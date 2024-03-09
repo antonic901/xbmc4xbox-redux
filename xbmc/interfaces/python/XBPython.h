@@ -2,7 +2,7 @@
 
 /*
  *      Copyright (C) 2005-2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,13 +15,12 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
-#include "cores/IPlayer.h"
+#include "cores/IPlayerCallback.h"
 #include "threads/CriticalSection.h"
 #include "threads/Event.h"
 #include "threads/Thread.h"
@@ -87,6 +86,7 @@ public:
   void OnDatabaseUpdated(const std::string &database);
   void OnDatabaseScanStarted(const std::string &database);
   void OnAbortRequested(const CStdString &ID="");
+  void OnNotification(const std::string &sender, const std::string &method, const std::string &data);
 
   virtual void Process();
   virtual void Uninitialize();
@@ -100,25 +100,12 @@ public:
   void PulseGlobalEvent();
   bool WaitForEvent(CEvent& hEvent, unsigned int milliseconds);
 
-  // inject xbmc stuff into the interpreter.
-  // should be called for every new interpreter
-  void InitializeInterpreter(ADDON::AddonPtr addon);
-
-  // remove modules and references when interpreter done
-  void DeInitializeInterpreter();
-
   void RegisterExtensionLib(LibraryLoader *pLib);
   void UnregisterExtensionLib(LibraryLoader *pLib);
   void UnloadExtensionLibs();
 
-#ifdef _XBOX // SpyceModule.cpp
-  void* getMainThreadState() { CSingleLock lock(m_critSection); return m_mainThreadState; };
-  void Finalize();
-private:
-#else
 private:
   void Finalize();
-#endif
 
   CCriticalSection    m_critSection;
   bool              FileExist(const char* strFile);

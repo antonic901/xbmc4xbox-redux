@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -39,7 +38,7 @@ namespace XBMCAddon
   { 
   protected:
     AddonClass* addonClassObject;
-    Callback(AddonClass* _object, const char* classname) : AddonClass(classname), addonClassObject(_object) {}
+    Callback(AddonClass* _object) : addonClassObject(_object) {}
 
   public:
     virtual void executeCallback() = 0;
@@ -71,11 +70,11 @@ namespace XBMCAddon
 
   public:
     CallbackFunction(M* object, MemberFunction method) : 
-      Callback(object, "CallbackFunction<M>"), meth(method), obj(object) {}
+      Callback(object), meth(method), obj(object) {}
 
     virtual ~CallbackFunction() { deallocating(); }
 
-    virtual void executeCallback() { TRACE; ((*obj).*(meth))(); }
+    virtual void executeCallback() { XBMC_TRACE; ((*obj).*(meth))(); }
   };
 
   /**
@@ -94,12 +93,12 @@ namespace XBMCAddon
 
   public:
     CallbackFunction(M* object, MemberFunction method, P1 parameter) : 
-      Callback(object, "CallbackFunction<M,P1>"), meth(method), obj(object),
+      Callback(object), meth(method), obj(object),
       param(parameter) {}
 
     virtual ~CallbackFunction() { deallocating(); }
 
-    virtual void executeCallback() { TRACE; ((*obj).*(meth))(param); }
+    virtual void executeCallback() { XBMC_TRACE; ((*obj).*(meth))(param); }
   };
 
   /**
@@ -119,12 +118,65 @@ namespace XBMCAddon
 
   public:
     CallbackFunction(M* object, MemberFunction method, P1* parameter) : 
-      Callback(object, "CallbackFunction<M,P1>"), meth(method), obj(object),
+      Callback(object), meth(method), obj(object),
       param(parameter) {}
 
     virtual ~CallbackFunction() { deallocating(); }
 
-    virtual void executeCallback() { TRACE; ((*obj).*(meth))(param); }
+    virtual void executeCallback() { XBMC_TRACE; ((*obj).*(meth))(param); }
+  };
+
+
+  /**
+   * This is the template to carry a callback to a member function
+   *  that returns 'void' (has no return) and takes two parameters.
+   */
+  template<class M, typename P1, typename P2> class CallbackFunction<M,P1,P2, cb_null_type, cb_null_type, cb_null_type> : public Callback
+  { 
+  public:
+    typedef void (M::*MemberFunction)(P1,P2);
+
+  protected:
+    MemberFunction meth;
+    M* obj;
+    P1 param1;
+    P2 param2;
+
+  public:
+    CallbackFunction(M* object, MemberFunction method, P1 parameter, P2 parameter2) : 
+      Callback(object), meth(method), obj(object),
+      param1(parameter), param2(parameter2) {}
+
+    virtual ~CallbackFunction() { deallocating(); }
+
+    virtual void executeCallback() { XBMC_TRACE; ((*obj).*(meth))(param1,param2); }
+  };
+
+
+  /**
+   * This is the template to carry a callback to a member function
+   *  that returns 'void' (has no return) and takes three parameters.
+   */
+  template<class M, typename P1, typename P2, typename P3> class CallbackFunction<M,P1,P2,P3, cb_null_type, cb_null_type> : public Callback
+  {
+  public:
+    typedef void (M::*MemberFunction)(P1,P2,P3);
+
+  protected:
+    MemberFunction meth;
+    M* obj;
+    P1 param1;
+    P2 param2;
+    P3 param3;
+
+  public:
+    CallbackFunction(M* object, MemberFunction method, P1 parameter, P2 parameter2, P3 parameter3) : 
+      Callback(object), meth(method), obj(object),
+      param1(parameter), param2(parameter2), param3(parameter3) {}
+
+    virtual ~CallbackFunction() { deallocating(); }
+
+    virtual void executeCallback() { XBMC_TRACE; ((*obj).*(meth))(param1,param2,param3); }
   };
 }
 

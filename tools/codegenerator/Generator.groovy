@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -55,13 +54,13 @@ if (newargs.size() > 3)
 File moduleSpec = new File(newargs[0])
 assert moduleSpec.exists() && moduleSpec.isFile(), 'Cannot locate the spec file "' + moduleSpec.getCanonicalPath() + '."'
 
-spec = [ 'module' : Helper.transformSwigXml(new XmlParser().parse(moduleSpec)) ]
+File templateFile = new File(newargs[1])
+assert templateFile.exists() && templateFile.isFile(), 'Cannot locate the template file "' + templateFile.getCanonicalPath() + '."'
+
+spec = [ 'module' : Helper.transformSwigXml(new XmlParser().parse(moduleSpec)), 'templateFile' : templateFile ]
 
 if (verbose)
    println XmlUtil.serialize(spec['module'])
-
-File templateFile = new File(newargs[1])
-assert templateFile.exists() && templateFile.isFile(), 'Cannot locate the template file "' + templateFile.getCanonicalPath() + '."'
 
 te = new SimpleTemplateEngine()
 println 'Processing "' + templateFile + '" using the module specification for module "' + moduleSpec + '"'

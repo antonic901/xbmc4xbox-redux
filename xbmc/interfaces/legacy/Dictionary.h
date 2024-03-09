@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -26,6 +25,11 @@
 
 namespace XBMCAddon
 {
+  // This is a hack in order to handle int's as strings. The correct fix for
+  // this is to get rid of Alternative all togther and make the codegenerator
+  // finally handle overloading correctly.
+  typedef String StringOrInt;
+
   /**
    * This is a bit of a hack for dynamically typed languages. In somce
    * cases python addon api calls handle dictionaries with variable
@@ -35,5 +39,7 @@ namespace XBMCAddon
    * native api handles these calls by converting the string to the
    * appropriate types.
    */
-  typedef std::map<String,String> Dictionary;
+  template<class T> class Dictionary : public std::map<String,T> {};
+
+  typedef Dictionary<StringOrInt> Properties;
 }

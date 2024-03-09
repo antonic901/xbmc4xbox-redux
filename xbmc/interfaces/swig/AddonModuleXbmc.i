@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,18 +13,16 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
 %module(directors="1") xbmc
 
 %{
-#include "libPython/XBPythonDll.h"
-
 #include "interfaces/legacy/Player.h"
+#include "interfaces/legacy/RenderCapture.h"
 #include "interfaces/legacy/Keyboard.h"
 #include "interfaces/legacy/ModuleXbmc.h"
 #include "interfaces/legacy/Monitor.h"
@@ -46,70 +44,10 @@ using namespace xbmc;
 
 %feature("python:coerceToUnicode") XBMCAddon::xbmc::getLocalizedString "true"
 
+%include "interfaces/legacy/AddonString.h"
 %include "interfaces/legacy/ModuleXbmc.h"
 
 %feature("director") Player;
-%feature("ref") Player "${ths}->Acquire();"
-%feature("unref") Player "${ths}->Release();"
-
-%feature("python:method:play") Player
-{
-    TRACE;
-    PyObject *pObject = NULL;
-    PyObject *pObjectListItem = NULL;
-    char bWindowed = false;
-    static const char *keywords[] = { "item", "listitem", "windowed", NULL };
-
-    if (!PyArg_ParseTupleAndKeywords(
-      args,
-      kwds,
-      (char*)"|OOb",
-      (char**)keywords,
-      &pObject,
-      &pObjectListItem,
-      &bWindowed))
-    {
-      return NULL;
-    }
-
-    try
-    {
-      Player* player = ((Player*)retrieveApiInstance((PyObject*)self,&PyXBMCAddon_xbmc_Player_Type,"play","XBMCAddon::xbmc::Player"));
-
-      // set fullscreen or windowed
-      bool windowed = (0 != bWindowed);
-
-      if (pObject == NULL)
-        player->playCurrent(windowed);
-      else if ((PyString_Check(pObject) || PyUnicode_Check(pObject)))
-      {
-        CStdString item;
-        PyXBMCGetUnicodeString(item,pObject,"item","Player::play");
-        XBMCAddon::xbmcgui::ListItem* pListItem = 
-          (pObjectListItem ? 
-           (XBMCAddon::xbmcgui::ListItem *)retrieveApiInstance(pObjectListItem,"p.XBMCAddon::xbmcgui::ListItem","XBMCAddon::xbmcgui::","play") :
-           NULL);
-        player->playStream(item,pListItem,windowed);
-      }
-      else // pObject must be a playlist
-        player->playPlaylist((PlayList *)retrieveApiInstance(pObject,"p.PlayList","XBMCAddon::xbmcgui::", "play"), windowed);
-    }
-    catch (const XbmcCommons::Exception& e)
-    { 
-      CLog::Log(LOGERROR,"Leaving Python method 'XBMCAddon_xbmc_Player_play'. Exception from call to 'play' '%s' ... returning NULL", e.GetMessage());
-      PyErr_SetString(PyExc_RuntimeError, e.GetMessage()); 
-      return NULL; 
-    }
-    catch (...)
-    {
-      CLog::Log(LOGERROR,"Unknown exception thrown from the call 'play'");
-      PyErr_SetString(PyExc_RuntimeError, "Unknown exception thrown from the call 'play'"); 
-      return NULL; 
-    }
-
-    Py_INCREF(Py_None);
-    return Py_None;
-  }
 
 %feature("python:nokwds") XBMCAddon::xbmc::Keyboard::Keyboard "true"
 %feature("python:nokwds") XBMCAddon::xbmc::Player::Player "true"
@@ -117,14 +55,14 @@ using namespace xbmc;
 
 %include "interfaces/legacy/Player.h"
 
+%include "interfaces/legacy/RenderCapture.h"
+
 %include "interfaces/legacy/InfoTagMusic.h"
 %include "interfaces/legacy/InfoTagVideo.h"
 %include "interfaces/legacy/Keyboard.h"
 %include "interfaces/legacy/PlayList.h"
 
 %feature("director") Monitor;
-%feature("ref") Monitor "${ths}->Acquire();"
-%feature("unref") Monitor "${ths}->Release();"
 
 %include "interfaces/legacy/Monitor.h"
 

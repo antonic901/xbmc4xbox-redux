@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,23 +13,23 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
 #include "swighelper.h"
+#include "Dialog.h"
 
 namespace XBMCAddon
 {
   namespace xbmcgui
   {
     /**
-     * lock() -- Lock the gui until xbmcgui.unlock() is called.
-     * 
-     * *Note, This will improve performance when doing a lot of gui manipulation at once.
-     *        The main program (xbmc itself) will freeze until xbmcgui.unlock() is called.
+     * lock() -- Lock the gui until xbmcgui.unlock() is called.\n
+     * \n
+     * *Note, This will improve performance when doing a lot of gui manipulation at once.\n
+     *        The main program (xbmc itself) will freeze until xbmcgui.unlock() is called.\n
      * 
      * example:
      *   - xbmcgui.lock()
@@ -69,6 +69,20 @@ namespace XBMCAddon
     SWIG_CONSTANT2(int,ICON_OVERLAY_UNWATCHED, CGUIListItem::ICON_OVERLAY_UNWATCHED);
     SWIG_CONSTANT2(int,ICON_OVERLAY_WATCHED, CGUIListItem::ICON_OVERLAY_WATCHED);
     SWIG_CONSTANT2(int,ICON_OVERLAY_HD, CGUIListItem::ICON_OVERLAY_HD);
+
+    SWIG_CONSTANT_FROM_GETTER(const char*,NOTIFICATION_INFO);
+    SWIG_CONSTANT_FROM_GETTER(const char*,NOTIFICATION_WARNING);
+    SWIG_CONSTANT_FROM_GETTER(const char*,NOTIFICATION_ERROR);
+
+    SWIG_CONSTANT(int,INPUT_ALPHANUM);
+    SWIG_CONSTANT(int,INPUT_NUMERIC);
+    SWIG_CONSTANT(int,INPUT_DATE);
+    SWIG_CONSTANT(int,INPUT_TIME);
+    SWIG_CONSTANT(int,INPUT_IPADDRESS);
+    SWIG_CONSTANT(int,INPUT_PASSWORD);
+
+    SWIG_CONSTANT(int,PASSWORD_VERIFY);
+    SWIG_CONSTANT(int,ALPHANUM_HIDE_INPUT);
 
   }
 }

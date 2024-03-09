@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -25,6 +24,9 @@
 #include "AddonString.h"
 #include "AddonClass.h"
 #include "LanguageHook.h"
+#include "commons/Buffer.h"
+
+#include <algorithm>
 
 namespace XBMCAddon
 {
@@ -33,19 +35,19 @@ namespace XBMCAddon
   {
 
     /**
-     * File class.
-     * 
-     * 'w' - opt open for write
-     * example:
-     *  f = xbmcvfs.File(file, ['w'])
+     * File class.\n
+     * \n
+     * 'w' - opt open for write\n
+     * example:\n
+     *  f = xbmcvfs.File(file, ['w'])\n
      */
     class File : public AddonClass
     {
       XFILE::CFile* file;
     public:
-      inline File(const String& filepath, const char* mode = NULL) : AddonClass("File"), file(new XFILE::CFile())
+      inline File(const String& filepath, const char* mode = NULL) : file(new XFILE::CFile())
       {
-        DelayedCallGuard dg;
+        DelayedCallGuard dg(languageHook);
         if (mode && strncmp(mode, "w", 1) == 0)
           file->OpenForWrite(filepath,true);
         else
@@ -54,61 +56,86 @@ namespace XBMCAddon
 
       inline ~File() { delete file; }
 
-      // TODO: use a reference counted buffer object with a void* and a size as the return
       /**
-       * read(bytes)
-       * 
-       * bytes : how many bytes to read [opt]- if not set it will read the whole fi
-       * 
-       * example:
-       *  f = xbmcvfs.File(file)
-       *  b = f.read()
-       *  f.close()
+       * read(bytes)\n
+       * \n
+       * bytes : how many bytes to read [opt]- if not set it will read the whole file\n
+       *\n
+       * returns: string\n
+       * \n
+       * example:\n
+       *  f = xbmcvfs.File(file)\n
+       *  b = f.read()\n
+       *  f.close()\n
        */
-      //      void* read(unsigned long numBytes = 0);
+      inline String read(unsigned long numBytes = 0) 
+      { 
+        XbmcCommons::Buffer b = readBytes(numBytes);
+        return b.getString(numBytes == 0 ? b.remaining() : std::min((unsigned long)b.remaining(),numBytes));
+      }
 
       /**
-       * write(buffer)
-       * 
-       * buffer : buffer to write to fi
-       * 
-       * example:
-       *  f = xbmcvfs.File(file, 'w', True)
-       *  result = f.write(buffer)
-       *  f.close()
+       * readBytes(numbytes)\n
+       * \n
+       * numbytes : how many bytes to read [opt]- if not set it will read the whole file\n
+       *\n
+       * returns: bytearray\n
+       * \n
+       * example:\n
+       *  f = xbmcvfs.File(file)\n
+       *  b = f.read()\n
+       *  f.close()\n
        */
-      bool write(const char* file);
+      XbmcCommons::Buffer readBytes(unsigned long numBytes = 0);
 
       /**
-       * size()
-       * 
-       * example:
-       *  f = xbmcvfs.File(file)
-       *  s = f.size()
-       *  f.close()
+       * write(buffer)\n
+       * \n
+       * buffer : buffer to write to file\n
+       *\n
+       * returns: true on success.\n
+       * \n
+       * example:\n
+       *  f = xbmcvfs.File(file, 'w', True)\n
+       *  result = f.write(buffer)\n
+       *  f.close()\n
        */
-      inline long long size() { DelayedCallGuard dg; return file->GetLength(); }
+      bool write(XbmcCommons::Buffer& buffer);
 
       /**
-       * seek()
-       * 
-       * FilePosition : position in the file
-       * Whence : where in a file to seek from[0 begining, 1 current , 2 end possition]
-       * example:
-       *  f = xbmcvfs.File(file)
-       *  result = f.seek(8129, 0)
-       *  f.close()
+       * size()\n
+       * \n
+       * example:\n
+       *  f = xbmcvfs.File(file)\n
+       *  s = f.size()\n
+       *  f.close()\n
        */
-      inline long long seek(long long seekBytes, int iWhence) { DelayedCallGuard dg; return file->Seek(seekBytes,iWhence); }
+      inline long long size() { DelayedCallGuard dg(languageHook); return file->GetLength(); }
 
       /**
-       * close()
-       * 
-       * example:
-       *  f = xbmcvfs.File(file)
-       *  f.close()
+       * seek()\n
+       * \n
+       * FilePosition : position in the file\n
+       * Whence : where in a file to seek from[0 begining, 1 current , 2 end possition]\n
+       * example:\n
+       *  f = xbmcvfs.File(file)\n
+       *  result = f.seek(8129, 0)\n
+       *  f.close()\n
        */
-      inline void close() { DelayedCallGuard dg; file->Close(); }
+      inline long long seek(long long seekBytes, int iWhence) { DelayedCallGuard dg(languageHook); return file->Seek(seekBytes,iWhence); }
+
+      /**
+       * close()\n
+       * \n
+       * example:\n
+       *  f = xbmcvfs.File(file)\n
+       *  f.close()\n
+       */
+      inline void close() { DelayedCallGuard dg(languageHook); file->Close(); }
+
+#ifndef SWIG
+      inline const XFILE::CFile* getFile() const { return file; }
+#endif
 
     };
   }

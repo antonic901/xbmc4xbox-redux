@@ -1,6 +1,6 @@
  /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -31,15 +30,15 @@ namespace XBMCAddon
   {
     void WindowDialogMixin::show()
     {
-      TRACE;
-      ThreadMessage tMsg = {TMSG_GUI_PYTHON_DIALOG, HACK_CUSTOM_ACTION_OPENING, 0};
+      XBMC_TRACE;
+      ThreadMessage tMsg = {TMSG_GUI_PYTHON_DIALOG, HACK_CUSTOM_ACTION_OPENING, 0u};
       tMsg.lpVoid = w->window->get();
       CApplicationMessenger::Get().SendMessage(tMsg, true);
     }
 
     void WindowDialogMixin::close()
     {
-      TRACE;
+      XBMC_TRACE;
       w->bModal = false;
       w->PulseActionEvent();
 
@@ -50,11 +49,11 @@ namespace XBMCAddon
       w->iOldWindowId = 0;
     }
 
-    bool WindowDialogMixin::IsDialogRunning() const { TRACE; return w->window->isActive(); }
+    bool WindowDialogMixin::IsDialogRunning() const { XBMC_TRACE; return w->window->isActive(); }
 
     bool WindowDialogMixin::OnAction(const CAction &action)
     {
-      TRACE;
+      XBMC_TRACE;
       switch (action.GetID())
       {
       case HACK_CUSTOM_ACTION_OPENING:
@@ -69,7 +68,7 @@ namespace XBMCAddon
           return true;
         }
         break;
-
+        
       case HACK_CUSTOM_ACTION_CLOSING:
         {
           // This is from the CGUIPythonWindowXMLDialog::Show_Internal

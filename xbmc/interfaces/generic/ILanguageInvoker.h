@@ -1,7 +1,7 @@
 #pragma once
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -68,12 +68,12 @@ protected:
   virtual bool execute(const std::string &script, const std::vector<std::string> &arguments) = 0;
   virtual bool stop(bool abort) = 0;
 
-  virtual void onError()
+  virtual void onExecutionFailed()
   {
     if (m_invocationHandler)
       m_invocationHandler->OnScriptEnded(this);
   }
-  virtual void onDone()
+  virtual void onExecutionDone()
   {
     if (m_invocationHandler)
       m_invocationHandler->OnScriptEnded(this);

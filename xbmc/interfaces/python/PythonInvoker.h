@@ -1,7 +1,7 @@
 #pragma once
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
  *
  */
 
+#include <map>
 #include <string>
 
 #include "interfaces/generic/ILanguageInvoker.h"
@@ -35,21 +36,41 @@ public:
 
   virtual bool IsStopping() const { return m_stop || ILanguageInvoker::IsStopping(); }
 
+  typedef void (*PythonModuleInitialization)();
+  
 protected:
+  // implementation of ILanguageInvoker
   virtual bool execute(const std::string &script, const std::vector<std::string> &arguments);
   virtual bool stop(bool abort);
+  virtual void onExecutionFailed();
 
+  // custom virtual methods
+  virtual std::map<std::string, PythonModuleInitialization> getModules() const;
+  virtual const char* getInitializationScript() const;
+  virtual void onInitialization();
+  // actually a PyObject* but don't wanna draw Python.h include into the header
+  virtual void onPythonModuleInitialization(void* moduleDict);
+  virtual void onDeinitialization();
+
+  virtual void onSuccess() { }
+  virtual void onAbort() { }
   virtual void onError();
 
-private:
-  void addPath(const std::string path);
-
-  char *m_source;
+  std::string m_sourceFile;
   unsigned int  m_argc;
   char **m_argv;
+  CCriticalSection m_critical;
+
+private:
+  void initializeModules(const std::map<std::string, PythonModuleInitialization> &modules);
+  bool initializeModule(PythonModuleInitialization module);
+  void addPath(const std::string& path); // add path in UTF-8 encoding
+  void addNativePath(const std::string& path); // add path in system/Python encoding
+
   std::string m_pythonPath;
   void *m_threadState;
   bool m_stop;
   CEvent m_stoppedEvent;
-  CCriticalSection m_critical;
+
+  static CCriticalSection s_critical;
 };

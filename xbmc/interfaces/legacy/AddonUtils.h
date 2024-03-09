@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -28,11 +27,15 @@
 
 #pragma once
 
-#define ENABLE_TRACE_API
+//#define ENABLE_XBMC_TRACE_API
 
 #include "threads/SingleLock.h"
 
 #include <vector>
+
+#ifdef TARGET_WINDOWS
+#define __PRETTY_FUNCTION__ __FUNCTION__
+#endif
 
 /**
  * This file contains the public definitions for the Addon api. It's meant to be used
@@ -61,17 +64,6 @@ namespace XBMCAddonUtils
     ~InvertSingleLockGuard() { lock.Enter(); }
   };
 
-//  class WaitForNotify
-//  {
-//    std::vector<HANDLE> thoseWaiting;
-//    CCriticalSection csection; // Ha!
-//    CCriticalSection atomicWait;
-//  public:
-//    void wait();
-//    void notify();
-//    void notifyAll();
-//  };
-
 #define LOCKGUI XBMCAddonUtils::GuiLock __gl
 
   /*
@@ -80,7 +72,7 @@ namespace XBMCAddonUtils
    */
   const char *getDefaultImage(char* cControlType, char* cTextureType, char* cDefault);
 
-#ifdef ENABLE_TRACE_API
+#ifdef ENABLE_XBMC_TRACE_API
   class TraceGuard
   {
     const char* function;
@@ -97,10 +89,10 @@ namespace XBMCAddonUtils
 #endif
 }
 
-#ifdef ENABLE_TRACE_API
-#define TRACE XBMCAddonUtils::TraceGuard _tg(__PRETTY_FUNCTION__)
+#ifdef ENABLE_XBMC_TRACE_API
+#define XBMC_TRACE XBMCAddonUtils::TraceGuard _tg(__PRETTY_FUNCTION__)
 #else
-#define TRACE
+#define XBMC_TRACE
 #endif
 
 

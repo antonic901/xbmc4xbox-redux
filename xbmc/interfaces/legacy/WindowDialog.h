@@ -1,6 +1,6 @@
  /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -29,6 +28,9 @@ namespace XBMCAddon
 {
   namespace xbmcgui
   {
+    /**
+     * WindowDialog class
+     */
     class WindowDialog : public Window, private WindowDialogMixin
     {
 
@@ -42,12 +44,12 @@ namespace XBMCAddon
       SWIGHIDDENVIRTUAL void OnDeinitWindow(int nextWindowID);
 
       SWIGHIDDENVIRTUAL bool IsDialogRunning() const { return WindowDialogMixin::IsDialogRunning(); }
-      SWIGHIDDENVIRTUAL bool IsModalDialog() const { TRACE; return true; };
-      SWIGHIDDENVIRTUAL bool IsDialog() const { TRACE; return true; };
-#endif
+      SWIGHIDDENVIRTUAL bool IsModalDialog() const { XBMC_TRACE; return true; };
+      SWIGHIDDENVIRTUAL bool IsDialog() const { XBMC_TRACE; return true; };
 
-      SWIGHIDDENVIRTUAL inline void show() { WindowDialogMixin::show(); }
-      SWIGHIDDENVIRTUAL inline void close() { WindowDialogMixin::close(); }
+      SWIGHIDDENVIRTUAL inline void show() { XBMC_TRACE; WindowDialogMixin::show(); }
+      SWIGHIDDENVIRTUAL inline void close() { XBMC_TRACE; WindowDialogMixin::close(); }
+#endif
     };
   }
 }

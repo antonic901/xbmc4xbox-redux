@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 
 #include <vector>
 
-#include "system.h" // <xtl.h>
 #include "ScriptInvocationManager.h"
 #include "ILanguageInvocationHandler.h"
 #include "ILanguageInvoker.h"
@@ -122,8 +121,8 @@ void CScriptInvocationManager::RegisterLanguageInvocationHandler(ILanguageInvoca
     return;
 
   string ext = extension;
-  StringUtils2::ToLower(ext);
-  if (!StringUtils2::StartsWith(ext, "."))
+  StringUtils::ToLower(ext);
+  if (!StringUtils::StartsWithNoCase(ext, "."))
     ext = "." + ext;
 
   CSingleLock lock(m_critSection);
@@ -178,7 +177,7 @@ void CScriptInvocationManager::UnregisterLanguageInvocationHandler(ILanguageInvo
 bool CScriptInvocationManager::HasLanguageInvoker(const std::string &script) const
 {
   std::string extension = URIUtils::GetExtension(script);
-  StringUtils2::ToLower(extension);
+  StringUtils::ToLower(extension);
 
   CSingleLock lock(m_critSection);
   map<string, ILanguageInvocationHandler*>::const_iterator it = m_invocationHandlers.find(extension);
@@ -188,7 +187,7 @@ bool CScriptInvocationManager::HasLanguageInvoker(const std::string &script) con
 ILanguageInvoker* CScriptInvocationManager::GetLanguageInvoker(const std::string &script) const
 {
   std::string extension = URIUtils::GetExtension(script);
-  StringUtils2::ToLower(extension);
+  StringUtils::ToLower(extension);
 
   CSingleLock lock(m_critSection);
   map<string, ILanguageInvocationHandler*>::const_iterator it = m_invocationHandlers.find(extension);

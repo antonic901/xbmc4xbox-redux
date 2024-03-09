@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -32,62 +31,76 @@ namespace XBMCAddon
 {
   namespace Python
   {
-    static AddonClass::Ref<LanguageHook> instance;
+    static AddonClass::Ref<PythonLanguageHook> instance;
 
     static CCriticalSection hooksMutex;
-    std::map<PyInterpreterState*,AddonClass::Ref<LanguageHook> > LanguageHook::hooks;
+    static std::map<PyInterpreterState*,AddonClass::Ref<PythonLanguageHook> > hooks;
 
     // vtab instantiation
-    LanguageHook::~LanguageHook()
+    PythonLanguageHook::~PythonLanguageHook()
     {
-      TRACE;
+      XBMC_TRACE;
       XBMCAddon::LanguageHook::deallocating();
     }
 
-    void LanguageHook::MakePendingCalls()
+    void PythonLanguageHook::MakePendingCalls()
     {
-      TRACE;
+      XBMC_TRACE;
       PythonCallbackHandler::makePendingCalls();
     }
 
-    void LanguageHook::DelayedCallOpen()
+    void PythonLanguageHook::DelayedCallOpen()
     {
-      TRACE;
+      XBMC_TRACE;
       PyGILLock::releaseGil();
     }
 
-    void LanguageHook::DelayedCallClose()
+    void PythonLanguageHook::DelayedCallClose()
     {
-      TRACE;
+      XBMC_TRACE;
       PyGILLock::acquireGil();
     }
 
-    void LanguageHook::RegisterMe()
+    void PythonLanguageHook::RegisterMe()
     {
-      TRACE;
+      XBMC_TRACE;
       CSingleLock lock(hooksMutex);
-      hooks[m_interp] = AddonClass::Ref<LanguageHook>(this);
+      hooks[m_interp] = AddonClass::Ref<PythonLanguageHook>(this);
     }
 
-    void LanguageHook::UnregisterMe()
+    void PythonLanguageHook::UnregisterMe()
     {
-      TRACE;
+      XBMC_TRACE;
       CSingleLock lock(hooksMutex);
       hooks.erase(m_interp);
     }
 
-    AddonClass::Ref<LanguageHook> LanguageHook::GetIfExists(PyInterpreterState* interp)
+    static AddonClass::Ref<XBMCAddon::Python::PythonLanguageHook> g_languageHook;
+
+    // Ok ... we're going to get it even if it doesn't exist. If it doesn't exist then
+    // we're going to assume we're not in control of the interpreter. This (apparently)
+    // can be the case. E.g. Libspotify manages to call into a script using a ctypes
+    // extention but under the control of an Interpreter we know nothing about. In
+    // cases like this we're going to use a global interpreter 
+    AddonClass::Ref<PythonLanguageHook> PythonLanguageHook::GetIfExists(PyInterpreterState* interp)
     {
-      TRACE;
+      XBMC_TRACE;
       CSingleLock lock(hooksMutex);
-      std::map<PyInterpreterState*,AddonClass::Ref<LanguageHook> >::iterator iter = hooks.find(interp);
-      return iter == hooks.end() ? AddonClass::Ref<LanguageHook>(NULL) : AddonClass::Ref<LanguageHook>(iter->second);
+      std::map<PyInterpreterState*,AddonClass::Ref<PythonLanguageHook> >::iterator iter = hooks.find(interp);
+      if (iter != hooks.end())
+        return AddonClass::Ref<PythonLanguageHook>(iter->second);
+
+      // if we got here then we need to use the global one.
+      if (g_languageHook.isNull())
+        g_languageHook = new XBMCAddon::Python::PythonLanguageHook();
+
+      return g_languageHook;
     }
 
-    bool LanguageHook::IsAddonClassInstanceRegistered(AddonClass* obj)
+    bool PythonLanguageHook::IsAddonClassInstanceRegistered(AddonClass* obj)
     {
-      for (std::map<PyInterpreterState*,AddonClass::Ref<LanguageHook> >::iterator iter = hooks.begin();
-           iter != hooks.end(); iter++)
+      for (std::map<PyInterpreterState*,AddonClass::Ref<PythonLanguageHook> >::iterator iter = hooks.begin();
+           iter != hooks.end(); ++iter)
       {
         if ((iter->second)->HasRegisteredAddonClassInstance(obj))
           return true;
@@ -107,16 +120,15 @@ namespace XBMCAddon
      * See PythonCallbackHandler for more details
      * See PythonCallbackHandler::PythonCallbackHandler for more details
      */
-    XBMCAddon::CallbackHandler* LanguageHook::GetCallbackHandler()
+    XBMCAddon::CallbackHandler* PythonLanguageHook::GetCallbackHandler()
     { 
-      TRACE;
+      XBMC_TRACE;
       return new PythonCallbackHandler();
     }
 
-    String LanguageHook::GetAddonId()
+    String PythonLanguageHook::GetAddonId()
     {
-      TRACE;
-      const char* id = NULL;
+      XBMC_TRACE;
 
       // Get a reference to the main module
       // and global dictionary
@@ -125,13 +137,14 @@ namespace XBMCAddon
       // Extract a reference to the function "func_name"
       // from the global dictionary
       PyObject* pyid = PyDict_GetItemString(global_dict, "__xbmcaddonid__");
-      id = PyString_AsString(pyid);
-      return id;
+      if (pyid)
+        return PyString_AsString(pyid);
+      return "";
     }
 
-    String LanguageHook::GetAddonVersion()
+    String PythonLanguageHook::GetAddonVersion()
     {
-      TRACE;
+      XBMC_TRACE;
       // Get a reference to the main module
       // and global dictionary
       PyObject* main_module = PyImport_AddModule((char*)"__main__");
@@ -139,41 +152,42 @@ namespace XBMCAddon
       // Extract a reference to the function "func_name"
       // from the global dictionary
       PyObject* pyversion = PyDict_GetItemString(global_dict, "__xbmcapiversion__");
-      String version(PyString_AsString(pyversion));
-      return version;
+      if (pyversion)
+        return PyString_AsString(pyversion);
+      return "";
     }
 
-    void LanguageHook::RegisterPlayerCallback(IPlayerCallback* player) { TRACE; g_pythonParser.RegisterPythonPlayerCallBack(player); }
-    void LanguageHook::UnregisterPlayerCallback(IPlayerCallback* player) { TRACE; g_pythonParser.UnregisterPythonPlayerCallBack(player); }
-    void LanguageHook::RegisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor) { TRACE; g_pythonParser.RegisterPythonMonitorCallBack(monitor); }
-    void LanguageHook::UnregisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor) { TRACE; g_pythonParser.UnregisterPythonMonitorCallBack(monitor); }
+    void PythonLanguageHook::RegisterPlayerCallback(IPlayerCallback* player) { XBMC_TRACE; g_pythonParser.RegisterPythonPlayerCallBack(player); }
+    void PythonLanguageHook::UnregisterPlayerCallback(IPlayerCallback* player) { XBMC_TRACE; g_pythonParser.UnregisterPythonPlayerCallBack(player); }
+    void PythonLanguageHook::RegisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor) { XBMC_TRACE; g_pythonParser.RegisterPythonMonitorCallBack(monitor); }
+    void PythonLanguageHook::UnregisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor) { XBMC_TRACE; g_pythonParser.UnregisterPythonMonitorCallBack(monitor); }
 
-    bool LanguageHook::WaitForEvent(CEvent& hEvent, unsigned int milliseconds)
+    bool PythonLanguageHook::WaitForEvent(CEvent& hEvent, unsigned int milliseconds)
     { 
-      TRACE;
+      XBMC_TRACE;
       return g_pythonParser.WaitForEvent(hEvent,milliseconds);
     }
 
-    void LanguageHook::RegisterAddonClassInstance(AddonClass* obj)
+    void PythonLanguageHook::RegisterAddonClassInstance(AddonClass* obj)
     {
-      TRACE;
-      Synchronize l(*this);
+      XBMC_TRACE;
+      CSingleLock l(*this);
       obj->Acquire();
       currentObjects.insert(obj);
     }
 
-    void LanguageHook::UnregisterAddonClassInstance(AddonClass* obj)
+    void PythonLanguageHook::UnregisterAddonClassInstance(AddonClass* obj)
     {
-      TRACE;
-      Synchronize l(*this);
+      XBMC_TRACE;
+      CSingleLock l(*this);
       if (currentObjects.erase(obj) > 0)
         obj->Release();
     }
 
-    bool LanguageHook::HasRegisteredAddonClassInstance(AddonClass* obj)
+    bool PythonLanguageHook::HasRegisteredAddonClassInstance(AddonClass* obj)
     {
-      TRACE;
-      Synchronize l(*this);
+      XBMC_TRACE;
+      CSingleLock l(*this);
       return currentObjects.find(obj) != currentObjects.end();
     }
   }

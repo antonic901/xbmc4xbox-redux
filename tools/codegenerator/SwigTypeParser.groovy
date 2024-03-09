@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -34,6 +33,10 @@ public class SwigTypeParser
     */
    private static Map typeTable = [:]
 
+   /**
+    * Add a typedef node to the global list of typedefs to be used later in 
+    *  parsing types.
+    */
    public static void appendTypeTable(Node typetab) { typetab.each { typeTable[it.@namespace + it.@type] = it.@basetype } }
 
    /**
@@ -42,9 +45,9 @@ public class SwigTypeParser
    public static String convertTypeToLTypeForParam(String ty)
    {
       // in the case where we're converting from a type to an ltype for a parameter,
-      //  and the type is a r.q(const).*, we are going to assume the ltype is
+      //  and the type is a r.*, we are going to assume the ltype is
       //  a "pass-by-value" on the stack.
-      return (ty.trim().startsWith('r.q(const).') ? SwigTypeParser.SwigType_ltype(ty.trim().substring(11)) : SwigTypeParser.SwigType_ltype(ty.trim()))
+      return (ty.trim().startsWith('r.') ? SwigTypeParser.SwigType_ltype(ty.trim().substring(2)) : SwigTypeParser.SwigType_ltype(ty.trim()))
    }
 
   /**
@@ -52,7 +55,7 @@ public class SwigTypeParser
    * if the type string is p.MyType you will get MyType. If the string is 
    * p.q(const).int you will get 'int'
    */
-  public static String getBaseType(String ty)
+  public static String getRootType(String ty)
   { 
     int li = ty.lastIndexOf('.')
     return li >= 0 ? ty.substring(li + 1) : ty
@@ -129,25 +132,56 @@ public class SwigTypeParser
       return result.replaceAll('<\\(', '<').replaceAll('\\)>', '>')
    }
 
+   /**
+    * This will resolve the typedefs given the parameter passed is a simple type.
+    *  see SwigType_resolve_all_typedefs which will handle qualifiers, pointers,
+    *  references, and typedef of typedefs to resolve all the way down to the
+    *  most basic types.
+    */
    public static String SwigType_typedef_resolve(String t)
    {
       String td = typeTable[t]
       String ret = td == null ? t : td
-//      System.out.println "trying to resolve ${t} and it appears to be typedefed to ${ret}"
       return ret
    }
 
-   public static String SwigType_typedef_resolve_all(String t)
-   {
-      String prev = t
-      t = SwigType_typedef_resolve(prev)
-      while(prev != t)
-      {
-         String tmp = t
-         t = SwigType_typedef_resolve(prev)
-         prev = tmp
+   /**
+    * This will resolve typedefs anbd handle qualifiers, pointers,
+    *  references, and typedef of typedefs to resolve all the way down to the
+    *  most basic types.
+    */
+   public static String SwigType_resolve_all_typedefs(String s)
+   { 
+      String result = ''
+      String tc = s
+
+      /* Nuke all leading qualifiers, appending them to the result*/
+      while (SwigType_isqualifier(tc)) {
+         List tmpl = SwigType_pop(tc)
+         tc = tmpl[1]
+         result += tmpl[0]
       }
-      return t
+
+      if (SwigType_issimple(tc)) {
+         /* Resolve any typedef definitions */
+         String tt = tc
+         String td
+         while ((td = SwigType_typedef_resolve(tt)) != tt) {
+            if (td != tt) {
+               tt = td
+               break
+            }
+            else if (td != tt) tt = td
+         }
+         tc = td
+
+         return tc
+      }
+
+      List tmpl = SwigType_pop(tc)
+      result += tmpl[0]
+      result += SwigType_resolve_all_typedefs(tmpl[1])
+      return result
    }
 
    /**
@@ -206,7 +240,7 @@ public class SwigTypeParser
             firstarray = false
          } else if (SwigType_isreference(element)) {
             if (notypeconv) {
-               result == element
+               result += element
             } else {
                result += "p."
             }
@@ -217,7 +251,7 @@ public class SwigTypeParser
             } else {
                result += "p."
             }
-            firstarray = 0;
+            firstarray = false;
          } else if (SwigType_isenum(element)) {
             boolean anonymous_enum = (element == "enum ")
             if (notypeconv || !anonymous_enum) {
@@ -248,8 +282,16 @@ public class SwigTypeParser
 
    public static boolean SwigType_ispointer(String t)
    {
-      if (t.startsWith('q(')) t = t.substring(t.indexOf('.') + 1,)
+      if (t.startsWith('q(')) t = t.substring(t.indexOf('.') + 1)
       return t.startsWith('p.')
+   }
+
+   public static String SwigType_makepointer(String t)
+   {
+     String prefix = (t.startsWith('q(')) ? t.substring(0,t.indexOf('.') + 1) : ""
+     String remainder = (t.startsWith('q(')) ? t.substring(t.indexOf('.') + 1) : t
+     
+     return prefix + "p." + remainder
    }
 
    public static boolean SwigType_isarray(String t) { return t.startsWith('a(') }
@@ -305,6 +347,12 @@ public class SwigTypeParser
       }
       return t.substring(start,c)
    }
+
+  public static List SwigType_templateparmlist(String t)
+  {
+    int i = t.indexOf('<');
+    return SwigType_parmlist(t.substring(i))
+  }
 
    /* -----------------------------------------------------------------------------
     * SwigType_parmlist()
@@ -542,11 +590,12 @@ public class SwigTypeParser
       //System.out.println "${convertTypeToLType('bool')}"
       //testPrint('p.q(const).XBMCAddon::xbmcgui::ListItemList')
       //testPrint('p.q(const).XBMCAddon::xbmcgui::ListItemList')
-      testPrint('r.q(const).std::map<(String,String)>', 'foo')
+      //testPrint(SwigTypeParser.SwigType_makepointer('r.q(const).std::map<(String,String)>'), 'foo')
+      testPrint(SwigTypeParser.SwigType_makepointer('q(const).p.q(const).char'),'bfoo')
    }
 
    private static void testPrint(String ty, String id = 'foo')
    {
-      println SwigTypeParser.SwigType_ltype(ty) + "|" + SwigTypeParser.SwigType_str(SwigTypeParser.SwigType_ltype(ty),id) + ' ' + " = " + SwigTypeParser.SwigType_str(ty,id)
+      println SwigTypeParser.SwigType_ltype(ty) + "|" + SwigTypeParser.SwigType_str(SwigTypeParser.SwigType_ltype(ty),id) + ' ' + " = " + ty + '|' + SwigTypeParser.SwigType_str(ty,id)
    }
 }

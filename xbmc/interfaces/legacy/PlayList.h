@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -33,8 +32,6 @@ namespace XBMCAddon
   {
     XBMCCOMMONS_STANDARD_EXCEPTION(PlayListException);
 
-    typedef XBMCAddon::xbmcgui::ListItem PlayListItem;
-
     class PlayList : public AddonClass
     {
       long refs;
@@ -45,13 +42,16 @@ namespace XBMCAddon
       PlayList(int playList) throw (PlayListException);
       virtual ~PlayList();
 
+      /**
+       * getPlayListId() -- returns an integer.
+       */
       inline int getPlayListId() const { return iPlayList; }
 
       /**
        * add(url[, listitem, index]) -- Adds a new file to the playlist.
        * 
-       * url            : string or unicode - filename or url to add.
-       * listitem       : [opt] listitem - used with setInfo() to set different infolabels.
+       * url            : string or unicode - filename or url to add.\n
+       * listitem       : [opt] listitem - used with setInfo() to set different infolabels.\n
        * index          : [opt] integer - position to add playlist item. (default=end)
        * 
        * *Note, You can use the above as keywords for arguments and skip certain optional arguments.
@@ -59,18 +59,18 @@ namespace XBMCAddon
        * 
        * example:
        *   - playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
-       *   - video = 'F:\\\\movies\\\\Ironman.mov'
-       *   - listitem = xbmcgui.ListItem('Ironman', thumbnailImage='F:\\\\movies\\\\Ironman.tbn')
+       *   - video = 'F:\\movies\\Ironman.mov'
+       *   - listitem = xbmcgui.ListItem('Ironman', thumbnailImage='F:\\movies\\Ironman.tbn')
        *   - listitem.setInfo('video', {'Title': 'Ironman', 'Genre': 'Science Fiction'})
-       *   - playlist.add(url=video, listitem=listitem, index=7)\n
+       *   - playlist.add(url=video, listitem=listitem, index=7)n
        */
-      void add(const String& url, PlayListItem* listitem = NULL, int index = -1);
+      void add(const String& url, XBMCAddon::xbmcgui::ListItem* listitem = NULL, int index = -1);
 
       /**
        * load(filename) -- Load a playlist.
        * 
        * clear current playlist and copy items from the file to this Playlist
-       * filename can be like .pls or .m3u ...
+       * filename can be like .pls or .m3u ...\n
        * returns False if unable to load playlist
        */
       bool load(const char* filename) throw (PlayListException);
@@ -109,7 +109,7 @@ namespace XBMCAddon
        * retrieve the item at the given position. A negative index means from the ending 
        * rather than from the start.
        */
-      PlayListItem* operator[](long i) throw (PlayListException);
+      XBMCAddon::xbmcgui::ListItem* operator[](long i) throw (PlayListException);
     };
   }
 }

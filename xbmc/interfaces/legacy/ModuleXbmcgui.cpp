@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,17 +13,20 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
 #include "ModuleXbmcgui.h"
-
+#include "LanguageHook.h"
 #include "guilib/GraphicContext.h"
 #include "guilib/GUIWindowManager.h"
 #include "utils/log.h"
+
+#define NOTIFICATION_INFO     "info"
+#define NOTIFICATION_WARNING  "warning"
+#define NOTIFICATION_ERROR    "error"
 
 namespace XBMCAddon
 {
@@ -41,18 +44,21 @@ namespace XBMCAddon
 
     long getCurrentWindowId()
     {
-      lock();
-      int id = g_windowManager.GetActiveWindow();
-      unlock();
-      return id;
+      DelayedCallGuard dg;
+      CSingleLock gl(g_graphicsContext);
+      return g_windowManager.GetActiveWindow();
     }
 
     long getCurrentWindowDialogId()
     {
-      lock();
-      int id = g_windowManager.GetTopMostModalDialogID();
-      unlock();
-      return id;
+      DelayedCallGuard dg;
+      CSingleLock gl(g_graphicsContext);
+      return g_windowManager.GetTopMostModalDialogID();
     }
+    
+    const char* getNOTIFICATION_INFO()    { return NOTIFICATION_INFO; }
+    const char* getNOTIFICATION_WARNING() { return NOTIFICATION_WARNING; }
+    const char* getNOTIFICATION_ERROR()   { return NOTIFICATION_ERROR; }
+
   }
 }

@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -26,6 +25,7 @@
 #include "addons/GUIDialogAddonSettings.h"
 #include "guilib/GUIWindowManager.h"
 #include "GUIUserMessages.h"
+#include "utils/StringUtils.h"
 
 using namespace ADDON;
 
@@ -37,7 +37,7 @@ namespace XBMCAddon
 
     String Addon::getAddonVersion() { return languageHook == NULL ? emptyString : languageHook->GetAddonVersion(); }
 
-    Addon::Addon(const char* cid) throw (AddonException) : AddonClass("Addon") 
+    Addon::Addon(const char* cid) throw (AddonException)
     {
       String id(cid ? cid : emptyString);
 
@@ -69,12 +69,9 @@ namespace XBMCAddon
         }
         else
         {
-          CStdString errorMessage ("Could not get AddonPtr given a script id of ");
-          errorMessage += id;
-          errorMessage += ". If you are trying to use 'os.getcwd' to set the path, you cannot do that in a ";
-          errorMessage += version.Print();
-          errorMessage += " plugin.";
-          throw AddonException(errorMessage.c_str());
+          throw AddonException("Could not get AddonPtr given a script id of %s."
+                               "If you are trying to use 'os.getcwd' to set the path, you cannot do that in a %s plugin.", 
+                               id.c_str(), version.Print().c_str());
         }
       }
 
@@ -154,9 +151,7 @@ namespace XBMCAddon
         return pAddon->Profile();
       else if (strcmpi(id, "stars") == 0)
       {
-        CStdString tmps;
-        tmps.Format("%d", pAddon->Stars());
-        return tmps;
+        return StringUtils::Format("%d", pAddon->Stars());
       }
       else if (strcmpi(id, "summary") == 0)
         return pAddon->Summary();

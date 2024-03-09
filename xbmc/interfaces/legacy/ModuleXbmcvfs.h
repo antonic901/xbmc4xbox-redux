@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -33,33 +32,33 @@ namespace XBMCAddon
     /**
      * copy(source, destination) -- copy file to destination, returns true/false.
      * 
-     * source          : file to copy.
-     * destination     : destination fi
+     * source          : file to copy.\n
+     * destination     : destination file
      * 
      * example:
-     *   success = xbmcvfs.copy(source, destination)
+     *   - success = xbmcvfs.copy(source, destination)
      */
     bool copy(const String& strSource, const String& strDestnation);
 
+    // delete a file
     /**
      * delete(file)
      * 
-     * file        : file to dele
+     * file        : file to delete
      * 
      * example:
-     *   xbmcvfs.delete(file)
+     *   - xbmcvfs.delete(file)
      */
-    // delete a file
     bool deleteFile(const String& file);
 
     /**
      * rename(file, newFileName)
      * 
-     * file        : file to reana
-     * newFileName : new filename, including the full pa
+     * file        : file to rename\n
+     * newFileName : new filename, including the full path
      * 
      * example:
-     *   success = xbmcvfs.rename(file,newFileName)
+     *   - success = xbmcvfs.rename(file,newFileName)
      */
     // rename a file
     bool rename(const String& file, const String& newFile);
@@ -67,10 +66,10 @@ namespace XBMCAddon
     /**
      * exists(path)
      * 
-     * path        : file or fold
+     * path        : file or folder (folder must end with slash or backslash)
      * 
      * example:
-     *   success = xbmcvfs.exists(path)
+     *   - success = xbmcvfs.exists(path)
      */
     // check for a file or folder existance, mimics Pythons os.path.exists()
     bool exists(const String& path);
@@ -103,14 +102,14 @@ namespace XBMCAddon
      * path        : folder
      * 
      * example:
-     *  - success = xbmcvfs.rmdir(path)\n
+     *  - success = xbmcvfs.rmdir(path)
      */
     bool rmdir(const String& path, bool force = false);
 
     /**
      * listdir(path) -- lists content of a folder.
      * 
-     * path        : folder
+     * path        : folder 
      * 
      * example:
      *  - dirs, files = xbmcvfs.listdir(path)

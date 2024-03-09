@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -35,7 +34,7 @@ namespace XBMCAddon
     bool copy(const String& strSource, const String& strDestnation)
     {
       DelayedCallGuard dg;
-      return XFILE::CFile::Copy(strSource, strDestnation);
+      return XFILE::CFile::Cache(strSource, strDestnation);
     }
 
     // delete a file
@@ -56,6 +55,8 @@ namespace XBMCAddon
     bool exists(const String& path)
     {
       DelayedCallGuard dg;
+      if (URIUtils::HasSlashAtEnd(path, true))
+        return XFILE::CDirectory::Exists(path);
       return XFILE::CFile::Exists(path, false);
     }      
 
@@ -76,7 +77,7 @@ namespace XBMCAddon
     bool rmdir(const String& path, bool force)
     {
       DelayedCallGuard dg;
-      return CFileUtils::DeleteItem(path,force);
+      return (force ? CFileUtils::DeleteItem(path,force) : XFILE::CDirectory::Remove(path));
     }      
 
     Tuple<std::vector<String>, std::vector<String> > listdir(const String& path)
@@ -84,7 +85,7 @@ namespace XBMCAddon
       CFileItemList items;
       CStdString strSource;
       strSource = path;
-      XFILE::CDirectory::GetDirectory(strSource, items);
+      XFILE::CDirectory::GetDirectory(strSource, items, "", XFILE::DIR_FLAG_NO_FILE_DIRS);
 
       Tuple<std::vector<String>, std::vector<String> > ret;
       // initialize the Tuple to two values

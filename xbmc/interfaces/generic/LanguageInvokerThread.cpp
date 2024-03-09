@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -97,7 +97,7 @@ void CLanguageInvokerThread::OnExit()
   if (m_invoker == NULL)
     return;
 
-  m_invoker->onDone();
+  m_invoker->onExecutionDone();
   m_invocationManager->OnScriptEnded(GetId());
 }
 
@@ -106,6 +106,6 @@ void CLanguageInvokerThread::OnException()
   if (m_invoker == NULL)
     return;
 
-  m_invoker->onError();
+  m_invoker->onExecutionFailed();
   m_invocationManager->OnScriptEnded(GetId());
 }

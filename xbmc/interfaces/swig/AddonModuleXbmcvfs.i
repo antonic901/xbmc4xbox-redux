@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,19 +13,17 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
 %module xbmcvfs
 
 %{
-#include "libPython/XBPythonDll.h"
-
 #include "interfaces/legacy/ModuleXbmcvfs.h"
 #include "interfaces/legacy/File.h"
+#include "interfaces/legacy/Stat.h"
 #include "utils/log.h"
 
 using namespace XBMCAddon;
@@ -37,7 +35,14 @@ using namespace xbmcvfs;
 
 %}
 
+%include "interfaces/legacy/swighelper.h"
+%include "interfaces/legacy/AddonString.h"
 %include "interfaces/legacy/File.h"
+
+%rename ("st_atime") XBMCAddon::xbmcvfs::Stat::atime;
+%rename ("st_mtime") XBMCAddon::xbmcvfs::Stat::mtime;
+%rename ("st_ctime") XBMCAddon::xbmcvfs::Stat::ctime;
+%include "interfaces/legacy/Stat.h"
 
 %rename ("delete") XBMCAddon::xbmcvfs::deleteFile;
 %include "interfaces/legacy/ModuleXbmcvfs.h"
