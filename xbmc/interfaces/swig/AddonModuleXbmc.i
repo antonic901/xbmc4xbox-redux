@@ -22,7 +22,6 @@
 
 %{
 #include "interfaces/legacy/Player.h"
-#include "interfaces/legacy/RenderCapture.h"
 #include "interfaces/legacy/Keyboard.h"
 #include "interfaces/legacy/ModuleXbmc.h"
 #include "interfaces/legacy/Monitor.h"
@@ -54,8 +53,6 @@ using namespace xbmc;
 %feature("python:nokwds") XBMCAddon::xbmc::PlayList::PlayList "true"
 
 %include "interfaces/legacy/Player.h"
-
-%include "interfaces/legacy/RenderCapture.h"
 
 %include "interfaces/legacy/InfoTagMusic.h"
 %include "interfaces/legacy/InfoTagVideo.h"

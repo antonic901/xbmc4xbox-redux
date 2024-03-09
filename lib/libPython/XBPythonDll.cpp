@@ -58,9 +58,12 @@ class CVaPassNext{
 #define PyList_Type (*((PyTypeObject*)pointer_PyList_Type))
 #define PyLong_Type (*((PyTypeObject*)pointer_PyLong_Type))
 #define PyInt_Type (*((PyTypeObject*)pointer_PyInt_Type))
+#define PyFloat_Type (*((PyTypeObject*)pointer_PyFloat_Type))
 #define PyUnicode_Type (*((PyTypeObject*)pointer_PyUnicode_Type))
 #define PyTuple_Type (*((PyTypeObject*)pointer_PyTuple_Type))
 #define PyDict_Type (*((PyTypeObject*)pointer_PyDict_Type))
+#define PyByteArray_Type (*((PyTypeObject*)pointer_PyByteArray_Type))
+#define PyByteArrayIter_Type (*((PyTypeObject*)pointer_PyByteArrayIter_Type))
 
 #define DLL_ORD_FUNCTION(ord, function) "hapdbg.dll", ord, (void**)&p_##function
 
@@ -217,7 +220,9 @@ extern "C"
 #endif
   FUNCTION4(PyInt_AsLong)
   FUNCTION4(PyFloat_AsDouble)
+  FUNCTION8(PyString_FromStringAndSize)
   FUNCTION4(PyString_FromString)
+  FUNCTION4(PyString_Size)
   FUNCTION4(PyBool_FromLong)
   FUNCTION12(PyModule_AddIntConstant)
 
@@ -255,6 +260,9 @@ extern "C"
   //FUNCTION4(PyDict_Keys)
   FUNCTION16(PyDict_Next)
   FUNCTION4(PyDict_Size)
+  FUNCTION8(PyByteArray_FromStringAndSize)
+  FUNCTION4(PyByteArray_Size)
+  FUNCTION4(PyByteArray_AsString)
   FUNCTION4(PyType_Ready)
   FUNCTION12(PyType_GenericNew)
   FUNCTION4(PyTuple_New)
@@ -305,9 +313,12 @@ extern "C"
   DATA_OBJECT(PyList_Type)
   DATA_OBJECT(PyLong_Type)
   DATA_OBJECT(PyInt_Type)
+  DATA_OBJECT(PyFloat_Type)
   DATA_OBJECT(PyUnicode_Type)
   DATA_OBJECT(PyTuple_Type)
   DATA_OBJECT(PyDict_Type)
+  DATA_OBJECT(PyByteArray_Type)
+  DATA_OBJECT(PyByteArrayIter_Type)
 
 #ifdef Py_TRACE_REFS
   DATA_OBJECT(_Py_RefTotal)
@@ -369,7 +380,9 @@ extern "C"
 #endif
       dll.ResolveExport(DLL_FUNCTION(PyInt_AsLong)) &&
       dll.ResolveExport(DLL_FUNCTION(PyFloat_AsDouble)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyString_FromStringAndSize)) &&
       dll.ResolveExport(DLL_FUNCTION(PyString_FromString)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyString_Size)) &&
       dll.ResolveExport(DLL_FUNCTION(PyBool_FromLong)) &&
       dll.ResolveExport(DLL_FUNCTION(PyModule_AddIntConstant)) &&
       dll.ResolveExport(DLL_VA_FUNCTION(PyObject_CallFunction)) &&
@@ -384,6 +397,9 @@ extern "C"
       //dll.ResolveExport(DLL_FUNCTION(PyDict_Keys)) &&
       dll.ResolveExport(DLL_FUNCTION(PyDict_Next)) &&
       dll.ResolveExport(DLL_FUNCTION(PyDict_Size)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyByteArray_FromStringAndSize)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyByteArray_Size)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyByteArray_AsString)) &&
       dll.ResolveExport(DLL_FUNCTION(PyType_Ready)) &&
       dll.ResolveExport(DLL_FUNCTION(PyType_GenericNew)) &&
       dll.ResolveExport(DLL_FUNCTION(PyTuple_New)) &&
@@ -412,9 +428,12 @@ extern "C"
       dll.ResolveExport(DLL_OBJECT_DATA(PyList_Type)) &&
       dll.ResolveExport(DLL_OBJECT_DATA(PyLong_Type)) &&
       dll.ResolveExport(DLL_OBJECT_DATA(PyInt_Type)) &&
+      dll.ResolveExport(DLL_OBJECT_DATA(PyFloat_Type)) &&
       dll.ResolveExport(DLL_OBJECT_DATA(PyUnicode_Type)) &&
       dll.ResolveExport(DLL_OBJECT_DATA(PyTuple_Type)) &&
       dll.ResolveExport(DLL_OBJECT_DATA(PyDict_Type)) &&
+      dll.ResolveExport(DLL_OBJECT_DATA(PyByteArray_Type)) &&
+      dll.ResolveExport(DLL_OBJECT_DATA(PyByteArrayIter_Type)) &&
 #ifdef Py_TRACE_REFS
       dll.ResolveExport(DLL_OBJECT_DATA(_Py_RefTotal)) &&
       dll.ResolveExport(DLL_FUNCTION(_Py_NegativeRefcount)) &&
