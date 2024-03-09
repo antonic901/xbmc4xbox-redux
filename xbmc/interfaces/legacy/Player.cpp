@@ -27,6 +27,7 @@
 #include "ApplicationMessenger.h"
 #include "GUIInfoManager.h"
 #include "AddonUtils.h"
+#include "utils/LangCodeExpander.h"
 #include "utils/log.h"
 #include "cores/IPlayer.h"
 #include "settings/MediaSettings.h"
@@ -308,13 +309,13 @@ namespace XBMCAddon
     bool Player::isPlayingAudio()
     {
       XBMC_TRACE;
-      return g_application.m_pPlayer->IsPlayingAudio();
+      return g_application.IsPlayingAudio();
     }
 
     bool Player::isPlayingVideo()
     {
       XBMC_TRACE;
-      return g_application.m_pPlayer->IsPlayingVideo();
+      return g_application.IsPlayingVideo();
     }
 
     String Player::getPlayingFile() throw (PlayerException)
@@ -329,7 +330,7 @@ namespace XBMCAddon
     InfoTagVideo* Player::getVideoInfoTag() throw (PlayerException)
     {
       XBMC_TRACE;
-      if (!g_application.m_pPlayer->IsPlayingVideo())
+      if (!g_application.IsPlayingVideo())
         throw PlayerException("XBMC is not playing any videofile");
 
       const CVideoInfoTag* movie = g_infoManager.GetCurrentMovieTag();
@@ -342,7 +343,7 @@ namespace XBMCAddon
     InfoTagMusic* Player::getMusicInfoTag() throw (PlayerException)
     {
       XBMC_TRACE;
-      if (g_application.m_pPlayer->IsPlayingVideo() || !g_application.m_pPlayer->IsPlayingAudio())
+      if (g_application.IsPlayingVideo() || !g_application.IsPlayingAudio())
         throw PlayerException("XBMC is not playing any music file");
 
       const MUSIC_INFO::CMusicInfoTag* tag = g_infoManager.GetCurrentSongTag();
@@ -382,7 +383,7 @@ namespace XBMCAddon
     void Player::setSubtitles(const char* cLine)
     {
       XBMC_TRACE;
-      if (g_application.m_pPlayer->HasPlayer())
+      if (g_application.m_pPlayer)
       {
         int nStream = g_application.m_pPlayer->AddSubtitle(cLine);
         if(nStream >= 0)
@@ -398,7 +399,7 @@ namespace XBMCAddon
     void Player::showSubtitles(bool bVisible)
     {
       XBMC_TRACE;
-      if (g_application.m_pPlayer->HasPlayer())
+      if (g_application.m_pPlayer)
       {
         CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn = bVisible != 0;
         g_application.m_pPlayer->SetSubtitleVisible(bVisible != 0);
@@ -408,15 +409,15 @@ namespace XBMCAddon
     String Player::getSubtitles()
     {
       XBMC_TRACE;
-      if (g_application.m_pPlayer->HasPlayer())
+      if (g_application.m_pPlayer)
       {
-        SPlayerSubtitleStreamInfo info;
-        g_application.m_pPlayer->GetSubtitleStreamInfo(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleStream, info);
+        int i = g_application.m_pPlayer->GetSubtitle();
+        CStdString strName;
+        g_application.m_pPlayer->GetSubtitleName(i, strName);
 
-        if (info.language.length() > 0)
-          return info.language;
-        else
-          return info.name;
+        if (strName == "Unknown(Invalid)")
+          strName = "";
+        return strName;
       }
 
       return NULL;
@@ -426,7 +427,7 @@ namespace XBMCAddon
     {
       XBMC_TRACE;
       CLog::Log(LOGWARNING,"'xbmc.Player().disableSubtitles()' is deprecated and will be removed in future releases, please use 'xbmc.Player().showSubtitles(false)' instead");
-      if (g_application.m_pPlayer->HasPlayer())
+      if (g_application.m_pPlayer)
       {
         CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn = false;
         g_application.m_pPlayer->SetSubtitleVisible(false);
@@ -435,19 +436,18 @@ namespace XBMCAddon
 
     std::vector<String>* Player::getAvailableSubtitleStreams()
     {
-      if (g_application.m_pPlayer->HasPlayer())
+      if (g_application.m_pPlayer)
       {
         int subtitleCount = g_application.m_pPlayer->GetSubtitleCount();
         std::vector<String>* ret = new std::vector<String>(subtitleCount);
         for (int iStream=0; iStream < subtitleCount; iStream++)
         {
-          SPlayerSubtitleStreamInfo info;
-          g_application.m_pPlayer->GetSubtitleStreamInfo(iStream, info);
-
-          if (info.language.length() > 0)
-            (*ret)[iStream] = info.language;
-          else
-            (*ret)[iStream] = info.name;
+          CStdString strName;
+          CStdString FullLang;
+          g_application.m_pPlayer->GetSubtitleName(iStream, strName);
+          if (!g_LangCodeExpander.Lookup(FullLang, strName))
+            FullLang = strName;
+          (*ret)[iStream] = FullLang;
         }
         return ret;
       }
@@ -457,7 +457,7 @@ namespace XBMCAddon
 
     void Player::setSubtitleStream(int iStream)
     {
-      if (g_application.m_pPlayer->HasPlayer())
+      if (g_application.m_pPlayer)
       {
         int streamCount = g_application.m_pPlayer->GetSubtitleCount();
         if(iStream < streamCount)
@@ -470,19 +470,19 @@ namespace XBMCAddon
 
     std::vector<String>* Player::getAvailableAudioStreams()
     {
-      if (g_application.m_pPlayer->HasPlayer())
+      if (g_application.m_pPlayer)
       {
         int streamCount = g_application.m_pPlayer->GetAudioStreamCount();
         std::vector<String>* ret = new std::vector<String>(streamCount);
         for (int iStream=0; iStream < streamCount; iStream++)
-        {
-          SPlayerAudioStreamInfo info;
-          g_application.m_pPlayer->GetAudioStreamInfo(iStream, info);
-
-          if (info.language.length() > 0)
-            (*ret)[iStream] = info.language;
-          else
-            (*ret)[iStream] = info.name;
+        {  
+          CStdString strName;
+          CStdString FullLang;
+          g_application.m_pPlayer->GetAudioStreamLanguage(iStream, strName);
+          g_LangCodeExpander.Lookup(FullLang, strName);
+          if (FullLang.IsEmpty())
+            g_application.m_pPlayer->GetAudioStreamName(iStream, FullLang);
+          (*ret)[iStream] = FullLang;
         }
         return ret;
       }
@@ -492,7 +492,7 @@ namespace XBMCAddon
 
     void Player::setAudioStream(int iStream)
     {
-      if (g_application.m_pPlayer->HasPlayer())
+      if (g_application.m_pPlayer)
       {
         int streamCount = g_application.m_pPlayer->GetAudioStreamCount();
         if(iStream < streamCount)
