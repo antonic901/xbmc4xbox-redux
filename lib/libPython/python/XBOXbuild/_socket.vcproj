@@ -12,98 +12,6 @@
 	</Platforms>
 	<Configurations>
 		<Configuration
-			Name="Debug|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)\obj\$(ProjectName)"
-			ConfigurationType="2"
-			CharacterSet="0">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				InlineFunctionExpansion="0"
-				EnableIntrinsicFunctions="FALSE"
-				AdditionalIncludeDirectories="..\Include;..\PC"
-				PreprocessorDefinitions="Py_BUILD_CORE_MODULE"
-				RuntimeLibrary="3"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib"
-				OutputFile="$(OutDir)\$(ProjectName)_d.pyd"
-				LinkIncremental="1"
-				IgnoreDefaultLibraryNames="libc;msvcr71;libcmt"
-				ProgramDatabaseFile="$(OutDir)\$(ProjectName)_d.pdb"
-				BaseAddress="0x1e1D0000"
-				ImportLibrary="$(OutDir)\$(TargetName).lib"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)\obj\$(ProjectName)"
-			ConfigurationType="2"
-			CharacterSet="0"
-			WholeProgramOptimization="TRUE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="1"
-				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="..\Include;..\PC"
-				PreprocessorDefinitions="Py_BUILD_CORE_MODULE"
-				RuntimeLibrary="2"
-				EnableEnhancedInstructionSet="1"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib"
-				OutputFile="$(OutDir)\$(ProjectName).pyd"
-				IgnoreDefaultLibraryNames="libc;msvcr71;libcmt"
-				ProgramDatabaseFile="$(OutDir)\$(ProjectName).pdb"
-				BaseAddress="0x1e1D0000"
-				ImportLibrary="$(OutDir)\$(TargetName).lib"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
 			Name="Release XBOX|Win32"
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)\obj\$(ProjectName)"
@@ -163,7 +71,9 @@
 				AdditionalIncludeDirectories="..\Include;..\PC"
 				PreprocessorDefinitions="Py_BUILD_CORE_MODULE"
 				RuntimeLibrary="2"
-				EnableEnhancedInstructionSet="1"/>
+				EnableFunctionLevelLinking="TRUE"
+				EnableEnhancedInstructionSet="1"
+				DebugInformationFormat="3"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -171,6 +81,7 @@
 				AdditionalDependencies="ws2_32.lib"
 				OutputFile="$(OutDir)\$(ProjectName).pyd"
 				IgnoreDefaultLibraryNames="libc;msvcr71;libcmt"
+				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)\$(ProjectName).pdb"
 				BaseAddress="0x1e1D0000"
 				ImportLibrary="$(OutDir)\$(TargetName).lib"/>

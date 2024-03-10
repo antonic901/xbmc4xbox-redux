@@ -11,135 +11,6 @@
 	</Platforms>
 	<Configurations>
 		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)\obj\$(ProjectName)"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm200 "
-				Optimization="1"
-				InlineFunctionExpansion="1"
-				EnableIntrinsicFunctions="TRUE"
-				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="..\Python;..\Modules\zlib;..\Include; ..\PC"
-				PreprocessorDefinitions="_USRDLL;Py_BUILD_CORE;Py_ENABLE_SHARED;WIN32"
-				StringPooling="TRUE"
-				ExceptionHandling="FALSE"
-				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				EnableEnhancedInstructionSet="1"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="getbuildinfo.o"
-				OutputFile="$(OutDir)\python27.dll"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;;&quot;$(SolutionDir)&quot;"
-				IgnoreDefaultLibraryNames="libc;msvcr71;libcmt"
-				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)\python27.pdb"
-				SubSystem="2"
-				BaseAddress="0x1e000000"
-				ImportLibrary="$(OutDir)\python27.lib"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"
-				Description="Generate build information..."
-				CommandLine="&quot;$(OutDir)\make_buildinfo.exe&quot; Release"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"
-				AdditionalIncludeDirectories="..\Include;..\PC;..\Include"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
-			Name="Debug|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)\obj\$(ProjectName)"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="0">
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm200 "
-				Optimization="0"
-				InlineFunctionExpansion="0"
-				EnableIntrinsicFunctions="FALSE"
-				AdditionalIncludeDirectories="..\Python;..\Modules\zlib;..\Include; ..\PC"
-				PreprocessorDefinitions="_USRDLL;Py_BUILD_CORE;Py_ENABLE_SHARED;WIN32"
-				StringPooling="TRUE"
-				ExceptionHandling="FALSE"
-				RuntimeLibrary="3"
-				EnableFunctionLevelLinking="TRUE"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="getbuildinfo.o"
-				OutputFile="$(OutDir)\python27_d.dll"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OutDir)"
-				IgnoreDefaultLibraryNames="libc;msvcr71;libcmt"
-				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)\python27_d.pdb"
-				SubSystem="2"
-				BaseAddress="0x1e000000"
-				ImportLibrary="$(OutDir)\python27_d.lib"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"
-				Description="Generate build information..."
-				CommandLine="&quot;$(OutDir)\make_buildinfo.exe&quot; Debug"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"
-				AdditionalIncludeDirectories="..\Include;..\PC;..\Include"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
 			Name="Release XBOX|Win32"
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)\obj\$(ProjectName)"
@@ -158,10 +29,10 @@
 				StringPooling="TRUE"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
+				EnableFunctionLevelLinking="FALSE"
 				EnableEnhancedInstructionSet="1"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -172,7 +43,7 @@
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;;&quot;$(SolutionDir)&quot;"
 				IgnoreDefaultLibraryNames="libc;msvcr71;libcmt"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="FALSE"
 				ProgramDatabaseFile="$(OutDir)\python27.pdb"
 				SubSystem="2"
 				BaseAddress="0x1e000000"
@@ -223,6 +94,7 @@
 				StringPooling="TRUE"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="TRUE"
 				EnableEnhancedInstructionSet="1"
 				WarningLevel="3"
 				DebugInformationFormat="3"
@@ -237,7 +109,7 @@
 				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;;&quot;$(SolutionDir)&quot;"
 				IgnoreDefaultLibraryNames="libc;msvcr71;libcmt"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)\python27.pdb"
+				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
 				SubSystem="2"
 				BaseAddress="0x1e000000"
 				ImportLibrary="$(OutDir)\python27.lib"
