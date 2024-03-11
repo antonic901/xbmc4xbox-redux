@@ -42,7 +42,11 @@
 
 XBPython g_pythonParser;
 
+#if (defined USE_EXTERNAL_PYTHON) && (defined HAVE_LIBPYTHON2_6)
+#define PYTHON_DLL "special://xbmcbin/system/python/python26.dll"
+#else
 #define PYTHON_DLL "special://xbmc/system/python/python27.dll"
+#endif
 
 #include "threads/SystemClock.h"
 #include "addons/Addon.h"
@@ -470,7 +474,7 @@ void XBPython::Initialize()
       setenv("PYTHONCASEOK", "1", 1);
       CLog::Log(LOGDEBUG, "Python wrapper library linked with internal Python library");
 #endif /* _LINUX */
-#else
+#elif !defined(_WIN32)
       /* PYTHONOPTIMIZE is set off intentionally when using external Python.
          Reason for this is because we cannot be sure what version of Python
          was used to compile the various Python object files (i.e. .pyo,
