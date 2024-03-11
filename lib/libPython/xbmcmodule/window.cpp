@@ -34,6 +34,7 @@
 #include "Application.h"
 #include "ApplicationMessenger.h"
 #include "utils/Variant.h"
+#include "utils/log.h"
 
 using namespace std;
 
@@ -495,6 +496,14 @@ namespace PYXBMC
 
       while (self->bModal && !g_application.m_bStop)
       {
+        // Check if XBPyThread::stop() raised a SystemExit exception
+        if (PyThreadState_Get()->async_exc == PyExc_SystemExit)
+        {
+          CLog::Log(LOGDEBUG, "PYTHON: doModal() encountered a SystemExit exception, closing window and returning");
+          Window_Close(self, NULL);
+          break;
+        }
+
         PyXBMC_MakePendingCalls();
 
         CPyThreadState pyState;
