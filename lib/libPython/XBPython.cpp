@@ -567,7 +567,7 @@ void XBPython::Initialize()
       setenv("PYTHONCASEOK", "1", 1);
       CLog::Log(LOGDEBUG, "Python wrapper library linked with internal Python library");
 #endif /* _LINUX */
-#elif !defined(_WIN32)
+#elif !defined(_WIN32) && !defined(TARGET_ANDROID)
       /* PYTHONOPTIMIZE is set off intentionally when using external Python.
          Reason for this is because we cannot be sure what version of Python
          was used to compile the various Python object files (i.e. .pyo,
@@ -601,6 +601,13 @@ void XBPython::Initialize()
       buf = "OS=win32";
       pgwin32_putenv(buf.c_str());
 
+#elif defined(TARGET_ANDROID)
+      CStdString apkPath = getenv("XBMC_ANDROID_APK");
+      apkPath += "/assets/python2.6";
+      setenv("PYTHONHOME",apkPath.c_str(), 1);
+      setenv("PYTHONPATH", "", 1);
+      setenv("PYTHONOPTIMIZE","",1);
+      setenv("PYTHONNOUSERSITE","1",1);
 #endif /* USE_EXTERNAL_PYTHON */
 
       if (PyEval_ThreadsInitialized())
