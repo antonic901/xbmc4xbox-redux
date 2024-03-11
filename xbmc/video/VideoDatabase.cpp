@@ -49,7 +49,7 @@
 #include "utils/variant.h"
 #include "interfaces/AnnouncementManager.h"
 #include "utils/log.h"
-#include "DateTime.h"
+#include "XBDateTime.h"
 #include "video/VideoDbUrl.h"
 #include "SmartPlaylist.h"
 #include "utils/GroupUtils.h"

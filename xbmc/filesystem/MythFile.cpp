@@ -21,7 +21,7 @@
 #include "threads/SystemClock.h"
 #include "inttypes.h"
 #include "MythFile.h"
-#include "DateTime.h"
+#include "XBDateTime.h"
 #include "FileItem.h"
 #include "utils/URIUtils.h"
 #include "DllLibCMyth.h"

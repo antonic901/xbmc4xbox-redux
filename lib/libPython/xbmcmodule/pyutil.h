@@ -20,10 +20,10 @@
  *
  */
 
-#include "utils/StdString.h"
+#include <Python.h>
 
-#include "libPython/python/Include/Python.h"
 #include "../XBPythonDll.h"
+#include "utils/StdString.h"
 
 #ifdef __cplusplus
 extern "C" {

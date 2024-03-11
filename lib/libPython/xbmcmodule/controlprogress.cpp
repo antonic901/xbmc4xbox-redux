@@ -19,7 +19,8 @@
  */
 
 #include "system.h"
-#include "libPython/python/Include/Python.h"
+#include <Python.h>
+
 #include "GUIProgressControl.h"
 #include "control.h"
 #include "pyutil.h"

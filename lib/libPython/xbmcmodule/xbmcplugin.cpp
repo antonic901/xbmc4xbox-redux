@@ -18,13 +18,13 @@
  *
  */
 
+// include for constants
+#include "pyutil.h"
+
 #include "system.h"
 #include "filesystem/PluginDirectory.h"
 #include "listitem.h"
 #include "FileItem.h"
-
-// include for constants
-#include "pyutil.h"
 
 using namespace std;
 using namespace XFILE;

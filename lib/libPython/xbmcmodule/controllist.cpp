@@ -18,7 +18,7 @@
  *
  */
 
-#include "libPython/python/Include/Python.h"
+#include <Python.h>
 
 #include "guilib/GUIListContainer.h"
 #include "guilib/GUIFontManager.h"

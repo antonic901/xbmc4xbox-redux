@@ -19,7 +19,8 @@
  */
 
 #include "system.h"
-#include "libPython/python/Include/Python.h"
+#include <Python.h>
+
 #include "../XBPythonDll.h"
 #include "GUIRadioButtonControl.h"
 #include "utils/CharsetConverter.h"

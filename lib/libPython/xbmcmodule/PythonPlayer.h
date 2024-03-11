@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "libPython/python/Include/Python.h"
+#include <Python.h>
 #include "cores/IPlayer.h"
 
 

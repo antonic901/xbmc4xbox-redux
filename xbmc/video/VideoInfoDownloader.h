@@ -25,7 +25,7 @@
 #include "video/VideoInfoTag.h"
 #include "addons/Scraper.h"
 #include "Episode.h"
-#include "DateTime.h"
+#include "XBDateTime.h"
 #include "filesystem/CurlFile.h"
 
 // forward declarations

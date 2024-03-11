@@ -110,7 +110,7 @@ public:
   // returns -1 if no scripts exist with specified filename
   int getScriptId(const CStdString &strFile);
 
-  PyThreadState *getMainThreadState();
+  void* getMainThreadState();
 
   bool m_bLogin;
   CCriticalSection    m_critSection;
@@ -118,7 +118,7 @@ private:
   bool              FileExist(const char* strFile);
 
   int               m_nextid;
-  PyThreadState*    m_mainThreadState;
+  void*             m_mainThreadState;
   ThreadIdentifier  m_ThreadId;
   bool              m_bInitialized;
   int               m_iDllScriptCounter; // to keep track of the total scripts running that need the dll

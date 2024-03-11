@@ -18,10 +18,11 @@
  *
  */
 
-#include "system.h"
-#include "winxml.h"
-#include "libPython/Python/Include/Python.h"
+#include <Python.h>
+
 #include "../XBPythonDll.h"
+
+#include "winxml.h"
 #include "pyutil.h"
 #include "GUIPythonWindowXMLDialog.h"
 #include "addons/Skin.h"

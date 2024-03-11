@@ -25,7 +25,7 @@
 #include "guilib/GUIKeyboardFactory.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "LocalizeStrings.h"
-#include "DateTime.h"
+#include "XBDateTime.h"
 #include "utils/md5.h"
 
 using namespace std;

@@ -19,8 +19,9 @@
  */
 
 #include "system.h"
-#include "libPython/python/Include/Python.h"
-#include "libPython/python/Include/structmember.h"
+#include <Python.h>
+#include <structmember.h>
+
 #include "../XBPythonDll.h"
 #include "control.h"
 #include "window.h"

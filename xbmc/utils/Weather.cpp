@@ -35,7 +35,7 @@
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "guilib/GUIKeyboardFactory.h"
-#include "DateTime.h"
+#include "XBDateTime.h"
 #include "LangInfo.h"
 #include "LocalizeStrings.h"
 #include "filesystem/Directory.h"

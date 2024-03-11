@@ -22,7 +22,7 @@
 #include "VideoDatabase.h"
 #include "addons/Scraper.h"
 #include "NfoFile.h"
-#include "DateTime.h"
+#include "XBDateTime.h"
 
 class CRegExp;
 

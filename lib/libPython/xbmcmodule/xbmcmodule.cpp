@@ -20,7 +20,8 @@
 
 #include "xbox/Network.h"
 #include "system.h"
-#include "libPython/python/Include/Python.h"
+#include <Python.h>
+
 #include "../XBPythonDll.h"
 #include "player.h"
 #include "pyplaylist.h"

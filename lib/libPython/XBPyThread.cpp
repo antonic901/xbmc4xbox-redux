@@ -18,10 +18,15 @@
  *
  */
 
+#if (defined HAVE_CONFIG_H) && (!defined WIN32)
+  #include "config.h"
+#endif
+
 // python.h should always be included first before any other includes
+#include <Python.h>
+#include <osdefs.h>
+
 #include "system.h"
-#include "Python/Include/Python.h"
-#include "Python/Include/osdefs.h"
 #include "XBPythonDll.h"
 #include "filesystem/SpecialProtocol.h"
 #include "GUIWindowManager.h"
@@ -152,7 +157,7 @@ void XBPyThread::Process()
   {
     // we want to use sys.path so it includes site-packages
     // if this fails, default to using Py_GetPath
-    PyObject *sysMod(PyImport_ImportModule("sys")); // must call Py_DECREF when finished
+    PyObject *sysMod(PyImport_ImportModule((char*)"sys")); // must call Py_DECREF when finished
     PyObject *sysModDict(PyModule_GetDict(sysMod)); // borrowed ref, no need to delete
     PyObject *pathObj(PyDict_GetItemString(sysModDict, "path")); // borrowed ref, no need to delete
 
@@ -211,8 +216,16 @@ void XBPyThread::Process()
   {
     if (m_type == 'F')
     {
+#ifdef USE_EXTERNAL_PYTHON
       // run script from file
-      FILE *fp = fopen_utf8(CSpecialProtocol::TranslatePath(m_source).c_str(), "r");
+      // We need to have python open the file because on Windows the DLL that python
+      //  is linked against may not be the DLL that xbmc is linked against so 
+      //  passing a FILE* to python from an fopen has the potential to crash.
+      PyObject* file = PyFile_FromString((char *) CSpecialProtocol::TranslatePath(m_source).c_str(), (char*)"r");
+      FILE *fp = PyFile_AsFile(file);
+#else
+      FILE *fp = fopen_utf8(CSpecialProtocol::TranslatePath(m_source).c_str(), "r");      
+#endif
       if (fp)
       {
         PyObject *f = PyString_FromString(CSpecialProtocol::TranslatePath(m_source).c_str());
@@ -230,7 +243,22 @@ void XBPyThread::Process()
         }
         Py_DECREF(f);
         PyRun_File(fp, CSpecialProtocol::TranslatePath(m_source).c_str(), m_Py_file_input, moduleDict, moduleDict);
+
+#ifdef USE_EXTERNAL_PYTHON
+        // Get a reference to the main module
+        // and global dictionary
+        PyObject* main_module = PyImport_AddModule((char*)"__main__");
+        PyObject* global_dict = PyModule_GetDict(main_module);
+
+        // Extract a reference to the function "func_name"
+        // from the global dictionary
+        PyObject* expression = PyDict_GetItemString(global_dict, "xbmcclosefilehack");
+
+        if (!PyObject_CallFunction(expression,(char*)"(O)",file))
+          CLog::Log(LOGERROR,"Failed to close the script file %s",_P(m_source).c_str());
+#else
         fclose(fp);
+#endif
       }
       else
         CLog::Log(LOGERROR, "%s not found!", m_source);
@@ -396,14 +424,14 @@ void XBPyThread::stop()
   if (m_threadState)
   {
     PyEval_AcquireLock();
-    PyThreadState* old = PyThreadState_Swap(m_threadState);
+    PyThreadState* old = PyThreadState_Swap((PyThreadState*)m_threadState);
 
     PyObject *m;
     m = PyImport_AddModule((char*)"xbmc");
     if(!m || PyObject_SetAttrString(m, (char*)"abortRequested", PyBool_FromLong(1)))
       CLog::Log(LOGERROR, "XBPyThread::stop - failed to set abortRequested");
 
-    for(PyThreadState* state = m_threadState->interp->tstate_head; state; state = state->next)
+    for(PyThreadState* state = ((PyThreadState*)m_threadState)->interp->tstate_head; state; state = state->next)
     {
       Py_XDECREF(state->async_exc);
       state->async_exc = PyExc_SystemExit;

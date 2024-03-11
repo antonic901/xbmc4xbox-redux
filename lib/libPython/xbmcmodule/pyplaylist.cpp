@@ -18,7 +18,9 @@
  *
  */
 
-#include "system.h"
+#include <Python.h>
+
+#include "pyutil.h"
 #include "PlayListPlayer.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
@@ -26,7 +28,6 @@
 #include "libPython/python/Include/structmember.h"
 #include "../XBPythonDll.h"
 #include "playlists/PlayListFactory.h"
-#include "pyutil.h"
 #include "listitem.h"
 #include "playlists/PlayList.h"
 #include "video/VideoInfoTag.h"

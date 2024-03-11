@@ -21,7 +21,6 @@
  *
  */
 
-#include "python/Include/Python.h"
 #include "threads/Thread.h"
 #include "addons/IAddon.h"
 #include "utils/StringUtils.h"
@@ -42,8 +41,8 @@ public:
   void setAddon(ADDON::AddonPtr _addon) { addon = _addon; }
 
 protected:
-  XBPython      *m_pExecuter;
-  PyThreadState *m_threadState;
+  XBPython *m_pExecuter;
+  void *m_threadState;
 
   char m_type;
   char *m_source;

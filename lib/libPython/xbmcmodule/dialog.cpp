@@ -20,7 +20,7 @@
 
 #include "system.h"
 #include "dialog.h"
-#include "libPython/python/Include/Python.h"
+
 #include "../XBPythonDll.h"
 #include "pyutil.h"
 #include "pythreadstate.h"

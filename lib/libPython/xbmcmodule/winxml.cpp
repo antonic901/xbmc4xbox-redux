@@ -18,9 +18,9 @@
  *
  */
 
-#include "system.h"
+#include <Python.h>
+
 #include "winxml.h"
-#include "libPython/Python/Include/Python.h"
 #include "../XBPythonDll.h"
 #include "pyutil.h"
 #include "GUIPythonWindowXML.h"

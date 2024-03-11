@@ -28,14 +28,14 @@ class PyXBMCAction
 {
 public:
   int param;
-  PyObject* pCallbackWindow;
-  PyObject* pObject;
+  void* pCallbackWindow;
+  void* pObject;
   int controlId; // for XML window
 #if defined(_LINUX) || defined(_WIN32)
   int type; // 0=Action, 1=Control;
 #endif
 
-  PyXBMCAction(PyObject*& callback);
+  PyXBMCAction(void*& callback);
   virtual ~PyXBMCAction() ;
 };
 
@@ -50,11 +50,11 @@ public:
   virtual bool    OnMessage(CGUIMessage& message);
   virtual bool    OnAction(const CAction &action);
   virtual bool    OnBack(int actionID);
-  void             SetCallbackWindow(PyThreadState *state, PyObject *object);
+  void             SetCallbackWindow(void* state, void *object);
   void             WaitForActionEvent();
   void             PulseActionEvent();
 protected:
-  PyObject*        pCallbackWindow;
-  PyThreadState*   m_threadState;
+  void* pCallbackWindow;
+  void* m_threadState;
   CEvent           m_actionEvent;
 };
