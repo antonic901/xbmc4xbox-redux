@@ -31,13 +31,15 @@
 
 // python.h should always be included first before any other includes
 #include <Python.h>
-#include "XBPythonDll.h"
 
 #include "system.h"
 #include "cores/DllLoader/DllLoaderContainer.h"
 #include "GUIPassword.h"
 
 #include "XBPython.h"
+#ifdef _XBOX
+#include "XBPythonDll.h"
+#endif
 #include "settings/Settings.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
@@ -48,9 +50,9 @@
 #include "utils/TimeUtils.h"
 #include "Util.h"
 
+#ifdef _XBOX
 XBPython g_pythonParser;
 
-#if !defined(USE_EXTERNAL_PYTHON)
 #define PYTHON_DLL "special://xbmc/system/python/python27.dll"
 #endif
 
@@ -520,7 +522,7 @@ void XBPython::Initialize()
   m_iDllScriptCounter++;
   if (!m_bInitialized)
   {
-#if !defined(USE_EXTERNAL_PYTHON)
+#ifdef _XBOX
       m_pDll = DllLoaderContainer::LoadModule(PYTHON_DLL, NULL, true);
 
       if (!m_pDll || !python_load_dll(*m_pDll))
@@ -554,39 +556,23 @@ void XBPython::Initialize()
       // Info about interesting python envvars available
       // at http://docs.python.org/using/cmdline.html#environment-variables
 
-#if (!defined USE_EXTERNAL_PYTHON)
-#ifdef _LINUX
-      // Required for python to find optimized code (pyo) files
-      setenv("PYTHONOPTIMIZE", "1", 1);
-      setenv("PYTHONHOME", CSpecialProtocol::TranslatePath("special://xbmc/system/python").c_str(), 1);
-#ifdef __APPLE__
-      // OSX uses contents from extracted zip, 3X to 4X times faster during Py_Initialize
-      setenv("PYTHONPATH", CSpecialProtocol::TranslatePath("special://xbmc/system/python/Lib").c_str(), 1);
-#else
-      setenv("PYTHONPATH", CSpecialProtocol::TranslatePath("special://xbmc/system/python/python27.zip").c_str(), 1);
-#endif /* __APPLE__ */
-      setenv("PYTHONCASEOK", "1", 1);
-      CLog::Log(LOGDEBUG, "Python wrapper library linked with internal Python library");
-#endif /* _LINUX */
-#elif !defined(_WIN32) && !defined(TARGET_ANDROID)
+#ifndef _XBOX
+#if !defined(_WIN32) && !defined(TARGET_ANDROID)
       /* PYTHONOPTIMIZE is set off intentionally when using external Python.
          Reason for this is because we cannot be sure what version of Python
          was used to compile the various Python object files (i.e. .pyo,
          .pyc, etc.). */
-      #if defined(__APPLE__)
         // check if we are running as real xbmc.app or just binary
-        if (CUtil::GetFrameworksPath().length())
-        {
-          // using external python, it's build looking for xxx/lib/python2.6
-          // so point it to frameworks/usr which is where python2.6 is located
-          setenv("PYTHONHOME", CSpecialProtocol::TranslatePath("special://frameworks/usr").c_str(), 1);
-          setenv("PYTHONPATH", CSpecialProtocol::TranslatePath("special://frameworks/usr").c_str(), 1);
-          CLog::Log(LOGDEBUG, "PYTHONHOME -> %s", CSpecialProtocol::TranslatePath("special://frameworks/usr").c_str());
-          CLog::Log(LOGDEBUG, "PYTHONPATH -> %s", CSpecialProtocol::TranslatePath("special://frameworks/usr").c_str());
-        }
-      #endif
+      if (!CUtil::GetFrameworksPath(true).IsEmpty())
+      {
+        // using external python, it's build looking for xxx/lib/python2.6
+        // so point it to frameworks which is where python2.6 is located
+        setenv("PYTHONHOME", CSpecialProtocol::TranslatePath("special://frameworks").c_str(), 1);
+        setenv("PYTHONPATH", CSpecialProtocol::TranslatePath("special://frameworks").c_str(), 1);
+        CLog::Log(LOGDEBUG, "PYTHONHOME -> %s", CSpecialProtocol::TranslatePath("special://frameworks").c_str());
+        CLog::Log(LOGDEBUG, "PYTHONPATH -> %s", CSpecialProtocol::TranslatePath("special://frameworks").c_str());
+      }
       setenv("PYTHONCASEOK", "1", 1); //This line should really be removed
-      CLog::Log(LOGDEBUG, "Python wrapper library linked with system Python library");
 #elif defined(_WIN32)
       // because the third party build of python is compiled with vs2008 we need
       // a hack to set the PYTHONPATH
@@ -609,7 +595,8 @@ void XBPython::Initialize()
       setenv("PYTHONPATH", "", 1);
       setenv("PYTHONOPTIMIZE","",1);
       setenv("PYTHONNOUSERSITE","1",1);
-#endif /* USE_EXTERNAL_PYTHON */
+#endif
+#endif
 
       if (PyEval_ThreadsInitialized())
         PyEval_AcquireLock();
@@ -668,15 +655,15 @@ void XBPython::Finalize()
       PyEval_ReleaseLock();
     }
 
-#if !((defined(__APPLE__) || defined(_WIN32)) && defined(USE_EXTERNAL_PYTHON))
+#if !(defined(TARGET_DARWIN) || defined(_WIN32)) || defined(_XBOX)
     UnloadExtensionLibs();
 #endif
 
     // first free all dlls loaded by python, after that python27.dll (this is done by UnloadPythonDlls
-#if !((defined(__APPLE__) || defined(_WIN32)) && defined(USE_EXTERNAL_PYTHON))
+#if !(defined(TARGET_DARWIN) || defined(_WIN32)) || defined(_XBOX)
     DllLoaderContainer::UnloadPythonDlls();
 #endif
-#if defined(_LINUX) && !(defined(__APPLE__) && defined(USE_EXTERNAL_PYTHON))
+#if defined(_LINUX) && !defined(__APPLE__) && !defined(__FreeBSD__)
     // we can't release it on windows, as this is done in UnloadPythonDlls() for win32 (see above).
     // The implementation for linux needs looking at - UnloadPythonDlls() currently only searches for "python27.dll"
     // The implementation for osx can never unload the python dylib.

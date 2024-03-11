@@ -25,7 +25,6 @@
 // python.h should always be included first before any other includes
 #include <Python.h>
 #include <osdefs.h>
-#include "XBPythonDll.h"
 
 #include "system.h"
 #include "filesystem/SpecialProtocol.h"
@@ -42,6 +41,9 @@
 
 #include "XBPyThread.h"
 #include "XBPython.h"
+#ifdef _XBOX
+#include "XBPythonDll.h"
+#endif
 
 #include "xbmcmodule/pyutil.h"
 #include "xbmcmodule/pythreadstate.h"
@@ -181,32 +183,30 @@ void XBPyThread::Process()
   // and add on whatever our default path is
   path += PY_PATH_SEP;
 
-#if (defined USE_EXTERNAL_PYTHON)
-  {
-    // we want to use sys.path so it includes site-packages
-    // if this fails, default to using Py_GetPath
-    PyObject *sysMod(PyImport_ImportModule((char*)"sys")); // must call Py_DECREF when finished
-    PyObject *sysModDict(PyModule_GetDict(sysMod)); // borrowed ref, no need to delete
-    PyObject *pathObj(PyDict_GetItemString(sysModDict, "path")); // borrowed ref, no need to delete
+#ifndef _XBOX
+  // we want to use sys.path so it includes site-packages
+  // if this fails, default to using Py_GetPath
+  PyObject *sysMod(PyImport_ImportModule((char*)"sys")); // must call Py_DECREF when finished
+  PyObject *sysModDict(PyModule_GetDict(sysMod)); // borrowed ref, no need to delete
+  PyObject *pathObj(PyDict_GetItemString(sysModDict, "path")); // borrowed ref, no need to delete
 
-    if( pathObj && PyList_Check(pathObj) )
+  if( pathObj && PyList_Check(pathObj) )
+  {
+    for( int i = 0; i < PyList_Size(pathObj); i++ )
     {
-      for( int i = 0; i < PyList_Size(pathObj); i++ )
+      PyObject *e = PyList_GetItem(pathObj, i); // borrowed ref, no need to delete
+      if( e && PyString_Check(e) )
       {
-        PyObject *e = PyList_GetItem(pathObj, i); // borrowed ref, no need to delete
-        if( e && PyString_Check(e) )
-        {
-            path += PyString_AsString(e); // returns internal data, don't delete or modify
-            path += PY_PATH_SEP;
-        }
+          path += PyString_AsString(e); // returns internal data, don't delete or modify
+          path += PY_PATH_SEP;
       }
     }
-    else
-    {
-      path += Py_GetPath();
-    }
-    Py_DECREF(sysMod); // release ref to sysMod
   }
+  else
+  {
+    path += Py_GetPath();
+  }
+  Py_DECREF(sysMod); // release ref to sysMod
 #else
   path += Py_GetPath();
 #endif
@@ -238,16 +238,19 @@ void XBPyThread::Process()
   PyEval_AcquireLock();
   PyThreadState_Swap(state);
 
+#ifdef _XBOX
+  // without this os.getcwd() will return empty string
   xbp_chdir(scriptDir.c_str());
+#endif
 
   if (!stopping)
   {
     if (m_type == 'F')
     {
-#ifdef USE_EXTERNAL_PYTHON
+#ifndef _XBOX
       // run script from file
       // We need to have python open the file because on Windows the DLL that python
-      //  is linked against may not be the DLL that xbmc is linked against so 
+      //  is linked against may not be the DLL that xbmc is linked against so
       //  passing a FILE* to python from an fopen has the potential to crash.
       PyObject* file = PyFile_FromString((char *) CSpecialProtocol::TranslatePath(m_source).c_str(), (char*)"r");
       FILE *fp = PyFile_AsFile(file);
@@ -272,7 +275,7 @@ void XBPyThread::Process()
         Py_DECREF(f);
         PyRun_File(fp, CSpecialProtocol::TranslatePath(m_source).c_str(), m_Py_file_input, moduleDict, moduleDict);
 
-#ifdef USE_EXTERNAL_PYTHON
+#ifndef _XBOX
         // Get a reference to the main module
         // and global dictionary
         PyObject* main_module = PyImport_AddModule((char*)"__main__");
