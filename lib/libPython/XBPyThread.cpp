@@ -273,21 +273,10 @@ void XBPyThread::Process()
           CLog::Log(LOGDEBUG,"Instantiating addon using automatically obtained id of \"%s\" dependent on version %s of the xbmc.python api",addon->ID().c_str(),version.c_str());
         }
         Py_DECREF(f);
-        PyRun_File(fp, CSpecialProtocol::TranslatePath(m_source).c_str(), m_Py_file_input, moduleDict, moduleDict);
-
 #ifndef _XBOX
-        // Get a reference to the main module
-        // and global dictionary
-        PyObject* main_module = PyImport_AddModule((char*)"__main__");
-        PyObject* global_dict = PyModule_GetDict(main_module);
-
-        // Extract a reference to the function "func_name"
-        // from the global dictionary
-        PyObject* expression = PyDict_GetItemString(global_dict, "xbmcclosefilehack");
-
-        if (!PyObject_CallFunction(expression,(char*)"(O)",file))
-          CLog::Log(LOGERROR,"Failed to close the script file %s",CSpecialProtocol::TranslatePath(m_source).c_str());
+        PyRun_FileExFlags(fp, CSpecialProtocol::TranslatePath(m_source).c_str(), m_Py_file_input, moduleDict, moduleDict,1,NULL);
 #else
+        PyRun_File(fp, CSpecialProtocol::TranslatePath(m_source).c_str(), m_Py_file_input, moduleDict, moduleDict);
         fclose(fp);
 #endif
       }
