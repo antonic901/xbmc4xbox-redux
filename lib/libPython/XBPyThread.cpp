@@ -166,7 +166,15 @@ void XBPyThread::Process()
   ADDON::VECADDONS addons;
   ADDON::CAddonMgr::Get().GetAddons(ADDON::ADDON_SCRIPT_MODULE, addons);
   for (unsigned int i = 0; i < addons.size(); ++i)
+#ifdef TARGET_WINDOWS
+  {
+    CStdString strTmp(CSpecialProtocol::TranslatePath(addons[i]->LibPath()));
+    g_charsetConverter.utf8ToStringCharset(strTmp);
+    path += PY_PATH_SEP + strTmp;
+  }
+#else
     path += PY_PATH_SEP + CSpecialProtocol::TranslatePath(addons[i]->LibPath());
+#endif
 
   // and add on whatever our default path is
   path += PY_PATH_SEP;
