@@ -491,10 +491,10 @@ void XBPython::Initialize()
         {
           // using external python, it's build looking for xxx/lib/python2.6
           // so point it to frameworks/usr which is where python2.6 is located
-          setenv("PYTHONHOME", _P("special://frameworks/usr").c_str(), 1);
-          setenv("PYTHONPATH", _P("special://frameworks/usr").c_str(), 1);
-          CLog::Log(LOGDEBUG, "PYTHONHOME -> %s", _P("special://frameworks/usr").c_str());
-          CLog::Log(LOGDEBUG, "PYTHONPATH -> %s", _P("special://frameworks/usr").c_str());
+          setenv("PYTHONHOME", CSpecialProtocol::TranslatePath("special://frameworks/usr").c_str(), 1);
+          setenv("PYTHONPATH", CSpecialProtocol::TranslatePath("special://frameworks/usr").c_str(), 1);
+          CLog::Log(LOGDEBUG, "PYTHONHOME -> %s", CSpecialProtocol::TranslatePath("special://frameworks/usr").c_str());
+          CLog::Log(LOGDEBUG, "PYTHONPATH -> %s", CSpecialProtocol::TranslatePath("special://frameworks/usr").c_str());
         }
       #endif
       setenv("PYTHONCASEOK", "1", 1); //This line should really be removed
@@ -505,11 +505,11 @@ void XBPython::Initialize()
       // buf is corrupted after putenv and might need a strdup but it seems to
       // work this way
       CStdString buf;
-      buf = "PYTHONPATH=" + _P("special://xbmc/system/python/DLLs") + ";" + _P("special://xbmc/system/python/Lib");
+      buf = "PYTHONPATH=" + CSpecialProtocol::TranslatePath("special://xbmc/system/python/DLLs") + ";" + CSpecialProtocol::TranslatePath("special://xbmc/system/python/Lib");
       pgwin32_putenv(buf.c_str());
       buf = "PYTHONOPTIMIZE=1";
       pgwin32_putenv(buf.c_str());
-      buf = "PYTHONHOME=" + _P("special://xbmc/system/python");
+      buf = "PYTHONHOME=" + CSpecialProtocol::TranslatePath("special://xbmc/system/python");
       pgwin32_putenv(buf.c_str());
       buf = "OS=win32";
       pgwin32_putenv(buf.c_str());

@@ -255,7 +255,7 @@ void XBPyThread::Process()
         PyObject* expression = PyDict_GetItemString(global_dict, "xbmcclosefilehack");
 
         if (!PyObject_CallFunction(expression,(char*)"(O)",file))
-          CLog::Log(LOGERROR,"Failed to close the script file %s",_P(m_source).c_str());
+          CLog::Log(LOGERROR,"Failed to close the script file %s",CSpecialProtocol::TranslatePath(m_source).c_str());
 #else
         fclose(fp);
 #endif
