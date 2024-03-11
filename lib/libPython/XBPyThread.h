@@ -22,6 +22,7 @@
  */
 
 #include "threads/Thread.h"
+#include "threads/Event.h"
 #include "addons/IAddon.h"
 #include "utils/StringUtils.h"
 
@@ -42,6 +43,7 @@ public:
 
 protected:
   XBPython *m_pExecuter;
+  CEvent stoppedEvent;
   void *m_threadState;
 
   char m_type;
