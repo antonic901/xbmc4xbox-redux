@@ -183,7 +183,6 @@ void XBPyThread::Process()
   // and add on whatever our default path is
   path += PY_PATH_SEP;
 
-#ifndef _XBOX
   // we want to use sys.path so it includes site-packages
   // if this fails, default to using Py_GetPath
   PyObject *sysMod(PyImport_ImportModule((char*)"sys")); // must call Py_DECREF when finished
@@ -207,9 +206,6 @@ void XBPyThread::Process()
     path += Py_GetPath();
   }
   Py_DECREF(sysMod); // release ref to sysMod
-#else
-  path += Py_GetPath();
-#endif
 
   // set current directory and python's path.
   if (m_argv != NULL)
@@ -247,16 +243,13 @@ void XBPyThread::Process()
   {
     if (m_type == 'F')
     {
-#ifndef _XBOX
       // run script from file
       // We need to have python open the file because on Windows the DLL that python
       //  is linked against may not be the DLL that xbmc is linked against so
       //  passing a FILE* to python from an fopen has the potential to crash.
       PyObject* file = PyFile_FromString((char *) CSpecialProtocol::TranslatePath(m_source).c_str(), (char*)"r");
       FILE *fp = PyFile_AsFile(file);
-#else
-      FILE *fp = fopen_utf8(CSpecialProtocol::TranslatePath(m_source).c_str(), "r");      
-#endif
+
       if (fp)
       {
         PyObject *f = PyString_FromString(CSpecialProtocol::TranslatePath(m_source).c_str());
@@ -273,12 +266,7 @@ void XBPyThread::Process()
           CLog::Log(LOGDEBUG,"Instantiating addon using automatically obtained id of \"%s\" dependent on version %s of the xbmc.python api",addon->ID().c_str(),version.c_str());
         }
         Py_DECREF(f);
-#ifndef _XBOX
         PyRun_FileExFlags(fp, CSpecialProtocol::TranslatePath(m_source).c_str(), m_Py_file_input, moduleDict, moduleDict,1,NULL);
-#else
-        PyRun_File(fp, CSpecialProtocol::TranslatePath(m_source).c_str(), m_Py_file_input, moduleDict, moduleDict);
-        fclose(fp);
-#endif
       }
       else
         CLog::Log(LOGERROR, "%s not found!", m_source);
