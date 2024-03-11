@@ -31,12 +31,14 @@
 
 // python.h should always be included first before any other includes
 #include <Python.h>
+#include "XBPythonDll.h"
 
 #include "system.h"
 #include "cores/DllLoader/DllLoaderContainer.h"
+#include "GUIPassword.h"
 
 #include "XBPython.h"
-#include "XBPythonDll.h"
+#include "settings/Settings.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
 #include "guilib/GraphicContext.h"

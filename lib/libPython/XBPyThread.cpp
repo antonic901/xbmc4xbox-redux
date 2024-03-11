@@ -25,13 +25,13 @@
 // python.h should always be included first before any other includes
 #include <Python.h>
 #include <osdefs.h>
+#include "XBPythonDll.h"
 
 #include "system.h"
-#include "XBPythonDll.h"
 #include "filesystem/SpecialProtocol.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogKaiToast.h"
-#include "LocalizeStrings.h"
+#include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
 #include "threads/SingleLock.h"
 #include "utils/URIUtils.h"
@@ -43,9 +43,10 @@
 #include "XBPyThread.h"
 #include "XBPython.h"
 
-#include "xbmcmodule/pythreadstate.h"
 #include "xbmcmodule/pyutil.h"
+#include "xbmcmodule/pythreadstate.h"
 #include "utils/CharsetConverter.h"
+
 
 #ifdef _WIN32PC
 extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
@@ -170,7 +171,6 @@ void XBPyThread::Process()
 #ifdef TARGET_WINDOWS
   {
     CStdString strTmp(CSpecialProtocol::TranslatePath(addons[i]->LibPath()));
-    CStdString strDest;
     g_charsetConverter.utf8ToSystem(strTmp);
     path += PY_PATH_SEP + strTmp;
   }

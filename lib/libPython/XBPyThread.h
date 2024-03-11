@@ -1,6 +1,3 @@
-#ifndef XBPYTHREAD_H_
-#define XBPYTHREAD_H_
-
 /*
  *      Copyright (C) 2005-2013 Team XBMC
  *      http://xbmc.org
@@ -21,10 +18,12 @@
  *
  */
 
+#ifndef XBPYTHREAD_H_
+#define XBPYTHREAD_H_
+
 #include "threads/Thread.h"
 #include "threads/Event.h"
 #include "addons/IAddon.h"
-#include "utils/StringUtils.h"
 
 class XBPython;
 
