@@ -322,6 +322,7 @@ void XBPyThread::Process()
         CLog::Log(LOGINFO, "<unknown exception type>");
       }
 
+      PYXBMC::PyXBMCGUILock();
       CGUIDialogKaiToast *pDlgToast = (CGUIDialogKaiToast*)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
       if (pDlgToast)
       {
@@ -339,6 +340,7 @@ void XBPyThread::Process()
         desc.Format(g_localizeStrings.Get(2100), script);
         pDlgToast->QueueNotification(CGUIDialogKaiToast::Error, g_localizeStrings.Get(257), desc);
       }
+      PYXBMC::PyXBMCGUIUnlock();
     }
 
     Py_XDECREF(exc_type);
