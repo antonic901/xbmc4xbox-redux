@@ -429,7 +429,7 @@ namespace PYXBMC
     if (WindowDialog_Check(self) || WindowXMLDialog_Check(self))
     {
       CPyThreadState pyState;
-      ThreadMessage tMsg = {TMSG_GUI_PYTHON_DIALOG, 1, 1};
+      ThreadMessage tMsg = {TMSG_GUI_PYTHON_DIALOG, WindowXMLDialog_Check(self) ? 1 : 0, 1};
       tMsg.lpVoid = self->pWindow;
       CApplicationMessenger::Get().SendMessage(tMsg, true);
     }
@@ -467,7 +467,7 @@ namespace PYXBMC
     if (WindowDialog_Check(self) || WindowXMLDialog_Check(self))
     {
       CPyThreadState pyState;
-      ThreadMessage tMsg = {TMSG_GUI_PYTHON_DIALOG, 1, 0};
+      ThreadMessage tMsg = {TMSG_GUI_PYTHON_DIALOG, WindowXMLDialog_Check(self) ? 1 : 0, 0};
       tMsg.lpVoid = self->pWindow;
       CApplicationMessenger::Get().SendMessage(tMsg, true);
     }
