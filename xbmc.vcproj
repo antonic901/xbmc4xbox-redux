@@ -4847,6 +4847,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\lib\libPython\xbmcmodule\controlcheckmark.cpp">
 					</File>
 					<File
+						RelativePath=".\lib\libPython\xbmcmodule\controledit.cpp">
+					</File>
+					<File
 						RelativePath=".\lib\libPython\xbmcmodule\controlfadelabel.cpp">
 					</File>
 					<File

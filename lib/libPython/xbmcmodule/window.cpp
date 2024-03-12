@@ -29,6 +29,7 @@
 #include "GUIButtonControl.h"
 #include "GUICheckMarkControl.h"
 #include "GUIRadioButtonControl.h"
+#include "GUIEditControl.h"
 #include "GUIWindowManager.h"
 #include "settings/DisplaySettings.h"
 #include "Application.h"
@@ -267,6 +268,21 @@ namespace PYXBMC
       ((ControlRadioButton*)pControl)->shadowColor   = li.shadowColor;
       if (li.font) ((ControlRadioButton*)pControl)->strFont = li.font->GetFontName();
       ((ControlRadioButton*)pControl)->align = li.align;
+      break;
+    case CGUIControl::GUICONTROL_EDIT:
+      pControl = (Control*)ControlEdit_Type.tp_alloc(&ControlEdit_Type, 0);
+      new(&((ControlEdit*)pControl)->strFont) string();
+      new(&((ControlEdit*)pControl)->strText) string();
+      new(&((ControlEdit*)pControl)->strTextureFocus) string();
+      new(&((ControlEdit*)pControl)->strTextureNoFocus) string();
+
+      li = ((CGUIEditControl *)pGUIControl)->GetLabelInfo();
+
+      // note: conversion from infocolors -> plain colors here
+      ((ControlEdit*)pControl)->disabledColor = li.disabledColor;
+      ((ControlEdit*)pControl)->textColor  = li.textColor;
+      if (li.font) ((ControlEdit*)pControl)->strFont = li.font->GetFontName();
+      ((ControlButton*)pControl)->align = li.align;
       break;
     default:
       break;
@@ -603,6 +619,8 @@ namespace PYXBMC
     else if (ControlRadioButton_Check(pControl))
       ControlRadioButton_Create((ControlRadioButton*)pControl);
 
+    else if (ControlEdit_Check(pControl))
+      ControlEdit_Create((ControlEdit*)pControl);
     //unknown control type to add, should not happen
     else
     {

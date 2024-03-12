@@ -142,6 +142,7 @@ namespace PYXBMC
     initDialogProgress_Type();
     initAction_Type();
     initControlRadioButton_Type();
+    initControlEdit_Type();
 
     if (PyType_Ready(&Window_Type) < 0 ||
         PyType_Ready(&WindowDialog_Type) < 0 ||
@@ -163,6 +164,7 @@ namespace PYXBMC
         PyType_Ready(&DialogProgress_Type) < 0 ||
         PyType_Ready(&ControlSlider_Type) < 0 ||
         PyType_Ready(&ControlRadioButton_Type) < 0 ||
+        PyType_Ready(&ControlEdit_Type) < 0 ||
         PyType_Ready(&Action_Type) < 0)
       return;
 
@@ -202,6 +204,7 @@ namespace PYXBMC
     Py_INCREF(&DialogProgress_Type);
     Py_INCREF(&Action_Type);
     Py_INCREF(&ControlRadioButton_Type);
+    Py_INCREF(&ControlEdit_Type);
 
     pXbmcGuiModule = Py_InitModule3((char*)"xbmcgui", xbmcGuiMethods, xbmcgui_module_documentation);
 
@@ -228,6 +231,7 @@ namespace PYXBMC
     PyModule_AddObject(pXbmcGuiModule, (char*)"DialogProgress", (PyObject *)&DialogProgress_Type);
     PyModule_AddObject(pXbmcGuiModule, (char*)"Action", (PyObject *)&Action_Type);
     PyModule_AddObject(pXbmcGuiModule, (char*)"ControlRadioButton", (PyObject*)&ControlRadioButton_Type);
+    PyModule_AddObject(pXbmcGuiModule, (char*)"ControlEdit", (PyObject*)&ControlEdit_Type);
 
     PyModule_AddStringConstant(pXbmcGuiModule, (char*)"__author__", (char*)PY_XBMC_AUTHOR);
     PyModule_AddStringConstant(pXbmcGuiModule, (char*)"__date__", (char*)"16 June 2011");
