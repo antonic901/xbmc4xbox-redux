@@ -586,7 +586,7 @@ extern "C" {
     }
     
     PyMODINIT_FUNC
-    InitVFSTypes(bool bInitTypes)
+    InitVFSTypes()
     {
       initFile_Type();
       if (PyType_Ready(&File_Type)) return;
