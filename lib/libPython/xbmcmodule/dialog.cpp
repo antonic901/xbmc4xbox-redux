@@ -559,8 +559,10 @@ namespace PYXBMC
     CGUIDialogProgress* pDialog= ((DialogProgress*)self)->dlg;
     if (PyXBMCWindowIsNull(pDialog)) return NULL;
 
-    PyThreadState state;
-    pDialog->Close();
+    {
+      PyThreadState state;
+      pDialog->Close();
+    }
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -569,8 +571,11 @@ namespace PYXBMC
   static void Dialog_ProgressDealloc(PyObject *self)
   {
     CGUIDialogProgress* pDialog= ((DialogProgress*)self)->dlg;
-    if(pDialog)
+    if (pDialog)
+    {
+      PyThreadState state;
       pDialog->Close();
+    }
 
     self->ob_type->tp_free((PyObject*)self);
   }
