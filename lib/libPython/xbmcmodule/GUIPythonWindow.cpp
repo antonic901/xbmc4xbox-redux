@@ -60,6 +60,7 @@ CGUIPythonWindow::CGUIPythonWindow(int id)
   pCallbackWindow = NULL;
   m_threadState = NULL;
   m_loadType = LOAD_ON_GUI_INIT;
+  m_destroyAfterDeinit = false;
 }
 
 CGUIPythonWindow::~CGUIPythonWindow(void)
@@ -159,6 +160,18 @@ bool CGUIPythonWindow::OnMessage(CGUIMessage& message)
   }
 
   return CGUIWindow::OnMessage(message);
+}
+
+void CGUIPythonWindow::OnDeinitWindow(int nextWindowID /*= 0*/)
+{
+  CGUIWindow::OnDeinitWindow(nextWindowID);
+  if (m_destroyAfterDeinit)
+    g_windowManager.Delete(GetID());
+}
+
+void CGUIPythonWindow::SetDestroyAfterDeinit(bool destroy /*= true*/)
+{
+  m_destroyAfterDeinit = destroy;
 }
 
 void CGUIPythonWindow::SetCallbackWindow(void *state, void *object)

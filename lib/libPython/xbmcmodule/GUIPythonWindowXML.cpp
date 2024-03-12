@@ -56,6 +56,7 @@ CGUIPythonWindowXML::CGUIPythonWindowXML(int id, CStdString strXML, CStdString s
   m_threadState = NULL;
   m_loadType = LOAD_ON_GUI_INIT;
   m_scriptPath = strFallBackPath;
+  m_destroyAfterDeinit = false;
 }
 
 CGUIPythonWindowXML::~CGUIPythonWindowXML(void)
@@ -210,6 +211,18 @@ bool CGUIPythonWindowXML::OnMessage(CGUIMessage& message)
   }
 
   return CGUIMediaWindow::OnMessage(message);
+}
+
+void CGUIPythonWindowXML::OnDeinitWindow(int nextWindowID /*= 0*/)
+{
+  CGUIMediaWindow::OnDeinitWindow(nextWindowID);
+  if (m_destroyAfterDeinit)
+    g_windowManager.Delete(GetID());
+}
+
+void CGUIPythonWindowXML::SetDestroyAfterDeinit(bool destroy /*= true*/)
+{
+  m_destroyAfterDeinit = destroy;
 }
 
 void CGUIPythonWindowXML::AddItem(CFileItemPtr fileItem, int itemPosition)
