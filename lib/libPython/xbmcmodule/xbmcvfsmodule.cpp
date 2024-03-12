@@ -575,6 +575,7 @@ extern "C" {
       pXbmcvfsModule = Py_InitModule((char*)"xbmcvfs", xbmcvfsMethods);
       if (pXbmcvfsModule == NULL) return;
 
+      Py_INCREF(&File_Type);
       PyModule_AddObject(pXbmcvfsModule, (char*)"File", (PyObject*)&File_Type);
 
       // constants
