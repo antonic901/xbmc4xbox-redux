@@ -542,6 +542,7 @@ const infomap listitem_labels[]= {{ "thumb",            LISTITEM_THUMB },
                                   { "playcount",        LISTITEM_PLAYCOUNT },
                                   { "lastplayed",       MUSICPLAYER_LASTPLAYED },
                                   { "discnumber",       LISTITEM_DISC_NUMBER },
+                                  { "dateadded",        LISTITEM_DATE_ADDED },
                                   { "dbtype",           LISTITEM_DBTYPE },
                                   { "dbid",             LISTITEM_DBID }};
 
@@ -4317,6 +4318,10 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
   case LISTITEM_SUBTITLE_LANGUAGE:
     if (item->HasVideoInfoTag())
       return item->GetVideoInfoTag()->m_streamDetails.GetSubtitleLanguage();
+    break;
+  case LISTITEM_DATE_ADDED:
+    if (item->HasVideoInfoTag() && item->GetVideoInfoTag()->m_dateAdded.IsValid())
+      return item->GetVideoInfoTag()->m_dateAdded.GetAsLocalizedDate();
     break;
   case LISTITEM_DBTYPE:
     if (item->HasVideoInfoTag())
