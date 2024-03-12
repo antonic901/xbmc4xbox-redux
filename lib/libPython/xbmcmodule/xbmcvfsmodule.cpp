@@ -313,7 +313,7 @@ extern "C" {
     PyObject* vfs_rmdir(File *self, PyObject *args, PyObject *kwds)
     {
       PyObject *f_line;
-      bool bForce = false;
+      char bForce = 0;
       if (!PyArg_ParseTuple(
         args,
         (char*)"O|b",
@@ -330,7 +330,7 @@ extern "C" {
       if (bForce)
       {
         CPyThreadState pyState;
-        bResult = CFileUtils::DeleteItem(strSource, bForce);
+        bResult = CFileUtils::DeleteItem(strSource, bForce ? true : false);
         pyState.Restore();
       }
       else 
