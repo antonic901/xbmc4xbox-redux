@@ -191,6 +191,7 @@ bool CGUIPythonWindowXML::OnMessage(CGUIMessage& message)
             // aquire lock?
             PyXBMC_AddPendingCall((PyThreadState*)m_threadState, Py_XBMC_Event_OnClick, inf);
             PulseActionEvent();
+            return true;
           }
           else if (controlClicked->IsContainer() && message.GetParam1() == ACTION_MOUSE_RIGHT_CLICK)
           {
@@ -200,6 +201,7 @@ bool CGUIPythonWindowXML::OnMessage(CGUIMessage& message)
             // aquire lock?
             PyXBMC_AddPendingCall((PyThreadState*)m_threadState, Py_XBMC_Event_OnAction, inf);
             PulseActionEvent();
+            return true;
           }
         }
       }
