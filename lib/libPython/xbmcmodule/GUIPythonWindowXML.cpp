@@ -132,7 +132,7 @@ bool CGUIPythonWindowXML::OnMessage(CGUIMessage& message)
     }
     break;
 
-    case GUI_MSG_SETFOCUS:
+    case GUI_MSG_FOCUSED:
     {
       if (m_viewControl.HasControl(message.GetControlId()) && m_viewControl.GetCurrentControl() != (int)message.GetControlId())
       {
