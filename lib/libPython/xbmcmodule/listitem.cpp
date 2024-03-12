@@ -222,7 +222,7 @@ namespace PYXBMC
   PyDoc_STRVAR(setIconImage__doc__,
     "setIconImage(icon) -- Sets the listitem's icon image.\n"
     "\n"
-    "icon            : string - image filename.\n"
+    "icon            : string or unicode - image filename.\n"
     "\n"
     "example:\n"
     "  - self.list.getSelectedItem().setIconImage('emailread.png')\n");
@@ -250,7 +250,7 @@ namespace PYXBMC
   PyDoc_STRVAR(setThumbnailImage__doc__,
     "setThumbnailImage(thumb) -- Sets the listitem's thumbnail image.\n"
     "\n"
-    "thumb           : string - image filename.\n"
+    "thumb           : string or unicode - image filename.\n"
     "\n"
     "example:\n"
     "  - self.list.getSelectedItem().setThumbnailImage('emailread.png')\n");
