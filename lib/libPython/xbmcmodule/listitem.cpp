@@ -229,14 +229,18 @@ namespace PYXBMC
 
   PyObject* ListItem_SetIconImage(ListItem *self, PyObject *args)
   {
-    char *cLine = NULL;
+    PyObject* unicodeLine = NULL;
     if (!self->item) return NULL;
 
-    if (!PyArg_ParseTuple(args, (char*)"s", &cLine)) return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"O", &unicodeLine)) return NULL;
+
+    string utf8Line;
+    if (unicodeLine && !PyXBMCGetUnicodeString(utf8Line, unicodeLine, 1))
+      return NULL;
 
     // set label
     PyXBMCGUILock();
-    self->item->SetIconImage(cLine ? cLine : "");
+    self->item->SetIconImage(utf8Line);
     PyXBMCGUIUnlock();
 
     Py_INCREF(Py_None);
@@ -253,14 +257,18 @@ namespace PYXBMC
 
   PyObject* ListItem_SetThumbnailImage(ListItem *self, PyObject *args)
   {
-    char *cLine = NULL;
+    PyObject* unicodeLine = NULL;
     if (!self->item) return NULL;
 
-    if (!PyArg_ParseTuple(args, (char*)"s", &cLine)) return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"O", &unicodeLine)) return NULL;
+
+    string utf8Line;
+    if (unicodeLine && !PyXBMCGetUnicodeString(utf8Line, unicodeLine, 1))
+      return NULL;
 
     // set label
     PyXBMCGUILock();
-    self->item->SetThumbnailImage(cLine ? cLine : "");
+    self->item->SetThumbnailImage(utf8Line);
     PyXBMCGUIUnlock();
 
     Py_INCREF(Py_None);
