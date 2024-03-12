@@ -28,7 +28,6 @@
 
 using namespace std;
 
-static int iPyXBMCGUILockRef = 0;
 static CXBMCTinyXML pySkinReferences;
 
 
