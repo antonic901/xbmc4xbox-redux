@@ -49,10 +49,17 @@ namespace PYXBMC
     //              for non-unicode data?
     if (PyUnicode_Check(pObject))
     {
-      CStdString utf8String;
-      g_charsetConverter.wToUTF8(PyUnicode_AsUnicode(pObject), utf8String);
-      buf = utf8String;
-      return 1;
+      // Python unicode objects are UCS2 or UCS4 depending on compilation
+      // options, wchar_t is 16-bit or 32-bit depending on platform.
+      // Avoid the complexity by just letting python convert the string.
+      PyObject *utf8_pyString = PyUnicode_AsUTF8String(pObject);
+
+      if (utf8_pyString)
+      {
+        buf = PyString_AsString(utf8_pyString);
+        Py_DECREF(utf8_pyString);
+        return 1;
+      }
     }
     if (PyString_Check(pObject))
     {

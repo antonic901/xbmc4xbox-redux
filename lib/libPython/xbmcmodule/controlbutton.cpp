@@ -26,7 +26,6 @@
 #include "GUIFontManager.h"
 #include "control.h"
 #include "pyutil.h"
-#include "CharsetConverter.h"
 
 using namespace std;
 
@@ -284,11 +283,10 @@ namespace PYXBMC
     if (!self->pGUIControl) return NULL;
 
     PyXBMCGUILock();
-    CStdStringW label;
-    g_charsetConverter.utf8ToW(((CGUIButtonControl*) self->pGUIControl)->GetLabel(), label);
+    CStdString label = ((CGUIButtonControl*) self->pGUIControl)->GetLabel();
     PyXBMCGUIUnlock();
 
-    return Py_BuildValue((char*)"u", label.c_str());
+    return PyUnicode_DecodeUTF8(label.c_str(), label.size(), "replace");
   }
 
   // getLabel2() Method
@@ -303,11 +301,10 @@ namespace PYXBMC
     if (!self->pGUIControl) return NULL;
 
     PyXBMCGUILock();
-    CStdStringW label;
-    g_charsetConverter.utf8ToW(((CGUIButtonControl*) self->pGUIControl)->GetLabel2(), label);
+    CStdString label = ((CGUIButtonControl*) self->pGUIControl)->GetLabel2();
     PyXBMCGUIUnlock();
 
-    return Py_BuildValue((char*)"u", label.c_str());
+    return PyUnicode_DecodeUTF8(label.c_str(), label.size(), "replace");
   }
 
   PyMethodDef ControlButton_methods[] = {

@@ -201,7 +201,8 @@ extern "C"
     va_end(va);
     return ret;
   }*/
-  FUNCTION4(PyUnicodeUCS2_AsUnicode)
+  FUNCTION4(PyUnicodeUCS2_AsUTF8String)
+  FUNCTION4(PyUnicodeUCS2_DecodeUTF8)
   FUNCTION(Py_MakePendingCalls)
   FUNCTION(PyEval_SaveThread)
   FUNCTION4(PyEval_RestoreThread)
@@ -349,7 +350,8 @@ extern "C"
       dll.ResolveExport(DLL_FUNCTION(PyLong_AsLong)) &&
       dll.ResolveExport(DLL_FUNCTION(PyLong_AsLongLong)) &&
       dll.ResolveExport(DLL_VA_FUNCTION(PyErr_Format)) &&
-      dll.ResolveExport(DLL_FUNCTION(PyUnicodeUCS2_AsUnicode)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyUnicodeUCS2_AsUTF8String)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyUnicodeUCS2_DecodeUTF8)) &&
       dll.ResolveExport(DLL_FUNCTION(Py_MakePendingCalls)) &&
       dll.ResolveExport(DLL_FUNCTION(PyEval_SaveThread)) &&
       dll.ResolveExport(DLL_FUNCTION(PyEval_RestoreThread)) &&

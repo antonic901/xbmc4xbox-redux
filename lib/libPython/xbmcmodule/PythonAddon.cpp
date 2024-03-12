@@ -23,7 +23,6 @@
 #include "pyutil.h"
 #include "pythreadstate.h"
 #include "addons/AddonManager.h"
-#include "utils/CharsetConverter.h"
 #include "addons/GUIDialogAddonSettings.h"
 #include "utils/log.h"
 
@@ -170,10 +169,9 @@ namespace PYXBMC
       return NULL;
     };
 
-    CStdStringW label;
-    g_charsetConverter.utf8ToW(self->pAddon->GetString(id), label);
+    CStdString label = self->pAddon->GetString(id);
 
-    return Py_BuildValue((char*)"u", label.c_str());
+    return PyUnicode_DecodeUTF8(label.c_str(), label.size(), "replace");
   }
 
     PyDoc_STRVAR(getSetting__doc__,
