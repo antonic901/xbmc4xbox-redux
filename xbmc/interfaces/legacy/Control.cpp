@@ -103,7 +103,8 @@ namespace XBMCAddon
         label,
         true,
         0,
-        true);
+        true,
+        false);
 
       CGUIMessage msg(GUI_MSG_LABEL_RESET, iParentId, iControlId);
       pGUIControl->OnMessage(msg);
@@ -432,7 +433,7 @@ namespace XBMCAddon
 
       LOCKGUI;
       if (pGUIControl)
-        ((CGUIImage*)pGUIControl)->SetFileName(strFileName, false, useCache);
+        ((CGUIImage*)pGUIControl)->SetFileName(strFileName, false);
     }
 
     void ControlImage::setColorDiffuse(const char* cColorDiffuse) throw (UnimplementedException)
@@ -522,12 +523,13 @@ namespace XBMCAddon
     ControlSlider::ControlSlider(long x, long y, long width, long height, 
                                  const char* textureback, 
                                  const char* texture,
-                                 const char* texturefocus)
+                                 const char* texturefocus, int orientation)
     {
       dwPosX = x;
       dwPosY = y;
       dwWidth = width;
       dwHeight = height;
+      iOrientation = orientation;
 
       // if texture is supplied use it, else get default ones
       strTextureBack = textureback ? textureback : 
@@ -554,7 +556,7 @@ namespace XBMCAddon
       pGUIControl = new CGUISliderControl(iParentId, iControlId,(float)dwPosX, (float)dwPosY,
                                           (float)dwWidth,(float)dwHeight,
                                           (CStdString)strTextureBack,(CStdString)strTexture,
-                                          (CStdString)strTextureFoc,0);   
+                                          (CStdString)strTextureFoc, 0, ORIENTATION(iOrientation));   
     
       return pGUIControl;
     }  
@@ -593,8 +595,9 @@ namespace XBMCAddon
                                            long _textOffsetX, long _textOffsetY, 
                                            long alignment, const char* font, const char* _textColor,
                                            const char* _disabledColor, long angle,
-                                           const char* _shadowColor, const char* _focusedColor) :
-      strFont("font13"), textColor(0xffffffff), disabledColor(0x60ffffff), 
+                                           const char* _shadowColor, const char* _focusedColor,
+                                           const char* disabledOnTexture, const char* disabledOffTexture) :
+      strFont("font13"), textColor(0xffffffff), disabledColor(0x60ffffff),
       textOffsetX(_textOffsetX), textOffsetY(_textOffsetY), align(alignment), iAngle(angle), 
       shadowColor(0), focusedColor(0xffffffff)
     {
@@ -723,7 +726,9 @@ namespace XBMCAddon
         (CStdString)strTextureRadioOnFocus,
         (CStdString)strTextureRadioOnNoFocus,
         (CStdString)strTextureRadioOffFocus,
-        (CStdString)strTextureRadioOffNoFocus);
+        (CStdString)strTextureRadioOffNoFocus,
+        (CStdString)strTextureRadioOnDisabled, 
+        (CStdString)strTextureRadioOffDisabled);
 
       CGUIRadioButtonControl* pGuiButtonControl =
         (CGUIRadioButtonControl*)pGUIControl;
@@ -821,7 +826,7 @@ namespace XBMCAddon
         pRoot->InsertEndChild(pNode);
       }
 
-      const CRect animRect((float)dwPosX, (float)dwPosY, (float)dwPosX + dwWidth, (float)dwPosY + dwHeight);
+      const FRECT animRect = { (float)dwPosX, (float)dwPosY, (float)dwWidth, (float)dwHeight };
       LOCKGUI;
       if (pGUIControl)
       {
@@ -946,16 +951,22 @@ namespace XBMCAddon
       strTextureDown = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"texturedown", (char*)"scroll-down.png");
       strTextureUpFocus = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"textureupfocus", (char*)"scroll-up-focus.png");
       strTextureDownFocus = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"texturedownfocus", (char*)"scroll-down-focus.png");
+      strTextureUpDisabled = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"textureupdisabled", (char*)"scroll-up.png");
+      strTextureDownDisabled = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"texturedowndisabled", (char*)"scroll-down.png");
     }
 
     void ControlSpin::setTextures(const char* up, const char* down, 
                                   const char* upFocus, 
-                                  const char* downFocus) throw(UnimplementedException)
+                                  const char* downFocus,
+                                  const char* upDisabled, 
+                                  const char* downDisabled) throw(UnimplementedException)
     {
       strTextureUp = up;
       strTextureDown = down;
       strTextureUpFocus = upFocus;
       strTextureDownFocus = downFocus;
+      strTextureUpDisabled = upDisabled;
+      strTextureDownDisabled = downDisabled;
       /*
         PyXBMCGUILock();
         if (self->pGUIControl)

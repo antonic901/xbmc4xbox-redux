@@ -55,7 +55,7 @@ namespace XBMCAddon
       if (!iconImage.empty())
         item->SetIconImage( iconImage );
       if (!thumbnailImage.empty())
-        item->SetArt("thumb",  thumbnailImage );
+        item->SetThumbnailImage(thumbnailImage);
       if (!path.empty())
         item->SetPath(path);
     }
@@ -125,7 +125,7 @@ namespace XBMCAddon
       if (!item) return;
       {
         LOCKGUI;
-        item->SetArt("thumb", thumbFilename);
+        item->SetThumbnailImage(thumbFilename);
       }
     }
 
@@ -137,9 +137,9 @@ namespace XBMCAddon
         for (Properties::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
         {
           CStdString artName = it->first;
-          StringUtils::ToLower(artName);
+          StringUtils2::ToLower(artName);
           const CStdString artFilename(it->second.c_str());
-          item->SetArt(artName, artFilename);
+          item->SetProperty(artName, artFilename);
         }
       }
     }
@@ -171,7 +171,7 @@ namespace XBMCAddon
     {
       LOCKGUI;
       String lowerKey = key;
-      StringUtils::ToLower(lowerKey);
+      StringUtils2::ToLower(lowerKey);
       if (lowerKey == "startoffset")
       { // special case for start offset - don't actually store in a property,
         // we store it in item.m_lStartOffset instead
@@ -193,7 +193,7 @@ namespace XBMCAddon
           item->SetSpecialSort(SortSpecialOnTop);
       }
       else if (lowerKey == "fanart_image")
-        item->SetArt("fanart", value);
+        item->SetProperty("fanart_image", value);
       else
         item->SetProperty(lowerKey, value);
     }
@@ -202,19 +202,19 @@ namespace XBMCAddon
     {
       LOCKGUI;
       String lowerKey = key;
-      StringUtils::ToLower(lowerKey);
+      StringUtils2::ToLower(lowerKey);
       CStdString value;
       if (lowerKey == "startoffset")
       { // special case for start offset - don't actually store in a property,
         // we store it in item.m_lStartOffset instead
-        value = StringUtils::Format("%f", item->m_lStartOffset / 75.0);
+        value = StringUtils2::Format("%f", item->m_lStartOffset / 75.0);
       }
       else if (lowerKey == "totaltime")
-        value = StringUtils::Format("%f", item->GetVideoInfoTag()->m_resumePoint.totalTimeInSeconds);
+        value = StringUtils2::Format("%f", item->GetVideoInfoTag()->m_resumePoint.totalTimeInSeconds);
       else if (lowerKey == "resumetime")
-        value = StringUtils::Format("%f", item->GetVideoInfoTag()->m_resumePoint.timeInSeconds);
+        value = StringUtils2::Format("%f", item->GetVideoInfoTag()->m_resumePoint.timeInSeconds);
       else if (lowerKey == "fanart_image")
-        value = item->GetArt("fanart");
+        value = item->GetProperty("fanart_image").asString();
       else
         value = item->GetProperty(lowerKey).asString();
 
@@ -270,7 +270,7 @@ namespace XBMCAddon
         for (InfoLabelDict::const_iterator it = infoLabels.begin(); it != infoLabels.end(); ++it)
         {
           String key = it->first;
-          StringUtils::ToLower(key);
+          StringUtils2::ToLower(key);
 
           const InfoLabelValue& alt = it->second;
           const String value(alt.which() == first ? alt.former() : emptyString);
@@ -338,9 +338,9 @@ namespace XBMCAddon
             }
           }
           else if (key == "genre")
-            item->GetVideoInfoTag()->m_genre = StringUtils::Split(value, g_advancedSettings.m_videoItemSeparator);
+            item->GetVideoInfoTag()->m_genre = StringUtils2::Split(value, g_advancedSettings.m_videoItemSeparator);
           else if (key == "director")
-            item->GetVideoInfoTag()->m_director = StringUtils::Split(value, g_advancedSettings.m_videoItemSeparator);
+            item->GetVideoInfoTag()->m_director = StringUtils2::Split(value, g_advancedSettings.m_videoItemSeparator);
           else if (key == "mpaa")
             item->GetVideoInfoTag()->m_strMPAARating = value;
           else if (key == "plot")
@@ -356,11 +356,11 @@ namespace XBMCAddon
           else if (key == "duration")
             item->GetVideoInfoTag()->m_duration = CVideoInfoTag::GetDurationFromMinuteString(value);
           else if (key == "studio")
-            item->GetVideoInfoTag()->m_studio = StringUtils::Split(value, g_advancedSettings.m_videoItemSeparator);            
+            item->GetVideoInfoTag()->m_studio = StringUtils2::Split(value, g_advancedSettings.m_videoItemSeparator);            
           else if (key == "tagline")
             item->GetVideoInfoTag()->m_strTagLine = value;
           else if (key == "writer")
-            item->GetVideoInfoTag()->m_writingCredits = StringUtils::Split(value, g_advancedSettings.m_videoItemSeparator);
+            item->GetVideoInfoTag()->m_writingCredits = StringUtils2::Split(value, g_advancedSettings.m_videoItemSeparator);
           else if (key == "tvshowtitle")
             item->GetVideoInfoTag()->m_strShowTitle = value;
           else if (key == "premiered")
@@ -372,7 +372,7 @@ namespace XBMCAddon
           else if (key == "aired")
             item->GetVideoInfoTag()->m_firstAired.SetFromDateString(value);
           else if (key == "credits")
-            item->GetVideoInfoTag()->m_writingCredits = StringUtils::Split(value, g_advancedSettings.m_videoItemSeparator);
+            item->GetVideoInfoTag()->m_writingCredits = StringUtils2::Split(value, g_advancedSettings.m_videoItemSeparator);
           else if (key == "lastplayed")
             item->GetVideoInfoTag()->m_lastPlayed.SetFromDBDateTime(value);
           else if (key == "album")
@@ -402,7 +402,7 @@ namespace XBMCAddon
         for (InfoLabelDict::const_iterator it = infoLabels.begin(); it != infoLabels.end(); ++it)
         {
           String key = it->first;
-          StringUtils::ToLower(key);
+          StringUtils2::ToLower(key);
 
           const InfoLabelValue& alt = it->second;
           const String value(alt.which() == first ? alt.former() : emptyString);
@@ -439,11 +439,11 @@ namespace XBMCAddon
           else if (key == "musicbrainztrackid")
             item->GetMusicInfoTag()->SetMusicBrainzTrackID(value);
           else if (key == "musicbrainzartistid")
-            item->GetMusicInfoTag()->SetMusicBrainzArtistID(StringUtils::Split(value, g_advancedSettings.m_musicItemSeparator));
+            item->GetMusicInfoTag()->SetMusicBrainzArtistID(value);
           else if (key == "musicbrainzalbumid")
             item->GetMusicInfoTag()->SetMusicBrainzAlbumID(value);
           else if (key == "musicbrainzalbumartistid")
-            item->GetMusicInfoTag()->SetMusicBrainzAlbumArtistID(StringUtils::Split(value, g_advancedSettings.m_musicItemSeparator));
+            item->GetMusicInfoTag()->SetMusicBrainzAlbumArtistID(value);
           else if (key == "musicbrainztrmid")
             item->GetMusicInfoTag()->SetMusicBrainzTRMID(value);
           else if (key == "comment")
@@ -471,7 +471,7 @@ namespace XBMCAddon
         for (InfoLabelDict::const_iterator it = infoLabels.begin(); it != infoLabels.end(); ++it)
         {
           String key = it->first;
-          StringUtils::ToLower(key);
+          StringUtils2::ToLower(key);
 
           const InfoLabelValue& alt = it->second;
           const String value(alt.which() == first ? alt.former() : emptyString);
@@ -497,8 +497,8 @@ namespace XBMCAddon
           else
           {
             const String& exifkey = key;
-            if (!StringUtils::StartsWithNoCase(exifkey, "exif:") || exifkey.length() < 6) continue;
-            int info = CPictureInfoTag::TranslateString(StringUtils::Mid(exifkey,5));
+            if (!StringUtils2::StartsWithNoCase(exifkey, "exif:") || exifkey.length() < 6) continue;
+            int info = CPictureInfoTag::TranslateString(StringUtils2::Mid(exifkey,5));
             item->GetPictureInfoTag()->SetInfo(info, value);
           }
         }
@@ -527,8 +527,6 @@ namespace XBMCAddon
             video->m_iHeight = strtol(value.c_str(), NULL, 10);
           else if (key == "duration")
             video->m_iDuration = strtol(value.c_str(), NULL, 10);
-          else if (key == "stereomode")
-            video->m_strStereoMode = value;
         }
         item->GetVideoInfoTag()->m_streamDetails.AddStream(video);
       }
@@ -578,10 +576,10 @@ namespace XBMCAddon
 
         LOCKGUI;
         String property;
-        property = StringUtils::Format("contextmenulabel(%i)", itemCount);
+        property = StringUtils2::Format("contextmenulabel(%i)", itemCount);
         item->SetProperty(property, uText);
 
-        property = StringUtils::Format("contextmenuaction(%i)", itemCount);
+        property = StringUtils2::Format("contextmenuaction(%i)", itemCount);
         item->SetProperty(property, uAction);
       }
 

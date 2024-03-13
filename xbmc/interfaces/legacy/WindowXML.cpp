@@ -68,8 +68,10 @@ namespace XBMCAddon
       { XBMC_TRACE; if(up()) CGUIMediaWindow::FreeResources(forceUnLoad); else checkedv(FreeResources(forceUnLoad)); }
       virtual bool OnClick(int iItem) { XBMC_TRACE; return up() ? CGUIMediaWindow::OnClick(iItem) : checkedb(OnClick(iItem)); }
 
-      virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
-      { XBMC_TRACE; if(up()) CGUIMediaWindow::Process(currentTime,dirtyregions); else checkedv(Process(currentTime,dirtyregions)); }
+      /*virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+      { XBMC_TRACE; if(up()) CGUIMediaWindow::Process(currentTime,dirtyregions); else checkedv(Process(currentTime,dirtyregions)); }*/
+      virtual void Render()
+      { XBMC_TRACE; if(up()) CGUIMediaWindow::Render(); else checkedv(Render()); }
 
       // this is a hack to SKIP the CGUIMediaWindow
       virtual bool OnAction(const CAction &action) 
@@ -401,11 +403,19 @@ namespace XBMCAddon
       ref(window)->FreeResources(forceUnLoad);
     }
 
-    void WindowXML::Process(unsigned int currentTime, CDirtyRegionList &regions)
+    /*void WindowXML::Process(unsigned int currentTime, CDirtyRegionList &regions)
     {
       XBMC_TRACE;
       g_TextureManager.AddTexturePath(m_mediaDir);
       ref(window)->Process(currentTime, regions);
+      g_TextureManager.RemoveTexturePath(m_mediaDir);
+    }*/
+
+    void WindowXML::Render()
+    {
+      XBMC_TRACE;
+      g_TextureManager.AddTexturePath(m_mediaDir);
+      ref(window)->Render();
       g_TextureManager.RemoveTexturePath(m_mediaDir);
     }
 
@@ -436,7 +446,7 @@ namespace XBMCAddon
       // load our window
       XFILE::CFile file;
       std::string strPathLower = strPath;
-      StringUtils::ToLower(strPathLower);
+      StringUtils2::ToLower(strPathLower);
       if (!file.Open(strPath) && !file.Open(strPathLower) && !file.Open(strLowerPath))
       {
         // fail - can't load the file

@@ -306,6 +306,8 @@ void CAdvancedSettings::Initialize()
   m_userAgent = g_sysinfo.GetUserAgent();
 
   m_initialized = true;
+
+  m_jsonOutputCompact = true;
 }
 
 bool CAdvancedSettings::Load()

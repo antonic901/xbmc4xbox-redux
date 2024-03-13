@@ -23,6 +23,7 @@
 #include <Python.h>
 #include <string>
 #include <stdint.h>
+#include "libPython/XBPythonDll.h"
 
 #include "utils/StdString.h"
 #include "interfaces/legacy/Exception.h"

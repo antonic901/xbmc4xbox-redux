@@ -20,7 +20,7 @@
  *
  */
 
-#include "cores/IPlayerCallback.h"
+#include "cores/IPlayer.h"
 #include "threads/CriticalSection.h"
 #include "threads/Event.h"
 #include "threads/Thread.h"
@@ -104,8 +104,14 @@ public:
   void UnregisterExtensionLib(LibraryLoader *pLib);
   void UnloadExtensionLibs();
 
+#ifdef _XBOX // SpyceModule.cpp
+  void* getMainThreadState() { CSingleLock lock(m_critSection); return m_mainThreadState; };
+  void Finalize();
+private:
+#else
 private:
   void Finalize();
+#endif
 
   CCriticalSection    m_critSection;
   bool              FileExist(const char* strFile);

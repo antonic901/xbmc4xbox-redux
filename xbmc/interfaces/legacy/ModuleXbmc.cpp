@@ -23,7 +23,8 @@
 #if (defined HAVE_CONFIG_H) && (!defined TARGET_WINDOWS)
   #include "config.h"
 #endif
-#include "network/Network.h"
+
+#include "xbox/IoSupport.h"
 
 #include "ModuleXbmc.h"
 
@@ -31,9 +32,6 @@
 #include "ApplicationMessenger.h"
 #include "utils/URIUtils.h"
 #include "aojsonrpc.h"
-#ifndef TARGET_WINDOWS
-#include "XTimeUtils.h"
-#endif
 #include "guilib/LocalizeStrings.h"
 #include "GUIInfoManager.h"
 #include "guilib/GUIAudioManager.h"
@@ -48,7 +46,6 @@
 #include "guilib/TextureManager.h"
 #include "Util.h"
 #include "URL.h"
-#include "cores/AudioEngine/AEFactory.h"
 #include "storage/MediaManager.h"
 #include "utils/FileUtils.h"
 #include "utils/LangCodeExpander.h"
@@ -57,8 +54,6 @@
 #include "AddonUtils.h"
 
 #include "LanguageHook.h"
-
-#include "cores/VideoRenderers/RenderCapture.h"
 
 #include "threads/SystemClock.h"
 #include "Exception.h"
@@ -235,27 +230,42 @@ namespace XBMCAddon
     {
       XBMC_TRACE;
       char cTitleIP[32];
+#ifdef _XBOX
+      XNADDR xna;
+      XNetGetTitleXnAddr(&xna);
+      XNetInAddrToString(xna.ina, cTitleIP, 32);
+#else
       sprintf(cTitleIP, "127.0.0.1");
       CNetworkInterface* iface = g_application.getNetwork().GetFirstConnectedInterface();
       if (iface)
         return iface->GetCurrentIPAddress();
-
+#endif
       return cTitleIP;
     }
 
     long getDVDState()
     {
       XBMC_TRACE;
+#ifdef _XBOX
+      return CIoSupport::GetTrayState();
+#else
       return g_mediaManager.GetDriveStatus();
+#endif
     }
 
     long getFreeMem()
     {
+#ifdef _XBOX
+      MEMORYSTATUS stat;
+      GlobalMemoryStatus(&stat);
+      return (long)(stat.dwAvailPhys  / ( 1024 * 1024 ));
+#else
       XBMC_TRACE;
       MEMORYSTATUSEX stat;
       stat.dwLength = sizeof(MEMORYSTATUSEX);
       GlobalMemoryStatusEx(&stat);
       return (long)(stat.ullAvailPhys  / ( 1024 * 1024 ));
+#endif
     }
 
     // getCpuTemp() method
@@ -333,7 +343,7 @@ namespace XBMCAddon
 
       if (XFILE::CFile::Exists(filename))
       {
-        g_audioManager.PlayPythonSound(filename,useCached);
+        g_audioManager.PlayPythonSound(filename);
       }
     }
 
@@ -379,7 +389,7 @@ namespace XBMCAddon
       XBMC_TRACE;
       Crc32 crc;
       crc.ComputeFromLowerCase(path);
-      return StringUtils::Format("%08x.tbn", (unsigned __int32)crc);;
+      return StringUtils2::Format("%08x.tbn", (unsigned __int32)crc);;
     }
 
     String makeLegalFilename(const String& filename, bool fatX)
@@ -421,17 +431,17 @@ namespace XBMCAddon
       if (strcmpi(id, "datelong") == 0)
         {
           result = g_langInfo.GetDateFormat(true);
-          StringUtils::Replace(result, "DDDD", "%A");
-          StringUtils::Replace(result, "MMMM", "%B");
-          StringUtils::Replace(result, "D", "%d");
-          StringUtils::Replace(result, "YYYY", "%Y");
+          StringUtils2::Replace(result, "DDDD", "%A");
+          StringUtils2::Replace(result, "MMMM", "%B");
+          StringUtils2::Replace(result, "D", "%d");
+          StringUtils2::Replace(result, "YYYY", "%Y");
         }
       else if (strcmpi(id, "dateshort") == 0)
         {
           result = g_langInfo.GetDateFormat(false);
-          StringUtils::Replace(result, "MM", "%m");
-          StringUtils::Replace(result, "DD", "%d");
-          StringUtils::Replace(result, "YYYY", "%Y");
+          StringUtils2::Replace(result, "MM", "%m");
+          StringUtils2::Replace(result, "DD", "%d");
+          StringUtils2::Replace(result, "YYYY", "%Y");
         }
       else if (strcmpi(id, "tempunit") == 0)
         result = g_langInfo.GetTempUnitString();
@@ -440,14 +450,14 @@ namespace XBMCAddon
       else if (strcmpi(id, "time") == 0)
         {
           result = g_langInfo.GetTimeFormat();
-          StringUtils::Replace(result, "H", "%H");
-          StringUtils::Replace(result, "h", "%I");
-          StringUtils::Replace(result, "mm", "%M");
-          StringUtils::Replace(result, "ss", "%S");
-          StringUtils::Replace(result, "xx", "%p");
+          StringUtils2::Replace(result, "H", "%H");
+          StringUtils2::Replace(result, "h", "%I");
+          StringUtils2::Replace(result, "mm", "%M");
+          StringUtils2::Replace(result, "ss", "%S");
+          StringUtils2::Replace(result, "xx", "%p");
         }
       else if (strcmpi(id, "meridiem") == 0)
-        result = StringUtils::Format("%s/%s",
+        result = StringUtils2::Format("%s/%s",
                                      g_langInfo.GetMeridiemSymbol(CLangInfo::MERIDIEM_SYMBOL_AM).c_str(),
                                      g_langInfo.GetMeridiemSymbol(CLangInfo::MERIDIEM_SYMBOL_PM).c_str());
 
@@ -483,18 +493,19 @@ namespace XBMCAddon
     bool startServer(int iTyp, bool bStart, bool bWait)
     {
       XBMC_TRACE;
-      DelayedCallGuard dg;
-      return g_application.StartServer((CApplication::ESERVERS)iTyp, bStart != 0, bWait != 0);
+      //DelayedCallGuard dg;
+      //return g_application.StartServer((CApplication::ESERVERS)iTyp, bStart != 0, bWait != 0);
+      return false;
     }
 
     void audioSuspend()
     {  
-      CAEFactory::Suspend();
+      //CAEFactory::Suspend();
     }
 
     void audioResume()
     { 
-      CAEFactory::Resume();
+      //CAEFactory::Resume();
     }
 
     String convertLanguage(const char* language, int format)
@@ -551,6 +562,21 @@ namespace XBMCAddon
     int getLOGSEVERE() { return LOGSEVERE; }
     int getLOGFATAL() { return LOGFATAL; }
     int getLOGNONE() { return LOGNONE; }
+
+#ifdef _XBOX
+    enum ECAPTURESTATE
+    {
+      CAPTURESTATE_WORKING,
+      CAPTURESTATE_NEEDSRENDER,
+      CAPTURESTATE_NEEDSREADOUT,
+      CAPTURESTATE_DONE,
+      CAPTURESTATE_FAILED,
+      CAPTURESTATE_NEEDSDELETE
+    };
+
+#define CAPTUREFLAG_CONTINUOUS  0x01 //after a render is done, render a new one immediately
+#define CAPTUREFLAG_IMMEDIATELY 0x02 //read out immediately after render, this can cause a busy wait
+#endif
 
     // render capture user states
     int getCAPTURE_STATE_WORKING() { return CAPTURESTATE_WORKING; }

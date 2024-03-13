@@ -330,13 +330,16 @@ namespace XBMCAddon
        */
       virtual void setTextures(const char* up, const char* down, 
                                const char* upFocus, 
-                               const char* downFocus) throw(UnimplementedException);
+                               const char* downFocus,
+                               const char* upDisabled, const char* downDisabled) throw(UnimplementedException);
 #ifndef SWIG
       color_t color;
       std::string strTextureUp;
       std::string strTextureDown;
       std::string strTextureUpFocus;
       std::string strTextureDownFocus;
+      std::string strTextureUpDisabled;
+      std::string strTextureDownDisabled;
 #endif
 
     private:
@@ -1339,13 +1342,14 @@ namespace XBMCAddon
       ControlRadioButton(long x, long y, long width, long height, const String& label,
                          const char* focusOnTexture = NULL, const char* noFocusOnTexture = NULL,
                          const char* focusOffTexture = NULL, const char* noFocusOffTexture = NULL,
-                         const char* focusTexture = NULL, const char* noFocusTexture = NULL, 
+                         const char* focusTexture = NULL, const char* noFocusTexture = NULL,
                          long textOffsetX = CONTROL_TEXT_OFFSET_X, 
                          long textOffsetY = CONTROL_TEXT_OFFSET_Y, 
                          long _alignment = (XBFONT_LEFT | XBFONT_CENTER_Y), 
                          const char* font = NULL, const char* textColor = NULL,
                          const char* disabledColor = NULL, long angle = 0,
-                         const char* shadowColor = NULL, const char* focusedColor = NULL);
+                         const char* shadowColor = NULL, const char* focusedColor = NULL,
+                         const char* disabledOnTexture = NULL, const char* disabledOffTexture = NULL);
 
       // setSelected() Method
       /**
@@ -1423,6 +1427,8 @@ namespace XBMCAddon
       std::string strTextureRadioOnNoFocus;
       std::string strTextureRadioOffFocus;
       std::string strTextureRadioOffNoFocus;
+      std::string strTextureRadioOnDisabled;
+      std::string strTextureRadioOffDisabled;
       color_t textColor;
       color_t disabledColor;
       int textOffsetX;
@@ -1468,7 +1474,7 @@ namespace XBMCAddon
       ControlSlider(long x, long y, long width, long height, 
                     const char* textureback = NULL, 
                     const char* texture = NULL,
-                    const char* texturefocus = NULL);
+                    const char* texturefocus = NULL, int orientation = 1);
 
       /**
        * getPercent() -- Returns a float of the percent of the slider.
@@ -1489,7 +1495,8 @@ namespace XBMCAddon
 #ifndef SWIG
       std::string strTextureBack;
       std::string strTexture;
-      std::string strTextureFoc;    
+      std::string strTextureFoc;
+      int iOrientation;
 
       SWIGHIDDENVIRTUAL CGUIControl* Create() throw (WindowException);
 

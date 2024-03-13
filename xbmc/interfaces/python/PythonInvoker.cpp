@@ -213,6 +213,7 @@ bool CPythonInvoker::execute(const std::string &script, const std::vector<std::s
     addNativePath(Py_GetPath());
 
   Py_DECREF(sysMod); // release ref to sysMod
+
   // set current directory and python's path.
   if (m_argv != NULL)
     PySys_SetArgv(m_argc, m_argv);
@@ -579,7 +580,7 @@ void CPythonInvoker::onError()
       }
     }
 
-    desc = StringUtils::Format(g_localizeStrings.Get(2100), script.c_str());
+    desc = StringUtils2::Format(g_localizeStrings.Get(2100), script.c_str());
     pDlgToast->QueueNotification(CGUIDialogKaiToast::Error, g_localizeStrings.Get(257), desc);
   }
 }

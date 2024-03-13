@@ -19,10 +19,10 @@
  *
  */
 #include "system.h"
+#ifdef HAS_JSONRPC
 #include "interfaces/json-rpc/ITransportLayer.h"
 #include "interfaces/json-rpc/JSONRPC.h"
 
-#ifdef HAS_JSONRPC
 class CAddOnTransport : public JSONRPC::ITransportLayer
 {
 public:

@@ -262,6 +262,8 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     DatabaseSettings m_databaseMusic; // advanced music database setup
     DatabaseSettings m_databaseVideo; // advanced video database setup
 
+    bool m_jsonOutputCompact;
+
     std::vector<CStdString> m_settingsFiles;
     void ParseSettingsFile(const CStdString &file);
 

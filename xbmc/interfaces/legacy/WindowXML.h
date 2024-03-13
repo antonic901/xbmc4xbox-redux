@@ -167,7 +167,8 @@ namespace XBMCAddon
       SWIGHIDDENVIRTUAL void      FreeResources(bool forceUnLoad = false);
       SWIGHIDDENVIRTUAL bool      OnClick(int iItem);
       SWIGHIDDENVIRTUAL bool      OnDoubleClick(int iItem);
-      SWIGHIDDENVIRTUAL void      Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+      /*SWIGHIDDENVIRTUAL void      Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);*/
+                        void      Render();
 
       SWIGHIDDENVIRTUAL bool IsMediaWindow() const { XBMC_TRACE; return true; };
 

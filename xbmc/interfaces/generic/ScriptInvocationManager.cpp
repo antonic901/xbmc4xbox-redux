@@ -20,6 +20,7 @@
 
 #include <vector>
 
+#include "system.h" // <xtl.h>
 #include "ScriptInvocationManager.h"
 #include "ILanguageInvocationHandler.h"
 #include "ILanguageInvoker.h"
@@ -121,8 +122,8 @@ void CScriptInvocationManager::RegisterLanguageInvocationHandler(ILanguageInvoca
     return;
 
   string ext = extension;
-  StringUtils::ToLower(ext);
-  if (!StringUtils::StartsWithNoCase(ext, "."))
+  StringUtils2::ToLower(ext);
+  if (!StringUtils2::StartsWithNoCase(ext, "."))
     ext = "." + ext;
 
   CSingleLock lock(m_critSection);
@@ -177,7 +178,7 @@ void CScriptInvocationManager::UnregisterLanguageInvocationHandler(ILanguageInvo
 bool CScriptInvocationManager::HasLanguageInvoker(const std::string &script) const
 {
   std::string extension = URIUtils::GetExtension(script);
-  StringUtils::ToLower(extension);
+  StringUtils2::ToLower(extension);
 
   CSingleLock lock(m_critSection);
   map<string, ILanguageInvocationHandler*>::const_iterator it = m_invocationHandlers.find(extension);
@@ -187,7 +188,7 @@ bool CScriptInvocationManager::HasLanguageInvoker(const std::string &script) con
 ILanguageInvoker* CScriptInvocationManager::GetLanguageInvoker(const std::string &script) const
 {
   std::string extension = URIUtils::GetExtension(script);
-  StringUtils::ToLower(extension);
+  StringUtils2::ToLower(extension);
 
   CSingleLock lock(m_critSection);
   map<string, ILanguageInvocationHandler*>::const_iterator it = m_invocationHandlers.find(extension);

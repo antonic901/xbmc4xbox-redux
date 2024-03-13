@@ -22,10 +22,6 @@
   #include "config.h"
 #endif
 
-#if (defined HAVE_CONFIG_H) && (!defined WIN32)
-  #include "config.h"
-#endif
-
 // python.h should always be included first before any other includes
 #include <Python.h>
 
@@ -447,8 +443,12 @@ bool XBPython::InitializeEngine()
 
       // first we check if all necessary files are installed
 #ifndef TARGET_POSIX
-      if(!FileExist("special://xbmc/system/python/DLLs/_socket.pyd") ||
+      if (!FileExist("special://xbmc/system/python/python27.zlib") ||
+        !FileExist("special://xbmc/system/python/DLLs/_elementtree.pyd") ||
+        !FileExist("special://xbmc/system/python/DLLs/_hashlib.pyd") ||
+        !FileExist("special://xbmc/system/python/DLLs/_socket.pyd") ||
         !FileExist("special://xbmc/system/python/DLLs/_ssl.pyd") ||
+        !FileExist("special://xbmc/system/python/DLLs/_sqlite3.pyd") ||
         !FileExist("special://xbmc/system/python/DLLs/bz2.pyd") ||
         !FileExist("special://xbmc/system/python/DLLs/pyexpat.pyd") ||
         !FileExist("special://xbmc/system/python/DLLs/select.pyd") ||
@@ -468,6 +468,7 @@ bool XBPython::InitializeEngine()
       // Info about interesting python envvars available
       // at http://docs.python.org/using/cmdline.html#environment-variables
 
+#ifndef _XBOX
 #if !defined(TARGET_WINDOWS) && !defined(TARGET_ANDROID)
       /* PYTHONOPTIMIZE is set off intentionally when using external Python.
          Reason for this is because we cannot be sure what version of Python
@@ -504,6 +505,7 @@ bool XBPython::InitializeEngine()
       setenv("PYTHONPATH", "", 1);
       setenv("PYTHONOPTIMIZE","",1);
       setenv("PYTHONNOUSERSITE","1",1);
+#endif
 #endif
 
       if (PyEval_ThreadsInitialized())
