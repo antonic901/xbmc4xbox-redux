@@ -20,12 +20,12 @@
 
 #include <Python.h>
 
+#include "libPython/XBPythonDll.h"
 #include "winxml.h"
-#include "../XBPythonDll.h"
 #include "pyutil.h"
 #include "GUIPythonWindowXML.h"
 #include "addons/Skin.h"
-#include "URIUtils.h"
+#include "utils/URIUtils.h"
 #include "filesystem/File.h"
 
 using namespace std;
@@ -71,7 +71,7 @@ namespace PYXBMC
     // Check to see if the XML file exists in current skin. If not use fallback path to find a skin for the script
     RESOLUTION_INFO res;
     CStdString strSkinPath = g_SkinInfo->GetSkinPath(strXMLname, &res);
- 
+
     if (!XFILE::CFile::Exists(strSkinPath))
     {
       CStdString str("none");

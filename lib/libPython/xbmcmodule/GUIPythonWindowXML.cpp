@@ -18,34 +18,28 @@
  *
  */
 
-#include "GUIWindow.h"
 #include "pyutil.h"
 #include "GUIPythonWindowXML.h"
-#include "windows/GUIMediaWindow.h"
 #include "window.h"
 #include "control.h"
 #include "action.h"
 #include "utils/URIUtils.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIWindowManager.h"
 #include "FileItem.h"
 #include "filesystem/File.h"
-#include "TextureManager.h"
+#include "guilib/TextureManager.h"
 #include "../XBPython.h"
 #include "settings/Settings.h"
-#include "LocalizeStrings.h"
+#include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
-#include "utils/Variant.h"
+#include "utils/XBMCTinyXML.h"
 
 using namespace std;
 
 #define CONTROL_BTNVIEWASICONS  2
 #define CONTROL_BTNSORTBY       3
 #define CONTROL_BTNSORTASC      4
-#define CONTROL_LIST            50
 #define CONTROL_LABELFILES      12
-
-#define CONTROL_VIEW_START      50
-#define CONTROL_VIEW_END        59
 
 using namespace PYXBMC;
 
@@ -99,7 +93,7 @@ bool CGUIPythonWindowXML::OnClick(int iItem) {
 }
 
 // SetupShares();
-/* 
+/*
  CGUIMediaWindow::OnWindowLoaded() calls SetupShares() so override it
 and just call UpdateButtons();
 */
@@ -234,7 +228,7 @@ void CGUIPythonWindowXML::AddItem(CFileItemPtr fileItem, int itemPosition)
   else if (itemPosition <  -1 &&  !(itemPosition*-1 < m_vecItems->Size()))
   {
     m_vecItems->AddFront(fileItem,0);
-  } 
+  }
   else
   {
     m_vecItems->AddFront(fileItem,itemPosition);
@@ -271,7 +265,7 @@ void CGUIPythonWindowXML::SetProperty(const CStdString& key, const CStdString& v
 }
 
 CFileItemPtr CGUIPythonWindowXML::GetListItem(int position)
-{ 
+{
   if (position < 0 || position >= m_vecItems->Size()) return CFileItemPtr();
   return m_vecItems->Get(position);
 }
@@ -329,7 +323,7 @@ bool CGUIPythonWindowXML::LoadXML(const CStdString &strPath, const CStdString &s
     return false;
   int size = file.Read(buffer, file.GetLength());
   if (size > 0)
-  { 
+  {
     buffer[size] = 0;
     xml = buffer;
     if (offset)
@@ -435,9 +429,9 @@ void CGUIPythonWindowXML::SetCallbackWindow(void *state, void *object)
   m_threadState   = state;
 }
 
-void CGUIPythonWindowXML::GetContextButtons(int itemNumber, CContextButtons &buttons) 
+void CGUIPythonWindowXML::GetContextButtons(int itemNumber, CContextButtons &buttons)
 {
-  // maybe on day we can make an easy way to do this context menu 
+  // maybe on day we can make an easy way to do this context menu
   // with out this method overriding the MediaWindow version, it will display 'Add to Favorites'
 }
 
@@ -449,7 +443,7 @@ unsigned int CGUIPythonWindowXML::LoadScriptStrings()
   URIUtils::AddFileToFolder(pathToLanguageFile, "language", pathToLanguageFile);
   URIUtils::AddSlashAtEnd(pathToLanguageFile);
 
-  // allocate a bunch of strings 
+  // allocate a bunch of strings
   return g_localizeStrings.LoadBlock(m_scriptPath, pathToLanguageFile, CSettings::Get().GetString("locale.language"));
 }
 

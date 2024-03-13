@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  *      Copyright (C) 2005-2013 Team XBMC
  *      http://xbmc.org
@@ -22,7 +20,7 @@
 
 #include <Python.h>
 
-#include "../XBPythonDll.h"
+#include "libPython/XBPythonDll.h"
 #include "utils/StdString.h"
 
 #ifdef __cplusplus

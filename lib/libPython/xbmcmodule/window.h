@@ -20,7 +20,7 @@
 
 #include <Python.h>
 
-#include "../XBPythonDll.h"
+#include "libPython/XBPythonDll.h"
 #include "GUIPythonWindow.h"
 #include "GUIPythonWindowXML.h"
 #include "GUIPythonWindowXMLDialog.h"
@@ -41,17 +41,17 @@
 #define WindowXMLDialog_Check(op) PyObject_TypeCheck(op, &WindowXMLDialog_Type)
 #define WindowXMLDialog_CheckExact(op) ((op)->ob_type == &WindowXMLDialog_Type)
 
-#define PyObject_HEAD_XBMC_WINDOW   \
-    PyObject_HEAD \
-    int iWindowId; \
-    int iOldWindowId; \
-    int iCurrentControlId; \
-    bool bIsPythonWindow; \
-    bool bModal; \
-    bool bUsingXML; \
-    std::string sXMLFileName; \
-    std::string sFallBackPath; \
-    CGUIWindow* pWindow; \
+#define PyObject_HEAD_XBMC_WINDOW \
+    PyObject_HEAD                 \
+    int iWindowId;                \
+    int iOldWindowId;             \
+    int iCurrentControlId;        \
+    bool bIsPythonWindow;         \
+    bool bModal;                  \
+    bool bUsingXML;               \
+    std::string sXMLFileName;     \
+    std::string sFallBackPath;    \
+    CGUIWindow* pWindow;          \
     std::vector<Control*> vecControls;
 
 #ifdef __cplusplus

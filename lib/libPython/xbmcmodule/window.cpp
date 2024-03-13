@@ -18,7 +18,6 @@
  *
  */
 
-#include "system.h"
 #include "window.h"
 #include "dialog.h"
 #include "winxml.h"
@@ -26,21 +25,21 @@
 #include "pythreadstate.h"
 #include "action.h"
 #include "GUIPythonWindow.h"
-#include "GUIButtonControl.h"
-#include "GUICheckMarkControl.h"
-#include "GUIRadioButtonControl.h"
-#include "GUIEditControl.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIButtonControl.h"
+#include "guilib/GUICheckMarkControl.h"
+#include "guilib/GUIRadioButtonControl.h"
+#include "guilib/GUIEditControl.h"
+#include "guilib/GUIWindowManager.h"
 #include "settings/DisplaySettings.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
-#include "utils/Variant.h"
-#include "utils/log.h"
 #include "threads/SingleLock.h"
+#include "utils/log.h"
 
 using namespace std;
 
 #define ACTIVE_WINDOW g_windowManager.GetActiveWindow()
+
 
 /**
  * A CSingleLock that will relinquish the GIL during the time
@@ -159,11 +158,11 @@ namespace PYXBMC
     {
     case CGUIControl::GUICONTROL_BUTTON:
       pControl = (Control*)ControlButton_Type.tp_alloc(&ControlButton_Type, 0);
-      new(&((ControlButton*)pControl)->strFont) string();    
-      new(&((ControlButton*)pControl)->strText) string();    
-      new(&((ControlButton*)pControl)->strText2) string();    
-      new(&((ControlButton*)pControl)->strTextureFocus) string();    
-      new(&((ControlButton*)pControl)->strTextureNoFocus) string(); 
+      new(&((ControlButton*)pControl)->strFont) string();
+      new(&((ControlButton*)pControl)->strText) string();
+      new(&((ControlButton*)pControl)->strText2) string();
+      new(&((ControlButton*)pControl)->strTextureFocus) string();
+      new(&((ControlButton*)pControl)->strTextureNoFocus) string();
 
       li = ((CGUIButtonControl *)pGUIControl)->GetLabelInfo();
 
@@ -177,10 +176,10 @@ namespace PYXBMC
       break;
     case CGUIControl::GUICONTROL_CHECKMARK:
       pControl = (Control*)ControlCheckMark_Type.tp_alloc(&ControlCheckMark_Type, 0);
-      new(&((ControlCheckMark*)pControl)->strFont) string();    
-      new(&((ControlCheckMark*)pControl)->strText) string();    
-      new(&((ControlCheckMark*)pControl)->strTextureFocus) string();    
-      new(&((ControlCheckMark*)pControl)->strTextureNoFocus) string();    
+      new(&((ControlCheckMark*)pControl)->strFont) string();
+      new(&((ControlCheckMark*)pControl)->strText) string();
+      new(&((ControlCheckMark*)pControl)->strTextureFocus) string();
+      new(&((ControlCheckMark*)pControl)->strTextureNoFocus) string();
 
       li = ((CGUICheckMarkControl *)pGUIControl)->GetLabelInfo();
 
@@ -198,45 +197,45 @@ namespace PYXBMC
       break;
     case CGUIControl::GUICONTROL_SPIN:
       pControl = (Control*)ControlSpin_Type.tp_alloc(&ControlSpin_Type, 0);
-      new(&((ControlSpin*)pControl)->strTextureUp) string();    
-      new(&((ControlSpin*)pControl)->strTextureDown) string();    
-      new(&((ControlSpin*)pControl)->strTextureUpFocus) string();    
-      new(&((ControlSpin*)pControl)->strTextureDownFocus) string();      
+      new(&((ControlSpin*)pControl)->strTextureUp) string();
+      new(&((ControlSpin*)pControl)->strTextureDown) string();
+      new(&((ControlSpin*)pControl)->strTextureUpFocus) string();
+      new(&((ControlSpin*)pControl)->strTextureDownFocus) string();
       break;
     case CGUIControl::GUICONTROL_FADELABEL:
       pControl = (Control*)ControlFadeLabel_Type.tp_alloc(&ControlFadeLabel_Type, 0);
       new(&((ControlFadeLabel*)pControl)->strFont) string();
-      new(&((ControlFadeLabel*)pControl)->vecLabels) std::vector<string>();    
+      new(&((ControlFadeLabel*)pControl)->vecLabels) std::vector<string>();
       break;
     case CGUIControl::GUICONTROL_TEXTBOX:
       pControl = (Control*)ControlTextBox_Type.tp_alloc(&ControlTextBox_Type, 0);
-      new(&((ControlTextBox*)pControl)->strFont) string();        
+      new(&((ControlTextBox*)pControl)->strFont) string();
       break;
     case CGUIControl::GUICONTROL_IMAGE:
       pControl = (Control*)ControlImage_Type.tp_alloc(&ControlImage_Type, 0);
-      new(&((ControlImage*)pControl)->strFileName) string();    
+      new(&((ControlImage*)pControl)->strFileName) string();
       break;
     case CGUIControl::GUICONTROL_PROGRESS:
       pControl = (Control*)ControlProgress_Type.tp_alloc(&ControlProgress_Type, 0);
-      new(&((ControlProgress*)pControl)->strTextureLeft) string();    
-      new(&((ControlProgress*)pControl)->strTextureMid) string();    
-      new(&((ControlProgress*)pControl)->strTextureRight) string();    
-      new(&((ControlProgress*)pControl)->strTextureBg) string();     
-      new(&((ControlProgress*)pControl)->strTextureOverlay) string();     
+      new(&((ControlProgress*)pControl)->strTextureLeft) string();
+      new(&((ControlProgress*)pControl)->strTextureMid) string();
+      new(&((ControlProgress*)pControl)->strTextureRight) string();
+      new(&((ControlProgress*)pControl)->strTextureBg) string();
+      new(&((ControlProgress*)pControl)->strTextureOverlay) string();
       break;
     case CGUIControl::GUICONTROL_SLIDER:
       pControl = (Control*)ControlSlider_Type.tp_alloc(&ControlSlider_Type, 0);
       new(&((ControlSlider*)pControl)->strTextureBack) string();
       new(&((ControlSlider*)pControl)->strTexture) string();
-      new(&((ControlSlider*)pControl)->strTextureFoc) string();        
-      break;			
+      new(&((ControlSlider*)pControl)->strTextureFoc) string();
+      break;
     case CGUIControl::GUICONTAINER_LIST:
     case CGUIControl::GUICONTAINER_WRAPLIST:
     case CGUIControl::GUICONTAINER_FIXEDLIST:
     case CGUIControl::GUICONTAINER_PANEL:
       pControl = (Control*)ControlList_Type.tp_alloc(&ControlList_Type, 0);
-      new(&((ControlList*)pControl)->strFont) string();    
-      new(&((ControlList*)pControl)->strTextureButton) string();    
+      new(&((ControlList*)pControl)->strFont) string();
+      new(&((ControlList*)pControl)->strTextureButton) string();
       new(&((ControlList*)pControl)->strTextureButtonFocus) string();
       new(&((ControlList*)pControl)->vecItems) std::vector<PYXBMC::ListItem*>();
       // create a python spin control
@@ -247,8 +246,8 @@ namespace PYXBMC
       break;
     case CGUIControl::GUICONTROL_RADIO:
       pControl = (Control*)ControlRadioButton_Type.tp_alloc(&ControlRadioButton_Type, 0);
-      new(&((ControlRadioButton*)pControl)->strFont) string();    
-      new(&((ControlRadioButton*)pControl)->strText) string();    
+      new(&((ControlRadioButton*)pControl)->strFont) string();
+      new(&((ControlRadioButton*)pControl)->strText) string();
       new(&((ControlRadioButton*)pControl)->strTextureFocus) string();
       new(&((ControlRadioButton*)pControl)->strTextureNoFocus) string();
       new(&((ControlRadioButton*)pControl)->strTextureRadioOnFocus) string();
@@ -306,7 +305,7 @@ namespace PYXBMC
     pControl->iControlLeft = pGUIControl->GetControlIdLeft();
     pControl->iControlRight = pGUIControl->GetControlIdRight();
 
-    // It got this far so means the control isn't actually in the vector of controls 
+    // It got this far so means the control isn't actually in the vector of controls
     // so lets add it to save doing all that next time
     self->vecControls.push_back(pControl);
 
@@ -334,8 +333,8 @@ namespace PYXBMC
       // error is already set by Window_CreateNewWindow, just release the memory
       self->vecControls.clear();
       self->vecControls.~vector();
-      self->sFallBackPath.~string();          
-      self->sXMLFileName.~string();        
+      self->sFallBackPath.~string();
+      self->sXMLFileName.~string();
       self->ob_type->tp_free((PyObject*)self);
       return NULL;
     }
@@ -404,8 +403,8 @@ namespace PYXBMC
     lock.Leave();
     self->vecControls.clear();
     self->vecControls.~vector();
-    self->sFallBackPath.~string();          
-    self->sXMLFileName.~string();            
+    self->sFallBackPath.~string();
+    self->sXMLFileName.~string();
     self->ob_type->tp_free((PyObject*)self);
   }
 
@@ -476,6 +475,7 @@ namespace PYXBMC
       CApplicationMessenger::Get().ActivateWindow(self->iOldWindowId, params, false);
     }
     self->iOldWindowId = 0;
+
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -681,7 +681,7 @@ namespace PYXBMC
 
     // Control Slider
     else if (ControlSlider_Check(pControl))
-      ControlSlider_Create((ControlSlider*)pControl);    
+      ControlSlider_Create((ControlSlider*)pControl);
 
     // Control Group
     else if (ControlGroup_Check(pControl))
@@ -812,7 +812,7 @@ namespace PYXBMC
     Py_INCREF(Py_None);
     return Py_None;
   }
-  
+
   PyDoc_STRVAR(setFocusId__doc__,
     "setFocusId(self, int) -- Gives the control with the supplied focus.\n"
     "Throws: \n"
@@ -871,7 +871,7 @@ namespace PYXBMC
 
     return PyLong_FromLong((long)iControlId);
   }
-  
+
   PyDoc_STRVAR(removeControl__doc__,
     "removeControl(self, Control) -- Removes the control from this window.\n"
     "\n"

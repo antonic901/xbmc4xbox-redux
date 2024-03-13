@@ -18,12 +18,11 @@
  *
  */
 
-#include "system.h"
 #include <Python.h>
 
-#include "../XBPythonDll.h"
-#include "GUICheckMarkControl.h"
-#include "GUIFontManager.h"
+#include "libPython/XBPythonDll.h"
+#include "guilib/GUICheckMarkControl.h"
+#include "guilib/GUIFontManager.h"
 #include "control.h"
 #include "pyutil.h"
 
@@ -52,10 +51,10 @@ namespace PYXBMC
 
     self = (ControlCheckMark*)type->tp_alloc(type, 0);
     if (!self) return NULL;
-    new(&self->strFont) string();    
-    new(&self->strText) string();    
-    new(&self->strTextureFocus) string();    
-    new(&self->strTextureNoFocus) string();    
+    new(&self->strFont) string();
+    new(&self->strText) string();
+    new(&self->strTextureFocus) string();
+    new(&self->strTextureNoFocus) string();
 
     // set up default values in case they are not supplied
     self->checkWidth = 30;

@@ -18,7 +18,6 @@
  *
  */
 
-#include "system.h"
 #include "pyutil.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
@@ -30,10 +29,10 @@
 #include "infotagmusic.h"
 #include "listitem.h"
 #include "FileItem.h"
-#include "LangCodeExpander.h"
+#include "utils/LangCodeExpander.h"
 #include "settings/MediaSettings.h"
-#include "utils/log.h"
 #include "pythreadstate.h"
+#include "utils/log.h"
 
 using namespace MUSIC_INFO;
 
@@ -569,16 +568,16 @@ namespace PYXBMC
         g_application.m_pPlayer->SetSubTitleDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
       }
     }
-    
+
     Py_INCREF(Py_None);
     return Py_None;
   }
 
-  
+
   // Player_GetSubtitles
   PyDoc_STRVAR(getSubtitles__doc__,
     "getSubtitles() -- get subtitle stream name\n");
-  
+
   PyObject* Player_GetSubtitles(PyObject *self)
   {
     if (g_application.m_pPlayer)
@@ -591,7 +590,7 @@ namespace PYXBMC
         strName = "";
       return Py_BuildValue((char*)"s", strName.c_str());
     }
-    
+
     Py_INCREF(Py_None);
     return Py_None;
   }
@@ -622,7 +621,7 @@ namespace PYXBMC
   // Player_DisableSubtitles
   PyDoc_STRVAR(DisableSubtitles__doc__,
     "DisableSubtitles() -- disable subtitles\n");
-  
+
   PyObject* Player_DisableSubtitles(PyObject *self)
   {
     CLog::Log(LOGWARNING,"'xbmc.Player().disableSubtitles()' is deprecated and will be removed in future releases, please use 'xbmc.Player().showSubtitles(false)' instead");
@@ -630,7 +629,7 @@ namespace PYXBMC
     {
       CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn = false;
       g_application.m_pPlayer->SetSubtitleVisible(false);
-    
+
       Py_INCREF(Py_None);
       return Py_None;
     }
@@ -730,7 +729,7 @@ namespace PYXBMC
   {
     int iStream;
     if (!PyArg_ParseTuple(args, (char*)"i", &iStream)) return NULL;
-   
+
     if (g_application.m_pPlayer)
     {
       int streamCount = g_application.m_pPlayer->GetSubtitleCount();

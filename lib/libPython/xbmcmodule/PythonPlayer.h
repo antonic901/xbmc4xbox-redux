@@ -49,7 +49,6 @@ public:
   void    OnPlayBackSeekChapter(int iChapter);
   void    OnQueueNextItem();
 
-
   void    Acquire();
   void    Release();
 

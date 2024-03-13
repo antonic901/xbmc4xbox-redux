@@ -20,13 +20,11 @@
 
 #include <Python.h>
 
+#include "libPython/XBPythonDll.h"
 #include "pyutil.h"
 #include "PlayListPlayer.h"
-#include "Util.h"
 #include "utils/URIUtils.h"
 #include "pyplaylist.h"
-#include "libPython/python/Include/structmember.h"
-#include "../XBPythonDll.h"
 #include "playlists/PlayListFactory.h"
 #include "listitem.h"
 #include "playlists/PlayList.h"
@@ -80,7 +78,7 @@ namespace PYXBMC
       return Py_BuildValue((char*)"l", self->item->GetMusicInfoTag()->GetDuration());
 
     if (self->item->HasVideoInfoTag())
-      return Py_BuildValue((char*)"l", self->item->GetVideoInfoTag()->GetDuration());
+      return Py_BuildValue((char*)"s", self->item->GetVideoInfoTag()->GetDuration());
 
     return Py_BuildValue((char*)"l", 0);
   }
@@ -99,7 +97,7 @@ namespace PYXBMC
   {
     int iNr;
     PlayList *self;
-    if (!PyArg_ParseTuple(args, (char*)"i", &iNr))  return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"i", &iNr)) return NULL;
 
     self = (PlayList*)type->tp_alloc(type, 0);
     if (!self) return NULL;
@@ -211,7 +209,7 @@ namespace PYXBMC
   {
     char* cFileName = NULL;
 
-    if (!PyArg_ParseTuple(args, (char*)"s", &cFileName))  return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"s", &cFileName)) return NULL;
 
     CFileItem item(cFileName);
     item.SetPath(cFileName);
@@ -262,7 +260,7 @@ namespace PYXBMC
   PyObject* PlayList_Remove(PlayList *self, PyObject *args)
   {
     char *cFileName = NULL;
-    if (!PyArg_ParseTuple(args, (char*)"s", &cFileName))  return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"s", &cFileName)) return NULL;
 
     self->pPlayList->Remove(cFileName);
 
@@ -372,7 +370,7 @@ namespace PYXBMC
 
   PyMappingMethods Playlist_as_mapping = {
     PlayList_Length,    /* inquiry mp_length;                  __len__ */
-    PlayList_GetItem,   /* binaryfunc mp_subscript             __getitem__ */ 
+    PlayList_GetItem,   /* binaryfunc mp_subscript             __getitem__ */
     0,                  /* objargproc mp_ass_subscript;     __setitem__ */
   };
 

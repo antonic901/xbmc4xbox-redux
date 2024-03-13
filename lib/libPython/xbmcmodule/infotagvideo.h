@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include <Python.h>
 
 #include "video/VideoInfoTag.h"

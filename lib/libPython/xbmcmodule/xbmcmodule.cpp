@@ -18,40 +18,47 @@
  *
  */
 
-#include "xbox/Network.h"
-#include "system.h"
 #include <Python.h>
 
-#include "../XBPythonDll.h"
+#include "libPython/XBPythonDll.h"
 #include "player.h"
 #include "pyplaylist.h"
 #include "keyboard.h"
 #include "xbox/IoSupport.h"
+#ifndef _LINUX
 #include <ConIo.h>
+#endif
 #include "infotagvideo.h"
 #include "infotagmusic.h"
-#include "libGoAhead/XBMChttp.h"
+#ifdef HAS_HTTPAPI
+#include "interfaces/http-api/XBMChttp.h"
+#include "interfaces/http-api/HttpApi.h"
+#endif
 #include "GUIInfoManager.h"
-#include "GUIWindowManager.h"
-#include "GUIAudioManager.h"
+#include "guilib/GUIWindowManager.h"
+#include "guilib/GUIAudioManager.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
 #include "utils/Crc32.h"
+#include "utils/URIUtils.h"
 #include "Util.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
-#include "TextureManager.h"
+#include "guilib/TextureManager.h"
 #include "LangInfo.h"
 #include "SectionLoader.h"
-#include "utils/URIUtils.h"
-#include "CharsetConverter.h"
-#include "LocalizeStrings.h"
-#include "utils/log.h"
+#include "guilib/LocalizeStrings.h"
 #include "utils/FileUtils.h"
 #include "pythreadstate.h"
+#include "utils/log.h"
+#include "utils/Weather.h"
+#include "guilib/GUIFontManager.h"
+#include "filesystem/Directory.h"
 #include "monitor.h"
+#include "URL.h"
+#include "storage/MediaManager.h"
 
 // include for constants
 #include "pyutil.h"
@@ -127,16 +134,16 @@ namespace PYXBMC
   PyDoc_STRVAR(output__doc__,
     "'xbmc.output()' is depreciated and will be removed in future releases,\n"
     "please use 'xbmc.log()' instead");
-  
+
   PyObject* XBMC_Output(PyObject *self, PyObject *args, PyObject *kwds)
   {
     CLog::Log(LOGWARNING,"'xbmc.output()' is depreciated and will be removed in future releases, please use 'xbmc.log()' instead");
     return XBMC_Log(self, args, kwds);
   }
-  
+
   // shutdown() method
   PyDoc_STRVAR(shutdown__doc__,
-    "shutdown() -- Shutdown the xbox.\n"
+    "shutdown() -- Shutdown the system.\n"
     "\n"
     "example:\n"
     "  - xbmc.shutdown()\n");
@@ -168,7 +175,7 @@ namespace PYXBMC
 
   // restart() method
   PyDoc_STRVAR(restart__doc__,
-    "restart() -- Restart the xbox.\n"
+    "restart() -- Restart the system.\n"
     "\n"
     "example:\n"
     "  - xbmc.restart()\n");
@@ -276,11 +283,11 @@ namespace PYXBMC
     else //no parameters
       execute = cmd;
 
-    CUtil::URLDecode(parameter);
+    CURL::Decode(parameter);
 
     pyLock.Restore();
     return PyString_FromString(CHttpApi::MethodCall(execute, parameter).c_str());
-	}
+  }
 #endif
 
 #ifdef HAS_JSONRPC
@@ -307,7 +314,7 @@ namespace PYXBMC
     CPythonTransport::CPythonClient client;
 
     return PyString_FromString(JSONRPC::CJSONRPC::MethodCall(method, &transport, &client).c_str());
-	}
+  }
 #endif
 
   // sleep() method
@@ -404,7 +411,6 @@ namespace PYXBMC
   }
 
   // getIPAddress() method
-  // getIPAddress() method
   PyDoc_STRVAR(getIPAddress__doc__,
     "getIPAddress() -- Returns the current ip address as a string.\n"
     "\n"
@@ -420,6 +426,9 @@ namespace PYXBMC
     XNetInAddrToString(xna.ina, cTitleIP, 32);
 #else
     sprintf(cTitleIP, "127.0.0.1");
+    CNetworkInterface* iface = g_application.getNetwork().GetFirstConnectedInterface();
+    if (iface)
+      return PyString_FromString(iface->GetCurrentIPAddress().c_str());
 #endif
     return PyString_FromString(cTitleIP);
   }
@@ -439,7 +448,11 @@ namespace PYXBMC
 
   PyObject* XBMC_GetDVDState(PyObject *self, PyObject *args)
   {
+#ifdef _XBOX
     return PyInt_FromLong(CIoSupport::GetTrayState());
+#else
+    return PyInt_FromLong(g_mediaManager.GetDriveStatus());
+#endif
   }
 
   // getFreeMem() method
@@ -451,9 +464,16 @@ namespace PYXBMC
 
   PyObject* XBMC_GetFreeMem(PyObject *self, PyObject *args)
   {
+#ifdef _XBOX
     MEMORYSTATUS stat;
     GlobalMemoryStatus(&stat);
     return PyInt_FromLong( stat.dwAvailPhys  / ( 1024 * 1024 ) );
+#else
+    MEMORYSTATUSEX stat;
+    stat.dwLength = sizeof(MEMORYSTATUSEX);
+    GlobalMemoryStatusEx(&stat);
+    return PyInt_FromLong( (long)(stat.ullAvailPhys  / ( 1024 * 1024 )) );
+#endif
   }
 
   // getCpuTemp() method

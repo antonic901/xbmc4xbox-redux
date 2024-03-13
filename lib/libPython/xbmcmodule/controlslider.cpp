@@ -21,7 +21,7 @@
 
 #include <Python.h>
 
-#include "GUISliderControl.h"
+#include "guilib/GUISliderControl.h"
 #include "control.h"
 #include "pyutil.h"
 #include "utils/log.h"
@@ -37,18 +37,18 @@ namespace PYXBMC
   PyObject * ControlSlider_New (PyTypeObject *type, PyObject *args, PyObject *kwds)
   {
     static const char* keywords[] = { "x", "y", "width", "height", "textureback", "texture", "texturefocus", NULL };
-	
+
     ControlSlider *self;
     char *cTextureBack = NULL;
     char *cTexture = NULL;
     char *cTextureFoc  = NULL;
-	
+
     self = (ControlSlider *) type->tp_alloc (type, 0);
     if (!self) return NULL;
     new(&self->strTextureBack) string();
     new(&self->strTexture) string();
-    new(&self->strTextureFoc) string();    
-	
+    new(&self->strTextureFoc) string();
+
     if (!PyArg_ParseTupleAndKeywords(args, kwds,
                                      (char*)"llll|sss",
                                      (char**)keywords,
@@ -67,10 +67,10 @@ namespace PYXBMC
     self->strTextureBack = cTextureBack ? cTextureBack : PyXBMCGetDefaultImage((char*)"slider", (char*)"texturesliderbar", (char*)"osd_slider_bg_2.png");
     self->strTexture = cTexture ? cTexture : PyXBMCGetDefaultImage((char*)"slider", (char*)"textureslidernib", (char*)"osd_slider_nibNF.png");
     self->strTextureFoc = cTextureFoc ? cTextureFoc : PyXBMCGetDefaultImage((char*)"slider", (char*)"textureslidernibfocus", (char*)"osd_slider_nib.png");
-    
+
     return (PyObject*)self;
   }
-  
+
   void ControlSlider_Dealloc(ControlSlider* self)
   {
     self->strTextureBack.~string();
@@ -81,15 +81,15 @@ namespace PYXBMC
 
   CGUIControl* ControlSlider_Create (ControlSlider* pControl)
   {
-    
+
     pControl->pGUIControl = new CGUISliderControl(pControl->iParentId, pControl->iControlId,(float)pControl->dwPosX, (float)pControl->dwPosY,
               (float)pControl->dwWidth,(float)pControl->dwHeight,
               (CStdString)pControl->strTextureBack,(CStdString)pControl->strTexture,
               (CStdString)pControl->strTextureFoc,3,HORIZONTAL);
-    
-    
+
+
     return pControl->pGUIControl;
-  }  
+  }
 
   PyDoc_STRVAR(getPercent__doc__,
     "getPercent() -- Returns a float of the percent of the slider.\n"
@@ -124,11 +124,11 @@ namespace PYXBMC
     Py_INCREF(Py_None);
     return Py_None;
   }
-	
-	
+
+
   PyMethodDef ControlSlider_methods[] = {
     {(char*)"getPercent", (PyCFunction)ControlSlider_GetPercent, METH_VARARGS, getPercent__doc__},
-    {(char*)"setPercent", (PyCFunction)ControlSlider_SetPercent, METH_VARARGS, setPercent__doc__},  
+    {(char*)"setPercent", (PyCFunction)ControlSlider_SetPercent, METH_VARARGS, setPercent__doc__},
     {NULL, NULL, 0, NULL}
   };
 
@@ -144,7 +144,7 @@ namespace PYXBMC
    "height         : integer - height of control.\n"
    "textureback    : [opt] string - image filename.\n"
    "texture        : [opt] string - image filename.\n"
-   "texturefocus   : [opt] string - image filename.\n"               
+   "texturefocus   : [opt] string - image filename.\n"
    "*Note, You can use the above as keywords for arguments and skip certain optional arguments.\n"
    "       Once you use a keyword, all following arguments require the keyword.\n"
    "       After you create the control, you need to add it to the window with addControl().\n"

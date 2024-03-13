@@ -18,19 +18,18 @@
  *
  */
 
-#include "system.h"
 #include <Python.h>
 
-#include "../XBPythonDll.h"
+#include "libPython/XBPythonDll.h"
 #include "listitem.h"
 #include "pyutil.h"
 #include "video/VideoInfoTag.h"
 #include "pictures/PictureInfoTag.h"
 #include "music/tags/MusicInfoTag.h"
 #include "FileItem.h"
+#include "utils/Variant.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/StringUtils.h"
-#include "utils/Variant.h"
 
 using namespace std;
 
@@ -696,7 +695,7 @@ namespace PYXBMC
       {
         if (strcmpi(PyString_AsString(key), "codec") == 0)
         {
-          if (!PyXBMCGetUnicodeString(video->m_strCodec, value, 1)) 
+          if (!PyXBMCGetUnicodeString(video->m_strCodec, value, 1))
             continue;
         }
         else if (strcmpi(PyString_AsString(key), "aspect") == 0)
@@ -717,12 +716,12 @@ namespace PYXBMC
       {
         if (strcmpi(PyString_AsString(key), "codec") == 0)
         {
-          if (!PyXBMCGetUnicodeString(audio->m_strCodec, value, 1)) 
+          if (!PyXBMCGetUnicodeString(audio->m_strCodec, value, 1))
             continue;
         }
         else if (strcmpi(PyString_AsString(key), "language") == 0)
         {
-          if (!PyXBMCGetUnicodeString(audio->m_strLanguage, value, 1)) 
+          if (!PyXBMCGetUnicodeString(audio->m_strLanguage, value, 1))
             continue;
         }
         else if (strcmpi(PyString_AsString(key), "channels") == 0)
@@ -737,7 +736,7 @@ namespace PYXBMC
       {
         if (strcmpi(PyString_AsString(key), "language") == 0)
         {
-          if (!PyXBMCGetUnicodeString(subtitle->m_strLanguage, value, 1)) 
+          if (!PyXBMCGetUnicodeString(subtitle->m_strLanguage, value, 1))
             continue;
         }
       }
@@ -879,7 +878,7 @@ namespace PYXBMC
     "  - action          : string or unicode - any built-in function to perform.\n"
     "replaceItems        : [opt] bool - True=only your items will show/False=your items will be added to context menu(Default).\n"
     "\n"
-    "List of functions - http://xbmc.org/wiki/?title=List_of_Built_In_Functions \n"
+    "List of functions - http://wiki.xbmc.org/?title=List_of_Built_In_Functions \n"
     "\n"
     "*Note, You can use the above as keywords for arguments and skip certain optional arguments.\n"
     "       Once you use a keyword, all following arguments require the keyword.\n"

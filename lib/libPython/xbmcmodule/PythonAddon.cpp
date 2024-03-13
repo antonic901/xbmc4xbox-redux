@@ -62,6 +62,7 @@ namespace PYXBMC
 
 }
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -148,7 +149,7 @@ namespace PYXBMC
 
   void Addon_Dealloc(Addon* self)
   {
-    CAddonMgr::Get().RemoveFromUpdateableAddons(self->pAddon);  
+    CAddonMgr::Get().RemoveFromUpdateableAddons(self->pAddon);
     self->ob_type->tp_free((PyObject*)self);
   }
 
@@ -381,12 +382,6 @@ namespace PYXBMC
     " - self.Addon = xbmcaddon.Addon(id='script.recentlyadded')\n");
 
 // Restore code and data sections to normal.
-#ifndef __GNUC__
-#pragma code_seg()
-#pragma data_seg()
-#pragma bss_seg()
-#pragma const_seg()
-#endif
 
   PyTypeObject Addon_Type;
 

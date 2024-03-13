@@ -18,11 +18,10 @@
  *
  */
 
-#include "system.h"
 #include "keyboard.h"
 #include "pythreadstate.h"
 #include "pyutil.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogKeyboardGeneric.h"
 #include "ApplicationMessenger.h"
 
@@ -41,6 +40,8 @@ namespace PYXBMC
 
     self = (Keyboard*)type->tp_alloc(type, 0);
     if (!self) return NULL;
+    new(&self->strDefault) string();
+    new(&self->strHeading) string();
 
     PyObject *line = NULL;
     PyObject *heading = NULL;
@@ -64,6 +65,8 @@ namespace PYXBMC
 
   void Keyboard_Dealloc(Keyboard* self)
   {
+    self->strDefault.~string();
+    self->strHeading.~string();
     self->ob_type->tp_free((PyObject*)self);
   }
 
@@ -117,7 +120,7 @@ namespace PYXBMC
   PyObject* Keyboard_SetDefault(Keyboard *self, PyObject *args)
   {
     PyObject *line = NULL;
-    if (!PyArg_ParseTuple(args, (char*)"|O", &line))    return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"|O", &line)) return NULL;
 
     string utf8Line;
     if (line && !PyXBMCGetUnicodeString(utf8Line, line, 1)) return NULL;

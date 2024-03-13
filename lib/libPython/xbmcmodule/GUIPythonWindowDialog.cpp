@@ -19,8 +19,7 @@
  */
 
 #include "GUIPythonWindowDialog.h"
-#include "GUIWindowManager.h"
-#include "ApplicationMessenger.h"
+#include "guilib/GUIWindowManager.h"
 #include "threads/SingleLock.h"
 
 CGUIPythonWindowDialog::CGUIPythonWindowDialog(int id)

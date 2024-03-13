@@ -18,11 +18,10 @@
  *
  */
 
-#include "system.h"
 #include <Python.h>
 #include <structmember.h>
 
-#include "../XBPythonDll.h"
+#include "libPython/XBPythonDll.h"
 #include "control.h"
 #include "window.h"
 #include "dialog.h"
@@ -30,8 +29,8 @@
 #include "pyutil.h"
 #include "action.h"
 #include "utils/log.h"
-#include "GUIWindowManager.h"
-#include "GUIListItem.h"
+#include "guilib/GUIWindowManager.h"
+#include "guilib/GUIListItem.h"
 
 
 #if defined(__GNUG__) && (__GNUC__>4) || (__GNUC__==4 && __GNUC_MINOR__>=2)
@@ -47,7 +46,7 @@ namespace PYXBMC
   // lock() method
   PyDoc_STRVAR(lock__doc__,
     "'xbmcgui.lock()' is depreciated and serves no purpose anymore,\n"
-    "\n"           
+    "\n"
     "it will be removed in future releases\n");
 
   PyObject* XBMCGUI_Lock(PyObject *self, PyObject *args)
@@ -193,7 +192,7 @@ namespace PYXBMC
     Py_INCREF(&ControlCheckMark_Type);
     Py_INCREF(&ControlList_Type);
     Py_INCREF(&ControlImage_Type);
-    Py_INCREF(&ControlProgress_Type);  
+    Py_INCREF(&ControlProgress_Type);
     Py_INCREF(&ControlSlider_Type);
     Py_INCREF(&ControlGroup_Type);
     Py_INCREF(&Dialog_Type);
@@ -221,7 +220,7 @@ namespace PYXBMC
     PyModule_AddObject(pXbmcGuiModule, (char*)"ControlList", (PyObject*)&ControlList_Type);
     PyModule_AddObject(pXbmcGuiModule, (char*)"ControlImage", (PyObject*)&  ControlImage_Type);
     PyModule_AddObject(pXbmcGuiModule, (char*)"ControlProgress", (PyObject*)& ControlProgress_Type);
-    PyModule_AddObject(pXbmcGuiModule, (char*)"ControlSlider", (PyObject*)& ControlSlider_Type);  
+    PyModule_AddObject(pXbmcGuiModule, (char*)"ControlSlider", (PyObject*)& ControlSlider_Type);
     PyModule_AddObject(pXbmcGuiModule, (char*)"ControlGroup", (PyObject*)& ControlGroup_Type);
     PyModule_AddObject(pXbmcGuiModule, (char*)"Dialog", (PyObject *)&Dialog_Type);
     PyModule_AddObject(pXbmcGuiModule, (char*)"DialogProgress", (PyObject *)&DialogProgress_Type);

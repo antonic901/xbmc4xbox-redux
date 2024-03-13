@@ -18,11 +18,10 @@
  *
  */
 
-#include "system.h"
 #include <Python.h>
 
-#include "../XBPythonDll.h"
-#include "GUIImage.h"
+#include "libPython/XBPythonDll.h"
+#include "guilib/GUIImage.h"
 #include "control.h"
 #include "pyutil.h"
 
@@ -45,7 +44,7 @@ namespace PYXBMC
 
     self = (ControlImage*)type->tp_alloc(type, 0);
     if (!self) return NULL;
-    new(&self->strFileName) string();    
+    new(&self->strFileName) string();
 
     //if (!PyArg_ParseTuple(args, "lllls|l", &self->dwPosX, &self->dwPosY, &self->dwWidth, &self->dwHeight,
     //  &cImage, &self->aspectRatio)) return NULL;
@@ -76,7 +75,7 @@ namespace PYXBMC
 
   void ControlImage_Dealloc(ControlImage* self)
   {
-    self->strFileName.~string();  
+    self->strFileName.~string();
     self->ob_type->tp_free((PyObject*)self);
   }
 
@@ -165,7 +164,6 @@ namespace PYXBMC
     "width          : integer - width of control.\n"
     "height         : integer - height of control.\n"
     "filename       : string - image filename.\n"
-    "colorKey       : [opt] hexString - (example, '0xFFFF3300')\n"
     "aspectRatio    : [opt] integer - (values 0 = stretch (default), 1 = scale up (crops), 2 = scale down (black bars)"
     "colorDiffuse   : hexString - (example, '0xC0FF0000' (red tint))\n"
     "\n"

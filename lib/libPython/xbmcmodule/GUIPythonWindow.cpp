@@ -23,7 +23,7 @@
 #include "window.h"
 #include "control.h"
 #include "action.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIWindowManager.h"
 #include "../XBPython.h"
 #include "utils/log.h"
 #include "threads/SingleLock.h"
@@ -190,6 +190,58 @@ void CGUIPythonWindow::PulseActionEvent()
 {
   m_actionEvent.Set();
 }
+
+
+#ifdef _LINUX
+
+/*
+vector<PyXBMCAction*> g_actionQueue;
+CRITICAL_SECTION g_critSection;
+
+void Py_InitCriticalSection()
+{
+  static bool first_call = true;
+  if (first_call)
+  {
+    InitializeCriticalSection(&g_critSection);
+    first_call = false;
+  }
+}
+
+void Py_AddPendingActionCall(PyXBMCAction* inf)
+{
+  EnterCriticalSection(&g_critSection);
+  g_actionQueue.push_back(inf);
+  LeaveCriticalSection(&g_critSection);
+}
+
+void Py_MakePendingActionCalls()
+{
+  vector<PyXBMCAction*>::iterator iter;
+  iter = g_actionQueue.begin();
+  while (iter!=g_actionQueue.end())
+  {
+    PyXBMCAction* arg = (*iter);
+    EnterCriticalSection(&g_critSection);
+    g_actionQueue.erase(iter);
+    LeaveCriticalSection(&g_critSection);
+
+    if (arg->type==0)
+    {
+      Py_XBMC_Event_OnAction(arg);
+    } else if (arg->type==1) {
+      Py_XBMC_Event_OnControl(arg);
+    }
+
+    EnterCriticalSection(&g_critSection);
+    iter=g_actionQueue.begin();
+    LeaveCriticalSection(&g_critSection);
+  }
+}
+
+*/
+
+#endif
 
 /*
  * called from python library!

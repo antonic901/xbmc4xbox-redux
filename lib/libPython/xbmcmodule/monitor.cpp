@@ -41,11 +41,11 @@ namespace PYXBMC
     {
       PyErr_SetString((PyObject*)self, "Unable to identify addon");
       return NULL;
-    }    
+    }
     CPyThreadState pyState;
     self->pMonitor = new CPythonMonitor();
     pyState.Restore();
-    self->pMonitor->Id = addonId;    
+    self->pMonitor->Id = addonId;
     self->pMonitor->SetCallback(PyThreadState_Get(), (PyObject*)self);
 
     return (PyObject*)self;
@@ -78,7 +78,7 @@ namespace PYXBMC
 
   // Monitor_onScreensaverActivated
   PyDoc_STRVAR(onScreensaverActivated__doc__,
-               "onScreenSaverStarted() -- onScreensaverActivated method.\n"
+               "onScreensaverActivated() -- onScreensaverActivated method.\n"
                "\n"
                "Will be called when screensaver kicks in");
 
@@ -98,7 +98,7 @@ namespace PYXBMC
   {
     Py_INCREF(Py_None);
     return Py_None;
-  }  
+  }
 
   // Monitor_onDatabaseUpdated
   PyDoc_STRVAR(onDatabaseUpdated__doc__,
@@ -112,7 +112,7 @@ namespace PYXBMC
   {
    Py_INCREF(Py_None);
    return Py_None;
-  }  
+  }
 
   // Monitor_onAbortRequested
   PyDoc_STRVAR(onAbortRequested__doc__,

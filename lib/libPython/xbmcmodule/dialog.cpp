@@ -18,23 +18,22 @@
  *
  */
 
-#include "system.h"
 #include "dialog.h"
 
-#include "../XBPythonDll.h"
+#include "libPython/XBPythonDll.h"
+#include "ApplicationMessenger.h"
+#include "settings/Settings.h"
 #include "pyutil.h"
 #include "pythreadstate.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "dialogs/GUIDialogNumeric.h"
-#include "dialogs/GUIDialogGamepad.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "storage/MediaManager.h"
 #include "settings/MediaSourceSettings.h"
-#include "ApplicationMessenger.h"
 
 using namespace std;
 
@@ -53,6 +52,9 @@ namespace PYXBMC
 
     self = (WindowDialog*)type->tp_alloc(type, 0);
     if (!self) return NULL;
+    new(&self->sXMLFileName) string();
+    new(&self->sFallBackPath) string();
+    new(&self->vecControls) std::vector<Control*>();
 
     self->iWindowId = -1;
 
@@ -62,6 +64,10 @@ namespace PYXBMC
     if (!Window_CreateNewWindow((Window*)self, true))
     {
       // error is already set by Window_CreateNewWindow, just release the memory
+      self->vecControls.clear();
+      self->vecControls.~vector();
+      self->sFallBackPath.~string();
+      self->sXMLFileName.~string();
       self->ob_type->tp_free((PyObject*)self);
       return NULL;
     }
@@ -161,8 +167,16 @@ namespace PYXBMC
     char *cDefault = NULL;
     PyObject *result;
 
-    for (int i = 0; i < 3; i++) unicodeLine[i] = NULL;
-    if (!PyArg_ParseTuple(args, (char*)"iOO|Obbsb", &browsetype , &unicodeLine[0], &unicodeLine[1], &unicodeLine[2], &useThumbs, &useFileDirectories, &cDefault, &enableMultiple))  return NULL;
+    for (int i = 0; i < 3; i++)
+      unicodeLine[i] = NULL;
+    if (!PyArg_ParseTuple(args, (char*)"iOO|Obbsb",
+                          &browsetype , &unicodeLine[0],
+                          &unicodeLine[1], &unicodeLine[2],
+                          &useThumbs, &useFileDirectories,
+                          &cDefault, &enableMultiple))
+    {
+      return NULL;
+    }
     for (int i = 0; i < 3; i++)
     {
       if (unicodeLine[i] && !PyXBMCGetUnicodeString(utf8Line[i], unicodeLine[i], i+1))
@@ -175,9 +189,9 @@ namespace PYXBMC
     localShares = *shares;
     g_mediaManager.GetLocalDrives(localShares);
 
-    if (useFileDirectories && !utf8Line[2].size() == 0) 
+    if (useFileDirectories && !utf8Line[2].size() == 0)
       utf8Line[2] += "|.rar|.zip";
-    
+
     value = cDefault;
 
     CPyThreadState pyState;
@@ -207,7 +221,7 @@ namespace PYXBMC
       if (!result)
         return NULL;
 
-      for (int i = 0; i < valuelist.size(); i++)
+      for (unsigned int i = 0; i < valuelist.size(); i++)
         PyTuple_SetItem(result, i, PyString_FromString(valuelist.at(i).c_str()));
 
       return result;

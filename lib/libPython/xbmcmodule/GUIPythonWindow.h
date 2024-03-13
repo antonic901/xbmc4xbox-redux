@@ -20,9 +20,8 @@
  *
  */
 
-#include "GUIWindow.h"
+#include "guilib/GUIWindow.h"
 #include "threads/Event.h"
-#include "libPython/python/Include/Python.h"
 
 class PyXBMCAction
 {

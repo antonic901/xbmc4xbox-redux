@@ -18,7 +18,6 @@
  *
  */
 
-#include "system.h"
 #include "infotagvideo.h"
 #include "pyutil.h"
 #include "settings/AdvancedSettings.h"
@@ -39,7 +38,7 @@ namespace PYXBMC
   {
     InfoTagVideo* self = (InfoTagVideo*)InfoTagVideo_Type.tp_alloc(&InfoTagVideo_Type, 0);
     if (!self) return NULL;
-
+    new(&self->infoTag) CVideoInfoTag();
     self->infoTag = infoTag;
 
     return self;
@@ -47,6 +46,7 @@ namespace PYXBMC
 
   void InfoTagVideo_Dealloc(InfoTagVideo* self)
   {
+    self->infoTag.~CVideoInfoTag();
     self->ob_type->tp_free((PyObject*)self);
   }
 
@@ -166,16 +166,6 @@ namespace PYXBMC
   {
     return Py_BuildValue((char*)"s", self->infoTag.m_strPath.c_str());
   }
-
-  /*// InfoTagVideo_GetDVDLabel
-  PyDoc_STRVAR(getDVDLabel__doc__,
-    "getDVDLabel() -- returns a string.\n");
-
-  PyObject* InfoTagVideo_GetDVDLabel(InfoTagVideo *self, PyObject *args)
-  {
-    return Py_BuildValue("s", self->infoTag.m_strDVDLabel.c_str());
-  }
-  */
 
   // InfoTagVideo_GetIMDBNumber
   PyDoc_STRVAR(getIMDBNumber__doc__,

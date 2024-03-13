@@ -21,7 +21,7 @@
 #include "pyutil.h"
 #include "PythonPlayer.h"
 #include "pythreadstate.h"
-#include "libPython/XBPython.h"
+#include "../XBPython.h"
 #include "threads/Atomics.h"
 
 using namespace PYXBMC;

@@ -21,11 +21,14 @@
 #include "pyutil.h"
 #include "pythreadstate.h"
 #include <wchar.h>
+#include <vector>
 #include "addons/Skin.h"
 #include "utils/log.h"
 #include "utils/XBMCTinyXML.h"
+#include "utils/CharsetConverter.h"
+#include "threads/CriticalSection.h"
+#include "threads/SingleLock.h"
 #include "ApplicationMessenger.h"
-#include "CharsetConverter.h"
 
 using namespace std;
 
@@ -49,6 +52,7 @@ namespace PYXBMC
     //              for non-unicode data?
     if (PyUnicode_Check(pObject))
     {
+
       // Python unicode objects are UCS2 or UCS4 depending on compilation
       // options, wchar_t is 16-bit or 32-bit depending on platform.
       // Avoid the complexity by just letting python convert the string.
@@ -258,3 +262,4 @@ void _PyXBMC_MakePendingCalls()
     iter = g_callQueue.begin();
   }
 }
+

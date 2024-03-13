@@ -18,11 +18,18 @@
  *
  */
 
-#include "system.h"
+// Get rid of 'dereferencing type-punned pointer will break strict-aliasing rules'
+// warnings caused by Py_RETURN_TRUE/FALSE.
+#if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#endif
+
 #include "action.h"
+#include "guilib/Key.h"
 #include "pyutil.h"
 
 using namespace std;
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,8 +43,8 @@ namespace PYXBMC
 
     self = (Action*)type->tp_alloc(type, 0);
     if (!self) return NULL;
-    new(&self->strAction) string(); 
-    
+    new(&self->strAction) string();
+
     //if (!PyArg_ParseTuple(args, "l", &self->action)) return NULL;
     //self->action = -1;
 
@@ -54,16 +61,16 @@ namespace PYXBMC
   PyObject* Action_FromAction(const CAction& action)
   {
     Action* pyAction = (Action*)Action_Type.tp_alloc(&Action_Type, 0);
-    new(&pyAction->strAction) string(); 
-    
+    new(&pyAction->strAction) string();
+
     if (pyAction)
     {
       pyAction->id = action.GetID();
       pyAction->buttonCode = action.GetButtonCode();
-      pyAction->fAmount1 = action.GetAmount();
+      pyAction->fAmount1 = action.GetAmount(0);
       pyAction->fAmount2 = action.GetAmount(1);
       pyAction->fRepeat = action.GetRepeat();
-      pyAction->strAction = action.GetName().c_str();
+      pyAction->strAction = action.GetName();
     }
 
     return (PyObject*)pyAction;
@@ -71,7 +78,7 @@ namespace PYXBMC
 
   void Action_Dealloc(Action* self)
   {
-    self->strAction.~string();  
+    self->strAction.~string();
     self->ob_type->tp_free((PyObject*)self);
   }
 

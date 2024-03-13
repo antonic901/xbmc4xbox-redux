@@ -18,13 +18,12 @@
  *
  */
 
-#include "system.h"
 #include <Python.h>
 
-#include "../XBPythonDll.h"
-#include "GUILabelControl.h"
-#include "GUIFontManager.h"
-#include "GUIWindowManager.h"
+#include "libPython/XBPythonDll.h"
+#include "guilib/GUILabelControl.h"
+#include "guilib/GUIFontManager.h"
+#include "guilib/GUIWindowManager.h"
 #include "control.h"
 #include "pyutil.h"
 
@@ -141,7 +140,7 @@ namespace PYXBMC
   {
     PyObject *pObjectText;
 
-    if (!PyArg_ParseTuple(args, (char*)"O", &pObjectText))  return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"O", &pObjectText)) return NULL;
     if (!PyXBMCGetUnicodeString(self->strText, pObjectText, 1)) return NULL;
 
     ControlLabel *pControl = (ControlLabel*)self;

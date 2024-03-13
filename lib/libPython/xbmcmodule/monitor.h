@@ -20,7 +20,7 @@
  */
 #pragma once
 
-#include "../python/Include/Python.h"
+#include <Python.h>
 #include "PythonMonitor.h"
 
 #ifdef __cplusplus

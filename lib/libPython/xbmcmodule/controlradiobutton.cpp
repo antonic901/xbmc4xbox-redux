@@ -18,12 +18,11 @@
  *
  */
 
-#include "system.h"
 #include <Python.h>
 
-#include "../XBPythonDll.h"
-#include "GUIRadioButtonControl.h"
-#include "GUIFontManager.h"
+#include "libPython/XBPythonDll.h"
+#include "guilib/GUIRadioButtonControl.h"
+#include "guilib/GUIFontManager.h"
 #include "control.h"
 #include "pyutil.h"
 
@@ -73,17 +72,17 @@ namespace PYXBMC
 
     self = (ControlRadioButton*)type->tp_alloc(type, 0);
     if (!self) return NULL;
-    new(&self->strFont) string();    
-    new(&self->strText) string();    
-    new(&self->strTextureFocus) string();    
-    new(&self->strTextureNoFocus) string(); 
+    new(&self->strFont) string();
+    new(&self->strText) string();
+    new(&self->strTextureFocus) string();
+    new(&self->strTextureNoFocus) string();
     new(&self->strTextureRadioOnFocus) string();
     new(&self->strTextureRadioOnNoFocus) string();
     new(&self->strTextureRadioOffFocus) string();
     new(&self->strTextureRadioOffNoFocus) string();
     new(&self->strTextureRadioOnDisabled) string();
     new(&self->strTextureRadioOffDisabled) string();
-    
+
     // set up default values in case they are not supplied
     self->textOffsetX = CONTROL_TEXT_OFFSET_X;
     self->textOffsetY = CONTROL_TEXT_OFFSET_Y;
@@ -147,7 +146,7 @@ namespace PYXBMC
       self->strTextureRadioOnFocus = self->strTextureRadioOnNoFocus = cTextureFocus ? cTextureFocus :
         PyXBMCGetDefaultImage((char*)"radiobutton", (char*)"textureradiofocus", (char*)"radiobutton-focus.png");
     }
-    
+
     if (cTextureOffFocus && cTextureOffNoFocus)
     {
       self->strTextureRadioOffFocus = cTextureOffFocus;
@@ -238,7 +237,7 @@ namespace PYXBMC
       NULL};
 
     char selected = false;
- 
+
     if (!PyArg_ParseTupleAndKeywords(
       args,
       kwds,
@@ -310,7 +309,7 @@ namespace PYXBMC
     char *cShadowColor = NULL;
     char *cFocusedColor = NULL;
     PyObject *pObjectText = NULL;
- 
+
     if (!PyArg_ParseTupleAndKeywords(
       args,
       kwds,
@@ -373,7 +372,7 @@ namespace PYXBMC
       "width",
       "height",
       NULL};
- 
+
     if (!PyArg_ParseTupleAndKeywords(
       args,
       kwds,

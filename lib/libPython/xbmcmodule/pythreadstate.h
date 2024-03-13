@@ -59,3 +59,4 @@ class CPyThreadState
   private:
     PyThreadState* m_threadState;
 };
+

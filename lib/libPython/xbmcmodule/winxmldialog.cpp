@@ -20,7 +20,7 @@
 
 #include <Python.h>
 
-#include "../XBPythonDll.h"
+#include "libPython/XBPythonDll.h"
 
 #include "winxml.h"
 #include "pyutil.h"
@@ -72,7 +72,7 @@ namespace PYXBMC
     // Check to see if the XML file exists in current skin. If not use fallback path to find a skin for the script
     RESOLUTION_INFO res;
     CStdString strSkinPath = g_SkinInfo->GetSkinPath(strXMLname, &res);
- 
+
     if (!XFILE::CFile::Exists(strSkinPath))
     {
       CStdString str("none");
@@ -97,7 +97,7 @@ namespace PYXBMC
         // Finally fallback to the DefaultSkin as it didn't exist in either the XBMC Skin folder or the fallback skin folder
         props.path = URIUtils::AddFileToFolder(fallbackPath, strDefault);
         CSkinInfo skinInfo(props, res);
-        
+
         skinInfo.Start();
         strSkinPath = skinInfo.GetSkinPath(strXMLname, &res);
         if (!XFILE::CFile::Exists(strSkinPath))

@@ -19,10 +19,9 @@
  *
  */
 
-#include "system.h"
 #include <Python.h>
 
-#include "../XBPythonDll.h"
+#include "libPython/XBPythonDll.h"
 
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
@@ -59,7 +58,7 @@ extern "C" {
     PyDoc_STRVAR(file__doc__,
       "File class.\n"
       "\n"
-      "'w' - opt open for write\n"           
+      "'w' - opt open for write\n"
       "example:\n"
       " f = xbmcvfs.File(file, ['w'])\n");
 
@@ -88,9 +87,9 @@ extern "C" {
       {
         CPyThreadState pyState;
         self->pFile->OpenForWrite(strSource,true);
-        pyState.Restore();                          
+        pyState.Restore();
       }
-      else 
+      else
       {
         CPyThreadState pyState;
         self->pFile->Open(strSource, READ_NO_CACHE);
@@ -107,17 +106,17 @@ extern "C" {
 
       self->pFile = NULL;
       self->ob_type->tp_free((PyObject*)self);
-    }  
+    }
 
     // copy() method
     PyDoc_STRVAR(copy__doc__,
-      "copy(source, destination) -- copy file to destination, returns true/false.\n"
+      "copy(source, destination) -- Copy file to destination, returns true/false.\n"
       "\n"
       "source          : file to copy.\n"
-      "destination     : destination file"
+      "destination     : destination file\n"
       "\n"
       "example:\n"
-      "  success = xbmcvfs.copy(source, destination)\n");
+      " - success = xbmcvfs.copy(source, destination)\n");
 
     PyObject* vfs_copy(PyObject *self, PyObject *args)
     {
@@ -145,12 +144,12 @@ extern "C" {
       return Py_BuildValue((char*)"b", bResult);
     }
     PyDoc_STRVAR(delete__doc__,
-      "delete(file)\n"
+      "delete(file) -- Delete file\n"
       "\n"
-      "file        : file to delete"
+      "file        : file to delete\n"
       "\n"
       "example:\n"
-      "  xbmcvfs.delete(file)\n");
+      " - xbmcvfs.delete(file)\n");
 
     // delete a file
     PyObject* vfs_delete(File *self, PyObject *args, PyObject *kwds)
@@ -176,13 +175,13 @@ extern "C" {
     }
 
     PyDoc_STRVAR(rename__doc__,
-      "rename(file, newFileName)\n"
+      "rename(file, newFileName) -- Rename file, returns true/false.\n"
       "\n"
-      "file        : file to reaname"
-      "newFileName : new filename, including the full path"
+      "file        : file to reaname\n"
+      "newFileName : new filename, including the full path\n"
       "\n"
       "example:\n"
-      "  success = xbmcvfs.rename(file,newFileName)\n");
+      " - success = xbmcvfs.rename(file, newFileName)\n");
 
     // rename a file
     PyObject* vfs_rename(File *self, PyObject *args, PyObject *kwds)
@@ -210,15 +209,15 @@ extern "C" {
 
       return Py_BuildValue((char*)"b", bResult);
 
-    }  
+    }
 
     PyDoc_STRVAR(exists__doc__,
-      "exists(path)\n"
+      "exists(path) -- Check if file exists, returns true/false.\n"
       "\n"
-      "path        : file or folder"
+      "path        : file or folder\n"
       "\n"
       "example:\n"
-      "  success = xbmcvfs.exists(path)\n");
+      " - success = xbmcvfs.exists(path)\n");
 
     // check for a file or folder existance, mimics Pythons os.path.exists()
     PyObject* vfs_exists(File *self, PyObject *args, PyObject *kwds)
@@ -241,7 +240,7 @@ extern "C" {
       pyState.Restore();
 
       return Py_BuildValue((char*)"b", bResult);
-    }  
+    }
 
     PyDoc_STRVAR(mkdir__doc__,
       "mkdir(path) -- Create a folder.\n"
@@ -271,7 +270,7 @@ extern "C" {
       pyState.Restore();
 
       return Py_BuildValue((char*)"b", bResult);
-    }      
+    }
 
     PyDoc_STRVAR(mkdirs__doc__,
       "mkdirs(path) -- Create folder(s) - it will create all folders in the path.\n"
@@ -300,7 +299,7 @@ extern "C" {
       pyState.Restore();
 
       return Py_BuildValue((char*)"b", bResult);
-    }      
+    }
 
     PyDoc_STRVAR(rmdir__doc__,
       "rmdir(path) -- Remove a folder.\n"
@@ -326,14 +325,13 @@ extern "C" {
       if (!PyXBMCGetUnicodeString(strSource, f_line, 1)) return NULL;
 
       bool bResult;
-
       if (bForce)
       {
         CPyThreadState pyState;
-        bResult = CFileUtils::DeleteItem(strSource, bForce ? true : false);
+        bResult = CFileUtils::DeleteItem(strSource, bForce);
         pyState.Restore();
       }
-      else 
+      else
       {
         CPyThreadState pyState;
         bResult = CDirectory::Remove(strSource);
@@ -341,7 +339,7 @@ extern "C" {
       }
 
       return Py_BuildValue((char*)"b", bResult);
-    }   
+    }
 
     PyDoc_STRVAR(listdir__doc__,
       "listdir(path) -- lists content of a folder.\n"
@@ -373,11 +371,11 @@ extern "C" {
       PyObject *fileList = PyList_New(0);
       PyObject *folderList = PyList_New(0);
       for (int i=0; i < items.Size(); i++)
-      {  
+      {
         CStdString itemPath = items[i]->GetPath();
         PyObject *obj;
         if (URIUtils::HasSlashAtEnd(itemPath)) // folder
-        {  
+        {
           URIUtils::RemoveSlashAtEnd(itemPath);
           CStdString strFileName = URIUtils::GetFileName(itemPath);
           obj = Py_BuildValue((char*)"s", strFileName.c_str());
@@ -392,7 +390,7 @@ extern "C" {
         Py_DECREF(obj); //we have to do this as PyList_Append is known to leak
       }
       return Py_BuildValue((char*)"O,O", folderList, fileList);
-    }   
+    }
 
     // define c functions to be used in python here
     PyMethodDef xbmcvfsMethods[] = {
@@ -406,7 +404,6 @@ extern "C" {
       {(char*)"listdir", (PyCFunction)vfs_listdir, METH_VARARGS, listdir__doc__},
       {NULL, NULL, 0, NULL}
     };
-
     PyDoc_STRVAR(read__doc__,
       "read(bytes)\n"
       "\n"
@@ -429,7 +426,7 @@ extern "C" {
       char* buffer = new char[readBytes + 1];
       PyObject* ret = NULL;
       if (buffer)
-      {  
+      {
         unsigned int bytesRead;
         CPyThreadState pyState;
         bytesRead = self->pFile->Read(buffer, readBytes);
@@ -585,7 +582,7 @@ extern "C" {
       PyModule_AddStringConstant(pXbmcvfsModule, (char*)"__credits__", (char*)PY_XBMC_CREDITS);
       PyModule_AddStringConstant(pXbmcvfsModule, (char*)"__platform__", (char*)PY_XBMC_PLATFORM);
     }
-    
+
     PyMODINIT_FUNC
     InitVFSTypes()
     {

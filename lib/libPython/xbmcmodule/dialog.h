@@ -23,6 +23,7 @@
 #include "window.h"
 #pragma once
 
+
 class CGUIDialogProgress;
 
 #ifdef __cplusplus

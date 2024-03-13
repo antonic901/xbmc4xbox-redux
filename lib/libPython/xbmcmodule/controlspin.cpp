@@ -18,11 +18,10 @@
  *
  */
 
-#include "system.h"
 #include <Python.h>
 
-#include "../XBPythonDll.h"
-#include "GUISpinControl.h"
+#include "libPython/XBPythonDll.h"
+#include "guilib/GUISpinControl.h"
 #include "control.h"
 #include "pyutil.h"
 
@@ -47,10 +46,10 @@ namespace PYXBMC
 
     self = (ControlSpin*)type->tp_alloc(type, 0);
     if (!self) return NULL;
-    new(&self->strTextureUp) string();    
-    new(&self->strTextureDown) string();    
-    new(&self->strTextureUpFocus) string();    
-    new(&self->strTextureDownFocus) string();      
+    new(&self->strTextureUp) string();
+    new(&self->strTextureDown) string();
+    new(&self->strTextureUpFocus) string();
+    new(&self->strTextureDownFocus) string();
 
     if (!PyArg_ParseTuple(args, "llll|Oss", &self->dwPosX, &self->dwPosY, &self->dwWidth, &self->dwHeight,
       &pObjectText, &cTextureFocus, &cTextureNoFocus)) return NULL;
@@ -75,10 +74,10 @@ namespace PYXBMC
     //ControlSpin* self = (ControlSpin*)_PyObject_New(&ControlSpin_Type);
     ControlSpin*self = (ControlSpin*)ControlSpin_Type.tp_alloc(&ControlSpin_Type, 0);
     if (!self) return NULL;
-    new(&self->strTextureUp) string();    
-    new(&self->strTextureDown) string();    
-    new(&self->strTextureUpFocus) string();    
-    new(&self->strTextureDownFocus) string();      
+    new(&self->strTextureUp) string();
+    new(&self->strTextureDown) string();
+    new(&self->strTextureUpFocus) string();
+    new(&self->strTextureDownFocus) string();
     new(&self->strTextureUpDisabled) string();
     new(&self->strTextureDownDisabled) string();
 
@@ -115,7 +114,7 @@ namespace PYXBMC
   {
     char *cColor = NULL;
 
-    if (!PyArg_ParseTuple(args, (char*)"s", &cColor))   return NULL;
+    if (!PyArg_ParseTuple(args, (char*)"s", &cColor)) return NULL;
 
     if (cColor) sscanf(cColor, "%x", &self->color);
 

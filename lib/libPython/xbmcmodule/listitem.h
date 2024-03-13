@@ -19,7 +19,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include <Python.h>
 
 #include "FileItem.h"

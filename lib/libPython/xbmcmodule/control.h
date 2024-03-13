@@ -20,11 +20,13 @@
 
 #include <Python.h>
 
-#include "../XBPythonDll.h"
-#include "GUIControl.h"
+#include "libPython/XBPythonDll.h"
 #include "listitem.h"
+#include "guilib/GUIColorManager.h"
 
 #pragma once
+
+class CGUIControl;
 
 // python type checking
 #define Control_Check(op) PyObject_TypeCheck(op, &Control_Type)
@@ -75,18 +77,18 @@
 #define CONTROL_TEXT_OFFSET_X 10
 #define CONTROL_TEXT_OFFSET_Y 2
 
-#define PyObject_HEAD_XBMC_CONTROL    \
-    PyObject_HEAD       \
-    int iControlId;     \
-    int iParentId;      \
-    int dwPosX;         \
-    int dwPosY;         \
-    int dwWidth;        \
-    int dwHeight;       \
-    int iControlUp;     \
-    int iControlDown;   \
-    int iControlLeft;   \
-    int iControlRight;  \
+#define PyObject_HEAD_XBMC_CONTROL  \
+    PyObject_HEAD                   \
+    int iControlId;                 \
+    int iParentId;                  \
+    int dwPosX;                     \
+    int dwPosY;                     \
+    int dwWidth;                    \
+    int dwHeight;                   \
+    int iControlUp;                 \
+    int iControlDown;               \
+    int iControlLeft;               \
+    int iControlRight;              \
     CGUIControl* pGUIControl;
 
 #ifdef __cplusplus
@@ -241,13 +243,13 @@ namespace PYXBMC
     color_t shadowColor;
     color_t focusedColor;
   } ControlRadioButton;
-	
+
   typedef struct {
     PyObject_HEAD_XBMC_CONTROL
     std::string strTextureBack;
     std::string strTexture;
-    std::string strTextureFoc;    
-  } ControlSlider;	
+    std::string strTextureFoc;
+  } ControlSlider;
 
   extern void Control_Dealloc(Control* self);
 
