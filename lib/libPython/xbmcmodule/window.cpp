@@ -1026,10 +1026,13 @@ namespace PYXBMC
     if (!PyXBMCGetUnicodeString(uText, value, 1))
       return NULL;
 
-    GilSafeSingleLock lock(g_graphicsContext);
     CStdString lowerKey = key;
+    {
+      CPyThreadState gil;
+      CSingleLock lock(g_graphicsContext);
 
-    self->pWindow->SetProperty(lowerKey.ToLower(), uText);
+      self->pWindow->SetProperty(lowerKey.ToLower(), uText);
+    }
 
     Py_INCREF(Py_None);
     return Py_None;
