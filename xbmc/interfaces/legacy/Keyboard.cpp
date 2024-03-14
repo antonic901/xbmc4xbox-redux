@@ -23,7 +23,7 @@
 #include "LanguageHook.h"
 
 #include "guilib/GUIWindowManager.h"
-#include "dialogs/GUIDialogKeyboard.h"
+#include "dialogs/GUIDialogKeyboardGeneric.h"
 #include "ApplicationMessenger.h"
 
 namespace XBMCAddon
@@ -33,7 +33,7 @@ namespace XBMCAddon
     Keyboard::Keyboard(const String& line /* = nullString*/, const String& heading/* = nullString*/, bool hidden/* = false*/) 
       : AddonClass("Keyboard"), strDefault(line), strHeading(heading), bHidden(hidden), dlg(NULL) 
     {
-      dlg = (CGUIDialogKeyboard*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
+      dlg = (CGUIDialogKeyboardGeneric*)g_windowManager.GetWindow(WINDOW_DIALOG_KEYBOARD);
     }
 
     Keyboard::~Keyboard() {}
@@ -41,7 +41,7 @@ namespace XBMCAddon
     void Keyboard::doModal(int autoclose) throw (KeyboardException)
     {
       DelayedCallGuard dg(languageHook);
-      CGUIDialogKeyboard *pKeyboard = dlg;
+      CGUIDialogKeyboardGeneric *pKeyboard = dlg;
       if(!pKeyboard)
         throw KeyboardException("Unable to load virtual keyboard");
 
@@ -61,7 +61,7 @@ namespace XBMCAddon
     {
       strDefault = line;
 
-      CGUIDialogKeyboard *pKeyboard = dlg;
+      CGUIDialogKeyboardGeneric *pKeyboard = dlg;
       if(!pKeyboard)
         throw KeyboardException("Unable to load keyboard");
 
@@ -72,7 +72,7 @@ namespace XBMCAddon
     {
       bHidden = hidden;
 
-      CGUIDialogKeyboard *pKeyboard = dlg;
+      CGUIDialogKeyboardGeneric *pKeyboard = dlg;
       if(!pKeyboard)
         throw KeyboardException("Unable to load keyboard");
 
@@ -83,7 +83,7 @@ namespace XBMCAddon
     {
       strHeading = heading;
 
-      CGUIDialogKeyboard *pKeyboard = dlg;
+      CGUIDialogKeyboardGeneric *pKeyboard = dlg;
       if(!pKeyboard)
         throw KeyboardException("Unable to load keyboard");
 
@@ -92,7 +92,7 @@ namespace XBMCAddon
 
     String Keyboard::getText() throw (KeyboardException)
     {
-      CGUIDialogKeyboard *pKeyboard = dlg;
+      CGUIDialogKeyboardGeneric *pKeyboard = dlg;
       if(!pKeyboard)
         throw KeyboardException("Unable to load keyboard");
       return pKeyboard->GetText();
@@ -100,7 +100,7 @@ namespace XBMCAddon
 
     bool Keyboard::isConfirmed() throw (KeyboardException)
     {
-      CGUIDialogKeyboard *pKeyboard = dlg;
+      CGUIDialogKeyboardGeneric *pKeyboard = dlg;
       if(!pKeyboard)
         throw KeyboardException("Unable to load keyboard");
       return pKeyboard->IsConfirmed();

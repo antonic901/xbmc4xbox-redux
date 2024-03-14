@@ -89,7 +89,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="FALSE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;&quot;lib/libjpeg-turbo/include&quot;"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;"
 				PreprocessorDefinitions="NDEBUG;_XBOX;_XBMC;PROFILE;HAVE_MSWINDOWS;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -152,7 +152,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="FALSE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;&quot;lib/libjpeg-turbo/include&quot;"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;"
 				PreprocessorDefinitions="NDEBUG;_XBOX;_XBMC;PROFILE;FASTCAP;HAVE_MSWINDOWS;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -280,7 +280,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;&quot;lib/libjpeg-turbo/include&quot;"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;"
 				PreprocessorDefinitions="_XBOX;_XBMC;NDEBUG;HAVE_MSWINDOWS;LTCG;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -335,7 +335,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				AdditionalOptions="/EHa"
 				Optimization="0"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;&quot;lib/libjpeg-turbo/include&quot;"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;"
 				PreprocessorDefinitions="_XBOX;_XBMC;_DEBUG;HAVE_MSWINDOWS;NOMINMAX"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="FALSE"
@@ -3277,6 +3277,118 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\interfaces\legacy\WindowXML.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="python"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\interfaces\python\CallbackHandler.cpp">
+						<FileConfiguration
+							Name="Debug|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile_FastCap|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release_LTCG|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug Xbox No Memory Tracking|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\python\CallbackHandler.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\python\LanguageHook.cpp">
+						<FileConfiguration
+							Name="Debug|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile_FastCap|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release_LTCG|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug Xbox No Memory Tracking|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\python\LanguageHook.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\python\preamble.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\python\pythreadstate.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\python\swig.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\python\swig.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\python\XBPython.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\python\XBPython.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\python\XBPyThread.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\python\XBPyThread.h">
 					</File>
 				</Filter>
 			</Filter>

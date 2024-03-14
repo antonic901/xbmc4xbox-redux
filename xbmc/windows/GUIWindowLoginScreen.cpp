@@ -28,7 +28,7 @@
 #include "profiles/windows/GUIWindowSettingsProfile.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "GUIPassword.h"
-#include "libPython/XBPython.h"
+#include "interfaces/python/XBPython.h"
 #include "utils/Weather.h"
 #include "utils/FanController.h"
 #include "xbox/network.h"

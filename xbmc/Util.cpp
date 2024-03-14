@@ -55,7 +55,7 @@
 #ifdef HAS_VIDEO_PLAYBACK
 #include "cores/VideoRenderers/RenderManager.h"
 #endif
-#include "libPython/XBPython.h"
+#include "interfaces/python/XBPython.h"
 #include "profiles/ProfilesManager.h"
 #include "utils/RegExp.h"
 #include "utils/AlarmClock.h"

@@ -1,6 +1,8 @@
 #include "system.h"
 #ifdef SPYCE_SUPPORT
+#include "interfaces/python/XBPython.h"
 #include "SpyceModule.h"
+#include "libPython/python/Include/Python.h"
 
 #ifndef __GNUC__
 #pragma code_seg("WEB_TEXT")
@@ -41,7 +43,7 @@ namespace WEBS_SPYCE
 			g_pythonParser.Initialize();
 
 			PyEval_AcquireLock();
-			PyInterpreterState * mainInterpreterState = g_pythonParser.getMainThreadState()->interp;
+			PyInterpreterState * mainInterpreterState = ((PyThreadState*)g_pythonParser.getMainThreadState())->interp;
 			spyThreadState = PyThreadState_New(mainInterpreterState);
 			PyThreadState_Swap(spyThreadState);
 

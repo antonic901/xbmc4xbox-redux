@@ -33,7 +33,7 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
-#include "lib/libPython/XBPython.h"
+#include "interfaces/python/XBPython.h"
 #include "pictures/GUIWindowSlideShow.h"
 #include "libGoAhead/XBMChttp.h"
 #include "xbox/network.h"

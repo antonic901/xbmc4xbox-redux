@@ -21,7 +21,7 @@
 #include "AddonManager.h"
 #include "utils/log.h"
 #ifdef HAS_PYTHON
-#include "libPython/XBPython.h"
+#include "interfaces/python/XBPython.h"
 #endif
 
 using namespace std;

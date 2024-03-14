@@ -35,7 +35,7 @@
 #include "GUIListContainer.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #include "GUIPassword.h"
-#include "libPython/XBPython.h"
+#include "interfaces/python/XBPython.h"
 #include "pictures/GUIWindowSlideShow.h"
 #include "playlists/PlayListFactory.h"
 #include "xbox/network.h"
@@ -56,6 +56,7 @@
 #include "LocalizeStrings.h"
 #include "storage/MediaManager.h"
 #include "FileUtils.h"
+#include "utils/StringUtils.h"
 
 #include "JobManager.h"
 #include "FileOperationJob.h"

@@ -1,5 +1,4 @@
 #ifdef SPYCE_SUPPORT
-#include "../libPython/XBPython.h"
 #include "includes.h"
 
 #ifdef __cplusplus

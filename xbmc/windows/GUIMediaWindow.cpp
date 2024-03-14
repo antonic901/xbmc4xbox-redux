@@ -44,6 +44,7 @@
 #include "GUIUserMessages.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "utils/StringUtils.h"
 #include "LocalizeStrings.h"
 
 #include "GUIImage.h"
@@ -66,7 +67,7 @@
 #include "FileItemListModification.h"
 #include "utils/FileUtils.h"
 #ifdef HAS_PYTHON
-#include "libPython/XBPython.h"
+#include "interfaces/python/XBPython.h"
 #endif
 
 #define CONTROL_BTNVIEWASICONS       2

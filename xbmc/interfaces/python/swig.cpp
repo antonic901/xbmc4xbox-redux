@@ -20,10 +20,7 @@
  */
 
 #include "interfaces/python/swig.h"
-<<<<<<< Updated upstream
-=======
 #include "libPython/XBPythonDll.h"
->>>>>>> Stashed changes
 #include <string>
 
 namespace PythonBindings

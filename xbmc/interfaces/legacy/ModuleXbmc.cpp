@@ -176,10 +176,10 @@ namespace XBMCAddon
       TRACE;
 
       XbmcThreads::EndTime endTime(timemillis);
-      while (!endTime.isTimePast())
+      while (!endTime.IsTimePast())
       {
         DelayedCallGuard dcguard;
-        long nextSleep = endTime.millisLeft();
+        long nextSleep = endTime.MillisLeft();
         if (nextSleep > 100)
           nextSleep = 100; // only sleep for 100 millis
         ::Sleep(nextSleep);

@@ -35,21 +35,17 @@
 #include "GUIPassword.h"
 #include "XBPython.h"
 #ifdef _XBOX
-#include "XBPythonDll.h"
+#include "libPython/XBPythonDll.h"
 #endif
 #include "settings/Settings.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
+#include "guilib/GraphicContext.h"
+#include "profiles/ProfilesManager.h"
 #include "utils/log.h"
 #include "pythreadstate.h"
 #include "utils/TimeUtils.h"
 #include "Util.h"
-
-#ifdef _XBOX
-XBPython g_pythonParser;
-
-#define PYTHON_DLL "special://xbmc/system/python/python27.dll"
-#endif
 
 #include "threads/SystemClock.h"
 #include "addons/Addon.h"
@@ -57,14 +53,20 @@ XBPython g_pythonParser;
 
 #include "interfaces/legacy/Monitor.h"
 
+#ifdef _XBOX
+XBPython g_pythonParser;
+
+#define PYTHON_DLL "special://xbmc/system/python/python27.dll"
+#endif
+
 using namespace ANNOUNCEMENT;
 
 namespace PythonBindings {
-  void initModule_xbmcgui(void);
-  void initModule_xbmc(void);
-  void initModule_xbmcplugin(void);
-  void initModule_xbmcaddon(void);
-  void initModule_xbmcvfs(void);
+  void initModule_xbmcgui(void) {};
+  void initModule_xbmc(void) {};
+  void initModule_xbmcplugin(void){};
+  void initModule_xbmcaddon(void) {};
+  void initModule_xbmcvfs(void) {};
 }
 
 using namespace PythonBindings;
@@ -521,8 +523,12 @@ void XBPython::Initialize()
 
       // first we check if all necessary files are installed
 #ifndef _LINUX
-      if(!FileExist("special://xbmc/system/python/DLLs/_socket.pyd") ||
+      if (!FileExist("special://xbmc/system/python/python27.zlib") ||
+        !FileExist("special://xbmc/system/python/DLLs/_elementtree.pyd") ||
+        !FileExist("special://xbmc/system/python/DLLs/_hashlib.pyd") ||
+        !FileExist("special://xbmc/system/python/DLLs/_socket.pyd") ||
         !FileExist("special://xbmc/system/python/DLLs/_ssl.pyd") ||
+        !FileExist("special://xbmc/system/python/DLLs/_sqlite3.pyd") ||
         !FileExist("special://xbmc/system/python/DLLs/bz2.pyd") ||
         !FileExist("special://xbmc/system/python/DLLs/pyexpat.pyd") ||
         !FileExist("special://xbmc/system/python/DLLs/select.pyd") ||
@@ -742,7 +748,7 @@ int XBPython::evalFile(const CStdString &src, const std::vector<CStdString> &arg
   }
 
   // check if locked
-  if (g_settings.GetCurrentProfile().programsLocked() && !g_passwordManager.IsMasterLockUnlocked(true))
+  if (CProfilesManager::Get().GetCurrentProfile().programsLocked() && !g_passwordManager.IsMasterLockUnlocked(true))
     return -1;
 
   CSingleLock lock(m_critSection);

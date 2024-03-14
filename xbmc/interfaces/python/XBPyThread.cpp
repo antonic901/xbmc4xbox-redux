@@ -43,7 +43,7 @@
 #include "XBPyThread.h"
 #include "XBPython.h"
 #ifdef _XBOX
-#include "XBPythonDll.h"
+#include "libPython/XBPythonDll.h"
 #endif
 
 #include "interfaces/legacy/Exception.h"
@@ -56,7 +56,7 @@
 #include "utils/CharsetConverter.h"
 
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(_XBOX)
 extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
 #else
 #define fopen_utf8 fopen
@@ -308,7 +308,6 @@ void XBPyThread::Process()
       CPyThreadState releaseGil;
       CSingleLock gc(g_graphicsContext);
 
-      PYXBMC::PyXBMCGUILock();
       CGUIDialogKaiToast *pDlgToast = (CGUIDialogKaiToast*)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
       if (pDlgToast)
       {
@@ -326,7 +325,6 @@ void XBPyThread::Process()
         desc.Format(g_localizeStrings.Get(2100), script);
         pDlgToast->QueueNotification(CGUIDialogKaiToast::Error, g_localizeStrings.Get(257), desc);
       }
-      PYXBMC::PyXBMCGUIUnlock();
     }
   }
 

@@ -56,7 +56,7 @@
 #include "GUIColorManager.h"
 #include "GUITextLayout.h"
 #include "addons/Skin.h"
-#include "libPython/XBPython.h"
+#include "interfaces/python/XBPython.h"
 #include "input/ButtonTranslator.h"
 #include "GUIAudioManager.h"
 #include "GUIPassword.h"
