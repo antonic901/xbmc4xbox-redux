@@ -62,11 +62,11 @@ XBPython g_pythonParser;
 using namespace ANNOUNCEMENT;
 
 namespace PythonBindings {
-  void initModule_xbmcgui(void) {};
-  void initModule_xbmc(void) {};
-  void initModule_xbmcplugin(void){};
-  void initModule_xbmcaddon(void) {};
-  void initModule_xbmcvfs(void) {};
+  void initModule_xbmcgui(void);
+  void initModule_xbmc(void);
+  void initModule_xbmcplugin(void);
+  void initModule_xbmcaddon(void);
+  void initModule_xbmcvfs(void);
 }
 
 using namespace PythonBindings;

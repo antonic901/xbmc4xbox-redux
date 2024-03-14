@@ -22,6 +22,8 @@
 %module xbmcvfs
 
 %{
+#include "libPython/XBPythonDll.h"
+
 #include "interfaces/legacy/ModuleXbmcvfs.h"
 #include "interfaces/legacy/File.h"
 #include "utils/log.h"

@@ -22,6 +22,8 @@
 %module(directors="1") xbmcgui
 
 %{
+#include "libPython/XBPythonDll.h"
+
 #include "interfaces/legacy/Dialog.h"
 #include "interfaces/legacy/ModuleXbmcgui.h"
 #include "interfaces/legacy/Control.h"

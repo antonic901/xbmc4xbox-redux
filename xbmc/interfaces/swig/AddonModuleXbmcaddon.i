@@ -22,6 +22,8 @@
 %module xbmcaddon
 
 %{
+#include "libPython/XBPythonDll.h"
+
 #include "interfaces/legacy/Addon.h"
 
 using namespace XBMCAddon;

@@ -514,7 +514,21 @@ namespace XBMCAddon
     int getLOGFATAL() { return LOGFATAL; }
     int getLOGNONE() { return LOGNONE; }
 
-#ifndef _XBOX
+#ifdef _XBOX
+    enum ECAPTURESTATE
+    {
+      CAPTURESTATE_WORKING,
+      CAPTURESTATE_NEEDSRENDER,
+      CAPTURESTATE_NEEDSREADOUT,
+      CAPTURESTATE_DONE,
+      CAPTURESTATE_FAILED,
+      CAPTURESTATE_NEEDSDELETE
+    };
+
+#define CAPTUREFLAG_CONTINUOUS  0x01 //after a render is done, render a new one immediately
+#define CAPTUREFLAG_IMMEDIATELY 0x02 //read out immediately after render, this can cause a busy wait
+#endif
+
     // render capture user states
     int getCAPTURE_STATE_WORKING() { return CAPTURESTATE_WORKING; }
     int getCAPTURE_STATE_DONE(){ return CAPTURESTATE_DONE; }
@@ -523,7 +537,6 @@ namespace XBMCAddon
     // render capture flags
     int getCAPTURE_FLAG_CONTINUOUS() { return (int)CAPTUREFLAG_CONTINUOUS; }
     int getCAPTURE_FLAG_IMMEDIATELY() { return (int)CAPTUREFLAG_IMMEDIATELY; }
-#endif
 
     const int lLOGNOTICE = LOGNOTICE;
 

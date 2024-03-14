@@ -55,11 +55,11 @@ Helper.setup(classes,
       'int': '${result} = Py_BuildValue((char*)"i", ${api});',
       'double': '${result} = PyFloat_FromDouble(${api});',
       'float': '${result} = Py_BuildValue((char*)"f", ${api});',
-      'String' : new File('typemaps/python.string.outtm'),
+      'String' : new File('/home/nikola/dev/xbmc4xbox-redux/xbmc/interfaces/python/typemaps/python.string.outtm'),
       'p.q(const).char' : '${result} = PyString_FromString(${api});',
-      (Pattern.compile('''(p.){0,1}std::vector<\\(.*\\)>''')) : new File('typemaps/python.vector.outtm'),
-      (Pattern.compile('''(p.){0,1}Tuple<\\(.*\\)>''')) : new File('typemaps/python.Tuple.outtm'),
-      (Pattern.compile('''(p.){0,1}Alternative<\\(.*\\)>''')) : new File('typemaps/python.Alternative.outtm')
+      (Pattern.compile('''(p.){0,1}std::vector<\\(.*\\)>''')) : new File('/home/nikola/dev/xbmc4xbox-redux/xbmc/interfaces/python/typemaps/python.vector.outtm'),
+      (Pattern.compile('''(p.){0,1}Tuple<\\(.*\\)>''')) : new File('/home/nikola/dev/xbmc4xbox-redux/xbmc/interfaces/python/typemaps/python.Tuple.outtm'),
+      (Pattern.compile('''(p.){0,1}Alternative<\\(.*\\)>''')) : new File('/home/nikola/dev/xbmc4xbox-redux/xbmc/interfaces/python/typemaps/python.Alternative.outtm')
     ], '${result} = makePythonInstance(${api},&Py${Helper.findFullClassName(classnode).replaceAll(\'::\',\'_\')}_Type,"${type}");',
     /**
      * This is meant to contain mini-templates for converting the parameter types
@@ -71,13 +71,13 @@ Helper.setup(classes,
      */
     [ 
       'String' : 'if (${slarg}) PyXBMCGetUnicodeString(${api},${slarg},false,"${api}","${method.@name}");',
-      (Pattern.compile('''(p.){0,1}std::vector<\\(.*\\)>''')) : new File('typemaps/python.vector.intm'),
-      (Pattern.compile('''(p.){0,1}Tuple(3){0,1}<\\(.*\\)>''')) : new File('typemaps/python.Tuple.intm'),
+      (Pattern.compile('''(p.){0,1}std::vector<\\(.*\\)>''')) : new File('/home/nikola/dev/xbmc4xbox-redux/xbmc/interfaces/python/typemaps/python.vector.intm'),
+      (Pattern.compile('''(p.){0,1}Tuple(3){0,1}<\\(.*\\)>''')) : new File('/home/nikola/dev/xbmc4xbox-redux/xbmc/interfaces/python/typemaps/python.Tuple.intm'),
       // I shouldn't need both of these but my parser doesn't resolve namespaces within
       //  parameter declarations. TODO: Maybe I should fix this.
-      'r.q(const).Dictionary' : new File('typemaps/python.dict.intm'),
-      'r.q(const).XBMCAddon::Dictionary' : new File('typemaps/python.dict.intm'),
-      (Pattern.compile('''(p.){0,1}std::map<\\(.*\\)>''')) : new File('typemaps/python.map.intm'),
+      'r.q(const).Dictionary' : new File('/home/nikola/dev/xbmc4xbox-redux/xbmc/interfaces/python/typemaps/python.dict.intm'),
+      'r.q(const).XBMCAddon::Dictionary' : new File('/home/nikola/dev/xbmc4xbox-redux/xbmc/interfaces/python/typemaps/python.dict.intm'),
+      (Pattern.compile('''(p.){0,1}std::map<\\(.*\\)>''')) : new File('/home/nikola/dev/xbmc4xbox-redux/xbmc/interfaces/python/typemaps/python.map.intm'),
       'bool' : '${api} = (PyInt_AsLong(${slarg}) == 0L ? false : true);'
     ], '${api} = (${swigTypeParser.SwigType_str(ltype)})retrieveApiInstance(${slarg},"${ltype}","${helper.findNamespace(method)}","${helper.callingName(method)}");')
 
