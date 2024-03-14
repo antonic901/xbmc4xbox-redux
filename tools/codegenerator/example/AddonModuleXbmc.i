@@ -1,6 +1,5 @@
-<%
 /*
- *      Copyright (C) 2005-2012 Team XBMC
+ *      Copyright (C) 2005-2010 Team XBMC
  *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -19,7 +18,7 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
-%>
-${result} = <% 
-  if(method.@feature_python_coerceToUnicode) { %>PyUnicode_DecodeUTF8(${api}.c_str(),${api}.size(),"replace");<% }
-  else { %>PyString_FromString(${api}.c_str());<% } %>
+
+%module xbmc
+
+%include "native/ModuleXbmc.h"

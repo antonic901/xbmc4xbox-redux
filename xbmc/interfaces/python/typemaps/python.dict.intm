@@ -19,31 +19,6 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
-<<<<<<<< HEAD:lib/libPython/xbmcmodule/PythonAddon.h
-
-#include <Python.h>
-
-#include "addons/IAddon.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-namespace PYXBMC
-{
-  typedef struct {
-    PyObject_HEAD
-    ADDON::AddonPtr pAddon;
-  } Addon;
-
-  extern PyTypeObject Addon_Type;
-  void initAddon_Type();
-}
-
-#ifdef __cplusplus
-}
-#endif
-========
 %>
     {
       PyObject *pykey, *pyvalue;
@@ -57,4 +32,3 @@ namespace PYXBMC
         ${api}[key] = value;
       }
     }
->>>>>>>> 396a4400d5 ([81f2141] @Montellese, @Memphiz, @jimfcarroll Replace the scripting engine with a codegenerated one.):xbmc/interfaces/python/typemaps/python.dict.intm
