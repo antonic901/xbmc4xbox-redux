@@ -22,18 +22,43 @@
 #include "XBDateTime.h"
 #include "threads/SystemClock.h"
 
+#if   defined(TARGET_DARWIN)
+#include <mach/mach_time.h>
+#include <CoreVideo/CVHostTime.h>
+#elif defined(TARGET_WINDOWS)
+#include <windows.h>
+#elif defined(_XBOX)
+#include <xtl.h>
+#else
+#include <time.h>
+#endif
+
 int64_t CurrentHostCounter(void)
 {
+#if   defined(TARGET_DARWIN)
+  return( (int64_t)CVGetCurrentHostTime() );
+#elif defined(TARGET_WINDOWS) || defined(_XBOX)
   LARGE_INTEGER PerformanceCount;
   QueryPerformanceCounter(&PerformanceCount);
   return( (int64_t)PerformanceCount.QuadPart );
+#else
+  struct timespec now;
+  clock_gettime(CLOCK_MONOTONIC, &now);
+  return( ((int64_t)now.tv_sec * 1000000000L) + now.tv_nsec );
+#endif
 }
 
 int64_t CurrentHostFrequency(void)
 {
+#if defined(TARGET_DARWIN)
+  return( (int64_t)CVGetHostClockFrequency() );
+#elif defined(TARGET_WINDOWS) || defined(_XBOX)
   LARGE_INTEGER Frequency;
   QueryPerformanceFrequency(&Frequency);
   return( (int64_t)Frequency.QuadPart );
+#else
+  return( (int64_t)1000000000L );
+#endif
 }
 
 unsigned int CTimeUtils::frameTime = 0;
