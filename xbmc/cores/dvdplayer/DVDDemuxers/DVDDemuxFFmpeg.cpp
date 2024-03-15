@@ -37,6 +37,7 @@
 #include "utils/log.h"
 #include "threads/Thread.h"
 #include "threads/SystemClock.h"
+#include "utils/StringUtils.h"
 
 void CDemuxStreamAudioFFmpeg::GetStreamInfo(std::string& strInfo)
 {
@@ -109,7 +110,7 @@ void ff_avutil_log(void* ptr, int level, const char* format, va_list va)
   }
 
   CStdString message, prefix;
-  message.FormatV(format, va);
+  message = StringUtils2::FormatV(format, va);
 
   prefix.Format("ffmpeg[%X]: ", threadId);
   if(avc)

@@ -19,13 +19,22 @@
  */
 
 #include "system.h"
-#include "utils/log.h"
 #include "DVDSubtitlesLibass.h"
 #include "DVDClock.h"
 #include "filesystem/SpecialProtocol.h"
+#include "utils/log.h"
+#include "utils/StringUtils.h"
 #include "threads/Atomics.h"
 
 using namespace std;
+
+static void libass_log(int level, const char *fmt, va_list args, void *data)
+{
+  if(level >= 5)
+    return;
+  CStdString log = StringUtils2::FormatV(fmt, args);
+  CLog::Log(LOGDEBUG, "CDVDSubtitlesLibass: [ass] %s", log.c_str());
+}
 
 CDVDSubtitlesLibass::CDVDSubtitlesLibass()
 {

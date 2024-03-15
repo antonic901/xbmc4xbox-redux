@@ -26,6 +26,7 @@
 #include "threads/SingleLock.h"
 #include "threads/Thread.h"
 #include "utils/StdString.h"
+#include "utils/StringUtils.h"
 
 #define critSec XBMC_GLOBAL_USE(CLog::CLogGlobals).critSec
 #define m_file XBMC_GLOBAL_USE(CLog::CLogGlobals).m_file
@@ -81,7 +82,7 @@ void CLog::Log(int loglevel, const char *format, ... )
     strData.reserve(16384);
     va_list va;
     va_start(va, format);
-    strData.FormatV(format,va);
+    strData = StringUtils2::FormatV(format,va);
     va_end(va);
 
     if (m_repeatLogLevel == loglevel && m_repeatLine == strData)
