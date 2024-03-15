@@ -28,11 +28,18 @@
 
 void CThread::SpawnThread(unsigned stacksize)
 {
-  m_ThreadOpaque.handle = CreateThread(NULL,stacksize, (LPTHREAD_START_ROUTINE)&staticThread, this, 0, &m_ThreadId);
+  // Create in the suspended state, so that no matter the thread priorities and scheduled order, the handle will be assigned
+  // before the new thread exits.
+  m_ThreadOpaque.handle = CreateThread(NULL, stacksize, (LPTHREAD_START_ROUTINE)&staticThread, this, CREATE_SUSPENDED, &m_ThreadId);
   if (m_ThreadOpaque.handle == NULL)
   {
-    if (logger) logger->Log(LOGERROR, "%s - fatal error creating thread", __FUNCTION__);
+    if (logger) logger->Log(LOGERROR, "%s - fatal error %d creating thread", __FUNCTION__, GetLastError());
+    return;
   }
+
+  if (ResumeThread(m_ThreadOpaque.handle) == -1)
+    if (logger) logger->Log(LOGERROR, "%s - fatal error %d resuming thread", __FUNCTION__, GetLastError());
+
 }
 
 void CThread::TermHandler()
