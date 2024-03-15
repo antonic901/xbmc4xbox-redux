@@ -49,6 +49,7 @@ namespace XbmcThreads
    */
   template<class L> class CountingLockable : public NonCopyable
   {
+    friend class ConditionVariable;
   protected:
     L mutex;
     unsigned int count;

@@ -142,11 +142,16 @@ namespace XbmcThreads
 
     inline void wait(CCriticalSection& mutex) 
     {
+      int  count = lock.count;
+      lock.count = 0;
       wait(mutex,(unsigned long)-1L);
+      lock.count = count;
     }
 
     inline bool wait(CCriticalSection& mutex, unsigned long milliseconds) 
     { 
+      int  count = lock.count;
+      lock.count = 0;
       bool success = false;
       DWORD ms = ((unsigned long)-1L) == milliseconds ? INFINITE : (DWORD)milliseconds;
 
@@ -171,7 +176,7 @@ namespace XbmcThreads
           --waiting;
         }
       }
-
+      lock.count = count;
       return success;
     }
 
