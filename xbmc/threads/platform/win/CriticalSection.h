@@ -28,7 +28,6 @@
 #else
 #include <windows.h>
 #endif
-#include <assert.h>
 
 namespace XbmcThreads
 {
