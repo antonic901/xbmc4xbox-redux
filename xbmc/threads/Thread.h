@@ -31,6 +31,10 @@
 #include "threads/ThreadLocal.h"
 #include "commons/ilog.h"
 
+#ifdef TARGET_DARWIN
+#include <mach/mach.h>
+#endif
+
 class IRunnable
 {
 public:
@@ -38,7 +42,9 @@ public:
   virtual ~IRunnable() {}
 };
 
+#ifdef _XBOX
 #undef GetCurrentThread
+#endif
 
 // minimum as mandated by XTL
 #define THREAD_MINSTACKSIZE 0x10000
