@@ -455,7 +455,7 @@ void CMusicInfoTag::Serialize(CVariant& value)
   value["albumartist"] = m_albumArtist;
   value["genre"] = m_genre;
   value["duration"] = m_iDuration;
-  value["track"] = m_iTrack;
+  value["track"] = GetTrackNumber();
   value["loaded"] = m_bLoaded;
   value["year"] = m_dwReleaseDate.wYear;
   value["musicbrainztrackid"] = m_strMusicBrainzTrackID;
@@ -464,7 +464,7 @@ void CMusicInfoTag::Serialize(CVariant& value)
   value["musicbrainzalbumartistid"] = m_strMusicBrainzAlbumArtistID;
   value["musicbrainztrmid"] = m_strMusicBrainzTRMID;
   value["comment"] = m_strComment;
-  value["rating"] = m_rating;
+  value["rating"] = (int)(m_rating - '0');
   value["playcount"] = m_iTimesPlayed;
   value["artistid"] = m_iArtistId;
   value["albumid"] = m_iAlbumId;
@@ -481,7 +481,7 @@ void CMusicInfoTag::ToSortable(SortItem& sortable)
   sortable[FieldTrackNumber] = m_iTrack;
   sortable[FieldYear] = m_dwReleaseDate.wYear;
   sortable[FieldComment] = m_strComment;
-  sortable[FieldRating] = (float)m_rating;
+  sortable[FieldRating] = (float)(m_rating - '0');
   sortable[FieldPlaycount] = m_iTimesPlayed;
   sortable[FieldLastPlayed] = m_lastPlayed.IsValid() ? m_lastPlayed.GetAsDBDateTime() : StringUtils::EmptyString;
   sortable[FieldListeners] = m_listeners;
