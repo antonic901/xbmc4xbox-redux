@@ -24,10 +24,14 @@
 #ifndef FILERAR_H_
 #define FILERAR_H_
 
+#include "File.h"
 #include "IFile.h"
-#include "UnrarXLib/rar.hpp"
 #include "threads/Thread.h"
 #include "threads/Event.h"
+
+class CmdExtract;
+class CommandData;
+class Archive;
 
 namespace XFILE
 {	

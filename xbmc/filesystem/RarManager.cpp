@@ -18,20 +18,21 @@
  *
  */
 
-#include "utils/log.h"
 #include "RarManager.h"
-#include "UnrarXLib/rar.hpp"
 #include "Util.h"
+#include "utils/CharsetConverter.h"
 #include "utils/URIUtils.h"
 #include "threads/SingleLock.h"
-#include "GUIWindowManager.h"
-#include "dialogs/GUIDialogYesNo.h"
-#include "filesystem/Directory.h"
-#include "filesystem/SpecialProtocol.h"
+#include "Directory.h"
+#include "SpecialProtocol.h"
 #include "settings/AdvancedSettings.h"
 #include "FileItem.h"
-#include "utils/CharsetConverter.h"
+#include "utils/log.h"
+#include "filesystem/File.h"
 #include "utils/StringUtils.h"
+
+#include "dialogs/GUIDialogYesNo.h"
+#include "guilib/GUIWindowManager.h"
 
 #include <set>
 
