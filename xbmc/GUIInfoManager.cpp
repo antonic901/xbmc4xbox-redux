@@ -514,6 +514,21 @@ const infomap listitem_labels[]= {{ "thumb",            LISTITEM_THUMB },
                                   { "picturepath",      LISTITEM_PICTURE_PATH },
                                   { "pictureresolution",LISTITEM_PICTURE_RESOLUTION },
                                   { "picturedatetime",  LISTITEM_PICTURE_DATETIME },
+                                  { "picturecomment",   LISTITEM_PICTURE_COMMENT },
+                                  { "picturecaption",   LISTITEM_PICTURE_CAPTION },
+                                  { "picturedesc",      LISTITEM_PICTURE_DESC },
+                                  { "picturekeywords",  LISTITEM_PICTURE_KEYWORDS },
+                                  { "picturecammake",   LISTITEM_PICTURE_CAM_MAKE },
+                                  { "picturecammodel",  LISTITEM_PICTURE_CAM_MODEL },
+                                  { "pictureaperture",  LISTITEM_PICTURE_APERTURE },
+                                  { "picturefocallen",  LISTITEM_PICTURE_FOCAL_LEN },
+                                  { "picturefocusdist", LISTITEM_PICTURE_FOCUS_DIST },
+                                  { "pictureexpmode",   LISTITEM_PICTURE_EXP_MODE },
+                                  { "pictureexptime",   LISTITEM_PICTURE_EXP_TIME },
+                                  { "pictureiso",       LISTITEM_PICTURE_ISO },
+                                  { "picturegpslat",    LISTITEM_PICTURE_GPS_LAT },
+                                  { "picturegpslon",    LISTITEM_PICTURE_GPS_LON },
+                                  { "picturegpsalt",    LISTITEM_PICTURE_GPS_ALT },
                                   { "studio",           LISTITEM_STUDIO },
                                   { "country",          LISTITEM_COUNTRY },
                                   { "mpaa",             LISTITEM_MPAA },
@@ -580,6 +595,25 @@ const infomap playlist[] =       {{ "length",           PLAYLIST_LENGTH },
                                   { "israndom",         PLAYLIST_ISRANDOM },
                                   { "isrepeat",         PLAYLIST_ISREPEAT },
                                   { "isrepeatone",      PLAYLIST_ISREPEATONE }};
+
+const int picture_slide_map[]  = {/* LISTITEM_PICTURE_RESOLUTION => */ SLIDE_RESOLUTION,
+                                  /* LISTITEM_PICTURE_DATE       => */ SLIDE_EXIF_DATE,
+                                  /* LISTITEM_PICTURE_DATETIME   => */ SLIDE_EXIF_DATE_TIME,
+                                  /* LISTITEM_PICTURE_COMMENT    => */ SLIDE_COMMENT,
+                                  /* LISTITEM_PICTURE_CAPTION    => */ SLIDE_IPTC_CAPTION,
+                                  /* LISTITEM_PICTURE_DESC       => */ SLIDE_EXIF_DESCRIPTION,
+                                  /* LISTITEM_PICTURE_KEYWORDS   => */ SLIDE_IPTC_KEYWORDS,
+                                  /* LISTITEM_PICTURE_CAM_MAKE   => */ SLIDE_EXIF_CAMERA_MAKE,
+                                  /* LISTITEM_PICTURE_CAM_MODEL  => */ SLIDE_EXIF_CAMERA_MODEL,
+                                  /* LISTITEM_PICTURE_APERTURE   => */ SLIDE_EXIF_APERTURE,
+                                  /* LISTITEM_PICTURE_FOCAL_LEN  => */ SLIDE_EXIF_FOCAL_LENGTH,
+                                  /* LISTITEM_PICTURE_FOCUS_DIST => */ SLIDE_EXIF_FOCUS_DIST,
+                                  /* LISTITEM_PICTURE_EXP_MODE   => */ SLIDE_EXIF_EXPOSURE_MODE,
+                                  /* LISTITEM_PICTURE_EXP_TIME   => */ SLIDE_EXIF_EXPOSURE_TIME,
+                                  /* LISTITEM_PICTURE_ISO        => */ SLIDE_EXIF_ISO_EQUIV,
+                                  /* LISTITEM_PICTURE_GPS_LAT    => */ SLIDE_EXIF_GPS_LATITUDE,
+                                  /* LISTITEM_PICTURE_GPS_LON    => */ SLIDE_EXIF_GPS_LONGITUDE,
+                                  /* LISTITEM_PICTURE_GPS_ALT    => */ SLIDE_EXIF_GPS_ALTITUDE };
 
 const infomap bar[] =            {{ "gputemperature",  SYSTEM_GPU_TEMPERATURE },
                                   { "cputemperature",  SYSTEM_CPU_TEMPERATURE },
@@ -3943,6 +3977,9 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
     return item->GetProperty(property).asString();
   }
 
+  if (info >= LISTITEM_PICTURE_START && info <= LISTITEM_PICTURE_END && item->HasPictureInfoTag())
+    return item->GetPictureInfoTag()->GetInfo(picture_slide_map[info - LISTITEM_PICTURE_START]);
+
   switch (info)
   {
   case LISTITEM_LABEL:
@@ -4216,14 +4253,6 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info)
   case LISTITEM_PICTURE_PATH:
     if (item->IsPicture() && (!item->IsZIP() || item->IsRAR() || item->IsCBZ() || item->IsCBR()))
       return item->GetPath();
-    break;
-  case LISTITEM_PICTURE_DATETIME:
-    if (item->HasPictureInfoTag())
-      return item->GetPictureInfoTag()->GetInfo(SLIDE_EXIF_DATE_TIME);
-    break;
-  case LISTITEM_PICTURE_RESOLUTION:
-    if (item->HasPictureInfoTag())
-      return item->GetPictureInfoTag()->GetInfo(SLIDE_RESOLUTION);
     break;
   case LISTITEM_STUDIO:
     if (item->HasVideoInfoTag())
