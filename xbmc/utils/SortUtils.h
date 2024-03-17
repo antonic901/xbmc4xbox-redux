@@ -89,7 +89,8 @@ typedef enum {
   SortByPlaycount,
   SortByListeners,
   SortByBitrate,
-  SortByRandom
+  SortByRandom,
+  SortByDateTaken
 } SortBy;
 
 typedef struct SortDescription {

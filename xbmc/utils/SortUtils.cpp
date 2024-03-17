@@ -405,6 +405,11 @@ string ByRandom(SortAttribute attributes, const SortItem &values)
   return label;
 }
 
+string ByDateTaken(SortAttribute attributes, const SortItem &values)
+{
+  return values.find(FieldDateTaken)->second.asString();
+}
+
 bool preliminarySort(const SortItem &left, const SortItem &right, bool handleFolder, bool &result, std::wstring &labelLeft, std::wstring &labelRight)
 {
   // make sure both items have the necessary data to do the sorting
@@ -579,6 +584,7 @@ map<SortBy, SortUtils::SortPreparator> fillPreparators()
   preparators[SortByListeners]                = ByListeners;
   preparators[SortByBitrate]                  = ByBitrate;
   preparators[SortByRandom]                   = ByRandom;
+  preparators[SortByDateTaken]                = ByDateTaken;
 
   return preparators;
 }
@@ -646,6 +652,7 @@ map<SortBy, Fields> fillSortingFields()
   sortingFields[SortByPlaycount].insert(FieldPlaycount);
   sortingFields[SortByListeners].insert(FieldListeners);
   sortingFields[SortByBitrate].insert(FieldBitrate);
+  sortingFields[SortByDateTaken].insert(FieldDateTaken);
   sortingFields.insert(pair<SortBy, Fields>(SortByRandom, Fields()));
 
   return sortingFields;
@@ -848,6 +855,7 @@ const sort_map table[] = {
   { SortByLastPlayed,               SORT_METHOD_LASTPLAYED,                   SortAttributeIgnoreFolders, 568 },
   { SortByPlaycount,                SORT_METHOD_PLAYCOUNT,                    SortAttributeIgnoreFolders, 567 },
   { SortByListeners,                SORT_METHOD_LISTENERS,                    SortAttributeNone,          20455 },
+  { SortByDateTaken,                SORT_METHOD_DATE_TAKEN,                   SortAttributeIgnoreFolders, 577 },
   { SortByNone,                     SORT_METHOD_NONE,                         SortAttributeNone,          16018 },
   // the following have no corresponding SORT_METHOD_*
   { SortByAlbumType,                SORT_METHOD_NONE,                         SortAttributeNone,          564 },

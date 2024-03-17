@@ -31,6 +31,7 @@ void CPictureInfoTag::Reset()
   memset(&m_exifInfo, 0, sizeof(m_exifInfo));
   memset(&m_iptcInfo, 0, sizeof(m_iptcInfo));
   m_isLoaded = false;
+  m_dateTimeTaken.Reset();
 }
 
 const CPictureInfoTag& CPictureInfoTag::operator=(const CPictureInfoTag& right)
@@ -39,6 +40,7 @@ const CPictureInfoTag& CPictureInfoTag::operator=(const CPictureInfoTag& right)
   memcpy(&m_exifInfo, &right.m_exifInfo, sizeof(m_exifInfo));
   memcpy(&m_iptcInfo, &right.m_iptcInfo, sizeof(m_iptcInfo));
   m_isLoaded = right.m_isLoaded;
+  m_dateTimeTaken = right.m_dateTimeTaken;
   return *this;
 }
 
@@ -52,6 +54,8 @@ bool CPictureInfoTag::Load(const CStdString &path)
 
   if (exifDll.process_jpeg(path.c_str(), &m_exifInfo, &m_iptcInfo))
     m_isLoaded = true;
+
+  ConvertDateTime();
 
   return m_isLoaded;
 }
@@ -97,6 +101,7 @@ void CPictureInfoTag::Archive(CArchive& ar)
     ar << m_exifInfo.ThumbnailSizeOffset;
     ar << m_exifInfo.Whitebalance;
     ar << m_exifInfo.Width;
+    ar << m_dateTimeTaken;
 
     ar << CStdString(m_iptcInfo.Author);
     ar << CStdString(m_iptcInfo.Byline);
@@ -160,6 +165,7 @@ void CPictureInfoTag::Archive(CArchive& ar)
     ar >> m_exifInfo.ThumbnailSizeOffset;
     ar >> m_exifInfo.Whitebalance;
     ar >> m_exifInfo.Width;
+    ar >> m_dateTimeTaken;
 
     GetStringFromArchive(ar, m_iptcInfo.Author, sizeof(m_iptcInfo.Author));
     GetStringFromArchive(ar, m_iptcInfo.Byline, sizeof(m_iptcInfo.Byline));
@@ -249,7 +255,8 @@ void CPictureInfoTag::Serialize(CVariant& value)
 
 void CPictureInfoTag::ToSortable(SortItem& sortable)
 {
-
+  if (m_dateTimeTaken.IsValid())
+    sortable[FieldDateTaken] = m_dateTimeTaken.GetAsDBDateTime();
 }
 
 void CPictureInfoTag::GetStringFromArchive(CArchive &ar, char *string, size_t length)
@@ -317,22 +324,12 @@ const CStdString CPictureInfoTag::GetInfo(int info) const
     }
     break;
   case SLIDE_EXIF_DATE_TIME:
+    if (m_dateTimeTaken.IsValid())
+      value = m_dateTimeTaken.GetAsLocalizedDateTime();
+    break;
   case SLIDE_EXIF_DATE:
-    if (strlen(m_exifInfo.DateTime) >= 19 && m_exifInfo.DateTime[0] != ' ')
-    {
-      CStdString dateTime = m_exifInfo.DateTime;
-      int year  = atoi(dateTime.Mid(0, 4).c_str());
-      int month = atoi(dateTime.Mid(5, 2).c_str());
-      int day   = atoi(dateTime.Mid(8, 2).c_str());
-      int hour  = atoi(dateTime.Mid(11,2).c_str());
-      int min   = atoi(dateTime.Mid(14,2).c_str());
-      int sec   = atoi(dateTime.Mid(17,2).c_str());
-      CDateTime date(year, month, day, hour, min, sec);
-      if(SLIDE_EXIF_DATE_TIME == info)
-          value = date.GetAsLocalizedDateTime();
-      else
-          value = date.GetAsLocalizedDate();
-    }
+    if (m_dateTimeTaken.IsValid())
+      value = m_dateTimeTaken.GetAsLocalizedDate();
     break;
 //  case SLIDE_EXIF_DESCRIPTION:
 //    value = m_exifInfo.Description;
@@ -593,6 +590,7 @@ void CPictureInfoTag::SetInfo(int info, const CStdString& value)
   case SLIDE_EXIF_DATE_TIME:
     {
       strcpy(m_exifInfo.DateTime, value.c_str());
+      ConvertDateTime();
       break;
     }
   default:
@@ -603,4 +601,24 @@ void CPictureInfoTag::SetInfo(int info, const CStdString& value)
 void CPictureInfoTag::SetLoaded(bool loaded)
 {
   m_isLoaded = loaded;
+}
+
+const CDateTime& CPictureInfoTag::GetDateTimeTaken() const
+{
+  return m_dateTimeTaken;
+}
+
+void CPictureInfoTag::ConvertDateTime()
+{
+  if (strlen(m_exifInfo.DateTime) >= 19 && m_exifInfo.DateTime[0] != ' ')
+  {
+    CStdString dateTime = m_exifInfo.DateTime;
+    int year  = atoi(dateTime.Mid(0, 4).c_str());
+    int month = atoi(dateTime.Mid(5, 2).c_str());
+    int day   = atoi(dateTime.Mid(8, 2).c_str());
+    int hour  = atoi(dateTime.Mid(11,2).c_str());
+    int min   = atoi(dateTime.Mid(14,2).c_str());
+    int sec   = atoi(dateTime.Mid(17,2).c_str());
+    m_dateTimeTaken.SetDateTime(year, month, day, hour, min, sec);
+  }
 }

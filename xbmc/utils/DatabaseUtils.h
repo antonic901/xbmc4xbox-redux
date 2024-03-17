@@ -56,6 +56,7 @@ typedef enum {
   FieldPlaylist,
   FieldVirtualFolder,
   FieldRandom,
+  FieldDateTaken,
 
   // fields retrievable from the database
   FieldId,
