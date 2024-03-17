@@ -91,7 +91,7 @@ public:
   void Reset();
   virtual void Archive(CArchive& ar);
   virtual void Serialize(CVariant& value);
-  virtual void ToSortable(SortItem& sortable);
+  virtual void ToSortable(SortItem& sortable, Field field) const;
   const CPictureInfoTag& operator=(const CPictureInfoTag& item);
   const CStdString GetInfo(int info) const;
 

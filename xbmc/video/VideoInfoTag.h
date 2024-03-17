@@ -49,7 +49,7 @@ public:
   bool Save(TiXmlNode *node, const CStdString &tag, bool savePathInfo = true);
   virtual void Archive(CArchive& ar);
   virtual void Serialize(CVariant& value);
-  virtual void ToSortable(SortItem& sortable);
+  virtual void ToSortable(SortItem& sortable, Field field) const;
   const CStdString GetCast(bool bIncludeRole = false) const;
   bool HasStreamDetails() const;
   bool IsEmpty() const;

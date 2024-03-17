@@ -253,9 +253,9 @@ void CPictureInfoTag::Serialize(CVariant& value)
   value["transmissionreference"] = CStdString(m_iptcInfo.TransmissionReference);
 }
 
-void CPictureInfoTag::ToSortable(SortItem& sortable)
+void CPictureInfoTag::ToSortable(SortItem& sortable, Field field) const
 {
-  if (m_dateTimeTaken.IsValid())
+  if (field == FieldDateTaken && m_dateTimeTaken.IsValid())
     sortable[FieldDateTaken] = m_dateTimeTaken.GetAsDBDateTime();
 }
 
