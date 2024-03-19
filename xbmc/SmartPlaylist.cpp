@@ -1209,11 +1209,11 @@ CStdString CSmartPlaylistRule::GetField(int field, const CStdString &type) const
   return "";
 }
 
-CSmartPlaylistRuleCombination::CSmartPlaylistRuleCombination()
+CDatabaseQueryRuleCombination::CDatabaseQueryRuleCombination()
   : m_type(CombinationAnd)
 { }
 
-void CSmartPlaylistRuleCombination::clear()
+void CDatabaseQueryRuleCombination::clear()
 {
   m_combinations.clear();
   m_rules.clear();
@@ -1225,11 +1225,13 @@ CStdString CSmartPlaylistRuleCombination::GetWhereClause(const CDatabase &db, co
   CStdString rule, currentRule;
 
   // translate the combinations into SQL
-  for (CSmartPlaylistRuleCombinations::const_iterator it = m_combinations.begin(); it != m_combinations.end(); ++it)
+  for (CDatabaseQueryRuleCombinations::const_iterator it = m_combinations.begin(); it != m_combinations.end(); ++it)
   {
     if (it != m_combinations.begin())
       rule += m_type == CombinationAnd ? " AND " : " OR ";
-    rule += "(" + (*it)->GetWhereClause(db, strType, referencedPlaylists) + ")";
+    boost::shared_ptr<CSmartPlaylistRuleCombination> combo = boost::static_pointer_cast<CSmartPlaylistRuleCombination>(*it);
+    if (combo)
+      rule += "(" + combo->GetWhereClause(db, strType, referencedPlaylists) + ")";
   }
 
   // translate the rules into SQL
@@ -1284,8 +1286,12 @@ CStdString CSmartPlaylistRuleCombination::GetWhereClause(const CDatabase &db, co
 
 void CSmartPlaylistRuleCombination::GetVirtualFolders(const CStdString& strType, std::vector<CStdString> &virtualFolders) const
 {
-  for (CSmartPlaylistRuleCombinations::const_iterator it = m_combinations.begin(); it != m_combinations.end(); ++it)
-    (*it)->GetVirtualFolders(strType, virtualFolders);
+  for (CDatabaseQueryRuleCombinations::const_iterator it = m_combinations.begin(); it != m_combinations.end(); ++it)
+  {
+    boost::shared_ptr<CSmartPlaylistRuleCombination> combo = boost::static_pointer_cast<CSmartPlaylistRuleCombination>(*it);
+    if (combo)
+      combo->GetVirtualFolders(strType, virtualFolders);
+  }
 
   for (CDatabaseQueryRules::const_iterator it = m_rules.begin(); it != m_rules.end(); ++it)
   {
@@ -1311,7 +1317,7 @@ void CSmartPlaylistRuleCombination::GetVirtualFolders(const CStdString& strType,
   }
 }
 
-bool CSmartPlaylistRuleCombination::Load(const CVariant &obj, const IDatabaseQueryRuleFactory *factory)
+bool CDatabaseQueryRuleCombination::Load(const CVariant &obj, const IDatabaseQueryRuleFactory *factory)
 {
   if (!obj.isObject() && !obj.isArray())
     return false;
@@ -1342,7 +1348,7 @@ bool CSmartPlaylistRuleCombination::Load(const CVariant &obj, const IDatabaseQue
 
     if (it->isMember("and") || it->isMember("or"))
     {
-      boost::shared_ptr<CSmartPlaylistRuleCombination> combo(factory->CreateCombination());
+      boost::shared_ptr<CDatabaseQueryRuleCombination> combo(factory->CreateCombination());
       if (combo && combo->Load(*it, factory))
         m_combinations.push_back(combo);
     }
@@ -1357,14 +1363,14 @@ bool CSmartPlaylistRuleCombination::Load(const CVariant &obj, const IDatabaseQue
   return true;
 }
 
-bool CSmartPlaylistRuleCombination::Save(TiXmlNode *parent) const
+bool CDatabaseQueryRuleCombination::Save(TiXmlNode *parent) const
 {
   for (CDatabaseQueryRules::const_iterator it = m_rules.begin(); it != m_rules.end(); ++it)
     (*it)->Save(parent);
   return true;
 }
 
-bool CSmartPlaylistRuleCombination::Save(CVariant &obj) const
+bool CDatabaseQueryRuleCombination::Save(CVariant &obj) const
 {
   if (!obj.isObject() || (m_combinations.empty() && m_rules.empty()))
     return false;
@@ -1372,7 +1378,7 @@ bool CSmartPlaylistRuleCombination::Save(CVariant &obj) const
   CVariant comboArray(CVariant::VariantTypeArray);
   if (!m_combinations.empty())
   {
-    for (CSmartPlaylistRuleCombinations::const_iterator combo = m_combinations.begin(); combo != m_combinations.end(); combo++)
+    for (CDatabaseQueryRuleCombinations::const_iterator combo = m_combinations.begin(); combo != m_combinations.end(); combo++)
     {
       CVariant comboObj(CVariant::VariantTypeObject);
       if ((*combo)->Save(comboObj))
@@ -1395,7 +1401,7 @@ bool CSmartPlaylistRuleCombination::Save(CVariant &obj) const
   return true;
 }
 
-std::string CSmartPlaylistRuleCombination::TranslateCombinationType() const
+std::string CDatabaseQueryRuleCombination::TranslateCombinationType() const
 {
   return m_type == CombinationAnd ? "and" : "or";
 }
@@ -1837,7 +1843,7 @@ CDatabaseQueryRule *CSmartPlaylist::CreateRule() const
 {
   return new CSmartPlaylistRule();
 }
-CSmartPlaylistRuleCombination *CSmartPlaylist::CreateCombination() const
+CDatabaseQueryRuleCombination *CSmartPlaylist::CreateCombination() const
 {
   return new CSmartPlaylistRuleCombination();
 }
