@@ -1233,7 +1233,7 @@ CStdString CSmartPlaylistRuleCombination::GetWhereClause(const CDatabase &db, co
   }
 
   // translate the rules into SQL
-  for (CSmartPlaylistRules::const_iterator it = m_rules.begin(); it != m_rules.end(); ++it)
+  for (CDatabaseQueryRules::const_iterator it = m_rules.begin(); it != m_rules.end(); ++it)
   {
     // don't include playlists that are meant to be displayed
     // as a virtual folders in the SQL WHERE clause
@@ -1287,7 +1287,7 @@ void CSmartPlaylistRuleCombination::GetVirtualFolders(const CStdString& strType,
   for (CSmartPlaylistRuleCombinations::const_iterator it = m_combinations.begin(); it != m_combinations.end(); ++it)
     (*it)->GetVirtualFolders(strType, virtualFolders);
 
-  for (CSmartPlaylistRules::const_iterator it = m_rules.begin(); it != m_rules.end(); ++it)
+  for (CDatabaseQueryRules::const_iterator it = m_rules.begin(); it != m_rules.end(); ++it)
   {
     if (((*it)->m_field != FieldVirtualFolder && (*it)->m_field != FieldPlaylist) || (*it)->m_operator != CDatabaseQueryRule::OPERATOR_EQUALS)
       continue;
@@ -1348,7 +1348,7 @@ bool CSmartPlaylistRuleCombination::Load(const CVariant &obj)
     }
     else
     {
-      boost::shared_ptr<CSmartPlaylistRule> rule(new CSmartPlaylistRule());
+      boost::shared_ptr<CDatabaseQueryRule> rule(new CSmartPlaylistRule());
       if (rule && rule->Load(*it))
         m_rules.push_back(rule);
     }
@@ -1359,7 +1359,7 @@ bool CSmartPlaylistRuleCombination::Load(const CVariant &obj)
 
 bool CSmartPlaylistRuleCombination::Save(TiXmlNode *parent) const
 {
-  for (CSmartPlaylistRules::const_iterator it = m_rules.begin(); it != m_rules.end(); ++it)
+  for (CDatabaseQueryRules::const_iterator it = m_rules.begin(); it != m_rules.end(); ++it)
     (*it)->Save(parent);
   return true;
 }
@@ -1382,7 +1382,7 @@ bool CSmartPlaylistRuleCombination::Save(CVariant &obj) const
   }
   if (!m_rules.empty())
   {
-    for (CSmartPlaylistRules::const_iterator rule = m_rules.begin(); rule != m_rules.end(); rule++)
+    for (CDatabaseQueryRules::const_iterator rule = m_rules.begin(); rule != m_rules.end(); rule++)
     {
       CVariant ruleObj(CVariant::VariantTypeObject);
       if ((*rule)->Save(ruleObj))
