@@ -165,9 +165,10 @@ public:
     CombinationAnd
   } Combination;
 
+  void clear();
   virtual bool Load(const TiXmlNode *node, const std::string &encoding = "UTF-8") { return false; }
   virtual bool Load(const CVariant &obj);
-  virtual bool Save(TiXmlNode *parent) const { return false; }
+  virtual bool Save(TiXmlNode *parent) const;
   virtual bool Save(CVariant &obj) const;
 
   CStdString GetWhereClause(const CDatabase &db, const CStdString& strType, std::set<CStdString> &referencedPlaylists) const;
@@ -179,8 +180,9 @@ public:
 
   void AddRule(const CSmartPlaylistRule &rule);
 
+  bool empty() const { return m_combinations.empty() && m_rules.empty(); }
+
 private:
-  friend class CSmartPlaylist;
   friend class CGUIDialogSmartPlaylistEditor;
   friend class CGUIDialogMediaFilter;
 
