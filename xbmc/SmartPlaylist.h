@@ -176,7 +176,6 @@ public:
   void SetType(Combination combination) { m_type = combination; }
 
   void AddRule(const CSmartPlaylistRule &rule);
-  void AddCombination(const CSmartPlaylistRuleCombination &rule);
 
 private:
   friend class CSmartPlaylist;
