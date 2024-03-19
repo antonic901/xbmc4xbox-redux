@@ -32,18 +32,7 @@ class CDatabase;
 class CURL;
 class CVariant;
 
-class ISmartPlaylistRule
-{
-public:
-  virtual ~ISmartPlaylistRule() { }
-
-  virtual bool Load(const TiXmlNode *node, const std::string &encoding = "UTF-8") = 0;
-  virtual bool Load(const CVariant &obj) = 0;
-  virtual bool Save(TiXmlNode *parent) const = 0;
-  virtual bool Save(CVariant &obj) const = 0;
-};
-
-class CDatabaseQueryRule : public ISmartPlaylistRule
+class CDatabaseQueryRule
 {
 public:
   CDatabaseQueryRule();
@@ -154,7 +143,7 @@ class CSmartPlaylistRuleCombination;
 typedef std::vector< boost::shared_ptr<CDatabaseQueryRule> > CDatabaseQueryRules;
 typedef std::vector< boost::shared_ptr<CSmartPlaylistRuleCombination> > CSmartPlaylistRuleCombinations;
 
-class CSmartPlaylistRuleCombination : public ISmartPlaylistRule
+class CSmartPlaylistRuleCombination
 {
 public:
   CSmartPlaylistRuleCombination();
