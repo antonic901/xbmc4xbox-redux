@@ -392,7 +392,7 @@ void CGUIDialogSmartPlaylistRule::UpdateButtons()
   else
     CONTROL_DISABLE(CONTROL_BROWSE);
 
-  switch (CSmartPlaylistRule::GetFieldType(m_rule.m_field))
+  switch (m_rule.GetFieldType(m_rule.m_field))
   {
   case CSmartPlaylistRule::TEXT_FIELD:
     // text fields - add the usual comparisons
@@ -448,7 +448,7 @@ void CGUIDialogSmartPlaylistRule::UpdateButtons()
   // update the parameter edit control appropriately
   SET_CONTROL_LABEL2(CONTROL_VALUE, m_rule.GetParameter());
   CGUIEditControl::INPUT_TYPE type = CGUIEditControl::INPUT_TYPE_TEXT;
-  CSmartPlaylistRule::FIELD_TYPE fieldType = CSmartPlaylistRule::GetFieldType(m_rule.m_field);
+  CSmartPlaylistRule::FIELD_TYPE fieldType = m_rule.GetFieldType(m_rule.m_field);
   switch (fieldType)
   {
   case CSmartPlaylistRule::TEXT_FIELD:
