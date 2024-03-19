@@ -119,7 +119,8 @@ typedef enum {
   FieldBorn,
   FieldBandFormed,
   FieldDisbanded,
-  FieldDied
+  FieldDied,
+  FieldMax
 } Field;
 
 typedef std::set<Field> Fields;
