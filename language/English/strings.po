@@ -8560,7 +8560,11 @@ msgctxt "#21452"
 msgid "Get More..."
 msgstr ""
 
-#empty strings from id 21453 to 21457
+#empty strings from id 21453 to 21456
+
+msgctxt "#21457"
+msgid "Watched episode count"
+msgstr ""
 
 msgctxt "#21458"
 msgid "Group by"
