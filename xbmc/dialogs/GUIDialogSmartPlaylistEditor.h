@@ -56,6 +56,7 @@ protected:
   void OnOK();
   void OnCancel();
   void UpdateButtons();
+  void UpdateRuleControlButtons();
   int GetSelectedItem();
   void HighlightItem(int item);
   PLAYLIST_TYPE ConvertType(const CStdString &type);

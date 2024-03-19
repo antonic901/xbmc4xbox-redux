@@ -134,7 +134,12 @@ bool CGUIDialogSmartPlaylistEditor::OnMessage(CGUIMessage& message)
         message.GetControlId() == CONTROL_RULE_EDIT)
       HighlightItem(GetSelectedItem());
     else
+    {
+      if (message.GetControlId() == CONTROL_RULE_LIST)
+        UpdateRuleControlButtons();
+
       HighlightItem(-1);
+    }
     break;
   }
   return CGUIDialog::OnMessage(message);
@@ -264,6 +269,10 @@ void CGUIDialogSmartPlaylistEditor::UpdateButtons()
 {
   CONTROL_ENABLE(CONTROL_OK); // always enabled since we can have no rules -> match everything (as we do with default partymode playlists)
 
+  // if there's no rule available, add a dummy one the user can edit
+  if (m_playlist.m_ruleCombination.m_rules.size() <= 0)
+    m_playlist.m_ruleCombination.m_rules.push_back(CSmartPlaylistRule());
+
   // name
   if (m_mode == "partyvideo" || m_mode == "partymusic")
   {
@@ -271,11 +280,10 @@ void CGUIDialogSmartPlaylistEditor::UpdateButtons()
     CONTROL_DISABLE(CONTROL_NAME);
   }
   else
-  {
-  SET_CONTROL_LABEL2(CONTROL_NAME, m_playlist.m_playlistName);
-  }
+    SET_CONTROL_LABEL2(CONTROL_NAME, m_playlist.m_playlistName);
 
-  CONTROL_ENABLE_ON_CONDITION(CONTROL_RULE_REMOVE, m_playlist.m_ruleCombination.m_rules.size() > 0);
+  UpdateRuleControlButtons();
+
   CONTROL_ENABLE_ON_CONDITION(CONTROL_MATCH, m_playlist.m_ruleCombination.m_rules.size() > 1);
 
   int currentItem = GetSelectedItem();
@@ -357,6 +365,17 @@ void CGUIDialogSmartPlaylistEditor::UpdateButtons()
     CONTROL_ENABLE(CONTROL_GROUP_BY);
     CONTROL_ENABLE_ON_CONDITION(CONTROL_GROUP_MIXED, CSmartPlaylistRule::CanGroupMix(currentGroup));
   }
+}
+
+void CGUIDialogSmartPlaylistEditor::UpdateRuleControlButtons()
+{
+  int iSize = m_playlist.m_ruleCombination.m_rules.size();
+  int iItem = GetSelectedItem();
+  // only enable the remove control if ...
+  CONTROL_ENABLE_ON_CONDITION(CONTROL_RULE_REMOVE,
+                              iSize > 0 && // there is at least one item
+                              iItem >= 0 && iItem < iSize && // and a valid item is selected
+                              m_playlist.m_ruleCombination.m_rules[iItem].m_field != FieldNone); // and it is not be empty
 }
 
 void CGUIDialogSmartPlaylistEditor::OnWindowLoaded()
@@ -534,7 +553,6 @@ bool CGUIDialogSmartPlaylistEditor::NewPlaylist(const CStdString &type)
 
   editor->m_path = "";
   editor->m_playlist = CSmartPlaylist();
-  editor->m_playlist.m_ruleCombination.m_rules.push_back(CSmartPlaylistRule());
   editor->m_mode = type;
   editor->Initialize();
   editor->DoModal(g_windowManager.GetActiveWindow());
@@ -559,11 +577,8 @@ bool CGUIDialogSmartPlaylistEditor::EditPlaylist(const CStdString &path, const C
     if (!editor->m_mode.Left(5).Equals("party"))
       return false; // only edit normal playlists that exist
     // party mode playlists can be editted even if they don't exist
-    playlist.m_ruleCombination.m_rules.push_back(CSmartPlaylistRule());
     playlist.SetType(editor->m_mode == "partymusic" ? "songs" : "musicvideos");
   }
-  if (editor->m_playlist.m_ruleCombination.m_rules.size() <= 0)
-    editor->m_playlist.m_ruleCombination.m_rules.push_back(CSmartPlaylistRule());
   editor->m_playlist = playlist;
   editor->m_path = path;
   editor->Initialize();
