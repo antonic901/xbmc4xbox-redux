@@ -83,7 +83,7 @@ protected:
   void OnFocus();
   void OnUnFocus();
   virtual void RenderText();
-  CGUILabel::COLOR GetTextColor() const;
+  virtual CGUILabel::COLOR GetTextColor() const;
 
   CGUITexture m_imgFocus;
   CGUITexture m_imgNoFocus;
