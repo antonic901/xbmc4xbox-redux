@@ -30,6 +30,7 @@
 
 #include "GUIButtonControl.h"
 #include "utils/Stopwatch.h"
+#include "utils/StringValidation.h"
 
 /*!
  \ingroup controls
@@ -79,7 +80,10 @@ public:
   void SetTextChangeActions(const CGUIAction& textChangeActions) { m_textChangeActions = textChangeActions; };
   
   bool HasTextChangeActions() { return m_textChangeActions.HasActionsMeetingCondition(); };
-  
+
+  virtual bool HasInvalidInput() const { return m_invalidInput; }
+  virtual void SetInputValidation(StringValidation::Validator inputValidator, void *data = NULL);
+
 protected:
   virtual void RenderText();
   CStdStringW GetDisplayedText() const;
@@ -88,6 +92,9 @@ protected:
   void UpdateText(bool sendUpdate = true);
   void OnPasteClipboard();
   void DefaultConstructor();
+
+  virtual bool ValidateInput(const CStdStringW &data) const;
+  void ValidateInput();
 
   /*! \brief Clear out the current text input if it's an MD5 password.
    \return true if the password is cleared, false otherwise.
@@ -110,6 +117,10 @@ protected:
   bool m_isMD5;
   
   CGUIAction m_textChangeActions;
+
+  bool m_invalidInput;
+  StringValidation::Validator m_inputValidator;
+  void *m_inputValidatorData;
 
   CStopWatch   m_smsTimer;
 

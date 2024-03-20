@@ -98,6 +98,8 @@
 
 #define GUI_MSG_SET_TEXT        42
 
+#define GUI_MSG_VALIDITY_CHANGED  44
+
 #define GUI_MSG_USER         1000
 
 /*!
