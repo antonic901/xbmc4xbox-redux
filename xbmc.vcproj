@@ -3792,6 +3792,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\dbwrappers\Database.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\dbwrappers\DatabaseQuery.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\dbwrappers\DatabaseQuery.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\dbwrappers\dataset.cpp">
 				</File>
 				<File
