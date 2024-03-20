@@ -158,6 +158,8 @@ public:
   virtual void Update();
   virtual void Clear() { m_pEdit = NULL; }
 private:
+  static bool InputValidation(const std::string &input, void *data);
+
   CGUIEditControl *m_pEdit;
 };
 
