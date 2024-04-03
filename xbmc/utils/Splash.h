@@ -31,10 +31,14 @@ public:
 
   bool Start();
   void Stop();
+
+  // In case you don't want to use another thread
+  void Show();
+
 private:
+  virtual void Process();
   virtual void OnStartup();
   virtual void OnExit();
-  virtual void Process();
 
   CStdString m_ImageName;
 };
