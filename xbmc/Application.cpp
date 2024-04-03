@@ -1208,7 +1208,7 @@ HRESULT CApplication::Create(HWND hWnd)
       CLog::Log(LOGINFO, "load default splash image: %s", CSpecialProtocol::TranslatePath("special://xbmc/media/Splash.png").c_str());
       m_splash = new CSplash("special://xbmc/media/Splash.png");
     }
-    m_splash->Start();
+    m_splash->Show();
   }
 
   int iResolution = g_graphicsContext.GetVideoResolution();
@@ -1359,7 +1359,8 @@ HRESULT CApplication::Initialize()
 
   m_ctrDpad.SetDelays(100, 500); //g_settings.m_iMoveDelayController, g_settings.m_iRepeatDelayController);
 
-  SAFE_DELETE(m_splash);
+  if (g_advancedSettings.m_splashImage)
+    SAFE_DELETE(m_splash);
 
   if (CSettings::Get().GetBool("masterlock.startuplock") && 
       CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
