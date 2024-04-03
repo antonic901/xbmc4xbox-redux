@@ -24,27 +24,29 @@
 #ifdef _XBOX
 #include "xbox/XKUtils.h"
 #include "xbox/XKHDD.h"
+#include "libGoAhead/XBMChttp.h"
+#include "SectionLoader.h"
 #endif
 
-#include "TextureManager.h"
 #include "LangInfo.h"
 #include "PlayListPlayer.h"
 #include "Util.h"
-#include "utils/URIUtils.h"
-#include "utils/Variant.h"
 #include "pictures/GUIWindowSlideShow.h"
-#include "libGoAhead/XBMChttp.h"
 #include "interfaces/Builtins.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "xbox/network.h"
 #include "utils/log.h"
-#include "GUIWindowManager.h"
-#include "settings/Settings.h"
+#include "utils/URIUtils.h"
+#include "utils/Variant.h"
+#include "guilib/GUIWindowManager.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/Settings.h"
 #include "FileItem.h"
-#include "GUIDialog.h"
+#include "guilib/GUIDialog.h"
 #include "guilib/Key.h"
-#include "SectionLoader.h"
+#include "utils/Splash.h"
+
+#include "guilib/LocalizeStrings.h"
 #include "threads/SingleLock.h"
 
 #include "playlists/PlayList.h"
@@ -675,6 +677,11 @@ case TMSG_POWERDOWN:
         CAction action((int)pMsg->dwParam1);
         g_application.ShowVolumeBar(&action);
       }
+    case TMSG_SPLASH_MESSAGE:
+      {
+        if (g_application.GetSplash())
+          g_application.GetSplash()->Show(pMsg->strParam);
+      }
   }
 }
 
@@ -1003,4 +1010,16 @@ void CApplicationMessenger::ShowVolumeBar(bool up)
   ThreadMessage tMsg = {TMSG_VOLUME_SHOW};
   tMsg.dwParam1 = up ? ACTION_VOLUME_UP : ACTION_VOLUME_DOWN;
   SendMessage(tMsg, false);
+}
+
+void CApplicationMessenger::SetSplashMessage(const CStdString& message)
+{
+  ThreadMessage tMsg = {TMSG_SPLASH_MESSAGE};
+  tMsg.strParam = message;
+  SendMessage(tMsg, true);
+}
+
+void CApplicationMessenger::SetSplashMessage(int stringID)
+{
+  SetSplashMessage(g_localizeStrings.Get(stringID));
 }

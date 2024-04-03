@@ -84,6 +84,7 @@ class CGUIMessage;
 #define TMSG_GUI_MESSAGE              610
 
 #define TMSG_VOLUME_SHOW          900
+#define TMSG_SPLASH_MESSAGE       901
 
 typedef struct
 {
@@ -176,6 +177,9 @@ public:
   void SendGUIMessage(const CGUIMessage &msg, int windowID = WINDOW_INVALID, bool waitResult=false);
 
   void ShowVolumeBar(bool up);
+
+  void SetSplashMessage(const CStdString& message);
+  void SetSplashMessage(int stringID);
 
   virtual ~CApplicationMessenger();
 private:
