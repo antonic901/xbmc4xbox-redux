@@ -222,7 +222,7 @@ void CAdvancedSettings::Initialize()
 
   m_thumbSize = 192;
   m_fanartHeight = 480;
-  m_useddsfanart = false;
+  m_useDDSFanart = false;
 
   m_sambaclienttimeout = 10;
   m_sambadoscodepage = "";
@@ -710,7 +710,7 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
   XMLUtils::GetInt(pRootElement, "thumbsize", m_thumbSize, 0, 1024);
   XMLUtils::GetInt(pRootElement, "fanartheight", m_fanartHeight, 0, 1080);
   //dds support
-  XMLUtils::GetBoolean(pRootElement, "useddsfanart", m_useddsfanart);
+  XMLUtils::GetBoolean(pRootElement, "useddsfanart", m_useDDSFanart);
 
 
   XMLUtils::GetBoolean(pRootElement, "playlistasfolders", m_playlistAsFolders);

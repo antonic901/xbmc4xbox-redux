@@ -180,7 +180,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     int m_thumbSize;
     int m_fanartHeight;
     //dds DXT1 support
-    bool m_useddsfanart;
+    bool m_useDDSFanart;
 
     int m_sambaclienttimeout;
     CStdString m_sambadoscodepage;

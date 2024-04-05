@@ -56,7 +56,7 @@ IDirect3DTexture8* CPicture::Load(const CStdString& file, int width, int height)
     correctly for use by xbmc. These DDS files are pre-padded to POT to simplify/speedup
     handling.
   */
-  if (g_advancedSettings.m_useddsfanart)
+  if (g_advancedSettings.m_useDDSFanart)
   {
     //If a .dds version of the image exists we load it instead.
     CStdString ddsPath = URIUtils::ReplaceExtension(file, ".dds");

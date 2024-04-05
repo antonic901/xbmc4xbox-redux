@@ -20,7 +20,6 @@
 
 #include "GUILargeTextureManager.h"
 #include "pictures/Picture.h"
-#include "settings/Settings.h"
 #include "FileItem.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
@@ -29,6 +28,7 @@
 #include "threads/SingleLock.h"
 #include "utils/JobManager.h"
 #include "guilib/GraphicContext.h"
+#include "TextureCache.h"
 
 using namespace std;
 
@@ -56,11 +56,11 @@ bool CImageLoader::DoWork()
   CFileItem file(m_path, false);
   if (file.IsPicture() && !(file.IsZIP() || file.IsRAR() || file.IsCBR() || file.IsCBZ())) // ignore non-pictures
   { // check for filename only (i.e. lookup in skin/media/)
-    CStdString loadPath(m_path);
-    if ((size_t)m_path.FindOneOf("/\\") == CStdString::npos)
-    {
-      loadPath = g_TextureManager.GetTexturePath(m_path);
-    }
+    CStdString loadPath = g_TextureManager.GetTexturePath(m_path);
+
+    // cache the image if necessary
+    loadPath = CTextureCache::Get().CheckAndCacheImage(loadPath);
+
 #ifdef HAS_XBOX_D3D
     int width = min(g_graphicsContext.GetWidth(), 1024);
     int height = min(g_graphicsContext.GetHeight(), 720);
