@@ -29,6 +29,7 @@
 #include "utils/URIUtils.h"
 
 #include "DDSImage.h"
+#include "TextureManager.h"
 
 using namespace XFILE;
 
@@ -82,10 +83,20 @@ void CTextureCache::Deinitialize()
   m_database.Close();
 }
 
+bool CTextureCache::IsCachedImage(const CStdString &url) const
+{
+  if (0 == strncmp(url.c_str(), "special://skin/", 15)) // a skin image
+    return true;
+  CStdString basePath(CProfilesManager::Get().GetThumbnailsFolder());
+  if (0 == strncmp(url.c_str(), basePath.c_str(), basePath.GetLength()))
+    return true;
+  return g_TextureManager.CanLoad(url);
+}
+
 CStdString CTextureCache::GetCachedImage(const CStdString &url)
 {
-  if (URIUtils::GetExtension(url).Equals(".dds") || 0 == strncmp(url.c_str(), "special://skin/", 15))
-    return url; // already cached
+  if (IsCachedImage(url))
+    return url;
 
   // lookup the item in the database
   CStdString cacheFile;
