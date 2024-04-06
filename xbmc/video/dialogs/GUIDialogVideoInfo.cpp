@@ -629,8 +629,6 @@ void CGUIDialogVideoInfo::OnGetThumb()
     item->SetProperty("labelonthumbload", g_localizeStrings.Get(20015));
 
     // make sure any previously cached thumb is removed
-    if (CFile::Exists(item->GetCachedPictureThumb()))
-      CFile::Delete(item->GetCachedPictureThumb());
     CTextureCache::Get().ClearCachedImage(item->GetCachedPictureThumb());
     items.Add(item);
   }
@@ -752,8 +750,6 @@ void CGUIDialogVideoInfo::OnGetFanart()
     item->SetProperty("labelonthumbload", g_localizeStrings.Get(20441));
 
     // make sure any previously cached thumb is removed
-    if (CFile::Exists(item->GetCachedPictureThumb()))
-      CFile::Delete(item->GetCachedPictureThumb());
     CTextureCache::Get().ClearCachedImage(item->GetCachedPictureThumb());
     items.Add(item);
   }
@@ -765,8 +761,6 @@ void CGUIDialogVideoInfo::OnGetFanart()
     itemLocal->SetThumbnailImage(strLocal);
     itemLocal->SetLabel(g_localizeStrings.Get(20438));
     // make sure any previously cached thumb is removed
-    if (CFile::Exists(itemLocal->GetCachedPictureThumb()))
-      CFile::Delete(itemLocal->GetCachedPictureThumb());
     CTextureCache::Get().ClearCachedImage(itemLocal->GetCachedPictureThumb());
     items.Add(itemLocal);
   }
@@ -784,9 +778,7 @@ void CGUIDialogVideoInfo::OnGetFanart()
   bool flip=false;
   if (!CGUIDialogFileBrowser::ShowAndGetImage(items, sources, g_localizeStrings.Get(20437), result, &flip, 20445) || result.Equals("fanart://Current"))
     return;   // user cancelled
-    
-  if (CFile::Exists(cachedThumb))
-    CFile::Delete(cachedThumb);
+
   CTextureCache::Get().ClearCachedImage(cachedThumb);
 
   if (result.Equals("fanart://Local"))

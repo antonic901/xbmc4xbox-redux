@@ -1208,8 +1208,6 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
           item->SetLabel(g_localizeStrings.Get(415));
           item->SetProperty("labelonthumbload",g_localizeStrings.Get(20015));
           // make sure any previously cached thumb is removed
-          if (CFile::Exists(item->GetCachedPictureThumb()))
-            CFile::Delete(item->GetCachedPictureThumb());
           CTextureCache::Get().ClearCachedImage(item->GetCachedPictureThumb());
           items.Add(item);
         }
@@ -1300,7 +1298,6 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       }
       if (result == "thumb://None")
       {
-        CFile::Delete(cachedThumb);
         CTextureCache::Get().ClearCachedImage(cachedThumb);
       }
       else

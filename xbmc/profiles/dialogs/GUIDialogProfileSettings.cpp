@@ -173,8 +173,6 @@ void CGUIDialogProfileSettings::OnSettingChanged(SettingInfo &setting)
       CFileItem item(strThumb);
       item.SetPath(strThumb);
       m_strThumb = item.GetCachedProfileThumb();
-      if (CFile::Exists(m_strThumb))
-        CFile::Delete(m_strThumb);
       CTextureCache::Get().ClearCachedImage(m_strThumb);
 
       if (!strThumb.Equals("thumb://None"))

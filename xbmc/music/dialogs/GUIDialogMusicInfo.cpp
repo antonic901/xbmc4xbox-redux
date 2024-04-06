@@ -441,8 +441,6 @@ void CGUIDialogMusicInfo::OnGetThumb()
     item->SetLabel(g_localizeStrings.Get(415));
     item->SetProperty("labelonthumbload", g_localizeStrings.Get(20015));
     // make sure any previously cached thumb is removed
-    if (CFile::Exists(item->GetCachedPictureThumb()))
-      CFile::Delete(item->GetCachedPictureThumb());
     CTextureCache::Get().ClearCachedImage(item->GetCachedPictureThumb());
     items.Add(item);
   }
@@ -516,7 +514,6 @@ void CGUIDialogMusicInfo::OnGetThumb()
   }
   if (result == "thumb://None")
   { // cache the default thumb
-    CFile::Delete(cachedThumb);
     CTextureCache::Get().ClearCachedImage(cachedThumb);
     cachedThumb = "";
   }
@@ -572,8 +569,6 @@ void CGUIDialogMusicInfo::OnGetFanart()
     item->SetProperty("labelonthumbload", g_localizeStrings.Get(20441));
 
     // make sure any previously cached thumb is removed
-    if (CFile::Exists(item->GetCachedPictureThumb()))
-      CFile::Delete(item->GetCachedPictureThumb());
     CTextureCache::Get().ClearCachedImage(item->GetCachedPictureThumb());
     items.Add(item);
   }
@@ -591,8 +586,6 @@ void CGUIDialogMusicInfo::OnGetFanart()
     itemLocal->SetThumbnailImage(strLocal);
     itemLocal->SetLabel(g_localizeStrings.Get(20438));
     // make sure any previously cached thumb is removed
-    if (CFile::Exists(itemLocal->GetCachedPictureThumb()))
-      CFile::Delete(itemLocal->GetCachedPictureThumb());
     CTextureCache::Get().ClearCachedImage(itemLocal->GetCachedPictureThumb());
     items.Add(itemLocal);
   }
@@ -619,8 +612,6 @@ void CGUIDialogMusicInfo::OnGetFanart()
   if (result.Equals("fanart://Local"))
     result = strLocal;
  
-  if (CFile::Exists(cachedThumb))
-    CFile::Delete(cachedThumb);
   CTextureCache::Get().ClearCachedImage(cachedThumb);
 
   if (!result.Equals("fanart://None"))
