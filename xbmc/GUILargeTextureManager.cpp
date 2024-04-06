@@ -244,7 +244,7 @@ void CGUILargeTextureManager::QueueImage(const CStdString &path)
 
   // queue the item
   CLargeTexture *image = new CLargeTexture(path);
-  unsigned int jobID = CJobManager::GetInstance().AddJob(new CImageLoader(path), this);
+  unsigned int jobID = CJobManager::GetInstance().AddJob(new CImageLoader(path), this, CJob::PRIORITY_NORMAL);
   m_queued.push_back(make_pair(jobID, image));
 }
   
