@@ -62,11 +62,10 @@ bool CPictureThumbLoader::LoadItem(CFileItem* pItem)
           return DownloadVideoThumb(pItem, cachedThumb);
         else
         {
-          CPicture pic;
-          if(pic.CreateThumbnail(thumb, cachedThumb))
-            pItem->SetThumbnailImage(cachedThumb);
-          else
-            pItem->SetThumbnailImage("");
+          thumb = CTextureCache::Get().CheckAndCacheImage(thumb);
+          pItem->SetThumbnailImage(thumb);
+          pItem->FillInDefaultIcon();
+          return !thumb.IsEmpty();
         }
       }
     }
@@ -98,13 +97,6 @@ bool CPictureThumbLoader::DownloadVideoThumb(CFileItem *item, const CStdString &
   if (item->GetVideoInfoTag()->m_strPictureURL.m_url.size())
   { // yep - download using this thumb
     if (CScraperUrl::DownloadThumbnail(cachedThumb, item->GetVideoInfoTag()->m_strPictureURL.m_url[0]))
-      item->SetThumbnailImage(cachedThumb);
-    else
-      item->SetThumbnailImage("");
-  }
-  else if (item->GetVideoInfoTag()->m_fanart.GetNumFanarts() > 0 && item->HasProperty("fanart_number"))
-  { // yep - download our fanart preview
-    if (item->GetVideoInfoTag()->m_fanart.DownloadThumb((int)item->GetProperty("fanart_number").asInteger(), cachedThumb))
       item->SetThumbnailImage(cachedThumb);
     else
       item->SetThumbnailImage("");
