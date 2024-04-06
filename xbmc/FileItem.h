@@ -212,7 +212,6 @@ public:
   CStdString GetCachedArtistThumb() const;
   CStdString GetCachedProgramThumb() const;
   CStdString GetCachedGameSaveThumb() const;
-  CStdString GetCachedProfileThumb() const;
   CStdString GetCachedSeasonThumb() const;
   CStdString GetCachedActorThumb() const;
   /*!

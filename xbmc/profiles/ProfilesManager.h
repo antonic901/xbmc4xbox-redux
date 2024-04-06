@@ -158,7 +158,6 @@ public:
   std::string GetPicturesThumbFolder() const;
   std::string GetProgramsThumbFolder() const;
   std::string GetGameSaveThumbFolder() const;
-  std::string GetProfilesThumbFolder() const;
   std::string GetVideoFanartFolder() const;
   std::string GetMusicFanartFolder() const;
 

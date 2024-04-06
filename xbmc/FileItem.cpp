@@ -999,11 +999,6 @@ CStdString CFileItem::GetCachedArtistThumb() const
   return GetCachedThumb("artist"+GetLabel(),CProfilesManager::Get().GetMusicArtistThumbFolder());
 }
 
-CStdString CFileItem::GetCachedProfileThumb() const
-{
-  return GetCachedThumb("profile"+m_strPath,URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(),"Thumbnails\\Profiles"));
-}
-
 CStdString CFileItem::GetCachedSeasonThumb() const
 {
   CStdString seasonPath;

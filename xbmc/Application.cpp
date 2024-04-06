@@ -1257,8 +1257,6 @@ HRESULT CApplication::Initialize()
   CDirectory::Create(CProfilesManager::Get().GetProfileUserDataFolder());
   CProfilesManager::Get().CreateProfileFolders();
 
-  CDirectory::Create(CProfilesManager::Get().GetProfilesThumbFolder());
-
   CDirectory::Create("special://home/addons");
   CDirectory::Create("special://home/addons/packages");
   CUtil::WipeDir("special://temp/");

@@ -542,11 +542,6 @@ std::string CProfilesManager::GetGameSaveThumbFolder() const
   return URIUtils::AddFileToFolder(GetThumbnailsFolder(), "GameSaves");
 }
 
-std::string CProfilesManager::GetProfilesThumbFolder() const
-{
-  return URIUtils::AddFileToFolder(GetUserDataFolder(), "Thumbnails/Profiles");
-}
-
 std::string CProfilesManager::GetVideoFanartFolder() const
 {
   return URIUtils::AddFileToFolder(GetThumbnailsFolder(), "Video/Fanart");
