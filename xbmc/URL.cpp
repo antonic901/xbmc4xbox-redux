@@ -157,6 +157,7 @@ void CURL::Parse(const CStdString& strURL1)
 
   std::string strProtocol2 = GetTranslatedProtocol();
   if(IsProtocol("rss") ||
+     IsProtocol("rar") ||
      IsProtocol("addons") ||
      IsProtocol("videodb") ||
      IsProtocol("musicdb"))

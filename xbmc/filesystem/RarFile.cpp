@@ -201,6 +201,10 @@ bool CRarFile::Open(const CURL& url)
         CLog::Log(LOGERROR,"CRarFile::Open: Can't cache files bigger than 4GB due to fat-x limits.");
         return false;
       }
+
+      CFileInfo* info = g_RarManager.GetFileInRar(m_strRarPath,m_strPathInRar);
+      if ((!info || !CFile::Exists(info->m_strCachedPath)) && m_bFileOptions & EXFILE_NOCACHE)
+        return false;
       m_bUseFile = true;
       CStdString strPathInCache;
       
