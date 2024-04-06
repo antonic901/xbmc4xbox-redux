@@ -280,18 +280,11 @@ void CPicture::CreateFolderThumb(const CStdString *thumbs, const CStdString &fol
 { // we want to mold the thumbs together into one single one
   DllImageLib dll;
   if (!dll.Load()) return;
-  CStdString cachedThumbs[4];
+
   const char *szThumbs[4];
   for (int i=0; i < 4; i++)
-  {
-    if (!thumbs[i].IsEmpty())
-    {
-      CFileItem item(thumbs[i], false);
-      cachedThumbs[i] = item.GetCachedPictureThumb();
-      CreateThumbnail(thumbs[i], cachedThumbs[i], true);
-    }
-    szThumbs[i] = cachedThumbs[i].c_str();
-  }
+    szThumbs[i] = thumbs[i].c_str();
+
   if (!dll.CreateFolderThumbnail(szThumbs, folderThumb.c_str(), g_advancedSettings.m_thumbSize, g_advancedSettings.m_thumbSize))
   {
     CLog::Log(LOGERROR, "%s failed for folder thumb %s", __FUNCTION__, folderThumb.c_str());
