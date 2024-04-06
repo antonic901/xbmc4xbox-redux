@@ -1376,6 +1376,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\music\Song.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\TextureDatabase.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\TextureDatabase.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\video\VideoDatabase.cpp">
 				</File>
 				<File
@@ -1658,6 +1664,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\pictures\SlideShowPicture.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\TextureCache.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\TextureCache.h">
 				</File>
 			</Filter>
 			<Filter
