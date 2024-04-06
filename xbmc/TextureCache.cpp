@@ -26,18 +26,19 @@
 #include "utils/Crc32.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/log.h"
-#include "utils/URIUtils.h"
 #include "URL.h"
 
 #include "DDSImage.h"
 #include "pictures/Picture.h"
-#include "TextureManager.h"
+#include "guilib/TextureManager.h"
+#include "utils/URIUtils.h"
 
 using namespace XFILE;
 
-CTextureCache::CCacheJob::CCacheJob(const CStdString &url)
+CTextureCache::CCacheJob::CCacheJob(const CStdString &url, const CStdString &oldHash)
 {
   m_url = url;
+  m_oldHash = oldHash;
   m_original = CTextureCache::GetCacheFile(m_url);
 }
 
@@ -54,11 +55,11 @@ bool CTextureCache::CCacheJob::operator==(const CJob* job) const
 
 bool CTextureCache::CCacheJob::DoWork()
 {
-  m_hash = CacheImage(m_url, m_original);
+  m_hash = CacheImage(m_url, m_original, m_oldHash);
   return !m_hash.IsEmpty();
 }
 
-CStdString CTextureCache::CCacheJob::CacheImage(const CStdString &url, const CStdString &original)
+CStdString CTextureCache::CCacheJob::CacheImage(const CStdString &url, const CStdString &original, const CStdString &oldHash)
 {
   // unwrap the URL as required
   CStdString image(url);
@@ -71,11 +72,14 @@ CStdString CTextureCache::CCacheJob::CacheImage(const CStdString &url, const CSt
   }
 
   // generate the hash
-  CStdString hash = "nohash"; //CTextureCache::GetImageHash(image);
-  if (hash.IsEmpty())
-    return "";
+  CStdString hash = CTextureCache::Get().GetImageHash(image);
+  if (hash.IsEmpty() || hash == oldHash)
+    return hash;
 
-  CLog::Log(LOGDEBUG, "Caching image '%s' as '%s' %s size", image.c_str(), original.c_str(), fullSize ? "full" : "thumb");
+  if (!oldHash.IsEmpty())
+    CLog::Log(LOGDEBUG, "Re-caching image '%s' as '%s' %s size", image.c_str(), original.c_str(), fullSize ? "full" : "thumb");
+  else
+    CLog::Log(LOGDEBUG, "Caching image '%s' as '%s' %s size", image.c_str(), original.c_str(), fullSize ? "full" : "thumb");
 
   CStdString originalURL = CTextureCache::GetCachedPath(original);
   if (fullSize && CPicture::CacheFanart(image, originalURL))
@@ -137,16 +141,23 @@ void CTextureCache::Deinitialize()
 
 bool CTextureCache::IsCachedImage(const CStdString &url) const
 {
-  if (0 == strncmp(url.c_str(), "special://skin/", 15)) // a skin image
+  if (url != "-" && !CURL::IsFullPath(url))
     return true;
-  CStdString basePath(CProfilesManager::Get().GetThumbnailsFolder());
-  if (0 == strncmp(url.c_str(), basePath.c_str(), basePath.GetLength()))
+  if (URIUtils::IsInPath(url, "special://skin/") ||
+      URIUtils::IsInPath(url, CProfilesManager::Get().GetThumbnailsFolder()))
     return true;
-  return g_TextureManager.CanLoad(url);
+  return false;
 }
 
 CStdString CTextureCache::GetCachedImage(const CStdString &url)
 {
+  if (0 == strncmp(url.c_str(), "thumb://", 8))
+  {
+    CStdString image = CURL(url).GetHostName();
+    CURL::Decode(image);
+    if (IsCachedImage(image))
+      return image; // no point generating thumbs of already cached images
+  }
   if (IsCachedImage(url))
     return url;
 
@@ -164,12 +175,12 @@ CStdString CTextureCache::GetWrappedThumbURL(const CStdString &image)
   return URIUtils::AddFileToFolder("thumb://" + url, URIUtils::GetFileName(image));
 }
 
-CStdString CTextureCache::CheckAndCacheImage(const CStdString &url, bool returnDDS)
+CStdString CTextureCache::CheckCachedImage(const CStdString &url, bool returnDDS)
 {
   CStdString path(GetCachedImage(url));
   if (!path.IsEmpty())
   {
-    if (returnDDS && 0 != strncmp(url.c_str(), "special://skin/", 15)) // TODO: should skin images be .dds'd (currently they're not necessarily writeable)
+    if (returnDDS && !URIUtils::IsInPath(url, "special://skin/")) // TODO: should skin images be .dds'd (currently they're not necessarily writeable)
     { // check for dds version
       CStdString ddsPath = URIUtils::ReplaceExtension(path, ".dds");
       if (CFile::Exists(ddsPath))
@@ -179,9 +190,33 @@ CStdString CTextureCache::CheckAndCacheImage(const CStdString &url, bool returnD
     }
     return path;
   }
+  return "";
+}
 
-  // Uncached image - best we can do for now is cache it so that the texture manager
-  // can load it.
+CStdString CTextureCache::CheckAndCacheImage(const CStdString &url, bool returnDDS)
+{
+  CStdString path(CheckCachedImage(url,returnDDS));
+  if (!path.IsEmpty())
+  {
+    return path;
+  }
+  return CacheImageFile(url);
+}
+
+CStdString CTextureCache::CacheImageFile(const CStdString &url)
+{
+  // Cache image so that the texture manager can load it.
+  CStdString originalFile = GetCacheFile(url);
+
+  CStdString hash = CCacheJob::CacheImage(url, originalFile);
+  if (!hash.IsEmpty())
+  {
+    AddCachedTexture(url, originalFile, hash);
+    if (g_advancedSettings.m_useDDSFanart)
+      AddJob(new CDDSJob(GetCachedPath(originalFile)));
+    return GetCachedPath(originalFile);
+  }
+  return "";
 
   // TODO: In the future we need a cache job to callback when the image is loaded
   //       thus automatically updating the images.  We'd also need fallback code inside
@@ -221,23 +256,12 @@ CStdString CTextureCache::CheckAndCacheImage(const CStdString &url, bool returnD
   // a current image and a new one is loading we currently hold on to the current one and render
   // the current one faded out - we'd need to change this so that the fading only happened once it
   // was ready to render.
-
-  CStdString originalFile = GetCacheFile(url);
-
-  CStdString hash = CCacheJob::CacheImage(url, originalFile);
-  if (!hash.IsEmpty())
-  {
-    AddCachedTexture(url, originalFile, hash);
-    if (g_advancedSettings.m_useDDSFanart)
-      AddJob(new CDDSJob(GetCachedPath(originalFile)));
-    return GetCachedPath(originalFile);
-  }
-  return url;
 }
 
-void CTextureCache::ClearCachedImage(const CStdString &url)
+void CTextureCache::ClearCachedImage(const CStdString &url, bool deleteSource /*= false */)
 {
-  CStdString path(url);
+  // TODO: This can be removed when the texture cache covers everything.
+  CStdString path = deleteSource ? url : "";
   CStdString cachedFile;
   if (ClearCachedTexture(url, cachedFile))
     path = GetCachedPath(cachedFile);
@@ -251,7 +275,14 @@ void CTextureCache::ClearCachedImage(const CStdString &url)
 bool CTextureCache::GetCachedTexture(const CStdString &url, CStdString &cachedURL)
 {
   CSingleLock lock(m_databaseSection);
-  return m_database.GetCachedTexture(url, cachedURL);
+  CStdString imageHash;
+  if (m_database.GetCachedTexture(url, cachedURL, imageHash))
+  {
+    if (!imageHash.IsEmpty()) // check for an updated image
+      AddJob(new CCacheJob(url, imageHash));
+    return true;
+  }
+  return false;
 }
 
 bool CTextureCache::AddCachedTexture(const CStdString &url, const CStdString &cachedURL, const CStdString &hash)
@@ -268,8 +299,21 @@ bool CTextureCache::ClearCachedTexture(const CStdString &url, CStdString &cached
 
 CStdString CTextureCache::GetImageHash(const CStdString &url) const
 {
-  // TODO: stat the image and grab ctime/mtime and size
-  return "nohash";
+  struct __stat64 st;
+  if (CFile::Stat(url, &st) == 0)
+  {
+    int64_t time = st.st_mtime;
+    if (!time)
+      time = st.st_ctime;
+    if (time || st.st_size)
+    {
+      CStdString hash;
+      hash.Format("d%"PRId64"s%"PRId64, time, st.st_size);
+      return hash;
+    }
+  }
+  CLog::Log(LOGDEBUG, "%s - unable to stat url %s", __FUNCTION__, url.c_str());
+  return "";
 }
 
 CStdString CTextureCache::GetCacheFile(const CStdString &url)

@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include "StdString.h"
+#include "utils/StdString.h"
 #include "utils/JobManager.h"
 #include "TextureDatabase.h"
 
@@ -52,20 +52,41 @@ public:
    */
   void Deinitialize();
 
-  /*! \brief check whether we have this image cached, and change it's url if so
+  /*! \brief Check whether we already have this image cached
 
-   Checks firstly whether the image should be cached (i.e. is the image a .dds file?).
-   If the image isn't a .dds file, we lookup the database for a cached version and use
-   that if available. If the image is not yet in the database it is cached and added
-   to the database.
+   Check and return URL to cached image if it exists; If not, return empty string.
+   If the image is cached, return URL (for original image or .dds version if requested)
+   Created .dds of image if requested as per settings.
 
-   \param image url of the image to cache
+   \param image url of the image to check
    \param returnDDS if we're allowed to return a DDS version, defaults to true
    \return cached url of this image
    \sa GetCachedImage
+   */ 
+   CStdString CheckCachedImage(const CStdString &image, bool returnDDS = true);
+
+  /*! \brief This function is a wrapper around CheckCacheImage and CacheImageFile.
+  
+   Checks firstly whether an image is already cached, and return URL if so [see CheckCacheImage]
+   If the image is not yet in the database it is cached and added to the database [see CacheImageFile]
+
+   \param image url of the image to check and cache
+   \param returnDDS if we're allowed to return a DDS version, defaults to true
+   \return cached url of this image
+   \sa CheckCacheImage
    */
   CStdString CheckAndCacheImage(const CStdString &image, bool returnDDS = true);
 
+  /*! \brief Take image URL and add it to image cache
+
+   Takes the URL to an image. Caches and adds to the database.
+
+   \param image url of the image to cache
+   \return cached url of this image
+   \sa CCacheJob::CacheImage
+   */  
+  CStdString CacheImageFile(const CStdString &url);
+  
   /*! \brief retrieve the cached version of the given image (if it exists)
    \param image url of the image
    \return cached url of this image, empty if none exists
@@ -77,7 +98,7 @@ public:
    \param image url of the image
    \sa GetCachedImage
    */
-  void ClearCachedImage(const CStdString &image);
+  void ClearCachedImage(const CStdString &image, bool deleteSource = false);
 
   /*! \brief retrieve the cache file to associate with the given image
    \param url location of the image
@@ -124,7 +145,7 @@ private:
   class CCacheJob : public CJob
   {
   public:
-    CCacheJob(const CStdString &url);
+    CCacheJob(const CStdString &url, const CStdString &oldHash);
 
     virtual const char* GetType() const { return "cacheimage"; };
     virtual bool operator==(const CJob *job) const;
@@ -133,13 +154,15 @@ private:
     /*! \brief Cache an image either full size or thumb sized
      \param url URL of image to cache
      \param original URL of cached version
+     \param oldHash hash of any previously cached version - if the hashes match, we don't cache the image
      \return hash of the image that we cached, empty on failure
      */
-    static CStdString CacheImage(const CStdString &url, const CStdString &original);
+    static CStdString CacheImage(const CStdString &url, const CStdString &original, const CStdString &oldHash = "");
 
     CStdString m_url;
     CStdString m_original;
     CStdString m_hash;
+    CStdString m_oldHash;
   };
 
   // private construction, and no assignements; use the provided singleton methods
@@ -191,3 +214,4 @@ private:
   CCriticalSection m_databaseSection;
   CTextureDatabase m_database;
 };
+
