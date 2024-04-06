@@ -60,6 +60,8 @@ bool CImageLoader::DoWork()
 
     // cache the image if necessary
     loadPath = CTextureCache::Get().CheckAndCacheImage(loadPath);
+    if (loadPath.IsEmpty())
+      return false;
 
 #ifdef HAS_XBOX_D3D
     int width = min(g_graphicsContext.GetWidth(), 1024);
