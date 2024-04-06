@@ -359,6 +359,22 @@ CStdString CProgramThumbLoader::GetLocalThumb(const CFileItem &item)
       }
     }
   }
+#ifdef _XBOX
+  else if (item.IsXBE())
+  {
+    CStdString directory, icon;
+    URIUtils::GetDirectory(item.GetPath(), directory);
+    URIUtils::AddFileToFolder(directory, "avalaunch_icon.jpg", icon);
+
+    // first check for avalaunch_icon.jpg
+    if (CFile::Exists(icon) || CUtil::CacheXBEIcon(item.GetPath(), icon))
+    {
+      CFileItem item(icon,false);
+      if (FillThumb(item))
+        return item.GetThumbnailImage();
+    }
+  }
+#endif
   else if (item.m_bIsFolder)
   {
     CStdString folderThumb = item.GetFolderThumb();

@@ -49,6 +49,7 @@
 #include "xbox/IoSupport.h"
 #include "storage/DetectDVDType.h"
 #include "video/windows/GUIWindowVideoBase.h"
+#include "TextureCache.h"
 
 using namespace std;
 
@@ -415,15 +416,11 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
       // see if there's a local thumb for this item
       CStdString folderThumb = item->GetFolderThumb();
       if (XFILE::CFile::Exists(folderThumb))
-      { // cache it
-        CPicture pic;
-        if (pic.CreateThumbnail(folderThumb, item->GetCachedProgramThumb()))
-        {
-          CFileItemPtr local(new CFileItem("thumb://Local", false));
-          local->SetThumbnailImage(item->GetCachedProgramThumb());
-          local->SetLabel(g_localizeStrings.Get(20017));
-          items.Add(local);
-        }
+      {
+        CFileItemPtr local(new CFileItem("thumb://Local", false));
+        local->SetThumbnailImage(folderThumb);
+        local->SetLabel(g_localizeStrings.Get(20017));
+        items.Add(local);
       }
       // and add a "no thumb" entry as well
       CFileItemPtr nothumb(new CFileItem("thumb://None", false));
@@ -440,6 +437,9 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
       if (strThumb == "thumb://Current")
         return true;
 
+      if (strThumb == "thumb://Local")
+        strThumb = folderThumb;
+
       if (strThumb == "thumb://None")
         strThumb = "";
 
@@ -449,7 +449,7 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
         CMediaSourceSettings::Get().Save();
       }
       else if (!strThumb.IsEmpty())
-      { // this is icky as we have to cache using a bunch of different criteria
+      { // this is some sort of an auto-share, so we have to cache it based on the criteria we use to retrieve them
         CStdString cachedThumb;
         if (type == "music")
         {
@@ -462,7 +462,14 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
         else if (type == "pictures")
           cachedThumb = item->GetCachedPictureThumb();
         else  // assume "programs"
-          cachedThumb = item->GetCachedProgramThumb();
+        { // store the thumb for this share
+          CTextureDatabase db;
+          if (db.Open())
+          {
+            cachedThumb = CTextureCache::GetUniqueImage(item->GetPath(), URIUtils::GetExtension(strThumb));
+            db.SetTextureForPath(item->GetPath(), cachedThumb);
+          }
+        }
         XFILE::CFile::Copy(strThumb, cachedThumb);
       }
 

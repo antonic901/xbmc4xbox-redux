@@ -704,12 +704,9 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
       item->SetPath(shortcutPath);
   }
   m_database.CommitTransaction();
-  // set the cached thumbs
-  items.SetThumbnailImage("");
-  items.SetCachedProgramThumbs();
-  items.SetCachedProgramThumb();
-  if (!items.HasThumbnail())
-    items.SetUserProgramThumb();
+
+  // set the folder thumb
+  CProgramThumbLoader::FillThumb(items);
 
   if (bProgressVisible)
     m_dlgProgress->Close();

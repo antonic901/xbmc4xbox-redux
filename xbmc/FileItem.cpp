@@ -2429,17 +2429,6 @@ void CFileItemList::SetCachedVideoThumbs()
   }
 }
 
-void CFileItemList::SetCachedProgramThumbs()
-{
-  CSingleLock lock(m_lock);
-  // TODO: Investigate caching time to see if it speeds things up
-  for (unsigned int i = 0; i < m_items.size(); ++i)
-  {
-    CFileItemPtr pItem = m_items[i];
-    pItem->SetCachedProgramThumb();
-  }
-}
-
 void CFileItemList::SetCachedMusicThumbs()
 {
   CSingleLock lock(m_lock);
@@ -2987,31 +2976,6 @@ CStdString CFileItem::GetCachedThumb(const CStdString &path, const CStdString &p
   return URIUtils::AddFileToFolder(path2, thumb);
 }
 
-CStdString CFileItem::GetCachedProgramThumb() const
-{
-  // get the locally cached thumb
-  Crc32 crc;
-  if (IsOnDVD())
-  {
-    CStdString strDesc;
-    CUtil::GetXBEDescription(m_strPath,strDesc);
-    CStdString strCRC;
-    strCRC.Format("%s%u",strDesc.c_str(),CUtil::GetXbeID(m_strPath));
-    crc.ComputeFromLowerCase(strCRC);
-  }
-  else
-    crc.ComputeFromLowerCase(m_strPath);
-
-  CStdString hex;
-  hex.Format("%08x", (__int32)crc);
-
-  CStdString thumb;
-
-  thumb.Format("%s\\%c\\%08x.tbn", CProfilesManager::Get().GetProgramsThumbFolder().c_str(), hex[0], (unsigned __int32)crc);
-
-  return thumb;
-}
-
 CStdString CFileItem::GetCachedGameSaveThumb() const
 {
   CStdString extension;
@@ -3074,68 +3038,6 @@ CStdString CFileItem::GetCachedGameSaveThumb() const
   return "";
 }
 
-void CFileItem::SetCachedProgramThumb()
-{
-  // don't set any thumb for programs on DVD, as they're bound to be named the
-  // same (D:\default.xbe).
-  if (IsParentFolder()) return;
-  CStdString thumb(GetCachedProgramThumb());
-  if (CFile::Exists(thumb))
-    SetThumbnailImage(thumb);
-}
-
-void CFileItem::SetUserProgramThumb()
-{
-  if (m_bIsShareOrDrive) return;
-  if (IsParentFolder()) return;
-
-  if (IsShortCut())
-  {
-    CShortcut shortcut;
-    if ( shortcut.Create(m_strPath) && !shortcut.m_strThumb.IsEmpty() )
-    {
-      m_strThumbnailImage = shortcut.m_strThumb;
-      return;
-    }
-  }
-  // 1.  Try <filename>.tbn
-  CStdString fileThumb(GetTBNFile());
-  CStdString thumb(GetCachedProgramThumb());
-  if (CFile::Exists(fileThumb))
-  { // cache
-    CPicture pic;
-    if (pic.CreateThumbnail(fileThumb, thumb))
-      SetThumbnailImage(thumb);
-  }
-  else if (IsXBE())
-  {
-    // 2. check for avalaunch_icon.jpg
-    CStdString directory;
-    URIUtils::GetDirectory(m_strPath, directory);
-    CStdString avalaunchIcon;
-    URIUtils::AddFileToFolder(directory, "avalaunch_icon.jpg", avalaunchIcon);
-    if (CFile::Exists(avalaunchIcon))
-    {
-      CPicture pic;
-      if (pic.CreateThumbnail(avalaunchIcon, thumb))
-        SetThumbnailImage(thumb);
-    }
-    else if (CUtil::CacheXBEIcon(m_strPath, thumb))
-      SetThumbnailImage(thumb);
-  }
-  else if (m_bIsFolder)
-  {
-    // 3. cache the folder image
-    CStdString folderThumb(GetFolderThumb());
-    if (CFile::Exists(folderThumb))
-    {
-      CPicture pic;
-      if (pic.CreateThumbnail(folderThumb, thumb))
-        SetThumbnailImage(thumb);
-    }
-  }
-}
-
 /*void CFileItem::SetThumb()
 {
   // we need to know the type of file at this point
@@ -3162,20 +3064,6 @@ void CFileItem::SetUserProgramThumb()
   //  * Thumbs are cached from here using file or folder path
 
 }*/
-
-void CFileItemList::SetProgramThumbs()
-{
-  // TODO: Is there a speed up if we cache the program thumbs first?
-  for (unsigned int i = 0; i < m_items.size(); i++)
-  {
-    CFileItemPtr pItem = m_items[i];
-    if (pItem->IsParentFolder())
-      continue;
-    pItem->SetCachedProgramThumb();
-    if (!pItem->HasThumbnail())
-      pItem->SetUserProgramThumb();
-  }
-}
 
 bool CFileItem::LoadMusicTag()
 {
@@ -3268,7 +3156,7 @@ void CFileItemList::SetGameSavesThumbs()
     CFileItemPtr pItem = m_items[i];
     if (pItem->IsParentFolder())
       continue;
-    pItem->SetCachedGameSavesThumb();  // was  pItem->SetCachedProgramThumb(); oringally
+    pItem->SetCachedGameSavesThumb();
   }
 }
 

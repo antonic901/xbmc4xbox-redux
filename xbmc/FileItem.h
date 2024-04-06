@@ -210,7 +210,6 @@ public:
   CStdString GetCachedEpisodeThumb() const;
   CStdString GetCachedPictureThumb() const;
   CStdString GetCachedArtistThumb() const;
-  CStdString GetCachedProgramThumb() const;
   CStdString GetCachedGameSaveThumb() const;
   CStdString GetCachedSeasonThumb() const;
   CStdString GetCachedActorThumb() const;
@@ -241,7 +240,6 @@ public:
   void SetCachedVideoThumb();
   void SetCachedPictureThumb();
   void SetCachedArtistThumb();
-  void SetCachedProgramThumb();
   void SetCachedGameSavesThumb();
   void SetCachedMusicThumb();
   void SetCachedSeasonThumb();
@@ -268,7 +266,6 @@ public:
 
   // Caches the user thumb and assigns it to the item
   void SetUserVideoThumb();
-  void SetUserProgramThumb();
   void SetUserMusicThumb(bool alwaysCheckRemote = false);
 
   /*! \brief Get the path where we expect local metadata to reside.
@@ -513,10 +510,8 @@ public:
   bool AlwaysCache() const;
 
   void SetCachedVideoThumbs();
-  void SetCachedProgramThumbs();
   void SetCachedGameSavesThumbs();
   void SetCachedMusicThumbs();
-  void SetProgramThumbs();
   void SetGameSavesThumbs();
 
   void Swap(unsigned int item1, unsigned int item2);
