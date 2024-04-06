@@ -52,53 +52,65 @@ CImageLoader::~CImageLoader()
 
 bool CImageLoader::DoWork()
 {
-  CPicture pic;
-  CFileItem file(m_path, false);
-  if (file.IsPicture() && !(file.IsZIP() || file.IsRAR() || file.IsCBR() || file.IsCBZ())) // ignore non-pictures
-  { // check for filename only (i.e. lookup in skin/media/)
-    CStdString loadPath = g_TextureManager.GetTexturePath(m_path);
+  CStdString texturePath = g_TextureManager.GetTexturePath(m_path);
+  CStdString loadPath = CTextureCache::Get().CheckCachedImage(texturePath); 
+  
+  // If empty, then go on to validate and cache image as appropriate
+  // If hit, continue down and load image
+  if (loadPath.IsEmpty())
+  {
+    CFileItem file(m_path, false);
 
-    // cache the image if necessary
-    loadPath = CTextureCache::Get().CheckAndCacheImage(loadPath);
-    if (loadPath.IsEmpty())
-      return false;
-
-#ifdef HAS_XBOX_D3D
-    int width = min(g_graphicsContext.GetWidth(), 1024);
-    int height = min(g_graphicsContext.GetHeight(), 720);
-    // if loading a .tbn that is not a fanart, try and load at requested thumbnail size as actual on disk
-    // tbn might be larger due to libjpeg 1/8 - 8/8 scaling.
-    CStdString directoryPath;
-    URIUtils::GetDirectory(loadPath, directoryPath);
-    URIUtils::RemoveSlashAtEnd(directoryPath);
-    if (directoryPath != CProfilesManager::Get().GetVideoFanartFolder() &&
-        directoryPath != CProfilesManager::Get().GetMusicFanartFolder() &&
-        URIUtils::GetExtension(loadPath).Equals(".tbn"))
-    {
-      width = g_advancedSettings.m_thumbSize;
-      height = g_advancedSettings.m_thumbSize;
-    }
-    m_texture = pic.Load(loadPath, width, height);
-    if (m_texture)
-#else
-    m_texture = new CTexture();
-    if (pic.Load(loadPath, m_texture, min(g_graphicsContext.GetWidth(), 2048), min(g_graphicsContext.GetHeight(), 1080)))
-#endif
-    {
-      m_width = pic.GetWidth();
-      m_height = pic.GetHeight();
-      m_orientation = (CSettings::Get().GetBool("pictures.useexifrotation") && pic.GetExifInfo()->Orientation) ? pic.GetExifInfo()->Orientation - 1: 0;
+    // Validate file URL to see if it is an image
+    if ((file.IsPicture() && !(file.IsZIP() || file.IsRAR() || file.IsCBR() || file.IsCBZ() )) 
+       || file.GetMimeType().Left(6).Equals("image/")) // ignore non-pictures
+    { 
+      // Cache the image if necessary
+      loadPath = CTextureCache::Get().CacheImageFile(texturePath);
+      if (loadPath.IsEmpty())
+        return false;
     }
     else
-    {
-#ifdef HAS_XBOX_D3D
-      SAFE_RELEASE(m_texture);
-#else
-      delete m_texture;
-      m_texture = NULL;
-#endif
-    }
+      return true;
   }
+ 
+#ifdef HAS_XBOX_D3D
+  int width = min(g_graphicsContext.GetWidth(), 1024);
+  int height = min(g_graphicsContext.GetHeight(), 720);
+  // if loading a .tbn that is not a fanart, try and load at requested thumbnail size as actual on disk
+  // tbn might be larger due to libjpeg 1/8 - 8/8 scaling.
+  CStdString directoryPath;
+  URIUtils::GetDirectory(loadPath, directoryPath);
+  URIUtils::RemoveSlashAtEnd(directoryPath);
+  if (directoryPath != CProfilesManager::Get().GetVideoFanartFolder() &&
+      directoryPath != CProfilesManager::Get().GetMusicFanartFolder() &&
+      URIUtils::GetExtension(loadPath).Equals(".tbn"))
+  {
+    width = g_advancedSettings.m_thumbSize;
+    height = g_advancedSettings.m_thumbSize;
+  }
+
+  CPicture pic;
+  m_texture = pic.Load(loadPath, width, height);
+  if (m_texture)
+  {
+    m_width = pic.GetWidth();
+    m_height = pic.GetHeight();
+    m_orientation = (CSettings::Get().GetBool("pictures.useexifrotation") && pic.GetExifInfo()->Orientation) ? pic.GetExifInfo()->Orientation - 1: 0;
+  }
+  else
+    SAFE_RELEASE(m_texture);
+#else
+  m_texture = new CTexture();
+  unsigned int start = XbmcThreads::SystemClockMillis();
+  if (!m_texture->LoadFromFile(loadPath, min(g_graphicsContext.GetWidth(), 2048), min(g_graphicsContext.GetHeight(), 1080), g_guiSettings.GetBool("pictures.useexifrotation")))
+  {
+    delete m_texture;
+    m_texture = NULL;
+  }
+  else if (XbmcThreads::SystemClockMillis() - start > 100)
+    CLog::Log(LOGDEBUG, "%s - took %u ms to load %s", __FUNCTION__, XbmcThreads::SystemClockMillis() - start, loadPath.c_str());
+#endif
 
   return true;
 }

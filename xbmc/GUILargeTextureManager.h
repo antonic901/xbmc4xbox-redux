@@ -43,7 +43,7 @@ public:
 
   CStdString    m_path; ///< path of image to load
 #ifdef HAS_XBOX_D3D
-  LPDIRECT3DTEXTURE8 m_texture; ///< Texture object to load the image into \sa CBaseTexture.
+  LPDIRECT3DTEXTURE8 m_texture; ///< Texture object to load the image into \sa LPDIRECT3DTEXTURE8.
 #else
   CBaseTexture *m_texture; ///< Texture object to load the image into \sa CBaseTexture.
 #endif
