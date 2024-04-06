@@ -25,6 +25,7 @@
 #include "FileItem.h"
 #include "video/VideoInfoTag.h"
 #include "TextureManager.h"
+#include "TextureCache.h"
 #include "utils/Variant.h"
 
 using namespace XFILE;
@@ -72,6 +73,7 @@ bool CPictureThumbLoader::LoadItem(CFileItem* pItem)
     else if (m_regenerateThumbs)
     {
       CFile::Delete(thumb);
+      CTextureCache::Get().ClearCachedImage(thumb);
       pItem->SetThumbnailImage("");
     }
   }

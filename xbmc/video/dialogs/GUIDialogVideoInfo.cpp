@@ -48,6 +48,7 @@
 #include "LocalizeStrings.h"
 #include "ApplicationMessenger.h"
 #include "ThumbLoader.h"
+#include "TextureCache.h"
 
 using namespace std;
 using namespace XFILE;
@@ -630,6 +631,7 @@ void CGUIDialogVideoInfo::OnGetThumb()
     // make sure any previously cached thumb is removed
     if (CFile::Exists(item->GetCachedPictureThumb()))
       CFile::Delete(item->GetCachedPictureThumb());
+    CTextureCache::Get().ClearCachedImage(item->GetCachedPictureThumb());
     items.Add(item);
   }
 
@@ -670,6 +672,7 @@ void CGUIDialogVideoInfo::OnGetThumb()
   CStdString cachedThumb(item.GetCachedVideoThumb());
   if (!m_movieItem->m_bIsFolder && m_movieItem->GetVideoInfoTag()->m_iSeason > -1)
     cachedThumb = item.GetCachedEpisodeThumb();
+  CTextureCache::Get().ClearCachedImage(cachedThumb);
 
   if (result.Left(14) == "thumb://Remote")
   {
@@ -751,6 +754,7 @@ void CGUIDialogVideoInfo::OnGetFanart()
     // make sure any previously cached thumb is removed
     if (CFile::Exists(item->GetCachedPictureThumb()))
       CFile::Delete(item->GetCachedPictureThumb());
+    CTextureCache::Get().ClearCachedImage(item->GetCachedPictureThumb());
     items.Add(item);
   }
   
@@ -763,6 +767,7 @@ void CGUIDialogVideoInfo::OnGetFanart()
     // make sure any previously cached thumb is removed
     if (CFile::Exists(itemLocal->GetCachedPictureThumb()))
       CFile::Delete(itemLocal->GetCachedPictureThumb());
+    CTextureCache::Get().ClearCachedImage(itemLocal->GetCachedPictureThumb());
     items.Add(itemLocal);
   }
   else
@@ -782,6 +787,7 @@ void CGUIDialogVideoInfo::OnGetFanart()
     
   if (CFile::Exists(cachedThumb))
     CFile::Delete(cachedThumb);
+  CTextureCache::Get().ClearCachedImage(cachedThumb);
 
   if (result.Equals("fanart://Local"))
     result = strLocal;

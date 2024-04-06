@@ -54,6 +54,7 @@
 #include "playlists/SmartPlayList.h"
 #include "utils/GroupUtils.h"
 #include "dbwrappers/dataset.h"
+#include "TextureCache.h"
 
 using namespace std;
 using namespace dbiplus;
@@ -1560,7 +1561,10 @@ void CVideoDatabase::DeleteDetailsForTvShow(const CStdString& strPath)
     strPath2.Format("videodb://tvshows/titles/%i/",idTvShow);
     GetSeasonsNav(strPath2,items,-1,-1,-1,-1,idTvShow);
     for( int i=0;i<items.Size();++i )
+    {
       XFILE::CFile::Delete(items[i]->GetCachedSeasonThumb());
+      CTextureCache::Get().ClearCachedImage(items[i]->GetCachedSeasonThumb());
+    }
 
     DeleteThumbForItem(strPath,true);
 
@@ -9012,14 +9016,22 @@ void CVideoDatabase::DeleteThumbForItem(const CStdString& strPath, bool bFolder,
   {
     item.SetPath(item.GetVideoInfoTag()->m_strFileNameAndPath);
     if (CFile::Exists(item.GetCachedEpisodeThumb()))
+    {
       XFILE::CFile::Delete(item.GetCachedEpisodeThumb());
+      CTextureCache::Get().ClearCachedImage(item.GetCachedEpisodeThumb());
+    }
     else
+    {
       XFILE::CFile::Delete(item.GetCachedVideoThumb());
+      CTextureCache::Get().ClearCachedImage(item.GetCachedVideoThumb());
+    }
   }
   else
   {
     XFILE::CFile::Delete(item.GetCachedVideoThumb());
+    CTextureCache::Get().ClearCachedImage(item.GetCachedVideoThumb());
     XFILE::CFile::Delete(item.GetCachedFanart());
+    CTextureCache::Get().ClearCachedImage(item.GetCachedFanart());
   }
 
   // tell our GUI to completely reload all controls (as some of them

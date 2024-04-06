@@ -42,6 +42,7 @@
 #include "settings/Settings.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
+#include "TextureCache.h"
 
 using namespace XFILE;
 
@@ -442,6 +443,7 @@ void CGUIDialogMusicInfo::OnGetThumb()
     // make sure any previously cached thumb is removed
     if (CFile::Exists(item->GetCachedPictureThumb()))
       CFile::Delete(item->GetCachedPictureThumb());
+    CTextureCache::Get().ClearCachedImage(item->GetCachedPictureThumb());
     items.Add(item);
   }
 
@@ -499,6 +501,7 @@ void CGUIDialogMusicInfo::OnGetThumb()
   else
     cachedThumb = CUtil::GetCachedAlbumThumb(m_album.strAlbum, StringUtils::Join(m_album.artist, g_advancedSettings.m_musicItemSeparator));
 
+  CTextureCache::Get().ClearCachedImage(cachedThumb);
   if (result.Left(14).Equals("thumb://Remote"))
   {
     CFileItem chosen(result, false);
@@ -513,8 +516,9 @@ void CGUIDialogMusicInfo::OnGetThumb()
   }
   if (result == "thumb://None")
   { // cache the default thumb
-    CPicture pic;
-    pic.CacheSkinImage("DefaultAlbumCover.png", cachedThumb);
+    CFile::Delete(cachedThumb);
+    CTextureCache::Get().ClearCachedImage(cachedThumb);
+    cachedThumb = "";
   }
   else if (result == "thumb://Local")
     CFile::Copy(cachedLocalThumb, cachedThumb);
@@ -570,6 +574,7 @@ void CGUIDialogMusicInfo::OnGetFanart()
     // make sure any previously cached thumb is removed
     if (CFile::Exists(item->GetCachedPictureThumb()))
       CFile::Delete(item->GetCachedPictureThumb());
+    CTextureCache::Get().ClearCachedImage(item->GetCachedPictureThumb());
     items.Add(item);
   }
   
@@ -588,6 +593,7 @@ void CGUIDialogMusicInfo::OnGetFanart()
     // make sure any previously cached thumb is removed
     if (CFile::Exists(itemLocal->GetCachedPictureThumb()))
       CFile::Delete(itemLocal->GetCachedPictureThumb());
+    CTextureCache::Get().ClearCachedImage(itemLocal->GetCachedPictureThumb());
     items.Add(itemLocal);
   }
   else
@@ -615,6 +621,7 @@ void CGUIDialogMusicInfo::OnGetFanart()
  
   if (CFile::Exists(cachedThumb))
     CFile::Delete(cachedThumb);
+  CTextureCache::Get().ClearCachedImage(cachedThumb);
 
   if (!result.Equals("fanart://None"))
   { // local file

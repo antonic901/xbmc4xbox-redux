@@ -37,6 +37,7 @@
 #include "settings/Settings.h"
 #include "settings/MediaSourceSettings.h"
 #include "LocalizeStrings.h"
+#include "TextureCache.h"
 #include "music/Album.h"
 
 using namespace XFILE;
@@ -294,6 +295,7 @@ void CGUIDialogSongInfo::OnGetThumb()
 
   CStdString cachedThumb(CUtil::GetCachedAlbumThumb(m_song->GetMusicInfoTag()->GetAlbum(), StringUtils::Join(m_song->GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator)));
 
+  CTextureCache::Get().ClearCachedImage(cachedThumb);
   if (result == "thumb://None")
   { // cache the default thumb
     CPicture pic;

@@ -54,7 +54,6 @@
 #include "ApplicationMessenger.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
-#include "utils/StringUtils2.h"
 
 using namespace std;
 using namespace XFILE;

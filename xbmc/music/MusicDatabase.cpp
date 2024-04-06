@@ -54,6 +54,7 @@
 #include "utils/variant.h"
 #include "interfaces/AnnouncementManager.h"
 #include "utils/log.h"
+#include "TextureCache.h"
 #include "playlists/SmartPlayList.h"
 #include "dbwrappers/dataset.h"
 
@@ -2173,6 +2174,7 @@ bool CMusicDatabase::CleanupThumbs()
       if (strThumb.Left(strThumbsDir.size()) == strThumbsDir)
       { // only delete cached thumbs
         CFile::Delete(strThumb);
+        CTextureCache::Get().ClearCachedImage(strThumb);
       }
       m_pDS->next();
     }

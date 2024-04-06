@@ -58,6 +58,7 @@
 #include "utils/log.h"
 #include "guilib/GUIKeyboardFactory.h"
 #include "video/VideoInfoScanner.h"
+#include "TextureCache.h"
 
 using namespace XFILE;
 using namespace VIDEODATABASEDIRECTORY;
@@ -1209,6 +1210,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
           // make sure any previously cached thumb is removed
           if (CFile::Exists(item->GetCachedPictureThumb()))
             CFile::Delete(item->GetCachedPictureThumb());
+          CTextureCache::Get().ClearCachedImage(item->GetCachedPictureThumb());
           items.Add(item);
         }
       }
@@ -1283,6 +1285,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 
       // delete the thumbnail if that's what the user wants, else overwrite with the
       // new thumbnail
+      CTextureCache::Get().ClearCachedImage(cachedThumb);
       if (result.Left(14) == "thumb://Remote")
       {
         CFileItem chosen(result,false);
@@ -1298,6 +1301,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       if (result == "thumb://None")
       {
         CFile::Delete(cachedThumb);
+        CTextureCache::Get().ClearCachedImage(cachedThumb);
       }
       else
         CFile::Copy(result,cachedThumb);
