@@ -1561,7 +1561,7 @@ void CVideoDatabase::DeleteDetailsForTvShow(const CStdString& strPath)
     strPath2.Format("videodb://tvshows/titles/%i/",idTvShow);
     GetSeasonsNav(strPath2,items,-1,-1,-1,-1,idTvShow);
     for( int i=0;i<items.Size();++i )
-      CTextureCache::Get().ClearCachedImage(items[i]->GetCachedSeasonThumb());
+      CTextureCache::Get().ClearCachedImage(items[i]->GetCachedSeasonThumb(), true);
 
     DeleteThumbForItem(strPath,true);
 
@@ -9013,14 +9013,14 @@ void CVideoDatabase::DeleteThumbForItem(const CStdString& strPath, bool bFolder,
   {
     item.SetPath(item.GetVideoInfoTag()->m_strFileNameAndPath);
     if (CFile::Exists(item.GetCachedEpisodeThumb()))
-      CTextureCache::Get().ClearCachedImage(item.GetCachedEpisodeThumb());
+      CTextureCache::Get().ClearCachedImage(item.GetCachedEpisodeThumb(), true);
     else
-      CTextureCache::Get().ClearCachedImage(item.GetCachedVideoThumb());
+      CTextureCache::Get().ClearCachedImage(item.GetCachedVideoThumb(), true);
   }
   else
   {
-    CTextureCache::Get().ClearCachedImage(item.GetCachedVideoThumb());
-    CTextureCache::Get().ClearCachedImage(item.GetCachedFanart());
+    CTextureCache::Get().ClearCachedImage(item.GetCachedVideoThumb(), true);
+    CTextureCache::Get().ClearCachedImage(item.GetCachedFanart(), true);
   }
 
   // tell our GUI to completely reload all controls (as some of them

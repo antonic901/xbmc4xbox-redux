@@ -499,7 +499,7 @@ void CGUIDialogMusicInfo::OnGetThumb()
   else
     cachedThumb = CUtil::GetCachedAlbumThumb(m_album.strAlbum, StringUtils::Join(m_album.artist, g_advancedSettings.m_musicItemSeparator));
 
-  CTextureCache::Get().ClearCachedImage(cachedThumb);
+  CTextureCache::Get().ClearCachedImage(cachedThumb, true);
   if (result.Left(14).Equals("thumb://Remote"))
   {
     CFileItem chosen(result, false);
@@ -514,7 +514,7 @@ void CGUIDialogMusicInfo::OnGetThumb()
   }
   if (result == "thumb://None")
   { // cache the default thumb
-    CTextureCache::Get().ClearCachedImage(cachedThumb);
+  CTextureCache::Get().ClearCachedImage(cachedThumb, true);
     cachedThumb = "";
   }
   else if (result == "thumb://Local")
@@ -607,7 +607,7 @@ void CGUIDialogMusicInfo::OnGetFanart()
   if (result.Equals("fanart://Local"))
     result = strLocal;
  
-  CTextureCache::Get().ClearCachedImage(cachedThumb);
+  CTextureCache::Get().ClearCachedImage(cachedThumb, true);
 
   if (!result.Equals("fanart://None"))
   { // local file

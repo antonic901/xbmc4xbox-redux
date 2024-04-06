@@ -1283,7 +1283,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 
       // delete the thumbnail if that's what the user wants, else overwrite with the
       // new thumbnail
-      CTextureCache::Get().ClearCachedImage(cachedThumb);
+      CTextureCache::Get().ClearCachedImage(cachedThumb, true);
       if (result.Left(14) == "thumb://Remote")
       {
         CFileItem chosen(result,false);
@@ -1298,7 +1298,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       }
       if (result == "thumb://None")
       {
-        CTextureCache::Get().ClearCachedImage(cachedThumb);
+        CTextureCache::Get().ClearCachedImage(cachedThumb, true);
       }
       else
         CFile::Copy(result,cachedThumb);
