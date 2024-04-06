@@ -45,23 +45,13 @@ bool CPictureThumbLoader::LoadItem(CFileItem* pItem)
 {
   if (pItem->m_bIsShareOrDrive) return true;
   
-  if (pItem->HasThumbnail())
-  {
-    CStdString thumb(pItem->GetThumbnailImage());
+  if (CheckAndCacheThumb(*pItem))
+    return true;
 
-    // look for remote thumbs    
-    if (!g_TextureManager.CanLoad(thumb))
-    {
-      thumb = CTextureCache::Get().CheckAndCacheImage(thumb);
-      pItem->SetThumbnailImage(thumb);
-      pItem->FillInDefaultIcon();
-      return !thumb.IsEmpty();
-    }
-    else if (m_regenerateThumbs)
-    {
-      CTextureCache::Get().ClearCachedImage(thumb);
-      pItem->SetThumbnailImage("");
-    }
+  if (pItem->HasThumbnail() && m_regenerateThumbs)
+  {
+    CTextureCache::Get().ClearCachedImage(pItem->GetThumbnailImage());
+    pItem->SetThumbnailImage("");
   }
 
   if (pItem->IsPicture() && !pItem->IsZIP() && !pItem->IsRAR() && !pItem->IsCBZ() && !pItem->IsCBR() && !pItem->IsPlayList())

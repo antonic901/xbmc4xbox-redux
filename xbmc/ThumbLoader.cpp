@@ -25,6 +25,7 @@
 #include "filesystem/File.h"
 #include "FileItem.h"
 #include "TextureManager.h"
+#include "TextureCache.h"
 #include "video/VideoInfoTag.h"
 #include "video/VideoDatabase.h"
 #include "utils/URIUtils.h"
@@ -62,6 +63,25 @@ bool CThumbLoader::LoadRemoteThumb(CFileItem *pItem)
     }
   }
   return pItem->HasThumbnail();
+}
+
+CStdString CThumbLoader::GetCachedThumb(const CFileItem &item)
+{
+  CTextureDatabase db;
+  if (db.Open())
+    return db.GetTextureForPath(item.GetPath());
+  return "";
+}
+
+bool CThumbLoader::CheckAndCacheThumb(CFileItem &item)
+{
+  if (item.HasThumbnail() && !g_TextureManager.CanLoad(item.GetThumbnailImage()))
+  {
+    CStdString thumb = CTextureCache::Get().CheckAndCacheImage(item.GetThumbnailImage());
+    item.SetThumbnailImage(thumb);
+    return !thumb.IsEmpty();
+  }
+  return false;
 }
 
 CVideoThumbLoader::CVideoThumbLoader() :  
