@@ -1222,8 +1222,7 @@ bool CUtil::CacheXBEIcon(const CStdString& strFilePath, const CStdString& strIco
         int iHeight = descSurface.Height;
         int iWidth = descSurface.Width;
         DWORD dwFormat = descSurface.Format;
-        CPicture pic;
-        success = pic.CreateThumbnailFromSwizzledTexture(pTexture, iHeight, iWidth, strIcon.c_str());
+        success = CPicture::CreateThumbnailFromSwizzledTexture(pTexture, iHeight, iWidth, strIcon.c_str());
       }
       pTexture->Release();
     }

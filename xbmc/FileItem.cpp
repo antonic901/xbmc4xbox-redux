@@ -2564,8 +2564,7 @@ void CFileItem::SetUserMusicThumb(bool alwaysCheckRemote /* = false */)
   if (!thumb.IsEmpty())
   {
     CStdString cachedThumb(CUtil::GetCachedMusicThumb(m_strPath));
-    CPicture pic;
-    pic.CreateThumbnail(thumb, cachedThumb);
+    CPicture::CreateThumbnail(thumb, cachedThumb);
   }
 
   SetCachedMusicThumb();
@@ -2797,8 +2796,7 @@ void CFileItem::SetUserVideoThumb()
   if (!thumb.IsEmpty())
   {
     CStdString cachedThumb(GetCachedVideoThumb());
-    CPicture pic;
-    pic.CreateThumbnail(thumb, cachedThumb);
+    CPicture::CreateThumbnail(thumb, cachedThumb);
   }
   SetCachedVideoThumb();
 }
@@ -2814,8 +2812,7 @@ bool CFileItem::CacheLocalFanart() const
   CStdString localFanart(GetLocalFanart());
   if (!localFanart.IsEmpty())
   {
-    CPicture pic;
-    return pic.CacheFanart(localFanart, cachedFanart);
+    return CPicture::CacheFanart(localFanart, cachedFanart);
   }
   return false;
 }

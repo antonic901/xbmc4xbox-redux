@@ -617,10 +617,11 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
     // as thumbnails could be slightly bigger on disk due to libjpeg scaling
     if (URIUtils::GetExtension(strPath).Equals(".tbn"))
     {
-      CPicture pic;
-      pTexture = pic.Load(strPath, g_advancedSettings.m_thumbSize, g_advancedSettings.m_thumbSize);
-      info.Width = pic.GetWidth();
-      info.Height = pic.GetHeight();
+      CTexture texture;
+      if (!texture.LoadFromFile(strPath, g_advancedSettings.m_thumbSize, g_advancedSettings.m_thumbSize))
+        return 0;
+      info.Width = texture.GetWidth();
+      info.Height = texture.GetHeight();
     }
     else
     {

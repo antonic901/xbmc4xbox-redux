@@ -783,11 +783,10 @@ void CGUIDialogVideoInfo::OnGetFanart()
     bool succeeded = downloader.Copy(m_movieItem->GetVideoInfoTag()->m_fanart.GetImageURL(), tempFile, g_localizeStrings.Get(13413));
     if (succeeded)
     {
-      CPicture pic;
       if (flip)
-        pic.ConvertFile(tempFile, cachedThumb,0,1920,-1,100,true);
+        CPicture::ConvertFile(tempFile, cachedThumb,0,1920,-1,100,true);
       else
-        pic.CacheFanart(tempFile, cachedThumb);
+        CPicture::CacheFanart(tempFile, cachedThumb);
     }
     CFile::Delete(tempFile);
     if (!succeeded)
@@ -795,11 +794,10 @@ void CGUIDialogVideoInfo::OnGetFanart()
   }
   else if (CFile::Exists(result))
   { // local file
-    CPicture pic;
     if (flip)
-      pic.ConvertFile(result, cachedThumb,0,1920,-1,100,true);
+      CPicture::ConvertFile(result, cachedThumb,0,1920,-1,100,true);
     else
-      pic.CacheFanart(result, cachedThumb);
+      CPicture::CacheFanart(result, cachedThumb);
   }
 
   CUtil::DeleteVideoDatabaseDirectoryCache(); // to get them new thumbs to show

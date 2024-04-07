@@ -593,8 +593,7 @@ void CXbmcHttp::copyThumb(CStdString srcFn, CStdString destFn)
           CFile::Copy(srcFn, destFn);
 	    else
 	    {
-	      CPicture pic;
-          pic.CacheSkinImage(srcFn, destFn);
+        CPicture::CacheSkinImage(srcFn, destFn);
 	    }
       }
       catch (...)
@@ -3007,9 +3006,8 @@ int CXbmcHttp::xbmcTakeScreenshot(int numParas, CStdString paras[])
           width=atoi(paras[3]);
           height=atoi(paras[4]);
         }
-      CPicture pic;
       int ret;
-      ret=pic.ConvertFile(tmpFile, filepath, (float) atof(paras[2]), width, height, atoi(paras[5]));
+      ret=CPicture::ConvertFile(tmpFile, filepath, (float) atof(paras[2]), width, height, atoi(paras[5]));
       if (ret==0)
       {
         CFile::Delete(tmpFile);

@@ -610,11 +610,10 @@ void CGUIDialogMusicInfo::OnGetFanart()
       result = tempFile;
     }
 
-    CPicture pic;
     if (flip)
-      pic.ConvertFile(result, cachedThumb,0,1920,-1,100,true);
+      CPicture::ConvertFile(result, cachedThumb,0,1920,-1,100,true);
     else
-      pic.CacheFanart(result, cachedThumb);
+      CPicture::CacheFanart(result, cachedThumb);
 
     m_albumItem->SetProperty("fanart_image",cachedThumb);
     m_hasUpdatedThumb = true;

@@ -19,20 +19,13 @@
  *
  */
 
-#include "system.h"
-#include "pictures/DllImageLib.h"
-#include "gui3d.h"
+#include "utils/StdString.h"
 
 class CPicture
 {
 public:
-  CPicture(void);
-  virtual ~CPicture(void);
-  IDirect3DTexture8* Load(const CStdString& strFilename, int width = 128, int height = 128);
-
   static bool CreateThumbnailFromMemory(const unsigned char* buffer, int bufSize, const CStdString& extension, const CStdString& thumbFile);
   static bool CreateThumbnailFromSurface(const unsigned char* buffer, int width, int height, int stride, const CStdString &thumbFile);
-  static bool CreateThumbnailFromSwizzledTexture(LPDIRECT3DTEXTURE8 &texture, int width, int height, const CStdString &thumbFile);
   static int ConvertFile(const CStdString& srcFile, const CStdString& destFile, float rotateDegrees, int width, int height, unsigned int quality, bool mirror=false);
 
   static void CreateFolderThumb(const CStdString *strThumbs, const CStdString &folderThumbnail);
@@ -41,17 +34,9 @@ public:
   static bool CacheFanart(const CStdString& sourceUrl, const CStdString& destFileName);
 
   // caches a skin image as a thumbnail image
-  bool CacheSkinImage(const CStdString &srcFile, const CStdString &destFile);
+  static bool CacheSkinImage(const CStdString &srcFile, const CStdString &destFile);
+  static bool CreateThumbnailFromSwizzledTexture(LPDIRECT3DTEXTURE8 &texture, int width, int height, const CStdString &thumbFile);
 
-  ImageInfo GetInfo() const { return m_info; };
-  unsigned int GetWidth() const { return m_info.width; };
-  unsigned int GetHeight() const { return m_info.height; };
-  unsigned int GetOriginalWidth() const { return m_info.originalwidth; };
-  unsigned int GetOriginalHeight() const { return m_info.originalheight; };
-  const EXIFINFO *GetExifInfo() const { return &m_info.exifInfo; };
-
-protected:
-  
 private:
   static bool CacheImage(const CStdString& sourceUrl, const CStdString& destFileName, int width, int height);
 
@@ -62,6 +47,4 @@ private:
     FLOAT tu, tv;
   };
   static const DWORD FVF_VERTEX = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
-
-  ImageInfo m_info;
 };

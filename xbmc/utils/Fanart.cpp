@@ -159,8 +159,7 @@ bool CFanart::DownloadThumb(unsigned int index, const CStdString &strDestination
 
 bool CFanart::DownloadImage(const CStdString &url, const CStdString &destination) const
 {
-  CPicture pic;
-  return pic.CacheFanart(url, destination);
+  return CPicture::CacheFanart(url, destination);
 }
 
 bool CFanart::DownloadImage(const CStdString &strDestination) const

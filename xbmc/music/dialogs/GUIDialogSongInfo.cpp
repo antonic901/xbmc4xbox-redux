@@ -263,8 +263,7 @@ void CGUIDialogSongInfo::OnGetThumb()
   if (CFile::Exists(localThumb))
   {
     URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath, "localthumb.jpg", cachedLocalThumb);
-    CPicture pic;
-    if (pic.CreateThumbnail(localThumb, cachedLocalThumb))
+    if (CPicture::CreateThumbnail(localThumb, cachedLocalThumb))
     {
       CFileItemPtr item(new CFileItem("thumb://Local", false));
       item->SetThumbnailImage(cachedLocalThumb);
@@ -298,8 +297,7 @@ void CGUIDialogSongInfo::OnGetThumb()
   CTextureCache::Get().ClearCachedImage(cachedThumb, true);
   if (result == "thumb://None")
   { // cache the default thumb
-    CPicture pic;
-    pic.CacheSkinImage("DefaultAlbumCover.png", cachedThumb);
+    CPicture::CacheSkinImage("DefaultAlbumCover.png", cachedThumb);
   }
   else if (result == "thumb://allmusic.com")
     CFile::Copy(thumbFromWeb, cachedThumb);
@@ -307,8 +305,7 @@ void CGUIDialogSongInfo::OnGetThumb()
     CFile::Copy(cachedLocalThumb, cachedThumb);
   else if (CFile::Exists(result))
   {
-    CPicture pic;
-    pic.CreateThumbnail(result, cachedThumb);
+    CPicture::CreateThumbnail(result, cachedThumb);
   }
 
   m_song->SetThumbnailImage(cachedThumb);
