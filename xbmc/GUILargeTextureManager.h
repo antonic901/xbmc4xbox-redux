@@ -69,7 +69,7 @@ public:
 
   virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
 
-  bool GetImage(const CStdString &path, CTexture &texture, int &orientation, bool firstRequest);
+  bool GetImage(const CStdString &path, CTextureArray &texture, int &orientation, bool firstRequest);
   void ReleaseImage(const CStdString &path, bool immediately = false);
 
   void CleanupUnusedImages();
@@ -88,7 +88,7 @@ protected:
     void SetTexture(LPDIRECT3DTEXTURE8 texture, int width, int height, int orientation);
 
     const CStdString &GetPath() const { return m_path; };
-    const CTexture &GetTexture() const { return m_texture; };
+    const CTextureArray &GetTexture() const { return m_texture; };
     int GetOrientation() const { return m_orientation; };
 
   private:
@@ -96,7 +96,7 @@ protected:
 
     unsigned int m_refCount;
     CStdString m_path;
-    CTexture m_texture;
+    CTextureArray m_texture;
     int m_orientation;
     unsigned int m_timeToDelete;
   };

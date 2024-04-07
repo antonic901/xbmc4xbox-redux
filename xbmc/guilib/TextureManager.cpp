@@ -46,7 +46,7 @@ extern "C" void dllprintf( const char *format, ... );
 
 CGUITextureManager g_TextureManager;
 
-CTexture::CTexture(int width, int height, int loops, LPDIRECT3DPALETTE8 palette, bool packed, bool texCoordsArePixels)
+CTextureArray::CTextureArray(int width, int height, int loops, LPDIRECT3DPALETTE8 palette, bool packed, bool texCoordsArePixels)
 {
   m_width = width;
   m_height = height;
@@ -64,12 +64,12 @@ CTexture::CTexture(int width, int height, int loops, LPDIRECT3DPALETTE8 palette,
   m_packed = packed;
 };
 
-unsigned int CTexture::size() const
+unsigned int CTextureArray::size() const
 {
   return m_textures.size();
 }
 
-void CTexture::Add(LPDIRECT3DTEXTURE8 texture, int delay)
+void CTextureArray::Add(LPDIRECT3DTEXTURE8 texture, int delay)
 {
   if (!texture)
     return;
@@ -87,7 +87,7 @@ void CTexture::Add(LPDIRECT3DTEXTURE8 texture, int delay)
   }
 }
 
-void CTexture::Set(LPDIRECT3DTEXTURE8 texture, int width, int height)
+void CTextureArray::Set(LPDIRECT3DTEXTURE8 texture, int width, int height)
 {
   assert(!m_textures.size()); // don't try and set a texture if we already have one!
   m_width = width;
@@ -95,7 +95,7 @@ void CTexture::Set(LPDIRECT3DTEXTURE8 texture, int width, int height)
   Add(texture, 100);
 }
 
-void CTexture::Free()
+void CTextureArray::Free()
 {
   CSingleLock lock(g_graphicsContext);
   for (unsigned int i = 0; i < m_textures.size(); i++)
@@ -210,7 +210,7 @@ bool CTextureMap::Release()
   return false;
 }
 
-const CTexture &CTextureMap::GetTexture()
+const CTextureArray &CTextureMap::GetTexture()
 {
   m_referenceCount++;
   return m_texture;
@@ -254,9 +254,9 @@ CGUITextureManager::~CGUITextureManager(void)
   Cleanup();
 }
 
-static const CTexture emptyTexture;
+static const CTextureArray emptyTexture;
 
-const CTexture &CGUITextureManager::GetTexture(const CStdString& strTextureName)
+const CTextureArray &CGUITextureManager::GetTexture(const CStdString& strTextureName)
 {
   //  CLog::Log(LOGINFO, " refcount++ for  GetTexture(%s)\n", strTextureName.c_str());
   for (int i = 0; i < (int)m_vecTextures.size(); ++i)

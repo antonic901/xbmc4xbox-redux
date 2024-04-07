@@ -323,7 +323,7 @@ bool CPicture::CacheSkinImage(const CStdString &srcFile, const CStdString &destF
   int iImages = g_TextureManager.Load(srcFile);
   if (iImages > 0)
   {
-    CTexture texture = g_TextureManager.GetTexture(srcFile);
+    CTextureArray texture = g_TextureManager.GetTexture(srcFile);
     if (texture.size())
     {
       bool success(false);

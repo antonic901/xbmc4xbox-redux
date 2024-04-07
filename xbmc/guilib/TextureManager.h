@@ -34,10 +34,10 @@
 
 
 // currently just used as a transport from texture manager to rest of app
-class CTexture
+class CTextureArray
 {
 public:
-  CTexture()
+  CTextureArray()
   {
     Reset();
   };
@@ -54,7 +54,7 @@ public:
     m_texCoordsArePixels = false;
     m_packed = false;
   };
-  CTexture(int width, int height, int loops, LPDIRECT3DPALETTE8 palette = NULL, bool packed = false, bool texCoordsArePixels = false);
+  CTextureArray(int width, int height, int loops, LPDIRECT3DPALETTE8 palette = NULL, bool packed = false, bool texCoordsArePixels = false);
   void Add(LPDIRECT3DTEXTURE8 texture, int delay);
   void Set(LPDIRECT3DTEXTURE8 texture, int width, int height);
   void Free();
@@ -87,7 +87,7 @@ public:
   bool Release();
 
   const CStdString& GetName() const;
-  const CTexture &GetTexture();
+  const CTextureArray &GetTexture();
   void Dump() const;
   unsigned int GetMemoryUsage() const;
   void Flush();
@@ -96,7 +96,7 @@ protected:
   void FreeTexture();
 
   CStdString m_textureName;
-  CTexture m_texture;
+  CTextureArray m_texture;
   unsigned int m_referenceCount;
   unsigned int m_memUsage;
 };
@@ -118,7 +118,7 @@ public:
   bool HasTexture(const CStdString &textureName, CStdString *path = NULL, int *bundle = NULL, int *size = NULL);
   bool CanLoad(const CStdString &texturePath) const; ///< Returns true if the texture manager can load this texture
   int Load(const CStdString& strTextureName, bool checkBundleOnly = false);
-  const CTexture &GetTexture(const CStdString& strTextureName);
+  const CTextureArray &GetTexture(const CStdString& strTextureName);
   void ReleaseTexture(const CStdString& strTextureName);
   void Cleanup();
   void Dump() const;

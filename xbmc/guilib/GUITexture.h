@@ -197,8 +197,8 @@ protected:
 
   int m_largeOrientation;   // orientation for large textures
 
-  CTexture m_diffuse;
-  CTexture m_texture;
+  CTextureArray m_diffuse;
+  CTextureArray m_texture;
 };
 
 #ifndef HAS_SDL
