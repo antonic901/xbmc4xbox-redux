@@ -22,7 +22,7 @@
 				AdditionalOptions="/EHa"
 				Optimization="0"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="..;../../lib;../../lib/freetype/include;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;../../lib/boost;../guilib;..\utils"
+				AdditionalIncludeDirectories="..;../../lib;../../lib/freetype/include;&quot;../../lib/libjpeg-turbo/include&quot;;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;../../lib/boost;../guilib;..\utils"
 				PreprocessorDefinitions="_DEBUG;_XBOX;_LIB;NOMINMAX"
 				MinimalRebuild="FALSE"
 				ExceptionHandling="FALSE"
@@ -66,7 +66,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="FALSE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="..;../../lib;../../lib/freetype/include;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;../../lib/boost;../guilib;..\utils"
+				AdditionalIncludeDirectories="..;../../lib;../../lib/freetype/include;&quot;../../lib/libjpeg-turbo/include&quot;;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;../../lib/boost;../guilib;..\utils"
 				PreprocessorDefinitions="NDEBUG;_XBOX;PROFILE;_LIB;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -105,7 +105,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="FALSE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="..;../../lib;../../lib/freetype/include;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;../../lib/boost;../guilib;..\utils"
+				AdditionalIncludeDirectories="..;../../lib;../../lib/freetype/include;&quot;../../lib/libjpeg-turbo/include&quot;;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;../../lib/boost;../guilib;..\utils"
 				PreprocessorDefinitions="NDEBUG;_XBOX;PROFILE;FASTCAP;_LIB;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -145,7 +145,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="..;../../lib;../../lib/freetype/include;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;../../lib/boost;../guilib;..\utils"
+				AdditionalIncludeDirectories="..;../../lib;../../lib/freetype/include;&quot;../../lib/libjpeg-turbo/include&quot;;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;../../lib/boost;../guilib;..\utils"
 				PreprocessorDefinitions="NDEBUG;_XBOX;_LIB;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -184,7 +184,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="..;../../lib;../../lib/freetype/include;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;../../lib/boost;../guilib;..\utils"
+				AdditionalIncludeDirectories="..;../../lib;../../lib/freetype/include;&quot;../../lib/libjpeg-turbo/include&quot;;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;../../lib/boost;../guilib;..\utils"
 				PreprocessorDefinitions="NDEBUG;_XBOX;LTCG;_LIB;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -411,6 +411,9 @@
 			</File>
 			<File
 				RelativePath=".\PackedTexture.cpp">
+			</File>
+			<File
+				RelativePath=".\Texture.cpp">
 			</File>
 			<File
 				RelativePath=".\TextureBundle.cpp">
@@ -687,6 +690,9 @@
 			</File>
 			<File
 				RelativePath=".\StdString.h">
+			</File>
+			<File
+				RelativePath=".\Texture.h">
 			</File>
 			<File
 				RelativePath=".\TextureBundle.h">

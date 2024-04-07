@@ -1,0 +1,65 @@
+/*
+ *      Copyright (C) 2005-2008 Team XBMC
+ *      http://www.xbmc.org
+ *
+ *  This Program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
+ *
+ *  This Program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with XBMC; see the file COPYING.  If not, write to
+ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  http://www.gnu.org/copyleft/gpl.html
+ *
+ */
+
+/*!
+\file Texture.h
+\brief
+*/
+
+#ifndef GUILIB_TEXTURE_H
+#define GUILIB_TEXTURE_H
+
+#include "utils/StdString.h"
+#include "XBTF.h"
+
+#pragma once
+
+/*!
+\ingroup textures
+\brief Base texture class, subclasses of which depend on the render spec (DX, GL etc.)
+*/
+class CBaseTexture
+{
+
+public:
+  CBaseTexture(unsigned int width = 0, unsigned int height = 0, unsigned int format = XB_FMT_A8R8G8B8);
+  virtual ~CBaseTexture();
+
+  IDirect3DTexture8* LoadFromFile(const CStdString& texturePath, unsigned int maxHeight = 0, unsigned int maxWidth = 0,
+                                  bool autoRotate = false, unsigned int *originalWidth = NULL, unsigned int *originalHeight = NULL);
+
+  bool HasAlpha() const;
+
+  unsigned int GetWidth() const { return m_imageWidth; }
+  unsigned int GetHeight() const { return m_imageHeight; }
+  int GetOrientation() const { return m_orientation; }
+
+protected:
+  unsigned int m_imageWidth;
+  unsigned int m_imageHeight;
+  unsigned int m_textureWidth;
+  unsigned int m_textureHeight;
+
+  int m_orientation;
+  bool m_hasAlpha;
+};
+
+#endif
