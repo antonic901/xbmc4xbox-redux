@@ -25,6 +25,8 @@
 
 typedef uint32_t color_t;
 
+class CBaseTexture;
+
 class CSlideShowPic
 {
 public:
@@ -41,8 +43,8 @@ public:
   CSlideShowPic();
   ~CSlideShowPic();
 
-  void SetTexture(int iSlideNumber, LPDIRECT3DTEXTURE8 pTexture, int iWidth, int iHeight, int iRotate, DISPLAY_EFFECT dispEffect = EFFECT_RANDOM, TRANSISTION_EFFECT transEffect = FADEIN_FADEOUT);
-  void UpdateTexture(IDirect3DTexture8 *pTexture, int iWidth, int iHeight);
+  void SetTexture(int iSlideNumber, CBaseTexture* pTexture, DISPLAY_EFFECT dispEffect = EFFECT_RANDOM, TRANSISTION_EFFECT transEffect = FADEIN_FADEOUT);
+  void UpdateTexture(CBaseTexture *pTexture);
   bool IsLoaded() const { return m_bIsLoaded;};
   void UnLoad() {m_bIsLoaded = false;};
   void Render();

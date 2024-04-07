@@ -37,26 +37,13 @@
 class CTextureArray
 {
 public:
-  CTextureArray()
-  {
-    Reset();
-  };
-  void Reset()
-  {
-    m_textures.clear();
-    m_delays.clear();
-    m_palette = NULL;
-    m_width = 0;
-    m_height = 0;
-    m_loops = 0;
-    m_texWidth = 0;
-    m_texHeight = 0;
-    m_texCoordsArePixels = false;
-    m_packed = false;
-  };
+  CTextureArray();
   CTextureArray(int width, int height, int loops, LPDIRECT3DPALETTE8 palette = NULL, bool packed = false, bool texCoordsArePixels = false);
+
+  void Reset();
+
   void Add(LPDIRECT3DTEXTURE8 texture, int delay);
-  void Set(LPDIRECT3DTEXTURE8 texture, int width, int height);
+  void Set(CBaseTexture *texture, int width, int height);
   void Free();
   unsigned int size() const;
 
@@ -65,6 +52,7 @@ public:
   std::vector<int> m_delays;
   int m_width;
   int m_height;
+  int m_orientation;
   int m_loops;
   int m_texWidth;
   int m_texHeight;

@@ -29,6 +29,7 @@
 #include "threads/SingleLock.h"
 #include "utils/JobManager.h"
 #include "guilib/GraphicContext.h"
+#include "utils/log.h"
 #include "TextureCache.h"
 
 using namespace std;
@@ -39,16 +40,11 @@ CImageLoader::CImageLoader(const CStdString &path)
 {
   m_path = path;
   m_texture = NULL;
-  m_width = m_height = m_orientation = 0;
 }
 
 CImageLoader::~CImageLoader()
 {
-#ifdef HAS_XBOX_D3D
-  SAFE_RELEASE(m_texture);
-#else
   delete(m_texture);
-#endif
 }
 
 bool CImageLoader::DoWork()
@@ -90,31 +86,21 @@ bool CImageLoader::DoWork()
     width = g_advancedSettings.m_thumbSize;
     height = g_advancedSettings.m_thumbSize;
   }
+#endif
 
-  CBaseTexture texture;
-  if (texture.LoadFromFile(loadPath, width, height))
-  {
-    m_texture = texture.GetTextureObject();
-    m_width = texture.GetWidth();
-    m_height = texture.GetHeight();
-    m_orientation = texture.GetOrientation();
-  }
-  else
-  {
-    delete m_texture;
-    m_texture = NULL;
-  }
-#else
   m_texture = new CTexture();
   unsigned int start = XbmcThreads::SystemClockMillis();
-  if (!m_texture->LoadFromFile(loadPath, min(g_graphicsContext.GetWidth(), 2048), min(g_graphicsContext.GetHeight(), 1080), g_guiSettings.GetBool("pictures.useexifrotation")))
+#ifdef HAS_XBOX_D3D
+  if (!m_texture->LoadFromFile(loadPath, width, height, CSettings::Get().GetBool("pictures.useexifrotation")))
+#else
+  if (!m_texture->LoadFromFile(loadPath, min(g_graphicsContext.GetWidth(), 2048), min(g_graphicsContext.GetHeight(), 1080), CSettings::Get().GetBool("pictures.useexifrotation")))
+#endif
   {
     delete m_texture;
     m_texture = NULL;
   }
   else if (XbmcThreads::SystemClockMillis() - start > 100)
     CLog::Log(LOGDEBUG, "%s - took %u ms to load %s", __FUNCTION__, XbmcThreads::SystemClockMillis() - start, loadPath.c_str());
-#endif
 
   return true;
 }
@@ -122,7 +108,6 @@ bool CImageLoader::DoWork()
 CGUILargeTextureManager::CLargeTexture::CLargeTexture(const CStdString &path)
 {
   m_path = path;
-  m_orientation = 0;
   m_refCount = 1;
   m_timeToDelete = 0;
 };
@@ -163,12 +148,11 @@ bool CGUILargeTextureManager::CLargeTexture::DeleteIfRequired()
   return false;
 };
 
-void CGUILargeTextureManager::CLargeTexture::SetTexture(LPDIRECT3DTEXTURE8 texture, int width, int height, int orientation)
+void CGUILargeTextureManager::CLargeTexture::SetTexture(CBaseTexture* texture)
 {
   assert(!m_texture.size());
   if (texture)
-    m_texture.Set(texture, width, height);
-  m_orientation = orientation;
+    m_texture.Set(texture, texture->GetWidth(), texture->GetHeight());
 };
 
 CGUILargeTextureManager::CGUILargeTextureManager()
@@ -196,7 +180,7 @@ void CGUILargeTextureManager::CleanupUnusedImages()
 
 // if available, increment reference count, and return the image.
 // else, add to the queue list if appropriate.
-bool CGUILargeTextureManager::GetImage(const CStdString &path, CTextureArray &texture, int &orientation, bool firstRequest)
+bool CGUILargeTextureManager::GetImage(const CStdString &path, CTextureArray &texture, bool firstRequest)
 {
   // note: max size to load images: 2048x1024? (8MB)
   CSingleLock lock(m_listSection);
@@ -207,7 +191,6 @@ bool CGUILargeTextureManager::GetImage(const CStdString &path, CTextureArray &te
     {
       if (firstRequest)
         image->AddRef();
-      orientation = image->GetOrientation();
       texture = image->GetTexture();
       return texture.size() > 0;
     }
@@ -276,7 +259,7 @@ void CGUILargeTextureManager::OnJobComplete(unsigned int jobID, bool success, CJ
     { // found our job
       CImageLoader *loader = (CImageLoader *)job;
       CLargeTexture *image = it->second;
-      image->SetTexture(loader->m_texture, loader->m_width, loader->m_height, loader->m_orientation);
+      image->SetTexture(loader->m_texture);
       loader->m_texture = NULL; // we want to keep the texture, and jobs are auto-deleted.
       m_queued.erase(it);
       m_allocated.push_back(image);

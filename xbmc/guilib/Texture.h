@@ -63,4 +63,6 @@ protected:
   bool m_hasAlpha;
 };
 
+#define CTexture CBaseTexture
+
 #endif

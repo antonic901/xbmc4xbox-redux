@@ -90,7 +90,7 @@ public:
   virtual bool OnAction(const CAction &action);
   virtual void Render();
   virtual void OnDeinitWindow(int nextWindowID);
-  void OnLoadPic(int iPic, int iSlideNumber, LPDIRECT3DTEXTURE8 pTexture, int iWidth, int iHeight, int iOriginalWidth, int iOriginalHeight, int iRotate, bool bFullSize);
+  void OnLoadPic(int iPic, int iSlideNumber, CBaseTexture* pTexture, int iOriginalWidth, int iOriginalHeight, bool bFullSize);
   int NumSlides() const;
   int CurrentSlide() const;
   void Shuffle();

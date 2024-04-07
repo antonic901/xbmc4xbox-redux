@@ -22,7 +22,7 @@
 
 #include "threads/CriticalSection.h"
 #include "utils/Job.h"
-#include "TextureManager.h"
+#include "guilib/TextureManager.h"
 
 /*!
  \ingroup textures,jobs
@@ -42,14 +42,7 @@ public:
   virtual bool DoWork();
 
   CStdString    m_path; ///< path of image to load
-#ifdef HAS_XBOX_D3D
-  LPDIRECT3DTEXTURE8 m_texture; ///< Texture object to load the image into \sa LPDIRECT3DTEXTURE8.
-#else
   CBaseTexture *m_texture; ///< Texture object to load the image into \sa CBaseTexture.
-#endif
-  int           m_width; ///< width of loaded image
-  int           m_height; ///< height of loaded image
-  int           m_orientation; ///< orientation of loaded image
 };
 
 /*!
@@ -69,7 +62,7 @@ public:
 
   virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
 
-  bool GetImage(const CStdString &path, CTextureArray &texture, int &orientation, bool firstRequest);
+  bool GetImage(const CStdString &path, CTextureArray &texture, bool firstRequest);
   void ReleaseImage(const CStdString &path, bool immediately = false);
 
   void CleanupUnusedImages();
@@ -85,11 +78,10 @@ protected:
     void AddRef();
     bool DecrRef(bool deleteImmediately);
     bool DeleteIfRequired();
-    void SetTexture(LPDIRECT3DTEXTURE8 texture, int width, int height, int orientation);
+    void SetTexture(CBaseTexture* texture);
 
     const CStdString &GetPath() const { return m_path; };
     const CTextureArray &GetTexture() const { return m_texture; };
-    int GetOrientation() const { return m_orientation; };
 
   private:
     static const unsigned int TIME_TO_DELETE = 2000;
@@ -97,7 +89,6 @@ protected:
     unsigned int m_refCount;
     CStdString m_path;
     CTextureArray m_texture;
-    int m_orientation;
     unsigned int m_timeToDelete;
   };
 

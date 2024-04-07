@@ -21,6 +21,7 @@
 
 #include "include.h"
 #include "TextureManager.h"
+#include "Texture.h"
 #include "AnimatedGif.h"
 #include "PackedTexture.h"
 #include "GraphicContext.h"
@@ -51,6 +52,7 @@ CTextureArray::CTextureArray(int width, int height, int loops, LPDIRECT3DPALETTE
   m_width = width;
   m_height = height;
   m_loops = loops;
+  m_orientation = 0;
   m_palette = palette;
   m_texWidth = 0;
   m_texHeight = 0;
@@ -64,9 +66,34 @@ CTextureArray::CTextureArray(int width, int height, int loops, LPDIRECT3DPALETTE
   m_packed = packed;
 };
 
+CTextureArray::CTextureArray()
+{
+  Reset();
+}
+
+CTextureArray::~CTextureArray()
+{
+
+}
+
 unsigned int CTextureArray::size() const
 {
   return m_textures.size();
+}
+
+void CTextureArray::Reset()
+{
+  m_textures.clear();
+  m_delays.clear();
+  m_palette = NULL;
+  m_width = 0;
+  m_height = 0;
+  m_loops = 0;
+  m_orientation = 0;
+  m_texWidth = 0;
+  m_texHeight = 0;
+  m_texCoordsArePixels = false;
+  m_packed = false;
 }
 
 void CTextureArray::Add(LPDIRECT3DTEXTURE8 texture, int delay)
@@ -87,12 +114,17 @@ void CTextureArray::Add(LPDIRECT3DTEXTURE8 texture, int delay)
   }
 }
 
-void CTextureArray::Set(LPDIRECT3DTEXTURE8 texture, int width, int height)
+void CTextureArray::Set(CBaseTexture *texture, int width, int height)
 {
   assert(!m_textures.size()); // don't try and set a texture if we already have one!
   m_width = width;
   m_height = height;
+  m_orientation = texture ? texture->GetOrientation() : 0;
+#ifdef HAS_XBOX_D3D
+  Add(texture->GetTextureObject(), 100);
+#else
   Add(texture, 100);
+#endif
 }
 
 void CTextureArray::Free()

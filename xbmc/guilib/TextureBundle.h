@@ -27,6 +27,7 @@
 #include <map>
 
 class CAutoTexBuffer;
+class CBaseTexture;
 
 class CTextureBundle
 {

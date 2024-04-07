@@ -20,6 +20,7 @@
 
 #include "SlideShowPicture.h"
 #include "system.h"
+#include "guilib/Texture.h"
 #include "GUIInfoManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
@@ -69,7 +70,7 @@ void CSlideShowPic::Close()
   m_bTransistionImmediately = false;
 }
 
-void CSlideShowPic::SetTexture(int iSlideNumber, LPDIRECT3DTEXTURE8 pTexture, int iWidth, int iHeight, int iRotate, DISPLAY_EFFECT dispEffect, TRANSISTION_EFFECT transEffect)
+void CSlideShowPic::SetTexture(int iSlideNumber, CBaseTexture* pTexture, DISPLAY_EFFECT dispEffect, TRANSISTION_EFFECT transEffect)
 {
   CSingleLock lock(m_textureAccess);
   Close();
@@ -77,9 +78,14 @@ void CSlideShowPic::SetTexture(int iSlideNumber, LPDIRECT3DTEXTURE8 pTexture, in
   m_bNoEffect = false;
   m_bTransistionImmediately = false;
   m_iSlideNumber = iSlideNumber;
+
+#ifdef HAS_XBOX_D3D
+  m_pImage = pTexture->GetTextureObject();
+#else
   m_pImage = pTexture;
-  m_fWidth = (float)iWidth;
-  m_fHeight = (float)iHeight;
+#endif
+  m_fWidth = (float)pTexture->GetWidth();
+  m_fHeight = (float)pTexture->GetHeight();
   // reset our counter
   m_iCounter = 0;
   // initialize our transistion effect
@@ -96,11 +102,11 @@ void CSlideShowPic::SetTexture(int iSlideNumber, LPDIRECT3DTEXTURE8 pTexture, in
   m_fTransistionAngle = 0;
   m_fTransistionZoom = 0;
   m_fAngle = 0;
-  if (iRotate == 8)
+  if (pTexture->GetOrientation() == 7)
   { // rotate to 270 degrees
     m_fAngle = 3.0f;
   }
-  if (iRotate == 6)
+  if (pTexture->GetOrientation() == 5)
   { // rotate to 90 degrees
     m_fAngle = 1.0f;
   }
@@ -163,7 +169,7 @@ int CSlideShowPic::GetOriginalHeight()
     return m_iOriginalHeight;
 }
 
-void CSlideShowPic::UpdateTexture(IDirect3DTexture8 *pTexture, int iWidth, int iHeight)
+void CSlideShowPic::UpdateTexture(CBaseTexture *pTexture)
 {
   CSingleLock lock(m_textureAccess);
   if (m_pImage)
@@ -174,9 +180,13 @@ void CSlideShowPic::UpdateTexture(IDirect3DTexture8 *pTexture, int iWidth, int i
 #endif
     m_pImage->Release();
   }
+#ifdef HAS_XBOX_D3D
+  m_pImage = pTexture->GetTextureObject();
+#else
   m_pImage = pTexture;
-  m_fWidth = (float)iWidth;
-  m_fHeight = (float)iHeight;
+#endif
+  m_fWidth = (float)pTexture->GetWidth();
+  m_fHeight = (float)pTexture->GetHeight();
 }
 
 void CSlideShowPic::Process()

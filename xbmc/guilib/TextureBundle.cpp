@@ -1,7 +1,8 @@
 
 
 #include "include.h"
-#include "./TextureBundle.h"
+#include "TextureBundle.h"
+#include "Texture.h"
 #include "GraphicContext.h"
 #ifdef HAS_XBOX_D3D
 #include <XGraphics.h>
