@@ -35,6 +35,8 @@
 /*!
 \ingroup textures
 \brief Base texture class, subclasses of which depend on the render spec (DX, GL etc.)
+This class is not real backport from Kodi/XBMC. This class is used for loading large textures (external images from HDD, Internet, etc.) only.
+CBaseTexture::LoadFromFile before was known as CPicture::Load.
 */
 class CBaseTexture
 {
