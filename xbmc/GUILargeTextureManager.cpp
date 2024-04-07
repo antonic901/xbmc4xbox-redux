@@ -21,6 +21,7 @@
 #include "GUILargeTextureManager.h"
 #include "pictures/Picture.h"
 #include "FileItem.h"
+#include "guilib/Texture.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
@@ -90,13 +91,13 @@ bool CImageLoader::DoWork()
     height = g_advancedSettings.m_thumbSize;
   }
 
-  CPicture pic;
-  m_texture = pic.Load(loadPath, width, height);
+  CBaseTexture texture;
+  m_texture = texture.LoadFromFile(loadPath, width, height);
   if (m_texture)
   {
-    m_width = pic.GetWidth();
-    m_height = pic.GetHeight();
-    m_orientation = (CSettings::Get().GetBool("pictures.useexifrotation") && pic.GetExifInfo()->Orientation) ? pic.GetExifInfo()->Orientation - 1: 0;
+    m_width = texture.GetWidth();
+    m_height = texture.GetHeight();
+    m_orientation = texture.GetOrientation();
   }
   else
     SAFE_RELEASE(m_texture);
