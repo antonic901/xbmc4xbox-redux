@@ -19,6 +19,7 @@
 *
 */
 
+#include "system.h" // SAFE_RELEASE
 #include "Texture.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
@@ -34,19 +35,21 @@
 /*                                                                      */
 /************************************************************************/
 CBaseTexture::CBaseTexture(unsigned int width, unsigned int height, unsigned int format)
- : m_hasAlpha( true )
+ : m_hasAlpha( true ),
+   m_imageWidth( width ),
+   m_imageHeight( height ),
+   m_orientation( 0 ),
+   m_texture( NULL )
 {
-  m_imageWidth = width;
-  m_imageHeight = height;
-  m_orientation = 0;
 }
 
 CBaseTexture::~CBaseTexture()
 {
+  SAFE_RELEASE(m_texture);
 }
 
-IDirect3DTexture8* CBaseTexture::LoadFromFile(const CStdString& texturePath, unsigned int maxWidth, unsigned int maxHeight,
-                                              bool autoRotate, unsigned int *originalWidth, unsigned int *originalHeight)
+bool CBaseTexture::LoadFromFile(const CStdString& texturePath, unsigned int maxWidth, unsigned int maxHeight,
+                                bool autoRotate, unsigned int *originalWidth, unsigned int *originalHeight)
 {
   unsigned int width = maxWidth ? std::min(maxWidth, (unsigned int)g_graphicsContext.GetMaxTextureSize()) : (unsigned int)g_graphicsContext.GetMaxTextureSize();
   unsigned int height = maxHeight ? std::min(maxHeight, (unsigned int)g_graphicsContext.GetMaxTextureSize()) : (unsigned int)g_graphicsContext.GetMaxTextureSize();
@@ -79,20 +82,19 @@ IDirect3DTexture8* CBaseTexture::LoadFromFile(const CStdString& texturePath, uns
         m_imageHeight = img.GetHeight();
         m_orientation = 0;
 
-        LPDIRECT3DTEXTURE8 pTexture = NULL;
         //Texture is created using GetWidth and GetHeight, which return texture size (always POT)
-        g_graphicsContext.Get3DDevice()->CreateTexture(img.GetWidth(), img.GetHeight(), 1, 0, D3DFMT_DXT1 , D3DPOOL_MANAGED, &pTexture);
-        if (pTexture)
+        g_graphicsContext.Get3DDevice()->CreateTexture(img.GetWidth(), img.GetHeight(), 1, 0, D3DFMT_DXT1 , D3DPOOL_MANAGED, &m_texture);
+        if (m_texture)
         {
           D3DLOCKED_RECT lr;
-          if ( D3D_OK == pTexture->LockRect( 0, &lr, NULL, 0 ))
+          if ( D3D_OK == m_texture->LockRect( 0, &lr, NULL, 0 ))
           {
             BYTE *pixels = (BYTE *)lr.pBits;
             //DDS Textures are always POT and don't need decoding, just memcpy into the texture.
             memcpy(pixels, img.GetData(), img.GetSize());
-            pTexture->UnlockRect( 0 );
+            m_texture->UnlockRect( 0 );
           }
-          return pTexture;
+          return true;
         }
         else
         {
@@ -125,32 +127,32 @@ IDirect3DTexture8* CBaseTexture::LoadFromFile(const CStdString& texturePath, uns
           *originalHeight = jpegfile.OrgHeight();
         m_imageWidth = jpegfile.Width();
         m_imageHeight = jpegfile.Height();
-        LPDIRECT3DTEXTURE8 pTexture = NULL;
-        g_graphicsContext.Get3DDevice()->CreateTexture(((jpegfile.Width() + 3) / 4) * 4, ((jpegfile.Height() + 3) / 4) * 4, 1, 0, D3DFMT_LIN_A8R8G8B8 , D3DPOOL_MANAGED, &pTexture);
-        if (pTexture)
+
+        g_graphicsContext.Get3DDevice()->CreateTexture(((jpegfile.Width() + 3) / 4) * 4, ((jpegfile.Height() + 3) / 4) * 4, 1, 0, D3DFMT_LIN_A8R8G8B8 , D3DPOOL_MANAGED, &m_texture);
+        if (m_texture)
         {
           D3DLOCKED_RECT lr;
-          if ( D3D_OK == pTexture->LockRect( 0, &lr, NULL, 0 ))
+          if ( D3D_OK == m_texture->LockRect( 0, &lr, NULL, 0 ))
           {
             DWORD destPitch = lr.Pitch;
             BYTE *pixels = (BYTE *)lr.pBits;
             bool ret = jpegfile.Decode(pixels, destPitch, XB_FMT_A8R8G8B8);
-            pTexture->UnlockRect( 0 );
+            m_texture->UnlockRect( 0 );
             if (ret)
             {
               if (autoRotate && jpegfile.Orientation())
                 m_orientation = jpegfile.Orientation() - 1;
               m_hasAlpha = false;
-              return pTexture;
+              return true;
             }
             else
-              return NULL;
+              return false;
           }
         }
         else
         {
           CLog::Log(LOGERROR, "%s - failed to create texture while loading image %s", __FUNCTION__, texturePath.c_str());
-          return NULL;
+          return false;
         }
       }
     }
@@ -158,7 +160,7 @@ IDirect3DTexture8* CBaseTexture::LoadFromFile(const CStdString& texturePath, uns
 
   DllImageLib dll;
   if (!dll.Load())
-    return NULL;
+    return false;
 
   ImageInfo image;
   memset(&image, 0, sizeof(image));
@@ -180,12 +182,11 @@ IDirect3DTexture8* CBaseTexture::LoadFromFile(const CStdString& texturePath, uns
   if (autoRotate && image.exifInfo.Orientation)
     m_orientation = image.exifInfo.Orientation - 1;
 
-  LPDIRECT3DTEXTURE8 pTexture = NULL;
-  g_graphicsContext.Get3DDevice()->CreateTexture(image.width, image.height, 1, 0, D3DFMT_LIN_A8R8G8B8 , D3DPOOL_MANAGED, &pTexture);
-  if (pTexture)
+  g_graphicsContext.Get3DDevice()->CreateTexture(image.width, image.height, 1, 0, D3DFMT_LIN_A8R8G8B8 , D3DPOOL_MANAGED, &m_texture);
+  if (m_texture)
   {
     D3DLOCKED_RECT lr;
-    if ( D3D_OK == pTexture->LockRect( 0, &lr, NULL, 0 ))
+    if ( D3D_OK == m_texture->LockRect( 0, &lr, NULL, 0 ))
     {
       DWORD destPitch = lr.Pitch;
       // CxImage aligns rows to 4 byte boundaries
@@ -204,14 +205,14 @@ IDirect3DTexture8* CBaseTexture::LoadFromFile(const CStdString& texturePath, uns
           *dst++ = (image.alpha) ? *alpha++ : 0xff;  // alpha
         }
       }
-      pTexture->UnlockRect( 0 );
+      m_texture->UnlockRect( 0 );
     }
   }
   else
     CLog::Log(LOGERROR, "%s - failed to create texture while loading image %s", __FUNCTION__, texturePath.c_str());
   dll.ReleaseImage(&image);
 
-  return pTexture;
+  return m_texture != NULL;
 }
 
 bool CBaseTexture::HasAlpha() const

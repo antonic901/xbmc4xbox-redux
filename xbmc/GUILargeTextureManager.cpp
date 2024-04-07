@@ -92,15 +92,18 @@ bool CImageLoader::DoWork()
   }
 
   CBaseTexture texture;
-  m_texture = texture.LoadFromFile(loadPath, width, height);
-  if (m_texture)
+  if (texture.LoadFromFile(loadPath, width, height))
   {
+    m_texture = texture.GetTextureObject();
     m_width = texture.GetWidth();
     m_height = texture.GetHeight();
     m_orientation = texture.GetOrientation();
   }
   else
-    SAFE_RELEASE(m_texture);
+  {
+    delete m_texture;
+    m_texture = NULL;
+  }
 #else
   m_texture = new CTexture();
   unsigned int start = XbmcThreads::SystemClockMillis();

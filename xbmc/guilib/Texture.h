@@ -43,11 +43,12 @@ public:
   CBaseTexture(unsigned int width = 0, unsigned int height = 0, unsigned int format = XB_FMT_A8R8G8B8);
   virtual ~CBaseTexture();
 
-  IDirect3DTexture8* LoadFromFile(const CStdString& texturePath, unsigned int maxHeight = 0, unsigned int maxWidth = 0,
-                                  bool autoRotate = false, unsigned int *originalWidth = NULL, unsigned int *originalHeight = NULL);
+  bool LoadFromFile(const CStdString& texturePath, unsigned int maxHeight = 0, unsigned int maxWidth = 0,
+                    bool autoRotate = false, unsigned int *originalWidth = NULL, unsigned int *originalHeight = NULL);
 
   bool HasAlpha() const;
 
+  IDirect3DTexture8* GetTextureObject() const { return m_texture; }
   unsigned int GetWidth() const { return m_imageWidth; }
   unsigned int GetHeight() const { return m_imageHeight; }
   int GetOrientation() const { return m_orientation; }
@@ -57,7 +58,7 @@ protected:
   unsigned int m_imageHeight;
   unsigned int m_textureWidth;
   unsigned int m_textureHeight;
-
+  IDirect3DTexture8* m_texture;
   int m_orientation;
   bool m_hasAlpha;
 };
