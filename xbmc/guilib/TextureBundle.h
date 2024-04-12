@@ -63,8 +63,7 @@ public:
   bool PreloadFile(const CStdString& Filename);
   static CStdString Normalize(const CStdString &name);
 
-  bool LoadTexture(LPDIRECT3DDEVICE8 pDevice, const CStdString& Filename, D3DXIMAGE_INFO* pInfo, LPDIRECT3DTEXTURE8* ppTexture,
-                      LPDIRECT3DPALETTE8* ppPalette);
+  bool LoadTexture(const CStdString& Filename, CBaseTexture** ppTexture, int &width, int &height);
 
   int LoadAnim(LPDIRECT3DDEVICE8 pDevice, const CStdString& Filename, D3DXIMAGE_INFO* pInfo, LPDIRECT3DTEXTURE8** ppTextures,
                LPDIRECT3DPALETTE8* ppPalette, int& nLoops, int** ppDelays);

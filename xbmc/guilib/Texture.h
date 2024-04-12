@@ -42,7 +42,8 @@ class CBaseTexture
 {
 
 public:
-  CBaseTexture(unsigned int width = 0, unsigned int height = 0, unsigned int format = XB_FMT_A8R8G8B8);
+  CBaseTexture(unsigned int width = 0, unsigned int height = 0, unsigned int format = XB_FMT_A8R8G8B8,
+               IDirect3DTexture8* texture = NULL, IDirect3DPalette8* palette = NULL, bool packed = false);
   virtual ~CBaseTexture();
 
   bool LoadFromFile(const CStdString& texturePath, unsigned int maxHeight = 0, unsigned int maxWidth = 0,
@@ -51,18 +52,46 @@ public:
   bool HasAlpha() const;
 
   IDirect3DTexture8* GetTextureObject() const { return m_texture; }
+  IDirect3DPalette8* GetPaletteObject() const { return m_palette; }
+  void SetPaletteObject(IDirect3DPalette8* palette) { m_palette = palette; }
+
+  unsigned char* GetPixels() const { return m_pixels; }
+  unsigned int GetPitch() const { return m_pitch; }
+  unsigned int GetRows() const { return GetRows(m_textureHeight); }
+  unsigned int GetTextureWidth() const { return m_textureWidth; }
+  unsigned int GetTextureHeight() const { return m_textureHeight; }
   unsigned int GetWidth() const { return m_imageWidth; }
   unsigned int GetHeight() const { return m_imageHeight; }
+  bool GetTexCoordsArePixels() const { return m_texCoordsArePixels; }
   int GetOrientation() const { return m_orientation; }
 
+  void Allocate(unsigned int width, unsigned int height, unsigned int format);
+  // populates some general info about loaded texture (width, height, pitch etc.)
+  bool GetTextureInfo();
+
 protected:
+  // helpers for computation of texture parameters for compressed textures
+  unsigned int GetRows(unsigned int height) const;
+
   unsigned int m_imageWidth;
   unsigned int m_imageHeight;
   unsigned int m_textureWidth;
   unsigned int m_textureHeight;
   IDirect3DTexture8* m_texture;
+  /* NOTICE for future:
+    Note that in SDL and Win32 we already convert the paletted textures into normal textures,
+    so there's no chance of having m_palette as a real palette */
+  IDirect3DPalette8* m_palette;
+  // this variable should hold Data which represents loaded Texture
+  unsigned char* m_pixels;
+  unsigned int m_format;
+  unsigned int m_pitch;
   int m_orientation;
   bool m_hasAlpha;
+  // What is this? On Kodi it's always false
+  bool m_texCoordsArePixels;
+  // true if texture is loaded from .XPR
+  bool m_packed;
 };
 
 #define CTexture CBaseTexture

@@ -19,6 +19,7 @@
  */
 
 #include "include.h"
+#include "Texture.h"
 #include "GUITextureD3D.h"
 #include "GraphicContext.h"
 
@@ -31,15 +32,17 @@ CGUITextureD3D::CGUITextureD3D(float posX, float posY, float width, float height
 
 void CGUITextureD3D::Begin()
 {
+  CBaseTexture* texture = m_texture.m_textures[m_currentFrame];
   LPDIRECT3DDEVICE8 p3DDevice = g_graphicsContext.Get3DDevice();
+
   // Set state to render the image
 #ifdef HAS_XBOX_D3D
   if (!m_texture.m_texCoordsArePixels)
-    p3DDevice->SetPalette( 0, m_texture.m_palette);
-  if (m_diffuse.m_palette)
-    p3DDevice->SetPalette( 1, m_diffuse.m_palette);
+    p3DDevice->SetPalette( 0, texture->GetPaletteObject());
+  if (m_diffuse.size())
+    p3DDevice->SetPalette( 1, m_diffuse.m_textures[0]->GetPaletteObject());
 #endif
-  p3DDevice->SetTexture( 0, m_texture.m_textures[m_currentFrame] );
+  p3DDevice->SetTexture( 0, texture->GetTextureObject() );
   p3DDevice->SetTextureStageState( 0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR );
   p3DDevice->SetTextureStageState( 0, D3DTSS_MINFILTER, D3DTEXF_LINEAR );
   p3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
@@ -52,7 +55,7 @@ void CGUITextureD3D::Begin()
   p3DDevice->SetTextureStageState( 0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP );
   if (m_diffuse.size())
   {
-    p3DDevice->SetTexture( 1, m_diffuse.m_textures[0] );
+    p3DDevice->SetTexture( 1, m_diffuse.m_textures[0]->GetTextureObject() );
     p3DDevice->SetTextureStageState( 1, D3DTSS_MAGFILTER, D3DTEXF_LINEAR );
     p3DDevice->SetTextureStageState( 1, D3DTSS_MINFILTER, D3DTEXF_LINEAR );
     p3DDevice->SetTextureStageState( 1, D3DTSS_COLORARG1, D3DTA_TEXTURE );
@@ -104,7 +107,7 @@ void CGUITextureD3D::End()
     p3DDevice->SetRenderState( D3DRS_FILLMODE, D3DFILL_SOLID );
   }
   p3DDevice->SetPalette( 0, NULL);
-  if (m_diffuse.m_palette)
+  if (m_diffuse.size())
     p3DDevice->SetPalette( 1, NULL);
 #endif
   // unset the texture and palette or the texture caching crashes because the runtime still has a reference

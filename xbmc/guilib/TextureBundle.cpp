@@ -419,16 +419,16 @@ bool CTextureBundle::LoadFile(const CStdString& Filename, CAutoTexBuffer& Unpack
   return success;
 }
 
-bool CTextureBundle::LoadTexture(LPDIRECT3DDEVICE8 pDevice, const CStdString& Filename, D3DXIMAGE_INFO* pInfo, LPDIRECT3DTEXTURE8* ppTexture,
-                                    LPDIRECT3DPALETTE8* ppPalette)
+bool CTextureBundle::LoadTexture(const CStdString& Filename, CBaseTexture** ppTexture, int &width, int &height)
 {
-  *ppTexture = NULL; *ppPalette = NULL;
+  DWORD ResDataOffset;
+  *ppTexture = NULL;
 
   CAutoTexBuffer UnpackedBuf;
   if (!LoadFile(Filename, UnpackedBuf))
     return false;
 
-  D3DTexture* pTex = (D3DTexture*)(new char[sizeof(D3DTexture) + sizeof(DWORD)]);
+  D3DTexture* pTex = (D3DTexture*)(new char[sizeof(D3DTexture) + sizeof(DWORD)]); // Why we are appending sizeof(DWORD) here? It's not like that on Kodi
   D3DPalette* pPal = 0;
   void* ResData = 0;
 
@@ -460,36 +460,38 @@ bool CTextureBundle::LoadTexture(LPDIRECT3DDEVICE8 pDevice, const CStdString& Fi
   memcpy(RealSize, Next, 4);
   Next += 4;
 
-  DWORD ResDataOffset = ((Next - UnpackedBuf) + 127) & ~127;
+  ResDataOffset = ((Next - UnpackedBuf) + 127) & ~127;
   ResData = UnpackedBuf + ResDataOffset;
 
   if ((pTex->Common & D3DCOMMON_TYPE_MASK) != D3DCOMMON_TYPE_TEXTURE)
     goto PackedLoadError;
 
-  *ppTexture = (LPDIRECT3DTEXTURE8)pTex;
 #ifdef HAS_XBOX_D3D
-  (*ppTexture)->Register(ResData);
+  *ppTexture = new CTexture(RealSize[0], RealSize[1], XB_FMT_A8R8G8B8, (LPDIRECT3DTEXTURE8)pTex, NULL, true);
+  (*ppTexture)->GetTextureObject()->Register(ResData);
 #else
   GetTextureFromData(pTex, ResData, ppTexture);
+  delete[] pTex;
 #endif
-  *(DWORD*)(pTex + 1) = (DWORD)(BYTE*)UnpackedBuf;
 #ifdef HAS_XBOX_D3D
+  *(DWORD*)(pTex + 1) = (DWORD)(BYTE*)UnpackedBuf;
   if (pPal)
   {
-    *ppPalette = (LPDIRECT3DPALETTE8)pPal;
-    (*ppPalette)->Register(ResData);
+    (*ppTexture)->SetPaletteObject((LPDIRECT3DPALETTE8)pPal);
+    (*ppTexture)->GetPaletteObject()->Register(ResData);
   }
   UnpackedBuf.Release();
 #endif
 
-  pInfo->Width = RealSize[0];
-  pInfo->Height = RealSize[1];
-  pInfo->Depth = 0;
-  pInfo->MipLevels = 1;
+  width = RealSize[0];
+  height = RealSize[1];
+/* DXMERGE - this was previously used to specify the format of the image - probably only affects directx?
+#ifndef HAS_SDL
   D3DSURFACE_DESC desc;
   (*ppTexture)->GetLevelDesc(0, &desc);
   pInfo->Format = desc.Format;
-
+#endif
+*/
   return true;
 
 PackedLoadError:

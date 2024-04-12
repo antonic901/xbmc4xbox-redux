@@ -38,17 +38,16 @@ class CTextureArray
 {
 public:
   CTextureArray();
-  CTextureArray(int width, int height, int loops, LPDIRECT3DPALETTE8 palette = NULL, bool packed = false, bool texCoordsArePixels = false);
+  CTextureArray(int width, int height, int loops, bool texCoordsArePixels = false);
 
   void Reset();
 
-  void Add(LPDIRECT3DTEXTURE8 texture, int delay);
+  void Add(CBaseTexture *texture, int delay);
   void Set(CBaseTexture *texture, int width, int height);
   void Free();
   unsigned int size() const;
 
-  std::vector<LPDIRECT3DTEXTURE8> m_textures;
-  LPDIRECT3DPALETTE8 m_palette;
+  std::vector<CBaseTexture *> m_textures;
   std::vector<int> m_delays;
   int m_width;
   int m_height;
@@ -57,7 +56,6 @@ public:
   int m_texWidth;
   int m_texHeight;
   bool m_texCoordsArePixels;
-  bool m_packed;
 };
 
 /*!
@@ -70,8 +68,8 @@ public:
   CTextureMap();
   virtual ~CTextureMap();
 
-  CTextureMap(const CStdString& textureName, int width, int height, int loops, LPDIRECT3DPALETTE8 palette, bool packed);
-  void Add(LPDIRECT3DTEXTURE8 pTexture, int delay);
+  CTextureMap(const CStdString& textureName, int width, int height, int loops);
+  void Add(CBaseTexture *texture, int delay);
   bool Release();
 
   const CStdString& GetName() const;
