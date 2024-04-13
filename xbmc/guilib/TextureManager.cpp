@@ -592,6 +592,7 @@ void CGUITextureManager::ReleaseTexture(const CStdString& strTextureName)
   CLog::Log(LOGWARNING, "%s: Unable to release texture %s", __FUNCTION__, strTextureName.c_str());
 }
 
+#ifndef HAS_XBOX_D3D
 void CGUITextureManager::FreeUnusedTextures()
 {
   CSingleLock lock(g_graphicsContext);
@@ -599,6 +600,7 @@ void CGUITextureManager::FreeUnusedTextures()
     delete *i;
   m_unusedTextures.clear();
 }
+#endif
 
 void CGUITextureManager::Cleanup()
 {

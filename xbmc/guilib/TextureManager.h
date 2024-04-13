@@ -129,10 +129,14 @@ public:
   void SetTexturePath(const CStdString &texturePath);    ///< Set a single path as the path to check when loading media (clear then add)
   void RemoveTexturePath(const CStdString &texturePath); ///< Remove a path from the paths to check when loading media
 
+#ifndef HAS_XBOX_D3D
   void FreeUnusedTextures(); ///< Free textures (called from app thread only)
+#endif
 protected:
   std::vector<CTextureMap*> m_vecTextures;
+#ifndef HAS_XBOX_D3D // We could probably switch to XBMC way of cleaning unused textures
   std::vector<CTextureMap*> m_unusedTextures;
+#endif
   typedef std::vector<CTextureMap*>::iterator ivecTextures;
   // we have 2 texture bundles (one for the base textures, one for the theme)
   CTextureBundle m_TexBundle[2];
