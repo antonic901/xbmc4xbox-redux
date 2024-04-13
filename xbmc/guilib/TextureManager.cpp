@@ -19,34 +19,36 @@
 */
 
 
-#include "include.h"
 #include "TextureManager.h"
 #include "Texture.h"
 #include "AnimatedGif.h"
 #include "GraphicContext.h"
 #include "threads/SingleLock.h"
-#include "utils/StringUtils.h"
-#include "pictures/Picture.h"
 #include "utils/CharsetConverter.h"
-#include "filesystem/File.h"
-#include "filesystem/Directory.h"
-#include "filesystem/SpecialProtocol.h"
-#include "settings/AdvancedSettings.h"
-#include "utils/TimeUtils.h"
+#include "utils/log.h"
 #include "utils/URIUtils.h"
 #include "addons/Skin.h"
+#ifdef _DEBUG
+#include "utils/TimeUtils.h"
+#endif
+#include "filesystem/File.h"
+#include "filesystem/Directory.h"
+#include <assert.h>
 
 #ifdef HAS_XBOX_D3D
 #include <XGraphics.h>
+#include "settings/AdvancedSettings.h"
 #endif
 
 using namespace std;
 
-extern "C" void dllprintf( const char *format, ... );
-
 CGUITextureManager g_TextureManager;
 
-CTextureArray::CTextureArray(int width, int height, int loops, bool texCoordsArePixels)
+
+/************************************************************************/
+/*                                                                      */
+/************************************************************************/
+CTextureArray::CTextureArray(int width, int height, int loops,  bool texCoordsArePixels)
 {
   m_width = width;
   m_height = height;
@@ -59,7 +61,7 @@ CTextureArray::CTextureArray(int width, int height, int loops, bool texCoordsAre
 #else
   m_texCoordsArePixels = false;
 #endif
-};
+}
 
 CTextureArray::CTextureArray()
 {
@@ -75,6 +77,7 @@ unsigned int CTextureArray::size() const
 {
   return m_textures.size();
 }
+
 
 void CTextureArray::Reset()
 {
@@ -154,6 +157,35 @@ CTextureMap::~CTextureMap()
   FreeTexture();
 }
 
+bool CTextureMap::Release()
+{
+  if (!m_texture.m_textures.size())
+    return true;
+  if (!m_referenceCount)
+    return true;
+
+  m_referenceCount--;
+  if (!m_referenceCount)
+  {
+#ifdef HAS_XBOX_D3D
+    FreeTexture();
+#endif
+    return true;
+  }
+  return false;
+}
+
+const CStdString& CTextureMap::GetName() const
+{
+  return m_textureName;
+}
+
+const CTextureArray& CTextureMap::GetTexture()
+{
+  m_referenceCount++;
+  return m_texture;
+}
+
 void CTextureMap::Dump() const
 {
   if (!m_referenceCount)
@@ -164,9 +196,26 @@ void CTextureMap::Dump() const
   OutputDebugString(strLog.c_str());
 }
 
-const CStdString& CTextureMap::GetName() const
+unsigned int CTextureMap::GetMemoryUsage() const
 {
-  return m_textureName;
+  return m_memUsage;
+}
+
+void CTextureMap::Flush()
+{
+  if (!m_referenceCount)
+    FreeTexture();
+}
+
+
+void CTextureMap::FreeTexture()
+{
+  m_texture.Free();
+}
+
+bool CTextureMap::IsEmpty() const
+{
+  return m_texture.m_textures.size() == 0;
 }
 
 void CTextureMap::Add(CBaseTexture* texture, int delay)
@@ -177,60 +226,21 @@ void CTextureMap::Add(CBaseTexture* texture, int delay)
 #ifdef HAS_XBOX_D3D
     m_memUsage += sizeof(CTexture) + (texture->GetPitch() * texture->GetRows()); // This is equal to D3DSURFACE_DESC.Size
 #else
-    m_memUsage += sizeof(CTexture) + (texture->GetTextureWidth() * texture->GetTextureHeight() * 4); Kodi assumes format XB_FMT_A8R8G8B8 which is biggest
+    m_memUsage += sizeof(CTexture) + (texture->GetTextureWidth() * texture->GetTextureHeight() * 4);
 #endif
 }
 
-bool CTextureMap::Release()
-{
-  if (!m_texture.m_textures.size()) return true;
-  if (!m_referenceCount) return true;
-
-  m_referenceCount--;
-  if (!m_referenceCount)
-  {
-    FreeTexture();
-    return true;
-  }
-  return false;
-}
-
-const CTextureArray &CTextureMap::GetTexture()
-{
-  m_referenceCount++;
-  return m_texture;
-}
-
-void CTextureMap::Flush()
-{
-  if (!m_referenceCount)
-    FreeTexture();
-}
-
-void CTextureMap::FreeTexture()
-{
-  m_texture.Free();
-}
-
-unsigned int CTextureMap::GetMemoryUsage() const
-{
-  return m_memUsage;
-}
-
-bool CTextureMap::IsEmpty() const
-{
-  return m_texture.m_textures.size() == 0;
-}
-
-//------------------------------------------------------------------------------
+/************************************************************************/
+/*                                                                      */
+/************************************************************************/
 CGUITextureManager::CGUITextureManager(void)
 {
 #ifdef HAS_XBOX_D3D
   D3DXSetDXT3DXT5(TRUE);
-#endif
   for (int bundle = 0; bundle < 2; bundle++)
     m_iNextPreload[bundle] = m_PreLoadNames[bundle].end();
-  // we set the theme bundle to be the first bundle (thus prioritising it
+#endif
+  // we set the theme bundle to be the first bundle (thus prioritizing it)
   m_TexBundle[0].SetThemeBundle(true);
 }
 
@@ -239,10 +249,9 @@ CGUITextureManager::~CGUITextureManager(void)
   Cleanup();
 }
 
-static const CTextureArray emptyTexture;
-
-const CTextureArray &CGUITextureManager::GetTexture(const CStdString& strTextureName)
+const CTextureArray& CGUITextureManager::GetTexture(const CStdString& strTextureName)
 {
+  static CTextureArray emptyTexture;
   //  CLog::Log(LOGINFO, " refcount++ for  GetTexture(%s)\n", strTextureName.c_str());
   for (int i = 0; i < (int)m_vecTextures.size(); ++i)
   {
@@ -256,26 +265,7 @@ const CTextureArray &CGUITextureManager::GetTexture(const CStdString& strTexture
   return emptyTexture;
 }
 
-// Round a number to the nearest power of 2 rounding up
-// runs pretty quickly - the only expensive op is the bsr
-// alternive would be to dec the source, round down and double the result
-// which is slightly faster but rounds 1 to 2
-DWORD __forceinline __stdcall PadPow2(DWORD x)
-{
-  __asm {
-    mov edx, x    // put the value in edx
-    xor ecx, ecx  // clear ecx - if x is 0 bsr doesn't alter it
-    bsr ecx, edx  // find MSB position
-    mov eax, 1    // shift 1 by result effectively
-    shl eax, cl   // doing a round down to power of 2
-    cmp eax, edx  // check if x was already a power of two
-    adc ecx, 0    // if it wasn't then CF is set so add to ecx
-    mov eax, 1    // shift 1 by result again, this does a round
-    shl eax, cl   // up as a result of adding CF to ecx
-  }
-  // return result in eax
-}
-
+#ifdef HAS_XBOX_D3D
 void CGUITextureManager::StartPreLoad()
 {
   for (int bundle = 0; bundle < 2; bundle++)
@@ -329,7 +319,11 @@ void CGUITextureManager::FlushPreLoad()
     m_iNextPreload[i] = m_PreLoadNames[i].end();
   }
 }
+#endif
 
+/************************************************************************/
+/*                                                                      */
+/************************************************************************/
 bool CGUITextureManager::CanLoad(const CStdString &texturePath) const
 {
   if (texturePath == "-")
@@ -361,6 +355,7 @@ bool CGUITextureManager::HasTexture(const CStdString &textureName, CStdString *p
     {
       for (int i = 0; i < 2; i++)
       {
+#ifdef HAS_XBOX_D3D
         if (m_iNextPreload[i] != m_PreLoadNames[i].end() && (*m_iNextPreload[i] == bundledName))
         {
           ++m_iNextPreload[i];
@@ -369,6 +364,7 @@ bool CGUITextureManager::HasTexture(const CStdString &textureName, CStdString *p
             m_TexBundle[i].PreloadFile(*m_iNextPreload[i]);
         }
       }
+#endif
       if (size) *size = 1;
       return true;
     }
@@ -376,6 +372,7 @@ bool CGUITextureManager::HasTexture(const CStdString &textureName, CStdString *p
 
   for (int i = 0; i < 2; i++)
   {
+#ifdef HAS_XBOX_D3D
     if (m_iNextPreload[i] != m_PreLoadNames[i].end() && (*m_iNextPreload[i] == bundledName))
     {
       if (bundle) *bundle = i;
@@ -385,7 +382,9 @@ bool CGUITextureManager::HasTexture(const CStdString &textureName, CStdString *p
         m_TexBundle[i].PreloadFile(*m_iNextPreload[i]);
       return true;
     }
-    else if (m_TexBundle[i].HasFile(bundledName))
+    else
+#endif
+    if (m_TexBundle[i].HasFile(bundledName))
     {
       if (bundle) *bundle = i;
       return true;
@@ -434,8 +433,10 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
       if (!nImages)
       {
         CLog::Log(LOGERROR, "Texture manager unable to load bundled file: %s", strTextureName.c_str());
+#ifdef HAS_XBOX_D3D
         delete [] pTextures;
         delete [] Delay;
+#endif
         return 0;
       }
 
@@ -477,6 +478,15 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
         pal[AnimatedGifSet.m_vecimg[0]->Transparent].peFlags = 0;
 
       palette->Unlock();
+#else
+      // fixup our palette
+      COLOR *palette = AnimatedGifSet.m_vecimg[0]->Palette;
+      // set the alpha values to fully opaque
+      for (int i = 0; i < 256; i++)
+        palette[i].x = 0xff;
+      // and set the transparent colour
+      if (AnimatedGifSet.m_vecimg[0]->Transparency && AnimatedGifSet.m_vecimg[0]->Transparent >= 0)
+        palette[AnimatedGifSet.m_vecimg[0]->Transparent].x = 0;
 #endif
 
       pMap = new CTextureMap(strTextureName, iWidth, iHeight, AnimatedGifSet.nLoops);
@@ -487,7 +497,11 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
         if (glTexture)
         {
           CAnimatedGif* pImage = AnimatedGifSet.m_vecimg[iImage];
+#ifdef HAS_XBOX_D3D
           glTexture->LoadPaletted(pImage->Width, pImage->Height, pImage->BytesPerRow, XB_FMT_A8, (unsigned char *)pImage->Raster, iImage == 0 ? palette : NULL);
+#else
+          glTexture->LoadPaletted(pImage->Width, pImage->Height, pImage->BytesPerRow, XB_FMT_A8R8G8B8, (unsigned char *)pImage->Raster, palette);
+#endif
           pMap->Add(glTexture, pImage->Delay);
         }
       } // of for (int iImage=0; iImage < iImages; iImage++)
@@ -518,10 +532,13 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
   }
   else
   {
-    bool isThumbnail = URIUtils::GetExtension(strPath).Equals(".tbn");
-
     pTexture = new CTexture();
+#ifdef HAS_XBOX_D3D
+    bool isThumbnail = URIUtils::GetExtension(strPath).Equals(".tbn");
     if (!pTexture->LoadFromFile(strPath, isThumbnail ? g_advancedSettings.m_thumbSize : 0, isThumbnail ? g_advancedSettings.m_thumbSize : 0))
+#else
+    if(!pTexture->LoadFromFile(strPath))
+#endif
       return 0;
     width = pTexture->GetWidth();
     height = pTexture->GetHeight();
@@ -560,7 +577,12 @@ void CGUITextureManager::ReleaseTexture(const CStdString& strTextureName)
       if (pMap->Release())
       {
         //CLog::Log(LOGINFO, "  cleanup:%s", strTextureName.c_str());
+#ifdef HAS_XBOX_D3D
         delete pMap;
+#else
+        // add to our textures to free
+        m_unusedTextures.push_back(pMap);
+#endif
         i = m_vecTextures.erase(i);
       }
       return;
@@ -568,6 +590,14 @@ void CGUITextureManager::ReleaseTexture(const CStdString& strTextureName)
     ++i;
   }
   CLog::Log(LOGWARNING, "%s: Unable to release texture %s", __FUNCTION__, strTextureName.c_str());
+}
+
+void CGUITextureManager::FreeUnusedTextures()
+{
+  CSingleLock lock(g_graphicsContext);
+  for (ivecTextures i = m_unusedTextures.begin(); i != m_unusedTextures.end(); ++i)
+    delete *i;
+  m_unusedTextures.clear();
 }
 
 void CGUITextureManager::Cleanup()
@@ -585,6 +615,9 @@ void CGUITextureManager::Cleanup()
   }
   for (int i = 0; i < 2; i++)
     m_TexBundle[i].Cleanup();
+#ifndef HAS_XBOX_D3D
+  FreeUnusedTextures();
+#endif
 }
 
 void CGUITextureManager::Dump() const
@@ -635,18 +668,21 @@ unsigned int CGUITextureManager::GetMemoryUsage() const
 
 void CGUITextureManager::SetTexturePath(const CStdString &texturePath)
 {
+  CSingleLock lock(m_section);
   m_texturePaths.clear();
   AddTexturePath(texturePath);
 }
 
 void CGUITextureManager::AddTexturePath(const CStdString &texturePath)
 {
+  CSingleLock lock(m_section);
   if (!texturePath.IsEmpty())
     m_texturePaths.push_back(texturePath);
 }
 
 void CGUITextureManager::RemoveTexturePath(const CStdString &texturePath)
 {
+  CSingleLock lock(m_section);
   for (vector<CStdString>::iterator it = m_texturePaths.begin(); it != m_texturePaths.end(); ++it)
   {
     if (*it == texturePath)
@@ -663,6 +699,7 @@ CStdString CGUITextureManager::GetTexturePath(const CStdString &textureName, boo
     return textureName;
   else
   { // texture doesn't include the full path, so check all fallbacks
+    CSingleLock lock(m_section);
     for (vector<CStdString>::iterator it = m_texturePaths.begin(); it != m_texturePaths.end(); ++it)
     {
       CStdString path = URIUtils::AddFileToFolder(it->c_str(), "media");
