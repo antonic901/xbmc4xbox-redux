@@ -416,8 +416,6 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
   //Lock here, we will do stuff that could break rendering
   CSingleLock lock(g_graphicsContext);
 
-  LPDIRECT3DPALETTE8 pPal = 0;
-
 #ifdef _DEBUG
   int64_t start;
   start = CurrentHostCounter();
@@ -425,128 +423,87 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
 
   if (strPath.Right(4).ToLower() == ".gif")
   {
-    return 0;
-//     CTextureMap* pMap;
+    CTextureMap* pMap;
 
-//     if (bundle >= 0)
-//     {
-//       LPDIRECT3DTEXTURE8* pTextures;
-//       int nLoops = 0;
-//       int* Delay;
-//       int nImages = m_TexBundle[bundle].LoadAnim(g_graphicsContext.Get3DDevice(), strTextureName, &info, &pTextures, &pPal, nLoops, &Delay);
-//       if (!nImages)
-//       {
-//         CLog::Log(LOGERROR, "Texture manager unable to load bundled file: %s", strTextureName.c_str());
-//         delete [] pTextures;
-//         delete [] Delay;
-//         return 0;
-//       }
+    if (bundle >= 0)
+    {
+      CBaseTexture **pTextures;
+      int nLoops = 0, width = 0, height = 0;
+      int* Delay;
+      int nImages = m_TexBundle[bundle].LoadAnim(strTextureName, &pTextures, width, height, nLoops, &Delay);
+      if (!nImages)
+      {
+        CLog::Log(LOGERROR, "Texture manager unable to load bundled file: %s", strTextureName.c_str());
+        delete [] pTextures;
+        delete [] Delay;
+        return 0;
+      }
 
-//       pMap = new CTextureMap(strTextureName, info.Width, info.Height, nLoops, pPal, true);
-//       for (int iImage = 0; iImage < nImages; ++iImage)
-//       {
-//         pMap->Add(pTextures[iImage], Delay[iImage]);
-//       }
+      pMap = new CTextureMap(strTextureName, width, height, nLoops);
+      for (int iImage = 0; iImage < nImages; ++iImage)
+      {
+        pMap->Add(pTextures[iImage], Delay[iImage]);
+      }
 
-//       delete [] pTextures;
-//       delete [] Delay;
-// #ifdef HAS_XBOX_D3D
-//       pPal->Release();
-// #endif
-//     }
-//     else
-//     {
-//       CAnimatedGifSet AnimatedGifSet;
-//       int iImages = AnimatedGifSet.LoadGIF(strPath.c_str());
-//       if (iImages == 0)
-//       {
-//         CStdString rootPath = strPath.Left(g_SkinInfo->Path().GetLength());
-//         if (0 == rootPath.CompareNoCase(g_SkinInfo->Path()))
-//           CLog::Log(LOGERROR, "Texture manager unable to load file: %s", strPath.c_str());
-//         return 0;
-//       }
-//       int iWidth = AnimatedGifSet.FrameWidth;
-//       int iHeight = AnimatedGifSet.FrameHeight;
+      delete [] pTextures;
+      delete [] Delay;
+    }
+    else
+    {
+      CAnimatedGifSet AnimatedGifSet;
+      int iImages = AnimatedGifSet.LoadGIF(strPath.c_str());
+      if (iImages == 0)
+      {
+        CStdString rootPath = strPath.Left(g_SkinInfo->Path().GetLength());
+        if (0 == rootPath.CompareNoCase(g_SkinInfo->Path()))
+          CLog::Log(LOGERROR, "Texture manager unable to load file: %s", strPath.c_str());
+        return 0;
+      }
+      int iWidth = AnimatedGifSet.FrameWidth;
+      int iHeight = AnimatedGifSet.FrameHeight;
 
-//       int iPaletteSize = (1 << AnimatedGifSet.m_vecimg[0]->BPP);
-// #ifdef HAS_XBOX_D3D
-//       g_graphicsContext.Get3DDevice()->CreatePalette(D3DPALETTE_256, &pPal);
-//       PALETTEENTRY* pal;
-//       pPal->Lock((D3DCOLOR**)&pal, 0);
+#ifdef HAS_XBOX_D3D
+      LPDIRECT3DPALETTE8 palette = 0;
 
-//       memcpy(pal, AnimatedGifSet.m_vecimg[0]->Palette, sizeof(PALETTEENTRY)*iPaletteSize);
-//       for (int i = 0; i < iPaletteSize; i++)
-//         pal[i].peFlags = 0xff; // alpha
-//       if (AnimatedGifSet.m_vecimg[0]->Transparency && AnimatedGifSet.m_vecimg[0]->Transparent >= 0)
-//         pal[AnimatedGifSet.m_vecimg[0]->Transparent].peFlags = 0;
+      int iPaletteSize = (1 << AnimatedGifSet.m_vecimg[0]->BPP);
+      g_graphicsContext.Get3DDevice()->CreatePalette(D3DPALETTE_256, &palette);
+      PALETTEENTRY* pal;
+      palette->Lock((D3DCOLOR**)&pal, 0);
 
-//       pPal->Unlock();
-// #endif
-//       pMap = new CTextureMap(strTextureName, iWidth, iHeight, AnimatedGifSet.nLoops, pPal, false);
-//       for (int iImage = 0; iImage < iImages; iImage++)
-//       {
-//         int w = PadPow2(iWidth);
-//         int h = PadPow2(iHeight);
-// #ifdef HAS_XBOX_D3D
-//         if (D3DXCreateTexture(g_graphicsContext.Get3DDevice(), w, h, 1, 0, D3DFMT_P8, D3DPOOL_MANAGED, &pTexture) == D3D_OK)
-// #else
-//         if (D3DXCreateTexture(g_graphicsContext.Get3DDevice(), w, h, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED, &pTexture) == D3D_OK)
-// #endif
-//         {
-//           CAnimatedGif* pImage = AnimatedGifSet.m_vecimg[iImage];
-//           D3DLOCKED_RECT lr;
-//           RECT rc = { 0, 0, pImage->Width, pImage->Height };
-//           if ( D3D_OK == pTexture->LockRect( 0, &lr, &rc, 0 ))
-//           {
-// #ifdef HAS_XBOX_D3D
-//             POINT pt = { 0, 0 };
-//             XGSwizzleRect(pImage->Raster, pImage->BytesPerRow, &rc, lr.pBits, w, h, &pt, 1);
-// #else
-//             COLOR *palette = AnimatedGifSet.m_vecimg[0]->Palette;
-//             // set the alpha values to fully opaque
-//             for (int i = 0; i < iPaletteSize; i++)
-//               palette[i].x = 0xff;
-//             // and set the transparent colour
-//             if (AnimatedGifSet.m_vecimg[0]->Transparency && AnimatedGifSet.m_vecimg[0]->Transparent >= 0)
-//               palette[AnimatedGifSet.m_vecimg[0]->Transparent].x = 0;
+      memcpy(pal, AnimatedGifSet.m_vecimg[0]->Palette, sizeof(PALETTEENTRY)*iPaletteSize);
+      for (int i = 0; i < iPaletteSize; i++)
+        pal[i].peFlags = 0xff; // alpha
+      if (AnimatedGifSet.m_vecimg[0]->Transparency && AnimatedGifSet.m_vecimg[0]->Transparent >= 0)
+        pal[AnimatedGifSet.m_vecimg[0]->Transparent].peFlags = 0;
 
-//             for (int y = 0; y < pImage->Height; y++)
-//             {
-//               BYTE *dest = (BYTE *)lr.pBits + y * lr.Pitch;
-//               BYTE *source = (BYTE *)pImage->Raster + y * pImage->BytesPerRow;
-//               for (int x = 0; x < pImage->Width; x++)
-//               {
-//                 COLOR col = palette[*source++];
-//                 *dest++ = col.b;
-//                 *dest++ = col.g;
-//                 *dest++ = col.r;
-//                 *dest++ = col.x;
-//               }
-//             }
-// #endif
-//             pTexture->UnlockRect( 0 );
+      palette->Unlock();
+#endif
 
-//             pMap->Add(pTexture, pImage->Delay);
-//           }
-//         }
-//       } // of for (int iImage=0; iImage < iImages; iImage++)
+      pMap = new CTextureMap(strTextureName, iWidth, iHeight, AnimatedGifSet.nLoops);
 
-// #ifdef HAS_XBOX_D3D
-//       pPal->Release();
-// #endif
-//     }
+      for (int iImage = 0; iImage < iImages; iImage++)
+      {
+        CTexture *glTexture = new CTexture();
+        if (glTexture)
+        {
+          CAnimatedGif* pImage = AnimatedGifSet.m_vecimg[iImage];
+          glTexture->LoadPaletted(pImage->Width, pImage->Height, pImage->BytesPerRow, XB_FMT_A8, (unsigned char *)pImage->Raster, iImage == 0 ? palette : NULL);
+          pMap->Add(glTexture, pImage->Delay);
+        }
+      } // of for (int iImage=0; iImage < iImages; iImage++)
+    }
 
-// #ifdef _DEBUG
-//     int64_t end, freq;
-//     end = CurrentHostCounter();
-//     freq = CurrentHostFrequency();
-//     char temp[200];
-//     sprintf(temp, "Load %s: %.1fms%s\n", strPath.c_str(), 1000.f * (end - start) / freq, (bundle >= 0) ? " (bundled)" : "");
-//     OutputDebugString(temp);
-// #endif
+#ifdef _DEBUG
+    int64_t end, freq;
+    end = CurrentHostCounter();
+    freq = CurrentHostFrequency();
+    char temp[200];
+    sprintf(temp, "Load %s: %.1fms%s\n", strPath.c_str(), 1000.f * (end - start) / freq, (bundle >= 0) ? " (bundled)" : "");
+    OutputDebugString(temp);
+#endif
 
-//     m_vecTextures.push_back(pMap);
-//     return 1;
+    m_vecTextures.push_back(pMap);
+    return 1;
   } // of if (strPath.Right(4).ToLower()==".gif")
 
   CBaseTexture *pTexture = NULL;
@@ -568,68 +525,11 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
       return 0;
     width = pTexture->GetWidth();
     height = pTexture->GetHeight();
-
-//     // normal picture
-//     // convert from utf8
-//     CStdString texturePath;
-//     g_charsetConverter.utf8ToStringCharset(strPath, texturePath);
-
-//     // if the file is a thumbnail, load with picture loader (fast jpeg decoder), and limit to our chosen thumbsize
-//     // as thumbnails could be slightly bigger on disk due to libjpeg scaling
-//     if (URIUtils::GetExtension(strPath).Equals(".tbn"))
-//     {
-//       CBaseTexture* texture = new CTexture();
-//       if (!texture->LoadFromFile(strPath, g_advancedSettings.m_thumbSize, g_advancedSettings.m_thumbSize))
-//         return 0;
-//       info.Width = texture->GetWidth();
-//       info.Height = texture->GetHeight();
-//     }
-//     else
-//     {
-
-//       HRESULT result = D3DXCreateTextureFromFileEx(g_graphicsContext.Get3DDevice(), CSpecialProtocol::TranslatePath(texturePath).c_str(),
-//                                        D3DX_DEFAULT, D3DX_DEFAULT, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED,
-//                                        D3DX_FILTER_NONE , D3DX_FILTER_NONE, 0, &info, NULL, &pTexture);
-
-//       int checkWidth  = D3DX_DEFAULT;
-//       int checkHeight = D3DX_DEFAULT;
-
-//       // Don't allow anything bigger than 720p on Xbox because of the limited amount of memory
-//       if ( info.Width > 1280 )
-//         checkWidth = 1280;
-
-//       if ( info.Height > 720 )
-//         checkHeight = 720;
-
-//       if (checkWidth != D3DX_DEFAULT || checkHeight != D3DX_DEFAULT )
-//       {
-//         // HACK!: If the picture/texture turns out to be too large try to load with a resolution equal to our screen
-//         CLog::Log(LOGWARNING, "%s - Texture file %s (%i x %i) is too big! Reloading resized", __FUNCTION__, strPath.c_str(), info.Width, info.Height );
-
-//         if (pTexture)
-//         {
-//           pTexture->Release();
-//           pTexture = NULL;
-//         }
-
-//         result = D3DXCreateTextureFromFileEx(g_graphicsContext.Get3DDevice(), CSpecialProtocol::TranslatePath(texturePath).c_str(),
-//                                          checkWidth, checkHeight, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED,
-//                                          D3DX_FILTER_NONE , D3DX_FILTER_NONE, 0, &info, NULL, &pTexture);
-//       }
-
-//       if (result != D3D_OK)
-//       {
-// //       if (!strnicmp(strPath.c_str(), "special://home/skin/", 20) && !strnicmp(strPath.c_str(), "special://xbmc/skin/", 20))
-//           CLog::Log(LOGERROR, "%s - Texture manager unable to load file: %s", __FUNCTION__, strPath.c_str());
-//         return 0;
-//       }
-//     }
   }
 
   if (!pTexture) return 0;
 
   CTextureMap* pMap = new CTextureMap(strTextureName, width, height, 0);
-
   pMap->Add(pTexture, 100);
   m_vecTextures.push_back(pMap);
 

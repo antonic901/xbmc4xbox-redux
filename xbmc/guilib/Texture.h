@@ -48,6 +48,7 @@ public:
 
   bool LoadFromFile(const CStdString& texturePath, unsigned int maxHeight = 0, unsigned int maxWidth = 0,
                     bool autoRotate = false, unsigned int *originalWidth = NULL, unsigned int *originalHeight = NULL);
+  bool LoadPaletted(unsigned int width, unsigned int height, unsigned int pitch, unsigned int format, const unsigned char *pixels, IDirect3DPalette8 *palette);
 
   bool HasAlpha() const;
 
@@ -68,6 +69,8 @@ public:
   void Allocate(unsigned int width, unsigned int height, unsigned int format);
   // populates some general info about loaded texture (width, height, pitch etc.)
   bool GetTextureInfo();
+
+  static unsigned int PadPow2(unsigned int x);
 
 protected:
   // helpers for computation of texture parameters for compressed textures

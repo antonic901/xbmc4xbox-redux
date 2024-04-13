@@ -38,7 +38,14 @@ void CGUITextureD3D::Begin()
   // Set state to render the image
 #ifdef HAS_XBOX_D3D
   if (!m_texture.m_texCoordsArePixels)
-    p3DDevice->SetPalette( 0, texture->GetPaletteObject());
+  {
+    if (texture->GetPaletteObject())
+      p3DDevice->SetPalette( 0, texture->GetPaletteObject());
+    else
+    { // for image formats which are made of multiple textures (ex. GIFs), palette is stored in first texture
+      p3DDevice->SetPalette( 0, m_texture.m_textures[0]->GetPaletteObject());
+    }
+  }
   if (m_diffuse.size())
     p3DDevice->SetPalette( 1, m_diffuse.m_textures[0]->GetPaletteObject());
 #endif

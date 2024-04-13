@@ -275,6 +275,43 @@ bool CBaseTexture::LoadFromFile(const CStdString& texturePath, unsigned int maxW
   return GetTextureInfo();
 }
 
+bool CBaseTexture::LoadPaletted(unsigned int width, unsigned int height, unsigned int pitch, unsigned int format, const unsigned char *pixels, IDirect3DPalette8 *palette)
+{
+  m_imageWidth = width;
+  m_imageHeight = height;
+  m_format = format;
+  m_palette = palette;
+
+  int w = PadPow2(width);
+  int h = PadPow2(height);
+
+  if (D3DXCreateTexture(g_graphicsContext.Get3DDevice(), w, h, 1, 0, D3DFMT_P8, D3DPOOL_MANAGED, &m_texture) == D3D_OK)
+  {
+    D3DLOCKED_RECT lr;
+    RECT rc = { 0, 0, width, height };
+    if ( D3D_OK == m_texture->LockRect( 0, &lr, &rc, 0 ))
+    {
+      POINT pt = { 0, 0 };
+      XGSwizzleRect(pixels, pitch, &rc, lr.pBits, w, h, &pt, 1);
+
+      m_texture->UnlockRect( 0 );
+      return GetTextureInfo();
+    }
+  }
+  return false;
+}
+
+unsigned int CBaseTexture::PadPow2(unsigned int x)
+{
+  --x;
+  x |= x >> 1;
+  x |= x >> 2;
+  x |= x >> 4;
+  x |= x >> 8;
+  x |= x >> 16;
+  return ++x;
+}
+
 unsigned int CBaseTexture::GetRows(unsigned int height) const
 {
   switch (m_format)
