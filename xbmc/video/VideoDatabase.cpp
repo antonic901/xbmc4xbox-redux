@@ -1969,6 +1969,7 @@ int CVideoDatabase::SetDetailsForMovie(const CStdString& strFilenameAndPath, con
     sql += PrepareSQL(" where idMovie=%i", idMovie);
     m_pDS->exec(sql.c_str());
     CommitTransaction();
+
     return idMovie;
   }
   catch (...)
@@ -2041,6 +2042,7 @@ int CVideoDatabase::SetDetailsForTvShow(const CStdString& strPath, const CVideoI
     sql += PrepareSQL("where idShow=%i", idTvShow);
     m_pDS->exec(sql.c_str());
     CommitTransaction();
+
     return idTvShow;
   }
   catch (...)
@@ -2113,6 +2115,7 @@ int CVideoDatabase::SetDetailsForEpisode(const CStdString& strFilenameAndPath, c
     sql += PrepareSQL("where idEpisode=%i", idEpisode);
     m_pDS->exec(sql.c_str());
     CommitTransaction();
+
     return idEpisode;
   }
   catch (...)
@@ -2216,6 +2219,7 @@ int CVideoDatabase::SetDetailsForMusicVideo(const CStdString& strFilenameAndPath
     sql += PrepareSQL(" where idMVideo=%i", idMVideo);
     m_pDS->exec(sql.c_str());
     CommitTransaction();
+
     return idMVideo;
   }
   catch (...)
@@ -2682,6 +2686,9 @@ void CVideoDatabase::DeleteMovie(const CStdString& strFilenameAndPath, bool bKee
     SplitPath(strFilenameAndPath,strPath,strFileName);
     InvalidatePathHash(strPath);
     CommitTransaction();
+
+    if (!bKeepId)
+      AnnounceRemove("movie", idMovie);
   }
   catch (...)
   {
@@ -2761,6 +2768,9 @@ void CVideoDatabase::DeleteTvShow(const CStdString& strPath, bool bKeepId /* = f
     InvalidatePathHash(strPath);
 
     CommitTransaction();
+
+    if (!bKeepId)
+      AnnounceRemove("tvshow", idTvShow);
   }
   catch (...)
   {
@@ -2819,6 +2829,8 @@ void CVideoDatabase::DeleteEpisode(const CStdString& strFilenameAndPath, int idE
       m_pDS->exec(strSQL.c_str());
     }
 
+    if (!bKeepId)
+      AnnounceRemove("episode", idEpisode);
   }
   catch (...)
   {
@@ -2884,6 +2896,9 @@ void CVideoDatabase::DeleteMusicVideo(const CStdString& strFilenameAndPath, bool
     SplitPath(strFilenameAndPath,strPath,strFileName);
     InvalidatePathHash(strPath);
     CommitTransaction();
+
+    if (!bKeepId)
+      AnnounceRemove("musicvideo", idMVideo);
   }
   catch (...)
   {
