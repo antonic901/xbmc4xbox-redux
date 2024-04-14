@@ -685,6 +685,11 @@ public:
     }
   }
 
+  void SetArtForItem(int mediaId, const std::string &mediaType, const std::string &artType, const std::string &url);
+  void SetArtForItem(int mediaId, const std::string &mediaType, const std::map<std::string, std::string> &art);
+  bool GetArtForItem(int mediaId, const std::string &mediaType, std::map<std::string, std::string> &art);
+  std::string GetArtForItem(int mediaId, const std::string &mediaType, const std::string &artType);
+
   int AddTag(const std::string &tag);
   void AddTagToItem(int idItem, int idTag, const std::string &type);
   void RemoveTagFromItem(int idItem, int idTag, const std::string &type);
