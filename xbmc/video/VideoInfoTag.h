@@ -46,7 +46,7 @@ public:
   CVideoInfoTag() { Reset(); };
   void Reset();
   bool Load(const TiXmlElement *movie, bool chained = false);
-  bool Save(TiXmlNode *node, const CStdString &tag, bool savePathInfo = true);
+  bool Save(TiXmlNode *node, const CStdString &tag, bool savePathInfo = true, const TiXmlElement *additionalNode = NULL);
   virtual void Archive(CArchive& ar);
   virtual void Serialize(CVariant& value);
   virtual void ToSortable(SortItem& sortable, Field field) const;
