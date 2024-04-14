@@ -1671,9 +1671,6 @@ bool CGUIWindowVideoBase::StackingAvailable(const CFileItemList &items) const
 
 void CGUIWindowVideoBase::GetGroupedItems(CFileItemList &items)
 {
-  if (!items.GetPath().Equals("plugin://video/"))
-    items.SetCachedVideoThumbs();
-
   CGUIMediaWindow::GetGroupedItems(items);
 
   std::string group;

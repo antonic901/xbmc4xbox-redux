@@ -47,6 +47,7 @@
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
 #include "GUIUserMessages.h"
+#include "ThumbLoader.h"
 
 using namespace std;
 using namespace XFILE;
@@ -1548,11 +1549,10 @@ namespace VIDEO
   void CVideoInfoScanner::ApplyThumbToFolder(const CStdString &folder, const CStdString &imdbThumb)
   {
     // copy icon to folder also;
-    if (CFile::Exists(imdbThumb))
+    if (!imdbThumb.IsEmpty())
     {
       CFileItem folderItem(folder, true);
-      CStdString strThumb(folderItem.GetCachedVideoThumb());
-      CFile::Copy(imdbThumb.c_str(), strThumb.c_str(), NULL, NULL);
+      CThumbLoader::SetCachedImage(folderItem, "thumb", imdbThumb);
     }
   }
 

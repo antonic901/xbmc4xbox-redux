@@ -457,9 +457,7 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
           URIUtils::RemoveSlashAtEnd(cachedThumb);
           cachedThumb = CUtil::GetCachedMusicThumb(cachedThumb);
         }
-        else if (type == "video")
-          cachedThumb = item->GetCachedVideoThumb();
-        else  // assume "programs"
+        else  // programs, video, pictures
         { // store the thumb for this share
           CTextureDatabase db;
           if (db.Open())
