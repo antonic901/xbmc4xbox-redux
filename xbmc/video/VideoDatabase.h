@@ -823,6 +823,7 @@ private:
   bool LookupByFolders(const CStdString &path, bool shows = false);
   
   virtual int GetMinVersion() const { return 70; };
+  virtual int GetExportVersion() const { return 1; };
   const char *GetBaseDBName() const { return "MyVideos"; };
 
   void ConstructPath(CStdString& strDest, const CStdString& strPath, const CStdString& strFileName);
