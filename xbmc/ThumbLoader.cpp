@@ -29,7 +29,6 @@
 #include "settings/Settings.h"
 #include "GUIUserMessages.h"
 #include "guilib/GUIWindowManager.h"
-#include "guilib/TextureManager.h"
 #include "TextureCache.h"
 #include "utils/log.h"
 #include "Shortcut.h"
@@ -47,26 +46,6 @@ CThumbLoader::CThumbLoader(int nThreads) :
 
 CThumbLoader::~CThumbLoader()
 {
-}
-
-bool CThumbLoader::LoadRemoteThumb(CFileItem *pItem)
-{
-  // look for remote thumbs
-  CStdString thumb(pItem->GetThumbnailImage());
-  if (!g_TextureManager.CanLoad(thumb))
-  {
-    CStdString cachedThumb(pItem->GetCachedVideoThumb());
-    if (CFile::Exists(cachedThumb))
-      pItem->SetThumbnailImage(cachedThumb);
-    else
-    {
-      if (CPicture::CreateThumbnail(thumb, cachedThumb))
-        pItem->SetThumbnailImage(cachedThumb);
-      else
-        pItem->SetThumbnailImage("");
-    }
-  }
-  return pItem->HasThumbnail();
 }
 
 CStdString CThumbLoader::GetCachedImage(const CFileItem &item, const CStdString &type)
@@ -427,8 +406,6 @@ bool CMusicThumbLoader::LoadItem(CFileItem* pItem)
   if (pItem->m_bIsShareOrDrive) return true;
   if (!pItem->HasThumbnail())
     pItem->SetUserMusicThumb();
-  else
-    LoadRemoteThumb(pItem);
   return true;
 }
 
