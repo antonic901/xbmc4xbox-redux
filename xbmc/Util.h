@@ -204,9 +204,6 @@ public:
    \return true if Read file operations are supported, false otherwise
    */
   static bool SupportsReadFileOperations(const CStdString& strPath);
-
-  static CStdString GetCachedMusicThumb(const CStdString &path);
-  static CStdString GetCachedAlbumThumb(const CStdString &album, const CStdString &artist);
   static CStdString GetDefaultFolderThumb(const CStdString &folderThumb);
 
   static void BootToDash();

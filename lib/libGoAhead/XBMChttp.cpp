@@ -57,6 +57,7 @@
 #include "utils/URIUtils.h"
 #include "utils/log.h"
 #include "TextureCache.h"
+#include "ThumbnailCache.h"
 #include "utils/SystemInfo.h"
 #include "ThumbLoader.h"
 
@@ -1889,7 +1890,7 @@ int CXbmcHttp::xbmcGetThumbFilename(int numParas, CStdString paras[])
 
   if (numParas>1)
   {
-    thumbFilename = CUtil::GetCachedAlbumThumb(paras[0], paras[1]);
+    thumbFilename = CThumbnailCache::GetAlbumThumb(paras[0], paras[1]);
     return SetResponse(openTag+thumbFilename ) ;
   }
   else

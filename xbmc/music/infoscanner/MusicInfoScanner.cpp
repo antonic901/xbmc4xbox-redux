@@ -47,6 +47,7 @@
 #include "GUIUserMessages.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
+#include "ThumbnailCache.h"
 
 #include <algorithm>
 
@@ -754,13 +755,13 @@ void CMusicInfoScanner::UpdateFolderThumb(const VECSONGS &songs, const CStdStrin
   CStdString album, artist;
   if (!HasSingleAlbum(songs, album, artist)) return;
   // Was the album art of this album read during scan?
-  CStdString albumCoverArt(CUtil::GetCachedAlbumThumb(album, artist));
+  CStdString albumCoverArt(CThumbnailCache::GetAlbumThumb(album, artist));
   if (CUtil::ThumbExists(albumCoverArt))
   {
     CStdString folderPath1(folderPath);
     // Folder art is cached without the slash at end
     URIUtils::RemoveSlashAtEnd(folderPath1);
-    CStdString folderCoverArt(CUtil::GetCachedMusicThumb(folderPath1));
+    CStdString folderCoverArt(CThumbnailCache::GetMusicThumb(folderPath1));
     // copy as directory thumb as well
     if (CFile::Copy(albumCoverArt, folderCoverArt))
       CUtil::ThumbCacheAdd(folderCoverArt, true);
@@ -1057,7 +1058,7 @@ void CMusicInfoScanner::GetAlbumArtwork(long id, const CAlbum &album)
     CStdString thumb;
     if (!m_musicDatabase.GetAlbumThumb(id, thumb) || thumb.IsEmpty() || !XFILE::CFile::Exists(thumb))
     {
-      thumb = CUtil::GetCachedAlbumThumb(album.strAlbum,StringUtils::Join(album.artist, g_advancedSettings.m_musicItemSeparator));
+      thumb = CThumbnailCache::GetAlbumThumb(album);
       CScraperUrl::DownloadThumbnail(thumb,album.thumbURL.m_url[0]);
       m_musicDatabase.SaveAlbumThumb(id, thumb);
     }

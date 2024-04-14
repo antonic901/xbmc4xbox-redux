@@ -25,6 +25,7 @@
 #include "pictures/Picture.h"
 #include "settings/AdvancedSettings.h"
 #include "filesystem/File.h"
+#include "ThumbnailCache.h"
 
 // Use SDL macros to perform byte swapping on big-endian systems
 // This assumes that big-endian systems use SDL
@@ -118,9 +119,9 @@ bool CFlacTag::Read(const CStdString& strFile)
 
   CStdString strCoverArt;
   if (!m_musicInfoTag.GetAlbum().IsEmpty() && (!m_musicInfoTag.GetAlbumArtist().empty() || !m_musicInfoTag.GetArtist().empty()))
-    strCoverArt = CUtil::GetCachedAlbumThumb(m_musicInfoTag.GetAlbum(), StringUtils::Join(!m_musicInfoTag.GetAlbumArtist().empty() ? m_musicInfoTag.GetAlbumArtist() : m_musicInfoTag.GetArtist(), g_advancedSettings.m_musicItemSeparator));
+    strCoverArt = CThumbnailCache::GetAlbumThumb(&m_musicInfoTag);
   else
-    strCoverArt = CUtil::GetCachedMusicThumb(m_musicInfoTag.GetURL());
+    strCoverArt = CThumbnailCache::GetMusicThumb(m_musicInfoTag.GetURL());
 
   if (cover && !CUtil::ThumbExists(strCoverArt))
   {

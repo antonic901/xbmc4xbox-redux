@@ -28,6 +28,7 @@
 #include "settings/AdvancedSettings.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
+#include "ThumbnailCache.h"
 
 using namespace XFILE;
 using namespace AUTOPTR;
@@ -387,9 +388,9 @@ bool CMusicInfoTagLoaderMP4::Load(const CStdString& strFileName, CMusicInfoTag& 
       // other non-tagged files don't get this album image
       CStdString strCoverArt;
       if (!tag.GetAlbum().IsEmpty() && (!tag.GetAlbumArtist().empty() || !tag.GetArtist().empty()))
-        strCoverArt = CUtil::GetCachedAlbumThumb(tag.GetAlbum(), StringUtils::Join(!tag.GetAlbumArtist().empty() ? tag.GetAlbumArtist() : tag.GetArtist(), g_advancedSettings.m_musicItemSeparator));
+        strCoverArt = CThumbnailCache::GetAlbumThumb(&tag);
       else
-        strCoverArt = CUtil::GetCachedMusicThumb(tag.GetURL());
+        strCoverArt = CThumbnailCache::GetMusicThumb(tag.GetURL());
       if (!CUtil::ThumbExists(strCoverArt))
       {
         if (CPicture::CreateThumbnailFromMemory( m_thumbData, m_thumbSize, "", strCoverArt ) )
