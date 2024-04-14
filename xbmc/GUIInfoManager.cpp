@@ -88,6 +88,7 @@
 #include "addons/AddonManager.h"
 #include "interfaces/info/InfoBool.h"
 #include "video/VideoDatabase.h"
+#include "TextureCache.h"
 
 using namespace std;
 using namespace XFILE;
@@ -3792,13 +3793,9 @@ void CGUIInfoManager::SetCurrentMovie(CFileItem &item)
   item.SetVideoThumb();
   if (!item.HasThumbnail())
   {
-    CStdString strPath, strFileName;
-    URIUtils::Split(item.GetCachedVideoThumb(), strPath, strFileName);
-
-    // create unique thumb for auto generated thumbs
-    CStdString cachedThumb = strPath + "auto-" + strFileName;
-    if (CFile::Exists(cachedThumb))
-      item.SetThumbnailImage(cachedThumb);
+    CStdString thumbURL = CVideoThumbLoader::GetEmbeddedThumbURL(item);
+    if (!CTextureCache::Get().GetCachedImage(thumbURL).IsEmpty())
+      item.SetThumbnailImage(thumbURL);
   }
 
   // find a thumb for this stream

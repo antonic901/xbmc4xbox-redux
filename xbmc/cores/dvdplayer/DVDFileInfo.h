@@ -24,12 +24,13 @@
 class CFileItem;
 class CDVDDemux;
 class CStreamDetails;
+class CTextureDetails;
 
 class CDVDFileInfo
 {
 public:
-  // Extract a thumbnail immage from the media at strPath an image file in strTarget, optionally populating a streamdetails class with the data
-  static bool ExtractThumb(const CStdString &strPath, const CStdString &strTarget, CStreamDetails *pStreamDetails);
+  // Extract a thumbnail immage from the media at strPath, optionally populating a streamdetails class with the data
+  static bool ExtractThumb(const CStdString &strPath, CTextureDetails &details, CStreamDetails *pStreamDetails);
   
   // GetFileMetaData will fill pItem's properties according to what can be extracted from the file.
   static void GetFileMetaData(const CStdString &strPath, CFileItem *pItem); 

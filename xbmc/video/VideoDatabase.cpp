@@ -8697,12 +8697,11 @@ CStdString CVideoDatabase::GetCachedThumb(const CFileItem& item) const
   CStdString cachedThumb(item.GetCachedVideoThumb());
   if (!CFile::Exists(cachedThumb) && g_advancedSettings.m_bVideoLibraryExportAutoThumbs)
   {
-    CStdString strPath, strFileName;
-    URIUtils::Split(cachedThumb, strPath, strFileName);
-    cachedThumb = strPath + "auto-" + strFileName;
+    CStdString thumbURL = CVideoThumbLoader::GetEmbeddedThumbURL(item);
+    cachedThumb = CTextureCache::Get().GetCachedImage(thumbURL);
   }
 
-  if (CFile::Exists(cachedThumb))
+  if (!cachedThumb.IsEmpty() && CFile::Exists(cachedThumb))
     return cachedThumb;
   else
     return "";
