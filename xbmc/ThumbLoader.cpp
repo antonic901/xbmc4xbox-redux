@@ -215,13 +215,14 @@ bool CVideoThumbLoader::LoadItem(CFileItem* pItem)
   // thumbnails
   if (!pItem->HasThumbnail())
   {
-    CStdString thumb = GetLocalThumb(*pItem);
-    if (thumb.IsEmpty() && !pItem->m_bIsFolder && pItem->IsVideo())
+    FillThumb(*pItem);
+    if (!pItem->HasThumbnail() && !pItem->m_bIsFolder && pItem->IsVideo())
     {
       // create unique thumb for auto generated thumbs
       CStdString thumbURL = GetEmbeddedThumbURL(*pItem);
       if (!CTextureCache::Get().GetCachedImage(thumbURL).IsEmpty())
       {
+        CTextureCache::Get().BackgroundCacheImage(thumbURL);
         pItem->SetProperty("HasAutoThumb", true);
         pItem->SetProperty("AutoThumbImage", thumbURL);
         pItem->SetThumbnailImage(thumbURL);
@@ -236,13 +237,8 @@ bool CVideoThumbLoader::LoadItem(CFileItem* pItem)
 
         CThumbExtractor* extract = new CThumbExtractor(item, path, true, thumbURL);
         AddJob(extract);
+        return true;
       }
-      return true;
-    }
-    if (!thumb.IsEmpty())
-    {
-      CTextureCache::Get().BackgroundCacheImage(thumb);
-      pItem->SetThumbnailImage(thumb);
     }
   }
 
@@ -264,8 +260,10 @@ bool CVideoThumbLoader::LoadItem(CFileItem* pItem)
   return true;
 }
 
-CStdString CVideoThumbLoader::GetLocalThumb(const CFileItem &item)
+bool CVideoThumbLoader::FillThumb(CFileItem &item)
 {
+  if (item.HasThumbnail())
+    return true;
   CStdString thumb = GetCachedImage(item, "thumb");
   if (thumb.IsEmpty())
   {
@@ -273,7 +271,8 @@ CStdString CVideoThumbLoader::GetLocalThumb(const CFileItem &item)
     if (!thumb.IsEmpty())
       SetCachedImage(item, "thumb", thumb);
   }
-  return thumb;
+  item.SetThumbnailImage(thumb);
+  return !thumb.IsEmpty();
 }
 
 CStdString CVideoThumbLoader::GetEmbeddedThumbURL(const CFileItem &item)
