@@ -129,34 +129,7 @@ bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileI
       pItem->SetProperty("watched", iWatched);
       pItem->SetProperty("unwatched", (int)set->second.size() - iWatched);
       pItem->SetOverlayImage(CGUIListItem::ICON_OVERLAY_UNWATCHED, setInfo->m_playCount > 0);
-#ifdef _XBOX
-      /**
-       * Handling artwork images (fanart, thumb, poster etc.) is different in XBMC4Xbox because
-       * PRs like #798/918/919/1109 are not backported. Code below is specific to XBOX. This code
-       * basically takes thumb and poster of first movie and set that as fanart and thumbnail of
-       * movie set
-      */
-      bool thumb=false,fanart=false;
-      if (XFILE::CFile::Exists(pItem->GetCachedVideoThumb()))
-      {
-        pItem->SetThumbnailImage(pItem->GetCachedVideoThumb());
-        thumb = true;
-      }
-      if (XFILE::CFile::Exists(pItem->GetCachedFanart()))
-      {
-        pItem->SetProperty("fanart_image",pItem->GetCachedFanart());
-        fanart = true;
-      }
-      if (!thumb || !fanart) // use the first item's thumb
-      {
-        CStdString path = (*set->second.begin())->GetVideoInfoTag()->m_strFileNameAndPath;
-        CFileItem item(path,false);
-        if (!thumb && XFILE::CFile::Exists(item.GetCachedVideoThumb()))
-          pItem->SetThumbnailImage(item.GetCachedVideoThumb());
-        if (!fanart && XFILE::CFile::Exists(item.GetCachedFanart()))
-          pItem->SetProperty("fanart_image",item.GetCachedFanart());
-      }
-#endif
+
       groupedItems.Add(pItem);
     }
   }
