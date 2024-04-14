@@ -317,6 +317,17 @@ bool CVideoDatabase::CreateTables()
     m_pDS->exec("CREATE UNIQUE INDEX ix_taglinks_2 ON taglinks (idMedia, media_type(20), idTag)");
     m_pDS->exec("CREATE INDEX ix_taglinks_3 ON taglinks (media_type(20))");
 
+    CLog::Log(LOGINFO, "create art table and triggers");
+    m_pDS->exec("CREATE TABLE art(art_id INTEGER PRIMARY KEY, media_id INTEGER, media_type TEXT, type TEXT, url TEXT)");
+    m_pDS->exec("CREATE INDEX ix_art ON art(media_id, media_type, type)");
+    m_pDS->exec("CREATE TRIGGER delete_movie AFTER DELETE ON movie FOR EACH ROW BEGIN DELETE FROM art WHERE media_id=old.idMovie AND media_type='movie'; END");
+    m_pDS->exec("CREATE TRIGGER delete_tvshow AFTER DELETE ON tvshow FOR EACH ROW BEGIN DELETE FROM art WHERE media_id=old.idShow AND media_type='tvshow'; END");
+    m_pDS->exec("CREATE TRIGGER delete_musicvideo AFTER DELETE ON musicvideo FOR EACH ROW BEGIN DELETE FROM art WHERE media_id=old.idMVideo AND media_type='musicvideo'; END");
+    m_pDS->exec("CREATE TRIGGER delete_episode AFTER DELETE ON episode FOR EACH ROW BEGIN DELETE FROM art WHERE media_id=old.idEpisode AND media_type='episode'; END");
+    m_pDS->exec("CREATE TRIGGER delete_season AFTER DELETE ON seasons FOR EACH ROW BEGIN DELETE FROM art WHERE media_id=old.idSeason AND media_type='season'; END");
+    m_pDS->exec("CREATE TRIGGER delete_set AFTER DELETE ON sets FOR EACH ROW BEGIN DELETE FROM art WHERE media_id=old.idSet AND media_type='set'; END");
+    m_pDS->exec("CREATE TRIGGER delete_person AFTER DELETE ON actors FOR EACH ROW BEGIN DELETE FROM art WHERE media_id=old.idActor AND media_type IN ('actor','artist','writer','director'); END");
+
     // we create views last to ensure all indexes are rolled in
     CreateViews();
   }
