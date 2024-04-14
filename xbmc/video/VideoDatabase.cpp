@@ -5178,11 +5178,7 @@ bool CVideoDatabase::GetActorsNav(const CStdString& strBaseDir, CFileItemList& i
         pItem->SetIconImage("DefaultArtist.png");
       }
       else
-      {
-        if (CFile::Exists(pItem->GetCachedActorThumb()))
-          pItem->SetThumbnailImage(pItem->GetCachedActorThumb());
         pItem->SetIconImage("DefaultActor.png");
-      }
     }
     return true;
   }
