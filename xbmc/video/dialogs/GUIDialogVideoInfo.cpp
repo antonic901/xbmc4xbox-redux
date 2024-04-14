@@ -273,8 +273,7 @@ void CGUIDialogVideoInfo::SetMovie(const CFileItem *item)
     for (CVideoInfoTag::iCast it = m_movieItem->GetVideoInfoTag()->m_cast.begin(); it != m_movieItem->GetVideoInfoTag()->m_cast.end(); ++it)
     {
       CFileItemPtr item(new CFileItem(it->strName));
-      if (CFile::Exists(item->GetCachedActorThumb()))
-        item->SetThumbnailImage(item->GetCachedActorThumb());
+      item->SetThumbnailImage(it->thumb);
       item->SetIconImage("DefaultActor.png");
       item->SetLabel(it->strName);
       item->SetLabel2(it->strRole);

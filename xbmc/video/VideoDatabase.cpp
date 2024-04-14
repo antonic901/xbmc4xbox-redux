@@ -3362,10 +3362,13 @@ void CVideoDatabase::GetCast(const CStdString &table, const CStdString &table_id
 
     CStdString sql = PrepareSQL("SELECT actors.strActor,"
                                 "  actorlink%s.strRole,"
-                                "  actors.strThumb "
+                                "  actors.strThumb,"
+                                "  art.url "
                                 "FROM actorlink%s"
                                 "  JOIN actors ON"
-                                "    actorlink%s.idActor=actors.idActor "
+                                "    actorlink%s.idActor=actors.idActor"
+                                "  LEFT JOIN art ON"
+                                "    art.media_id=actors.idActor AND art.media_type='actor' AND art.type='thumb' "
                                 "WHERE actorlink%s.%s=%i "
                                 "ORDER BY actorlink%s.iOrder",table.c_str(), table.c_str(), table.c_str(), table.c_str(), table_id.c_str(), type_id, table.c_str());
     m_pDS2->query(sql.c_str());
@@ -3385,7 +3388,7 @@ void CVideoDatabase::GetCast(const CStdString &table, const CStdString &table_id
       if (!found)
       {
         info.strRole = m_pDS2->fv(1).get_asString();
-        info.thumbUrl.ParseString(m_pDS2->fv(2).get_asString());
+        info.thumb = m_pDS2->fv(3).get_asString();
         cast.push_back(info);
       }
       m_pDS2->next();
@@ -8769,13 +8772,11 @@ void CVideoDatabase::ExportActorThumbs(const CStdString &strDir, const CVideoInf
   {
     CFileItem item;
     item.SetLabel(iter->strName);
-    CStdString strThumb = item.GetCachedActorThumb();
-    if (CFile::Exists(strThumb))
+    if (!iter->thumb.IsEmpty())
     {
       CStdString thumbFile(GetSafeFile(strPath, iter->strName) + ".tbn");
       if (overwrite || !CFile::Exists(thumbFile))
-        if (!CFile::Copy(strThumb, thumbFile))
-          CLog::Log(LOGERROR, "%s: Actor thumb export failed! ('%s' -> '%s')", __FUNCTION__, strThumb.c_str(), thumbFile.c_str());
+        CTextureCache::Get().Export(iter->thumb, thumbFile);
     }
   }
 }
