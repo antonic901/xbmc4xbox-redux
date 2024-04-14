@@ -496,10 +496,9 @@ namespace VIDEO
       pItem->GetVideoInfoTag()->Reset();
       m_nfoReader.GetDetails(*pItem->GetVideoInfoTag());
 
-      long lResult = AddVideo(pItem.get(), info2->Content(), bDirNames);
+      long lResult = AddVideo(pItem.get(), info2->Content(), bDirNames, useLocal);
       if (lResult < 0)
         return INFO_ERROR;
-      GetArtwork(pItem.get(), info2->Content(), bDirNames, useLocal, pDlgProgress);
       if (!fetchEpisodes && CSettings::Get().GetBool("videolibrary.seasonthumbs"))
         FetchSeasonThumbs(lResult);
       if (fetchEpisodes)
@@ -524,9 +523,8 @@ namespace VIDEO
     long lResult=-1;
     if (GetDetails(pItem.get(), url, info2, result == CNfoFile::COMBINED_NFO ? &m_nfoReader : NULL, pDlgProgress))
     {
-      if ((lResult = AddVideo(pItem.get(), info2->Content(), bDirNames)) < 0)
+      if ((lResult = AddVideo(pItem.get(), info2->Content(), false, useLocal)) < 0)
         return INFO_ERROR;
-      GetArtwork(pItem.get(), info2->Content(), false, useLocal);
     }
     if (fetchEpisodes)
     {
@@ -561,9 +559,8 @@ namespace VIDEO
       pItem->GetVideoInfoTag()->Reset();
       m_nfoReader.GetDetails(*pItem->GetVideoInfoTag());
 
-      if (AddVideo(pItem.get(), info2->Content(), bDirNames) < 0)
+      if (AddVideo(pItem.get(), info2->Content(), bDirNames, true) < 0)
         return INFO_ERROR;
-      GetArtwork(pItem.get(), info2->Content(), bDirNames, true, pDlgProgress);
       return INFO_ADDED;
     }
     if (result == CNfoFile::URL_NFO || result == CNfoFile::COMBINED_NFO)
@@ -578,9 +575,8 @@ namespace VIDEO
 
     if (GetDetails(pItem.get(), url, info2, result == CNfoFile::COMBINED_NFO ? &m_nfoReader : NULL, pDlgProgress))
     {
-      if (AddVideo(pItem.get(), info2->Content(), bDirNames) < 0)
+      if (AddVideo(pItem.get(), info2->Content(), bDirNames, useLocal) < 0)
         return INFO_ERROR;
-      GetArtwork(pItem.get(), info2->Content(), bDirNames, useLocal);
       return INFO_ADDED;
     }
     // TODO: This is not strictly correct as we could fail to download information here or error, or be cancelled
@@ -608,9 +604,8 @@ namespace VIDEO
       pItem->GetVideoInfoTag()->Reset();
       m_nfoReader.GetDetails(*pItem->GetVideoInfoTag());
 
-      if (AddVideo(pItem.get(), info2->Content(), bDirNames) < 0)
+      if (AddVideo(pItem.get(), info2->Content(), bDirNames, true) < 0)
         return INFO_ERROR;
-      GetArtwork(pItem.get(), info2->Content(), bDirNames, true, pDlgProgress);
       return INFO_ADDED;
     }
     if (result == CNfoFile::URL_NFO || result == CNfoFile::COMBINED_NFO)
@@ -625,9 +620,8 @@ namespace VIDEO
 
     if (GetDetails(pItem.get(), url, info2, result == CNfoFile::COMBINED_NFO ? &m_nfoReader : NULL, pDlgProgress))
     {
-      if (AddVideo(pItem.get(), info2->Content(), bDirNames) < 0)
+      if (AddVideo(pItem.get(), info2->Content(), bDirNames, useLocal) < 0)
         return INFO_ERROR;
-      GetArtwork(pItem.get(), info2->Content(), bDirNames, useLocal);
       return INFO_ADDED;
     }
     // TODO: This is not strictly correct as we could fail to download information here or error, or be cancelled
@@ -1075,6 +1069,8 @@ namespace VIDEO
     if (!m_database.Open())
       return -1;
 
+    GetArtwork(pItem, content, videoFolder, useLocal);
+
     CVideoInfoTag *tag = pItem->GetVideoInfoTag();
     CStdString strTitle(tag->m_strTitle);
 
@@ -1160,10 +1156,17 @@ namespace VIDEO
       m_database.AddBookMarkToFile(pItem->GetPath(), movieDetails.m_resumePoint, CBookmark::EType::RESUME);
 
     m_database.Close();
+
+    CFileItemPtr itemCopy = CFileItemPtr(new CFileItem(*pItem));
+    // Hack to make sure CVideoInfoTag::m_strShowTitle is set for tvshows
+    // to make sure CAnnouncementManager provides the correct type for the item
+    if (content == CONTENT_TVSHOWS && !pItem->m_bIsFolder && itemCopy->HasVideoInfoTag())
+      itemCopy->GetVideoInfoTag()->m_strShowTitle = itemCopy->GetVideoInfoTag()->m_strTitle;
+    ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::VideoLibrary, "xbmc", "OnUpdate", itemCopy);
     return lResult;
   }
 
-  void CVideoInfoScanner::GetArtwork(CFileItem *pItem, const CONTENT_TYPE &content, bool bApplyToDir, bool useLocal, CGUIDialogProgress* pDialog /* == NULL */)
+  void CVideoInfoScanner::GetArtwork(CFileItem *pItem, const CONTENT_TYPE &content, bool bApplyToDir, bool useLocal)
   {
     CVideoInfoTag &movieDetails = *pItem->GetVideoInfoTag();
     movieDetails.m_fanart.Unpack();
@@ -1232,13 +1235,6 @@ namespace VIDEO
       FetchActorThumbs(movieDetails.m_cast, parentDir);
     if (bApplyToDir)
       ApplyThumbToFolder(parentDir, thumb);
-
-    CFileItemPtr itemCopy = CFileItemPtr(new CFileItem(*pItem));
-    // Hack to make sure CVideoInfoTag::m_strShowTitle is set for tvshows
-    // to make sure CAnnouncementManager provides the correct type for the item
-    if (content == CONTENT_TVSHOWS && !isEpisode && itemCopy->HasVideoInfoTag())
-      itemCopy->GetVideoInfoTag()->m_strShowTitle = itemCopy->GetVideoInfoTag()->m_strTitle;
-    ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::VideoLibrary, "xbmc", "OnUpdate", itemCopy);
   }
 
   void CVideoInfoScanner::DownloadImage(const CStdString &url, const CStdString &destination, bool asThumb /*= true */, CGUIDialogProgress *progress /*= NULL */)
@@ -1307,9 +1303,8 @@ namespace VIDEO
       if (result == CNfoFile::FULL_NFO)
       {
         m_nfoReader.GetDetails(*item.GetVideoInfoTag());
-        if (AddVideo(&item, CONTENT_TVSHOWS, file->isFolder, idShow) < 0)
+        if (AddVideo(&item, CONTENT_TVSHOWS, file->isFolder, true, idShow) < 0)
           return INFO_ERROR;
-        GetArtwork(&item, CONTENT_TVSHOWS);
         continue;
       }
 
@@ -1401,9 +1396,8 @@ namespace VIDEO
         if (item.GetVideoInfoTag()->m_iEpisode == -1)
           item.GetVideoInfoTag()->m_iEpisode = guide->iEpisode;
 
-        if (AddVideo(&item, CONTENT_TVSHOWS, file->isFolder, idShow) < 0)
+        if (AddVideo(&item, CONTENT_TVSHOWS, file->isFolder, useLocal, idShow) < 0)
           return INFO_ERROR;
-        GetArtwork(&item, CONTENT_TVSHOWS);
       }
       else
       {

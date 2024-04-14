@@ -167,13 +167,12 @@ namespace VIDEO
     bool GetDetails(CFileItem *pItem, CScraperUrl &url, const ADDON::ScraperPtr &scraper, CNfoFile *nfoFile=NULL, CGUIDialogProgress* pDialog=NULL);
 
     /*! \brief Retrieve any artwork associated with an item
-     \param pItem item to add to the database.
+     \param pItem item to find artwork for.
      \param content content type of the item.
      \param bApplyToDir whether we should apply any thumbs to a folder.  Defaults to false.
      \param useLocal whether we should use local thumbs. Defaults to true.
-     \param pDialog progress dialog to update during processing. Defaults to NULL.
      */
-    void GetArtwork(CFileItem *pItem, const CONTENT_TYPE &content, bool bApplyToDir=false, bool useLocal=true, CGUIDialogProgress* pDialog = NULL);
+    void GetArtwork(CFileItem *pItem, const CONTENT_TYPE &content, bool bApplyToDir=false, bool useLocal=true);
 
     /*! \brief Extract episode and season numbers from a processed regexp
      \param reg Regular expression object with at least 2 matches
