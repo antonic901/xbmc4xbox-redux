@@ -22,7 +22,6 @@
 #include "VideoDatabase.h"
 #include "addons/Scraper.h"
 #include "NfoFile.h"
-#include "XBDateTime.h"
 
 class CRegExp;
 
@@ -37,19 +36,6 @@ namespace VIDEO
     bool noupdate;          /* exclude from update library function */
     bool exclude;           /* exclude this path from scraping */
   } SScanSettings;
-
-  typedef struct SEpisode
-  {
-    CStdString strPath;
-    CStdString strTitle;
-    int iSeason;
-    int iEpisode;
-    int iSubepisode;
-    bool isFolder;
-    CDateTime cDate;
-  } SEpisode;
-
-  typedef std::vector<SEpisode> EPISODES;
 
   enum SCAN_STATE { PREPARING = 0, REMOVING_OLD, CLEANING_UP_DATABASE, FETCHING_MOVIE_INFO, FETCHING_MUSICVIDEO_INFO, FETCHING_TVSHOW_INFO, COMPRESSING_DATABASE, WRITING_CHANGES };
 
@@ -176,16 +162,17 @@ namespace VIDEO
     /*! \brief Extract episode and season numbers from a processed regexp
      \param reg Regular expression object with at least 2 matches
      \param episodeInfo Episode information to fill in.
+     \param defaultSeason Season to use if not found in reg.
      \return true on success (2 matches), false on failure (fewer than 2 matches)
      */
-    bool GetEpisodeAndSeasonFromRegExp(CRegExp &reg, SEpisode &episodeInfo);
+    bool GetEpisodeAndSeasonFromRegExp(CRegExp &reg, EPISODE &episodeInfo, int defaultSeason);
 
     /*! \brief Extract episode air-date from a processed regexp
      \param reg Regular expression object with at least 3 matches
      \param episodeInfo Episode information to fill in.
      \return true on success (3 matches), false on failure (fewer than 3 matches)
      */
-    bool GetAirDateFromRegExp(CRegExp &reg, SEpisode &episodeInfo);
+    bool GetAirDateFromRegExp(CRegExp &reg, EPISODE &episodeInfo);
 
     /*! \brief Fetch thumbs for actors
      Updates each actor with their thumb (local or online)
@@ -214,20 +201,10 @@ namespace VIDEO
      */
     bool CanFastHash(const CFileItemList &items) const;
 
-    /*! \brief Download an image file and apply the image to a folder if necessary
-     \param url URL of the image.
-     \param destination File to save the image as
-     \param asThumb whether we need to download as a thumbnail or as a full image. Defaults to true
-     \param progress progressbar to update - defaults to NULL
-     \param directory directory that this thumbnail should be applied to. Defaults to empty
-     */
-    void DownloadImage(const CStdString &url, const CStdString &destination, bool asThumb = true, CGUIDialogProgress *dialog = NULL);
-
     /*! \brief Process a series folder, filling in episode details and adding them to the database.
      TODO: Ideally we would return INFO_HAVE_ALREADY if we don't have to update any episodes
      and we should return INFO_NOT_FOUND only if no information is found for any of
      the episodes. INFO_ADDED then indicates we've added one or more episodes.
-     \param episodes the episode list for the show.
      \param files the episode files to process.
      \param scraper scraper to use for finding online info
      \param idShow the database id of the show.
@@ -236,11 +213,11 @@ namespace VIDEO
      \return INFO_ERROR on failure, INFO_CANCELLED on cancellation,
      INFO_NOT_FOUND if an episode isn't found, or INFO_ADDED if all episodes are added.
      */
-    INFO_RET OnProcessSeriesFolder(EPISODELIST& episodes, EPISODES& files, const ADDON::ScraperPtr &scraper, bool useLocal, int idShow, const CStdString& strShowTitle, CGUIDialogProgress* pDlgProgress = NULL);
+    INFO_RET OnProcessSeriesFolder(EPISODELIST& files, const ADDON::ScraperPtr &scraper, bool useLocal, int idShow, const CStdString& strShowTitle, CGUIDialogProgress* pDlgProgress = NULL);
 
-    void EnumerateSeriesFolder(CFileItem* item, EPISODES& episodeList);
-    bool EnumerateEpisodeItem(const CFileItemPtr item, EPISODES& episodeList);
-    bool ProcessItemByVideoInfoTag(const CFileItemPtr item, EPISODES &episodeList);
+    void EnumerateSeriesFolder(CFileItem* item, EPISODELIST& episodeList);
+    bool EnumerateEpisodeItem(const CFileItemPtr item, EPISODELIST& episodeList);
+    bool ProcessItemByVideoInfoTag(const CFileItemPtr item, EPISODELIST &episodeList);
 
     CStdString GetnfoFile(CFileItem *item, bool bGrabAny=false) const;
 

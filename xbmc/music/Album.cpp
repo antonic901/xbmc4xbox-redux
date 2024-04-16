@@ -32,7 +32,7 @@ bool CAlbum::operator<(const CAlbum &a) const
   return strAlbum +StringUtils::Join(artist, g_advancedSettings.m_musicItemSeparator) < a.strAlbum + StringUtils::Join(a.artist, g_advancedSettings.m_musicItemSeparator);
 }
 
-bool CAlbum::Load(const TiXmlElement *album, bool chained)
+bool CAlbum::Load(const TiXmlElement *album, bool chained, bool prefix)
 {
   if (!album) return false;
   if (!chained)
@@ -54,11 +54,27 @@ bool CAlbum::Load(const TiXmlElement *album, bool chained)
   XMLUtils::GetInt(album,"year",iYear);
   XMLUtils::GetInt(album,"rating",iRating); 
 
+  size_t iThumbCount = thumbURL.m_url.size();
+  CStdString xmlAdd = thumbURL.m_xml;
   const TiXmlElement* thumb = album->FirstChildElement("thumb");
   while (thumb)
   {
     thumbURL.ParseElement(thumb);
+    if (prefix)
+    {
+      CStdString temp;
+      temp << *thumb;
+      xmlAdd = temp+xmlAdd;
+    }
     thumb = thumb->NextSiblingElement("thumb");
+  }
+  // prefix thumbs from nfos
+  if (prefix && iThumbCount && iThumbCount != thumbURL.m_url.size())
+  {
+    rotate(thumbURL.m_url.begin(),
+           thumbURL.m_url.begin()+iThumbCount, 
+           thumbURL.m_url.end());
+    thumbURL.m_xml = xmlAdd;
   }
 
   const TiXmlElement* node = album->FirstChildElement("track");

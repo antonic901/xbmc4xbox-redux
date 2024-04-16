@@ -34,6 +34,7 @@
 #include "utils/URIUtils.h"
 
 using namespace std;
+using namespace VIDEO;
 
 #ifndef __GNUC__
 #pragma warning (disable:4018)

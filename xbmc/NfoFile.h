@@ -51,7 +51,7 @@ public:
   NFOResult Create(const CStdString&, const ADDON::ScraperPtr&, int episode=-1,
                    const CStdString& strPath2="");
   template<class T>
-    bool GetDetails(T& details,const char* document=NULL)
+    bool GetDetails(T& details,const char* document=NULL, bool prefix=false)
   {
     CXBMCTinyXML doc;
     CStdString strDoc;
@@ -71,7 +71,7 @@ public:
 
     doc.Clear();
     doc.Parse(strUtf8.c_str(),0,TIXML_ENCODING_UTF8);
-    return details.Load(doc.RootElement(),true);
+    return details.Load(doc.RootElement(),true,prefix);
   }
 
   void Close();
