@@ -1400,7 +1400,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
     output+=closeTag+openTag+"Resolution:" + resolution;
     CFileItem item(*slide);
     CStdString thumbURL = CTextureCache::GetWrappedThumbURL(item.GetPath());
-    if (autoGetPictureThumbs || !CTextureCache::Get().GetCachedImage(thumbURL).IsEmpty())
+    if (autoGetPictureThumbs || CTextureCache::Get().HasCachedImage(thumbURL))
       thumb = thumbURL;
     if (thumb.IsEmpty())
     {
