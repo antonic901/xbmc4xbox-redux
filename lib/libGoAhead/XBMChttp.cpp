@@ -1347,7 +1347,7 @@ int CXbmcHttp::xbmcGetMovieDetails(int numParas, CStdString paras[])
         if (!CVideoThumbLoader::FillThumb(*item))
           thumb = "[None]";
         else
-          thumb = CTextureCache::Get().CheckAndCacheImage(item->GetThumbnailImage());
+          thumb = CTextureCache::GetWrappedImageURL(item->GetThumbnailImage());
         output += closeTag+openTag+"Thumb:" + thumb;
         m_database.Close();
         delete item;
@@ -1399,9 +1399,9 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
       resolution = slide->GetPictureInfoTag()->GetInfo(SLIDE_RESOLUTION);
     output+=closeTag+openTag+"Resolution:" + resolution;
     CFileItem item(*slide);
-    thumb = CTextureCache::Get().GetCachedImage(CTextureCache::GetWrappedThumbURL(item.GetPath()));
-    if (autoGetPictureThumbs && thumb.IsEmpty())
-      thumb = CTextureCache::Get().CheckAndCacheImage(CTextureCache::GetWrappedThumbURL(item.GetPath()), false);
+    CStdString thumbURL = CTextureCache::GetWrappedThumbURL(item.GetPath());
+    if (autoGetPictureThumbs || !CTextureCache::Get().GetCachedImage(thumbURL).IsEmpty())
+      thumb = thumbURL;
     if (thumb.IsEmpty())
     {
       thumb = "[None]";
