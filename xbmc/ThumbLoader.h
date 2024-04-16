@@ -26,6 +26,7 @@
 
 class CStreamDetails;
 class IStreamDetailsObserver;
+class CVideoDatabase;
 
 /*!
  \ingroup thumbs,jobs
@@ -123,6 +124,7 @@ protected:
   virtual void OnLoaderFinish() ;
 
   IStreamDetailsObserver *m_pStreamDetailsObs;
+  CVideoDatabase *m_database;
 };
 
 class CProgramThumbLoader : public CThumbLoader
