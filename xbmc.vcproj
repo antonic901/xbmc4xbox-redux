@@ -1905,6 +1905,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\IFile.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\filesystem\ImageFile.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\filesystem\ImageFile.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\iso9660.cpp">
 				</File>
 				<File

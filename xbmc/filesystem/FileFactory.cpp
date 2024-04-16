@@ -47,6 +47,7 @@
 #include "TuxBoxFile.h"
 #include "HDHomeRunFile.h"
 #include "SlingboxFile.h"
+#include "ImageFile.h"
 #include "MythFile.h"
 #include "URL.h"
 #include "utils/log.h"
@@ -77,6 +78,7 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
   else if (url.IsProtocol("library")) return NULL;
   else if (url.IsProtocol("special")) return new CSpecialProtocolFile();
   else if (url.IsProtocol("multipath")) return new CMultiPathFile();
+  else if (url.IsProtocol("image")) return new CImageFile();
   else if (url.IsProtocol("file") || url.GetProtocol().empty()) return new CFileHD();
   else if (url.IsProtocol("filereader")) return new CFileFileReader();
 #ifdef HAS_FILESYSTEM
