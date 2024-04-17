@@ -57,6 +57,7 @@
 #include "TextureCache.h"
 #include "playlists/SmartPlayList.h"
 #include "dbwrappers/dataset.h"
+#include "utils/XMLUtils.h"
 
 using namespace std;
 using namespace AUTOPTR;
@@ -4574,32 +4575,42 @@ void CMusicDatabase::ExportToXML(const CStdString &xmlFile, bool singleFiles, bo
       CStdString strPath;
       GetArtistPath(artist.idArtist,strPath);
       artist.Save(pMain, "artist", strPath);
+
+      map<string, string> artwork;
+      if (GetArtForItem(artist.idArtist, "artist", artwork) && !singleFiles)
+      { // append to the XML
+        TiXmlElement additionalNode("art");
+        for (map<string, string>::const_iterator i = artwork.begin(); i != artwork.end(); ++i)
+          XMLUtils::SetString(&additionalNode, i->first.c_str(), i->second);
+        pMain->LastChild()->InsertEndChild(additionalNode);
+      }
       if (singleFiles)
       {
         if (!CDirectory::Exists(strPath))
           CLog::Log(LOGDEBUG, "%s - Not exporting item %s as it does not exist", __FUNCTION__, strPath.c_str());
         else
         {
-        CStdString nfoFile;
-        URIUtils::AddFileToFolder(strPath, "artist.nfo", nfoFile);
-        if (overwrite || !CFile::Exists(nfoFile))
-        {
-          if (!xmlDoc.SaveFile(nfoFile))
-            CLog::Log(LOGERROR, "%s: Artist nfo export failed! ('%s')", __FUNCTION__, nfoFile.c_str());
-        }
+          CStdString nfoFile;
+          URIUtils::AddFileToFolder(strPath, "artist.nfo", nfoFile);
+          if (overwrite || !CFile::Exists(nfoFile))
+          {
+            if (!xmlDoc.SaveFile(nfoFile))
+              CLog::Log(LOGERROR, "%s: Artist nfo export failed! ('%s')", __FUNCTION__, nfoFile.c_str());
+          }
 
-        if (images)
-        {
-          CFileItem item(artist);
-          if (CFile::Exists(item.GetCachedArtistThumb()) && (overwrite || !CFile::Exists(URIUtils::AddFileToFolder(strPath,"folder.jpg"))))
-            CFile::Copy(item.GetCachedArtistThumb(),URIUtils::AddFileToFolder(strPath,"folder.jpg"));
-          if (CFile::Exists(item.GetCachedFanart()) && (overwrite || !CFile::Exists(URIUtils::AddFileToFolder(strPath,"fanart.jpg"))))
-            CFile::Copy(item.GetCachedFanart(),URIUtils::AddFileToFolder(strPath,"fanart.jpg"));
+          if (images && !artwork.empty())
+          {
+            CStdString savedThumb = URIUtils::AddFileToFolder(strPath,"folder.jpg");
+            CStdString savedFanart = URIUtils::AddFileToFolder(strPath,"fanart.jpg");
+            if (artwork.find("thumb") != artwork.end() && (overwrite || !CFile::Exists(savedThumb)))
+              CTextureCache::Get().Export(artwork["thumb"], savedThumb);
+            if (artwork.find("fanart") != artwork.end() && (overwrite || !CFile::Exists(savedFanart)))
+              CTextureCache::Get().Export(artwork["fanart"], savedFanart);
+          }
+          xmlDoc.Clear();
+          TiXmlDeclaration decl("1.0", "UTF-8", "yes");
+          xmlDoc.InsertEndChild(decl);
         }
-        xmlDoc.Clear();
-        TiXmlDeclaration decl("1.0", "UTF-8", "yes");
-        xmlDoc.InsertEndChild(decl);
-      }
       }
       
       if ((current % 50) == 0 && progress)
