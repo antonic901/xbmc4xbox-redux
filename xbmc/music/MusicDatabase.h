@@ -101,7 +101,7 @@ public:
   void DeleteAlbumInfo();
   bool LookupCDDBInfo(bool bRequery=false);
   void DeleteCDDBInfo();
-  void AddSong(const CSong& song, bool bCheck = true);
+  int AddSong(const CSong &song, bool bCheck = true);
   int UpdateSong(const CSong& song, int idSong = -1);
   int SetAlbumInfo(int idAlbum, const CAlbum& album, const VECSONGS& songs, bool bTransaction=true);
   bool DeleteAlbumInfo(int idArtist);

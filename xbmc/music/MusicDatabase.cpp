@@ -278,21 +278,22 @@ void CMusicDatabase::CreateViews()
               "    artist.idArtist = artistinfo.idArtist");
 }
 
-void CMusicDatabase::AddSong(const CSong& song, bool bCheck)
+int CMusicDatabase::AddSong(const CSong& song, bool bCheck)
 {
+  int idSong = -1;
   CStdString strSQL;
   try
   {
     // We need at least the title
     if (song.strTitle.IsEmpty())
-      return;
+      return -1;
 
     CStdString strPath, strFileName;
     URIUtils::Split(song.strFileName, strPath, strFileName);
     ASSERT(URIUtils::HasSlashAtEnd(strPath));
 
-    if (NULL == m_pDB.get()) return ;
-    if (NULL == m_pDS.get()) return ;
+    if (NULL == m_pDB.get()) return -1;
+    if (NULL == m_pDS.get()) return -1;
 
     int idPath = AddPath(strPath);
     int idThumb = AddThumb(song.strThumb);
@@ -305,14 +306,13 @@ void CMusicDatabase::AddSong(const CSong& song, bool bCheck)
     DWORD crc = ComputeCRC(song.strFileName);
 
     bool bInsert = true;
-    int idSong = -1;
     if (bCheck)
     {
       strSQL=PrepareSQL("select * from song where idAlbum=%i and dwFileNameCRC='%ul' and strTitle='%s'",
                     idAlbum, crc, song.strTitle.c_str());
       
       if (!m_pDS->query(strSQL.c_str()))
-        return;
+        return -1;
       
       if (m_pDS->num_rows() != 0)
       {
@@ -375,13 +375,14 @@ void CMusicDatabase::AddSong(const CSong& song, bool bCheck)
       AddSongArtist(idArtist, idSong, index > 0 ? true : false, index);
     }
 
-    for (unsigned int index = 0; index < song.genre.size(); index++)
+    unsigned int index = 0;
+    for (vector<string>::const_iterator i = song.genre.begin(); i != song.genre.end(); ++i)
     {
       // index will be wrong for albums, but ordering is not all that relevant
       // for genres anyway
-      int idGenre = AddGenre(song.genre[index]);
+      int idGenre = AddGenre(*i);
       AddSongGenre(idGenre, idSong, index);
-      AddAlbumGenre(idGenre, idAlbum, index);
+      AddAlbumGenre(idGenre, idAlbum, index++);
     }
     
     AnnounceUpdate("song", idSong);
@@ -390,6 +391,7 @@ void CMusicDatabase::AddSong(const CSong& song, bool bCheck)
   {
     CLog::Log(LOGERROR, "musicdatabase:unable to addsong (%s)", strSQL.c_str());
   }
+  return idSong;
 }
 
 int CMusicDatabase::UpdateSong(const CSong& song, int idSong /* = -1 */)
@@ -415,7 +417,7 @@ int CMusicDatabase::UpdateSong(const CSong& song, int idSong /* = -1 */)
   // Make sure newSong.idSong has a valid value (> 0)
   newSong.idSong = idSong;
   // re-add the song
-  AddSong(newSong, false);
+  newSong.idSong = AddSong(newSong, false);
   if (newSong.idSong < 0)
     return -1;
 
