@@ -699,7 +699,6 @@ void CGUIWindowMusicBase::AddItemToPlayList(const CFileItemPtr &pItem, CFileItem
     GetDirectory(pItem->GetPath(), items);
     //OnRetrieveMusicInfo(items);
     FormatAndSort(items);
-    SetupFanart(items);
     for (int i = 0; i < items.Size(); ++i)
       AddItemToPlayList(items[i], queuedItems);
   }
@@ -1338,37 +1337,6 @@ bool CGUIWindowMusicBase::CheckFilterAdvanced(CFileItemList &items) const
 bool CGUIWindowMusicBase::CanContainFilter(const CStdString &strDirectory) const
 {
   return strDirectory.Left(10).Equals("musicdb://");
-}
-
-void CGUIWindowMusicBase::SetupFanart(CFileItemList& items)
-{
-  // set fanart
-  map<CStdString, CStdString> artists;
-  for (int i = 0; i < items.Size(); i++)
-  {
-    CFileItemPtr item = items[i];
-    CStdString strArtist;
-    if (item->HasProperty("fanart_image"))
-      continue;
-    if (item->HasMusicInfoTag())
-      strArtist = StringUtils::Join(item->GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator);
-   if (item->HasVideoInfoTag())
-      strArtist = StringUtils::Join(item->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator);
-   if (strArtist.IsEmpty())
-     continue;
-    map<CStdString, CStdString>::iterator artist = artists.find(strArtist);
-    if (artist == artists.end())
-    {
-      CStdString strFanart = item->GetCachedFanart();
-      if (XFILE::CFile::Exists(strFanart))
-        item->SetProperty("fanart_image",strFanart);
-      else
-        strFanart = "";
-      artists.insert(make_pair(strArtist, strFanart));
-    }
-    else
-      item->SetProperty("fanart_image",artist->second);
-  }
 }
 
 CStdString CGUIWindowMusicBase::GetStartFolder(const CStdString &dir)

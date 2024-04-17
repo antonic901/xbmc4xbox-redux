@@ -239,8 +239,9 @@ bool CRecentlyAddedJob::UpdateMusic()
 
         if (loader.LoadItem(item.get()))
         {
-          strAlbumThumb = item->GetArt("thumb");
-          strAlbumFanart = item->GetArt("fanart");
+          // TODO: uncomment once we add support for ListItem.Art(...)
+          // strAlbumThumb = item->GetArt("thumb");
+          // strAlbumFanart = item->GetArt("fanart");
         }
       }
       
