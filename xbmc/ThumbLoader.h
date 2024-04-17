@@ -27,6 +27,7 @@
 class CStreamDetails;
 class IStreamDetailsObserver;
 class CVideoDatabase;
+class CMusicDatabase;
 
 /*!
  \ingroup thumbs,jobs
@@ -158,5 +159,17 @@ public:
   CMusicThumbLoader();
   virtual ~CMusicThumbLoader();
   virtual bool LoadItem(CFileItem* pItem);
+
+  /*! \brief helper function to fill the art for a video library item
+   \param item a video CFileItem
+   \return true if we fill art, false otherwise
+   */
+  bool FillLibraryArt(CFileItem &item);
+
+protected:
+  virtual void OnLoaderStart();
+  virtual void OnLoaderFinish();
+
+  CMusicDatabase *m_database;
 };
 #endif
