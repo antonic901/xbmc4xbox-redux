@@ -159,7 +159,7 @@ long CMusicInfoTag::GetDatabaseId() const
   return m_iDbId;
 }
 
-const CStdString &CMusicInfoTag::GetType() const
+const std::string &CMusicInfoTag::GetType() const
 {
   return m_type;
 }
@@ -267,7 +267,7 @@ void CMusicInfoTag::SetYear(int year)
   m_dwReleaseDate.wYear = year;
 }
 
-void CMusicInfoTag::SetDatabaseId(long id, const CStdString& type)
+void CMusicInfoTag::SetDatabaseId(long id, const std::string &type)
 {
   m_iDbId = id;
   m_type = type;
