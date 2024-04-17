@@ -48,6 +48,7 @@ public:
     moods.clear();
     styles.clear();
     themes.clear();
+    art.clear();
     strReview.Empty();
     strLabel.Empty();
     strType.Empty();
@@ -70,6 +71,7 @@ public:
   std::vector<std::string> moods;
   std::vector<std::string> styles;
   std::vector<std::string> themes;
+  std::map<std::string, std::string> art;
   CStdString strReview;
   CStdString strLabel;
   CStdString strType;

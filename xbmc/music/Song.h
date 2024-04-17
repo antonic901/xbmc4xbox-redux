@@ -25,14 +25,10 @@
 
 #include "utils/StdString.h"
 #include "XBDateTime.h"
+#include "music/tags/MusicInfoTag.h" // for EmbeddedArt
 
 #include <map>
 #include <vector>
-
-namespace MUSIC_INFO
-{
-  class CMusicInfoTag;
-}
 
 /*!
  \ingroup music
@@ -67,6 +63,17 @@ public:
     if (iTrack < song.iTrack) return true;
     return false;
   }
+
+  /*! \brief whether this song has art associated with it
+   Tests both the strThumb and embeddedArt members.
+   */
+  bool HasArt() const;
+
+  /*! \brief whether the art from this song matches the art from another
+   Tests both the strThumb and embeddedArt members.
+   */
+  bool ArtMatches(const CSong &right) const;
+
   long idSong;
   CStdString strFileName;
   CStdString strTitle;
@@ -75,6 +82,7 @@ public:
   std::vector<std::string> albumArtist;
   std::vector<std::string> genre;
   CStdString strThumb;
+  MUSIC_INFO::EmbeddedArtInfo embeddedArt;
   CStdString strMusicBrainzTrackID;
   CStdString strMusicBrainzArtistID;
   CStdString strMusicBrainzAlbumID;
