@@ -503,7 +503,7 @@ CStdString CProgramThumbLoader::GetLocalThumb(const CFileItem &item)
   return "";
 }
 
-CMusicThumbLoader::CMusicThumbLoader()
+CMusicThumbLoader::CMusicThumbLoader() : CThumbLoader(1)
 {
 }
 
