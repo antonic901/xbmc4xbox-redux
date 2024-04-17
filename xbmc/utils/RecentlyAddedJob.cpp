@@ -239,8 +239,8 @@ bool CRecentlyAddedJob::UpdateMusic()
 
         if (loader.LoadItem(item.get()))
         {
-          strAlbumThumb = item->GetThumbnailImage();
-          strAlbumFanart = item->GetProperty("fanart_image").asString();
+          strAlbumThumb = item->GetArt("thumb");
+          strAlbumFanart = item->GetArt("fanart");
         }
       }
       
