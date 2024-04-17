@@ -420,8 +420,6 @@ void CGUIWindowMusicBase::ShowArtistInfo(const CArtist& artist, const CStdString
 
       if (bShowInfo)
         pDlgArtistInfo->DoModal();
-      else
-        pDlgArtistInfo->RefreshThumb();  // downloads the thumb if we don't already have one
 
       if (!pDlgArtistInfo->NeedRefresh())
       {
@@ -464,8 +462,6 @@ void CGUIWindowMusicBase::ShowArtistInfo(const CArtist& artist, const CStdString
         pDlgArtistInfo->SetArtist(info.GetArtist(), path);
         if (bShowInfo)
           pDlgArtistInfo->DoModal();
-        else
-          pDlgArtistInfo->RefreshThumb();  // downloads the thumb if we don't already have one
 
         CArtist artistInfo = info.GetArtist();
         artistInfo.idArtist = artist.idArtist;
@@ -513,8 +509,6 @@ void CGUIWindowMusicBase::ShowAlbumInfo(const CAlbum& album, const CStdString& p
       pDlgAlbumInfo->SetAlbum(albumInfo, path);
       if (bShowInfo)
         pDlgAlbumInfo->DoModal();
-      else
-        pDlgAlbumInfo->RefreshThumb();  // downloads the thumb if we don't already have one
 
       if (!pDlgAlbumInfo->NeedRefresh())
       {
@@ -561,8 +555,6 @@ void CGUIWindowMusicBase::ShowAlbumInfo(const CAlbum& album, const CStdString& p
         pDlgAlbumInfo->SetAlbum(info.GetAlbum(), path);
         if (bShowInfo)
           pDlgAlbumInfo->DoModal();
-        else
-          pDlgAlbumInfo->RefreshThumb();  // downloads the thumb if we don't already have one
 
         CAlbum albumInfo = info.GetAlbum();
         albumInfo.idAlbum = album.idAlbum;

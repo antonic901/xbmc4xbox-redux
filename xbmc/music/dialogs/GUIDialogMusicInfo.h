@@ -39,7 +39,6 @@ public:
   void SetArtist(const CArtist& artist, const CStdString &path);
   bool NeedRefresh() const;
   bool HasUpdatedThumb() const { return m_hasUpdatedThumb; };
-  void RefreshThumb();
 
   virtual bool HasListItems() const { return true; };
   virtual CFileItemPtr GetCurrentListItem(int offset = 0);
@@ -48,7 +47,6 @@ protected:
   virtual void OnInitWindow();
   void Update();
   void SetLabel(int iControl, const CStdString& strLabel);
-  int DownloadThumbnail(const CStdString &thumbFile, bool bMultiple=false);
   void OnGetThumb();
   void OnGetFanart();
   void SetSongs(const VECSONGS &songs);
