@@ -855,13 +855,6 @@ bool CGUIWindowVideoNav::DeleteItem(CFileItem* pItem, bool bUnavailable /* = fal
 void CGUIWindowVideoNav::OnPrepareFileItems(CFileItemList &items)
 {
   CGUIWindowVideoBase::OnPrepareFileItems(items);
-
-  // set fanart
-  CQueryParams params;
-  CVideoDatabaseDirectory dir;
-  dir.GetQueryParams(items.GetPath(),params);
-  if (params.GetContentType() == VIDEODB_CONTENT_MUSICVIDEOS)
-    CGUIWindowMusicNav::SetupFanart(items);
 }
 
 void CGUIWindowVideoNav::GetContextButtons(int itemNumber, CContextButtons &buttons)
@@ -1129,21 +1122,25 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   case CONTEXT_BUTTON_SET_MOVIESET_THUMB:
     {
       // Grab the thumbnails from the web
-      CStdString strPath;
       CFileItemList items;
-      URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath,"imdbthumbs",strPath);
-      CUtil::WipeDir(strPath);
-      XFILE::CDirectory::Create(strPath);
       CFileItemPtr noneitem(new CFileItem("thumb://None", false));
-      CStdString cachedThumb;
+      CStdString currentThumb;
+      int idArtist = -1;
+      CStdString artistPath;
       if (button == CONTEXT_BUTTON_SET_ARTIST_THUMB)
-        cachedThumb = m_vecItems->Get(itemNumber)->GetCachedArtistThumb();
-      else
-        cachedThumb = m_database.GetArtForItem(m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_iDbId, m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_type, "thumb");
-      if (!cachedThumb.IsEmpty() && CFile::Exists(cachedThumb))
+      {
+        CMusicDatabase database;
+        database.Open();
+        idArtist = database.GetArtistByName(m_vecItems->Get(itemNumber)->GetLabel());
+        database.GetArtistPath(idArtist, artistPath);
+        currentThumb = database.GetArtForItem(idArtist, "artist", "thumb");
+      }
+      if (currentThumb.empty())
+        currentThumb = m_database.GetArtForItem(m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_iDbId, m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_type, "thumb");
+      if (!currentThumb.IsEmpty() && CFile::Exists(currentThumb))
       {
         CFileItemPtr item(new CFileItem("thumb://Current", false));
-        item->SetThumbnailImage(cachedThumb);
+        item->SetThumbnailImage(currentThumb);
         item->SetLabel(g_localizeStrings.Get(20016));
         items.Add(item);
       }
@@ -1181,24 +1178,8 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       bool local=false;
       if (button == CONTEXT_BUTTON_SET_ARTIST_THUMB)
       {
-        CStdString picturePath;
-
-        CStdString strPath = m_vecItems->Get(itemNumber)->GetPath();
-        URIUtils::RemoveSlashAtEnd(strPath);
-
-        int nPos=strPath.ReverseFind("/");
-        if (nPos>-1)
-        {
-          //  try to guess where the user should start
-          //  browsing for the artist thumb
-          CMusicDatabase database;
-          database.Open();
-          long idArtist=database.GetArtistByName(m_vecItems->Get(itemNumber)->GetLabel());
-          database.GetArtistPath(idArtist, picturePath);
-        }
-
         CStdString strThumb;
-        URIUtils::AddFileToFolder(picturePath,"folder.jpg",strThumb);
+        URIUtils::AddFileToFolder(artistPath,"folder.jpg",strThumb);
         if (XFILE::CFile::Exists(strThumb))
         {
           CFileItemPtr pItem(new CFileItem(strThumb,false));
@@ -1257,13 +1238,14 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         result.clear();
       if (button == CONTEXT_BUTTON_SET_MOVIESET_THUMB ||
           button == CONTEXT_BUTTON_SET_ACTOR_THUMB ||
-          button == CONTEXT_BUTTON_SET_SEASON_THUMB)
+          button == CONTEXT_BUTTON_SET_SEASON_THUMB ||
+         (button == CONTEXT_BUTTON_SET_ARTIST_THUMB && idArtist < 0))
         m_database.SetArtForItem(m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_iDbId, m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_type, "thumb", result);
       else
       {
-        CTextureCache::Get().ClearCachedImage(cachedThumb, true);
-        if (!result.IsEmpty())
-          CFile::Copy(result,cachedThumb);
+        CMusicDatabase db;
+        if (db.Open())
+          db.SetArtForItem(idArtist, "artist", "thumb", result);
       }
 
       CUtil::DeleteVideoDatabaseDirectoryCache();
