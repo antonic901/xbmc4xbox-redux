@@ -100,7 +100,6 @@ bool CRecentlyAddedJob::UpdateVideo()
 
   if (videodatabase.GetRecentlyAddedEpisodesNav("videodb://recentlyaddedepisodes/", TVShowItems, NUM_ITEMS))
   {
-    std::map<int, std::string> showThumbs; 
     for (; i < TVShowItems.Size(); ++i)
     {    
       CFileItemPtr item          = TVShowItems.Get(i);
@@ -133,7 +132,7 @@ bool CRecentlyAddedJob::UpdateVideo()
       std::string showThumb = videodatabase.GetArtForItem(item->GetVideoInfoTag()->m_iIdShow, "tvshow", "thumb");
 
       home->SetProperty("LatestEpisode." + value + ".Thumb"         , item->GetThumbnailImage());
-      home->SetProperty("LatestEpisode." + value + ".ShowThumb"     , showThumb);
+      home->SetProperty("LatestEpisode." + value + ".ShowThumb"     , item->GetProperty("tvshowthumb"));
       home->SetProperty("LatestEpisode." + value + ".SeasonThumb"   , seasonThumb);
       home->SetProperty("LatestEpisode." + value + ".Fanart"        , item->GetProperty("fanart_image"));
     }
