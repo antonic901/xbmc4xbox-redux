@@ -532,13 +532,13 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
   }
   else
   {
-    pTexture = new CTexture();
 #ifdef HAS_XBOX_D3D
     bool isThumbnail = URIUtils::GetExtension(strPath).Equals(".tbn");
-    if (!pTexture->LoadFromFile(strPath, isThumbnail ? g_advancedSettings.m_thumbSize : 0, isThumbnail ? g_advancedSettings.m_thumbSize : 0))
+    pTexture = CBaseTexture::LoadFromFile(strPath, isThumbnail ? g_advancedSettings.m_thumbSize : 0, isThumbnail ? g_advancedSettings.m_thumbSize : 0);
 #else
-    if(!pTexture->LoadFromFile(strPath))
+    pTexture = CBaseTexture::LoadFromFile(strPath);
 #endif
+    if (!pTexture)
       return 0;
     width = pTexture->GetWidth();
     height = pTexture->GetHeight();
