@@ -75,8 +75,8 @@ bool CImageLoader::DoWork()
         directoryPath != CProfilesManager::Get().GetMusicFanartFolder() &&
         URIUtils::GetExtension(loadPath).Equals(".tbn"))
     {
-      width = g_advancedSettings.m_thumbSize;
-      height = g_advancedSettings.m_thumbSize;
+      width = g_advancedSettings.GetThumbSize();
+      height = g_advancedSettings.GetThumbSize();
     }
 #endif
 

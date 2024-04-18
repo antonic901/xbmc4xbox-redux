@@ -220,8 +220,8 @@ void CAdvancedSettings::Initialize()
   m_playlistAsFolders = true;
   m_detectAsUdf = false;
 
-  m_thumbSize = 192;
-  m_fanartHeight = 480;
+  m_fanartRes = 480;
+  m_imageRes = 384;
   m_useDDSFanart = false;
 
   m_sambaclienttimeout = 10;
@@ -707,8 +707,8 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
 
   XMLUtils::GetInt(pRootElement, "remoterepeat", m_remoteRepeat, 1, INT_MAX);
   XMLUtils::GetFloat(pRootElement, "controllerdeadzone", m_controllerDeadzone, 0.0f, 1.0f);
-  XMLUtils::GetInt(pRootElement, "thumbsize", m_thumbSize, 0, 1024);
-  XMLUtils::GetInt(pRootElement, "fanartheight", m_fanartHeight, 0, 1080);
+  XMLUtils::GetInt(pRootElement, "fanartres", m_fanartRes, 0, 1080);
+  XMLUtils::GetInt(pRootElement, "imageres", m_imageRes, 0, 1080);
   //dds support
   XMLUtils::GetBoolean(pRootElement, "useddsfanart", m_useDDSFanart);
 
