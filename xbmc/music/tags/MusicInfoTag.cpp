@@ -165,11 +165,6 @@ const std::vector<std::string>& CMusicInfoTag::GetArtist() const
   return m_artist;
 }
 
-int CMusicInfoTag::GetArtistId() const
-{
-  return m_iArtistId;
-}
-
 const CStdString& CMusicInfoTag::GetAlbum() const
 {
   return m_strAlbum;
@@ -275,11 +270,6 @@ void CMusicInfoTag::SetArtist(const CStdString& strArtist)
 void CMusicInfoTag::SetArtist(const std::vector<std::string>& artists)
 {
   m_artist = artists;
-}
-
-void CMusicInfoTag::SetArtistId(const int iArtistId)
-{
-  m_iArtistId = iArtistId;
 }
 
 void CMusicInfoTag::SetAlbum(const CStdString& strAlbum)
@@ -498,7 +488,6 @@ void CMusicInfoTag::SetSong(const CSong& song)
   m_type = "song";
   m_bLoaded = true;
   m_iTimesPlayed = song.iTimesPlayed;
-  m_iArtistId = song.iArtistId;
   m_iAlbumId = song.iAlbumId;
 }
 
@@ -522,7 +511,6 @@ void CMusicInfoTag::Serialize(CVariant& value)
   value["comment"] = m_strComment;
   value["rating"] = (int)(m_rating - '0');
   value["playcount"] = m_iTimesPlayed;
-  value["artistid"] = m_iArtistId;
   value["albumid"] = m_iAlbumId;
 }
 
@@ -571,7 +559,6 @@ void CMusicInfoTag::Archive(CArchive& ar)
     ar << m_strComment;
     ar << m_rating;
     ar << m_iTimesPlayed;
-    ar << m_iArtistId;
     ar << m_iAlbumId;
   }
   else
@@ -595,7 +582,6 @@ void CMusicInfoTag::Archive(CArchive& ar)
     ar >> m_strComment;
     ar >> m_rating;
     ar >> m_iTimesPlayed;
-    ar >> m_iArtistId;
     ar >> m_iAlbumId;
  }
 }
@@ -624,7 +610,6 @@ void CMusicInfoTag::Clear()
   m_type.clear();
   m_iTimesPlayed = 0;
   memset(&m_dwReleaseDate, 0, sizeof(m_dwReleaseDate) );
-  m_iArtistId = -1;
   m_iAlbumId = -1;
   m_coverArt.clear();
 }

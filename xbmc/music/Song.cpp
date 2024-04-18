@@ -51,7 +51,6 @@ CSong::CSong(CMusicInfoTag& tag)
   iEndOffset = 0;
   idSong = -1;
   iTimesPlayed = 0;
-  iArtistId = -1;
   iAlbumId = -1;
 }
 
@@ -84,7 +83,6 @@ void CSong::Clear()
   idSong = -1;
   iTimesPlayed = 0;
   lastPlayed.Reset();
-  iArtistId = -1;
   iAlbumId = -1;
   bCompilation = false;
   embeddedArt.clear();

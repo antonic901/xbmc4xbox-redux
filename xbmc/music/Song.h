@@ -97,7 +97,6 @@ public:
   CDateTime lastPlayed;
   int iStartOffset;
   int iEndOffset;
-  int iArtistId;
   int iAlbumId;
   bool bCompilation;
 };
