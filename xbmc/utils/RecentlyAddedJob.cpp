@@ -132,7 +132,7 @@ bool CRecentlyAddedJob::UpdateVideo()
       std::string showThumb = videodatabase.GetArtForItem(item->GetVideoInfoTag()->m_iIdShow, "tvshow", "thumb");
 
       home->SetProperty("LatestEpisode." + value + ".Thumb"         , item->GetArt("thumb"));
-      home->SetProperty("LatestEpisode." + value + ".ShowThumb"     , item->GetProperty("tvshowthumb"));
+      home->SetProperty("LatestEpisode." + value + ".ShowThumb"     , item->GetArt("tvshowthumb"));
       home->SetProperty("LatestEpisode." + value + ".SeasonThumb"   , seasonThumb);
       home->SetProperty("LatestEpisode." + value + ".Fanart"        , item->GetArt("fanart"));
     }

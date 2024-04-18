@@ -654,7 +654,7 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
       {
         shortcutPath = item->GetPath();
         item->SetPath(cut.m_strPath);
-        item->SetThumbnailImage(cut.m_strThumb);
+        item->SetArt("thumb", cut.m_strThumb);
 
         LABEL_MASKS labelMasks;
         m_guiState->GetSortMethodLabelMasks(labelMasks);
