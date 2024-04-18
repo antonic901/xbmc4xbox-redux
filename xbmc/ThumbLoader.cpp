@@ -128,7 +128,7 @@ bool CThumbExtractor::DoWork()
       CTextureCache::Get().AddCachedTexture(m_target, details);
       m_item.SetProperty("HasAutoThumb", true);
       m_item.SetProperty("AutoThumbImage", m_target);
-      m_item.SetThumbnailImage(CTextureCache::GetCachedPath(details.file));
+      m_item.SetArt("thumb", CTextureCache::GetCachedPath(details.file));
     }
   }
   else if (m_item.HasVideoInfoTag() && !m_item.GetVideoInfoTag()->HasStreamDetails())
@@ -243,10 +243,10 @@ bool CVideoThumbLoader::LoadItem(CFileItem* pItem)
   }
 
   // thumbnailsf
-  if (!pItem->HasThumbnail())
+  if (!pItem->HasArt("thumb"))
   {
     FillThumb(*pItem);
-    if (!pItem->HasThumbnail() && !pItem->m_bIsFolder && pItem->IsVideo())
+    if (!pItem->HasArt("thumb") && !pItem->m_bIsFolder && pItem->IsVideo())
     {
       // create unique thumb for auto generated thumbs
       CStdString thumbURL = GetEmbeddedThumbURL(*pItem);
@@ -255,7 +255,7 @@ bool CVideoThumbLoader::LoadItem(CFileItem* pItem)
         CTextureCache::Get().BackgroundCacheImage(thumbURL);
         pItem->SetProperty("HasAutoThumb", true);
         pItem->SetProperty("AutoThumbImage", thumbURL);
-        pItem->SetThumbnailImage(thumbURL);
+        pItem->SetArt("thumb", thumbURL);
       }
       else if (CSettings::Get().GetBool("myvideos.extractthumb") &&
                CSettings::Get().GetBool("myvideos.extractflags"))
@@ -354,7 +354,7 @@ bool CVideoThumbLoader::FillLibraryArt(CFileItem &item)
           tag.m_strPictureURL.Parse();
           CStdString thumb = CScraperUrl::GetThumbURL(tag.m_strPictureURL.GetFirstThumb());
           if (!thumb.IsEmpty())
-            item.SetThumbnailImage(thumb);
+            item.SetArt("thumb", thumb);
         }
       }
       else if (tag.m_type == "season")
@@ -367,7 +367,7 @@ bool CVideoThumbLoader::FillLibraryArt(CFileItem &item)
         CVideoInfoScanner::GetSeasonThumbs(show, seasons, true);
         map<int, string>::iterator season = seasons.find(tag.m_iSeason);
         if (season != seasons.end())
-          item.SetThumbnailImage(season->second);
+          item.SetArt("thumb", season->second);
       }
       // add to the database for next time around
       map<string, string> artwork = item.GetArt();
@@ -400,7 +400,7 @@ bool CVideoThumbLoader::FillLibraryArt(CFileItem &item)
 
 bool CVideoThumbLoader::FillThumb(CFileItem &item)
 {
-  if (item.HasThumbnail())
+  if (item.HasArt("thumb"))
     return true;
   CStdString thumb = GetCachedImage(item, "thumb");
   if (thumb.IsEmpty())
@@ -409,7 +409,7 @@ bool CVideoThumbLoader::FillThumb(CFileItem &item)
     if (!thumb.IsEmpty())
       SetCachedImage(item, "thumb", thumb);
   }
-  item.SetThumbnailImage(thumb);
+  item.SetArt("thumb", thumb);
   return !thumb.IsEmpty();
 }
 
@@ -459,7 +459,7 @@ bool CProgramThumbLoader::LoadItem(CFileItem *pItem)
 bool CProgramThumbLoader::FillThumb(CFileItem &item)
 {
   // no need to do anything if we already have a thumb set
-  CStdString thumb = item.GetThumbnailImage();
+  CStdString thumb = item.GetArt("thumb");
 
   if (thumb.IsEmpty())
   { // see whether we have a cached image for this item
@@ -475,7 +475,7 @@ bool CProgramThumbLoader::FillThumb(CFileItem &item)
   if (!thumb.IsEmpty())
   {
     CTextureCache::Get().BackgroundCacheImage(thumb);
-    item.SetThumbnailImage(thumb);
+    item.SetArt("thumb", thumb);
   }
   return true;
 }
@@ -495,7 +495,7 @@ CStdString CProgramThumbLoader::GetLocalThumb(const CFileItem &item)
       {
         CFileItem cut(shortcut.m_strPath,false);
         if (FillThumb(cut))
-          return cut.GetThumbnailImage();
+          return cut.GetArt("thumb");
       }
     }
   }
@@ -511,7 +511,7 @@ CStdString CProgramThumbLoader::GetLocalThumb(const CFileItem &item)
     {
       CFileItem item(icon,false);
       if (FillThumb(item))
-        return item.GetThumbnailImage();
+        return item.GetArt("thumb");
     }
   }
 #endif
@@ -585,7 +585,7 @@ bool CMusicThumbLoader::LoadItem(CFileItem* pItem)
     }
   }
 
-  if (!pItem->HasThumbnail())
+  if (!pItem->HasArt("thumb"))
     FillThumb(*pItem);
 
   return true;
@@ -593,7 +593,7 @@ bool CMusicThumbLoader::LoadItem(CFileItem* pItem)
 
 bool CMusicThumbLoader::FillThumb(CFileItem &item)
 {
-  if (item.HasThumbnail())
+  if (item.HasArt("thumb"))
     return true;
   CStdString thumb = GetCachedImage(item, "thumb");
   if (thumb.IsEmpty())
@@ -602,7 +602,7 @@ bool CMusicThumbLoader::FillThumb(CFileItem &item)
     if (!thumb.IsEmpty())
       SetCachedImage(item, "thumb", thumb);
   }
-  item.SetThumbnailImage(thumb);
+  item.SetArt("thumb", thumb);
   return !thumb.IsEmpty();
 }
 

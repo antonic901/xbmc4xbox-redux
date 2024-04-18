@@ -474,7 +474,7 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       item->Select(true);
       if (CFileUtils::DeleteItem(item))
       {
-        CFile::Delete(item->GetThumbnailImage());
+        CFile::Delete(item->GetArt("thumb"));
         Update(m_vecItems->GetPath());
       }
       return true;

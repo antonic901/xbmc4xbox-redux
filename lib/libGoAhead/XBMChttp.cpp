@@ -1249,8 +1249,8 @@ int CXbmcHttp::xbmcGetTagFromFilename(int numParas, CStdString paras[])
     tmp.Format("%i", stTime.wYear);
     output += closeTag+openTag+"Release year:" + tmp;
     CMusicThumbLoader::FillThumb(*pItem);
-    if (pItem->HasThumbnail())
-      output += closeTag+openTag+"Thumb:" + pItem->GetThumbnailImage() ;
+    if (pItem->HasArt("thumb"))
+      output += closeTag+openTag+"Thumb:" + (CStdString)pItem->GetArt("thumb");
     else {
       output += closeTag+openTag+"Thumb:[None]";
     }
@@ -1345,7 +1345,7 @@ int CXbmcHttp::xbmcGetMovieDetails(int numParas, CStdString paras[])
         if (!CVideoThumbLoader::FillThumb(*item))
           thumb = "[None]";
         else
-          thumb = CTextureCache::GetWrappedImageURL(item->GetThumbnailImage());
+          thumb = CTextureCache::GetWrappedImageURL(item->GetArt("thumb"));
         output += closeTag+openTag+"Thumb:" + thumb;
         m_database.Close();
         delete item;

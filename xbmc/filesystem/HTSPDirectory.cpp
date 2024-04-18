@@ -441,7 +441,7 @@ bool CHTSPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
       item->SetURL(url2);
       item->SetLabel(label);
       item->SetLabelPreformated(true);
-      item->SetThumbnailImage(it->second.icon);
+      item->SetArt("thumb", it->second.icon);
       items.Add(item);
     }
 

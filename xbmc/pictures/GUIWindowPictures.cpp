@@ -266,10 +266,10 @@ bool CGUIWindowPictures::Update(const CStdString &strDirectory, bool updateFilte
   if (!CGUIMediaWindow::Update(strDirectory, updateFilterPath))
     return false;
 
-  m_vecItems->SetThumbnailImage("");
+  m_vecItems->SetArt("thumb", "");
   if (CSettings::Get().GetBool("pictures.generatethumbs"))
     m_thumbLoader.Load(*m_vecItems);
-  m_vecItems->SetThumbnailImage(CPictureThumbLoader::GetCachedImage(*m_vecItems, "thumb"));
+  m_vecItems->SetArt("thumb", CPictureThumbLoader::GetCachedImage(*m_vecItems, "thumb"));
 
   return true;
 }

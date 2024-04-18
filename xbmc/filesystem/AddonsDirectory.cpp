@@ -32,6 +32,7 @@
 #include "File.h"
 #include "utils/URIUtils.h"
 #include "guilib/GUIKeyboardFactory.h"
+#include "TextureManager.h"
 
 using namespace ADDON;
 
@@ -143,7 +144,9 @@ bool CAddonsDirectory::GetDirectory(const CURL& url, CFileItemList &items)
             CFileItemPtr item(new CFileItem(TranslateType((TYPE)i,true)));
             item->SetPath(URIUtils::AddFileToFolder(strPath,TranslateType((TYPE)i,false)));
             item->m_bIsFolder = true;
-            item->SetIconImage(GetIcon((TYPE)i));
+            CStdString thumb = GetIcon((TYPE)i);
+            if (!thumb.IsEmpty() && g_TextureManager.HasTexture(thumb))
+              item->SetArt("thumb", thumb);
             items.Add(item);
             break;
           }
@@ -253,7 +256,7 @@ CFileItemPtr CAddonsDirectory::FileItemFromAddon(const AddonPtr &addon, const CS
 
   if (!(basePath.Equals("addons://") && addon->Type() == ADDON_REPOSITORY))
     item->SetLabel2(addon->Version().asString());
-  item->SetThumbnailImage(addon->Icon());
+  item->SetArt("thumb", addon->Icon());
   item->SetLabelPreformated(true);
   item->SetIconImage("DefaultAddon.png");
   if (!addon->FanArt().IsEmpty() && 

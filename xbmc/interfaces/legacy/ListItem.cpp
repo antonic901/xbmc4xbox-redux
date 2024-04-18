@@ -55,7 +55,7 @@ namespace XBMCAddon
       if (!iconImage.empty())
         item->SetIconImage( iconImage );
       if (!thumbnailImage.empty())
-        item->SetThumbnailImage(thumbnailImage);
+        item->SetArt("thumb",  thumbnailImage );
       if (!path.empty())
         item->SetPath(path);
     }
@@ -125,7 +125,7 @@ namespace XBMCAddon
       if (!item) return;
       {
         LOCKGUI;
-        item->SetThumbnailImage(thumbFilename);
+        item->SetArt("thumb", thumbFilename);
       }
     }
 
@@ -136,10 +136,10 @@ namespace XBMCAddon
         LOCKGUI;
         for (Properties::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
         {
-          CStdString artName = it->first;
+          std::string artName = it->first;
           StringUtils2::ToLower(artName);
-          const CStdString artFilename(it->second.c_str());
-          item->SetProperty(artName, artFilename);
+          const std::string artFilename(it->second.c_str());
+          item->SetArt(artName, artFilename);
         }
       }
     }
@@ -193,7 +193,7 @@ namespace XBMCAddon
           item->SetSpecialSort(SortSpecialOnTop);
       }
       else if (lowerKey == "fanart_image")
-        item->SetProperty("fanart_image", value);
+        item->SetArt("fanart", value);
       else
         item->SetProperty(lowerKey, value);
     }
@@ -203,7 +203,7 @@ namespace XBMCAddon
       LOCKGUI;
       String lowerKey = key;
       StringUtils2::ToLower(lowerKey);
-      CStdString value;
+      std::string value;
       if (lowerKey == "startoffset")
       { // special case for start offset - don't actually store in a property,
         // we store it in item.m_lStartOffset instead
@@ -214,7 +214,7 @@ namespace XBMCAddon
       else if (lowerKey == "resumetime")
         value = StringUtils2::Format("%f", item->GetVideoInfoTag()->m_resumePoint.timeInSeconds);
       else if (lowerKey == "fanart_image")
-        value = item->GetProperty("fanart_image").asString();
+        value = item->GetArt("fanart");
       else
         value = item->GetProperty(lowerKey).asString();
 

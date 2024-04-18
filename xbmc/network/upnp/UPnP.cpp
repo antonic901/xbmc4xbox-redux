@@ -877,12 +877,12 @@ CUPnPServer::BuildObject(const CFileItem&              item,
         }
     }
     // set a thumbnail if we have one
-    if (item.HasThumbnail() && upnp_server) {
+    if (item.HasArt("thumb") && upnp_server) {
         object->m_ExtraInfo.album_art_uri = upnp_server->BuildSafeResourceUri(
             (*ips.GetFirstItem()).ToString(),
-            item.GetThumbnailImage());
+            item.GetArt("thumb").c_str());
         // Set DLNA profileID by extension, defaulting to JPEG.
-        NPT_String ext = URIUtils::GetExtension(item.GetThumbnailImage()).c_str();
+        NPT_String ext = URIUtils::GetExtension(item.GetArt("thumb")).c_str();
         if (strcmp(ext, ".png") == 0) {
             object->m_ExtraInfo.album_art_uri_dlna_profile = "PNG_TN";
         } else {
@@ -953,8 +953,8 @@ CUPnPServer::Build(CFileItemPtr                  item,
                 if (!item->HasMusicInfoTag() || !item->GetMusicInfoTag()->Loaded() )
                     item->LoadMusicTag();
 
-                if (!item->HasThumbnail() )
-                    item->SetThumbnailImage(CThumbLoader::GetCachedImage(*item, "thumb"));
+                if (!item->HasArt("thumb") )
+                    item->SetArt("thumb", CThumbLoader::GetCachedImage(*item, "thumb"));
 
                 if (item->GetLabel().IsEmpty()) {
                     /* if no label try to grab it from node type */
@@ -1000,8 +1000,8 @@ CUPnPServer::Build(CFileItemPtr                  item,
                     }
                 }
 
-                if (!item->HasThumbnail() )
-                    item->SetThumbnailImage(CThumbLoader::GetCachedImage(*item, "thumb"));
+                if (!item->HasArt("thumb") )
+                    item->SetArt("thumb", CThumbLoader::GetCachedImage(*item, "thumb"));
             }
         }
 
@@ -1964,7 +1964,7 @@ CUPnPRenderer::PlayMedia(const char* uri, const char* meta, PLT_Action* action)
         item.m_strTitle = (const char*)object->m_Title;
         item.SetLabel((const char*)object->m_Title);
         item.SetLabelPreformated(true);
-        item.SetThumbnailImage((const char*)object->m_ExtraInfo.album_art_uri);
+        item.SetArt("thumb", (const char*)object->m_ExtraInfo.album_art_uri);
         if       (object->m_ObjectClass.type.StartsWith("object.item.audioItem")) {            
             if(NPT_SUCCEEDED(CUPnP::PopulateTagFromObject(*item.GetMusicInfoTag(), *object, res)))
                 item.SetLabelPreformated(false);

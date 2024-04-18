@@ -184,7 +184,7 @@ void CGUIWindowSettingsProfile::LoadList()
     CFileItemPtr item(new CFileItem(profile->getName()));
     item->SetPath("");
     item->SetLabel2(profile->getDate());
-    item->SetThumbnailImage(profile->getThumb());
+    item->SetArt("thumb", profile->getThumb());
     item->SetOverlayImage(profile->getLockMode() == LOCK_MODE_EVERYONE ? CGUIListItem::ICON_OVERLAY_NONE : CGUIListItem::ICON_OVERLAY_LOCKED);
     m_listItems->Add(item);
   }
