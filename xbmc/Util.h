@@ -131,10 +131,6 @@ public:
   static void ClearSubtitles();
   static void PrepareSubtitleFonts();
   static __int64 ToInt64(DWORD dwHigh, DWORD dwLow);
-  static bool ThumbExists(const CStdString& strFileName, bool bAddCache = false);
-  static bool ThumbCached(const CStdString& strFileName);
-  static void ThumbCacheAdd(const CStdString& strFileName, bool bFileExists);
-  static void ThumbCacheClear();
   static void PlayDVD(const CStdString& strProtocol = "dvd", bool restart = false);
   static CStdString GetNextFilename(const CStdString &fn_template, int max);
   static void TakeScreenshot();

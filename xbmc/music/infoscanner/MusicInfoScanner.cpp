@@ -23,7 +23,6 @@
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "music/infoscanner/MusicAlbumInfo.h"
 #include "music/infoscanner/MusicInfoScraper.h"
-#include "filesystem/DirectoryCache.h"
 #include "filesystem/MusicDatabaseDirectory.h"
 #include "filesystem/MusicDatabaseDirectory/DirectoryNode.h"
 #include "Util.h"
@@ -39,6 +38,7 @@
 #include "dialogs/GUIDialogSelect.h"
 #include "guilib/GUIKeyboardFactory.h"
 #include "filesystem/File.h"
+#include "filesystem/Directory.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
@@ -88,9 +88,6 @@ void CMusicInfoScanner::Process()
     }
 
     m_bCanInterrupt = true;
-
-    CUtil::ThumbCacheClear();
-    g_directoryCache.ClearMusicThumbCache();
 
     if (m_scanType == 0) // load info from files
     {
@@ -155,9 +152,6 @@ void CMusicInfoScanner::Process()
       fileCountReader.StopThread();
 
       m_musicDatabase.EmptyCache();
-
-      CUtil::ThumbCacheClear();
-      g_directoryCache.ClearMusicThumbCache();
 
       m_musicDatabase.Close();
       CLog::Log(LOGDEBUG, "%s - Finished scan", __FUNCTION__);

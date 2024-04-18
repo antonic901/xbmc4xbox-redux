@@ -158,7 +158,6 @@ public:
   void RemoveExtension();
   void CleanString();
   void FillInDefaultIcon();
-  void SetMusicThumb(bool alwaysCheckRemote = false);
   void SetFileSizeLabel();
   virtual void SetLabel(const CStdString &strLabel);
   CURL GetAsUrl() const;
@@ -206,33 +205,17 @@ public:
   CPictureInfoTag* GetPictureInfoTag();
 
   // Gets the cached thumb filename (no existence checks)
-  CStdString GetCachedArtistThumb() const;
   CStdString GetCachedGameSaveThumb() const;
-  /*!
-   \brief Get the cached fanart path for this item if it exists
-   \return path to the cached fanart for this item, or empty if none exists
-   \sa CacheLocalFanart, GetLocalFanart
-   */
-  CStdString GetCachedFanart() const;
-  static CStdString GetCachedThumb(const CStdString &path, const CStdString& strPath2, bool split=false);
 
-  /*!
-   \brief Cache a copy of the local fanart for this item if we don't already have an image cached
-   \return true if we already have cached fanart or if the caching was successful, false if no image is cached.
-   \sa GetLocalFanart, GetCachedFanart
-   */
-  bool CacheLocalFanart() const;
   /*!
    \brief Get the local fanart for this item if it exists
    \return path to the local fanart for this item, or empty if none exists
-   \sa CacheLocalFanart, GetCachedFanart
+   \sa GetFolderThumb, GetTBNFile
    */
   CStdString GetLocalFanart() const;
 
   // Sets the cached thumb for the item if it exists
-  void SetCachedArtistThumb();
   void SetCachedGameSavesThumb();
-  void SetCachedMusicThumb();
 
   // Gets the .tbn file associated with this item
   CStdString GetTBNFile() const;
@@ -253,9 +236,6 @@ public:
   // Gets the user thumb, if it exists
   CStdString GetUserVideoThumb() const;
   CStdString GetUserMusicThumb(bool alwaysCheckRemote = false) const;
-
-  // Caches the user thumb and assigns it to the item
-  void SetUserMusicThumb(bool alwaysCheckRemote = false);
 
   /*! \brief Get the path where we expect local metadata to reside.
    For a folder, this is just the existing path (eg tvshow folder)
@@ -315,11 +295,6 @@ public:
    */
   void SetFromSong(const CSong &song);
 
-private:
-  // Gets the previously cached thumb file (with existence checks)
-  CStdString GetPreviouslyCachedMusicThumb() const;
-
-public:
   bool m_bIsShareOrDrive;    ///< is this a root share/drive
   int m_iDriveType;     ///< If \e m_bIsShareOrDrive is \e true, use to get the share type. Types see: CMediaSource::m_iDriveType
   CDateTime m_dateTime;             ///< file creation date & time
@@ -439,7 +414,6 @@ public:
   */
   void Sort(SortDescription sortDescription);
   void Randomize();
-  void SetMusicThumbs();
   void FillInDefaultIcons();
   int GetFolderCount() const;
   int GetFileCount() const;
@@ -499,7 +473,6 @@ public:
   bool AlwaysCache() const;
 
   void SetCachedGameSavesThumbs();
-  void SetCachedMusicThumbs();
   void SetGameSavesThumbs();
 
   void Swap(unsigned int item1, unsigned int item2);

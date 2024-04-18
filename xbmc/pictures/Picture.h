@@ -26,14 +26,7 @@ class CBaseTexture;
 class CPicture
 {
 public:
-  static bool CreateThumbnailFromMemory(const unsigned char* buffer, int bufSize, const CStdString& extension, const CStdString& thumbFile);
   static bool CreateThumbnailFromSurface(const unsigned char* buffer, int width, int height, int stride, const CStdString &thumbFile);
-  static int ConvertFile(const CStdString& srcFile, const CStdString& destFile, float rotateDegrees, int width, int height, unsigned int quality, bool mirror=false);
-
-  static void CreateFolderThumb(const CStdString *strThumbs, const CStdString &folderThumbnail);
-  static bool CreateThumbnail(const CStdString& strFileName, const CStdString& strThumbFileName, bool checkExistence = false);
-  static bool CacheThumb(const CStdString& sourceUrl, const CStdString& destFileName);
-  static bool CacheFanart(const CStdString& sourceUrl, const CStdString& destFileName);
 
   /*! \brief Create a tiled thumb of the given files
    \param files the files to create the thumb from
@@ -52,7 +45,6 @@ public:
   static bool CacheTexture(uint8_t *pixels, uint32_t width, uint32_t height, uint32_t pitch, int orientation, uint32_t &dest_width, uint32_t &dest_height, const std::string &dest);
 
 private:
-  static bool CacheImage(const CStdString& sourceUrl, const CStdString& destFileName, int width, int height);
   static void GetScale(unsigned int width, unsigned int height, unsigned int &out_width, unsigned int &out_height);
   static bool ScaleImage(uint8_t *in_pixels, unsigned int in_width, unsigned int in_height, unsigned int in_pitch,
                          uint8_t *out_pixels, unsigned int out_width, unsigned int out_height, unsigned int out_pitch);

@@ -38,7 +38,6 @@
 #include "filesystem/DirectoryCache.h"
 #include "filesystem/SpecialProtocol.h"
 #include "FileSystem/RSSDirectory.h"
-#include "ThumbnailCache.h"
 #include "filesystem/ZipManager.h"
 #include "filesystem/RarManager.h"
 #include "filesystem/MythDirectory.h"
@@ -2043,26 +2042,6 @@ __int64 CUtil::ToInt64(DWORD dwHigh, DWORD dwLow)
   n <<= 32;
   n += dwLow;
   return n;
-}
-
-bool CUtil::ThumbExists(const CStdString& strFileName, bool bAddCache)
-{
-  return CThumbnailCache::GetThumbnailCache()->ThumbExists(strFileName, bAddCache);
-}
-
-void CUtil::ThumbCacheAdd(const CStdString& strFileName, bool bFileExists)
-{
-  CThumbnailCache::GetThumbnailCache()->Add(strFileName, bFileExists);
-}
-
-void CUtil::ThumbCacheClear()
-{
-  CThumbnailCache::GetThumbnailCache()->Clear();
-}
-
-bool CUtil::ThumbCached(const CStdString& strFileName)
-{
-  return CThumbnailCache::GetThumbnailCache()->IsCached(strFileName);
 }
 
 void CUtil::PlayDVD(const CStdString& strProtocol, bool restart)

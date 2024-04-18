@@ -55,7 +55,6 @@
 #include "utils/log.h"
 #include "utils/Variant.h"
 #include "utils/CharsetConverter.h"
-#include "ThumbnailCache.h"
 
 using namespace std;
 using namespace XFILE;
@@ -994,31 +993,6 @@ void CFileItem::FillInDefaultIcon()
   }
 }
 
-CStdString CFileItem::GetCachedArtistThumb() const
-{
-  return CThumbnailCache::GetArtistThumb(*this);
-}
-
-void CFileItem::SetCachedArtistThumb()
-{
-  CStdString thumb(GetCachedArtistThumb());
-  if (CFile::Exists(thumb))
-  {
-    // found it, we are finished.
-    SetThumbnailImage(thumb);
-  }
-}
-
-// set the album thumb for a file or folder
-void CFileItem::SetMusicThumb(bool alwaysCheckRemote /* = true */)
-{
-  if (HasThumbnail()) return;
-
-  SetCachedMusicThumb();
-  if (!HasThumbnail())
-    SetUserMusicThumb(alwaysCheckRemote);
-}
-
 void CFileItem::RemoveExtension()
 {
   if (m_bIsFolder)
@@ -1789,21 +1763,6 @@ void CFileItemList::FillInDefaultIcons()
   }
 }
 
-void CFileItemList::SetMusicThumbs()
-{
-  CSingleLock lock(m_lock);
-  //cache thumbnails directory
-  g_directoryCache.InitMusicThumbCache();
-
-  for (int i = 0; i < (int)m_items.size(); ++i)
-  {
-    CFileItemPtr pItem = m_items[i];
-    pItem->SetMusicThumb();
-  }
-
-  g_directoryCache.ClearMusicThumbCache();
-}
-
 int CFileItemList::GetFolderCount() const
 {
   CSingleLock lock(m_lock);
@@ -2390,84 +2349,6 @@ bool CFileItemList::AlwaysCache() const
   return false;
 }
 
-void CFileItemList::SetCachedMusicThumbs()
-{
-  CSingleLock lock(m_lock);
-  // TODO: Investigate caching time to see if it speeds things up
-  for (unsigned int i = 0; i < m_items.size(); ++i)
-  {
-    CFileItemPtr pItem = m_items[i];
-    pItem->SetCachedMusicThumb();
-  }
-}
-
-void CFileItem::SetCachedMusicThumb()
-{
-  // if it already has a thumbnail, then return
-  if (HasThumbnail() || m_bIsShareOrDrive) return ;
-
-  // streams do not have thumbnails
-  if (IsInternetStream()) return ;
-
-  //  music db items already have thumbs or there is no thumb available
-  if (IsMusicDb()) return;
-
-  // ignore the parent dir items
-  if (IsParentFolder()) return;
-
-  CStdString cachedThumb(GetPreviouslyCachedMusicThumb());
-  if (!cachedThumb.IsEmpty())
-    SetThumbnailImage(cachedThumb);
-    // SetIconImage(cachedThumb);
-}
-
-CStdString CFileItem::GetPreviouslyCachedMusicThumb() const
-{
-  // look if an album thumb is available,
-  // could be any file with tags loaded or
-  // a directory in album window
-  CStdString strAlbum, strArtist;
-  if (HasMusicInfoTag() && m_musicInfoTag->Loaded())
-  {
-    strAlbum = m_musicInfoTag->GetAlbum();
-    if (!m_musicInfoTag->GetAlbumArtist().empty())
-      strArtist = StringUtils::Join(m_musicInfoTag->GetAlbumArtist(), g_advancedSettings.m_musicItemSeparator);
-    else
-      strArtist = StringUtils::Join(m_musicInfoTag->GetArtist(), g_advancedSettings.m_musicItemSeparator);
-  }
-  if (!strAlbum.IsEmpty() && !strArtist.IsEmpty())
-  {
-    // try permanent album thumb using "album name + artist name"
-    CStdString thumb(CThumbnailCache::GetAlbumThumb(strAlbum, strArtist));
-    if (CFile::Exists(thumb))
-      return thumb;
-  }
-
-  // if a file, try to find a cached filename.tbn
-  if (!m_bIsFolder)
-  {
-    // look for locally cached tbn
-    CStdString thumb(CThumbnailCache::GetMusicThumb(m_strPath));
-    if (CFile::Exists(thumb))
-      return thumb;
-  }
-
-  // try and find a cached folder thumb (folder.jpg or folder.tbn)
-  CStdString strPath;
-  if (!m_bIsFolder)
-    URIUtils::GetDirectory(m_strPath, strPath);
-  else
-    strPath = m_strPath;
-  // music thumbs are cached without slash at end
-  URIUtils::RemoveSlashAtEnd(strPath);
-
-  CStdString thumb(CThumbnailCache::GetMusicThumb(strPath));
-  if (CFile::Exists(thumb))
-    return thumb;
-
-  return "";
-}
-
 CStdString CFileItem::GetUserMusicThumb(bool alwaysCheckRemote /* = false */) const
 {
   if (m_strPath.IsEmpty()
@@ -2502,17 +2383,6 @@ CStdString CFileItem::GetUserMusicThumb(bool alwaysCheckRemote /* = false */) co
   }
   // No thumb found
   return "";
-}
-
-void CFileItem::SetUserMusicThumb(bool alwaysCheckRemote /* = false */)
-{
-  // caches as the local thumb
-  CStdString thumb(GetUserMusicThumb(alwaysCheckRemote));
-  if (!thumb.IsEmpty())
-  {
-    CStdString cachedThumb(CThumbnailCache::GetMusicThumb(m_strPath));
-    CPicture::CreateThumbnail(thumb, cachedThumb);
-  }
 }
 
 // Gets the .tbn filename from a file or folder name.
@@ -2686,22 +2556,6 @@ CStdString CFileItem::GetBaseMoviePath(bool bUseFolderNames) const
   return strMovieName;
 }
 
-bool CFileItem::CacheLocalFanart() const
-{
-  // first check for an already cached fanart image
-  CStdString cachedFanart(GetCachedFanart());
-  if (CFile::Exists(cachedFanart))
-    return true;
-
-  // we don't have a cached image, so let's see if the user has a local image, and cache it if so
-  CStdString localFanart(GetLocalFanart());
-  if (!localFanart.IsEmpty())
-  {
-    return CPicture::CacheFanart(localFanart, cachedFanart);
-  }
-  return false;
-}
-
 CStdString CFileItem::GetLocalFanart() const
 {
   if (IsVideoDb())
@@ -2800,23 +2654,18 @@ CStdString CFileItem::GetLocalMetadataPath() const
   return parent;
 }
 
-CStdString CFileItem::GetCachedFanart() const
-{
-  return CThumbnailCache::GetFanart(*this);
-}
-
-CStdString CFileItem::GetCachedThumb(const CStdString &path, const CStdString &path2, bool split)
-{
-  return CThumbnailCache::GetThumb(path, path2, split);
-}
-
 CStdString CFileItem::GetCachedGameSaveThumb() const
 {
   CStdString extension;
   URIUtils::GetExtension(m_strPath,extension);
   if (extension.Equals(".xbx")) // savemeta.xbx - cache thumb
-  {
-    CStdString thumb = GetCachedThumb(m_strPath,CProfilesManager::Get().GetGameSaveThumbFolder());
+  { // get the locally cached thumb
+    Crc32 crc;
+    crc.ComputeFromLowerCase(m_strPath);
+    CStdString crcThumb;
+    crcThumb.Format("%08x.tbn", (unsigned __int32)crc);
+
+    CStdString thumb = URIUtils::AddFileToFolder(CProfilesManager::Get().GetGameSaveThumbFolder(), crcThumb);
     CLog::Log(LOGDEBUG, "Thumb (%s)",thumb.c_str());
     if (!CFile::Exists(thumb))
     {
@@ -2871,33 +2720,6 @@ CStdString CFileItem::GetCachedGameSaveThumb() const
   }
   return "";
 }
-
-/*void CFileItem::SetThumb()
-{
-  // we need to know the type of file at this point
-  // as differing views have differing inheritance rules for thumbs:
-
-  // Videos:
-  // Folders only use <foldername>/folder.jpg or <foldername>.tbn
-  // Files use <filename>.tbn
-  //  * Thumbs are cached from here using file or folder path
-
-  // Music:
-  // Folders only use <foldername>/folder.jpg or <foldername>.tbn
-  // Files use <filename>.tbn or the album/path cached thumb or inherit from the folder
-  //  * Thumbs are cached from here using file or folder path
-
-  // Programs:
-  // Folders only use <foldername>/folder.jpg or <foldername>.tbn
-  // Files use <filename>.tbn or the embedded xbe.  Shortcuts have the additional step of the <thumbnail> tag to check
-  //  * Thumbs are cached from here using file or folder path
-
-  // Pictures:
-  // Folders use <foldername>/folder.jpg or <foldername>.tbn, or auto-generated from 4 images in the folder
-  // Files use <filename>.tbn or a resized version of the picture
-  //  * Thumbs are cached from here using file or folder path
-
-}*/
 
 bool CFileItem::LoadMusicTag()
 {

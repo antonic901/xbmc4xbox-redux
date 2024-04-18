@@ -37,116 +37,6 @@
 
 using namespace XFILE;
 
-bool CPicture::CreateThumbnail(const CStdString& file, const CStdString& thumbFile, bool checkExistence /*= false*/)
-{
-  // don't create the thumb if it already exists
-  if (checkExistence && CFile::Exists(thumbFile))
-    return true;
-
-  return CacheImage(file, thumbFile, g_advancedSettings.m_thumbSize, g_advancedSettings.m_thumbSize);
-}
-
-bool CPicture::CacheImage(const CStdString& sourceUrl, const CStdString& destFile, int width, int height)
-{
-  if (width > 0 && height > 0)
-  {
-    CLog::Log(LOGINFO, "Caching image from: %s to %s with width %i and height %i", sourceUrl.c_str(), destFile.c_str(), width, height);
-
-    CJpegIO jpegImage;
-    DllImageLib dll;
-    bool ret;
-
-    CStdString tempFile(sourceUrl);
-    bool isTemp(false);
-    if (URIUtils::IsInternetStream(sourceUrl, true))
-    {
-      Crc32 crc;
-      crc.ComputeFromLowerCase(sourceUrl);
-      tempFile.Format("special://temp/%08x%s", (unsigned __int32)crc, URIUtils::GetExtension(sourceUrl).c_str());
-      CCurlFile stream;
-      if (!stream.Download(sourceUrl, tempFile))
-        return false;
-      isTemp = true;
-    }
-
-    ret = false;
-    if (URIUtils::GetExtension(sourceUrl).Equals(".jpg") || URIUtils::GetExtension(sourceUrl).Equals(".tbn"))
-      ret = jpegImage.CreateThumbnail(tempFile, destFile, width, height);
-
-    if (!ret)
-    {
-      if (!dll.Load()) return false;
-      if (!dll.CreateThumbnail(tempFile.c_str(), destFile.c_str(), width, height, CSettings::Get().GetBool("pictures.useexifrotation")))
-      {
-        CLog::Log(LOGERROR, "%s Unable to create new image %s from image %s", __FUNCTION__, destFile.c_str(), sourceUrl.c_str());
-        return false;
-      }
-    }
-    if (isTemp)
-      CFile::Delete(tempFile);
-  }
-  else
-  {
-    CLog::Log(LOGINFO, "Caching image from: %s to %s", sourceUrl.c_str(), destFile.c_str());
-    if (URIUtils::IsInternetStream(sourceUrl, true))
-    {
-      CCurlFile stream;
-      return stream.Download(sourceUrl, destFile);
-    }
-    else
-      return CFile::Copy(sourceUrl, destFile);
-  }
-  return true;
-}
-
-bool CPicture::CacheThumb(const CStdString& sourceUrl, const CStdString& destFile)
-{
-  return CacheImage(sourceUrl, destFile, g_advancedSettings.m_thumbSize, g_advancedSettings.m_thumbSize);
-}
-
-bool CPicture::CacheFanart(const CStdString& sourceUrl, const CStdString& destFile)
-{
-  int height = g_advancedSettings.m_fanartHeight;
-  // Assume 16:9 size
-  int width = height * 16 / 9;
-
-  return CacheImage(sourceUrl, destFile, width, height);
-}
-
-bool CPicture::CreateThumbnailFromMemory(const unsigned char* buffer, int bufSize, const CStdString& extension, const CStdString& thumbFile)
-{
-  CLog::Log(LOGINFO, "Creating album thumb from memory: %s", thumbFile.c_str());
-  if (extension.Equals("jpg") || extension.Equals("tbn"))
-  {
-    CJpegIO jpegImage;
-    if (jpegImage.CreateThumbnailFromMemory((unsigned char*)buffer, bufSize, thumbFile.c_str(), g_advancedSettings.m_thumbSize, g_advancedSettings.m_thumbSize))
-      return true;
-  }
-  DllImageLib dll;
-  if (!dll.Load()) return false;
-  if (!dll.CreateThumbnailFromMemory((BYTE *)buffer, bufSize, extension.c_str(), thumbFile.c_str(), g_advancedSettings.m_thumbSize, g_advancedSettings.m_thumbSize))
-  {
-    CLog::Log(LOGERROR, "%s: exception with fileType: %s", __FUNCTION__, extension.c_str());
-    return false;
-  }
-  return true;
-}
-
-void CPicture::CreateFolderThumb(const CStdString *thumbs, const CStdString &folderThumb)
-{ // we want to mold the thumbs together into one single one
-  DllImageLib dll;
-  if (!dll.Load()) return;
-
-  const char *szThumbs[4];
-  for (int i=0; i < 4; i++)
-    szThumbs[i] = thumbs[i].c_str();
-
-  if (!dll.CreateFolderThumbnail(szThumbs, folderThumb.c_str(), g_advancedSettings.m_thumbSize, g_advancedSettings.m_thumbSize))
-  {
-    CLog::Log(LOGERROR, "%s failed for folder thumb %s", __FUNCTION__, folderThumb.c_str());
-  }
-}
-
 bool CPicture::CreateThumbnailFromSurface(const unsigned char *buffer, int width, int height, int stride, const CStdString &thumbFile)
 {
   if (URIUtils::GetExtension(thumbFile).Equals(".jpg"))
@@ -158,19 +48,6 @@ bool CPicture::CreateThumbnailFromSurface(const unsigned char *buffer, int width
   DllImageLib dll;
   if (!buffer || !dll.Load()) return false;
   return dll.CreateThumbnailFromSurface((BYTE *)buffer, width, height, stride, thumbFile.c_str());
-}
-
-int CPicture::ConvertFile(const CStdString &srcFile, const CStdString &destFile, float rotateDegrees, int width, int height, unsigned int quality, bool mirror)
-{
-  DllImageLib dll;
-  if (!dll.Load()) return false;
-  int ret = dll.ConvertFile(srcFile.c_str(), destFile.c_str(), rotateDegrees, width, height, quality, mirror);
-  if (ret)
-  {
-    CLog::Log(LOGERROR, "PICTURE: Error %i converting image %s", ret, srcFile.c_str());
-    return ret;
-  }
-  return ret;
 }
 
 bool CPicture::CacheTexture(CBaseTexture *texture, uint32_t &dest_width, uint32_t &dest_height, const std::string &dest)
