@@ -28,7 +28,6 @@
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
-#include "ThumbnailCache.h"
 
 using namespace AUTOPTR;
 using namespace XFILE;
@@ -69,9 +68,9 @@ typedef enum WMT_ATTR_DATATYPE
 // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/wmform/htm/wm_picture.asp
 typedef struct _WMPicture
 {
-  LPWSTR pwszMIMEType;
+  CStdString pwszMIMEType;
   BYTE bPictureType;
-  LPWSTR pwszDescription;
+  CStdStringW pwszDescription;
   DWORD dwDataLen;
   BYTE* pbData;
 }
@@ -488,46 +487,29 @@ void CMusicInfoTagLoaderWMA::SetTagValueBinary(const CStdString& strFrameName, c
     picture.dwDataLen = (DWORD)pValue[iPicOffset] + (pValue[iPicOffset + 1] * 0x100) + (pValue[iPicOffset + 2] * 0x10000);
     iPicOffset += 4;
 
-    picture.pwszMIMEType = (LPWSTR)(pValue + iPicOffset);
-    iPicOffset += (wcslen(picture.pwszMIMEType) * 2);
+    CStdStringW wString;
+    CStdString16 utf16String = (uint16_t*)(pValue+iPicOffset);
+    g_charsetConverter.utf16LEtoW(utf16String, wString);
+    g_charsetConverter.wToUTF8(wString, picture.pwszMIMEType);
+    iPicOffset += (wString.length() * 2);
     iPicOffset += 2;
 
-    picture.pwszDescription = (LPWSTR)(pValue + iPicOffset);
-    iPicOffset += (wcslen(picture.pwszDescription) * 2);
+    utf16String = (uint16_t*)(pValue+iPicOffset);
+    g_charsetConverter.utf16LEtoW(utf16String, picture.pwszDescription);
+    iPicOffset += (picture.pwszDescription.length() * 2);
     iPicOffset += 2;
 
-    picture.pbData = (pValue + iPicOffset);
+    picture.pbData = (BYTE *)(pValue + iPicOffset);
 
     // many wma's don't have the bPictureType specified.  For now, just take
     // Cover Front (3) or Other (0) as the cover.
     if (picture.bPictureType == 3 || picture.bPictureType == 0) // Cover Front
     {
-      CStdString strExtension(picture.pwszMIMEType);
-      // if we don't have an album tag, cache with the full file path so that
-      // other non-tagged files don't get this album image
-      CStdString strCoverArt;
-      if (!tag.GetAlbum().IsEmpty() && (!tag.GetAlbumArtist().empty() || !tag.GetArtist().empty()))
-        strCoverArt = CThumbnailCache::GetAlbumThumb(&tag);
-      else
-        strCoverArt = CThumbnailCache::GetMusicThumb(tag.GetURL());
-      if (!CUtil::ThumbExists(strCoverArt))
+      if (picture.pbData != NULL && picture.dwDataLen > 0)
       {
-        int nPos = strExtension.Find('/');
-        if (nPos > -1)
-          strExtension.Delete(0, nPos + 1);
-
-        if (picture.pbData != NULL && picture.dwDataLen > 0)
-        {
-          if (CPicture::CreateThumbnailFromMemory(picture.pbData, picture.dwDataLen, strExtension, strCoverArt))
-          {
-            CUtil::ThumbCacheAdd(strCoverArt, true);
-          }
-          else
-          {
-            CUtil::ThumbCacheAdd(strCoverArt, false);
-            CLog::Log(LOGERROR, "Tag loader wma: Unable to create album art for %s (extension=%s, size=%lu)", tag.GetURL().c_str(), strExtension.c_str(), picture.dwDataLen);
-          }
-        }
+        tag.SetCoverArtInfo(picture.dwDataLen, picture.pwszMIMEType);
+        if (art)
+          art->set(picture.pbData, picture.dwDataLen, picture.pwszMIMEType);
       }
     }
   }
