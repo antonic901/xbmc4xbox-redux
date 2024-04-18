@@ -253,15 +253,24 @@ bool CBaseTexture::LoadFromFile(const CStdString& texturePath, unsigned int maxW
     return false;
   }
 
+  if (originalWidth)
+    *originalWidth = image.originalwidth;
+  if (originalHeight)
+    *originalHeight = image.originalheight;
+
+  LoadFromImage(image, autoRotate);
+  dll.ReleaseImage(&image);
+
+  return GetTextureInfo();
+}
+
+void CBaseTexture::LoadFromImage(ImageInfo &image, bool autoRotate)
+{
   m_hasAlpha = NULL != image.alpha;
 
   Allocate(image.width, image.height, XB_FMT_A8R8G8B8);
   if (autoRotate && image.exifInfo.Orientation)
     m_orientation = image.exifInfo.Orientation - 1;
-  if (originalWidth)
-    *originalWidth = image.originalwidth;
-  if (originalHeight)
-    *originalHeight = image.originalheight;
 
   g_graphicsContext.Get3DDevice()->CreateTexture(image.width, image.height, 1, 0, D3DFMT_LIN_A8R8G8B8 , D3DPOOL_MANAGED, &m_texture);
   if (m_texture)
@@ -289,10 +298,7 @@ bool CBaseTexture::LoadFromFile(const CStdString& texturePath, unsigned int maxW
     }
   }
   else
-    CLog::Log(LOGERROR, "%s - failed to create texture while loading image %s", __FUNCTION__, texturePath.c_str());
-  dll.ReleaseImage(&image);
-
-  return GetTextureInfo();
+    CLog::Log(LOGERROR, "%s - failed to create texture while loading image %s", __FUNCTION__);
 }
 
 bool CBaseTexture::LoadPaletted(unsigned int width, unsigned int height, unsigned int pitch, unsigned int format, const unsigned char *pixels, IDirect3DPalette8 *palette)

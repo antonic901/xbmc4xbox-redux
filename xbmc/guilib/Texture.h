@@ -32,6 +32,8 @@
 
 #pragma once
 
+struct ImageInfo;
+
 /*!
 \ingroup textures
 \brief Base texture class, subclasses of which depend on the render spec (DX, GL etc.)
@@ -75,6 +77,7 @@ public:
   static unsigned int PadPow2(unsigned int x);
 
 protected:
+  void LoadFromImage(ImageInfo &image, bool autoRotate = false);
   // helpers for computation of texture parameters for compressed textures
   unsigned int GetRows(unsigned int height) const;
 
