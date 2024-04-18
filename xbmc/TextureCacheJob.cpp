@@ -103,7 +103,14 @@ bool CTextureCacheJob::CacheTexture(CBaseTexture **out_texture)
       m_details.width = width;
       m_details.height = height;
       if (out_texture) // caller wants the texture
+#ifdef _XBOX
+      { // load cached image
+        delete texture;
+        *out_texture = CBaseTexture::LoadFromFile(CTextureCache::GetCachedPath(m_details.file), width, height, CSettings::Get().GetBool("pictures.useexifrotation"));
+      }
+#else
         *out_texture = texture;
+#endif
       else
         delete texture;
       return true;
