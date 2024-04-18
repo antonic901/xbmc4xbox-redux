@@ -31,7 +31,6 @@
 #include "GUIUserMessages.h"
 #include "utils/URIUtils.h"
 #include "guilib/GUIWindowManager.h"
-#include "pictures/Picture.h"
 #include "filesystem/File.h"
 #include "FileItem.h"
 #include "Application.h"
@@ -298,34 +297,9 @@ void CDetectDVDMedia::SetNewDVDShareUrl( const CStdString& strNewUrl, bool bCDDA
   m_diskLabel = strDescription;
   m_diskPath = strNewUrl;
 
-  // delete any previously cached disc thumbnail
-  CStdString strCache = "special://temp/dvdicon.tbn";
-  if (CFile::Exists(strCache))
-    CFile::Delete(strCache);
-
-  // find and cache disc thumbnail, and update label to xbe label if applicable
-  if ((g_advancedSettings.m_usePCDVDROM || IsDiscInDrive()) && !bCDDA)
-  {
-    // update disk label to xbe label if we have that info
-    if (CFile::Exists("D:\\default.xbe"))
-      CUtil::GetXBEDescription("D:\\default.xbe", m_diskLabel);
-
-    // and get the thumb
-    CStdString strThumb;
-    CStdStringArray thumbs;
-    StringUtils::SplitString(g_advancedSettings.m_dvdThumbs, "|", thumbs);
-    for (unsigned int i = 0; i < thumbs.size(); ++i)
-    {
-      URIUtils::AddFileToFolder(m_diskPath, thumbs[i], strThumb);
-      CLog::Log(LOGDEBUG,"%s: looking for disc thumb:[%s]", __FUNCTION__, strThumb.c_str());
-      if (CFile::Exists(strThumb))
-      {
-        CLog::Log(LOGDEBUG,"%s: found disc thumb:[%s], caching as:[%s]", __FUNCTION__, strThumb.c_str(), strCache.c_str());
-        CPicture::CreateThumbnail(strThumb, strCache);
-        break;
-      }
-    }
-  }
+  // update label to xbe label if applicable
+  if ((g_advancedSettings.m_usePCDVDROM || IsDiscInDrive()) && !bCDDA && CFile::Exists("D:\\default.xbe"))
+    CUtil::GetXBEDescription("D:\\default.xbe", m_diskLabel);
 }
 
 DWORD CDetectDVDMedia::GetTrayState()
