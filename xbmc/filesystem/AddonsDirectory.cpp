@@ -29,7 +29,7 @@
 #include "addons/Repository.h"
 #include "addons/AddonInstaller.h"
 #include "addons/PluginSource.h"
-#include "StringUtils.h"
+#include "File.h"
 #include "utils/URIUtils.h"
 #include "guilib/GUIKeyboardFactory.h"
 
@@ -256,7 +256,12 @@ CFileItemPtr CAddonsDirectory::FileItemFromAddon(const AddonPtr &addon, const CS
   item->SetThumbnailImage(addon->Icon());
   item->SetLabelPreformated(true);
   item->SetIconImage("DefaultAddon.png");
-  item->SetProperty("fanart_image", addon->FanArt());
+  if (!addon->FanArt().IsEmpty() && 
+      (URIUtils::IsInternetStream(addon->FanArt()) || 
+       CFile::Exists(addon->FanArt())))
+  {
+    item->SetArt("fanart", addon->FanArt());
+  }
   CAddonDatabase::SetPropertiesFromAddon(addon, item);
   return item;
 }

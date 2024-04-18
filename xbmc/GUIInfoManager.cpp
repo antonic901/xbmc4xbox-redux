@@ -213,7 +213,7 @@ const infomap player_labels[] =  {{ "hasmedia",         PLAYER_HAS_MEDIA },     
                                   { "folderpath",       PLAYER_PATH },
                                   { "filenameandpath",  PLAYER_FILEPATH }};
 
-const infomap player_param[] =   {{ "property",         PLAYER_ITEM_PROPERTY }};
+const infomap player_param[] =   {{ "art",              PLAYER_ITEM_ART }};
 
 const infomap player_times[] =   {{ "seektime",         PLAYER_SEEKTIME },
                                   { "seekoffset",       PLAYER_SEEKOFFSET },
@@ -973,7 +973,11 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition)
           return AddMultiInfo(GUIInfo(player_times[i].val, TranslateTimeFormat(prop.param())));
       }
       if (prop.name == "property")
+      {
+        if (prop.param().Equals("fanart_image"))
+          return AddMultiInfo(GUIInfo(PLAYER_ITEM_ART, ConditionalStringParameter("fanart")));
         return AddListItemProp(prop.param(), MUSICPLAYER_PROPERTY_OFFSET);
+      }
       return TranslateMusicPlayerString(prop.name);
     }
     else if (cat.name == "videoplayer")
@@ -1198,7 +1202,11 @@ int CGUIInfoManager::TranslateListItem(const Property &info)
       return listitem_labels[i].val;
   }
   if (info.name == "property" && info.num_params() == 1)
+  {
+    if (info.param().Equals("fanart_image"))
+      return AddListItemProp("fanart", LISTITEM_ART_OFFSET);
     return AddListItemProp(info.param());
+  }
   return 0;
 }
 
@@ -1891,7 +1899,7 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow, CStdString *fa
     {
       CGUIWindow *window = GetWindowWithCondition(contextWindow, WINDOW_CONDITION_IS_MEDIA_WINDOW);
       if (window)
-        return ((CGUIMediaWindow *)window)->CurrentDirectory().GetProperty("fanart_image").asString();
+        return ((CGUIMediaWindow *)window)->CurrentDirectory().GetArt("fanart");
     }
     break;
   }
@@ -2975,9 +2983,9 @@ CStdString CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextWi
     if (m_seekOffset > 0)
       return "+" + seekOffset;
   }
-  else if (info.m_info == PLAYER_ITEM_PROPERTY)
+  else if (info.m_info == PLAYER_ITEM_ART)
   {
-    return m_currentFile->GetProperty(m_stringParameters[info.GetData1()]).asString();
+    return m_currentFile->GetArt(m_stringParameters[info.GetData1()]);
   }
   else if (info.m_info == SYSTEM_TIME)
   {
@@ -3997,6 +4005,12 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, CStdSt
 
   if (info >= CONDITIONAL_LABEL_START && info <= CONDITIONAL_LABEL_END)
     return GetSkinVariableString(info, false, item);
+
+  if (info >= LISTITEM_PROPERTY_START + LISTITEM_ART_OFFSET && info - (LISTITEM_PROPERTY_START + LISTITEM_ART_OFFSET) < (int)m_listitemProperties.size())
+  { // grab the art
+    std::string art = m_listitemProperties[info - (LISTITEM_PROPERTY_START + LISTITEM_ART_OFFSET)];
+    return item->GetArt(art);
+  }
 
   if (info >= LISTITEM_PROPERTY_START && info - LISTITEM_PROPERTY_START < (int)m_listitemProperties.size())
   { // grab the property  

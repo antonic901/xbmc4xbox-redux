@@ -587,7 +587,10 @@ void CPluginDirectory::SetProperty(int handle, const CStdString &strProperty, co
   CPluginDirectory *dir = dirFromHandle(handle);
   if (!dir)
     return;
-  dir->m_listItems->SetProperty(strProperty, strValue);
+  if (strProperty == "fanart_image")
+    dir->m_listItems->SetArt("fanart", strValue);
+  else
+    dir->m_listItems->SetProperty(strProperty, strValue);
 }
 
 void CPluginDirectory::CancelDirectory()

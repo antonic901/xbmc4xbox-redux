@@ -77,7 +77,7 @@ bool CRecentlyAddedJob::UpdateVideo()
         m_thumbLoader.LoadItem(item.get());
 
       home->SetProperty("LatestMovie." + value + ".Thumb"       , item->GetThumbnailImage());
-      home->SetProperty("LatestMovie." + value + ".Fanart"      , item->GetProperty("fanart_image"));
+      home->SetProperty("LatestMovie." + value + ".Fanart"      , item->GetArt("fanart"));
     }
   } 
   for (; i < NUM_ITEMS; ++i)
@@ -134,7 +134,7 @@ bool CRecentlyAddedJob::UpdateVideo()
       home->SetProperty("LatestEpisode." + value + ".Thumb"         , item->GetThumbnailImage());
       home->SetProperty("LatestEpisode." + value + ".ShowThumb"     , item->GetProperty("tvshowthumb"));
       home->SetProperty("LatestEpisode." + value + ".SeasonThumb"   , seasonThumb);
-      home->SetProperty("LatestEpisode." + value + ".Fanart"        , item->GetProperty("fanart_image"));
+      home->SetProperty("LatestEpisode." + value + ".Fanart"        , item->GetArt("fanart"));
     }
   } 
   for (; i < NUM_ITEMS; ++i)
@@ -177,7 +177,7 @@ bool CRecentlyAddedJob::UpdateVideo()
         m_thumbLoader.LoadItem(item.get());
 
       home->SetProperty("LatestMusicVideo." + value + ".Thumb"       , item->GetThumbnailImage());
-      home->SetProperty("LatestMusicVideo." + value + ".Fanart"      , item->GetProperty("fanart_image"));
+      home->SetProperty("LatestMusicVideo." + value + ".Fanart"      , item->GetArt("fanart"));
     }
   }
   for (; i < NUM_ITEMS; ++i)
@@ -238,9 +238,8 @@ bool CRecentlyAddedJob::UpdateMusic()
 
         if (loader.LoadItem(item.get()))
         {
-          // TODO: uncomment once we add support for ListItem.Art(...)
-          // strAlbumThumb = item->GetArt("thumb");
-          // strAlbumFanart = item->GetArt("fanart");
+          strAlbumThumb = item->GetArt("thumb");
+          strAlbumFanart = item->GetArt("fanart");
         }
       }
       

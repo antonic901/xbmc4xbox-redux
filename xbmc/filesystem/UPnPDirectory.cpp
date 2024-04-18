@@ -466,7 +466,7 @@ CUPnPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
             for(unsigned i = 0; i < (*entry)->m_Resources.GetItemCount(); ++i) {
                 PLT_MediaItemResource& res = (*entry)->m_Resources[i];
                 if(res.m_ProtocolInfo.Match(fanart_mask)) {
-                    pItem->SetProperty("fanart_image", (const char*)res.m_Uri);
+                    pItem->SetArt("fanart", (const char*)res.m_Uri);
                     break;
                 }
             }

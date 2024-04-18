@@ -6174,7 +6174,7 @@ void CVideoDatabase::Stack(CFileItemList& items, VIDEODB_CONTENT_TYPE type, bool
       {
         CFileItemPtr pItem = items.Get(i);
         CStdString strTitle = pItem->GetVideoInfoTag()->m_strTitle;
-        CStdString strFanArt = pItem->GetProperty("fanart_image").asString();
+        CStdString strFanArt = pItem->GetArt("fanart");
 
         int j = i + 1;
         bool bStacked = false;
@@ -6202,7 +6202,7 @@ void CVideoDatabase::Stack(CFileItemList& items, VIDEODB_CONTENT_TYPE type, bool
 
             // check for fanart if not already set
             if (strFanArt.IsEmpty())
-              strFanArt = jItem->GetProperty("fanart_image").asString();
+              strFanArt = jItem->GetArt("fanart");
 
             // remove duplicate entry
             items.Remove(j);
@@ -6217,7 +6217,7 @@ void CVideoDatabase::Stack(CFileItemList& items, VIDEODB_CONTENT_TYPE type, bool
           pItem->GetVideoInfoTag()->m_playCount = (pItem->GetVideoInfoTag()->m_iEpisode == (int)pItem->GetProperty("watchedepisodes").asInteger()) ? 1 : 0;
           pItem->SetOverlayImage(CGUIListItem::ICON_OVERLAY_UNWATCHED, (pItem->GetVideoInfoTag()->m_playCount > 0) && (pItem->GetVideoInfoTag()->m_iEpisode > 0));
           if (!strFanArt.IsEmpty())
-            pItem->SetProperty("fanart_image", strFanArt);
+            pItem->SetArt("fanart", strFanArt);
         }
         // increment i to j which is the next item
         i = j;
@@ -6239,7 +6239,7 @@ void CVideoDatabase::Stack(CFileItemList& items, VIDEODB_CONTENT_TYPE type, bool
         CStdString strPath = pItem->GetVideoInfoTag()->m_strPath;
         int iSeason = pItem->GetVideoInfoTag()->m_iSeason;
         int iEpisode = pItem->GetVideoInfoTag()->m_iEpisode;
-        //CStdString strFanArt = pItem->GetProperty("fanart_image");
+        //CStdString strFanArt = pItem->GetArt("fanart");
 
         // do we have a dvd folder, ie foo/VIDEO_TS.IFO or foo/VIDEO_TS/VIDEO_TS.IFO
         CStdString strFileNameAndPath = pItem->GetVideoInfoTag()->m_strFileNameAndPath;
@@ -6284,7 +6284,7 @@ void CVideoDatabase::Stack(CFileItemList& items, VIDEODB_CONTENT_TYPE type, bool
 
                 // episodes dont have fanart yet
                 //if (strFanArt.IsEmpty())
-                //  strFanArt = jItem->GetProperty("fanart_image");
+                //  strFanArt = jItem->GetArt("fanart");
 
                 paths.push_back(jFileNameAndPath);
               }
@@ -6310,7 +6310,7 @@ void CVideoDatabase::Stack(CFileItemList& items, VIDEODB_CONTENT_TYPE type, bool
 
           // episodes dont have fanart yet
           //if (!strFanArt.IsEmpty())
-          //  pItem->SetProperty("fanart_image", strFanArt);
+          //  pItem->SetArt("fanart", strFanArt);
         }
         // increment i to j which is the next item
         i = j;
@@ -8400,8 +8400,8 @@ void CVideoDatabase::ExportToXML(const CStdString &path, bool singleFiles /* = f
           CTextureCache::Get().Export(saveItem.GetThumbnailImage(), savedThumb);
 
         CStdString savedFanart(URIUtils::ReplaceExtension(savedThumb, "-fanart.jpg"));
-        if (saveItem.HasProperty("fanart_image") && (overwrite || !CFile::Exists(savedFanart, false)))
-          CTextureCache::Get().Export(saveItem.GetProperty("fanart_image").asString(), savedFanart);
+        if (saveItem.HasArt("fanart") && (overwrite || !CFile::Exists(savedFanart, false)))
+          CTextureCache::Get().Export(saveItem.GetArt("fanart"), savedFanart);
         
         if (actorThumbs)
           ExportActorThumbs(actorsDir, movie, singleFiles, overwrite);
@@ -8591,8 +8591,8 @@ void CVideoDatabase::ExportToXML(const CStdString &path, bool singleFiles /* = f
           CTextureCache::Get().Export(saveItem.GetThumbnailImage(), savedThumb);
 
         CStdString savedFanart(saveItem.GetFolderThumb("fanart.jpg"));
-        if (saveItem.HasProperty("fanart_image") && (overwrite || !CFile::Exists(savedFanart, false)))
-          CTextureCache::Get().Export(saveItem.GetProperty("fanart_image").asString(), savedFanart);
+        if (saveItem.HasArt("fanart") && (overwrite || !CFile::Exists(savedFanart, false)))
+          CTextureCache::Get().Export(saveItem.GetArt("fanart"), savedFanart);
 
         if (actorThumbs)
           ExportActorThumbs(actorsDir, tvshow, singleFiles, overwrite);

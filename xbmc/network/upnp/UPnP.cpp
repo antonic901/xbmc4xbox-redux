@@ -891,8 +891,8 @@ CUPnPServer::BuildObject(const CFileItem&              item,
     }
 
     if (upnp_server) {
-        if (item.HasProperty("fanart_image")) {
-            upnp_server->AddSafeResourceUri(object, ips, item.GetProperty("fanart_image").asString().c_str(), "xbmc.org:*:fanart:*");
+        if (item.HasArt("fanart")) {
+            upnp_server->AddSafeResourceUri(object, ips, item.GetArt("fanart").c_str(), "xbmc.org:*:fanart:*");
         }
     }
 

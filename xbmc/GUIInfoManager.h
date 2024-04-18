@@ -102,7 +102,7 @@ namespace INFO
 #define PLAYER_FILEPATH              46
 #define PLAYER_SEEKOFFSET            47
 #define PLAYER_PROGRESS_CACHE        48
-#define PLAYER_ITEM_PROPERTY         49
+#define PLAYER_ITEM_ART              49
 
 #define WEATHER_CONDITIONS          100
 #define WEATHER_TEMPERATURE         101
@@ -565,11 +565,12 @@ namespace INFO
 #define LISTITEM_TAG                (LISTITEM_START + 154)
 #define LISTITEM_SET                (LISTITEM_START + 155)
 
-#define LISTITEM_PROPERTY_START     (LISTITEM_START + 200)
+#define LISTITEM_PROPERTY_START     (LISTITEM_START + 100)
 #define LISTITEM_PROPERTY_END       (LISTITEM_PROPERTY_START + 1000)
 #define LISTITEM_END                (LISTITEM_PROPERTY_END)
 
-#define MUSICPLAYER_PROPERTY_OFFSET 900 // last 100 id's reserved for musicplayer props.
+#define MUSICPLAYER_PROPERTY_OFFSET 800 // 100 id's reserved for musicplayer props.
+#define LISTITEM_ART_OFFSET         900 // 100 id's reserved for listitem art.
 
 #define CONDITIONAL_LABEL_START       LISTITEM_END + 1 // 36001
 #define CONDITIONAL_LABEL_END         37000
