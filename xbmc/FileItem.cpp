@@ -93,7 +93,6 @@ CFileItem::CFileItem(const CMusicInfoTag& music)
   m_bIsFolder = URIUtils::HasSlashAtEnd(m_strPath);
   *GetMusicInfoTag() = music;
   FillInDefaultIcon();
-  SetCachedMusicThumb();
 }
 
 CFileItem::CFileItem(const CVideoInfoTag& movie)
@@ -1220,11 +1219,6 @@ void CFileItem::SetFromAlbum(const CAlbum &album)
   m_strLabel2 = StringUtils::Join(album.artist, g_advancedSettings.m_musicItemSeparator);
   GetMusicInfoTag()->SetAlbum(album);
   m_bIsAlbum = true;
-  if (album.thumbURL.m_url.size() > 0)
-    m_strThumbnailImage = album.thumbURL.m_url[0].m_url;
-  else
-    m_strThumbnailImage.clear();
-
   CMusicDatabase::SetPropertiesFromAlbum(*this,album);
 }
 
@@ -2533,8 +2527,6 @@ void CFileItem::SetUserMusicThumb(bool alwaysCheckRemote /* = false */)
     CStdString cachedThumb(CThumbnailCache::GetMusicThumb(m_strPath));
     CPicture::CreateThumbnail(thumb, cachedThumb);
   }
-
-  SetCachedMusicThumb();
 }
 
 // Gets the .tbn filename from a file or folder name.

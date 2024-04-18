@@ -281,12 +281,14 @@ bool CRecentlyAddedJob::UpdateMusic()
       CStdString value;
       CStdString strPath;
       CStdString strThumb;
+      CStdString strFanart;
       CStdString strDBpath;
       CStdString strSQLAlbum;
       CAlbum&    album=albums[i];     
-      
+
       value.Format("%i", i + 1);
-      musicdatabase.GetAlbumThumb(album.idAlbum,strThumb);
+      strThumb = musicdatabase.GetArtForItem(album.idAlbum, "album", "thumb");
+      strFanart = musicdatabase.GetArtistArtForItem(album.idAlbum, "album", "fanart");
       strDBpath.Format("musicdb://albums/%i/", album.idAlbum);
       strSQLAlbum.Format("idAlbum=%i", album.idAlbum);
       
@@ -298,7 +300,7 @@ bool CRecentlyAddedJob::UpdateMusic()
       home->SetProperty("LatestAlbum." + value + ".Rating"  , album.iRating);
       home->SetProperty("LatestAlbum." + value + ".Path"    , strDBpath);
       home->SetProperty("LatestAlbum." + value + ".Thumb"   , strThumb);
-      home->SetProperty("LatestAlbum." + value + ".Fanart"  , CFileItem::GetCachedThumb(strArtist,CProfilesManager::Get().GetMusicFanartFolder()));
+      home->SetProperty("LatestAlbum." + value + ".Fanart"  , strFanart);
     }
   }
   for (; i < NUM_ITEMS; ++i)

@@ -212,8 +212,6 @@ void CGUIWindowMusicSongs::OnPrepareFileItems(CFileItemList &items)
   CGUIWindowMusicBase::OnPrepareFileItems(items);
 
   RetrieveMusicInfo();
-
-  items.SetCachedMusicThumbs();
 }
 
 void CGUIWindowMusicSongs::UpdateButtons()

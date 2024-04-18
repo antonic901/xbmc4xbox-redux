@@ -57,7 +57,7 @@
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "music/infoscanner/MusicInfoScanner.h"
-#include "ThumbnailCache.h"
+#include "ThumbLoader.h"
 
 using namespace std;
 using namespace XFILE;
@@ -1173,7 +1173,7 @@ void CGUIWindowMusicBase::UpdateThumb(const CAlbum &album, const CStdString &pat
     saveDirThumb = false;
   }
 
-  CStdString albumThumb(CThumbnailCache::GetAlbumThumb(album));
+  CStdString albumThumb = m_musicdatabase.GetArtForItem(album.idAlbum, "album", "thumb");
 
   // Update the thumb in the music database (songs + albums)
   CStdString albumPath(path);
@@ -1220,9 +1220,8 @@ void CGUIWindowMusicBase::UpdateThumb(const CAlbum &album, const CStdString &pat
     VECALBUMS albums;
     CMusicInfoScanner::CategoriseAlbums(songs, albums);
     if (albums.size() == 1)
-    { // can cache as the folder thumb
-      CStdString folderThumb(CThumbnailCache::GetMusicThumb(albumPath));
-      CFile::Copy(albumThumb, folderThumb);
+    { // set as folder thumb as well
+      CThumbLoader::SetCachedImage(items, "thumb", albumPath);
     }
   }
 
@@ -1320,8 +1319,6 @@ bool CGUIWindowMusicBase::GetDirectory(const CStdString &strDirectory, CFileItem
 
 void CGUIWindowMusicBase::OnPrepareFileItems(CFileItemList &items)
 {
-  if (!items.GetPath().Equals("plugin://music/"))
-    items.SetCachedMusicThumbs();
 }
 
 bool CGUIWindowMusicBase::CheckFilterAdvanced(CFileItemList &items) const

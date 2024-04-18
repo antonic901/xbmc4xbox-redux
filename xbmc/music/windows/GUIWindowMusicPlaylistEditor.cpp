@@ -172,8 +172,6 @@ void CGUIWindowMusicPlaylistEditor::OnPrepareFileItems(CFileItemList &items)
   CGUIWindowMusicBase::OnPrepareFileItems(items);
 
   RetrieveMusicInfo();
-
-  items.SetCachedMusicThumbs();
 }
 
 void CGUIWindowMusicPlaylistEditor::UpdateButtons()
