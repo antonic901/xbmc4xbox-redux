@@ -214,6 +214,24 @@ public:
    */
   CStdString GetLocalFanart() const;
 
+  /*! \brief Assemble the filename of a particular piece of local artwork for an item.
+             No file existence check is typically performed.
+   \param artFile the art file to search for.
+   \param useFolder whether to look in the folder for the art file. Defaults to false.
+   \return the path to the local artwork.
+   \sa FindLocalArt
+   */
+  CStdString GetLocalArt(const std::string &artFile, bool useFolder = false) const;
+
+  /*! \brief Assemble the filename of a particular piece of local artwork for an item,
+             and check for file existence.
+   \param artFile the art file to search for.
+   \param useFolder whether to look in the folder for the art file. Defaults to false.
+   \return the path to the local artwork if it exists, empty otherwise.
+   \sa GetLocalArt
+   */
+  CStdString FindLocalArt(const std::string &artFile, bool useFolder) const;
+
   // Sets the cached thumb for the item if it exists
   void SetCachedGameSavesThumb();
 
