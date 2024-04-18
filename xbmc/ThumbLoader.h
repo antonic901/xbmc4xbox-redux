@@ -153,6 +153,11 @@ public:
   static CStdString GetLocalThumb(const CFileItem &item);
 };
 
+namespace MUSIC_INFO
+{
+  class EmbeddedArt;
+};
+
 class CMusicThumbLoader : public CThumbLoader
 {
 public:
@@ -165,6 +170,8 @@ public:
    \return true if we fill art, false otherwise
    */
   bool FillLibraryArt(CFileItem &item);
+
+  static bool GetEmbeddedThumb(const std::string &path, MUSIC_INFO::EmbeddedArt &art);
 
 protected:
   virtual void OnLoaderStart();

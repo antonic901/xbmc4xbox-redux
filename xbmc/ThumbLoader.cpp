@@ -37,6 +37,7 @@
 #include "cores/dvdplayer/DVDFileInfo.h"
 #include "video/VideoInfoScanner.h"
 #include "music/tags/MusicInfoTag.h"
+#include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "music/infoscanner/MusicInfoScanner.h"
 #include "music/Artist.h"
 
@@ -614,4 +615,14 @@ bool CMusicThumbLoader::FillLibraryArt(CFileItem &item)
     m_database->Close();
   }
   return !item.GetArt().empty();
+}
+
+bool CMusicThumbLoader::GetEmbeddedThumb(const std::string &path, EmbeddedArt &art)
+{
+  auto_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(path));
+  CMusicInfoTag tag;
+  if (NULL != pLoader.get())
+    pLoader->Load(path, tag, &art);
+
+  return !art.empty();
 }
