@@ -22,8 +22,8 @@
 
 #include "include.h"
 #include "libexif/libexif.h"
-#include "settings/DisplaySettings.h"
 #include "settings/Settings.h"
+#include "settings/AdvancedSettings.h"
 #include "filesystem/File.h"
 #include "JpegIO.h"
 #include "XBTF.h"
@@ -174,8 +174,16 @@ bool CJpegIO::Read(unsigned char* buffer, unsigned int bufSize, unsigned int min
     the gpu can hold, use the previous one.*/
     if (minx == 0 || miny == 0)
     {
-      minx = CDisplaySettings::Get().GetCurrentResolutionInfo().iWidth;
-      miny = CDisplaySettings::Get().GetCurrentResolutionInfo().iHeight;
+      miny = g_advancedSettings.m_imageRes;
+      if (g_advancedSettings.m_fanartRes > g_advancedSettings.m_imageRes)
+      { // a separate fanart resolution is specified - check if the image is exactly equal to this res
+        if (m_cinfo.image_width == (unsigned int)g_advancedSettings.m_fanartRes * 16/9 &&
+            m_cinfo.image_height == (unsigned int)g_advancedSettings.m_fanartRes)
+        { // special case for fanart res
+          miny = g_advancedSettings.m_fanartRes;
+        }
+      }
+      minx = miny * 16/9;
     }
 
     /* override minx/miny values based on image aspect and area of requested minx/miny 
