@@ -777,7 +777,7 @@ void CApplicationMessenger::MediaPlay(string filename)
   item.SetPath(filename);
   item.m_bIsFolder = false;
   if (item.IsAudio())
-    item.SetMusicThumb();
+    CMusicThumbLoader::FillThumb(item);
   else
     CVideoThumbLoader::FillThumb(item);
   item.FillInDefaultIcon();
