@@ -21,7 +21,6 @@
 #include "pictures/GUIWindowPictures.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
-#include "pictures/Picture.h"
 #include "Application.h"
 #include "GUIPassword.h"
 #include "dialogs/GUIDialogMediaSource.h"

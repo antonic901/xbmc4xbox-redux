@@ -22,7 +22,6 @@
 #include "Util.h"
 #include "LocalizeStrings.h"
 #include "AutoPtrHandle.h"
-#include "pictures/Picture.h"
 #include "music/tags/id3v1genre.h"
 #include "music/tags/MusicInfoTag.h"
 #include "settings/AdvancedSettings.h"

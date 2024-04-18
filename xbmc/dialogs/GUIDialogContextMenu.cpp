@@ -43,7 +43,6 @@
 #include "addons/AddonManager.h"
 #include "FileItem.h"
 #include "filesystem/File.h"
-#include "pictures/Picture.h"
 #include "LocalizeStrings.h"
 #include "utils/StringUtils.h"
 #include "xbox/IoSupport.h"

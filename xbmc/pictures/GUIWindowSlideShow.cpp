@@ -21,7 +21,6 @@
 #include "system.h"
 #include "pictures/GUIWindowSlideShow.h"
 #include "Application.h"
-#include "pictures/Picture.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "URL.h"

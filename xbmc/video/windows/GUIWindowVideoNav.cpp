@@ -27,7 +27,6 @@
 #include "PlayListPlayer.h"
 #include "GUIPassword.h"
 #include "dialogs/GUIDialogFileBrowser.h"
-#include "pictures/Picture.h"
 #include "filesystem/VideoDatabaseDirectory.h"
 #include "playlists/PlayListFactory.h"
 #include "dialogs/GUIDialogOK.h"

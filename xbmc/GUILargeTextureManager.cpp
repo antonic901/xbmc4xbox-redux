@@ -19,7 +19,6 @@
  */
 
 #include "GUILargeTextureManager.h"
-#include "pictures/Picture.h"
 #include "FileItem.h"
 #include "guilib/Texture.h"
 #include "profiles/ProfilesManager.h"

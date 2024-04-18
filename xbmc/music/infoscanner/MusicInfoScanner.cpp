@@ -42,7 +42,6 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
-#include "pictures/Picture.h"
 #include "interfaces/AnnouncementManager.h"
 #include "GUIUserMessages.h"
 #include "LocalizeStrings.h"

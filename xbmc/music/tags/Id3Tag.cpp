@@ -20,7 +20,6 @@
 
 #include "music/tags/Id3Tag.h"
 #include "Util.h"
-#include "pictures/Picture.h"
 #include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
 #include "utils/CharsetConverter.h"

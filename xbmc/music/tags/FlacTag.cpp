@@ -22,7 +22,6 @@
 #include "utils/StringUtils.h"
 #include "music/tags/FlacTag.h"
 #include "Util.h"
-#include "pictures/Picture.h"
 #include "settings/AdvancedSettings.h"
 #include "filesystem/File.h"
 

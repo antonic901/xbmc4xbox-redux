@@ -29,7 +29,6 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "GUIPassword.h"
-#include "pictures/Picture.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"

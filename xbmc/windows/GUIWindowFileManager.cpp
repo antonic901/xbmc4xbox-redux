@@ -30,7 +30,6 @@
 #include "filesystem/FileDirectoryFactory.h"
 #include "filesystem/MultiPathDirectory.h"
 #include "filesystem/SpecialProtocol.h"
-#include "pictures/Picture.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "GUIListContainer.h"
 #include "dialogs/GUIDialogMediaSource.h"

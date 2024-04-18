@@ -27,7 +27,6 @@
 #include "GUIPassword.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "settings/dialogs/GUIDialogContentSettings.h"
-#include "pictures/Picture.h"
 #include "filesystem/MusicDatabaseDirectory.h"
 #include "filesystem/VideoDatabaseDirectory.h"
 #include "PartyModeManager.h"
