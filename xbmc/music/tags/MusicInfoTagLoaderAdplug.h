@@ -31,7 +31,7 @@ namespace MUSIC_INFO
 		CMusicInfoTagLoaderAdplug(void);
 		virtual ~CMusicInfoTagLoaderAdplug();
 
-		virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag);
+		virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
   private:
     int m_adl;
     DllAdplug m_dll;

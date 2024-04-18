@@ -30,7 +30,7 @@ namespace MUSIC_INFO
 		CMusicInfoTagLoaderGYM(void);
 		virtual ~CMusicInfoTagLoaderGYM();
 
-		virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag);
+		virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
   private:
     int m_gym;
     DllGensApu m_dll;

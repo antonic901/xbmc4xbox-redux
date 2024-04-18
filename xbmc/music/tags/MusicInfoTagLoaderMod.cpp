@@ -51,7 +51,7 @@ CMusicInfoTagLoaderMod::~CMusicInfoTagLoaderMod()
 	CSectionLoader::Unload("MOD_RX");
 }
 
-bool CMusicInfoTagLoaderMod::Load(const CStdString& strFileName, CMusicInfoTag& tag)
+bool CMusicInfoTagLoaderMod::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
 	tag.SetURL(strFileName);
 	// first, does the module have a .mdz?

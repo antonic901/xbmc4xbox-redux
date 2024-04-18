@@ -23,6 +23,7 @@
 
 namespace MUSIC_INFO
 {
+  class EmbeddedArt;
   class CMusicInfoTag;
   class IMusicInfoTagLoader
   {
@@ -30,6 +31,6 @@ namespace MUSIC_INFO
     IMusicInfoTagLoader(void){};
     virtual ~IMusicInfoTagLoader(){};
 
-    virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag) = 0;
+    virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL) = 0;
   };
 }

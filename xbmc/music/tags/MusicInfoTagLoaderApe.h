@@ -32,6 +32,6 @@ public:
   CMusicInfoTagLoaderApe(void);
   virtual ~CMusicInfoTagLoaderApe();
 
-  virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag);
+  virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
 };
 }

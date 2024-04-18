@@ -86,7 +86,7 @@ CMusicInfoTagLoaderWMA::~CMusicInfoTagLoaderWMA()
 // Based on MediaInfo
 // by J�r�me Martinez, Zen@MediaArea.net
 // http://sourceforge.net/projects/mediainfo/
-bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& tag)
+bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   try
   {
@@ -273,7 +273,7 @@ bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& 
         else if (iFrameType == WMT_TYPE_BINARY && iValueSize > 0)
         {
           BYTE* pValue = (BYTE*)(pData.get() + iOffset); // Raw data
-          SetTagValueBinary(strFrameName, pValue, tag);
+          SetTagValueBinary(strFrameName, pValue, tag, art);
         }
         else if (iFrameType == WMT_TYPE_BOOL && iValueSize > 0)
         {
@@ -352,7 +352,7 @@ bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& 
         else if (iFrameType == WMT_TYPE_BINARY && iValueSize > 0)
         {
           BYTE* pValue = (BYTE*)(pData.get() + iOffset); // Raw data
-          SetTagValueBinary(strFrameName, pValue, tag);
+          SetTagValueBinary(strFrameName, pValue, tag, art);
         }
         else if (iFrameType == WMT_TYPE_BOOL && iValueSize > 0)
         {
@@ -474,7 +474,7 @@ void CMusicInfoTagLoaderWMA::SetTagValueDWORD(const CStdString& strFrameName, DW
   }
 }
 
-void CMusicInfoTagLoaderWMA::SetTagValueBinary(const CStdString& strFrameName, const LPBYTE pValue, CMusicInfoTag& tag)
+void CMusicInfoTagLoaderWMA::SetTagValueBinary(const CStdString& strFrameName, const LPBYTE pValue, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   if (strFrameName == "WM/Picture")
   {

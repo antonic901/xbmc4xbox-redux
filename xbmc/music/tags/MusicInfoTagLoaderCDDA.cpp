@@ -38,7 +38,7 @@ CMusicInfoTagLoaderCDDA::~CMusicInfoTagLoaderCDDA()
 {
 }
 
-bool CMusicInfoTagLoaderCDDA::Load(const CStdString& strFileName, CMusicInfoTag& tag)
+bool CMusicInfoTagLoaderCDDA::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   try
   {

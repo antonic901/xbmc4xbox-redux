@@ -94,7 +94,7 @@ CMusicInfoTagLoaderSPC::~CMusicInfoTagLoaderSPC()
 {
 }
 
-bool CMusicInfoTagLoaderSPC::Load(const CStdString& strFileName, CMusicInfoTag& tag)
+bool CMusicInfoTagLoaderSPC::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   tag.SetLoaded(false);
 

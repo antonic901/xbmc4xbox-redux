@@ -31,7 +31,7 @@ CMusicInfoTagLoaderApe::CMusicInfoTagLoaderApe(void)
 CMusicInfoTagLoaderApe::~CMusicInfoTagLoaderApe()
 {}
 
-bool CMusicInfoTagLoaderApe::Load(const CStdString& strFileName, CMusicInfoTag& tag)
+bool CMusicInfoTagLoaderApe::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   try
   {

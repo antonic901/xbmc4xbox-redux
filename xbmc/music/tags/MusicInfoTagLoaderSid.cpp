@@ -43,7 +43,7 @@ CMusicInfoTagLoaderSid::~CMusicInfoTagLoaderSid()
 {
 }
 
-bool CMusicInfoTagLoaderSid::Load(const CStdString& strFileName, CMusicInfoTag& tag)
+bool CMusicInfoTagLoaderSid::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   CStdString strFileToLoad = strFileName;
   int iTrack = 0;

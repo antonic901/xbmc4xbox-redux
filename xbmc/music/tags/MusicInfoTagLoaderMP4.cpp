@@ -94,7 +94,7 @@ unsigned int CMusicInfoTagLoaderMP4::ReadUnsignedInt( const char* pData )
 // Given a metadata type, and a pointer to the data (and the size), this function attempts to populate
 // XBMC's CMusicInfoTag object. Tags that we don't support are simply ignored..
 
-void CMusicInfoTagLoaderMP4::ParseTag( unsigned int metaKey, const char* pMetaData, int metaSize, CMusicInfoTag& tag)
+void CMusicInfoTagLoaderMP4::ParseTag( unsigned int metaKey, const char* pMetaData, int metaSize, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   switch ( metaKey )
   {
@@ -266,13 +266,12 @@ int CMusicInfoTagLoaderMP4::GetILSTOffset( const char* pBuffer, int bufferSize )
 //
 // I hope to make this particular function more readable/structured when time permits.
 
-int CMusicInfoTagLoaderMP4::ParseAtom( __int64 startOffset, __int64 stopOffset, CMusicInfoTag& tag )
+int CMusicInfoTagLoaderMP4::ParseAtom( int64_t startOffset, int64_t stopOffset, CMusicInfoTag& tag, EmbeddedArt *art )
 {
-  __int64	currentOffset;
-
-  int				atomSize;
-  unsigned int	atomName;
-  char			atomHeader[ 10 ];
+  int64_t       currentOffset;
+  int				    atomSize;
+  unsigned int  atomName;
+  char			    atomHeader[ 10 ];
 
   currentOffset = startOffset;
   while ( currentOffset < stopOffset)
@@ -292,7 +291,7 @@ int CMusicInfoTagLoaderMP4::ParseAtom( __int64 startOffset, __int64 stopOffset, 
     {
       if ( atomName == g_ContainerAtoms[ containerAtom ] )
       {
-        ParseAtom( m_file.GetPosition(), currentOffset + atomSize, tag );
+        ParseAtom( m_file.GetPosition(), currentOffset + atomSize, tag, art );
         break;
       }
     }
@@ -324,7 +323,7 @@ int CMusicInfoTagLoaderMP4::ParseAtom( __int64 startOffset, __int64 stopOffset, 
 
 
         // Ok.. we've got some metadata to process. Go to it.
-        ParseTag( metaKey, metaData, metaSize - 20, tag );
+        ParseTag( metaKey, metaData, metaSize - 20, tag, art );
       }
     }
     else
@@ -359,7 +358,7 @@ CMusicInfoTagLoaderMP4::~CMusicInfoTagLoaderMP4()
 {
 }
 
-bool CMusicInfoTagLoaderMP4::Load(const CStdString& strFileName, CMusicInfoTag& tag)
+bool CMusicInfoTagLoaderMP4::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   try
   {
@@ -380,7 +379,7 @@ bool CMusicInfoTagLoaderMP4::Load(const CStdString& strFileName, CMusicInfoTag& 
     m_thumbSize = false;
     m_thumbData = NULL;
     m_isCompilation = false;
-    ParseAtom( 0, m_file.GetLength(), tag );
+    ParseAtom( 0, m_file.GetLength(), tag, art );
 
     if (m_thumbData)
     { // cache the thumb

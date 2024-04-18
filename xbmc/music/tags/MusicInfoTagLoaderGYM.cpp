@@ -35,7 +35,7 @@ CMusicInfoTagLoaderGYM::~CMusicInfoTagLoaderGYM()
 {
 }
 
-bool CMusicInfoTagLoaderGYM::Load(const CStdString& strFileName, CMusicInfoTag& tag)
+bool CMusicInfoTagLoaderGYM::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   tag.SetLoaded(false);
 

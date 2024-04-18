@@ -30,6 +30,6 @@ public:
   CMusicInfoTagLoaderSHN(void);
   virtual ~CMusicInfoTagLoaderSHN();
 
-  virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag);
+  virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
 };
 }

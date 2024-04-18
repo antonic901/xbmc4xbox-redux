@@ -35,7 +35,7 @@ CMusicInfoTagLoaderAdplug::~CMusicInfoTagLoaderAdplug()
 {
 }
 
-bool CMusicInfoTagLoaderAdplug::Load(const CStdString& strFileName, CMusicInfoTag& tag)
+bool CMusicInfoTagLoaderAdplug::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   tag.SetLoaded(false);
 

@@ -29,6 +29,6 @@ namespace MUSIC_INFO
 			CMusicInfoTagLoaderSid(void);
 			virtual ~CMusicInfoTagLoaderSid();
 
-			virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag);
+			virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
 	};
 }
