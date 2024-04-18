@@ -157,6 +157,30 @@ CArchive& CArchive::operator<<(char c)
   return *this;
 }
 
+CArchive& CArchive::operator<<(const std::string& str)
+{
+  *this << (int)str.size();
+
+  int size = str.size();
+  if (m_BufferPos + size >= BUFFER_MAX)
+    FlushBuffer();
+
+  int iBufferMaxParts=size/BUFFER_MAX;
+  for (int i=0; i<iBufferMaxParts; i++)
+  {
+    memcpy(&m_pBuffer[m_BufferPos], str.c_str()+(i*BUFFER_MAX), BUFFER_MAX);
+    m_BufferPos+=BUFFER_MAX;
+    FlushBuffer();
+  }
+
+  int iPos=iBufferMaxParts*BUFFER_MAX;
+  int iSizeLeft=size-iPos;
+  memcpy(&m_pBuffer[m_BufferPos], str.c_str()+iPos, iSizeLeft);
+  m_BufferPos+=iSizeLeft;
+
+  return *this;
+}
+
 CArchive& CArchive::operator<<(const CStdString& str)
 {
   *this << str.GetLength();
@@ -239,7 +263,7 @@ CArchive& CArchive::operator<<(const CVariant& variant)
     *this << variant.asBoolean();
     break;
   case CVariant::VariantTypeString:
-    *this << CStdString(variant.asString());
+    *this << variant.asString();
     break;
   case CVariant::VariantTypeDouble:
     *this << variant.asDouble();
@@ -253,7 +277,7 @@ CArchive& CArchive::operator<<(const CVariant& variant)
     *this << variant.size();
     for (CVariant::const_iterator_map itr = variant.begin_map(); itr != variant.end_map(); itr++)
     {
-      *this << CStdString(itr->first);
+      *this << itr->first;
       *this << itr->second;
     }
     break;
@@ -270,7 +294,7 @@ CArchive& CArchive::operator<<(const std::vector<std::string>& strArray)
 {
   *this << (unsigned int)strArray.size();
   for (unsigned int index = 0; index < strArray.size(); index++)
-    *this << CStdString(strArray.at(index));
+    *this << strArray.at(index);
 
   return *this;
 }
@@ -336,6 +360,19 @@ CArchive& CArchive::operator>>(bool& b)
 CArchive& CArchive::operator>>(char& c)
 {
   m_pFile->Read((void*)&c, sizeof(char));
+
+  return *this;
+}
+
+CArchive& CArchive::operator>>(std::string& str)
+{
+  int iLength = 0;
+  *this >> iLength;
+
+  char *s = new char[iLength];
+  m_pFile->Read(s, iLength);
+  str.assign(s, iLength);
+  delete[] s;
 
   return *this;
 }
@@ -409,7 +446,7 @@ CArchive& CArchive::operator>>(CVariant& variant)
   }
   case CVariant::VariantTypeString:
   {
-    CStdString value;
+    std::string value;
     *this >> value;
     variant = value;
     break;
@@ -439,7 +476,7 @@ CArchive& CArchive::operator>>(CVariant& variant)
     *this >> size;
     for (; size > 0; size--)
     {
-      CStdString name;
+      std::string name;
       CVariant value;
       *this >> name;
       *this >> value;
@@ -463,7 +500,7 @@ CArchive& CArchive::operator>>(std::vector<std::string>& strArray)
   strArray.clear();
   for (int index = 0; index < size; index++)
   {
-    CStdString str;
+    std::string str;
     *this >> str;
     strArray.push_back(str);
   }
