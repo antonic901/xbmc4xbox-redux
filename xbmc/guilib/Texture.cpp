@@ -144,6 +144,15 @@ CBaseTexture *CBaseTexture::LoadFromFile(const CStdString& texturePath, unsigned
   return NULL;
 }
 
+CBaseTexture *CBaseTexture::LoadFromFileInMemory(unsigned char *buffer, size_t bufferSize, const std::string &mimeType, unsigned int idealWidth, unsigned int idealHeight)
+{
+  CTexture *texture = new CTexture();
+  if (texture->LoadFromFileInMem(buffer, bufferSize, mimeType, idealWidth, idealHeight))
+    return texture;
+  delete texture;
+  return NULL;
+}
+
 bool CBaseTexture::LoadFromFile(const CStdString& texturePath, unsigned int maxWidth, unsigned int maxHeight,
                                 bool autoRotate, unsigned int *originalWidth, unsigned int *originalHeight)
 {
@@ -268,6 +277,72 @@ bool CBaseTexture::LoadFromFile(const CStdString& texturePath, unsigned int maxW
     *originalHeight = image.originalheight;
 
   LoadFromImage(image, autoRotate);
+  dll.ReleaseImage(&image);
+
+  return GetTextureInfo();
+}
+
+bool CBaseTexture::LoadFromFileInMem(unsigned char* buffer, size_t size, const std::string& mimeType, unsigned int maxWidth, unsigned int maxHeight)
+{
+  if (!buffer || !size)
+    return false;
+
+  unsigned int width = maxWidth ? std::min(maxWidth, (unsigned int)g_graphicsContext.GetMaxTextureSize()) : (unsigned int)g_graphicsContext.GetMaxTextureSize();
+  unsigned int height = maxHeight ? std::min(maxHeight, (unsigned int)g_graphicsContext.GetMaxTextureSize()) : (unsigned int)g_graphicsContext.GetMaxTextureSize();
+
+  //ImageLib is sooo sloow for jpegs. Try our own decoder first. If it fails, fall back to ImageLib.
+  if (mimeType == "image/jpeg")
+  {
+    CJpegIO jpegfile;
+    if (jpegfile.Read(buffer, size, maxWidth, maxHeight))
+    {
+      if (jpegfile.Width() > 0 && jpegfile.Height() > 0)
+      {
+        Allocate(jpegfile.Width(), jpegfile.Height(), XB_FMT_A8R8G8B8);
+        g_graphicsContext.Get3DDevice()->CreateTexture(((jpegfile.Width() + 3) / 4) * 4, ((jpegfile.Height() + 3) / 4) * 4, 1, 0, D3DFMT_LIN_A8R8G8B8 , D3DPOOL_MANAGED, &m_texture);
+        if (m_texture)
+        {
+          D3DLOCKED_RECT lr;
+          if ( D3D_OK == m_texture->LockRect( 0, &lr, NULL, 0 ))
+          {
+            DWORD destPitch = lr.Pitch;
+            bool ret = jpegfile.Decode((BYTE *)lr.pBits, destPitch, XB_FMT_A8R8G8B8);
+            m_texture->UnlockRect( 0 );
+            if (ret)
+            {
+              m_hasAlpha = false;
+              return GetTextureInfo();
+            }
+            else
+              return false;
+          }
+        }
+        else
+        {
+          CLog::Log(LOGERROR, "%s - failed to create texture while loading image from memory", __FUNCTION__);
+          return false;
+        }
+      }
+    }
+  }
+  DllImageLib dll;
+  if (!dll.Load())
+    return false;
+
+  ImageInfo image;
+  memset(&image, 0, sizeof(image));
+
+  CStdString ext = mimeType;
+  int nPos = ext.Find('/');
+  if (nPos > -1)
+    ext.Delete(0, nPos + 1);
+
+  if(!dll.LoadImageFromMemory(buffer, size, ext.c_str(), width, height, &image))
+  {
+    CLog::Log(LOGERROR, "Texture manager unable to load image from memory");
+    return false;
+  }
+  LoadFromImage(image);
   dll.ReleaseImage(&image);
 
   return GetTextureInfo();
