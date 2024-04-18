@@ -50,7 +50,6 @@
 #include "storage/DetectDVDType.h"
 #include "video/windows/GUIWindowVideoBase.h"
 #include "TextureCache.h"
-#include "ThumbnailCache.h"
 
 using namespace std;
 
@@ -450,22 +449,10 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
         CMediaSourceSettings::Get().Save();
       }
       else if (!strThumb.IsEmpty())
-      { // this is some sort of an auto-share, so we have to cache it based on the criteria we use to retrieve them
-        CStdString cachedThumb;
-        if (type == "music")
-        {
-          cachedThumb = item->GetPath();
-          URIUtils::RemoveSlashAtEnd(cachedThumb);
-          cachedThumb = CThumbnailCache::GetMusicThumb(cachedThumb);
-        }
-        else  // programs, video, pictures
-        { // store the thumb for this share
-          CTextureDatabase db;
-          if (db.Open())
-            db.SetTextureForPath(item->GetPath(), "thumb", strThumb);
-        }
-        if (!cachedThumb.IsEmpty())
-          XFILE::CFile::Copy(strThumb, cachedThumb);
+      { // this is some sort of an auto-share, so store in the texture database
+        CTextureDatabase db;
+        if (db.Open())
+          db.SetTextureForPath(item->GetPath(), "thumb", strThumb);
       }
 
       CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_UPDATE_SOURCES);
