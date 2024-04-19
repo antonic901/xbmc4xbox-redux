@@ -1682,6 +1682,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\BackgroundInfoLoader.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\music\MusicThumbLoader.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\music\MusicThumbLoader.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\pictures\PictureThumbLoader.cpp">
 				</File>
 				<File
@@ -1692,6 +1698,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\ThumbLoader.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\video\VideoThumbLoader.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\video\VideoThumbLoader.h">
 				</File>
 			</Filter>
 			<Filter

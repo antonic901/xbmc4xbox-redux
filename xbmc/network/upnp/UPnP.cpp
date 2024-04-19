@@ -58,7 +58,8 @@
 #include "utils/md5.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
-#include "ThumbLoader.h"
+#include "video/VideoThumbLoader.h"
+#include "music/MusicThumbLoader.h"
 
 using namespace std;
 using namespace MUSIC_INFO;

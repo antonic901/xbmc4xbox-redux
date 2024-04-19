@@ -42,6 +42,7 @@
 #include "LocalizeStrings.h"
 #include "utils/log.h"
 #include "TextureCache.h"
+#include "music/MusicThumbLoader.h"
 
 using namespace std;
 using namespace XFILE;

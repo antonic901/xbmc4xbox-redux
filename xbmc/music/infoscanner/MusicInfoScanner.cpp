@@ -47,7 +47,7 @@
 #include "LocalizeStrings.h"
 #include "utils/log.h"
 #include "TextureCache.h"
-#include "ThumbLoader.h"
+#include "music/MusicThumbLoader.h"
 
 #include <algorithm>
 

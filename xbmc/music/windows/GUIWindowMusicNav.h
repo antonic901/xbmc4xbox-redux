@@ -21,7 +21,6 @@
  */
 
 #include "music/windows/GUIWindowMusicBase.h"
-#include "ThumbLoader.h"
 #include "utils/Stopwatch.h"
 
 class CFileItemList;

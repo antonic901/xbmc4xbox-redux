@@ -89,7 +89,8 @@
 #include "interfaces/info/InfoBool.h"
 #include "video/VideoDatabase.h"
 #include "TextureCache.h"
-#include "ThumbLoader.h"
+#include "video/VideoThumbLoader.h"
+#include "music/MusicThumbLoader.h"
 
 using namespace std;
 using namespace XFILE;

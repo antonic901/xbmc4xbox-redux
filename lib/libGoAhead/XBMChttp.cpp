@@ -57,7 +57,8 @@
 #include "utils/log.h"
 #include "TextureCache.h"
 #include "utils/SystemInfo.h"
-#include "ThumbLoader.h"
+#include "music/MusicThumbLoader.h"
+#include "video/VideoThumbLoader.h"
 
 #ifdef _WIN32PC
 extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);

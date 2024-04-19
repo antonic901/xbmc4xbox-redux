@@ -57,7 +57,6 @@
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "music/infoscanner/MusicInfoScanner.h"
-#include "ThumbLoader.h"
 
 using namespace std;
 using namespace XFILE;

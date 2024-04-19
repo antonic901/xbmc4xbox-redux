@@ -21,7 +21,6 @@
  */
 
 #include "music/windows/GUIWindowMusicBase.h"
-#include "ThumbLoader.h"
 
 class CFileItemList;
 
