@@ -15,7 +15,6 @@
 				<viewtype label="535">list</viewtype>
 				<pagecontrol>60</pagecontrol>
 				<scrolltime>200</scrolltime>
-				<visible>![Window.IsVisible(VideoLibrary) + Container.Content(TVShows) + !Skin.HasSetting(TVShowsUsePosters)]</visible>
 				<itemlayout height="40" width="580">
 					<control type="image">
 						<posx>0</posx>
@@ -47,7 +46,7 @@
 						<align>right</align>
 						<aligny>center</aligny>
 						<label>$INFO[ListItem.Label2]</label>
-						<visible>![Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)]</visible>
+						<visible>!Window.IsVisible(Videos)</visible>
 					</control>
 					<control type="label">
 						<posx>620</posx>
@@ -60,8 +59,8 @@
 						<align>right</align>
 						<aligny>center</aligny>
 						<label>$INFO[ListItem.Label2]</label>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)]</visible>
-						<animation effect="slide" start="0,0" end="40,0" delay="0" time="0" condition="Window.IsVisible(VideoFiles) | ![Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]">conditional</animation>
+						<visible>Window.IsVisible(Videos)</visible>
+						<animation effect="slide" start="0,0" end="40,0" delay="0" time="0" condition="![Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]">conditional</animation>
 					</control>
 					<control type="image">
 						<posx>625</posx>
@@ -69,7 +68,7 @@
 						<width>40</width>
 						<height>26</height>
 						<texture>$INFO[ListItem.VideoResolution,flagging/lists/,.png]</texture>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + [Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]</visible>
+						<visible>Window.IsVisible(Videos) + [Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]</visible>
 					</control>
 					<control type="image">
 						<posx>665</posx>
@@ -77,7 +76,7 @@
 						<width>20</width>
 						<height>16</height>
 						<texture>$INFO[ListItem.Overlay]</texture>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + !ListItem.IsResumable</visible>
+						<visible>Window.IsVisible(Videos) + !ListItem.IsResumable</visible>
 					</control>
 					<control type="image">
 						<posx>665</posx>
@@ -85,7 +84,7 @@
 						<width>16</width>
 						<height>16</height>
 						<texture>OverlayWatching.png</texture>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + ListItem.IsResumable</visible>
+						<visible>Window.IsVisible(Videos) + ListItem.IsResumable</visible>
 					</control>
 				</itemlayout>
 				<focusedlayout height="40" width="580">
@@ -138,7 +137,7 @@
 						<align>right</align>
 						<aligny>center</aligny>
 						<label>$INFO[ListItem.Label2]</label>
-						<visible>![Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)]</visible>
+						<visible>!Window.IsVisible(Videos)</visible>
 					</control>
 					<control type="label">
 						<posx>620</posx>
@@ -151,8 +150,8 @@
 						<align>right</align>
 						<aligny>center</aligny>
 						<label>$INFO[ListItem.Label2]</label>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)]</visible>
-						<animation effect="slide" start="0,0" end="40,0" delay="0" time="0" condition="Window.IsVisible(VideoFiles) | ![Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]">conditional</animation>
+						<visible>Window.IsVisible(Videos)</visible>
+						<animation effect="slide" start="0,0" end="40,0" delay="0" time="0" condition="![Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]">conditional</animation>
 					</control>
 					<control type="image">
 						<posx>625</posx>
@@ -160,7 +159,7 @@
 						<width>40</width>
 						<height>26</height>
 						<texture>$INFO[ListItem.VideoResolution,flagging/lists/,.png]</texture>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + [Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]</visible>
+						<visible>Window.IsVisible(Videos) + [Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]</visible>
 					</control>
 					<control type="image">
 						<posx>665</posx>
@@ -168,7 +167,7 @@
 						<width>20</width>
 						<height>16</height>
 						<texture>$INFO[ListItem.Overlay]</texture>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + !ListItem.IsResumable</visible>
+						<visible>Window.IsVisible(Videos) + !ListItem.IsResumable</visible>
 					</control>
 					<control type="image">
 						<posx>665</posx>
@@ -176,7 +175,7 @@
 						<width>16</width>
 						<height>16</height>
 						<texture>OverlayWatching.png</texture>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + ListItem.IsResumable</visible>
+						<visible>Window.IsVisible(Videos) + ListItem.IsResumable</visible>
 					</control>
 				</focusedlayout>
 			</control>
@@ -240,7 +239,7 @@
 				<pagecontrol>60</pagecontrol>
 				<scrolltime>200</scrolltime>
 				<preloaditems>2</preloaditems>
-				<itemlayout condition="!Container.Content(Movies) + !Container.Content(Seasons) + [!Container.Content(TVShows) + !Skin.HasSetting(TVShowsUsePosters)] + !Container.Content(Sets)" height="186" width="216">
+				<itemlayout condition="!Container.Content(Movies) + !Container.Content(Seasons) + !Container.Content(TVShows) + !Container.Content(Sets)" height="186" width="216">
 					<control type="image">
 						<posx>1</posx>
 						<posy>0</posy>
@@ -283,7 +282,7 @@
 						<texture>$INFO[ListItem.Overlay]</texture>
 					</control>
 				</itemlayout>
-				<focusedlayout condition="!Container.Content(Movies) + !Container.Content(Seasons) + [!Container.Content(TVShows) + !Skin.HasSetting(TVShowsUsePosters)] + !Container.Content(Sets)" height="186" width="216">
+				<focusedlayout condition="!Container.Content(Movies) + !Container.Content(Seasons) + !Container.Content(TVShows)+ !Container.Content(Sets)" height="186" width="216">
 					<control type="image">
 						<posx>1</posx>
 						<posy>0</posy>
@@ -326,7 +325,7 @@
 						<texture>$INFO[ListItem.Overlay]</texture>
 					</control>
 				</focusedlayout>
-				<itemlayout condition="Container.Content(Movies) | Container.Content(Seasons) | [Container.Content(TVShows) + Skin.HasSetting(TVShowsUsePosters)] | Container.Content(Sets)" height="279" width="216">
+				<itemlayout condition="Container.Content(Movies) | Container.Content(Seasons) | Container.Content(TVShows) | Container.Content(Sets)" height="279" width="216">
 					<control type="image">
 						<posx>1</posx>
 						<posy>0</posy>
@@ -357,7 +356,7 @@
 						<texture>$INFO[ListItem.Overlay]</texture>
 					</control>
 				</itemlayout>
-				<focusedlayout condition="Container.Content(Movies) | Container.Content(Seasons) | [Container.Content(TVShows) + Skin.HasSetting(TVShowsUsePosters)] | Container.Content(Sets)" height="276" width="216">
+				<focusedlayout condition="Container.Content(Movies) | Container.Content(Seasons) | Container.Content(TVShows) | Container.Content(Sets)" height="276" width="216">
 					<control type="image">
 						<posx>1</posx>
 						<posy>0</posy>
@@ -412,7 +411,7 @@
 			<visible>Control.IsVisible(505)</visible>
 			<include>VisibleFadeEffect</include>
 			<control type="panel" id="505">
-				<visible>[Container.Content(TVShows) + !Skin.HasSetting(TVShowsUsePosters)] | Window.IsVisible(VideoFiles) | Window.IsVisible(Programs)</visible>
+				<visible>!Container.Content(Movies) + !Container.Content(Episodes) + !Container.Content(Seasons) + !Container.Content(MusicVideos) + !Container.Content(Addons)</visible>
 				<posx>95</posx>
 				<posy>80</posy>
 				<width>1080</width>
@@ -434,6 +433,17 @@
 						<bordertexture border="5">button-nofocus.png</bordertexture>
 						<bordersize>5</bordersize>
 						<texture background="true">$INFO[Listitem.Icon]</texture>
+						<visible>IsEmpty(ListItem.Art(banner))</visible>
+					</control>
+					<control type="image">
+						<posx>1</posx>
+						<posy>0</posy>
+						<width>538</width>
+						<height>105</height>
+						<bordertexture border="5">button-nofocus.png</bordertexture>
+						<bordersize>5</bordersize>
+						<texture background="true">$INFO[Listitem.Art(banner)]</texture>
+						<visible>!IsEmpty(ListItem.Art(banner))</visible>
 					</control>
 					<control type="image">
 						<posx>500</posx>
@@ -453,6 +463,17 @@
 						<bordertexture border="5">folder-focus.png</bordertexture>
 						<bordersize>5</bordersize>
 						<texture background="true">$INFO[Listitem.Icon]</texture>
+						<visible>IsEmpty(ListItem.Art(banner))</visible>
+					</control>
+					<control type="image">
+						<posx>1</posx>
+						<posy>0</posy>
+						<width>538</width>
+						<height>105</height>
+						<bordertexture border="5">folder-focus.png</bordertexture>
+						<bordersize>5</bordersize>
+						<texture background="true">$INFO[Listitem.Art(banner)]</texture>
+						<visible>!IsEmpty(ListItem.Art(banner))</visible>
 					</control>
 					<control type="image">
 						<posx>500</posx>
@@ -536,7 +557,7 @@
 						<align>right</align>
 						<aligny>center</aligny>
 						<label>$INFO[ListItem.Label2]</label>
-						<visible>![Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)]</visible>
+						<visible>!Window.IsVisible(Videos)</visible>
 					</control>
 					<control type="label">
 						<posx>1005</posx>
@@ -549,8 +570,8 @@
 						<align>right</align>
 						<aligny>center</aligny>
 						<label>$INFO[ListItem.Label2]</label>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)]</visible>
-						<animation effect="slide" start="0,0" end="40,0" delay="0" time="0" condition="Window.IsVisible(VideoFiles) | ![Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]">conditional</animation>
+						<visible>Window.IsVisible(Videos)</visible>
+						<animation effect="slide" start="0,0" end="40,0" delay="0" time="0" condition="![Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]">conditional</animation>
 					</control>
 					<control type="image">
 						<posx>1010</posx>
@@ -558,7 +579,7 @@
 						<width>40</width>
 						<height>26</height>
 						<texture>$INFO[ListItem.VideoResolution,flagging/lists/,.png]</texture>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + [Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]</visible>
+						<visible>Window.IsVisible(Videos) + [Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]</visible>
 					</control>
 					<control type="image">
 						<posx>1050</posx>
@@ -566,7 +587,7 @@
 						<width>20</width>
 						<height>16</height>
 						<texture>$INFO[ListItem.Overlay]</texture>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + !ListItem.IsResumable</visible>
+						<visible>Window.IsVisible(Videos) + !ListItem.IsResumable</visible>
 					</control>
 					<control type="image">
 						<posx>1050</posx>
@@ -574,7 +595,7 @@
 						<width>16</width>
 						<height>16</height>
 						<texture>OverlayWatching.png</texture>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + ListItem.IsResumable</visible>
+						<visible>Window.IsVisible(Videos) + ListItem.IsResumable</visible>
 					</control>
 				</itemlayout>
 				<focusedlayout height="40" width="1080">
@@ -634,7 +655,7 @@
 						<align>right</align>
 						<aligny>center</aligny>
 						<label>$INFO[ListItem.Label2]</label>
-						<visible>![Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)]</visible>
+						<visible>!Window.IsVisible(Videos)</visible>
 					</control>
 					<control type="label">
 						<posx>1005</posx>
@@ -647,8 +668,8 @@
 						<align>right</align>
 						<aligny>center</aligny>
 						<label>$INFO[ListItem.Label2]</label>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)]</visible>
-						<animation effect="slide" start="0,0" end="40,0" delay="0" time="0" condition="Window.IsVisible(VideoFiles) | ![Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]">conditional</animation>
+						<visible>Window.IsVisible(Videos)</visible>
+						<animation effect="slide" start="0,0" end="40,0" delay="0" time="0" condition="![Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]">conditional</animation>
 					</control>
 					<control type="image">
 						<posx>1010</posx>
@@ -656,7 +677,7 @@
 						<width>40</width>
 						<height>26</height>
 						<texture>$INFO[ListItem.VideoResolution,flagging/lists/,.png]</texture>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + [Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]</visible>
+						<visible>Window.IsVisible(Videos) + [Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]</visible>
 					</control>
 					<control type="image">
 						<posx>1050</posx>
@@ -664,7 +685,7 @@
 						<width>20</width>
 						<height>16</height>
 						<texture>$INFO[ListItem.Overlay]</texture>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + !ListItem.IsResumable</visible>
+						<visible>Window.IsVisible(Videos) + !ListItem.IsResumable</visible>
 					</control>
 					<control type="image">
 						<posx>1050</posx>
@@ -672,7 +693,7 @@
 						<width>16</width>
 						<height>16</height>
 						<texture>OverlayWatching.png</texture>
-						<visible>[Window.IsVisible(VideoLibrary) | Window.IsVisible(VideoFiles)] + ListItem.IsResumable</visible>
+						<visible>Window.IsVisible(Videos) + ListItem.IsResumable</visible>
 					</control>
 				</focusedlayout>
 			</control>

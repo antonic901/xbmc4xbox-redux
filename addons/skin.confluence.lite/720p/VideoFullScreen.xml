@@ -53,7 +53,7 @@
 				<posy>260r</posy>
 				<width>300</width>
 				<height>230</height>
-				<info>VideoPlayer.Cover</info>
+				<texture fallback="DefaultVideoCover.png">$INFO[Player.Art(thumb)]</texture>
 				<aspectratio aligny="bottom">keep</aspectratio>
 				<bordertexture border="8">ThumbShadow.png</bordertexture>
 				<bordersize>8</bordersize>
@@ -65,7 +65,7 @@
 				<posy>350r</posy>
 				<width>300</width>
 				<height>330</height>
-				<info>VideoPlayer.Cover</info>
+				<texture fallback="DefaultVideoCover.png">$INFO[Player.Art(thumb)]</texture>
 				<aspectratio aligny="bottom">keep</aspectratio>
 				<bordertexture border="8">ThumbShadow.png</bordertexture>
 				<bordersize>8</bordersize>
