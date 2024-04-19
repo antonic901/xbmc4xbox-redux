@@ -52,7 +52,6 @@
 #include "playlists/PlayList.h"
 
 #include "utils/GlobalsHandling.h"
-#include "ThumbLoader.h"
 
 using namespace std;
 
@@ -776,12 +775,6 @@ void CApplicationMessenger::MediaPlay(string filename)
   CFileItem item;
   item.SetPath(filename);
   item.m_bIsFolder = false;
-  if (item.IsAudio())
-    CMusicThumbLoader::FillThumb(item);
-  else
-    CVideoThumbLoader::FillThumb(item);
-  item.FillInDefaultIcon();
-
   MediaPlay(item);
 }
 
