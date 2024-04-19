@@ -46,9 +46,9 @@
 #include "GUIUserMessages.h"
 #include "LocalizeStrings.h"
 #include "ApplicationMessenger.h"
-#include "ThumbLoader.h"
 #include "TextureCache.h"
 #include "music/MusicDatabase.h"
+#include "video/VideoThumbLoader.h"
 
 using namespace std;
 using namespace XFILE;
