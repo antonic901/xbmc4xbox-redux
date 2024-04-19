@@ -115,6 +115,12 @@ void CGUIListItem::SetArt(const std::string &type, const std::string &url)
   }
 }
 
+void CGUIListItem::AppendArt(const ArtMap &art)
+{
+  for (ArtMap::const_iterator i = art.begin(); i != art.end(); ++i)
+    SetArt(i->first, i->second);
+}
+
 std::string CGUIListItem::GetArt(const std::string &type) const
 {
   ArtMap::const_iterator i = m_art.find(type);
