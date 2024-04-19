@@ -55,7 +55,8 @@ bool CRecentlyAddedJob::UpdateVideo()
   CFileItemList  items;
   CVideoDatabase videodatabase;
   CVideoThumbLoader loader;
-  
+  loader.Initialize();
+
   videodatabase.Open();
 
   if (videodatabase.GetRecentlyAddedMoviesNav("videodb://recentlyaddedmovies/", items, NUM_ITEMS))
@@ -213,8 +214,9 @@ bool CRecentlyAddedJob::UpdateMusic()
   int            i = 0;
   CFileItemList  musicItems;
   CMusicDatabase musicdatabase;
-  CThumbLoader loader;
-  
+  CMusicThumbLoader loader;
+  loader.Initialize();
+
   musicdatabase.Open();
   
   if (musicdatabase.GetRecentlyAddedAlbumSongs("musicdb://songs/", musicItems, NUM_ITEMS))
