@@ -23,13 +23,6 @@
 
 #pragma once
 
-namespace MUSIC_INFO {
-class CMusicInfoTag;
-}
-
-class CVideoInfoTag;
-
-
 class PLT_UPnP;
 class PLT_SyncMediaBrowser;
 class PLT_MediaObject;
@@ -63,14 +56,6 @@ public:
     bool StartRenderer();
     void StopRenderer();
     void UpdateState();
-
-    // methods
-    static int PopulateTagFromObject(MUSIC_INFO::CMusicInfoTag& tag,
-                                     PLT_MediaObject&           object,
-                                     PLT_MediaItemResource*     resource = NULL);
-    static int PopulateTagFromObject(CVideoInfoTag&             tag,
-                                     PLT_MediaObject&           object,
-                                     PLT_MediaItemResource*     resource = NULL);
 
     // class methods
     static CUPnP* GetInstance();
