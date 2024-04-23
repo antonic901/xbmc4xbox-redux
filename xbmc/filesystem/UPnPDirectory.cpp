@@ -32,6 +32,7 @@
 
 using namespace MUSIC_INFO;
 using namespace XFILE;
+using namespace UPNP;
 
 namespace XFILE
 {

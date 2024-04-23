@@ -111,78 +111,11 @@ DLNA_ORG_FLAGS = 'DLNA.ORG_FLAGS'
 DLNA_ORG_FLAGS_VAL = '01500000000000000000000000000000'
 */
 
-/*----------------------------------------------------------------------
-|   static
-+---------------------------------------------------------------------*/
-CUPnP* CUPnP::upnp = NULL;
-// change to false for XBMC_PC if you want real UPnP functionality
-// otherwise keep to true for xbox as it doesn't support multicast
-// don't change unless you know what you're doing!
-bool CUPnP::broadcast = true; 
-
 #ifdef HAS_XBOX_NETWORK
 #include <xtl.h>
 #include <winsockx.h>
 #include "NptXboxNetwork.h"
-#endif
 
-namespace
-{
-  static const NPT_String JoinString(const NPT_List<NPT_String>& array, const NPT_String& delimiter)
-  {
-    NPT_String result;
-
-    for(NPT_List<NPT_String>::Iterator it = array.GetFirstItem(); it; it++ )
-        result += delimiter + (*it);
-
-    if(result.IsEmpty())
-        return "";
-    else
-        return result.SubString(delimiter.GetLength());
-  }
-
-  enum EClientQuirks
-  {
-    ECLIENTQUIRKS_NONE = 0x0
-
-    /* Client requires folder's to be marked as storageFolers as verndor type (360)*/
-  , ECLIENTQUIRKS_ONLYSTORAGEFOLDER = 0x01
-
-    /* Client can't handle subtypes for videoItems (360) */
-  , ECLIENTQUIRKS_BASICVIDEOCLASS = 0x02
-
-    /* Client requires album to be set to [Unknown Series] to show title (WMP) */
-  , ECLIENTQUIRKS_UNKNOWNSERIES = 0x04
-  };
-
-  static EClientQuirks GetClientQuirks(const PLT_HttpRequestContext* context)
-  {
-    if(context == NULL)
-        return ECLIENTQUIRKS_NONE;
-
-    unsigned int quirks = 0;
-    const NPT_String* user_agent = context->GetRequest().GetHeaders().GetHeaderValue(NPT_HTTP_HEADER_USER_AGENT); 
-    const NPT_String* server     = context->GetRequest().GetHeaders().GetHeaderValue(NPT_HTTP_HEADER_SERVER);
-
-    if (user_agent) {
-        if (user_agent->Find("XBox", 0, true) >= 0 || 
-            user_agent->Find("Xenon", 0, true) >= 0)
-            quirks |= ECLIENTQUIRKS_ONLYSTORAGEFOLDER | ECLIENTQUIRKS_BASICVIDEOCLASS;
-
-        if (user_agent->Find("Windows-Media-Player", 0, true) >= 0)
-            quirks |= ECLIENTQUIRKS_UNKNOWNSERIES;
-
-    }
-    if (server) {
-        if (server->Find("Xbox", 0, true) >= 0)
-            quirks |= ECLIENTQUIRKS_ONLYSTORAGEFOLDER | ECLIENTQUIRKS_BASICVIDEOCLASS;
-    }
-
-    return (EClientQuirks)quirks;
-  }
-}
-
-#ifdef HAS_XBOX_NETWORK
 /*----------------------------------------------------------------------
 |   static initializer
 +---------------------------------------------------------------------*/
@@ -244,6 +177,15 @@ NPT_NetworkInterface::GetNetworkInterfaces(NPT_List<NPT_NetworkInterface*>& inte
 #endif
 
 /*----------------------------------------------------------------------
+|   NPT_GetEnvironment
++---------------------------------------------------------------------*/
+NPT_Result 
+NPT_GetEnvironment(const char* name, NPT_String& value)
+{
+    return NPT_FAILURE;
+}
+
+/*----------------------------------------------------------------------
 |   NPT_Console::Output
 +---------------------------------------------------------------------*/
 void
@@ -252,14 +194,74 @@ NPT_Console::Output(const char* message)
     CLog::Log(LOGDEBUG, "%s", message);
 }
 
-/*----------------------------------------------------------------------
-|   NPT_GetEnvironment
-+---------------------------------------------------------------------*/
-NPT_Result 
-NPT_GetEnvironment(const char* name, NPT_String& value)
+namespace UPNP
 {
-    return NPT_FAILURE;
+
+/*----------------------------------------------------------------------
+|   static
++---------------------------------------------------------------------*/
+CUPnP* CUPnP::upnp = NULL;
+// change to false for XBMC_PC if you want real UPnP functionality
+// otherwise keep to true for xbox as it doesn't support multicast
+// don't change unless you know what you're doing!
+bool CUPnP::broadcast = true; 
+
+namespace
+{
+  static const NPT_String JoinString(const NPT_List<NPT_String>& array, const NPT_String& delimiter)
+  {
+    NPT_String result;
+
+    for(NPT_List<NPT_String>::Iterator it = array.GetFirstItem(); it; it++ )
+        result += delimiter + (*it);
+
+    if(result.IsEmpty())
+        return "";
+    else
+        return result.SubString(delimiter.GetLength());
+  }
+
+  enum EClientQuirks
+  {
+    ECLIENTQUIRKS_NONE = 0x0
+
+    /* Client requires folder's to be marked as storageFolers as verndor type (360)*/
+  , ECLIENTQUIRKS_ONLYSTORAGEFOLDER = 0x01
+
+    /* Client can't handle subtypes for videoItems (360) */
+  , ECLIENTQUIRKS_BASICVIDEOCLASS = 0x02
+
+    /* Client requires album to be set to [Unknown Series] to show title (WMP) */
+  , ECLIENTQUIRKS_UNKNOWNSERIES = 0x04
+  };
+
+  static EClientQuirks GetClientQuirks(const PLT_HttpRequestContext* context)
+  {
+    if(context == NULL)
+        return ECLIENTQUIRKS_NONE;
+
+    unsigned int quirks = 0;
+    const NPT_String* user_agent = context->GetRequest().GetHeaders().GetHeaderValue(NPT_HTTP_HEADER_USER_AGENT); 
+    const NPT_String* server     = context->GetRequest().GetHeaders().GetHeaderValue(NPT_HTTP_HEADER_SERVER);
+
+    if (user_agent) {
+        if (user_agent->Find("XBox", 0, true) >= 0 || 
+            user_agent->Find("Xenon", 0, true) >= 0)
+            quirks |= ECLIENTQUIRKS_ONLYSTORAGEFOLDER | ECLIENTQUIRKS_BASICVIDEOCLASS;
+
+        if (user_agent->Find("Windows-Media-Player", 0, true) >= 0)
+            quirks |= ECLIENTQUIRKS_UNKNOWNSERIES;
+
+    }
+    if (server) {
+        if (server->Find("Xbox", 0, true) >= 0)
+            quirks |= ECLIENTQUIRKS_ONLYSTORAGEFOLDER | ECLIENTQUIRKS_BASICVIDEOCLASS;
+    }
+
+    return (EClientQuirks)quirks;
+  }
 }
+
 
 /*----------------------------------------------------------------------
 |   CDeviceHostReferenceHolder class
@@ -2478,3 +2480,4 @@ int CUPnP::PopulateTagFromObject(CVideoInfoTag&         tag,
     return NPT_SUCCESS;
 }
 
+} /* namespace UPNP */

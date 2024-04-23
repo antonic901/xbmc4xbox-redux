@@ -65,6 +65,9 @@ using namespace std;
 #ifdef HAS_EVENT_SERVER
 using namespace EVENTSERVER;
 #endif // HAS_EVENT_SERVER
+#ifdef HAS_UPNP
+using namespace UPNP;
+#endif // HAS_UPNP
 
 CNetworkServices::CNetworkServices()
   :
