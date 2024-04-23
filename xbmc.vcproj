@@ -2899,6 +2899,24 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\network\upnp\UPnP.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\network\upnp\UPnPInternal.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\upnp\UPnPInternal.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\upnp\UPnPRenderer.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\upnp\UPnPRenderer.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\upnp\UPnPServer.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\upnp\UPnPServer.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\network\upnp\UPnPSettings.cpp">
 					</File>
 					<File

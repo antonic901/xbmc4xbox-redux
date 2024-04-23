@@ -22,6 +22,7 @@
 #include "system.h"
 #include "utils/StdString.h"
 #include "NptTypes.h"
+#include "PltDidl.h"
 
 class CUPnPServer;
 class CFileItem;

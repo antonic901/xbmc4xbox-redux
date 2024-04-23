@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include "utils/StdString.h"
+
 class PLT_UPnP;
 class PLT_SyncMediaBrowser;
 class PLT_MediaObject;

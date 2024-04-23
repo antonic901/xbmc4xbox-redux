@@ -20,7 +20,6 @@
  *
  */
 #include "PltMediaConnect.h"
-#include "PltDidl.h"
 #include "FileItem.h"
 
 class PLT_MediaObject;
