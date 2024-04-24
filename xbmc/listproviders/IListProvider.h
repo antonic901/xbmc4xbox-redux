@@ -48,7 +48,7 @@ public:
   /*! \brief Update the list content
    \return true if the content has changed, false otherwise.
    */
-  virtual bool Update(bool refresh)=0;
+  virtual bool Update(bool forceRefresh)=0;
 
   /*! \brief Fetch the current list of items.
    \param items [out] the list to be filled.
@@ -62,8 +62,9 @@ public:
 
   /*! \brief Reset the current list of items.
    Derived classes may choose to ignore this.
+   \param immediately whether the content of the provider should be cleared.
    */
-  virtual void Reset() {};
+  virtual void Reset(bool immediately = false) {};
 
   /*! \brief Click event on an item.
    \param item the item that was clicked.
