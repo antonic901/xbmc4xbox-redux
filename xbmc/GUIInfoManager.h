@@ -282,13 +282,12 @@ namespace INFO
 #define CONTAINER_PROPERTY          357
 #define CONTAINER_SORT_DIRECTION    358
 #define CONTAINER_NUM_ITEMS         359
-#define CONTAINER_FOLDERTHUMB       360
-#define CONTAINER_FOLDERPATH        361
-#define CONTAINER_CONTENT           362
-#define CONTAINER_HAS_THUMB         363
-#define CONTAINER_SORT_METHOD       364
-#define CONTAINER_CURRENT_ITEM      365
-
+#define CONTAINER_FOLDERPATH        360
+#define CONTAINER_CONTENT           361
+#define CONTAINER_HAS_THUMB         362
+#define CONTAINER_SORT_METHOD       363
+#define CONTAINER_CURRENT_ITEM      364
+#define CONTAINER_ART               365
 #define CONTAINER_HAS_FOCUS         366
 #define CONTAINER_ROW               367
 #define CONTAINER_COLUMN            368
@@ -297,12 +296,10 @@ namespace INFO
 #define CONTAINER_HAS_NEXT          371
 #define CONTAINER_HAS_PREVIOUS      372
 #define CONTAINER_SUBITEM           373
-#define CONTAINER_TVSHOWTHUMB       374
-#define CONTAINER_NUM_PAGES         375
-#define CONTAINER_CURRENT_PAGE      376
-#define CONTAINER_SEASONTHUMB       377
-#define CONTAINER_SHOWPLOT          378
-#define CONTAINER_TOTALTIME         379
+#define CONTAINER_NUM_PAGES         374
+#define CONTAINER_CURRENT_PAGE      375
+#define CONTAINER_SHOWPLOT          376
+#define CONTAINER_TOTALTIME         377
 #define CONTAINER_SORT_ORDER        380
 
 #define CONTAINER_VIEWCOUNT         381

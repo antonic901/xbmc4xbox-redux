@@ -1100,6 +1100,17 @@ bool CGUIWindowMusicBase::GetDirectory(const CStdString &strDirectory, CFileItem
     loader.FillThumb(items);
   }
 
+  CQueryParams params;
+  map<string, string> art;
+  CDirectoryNode::GetDatabaseInfo(items.GetPath(), params);
+  if (m_musicdatabase.GetArtForItem(params.GetArtistId(), "artist", art));
+  {
+    // set container art
+    items.AppendArt(art, "artist");
+    items.SetArtFallback("fanart", "artist.fanart");
+    items.SetArtFallback("fanart", "albumartist.fanart");
+  }
+
   // add in the "New Playlist" item if we're in the playlists folder
   if ((items.GetPath() == "special://musicplaylists/") && !items.Contains("newplaylist://"))
   {
