@@ -28,6 +28,7 @@
 #include "utils/URIUtils.h"
 #include "settings/AdvancedSettings.h"
 #include "video/VideoInfoTag.h"
+#include "music/tags/MusicInfoTag.h"
 #include "URL.h"
 #include "Key.h"
 
@@ -210,9 +211,11 @@ CStdString CFavouritesDirectory::GetExecutePath(const CFileItem &item, const std
   else  // assume a media file
   {
     if (item.IsVideoDb() && item.HasVideoInfoTag())
-      execute.Format("PlayMedia(%s)", Paramify(item.GetVideoInfoTag()->m_strFileNameAndPath));
+      execute = StringUtils2::Format("PlayMedia(%s)", StringUtils2::Paramify(item.GetVideoInfoTag()->m_strFileNameAndPath).c_str());
+    else if (item.IsMusicDb() && item.HasMusicInfoTag())
+      execute = StringUtils2::Format("PlayMedia(%s)", StringUtils2::Paramify(item.GetMusicInfoTag()->GetURL()).c_str());
     else
-      execute.Format("PlayMedia(%s)", Paramify(item.GetPath()));
+      execute = StringUtils2::Format("PlayMedia(%s)", StringUtils2::Paramify(item.GetPath()).c_str());
   }
   return execute;
 }
