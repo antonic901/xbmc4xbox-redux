@@ -60,28 +60,28 @@ static const NPT_String JoinString(const NPT_List<NPT_String>& array, const NPT_
 +---------------------------------------------------------------------*/
 EClientQuirks GetClientQuirks(const PLT_HttpRequestContext* context)
 {
-    if(context == NULL)
-        return ECLIENTQUIRKS_NONE;
+  if(context == NULL)
+      return ECLIENTQUIRKS_NONE;
 
-    unsigned int quirks = 0;
-    const NPT_String* user_agent = context->GetRequest().GetHeaders().GetHeaderValue(NPT_HTTP_HEADER_USER_AGENT); 
-    const NPT_String* server     = context->GetRequest().GetHeaders().GetHeaderValue(NPT_HTTP_HEADER_SERVER);
+  unsigned int quirks = 0;
+  const NPT_String* user_agent = context->GetRequest().GetHeaders().GetHeaderValue(NPT_HTTP_HEADER_USER_AGENT); 
+  const NPT_String* server     = context->GetRequest().GetHeaders().GetHeaderValue(NPT_HTTP_HEADER_SERVER);
 
-    if (user_agent) {
-        if (user_agent->Find("XBox", 0, true) >= 0 || 
-            user_agent->Find("Xenon", 0, true) >= 0)
-            quirks |= ECLIENTQUIRKS_ONLYSTORAGEFOLDER | ECLIENTQUIRKS_BASICVIDEOCLASS;
+  if (user_agent) {
+      if (user_agent->Find("XBox", 0, true) >= 0 ||
+          user_agent->Find("Xenon", 0, true) >= 0)
+          quirks |= ECLIENTQUIRKS_ONLYSTORAGEFOLDER | ECLIENTQUIRKS_BASICVIDEOCLASS;
 
-        if (user_agent->Find("Windows-Media-Player", 0, true) >= 0)
-            quirks |= ECLIENTQUIRKS_UNKNOWNSERIES;
+      if (user_agent->Find("Windows-Media-Player", 0, true) >= 0)
+          quirks |= ECLIENTQUIRKS_UNKNOWNSERIES;
 
-    }
-    if (server) {
-        if (server->Find("Xbox", 0, true) >= 0)
-            quirks |= ECLIENTQUIRKS_ONLYSTORAGEFOLDER | ECLIENTQUIRKS_BASICVIDEOCLASS;
-    }
+  }
+  if (server) {
+      if (server->Find("Xbox", 0, true) >= 0)
+          quirks |= ECLIENTQUIRKS_ONLYSTORAGEFOLDER | ECLIENTQUIRKS_BASICVIDEOCLASS;
+  }
 
-    return (EClientQuirks)quirks;
+  return (EClientQuirks)quirks;
 }
 
 /*----------------------------------------------------------------------
