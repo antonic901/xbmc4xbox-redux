@@ -1507,7 +1507,7 @@ void CGUIWindowVideoNav::OnChooseFanart(const CFileItem &videoItem)
   if (result.Equals("fanart://None") || !CFile::Exists(result))
     result.clear();
   if (!result.IsEmpty() && flip)
-    result = CTextureCache::GetWrappedImageURL(result, "", "flipped");
+    result = CTextureUtils::GetWrappedImageURL(result, "", "flipped");
 
   // update the db
   CVideoDatabase db;

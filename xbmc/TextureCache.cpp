@@ -80,7 +80,7 @@ bool CTextureCache::HasCachedImage(const CStdString &url)
 
 CStdString CTextureCache::GetCachedImage(const CStdString &image, CTextureDetails &details, bool trackUsage)
 {
-  CStdString url = UnwrapImageURL(image);
+  CStdString url = CTextureUtils::UnwrapImageURL(image);
 
   if (IsCachedImage(url))
     return url;
@@ -93,42 +93,6 @@ CStdString CTextureCache::GetCachedImage(const CStdString &image, CTextureDetail
     return GetCachedPath(details.file);
   }
   return "";
-}
-
-CStdString CTextureCache::GetWrappedImageURL(const CStdString &image, const CStdString &type, const CStdString &options)
-{
-  if (image.compare(0, 8, "image://") == 0)
-    return image; // already wrapped
-
-  CStdString encoded(image);
-  CURL::Encode(encoded);
-  CStdString url = "image://";
-  if (!type.IsEmpty())
-    url += type + "@";
-  url += encoded;
-  if (!options.IsEmpty())
-    url += "/transform?" + options;
-  return url;
-}
-
-CStdString CTextureCache::GetWrappedThumbURL(const CStdString &image)
-{
-  return GetWrappedImageURL(image, "", "size=thumb");
-}
-
-CStdString CTextureCache::UnwrapImageURL(const CStdString &image)
-{
-  if (image.compare(0, 8, "image://") == 0)
-  {
-    CURL url(image);
-    if (url.GetUserName().IsEmpty() && url.GetOptions().IsEmpty())
-    {
-      CStdString file(url.GetHostName());
-      CURL::Decode(file);
-      return file;
-    }
-  }
-  return image;
 }
 
 CStdString CTextureCache::CheckCachedImage(const CStdString &url, bool returnDDS, bool &needsRecaching)
@@ -159,7 +123,7 @@ void CTextureCache::BackgroundCacheImage(const CStdString &url)
     return; // image is already cached and doesn't need to be checked further
 
   // needs (re)caching
-  AddJob(new CTextureCacheJob(UnwrapImageURL(url), details.hash));
+  AddJob(new CTextureCacheJob(CTextureUtils::UnwrapImageURL(url), details.hash));
 }
 
 bool CTextureCache::CacheImage(const CStdString &image, CTextureDetails &details)
@@ -173,7 +137,7 @@ bool CTextureCache::CacheImage(const CStdString &image, CTextureDetails &details
 
 CStdString CTextureCache::CacheImage(const CStdString &image, CBaseTexture **texture, CTextureDetails *details)
 {
-  CStdString url = UnwrapImageURL(image);
+  CStdString url = CTextureUtils::UnwrapImageURL(image);
   CSingleLock lock(m_processingSection);
   if (m_processing.find(url) == m_processing.end())
   {
@@ -219,6 +183,22 @@ void CTextureCache::ClearCachedImage(const CStdString &url, bool deleteSource /*
     CFile::Delete(path);
 }
 
+bool CTextureCache::ClearCachedImage(int id)
+{
+  CStdString cachedFile;
+  if (ClearCachedTexture(id, cachedFile))
+  {
+    cachedFile = GetCachedPath(cachedFile);
+    if (CFile::Exists(cachedFile))
+      CFile::Delete(cachedFile);
+    cachedFile = URIUtils::ReplaceExtension(cachedFile, ".dds");
+    if (CFile::Exists(cachedFile))
+      CFile::Delete(cachedFile);
+    return true;
+  }
+  return false;
+}
+
 bool CTextureCache::GetCachedTexture(const CStdString &url, CTextureDetails &details)
 {
   CSingleLock lock(m_databaseSection);
@@ -247,6 +227,12 @@ bool CTextureCache::ClearCachedTexture(const CStdString &url, CStdString &cached
 {
   CSingleLock lock(m_databaseSection);
   return m_database.ClearCachedTexture(url, cachedURL);
+}
+
+bool CTextureCache::ClearCachedTexture(int id, CStdString &cachedURL)
+{
+  CSingleLock lock(m_databaseSection);
+  return m_database.ClearCachedTexture(id, cachedURL);
 }
 
 CStdString CTextureCache::GetCacheFile(const CStdString &url)

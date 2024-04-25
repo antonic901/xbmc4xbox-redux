@@ -37,7 +37,7 @@
 #include "video/VideoInfoTag.h"
 #include "music/MusicDatabase.h"
 #include "music/tags/MusicInfoTag.h"
-#include "TextureCache.h"
+#include "TextureDatabase.h"
 #include "ThumbLoader.h"
 
 using namespace MUSIC_INFO;
@@ -543,7 +543,7 @@ BuildObject(CFileItem&                    item,
     if (fetched_art && upnp_server) {
         object->m_ExtraInfo.album_art_uri = upnp_server->BuildSafeResourceUri(
             (*ips.GetFirstItem()).ToString(),
-            CTextureCache::GetWrappedImageURL(item.GetArt("thumb")).c_str());
+            CTextureUtils::GetWrappedImageURL(item.GetArt("thumb")).c_str());
 
         // Set DLNA profileID by extension, defaulting to JPEG.
         NPT_String ext = URIUtils::GetExtension(thumb).c_str();
@@ -555,7 +555,7 @@ BuildObject(CFileItem&                    item,
 
         std::string fanart = item.GetArt("fanart");
         if (!fanart.empty())
-            upnp_server->AddSafeResourceUri(object, ips, CTextureCache::GetWrappedImageURL(fanart), "xbmc.org:*:fanart:*");
+            upnp_server->AddSafeResourceUri(object, ips, CTextureUtils::GetWrappedImageURL(fanart), "xbmc.org:*:fanart:*");
     }
 
     return object;

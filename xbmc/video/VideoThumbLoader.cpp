@@ -499,7 +499,7 @@ CStdString CVideoThumbLoader::GetEmbeddedThumbURL(const CFileItem &item)
   if (URIUtils::IsStack(path))
     path = CStackDirectory::GetFirstStackedFile(path);
 
-  return CTextureCache::GetWrappedImageURL(path, "video");
+  return CTextureUtils::GetWrappedImageURL(path, "video");
 }
 
 void CVideoThumbLoader::OnJobComplete(unsigned int jobID, bool success, CJob* job)

@@ -11,7 +11,7 @@
 #include "pictures/GUIWindowSlideShow.h"
 #include "pictures/PictureInfoTag.h"
 #include "profiles/ProfilesManager.h"
-#include "TextureCache.h"
+#include "TextureDatabase.h"
 #include "ThumbLoader.h"
 #include "URL.h"
 #include "utils/URIUtils.h"
@@ -265,7 +265,7 @@ CUPnPRenderer::GetMetadata(NPT_String& meta)
         else
             thumb = g_infoManager.GetImage(VIDEOPLAYER_COVER, -1);
 
-        thumb = CTextureCache::GetWrappedImageURL(thumb);
+        thumb = CTextureUtils::GetWrappedImageURL(thumb);
             
         NPT_String ip = g_application.getNetwork().m_networkinfo.ip;
 

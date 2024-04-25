@@ -767,7 +767,7 @@ void CGUIDialogVideoInfo::OnGetFanart()
     strItemPath.Format("fanart://Remote%i",i);
     CFileItemPtr item(new CFileItem(strItemPath, false));
     CStdString thumb = m_movieItem->GetVideoInfoTag()->m_fanart.GetPreviewURL(i);
-    item->SetArt("thumb", CTextureCache::GetWrappedThumbURL(thumb));
+    item->SetArt("thumb", CTextureUtils::GetWrappedThumbURL(thumb));
     item->SetIconImage("DefaultPicture.png");
     item->SetLabel(g_localizeStrings.Get(20441));
 
@@ -824,7 +824,7 @@ void CGUIDialogVideoInfo::OnGetFanart()
 
   // set the fanart image
   if (flip && !result.IsEmpty())
-    result = CTextureCache::GetWrappedImageURL(result, "", "flipped");
+    result = CTextureUtils::GetWrappedImageURL(result, "", "flipped");
   CVideoDatabase db;
   if (db.Open())
   {
