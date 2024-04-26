@@ -51,8 +51,6 @@ public:
   void AddToDatabase(int iItem);
   static void OnScan(const CStdString& strPath, bool scanAll = false);
   virtual void OnInfo(CFileItem* pItem, const ADDON::ScraperPtr& scraper);
-  static void MarkWatched(const CFileItemPtr &pItem, bool bMark);
-  static void UpdateVideoTitle(const CFileItem* pItem);
 
   /*! \brief Show the resume menu for this item (if it has a resume bookmark)
    If a resume bookmark is found, we set the item's m_lStartOffset to STARTOFFSET_RESUME.
@@ -100,7 +98,6 @@ protected:
   virtual bool CanContainFilter(const CStdString &strDirectory) const;
 
   virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
-  void GetNonContextButtons(int itemNumber, CContextButtons &buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
   virtual void OnQueueItem(int iItem);
   virtual void OnDeleteItem(CFileItemPtr pItem);

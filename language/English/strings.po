@@ -8003,7 +8003,10 @@ msgctxt "#20434"
 msgid "Sets"
 msgstr ""
 
-#empty string with id 20435
+#: system/settings/settings.xml
+msgctxt "#20435"
+msgid "Combine split video items"
+msgstr ""
 
 msgctxt "#20436"
 msgid "Export actor thumbs?"
@@ -8087,7 +8090,10 @@ msgctxt "#20455"
 msgid "Listeners"
 msgstr ""
 
-#empty string with id 20456
+#: system/settings/settings.xml
+msgctxt "#20456"
+msgid "Flatten library hierarchy"
+msgstr ""
 
 #: xbmc/playlists/SmartPlaylist.cpp
 msgctxt "#20457"
@@ -12658,11 +12664,7 @@ msgctxt "#38745"
 msgid "Front LED colour"
 msgstr ""
 
-#: xbmc/video/windows/GUIWindowVideoBase.cpp
-#: xbmc/music/windows/GUIWindowMusicBase.cpp
-msgctxt "#38746"
-msgid "Now playing..." ???
-msgstr ""
+#empty string with id 38746 
 
 #: system/settings/settings.xml
 msgctxt "#38747"
