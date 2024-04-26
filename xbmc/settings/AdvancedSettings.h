@@ -258,7 +258,10 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     int m_playlistTimeout;
     bool m_bVirtualShares; 
     bool m_bNavVKeyboard; // if true we navigate the virtual keyboard using cursor keys
-    
+
+    bool m_karaokeChangeGenreForKaraokeSongs;
+    int m_karaokeStartIndex; // auto-assign numbering start from this value
+
     bool m_bPythonVerbose;
 
     bool m_loaded;

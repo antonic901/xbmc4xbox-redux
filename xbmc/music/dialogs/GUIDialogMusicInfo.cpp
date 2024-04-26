@@ -18,12 +18,9 @@
  *
  */
 
-#include "music/dialogs/GUIDialogMusicInfo.h"
-#include "GUIWindowManager.h"
-#include "Util.h"
-#include "utils/URIUtils.h"
-#include "utils/StringUtils.h"
-#include "GUIImage.h"
+#include "GUIDialogMusicInfo.h"
+#include "guilib/GUIWindowManager.h"
+#include "guilib/GUIImage.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "GUIPassword.h"
 #include "music/MusicDatabase.h"
@@ -32,28 +29,22 @@
 #include "filesystem/File.h"
 #include "FileItem.h"
 #include "profiles/ProfilesManager.h"
-#include "video/VideoInfoTag.h"
 #include "storage/MediaManager.h"
-#include "filesystem/Directory.h"
 #include "utils/AsyncFileCopy.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
-#include "LocalizeStrings.h"
+#include "guilib/Key.h"
+#include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
+#include "utils/URIUtils.h"
+#include "utils/StringUtils.h"
 #include "TextureCache.h"
 #include "music/MusicThumbLoader.h"
+#include "filesystem/Directory.h"
 
 using namespace std;
 using namespace XFILE;
-
-#define CONTROL_ALBUM           20
-#define CONTROL_ARTIST          21
-#define CONTROL_DATE            22
-#define CONTROL_RATING          23
-#define CONTROL_GENRE           24
-#define CONTROL_MOODS           25
-#define CONTROL_STYLES          26
 
 #define CONTROL_IMAGE            3
 #define CONTROL_TEXTAREA         4
@@ -146,17 +137,27 @@ bool CGUIDialogMusicInfo::OnMessage(CGUIMessage& message)
   return CGUIDialog::OnMessage(message);
 }
 
+bool CGUIDialogMusicInfo::OnAction(const CAction &action)
+{
+  if (action.GetID() == ACTION_SHOW_INFO)
+  {
+    Close();
+    return true;
+  }
+  return CGUIDialog::OnAction(action);
+}
+
 void CGUIDialogMusicInfo::SetAlbum(const CAlbum& album, const CStdString &path)
 {
   m_album = album;
-  SetSongs(m_album.songs);
+  SetSongs(m_album.infoSongs);
   *m_albumItem = CFileItem(path, true);
   m_albumItem->GetMusicInfoTag()->SetAlbum(m_album.strAlbum);
-  m_albumItem->GetMusicInfoTag()->SetAlbumArtist(StringUtils::Join(m_album.artist, g_advancedSettings.m_musicItemSeparator));
+  m_albumItem->GetMusicInfoTag()->SetAlbumArtist(StringUtils2::Join(m_album.artist, g_advancedSettings.m_musicItemSeparator));
   m_albumItem->GetMusicInfoTag()->SetArtist(m_album.artist);
   m_albumItem->GetMusicInfoTag()->SetYear(m_album.iYear);
   m_albumItem->GetMusicInfoTag()->SetLoaded(true);
-  m_albumItem->GetMusicInfoTag()->SetRating('0' + (m_album.iRating + 1) / 2);
+  m_albumItem->GetMusicInfoTag()->SetRating('0' + m_album.iRating);
   m_albumItem->GetMusicInfoTag()->SetGenre(m_album.genre);
   m_albumItem->GetMusicInfoTag()->SetDatabaseId(m_album.idAlbum, "album");
   CMusicDatabase::SetPropertiesFromAlbum(*m_albumItem,m_album);
@@ -221,11 +222,24 @@ void CGUIDialogMusicInfo::SetDiscography()
   CMusicDatabase database;
   database.Open();
 
+  vector<int> albumsByArtist;
+  database.GetAlbumsByArtist(m_artist.idArtist, true, albumsByArtist);
+
   for (unsigned int i=0;i<m_artist.discography.size();++i)
   {
     CFileItemPtr item(new CFileItem(m_artist.discography[i].first));
     item->SetLabel2(m_artist.discography[i].second);
-    long idAlbum = database.GetAlbumByName(item->GetLabel(),m_artist.strArtist);
+
+    int idAlbum = -1;
+    for (vector<int>::const_iterator album = albumsByArtist.begin(); album != albumsByArtist.end(); ++album)
+    {
+      if (database.GetAlbumById(*album).Equals(item->GetLabel()))
+      {
+        idAlbum = *album;
+        item->GetMusicInfoTag()->SetDatabaseId(idAlbum, "album");
+        break;
+      }
+    }
 
     if (idAlbum != -1) // we need this slight stupidity to get correct case for the album name
       item->SetArt("thumb", database.GetArtForItem(idAlbum, "album", "thumb"));
@@ -241,67 +255,49 @@ void CGUIDialogMusicInfo::Update()
   if (m_bArtistInfo)
   {
     CONTROL_ENABLE(CONTROL_BTN_GET_FANART);
-    SetLabel(CONTROL_ARTIST, m_artist.strArtist );
-    SetLabel(CONTROL_GENRE, StringUtils::Join(m_artist.genre, g_advancedSettings.m_musicItemSeparator));
-    SetLabel(CONTROL_MOODS, StringUtils::Join(m_artist.moods, g_advancedSettings.m_musicItemSeparator));
-    SetLabel(CONTROL_STYLES, StringUtils::Join(m_artist.styles, g_advancedSettings.m_musicItemSeparator));
-    if (m_bViewReview)
+
+    SetLabel(CONTROL_TEXTAREA, m_artist.strBiography);
+    CGUIMessage message(GUI_MSG_LABEL_BIND, GetID(), CONTROL_LIST, 0, 0, m_albumSongs);
+    OnMessage(message);
+
+    if (GetControl(CONTROL_BTN_TRACKS)) // if no CONTROL_BTN_TRACKS found - allow skinner full visibility control over CONTROL_TEXTAREA and CONTROL_LIST
     {
-      SET_CONTROL_VISIBLE(CONTROL_TEXTAREA);
-      SET_CONTROL_HIDDEN(CONTROL_LIST);
-      SetLabel(CONTROL_TEXTAREA, m_artist.strBiography);
-      SET_CONTROL_LABEL(CONTROL_BTN_TRACKS, 21888);
-    }
-    else
-    {
-      SET_CONTROL_VISIBLE(CONTROL_LIST);
-      if (GetControl(CONTROL_LIST))
+      if (m_bViewReview)
       {
-        SET_CONTROL_HIDDEN(CONTROL_TEXTAREA);
-        CGUIMessage message(GUI_MSG_LABEL_BIND, GetID(), CONTROL_LIST, 0, 0, m_albumSongs);
-        OnMessage(message);
+        SET_CONTROL_VISIBLE(CONTROL_TEXTAREA);
+        SET_CONTROL_HIDDEN(CONTROL_LIST);
+        SET_CONTROL_LABEL(CONTROL_BTN_TRACKS, 21888);
       }
       else
-        CLog::Log(LOGERROR, "Out of date skin - needs list with id %i", CONTROL_LIST);
-      SET_CONTROL_LABEL(CONTROL_BTN_TRACKS, 21887);
+      {
+        SET_CONTROL_VISIBLE(CONTROL_LIST);
+        SET_CONTROL_HIDDEN(CONTROL_TEXTAREA);
+        SET_CONTROL_LABEL(CONTROL_BTN_TRACKS, 21887);
+      }
     }
   }
   else
   {
     CONTROL_DISABLE(CONTROL_BTN_GET_FANART);
-    SetLabel(CONTROL_ALBUM, m_album.strAlbum );
-    SetLabel(CONTROL_ARTIST, StringUtils::Join(m_album.artist, g_advancedSettings.m_musicItemSeparator) );
-    CStdString date; date.Format("%d", m_album.iYear);
-    SetLabel(CONTROL_DATE, date );
 
-    CStdString strRating;
-    if (m_album.iRating > 0)
-      strRating.Format("%i/9", m_album.iRating);
-    SetLabel(CONTROL_RATING, strRating );
+    SetLabel(CONTROL_TEXTAREA, m_album.strReview);
+    CGUIMessage message(GUI_MSG_LABEL_BIND, GetID(), CONTROL_LIST, 0, 0, m_albumSongs);
+    OnMessage(message);
 
-    SetLabel(CONTROL_GENRE, StringUtils::Join(m_album.genre, g_advancedSettings.m_musicItemSeparator).c_str());
-    SetLabel(CONTROL_MOODS, StringUtils::Join(m_album.moods, g_advancedSettings.m_musicItemSeparator));
-    SetLabel(CONTROL_STYLES, StringUtils::Join(m_album.styles, g_advancedSettings.m_musicItemSeparator));
-
-    if (m_bViewReview)
+    if (GetControl(CONTROL_BTN_TRACKS)) // if no CONTROL_BTN_TRACKS found - allow skinner full visibility control over CONTROL_TEXTAREA and CONTROL_LIST
     {
-      SET_CONTROL_VISIBLE(CONTROL_TEXTAREA);
-      SET_CONTROL_HIDDEN(CONTROL_LIST);
-      SetLabel(CONTROL_TEXTAREA, m_album.strReview);
-      SET_CONTROL_LABEL(CONTROL_BTN_TRACKS, 182);
-    }
-    else
-    {
-      SET_CONTROL_VISIBLE(CONTROL_LIST);
-      if (GetControl(CONTROL_LIST))
+      if (m_bViewReview)
       {
-        SET_CONTROL_HIDDEN(CONTROL_TEXTAREA);
-        CGUIMessage message(GUI_MSG_LABEL_BIND, GetID(), CONTROL_LIST, 0, 0, m_albumSongs);
-        OnMessage(message);
+        SET_CONTROL_VISIBLE(CONTROL_TEXTAREA);
+        SET_CONTROL_HIDDEN(CONTROL_LIST);
+        SET_CONTROL_LABEL(CONTROL_BTN_TRACKS, 182);
       }
       else
-        CLog::Log(LOGERROR, "Out of date skin - needs list with id %i", CONTROL_LIST);
-      SET_CONTROL_LABEL(CONTROL_BTN_TRACKS, 183);
+      {
+        SET_CONTROL_VISIBLE(CONTROL_LIST);
+        SET_CONTROL_HIDDEN(CONTROL_TEXTAREA);
+        SET_CONTROL_LABEL(CONTROL_BTN_TRACKS, 183);
+      }
     }
   }
   // update the thumbnail
@@ -319,7 +315,7 @@ void CGUIDialogMusicInfo::Update()
 
 void CGUIDialogMusicInfo::SetLabel(int iControl, const CStdString& strLabel)
 {
-  if (strLabel.IsEmpty())
+  if (strLabel.empty())
   {
     SET_CONTROL_LABEL(iControl, (iControl == CONTROL_TEXTAREA) ? (m_bArtistInfo?547:414) : 416);
   }
@@ -371,12 +367,12 @@ void CGUIDialogMusicInfo::OnGetThumb()
   for (unsigned int i = 0; i < thumbs.size(); ++i)
   {
     CStdString strItemPath;
-    strItemPath.Format("thumb://Remote%i", i);
+    strItemPath = StringUtils2::Format("thumb://Remote%i", i);
     CFileItemPtr item(new CFileItem(strItemPath, false));
     item->SetArt("thumb", thumbs[i]);
     item->SetIconImage("DefaultPicture.png");
     item->SetLabel(g_localizeStrings.Get(20015));
-
+    
     // TODO: Do we need to clear the cached image?
     //    CTextureCache::Get().ClearCachedImage(thumb);
     items.Add(item);
@@ -390,7 +386,7 @@ void CGUIDialogMusicInfo::OnGetThumb()
     database.Open();
     CStdString strArtistPath;
     if (database.GetArtistPath(m_artist.idArtist,strArtistPath))
-      URIUtils::AddFileToFolder(strArtistPath,"folder.jpg",localThumb);
+      localThumb = URIUtils::AddFileToFolder(strArtistPath, "folder.jpg");
   }
   else
     localThumb = m_albumItem->GetUserMusicThumb();
@@ -411,10 +407,11 @@ void CGUIDialogMusicInfo::OnGetThumb()
     item->SetLabel(g_localizeStrings.Get(20018));
     items.Add(item);
   }
-  
+
   CStdString result;
   bool flip=false;
   VECSOURCES sources(*CMediaSourceSettings::Get().GetSources("music"));
+  AddItemPathToFileBrowserSources(sources, *m_albumItem);
   g_mediaManager.GetLocalDrives(sources);
   if (!CGUIDialogFileBrowser::ShowAndGetImage(items, sources, g_localizeStrings.Get(1030), result, &flip))
     return;   // user cancelled
@@ -423,9 +420,9 @@ void CGUIDialogMusicInfo::OnGetThumb()
     return;   // user chose the one they have
 
   CStdString newThumb;
-  if (result.Left(14) == "thumb://Remote")
+  if (StringUtils2::StartsWith(result, "thumb://Remote"))
   {
-    int number = atoi(result.Mid(14));
+    int number = atoi(result.substr(14).c_str());
     newThumb = thumbs[number];
   }
   else if (result == "thumb://Local")
@@ -471,8 +468,7 @@ void CGUIDialogMusicInfo::OnGetFanart()
   // Grab the thumbnails from the web
   for (unsigned int i = 0; i < m_artist.fanart.GetNumFanarts(); i++)
   {
-    CStdString strItemPath;
-    strItemPath.Format("fanart://Remote%i",i);
+    CStdString strItemPath = StringUtils2::Format("fanart://Remote%i",i);
     CFileItemPtr item(new CFileItem(strItemPath, false));
     CStdString thumb = m_artist.fanart.GetPreviewURL(i);
     item->SetArt("thumb", CTextureUtils::GetWrappedThumbURL(thumb));
@@ -483,7 +479,7 @@ void CGUIDialogMusicInfo::OnGetFanart()
     //    CTextureCache::Get().ClearCachedImage(thumb);
     items.Add(item);
   }
-  
+
   // Grab a local thumb
   CMusicDatabase database;
   database.Open();
@@ -491,7 +487,7 @@ void CGUIDialogMusicInfo::OnGetFanart()
   database.GetArtistPath(m_artist.idArtist,strArtistPath);
   CFileItem item(strArtistPath,true);
   CStdString strLocal = item.GetLocalFanart();
-  if (!strLocal.IsEmpty())
+  if (!strLocal.empty())
   {
     CFileItemPtr itemLocal(new CFileItem("fanart://Local",false));
     itemLocal->SetArt("thumb", strLocal);
@@ -508,9 +504,9 @@ void CGUIDialogMusicInfo::OnGetFanart()
     itemNone->SetLabel(g_localizeStrings.Get(20439));
     items.Add(itemNone);
   }
-  
+
   CStdString result;
-  VECSOURCES sources(*CMediaSourceSettings::Get().GetSources("music"));
+  VECSOURCES sources = *CMediaSourceSettings::Get().GetSources("music");
   g_mediaManager.GetLocalDrives(sources);
   bool flip=false;
   if (!CGUIDialogFileBrowser::ShowAndGetImage(items, sources, g_localizeStrings.Get(20437), result, &flip, 20445))
@@ -519,14 +515,14 @@ void CGUIDialogMusicInfo::OnGetFanart()
   // delete the thumbnail if that's what the user wants, else overwrite with the
   // new thumbnail
   if (result.Equals("fanart://Current"))
-   return; 
+   return;
 
   if (result.Equals("fanart://Local"))
     result = strLocal;
- 
-  if (result.Left(15)  == "fanart://Remote")
+
+  if (StringUtils2::StartsWith(result, "fanart://Remote"))
   {
-    int iFanart = atoi(result.Mid(15).c_str());
+    int iFanart = atoi(result.substr(15).c_str());
     m_artist.fanart.SetPrimaryFanart(iFanart);
     result = m_artist.fanart.GetImageURL();
   }
@@ -558,14 +554,14 @@ void CGUIDialogMusicInfo::OnSearch(const CFileItem* pItem)
 {
   CMusicDatabase database;
   database.Open();
-  long idAlbum = database.GetAlbumByName(pItem->GetLabel(),m_artist.strArtist);
-  if (idAlbum != -1)
+  if (pItem->HasMusicInfoTag() &&
+      pItem->GetMusicInfoTag()->GetDatabaseId() > 0)
   {
     CAlbum album;
-    if (database.GetAlbumInfo(idAlbum,album,&album.songs))
+    if (database.GetAlbum(pItem->GetMusicInfoTag()->GetDatabaseId(), album))
     {
       CStdString strPath;
-      database.GetAlbumPath(idAlbum,strPath);
+      database.GetAlbumPath(pItem->GetMusicInfoTag()->GetDatabaseId(), strPath);
       SetAlbum(album,strPath);
       Update();
     }
@@ -573,7 +569,24 @@ void CGUIDialogMusicInfo::OnSearch(const CFileItem* pItem)
 }
 
 CFileItemPtr CGUIDialogMusicInfo::GetCurrentListItem(int offset)
-{ 
-  return m_albumItem; 
+{
+  return m_albumItem;
 }
 
+void CGUIDialogMusicInfo::AddItemPathToFileBrowserSources(VECSOURCES &sources, const CFileItem &item)
+{
+  CStdString itemDir;
+
+  if (item.HasMusicInfoTag() && item.GetMusicInfoTag()->GetType() == "song")
+    itemDir = URIUtils::GetParentPath(item.GetMusicInfoTag()->GetURL());
+  else
+    itemDir = item.GetPath();
+
+  if (!itemDir.empty() && CDirectory::Exists(itemDir))
+  {
+    CMediaSource itemSource;
+    itemSource.strName = g_localizeStrings.Get(36041);
+    itemSource.strPath = itemDir;
+    sources.push_back(itemSource);
+  }
+}

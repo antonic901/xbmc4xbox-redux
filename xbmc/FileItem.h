@@ -122,6 +122,7 @@ public:
    */
   bool IsAudio() const;
 
+  bool IsKaraoke() const;
   bool IsCUESheet() const;
   bool IsInternetStream(const bool bStrictCheck = false) const;
   bool IsPlayList() const;
@@ -129,9 +130,9 @@ public:
   bool IsLibraryFolder() const;
   bool IsPythonScript() const;
   bool IsXBE() const;
+  bool IsDefaultXBE() const;
   bool IsPlugin() const;
   bool IsScript() const;
-  bool IsDefaultXBE() const;
   bool IsAddonsPath() const;
   bool IsSourcesPath() const;
   bool IsShortCut() const;

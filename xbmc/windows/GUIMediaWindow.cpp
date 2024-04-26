@@ -963,10 +963,10 @@ bool CGUIMediaWindow::OnClick(int iItem)
     delete pFileDirectory;
   }
 
-  CURL url(pItem->GetPath());
-  if (url.GetProtocol() == "script")
+  if (pItem->IsScript())
   {
     // execute the script
+    CURL url(pItem->GetPath());
     AddonPtr addon;
     if (CAddonMgr::Get().GetAddon(url.GetHostName(), addon, ADDON_SCRIPT))
     {

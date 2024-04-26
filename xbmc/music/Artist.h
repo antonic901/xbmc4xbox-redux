@@ -36,7 +36,7 @@ public:
   long idArtist;
   bool operator<(const CArtist& a) const
   {
-    if (strMusicBrainzArtistID.IsEmpty() && a.strMusicBrainzArtistID.IsEmpty())
+    if (strMusicBrainzArtistID.empty() && a.strMusicBrainzArtistID.empty())
     {
       if (strArtist < a.strArtist) return true;
       if (strArtist > a.strArtist) return false;
@@ -47,24 +47,26 @@ public:
     if (strMusicBrainzArtistID > a.strMusicBrainzArtistID) return false;
     return false;
   }
+  
+  void MergeScrapedArtist(const CArtist& source, bool override = true);
 
   void Reset()
   {
-    strArtist.Empty();
+    strArtist.clear();
     genre.clear();
-    strBiography.Empty();
+    strBiography.clear();
     styles.clear();
     moods.clear();
     instruments.clear();
-    strBorn.Empty();
-    strFormed.Empty();
-    strDied.Empty();
-    strDisbanded.Empty();
+    strBorn.clear();
+    strFormed.clear();
+    strDied.clear();
+    strDisbanded.clear();
     yearsActive.clear();
     thumbURL.Clear();
     discography.clear();
     idArtist = -1;
-    strPath.Empty();
+    strPath.clear();
   }
 
   /*! \brief Load artist information from an XML file.
@@ -122,9 +124,11 @@ public:
   std::string GetArtist() const                { return m_strArtist; }
   std::string GetMusicBrainzArtistID() const   { return m_strMusicBrainzArtistID; }
   std::string GetJoinPhrase() const            { return m_strJoinPhrase; }
+  int         GetArtistId() const              { return idArtist; }
   void SetArtist(const std::string &strArtist) { m_strArtist = strArtist; }
   void SetMusicBrainzArtistID(const std::string &strMusicBrainzArtistID) { m_strMusicBrainzArtistID = strMusicBrainzArtistID; }
   void SetJoinPhrase(const std::string &strJoinPhrase) { m_strJoinPhrase = strJoinPhrase; }
+  void SetArtistId(int idArtist)               { this->idArtist = idArtist; }
 
 private:
   long idArtist;

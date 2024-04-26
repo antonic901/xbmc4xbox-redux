@@ -115,6 +115,9 @@ void CAdvancedSettings::Initialize()
   m_audioApplyDrc = true;
   m_dvdplayerIgnoreDTSinWAV = false;
 
+  m_karaokeChangeGenreForKaraokeSongs = false;
+  m_karaokeStartIndex = 1;
+
   m_audioPlayCountMinimumPercent = 90.0f;
 
   m_videoSubsDelayRange = 10;

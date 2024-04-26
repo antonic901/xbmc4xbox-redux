@@ -18,17 +18,13 @@
  *
  */
 
-#include "music/infoscanner/MusicAlbumInfo.h"
-#include "ScraperParser.h"
+#include "MusicAlbumInfo.h"
 #include "addons/Scraper.h"
-#include "utils/XMLUtils.h"
-#include "utils/CharsetConverter.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "settings/AdvancedSettings.h"
 
 using namespace std;
-
 using namespace MUSIC_GRABBER;
 
 CMusicAlbumInfo::CMusicAlbumInfo(const CStdString& strAlbumInfo, const CScraperUrl& strAlbumURL)
@@ -53,7 +49,7 @@ CMusicAlbumInfo::CMusicAlbumInfo(const CStdString& strAlbum, const CStdString& s
 void CMusicAlbumInfo::SetAlbum(CAlbum& album)
 {
   m_album = album;
-  m_album.m_strDateOfRelease.Format("%i", album.iYear);
+  m_album.m_strDateOfRelease = StringUtils2::Format("%i", album.iYear);
   m_strTitle2 = "";
   m_bLoaded = true;
 }
@@ -61,7 +57,7 @@ void CMusicAlbumInfo::SetAlbum(CAlbum& album)
 bool CMusicAlbumInfo::Load(XFILE::CCurlFile& http, const ADDON::ScraperPtr& scraper)
 {
   bool fSuccess = scraper->GetAlbumDetails(http, m_albumURL, m_album);
-  if (fSuccess && m_strTitle2.empty()) 
+  if (fSuccess && m_strTitle2.empty())
     m_strTitle2 = m_album.strAlbum;
   SetLoaded(fSuccess);
   return fSuccess;

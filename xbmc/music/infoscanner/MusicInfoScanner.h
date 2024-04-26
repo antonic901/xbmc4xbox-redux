@@ -20,7 +20,7 @@
  */
 #include "threads/Thread.h"
 #include "music/MusicDatabase.h"
-#include "music/infoscanner/MusicAlbumInfo.h"
+#include "MusicAlbumInfo.h"
 #include "MusicInfoScraper.h"
 
 class CAlbum;
@@ -67,35 +67,36 @@ public:
    This takes a list of FileItems and turns it into a tree of Albums,
    Artists, and Songs.
    Albums are defined uniquely by the album name and album artist.
-
+   
    \param songs [in/out] list of songs to categorise - albumartist field may be altered.
    \param albums [out] albums found within these songs.
    */
   static void FileItemsToAlbums(CFileItemList& items, VECALBUMS& albums, MAPSONGS* songsMap = NULL);
 
   /*! \brief Fixup albums and songs
-
+   
    If albumartist is not available in a song, we determine it from the
    common portion of each song's artist list.
-
+   
    eg the common artist for
    Bob Dylan / Tom Petty / Roy Orbison
    Bob Dylan / Tom Petty
    would be "Bob Dylan / Tom Petty".
-
+   
    If all songs that share an album
    1. have a non-empty album name
    2. have at least two different primary artists
    3. have no album artist set
    4. and no track numbers overlap
    we assume it is a various artists album, and set the albumartist field accordingly.
-
+   
    */
   static void FixupAlbums(VECALBUMS &albums);
 
   /*! \brief Find art for albums
    Based on the albums in the folder, finds whether we have unique album art
    and assigns to the album if we do.
+
    In order of priority:
     1. If there is a single album in the folder, then the folder art is assigned to the album.
     2. We find the art for each song. A .tbn file takes priority over embedded art.
@@ -103,32 +104,33 @@ public:
        and remove that art from each song so that they inherit from the album.
     4. If there is not a unique piece of art for each song, then no art is assigned
        to the album.
+
    \param albums [in/out] list of albums to categorise - art field may be altered.
    \param path [in] path containing albums.
    */
   static void FindArtForAlbums(VECALBUMS &albums, const CStdString &path);
 
   /*! \brief Update the database information for a MusicDB album
-   Given a musicdb:// style path pointing to an album, search and update its info
-   with the scrapers. If info is found, update the database and artwork with the new
+   Given an album, search and update its info with the given scraper.
+   If info is found, update the database and artwork with the new
    information.
-   \param strPath [in] musicdb:// style path to the album in the database
-   \param albumInfo [in/out] a CMusicAlbumInfo struct which will be populated with the output of the scraper
-   \param pDialog [in] a progress dialog which this and downstream functions can update with status, if required
+   \param album [in/out] the album to update
+   \param scraper [in] the album scraper to use
    \param bAllowSelection [in] should we allow the user to manually override the info with a GUI if the album is not found?
+   \param pDialog [in] a progress dialog which this and downstream functions can update with status, if required
    */
-  INFO_RET UpdateDatabaseAlbumInfo(const CStdString& strPath, MUSIC_GRABBER::CMusicAlbumInfo& albumInfo, bool bAllowSelection, CGUIDialogProgress* pDialog = NULL);
-
+  INFO_RET UpdateDatabaseAlbumInfo(CAlbum& album, const ADDON::ScraperPtr& scraper, bool bAllowSelection, CGUIDialogProgress* pDialog = NULL);
+ 
   /*! \brief Update the database information for a MusicDB artist
-   Given a musicdb:// style path pointing to an artist, search and update its info
-   with the scrapers. If info is found, update the database and artwork with the new
+   Given an artist, search and update its info with the given scraper.
+   If info is found, update the database and artwork with the new
    information.
-   \param strPath [in] musicdb:// style path to the artist in the database
-   \param albumInfo [in/out] a CMusicArtistInfo struct which will be populated with the output of the scraper
-   \param pDialog [in] a progress dialog which this and downstream functions can update with status, if required
+   \param artist [in/out] the artist to update
+   \param scraper [in] the artist scraper to use
    \param bAllowSelection [in] should we allow the user to manually override the info with a GUI if the album is not found?
+   \param pDialog [in] a progress dialog which this and downstream functions can update with status, if required
    */
-  INFO_RET UpdateDatabaseArtistInfo(const CStdString& strPath, MUSIC_GRABBER::CMusicArtistInfo& artistInfo, bool bAllowSelection, CGUIDialogProgress* pDialog = NULL);
+  INFO_RET UpdateDatabaseArtistInfo(CArtist& artist, const ADDON::ScraperPtr& scraper, bool bAllowSelection, CGUIDialogProgress* pDialog = NULL);
 
   /*! \brief Using the scrapers download metadata for an album
    Given a CAlbum style struct containing some data about an album, query
@@ -140,7 +142,7 @@ public:
    \param albumInfo [in/out] a CMusicAlbumInfo struct which will be populated with the output of the scraper
    \param pDialog [in] a progress dialog which this and downstream functions can update with status, if required
    */
-  INFO_RET DownloadAlbumInfo(const CAlbum& album, ADDON::ScraperPtr& scraper, MUSIC_GRABBER::CMusicAlbumInfo& albumInfo, CGUIDialogProgress* pDialog = NULL);
+  INFO_RET DownloadAlbumInfo(const CAlbum& album, const ADDON::ScraperPtr& scraper, MUSIC_GRABBER::CMusicAlbumInfo& albumInfo, CGUIDialogProgress* pDialog = NULL);
 
   /*! \brief Using the scrapers download metadata for an artist
    Given a CAlbum style struct containing some data about an artist, query
@@ -152,7 +154,7 @@ public:
    \param artistInfo [in/out] a CMusicAlbumInfo struct which will be populated with the output of the scraper
    \param pDialog [in] a progress dialog which this and downstream functions can update with status, if required
    */
-  INFO_RET DownloadArtistInfo(const CArtist& artist, ADDON::ScraperPtr& scraper, MUSIC_GRABBER::CMusicArtistInfo& artistInfo, CGUIDialogProgress* pDialog = NULL);
+  INFO_RET DownloadArtistInfo(const CArtist& artist, const ADDON::ScraperPtr& scraper, MUSIC_GRABBER::CMusicArtistInfo& artistInfo, CGUIDialogProgress* pDialog = NULL);
 
   /*! \brief Search for art for an artist
    Look for art for an artist. Checks the artist structure for thumbs, and checks
@@ -196,7 +198,7 @@ protected:
    \param preferredScraper [in] A ScraperPtr to the preferred album/artist scraper.
    \param musicBrainzURL [out] will be populated with the MB URL for the artist/album.
    */
-  bool ResolveMusicBrainz(const CStdString strMusicBrainzID, ADDON::ScraperPtr &preferredScraper, MUSIC_GRABBER::CMusicInfoScraper &musicInfoScraper, CScraperUrl &musicBrainzURL);
+  bool ResolveMusicBrainz(const CStdString &strMusicBrainzID, const ADDON::ScraperPtr &preferredScraper, CScraperUrl &musicBrainzURL);
 
 protected:
   bool m_showDialog;

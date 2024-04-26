@@ -24,6 +24,7 @@
 #pragma once
 
 #include "utils/StdString.h"
+#include "utils/ISerializable.h"
 #include "XBDateTime.h"
 #include "music/tags/MusicInfoTag.h" // for EmbeddedArt
 #include "Artist.h"
@@ -50,13 +51,14 @@ class CFileItem;
  \brief Class to store and read song information from CMusicDatabase
  \sa CAlbum, CMusicDatabase
  */
-class CSong
+class CSong: public ISerializable
 {
 public:
   CSong() ;
   CSong(CFileItem& item);
   virtual ~CSong(){};
   void Clear() ;
+  void MergeScrapedSong(const CSong& source, bool override);
   virtual void Serialize(CVariant& value) const;
 
   bool operator<(const CSong &song) const

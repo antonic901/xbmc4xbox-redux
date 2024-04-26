@@ -20,7 +20,7 @@
  *
  */
 
-#include "music/windows/GUIWindowMusicBase.h"
+#include "GUIWindowMusicBase.h"
 #include "utils/Stopwatch.h"
 
 class CFileItemList;
@@ -36,11 +36,10 @@ public:
   virtual bool OnAction(const CAction& action);
   virtual void FrameMove();
 
-  virtual void OnPrepareFileItems(CFileItemList &items);
 protected:
   virtual void OnItemLoaded(CFileItem* pItem) {};
   // override base class methods
-  virtual bool Update(const CStdString &strDirectory);
+  virtual bool Update(const CStdString &strDirectory, bool updateFilterPath = true);
   virtual bool GetDirectory(const CStdString &strDirectory, CFileItemList &items);
   virtual void UpdateButtons();
   virtual void PlayItem(int iItem);

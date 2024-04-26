@@ -2,9 +2,7 @@
 \file GUIWindowMusicBase.h
 \brief
 */
-
 #pragma once
-
 /*
  *      Copyright (C) 2005-2013 Team XBMC
  *      http://xbmc.org
@@ -34,9 +32,9 @@
 #include "music/MusicThumbLoader.h"
 
 /*!
- \ingroup windows 
+ \ingroup windows
  \brief The base class for music windows
- 
+
  CGUIWindowMusicBase is the base class for
  all music windows.
  */
@@ -48,9 +46,9 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnAction(const CAction &action);
   virtual bool OnBack(int actionID);
-  
+
   void OnInfo(CFileItem *pItem, bool bShowInfo = false);
-  
+
 protected:
   virtual void OnInitWindow();
   /*!
@@ -64,13 +62,12 @@ protected:
   \brief Overwrite to update your gui buttons (visible, enable,...)
   */
   virtual void UpdateButtons();
-  
+
   virtual bool GetDirectory(const CStdString &strDirectory, CFileItemList &items);
   virtual void OnRetrieveMusicInfo(CFileItemList& items);
   void AddItemToPlayList(const CFileItemPtr &pItem, CFileItemList &queuedItems);
   virtual void OnScan(int iItem) {};
   void OnRipCD();
-  virtual void OnPrepareFileItems(CFileItemList &items);
   virtual CStdString GetStartFolder(const CStdString &dir);
 
   virtual bool CheckFilterAdvanced(CFileItemList &items) const;
@@ -96,7 +93,7 @@ protected:
   void OnRipTrack(int iItem);
   void OnSearch();
   virtual void LoadPlayList(const CStdString& strPlayList);
-  
+
   typedef std::vector <CFileItem*>::iterator ivecItems; ///< CFileItem* vector Iterator
   CGUIDialogProgress* m_dlgProgress; ///< Progress dialog
 

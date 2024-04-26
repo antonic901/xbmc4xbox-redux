@@ -82,6 +82,7 @@ CFileItem::CFileItem(const CStdString &path, const CAlbum& album)
 
   m_strPath = path;
   URIUtils::AddSlashAtEnd(m_strPath);
+  SetFromAlbum(album);
 }
 
 CFileItem::CFileItem(const CMusicInfoTag& music)
@@ -590,6 +591,14 @@ bool CFileItem::IsAudio() const
   return false;
 }
 
+bool CFileItem::IsKaraoke() const
+{
+  if ( !IsAudio())
+    return false;
+
+  return false/*CKaraokeLyricsFactory::HasLyrics( m_strPath )*/;
+}
+
 bool CFileItem::IsPicture() const
 {
   if( m_mimetype.Left(6).Equals("image/") )
@@ -670,16 +679,16 @@ bool CFileItem::IsXBE() const
   return URIUtils::GetExtension(m_strPath).Equals(".xbe", false);
 }
 
-bool CFileItem::IsType(const char *ext) const
-{
-  return URIUtils::GetExtension(m_strPath).Equals(ext, false);
-}
-
 bool CFileItem::IsDefaultXBE() const
 {
   CStdString filename = URIUtils::GetFileName(m_strPath);
   if (filename.Equals("default.xbe")) return true;
   return false;
+}
+
+bool CFileItem::IsType(const char *ext) const
+{
+  return URIUtils::GetExtension(m_strPath).Equals(ext, false);
 }
 
 bool CFileItem::IsShortCut() const

@@ -22,7 +22,6 @@
 
 #include "view/GUIViewState.h"
 
-
 class CGUIViewStateWindowMusic : public CGUIViewState
 {
 public:

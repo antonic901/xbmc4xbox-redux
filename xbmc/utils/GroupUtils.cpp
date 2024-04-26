@@ -29,9 +29,7 @@
 #include "video/VideoInfoTag.h"
 #include "utils/URIUtils.h"
 #include "filesystem/MultiPathDirectory.h"
-#ifdef _XBOX
-#include "filesystem/File.h"
-#endif
+
 using namespace std;
 
 typedef map<int, set<CFileItemPtr> > SetMap;
