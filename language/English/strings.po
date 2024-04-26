@@ -10130,7 +10130,13 @@ msgctxt "#34005"
 msgid "Flac"
 msgstr ""
 
-#empty strings from id 34006 to 36100
+#empty strings from id 34006 to 36040
+
+msgctxt "#36041"
+msgid "* Item folder"
+msgstr ""
+
+#empty strings from id 36042 to 36100
 #strings from 36100 to 36999 are reserved for settings descriptions
 
 #. Description of settings section "Appearance"

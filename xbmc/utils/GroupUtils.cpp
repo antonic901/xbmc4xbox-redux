@@ -27,6 +27,8 @@
 #include "utils/Variant.h"
 #include "video/VideoDbUrl.h"
 #include "video/VideoInfoTag.h"
+#include "utils/URIUtils.h"
+#include "filesystem/MultiPathDirectory.h"
 #ifdef _XBOX
 #include "filesystem/File.h"
 #endif
@@ -93,6 +95,7 @@ bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileI
 
       int ratings = 0;
       int iWatched = 0; // have all the movies been played at least once?
+      std::set<CStdString> pathSet;
       for (std::set<CFileItemPtr>::const_iterator movie = set->second.begin(); movie != set->second.end(); movie++)
       {
         CVideoInfoTag* movieInfo = (*movie)->GetVideoInfoTag();
@@ -119,7 +122,15 @@ bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileI
         setInfo->m_playCount += movieInfo->m_playCount;
         if (movieInfo->m_playCount > 0)
           iWatched++;
+
+        //accumulate the path for a multipath construction
+        CFileItem video(movieInfo->m_basePath, false);
+        if (video.IsVideo())
+          pathSet.insert(URIUtils::GetParentPath(movieInfo->m_basePath));
+        else
+          pathSet.insert(movieInfo->m_basePath);
       }
+      setInfo->m_basePath = XFILE::CMultiPathDirectory::ConstructMultiPath(pathSet);
 
       if (ratings > 1)
         pItem->GetVideoInfoTag()->m_fRating /= ratings;
