@@ -40,6 +40,7 @@
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "GUIInfoManager.h"
+#include "video/VideoInfoTag.h"
 #include "UPnPSettings.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
@@ -344,6 +345,26 @@ CUPnP::ReleaseInstance(bool bWait)
             cleaner->Start();
         }
     }
+}
+
+/*----------------------------------------------------------------------
+|   CUPnP::MarkWatched
++---------------------------------------------------------------------*/
+bool
+CUPnP::MarkWatched(const CFileItem& item, const bool watched)
+{
+    // TODO: implement this
+    return false;
+}
+
+/*----------------------------------------------------------------------
+|   CUPnP::SaveFileState
++---------------------------------------------------------------------*/
+bool
+CUPnP::SaveFileState(const CFileItem& item, const CBookmark& bookmark, const bool updatePlayCount)
+{
+    // TODO: implement this
+    return false;
 }
 
 /*----------------------------------------------------------------------
