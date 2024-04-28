@@ -12287,6 +12287,12 @@ msgid "Category containing settings for how video output is handled."
 msgstr ""
 
 #empty strings from id 36604 to 36999
+
+#: xbmc/Windows/GUIMediaWindow.cpp
+msgctxt "#37015"
+msgid "Browse Into"
+msgstr ""
+
 #strings from id 38600 to 38999 reserved for xbmc4xbox
 
 #: system/settings/xbox.xml

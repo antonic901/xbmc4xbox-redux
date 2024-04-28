@@ -529,6 +529,17 @@ void CGUIWindowFileManager::OnClick(int iList, int iItem)
     return;
   }
 
+  if (!pItem->m_bIsFolder && pItem->IsFileFolder(EFILEFOLDER_MASK_ALL))
+  {
+    XFILE::IFileDirectory *pFileDirectory = NULL;
+    pFileDirectory = XFILE::CFactoryFileDirectory::Create(pItem->GetAsUrl(), pItem.get(), "");
+    if(pFileDirectory)
+      pItem->m_bIsFolder = true;
+    else if(pItem->m_bIsFolder)
+      pItem->m_bIsFolder = false;
+    delete pFileDirectory;
+  }
+
   if (pItem->m_bIsFolder)
   {
     // save path + drive type because of the possible refresh

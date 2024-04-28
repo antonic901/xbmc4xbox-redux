@@ -362,7 +362,7 @@ void CDirectory::FilterFileDirectories(CFileItemList &items, const CStdString &m
   for (int i=0; i< items.Size(); ++i)
   {
     CFileItemPtr pItem=items[i];
-    if ((!pItem->m_bIsFolder) && (!pItem->IsInternetStream()))
+    if (!pItem->m_bIsFolder && pItem->IsFileFolder(EFILEFOLDER_TYPE_ALWAYS))
     {
       auto_ptr<IFileDirectory> pDirectory(CFactoryFileDirectory::Create(pItem->GetURL(),pItem.get(),mask));
       if (pDirectory.get())
