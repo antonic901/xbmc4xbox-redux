@@ -636,7 +636,7 @@ extern "C"
     }
     else if (url.GetFileName().Find("*.") != string::npos)
     {
-      URIUtils::GetExtension(url.GetFileName(),strMask);
+      strMask = URIUtils::GetExtension(url.GetFileName());
       url.SetFileName(url.GetFileName().Left(url.GetFileName().Find("*.")));
     }
     int iDirSlot=0; // locate next free directory

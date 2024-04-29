@@ -63,11 +63,6 @@ CStdString URIUtils::GetExtension(const CStdString& strFileName)
   return strFileName.substr(period);
 }
 
-void URIUtils::GetExtension(const CStdString& strFile, CStdString& strExtension)
-{
-  strExtension = GetExtension(strFile);
-}
-
 bool URIUtils::HasExtension(const CStdString& strFileName)
 {
   if (IsURL(strFileName))

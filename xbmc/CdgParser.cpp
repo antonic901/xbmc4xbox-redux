@@ -284,8 +284,7 @@ void CCdgReader::Process()
   double fCurTime = 0.0f;
   bool bIsFirstPass = true;
   double fNewTime=0.f;
-  CStdString strExt;
-  URIUtils::GetExtension(m_pLoader->GetFileName(),strExt);
+  CStdString strExt = URIUtils::GetExtension(m_pLoader->GetFileName());
   strExt = m_pLoader->GetFileName().substr(0,m_pLoader->GetFileName().size()-strExt.size());
 
   while (!CThread::m_bStop)
@@ -299,7 +298,7 @@ void CCdgReader::Process()
       if (CThread::m_bStop)
         return;
 
-      URIUtils::GetExtension(m_pLoader->GetFileName(),strExt);
+      strExt = URIUtils::GetExtension(m_pLoader->GetFileName());
       strExt = m_pLoader->GetFileName().substr(0,m_pLoader->GetFileName().size()-strExt.size());
 
       fDiff = 0.f;

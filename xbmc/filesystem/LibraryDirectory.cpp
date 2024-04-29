@@ -52,7 +52,7 @@ bool CLibraryDirectory::GetDirectory(const CURL& url, CFileItemList &items)
   if (libNode.empty())
     return false;
 
-  if (URIUtils::GetExtension(libNode).Equals(".xml"))
+  if (URIUtils::HasExtension(libNode, ".xml"))
   { // a filter or folder node
     TiXmlElement *node = LoadXML(libNode);
     if (node)

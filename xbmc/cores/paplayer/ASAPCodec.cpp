@@ -23,6 +23,7 @@
 #include "filesystem/File.h"
 #include "utils/URIUtils.h"
 
+
 ASAPCodec::ASAPCodec()
 {
   m_CodecName = "ASAP";
@@ -39,10 +40,7 @@ bool ASAPCodec::Init(const CStdString &strFile, unsigned int filecache)
 
   CStdString strFileToLoad = strFile;
   int song = -1;
-  CStdString strExtension;
-  URIUtils::GetExtension(strFile, strExtension);
-  strExtension.MakeLower();
-  if (strExtension == ".asapstream")
+  if (URIUtils::HasExtension(strFile, ".asapstream"))
   {
     CStdString strFileName = URIUtils::GetFileName(strFile);
     int iStart = strFileName.ReverseFind('-') + 1;

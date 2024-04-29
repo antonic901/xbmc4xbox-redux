@@ -39,7 +39,6 @@ public:
 
   static CStdString GetExtension(const CURL& url);
   static CStdString GetExtension(const CStdString& strFileName);
-  static void GetExtension(const CStdString& strFile, CStdString& strExtension);
 
   /*!
    \brief Check if there is a file extension

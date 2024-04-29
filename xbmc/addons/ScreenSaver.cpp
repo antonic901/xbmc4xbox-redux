@@ -96,7 +96,7 @@ void CScreenSaver::GetInfo(SCR_INFO *info)
 void CScreenSaver::Destroy()
 {
 #ifdef HAS_PYTHON
-  if (URIUtils::GetExtension(LibPath()).Equals(".py", false))
+  if (URIUtils::HasExtension(LibPath(), ".py"))
   {
     g_alarmClock.Start(SCRIPT_ALARM, SCRIPT_TIMEOUT, "StopScript(" + LibPath() + ")", true, false);
     return;

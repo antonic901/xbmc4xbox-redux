@@ -49,9 +49,7 @@ bool COggTag::Read(const CStdString& strFile1)
 
   m_musicInfoTag.SetURL(strFile);
 
-  CStdString strExtension;
-  URIUtils::GetExtension(strFile, strExtension);
-  if (strExtension==".oggstream")
+  if (URIUtils::HasExtension(strFile, ".oggstream"))
   {
     CStdString strFileName=URIUtils::GetFileName(strFile);
     int iStart=strFileName.ReverseFind("-")+1;

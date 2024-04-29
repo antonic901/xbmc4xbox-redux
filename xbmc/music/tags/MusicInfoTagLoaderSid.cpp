@@ -47,10 +47,7 @@ bool CMusicInfoTagLoaderSid::Load(const CStdString& strFileName, CMusicInfoTag& 
 {
   CStdString strFileToLoad = strFileName;
   int iTrack = 0;
-  CStdString strExtension;
-  URIUtils::GetExtension(strFileName,strExtension);
-  strExtension.MakeLower();
-  if (strExtension==".sidstream")
+  if (URIUtils::HasExtension(strFileName, ".sidstream"))
   {
     //  Extract the track to play
     CStdString strFile=URIUtils::GetFileName(strFileName);

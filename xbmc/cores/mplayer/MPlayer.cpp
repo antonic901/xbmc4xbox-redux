@@ -981,8 +981,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
       CLog::Log(LOGINFO, " dvddevice: %s", strPath.c_str());
     }
 
-    CStdString strExtension;
-    URIUtils::GetExtension(strFile, strExtension);
+    CStdString strExtension = URIUtils::GetExtension(strFile);
     strExtension.MakeLower();
 
 

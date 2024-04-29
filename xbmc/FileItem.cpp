@@ -535,27 +535,27 @@ bool CFileItem::IsVideo() const
   if (IsHDHomeRun() || IsTuxBox() || URIUtils::IsDVD(m_strPath) || IsSlingbox())
     return true;
 
-  CStdString extension;
   if( m_mimetype.Left(12).Equals("application/") )
   { /* check for some standard types */
-    extension = m_mimetype.Mid(12);
+    CStdString extension = m_mimetype.Mid(12);
     if( extension.Equals("ogg")
      || extension.Equals("mp4")
      || extension.Equals("mxf") )
      return true;
   }
 
-  URIUtils::GetExtension(m_strPath, extension);
+  return URIUtils::HasExtension(m_strPath, g_advancedSettings.m_videoExtensions);
+}
 
-  if (extension.IsEmpty())
-    return false;
+bool CFileItem::IsDiscStub() const
+{
+  if (IsVideoDb() && HasVideoInfoTag())
+  {
+    CFileItem dbItem(m_bIsFolder ? GetVideoInfoTag()->m_strPath : GetVideoInfoTag()->m_strFileNameAndPath, m_bIsFolder);
+    return dbItem.IsDiscStub();
+  }
 
-  extension.ToLower();
-
-  if (g_advancedSettings.m_videoExtensions.Find(extension) != -1)
-    return true;
-
-  return false;
+  return URIUtils::HasExtension(m_strPath, g_advancedSettings.m_discStubExtensions);
 }
 
 bool CFileItem::IsAudio() const
@@ -569,26 +569,16 @@ bool CFileItem::IsAudio() const
   if (HasPictureInfoTag()) return false;
   if (IsCDDA()) return true;
 
-  CStdString extension;
   if( m_mimetype.Left(12).Equals("application/") )
   { /* check for some standard types */
-    extension = m_mimetype.Mid(12);
+    CStdString extension = m_mimetype.Mid(12);
     if( extension.Equals("ogg")
      || extension.Equals("mp4")
      || extension.Equals("mxf") )
      return true;
   }
 
-  URIUtils::GetExtension(m_strPath, extension);
-
-  if (extension.IsEmpty())
-    return false;
-
-  extension.ToLower();
-  if (g_advancedSettings.m_musicExtensions.Find(extension) != -1)
-    return true;
-
-  return false;
+  return URIUtils::HasExtension(m_strPath, g_advancedSettings.m_musicExtensions);
 }
 
 bool CFileItem::IsKaraoke() const
@@ -613,12 +603,12 @@ bool CFileItem::IsPicture() const
 
 bool CFileItem::IsLyrics() const
 {
-  return URIUtils::GetExtension(m_strPath).Equals(".cdg", false) || URIUtils::GetExtension(m_strPath).Equals(".lrc", false);
+  return URIUtils::HasExtension(m_strPath, ".cdg|.lrc");
 }
 
 bool CFileItem::IsCUESheet() const
 {
-  return URIUtils::GetExtension(m_strPath).Equals(".cue", false);
+  return URIUtils::HasExtension(m_strPath, ".cue");
 }
 
 bool CFileItem::IsInternetStream(const bool bStrictCheck /* = false */) const
@@ -646,12 +636,7 @@ bool CFileItem::IsFileFolder(EFileFolderType types) const
     || IsZIP()
     || IsRAR()
     || IsRSS()
-    || IsType(".ogg")
-    || IsType(".oga")
-    || IsType(".nsf")
-    || IsType(".sid")
-    || IsType(".sap")
-    || IsType(".xsp")
+    || IsType(".ogg|.oga|.nsf|.sid|.sap|.xsp")
 #if defined(TARGET_ANDROID)
     || IsType(".apk")
 #endif
@@ -678,10 +663,7 @@ bool CFileItem::IsSmartPlayList() const
   if (HasProperty("library.smartplaylist") && GetProperty("library.smartplaylist").asBoolean())
     return true;
 
-  CStdString strExtension;
-  URIUtils::GetExtension(m_strPath, strExtension);
-  strExtension.ToLower();
-  return (strExtension == ".xsp");
+  return URIUtils::HasExtension(m_strPath, ".xsp");
 }
 
 bool CFileItem::IsLibraryFolder() const
@@ -699,7 +681,7 @@ bool CFileItem::IsPlayList() const
 
 bool CFileItem::IsPythonScript() const
 {
-  return URIUtils::GetExtension(m_strPath).Equals(".py", false);
+  return URIUtils::HasExtension(m_strPath, ".py");
 }
 
 bool CFileItem::IsXBE() const
@@ -716,25 +698,22 @@ bool CFileItem::IsDefaultXBE() const
 
 bool CFileItem::IsType(const char *ext) const
 {
-  return URIUtils::GetExtension(m_strPath).Equals(ext, false);
+  return URIUtils::HasExtension(m_strPath, ext);
 }
 
 bool CFileItem::IsShortCut() const
 {
-  return URIUtils::GetExtension(m_strPath).Equals(".cut", false);
+  return URIUtils::HasExtension(m_strPath, ".cut");
 }
 
 bool CFileItem::IsNFO() const
 {
-  return URIUtils::GetExtension(m_strPath).Equals(".nfo", false);
+  return URIUtils::HasExtension(m_strPath, ".nfo");
 }
 
 bool CFileItem::IsDVDImage() const
 {
-  CStdString strExtension;
-  URIUtils::GetExtension(m_strPath, strExtension);
-  if (strExtension.Equals(".img") || strExtension.Equals(".iso") || strExtension.Equals(".nrg")) return true;
-  return false;
+  return URIUtils::HasExtension(m_strPath, ".img|.iso|.nrg");
 }
 
 bool CFileItem::IsOpticalMediaFile() const
@@ -785,20 +764,17 @@ bool CFileItem::IsZIP() const
 
 bool CFileItem::IsCBZ() const
 {
-  return URIUtils::GetExtension(m_strPath).Equals(".cbz", false);
+  return URIUtils::HasExtension(m_strPath, ".cbz");
 }
 
 bool CFileItem::IsCBR() const
 {
-  return URIUtils::GetExtension(m_strPath).Equals(".cbr", false);
+  return URIUtils::HasExtension(m_strPath, ".cbr");
 }
 
 bool CFileItem::IsRSS() const
 {
-  if (m_strPath.Left(6).Equals("rss://"))
-    return true;
-
-  return URIUtils::GetExtension(m_strPath).Equals(".rss")
+  return m_strPath.Left(6).Equals("rss://") || URIUtils::HasExtension(m_strPath, ".rss")
       || GetMimeType() == "application/rss+xml";
 }
 
@@ -2729,9 +2705,7 @@ CStdString CFileItem::GetLocalMetadataPath() const
 
 CStdString CFileItem::GetCachedGameSaveThumb() const
 {
-  CStdString extension;
-  URIUtils::GetExtension(m_strPath,extension);
-  if (extension.Equals(".xbx")) // savemeta.xbx - cache thumb
+  if (URIUtils::HasExtension(m_strPath, ".xbx")) // savemeta.xbx - cache thumb
   { // get the locally cached thumb
     Crc32 crc;
     crc.ComputeFromLowerCase(m_strPath);

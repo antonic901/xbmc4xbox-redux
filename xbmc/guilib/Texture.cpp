@@ -213,7 +213,7 @@ bool CBaseTexture::LoadFromFile(const CStdString& texturePath, unsigned int maxW
   }
 
   //ImageLib is sooo sloow for jpegs. Try our own decoder first. If it fails, fall back to ImageLib.
-  if (URIUtils::GetExtension(texturePath).Equals(".jpg") || URIUtils::GetExtension(texturePath).Equals(".tbn"))
+  if (URIUtils::HasExtension(texturePath, ".jpg|.tbn"))
   {
     CJpegIO jpegfile;
     if (jpegfile.Open(texturePath, width, height))

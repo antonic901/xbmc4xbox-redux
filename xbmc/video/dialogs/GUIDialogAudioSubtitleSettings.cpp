@@ -327,9 +327,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
     }
     if (CGUIDialogFileBrowser::ShowAndGetFile(*CMediaSourceSettings::Get().GetSources("video"),strMask,g_localizeStrings.Get(293),strPath,false,true)) // "subtitles"
     {
-      CStdString strExt;
-      URIUtils::GetExtension(strPath,strExt);
-      if (strExt.CompareNoCase(".idx") == 0 || strExt.CompareNoCase(".sub") == 0)
+      if (URIUtils::HasExtension(strPath, ".idx|.sub"))
       {
         // else get current position
         double time = g_application.GetTime();
@@ -343,11 +341,11 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
           if (g_application.GetCurrentPlayer() == EPC_MPLAYER)
               g_application.m_pPlayer->CloseFile(); // to conserve memory if unraring
               
-          if (CFile::Copy(strPath,"special://temp/subtitle"+strExt+".keep"))
+          if (CFile::Copy(strPath,"special://temp/subtitle"+URIUtils::GetExtension(strPath)+".keep"))
           {
             CStdString strPath2;
             CStdString strPath3;
-            if (strExt.CompareNoCase(".idx") == 0)
+            if (URIUtils::HasExtension(strPath, ".idx"))
             {
               strPath2 = URIUtils::ReplaceExtension(strPath,".sub");
               strPath3 = "special://temp/subtitle.sub.keep";
@@ -418,8 +416,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
       else
       {
         m_subtitleStream = g_application.m_pPlayer->GetSubtitleCount();
-        CStdString strExt;
-        URIUtils::GetExtension(strPath,strExt);
+        std::string strExt = URIUtils::GetExtension(strPath);
         if (CFile::Copy(strPath,"special://temp/subtitle.browsed"+strExt))
         {
           int id = g_application.m_pPlayer->AddSubtitle("special://temp/subtitle.browsed"+strExt);

@@ -514,8 +514,6 @@ void CUtil::CleanString(const CStdString& strFileName, CStdString& strTitle, CSt
 
   CRegExp reTags(true);
   CRegExp reYear;
-  CStdString strExtension;
-  URIUtils::GetExtension(strFileName, strExtension);
 
   if (!reYear.RegComp(g_advancedSettings.m_videoCleanDateTimeRegExp))
   {
@@ -576,7 +574,7 @@ void CUtil::CleanString(const CStdString& strFileName, CStdString& strTitle, CSt
 
   // restore extension if needed
   if (!bRemoveExtension)
-    strTitleAndYear += strExtension;
+    strTitleAndYear += URIUtils::GetExtension(strFileName);
 }
 
 void CUtil::GetQualifiedFilename(const CStdString &strBasePath, CStdString &strFilename)
@@ -1128,19 +1126,8 @@ bool CUtil::IsWritable(const CStdString& strFile)
 
 bool CUtil::IsPicture(const CStdString& strFile)
 {
-  CStdString extension = URIUtils::GetExtension(strFile);
-
-  if (extension.IsEmpty())
-    return false;
-
-  extension.ToLower();
-  if (g_advancedSettings.m_pictureExtensions.Find(extension) != -1)
-    return true;
-
-  if (extension == ".tbn" || extension == ".dds")
-    return true;
-
-  return false;
+  return URIUtils::HasExtension(strFile,
+                  g_advancedSettings.m_pictureExtensions + "|.tbn|.dds");
 }
 
 bool CUtil::ExcludeFileOrFolder(const CStdString& strFileOrFolder, const CStdStringArray& regexps)
@@ -1195,11 +1182,9 @@ bool CUtil::CacheXBEIcon(const CStdString& strFilePath, const CStdString& strIco
   g_charsetConverter.utf8ToStringCharset(strFilePath, localFile);
   CXBE xbeReader;
   CStdString strTempFile;
-  CStdString strExtension;
 
   URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath,"1.xpr",strTempFile);
-  URIUtils::GetExtension(strFilePath,strExtension);
-  if (strExtension.Equals(".xbx"))
+  if (URIUtils::HasExtension(strFilePath, ".xbx"))
   {
   ::CopyFile(strFilePath.c_str(), strTempFile.c_str(),FALSE);
   }
@@ -1485,8 +1470,7 @@ void CUtil::GetFatXQualifiedPath(CStdString& strFileNameAndPath)
 
     if (CUtil::ShortenFileName(strFileName))
     {
-      CStdString strExtension;
-      URIUtils::GetExtension(strFileName, strExtension);
+      CStdString strExtension = URIUtils::GetExtension(strFileName);
       CStdString strNoExt(URIUtils::ReplaceExtension(strFileName, ""));
       // remove any spaces as a result of truncation (only):
       while (strNoExt[strNoExt.size()-1] == ' ')
@@ -1504,8 +1488,7 @@ bool CUtil::ShortenFileName(CStdString& strFileNameAndPath)
   CStdString strFile = URIUtils::GetFileName(strFileNameAndPath);
   if (strFile.size() > 42)
   {
-    CStdString strExtension;
-    URIUtils::GetExtension(strFileNameAndPath, strExtension);
+    CStdString strExtension = URIUtils::GetExtension(strFileNameAndPath);
     CStdString strPath = strFileNameAndPath.Left( strFileNameAndPath.size() - strFile.size() );
 
     CRegExp reg;
@@ -2510,7 +2493,7 @@ CStdString CUtil::ValidatePath(const CStdString &path, bool bFixDoubleSlashes /*
 
 bool CUtil::IsUsingTTFSubtitles()
 {
-  return URIUtils::GetExtension(CSettings::Get().GetString("subtitles.font")).Equals(".ttf");
+  return URIUtils::HasExtension(CSettings::Get().GetString("subtitles.font"), ".ttf");
 }
 
 void CUtil::SplitExecFunction(const CStdString &execString, CStdString &function, vector<CStdString> &parameters)
@@ -3577,8 +3560,7 @@ void CUtil::GetSkinThemes(vector<CStdString>& vecTheme)
     CFileItemPtr pItem = items[i];
     if (!pItem->m_bIsFolder)
     {
-      CStdString strExtension;
-      URIUtils::GetExtension(pItem->GetPath(), strExtension);
+      CStdString strExtension = URIUtils::GetExtension(pItem->GetPath());
       if (strExtension == ".xpr" && pItem->GetLabel().CompareNoCase("Textures.xpr"))
       {
         CStdString strLabel = pItem->GetLabel();
