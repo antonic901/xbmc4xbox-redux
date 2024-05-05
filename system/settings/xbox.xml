@@ -60,11 +60,6 @@
       </group>
     </category>
     <category id="videoplayer">
-      <group id="1">
-        <setting id="videoplayer.autoplaynextitem">
-          <level>4</level>
-        </setting>
-      </group>
       <group id="2">
         <setting id="videoplayer.displayresolution" type="integer" label="169" help="">
           <level>1</level>

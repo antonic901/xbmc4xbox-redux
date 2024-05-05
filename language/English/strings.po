@@ -5479,7 +5479,9 @@ msgctxt "#13411"
 msgid "Minimum fan speed"
 msgstr ""
 
-#empty string with id 13412
+msgctxt "#13412"
+msgid "Play from here"
+msgstr ""
 
 #: xbmc/addons/guidialogaddoninfo.cpp
 msgctxt "#13413"
@@ -5540,7 +5542,17 @@ msgctxt "#13424"
 msgid "Use pixel buffer objects"
 msgstr ""
 
-#empty strings from id 13425 to 13499
+#empty strings from id 13425 to 13432
+
+msgctxt "#13433"
+msgid "Play the next video automatically"
+msgstr ""
+
+msgctxt "#13434"
+msgid "Play only this"
+msgstr ""
+
+#empty strings from id 13435 to 13499
 
 #: system/settings/settings.xml
 msgctxt "#13500"

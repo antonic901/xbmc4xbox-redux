@@ -1144,6 +1144,16 @@ void CGUIWindowVideoBase::GetContextButtons(int itemNumber, CContextButtons &but
       {
         buttons.Add(CONTEXT_BUTTON_RESUME_ITEM, GetResumeString(*(item.get())));     // Resume Video
       }
+      //if the item isn't a folder, is a member of a list rather than a single item
+      //and we're not on the last element of the list, 
+      //then add add either 'play from here' or 'play only this' depending on default behaviour
+      if (!item->m_bIsFolder && m_vecItems->Size() > 1 && itemNumber < m_vecItems->Size()-1)
+      {
+        if (!CSettings::Get().GetBool("videoplayer.autoplaynextitem"))
+          buttons.Add(CONTEXT_BUTTON_PLAY_AND_QUEUE, 13412);
+        else
+          buttons.Add(CONTEXT_BUTTON_PLAY_ONLY_THIS, 13434);
+      }
       if (item->IsSmartPlayList() || m_vecItems->IsSmartPlayList())
         buttons.Add(CONTEXT_BUTTON_EDIT_SMART_PLAYLIST, 586);
     }
@@ -1332,6 +1342,10 @@ bool CGUIWindowVideoBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     CUtil::DeleteVideoDatabaseDirectoryCache();
     Refresh();
     return true;
+  case CONTEXT_BUTTON_PLAY_AND_QUEUE:
+    return OnPlayAndQueueMedia(item);
+  case CONTEXT_BUTTON_PLAY_ONLY_THIS:
+    return OnPlayMedia(itemNumber);
   default:
     break;
   }
@@ -1369,6 +1383,18 @@ bool CGUIWindowVideoBase::OnPlayMedia(int iItem)
   PlayMovie(&item);
 
   return true;
+}
+
+bool CGUIWindowVideoBase::OnPlayAndQueueMedia(const CFileItemPtr &item)
+{
+  // Get the current playlist and make sure it is not shuffled
+  int iPlaylist = m_guiState->GetPlaylist();
+  if (iPlaylist != PLAYLIST_NONE && g_playlistPlayer.IsShuffled(iPlaylist))
+     g_playlistPlayer.SetShuffle(iPlaylist, false);
+
+  // Call the base method to actually queue the items
+  // and start playing the given item
+  return CGUIMediaWindow::OnPlayAndQueueMedia(item);
 }
 
 void CGUIWindowVideoBase::PlayMovie(const CFileItem *item)
