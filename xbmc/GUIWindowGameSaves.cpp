@@ -426,9 +426,7 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CStdString path;
       if (strFileName.Equals("savemeta.xbx") || strFileName.Equals("titlemeta.xbx") )
       {
-        CStdString itemPath;
-        URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->GetPath(),itemPath);
-        item->SetPath(itemPath);
+        item->SetPath(URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->GetPath()));
         item->m_bIsFolder = true;
         // first copy the titlemeta dir
         CFileItemList items2;
@@ -465,9 +463,7 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CLog::Log(LOGDEBUG,"GSM: Deletion of folder confirmed for folder %s", item->GetPath().c_str());
       if (strFileName.Equals("savemeta.xbx") || strFileName.Equals("titlemeta.xbx"))
       {
-        CStdString itemPath;
-        URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->GetPath(),itemPath);
-        item->SetPath(itemPath);
+        item->SetPath(URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->GetPath()));
         item->m_bIsFolder = true;
       }
 
@@ -488,10 +484,8 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         return true;
       CStdString path;
       if (strFileName.Equals("savemeta.xbx") || strFileName.Equals("titlemeta.xbx"))
-      {
-        CStdString itemPath;
-        URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->GetPath(),itemPath);
-        item->SetPath(itemPath);
+      {  
+        item->SetPath(URIUtils::GetDirectory(m_vecItems->Get(itemNumber)->GetPath()));
         item->m_bIsFolder = true;
         // first copy the titlemeta dir
         CFileItemList items2;

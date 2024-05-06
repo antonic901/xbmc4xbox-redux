@@ -490,8 +490,7 @@ int CProgramDatabase::GetProgramInfo(CFileItem *item)
       idTitle = m_pDS->fv("titleId").get_asInt();
       if (item->m_dwSize == -1)
       {
-        CStdString strPath;
-        URIUtils::GetDirectory(item->GetPath(),strPath);
+        CStdString strPath = URIUtils::GetDirectory(item->GetPath());
         __int64 iSize = CGUIWindowFileManager::CalculateFolderSize(strPath);
         CStdString strSQL=PrepareSQL("update files set iSize=%I64u where strFileName like '%s'",iSize,item->GetPath().c_str());
         m_pDS->exec(strSQL.c_str());
@@ -529,8 +528,7 @@ bool CProgramDatabase::AddProgramInfo(CFileItem *item, unsigned int titleID)
     lastAccessed.u.LowPart = time.dwLowDateTime; 
     lastAccessed.u.HighPart = time.dwHighDateTime;
 
-    CStdString strPath;
-    URIUtils::GetDirectory(item->GetPath(),strPath);
+    CStdString strPath = URIUtils::GetDirectory(item->GetPath());
     // special case - programs in root of sources
     bool bIsShare=false;
     CUtil::GetMatchingSource(strPath,*CMediaSourceSettings::Get().GetSources("programs"),bIsShare);

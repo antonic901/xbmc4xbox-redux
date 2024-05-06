@@ -314,10 +314,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
     {
       CMediaSource share;
       std::vector<CStdString> paths;
-      CStdString strPath1;
-      URIUtils::GetDirectory(strPath,strPath1);
-      paths.push_back(strPath1);
-      strPath1 = CSettings::Get().GetString("subtitles.custompath");
+      paths.push_back(URIUtils::GetDirectory(strPath));
       paths.push_back(CSettings::Get().GetString("subtitles.custompath"));
       share.FromNameAndPaths("video",g_localizeStrings.Get(21367),paths);
       // hack
@@ -356,7 +353,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
               if (!CFile::Exists(strPath2) && (URIUtils::IsInRAR(strPath2) || URIUtils::IsInZIP(strPath2)))
               {
                 CStdString strFileName = URIUtils::GetFileName(strPath);
-                URIUtils::GetDirectory(strPath,strPath3);
+                strPath3 = URIUtils::GetDirectory(strPath);
                 URIUtils::GetParentPath(strPath3,strPath2);
                 URIUtils::AddFileToFolder(strPath2,strFileName,strPath2);
                 strPath2 = URIUtils::ReplaceExtension(strPath2,".idx");
@@ -372,7 +369,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
               URIUtils::Split(strPath,strDir,strPath3);
               strFileNameNoExtNoCase = URIUtils::ReplaceExtension(strPath3,".");
               strFileNameNoExtNoCase.ToLower();
-              URIUtils::GetDirectory(strPath,strDir);
+              strDir = URIUtils::GetDirectory(strPath);
               CDirectory::GetDirectory(strDir,items,".rar|.zip",XFILE::DIR_FLAG_NO_FILE_DIRS,true);
               for (int i=0;i<items.Size();++i)
                 CUtil::CacheRarSubtitles(items[i]->GetPath(),strFileNameNoExtNoCase);

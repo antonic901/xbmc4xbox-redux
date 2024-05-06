@@ -31,8 +31,6 @@ public:
   static bool IsInPath(const CStdString &uri, const CStdString &baseURI);
 
   static CStdString GetDirectory(const CStdString &strFilePath);
-  static void GetDirectory(const CStdString& strFilePath,
-                           CStdString& strDirectoryPath);
 
   static const CStdString GetFileName(const CURL& url);
   static const CStdString GetFileName(const CStdString& strFileNameAndPath);

@@ -57,7 +57,7 @@ bool CMusicInfoTagLoaderSid::Load(const CStdString& strFileName, CMusicInfoTag& 
     //  that contains the bitstream to play,
     //  so extract it
     CStdString strPath=strFileName;
-    URIUtils::GetDirectory(strPath, strFileToLoad);
+    strFileToLoad = URIUtils::GetDirectory(strPath);
     URIUtils::RemoveSlashAtEnd(strFileToLoad);   // we want the filename
   }
   CStdString strFileNameLower(strFileToLoad);

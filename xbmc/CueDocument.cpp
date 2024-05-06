@@ -357,9 +357,7 @@ int CCueDocument::ExtractNumericInfo(const CStdString &info)
 ////////////////////////////////////////////////////////////////////////////////////
 bool CCueDocument::ResolvePath(CStdString &strPath, const CStdString &strBase)
 {
-  CStdString strDirectory;
-  URIUtils::GetDirectory(strBase, strDirectory);
-  
+  CStdString strDirectory = URIUtils::GetDirectory(strBase);
   CStdString strFilename = strPath;
   URIUtils::GetFileName(strFilename);
 

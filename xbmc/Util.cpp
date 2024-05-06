@@ -1438,7 +1438,7 @@ void CUtil::GetFatXQualifiedPath(CStdString& strFileNameAndPath)
   }
   else
   {
-    URIUtils::GetDirectory(strFileNameAndPath,strBasePath);
+    strBasePath = URIUtils::GetDirectory(strFileNameAndPath);
     // TODO: GETDIR - is this required?  What happens to the tokenize below otherwise?
     strFileName = URIUtils::GetFileName(strFileNameAndPath);
   }
@@ -2053,8 +2053,7 @@ CStdString CUtil::GetNextFilename(const CStdString &fn_template, int max)
   if (!fn_template.Find("%03d"))
     return "";
 
-  CStdString searchPath;
-  URIUtils::GetDirectory(fn_template, searchPath);
+  CStdString searchPath = URIUtils::GetDirectory(fn_template);
   CStdString mask = URIUtils::GetExtension(fn_template);
 
   CStdString name;

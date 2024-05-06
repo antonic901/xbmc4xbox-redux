@@ -55,7 +55,7 @@ bool COggTag::Read(const CStdString& strFile1)
     int iStart=strFileName.ReverseFind("-")+1;
     currentStream = atoi(strFileName.substr(iStart, strFileName.size()-iStart-10).c_str())-1;
     CStdString strPath=strFile;
-    URIUtils::GetDirectory(strPath, strFile);
+    strFile = URIUtils::GetDirectory(strPath);
     URIUtils::RemoveSlashAtEnd(strFile);   // we want the filename
   }
 

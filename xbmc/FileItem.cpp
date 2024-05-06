@@ -2440,8 +2440,8 @@ CStdString CFileItem::GetTBNFile() const
 
   if (URIUtils::IsInRAR(strFile) || URIUtils::IsInZIP(strFile))
   {
-    CStdString strPath, strParent;
-    URIUtils::GetDirectory(strFile,strPath);
+    CStdString strPath = URIUtils::GetDirectory(strFile);
+    CStdString strParent;
     URIUtils::GetParentPath(strPath,strParent);
     URIUtils::AddFileToFolder(strParent,URIUtils::GetFileName(m_strPath),strFile);
   }
@@ -2517,8 +2517,8 @@ CStdString CFileItem::GetLocalArt(const std::string &artFile, bool useFolder) co
 
   if (URIUtils::IsInRAR(strFile) || URIUtils::IsInZIP(strFile))
   {
-    CStdString strPath, strParent;
-    URIUtils::GetDirectory(strFile,strPath);
+    CStdString strPath = URIUtils::GetDirectory(strFile);
+    CStdString strParent;
     URIUtils::GetParentPath(strPath,strParent);
     URIUtils::AddFileToFolder(strParent,URIUtils::GetFileName(strFile),strFile);
   }
@@ -2635,8 +2635,8 @@ CStdString CFileItem::GetLocalFanart() const
   }
   if (URIUtils::IsInRAR(strFile) || URIUtils::IsInZIP(strFile))
   {
-    CStdString strPath, strParent;
-    URIUtils::GetDirectory(strFile,strPath);
+    CStdString strPath = URIUtils::GetDirectory(strFile);
+    CStdString strParent;
     URIUtils::GetParentPath(strPath,strParent);
     URIUtils::AddFileToFolder(strParent,URIUtils::GetFileName(m_strPath),strFile);
   }
@@ -2651,8 +2651,7 @@ CStdString CFileItem::GetLocalFanart() const
    || m_strPath.IsEmpty())
     return "";
 
-  CStdString strDir;
-  URIUtils::GetDirectory(strFile, strDir);
+  CStdString strDir = URIUtils::GetDirectory(strFile);
 
   if (strDir.IsEmpty())
     return "";
@@ -2720,8 +2719,8 @@ CStdString CFileItem::GetCachedGameSaveThumb() const
     CLog::Log(LOGDEBUG, "Thumb (%s)",thumb.c_str());
     if (!CFile::Exists(thumb))
     {
-      CStdString strTitleImage, strParent, strParentSave, strParentTitle;
-      URIUtils::GetDirectory(m_strPath,strTitleImage);
+      CStdString strParent, strParentSave, strParentTitle;
+      CStdString strTitleImage = URIUtils::GetDirectory(m_strPath);
       URIUtils::GetParentPath(strTitleImage,strParent);
       URIUtils::AddFileToFolder(strTitleImage,"saveimage.xbx",strTitleImage);
       URIUtils::AddFileToFolder(strParent,"saveimage.xbx",strParentSave);
@@ -2960,8 +2959,8 @@ CStdString CFileItem::FindTrailer() const
   }
   if (URIUtils::IsInRAR(strFile) || URIUtils::IsInZIP(strFile))
   {
-    CStdString strPath, strParent;
-    URIUtils::GetDirectory(strFile,strPath);
+    CStdString strPath = URIUtils::GetDirectory(strFile);
+    CStdString strParent;
     URIUtils::GetParentPath(strPath,strParent);
     URIUtils::AddFileToFolder(strParent,URIUtils::GetFileName(m_strPath),strFile);
   }
@@ -2974,8 +2973,7 @@ CStdString CFileItem::FindTrailer() const
    || m_strPath.Left(4).Equals("dvd:"))
     return "";
 
-  CStdString strDir;
-  URIUtils::GetDirectory(strFile, strDir);
+  CStdString strDir = URIUtils::GetDirectory(strFile);
   CFileItemList items;
   CDirectory::GetDirectory(strDir, items, g_advancedSettings.m_videoExtensions, DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO);
   URIUtils::RemoveExtension(strFile);

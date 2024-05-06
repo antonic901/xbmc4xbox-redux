@@ -1172,11 +1172,6 @@ CStdString URIUtils::GetDirectory(const CStdString &strFilePath)
   return strFilePath.substr(0, iPosSlash + 1) + strFilePath.substr(iPosBar); // Path + options
 }
 
-void URIUtils::GetDirectory(const CStdString& strFilePath, CStdString& strDirectoryPath)
-{
-  strDirectoryPath = GetDirectory(strFilePath);
-}
-
 CURL URIUtils::CreateArchivePath(const std::string& type,
                                  const CURL& archiveUrl,
                                  const std::string& pathInArchive,
