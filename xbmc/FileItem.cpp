@@ -525,7 +525,7 @@ bool CFileItem::Exists(bool bUseCache /* = true */) const
 bool CFileItem::IsVideo() const
 {
   /* check preset mime type */
-  if( m_mimetype.Left(6).Equals("video/") )
+  if( StringUtils2::StartsWithNoCase(m_mimetype, "video/") )
     return true;
 
   if (HasVideoInfoTag()) return true;
@@ -535,7 +535,7 @@ bool CFileItem::IsVideo() const
   if (IsHDHomeRun() || IsTuxBox() || URIUtils::IsDVD(m_strPath) || IsSlingbox())
     return true;
 
-  if( m_mimetype.Left(12).Equals("application/") )
+  if( StringUtils2::StartsWithNoCase(m_mimetype, "application/") )
   { /* check for some standard types */
     CStdString extension = m_mimetype.Mid(12);
     if( extension.Equals("ogg")
@@ -561,7 +561,7 @@ bool CFileItem::IsDiscStub() const
 bool CFileItem::IsAudio() const
 {
   /* check preset mime type */
-  if( m_mimetype.Left(6).Equals("audio/") )
+  if( StringUtils2::StartsWithNoCase(m_mimetype, "audio/") )
     return true;
 
   if (HasMusicInfoTag()) return true;
@@ -569,7 +569,7 @@ bool CFileItem::IsAudio() const
   if (HasPictureInfoTag()) return false;
   if (IsCDDA()) return true;
 
-  if( m_mimetype.Left(12).Equals("application/") )
+  if( StringUtils2::StartsWithNoCase(m_mimetype, "application/") )
   { /* check for some standard types */
     CStdString extension = m_mimetype.Mid(12);
     if( extension.Equals("ogg")
@@ -591,7 +591,7 @@ bool CFileItem::IsKaraoke() const
 
 bool CFileItem::IsPicture() const
 {
-  if( m_mimetype.Left(6).Equals("image/") )
+  if( StringUtils2::StartsWithNoCase(m_mimetype, "image/") )
     return true;
 
   if (HasPictureInfoTag()) return true;
@@ -730,12 +730,12 @@ bool CFileItem::IsDVDFile(bool bVobs /*= true*/, bool bIfos /*= true*/) const
   if (bIfos)
   {
     if (strFileName.Equals("video_ts.ifo")) return true;
-    if (strFileName.Left(4).Equals("vts_") && strFileName.Right(6).Equals("_0.ifo") && strFileName.length() == 12) return true;
+    if (StringUtils2::StartsWithNoCase(strFileName, "vts_") && StringUtils2::EndsWithNoCase(strFileName, "_0.ifo") && strFileName.length() == 12) return true;
   }
   if (bVobs)
   {
     if (strFileName.Equals("video_ts.vob")) return true;
-    if (strFileName.Left(4).Equals("vts_") && strFileName.Right(4).Equals(".vob")) return true;
+    if (StringUtils2::StartsWithNoCase(strFileName, "vts_") && StringUtils2::EndsWithNoCase(strFileName, ".vob")) return true;
   }
 
   return false;
@@ -774,7 +774,7 @@ bool CFileItem::IsCBR() const
 
 bool CFileItem::IsRSS() const
 {
-  return m_strPath.Left(6).Equals("rss://") || URIUtils::HasExtension(m_strPath, ".rss")
+  return StringUtils2::StartsWithNoCase(m_strPath, "rss://") || URIUtils::HasExtension(m_strPath, ".rss")
       || GetMimeType() == "application/rss+xml";
 }
 
@@ -1086,16 +1086,16 @@ const CStdString& CFileItem::GetMimeType(bool lookup /*= true*/) const
 
     if( m_bIsFolder )
       m_ref = "x-directory/normal";
-    else if( m_strPath.Left(8).Equals("shout://")
-          || m_strPath.Left(7).Equals("http://")
-          || m_strPath.Left(8).Equals("https://"))
+    else if( StringUtils2::StartsWithNoCase(m_strPath, "shout://")
+          || StringUtils2::StartsWithNoCase(m_strPath, "http://")
+          || StringUtils2::StartsWithNoCase(m_strPath, "https://"))
     {
       CCurlFile::GetMimeType(GetAsUrl(), m_ref);
 
       // try to get mime-type again but with an NSPlayer User-Agent
       // in order for server to provide correct mime-type.  Allows us
       // to properly detect an MMS stream
-      if (m_ref.Left(11).Equals("video/x-ms-"))
+      if (StringUtils2::StartsWithNoCase(m_mimetype, "video/x-ms-"))
         CCurlFile::GetMimeType(GetAsUrl(), m_ref, "NSPlayer/11.00.6001.7000");
 
       // make sure there are no options set in mime-type
@@ -1112,7 +1112,7 @@ const CStdString& CFileItem::GetMimeType(bool lookup /*= true*/) const
   }
 
   // change protocol to mms for the following mome-type.  Allows us to create proper FileMMS.
-  if( m_mimetype.Left(32).Equals("application/vnd.ms.wms-hdr.asfv1") || m_mimetype.Left(24).Equals("application/x-mms-framed") )
+  if( StringUtils2::StartsWithNoCase(m_mimetype, "application/vnd.ms.wms-hdr.asfv1") || StringUtils2::StartsWithNoCase(m_mimetype, "application/x-mms-framed") )
   {
     CStdString& m_path = (CStdString&)m_strPath;
     m_path.Replace("http:", "mms:");
@@ -2375,6 +2375,8 @@ bool CFileItemList::AlwaysCache() const
 CStdString CFileItem::GetUserMusicThumb(bool alwaysCheckRemote /* = false */, bool fallbackToFolder /* = false */) const
 {
   if (m_strPath.IsEmpty()
+   || StringUtils2::StartsWithNoCase(m_strPath, "newsmartplaylist://")
+   || StringUtils2::StartsWithNoCase(m_strPath, "newplaylist://")
    || m_bIsShareOrDrive
    || IsInternetStream()
    || URIUtils::IsUPnP(m_strPath)
@@ -2466,6 +2468,8 @@ CStdString CFileItem::FindLocalArt(const std::string &artFile, bool useFolder) c
 {
   // ignore a bunch that are meaningless
   if (m_strPath.empty()
+   || StringUtils2::StartsWithNoCase(m_strPath, "newsmartplaylist://")
+   || StringUtils2::StartsWithNoCase(m_strPath, "newplaylist://")
    || m_bIsShareOrDrive
    || IsInternetStream()
    || URIUtils::IsUPnP(m_strPath)

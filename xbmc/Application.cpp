@@ -5753,7 +5753,7 @@ void CApplication::OnSettingChanged(const CSetting *setting)
 #else
     g_windowManager.SendMessage(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_WINDOW_RESIZE);
 #endif
-  else if (StringUtils2::StartsWith(settingId, "audiooutput."))
+  else if (StringUtils2::StartsWithNoCase(settingId, "audiooutput."))
   {
     if (settingId == "audiooutput.ac3passthrough")
       g_audioConfig.SetAC3Enabled(((CSettingBool*)setting)->GetValue());

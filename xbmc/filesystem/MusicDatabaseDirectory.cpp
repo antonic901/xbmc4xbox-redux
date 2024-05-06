@@ -18,7 +18,6 @@
  *
  */
 
-#include "utils/log.h"
 #include "MusicDatabaseDirectory.h"
 #include "utils/URIUtils.h"
 #include "MusicDatabaseDirectory/QueryParams.h"
@@ -26,9 +25,11 @@
 #include "filesystem/File.h"
 #include "FileItem.h"
 #include "utils/Crc32.h"
-#include "TextureManager.h"
-#include "LocalizeStrings.h"
+#include "guilib/TextureManager.h"
+#include "guilib/LocalizeStrings.h"
 #include "utils/LegacyPathTranslation.h"
+#include "utils/log.h"
+#include "utils/StringUtils.h"
 
 using namespace std;
 using namespace XFILE;
@@ -132,7 +133,7 @@ void CMusicDatabaseDirectory::ClearDirectoryCache(const CStdString& strDirectory
 
 bool CMusicDatabaseDirectory::IsAllItem(const CStdString& strDirectory)
 {
-  if (strDirectory.Right(4).Equals("/-1/"))
+  if (StringUtils2::EndsWith(strDirectory, "/-1/"))
     return true;
   return false;
 }

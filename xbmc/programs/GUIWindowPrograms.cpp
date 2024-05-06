@@ -42,6 +42,7 @@
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 
 using namespace XFILE;
 
@@ -604,11 +605,11 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
       return false;
 
   // don't allow the view state to change these
-  if (strDirectory.Left(9).Equals("addons://"))
+  if (StringUtils2::StartsWithNoCase(strDirectory, "addons://"))
   {
     for (int i=0;i<items.Size();++i)
     {
-      items[i]->SetLabel2(items[i]->GetProperty("Addon.Version"));
+      items[i]->SetLabel2(items[i]->GetProperty("Addon.Version").asString());
       items[i]->SetLabelPreformated(true);
     }
   }

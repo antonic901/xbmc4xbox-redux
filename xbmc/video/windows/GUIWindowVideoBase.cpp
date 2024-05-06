@@ -1623,7 +1623,7 @@ bool CGUIWindowVideoBase::CheckFilterAdvanced(CFileItemList &items) const
 
 bool CGUIWindowVideoBase::CanContainFilter(const CStdString &strDirectory) const
 {
-  return strDirectory.Left(10).Equals("videodb://");
+  return StringUtils2::StartsWithNoCase(strDirectory, "videodb://");
 }
 
 void CGUIWindowVideoBase::AddToDatabase(int iItem)

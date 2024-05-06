@@ -6,4 +6,5 @@ public:
   static bool DeleteItem(const CFileItemPtr &item, bool force=false);
   static bool DeleteItem(const CStdString &strPath, bool force=false);
   static bool RenameFile(const CStdString &strFile);
+  static bool RemoteAccessAllowed(const CStdString &strPath);
 };

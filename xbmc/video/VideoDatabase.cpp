@@ -464,7 +464,7 @@ int CVideoDatabase::GetPathId(const CStdString& strPath)
     if (NULL == m_pDS.get()) return -1;
 
     CStdString strPath1(strPath);
-    if (URIUtils::IsStack(strPath) || strPath.Mid(0,6).Equals("rar://") || strPath.Mid(0,6).Equals("zip://"))
+    if (URIUtils::IsStack(strPath) || StringUtils2::StartsWithNoCase(strPath, "rar://") || StringUtils2::StartsWithNoCase(strPath, "zip://"))
       URIUtils::GetParentPath(strPath,strPath1);
 
     URIUtils::AddSlashAtEnd(strPath1);
@@ -631,7 +631,7 @@ int CVideoDatabase::AddPath(const CStdString& strPath, const CStdString &strDate
     if (NULL == m_pDS.get()) return -1;
 
     CStdString strPath1(strPath);
-    if (URIUtils::IsStack(strPath) || strPath.Mid(0,6).Equals("rar://") || strPath.Mid(0,6).Equals("zip://"))
+    if (URIUtils::IsStack(strPath) || StringUtils2::StartsWithNoCase(strPath, "rar://") || StringUtils2::StartsWithNoCase(strPath, "zip://"))
       URIUtils::GetParentPath(strPath,strPath1);
 
     URIUtils::AddSlashAtEnd(strPath1);
@@ -6313,7 +6313,7 @@ void CVideoDatabase::Stack(CFileItemList& items, VIDEODB_CONTENT_TYPE type, bool
 
         // do we have a dvd folder, ie foo/VIDEO_TS.IFO or foo/VIDEO_TS/VIDEO_TS.IFO
         CStdString strFileNameAndPath = pItem->GetVideoInfoTag()->m_strFileNameAndPath;
-        bool bDvdFolder = strFileNameAndPath.Right(12).Equals("VIDEO_TS.IFO");
+        bool bDvdFolder = StringUtils2::EndsWithNoCase(strFileNameAndPath, "video_ts.ifo");
 
         vector<CStdString> paths;
         paths.push_back(strFileNameAndPath);
@@ -6339,7 +6339,7 @@ void CVideoDatabase::Stack(CFileItemList& items, VIDEODB_CONTENT_TYPE type, bool
             // keep checking to see if this is dvd folder
             if (!bDvdFolder)
             {
-              bDvdFolder = jFileNameAndPath.Right(12).Equals("VIDEO_TS.IFO");
+              bDvdFolder = StringUtils2::EndsWithNoCase(jFileNameAndPath, "video_ts.ifo");
               // if we have a dvd folder, we stack differently
               if (bDvdFolder)
               {
@@ -9112,7 +9112,7 @@ void CVideoDatabase::ConstructPath(CStdString& strDest, const CStdString& strPat
 
 void CVideoDatabase::SplitPath(const CStdString& strFileNameAndPath, CStdString& strPath, CStdString& strFileName)
 {
-  if (URIUtils::IsStack(strFileNameAndPath) || strFileNameAndPath.Mid(0,6).Equals("rar://") || strFileNameAndPath.Mid(0,6).Equals("zip://"))
+  if (URIUtils::IsStack(strFileNameAndPath) || StringUtils2::StartsWithNoCase(strFileNameAndPath, "rar://") || StringUtils2::StartsWithNoCase(strFileNameAndPath, "zip://"))
   {
     URIUtils::GetParentPath(strFileNameAndPath,strPath);
     strFileName = strFileNameAndPath;

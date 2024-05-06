@@ -18,7 +18,6 @@
  *
  */
 
-#include "utils/log.h"
 #include "VideoDatabaseDirectory.h"
 #include "utils/URIUtils.h"
 #include "VideoDatabaseDirectory/QueryParams.h"
@@ -28,8 +27,10 @@
 #include "FileItem.h"
 #include "settings/Settings.h"
 #include "utils/Crc32.h"
-#include "LocalizeStrings.h"
+#include "guilib/LocalizeStrings.h"
 #include "utils/LegacyPathTranslation.h"
+#include "utils/log.h"
+#include "utils/StringUtils.h"
 
 using namespace std;
 using namespace XFILE;
@@ -132,7 +133,7 @@ void CVideoDatabaseDirectory::ClearDirectoryCache(const CStdString& strDirectory
 
 bool CVideoDatabaseDirectory::IsAllItem(const CStdString& strDirectory)
 {
-  if (strDirectory.Right(4).Equals("/-1/"))
+  if (StringUtils2::EndsWith(strDirectory, "/-1/"))
     return true;
   return false;
 }

@@ -21,10 +21,11 @@
 #include "MediaSource.h"
 #include "settings/AdvancedSettings.h"
 #include "Util.h"
-#include "utils/URIUtils.h"
 #include "URL.h"
 #include "filesystem/MultiPathDirectory.h"
-#include "Utils/MemoryUnitManager.h"
+#include "utils/URIUtils.h"
+#include "utils/StringUtils.h"
+#include "utils/MemoryUnitManager.h"
 
 using namespace std;
 using namespace XFILE;
@@ -55,10 +56,11 @@ void CMediaSource::FromNameAndPaths(const CStdString &category, const CStdString
   m_strLockCode = "0";
   m_iBadPwdCount = 0;
   m_iHasLock = 0;
+  m_allowSharing = true;
 
   if (URIUtils::IsMultiPath(strPath))
     m_iDriveType = SOURCE_TYPE_VPATH;
-  else if (strPath.Left(4).Equals("udf:"))
+  else if (StringUtils2::StartsWithNoCase(strPath, "udf:"))
   {
     m_iDriveType = SOURCE_TYPE_VIRTUAL_DVD;
     strPath = "D:\\";

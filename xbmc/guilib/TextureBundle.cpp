@@ -14,6 +14,7 @@
 #include "addons/Skin.h"
 #include "settings/Settings.h"
 #include "utils/URIUtils.h"
+#include "utils/StringUtils.h"
 #include "filesystem/SpecialProtocol.h"
 
 #ifdef _XBOX
@@ -285,11 +286,10 @@ void CTextureBundle::GetTexturesFromPath(const CStdString &path, std::vector<CSt
   CStdString testPath = Normalize(path);
   if (!URIUtils::HasSlashAtEnd(testPath))
     testPath += "\\";
-  int testLength = testPath.GetLength();
   std::map<CStdString, FileHeader_t>::iterator it;
   for (it = m_FileHeaders.begin(); it != m_FileHeaders.end(); it++)
   {
-    if (it->first.Left(testLength).Equals(testPath))
+    if (StringUtils2::StartsWithNoCase(it->first, testPath))
       textures.push_back(it->first);
   }
 }

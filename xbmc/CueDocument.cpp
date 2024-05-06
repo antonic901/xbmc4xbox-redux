@@ -98,7 +98,7 @@ bool CCueDocument::Parse(const CStdString &strFile)
   {
     if (!ReadNextLine(strLine))
       break;
-    if (strLine.Left(7) == "INDEX 0")
+    if (StringUtils2::StartsWithNoCase(strLine,"INDEX 0"))
     {
       if (bCurrentFileChanged)
       {
@@ -119,7 +119,7 @@ bool CCueDocument::Parse(const CStdString &strFile)
       if (m_iTotalTracks >= 0)
         m_Track[m_iTotalTracks].iStartTime = time; // start time of the next track
     }
-    else if (strLine.Left(5) == "TITLE")
+    else if (StringUtils2::StartsWithNoCase(strLine,"TITLE"))
     {
       if (m_iTotalTracks == -1) // No tracks yet
         ExtractQuoteInfo(strLine, m_strAlbum);
@@ -135,14 +135,14 @@ bool CCueDocument::Parse(const CStdString &strFile)
         }
       }
     }
-    else if (strLine.Left(9) == "PERFORMER")
+    else if (StringUtils2::StartsWithNoCase(strLine,"PERFORMER"))
     {
       if (m_iTotalTracks == -1) // No tracks yet
         ExtractQuoteInfo(strLine, m_strArtist);
       else // New Artist for this track
         ExtractQuoteInfo(strLine, m_Track[m_iTotalTracks].strArtist);
     }
-    else if (strLine.Left(5) == "TRACK")
+    else if (StringUtils2::StartsWithNoCase(strLine,"TRACK"))
     {
       int iTrackNumber = ExtractNumericInfo(strLine.c_str() + 5);
  
@@ -159,7 +159,7 @@ bool CCueDocument::Parse(const CStdString &strFile)
 
       bCurrentFileChanged = false;
     }
-    else if (strLine.Left(4) == "FILE")
+    else if (StringUtils2::StartsWithNoCase(strLine,"FILE"))
     {
       // already a file name? then the time computation will be changed
       if(strCurrentFile.size() > 0)
@@ -171,13 +171,13 @@ bool CCueDocument::Parse(const CStdString &strFile)
       if (strCurrentFile.length() > 0)
         ResolvePath(strCurrentFile, strFile);
     }
-    else if (strLine.Left(8) == "REM DATE")
+    else if (StringUtils2::StartsWithNoCase(strLine,"REM DATE"))
     {
       int iYear = ExtractNumericInfo(strLine.c_str() + 8);
       if (iYear > 0)
         m_iYear = iYear;
     }
-    else if (strLine.Left(9) == "REM GENRE")
+    else if (StringUtils2::StartsWithNoCase(strLine,"REM GENRE"))
     {
       if (!ExtractQuoteInfo(strLine, m_strGenre))
       {
@@ -190,13 +190,13 @@ bool CCueDocument::Parse(const CStdString &strFile)
         }
       }
     }
-    else if (strLine.Left(25) == "REM REPLAYGAIN_ALBUM_GAIN")
+    else if (StringUtils2::StartsWithNoCase(strLine,"REM REPLAYGAIN_ALBUM_GAIN"))
       m_replayGainAlbumGain = (float)atof(strLine.Mid(26));
-    else if (strLine.Left(25) == "REM REPLAYGAIN_ALBUM_PEAK")
+    else if (StringUtils2::StartsWithNoCase(strLine,"REM REPLAYGAIN_ALBUM_PEAK"))
       m_replayGainAlbumPeak = (float)atof(strLine.Mid(26));
-    else if (strLine.Left(25) == "REM REPLAYGAIN_TRACK_GAIN" && m_iTotalTracks >= 0)
+    else if (StringUtils2::StartsWithNoCase(strLine,"REM REPLAYGAIN_TRACK_GAIN") && m_iTotalTracks >= 0)
       m_Track[m_iTotalTracks].replayGainTrackGain = (float)atof(strLine.Mid(26));
-    else if (strLine.Left(25) == "REM REPLAYGAIN_TRACK_PEAK" && m_iTotalTracks >= 0)
+    else if (StringUtils2::StartsWithNoCase(strLine,"REM REPLAYGAIN_TRACK_PEAK") && m_iTotalTracks >= 0)
       m_Track[m_iTotalTracks].replayGainTrackPeak = (float)atof(strLine.Mid(26));
   }
 

@@ -37,6 +37,7 @@
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 
 #define CONTROL_BTNVIEWASICONS      2
 #define CONTROL_BTNSORTBY           3
@@ -459,7 +460,7 @@ void CGUIWindowPictures::GetContextButtons(int itemNumber, CContextButtons &butt
     }
     else
     {
-      if (item && !item->GetPath().Left(14).Equals("addons://more/"))
+      if (item && !StringUtils2::StartsWithNoCase(item->GetPath(), "addons://more/"))
       {
         if (!(item->m_bIsFolder || item->IsZIP() || item->IsRAR() || item->IsCBZ() || item->IsCBR()))
         {

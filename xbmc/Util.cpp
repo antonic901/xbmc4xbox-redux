@@ -392,11 +392,11 @@ CStdString CUtil::GetTitleFromPath(const CURL& url, bool bIsFolder /* = false */
     strFilename = g_localizeStrings.Get(744);
 
   // Music Playlists
-  else if (path.Left(24).Equals("special://musicplaylists"))
+  else if (StringUtils2::StartsWithNoCase(path, "special://musicplaylists"))
     strFilename = g_localizeStrings.Get(136);
 
   // Video Playlists
-  else if (path.Left(24).Equals("special://videoplaylists"))
+  else if (StringUtils2::StartsWithNoCase(path, "special://videoplaylists"))
     strFilename = g_localizeStrings.Get(136);
 
   else if ((url.GetProtocol() == "rar" || url.GetProtocol() == "zip") && strFilename.IsEmpty())
@@ -2447,10 +2447,12 @@ CStdString CUtil::ValidatePath(const CStdString &path, bool bFixDoubleSlashes /*
   // recurse and crash XBMC
   if (URIUtils::IsURL(path) && 
      (path.Find('%') >= 0 ||
-      path.Left(4).Equals("zip:") ||
-      path.Left(4).Equals("rar:") ||
-      path.Left(6).Equals("stack:") ||
-      path.Left(10).Equals("multipath:") ))
+      StringUtils2::StartsWithNoCase(path, "apk:") ||
+      StringUtils2::StartsWithNoCase(path, "zip:") ||
+      StringUtils2::StartsWithNoCase(path, "rar:") ||
+      StringUtils2::StartsWithNoCase(path, "stack:") ||
+      StringUtils2::StartsWithNoCase(path, "bluray:") ||
+      StringUtils2::StartsWithNoCase(path, "multipath:") ))
     return result;
 
   // check the path for incorrect slashes
@@ -2512,7 +2514,7 @@ void CUtil::SplitExecFunction(const CStdString &execString, CStdString &function
 
   // remove any whitespace, and the standard prefix (if it exists)
   function.Trim();
-  if( function.Left(5).Equals("xbmc.", false) )
+  if( StringUtils2::StartsWithNoCase(function, "xbmc.") )
     function.Delete(0, 5);
 
   SplitParams(paramString, parameters);
@@ -2720,7 +2722,7 @@ int CUtil::GetMatchingSource(const CStdString& strPath1, VECSOURCES& VECSOURCES,
       int iLenShare = strShare.size();
       //CLog::Log(LOGDEBUG,"CUtil::GetMatchingSource, comparing url [%s]", strShare.c_str());
 
-      if ((iLenPath >= iLenShare) && (strDest.Left(iLenShare).Equals(strShare)) && (iLenShare > iLength))
+      if ((iLenPath >= iLenShare) && StringUtils2::StartsWithNoCase(strDest, strShare) && (iLenShare > iLength))
       {
         //CLog::Log(LOGDEBUG,"Found matching source at index %i: [%s], Len = [%i]", i, strShare.c_str(), iLenShare);
 
@@ -2746,7 +2748,7 @@ int CUtil::GetMatchingSource(const CStdString& strPath1, VECSOURCES& VECSOURCES,
 
     // rar:// and zip://
     // if archive wasn't mounted, look for a matching share for the archive instead
-    if( strPath.Left(6).Equals("rar://") || strPath.Left(6).Equals("zip://") )
+    if( StringUtils2::StartsWithNoCase(strPath, "rar://") || StringUtils2::StartsWithNoCase(strPath, "zip://") )
     {
       // get the hostname portion of the url since it contains the archive file
       strPath = checkURL.GetHostName();
@@ -2766,28 +2768,28 @@ CStdString CUtil::TranslateSpecialSource(const CStdString &strSpecial)
   CStdString strReturn=strSpecial;
   if (!strSpecial.IsEmpty() && strSpecial[0] == '$')
   {
-    if (strSpecial.Left(5).Equals("$HOME"))
+    if (StringUtils2::StartsWithNoCase(strSpecial, "$home"))
       URIUtils::AddFileToFolder("special://home/", strSpecial.Mid(5), strReturn);
-    else if (strSpecial.Left(10).Equals("$SUBTITLES"))
+    else if (StringUtils2::StartsWithNoCase(strSpecial, "$subtitles"))
       URIUtils::AddFileToFolder("special://subtitles/", strSpecial.Mid(10), strReturn);
-    else if (strSpecial.Left(9).Equals("$USERDATA"))
+    else if (StringUtils2::StartsWithNoCase(strSpecial, "$userdata"))
       URIUtils::AddFileToFolder("special://userdata/", strSpecial.Mid(9), strReturn);
-    else if (strSpecial.Left(9).Equals("$DATABASE"))
+    else if (StringUtils2::StartsWithNoCase(strSpecial, "$database"))
       URIUtils::AddFileToFolder("special://database/", strSpecial.Mid(9), strReturn);
-    else if (strSpecial.Left(11).Equals("$THUMBNAILS"))
+    else if (StringUtils2::StartsWithNoCase(strSpecial, "$thumbnails"))
       URIUtils::AddFileToFolder("special://thumbnails/", strSpecial.Mid(11), strReturn);
-    else if (strSpecial.Left(11).Equals("$RECORDINGS"))
+    else if (StringUtils2::StartsWithNoCase(strSpecial, "$recordings"))
       URIUtils::AddFileToFolder("special://recordings/", strSpecial.Mid(11), strReturn);
-    else if (strSpecial.Left(12).Equals("$SCREENSHOTS"))
+    else if (StringUtils2::StartsWithNoCase(strSpecial, "$screenshots"))
       URIUtils::AddFileToFolder("special://screenshots/", strSpecial.Mid(12), strReturn);
-    else if (strSpecial.Left(15).Equals("$MUSICPLAYLISTS"))
+    else if (StringUtils2::StartsWithNoCase(strSpecial, "$musicplaylists"))
       URIUtils::AddFileToFolder("special://musicplaylists/", strSpecial.Mid(15), strReturn);
-    else if (strSpecial.Left(15).Equals("$VIDEOPLAYLISTS"))
+    else if (StringUtils2::StartsWithNoCase(strSpecial, "$videoplaylists"))
       URIUtils::AddFileToFolder("special://videoplaylists/", strSpecial.Mid(15), strReturn);
-    else if (strSpecial.Left(7).Equals("$CDRIPS"))
+    else if (StringUtils2::StartsWithNoCase(strSpecial, "$cdrips"))
       URIUtils::AddFileToFolder("special://cdrips/", strSpecial.Mid(7), strReturn);
     // this one will be removed post 2.0
-    else if (strSpecial.Left(10).Equals("$PLAYLISTS"))
+    else if (StringUtils2::StartsWithNoCase(strSpecial, "$playlists"))
       URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), strSpecial.Mid(10), strReturn);
   }
   return strReturn;
