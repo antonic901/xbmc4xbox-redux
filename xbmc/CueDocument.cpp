@@ -53,15 +53,19 @@
 ////////////////////////////////////////////////////////////////////////////////////
 
 #include "CueDocument.h"
-#include "Util.h"
+#include "utils/log.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/CharsetConverter.h"
+#include "filesystem/File.h"
+#include "filesystem/Directory.h"
+#include "FileItem.h"
 #include "settings/AdvancedSettings.h"
 
 #include <set>
 
 using namespace std;
+using namespace XFILE;
 
 CCueDocument::CCueDocument(void)
 {
@@ -358,10 +362,26 @@ int CCueDocument::ExtractNumericInfo(const CStdString &info)
 bool CCueDocument::ResolvePath(CStdString &strPath, const CStdString &strBase)
 {
   CStdString strDirectory = URIUtils::GetDirectory(strBase);
-  CStdString strFilename = strPath;
-  URIUtils::GetFileName(strFilename);
+  CStdString strFilename = URIUtils::GetFileName(strPath);
 
-  URIUtils::AddFileToFolder(strDirectory, strFilename, strPath);
+  strPath = URIUtils::AddFileToFolder(strDirectory, strFilename);
+
+  // i *hate* windows
+  if (!CFile::Exists(strPath))
+  {
+    CFileItemList items;
+    CDirectory::GetDirectory(strDirectory,items);
+    for (int i=0;i<items.Size();++i)
+    {
+      if (items[i]->GetPath().Equals(strPath))
+      {
+        strPath = items[i]->GetPath();
+        return true;
+      }
+    }
+    CLog::Log(LOGERROR,"Could not find '%s' referenced in cue, case sensitivity issue?", strPath.c_str());
+    return false;
+  }
 
   return true;
 }
