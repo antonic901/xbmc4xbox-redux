@@ -133,6 +133,7 @@ public:
   static __int64 ToInt64(DWORD dwHigh, DWORD dwLow);
   static void PlayDVD(const CStdString& strProtocol = "dvd", bool restart = false);
   static CStdString GetNextFilename(const CStdString &fn_template, int max);
+  static CStdString GetNextPathname(const CStdString &path_template, int max);
   static void TakeScreenshot();
   static void TakeScreenshot(const CStdString& strFileName, bool flash);
   static void SetBrightnessContrastGamma(float Brightness, float Contrast, float Gamma, bool bImmediate);

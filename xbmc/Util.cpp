@@ -2075,6 +2075,21 @@ CStdString CUtil::GetNextFilename(const CStdString &fn_template, int max)
   return "";
 }
 
+CStdString CUtil::GetNextPathname(const CStdString &path_template, int max)
+{
+  if (!path_template.Find("%04d"))
+    return "";
+
+  for (int i = 0; i <= max; i++)
+  {
+    CStdString name;
+    name.Format(path_template.c_str(), i);
+    if (!CFile::Exists(name))
+      return name;
+  }
+  return "";
+}
+
 void CUtil::InitGamma()
 {
   g_graphicsContext.Get3DDevice()->GetGammaRamp(&oldramp);
