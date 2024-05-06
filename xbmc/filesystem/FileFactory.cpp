@@ -85,8 +85,7 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
   else if (url.IsProtocol("iso9660")) return new CISOFile();
   else if (url.IsProtocol("soundtrack")) return new CSndtrkFile();
   else if (url.IsProtocol("cdda")) return new CCDDAFile();
-  // Is this same as url.IsProtocol("mem")?
-  else if (StringUtils2::StartsWith(url.GetProtocol(), "mem")) return new CMemUnitFile();
+  else if (url.IsProtocol("mem")) return new CMemUnitFile();
 #endif
   if( g_application.getNetwork().IsAvailable() )
   {

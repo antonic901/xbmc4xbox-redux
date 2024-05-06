@@ -42,7 +42,7 @@ namespace XFILE
     CURL url(urlOrig);
 
     /* if this isn't a proper archive path, assume it's the path to a archive file */
-    if (urlOrig.GetProtocol() != "rar")
+    if (!urlOrig.IsProtocol("rar"))
       url = URIUtils::CreateArchivePath("rar", urlOrig);
 
     CStdString strArchive = url.GetHostName();

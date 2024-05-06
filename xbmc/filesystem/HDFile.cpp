@@ -50,7 +50,7 @@ CStdString CFileHD::GetLocal(const CURL &url)
 {
   CStdString path( url.GetFileName() );
 
-  if( url.GetProtocol().Equals("file", false) )
+  if(url.IsProtocol("file"))
   {
     // file://drive[:]/path
     // file:///drive:/path

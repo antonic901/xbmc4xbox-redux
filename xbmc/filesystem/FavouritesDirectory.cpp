@@ -42,7 +42,7 @@ namespace XFILE
 bool CFavouritesDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
   items.Clear();
-  if (url.GetProtocol() == "favourites")
+  if (url.IsProtocol("favourites"))
   {
     Load(items); //load the default favourite files
   }
@@ -51,7 +51,7 @@ bool CFavouritesDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 
 bool CFavouritesDirectory::Exists(const CURL& url)
 {
-  if (url.GetProtocol() == "favourites")
+  if (url.IsProtocol("favourites"))
   {
     return XFILE::CFile::Exists("special://xbmc/system/favourites.xml") 
         || XFILE::CFile::Exists(URIUtils::AddFileToFolder(CProfilesManager::Get().GetProfileUserDataFolder(), "favourites.xml"));

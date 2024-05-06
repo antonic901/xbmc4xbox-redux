@@ -114,7 +114,7 @@ ICodec* CodecFactory::CreateCodecDemux(const CStdString& strFile, const CStdStri
    else if (strContent.Equals("audio/flac") || strContent.Equals("audio/x-flac") || strContent.Equals("application/x-flac"))
      return new FLACCodec();
 
-  if (urlFile.GetProtocol() == "shout")
+  if (urlFile.IsProtocol("shout"))
   {
     return new MP3Codec(); // if we got this far with internet radio - content-type was wrong. gamble on mp3.
   }

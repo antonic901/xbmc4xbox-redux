@@ -1568,7 +1568,7 @@ bool CGUIWindowVideoBase::StackingAvailable(const CFileItemList &items) const
   return !(items.IsTuxBox()         || items.IsPlugin()  ||
            items.IsAddonsPath()     || items.IsRSS()     ||
            items.IsInternetStream() || items.IsVideoDb() ||
-           url.GetProtocol() == "playlistvideo");
+           url.IsProtocol("playlistvideo"));
 }
 
 void CGUIWindowVideoBase::GetGroupedItems(CFileItemList &items)

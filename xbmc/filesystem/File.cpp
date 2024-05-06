@@ -230,7 +230,7 @@ bool CFile::Open(const CURL& file, const unsigned int flags)
   {
     bool bPathInCache;
     CURL url2(URIUtils::SubstitutePath(file));
-    if (url2.GetProtocol() == "zip")
+    if (url2.IsProtocol("zip"))
       url2.SetOptions("");
     if (!g_directoryCache.FileExists(url2.Get(), bPathInCache) )
     {

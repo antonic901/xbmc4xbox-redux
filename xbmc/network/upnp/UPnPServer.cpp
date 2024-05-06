@@ -33,7 +33,7 @@ NPT_String CUPnPServer::BuildSafeResourceUri(const char* host,
 
     // determine the filename to provide context to md5'd urls
     CStdString filename;
-    if (url.GetProtocol() == "image")
+    if (url.IsProtocol("image"))
       filename = URIUtils::GetFileName(url.GetHostName());
     else
       filename = URIUtils::GetFileName(file_path);

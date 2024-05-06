@@ -143,7 +143,7 @@ void CRssReader::Process()
     CURL url(strUrl);
 
     // we wait for the network to come up
-    if ((url.GetProtocol() == "http" || url.GetProtocol() == "https") &&
+    if ((url.IsProtocol("http") || url.IsProtocol("https")) &&
         !g_application.getNetwork().IsAvailable())
       strXML = "<rss><item><title>"+g_localizeStrings.Get(15301)+"</title></item></rss>";
     else
@@ -159,7 +159,7 @@ void CRssReader::Process()
         } 
         nRetries--;
 
-        if (url.GetProtocol() != "http" && url.GetProtocol() != "https")
+        if (!url.IsProtocol("http") && !url.IsProtocol("https"))
         {
           CFile file;
           if (file.Open(strUrl))
