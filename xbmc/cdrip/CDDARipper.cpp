@@ -42,6 +42,9 @@
 #include "utils/log.h"
 #include "utils/TimeUtils.h"
 #include "utils/URIUtils.h"
+#include "settings/MediaSourceSettings.h"
+#include "Application.h"
+#include "music/MusicDatabase.h"
 #include "URL.h"
 
 using namespace std;
@@ -55,6 +58,7 @@ CCDDARipper& CCDDARipper::GetInstance()
 }
 
 CCDDARipper::CCDDARipper()
+  : CJobQueue(false, 1) //enforce fifo and non-parallel processing
 {
 }
 
@@ -301,7 +305,22 @@ CStdString CCDDARipper::GetTrackName(CFileItem *item)
 void CCDDARipper::OnJobComplete(unsigned int jobID, bool success, CJob* job)
 {
   if (success)
+  {
+    if(CJobQueue::QueueEmpty())
+    {
+      CStdString dir;
+      URIUtils::GetDirectory(((CCDDARipJob*)job)->GetOutput(), dir);
+      bool unimportant;
+      int source = CUtil::GetMatchingSource(dir, *CMediaSourceSettings::Get().CMediaSourceSettings::GetSources("music"), unimportant);
+
+      CMusicDatabase database;
+      database.Open();
+      if(source>=0 && database.InsideScannedPath(dir))
+        g_application.StartMusicScan(dir);
+      database.Close();
+    }
     return CJobQueue::OnJobComplete(jobID, success, job);
+  }
 
   CancelJobs();
 }
