@@ -71,7 +71,8 @@ public:
   static bool IsFullPath(const CStdString &url); ///< return true if the url includes the full path
   static void Decode(CStdString& strURLData);
   static void Encode(CStdString& strURLData);
-  static CStdString TranslateProtocol(const CStdString& prot);
+  static std::string Decode(const std::string& strURLData);
+  static std::string Encode(const std::string& strURLData);
 
   /*! \brief Check whether a URL is a given URL scheme.
    Comparison is case-insensitive as per RFC1738
@@ -102,9 +103,6 @@ public:
   {
     return m_strFileType == type;
   }
-
-  static std::string Decode(const std::string& strURLData);
-  static std::string Encode(const std::string& strURLData);
   
   void GetOptions(std::map<CStdString, CStdString> &options) const;
   bool HasOption(const CStdString &key) const;

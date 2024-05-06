@@ -292,7 +292,7 @@ void CURL::Parse(const CStdString& strURL1)
    || IsProtocol("musicdb")
    || IsProtocol("videodb")
    || IsProtocol("sources")
-   || StringUtils2::StartsWith(m_strProtocol, "mem"))
+   || IsProtocol("mem"))
   {
     if (m_strHostName != "" && m_strFileName != "")
     {
@@ -316,7 +316,7 @@ void CURL::Parse(const CStdString& strURL1)
   SetFileName(m_strFileName);
 
   /* decode urlencoding on this stuff */
-  if( m_strProtocol.Equals("rar") || m_strProtocol.Equals("zip") || m_strProtocol.Equals("musicsearch"))
+  if(URIUtils::HasEncodedHostname(*this))
   {
     CURL::Decode(m_strHostName);
     // Validate it as it is likely to contain a filename
@@ -436,7 +436,21 @@ const CStdString& CURL::GetProtocol() const
 
 const CStdString CURL::GetTranslatedProtocol() const
 {
-  return TranslateProtocol(m_strProtocol);
+  if (IsProtocol("ftpx"))
+    return "ftp";
+
+  if (IsProtocol("shout")
+   || IsProtocol("daap")
+   || IsProtocol("dav")
+   || IsProtocol("tuxbox")
+   || IsProtocol("mms")
+   || IsProtocol("rss"))
+    return "http";
+
+  if (IsProtocol("davs"))
+    return "https";
+
+  return GetProtocol();
 }
 
 const CStdString& CURL::GetFileType() const
@@ -458,7 +472,8 @@ const CStdString CURL::GetFileNameWithoutPath() const
 {
   // *.zip and *.rar store the actual zip/rar path in the hostname of the url
   if ((IsProtocol("rar")  ||
-       IsProtocol("zip")) &&
+       IsProtocol("zip")  ||
+       IsProtocol("apk")) &&
        m_strFileName.empty())
     return URIUtils::GetFileName(m_strHostName);
 
@@ -558,12 +573,12 @@ std::string CURL::GetWithoutUserDetails(bool redact) const
   {
     std::string strHostName;
 
-    if (URIUtils::ProtocolHasParentInHostname(m_strProtocol))
+    if (URIUtils::HasParentInHostname(*this))
       strHostName = CURL(m_strHostName).GetWithoutUserDetails();
     else
       strHostName = m_strHostName;
 
-    if (URIUtils::ProtocolHasEncodedHostname(m_strProtocol))
+    if (URIUtils::HasEncodedHostname(*this))
       strURL += URLEncodeInline(strHostName);
     else
       strURL += strHostName;
@@ -622,7 +637,7 @@ CStdString CURL::GetWithoutFilename() const
 
   if (m_strHostName != "")
   {
-    if( m_strProtocol.Equals("rar") || m_strProtocol.Equals("zip") || m_strProtocol.Equals("musicsearch"))
+    if( URIUtils::HasEncodedHostname(*this) )
       strURL += URLEncodeInline(m_strHostName);
     else
       strURL += m_strHostName;
@@ -664,7 +679,7 @@ bool CURL::IsFullPath(const CStdString &url)
   if (url.size() && url[0] == '/') return true;     //   /foo/bar.ext
   if (url.Find("://") >= 0) return true;                 //   foo://bar.ext
   if (url.size() > 1 && url[1] == ':') return true; //   c:\\foo\\bar\\bar.ext
-  if (StringUtils2::StartsWith(url, "\\\\")) return true;    //   \\UNC\path\to\file
+  if (URIUtils::PathStarts(url, "\\\\")) return true;    //   \\UNC\path\to\file
   return false;
 }
 
@@ -794,23 +809,4 @@ bool CURL::IsProtocolEqual(const std::string &protocol, const char *type)
   if (type)
     return protocol == type;
   return false;
-}
-
-CStdString CURL::TranslateProtocol(const CStdString& prot)
-{
-  if (prot == "ftpx")
-    return "ftp";
-
-  if (prot == "shout"
-   || prot == "daap"
-   || prot == "dav"
-   || prot == "tuxbox"
-   || prot == "mms"
-   || prot == "rss")
-   return "http";
-  
-  if (prot == "davs")
-    return "https";
-
-  return prot;
 }

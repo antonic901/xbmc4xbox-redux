@@ -1250,6 +1250,16 @@ const CURL CFileItem::GetURL() const
   return url;
 }
 
+bool CFileItem::IsURL(const CURL& url) const
+{
+  return IsPath(url.Get());
+}
+
+bool CFileItem::IsPath(const std::string& path) const
+{
+  return URIUtils::PathEquals(m_strPath, path);
+}
+
 /////////////////////////////////////////////////////////////////////////////////
 /////
 ///// CFileItemList
@@ -2158,7 +2168,7 @@ void CFileItemList::StackFiles()
     VECCREGEXP::iterator  expr        = stackRegExps.begin();
 
     URIUtils::Split(item1->GetPath(), filePath, file1);
-    if (URIUtils::ProtocolHasEncodedFilename(CURL(filePath).GetProtocol() ) )
+    if (URIUtils::HasEncodedFilename(CURL(filePath)))
       CURL::Decode(file1);
 
     int j;
@@ -2191,7 +2201,7 @@ void CFileItemList::StackFiles()
 
           CStdString file2, filePath2;
           URIUtils::Split(item2->GetPath(), filePath2, file2);
-          if (URIUtils::ProtocolHasEncodedFilename(CURL(filePath2).GetProtocol() ) )
+          if (URIUtils::HasEncodedFilename(CURL(filePath2)) )
             CURL::Decode(file2);
 
           if (expr->RegFind(file2, offset) != -1)

@@ -100,7 +100,7 @@ namespace XFILE
       File1 = URIUtils::GetFileName(files[0]->GetPath());
       File2 = URIUtils::GetFileName(files[1]->GetPath());
       // Check if source path uses URL encoding
-      if (URIUtils::ProtocolHasEncodedFilename(CURL(strCommonDir).GetProtocol()))
+      if (URIUtils::HasEncodedFilename(CURL(strCommonDir)))
       {
         CURL::Decode(File1);
         CURL::Decode(File2);
@@ -136,7 +136,7 @@ namespace XFILE
                   // got it
                   strStackTitle = Title1 + Ignore1;
                   // Check if source path uses URL encoding
-                  if (URIUtils::ProtocolHasEncodedFilename(CURL(strCommonDir).GetProtocol()))
+                  if (URIUtils::HasEncodedFilename(CURL(strCommonDir)))
                     CURL::Encode(strStackTitle);
 
                   strStackTitle += Extension1;

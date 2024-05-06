@@ -267,25 +267,25 @@ void URIUtils::GetCommonPath(CStdString& strParent, const CStdString& strPath)
   }
 }
 
-bool URIUtils::ProtocolHasParentInHostname(const CStdString& prot)
+bool URIUtils::HasParentInHostname(const CURL& url)
 {
-  return prot.Equals("zip")
-      || prot.Equals("rar")
-      || prot.Equals("apk")
-      || prot.Equals("bluray")
-      || prot.Equals("udf");
+  return url.IsProtocol("zip")
+      || url.IsProtocol("rar")
+      || url.IsProtocol("apk")
+      || url.IsProtocol("bluray")
+      || url.IsProtocol("udf");
 }
 
-bool URIUtils::ProtocolHasEncodedHostname(const CStdString& prot)
+bool URIUtils::HasEncodedHostname(const CURL& url)
 {
-  return ProtocolHasParentInHostname(prot)
-      || prot.Equals("musicsearch")
-      || prot.Equals("image");
+  return HasParentInHostname(url)
+      || url.IsProtocol("musicsearch")
+      || url.IsProtocol( "image");
 }
 
-bool URIUtils::ProtocolHasEncodedFilename(const CStdString& prot)
+bool URIUtils::HasEncodedFilename(const CURL& url)
 {
-  CStdString prot2 = CURL::TranslateProtocol(prot);
+  const std::string prot2 = url.GetTranslatedProtocol();
 
   // For now assume only (quasi) http internet streams use URL encoding
   return CURL::IsProtocolEqual(prot2, "http")  ||
@@ -305,7 +305,7 @@ bool URIUtils::GetParentPath(const CStdString& strPath, CStdString& strParent)
 
   CURL url(strPath);
   CStdString strFile = url.GetFileName();
-  if ( URIUtils::ProtocolHasParentInHostname(url.GetProtocol()) && strFile.empty())
+  if ( URIUtils::HasParentInHostname(url) && strFile.empty())
   {
     strFile = url.GetHostName();
     return GetParentPath(strFile, strParent);
@@ -316,14 +316,14 @@ bool URIUtils::GetParentPath(const CStdString& strPath, CStdString& strParent)
     CFileItemList items;
     dir.GetDirectory(url, items);
     items[0]->m_strDVDLabel = GetDirectory(items[0]->GetPath());
-    if (StringUtils2::StartsWithNoCase(items[0]->m_strDVDLabel, "rar://") || StringUtils2::StartsWithNoCase(items[0]->m_strDVDLabel, "zip://"))
+    if (IsProtocol(items[0]->m_strDVDLabel, "rar") || IsProtocol(items[0]->m_strDVDLabel, "zip"))
       GetParentPath(items[0]->m_strDVDLabel, strParent);
     else
       strParent = items[0]->m_strDVDLabel;
     for( int i=1;i<items.Size();++i)
     {
       items[i]->m_strDVDLabel = GetDirectory(items[i]->GetPath());
-      if (StringUtils2::StartsWithNoCase(items[0]->m_strDVDLabel, "rar://") || StringUtils2::StartsWithNoCase(items[0]->m_strDVDLabel, "zip://"))
+      if (IsProtocol(items[0]->m_strDVDLabel, "rar") || IsProtocol(items[0]->m_strDVDLabel, "zip"))
         items[i]->SetPath(GetParentPath(items[i]->m_strDVDLabel));
       else
         items[i]->SetPath(items[i]->m_strDVDLabel);
@@ -434,13 +434,13 @@ std::string URIUtils::ChangeBasePath(const std::string &fromPath, const std::str
     StringUtils2::Replace(toFile, "\\", "/");
 
   // Handle difference in URL encoded vs. not encoded
-  if ( ProtocolHasEncodedFilename(CURL(fromPath).GetProtocol() )
-   && !ProtocolHasEncodedFilename(CURL(toPath).GetProtocol() ) )
+  if ( HasEncodedFilename(CURL(fromPath))
+   && !HasEncodedFilename(CURL(toPath)) )
   {
     toFile = URLDecodePath(toFile); // Decode path
   }
-  else if (!ProtocolHasEncodedFilename(CURL(fromPath).GetProtocol() )
-         && ProtocolHasEncodedFilename(CURL(toPath).GetProtocol() ) )
+  else if (!HasEncodedFilename(CURL(fromPath))
+         && HasEncodedFilename(CURL(toPath)) )
   {
     toFile = URLEncodePath(toFile); // Encode path
   }
@@ -493,6 +493,21 @@ CStdString URIUtils::SubstitutePath(const CStdString& strPath, bool reverse /* =
   return strPath;
 }
 
+bool URIUtils::IsProtocol(const std::string& url, const std::string &type)
+{
+  return StringUtils2::StartsWithNoCase(url, type + "://");
+}
+
+bool URIUtils::PathStarts(const std::string& url, const char *start)
+{
+  return StringUtils2::StartsWith(url, start);
+}
+
+bool URIUtils::PathEquals(const std::string& url, const std::string &start)
+{
+  return url == start;
+}
+
 bool URIUtils::IsRemote(const CStdString& strFile)
 {
   if (IsMemCard(strFile) || IsCDDA(strFile) || IsISO9660(strFile))
@@ -516,7 +531,7 @@ bool URIUtils::IsRemote(const CStdString& strFile)
   }
 
   CURL url(strFile);
-  if(ProtocolHasParentInHostname(url.GetProtocol()))
+  if(HasParentInHostname(url))
     return IsRemote(url.GetHostName());
 
   if (!url.IsLocal())
@@ -531,20 +546,20 @@ bool URIUtils::IsOnDVD(const CStdString& strFile)
   if (strFile.size() >= 2 && strFile.substr(1,1) == ":")
     return (GetDriveType(strFile.substr(0, 3).c_str()) == DRIVE_CDROM);
 #else
-  if (StringUtils2::StartsWith(strFile, "d:"))
+  if (IsProtocol(strFile, "d"))
     return true;
 #endif
 
-  if (StringUtils2::StartsWith(strFile, "dvd:"))
+  if (IsProtocol(strFile, "dvd"))
     return true;
 
-  if (StringUtils2::StartsWith(strFile, "udf:"))
+  if (IsProtocol(strFile, "udf"))
     return true;
 
-  if (StringUtils2::StartsWith(strFile, "iso9660:"))
+  if (IsProtocol(strFile, "iso9660"))
     return true;
 
-  if (StringUtils2::StartsWith(strFile, "cdda:"))
+  if (IsProtocol(strFile, "cdda"))
     return true;
 
   return false;
@@ -574,7 +589,7 @@ bool URIUtils::IsOnLAN(const CStdString& strPath)
     return true;
 
   CURL url(strPath);
-  if (ProtocolHasParentInHostname(url.GetProtocol()))
+  if (HasParentInHostname(url))
     return IsOnLAN(url.GetHostName());
 
   if(!IsRemote(strPath))
@@ -624,7 +639,7 @@ bool URIUtils::IsHostOnLAN(const CStdString& host, bool offLineCheck)
 
 bool URIUtils::IsMultiPath(const CStdString& strPath)
 {
-  return StringUtils2::StartsWithNoCase(strPath, "multipath:");
+  return IsProtocol(strPath, "multipath");
 }
 
 bool URIUtils::IsHD(const CStdString& strFileName)
@@ -637,7 +652,7 @@ bool URIUtils::IsHD(const CStdString& strFileName)
   if (IsSpecial(strFileName))
     return IsHD(CSpecialProtocol::TranslatePath(strFileName));
 
-  if (ProtocolHasParentInHostname(url.GetProtocol()))
+  if (HasParentInHostname(url))
     return IsHD(url.GetHostName());
 
   return url.GetProtocol().empty() || url.IsProtocol("file");
@@ -651,7 +666,7 @@ bool URIUtils::IsDVD(const CStdString& strFile)
     return true;
 
 #if defined(TARGET_WINDOWS)
-  if (StringUtils2::StartsWithNoCase(strFile, "dvd://"))
+  if (IsProtocol(strFile, "dvd"))
     return true;
 
   if(strFile.size() < 2 || (strFile.substr(1) != ":\\" && strFile.substr(1) != ":"))
@@ -669,7 +684,7 @@ bool URIUtils::IsDVD(const CStdString& strFile)
 
 bool URIUtils::IsStack(const CStdString& strFile)
 {
-  return StringUtils2::StartsWithNoCase(strFile, "stack:");
+  return IsProtocol(strFile, "stack");
 }
 
 bool URIUtils::IsRAR(const CStdString& strFile)
@@ -736,7 +751,7 @@ bool URIUtils::IsSpecial(const CStdString& strFile)
   if (IsStack(strFile))
     strFile2 = CStackDirectory::GetFirstStackedFile(strFile);
 
-  return StringUtils2::StartsWithNoCase(strFile2, "special:");
+  return IsProtocol(strFile2, "special");
 }
 
 bool URIUtils::IsPlugin(const CStdString& strFile)
@@ -765,12 +780,12 @@ bool URIUtils::IsSourcesPath(const CStdString& strPath)
 
 bool URIUtils::IsCDDA(const CStdString& strFile)
 {
-  return StringUtils2::StartsWithNoCase(strFile, "cdda:");
+  return IsProtocol(strFile, "cdda");
 }
 
 bool URIUtils::IsISO9660(const CStdString& strFile)
 {
-  return StringUtils2::StartsWithNoCase(strFile, "iso9660:");
+  return IsProtocol(strFile, "iso9660");
 }
 
 bool URIUtils::IsSmb(const CStdString& strFile)
@@ -780,7 +795,7 @@ bool URIUtils::IsSmb(const CStdString& strFile)
   if (IsStack(strFile))
     strFile2 = CStackDirectory::GetFirstStackedFile(strFile);
 
-  return StringUtils2::StartsWithNoCase(strFile2, "smb:");
+  return IsProtocol(strFile2, "smb");
 }
 
 bool URIUtils::IsURL(const CStdString& strFile)
@@ -795,8 +810,8 @@ bool URIUtils::IsFTP(const CStdString& strFile)
   if (IsStack(strFile))
     strFile2 = CStackDirectory::GetFirstStackedFile(strFile);
 
-  return StringUtils2::StartsWithNoCase(strFile2, "ftp:")  ||
-         StringUtils2::StartsWithNoCase(strFile2, "ftps:");
+  return IsProtocol(strFile2, "ftp")  ||
+         IsProtocol(strFile2, "ftps");
 }
 
 bool URIUtils::IsDAV(const CStdString& strFile)
@@ -806,8 +821,8 @@ bool URIUtils::IsDAV(const CStdString& strFile)
   if (IsStack(strFile))
     strFile2 = CStackDirectory::GetFirstStackedFile(strFile);
 
-  return StringUtils2::StartsWithNoCase(strFile2, "dav:")  ||
-         StringUtils2::StartsWithNoCase(strFile2, "davs:");
+  return IsProtocol(strFile2, "dav")  ||
+         IsProtocol(strFile2, "davs");
 }
 
 bool URIUtils::IsInternetStream(const std::string &path, bool bStrictCheck /* = false */)
@@ -846,47 +861,47 @@ bool URIUtils::IsInternetStream(const CURL& url, bool bStrictCheck /* = false */
 
 bool URIUtils::IsDAAP(const CStdString& strFile)
 {
-  return StringUtils2::StartsWithNoCase(strFile, "daap:");
+  return IsProtocol(strFile, "daap");
 }
 
 bool URIUtils::IsUPnP(const CStdString& strFile)
 {
-  return StringUtils2::StartsWithNoCase(strFile, "upnp:");
+  return IsProtocol(strFile, "upnp");
 }
 
 bool URIUtils::IsMemCard(const CStdString& strFile)
 {
-  return StringUtils2::StartsWithNoCase(strFile, "mem");
+  return IsProtocol(strFile, "mem");
 }
 
 bool URIUtils::IsTuxBox(const CStdString& strFile)
 {
-  return StringUtils2::StartsWithNoCase(strFile, "tuxbox:");
+  return IsProtocol(strFile, "tuxbox");
 }
 
 bool URIUtils::IsMythTV(const CStdString& strFile)
 {
-  return StringUtils2::StartsWithNoCase(strFile, "myth:");
+  return IsProtocol(strFile, "myth");
 }
 
 bool URIUtils::IsHDHomeRun(const CStdString& strFile)
 {
-  return StringUtils2::StartsWithNoCase(strFile, "hdhomerun:");
+  return IsProtocol(strFile, "hdhomerun");
 }
 
 bool URIUtils::IsSlingbox(const CStdString& strFile)
 {
-  return StringUtils2::StartsWithNoCase(strFile, "sling:");
+  return IsProtocol(strFile, "sling");
 }
 
 bool URIUtils::IsVTP(const CStdString& strFile)
 {
-  return StringUtils2::StartsWithNoCase(strFile, "vtp:");
+  return IsProtocol(strFile, "vtp");
 }
 
 bool URIUtils::IsHTSP(const CStdString& strFile)
 {
-  return StringUtils2::StartsWithNoCase(strFile, "htsp:");
+  return IsProtocol(strFile, "htsp");
 }
 
 bool URIUtils::IsLiveTV(const CStdString& strFile)
@@ -899,8 +914,8 @@ bool URIUtils::IsLiveTV(const CStdString& strFile)
   || IsHDHomeRun(strFile)
   || IsSlingbox(strFile)
   || IsHTSP(strFile)
-  || StringUtils2::StartsWithNoCase(strFile, "sap:")
-  ||(StringUtils2::EndsWithNoCase(strFileWithoutSlash, ".pvr") && !StringUtils2::StartsWithNoCase(strFileWithoutSlash, "pvr://recordings")))
+  || IsProtocol(strFile, "sap")
+  ||(StringUtils2::EndsWithNoCase(strFileWithoutSlash, ".pvr") && !PathStarts(strFileWithoutSlash, "pvr://recordings")))
     return true;
 
   if (IsMythTV(strFile) && CMythDirectory::IsLiveTV(strFile))
@@ -915,12 +930,12 @@ bool URIUtils::IsPVRRecording(const CStdString& strFile)
   RemoveSlashAtEnd(strFileWithoutSlash);
 
   return StringUtils2::EndsWithNoCase(strFileWithoutSlash, ".pvr") &&
-         StringUtils2::StartsWithNoCase(strFile, "pvr://recordings");
+         PathStarts(strFile, "pvr://recordings");
 }
 
 bool URIUtils::IsMusicDb(const CStdString& strFile)
 {
-  return StringUtils2::StartsWithNoCase(strFile, "musicdb:");
+  return IsProtocol(strFile, "musicdb");
 }
 
 bool URIUtils::IsNfs(const CStdString& strFile)
@@ -930,7 +945,7 @@ bool URIUtils::IsNfs(const CStdString& strFile)
   if (IsStack(strFile))
     strFile2 = CStackDirectory::GetFirstStackedFile(strFile);
   
-  return StringUtils2::StartsWithNoCase(strFile2, "nfs:");
+  return IsProtocol(strFile2, "nfs");
 }
 
 bool URIUtils::IsAfp(const CStdString& strFile)
@@ -940,23 +955,23 @@ bool URIUtils::IsAfp(const CStdString& strFile)
   if (IsStack(strFile))
     strFile2 = CStackDirectory::GetFirstStackedFile(strFile);
   
-  return StringUtils2::StartsWithNoCase(strFile2, "afp:");
+  return IsProtocol(strFile2, "afp");
 }
 
 
 bool URIUtils::IsVideoDb(const CStdString& strFile)
 {
-  return StringUtils2::StartsWithNoCase(strFile, "videodb:");
+  return IsProtocol(strFile, "videodb");
 }
 
 bool URIUtils::IsBluray(const CStdString& strFile)
 {
-  return StringUtils2::StartsWithNoCase(strFile, "bluray:");
+  return IsProtocol(strFile, "bluray");
 }
 
 bool URIUtils::IsAndroidApp(const CStdString &path)
 {
-  return StringUtils2::StartsWithNoCase(path, "androidapp:");
+  return IsProtocol(path, "androidapp");
 }
 
 bool URIUtils::IsLibraryFolder(const CStdString& strFile)
@@ -967,9 +982,9 @@ bool URIUtils::IsLibraryFolder(const CStdString& strFile)
 
 bool URIUtils::IsLibraryContent(const std::string &strFile)
 {
-  return (StringUtils2::StartsWith(strFile, "library://") ||
-          StringUtils2::StartsWith(strFile, "videodb://") ||
-          StringUtils2::StartsWith(strFile, "musicdb://") ||
+  return (IsProtocol(strFile, "library") ||
+          IsProtocol(strFile, "videodb") ||
+          IsProtocol(strFile, "musicdb") ||
           StringUtils2::EndsWith(strFile, ".xsp"));
 }
 
@@ -1290,7 +1305,7 @@ bool URIUtils::UpdateUrlEncoding(std::string &strFilename)
     url.Parse(stackPath);
   }
   // if the protocol has an encoded hostname we need to work with its hostname
-  else if (URIUtils::ProtocolHasEncodedHostname(url.GetProtocol()))
+  else if (URIUtils::HasEncodedHostname(url))
   {
     std::string hostname = url.GetHostName();
     UpdateUrlEncoding(hostname);
