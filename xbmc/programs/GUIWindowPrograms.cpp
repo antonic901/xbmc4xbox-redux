@@ -583,6 +583,7 @@ void CGUIWindowPrograms::PopulateTrainersList()
 
 bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemList &items)
 {
+#ifdef _XBOX
   bool bFlattened=false;
   if (URIUtils::IsDVD(strDirectory))
   {
@@ -598,9 +599,21 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
     }
   }
   if (!bFlattened)
+#endif
     if (!CGUIMediaWindow::GetDirectory(strDirectory, items))
       return false;
 
+  // don't allow the view state to change these
+  if (strDirectory.Left(9).Equals("addons://"))
+  {
+    for (int i=0;i<items.Size();++i)
+    {
+      items[i]->SetLabel2(items[i]->GetProperty("Addon.Version"));
+      items[i]->SetLabelPreformated(true);
+    }
+  }
+
+#ifdef _XBOX
   if (items.IsVirtualDirectoryRoot())
   {
     items.SetLabel("");
@@ -711,6 +724,7 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
 
   if (bProgressVisible)
     m_dlgProgress->Close();
+#endif
 
   return true;
 }
