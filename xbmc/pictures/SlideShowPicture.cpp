@@ -618,7 +618,7 @@ void CSlideShowPic::Render(float *x, float *y, CBaseTexture* pTexture, color_t c
   };
   static const DWORD FVF_VERTEX = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 
-  VERTEX vertex[4];
+  VERTEX vertex[5];
 
   for (int i = 0; i < 4; i++)
   {
@@ -631,6 +631,7 @@ void CSlideShowPic::Render(float *x, float *y, CBaseTexture* pTexture, color_t c
     vertex[i].tv = 0;
     vertex[i].col = color;
   }
+
 #ifdef HAS_XBOX_D3D
   vertex[1].tu = m_fWidth;
   vertex[2].tu = m_fWidth;
@@ -642,6 +643,8 @@ void CSlideShowPic::Render(float *x, float *y, CBaseTexture* pTexture, color_t c
   vertex[2].tv = 1.0f;
   vertex[3].tv = 1.0f;
 #endif
+
+  vertex[4] = vertex[0]; // Not used when pTexture != NULL
 
   // Set state to render the image
   if (pTexture)
@@ -681,10 +684,14 @@ void CSlideShowPic::Render(float *x, float *y, CBaseTexture* pTexture, color_t c
 #endif
   g_graphicsContext.Get3DDevice()->SetVertexShader( FVF_VERTEX );
   // Render the image
+  if (pTexture)
+  {
 #ifdef HAS_XBOX_D3D
-  g_graphicsContext.Get3DDevice()->DrawPrimitiveUP( D3DPT_QUADLIST, 1, vertex, sizeof(VERTEX) );
+    g_graphicsContext.Get3DDevice()->DrawPrimitiveUP( D3DPT_QUADLIST, 1, vertex, sizeof(VERTEX) );
 #else
-  g_graphicsContext.Get3DDevice()->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, vertex, sizeof(VERTEX) );
+    g_graphicsContext.Get3DDevice()->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, vertex, sizeof(VERTEX) );
 #endif
-  if (pTexture) g_graphicsContext.Get3DDevice()->SetTexture(0, NULL);
+    g_graphicsContext.Get3DDevice()->SetTexture(0, NULL);
+  } else
+    g_graphicsContext.Get3DDevice()->DrawPrimitiveUP( D3DPT_LINESTRIP, 4, vertex, sizeof(VERTEX) );
 }
