@@ -419,6 +419,7 @@ case TMSG_POWERDOWN:
           CUtil::GetRecursiveListing(strPath, items, g_advancedSettings.m_pictureExtensions);
           if (items.Size() > 0)
           {
+            pSlideShow->Reset();
             for (int i=0;i<items.Size();++i)
             {
               pSlideShow->Add(items[i].get());
@@ -446,7 +447,6 @@ case TMSG_POWERDOWN:
           g_application.StopPlaying();
 
         g_graphicsContext.Lock();
-        pSlideShow->Reset();
 
         CFileItemList items;
         CStdString strPath = pMsg->strParam;

@@ -291,7 +291,15 @@ CUPnPRenderer::GetMetadata(NPT_String& meta)
 NPT_Result
 CUPnPRenderer::OnNext(PLT_ActionReference& action)
 {
-    CApplicationMessenger::Get().PlayListPlayerNext();
+    if (g_windowManager.GetActiveWindow() == WINDOW_SLIDESHOW) {
+        CGUIWindowSlideShow *slideshow = (CGUIWindowSlideShow *)g_windowManager.GetWindow(WINDOW_SLIDESHOW);
+        if (slideshow == NULL) {
+            return NPT_FAILURE;
+        }
+        slideshow->ShowNext();
+    } else {
+        CApplicationMessenger::Get().PlayListPlayerNext();
+    }
     return NPT_SUCCESS;
 }
 
