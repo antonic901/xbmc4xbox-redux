@@ -1772,8 +1772,7 @@ bool CApplication::LoadSkin(const SkinPtr& skin)
   g_fontManager.LoadFonts(CSettings::Get().GetString("lookandfeel.font"));
 
   // load in the skin strings
-  CStdString langPath;
-  URIUtils::AddFileToFolder(skin->Path(), "language", langPath);
+  CStdString langPath = URIUtils::AddFileToFolder(skin->Path(), "language");
   URIUtils::AddSlashAtEnd(langPath);
 
   g_localizeStrings.LoadSkinStrings(langPath, CSettings::Get().GetString("locale.language"));

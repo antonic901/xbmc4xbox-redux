@@ -284,11 +284,14 @@ void CGUIWindowMusicPlayList::SavePlayList()
   if (CGUIKeyboardFactory::ShowAndGetInput(strNewFileName, g_localizeStrings.Get(16012), false))
   {
     // need 2 rename it
-    CStdString strFolder, strPath;
-    URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "music", strFolder);
+    CStdString strFolder = URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "music");
+    strNewFileName = CUtil::MakeLegalFileName(strNewFileName);
+#ifdef _XBOX
+    // Do we need this here? Maybe we should replace it with: CUtil::MakeLegalFileName(strNewFileName, LEGAL_FATX)
     CUtil::RemoveIllegalChars( strNewFileName );
+#endif
     strNewFileName += ".m3u";
-    URIUtils::AddFileToFolder(strFolder, strNewFileName, strPath);
+    CStdString strPath = URIUtils::AddFileToFolder(strFolder, strNewFileName);
 
     // get selected item
     int iItem = m_viewControl.GetSelectedItem();

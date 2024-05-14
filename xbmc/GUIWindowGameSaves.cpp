@@ -225,10 +225,8 @@ bool CGUIWindowGameSaves::GetDirectory(const CStdString& strDirectory, CFileItem
         m_dlgProgress->Progress();
       }
 
-      CStdString titlemetaXBX;
-      CStdString savemetaXBX;
-      URIUtils::AddFileToFolder(item->GetPath(), "titlemeta.xbx", titlemetaXBX);
-      URIUtils::AddFileToFolder(item->GetPath(), "savemeta.xbx", savemetaXBX);
+      CStdString titlemetaXBX = URIUtils::AddFileToFolder(item->GetPath(), "titlemeta.xbx");
+      CStdString savemetaXBX = URIUtils::AddFileToFolder(item->GetPath(), "savemeta.xbx");
       int domode = 0;
       if (CFile::Exists(titlemetaXBX))
       {
@@ -273,8 +271,7 @@ bool CGUIWindowGameSaves::GetDirectory(const CStdString& strDirectory, CFileItem
           {
             if (items2[j]->m_bIsFolder)
             {
-              CStdString strPath;
-              URIUtils::AddFileToFolder(items2[j]->GetPath(),"savemeta.xbx",strPath);
+              CStdString strPath = URIUtils::AddFileToFolder(items2[j]->GetPath(),"savemeta.xbx");
               if (CFile::Exists(strPath))
                 break;
             }
@@ -433,21 +430,20 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         CStdString strParent;
         URIUtils::GetParentPath(item->GetPath(),strParent);
         CDirectory::GetDirectory(strParent,items2);
-        URIUtils::AddFileToFolder(value,URIUtils::GetFileName(strParent),path);
+        path = URIUtils::AddFileToFolder(value,URIUtils::GetFileName(strParent));
         for (int j=0;j<items2.Size();++j)
         {
           if (!items2[j]->m_bIsFolder)
           {
-            CStdString strDest;
-            URIUtils::AddFileToFolder(path,URIUtils::GetFileName(items2[j]->GetPath()),strDest);
+            CStdString strDest = URIUtils::AddFileToFolder(path,URIUtils::GetFileName(items2[j]->GetPath()));
             CFile::Copy(items2[j]->GetPath(),strDest);
           }
         }
-        URIUtils::AddFileToFolder(path,URIUtils::GetFileName(item->GetPath()),path);
+        path = URIUtils::AddFileToFolder(path,URIUtils::GetFileName(item->GetPath()));
       }
       else
       {
-        URIUtils::AddFileToFolder(value,URIUtils::GetFileName(item->GetPath()),path);
+        path = URIUtils::AddFileToFolder(value,URIUtils::GetFileName(item->GetPath()));
       }
 
       item->Select(true);
@@ -493,22 +489,21 @@ bool CGUIWindowGameSaves::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         URIUtils::GetParentPath(item->GetPath(),strParent);
         CDirectory::GetDirectory(strParent,items2);
 
-        URIUtils::AddFileToFolder(value,URIUtils::GetFileName(strParent),path);
+        path = URIUtils::AddFileToFolder(value,URIUtils::GetFileName(strParent));
         for (int j=0;j<items2.Size();++j) // only copy main title stuff
         {
           if (!items2[j]->m_bIsFolder)
           {
-            CStdString strDest;
-            URIUtils::AddFileToFolder(path,URIUtils::GetFileName(items2[j]->GetPath()),strDest);
+            CStdString strDest = URIUtils::AddFileToFolder(path,URIUtils::GetFileName(items2[j]->GetPath()));
             CFile::Copy(items2[j]->GetPath(),strDest);
           }
         }
 
-        URIUtils::AddFileToFolder(path,URIUtils::GetFileName(item->GetPath()),path);
+        path = URIUtils::AddFileToFolder(path,URIUtils::GetFileName(item->GetPath()));
       }
       else
       {
-        URIUtils::AddFileToFolder(value,URIUtils::GetFileName(item->GetPath()),path);
+        path = URIUtils::AddFileToFolder(value,URIUtils::GetFileName(item->GetPath()));
       }
 
       item->Select(true);

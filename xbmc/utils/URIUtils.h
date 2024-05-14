@@ -192,8 +192,6 @@ public:
                                 const CStdString& strFilePathInArchive,
                                 const CStdString& strPwd="");
 
-  static void AddFileToFolder(const CStdString& strFolder,
-                              const CStdString& strFile, CStdString& strResult);
   static CStdString AddFileToFolder(const CStdString &strFolder, const CStdString &strFile);
 
   static bool HasParentInHostname(const CURL& url);

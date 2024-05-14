@@ -355,7 +355,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(SettingInfo &setting)
                 CStdString strFileName = URIUtils::GetFileName(strPath);
                 strPath3 = URIUtils::GetDirectory(strPath);
                 URIUtils::GetParentPath(strPath3,strPath2);
-                URIUtils::AddFileToFolder(strPath2,strFileName,strPath2);
+                strPath2 = URIUtils::AddFileToFolder(strPath2,strFileName);
                 strPath2 = URIUtils::ReplaceExtension(strPath2,".idx");
               }
               strPath3 = "special://temp/subtitle.idx.keep";

@@ -1328,7 +1328,7 @@ int CBuiltins::Execute(const CStdString& execString)
       else
       {
         if (URIUtils::HasSlashAtEnd(path))
-          URIUtils::AddFileToFolder(path, "musicdb.xml", path);
+          path = URIUtils::AddFileToFolder(path, "musicdb.xml");
         CMusicDatabase musicdatabase;
         musicdatabase.Open();
         musicdatabase.ExportToXML(path, singleFile, thumbs, overwrite);

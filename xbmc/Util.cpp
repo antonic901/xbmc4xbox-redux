@@ -1181,9 +1181,7 @@ bool CUtil::CacheXBEIcon(const CStdString& strFilePath, const CStdString& strIco
   CStdString localFile;
   g_charsetConverter.utf8ToStringCharset(strFilePath, localFile);
   CXBE xbeReader;
-  CStdString strTempFile;
-
-  URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath,"1.xpr",strTempFile);
+  CStdString strTempFile = URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath,"1.xpr");
   if (URIUtils::HasExtension(strFilePath, ".xbx"))
   {
   ::CopyFile(strFilePath.c_str(), strTempFile.c_str(),FALSE);
@@ -1749,8 +1747,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
   {
     for (int j=0; common_sub_dirs[j]; j++)
     {
-      CStdString strPath2;
-      URIUtils::AddFileToFolder(strLookInPaths[i],common_sub_dirs[j],strPath2);
+      CStdString strPath2 = URIUtils::AddFileToFolder(strLookInPaths[i],common_sub_dirs[j]);
       if (CDirectory::Exists(strPath2))
         strLookInPaths.push_back(strPath2);
     }
@@ -1765,8 +1762,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
     sprintf(temp,"cd%i",i+1);
     for (int i=0;i<iSize;++i)
     {
-      CStdString strPath2;
-      URIUtils::AddFileToFolder(strLookInPaths[i],temp,strPath2);
+      CStdString strPath2 = URIUtils::AddFileToFolder(strLookInPaths[i],temp);
       if (CDirectory::Exists(strPath2))
         strLookInPaths.push_back(strPath2);
     }
@@ -1809,9 +1805,8 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
         // is this a rar-file ..
         if ((URIUtils::IsRAR(strItem) || URIUtils::IsZIP(strItem)) && CSettings::Get().GetBool("subtitles.searchrars"))
         {
-          CStdString strRar, strItemWithPath;
-          URIUtils::AddFileToFolder(strLookInPaths[step],strFileNameNoExt+URIUtils::GetExtension(strItem),strRar);
-          URIUtils::AddFileToFolder(strLookInPaths[step],strItem,strItemWithPath);
+          CStdString strRar = URIUtils::AddFileToFolder(strLookInPaths[step],strFileNameNoExt+URIUtils::GetExtension(strItem));
+          CStdString strItemWithPath = URIUtils::AddFileToFolder(strLookInPaths[step],strItem);
 
           unsigned int iPos = strMovie.substr(0,6)=="rar://"?1:0;
           iPos = strMovie.substr(0,6)=="zip://"?1:0;
@@ -2779,56 +2774,49 @@ int CUtil::GetMatchingSource(const CStdString& strPath1, VECSOURCES& VECSOURCES,
 
 CStdString CUtil::TranslateSpecialSource(const CStdString &strSpecial)
 {
-  CStdString strReturn=strSpecial;
   if (!strSpecial.IsEmpty() && strSpecial[0] == '$')
   {
     if (StringUtils2::StartsWithNoCase(strSpecial, "$home"))
-      URIUtils::AddFileToFolder("special://home/", strSpecial.Mid(5), strReturn);
+      return URIUtils::AddFileToFolder("special://home/", strSpecial.Mid(5));
     else if (StringUtils2::StartsWithNoCase(strSpecial, "$subtitles"))
-      URIUtils::AddFileToFolder("special://subtitles/", strSpecial.Mid(10), strReturn);
+      return URIUtils::AddFileToFolder("special://subtitles/", strSpecial.Mid(10));
     else if (StringUtils2::StartsWithNoCase(strSpecial, "$userdata"))
-      URIUtils::AddFileToFolder("special://userdata/", strSpecial.Mid(9), strReturn);
+      return URIUtils::AddFileToFolder("special://userdata/", strSpecial.Mid(9));
     else if (StringUtils2::StartsWithNoCase(strSpecial, "$database"))
-      URIUtils::AddFileToFolder("special://database/", strSpecial.Mid(9), strReturn);
+      return URIUtils::AddFileToFolder("special://database/", strSpecial.Mid(9));
     else if (StringUtils2::StartsWithNoCase(strSpecial, "$thumbnails"))
-      URIUtils::AddFileToFolder("special://thumbnails/", strSpecial.Mid(11), strReturn);
+      return URIUtils::AddFileToFolder("special://thumbnails/", strSpecial.Mid(11));
     else if (StringUtils2::StartsWithNoCase(strSpecial, "$recordings"))
-      URIUtils::AddFileToFolder("special://recordings/", strSpecial.Mid(11), strReturn);
+      return URIUtils::AddFileToFolder("special://recordings/", strSpecial.Mid(11));
     else if (StringUtils2::StartsWithNoCase(strSpecial, "$screenshots"))
-      URIUtils::AddFileToFolder("special://screenshots/", strSpecial.Mid(12), strReturn);
+      return URIUtils::AddFileToFolder("special://screenshots/", strSpecial.Mid(12));
     else if (StringUtils2::StartsWithNoCase(strSpecial, "$musicplaylists"))
-      URIUtils::AddFileToFolder("special://musicplaylists/", strSpecial.Mid(15), strReturn);
+      return URIUtils::AddFileToFolder("special://musicplaylists/", strSpecial.Mid(15));
     else if (StringUtils2::StartsWithNoCase(strSpecial, "$videoplaylists"))
-      URIUtils::AddFileToFolder("special://videoplaylists/", strSpecial.Mid(15), strReturn);
+      return URIUtils::AddFileToFolder("special://videoplaylists/", strSpecial.Mid(15));
     else if (StringUtils2::StartsWithNoCase(strSpecial, "$cdrips"))
-      URIUtils::AddFileToFolder("special://cdrips/", strSpecial.Mid(7), strReturn);
+      return URIUtils::AddFileToFolder("special://cdrips/", strSpecial.Mid(7));
     // this one will be removed post 2.0
     else if (StringUtils2::StartsWithNoCase(strSpecial, "$playlists"))
-      URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), strSpecial.Mid(10), strReturn);
+      return URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), strSpecial.Mid(10));
   }
-  return strReturn;
+  return strSpecial;
 }
 
 CStdString CUtil::MusicPlaylistsLocation()
 {
   vector<CStdString> vec;
-  CStdString strReturn;
-  URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "music", strReturn);
-  vec.push_back(strReturn);
-  URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "mixed", strReturn);
-  vec.push_back(strReturn);
-  return XFILE::CMultiPathDirectory::ConstructMultiPath(vec);;
+  vec.push_back(URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "music"));
+  vec.push_back(URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "mixed"));
+  return XFILE::CMultiPathDirectory::ConstructMultiPath(vec);
 }
 
 CStdString CUtil::VideoPlaylistsLocation()
 {
   vector<CStdString> vec;
-  CStdString strReturn;
-  URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "video", strReturn);
-  vec.push_back(strReturn);
-  URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "mixed", strReturn);
-  vec.push_back(strReturn);
-  return XFILE::CMultiPathDirectory::ConstructMultiPath(vec);;
+  vec.push_back(URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "video"));
+  vec.push_back(URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "mixed"));
+  return XFILE::CMultiPathDirectory::ConstructMultiPath(vec);
 }
 
 void CUtil::DeleteMusicDatabaseDirectoryCache()
@@ -3566,8 +3554,7 @@ CStdString CUtil::GetDefaultFolderThumb(const CStdString &folderThumb)
 
 void CUtil::GetSkinThemes(vector<CStdString>& vecTheme)
 {
-  CStdString strPath;
-  URIUtils::AddFileToFolder(g_graphicsContext.GetMediaDir(),"media",strPath);
+  CStdString strPath = URIUtils::AddFileToFolder(g_graphicsContext.GetMediaDir(), "media");
   CFileItemList items;
   CDirectory::GetDirectory(strPath, items);
   // Search for Themes in the Current skin!

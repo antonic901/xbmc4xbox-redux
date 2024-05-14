@@ -18,16 +18,16 @@
  *
  */
 
-#include "system.h"
-#include "utils/log.h"
 #include "SpecialProtocol.h"
 #include "URL.h"
 #include "Util.h"
+#include "guilib/GraphicContext.h"
 #include "profiles/ProfilesManager.h"
+#include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "utils/log.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
-#include "guilib/GraphicContext.h"
 
 #ifdef _LINUX
 #include <dirent.h>
@@ -111,37 +111,42 @@ CStdString CSpecialProtocol::TranslatePath(const CURL &url)
     RootDir = FullFileName;
 
   if (RootDir.Equals("subtitles"))
-    URIUtils::AddFileToFolder(CSettings::Get().GetString("subtitles.custompath"), FileName, translatedPath);
+    translatedPath = URIUtils::AddFileToFolder(CSettings::Get().GetString("subtitles.custompath"), FileName);
   else if (RootDir.Equals("userdata"))
-    URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(), FileName, translatedPath);
+    translatedPath = URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(), FileName);
   else if (RootDir.Equals("database"))
-    URIUtils::AddFileToFolder(CProfilesManager::Get().GetDatabaseFolder(), FileName, translatedPath);
+    translatedPath = URIUtils::AddFileToFolder(CProfilesManager::Get().GetDatabaseFolder(), FileName);
   else if (RootDir.Equals("thumbnails"))
-    URIUtils::AddFileToFolder(CProfilesManager::Get().GetThumbnailsFolder(), FileName, translatedPath);
+    translatedPath = URIUtils::AddFileToFolder(CProfilesManager::Get().GetThumbnailsFolder(), FileName);
   else if (RootDir.Equals("recordings") || RootDir.Equals("cdrips"))
-    URIUtils::AddFileToFolder(CSettings::Get().GetString("audiocds.recordingpath"), FileName, translatedPath);
+    translatedPath = URIUtils::AddFileToFolder(CSettings::Get().GetString("audiocds.recordingpath"), FileName);
   else if (RootDir.Equals("screenshots"))
-    URIUtils::AddFileToFolder(CSettings::Get().GetString("debug.screenshotpath"), FileName, translatedPath);
+    translatedPath = URIUtils::AddFileToFolder(CSettings::Get().GetString("debug.screenshotpath"), FileName);
   else if (RootDir.Equals("musicplaylists"))
-    URIUtils::AddFileToFolder(CUtil::MusicPlaylistsLocation(), FileName, translatedPath);
+    translatedPath = URIUtils::AddFileToFolder(CUtil::MusicPlaylistsLocation(), FileName);
   else if (RootDir.Equals("videoplaylists"))
-    URIUtils::AddFileToFolder(CUtil::VideoPlaylistsLocation(), FileName, translatedPath);
+    translatedPath = URIUtils::AddFileToFolder(CUtil::VideoPlaylistsLocation(), FileName);
   else if (RootDir.Equals("skin"))
-    URIUtils::AddFileToFolder(g_graphicsContext.GetMediaDir(), FileName, translatedPath);
+    translatedPath = URIUtils::AddFileToFolder(g_graphicsContext.GetMediaDir(), FileName);
+  else if (RootDir.Equals("logpath"))
+    translatedPath = URIUtils::AddFileToFolder(g_advancedSettings.m_logFolder, FileName);
 
   // from here on, we have our "real" special paths
-  else if (RootDir.Equals("xbmc"))
-    URIUtils::AddFileToFolder(GetPath("xbmc"), FileName, translatedPath);
-  else if (RootDir.Equals("home"))
-    URIUtils::AddFileToFolder(GetPath("home"), FileName, translatedPath);
-  else if (RootDir.Equals("userhome"))
-    URIUtils::AddFileToFolder(GetPath("userhome"), FileName, translatedPath);
-  else if (RootDir.Equals("temp"))
-    URIUtils::AddFileToFolder(GetPath("temp"), FileName, translatedPath);
-  else if (RootDir.Equals("profile"))
-    URIUtils::AddFileToFolder(GetPath("profile"), FileName, translatedPath);
-  else if (RootDir.Equals("masterprofile"))
-    URIUtils::AddFileToFolder(GetPath("masterprofile"), FileName, translatedPath);
+  else if (RootDir.Equals("xbmc") ||
+           RootDir.Equals("xbmcbin") ||
+           RootDir.Equals("home") ||
+           RootDir.Equals("userhome") ||
+           RootDir.Equals("temp") ||
+           RootDir.Equals("profile") ||
+           RootDir.Equals("masterprofile") ||
+           RootDir.Equals("frameworks"))
+  {
+    CStdString basePath = GetPath(RootDir);
+    if (!basePath.IsEmpty())
+      translatedPath = URIUtils::AddFileToFolder(basePath, FileName);
+    else
+      translatedPath.clear();
+  }
 
   // check if we need to recurse in
   if (URIUtils::IsSpecial(translatedPath))

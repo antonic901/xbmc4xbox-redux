@@ -161,9 +161,8 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   
         DWORD dwTitleId = CUtil::GetXbeID(item->GetPath());
         CStdString strTitleID;
-        CStdString strGameSavepath;
         strTitleID.Format("%08X",dwTitleId);
-        URIUtils::AddFileToFolder("E:\\udata\\",strTitleID,strGameSavepath);
+        CStdString strGameSavepath = URIUtils::AddFileToFolder("E:\\udata\\",strTitleID);
   
         if (CDirectory::Exists(strGameSavepath))
           buttons.Add(CONTEXT_BUTTON_GAMESAVES, 38778);         // Goto GameSaves
@@ -266,9 +265,8 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   case CONTEXT_BUTTON_GAMESAVES:
     {
       CStdString strTitleID;
-      CStdString strGameSavepath;
       strTitleID.Format("%08X",CUtil::GetXbeID(item->GetPath()));
-      URIUtils::AddFileToFolder("E:\\udata\\",strTitleID,strGameSavepath);
+      CStdString strGameSavepath = URIUtils::AddFileToFolder("E:\\udata\\",strTitleID);
       g_windowManager.ActivateWindow(WINDOW_GAMESAVES,strGameSavepath);
       return true;
     }
@@ -588,8 +586,7 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
   bool bFlattened=false;
   if (URIUtils::IsDVD(strDirectory))
   {
-    CStdString strPath;
-    URIUtils::AddFileToFolder(strDirectory,"default.xbe",strPath);
+    CStdString strPath = URIUtils::AddFileToFolder(strDirectory,"default.xbe");
     if (CFile::Exists(strPath)) // flatten dvd
     {
       CFileItemPtr item(new CFileItem("default.xbe"));
@@ -652,8 +649,7 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
 
     if (item->m_bIsFolder && !item->IsParentFolder() && !item->IsPlugin())
     { // folder item - let's check for a default.xbe file, and flatten if we have one
-      CStdString defaultXBE;
-      URIUtils::AddFileToFolder(item->GetPath(), "default.xbe", defaultXBE);
+      CStdString defaultXBE = URIUtils::AddFileToFolder(item->GetPath(), "default.xbe");
       if (CFile::Exists(defaultXBE))
       { // yes, format the item up
         item->SetPath(defaultXBE);
