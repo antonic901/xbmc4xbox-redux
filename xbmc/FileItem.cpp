@@ -93,6 +93,7 @@ CFileItem::CFileItem(const CMusicInfoTag& music)
   m_bIsFolder = URIUtils::HasSlashAtEnd(m_strPath);
   *GetMusicInfoTag() = music;
   FillInDefaultIcon();
+  FillInMimeType(false);
 }
 
 CFileItem::CFileItem(const CVideoInfoTag& movie)
@@ -109,6 +110,7 @@ CFileItem::CFileItem(const CArtist& artist)
   m_bIsFolder = true;
   URIUtils::AddSlashAtEnd(m_strPath);
   GetMusicInfoTag()->SetArtist(artist.strArtist);
+  FillInMimeType(false);
 }
 
 CFileItem::CFileItem(const CGenre& genre)
@@ -119,6 +121,7 @@ CFileItem::CFileItem(const CGenre& genre)
   m_bIsFolder = true;
   URIUtils::AddSlashAtEnd(m_strPath);
   GetMusicInfoTag()->SetGenre(genre.strGenre);
+  FillInMimeType(false);
 }
 
 CFileItem::CFileItem(const CFileItem& item): CGUIListItem()
@@ -135,6 +138,8 @@ CFileItem::CFileItem(const CGUIListItem& item)
   // not particularly pretty, but it gets around the issue of Initialize() defaulting
   // parameters in the CGUIListItem base class.
   *((CGUIListItem *)this) = item;
+
+  FillInMimeType(false);
 }
 
 CFileItem::CFileItem(void)
@@ -167,6 +172,7 @@ CFileItem::CFileItem(const CStdString& strPath, bool bIsFolder)
   // tuxbox urls cannot have a / at end
   if (m_bIsFolder && !m_strPath.IsEmpty() && !IsFileFolder() && !URIUtils::IsTuxBox(m_strPath))
     URIUtils::AddSlashAtEnd(m_strPath);
+  FillInMimeType(false);
 }
 
 CFileItem::CFileItem(const CMediaSource& share)
@@ -192,6 +198,7 @@ CFileItem::CFileItem(const CMediaSource& share)
     GetVideoInfoTag()->m_strFileNameAndPath = "removable://";
     GetVideoInfoTag()->m_strFileNameAndPath += share.strStatus; // share.strStatus contains disc volume label
   }
+  FillInMimeType(false);
 }
 
 CFileItem::~CFileItem(void)
@@ -426,7 +433,7 @@ void CFileItem::Serialize(CVariant& value) const
   value["size"] = m_dwSize;
   value["DVDLabel"] = m_strDVDLabel;
   value["title"] = m_strTitle;
-  value["mimetype"] = GetMimeType();
+  value["mimetype"] = m_mimetype;
   value["extrainfo"] = m_extrainfo;
 
   if (m_musicInfoTag)
@@ -775,7 +782,7 @@ bool CFileItem::IsCBR() const
 bool CFileItem::IsRSS() const
 {
   return StringUtils2::StartsWithNoCase(m_strPath, "rss://") || URIUtils::HasExtension(m_strPath, ".rss")
-      || GetMimeType() == "application/rss+xml";
+      || m_mimetype == "application/rss+xml";
 }
 
 bool CFileItem::IsStack() const
@@ -1072,48 +1079,44 @@ bool CFileItem::IsParentFolder() const
   return m_bIsParentFolder;
 }
 
-const CStdString& CFileItem::GetMimeType(bool lookup /*= true*/) const
+void CFileItem::FillInMimeType(bool lookup /*= true*/)
 {
-  if( m_mimetype.IsEmpty() && lookup)
+  if (m_mimetype.IsEmpty())
   {
-    // discard const qualifyier
-    CStdString& m_ref = (CStdString&)m_mimetype;
-
     if( m_bIsFolder )
-      m_ref = "x-directory/normal";
+      m_mimetype = "x-directory/normal";
     else if( StringUtils2::StartsWithNoCase(m_strPath, "shout://")
           || StringUtils2::StartsWithNoCase(m_strPath, "http://")
           || StringUtils2::StartsWithNoCase(m_strPath, "https://"))
     {
-      CCurlFile::GetMimeType(GetURL(), m_ref);
+      // If lookup is false, bail out early to leave mime type empty
+      if (!lookup)
+        return;
+
+      CCurlFile::GetMimeType(GetURL(), m_mimetype);
 
       // try to get mime-type again but with an NSPlayer User-Agent
       // in order for server to provide correct mime-type.  Allows us
       // to properly detect an MMS stream
       if (StringUtils2::StartsWithNoCase(m_mimetype, "video/x-ms-"))
-        CCurlFile::GetMimeType(GetURL(), m_ref, "NSPlayer/11.00.6001.7000");
+        CCurlFile::GetMimeType(GetURL(), m_mimetype, "NSPlayer/11.00.6001.7000");
 
       // make sure there are no options set in mime-type
       // mime-type can look like "video/x-ms-asf ; charset=utf8"
-      int i = m_ref.Find(';');
+      int i = m_mimetype.Find(';');
       if(i>=0)
-        m_ref.Delete(i,m_ref.length()-i);
-      m_ref.Trim();
+        m_mimetype.Delete(i, m_mimetype.length() - i);
+      m_mimetype.Trim();
     }
 
     // if it's still empty set to an unknown type
-    if( m_ref.IsEmpty() )
-      m_ref = "application/octet-stream";
+    if (m_mimetype.IsEmpty())
+      m_mimetype = "application/octet-stream";
   }
 
-  // change protocol to mms for the following mome-type.  Allows us to create proper FileMMS.
+  // change protocol to mms for the following mime-type.  Allows us to create proper FileMMS.
   if( StringUtils2::StartsWithNoCase(m_mimetype, "application/vnd.ms.wms-hdr.asfv1") || StringUtils2::StartsWithNoCase(m_mimetype, "application/x-mms-framed") )
-  {
-    CStdString& m_path = (CStdString&)m_strPath;
-    m_path.Replace("http:", "mms:");
-  }
-
-  return m_mimetype;
+    m_strPath.Replace("http:", "mms:");
 }
 
 bool CFileItem::IsSamePath(const CFileItem *item) const
@@ -1203,6 +1206,7 @@ void CFileItem::SetFromVideoInfoTag(const CVideoInfoTag &video)
   if (video.m_iSeason == 0)
     SetProperty("isspecial", "true");
   FillInDefaultIcon();
+  FillInMimeType(false);
 }
 
 void CFileItem::SetFromAlbum(const CAlbum &album)
@@ -1213,6 +1217,7 @@ void CFileItem::SetFromAlbum(const CAlbum &album)
   GetMusicInfoTag()->SetAlbum(album);
   m_bIsAlbum = true;
   CMusicDatabase::SetPropertiesFromAlbum(*this,album);
+  FillInMimeType(false);
 }
 
 void CFileItem::SetFromSong(const CSong &song)
@@ -1224,7 +1229,9 @@ void CFileItem::SetFromSong(const CSong &song)
   m_lStartPartNumber = 1;
   SetProperty("item_start", song.iStartOffset);
   m_lEndOffset = song.iEndOffset;
-  SetArt("thumb", song.strThumb);
+  if (!song.strThumb.empty())
+    SetArt("thumb", song.strThumb);
+  FillInMimeType(false);
 }
 
 /*

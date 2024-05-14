@@ -200,7 +200,7 @@ bool CUPnPDirectory::GetResource(const CURL& path, CFileItem &item)
 
     // store original path so we remember it
     item.SetProperty("original_listitem_url",  item.GetPath());
-    item.SetProperty("original_listitem_mime", item.GetMimeType(false));
+    item.SetProperty("original_listitem_mime", item.GetMimeType());
 
     // if it's an item, path is the first url to the item
     // we hope the server made the first one reachable for us
