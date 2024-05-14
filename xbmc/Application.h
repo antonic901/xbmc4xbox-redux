@@ -88,6 +88,13 @@ class CProfile;
 class CSplash;
 class CGUITextLayout;
 
+typedef enum
+{
+  PLAYBACK_CANCELED = -1,
+  PLAYBACK_FAIL = 0,
+  PLAYBACK_OK = 1,
+} PlayBackRet;
+
 class CApplication : public CXBApplicationEx, public IPlayerCallback, public IMsgTargetCallback,
                      public ISettingCallback, public ISettingsHandler, public ISubSettings
 {
@@ -147,7 +154,7 @@ public:
   virtual void OnPlayBackSpeedChanged(int iSpeed);
   bool PlayMedia(const CFileItem& item, int iPlaylist = PLAYLIST_MUSIC);
   bool ProcessAndStartPlaylist(const CStdString& strPlayList, PLAYLIST::CPlayList& playlist, int iPlaylist, int track=0);
-  bool PlayFile(const CFileItem& item, bool bRestart = false);
+  PlayBackRet PlayFile(const CFileItem& item, bool bRestart = false);
   void SaveFileState(bool bForeground = false);
   void UpdateFileState();
   void StopPlaying();
@@ -228,7 +235,7 @@ public:
   MEDIA_DETECT::CAutorun m_Autorun;
   MEDIA_DETECT::CDetectDVDMedia m_DetectDVDType;
   CDelayController m_ctrDpad;
-  IPlayer* m_pPlayer;
+  boost::shared_ptr<IPlayer> m_pPlayer;
 
   bool m_bSpinDown;
   bool m_bNetworkSpinDown;
@@ -237,8 +244,20 @@ public:
   inline bool IsInScreenSaver() { return m_bScreenSave; };
   int m_iScreenSaveLock; // spiff: are we checking for a lock? if so, ignore the screensaver state, if -1 we have failed to input locks
 
-  bool m_bIsPaused;
+  unsigned int m_iPlayerOPSeq;  // used to detect whether an OpenFile request on player is canceled by us.
   bool m_bPlaybackStarting;
+  typedef enum
+  {
+    PLAY_STATE_NONE = 0,
+    PLAY_STATE_STARTING,
+    PLAY_STATE_PLAYING,
+    PLAY_STATE_STOPPED,
+    PLAY_STATE_ENDED,
+  } PlayState;
+  PlayState m_ePlayState;
+  CCriticalSection m_playStateMutex;
+
+  bool m_bIsPaused;
   bool m_128MBHack;
 
   CCdgParser* m_pCdgParser;
@@ -333,7 +352,7 @@ protected:
   void FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetwork);
   void InitBasicD3D();
 
-  bool PlayStack(const CFileItem& item, bool bRestart);
+  PlayBackRet PlayStack(const CFileItem& item, bool bRestart);
   bool ProcessMouse();
   bool ProcessHTTPApiButtons();
   bool ProcessKeyboard();
