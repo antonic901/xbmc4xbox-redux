@@ -77,6 +77,15 @@ public:
 
   void SetLabel(const CStdString &label, const CStdString &fallback, int context = 0);
   CStdString GetLabel(int contextWindow, bool preferImage = false, CStdString *fallback = NULL) const;
+
+  /*!
+   \brief Gets the label and returns it as an int value
+   \param contextWindow the context in which to evaluate the expression.
+   \return int value.
+   \sa GetLabel
+   */
+  int GetIntValue(int contextWindow) const;
+
   CStdString GetItemLabel(const CGUIListItem *item, bool preferImage = false, CStdString *fallback = NULL) const;
   bool IsConstant() const;
   bool IsEmpty() const;

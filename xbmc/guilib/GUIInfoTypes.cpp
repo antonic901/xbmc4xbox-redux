@@ -127,6 +127,15 @@ CGUIInfoLabel::CGUIInfoLabel(const CStdString &label, const CStdString &fallback
   SetLabel(label, fallback, context);
 }
 
+int CGUIInfoLabel::GetIntValue(int contextWindow) const
+{
+  std::string label = GetLabel(contextWindow);
+  if (!label.empty())
+    return strtol(label.c_str(), NULL, 10);
+
+  return 0;
+}
+
 void CGUIInfoLabel::SetLabel(const CStdString &label, const CStdString &fallback, int context)
 {
   m_fallback = fallback;
