@@ -296,6 +296,9 @@ void CGUIWindowSlideShow::ShowNext()
     m_iNextSlide = 0;
 
   m_iDirection   = 1;
+  m_iZoomFactor  = 1;
+  m_fZoom        = 1.0f;
+  m_fRotate      = 0.0f;
   m_bLoadNextPic = true;
 }
 
@@ -307,7 +310,11 @@ void CGUIWindowSlideShow::ShowPrevious()
   m_iNextSlide = m_iCurrentSlide - 1;
   if (m_iNextSlide < 0)
     m_iNextSlide = m_slides->Size() - 1;
+
   m_iDirection   = -1;
+  m_iZoomFactor  = 1;
+  m_fZoom        = 1.0f;
+  m_fRotate      = 0.0f;
   m_bLoadNextPic = true;
 }
 
@@ -546,7 +553,8 @@ void CGUIWindowSlideShow::Render()
     m_iNextSlide    = GetNextSlide();
     AnnouncePlayerPlay(m_slides->Get(m_iCurrentSlide));
 
-//    m_iZoomFactor = 1;
+    m_iZoomFactor = 1;
+    m_fZoom = 1.0f;
     m_fRotate = 0.0f;
   }
 
@@ -610,14 +618,14 @@ bool CGUIWindowSlideShow::OnAction(const CAction &action)
     break;
 
   case ACTION_MOVE_RIGHT:
-    if (m_iZoomFactor == 1)
+    if (m_iZoomFactor == 1 || !m_Image[m_iCurrentPic].m_bCanMoveHorizontally)
       ShowNext();
     else
       Move(PICTURE_MOVE_AMOUNT, 0);
     break;
 
   case ACTION_MOVE_LEFT:
-    if (m_iZoomFactor == 1)
+    if (m_iZoomFactor == 1 || !m_Image[m_iCurrentPic].m_bCanMoveHorizontally)
       ShowPrevious();
     else
       Move( -PICTURE_MOVE_AMOUNT, 0);
@@ -925,7 +933,6 @@ void CGUIWindowSlideShow::OnLoadPic(int iPic, int iSlideNumber, CBaseTexture* pT
       else
         m_Image[iPic].SetTexture(iSlideNumber, pTexture, CSlideShowPic::EFFECT_NO_TIMEOUT);
       m_Image[iPic].SetOriginalSize(iOriginalWidth, iOriginalHeight, bFullSize);
-      m_Image[iPic].Zoom(m_iZoomFactor, true);
 
       m_Image[iPic].m_bIsComic = false;
       if (URIUtils::IsInRAR(m_slides->Get(m_iCurrentSlide)->GetPath()) || URIUtils::IsInZIP(m_slides->Get(m_iCurrentSlide)->GetPath())) // move to top for cbr/cbz
