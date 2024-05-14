@@ -49,6 +49,10 @@ public:
   void UnLoad() {m_bIsLoaded = false;};
   void Render();
   void Close();
+  void Reset(DISPLAY_EFFECT dispEffect = EFFECT_RANDOM, TRANSISTION_EFFECT transEffect = FADEIN_FADEOUT);
+  DISPLAY_EFFECT DisplayEffect() const { return m_displayEffect; }
+  bool DisplayEffectNeedChange(DISPLAY_EFFECT newDispEffect) const;
+  bool IsStarted() const { return m_iCounter > 0; }
   bool IsFinished() const { return m_bIsFinished;};
   bool DrawNextImage() const { return m_bDrawNextImage;};
 
@@ -76,7 +80,9 @@ public:
   
   bool m_bIsComic;
   bool m_bCanMoveHorizontally;
+  bool m_bCanMoveVertically;
 private:
+  void SetTexture_Internal(int iSlideNumber, CBaseTexture* pTexture, DISPLAY_EFFECT dispEffect = EFFECT_RANDOM, TRANSISTION_EFFECT transEffect = FADEIN_FADEOUT);
   void Process();
   void Render(float *x, float *y, CBaseTexture* pTexture, color_t color, _D3DFILLMODE fillmode = D3DFILL_SOLID );
   CBaseTexture *m_pImage;

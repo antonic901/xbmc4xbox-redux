@@ -49,6 +49,9 @@ CSlideShowPic::CSlideShowPic()
   m_bIsFinished = false;
   m_bDrawNextImage = false;
   m_bTransistionImmediately = false;
+
+  m_bCanMoveHorizontally = false;
+  m_bCanMoveVertically = false;
 }
 
 CSlideShowPic::~CSlideShowPic()
@@ -70,10 +73,34 @@ void CSlideShowPic::Close()
   m_bTransistionImmediately = false;
 }
 
+void CSlideShowPic::Reset(DISPLAY_EFFECT dispEffect, TRANSISTION_EFFECT transEffect)
+{
+  CSingleLock lock(m_textureAccess);
+  if (m_pImage)
+    SetTexture_Internal(m_iSlideNumber, m_pImage, dispEffect, transEffect);
+  else
+    Close();
+}
+
+bool CSlideShowPic::DisplayEffectNeedChange(DISPLAY_EFFECT newDispEffect) const
+{
+  if (m_displayEffect == newDispEffect)
+    return false;
+  if (newDispEffect == EFFECT_RANDOM && m_displayEffect != EFFECT_NONE && m_displayEffect != EFFECT_NO_TIMEOUT)
+    return false;
+  return true;
+}
+
 void CSlideShowPic::SetTexture(int iSlideNumber, CBaseTexture* pTexture, DISPLAY_EFFECT dispEffect, TRANSISTION_EFFECT transEffect)
 {
   CSingleLock lock(m_textureAccess);
   Close();
+  SetTexture_Internal(iSlideNumber, pTexture, dispEffect, transEffect);
+}
+
+void CSlideShowPic::SetTexture_Internal(int iSlideNumber, CBaseTexture* pTexture, DISPLAY_EFFECT dispEffect, TRANSISTION_EFFECT transEffect)
+{
+  CSingleLock lock(m_textureAccess);
   m_bPause = false;
   m_bNoEffect = false;
   m_bTransistionImmediately = false;
@@ -501,6 +528,7 @@ void CSlideShowPic::Render()
     float w = maxx - minx;
     float h = maxy - miny;
     m_bCanMoveHorizontally = (w >= fScreenWidth);
+    m_bCanMoveVertically   = (h >= fScreenHeight);
     if (w >= fScreenWidth)
     { // must have no black bars
       if (minx + m_fZoomLeft*w > fOffsetX)
