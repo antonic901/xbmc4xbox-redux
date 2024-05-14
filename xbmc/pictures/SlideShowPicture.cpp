@@ -61,7 +61,7 @@ void CSlideShowPic::Close()
   CSingleLock lock(m_textureAccess);
   if (m_pImage)
   {
-    m_pImage->Release();
+    delete m_pImage;
     m_pImage = NULL;
   }
   m_bIsLoaded = false;
@@ -79,11 +79,7 @@ void CSlideShowPic::SetTexture(int iSlideNumber, CBaseTexture* pTexture, DISPLAY
   m_bTransistionImmediately = false;
   m_iSlideNumber = iSlideNumber;
 
-#ifdef HAS_XBOX_D3D
-  m_pImage = pTexture->GetTextureObject();
-#else
   m_pImage = pTexture;
-#endif
   m_fWidth = (float)pTexture->GetWidth();
   m_fHeight = (float)pTexture->GetHeight();
   // reset our counter
@@ -175,16 +171,13 @@ void CSlideShowPic::UpdateTexture(CBaseTexture *pTexture)
   if (m_pImage)
   {
 #ifdef HAS_XBOX_D3D
-    while (m_pImage->IsBusy())
+    while (m_pImage->GetTextureObject()->IsBusy())
       Sleep(1);
 #endif
-    m_pImage->Release();
+    delete m_pImage;
+    m_pImage = NULL;
   }
-#ifdef HAS_XBOX_D3D
-  m_pImage = pTexture->GetTextureObject();
-#else
   m_pImage = pTexture;
-#endif
   m_fWidth = (float)pTexture->GetWidth();
   m_fHeight = (float)pTexture->GetHeight();
 }
@@ -615,8 +608,16 @@ void CSlideShowPic::Render()
   Render(ox, oy, NULL, PICTURE_VIEW_BOX_COLOR, D3DFILL_WIREFRAME);
 }
 
-void CSlideShowPic::Render(float *x, float *y, IDirect3DTexture8 *pTexture, color_t color, _D3DFILLMODE fillmode)
+void CSlideShowPic::Render(float *x, float *y, CBaseTexture* pTexture, color_t color, _D3DFILLMODE fillmode)
 {
+  struct VERTEX
+  {
+    D3DXVECTOR4 p;
+    D3DCOLOR col;
+    FLOAT tu, tv;
+  };
+  static const DWORD FVF_VERTEX = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
+
   VERTEX vertex[4];
 
   for (int i = 0; i < 4; i++)
@@ -643,7 +644,16 @@ void CSlideShowPic::Render(float *x, float *y, IDirect3DTexture8 *pTexture, colo
 #endif
 
   // Set state to render the image
-  if (pTexture) g_graphicsContext.Get3DDevice()->SetTexture( 0, pTexture );
+  if (pTexture)
+  {
+#ifdef HAS_XBOX_D3D
+    g_graphicsContext.Get3DDevice()->SetTexture( 0, pTexture->GetTextureObject() );
+#else
+    pTexture->LoadToGPU();
+    pTexture->BindToUnit(0);
+#endif
+  }
+
   g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
   g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
   g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );

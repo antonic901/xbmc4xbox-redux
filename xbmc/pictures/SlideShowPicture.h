@@ -78,15 +78,8 @@ public:
   bool m_bCanMoveHorizontally;
 private:
   void Process();
-  void Render(float *x, float *y, IDirect3DTexture8 *pTexture, color_t color, _D3DFILLMODE fillmode = D3DFILL_SOLID );
-
-  struct VERTEX
-  {
-    D3DXVECTOR4 p;
-    D3DCOLOR col;
-    FLOAT tu, tv;
-  };
-  static const DWORD FVF_VERTEX = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
+  void Render(float *x, float *y, CBaseTexture* pTexture, color_t color, _D3DFILLMODE fillmode = D3DFILL_SOLID );
+  CBaseTexture *m_pImage;
 
   int m_iOriginalWidth;
   int m_iOriginalHeight;
@@ -95,7 +88,6 @@ private:
   bool m_bIsFinished;
   bool m_bDrawNextImage;
   CStdString m_strFileName;
-  IDirect3DTexture8* m_pImage;
   float m_fWidth;
   float m_fHeight;
   color_t m_alpha;
