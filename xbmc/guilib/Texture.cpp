@@ -45,26 +45,6 @@ CBaseTexture::CBaseTexture(unsigned int width, unsigned int height, unsigned int
   GetTextureInfo();
 }
 
-CBaseTexture::CBaseTexture(const CBaseTexture &copy)
-{
-  m_imageWidth = copy.m_imageWidth;
-  m_imageHeight = copy.m_imageHeight;
-  m_textureWidth = copy.m_textureWidth;
-  m_textureHeight = copy.m_textureHeight;
-  m_format = copy.m_format;
-  m_pitch = copy.m_pitch;
-  m_orientation = copy.m_orientation;
-  m_hasAlpha = copy.m_hasAlpha;
-  m_texCoordsArePixels = copy.m_texCoordsArePixels;
-  m_packed = copy.m_packed;
-  m_pixels = NULL;
-  if (copy.m_pixels)
-  {
-    m_pixels = new unsigned char[GetPitch() * GetRows()];
-    memcpy(m_pixels, copy.m_pixels, GetPitch() * GetRows());
-  }
-}
-
 CBaseTexture::~CBaseTexture()
 {
   if (m_packed)
@@ -98,8 +78,8 @@ CBaseTexture::~CBaseTexture()
 
 void CBaseTexture::Allocate(unsigned int width, unsigned int height, unsigned int format)
 {
-  m_imageWidth = width;
-  m_imageHeight = height;
+  m_imageWidth = m_originalWidth = width;
+  m_imageHeight = m_originalHeight = height;
   m_format = format;
   m_pitch = 0;
   m_orientation = 0;
@@ -138,7 +118,7 @@ bool CBaseTexture::GetTextureInfo()
 CBaseTexture *CBaseTexture::LoadFromFile(const CStdString& texturePath, unsigned int idealWidth, unsigned int idealHeight, bool autoRotate)
 {
   CTexture *texture = new CTexture();
-  if (texture->LoadFromFile(texturePath, idealWidth, idealHeight, autoRotate, NULL, NULL))
+  if (texture->LoadFromFileInternal(texturePath, idealWidth, idealHeight, autoRotate))
     return texture;
   delete texture;
   return NULL;
@@ -153,8 +133,7 @@ CBaseTexture *CBaseTexture::LoadFromFileInMemory(unsigned char *buffer, size_t b
   return NULL;
 }
 
-bool CBaseTexture::LoadFromFile(const CStdString& texturePath, unsigned int maxWidth, unsigned int maxHeight,
-                                bool autoRotate, unsigned int *originalWidth, unsigned int *originalHeight)
+bool CBaseTexture::LoadFromFileInternal(const CStdString& texturePath, unsigned int maxWidth, unsigned int maxHeight, bool autoRotate)
 {
   unsigned int width = maxWidth ? std::min(maxWidth, (unsigned int)g_graphicsContext.GetMaxTextureSize()) : (unsigned int)g_graphicsContext.GetMaxTextureSize();
   unsigned int height = maxHeight ? std::min(maxHeight, (unsigned int)g_graphicsContext.GetMaxTextureSize()) : (unsigned int)g_graphicsContext.GetMaxTextureSize();
@@ -179,11 +158,9 @@ bool CBaseTexture::LoadFromFile(const CStdString& texturePath, unsigned int maxW
           GetOrgWidth() and GetOrgHeight() return the actual size of the image stored in the dds file,
           as opposed to the texture size (which is always POT)
         */
-        if (originalWidth)
-          *originalWidth = img.GetOrgWidth();
-        if (originalHeight)
-          *originalHeight = img.GetOrgHeight();
         Allocate(img.GetWidth(), img.GetHeight(), XB_FMT_DXT1);
+        m_originalWidth = img.GetOrgWidth();
+        m_originalHeight = img.GetOrgHeight();
 
         //Texture is created using GetWidth and GetHeight, which return texture size (always POT)
         g_graphicsContext.Get3DDevice()->CreateTexture(img.GetWidth(), img.GetHeight(), 1, 0, D3DFMT_DXT1 , D3DPOOL_MANAGED, &m_texture);
@@ -224,10 +201,8 @@ bool CBaseTexture::LoadFromFile(const CStdString& texturePath, unsigned int maxW
       if (jpegfile.Width() > 0 && jpegfile.Height() > 0)
       {
         Allocate(jpegfile.Width(), jpegfile.Height(), XB_FMT_A8R8G8B8);
-        if (originalWidth)
-          *originalWidth = jpegfile.OrgWidth();
-        if (originalHeight)
-          *originalHeight = jpegfile.OrgHeight();
+        m_originalWidth = jpegfile.OrgWidth();
+        m_originalHeight = jpegfile.OrgHeight();
 
         g_graphicsContext.Get3DDevice()->CreateTexture(((jpegfile.Width() + 3) / 4) * 4, ((jpegfile.Height() + 3) / 4) * 4, 1, 0, D3DFMT_LIN_A8R8G8B8 , D3DPOOL_MANAGED, &m_texture);
         if (m_texture)
@@ -270,11 +245,6 @@ bool CBaseTexture::LoadFromFile(const CStdString& texturePath, unsigned int maxW
     CLog::Log(LOGERROR, "Texture manager unable to load file: %s", texturePath.c_str());
     return false;
   }
-
-  if (originalWidth)
-    *originalWidth = image.originalwidth;
-  if (originalHeight)
-    *originalHeight = image.originalheight;
 
   LoadFromImage(image, autoRotate);
   dll.ReleaseImage(&image);
@@ -355,6 +325,9 @@ void CBaseTexture::LoadFromImage(ImageInfo &image, bool autoRotate)
   Allocate(image.width, image.height, XB_FMT_A8R8G8B8);
   if (autoRotate && image.exifInfo.Orientation)
     m_orientation = image.exifInfo.Orientation - 1;
+
+  m_originalWidth = image.originalwidth;
+  m_originalHeight = image.originalheight;
 
   g_graphicsContext.Get3DDevice()->CreateTexture(image.width, image.height, 1, 0, D3DFMT_LIN_A8R8G8B8 , D3DPOOL_MANAGED, &m_texture);
   if (m_texture)
