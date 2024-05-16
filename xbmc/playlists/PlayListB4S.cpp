@@ -18,14 +18,15 @@
  *
  */
 
-#include "playlists/PlayListB4S.h"
+#include "PlayListB4S.h"
 #include "Util.h"
-#include "utils/URIUtils.h"
 #include "utils/XBMCTinyXML.h"
 #include "settings/AdvancedSettings.h"
 #include "music/tags/MusicInfoTag.h"
 #include "filesystem/File.h"
 #include "utils/log.h"
+#include "utils/URIUtils.h"
+#include "utils/XMLUtils.h"
 
 using namespace XFILE;
 using namespace PLAYLIST;
@@ -71,14 +72,14 @@ bool CPlayListB4S::LoadData(istream& stream)
 
   TiXmlElement* pPlayListElement = pRootElement->FirstChildElement("playlist");
   if (!pPlayListElement ) return false;
-  m_strPlayListName = pPlayListElement->Attribute("label");
+  m_strPlayListName = XMLUtils::GetAttribute(pPlayListElement, "label");
 
   TiXmlElement* pEntryElement = pPlayListElement->FirstChildElement("entry");
 
   if (!pEntryElement) return false;
   while (pEntryElement)
   {
-    CStdString strFileName = pEntryElement->Attribute("Playstring");
+    CStdString strFileName = XMLUtils::GetAttribute(pEntryElement, "Playstring");
     int iColon = strFileName.Find(":");
     if (iColon > 0)
     {

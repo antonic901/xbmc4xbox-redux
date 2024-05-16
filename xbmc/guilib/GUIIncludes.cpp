@@ -249,7 +249,7 @@ void CGUIIncludes::ResolveIncludesForNode(TiXmlElement *node, std::map<int, bool
   CStdString type;
   if (node->ValueStr() == "control")
   {
-    type = node->Attribute("type");
+    type = XMLUtils::GetAttribute(node, "type");
     map<CStdString, TiXmlElement>::const_iterator it = m_defaults.find(type);
     if (it != m_defaults.end())
     {

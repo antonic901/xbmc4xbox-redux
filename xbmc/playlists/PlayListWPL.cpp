@@ -18,13 +18,14 @@
  *
  */
 
-#include "playlists/PlayListWPL.h"
+#include "PlayListWPL.h"
 #include "Util.h"
-#include "utils/URIUtils.h"
 #include "utils/XBMCTinyXML.h"
 #include "settings/AdvancedSettings.h"
 #include "filesystem/File.h"
 #include "utils/log.h"
+#include "utils/URIUtils.h"
+#include "utils/XMLUtils.h"
 
 using namespace XFILE;
 using namespace PLAYLIST;
@@ -89,8 +90,8 @@ bool CPlayListWPL::LoadData(istream& stream)
   if (!pMediaElement) return false;
   while (pMediaElement)
   {
-    CStdString strFileName = pMediaElement->Attribute("src");
-    if (strFileName.size())
+    CStdString strFileName = XMLUtils::GetAttribute(pMediaElement, "src");
+    if (!strFileName.empty())
     {
       strFileName = URIUtils::SubstitutePath(strFileName);
       CUtil::GetQualifiedFilename(m_strBasePath, strFileName);

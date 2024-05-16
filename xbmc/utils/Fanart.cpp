@@ -20,6 +20,7 @@
 
 #include "Fanart.h"
 #include "utils/XBMCTinyXML.h"
+#include "utils/XMLUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
 
@@ -62,7 +63,7 @@ bool CFanart::Unpack()
   TiXmlElement *fanart = doc.FirstChildElement("fanart");
   while (fanart)
   {
-    CStdString url = fanart->Attribute("url");
+    CStdString url = XMLUtils::GetAttribute(fanart, "url");
     TiXmlElement *fanartThumb = fanart->FirstChildElement("thumb");
     while (fanartThumb)
     {
@@ -70,8 +71,7 @@ bool CFanart::Unpack()
       if (url.empty())
       {
         data.strImage = fanartThumb->GetText();
-        if (fanartThumb->Attribute("preview"))
-          data.strPreview = fanartThumb->Attribute("preview");
+        data.strPreview = XMLUtils::GetAttribute(fanartThumb, "preview");
       }
       else
       {
@@ -79,13 +79,8 @@ bool CFanart::Unpack()
         if (fanartThumb->Attribute("preview"))
           data.strPreview = URIUtils::AddFileToFolder(url, fanartThumb->Attribute("preview"));
       }
-      data.strResolution = fanartThumb->Attribute("dim");
-      if (data.strPreview.IsEmpty())
-      { // could be due to an old version in db - use old hardcoded method for now
-        if (m_url.Equals("http://thetvdb.com/banners/"))
-          data.strPreview = "_cache/" + data.strImage;
-      }
-      ParseColors(fanartThumb->Attribute("colors"), data.strColors);
+      data.strResolution = XMLUtils::GetAttribute(fanartThumb, "dim");
+      ParseColors(XMLUtils::GetAttribute(fanartThumb, "colors"), data.strColors);
       m_fanart.push_back(data);
       fanartThumb = fanartThumb->NextSiblingElement("thumb");
     }

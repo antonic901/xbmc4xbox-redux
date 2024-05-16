@@ -41,8 +41,9 @@ const CSkinVariableString* CSkinVariable::CreateFromXML(const TiXmlElement& node
       if (valuenode->FirstChild())
       {
         CSkinVariableString::ConditionLabelPair pair;
-        if (valuenode->Attribute("condition"))
-          pair.m_condition = g_infoManager.Register(valuenode->Attribute("condition"), context);
+        const char *condition = valuenode->Attribute("condition");
+        if (condition)
+          pair.m_condition = g_infoManager.Register(condition, context);
         else
           pair.m_condition = DEFAULT_VALUE;
 

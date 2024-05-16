@@ -29,6 +29,7 @@
 #include "log.h"
 #include "CharsetConverter.h"
 #include "utils/StringUtils.h"
+#include "utils/XMLUtils.h"
 
 #include <sstream>
 #include <cstring>
@@ -180,7 +181,7 @@ void CScraperParser::ReplaceBuffers(CStdString& strDest)
 
 void CScraperParser::ParseExpression(const CStdString& input, CStdString& dest, TiXmlElement* element, bool bAppend)
 {
-  CStdString strOutput = element->Attribute("output");
+  CStdString strOutput = XMLUtils::GetAttribute(element, "output");
 
   TiXmlElement* pExpression = element->FirstChildElement("expression");
   if (pExpression)

@@ -20,11 +20,12 @@
 
 #include "FileItem.h"
 #include "SlingboxFile.h"
-#include "File.h"
+#include "filesystem/File.h"
 #include "SlingboxLib/SlingboxLib.h"
 #include "profiles/ProfilesManager.h"
 #include "utils/log.h"
 #include "utils/XMLUtils.h"
+#include "utils/StringUtils.h"
 
 using namespace XFILE;
 using namespace std;
@@ -526,8 +527,8 @@ void CSlingboxFile::LoadSettings(const CStdString& strHostname)
   for (pElement = pRootElement->FirstChildElement("slingbox"); pElement;
     pElement = pElement->NextSiblingElement("slingbox"))
   {
-    if (pElement->Attribute("hostname") == NULL ||      
-      !m_sSlingboxSettings.strHostname.CompareNoCase(pElement->Attribute("hostname")))
+    const char *hostname = pElement->Attribute("hostname");
+    if (!hostname || StringUtils2::EqualsNoCase(m_sSlingboxSettings.strHostname, hostname))
     {
       // Load setting values
       XMLUtils::GetInt(pElement, "width", m_sSlingboxSettings.iVideoWidth, 0, 640);

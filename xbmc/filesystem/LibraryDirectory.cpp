@@ -57,7 +57,7 @@ bool CLibraryDirectory::GetDirectory(const CURL& url, CFileItemList &items)
     TiXmlElement *node = LoadXML(libNode);
     if (node)
     {
-      CStdString type = node->Attribute("type");
+      CStdString type = XMLUtils::GetAttribute(node, "type");
       if (type == "filter")
       {
         CSmartPlaylist playlist;
@@ -157,8 +157,7 @@ TiXmlElement *CLibraryDirectory::LoadXML(const std::string &xmlFile)
     return NULL;
 
   // check the condition
-  const char* visible = xml->Attribute("visible");
-  std::string condition = visible ? visible : "";
+  std::string condition = XMLUtils::GetAttribute(xml, "visible");
   if (condition.empty() || g_infoManager.EvaluateBool(condition))
     return xml;
 

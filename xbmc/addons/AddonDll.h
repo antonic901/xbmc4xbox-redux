@@ -19,16 +19,18 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
+
 #include "Addon.h"
 #include "DllAddon.h"
 #include "AddonManager.h"
 #include "AddonStatusHandler.h"
 #include "settings/dialogs/GUIDialogSettings.h"
-#include "URIUtils.h"
+#include "utils/URIUtils.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/Directory.h"
 #include "utils/log.h"
+#include "utils/XMLUtils.h"
 
 using namespace XFILE;
 
@@ -421,38 +423,39 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::TransferSettings()
     {
       ADDON_STATUS status = ADDON_STATUS_OK;
       const char *id = setting->Attribute("id");
-      const char *type = setting->Attribute("type");
+      const std::string type = XMLUtils::GetAttribute(setting, "type");
       const char *option = setting->Attribute("option");
 
-      if (type)
+      if (id && !type.empty())
       {
-        if (strcmpi(type,"sep") == 0 || strcmpi(type,"lsep") == 0)
+        if (type == "sep" || type == "lsep")
         {
           /* Don't propagate separators */
         }
-        else if (strcmpi(type, "text") == 0 || strcmpi(type, "ipaddress") == 0 ||
-          strcmpi(type, "video") == 0 || strcmpi(type, "audio") == 0 ||
-          strcmpi(type, "image") == 0 || strcmpi(type, "folder") == 0 ||
-          strcmpi(type, "executable") == 0 || strcmpi(type, "file") == 0 ||
-          strcmpi(type, "action") == 0 || strcmpi(type, "date") == 0 ||
-          strcmpi(type, "time") == 0 || strcmpi(type, "select") == 0 ||
-          strcmpi(type, "addon") == 0 || strcmpi(type, "labelenum") == 0 ||
-          strcmpi(type, "fileenum") == 0 )
+        else if (type == "text"       || type == "ipaddress" ||
+                 type == "video"      || type == "audio"     ||
+                 type == "image"      || type == "folder"    ||
+                 type == "executable" || type == "file"      ||
+                 type == "action"     || type == "date"      ||
+                 type == "time"       || type == "select"    ||
+                 type == "addon"      || type == "labelenum" ||
+                 type == "fileenum" )
         {
           status = m_pDll->SetSetting(id, (const char*) GetSetting(id).c_str());
         }
-        else if ((strcmpi(type, "enum") == 0 || strcmpi(type,"integer") == 0))
+        else if (type == "enum"      || type =="integer" ||
+                 type == "labelenum" || type == "rangeofnum")
         {
           int tmp = atoi(GetSetting(id));
           status = m_pDll->SetSetting(id, (int*) &tmp);
         }
-        else if (strcmpi(type, "bool") == 0)
+        else if (type == "bool")
         {
           bool tmp = (GetSetting(id) == "true") ? true : false;
           status = m_pDll->SetSetting(id, (bool*) &tmp);
         }
-        else if (strcmpi(type, "rangeofnum") == 0 || strcmpi(type, "slider") == 0 ||
-                 strcmpi(type, "number") == 0)
+        else if (type == "rangeofnum" || type == "slider" ||
+                 type == "number")
         {
           float tmpf = (float)atof(GetSetting(id));
           int   tmpi;
@@ -470,7 +473,7 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::TransferSettings()
         else
         {
           /* Log unknowns as an error, but go ahead and transfer the string */
-          CLog::Log(LOGERROR, "Unknown setting type '%s' for %s", type, Name().c_str());
+          CLog::Log(LOGERROR, "Unknown setting type '%s' for %s", type.c_str(), Name().c_str());
           status = m_pDll->SetSetting(id, (const char*) GetSetting(id).c_str());
         }
 

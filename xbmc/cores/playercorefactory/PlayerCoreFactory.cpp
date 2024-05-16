@@ -45,6 +45,7 @@
 #include "PlayerSelectionRule.h"
 #include "LocalizeStrings.h"
 #include "AutoPtrHandle.h"
+#include "utils/XMLUtils.h"
 
 #include "defs_from_settings.h"
 
@@ -351,9 +352,9 @@ bool CPlayerCoreFactory::LoadConfiguration(const std::string &file, bool clear)
     TiXmlElement* pPlayer = pPlayers->FirstChildElement("player");
     while (pPlayer)
     {
-      CStdString name = pPlayer->Attribute("name");
-      CStdString type = pPlayer->Attribute("type");
-      if (type.length() == 0) type = name;
+      CStdString name = XMLUtils::GetAttribute(pPlayer, "name");
+      CStdString type = XMLUtils::GetAttribute(pPlayer, "type");
+      if (type.empty()) type = name;
       type.ToLower();
 
       EPLAYERCORES eCore = EPC_NONE;
