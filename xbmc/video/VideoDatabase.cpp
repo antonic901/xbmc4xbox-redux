@@ -9045,27 +9045,29 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
       {
         info.Load(movie);
         CFileItem item(info);
-        map<string, string> artwork;
-        if (ImportArtFromXML(movie->FirstChild("art"), artwork))
-          item.SetArt(artwork);
         bool useFolders = info.m_basePath.IsEmpty() ? LookupByFolders(item.GetPath()) : false;
+        CStdString filename = info.m_strTitle;
+        if (info.m_iYear > 0)
+          filename.AppendFormat("_%i", info.m_iYear);
+        CFileItem artItem(item);
+        artItem.SetPath(GetSafeFile(moviesDir, filename) + ".avi");
+        scanner.GetArtwork(&artItem, CONTENT_MOVIES, useFolders, true, actorsDir);
+        item.SetArt(artItem.GetArt());
         scanner.AddVideo(&item, CONTENT_MOVIES, useFolders, true, NULL, true);
-        CStdString strFileName(info.m_strTitle);
-        if (GetExportVersion() >= 1 && info.m_iYear > 0)
-          strFileName.AppendFormat("_%i", info.m_iYear);
         current++;
       }
       else if (strnicmp(movie->Value(), "musicvideo", 10) == 0)
       {
         info.Load(movie);
         CFileItem item(info);
-        map<string, string> artwork;
-        if (ImportArtFromXML(movie->FirstChild("art"), artwork))
-          item.SetArt(artwork);
         bool useFolders = info.m_basePath.IsEmpty() ? LookupByFolders(item.GetPath()) : false;
-        CStdString strFileName(StringUtils::Join(info.m_artist, g_advancedSettings.m_videoItemSeparator) + "." + info.m_strTitle);
-        if (GetExportVersion() >= 1 && info.m_iYear > 0)
-          strFileName.AppendFormat("_%i", info.m_iYear);
+        CStdString filename = StringUtils::Join(info.m_artist, g_advancedSettings.m_videoItemSeparator) + "." + info.m_strTitle;
+        if (info.m_iYear > 0)
+          filename.AppendFormat("_%i", info.m_iYear);
+        CFileItem artItem(item);
+        artItem.SetPath(GetSafeFile(musicvideosDir, filename) + ".avi");
+        scanner.GetArtwork(&artItem, CONTENT_MOVIES, useFolders, true, actorsDir);
+        item.SetArt(artItem.GetArt());
         scanner.AddVideo(&item, CONTENT_MUSICVIDEOS, useFolders, true, NULL, true);
         current++;
       }
@@ -9077,30 +9079,21 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
         URIUtils::AddSlashAtEnd(info.m_strPath);
         DeleteTvShow(info.m_strPath);
         CFileItem showItem(info);
-        map<string, string> artwork;
-        if (ImportArtFromXML(movie->FirstChild("art"), artwork))
-          showItem.SetArt(artwork);
         bool useFolders = info.m_basePath.IsEmpty() ? LookupByFolders(showItem.GetPath(), true) : false;
+        CFileItem artItem(showItem);
+        CStdString artPath(GetSafeFile(tvshowsDir, info.m_strTitle));
+        artItem.SetPath(artPath);
+        scanner.GetArtwork(&artItem, CONTENT_MOVIES, useFolders, true, actorsDir);
+        showItem.SetArt(artItem.GetArt());
         int showID = scanner.AddVideo(&showItem, CONTENT_TVSHOWS, useFolders, true, NULL, true);
         // season artwork
-        TiXmlNode *art = movie->FirstChild("art");
-        if (art)
+        map<int, map<string, string> > seasonArt;
+        artItem.GetVideoInfoTag()->m_strPath = artPath;
+        scanner.GetSeasonThumbs(*artItem.GetVideoInfoTag(), seasonArt, CVideoThumbLoader::GetArtTypes("season"), true);
+        for (map<int, map<string, string> >::iterator i = seasonArt.begin(); i != seasonArt.end(); ++i)
         {
-          TiXmlElement *season = art->FirstChildElement("season");
-          while (season)
-          {
-            if (season->FirstChild())
-            {
-              int seasonNum = -1;
-              season->Attribute("num", &seasonNum);
-              map<string, string> artwork;
-              ImportArtFromXML(season, artwork);
-              int seasonID = AddSeason(showID, seasonNum);
-              if (seasonID > -1)
-                SetArtForItem(seasonID, "season", artwork);
-            }
-            season = season->NextSiblingElement("season");
-          }
+          int seasonID = AddSeason(showID, i->first);
+          SetArtForItem(seasonID, "season", i->second);
         }
         current++;
         // now load the episodes
@@ -9111,9 +9104,12 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
           CVideoInfoTag info;
           info.Load(episode);
           CFileItem item(info);
-          map<string, string> artwork;
-          if (ImportArtFromXML(movie->FirstChild("art"), artwork))
-            item.SetArt(artwork);
+          CStdString filename;
+          filename.Format("s%02ie%02i.avi", info.m_iSeason, info.m_iEpisode);
+          CFileItem artItem(item);
+          artItem.SetPath(GetSafeFile(artPath, filename));
+          scanner.GetArtwork(&artItem, CONTENT_MOVIES, useFolders, true, actorsDir);
+          item.SetArt(artItem.GetArt());
           scanner.AddVideo(&item,CONTENT_TVSHOWS, false, false, showItem.GetVideoInfoTag(), true);
           episode = episode->NextSiblingElement("episodedetails");
         }
