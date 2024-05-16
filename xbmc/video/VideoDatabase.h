@@ -621,7 +621,7 @@ public:
   bool HasContent(VIDEODB_CONTENT_TYPE type);
   bool HasSets() const;
 
-  void CleanDatabase(CGUIDialogProgressBarHandle* handle=NULL, const std::set<int>* paths=NULL);
+  void CleanDatabase(CGUIDialogProgressBarHandle* handle=NULL, const std::set<int>* paths=NULL, bool showProgress=true);
 
   /*! \brief Add a file to the database, if necessary
    If the file is already in the database, we simply return its id.
@@ -847,7 +847,10 @@ private:
    \return safe filename based on this title
    */
   CStdString GetSafeFile(const CStdString &dir, const CStdString &name) const;
-  
+
+  std::vector<int> CleanMediaType(const std::string &mediaType, const std::string &cleanableFileIDs,
+                                  std::map<int, bool> &pathsDeleteDecisions, std::string &deletedFileIDs, bool silent);
+
   void AnnounceRemove(std::string content, int id);
   void AnnounceUpdate(std::string content, int id);
 };
