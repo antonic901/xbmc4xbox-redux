@@ -91,7 +91,7 @@ public:
   virtual void DumpTextureUse();
 #endif
 protected:
-  virtual bool OnMouseEvent(const CPoint &point, const CMouseEvent &event);
+  virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   bool OnClick(int actionID);
   virtual void Render();
   virtual void RenderItem(float posX, float posY, CGUIListItemPtr& item, bool focused);

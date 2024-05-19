@@ -58,19 +58,19 @@ bool CGUIDialogVideoOSD::OnAction(const CAction &action)
   return CGUIDialog::OnAction(action);
 }
 
-bool CGUIDialogVideoOSD::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
+EVENT_RESULT CGUIDialogVideoOSD::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
 {
   if (event.m_id == ACTION_MOUSE_WHEEL_UP)
   {
-    return g_application.OnAction(CAction(ACTION_ANALOG_SEEK_FORWARD, 0.5f));
+    return g_application.OnAction(CAction(ACTION_ANALOG_SEEK_FORWARD, 0.5f)) ? EVENT_RESULT_HANDLED : EVENT_RESULT_UNHANDLED;
   }
   if (event.m_id == ACTION_MOUSE_WHEEL_DOWN)
   {
-    return g_application.OnAction(CAction(ACTION_ANALOG_SEEK_FORWARD, 0.5f));
+    return g_application.OnAction(CAction(ACTION_ANALOG_SEEK_BACK, 0.5f)) ? EVENT_RESULT_HANDLED : EVENT_RESULT_UNHANDLED;
   }
   if (event.m_id == ACTION_MOUSE_LEFT_CLICK)
   { // pause
-    return g_application.OnAction(CAction(ACTION_PAUSE));
+    return g_application.OnAction(CAction(ACTION_PAUSE)) ? EVENT_RESULT_HANDLED : EVENT_RESULT_UNHANDLED;
   }
   return CGUIDialog::OnMouseEvent(point, event);
 }

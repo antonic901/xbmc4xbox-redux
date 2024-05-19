@@ -45,7 +45,7 @@ public:
   virtual void Render();
   virtual bool OnMessage(CGUIMessage& message);
 
-  virtual bool SendMouseEvent(const CPoint &point, const CMouseEvent &event);
+  virtual EVENT_RESULT SendMouseEvent(const CPoint &point, const CMouseEvent &event);
   virtual void UnfocusFromPoint(const CPoint &point);
 
   virtual void AddControl(CGUIControl *control, int position = -1);
@@ -62,7 +62,7 @@ public:
   // based on grouplist orientation pick one value as minSize;
   void SetMinSize(float minWidth, float minHeight);
 protected:
-  virtual bool OnMouseEvent(const CPoint &point, const CMouseEvent &event);
+  virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   bool IsControlOnScreen(float pos, const CGUIControl* control) const;
   bool IsFirstFocusableControl(const CGUIControl *control) const;
   bool IsLastFocusableControl(const CGUIControl *control) const;

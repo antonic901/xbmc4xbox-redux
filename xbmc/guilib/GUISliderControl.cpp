@@ -564,7 +564,7 @@ void CGUISliderControl::SetFromPosition(const CPoint &point, bool guessSelector 
   SendClick();
 }
 
-bool CGUISliderControl::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
+EVENT_RESULT CGUISliderControl::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
 {
   m_dragging = false;
   if (event.m_id == ACTION_MOUSE_DRAG)
@@ -584,24 +584,24 @@ bool CGUISliderControl::OnMouseEvent(const CPoint &point, const CMouseEvent &eve
       SendWindowMessage(msg);
     }
     SetFromPosition(point, guessSelector);
-    return true;
+    return EVENT_RESULT_HANDLED;
   }
   else if (event.m_id == ACTION_MOUSE_LEFT_CLICK && m_guiBackground.HitTest(point))
   {
     SetFromPosition(point, true);
-    return true;
+    return EVENT_RESULT_HANDLED;
   }
   else if (event.m_id == ACTION_MOUSE_WHEEL_UP)
   {
     Move(10);
-    return true;
+    return EVENT_RESULT_HANDLED;
   }
   else if (event.m_id == ACTION_MOUSE_WHEEL_DOWN)
   {
     Move(-10);
-    return true;
+    return EVENT_RESULT_HANDLED;
   }
-  return false;
+  return EVENT_RESULT_UNHANDLED;
 }
 
 void CGUISliderControl::SetInfo(int iInfo)

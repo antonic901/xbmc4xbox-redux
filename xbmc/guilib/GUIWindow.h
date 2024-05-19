@@ -186,7 +186,7 @@ public:
 
   virtual void OnDeinitWindow(int nextWindowID);
 protected:
-  virtual bool OnMouseEvent(const CPoint &point, const CMouseEvent &event);
+  virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   virtual bool LoadXML(const CStdString& strPath, const CStdString &strLowerPath);  ///< Loads from the given file
   bool Load(TiXmlElement *pRootElement);                 ///< Loads from the given XML root element
   virtual void LoadAdditionalTags(TiXmlElement *root) {}; ///< Load additional information from the XML document
@@ -195,7 +195,7 @@ protected:
   virtual void OnWindowUnload() {}
   virtual void OnWindowLoaded();
   virtual void OnInitWindow();
-  bool OnMouseAction(const CAction &action);
+  EVENT_RESULT OnMouseAction(const CAction &action);
   virtual bool RenderAnimation(unsigned int time);
   virtual bool CheckAnimation(ANIMATION_TYPE animType);
 
