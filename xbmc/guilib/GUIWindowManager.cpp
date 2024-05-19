@@ -480,6 +480,18 @@ void CGUIWindowManager::Render()
 {
   assert(g_application.IsCurrentThread());
   CSingleLock lock(g_graphicsContext);
+  CGUIWindow* pWindow = GetWindow(GetActiveWindow());
+  if (pWindow)
+  {
+    pWindow->ClearBackground();
+    pWindow->Render();
+  }
+}
+
+void CGUIWindowManager::FrameMove()
+{
+  assert(g_application.IsCurrentThread());
+  CSingleLock lock(g_graphicsContext);
 
   if(m_iNested == 0)
   {
@@ -493,18 +505,6 @@ void CGUIWindowManager::Render()
     m_deleteWindows.clear();
   }
 
-  CGUIWindow* pWindow = GetWindow(GetActiveWindow());
-  if (pWindow)
-  {
-    pWindow->ClearBackground();
-    pWindow->Render();
-  }
-}
-
-void CGUIWindowManager::FrameMove()
-{
-  assert(g_application.IsCurrentThread());
-  CSingleLock lock(g_graphicsContext);
   CGUIWindow* pWindow = GetWindow(GetActiveWindow());
   if (pWindow)
     pWindow->FrameMove();
