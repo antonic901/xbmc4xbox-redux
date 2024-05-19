@@ -27,7 +27,6 @@
 #include "settings/Settings.h"
 #include "GUIControlFactory.h"
 #include "GUIControlGroup.h"
-#include "GUITexture.h" // FRECT
 
 #include "addons/Skin.h"
 #include "GUIInfoManager.h"
@@ -187,7 +186,7 @@ bool CGUIWindow::Load(TiXmlElement* pRootElement)
     }
     else if (strValue == "animation" && pChild->FirstChild())
     {
-      FRECT rect = { 0, 0, (float)m_coordsRes.iWidth, (float)m_coordsRes.iHeight };
+      CRect rect(0, 0, (float)m_coordsRes.iWidth, (float)m_coordsRes.iHeight);
       CAnimation anim;
       anim.Create(pChild, rect, GetID());
       m_animations.push_back(anim);
@@ -234,7 +233,7 @@ bool CGUIWindow::Load(TiXmlElement* pRootElement)
       {
         if (strcmpi(pControl->Value(), "control") == 0)
         {
-          FRECT rect = { 0, 0, (float)m_coordsRes.iWidth, (float)m_coordsRes.iHeight };
+          CRect rect(0, 0, (float)m_coordsRes.iWidth, (float)m_coordsRes.iHeight);
           LoadControl(pControl, NULL, rect);
         }
         pControl = pControl->NextSiblingElement();
@@ -250,7 +249,7 @@ bool CGUIWindow::Load(TiXmlElement* pRootElement)
   return true;
 }
 
-void CGUIWindow::LoadControl(TiXmlElement* pControl, CGUIControlGroup *pGroup, const FRECT &rect)
+void CGUIWindow::LoadControl(TiXmlElement* pControl, CGUIControlGroup *pGroup, const CRect &rect)
 {
   // get control type
   CGUIControlFactory factory;
@@ -279,8 +278,8 @@ void CGUIWindow::LoadControl(TiXmlElement* pControl, CGUIControlGroup *pGroup, c
     {
       CGUIControlGroup *grp = (CGUIControlGroup *)pGUIControl;
       TiXmlElement *pSubControl = pControl->FirstChildElement("control");
-      FRECT grpRect = { grp->GetXPosition(), grp->GetYPosition(),
-          grp->GetXPosition() + grp->GetWidth(), grp->GetYPosition() + grp->GetHeight() };
+      CRect grpRect(grp->GetXPosition(), grp->GetYPosition(),
+                    grp->GetXPosition() + grp->GetWidth(), grp->GetYPosition() + grp->GetHeight());
       while (pSubControl)
       {
         LoadControl(pSubControl, grp, grpRect);
@@ -868,15 +867,15 @@ void CGUIWindow::SetDefaults()
   m_clearBackground = 0xff000000; // opaque black -> clear
 }
 
-FRECT CGUIWindow::GetScaledBounds() const
+CRect CGUIWindow::GetScaledBounds() const
 {
   CSingleLock lock(g_graphicsContext);
   g_graphicsContext.SetScalingResolution(m_coordsRes, m_needsScaling);
   CPoint pos(GetPosition());
-  FRECT rect = {pos.x, pos.y, pos.x + m_width, pos.y + m_height};
+  CRect rect(pos.x, pos.y, pos.x + m_width, pos.y + m_height);
   float z = 0;
-  g_graphicsContext.ScaleFinalCoords(rect.left, rect.top, z);
-  g_graphicsContext.ScaleFinalCoords(rect.right, rect.bottom, z);
+  g_graphicsContext.ScaleFinalCoords(rect.x1, rect.y1, z);
+  g_graphicsContext.ScaleFinalCoords(rect.x2, rect.y2, z);
   return rect;
 }
 

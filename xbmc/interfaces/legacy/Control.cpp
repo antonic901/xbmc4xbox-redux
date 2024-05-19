@@ -716,7 +716,7 @@ namespace XBMCAddon
         pRoot->InsertEndChild(pNode);
       }
 
-      const FRECT animRect = { (float)dwPosX, (float)dwPosY, (float)dwWidth, (float)dwHeight };
+      const CRect animRect((float)dwPosX, (float)dwPosY, (float)dwWidth, (float)dwHeight);
       LOCKGUI;
       if (pGUIControl)
       {
