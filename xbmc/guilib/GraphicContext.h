@@ -147,9 +147,8 @@ public:
   bool IsWidescreen() const { return m_bWidescreen; }
   bool SetViewPort(float fx, float fy , float fwidth, float fheight, bool intersectPrevious = false);
   void RestoreViewPort();
-  const RECT& GetViewWindow() const;
+  const CRect& GetViewWindow() const;
   void SetViewWindow(float left, float top, float right, float bottom);
-  void SetFullScreenViewWindow(RESOLUTION &res);
   void ClipToViewWindow();
   void SetFullScreenVideo(bool bOnOff);
   bool IsFullScreenVideo() const;
@@ -266,6 +265,8 @@ public:
 
   int GetMaxTextureSize() const { return m_maxTextureSize; };
 protected:
+  void SetFullScreenViewWindow(RESOLUTION &res);
+
   LPDIRECT3DDEVICE8 m_pd3dDevice;
   D3DPRESENT_PARAMETERS* m_pd3dParams;
   std::stack<D3DVIEWPORT8*> m_viewStack;
@@ -275,7 +276,7 @@ protected:
   int m_iBackBufferCount;
   bool m_bWidescreen;
   CStdString m_strMediaDir;
-  RECT m_videoRect;
+  CRect m_videoRect;
   bool m_bFullScreenVideo;
   bool m_bCalibrating;
   RESOLUTION m_Resolution;

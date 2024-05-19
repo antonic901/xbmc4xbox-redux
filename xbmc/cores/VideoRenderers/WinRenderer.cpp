@@ -243,7 +243,7 @@ void CWinRenderer::DrawAlpha(int x0, int y0, int w, int h, unsigned char *src, u
   }
 
   // scale to fit screen
-  const RECT& rv = g_graphicsContext.GetViewWindow();
+  const CRect rv = g_graphicsContext.GetViewWindow();
 
   // Vobsubs are defined to be 720 wide.
   // NOTE: This will not work nicely if we are allowing mplayer to render text based subs
@@ -258,7 +258,7 @@ void CWinRenderer::DrawAlpha(int x0, int y0, int w, int h, unsigned char *src, u
     // pixel aspect ratio as the movie, and are 720 pixels wide
 
     float pixelaspect = m_fSourceFrameRatio * m_iSourceHeight / m_iSourceWidth;
-    xscale = (rv.right - rv.left) / 720.0f;
+    xscale = rv.Width() / 720.0f;
     yscale = xscale * CDisplaySettings::Get().GetResolutionInfo(res).fPixelRatio / pixelaspect;
   }
   else
@@ -271,10 +271,10 @@ void CWinRenderer::DrawAlpha(int x0, int y0, int w, int h, unsigned char *src, u
   }
   
   // horizontal centering, and align to bottom of subtitles line
-  osdRect.left = (float)rv.left + (float)(rv.right - rv.left - (float)w * xscale) / 2.0f;
+  osdRect.left = rv.x1 + (rv.Width() - (float)w * xscale) / 2.0f;
   osdRect.right = osdRect.left + (float)w * xscale;
   float relbottom = ((float)(CDisplaySettings::Get().GetResolutionInfo(res).iSubtitles - CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top)) / (CDisplaySettings::Get().GetResolutionInfo(res).Overscan.bottom - CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top);
-  osdRect.bottom = (float)rv.top + (float)(rv.bottom - rv.top) * relbottom;
+  osdRect.bottom = rv.y1 + rv.Height() * relbottom;
   osdRect.top = osdRect.bottom - (float)h * yscale;
 
   RECT rc = { 0, 0, w, h };
@@ -481,11 +481,11 @@ void CWinRenderer::ManageTextures()
 
 void CWinRenderer::ManageDisplay()
 {
-  const RECT& rv = g_graphicsContext.GetViewWindow();
-  float fScreenWidth = (float)rv.right - rv.left;
-  float fScreenHeight = (float)rv.bottom - rv.top;
-  float fOffsetX1 = (float)rv.left;
-  float fOffsetY1 = (float)rv.top;
+  const CRect rv = g_graphicsContext.GetViewWindow();
+  float fScreenWidth = rv.Width();
+  float fScreenHeight = rv.Height();
+  float fOffsetX1 = rv.x1;
+  float fOffsetY1 = rv.y1;
 
   // source rect
   rs.left = CMediaSettings::Get().GetCurrentVideoSettings().m_CropLeft;

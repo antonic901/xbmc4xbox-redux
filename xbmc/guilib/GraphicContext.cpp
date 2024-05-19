@@ -267,7 +267,7 @@ void CGraphicContext::RestoreViewPort()
   UpdateCameraPosition(m_cameras.top());
 }
 
-const RECT& CGraphicContext::GetViewWindow() const
+const CRect& CGraphicContext::GetViewWindow() const
 {
   return m_videoRect;
 }
@@ -279,22 +279,22 @@ void CGraphicContext::SetViewWindow(float left, float top, float right, float bo
   }
   else
   {
-    m_videoRect.left = (long)(ScaleFinalXCoord(left, top) + 0.5f);
-    m_videoRect.top = (long)(ScaleFinalYCoord(left, top) + 0.5f);
-    m_videoRect.right = (long)(ScaleFinalXCoord(right, bottom) + 0.5f);
-    m_videoRect.bottom = (long)(ScaleFinalYCoord(right, bottom) + 0.5f);
+    m_videoRect.x1 = ScaleFinalXCoord(left, top);
+    m_videoRect.y1 = ScaleFinalYCoord(left, top);
+    m_videoRect.x2 = ScaleFinalXCoord(right, bottom);
+    m_videoRect.y2 = ScaleFinalYCoord(right, bottom);
   }
 }
 
 void CGraphicContext::ClipToViewWindow()
 {
-  D3DRECT clip = { m_videoRect.left, m_videoRect.top, m_videoRect.right, m_videoRect.bottom };
-  if (m_videoRect.left < 0) clip.x1 = 0;
-  if (m_videoRect.top < 0) clip.y1 = 0;
-  if (m_videoRect.left > m_iScreenWidth - 1) clip.x1 = m_iScreenWidth - 1;
-  if (m_videoRect.top > m_iScreenHeight - 1) clip.y1 = m_iScreenHeight - 1;
-  if (m_videoRect.right > m_iScreenWidth) clip.x2 = m_iScreenWidth;
-  if (m_videoRect.bottom > m_iScreenHeight) clip.y2 = m_iScreenHeight;
+  D3DRECT clip = { (long)m_videoRect.x1, (long)m_videoRect.y1, (long)m_videoRect.x2, (long)m_videoRect.y2 };
+  if (m_videoRect.x1 < 0) clip.x1 = 0;
+  if (m_videoRect.y1 < 0) clip.y1 = 0;
+  if (m_videoRect.x1 > m_iScreenWidth - 1) clip.x1 = m_iScreenWidth - 1;
+  if (m_videoRect.y1 > m_iScreenHeight - 1) clip.y1 = m_iScreenHeight - 1;
+  if (m_videoRect.x2 > m_iScreenWidth) clip.x2 = m_iScreenWidth;
+  if (m_videoRect.y2 > m_iScreenHeight) clip.y2 = m_iScreenHeight;
   if (clip.x2 < clip.x1) clip.x2 = clip.x1 + 1;
   if (clip.y2 < clip.y1) clip.y2 = clip.y1 + 1;
 #ifdef HAS_XBOX_D3D
@@ -304,10 +304,10 @@ void CGraphicContext::ClipToViewWindow()
 
 void CGraphicContext::SetFullScreenViewWindow(RESOLUTION &res)
 {
-  m_videoRect.left = CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left;
-  m_videoRect.top = CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top;
-  m_videoRect.right = CDisplaySettings::Get().GetResolutionInfo(res).Overscan.right;
-  m_videoRect.bottom = CDisplaySettings::Get().GetResolutionInfo(res).Overscan.bottom;
+  m_videoRect.x1 = (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left;
+  m_videoRect.y1 = (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top;
+  m_videoRect.x2 = (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.right;
+  m_videoRect.y2 = (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.bottom;
 }
 
 void CGraphicContext::SetFullScreenVideo(bool bOnOff)

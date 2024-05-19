@@ -114,11 +114,11 @@ void CComboRenderer::ManageTextures()
 
 void CComboRenderer::ManageDisplay()
 {
-  const RECT& rv = g_graphicsContext.GetViewWindow();
-  float fScreenWidth = (float)rv.right - rv.left;
-  float fScreenHeight = (float)rv.bottom - rv.top;
-  float fOffsetX1 = (float)rv.left;
-  float fOffsetY1 = (float)rv.top;
+  const CRect rv = g_graphicsContext.GetViewWindow();
+  float fScreenWidth = rv.Width();
+  float fScreenHeight = rv.Height();
+  float fOffsetX1 = rv.x1;
+  float fOffsetY1 = rv.y1;
   float fPixelRatio = CDisplaySettings::Get().GetPixelRatio();
   float fMaxScreenWidth = (float)CDisplaySettings::Get().GetResolutionInfo(g_graphicsContext.GetVideoResolution()).iWidth;
   float fMaxScreenHeight = (float)CDisplaySettings::Get().GetResolutionInfo(g_graphicsContext.GetVideoResolution()).iHeight;
