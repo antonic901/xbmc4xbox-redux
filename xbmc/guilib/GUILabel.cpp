@@ -61,6 +61,11 @@ bool CGUILabel::SetOverflow(OVER_FLOW overflow)
   return changed;
 }
 
+bool CGUILabel::IsScrolling()
+{
+  return m_scrolling;
+}
+
 bool CGUILabel::SetColor(CGUILabel::COLOR color)
 {
   bool changed = m_color != color;
@@ -86,6 +91,14 @@ color_t CGUILabel::GetColor() const
       break;
   }
   return m_label.textColor;
+}
+
+bool CGUILabel::Process(unsigned int currentTime)
+{
+  // TODO Add the correct processing
+
+  bool overFlows = (m_renderRect.Width() + 0.5f < m_textLayout.GetTextWidth()); // 0.5f to deal with floating point rounding issues
+  return (overFlows && m_scrolling);
 }
 
 void CGUILabel::Render()
