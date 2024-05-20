@@ -559,7 +559,7 @@ bool CGUITextureBase::SetDiffuseColor(color_t color)
 {
   bool changed = m_diffuseColor != color;
   m_diffuseColor = color;
-  m_info.diffuseColor.Update();
+  changed |= m_info.diffuseColor.Update();
   return changed;
 }
 
