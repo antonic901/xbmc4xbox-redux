@@ -227,6 +227,12 @@
 				RelativePath=".\DDSImage.cpp">
 			</File>
 			<File
+				RelativePath=".\DirtyRegionSolvers.cpp">
+			</File>
+			<File
+				RelativePath=".\DirtyRegionTracker.cpp">
+			</File>
+			<File
 				RelativePath=".\GraphicContext.cpp">
 			</File>
 			<File
@@ -430,6 +436,15 @@
 				RelativePath=".\DDSImage.h">
 			</File>
 			<File
+				RelativePath=".\DirtyRegion.h">
+			</File>
+			<File
+				RelativePath=".\DirtyRegionSolvers.h">
+			</File>
+			<File
+				RelativePath=".\DirtyRegionTracker.h">
+			</File>
+			<File
 				RelativePath=".\Geometry.h">
 			</File>
 			<File
@@ -611,6 +626,9 @@
 			</File>
 			<File
 				RelativePath=".\IAudioDeviceChangedCallback.h">
+			</File>
+			<File
+				RelativePath=".\IDirtyRegionSolver.h">
 			</File>
 			<File
 				RelativePath=".\IMsgTargetCallback.h">
