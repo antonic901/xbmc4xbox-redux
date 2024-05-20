@@ -971,16 +971,18 @@ void CGUISpinControl::ChangePage(int amount)
   SendWindowMessage(message);
 }
 
-void CGUISpinControl::UpdateColors()
+bool CGUISpinControl::UpdateColors()
 {
-  m_label.UpdateColors();
-  CGUIControl::UpdateColors();
-  m_imgspinDownFocus.SetDiffuseColor(m_diffuseColor);
-  m_imgspinDown.SetDiffuseColor(m_diffuseColor);
-  m_imgspinUp.SetDiffuseColor(m_diffuseColor);
-  m_imgspinUpFocus.SetDiffuseColor(m_diffuseColor);
-  m_imgspinUpDisabled.SetDiffuseColor(m_diffuseColor);
-  m_imgspinDownDisabled.SetDiffuseColor(m_diffuseColor);
+  bool changed = CGUIControl::UpdateColors();
+  changed |= m_label.UpdateColors();
+  changed |= m_imgspinDownFocus.SetDiffuseColor(m_diffuseColor);
+  changed |= m_imgspinDown.SetDiffuseColor(m_diffuseColor);
+  changed |= m_imgspinUp.SetDiffuseColor(m_diffuseColor);
+  changed |= m_imgspinUpFocus.SetDiffuseColor(m_diffuseColor);
+  changed |= m_imgspinUpDisabled.SetDiffuseColor(m_diffuseColor);
+  changed |= m_imgspinDownDisabled.SetDiffuseColor(m_diffuseColor);
+
+  return changed;
 }
 
 bool CGUISpinControl::IsVisible() const

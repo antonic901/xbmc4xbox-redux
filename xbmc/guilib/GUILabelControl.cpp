@@ -53,6 +53,7 @@ void CGUILabelControl::SetCursorPos(int iPos)
   g_charsetConverter.utf8ToW(labelUTF8, label);
   if (iPos > (int)label.length()) iPos = label.length();
   if (iPos < 0) iPos = 0;
+
   m_iCursorPos = iPos;
 }
 
@@ -61,10 +62,12 @@ void CGUILabelControl::SetInfo(const CGUIInfoLabel &infoLabel)
   m_infoLabel = infoLabel;
 }
 
-void CGUILabelControl::UpdateColors()
+bool CGUILabelControl::UpdateColors()
 {
-  m_label.UpdateColors();
-  CGUIControl::UpdateColors();
+  bool changed = m_label.UpdateColors();
+  changed |= CGUIControl::UpdateColors();
+
+  return changed;
 }
 
 void CGUILabelControl::UpdateInfo(const CGUIListItem *item)

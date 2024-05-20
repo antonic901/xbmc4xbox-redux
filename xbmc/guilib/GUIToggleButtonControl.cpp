@@ -123,11 +123,13 @@ void CGUIToggleButtonControl::SetMinWidth(float minWidth)
   m_selectButton.SetMinWidth(minWidth);
 }
 
-void CGUIToggleButtonControl::UpdateColors()
+bool CGUIToggleButtonControl::UpdateColors()
 {
-  CGUIButtonControl::UpdateColors();
-  m_selectButton.SetColorDiffuse(m_diffuseColor);
-  m_selectButton.UpdateColors();
+  bool changed = CGUIButtonControl::UpdateColors();
+  changed |= m_selectButton.SetColorDiffuse(m_diffuseColor);
+  changed |= m_selectButton.UpdateColors();
+
+  return changed;
 }
 
 void CGUIToggleButtonControl::SetLabel(const string &strLabel)

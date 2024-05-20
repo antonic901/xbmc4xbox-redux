@@ -151,7 +151,7 @@ public:
   virtual void SetPosition(float posX, float posY);
   virtual void SetHitRect(const CRect &rect);
   virtual void SetCamera(const CPoint &camera);
-  void SetColorDiffuse(const CGUIInfoColor &color);
+  bool SetColorDiffuse(const CGUIInfoColor &color);
   CPoint GetRenderPosition() const;
   virtual float GetXPosition() const;
   virtual float GetYPosition() const;
@@ -289,7 +289,7 @@ protected:
    */
   virtual bool CanFocusFromPoint(const CPoint &point) const;
 
-  virtual void UpdateColors();
+  virtual bool UpdateColors();
   virtual void Animate(unsigned int currentTime);
   virtual bool CheckAnimation(ANIMATION_TYPE animType);
   void UpdateStates(ANIMATION_TYPE type, ANIMATION_PROCESS currentProcess, ANIMATION_STATE currentState);
