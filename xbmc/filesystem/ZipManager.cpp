@@ -18,14 +18,17 @@
  *
  */
 
-#include "system.h"
-#include "utils/log.h"
 #include "ZipManager.h"
-#include "utils/URIUtils.h"
+
+#include <algorithm>
+#include <utility>
+
+#include "File.h"
+#include "system.h"
 #include "URL.h"
-#include "filesystem/File.h"
-#include "SpecialProtocol.h"
-#include "CharsetConverter.h"
+#include "utils/CharsetConverter.h"
+#include "utils/log.h"
+#include "utils/URIUtils.h"
 
 // All values are stored in little-endian byte order in .zip file
 // Use SDL macros to perform byte swapping on big-endian systems
@@ -37,12 +40,7 @@
 #define SDL_SwapLE32(X) (X)
 #endif
 
-#ifndef min
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
-#endif
-
 using namespace XFILE;
-using namespace std;
 
 CZipManager g_ZipManager;
 
@@ -55,7 +53,7 @@ CZipManager::~CZipManager()
 
 }
 
-bool CZipManager::GetZipList(const CURL& url, vector<SZipEntry>& items)
+bool CZipManager::GetZipList(const CURL& url, std::vector<SZipEntry>& items)
 {
   CLog::Log(LOGDEBUG, "%s - Processing %s", __FUNCTION__, url.GetRedacted().c_str());
 
@@ -69,10 +67,10 @@ bool CZipManager::GetZipList(const CURL& url, vector<SZipEntry>& items)
     return false;
   }
 
-  map<CStdString,vector<SZipEntry> >::iterator it = mZipMap.find(strFile);
+  std::map<CStdString, std::vector<SZipEntry> >::iterator it = mZipMap.find(strFile);
   if (it != mZipMap.end()) // already listed, just return it if not changed, else release and reread
   {
-    map<CStdString,int64_t>::iterator it2=mZipDate.find(strFile);
+    std::map<CStdString,int64_t>::iterator it2=mZipDate.find(strFile);
     if (CFile::Stat(strFile,&m_StatData))
       CLog::Log(LOGDEBUG,"statdata: %i, new: %i",it2->second,m_StatData.st_mtime);
       if (m_StatData.st_mtime == it2->second)
@@ -112,8 +110,8 @@ bool CZipManager::GetZipList(const CURL& url, vector<SZipEntry>& items)
   // Don't need to look in the last 18 bytes (ECDREC_SIZE-4)
   // But as we need to do overlapping between blocks (3 bytes),
   // we start the search at ECDREC_SIZE-1 from the end of file
-  int searchSize = (int) min(65557, fileSize-ECDREC_SIZE+1);
-  int blockSize = (int) min(1024, searchSize);
+  int searchSize = (int) std::min(static_cast<int64_t>(65557), fileSize-ECDREC_SIZE+1);
+  int blockSize = (int) std::min(1024, searchSize);
   int nbBlock = searchSize / blockSize;
   int extraBlockSize = searchSize % blockSize;
   // Signature is on 4 bytes
@@ -221,8 +219,8 @@ bool CZipManager::GetZipEntry(const CURL& url, SZipEntry& item)
 {
   CStdString strFile = url.GetHostName();
 
-  map<CStdString,vector<SZipEntry> >::iterator it = mZipMap.find(strFile);
-  vector<SZipEntry> items;
+  std::map<CStdString, std::vector<SZipEntry> >::iterator it = mZipMap.find(strFile);
+  std::vector<SZipEntry> items;
   if (it == mZipMap.end()) // we need to list the zip
   {
     GetZipList(url,items);
@@ -233,7 +231,7 @@ bool CZipManager::GetZipEntry(const CURL& url, SZipEntry& item)
   }
 
   CStdString strFileName = url.GetFileName();
-  for (vector<SZipEntry>::iterator it2=items.begin();it2 != items.end();++it2)
+  for (std::vector<SZipEntry>::iterator it2=items.begin();it2 != items.end();++it2)
   {
     if (CStdString(it2->name) == strFileName)
     {
@@ -252,10 +250,10 @@ bool CZipManager::ExtractArchive(const CStdString& strArchive, const CStdString&
 
 bool CZipManager::ExtractArchive(const CURL& archive, const CStdString& strPath)
 {
-  vector<SZipEntry> entry;
+  std::vector<SZipEntry> entry;
   CURL url = URIUtils::CreateArchivePath("zip", archive);
   GetZipList(url, entry);
-  for (vector<SZipEntry>::iterator it=entry.begin();it != entry.end();++it)
+  for (std::vector<SZipEntry>::iterator it=entry.begin();it != entry.end();++it)
   {
     if (it->name[strlen(it->name)-1] == '/') // skip dirs
       continue;
@@ -309,10 +307,10 @@ void CZipManager::readCHeader(const char* buffer, SZipEntry& info)
 void CZipManager::release(const CStdString& strPath)
 {
   CURL url(strPath);
-  map<CStdString,vector<SZipEntry> >::iterator it= mZipMap.find(url.GetHostName());
+  std::map<CStdString, std::vector<SZipEntry> >::iterator it= mZipMap.find(url.GetHostName());
   if (it != mZipMap.end())
   {
-    map<CStdString,int64_t>::iterator it2=mZipDate.find(url.GetHostName());
+    std::map<CStdString,int64_t>::iterator it2=mZipDate.find(url.GetHostName());
     mZipMap.erase(it);
     mZipDate.erase(it2);
   }
