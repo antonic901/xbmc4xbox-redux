@@ -69,7 +69,7 @@ public:
   bool OnAction(const CAction &action);
 
   /*! \brief Rendering of the current window
-   Render is called every frame to draw the current window.
+   Render is called every frame to draw the current window and any dialogs.
    It should only be called from the application thread.
    */
   void Render();
@@ -87,6 +87,10 @@ public:
    */
   bool Initialized() const { return m_initialized; };
 
+  /*! \brief Used for rendering all visible dialogs while we
+   are in CGUIWindowFullscreen and videoplayback is not paused.
+   For more info see CApplication::Render().
+   */
   void RenderDialogs();
   CGUIWindow* GetWindow(int id) const;
   void ProcessRenderLoop(bool renderOnly = false);
