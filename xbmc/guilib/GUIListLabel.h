@@ -56,6 +56,8 @@ public:
     CGUILabel::CheckAndCorrectOverlap(label1.m_label, label2.m_label);
   }
 
+  virtual CRect GetRenderRegion();
+
 protected:
   virtual bool UpdateColors();
 
