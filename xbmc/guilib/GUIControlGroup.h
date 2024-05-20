@@ -85,7 +85,8 @@ public:
 #ifdef _DEBUG
   virtual void DumpTextureUse();
 #endif
-protected:  
+protected:
+  virtual void SendFinalDirtyRegionToParent(const CRect &dirtyRegion, const CGUIControl *sender);
   /*!
    \brief Check whether a given control is valid
    Runs through controls and returns whether this control is valid.  Only functional
