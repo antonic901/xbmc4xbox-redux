@@ -77,7 +77,7 @@ public:
   virtual void OnClick();
   bool HasClickActions() { return m_clickActions.HasActionsMeetingCondition(); };
 
-  virtual void UpdateColors();
+  virtual bool UpdateColors();
 protected:
   friend class CGUISpinControlEx;
   virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);

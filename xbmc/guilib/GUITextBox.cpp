@@ -113,10 +113,10 @@ void CGUITextBox::DoRender(unsigned int currentTime)
     g_graphicsContext.RemoveTransform();
 }
 
-void CGUITextBox::UpdateColors()
+bool CGUITextBox::UpdateColors()
 {
-  m_label.UpdateColors();
-  CGUIControl::UpdateColors();
+  bool changed = m_label.UpdateColors();
+  return CGUIControl::UpdateColors() || changed;
 }
 
 #define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))

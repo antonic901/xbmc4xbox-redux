@@ -65,7 +65,7 @@ public:
   virtual void UpdateInfo(const CGUIListItem *item = NULL);
   void UpdateLayout(void);
 protected:
-  virtual void UpdateColors();
+  virtual bool UpdateColors();
   CGUITexture m_guiBackground;
   CGUITexture m_guiLeft;
   CGUITexture m_guiMid;

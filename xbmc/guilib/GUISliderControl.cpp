@@ -638,14 +638,16 @@ CStdString CGUISliderControl::GetDescription() const
   return description;
 }
 
-void CGUISliderControl::UpdateColors()
+bool CGUISliderControl::UpdateColors()
 {
-  CGUIControl::UpdateColors();
-  m_guiBackground.SetDiffuseColor(m_diffuseColor);
-  m_guiSelectorLower.SetDiffuseColor(m_diffuseColor);
-  m_guiSelectorUpper.SetDiffuseColor(m_diffuseColor);
-  m_guiSelectorLowerFocus.SetDiffuseColor(m_diffuseColor);
-  m_guiSelectorUpperFocus.SetDiffuseColor(m_diffuseColor);
+  bool changed = CGUIControl::UpdateColors();
+  changed |= m_guiBackground.SetDiffuseColor(m_diffuseColor);
+  changed |= m_guiSelectorLower.SetDiffuseColor(m_diffuseColor);
+  changed |= m_guiSelectorUpper.SetDiffuseColor(m_diffuseColor);
+  changed |= m_guiSelectorLowerFocus.SetDiffuseColor(m_diffuseColor);
+  changed |= m_guiSelectorUpperFocus.SetDiffuseColor(m_diffuseColor);
+
+  return changed;
 }
 
 float CGUISliderControl::GetProportion(RangeSelector selector /* = RangeSelectorLower */) const

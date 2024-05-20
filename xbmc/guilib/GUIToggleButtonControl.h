@@ -59,7 +59,7 @@ public:
   void SetAltClickActions(const CGUIAction &clickActions);
 
 protected:
-  virtual void UpdateColors();
+  virtual bool UpdateColors();
   virtual void OnClick();
   CGUIButtonControl m_selectButton;
   INFO::InfoPtr m_toggleSelect;

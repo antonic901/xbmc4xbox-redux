@@ -222,15 +222,16 @@ CStdString CGUIRadioButtonControl::GetDescription() const
   return strLabel;
 }
 
-void CGUIRadioButtonControl::UpdateColors()
+bool CGUIRadioButtonControl::UpdateColors()
 {
-  CGUIButtonControl::UpdateColors();
-  m_imgRadioOnFocus.SetDiffuseColor(m_diffuseColor);
-  m_imgRadioOnNoFocus.SetDiffuseColor(m_diffuseColor);
-  m_imgRadioOffFocus.SetDiffuseColor(m_diffuseColor);
-  m_imgRadioOffNoFocus.SetDiffuseColor(m_diffuseColor);
-  m_imgRadioOnDisabled.SetDiffuseColor(m_diffuseColor);
-  m_imgRadioOffDisabled.SetDiffuseColor(m_diffuseColor);
+  bool changed = CGUIButtonControl::UpdateColors();
+  changed |= m_imgRadioOnFocus.SetDiffuseColor(m_diffuseColor);
+  changed |= m_imgRadioOnNoFocus.SetDiffuseColor(m_diffuseColor);
+  changed |= m_imgRadioOffFocus.SetDiffuseColor(m_diffuseColor);
+  changed |= m_imgRadioOffNoFocus.SetDiffuseColor(m_diffuseColor);
+  changed |= m_imgRadioOnDisabled.SetDiffuseColor(m_diffuseColor);
+  changed |= m_imgRadioOffDisabled.SetDiffuseColor(m_diffuseColor);
+  return changed;
 }
 
 void CGUIRadioButtonControl::SetToggleSelect(const CStdString &toggleSelect)
