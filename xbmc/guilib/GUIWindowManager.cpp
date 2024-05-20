@@ -55,6 +55,8 @@ CGUIWindowManager::~CGUIWindowManager(void)
 void CGUIWindowManager::Initialize()
 {
   LoadNotOnDemandWindows();
+  m_tracker.SelectAlgorithm();
+
   m_initialized = true;
 }
 
@@ -478,6 +480,7 @@ void CGUIWindowManager::Render()
 {
   assert(g_application.IsCurrentThread());
   CSingleLock lock(g_graphicsContext);
+
   CGUIWindow* pWindow = GetWindow(GetActiveWindow());
   if (pWindow)
   {
@@ -537,6 +540,11 @@ void CGUIWindowManager::RenderDialogs()
     if ((*it)->IsDialogRunning())
       (*it)->Render();
   }
+}
+
+void CGUIWindowManager::MarkDirtyRegion(CRect region)
+{
+  m_tracker.MarkDirtyRegion(CDirtyRegion(region));
 }
 
 CGUIWindow* CGUIWindowManager::GetWindow(int id) const

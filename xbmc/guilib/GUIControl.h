@@ -158,6 +158,11 @@ public:
   virtual float GetWidth() const;
   virtual float GetHeight() const;
 
+  void MarkDirtyRegion();
+  virtual void SendFinalDirtyRegionToParent(const CRect &dirtyRegion, const CGUIControl *sender);
+  void FlushDirtyRegion();
+  virtual CRect GetRenderRegion();
+
   /*! \brief Set actions to perform on navigation
    \param actions ActionMap of actions
    \sa SetNavigationAction
@@ -327,6 +332,8 @@ protected:
   CPoint m_camera;
   bool m_hasCamera;
   TransformMatrix m_transform;
+
+  CRect m_markedLocalRegion;
 };
 
 #endif
