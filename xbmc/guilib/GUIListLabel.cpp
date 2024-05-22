@@ -70,8 +70,8 @@ CRect CGUIListLabel::GetRenderRegion() const
 
 bool CGUIListLabel::UpdateColors()
 {
-  bool changed = m_label.UpdateColors();
-  changed |= CGUIControl::UpdateColors();
+  bool changed = CGUIControl::UpdateColors();
+  changed |= m_label.UpdateColors();
 
   return changed;
 }

@@ -88,8 +88,10 @@ CGUITextBox::~CGUITextBox(void)
 
 bool CGUITextBox::UpdateColors()
 {
-  bool changed = m_label.UpdateColors();
-  return CGUIControl::UpdateColors() || changed;
+  bool changed = CGUIControl::UpdateColors();
+  changed |= m_label.UpdateColors();
+
+  return changed;
 }
 
 #define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
