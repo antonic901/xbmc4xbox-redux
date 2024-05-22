@@ -106,7 +106,7 @@ void CGUIDialogBusy::Show_Internal()
   OnMessage(msg);
 }
 
-void CGUIDialogBusy::DoRender(unsigned int currentTime)
+void CGUIDialogBusy::DoProcess(unsigned int currentTime)
 {
   bool visible = g_windowManager.GetTopMostModalDialogID() == WINDOW_DIALOG_BUSY;
   m_bLastVisible = visible;
@@ -120,7 +120,7 @@ void CGUIDialogBusy::DoRender(unsigned int currentTime)
     progress->SetVisible(m_progress > 0);
   }
 
-  CGUIDialog::DoRender(currentTime);
+  CGUIDialog::DoProcess(currentTime);
 }
 
 void CGUIDialogBusy::Render()

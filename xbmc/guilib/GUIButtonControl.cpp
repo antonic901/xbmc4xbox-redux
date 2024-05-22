@@ -49,6 +49,7 @@ CGUIButtonControl::~CGUIButtonControl(void)
 
 void CGUIButtonControl::Process(unsigned int currentTime)
 {
+  ProcessText(currentTime);
   if (m_bInvalidated)
   {
     m_imgFocus.SetWidth(GetWidth());
@@ -86,7 +87,6 @@ void CGUIButtonControl::Process(unsigned int currentTime)
   m_imgFocus.Process(currentTime);
   m_imgNoFocus.Process(currentTime);
 
-  ProcessText(currentTime);
   CGUIControl::Process(currentTime);
 }
 
@@ -132,7 +132,7 @@ float CGUIButtonControl::GetWidth() const
 void CGUIButtonControl::SetMinWidth(float minWidth)
 {
   if (m_minWidth != minWidth)
-    RenderText();
+    MarkDirtyRegion();
 
   m_minWidth = minWidth;
 }
