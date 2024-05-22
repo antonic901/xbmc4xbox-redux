@@ -536,25 +536,15 @@ void CGUIWindowManager::Render()
     RenderPass();
   else
   {
-#ifdef HAS_XBOX_D3D
-    RenderPass();
-#else
     for (CDirtyRegionList::const_iterator i = dirtyRegions.begin(); i != dirtyRegions.end(); i++)
     {
       if (i->IsEmpty())
         continue;
-      GLint oldRegion[8];
-      glGetIntegerv(GL_SCISSOR_BOX, oldRegion);
 
-      glScissor(i->x1, g_graphicsContext.GetHeight() - i->y2, i->Width(), i->Height());
-      glEnable(GL_SCISSOR_TEST);
-
+      g_graphicsContext.SetScissors(*i);
       RenderPass();
-
-      // Reset scissorbox
-      glScissor(oldRegion[0], oldRegion[1], oldRegion[2], oldRegion[3]);
     }
-#endif
+    g_graphicsContext.ResetScissors();
   }
 
   if (g_advancedSettings.m_guiVisualizeDirtyRegions)

@@ -168,6 +168,9 @@ public:
   void ApplyStateBlock();
   void Clear(color_t color = 0);
 
+  virtual void SetScissors(const CRect &rect);
+  virtual void ResetScissors();
+
   // output scaling
   const RESOLUTION_INFO &GetResInfo() const;
 

@@ -34,6 +34,7 @@
 #endif
 #include "addons/Skin.h"
 #include "TextureManager.h"
+#include "utils/MathUtils.h"
 
 using namespace std;
 
@@ -883,3 +884,30 @@ void CGraphicContext::SetMediaDir(const CStdString &strMediaDir)
   m_strMediaDir = strMediaDir;
 }
 
+void CGraphicContext::SetScissors(const CRect& rect)
+{
+  if (!m_bRenderCreated)
+    return;
+
+  RECT scissor;
+  scissor.left = MathUtils::round_int(rect.x1);
+  scissor.top = MathUtils::round_int(rect.y1);
+  scissor.right = MathUtils::round_int(rect.x2);
+  scissor.bottom = MathUtils::round_int(rect.y2);
+  m_pD3DDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);
+  m_pD3DDevice->SetScissorRect(&scissor);
+}
+
+void CGraphicContext::ResetScissors()
+{
+  if (!m_bRenderCreated)
+    return;
+
+  RECT scissor;
+  scissor.left = 0;
+  scissor.top = 0;
+  scissor.right = m_nBackBufferWidth;
+  scissor.bottom = m_nBackBufferHeight;
+  m_pD3DDevice->SetScissorRect(&scissor);
+  m_pD3DDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+}
