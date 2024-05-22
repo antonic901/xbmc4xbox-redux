@@ -106,9 +106,11 @@ void CGUIDialogBusy::Show_Internal()
   OnMessage(msg);
 }
 
-void CGUIDialogBusy::DoProcess(unsigned int currentTime)
+void CGUIDialogBusy::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   bool visible = g_windowManager.GetTopMostModalDialogID() == WINDOW_DIALOG_BUSY;
+  if(!visible && m_bLastVisible)
+    dirtyregions.push_back(m_previousDirtyRegion);
   m_bLastVisible = visible;
 
   // update the progress control if available
@@ -120,7 +122,7 @@ void CGUIDialogBusy::DoProcess(unsigned int currentTime)
     progress->SetVisible(m_progress > 0);
   }
 
-  CGUIDialog::DoProcess(currentTime);
+  CGUIDialog::DoProcess(currentTime, dirtyregions);
 }
 
 void CGUIDialogBusy::Render()

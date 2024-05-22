@@ -45,7 +45,7 @@ CGUIScrollBar::~CGUIScrollBar(void)
 {
 }
 
-void CGUIScrollBar::Process(unsigned int currentTime)
+void CGUIScrollBar::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   bool changed = false;
 
@@ -61,7 +61,7 @@ void CGUIScrollBar::Process(unsigned int currentTime)
   if (changed)
     MarkDirtyRegion();
 
-  CGUIControl::Process(currentTime);
+  CGUIControl::Process(currentTime, dirtyregions);
 }
 
 void CGUIScrollBar::Render()

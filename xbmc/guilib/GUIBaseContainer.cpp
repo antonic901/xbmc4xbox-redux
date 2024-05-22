@@ -60,16 +60,16 @@ CGUIBaseContainer::~CGUIBaseContainer(void)
   delete m_listProvider;
 }
 
-void CGUIBaseContainer::DoProcess(unsigned int currentTime)
+void CGUIBaseContainer::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
-  CGUIControl::DoProcess(currentTime);
+  CGUIControl::DoProcess(currentTime, dirtyregions);
 
   if (m_pageChangeTimer.GetElapsedMilliseconds() > 200)
     m_pageChangeTimer.Stop();
   m_wasReset = false;
 }
 
-void CGUIBaseContainer::Process(unsigned int currentTime)
+void CGUIBaseContainer::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   ValidateOffset();
 
@@ -113,9 +113,9 @@ void CGUIBaseContainer::Process(unsigned int currentTime)
       CGUIListItemPtr item = m_items[itemNo];
       // render our item
       if (m_orientation == VERTICAL)
-        ProcessItem(origin.x, pos, item, focused, currentTime);
+        ProcessItem(origin.x, pos, item, focused, currentTime, dirtyregions);
       else
-        ProcessItem(pos, origin.y, item, focused, currentTime);
+        ProcessItem(pos, origin.y, item, focused, currentTime, dirtyregions);
     }
     // increment our position
     pos += focused ? m_focusedLayout->Size(m_orientation) : m_layout->Size(m_orientation);
@@ -124,10 +124,10 @@ void CGUIBaseContainer::Process(unsigned int currentTime)
 
   UpdatePageControl(offset);
 
-  CGUIControl::Process(currentTime);
+  CGUIControl::Process(currentTime, dirtyregions);
 }
 
-void CGUIBaseContainer::ProcessItem(float posX, float posY, CGUIListItemPtr& item, bool focused, unsigned int currentTime)
+void CGUIBaseContainer::ProcessItem(float posX, float posY, CGUIListItemPtr& item, bool focused, unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   if (!m_focusedLayout || !m_layout) return;
 
@@ -157,7 +157,7 @@ void CGUIBaseContainer::ProcessItem(float posX, float posY, CGUIListItemPtr& ite
           subItem = m_lastItem->GetFocusedLayout()->GetFocusedItem();
         item->GetFocusedLayout()->SetFocusedItem(subItem ? subItem : 1);
       }
-      item->GetFocusedLayout()->Process(item.get(), m_parentID, currentTime);
+      item->GetFocusedLayout()->Process(item.get(), m_parentID, currentTime, dirtyregions);
     }
     m_lastItem = item;
   }
@@ -171,9 +171,9 @@ void CGUIBaseContainer::ProcessItem(float posX, float posY, CGUIListItemPtr& ite
       item->SetLayout(layout);
     }
     if (item->GetFocusedLayout() && item->GetFocusedLayout()->IsAnimating(ANIM_TYPE_UNFOCUS))
-      item->GetFocusedLayout()->Process(item.get(), m_parentID, currentTime);
+      item->GetFocusedLayout()->Process(item.get(), m_parentID, currentTime, dirtyregions);
     else if (item->GetLayout())
-      item->GetLayout()->Process(item.get(), m_parentID, currentTime);
+      item->GetLayout()->Process(item.get(), m_parentID, currentTime, dirtyregions);
   }
 
   g_graphicsContext.RestoreOrigin();

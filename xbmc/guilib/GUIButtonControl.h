@@ -47,7 +47,7 @@ public:
   virtual ~CGUIButtonControl(void);
   virtual CGUIButtonControl *Clone() const { return new CGUIButtonControl(*this); };
 
-  virtual void Process(unsigned int currentTime);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
   virtual bool OnAction(const CAction &action) ;
   virtual bool OnMessage(CGUIMessage& message);
