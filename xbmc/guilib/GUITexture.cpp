@@ -141,8 +141,18 @@ void CGUITextureBase::Render()
       return;
   }
 
+  // set our draw color
+  #define MIX_ALPHA(a,c) (((a * (c >> 24)) / 255) << 24) | (c & 0x00ffffff)
+
+  // diffuse color
+  color_t color = (m_info.diffuseColor) ? (color_t)m_info.diffuseColor : m_diffuseColor;
+  if (m_alpha != 0xFF)
+	  color = MIX_ALPHA(m_alpha, color);
+
+  color = g_graphicsContext.MergeAlpha(color);
+
   // setup our renderer
-  Begin();
+  Begin(color);
 
   // compute the texture coordinates
   float u1, u2, u3, v1, v2, v3;
@@ -242,15 +252,7 @@ void CGUITextureBase::Render(float left, float top, float right, float bottom, f
   if (y[2] == y[0]) y[2] += 1.0f; if (x[2] == x[0]) x[2] += 1.0f;
   if (y[3] == y[1]) y[3] += 1.0f; if (x[3] == x[1]) x[3] += 1.0f;
 
-#define MIX_ALPHA(a,c) (((a * (c >> 24)) / 255) << 24) | (c & 0x00ffffff)
-
-  // diffuse color
-  color_t color = (m_info.diffuseColor) ? m_info.diffuseColor : m_diffuseColor;
-  if (m_alpha != 0xFF) color = MIX_ALPHA(m_alpha, color);
-
-  color = g_graphicsContext.MergeAlpha(color);
-
-  Draw(x, y, z, texture, diffuse, color, orientation);
+  Draw(x, y, z, texture, diffuse, orientation);
 }
 
 void CGUITextureBase::PreAllocResources()
