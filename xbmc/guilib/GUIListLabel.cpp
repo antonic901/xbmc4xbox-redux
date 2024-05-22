@@ -78,7 +78,9 @@ bool CGUIListLabel::UpdateColors()
 
 void CGUIListLabel::Process(unsigned int currentTime)
 {
-  m_label.Process(currentTime);
+  if (m_label.Process(currentTime))
+    MarkDirtyRegion();
+
   CGUIControl::Process(currentTime);
 }
 
