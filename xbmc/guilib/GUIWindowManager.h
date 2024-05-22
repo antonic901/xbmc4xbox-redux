@@ -135,6 +135,8 @@ public:
   void DumpTextureUse();
 #endif
 private:
+  void RenderPass();
+
   void LoadNotOnDemandWindows();
   void UnloadNotOnDemandWindows();
   void AddToWindowHistory(int newWindowID);
