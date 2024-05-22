@@ -163,7 +163,6 @@ public:
   virtual float GetHeight() const;
 
   void MarkDirtyRegion();
-  virtual void SendFinalDirtyRegionToParent(const CRect &dirtyRegion, const CGUIControl *sender);
   virtual CRect GetRenderRegion() const;
 
   /*! \brief Set actions to perform on navigation
