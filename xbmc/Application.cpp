@@ -5071,6 +5071,9 @@ void CApplication::Process()
     m_slowTimer.Reset();
     ProcessSlow();
   }
+
+  // Process events and animate controls before rendering
+  g_windowManager.Process(CTimeUtils::GetFrameTime());
 }
 
 // We get called every 500ms

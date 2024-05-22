@@ -66,7 +66,9 @@ public:
   virtual void SaveStates(std::vector<CControlState> &states);
   virtual int GetSelectedItem() const;
 
-  virtual void DoRender(unsigned int currentTime);
+  virtual void DoProcess(unsigned int currentTime);
+  virtual void Process(unsigned int currentTime);
+
   void LoadLayout(TiXmlElement *layout);
   void LoadListProvider(TiXmlElement *content, int defaultItem, bool defaultAlways);
 
@@ -95,6 +97,9 @@ public:
 protected:
   virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   bool OnClick(int actionID);
+
+  virtual void ProcessItem(float posX, float posY, CGUIListItem *item, bool focused, unsigned int currentTime);
+
   virtual void Render();
   virtual void RenderItem(float posX, float posY, CGUIListItemPtr& item, bool focused);
   virtual void Scroll(int amount);
@@ -139,8 +144,6 @@ protected:
 
   int m_pageControl;
 
-  unsigned int m_renderTime;
-
   std::vector<CGUIListItemLayout> m_layouts;
   std::vector<CGUIListItemLayout> m_focusedLayouts;
 
@@ -149,7 +152,7 @@ protected:
 
   void ScrollToOffset(int offset);
   void SetContainerMoving(int direction);
-  void UpdateScrollOffset();
+  void UpdateScrollOffset(unsigned int currentTime);
 
   CScroller m_scroller;
 

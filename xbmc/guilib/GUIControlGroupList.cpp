@@ -34,7 +34,6 @@ CGUIControlGroupList::CGUIControlGroupList(int parentID, int controlID, float po
   m_totalSize = 0;
   m_orientation = orientation;
   m_alignment = alignment;
-  m_renderTime = 0;
   m_useControlPositions = useControlPositions;
   ControlType = GUICONTROL_GROUPLIST;
   m_minSize = 0;
@@ -44,9 +43,9 @@ CGUIControlGroupList::~CGUIControlGroupList(void)
 {
 }
 
-void CGUIControlGroupList::Render()
+void CGUIControlGroupList::Process(unsigned int currentTime)
 {
-  m_scroller.Update(m_renderTime);
+  m_scroller.Update(currentTime);
 
   // first we update visibility of all our items, to ensure our size and
   // alignment computations are correct.
@@ -61,6 +60,28 @@ void CGUIControlGroupList::Render()
     CGUIMessage message2(GUI_MSG_ITEM_SELECT, GetParentID(), m_pageControl, (int)m_scroller.GetValue());
     SendWindowMessage(message2);
   }
+  // we run through the controls, rendering as we go
+  float pos = GetAlignOffset();
+  for (iControls it = m_children.begin(); it != m_children.end(); ++it)
+  {
+    // note we render all controls, even if they're offscreen, as then they'll be updated
+    // with respect to animations
+    CGUIControl *control = *it;
+    if (m_orientation == VERTICAL)
+      g_graphicsContext.SetOrigin(m_posX, m_posY + pos - m_offset);
+    else
+      g_graphicsContext.SetOrigin(m_posX + pos - m_offset, m_posY);
+    control->DoProcess(currentTime);
+
+    if (control->IsVisible())
+      pos += Size(control) + m_itemGap;
+    g_graphicsContext.RestoreOrigin();
+  }
+  CGUIControl::Process(currentTime);
+}
+
+void CGUIControlGroupList::Render()
+{
   // we run through the controls, rendering as we go
   int index = 0;
   bool render(g_graphicsContext.SetClipRegion(m_posX, m_posY, m_width, m_height));
@@ -83,7 +104,7 @@ void CGUIControlGroupList::Render()
         g_graphicsContext.SetOrigin(m_posX, m_posY + pos - m_scroller.GetValue());
       else
         g_graphicsContext.SetOrigin(m_posX + pos - m_scroller.GetValue(), m_posY);
-      control->DoRender(m_renderTime);
+      control->DoRender();
     }
 
     if (IsControlOnScreen(pos, control))
@@ -103,7 +124,7 @@ void CGUIControlGroupList::Render()
       g_graphicsContext.SetOrigin(m_posX, m_posY + focusedPos - m_scroller.GetValue());
     else
       g_graphicsContext.SetOrigin(m_posX + focusedPos - m_scroller.GetValue(), m_posY);
-    focusedControl->DoRender(m_renderTime);
+    focusedControl->DoRender();
   }
   if (render) g_graphicsContext.RestoreClipRegion();
   CGUIControl::Render();
