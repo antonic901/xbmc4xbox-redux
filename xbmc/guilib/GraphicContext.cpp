@@ -886,9 +886,10 @@ void CGraphicContext::SetMediaDir(const CStdString &strMediaDir)
 
 void CGraphicContext::SetScissors(const CRect& rect)
 {
-  if (!m_bRenderCreated)
+  if (!m_pd3dDevice)
     return;
 
+#ifndef HAS_XBOX_D3D
   RECT scissor;
   scissor.left = MathUtils::round_int(rect.x1);
   scissor.top = MathUtils::round_int(rect.y1);
@@ -896,13 +897,22 @@ void CGraphicContext::SetScissors(const CRect& rect)
   scissor.bottom = MathUtils::round_int(rect.y2);
   m_pD3DDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);
   m_pD3DDevice->SetScissorRect(&scissor);
+#else
+  D3DRECT scissor;
+  scissor.x1 = MathUtils::round_int(rect.x1);
+  scissor.y1 = MathUtils::round_int(rect.y1);
+  scissor.x2 = MathUtils::round_int(rect.x2);
+  scissor.y2 = MathUtils::round_int(rect.y2);
+  m_pd3dDevice->SetScissors(1, TRUE, &scissor);
+#endif
 }
 
 void CGraphicContext::ResetScissors()
 {
-  if (!m_bRenderCreated)
+  if (!m_pd3dDevice)
     return;
 
+#ifndef HAS_XBOX_D3D
   RECT scissor;
   scissor.left = 0;
   scissor.top = 0;
@@ -910,4 +920,12 @@ void CGraphicContext::ResetScissors()
   scissor.bottom = m_nBackBufferHeight;
   m_pD3DDevice->SetScissorRect(&scissor);
   m_pD3DDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+#else
+  D3DRECT scissor;
+  scissor.x1 = 0;
+  scissor.y1 = 0;
+  scissor.x2 = CDisplaySettings::Get().GetCurrentResolutionInfo().iWidth;
+  scissor.y2 = CDisplaySettings::Get().GetCurrentResolutionInfo().iHeight;
+  m_pd3dDevice->SetScissors(0, FALSE, &scissor);
+#endif
 }
