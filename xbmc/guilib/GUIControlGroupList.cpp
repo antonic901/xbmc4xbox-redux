@@ -43,7 +43,7 @@ CGUIControlGroupList::~CGUIControlGroupList(void)
 {
 }
 
-void CGUIControlGroupList::Process(unsigned int currentTime)
+void CGUIControlGroupList::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   m_scroller.Update(currentTime);
 
@@ -71,13 +71,13 @@ void CGUIControlGroupList::Process(unsigned int currentTime)
       g_graphicsContext.SetOrigin(m_posX, m_posY + pos - m_scroller.GetValue());
     else
       g_graphicsContext.SetOrigin(m_posX + pos - m_scroller.GetValue(), m_posY);
-    control->DoProcess(currentTime);
+    control->DoProcess(currentTime, dirtyregions);
 
     if (control->IsVisible())
       pos += Size(control) + m_itemGap;
     g_graphicsContext.RestoreOrigin();
   }
-  CGUIControl::Process(currentTime);
+  CGUIControl::Process(currentTime, dirtyregions);
 }
 
 void CGUIControlGroupList::Render()

@@ -5079,7 +5079,10 @@ void CApplication::Process()
 
   // Render the mouse pointer
   if (g_Mouse.IsActive())
-    m_guiPointer.DoProcess(currentTime);
+  {
+    CDirtyRegionList dirtyregions;
+    m_guiPointer.DoProcess(currentTime, dirtyregions);
+  }
 }
 
 // We get called every 500ms

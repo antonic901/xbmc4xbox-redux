@@ -48,7 +48,7 @@ public:
   virtual ~CGUIScrollBar(void);
   virtual CGUIScrollBar *Clone() const { return new CGUIScrollBar(*this); };
 
-  virtual void Process(unsigned int currentTime);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
   virtual bool OnAction(const CAction &action);
   virtual void PreAllocResources();

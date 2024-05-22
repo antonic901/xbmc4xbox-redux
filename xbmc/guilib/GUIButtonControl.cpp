@@ -47,7 +47,7 @@ CGUIButtonControl::~CGUIButtonControl(void)
 {
 }
 
-void CGUIButtonControl::Process(unsigned int currentTime)
+void CGUIButtonControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   ProcessText(currentTime);
   if (m_bInvalidated)
@@ -87,7 +87,7 @@ void CGUIButtonControl::Process(unsigned int currentTime)
   m_imgFocus.Process(currentTime);
   m_imgNoFocus.Process(currentTime);
 
-  CGUIControl::Process(currentTime);
+  CGUIControl::Process(currentTime, dirtyregions);
 }
 
 void CGUIButtonControl::Render()
