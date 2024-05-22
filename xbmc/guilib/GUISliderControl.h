@@ -60,6 +60,7 @@ public:
   virtual ~CGUISliderControl(void);
   virtual CGUISliderControl *Clone() const { return new CGUISliderControl(*this); };
 
+  virtual void Process(unsigned int currentTime);
   virtual void Render();
   virtual bool OnAction(const CAction &action);
   virtual void PreAllocResources();
