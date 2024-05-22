@@ -51,6 +51,7 @@ public:
   virtual ~CGUIResizeControl(void);
   virtual CGUIResizeControl *Clone() const { return new CGUIResizeControl(*this); };
 
+  virtual void Process(unsigned int currentTime);
   virtual void Render();
   virtual bool OnAction(const CAction &action);
   virtual void OnUp();
