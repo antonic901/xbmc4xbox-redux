@@ -125,7 +125,7 @@ void CGUITextBox::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyreg
   {
     m_autoScrollRepeatAnim->Animate(m_renderTime, true);
     m_autoScrollRepeatAnim->RenderAnimation(m_textMatrix);
-    g_graphicsContext.AddTransform(m_textMatrix);
+    m_cachedTextMatrix = g_graphicsContext.AddTransform(m_textMatrix);
   }
 
   CGUIControl::DoProcess(currentTime, dirtyregions);
@@ -155,7 +155,7 @@ void CGUITextBox::DoRender()
 {
   // render the repeat anim as appropriate
   if (m_autoScrollRepeatAnim)
-    g_graphicsContext.AddTransform(m_textMatrix);
+    g_graphicsContext.SetTransform(m_cachedTextMatrix);
 
   CGUIControl::DoRender();
 
