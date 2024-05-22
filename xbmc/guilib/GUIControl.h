@@ -163,7 +163,6 @@ public:
 
   void MarkDirtyRegion();
   virtual void SendFinalDirtyRegionToParent(const CRect &dirtyRegion, const CGUIControl *sender);
-  void FlushDirtyRegion(bool setMatrixBeforeFlush);
   virtual CRect GetRenderRegion() const;
 
   /*! \brief Set actions to perform on navigation
@@ -336,7 +335,8 @@ protected:
   bool m_hasCamera;
   TransformMatrix m_transform;
 
-  CRect m_markedLocalRegion;
+  bool  m_controlIsDirty;
+  CRect m_previousDirtyRegion;
 };
 
 #endif

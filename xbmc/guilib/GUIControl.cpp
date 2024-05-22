@@ -49,6 +49,7 @@ CGUIControl::CGUIControl()
   m_hasCamera = false;
   m_pushedUpdates = false;
   m_pulseOnSelect = false;
+  m_controlIsDirty = true;
 }
 
 CGUIControl::CGUIControl(int parentID, int controlID, float posX, float posY, float width, float height)
@@ -118,10 +119,9 @@ void CGUIControl::DynamicResourceAlloc(bool bOnOff)
 // 3. reset the animation transform
 void CGUIControl::DoProcess(unsigned int currentTime)
 {
-  if (m_bInvalidated)
-    MarkDirtyRegion();
+  bool changed = m_bInvalidated;
 
-  Animate(currentTime);
+  changed |= Animate(currentTime);
 
   g_graphicsContext.AddTransform(m_transform);
   if (m_hasCamera)
@@ -134,13 +134,22 @@ void CGUIControl::DoProcess(unsigned int currentTime)
   if (IsVisible())
     Process(currentTime);
 
-  FlushDirtyRegion(false);
+  changed |=  m_controlIsDirty;
+
+  CRect currentRenderRegion = g_graphicsContext.generateAABB(GetRenderRegion());
+  CRect dirtyRegion = currentRenderRegion;
+  dirtyRegion.Union(m_previousDirtyRegion);
+  m_previousDirtyRegion = currentRenderRegion;
+
+  if (changed)
+    SendFinalDirtyRegionToParent(dirtyRegion, this);
 
   if (m_hasCamera)
     g_graphicsContext.RestoreCameraPosition();
   g_graphicsContext.RemoveTransform();
 
   m_bInvalidated = false;
+  m_controlIsDirty = false;
 }
 
 void CGUIControl::Process(unsigned int currentTime)
@@ -429,7 +438,7 @@ float CGUIControl::GetHeight() const
 
 void CGUIControl::MarkDirtyRegion()
 {
-  m_markedLocalRegion.Union(GetRenderRegion());
+  m_controlIsDirty = true;
 }
 
 void CGUIControl::SendFinalDirtyRegionToParent(const CRect &dirtyRegion, const CGUIControl *sender)
@@ -438,34 +447,6 @@ void CGUIControl::SendFinalDirtyRegionToParent(const CRect &dirtyRegion, const C
     m_parentControl->SendFinalDirtyRegionToParent(dirtyRegion, sender);
   else
     g_windowManager.MarkDirtyRegion(dirtyRegion);
-}
-
-void CGUIControl::FlushDirtyRegion(bool setMatrixBeforeFlush)
-{
-  if (!m_markedLocalRegion.IsEmpty())
-  {
-    if (setMatrixBeforeFlush)
-    {
-      g_graphicsContext.AddTransform(m_transform);
-      if (m_hasCamera)
-        g_graphicsContext.SetCameraPosition(m_camera);
-    }
-
-    CRect AABB = g_graphicsContext.generateAABB(m_markedLocalRegion);
-
-    if (setMatrixBeforeFlush)
-    {
-      if (m_hasCamera)
-        g_graphicsContext.RestoreCameraPosition();
-      g_graphicsContext.RemoveTransform();
-    }
-
-    // When we have transformed to screen cordinates we send it to
-    // the parent which may choose to ignore it or send it further down.
-    SendFinalDirtyRegionToParent(AABB, this);
-  }
-
-  m_markedLocalRegion = CRect();
 }
 
 CRect CGUIControl::GetRenderRegion() const
@@ -815,7 +796,7 @@ bool CGUIControl::Animate(unsigned int currentTime)
   // check visible state outside the loop, as it could change
   GUIVISIBLE visible = m_visible;
 
-  TransformMatrix newTransform;
+  m_transform.Reset();
   bool changed = false;
 
   CPoint center(m_posX + m_width * 0.5f, m_posY + m_height * 0.5f);
@@ -827,7 +808,7 @@ bool CGUIControl::Animate(unsigned int currentTime)
     UpdateStates(anim.GetType(), anim.GetProcess(), anim.GetState());
     // and render the animation effect
     changed |= (anim.GetProcess() != ANIM_PROCESS_NONE);
-    anim.RenderAnimation(newTransform, center);
+    anim.RenderAnimation(m_transform, center);
 
 /*    // debug stuff
     if (anim.currentProcess != ANIM_PROCESS_NONE)
@@ -843,16 +824,6 @@ bool CGUIControl::Animate(unsigned int currentTime)
           CLog::DebugLog("Animating control %d with a %s fade effect %s. Amount is %2.1f. Visible=%s", m_controlID, anim.type == ANIM_TYPE_CONDITIONAL ? (anim.lastCondition ? "conditional_on" : "conditional_off") : (anim.type == ANIM_TYPE_VISIBLE ? "visible" : "hidden"), anim.currentProcess == ANIM_PROCESS_NORMAL ? "normal" : "reverse", anim.amount, IsVisible() ? "true" : "false");
       }
     }*/
-  }
-
-  if (changed)
-  {
-    MarkDirtyRegion();
-    FlushDirtyRegion(true);
-
-    m_transform = newTransform;
-
-    MarkDirtyRegion();
   }
 
   return changed;
