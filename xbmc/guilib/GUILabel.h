@@ -154,8 +154,6 @@ public:
    */
   bool SetOverflow(OVER_FLOW overflow);
 
-  bool IsScrolling();
-
   /*! \brief Set this label invalid.  Forces an update of the control
    */
   void SetInvalid();
