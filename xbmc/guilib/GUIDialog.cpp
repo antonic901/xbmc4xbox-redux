@@ -234,12 +234,6 @@ void CGUIDialog::Show()
   CApplicationMessenger::Get().Show(this);
 }
 
-bool CGUIDialog::RenderAnimation(unsigned int time)
-{
-  CGUIWindow::RenderAnimation(time);
-  return m_bRunning;
-}
-
 void CGUIDialog::FrameMove()
 {
   if (m_autoClosing)
@@ -263,6 +257,9 @@ void CGUIDialog::FrameMove()
 
 void CGUIDialog::Render()
 {
+  if (!m_bRunning)
+    return;
+
   CGUIWindow::Render();
   // Check to see if we should close at this point
   // We check after the controls have finished rendering, as we may have to close due to

@@ -300,6 +300,13 @@ void CGUIWindow::CenterWindow()
   m_posY = (m_coordsRes.iHeight - GetHeight()) / 2;
 }
 
+void CGUIWindow::DoProcess(unsigned int currentTime)
+{
+  g_graphicsContext.SetRenderingResolution(m_coordsRes, m_needsScaling);
+  g_graphicsContext.ResetWindowTransform();
+  CGUIControlGroup::DoProcess(currentTime);
+}
+
 void CGUIWindow::Render()
 {
   // If we're rendering from a different thread, then we should wait for the main
@@ -310,14 +317,7 @@ void CGUIWindow::Render()
 
   g_graphicsContext.SetRenderingResolution(m_coordsRes, m_needsScaling);
 
-   m_renderTime = CTimeUtils::GetFrameTime();
-  // render our window animation - returns false if it needs to stop rendering
-  if (!RenderAnimation(m_renderTime))
-    return;
-
-  if (m_hasCamera)
-    g_graphicsContext.SetCameraPosition(m_camera);
-
+  g_graphicsContext.ResetWindowTransform();
   CGUIControlGroup::Render();
 }
 
@@ -455,6 +455,10 @@ void CGUIWindow::OnDeinitWindow(int nextWindowID)
       QueueAnimation(ANIM_TYPE_WINDOW_CLOSE);
       while (IsAnimating(ANIM_TYPE_WINDOW_CLOSE))
       {
+        // TODO This shouldn't be handled like this
+        // The processing should be done from WindowManager and deinit
+        // should probably be called from there.
+        g_windowManager.Process(CTimeUtils::GetFrameTime());
         g_windowManager.ProcessRenderLoop(true);
       }
     }
@@ -741,14 +745,12 @@ bool CGUIWindow::IsAnimating(ANIMATION_TYPE animType)
   return CGUIControlGroup::IsAnimating(animType);
 }
 
-bool CGUIWindow::RenderAnimation(unsigned int time)
+void CGUIWindow::Animate(unsigned int currentTime)
 {
-  g_graphicsContext.ResetWindowTransform();
   if (m_animationsEnabled)
-    CGUIControlGroup::Animate(time);
+    CGUIControlGroup::Animate(currentTime);
   else
     m_transform.Reset();
-  return true;
 }
 
 void CGUIWindow::DisableAnimations()

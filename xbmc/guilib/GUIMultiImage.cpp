@@ -112,7 +112,7 @@ void CGUIMultiImage::UpdateInfo(const CGUIListItem *item)
   }
 }
 
-void CGUIMultiImage::Render()
+void CGUIMultiImage::Process(unsigned int currentTime)
 {
   // Set a viewport so that we don't render outside the defined area
   if (m_directoryStatus == READY && !m_files.empty())
@@ -140,9 +140,24 @@ void CGUIMultiImage::Render()
   if (g_graphicsContext.SetClipRegion(m_posX, m_posY, m_width, m_height))
   {
     m_image.SetColorDiffuse(m_diffuseColor);
+    m_image.DoProcess(currentTime);
+
+    g_graphicsContext.RestoreClipRegion();
+  }
+
+  CGUIControl::Process(currentTime);
+}
+
+void CGUIMultiImage::Render()
+{
+  if (!m_files.empty())
+  {
+    // Set a viewport so that we don't render outside the defined area
+    g_graphicsContext.SetClipRegion(m_posX, m_posY, m_width, m_height);
     m_image.Render(); // DirtyRegions NOTICE: https://github.com/xbmc/xbmc/commit/a1c6c8afb8a706ad573f49b8093141f9def1cd04#diff-d2fe9bdf07198ca350afd2f28f4b9f51ec90372731c2a47b6bf91899fe09158aL148
     g_graphicsContext.RestoreClipRegion();
   }
+
   CGUIControl::Render();
 }
 
