@@ -68,9 +68,9 @@ void CGUIControlGroupList::Process(unsigned int currentTime)
     // with respect to animations
     CGUIControl *control = *it;
     if (m_orientation == VERTICAL)
-      g_graphicsContext.SetOrigin(m_posX, m_posY + pos - m_offset);
+      g_graphicsContext.SetOrigin(m_posX, m_posY + pos - m_scroller.GetValue());
     else
-      g_graphicsContext.SetOrigin(m_posX + pos - m_offset, m_posY);
+      g_graphicsContext.SetOrigin(m_posX + pos - m_scroller.GetValue(), m_posY);
     control->DoProcess(currentTime);
 
     if (control->IsVisible())

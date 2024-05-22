@@ -98,7 +98,7 @@ protected:
   virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   bool OnClick(int actionID);
 
-  virtual void ProcessItem(float posX, float posY, CGUIListItem *item, bool focused, unsigned int currentTime);
+  virtual void ProcessItem(float posX, float posY, CGUIListItemPtr& item, bool focused, unsigned int currentTime);
 
   virtual void Render();
   virtual void RenderItem(float posX, float posY, CGUIListItemPtr& item, bool focused);

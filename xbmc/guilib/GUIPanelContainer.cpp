@@ -48,7 +48,7 @@ void CGUIPanelContainer::Process(unsigned int currentTime)
 
   UpdateScrollOffset(currentTime);
 
-  int offset = (int)(m_scrollOffset / m_layout->Size(m_orientation));
+  int offset = (int)(m_scroller.GetValue() / m_layout->Size(m_orientation));
 
   int cacheBefore, cacheAfter;
   GetCacheOffsets(cacheBefore, cacheAfter);
@@ -59,7 +59,7 @@ void CGUIPanelContainer::Process(unsigned int currentTime)
   CPoint origin = CPoint(m_posX, m_posY) + m_renderOffset;
   float pos = (m_orientation == VERTICAL) ? origin.y : origin.x;
   float end = (m_orientation == VERTICAL) ? m_posY + m_height : m_posX + m_width;
-  pos += (offset - cacheBefore) * m_layout->Size(m_orientation) - m_scrollOffset;
+  pos += (offset - cacheBefore) * m_layout->Size(m_orientation) - m_scroller.GetValue();
   end += cacheAfter * m_layout->Size(m_orientation);
 
   int current = (offset - cacheBefore) * m_itemsPerRow;
@@ -74,9 +74,9 @@ void CGUIPanelContainer::Process(unsigned int currentTime)
       bool focused = (current == m_offset * m_itemsPerRow + m_cursor) && m_bHasFocus;
 
       if (m_orientation == VERTICAL)
-        ProcessItem(origin.x + col * m_layout->Size(HORIZONTAL), pos, item.get(), focused, currentTime);
+        ProcessItem(origin.x + col * m_layout->Size(HORIZONTAL), pos, item, focused, currentTime);
       else
-        ProcessItem(pos, origin.y + col * m_layout->Size(VERTICAL), item.get(), focused, currentTime);
+        ProcessItem(pos, origin.y + col * m_layout->Size(VERTICAL), item, focused, currentTime);
     }
     // increment our position
     if (col < m_itemsPerRow - 1)
