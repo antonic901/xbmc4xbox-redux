@@ -49,6 +49,7 @@ public:
   virtual ~CGUIRSSControl(void);
   virtual CGUIRSSControl *Clone() const { return new CGUIRSSControl(*this); };
 
+  virtual void Process(unsigned int currentTime);
   virtual void Render();
   virtual void OnFeedUpdate(const vecText &feed);
   virtual void OnFeedRelease();
