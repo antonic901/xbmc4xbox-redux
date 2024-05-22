@@ -545,6 +545,9 @@ void CGUIWindowManager::Render()
     RenderPass();
   else
   {
+#ifdef HAS_XBOX_D3D
+    RenderPass();
+#else
     for (unsigned int i = 0; i < dirtyRegions.size(); i++)
     {
       CDirtyRegion currentRegion = dirtyRegions[i];
@@ -562,6 +565,7 @@ void CGUIWindowManager::Render()
       // Reset scissorbox
       glScissor(oldRegion[0], oldRegion[1], oldRegion[2], oldRegion[3]);
     }
+#endif
   }
 
   if (g_advancedSettings.m_guiVisualizeDirtyRegions)
