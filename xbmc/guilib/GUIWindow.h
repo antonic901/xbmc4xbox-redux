@@ -194,7 +194,7 @@ protected:
   virtual void OnWindowLoaded();
   virtual void OnInitWindow();
   EVENT_RESULT OnMouseAction(const CAction &action);
-  virtual void Animate(unsigned int currentTime);
+  virtual bool Animate(unsigned int currentTime);
   virtual bool CheckAnimation(ANIMATION_TYPE animType);
 
   CAnimation *GetAnimation(ANIMATION_TYPE animType, bool checkConditions = true);
