@@ -130,8 +130,6 @@ protected:
 
   CPoint m_renderOffset; ///< \brief render offset of the first item in the list \sa SetRenderOffset
 
-  int m_offset;
-  int m_cursor;
   float m_analogScrollCount;
   unsigned int m_lastHoldTime;
 
@@ -172,7 +170,24 @@ protected:
   void OnJumpLetter(char letter, bool skip = false);
   void OnJumpSMS(int letter);
   std::vector< std::pair<int, CStdString> > m_letterOffsets;
+
+  /*! \brief Set the cursor position
+   Should be used by all base classes rather than directly setting it, as
+   this also marks the control as dirty (if needed)
+   */
+  virtual void SetCursor(int cursor);
+  inline int GetCursor() const { return m_cursor; };
+
+  /*! \brief Set the container offset
+   Should be used by all base classes rather than directly setting it, as
+   this also marks the control as dirty (if needed)
+   */
+  void SetOffset(int offset);
+  inline int GetOffset() const { return m_offset; };
+
 private:
+  int m_cursor;
+  int m_offset;
   int m_cacheItems;
   CStopWatch m_scrollTimer;
   CStopWatch m_pageChangeTimer;
