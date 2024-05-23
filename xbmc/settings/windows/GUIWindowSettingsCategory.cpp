@@ -348,7 +348,7 @@ bool CGUIWindowSettingsCategory::OnBack(int actionID)
   return CGUIWindow::OnBack(actionID);
 }
 
-void CGUIWindowSettingsCategory::Render()
+void CGUIWindowSettingsCategory::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   // update alpha status of current button
   bool bAlphaFaded = false;
@@ -368,7 +368,7 @@ void CGUIWindowSettingsCategory::Render()
       bAlphaFaded = true;
     }
   }
-  CGUIWindow::Render();
+  CGUIWindow::DoProcess(currentTime, dirtyregions);
   if (control && bAlphaFaded)
   {
     control->SetFocus(false);
@@ -377,6 +377,11 @@ void CGUIWindowSettingsCategory::Render()
     else
       ((CGUIButtonControl *)control)->SetSelected(false);
   }
+}
+
+void CGUIWindowSettingsCategory::Render()
+{
+  CGUIWindow::Render();
 }
 
 void CGUIWindowSettingsCategory::OnInitWindow()
