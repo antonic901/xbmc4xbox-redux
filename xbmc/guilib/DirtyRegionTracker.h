@@ -23,10 +23,18 @@
 #include "IDirtyRegionSolver.h"
 #include "DirtyRegionSolvers.h"
 
+#if defined(TARGET_DARWIN_IOS)
+#define DEFAULT_BUFFERING 4
+#elif defined(_XBOX)
+#define DEFAULT_BUFFERING 2
+#else
+#define DEFAULT_BUFFERING 3
+#endif
+
 class CDirtyRegionTracker
 {
 public:
-  CDirtyRegionTracker(int buffering = 2);
+  CDirtyRegionTracker(int buffering = DEFAULT_BUFFERING);
   ~CDirtyRegionTracker();
   void SelectAlgorithm();
   void MarkDirtyRegion(const CDirtyRegion &region);
