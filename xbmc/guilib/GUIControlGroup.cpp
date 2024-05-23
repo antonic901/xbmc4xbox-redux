@@ -505,6 +505,7 @@ void CGUIControlGroup::AddControl(CGUIControl *control, int position /* = -1*/)
   control->SetParentControl(this);
   control->SetPushUpdates(m_pushedUpdates);
   AddLookup(control);
+  SetInvalid();
 }
 
 void CGUIControlGroup::AddLookup(CGUIControl *control)
@@ -605,6 +606,7 @@ bool CGUIControlGroup::RemoveControl(const CGUIControl *control)
     {
       m_children.erase(it);
       RemoveLookup(child);
+      SetInvalid();
       return true;
     }
   }
@@ -627,6 +629,7 @@ void CGUIControlGroup::ClearAll()
   }
   m_children.clear();
   m_lookup.clear();
+  SetInvalid();
 }
 
 void CGUIControlGroup::GetContainers(vector<CGUIControl *> &containers) const
