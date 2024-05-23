@@ -1188,8 +1188,6 @@ void CGUIBaseContainer::GetCacheOffsets(int &cacheBefore, int &cacheAfter)
 
 void CGUIBaseContainer::SetCursor(int cursor)
 {
-  if (m_cursor != cursor)
-    MarkDirtyRegion();
   m_cursor = cursor;
 }
 
