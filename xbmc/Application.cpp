@@ -2622,6 +2622,14 @@ void CApplication::FrameMove()
   ProcessGamepad(frameTime);
   ProcessEventServer(frameTime);
 
+  // Process events and animate controls before rendering
+  unsigned int currentTime = CTimeUtils::GetFrameTime();
+  g_windowManager.Process(currentTime);
+  if (g_Mouse.IsActive())
+  {
+    CDirtyRegionList dirtyregions;
+    m_guiPointer.DoProcess(currentTime, dirtyregions);
+  }
   g_windowManager.FrameMove();
 }
 
@@ -5072,17 +5080,6 @@ void CApplication::Process()
     ProcessSlow();
   }
 
-  unsigned int currentTime = CTimeUtils::GetFrameTime();
-
-  // Process events and animate controls before rendering
-  g_windowManager.Process(currentTime);
-
-  // Render the mouse pointer
-  if (g_Mouse.IsActive())
-  {
-    CDirtyRegionList dirtyregions;
-    m_guiPointer.DoProcess(currentTime, dirtyregions);
-  }
 }
 
 // We get called every 500ms
