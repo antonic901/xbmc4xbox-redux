@@ -35,6 +35,9 @@
 #include "input/ButtonTranslator.h"
 #include "utils/XMLUtils.h"
 #include "utils/Variant.h"
+#include "GUIAudioManager.h"
+#include "Application.h"
+#include "ApplicationMessenger.h"
 
 using namespace std;
 
@@ -49,6 +52,8 @@ CGUIWindow::CGUIWindow(int id, const CStdString &xmlFile)
   m_needsScaling = true;
   m_windowLoaded = false;
   m_loadType = LOAD_EVERY_TIME;
+  m_closing = false;
+  m_active = false;
   m_renderOrder = 0;
   m_dynamicResourceAlloc = true;
   m_previousWindow = WINDOW_INVALID;
@@ -321,9 +326,48 @@ void CGUIWindow::DoRender()
   CGUIControlGroup::DoRender();
 }
 
-void CGUIWindow::Close(bool forceClose)
+void CGUIWindow::Render()
 {
-  CLog::Log(LOGERROR,"%s - should never be called on the base class!", __FUNCTION__);
+  CGUIControlGroup::Render();
+  // Check to see if we should close at this point
+  // We check after the controls have finished rendering, as we may have to close due to
+  // the controls rendering after the window has finished it's animation
+  // we call the base class instead of this class so that we can find the change
+  if (m_closing && !CGUIControlGroup::IsAnimating(ANIM_TYPE_WINDOW_CLOSE))
+    Close(true);
+}
+
+void CGUIWindow::Close_Internal(bool forceClose /*= false*/, int nextWindowID /*= 0*/, bool enableSound /*= true*/)
+{
+  CSingleLock lock(g_graphicsContext);
+  forceClose |= (nextWindowID == WINDOW_FULLSCREEN_VIDEO);
+  if (forceClose)
+  {
+    CGUIMessage msg(GUI_MSG_WINDOW_DEINIT, 0, 0);
+    OnMessage(msg);
+    m_closing = false;
+  }
+  else if (m_active && !m_closing)
+  {
+    if (enableSound && IsSoundEnabled())
+      g_audioManager.PlayWindowSound(GetID(), SOUND_DEINIT);
+
+    // Perform the window out effect
+    QueueAnimation(ANIM_TYPE_WINDOW_CLOSE);
+    m_closing = true;
+  }
+}
+
+void CGUIWindow::Close(bool forceClose /*= false*/, int nextWindowID /*= 0*/, bool enableSound /*= true*/)
+{
+  if (!g_application.IsCurrentThread())
+  {
+    // make sure graphics lock is not held
+    CSingleExit leaveIt(g_graphicsContext);
+    CApplicationMessenger::Get().Close(this, forceClose, true, nextWindowID, enableSound);
+  }
+  else
+    Close_Internal(forceClose, nextWindowID, enableSound);
 }
 
 bool CGUIWindow::OnAction(const CAction &action)
@@ -414,8 +458,14 @@ EVENT_RESULT CGUIWindow::OnMouseEvent(const CPoint &point, const CMouseEvent &ev
 /// calling the base method.
 void CGUIWindow::OnInitWindow()
 {
+  //  Play the window specific init sound
+  if (IsSoundEnabled())
+    g_audioManager.PlayWindowSound(GetID(), SOUND_INIT);
+
   // set our rendered state
   m_hasRendered = false;
+  m_closing = false;
+  m_active = true;
   ResetAnimations();  // we need to reset our animations as those windows that don't dynamically allocate
                       // need their anims reset. An alternative solution is turning off all non-dynamic
                       // allocation (which in some respects may be nicer, but it kills hdd spindown and the like)
@@ -445,24 +495,9 @@ void CGUIWindow::OnDeinitWindow(int nextWindowID)
   {
     RunUnloadActions();
   }
-  
-  if (nextWindowID != WINDOW_FULLSCREEN_VIDEO)
-  {
-    // Dialog animations are handled in Close() rather than here
-    if (HasAnimation(ANIM_TYPE_WINDOW_CLOSE) && !IsDialog())
-    {
-      // Perform the window out effect
-      QueueAnimation(ANIM_TYPE_WINDOW_CLOSE);
-      while (IsAnimating(ANIM_TYPE_WINDOW_CLOSE))
-      {
-        // TODO This shouldn't be handled like this
-        // The processing should be done from WindowManager and deinit
-        // should probably be called from there.
-        g_windowManager.ProcessRenderLoop(true);
-      }
-    }
-  }
+
   SaveControlStates();
+  m_active = false;
 }
 
 bool CGUIWindow::OnMessage(CGUIMessage& message)
@@ -742,6 +777,8 @@ bool CGUIWindow::IsAnimating(ANIMATION_TYPE animType)
 {
   if (!m_animationsEnabled)
     return false;
+  if (animType == ANIM_TYPE_WINDOW_CLOSE)
+    return m_closing;
   return CGUIControlGroup::IsAnimating(animType);
 }
 

@@ -304,9 +304,7 @@ void CGUIWindowManager::PreviousWindow()
   g_infoManager.SetNextWindow(previousWindow);
 
   // deinitialize our window
-  g_audioManager.PlayWindowSound(pCurrentWindow->GetID(), SOUND_DEINIT);
-  CGUIMessage msg(GUI_MSG_WINDOW_DEINIT, 0, 0);
-  pCurrentWindow->OnMessage(msg);
+  CloseWindowSync(pCurrentWindow);
 
   g_infoManager.SetNextWindow(WINDOW_INVALID);
   g_infoManager.SetPreviousWindow(currentWindow);
@@ -316,7 +314,6 @@ void CGUIWindowManager::PreviousWindow()
 
   // ok, initialize the new window
   CLog::Log(LOGDEBUG,"CGUIWindowManager::PreviousWindow: Activate new");
-  g_audioManager.PlayWindowSound(pNewWindow->GetID(), SOUND_INIT);
   CGUIMessage msg2(GUI_MSG_WINDOW_INIT, 0, 0, WINDOW_INVALID, GetActiveWindow());
   pNewWindow->OnMessage(msg2);
 
@@ -404,12 +401,7 @@ void CGUIWindowManager::ActivateWindow_Internal(int iWindowID, const vector<CStd
   int currentWindow = GetActiveWindow();
   CGUIWindow *pWindow = GetWindow(currentWindow);
   if (pWindow)
-  {
-    //  Play the window specific deinit sound
-    g_audioManager.PlayWindowSound(pWindow->GetID(), SOUND_DEINIT);
-    CGUIMessage msg(GUI_MSG_WINDOW_DEINIT, 0, 0, iWindowID);
-    pWindow->OnMessage(msg);
-  }
+    CloseWindowSync(pWindow, iWindowID);
   g_infoManager.SetNextWindow(WINDOW_INVALID);
 
   // Add window to the history list (we must do this before we activate it,
@@ -421,7 +413,6 @@ void CGUIWindowManager::ActivateWindow_Internal(int iWindowID, const vector<CStd
   AddToWindowHistory(iWindowID);
 
   g_infoManager.SetPreviousWindow(currentWindow);
-  g_audioManager.PlayWindowSound(pNewWindow->GetID(), SOUND_INIT);
   // Send the init message
   CGUIMessage msg(GUI_MSG_WINDOW_INIT, 0, 0, currentWindow, iWindowID);
   msg.SetStringParams(params);
@@ -653,8 +644,7 @@ void CGUIWindowManager::DeInitialize()
     if (IsWindowActive(it->first))
     {
       pWindow->DisableAnimations();
-      CGUIMessage msg(GUI_MSG_WINDOW_DEINIT, 0, 0);
-      pWindow->OnMessage(msg);
+      pWindow->Close(true);
     }
     pWindow->ResetControlStates();
     pWindow->FreeResources(true);
@@ -987,6 +977,13 @@ void CGUIWindowManager::ClearWindowHistory()
 {
   while (m_windowHistory.size())
     m_windowHistory.pop();
+}
+
+void CGUIWindowManager::CloseWindowSync(CGUIWindow *window, int nextWindowID /*= 0*/)
+{
+  window->Close(false, nextWindowID);
+  while (window->IsAnimating(ANIM_TYPE_WINDOW_CLOSE))
+    g_windowManager.ProcessRenderLoop(true);
 }
 
 #ifdef _DEBUG

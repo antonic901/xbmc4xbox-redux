@@ -139,6 +139,7 @@ private:
   void UnloadNotOnDemandWindows();
   void AddToWindowHistory(int newWindowID);
   void ClearWindowHistory();
+  void CloseWindowSync(CGUIWindow *window, int nextWindowID = 0);
   CGUIWindow *GetTopMostDialog() const;
 
   friend class CApplicationMessenger;
