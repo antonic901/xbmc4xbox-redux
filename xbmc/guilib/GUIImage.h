@@ -92,6 +92,8 @@ public:
   float GetTextureWidth() const;
   float GetTextureHeight() const;
 
+  virtual CRect CalcRenderRegion() const;
+
 #ifdef _DEBUG
   virtual void DumpTextureUse();
 #endif
