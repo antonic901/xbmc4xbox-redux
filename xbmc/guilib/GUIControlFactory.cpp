@@ -768,6 +768,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   CLabelInfo labelInfo;
   CLabelInfo spinInfo;
 
+  CGUIInfoColor hitColor(0xFFFFFFFF);
   CGUIInfoColor textColor3;
   CGUIInfoColor headlineColor;
 
@@ -828,6 +829,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
 
   hitRect.SetRect(posX, posY, posX + width, posY + height);
   GetHitRect(pControlNode, hitRect);
+
+  GetInfoColor(pControlNode, "hitrectcolor", hitColor, parentID);
 
   GetActions(pControlNode, "onup",    actions[ACTION_MOVE_UP]);
   GetActions(pControlNode, "ondown",  actions[ACTION_MOVE_DOWN]);
@@ -1406,7 +1409,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   // things that apply to all controls
   if (control)
   {
-    control->SetHitRect(hitRect);
+    control->SetHitRect(hitRect, hitColor);
     control->SetVisibleCondition(visibleCondition, allowHiddenFocus);
     control->SetEnableCondition(enableCondition);
     control->SetAnimations(animations);

@@ -24,6 +24,7 @@
 #include "GUIInfoManager.h"
 #include "LocalizeStrings.h"
 #include "GUIWindowManager.h"
+#include "GUITexture.h"
 
 using namespace std;
 
@@ -172,6 +173,13 @@ void CGUIControl::DoRender()
     g_graphicsContext.SetTransform(m_cachedTransform);
     if (m_hasCamera)
       g_graphicsContext.SetCameraPosition(m_camera);
+
+
+    if (m_hitColor != 0xFFFFFFFF)
+    {
+      color_t color = g_graphicsContext.MergeAlpha(m_hitColor);
+      CGUITexture::DrawQuad(g_graphicsContext.generateAABB(m_hitRect), color);
+    }
 
     Render();
 
@@ -900,9 +908,10 @@ void CGUIControl::SaveStates(vector<CControlState> &states)
   // empty for now - do nothing with the majority of controls
 }
 
-void CGUIControl::SetHitRect(const CRect &rect)
+void CGUIControl::SetHitRect(const CRect &rect, const CGUIInfoColor &color)
 {
   m_hitRect = rect;
+  m_hitColor = color;
 }
 
 void CGUIControl::SetCamera(const CPoint &camera)
