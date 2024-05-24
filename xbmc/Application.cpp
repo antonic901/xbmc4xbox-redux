@@ -2311,8 +2311,8 @@ bool CApplication::OnKey(CKey& key)
 
 bool CApplication::OnAction(CAction &action)
 {
-  // Let's tell the outside world about this action
-  if (m_pXbmcHttp && CSettings::Get().GetInt("services.httpapibroadcastlevel")>=2)
+  // Let's tell the outside world about this action, ignoring mouse moves
+  if (m_pXbmcHttp && CSettings::Get().GetInt("services.httpapibroadcastlevel")>=2 && action.GetID() != ACTION_MOUSE_MOVE)
   {
     CStdString tmp;
     tmp.Format("%i",action.GetID());
@@ -2328,6 +2328,9 @@ bool CApplication::OnAction(CAction &action)
       return true;
     }
   }
+
+  if (action.IsMouse())
+    m_guiPointer.SetPosition(action.GetAmount(0), action.GetAmount(1));
 
   // in normal case
   // just pass the action to the current window and let it handle it
@@ -2970,7 +2973,7 @@ bool CApplication::ProcessMouse()
     actionID = ACTION_MOUSE_WHEEL_DOWN;
 
   CAction action(actionID, (unsigned int)g_Mouse.bHold[MOUSE_LEFT_BUTTON], g_Mouse.GetLocation().x, g_Mouse.GetLocation().y, g_Mouse.GetLastMove().x, g_Mouse.GetLastMove().y);
-  return g_windowManager.OnAction(action);
+  return OnAction(action);
 }
 
 void  CApplication::CheckForTitleChange()
@@ -3022,7 +3025,6 @@ bool CApplication::ProcessHTTPApiButtons()
     {
       if (keyHttp.GetButtonCode() == KEY_VMOUSE) //virtual mouse
       {
-        g_Mouse.SetLocation(CPoint(keyHttp.GetLeftThumbX(), keyHttp.GetLeftThumbY()));
         int actionID = ACTION_MOUSE_MOVE;
         if (keyHttp.GetLeftTrigger() == 1)
           actionID = ACTION_MOUSE_LEFT_CLICK;
@@ -3033,7 +3035,7 @@ bool CApplication::ProcessHTTPApiButtons()
         else if (keyHttp.GetRightTrigger() == 1)
           actionID = ACTION_MOUSE_DOUBLE_CLICK;
         CAction action(actionID, keyHttp.GetLeftThumbX(), keyHttp.GetLeftThumbY());
-        g_windowManager.OnAction(action);
+        OnAction(action);
       }
       else
         OnKey(keyHttp);
@@ -3122,10 +3124,7 @@ bool CApplication::ProcessEventServer(float frameTime)
   {
     CPoint pos;
     if (es->GetMousePos(pos.x, pos.y) && g_Mouse.IsEnabled())
-    {
-      g_Mouse.SetLocation(pos, true);
-      return g_windowManager.OnAction(CAction(ACTION_MOUSE_MOVE, pos.x, pos.y));
-    }
+      return OnAction(CAction(ACTION_MOUSE_MOVE, pos.x, pos.y));
   }
 #endif
   return false;
