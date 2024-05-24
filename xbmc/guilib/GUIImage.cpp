@@ -106,7 +106,8 @@ void CGUIImage::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions
   if (m_crossFadeTime)
   {
     // make sure our texture has started allocating
-    m_texture.AllocResources();
+    if (m_texture.AllocResources())
+      MarkDirtyRegion();
 
     // compute the frame time
     unsigned int frameTime = 0;
@@ -181,6 +182,7 @@ bool CGUIImage::ProcessFading(CGUIImage::CFadingTexture *texture, unsigned int f
   assert(texture);
   if (texture->m_fadeTime <= frameTime)
   { // time to kill off the texture
+    MarkDirtyRegion();
     delete texture;
     return false;
   }
