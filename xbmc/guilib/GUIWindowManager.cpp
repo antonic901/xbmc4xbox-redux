@@ -489,14 +489,12 @@ void CGUIWindowManager::Process(unsigned int currentTime)
   if (pWindow)
     pWindow->DoProcess(currentTime, dirtyregions);
 
-  // we process the dialogs based on their render order.
-  vector<CGUIWindow *> renderList = m_activeDialogs;
-  // stable_sort(renderList.begin(), renderList.end(), RenderOrderSortFunction);
-
-  for (iDialog it = renderList.begin(); it != renderList.end(); ++it)
+  // process all dialogs - visibility may change etc.
+  for (WindowMap::iterator it = m_mapWindows.begin(); it != m_mapWindows.end(); it++)
   {
-    if ((*it)->IsDialogRunning())
-      (*it)->DoProcess(currentTime, dirtyregions);
+    CGUIWindow *pWindow = (*it).second;
+    if (pWindow && pWindow->IsDialog())
+      pWindow->DoProcess(currentTime, dirtyregions);
   }
 
   for (CDirtyRegionList::iterator itr = dirtyregions.begin(); itr != dirtyregions.end(); itr++)
@@ -619,23 +617,6 @@ CGUIWindow* CGUIWindowManager::GetWindow(int id) const
   if (it != m_mapWindows.end())
     return (*it).second;
   return NULL;
-}
-
-// Shows and hides modeless dialogs as necessary.
-void CGUIWindowManager::UpdateModelessVisibility()
-{
-  CSingleLock lock(g_graphicsContext);
-  for (WindowMap::iterator it = m_mapWindows.begin(); it != m_mapWindows.end(); it++)
-  {
-    CGUIWindow *pWindow = (*it).second;
-    if (pWindow && pWindow->IsDialog() && pWindow->HasVisibleCondition())
-    {
-      if (pWindow->HasVisibleCondition())
-        ((CGUIDialog *)pWindow)->Show_Internal();
-      else
-        ((CGUIDialog *)pWindow)->Close_Internal();
-    }
-  }
 }
 
 void CGUIWindowManager::ProcessRenderLoop(bool renderOnly /*= false*/)

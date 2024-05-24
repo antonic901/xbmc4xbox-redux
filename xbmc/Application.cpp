@@ -1983,8 +1983,6 @@ void CApplication::RenderNoPresent()
 
   m_pd3dDevice->BeginScene();
 
-  g_windowManager.UpdateModelessVisibility();
-
   //SWATHWIDTH of 4 improves fillrates (performance investigator)
 #ifdef HAS_XBOX_D3D
   m_pd3dDevice->SetRenderState(D3DRS_SWATHWIDTH, 4);
@@ -4317,8 +4315,6 @@ bool CApplication::NeedRenderFullScreen()
 {
   if (g_windowManager.GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO)
   {
-    g_windowManager.UpdateModelessVisibility();
-
     if (g_windowManager.HasDialogOnScreen()) return true;
     if (g_Mouse.IsActive()) return true;
 
