@@ -151,6 +151,7 @@
 #include "windows/GUIWindowLoginScreen.h"
 #include "addons/GUIWindowAddonBrowser.h"
 #include "music/windows/GUIWindowVisualisation.h"
+#include "windows/GUIWindowPointer.h"
 #include "windows/GUIWindowSystemInfo.h"
 #include "windows/GUIWindowScreensaver.h"
 #include "pictures/GUIWindowSlideShow.h"
@@ -1291,6 +1292,7 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIWindowSettingsProfile);          // window id = 34
   g_windowManager.Add(new CGUIWindow(WINDOW_SKIN_SETTINGS, "SkinSettings.xml"));
   g_windowManager.Add(new CGUIWindowAddonBrowser);          // window id = 40
+  g_windowManager.Add(new CGUIWindowPointer);            // window id = 99
   g_windowManager.Add(new CGUIWindowGameSaves);               // window id = 35
   g_windowManager.Add(new CGUIDialogYesNo);              // window id = 100
   g_windowManager.Add(new CGUIDialogProgress);           // window id = 101
@@ -1793,7 +1795,6 @@ bool CApplication::LoadSkin(const SkinPtr& skin)
   CLog::Log(LOGDEBUG,"Load Skin XML: %.2fms", 1000.f * (end - start) / freq);
 
   CLog::Log(LOGINFO, "  initialize new skin...");
-  m_guiPointer.AllocResources(true);
   g_windowManager.AddMsgTarget(this);
   g_windowManager.AddMsgTarget(&g_playlistPlayer);
   g_windowManager.AddMsgTarget(&g_infoManager);
@@ -1852,9 +1853,6 @@ void CApplication::UnloadSkin(bool forReload /* = false */)
 
   //These windows are not handled by the windowmanager (why not?) so we should unload them manually
   CGUIMessage msg(GUI_MSG_WINDOW_DEINIT, 0, 0);
-  m_guiPointer.OnMessage(msg);
-  m_guiPointer.ResetControlStates();
-  m_guiPointer.FreeResources(true);
 
   delete m_debugLayout;
   m_debugLayout = NULL;
@@ -2009,12 +2007,6 @@ void CApplication::RenderNoPresent()
       if (iBlinkRecord > 50)
         iBlinkRecord = 0;
     }
-  }
-
-  // Render the mouse pointer
-  if (g_Mouse.IsActive())
-  {
-    m_guiPointer.Render();
   }
 
   {
@@ -2273,10 +2265,7 @@ bool CApplication::OnAction(CAction &action)
   }
 
   if (action.IsMouse())
-  {
     g_Mouse.SetActive(true);
-    m_guiPointer.SetPosition(action.GetAmount(0), action.GetAmount(1));
-  }
 
   // in normal case
   // just pass the action to the current window and let it handle it
@@ -2622,17 +2611,9 @@ void CApplication::FrameMove()
   ProcessGamepad(frameTime);
   ProcessEventServer(frameTime);
 
-  // Process events and animate controls before rendering
+  // Process events and animate controls
   if (!m_bStop)
-  {
-    unsigned int currentTime = CTimeUtils::GetFrameTime();
-    g_windowManager.Process(currentTime);
-    if (g_Mouse.IsActive())
-    {
-      CDirtyRegionList dirtyregions;
-      m_guiPointer.DoProcess(currentTime, dirtyregions);
-    }
-  }
+    g_windowManager.Process(CTimeUtils::GetFrameTime());
   g_windowManager.FrameMove();
 }
 
@@ -2907,9 +2888,6 @@ bool CApplication::ProcessMouse()
 {
   if (!g_Mouse.IsActive())
     return false;
-
-  // Update the pointer position here so it gets updated even for ACTION_NOOP
-  m_guiPointer.SetPosition((float) g_Mouse.GetX(), (float) g_Mouse.GetY());
 
   // Reset the screensaver and idle timers
   m_idleTimer.StartZero();
