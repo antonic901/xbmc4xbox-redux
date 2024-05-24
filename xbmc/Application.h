@@ -36,8 +36,6 @@ namespace ADDON
   typedef boost::shared_ptr<IAddon> AddonPtr;
 }
 
-#include "windows/GUIWindowPointer.h"   // Mouse pointer
-
 #include "utils/Idle.h"
 #include "utils/DelayController.h"
 #include "cores/IPlayer.h"
@@ -228,8 +226,6 @@ public:
   CNetwork& getNetwork();
 
   bool ExecuteXBMCAction(std::string action, const CGUIListItemPtr &item = CGUIListItemPtr());
-
-  CGUIWindowPointer m_guiPointer;
 
   CIdleThread m_idleThread;
   MEDIA_DETECT::CAutorun m_Autorun;
