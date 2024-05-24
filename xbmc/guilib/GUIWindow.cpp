@@ -594,7 +594,8 @@ bool CGUIWindow::OnMessage(CGUIMessage& message)
       {
         if (message.GetParam1() == GUI_MSG_PAGE_CHANGE ||
             message.GetParam1() == GUI_MSG_REFRESH_THUMBS ||
-            message.GetParam1() == GUI_MSG_REFRESH_LIST)
+            message.GetParam1() == GUI_MSG_REFRESH_LIST ||
+            message.GetParam1() == GUI_MSG_WINDOW_RESIZE)
         { // alter the message accordingly, and send to all controls
           for (iControls it = m_children.begin(); it != m_children.end(); ++it)
           {
