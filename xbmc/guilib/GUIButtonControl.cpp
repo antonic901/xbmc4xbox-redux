@@ -72,10 +72,9 @@ void CGUIButtonControl::Process(unsigned int currentTime, CDirtyRegionList &dirt
 
       alphaChannel += 192;
       alphaChannel = (unsigned int)((float)m_alpha * (float)alphaChannel / 255.0f);
-
-      if (m_imgFocus.SetAlpha((unsigned char)alphaChannel))
-        MarkDirtyRegion();
     }
+    if (m_imgFocus.SetAlpha((unsigned char)alphaChannel))
+      MarkDirtyRegion();
 
     m_imgFocus.SetVisible(true);
     m_imgNoFocus.SetVisible(false);
@@ -247,6 +246,7 @@ void CGUIButtonControl::SetLabel(const string &label)
   if (m_info.GetLabel(GetParentID(), false) != label)
   {
     m_info.SetLabel(label, "", GetParentID());
+    SetInvalid();
   }
 }
 
@@ -255,6 +255,7 @@ void CGUIButtonControl::SetLabel2(const string &label2)
   if (m_info2.GetLabel(GetParentID(), false) != label2)
   {
     m_info2.SetLabel(label2, "", GetParentID());
+    SetInvalid();
   }
 }
 
