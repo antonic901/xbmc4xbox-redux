@@ -93,7 +93,7 @@ public:
 
   void DynamicResourceAlloc(bool bOnOff);
   void PreAllocResources();
-  void AllocResources();
+  bool AllocResources();
   void FreeResources(bool immediately = false);
   void SetInvalid();
 
