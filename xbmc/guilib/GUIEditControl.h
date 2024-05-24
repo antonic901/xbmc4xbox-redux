@@ -126,6 +126,5 @@ protected:
   CStopWatch   m_smsTimer;
 
   static const unsigned int smsDelay;
-  CStdStringW m_lastRenderedText; ///< last rendered text
 };
 #endif

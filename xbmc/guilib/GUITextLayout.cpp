@@ -244,6 +244,9 @@ void CGUITextLayout::UpdateCommon(const CStdStringW &text, float maxWidth, bool 
 
   // and cache the width and height for later reading
   CalcTextExtent();
+
+  m_lastText = text;
+  return true;
 }
 
 // BidiTransform is used to handle RTL text flipping in the string
