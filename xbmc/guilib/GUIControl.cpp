@@ -137,7 +137,7 @@ void CGUIControl::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyreg
 
   changed |=  m_controlIsDirty;
 
-  if (changed)
+  if (changed || dirtyRegion != m_renderRegion)
   {
     dirtyRegion.Union(m_renderRegion);
     dirtyregions.push_back(dirtyRegion);
