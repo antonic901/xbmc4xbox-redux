@@ -65,25 +65,25 @@ public:
 
   void Initialize(void *appData = NULL);
   void Update();
-  void Acquire();
   void SetResolution(int maxX, int maxY, float speedX, float speedY);
   bool IsActive() const;
   bool IsEnabled() const;
   bool HasMoved() const;
   void SetInactive();
-  void SetExclusiveAccess(const CGUIControl *control, int windowID, const CPoint &point);
-  void EndExclusiveAccess(const CGUIControl *control, int windowID);
   int GetExclusiveWindowID() const { return m_exclusiveWindowID; };
   const CGUIControl *GetExclusiveControl() const { return m_exclusiveControl; };
   const CPoint &GetExclusiveOffset() const { return m_exclusiveOffset; };
+  void SetActive(bool active = true);
   void SetState(int state) { m_pointerState = state; };
   void SetEnabled(bool enabled) { m_mouseEnabled = enabled; };
   int GetState() const { return m_pointerState; };
-  CAction GetAction() const;
-  CPoint GetLocation() const;
-  void SetLocation(const CPoint &point, bool activate=false);
-  CPoint GetLastMove() const;
-  char GetWheel() const;
+  uint32_t GetAction() const;
+
+  int GetHold(int ButtonID) const;
+  inline int GetX(void) const { return m_mouseState.x; }
+  inline int GetY(void) const { return m_mouseState.y; }
+  inline int GetDX(void) const { return m_mouseState.dx; }
+  inline int GetDY(void) const { return m_mouseState.dy; }
 
 private:
   // exclusive access to mouse from a control

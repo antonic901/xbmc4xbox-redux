@@ -76,6 +76,9 @@
 #define KEY_ASCII           0xF100 // a printable character in the range of TRUE ASCII (from 0 to 127) // FIXME make it clean and pure unicode! remove the need for KEY_ASCII
 #define KEY_UNICODE         0xF200 // another printable character whose range is not included in this KEY code
 
+// 0xE000 -> 0xE0FF is reserved for mouse actions
+#define KEY_MOUSE           0xE000
+
 #define KEY_INVALID         0xFFFF
 
 // actions that we have defined...
@@ -283,6 +286,11 @@
 
 #define ACTION_SETTINGS_RESET         241
 #define ACTION_SETTINGS_LEVEL_CHANGE  242
+
+// The NOOP action can be specified to disable an input event. This is
+// useful in user keyboard.xml etc to disable actions specified in the
+// system mappings.
+#define ACTION_NOOP                   999
 
 // Window ID defines to make the code a bit more readable
 #define WINDOW_INVALID                     9999

@@ -27,8 +27,8 @@
 #include "DirectInputMouse.h"
 #endif
 
-#include "../Key.h"
-#include "../GraphicContext.h"
+#include "guilib/Key.h"
+#include "utils/TimeUtils.h"
 
 #include "settings/Setting.h"
 
@@ -175,6 +175,19 @@ void CMouse::SetResolution(int maxX, int maxY, float speedX, float speedY)
   m_mouseState.y = m_maxY / 2;
 }
 
+void CMouse::SetActive(bool active /*=true*/)
+{
+  m_lastActiveTime = CTimeUtils::GetFrameTime();
+  m_mouseState.active = active;
+#ifndef _XBOX
+  // we show the OS mouse if:
+  // 1. The mouse is active (it has been moved) AND
+  // 2. The XBMC mouse is disabled in settings AND
+  // 3. XBMC is not in fullscreen.
+  g_Windowing.ShowOSMouse(m_mouseState.active && !IsEnabled() && !g_Windowing.IsFullScreen());
+#endif
+}
+
 // IsActive - returns true if we have been active in the last MOUSE_ACTIVE_LENGTH period
 bool CMouse::IsActive() const
 {
@@ -198,9 +211,10 @@ bool CMouse::HasMoved() const
   return (m_mouseState.dx * m_mouseState.dx + m_mouseState.dy * m_mouseState.dy >= MOUSE_MINIMUM_MOVEMENT * MOUSE_MINIMUM_MOVEMENT);
 }
 
-CAction CMouse::GetAction() const
+uint32_t CMouse::GetAction() const
 {
   int actionID = ACTION_MOUSE_MOVE;
+
   if (bClick[MOUSE_LEFT_BUTTON])
     actionID = ACTION_MOUSE_LEFT_CLICK;
   else if (bClick[MOUSE_RIGHT_BUTTON])
@@ -216,54 +230,14 @@ CAction CMouse::GetAction() const
   else if (m_mouseState.dz < 0)
     actionID = ACTION_MOUSE_WHEEL_DOWN;
 
-  return CAction(actionID, (unsigned int)bHold[MOUSE_LEFT_BUTTON], (float)m_mouseState.x, (float)m_mouseState.y, (float)m_mouseState.dx, (float)m_mouseState.dy);
+  return actionID;
 }
 
-CPoint CMouse::GetLocation() const
+int CMouse::GetHold(int ButtonID) const
 {
-  return CPoint((float)m_mouseState.x, (float)m_mouseState.y);
-}
-
-void CMouse::SetLocation(const CPoint &point, bool activate)
-{
-  m_mouseState.x = (int)point.x;
-  m_mouseState.y = (int)point.y;
-  if (activate)
-  {
-    m_lastActiveTime = XbmcThreads::SystemClockMillis();
-    m_mouseState.active = true;
+  switch (ButtonID)
+  { case MOUSE_LEFT_BUTTON:
+      return bHold[MOUSE_LEFT_BUTTON];
   }
-}
-
-CPoint CMouse::GetLastMove() const
-{
-  return CPoint(m_mouseState.dx, m_mouseState.dy);
-}
-
-char CMouse::GetWheel() const
-{
-  return m_mouseState.dz;
-}
-
-void CMouse::SetExclusiveAccess(const CGUIControl *control, int windowID, const CPoint &point)
-{
-  m_exclusiveControl = control;
-  m_exclusiveWindowID = windowID;
-  // convert posX, posY to screen coords...
-  // NOTE: This relies on the window resolution having been set correctly beforehand in CGUIWindow::OnMouseAction()
-  CPoint mouseCoords(GetLocation());
-  g_graphicsContext.InvertFinalCoords(mouseCoords.x, mouseCoords.y);
-  m_exclusiveOffset = point - mouseCoords;
-}
-
-void CMouse::EndExclusiveAccess(const CGUIControl *control, int windowID)
-{
-  if (m_exclusiveControl == control && m_exclusiveWindowID == windowID)
-    SetExclusiveAccess(NULL, WINDOW_INVALID, CPoint(0, 0));
-}
-
-void CMouse::Acquire()
-{
-  if (m_mouseDevice)
-    m_mouseDevice->Acquire();
+  return false;
 }
