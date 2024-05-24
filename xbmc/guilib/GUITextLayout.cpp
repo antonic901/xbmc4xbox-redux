@@ -210,6 +210,13 @@ bool CGUITextLayout::UpdateW(const CStdStringW &text, float maxWidth /*= 0*/, bo
   if (text == m_lastText && !forceUpdate)
     return false;
 
+  m_lastText = text;
+  UpdateCommon(text, maxWidth, forceLTRReadingOrder);
+  return true;
+}
+
+void CGUITextLayout::UpdateCommon(const CStdStringW &text, float maxWidth, bool forceLTRReadingOrder)
+{
   // parse the text for style information
   vecText parsedText;
   vecColors colors;
@@ -217,8 +224,6 @@ bool CGUITextLayout::UpdateW(const CStdStringW &text, float maxWidth /*= 0*/, bo
 
   // and update
   UpdateStyled(parsedText, colors, maxWidth, forceLTRReadingOrder);
-  m_lastText = text;
-  return true;
 }
 
 void CGUITextLayout::UpdateStyled(const vecText &text, const vecColors &colors, float maxWidth, bool forceLTRReadingOrder)
