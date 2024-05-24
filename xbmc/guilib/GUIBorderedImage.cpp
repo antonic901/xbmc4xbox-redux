@@ -39,7 +39,7 @@ CGUIBorderedImage::~CGUIBorderedImage(void)
 {
 }
 
-void CGUIBorderedImage::Render()
+void CGUIBorderedImage::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   if (!m_borderImage.GetFileName().IsEmpty() && m_texture.ReadyToRender())
   {
@@ -48,8 +48,16 @@ void CGUIBorderedImage::Render()
     m_borderImage.SetPosition(rect.x1 - m_borderSize.x1, rect.y1 - m_borderSize.y1);
     m_borderImage.SetWidth(rect.Width() + m_borderSize.x1 + m_borderSize.x2);
     m_borderImage.SetHeight(rect.Height() + m_borderSize.y1 + m_borderSize.y2);
-    m_borderImage.Render();
+    if (m_borderImage.Process(currentTime))
+      MarkDirtyRegion();
   }
+  CGUIImage::Process(currentTime, dirtyregions);
+}
+
+void CGUIBorderedImage::Render()
+{
+  if (!m_borderImage.GetFileName().IsEmpty() && m_texture.ReadyToRender())
+    m_borderImage.Render();
   CGUIImage::Render();
 }
 
@@ -57,6 +65,11 @@ void CGUIBorderedImage::PreAllocResources()
 {
   m_borderImage.PreAllocResources();
   CGUIImage::PreAllocResources();
+}
+
+CRect CGUIBorderedImage::CalcRenderRegion() const
+{
+  return m_borderImage.GetRenderRect();
 }
 
 void CGUIBorderedImage::AllocResources()
