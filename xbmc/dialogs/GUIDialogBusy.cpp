@@ -94,10 +94,10 @@ CGUIDialogBusy::~CGUIDialogBusy(void)
 void CGUIDialogBusy::Show_Internal()
 {
   m_bCanceled = false;
-  m_bRunning = true;
+  m_active = true;
   m_bModal = true;
   m_bLastVisible = true;
-  m_dialogClosing = false;
+  m_closing = false;
   m_progress = 0;
   g_windowManager.RouteToWindow(this);
 

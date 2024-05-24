@@ -95,6 +95,7 @@ public:
    \sa FrameMove
    */
   virtual void DoRender();
+  virtual void Render();
 
   /*! \brief Main update function, called every frame prior to rendering
    Any window that requires updating on a frame by frame basis (such as to maintain
@@ -102,8 +103,7 @@ public:
    */
   virtual void FrameMove() {};
 
-  // Close should never be called on this base class (only on derivatives) - its here so that window-manager can use a general close
-  virtual void Close(bool forceClose = false);
+  void Close(bool forceClose = false, int nextWindowID = 0, bool enableSound = true);
 
   // OnAction() is called by our window manager.  We should process any messages
   // that should be handled at the window level in the derived classes, and any
@@ -136,6 +136,7 @@ public:
   virtual bool IsModalDialog() const { return false; };
   virtual bool IsMediaWindow() const { return false; };
   virtual bool HasListItems() const { return false; };
+  virtual bool IsSoundEnabled() const { return true; };
   virtual CFileItemPtr GetCurrentListItem(int offset = 0) { return CFileItemPtr(); };
   virtual int GetViewContainerID() const { return 0; };
   virtual int GetViewCount() const { return 0; };
@@ -193,6 +194,7 @@ protected:
   virtual void OnWindowUnload() {}
   virtual void OnWindowLoaded();
   virtual void OnInitWindow();
+  void Close_Internal(bool forceClose = false, int nextWindowID = 0, bool enableSound = true);
   EVENT_RESULT OnMouseAction(const CAction &action);
   virtual bool Animate(unsigned int currentTime);
   virtual bool CheckAnimation(ANIMATION_TYPE animType);
@@ -224,6 +226,7 @@ protected:
   LOAD_TYPE m_loadType;
   bool m_isDialog;      // true if we have a dialog, false otherwise.
   bool m_dynamicResourceAlloc;
+  bool m_closing;
   bool m_active;        // true if window is active or dialog is running
   CGUIInfoColor m_clearBackground; // colour to clear the window
 
