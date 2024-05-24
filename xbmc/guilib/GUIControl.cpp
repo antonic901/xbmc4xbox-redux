@@ -121,7 +121,7 @@ void CGUIControl::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyreg
 {
   CRect dirtyRegion = m_renderRegion;
 
-  bool changed = m_bInvalidated;
+  bool changed = m_bInvalidated && IsVisible();
 
   changed |= Animate(currentTime);
 
