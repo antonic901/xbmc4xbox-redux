@@ -130,7 +130,10 @@ void CGUIControl::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyreg
     g_graphicsContext.SetCameraPosition(m_camera);
 
   if (IsVisible())
+  {
     Process(currentTime, dirtyregions);
+    m_bInvalidated = false;
+  }
 
   changed |=  m_controlIsDirty;
 
@@ -144,7 +147,6 @@ void CGUIControl::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyreg
     g_graphicsContext.RestoreCameraPosition();
   g_graphicsContext.RemoveTransform();
 
-  m_bInvalidated = false;
   m_controlIsDirty = false;
 }
 
