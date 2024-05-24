@@ -43,6 +43,7 @@ struct MouseState
 };
 
 class CGUIControl;
+class CAction;
 
 class IMouseDevice
 {
@@ -78,6 +79,7 @@ public:
   void SetState(int state) { m_pointerState = state; };
   void SetEnabled(bool enabled) { m_mouseEnabled = enabled; };
   int GetState() const { return m_pointerState; };
+  CAction GetAction() const;
   CPoint GetLocation() const;
   void SetLocation(const CPoint &point, bool activate=false);
   CPoint GetLastMove() const;
@@ -108,8 +110,6 @@ private:
   unsigned int m_lastActiveTime;
   unsigned int m_lastClickTime[5];
 
-public:
-  // public access variables to button clicks etc.
   bool bClick[5];
   bool bDoubleClick[5];
   bool bHold[5];
