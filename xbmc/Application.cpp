@@ -2330,7 +2330,10 @@ bool CApplication::OnAction(CAction &action)
   }
 
   if (action.IsMouse())
+  {
+    g_Mouse.SetActive(true);
     m_guiPointer.SetPosition(action.GetAmount(0), action.GetAmount(1));
+  }
 
   // in normal case
   // just pass the action to the current window and let it handle it
