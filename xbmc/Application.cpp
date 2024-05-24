@@ -4341,9 +4341,6 @@ void CApplication::RenderFullScreen()
 
     if (g_windowManager.HasDialogOnScreen())
       g_windowManager.RenderDialogs();
-    // Render the mouse pointer, if visible...
-    if (g_Mouse.IsActive())
-      g_application.m_guiPointer.Render();
   }
 }
 
