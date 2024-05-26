@@ -448,32 +448,32 @@ void CGUIDialogKeyboardGeneric::UpdateButtons()
 {
   if (m_bShift)
   { // show the button depressed
-    CGUIMessage msg(GUI_MSG_SELECTED, GetID(), CTL_BUTTON_SHIFT);
+    CGUIMessage msg(GUI_MSG_SET_SELECTED, GetID(), CTL_BUTTON_SHIFT);
     OnMessage(msg);
   }
   else
   {
-    CGUIMessage msg(GUI_MSG_DESELECTED, GetID(), CTL_BUTTON_SHIFT);
+    CGUIMessage msg(GUI_MSG_SET_DESELECTED, GetID(), CTL_BUTTON_SHIFT);
     OnMessage(msg);
   }
   if (m_keyType == CAPS)
   {
-    CGUIMessage msg(GUI_MSG_SELECTED, GetID(), CTL_BUTTON_CAPS);
+    CGUIMessage msg(GUI_MSG_SET_SELECTED, GetID(), CTL_BUTTON_CAPS);
     OnMessage(msg);
   }
   else
   {
-    CGUIMessage msg(GUI_MSG_DESELECTED, GetID(), CTL_BUTTON_CAPS);
+    CGUIMessage msg(GUI_MSG_SET_DESELECTED, GetID(), CTL_BUTTON_CAPS);
     OnMessage(msg);
   }
   if (m_keyType == SYMBOLS)
   {
-    CGUIMessage msg(GUI_MSG_SELECTED, GetID(), CTL_BUTTON_SYMBOLS);
+    CGUIMessage msg(GUI_MSG_SET_SELECTED, GetID(), CTL_BUTTON_SYMBOLS);
     OnMessage(msg);
   }
   else
   {
-    CGUIMessage msg(GUI_MSG_DESELECTED, GetID(), CTL_BUTTON_SYMBOLS);
+    CGUIMessage msg(GUI_MSG_SET_DESELECTED, GetID(), CTL_BUTTON_SYMBOLS);
     OnMessage(msg);
   }
   char szLabel[2];
