@@ -63,12 +63,12 @@ public:
   void ActivateWindow(int iWindowID, const std::vector<CStdString>& params, bool swappingWindows = false);
   void PreviousWindow();
 
-  void CloseDialogs(bool forceClose = false);
+  void CloseDialogs(bool forceClose = false) const;
 
   // OnAction() runs through our active dialogs and windows and sends the message
   // off to the callbacks (application, python, playlist player) and to the
   // currently focused window(s).  Returns true only if the message is handled.
-  bool OnAction(const CAction &action);
+  bool OnAction(const CAction &action) const;
 
   /*! \brief Process active controls allowing them to animate before rendering.
    */
@@ -82,7 +82,7 @@ public:
    */
   void MarkDirty(const CRect& rect);
 
-  /*! \brief Rendering of the current window
+  /*! \brief Rendering of the current window and any dialogs
    Render is called every frame to draw the current window and any dialogs.
    It should only be called from the application thread.
    Returns true only if it has rendered something.
@@ -138,7 +138,7 @@ public:
   void DumpTextureUse();
 #endif
 private:
-  void RenderPass();
+  void RenderPass() const;
 
   void LoadNotOnDemandWindows();
   void UnloadNotOnDemandWindows();
