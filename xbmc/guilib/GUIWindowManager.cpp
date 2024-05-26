@@ -34,6 +34,7 @@
 #include "GUITexture.h"
 #include "threads/SingleLock.h"
 #include "utils/Variant.h"
+#include "TimeUtils.h"
 
 #ifndef _XBOX
 #include "../Tools/Win32/XBMC_PC.h"
@@ -618,8 +619,10 @@ void CGUIWindowManager::ProcessRenderLoop(bool renderOnly /*= false*/)
     m_iNested++;
     if (!renderOnly)
     {
-	    m_pCallback->Process();
-	    m_pCallback->FrameMove();
+      m_pCallback->Process();
+      m_pCallback->FrameMove();
+    } else {
+      Process(CTimeUtils::GetFrameTime());
     }
     m_pCallback->Render();
     m_iNested--;
