@@ -535,16 +535,20 @@ void CGUIWindowManager::RenderPass()
   }
 }
 
-void CGUIWindowManager::Render()
+bool CGUIWindowManager::Render()
 {
   assert(g_application.IsCurrentThread());
   CSingleLock lock(g_graphicsContext);
 
   CDirtyRegionList dirtyRegions = m_tracker.GetDirtyRegions();
 
+  bool hasRendered = false;
   // If we visualize the regions we will always render the entire viewport
   if (g_advancedSettings.m_guiVisualizeDirtyRegions || g_advancedSettings.m_guiAlgorithmDirtyRegions == DIRTYREGION_SOLVER_FILL_VIEWPORT_ALWAYS)
+  {
     RenderPass();
+    hasRendered = true;
+  }
   else
   {
     for (CDirtyRegionList::const_iterator i = dirtyRegions.begin(); i != dirtyRegions.end(); i++)
@@ -554,6 +558,7 @@ void CGUIWindowManager::Render()
 
       g_graphicsContext.SetScissors(*i);
       RenderPass();
+      hasRendered = true;
     }
     g_graphicsContext.ResetScissors();
   }
@@ -569,6 +574,8 @@ void CGUIWindowManager::Render()
   }
 
   m_tracker.CleanMarkedRegions();
+
+  return hasRendered;
 }
 
 void CGUIWindowManager::FrameMove()
