@@ -207,7 +207,7 @@ INT CXBApplicationEx::Run()
     try
     {
 #endif
-      FrameMove();
+      FrameMove(true);
       //reset exception count
       frameMoveExceptionCount = 0;
 

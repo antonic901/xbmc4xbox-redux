@@ -105,7 +105,7 @@ void CGUIDialogProgress::ProgressKeys()
 {
   if (m_active)
   {
-    g_application.FrameMove();
+    g_application.FrameMove(true);
   }
 }
 

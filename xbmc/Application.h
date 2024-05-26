@@ -112,7 +112,7 @@ public:
   CApplication(void);
   virtual ~CApplication(void);
   virtual HRESULT Initialize();
-  virtual void FrameMove();
+  virtual void FrameMove(bool processEvents);
   virtual void Render();
 #ifndef HAS_XBOX_D3D
   virtual void RenderNoPresent();

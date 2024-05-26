@@ -2577,38 +2577,40 @@ void CApplication::UpdateLCD()
 #endif
 }
 
-void CApplication::FrameMove()
+void CApplication::FrameMove(bool processEvents)
 {
-  // currently we calculate the repeat time (ie time from last similar keypress) just global as fps
-  float frameTime = m_frameTime.GetElapsedSeconds();
-  m_frameTime.StartZero();
-  // never set a frametime less than 2 fps to avoid problems when debuggin and on breaks
-  if( frameTime > 0.5 ) frameTime = 0.5;
-
-  g_graphicsContext.Lock();
-  // check if there are notifications to display
-  CGUIDialogKaiToast *toast = (CGUIDialogKaiToast *)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
-  if (toast && toast->DoWork())
+  if (processEvents)
   {
-    if (!toast->IsDialogRunning())
+    // currently we calculate the repeat time (ie time from last similar keypress) just global as fps
+    float frameTime = m_frameTime.GetElapsedSeconds();
+    m_frameTime.StartZero();
+    // never set a frametime less than 2 fps to avoid problems when debuggin and on breaks
+    if( frameTime > 0.5 ) frameTime = 0.5;
+
+    g_graphicsContext.Lock();
+    // check if there are notifications to display
+    CGUIDialogKaiToast *toast = (CGUIDialogKaiToast *)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
+    if (toast && toast->DoWork())
     {
-      toast->Show();
+      if (!toast->IsDialogRunning())
+      {
+        toast->Show();
+      }
     }
+    g_graphicsContext.Unlock();
+
+    UpdateLCD();
+
+    // read raw input from controller, remote control, mouse and keyboard
+    ReadInput();
+    // process input actions
+    ProcessMouse();
+    ProcessHTTPApiButtons();
+    ProcessKeyboard();
+    ProcessRemote(frameTime);
+    ProcessGamepad(frameTime);
+    ProcessEventServer(frameTime);
   }
-  g_graphicsContext.Unlock();
-
-  UpdateLCD();
-
-  // read raw input from controller, remote control, mouse and keyboard
-  ReadInput();
-  // process input actions
-  ProcessMouse();
-  ProcessHTTPApiButtons();
-  ProcessKeyboard();
-  ProcessRemote(frameTime);
-  ProcessGamepad(frameTime);
-  ProcessEventServer(frameTime);
-
   // Process events and animate controls
   if (!m_bStop)
     g_windowManager.Process(CTimeUtils::GetFrameTime());
