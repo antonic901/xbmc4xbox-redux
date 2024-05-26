@@ -86,7 +86,7 @@ public:
   void SetShowRange(bool bOnoff) ;
   void SetShowOnePage(bool showOnePage) { m_showOnePage = showOnePage; };
   void Clear();
-  virtual CStdString GetDescription() const;
+  virtual std::string GetDescription() const;
   bool IsFocusedOnUp() const;
 
   virtual bool IsVisible() const;

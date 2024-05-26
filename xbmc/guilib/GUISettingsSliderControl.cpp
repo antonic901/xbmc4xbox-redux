@@ -119,7 +119,7 @@ void CGUISettingsSliderControl::SetEnabled(bool bEnable)
   m_buttonControl.SetEnabled(bEnable);
 }
 
-CStdString CGUISettingsSliderControl::GetDescription() const
+std::string CGUISettingsSliderControl::GetDescription() const
 {
   return m_buttonControl.GetDescription() + " " + CGUISliderControl::GetDescription();
 }
