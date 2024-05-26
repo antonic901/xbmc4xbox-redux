@@ -27,63 +27,6 @@
 #include "utils/Variant.h"
 #include "video/VideoDatabase.h"
 
-std::string DatabaseUtils::MediaTypeToString(MediaType mediaType)
-{
-  switch (mediaType)
-  {
-  case MediaTypeMusic:
-    return "music";
-  case MediaTypeArtist:
-    return "artist";
-  case MediaTypeAlbum:
-    return "album";
-  case MediaTypeSong:
-    return "song";
-  case MediaTypeVideo:
-    return "video";
-  case MediaTypeVideoCollection:
-    return "set";
-  case MediaTypeMusicVideo:
-    return "musicvideo";
-  case MediaTypeMovie:
-    return "movie";
-  case MediaTypeTvShow:
-    return "tvshow";
-  case MediaTypeEpisode:
-    return "episode";
-  default:
-    break;
-  }
-
-  return "";
-}
-
-MediaType DatabaseUtils::MediaTypeFromString(const std::string &strMediaType)
-{
-  if (strMediaType.compare("music") == 0)
-    return MediaTypeMusic;
-  else if (strMediaType.compare("artist") == 0 || strMediaType.compare("artists") == 0)
-    return MediaTypeArtist;
-  else if (strMediaType.compare("album") == 0 || strMediaType.compare("albums") == 0)
-    return MediaTypeAlbum;
-  else if (strMediaType.compare("song") == 0 || strMediaType.compare("songs") == 0)
-    return MediaTypeSong;
-  else if (strMediaType.compare("video") == 0 || strMediaType.compare("videos") == 0)
-    return MediaTypeVideo;
-  else if (strMediaType.compare("set") == 0 || strMediaType.compare("sets") == 0)
-    return MediaTypeVideoCollection;
-  else if (strMediaType.compare("musicvideo") == 0 || strMediaType.compare("musicvideos") == 0)
-    return MediaTypeMusicVideo;
-  else if (strMediaType.compare("movie") == 0 || strMediaType.compare("movies") == 0)
-    return MediaTypeMovie;
-  else if (strMediaType.compare("tvshow") == 0 || strMediaType.compare("tvshows") == 0)
-    return MediaTypeTvShow;
-  else if (strMediaType.compare("episode") == 0 || strMediaType.compare("episodes") == 0)
-    return MediaTypeEpisode;
-
-  return MediaTypeNone;
-}
-
 MediaType DatabaseUtils::MediaTypeFromVideoContentType(int videoContentType)
 {
   VIDEODB_CONTENT_TYPE type = (VIDEODB_CONTENT_TYPE)videoContentType;
@@ -111,7 +54,7 @@ MediaType DatabaseUtils::MediaTypeFromVideoContentType(int videoContentType)
   return MediaTypeNone;
 }
 
-std::string DatabaseUtils::GetField(Field field, MediaType mediaType, DatabaseQueryPart queryPart)
+std::string DatabaseUtils::GetField(Field field, const MediaType &mediaType, DatabaseQueryPart queryPart)
 {
   if (field == FieldNone || mediaType == MediaTypeNone)
     return "";
@@ -300,7 +243,7 @@ std::string DatabaseUtils::GetField(Field field, MediaType mediaType, DatabaseQu
   return "";
 }
 
-int DatabaseUtils::GetField(Field field, MediaType mediaType)
+int DatabaseUtils::GetField(Field field, const MediaType &mediaType)
 {
   if (field == FieldNone || mediaType == MediaTypeNone)
     return -1;
@@ -308,7 +251,7 @@ int DatabaseUtils::GetField(Field field, MediaType mediaType)
   return GetField(field, mediaType, false);
 }
 
-int DatabaseUtils::GetFieldIndex(Field field, MediaType mediaType)
+int DatabaseUtils::GetFieldIndex(Field field, const MediaType &mediaType)
 {
   if (field == FieldNone || mediaType == MediaTypeNone)
     return -1;
@@ -316,7 +259,7 @@ int DatabaseUtils::GetFieldIndex(Field field, MediaType mediaType)
   return GetField(field, mediaType, true);
 }
 
-bool DatabaseUtils::GetSelectFields(const Fields &fields, MediaType mediaType, FieldList &selectFields)
+bool DatabaseUtils::GetSelectFields(const Fields &fields, const MediaType &mediaType, FieldList &selectFields)
 {
   if (mediaType == MediaTypeNone || fields.empty())
     return false;
@@ -404,7 +347,7 @@ bool DatabaseUtils::GetFieldValue(const dbiplus::field_value &fieldValue, CVaria
   return false;
 }
 
-bool DatabaseUtils::GetDatabaseResults(MediaType mediaType, const FieldList &fields, const std::auto_ptr<dbiplus::Dataset> &dataset, DatabaseResults &results)
+bool DatabaseUtils::GetDatabaseResults(const MediaType &mediaType, const FieldList &fields, const std::auto_ptr<dbiplus::Dataset> &dataset, DatabaseResults &results)
 {
   if (dataset->num_rows() == 0)
     return true;
@@ -466,46 +409,29 @@ bool DatabaseUtils::GetDatabaseResults(MediaType mediaType, const FieldList &fie
     }
 
     result[FieldMediaType] = mediaType;
-    switch (mediaType)
-    {
-    case MediaTypeMovie:
-    case MediaTypeVideoCollection:
-    case MediaTypeTvShow:
-    case MediaTypeMusicVideo:
+    if (mediaType == MediaTypeMovie || mediaType == MediaTypeVideoCollection ||
+        mediaType == MediaTypeTvShow || mediaType == MediaTypeMusicVideo)
       result[FieldLabel] = result.find(FieldTitle)->second.asString();
-      break;
-      
-    case MediaTypeEpisode:
+    else if (mediaType == MediaTypeEpisode)
     {
       std::ostringstream label;
       label << (int)(result.find(FieldSeason)->second.asInteger() * 100 + result.find(FieldEpisodeNumber)->second.asInteger());
       label << ". ";
       label << result.find(FieldTitle)->second.asString();
       result[FieldLabel] = label.str();
-      break;
     }
-
-    case MediaTypeAlbum:
+    else if (mediaType == MediaTypeAlbum)
       result[FieldLabel] = result.find(FieldAlbum)->second.asString();
-      break;
-
-    case MediaTypeSong:
+    else if (mediaType == MediaTypeSong)
     {
       std::ostringstream label;
       label << (int)result.find(FieldTrackNumber)->second.asInteger();
       label << ". ";
       label << result.find(FieldTitle)->second.asString();
       result[FieldLabel] = label.str();
-      break;
     }
-
-    case MediaTypeArtist:
+    else if (mediaType == MediaTypeArtist)
       result[FieldLabel] = result.find(FieldArtist)->second.asString();
-      break;
-
-    default:
-      break;
-    }
 
     results.push_back(result);
   }
@@ -534,7 +460,7 @@ std::string DatabaseUtils::BuildLimitClause(int end, int start /* = 0 */)
   return sql.str();
 }
 
-int DatabaseUtils::GetField(Field field, MediaType mediaType, bool asIndex)
+int DatabaseUtils::GetField(Field field, const MediaType &mediaType, bool asIndex)
 {
   if (field == FieldNone || mediaType == MediaTypeNone)
     return -1;

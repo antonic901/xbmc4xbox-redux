@@ -115,7 +115,10 @@ void CAnnouncementManager::Announce(AnnouncementFlag flag, const char *sender, c
     }
     */
 
-    CVideoDatabase::VideoContentTypeToString((VIDEODB_CONTENT_TYPE)item->GetVideoContentType(), type);
+    if (!item->GetVideoInfoTag()->m_type.empty())
+      type = item->GetVideoInfoTag()->m_type;
+    else
+      CVideoDatabase::VideoContentTypeToString((VIDEODB_CONTENT_TYPE)item->GetVideoContentType(), type);
 
     if (id <= 0)
     {
@@ -150,7 +153,7 @@ void CAnnouncementManager::Announce(AnnouncementFlag flag, const char *sender, c
   else if (item->HasMusicInfoTag())
   {
     id = item->GetMusicInfoTag()->GetDatabaseId();
-    type = "song";
+    type = MediaTypeSong;
 
     // TODO: Can be removed once this is properly handled when starting playback of a file
     if (id <= 0 && !item->GetPath().empty() &&

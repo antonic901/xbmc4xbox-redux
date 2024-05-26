@@ -3908,6 +3908,16 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\commons\ilog.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="media"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\media\MediaType.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\media\MediaType.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

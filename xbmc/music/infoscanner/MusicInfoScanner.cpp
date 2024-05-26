@@ -729,7 +729,7 @@ int CMusicInfoScanner::RetrieveMusicInfo(const CStdString& strDirectory, CFileIt
       if (m_musicDatabase.GetArtist(album->artistCredits[0].GetArtistId(), artist))
       {
         artist.strPath = URIUtils::GetParentPath(strDirectory);
-        m_musicDatabase.SetArtForItem(artist.idArtist, "artist", GetArtistArtwork(artist));
+        m_musicDatabase.SetArtForItem(artist.idArtist, MediaTypeArtist, GetArtistArtwork(artist));
       }
     }
 
@@ -957,7 +957,7 @@ loop:
     m_musicDatabase.Open();
     m_musicDatabase.UpdateArtist(artist);
     m_musicDatabase.GetArtistPath(artist.idArtist, artist.strPath);
-    m_musicDatabase.SetArtForItem(artist.idArtist, "artist", GetArtistArtwork(artist));
+    m_musicDatabase.SetArtForItem(artist.idArtist, MediaTypeArtist, GetArtistArtwork(artist));
     m_musicDatabase.Close();
     artistInfo.SetLoaded();
   }
@@ -1166,13 +1166,13 @@ void CMusicInfoScanner::GetAlbumArtwork(long id, const CAlbum &album)
 {
   if (album.thumbURL.m_url.size())
   {
-    if (m_musicDatabase.GetArtForItem(id, "album", "thumb").empty())
+    if (m_musicDatabase.GetArtForItem(id, MediaTypeAlbum, "thumb").empty())
     {
       string thumb = CScraperUrl::GetThumbURL(album.thumbURL.GetFirstThumb());
       if (!thumb.empty())
       {
         CTextureCache::Get().BackgroundCacheImage(thumb);
-        m_musicDatabase.SetArtForItem(id, "album", "thumb", thumb);
+        m_musicDatabase.SetArtForItem(id, MediaTypeAlbum, "thumb", thumb);
       }
     }
   }

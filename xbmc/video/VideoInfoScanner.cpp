@@ -1079,6 +1079,7 @@ namespace VIDEO
 
       lResult = m_database.SetDetailsForMovie(pItem->GetPath(), movieDetails, art);
       movieDetails.m_iDbId = lResult;
+      movieDetails.m_type = MediaTypeMovie;
 
       // setup links to shows if the linked shows are in the db
       for (unsigned int i=0; i < movieDetails.m_showLink.size(); ++i)
@@ -1098,13 +1099,14 @@ namespace VIDEO
         map<int, map<string, string> > seasonArt;
         if (!libraryImport)
         { // get and cache season thumbs
-          GetSeasonThumbs(movieDetails, seasonArt, CVideoThumbLoader::GetArtTypes("season"), useLocal);
+          GetSeasonThumbs(movieDetails, seasonArt, CVideoThumbLoader::GetArtTypes(MediaTypeSeason), useLocal);
           for (map<int, map<string, string> >::iterator i = seasonArt.begin(); i != seasonArt.end(); ++i)
             for (map<string, string>::iterator j = i->second.begin(); j != i->second.end(); ++j)
               CTextureCache::Get().BackgroundCacheImage(j->second);
         }
         lResult = m_database.SetDetailsForTvShow(pItem->GetPath(), movieDetails, art, seasonArt);
         movieDetails.m_iDbId = lResult;
+        movieDetails.m_type = MediaTypeTvShow;
       }
       else
       {
@@ -1114,6 +1116,7 @@ namespace VIDEO
         int idEpisode = m_database.AddEpisode(idShow, pItem->GetPath());
         lResult = m_database.SetDetailsForEpisode(pItem->GetPath(), movieDetails, art, idShow, idEpisode);
         movieDetails.m_iDbId = lResult;
+        movieDetails.m_type = MediaTypeEpisode;
         if (movieDetails.m_fEpBookmark > 0)
         {
           movieDetails.m_strFileNameAndPath = pItem->GetPath();
@@ -1129,6 +1132,7 @@ namespace VIDEO
     {
       lResult = m_database.SetDetailsForMusicVideo(pItem->GetPath(), movieDetails, art);
       movieDetails.m_iDbId = lResult;
+      movieDetails.m_type = MediaTypeMusicVideo;
     }
 
     if (g_advancedSettings.m_bVideoLibraryImportWatchedState || libraryImport)
@@ -1141,10 +1145,6 @@ namespace VIDEO
     m_database.Close();
 
     CFileItemPtr itemCopy = CFileItemPtr(new CFileItem(*pItem));
-    // Hack to make sure CVideoInfoTag::m_strShowTitle is set for tvshows
-    // to make sure CAnnouncementManager provides the correct type for the item
-    if (content == CONTENT_TVSHOWS && !pItem->m_bIsFolder && itemCopy->HasVideoInfoTag())
-      itemCopy->GetVideoInfoTag()->m_strShowTitle = itemCopy->GetVideoInfoTag()->m_strTitle;
     ANNOUNCEMENT::CAnnouncementManager::Announce(ANNOUNCEMENT::VideoLibrary, "xbmc", "OnUpdate", itemCopy);
     return lResult;
   }
@@ -1154,11 +1154,11 @@ namespace VIDEO
     switch (content)
     {
       case CONTENT_MOVIES:
-        return "movie";
+        return MediaTypeMovie;
       case CONTENT_MUSICVIDEOS:
-        return "musicvideo";
+        return MediaTypeMusicVideo;
       case CONTENT_TVSHOWS:
-        return folder ? "tvshow" : "episode";
+        return folder ? MediaTypeTvShow : MediaTypeEpisode;
       default:
         return "";
     }

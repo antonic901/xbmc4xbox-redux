@@ -64,10 +64,8 @@ bool CRecentlyAddedJob::UpdateVideo()
     for (; i < items.Size(); ++i)
     {
       CFileItemPtr item = items.Get(i);
-      CStdString   value;
-      CStdString   strRating;
-      value.Format("%i", i + 1);
-      strRating.Format("%.1f", item->GetVideoInfoTag()->m_fRating);
+      CStdString   value = StringUtils2::Format("%i", i + 1);
+      CStdString   strRating = StringUtils2::Format("%.1f", item->GetVideoInfoTag()->m_fRating);
       
       home->SetProperty("LatestMovie." + value + ".Title"       , item->GetLabel());
       home->SetProperty("LatestMovie." + value + ".Rating"      , strRating);
@@ -86,8 +84,7 @@ bool CRecentlyAddedJob::UpdateVideo()
   } 
   for (; i < NUM_ITEMS; ++i)
   {
-    CStdString value;
-    value.Format("%i", i + 1);
+    CStdString value = StringUtils2::Format("%i", i + 1);
     home->SetProperty("LatestMovie." + value + ".Title"       , "");
     home->SetProperty("LatestMovie." + value + ".Thumb"       , "");
     home->SetProperty("LatestMovie." + value + ".Rating"      , "");
@@ -109,13 +106,9 @@ bool CRecentlyAddedJob::UpdateVideo()
       CFileItemPtr item          = TVShowItems.Get(i);
       int          EpisodeSeason = item->GetVideoInfoTag()->m_iSeason;
       int          EpisodeNumber = item->GetVideoInfoTag()->m_iEpisode;
-      CStdString   EpisodeNo;
-      CStdString   value;
-      CStdString   strRating;
-      CStdString   strSeason;
-      EpisodeNo.Format("s%02de%02d", EpisodeSeason, EpisodeNumber);
-      value.Format("%i", i + 1);
-      strRating.Format("%.1f", item->GetVideoInfoTag()->m_fRating);
+      CStdString   EpisodeNo = StringUtils2::Format("s%02de%02d", EpisodeSeason, EpisodeNumber);
+      CStdString   value = StringUtils2::Format("%i", i + 1);
+      CStdString   strRating = StringUtils2::Format("%.1f", item->GetVideoInfoTag()->m_fRating);
 
       CFileItem show(item->GetVideoInfoTag()->m_strShowPath, true);
 
@@ -131,9 +124,9 @@ bool CRecentlyAddedJob::UpdateVideo()
       if (!item->HasArt("thumb"))
         loader.LoadItem(item.get());
 
-      int seasonID = videodatabase.GetSeasonId(item->GetVideoInfoTag()->m_iIdShow, EpisodeSeason);
-      std::string seasonThumb = videodatabase.GetArtForItem(seasonID, "season", "thumb");
-      std::string showThumb = videodatabase.GetArtForItem(item->GetVideoInfoTag()->m_iIdShow, "tvshow", "thumb");
+      std::string seasonThumb;
+      if (item->GetVideoInfoTag()->m_iIdSeason > 0)
+        seasonThumb = videodatabase.GetArtForItem(item->GetVideoInfoTag()->m_iIdSeason, MediaTypeSeason, "thumb");
 
       home->SetProperty("LatestEpisode." + value + ".Thumb"         , item->GetArt("thumb"));
       home->SetProperty("LatestEpisode." + value + ".ShowThumb"     , item->GetArt("tvshow.thumb"));
@@ -143,8 +136,7 @@ bool CRecentlyAddedJob::UpdateVideo()
   } 
   for (; i < NUM_ITEMS; ++i)
   {
-    CStdString value;
-    value.Format("%i", i + 1);
+    CStdString value = StringUtils2::Format("%i", i + 1);
     home->SetProperty("LatestEpisode." + value + ".ShowTitle"     , "");
     home->SetProperty("LatestEpisode." + value + ".EpisodeTitle"  , "");
     home->SetProperty("LatestEpisode." + value + ".Rating"        , "");      
@@ -167,8 +159,7 @@ bool CRecentlyAddedJob::UpdateVideo()
     for (; i < MusicVideoItems.Size(); ++i)
     {
       CFileItemPtr item = MusicVideoItems.Get(i);
-      CStdString   value;
-      value.Format("%i", i + 1);
+      CStdString   value = StringUtils2::Format("%i", i + 1);
 
       home->SetProperty("LatestMusicVideo." + value + ".Title"       , item->GetLabel());
       home->SetProperty("LatestMusicVideo." + value + ".Year"        , item->GetVideoInfoTag()->m_iYear);
@@ -186,8 +177,7 @@ bool CRecentlyAddedJob::UpdateVideo()
   }
   for (; i < NUM_ITEMS; ++i)
   {
-    CStdString value;
-    value.Format("%i", i + 1);
+    CStdString value = StringUtils2::Format("%i", i + 1);
     home->SetProperty("LatestMusicVideo." + value + ".Title"       , "");
     home->SetProperty("LatestMusicVideo." + value + ".Thumb"       , "");
     home->SetProperty("LatestMusicVideo." + value + ".Year"        , "");
@@ -227,8 +217,7 @@ bool CRecentlyAddedJob::UpdateMusic()
     for (; i < musicItems.Size(); ++i)
     {
       CFileItemPtr item = musicItems.Get(i);
-      CStdString   value;
-      value.Format("%i", i + 1);
+      CStdString   value = StringUtils2::Format("%i", i + 1);
       
       CStdString   strThumb;
       CStdString   strRating;
@@ -248,7 +237,7 @@ bool CRecentlyAddedJob::UpdateMusic()
         }
       }
       
-      strRating.Format("%c", item->GetMusicInfoTag()->GetRating());
+      strRating = StringUtils2::Format("%c", item->GetMusicInfoTag()->GetRating());
       
       home->SetProperty("LatestSong." + value + ".Title"   , item->GetMusicInfoTag()->GetTitle());
       home->SetProperty("LatestSong." + value + ".Year"    , item->GetMusicInfoTag()->GetYear());
@@ -262,8 +251,7 @@ bool CRecentlyAddedJob::UpdateMusic()
   }
   for (; i < NUM_ITEMS; ++i)
   {
-    CStdString value;
-    value.Format("%i", i + 1);
+    CStdString value = StringUtils2::Format("%i", i + 1);
     home->SetProperty("LatestSong." + value + ".Title"   , "");
     home->SetProperty("LatestSong." + value + ".Year"    , "");
     home->SetProperty("LatestSong." + value + ".Artist"  , "");      
@@ -281,20 +269,12 @@ bool CRecentlyAddedJob::UpdateMusic()
   { 
     for (; i < (int)albums.size(); ++i)
     {
-      CStdString value;
-      CStdString strPath;
-      CStdString strThumb;
-      CStdString strFanart;
-      CStdString strDBpath;
-      CStdString strSQLAlbum;
-      CAlbum&    album=albums[i];     
-
-      value.Format("%i", i + 1);
-      strThumb = musicdatabase.GetArtForItem(album.idAlbum, "album", "thumb");
-      strFanart = musicdatabase.GetArtistArtForItem(album.idAlbum, "album", "fanart");
-      strDBpath.Format("musicdb://albums/%i/", album.idAlbum);
-      strSQLAlbum.Format("idAlbum=%i", album.idAlbum);
-      
+      CAlbum&    album=albums[i];
+      CStdString value = StringUtils2::Format("%i", i + 1);
+      CStdString strThumb = musicdatabase.GetArtForItem(album.idAlbum, MediaTypeAlbum, "thumb");
+      CStdString strFanart = musicdatabase.GetArtistArtForItem(album.idAlbum, MediaTypeAlbum, "fanart");
+      CStdString strDBpath = StringUtils2::Format("musicdb://albums/%i/", album.idAlbum);
+      CStdString strSQLAlbum = StringUtils2::Format("idAlbum=%i", album.idAlbum);
       CStdString strArtist = musicdatabase.GetSingleValue("albumview", "strArtists", strSQLAlbum);
       
       home->SetProperty("LatestAlbum." + value + ".Title"   , album.strAlbum);
@@ -308,8 +288,7 @@ bool CRecentlyAddedJob::UpdateMusic()
   }
   for (; i < NUM_ITEMS; ++i)
   {
-    CStdString value;
-    value.Format("%i", i + 1);
+    CStdString value = StringUtils2::Format("%i", i + 1);
     home->SetProperty("LatestAlbum." + value + ".Title"   , "");
     home->SetProperty("LatestAlbum." + value + ".Year"    , "");
     home->SetProperty("LatestAlbum." + value + ".Artist"  , "");      
