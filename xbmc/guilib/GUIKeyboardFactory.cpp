@@ -26,6 +26,7 @@
 #include "GUIUserMessages.h"
 #include "GUIWindowManager.h"
 #include "settings/Settings.h"
+#include "ApplicationMessenger.h"
 #include "utils/md5.h"
 
 
@@ -47,22 +48,19 @@ void CGUIKeyboardFactory::keyTypedCB(CGUIKeyboard *ref, const std::string &typed
 {
   if(ref)
   {
-    // send our search message (only the active window needs it)
+    // send our search message in safe way (only the active window needs it)
     CGUIMessage message(GUI_MSG_NOTIFY_ALL, ref->GetWindowId(), 0);
-    CGUIWindow *window = NULL;
     switch(m_filtering)
     {
       case FILTERING_SEARCH:
-        window = g_windowManager.GetWindow(g_windowManager.GetActiveWindow());
         message.SetParam1(GUI_MSG_SEARCH_UPDATE);
         message.SetStringParam(typedString);
-        if (window)
-          window->OnMessage(message);
+        CApplicationMessenger::Get().SendGUIMessage(message, g_windowManager.GetActiveWindow());
         break;
       case FILTERING_CURRENT:
         message.SetParam1(GUI_MSG_FILTER_ITEMS);
         message.SetStringParam(typedString);
-        g_windowManager.SendMessage(message);
+        CApplicationMessenger::Get().SendGUIMessage(message);
         break;
     }
   }
