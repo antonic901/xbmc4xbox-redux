@@ -728,7 +728,7 @@ int CGUIWindowManager::GetTopMostModalDialogID() const
   for (crDialog it = m_activeDialogs.rbegin(); it != m_activeDialogs.rend(); ++it)
   {
     CGUIWindow *dialog = *it;
-    if (dialog->IsModalDialog())
+    if (dialog->IsModalDialog() && !dialog->IsAnimating(ANIM_TYPE_WINDOW_CLOSE))
     { // have a modal window
       return dialog->GetID();
     }
