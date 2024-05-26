@@ -174,12 +174,12 @@ void CGUIWindowPictures::UpdateButtons()
   // Update the shuffle button
   if (CSettings::Get().GetBool("slideshow.shuffle"))
   {
-    CGUIMessage msg2(GUI_MSG_SELECTED, GetID(), CONTROL_SHUFFLE);
+    CGUIMessage msg2(GUI_MSG_SET_SELECTED, GetID(), CONTROL_SHUFFLE);
     g_windowManager.SendMessage(msg2);
   }
   else
   {
-    CGUIMessage msg2(GUI_MSG_DESELECTED, GetID(), CONTROL_SHUFFLE);
+    CGUIMessage msg2(GUI_MSG_SET_DESELECTED, GetID(), CONTROL_SHUFFLE);
     g_windowManager.SendMessage(msg2);
   }
 

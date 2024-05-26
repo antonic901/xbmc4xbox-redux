@@ -204,12 +204,12 @@ bool CGUIButtonControl::OnMessage(CGUIMessage& message)
       SetLabel2(message.GetLabel());
       return true;
     }
-    if (message.GetMessage() == GUI_MSG_SELECTED)
+    if (message.GetMessage() == GUI_MSG_SET_SELECTED)
     {
       m_bSelected = true;
       return true;
     }
-    if (message.GetMessage() == GUI_MSG_DESELECTED)
+    if (message.GetMessage() == GUI_MSG_SET_DESELECTED)
     {
       m_bSelected = false;
       return true;

@@ -526,12 +526,12 @@ void CGUIMediaWindow::UpdateButtons()
       CONTROL_ENABLE(CONTROL_BTNSORTASC);
       if (m_guiState->GetDisplaySortOrder() == SortOrderAscending)
       {
-        CGUIMessage msg(GUI_MSG_DESELECTED, GetID(), CONTROL_BTNSORTASC);
+        CGUIMessage msg(GUI_MSG_SET_DESELECTED, GetID(), CONTROL_BTNSORTASC);
         g_windowManager.SendMessage(msg);
       }
       else
       {
-        CGUIMessage msg(GUI_MSG_SELECTED, GetID(), CONTROL_BTNSORTASC);
+        CGUIMessage msg(GUI_MSG_SET_SELECTED, GetID(), CONTROL_BTNSORTASC);
         g_windowManager.SendMessage(msg);
       }
     }
