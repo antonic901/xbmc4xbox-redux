@@ -77,6 +77,10 @@ public:
    */
   void MarkDirty();
 
+  /*! \brief Mark a region as dirty, forcing a redraw at the next Render()
+   */
+  void MarkDirty(const CRect& rect);
+
   /*! \brief Rendering of the current window
    Render is called every frame to draw the current window and any dialogs.
    It should only be called from the application thread.
