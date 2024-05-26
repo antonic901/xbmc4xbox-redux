@@ -126,7 +126,7 @@ const CStdString CGUISpinControlEx::GetCurrentLabel() const
   return CGUISpinControl::GetLabel();
 }
 
-CStdString CGUISpinControlEx::GetDescription() const
+std::string CGUISpinControlEx::GetDescription() const
 {
   CStdString strLabel;
   strLabel.Format("%s (%s)", m_buttonControl.GetDescription(), GetLabel());

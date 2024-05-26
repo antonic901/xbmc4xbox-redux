@@ -67,7 +67,7 @@ public:
   virtual CStdString GetLabel() const { return GetDescription(); };
   virtual CStdString GetLabel2() const;
   void SetSelected(bool bSelected);
-  virtual CStdString GetDescription() const;
+  virtual std::string GetDescription() const;
   virtual float GetWidth() const;
   virtual void SetMinWidth(float minWidth);
   void SetAlpha(unsigned char alpha);

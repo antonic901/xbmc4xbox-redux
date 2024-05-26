@@ -720,15 +720,15 @@ bool CGUIBaseContainer::OnClick(int actionID)
   return SendWindowMessage(msg);
 }
 
-CStdString CGUIBaseContainer::GetDescription() const
+std::string CGUIBaseContainer::GetDescription() const
 {
-  CStdString strLabel;
+  std::string strLabel;
   int item = GetSelectedItem();
   if (item >= 0 && item < (int)m_items.size())
   {
     CGUIListItemPtr pItem = m_items[item];
     if (pItem->m_bIsFolder)
-      strLabel.Format("[%s]", pItem->GetLabel().c_str());
+      strLabel = StringUtils::Format("[%s]", pItem->GetLabel().c_str());
     else
       strLabel = pItem->GetLabel();
   }
@@ -1123,35 +1123,35 @@ bool CGUIBaseContainer::HasPreviousPage() const
   return false;
 }
 
-CStdString CGUIBaseContainer::GetLabel(int info) const
+std::string CGUIBaseContainer::GetLabel(int info) const
 {
-  CStdString label;
+  std::string label;
   switch (info)
   {
   case CONTAINER_NUM_PAGES:
-    label.Format("%u", (GetRows() + m_itemsPerPage - 1) / m_itemsPerPage);
+    label = StringUtils::Format("%u", (GetRows() + m_itemsPerPage - 1) / m_itemsPerPage);
     break;
   case CONTAINER_CURRENT_PAGE:
-    label.Format("%u", GetCurrentPage());
+    label = StringUtils::Format("%u", GetCurrentPage());
     break;
   case CONTAINER_POSITION:
-    label.Format("%i", GetCursor());
+    label = StringUtils::Format("%i", GetCursor());
     break;
   case CONTAINER_CURRENT_ITEM:
     {
       if (m_items.size() && m_items[0]->IsFileItem() && (boost::static_pointer_cast<CFileItem>(m_items[0]))->IsParentFolder())
-        label.Format("%i", GetSelectedItem());
+        label = StringUtils::Format("%i", GetSelectedItem());
       else
-        label.Format("%i", GetSelectedItem() + 1);
+        label = StringUtils::Format("%i", GetSelectedItem() + 1);
     }
     break;
   case CONTAINER_NUM_ITEMS:
     {
       unsigned int numItems = GetNumItems();
       if (numItems && m_items[0]->IsFileItem() && (boost::static_pointer_cast<CFileItem>(m_items[0]))->IsParentFolder())
-        label.Format("%u", numItems-1);
+        label = StringUtils::Format("%u", numItems-1);
       else
-        label.Format("%u", numItems);
+        label = StringUtils::Format("%u", numItems);
     }
     break;
   default:

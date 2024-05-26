@@ -42,13 +42,13 @@ public:
   virtual bool IsContainer() const { return true; };
 
   VIEW_TYPE GetType() const { return m_type; };
-  const CStdString &GetLabel() const { return m_label; };
-  void SetType(VIEW_TYPE type, const CStdString &label)
+  const std::string &GetLabel() const { return m_label; };
+  void SetType(VIEW_TYPE type, const std::string &label)
   {
     m_type = type;
     m_label = label;
   }
 
   virtual CGUIListItemPtr GetListItem(int offset, unsigned int flag = 0) const = 0;
-  virtual CStdString GetLabel(int info) const                                  = 0;
+  virtual std::string GetLabel(int info) const                                 = 0;
 };
