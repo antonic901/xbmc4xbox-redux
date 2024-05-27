@@ -25,11 +25,11 @@
 #include "utils/JobManager.h"
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
-#include "Key.h"
+#include "guilib/Key.h"
 #include "TextureCache.h"
+#include "utils/Random.h"
 #include "utils/StringUtils.h"
 
-using namespace std;
 using namespace XFILE;
 
 CGUIMultiImage::CGUIMultiImage(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& texture, unsigned int timePerImage, unsigned int fadeTime, bool randomized, bool loop, unsigned int timeToPauseAtEnd)
@@ -49,9 +49,8 @@ CGUIMultiImage::CGUIMultiImage(int parentID, int controlID, float posX, float po
 }
 
 CGUIMultiImage::CGUIMultiImage(const CGUIMultiImage &from)
-: CGUIControl(from), m_image(from.m_image)
+  : CGUIControl(from), m_texturePath(from.m_texturePath), m_imageTimer(), m_files(), m_image(from.m_image)
 {
-  m_texturePath = from.m_texturePath;
   m_timePerImage = from.m_timePerImage;
   m_timeToPauseAtEnd = from.m_timeToPauseAtEnd;
   m_randomized = from.m_randomized;
@@ -62,6 +61,7 @@ CGUIMultiImage::CGUIMultiImage(const CGUIMultiImage &from)
     m_currentPath = m_texturePath.GetLabel(WINDOW_INVALID);
   m_currentImage = 0;
   ControlType = GUICONTROL_MULTI_IMAGE;
+  m_jobID = 0;
 }
 
 CGUIMultiImage::~CGUIMultiImage(void)
@@ -98,12 +98,12 @@ void CGUIMultiImage::UpdateInfo(const CGUIListItem *item)
   // alloc as this can free our resources
   if (!m_texturePath.IsConstant())
   {
-    CStdString texturePath;
+    std::string texturePath;
     if (item)
       texturePath = m_texturePath.GetItemLabel(item, true);
     else
       texturePath = m_texturePath.GetLabel(m_parentID);
-    if (texturePath != m_currentPath && !texturePath.IsEmpty())
+    if (texturePath != m_currentPath)
     {
       // a new path - set our current path and tell ourselves to load our directory
       m_currentPath = texturePath;
@@ -138,6 +138,8 @@ void CGUIMultiImage::Process(unsigned int currentTime, CDirtyRegionList &dirtyre
       }
     }
   }
+  else
+    m_image.SetFileName("");
 
   if (g_graphicsContext.SetClipRegion(m_posX, m_posY, m_width, m_height))
   {
@@ -154,14 +156,7 @@ void CGUIMultiImage::Process(unsigned int currentTime, CDirtyRegionList &dirtyre
 
 void CGUIMultiImage::Render()
 {
-  if (!m_files.empty())
-  {
-    // Set a viewport so that we don't render outside the defined area
-    g_graphicsContext.SetClipRegion(m_posX, m_posY, m_width, m_height);
-    m_image.Render(); // DirtyRegions NOTICE: https://github.com/xbmc/xbmc/commit/a1c6c8afb8a706ad573f49b8093141f9def1cd04#diff-d2fe9bdf07198ca350afd2f28f4b9f51ec90372731c2a47b6bf91899fe09158aL148
-    g_graphicsContext.RestoreClipRegion();
-  }
-
+  m_image.Render();
   CGUIControl::Render();
 }
 
@@ -194,6 +189,8 @@ void CGUIMultiImage::FreeResources(bool immediately)
 {
   m_image.FreeResources(immediately);
   m_currentImage = 0;
+  CancelLoading();
+  m_files.clear();
   CGUIControl::FreeResources(immediately);
 }
 
@@ -225,7 +222,7 @@ void CGUIMultiImage::LoadDirectory()
   m_files.clear();
 
   // don't load any images if our path is empty
-  if (m_currentPath.IsEmpty()) return;
+  if (m_currentPath.empty()) return;
 
   /* Check the fast cases:
    1. Picture extension
@@ -252,7 +249,7 @@ void CGUIMultiImage::OnDirectoryLoaded()
 {
   // Randomize or sort our images if necessary
   if (m_randomized)
-    random_shuffle(m_files.begin(), m_files.end());
+    KODI::UTILS::RandomShuffle(m_files.begin(), m_files.end());
   else
     sort(m_files.begin(), m_files.end());
 
@@ -293,7 +290,7 @@ std::string CGUIMultiImage::GetDescription() const
   return m_image.GetDescription();
 }
 
-CGUIMultiImage::CMultiImageJob::CMultiImageJob(const CStdString &path)
+CGUIMultiImage::CMultiImageJob::CMultiImageJob(const std::string &path)
   : m_path(path)
 {
 }
@@ -311,8 +308,8 @@ bool CGUIMultiImage::CMultiImageJob::DoWork()
   {
     // Load in images from the directory specified
     // m_path is relative (as are all skin paths)
-    CStdString realPath = g_TextureManager.GetTexturePath(m_path, true);
-    if (realPath.IsEmpty())
+    std::string realPath = g_TextureManager.GetTexturePath(m_path, true);
+    if (realPath.empty())
       return true;
 
     URIUtils::AddSlashAtEnd(realPath);

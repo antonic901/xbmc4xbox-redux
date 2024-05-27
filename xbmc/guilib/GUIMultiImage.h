@@ -28,6 +28,8 @@
  *
  */
 
+#include <vector>
+
 #include "GUIImage.h"
 #include "utils/Stopwatch.h"
 #include "utils/Job.h"
@@ -73,16 +75,16 @@ protected:
   class CMultiImageJob : public CJob
   {
   public:
-    CMultiImageJob(const CStdString &path);
+    CMultiImageJob(const std::string &path);
     virtual bool DoWork();
     virtual const char *GetType() const { return "multiimage"; };
 
-    std::vector<CStdString> m_files;
-    CStdString              m_path;
+    std::vector<std::string> m_files;
+    std::string              m_path;
   };
 
   CGUIInfoLabel m_texturePath;
-  CStdString m_currentPath;
+  std::string m_currentPath;
   unsigned int m_currentImage;
   CStopWatch m_imageTimer;
   unsigned int m_timePerImage;
@@ -91,7 +93,7 @@ protected:
   bool m_loop;
 
   bool m_bDynamicResourceAlloc;
-  std::vector<CStdString> m_files;
+  std::vector<std::string> m_files;
 
   CGUIImage m_image;
 

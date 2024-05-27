@@ -4305,6 +4305,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\playlists\PlayListXML.h">
 			</File>
 			<File
+				RelativePath=".\xbmc\utils\Random.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\utils\RegExp.h">
 			</File>
 			<File
