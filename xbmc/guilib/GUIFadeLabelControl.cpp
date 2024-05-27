@@ -194,6 +194,8 @@ void CGUIFadeLabelControl::Render()
     }
   }
 
+  m_textLayout.UpdateScrollinfo(m_scrollInfo);
+
   g_graphicsContext.RemoveTransform();
 
   CGUIControl::Render();

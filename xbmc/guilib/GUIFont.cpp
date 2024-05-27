@@ -117,20 +117,8 @@ void CGUIFont::DrawText( float x, float y, const vecColors &colors, color_t shad
     g_graphicsContext.RestoreClipRegion();
 }
 
-void CGUIFont::DrawScrollingText(float x, float y, const vecColors &colors, color_t shadowColor,
-                const vecText &text, uint32_t alignment, float maxWidth, CScrollInfo &scrollInfo)
+bool CGUIFont::UpdateScrollInfo(const vecText &text, CScrollInfo &scrollInfo)
 {
-  if (!m_font) return;
-  if (!shadowColor) shadowColor = m_shadowColor;
-
-  float spaceWidth = GetCharWidth(L' ');
-  unsigned int maxChars = min((long unsigned int)(text.size() + scrollInfo.suffix.size()), (long unsigned int)((maxWidth*1.05f)/spaceWidth)); //max chars on screen + extra marginchars
-
-  if (!text.size() || ClippedRegionIsEmpty(x, y, maxWidth, alignment))
-    return; // nothing to render
-
-  maxWidth = ROUND(maxWidth / g_graphicsContext.GetGUIScaleX());
-
   // draw at our scroll position
   // we handle the scrolling as follows:
   //   We scroll on a per-pixel basis up until we have scrolled the first character outside
@@ -139,62 +127,97 @@ void CGUIFont::DrawScrollingText(float x, float y, const vecColors &colors, colo
   //   pixelPos is the amount in pixels to move the string by.
   //   characterPos is the amount in characters to rotate the string by.
   //
-  float offset = scrollInfo.pixelPos;
-  if (!scrollInfo.waitTime)
+  if (scrollInfo.waitTime)
   {
-    // move along by the appropriate scroll amount
-    float scrollAmount = fabs(scrollInfo.GetPixelsPerFrame() * g_graphicsContext.GetGUIScaleX());
+    scrollInfo.waitTime--;
+    return false;
+  }
 
-    if (scrollInfo.pixelSpeed > 0)
-    {
-      // we want to move scrollAmount, grab the next character
-      float charWidth = GetCharWidth(scrollInfo.GetCurrentChar(text));
-      if (scrollInfo.pixelPos + scrollAmount < charWidth)
-        scrollInfo.pixelPos += scrollAmount;  // within the current character
-      else
-      { // past the current character, decrement scrollAmount by the charWidth and move to the next character
-        while (scrollInfo.pixelPos + scrollAmount >= charWidth)
+  if (text.empty())
+    return false;
+
+  CScrollInfo old(scrollInfo);
+
+  // move along by the appropriate scroll amount
+  float scrollAmount = fabs(scrollInfo.GetPixelsPerFrame() * g_graphicsContext.GetGUIScaleX());
+
+  if (scrollInfo.pixelSpeed > 0)
+  {
+    // we want to move scrollAmount, grab the next character
+    float charWidth = GetCharWidth(scrollInfo.GetCurrentChar(text));
+    if (scrollInfo.pixelPos + scrollAmount < charWidth)
+      scrollInfo.pixelPos += scrollAmount;  // within the current character
+    else
+    { // past the current character, decrement scrollAmount by the charWidth and move to the next character
+      while (scrollInfo.pixelPos + scrollAmount >= charWidth)
+      {
+        scrollAmount -= (charWidth - scrollInfo.pixelPos);
+        scrollInfo.pixelPos = 0;
+        scrollInfo.characterPos++;
+        if (scrollInfo.characterPos >= text.size() + scrollInfo.suffix.size())
         {
-          scrollAmount -= (charWidth - scrollInfo.pixelPos);
-          scrollInfo.pixelPos = 0;
-          scrollInfo.characterPos++;
-          if (scrollInfo.characterPos >= text.size() + scrollInfo.suffix.size())
-          {
-            scrollInfo.Reset();
-            break;
-          }
-          charWidth = GetCharWidth(scrollInfo.GetCurrentChar(text));
+          scrollInfo.Reset();
+          break;
         }
+        charWidth = GetCharWidth(scrollInfo.GetCurrentChar(text));
       }
-      offset = scrollInfo.pixelPos;
-    }
-    else if (scrollInfo.pixelSpeed < 0)
-    { // scrolling backwards
-      // we want to move scrollAmount, grab the next character
-      float charWidth = GetCharWidth(scrollInfo.GetCurrentChar(text));
-      if (scrollInfo.pixelPos + scrollAmount < charWidth)
-        scrollInfo.pixelPos += scrollAmount;  // within the current character
-      else
-      { // past the current character, decrement scrollAmount by the charWidth and move to the next character
-        while (scrollInfo.pixelPos + scrollAmount >= charWidth)
-        {
-          scrollAmount -= (charWidth - scrollInfo.pixelPos);
-          scrollInfo.pixelPos = 0;
-          if (scrollInfo.characterPos == 0)
-          {
-            scrollInfo.Reset();
-            scrollInfo.characterPos = text.size() + scrollInfo.suffix.size() - 1;
-            break;
-          }
-          scrollInfo.characterPos--;
-          charWidth = GetCharWidth(scrollInfo.GetCurrentChar(text));
-        }
-      }
-      offset = charWidth - scrollInfo.pixelPos;
     }
   }
+  else if (scrollInfo.pixelSpeed < 0)
+  { // scrolling backwards
+    // we want to move scrollAmount, grab the next character
+    float charWidth = GetCharWidth(scrollInfo.GetCurrentChar(text));
+    if (scrollInfo.pixelPos + scrollAmount < charWidth)
+      scrollInfo.pixelPos += scrollAmount;  // within the current character
+    else
+    { // past the current character, decrement scrollAmount by the charWidth and move to the next character
+      while (scrollInfo.pixelPos + scrollAmount >= charWidth)
+      {
+        scrollAmount -= (charWidth - scrollInfo.pixelPos);
+        scrollInfo.pixelPos = 0;
+        if (scrollInfo.characterPos == 0)
+        {
+          scrollInfo.Reset();
+          scrollInfo.characterPos = text.size() + scrollInfo.suffix.size() - 1;
+          break;
+        }
+        scrollInfo.characterPos--;
+        charWidth = GetCharWidth(scrollInfo.GetCurrentChar(text));
+      }
+    }
+  }
+
+  if(scrollInfo.characterPos != old.characterPos
+  || scrollInfo.pixelPos     != old.pixelPos)
+    return true;
   else
-    scrollInfo.waitTime--;
+    return false;
+}
+
+void CGUIFont::DrawScrollingText(float x, float y, const vecColors &colors, color_t shadowColor,
+                const vecText &text, uint32_t alignment, float maxWidth, const CScrollInfo &scrollInfo)
+{
+  if (!m_font) return;
+  if (!shadowColor) shadowColor = m_shadowColor;
+
+  float spaceWidth = GetCharWidth(L' ');
+  // max chars on screen + extra margin chars
+  vecText::size_type maxChars =
+    std::min<vecText::size_type>(
+      (text.size() + (vecText::size_type)scrollInfo.suffix.size()),
+      (vecText::size_type)((maxWidth * 1.05f) / spaceWidth));
+
+  if (!text.size() || ClippedRegionIsEmpty(x, y, maxWidth, alignment))
+    return; // nothing to render
+
+  maxWidth = ROUND(maxWidth / g_graphicsContext.GetGUIScaleX());
+
+  float charWidth = GetCharWidth(scrollInfo.GetCurrentChar(text));
+  float offset;
+  if(scrollInfo.pixelSpeed >= 0)
+    offset = scrollInfo.pixelPos;
+  else
+    offset = charWidth - scrollInfo.pixelPos;
 
   // Now rotate our string as needed, only take a slightly larger then visible part of the text.
   unsigned int pos = scrollInfo.characterPos;
