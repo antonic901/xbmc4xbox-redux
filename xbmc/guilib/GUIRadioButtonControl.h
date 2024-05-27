@@ -71,6 +71,6 @@ protected:
   CGUITexture m_imgRadioOffDisabled;
   float m_radioPosX;
   float m_radioPosY;
-  unsigned int m_toggleSelect;
+  INFO::InfoPtr m_toggleSelect;
   bool m_useLabel2;
 };

@@ -40,7 +40,6 @@ CGUIRadioButtonControl::CGUIRadioButtonControl(int parentID, int controlID, floa
 {
   m_radioPosX = 0;
   m_radioPosY = 0;
-  m_toggleSelect = 0;
   m_imgRadioOnFocus.SetAspectRatio(CAspectRatio::AR_KEEP);
   m_imgRadioOnNoFocus.SetAspectRatio(CAspectRatio::AR_KEEP);
   m_imgRadioOffFocus.SetAspectRatio(CAspectRatio::AR_KEEP);
@@ -61,7 +60,7 @@ void CGUIRadioButtonControl::Render()
 
   // ask our infoManager whether we are selected or not...
   if (m_toggleSelect)
-    m_bSelected = g_infoManager.GetBoolValue(m_toggleSelect);
+    m_bSelected = m_toggleSelect->Get();
 
   if ( IsSelected() && !IsDisabled() )
   {

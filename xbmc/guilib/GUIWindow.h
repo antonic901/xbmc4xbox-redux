@@ -62,11 +62,10 @@ public:
   COrigin()
   {
     x = y = 0;
-    condition = 0;
   };
   float x;
   float y;
-  unsigned int condition;
+  INFO::InfoPtr condition;
 };
 
 /*!
@@ -267,7 +266,7 @@ protected:
   int m_exclusiveMouseControl; ///< \brief id of child control that wishes to receive all mouse events \sa GUI_MSG_EXCLUSIVE_MOUSE
 
 private:
-  std::map<int, bool> m_xmlIncludeConditions; ///< \brief used to store conditions used to resolve includes for this window
+  std::map<INFO::InfoPtr, bool> m_xmlIncludeConditions; ///< \brief used to store conditions used to resolve includes for this window
 };
 
 #endif

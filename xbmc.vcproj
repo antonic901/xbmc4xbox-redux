@@ -2943,10 +2943,13 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\interfaces\IAnnouncer.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\interfaces\info\InfoBool.cpp">
+					RelativePath=".\xbmc\interfaces\info\InfoBool.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\interfaces\info\InfoBool.h">
+					RelativePath=".\xbmc\interfaces\info\InfoExpression.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\interfaces\info\InfoExpression.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\interfaces\info\SkinVariable.cpp">

@@ -225,7 +225,7 @@ bool CGUIIncludes::HasIncludeFile(const CStdString &file) const
   return false;
 }
 
-void CGUIIncludes::ResolveIncludes(TiXmlElement *node, std::map<int, bool>* xmlIncludeConditions /* = NULL */)
+void CGUIIncludes::ResolveIncludes(TiXmlElement *node, std::map<INFO::InfoPtr, bool>* xmlIncludeConditions /* = NULL */)
 {
   if (!node)
     return;
@@ -239,7 +239,7 @@ void CGUIIncludes::ResolveIncludes(TiXmlElement *node, std::map<int, bool>* xmlI
   }
 }
 
-void CGUIIncludes::ResolveIncludesForNode(TiXmlElement *node, std::map<int, bool>* xmlIncludeConditions /* = NULL */)
+void CGUIIncludes::ResolveIncludesForNode(TiXmlElement *node, std::map<INFO::InfoPtr, bool>* xmlIncludeConditions /* = NULL */)
 {
   // we have a node, find any <include file="fileName">tagName</include> tags and replace
   // recursively with their real includes
@@ -276,8 +276,8 @@ void CGUIIncludes::ResolveIncludesForNode(TiXmlElement *node, std::map<int, bool
     const char *condition = include->Attribute("condition");
     if (condition)
     { // check this condition
-      int conditionID = g_infoManager.Register(condition);
-      bool value = g_infoManager.GetBoolValue(conditionID);
+      INFO::InfoPtr conditionID = g_infoManager.Register(condition);
+      bool value = conditionID->Get();
 
       if (xmlIncludeConditions)
         (*xmlIncludeConditions)[conditionID] = value;

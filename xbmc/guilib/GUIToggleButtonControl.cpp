@@ -31,7 +31,6 @@ CGUIToggleButtonControl::CGUIToggleButtonControl(int parentID, int controlID, fl
     : CGUIButtonControl(parentID, controlID, posX, posY, width, height, textureFocus, textureNoFocus, labelInfo, wrapMultiLine)
     , m_selectButton(parentID, controlID, posX, posY, width, height, altTextureFocus, altTextureNoFocus, labelInfo, wrapMultiLine)
 {
-  m_toggleSelect = 0;
   ControlType = GUICONTROL_TOGGLEBUTTON;
 }
 
@@ -43,7 +42,7 @@ void CGUIToggleButtonControl::Render()
 {
   // ask our infoManager whether we are selected or not...
   if (m_toggleSelect)
-    m_bSelected = g_infoManager.GetBoolValue(m_toggleSelect);
+    m_bSelected = m_toggleSelect->Get();
 
   if (m_bSelected)
   {

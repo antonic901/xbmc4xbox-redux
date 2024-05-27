@@ -18,7 +18,7 @@
  *
  */
 
-#include "InfoBool.h"
+#include "InfoExpression.h"
 #include <stack>
 #include "utils/log.h"
 #include "GUIInfoManager.h"
@@ -26,10 +26,10 @@
 using namespace std;
 using namespace INFO;
 
-InfoSingle::InfoSingle(const CStdString &expression, int context)
+InfoSingle::InfoSingle(const std::string &expression, int context)
 : InfoBool(expression, context)
 {
-  m_condition = g_infoManager.TranslateSingleString(expression);
+  m_condition = g_infoManager.TranslateSingleString(expression, m_listItemDependent);
 }
 
 void InfoSingle::Update(const CGUIListItem *item)
@@ -37,7 +37,7 @@ void InfoSingle::Update(const CGUIListItem *item)
   m_value = g_infoManager.GetBool(m_condition, m_context, item);
 }
 
-InfoExpression::InfoExpression(const CStdString &expression, int context)
+InfoExpression::InfoExpression(const std::string &expression, int context)
 : InfoBool(expression, context)
 {
   Parse(expression);
@@ -70,20 +70,21 @@ short InfoExpression::GetOperator(const char ch) const
     return 0;
 }
 
-void InfoExpression::Parse(const CStdString &expression)
+void InfoExpression::Parse(const std::string &expression)
 {
   stack<char> operators;
-  CStdString operand;
+  std::string operand;
   for (unsigned int i = 0; i < expression.size(); i++)
   {
     if (GetOperator(expression[i]))
     {
       // cleanup any operand, translate and put into our expression list
-      if (!operand.IsEmpty())
+      if (!operand.empty())
       {
-        unsigned int info = g_infoManager.Register(operand, m_context);
+        InfoPtr info = g_infoManager.Register(operand, m_context);
         if (info)
         {
+          m_listItemDependent |= info->ListItemDependent();
           m_postfix.push_back(m_operands.size());
           m_operands.push_back(info);
         }
@@ -92,7 +93,7 @@ void InfoExpression::Parse(const CStdString &expression)
       // handle closing parenthesis
       if (expression[i] == ']')
       {
-        while (operators.size())
+        while (!operators.empty())
         {
           char oper = operators.top();
           operators.pop();
@@ -127,9 +128,10 @@ void InfoExpression::Parse(const CStdString &expression)
 
   if (!operand.empty())
   {
-    unsigned int info = g_infoManager.Register(operand, m_context);
+    InfoPtr info = g_infoManager.Register(operand, m_context);
     if (info)
     {
+      m_listItemDependent |= info->ListItemDependent();
       m_postfix.push_back(m_operands.size());
       m_operands.push_back(info);
     }
@@ -156,7 +158,7 @@ bool InfoExpression::Evaluate(const CGUIListItem *item, bool &result)
     short expr = *it;
     if (expr == -OPERATOR_NOT)
     { // NOT the top item on the stack
-      if (save.size() < 1) return false;
+      if (save.empty()) return false;
       bool expr = save.top();
       save.pop();
       save.push(!expr);
@@ -176,11 +178,10 @@ bool InfoExpression::Evaluate(const CGUIListItem *item, bool &result)
       save.push(left || right);
     }
     else  // operand
-      save.push(g_infoManager.GetBoolValue(m_operands[expr], item));
+      save.push(m_operands[expr]->Get(item));
   }
   if (save.size() != 1)
     return false;
   result = save.top();
   return true;
 }
-

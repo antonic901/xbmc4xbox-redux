@@ -186,7 +186,13 @@ public:
   virtual void SetHeight(float height);
   virtual void SetVisible(bool bVisible, bool setVisState = false);
   void SetVisibleCondition(const CStdString &expression, const CStdString &allowHiddenFocus = "");
-  unsigned int GetVisibleCondition() const { return m_visibleCondition; };
+#ifdef _XBOX
+  // We need this only for Xbox because of CGUIWindowManager::UpdateModelessVisibility().
+  // This is moved in CGUIDialog::UpdateVisibility() on XBMC mainline which I'm not sure
+  // if we can do since we don't have Dirty Regions backported.
+  INFO::InfoPtr GetVisibleCondition() const { return m_visibleCondition; };
+#endif
+  bool HasVisibleCondition() const { return m_visibleCondition; };
   void SetEnableCondition(const CStdString &expression);
   virtual void UpdateVisibility(const CGUIListItem *item = NULL);
   virtual void SetInitialVisibility();
@@ -307,14 +313,14 @@ protected:
   CGUIControl *m_parentControl;   // our parent control if we're part of a group
 
   // visibility condition/state
-  unsigned int m_visibleCondition;
+  INFO::InfoPtr m_visibleCondition;
   GUIVISIBLE m_visible;
   bool m_visibleFromSkinCondition;
   bool m_forceHidden;       // set from the code when a hidden operation is given - overrides m_visible
   CGUIInfoBool m_allowHiddenFocus;
   bool m_hasRendered;
   // enable/disable state
-  unsigned int m_enableCondition;
+  INFO::InfoPtr m_enableCondition;
   bool m_enabled;
 
   bool m_pushedUpdates;

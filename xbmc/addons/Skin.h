@@ -96,7 +96,7 @@ public:
    */
   static bool TranslateResolution(const CStdString &name, RESOLUTION_INFO &res);
 
-  void ResolveIncludes(TiXmlElement *node, std::map<int, bool>* xmlIncludeConditions = NULL);
+  void ResolveIncludes(TiXmlElement *node, std::map<INFO::InfoPtr, bool>* xmlIncludeConditions = NULL);
   bool ResolveConstant(const CStdString &constant, float &value) const;
   bool ResolveConstant(const CStdString &constant, unsigned int &value) const;
 

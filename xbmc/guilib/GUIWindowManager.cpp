@@ -556,9 +556,9 @@ void CGUIWindowManager::UpdateModelessVisibility()
   for (WindowMap::iterator it = m_mapWindows.begin(); it != m_mapWindows.end(); it++)
   {
     CGUIWindow *pWindow = (*it).second;
-    if (pWindow && pWindow->IsDialog() && pWindow->GetVisibleCondition())
+    if (pWindow && pWindow->IsDialog() && pWindow->HasVisibleCondition())
     {
-      if (g_infoManager.GetBoolValue(pWindow->GetVisibleCondition()))
+      if (pWindow->HasVisibleCondition())
         ((CGUIDialog *)pWindow)->Show_Internal();
       else
         ((CGUIDialog *)pWindow)->Close_Internal();
