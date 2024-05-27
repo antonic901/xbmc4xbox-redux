@@ -50,7 +50,6 @@ public:
 
   virtual void DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
-  virtual void DoRender();
   virtual void Render();
   virtual bool OnMessage(CGUIMessage& message);
   virtual float GetHeight() const;
@@ -61,8 +60,12 @@ public:
   virtual bool CanFocus() const;
   void SetInfo(const CGUIInfoLabel &info);
   void SetAutoScrolling(const TiXmlNode *node);
+  void SetAutoScrolling(int delay, int time, int repeatTime, const std::string &condition = "");
   void ResetAutoScrolling();
-  CStdString GetLabel(int info) const;
+
+  virtual bool GetCondition(int condition, int data) const;
+  virtual std::string GetLabel(int info) const;
+  std::string GetDescription() const;
 
   void Scroll(unsigned int offset);
 
@@ -74,6 +77,7 @@ protected:
   void ScrollToOffset(int offset, bool autoScroll = false);
   unsigned int GetRows() const;
   int GetCurrentPage() const;
+  int GetNumPages() const;
 
   // auto-height
   float m_minHeight;
@@ -86,12 +90,10 @@ protected:
   int   m_scrollTime;
   unsigned int m_itemsPerPage;
   float m_itemHeight;
-  unsigned int m_renderTime;
   unsigned int m_lastRenderTime;
 
   CLabelInfo m_label;
 
-  TransformMatrix m_textMatrix;
   TransformMatrix m_cachedTextMatrix;
 
   // autoscrolling
