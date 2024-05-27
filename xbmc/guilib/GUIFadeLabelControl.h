@@ -28,6 +28,8 @@
  *
  */
 
+#include <vector>
+
 #include "GUIControl.h"
 #include "GUILabel.h"
 
@@ -49,6 +51,7 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
 
   void SetInfo(const std::vector<CGUIInfoLabel> &vecInfo);
+  void SetScrolling(bool scroll) { m_scroll = scroll; }
 
 protected:
   virtual bool UpdateColors();
@@ -63,7 +66,7 @@ protected:
 
    \return the label that should be displayed.  If empty, there is no label available.
    */
-  CStdString GetLabel();
+  std::string GetLabel();
 
   std::vector< CGUIInfoLabel > m_infoLabels;
   unsigned int m_currentLabel;
@@ -71,13 +74,14 @@ protected:
 
   CLabelInfo m_label;
 
+  bool m_scroll;      // true if we scroll the text
   bool m_scrollOut;   // true if we scroll the text all the way to the left before fading in the next label
   bool m_shortText;   // true if the text we have is shorter than the width of the control
 
   CScrollInfo m_scrollInfo;
   CGUITextLayout m_textLayout;
   CAnimation m_fadeAnim;
-  unsigned int m_renderTime;
+  TransformMatrix m_fadeMatrix;
   unsigned int m_scrollSpeed;
   bool m_resetOnLabelChange;
   bool m_randomized;
