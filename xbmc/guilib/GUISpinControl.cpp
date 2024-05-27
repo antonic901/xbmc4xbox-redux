@@ -18,11 +18,10 @@
  *
  */
 
-#include "include.h"
 #include "GUISpinControl.h"
-#include "utils/CharsetConverter.h"
-
-using namespace std;
+#include "guilib/Key.h"
+#include "utils/StringUtils.h"
+#include <stdio.h>
 
 #define SPIN_BUTTON_DOWN 1
 #define SPIN_BUTTON_UP   2
@@ -256,6 +255,17 @@ bool CGUISpinControl::OnMessage(CGUIMessage& message)
         m_bShowRange = false;
       break;
 
+    case GUI_MSG_SET_LABELS:
+      if (message.GetPointer())
+      {
+        const std::vector< std::pair<std::string, int> > *labels = (const std::vector< std::pair<std::string, int> > *)message.GetPointer();
+        Clear();
+        for (std::vector< std::pair<std::string, int> >::const_iterator i = labels->begin(); i != labels->end(); ++i)
+          AddLabel(i->first, i->second);
+        SetValue( message.GetParam1());
+      }
+      break;
+
     case GUI_MSG_LABEL_ADD:
       {
         AddLabel(message.GetLabel(), message.GetParam1());
@@ -382,18 +392,17 @@ void CGUISpinControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyr
     strcpy(m_szTyped, "");
   }
 
-  CStdString text;
-  CStdStringW strTextUnicode;
+  std::string text;
 
   if (m_iType == SPIN_CONTROL_TYPE_INT)
   {
     if (m_bShowRange)
     {
-      text.Format("%i/%i", m_iValue, m_iEnd);
+      text = StringUtils::Format("%i/%i", m_iValue, m_iEnd);
     }
     else
     {
-      text.Format("%i", m_iValue);
+      text = StringUtils::Format("%i", m_iValue);
     }
   }
   else if (m_iType == SPIN_CONTROL_TYPE_PAGE)
@@ -403,17 +412,17 @@ void CGUISpinControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyr
     int currentPage = m_currentItem / m_itemsPerPage + 1;
     if (m_currentItem >= m_numItems - m_itemsPerPage)
       currentPage = numPages;
-    text.Format("%i/%i", currentPage, numPages);
+    text = StringUtils::Format("%i/%i", currentPage, numPages);
   }
   else if (m_iType == SPIN_CONTROL_TYPE_FLOAT)
   {
     if (m_bShowRange)
     {
-      text.Format("%02.2f/%02.2f", m_fValue, m_fEnd);
+      text = StringUtils::Format("%02.2f/%02.2f", m_fValue, m_fEnd);
     }
     else
     {
-      text.Format("%02.2f", m_fValue);
+      text = StringUtils::Format("%02.2f", m_fValue);
     }
   }
   else
@@ -422,35 +431,40 @@ void CGUISpinControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyr
     {
       if (m_bShowRange)
       {
-        text.Format("(%i/%i) %s", m_iValue + 1, (int)m_vecLabels.size(), CStdString(m_vecLabels[m_iValue]).c_str() );
+        text = StringUtils::Format("(%i/%i) %s", m_iValue + 1, (int)m_vecLabels.size(), std::string(m_vecLabels[m_iValue]).c_str() );
       }
       else
       {
-        text.Format("%s", CStdString(m_vecLabels[m_iValue]).c_str() );
+        text = StringUtils::Format("%s", std::string(m_vecLabels[m_iValue]).c_str() );
       }
     }
-    else text.Format("?%i?", m_iValue);
+    else text = StringUtils::Format("?%i?", m_iValue);
 
   }
 
   changed |= m_label.SetText(text);
 
-  const float space = 5;
   float textWidth = m_label.GetTextWidth() + 2 * m_label.GetLabelInfo().offsetX;
   // Position the arrows
   bool arrowsOnRight(0 != (m_label.GetLabelInfo().align & (XBFONT_RIGHT | XBFONT_CENTER_X)));
   if (!arrowsOnRight)
   {
+    const float space = 5;
     changed |= m_imgspinDownFocus.SetPosition(m_posX + textWidth + space, m_posY);
     changed |= m_imgspinDown.SetPosition(m_posX + textWidth + space, m_posY);
+    changed |= m_imgspinDownDisabled.SetPosition(m_posX + textWidth + space, m_posY);
     changed |= m_imgspinUpFocus.SetPosition(m_posX + textWidth + space + m_imgspinDown.GetWidth(), m_posY);
     changed |= m_imgspinUp.SetPosition(m_posX + textWidth + space + m_imgspinDown.GetWidth(), m_posY);
+    changed |= m_imgspinUpDisabled.SetPosition(m_posX + textWidth + space + m_imgspinDownDisabled.GetWidth(), m_posY);
   }
 
   changed |= m_imgspinDownFocus.Process(currentTime);
   changed |= m_imgspinDown.Process(currentTime);
   changed |= m_imgspinUp.Process(currentTime);
   changed |= m_imgspinUpFocus.Process(currentTime);
+  changed |= m_imgspinUpDisabled.Process(currentTime);
+  changed |= m_imgspinDownDisabled.Process(currentTime);
+  changed |= m_label.Process(currentTime);
 
   if (changed)
     MarkDirtyRegion();
@@ -529,7 +543,7 @@ void CGUISpinControl::SetFloatRange(float fStart, float fEnd)
   m_fEnd = fEnd;
 }
 
-void CGUISpinControl::SetValueFromLabel(const CStdString &label)
+void CGUISpinControl::SetValueFromLabel(const std::string &label)
 {
   if (m_iType == SPIN_CONTROL_TYPE_TEXT)
   {
@@ -602,19 +616,19 @@ std::string CGUISpinControl::GetStringValue() const
   return "";
 }
 
-void CGUISpinControl::AddLabel(const string& strLabel, int iValue)
+void CGUISpinControl::AddLabel(const std::string& strLabel, int iValue)
 {
   m_vecLabels.push_back(strLabel);
   m_vecValues.push_back(iValue);
 }
 
-void CGUISpinControl::AddLabel(const string& strLabel, const string& strValue)
+void CGUISpinControl::AddLabel(const std::string& strLabel, const std::string& strValue)
 {
   m_vecLabels.push_back(strLabel);
   m_vecStrValues.push_back(strValue);
 }
 
-const string CGUISpinControl::GetLabel() const
+const std::string CGUISpinControl::GetLabel() const
 {
   if (m_iValue >= 0 && m_iValue < (int)m_vecLabels.size())
   {
@@ -966,22 +980,26 @@ EVENT_RESULT CGUISpinControl::OnMouseEvent(const CPoint &point, const CMouseEven
   }
   else if (event.m_id == ACTION_MOUSE_WHEEL_UP)
   {
-    MoveUp();
-    return EVENT_RESULT_HANDLED;
+    if (m_imgspinUpFocus.HitTest(point) || m_imgspinDownFocus.HitTest(point))
+    {
+      MoveUp();
+      return EVENT_RESULT_HANDLED;
+    }
   }
   else if (event.m_id == ACTION_MOUSE_WHEEL_DOWN)
   {
-    MoveDown();
-    return EVENT_RESULT_HANDLED;
+    if (m_imgspinUpFocus.HitTest(point) || m_imgspinDownFocus.HitTest(point))
+    {
+      MoveDown();
+      return EVENT_RESULT_HANDLED;
+    }
   }
   return EVENT_RESULT_UNHANDLED;
 }
 
 std::string CGUISpinControl::GetDescription() const
 {
-  CStdString strLabel;
-  strLabel.Format("%i/%i", 1 + GetValue(), GetMaximum());
-  return strLabel;
+  return StringUtils::Format("%i/%i", 1 + GetValue(), GetMaximum());
 }
 
 bool CGUISpinControl::IsFocusedOnUp() const
