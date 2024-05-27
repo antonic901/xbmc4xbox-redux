@@ -7,9 +7,32 @@
 #define CGUILIB_GUIFONT_H
 #pragma once
 
-#include "utils/StdString.h"
+/*
+ *      Copyright (C) 2003-2013 Team XBMC
+ *      http://xbmc.org
+ *
+ *  This Program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
+ *
+ *  This Program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
+ *
+ */
 
+#include "GraphicContext.h"
 #include <assert.h>
+#include <math.h>
+#include <string>
+#include <stdint.h>
+#include <vector>
 
 typedef uint32_t character_t;
 typedef uint32_t color_t;
@@ -18,18 +41,27 @@ typedef std::vector<color_t> vecColors;
 
 class CGUIFontTTF;
 
-// flags for alignment
-#define XBFONT_LEFT       0x00000000
-#define XBFONT_RIGHT      0x00000001
-#define XBFONT_CENTER_X   0x00000002
-#define XBFONT_CENTER_Y   0x00000004
-#define XBFONT_TRUNCATED  0x00000008
-#define XBFONT_JUSTIFIED  0x00000010
+///
+/// \defgroup kodi_gui_font_alignment Font alignment flags
+/// \ingroup python_xbmcgui_control_radiobutton
+/// @{
+/// @brief Flags for alignment
+///
+/// Flags are used as bits to have several together, e.g. `XBFONT_LEFT | XBFONT_CENTER_Y`
+///
+#define XBFONT_LEFT       0x00000000 ///< Align X left
+#define XBFONT_RIGHT      0x00000001 ///< Align X right
+#define XBFONT_CENTER_X   0x00000002 ///< Align X center
+#define XBFONT_CENTER_Y   0x00000004 ///< Align Y center
+#define XBFONT_TRUNCATED  0x00000008 ///< Truncated text
+#define XBFONT_JUSTIFIED  0x00000010 ///< Justify text
+/// @}
 
+// flags for font style. lower 16 bits are the unicode code
+// points, 16-24 are color bits and 24-32 are style bits
 #define FONT_STYLE_NORMAL       0
 #define FONT_STYLE_BOLD         1
 #define FONT_STYLE_ITALICS      2
-#define FONT_STYLE_BOLD_ITALICS 3
 #define FONT_STYLE_LIGHT        4
 #define FONT_STYLE_UPPERCASE    8
 #define FONT_STYLE_LOWERCASE    16
@@ -39,45 +71,46 @@ class CGUIFontTTF;
 class CScrollInfo
 {
 public:
-  CScrollInfo(unsigned int wait = 50, float pos = 0, int speed = defaultSpeed, const CStdString &scrollSuffix = " | ")
+  CScrollInfo(unsigned int wait = 50, float pos = 0, int speed = defaultSpeed, const std::string &scrollSuffix = " | ");
+
+  void SetSpeed(int speed)
   {
-    initialWait = wait;
-    initialPos = pos;
-    SetSpeed(speed ? speed : defaultSpeed);
-    suffix = scrollSuffix;
-    Reset();
-  };
-  void SetSpeed(int speed);
+#ifdef _XBOX
+    if (speed == defaultSpeed)
+    {
+      // HACK: workaround for PAL vs NTSC speeds on xbox
+      if (g_graphicsContext.GetVideoResolution() == RES_PAL_4x3 ||
+          g_graphicsContext.GetVideoResolution() == RES_PAL_16x9)
+        speed = 50;
+    }
+#endif
+    pixelSpeed = speed * 0.001f;
+  }
   void Reset()
   {
     waitTime = initialWait;
-    characterPos = 0;
     // pixelPos is where we start the current letter, so is measured
     // to the left of the text rendering's left edge.  Thus, a negative
     // value will mean the text starts to the right
     pixelPos = -initialPos;
     // privates:
-    m_averageFrameTime = 1000.f / abs(defaultSpeed);
+    m_averageFrameTime = 1000.f / fabs((float)defaultSpeed);
     m_lastFrameTime = 0;
-  }
-  uint32_t GetCurrentChar(const vecText &text) const
-  {
-    assert(text.size());
-    if (characterPos < text.size())
-      return text[characterPos];
-    else if (characterPos < text.size() + suffix.size())
-      return suffix[characterPos - text.size()];
-    return text[0];
+    m_textWidth = 0;
+    m_totalWidth = 0;
+    m_widthValid = false;
   }
   float GetPixelsPerFrame();
 
   float pixelPos;
   float pixelSpeed;
   unsigned int waitTime;
-  unsigned int characterPos;
   unsigned int initialWait;
   float initialPos;
-  CStdString suffix;
+  vecText suffix;
+  mutable float m_textWidth;
+  mutable float m_totalWidth;
+  mutable bool m_widthValid;
 
   static const int defaultSpeed = 60;
 private:
@@ -92,11 +125,11 @@ private:
 class CGUIFont
 {
 public:
-  CGUIFont(const CStdString& strFontName, uint32_t style, color_t textColor,
+  CGUIFont(const std::string& strFontName, uint32_t style, color_t textColor,
 	   color_t shadowColor, float lineSpacing, float origHeight, CGUIFontTTF *font);
   virtual ~CGUIFont();
 
-  CStdString& GetFontName();
+  std::string& GetFontName();
 
   void DrawText( float x, float y, color_t color, color_t shadowColor,
                  const vecText &text, uint32_t alignment, float maxPixelWidth)
@@ -132,16 +165,13 @@ public:
 
   CGUIFontTTF* GetFont() const
   {
-     return m_font;
+    return m_font;
   }
 
-  void SetFont(CGUIFontTTF* font)
-  {
-     m_font = font;
-  }
+  void SetFont(CGUIFontTTF* font);
 
 protected:
-  CStdString m_strFontName;
+  std::string m_strFontName;
   uint32_t m_style;
   color_t m_shadowColor;
   color_t m_textColor;
