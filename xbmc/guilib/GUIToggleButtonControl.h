@@ -53,10 +53,10 @@ public:
   virtual void SetWidth(float width);
   virtual void SetHeight(float height);
   virtual void SetMinWidth(float minWidth);
-  void SetLabel(const std::string& strLabel);
+  virtual void SetLabel(const std::string& label);
   void SetAltLabel(const std::string& label);
-  virtual std::string GetLabel() const;
-  void SetToggleSelect(const CStdString &toggleSelect);
+  virtual std::string GetDescription() const;
+  void SetToggleSelect(const std::string &toggleSelect);
   void SetAltClickActions(const CGUIAction &clickActions);
 
 protected:
@@ -64,5 +64,9 @@ protected:
   virtual void OnClick();
   CGUIButtonControl m_selectButton;
   INFO::InfoPtr m_toggleSelect;
+
+private:
+  void ProcessToggle(unsigned int currentTime);
+  std::string m_altLabel;
 };
 #endif
