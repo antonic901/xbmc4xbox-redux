@@ -126,25 +126,6 @@
 		<textoffsetx>7</textoffsetx>
 		<aligny>center</aligny>
 	</default>
-	<default type="selectbutton">
-		<posx>490</posx>
-		<posy>335</posy>
-		<width>300</width>
-		<height>50</height>
-		<label>-</label>
-		<font>font12</font>
-		<texturefocus>-</texturefocus>
-		<texturenofocus>-</texturenofocus>
-		<texturebg>button-focus.png</texturebg>
-		<textureleft>scroll-left.png</textureleft>
-		<textureleftfocus>scroll-left-focus.png</textureleftfocus>
-		<textureright>scroll-right.png</textureright>
-		<texturerightfocus>scroll-right-focus.png</texturerightfocus>
-		<font>font13</font>
-		<textcolor>white</textcolor>
-		<disabledcolor>grey3</disabledcolor>
-		<aligny>center</aligny>
-	</default>
 	<default type="slider">
 		<controloffsetx>75</controloffsetx>
 		<controloffsety>0</controloffsety>

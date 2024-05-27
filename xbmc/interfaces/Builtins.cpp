@@ -143,7 +143,6 @@ const BUILT_IN commands[] = {
   { "Skin.SetPath",               true,   "Prompts and sets a skin path" },
   { "Skin.Theme",                 true,   "Control skin theme" },
   { "Skin.SetImage",              true,   "Prompts and sets a skin image" },
-  { "Skin.SetLargeImage",         true,   "Prompts and sets a large skin images" },
   { "Skin.SetFile",               true,   "Prompts and sets a file" },
   { "Skin.SetAddon",              true,   "Prompts and set an addon" },
   { "Skin.SetBool",               true,   "Sets a skin setting on" },
@@ -1021,7 +1020,7 @@ int CBuiltins::Execute(const CStdString& execString)
     g_application.ReloadSkin(!params.empty() && StringUtils2::EqualsNoCase(params[0], "confirm"));
   }
   else if (execute.Equals("skin.setstring") || execute.Equals("skin.setimage") || execute.Equals("skin.setfile") ||
-           execute.Equals("skin.setpath") || execute.Equals("skin.setnumeric") || execute.Equals("skin.setlargeimage"))
+           execute.Equals("skin.setpath") || execute.Equals("skin.setnumeric"))
   {
     // break the parameter up if necessary
     int string = 0;
@@ -1053,13 +1052,6 @@ int CBuiltins::Execute(const CStdString& execString)
     else if (execute.Equals("skin.setimage"))
     {
       if (CGUIDialogFileBrowser::ShowAndGetImage(localShares, g_localizeStrings.Get(1030), value))
-        CSkinSettings::Get().SetString(string, value);
-    }
-    else if (execute.Equals("skin.setlargeimage"))
-    {
-      VECSOURCES *shares = CMediaSourceSettings::Get().GetSources("pictures");
-      if (!shares) shares = &localShares;
-      if (CGUIDialogFileBrowser::ShowAndGetImage(*shares, g_localizeStrings.Get(1030), value))
         CSkinSettings::Get().SetString(string, value);
     }
     else if (execute.Equals("skin.setfile"))

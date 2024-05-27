@@ -245,9 +245,6 @@
 				RelativePath=".\GUIButtonControl.cpp">
 			</File>
 			<File
-				RelativePath=".\GUICheckMarkControl.cpp">
-			</File>
-			<File
 				RelativePath=".\GUIColorManager.cpp">
 			</File>
 			<File
@@ -326,9 +323,6 @@
 				RelativePath=".\GUIMultiImage.cpp">
 			</File>
 			<File
-				RelativePath=".\GUIMultiSelectText.cpp">
-			</File>
-			<File
 				RelativePath=".\GUIPanelContainer.cpp">
 			</File>
 			<File
@@ -348,9 +342,6 @@
 			</File>
 			<File
 				RelativePath=".\GUIScrollBarControl.cpp">
-			</File>
-			<File
-				RelativePath=".\GUISelectButtonControl.cpp">
 			</File>
 			<File
 				RelativePath=".\GUISettingsSliderControl.cpp">
@@ -466,9 +457,6 @@
 				RelativePath=".\GUICallback.h">
 			</File>
 			<File
-				RelativePath=".\GUICheckMarkControl.h">
-			</File>
-			<File
 				RelativePath=".\GUIColorManager.h">
 			</File>
 			<File
@@ -553,9 +541,6 @@
 				RelativePath=".\GUIMultiImage.h">
 			</File>
 			<File
-				RelativePath=".\GUIMultiSelectText.h">
-			</File>
-			<File
 				RelativePath=".\GUIPanelContainer.h">
 			</File>
 			<File
@@ -575,9 +560,6 @@
 			</File>
 			<File
 				RelativePath=".\GUIScrollBarControl.h">
-			</File>
-			<File
-				RelativePath=".\GUISelectButtonControl.h">
 			</File>
 			<File
 				RelativePath=".\GUISettingsSliderControl.h">

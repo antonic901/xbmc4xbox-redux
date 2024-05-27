@@ -30,13 +30,11 @@
 #include "GUILabelControl.h"
 #include "GUIEditControl.h"
 #include "GUIFadeLabelControl.h"
-#include "GUICheckMarkControl.h"
 #include "GUIToggleButtonControl.h"
 #include "GUITextBox.h"
 #include "GUIVideoControl.h"
 #include "GUIProgressControl.h"
 #include "GUISliderControl.h"
-#include "GUISelectButtonControl.h"
 #include "GUIMoverControl.h"
 #include "GUIResizeControl.h"
 #include "GUISpinControlEx.h"
@@ -50,7 +48,6 @@
 #include "GUIFixedListContainer.h"
 #include "GUIWrappingListContainer.h"
 #include "GUIPanelContainer.h"
-#include "GUIMultiSelectText.h"
 #include "GUIListLabel.h"
 #include "GUIListGroup.h"
 #include "GUIInfoManager.h"
@@ -75,10 +72,8 @@ typedef struct
 
 static const ControlMapping controls[] =
    {{"button",            CGUIControl::GUICONTROL_BUTTON},
-    {"checkmark",         CGUIControl::GUICONTROL_CHECKMARK},
     {"fadelabel",         CGUIControl::GUICONTROL_FADELABEL},
     {"image",             CGUIControl::GUICONTROL_IMAGE},
-    {"largeimage",        CGUIControl::GUICONTROL_IMAGE},
     {"image",             CGUIControl::GUICONTROL_BORDEREDIMAGE},
     {"label",             CGUIControl::GUICONTROL_LABEL},
     {"label",             CGUIControl::GUICONTROL_LISTLABEL},
@@ -87,7 +82,6 @@ static const ControlMapping controls[] =
     {"progress",          CGUIControl::GUICONTROL_PROGRESS},
     {"radiobutton",       CGUIControl::GUICONTROL_RADIO},
     {"rss",               CGUIControl::GUICONTROL_RSS},
-    {"selectbutton",      CGUIControl::GUICONTROL_SELECTBUTTON},
     {"slider",            CGUIControl::GUICONTROL_SLIDER},
     {"sliderex",          CGUIControl::GUICONTROL_SETTINGS_SLIDER},
     {"spincontrol",       CGUIControl::GUICONTROL_SPIN},
@@ -103,7 +97,6 @@ static const ControlMapping controls[] =
     {"multiimage",        CGUIControl::GUICONTROL_MULTI_IMAGE},
     {"grouplist",         CGUIControl::GUICONTROL_GROUPLIST},
     {"scrollbar",         CGUIControl::GUICONTROL_SCROLLBAR},
-    {"multiselect",       CGUIControl::GUICONTROL_MULTISELECT},
     {"list",              CGUIControl::GUICONTAINER_LIST},
     {"wraplist",          CGUIControl::GUICONTAINER_WRAPLIST},
     {"fixedlist",         CGUIControl::GUICONTAINER_FIXEDLIST},
@@ -718,13 +711,11 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   bool bReveal = false;
   CTextureInfo textureBackground, textureLeft, textureRight, textureMid, textureOverlay;
   CTextureInfo textureNib, textureNibFocus, textureBar, textureBarFocus;
-  CTextureInfo textureLeftFocus, textureRightFocus;
   CTextureInfo textureUp, textureDown;
   CTextureInfo textureUpFocus, textureDownFocus;
   CTextureInfo textureUpDisabled, textureDownDisabled;
   CTextureInfo texture, borderTexture;
   CGUIInfoLabel textureFile;
-  CTextureInfo textureCheckMark, textureCheckMarkNF;
   CTextureInfo textureFocus, textureNoFocus;
   CTextureInfo textureAltFocus, textureAltNoFocus;
   CTextureInfo textureRadioOnFocus, textureRadioOnNoFocus;
@@ -910,11 +901,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   GetTexture(pControlNode, "textureupdisabled", textureUpDisabled);
   GetTexture(pControlNode, "texturedowndisabled", textureDownDisabled);
 
-  GetTexture(pControlNode, "textureleft", textureLeft);
-  GetTexture(pControlNode, "textureright", textureRight);
-  GetTexture(pControlNode, "textureleftfocus", textureLeftFocus);
-  GetTexture(pControlNode, "texturerightfocus", textureRightFocus);
-
   GetInfoColor(pControlNode, "spincolor", spinInfo.textColor, parentID);
   if (XMLUtils::GetString(pControlNode, "spinfont", strFont))
     spinInfo.font = g_fontManager.GetFont(strFont);
@@ -929,8 +915,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   XMLUtils::GetFloat(pControlNode, "markheight", checkHeight);
   XMLUtils::GetFloat(pControlNode, "sliderwidth", sliderWidth);
   XMLUtils::GetFloat(pControlNode, "sliderheight", sliderHeight);
-  GetTexture(pControlNode, "texturecheckmark", textureCheckMark);
-  GetTexture(pControlNode, "texturecheckmarknofocus", textureCheckMarkNF);
   if (!GetTexture(pControlNode, "textureradioonfocus", textureRadioOnFocus) || !GetTexture(pControlNode, "textureradioonnofocus", textureRadioOnNoFocus))
   {
     GetTexture(pControlNode, "textureradiofocus", textureRadioOnFocus);    // backward compatibility
@@ -1232,15 +1216,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     ((CGUIToggleButtonControl *)control)->SetUnFocusActions(unfocusActions);
     ((CGUIToggleButtonControl *)control)->SetToggleSelect(toggleSelect);
   }
-  else if (type == CGUIControl::GUICONTROL_CHECKMARK)
-  {
-    control = new CGUICheckMarkControl(
-      parentID, id, posX, posY, width, height,
-      textureCheckMark, textureCheckMarkNF,
-      checkWidth, checkHeight, labelInfo);
-
-    ((CGUICheckMarkControl *)control)->SetLabel(strLabel);
-  }
   else if (type == CGUIControl::GUICONTROL_RADIO)
   {
     control = new CGUIRadioButtonControl(
@@ -1256,15 +1231,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     ((CGUIRadioButtonControl *)control)->SetClickActions(clickActions);
     ((CGUIRadioButtonControl *)control)->SetFocusActions(focusActions);
     ((CGUIRadioButtonControl *)control)->SetUnFocusActions(unfocusActions);
-  }
-  else if (type == CGUIControl::GUICONTROL_MULTISELECT)
-  {
-    CGUIInfoLabel label;
-    if (infoLabels.size())
-      label = infoLabels[0];
-    control = new CGUIMultiSelectTextControl(
-      parentID, id, posX, posY, width, height,
-      textureFocus, textureNoFocus, labelInfo, label);
   }
   else if (type == CGUIControl::GUICONTROL_SPIN)
   {
@@ -1328,9 +1294,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   }
   else if (type == CGUIControl::GUICONTROL_IMAGE)
   {
-    if (strType == "largeimage")
-      texture.useLarge = true;
-
     // use a bordered texture if we have <bordersize> or <bordertexture> specified.
     if (borderTexture.filename.IsEmpty() && borderStr.IsEmpty())
       control = new CGUIImage(
@@ -1408,16 +1371,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
       ((CGUITextBox *)control)->SetInfo(infoLabels[0]);
     ((CGUITextBox *)control)->SetAutoScrolling(pControlNode);
     ((CGUITextBox *)control)->SetMinHeight(minHeight);
-  }
-  else if (type == CGUIControl::GUICONTROL_SELECTBUTTON)
-  {
-    control = new CGUISelectButtonControl(
-      parentID, id, posX, posY,
-      width, height, textureFocus, textureNoFocus,
-      labelInfo,
-      textureBackground, textureLeft, textureLeftFocus, textureRight, textureRightFocus);
-
-    ((CGUISelectButtonControl *)control)->SetLabel(strLabel);
   }
   else if (type == CGUIControl::GUICONTROL_MOVER)
   {
