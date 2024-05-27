@@ -1282,7 +1282,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   }
   else if (type == CGUIControl::GUICONTROL_SCROLLBAR)
   {
-    control = new CGUIScrollBar(
+    control = new GUIScrollBarControl(
       parentID, id, posX, posY, width, height,
       textureBackground, textureBar, textureBarFocus, textureNib, textureNibFocus, orientation, showOnePage);
   }
