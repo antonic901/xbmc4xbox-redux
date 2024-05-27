@@ -63,6 +63,7 @@ public:
   virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
   virtual bool OnAction(const CAction &action);
+  virtual bool IsActive() const { return true; };
   virtual void PreAllocResources();
   virtual void AllocResources();
   virtual void FreeResources(bool immediately = false);
@@ -71,8 +72,9 @@ public:
   virtual void SetRange(int iStart, int iEnd);
   virtual void SetFloatRange(float fStart, float fEnd);
   virtual bool OnMessage(CGUIMessage& message);
-  void RenderSelector(CGUITexture &nib, float fScale, RangeSelector selector);
+  bool ProcessSelector(CGUITexture &nib, unsigned int currentTime, float fScale, RangeSelector selector);
   void SetRangeSelection(bool rangeSelection);
+  bool GetRangeSelection() const { return m_rangeSelection; }
   void SetRangeSelector(RangeSelector selector);
   void SwitchRangeSelector();
   void SetInfo(int iInfo);
@@ -86,8 +88,8 @@ public:
   void SetFloatInterval(float fInterval);
   void SetType(int iType) { m_iType = iType; };
   virtual std::string GetDescription() const;
-  void SetTextValue(const CStdString &textValue) { m_textValue = textValue; };
-  void SetAction(const CStdString &action);
+  void SetTextValue(const std::string &textValue) { m_textValue = textValue; };
+  void SetAction(const std::string &action);
 protected:
   virtual bool HitTest(const CPoint &point) const;
   virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
@@ -126,7 +128,7 @@ protected:
   float m_fEnd;
 
   int m_iInfoCode;
-  CStdString m_textValue; ///< Allows overriding of the text value to be displayed (parent must update when the slider updates)
+  std::string m_textValue; ///< Allows overriding of the text value to be displayed (parent must update when the slider updates)
   const SliderAction *m_action; ///< Allows the skin to configure the action of a click on the slider \sa SendClick
   bool m_dragging; ///< Whether we're in a (mouse/touch) drag operation or not - some actions are sent only on release.
   ORIENTATION m_orientation;
