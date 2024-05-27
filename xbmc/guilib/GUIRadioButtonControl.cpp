@@ -18,17 +18,16 @@
  *
  */
 
-#include "include.h"
 #include "GUIRadioButtonControl.h"
 #include "GUIInfoManager.h"
-#include "GUIFontManager.h"
 #include "LocalizeStrings.h"
+#include "guilib/Key.h"
 
 CGUIRadioButtonControl::CGUIRadioButtonControl(int parentID, int controlID, float posX, float posY, float width, float height,
     const CTextureInfo& textureFocus, const CTextureInfo& textureNoFocus,
     const CLabelInfo& labelInfo,
     const CTextureInfo& radioOnFocus, const CTextureInfo& radioOnNoFocus,
-    const CTextureInfo& radioOffFocus, const CTextureInfo& radioOffNoFocus, 
+    const CTextureInfo& radioOffFocus, const CTextureInfo& radioOffNoFocus,
     const CTextureInfo& radioOnDisabled, const CTextureInfo& radioOffDisabled)
     : CGUIButtonControl(parentID, controlID, posX, posY, width, height, textureFocus, textureNoFocus, labelInfo)
     , m_imgRadioOnFocus(posX, posY, 16, 16, radioOnFocus)
@@ -53,14 +52,9 @@ CGUIRadioButtonControl::CGUIRadioButtonControl(int parentID, int controlID, floa
 CGUIRadioButtonControl::~CGUIRadioButtonControl(void)
 {}
 
-
 void CGUIRadioButtonControl::Render()
 {
   CGUIButtonControl::Render();
-
-  // ask our infoManager whether we are selected or not...
-  if (m_toggleSelect)
-    m_bSelected = m_toggleSelect->Get();
 
   if ( IsSelected() && !IsDisabled() )
   {
@@ -80,9 +74,33 @@ void CGUIRadioButtonControl::Render()
     m_imgRadioOnDisabled.Render();
   else
     m_imgRadioOffDisabled.Render();
+}
+
+void CGUIRadioButtonControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+{
+  if (m_toggleSelect)
+  {
+    // ask our infoManager whether we are selected or not...
+    bool selected = m_toggleSelect->Get();
+
+    if (selected != m_bSelected)
+    {
+      MarkDirtyRegion();
+      m_bSelected = selected;
+    }
+  }
+
+  m_imgRadioOnFocus.Process(currentTime);
+  m_imgRadioOnNoFocus.Process(currentTime);
+  m_imgRadioOffFocus.Process(currentTime);
+  m_imgRadioOffNoFocus.Process(currentTime);
+  m_imgRadioOnDisabled.Process(currentTime);
+  m_imgRadioOffDisabled.Process(currentTime);
 
   if (m_useLabel2)
     SetLabel2(g_localizeStrings.Get(m_bSelected ? 16041 : 351));
+
+  CGUIButtonControl::Process(currentTime, dirtyregions);
 }
 
 bool CGUIRadioButtonControl::OnAction(const CAction &action)
@@ -120,7 +138,6 @@ void CGUIRadioButtonControl::AllocResources()
   m_imgRadioOffNoFocus.AllocResources();
   m_imgRadioOnDisabled.AllocResources();
   m_imgRadioOffDisabled.AllocResources();
-
   SetPosition(m_posX, m_posY);
 }
 
@@ -235,7 +252,7 @@ bool CGUIRadioButtonControl::UpdateColors()
   return changed;
 }
 
-void CGUIRadioButtonControl::SetToggleSelect(const CStdString &toggleSelect)
+void CGUIRadioButtonControl::SetToggleSelect(const std::string &toggleSelect)
 {
   m_toggleSelect = g_infoManager.Register(toggleSelect, GetParentID());
 }
