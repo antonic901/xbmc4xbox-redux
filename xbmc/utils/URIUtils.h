@@ -192,7 +192,12 @@ public:
                                 const CStdString& strFilePathInArchive,
                                 const CStdString& strPwd="");
 
-  static CStdString AddFileToFolder(const CStdString &strFolder, const CStdString &strFile);
+  static std::string AddFileToFolder(const std::string& strFolder, const std::string& strFile);
+  static std::string AddFileToFolder(const std::string& strFolder, const std::string& strFile, std::string a1)
+  {
+    std::string newPath = AddFileToFolder(strFolder, strFile);
+    return AddFileToFolder(newPath, a1);
+  }
 
   static bool HasParentInHostname(const CURL& url);
   static bool HasEncodedHostname(const CURL& url);

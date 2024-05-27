@@ -1134,8 +1134,8 @@ std::string URIUtils::CanonicalizePath(const std::string& path, const char slash
   return result;
 }
 
-CStdString URIUtils::AddFileToFolder(const CStdString& strFolder, 
-                                const CStdString& strFile)
+std::string URIUtils::AddFileToFolder(const std::string& strFolder, 
+                                const std::string& strFile)
 {
   if (IsURL(strFolder))
   {

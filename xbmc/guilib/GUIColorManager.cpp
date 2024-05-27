@@ -18,11 +18,16 @@
  *
  */
 
-#include "include.h"
 #include "GUIColorManager.h"
-#include "utils/URIUtils.h"
-#include "filesystem/SpecialProtocol.h"
+
+#include <utility>
+
 #include "addons/Skin.h"
+#include "filesystem/SpecialProtocol.h"
+#include "utils/log.h"
+#include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
+#include "utils/XBMCTinyXML.h"
 
 CGUIColorManager g_colorManager;
 
@@ -41,7 +46,7 @@ void CGUIColorManager::Clear()
 }
 
 // load the color file in
-void CGUIColorManager::Load(const CStdString &colorFile)
+void CGUIColorManager::Load(const std::string &colorFile)
 {
   Clear();
 
@@ -51,17 +56,18 @@ void CGUIColorManager::Load(const CStdString &colorFile)
     LoadXML(xmlDoc);
 
   // first load the default color map if it exists
-  CStdString basePath = URIUtils::AddFileToFolder(g_SkinInfo->Path(), "colors");
-  CStdString path = URIUtils::AddFileToFolder(basePath, "defaults.xml");
+  std::string path = URIUtils::AddFileToFolder(g_SkinInfo->Path(), "colors", "defaults.xml");
 
-  if (xmlDoc.LoadFile(path))
+  if (xmlDoc.LoadFile(CSpecialProtocol::TranslatePathConvertCase(path)))
     LoadXML(xmlDoc);
 
   // now the color map requested
-  if (colorFile.CompareNoCase("SKINDEFAULT") == 0)
+  if (StringUtils::EqualsNoCase(colorFile, "SKINDEFAULT"))
     return; // nothing to do
 
-  path = URIUtils::AddFileToFolder(basePath, colorFile);
+  path = URIUtils::AddFileToFolder(g_SkinInfo->Path(), "colors", colorFile);
+  if (!URIUtils::HasExtension(path))
+    path += ".xml";
   CLog::Log(LOGINFO, "Loading colors from %s", path.c_str());
 
   if (xmlDoc.LoadFile(path))
@@ -72,8 +78,8 @@ bool CGUIColorManager::LoadXML(CXBMCTinyXML &xmlDoc)
 {
   TiXmlElement* pRootElement = xmlDoc.RootElement();
 
-  CStdString strValue = pRootElement->Value();
-  if (strValue != CStdString("colors"))
+  std::string strValue = pRootElement->Value();
+  if (strValue != std::string("colors"))
   {
     CLog::Log(LOGERROR, "color file doesnt start with <colors>");
     return false;
@@ -87,7 +93,7 @@ bool CGUIColorManager::LoadXML(CXBMCTinyXML &xmlDoc)
     {
       color_t value = 0xffffffff;
       sscanf(color->FirstChild()->Value(), "%x", (unsigned int*) &value);
-      CStdString name = color->Attribute("name");
+      std::string name = color->Attribute("name");
       iColor it = m_colors.find(name);
       if (it != m_colors.end())
         (*it).second = value;
@@ -100,11 +106,11 @@ bool CGUIColorManager::LoadXML(CXBMCTinyXML &xmlDoc)
 }
 
 // lookup a color and return it's hex value
-color_t CGUIColorManager::GetColor(const CStdString &color) const
+color_t CGUIColorManager::GetColor(const std::string &color) const
 {
   // look in our color map
-  CStdString trimmed(color);
-  trimmed.TrimLeft("= ");
+  std::string trimmed(color);
+  StringUtils::TrimLeft(trimmed, "= ");
   icColor it = m_colors.find(trimmed);
   if (it != m_colors.end())
     return (*it).second;
