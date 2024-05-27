@@ -18,9 +18,8 @@
  *
  */
 
-#include "include.h"
 #include "GUIResizeControl.h"
-#include "GUIWindowManager.h"
+#include "guilib/Key.h"
 #include "utils/TimeUtils.h"
 
 // time to reset accelerated cursors (digital movement)
@@ -34,11 +33,12 @@ CGUIResizeControl::CGUIResizeControl(int parentID, int controlID, float posX, fl
   m_frameCounter = 0;
   m_lastMoveTime = 0;
   m_fSpeed = 1.0;
-  m_fAnalogSpeed = 2.0f; // TODO: implement correct analog speed
-  m_fAcceleration = 0.2f; // TODO: implement correct computation of acceleration
-  m_fMaxSpeed = 10.0;  // TODO: implement correct computation of maxspeed
+  m_fAnalogSpeed = 2.0f; //! @todo implement correct analog speed
+  m_fAcceleration = 0.2f; //! @todo implement correct computation of acceleration
+  m_fMaxSpeed = 10.0;  //! @todo implement correct computation of maxspeed
   ControlType = GUICONTROL_RESIZE;
   SetLimits(0, 0, 720, 576); // defaults
+  m_nDirection = DIRECTION_NONE;
 }
 
 CGUIResizeControl::~CGUIResizeControl(void)
