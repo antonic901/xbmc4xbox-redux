@@ -55,7 +55,7 @@ public:
   virtual void SetMinWidth(float minWidth);
   void SetLabel(const std::string& strLabel);
   void SetAltLabel(const std::string& label);
-  virtual CStdString GetLabel() const;
+  virtual std::string GetLabel() const;
   void SetToggleSelect(const CStdString &toggleSelect);
   void SetAltClickActions(const CGUIAction &clickActions);
 

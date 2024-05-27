@@ -18,15 +18,9 @@
  *
  */
 
-#include "include.h"
 #include "GUIButtonControl.h"
-#include "GUIWindowManager.h"
-#include "GUIDialog.h"
-#include "utils/CharsetConverter.h"
 #include "GUIFontManager.h"
-#include "addons/Skin.h"
-
-using namespace std;
+#include "guilib/Key.h"
 
 CGUIButtonControl::CGUIButtonControl(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& textureFocus, const CTextureInfo& textureNoFocus, const CLabelInfo& labelInfo, bool wrapMultiline)
     : CGUIControl(parentID, controlID, posX, posY, width, height)
@@ -97,10 +91,14 @@ void CGUIButtonControl::Render()
   m_imgFocus.Render();
   m_imgNoFocus.Render();
 
+  RenderText();
+  CGUIControl::Render();
+}
+
+void CGUIButtonControl::RenderText()
+{
   m_label.Render();
   m_label2.Render();
-
-  CGUIControl::Render();
 }
 
 CGUILabel::COLOR CGUIButtonControl::GetTextColor() const
@@ -145,8 +143,9 @@ void CGUIButtonControl::ProcessText(unsigned int currentTime)
   float renderWidth = GetWidth();
   bool changed = m_label.SetMaxRect(m_posX, m_posY, renderWidth, m_height);
   changed |= m_label.SetText(m_info.GetLabel(m_parentID));
-  if (!g_SkinInfo->GetLegacy())
-    changed |= m_label.SetScrolling(HasFocus());
+  changed |= m_label.SetScrolling(HasFocus());
+  changed |= m_label2.SetMaxRect(m_posX, m_posY, renderWidth, m_height);
+  changed |= m_label2.SetText(m_info2.GetLabel(m_parentID));
 
   // text changed - images need resizing
   if (m_minWidth && (m_label.GetRenderRect() != labelRenderRect))
@@ -163,8 +162,6 @@ void CGUIButtonControl::ProcessText(unsigned int currentTime)
   if (!m_info2.GetLabel(m_parentID).empty())
   {
     changed |= m_label2.SetAlign(XBFONT_RIGHT | (m_label.GetLabelInfo().align & XBFONT_CENTER_Y) | XBFONT_TRUNCATED);
-    changed |= m_label2.SetMaxRect(m_posX, m_posY, renderWidth, m_height);
-    changed |= m_label2.SetText(m_info2.GetLabel(m_parentID));
     changed |= m_label2.SetScrolling(HasFocus());
 
     // If overlapping was corrected - compare render rects to determine
@@ -174,8 +171,10 @@ void CGUIButtonControl::ProcessText(unsigned int currentTime)
                   m_label2.GetRenderRect() != label2RenderRect);
 
     changed |= m_label2.SetColor(GetTextColor());
+    changed |= m_label2.Process(currentTime);
   }
   changed |= m_label.SetColor(GetTextColor());
+  changed |= m_label.Process(currentTime);
   if (changed)
     MarkDirtyRegion();
 }
@@ -204,13 +203,22 @@ bool CGUIButtonControl::OnMessage(CGUIMessage& message)
       SetLabel2(message.GetLabel());
       return true;
     }
+    if (message.GetMessage() == GUI_MSG_IS_SELECTED)
+    {
+      message.SetParam1(m_bSelected ? 1 : 0);
+      return true;
+    }
     if (message.GetMessage() == GUI_MSG_SET_SELECTED)
     {
+      if (!m_bSelected)
+        SetInvalid();
       m_bSelected = true;
       return true;
     }
     if (message.GetMessage() == GUI_MSG_SET_DESELECTED)
     {
+      if (m_bSelected)
+        SetInvalid();
       m_bSelected = false;
       return true;
     }
@@ -261,7 +269,7 @@ void CGUIButtonControl::SetInvalid()
   m_imgNoFocus.SetInvalid();
 }
 
-void CGUIButtonControl::SetLabel(const string &label)
+void CGUIButtonControl::SetLabel(const std::string &label)
 { // NOTE: No fallback for buttons at this point
   if (m_info.GetLabel(GetParentID(), false) != label)
   {
@@ -270,7 +278,7 @@ void CGUIButtonControl::SetLabel(const string &label)
   }
 }
 
-void CGUIButtonControl::SetLabel2(const string &label2)
+void CGUIButtonControl::SetLabel2(const std::string &label2)
 { // NOTE: No fallback for buttons at this point
   if (m_info2.GetLabel(GetParentID(), false) != label2)
   {
@@ -297,6 +305,7 @@ bool CGUIButtonControl::UpdateColors()
 {
   bool changed = CGUIControl::UpdateColors();
   changed |= m_label.UpdateColors();
+  changed |= m_label2.UpdateColors();
   changed |= m_imgFocus.SetDiffuseColor(m_diffuseColor);
   changed |= m_imgNoFocus.SetDiffuseColor(m_diffuseColor);
 
@@ -327,13 +336,13 @@ std::string CGUIButtonControl::GetDescription() const
   return strLabel;
 }
 
-CStdString CGUIButtonControl::GetLabel2() const
+std::string CGUIButtonControl::GetLabel2() const
 {
-  CStdString strLabel(m_info2.GetLabel(m_parentID));
+  std::string strLabel(m_info2.GetLabel(m_parentID));
   return strLabel;
 }
 
-void CGUIButtonControl::PythonSetLabel(const CStdString &strFont, const string &strText, color_t textColor, color_t shadowColor, color_t focusedColor)
+void CGUIButtonControl::PythonSetLabel(const std::string &strFont, const std::string &strText, color_t textColor, color_t shadowColor, color_t focusedColor)
 {
   m_label.GetLabelInfo().font = g_fontManager.GetFont(strFont);
   m_label.GetLabelInfo().textColor = textColor;
@@ -379,4 +388,3 @@ void CGUIButtonControl::SetSelected(bool bSelected)
     SetInvalid();
   }
 }
-

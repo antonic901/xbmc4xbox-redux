@@ -70,7 +70,7 @@ public:
   virtual void SetLabel2(const std::string &text);
   void SetHint(const CGUIInfoLabel& hint);
 
-  virtual CStdString GetLabel2() const;
+  virtual std::string GetLabel2() const;
 
   unsigned int GetCursorPosition() const;
   void SetCursorPosition(unsigned int iPosition);
