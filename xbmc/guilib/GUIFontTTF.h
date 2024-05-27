@@ -107,6 +107,12 @@ protected:
   int m_posX;                        // current position in the texture
   int m_posY;
 
+  /*! \brief the height of each line in the texture.
+   Accounts for spacing between lines to avoid characters overlapping.
+   */
+  unsigned int GetTextureLineHeight() const;
+  static unsigned int spacing_between_characters_in_texture;
+
   Character *m_char;                 // our characters
   Character *m_charquick[256*7];     // ascii chars (7 styles) here
   int m_maxChars;                    // size of character array (can be incremented)
