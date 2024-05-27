@@ -92,7 +92,8 @@ private:
 class CGUIFont
 {
 public:
-  CGUIFont(const CStdString& strFontName, uint32_t style, color_t textColor, color_t shadowColor, float lineSpacing, CGUIFontTTF *font);
+  CGUIFont(const CStdString& strFontName, uint32_t style, color_t textColor,
+	   color_t shadowColor, float lineSpacing, float origHeight, CGUIFontTTF *font);
   virtual ~CGUIFont();
 
   CStdString& GetFontName();
@@ -115,6 +116,9 @@ public:
   float GetCharWidth( character_t ch );
   float GetTextHeight(int numLines) const;
   float GetLineHeight() const;
+
+  //! get font scale factor (rendered height / original height)
+  float GetScaleFactor() const;
 
   void Begin();
   void End();
@@ -139,6 +143,7 @@ protected:
   color_t m_shadowColor;
   color_t m_textColor;
   float m_lineSpacing;
+  float m_origHeight;
   CGUIFontTTF *m_font; // the font object has the size information
 
 private:
