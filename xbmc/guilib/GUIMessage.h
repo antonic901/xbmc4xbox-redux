@@ -105,6 +105,11 @@
 
 #define GUI_MSG_VALIDITY_CHANGED  44
 
+/*!
+ \brief Check whether a button is selected
+ */
+#define GUI_MSG_IS_SELECTED    45
+
 #define GUI_MSG_USER         1000
 
 /*!
