@@ -256,7 +256,7 @@ void CTextureBundle::Cleanup()
   m_PreLoadBuffer[1] = 0;
 }
 
-bool CTextureBundle::HasFile(const CStdString& Filename)
+bool CTextureBundle::HasFile(const std::string& Filename)
 {
   if (m_hFile == INVALID_HANDLE_VALUE && !OpenBundle())
     return false;
@@ -275,9 +275,9 @@ bool CTextureBundle::HasFile(const CStdString& Filename)
   return m_FileHeaders.find(name) != m_FileHeaders.end();
 }
 
-void CTextureBundle::GetTexturesFromPath(const CStdString &path, std::vector<CStdString> &textures)
+void CTextureBundle::GetTexturesFromPath(const std::string &path, std::vector<std::string> &textures)
 {
-  if (path.GetLength() > 1 && path[1] == ':')
+  if (path.size() > 1 && path[1] == ':')
     return;
 
   if (m_hFile == INVALID_HANDLE_VALUE && !OpenBundle())
@@ -419,7 +419,7 @@ bool CTextureBundle::LoadFile(const CStdString& Filename, CAutoTexBuffer& Unpack
   return success;
 }
 
-bool CTextureBundle::LoadTexture(const CStdString& Filename, CBaseTexture** ppTexture, int &width, int &height)
+bool CTextureBundle::LoadTexture(const std::string& Filename, CBaseTexture** ppTexture, int &width, int &height)
 {
   DWORD ResDataOffset;
   *ppTexture = NULL;
@@ -500,7 +500,7 @@ PackedLoadError:
   if (pPal) delete pPal;
   return false;
 }
-int CTextureBundle::LoadAnim(const CStdString& Filename, CBaseTexture*** ppTextures,
+int CTextureBundle::LoadAnim(const std::string& Filename, CBaseTexture*** ppTextures,
                               int &width, int &height, int& nLoops, int** ppDelays)
 {
   DWORD ResDataOffset;
@@ -610,7 +610,7 @@ void CTextureBundle::SetThemeBundle(bool themeBundle)
 
 // normalize to how it's stored within the bundle
 // lower case + using \\ rather than /
-CStdString CTextureBundle::Normalize(const CStdString &name)
+std::string CTextureBundle::Normalize(const std::string &name)
 {
   CStdString newName(name);
   newName.Normalize();

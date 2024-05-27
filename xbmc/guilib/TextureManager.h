@@ -123,7 +123,7 @@ public:
   uint32_t GetMemoryUsage() const;
   void Flush();
   CStdString GetTexturePath(const CStdString& textureName, bool directory = false);
-  void GetBundledTexturesFromPath(const CStdString& texturePath, std::vector<CStdString> &items);
+  void GetBundledTexturesFromPath(const std::string& texturePath, std::vector<std::string> &items);
 
   void AddTexturePath(const CStdString &texturePath);    ///< Add a new path to the paths to check when loading media
   void SetTexturePath(const CStdString &texturePath);    ///< Set a single path as the path to check when loading media (clear then add)

@@ -21,6 +21,8 @@
  */
 
 #include "utils/StdString.h"
+#include <string>
+#include <vector>
 #include "gui3d.h"
 
 #include <stdint.h>
@@ -58,13 +60,13 @@ public:
   void Cleanup();
 
   void SetThemeBundle(bool themeBundle);
-  bool HasFile(const CStdString& Filename);
-  void GetTexturesFromPath(const CStdString &path, std::vector<CStdString> &textures);
+  bool HasFile(const std::string& Filename);
+  void GetTexturesFromPath(const std::string &path, std::vector<std::string> &textures);
   bool PreloadFile(const CStdString& Filename);
-  static CStdString Normalize(const CStdString &name);
+  static std::string Normalize(const std::string &name);
 
-  bool LoadTexture(const CStdString& Filename, CBaseTexture** ppTexture, int &width, int &height);
+  bool LoadTexture(const std::string& Filename, CBaseTexture** ppTexture, int &width, int &height);
 
-  int LoadAnim(const CStdString& Filename, CBaseTexture*** ppTextures, int &width, int &height, int& nLoops, int** ppDelays);
+  int LoadAnim(const std::string& Filename, CBaseTexture*** ppTextures, int &width, int &height, int& nLoops, int** ppDelays);
 };
 
