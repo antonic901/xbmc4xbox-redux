@@ -249,7 +249,7 @@ bool CGUIFontTTF::Load(const CStdString& strFilename, float height, float aspect
   {
     m_stroker = g_freeTypeLibrary.GetStroker();
 
-    FT_Pos strength = FT_MulFix( m_face->units_per_EM, m_face->size->metrics.y_scale) / 16;
+    FT_Pos strength = FT_MulFix( m_face->units_per_EM, m_face->size->metrics.y_scale) / 12;
     if (strength < 128)
       strength = 128;
     m_cellHeight += 2*strength;
