@@ -89,7 +89,8 @@ public:
    */
   enum OVER_FLOW { OVER_FLOW_TRUNCATE = 0,
                    OVER_FLOW_SCROLL,
-                   OVER_FLOW_WRAP };
+                   OVER_FLOW_WRAP,
+                   OVER_FLOW_CLIP };
 
   CGUILabel(float posX, float posY, float width, float height, const CLabelInfo& labelInfo, OVER_FLOW overflow = OVER_FLOW_TRUNCATE);
   virtual ~CGUILabel(void);
@@ -137,6 +138,12 @@ public:
    \param scrolling true if this label should scroll.
    */
   void SetScrolling(bool scrolling);
+
+  /*! \brief Set how this label should handle overflowing text.
+   \param overflow the overflow type
+   \sa OVER_FLOW
+   */
+  bool SetOverflow(OVER_FLOW overflow);
 
   /*! \brief Set this label invalid.  Forces an update of the control
    */
