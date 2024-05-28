@@ -552,6 +552,9 @@ CGUIListItemPtr CGUIBaseContainer::GetListItem(int offset, unsigned int flag) co
   if (flag & INFOFLAG_LISTITEM_POSITION) // use offset from the first item displayed, taking into account scrolling
     item = CorrectOffset((int)(m_scroller.GetValue() / m_layout->Size(m_orientation)), offset);
 
+  if (flag & INFOFLAG_LISTITEM_ABSOLUTE) // use offset from the first item
+    item = CorrectOffset(0, offset);
+
   if (flag & INFOFLAG_LISTITEM_WRAP)
   {
     item %= ((int)m_items.size());
