@@ -18,17 +18,14 @@
  *
  */
 
-#include "include.h"
+#include "system.h"
 #include "GUIListItemLayout.h"
 #include "FileItem.h"
 #include "GUIControlFactory.h"
-#include "addons/Skin.h"
 #include "GUIInfoManager.h"
 #include "GUIListLabel.h"
 #include "GUIImage.h"
-#include "string.h"
-
-using namespace std;
+#include "utils/XBMCTinyXML.h"
 
 CGUIListItemLayout::CGUIListItemLayout()
 : m_group(0, 0, 0, 0, 0, 0)
@@ -78,6 +75,7 @@ void CGUIListItemLayout::Process(CGUIListItem *item, int parentID, unsigned int 
     // let's use a static cast with a virtual base function
     CFileItem *fileItem = item->IsFileItem() ? (CFileItem *)item : new CFileItem(*item);
     m_isPlaying.Update(item);
+    m_group.SetInvalid();
     m_group.UpdateInfo(fileItem);
     // delete our temporary fileitem
     if (!item->IsFileItem())
@@ -107,16 +105,22 @@ unsigned int CGUIListItemLayout::GetFocusedItem() const
 
 void CGUIListItemLayout::SetWidth(float width)
 {
-  m_group.EnlargeWidth(width - m_width);
-  m_width = width;
-  SetInvalid();
+  if (m_width != width)
+  {
+    m_group.EnlargeWidth(width - m_width);
+    m_width = width;
+    SetInvalid();
+  }
 }
 
 void CGUIListItemLayout::SetHeight(float height)
 {
-  m_group.EnlargeHeight(height - m_height);
-  m_height = height;
-  SetInvalid();
+  if (m_height != height)
+  {
+    m_group.EnlargeHeight(height - m_height);
+    m_height = height;
+    SetInvalid();
+  }
 }
 
 void CGUIListItemLayout::SelectItemFromPoint(const CPoint &point)
@@ -166,7 +170,6 @@ void CGUIListItemLayout::LoadControl(TiXmlElement *child, CGUIControlGroup *grou
 void CGUIListItemLayout::LoadLayout(TiXmlElement *layout, int context, bool focused)
 {
   m_focused = focused;
-  g_SkinInfo->ResolveIncludes(layout);
   layout->QueryFloatAttribute("width", &m_width);
   layout->QueryFloatAttribute("height", &m_height);
   const char *condition = layout->Attribute("condition");
@@ -187,7 +190,7 @@ void CGUIListItemLayout::LoadLayout(TiXmlElement *layout, int context, bool focu
 }
 
 //#ifdef GUILIB_PYTHON_COMPATIBILITY
-void CGUIListItemLayout::CreateListControlLayouts(float width, float height, bool focused, const CLabelInfo &labelInfo, const CLabelInfo &labelInfo2, const CTextureInfo &texture, const CTextureInfo &textureFocus, float texHeight, float iconWidth, float iconHeight, const CStdString &nofocusCondition, const CStdString &focusCondition)
+void CGUIListItemLayout::CreateListControlLayouts(float width, float height, bool focused, const CLabelInfo &labelInfo, const CLabelInfo &labelInfo2, const CTextureInfo &texture, const CTextureInfo &textureFocus, float texHeight, float iconWidth, float iconHeight, const std::string &nofocusCondition, const std::string &focusCondition)
 {
   m_width = width;
   m_height = height;
