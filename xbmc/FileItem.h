@@ -240,6 +240,8 @@ public:
     return m_pictureInfoTag;
   }
 
+  bool HasAddonInfo() const { return false; } // @todo BACKPORT: https://github.com/xbmc/xbmc/pull/9051
+
   CPictureInfoTag* GetPictureInfoTag();
 
   // Gets the cached thumb filename (no existence checks)

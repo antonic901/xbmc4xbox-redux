@@ -682,19 +682,22 @@ void CGUIWindowVideoNav::PlayItem(int iItem)
   CGUIWindowVideoBase::PlayItem(iItem);
 }
 
-void CGUIWindowVideoNav::OnItemInfo(CFileItem* pItem, ADDON::ScraperPtr& scraper)
+void CGUIWindowVideoNav::OnItemInfo(const CFileItem& fileItem, ADDON::ScraperPtr& scraper)
 {
-  m_database.Open(); // since we can be called from the music library without being inited
-  if (pItem->IsVideoDb())
-    scraper = m_database.GetScraperForPath(pItem->GetVideoInfoTag()->m_strPath);
-  else
+  if (!scraper || scraper->Content() == CONTENT_NONE)
   {
-    CStdString strPath,strFile;
-    URIUtils::Split(pItem->GetPath(),strPath,strFile);
-    scraper = m_database.GetScraperForPath(strPath);
+    m_database.Open(); // since we can be called from the music library without being inited
+    if (fileItem.IsVideoDb())
+      scraper = m_database.GetScraperForPath(fileItem.GetVideoInfoTag()->m_strPath);
+    else
+    {
+      CStdString strPath,strFile;
+      URIUtils::Split(fileItem.GetPath(),strPath,strFile);
+      scraper = m_database.GetScraperForPath(strPath);
+    }
+    m_database.Close();
   }
-  m_database.Close();
-  CGUIWindowVideoBase::OnItemInfo(pItem,scraper);
+  CGUIWindowVideoBase::OnItemInfo(fileItem, scraper);
 }
 
 void CGUIWindowVideoNav::OnDeleteItem(CFileItemPtr pItem)

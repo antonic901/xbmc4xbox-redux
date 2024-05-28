@@ -46,6 +46,8 @@ public:
   virtual CFileItemPtr GetCurrentListItem(int offset = 0);
   const CFileItemList& CurrentDirectory() const { return *m_albumSongs; };
   static void AddItemPathToFileBrowserSources(VECSOURCES &sources, const CFileItem &item);
+
+  static void ShowFor(CFileItem item);
 protected:
   virtual void OnInitWindow();
   void Update();

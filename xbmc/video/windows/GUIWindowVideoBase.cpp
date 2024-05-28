@@ -248,21 +248,16 @@ void CGUIWindowVideoBase::UpdateButtons()
   CGUIMediaWindow::UpdateButtons();
 }
 
-void CGUIWindowVideoBase::OnItemInfo(CFileItem* pItem, const ADDON::ScraperPtr& scraper)
+void CGUIWindowVideoBase::OnItemInfo(const CFileItem& fileItem, ADDON::ScraperPtr& scraper)
 {
-  if (!pItem)
+  if (fileItem.IsParentFolder() || fileItem.m_bIsShareOrDrive || fileItem.IsPath("add") ||
+     (fileItem.IsPlayList() && !URIUtils::HasExtension(fileItem.GetPath(), ".strm")))
     return;
 
   if (!scraper)
     return;
 
-  if (pItem->IsParentFolder() || pItem->m_bIsShareOrDrive || pItem->GetPath().Equals("add") ||
-     (pItem->IsPlayList() && !URIUtils::HasExtension(pItem->GetPath(), ".strm")))
-    return;
-
-  // ShowIMDB can kill the item as this window can be closed while we do it,
-  // so take a copy of the item now
-  CFileItem item(*pItem);
+  CFileItem item(fileItem);
   if (item.IsVideoDb() && item.HasVideoInfoTag())
   {
     if (item.GetVideoInfoTag()->m_type == MediaTypeSeason)
@@ -305,8 +300,8 @@ void CGUIWindowVideoBase::OnItemInfo(CFileItem* pItem, const ADDON::ScraperPtr& 
   }
 
   // we need to also request any thumbs be applied to the folder item
-  if (pItem->m_bIsFolder)
-    item.SetProperty("set_folder_thumb", pItem->GetPath());
+  if (fileItem.m_bIsFolder)
+    item.SetProperty("set_folder_thumb", fileItem.GetPath());
 
   bool modified = ShowIMDB(&item, scraper);
   if (modified &&
@@ -1015,7 +1010,7 @@ bool CGUIWindowVideoBase::OnItemInfo(int iItem)
       return true;
   }
 
-  OnItemInfo(item.get(), scraper);
+  OnItemInfo(*item, scraper);
 
   return true;
 }
@@ -1280,7 +1275,7 @@ bool CGUIWindowVideoBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       VIDEO::SScanSettings settings;
       GetScraperForItem(item.get(), info, settings);
 
-      OnItemInfo(item.get(),info);
+      OnItemInfo(*item,info);
       return true;
     }
   case CONTEXT_BUTTON_SCAN:
@@ -1306,7 +1301,7 @@ bool CGUIWindowVideoBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         OnScan(strPath, true);
       }
       else
-        OnItemInfo(item.get(),info);
+        OnItemInfo(*item, info);
 
       return true;
     }

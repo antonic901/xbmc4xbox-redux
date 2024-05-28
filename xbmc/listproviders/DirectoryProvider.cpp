@@ -32,8 +32,11 @@
 #include "utils/log.h"
 #include "threads/SingleLock.h"
 #include "ApplicationMessenger.h"
+#include "music/dialogs/GUIDialogMusicInfo.h"
+#include "addons/GUIDialogAddonInfo.h"
 #include "FileItem.h"
 #include "video/VideoThumbLoader.h"
+#include "video/dialogs/GUIDialogVideoInfo.h"
 #include "music/MusicThumbLoader.h"
 #include "pictures/PictureThumbLoader.h"
 #include "boost/make_shared.hpp"
@@ -315,6 +318,32 @@ void CDirectoryProvider::CheckContentAttributes(string &target, CFileItem &fileI
     fileItem.m_bIsFolder = false;
     fileItem.SetPath(path);
   }
+}
+
+bool CDirectoryProvider::OnInfo(const CGUIListItemPtr& item)
+{
+  CFileItemPtr fileItem = boost::static_pointer_cast<CFileItem>(item);
+
+  if (fileItem->HasAddonInfo())
+    return CGUIDialogAddonInfo::ShowForItem(fileItem);
+  else if (fileItem->HasVideoInfoTag())
+  {
+    CGUIDialogVideoInfo::ShowFor(*fileItem.get());
+    return true;
+  }
+  else if (fileItem->HasMusicInfoTag())
+  {
+    CGUIDialogMusicInfo::ShowFor(*fileItem.get());
+    return true;
+  }
+  return false;
+}
+
+bool CDirectoryProvider::OnContextMenu(const CGUIListItemPtr& item)
+{
+  // @todo BACKPORT: https://github.com/xbmc/xbmc/pull/9371
+  CLog::Log(LOGWARNING, "%s needs implementation", __FUNCTION__);
+  return false;
 }
 
 bool CDirectoryProvider::IsUpdating() const

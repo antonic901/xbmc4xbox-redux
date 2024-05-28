@@ -36,7 +36,7 @@ public:
 
   virtual void OnPrepareFileItems(CFileItemList &items);
 
-  virtual void OnItemInfo(CFileItem* pItem, ADDON::ScraperPtr &info);
+  virtual void OnItemInfo(const CFileItem& fileItem, ADDON::ScraperPtr &info);
 
 protected:
   /*! \brief Load video information from the database for these items
