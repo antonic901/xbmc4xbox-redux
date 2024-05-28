@@ -41,6 +41,7 @@
 #include "utils/StringUtils.h"
 #include "TextureCache.h"
 #include "music/MusicThumbLoader.h"
+#include "music/windows/GUIWindowMusicNav.h"
 #include "filesystem/Directory.h"
 
 using namespace std;
@@ -589,4 +590,11 @@ void CGUIDialogMusicInfo::AddItemPathToFileBrowserSources(VECSOURCES &sources, c
     itemSource.strPath = itemDir;
     sources.push_back(itemSource);
   }
+}
+
+void CGUIDialogMusicInfo::ShowFor(CFileItem item)
+{
+  CGUIWindowMusicNav *window = static_cast<CGUIWindowMusicNav*>(g_windowManager.GetWindow(WINDOW_MUSIC_NAV));
+  if (window)
+    window->OnItemInfo(&item);
 }

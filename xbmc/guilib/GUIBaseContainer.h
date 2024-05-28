@@ -25,8 +25,11 @@
  *
  */
 
-#include "IGUIContainer.h"
+#include <utility>
+#include <vector>
+
 #include "GUIListItemLayout.h"
+#include "IGUIContainer.h"
 #include "utils/Stopwatch.h"
 
 /*!
@@ -90,6 +93,12 @@ public:
   void SetRenderOffset(const CPoint &offset);
 
   void SetClickActions(const CGUIAction& clickActions) { m_clickActions = clickActions; };
+  void SetFocusActions(const CGUIAction& focusActions) { m_focusActions = focusActions; };
+  void SetUnFocusActions(const CGUIAction& unfocusActions) { m_unfocusActions = unfocusActions; };
+
+  void SetAutoScrolling(const TiXmlNode *node);
+  void ResetAutoScrolling();
+  void UpdateAutoScrolling(unsigned int currentTime);
 
 #ifdef _DEBUG
   virtual void DumpTextureUse();
@@ -101,7 +110,7 @@ protected:
   virtual void ProcessItem(float posX, float posY, CGUIListItemPtr& item, bool focused, unsigned int currentTime, CDirtyRegionList &dirtyregions);
 
   virtual void Render();
-  virtual void RenderItem(float posX, float posY, CGUIListItemPtr& item, bool focused);
+  virtual void RenderItem(float posX, float posY, CGUIListItem *item, bool focused);
   virtual void Scroll(int amount);
   virtual bool MoveDown(bool wrapAround);
   virtual bool MoveUp(bool wrapAround);
@@ -120,8 +129,10 @@ protected:
   virtual int GetCurrentPage() const;
   bool InsideLayout(const CGUIListItemLayout *layout, const CPoint &point) const;
   virtual void OnFocus();
+  virtual void OnUnFocus();
   void UpdateListProvider(bool forceRefresh = false);
 
+  int ScrollCorrectionRange() const;
   inline float Size() const;
   void MoveToRow(int row);
   void FreeMemory(int keepStart, int keepEnd);
@@ -162,14 +173,15 @@ protected:
                     // changing around)
 
   void UpdateScrollByLetter();
-  void GetCacheOffsets(int &cacheBefore, int &cacheAfter);
+  void GetCacheOffsets(int &cacheBefore, int &cacheAfter) const;
+  int GetCacheCount() const { return m_cacheItems; };
   bool ScrollingDown() const { return m_scroller.IsScrollingDown(); };
   bool ScrollingUp() const { return m_scroller.IsScrollingUp(); };
   void OnNextLetter();
   void OnPrevLetter();
   void OnJumpLetter(char letter, bool skip = false);
   void OnJumpSMS(int letter);
-  std::vector< std::pair<int, CStdString> > m_letterOffsets;
+  std::vector< std::pair<int, std::string> > m_letterOffsets;
 
   /*! \brief Set the cursor position
    Should be used by all base classes rather than directly setting it, as
@@ -183,20 +195,42 @@ protected:
    this also marks the control as dirty (if needed)
    */
   void SetOffset(int offset);
+  /*! \brief Returns the index of the first visible row
+   returns the first row. This may be outside of the range of available items. Use GetItemOffset() to retrieve the first visible item in the list.
+   \sa GetItemOffset
+  */
   inline int GetOffset() const { return m_offset; };
+  /*! \brief Returns the index of the first visible item
+   returns the first visible item. This will always be in the range of available items. Use GetOffset() to retrieve the first visible row in the list.
+   \sa GetOffset
+  */
+  inline int GetItemOffset() const { return CorrectOffset(GetOffset(), 0); }
+
+  // autoscrolling
+  INFO::InfoPtr m_autoScrollCondition;
+  int           m_autoScrollMoveTime;   // time between to moves
+  unsigned int  m_autoScrollDelayTime;  // current offset into the delay
+  bool          m_autoScrollIsReversed; // scroll backwards
+
+  unsigned int m_lastRenderTime;
 
 private:
+  bool OnContextMenu();
+
   int m_cursor;
   int m_offset;
   int m_cacheItems;
   CStopWatch m_scrollTimer;
+  CStopWatch m_lastScrollStartTimer;
   CStopWatch m_pageChangeTimer;
 
   CGUIAction m_clickActions;
+  CGUIAction m_focusActions;
+  CGUIAction m_unfocusActions;
 
   // letter match searching
   CStopWatch m_matchTimer;
-  CStdString m_match;
+  std::string m_match;
   float m_scrollItemsPerFrame;
 
   static const int letter_match_timeout = 1000;
