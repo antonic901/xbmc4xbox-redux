@@ -18,10 +18,10 @@
  *
  */
 
-#include "include.h"
 #include "GUIControlGroupList.h"
-#include "Key.h"
+#include "guilib/Key.h"
 #include "GUIInfoManager.h"
+#include "utils/StringUtils.h"
 #include "GUIFont.h" // for XBFONT_* definitions
 
 CGUIControlGroupList::CGUIControlGroupList(int parentID, int controlID, float posX, float posY, float width, float height, float itemGap, int pageControl, ORIENTATION orientation, bool useControlPositions, uint32_t alignment, const CScroller& scroller)
@@ -45,12 +45,16 @@ CGUIControlGroupList::~CGUIControlGroupList(void)
 
 void CGUIControlGroupList::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
-  m_scroller.Update(currentTime);
+  if (m_scroller.Update(currentTime))
+    MarkDirtyRegion();
 
   // first we update visibility of all our items, to ensure our size and
   // alignment computations are correct.
   for (iControls it = m_children.begin(); it != m_children.end(); ++it)
-    (*it)->UpdateVisibility();
+  {
+    CGUIControl *control = *it;
+    control->UpdateVisibility();
+  }
 
   ValidateOffset();
   if (m_pageControl)
@@ -61,6 +65,7 @@ void CGUIControlGroupList::Process(unsigned int currentTime, CDirtyRegionList &d
     SendWindowMessage(message2);
   }
   // we run through the controls, rendering as we go
+  int index = 0;
   float pos = GetAlignOffset();
   for (iControls it = m_children.begin(); it != m_children.end(); ++it)
   {
@@ -74,7 +79,16 @@ void CGUIControlGroupList::Process(unsigned int currentTime, CDirtyRegionList &d
     control->DoProcess(currentTime, dirtyregions);
 
     if (control->IsVisible())
+    {
+      if (IsControlOnScreen(pos, control))
+      {
+        if (control->HasFocus())
+          m_focusedPosition = index;
+        index++;
+      }
+
       pos += Size(control) + m_itemGap;
+    }
     g_graphicsContext.RestoreOrigin();
   }
   CGUIControl::Process(currentTime, dirtyregions);
@@ -83,7 +97,6 @@ void CGUIControlGroupList::Process(unsigned int currentTime, CDirtyRegionList &d
 void CGUIControlGroupList::Render()
 {
   // we run through the controls, rendering as we go
-  int index = 0;
   bool render(g_graphicsContext.SetClipRegion(m_posX, m_posY, m_width, m_height));
   float pos = GetAlignOffset();
   float focusedPos = 0;
@@ -106,14 +119,6 @@ void CGUIControlGroupList::Render()
         g_graphicsContext.SetOrigin(m_posX + pos - m_scroller.GetValue(), m_posY);
       control->DoRender();
     }
-
-    if (IsControlOnScreen(pos, control))
-    {
-      if (control->HasFocus())
-        m_focusedPosition = index;
-      index++;
-    }
-
     if (control->IsVisible())
       pos += Size(control) + m_itemGap;
     g_graphicsContext.RestoreOrigin();
@@ -451,7 +456,7 @@ bool isVisibleFocusable(const CGUIControl *child)
 
 int CGUIControlGroupList::GetNumItems() const
 {
-  return count_if(m_children.begin(), m_children.end(), isVisibleFocusable);
+  return std::count_if(m_children.begin(), m_children.end(), isVisibleFocusable);
 }
 
 int CGUIControlGroupList::GetSelectedItem() const
@@ -507,7 +512,6 @@ void CGUIControlGroupList::CalculateItemGap()
   {
     int itemsCount = 0;
     float itemsSize = 0;
-
     for (iControls it = m_children.begin(); it != m_children.end(); ++it)
     {
       CGUIControl *child = *it;
@@ -517,6 +521,7 @@ void CGUIControlGroupList::CalculateItemGap()
         itemsCount++;
       }
     }
+
     if (itemsCount > 0)
       m_itemGap = (Size() - itemsSize) / itemsCount;
   }
@@ -528,7 +533,7 @@ float CGUIControlGroupList::GetAlignOffset() const
   {
     if (m_alignment & XBFONT_RIGHT)
       return Size() - m_totalSize;
-   if (m_alignment & (XBFONT_CENTER_X | XBFONT_JUSTIFIED))
+    if (m_alignment & (XBFONT_CENTER_X | XBFONT_JUSTIFIED))
       return (Size() - m_totalSize)*0.5f;
   }
   return 0.0f;
@@ -558,6 +563,7 @@ EVENT_RESULT CGUIControlGroupList::OnMouseEvent(const CPoint &point, const CMous
       offset = nextOffset;
     }
   }
+
   return EVENT_RESULT_UNHANDLED;
 }
 
