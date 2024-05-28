@@ -50,8 +50,7 @@ public:
 
   void AddToDatabase(int iItem);
   static void OnScan(const CStdString& strPath, bool scanAll = false);
-  virtual void OnInfo(CFileItem* pItem, const ADDON::ScraperPtr& scraper);
-
+  virtual void OnItemInfo(CFileItem* pItem, const ADDON::ScraperPtr& scraper);
   /*! \brief Show the resume menu for this item (if it has a resume bookmark)
    If a resume bookmark is found, we set the item's m_lStartOffset to STARTOFFSET_RESUME.
    Note that we do this in favour of setting the resume point, as we need additional
@@ -113,7 +112,7 @@ protected:
    \param item the selected item
    \return true if the action is performed, false otherwise
    */
-  bool OnInfo(int item);
+  bool OnItemInfo(int item);
   /*! \brief perform a given action on a file
    \param item the selected item
    \param action the action to perform

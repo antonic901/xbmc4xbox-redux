@@ -111,6 +111,7 @@ public:
   virtual bool OnAction(const CAction &action);
   
   virtual bool OnBack(int actionID);
+  virtual bool OnInfo(int actionID) { return false; };
 
   /*! \brief Clear the background (if necessary) prior to rendering the window
    */

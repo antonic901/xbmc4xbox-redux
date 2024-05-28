@@ -112,7 +112,7 @@ bool CGUIDialogSongInfo::OnMessage(CGUIMessage& message)
           path.Format("musicdb://albums/%li",m_albumId);
           item.SetPath(path);
           item.m_bIsFolder = true;
-          window->OnInfo(&item, true);
+          window->OnItemInfo(&item, true);
         }
         return true;
       }

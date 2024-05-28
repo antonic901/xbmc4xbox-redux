@@ -155,7 +155,10 @@ bool CGUIControl::OnAction(const CAction &action)
     case ACTION_MOVE_RIGHT:
       OnRight();
       return true;
-    
+
+    case ACTION_SHOW_INFO:
+      return OnInfo();
+
     case ACTION_NAV_BACK:
       return OnBack();
 
@@ -205,6 +208,14 @@ void CGUIControl::OnRight()
 bool CGUIControl::OnBack()
 {
   return Navigate(ACTION_NAV_BACK);
+}
+
+bool CGUIControl::OnInfo()
+{
+  CGUIAction action = GetAction(ACTION_SHOW_INFO);
+  if (action.HasAnyActions())
+    return action.ExecuteActions(GetID(), GetParentID());
+  return false;
 }
 
 void CGUIControl::OnNextControl()
@@ -376,12 +387,12 @@ float CGUIControl::GetHeight() const
   return m_height;
 }
 
-void CGUIControl::SetNavigationActions(const ActionMap &actions)
+void CGUIControl::SetActions(const ActionMap &actions)
 {
   m_actions = actions;
 }
 
-void CGUIControl::SetNavigationAction(int actionID, const CGUIAction &action, bool replace /*= true*/)
+void CGUIControl::SetAction(int actionID, const CGUIAction &action, bool replace /*= true*/)
 {
   ActionMap::iterator i = m_actions.find(actionID);
   if (i == m_actions.end() || !i->second.HasAnyActions() || replace)
@@ -750,7 +761,7 @@ bool CGUIControl::IsAnimating(ANIMATION_TYPE animType)
   return false;
 }
 
-CGUIAction CGUIControl::GetNavigateAction(int actionID) const
+CGUIAction CGUIControl::GetAction(int actionID) const
 {
   ActionMap::const_iterator i = m_actions.find(actionID);
   if (i != m_actions.end())

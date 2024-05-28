@@ -683,7 +683,7 @@ void CGUIWindowVideoNav::PlayItem(int iItem)
   CGUIWindowVideoBase::PlayItem(iItem);
 }
 
-void CGUIWindowVideoNav::OnInfo(CFileItem* pItem, ADDON::ScraperPtr& scraper)
+void CGUIWindowVideoNav::OnItemInfo(CFileItem* pItem, ADDON::ScraperPtr& scraper)
 {
   m_database.Open(); // since we can be called from the music library without being inited
   if (pItem->IsVideoDb())
@@ -695,7 +695,7 @@ void CGUIWindowVideoNav::OnInfo(CFileItem* pItem, ADDON::ScraperPtr& scraper)
     scraper = m_database.GetScraperForPath(strPath);
   }
   m_database.Close();
-  CGUIWindowVideoBase::OnInfo(pItem,scraper);
+  CGUIWindowVideoBase::OnItemInfo(pItem,scraper);
 }
 
 void CGUIWindowVideoNav::OnDeleteItem(CFileItemPtr pItem)
