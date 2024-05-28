@@ -36,7 +36,7 @@ class CGUIListLabel :
       public CGUIControl
 {
 public:
-  CGUIListLabel(int parentID, int controlID, float posX, float posY, float width, float height, const CLabelInfo& labelInfo, const CGUIInfoLabel &label, bool alwaysScroll);
+  CGUIListLabel(int parentID, int controlID, float posX, float posY, float width, float height, const CLabelInfo& labelInfo, const CGUIInfoLabel &label, CGUIControl::GUISCROLLVALUE scroll);
   virtual ~CGUIListLabel(void);
   virtual CGUIListLabel *Clone() const { return new CGUIListLabel(*this); };
 
@@ -48,7 +48,7 @@ public:
   virtual void SetInvalid();
   virtual void SetWidth(float width);
 
-  void SetLabel(const CStdString &label);
+  void SetLabel(const std::string &label);
   void SetSelected(bool selected);
   void SetScrolling(bool scrolling);
 
@@ -64,5 +64,5 @@ protected:
 
   CGUILabel     m_label;
   CGUIInfoLabel m_info;
-  bool          m_alwaysScroll;
+  CGUIControl::GUISCROLLVALUE m_scroll;
 };
