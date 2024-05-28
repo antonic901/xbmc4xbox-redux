@@ -18,10 +18,9 @@
  *
  */
 
-#include "include.h"
 #include "GUIListGroup.h"
 #include "GUIListLabel.h"
-#include "GUIBorderedImage.h"
+#include "utils/log.h"
 
 CGUIListGroup::CGUIListGroup(int parentID, int controlID, float posX, float posY, float width, float height)
 : CGUIControlGroup(parentID, controlID, posX, posY, width, height)
@@ -60,20 +59,23 @@ void CGUIListGroup::AddControl(CGUIControl *control, int position /*= -1*/)
 
 void CGUIListGroup::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
-  CGUIControlGroup::Process(currentTime, dirtyregions);
-  m_item = NULL;
-}
-
-void CGUIListGroup::Render()
-{
   g_graphicsContext.SetOrigin(m_posX, m_posY);
+
+  CRect rect;
   for (iControls it = m_children.begin(); it != m_children.end(); ++it)
   {
     CGUIControl *control = *it;
-    control->DoRender();
+    control->UpdateVisibility(m_item);
+    unsigned int oldDirty = dirtyregions.size();
+    control->DoProcess(currentTime, dirtyregions);
+    if (control->IsVisible() || (oldDirty != dirtyregions.size())) // visible or dirty (was visible?)
+      rect.Union(control->GetRenderRegion());
   }
-  CGUIControl::Render();
+
   g_graphicsContext.RestoreOrigin();
+  CGUIControl::Process(currentTime, dirtyregions);
+  m_renderRegion = rect;
+  m_item = NULL;
 }
 
 void CGUIListGroup::ResetAnimation(ANIMATION_TYPE type)
@@ -112,16 +114,16 @@ void CGUIListGroup::UpdateInfo(const CGUIListItem *item)
 
 void CGUIListGroup::EnlargeWidth(float difference)
 {
-  // Alters the width of the controls that have an ID of 1
+  // Alters the width of the controls that have an ID of 1 to 14
   for (iControls it = m_children.begin(); it != m_children.end(); it++)
   {
     CGUIControl *child = *it;
     if (child->GetID() >= 1 && child->GetID() <= 14)
     {
-      if (child->GetID() == 1) // label
+      if (child->GetID() == 1)
       {
-        child->SetWidth(child->GetWidth() + difference - 10);
-        child->SetVisible(child->GetWidth() > 10); ///
+        child->SetWidth(child->GetWidth() + difference);
+        child->SetVisible(child->GetWidth() > 10);
       }
       else
       {
@@ -134,16 +136,16 @@ void CGUIListGroup::EnlargeWidth(float difference)
 
 void CGUIListGroup::EnlargeHeight(float difference)
 {
-  // Alters the width of the controls that have an ID of 1
+  // Alters the height of the controls that have an ID of 1 to 14
   for (iControls it = m_children.begin(); it != m_children.end(); it++)
   {
     CGUIControl *child = *it;
     if (child->GetID() >= 1 && child->GetID() <= 14)
     {
-      if (child->GetID() == 1) // label
+      if (child->GetID() == 1)
       {
         child->SetHeight(child->GetHeight() + difference);
-        child->SetVisible(child->GetHeight() > 10); ///
+        child->SetVisible(child->GetHeight() > 10);
       }
       else
       {
@@ -216,6 +218,8 @@ void CGUIListGroup::SetState(bool selected, bool focused)
       label->SetSelected(selected);
       label->SetScrolling(focused);
     }
+    else if ((*it)->GetControlType() == CGUIControl::GUICONTROL_LISTGROUP)
+      ((CGUIListGroup *)(*it))->SetState(selected, focused);
   }
 }
 
