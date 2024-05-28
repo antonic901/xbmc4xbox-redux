@@ -51,6 +51,7 @@ public:
   virtual std::string GetDescription() const;
   virtual float GetWidth() const;
   virtual void SetWidth(float width);
+  virtual CRect CalcRenderRegion() const;
 
   const CLabelInfo& GetLabelInfo() const { return m_label.GetLabelInfo(); };
   void SetLabel(const std::string &strLabel);
@@ -65,7 +66,7 @@ public:
 
 protected:
   bool UpdateColors();
-  CStdString ShortenPath(const CStdString &path);
+  std::string ShortenPath(const std::string &path);
 
   /*! \brief Return the maximum width of this label control.
    \return Return the width of the control if available, else the width of the current text.
@@ -80,7 +81,6 @@ protected:
   unsigned int m_dwCounter;
 
   // stuff for autowidth
-  bool m_autoWidth;
   float m_minWidth;
 
   // multi-info stuff
