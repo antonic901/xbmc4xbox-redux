@@ -18,10 +18,8 @@
  *
  */
 
-#include "include.h"
 #include "GUIFixedListContainer.h"
-#include "GUIListItem.h"
-#include "GUIInfoManager.h"
+#include "guilib/Key.h"
 
 CGUIFixedListContainer::CGUIFixedListContainer(int parentID, int controlID, float posX, float posY, float width, float height, ORIENTATION orientation, const CScroller& scroller, int preloadItems, int fixedPosition, int cursorRange)
     : CGUIBaseContainer(parentID, controlID, posX, posY, width, height, orientation, scroller, preloadItems)
@@ -43,13 +41,13 @@ bool CGUIFixedListContainer::OnAction(const CAction &action)
   {
   case ACTION_PAGE_UP:
     {
-        Scroll(-m_itemsPerPage);
+      Scroll(-m_itemsPerPage);
       return true;
     }
     break;
   case ACTION_PAGE_DOWN:
     {
-        Scroll(m_itemsPerPage);
+      Scroll(m_itemsPerPage);
       return true;
     }
     break;
@@ -62,7 +60,7 @@ bool CGUIFixedListContainer::OnAction(const CAction &action)
       {
         handled = true;
         m_analogScrollCount -= 0.4f;
-          Scroll(-1);
+        Scroll(-1);
       }
       return handled;
     }
@@ -75,7 +73,7 @@ bool CGUIFixedListContainer::OnAction(const CAction &action)
       {
         handled = true;
         m_analogScrollCount -= 0.4f;
-          Scroll(1);
+        Scroll(1);
       }
       return handled;
     }
@@ -161,7 +159,7 @@ void CGUIFixedListContainer::ValidateOffset()
   // don't validate offset if we are scrolling in case the tween image exceed <0, 1> range
   if (GetOffset() > maxOffset || (!m_scroller.IsScrolling() && m_scroller.GetValue() > maxOffset * m_layout->Size(m_orientation)))
   {
-    SetOffset(maxOffset);
+    SetOffset(std::max(-minCursor, maxOffset));
     m_scroller.SetValue(GetOffset() * m_layout->Size(m_orientation));
   }
   if (GetOffset() < minOffset || (!m_scroller.IsScrolling() && m_scroller.GetValue() < minOffset * m_layout->Size(m_orientation)))
@@ -249,7 +247,6 @@ bool CGUIFixedListContainer::SelectItemFromPoint(const CPoint &point)
     SetCursor(cursor);
     return true;
   }
-  return InsideLayout(m_focusedLayout, point);
 }
 
 void CGUIFixedListContainer::SelectItem(int item)
@@ -285,7 +282,7 @@ bool CGUIFixedListContainer::HasPreviousPage() const
 
 bool CGUIFixedListContainer::HasNextPage() const
 {
-  return (GetOffset() != (int)m_items.size() - m_itemsPerPage && (int)m_items.size() >= m_itemsPerPage);
+  return (GetOffset() < (int)m_items.size() - m_itemsPerPage && (int)m_items.size() >= m_itemsPerPage);
 }
 
 int CGUIFixedListContainer::GetCurrentPage() const
