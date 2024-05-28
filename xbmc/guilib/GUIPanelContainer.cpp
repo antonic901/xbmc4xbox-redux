@@ -18,12 +18,12 @@
  *
  */
 
-#include "include.h"
 #include "GUIPanelContainer.h"
-#include "GUIListItem.h"
 #include "GUIInfoManager.h"
+#include "guilib/Key.h"
+#include "utils/StringUtils.h"
 
-using namespace std;
+#include <cassert>
 
 CGUIPanelContainer::CGUIPanelContainer(int parentID, int controlID, float posX, float posY, float width, float height, ORIENTATION orientation, const CScroller& scroller, int preloadItems)
     : CGUIBaseContainer(parentID, controlID, posX, posY, width, height, orientation, scroller, preloadItems)
@@ -53,8 +53,9 @@ void CGUIPanelContainer::Process(unsigned int currentTime, CDirtyRegionList &dir
   int cacheBefore, cacheAfter;
   GetCacheOffsets(cacheBefore, cacheAfter);
 
-  // Free memory not used on screen at the moment, do this first so there's more memory for the new items.
-  FreeMemory(CorrectOffset(offset - cacheBefore, 0), CorrectOffset(offset + cacheAfter + m_itemsPerPage + 1, 0));
+  // Free memory not used on screen
+  if ((int)m_items.size() > m_itemsPerPage + cacheBefore + cacheAfter)
+    FreeMemory(CorrectOffset(offset - cacheBefore, 0), CorrectOffset(offset + m_itemsPerPage + 1 + cacheAfter, 0));
 
   CPoint origin = CPoint(m_posX, m_posY) + m_renderOffset;
   float pos = (m_orientation == VERTICAL) ? origin.y : origin.x;
@@ -89,7 +90,9 @@ void CGUIPanelContainer::Process(unsigned int currentTime, CDirtyRegionList &dir
     current++;
   }
 
-  UpdatePageControl(offset);
+  // when we are scrolling up, offset will become lower (integer division, see offset calc)
+  // to have same behaviour when scrolling down, we need to set page control to offset+1
+  UpdatePageControl(offset + (m_scroller.IsScrollingDown() ? 1 : 0));
 
   CGUIControl::Process(currentTime, dirtyregions);
 }
@@ -103,9 +106,6 @@ void CGUIPanelContainer::Render()
 
   int cacheBefore, cacheAfter;
   GetCacheOffsets(cacheBefore, cacheAfter);
-
-  // Free memory not used on screen at the moment, do this first so there's more memory for the new items.
-  FreeMemory(CorrectOffset(offset - cacheBefore, 0), CorrectOffset(offset + cacheAfter + m_itemsPerPage + 1, 0));
 
   if (g_graphicsContext.SetClipRegion(m_posX, m_posY, m_width, m_height))
   {
@@ -164,7 +164,6 @@ void CGUIPanelContainer::Render()
 
     g_graphicsContext.RestoreClipRegion();
   }
-
   CGUIControl::Render();
 }
 
@@ -335,7 +334,7 @@ bool CGUIPanelContainer::MoveUp(bool wrapAround)
   else if (wrapAround)
   { // move last item in list in this column
     SetCursor((GetCursor() % m_itemsPerRow) + (m_itemsPerPage - 1) * m_itemsPerRow);
-    int offset = max((int)GetRows() - m_itemsPerPage, 0);
+    int offset = std::max((int)GetRows() - m_itemsPerPage, 0);
     // should check here whether cursor is actually allowed here, and reduce accordingly
     if (offset * m_itemsPerRow + GetCursor() >= (int)m_items.size())
       SetCursor((int)m_items.size() - offset * m_itemsPerRow - 1);
@@ -356,7 +355,7 @@ bool CGUIPanelContainer::MoveLeft(bool wrapAround)
   { // wrap around
     SetCursor(GetCursor() + m_itemsPerRow - 1);
     if (GetOffset() * m_itemsPerRow + GetCursor() >= (int)m_items.size())
-      SetCursor((int)m_items.size() - GetOffset() * m_itemsPerRow);
+      SetCursor((int)m_items.size() - GetOffset() * m_itemsPerRow - 1);
   }
   else
     return false;
@@ -395,7 +394,7 @@ void CGUIPanelContainer::ValidateOffset()
   // don't validate offset if we are scrolling in case the tween image exceed <0, 1> range
   if (GetOffset() > (int)GetRows() - m_itemsPerPage || (!m_scroller.IsScrolling() && m_scroller.GetValue() > ((int)GetRows() - m_itemsPerPage) * m_layout->Size(m_orientation)))
   {
-    SetOffset((int)GetRows() - m_itemsPerPage);
+    SetOffset(std::max(0, (int)GetRows() - m_itemsPerPage));
     m_scroller.SetValue(GetOffset() * m_layout->Size(m_orientation));
   }
   if (GetOffset() < 0 || (!m_scroller.IsScrolling() && m_scroller.GetValue() < 0))
@@ -477,7 +476,7 @@ int CGUIPanelContainer::GetCursorFromPoint(const CPoint &point, CPoint *itemPoin
     }
     posY -= sizeY;
   }
-  return false;
+  return -1;
 }
 
 bool CGUIPanelContainer::SelectItemFromPoint(const CPoint &point)
@@ -489,12 +488,24 @@ bool CGUIPanelContainer::SelectItemFromPoint(const CPoint &point)
   return true;
 }
 
+int CGUIPanelContainer::GetCurrentRow() const
+{
+  return m_itemsPerRow > 0 ? GetCursor() / m_itemsPerRow : 0;
+}
+
+int CGUIPanelContainer::GetCurrentColumn() const
+{
+  return GetCursor() % m_itemsPerRow;
+}
+
 bool CGUIPanelContainer::GetCondition(int condition, int data) const
-{ // probably only works vertically atm...
-  int row = GetCursor() / m_itemsPerRow;
-  int col = GetCursor() % m_itemsPerRow;
+{
+  int row = GetCurrentRow();
+  int col = GetCurrentColumn();
+
   if (m_orientation == HORIZONTAL)
-    swap(row, col);
+    std::swap(row, col);
+
   switch (condition)
   {
   case CONTAINER_ROW:
@@ -504,6 +515,26 @@ bool CGUIPanelContainer::GetCondition(int condition, int data) const
   default:
     return CGUIBaseContainer::GetCondition(condition, data);
   }
+}
+
+std::string CGUIPanelContainer::GetLabel(int info) const
+{
+  int row = GetCurrentRow();
+  int col = GetCurrentColumn();
+
+  if (m_orientation == HORIZONTAL)
+    std::swap(row, col);
+
+  switch (info)
+  {
+  case CONTAINER_ROW:
+    return StringUtils::Format("%i", row);
+  case CONTAINER_COLUMN:
+    return StringUtils::Format("%i", col);
+  default:
+    return CGUIBaseContainer::GetLabel(info);
+  }
+  return StringUtils::Empty;
 }
 
 void CGUIPanelContainer::SelectItem(int item)
