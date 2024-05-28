@@ -1324,6 +1324,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     ((CGUIListContainer *)control)->SetType(viewType, viewLabel);
     ((CGUIListContainer *)control)->SetPageControl(pageControl);
     ((CGUIListContainer *)control)->SetRenderOffset(offset);
+    ((CGUIListContainer *)control)->SetClickActions(clickActions);
   }
   else if (type == CGUIControl::GUICONTAINER_WRAPLIST)
   {
@@ -1336,6 +1337,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     ((CGUIWrappingListContainer *)control)->SetType(viewType, viewLabel);
     ((CGUIWrappingListContainer *)control)->SetPageControl(pageControl);
     ((CGUIWrappingListContainer *)control)->SetRenderOffset(offset);
+    ((CGUIWrappingListContainer *)control)->SetClickActions(clickActions);
   }
   else if (type == CGUIControl::GUICONTAINER_FIXEDLIST)
   {
@@ -1360,6 +1362,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
     ((CGUIPanelContainer *)control)->SetType(viewType, viewLabel);
     ((CGUIPanelContainer *)control)->SetPageControl(pageControl);
     ((CGUIPanelContainer *)control)->SetRenderOffset(offset);
+    ((CGUIPanelContainer *)control)->SetClickActions(clickActions);
   }
   else if (type == CGUIControl::GUICONTROL_TEXTBOX)
   {

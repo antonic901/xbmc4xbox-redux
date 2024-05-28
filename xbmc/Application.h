@@ -227,7 +227,7 @@ public:
 
   CNetwork& getNetwork();
 
-  bool ExecuteXBMCAction(std::string action);
+  bool ExecuteXBMCAction(std::string action, const CGUIListItemPtr &item = CGUIListItemPtr());
 
   CGUIWindowPointer m_guiPointer;
 

@@ -87,6 +87,8 @@ public:
    */
   void SetRenderOffset(const CPoint &offset);
 
+  void SetClickActions(const CGUIAction& clickActions) { m_clickActions = clickActions; };
+
 #ifdef _DEBUG
   virtual void DumpTextureUse();
 #endif
@@ -171,6 +173,8 @@ private:
   int m_cacheItems;
   CStopWatch m_scrollTimer;
   CStopWatch m_pageChangeTimer;
+
+  CGUIAction m_clickActions;
 
   // letter match searching
   CStopWatch m_matchTimer;

@@ -20,9 +20,12 @@
  */
 
 #include <vector>
+#include <memory>
 #include "utils/StdString.h"
+#include "boost/shared_ptr.hpp"
 
 class CGUIControl;
+class CGUIListItem; typedef boost::shared_ptr<CGUIListItem> CGUIListItemPtr;
 
 /**
  * Class containing vector of condition->(action/navigation route) pairs and handling its execution.
@@ -36,7 +39,7 @@ public:
   /**
    * Execute actions (no navigation paths), if action is paired with condition - evaluate condition first
    */
-  bool ExecuteActions(int controlID, int parentID) const;
+  bool ExecuteActions(int controlID, int parentID, const CGUIListItemPtr &item = CGUIListItemPtr()) const;
   /**
    * Check if there is any action that meet its condition
    */

@@ -37,14 +37,14 @@ CGUIAction::CGUIAction(int controlID)
   SetNavigation(controlID);
 }
 
-bool CGUIAction::ExecuteActions(int controlID, int parentID) const
+bool CGUIAction::ExecuteActions(int controlID, int parentID, const CGUIListItemPtr &item /* = NULL */) const
 {
   if (m_actions.size() == 0) return false;
   // take a copy of actions that satisfy our conditions
   vector<CStdString> actions;
   for (ciActions it = m_actions.begin() ; it != m_actions.end() ; it++)
   {
-    if (it->condition.IsEmpty() || g_infoManager.EvaluateBool(it->condition))
+    if (it->condition.IsEmpty() || g_infoManager.EvaluateBool(it->condition, 0, item))
     {
       if (!StringUtils::IsInteger(it->action))
         actions.push_back(it->action);
@@ -54,7 +54,7 @@ bool CGUIAction::ExecuteActions(int controlID, int parentID) const
   bool retval = false;
   for (vector<CStdString>::iterator i = actions.begin(); i != actions.end(); ++i)
   {
-    CGUIMessage msg(GUI_MSG_EXECUTE, controlID, parentID);
+    CGUIMessage msg(GUI_MSG_EXECUTE, controlID, parentID, 0, 0, item);
     msg.SetStringParam(*i);
     if (m_sendThreadMessages)
       g_windowManager.SendThreadMessage(msg);

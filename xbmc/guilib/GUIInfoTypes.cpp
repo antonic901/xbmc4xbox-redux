@@ -421,3 +421,9 @@ CStdString CGUIInfoLabel::GetLabel(const CStdString &label, int contextWindow, b
   CGUIInfoLabel info(label, "", contextWindow);
   return info.GetLabel(contextWindow, preferImage);
 }
+
+std::string CGUIInfoLabel::GetItemLabel(const std::string &label, const CGUIListItem *item, bool preferImage /*= false */)
+{ // translate the label
+  CGUIInfoLabel info(label);
+  return info.GetItemLabel(item, preferImage);
+}
