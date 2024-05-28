@@ -651,12 +651,12 @@ CStdString CGUIControlFactory::FilterLabel(const CStdString &label)
   return viewLabel;
 }
 
-bool CGUIControlFactory::GetString(const TiXmlNode* pRootNode, const char *strTag, CStdString &text)
+bool CGUIControlFactory::GetString(const TiXmlNode* pRootNode, const char *strTag, std::string &text)
 {
   if (!XMLUtils::GetString(pRootNode, strTag, text))
     return false;
   if (text == "-")
-    text.Empty();
+    text.clear();
   if (StringUtils::IsNaturalNumber(text))
     text = g_localizeStrings.Get(atoi(text.c_str()));
   else
