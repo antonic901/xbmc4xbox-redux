@@ -25,8 +25,10 @@
  *
  */
 
+#include <vector>
+
 #include "GUIControl.h"
-#include <map>
+
 /*!
  \ingroup controls
  \brief group of controls, useful for remembering last control + animating/hiding together
@@ -69,6 +71,7 @@ public:
   int GetFocusedControlID() const;
   CGUIControl *GetFocusedControl() const;
   const CGUIControl *GetControl(int id) const;
+  CGUIControl *GetControl(int id);
   virtual CGUIControl *GetFirstFocusableControl(int id);
   void GetContainers(std::vector<CGUIControl *> &containers) const;
 
@@ -107,7 +110,7 @@ protected:
   typedef std::multimap<int, CGUIControl *> LookupMap;
   void AddLookup(CGUIControl *control);
   void RemoveLookup(CGUIControl *control);
-  const LookupMap &GetLookup() { return m_lookup; };
+  const LookupMap &GetLookup() const { return m_lookup; };
   LookupMap m_lookup;
 
   int  m_defaultControl;
