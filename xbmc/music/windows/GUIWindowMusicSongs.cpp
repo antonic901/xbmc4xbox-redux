@@ -81,7 +81,7 @@ bool CGUIWindowMusicSongs::OnMessage(CGUIMessage& message)
       // the window translator does it by using a virtual window id (5)
 
       // is this the first time the window is opened?
-      if (m_vecItems->GetPath() == "?" && message.GetStringParam().IsEmpty())
+      if (m_vecItems->GetPath() == "?" && message.GetStringParam().empty())
         message.SetStringParam(CMediaSourceSettings::Get().GetDefaultSource("music"));
 
       return CGUIWindowMusicBase::OnMessage(message);

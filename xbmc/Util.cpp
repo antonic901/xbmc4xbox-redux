@@ -2507,16 +2507,16 @@ bool CUtil::IsUsingTTFSubtitles()
   return URIUtils::HasExtension(CSettings::Get().GetString("subtitles.font"), ".ttf");
 }
 
-void CUtil::SplitExecFunction(const CStdString &execString, CStdString &function, vector<CStdString> &parameters)
+void CUtil::SplitExecFunction(const std::string &execString, std::string &function, vector<string> &parameters)
 {
-  CStdString paramString;
- 
-  int iPos = execString.Find("(");
-  int iPos2 = execString.ReverseFind(")");
-  if (iPos > 0 && iPos2 > 0)
+  std::string paramString;
+
+  size_t iPos = execString.find("(");
+  size_t iPos2 = execString.rfind(")");
+  if (iPos != std::string::npos && iPos2 != std::string::npos)
   {
-    paramString = execString.Mid(iPos + 1, iPos2 - iPos - 1);
-    function = execString.Left(iPos);
+    paramString = execString.substr(iPos + 1, iPos2 - iPos - 1);
+    function = execString.substr(0, iPos);
   }
   else
     function = execString;
@@ -2529,13 +2529,13 @@ void CUtil::SplitExecFunction(const CStdString &execString, CStdString &function
   SplitParams(paramString, parameters);
 }
 
-void CUtil::SplitParams(const CStdString &paramString, std::vector<CStdString> &parameters)
+void CUtil::SplitParams(const std::string &paramString, std::vector<std::string> &parameters)
 {
   bool inQuotes = false;
   bool lastEscaped = false; // only every second character can be escaped
   int inFunction = 0;
   size_t whiteSpacePos = 0;
-  CStdString parameter;
+  std::string parameter;
   parameters.clear();
   for (size_t pos = 0; pos < paramString.size(); pos++)
   {
@@ -2566,22 +2566,22 @@ void CUtil::SplitParams(const CStdString &paramString, std::vector<CStdString> &
       if (!inFunction && ch == ',')
       { // not in a function, so a comma signfies the end of this parameter
         if (whiteSpacePos)
-          parameter = parameter.Left(whiteSpacePos);
+          parameter = parameter.substr(0, whiteSpacePos);
         // trim off start and end quotes
-        if (parameter.GetLength() > 1 && parameter[0] == '"' && parameter[parameter.GetLength() - 1] == '"')
-          parameter = parameter.Mid(1,parameter.GetLength() - 2);
-        else if (parameter.GetLength() > 3 && parameter[parameter.GetLength() - 1] == '"')
+        if (parameter.length() > 1 && parameter[0] == '"' && parameter[parameter.length() - 1] == '"')
+          parameter = parameter.substr(1, parameter.length() - 2);
+        else if (parameter.length() > 3 && parameter[parameter.length() - 1] == '"')
         {
           // check name="value" style param.
-          int quotaPos = parameter.Find('"');
-          if (quotaPos > 1 && quotaPos < parameter.GetLength() - 1 && parameter[quotaPos - 1] == '=')
+          size_t quotaPos = parameter.find('"');
+          if (quotaPos > 1 && quotaPos < parameter.length() - 1 && parameter[quotaPos - 1] == '=')
           {
-            parameter.Delete(parameter.GetLength() - 1);
-            parameter.Delete(quotaPos);
+            parameter.erase(parameter.length() - 1);
+            parameter.erase(quotaPos);
           }
         }
         parameters.push_back(parameter);
-        parameter.Empty();
+        parameter.clear();
         whiteSpacePos = 0;
         continue;
       }
@@ -2594,7 +2594,7 @@ void CUtil::SplitParams(const CStdString &paramString, std::vector<CStdString> &
     // whitespace handling - we skip any whitespace at the left or right of an unquoted parameter
     if (ch == ' ' && !inQuotes)
     {
-      if (parameter.IsEmpty()) // skip whitespace on left
+      if (parameter.empty()) // skip whitespace on left
         continue;
       if (!whiteSpacePos) // make a note of where whitespace starts on the right
         whiteSpacePos = parameter.size();
@@ -2606,21 +2606,21 @@ void CUtil::SplitParams(const CStdString &paramString, std::vector<CStdString> &
   if (inFunction || inQuotes)
     CLog::Log(LOGWARNING, "%s(%s) - end of string while searching for ) or \"", __FUNCTION__, paramString.c_str());
   if (whiteSpacePos)
-    parameter = parameter.Left(whiteSpacePos);
+    parameter.erase(whiteSpacePos);
   // trim off start and end quotes
-  if (parameter.GetLength() > 1 && parameter[0] == '"' && parameter[parameter.GetLength() - 1] == '"')
-    parameter = parameter.Mid(1,parameter.GetLength() - 2);
-  else if (parameter.GetLength() > 3 && parameter[parameter.GetLength() - 1] == '"')
+  if (parameter.size() > 1 && parameter[0] == '"' && parameter[parameter.size() - 1] == '"')
+    parameter = parameter.substr(1,parameter.size() - 2);
+  else if (parameter.size() > 3 && parameter[parameter.size() - 1] == '"')
   {
     // check name="value" style param.
-    int quotaPos = parameter.Find('"');
-    if (quotaPos > 1 && quotaPos < parameter.GetLength() - 1 && parameter[quotaPos - 1] == '=')
+    size_t quotaPos = parameter.find('"');
+    if (quotaPos > 1 && quotaPos < parameter.length() - 1 && parameter[quotaPos - 1] == '=')
     {
-      parameter.Delete(parameter.GetLength() - 1);
-      parameter.Delete(quotaPos);
+      parameter.erase(parameter.length() - 1);
+      parameter.erase(quotaPos);
     }
   }
-  if (!parameter.IsEmpty() || parameters.size())
+  if (!parameter.empty() || parameters.size())
     parameters.push_back(parameter);
 }
 

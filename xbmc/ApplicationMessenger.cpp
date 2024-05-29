@@ -1014,7 +1014,7 @@ void CApplicationMessenger::Close(CGUIWindow *window, bool forceClose, bool wait
   SendMessage(tMsg, waitResult);
 }
 
-void CApplicationMessenger::ActivateWindow(int windowID, const vector<CStdString> &params, bool swappingWindows)
+void CApplicationMessenger::ActivateWindow(int windowID, const vector<string> &params, bool swappingWindows)
 {
   ThreadMessage tMsg = {TMSG_GUI_ACTIVATE_WINDOW, windowID, swappingWindows ? 1 : 0};
   tMsg.params = params;

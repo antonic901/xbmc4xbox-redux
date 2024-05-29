@@ -81,7 +81,7 @@ bool CGUIWindowAddonBrowser::OnMessage(CGUIMessage& message)
       m_rootDir.AllowNonLocalSources(false);
 
       // is this the first time the window is opened?
-      if (m_vecItems->GetPath() == "?" && message.GetStringParam().IsEmpty())
+      if (m_vecItems->GetPath() == "?" && message.GetStringParam().empty())
         m_vecItems->SetPath("");
     }
     break;
@@ -492,7 +492,7 @@ int CGUIWindowAddonBrowser::SelectAddonID(const vector<ADDON::TYPE> &types, CStd
   dialog->DoModal();
   if (!multipleSelection && iTypes == 1 && dialog->IsButtonPressed())
   { // switch to the addons browser.
-    vector<CStdString> params;
+    vector<string> params;
     params.push_back("addons://all/"+TranslateType(types[0],false)+"/");
     params.push_back("return");
     g_windowManager.ActivateWindow(WINDOW_ADDON_BROWSER, params);

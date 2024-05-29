@@ -84,7 +84,7 @@ bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
       m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
 
       // is this the first time accessing this window?
-      if (m_vecItems->GetPath() == "?" && message.GetStringParam().IsEmpty())
+      if (m_vecItems->GetPath() == "?" && message.GetStringParam().empty())
         message.SetStringParam(CMediaSourceSettings::Get().GetDefaultSource("programs"));
 
       m_database.Open();
