@@ -18,15 +18,12 @@
  *
  */
 
-#include "include.h"
 #include "GUIStaticItem.h"
 #include "utils/XMLUtils.h"
 #include "GUIControlFactory.h"
-#include "utils/StringUtils.h"
 #include "GUIInfoManager.h"
 #include "utils/Variant.h"
-
-using namespace std;
+#include "utils/StringUtils.h"
 
 CGUIStaticItem::CGUIStaticItem(const TiXmlElement *item, int parentID) : CFileItem()
 {
@@ -44,7 +41,7 @@ CGUIStaticItem::CGUIStaticItem(const TiXmlElement *item, int parentID) : CFileIt
     CGUIControlFactory::GetInfoLabel(item, "thumb", thumb, parentID);
     CGUIControlFactory::GetInfoLabel(item, "icon", icon, parentID);
     const char *id = item->Attribute("id");
-    CStdString condition;
+    std::string condition;
     CGUIControlFactory::GetConditionalVisibility(item, condition);
     SetVisibleCondition(condition, parentID);
     CGUIControlFactory::GetActions(item, "onclick", m_clickActions);
@@ -52,29 +49,29 @@ CGUIStaticItem::CGUIStaticItem(const TiXmlElement *item, int parentID) : CFileIt
     SetLabel2(label2.GetLabel(parentID));
     SetArt("thumb", thumb.GetLabel(parentID, true));
     SetIconImage(icon.GetLabel(parentID, true));
-    if (!label.IsConstant())  m_info.push_back(make_pair(label, "label"));
-    if (!label2.IsConstant()) m_info.push_back(make_pair(label2, "label2"));
-    if (!thumb.IsConstant())  m_info.push_back(make_pair(thumb, "thumb"));
-    if (!icon.IsConstant())   m_info.push_back(make_pair(icon, "icon"));
+    if (!label.IsConstant())  m_info.push_back(std::make_pair(label, "label"));
+    if (!label2.IsConstant()) m_info.push_back(std::make_pair(label2, "label2"));
+    if (!thumb.IsConstant())  m_info.push_back(std::make_pair(thumb, "thumb"));
+    if (!icon.IsConstant())   m_info.push_back(std::make_pair(icon, "icon"));
     m_iprogramCount = id ? atoi(id) : 0;
     // add any properties
     const TiXmlElement *property = item->FirstChildElement("property");
     while (property)
     {
-      CStdString name = XMLUtils::GetAttribute(property, "name");
+      std::string name = XMLUtils::GetAttribute(property, "name");
       CGUIInfoLabel prop;
-      if (!name.IsEmpty() && CGUIControlFactory::GetInfoLabelFromElement(property, prop, parentID))
+      if (!name.empty() && CGUIControlFactory::GetInfoLabelFromElement(property, prop, parentID))
       {
         SetProperty(name, prop.GetLabel(parentID, true).c_str());
         if (!prop.IsConstant())
-          m_info.push_back(make_pair(prop, name));
+          m_info.push_back(std::make_pair(prop, name));
       }
       property = property->NextSiblingElement("property");
     }
   }
   else
   {
-    CStdString label, label2, thumb, icon;
+    std::string label, label2, thumb, icon;
     label  = XMLUtils::GetAttribute(item, "label");  label  = CGUIControlFactory::FilterLabel(label);
     label2 = XMLUtils::GetAttribute(item, "label2"); label2 = CGUIControlFactory::FilterLabel(label2);
     thumb  = XMLUtils::GetAttribute(item, "thumb");  thumb  = CGUIControlFactory::FilterLabel(thumb);
@@ -97,19 +94,19 @@ CGUIStaticItem::CGUIStaticItem(const CFileItem &item)
 
 void CGUIStaticItem::UpdateProperties(int contextWindow)
 {
-  for (InfoVector::const_iterator i = m_info.begin(); i != m_info.end(); i++)
+  for (InfoVector::const_iterator i = m_info.begin(); i != m_info.end(); ++i)
   {
     const CGUIInfoLabel &info = i->first;
-    const CStdString &name = i->second;
+    const std::string &name = i->second;
     bool preferTexture = strnicmp("label", name.c_str(), 5) != 0;
-    CStdString value(info.GetLabel(contextWindow, preferTexture));
-    if (name.Equals("label"))
+    std::string value(info.GetLabel(contextWindow, preferTexture));
+    if (StringUtils::EqualsNoCase(name, "label"))
       SetLabel(value);
-    else if (name.Equals("label2"))
+    else if (StringUtils::EqualsNoCase(name, "label2"))
       SetLabel2(value);
-    else if (name.Equals("thumb"))
+    else if (StringUtils::EqualsNoCase(name, "thumb"))
       SetArt("thumb", value);
-    else if (name.Equals("icon"))
+    else if (StringUtils::EqualsNoCase(name, "icon"))
       SetIconImage(value);
     else
       SetProperty(name, value.c_str());
