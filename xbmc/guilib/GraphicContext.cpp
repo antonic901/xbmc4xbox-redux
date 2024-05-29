@@ -268,6 +268,37 @@ void CGraphicContext::RestoreViewPort()
   UpdateCameraPosition(m_cameras.top());
 }
 
+void CGraphicContext::SetScissors(const CRect& rect)
+{
+  if (!m_pd3dDevice)
+    return;
+
+  m_scissors = rect;
+  m_scissors.Intersect(CRect(0,0,(float)m_iScreenWidth, (float)m_iScreenHeight));
+
+  D3DRECT scissor;
+  scissor.x1 = MathUtils::round_int(m_scissors.x1);
+  scissor.y1 = MathUtils::round_int(m_scissors.y1);
+  scissor.x2 = MathUtils::round_int(m_scissors.x2);
+  scissor.y2 = MathUtils::round_int(m_scissors.y2);
+  m_pd3dDevice->SetScissors(1, TRUE, &scissor);
+}
+
+void CGraphicContext::ResetScissors()
+{
+  if (!m_pd3dDevice)
+    return;
+
+  m_scissors.SetRect(0, 0, (float)m_iScreenWidth, (float)m_iScreenHeight);
+
+  D3DRECT scissor;
+  scissor.x1 = 0;
+  scissor.y1 = 0;
+  scissor.x2 = CDisplaySettings::Get().GetCurrentResolutionInfo().iWidth;
+  scissor.y2 = CDisplaySettings::Get().GetCurrentResolutionInfo().iHeight;
+  m_pd3dDevice->SetScissors(0, FALSE, &scissor);
+}
+
 const CRect& CGraphicContext::GetViewWindow() const
 {
   return m_videoRect;
@@ -469,6 +500,7 @@ void CGraphicContext::SetVideoResolution(RESOLUTION res, BOOL NeedZ, bool forceC
   SetFullScreenViewWindow(res);
   SetScreenFilters(m_bFullScreenVideo);
 
+  m_scissors.SetRect(0, 0, (float)m_iScreenWidth, (float)m_iScreenHeight);
   m_Resolution = res;
   if (NeedReset)
   {
@@ -882,50 +914,4 @@ void CGraphicContext::SetMediaDir(const CStdString &strMediaDir)
 {
   g_TextureManager.SetTexturePath(strMediaDir);
   m_strMediaDir = strMediaDir;
-}
-
-void CGraphicContext::SetScissors(const CRect& rect)
-{
-  if (!m_pd3dDevice)
-    return;
-
-#ifndef HAS_XBOX_D3D
-  RECT scissor;
-  scissor.left = MathUtils::round_int(rect.x1);
-  scissor.top = MathUtils::round_int(rect.y1);
-  scissor.right = MathUtils::round_int(rect.x2);
-  scissor.bottom = MathUtils::round_int(rect.y2);
-  m_pD3DDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);
-  m_pD3DDevice->SetScissorRect(&scissor);
-#else
-  D3DRECT scissor;
-  scissor.x1 = MathUtils::round_int(rect.x1);
-  scissor.y1 = MathUtils::round_int(rect.y1);
-  scissor.x2 = MathUtils::round_int(rect.x2);
-  scissor.y2 = MathUtils::round_int(rect.y2);
-  m_pd3dDevice->SetScissors(1, TRUE, &scissor);
-#endif
-}
-
-void CGraphicContext::ResetScissors()
-{
-  if (!m_pd3dDevice)
-    return;
-
-#ifndef HAS_XBOX_D3D
-  RECT scissor;
-  scissor.left = 0;
-  scissor.top = 0;
-  scissor.right = m_nBackBufferWidth;
-  scissor.bottom = m_nBackBufferHeight;
-  m_pD3DDevice->SetScissorRect(&scissor);
-  m_pD3DDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
-#else
-  D3DRECT scissor;
-  scissor.x1 = 0;
-  scissor.y1 = 0;
-  scissor.x2 = CDisplaySettings::Get().GetCurrentResolutionInfo().iWidth;
-  scissor.y2 = CDisplaySettings::Get().GetCurrentResolutionInfo().iHeight;
-  m_pd3dDevice->SetScissors(0, FALSE, &scissor);
-#endif
 }
