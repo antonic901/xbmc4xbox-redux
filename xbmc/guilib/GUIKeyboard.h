@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2012-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -27,6 +26,11 @@
 class CGUIKeyboard;
 enum FILTERING { FILTERING_NONE = 0, FILTERING_CURRENT, FILTERING_SEARCH };
 typedef void (*char_callback_t) (CGUIKeyboard *ref, const std::string &typedString);
+
+#ifdef _WIN32 // disable 4355: 'this' used in base member initializer list
+#pragma warning(push)
+#pragma warning(disable: 4355)
+#endif
 
 class CGUIKeyboard : public ITimerCallback
 {
@@ -47,14 +51,14 @@ class CGUIKeyboard : public ITimerCallback
      * \return - true if typedstring is valid and user has confirmed input - false if typedstring is undefined and user canceled the input
      *
      */
-    virtual bool ShowAndGetInput(char_callback_t pCallback, 
-                                 const std::string &initialString, 
-                                 std::string &typedString, 
-                                 const std::string &heading, 
+    virtual bool ShowAndGetInput(char_callback_t pCallback,
+                                 const std::string &initialString,
+                                 std::string &typedString,
+                                 const std::string &heading,
                                  bool bHiddenInput = false) = 0;
 
     /*!
-    *\brief This call should cancel a currently shown keyboard dialog. The implementation should 
+    *\brief This call should cancel a currently shown keyboard dialog. The implementation should
     * return false from the modal ShowAndGetInput once anyone calls this metohod.
     */
     virtual void Cancel() = 0;
@@ -70,16 +74,22 @@ class CGUIKeyboard : public ITimerCallback
     // helpers for autoclose function
     void startAutoCloseTimer(unsigned int autoCloseMs)
     {
-      if ( autoCloseMs > 0 ) 
+      if ( autoCloseMs > 0 )
         m_idleTimer.Start(autoCloseMs, false);
     }
 
     void resetAutoCloseTimer()
     {
-      if (m_idleTimer.IsRunning()) 
+      if (m_idleTimer.IsRunning())
         m_idleTimer.Restart();
     }
+
+    virtual bool SetTextToKeyboard(const std::string &text, bool closeKeyboard = false) { return false; }
 
   private:
     CTimer m_idleTimer;
 };
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
