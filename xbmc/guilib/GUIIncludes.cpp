@@ -18,14 +18,16 @@
  *
  */
 
-#include "include.h"
 #include "GUIIncludes.h"
 #include "addons/Skin.h"
 #include "GUIInfoManager.h"
-#include "interfaces/info/SkinVariable.h"
+#include "GUIInfoTypes.h"
+#include "utils/log.h"
+#include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
-
-using namespace std;
+#include "utils/StringUtils.h"
+#include "interfaces/info/SkinVariable.h"
+#include "boost/ref.hpp"
 
 CGUIIncludes::CGUIIncludes()
 {
@@ -72,8 +74,6 @@ CGUIIncludes::CGUIIncludes()
   m_constantNodes.insert("radioposy");
   m_constantNodes.insert("radiowidth");
   m_constantNodes.insert("radioheight");
-  m_constantNodes.insert("markwidth");
-  m_constantNodes.insert("markheight");
   m_constantNodes.insert("sliderwidth");
   m_constantNodes.insert("sliderheight");
   m_constantNodes.insert("itemgap");
@@ -81,6 +81,7 @@ CGUIIncludes::CGUIIncludes()
   m_constantNodes.insert("timeperimage");
   m_constantNodes.insert("fadetime");
   m_constantNodes.insert("pauseatend");
+  m_constantNodes.insert("depth");
 
   m_expressionAttributes.insert("condition");
 
@@ -101,9 +102,10 @@ void CGUIIncludes::ClearIncludes()
   m_constants.clear();
   m_skinvariables.clear();
   m_files.clear();
+  m_expressions.clear();
 }
 
-bool CGUIIncludes::LoadIncludes(const CStdString &includeFile)
+bool CGUIIncludes::LoadIncludes(const std::string &includeFile)
 {
   // check to see if we already have this loaded
   if (HasIncludeFile(includeFile))
@@ -136,7 +138,7 @@ bool CGUIIncludes::LoadIncludesFromXML(const TiXmlElement *root)
   {
     if (node->Attribute("name") && node->FirstChild())
     {
-      CStdString tagName = node->Attribute("name");
+      std::string tagName = node->Attribute("name");
       // we'll parse and store parameter list with defaults when include definition is first encountered
       // if there's a <definition> tag only use its body as the actually included part
       const TiXmlElement *definitionTag = node->FirstChildElement("definition");
@@ -147,17 +149,15 @@ bool CGUIIncludes::LoadIncludesFromXML(const TiXmlElement *root)
       if (haveParamTags && !definitionTag)
         CLog::Log(LOGWARNING, "Skin has invalid include definition: %s", tagName.c_str());
       else
-      {
-        //m_includes.insert({ tagName, { *includeBody, std::move(defaultParams) } });
         m_includes.insert(make_pair(tagName, std::pair<TiXmlElement, Params>(*includeBody, defaultParams)));
-      }
     }
     else if (node->Attribute("file"))
-    { // load this file in as well
+    {
       const char *condition = node->Attribute("condition");
       if (condition)
       { // check this condition
-        bool value = g_infoManager.EvaluateBool(condition);
+        INFO::InfoPtr conditionID = g_infoManager.Register(condition);
+        bool value = conditionID->Get();
 
         if (value)
         {
@@ -176,8 +176,8 @@ bool CGUIIncludes::LoadIncludesFromXML(const TiXmlElement *root)
   {
     if (node->Attribute("type") && node->FirstChild())
     {
-      CStdString tagName = node->Attribute("type");
-      m_defaults.insert(pair<CStdString, TiXmlElement>(tagName, *node));
+      std::string tagName = node->Attribute("type");
+      m_defaults.insert(std::pair<std::string, TiXmlElement>(tagName, *node));
     }
     node = node->NextSiblingElement("default");
   }
@@ -187,7 +187,7 @@ bool CGUIIncludes::LoadIncludesFromXML(const TiXmlElement *root)
   {
     if (node->Attribute("name") && node->FirstChild())
     {
-      CStdString tagName = node->Attribute("name");
+      std::string tagName = node->Attribute("name");
       m_constants.insert(make_pair(tagName, node->FirstChild()->ValueStr()));
     }
     node = node->NextSiblingElement("constant");
@@ -198,7 +198,7 @@ bool CGUIIncludes::LoadIncludesFromXML(const TiXmlElement *root)
   {
     if (node->Attribute("name") && node->FirstChild())
     {
-      CStdString tagName = node->Attribute("name");
+      std::string tagName = node->Attribute("name");
       m_skinvariables.insert(make_pair(tagName, *node));
     }
     node = node->NextSiblingElement("variable");
@@ -210,7 +210,7 @@ bool CGUIIncludes::LoadIncludesFromXML(const TiXmlElement *root)
     if (node->Attribute("name") && node->FirstChild())
     {
       std::string tagName = node->Attribute("name");
-      m_expressions.insert(make_pair(tagName, node->FirstChild()->ValueStr()));
+      m_expressions.insert(make_pair(tagName, "[" + node->FirstChild()->ValueStr() + "]"));
     }
     node = node->NextSiblingElement("expression");
   }
@@ -218,7 +218,7 @@ bool CGUIIncludes::LoadIncludesFromXML(const TiXmlElement *root)
   return true;
 }
 
-bool CGUIIncludes::HasIncludeFile(const CStdString &file) const
+bool CGUIIncludes::HasIncludeFile(const std::string &file) const
 {
   for (iFiles it = m_files.begin(); it != m_files.end(); ++it)
     if (*it == file) return true;
@@ -246,19 +246,30 @@ void CGUIIncludes::ResolveIncludesForNode(TiXmlElement *node, std::map<INFO::Inf
   if (!node) return;
 
   // First add the defaults if this is for a control
-  CStdString type;
+  std::string type;
   if (node->ValueStr() == "control")
   {
     type = XMLUtils::GetAttribute(node, "type");
-    map<CStdString, TiXmlElement>::const_iterator it = m_defaults.find(type);
+    std::map<std::string, TiXmlElement>::const_iterator it = m_defaults.find(type);
     if (it != m_defaults.end())
     {
+      // we don't insert <left> et. al. if <posx> or <posy> is specified
+      bool hasPosX(node->FirstChild("posx") != NULL);
+      bool hasPosY(node->FirstChild("posy") != NULL);
+
       const TiXmlElement &element = (*it).second;
       const TiXmlElement *tag = element.FirstChildElement();
       while (tag)
       {
+        std::string value = tag->ValueStr();
+        bool skip(false);
+        if (hasPosX && (value == "left" || value == "right" || value == "centerleft" || value == "centerright"))
+          skip = true;
+        if (hasPosY && (value == "top" || value == "bottom" || value == "centertop" || value == "centerbottom"))
+          skip = true;
         // we insert at the end of block
-        node->InsertEndChild(*tag);
+        if (!skip)
+          node->InsertEndChild(*tag);
         tag = tag->NextSiblingElement();
       }
     }
@@ -288,8 +299,9 @@ void CGUIIncludes::ResolveIncludesForNode(TiXmlElement *node, std::map<INFO::Inf
         continue;
       }
     }
+
     Params params;
-    CStdString tagName;
+    std::string tagName;
     // determine which form of include call we have
     const char *name = include->Attribute("content");
     if (name)
@@ -313,7 +325,7 @@ void CGUIIncludes::ResolveIncludesForNode(TiXmlElement *node, std::map<INFO::Inf
       }
     }
 
-    std::map<CStdString, std::pair<TiXmlElement, Params> >::const_iterator it = m_includes.find(tagName);
+    std::map<std::string, std::pair<TiXmlElement, Params> >::const_iterator it = m_includes.find(tagName);
     if (it != m_includes.end())
     { // found the tag(s) to include - let's replace it
       const TiXmlElement *includeBody = &it->second.first;
@@ -375,10 +387,10 @@ bool CGUIIncludes::GetParameters(const TiXmlElement *include, const char *valueA
     foundAny = param != NULL;  // doesn't matter if param isn't entirely valid
     while (param)
     {
-      CStdString paramName = XMLUtils::GetAttribute(param, "name");
+      std::string paramName = XMLUtils::GetAttribute(param, "name");
       if (!paramName.empty())
       {
-        CStdString paramValue;
+        std::string paramValue;
 
         // <param name="posx" value="120" />
         const char *value = param->Attribute(valueAttribute);         // try attribute first
@@ -391,8 +403,8 @@ bool CGUIIncludes::GetParameters(const TiXmlElement *include, const char *valueA
           if (child && child->Type() == TiXmlNode::TINYXML_TEXT)
             paramValue = child->ValueStr();                           // and then tag value
         }
-        //params.insert({ paramName, paramValue });                     // no overwrites
-        params.insert(make_pair(paramName, paramValue));
+
+        params.insert(make_pair(paramName, paramValue));                     // no overwrites
       }
       param = param->NextSiblingElement("param");
     }
@@ -405,7 +417,7 @@ void CGUIIncludes::ResolveParametersForNode(TiXmlElement *node, const Params& pa
 {
   if (!node)
     return;
-  CStdString newValue;
+  std::string newValue;
   // run through this element's attributes, resolving any parameters
   TiXmlAttribute *attribute = node->FirstAttribute();
   while (attribute)
@@ -457,21 +469,21 @@ void CGUIIncludes::ResolveParametersForNode(TiXmlElement *node, const Params& pa
 
 class ParamReplacer
 {
-  const std::map<CStdString, CStdString>& m_params;
+  const std::map<std::string, std::string>& m_params;
   // keep some stats so that we know exactly what's been resolved
   int m_numTotalParams;
   int m_numUndefinedParams;
 public:
-  ParamReplacer(const std::map<CStdString, CStdString>& params)
+  ParamReplacer(const std::map<std::string, std::string>& params)
     : m_params(params), m_numTotalParams(0), m_numUndefinedParams(0) {}
   int GetNumTotalParams() const { return m_numTotalParams; }
   int GetNumDefinedParams() const { return m_numTotalParams - m_numUndefinedParams; }
   int GetNumUndefinedParams() const { return m_numUndefinedParams; }
 
-  CStdString operator()(const CStdString &paramName)
+  std::string operator()(const std::string &paramName)
   {
     m_numTotalParams++;
-    std::map<CStdString, CStdString>::const_iterator it = m_params.find(paramName);
+    std::map<std::string, std::string>::const_iterator it = m_params.find(paramName);
     if (it != m_params.end())
       return it->second;
     m_numUndefinedParams++;
@@ -479,110 +491,39 @@ public:
   }
 };
 
-CGUIIncludes::ResolveParamsResult CGUIIncludes::ResolveParameters(const CStdString& strInput, CStdString& strOutput, const Params& params)
+CGUIIncludes::ResolveParamsResult CGUIIncludes::ResolveParameters(const std::string& strInput, std::string& strOutput, const Params& params)
 {
   ParamReplacer paramReplacer(params);
-  
-  CStdString strKeyword = CStdString("PARAM");
-  bool detector = false;
-  CStdString dollarStrPrefix = CStdString("$" + strKeyword + "[");
-  size_t index = 0;
-  size_t startPos;
-  while((startPos = strInput.find(dollarStrPrefix, index)) != std::string::npos)
-  {
-    size_t valuePos = startPos + dollarStrPrefix.size();
-    size_t endPos = StringUtils::FindEndBracket(strInput, '[',']', valuePos);
-    if (endPos != std::string::npos)
-    {
-      if(index == 0)
-        strOutput.clear();
-      strOutput += strInput.substr(index, startPos - index);
-      strOutput += paramReplacer(strInput.substr(valuePos, endPos - valuePos));
-      index = endPos + 1;
-    }
-    else
-    {
-      CLog::Log(LOGERROR, "Error parsing value - missing ']' in \"%s\"", strInput.c_str());
-      break;
-    }
-  }
-
-  if (index)
-  {
-    strOutput += strInput.substr(index);
-    detector = true;
-  }
-
-  if (detector)
+  if (CGUIInfoLabel::ReplaceSpecialKeywordReferences(strInput, "PARAM", boost::ref(paramReplacer), strOutput))
     // detect special input values of the form "$PARAM[undefinedParam]" (with no extra characters around)
     return paramReplacer.GetNumUndefinedParams() == 1 && paramReplacer.GetNumTotalParams() == 1 && strOutput.empty() ? SINGLE_UNDEFINED_PARAM_RESOLVED : PARAMS_RESOLVED;
   return NO_PARAMS_FOUND;
 }
 
-CStdString CGUIIncludes::ResolveConstant(const CStdString &constant) const
+std::string CGUIIncludes::ResolveConstant(const std::string &constant) const
 {
-  CStdStringArray values;
-  StringUtils::SplitString(constant, ",", values);
-  for (unsigned int i = 0; i < values.size(); ++i)
+  std::vector<std::string> values = StringUtils::Split(constant, ",");
+  for (std::vector<std::string>::iterator i = values.begin(); i != values.end(); ++i)
   {
-    map<CStdString, CStdString>::const_iterator it = m_constants.find(values[i]);
+    std::map<std::string, std::string>::const_iterator it = m_constants.find(*i);
     if (it != m_constants.end())
-      values[i] = it->second;
+      *i = it->second;
   }
-  CStdString value;
-  StringUtils::JoinString(values, ",", value);
-  return value;
+  return StringUtils::Join(values, ",");
 }
 
-CStdString CGUIIncludes::ResolveExpressions(const CStdString &expression) const
+std::string CGUIIncludes::ResolveExpressions(const std::string &expression) const
 {
-  CStdString work(expression);
-  
-  bool detector = false;
-  
-  CStdString strInput(work);
-  CStdString strKeyword("EXP");
-  CStdString strOutput;
-
-  CStdString dollarStrPrefix = CStdString("$" + strKeyword + "[");
-  size_t index = 0;
-  size_t startPos;
-  while((startPos = strInput.find(dollarStrPrefix, index)) != std::string::npos)
-  {
-    size_t valuePos = startPos + dollarStrPrefix.size();
-    size_t endPos = StringUtils::FindEndBracket(strInput, '[',']', valuePos);
-    if (endPos != std::string::npos)
-    {
-      if(index == 0)
-        strOutput.clear();
-      strOutput += strInput.substr(index, startPos - index);
-      std::map<CStdString, CStdString>::const_iterator it = m_expressions.find(strInput.substr(valuePos, endPos - valuePos));
-      if (it != m_expressions.end())
-        strOutput += it->second;
-      index = endPos + 1;
-    }
-    else
-    {
-      CLog::Log(LOGERROR, "Error parsing value - missing ']' in \"%s\"", strInput.c_str());
-      break;
-    }
-  }
-
-  if (index)
-  {
-    strOutput += strInput.substr(index);
-    detector = true;
-  }
-
-  if (detector)
-    work = strOutput;
+  std::string work(expression);
+  ExpressionReplacer replacer(m_expressions);
+  CGUIInfoLabel::ReplaceSpecialKeywordReferences(work, "EXP", replacer);
 
   return work;
 }
 
-const INFO::CSkinVariableString* CGUIIncludes::CreateSkinVariable(const CStdString& name, int context)
+const INFO::CSkinVariableString* CGUIIncludes::CreateSkinVariable(const std::string& name, int context)
 {
-  map<CStdString, TiXmlElement>::const_iterator it = m_skinvariables.find(name);
+  std::map<std::string, TiXmlElement>::const_iterator it = m_skinvariables.find(name);
   if (it != m_skinvariables.end())
     return INFO::CSkinVariable::CreateFromXML(it->second, context);
   return NULL;

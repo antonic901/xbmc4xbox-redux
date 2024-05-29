@@ -22,6 +22,10 @@
 
 #include <map>
 #include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "interfaces/info/InfoBool.h"
 
 // forward definitions
@@ -38,7 +42,7 @@ public:
   ~CGUIIncludes();
 
   void ClearIncludes();
-  bool LoadIncludes(const CStdString &includeFile);
+  bool LoadIncludes(const std::string &includeFile);
   bool LoadIncludesFromXML(const TiXmlElement *root);
 
   /*! \brief Resolve <include>name</include> tags recursively for the given XML element
@@ -47,7 +51,7 @@ public:
    \param node an XML Element - all child elements are traversed.
    */
   void ResolveIncludes(TiXmlElement *node, std::map<INFO::InfoPtr, bool>* xmlIncludeConditions = NULL);
-  const INFO::CSkinVariableString* CreateSkinVariable(const CStdString& name, int context);
+  const INFO::CSkinVariableString* CreateSkinVariable(const std::string& name, int context);
 
 private:
   enum ResolveParamsResult
@@ -58,25 +62,44 @@ private:
   };
 
   void ResolveIncludesForNode(TiXmlElement *node, std::map<INFO::InfoPtr, bool>* xmlIncludeConditions = NULL);
-  typedef std::map<CStdString, CStdString> Params;
+  typedef std::map<std::string, std::string> Params;
   static bool GetParameters(const TiXmlElement *include, const char *valueAttribute, Params& params);
   static void ResolveParametersForNode(TiXmlElement *node, const Params& params);
-  static ResolveParamsResult ResolveParameters(const CStdString& strInput, CStdString& strOutput, const Params& params);
-  CStdString ResolveConstant(const CStdString &constant) const;
-  CStdString ResolveExpressions(const CStdString &expression) const;
-  bool HasIncludeFile(const CStdString &includeFile) const;
-  std::map<CStdString, std::pair<TiXmlElement, Params> > m_includes;
-  std::map<CStdString, TiXmlElement> m_defaults;
-  std::map<CStdString, TiXmlElement> m_skinvariables;
-  std::map<CStdString, CStdString> m_constants;
-  std::map<CStdString, CStdString> m_expressions;
-  std::vector<CStdString> m_files;
-  typedef std::vector<CStdString>::const_iterator iFiles;
+  static ResolveParamsResult ResolveParameters(const std::string& strInput, std::string& strOutput, const Params& params);
+  std::string ResolveConstant(const std::string &constant) const;
+  std::string ResolveExpressions(const std::string &expression) const;
+  bool HasIncludeFile(const std::string &includeFile) const;
+  std::map<std::string, std::pair<TiXmlElement, Params> > m_includes;
+  std::map<std::string, TiXmlElement> m_defaults;
+  std::map<std::string, TiXmlElement> m_skinvariables;
+  std::map<std::string, std::string> m_constants;
+  std::map<std::string, std::string> m_expressions;
+  std::vector<std::string> m_files;
+  typedef std::vector<std::string>::const_iterator iFiles;
 
   std::set<std::string> m_constantAttributes;
   std::set<std::string> m_constantNodes;
 
   std::set<std::string> m_expressionAttributes;
   std::set<std::string> m_expressionNodes;
-};
 
+  // because C++98 doesn't support lambda functions we need this class to pass
+  // our replacer function to CGUIInfoLabel::ReplaceSpecialKeywordReferences
+  class ExpressionReplacer
+  {
+  public:
+    ExpressionReplacer(const std::map<std::string, std::string>& expressions)
+      : m_expressions(expressions) {}
+
+    std::string operator()(const std::string &str) const
+    {
+      std::map<std::string, std::string>::const_iterator it = m_expressions.find(str);
+      if (it != m_expressions.end())
+        return it->second;
+      return "";
+    }
+
+  private:
+    const std::map<std::string, std::string>& m_expressions;
+  };
+};
