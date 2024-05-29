@@ -1,8 +1,8 @@
 #pragma once
 
 /*
- *      Copyright (C) 2005-2008 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,16 +15,15 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
-#include "GUIDialog.h"
-#include "utils/Variant.h"
 #include "GUIKeyboard.h"
 #include <string>
+
+class CVariant;
 
 class CGUIKeyboardFactory
 {
@@ -34,15 +33,19 @@ class CGUIKeyboardFactory
     virtual ~CGUIKeyboardFactory(void);
 
     static bool ShowAndGetInput(std::string& aTextString, bool allowEmptyResult, unsigned int autoCloseMs = 0);
-    static bool ShowAndGetInput(std::string& aTextString, const CVariant &heading, bool allowEmptyResult, bool hiddenInput = false, unsigned int autoCloseMs = 0);
+    static bool ShowAndGetInput(std::string& aTextString, CVariant heading, bool allowEmptyResult, bool hiddenInput = false, unsigned int autoCloseMs = 0);
     static bool ShowAndGetNewPassword(std::string& strNewPassword, unsigned int autoCloseMs = 0);
-    static bool ShowAndGetNewPassword(std::string& newPassword, const CVariant &heading, bool allowEmpty, unsigned int autoCloseMs = 0);
+    static bool ShowAndGetNewPassword(std::string& newPassword, CVariant heading, bool allowEmpty, unsigned int autoCloseMs = 0);
     static bool ShowAndVerifyNewPassword(std::string& strNewPassword, unsigned int autoCloseMs = 0);
-    static bool ShowAndVerifyNewPassword(std::string& newPassword, const CVariant &heading, bool allowEmpty, unsigned int autoCloseMs = 0);
+    static bool ShowAndVerifyNewPassword(std::string& newPassword, CVariant heading, bool allowEmpty, unsigned int autoCloseMs = 0);
     static int  ShowAndVerifyPassword(std::string& strPassword, const std::string& strHeading, int iRetries, unsigned int autoCloseMs = 0);
     static bool ShowAndGetFilter(std::string& aTextString, bool searching, unsigned int autoCloseMs = 0);
 
+    static bool SendTextToActiveKeyboard(const std::string &aTextString, bool closeKeyboard = false);
+
+    static bool isKeyboardActivated() { return g_activedKeyboard != NULL; }
   private:
+    static CGUIKeyboard *g_activedKeyboard;
     static FILTERING m_filtering;
     static void keyTypedCB(CGUIKeyboard *ref, const std::string &typedString);
 };
