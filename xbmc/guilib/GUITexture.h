@@ -132,6 +132,7 @@ public:
   void SetWidth(float width);
   void SetHeight(float height);
   void SetFileName(const CStdString &filename);
+  void SetUseCache(const bool useCache = true);
   void SetAspectRatio(const CAspectRatio &aspect);
 
   const CStdString& GetFileName() const { return m_info.filename; };
@@ -174,7 +175,7 @@ protected:
 
   CRect m_vertex;       // vertex coords to render
   bool m_invalid;       // if true, we need to recalculate
-
+  bool m_use_cache;
   unsigned char m_alpha;
 
   float m_frameWidth, m_frameHeight;          // size in pixels of the actual frame within the texture

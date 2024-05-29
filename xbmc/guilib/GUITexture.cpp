@@ -60,6 +60,7 @@ CGUITextureBase::CGUITextureBase(float posX, float posY, float width, float heig
   m_allocateDynamically = false;
   m_isAllocated = NO;
   m_invalid = true;
+  m_use_cache = true;
 }
 
 CGUITextureBase::CGUITextureBase(const CGUITextureBase &right)
@@ -76,6 +77,7 @@ CGUITextureBase::CGUITextureBase(const CGUITextureBase &right)
   m_aspect = right.m_aspect;
 
   m_allocateDynamically = right.m_allocateDynamically;
+  m_use_cache = right.m_use_cache;
 
   // defaults
   m_vertex.SetRect(m_posX, m_posY, m_posX + m_width, m_posY + m_height);
@@ -292,7 +294,7 @@ void CGUITextureBase::AllocResources()
     if (m_isAllocated != NORMAL)
     { // use our large image background loader
       CTextureArray texture;
-      if (g_largeTextureManager.GetImage(m_info.filename, texture, !IsAllocated()))
+      if (g_largeTextureManager.GetImage(m_info.filename, texture, !IsAllocated(), m_use_cache))
       {
         m_isAllocated = IN_PROGRESS;
 
@@ -600,6 +602,11 @@ void CGUITextureBase::SetFileName(const CStdString& filename)
   FreeResources();
   m_info.filename = filename;
   // Don't allocate resources here as this is done at render time
+}
+
+void CGUITextureBase::SetUseCache(const bool useCache)
+{
+  m_use_cache = useCache;
 }
 
 int CGUITextureBase::GetOrientation() const

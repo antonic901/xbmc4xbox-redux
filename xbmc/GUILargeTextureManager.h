@@ -33,7 +33,7 @@
 class CImageLoader : public CJob
 {
 public:
-  CImageLoader(const CStdString &path);
+  CImageLoader(const CStdString &path, const bool useCache);
   virtual ~CImageLoader();
 
   /*!
@@ -41,6 +41,7 @@ public:
    */
   virtual bool DoWork();
 
+  bool          m_use_cache; ///< Whether or not to use any caching with this image
   CStdString    m_path; ///< path of image to load
   CBaseTexture *m_texture; ///< Texture object to load the image into \sa CBaseTexture.
 };
@@ -62,7 +63,7 @@ public:
 
   virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
 
-  bool GetImage(const CStdString &path, CTextureArray &texture, bool firstRequest);
+  bool GetImage(const CStdString &path, CTextureArray &texture, bool firstRequest, bool useCache = true);
   void ReleaseImage(const CStdString &path, bool immediately = false);
   void ReleaseQueuedImage(const CStdString &path);
 
@@ -93,7 +94,7 @@ protected:
     unsigned int m_timeToDelete;
   };
 
-  void QueueImage(const CStdString &path);
+  void QueueImage(const CStdString &path, bool useCache = true);
 
 private:
   std::vector< std::pair<unsigned int, CLargeTexture *> > m_queued;
