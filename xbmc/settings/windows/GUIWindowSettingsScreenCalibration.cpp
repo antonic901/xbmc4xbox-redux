@@ -351,7 +351,7 @@ void CGUIWindowSettingsScreenCalibration::DoProcess(unsigned int currentTime, CD
   m_needsScaling = false;
 
   g_graphicsContext.SetRenderingResolution(m_Res[m_iCurRes], false);
-  g_graphicsContext.ResetWindowTransform();
+  g_graphicsContext.AddGUITransform();
 
   // process the movers etc.
   for (int i = CONTROL_TOP_LEFT; i <= CONTROL_PIXEL_RATIO; i++)
@@ -360,6 +360,7 @@ void CGUIWindowSettingsScreenCalibration::DoProcess(unsigned int currentTime, CD
     if (control)
       control->DoProcess(currentTime, dirtyregions);
   }
+  g_graphicsContext.RemoveTransform();
 }
 
 void CGUIWindowSettingsScreenCalibration::Render()
