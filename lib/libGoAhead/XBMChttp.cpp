@@ -1815,7 +1815,7 @@ int CXbmcHttp::xbmcGetGUIStatus()
         if (strTmp!="")
           output += closeTag+openTag+"Description:" + strTmp;
         if (((CGUIButtonControl *)pControl)->HasClickActions())
-          output += closeTag+openTag+"Execution:" + ((CGUIButtonControl *)pControl)->GetClickActions().GetFirstAction();
+          output += closeTag+openTag+"Execution:" + ((CGUIButtonControl *)pControl)->GetClickActions().GetFirstAction().c_str();
       }
       else if (pControl->GetControlType() == CGUIControl::GUICONTROL_SPIN)
       {
