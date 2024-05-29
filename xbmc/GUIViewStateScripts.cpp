@@ -24,6 +24,7 @@
 #include "view/ViewState.h"
 #include "settings/Settings.h"
 #include "filesystem/Directory.h"
+#include "guilib/Key.h"
 
 using namespace XFILE;
 

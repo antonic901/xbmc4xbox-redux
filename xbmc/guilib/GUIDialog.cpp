@@ -143,7 +143,7 @@ void CGUIDialog::UpdateVisibility()
   { // check if our timer is running
     if (!m_showStartTime)
     {
-      if (HasRendered()) // start timer
+      if (HasProcessed()) // start timer
         m_showStartTime = CTimeUtils::GetFrameTime();
     }
     else
