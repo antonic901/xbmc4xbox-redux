@@ -19,9 +19,10 @@
  *
  */
 
+#include <string>
 #include <vector>
 #include <memory>
-#include "utils/StdString.h"
+#include "system.h" // <xtl.h>
 #include "boost/shared_ptr.hpp"
 
 class CGUIControl;
@@ -58,12 +59,12 @@ public:
   void SetNavigation(int id);
 
   // GetFirstAction is only needed in deprecated http api
-  CStdString GetFirstAction() const { return m_actions.size() > 0 ? m_actions[0].action : ""; };
+  std::string GetFirstAction() const { return m_actions.size() > 0 ? m_actions[0].action : ""; };
 private:
   struct cond_action_pair
   {
-    CStdString condition;
-    CStdString action;
+    std::string condition;
+    std::string action;
   };
 
   std::vector<cond_action_pair> m_actions;
