@@ -2006,10 +2006,10 @@ bool CGUIInfoManager::GetInt(int &value, int info, int contextWindow, const CGUI
       value = atoi(g_sysinfo.GetInfo(LCD_HDD_TEMPERATURE));
       return true;
     case SYSTEM_CPU_TEMPERATURE:
-      value = atoi(CFanController::Instance()->GetCPUTemp().ToString());
+      value = atoi(CFanController::Instance()->GetCPUTemp().ToString().c_str());
       return true;
     case SYSTEM_GPU_TEMPERATURE:
-      value = atoi(CFanController::Instance()->GetGPUTemp().ToString());
+      value = atoi(CFanController::Instance()->GetGPUTemp().ToString().c_str());
       return true;
     case SYSTEM_FAN_SPEED:
       value = CFanController::Instance()->GetFanSpeed() * 2;

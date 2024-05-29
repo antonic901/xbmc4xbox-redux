@@ -181,50 +181,28 @@ CArchive& CArchive::operator<<(const std::string& str)
   return *this;
 }
 
-CArchive& CArchive::operator<<(const CStdString& str)
+CArchive& CArchive::operator<<(const std::wstring& wstr)
 {
-  *this << str.GetLength();
+  *this << (unsigned int)wstr.size();
 
-  int size = str.GetLength();
-  if (m_BufferPos + size >= BUFFER_MAX)
-    FlushBuffer();
+  unsigned int size = wstr.size() * sizeof(wchar_t);
+  const uint8_t* ptr = (const uint8_t*)wstr.data();
 
-  int iBufferMaxParts=size/BUFFER_MAX;
-  for (int i=0; i<iBufferMaxParts; i++)
+  if (size + m_BufferPos >= BUFFER_MAX)
   {
-    memcpy(&m_pBuffer[m_BufferPos], str.c_str()+(i*BUFFER_MAX), BUFFER_MAX);
-    m_BufferPos+=BUFFER_MAX;
     FlushBuffer();
+    while (size >= BUFFER_MAX)
+    {
+      memcpy(m_pBuffer, ptr, BUFFER_MAX);
+      m_BufferPos = BUFFER_MAX;
+      ptr += BUFFER_MAX;
+      size -= BUFFER_MAX;
+      FlushBuffer();
+    }
   }
 
-  int iPos=iBufferMaxParts*BUFFER_MAX;
-  int iSizeLeft=size-iPos;
-  memcpy(&m_pBuffer[m_BufferPos], str.c_str()+iPos, iSizeLeft);
-  m_BufferPos+=iSizeLeft;
-
-  return *this;
-}
-
-CArchive& CArchive::operator<<(const CStdStringW& str)
-{
-  *this << str.GetLength();
-
-  int size = str.GetLength();
-  if (m_BufferPos + size >= BUFFER_MAX)
-    FlushBuffer();
-
-  int iBufferMaxParts=size/BUFFER_MAX;
-  for (int i=0; i<iBufferMaxParts; ++i)
-  {
-    memcpy(&m_pBuffer[m_BufferPos], str.c_str()+(i*BUFFER_MAX), BUFFER_MAX);
-    m_BufferPos+=BUFFER_MAX;
-    FlushBuffer();
-  }
-
-  int iPos=iBufferMaxParts*BUFFER_MAX;
-  int iSizeLeft=size-iPos;
-  memcpy(&m_pBuffer[m_BufferPos], str.c_str()+iPos, iSizeLeft);
-  m_BufferPos+=iSizeLeft;
+  memcpy(m_pBuffer + m_BufferPos, ptr, size);
+  m_BufferPos += size;
 
   return *this;
 }
@@ -377,26 +355,15 @@ CArchive& CArchive::operator>>(std::string& str)
   return *this;
 }
 
-CArchive& CArchive::operator>>(CStdString& str)
+CArchive& CArchive::operator>>(std::wstring& wstr)
 {
-  int iLength = 0;
+  unsigned int iLength = 0;
   *this >> iLength;
 
-  m_pFile->Read((void*)str.GetBufferSetLength(iLength), iLength);
-  str.ReleaseBuffer();
-
-
-  return *this;
-}
-
-CArchive& CArchive::operator>>(CStdStringW& str)
-{
-  int iLength = 0;
-  *this >> iLength;
-
-  m_pFile->Read((void*)str.GetBufferSetLength(iLength), iLength);
-  str.ReleaseBuffer();
-
+  wchar_t * const p = new wchar_t[iLength];
+  m_pFile->Read(p, iLength * sizeof(wchar_t));
+  wstr.assign(p, iLength);
+  delete[] p;
 
   return *this;
 }
