@@ -13,6 +13,7 @@
 
 #include "Application.h"
 #include "ApplicationMessenger.h"
+#include "GUIInfoManager.h"
 #include "XBMCweb.h"
 
 #include "Util.h"
@@ -20,7 +21,6 @@
 #include "filesystem/CDDADirectory.h"
 #include "filesystem/ZipManager.h"
 #include "playlists/PlayListFactory.h"
-#include "GUIInfoManager.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "music/MusicDatabase.h"
 #include "music/tags/MusicInfoTag.h"
