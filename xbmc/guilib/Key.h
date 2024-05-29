@@ -263,6 +263,7 @@
 
 #define ACTION_AUDIO_DELAY            161
 #define ACTION_SUBTITLE_DELAY         162
+#define ACTION_MENU                   163
 
 #define ACTION_PASTE                  180
 #define ACTION_NEXT_CONTROL           181
@@ -442,6 +443,8 @@ public:
    \return true if this is a mouse action, false otherwise
    */
   bool IsMouse() const { return (m_id >= ACTION_MOUSE_START && m_id <= ACTION_MOUSE_END); };
+
+  bool IsGesture() const { return false; };
 
   /*! \brief Human-readable name of the action
    \return name of the action

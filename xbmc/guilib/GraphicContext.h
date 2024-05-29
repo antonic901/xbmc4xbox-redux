@@ -242,11 +242,10 @@ public:
     */
   void RestoreClipRegion();
   void ClipRect(CRect &vertex, CRect &texture, CRect *diffuse = NULL);
-  inline void ResetWindowTransform()
+  inline void AddGUITransform()
   {
-    while (m_groupTransform.size())
-      m_groupTransform.pop();
     m_groupTransform.push(m_guiTransform);
+    UpdateFinalTransform(m_groupTransform.top());
   }
   inline TransformMatrix AddTransform(const TransformMatrix &matrix)
   {
@@ -266,7 +265,7 @@ public:
   }
   inline void RemoveTransform()
   {
-    ASSERT(m_groupTransform.size() > 1);
+    ASSERT(m_groupTransform.size());
     if (m_groupTransform.size())
       m_groupTransform.pop();
     if (m_groupTransform.size())

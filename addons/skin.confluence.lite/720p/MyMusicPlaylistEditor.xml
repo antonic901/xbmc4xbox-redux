@@ -1,5 +1,6 @@
 <window id="503">
 	<defaultcontrol allways="true">6</defaultcontrol>
+	<menucontrol>9000</menucontrol>
 	<allowoverlay>no</allowoverlay>
 	<controls>
 		<include>CommonBackground</include>

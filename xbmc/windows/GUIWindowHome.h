@@ -27,8 +27,7 @@
 class CGUIWindowHome :
       public CGUIWindow,
       public ANNOUNCEMENT::IAnnouncer,
-      public IJobCallback,
-      public CCriticalSection
+      public IJobCallback
 {
 public:
   CGUIWindowHome(void);
