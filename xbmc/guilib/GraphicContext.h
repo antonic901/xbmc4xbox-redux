@@ -147,6 +147,11 @@ public:
   bool IsWidescreen() const { return m_bWidescreen; }
   bool SetViewPort(float fx, float fy , float fwidth, float fheight, bool intersectPrevious = false);
   void RestoreViewPort();
+
+  void SetScissors(const CRect &rect);
+  void ResetScissors();
+  const CRect &GetScissors() const { return m_scissors; }
+
   const CRect& GetViewWindow() const;
   void SetViewWindow(float left, float top, float right, float bottom);
   void ClipToViewWindow();
@@ -167,9 +172,6 @@ public:
   void CaptureStateBlock();
   void ApplyStateBlock();
   void Clear(color_t color = 0);
-
-  virtual void SetScissors(const CRect &rect);
-  virtual void ResetScissors();
 
   // output scaling
   const RESOLUTION_INFO &GetResInfo() const;
@@ -306,6 +308,8 @@ private:
   TransformMatrix m_guiTransform;
   TransformMatrix m_finalTransform;
   std::stack<TransformMatrix> m_groupTransform;
+
+  CRect m_scissors;
 
   int m_maxTextureSize;
 };
