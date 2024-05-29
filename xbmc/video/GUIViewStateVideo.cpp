@@ -29,8 +29,7 @@
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
-#include "Util.h"
-#include "LocalizeStrings.h"
+#include "guilib/Key.h"
 #include "view/ViewStateSettings.h"
 
 using namespace XFILE;
