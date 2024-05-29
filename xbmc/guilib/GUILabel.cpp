@@ -157,10 +157,12 @@ void CGUILabel::SetText(const CStdString &label)
 
 void CGUILabel::SetTextW(const CStdStringW &label)
 {
-  m_textLayout.SetText(label);
-  m_scrollInfo.Reset();
-  UpdateRenderRect();
-  m_invalid = false;
+  if (m_textLayout.UpdateW(label, m_maxRect.Width(), m_invalid))
+  {
+    m_scrollInfo.Reset();
+    UpdateRenderRect();
+    m_invalid = false;
+  }
 }
 
 void CGUILabel::UpdateRenderRect()
