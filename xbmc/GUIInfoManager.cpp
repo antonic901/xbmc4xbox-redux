@@ -649,11 +649,11 @@ CGUIInfoManager::Property::Property(const CStdString &property, const CStdString
   CUtil::SplitParams(parameters, params);
 }
 
-const CStdString &CGUIInfoManager::Property::param(unsigned int n /* = 0 */) const
+const std::string &CGUIInfoManager::Property::param(unsigned int n /* = 0 */) const
 {
   if (n < params.size())
     return params[n];
-  return StringUtils::EmptyString;
+  return StringUtils::Empty;
 }
 
 unsigned int CGUIInfoManager::Property::num_params() const
@@ -770,9 +770,9 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition, bool 
       int compareString = ConditionalStringParameter(label);
       if (cat.num_params() > 2)
       {
-        if (cat.param(2).CompareNoCase("left") == 0)
+        if (StringUtils::EqualsNoCase(cat.param(2), "left"))
           return AddMultiInfo(GUIInfo(STRING_STR_LEFT, info, compareString));
-        else if (cat.param(2).CompareNoCase("right") == 0)
+        else if (StringUtils::EqualsNoCase(cat.param(2), "right"))
           return AddMultiInfo(GUIInfo(STRING_STR_RIGHT, info, compareString));
       }
       return AddMultiInfo(GUIInfo(STRING_STR, info, compareString));
@@ -991,7 +991,7 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition, bool 
       }
       if (prop.name == "property")
       {
-        if (prop.param().Equals("fanart_image"))
+        if (prop.param() == "fanart_image")
           return AddMultiInfo(GUIInfo(PLAYER_ITEM_ART, ConditionalStringParameter("fanart")));
         return AddListItemProp(prop.param(), MUSICPLAYER_PROPERTY_OFFSET);
       }
@@ -1040,9 +1040,9 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition, bool 
       if (prop.name == "sortdirection")
       {
         SortOrder order = SortOrderNone;
-        if (prop.param().Equals("ascending"))
+        if (StringUtils::EqualsNoCase(prop.param(), "ascending"))
           order = SortOrderAscending;
-        else if (prop.param().Equals("descending"))
+        else if (StringUtils::EqualsNoCase(prop.param(), "descending"))
           order = SortOrderDescending;
         return AddMultiInfo(GUIInfo(CONTAINER_SORT_DIRECTION, order));
       }
@@ -1109,7 +1109,7 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition, bool 
     {
       if (prop.name == "property" && prop.num_params() == 1)
       { // TODO: this doesn't support foo.xml
-        int winID = cat.param().IsEmpty() ? 0 : CButtonTranslator::TranslateWindow(cat.param());
+        int winID = cat.param().empty() ? 0 : CButtonTranslator::TranslateWindow(cat.param());
         if (winID != WINDOW_INVALID)
           return AddMultiInfo(GUIInfo(WINDOW_PROPERTY, winID, ConditionalStringParameter(prop.param())));
       }
@@ -1117,9 +1117,9 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition, bool 
       {
         if (prop.name == window_bools[i].str)
         { // TODO: The parameter for these should really be on the first not the second property
-          if (prop.param().Find("xml") >= 0)
+          if (prop.param().find("xml") != std::string::npos)
             return AddMultiInfo(GUIInfo(window_bools[i].val, 0, ConditionalStringParameter(prop.param())));
-          int winID = prop.param().IsEmpty() ? 0 : CButtonTranslator::TranslateWindow(prop.param());
+          int winID = prop.param().empty() ? 0 : CButtonTranslator::TranslateWindow(prop.param());
           if (winID != WINDOW_INVALID)
             return AddMultiInfo(GUIInfo(window_bools[i].val, winID, 0));
           return 0;
@@ -1225,7 +1225,7 @@ int CGUIInfoManager::TranslateListItem(const Property &info)
   }
   if (info.name == "property" && info.num_params() == 1)
   {
-    if (info.param().Equals("fanart_image"))
+    if (info.param() == "fanart_image")
       return AddListItemProp("fanart", LISTITEM_ART_OFFSET);
     return AddListItemProp(info.param());
   }

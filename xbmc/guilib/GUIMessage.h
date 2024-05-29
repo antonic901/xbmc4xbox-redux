@@ -9,8 +9,8 @@
 #pragma once
 
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *      Copyright (C) 2005-2013 Team Kodi
+ *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -43,8 +43,8 @@
 #define GUI_MSG_ENABLED         8   // enable control
 #define GUI_MSG_DISABLED        9   // disable control
 
-#define GUI_MSG_SET_SELECTED       10   // control = selected
-#define GUI_MSG_SET_DESELECTED     11   // control = not selected
+#define GUI_MSG_SET_SELECTED   10   // control = selected
+#define GUI_MSG_SET_DESELECTED 11   // control = not selected
 
 #define GUI_MSG_LABEL_ADD      12   // add label control (for controls supporting more then 1 label)
 
@@ -90,6 +90,12 @@
  recalculate sizing information
  */
 #define GUI_MSG_WINDOW_RESIZE  34
+
+/*!
+ \brief A control wishes to have (or release) exclusive access to mouse actions
+ */
+#define GUI_MSG_EXCLUSIVE_MOUSE 37
+
 
 /*!
  \brief A request to add a control
@@ -155,10 +161,6 @@ do { \
  OnMessage(msg); \
 } while(0)
 
-/*!
- \brief A control wishes to have (or release) exclusive access to mouse actions
- */
-#define GUI_MSG_EXCLUSIVE_MOUSE 37
 
 /*!
  \ingroup winmsg
@@ -240,6 +242,28 @@ do { \
 
 /*!
  \ingroup winmsg
+ \brief Set a bunch of labels on the given control
+ */
+#define SET_CONTROL_LABELS(controlID, defaultValue, labels) \
+do { \
+CGUIMessage msg(GUI_MSG_SET_LABELS, GetID(), controlID, defaultValue); \
+msg.SetPointer(labels); \
+OnMessage(msg); \
+} while(0)
+
+/*!
+ \ingroup winmsg
+ \brief Set the label of the current control
+ */
+#define SET_CONTROL_FILENAME(controlID,label) \
+do { \
+CGUIMessage msg(GUI_MSG_SET_FILENAME, GetID(), controlID); \
+msg.SetLabel(label); \
+OnMessage(msg); \
+} while(0)
+
+/*!
+ \ingroup winmsg
  \brief
  */
 #define SET_CONTROL_HIDDEN(controlID) \
@@ -274,11 +298,6 @@ do { \
  OnMessage(msg); \
 } while(0)
 
-#define BIND_CONTROL(i,c,pv) \
-do { \
- pv = ((c*)GetControl(i));\
-} while(0)
-
 /*!
 \ingroup winmsg
 \brief Click message sent from controls to windows.
@@ -289,9 +308,10 @@ do { \
  SendWindowMessage(msg); \
 } while(0)
 
+#include <string>
 #include <vector>
+#include "system.h" // <xtl.h>
 #include "boost/shared_ptr.hpp"
-#include "utils/StdString.h"
 
 // forwards
 class CGUIListItem; typedef boost::shared_ptr<CGUIListItem> CGUIListItemPtr;
@@ -309,7 +329,7 @@ public:
   CGUIMessage(int msg, int senderID, int controlID, int param1, int param2, const CGUIListItemPtr &item);
   CGUIMessage(const CGUIMessage& msg);
   virtual ~CGUIMessage(void);
-  const CGUIMessage& operator = (const CGUIMessage& msg);
+  CGUIMessage& operator = (const CGUIMessage& msg);
 
   int GetControlId() const ;
   int GetMessage() const;
@@ -324,14 +344,14 @@ public:
   void SetLabel(const std::string& strLabel);
   void SetLabel(int iString);               // for convience - looks up in strings.xml
   const std::string& GetLabel() const;
-  void SetStringParam(const CStdString &strParam);
-  void SetStringParams(const std::vector<CStdString> &params);
-  const CStdString& GetStringParam(size_t param = 0) const;
+  void SetStringParam(const std::string &strParam);
+  void SetStringParams(const std::vector<std::string> &params);
+  const std::string& GetStringParam(size_t param = 0) const;
   size_t GetNumStringParams() const;
 
 private:
   std::string m_strLabel;
-  std::vector<CStdString> m_params;
+  std::vector<std::string> m_params;
   int m_senderID;
   int m_controlID;
   int m_message;
@@ -340,6 +360,6 @@ private:
   int m_param2;
   CGUIListItemPtr m_item;
 
-  static CStdString empty_string;
+  static std::string empty_string;
 };
 #endif
