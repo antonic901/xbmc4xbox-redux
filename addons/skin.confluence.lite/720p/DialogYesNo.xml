@@ -35,38 +35,16 @@
 			<textcolor>selected</textcolor>
 			<shadowcolor>black</shadowcolor>
 		</control>
-		<control type="label" id="2">
-			<description>dialog line 1</description>
+    <control type="textbox" id="9">
+			<description>text</description>
 			<posx>30</posx>
 			<posy>60</posy>
 			<width>550</width>
-			<height>30</height>
+			<height>80</height>
 			<align>left</align>
-			<aligny>center</aligny>
 			<label>-</label>
 			<font>font13</font>
-		</control>
-		<control type="label" id="3">
-			<description>dialog line 2</description>
-			<posx>30</posx>
-			<posy>85</posy>
-			<width>550</width>
-			<height>30</height>
-			<align>left</align>
-			<aligny>center</aligny>
-			<label>-</label>
-			<font>font13</font>
-		</control>
-		<control type="label" id="4">
-			<description>dialog line 3</description>
-			<posx>30</posx>
-			<posy>110</posy>
-			<width>550</width>
-			<height>30</height>
-			<align>left</align>
-			<aligny>center</aligny>
-			<label>-</label>
-			<font>font13</font>
+			<autoscroll time="3000" delay="4000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
 		</control>
 		<control type="button" id="11">
 			<description>Yes button</description>
