@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2005-2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 
 #include "GUIControl.h"
 #include "boost/shared_ptr.hpp"
+#include <memory>
 
 typedef boost::shared_ptr<CGUIListItem> CGUIListItemPtr;
 
@@ -34,7 +35,7 @@ class IGUIContainer : public CGUIControl
 {
 protected:
   VIEW_TYPE m_type;
-  CStdString m_label;
+  std::string m_label;
 public:
   IGUIContainer(int parentID, int controlID, float posX, float posY, float width, float height)
    : CGUIControl(parentID, controlID, posX, posY, width, height), m_type(VIEW_TYPE_NONE) {}
