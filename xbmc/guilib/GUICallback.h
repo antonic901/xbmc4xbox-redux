@@ -55,27 +55,22 @@ public:
   // Assign an EventHandler (EventHandler's are derived from Event)
   GUIEvent<Cookie> &operator=(GUIEvent<Cookie> &aEvent)
   {
-    if (&aEvent)
+    if (&aEvent != this)
     {
       m_pInstance = aEvent.m_pInstance;
       m_pMethod = aEvent.m_pMethod;
     }
-    else
-    {
-      GUIEvent();
-    }
-
     return *this;
   }
 
   // Are the class instance and method pointers initialised?
-  bool HasAHandler()
+  bool HasAHandler() const
   {
     return (m_pInstance && m_pMethod);
   }
 
   // Execute the associated class method
-  void Fire(Cookie aCookie)
+  void Fire(Cookie aCookie) const
   {
     if (HasAHandler())
     {
@@ -101,9 +96,21 @@ public:
 
   GUIEventHandler(Class* pInstance, MethodPtr aMethodPtr)
   {
-    m_pInstance = (GUIEvent<Cookie>*) ((LPVOID) pInstance);
+    GUIEvent<Cookie>::m_pInstance = (GUIEvent<Cookie>*) ((LPVOID) pInstance);
+
+#ifndef TARGET_POSIX
     // Its dirty but it works!
-    memcpy(&m_pMethod, &aMethodPtr, sizeof(m_pMethod));
+    memcpy(&m_pMethod, &aMethodPtr, sizeof(GUIEvent<Cookie>::m_pMethod));
+#else
+    // Well, GCC doesn't like that dirty stuff... here's another version of the same thing
+    // but even dirtier *grin*
+
+#define my_offsetof(TYPE, MEMBER) \
+               ((size_t)((char *)&(((TYPE *)0x10)->MEMBER) - (char*)0x10))
+
+    void* target = (void*) (((char*) this) + my_offsetof(GUIEvent<Cookie>, m_pMethod));
+    memcpy(target, &aMethodPtr, sizeof(GUIEvent<Cookie>::m_pMethod));
+#endif
   }
 };
 
@@ -124,27 +131,22 @@ public:
   // Assign a CallbackHandler (CallbackHandler's are derived from Callback)
   Callback<Result, Cookie> &operator=(Callback<Result, Cookie> &aCallback)
   {
-    if (&aCallback)
+    if (&aCallback != this)
     {
       m_pInstance = aCallback.m_pInstance;
       m_pMethod = aCallback.m_pMethod;
     }
-    else
-    {
-      Callback();
-    }
-
     return *this;
   }
 
   // Are the class instance and method pointers initialised?
-  bool HasAHandler()
+  bool HasAHandler() const
   {
     return (m_pInstance && m_pMethod);
   }
 
   // Execute the associated class method and return the result
-  Result Fire(Cookie aCookie)
+  Result Fire(Cookie aCookie) const
   {
     if (HasAHandler())
     {
@@ -170,9 +172,9 @@ public:
 
   CallbackHandler (Class* pInstance, MethodPtr aMethodPtr)
   {
-    m_pInstance = (Callback<Result, Cookie>*) ((LPVOID) pInstance);
+    Callback<Result, Cookie>::m_pInstance = (Callback<Result, Cookie>*) ((LPVOID) pInstance);
     // Its dirty but it works!
-    memcpy(&m_pMethod, &aMethodPtr, sizeof(m_pMethod));
+    memcpy(&Callback<Result, Cookie>::m_pMethod, &aMethodPtr, sizeof(Callback<Result, Cookie>::m_pMethod));
   }
 };
 
