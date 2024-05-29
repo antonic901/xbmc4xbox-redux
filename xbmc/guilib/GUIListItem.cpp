@@ -18,14 +18,19 @@
  *
  */
 
-#include "include.h"
 #include "GUIListItem.h"
 #include "GUIListItemLayout.h"
 #include "utils/Archive.h"
 #include "utils/CharsetConverter.h"
+#include "utils/StringUtils.h"
 #include "utils/Variant.h"
 
 using namespace std;
+
+bool CGUIListItem::icompare::operator()(const CStdString &s1, const CStdString &s2) const
+{
+  return StringUtils::CompareNoCase(s1, s2) < 0;
+}
 
 CGUIListItem::CGUIListItem(const CGUIListItem& item)
 {
@@ -70,7 +75,7 @@ void CGUIListItem::SetLabel(const CStdString& strLabel)
   if (m_strLabel == strLabel)
     return;
   m_strLabel = strLabel;
-  if (m_sortLabel.IsEmpty())
+  if (m_sortLabel.empty())
     SetSortLabel(strLabel);
   SetInvalid();
 }
@@ -96,8 +101,13 @@ const CStdString& CGUIListItem::GetLabel2() const
 
 void CGUIListItem::SetSortLabel(const CStdString &label)
 {
-  g_charsetConverter.utf8ToW(label, m_sortLabel);
+  g_charsetConverter.utf8ToW(label, m_sortLabel, false);
   // no need to invalidate - this is never shown in the UI
+}
+
+void CGUIListItem::SetSortLabel(const CStdStringW &label)
+{
+  m_sortLabel = label;
 }
 
 const CStdStringW& CGUIListItem::GetSortLabel() const
@@ -113,6 +123,12 @@ void CGUIListItem::SetArt(const std::string &type, const std::string &url)
     m_art[type] = url;
     SetInvalid();
   }
+}
+
+void CGUIListItem::SetArt(const ArtMap &art)
+{
+  m_art = art;
+  SetInvalid();
 }
 
 void CGUIListItem::SetArtFallback(const std::string &from, const std::string &to)
@@ -204,11 +220,6 @@ CStdString CGUIListItem::GetOverlayImage() const
   }
 }
 
-void CGUIListItem::SetArt(const ArtMap &art)
-{
-  m_art = art;
-}
-
 void CGUIListItem::Select(bool bOnOff)
 {
   m_bSelected = bOnOff;
@@ -229,7 +240,7 @@ bool CGUIListItem::IsSelected() const
   return m_bSelected;
 }
 
-const CGUIListItem& CGUIListItem::operator =(const CGUIListItem& item)
+CGUIListItem& CGUIListItem::operator =(const CGUIListItem& item)
 {
   if (&item == this) return * this;
   m_strLabel2 = item.m_strLabel2;
@@ -258,20 +269,20 @@ void CGUIListItem::Archive(CArchive &ar)
     ar << m_strIcon;
     ar << m_bSelected;
     ar << m_overlayIcon;
-    ar << m_mapProperties.size();
-    for (PropertyMap::const_iterator it = m_mapProperties.begin(); it != m_mapProperties.end(); it++)
+    ar << (int)m_mapProperties.size();
+    for (PropertyMap::const_iterator it = m_mapProperties.begin(); it != m_mapProperties.end(); ++it)
     {
       ar << it->first;
       ar << it->second;
     }
     ar << (int)m_art.size();
-    for (ArtMap::const_iterator i = m_art.begin(); i != m_art.end(); i++)
+    for (ArtMap::const_iterator i = m_art.begin(); i != m_art.end(); ++i)
     {
       ar << i->first;
       ar << i->second;
     }
     ar << (int)m_artFallbacks.size();
-    for (ArtMap::const_iterator i = m_artFallbacks.begin(); i != m_artFallbacks.end(); i++)
+    for (ArtMap::const_iterator i = m_artFallbacks.begin(); i != m_artFallbacks.end(); ++i)
     {
       ar << i->first;
       ar << i->second;
@@ -285,7 +296,11 @@ void CGUIListItem::Archive(CArchive &ar)
     ar >> m_sortLabel;
     ar >> m_strIcon;
     ar >> m_bSelected;
-    ar >> (int&)m_overlayIcon;
+
+    int overlayIcon;
+    ar >> overlayIcon;
+    m_overlayIcon = GUIIconOverlay(overlayIcon);
+
     int mapSize;
     ar >> mapSize;
     for (int i = 0; i < mapSize; i++)
@@ -312,7 +327,6 @@ void CGUIListItem::Archive(CArchive &ar)
       ar >> value;
       m_artFallbacks.insert(make_pair(key, value));
     }
-    SetInvalid();
   }
 }
 void CGUIListItem::Serialize(CVariant &value)
@@ -320,15 +334,15 @@ void CGUIListItem::Serialize(CVariant &value)
   value["isFolder"] = m_bIsFolder;
   value["strLabel"] = m_strLabel;
   value["strLabel2"] = m_strLabel2;
-  value["sortLabel"] = CStdString(m_sortLabel);
+  value["sortLabel"] = m_sortLabel;
   value["strIcon"] = m_strIcon;
   value["selected"] = m_bSelected;
 
-  for (PropertyMap::const_iterator it = m_mapProperties.begin(); it != m_mapProperties.end(); it++)
+  for (PropertyMap::const_iterator it = m_mapProperties.begin(); it != m_mapProperties.end(); ++it)
   {
     value["properties"][it->first] = it->second;
   }
-  for (ArtMap::const_iterator it = m_art.begin(); it != m_art.end(); it++)
+  for (ArtMap::const_iterator it = m_art.begin(); it != m_art.end(); ++it)
     value["art"][it->first] = it->second;
 }
 
@@ -358,8 +372,7 @@ void CGUIListItem::FreeMemory(bool immediately)
 
 void CGUIListItem::SetLayout(CGUIListItemLayout *layout)
 {
-  if (m_layout)
-    delete m_layout;
+  delete m_layout;
   m_layout = layout;
 }
 
@@ -370,8 +383,7 @@ CGUIListItemLayout *CGUIListItem::GetLayout()
 
 void CGUIListItem::SetFocusedLayout(CGUIListItemLayout *layout)
 {
-  if (m_focusedLayout)
-    delete m_focusedLayout;
+  delete m_focusedLayout;
   m_focusedLayout = layout;
 }
 
@@ -388,17 +400,7 @@ void CGUIListItem::SetInvalid()
 
 void CGUIListItem::SetProperty(const CStdString &strKey, const CVariant &value)
 {
-  PropertyMap::iterator iter = m_mapProperties.find(strKey);
-  if (iter == m_mapProperties.end())
-  {
-    m_mapProperties.insert(make_pair(strKey, value));
-    SetInvalid();
-  }
-  else if (iter->second != value)
-  {
-    iter->second = value;
-    SetInvalid();
-  }
+  m_mapProperties[strKey] = value;
 }
 
 CVariant CGUIListItem::GetProperty(const CStdString &strKey) const
@@ -423,19 +425,12 @@ void CGUIListItem::ClearProperty(const CStdString &strKey)
 {
   PropertyMap::iterator iter = m_mapProperties.find(strKey);
   if (iter != m_mapProperties.end())
-  {
     m_mapProperties.erase(iter);
-    SetInvalid();
-  }
 }
 
 void CGUIListItem::ClearProperties()
 {
-  if (!m_mapProperties.empty())
-  {
-    m_mapProperties.clear();
-    SetInvalid();
-  }
+  m_mapProperties.clear();
 }
 
 void CGUIListItem::IncrementProperty(const CStdString &strKey, int nVal)
@@ -454,6 +449,6 @@ void CGUIListItem::IncrementProperty(const CStdString &strKey, double dVal)
 
 void CGUIListItem::AppendProperties(const CGUIListItem &item)
 {
-  for (PropertyMap::const_iterator i = m_mapProperties.begin(); i != m_mapProperties.end(); ++i)
+  for (PropertyMap::const_iterator i = item.m_mapProperties.begin(); i != item.m_mapProperties.end(); ++i)
     SetProperty(i->first, i->second);
 }

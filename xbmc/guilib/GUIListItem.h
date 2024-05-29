@@ -63,7 +63,7 @@ public:
   virtual ~CGUIListItem(void);
   virtual CGUIListItem *Clone() const { return new CGUIListItem(*this); };
 
-  const CGUIListItem& operator =(const CGUIListItem& item);
+  CGUIListItem& operator =(const CGUIListItem& item);
 
   virtual void SetLabel(const CStdString& strLabel);
   const CStdString& GetLabel() const;
@@ -129,6 +129,7 @@ public:
   bool HasArt(const std::string &type) const;
 
   void SetSortLabel(const CStdString &label);
+  void SetSortLabel(const CStdStringW &label);
   const CStdStringW &GetSortLabel() const;
 
   void Select(bool bOnOff);
@@ -163,12 +164,12 @@ public:
    \param item the item containing the properties to append.
    */
   void AppendProperties(const CGUIListItem &item);
-  
+
   void Archive(CArchive& ar);
   void Serialize(CVariant& value);
 
   bool       HasProperty(const CStdString &strKey) const;
-  bool       HasProperties() const { return m_mapProperties.size() > 0; };
+  bool       HasProperties() const { return !m_mapProperties.empty(); };
   void       ClearProperty(const CStdString &strKey);
 
   CVariant   GetProperty(const CStdString &strKey) const;
@@ -184,10 +185,7 @@ protected:
 
   struct icompare
   {
-    bool operator()(const CStdString &s1, const CStdString &s2) const
-    {
-      return s1.CompareNoCase(s2) < 0;
-    }
+    bool operator()(const CStdString &s1, const CStdString &s2) const;
   };
 
   typedef std::map<CStdString, CVariant, icompare> PropertyMap;
@@ -200,3 +198,4 @@ private:
   ArtMap m_artFallbacks;
 };
 #endif
+
