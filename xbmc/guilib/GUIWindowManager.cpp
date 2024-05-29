@@ -44,7 +44,6 @@ CGUIWindowManager g_windowManager;
 CGUIWindowManager::CGUIWindowManager(void)
 {
   m_pCallback = NULL;
-  m_bShowOverlay = true;
   m_iNested = 0;
   m_initialized = false;
 }
@@ -300,9 +299,6 @@ void CGUIWindowManager::PreviousWindow()
   // tell our info manager which window we are going to
   g_infoManager.SetNextWindow(previousWindow);
 
-  // set our overlay state (enables out animations on window change)
-  HideOverlay(pNewWindow->GetOverlayState());
-
   // deinitialize our window
   g_audioManager.PlayWindowSound(pCurrentWindow->GetID(), SOUND_DEINIT);
   CGUIMessage msg(GUI_MSG_WINDOW_DEINIT, 0, 0);
@@ -399,9 +395,6 @@ void CGUIWindowManager::ActivateWindow_Internal(int iWindowID, const vector<CStd
   }
 
   g_infoManager.SetNextWindow(iWindowID);
-
-  // set our overlay state
-  HideOverlay(pNewWindow->GetOverlayState());
 
   // deactivate any window
   int currentWindow = GetActiveWindow();
@@ -864,26 +857,6 @@ void CGUIWindowManager::UnloadNotOnDemandWindows()
       pWindow->FreeResources(true);
     }
   }
-}
-
-bool CGUIWindowManager::IsOverlayAllowed() const
-{
-  if (GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO ||
-      GetActiveWindow() == WINDOW_SCREENSAVER)
-    return false;
-  return m_bShowOverlay;
-}
-
-void CGUIWindowManager::ShowOverlay(CGUIWindow::OVERLAY_STATE state)
-{
-  if (state != CGUIWindow::OVERLAY_STATE_PARENT_WINDOW)
-    m_bShowOverlay = state == CGUIWindow::OVERLAY_STATE_SHOWN;
-}
-
-void CGUIWindowManager::HideOverlay(CGUIWindow::OVERLAY_STATE state)
-{
-  if (state == CGUIWindow::OVERLAY_STATE_HIDDEN)
-    m_bShowOverlay = false;
 }
 
 void CGUIWindowManager::AddToWindowHistory(int newWindowID)

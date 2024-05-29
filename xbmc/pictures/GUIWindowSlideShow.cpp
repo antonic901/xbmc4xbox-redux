@@ -249,7 +249,6 @@ void CGUIWindowSlideShow::OnDeinitWindow(int nextWindowID)
   if (nextWindowID != WINDOW_PICTURES)
     m_ImageLib.Unload();
 
-  g_windowManager.ShowOverlay(OVERLAY_STATE_SHOWN);
   // set screen filters to video filters so that we
   // get sharper images
   g_graphicsContext.SetScreenFilters(false);
@@ -816,7 +815,6 @@ bool CGUIWindowSlideShow::OnMessage(CGUIMessage& message)
       if (message.GetParam1() != WINDOW_PICTURES)
         m_ImageLib.Load();
 
-      g_windowManager.ShowOverlay(OVERLAY_STATE_HIDDEN);
       // set screen filters to video filters so that we
       // get sharper images
       g_graphicsContext.SetScreenFilters(true);

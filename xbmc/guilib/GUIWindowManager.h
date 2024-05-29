@@ -116,8 +116,6 @@ public:
   bool IsWindowActive(const CStdString &xmlFile, bool ignoreClosing = true) const;
   bool IsWindowVisible(const CStdString &xmlFile) const;
   bool IsWindowTopMost(const CStdString &xmlFile) const;
-  bool IsOverlayAllowed() const;
-  void ShowOverlay(CGUIWindow::OVERLAY_STATE state);
   void GetActiveModelessWindows(std::vector<int> &ids);
 #ifdef _DEBUG
   void DumpTextureUse();
@@ -125,7 +123,6 @@ public:
 private:
   void LoadNotOnDemandWindows();
   void UnloadNotOnDemandWindows();
-  void HideOverlay(CGUIWindow::OVERLAY_STATE state);
   void AddToWindowHistory(int newWindowID);
   void ClearWindowHistory();
   CGUIWindow *GetTopMostDialog() const;
@@ -150,7 +147,6 @@ private:
   CCriticalSection m_critSection;
   std::vector <IMsgTargetCallback*> m_vecMsgTargets;
 
-  bool m_bShowOverlay;
   int  m_iNested;
   bool m_initialized;
 };
