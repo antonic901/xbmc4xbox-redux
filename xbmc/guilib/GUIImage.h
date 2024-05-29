@@ -28,6 +28,8 @@
  *
  */
 
+#include <vector>
+
 #include "GUIControl.h"
 #include "GUITexture.h"
 
@@ -59,6 +61,10 @@ public:
     CGUITexture *m_texture;  ///< texture to fade out
     unsigned int m_fadeTime; ///< time to fade out (ms)
     bool         m_fading;   ///< whether we're fading out
+
+  private:
+    CFadingTexture(const CFadingTexture&);
+    CFadingTexture& operator=(const CFadingTexture&);
   };
 
   CGUIImage(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& texture);
@@ -71,7 +77,9 @@ public:
   virtual void UpdateVisibility(const CGUIListItem *item = NULL);
   virtual bool OnAction(const CAction &action) ;
   virtual bool OnMessage(CGUIMessage& message);
+#ifdef HAS_XBOX_D3D
   virtual void PreAllocResources();
+#endif
   virtual void AllocResources();
   virtual void FreeResources(bool immediately = false);
   virtual void DynamicResourceAlloc(bool bOnOff);
@@ -81,14 +89,15 @@ public:
   virtual void UpdateInfo(const CGUIListItem *item = NULL);
 
   virtual void SetInfo(const CGUIInfoLabel &info);
-  virtual void SetFileName(const CStdString& strFileName, bool setConstant = false, const bool useCache = true);
+  virtual void SetFileName(const std::string& strFileName, bool setConstant = false, const bool useCache = true);
   virtual void SetAspectRatio(const CAspectRatio &aspect);
   virtual void SetWidth(float width);
   virtual void SetHeight(float height);
   virtual void SetPosition(float posX, float posY);
+  virtual std::string GetDescription() const;
   void SetCrossFade(unsigned int time);
 
-  const CStdString& GetFileName() const;
+  const std::string& GetFileName() const;
   float GetTextureWidth() const;
   float GetTextureHeight() const;
 
@@ -112,8 +121,8 @@ protected:
 
   CGUITexture m_texture;
   std::vector<CFadingTexture *> m_fadingTextures;
-  CStdString m_currentTexture;
-  CStdString m_currentFallback;
+  std::string m_currentTexture;
+  std::string m_currentFallback;
 
   unsigned int m_crossFadeTime;
   unsigned int m_currentFadeTime;

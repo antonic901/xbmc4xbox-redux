@@ -115,6 +115,17 @@
  */
 #define GUI_MSG_SET_LABELS     46
 
+/*!
+ \brief Set the filename for an image control
+ */
+#define GUI_MSG_SET_FILENAME   47
+
+/*!
+ \brief Get the filename of an image control
+ */
+
+#define GUI_MSG_GET_FILENAME   48
+
 #define GUI_MSG_USER         1000
 
 /*!

@@ -744,7 +744,8 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition, bool 
     {
       int info = TranslateSingleString(cat.param(0), listItemDependent);
       // pipe our original string through the localize parsing then make it lowercase (picks up $LBRACKET etc.)
-      CStdString label = CGUIInfoLabel::GetLabel(cat.param(1)).ToLower();
+      CStdString label = CGUIInfoLabel::GetLabel(cat.param(1));
+      StringUtils::ToLower(label);
       // 'true', 'false', 'yes', 'no' are valid strings, do not resolve them to SYSTEM_ALWAYS_TRUE or SYSTEM_ALWAYS_FALSE
       if (label != "true" && label != "false" && label != "yes" && label != "no")
       {
@@ -764,7 +765,8 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition, bool 
     else if (cat.name == "substring" && cat.num_params() >= 2)
     {
       int info = TranslateSingleString(cat.param(0), listItemDependent);
-      CStdString label = CGUIInfoLabel::GetLabel(cat.param(1)).ToLower();
+      CStdString label = CGUIInfoLabel::GetLabel(cat.param(1));
+      StringUtils::ToLower(label);
       int compareString = ConditionalStringParameter(label);
       if (cat.num_params() > 2)
       {
@@ -798,7 +800,8 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition, bool 
           {
             int data1 = TranslateSingleString(prop.param(0));
             // pipe our original string through the localize parsing then make it lowercase (picks up $LBRACKET etc.)
-            CStdString label = CGUIInfoLabel::GetLabel(prop.param(1)).ToLower();
+            CStdString label = CGUIInfoLabel::GetLabel(prop.param(1));
+            StringUtils::ToLower(label);
             // 'true', 'false', 'yes', 'no' are valid strings, do not resolve them to SYSTEM_ALWAYS_TRUE or SYSTEM_ALWAYS_FALSE
             if (label != "true" && label != "false" && label != "yes" && label != "no")
             {
@@ -906,7 +909,8 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition, bool 
           int infoLabel = TranslateSingleString(param, listItemDependent);
           if (infoLabel > 0)
             return AddMultiInfo(GUIInfo(SYSTEM_ADDON_TITLE, infoLabel, 0));
-          CStdString label = CGUIInfoLabel::GetLabel(param).ToLower();
+          CStdString label = CGUIInfoLabel::GetLabel(param);
+          StringUtils::ToLower(label);
           return AddMultiInfo(GUIInfo(SYSTEM_ADDON_TITLE, ConditionalStringParameter(label), 1));
         }
         else if (prop.name == "addonicon")
@@ -914,7 +918,8 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition, bool 
           int infoLabel = TranslateSingleString(param, listItemDependent);
           if (infoLabel > 0)
             return AddMultiInfo(GUIInfo(SYSTEM_ADDON_ICON, infoLabel, 0));
-          CStdString label = CGUIInfoLabel::GetLabel(param).ToLower();
+          CStdString label = CGUIInfoLabel::GetLabel(param);
+          StringUtils::ToLower(label);
           return AddMultiInfo(GUIInfo(SYSTEM_ADDON_ICON, ConditionalStringParameter(label), 1));
         }
         else if (prop.name == "addonversion")
@@ -922,7 +927,8 @@ int CGUIInfoManager::TranslateSingleString(const CStdString &strCondition, bool 
           int infoLabel = TranslateSingleString(param, listItemDependent);
           if (infoLabel > 0)
             return AddMultiInfo(GUIInfo(SYSTEM_ADDON_VERSION, infoLabel, 0));
-          CStdString label = CGUIInfoLabel::GetLabel(param).ToLower();
+          CStdString label = CGUIInfoLabel::GetLabel(param);
+          StringUtils::ToLower(label);
           return AddMultiInfo(GUIInfo(SYSTEM_ADDON_VERSION, ConditionalStringParameter(label), 1));
         }
         else if (prop.name == "controllerport")
@@ -1253,7 +1259,7 @@ TIME_FORMAT CGUIInfoManager::TranslateTimeFormat(const CStdString &format)
   return TIME_FORMAT_GUESS;
 }
 
-CStdString CGUIInfoManager::GetLabel(int info, int contextWindow, CStdString *fallback)
+CStdString CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *fallback)
 {
   if (info >= CONDITIONAL_LABEL_START && info <= CONDITIONAL_LABEL_END)
     return GetSkinVariableString(info, false);
@@ -2914,7 +2920,7 @@ bool CGUIInfoManager::GetMultiInfoInt(int &value, const GUIInfo &info, int conte
 }
 
 /// \brief Examines the multi information sent and returns the string as appropriate
-CStdString CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextWindow, CStdString *fallback)
+CStdString CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextWindow, std::string *fallback)
 {
   if (info.m_info == SKIN_STRING)
   {
@@ -3098,7 +3104,7 @@ CStdString CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextWi
 }
 
 /// \brief Obtains the filename of the image to show from whichever subsystem is needed
-CStdString CGUIInfoManager::GetImage(int info, int contextWindow, CStdString *fallback)
+CStdString CGUIInfoManager::GetImage(int info, int contextWindow, std::string *fallback)
 {
   if (info >= CONDITIONAL_LABEL_START && info <= CONDITIONAL_LABEL_END)
     return GetSkinVariableString(info, true);
@@ -4007,7 +4013,7 @@ bool CGUIInfoManager::GetItemInt(int &value, const CGUIListItem *item, int info)
   return false;
 }
 
-CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, CStdString *fallback)
+CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, std::string *fallback)
 {
   if (!item) return "";
 
@@ -4419,7 +4425,7 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, CStdSt
   return "";
 }
 
-CStdString CGUIInfoManager::GetItemImage(const CFileItem *item, int info, CStdString *fallback)
+CStdString CGUIInfoManager::GetItemImage(const CFileItem *item, int info, std::string *fallback)
 {
   if (info >= CONDITIONAL_LABEL_START && info <= CONDITIONAL_LABEL_END)
     return GetSkinVariableString(info, true, item);

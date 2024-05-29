@@ -11,6 +11,7 @@
 
 #include "WebServer.h"
 #include "XBMChttp.h"
+#include "GUIInfoManager.h"
 #include "includes.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
@@ -27,7 +28,6 @@
 #include "video/VideoDatabase.h"
 #include "ProgramDatabase.h"
 #include "GUIButtonControl.h"
-#include "GUIInfoManager.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "music/infoscanner/MusicInfoScraper.h"
 #include "addons/AddonManager.h"

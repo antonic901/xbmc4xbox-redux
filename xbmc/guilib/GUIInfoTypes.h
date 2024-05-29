@@ -28,7 +28,11 @@
  *
  */
 
-#include "utils/StdString.h"
+#include <string>
+#include <vector>
+#include <stdint.h>
+#include <functional>
+#include <boost/function.hpp>
 #include "interfaces/info/InfoBool.h"
 
 class CGUIListItem;
@@ -42,7 +46,7 @@ public:
   operator bool() const { return m_value; };
 
   void Update(const CGUIListItem *item = NULL);
-  void Parse(const CStdString &expression, int context);
+  void Parse(const std::string &expression, int context);
 private:
   INFO::InfoPtr m_info;
   bool m_value;
@@ -55,29 +59,35 @@ class CGUIInfoColor
 public:
   CGUIInfoColor(color_t color = 0);
 
-  const CGUIInfoColor &operator=(const CGUIInfoColor &color);
-  const CGUIInfoColor &operator=(color_t color);
+  CGUIInfoColor& operator=(const CGUIInfoColor &color);
+  CGUIInfoColor& operator=(color_t color);
   operator color_t() const { return m_color; };
 
   bool Update();
-  void Parse(const CStdString &label, int context);
+  void Parse(const std::string &label, int context);
 
 private:
   color_t GetColor() const;
-  int      m_info;
+  int     m_info;
   color_t m_color;
 };
-
-typedef CStdString (*StringReplacerFunc) (const CStdString &str);
 
 class CGUIInfoLabel
 {
 public:
   CGUIInfoLabel();
-  CGUIInfoLabel(const CStdString &label, const CStdString &fallback = "", int context = 0);
+  CGUIInfoLabel(const std::string &label, const std::string &fallback = "", int context = 0);
 
-  void SetLabel(const CStdString &label, const CStdString &fallback, int context = 0);
-  CStdString GetLabel(int contextWindow, bool preferImage = false, CStdString *fallback = NULL) const;
+  void SetLabel(const std::string &label, const std::string &fallback, int context = 0);
+
+  /*!
+   \brief Gets a label (or image) for a given window context from the info manager.
+   \param contextWindow the context in which to evaluate the expression.
+   \param preferImage caller is specifically wanting an image rather than a label. Defaults to false.
+   \param fallback if non-NULL, is set to an alternate value to use should the actual value be not appropriate. Defaults to NULL.
+   \return label (or image).
+   */
+  const std::string &GetLabel(int contextWindow, bool preferImage = false, std::string *fallback = NULL) const;
 
   /*!
    \brief Gets the label and returns it as an int value
@@ -87,13 +97,21 @@ public:
    */
   int GetIntValue(int contextWindow) const;
 
-  CStdString GetItemLabel(const CGUIListItem *item, bool preferImage = false, CStdString *fallback = NULL) const;
+  /*!
+   \brief Gets a label (or image) for a given listitem from the info manager.
+   \param item listitem in question.
+   \param preferImage caller is specifically wanting an image rather than a label. Defaults to false.
+   \param fallback if non-NULL, is set to an alternate value to use should the actual value be not appropriate. Defaults to NULL.
+   \return label (or image).
+   */
+  const std::string &GetItemLabel(const CGUIListItem *item, bool preferImage = false, std::string *fallback = NULL) const;
+
   bool IsConstant() const;
   bool IsEmpty() const;
 
-  const CStdString GetFallback() const { return m_fallback; };
+  const std::string &GetFallback() const { return m_fallback; };
 
-  static CStdString GetLabel(const CStdString &label, int contextWindow = 0, bool preferImage = false);
+  static std::string GetLabel(const std::string &label, int contextWindow = 0, bool preferImage = false);
   static std::string GetItemLabel(const std::string &label, const CGUIListItem *item, bool preferImage = false);
 
   /*!
@@ -101,8 +119,16 @@ public:
    \param label text to replace
    \return text with any localized strings filled in.
    */
-  static CStdString ReplaceLocalize(const CStdString &label);
-  static CStdString ReplaceAddonStrings(const CStdString &label);
+  static std::string ReplaceLocalize(const std::string &label);
+
+  /*!
+   \brief Replaces instances of $ADDON[id number] with the appropriate localized addon string
+   \param label text to replace
+   \return text with any localized strings filled in.
+   */
+  static std::string ReplaceAddonStrings(const std::string &label);
+
+  typedef boost::function<std::string(const std::string&)> StringReplacerFunc;
 
   /*!
    \brief Replaces instances of $strKeyword[value] with the appropriate resolved string
@@ -112,33 +138,43 @@ public:
    \param strOutput the output string
    \return whether anything has been replaced.
    */
-  static bool ReplaceSpecialKeywordReferences(const CStdString &strInput, const CStdString &strKeyword, const StringReplacerFunc func, CStdString &strOutput);
+  static bool ReplaceSpecialKeywordReferences(const std::string &strInput, const std::string &strKeyword, const StringReplacerFunc &func, std::string &strOutput);
 
-  ///*!
-  // \brief Replaces instances of $strKeyword[value] with the appropriate resolved string in-place
-  // \param work text to replace in-place
-  // \param strKeyword keyword to look for
-  // \param func function that does the actual replacement of each bracketed value found
-  // \return whether anything has been replaced.
-  // */
-  static bool ReplaceSpecialKeywordReferences(CStdString &work, const CStdString &strKeyword, const StringReplacerFunc func);
+  /*!
+   \brief Replaces instances of $strKeyword[value] with the appropriate resolved string in-place
+   \param work text to replace in-place
+   \param strKeyword keyword to look for
+   \param func function that does the actual replacement of each bracketed value found
+   \return whether anything has been replaced.
+   */
+  static bool ReplaceSpecialKeywordReferences(std::string &work, const std::string &strKeyword, const StringReplacerFunc &func);
 
 private:
-  void Parse(const CStdString &label, int context);
+  void Parse(const std::string &label, int context);
+
+  /*! \brief return (and cache) built label from info portions.
+   \param rebuild whether we need to rebuild the label
+   \sa GetLabel, GetItemLabel
+   */
+  const std::string &CacheLabel(bool rebuild) const;
 
   class CInfoPortion
   {
   public:
-    CInfoPortion(int info, const CStdString &prefix, const CStdString &postfix, bool escaped = false);
-    CStdString GetLabel(const CStdString &info) const;
+    CInfoPortion(int info, const std::string &prefix, const std::string &postfix, bool escaped = false);
+    bool NeedsUpdate(const std::string &label) const;
+    std::string Get() const;
     int m_info;
-    CStdString m_prefix;
-    CStdString m_postfix;
   private:
     bool m_escaped;
+    mutable std::string m_label;
+    std::string m_prefix;
+    std::string m_postfix;
   };
 
-  CStdString m_fallback;
+  mutable bool        m_dirty;
+  mutable std::string m_label;
+  std::string m_fallback;
   std::vector<CInfoPortion> m_info;
 };
 
