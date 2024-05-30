@@ -2034,15 +2034,14 @@ void CApplication::RenderNoPresent()
       }
       if (iShowRemoteCode > 0)
       {
-        CStdStringW wszText;
-        wszText.Format(L"Remote Code: %i", iRemoteCode);
+        std::string wszText = StringUtils::Format("Remote Code: %i", iRemoteCode);
         float x = 0.08f * g_graphicsContext.GetWidth();
         float y = 0.12f * g_graphicsContext.GetHeight();
 #ifndef _DEBUG
         if (LOG_LEVEL_DEBUG_FREEMEM > g_advancedSettings.m_logLevel)
           y = 0.08f * g_graphicsContext.GetHeight();
 #endif
-        CGUITextLayout::DrawOutlineText(g_fontManager.GetFont("font13"), x, y, 0xffffffff, 0xff000000, 2, wszText);
+        CGUITextLayout::DrawText(g_fontManager.GetFont("font13"), x, y, 0xffffffff, 0xff000000, wszText, 0);
         iShowRemoteCode--;
       }
 #endif
