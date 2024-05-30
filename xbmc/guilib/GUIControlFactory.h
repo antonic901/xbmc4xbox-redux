@@ -1,10 +1,10 @@
 /*!
-\file GuiControlFactory.h
+\file GUIControlFactory.h
 \brief
 */
 
 #ifndef GUI_CONTROL_FACTORY_H
-#define GIU_CONTROL_FACTORY_H
+#define GUI_CONTROL_FACTORY_H
 
 #pragma once
 
@@ -27,6 +27,9 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
+
+#include <string>
+#include <vector>
 
 #include "GUIControl.h"
 
@@ -51,20 +54,20 @@ public:
    \param type name of the control
    \return type of control
    */
-  static CGUIControl::GUICONTROLTYPES TranslateControlType(const CStdString &type);
+  static CGUIControl::GUICONTROLTYPES TranslateControlType(const std::string &type);
 
   /*! \brief translate from control type to control name
    \param type type of the control
    \return name of control
    */
-  static CStdString TranslateControlType(CGUIControl::GUICONTROLTYPES type);
+  static std::string TranslateControlType(CGUIControl::GUICONTROLTYPES type);
 
   static bool GetAspectRatio(const TiXmlNode* pRootNode, const char* strTag, CAspectRatio &aspectRatio);
   static bool GetInfoTexture(const TiXmlNode* pRootNode, const char* strTag, CTextureInfo &image, CGUIInfoLabel &info, int parentID);
   static bool GetTexture(const TiXmlNode* pRootNode, const char* strTag, CTextureInfo &image);
   static bool GetAlignment(const TiXmlNode* pRootNode, const char* strTag, uint32_t& dwAlignment);
   static bool GetAlignmentY(const TiXmlNode* pRootNode, const char* strTag, uint32_t& dwAlignment);
-  static bool GetAnimations(const TiXmlNode *control, const CRect &rect, int context, std::vector<CAnimation> &animation);
+  static bool GetAnimations(TiXmlNode *control, const CRect &rect, int context, std::vector<CAnimation> &animation);
 
   /*! \brief Create an info label from an XML element
    Processes XML elements of the form
@@ -73,27 +76,27 @@ public:
    If either the fallback_value or info_value are natural numbers they are interpreted
    as ids for lookup in strings.xml. The fallback attribute is optional.
    \param element XML element to process
-   \param infoLabel returned infoLabel
+   \param infoLabel Returned infoLabel
+   \param parentID The parent id
    \return true if a valid info label was read, false otherwise
    */
   static bool GetInfoLabelFromElement(const TiXmlElement *element, CGUIInfoLabel &infoLabel, int parentID);
-  static void GetInfoLabel(const TiXmlNode *pControlNode, const CStdString &labelTag, CGUIInfoLabel &infoLabel, int parentID);
-  static void GetInfoLabels(const TiXmlNode *pControlNode, const CStdString &labelTag, std::vector<CGUIInfoLabel> &infoLabels, int parentID);
+  static void GetInfoLabel(const TiXmlNode *pControlNode, const std::string &labelTag, CGUIInfoLabel &infoLabel, int parentID);
+  static void GetInfoLabels(const TiXmlNode *pControlNode, const std::string &labelTag, std::vector<CGUIInfoLabel> &infoLabels, int parentID);
   static bool GetColor(const TiXmlNode* pRootNode, const char* strTag, color_t &value);
   static bool GetInfoColor(const TiXmlNode* pRootNode, const char* strTag, CGUIInfoColor &value, int parentID);
-  static CStdString FilterLabel(const CStdString &label);
+  static std::string FilterLabel(const std::string &label);
   static bool GetConditionalVisibility(const TiXmlNode* control, std::string &condition);
   static bool GetActions(const TiXmlNode* pRootNode, const char* strTag, CGUIAction& actions);
-  static void GetRectFromString(const CStdString &string, CRect &rect);
+  static void GetRectFromString(const std::string &string, CRect &rect);
   static bool GetHitRect(const TiXmlNode* pRootNode, CRect &rect);
-  static bool GetScroller(const TiXmlNode *pControlNode, const CStdString &scrollerTag, CScroller& scroller);
+  static bool GetScroller(const TiXmlNode *pControlNode, const std::string &scrollerTag, CScroller& scroller);
 private:
-  static CStdString GetType(const TiXmlElement *pControlNode);
+  static std::string GetType(const TiXmlElement *pControlNode);
   static bool GetConditionalVisibility(const TiXmlNode* control, std::string &condition, std::string &allowHiddenFocus);
-  bool GetPath(const TiXmlNode* pRootNode, const char* strTag, CStdString& strStringPath);
   bool GetString(const TiXmlNode* pRootNode, const char* strTag, std::string& strString);
-  bool GetFloatRange(const TiXmlNode* pRootNode, const char* strTag, float& iMinValue, float& iMaxValue, float& iIntervalValue);
-  bool GetIntRange(const TiXmlNode* pRootNode, const char* strTag, int& iMinValue, int& iMaxValue, int& iIntervalValue);
+  static bool GetFloatRange(const TiXmlNode* pRootNode, const char* strTag, float& iMinValue, float& iMaxValue, float& iIntervalValue);
+  static bool GetIntRange(const TiXmlNode* pRootNode, const char* strTag, int& iMinValue, int& iMaxValue, int& iIntervalValue);
 
   /*! \brief Parse a position string
    Handles strings of the form
@@ -117,9 +120,11 @@ private:
   static bool GetPosition(const TiXmlNode *node, const char* tag, const float parentSize, float& value);
 
   /*! \brief grab a dimension out of the XML
+
    Supports plain reading of a number (or constant) and, in addition allows "auto" as the value
    for the dimension, whereby value is set to the max attribute (if it exists) and min is set the min
    attribute (if it exists) or 1.  Auto values are thus detected by min != 0.
+
    \param node the <control> XML node to read
    \param strTag tag within node to read
    \param parentSize the size of the parent for relative sizing.

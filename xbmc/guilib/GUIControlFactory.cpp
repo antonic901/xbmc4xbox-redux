@@ -18,7 +18,7 @@
  *
  */
 
-#include "include.h"
+#include "system.h"
 #include "GUIControlFactory.h"
 #include "LocalizeStrings.h"
 #include "GUIButtonControl.h"
@@ -51,18 +51,16 @@
 #include "GUIListLabel.h"
 #include "GUIListGroup.h"
 #include "GUIInfoManager.h"
-#include "Key.h"
+#include "guilib/Key.h"
 #include "addons/Skin.h"
 #include "utils/CharsetConverter.h"
-#include "input/ButtonTranslator.h"
 #include "utils/XMLUtils.h"
 #include "GUIFontManager.h"
 #include "GUIColorManager.h"
-#include "settings/Settings.h"
 #include "utils/RssManager.h"
-#include "utils/RssReader.h"
-
-using namespace std;
+#include "utils/StringUtils.h"
+#include "GUIAction.h"
+#include "Util.h"
 
 typedef struct
 {
@@ -93,26 +91,28 @@ static const ControlMapping controls[] =
     {"resize",            CGUIControl::GUICONTROL_RESIZE},
     {"edit",              CGUIControl::GUICONTROL_EDIT},
     {"visualisation",     CGUIControl::GUICONTROL_VISUALISATION},
-    {"karvisualisation",  CGUIControl::GUICONTROL_VISUALISATION},
+    {"renderaddon",       CGUIControl::GUICONTROL_RENDERADDON},
     {"multiimage",        CGUIControl::GUICONTROL_MULTI_IMAGE},
     {"grouplist",         CGUIControl::GUICONTROL_GROUPLIST},
     {"scrollbar",         CGUIControl::GUICONTROL_SCROLLBAR},
+    {"gamecontroller",    CGUIControl::GUICONTROL_GAMECONTROLLER},
     {"list",              CGUIControl::GUICONTAINER_LIST},
     {"wraplist",          CGUIControl::GUICONTAINER_WRAPLIST},
     {"fixedlist",         CGUIControl::GUICONTAINER_FIXEDLIST},
+    {"epggrid",           CGUIControl::GUICONTAINER_EPGGRID},
     {"panel",             CGUIControl::GUICONTAINER_PANEL}};
 
-CGUIControl::GUICONTROLTYPES CGUIControlFactory::TranslateControlType(const CStdString &type)
+CGUIControl::GUICONTROLTYPES CGUIControlFactory::TranslateControlType(const std::string &type)
 {
-  for (unsigned int i = 0; i < sizeof(controls) / sizeof(controls[0]); ++i)
-    if (0 == type.CompareNoCase(controls[i].name))
+  for (unsigned int i = 0; i < ARRAY_SIZE(controls); ++i)
+    if (StringUtils::EqualsNoCase(type, controls[i].name))
       return controls[i].type;
   return CGUIControl::GUICONTROL_UNKNOWN;
 }
 
-CStdString CGUIControlFactory::TranslateControlType(CGUIControl::GUICONTROLTYPES type)
+std::string CGUIControlFactory::TranslateControlType(CGUIControl::GUICONTROLTYPES type)
 {
-  for (unsigned int i = 0; i < sizeof(controls) / sizeof(controls[0]); ++i)
+  for (unsigned int i = 0; i < ARRAY_SIZE(controls); ++i)
     if (type == controls[i].type)
       return controls[i].name;
   return "";
@@ -260,74 +260,65 @@ bool CGUIControlFactory::GetDimensions(const TiXmlNode *node, const char *leftTa
   {
     if (hasRight)
     {
-      width = max(0.0f, right - left); // if left=0, this fills to size of parent
+      width = std::max(0.0f, right - left); // if left=0, this fills to size of parent
       hasLeft = true;
     }
     else if (hasCenter)
     {
       if (hasLeft)
       {
-        width = max(0.0f, (center - left) * 2);
+        width = std::max(0.0f, (center - left) * 2);
         hasWidth = true;
       }
       else if (center > 0 && center < parentSize)
       { // centre given, so fill to edge of parent
-        width = max(0.0f, min(parentSize - center, center) * 2);
+        width = std::max(0.0f, std::min(parentSize - center, center) * 2);
         left = center - width/2;
         hasLeft = hasWidth = true;
       }
     }
     else if (hasLeft) // neither right nor center specified
     {
-      width = max(0.0f, parentSize - left); // if left=0, this fills to parent
+      width = std::max(0.0f, parentSize - left); // if left=0, this fills to parent
     }
   }
   return hasLeft && hasWidth;
 }
 
-bool CGUIControlFactory::GetPath(const TiXmlNode* pRootNode, const char* strTag, CStdString& strStringPath)
-{
-  const TiXmlNode* pNode = pRootNode->FirstChild(strTag );
-  if (!pNode) return false;
-  strStringPath = pNode->FirstChild() ? pNode->FirstChild()->Value() : "";
-  strStringPath.Replace('/', '\\');
-  return true;
-}
-
 bool CGUIControlFactory::GetAspectRatio(const TiXmlNode* pRootNode, const char* strTag, CAspectRatio &aspect)
 {
-  CStdString ratio;
+  std::string ratio;
   const TiXmlElement *node = pRootNode->FirstChildElement(strTag);
   if (!node || !node->FirstChild())
     return false;
 
   ratio = node->FirstChild()->Value();
-  if (ratio.CompareNoCase("keep") == 0) aspect.ratio = CAspectRatio::AR_KEEP;
-  else if (ratio.CompareNoCase("scale") == 0) aspect.ratio = CAspectRatio::AR_SCALE;
-  else if (ratio.CompareNoCase("center") == 0) aspect.ratio = CAspectRatio::AR_CENTER;
-  else if (ratio.CompareNoCase("stretch") == 0) aspect.ratio = CAspectRatio::AR_STRETCH;
+  if (StringUtils::EqualsNoCase(ratio, "keep")) aspect.ratio = CAspectRatio::AR_KEEP;
+  else if (StringUtils::EqualsNoCase(ratio, "scale")) aspect.ratio = CAspectRatio::AR_SCALE;
+  else if (StringUtils::EqualsNoCase(ratio, "center")) aspect.ratio = CAspectRatio::AR_CENTER;
+  else if (StringUtils::EqualsNoCase(ratio, "stretch")) aspect.ratio = CAspectRatio::AR_STRETCH;
 
   const char *attribute = node->Attribute("align");
   if (attribute)
   {
-    CStdString align(attribute);
-    if (align.CompareNoCase("center") == 0) aspect.align = ASPECT_ALIGN_CENTER | (aspect.align & ASPECT_ALIGNY_MASK);
-    else if (align.CompareNoCase("right") == 0) aspect.align = ASPECT_ALIGN_RIGHT | (aspect.align & ASPECT_ALIGNY_MASK);
-    else if (align.CompareNoCase("left") == 0) aspect.align = ASPECT_ALIGN_LEFT | (aspect.align & ASPECT_ALIGNY_MASK);
+    std::string align(attribute);
+    if (StringUtils::EqualsNoCase(align, "center")) aspect.align = ASPECT_ALIGN_CENTER | (aspect.align & ASPECT_ALIGNY_MASK);
+    else if (StringUtils::EqualsNoCase(align, "right")) aspect.align = ASPECT_ALIGN_RIGHT | (aspect.align & ASPECT_ALIGNY_MASK);
+    else if (StringUtils::EqualsNoCase(align, "left")) aspect.align = ASPECT_ALIGN_LEFT | (aspect.align & ASPECT_ALIGNY_MASK);
   }
   attribute = node->Attribute("aligny");
   if (attribute)
   {
-    CStdString align(attribute);
-    if (align.CompareNoCase("center") == 0) aspect.align = ASPECT_ALIGNY_CENTER | (aspect.align & ASPECT_ALIGN_MASK);
-    else if (align.CompareNoCase("bottom") == 0) aspect.align = ASPECT_ALIGNY_BOTTOM | (aspect.align & ASPECT_ALIGN_MASK);
-    else if (align.CompareNoCase("top") == 0) aspect.align = ASPECT_ALIGNY_TOP | (aspect.align & ASPECT_ALIGN_MASK);
+    std::string align(attribute);
+    if (StringUtils::EqualsNoCase(align, "center")) aspect.align = ASPECT_ALIGNY_CENTER | (aspect.align & ASPECT_ALIGN_MASK);
+    else if (StringUtils::EqualsNoCase(align, "bottom")) aspect.align = ASPECT_ALIGNY_BOTTOM | (aspect.align & ASPECT_ALIGN_MASK);
+    else if (StringUtils::EqualsNoCase(align, "top")) aspect.align = ASPECT_ALIGNY_TOP | (aspect.align & ASPECT_ALIGN_MASK);
   }
   attribute = node->Attribute("scalediffuse");
   if (attribute)
   {
-    CStdString scale(attribute);
-    if (scale.CompareNoCase("true") == 0 || scale.CompareNoCase("yes") == 0)
+    std::string scale(attribute);
+    if (StringUtils::EqualsNoCase(scale, "true") || StringUtils::EqualsNoCase(scale, "yes"))
       aspect.scaleDiffuse = true;
     else
       aspect.scaleDiffuse = false;
@@ -364,11 +355,10 @@ bool CGUIControlFactory::GetTexture(const TiXmlNode* pRootNode, const char* strT
   return true;
 }
 
-void CGUIControlFactory::GetRectFromString(const CStdString &string, CRect &rect)
+void CGUIControlFactory::GetRectFromString(const std::string &string, CRect &rect)
 {
   // format is rect="left[,top,right,bottom]"
-  CStdStringArray strRect;
-  StringUtils::SplitString(string, ",", strRect);
+  std::vector<std::string> strRect = StringUtils::Split(string, ',');
   if (strRect.size() == 1)
   {
     rect.x1 = (float)atof(strRect[0].c_str());
@@ -390,7 +380,7 @@ bool CGUIControlFactory::GetAlignment(const TiXmlNode* pRootNode, const char* st
   const TiXmlNode* pNode = pRootNode->FirstChild(strTag);
   if (!pNode || !pNode->FirstChild()) return false;
 
-  CStdString strAlign = pNode->FirstChild()->Value();
+  std::string strAlign = pNode->FirstChild()->Value();
   if (strAlign == "right" || strAlign == "bottom") alignment = XBFONT_RIGHT;
   else if (strAlign == "center") alignment = XBFONT_CENTER_X;
   else if (strAlign == "justify") alignment = XBFONT_JUSTIFIED;
@@ -406,7 +396,7 @@ bool CGUIControlFactory::GetAlignmentY(const TiXmlNode* pRootNode, const char* s
     return false;
   }
 
-  CStdString strAlign = pNode->FirstChild()->Value();
+  std::string strAlign = pNode->FirstChild()->Value();
 
   alignment = 0;
   if (strAlign == "center")
@@ -452,9 +442,9 @@ bool CGUIControlFactory::GetConditionalVisibility(const TiXmlNode *control, std:
   return GetConditionalVisibility(control, condition, allowHiddenFocus);
 }
 
-bool CGUIControlFactory::GetAnimations(const TiXmlNode *control, const CRect &rect, int context, vector<CAnimation> &animations)
+bool CGUIControlFactory::GetAnimations(TiXmlNode *control, const CRect &rect, int context, std::vector<CAnimation> &animations)
 {
-  const TiXmlElement* node = control->FirstChildElement("animation");
+  TiXmlElement* node = control->FirstChildElement("animation");
   bool ret = false;
   if (node)
     animations.clear();
@@ -474,7 +464,7 @@ bool CGUIControlFactory::GetAnimations(const TiXmlNode *control, const CRect &re
         const char *end = hidden.Attribute("end");
         if (start && end)
         {
-          CStdString temp = end;
+          std::string temp = end;
           hidden.SetAttribute("end", start);
           hidden.SetAttribute("start", temp.c_str());
         }
@@ -518,25 +508,21 @@ bool CGUIControlFactory::GetHitRect(const TiXmlNode *control, CRect &rect)
     node->QueryFloatAttribute("x", &rect.x1);
     node->QueryFloatAttribute("y", &rect.y1);
     if (node->Attribute("w"))
-    {
       rect.x2 = (float)atof(node->Attribute("w")) + rect.x1;
-    }
     if (node->Attribute("h"))
-    {
       rect.y2 = (float)atof(node->Attribute("h")) + rect.y1;
-    }
     return true;
   }
   return false;
 }
 
-bool CGUIControlFactory::GetScroller(const TiXmlNode *control, const CStdString &scrollerTag, CScroller& scroller)
+bool CGUIControlFactory::GetScroller(const TiXmlNode *control, const std::string &scrollerTag, CScroller& scroller)
 {
   const TiXmlElement* node = control->FirstChildElement(scrollerTag);
   if (node)
   {
     unsigned int scrollTime;
-    if (XMLUtils::GetUInt(control, scrollerTag, scrollTime))
+    if (XMLUtils::GetUInt(control, scrollerTag.c_str(), scrollTime))
     {
       scroller = CScroller(scrollTime, CAnimEffect::GetTweener(node));
       return true;
@@ -567,9 +553,9 @@ bool CGUIControlFactory::GetInfoColor(const TiXmlNode *control, const char *strT
   return false;
 }
 
-void CGUIControlFactory::GetInfoLabel(const TiXmlNode *pControlNode, const CStdString &labelTag, CGUIInfoLabel &infoLabel, int parentID)
+void CGUIControlFactory::GetInfoLabel(const TiXmlNode *pControlNode, const std::string &labelTag, CGUIInfoLabel &infoLabel, int parentID)
 {
-  vector<CGUIInfoLabel> labels;
+  std::vector<CGUIInfoLabel> labels;
   GetInfoLabels(pControlNode, labelTag, labels, parentID);
   if (labels.size())
     infoLabel = labels[0];
@@ -580,24 +566,22 @@ bool CGUIControlFactory::GetInfoLabelFromElement(const TiXmlElement *element, CG
   if (!element || !element->FirstChild())
     return false;
 
-  CStdString label = element->FirstChild()->Value();
-  if (label.IsEmpty() || label == "-")
+  std::string label = element->FirstChild()->Value();
+  if (label.empty() || label == "-")
     return false;
 
-  CStdString fallback = XMLUtils::GetAttribute(element, "fallback");
+  std::string fallback = XMLUtils::GetAttribute(element, "fallback");
   if (StringUtils::IsNaturalNumber(label))
-    label = g_localizeStrings.Get(atoi(label));
-  else // we assume the skin xml's aren't encoded as UTF-8
-    g_charsetConverter.unknownToUTF8(label);
+    label = g_localizeStrings.Get(atoi(label.c_str()));
   if (StringUtils::IsNaturalNumber(fallback))
-    fallback = g_localizeStrings.Get(atoi(fallback));
+    fallback = g_localizeStrings.Get(atoi(fallback.c_str()));
   else
     g_charsetConverter.unknownToUTF8(fallback);
   infoLabel.SetLabel(label, fallback, parentID);
   return true;
 }
 
-void CGUIControlFactory::GetInfoLabels(const TiXmlNode *pControlNode, const CStdString &labelTag, vector<CGUIInfoLabel> &infoLabels, int parentID)
+void CGUIControlFactory::GetInfoLabels(const TiXmlNode *pControlNode, const std::string &labelTag, std::vector<CGUIInfoLabel> &infoLabels, int parentID)
 {
   // we can have the following infolabels:
   // 1.  <number>1234</number> -> direct number
@@ -607,8 +591,7 @@ void CGUIControlFactory::GetInfoLabels(const TiXmlNode *pControlNode, const CStd
   int labelNumber = 0;
   if (XMLUtils::GetInt(pControlNode, "number", labelNumber))
   {
-    CStdString label;
-    label.Format("%i", labelNumber);
+    std::string label = StringUtils::Format("%i", labelNumber);
     infoLabels.push_back(CGUIInfoLabel(label));
     return; // done
   }
@@ -623,7 +606,7 @@ void CGUIControlFactory::GetInfoLabels(const TiXmlNode *pControlNode, const CStd
   const TiXmlNode *infoNode = pControlNode->FirstChild("info");
   if (infoNode)
   { // <info> nodes override <label>'s (backward compatibility)
-    CStdString fallback;
+    std::string fallback;
     if (infoLabels.size())
       fallback = infoLabels[0].GetLabel(0);
     infoLabels.clear();
@@ -631,8 +614,7 @@ void CGUIControlFactory::GetInfoLabels(const TiXmlNode *pControlNode, const CStd
     {
       if (infoNode->FirstChild())
       {
-        CStdString info;
-        info.Format("$INFO[%s]", infoNode->FirstChild()->Value());
+        std::string info = StringUtils::Format("$INFO[%s]", infoNode->FirstChild()->Value());
         infoLabels.push_back(CGUIInfoLabel(info, fallback, parentID));
       }
       infoNode = infoNode->NextSibling("info");
@@ -641,11 +623,11 @@ void CGUIControlFactory::GetInfoLabels(const TiXmlNode *pControlNode, const CStd
 }
 
 // Convert a string to a GUI label, by translating/parsing the label for localisable strings
-CStdString CGUIControlFactory::FilterLabel(const CStdString &label)
+std::string CGUIControlFactory::FilterLabel(const std::string &label)
 {
-  CStdString viewLabel = label;
+  std::string viewLabel = label;
   if (StringUtils::IsNaturalNumber(viewLabel))
-    viewLabel = g_localizeStrings.Get(atoi(label));
+    viewLabel = g_localizeStrings.Get(atoi(label.c_str()));
   else
     g_charsetConverter.unknownToUTF8(viewLabel);
   return viewLabel;
@@ -659,14 +641,12 @@ bool CGUIControlFactory::GetString(const TiXmlNode* pRootNode, const char *strTa
     text.clear();
   if (StringUtils::IsNaturalNumber(text))
     text = g_localizeStrings.Get(atoi(text.c_str()));
-  else
-    g_charsetConverter.unknownToUTF8(text);
   return true;
 }
 
-CStdString CGUIControlFactory::GetType(const TiXmlElement *pControlNode)
+std::string CGUIControlFactory::GetType(const TiXmlElement *pControlNode)
 {
-  CStdString type = XMLUtils::GetAttribute(pControlNode, "type");
+  std::string type = XMLUtils::GetAttribute(pControlNode, "type");
   if (type.empty())  // backward compatibility - not desired
     XMLUtils::GetString(pControlNode, "type", type);
   return type;
@@ -675,7 +655,7 @@ CStdString CGUIControlFactory::GetType(const TiXmlElement *pControlNode)
 CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlElement* pControlNode, bool insideContainer)
 {
   // get the control type
-  CStdString strType = GetType(pControlNode);
+  std::string strType = GetType(pControlNode);
   CGUIControl::GUICONTROLTYPES type = TranslateControlType(strType);
 
   int id = 0;
@@ -689,17 +669,16 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   CGUIInfoColor colorDiffuse(0xFFFFFFFF);
   int defaultControl = 0;
   bool  defaultAlways = false;
-  CStdString strTmp;
+  std::string strTmp;
   int singleInfo = 0;
-  CStdString strLabel;
+  std::string strLabel;
   int iUrlSet=0;
-  CStdString toggleSelect;
+  std::string toggleSelect;
 
   float spinWidth = 16;
   float spinHeight = 16;
   float spinPosX = 0, spinPosY = 0;
-  float checkWidth = 0, checkHeight = 0;
-  CStdString strSubType;
+  std::string strSubType;
   int iType = SPIN_CONTROL_TYPE_TEXT;
   int iMin = 0;
   int iMax = 100;
@@ -721,7 +700,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   CTextureInfo textureRadioOnFocus, textureRadioOnNoFocus;
   CTextureInfo textureRadioOffFocus, textureRadioOffNoFocus;
   CTextureInfo textureRadioOnDisabled, textureRadioOffDisabled;
-  CTextureInfo imageNoFocus, imageFocus;
+  CTextureInfo textureProgressIndicator;
   CGUIInfoLabel texturePath;
   CRect borderSize;
 
@@ -734,23 +713,16 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   CGUIAction focusActions;
   CGUIAction unfocusActions;
   CGUIAction textChangeActions;
-  CStdString strTitle = "";
-  CStdString strRSSTags = "";
+  std::string strTitle = "";
+  std::string strRSSTags = "";
 
-  DWORD dwBuddyControlID = 0;
   float buttonGap = 5;
   int iMovementRange = 0;
   CAspectRatio aspect;
-  if (g_SkinInfo && g_SkinInfo->APIVersion() < ADDON::AddonVersion("2.12"))
-  {
-    if (insideContainer)  // default for inside containers is keep
-      aspect.ratio = CAspectRatio::AR_KEEP;
-  }
+  std::string allowHiddenFocus;
+  std::string enableCondition;
 
-  CStdString allowHiddenFocus;
-  CStdString enableCondition;
-
-  vector<CAnimation> animations;
+  std::vector<CAnimation> animations;
 
   CGUIControl::GUISCROLLVALUE scrollValue = CGUIControl::FOCUS;
   bool bPulse = true;
@@ -766,7 +738,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   int preloadItems = 0;
 
   CLabelInfo labelInfo;
-  CLabelInfo spinInfo;
 
   CGUIInfoColor hitColor(0xFFFFFFFF);
   CGUIInfoColor textColor3;
@@ -777,9 +748,9 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   float radioPosX = 0;
   float radioPosY = 0;
 
-  CStdString altLabel;
-  CStdString strLabel2;
-  CStdString action;
+  std::string altLabel;
+  std::string strLabel2;
+  std::string action;
 
   int focusPosition = 0;
   int scrollTime = 200;
@@ -790,10 +761,11 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
 
   CRect hitRect;
   CPoint camera;
+  float stereo = 0.f;
   bool   hasCamera = false;
   bool resetOnLabelChange = true;
   bool bPassword = false;
-  CStdString visibleCondition;
+  std::string visibleCondition;
 
   /////////////////////////////////////////////////////////////////////////////
   // Read control properties from XML
@@ -801,8 +773,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
 
   if (!pControlNode->Attribute("id", (int*) &id))
     XMLUtils::GetInt(pControlNode, "id", (int&) id);       // backward compatibility - not desired
-  // TODO: Perhaps we should check here whether id is valid for focusable controls
-  // such as buttons etc.  For labels/fadelabels/images it does not matter
+  //! @todo Perhaps we should check here whether id is valid for focusable controls
+  //! such as buttons etc.  For labels/fadelabels/images it does not matter
 
   GetAlignment(pControlNode, "align", labelInfo.align);
   if (!GetDimensions(pControlNode, "left", "right", "centerleft", "centerright", "width", rect.Width(), posX, width, minWidth))
@@ -815,13 +787,13 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
         posX -= width;
     }
     if (!width) // no width specified, so compute from parent
-      width = max(rect.Width() - posX, 0.0f);
+      width = std::max(rect.Width() - posX, 0.0f);
   }
   if (!GetDimensions(pControlNode, "top", "bottom", "centertop", "centerbottom", "height", rect.Height(), posY, height, minHeight))
   {
     GetPosition(pControlNode, "posy", rect.Height(), posY);
     if (!height)
-      height = max(rect.Height() - posY, 0.0f);
+      height = std::max(rect.Height() - posY, 0.0f);
   }
 
   XMLUtils::GetFloat(pControlNode, "offsetx", offset.x);
@@ -867,7 +839,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   XMLUtils::GetFloat(pControlNode, "textoffsety", labelInfo.offsetY);
   int angle = 0;  // use the negative angle to compensate for our vertically flipped cartesian plane
   if (XMLUtils::GetInt(pControlNode, "angle", angle)) labelInfo.angle = (float)-angle;
-  CStdString strFont;
+  std::string strFont;
   if (XMLUtils::GetString(pControlNode, "font", strFont))
     labelInfo.font = g_fontManager.GetFont(strFont);
   uint32_t alignY = 0;
@@ -883,7 +855,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   focusActions.m_sendThreadMessages = unfocusActions.m_sendThreadMessages = true;
   GetActions(pControlNode, "altclick", altclickActions);
 
-  CStdString infoString;
+  std::string infoString;
   if (XMLUtils::GetString(pControlNode, "info", infoString))
     singleInfo = g_infoManager.TranslateString(infoString);
 
@@ -904,18 +876,11 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   GetTexture(pControlNode, "textureupdisabled", textureUpDisabled);
   GetTexture(pControlNode, "texturedowndisabled", textureDownDisabled);
 
-  GetInfoColor(pControlNode, "spincolor", spinInfo.textColor, parentID);
-  if (XMLUtils::GetString(pControlNode, "spinfont", strFont))
-    spinInfo.font = g_fontManager.GetFont(strFont);
-  if (!spinInfo.font) spinInfo.font = labelInfo.font;
-
   XMLUtils::GetFloat(pControlNode, "spinwidth", spinWidth);
   XMLUtils::GetFloat(pControlNode, "spinheight", spinHeight);
   XMLUtils::GetFloat(pControlNode, "spinposx", spinPosX);
   XMLUtils::GetFloat(pControlNode, "spinposy", spinPosY);
 
-  XMLUtils::GetFloat(pControlNode, "markwidth", checkWidth);
-  XMLUtils::GetFloat(pControlNode, "markheight", checkHeight);
   XMLUtils::GetFloat(pControlNode, "sliderwidth", sliderWidth);
   XMLUtils::GetFloat(pControlNode, "sliderheight", sliderHeight);
   if (!GetTexture(pControlNode, "textureradioonfocus", textureRadioOnFocus) || !GetTexture(pControlNode, "textureradioonnofocus", textureRadioOnNoFocus))
@@ -930,7 +895,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
     GetTexture(pControlNode, "textureradiooff", textureRadioOffFocus);
     textureRadioOffNoFocus = textureRadioOffFocus;
   }
-
   GetTexture(pControlNode, "textureradioondisabled", textureRadioOnDisabled);
   GetTexture(pControlNode, "textureradiooffdisabled", textureRadioOffDisabled);
   GetTexture(pControlNode, "texturesliderbackground", textureBackground);
@@ -946,7 +910,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
 
   if (XMLUtils::GetString(pControlNode, "subtype", strSubType))
   {
-    strSubType.ToLower();
+    StringUtils::ToLower(strSubType);
 
     if ( strSubType == "int")
       iType = SPIN_CONTROL_TYPE_INT;
@@ -974,19 +938,11 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
 
   // the <texture> tag can be overridden by the <info> tag
   GetInfoTexture(pControlNode, "texture", texture, textureFile, parentID);
-  if (g_SkinInfo && g_SkinInfo->APIVersion() < ADDON::AddonVersion("2.12"))
-  {
-    if (type == CGUIControl::GUICONTROL_IMAGE && insideContainer && textureFile.IsConstant())
-      aspect.ratio = CAspectRatio::AR_STRETCH;
-  }
 
   GetTexture(pControlNode, "bordertexture", borderTexture);
 
-  GetTexture(pControlNode, "imagefolder", imageNoFocus);
-  GetTexture(pControlNode, "imagefolderfocus", imageFocus);
-
   // fade label can have a whole bunch, but most just have one
-  vector<CGUIInfoLabel> infoLabels;
+  std::vector<CGUIInfoLabel> infoLabels;
   GetInfoLabels(pControlNode, "label", infoLabels, parentID);
 
   GetString(pControlNode, "label", strLabel);
@@ -998,7 +954,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
 
   if ( XMLUtils::GetString(pControlNode, "orientation", strTmp) )
   {
-    if (strTmp.ToLower() == "horizontal")
+    StringUtils::ToLower(strTmp);
+    if (strTmp == "horizontal")
       orientation = HORIZONTAL;
   }
   XMLUtils::GetFloat(pControlNode, "itemgap", buttonGap);
@@ -1012,6 +969,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   XMLUtils::GetBoolean(pControlNode,"pulseonselect", bPulse);
   XMLUtils::GetInt(pControlNode, "timeblocks", timeBlocks);
   XMLUtils::GetInt(pControlNode, "rulerunit", rulerUnit);
+  GetTexture(pControlNode, "progresstexture", textureProgressIndicator);
 
   GetInfoTexture(pControlNode, "imagepath", texture, texturePath, parentID);
 
@@ -1026,7 +984,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   XMLUtils::GetFloat(pControlNode, "radioheight", radioHeight);
   XMLUtils::GetFloat(pControlNode, "radioposx", radioPosX);
   XMLUtils::GetFloat(pControlNode, "radioposy", radioPosY);
-  CStdString borderStr;
+  std::string borderStr;
   if (XMLUtils::GetString(pControlNode, "bordersize", borderStr))
     GetRectFromString(borderStr, borderSize);
 
@@ -1043,7 +1001,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
 
   // view type
   VIEW_TYPE viewType = VIEW_TYPE_NONE;
-  CStdString viewLabel;
+  std::string viewLabel;
   if (type == CGUIControl::GUICONTAINER_PANEL)
   {
     viewType = VIEW_TYPE_ICON;
@@ -1062,7 +1020,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   TiXmlElement *itemElement = pControlNode->FirstChildElement("viewtype");
   if (itemElement && itemElement->FirstChild())
   {
-    CStdString type = itemElement->FirstChild()->Value();
+    std::string type = itemElement->FirstChild()->Value();
     if (type == "list")
       viewType = VIEW_TYPE_LIST;
     else if (type == "icon")
@@ -1096,11 +1054,12 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
     cam->QueryFloatAttribute("y", &camera.y);
   }
 
+  if (XMLUtils::GetFloat(pControlNode, "depth", stereo))
+    stereo = std::max(-1.f, std::min(1.f, stereo));
+
   XMLUtils::GetInt(pControlNode, "scrollspeed", labelInfo.scrollSpeed);
-  spinInfo.scrollSpeed = labelInfo.scrollSpeed;
 
   GetString(pControlNode, "scrollsuffix", labelInfo.scrollSuffix);
-  spinInfo.scrollSuffix = labelInfo.scrollSuffix;
 
   XMLUtils::GetString(pControlNode, "action", action);
 
@@ -1109,299 +1068,348 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   //
 
   CGUIControl *control = NULL;
-  if (type == CGUIControl::GUICONTROL_GROUP)
+  switch (type)
   {
-    if (insideContainer)
+  case CGUIControl::GUICONTROL_GROUP:
     {
-      control = new CGUIListGroup(parentID, id, posX, posY, width, height);
+      if (insideContainer)
+      {
+        control = new CGUIListGroup(parentID, id, posX, posY, width, height);
+      }
+      else
+      {
+        control = new CGUIControlGroup(
+          parentID, id, posX, posY, width, height);
+        ((CGUIControlGroup *)control)->SetDefaultControl(defaultControl, defaultAlways);
+        ((CGUIControlGroup *)control)->SetRenderFocusedLast(renderFocusedLast);
+      }
     }
-    else
+    break;
+  case CGUIControl::GUICONTROL_GROUPLIST:
     {
-      control = new CGUIControlGroup(
-        parentID, id, posX, posY, width, height);
+      CScroller scroller;
+      GetScroller(pControlNode, "scrolltime", scroller);
+
+      control = new CGUIControlGroupList(
+        parentID, id, posX, posY, width, height, buttonGap, pageControl, orientation, useControlCoords, labelInfo.align, scroller);
       ((CGUIControlGroup *)control)->SetDefaultControl(defaultControl, defaultAlways);
       ((CGUIControlGroup *)control)->SetRenderFocusedLast(renderFocusedLast);
+      ((CGUIControlGroupList *)control)->SetMinSize(minWidth, minHeight);
     }
-  }
-  else if (type == CGUIControl::GUICONTROL_GROUPLIST)
-  {
-    CScroller scroller;
-    GetScroller(pControlNode, "scrolltime", scroller);
-
-    control = new CGUIControlGroupList(
-      parentID, id, posX, posY, width, height, buttonGap, pageControl, orientation, useControlCoords, labelInfo.align, scroller);
-    ((CGUIControlGroup *)control)->SetDefaultControl(defaultControl, defaultAlways);
-    ((CGUIControlGroup *)control)->SetRenderFocusedLast(renderFocusedLast);
-    ((CGUIControlGroupList *)control)->SetMinSize(minWidth, minHeight);
-  }
-  else if (type == CGUIControl::GUICONTROL_LABEL)
-  {
-    const CGUIInfoLabel &content = (infoLabels.size()) ? infoLabels[0] : CGUIInfoLabel("");
-    if (insideContainer)
-    { // inside lists we use CGUIListLabel
-      control = new CGUIListLabel(parentID, id, posX, posY, width, height, labelInfo, content, scrollValue);
-    }
-    else
+    break;
+  case CGUIControl::GUICONTROL_LABEL:
     {
-      control = new CGUILabelControl(
+      const CGUIInfoLabel &content = (infoLabels.size()) ? infoLabels[0] : CGUIInfoLabel("");
+      if (insideContainer)
+      { // inside lists we use CGUIListLabel
+        control = new CGUIListLabel(parentID, id, posX, posY, width, height, labelInfo, content, scrollValue);
+      }
+      else
+      {
+        control = new CGUILabelControl(
+          parentID, id, posX, posY, width, height,
+          labelInfo, wrapMultiLine, bHasPath);
+        ((CGUILabelControl *)control)->SetInfo(content);
+        ((CGUILabelControl *)control)->SetWidthControl(minWidth, (scrollValue == CGUIControl::ALWAYS));
+      }
+    }
+    break;
+  case CGUIControl::GUICONTROL_EDIT:
+    {
+      control = new CGUIEditControl(
+        parentID, id, posX, posY, width, height, textureFocus, textureNoFocus,
+        labelInfo, strLabel);
+
+      CGUIInfoLabel hint_text;
+      GetInfoLabel(pControlNode, "hinttext", hint_text, parentID);
+      ((CGUIEditControl *) control)->SetHint(hint_text);
+
+      if (bPassword)
+        ((CGUIEditControl *) control)->SetInputType(CGUIEditControl::INPUT_TYPE_PASSWORD, 0);
+      ((CGUIEditControl *) control)->SetTextChangeActions(textChangeActions);
+    }
+    break;
+  case CGUIControl::GUICONTROL_VIDEO:
+    {
+      control = new CGUIVideoControl(
+        parentID, id, posX, posY, width, height);
+    }
+    break;
+  case CGUIControl::GUICONTROL_FADELABEL:
+    {
+      control = new CGUIFadeLabelControl(
         parentID, id, posX, posY, width, height,
-        labelInfo, wrapMultiLine, bHasPath);
-      ((CGUILabelControl *)control)->SetInfo(content);
-      ((CGUILabelControl *)control)->SetWidthControl(minWidth, (scrollValue == CGUIControl::ALWAYS) ? true : false);
+        labelInfo, scrollOut, timeToPauseAtEnd, resetOnLabelChange, randomized);
+
+      ((CGUIFadeLabelControl *)control)->SetInfo(infoLabels);
+
+      // check whether or not a scroll tag was specified.
+      if (scrollValue != CGUIControl::FOCUS)
+        ((CGUIFadeLabelControl *)control)->SetScrolling(scrollValue == CGUIControl::ALWAYS);
     }
-  }
-  else if (type == CGUIControl::GUICONTROL_EDIT)
-  {
-    control = new CGUIEditControl(
-      parentID, id, posX, posY, width, height, textureFocus, textureNoFocus,
-      labelInfo, strLabel);
-
-    CGUIInfoLabel hint_text;
-    GetInfoLabel(pControlNode, "hinttext", hint_text, parentID);
-    ((CGUIEditControl *) control)->SetHint(hint_text);
-
-    if (bPassword)
-      ((CGUIEditControl *) control)->SetInputType(CGUIEditControl::INPUT_TYPE_PASSWORD, 0);
-    ((CGUIEditControl *) control)->SetTextChangeActions(textChangeActions);          
-  }
-  else if (type == CGUIControl::GUICONTROL_VIDEO)
-  {
-    control = new CGUIVideoControl(
-      parentID, id, posX, posY, width, height);
-  }
-  else if (type == CGUIControl::GUICONTROL_FADELABEL)
-  {
-    control = new CGUIFadeLabelControl(
-      parentID, id, posX, posY, width, height,
-      labelInfo, scrollOut, timeToPauseAtEnd, resetOnLabelChange, randomized);
-
-    ((CGUIFadeLabelControl *)control)->SetInfo(infoLabels);
-  }
-  else if (type == CGUIControl::GUICONTROL_RSS)
-  {
-    control = new CGUIRSSControl(
-      parentID, id, posX, posY, width, height,
-      labelInfo, textColor3, headlineColor, strRSSTags);
-    RssUrls::const_iterator iter = CRssManager::Get().GetUrls().find(iUrlSet);
-    if (iter != CRssManager::Get().GetUrls().end())
-      ((CGUIRSSControl *)control)->SetUrlSet(iUrlSet);
-  }
-  else if (type == CGUIControl::GUICONTROL_BUTTON)
-  {
-    control = new CGUIButtonControl(
-      parentID, id, posX, posY, width, height,
-      textureFocus, textureNoFocus,
-      labelInfo, wrapMultiLine);
-
-    ((CGUIButtonControl *)control)->SetLabel(strLabel);
-    ((CGUIButtonControl *)control)->SetLabel2(strLabel2);
-    ((CGUIButtonControl *)control)->SetMinWidth(minWidth);
-    ((CGUIButtonControl *)control)->SetClickActions(clickActions);
-    ((CGUIButtonControl *)control)->SetFocusActions(focusActions);
-    ((CGUIButtonControl *)control)->SetUnFocusActions(unfocusActions);
-  }
-  else if (type == CGUIControl::GUICONTROL_TOGGLEBUTTON)
-  {
-    control = new CGUIToggleButtonControl(
-      parentID, id, posX, posY, width, height,
-      textureFocus, textureNoFocus,
-      textureAltFocus, textureAltNoFocus,
-      labelInfo, wrapMultiLine);
-
-    ((CGUIToggleButtonControl *)control)->SetLabel(strLabel);
-    ((CGUIToggleButtonControl *)control)->SetAltLabel(altLabel);
-    ((CGUIToggleButtonControl *)control)->SetMinWidth(minWidth);
-    ((CGUIToggleButtonControl *)control)->SetClickActions(clickActions);
-    ((CGUIToggleButtonControl *)control)->SetAltClickActions(altclickActions);
-    ((CGUIToggleButtonControl *)control)->SetFocusActions(focusActions);
-    ((CGUIToggleButtonControl *)control)->SetUnFocusActions(unfocusActions);
-    ((CGUIToggleButtonControl *)control)->SetToggleSelect(toggleSelect);
-  }
-  else if (type == CGUIControl::GUICONTROL_RADIO)
-  {
-    control = new CGUIRadioButtonControl(
-      parentID, id, posX, posY, width, height,
-      textureFocus, textureNoFocus,
-      labelInfo,
-      textureRadioOnFocus, textureRadioOnNoFocus, textureRadioOffFocus, textureRadioOffNoFocus, textureRadioOnDisabled, textureRadioOffDisabled);
-
-    ((CGUIRadioButtonControl *)control)->SetLabel(strLabel);
-    ((CGUIRadioButtonControl *)control)->SetLabel2(strLabel2);
-    ((CGUIRadioButtonControl *)control)->SetRadioDimensions(radioPosX, radioPosY, radioWidth, radioHeight);
-    ((CGUIRadioButtonControl *)control)->SetToggleSelect(toggleSelect);
-    ((CGUIRadioButtonControl *)control)->SetClickActions(clickActions);
-    ((CGUIRadioButtonControl *)control)->SetFocusActions(focusActions);
-    ((CGUIRadioButtonControl *)control)->SetUnFocusActions(unfocusActions);
-  }
-  else if (type == CGUIControl::GUICONTROL_SPIN)
-  {
-    control = new CGUISpinControl(
-      parentID, id, posX, posY, width, height,
-      textureUp, textureDown, textureUpFocus, textureDownFocus,
-      textureUpDisabled, textureDownDisabled,
-      labelInfo, iType);
-
-    ((CGUISpinControl *)control)->SetReverse(bReverse);
-
-    if (iType == SPIN_CONTROL_TYPE_INT)
+    break;
+  case CGUIControl::GUICONTROL_RSS:
     {
-      ((CGUISpinControl *)control)->SetRange(iMin, iMax);
+      control = new CGUIRSSControl(
+        parentID, id, posX, posY, width, height,
+        labelInfo, textColor3, headlineColor, strRSSTags);
+      RssUrls::const_iterator iter = CRssManager::Get().GetUrls().find(iUrlSet);
+      if (iter != CRssManager::Get().GetUrls().end())
+        ((CGUIRSSControl *)control)->SetUrlSet(iUrlSet);
     }
-    else if (iType == SPIN_CONTROL_TYPE_PAGE)
+    break;
+  case CGUIControl::GUICONTROL_BUTTON:
     {
-      ((CGUISpinControl *)control)->SetRange(iMin, iMax);
-      ((CGUISpinControl *)control)->SetShowRange(true);
-      ((CGUISpinControl *)control)->SetReverse(false);
-      ((CGUISpinControl *)control)->SetShowOnePage(showOnePage);
+      control = new CGUIButtonControl(
+        parentID, id, posX, posY, width, height,
+        textureFocus, textureNoFocus,
+        labelInfo, wrapMultiLine);
+
+      ((CGUIButtonControl *)control)->SetLabel(strLabel);
+      ((CGUIButtonControl *)control)->SetLabel2(strLabel2);
+      ((CGUIButtonControl *)control)->SetMinWidth(minWidth);
+      ((CGUIButtonControl *)control)->SetClickActions(clickActions);
+      ((CGUIButtonControl *)control)->SetFocusActions(focusActions);
+      ((CGUIButtonControl *)control)->SetUnFocusActions(unfocusActions);
     }
-    else if (iType == SPIN_CONTROL_TYPE_FLOAT)
+    break;
+  case CGUIControl::GUICONTROL_TOGGLEBUTTON:
     {
-      ((CGUISpinControl *)control)->SetFloatRange(fMin, fMax);
-      ((CGUISpinControl *)control)->SetFloatInterval(fInterval);
+      control = new CGUIToggleButtonControl(
+        parentID, id, posX, posY, width, height,
+        textureFocus, textureNoFocus,
+        textureAltFocus, textureAltNoFocus,
+        labelInfo, wrapMultiLine);
+
+      ((CGUIToggleButtonControl *)control)->SetLabel(strLabel);
+      ((CGUIToggleButtonControl *)control)->SetAltLabel(altLabel);
+      ((CGUIToggleButtonControl *)control)->SetMinWidth(minWidth);
+      ((CGUIToggleButtonControl *)control)->SetClickActions(clickActions);
+      ((CGUIToggleButtonControl *)control)->SetAltClickActions(altclickActions);
+      ((CGUIToggleButtonControl *)control)->SetFocusActions(focusActions);
+      ((CGUIToggleButtonControl *)control)->SetUnFocusActions(unfocusActions);
+      ((CGUIToggleButtonControl *)control)->SetToggleSelect(toggleSelect);
     }
-  }
-  else if (type == CGUIControl::GUICONTROL_SLIDER)
-  {
-    control = new CGUISliderControl(
-      parentID, id, posX, posY, width, height,
-      textureBar, textureNib, textureNibFocus, SLIDER_CONTROL_TYPE_PERCENTAGE, orientation);
+    break;
+  case CGUIControl::GUICONTROL_RADIO:
+    {
+      control = new CGUIRadioButtonControl(
+        parentID, id, posX, posY, width, height,
+        textureFocus, textureNoFocus,
+        labelInfo,
+        textureRadioOnFocus, textureRadioOnNoFocus, textureRadioOffFocus, textureRadioOffNoFocus, textureRadioOnDisabled, textureRadioOffDisabled);
 
-    ((CGUISliderControl *)control)->SetInfo(singleInfo);
-    ((CGUISliderControl *)control)->SetAction(action);
-  }
-  else if (type == CGUIControl::GUICONTROL_SETTINGS_SLIDER)
-  {
-    control = new CGUISettingsSliderControl(
-      parentID, id, posX, posY, width, height, sliderWidth, sliderHeight, textureFocus, textureNoFocus,
-      textureBar, textureNib, textureNibFocus, labelInfo, SLIDER_CONTROL_TYPE_PERCENTAGE);
+      ((CGUIRadioButtonControl *)control)->SetLabel(strLabel);
+      ((CGUIRadioButtonControl *)control)->SetLabel2(strLabel2);
+      ((CGUIRadioButtonControl *)control)->SetRadioDimensions(radioPosX, radioPosY, radioWidth, radioHeight);
+      ((CGUIRadioButtonControl *)control)->SetToggleSelect(toggleSelect);
+      ((CGUIRadioButtonControl *)control)->SetClickActions(clickActions);
+      ((CGUIRadioButtonControl *)control)->SetFocusActions(focusActions);
+      ((CGUIRadioButtonControl *)control)->SetUnFocusActions(unfocusActions);
+    }
+    break;
+  case CGUIControl::GUICONTROL_SPIN:
+    {
+      control = new CGUISpinControl(
+        parentID, id, posX, posY, width, height,
+        textureUp, textureDown, textureUpFocus, textureDownFocus,
+        textureUpDisabled, textureDownDisabled,
+        labelInfo, iType);
 
-    ((CGUISettingsSliderControl *)control)->SetText(strLabel);
-    ((CGUISettingsSliderControl *)control)->SetInfo(singleInfo);
-  }
-  else if (type == CGUIControl::GUICONTROL_SCROLLBAR)
-  {
-    control = new GUIScrollBarControl(
-      parentID, id, posX, posY, width, height,
-      textureBackground, textureBar, textureBarFocus, textureNib, textureNibFocus, orientation, showOnePage);
-  }
-  else if (type == CGUIControl::GUICONTROL_PROGRESS)
-  {
-    control = new CGUIProgressControl(
-      parentID, id, posX, posY, width, height,
-      textureBackground, textureLeft, textureMid, textureRight,
-      textureOverlay, bReveal);
+      ((CGUISpinControl *)control)->SetReverse(bReverse);
 
-    ((CGUIProgressControl *)control)->SetInfo(singleInfo);
-  }
-  else if (type == CGUIControl::GUICONTROL_IMAGE)
-  {
-    // use a bordered texture if we have <bordersize> or <bordertexture> specified.
-    if (borderTexture.filename.IsEmpty() && borderStr.IsEmpty())
-      control = new CGUIImage(
-        parentID, id, posX, posY, width, height, texture);
-    else
-      control = new CGUIBorderedImage(
-        parentID, id, posX, posY, width, height, texture, borderTexture, borderSize);
-    ((CGUIImage *)control)->SetInfo(textureFile);
-    ((CGUIImage *)control)->SetAspectRatio(aspect);
-    ((CGUIImage *)control)->SetCrossFade(fadeTime);
-  }
-  else if (type == CGUIControl::GUICONTROL_MULTI_IMAGE)
-  {
-    control = new CGUIMultiImage(
-      parentID, id, posX, posY, width, height, texture, timePerImage, fadeTime, randomized, loop, timeToPauseAtEnd);
-    ((CGUIMultiImage *)control)->SetInfo(texturePath);
-    ((CGUIMultiImage *)control)->SetAspectRatio(aspect);
-  }
-  else if (type == CGUIControl::GUICONTAINER_LIST)
-  {
-    CScroller scroller;
-    GetScroller(pControlNode, "scrolltime", scroller);
+      if (iType == SPIN_CONTROL_TYPE_INT)
+      {
+        ((CGUISpinControl *)control)->SetRange(iMin, iMax);
+      }
+      else if (iType == SPIN_CONTROL_TYPE_PAGE)
+      {
+        ((CGUISpinControl *)control)->SetRange(iMin, iMax);
+        ((CGUISpinControl *)control)->SetShowRange(true);
+        ((CGUISpinControl *)control)->SetReverse(false);
+        ((CGUISpinControl *)control)->SetShowOnePage(showOnePage);
+      }
+      else if (iType == SPIN_CONTROL_TYPE_FLOAT)
+      {
+        ((CGUISpinControl *)control)->SetFloatRange(fMin, fMax);
+        ((CGUISpinControl *)control)->SetFloatInterval(fInterval);
+      }
+    }
+    break;
+  case CGUIControl::GUICONTROL_SLIDER:
+    {
+      control = new CGUISliderControl(
+        parentID, id, posX, posY, width, height,
+        textureBar, textureNib, textureNibFocus, SLIDER_CONTROL_TYPE_PERCENTAGE, orientation);
 
-    control = new CGUIListContainer(parentID, id, posX, posY, width, height, orientation, scroller, preloadItems);
-    ((CGUIListContainer *)control)->LoadLayout(pControlNode);
-    ((CGUIListContainer *)control)->LoadListProvider(pControlNode, defaultControl, defaultAlways);
-    ((CGUIListContainer *)control)->SetType(viewType, viewLabel);
-    ((CGUIListContainer *)control)->SetPageControl(pageControl);
-    ((CGUIListContainer *)control)->SetRenderOffset(offset);
-    ((CGUIListContainer *)control)->SetClickActions(clickActions);
-  }
-  else if (type == CGUIControl::GUICONTAINER_WRAPLIST)
-  {
-    CScroller scroller;
-    GetScroller(pControlNode, "scrolltime", scroller);
+      ((CGUISliderControl *)control)->SetInfo(singleInfo);
+      ((CGUISliderControl *)control)->SetAction(action);
+    }
+    break;
+  case CGUIControl::GUICONTROL_SETTINGS_SLIDER:
+    {
+      control = new CGUISettingsSliderControl(
+        parentID, id, posX, posY, width, height, sliderWidth, sliderHeight, textureFocus, textureNoFocus,
+        textureBar, textureNib, textureNibFocus, labelInfo, SLIDER_CONTROL_TYPE_PERCENTAGE);
 
-    control = new CGUIWrappingListContainer(parentID, id, posX, posY, width, height, orientation, scroller, preloadItems, focusPosition);
-    ((CGUIWrappingListContainer *)control)->LoadLayout(pControlNode);
-    ((CGUIWrappingListContainer *)control)->LoadListProvider(pControlNode, defaultControl, defaultAlways);
-    ((CGUIWrappingListContainer *)control)->SetType(viewType, viewLabel);
-    ((CGUIWrappingListContainer *)control)->SetPageControl(pageControl);
-    ((CGUIWrappingListContainer *)control)->SetRenderOffset(offset);
-    ((CGUIWrappingListContainer *)control)->SetClickActions(clickActions);
-  }
-  else if (type == CGUIControl::GUICONTAINER_FIXEDLIST)
-  {
-    CScroller scroller;
-    GetScroller(pControlNode, "scrolltime", scroller);
+      ((CGUISettingsSliderControl *)control)->SetText(strLabel);
+      ((CGUISettingsSliderControl *)control)->SetInfo(singleInfo);
+    }
+    break;
+  case CGUIControl::GUICONTROL_SCROLLBAR:
+    {
+      control = new GUIScrollBarControl(
+        parentID, id, posX, posY, width, height,
+        textureBackground, textureBar, textureBarFocus, textureNib, textureNibFocus, orientation, showOnePage);
+    }
+    break;
+  case CGUIControl::GUICONTROL_PROGRESS:
+    {
+      control = new CGUIProgressControl(
+        parentID, id, posX, posY, width, height,
+        textureBackground, textureLeft, textureMid, textureRight,
+        textureOverlay, bReveal);
 
-    control = new CGUIFixedListContainer(parentID, id, posX, posY, width, height, orientation, scroller, preloadItems, focusPosition, iMovementRange);
-    ((CGUIFixedListContainer *)control)->LoadLayout(pControlNode);
-    ((CGUIFixedListContainer *)control)->LoadListProvider(pControlNode, defaultControl, defaultAlways);
-    ((CGUIFixedListContainer *)control)->SetType(viewType, viewLabel);
-    ((CGUIFixedListContainer *)control)->SetPageControl(pageControl);
-    ((CGUIFixedListContainer *)control)->SetRenderOffset(offset);
-  }
-  else if (type == CGUIControl::GUICONTAINER_PANEL)
-  {
-    CScroller scroller;
-    GetScroller(pControlNode, "scrolltime", scroller); 
+      ((CGUIProgressControl *)control)->SetInfo(singleInfo);
+    }
+    break;
+  case CGUIControl::GUICONTROL_IMAGE:
+    {
+      // use a bordered texture if we have <bordersize> or <bordertexture> specified.
+      if (borderTexture.filename.empty() && borderStr.empty())
+        control = new CGUIImage(
+          parentID, id, posX, posY, width, height, texture);
+      else
+        control = new CGUIBorderedImage(
+          parentID, id, posX, posY, width, height, texture, borderTexture, borderSize);
+      ((CGUIImage *)control)->SetInfo(textureFile);
+      ((CGUIImage *)control)->SetAspectRatio(aspect);
+      ((CGUIImage *)control)->SetCrossFade(fadeTime);
+    }
+    break;
+  case CGUIControl::GUICONTROL_MULTI_IMAGE:
+    {
+      control = new CGUIMultiImage(
+        parentID, id, posX, posY, width, height, texture, timePerImage, fadeTime, randomized, loop, timeToPauseAtEnd);
+      ((CGUIMultiImage *)control)->SetInfo(texturePath);
+      ((CGUIMultiImage *)control)->SetAspectRatio(aspect);
+    }
+    break;
+  case CGUIControl::GUICONTAINER_LIST:
+    {
+      CScroller scroller;
+      GetScroller(pControlNode, "scrolltime", scroller);
 
-    control = new CGUIPanelContainer(parentID, id, posX, posY, width, height, orientation, scroller, preloadItems);
-    ((CGUIPanelContainer *)control)->LoadLayout(pControlNode);
-    ((CGUIPanelContainer *)control)->LoadListProvider(pControlNode, defaultControl, defaultAlways);
-    ((CGUIPanelContainer *)control)->SetType(viewType, viewLabel);
-    ((CGUIPanelContainer *)control)->SetPageControl(pageControl);
-    ((CGUIPanelContainer *)control)->SetRenderOffset(offset);
-    ((CGUIPanelContainer *)control)->SetClickActions(clickActions);
-  }
-  else if (type == CGUIControl::GUICONTROL_TEXTBOX)
-  {
-    control = new CGUITextBox(
-      parentID, id, posX, posY, width, height,
-      labelInfo, scrollTime);
+      control = new CGUIListContainer(parentID, id, posX, posY, width, height, orientation, scroller, preloadItems);
+      ((CGUIListContainer *)control)->LoadLayout(pControlNode);
+      ((CGUIListContainer *)control)->LoadListProvider(pControlNode, defaultControl, defaultAlways);
+      ((CGUIListContainer *)control)->SetType(viewType, viewLabel);
+      ((CGUIListContainer *)control)->SetPageControl(pageControl);
+      ((CGUIListContainer *)control)->SetRenderOffset(offset);
+      ((CGUIListContainer *)control)->SetAutoScrolling(pControlNode);
+      ((CGUIListContainer *)control)->SetClickActions(clickActions);
+      ((CGUIListContainer *)control)->SetFocusActions(focusActions);
+      ((CGUIListContainer *)control)->SetUnFocusActions(unfocusActions);
+    }
+    break;
+  case CGUIControl::GUICONTAINER_WRAPLIST:
+    {
+      CScroller scroller;
+      GetScroller(pControlNode, "scrolltime", scroller);
 
-    ((CGUITextBox *)control)->SetPageControl(pageControl);
-    if (infoLabels.size())
-      ((CGUITextBox *)control)->SetInfo(infoLabels[0]);
-    ((CGUITextBox *)control)->SetAutoScrolling(pControlNode);
-    ((CGUITextBox *)control)->SetMinHeight(minHeight);
-  }
-  else if (type == CGUIControl::GUICONTROL_MOVER)
-  {
-    control = new CGUIMoverControl(
-      parentID, id, posX, posY, width, height,
-      textureFocus, textureNoFocus);
-  }
-  else if (type == CGUIControl::GUICONTROL_RESIZE)
-  {
-    control = new CGUIResizeControl(
-      parentID, id, posX, posY, width, height,
-      textureFocus, textureNoFocus);
-  }
-  else if (type == CGUIControl::GUICONTROL_SPINEX)
-  {
-    control = new CGUISpinControlEx(
-      parentID, id, posX, posY, width, height, spinWidth, spinHeight,
-      labelInfo, textureFocus, textureNoFocus, textureUp, textureDown, textureUpFocus, textureDownFocus,
-      textureUpDisabled, textureDownDisabled, labelInfo, iType);
+      control = new CGUIWrappingListContainer(parentID, id, posX, posY, width, height, orientation, scroller, preloadItems, focusPosition);
+      ((CGUIWrappingListContainer *)control)->LoadLayout(pControlNode);
+      ((CGUIWrappingListContainer *)control)->LoadListProvider(pControlNode, defaultControl, defaultAlways);
+      ((CGUIWrappingListContainer *)control)->SetType(viewType, viewLabel);
+      ((CGUIWrappingListContainer *)control)->SetPageControl(pageControl);
+      ((CGUIWrappingListContainer *)control)->SetRenderOffset(offset);
+      ((CGUIWrappingListContainer *)control)->SetAutoScrolling(pControlNode);
+      ((CGUIWrappingListContainer *)control)->SetClickActions(clickActions);
+      ((CGUIWrappingListContainer *)control)->SetFocusActions(focusActions);
+      ((CGUIWrappingListContainer *)control)->SetUnFocusActions(unfocusActions);
+    }
+    break;
+  case CGUIControl::GUICONTAINER_FIXEDLIST:
+    {
+      CScroller scroller;
+      GetScroller(pControlNode, "scrolltime", scroller);
 
-    ((CGUISpinControlEx *)control)->SetSpinPosition(spinPosX);
-    ((CGUISpinControlEx *)control)->SetText(strLabel);
-    ((CGUISpinControlEx *)control)->SetReverse(bReverse);
-  }
-  else if (type == CGUIControl::GUICONTROL_VISUALISATION)
-  {
+      control = new CGUIFixedListContainer(parentID, id, posX, posY, width, height, orientation, scroller, preloadItems, focusPosition, iMovementRange);
+      ((CGUIFixedListContainer *)control)->LoadLayout(pControlNode);
+      ((CGUIFixedListContainer *)control)->LoadListProvider(pControlNode, defaultControl, defaultAlways);
+      ((CGUIFixedListContainer *)control)->SetType(viewType, viewLabel);
+      ((CGUIFixedListContainer *)control)->SetPageControl(pageControl);
+      ((CGUIFixedListContainer *)control)->SetRenderOffset(offset);
+      ((CGUIFixedListContainer *)control)->SetAutoScrolling(pControlNode);
+      ((CGUIFixedListContainer *)control)->SetClickActions(clickActions);
+      ((CGUIFixedListContainer *)control)->SetFocusActions(focusActions);
+      ((CGUIFixedListContainer *)control)->SetUnFocusActions(unfocusActions);
+    }
+    break;
+  case CGUIControl::GUICONTAINER_PANEL:
+    {
+      CScroller scroller;
+      GetScroller(pControlNode, "scrolltime", scroller);
+
+      control = new CGUIPanelContainer(parentID, id, posX, posY, width, height, orientation, scroller, preloadItems);
+      ((CGUIPanelContainer *)control)->LoadLayout(pControlNode);
+      ((CGUIPanelContainer *)control)->LoadListProvider(pControlNode, defaultControl, defaultAlways);
+      ((CGUIPanelContainer *)control)->SetType(viewType, viewLabel);
+      ((CGUIPanelContainer *)control)->SetPageControl(pageControl);
+      ((CGUIPanelContainer *)control)->SetRenderOffset(offset);
+      ((CGUIPanelContainer *)control)->SetAutoScrolling(pControlNode);
+      ((CGUIPanelContainer *)control)->SetClickActions(clickActions);
+      ((CGUIPanelContainer *)control)->SetFocusActions(focusActions);
+      ((CGUIPanelContainer *)control)->SetUnFocusActions(unfocusActions);
+    }
+    break;
+  case CGUIControl::GUICONTROL_TEXTBOX:
+    {
+      control = new CGUITextBox(
+        parentID, id, posX, posY, width, height,
+        labelInfo, scrollTime);
+
+      ((CGUITextBox *)control)->SetPageControl(pageControl);
+      if (infoLabels.size())
+        ((CGUITextBox *)control)->SetInfo(infoLabels[0]);
+      ((CGUITextBox *)control)->SetAutoScrolling(pControlNode);
+      ((CGUITextBox *)control)->SetMinHeight(minHeight);
+    }
+    break;
+  case CGUIControl::GUICONTROL_MOVER:
+    {
+      control = new CGUIMoverControl(
+        parentID, id, posX, posY, width, height,
+        textureFocus, textureNoFocus);
+    }
+    break;
+  case CGUIControl::GUICONTROL_RESIZE:
+    {
+      control = new CGUIResizeControl(
+        parentID, id, posX, posY, width, height,
+        textureFocus, textureNoFocus);
+    }
+    break;
+  case CGUIControl::GUICONTROL_SPINEX:
+    {
+      control = new CGUISpinControlEx(
+        parentID, id, posX, posY, width, height, spinWidth, spinHeight,
+        labelInfo, textureFocus, textureNoFocus, textureUp, textureDown, textureUpFocus, textureDownFocus,
+        textureUpDisabled, textureDownDisabled, labelInfo, iType);
+
+      ((CGUISpinControlEx *)control)->SetSpinPosition(spinPosX);
+      ((CGUISpinControlEx *)control)->SetText(strLabel);
+      ((CGUISpinControlEx *)control)->SetReverse(bReverse);
+    }
+    break;
+  case CGUIControl::GUICONTROL_VISUALISATION:
     control = new CGUIVisualisationControl(parentID, id, posX, posY, width, height);
+    break;
+  case CGUIControl::GUICONTROL_RENDERADDON:
+    control = new CGUIRenderingControl(parentID, id, posX, posY, width, height);
+    break;
+  default:
+    break;
   }
 
   // things that apply to all controls
@@ -1416,6 +1424,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
     control->SetPulseOnSelect(bPulse);
     if (hasCamera)
       control->SetCamera(camera);
+    control->SetStereoFactor(stereo);
   }
   return control;
 }
