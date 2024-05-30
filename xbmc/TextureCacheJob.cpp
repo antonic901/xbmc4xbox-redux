@@ -126,7 +126,7 @@ CStdString CTextureCacheJob::DecodeImageURL(const CStdString &url, unsigned int 
   CStdString image(url);
   additional_info.clear();
   width = height = 0;
-  if (StringUtils2::StartsWith(url, "image://"))
+  if (StringUtils::StartsWith(url, "image://"))
   {
     // format is image://[type@]<url_encoded_path>?options
     CURL thumbURL(url);
@@ -187,7 +187,7 @@ CBaseTexture *CTextureCacheJob::LoadImage(const CStdString &image, unsigned int 
   CFileItem file(image, false);
   file.FillInMimeType();
   if (!(file.IsPicture() && !(file.IsZIP() || file.IsRAR() || file.IsCBR() || file.IsCBZ() ))
-      && !StringUtils2::StartsWithNoCase(file.GetMimeType(), "image/") && !file.GetMimeType().Equals("application/octet-stream")) // ignore non-pictures
+      && !StringUtils::StartsWithNoCase(file.GetMimeType(), "image/") && !file.GetMimeType().Equals("application/octet-stream")) // ignore non-pictures
     return NULL;
 
   CBaseTexture *texture = CBaseTexture::LoadFromFile(image, width, height, CSettings::Get().GetBool("pictures.useexifrotation"));
@@ -206,8 +206,8 @@ CBaseTexture *CTextureCacheJob::LoadImage(const CStdString &image, unsigned int 
 bool CTextureCacheJob::UpdateableURL(const CStdString &url) const
 {
   // we don't constantly check online images
-  if (StringUtils2::StartsWith(url, "http://") ||
-      StringUtils2::StartsWith(url, "https://"))
+  if (StringUtils::StartsWith(url, "http://") ||
+      StringUtils::StartsWith(url, "https://"))
     return false;
   return true;
 }

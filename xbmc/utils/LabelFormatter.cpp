@@ -179,7 +179,7 @@ CStdString CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFileI
       value = movie->m_strTitle;
     break;
   case 'Z':
-    if (movie && !movie->m_strShowTitle.IsEmpty())
+    if (movie && !movie->m_strShowTitle.empty())
       value = movie->m_strShowTitle;
     break;
   case 'B':

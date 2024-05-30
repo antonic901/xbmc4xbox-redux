@@ -514,7 +514,7 @@ bool CAddonInstallJob::Install(const CStdString &installFrom, const AddonPtr& re
 {
   // The first thing we do is install dependencies
   ADDONDEPS deps = m_addon->GetDeps();
-  CStdString referer = StringUtils2::Format("Referer=%s-%s.zip",m_addon->ID().c_str(),m_addon->Version().asString().c_str());
+  CStdString referer = StringUtils::Format("Referer=%s-%s.zip",m_addon->ID().c_str(),m_addon->Version().asString().c_str());
   for (ADDONDEPS::iterator it  = deps.begin(); it != deps.end(); ++it)
   {
     if (it->first.Equals("xbmc.metadata"))

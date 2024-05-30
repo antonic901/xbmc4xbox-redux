@@ -88,7 +88,7 @@ void CEventButtonState::Load()
         m_iKeyCode = CButtonTranslator::TranslateUniversalRemoteString( m_buttonName.c_str() );
       }
       else if ( (m_mapName.length() > 3) &&
-                (StringUtils2::StartsWith(m_mapName, "LI:")) ) // starts with LI: ?
+                (StringUtils::StartsWith(m_mapName, "LI:")) ) // starts with LI: ?
       {
 #ifdef HAS_LIRC
         string lircDevice = m_mapName.substr(3);
@@ -109,7 +109,7 @@ void CEventButtonState::Load()
   else
   {
     if (m_mapName.length() > 3 &&
-        (StringUtils2::StartsWith(m_mapName, "JS")) )
+        (StringUtils::StartsWith(m_mapName, "JS")) )
     {
       m_joystickName = m_mapName.substr(2);  // <num>:joyname
       m_iControllerNumber = (unsigned char)(*(m_joystickName.c_str()))

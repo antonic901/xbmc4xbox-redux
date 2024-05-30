@@ -1237,14 +1237,14 @@ int CXbmcHttp::xbmcGetTagFromFilename(int numParas, CStdString paras[])
   {
     CStdString output, tmp;
 
-    output = openTag+"Artist:" + StringUtils::Join(tag->GetArtist(), g_advancedSettings.m_musicItemSeparator);
+    output = openTag+"Artist:" + StringUtils::Join(tag->GetArtist(), g_advancedSettings.m_musicItemSeparator).c_str();
     output += closeTag+openTag+"Album:" + tag->GetAlbum();
     output += closeTag+openTag+"Title:" + tag->GetTitle();
     tmp.Format("%i", tag->GetTrackNumber());
     output += closeTag+openTag+"Track number:" + tmp;
     tmp.Format("%i", tag->GetDuration());
     output += closeTag+openTag+"Duration:" + tmp;
-    output += closeTag+openTag+"Genre:" + StringUtils::Join(tag->GetGenre(), g_advancedSettings.m_musicItemSeparator);
+    output += closeTag+openTag+"Genre:" + StringUtils::Join(tag->GetGenre(), g_advancedSettings.m_musicItemSeparator).c_str();
     SYSTEMTIME stTime;
     tag->GetReleaseDate(stTime);
     tmp.Format("%i", stTime.wYear);
@@ -1327,10 +1327,10 @@ int CXbmcHttp::xbmcGetMovieDetails(int numParas, CStdString paras[])
         m_database.GetMovieInfo(paras[0].c_str(),aMovieRec);
         tmp.Format("%i", aMovieRec.m_iYear);
         output = closeTag+openTag+"Year:" + tmp;
-        output += closeTag+openTag+"Director:" + StringUtils::Join(aMovieRec.m_director, g_advancedSettings.m_videoItemSeparator);
-        output += closeTag+openTag+"Title:" + aMovieRec.m_strTitle;
+        output += closeTag+openTag+"Director:" + StringUtils::Join(aMovieRec.m_director, g_advancedSettings.m_videoItemSeparator).c_str();
+        output += closeTag+openTag+"Title:" + aMovieRec.m_strTitle.c_str();
         output += closeTag+openTag+"Plot:" + aMovieRec.m_strPlot;
-        output += closeTag+openTag+"Genre:" + StringUtils::Join(aMovieRec.m_genre, g_advancedSettings.m_videoItemSeparator);
+        output += closeTag+openTag+"Genre:" + StringUtils::Join(aMovieRec.m_genre, g_advancedSettings.m_videoItemSeparator).c_str();
         CStdString strRating;
         strRating.Format("%3.3f", aMovieRec.m_fRating);
         if (strRating=="") strRating="0.0";
@@ -1452,10 +1452,10 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
       const CVideoInfoTag* tagVal=g_infoManager.GetCurrentMovieTag();
       if (tagVal)
       {
-        if (!tagVal->m_strShowTitle.IsEmpty())
-          output+=closeTag+openTag+"Show Title"+tag+":"+tagVal->m_strShowTitle ;
-        if (!tagVal->m_strTitle.IsEmpty())
-          output+=closeTag+openTag+"Title"+tag+":"+tagVal->m_strTitle ;
+        if (!tagVal->m_strShowTitle.empty())
+          output+=closeTag+openTag+"Show Title"+tag+":"+tagVal->m_strShowTitle.c_str() ;
+        if (!tagVal->m_strTitle.empty())
+          output+=closeTag+openTag+"Title"+tag+":"+tagVal->m_strTitle.c_str() ;
         //now have enough info to check for a change
         if (lastPlayingInfo!=output)
         {
@@ -1466,13 +1466,13 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
           return SetResponse(openTag+"Changed:False");
         //if still here, continue collecting info
         if (!tagVal->m_genre.empty())
-          output+=closeTag+openTag+"Genre"+tag+":"+StringUtils::Join(tagVal->m_genre, g_advancedSettings.m_videoItemSeparator);
+          output+=closeTag+openTag+"Genre"+tag+":"+StringUtils::Join(tagVal->m_genre, g_advancedSettings.m_videoItemSeparator).c_str();
         if (!tagVal->m_studio.empty())
-          output+=closeTag+openTag+"Studio"+tag+":"+StringUtils::Join(tagVal->m_studio, g_advancedSettings.m_videoItemSeparator);
+          output+=closeTag+openTag+"Studio"+tag+":"+StringUtils::Join(tagVal->m_studio, g_advancedSettings.m_videoItemSeparator).c_str();
         if (tagVal && tagVal->m_director.size() > 0)
-          output+=closeTag+openTag+"Director"+tag+":"+StringUtils::Join(tagVal->m_director, g_advancedSettings.m_videoItemSeparator);
+          output+=closeTag+openTag+"Director"+tag+":"+StringUtils::Join(tagVal->m_director, g_advancedSettings.m_videoItemSeparator).c_str();
         if (tagVal->m_writingCredits.size() > 0)
-          output+=closeTag+openTag+"Writer"+tag+":"+StringUtils::Join(tagVal->m_writingCredits, g_advancedSettings.m_videoItemSeparator);
+          output+=closeTag+openTag+"Writer"+tag+":"+StringUtils::Join(tagVal->m_writingCredits, g_advancedSettings.m_videoItemSeparator).c_str();
         if (!tagVal->m_strTagLine.IsEmpty())
           output+=closeTag+openTag+"Tagline"+tag+":"+tagVal->m_strTagLine;
         if (!tagVal->m_strPlotOutline.IsEmpty())
@@ -1530,7 +1530,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
         output+=closeTag+openTag+"Track"+tag+":"+tmp;
       }
       if (tagVal && !tagVal->GetArtist().empty())
-        output+=closeTag+openTag+"Artist"+tag+":"+StringUtils::Join(tagVal->GetArtist(), g_advancedSettings.m_musicItemSeparator);
+        output+=closeTag+openTag+"Artist"+tag+":"+StringUtils::Join(tagVal->GetArtist(), g_advancedSettings.m_musicItemSeparator).c_str();
       if (tagVal && !tagVal->GetAlbum().IsEmpty())
         output+=closeTag+openTag+"Album"+tag+":"+tagVal->GetAlbum();
       //now have enough info to check for a change
@@ -1543,7 +1543,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
       return SetResponse(openTag+"Changed:False");
       //if still here, continue collecting info
       if (tagVal && !tagVal->GetGenre().empty())
-        output+=closeTag+openTag+"Genre"+tag+":"+StringUtils::Join(tagVal->GetGenre(), g_advancedSettings.m_musicItemSeparator);
+        output+=closeTag+openTag+"Genre"+tag+":"+StringUtils::Join(tagVal->GetGenre(), g_advancedSettings.m_musicItemSeparator).c_str();
       if (tagVal && tagVal->GetYear())
         output+=closeTag+openTag+"Year"+tag+":"+tagVal->GetYearString();
       if (tagVal && tagVal->GetURL())

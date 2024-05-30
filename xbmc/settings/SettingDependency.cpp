@@ -25,7 +25,7 @@
 #include "SettingDefinitions.h"
 #include "SettingsManager.h"
 #include "utils/log.h"
-#include "utils/StringUtils2.h"
+#include "utils/StringUtils.h"
 #include "utils/XBMCTinyXML.h"
 
 bool CSettingDependencyCondition::Deserialize(const TiXmlNode *node)
@@ -119,9 +119,9 @@ bool CSettingDependencyCondition::Check() const
 
 bool CSettingDependencyCondition::setTarget(const std::string &target)
 {
-  if (StringUtils2::EqualsNoCase(target, "setting"))
+  if (StringUtils::EqualsNoCase(target, "setting"))
     m_target = SettingDependencyTargetSetting;
-  else if (StringUtils2::EqualsNoCase(target, "property"))
+  else if (StringUtils::EqualsNoCase(target, "property"))
     m_target = SettingDependencyTargetProperty;
   else
     return false;
@@ -132,12 +132,12 @@ bool CSettingDependencyCondition::setTarget(const std::string &target)
 bool CSettingDependencyCondition::setOperator(const std::string &op)
 {
   size_t length = 0;
-  if (StringUtils2::EndsWith(op, "is"))
+  if (StringUtils::EndsWith(op, "is"))
   {
     m_operator = SettingDependencyOperatorEquals;
     length = 2;
   }
-  else if (StringUtils2::EndsWith(op, "contains"))
+  else if (StringUtils::EndsWith(op, "contains"))
   {
     m_operator = SettingDependencyOperatorContains;
     length = 8;
@@ -147,7 +147,7 @@ bool CSettingDependencyCondition::setOperator(const std::string &op)
     return false;
   if (op.size() == length + 1)
   {
-    if (!StringUtils2::StartsWith(op, "!"))
+    if (!StringUtils::StartsWith(op, "!"))
       return false;
     m_negated = true;
   }
@@ -242,11 +242,11 @@ std::set<std::string> CSettingDependency::GetSettings() const
 
 bool CSettingDependency::setType(const std::string &type)
 {
-  if (StringUtils2::EqualsNoCase(type, "enable"))
+  if (StringUtils::EqualsNoCase(type, "enable"))
     m_type = SettingDependencyTypeEnable;
-  else if (StringUtils2::EqualsNoCase(type, "update"))
+  else if (StringUtils::EqualsNoCase(type, "update"))
     m_type = SettingDependencyTypeUpdate;
-  else if (StringUtils2::EqualsNoCase(type, "visible"))
+  else if (StringUtils::EqualsNoCase(type, "visible"))
     m_type = SettingDependencyTypeVisible;
   else
     return false;

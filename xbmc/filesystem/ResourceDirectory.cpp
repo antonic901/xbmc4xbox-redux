@@ -47,7 +47,7 @@ bool CResourceDirectory::GetDirectory(const CURL& url, CFileItemList &items)
     for (int i = 0; i < items.Size(); i++)
     {
       CFileItemPtr item = items[i];
-      if (StringUtils2::StartsWith(item->GetPath(), translatedPath))
+      if (StringUtils::StartsWith(item->GetPath(), translatedPath))
         item->SetPath(URIUtils::AddFileToFolder(pathToUrl, item->GetPath().substr(translatedPath.size())));
     }
 

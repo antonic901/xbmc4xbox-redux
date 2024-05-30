@@ -182,9 +182,9 @@ namespace PythonBindings
       {
           PyObject *tracebackModule;
 
-          msg += StringUtils2::Format("Error Type: %s\n", PyString_AsString(pystring));
+          msg += StringUtils::Format("Error Type: %s\n", PyString_AsString(pystring));
           if (PyObject_Str(exc_value))
-            msg += StringUtils2::Format("Error Contents: %s\n", PyString_AsString(PyObject_Str(exc_value)));
+            msg += StringUtils::Format("Error Contents: %s\n", PyString_AsString(PyObject_Str(exc_value)));
 
           tracebackModule = PyImport_ImportModule((char*)"traceback");
           if (tracebackModule != NULL)
@@ -195,7 +195,7 @@ namespace PythonBindings
             emptyString = PyString_FromString("");
             strRetval = PyObject_CallMethod(emptyString, (char*)"join", (char*)"O", tbList);
             
-            msg = StringUtils2::Format("%s%s", msg.c_str(),PyString_AsString(strRetval));
+            msg = StringUtils::Format("%s%s", msg.c_str(),PyString_AsString(strRetval));
 
             Py_DECREF(tbList);
             Py_DECREF(emptyString);

@@ -215,7 +215,7 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
   }
   else if (settingId == "videoscreen.flickerfilter" || settingId == "videoscreen.soften")
     g_graphicsContext.SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
-  else if (StringUtils2::StartsWith(settingId, "videooutput."))
+  else if (StringUtils::StartsWith(settingId, "videooutput."))
   {
     if (settingId == "videooutput.aspect")
     {

@@ -152,7 +152,7 @@ CUPnPServer::Build(CFileItemPtr                  item,
                 }
 
                 // try to grab title from tag
-                if (item->HasVideoInfoTag() && !item->GetVideoInfoTag()->m_strTitle.IsEmpty()) {
+                if (item->HasVideoInfoTag() && !item->GetVideoInfoTag()->m_strTitle.empty()) {
                     item->SetLabel(item->GetVideoInfoTag()->m_strTitle);
                     item->SetLabelPreformated(true);
                 }

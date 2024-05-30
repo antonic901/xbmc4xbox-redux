@@ -158,7 +158,7 @@ string ByArtist(SortAttribute attributes, const SortItem &values)
 
   const CVariant &track = values.find(FieldTrackNumber)->second;
   if (!track.isNull())
-    label += StringUtils2::Format(" %i", (int)track.asInteger());
+    label += StringUtils::Format(" %i", (int)track.asInteger());
 
   return label;
 }
@@ -169,7 +169,7 @@ string ByArtistThenYear(SortAttribute attributes, const SortItem &values)
 
   const CVariant &year = values.find(FieldYear)->first;
   if (!year.isNull())
-    label += StringUtils2::Format(" %i", (int)year.asInteger());
+    label += StringUtils::Format(" %i", (int)year.asInteger());
 
   const CVariant &album = values.find(FieldAlbum)->first;
   if (!album.isNull())
@@ -177,7 +177,7 @@ string ByArtistThenYear(SortAttribute attributes, const SortItem &values)
 
   const CVariant &track = values.find(FieldTrackNumber)->first;
   if (!track.isNull())
-    label += StringUtils2::Format(" %i", (int)track.asInteger());
+    label += StringUtils::Format(" %i", (int)track.asInteger());
 
   return label;
 }

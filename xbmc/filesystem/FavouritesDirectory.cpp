@@ -211,11 +211,11 @@ CStdString CFavouritesDirectory::GetExecutePath(const CFileItem &item, const std
   else  // assume a media file
   {
     if (item.IsVideoDb() && item.HasVideoInfoTag())
-      execute = StringUtils2::Format("PlayMedia(%s)", StringUtils2::Paramify(item.GetVideoInfoTag()->m_strFileNameAndPath).c_str());
+      execute = StringUtils::Format("PlayMedia(%s)", StringUtils::Paramify(item.GetVideoInfoTag()->m_strFileNameAndPath).c_str());
     else if (item.IsMusicDb() && item.HasMusicInfoTag())
-      execute = StringUtils2::Format("PlayMedia(%s)", StringUtils2::Paramify(item.GetMusicInfoTag()->GetURL()).c_str());
+      execute = StringUtils::Format("PlayMedia(%s)", StringUtils::Paramify(item.GetMusicInfoTag()->GetURL()).c_str());
     else
-      execute = StringUtils2::Format("PlayMedia(%s)", StringUtils2::Paramify(item.GetPath()).c_str());
+      execute = StringUtils::Format("PlayMedia(%s)", StringUtils::Paramify(item.GetPath()).c_str());
   }
   return execute;
 }

@@ -43,7 +43,7 @@
 #include "utils/CharsetConverter.h"
 #include "utils/FileUtils.h"
 #include "utils/log.h"
-#include "utils/StringUtils2.h"
+#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/XMLUtils.h"
 
@@ -130,7 +130,7 @@ bool CProfilesManager::Load(const std::string &file)
     if (profilesDoc.LoadFile(file))
     {
       const TiXmlElement *rootElement = profilesDoc.RootElement();
-      if (rootElement && StringUtils2::EqualsNoCase(rootElement->Value(), XML_PROFILES))
+      if (rootElement && StringUtils::EqualsNoCase(rootElement->Value(), XML_PROFILES))
       {
         XMLUtils::GetUInt(rootElement, XML_LAST_LOADED, m_lastUsedProfile);
         XMLUtils::GetBoolean(rootElement, XML_LOGIN_SCREEN, m_usingLoginScreen);
@@ -257,7 +257,7 @@ bool CProfilesManager::LoadProfile(size_t index)
   string strLanguage = CSettings::Get().GetString("locale.language");
   strLanguage[0] = toupper(strLanguage[0]);
 
-  string strLangInfoPath = StringUtils2::Format("special://xbmc/language/%s/langinfo.xml", strLanguage.c_str());
+  string strLangInfoPath = StringUtils::Format("special://xbmc/language/%s/langinfo.xml", strLanguage.c_str());
   CLog::Log(LOGINFO, "CProfilesManager: load language info file: %s", strLangInfoPath.c_str());
   g_langInfo.Load(strLangInfoPath);
 
@@ -314,7 +314,7 @@ bool CProfilesManager::DeleteProfile(size_t index)
 
   string message;
   string str = g_localizeStrings.Get(13201);
-  message = StringUtils2::Format(str.c_str(), profile->getName().c_str());
+  message = StringUtils::Format(str.c_str(), profile->getName().c_str());
   dlgYesNo->SetHeading(13200);
   dlgYesNo->SetLine(0, message);
   dlgYesNo->SetLine(1, "");
@@ -358,7 +358,7 @@ void CProfilesManager::CreateProfileFolders()
   CDirectory::Create(GetGameSaveThumbFolder());
 #endif
   for (size_t hex = 0; hex < 16; hex++)
-    CDirectory::Create(URIUtils::AddFileToFolder(GetThumbnailsFolder(), StringUtils2::Format("%x", hex)));
+    CDirectory::Create(URIUtils::AddFileToFolder(GetThumbnailsFolder(), StringUtils::Format("%x", hex)));
 
   CDirectory::Create("special://profile/addon_data");
   CDirectory::Create("special://profile/keymaps");
@@ -407,7 +407,7 @@ int CProfilesManager::GetProfileIndex(const std::string &name) const
   CSingleLock lock(m_critical);
   for (size_t i = 0; i < m_profiles.size(); i++)
   {
-    if (StringUtils2::EqualsNoCase(m_profiles[i].getName(), name))
+    if (StringUtils::EqualsNoCase(m_profiles[i].getName(), name))
       return i;
   }
 

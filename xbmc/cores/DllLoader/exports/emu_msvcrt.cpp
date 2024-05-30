@@ -1101,7 +1101,7 @@ extern "C"
 
   int dllvprintf(const char *format, va_list va)
   {
-    CStdString buffer = StringUtils2::FormatV(format, va);
+    CStdString buffer = StringUtils::FormatV(format, va);
     CLog::Log(LOGDEBUG, "  msg: %s", buffer.c_str());
     return buffer.length();
   }

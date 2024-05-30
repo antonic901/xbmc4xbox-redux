@@ -80,7 +80,7 @@ public:
   bool Save(TiXmlNode *node, const CStdString &tag, const CStdString& strPath);
 
   long idAlbum;
-  CStdString strAlbum;
+  std::string strAlbum;
   CStdString strMusicBrainzAlbumID;
   std::vector<std::string> artist;
   VECARTISTCREDITS artistCredits;

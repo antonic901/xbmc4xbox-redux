@@ -124,7 +124,7 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
   }
 #ifdef HAS_XBOX_HARDWARE
   // Is this same as url.IsProtocol("mem")?
-  if (StringUtils2::StartsWith(url.GetProtocol(), "mem")) return new CMemUnitDirectory();
+  if (StringUtils::StartsWith(url.GetProtocol(), "mem")) return new CMemUnitDirectory();
 #endif
 
   if( g_application.getNetwork().IsAvailable(true) )

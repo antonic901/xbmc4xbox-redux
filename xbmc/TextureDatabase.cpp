@@ -69,7 +69,7 @@ static const size_t NUM_FIELDS = sizeof(fields) / sizeof(translateField);
 int CTextureRule::TranslateField(const char *field) const
 {
   for (unsigned int i = 0; i < NUM_FIELDS; i++)
-    if (StringUtils2::EqualsNoCase(field, fields[i].string)) return fields[i].field;
+    if (StringUtils::EqualsNoCase(field, fields[i].string)) return fields[i].field;
   return FieldNone;
 }
 
@@ -118,7 +118,7 @@ void CTextureRule::GetAvailableFields(std::vector<std::string> &fieldList)
 
 CStdString CTextureUtils::GetWrappedImageURL(const CStdString &image, const CStdString &type, const CStdString &options)
 {
-  if (StringUtils2::StartsWith(image, "image://"))
+  if (StringUtils::StartsWith(image, "image://"))
     return image; // already wrapped
 
   CURL url;
@@ -140,7 +140,7 @@ CStdString CTextureUtils::GetWrappedThumbURL(const CStdString &image)
 
 CStdString CTextureUtils::UnwrapImageURL(const CStdString &image)
 {
-  if (StringUtils2::StartsWith(image, "image://"))
+  if (StringUtils::StartsWith(image, "image://"))
   {
     CURL url(image);
     if (url.GetUserName().IsEmpty() && url.GetOptions().IsEmpty())

@@ -503,7 +503,7 @@ void CSettingList::copy(const SettingPtrList &srcValues, SettingPtrList &dstValu
 
 bool CSettingList::fromString(const std::string &strValue, SettingPtrList &values) const
 {
-  std::vector<std::string> strValues = StringUtils2::Split(strValue, m_delimiter);
+  std::vector<std::string> strValues = StringUtils::Split(strValue, m_delimiter);
   return fromValues(strValues, values);
 }
 
@@ -517,7 +517,7 @@ bool CSettingList::fromValues(const std::vector<std::string> &strValues, Setting
   int index = 0;
   for (std::vector<std::string>::const_iterator itValue = strValues.begin(); itValue != strValues.end(); ++itValue)
   {
-    CSetting *settingValue = m_definition->Clone(StringUtils2::Format("%s.%d", m_id.c_str(), index++));
+    CSetting *settingValue = m_definition->Clone(StringUtils::Format("%s.%d", m_id.c_str(), index++));
     if (settingValue == NULL ||
         !settingValue->FromString(*itValue))
     {
@@ -544,7 +544,7 @@ std::string CSettingList::toString(const SettingPtrList &values) const
       strValues.push_back((*it)->ToString());
   }
 
-  return StringUtils2::Join(strValues, m_delimiter);
+  return StringUtils::Join(strValues, m_delimiter);
 }
 
 CSettingBool::CSettingBool(const std::string &id, CSettingsManager *settingsManager /* = NULL */)
@@ -662,12 +662,12 @@ void CSettingBool::copy(const CSettingBool &setting)
   
 bool CSettingBool::fromString(const std::string &strValue, bool &value) const
 {
-  if (StringUtils2::EqualsNoCase(strValue, "true"))
+  if (StringUtils::EqualsNoCase(strValue, "true"))
   {
     value = true;
     return true;
   }
-  if (StringUtils2::EqualsNoCase(strValue, "false"))
+  if (StringUtils::EqualsNoCase(strValue, "false"))
   {
     value = false;
     return true;

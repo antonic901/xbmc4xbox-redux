@@ -29,7 +29,7 @@
 #include "playlists/PlayList.h"
 #include "settings/Settings.h"
 #include "utils/log.h"
-#include "utils/StringUtils2.h"
+#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "video/VideoDatabase.h"
 
@@ -80,7 +80,7 @@ namespace XFILE
 
     std::string option = !filter ? "xsp" : "filter";
     const CStdString& group = playlist.GetGroup();
-    bool isGrouped = !group.empty() && !StringUtils2::EqualsNoCase(group, "none") && !playlist.IsGroupMixed();
+    bool isGrouped = !group.empty() && !StringUtils::EqualsNoCase(group, "none") && !playlist.IsGroupMixed();
 
     // get all virtual folders and add them to the item list
     playlist.GetVirtualFolders(virtualFolders);

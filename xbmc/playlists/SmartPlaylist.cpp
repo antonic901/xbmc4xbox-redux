@@ -150,7 +150,7 @@ CSmartPlaylistRule::CSmartPlaylistRule()
 int CSmartPlaylistRule::TranslateField(const char *field) const
 {
   for (unsigned int i = 0; i < NUM_FIELDS; i++)
-    if (StringUtils2::EqualsNoCase(field, fields[i].string)) return fields[i].field;
+    if (StringUtils::EqualsNoCase(field, fields[i].string)) return fields[i].field;
   return FieldNone;
 }
 
@@ -164,7 +164,7 @@ CStdString CSmartPlaylistRule::TranslateField(int field) const
 SortBy CSmartPlaylistRule::TranslateOrder(const char *order)
 {
   for (unsigned int i = 0; i < NUM_FIELDS; i++)
-    if (StringUtils2::EqualsNoCase(order, fields[i].string)) return fields[i].sort;
+    if (StringUtils::EqualsNoCase(order, fields[i].string)) return fields[i].sort;
   return SortByNone;
 }
 
@@ -179,7 +179,7 @@ Field CSmartPlaylistRule::TranslateGroup(const char *group)
 {
   for (unsigned int i = 0; i < NUM_GROUPS; i++)
   {
-    if (StringUtils2::EqualsNoCase(group, groups[i].name))
+    if (StringUtils::EqualsNoCase(group, groups[i].name))
       return groups[i].field;
   }
 
@@ -254,7 +254,7 @@ bool CSmartPlaylistRule::ValidateRating(const std::string &input, void *data)
 {
   char *end = NULL;
   string strRating = input;
-  StringUtils2::Trim(strRating);
+  StringUtils::Trim(strRating);
 
   double rating = strtod(strRating.c_str(), &end);
   return (end == NULL || *end == '\0') &&
@@ -974,7 +974,7 @@ const TiXmlNode* CSmartPlaylist::readName(const TiXmlNode *root)
   if (rootElem == NULL)
     return NULL;
 
-  if (!root || !StringUtils2::EqualsNoCase(root->Value(),"smartplaylist"))
+  if (!root || !StringUtils::EqualsNoCase(root->Value(),"smartplaylist"))
   {
     CLog::Log(LOGERROR, "Error loading Smart playlist");
     return NULL;
@@ -1099,7 +1099,7 @@ bool CSmartPlaylist::Load(const CVariant &obj)
   {
     const CVariant &order = obj["order"];
     if (order.isMember("direction") && order["direction"].isString())
-      m_orderDirection = StringUtils2::EqualsNoCase(order["direction"].asString(), "ascending") ? SortOrderAscending : SortOrderDescending;
+      m_orderDirection = StringUtils::EqualsNoCase(order["direction"].asString(), "ascending") ? SortOrderAscending : SortOrderDescending;
 
     if (order.isMember("ignorefolders") && obj["ignorefolders"].isBoolean())
       m_orderAttributes = obj["ignorefolders"].asBoolean() ? SortAttributeIgnoreFolders : SortAttributeNone;
@@ -1122,7 +1122,7 @@ bool CSmartPlaylist::LoadFromXML(const TiXmlNode *root, const CStdString &encodi
 
   CStdString tmp;
   if (XMLUtils::GetString(root, "match", tmp))
-    m_ruleCombination.SetType(StringUtils2::EqualsNoCase(tmp, "all") ? CSmartPlaylistRuleCombination::CombinationAnd : CSmartPlaylistRuleCombination::CombinationOr);
+    m_ruleCombination.SetType(StringUtils::EqualsNoCase(tmp, "all") ? CSmartPlaylistRuleCombination::CombinationAnd : CSmartPlaylistRuleCombination::CombinationOr);
 
   // now the rules
   const TiXmlNode *ruleNode = root->FirstChild("rule");
@@ -1140,7 +1140,7 @@ bool CSmartPlaylist::LoadFromXML(const TiXmlNode *root, const CStdString &encodi
   {
     m_group = groupElement->FirstChild()->ValueStr();
     const char* mixed = groupElement->Attribute("mixed");
-    m_groupMixed = mixed != NULL && StringUtils2::EqualsNoCase(mixed, "true");
+    m_groupMixed = mixed != NULL && StringUtils::EqualsNoCase(mixed, "true");
   }
 
   // now any limits
@@ -1154,11 +1154,11 @@ bool CSmartPlaylist::LoadFromXML(const TiXmlNode *root, const CStdString &encodi
   {
     const char *direction = order->Attribute("direction");
     if (direction)
-      m_orderDirection = StringUtils2::EqualsNoCase(direction, "ascending") ? SortOrderAscending : SortOrderDescending;
+      m_orderDirection = StringUtils::EqualsNoCase(direction, "ascending") ? SortOrderAscending : SortOrderDescending;
 
     const char *ignorefolders = order->Attribute("ignorefolders");
     if (ignorefolders != NULL)
-      m_orderAttributes = StringUtils2::EqualsNoCase(ignorefolders, "true") ? SortAttributeIgnoreFolders : SortAttributeNone;
+      m_orderAttributes = StringUtils::EqualsNoCase(ignorefolders, "true") ? SortAttributeIgnoreFolders : SortAttributeNone;
 
     m_orderField = CSmartPlaylistRule::TranslateOrder(order->FirstChild()->Value());
   }

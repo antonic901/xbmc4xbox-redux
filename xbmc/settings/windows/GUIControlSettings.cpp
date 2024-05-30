@@ -222,9 +222,9 @@ void CGUIControlSpinExSetting::FillIntegerSettingControl()
       for (; i <= pSettingInt->GetMaximum(); i += pSettingInt->GetStep())
       {
         if (control->GetFormatLabel() > -1)
-          strLabel = StringUtils2::Format(g_localizeStrings.Get(control->GetFormatLabel()).c_str(), i);
+          strLabel = StringUtils::Format(g_localizeStrings.Get(control->GetFormatLabel()).c_str(), i);
         else
-          strLabel = StringUtils2::Format(control->GetFormatString().c_str(), i);
+          strLabel = StringUtils::Format(control->GetFormatString().c_str(), i);
         m_pSpin->AddLabel(strLabel, i);
       }
 
@@ -328,7 +328,7 @@ void CGUIControlListSetting::Update()
         labels.push_back(pItem->GetLabel());
     }
 
-    m_pButton->SetLabel2(StringUtils2::Join(labels, ", "));
+    m_pButton->SetLabel2(StringUtils::Join(labels, ", "));
   }
 
   // disable the control if it has less than two items

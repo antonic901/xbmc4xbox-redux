@@ -121,7 +121,7 @@ bool CPluginDirectory::StartScript(const CStdString& strPath, bool retrievingDir
   m_totalItems = 0;
 
   // setup our parameters to send the script
-  CStdString strHandle = StringUtils2::Format("%i", handle);
+  CStdString strHandle = StringUtils::Format("%i", handle);
   vector<string> argv;
   argv.push_back(basePath);
   argv.push_back(strHandle);
@@ -434,7 +434,7 @@ bool CPluginDirectory::RunScriptWithParams(const CStdString& strPath)
   CStdString basePath(url.Get());
 
   // setup our parameters to send the script
-  CStdString strHandle = StringUtils2::Format("%i", -1);
+  CStdString strHandle = StringUtils::Format("%i", -1);
   vector<string> argv;
   argv.push_back(basePath);
   argv.push_back(strHandle);

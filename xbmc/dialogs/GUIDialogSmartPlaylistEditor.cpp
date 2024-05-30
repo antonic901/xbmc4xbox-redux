@@ -21,7 +21,7 @@
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"
 #include "guilib/GUIKeyboardFactory.h"
 #include "Util.h"
-#include "utils/StringUtils2.h"
+#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "dialogs/GUIDialogSmartPlaylistRule.h"
 #include "GUIWindowManager.h"
@@ -181,7 +181,7 @@ void CGUIDialogSmartPlaylistEditor::OnOK()
   {
     // check if we need to actually change the save location for this playlist
     // this occurs if the user switches from music video <> songs <> mixed
-    if (StringUtils2::EqualsNoCase(m_path.Left(CSettings::Get().GetString("system.playlistspath").size()), CSettings::Get().GetString("system.playlistspath"))) // fugly, well aware
+    if (StringUtils::EqualsNoCase(m_path.Left(CSettings::Get().GetString("system.playlistspath").size()), CSettings::Get().GetString("system.playlistspath"))) // fugly, well aware
     {
       CStdString filename = URIUtils::GetFileName(m_path);
       CStdString strFolder = m_path.Mid(CSettings::Get().GetString("system.playlistspath").size(),m_path.size()-filename.size()-CSettings::Get().GetString("system.playlistspath").size()-1);
@@ -574,7 +574,7 @@ bool CGUIDialogSmartPlaylistEditor::EditPlaylist(const CStdString &path, const C
   bool loaded(playlist.Load(path));
   if (!loaded)
   { // failed to load
-    if (!StringUtils2::StartsWithNoCase(editor->m_mode, "party"))
+    if (!StringUtils::StartsWithNoCase(editor->m_mode, "party"))
       return false; // only edit normal playlists that exist
     // party mode playlists can be editted even if they don't exist
     playlist.SetType(editor->m_mode == "partymusic" ? "songs" : "musicvideos");

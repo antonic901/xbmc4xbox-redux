@@ -164,7 +164,7 @@ void CMusicInfoScanner::Process()
       m_musicDatabase.EmptyCache();
       
       tick = XbmcThreads::SystemClockMillis() - tick;
-      CLog::Log(LOGNOTICE, "My Music: Scanning for music info using worker thread, operation took %s", StringUtils2::SecondsToTimeString(tick / 1000).c_str());
+      CLog::Log(LOGNOTICE, "My Music: Scanning for music info using worker thread, operation took %s", StringUtils::SecondsToTimeString(tick / 1000).c_str());
     }
     if (m_scanType == 1) // load album info
     {
@@ -610,9 +610,9 @@ void CMusicInfoScanner::FileItemsToAlbums(CFileItemList& items, VECALBUMS& album
     bool compilation = !songsByAlbumName->first.empty() && (isCompilation || !tracksOverlap); // 1+2b+2a
     if (artists.size() == 1)
     {
-      string artist = artists.begin()->first; StringUtils2::ToLower(artist);
-      if (!StringUtils2::EqualsNoCase(artist, "various") &&
-          !StringUtils2::EqualsNoCase(artist, "various artists")) // 3a
+      string artist = artists.begin()->first; StringUtils::ToLower(artist);
+      if (!StringUtils::EqualsNoCase(artist, "various") &&
+          !StringUtils::EqualsNoCase(artist, "various artists")) // 3a
         compilation = false;
     }
     else if (hasAlbumArtist) // 3b
@@ -722,8 +722,8 @@ int CMusicInfoScanner::RetrieveMusicInfo(const CStdString& strDirectory, CFileIt
     // we have the artist IDs to update, but before we call UpdateDatabaseArtistInfo.
     if (albums.size() == 1 &&
         album->artistCredits.size() > 0 &&
-        !StringUtils2::EqualsNoCase(album->artistCredits[0].GetArtist(), "various artists") &&
-        !StringUtils2::EqualsNoCase(album->artistCredits[0].GetArtist(), "various"))
+        !StringUtils::EqualsNoCase(album->artistCredits[0].GetArtist(), "various artists") &&
+        !StringUtils::EqualsNoCase(album->artistCredits[0].GetArtist(), "various"))
     {
       CArtist artist;
       if (m_musicDatabase.GetArtist(album->artistCredits[0].GetArtistId(), artist))
@@ -909,14 +909,15 @@ loop:
   {
     if (pDialog && bAllowSelection)
     {
-      if (!CGUIKeyboardFactory::ShowAndGetInput(album.strAlbum, g_localizeStrings.Get(16011), false))
+      CStdString textString(album.strAlbum);
+      if (!CGUIKeyboardFactory::ShowAndGetInput(textString, g_localizeStrings.Get(16011), false))
         return INFO_CANCELLED;
 
-      CStdString strTempArtist(StringUtils2::Join(album.artist, g_advancedSettings.m_musicItemSeparator));
+      CStdString strTempArtist(StringUtils::Join(album.artist, g_advancedSettings.m_musicItemSeparator));
       if (!CGUIKeyboardFactory::ShowAndGetInput(strTempArtist, g_localizeStrings.Get(16025), false))
         return INFO_CANCELLED;
 
-      album.artist = StringUtils2::Split(strTempArtist, g_advancedSettings.m_musicItemSeparator);
+      album.artist = StringUtils::Split(strTempArtist, g_advancedSettings.m_musicItemSeparator);
       goto loop;
     }
   }
@@ -970,7 +971,7 @@ INFO_RET CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album, const ADDON::
 {
   if (m_handle)
   {
-    m_handle->SetTitle(StringUtils2::Format(g_localizeStrings.Get(20321), info->Name().c_str()));
+    m_handle->SetTitle(StringUtils::Format(g_localizeStrings.Get(20321), info->Name().c_str()));
     m_handle->SetText(StringUtils::Join(album.artist, g_advancedSettings.m_musicItemSeparator) + " - " + album.strAlbum);
   }
 
@@ -1028,7 +1029,7 @@ INFO_RET CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album, const ADDON::
 
   if (!scraper.GetAlbumCount())
   {
-    scraper.FindAlbumInfo(album.strAlbum, StringUtils2::Join(album.artist, g_advancedSettings.m_musicItemSeparator));
+    scraper.FindAlbumInfo(album.strAlbum, StringUtils::Join(album.artist, g_advancedSettings.m_musicItemSeparator));
 
     while (!scraper.Completed())
     {
@@ -1066,7 +1067,7 @@ INFO_RET CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album, const ADDON::
           CMusicAlbumInfo& info = scraper.GetAlbum(i);
           double relevance = info.GetRelevance();
           if (relevance < 0)
-            relevance = CUtil::AlbumRelevance(info.GetAlbum().strAlbum, album.strAlbum, StringUtils2::Join(info.GetAlbum().artist, g_advancedSettings.m_musicItemSeparator), StringUtils2::Join(album.artist, g_advancedSettings.m_musicItemSeparator));
+            relevance = CUtil::AlbumRelevance(info.GetAlbum().strAlbum, album.strAlbum, StringUtils::Join(info.GetAlbum().artist, g_advancedSettings.m_musicItemSeparator), StringUtils::Join(album.artist, g_advancedSettings.m_musicItemSeparator));
 
           // if we're doing auto-selection (ie querying all albums at once, then allow 95->100% for perfect matches)
           // otherwise, perfect matches only
@@ -1078,7 +1079,7 @@ INFO_RET CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album, const ADDON::
           if (pDialog)
           {
             // set the label to [relevance]  album - artist
-            CStdString strTemp = StringUtils2::Format("[%0.2f]  %s", relevance, info.GetTitle2().c_str());
+            CStdString strTemp = StringUtils::Format("[%0.2f]  %s", relevance, info.GetTitle2().c_str());
             CFileItem item(strTemp);
             item.m_idepth = i; // use this to hold the index of the album in the scraper
             pDlg->Add(&item);
@@ -1103,7 +1104,7 @@ INFO_RET CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album, const ADDON::
             if (!CGUIKeyboardFactory::ShowAndGetInput(strNewAlbum, g_localizeStrings.Get(16011), false)) return INFO_CANCELLED;
             if (strNewAlbum == "") return INFO_CANCELLED;
 
-            CStdString strNewArtist = StringUtils2::Join(album.artist, g_advancedSettings.m_musicItemSeparator);
+            CStdString strNewArtist = StringUtils::Join(album.artist, g_advancedSettings.m_musicItemSeparator);
             if (!CGUIKeyboardFactory::ShowAndGetInput(strNewArtist, g_localizeStrings.Get(16025), false)) return INFO_CANCELLED;
 
             pDialog->SetLine(0, strNewAlbum);
@@ -1112,7 +1113,7 @@ INFO_RET CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album, const ADDON::
 
             CAlbum newAlbum = album;
             newAlbum.strAlbum = strNewAlbum;
-            newAlbum.artist = StringUtils2::Split(strNewArtist, g_advancedSettings.m_musicItemSeparator);
+            newAlbum.artist = StringUtils::Split(strNewArtist, g_advancedSettings.m_musicItemSeparator);
 
             return DownloadAlbumInfo(newAlbum, info, albumInfo, pDialog);
           }
@@ -1126,8 +1127,8 @@ INFO_RET CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album, const ADDON::
         if (relevance < 0)
           relevance = CUtil::AlbumRelevance(info.GetAlbum().strAlbum,
                                             album.strAlbum,
-                                            StringUtils2::Join(info.GetAlbum().artist, g_advancedSettings.m_musicItemSeparator),
-                                            StringUtils2::Join(album.artist, g_advancedSettings.m_musicItemSeparator));
+                                            StringUtils::Join(info.GetAlbum().artist, g_advancedSettings.m_musicItemSeparator),
+                                            StringUtils::Join(album.artist, g_advancedSettings.m_musicItemSeparator));
         if (relevance < THRESHOLD)
           return INFO_NOT_FOUND;
 
@@ -1182,7 +1183,7 @@ INFO_RET CMusicInfoScanner::DownloadArtistInfo(const CArtist& artist, const ADDO
 {
   if (m_handle)
   {
-    m_handle->SetTitle(StringUtils2::Format(g_localizeStrings.Get(20320), info->Name().c_str()));
+    m_handle->SetTitle(StringUtils::Format(g_localizeStrings.Get(20320), info->Name().c_str()));
     m_handle->SetText(artist.strArtist);
   }
 
@@ -1271,9 +1272,9 @@ INFO_RET CMusicInfoScanner::DownloadArtistInfo(const CArtist& artist, const ADDO
               strTemp += " ("+scraper.GetArtist(i).GetArtist().strBorn+")";
             if (!scraper.GetArtist(i).GetArtist().genre.empty())
             {
-              CStdString genres = StringUtils2::Join(scraper.GetArtist(i).GetArtist().genre, g_advancedSettings.m_musicItemSeparator);
+              CStdString genres = StringUtils::Join(scraper.GetArtist(i).GetArtist().genre, g_advancedSettings.m_musicItemSeparator);
               if (!genres.empty())
-                strTemp = StringUtils2::Format("[%s] %s", genres.c_str(), strTemp.c_str());
+                strTemp = StringUtils::Format("[%s] %s", genres.c_str(), strTemp.c_str());
             }
             item.SetLabel(strTemp);
             item.m_idepth = i; // use this to hold the index of the album in the scraper

@@ -97,7 +97,7 @@ public:
   CStdString m_strTrailer;
   CStdString m_strPlot;
   CScraperUrl m_strPictureURL;
-  CStdString m_strTitle;
+  std::string m_strTitle;
   CStdString m_strSortTitle;
   CStdString m_strVotes;
   std::vector<std::string> m_artist;
@@ -117,7 +117,7 @@ public:
   CStdString m_strStatus;
   CStdString m_strProductionCode;
   CDateTime m_firstAired;
-  CStdString m_strShowTitle;
+  std::string m_strShowTitle;
   std::vector<std::string> m_studio;
   CStdString m_strAlbum;
   CDateTime m_lastPlayed;

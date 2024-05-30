@@ -134,24 +134,24 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
   {
     vector<std::string> tokens;
     const std::string strPath = url.Get();
-    StringUtils2::Tokenize(strPath,tokens,".");
+    StringUtils::Tokenize(strPath,tokens,".");
     if (tokens.size() > 2)
     {
       if (url.IsFileType("001"))
       {
-        if (StringUtils2::EqualsNoCase(tokens[tokens.size()-2], "ts")) // .ts.001 - treat as a movie file to scratch some users itch
+        if (StringUtils::EqualsNoCase(tokens[tokens.size()-2], "ts")) // .ts.001 - treat as a movie file to scratch some users itch
           return NULL;
       }
       std::string token = tokens[tokens.size()-2];
-      if (StringUtils2::StartsWith(token, "part")) // only list '.part01.rar'
+      if (StringUtils::StartsWith(token, "part")) // only list '.part01.rar'
       {
         // need this crap to avoid making mistakes - yeyh for the new rar naming scheme :/
         __stat64 stat;
         int digits = token.size()-4;
-        std::string strFormat = StringUtils2::Format("part%%0%ii", digits);
-        std::string strNumber = StringUtils2::Format(strFormat.c_str(), 1);
+        std::string strFormat = StringUtils::Format("part%%0%ii", digits);
+        std::string strNumber = StringUtils::Format(strFormat.c_str(), 1);
         std::string strPath2 = strPath;
-        StringUtils2::Replace(strPath2,token,strNumber);
+        StringUtils::Replace(strPath2,token,strNumber);
         if (atoi(token.substr(4).c_str()) > 1 && CFile::Stat(strPath2,&stat) == 0)
         {
           pItem->m_bIsFolder = true;

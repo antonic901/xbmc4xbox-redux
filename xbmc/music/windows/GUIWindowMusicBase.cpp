@@ -296,7 +296,7 @@ void CGUIWindowMusicBase::OnItemInfo(int iItem, bool bShowInfo)
 void CGUIWindowMusicBase::OnItemInfo(CFileItem *pItem, bool bShowInfo)
 {
   if ((pItem->IsMusicDb() && !pItem->HasMusicInfoTag()) || pItem->IsParentFolder() ||
-       URIUtils::IsSpecial(pItem->GetPath()) || StringUtils2::StartsWithNoCase(pItem->GetPath(), "musicsearch://"))
+       URIUtils::IsSpecial(pItem->GetPath()) || StringUtils::StartsWithNoCase(pItem->GetPath(), "musicsearch://"))
     return; // nothing to do
 
   if (!pItem->m_bIsFolder)
@@ -472,7 +472,7 @@ bool CGUIWindowMusicBase::ShowAlbumInfo(const CFileItem *pItem, bool bShowInfo /
       {
         m_dlgProgress->SetHeading(185);
         m_dlgProgress->SetLine(0, pItem->GetMusicInfoTag()->GetAlbum());
-        m_dlgProgress->SetLine(1, StringUtils2::Join(pItem->GetMusicInfoTag()->GetAlbumArtist(), g_advancedSettings.m_musicItemSeparator));
+        m_dlgProgress->SetLine(1, StringUtils::Join(pItem->GetMusicInfoTag()->GetAlbumArtist(), g_advancedSettings.m_musicItemSeparator));
         m_dlgProgress->SetLine(2, "");
         m_dlgProgress->StartModal();
       }
@@ -1179,7 +1179,7 @@ bool CGUIWindowMusicBase::CheckFilterAdvanced(CFileItemList &items) const
 
 bool CGUIWindowMusicBase::CanContainFilter(const CStdString &strDirectory) const
 {
-  return StringUtils2::StartsWithNoCase(strDirectory, "musicdb://");
+  return StringUtils::StartsWithNoCase(strDirectory, "musicdb://");
 }
 
 void CGUIWindowMusicBase::OnInitWindow()

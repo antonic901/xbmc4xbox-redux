@@ -84,7 +84,7 @@ void CLangCodeExpander::LoadUserCodes(const TiXmlElement* pRootElement)
       {
         sShort = pShort->FirstChild()->Value();
         sLong = pLong->FirstChild()->Value();
-        StringUtils2::ToLower(sShort);
+        StringUtils::ToLower(sShort);
         m_mapUser[sShort] = sLong;
       }
       pLangCode = pLangCode->NextSibling();
@@ -149,8 +149,8 @@ bool CLangCodeExpander::ConvertTwoToThreeCharCode(CStdString& strThreeCharCode, 
   if ( strTwoCharCode.length() == 2 )
   {
     CStdString strTwoCharCodeLower( strTwoCharCode );
-    StringUtils2::ToLower(strTwoCharCodeLower);
-    StringUtils2::Trim(strTwoCharCodeLower);
+    StringUtils::ToLower(strTwoCharCodeLower);
+    StringUtils::Trim(strTwoCharCodeLower);
 
     for (unsigned int index = 0; index < sizeof(CharCode2To3) / sizeof(CharCode2To3[0]); ++index)
     {
@@ -199,7 +199,7 @@ bool CLangCodeExpander::ConvertToThreeCharCode(CStdString& strThreeCharCode, con
   {
     for(unsigned int i = 0; i < sizeof(g_iso639_2) / sizeof(LCENTRY); i++)
     {
-      if (StringUtils2::EqualsNoCase(strCharCode, g_iso639_2[i].name))
+      if (StringUtils::EqualsNoCase(strCharCode, g_iso639_2[i].name))
       {
         CodeToString(g_iso639_2[i].code, strThreeCharCode);
         return true;
@@ -227,8 +227,8 @@ bool CLangCodeExpander::ConvertLinuxToWindowsRegionCodes(const CStdString& strTw
     return false;
 
   CStdString strLower( strTwoCharCode );
-  StringUtils2::ToLower(strLower);
-  StringUtils2::Trim(strLower);
+  StringUtils::ToLower(strLower);
+  StringUtils::Trim(strLower);
   for (unsigned int index = 0; index < sizeof(RegionCode2To3) / sizeof(RegionCode2To3[0]); ++index)
   {
     if (strLower.Equals(RegionCode2To3[index].old))
@@ -247,7 +247,7 @@ bool CLangCodeExpander::ConvertWindowsToGeneralCharCode(const CStdString& strWin
     return false;
 
   CStdString strLower(strWindowsCharCode);
-  StringUtils2::ToLower(strLower);
+  StringUtils::ToLower(strLower);
   for (unsigned int index = 0; index < sizeof(CharCode2To3) / sizeof(CharCode2To3[0]); ++index)
   {
     if ((CharCode2To3[index].win_id && strLower.Equals(CharCode2To3[index].win_id)) ||
@@ -327,7 +327,7 @@ bool CLangCodeExpander::ReverseLookup(const CStdString& desc, CStdString& code)
     return false;
 
   CStdString descTmp(desc);
-  StringUtils2::Trim(descTmp);
+  StringUtils::Trim(descTmp);
   STRINGLOOKUPTABLE::iterator it;
   for (it = m_mapUser.begin(); it != m_mapUser.end() ; it++)
   {
@@ -364,8 +364,8 @@ bool CLangCodeExpander::LookupInMap(CStdString& desc, const CStdString& code)
   STRINGLOOKUPTABLE::iterator it;
   //Make sure we convert to lowercase before trying to find it
   CStdString sCode(code);
-  StringUtils2::ToLower(sCode);
-  StringUtils2::Trim(sCode);
+  StringUtils::ToLower(sCode);
+  StringUtils::Trim(sCode);
 
   it = m_mapUser.find(sCode);
   if (it != m_mapUser.end())
@@ -383,8 +383,8 @@ bool CLangCodeExpander::LookupInDb(CStdString& desc, const CStdString& code)
 
   long longcode;
   CStdString sCode(code);
-  StringUtils2::ToLower(sCode);
-  StringUtils2::Trim(sCode);
+  StringUtils::ToLower(sCode);
+  StringUtils::Trim(sCode);
 
   if(sCode.length() == 2)
   {

@@ -127,7 +127,7 @@ std::string CMythSession::GetValue(char *str)
   {
     result = str;
     m_dll->ref_release(str);
-    StringUtils2::Trim(result);
+    StringUtils::Trim(result);
   }
   return result;
 }

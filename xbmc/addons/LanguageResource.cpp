@@ -104,7 +104,7 @@ AddonPtr CLanguageResource::Clone() const
 
 bool CLanguageResource::IsInUse() const
 {
-  return StringUtils2::EqualsNoCase(CSettings::Get().GetString(LANGUAGE_SETTING), ID());
+  return StringUtils::EqualsNoCase(CSettings::Get().GetString(LANGUAGE_SETTING), ID());
 }
 
 bool CLanguageResource::OnPreInstall()
@@ -134,9 +134,9 @@ void CLanguageResource::OnPostInstall(bool restart, bool update)
 bool CLanguageResource::IsAllowed(const std::string &file) const
 {
   return file.empty() ||
-         StringUtils2::EqualsNoCase(file.c_str(), "langinfo.xml") ||
-         StringUtils2::EqualsNoCase(file.c_str(), "strings.po") ||
-         StringUtils2::EqualsNoCase(file.c_str(), "strings.xml");
+         StringUtils::EqualsNoCase(file.c_str(), "langinfo.xml") ||
+         StringUtils::EqualsNoCase(file.c_str(), "strings.po") ||
+         StringUtils::EqualsNoCase(file.c_str(), "strings.xml");
 }
 
 std::string CLanguageResource::GetAddonId(const std::string& locale)
@@ -145,10 +145,10 @@ std::string CLanguageResource::GetAddonId(const std::string& locale)
     return "";
 
   std::string addonId = locale;
-  if (!StringUtils2::StartsWith(addonId, LANGUAGE_ADDON_PREFIX))
+  if (!StringUtils::StartsWith(addonId, LANGUAGE_ADDON_PREFIX))
     addonId = LANGUAGE_ADDON_PREFIX + locale;
 
-  StringUtils2::ToLower(addonId);
+  StringUtils::ToLower(addonId);
   return addonId;
 }
 
@@ -187,7 +187,7 @@ bool CLanguageResource::FindLanguageAddonByName(const std::string &legacyLanguag
     // locale or the language addon name
     if (legacyLanguage.compare((*addon)->ID()) == 0 ||
         languageAddon->GetLocale().Equals(legacyLanguage) ||
-        StringUtils2::EqualsNoCase(legacyLanguage, languageAddon->Name()))
+        StringUtils::EqualsNoCase(legacyLanguage, languageAddon->Name()))
     {
       addonId = (*addon)->ID();
       return true;

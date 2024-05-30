@@ -446,7 +446,7 @@ namespace XBMCAddon
       // load our window
       XFILE::CFile file;
       std::string strPathLower = strPath;
-      StringUtils2::ToLower(strPathLower);
+      StringUtils::ToLower(strPathLower);
       if (!file.Open(strPath) && !file.Open(strPathLower) && !file.Open(strLowerPath))
       {
         // fail - can't load the file

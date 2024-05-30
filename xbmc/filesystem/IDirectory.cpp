@@ -63,10 +63,10 @@ bool IDirectory::IsAllowed(const CURL& url) const
 
     // Allow filenames of the form video_ts.ifo or vts_##_0.ifo
     
-    return StringUtils2::EqualsNoCase(fileName, "video_ts.ifo") ||
+    return StringUtils::EqualsNoCase(fileName, "video_ts.ifo") ||
           (fileName.length() == 12 &&
-           StringUtils2::StartsWithNoCase(fileName, "vts_") &&
-           StringUtils2::EndsWithNoCase(fileName, "_0.ifo"));
+           StringUtils::StartsWithNoCase(fileName, "vts_") &&
+           StringUtils::EndsWithNoCase(fileName, "_0.ifo"));
   }
   
   if (URIUtils::HasExtension(url, ".dat"))
@@ -76,9 +76,9 @@ bool IDirectory::IsAllowed(const CURL& url) const
     // Allow filenames of the form AVSEQ##(#).DAT, ITEM###(#).DAT
     // and MUSIC##(#).DAT
     return (fileName.length() == 11 || fileName.length() == 12) &&
-           (StringUtils2::StartsWithNoCase(fileName, "AVSEQ") ||
-            StringUtils2::StartsWithNoCase(fileName, "MUSIC") ||
-            StringUtils2::StartsWithNoCase(fileName, "ITEM"));
+           (StringUtils::StartsWithNoCase(fileName, "AVSEQ") ||
+            StringUtils::StartsWithNoCase(fileName, "MUSIC") ||
+            StringUtils::StartsWithNoCase(fileName, "ITEM"));
   }
 
   return true;
@@ -98,7 +98,7 @@ void IDirectory::SetMask(const std::string& strMask)
 {
   m_strFileMask = strMask;
   // ensure it's completed with a | so that filtering is easy.
-  StringUtils2::ToLower(m_strFileMask);
+  StringUtils::ToLower(m_strFileMask);
   if (m_strFileMask.size() && m_strFileMask[m_strFileMask.size() - 1] != '|')
     m_strFileMask += '|';
 }

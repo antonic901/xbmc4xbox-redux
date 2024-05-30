@@ -112,7 +112,7 @@ bool CFile::Copy(const CURL& url2, const CURL& dest, XFILE::IFileCallback* pCall
 #else
         pathsep = "/";
 #endif
-        StringUtils2::Tokenize(url.GetFileName(),tokens,pathsep.c_str());
+        StringUtils::Tokenize(url.GetFileName(),tokens,pathsep.c_str());
         CStdString strCurrPath;
         // Handle special
         if (!url.GetProtocol().IsEmpty()) {

@@ -109,7 +109,7 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
       HTML::CHTMLUtil::ConvertHTMLToW(wLink, wConverted);
       g_charsetConverter.wToUTF8(wConverted, strLinkTemp);
 
-      if (StringUtils2::EndsWith(strNameTemp, "..>") && 
+      if (StringUtils::EndsWith(strNameTemp, "..>") && 
           strLinkTemp.Left(strNameTemp.GetLength()-3).Equals(strNameTemp.Left(strNameTemp.GetLength()-3)))
         strName = strNameTemp = strLinkTemp;
 

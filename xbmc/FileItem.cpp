@@ -532,7 +532,7 @@ bool CFileItem::Exists(bool bUseCache /* = true */) const
 bool CFileItem::IsVideo() const
 {
   /* check preset mime type */
-  if( StringUtils2::StartsWithNoCase(m_mimetype, "video/") )
+  if( StringUtils::StartsWithNoCase(m_mimetype, "video/") )
     return true;
 
   if (HasVideoInfoTag()) return true;
@@ -542,7 +542,7 @@ bool CFileItem::IsVideo() const
   if (IsHDHomeRun() || IsTuxBox() || URIUtils::IsDVD(m_strPath) || IsSlingbox())
     return true;
 
-  if( StringUtils2::StartsWithNoCase(m_mimetype, "application/") )
+  if( StringUtils::StartsWithNoCase(m_mimetype, "application/") )
   { /* check for some standard types */
     CStdString extension = m_mimetype.Mid(12);
     if( extension.Equals("ogg")
@@ -568,7 +568,7 @@ bool CFileItem::IsDiscStub() const
 bool CFileItem::IsAudio() const
 {
   /* check preset mime type */
-  if( StringUtils2::StartsWithNoCase(m_mimetype, "audio/") )
+  if( StringUtils::StartsWithNoCase(m_mimetype, "audio/") )
     return true;
 
   if (HasMusicInfoTag()) return true;
@@ -576,7 +576,7 @@ bool CFileItem::IsAudio() const
   if (HasPictureInfoTag()) return false;
   if (IsCDDA()) return true;
 
-  if( StringUtils2::StartsWithNoCase(m_mimetype, "application/") )
+  if( StringUtils::StartsWithNoCase(m_mimetype, "application/") )
   { /* check for some standard types */
     CStdString extension = m_mimetype.Mid(12);
     if( extension.Equals("ogg")
@@ -598,7 +598,7 @@ bool CFileItem::IsKaraoke() const
 
 bool CFileItem::IsPicture() const
 {
-  if( StringUtils2::StartsWithNoCase(m_mimetype, "image/") )
+  if( StringUtils::StartsWithNoCase(m_mimetype, "image/") )
     return true;
 
   if (HasPictureInfoTag()) return true;
@@ -737,12 +737,12 @@ bool CFileItem::IsDVDFile(bool bVobs /*= true*/, bool bIfos /*= true*/) const
   if (bIfos)
   {
     if (strFileName.Equals("video_ts.ifo")) return true;
-    if (StringUtils2::StartsWithNoCase(strFileName, "vts_") && StringUtils2::EndsWithNoCase(strFileName, "_0.ifo") && strFileName.length() == 12) return true;
+    if (StringUtils::StartsWithNoCase(strFileName, "vts_") && StringUtils::EndsWithNoCase(strFileName, "_0.ifo") && strFileName.length() == 12) return true;
   }
   if (bVobs)
   {
     if (strFileName.Equals("video_ts.vob")) return true;
-    if (StringUtils2::StartsWithNoCase(strFileName, "vts_") && StringUtils2::EndsWithNoCase(strFileName, ".vob")) return true;
+    if (StringUtils::StartsWithNoCase(strFileName, "vts_") && StringUtils::EndsWithNoCase(strFileName, ".vob")) return true;
   }
 
   return false;
@@ -781,7 +781,7 @@ bool CFileItem::IsCBR() const
 
 bool CFileItem::IsRSS() const
 {
-  return StringUtils2::StartsWithNoCase(m_strPath, "rss://") || URIUtils::HasExtension(m_strPath, ".rss")
+  return StringUtils::StartsWithNoCase(m_strPath, "rss://") || URIUtils::HasExtension(m_strPath, ".rss")
       || m_mimetype == "application/rss+xml";
 }
 
@@ -1085,9 +1085,9 @@ void CFileItem::FillInMimeType(bool lookup /*= true*/)
   {
     if( m_bIsFolder )
       m_mimetype = "x-directory/normal";
-    else if( StringUtils2::StartsWithNoCase(m_strPath, "shout://")
-          || StringUtils2::StartsWithNoCase(m_strPath, "http://")
-          || StringUtils2::StartsWithNoCase(m_strPath, "https://"))
+    else if( StringUtils::StartsWithNoCase(m_strPath, "shout://")
+          || StringUtils::StartsWithNoCase(m_strPath, "http://")
+          || StringUtils::StartsWithNoCase(m_strPath, "https://"))
     {
       // If lookup is false, bail out early to leave mime type empty
       if (!lookup)
@@ -1098,7 +1098,7 @@ void CFileItem::FillInMimeType(bool lookup /*= true*/)
       // try to get mime-type again but with an NSPlayer User-Agent
       // in order for server to provide correct mime-type.  Allows us
       // to properly detect an MMS stream
-      if (StringUtils2::StartsWithNoCase(m_mimetype, "video/x-ms-"))
+      if (StringUtils::StartsWithNoCase(m_mimetype, "video/x-ms-"))
         CCurlFile::GetMimeType(GetURL(), m_mimetype, "NSPlayer/11.00.6001.7000");
 
       // make sure there are no options set in mime-type
@@ -1115,7 +1115,7 @@ void CFileItem::FillInMimeType(bool lookup /*= true*/)
   }
 
   // change protocol to mms for the following mime-type.  Allows us to create proper FileMMS.
-  if( StringUtils2::StartsWithNoCase(m_mimetype, "application/vnd.ms.wms-hdr.asfv1") || StringUtils2::StartsWithNoCase(m_mimetype, "application/x-mms-framed") )
+  if( StringUtils::StartsWithNoCase(m_mimetype, "application/vnd.ms.wms-hdr.asfv1") || StringUtils::StartsWithNoCase(m_mimetype, "application/x-mms-framed") )
     m_strPath.Replace("http:", "mms:");
 }
 
@@ -2393,8 +2393,8 @@ bool CFileItemList::AlwaysCache() const
 CStdString CFileItem::GetUserMusicThumb(bool alwaysCheckRemote /* = false */, bool fallbackToFolder /* = false */) const
 {
   if (m_strPath.IsEmpty()
-   || StringUtils2::StartsWithNoCase(m_strPath, "newsmartplaylist://")
-   || StringUtils2::StartsWithNoCase(m_strPath, "newplaylist://")
+   || StringUtils::StartsWithNoCase(m_strPath, "newsmartplaylist://")
+   || StringUtils::StartsWithNoCase(m_strPath, "newplaylist://")
    || m_bIsShareOrDrive
    || IsInternetStream()
    || URIUtils::IsUPnP(m_strPath)
@@ -2486,8 +2486,8 @@ CStdString CFileItem::FindLocalArt(const std::string &artFile, bool useFolder) c
 {
   // ignore a bunch that are meaningless
   if (m_strPath.empty()
-   || StringUtils2::StartsWithNoCase(m_strPath, "newsmartplaylist://")
-   || StringUtils2::StartsWithNoCase(m_strPath, "newplaylist://")
+   || StringUtils::StartsWithNoCase(m_strPath, "newsmartplaylist://")
+   || StringUtils::StartsWithNoCase(m_strPath, "newplaylist://")
    || m_bIsShareOrDrive
    || IsInternetStream()
    || URIUtils::IsUPnP(m_strPath)
@@ -3042,7 +3042,7 @@ CStdString CFileItem::FindTrailer() const
 int CFileItem::GetVideoContentType() const
 {
   VIDEODB_CONTENT_TYPE type = VIDEODB_CONTENT_MOVIES;
-  if (HasVideoInfoTag() && !GetVideoInfoTag()->m_strShowTitle.IsEmpty()) // tvshow
+  if (HasVideoInfoTag() && !GetVideoInfoTag()->m_strShowTitle.empty()) // tvshow
     type = VIDEODB_CONTENT_TVSHOWS;
   if (HasVideoInfoTag() && GetVideoInfoTag()->m_iSeason > -1 && !m_bIsFolder) // episode
     return VIDEODB_CONTENT_EPISODES;

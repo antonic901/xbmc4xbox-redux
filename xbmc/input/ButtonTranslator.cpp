@@ -798,7 +798,7 @@ int CButtonTranslator::TranslateWindow(const CStdString &window)
     strWindow = strWindow.Mid(0, strWindow.GetLength() - 4);
 
   // window12345, for custom window to be keymapped
-  if (strWindow.length() > 6 && StringUtils2::StartsWithNoCase(strWindow, "window"))
+  if (strWindow.length() > 6 && StringUtils::StartsWithNoCase(strWindow, "window"))
     strWindow = strWindow.Mid(6);
   if (strWindow.Left(2) == "my")  // drop "my" prefix
     strWindow = strWindow.Mid(2);

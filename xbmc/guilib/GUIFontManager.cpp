@@ -335,7 +335,7 @@ void GUIFontManager::LoadFonts(const std::string& fontSet)
       if (firstFont.empty())
         firstFont = idAttr;
 
-      if (StringUtils2::EqualsNoCase(fontSet, idAttr))
+      if (StringUtils::EqualsNoCase(fontSet, idAttr))
       {
         LoadFonts(pChild->FirstChild("font"));
         return;
@@ -380,7 +380,7 @@ void GUIFontManager::LoadFonts(const TiXmlNode* fontNode)
     {
       // TODO: Why do we tolower() this shit?
       CStdString strFontFileName = fileName;
-      StringUtils2::ToLower(strFontFileName);
+      StringUtils::ToLower(strFontFileName);
       LoadTTF(fontName, strFontFileName, textColor, shadowColor, iSize, iStyle, false, lineSpacing, aspect);
     }
     fontNode = fontNode->NextSibling("font");
@@ -393,7 +393,7 @@ void GUIFontManager::GetStyle(const TiXmlNode *fontNode, int &iStyle)
   iStyle = FONT_STYLE_NORMAL;
   if (XMLUtils::GetString(fontNode, "style", style))
   {
-    vector<string> styles = StringUtils2::Tokenize(style, " ");
+    vector<string> styles = StringUtils::Tokenize(style, " ");
     for (vector<string>::const_iterator i = styles.begin(); i != styles.end(); ++i)
     {
       if (*i == "bold")
@@ -458,7 +458,7 @@ void GUIFontManager::SettingOptionsSubtitleHeightsFiller(const CSetting *setting
   { // easy - just fill as per usual
     CSettingInt* pSettingInt = ((CSettingInt*)setting);
     for (int i = pSettingInt->GetMinimum(); i <= pSettingInt->GetMaximum(); i += pSettingInt->GetStep())
-      list.push_back(std::make_pair(StringUtils2::Format("%i", i), i));
+      list.push_back(std::make_pair(StringUtils::Format("%i", i), i));
   }
 #ifdef _XBOX
   else
@@ -483,7 +483,7 @@ void GUIFontManager::SettingOptionsSubtitleHeightsFiller(const CSetting *setting
           iCurrentSize = atoi(pItem->GetLabel().c_str());
           if (iCurrentSize == current)
             found = true;
-          list.push_back(std::make_pair(StringUtils2::Format("%i", iCurrentSize), iCurrentSize));
+          list.push_back(std::make_pair(StringUtils::Format("%i", iCurrentSize), iCurrentSize));
         }
       }
       

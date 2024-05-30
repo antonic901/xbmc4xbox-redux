@@ -933,7 +933,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     bool bSupportsDTSOut = g_audioConfig.GetDTSEnabled();
 
     // shoutcast is always stereo
-    if (StringUtils2::StartsWithNoCase(file.GetPath(), "shout:"))
+    if (StringUtils::StartsWithNoCase(file.GetPath(), "shout:"))
     {
       options.SetChannels(0);
       options.SetAC3PassTru(false);

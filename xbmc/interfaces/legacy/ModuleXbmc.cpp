@@ -389,7 +389,7 @@ namespace XBMCAddon
       XBMC_TRACE;
       Crc32 crc;
       crc.ComputeFromLowerCase(path);
-      return StringUtils2::Format("%08x.tbn", (unsigned __int32)crc);;
+      return StringUtils::Format("%08x.tbn", (unsigned __int32)crc);;
     }
 
     String makeLegalFilename(const String& filename, bool fatX)
@@ -431,17 +431,17 @@ namespace XBMCAddon
       if (strcmpi(id, "datelong") == 0)
         {
           result = g_langInfo.GetDateFormat(true);
-          StringUtils2::Replace(result, "DDDD", "%A");
-          StringUtils2::Replace(result, "MMMM", "%B");
-          StringUtils2::Replace(result, "D", "%d");
-          StringUtils2::Replace(result, "YYYY", "%Y");
+          StringUtils::Replace(result, "DDDD", "%A");
+          StringUtils::Replace(result, "MMMM", "%B");
+          StringUtils::Replace(result, "D", "%d");
+          StringUtils::Replace(result, "YYYY", "%Y");
         }
       else if (strcmpi(id, "dateshort") == 0)
         {
           result = g_langInfo.GetDateFormat(false);
-          StringUtils2::Replace(result, "MM", "%m");
-          StringUtils2::Replace(result, "DD", "%d");
-          StringUtils2::Replace(result, "YYYY", "%Y");
+          StringUtils::Replace(result, "MM", "%m");
+          StringUtils::Replace(result, "DD", "%d");
+          StringUtils::Replace(result, "YYYY", "%Y");
         }
       else if (strcmpi(id, "tempunit") == 0)
         result = g_langInfo.GetTempUnitString();
@@ -450,14 +450,14 @@ namespace XBMCAddon
       else if (strcmpi(id, "time") == 0)
         {
           result = g_langInfo.GetTimeFormat();
-          StringUtils2::Replace(result, "H", "%H");
-          StringUtils2::Replace(result, "h", "%I");
-          StringUtils2::Replace(result, "mm", "%M");
-          StringUtils2::Replace(result, "ss", "%S");
-          StringUtils2::Replace(result, "xx", "%p");
+          StringUtils::Replace(result, "H", "%H");
+          StringUtils::Replace(result, "h", "%I");
+          StringUtils::Replace(result, "mm", "%M");
+          StringUtils::Replace(result, "ss", "%S");
+          StringUtils::Replace(result, "xx", "%p");
         }
       else if (strcmpi(id, "meridiem") == 0)
-        result = StringUtils2::Format("%s/%s",
+        result = StringUtils::Format("%s/%s",
                                      g_langInfo.GetMeridiemSymbol(CLangInfo::MERIDIEM_SYMBOL_AM).c_str(),
                                      g_langInfo.GetMeridiemSymbol(CLangInfo::MERIDIEM_SYMBOL_PM).c_str());
 

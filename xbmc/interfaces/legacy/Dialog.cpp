@@ -221,7 +221,7 @@ namespace XBMCAddon
             timedate.wYear = atoi(sDefault.substr(sDefault.size() - 4).c_str());
           }
           if (CGUIDialogNumeric::ShowAndGetDate(timedate, heading))
-            value = StringUtils2::Format("%2d/%2d/%4d", timedate.wDay, timedate.wMonth, timedate.wYear);
+            value = StringUtils::Format("%2d/%2d/%4d", timedate.wDay, timedate.wMonth, timedate.wYear);
           else
             return emptyString;
         }
@@ -234,7 +234,7 @@ namespace XBMCAddon
             timedate.wMinute = atoi(sDefault.substr(3, 2).c_str());
           }
           if (CGUIDialogNumeric::ShowAndGetTime(timedate, heading))
-            value = StringUtils2::Format("%2d:%02d", timedate.wHour, timedate.wMinute);
+            value = StringUtils::Format("%2d:%02d", timedate.wHour, timedate.wMinute);
           else
             return emptyString;
         }
@@ -308,7 +308,7 @@ namespace XBMCAddon
               timedate.wYear = atoi(sDefault.substr(sDefault.size() - 4).c_str());
             }
             if (CGUIDialogNumeric::ShowAndGetDate(timedate, heading))
-              value = StringUtils2::Format("%2d/%2d/%4d", timedate.wDay, timedate.wMonth, timedate.wYear);
+              value = StringUtils::Format("%2d/%2d/%4d", timedate.wDay, timedate.wMonth, timedate.wYear);
             else
               value = emptyString;
           }
@@ -322,7 +322,7 @@ namespace XBMCAddon
               timedate.wMinute = atoi(sDefault.substr(3, 2).c_str());
             }
             if (CGUIDialogNumeric::ShowAndGetTime(timedate, heading))
-              value = StringUtils2::Format("%2d:%02d", timedate.wHour, timedate.wMinute);
+              value = StringUtils::Format("%2d:%02d", timedate.wHour, timedate.wMinute);
             else
               value = emptyString;
           }

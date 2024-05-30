@@ -29,7 +29,7 @@
 #include "threads/SingleLock.h"
 #include "utils/log.h"
 #include "utils/RssReader.h"
-#include "utils/StringUtils2.h"
+#include "utils/StringUtils.h"
 
 using namespace std;
 using namespace XFILE;
@@ -112,7 +112,7 @@ bool CRssManager::Load()
   }
 
   const TiXmlElement *pRootElement = rssDoc.RootElement();
-  if (pRootElement == NULL || !StringUtils2::EqualsNoCase(pRootElement->ValueStr(), "rssfeeds"))
+  if (pRootElement == NULL || !StringUtils::EqualsNoCase(pRootElement->ValueStr(), "rssfeeds"))
   {
     CLog::Log(LOGERROR, "CRssManager: error loading %s, no <rssfeeds> node", rssXML.c_str());
     return false;

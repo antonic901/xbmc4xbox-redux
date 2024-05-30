@@ -85,10 +85,10 @@ bool CLocale::operator==(const CLocale& other) const
     return true;
 
   return m_valid == other.m_valid &&
-         StringUtils2::EqualsNoCase(m_language, other.m_language) &&
-         StringUtils2::EqualsNoCase(m_territory, other.m_territory) &&
-         StringUtils2::EqualsNoCase(m_codeset, other.m_codeset) &&
-         StringUtils2::EqualsNoCase(m_modifier, other.m_modifier);
+         StringUtils::EqualsNoCase(m_language, other.m_language) &&
+         StringUtils::EqualsNoCase(m_territory, other.m_territory) &&
+         StringUtils::EqualsNoCase(m_codeset, other.m_codeset) &&
+         StringUtils::EqualsNoCase(m_modifier, other.m_modifier);
 }
 
 std::string CLocale::ToString() const
@@ -113,7 +113,7 @@ std::string CLocale::ToStringLC() const
     return "";
 
   std::string locale = ToString();
-  StringUtils2::ToLower(locale);
+  StringUtils::ToLower(locale);
 
   return locale;
 }
@@ -137,7 +137,7 @@ std::string CLocale::ToShortStringLC() const
     return "";
 
   std::string locale = ToShortString();
-  StringUtils2::ToLower(locale);
+  StringUtils::ToLower(locale);
 
   return locale;
 }
@@ -158,13 +158,13 @@ bool CLocale::Matches(const std::string& locale) const
   if (!m_valid || !other.m_valid)
     return false;
 
-  if (!StringUtils2::EqualsNoCase(m_language, other.m_language))
+  if (!StringUtils::EqualsNoCase(m_language, other.m_language))
     return false;
-  if (!m_territory.empty() && !other.m_territory.empty() && !StringUtils2::EqualsNoCase(m_territory, other.m_territory))
+  if (!m_territory.empty() && !other.m_territory.empty() && !StringUtils::EqualsNoCase(m_territory, other.m_territory))
     return false;
-  if (!m_codeset.empty() && !other.m_codeset.empty() && !StringUtils2::EqualsNoCase(m_codeset, other.m_codeset))
+  if (!m_codeset.empty() && !other.m_codeset.empty() && !StringUtils::EqualsNoCase(m_codeset, other.m_codeset))
     return false;
-  if (!m_modifier.empty() && !other.m_modifier.empty() && !StringUtils2::EqualsNoCase(m_modifier, other.m_modifier))
+  if (!m_modifier.empty() && !other.m_modifier.empty() && !StringUtils::EqualsNoCase(m_modifier, other.m_modifier))
     return false;
 
   return true;
@@ -213,13 +213,13 @@ bool CLocale::ParseLocale(const std::string &locale, std::string &language, std:
   if (pos != std::string::npos)
   {
     territory = tmp.substr(pos + 1);
-    StringUtils2::ToUpper(territory);
+    StringUtils::ToUpper(territory);
     tmp = tmp.substr(0, pos);
   }
 
   // what remains is the language
   language = tmp;
-  StringUtils2::ToLower(language);
+  StringUtils::ToLower(language);
 
   return CheckValidity(language, territory, codeset, modifier);
 }
@@ -229,7 +229,7 @@ void CLocale::Initialize()
   m_valid = CheckValidity(m_language, m_territory, m_codeset, m_modifier);
   if (m_valid)
   {
-    StringUtils2::ToLower(m_language);
-    StringUtils2::ToUpper(m_territory);
+    StringUtils::ToLower(m_language);
+    StringUtils::ToUpper(m_territory);
   }
 }

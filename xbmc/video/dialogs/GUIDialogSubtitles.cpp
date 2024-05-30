@@ -341,7 +341,7 @@ void CGUIDialogSubtitles::Search(const std::string &search/*=""*/)
 
   std::string preferredLanguage = CSettings::Get().GetString("locale.subtitlelanguage");
 
-  if(StringUtils2::EqualsNoCase(preferredLanguage, "original"))
+  if(StringUtils::EqualsNoCase(preferredLanguage, "original"))
   {
     CStdString strLanguage;
 
@@ -354,7 +354,7 @@ void CGUIDialogSubtitles::Search(const std::string &search/*=""*/)
 
     preferredLanguage = strLanguage;
   }
-  else if (StringUtils2::EqualsNoCase(preferredLanguage, "default"))
+  else if (StringUtils::EqualsNoCase(preferredLanguage, "default"))
     preferredLanguage = CSettings::Get().GetString("locale.language");
 
   url.SetOption("preferredlanguage", preferredLanguage);
@@ -407,7 +407,7 @@ void CGUIDialogSubtitles::UpdateStatus(STATUS status)
       break;
     case SEARCH_COMPLETE:
       if (!m_subtitles->IsEmpty())
-        label = StringUtils2::Format(g_localizeStrings.Get(24108).c_str(), m_subtitles->Size());
+        label = StringUtils::Format(g_localizeStrings.Get(24108).c_str(), m_subtitles->Size());
       else
         label = g_localizeStrings.Get(24109);
       break;
@@ -458,7 +458,7 @@ void CGUIDialogSubtitles::OnDownloadComplete(const CFileItemList *items, const s
   std::vector<CStdString> vecFiles;
 
   CStdString strCurrentFilePath;
-  if (StringUtils2::StartsWith(strCurrentFilePath, "http://"))
+  if (StringUtils::StartsWith(strCurrentFilePath, "http://"))
   {
     strCurrentFile = "TempSubtitle";
     vecFiles.push_back(strCurrentFile);
@@ -518,7 +518,7 @@ void CGUIDialogSubtitles::OnDownloadComplete(const CFileItemList *items, const s
 
     // construct subtitle path
     CStdString strSubExt = URIUtils::GetExtension(strUrl);
-    CStdString strSubName = StringUtils2::Format("%s.%s%s", strFileName.c_str(), strSubLang.c_str(), strSubExt.c_str());
+    CStdString strSubName = StringUtils::Format("%s.%s%s", strFileName.c_str(), strSubLang.c_str(), strSubExt.c_str());
 
     // Handle URL encoding:
     CStdString strDownloadFile = URIUtils::ChangeBasePath(strCurrentFilePath, strSubName, strDownloadPath);
@@ -565,7 +565,7 @@ void CGUIDialogSubtitles::OnDownloadComplete(const CFileItemList *items, const s
         strUrl = URIUtils::ReplaceExtension(strUrl, ".idx");
         if(CFile::Exists(strUrl))
         {
-          CStdString strSubNameIdx = StringUtils2::Format("%s.%s.idx", strFileName.c_str(), strSubLang.c_str());
+          CStdString strSubNameIdx = StringUtils::Format("%s.%s.idx", strFileName.c_str(), strSubLang.c_str());
           // Handle URL encoding:
           strDestFile = URIUtils::ChangeBasePath(strCurrentFilePath, strSubNameIdx, strDestPath);
           CFile::Copy(strUrl, strDestFile);

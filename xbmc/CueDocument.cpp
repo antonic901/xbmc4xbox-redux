@@ -102,7 +102,7 @@ bool CCueDocument::Parse(const CStdString &strFile)
   {
     if (!ReadNextLine(strLine))
       break;
-    if (StringUtils2::StartsWithNoCase(strLine,"INDEX 0"))
+    if (StringUtils::StartsWithNoCase(strLine,"INDEX 0"))
     {
       if (bCurrentFileChanged)
       {
@@ -123,7 +123,7 @@ bool CCueDocument::Parse(const CStdString &strFile)
       if (m_iTotalTracks >= 0)
         m_Track[m_iTotalTracks].iStartTime = time; // start time of the next track
     }
-    else if (StringUtils2::StartsWithNoCase(strLine,"TITLE"))
+    else if (StringUtils::StartsWithNoCase(strLine,"TITLE"))
     {
       if (m_iTotalTracks == -1) // No tracks yet
         ExtractQuoteInfo(strLine, m_strAlbum);
@@ -139,14 +139,14 @@ bool CCueDocument::Parse(const CStdString &strFile)
         }
       }
     }
-    else if (StringUtils2::StartsWithNoCase(strLine,"PERFORMER"))
+    else if (StringUtils::StartsWithNoCase(strLine,"PERFORMER"))
     {
       if (m_iTotalTracks == -1) // No tracks yet
         ExtractQuoteInfo(strLine, m_strArtist);
       else // New Artist for this track
         ExtractQuoteInfo(strLine, m_Track[m_iTotalTracks].strArtist);
     }
-    else if (StringUtils2::StartsWithNoCase(strLine,"TRACK"))
+    else if (StringUtils::StartsWithNoCase(strLine,"TRACK"))
     {
       int iTrackNumber = ExtractNumericInfo(strLine.c_str() + 5);
  
@@ -163,7 +163,7 @@ bool CCueDocument::Parse(const CStdString &strFile)
 
       bCurrentFileChanged = false;
     }
-    else if (StringUtils2::StartsWithNoCase(strLine,"FILE"))
+    else if (StringUtils::StartsWithNoCase(strLine,"FILE"))
     {
       // already a file name? then the time computation will be changed
       if(strCurrentFile.size() > 0)
@@ -175,13 +175,13 @@ bool CCueDocument::Parse(const CStdString &strFile)
       if (strCurrentFile.length() > 0)
         ResolvePath(strCurrentFile, strFile);
     }
-    else if (StringUtils2::StartsWithNoCase(strLine,"REM DATE"))
+    else if (StringUtils::StartsWithNoCase(strLine,"REM DATE"))
     {
       int iYear = ExtractNumericInfo(strLine.c_str() + 8);
       if (iYear > 0)
         m_iYear = iYear;
     }
-    else if (StringUtils2::StartsWithNoCase(strLine,"REM GENRE"))
+    else if (StringUtils::StartsWithNoCase(strLine,"REM GENRE"))
     {
       if (!ExtractQuoteInfo(strLine, m_strGenre))
       {
@@ -194,13 +194,13 @@ bool CCueDocument::Parse(const CStdString &strFile)
         }
       }
     }
-    else if (StringUtils2::StartsWithNoCase(strLine,"REM REPLAYGAIN_ALBUM_GAIN"))
+    else if (StringUtils::StartsWithNoCase(strLine,"REM REPLAYGAIN_ALBUM_GAIN"))
       m_replayGainAlbumGain = (float)atof(strLine.Mid(26));
-    else if (StringUtils2::StartsWithNoCase(strLine,"REM REPLAYGAIN_ALBUM_PEAK"))
+    else if (StringUtils::StartsWithNoCase(strLine,"REM REPLAYGAIN_ALBUM_PEAK"))
       m_replayGainAlbumPeak = (float)atof(strLine.Mid(26));
-    else if (StringUtils2::StartsWithNoCase(strLine,"REM REPLAYGAIN_TRACK_GAIN") && m_iTotalTracks >= 0)
+    else if (StringUtils::StartsWithNoCase(strLine,"REM REPLAYGAIN_TRACK_GAIN") && m_iTotalTracks >= 0)
       m_Track[m_iTotalTracks].replayGainTrackGain = (float)atof(strLine.Mid(26));
-    else if (StringUtils2::StartsWithNoCase(strLine,"REM REPLAYGAIN_TRACK_PEAK") && m_iTotalTracks >= 0)
+    else if (StringUtils::StartsWithNoCase(strLine,"REM REPLAYGAIN_TRACK_PEAK") && m_iTotalTracks >= 0)
       m_Track[m_iTotalTracks].replayGainTrackPeak = (float)atof(strLine.Mid(26));
   }
 
@@ -323,7 +323,7 @@ int CCueDocument::ExtractTimeFromIndex(const CStdString &index)
   numberTime.TrimLeft();
   while (!numberTime.IsEmpty())
   {
-    if (!StringUtils2::isasciidigit(numberTime[0]))
+    if (!StringUtils::isasciidigit(numberTime[0]))
       break;
     numberTime.erase(0, 1);
   }
@@ -348,8 +348,8 @@ int CCueDocument::ExtractTimeFromIndex(const CStdString &index)
 int CCueDocument::ExtractNumericInfo(const CStdString &info)
 {
   CStdString number(info);
-  StringUtils2::TrimLeft(number);
-  if (number.empty() || !StringUtils2::isasciidigit(number[0]))
+  StringUtils::TrimLeft(number);
+  if (number.empty() || !StringUtils::isasciidigit(number[0]))
     return -1;
   return atoi(number.c_str());
 }

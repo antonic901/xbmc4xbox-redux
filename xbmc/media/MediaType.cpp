@@ -87,7 +87,7 @@ bool MediaTypes::IsContainer(const MediaType &mediaType)
 std::map<std::string, MediaTypes::MediaTypeInfo>::const_iterator MediaTypes::findMediaType(const std::string &mediaType)
 {
   std::string strMediaType = mediaType;
-  StringUtils2::ToLower(strMediaType);
+  StringUtils::ToLower(strMediaType);
 
   std::map<std::string, MediaTypeInfo>::const_iterator it = m_mediaTypes.find(strMediaType);
   if (it != m_mediaTypes.end())

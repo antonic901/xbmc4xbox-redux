@@ -528,7 +528,7 @@ void CSlingboxFile::LoadSettings(const CStdString& strHostname)
     pElement = pElement->NextSiblingElement("slingbox"))
   {
     const char *hostname = pElement->Attribute("hostname");
-    if (!hostname || StringUtils2::EqualsNoCase(m_sSlingboxSettings.strHostname, hostname))
+    if (!hostname || StringUtils::EqualsNoCase(m_sSlingboxSettings.strHostname, hostname))
     {
       // Load setting values
       XMLUtils::GetInt(pElement, "width", m_sSlingboxSettings.iVideoWidth, 0, 640);

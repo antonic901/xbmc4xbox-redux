@@ -446,7 +446,7 @@ CStdString CLangInfo::GetSubtitleCharSet() const
 
 bool CLangInfo::SetLanguage(const std::string &strLanguage)
 {
-  string strLangInfoPath = StringUtils2::Format("special://xbmc/language/%s/langinfo.xml", strLanguage.c_str());
+  string strLangInfoPath = StringUtils::Format("special://xbmc/language/%s/langinfo.xml", strLanguage.c_str());
   if (!Load(strLangInfoPath))
     return false;
 
@@ -477,8 +477,8 @@ const CStdString& CLangInfo::GetAudioLanguage() const
 void CLangInfo::SetAudioLanguage(const std::string& language)
 {
   if (language.empty()
-    || StringUtils2::EqualsNoCase(language, "default")
-    || StringUtils2::EqualsNoCase(language, "original")
+    || StringUtils::EqualsNoCase(language, "default")
+    || StringUtils::EqualsNoCase(language, "original")
     || !g_LangCodeExpander.ConvertToThreeCharCode(m_audioLanguage, language))
     m_audioLanguage.clear();
 }
@@ -495,8 +495,8 @@ const CStdString& CLangInfo::GetSubtitleLanguage() const
 void CLangInfo::SetSubtitleLanguage(const std::string& language)
 {
   if (language.empty()
-    || StringUtils2::EqualsNoCase(language, "default")
-    || StringUtils2::EqualsNoCase(language, "original")
+    || StringUtils::EqualsNoCase(language, "default")
+    || StringUtils::EqualsNoCase(language, "original")
     || !g_LangCodeExpander.ConvertToThreeCharCode(m_subtitleLanguage, language))
     m_subtitleLanguage.clear();
 }
@@ -637,9 +637,9 @@ void CLangInfo::SettingOptionsLanguagesFiller(const CSetting *setting, std::vect
     CFileItemPtr pItem = items[i];
     if (pItem->m_bIsFolder)
     {
-      if (StringUtils2::EqualsNoCase(pItem->GetLabel(), ".svn") ||
-          StringUtils2::EqualsNoCase(pItem->GetLabel(), "fonts") ||
-          StringUtils2::EqualsNoCase(pItem->GetLabel(), "media"))
+      if (StringUtils::EqualsNoCase(pItem->GetLabel(), ".svn") ||
+          StringUtils::EqualsNoCase(pItem->GetLabel(), "fonts") ||
+          StringUtils::EqualsNoCase(pItem->GetLabel(), "media"))
         continue;
 
       vecLanguage.push_back(pItem->GetLabel());

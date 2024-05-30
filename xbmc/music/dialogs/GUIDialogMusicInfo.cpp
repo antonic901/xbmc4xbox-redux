@@ -153,7 +153,7 @@ void CGUIDialogMusicInfo::SetAlbum(const CAlbum& album, const CStdString &path)
   SetSongs(m_album.infoSongs);
   *m_albumItem = CFileItem(path, true);
   m_albumItem->GetMusicInfoTag()->SetAlbum(m_album.strAlbum);
-  m_albumItem->GetMusicInfoTag()->SetAlbumArtist(StringUtils2::Join(m_album.artist, g_advancedSettings.m_musicItemSeparator));
+  m_albumItem->GetMusicInfoTag()->SetAlbumArtist(StringUtils::Join(m_album.artist, g_advancedSettings.m_musicItemSeparator));
   m_albumItem->GetMusicInfoTag()->SetArtist(m_album.artist);
   m_albumItem->GetMusicInfoTag()->SetYear(m_album.iYear);
   m_albumItem->GetMusicInfoTag()->SetLoaded(true);
@@ -367,7 +367,7 @@ void CGUIDialogMusicInfo::OnGetThumb()
   for (unsigned int i = 0; i < thumbs.size(); ++i)
   {
     CStdString strItemPath;
-    strItemPath = StringUtils2::Format("thumb://Remote%i", i);
+    strItemPath = StringUtils::Format("thumb://Remote%i", i);
     CFileItemPtr item(new CFileItem(strItemPath, false));
     item->SetArt("thumb", thumbs[i]);
     item->SetIconImage("DefaultPicture.png");
@@ -420,7 +420,7 @@ void CGUIDialogMusicInfo::OnGetThumb()
     return;   // user chose the one they have
 
   CStdString newThumb;
-  if (StringUtils2::StartsWith(result, "thumb://Remote"))
+  if (StringUtils::StartsWith(result, "thumb://Remote"))
   {
     int number = atoi(result.substr(14).c_str());
     newThumb = thumbs[number];
@@ -468,7 +468,7 @@ void CGUIDialogMusicInfo::OnGetFanart()
   // Grab the thumbnails from the web
   for (unsigned int i = 0; i < m_artist.fanart.GetNumFanarts(); i++)
   {
-    CStdString strItemPath = StringUtils2::Format("fanart://Remote%i",i);
+    CStdString strItemPath = StringUtils::Format("fanart://Remote%i",i);
     CFileItemPtr item(new CFileItem(strItemPath, false));
     CStdString thumb = m_artist.fanart.GetPreviewURL(i);
     item->SetArt("thumb", CTextureUtils::GetWrappedThumbURL(thumb));
@@ -520,7 +520,7 @@ void CGUIDialogMusicInfo::OnGetFanart()
   if (result.Equals("fanart://Local"))
     result = strLocal;
 
-  if (StringUtils2::StartsWith(result, "fanart://Remote"))
+  if (StringUtils::StartsWith(result, "fanart://Remote"))
   {
     int iFanart = atoi(result.substr(15).c_str());
     m_artist.fanart.SetPrimaryFanart(iFanart);

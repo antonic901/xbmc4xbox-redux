@@ -54,7 +54,7 @@
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
 #include "utils/RssManager.h"
-#include "utils/StringUtils2.h"
+#include "utils/StringUtils.h"
 #include "utils/SystemInfo.h"
 #include "utils/Weather.h"
 #include "utils/XBMCTinyXML.h"
@@ -95,7 +95,7 @@ bool AddonHasSettings(const std::string &condition, const std::string &value, co
 
 bool CheckMasterLock(const std::string &condition, const std::string &value, const std::string &settingId)
 {
-  return g_passwordManager.IsMasterLockUnlocked(StringUtils2::EqualsNoCase(value, "true"));
+  return g_passwordManager.IsMasterLockUnlocked(StringUtils::EqualsNoCase(value, "true"));
 }
 
 bool HasPeripherals(const std::string &condition, const std::string &value, const std::string &settingId)
@@ -171,13 +171,13 @@ bool ProfileHasProgramsLocked(const std::string &condition, const std::string &v
 bool ProfileHasSettingsLocked(const std::string &condition, const std::string &value, const std::string &settingId)
 {
   LOCK_LEVEL::SETTINGS_LOCK slValue=LOCK_LEVEL::ALL;
-  if (StringUtils2::EqualsNoCase(value, "none"))
+  if (StringUtils::EqualsNoCase(value, "none"))
     slValue = LOCK_LEVEL::NONE;
-  else if (StringUtils2::EqualsNoCase(value, "standard"))
+  else if (StringUtils::EqualsNoCase(value, "standard"))
     slValue = LOCK_LEVEL::STANDARD;
-  else if (StringUtils2::EqualsNoCase(value, "advanced"))
+  else if (StringUtils::EqualsNoCase(value, "advanced"))
     slValue = LOCK_LEVEL::ADVANCED;
-  else if (StringUtils2::EqualsNoCase(value, "expert"))
+  else if (StringUtils::EqualsNoCase(value, "expert"))
     slValue = LOCK_LEVEL::EXPERT;
   return slValue <= CProfilesManager::Get().GetCurrentProfile().settingsLockLevel();
 }
@@ -218,9 +218,9 @@ CSettings& CSettings::Get()
 
 CSetting* CSettings::CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager /* = NULL */) const
 {
-  if (StringUtils2::EqualsNoCase(settingType, "addon"))
+  if (StringUtils::EqualsNoCase(settingType, "addon"))
     return new CSettingAddon(settingId, settingsManager);
-  else if (StringUtils2::EqualsNoCase(settingType, "path"))
+  else if (StringUtils::EqualsNoCase(settingType, "path"))
     return new CSettingPath(settingId, settingsManager);
 
   return NULL;
@@ -228,15 +228,15 @@ CSetting* CSettings::CreateSetting(const std::string &settingType, const std::st
 
 ISettingControl* CSettings::CreateControl(const std::string &controlType) const
 {
-  if (StringUtils2::EqualsNoCase(controlType, "toggle"))
+  if (StringUtils::EqualsNoCase(controlType, "toggle"))
     return new CSettingControlCheckmark();
-  else if (StringUtils2::EqualsNoCase(controlType, "spinner"))
+  else if (StringUtils::EqualsNoCase(controlType, "spinner"))
     return new CSettingControlSpinner();
-  else if (StringUtils2::EqualsNoCase(controlType, "edit"))
+  else if (StringUtils::EqualsNoCase(controlType, "edit"))
     return new CSettingControlEdit();
-  else if (StringUtils2::EqualsNoCase(controlType, "button"))
+  else if (StringUtils::EqualsNoCase(controlType, "button"))
     return new CSettingControlButton();
-  else if (StringUtils2::EqualsNoCase(controlType, "list"))
+  else if (StringUtils::EqualsNoCase(controlType, "list"))
     return new CSettingControlList();
 
   return NULL;
@@ -555,7 +555,7 @@ bool CSettings::SetList(const std::string &id, const std::vector<CVariant> &valu
   int index = 0;
   for (std::vector<CVariant>::const_iterator itValue = value.begin(); itValue != value.end(); ++itValue)
   {
-    CSetting *settingValue = listSetting->GetDefinition()->Clone(StringUtils2::Format("%s.%d", listSetting->GetId().c_str(), index++));
+    CSetting *settingValue = listSetting->GetDefinition()->Clone(StringUtils::Format("%s.%d", listSetting->GetId().c_str(), index++));
     if (settingValue == NULL)
       return false;
 

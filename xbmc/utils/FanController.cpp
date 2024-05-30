@@ -418,7 +418,7 @@ void CFanController::CalcSpeed(int targetTemp)
 void CFanController::SettingOptionsSpeedsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
 {
   for (int i=((CSettingInt*)setting)->GetMinimum(); i <= ((CSettingInt*)setting)->GetMaximum(); i += ((CSettingInt*)setting)->GetStep())
-    list.push_back(std::make_pair(StringUtils2::Format(g_localizeStrings.Get(14047), i * 2), i));
+    list.push_back(std::make_pair(StringUtils::Format(g_localizeStrings.Get(14047), i * 2), i));
   if (current < 1 || current > 50)
     current = Instance()->GetFanSpeed();
 }

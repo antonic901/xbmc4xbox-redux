@@ -156,7 +156,7 @@ void CGUIDialogAddonInfo::UpdateControls()
 
 void CGUIDialogAddonInfo::OnUpdate()
 {
-  CStdString referer = StringUtils2::Format("Referer=%s-%s.zip",m_localAddon->ID().c_str(),m_localAddon->Version().asString().c_str());
+  CStdString referer = StringUtils::Format("Referer=%s-%s.zip",m_localAddon->ID().c_str(),m_localAddon->Version().asString().c_str());
   CAddonInstaller::Get().Install(m_addon->ID(), true, referer); // force install
   Close();
 }
@@ -185,8 +185,8 @@ bool CGUIDialogAddonInfo::PromptIfDependency(int heading, int line2)
 
   if (!deps.empty())
   {
-    string line0 = StringUtils2::Format(g_localizeStrings.Get(24046), m_localAddon->Name().c_str());
-    string line1 = StringUtils2::Join(deps, ", ");
+    string line0 = StringUtils::Format(g_localizeStrings.Get(24046), m_localAddon->Name().c_str());
+    string line1 = StringUtils::Join(deps, ", ");
     CGUIDialogOK::ShowAndGetInput(heading, line0, line1, line2);
     return true;
   }

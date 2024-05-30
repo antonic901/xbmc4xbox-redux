@@ -203,7 +203,7 @@ bool CDatabaseQueryRule::Save(CVariant &obj) const
 CDatabaseQueryRule::SEARCH_OPERATOR CDatabaseQueryRule::TranslateOperator(const char *oper)
 {
   for (unsigned int i = 0; i < NUM_OPERATORS; i++)
-    if (StringUtils2::EqualsNoCase(oper, operators[i].string)) return operators[i].op;
+    if (StringUtils::EqualsNoCase(oper, operators[i].string)) return operators[i].op;
   return OPERATOR_CONTAINS;
 }
 

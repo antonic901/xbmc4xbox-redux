@@ -74,7 +74,7 @@ extern "C" int debug_callback(CURL_HANDLE *handle, curl_infotype info, char *out
   CStdString strLine;
   strLine.append(output, size);
   std::vector<std::string> vecLines;
-  StringUtils2::Tokenize(strLine, vecLines, "\r\n");
+  StringUtils::Tokenize(strLine, vecLines, "\r\n");
   std::vector<std::string>::const_iterator it = vecLines.begin();
 
   char *infotype;
@@ -682,7 +682,7 @@ void CCurlFile::ParseAndCorrectUrl(CURL &url2)
     g_charsetConverter.utf8ToStringCharset(filename);
 
     /* TODO: create a tokenizer that doesn't skip empty's */
-    StringUtils2::Tokenize(filename, array, "/");
+    StringUtils::Tokenize(filename, array, "/");
     filename.Empty();
     for(std::vector<std::string>::iterator it = array.begin(); it != array.end(); it++)
     {
@@ -708,7 +708,7 @@ void CCurlFile::ParseAndCorrectUrl(CURL &url2)
     m_ftppasvip = false;
 
     /* parse options given */
-    StringUtils2::Tokenize(options, array, "&");
+    StringUtils::Tokenize(options, array, "&");
     for(std::vector<std::string>::iterator it = array.begin(); it != array.end(); it++)
     {
       CStdString name, value;
@@ -780,7 +780,7 @@ void CCurlFile::ParseAndCorrectUrl(CURL &url2)
       url2.SetProtocolOptions("");
       // set xbmc headers
       std::vector<std::string> array;
-      StringUtils2::Tokenize(options, array, "&");
+      StringUtils::Tokenize(options, array, "&");
       for(std::vector<std::string>::iterator it = array.begin(); it != array.end(); it++)
       {
         // parse name, value
@@ -1151,7 +1151,7 @@ bool CCurlFile::Exists(const CURL& url)
   {
     g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_FILETIME, 1);
     // nocwd is less standard, will return empty list for non-existed remote dir on some ftp server, avoid it.
-    if (StringUtils2::EndsWith(url2.GetFileName(), "/"))
+    if (StringUtils::EndsWith(url2.GetFileName(), "/"))
       g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_SINGLECWD);
     else
       g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_NOCWD);
@@ -1302,7 +1302,7 @@ int CCurlFile::Stat(const CURL& url, struct __stat64* buffer)
   if(url2.IsProtocol("ftp"))
   {
     // nocwd is less standard, will return empty list for non-existed remote dir on some ftp server, avoid it.
-    if (StringUtils2::EndsWith(url2.GetFileName(), "/"))
+    if (StringUtils::EndsWith(url2.GetFileName(), "/"))
       g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_SINGLECWD);
     else
       g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_NOCWD);

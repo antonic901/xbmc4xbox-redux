@@ -39,8 +39,8 @@ int CHTMLUtil::FindTag(const std::string& strHTML, const std::string& strTag, st
 {
   std::string strHTMLLow = strHTML;
   std::string strTagLow = strTag;
-  StringUtils2::ToLower(strHTMLLow);
-  StringUtils2::ToLower(strTagLow);
+  StringUtils::ToLower(strHTMLLow);
+  StringUtils::ToLower(strTagLow);
   strtagFound = "";
 
   size_t iStart = strHTMLLow.find(strTag, iPos);
@@ -59,8 +59,8 @@ int CHTMLUtil::FindClosingTag(const std::string& strHTML, const std::string& str
 {
   std::string strHTMLLow = strHTML;
   std::string strTagLow = strTag;
-  StringUtils2::ToLower(strHTMLLow);
-  StringUtils2::ToLower(strTagLow);
+  StringUtils::ToLower(strHTMLLow);
+  StringUtils::ToLower(strTagLow);
   strtagFound = "";
 
   size_t iStart = strHTMLLow.find("</" + strTag, iPos);
@@ -301,7 +301,7 @@ void CHTMLUtil::ConvertHTMLToW(const std::wstring& strHTML, std::wstring& strStr
   strStripped = strHTML;
   while (mappings[iPos].html)
   {
-    StringUtils2::Replace(strStripped, mappings[iPos].html,std::wstring(1, mappings[iPos].w));
+    StringUtils::Replace(strStripped, mappings[iPos].html,std::wstring(1, mappings[iPos].w));
     iPos++;
   }
 
@@ -326,11 +326,11 @@ void CHTMLUtil::ConvertHTMLToW(const std::wstring& strHTML, std::wstring& strStr
     num = strStripped.substr(i, iPos-i);
     wchar_t val = (wchar_t)wcstol(num.c_str(),NULL,base);
     if (base == 10)
-      num = StringUtils2::Format(L"&#%ls;", num.c_str());
+      num = StringUtils::Format(L"&#%ls;", num.c_str());
     else
-      num = StringUtils2::Format(L"&#x%ls;", num.c_str());
+      num = StringUtils::Format(L"&#x%ls;", num.c_str());
 
-    StringUtils2::Replace(strStripped, num,std::wstring(1,val));
+    StringUtils::Replace(strStripped, num,std::wstring(1,val));
     iPos = strStripped.find(L"&#", iStart);
   }
 }

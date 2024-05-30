@@ -24,7 +24,7 @@
 #include "FileItem.h"
 #include "URL.h"
 #include "playlists/SmartPlayList.h"
-#include "utils/StringUtils2.h"
+#include "utils/StringUtils.h"
 
 #define URL_OPTION_XSP              "xsp"
 #define PROPERTY_SORT_ORDER         "sort.order"
@@ -59,7 +59,7 @@ bool CSmartPlaylistFileItemListModifier::Modify(CFileItemList &items) const
 std::string CSmartPlaylistFileItemListModifier::GetUrlOption(const std::string &path, const std::string &option)
 {
   if (path.empty() || option.empty())
-    return StringUtils2::Empty;
+    return StringUtils::Empty;
 
   CURL url(path);
   return url.GetOption(option);

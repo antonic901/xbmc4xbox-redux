@@ -250,7 +250,7 @@ namespace XFILE
     URIUtils::Split(paths[0], folder, file);
     stackedPath += folder;
     // double escape any occurence of commas
-    StringUtils2::Replace(file, ",", ",,");
+    StringUtils::Replace(file, ",", ",,");
     stackedPath += file;
     for (unsigned int i = 1; i < paths.size(); ++i)
     {
@@ -258,7 +258,7 @@ namespace XFILE
       file = paths[i];
       
       // double escape any occurence of commas
-      StringUtils2::Replace(file, ",", ",,");
+      StringUtils::Replace(file, ",", ",,");
       stackedPath += file;
     }
     return true;

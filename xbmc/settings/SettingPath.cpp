@@ -21,7 +21,7 @@
 #include "SettingPath.h"
 #include "settings/SettingsManager.h"
 #include "utils/log.h"
-#include "utils/StringUtils2.h"
+#include "utils/StringUtils.h"
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
 
@@ -87,8 +87,8 @@ bool CSettingPath::Deserialize(const TiXmlNode *node, bool update /* = false */)
 bool CSettingPath::SetValue(const std::string &value)
 {
   // for backwards compatibility to Frodo
-  if (StringUtils2::EqualsNoCase(value, "select folder") ||
-      StringUtils2::EqualsNoCase(value, "select writable folder"))
+  if (StringUtils::EqualsNoCase(value, "select folder") ||
+      StringUtils::EqualsNoCase(value, "select writable folder"))
     return CSettingString::SetValue("");
 
   return CSettingString::SetValue(value);

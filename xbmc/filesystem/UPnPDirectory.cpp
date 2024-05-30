@@ -313,7 +313,7 @@ CUPnPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
         bool video = true;
         bool audio = true;
         bool image = true;
-        StringUtils2::TrimLeft(m_strFileMask, "/");
+        StringUtils::TrimLeft(m_strFileMask, "/");
         if (!m_strFileMask.empty()) {
             video = m_strFileMask.find(".wmv") != std::string::npos;
             audio = m_strFileMask.find(".wma") != std::string::npos;

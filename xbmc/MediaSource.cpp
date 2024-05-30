@@ -60,7 +60,7 @@ void CMediaSource::FromNameAndPaths(const CStdString &category, const CStdString
 
   if (URIUtils::IsMultiPath(strPath))
     m_iDriveType = SOURCE_TYPE_VPATH;
-  else if (StringUtils2::StartsWithNoCase(strPath, "udf:"))
+  else if (StringUtils::StartsWithNoCase(strPath, "udf:"))
   {
     m_iDriveType = SOURCE_TYPE_VIRTUAL_DVD;
     strPath = "D:\\";

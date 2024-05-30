@@ -133,7 +133,7 @@ void CVideoDatabaseDirectory::ClearDirectoryCache(const CStdString& strDirectory
 
 bool CVideoDatabaseDirectory::IsAllItem(const CStdString& strDirectory)
 {
-  if (StringUtils2::EndsWith(strDirectory, "/-1/"))
+  if (StringUtils::EndsWith(strDirectory, "/-1/"))
     return true;
   return false;
 }

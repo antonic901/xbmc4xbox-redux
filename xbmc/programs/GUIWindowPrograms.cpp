@@ -602,7 +602,7 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
       return false;
 
   // don't allow the view state to change these
-  if (StringUtils2::StartsWithNoCase(strDirectory, "addons://"))
+  if (StringUtils::StartsWithNoCase(strDirectory, "addons://"))
   {
     for (int i=0;i<items.Size();++i)
     {

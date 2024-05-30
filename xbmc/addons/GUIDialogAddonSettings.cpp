@@ -290,10 +290,10 @@ bool CGUIDialogAddonSettings::ShowVirtualKeyboard(int iControl)
             int selected = -1;
             vector<std::string> valuesVec;
             if (setting->Attribute("values"))
-              StringUtils2::Tokenize(setting->Attribute("values"), valuesVec, "|");
+              StringUtils::Tokenize(setting->Attribute("values"), valuesVec, "|");
             else if (setting->Attribute("lvalues"))
             { // localize
-              StringUtils2::Tokenize(setting->Attribute("lvalues"), valuesVec, "|");
+              StringUtils::Tokenize(setting->Attribute("lvalues"), valuesVec, "|");
               for (unsigned int i = 0; i < valuesVec.size(); i++)
               {
                 if (i == atoi(value))
@@ -312,7 +312,7 @@ bool CGUIDialogAddonSettings::ShowVirtualKeyboard(int iControl)
             for (unsigned int i = 0; i < valuesVec.size(); i++)
             {
               pDlg->Add(valuesVec[i]);
-              if (selected == (int)i || (selected < 0 && StringUtils2::EqualsNoCase(valuesVec[i], value)))
+              if (selected == (int)i || (selected < 0 && StringUtils::EqualsNoCase(valuesVec[i], value)))
                 pDlg->SetSelected(i); // FIXME: the SetSelected() does not select "i", it always defaults to the first position
             }
             pDlg->DoModal();
@@ -745,7 +745,7 @@ void CGUIDialogAddonSettings::CreateControls()
         ((CGUISpinControlEx *)pControl)->SetText(label);
 
         if (!lvalues.empty())
-          StringUtils2::Tokenize(lvalues, valuesVec, "|");
+          StringUtils::Tokenize(lvalues, valuesVec, "|");
         else if (values == "$HOURS")
         {
           for (unsigned int i = 0; i < 24; i++)
@@ -755,9 +755,9 @@ void CGUIDialogAddonSettings::CreateControls()
           }
         }
         else
-          StringUtils2::Tokenize(values, valuesVec, "|");
+          StringUtils::Tokenize(values, valuesVec, "|");
         if (!entries.empty())
-          StringUtils2::Tokenize(entries, entryVec, "|");
+          StringUtils::Tokenize(entries, entryVec, "|");
 
         if(bSort && type == "labelenum")
           std::sort(valuesVec.begin(), valuesVec.end(), sortstringbyname());
@@ -796,7 +796,7 @@ void CGUIDialogAddonSettings::CreateControls()
         for (unsigned int i = 0; i < items.size(); ++i)
         {
           ((CGUISpinControlEx *)pControl)->AddLabel(items[i], i);
-          if (StringUtils2::EqualsNoCase(items[i], m_settings[id]))
+          if (StringUtils::EqualsNoCase(items[i], m_settings[id]))
             ((CGUISpinControlEx *)pControl)->SetValue(i);
         }
       }
@@ -843,7 +843,7 @@ void CGUIDialogAddonSettings::CreateControls()
         float fMin = 0.0f;
         float fMax = 100.0f;
         float fInc = 1.0f;
-        vector<std::string> range = StringUtils2::Split(XMLUtils::GetAttribute(setting, "range"), ",");
+        vector<std::string> range = StringUtils::Split(XMLUtils::GetAttribute(setting, "range"), ",");
         if (range.size() > 1)
         {
           fMin = (float)atof(range[0].c_str());
@@ -859,11 +859,11 @@ void CGUIDialogAddonSettings::CreateControls()
         std::string option = XMLUtils::GetAttribute(setting, "option");
         int iType=0;
 
-        if (option.empty() || StringUtils2::EqualsNoCase(option, "float"))
+        if (option.empty() || StringUtils::EqualsNoCase(option, "float"))
           iType = SLIDER_CONTROL_TYPE_FLOAT;
-        else if (StringUtils2::EqualsNoCase(option, "int"))
+        else if (StringUtils::EqualsNoCase(option, "int"))
           iType = SLIDER_CONTROL_TYPE_INT;
-        else if (StringUtils2::EqualsNoCase(option, "percent"))
+        else if (StringUtils::EqualsNoCase(option, "percent"))
           iType = SLIDER_CONTROL_TYPE_PERCENTAGE;
 
         ((CGUISettingsSliderControl *)pControl)->SetType(iType);
@@ -990,12 +990,12 @@ bool CGUIDialogAddonSettings::GetCondition(const CStdString &condition, const in
   vector<std::string> conditionVec;
 
   if (condition.Find("+") >= 0)
-    StringUtils2::Tokenize(condition, conditionVec, "+");
+    StringUtils::Tokenize(condition, conditionVec, "+");
   else
   {
     bCondition = false;
     bCompare = false;
-    StringUtils2::Tokenize(condition, conditionVec, "|");
+    StringUtils::Tokenize(condition, conditionVec, "|");
   }
 
   for (unsigned int i = 0; i < conditionVec.size(); i++)

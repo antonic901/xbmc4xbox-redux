@@ -50,7 +50,7 @@ bool CSettingsManager::Initialize(const TiXmlElement *root)
   if (m_initialized || root == NULL)
     return false;
 
-  if (!StringUtils2::EqualsNoCase(root->ValueStr(), SETTING_XML_ROOT))
+  if (!StringUtils::EqualsNoCase(root->ValueStr(), SETTING_XML_ROOT))
   {
     CLog::Log(LOGERROR, "CSettingsManager: error reading settings definition: doesn't contain <settings> tag");
     return false;
@@ -282,7 +282,7 @@ void CSettingsManager::RegisterCallback(ISettingCallback *callback, const std::s
   for (std::set<std::string>::const_iterator settingIt = settingList.begin(); settingIt != settingList.end(); ++settingIt)
   {
     std::string id = *settingIt;
-    StringUtils2::ToLower(id);
+    StringUtils::ToLower(id);
 
     SettingMap::iterator setting = m_settings.find(id);
     if (setting == m_settings.end())
@@ -446,7 +446,7 @@ CSetting* CSettingsManager::GetSetting(const std::string &id) const
     return NULL;
 
   std::string settingId = id;
-  StringUtils2::ToLower(settingId);
+  StringUtils::ToLower(settingId);
 
   SettingMap::const_iterator setting = m_settings.find(settingId);
   if (setting != m_settings.end())
@@ -463,7 +463,7 @@ CSettingSection* CSettingsManager::GetSection(const std::string &section) const
     return NULL;
 
   std::string sectionId = section;
-  StringUtils2::ToLower(sectionId);
+  StringUtils::ToLower(sectionId);
 
   SettingSectionMap::const_iterator sectionIt = m_sections.find(sectionId);
   if (sectionIt != m_sections.end())
@@ -631,7 +631,7 @@ bool CSettingsManager::Serialize(TiXmlNode *parent) const
     if (it->second.setting->GetType() == SettingTypeAction)
       continue;
 
-    std::vector<std::string> parts = StringUtils2::Split(it->first, ".");
+    std::vector<std::string> parts = StringUtils::Split(it->first, ".");
     if (parts.size() != 2 || parts.at(0).empty() || parts.at(1).empty())
     {
       CLog::Log(LOGWARNING, "CSettingsManager: unable to save setting \"%s\"", it->first.c_str());
@@ -816,21 +816,21 @@ void CSettingsManager::OnSettingPropertyChanged(const CSetting *setting, const c
 
 CSetting* CSettingsManager::CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager /* = NULL */) const
 {
-  if (StringUtils2::EqualsNoCase(settingType, "boolean"))
+  if (StringUtils::EqualsNoCase(settingType, "boolean"))
     return new CSettingBool(settingId, const_cast<CSettingsManager*>(this));
-  else if (StringUtils2::EqualsNoCase(settingType, "integer"))
+  else if (StringUtils::EqualsNoCase(settingType, "integer"))
     return new CSettingInt(settingId, const_cast<CSettingsManager*>(this));
-  else if (StringUtils2::EqualsNoCase(settingType, "number"))
+  else if (StringUtils::EqualsNoCase(settingType, "number"))
     return new CSettingNumber(settingId, const_cast<CSettingsManager*>(this));
-  else if (StringUtils2::EqualsNoCase(settingType, "string"))
+  else if (StringUtils::EqualsNoCase(settingType, "string"))
     return new CSettingString(settingId, const_cast<CSettingsManager*>(this));
-  else if (StringUtils2::EqualsNoCase(settingType, "action"))
+  else if (StringUtils::EqualsNoCase(settingType, "action"))
     return new CSettingAction(settingId, const_cast<CSettingsManager*>(this));
   else if (settingType.size() > 6 &&
-           StringUtils2::StartsWith(settingType, "list[") &&
-           StringUtils2::EndsWith(settingType, "]"))
+           StringUtils::StartsWith(settingType, "list[") &&
+           StringUtils::EndsWith(settingType, "]"))
   {
-    std::string elementType = StringUtils2::Mid(settingType, 5, settingType.size() - 6);
+    std::string elementType = StringUtils::Mid(settingType, 5, settingType.size() - 6);
     CSetting *elementSetting = CreateSetting(elementType, settingId + ".definition", const_cast<CSettingsManager*>(this));
     if (elementSetting != NULL)
       return new CSettingList(settingId, elementSetting, const_cast<CSettingsManager*>(this));
@@ -931,7 +931,7 @@ bool CSettingsManager::LoadSetting(const TiXmlNode *node, CSetting *setting, boo
 
   const std::string &settingId = setting->GetId();
 
-  std::vector<std::string> parts = StringUtils2::Split(settingId, ".");
+  std::vector<std::string> parts = StringUtils::Split(settingId, ".");
   if (parts.size() != 2 || parts.at(0).empty() || parts.at(1).empty())
   {
     CLog::Log(LOGWARNING, "CSettingsManager: unable to load setting \"%s\"", settingId.c_str());
@@ -948,9 +948,9 @@ bool CSettingsManager::LoadSetting(const TiXmlNode *node, CSetting *setting, boo
 
   // check if the default="true" attribute is set for the value
   const char *isDefaultAttribute = settingElement->Attribute(SETTING_XML_ELM_DEFAULT);
-  bool isDefault = isDefaultAttribute != NULL && StringUtils2::EqualsNoCase(isDefaultAttribute, "true");
+  bool isDefault = isDefaultAttribute != NULL && StringUtils::EqualsNoCase(isDefaultAttribute, "true");
 
-  if (!setting->FromString(settingElement->FirstChild() != NULL ? settingElement->FirstChild()->ValueStr() : StringUtils2::Empty))
+  if (!setting->FromString(settingElement->FirstChild() != NULL ? settingElement->FirstChild()->ValueStr() : StringUtils::Empty))
   {
     CLog::Log(LOGWARNING, "CSettingsManager: unable to read value of setting \"%s\"", settingId.c_str());
     return false;
@@ -983,7 +983,7 @@ bool CSettingsManager::UpdateSetting(const TiXmlNode *node, CSetting *setting, c
       return false;
 
     oldSetting = update.GetValue().c_str();
-    std::vector<std::string> parts = StringUtils2::Split(oldSetting, ".");
+    std::vector<std::string> parts = StringUtils::Split(oldSetting, ".");
     if (parts.size() != 2 || parts.at(0).empty() || parts.at(1).empty())
       return false;
 
@@ -995,7 +995,7 @@ bool CSettingsManager::UpdateSetting(const TiXmlNode *node, CSetting *setting, c
     if (oldSettingNode == NULL)
       return false;
 
-    if (setting->FromString(oldSettingNode->FirstChild() != NULL ? oldSettingNode->FirstChild()->ValueStr() : StringUtils2::Empty))
+    if (setting->FromString(oldSettingNode->FirstChild() != NULL ? oldSettingNode->FirstChild()->ValueStr() : StringUtils::Empty))
       updated = true;
     else
       CLog::Log(LOGWARNING, "CSetting: unable to update \"%s\" through automatically renaming from \"%s\"", setting->GetId().c_str(), oldSetting);

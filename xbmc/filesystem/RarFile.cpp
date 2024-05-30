@@ -546,7 +546,7 @@ void CRarFile::InitFromUrl(const CURL& url)
   m_strPathInRar = url.GetFileName();  
 
   vector<std::string> options;
-  StringUtils2::Tokenize(url.GetOptions().Mid(1), options, "&");
+  StringUtils::Tokenize(url.GetOptions().Mid(1), options, "&");
   
   m_bFileOptions = 0;
 
@@ -555,8 +555,8 @@ void CRarFile::InitFromUrl(const CURL& url)
     int iEqual = (*it).find('=');
     if( iEqual >= 0 )
     {
-      CStdString strOption = StringUtils2::Left((*it), iEqual);
-      CStdString strValue = StringUtils2::Mid((*it), iEqual+1);
+      CStdString strOption = StringUtils::Left((*it), iEqual);
+      CStdString strValue = StringUtils::Mid((*it), iEqual+1);
 
       if( strOption.Equals("flags") )
         m_bFileOptions = atoi(strValue.c_str());

@@ -289,7 +289,7 @@ void CTextureBundle::GetTexturesFromPath(const CStdString &path, std::vector<CSt
   std::map<CStdString, FileHeader_t>::iterator it;
   for (it = m_FileHeaders.begin(); it != m_FileHeaders.end(); it++)
   {
-    if (StringUtils2::StartsWithNoCase(it->first, testPath))
+    if (StringUtils::StartsWithNoCase(it->first, testPath))
       textures.push_back(it->first);
   }
 }

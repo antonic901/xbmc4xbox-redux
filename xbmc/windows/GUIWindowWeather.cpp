@@ -32,7 +32,7 @@
 #include "utils/SystemInfo.h"
 #include "addons/AddonManager.h"
 #include "settings/Settings.h"
-#include "utils/StringUtils2.h"
+#include "utils/StringUtils.h"
 
 using namespace ADDON;
 
@@ -319,7 +319,7 @@ void CGUIWindowWeather::SetProperties()
 
 void CGUIWindowWeather::CallScript()
 {
-  if (!StringUtils2::EqualsNoCase(CSettings::Get().GetString("weather.addon"), DEFAULT_WEATHER_ADDON))
+  if (!StringUtils::EqualsNoCase(CSettings::Get().GetString("weather.addon"), DEFAULT_WEATHER_ADDON))
   {
     AddonPtr addon;
     if (!ADDON::CAddonMgr::Get().GetAddon(CSettings::Get().GetString("weather.addon"), addon, ADDON_SCRIPT_WEATHER))

@@ -173,7 +173,7 @@ CStdString CSpecialProtocol::TranslatePathConvertCase(const CStdString& path)
 
   CStdString result;
   std::vector<std::string> tokens;
-  StringUtils2::Tokenize(translatedPath, tokens, "/");
+  StringUtils::Tokenize(translatedPath, tokens, "/");
   CStdString file;
   DIR* dir;
   struct dirent* de;

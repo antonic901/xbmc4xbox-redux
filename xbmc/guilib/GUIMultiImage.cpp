@@ -284,7 +284,7 @@ bool CGUIMultiImage::CMultiImageJob::DoWork()
   // check to see if we have a single image or a folder of images
   CFileItem item(m_path, false);
   item.FillInMimeType();
-  if (item.IsPicture() || StringUtils2::StartsWithNoCase(item.GetMimeType(), "image/"))
+  if (item.IsPicture() || StringUtils::StartsWithNoCase(item.GetMimeType(), "image/"))
   {
     m_files.push_back(m_path);
   }
@@ -302,7 +302,7 @@ bool CGUIMultiImage::CMultiImageJob::DoWork()
     for (int i=0; i < items.Size(); i++)
     {
       CFileItem* pItem = items[i].get();
-      if (pItem && (pItem->IsPicture() || StringUtils2::StartsWithNoCase(pItem->GetMimeType(), "image/")))
+      if (pItem && (pItem->IsPicture() || StringUtils::StartsWithNoCase(pItem->GetMimeType(), "image/")))
         m_files.push_back(pItem->GetPath());
     }
   }

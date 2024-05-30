@@ -31,7 +31,7 @@ namespace XbmcCommons
     strData.reserve(16384);
     va_list va;
     va_start(va, format);
-    strData = StringUtils2::FormatV(format,va);
+    strData = StringUtils::FormatV(format,va);
     va_end(va);
 
     log(loglevel, strData);

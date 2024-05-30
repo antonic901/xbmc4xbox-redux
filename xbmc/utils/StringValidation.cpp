@@ -24,23 +24,23 @@
 
 bool StringValidation::IsInteger(const std::string &input, void *data)
 {
-  return StringUtils2::IsInteger(input);
+  return StringUtils::IsInteger(input);
 }
 
 bool StringValidation::IsPositiveInteger(const std::string &input, void *data)
 {
-  return StringUtils2::IsNaturalNumber(input);
+  return StringUtils::IsNaturalNumber(input);
 }
 
 bool StringValidation::IsTime(const std::string &input, void *data)
 {
   std::string strTime = input;
-  StringUtils2::Trim(strTime);
+  StringUtils::Trim(strTime);
 
-  if (StringUtils2::EndsWithNoCase(strTime, " min"))
+  if (StringUtils::EndsWithNoCase(strTime, " min"))
   {
-    strTime = StringUtils2::Left(strTime, strTime.size() - 4);
-    StringUtils2::TrimRight(strTime);
+    strTime = StringUtils::Left(strTime, strTime.size() - 4);
+    StringUtils::TrimRight(strTime);
 
     return IsPositiveInteger(strTime, NULL);
   }
@@ -51,8 +51,8 @@ bool StringValidation::IsTime(const std::string &input, void *data)
     if (pos == std::string::npos)
       return IsPositiveInteger(strTime, NULL);
 
-    std::string strMin = StringUtils2::Left(strTime, pos);
-    std::string strSec = StringUtils2::Mid(strTime, pos + 1);
+    std::string strMin = StringUtils::Left(strTime, pos);
+    std::string strSec = StringUtils::Mid(strTime, pos + 1);
     return IsPositiveInteger(strMin, NULL) && IsPositiveInteger(strSec, NULL);
   }
   return false;

@@ -21,7 +21,7 @@
 #include "SettingConditions.h"
 #include "SettingDefinitions.h"
 #include "SettingsManager.h"
-#include "utils/StringUtils2.h"
+#include "utils/StringUtils.h"
 #include "utils/XBMCTinyXML.h"
 
 bool CSettingConditionItem::Deserialize(const TiXmlNode *node)
@@ -129,13 +129,13 @@ bool CSettingConditionsManager::Check(const std::string &condition, const std::s
     return false;
 
   std::string tmpCondition = condition;
-  StringUtils2::ToLower(tmpCondition);
+  StringUtils::ToLower(tmpCondition);
 
   // special handling of "isdefined" conditions
   if (tmpCondition == "isdefined")
   {
     std::string tmpValue = value;
-    StringUtils2::ToLower(tmpValue);
+    StringUtils::ToLower(tmpValue);
 
     return m_defines.find(tmpValue) != m_defines.end();
   }

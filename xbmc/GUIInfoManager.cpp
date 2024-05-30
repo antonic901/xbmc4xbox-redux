@@ -2053,8 +2053,8 @@ struct InfoBoolFinder
 INFO::InfoPtr CGUIInfoManager::Register(const std::string &expression, int context)
 {
   std::string condition(CGUIInfoLabel::ReplaceLocalize(expression));
-  StringUtils2::Trim(condition);
-  StringUtils2::ToLower(condition);
+  StringUtils::Trim(condition);
+  StringUtils::ToLower(condition);
 
   if (condition.empty())
     return INFO::InfoPtr();
@@ -2504,7 +2504,7 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
       case SKIN_STRING:
         {
           if (info.GetData2())
-            bReturn = StringUtils2::EqualsNoCase(CSkinSettings::Get().GetString(info.GetData1()), m_stringParameters[info.GetData2()]);
+            bReturn = StringUtils::EqualsNoCase(CSkinSettings::Get().GetString(info.GetData1()), m_stringParameters[info.GetData2()]);
           else
             bReturn = !CSkinSettings::Get().GetString(info.GetData1()).empty();
         }
@@ -3545,7 +3545,7 @@ CStdString CGUIInfoManager::GetVideoLabel(int item)
   
   if (item == VIDEOPLAYER_TITLE)
   {
-    if (m_currentFile->HasVideoInfoTag() && !m_currentFile->GetVideoInfoTag()->m_strTitle.IsEmpty())
+    if (m_currentFile->HasVideoInfoTag() && !m_currentFile->GetVideoInfoTag()->m_strTitle.empty())
       return m_currentFile->GetVideoInfoTag()->m_strTitle;
     // don't have the title, so use label, or drop down to title from path
     if (!m_currentFile->GetLabel().IsEmpty())
@@ -4198,7 +4198,7 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, CStdSt
   case LISTITEM_PLOT:
     if (item->HasVideoInfoTag())
     {
-      if (!(!item->GetVideoInfoTag()->m_strShowTitle.IsEmpty() && item->GetVideoInfoTag()->m_iSeason == -1)) // dont apply to tvshows
+      if (!(!item->GetVideoInfoTag()->m_strShowTitle.empty() && item->GetVideoInfoTag()->m_iSeason == -1)) // dont apply to tvshows
         if (item->GetVideoInfoTag()->m_playCount == 0 && !CSettings::Get().GetBool("videolibrary.showunwatchedplots"))
           return g_localizeStrings.Get(20370);
 
@@ -4342,7 +4342,7 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, CStdSt
     {
       CStdString letter;
       std::wstring character(1, item->GetSortLabel()[0]);
-      StringUtils2::ToUpper(character);
+      StringUtils::ToUpper(character);
       g_charsetConverter.wToUTF8(character, letter);
       return letter;
     }

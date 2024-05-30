@@ -45,13 +45,13 @@ bool ISettingControl::Deserialize(const TiXmlNode *node, bool update /* = false 
 
   if ((strTmp = elem->Attribute(SETTING_XML_ATTR_DELAYED)) != NULL)
   {
-    if (!StringUtils2::EqualsNoCase(strTmp, "false") && !StringUtils2::EqualsNoCase(strTmp, "true"))
+    if (!StringUtils::EqualsNoCase(strTmp, "false") && !StringUtils::EqualsNoCase(strTmp, "true"))
     {
       CLog::Log(LOGERROR, "ISettingControl: error reading \"delayed\" attribute of <control>");
       return false;
     }
     else
-      m_delayed = StringUtils2::EqualsNoCase(strTmp, "true");
+      m_delayed = StringUtils::EqualsNoCase(strTmp, "true");
   }
 
   return true;

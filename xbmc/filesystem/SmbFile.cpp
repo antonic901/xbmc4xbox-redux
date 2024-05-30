@@ -121,7 +121,7 @@ void CSMB::Init()
       smbc_set_context(m_context);
 
       // if a wins-server is set, we have to change name resolve order to
-      if ( CSettings::Get().GetString("smb.winsserver").length() > 0 && !StringUtils2::EqualsNoCase(CSettings::Get().GetString("smb.winsserver"), "0.0.0.0") )
+      if ( CSettings::Get().GetString("smb.winsserver").length() > 0 && !StringUtils::EqualsNoCase(CSettings::Get().GetString("smb.winsserver"), "0.0.0.0") )
       {
         lp_do_parameter( -1, "wins server", CSettings::Get().GetString("smb.winsserver").c_str());
         lp_do_parameter( -1, "name resolve order", "bcast wins host");
@@ -197,7 +197,7 @@ CStdString CSMB::URLEncode(const CURL &url)
   /* okey sadly since a slash is an invalid name we have to tokenize */
   std::vector<std::string> parts;
   std::vector<std::string>::iterator it;
-  StringUtils2::Tokenize(url.GetFileName(), parts, "/");
+  StringUtils::Tokenize(url.GetFileName(), parts, "/");
   for( it = parts.begin(); it != parts.end(); it++ )
   {
     flat += "/";

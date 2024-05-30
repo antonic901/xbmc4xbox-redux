@@ -252,7 +252,7 @@ bool CRarManager::GetFilesInRar(CFileItemList& vecpItems, const CStdString& strR
   CFileItemPtr pFileItem;
   vector<std::string> vec;
   set<CStdString> dirSet;
-  StringUtils2::Tokenize(strPathInRar,vec,"/");
+  StringUtils::Tokenize(strPathInRar,vec,"/");
   unsigned int iDepth = vec.size();
 
   ArchiveList_struct* pIterator;
@@ -280,7 +280,7 @@ bool CRarManager::GetFilesInRar(CFileItemList& vecpItems, const CStdString& strR
         continue;
 
       vec.clear();
-      StringUtils2::Tokenize(strName,vec,"/");
+      StringUtils::Tokenize(strName,vec,"/");
       if (vec.size() < iDepth)
         continue;
     }

@@ -585,7 +585,7 @@ std::string CURL::GetWithoutUserDetails(bool redact) const
 
     if ( HasPort() )
     {
-      strURL += StringUtils2::Format(":%i", m_iPort);
+      strURL += StringUtils::Format(":%i", m_iPort);
     }
     strURL += "/";
   }
@@ -733,10 +733,10 @@ void CURL::Encode(CStdString& strURLData)
 
     // Don't URL encode "-_.!()" according to RFC1738
     // TODO: Update it to "-_.~" after Gotham according to RFC3986
-    if (StringUtils2::isasciialphanum(kar) || kar == '-' || kar == '.' || kar == '_' || kar == '!' || kar == '(' || kar == ')')
+    if (StringUtils::isasciialphanum(kar) || kar == '-' || kar == '.' || kar == '_' || kar == '!' || kar == '(' || kar == ')')
       strResult.push_back(kar);
     else
-      strResult += StringUtils2::Format("%%%02.2x", (unsigned int)((unsigned char)kar)); // TODO: Change to "%%%02.2X" after Gotham
+      strResult += StringUtils::Format("%%%02.2x", (unsigned int)((unsigned char)kar)); // TODO: Change to "%%%02.2X" after Gotham
   }
   strURLData = strResult;
 }

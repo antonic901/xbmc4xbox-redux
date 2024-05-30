@@ -500,7 +500,7 @@ void CScraperParser::GetBufferParams(bool* result, const char* attribute, bool d
   if (attribute)
   {
     vector<std::string> vecBufs;
-    StringUtils2::Tokenize(attribute,vecBufs,",");
+    StringUtils::Tokenize(attribute,vecBufs,",");
     for (size_t nToken=0; nToken < vecBufs.size(); nToken++)
     {
       int index = atoi(vecBufs[nToken].c_str())-1;

@@ -839,7 +839,7 @@ void CGUIBaseContainer::UpdateScrollByLetter()
     // our checks are all done in uppercase
     CStdString nextLetter;
     std::wstring character = item->GetSortLabel().substr(0, 1);
-    StringUtils2::ToUpper(character);
+    StringUtils::ToUpper(character);
     g_charsetConverter.wToUTF8(character, nextLetter);
     if (currentMatch != nextLetter)
     {

@@ -52,13 +52,13 @@ CSkinSettings& CSkinSettings::Get()
 
 int CSkinSettings::TranslateString(const string &setting)
 {
-  std::string settingName = StringUtils2::Format("%s.%s", GetCurrentSkin().c_str(), setting.c_str());
+  std::string settingName = StringUtils::Format("%s.%s", GetCurrentSkin().c_str(), setting.c_str());
 
   CSingleLock lock(m_critical);
   // run through and see if we have this setting
   for (map<int, CSkinString>::const_iterator it = m_strings.begin(); it != m_strings.end(); ++it)
   {
-    if (StringUtils2::EqualsNoCase(settingName, it->second.name))
+    if (StringUtils::EqualsNoCase(settingName, it->second.name))
       return it->first;
   }
 
@@ -78,7 +78,7 @@ const string& CSkinSettings::GetString(int setting) const
   if (it != m_strings.end())
     return it->second.value;
 
-  return StringUtils2::Empty;
+  return StringUtils::Empty;
 }
 
 void CSkinSettings::SetString(int setting, const string &label)
@@ -97,13 +97,13 @@ void CSkinSettings::SetString(int setting, const string &label)
 
 int CSkinSettings::TranslateBool(const string &setting)
 {
-  string settingName = StringUtils2::Format("%s.%s", GetCurrentSkin().c_str(), setting.c_str());
+  string settingName = StringUtils::Format("%s.%s", GetCurrentSkin().c_str(), setting.c_str());
 
   CSingleLock lock(m_critical);
   // run through and see if we have this setting
   for (map<int, CSkinBool>::const_iterator it = m_bools.begin(); it != m_bools.end(); ++it)
   {
-    if (StringUtils2::EqualsNoCase(settingName, it->second.name))
+    if (StringUtils::EqualsNoCase(settingName, it->second.name))
       return it->first;
   }
 
@@ -144,13 +144,13 @@ void CSkinSettings::SetBool(int setting, bool set)
 
 void CSkinSettings::Reset(const string &setting)
 {
-  string settingName = StringUtils2::Format("%s.%s", GetCurrentSkin().c_str(), setting.c_str());
+  string settingName = StringUtils::Format("%s.%s", GetCurrentSkin().c_str(), setting.c_str());
 
   CSingleLock lock(m_critical);
   // run through and see if we have this setting as a string
   for (map<int, CSkinString>::iterator it = m_strings.begin(); it != m_strings.end(); ++it)
   {
-    if (StringUtils2::EqualsNoCase(settingName, it->second.name))
+    if (StringUtils::EqualsNoCase(settingName, it->second.name))
     {
       it->second.value.clear();
       return;
@@ -160,7 +160,7 @@ void CSkinSettings::Reset(const string &setting)
   // and now check for the skin bool
   for (map<int, CSkinBool>::iterator it = m_bools.begin(); it != m_bools.end(); ++it)
   {
-    if (StringUtils2::EqualsNoCase(settingName, it->second.name))
+    if (StringUtils::EqualsNoCase(settingName, it->second.name))
     {
       it->second.value = false;
       return;
@@ -176,13 +176,13 @@ void CSkinSettings::Reset()
   // clear all the settings and strings from this skin.
   for (map<int, CSkinBool>::iterator it = m_bools.begin(); it != m_bools.end(); ++it)
   {
-    if (StringUtils2::StartsWith(it->second.name, currentSkin))
+    if (StringUtils::StartsWith(it->second.name, currentSkin))
       it->second.value = false;
   }
 
   for (map<int, CSkinString>::iterator it = m_strings.begin(); it != m_strings.end(); ++it)
   {
-    if (StringUtils2::StartsWith(it->second.name, currentSkin))
+    if (StringUtils::StartsWith(it->second.name, currentSkin))
       it->second.value.clear();
   }
 
@@ -222,7 +222,7 @@ bool CSkinSettings::Load(const TiXmlNode *settings)
     { // bool setting
       CSkinBool setting;
       setting.name = settingName;
-      setting.value = pChild->FirstChild() ? StringUtils2::EqualsNoCase(pChild->FirstChild()->Value(), "true") : false;
+      setting.value = pChild->FirstChild() ? StringUtils::EqualsNoCase(pChild->FirstChild()->Value(), "true") : false;
       m_bools.insert(pair<int, CSkinBool>(number++, setting));
     }
     pChild = pChild->NextSiblingElement(XML_SETTING);

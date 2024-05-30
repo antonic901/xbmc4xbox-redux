@@ -34,7 +34,7 @@ AddonPtr CUISoundsResource::Clone() const
 
 bool CUISoundsResource::IsAllowed(const std::string& file) const
 {
-  return StringUtils2::EqualsNoCase(file, "sounds.xml")
+  return StringUtils::EqualsNoCase(file, "sounds.xml")
       || URIUtils::HasExtension(file, ".wav");
 }
 

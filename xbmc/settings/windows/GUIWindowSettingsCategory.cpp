@@ -642,7 +642,7 @@ CGUIControl* CGUIWindowSettingsCategory::AddSetting(CSetting *pSetting, float wi
     string indentation;
     for (int index = 1; index < parentLevels; index++)
       indentation.append("  ");
-    label = StringUtils2::Format(g_localizeStrings.Get(168).c_str(), indentation.c_str(), label.c_str());
+    label = StringUtils::Format(g_localizeStrings.Get(168).c_str(), indentation.c_str(), label.c_str());
   }
 
   // create the proper controls

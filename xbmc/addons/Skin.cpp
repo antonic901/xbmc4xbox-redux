@@ -298,7 +298,7 @@ void CSkinInfo::SettingOptionsSkinColorsFiller(const CSetting *setting, std::vec
   for (int i = 0; i < items.Size(); ++i)
   {
     CFileItemPtr pItem = items[i];
-    if (!pItem->m_bIsFolder && !StringUtils2::EqualsNoCase(pItem->GetLabel(), "defaults.xml"))
+    if (!pItem->m_bIsFolder && !StringUtils::EqualsNoCase(pItem->GetLabel(), "defaults.xml"))
     { // not the default one
       vecColors.push_back(pItem->GetLabel().Mid(0, pItem->GetLabel().size() - 4));
     }
@@ -310,7 +310,7 @@ void CSkinInfo::SettingOptionsSkinColorsFiller(const CSetting *setting, std::vec
   // try to find the best matching value
   for (vector< pair<string, string> >::const_iterator it = list.begin(); it != list.end(); ++it)
   {
-    if (StringUtils2::EqualsNoCase(it->second, settingValue))
+    if (StringUtils::EqualsNoCase(it->second, settingValue))
       current = settingValue;
   }
 }
@@ -347,7 +347,7 @@ void CSkinInfo::SettingOptionsSkinFontsFiller(const CSetting *setting, std::vect
       else
         list.push_back(make_pair(idAttr, idAttr));
 
-      if (StringUtils2::EqualsNoCase(idAttr, settingValue))
+      if (StringUtils::EqualsNoCase(idAttr, settingValue))
         currentValueSet = true;
     }
     pChild = pChild->NextSiblingElement("fontset");
@@ -388,7 +388,7 @@ void CSkinInfo::SettingOptionsSkinThemesFiller(const CSetting *setting, std::vec
   // try to find the best matching value
   for (vector< pair<string, string> >::const_iterator it = list.begin(); it != list.end(); ++it)
   {
-    if (StringUtils2::EqualsNoCase(it->second, settingValue))
+    if (StringUtils::EqualsNoCase(it->second, settingValue))
       current = settingValue;
   }
 }
@@ -403,7 +403,7 @@ void CSkinInfo::SettingOptionsStartupWindowsFiller(const CSetting *setting, std:
   for (vector<CStartupWindow>::const_iterator it = startupWindows.begin(); it != startupWindows.end(); it++)
   {
     string windowName = it->m_name;
-    if (StringUtils2::IsNaturalNumber(windowName))
+    if (StringUtils::IsNaturalNumber(windowName))
       windowName = g_localizeStrings.Get(atoi(windowName.c_str()));
     int windowID = it->m_id;
 

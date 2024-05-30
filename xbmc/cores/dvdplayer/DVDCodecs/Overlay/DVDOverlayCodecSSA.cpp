@@ -83,7 +83,7 @@ int CDVDOverlayCodecSSA::Decode(DemuxPacket *pPacket)
     size_t pos;
     CStdString      line, line2;
     std::vector<std::string> lines;
-    StringUtils2::Tokenize((const char*)data, lines, "\r\n");
+    StringUtils::Tokenize((const char*)data, lines, "\r\n");
     for(size_t i=0; i<lines.size(); i++)
     {
       line = lines[i];

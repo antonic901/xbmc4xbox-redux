@@ -3005,9 +3005,9 @@ void  CApplication::CheckForTitleChange()
     if (IsPlayingVideo())
     {
       const CVideoInfoTag* tagVal = g_infoManager.GetCurrentMovieTag();
-      if (m_pXbmcHttp && tagVal && !(tagVal->m_strTitle.IsEmpty()))
+      if (m_pXbmcHttp && tagVal && !(tagVal->m_strTitle.empty()))
       {
-        CStdString msg=m_pXbmcHttp->GetOpenTag()+"MovieTitle:"+tagVal->m_strTitle+m_pXbmcHttp->GetCloseTag();
+        CStdString msg=m_pXbmcHttp->GetOpenTag()+"MovieTitle:"+tagVal->m_strTitle.c_str()+m_pXbmcHttp->GetCloseTag();
         if (m_prevMedia!=msg && CSettings::Get().GetInt("services.httpapibroadcastlevel")>=1)
         {
           CApplicationMessenger::Get().HttpApi("broadcastlevel; MediaChanged:"+msg+";1");
@@ -3024,7 +3024,7 @@ void  CApplication::CheckForTitleChange()
         if (!tagVal->GetTitle().IsEmpty())
           msg=m_pXbmcHttp->GetOpenTag()+"AudioTitle:"+tagVal->GetTitle()+m_pXbmcHttp->GetCloseTag();
         if (!tagVal->GetArtist().empty())
-          msg+=m_pXbmcHttp->GetOpenTag()+"AudioArtist:"+StringUtils::Join(tagVal->GetArtist(), g_advancedSettings.m_musicItemSeparator)+m_pXbmcHttp->GetCloseTag();
+          msg+=m_pXbmcHttp->GetOpenTag()+"AudioArtist:"+StringUtils::Join(tagVal->GetArtist(), g_advancedSettings.m_musicItemSeparator).c_str()+m_pXbmcHttp->GetCloseTag();
         if (m_prevMedia!=msg)
         {
           CApplicationMessenger::Get().HttpApi("broadcastlevel; MediaChanged:"+msg+";1");
@@ -5817,7 +5817,7 @@ bool CApplication::SetLanguage(const CStdString &strLanguage)
   CStdString strPreviousLanguage = CSettings::Get().GetString("locale.language");
   if (strLanguage != strPreviousLanguage)
   {
-    CStdString strLangInfoPath = StringUtils2::Format("special://xbmc/language/%s/langinfo.xml", strLanguage.c_str());
+    CStdString strLangInfoPath = StringUtils::Format("special://xbmc/language/%s/langinfo.xml", strLanguage.c_str());
     if (!g_langInfo.Load(strLangInfoPath))
       return false;
 
@@ -5873,14 +5873,14 @@ void CApplication::OnSettingChanged(const CSetting *setting)
   {
     // also set the default color theme
     string colorTheme = URIUtils::ReplaceExtension(((CSettingString*)setting)->GetValue(), ".xml");
-    if (StringUtils2::EqualsNoCase(colorTheme, "Textures.xml"))
+    if (StringUtils::EqualsNoCase(colorTheme, "Textures.xml"))
       colorTheme = "defaults.xml";
 
     // check if we have to change the skin color
     // if yes, it will trigger a call to ReloadSkin() in
     // it's OnSettingChanged() callback
     // if no we have to call ReloadSkin() ourselves
-    if (!StringUtils2::EqualsNoCase(colorTheme, CSettings::Get().GetString("lookandfeel.skincolors")))
+    if (!StringUtils::EqualsNoCase(colorTheme, CSettings::Get().GetString("lookandfeel.skincolors")))
       CSettings::Get().SetString("lookandfeel.skincolors", colorTheme);
     else
       CApplicationMessenger::Get().ExecBuiltIn("ReloadSkin");
@@ -5891,7 +5891,7 @@ void CApplication::OnSettingChanged(const CSetting *setting)
 #else
     g_windowManager.SendMessage(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_WINDOW_RESIZE);
 #endif
-  else if (StringUtils2::StartsWithNoCase(settingId, "audiooutput."))
+  else if (StringUtils::StartsWithNoCase(settingId, "audiooutput."))
   {
     if (settingId == "audiooutput.ac3passthrough")
       g_audioConfig.SetAC3Enabled(((CSettingBool*)setting)->GetValue());
@@ -5959,13 +5959,13 @@ void CApplication::OnSettingChanged(const CSetting *setting)
   }
   else if (settingId == "lcd.contrast")
     g_lcd->SetContrast(((CSettingInt*)setting)->GetValue());
-  else if (StringUtils2::EqualsNoCase(settingId, "musicplayer.replaygaintype"))
+  else if (StringUtils::EqualsNoCase(settingId, "musicplayer.replaygaintype"))
     m_replayGainSettings.iType = ((CSettingInt*)setting)->GetValue();
-  else if (StringUtils2::EqualsNoCase(settingId, "musicplayer.replaygainpreamp"))
+  else if (StringUtils::EqualsNoCase(settingId, "musicplayer.replaygainpreamp"))
     m_replayGainSettings.iPreAmp = ((CSettingInt*)setting)->GetValue();
-  else if (StringUtils2::EqualsNoCase(settingId, "musicplayer.replaygainnogainpreamp"))
+  else if (StringUtils::EqualsNoCase(settingId, "musicplayer.replaygainnogainpreamp"))
     m_replayGainSettings.iNoGainPreAmp = ((CSettingInt*)setting)->GetValue();
-  else if (StringUtils2::EqualsNoCase(settingId, "musicplayer.replaygainavoidclipping"))
+  else if (StringUtils::EqualsNoCase(settingId, "musicplayer.replaygainavoidclipping"))
     m_replayGainSettings.bAvoidClipping = ((CSettingBool*)setting)->GetValue();
   else if (settingId == "network.assignment" || settingId == "network.ipaddress" ||
            settingId == "network.subnet" || settingId == "network.gateway" ||
@@ -6018,7 +6018,7 @@ bool CApplication::OnSettingUpdate(CSetting* &setting, const char *oldSettingId,
   // {
   //   // check if this is an update from Eden
   //   if (oldSettingId != NULL && oldSettingNode != NULL &&
-  //       StringUtils2::EqualsNoCase(oldSettingId, "audiooutput.channellayout"))
+  //       StringUtils::EqualsNoCase(oldSettingId, "audiooutput.channellayout"))
   //   {
   //     bool ret = false;
   //     CSettingInt* channels = (CSettingInt*)setting;
@@ -6037,13 +6037,13 @@ bool CApplication::OnSettingUpdate(CSetting* &setting, const char *oldSettingId,
   // {
   //   CSettingString *screensaverMode = (CSettingString*)setting;
   //   // we no longer ship the built-in slideshow screensaver, replace it if it's still in use
-  //   if (StringUtils2::EqualsNoCase(screensaverMode->GetValue(), "screensaver.xbmc.builtin.slideshow"))
+  //   if (StringUtils::EqualsNoCase(screensaverMode->GetValue(), "screensaver.xbmc.builtin.slideshow"))
   //     return screensaverMode->SetValue("screensaver.xbmc.builtin.dim");
   // }
   // else if (settingId == "scrapers.musicvideosdefault")
   // {
   //   CSettingAddon *musicvideoScraper = (CSettingAddon*)setting;
-  //   if (StringUtils2::EqualsNoCase(musicvideoScraper->GetValue(), "metadata.musicvideos.last.fm"))
+  //   if (StringUtils::EqualsNoCase(musicvideoScraper->GetValue(), "metadata.musicvideos.last.fm"))
   //   {
   //     musicvideoScraper->Reset();
   //     return true;

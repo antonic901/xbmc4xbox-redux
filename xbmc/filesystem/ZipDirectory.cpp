@@ -76,7 +76,7 @@ namespace XFILE
     CStdString strSkip;
     vector<std::string> baseTokens;
     if (!strPathInZip.IsEmpty())
-      StringUtils2::Tokenize(strPathInZip,baseTokens,"/");
+      StringUtils::Tokenize(strPathInZip,baseTokens,"/");
 
     for (vector<SZipEntry>::iterator ze=entries.begin();ze!=entries.end();++ze)
     {      
@@ -86,7 +86,7 @@ namespace XFILE
         continue; 
 
       vector<std::string> pathTokens;
-      StringUtils2::Tokenize(strEntryName,pathTokens,"/");
+      StringUtils::Tokenize(strEntryName,pathTokens,"/");
       if (pathTokens.size() < baseTokens.size()+1)
         continue;
 

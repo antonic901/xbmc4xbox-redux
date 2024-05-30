@@ -57,7 +57,6 @@
 #include "settings/MediaSourceSettings.h"
 #include "settings/SkinSettings.h"
 #include "utils/StringUtils.h"
-#include "utils/StringUtils2.h"
 #include "Util.h"
 #include "video/VideoDatabase.h"
 #include "music/MusicDatabase.h"
@@ -221,7 +220,7 @@ int CBuiltins::Execute(const CStdString& execString)
   CStdString execute;
   vector<CStdString> params;
   CUtil::SplitExecFunction(execString, execute, params);
-  execute.ToLower();
+  StringUtils::ToLower(execute);
   CStdString parameter = params.size() ? params[0] : "";
   CStdString strParameterCaseIntact = parameter;
   
@@ -510,7 +509,7 @@ int CBuiltins::Execute(const CStdString& execString)
         // force the item to start at the beginning (m_lStartOffset is initialized to 0)
         askToResume = false;
       }
-      else if (StringUtils2::StartsWithNoCase(params[i], "playoffset="))
+      else if (StringUtils::StartsWithNoCase(params[i], "playoffset="))
         item.SetProperty("playlist_starting_track", atoi(params[i].Mid(11)) - 1);
     }
 
@@ -580,7 +579,7 @@ int CBuiltins::Execute(const CStdString& execString)
           flags |= 4;
         else if (params[i].Equals("pause"))
           flags |= 8;
-        else if (StringUtils2::StartsWithNoCase(params[i], "beginslide="))
+        else if (StringUtils::StartsWithNoCase(params[i], "beginslide="))
           beginSlidePath = params[i].Mid(11);
       }
     }
@@ -681,7 +680,7 @@ int CBuiltins::Execute(const CStdString& execString)
       if (g_application.IsPlaying())
         g_application.m_pPlayer->Seek(true, false);
     }
-    else if (StringUtils2::StartsWithNoCase(parameter, "seekpercentage"))
+    else if (StringUtils::StartsWithNoCase(parameter, "seekpercentage"))
     {
       CStdString offset = "";
       float offsetpercent;
@@ -714,16 +713,16 @@ int CBuiltins::Execute(const CStdString& execString)
         g_application.m_pPlayer->Record(!g_application.m_pPlayer->IsRecording());
       }
     }
-    else if (StringUtils2::StartsWithNoCase(parameter, "partymode"))
+    else if (StringUtils::StartsWithNoCase(parameter, "partymode"))
     {
       CStdString strXspPath = "";
       //empty param=music, "music"=music, "video"=video, else xsp path
       PartyModeContext context = PARTYMODECONTEXT_MUSIC;
       if (parameter.size() > 9)
       {
-        if (parameter.size() == 16 && StringUtils2::EndsWithNoCase(parameter, "video)"))
+        if (parameter.size() == 16 && StringUtils::EndsWithNoCase(parameter, "video)"))
           context = PARTYMODECONTEXT_VIDEO;
-        else if (parameter.size() != 16 || !StringUtils2::EndsWithNoCase(parameter, "music)"))
+        else if (parameter.size() != 16 || !StringUtils::EndsWithNoCase(parameter, "music)"))
         {
           strXspPath = parameter.Mid(10).TrimRight(")");
           context = PARTYMODECONTEXT_UNKNOWN;
@@ -767,7 +766,7 @@ int CBuiltins::Execute(const CStdString& execString)
       g_windowManager.SendThreadMessage(msg);
 
     }
-    else if (StringUtils2::StartsWithNoCase(parameter, "repeat"))
+    else if (StringUtils::StartsWithNoCase(parameter, "repeat"))
     {
       // get current playlist
       int iPlaylist = g_playlistPlayer.GetCurrentPlaylist();
@@ -985,7 +984,7 @@ int CBuiltins::Execute(const CStdString& execString)
     int iTheme = -1;
 
     // find current theme
-    if (!StringUtils2::EqualsNoCase(CSettings::Get().GetString("lookandfeel.skintheme"), "SKINDEFAULT"))
+    if (!StringUtils::EqualsNoCase(CSettings::Get().GetString("lookandfeel.skintheme"), "SKINDEFAULT"))
       for (unsigned int i=0;i<vecTheme.size();++i)
       {
         CStdString strTmpTheme(CSettings::Get().GetString("lookandfeel.skintheme"));
@@ -1017,7 +1016,7 @@ int CBuiltins::Execute(const CStdString& execString)
     if (colorTheme.Equals("Textures.xml"))
       colorTheme = "defaults.xml";
     CSettings::Get().SetString("lookandfeel.skincolors", colorTheme);
-    g_application.ReloadSkin(!params.empty() && StringUtils2::EqualsNoCase(params[0], "confirm"));
+    g_application.ReloadSkin(!params.empty() && StringUtils::EqualsNoCase(params[0], "confirm"));
   }
   else if (execute.Equals("skin.setstring") || execute.Equals("skin.setimage") || execute.Equals("skin.setfile") ||
            execute.Equals("skin.setpath") || execute.Equals("skin.setnumeric"))
@@ -1074,7 +1073,7 @@ int CBuiltins::Execute(const CStdString& execString)
         CStdString replace;
         if (CGUIDialogFileBrowser::ShowAndGetFile(url.Get(), "", TranslateType(type, true), replace, true, true))
         {
-          if (StringUtils2::StartsWithNoCase(replace, "addons://"))
+          if (StringUtils::StartsWithNoCase(replace, "addons://"))
             CSkinSettings::Get().SetString(string, URIUtils::GetFileName(replace));
           else
             CSkinSettings::Get().SetString(string, replace);

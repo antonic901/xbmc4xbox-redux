@@ -39,7 +39,7 @@ bool URIUtils::IsInPath(const CStdString &uri, const CStdString &baseURI)
 {
   CStdString uriPath = CSpecialProtocol::TranslatePath(uri);
   CStdString basePath = CSpecialProtocol::TranslatePath(baseURI);
-  return StringUtils2::StartsWith(uriPath, basePath);
+  return StringUtils::StartsWith(uriPath, basePath);
 }
 
 /* returns filename extension including period of filename */
@@ -129,7 +129,7 @@ void URIUtils::RemoveExtension(CStdString& strFileName)
   if (period != string::npos && strFileName[period] == '.')
   {
     CStdString strExtension = strFileName.substr(period);
-    StringUtils2::ToLower(strExtension);
+    StringUtils::ToLower(strExtension);
     strExtension += "|";
 
     CStdString strFileMask;
@@ -409,20 +409,20 @@ bool URIUtils::GetParentPath(const CStdString& strPath, CStdString& strParent)
 
 std::string URLEncodePath(const std::string& strPath)
 {
-  vector<string> segments = StringUtils2::Split(strPath, "/");
+  vector<string> segments = StringUtils::Split(strPath, "/");
   for (vector<string>::iterator i = segments.begin(); i != segments.end(); ++i)
     *i = CURL::Encode(*i);
 
-  return StringUtils2::Join(segments, "/");
+  return StringUtils::Join(segments, "/");
 }
 
 std::string URLDecodePath(const std::string& strPath)
 {
-  vector<string> segments = StringUtils2::Split(strPath, "/");
+  vector<string> segments = StringUtils::Split(strPath, "/");
   for (vector<string>::iterator i = segments.begin(); i != segments.end(); ++i)
     *i = CURL::Decode(*i);
 
-  return StringUtils2::Join(segments, "/");
+  return StringUtils::Join(segments, "/");
 }
 
 std::string URIUtils::ChangeBasePath(const std::string &fromPath, const std::string &fromFile, const std::string &toPath)
@@ -431,7 +431,7 @@ std::string URIUtils::ChangeBasePath(const std::string &fromPath, const std::str
 
   // Convert back slashes to forward slashes, if required
   if (IsDOSPath(fromPath) && !IsDOSPath(toPath))
-    StringUtils2::Replace(toFile, "\\", "/");
+    StringUtils::Replace(toFile, "\\", "/");
 
   // Handle difference in URL encoded vs. not encoded
   if ( HasEncodedFilename(CURL(fromPath))
@@ -447,7 +447,7 @@ std::string URIUtils::ChangeBasePath(const std::string &fromPath, const std::str
 
   // Convert forward slashes to back slashes, if required
   if (!IsDOSPath(fromPath) && IsDOSPath(toPath))
-    StringUtils2::Replace(toFile, "/", "\\");
+    StringUtils::Replace(toFile, "/", "\\");
 
   return AddFileToFolder(toPath, toFile);
 }
@@ -495,12 +495,12 @@ CStdString URIUtils::SubstitutePath(const CStdString& strPath, bool reverse /* =
 
 bool URIUtils::IsProtocol(const std::string& url, const std::string &type)
 {
-  return StringUtils2::StartsWithNoCase(url, type + "://");
+  return StringUtils::StartsWithNoCase(url, type + "://");
 }
 
 bool URIUtils::PathStarts(const std::string& url, const char *start)
 {
-  return StringUtils2::StartsWith(url, start);
+  return StringUtils::StartsWith(url, start);
 }
 
 bool URIUtils::PathEquals(const std::string& url, const std::string &start)
@@ -661,7 +661,7 @@ bool URIUtils::IsHD(const CStdString& strFileName)
 bool URIUtils::IsDVD(const CStdString& strFile)
 {
   CStdString strFileLow = strFile;
-  StringUtils2::ToLower(strFileLow);
+  StringUtils::ToLower(strFileLow);
   if (strFileLow.find("video_ts.ifo") != std::string::npos && IsOnDVD(strFile))
     return true;
 
@@ -691,13 +691,13 @@ bool URIUtils::IsRAR(const CStdString& strFile)
 {
   CStdString strExtension = GetExtension(strFile);
 
-  if (strExtension.Equals(".001") && !StringUtils2::EndsWithNoCase(strFile, ".ts.001"))
+  if (strExtension.Equals(".001") && !StringUtils::EndsWithNoCase(strFile, ".ts.001"))
     return true;
 
-  if (StringUtils2::EqualsNoCase(strExtension, ".cbr"))
+  if (StringUtils::EqualsNoCase(strExtension, ".cbr"))
     return true;
 
-  if (StringUtils2::EqualsNoCase(strExtension, ".rar"))
+  if (StringUtils::EqualsNoCase(strExtension, ".rar"))
     return true;
 
   return false;
@@ -915,7 +915,7 @@ bool URIUtils::IsLiveTV(const CStdString& strFile)
   || IsSlingbox(strFile)
   || IsHTSP(strFile)
   || IsProtocol(strFile, "sap")
-  ||(StringUtils2::EndsWithNoCase(strFileWithoutSlash, ".pvr") && !PathStarts(strFileWithoutSlash, "pvr://recordings")))
+  ||(StringUtils::EndsWithNoCase(strFileWithoutSlash, ".pvr") && !PathStarts(strFileWithoutSlash, "pvr://recordings")))
     return true;
 
   if (IsMythTV(strFile) && CMythDirectory::IsLiveTV(strFile))
@@ -929,7 +929,7 @@ bool URIUtils::IsPVRRecording(const CStdString& strFile)
   CStdString strFileWithoutSlash(strFile);
   RemoveSlashAtEnd(strFileWithoutSlash);
 
-  return StringUtils2::EndsWithNoCase(strFileWithoutSlash, ".pvr") &&
+  return StringUtils::EndsWithNoCase(strFileWithoutSlash, ".pvr") &&
          PathStarts(strFile, "pvr://recordings");
 }
 
@@ -985,7 +985,7 @@ bool URIUtils::IsLibraryContent(const std::string &strFile)
   return (IsProtocol(strFile, "library") ||
           IsProtocol(strFile, "videodb") ||
           IsProtocol(strFile, "musicdb") ||
-          StringUtils2::EndsWith(strFile, ".xsp"));
+          StringUtils::EndsWith(strFile, ".xsp"));
 }
 
 bool URIUtils::IsDOSPath(const CStdString &path)
@@ -1110,7 +1110,7 @@ std::string URIUtils::CanonicalizePath(const std::string& path, const char slash
 
   const std::string slashStr(1, slashCharacter);
   vector<std::string> pathVec, resultVec;
-  StringUtils2::Tokenize(path, pathVec, slashStr);
+  StringUtils::Tokenize(path, pathVec, slashStr);
 
   for (vector<std::string>::const_iterator it = pathVec.begin(); it != pathVec.end(); ++it)
   {
@@ -1126,7 +1126,7 @@ std::string URIUtils::CanonicalizePath(const std::string& path, const char slash
   if (path[0] == slashCharacter)
     result.push_back(slashCharacter); // add slash at the begin
 
-  result += StringUtils2::Join(resultVec, slashStr);
+  result += StringUtils::Join(resultVec, slashStr);
 
   if (path[path.length() - 1] == slashCharacter  && !result.empty() && result[result.length() - 1] != slashCharacter)
     result.push_back(slashCharacter); // add slash at the end if result isn't empty and result isn't "/"
@@ -1159,9 +1159,9 @@ CStdString URIUtils::AddFileToFolder(const CStdString& strFolder,
 
   // correct any slash directions
   if (!IsDOSPath(strFolder))
-    StringUtils2::Replace(strResult, '\\', '/');
+    StringUtils::Replace(strResult, '\\', '/');
   else
-    StringUtils2::Replace(strResult, '/', '\\');
+    StringUtils::Replace(strResult, '/', '\\');
 
   return strResult;
 }
@@ -1198,8 +1198,8 @@ CURL URIUtils::CreateArchivePath(const std::string& type,
      and RarManager code (and elsewhere) doesn't pass in non-posix paths.
    */
   std::string strBuffer(pathInArchive);
-  StringUtils2::Replace(strBuffer, '\\', '/');
-  StringUtils2::TrimLeft(strBuffer, "/");
+  StringUtils::Replace(strBuffer, '\\', '/');
+  StringUtils::TrimLeft(strBuffer, "/");
   url.SetFileName(strBuffer);
 
   return url;
@@ -1236,7 +1236,7 @@ std::string URIUtils::resolvePath(const std::string &path)
   size_t posSlash = path.find('/');
   size_t posBackslash = path.find('\\');
   string delim = posSlash < posBackslash ? "/" : "\\";
-  vector<string> parts = StringUtils2::Split(path, delim);
+  vector<string> parts = StringUtils::Split(path, delim);
   vector<string> realParts;
 
   for (vector<string>::const_iterator part = parts.begin(); part != parts.end(); part++)
@@ -1265,7 +1265,7 @@ std::string URIUtils::resolvePath(const std::string &path)
     realPath += delim;
   }
   // put together the path
-  realPath += StringUtils2::Join(realParts, delim);
+  realPath += StringUtils::Join(realParts, delim);
   // re-add any / or \ at the end
   if (path.at(path.size() - 1) == delim.at(0) && realPath.at(realPath.size() - 1) != delim.at(0))
     realPath += delim;

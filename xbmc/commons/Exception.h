@@ -73,7 +73,7 @@ namespace XbmcCommons
      */
     inline void Set(const char* fmt, va_list& argList)
     {
-      message = StringUtils2::FormatV(fmt, argList);
+      message = StringUtils::FormatV(fmt, argList);
     }
 
     /**

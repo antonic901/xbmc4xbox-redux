@@ -58,7 +58,7 @@
 #include "utils/URIUtils.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
-#include "utils/StringUtils2.h"
+#include "utils/StringUtils.h"
 #include "utils/FileUtils.h"
 #include "addons/Skin.h"
 #include "filesystem/File.h"
@@ -1108,7 +1108,7 @@ void CGUIWindowVideoBase::GetContextButtons(int itemNumber, CContextButtons &but
           buttons.Add(CONTEXT_BUTTON_PLAY_ITEM, 208);
         }
 
-        if (!m_vecItems->GetPath().empty() && !StringUtils2::StartsWithNoCase(item->GetPath(), "newsmartplaylist://") && !StringUtils2::StartsWithNoCase(item->GetPath(), "newtag://")
+        if (!m_vecItems->GetPath().empty() && !StringUtils::StartsWithNoCase(item->GetPath(), "newsmartplaylist://") && !StringUtils::StartsWithNoCase(item->GetPath(), "newtag://")
             && !m_vecItems->IsSourcesPath())
         {
           buttons.Add(CONTEXT_BUTTON_QUEUE_ITEM, 13347);      // Add to Playlist
@@ -1583,7 +1583,7 @@ void CGUIWindowVideoBase::GetGroupedItems(CFileItemList &items)
     mixed = items.GetProperty(PROPERTY_GROUP_MIXED).asBoolean();
 
   // group == "none" completely supresses any grouping
-  if (!StringUtils2::EqualsNoCase(group, "none"))
+  if (!StringUtils::EqualsNoCase(group, "none"))
   {
     CQueryParams params;
     CVideoDatabaseDirectory dir;
@@ -1591,7 +1591,7 @@ void CGUIWindowVideoBase::GetGroupedItems(CFileItemList &items)
     VIDEODATABASEDIRECTORY::NODE_TYPE nodeType = CVideoDatabaseDirectory::GetDirectoryChildType(m_strFilterPath);
     if (items.GetContent().Equals("movies") && params.GetSetId() <= 0 &&
         nodeType == NODE_TYPE_TITLE_MOVIES &&
-       (CSettings::Get().GetBool("videolibrary.groupmoviesets") || (StringUtils2::EqualsNoCase(group, "sets") && mixed)))
+       (CSettings::Get().GetBool("videolibrary.groupmoviesets") || (StringUtils::EqualsNoCase(group, "sets") && mixed)))
     {
       CFileItemList groupedItems;
       if (GroupUtils::Group(GroupBySet, m_strFilterPath, items, groupedItems, GroupAttributeIgnoreSingleItems))
@@ -1621,7 +1621,7 @@ bool CGUIWindowVideoBase::CheckFilterAdvanced(CFileItemList &items) const
 
 bool CGUIWindowVideoBase::CanContainFilter(const CStdString &strDirectory) const
 {
-  return StringUtils2::StartsWithNoCase(strDirectory, "videodb://");
+  return StringUtils::StartsWithNoCase(strDirectory, "videodb://");
 }
 
 void CGUIWindowVideoBase::AddToDatabase(int iItem)

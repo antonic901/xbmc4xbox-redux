@@ -811,7 +811,7 @@ namespace VIDEO
      * Next preference is the episode title. If it exists use that for matching the TV Show
      * information.
      */
-    if (!tag->m_strTitle.IsEmpty())
+    if (!tag->m_strTitle.empty())
     {
       EPISODE episode;
       episode.strPath = item->GetPath();
@@ -1431,8 +1431,8 @@ namespace VIDEO
 
           double matchscore;
           std::string loweredTitle(file->strTitle);
-          StringUtils2::ToLower(loweredTitle);
-          int index = StringUtils2::FindBestMatch(loweredTitle, titles, matchscore);
+          StringUtils::ToLower(loweredTitle);
+          int index = StringUtils::FindBestMatch(loweredTitle, titles, matchscore);
           if (matchscore >= minscore)
           {
             guide = candidates->begin() + index;
@@ -1702,7 +1702,7 @@ namespace VIDEO
         else if (season == 0)
           basePath = "season-specials";
         else
-          basePath = StringUtils2::Format("season%02i", season);
+          basePath = StringUtils::Format("season%02i", season);
         CFileItem artItem(URIUtils::AddFileToFolder(show.m_strPath, basePath), false);
 
         for (vector<string>::const_iterator i = artTypes.begin(); i != artTypes.end(); ++i)
@@ -1894,7 +1894,7 @@ namespace VIDEO
     {
       strCheck = strDirectory;
       URIUtils::RemoveSlashAtEnd(strCheck);
-      if (URIUtils::GetFileName(strCheck).size() == 3 && StringUtils2::StartsWithNoCase(URIUtils::GetFileName(strCheck), "cd"))
+      if (URIUtils::GetFileName(strCheck).size() == 3 && StringUtils::StartsWithNoCase(URIUtils::GetFileName(strCheck), "cd"))
         strDirectory = URIUtils::GetDirectory(strCheck);
     }
     return strDirectory;

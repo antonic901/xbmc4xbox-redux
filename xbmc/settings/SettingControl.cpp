@@ -29,7 +29,7 @@
 
 bool CSettingControlCheckmark::SetFormat(const std::string &format)
 {
-  return format.empty() || StringUtils2::EqualsNoCase(format, "boolean");
+  return format.empty() || StringUtils::EqualsNoCase(format, "boolean");
 }
 
 bool CSettingControlSpinner::Deserialize(const TiXmlNode *node, bool update /* = false */)
@@ -74,13 +74,13 @@ bool CSettingControlSpinner::Deserialize(const TiXmlNode *node, bool update /* =
 
 bool CSettingControlSpinner::SetFormat(const std::string &format)
 {
-  if (!StringUtils2::EqualsNoCase(format, "string") &&
-      !StringUtils2::EqualsNoCase(format, "integer") &&
-      !StringUtils2::EqualsNoCase(format, "number"))
+  if (!StringUtils::EqualsNoCase(format, "string") &&
+      !StringUtils::EqualsNoCase(format, "integer") &&
+      !StringUtils::EqualsNoCase(format, "number"))
     return false;
 
   m_format = format;
-  StringUtils2::ToLower(m_format);
+  StringUtils::ToLower(m_format);
 
   return true;
 }
@@ -99,16 +99,16 @@ bool CSettingControlEdit::Deserialize(const TiXmlNode *node, bool update /* = fa
 
 bool CSettingControlEdit::SetFormat(const std::string &format)
 {
-  if (!StringUtils2::EqualsNoCase(format, "string") &&
-      !StringUtils2::EqualsNoCase(format, "integer") &&
-      !StringUtils2::EqualsNoCase(format, "number") &&
-      !StringUtils2::EqualsNoCase(format, "ip") &&
-      !StringUtils2::EqualsNoCase(format, "md5") &&
-      !StringUtils2::EqualsNoCase(format, "path")) // TODO
+  if (!StringUtils::EqualsNoCase(format, "string") &&
+      !StringUtils::EqualsNoCase(format, "integer") &&
+      !StringUtils::EqualsNoCase(format, "number") &&
+      !StringUtils::EqualsNoCase(format, "ip") &&
+      !StringUtils::EqualsNoCase(format, "md5") &&
+      !StringUtils::EqualsNoCase(format, "path")) // TODO
     return false;
 
   m_format = format;
-  StringUtils2::ToLower(m_format);
+  StringUtils::ToLower(m_format);
 
   return true;
 }
@@ -126,16 +126,16 @@ bool CSettingControlButton::Deserialize(const TiXmlNode *node, bool update /* = 
 
 bool CSettingControlButton::SetFormat(const std::string &format)
 {
-  if (!StringUtils2::EqualsNoCase(format, "string") &&  // TODO
-      !StringUtils2::EqualsNoCase(format, "integer") &&  // TODO
-      !StringUtils2::EqualsNoCase(format, "number") &&  // TODO
-      !StringUtils2::EqualsNoCase(format, "path") &&
-      !StringUtils2::EqualsNoCase(format, "addon") &&  // TODO
-      !StringUtils2::EqualsNoCase(format, "action"))
+  if (!StringUtils::EqualsNoCase(format, "string") &&  // TODO
+      !StringUtils::EqualsNoCase(format, "integer") &&  // TODO
+      !StringUtils::EqualsNoCase(format, "number") &&  // TODO
+      !StringUtils::EqualsNoCase(format, "path") &&
+      !StringUtils::EqualsNoCase(format, "addon") &&  // TODO
+      !StringUtils::EqualsNoCase(format, "action"))
     return false;
 
   m_format = format;
-  StringUtils2::ToLower(m_format);
+  StringUtils::ToLower(m_format);
 
   return true;
 }
@@ -153,12 +153,12 @@ bool CSettingControlList::Deserialize(const TiXmlNode *node, bool update /* = fa
 
 bool CSettingControlList::SetFormat(const std::string &format)
 {
-  if (!StringUtils2::EqualsNoCase(format, "string") &&
-      !StringUtils2::EqualsNoCase(format, "integer"))
+  if (!StringUtils::EqualsNoCase(format, "string") &&
+      !StringUtils::EqualsNoCase(format, "integer"))
     return false;
 
   m_format = format;
-  StringUtils2::ToLower(m_format);
+  StringUtils::ToLower(m_format);
 
   return true;
 }

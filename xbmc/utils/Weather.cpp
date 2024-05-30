@@ -795,7 +795,7 @@ void CWeather::OnSettingAction(const CSetting *setting)
       Refresh();
     }
   }
-  else if (StringUtils2::StartsWith(settingId, "weather.areacode"))
+  else if (StringUtils::StartsWith(settingId, "weather.areacode"))
   {
     CStdString strSearch;
     if (CGUIKeyboardFactory::ShowAndGetInput(strSearch, g_localizeStrings.Get(14024), false))

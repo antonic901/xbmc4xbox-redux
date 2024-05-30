@@ -64,7 +64,7 @@ bool CSourcesDirectory::GetDirectory(const VECSOURCES &sources, CFileItemList &i
   {
     const CMediaSource& share = sources[i];
     CFileItemPtr pItem(new CFileItem(share));
-    if (StringUtils2::StartsWithNoCase(pItem->GetPath(), "musicsearch://"))
+    if (StringUtils::StartsWithNoCase(pItem->GetPath(), "musicsearch://"))
       pItem->SetCanQueue(false);
 
     CStdString strIcon;

@@ -460,7 +460,7 @@ void CGUIWindowPictures::GetContextButtons(int itemNumber, CContextButtons &butt
     }
     else
     {
-      if (item && !StringUtils2::StartsWithNoCase(item->GetPath(), "addons://more/"))
+      if (item && !StringUtils::StartsWithNoCase(item->GetPath(), "addons://more/"))
       {
         if (!(item->m_bIsFolder || item->IsZIP() || item->IsRAR() || item->IsCBZ() || item->IsCBR()))
         {

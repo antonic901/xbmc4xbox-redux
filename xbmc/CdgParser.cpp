@@ -760,7 +760,7 @@ void CCdgParser::SettingOptionsVoiceMasksFiller(const CSetting *setting, std::ve
   for (int i = 0; i < (int) vecMask.size(); ++i)
   {
     std::string strMask = vecMask[i];
-    list.push_back(make_pair(StringUtils2::Format("(%i/%i) %s", i + 1, vecMask.size(), strMask.c_str()), vecMask[i]));
+    list.push_back(make_pair(StringUtils::Format("(%i/%i) %s", i + 1, vecMask.size(), strMask.c_str()), vecMask[i]));
     if (strcmpi(strMask.c_str(), current.c_str()) == 0)
       found = true;
   }

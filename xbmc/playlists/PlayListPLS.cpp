@@ -65,7 +65,7 @@ bool CPlayListPLS::Load(const CStdString &strFile)
   Clear();
 
   bool bShoutCast = false;
-  if( StringUtils2::StartsWithNoCase(strFileName, "shout://") )
+  if( StringUtils::StartsWithNoCase(strFileName, "shout://") )
   {
     strFileName.Delete(0, 8);
     strFileName.Insert(0, "http://");

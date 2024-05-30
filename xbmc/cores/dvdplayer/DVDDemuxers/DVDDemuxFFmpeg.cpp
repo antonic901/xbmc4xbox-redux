@@ -110,7 +110,7 @@ void ff_avutil_log(void* ptr, int level, const char* format, va_list va)
   }
 
   CStdString message, prefix;
-  message = StringUtils2::FormatV(format, va);
+  message = StringUtils::FormatV(format, va);
 
   prefix.Format("ffmpeg[%X]: ", threadId);
   if(avc)

@@ -229,7 +229,7 @@ class UpdateAddons : public IRunnable
     CAddonMgr::Get().GetAllOutdatedAddons(addons, true); // get local
     for (VECADDONS::iterator i = addons.begin(); i != addons.end(); ++i)
     {
-      CStdString referer = StringUtils2::Format("Referer=%s-%s.zip",(*i)->ID().c_str(),(*i)->Version().asString().c_str());
+      CStdString referer = StringUtils::Format("Referer=%s-%s.zip",(*i)->ID().c_str(),(*i)->Version().asString().c_str());
       CAddonInstaller::Get().Install((*i)->ID(), true, referer); // force install
     }
   }
@@ -509,7 +509,7 @@ int CGUIWindowAddonBrowser::SelectAddonID(const vector<ADDON::TYPE> &types, CStd
 
 CStdString CGUIWindowAddonBrowser::GetStartFolder(const CStdString &dir)
 {
-  if (StringUtils2::StartsWithNoCase(dir, "addons://"))
+  if (StringUtils::StartsWithNoCase(dir, "addons://"))
     return dir;
   return CGUIMediaWindow::GetStartFolder(dir);
 }
