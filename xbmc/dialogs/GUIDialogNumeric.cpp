@@ -206,8 +206,8 @@ void CGUIDialogNumeric::OnBackSpace()
   }
   if (m_mode == INPUT_NUMBER || m_mode == INPUT_PASSWORD)
   { // just go back one character
-    if (!m_number.IsEmpty())
-      m_number.Delete(m_number.GetLength() - 1);
+    if (!m_number.empty())
+      m_number.erase(m_number.length() - 1);
   }
   else if (m_mode == INPUT_IP_ADDRESS)
   {
@@ -288,7 +288,7 @@ void CGUIDialogNumeric::OnNext()
 
 void CGUIDialogNumeric::FrameMove()
 {
-  CStdString strLabel;
+  std::string strLabel;
   unsigned int start = 0;
   unsigned int end = 0;
   if (m_mode == INPUT_PASSWORD)
@@ -302,19 +302,19 @@ void CGUIDialogNumeric::FrameMove()
   }
   else if (m_mode == INPUT_TIME)
   { // format up the time
-    strLabel.Format("%2d:%02d", m_datetime.wHour, m_datetime.wMinute);
+    strLabel = StringUtils::Format("%2d:%02d", m_datetime.wHour, m_datetime.wMinute);
     start = m_block * 3;
     end = m_block * 3 + 2;
   }
   else if (m_mode == INPUT_TIME_SECONDS)
   { // format up the time
-    strLabel.Format("%2d:%02d", m_datetime.wMinute, m_datetime.wSecond);
+    strLabel = StringUtils::Format("%2d:%02d:%02d", m_datetime.wHour, m_datetime.wMinute, m_datetime.wSecond);
     start = m_block * 3;
     end = m_block * 3 + 2;
   }
   else if (m_mode == INPUT_DATE)
   { // format up the date
-    strLabel.Format("%2d/%2d/%4d", m_datetime.wDay, m_datetime.wMonth, m_datetime.wYear);
+    strLabel = StringUtils::Format("%2d/%2d/%4d", m_datetime.wDay, m_datetime.wMonth, m_datetime.wYear);
     start = m_block * 3;
     end = m_block * 3 + 2;
     if (m_block == 2)
@@ -322,7 +322,7 @@ void CGUIDialogNumeric::FrameMove()
   }
   else if (m_mode == INPUT_IP_ADDRESS)
   { // format up the date
-    strLabel.Format("%3d.%3d.%3d.%3d", m_ip[0], m_ip[1], m_ip[2], m_ip[3]);
+    strLabel = StringUtils::Format("%3d.%3d.%3d.%3d", m_ip[0], m_ip[1], m_ip[2], m_ip[3]);
     start = m_block * 4;
     end = m_block * 4 + 3;
   }
@@ -523,7 +523,7 @@ void CGUIDialogNumeric::SetMode(INPUT_MODE mode, void *initial)
     m_lastblock = 3;
     m_ip[0] = m_ip[1] = m_ip[2] = m_ip[3] = 0;
     // copy ip string into numeric form
-    CStdString ip = *(CStdString *)initial;
+    std::string ip = *(std::string *)initial;
     unsigned int block = 0;
     for (unsigned int i=0; i < ip.size(); i++)
     {
@@ -541,10 +541,10 @@ void CGUIDialogNumeric::SetMode(INPUT_MODE mode, void *initial)
     }
   }
   else if (m_mode == INPUT_NUMBER || m_mode == INPUT_PASSWORD)
-    m_number = *(CStdString *)initial;
+    m_number = *(std::string *)initial;
 }
 
-void CGUIDialogNumeric::SetMode(INPUT_MODE mode, const CStdString &initial)
+void CGUIDialogNumeric::SetMode(INPUT_MODE mode, const std::string &initial)
 {
   m_mode = mode;
   m_block = 0;
@@ -562,7 +562,7 @@ void CGUIDialogNumeric::SetMode(INPUT_MODE mode, const CStdString &initial)
       }
       else
       {
-        CStdString tmp = initial;
+        std::string tmp = initial;
         // if we are handling seconds and if the string only contains
         // "mm:ss" we need to add dummy "hh:" to get "hh:mm:ss"
         if (m_mode == INPUT_TIME_SECONDS && tmp.size() <= 5)
@@ -572,7 +572,7 @@ void CGUIDialogNumeric::SetMode(INPUT_MODE mode, const CStdString &initial)
     }
     else if (m_mode == INPUT_DATE)
     {
-      CStdString tmp = initial;
+      std::string tmp = initial;
       StringUtils::Replace(tmp, '/', '.');
       dateTime.SetFromDBDate(tmp);
     }
@@ -604,7 +604,7 @@ void CGUIDialogNumeric::GetOutput(void *output)
   }
 }
 
-bool CGUIDialogNumeric::ShowAndGetSeconds(CStdString &timeString, const CStdString &heading)
+bool CGUIDialogNumeric::ShowAndGetSeconds(std::string &timeString, const std::string &heading)
 {
   CGUIDialogNumeric *pDialog = (CGUIDialogNumeric *)g_windowManager.GetWindow(WINDOW_DIALOG_NUMERIC);
   if (!pDialog) return false;
@@ -624,7 +624,7 @@ bool CGUIDialogNumeric::ShowAndGetSeconds(CStdString &timeString, const CStdStri
   return true;
 }
 
-bool CGUIDialogNumeric::ShowAndGetTime(SYSTEMTIME &time, const CStdString &heading)
+bool CGUIDialogNumeric::ShowAndGetTime(SYSTEMTIME &time, const std::string &heading)
 {
   CGUIDialogNumeric *pDialog = (CGUIDialogNumeric *)g_windowManager.GetWindow(WINDOW_DIALOG_NUMERIC);
   if (!pDialog) return false;
@@ -637,7 +637,7 @@ bool CGUIDialogNumeric::ShowAndGetTime(SYSTEMTIME &time, const CStdString &headi
   return true;
 }
 
-bool CGUIDialogNumeric::ShowAndGetDate(SYSTEMTIME &date, const CStdString &heading)
+bool CGUIDialogNumeric::ShowAndGetDate(SYSTEMTIME &date, const std::string &heading)
 {
   CGUIDialogNumeric *pDialog = (CGUIDialogNumeric *)g_windowManager.GetWindow(WINDOW_DIALOG_NUMERIC);
   if (!pDialog) return false;
@@ -650,10 +650,10 @@ bool CGUIDialogNumeric::ShowAndGetDate(SYSTEMTIME &date, const CStdString &headi
   return true;
 }
 
-bool CGUIDialogNumeric::ShowAndGetIPAddress(CStdString &IPAddress, const CStdString &heading)
+bool CGUIDialogNumeric::ShowAndGetIPAddress(std::string &IPAddress, const std::string &heading)
 {
   CGUIDialogNumeric *pDialog = (CGUIDialogNumeric *)g_windowManager.GetWindow(WINDOW_DIALOG_NUMERIC);
-  if (!pDialog || !IPAddress) return false;
+  if (!pDialog || IPAddress.empty()) return false;
   pDialog->SetMode(INPUT_IP_ADDRESS, (void *)&IPAddress);
   pDialog->SetHeading(heading);
   pDialog->DoModal();
@@ -663,7 +663,7 @@ bool CGUIDialogNumeric::ShowAndGetIPAddress(CStdString &IPAddress, const CStdStr
   return true;
 }
 
-bool CGUIDialogNumeric::ShowAndGetNumber(CStdString& strInput, const CStdString &strHeading, unsigned int iAutoCloseTimeoutMs /* = 0 */)
+bool CGUIDialogNumeric::ShowAndGetNumber(std::string& strInput, const std::string &strHeading, unsigned int iAutoCloseTimeoutMs /* = 0 */)
 {
   // Prompt user for password input
   CGUIDialogNumeric *pDialog = (CGUIDialogNumeric *)g_windowManager.GetWindow(WINDOW_DIALOG_NUMERIC);
@@ -684,10 +684,10 @@ bool CGUIDialogNumeric::ShowAndGetNumber(CStdString& strInput, const CStdString 
 // \brief Show numeric keypad twice to get and confirm a user-entered password string.
 // \param strNewPassword String to preload into the keyboard accumulator. Overwritten with user input if return=true.
 // \return true if successful display and user input entry/re-entry. false if unsucessful display, no user input, or canceled editing.
-bool CGUIDialogNumeric::ShowAndVerifyNewPassword(CStdString& strNewPassword)
+bool CGUIDialogNumeric::ShowAndVerifyNewPassword(std::string& strNewPassword)
 {
   // Prompt user for password input
-  CStdString strUserInput = "";
+  std::string strUserInput;
   if (!ShowAndVerifyInput(strUserInput, g_localizeStrings.Get(12340), false))
   {
     // Show error to user saying the password entry was blank
@@ -695,7 +695,7 @@ bool CGUIDialogNumeric::ShowAndVerifyNewPassword(CStdString& strNewPassword)
     return false;
   }
 
-  if (strUserInput.IsEmpty())
+  if (strUserInput.empty())
     // user canceled out
     return false;
 
@@ -717,19 +717,19 @@ bool CGUIDialogNumeric::ShowAndVerifyNewPassword(CStdString& strNewPassword)
 // \param strHeading String shown on dialog title. Converts to localized string if contains a positive integer.
 // \param iRetries If greater than 0, shows "Incorrect password, %d retries left" on dialog line 2, else line 2 is blank.
 // \return 0 if successful display and user input. 1 if unsucessful input. -1 if no user input or canceled editing.
-int CGUIDialogNumeric::ShowAndVerifyPassword(CStdString& strPassword, const CStdString& strHeading, int iRetries)
+int CGUIDialogNumeric::ShowAndVerifyPassword(std::string& strPassword, const std::string& strHeading, int iRetries)
 {
-  CStdString strTempHeading = strHeading;
+  std::string strTempHeading = strHeading;
   if (0 < iRetries)
   {
     // Show a string telling user they have iRetries retries left
-    strTempHeading.Format("%s. %s %i %s", strHeading.c_str(), g_localizeStrings.Get(12342).c_str(), iRetries, g_localizeStrings.Get(12343).c_str());
+    strTempHeading = StringUtils::Format("%s. %s %i %s", strHeading.c_str(), g_localizeStrings.Get(12342).c_str(), iRetries, g_localizeStrings.Get(12343).c_str());
   }
   // make a copy of strPassword to prevent from overwriting it later
-  CStdString strPassTemp = strPassword;
+  std::string strPassTemp = strPassword;
   if (ShowAndVerifyInput(strPassTemp, strTempHeading, true))
     return 0;   // user entered correct password
-  if (strPassTemp.IsEmpty()) return -1;   // user canceled out
+  if (strPassTemp.empty()) return -1;   // user canceled out
   return 1; // user must have entered an incorrect password
 }
 
@@ -738,13 +738,13 @@ int CGUIDialogNumeric::ShowAndVerifyPassword(CStdString& strPassword, const CStd
 // \param dlgHeading String shown on dialog title.
 // \param bVerifyInput If set as true we verify the users input versus strToVerify.
 // \return true if successful display and user input. false if unsucessful display, no user input, or canceled editing.
-bool CGUIDialogNumeric::ShowAndVerifyInput(CStdString& strToVerify, const CStdString& dlgHeading, bool bVerifyInput)
+bool CGUIDialogNumeric::ShowAndVerifyInput(std::string& strToVerify, const std::string& dlgHeading, bool bVerifyInput)
 {
   // Prompt user for password input
   CGUIDialogNumeric *pDialog = (CGUIDialogNumeric *)g_windowManager.GetWindow(WINDOW_DIALOG_NUMERIC);
   pDialog->SetHeading( dlgHeading );
 
-  CStdString strInput = "";
+  std::string strInput;
   if (!bVerifyInput)
     strInput = strToVerify;
   pDialog->SetMode(INPUT_PASSWORD, (void *)&strInput);
@@ -767,11 +767,11 @@ bool CGUIDialogNumeric::ShowAndVerifyInput(CStdString& strToVerify, const CStdSt
   if (!bVerifyInput)
   {
     strToVerify = md5pword2;
-    strToVerify.ToLower();
+    StringUtils::ToLower(strToVerify);
     return true;
   }
 
-  if (strToVerify.Equals(md5pword2))
+  if (StringUtils::EqualsNoCase(strToVerify, md5pword2))
     return true;  // entered correct password
 
   // incorrect password
@@ -788,7 +788,7 @@ bool CGUIDialogNumeric::IsCanceled() const
   return m_bCanceled;
 }
 
-void CGUIDialogNumeric::SetHeading(const CStdString& strHeading)
+void CGUIDialogNumeric::SetHeading(const std::string& strHeading)
 {
   Initialize();
   CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), CONTROL_HEADING_LABEL);
