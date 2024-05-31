@@ -1,9 +1,8 @@
-#ifndef __TWEEN_H__
-#define __TWEEN_H__
+#pragma once
 
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *      Copyright (C) 2005-2015 Team Kodi
+ *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,7 +15,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
+ *  along with Kodi; see the file COPYING.  If not, see
  *  <http://www.gnu.org/licenses/>.
  *
  */
@@ -267,7 +266,7 @@ public:
     return easeOut(time, start, change, duration);
   }
 protected:
-  float easeOut(float time, float start, float change, float duration)
+  static float easeOut(float time, float start, float change, float duration)
   {
     time /= duration;
     if (time < (1/2.75)) {
@@ -313,7 +312,7 @@ protected:
   float _a;
   float _p;
 
-  float easeIn(float time, float start, float change, float duration)
+  float easeIn(float time, float start, float change, float duration) const
   {
     float s=0;
     float a=_a;
@@ -339,7 +338,7 @@ protected:
     return -(a * pow(2.0f, 10*time) * sin((time * duration - s) * (2 * M_PI) / p )) + start;
   }
 
-  float easeOut(float time, float start, float change, float duration)
+  float easeOut(float time, float start, float change, float duration) const
   {
     float s=0;
     float a=_a;
@@ -364,7 +363,7 @@ protected:
     return (a * pow(2.0f, -10*time) * sin((time * duration - s) * (2 * M_PI) / p )) + change + start;
   }
 
-  float easeInOut(float time, float start, float change, float duration)
+  float easeInOut(float time, float start, float change, float duration) const
   {
     float s=0;
     float a=_a;
@@ -397,6 +396,3 @@ protected:
   }
 };
 
-
-
-#endif // __TWEEN_H__
