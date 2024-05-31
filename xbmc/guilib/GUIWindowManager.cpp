@@ -578,9 +578,24 @@ bool CGUIWindowManager::Render()
       CGUITexture::DrawQuad(*i, 0x4c00ff00);
   }
 
+  return hasRendered;
+}
+
+void CGUIWindowManager::AfterRender()
+{
   m_tracker.CleanMarkedRegions();
 
-  return hasRendered;
+  CGUIWindow* pWindow = GetWindow(GetActiveWindow());
+  if (pWindow)
+    pWindow->AfterRender();
+
+  // make copy of vector as we may remove items from it as we go
+  vector<CGUIWindow *> activeDialogs = m_activeDialogs;
+  for (iDialog it = activeDialogs.begin(); it != activeDialogs.end(); ++it)
+  {
+    if ((*it)->IsDialogRunning())
+      (*it)->AfterRender();
+  }
 }
 
 void CGUIWindowManager::FrameMove()
@@ -623,6 +638,9 @@ void CGUIWindowManager::RenderDialogs()
     if ((*it)->IsDialogRunning())
       (*it)->DoRender();
   }
+
+  // execute post rendering actions (finalize window closing)
+  AfterRender();
 }
 
 CGUIWindow* CGUIWindowManager::GetWindow(int id) const

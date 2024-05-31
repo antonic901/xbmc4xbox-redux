@@ -326,9 +326,8 @@ void CGUIWindow::DoRender()
   CGUIControlGroup::DoRender();
 }
 
-void CGUIWindow::Render()
+void CGUIWindow::AfterRender()
 {
-  CGUIControlGroup::Render();
   // Check to see if we should close at this point
   // We check after the controls have finished rendering, as we may have to close due to
   // the controls rendering after the window has finished it's animation
