@@ -20,7 +20,6 @@
 
 #include "include.h"
 #include "GraphicContext.h"
-#include "GUIFontManager.h"
 #include "XBVideoConfig.h"
 #include "GUIAudioManager.h"
 #include "settings/DisplaySettings.h"
@@ -35,6 +34,7 @@
 #include "addons/Skin.h"
 #include "TextureManager.h"
 #include "utils/MathUtils.h"
+#include "GUIWindowManager.h"
 
 using namespace std;
 
@@ -506,7 +506,7 @@ void CGraphicContext::SetVideoResolution(RESOLUTION res, BOOL NeedZ, bool forceC
   {
     CLog::Log(LOGDEBUG, "We set resolution %i", m_Resolution);
     if (m_Resolution != RES_INVALID)
-      g_fontManager.ReloadTTFFonts();
+      g_windowManager.SendMessage(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_WINDOW_RESIZE);
   }
 
   Unlock();

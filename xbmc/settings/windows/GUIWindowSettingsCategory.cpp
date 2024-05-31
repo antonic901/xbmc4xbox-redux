@@ -264,14 +264,14 @@ bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
 
     case GUI_MSG_NOTIFY_ALL:
     {
-      //if (message.GetParam1() == GUI_MSG_WINDOW_RESIZE)
-      //{
-      //  if (IsActive() && CDisplaySettings::Get().GetCurrentResolution() != g_graphicsContext.GetVideoResolution())
-      //  {
-      //    CDisplaySettings::Get().SetCurrentResolution(g_graphicsContext.GetVideoResolution(), true);
-      //    CreateSettings();
-      //  }
-      //}
+      if (message.GetParam1() == GUI_MSG_WINDOW_RESIZE)
+      {
+       if (IsActive() && CDisplaySettings::Get().GetCurrentResolution() != g_graphicsContext.GetVideoResolution())
+       {
+         CDisplaySettings::Get().SetCurrentResolution(g_graphicsContext.GetVideoResolution(), true);
+         CreateSettings();
+       }
+      }
       break;
     }
   }
