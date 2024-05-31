@@ -212,7 +212,7 @@ void CGUIWindowPictures::OnPrepareFileItems(CFileItemList& items)
   CGUIMediaWindow::OnPrepareFileItems(items);
 
   for (int i=0;i<items.Size();++i )
-    if (items[i]->GetLabel().Equals("folder.jpg"))
+    if (StringUtils::EqualsNoCase(items[i]->GetLabel(), "folder.jpg"))
       items.Remove(i);
 
   if (items.GetFolderCount()==items.Size() || !CSettings::Get().GetBool("pictures.usetags"))
@@ -305,7 +305,7 @@ bool CGUIWindowPictures::GetDirectory(const CStdString &strDirectory, CFileItemL
     return false;
 
   CStdString label;
-  if (items.GetLabel().IsEmpty() && m_rootDir.IsSource(items.GetPath(), CMediaSourceSettings::Get().GetSources("pictures"), &label))
+  if (items.GetLabel().empty() && m_rootDir.IsSource(items.GetPath(), CMediaSourceSettings::Get().GetSources("pictures"), &label))
     items.SetLabel(label);
 
   return true;

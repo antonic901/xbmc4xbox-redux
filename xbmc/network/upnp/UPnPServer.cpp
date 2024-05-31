@@ -69,7 +69,7 @@ CUPnPServer::Build(CFileItemPtr                  item,
         path.TrimRight("/");
         if (path.StartsWith("virtualpath://")) {
             object = new PLT_MediaContainer;
-            object->m_Title = item->GetLabel();
+            object->m_Title = item->GetLabel().c_str();
             object->m_ObjectClass.type = "object.container";
             object->m_ObjectID = path;
 
@@ -122,7 +122,7 @@ CUPnPServer::Build(CFileItemPtr                  item,
                     }
                 }
 
-                if (item->GetLabel().IsEmpty()) {
+                if (item->GetLabel().empty()) {
                     /* if no label try to grab it from node type */
                     CStdString label;
                     if (CMusicDatabaseDirectory::GetLabel((const char*)path, label)) {
@@ -158,7 +158,7 @@ CUPnPServer::Build(CFileItemPtr                  item,
                 }
 
                 // try to grab it from the folder
-                if (item->GetLabel().IsEmpty()) {
+                if (item->GetLabel().empty()) {
                     CStdString label;
                     if (CVideoDatabaseDirectory::GetLabel((const char*)path, label)) {
                         item->SetLabel(label);

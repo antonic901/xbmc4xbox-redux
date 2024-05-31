@@ -147,7 +147,7 @@ CFileItem::CFileItem(void)
   Initialize();
 }
 
-CFileItem::CFileItem(const CStdString& strLabel)
+CFileItem::CFileItem(const std::string& strLabel)
     : CGUIListItem()
 {
   Initialize();
@@ -946,7 +946,7 @@ void CFileItem::FillInDefaultIcon()
   //   for .. folders the default picture for parent folder
   //   for other folders the defaultFolder.png
 
-  if (GetIconImage().IsEmpty())
+  if (GetIconImage().empty())
   {
     if (!m_bIsFolder)
     {
@@ -1044,7 +1044,7 @@ void CFileItem::CleanString()
   SetLabel(strTitleAndYear);
 }
 
-void CFileItem::SetLabel(const CStdString &strLabel)
+void CFileItem::SetLabel(const std::string &strLabel)
 {
   if (strLabel=="..")
   {
@@ -1182,13 +1182,13 @@ void CFileItem::UpdateInfo(const CFileItem &item, bool replaceLabels /*=true*/)
     *GetPictureInfoTag() = *item.GetPictureInfoTag();
     SetInvalid();
   }
-  if (replaceLabels && !item.GetLabel().IsEmpty())
+  if (replaceLabels && !item.GetLabel().empty())
     SetLabel(item.GetLabel());
-  if (replaceLabels && !item.GetLabel2().IsEmpty())
+  if (replaceLabels && !item.GetLabel2().empty())
     SetLabel2(item.GetLabel2());
   if (!item.GetArt("thumb").empty())
     SetArt("thumb", item.GetArt("thumb"));
-  if (!item.GetIconImage().IsEmpty())
+  if (!item.GetIconImage().empty())
     SetIconImage(item.GetIconImage());
   AppendProperties(item);
 }

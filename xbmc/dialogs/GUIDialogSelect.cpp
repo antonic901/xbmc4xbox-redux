@@ -253,7 +253,7 @@ void CGUIDialogSelect::SetSelected(const CStdString &strSelectedLabel)
 
   for (int index = 0; index < m_vecList->Size(); index++)
   {
-    if (strSelectedLabel.Equals(m_vecList->Get(index)->GetLabel()))
+    if (strSelectedLabel == m_vecList->Get(index)->GetLabel())
     {
       SetSelected(index);
       return;

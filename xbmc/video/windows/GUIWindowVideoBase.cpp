@@ -1842,7 +1842,7 @@ void CGUIWindowVideoBase::OnScan(const CStdString& strPath, bool scanAll)
   g_application.StartVideoScan(strPath, scanAll);
 }
 
-void CGUIWindowVideoBase::AppendAndClearSearchItems(CFileItemList &searchItems, const CStdString &prependLabel, CFileItemList &results)
+void CGUIWindowVideoBase::AppendAndClearSearchItems(CFileItemList &searchItems, const std::string &prependLabel, CFileItemList &results)
 {
   if (!searchItems.Size())
     return;

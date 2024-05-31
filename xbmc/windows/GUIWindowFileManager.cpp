@@ -867,7 +867,7 @@ void CGUIWindowFileManager::GetDirectoryHistoryString(const CFileItem* pItem, CS
     else
     {
       // Other items in virtual directory
-      strHistoryString = pItem->GetLabel() + pItem->GetPath();
+      strHistoryString = pItem->GetLabel() + pItem->GetPath().c_str();
       URIUtils::RemoveSlashAtEnd(strHistoryString);
     }
   }

@@ -3564,7 +3564,7 @@ void CUtil::GetSkinThemes(vector<CStdString>& vecTheme)
     if (!pItem->m_bIsFolder)
     {
       CStdString strExtension = URIUtils::GetExtension(pItem->GetPath());
-      if (strExtension == ".xpr" && pItem->GetLabel().CompareNoCase("Textures.xpr"))
+      if (strExtension == ".xpr" && StringUtils::EqualsNoCase(pItem->GetLabel(), "Textures.xpr"))
       {
         CStdString strLabel = pItem->GetLabel();
         vecTheme.push_back(strLabel.Mid(0, strLabel.size() - 4));

@@ -524,7 +524,7 @@ BuildObject(CFileItem&                    item,
 
     // set a title for the object
     if (object->m_Title.IsEmpty()) {
-        if (!item.GetLabel().IsEmpty()) {
+        if (!item.GetLabel().empty()) {
             CStdString title = item.GetLabel();
             if (item.IsPlayList() || !item.m_bIsFolder) URIUtils::RemoveExtension(title);
             object->m_Title = title;

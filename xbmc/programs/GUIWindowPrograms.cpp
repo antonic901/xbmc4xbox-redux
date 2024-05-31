@@ -693,7 +693,7 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
       if (!dwTitleID)
       {
         CStdString description;
-        if (CUtil::GetXBEDescription(item->GetPath(), description) && (!item->IsLabelPreformated() && !item->GetLabel().IsEmpty()))
+        if (CUtil::GetXBEDescription(item->GetPath(), description) && (!item->IsLabelPreformated() && !item->GetLabel().empty()))
           item->SetLabel(description);
 
         dwTitleID = CUtil::GetXbeID(item->GetPath());

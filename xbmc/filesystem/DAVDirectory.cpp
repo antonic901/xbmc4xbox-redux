@@ -166,7 +166,7 @@ bool CDAVDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 
       CStdString itemPath(URIUtils::AddFileToFolder(url2.GetWithoutFilename(), url3.GetFileName()));
 
-      if (item.GetLabel().IsEmpty())
+      if (item.GetLabel().empty())
       {
         CStdString name(itemPath);
         URIUtils::RemoveSlashAtEnd(name);

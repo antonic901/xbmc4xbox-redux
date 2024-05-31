@@ -80,7 +80,7 @@ public:
   CFileItem(void);
   CFileItem(const CFileItem& item);
   CFileItem(const CGUIListItem& item);
-  CFileItem(const CStdString& strLabel);
+  CFileItem(const std::string& strLabel);
   CFileItem(const CURL& path, bool bIsFolder);
   CFileItem(const CStdString& strPath, bool bIsFolder);
   CFileItem(const CSong& song);
@@ -198,7 +198,7 @@ public:
   void CleanString();
   void FillInDefaultIcon();
   void SetFileSizeLabel();
-  virtual void SetLabel(const CStdString &strLabel);
+  virtual void SetLabel(const std::string &strLabel);
   int GetVideoContentType() const; /* return VIDEODB_CONTENT_TYPE, but don't want to include videodb in this header */
   bool IsLabelPreformated() const { return m_bLabelPreformated; }
   void SetLabelPreformated(bool bYesNo) { m_bLabelPreformated=bYesNo; }
