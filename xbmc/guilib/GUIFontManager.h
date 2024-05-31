@@ -28,7 +28,12 @@
  *
  */
 
+#include <utility>
+#include <vector>
+
 #include "GraphicContext.h"
+#include "IMsgTargetCallback.h"
+#include "utils/GlobalsHandling.h"
 
 // Forward
 class CGUIFont;
@@ -41,8 +46,8 @@ struct OrigFontInfo
 {
    int size;
    float aspect;
-   CStdString fontFilePath;
-   CStdString fileName;
+   std::string fontFilePath;
+   std::string fileName;
    RESOLUTION_INFO sourceRes;
    bool preserveAspect;
    bool border;
@@ -52,15 +57,18 @@ struct OrigFontInfo
  \ingroup textures
  \brief
  */
-class GUIFontManager
+class GUIFontManager : public IMsgTargetCallback
 {
 public:
   GUIFontManager(void);
   virtual ~GUIFontManager(void);
-  void Unload(const CStdString& strFontName);
+
+  virtual bool OnMessage(CGUIMessage &message);
+
+  void Unload(const std::string& strFontName);
   void LoadFonts(const std::string &fontSet);
-  CGUIFont* LoadTTF(const CStdString& strFontName, const CStdString& strFilename, color_t textColor, color_t shadowColor, const int iSize, const int iStyle, bool border = false, float lineSpacing = 1.0f, float aspect = 1.0f, const RESOLUTION_INFO *res = NULL, bool preserveAspect = false);
-  CGUIFont* GetFont(const CStdString& strFontName, bool fallback = true);
+  CGUIFont* LoadTTF(const std::string& strFontName, const std::string& strFilename, color_t textColor, color_t shadowColor, const int iSize, const int iStyle, bool border = false, float lineSpacing = 1.0f, float aspect = 1.0f, const RESOLUTION_INFO *res = NULL, bool preserveAspect = false);
+  CGUIFont* GetFont(const std::string& strFontName, bool fallback = true);
 
   /*! \brief return a default font
    \param border whether the font should be a font with an outline
@@ -71,26 +79,29 @@ public:
   void Clear();
   void FreeFontFile(CGUIFontTTF *pFont);
 
-  void ReloadTTFFonts(void);
-
   static void SettingOptionsFontsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current);
+#ifdef _XBOX
   static void SettingOptionsSubtitleHeightsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
+#endif
 
 protected:
-  void RescaleFontSizeAndAspect(float *size, float *aspect, const RESOLUTION_INFO &sourceRes, bool preserveAspect) const;
+  void ReloadTTFFonts();
+  static void RescaleFontSizeAndAspect(float *size, float *aspect, const RESOLUTION_INFO &sourceRes, bool preserveAspect);
   void LoadFonts(const TiXmlNode* fontNode);
-  CGUIFontTTF* GetFontFile(const CStdString& strFontFile);
+  CGUIFontTTF* GetFontFile(const std::string& strFontFile);
   static void GetStyle(const TiXmlNode *fontNode, int &iStyle);
 
   std::vector<CGUIFont*> m_vecFonts;
   std::vector<CGUIFontTTF*> m_vecFontFiles;
   std::vector<OrigFontInfo> m_vecFontInfo;
   RESOLUTION_INFO m_skinResolution;
+  bool m_canReload;
 };
 
 /*!
  \ingroup textures
  \brief
  */
-extern GUIFontManager g_fontManager;
+XBMC_GLOBAL_REF(GUIFontManager, g_fontManager);
+#define g_fontManager XBMC_GLOBAL_USE(GUIFontManager)
 #endif

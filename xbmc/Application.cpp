@@ -5829,11 +5829,10 @@ void CApplication::OnSettingChanged(const CSetting *setting)
       CApplicationMessenger::Get().ExecBuiltIn("ReloadSkin");
   }
   else if (settingId == "lookandfeel.skinzoom")
-#ifdef _XBOX
-    g_fontManager.ReloadTTFFonts();
-#else
-    g_windowManager.SendMessage(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_WINDOW_RESIZE);
-#endif
+  {
+    CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_WINDOW_RESIZE);
+    g_windowManager.SendThreadMessage(msg);
+  }
   else if (StringUtils::StartsWithNoCase(settingId, "audiooutput."))
   {
     if (settingId == "audiooutput.ac3passthrough")

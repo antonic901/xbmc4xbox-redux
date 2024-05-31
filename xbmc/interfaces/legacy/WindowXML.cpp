@@ -321,6 +321,12 @@ namespace XBMCAddon
         }
         break;
 
+      case GUI_MSG_NOTIFY_ALL:
+        // most messages from GUI_MSG_NOTIFY_ALL break container content, whitelist working ones.
+        if (message.GetParam1() == GUI_MSG_PAGE_CHANGE || message.GetParam1() == GUI_MSG_WINDOW_RESIZE)
+          return A(CGUIMediaWindow::OnMessage(message));
+        return true;
+
       case GUI_MSG_CLICKED:
         {
           int iControl=message.GetSenderId();
@@ -372,6 +378,9 @@ namespace XBMCAddon
                 PulseActionEvent();
                 return true;
               }
+              // the core context menu can lead to all sort of issues right now when used with WindowXMLs, so lets intercept the corresponding message
+              else if (controlClicked->IsContainer() && message.GetParam1() == ACTION_CONTEXT_MENU)
+                return true;
             }
           }
         }
