@@ -61,7 +61,17 @@ bool CSndtrkDirectory::GetDirectory(const CURL& url, CFileItemList &items)
           else
             it->second=stInfo;
 
-          CFileItemPtr pItem(new CFileItem(stData.szName));
+          // convert from WCHAR to std::string
+          std::string strName;
+          size_t bufferSize = 32 * sizeof(char);
+          char narrowStr[32];
+          size_t numConverted = wcstombs(narrowStr, stData.szName, bufferSize);
+          if (numConverted == static_cast<size_t>(-1)) 
+            strName = "";
+          else
+            strName = narrowStr;
+
+          CFileItemPtr pItem(new CFileItem(strName));
           pItem->SetLabelPreformated(true);
           char tmpvar[4];
           sprintf(tmpvar,"%i",stData.uSoundtrackId);
@@ -90,10 +100,20 @@ bool CSndtrkDirectory::GetDirectory(const CURL& url, CFileItemList &items)
     {
       DWORD dwSongId;
       DWORD dwSongLength;
-      WCHAR strSong[64];
+      WCHAR wcSong[64];
       if ( XGetSoundtrackSongInfo( stInfo.uSoundtrackId, i, &dwSongId,
-                                   &dwSongLength, strSong, MAX_SONG_NAME ) )
+                                   &dwSongLength, wcSong, MAX_SONG_NAME ) )
       {
+        // convert from WCHAR to std::string
+        std::string strSong;
+        size_t bufferSize = 64 * sizeof(char);
+        char narrowStr[64];
+        size_t numConverted = wcstombs(narrowStr, wcSong, bufferSize);
+        if (numConverted == static_cast<size_t>(-1)) 
+          strSong = "";
+        else
+          strSong = narrowStr;
+
         // Add it to the list
         CFileItemPtr pItem(new CFileItem(strSong));
         std::string strPath("E:\\TDATA\\fffe0000\\music\\");
@@ -162,4 +182,3 @@ bool CSndtrkDirectory::FindTrackName(const std::string& strPath, char *NameOfSon
   }
   return false;
 }
-

@@ -3554,7 +3554,7 @@ CStdString CGUIInfoManager::GetVideoLabel(int item)
     if (m_currentFile->HasVideoInfoTag() && !m_currentFile->GetVideoInfoTag()->m_strTitle.empty())
       return m_currentFile->GetVideoInfoTag()->m_strTitle;
     // don't have the title, so use label, or drop down to title from path
-    if (!m_currentFile->GetLabel().IsEmpty())
+    if (!m_currentFile->GetLabel().empty())
       return m_currentFile->GetLabel();
     return CUtil::GetTitleFromPath(m_currentFile->GetPath());
   }

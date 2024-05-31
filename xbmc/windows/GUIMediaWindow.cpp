@@ -1219,7 +1219,7 @@ void CGUIMediaWindow::GetDirectoryHistoryString(const CFileItem* pItem, CStdStri
     else
     {
       // Other items in virual directory
-      CStdString strPath = pItem->GetPath();
+      std::string strPath = pItem->GetPath();
       URIUtils::RemoveSlashAtEnd(strPath);
 
       strHistoryString = pItem->GetLabel() + strPath;

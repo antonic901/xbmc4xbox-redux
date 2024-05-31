@@ -952,7 +952,7 @@ int CGUIDialogVideoInfo::ManageVideoItem(const CFileItemPtr &item)
   }
   else
   {
-    if (item->GetOverlayImage().Equals("OverlayWatched.png"))
+    if (item->GetOverlayImage() == "OverlayWatched.png")
       buttons.Add(CONTEXT_BUTTON_MARK_UNWATCHED, 16104); //Mark as UnWatched
     else
       buttons.Add(CONTEXT_BUTTON_MARK_WATCHED, 16103);   //Mark as Watched

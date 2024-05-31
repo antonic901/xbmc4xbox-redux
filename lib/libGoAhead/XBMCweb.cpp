@@ -446,7 +446,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
         // we want to know the name from an item in the music playlist
         if (selectionNumber <= g_playlistPlayer.GetPlaylist( PLAYLIST_MUSIC ).size())
         {
-          strcpy(buffer, g_playlistPlayer.GetPlaylist( PLAYLIST_MUSIC )[selectionNumber]->GetLabel());
+          strcpy(buffer, g_playlistPlayer.GetPlaylist( PLAYLIST_MUSIC )[selectionNumber]->GetLabel().c_str());
           output = buffer;
         }
       }
@@ -455,7 +455,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
         // we want to know the name from an item in the video playlist
         if (selectionNumber <= g_playlistPlayer.GetPlaylist( PLAYLIST_VIDEO ).size())
         {
-          strcpy(buffer, g_playlistPlayer.GetPlaylist( PLAYLIST_VIDEO )[selectionNumber]->GetLabel());
+          strcpy(buffer, g_playlistPlayer.GetPlaylist( PLAYLIST_VIDEO )[selectionNumber]->GetLabel().c_str());
           output = buffer;
         }
       }
@@ -786,7 +786,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
                   for (int i=0; i < (int)pPlayList->size(); ++i)
                   {
                     CFileItemPtr playlistItem =(*pPlayList)[i];
-                    if (playlistItem->GetLabel().IsEmpty())
+                    if (playlistItem->GetLabel().empty())
                       playlistItem->SetLabel(URIUtils::GetFileName(playlistItem->GetPath()));
                     playlist.Add(playlistItem);
                   }
