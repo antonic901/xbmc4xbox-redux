@@ -2579,7 +2579,7 @@ void CApplication::UpdateLCD()
 #endif
 }
 
-void CApplication::FrameMove(bool processEvents)
+void CApplication::FrameMove(bool processEvents, bool processGUI)
 {
   if (processEvents)
   {
@@ -2589,17 +2589,20 @@ void CApplication::FrameMove(bool processEvents)
     // never set a frametime less than 2 fps to avoid problems when debuggin and on breaks
     if( frameTime > 0.5 ) frameTime = 0.5;
 
-    g_graphicsContext.Lock();
-    // check if there are notifications to display
-    CGUIDialogKaiToast *toast = (CGUIDialogKaiToast *)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
-    if (toast && toast->DoWork())
+    if (processGUI)
     {
-      if (!toast->IsDialogRunning())
+      g_graphicsContext.Lock();
+      // check if there are notifications to display
+      CGUIDialogKaiToast *toast = (CGUIDialogKaiToast *)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
+      if (toast && toast->DoWork())
       {
-        toast->Show();
+        if (!toast->IsDialogRunning())
+        {
+          toast->Show();
+        }
       }
+      g_graphicsContext.Unlock();
     }
-    g_graphicsContext.Unlock();
 
     UpdateLCD();
 
@@ -2613,10 +2616,13 @@ void CApplication::FrameMove(bool processEvents)
     ProcessGamepad(frameTime);
     ProcessEventServer(frameTime);
   }
-  // Process events and animate controls
-  if (!m_bStop)
-    g_windowManager.Process(CTimeUtils::GetFrameTime());
-  g_windowManager.FrameMove();
+  if (processGUI)
+  {
+    // Process events and animate controls
+    if (!m_bStop)
+      g_windowManager.Process(CTimeUtils::GetFrameTime());
+    g_windowManager.FrameMove();
+  }
 }
 
 bool CApplication::ProcessGamepad(float frameTime)
