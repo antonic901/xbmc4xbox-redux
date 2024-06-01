@@ -390,7 +390,11 @@ void CGUIWindow::Close_Internal(bool forceClose /*= false*/, int nextWindowID /*
 
 void CGUIWindow::Close(bool forceClose /*= false*/, int nextWindowID /*= 0*/, bool enableSound /*= true*/, bool bWait /* = true */)
 {
+#ifdef HAS_XBOX_D3D
+  if (!g_application.IsCurrentThread() && !g_graphicsContext.IsFullScreenVideo())
+#else
   if (!g_application.IsCurrentThread())
+#endif
   {
     // make sure graphics lock is not held
     CSingleExit leaveIt(g_graphicsContext);

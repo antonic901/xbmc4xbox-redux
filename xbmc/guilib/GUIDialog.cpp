@@ -231,7 +231,11 @@ void CGUIDialog::DoModal(int iWindowID /*= WINDOW_INVALID */, const CStdString &
 
 void CGUIDialog::Show()
 {
+#ifdef HAS_XBOX_D3D
+  if (!g_application.IsCurrentThread() && !g_graphicsContext.IsFullScreenVideo())
+#else
   if (!g_application.IsCurrentThread())
+#endif
   {
     // make sure graphics lock is not held
     CSingleExit leaveIt(g_graphicsContext);
