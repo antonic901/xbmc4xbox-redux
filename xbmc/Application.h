@@ -361,6 +361,7 @@ protected:
   bool ProcessEventServer(float frameTime);
 
   bool ProcessJoystickEvent(const std::string& joystickName, int button, bool isAxis, float fAmount, unsigned int holdTime = 0);
+  int  GetActiveWindowID(void);
 
   void CheckForDebugButtonCombo();
   float NavigationIdleTime();
