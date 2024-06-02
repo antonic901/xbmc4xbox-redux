@@ -52,6 +52,7 @@ public:
 
   virtual bool CanFilterAdvanced() { return m_canFilterAdvanced; }
   virtual bool IsFiltered();
+  virtual bool IsSameStartFolder(const std::string &dir);
 
 protected:
   virtual void LoadAdditionalTags(TiXmlElement *root);
