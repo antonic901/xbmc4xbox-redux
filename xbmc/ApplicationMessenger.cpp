@@ -505,8 +505,8 @@ case TMSG_POWERDOWN:
       break;
 
     case TMSG_SWITCHTOFULLSCREEN:
-      if( g_windowManager.GetActiveWindow() != WINDOW_FULLSCREEN_VIDEO )
-        g_application.SwitchToFullScreen();
+      if(g_windowManager.GetActiveWindow() != WINDOW_FULLSCREEN_VIDEO)
+        g_application.SwitchToFullScreen(true);
       break;
 
     case TMSG_HTTPAPI:
@@ -663,7 +663,7 @@ case TMSG_POWERDOWN:
 
     case TMSG_GUI_ACTIVATE_WINDOW:
       {
-        g_windowManager.ActivateWindow(pMsg->dwParam1, pMsg->params, pMsg->dwParam2 > 0);
+        g_windowManager.ActivateWindow(pMsg->dwParam1, pMsg->params, pMsg->dwParam2 & 0x1 ? true : false, pMsg->dwParam2 & 0x2 ? true : false);
       }
       break;
 
@@ -1014,9 +1014,10 @@ void CApplicationMessenger::Close(CGUIWindow *window, bool forceClose, bool wait
   SendMessage(tMsg, waitResult);
 }
 
-void CApplicationMessenger::ActivateWindow(int windowID, const vector<string> &params, bool swappingWindows)
+void CApplicationMessenger::ActivateWindow(int windowID, const vector<string> &params, bool swappingWindows, bool force  /* = false */)
 {
-  ThreadMessage tMsg = {TMSG_GUI_ACTIVATE_WINDOW, windowID, swappingWindows ? 1 : 0};
+  ThreadMessage tMsg = {TMSG_GUI_ACTIVATE_WINDOW, windowID};
+  tMsg.dwParam2 = (swappingWindows ? 0x01 : 0) | (force ? 0x02 : 0);
   tMsg.params = params;
   SendMessage(tMsg, true);
 }

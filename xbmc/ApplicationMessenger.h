@@ -177,7 +177,7 @@ public:
   void DoModal(CGUIDialog *pDialog, int iWindowID, const CStdString &param = "");
   void Show(CGUIDialog *pDialog);
   void Close(CGUIWindow *window, bool forceClose, bool waitResult = true, int nextWindowID = 0, bool enableSound = true);
-  void ActivateWindow(int windowID, const std::vector<std::string> &params, bool swappingWindows);
+  void ActivateWindow(int windowID, const std::vector<std::string> &params, bool swappingWindows, bool force = false);
   void SendAction(const CAction &action, int windowID = WINDOW_INVALID, bool waitResult=true);
 
   /*! \brief Send a GUIMessage, optionally waiting before it's processed to return.

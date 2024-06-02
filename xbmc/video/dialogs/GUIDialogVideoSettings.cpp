@@ -143,7 +143,7 @@ void CGUIDialogVideoSettings::OnSettingChanged(SettingInfo &setting)
     if (CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE  &&
         g_passwordManager.CheckSettingLevelLock(CSettings::Get().GetSetting("videoscreen.guicalibration")->GetLevel()))
       return;
-    g_windowManager.ActivateWindow(WINDOW_SCREEN_CALIBRATION);
+    g_windowManager.ForceActivateWindow(WINDOW_SCREEN_CALIBRATION);
   }
   else if (setting.id == VIDEO_SETTINGS_FORCE_INDEX)
   {

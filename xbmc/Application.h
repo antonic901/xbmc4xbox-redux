@@ -269,7 +269,7 @@ public:
 
   void SetLoggingIn(bool loggingIn) { m_loggingIn = loggingIn; }
 
-  bool SwitchToFullScreen();
+  bool SwitchToFullScreen(bool force = false);
 
   CSplash* GetSplash() { return m_splash; }
 
