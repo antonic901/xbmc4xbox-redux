@@ -23,7 +23,7 @@
 
 #ifdef _LINUX
 #include "linux/PlatformDefs.h"
-#elif defined (WIN32)
+#elif defined (TARGET_WINDOWS)
 #include "windows.h"
 #else
 #include "xtl.h"

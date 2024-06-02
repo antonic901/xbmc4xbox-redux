@@ -38,6 +38,10 @@
 #define HAS_FILESYSTEM
 #define HAS_FILESYSTEM_CDDA
 #define HAS_FILESYSTEM_SMB
+#define HAS_FILESYSTEM_RAR
+#define HAS_FILESYSTEM_DAAP
+#define HAS_FILESYSTEM_MYTH
+#define HAS_FILESYSTEM_HTSP
 #define HAS_GAMEPAD
 #define HAS_IR_REMOTE
 #define HAS_DVD_DRIVE
@@ -150,6 +154,5 @@ WINBASEAPI BOOL WINAPI QueryPerformanceFrequencyXbox(LARGE_INTEGER *lpFrequency)
 #define SVN_REV "Unknown"
 #endif
 
-#define DEFAULT_SKIN          "skin.confluence.lite"
 #define DEFAULT_WEATHER_ADDON "weather.xbmc.builtin"
 #define DEFAULT_WEB_INTERFACE "webinterface.default"

@@ -106,6 +106,16 @@ public:
    */
   bool Initialized() const { return m_initialized; };
 
+  /*! \brief Create and initialize all windows and dialogs
+   */
+  void CreateWindows();
+
+  /*! \brief Destroy and remove all windows and dialogs
+  *
+  * \return true on success, false if destruction fails for any window
+  */
+  bool DestroyWindows();
+
   /*! \brief Used for rendering all visible dialogs while we
    are in CGUIWindowFullscreen and videoplayback is not paused.
    For more info see CApplication::Render().

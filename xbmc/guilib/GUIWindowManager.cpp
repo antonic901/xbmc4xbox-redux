@@ -34,6 +34,90 @@
 #include "utils/Variant.h"
 #include "utils/log.h"
 
+#include "windows/GUIWindowHome.h"
+#include "settings/windows/GUIWindowSettings.h"
+#include "windows/GUIWindowFileManager.h"
+#include "settings/windows/GUIWindowSettingsCategory.h"
+#include "music/windows/GUIWindowMusicPlaylist.h"
+#include "music/windows/GUIWindowMusicSongs.h"
+#include "music/windows/GUIWindowMusicNav.h"
+#include "music/windows/GUIWindowMusicPlaylistEditor.h"
+#include "video/windows/GUIWindowVideoPlaylist.h"
+#include "music/dialogs/GUIDialogMusicInfo.h"
+#include "video/dialogs/GUIDialogVideoInfo.h"
+#include "video/windows/GUIWindowVideoNav.h"
+#include "profiles/windows/GUIWindowSettingsProfile.h"
+#ifdef HAS_GL
+#include "rendering/gl/GUIWindowTestPatternGL.h"
+#endif
+#ifdef HAS_DX
+#include "rendering/dx/GUIWindowTestPatternDX.h"
+#endif
+#include "settings/windows/GUIWindowSettingsScreenCalibration.h"
+#include "programs/GUIWindowPrograms.h"
+#include "GUIWindowGameSaves.h"
+#include "pictures/GUIWindowPictures.h"
+#include "windows/GUIWindowWeather.h"
+#include "windows/GUIWindowLoginScreen.h"
+#include "addons/GUIWindowAddonBrowser.h"
+#include "music/windows/GUIWindowVisualisation.h"
+#include "windows/GUIWindowPointer.h"
+#include "windows/GUIWindowSystemInfo.h"
+#include "windows/GUIWindowScreensaver.h"
+#include "pictures/GUIWindowSlideShow.h"
+#include "windows/GUIWindowStartup.h"
+#include "video/windows/GUIWindowFullScreen.h"
+#include "video/dialogs/GUIDialogVideoOSD.h"
+
+
+// Dialog includes
+#include "music/dialogs/GUIDialogMusicOSD.h"
+#include "music/dialogs/GUIDialogVisualisationPresetList.h"
+#include "dialogs/GUIDialogTextViewer.h"
+#include "dialogs/GUIDialogTrainerSettings.h"
+#include "network/GUIDialogNetworkSetup.h"
+#include "dialogs/GUIDialogMediaSource.h"
+#include "video/dialogs/GUIDialogVideoSettings.h"
+#include "video/dialogs/GUIDialogAudioSubtitleSettings.h"
+#include "video/dialogs/GUIDialogVideoBookmarks.h"
+#include "profiles/dialogs/GUIDialogProfileSettings.h"
+#include "profiles/dialogs/GUIDialogLockSettings.h"
+#include "settings/dialogs/GUIDialogContentSettings.h"
+#include "dialogs/GUIDialogBusy.h"
+#include "dialogs/GUIDialogKeyboardGeneric.h"
+#include "dialogs/GUIDialogYesNo.h"
+#include "dialogs/GUIDialogOK.h"
+#include "dialogs/GUIDialogProgress.h"
+#include "dialogs/GUIDialogExtendedProgressBar.h"
+#include "dialogs/GUIDialogSelect.h"
+#include "dialogs/GUIDialogSeekBar.h"
+#include "dialogs/GUIDialogKaiToast.h"
+#include "dialogs/GUIDialogVolumeBar.h"
+#include "dialogs/GUIDialogMuteBug.h"
+#include "video/dialogs/GUIDialogFileStacking.h"
+#include "dialogs/GUIDialogNumeric.h"
+#include "dialogs/GUIDialogGamepad.h"
+#include "dialogs/GUIDialogSubMenu.h"
+#include "dialogs/GUIDialogFavourites.h"
+#include "dialogs/GUIDialogButtonMenu.h"
+#include "dialogs/GUIDialogContextMenu.h"
+#include "dialogs/GUIDialogPlayerControls.h"
+#include "music/dialogs/GUIDialogSongInfo.h"
+#include "dialogs/GUIDialogSmartPlaylistEditor.h"
+#include "dialogs/GUIDialogSmartPlaylistRule.h"
+#include "pictures/GUIDialogPictureInfo.h"
+#include "addons/GUIDialogAddonSettings.h"
+#include "addons/GUIDialogAddonInfo.h"
+#ifdef HAS_LINUX_NETWORK
+#include "network/GUIDialogAccessPoints.h"
+#endif
+
+#include "video/dialogs/GUIDialogFullScreenInfo.h"
+#include "dialogs/GUIDialogSlider.h"
+#include "guilib/GUIControlFactory.h"
+#include "dialogs/GUIDialogMediaFilter.h"
+#include "video/dialogs/GUIDialogSubtitles.h"
+
 using namespace std;
 
 CGUIWindowManager::CGUIWindowManager(void)
@@ -53,6 +137,193 @@ void CGUIWindowManager::Initialize()
   m_initialized = true;
 
   LoadNotOnDemandWindows();
+}
+
+void CGUIWindowManager::CreateWindows()
+{
+  Add(new CGUIWindowHome);
+  Add(new CGUIWindowPrograms);
+  Add(new CGUIWindowPictures);
+  Add(new CGUIWindowFileManager);
+  Add(new CGUIWindowSettings);
+  Add(new CGUIWindowSystemInfo);
+#ifdef HAS_GL
+  Add(new CGUIWindowTestPatternGL);
+#endif
+#ifdef HAS_DX
+  Add(new CGUIWindowTestPatternDX);
+#endif
+  Add(new CGUIWindowSettingsScreenCalibration);
+  Add(new CGUIWindowSettingsCategory);
+  Add(new CGUIWindowVideoNav);
+  Add(new CGUIWindowVideoPlaylist);
+  Add(new CGUIWindowLoginScreen);
+  Add(new CGUIWindowSettingsProfile);
+  Add(new CGUIWindow(WINDOW_SKIN_SETTINGS, "SkinSettings.xml"));
+  Add(new CGUIWindowAddonBrowser);
+  Add(new CGUIWindowPointer);
+#ifdef _XBOX
+  Add(new CGUIWindowGameSaves);
+#endif
+  Add(new CGUIDialogYesNo);
+  Add(new CGUIDialogProgress);
+  Add(new CGUIDialogExtendedProgressBar);
+  Add(new CGUIDialogKeyboardGeneric);
+  Add(new CGUIDialogVolumeBar);
+  Add(new CGUIDialogSeekBar);
+  Add(new CGUIDialogSubMenu);
+  Add(new CGUIDialogContextMenu);
+  Add(new CGUIDialogKaiToast);
+  Add(new CGUIDialogNumeric);
+  Add(new CGUIDialogGamepad);
+  Add(new CGUIDialogButtonMenu);
+  Add(new CGUIDialogMuteBug);
+  Add(new CGUIDialogPlayerControls);
+  Add(new CGUIDialogSlider);
+  Add(new CGUIDialogMusicOSD);
+  Add(new CGUIDialogVisualisationPresetList);
+  Add(new CGUIDialogVideoSettings);
+  Add(new CGUIDialogAudioSubtitleSettings);
+  Add(new CGUIDialogVideoBookmarks);
+  // Don't add the filebrowser dialog - it's created and added when it's needed
+#ifdef _XBOX
+  Add(new CGUIDialogTrainerSettings);
+#endif
+  Add(new CGUIDialogNetworkSetup);
+  Add(new CGUIDialogMediaSource);
+  Add(new CGUIDialogProfileSettings);
+  Add(new CGUIDialogFavourites);
+  Add(new CGUIDialogSongInfo);
+  Add(new CGUIDialogSmartPlaylistEditor);
+  Add(new CGUIDialogSmartPlaylistRule);
+  Add(new CGUIDialogBusy);
+  Add(new CGUIDialogPictureInfo);
+  Add(new CGUIDialogAddonInfo);
+  Add(new CGUIDialogAddonSettings);
+#ifdef HAS_LINUX_NETWORK
+  Add(new CGUIDialogAccessPoints);
+#endif
+
+  Add(new CGUIDialogLockSettings);
+
+  Add(new CGUIDialogContentSettings);
+
+  Add(new CGUIDialogMediaFilter);
+  Add(new CGUIDialogSubtitles);
+
+  Add(new CGUIWindowMusicPlayList);
+  Add(new CGUIWindowMusicSongs);
+  Add(new CGUIWindowMusicNav);
+  Add(new CGUIWindowMusicPlaylistEditor);
+
+  Add(new CGUIDialogSelect);
+  Add(new CGUIDialogMusicInfo);
+  Add(new CGUIDialogOK);
+  Add(new CGUIDialogVideoInfo);
+  Add(new CGUIDialogTextViewer);
+  Add(new CGUIWindowFullScreen);
+  Add(new CGUIWindowVisualisation);
+  Add(new CGUIWindowSlideShow);
+  Add(new CGUIDialogFileStacking);
+
+  Add(new CGUIDialogVideoOSD);
+  Add(new CGUIWindowScreensaver);
+  Add(new CGUIWindowWeather);
+  Add(new CGUIWindowStartup);
+}
+
+bool CGUIWindowManager::DestroyWindows()
+{
+  try
+  {
+    Delete(WINDOW_MUSIC_PLAYLIST);
+    Delete(WINDOW_MUSIC_PLAYLIST_EDITOR);
+    Delete(WINDOW_MUSIC_FILES);
+    Delete(WINDOW_MUSIC_NAV);
+    Delete(WINDOW_DIALOG_MUSIC_INFO);
+    Delete(WINDOW_DIALOG_VIDEO_INFO);
+    Delete(WINDOW_VIDEO_FILES);
+    Delete(WINDOW_VIDEO_PLAYLIST);
+    Delete(WINDOW_VIDEO_NAV);
+    Delete(WINDOW_FILES);
+    Delete(WINDOW_DIALOG_YES_NO);
+    Delete(WINDOW_DIALOG_PROGRESS);
+    Delete(WINDOW_DIALOG_NUMERIC);
+    Delete(WINDOW_DIALOG_GAMEPAD);
+    Delete(WINDOW_DIALOG_SUB_MENU);
+    Delete(WINDOW_DIALOG_BUTTON_MENU);
+    Delete(WINDOW_DIALOG_CONTEXT_MENU);
+    Delete(WINDOW_DIALOG_PLAYER_CONTROLS);
+    Delete(WINDOW_DIALOG_MUSIC_OSD);
+    Delete(WINDOW_DIALOG_VIS_PRESET_LIST);
+    Delete(WINDOW_DIALOG_SELECT);
+    Delete(WINDOW_DIALOG_OK);
+    Delete(WINDOW_DIALOG_FILESTACKING);
+    Delete(WINDOW_DIALOG_KEYBOARD);
+    Delete(WINDOW_FULLSCREEN_VIDEO);
+    Delete(WINDOW_DIALOG_TRAINER_SETTINGS);
+    Delete(WINDOW_DIALOG_PROFILE_SETTINGS);
+    Delete(WINDOW_DIALOG_LOCK_SETTINGS);
+    Delete(WINDOW_DIALOG_NETWORK_SETUP);
+    Delete(WINDOW_DIALOG_MEDIA_SOURCE);
+    Delete(WINDOW_DIALOG_VIDEO_OSD_SETTINGS);
+    Delete(WINDOW_DIALOG_AUDIO_OSD_SETTINGS);
+    Delete(WINDOW_DIALOG_VIDEO_BOOKMARKS);
+    Delete(WINDOW_DIALOG_CONTENT_SETTINGS);
+    Delete(WINDOW_DIALOG_FAVOURITES);
+    Delete(WINDOW_DIALOG_SONG_INFO);
+    Delete(WINDOW_DIALOG_SMART_PLAYLIST_EDITOR);
+    Delete(WINDOW_DIALOG_SMART_PLAYLIST_RULE);
+    Delete(WINDOW_DIALOG_BUSY);
+    Delete(WINDOW_DIALOG_PICTURE_INFO);
+    Delete(WINDOW_DIALOG_ADDON_INFO);
+    Delete(WINDOW_DIALOG_ADDON_SETTINGS);
+    Delete(WINDOW_DIALOG_SLIDER);
+    Delete(WINDOW_DIALOG_MEDIA_FILTER);
+    Delete(WINDOW_DIALOG_SUBTITLES);
+
+    Delete(WINDOW_DIALOG_TEXT_VIEWER);
+    Delete(WINDOW_STARTUP_ANIM);
+    Delete(WINDOW_LOGIN_SCREEN);
+    Delete(WINDOW_VISUALISATION);
+    Delete(WINDOW_SETTINGS_MENU);
+    Delete(WINDOW_SETTINGS_PROFILES);
+    Delete(WINDOW_SETTINGS_MYPICTURES);  // all the settings categories
+    Delete(WINDOW_SCREEN_CALIBRATION);
+    Delete(WINDOW_SYSTEM_INFORMATION);
+    Delete(WINDOW_SCREENSAVER);
+    Delete(WINDOW_DIALOG_VIDEO_OSD);
+    Delete(WINDOW_SLIDESHOW);
+    Delete(WINDOW_ADDON_BROWSER);
+    Delete(WINDOW_SKIN_SETTINGS);
+
+    Delete(WINDOW_HOME);
+    Delete(WINDOW_PROGRAMS);
+    Delete(WINDOW_PICTURES);
+    Delete(WINDOW_GAMESAVES);
+    Delete(WINDOW_WEATHER);
+
+    Delete(WINDOW_SETTINGS_MYPICTURES);
+    Remove(WINDOW_SETTINGS_MYPROGRAMS);
+    Remove(WINDOW_SETTINGS_MYWEATHER);
+    Remove(WINDOW_SETTINGS_MYMUSIC);
+    Remove(WINDOW_SETTINGS_SYSTEM);
+    Remove(WINDOW_SETTINGS_MYVIDEOS);
+    Remove(WINDOW_SETTINGS_SERVICE);
+    Remove(WINDOW_SETTINGS_APPEARANCE);
+    Remove(WINDOW_SETTINGS_MYPVR);
+    Remove(WINDOW_DIALOG_KAI_TOAST);
+
+    Remove(WINDOW_DIALOG_SEEK_BAR);
+    Remove(WINDOW_DIALOG_VOLUME_BAR);
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "Exception in CGUIWindowManager::DestroyWindows()");
+    return false;
+  }
+
+  return true;
 }
 
 bool CGUIWindowManager::SendMessage(int message, int senderID, int destID, int param1, int param2)

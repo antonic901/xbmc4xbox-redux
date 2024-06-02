@@ -19,93 +19,97 @@
  */
 
 #include "xbox/Network.h"
+#include "threads/SystemClock.h"
 #include "system.h"
-#include "utils/log.h"
 #include "Application.h"
 #include "interfaces/Builtins.h"
-#include "Splash.h"
-#include "input/KeyboardLayoutConfiguration.h"
+#include "utils/Variant.h"
+#include "utils/Splash.h"
 #include "LangInfo.h"
-#ifdef HAS_XBOX_HARDWARE
-#include "xbox/XKEEPROM.h"
-#include "utils/LCD.h"
-#include "xbox/IoSupport.h"
-#include "xbox/XKHDD.h"
-#endif
-#include "xbox/xbeheader.h"
 #include "Util.h"
-#include "utils/URIUtils.h"
-#include "TextureManager.h"
+#include "URL.h"
+#include "guilib/TextureManager.h"
+#include "cores/IPlayer.h"
 #include "cores/dvdplayer/DVDFileInfo.h"
 #include "PlayListPlayer.h"
 #include "Autorun.h"
-#ifdef HAS_LCD
-#include "utils/LCDFactory.h"
-#endif
-#ifdef HAS_XBOX_HARDWARE
-#include "utils/MemoryUnitManager.h"
-#include "utils/FanController.h"
-#include "utils/LED.h"
-#endif
-#include "XBVideoConfig.h"
-#include "XBAudioConfig.h"
+#include "video/Bookmark.h"
+#include "network/NetworkServices.h"
 #include "utils/LangCodeExpander.h"
 #include "GUIInfoManager.h"
 #include "playlists/PlayListFactory.h"
-#include "GUIFontManager.h"
-#include "GUIColorManager.h"
-#include "GUITextLayout.h"
+#include "guilib/GUIFontManager.h"
+#include "guilib/GUIColorManager.h"
+#include "addons/LanguageResource.h"
 #include "addons/Skin.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
+#ifdef HAS_PYTHON
 #include "interfaces/python/XBPython.h"
+#endif
 #include "input/ButtonTranslator.h"
-#include "GUIAudioManager.h"
+#include "guilib/GUIAudioManager.h"
 #include "GUIPassword.h"
 #include "ApplicationMessenger.h"
 #include "SectionLoader.h"
 #include "cores/DllLoader/DllLoaderContainer.h"
 #include "GUIUserMessages.h"
+#include "filesystem/Directory.h"
 #include "filesystem/DirectoryCache.h"
 #include "filesystem/StackDirectory.h"
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/DllLibCurl.h"
+#ifdef HAS_FILESYSTEM_DAAP
+#include "filesystem/DAAPFile.h"
+#endif
+#ifdef HAS_FILESYSTEM_MYTH
 #include "filesystem/MythSession.h"
+#endif
 #include "filesystem/PluginDirectory.h"
 #ifdef HAS_FILESYSTEM_SAP
 #include "filesystem/SAPDirectory.h"
 #endif
+#ifdef HAS_FILESYSTEM_HTSP
 #include "filesystem/HTSPDirectory.h"
+#endif
 #include "utils/TuxBoxUtil.h"
 #include "utils/SystemInfo.h"
 #include "utils/TimeUtils.h"
 #include "GUILargeTextureManager.h"
 #include "TextureCache.h"
 #include "playlists/SmartPlayList.h"
+#ifdef HAS_FILESYSTEM_RAR
 #include "filesystem/RarManager.h"
+#endif
 #include "playlists/PlayList.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/SettingAddon.h"
+#include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
-#include "settings/MediaSourceSettings.h"
 #include "settings/SkinSettings.h"
-#include "settings/Settings.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/SeekHandler.h"
-#include "utils/CharsetConverter.h"
-#include "utils/RssReader.h"
-#include "utils/StringUtils.h"
-#include "DatabaseManager.h"
-#include "utils/RssManager.h"
-#include "utils/Weather.h"
-#include "view/ViewStateSettings.h"
-#ifdef HAS_FILESYSTEM
-#include "filesystem/DAAPFile.h"
+
+#include "input/KeyboardLayoutConfiguration.h"
+
+#if HAVE_SDL_VERSION == 1
+#include <SDL/SDL.h>
+#elif HAVE_SDL_VERSION == 2
+#include <SDL2/SDL.h>
 #endif
+
 #ifdef HAS_UPNP
 #include "network/upnp/UPnP.h"
 #include "filesystem/UPnPDirectory.h"
+#endif
+#if defined(TARGET_POSIX) && defined(HAS_FILESYSTEM_SMB)
+#include "filesystem/SMBDirectory.h"
+#endif
+#ifdef HAS_FILESYSTEM_NFS
+#include "filesystem/NFSFile.h"
+#endif
+#ifdef HAS_FILESYSTEM_SFTP
+#include "filesystem/SFTPFile.h"
 #endif
 #include "PartyModeManager.h"
 #ifdef HAS_VIDEO_PLAYBACK
@@ -114,108 +118,115 @@
 #ifdef HAS_KARAOKE
 #include "CdgParser.h"
 #endif
-#include "AudioContext.h"
-#include "GUIFontTTF.h"
+#ifndef TARGET_POSIX
 #include "threads/platform/win/Win32Exception.h"
-#include "libGoAhead/XBMChttp.h"
-#ifdef HAS_XFONT
-#include <xfont.h>  // for textout functions
 #endif
 #ifdef HAS_EVENT_SERVER
 #include "network/EventServer.h"
 #endif
-#include "network/NetworkServices.h"
+#ifdef HAS_DBUS
+#include <dbus/dbus.h>
+#endif
+#ifdef HAS_JSONRPC
+#include "interfaces/json-rpc/JSONRPC.h"
+#endif
 #include "interfaces/AnnouncementManager.h"
 #include "music/infoscanner/MusicInfoScanner.h"
 
 // Windows includes
-#include "GUIWindowManager.h"
-#include "windows/GUIWindowHome.h"
-#include "settings/windows/GUIWindowSettings.h"
-#include "windows/GUIWindowFileManager.h"
-#include "settings/windows/GUIWindowSettingsCategory.h"
-#include "music/windows/GUIWindowMusicPlaylist.h"
-#include "music/windows/GUIWindowMusicSongs.h"
-#include "music/windows/GUIWindowMusicNav.h"
-#include "music/windows/GUIWindowMusicPlaylistEditor.h"
-#include "video/windows/GUIWindowVideoPlaylist.h"
-#include "music/dialogs/GUIDialogMusicInfo.h"
+#include "guilib/GUIWindowManager.h"
 #include "video/dialogs/GUIDialogVideoInfo.h"
-#include "video/windows/GUIWindowVideoNav.h"
-#include "profiles/windows/GUIWindowSettingsProfile.h"
-#include "settings/windows/GUIWindowSettingsScreenCalibration.h"
-#include "programs/GUIWindowPrograms.h"
-#include "pictures/GUIWindowPictures.h"
-#include "windows/GUIWindowWeather.h"
-#include "GUIWindowGameSaves.h"
-#include "windows/GUIWindowLoginScreen.h"
-#include "addons/GUIWindowAddonBrowser.h"
-#include "music/windows/GUIWindowVisualisation.h"
-#include "windows/GUIWindowPointer.h"
-#include "windows/GUIWindowSystemInfo.h"
 #include "windows/GUIWindowScreensaver.h"
-#include "pictures/GUIWindowSlideShow.h"
-#include "windows/GUIWindowStartup.h"
 #include "video/windows/GUIWindowFullScreen.h"
 #include "video/dialogs/GUIDialogVideoOSD.h"
+#include "video/VideoInfoScanner.h"
 
 // Dialog includes
-#include "music/dialogs/GUIDialogMusicOSD.h"
-#include "music/dialogs/GUIDialogVisualisationPresetList.h"
-#include "dialogs/GUIDialogTrainerSettings.h"
-#include "network/GUIDialogNetworkSetup.h"
-#include "dialogs/GUIDialogMediaSource.h"
-#include "video/dialogs/GUIDialogVideoSettings.h"
-#include "video/dialogs/GUIDialogAudioSubtitleSettings.h"
 #include "video/dialogs/GUIDialogVideoBookmarks.h"
-#include "profiles/dialogs/GUIDialogProfileSettings.h"
-#include "profiles/dialogs/GUIDialogLockSettings.h"
-#include "settings/dialogs/GUIDialogContentSettings.h"
-#include "dialogs/GUIDialogBusy.h"
-#include "dialogs/GUIDialogTextViewer.h"
-
-#include "dialogs/GUIDialogKeyboardGeneric.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogOK.h"
-#include "dialogs/GUIDialogProgress.h"
-#include "dialogs/GUIDialogExtendedProgressBar.h"
-#include "dialogs/GUIDialogSelect.h"
-#include "dialogs/GUIDialogSeekBar.h"
 #include "dialogs/GUIDialogKaiToast.h"
-#include "dialogs/GUIDialogVolumeBar.h"
-#include "dialogs/GUIDialogMuteBug.h"
-#include "video/dialogs/GUIDialogFileStacking.h"
-#include "dialogs/GUIDialogNumeric.h"
-#include "dialogs/GUIDialogGamepad.h"
 #include "dialogs/GUIDialogSubMenu.h"
-#include "dialogs/GUIDialogFavourites.h"
 #include "dialogs/GUIDialogButtonMenu.h"
-#include "dialogs/GUIDialogContextMenu.h"
-#include "dialogs/GUIDialogPlayerControls.h"
-#include "music/dialogs/GUIDialogSongInfo.h"
-#include "dialogs/GUIDialogSmartPlaylistEditor.h"
-#include "dialogs/GUIDialogSmartPlaylistRule.h"
-#include "pictures/GUIDialogPictureInfo.h"
 #include "addons/GUIDialogAddonSettings.h"
-#include "addons/GUIDialogAddonInfo.h"
+
 #include "video/dialogs/GUIDialogFullScreenInfo.h"
-#include "dialogs/GUIDialogSlider.h"
-#include "cores/dlgcache.h"
 #include "guilib/GUIControlFactory.h"
-#include "dialogs/GUIDialogMediaFilter.h"
-#include "video/dialogs/GUIDialogSubtitles.h"
+#include "cores/dlgcache.h"
+#include "utils/URIUtils.h"
 #include "utils/XMLUtils.h"
 #include "addons/AddonInstaller.h"
+#include "addons/AddonManager.h"
+#include "music/tags/MusicInfoTag.h"
+#include "music/tags/MusicInfoTagLoaderFactory.h"
+
+#ifdef HAS_PERFORMANCE_SAMPLE
+#include "utils/PerformanceSample.h"
+#else
+#define MEASURE_FUNCTION
+#endif
+
+#ifdef TARGET_WINDOWS
+#include "win32util.h"
+#endif
+
+#ifdef TARGET_DARWIN_OSX
+#include "osx/CocoaInterface.h"
+#include "osx/XBMCHelper.h"
+#endif
+#ifdef TARGET_DARWIN
+#include "osx/DarwinUtils.h"
+#endif
+
+#include "storage/MediaManager.h"
 #include "utils/JobManager.h"
 #include "utils/SaveFileStateJob.h"
+#include "utils/AlarmClock.h"
+#include "utils/StringUtils.h"
+#include "utils/Weather.h"
+#include "DatabaseManager.h"
 
-#include "settings/DisplaySettings.h"
-#include "settings/MediaSettings.h"
-#include "settings/SkinSettings.h"
-#include "view/ViewStateSettings.h"
-
-#ifdef _LINUX
+#ifdef TARGET_POSIX
 #include "XHandle.h"
+#endif
+
+#if defined(TARGET_ANDROID)
+#include "android/activity/XBMCApp.h"
+#include "android/activity/AndroidFeatures.h"
+#include "android/jni/Build.h"
+#endif
+
+#ifdef TARGET_WINDOWS
+#include "utils/Environment.h"
+#endif
+
+#if defined(HAS_LIBAMCODEC)
+#include "utils/AMLUtils.h"
+#endif
+
+#include "utils/CharsetConverter.h"
+#include "pictures/GUIWindowSlideShow.h"
+#include "windows/GUIWindowLoginScreen.h"
+
+#ifdef HAS_WEB_SERVER
+#include "libGoAhead/XBMChttp.h"
+#endif
+
+#ifdef HAS_XBOX_HARDWARE
+#ifdef HAS_XFONT
+#include <xfont.h>  // for textout functions
+#endif
+#include "XBVideoConfig.h"
+#include "XBAudioConfig.h"
+#include "utils/LCD.h"
+#include "utils/LCDFactory.h"
+#include "utils/LED.h"
+#include "utils/MemoryUnitManager.h"
+#include "utils/FanController.h"
+#include "xbox/IoSupport.h"
+#include "xbox/XKEEPROM.h"
+#include "xbox/XKHDD.h"
+#include "xbox/xbeheader.h"
 #endif
 
 using namespace std;
@@ -1274,88 +1285,16 @@ HRESULT CApplication::Initialize()
 
   StartServices();
 
-  g_windowManager.Add(new CGUIWindowHome);                     // window id = 0
-
-  if (!LoadSkin(CSettings::Get().GetString("lookandfeel.skin")))
-    LoadSkin(DEFAULT_SKIN);
-
-  g_windowManager.Add(new CGUIWindowPrograms);                 // window id = 1
-  g_windowManager.Add(new CGUIWindowPictures);                 // window id = 2
-  g_windowManager.Add(new CGUIWindowFileManager);      // window id = 3
-  g_windowManager.Add(new CGUIWindowSettings);                 // window id = 4
-  g_windowManager.Add(new CGUIWindowSystemInfo);               // window id = 7
-  g_windowManager.Add(new CGUIWindowSettingsScreenCalibration); // window id = 11
-  g_windowManager.Add(new CGUIWindowSettingsCategory);         // window id = 12 slideshow:window id 2007
-  g_windowManager.Add(new CGUIWindowVideoNav);                 // window id = 36
-  g_windowManager.Add(new CGUIWindowVideoPlaylist);            // window id = 28
-  g_windowManager.Add(new CGUIWindowLoginScreen);            // window id = 29
-  g_windowManager.Add(new CGUIWindowSettingsProfile);          // window id = 34
-  g_windowManager.Add(new CGUIWindow(WINDOW_SKIN_SETTINGS, "SkinSettings.xml"));
-  g_windowManager.Add(new CGUIWindowAddonBrowser);          // window id = 40
-  g_windowManager.Add(new CGUIWindowPointer);            // window id = 99
-  g_windowManager.Add(new CGUIWindowGameSaves);               // window id = 35
-  g_windowManager.Add(new CGUIDialogYesNo);              // window id = 100
-  g_windowManager.Add(new CGUIDialogProgress);           // window id = 101
-  g_windowManager.Add(new CGUIDialogExtendedProgressBar);     // window id = 148
-  g_windowManager.Add(new CGUIDialogKeyboardGeneric);           // window id = 103
-  g_windowManager.Add(new CGUIDialogVolumeBar);          // window id = 104
-  g_windowManager.Add(new CGUIDialogSeekBar);            // window id = 115
-  g_windowManager.Add(new CGUIDialogSubMenu);            // window id = 105
-  g_windowManager.Add(new CGUIDialogContextMenu);        // window id = 106
-  g_windowManager.Add(new CGUIDialogKaiToast);           // window id = 107
-  g_windowManager.Add(new CGUIDialogNumeric);            // window id = 109
-  g_windowManager.Add(new CGUIDialogGamepad);            // window id = 110
-  g_windowManager.Add(new CGUIDialogButtonMenu);         // window id = 111
-  g_windowManager.Add(new CGUIDialogMuteBug);            // window id = 113
-  g_windowManager.Add(new CGUIDialogPlayerControls);     // window id = 114
-  g_windowManager.Add(new CGUIDialogSlider);             // window id = 145
-  g_windowManager.Add(new CGUIDialogMusicOSD);           // window id = 120
-  g_windowManager.Add(new CGUIDialogVisualisationPresetList);   // window id = 122
-  g_windowManager.Add(new CGUIDialogVideoSettings);             // window id = 123
-  g_windowManager.Add(new CGUIDialogAudioSubtitleSettings);     // window id = 124
-  g_windowManager.Add(new CGUIDialogVideoBookmarks);      // window id = 125
-  // Don't add the filebrowser dialog - it's created and added when it's needed
-  g_windowManager.Add(new CGUIDialogTrainerSettings);  // window id = 127
-  g_windowManager.Add(new CGUIDialogNetworkSetup);  // window id = 128
-  g_windowManager.Add(new CGUIDialogMediaSource);   // window id = 129
-  g_windowManager.Add(new CGUIDialogProfileSettings); // window id = 130
-  g_windowManager.Add(new CGUIDialogFavourites);     // window id = 134
-  g_windowManager.Add(new CGUIDialogSongInfo);       // window id = 135
-  g_windowManager.Add(new CGUIDialogSmartPlaylistEditor);       // window id = 136
-  g_windowManager.Add(new CGUIDialogSmartPlaylistRule);       // window id = 137
-  g_windowManager.Add(new CGUIDialogBusy);      // window id = 138
-  g_windowManager.Add(new CGUIDialogPictureInfo);      // window id = 139
-  g_windowManager.Add(new CGUIDialogAddonInfo);
-  g_windowManager.Add(new CGUIDialogAddonSettings);      // window id = 140
-  g_windowManager.Add(new CGUIDialogTextViewer);              // window id = 147
-
-  g_windowManager.Add(new CGUIDialogLockSettings); // window id = 131
-
-  g_windowManager.Add(new CGUIDialogContentSettings);        // window id = 132
-
-  g_windowManager.Add(new CGUIDialogMediaFilter);   // window id = 151
-  g_windowManager.Add(new CGUIDialogSubtitles); // window id = 153
-
-  g_windowManager.Add(new CGUIWindowMusicPlayList);          // window id = 500
-  g_windowManager.Add(new CGUIWindowMusicSongs);             // window id = 501
-  g_windowManager.Add(new CGUIWindowMusicNav);               // window id = 502
-  g_windowManager.Add(new CGUIWindowMusicPlaylistEditor);    // window id = 503
-
-  g_windowManager.Add(new CGUIDialogSelect);             // window id = 2000
-  g_windowManager.Add(new CGUIDialogMusicInfo);                // window id = 2001
-  g_windowManager.Add(new CGUIDialogOK);                 // window id = 2002
-  g_windowManager.Add(new CGUIDialogVideoInfo);                // window id = 2003
-  g_windowManager.Add(new CGUIWindowFullScreen);         // window id = 2005
-  g_windowManager.Add(new CGUIWindowVisualisation);      // window id = 2006
-  g_windowManager.Add(new CGUIWindowSlideShow);          // window id = 2007
-  g_windowManager.Add(new CGUIDialogFileStacking);       // window id = 2008
-
-  g_windowManager.Add(new CGUIDialogVideoOSD);                // window id = 2901
-  g_windowManager.Add(new CGUIWindowScreensaver);        // window id = 2900 Screensaver
-  g_windowManager.Add(new CGUIWindowWeather);            // window id = 2600 WEATHER
-  g_windowManager.Add(new CGUIWindowStartup);            // startup window (id 2999)
-
+  g_windowManager.CreateWindows();
   /* window id's 3000 - 3100 are reserved for python */
+
+  // Make sure we have at least the default skin
+  string defaultSkin = ((const CSettingString*)CSettings::Get().GetSetting("lookandfeel.skin"))->GetDefault();
+  if (!LoadSkin(CSettings::Get().GetString("lookandfeel.skin")) && !LoadSkin(defaultSkin))
+  {
+    CLog::Log(LOGERROR, "Default skin '%s' not found! Terminating..", defaultSkin.c_str());
+    return E_FAIL;
+  }
 
   m_ctrDpad.SetDelays(100, 500); //g_settings.m_iMoveDelayController, g_settings.m_iRepeatDelayController);
 
@@ -3232,86 +3171,7 @@ HRESULT CApplication::Cleanup()
 {
   try
   {
-    g_windowManager.Delete(WINDOW_MUSIC_PLAYLIST);
-    g_windowManager.Delete(WINDOW_MUSIC_PLAYLIST_EDITOR);
-    g_windowManager.Delete(WINDOW_MUSIC_FILES);
-    g_windowManager.Delete(WINDOW_MUSIC_NAV);
-    g_windowManager.Delete(WINDOW_DIALOG_MUSIC_INFO);
-    g_windowManager.Delete(WINDOW_DIALOG_VIDEO_INFO);
-    g_windowManager.Delete(WINDOW_VIDEO_FILES);
-    g_windowManager.Delete(WINDOW_VIDEO_PLAYLIST);
-    g_windowManager.Delete(WINDOW_VIDEO_NAV);
-    g_windowManager.Delete(WINDOW_FILES);
-    g_windowManager.Delete(WINDOW_DIALOG_VIDEO_INFO);
-    g_windowManager.Delete(WINDOW_DIALOG_YES_NO);
-    g_windowManager.Delete(WINDOW_DIALOG_PROGRESS);
-    g_windowManager.Delete(WINDOW_DIALOG_NUMERIC);
-    g_windowManager.Delete(WINDOW_DIALOG_GAMEPAD);
-    g_windowManager.Delete(WINDOW_DIALOG_SUB_MENU);
-    g_windowManager.Delete(WINDOW_DIALOG_BUTTON_MENU);
-    g_windowManager.Delete(WINDOW_DIALOG_CONTEXT_MENU);
-    g_windowManager.Delete(WINDOW_DIALOG_PLAYER_CONTROLS);
-    g_windowManager.Delete(WINDOW_DIALOG_MUSIC_OSD);
-    g_windowManager.Delete(WINDOW_DIALOG_VIS_SETTINGS);
-    g_windowManager.Delete(WINDOW_DIALOG_VIS_PRESET_LIST);
-    g_windowManager.Delete(WINDOW_DIALOG_SELECT);
-    g_windowManager.Delete(WINDOW_DIALOG_OK);
-    g_windowManager.Delete(WINDOW_DIALOG_FILESTACKING);
-    g_windowManager.Delete(WINDOW_DIALOG_KEYBOARD);
-    g_windowManager.Delete(WINDOW_FULLSCREEN_VIDEO);
-    g_windowManager.Delete(WINDOW_DIALOG_TRAINER_SETTINGS);
-    g_windowManager.Delete(WINDOW_DIALOG_PROFILE_SETTINGS);
-    g_windowManager.Delete(WINDOW_DIALOG_LOCK_SETTINGS);
-    g_windowManager.Delete(WINDOW_DIALOG_NETWORK_SETUP);
-    g_windowManager.Delete(WINDOW_DIALOG_MEDIA_SOURCE);
-    g_windowManager.Delete(WINDOW_DIALOG_VIDEO_OSD_SETTINGS);
-    g_windowManager.Delete(WINDOW_DIALOG_AUDIO_OSD_SETTINGS);
-    g_windowManager.Delete(WINDOW_DIALOG_VIDEO_BOOKMARKS);
-    g_windowManager.Delete(WINDOW_DIALOG_CONTENT_SETTINGS);
-    g_windowManager.Delete(WINDOW_DIALOG_FAVOURITES);
-    g_windowManager.Delete(WINDOW_DIALOG_SONG_INFO);
-    g_windowManager.Delete(WINDOW_DIALOG_SMART_PLAYLIST_EDITOR);
-    g_windowManager.Delete(WINDOW_DIALOG_SMART_PLAYLIST_RULE);
-    g_windowManager.Delete(WINDOW_DIALOG_BUSY);
-    g_windowManager.Delete(WINDOW_DIALOG_PICTURE_INFO);
-    g_windowManager.Delete(WINDOW_DIALOG_ADDON_INFO);
-    g_windowManager.Delete(WINDOW_DIALOG_ADDON_SETTINGS);
-    g_windowManager.Delete(WINDOW_DIALOG_SLIDER);
-    g_windowManager.Delete(WINDOW_DIALOG_MEDIA_FILTER);
-    g_windowManager.Delete(WINDOW_DIALOG_SUBTITLES);
-    g_windowManager.Delete(WINDOW_DIALOG_TEXT_VIEWER);
-
-    g_windowManager.Delete(WINDOW_STARTUP_ANIM);
-    g_windowManager.Delete(WINDOW_LOGIN_SCREEN);
-    g_windowManager.Delete(WINDOW_VISUALISATION);
-    g_windowManager.Delete(WINDOW_SETTINGS_MENU);
-    g_windowManager.Delete(WINDOW_SETTINGS_PROFILES);
-    g_windowManager.Delete(WINDOW_SETTINGS_MYPICTURES);  // all the settings categories
-    g_windowManager.Delete(WINDOW_SCREEN_CALIBRATION);
-    g_windowManager.Delete(WINDOW_SYSTEM_INFORMATION);
-    g_windowManager.Delete(WINDOW_SCREENSAVER);
-    g_windowManager.Delete(WINDOW_DIALOG_VIDEO_OSD);
-    g_windowManager.Delete(WINDOW_SLIDESHOW);
-    g_windowManager.Delete(WINDOW_SKIN_SETTINGS);
-
-    g_windowManager.Delete(WINDOW_HOME);
-    g_windowManager.Delete(WINDOW_PROGRAMS);
-    g_windowManager.Delete(WINDOW_PICTURES);
-    g_windowManager.Delete(WINDOW_GAMESAVES);
-    g_windowManager.Delete(WINDOW_WEATHER);
-
-    g_windowManager.Delete(WINDOW_SETTINGS_MYPICTURES);
-    g_windowManager.Remove(WINDOW_SETTINGS_MYPROGRAMS);
-    g_windowManager.Remove(WINDOW_SETTINGS_MYWEATHER);
-    g_windowManager.Remove(WINDOW_SETTINGS_MYMUSIC);
-    g_windowManager.Remove(WINDOW_SETTINGS_SYSTEM);
-    g_windowManager.Remove(WINDOW_SETTINGS_MYVIDEOS);
-    g_windowManager.Remove(WINDOW_SETTINGS_SERVICE);
-    g_windowManager.Remove(WINDOW_SETTINGS_APPEARANCE);
-    g_windowManager.Remove(WINDOW_DIALOG_KAI_TOAST);
-
-    g_windowManager.Remove(WINDOW_DIALOG_SEEK_BAR);
-    g_windowManager.Remove(WINDOW_DIALOG_VOLUME_BAR);
+    g_windowManager.DestroyWindows();
 
     CAddonMgr::Get().DeInit();
 
