@@ -60,7 +60,6 @@ public:
   virtual bool OnClick(const CGUIListItemPtr &item);
   bool OnInfo(const CGUIListItemPtr &item);
   bool OnContextMenu(const CGUIListItemPtr &item);
-  void CheckContentAttributes(std::string &target, CFileItem &fileItem);
   virtual bool IsUpdating() const;
 
   // callback from directory job

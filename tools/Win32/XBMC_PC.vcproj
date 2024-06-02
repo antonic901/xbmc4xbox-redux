@@ -2143,12 +2143,6 @@
 					RelativePath="..\..\xbmc\programs\GUIViewStatePrograms.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIViewStateScripts.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\GUIViewStateScripts.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\windows\GUIWindowFileManager.cpp">
 				</File>
 				<File

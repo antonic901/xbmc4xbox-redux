@@ -3297,7 +3297,6 @@ HRESULT CApplication::Cleanup()
     g_windowManager.Delete(WINDOW_HOME);
     g_windowManager.Delete(WINDOW_PROGRAMS);
     g_windowManager.Delete(WINDOW_PICTURES);
-    g_windowManager.Delete(WINDOW_SCRIPTS);
     g_windowManager.Delete(WINDOW_GAMESAVES);
     g_windowManager.Delete(WINDOW_WEATHER);
 

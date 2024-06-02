@@ -178,14 +178,6 @@ bool CFavouritesDirectory::IsFavourite(CFileItem *item, int contextWindow)
   return items.Contains(GetExecutePath(*item, contextWindow));
 }
 
-static CStdString Paramify(const CStdString& param)
-{
-  CStdString result(param);
-  result.Replace("\\", "\\\\");
-  result.Replace("\"", "\\\"");
-  return "\"" + result + "\"";
-}
-
 CStdString CFavouritesDirectory::GetExecutePath(const CFileItem &item, int contextWindow)
 {
   CStdString text;
@@ -200,14 +192,13 @@ CStdString CFavouritesDirectory::GetExecutePath(const CFileItem &item, const std
                             !(item.IsSmartPlayList() || item.IsPlayList())))
   {
     if (!contextWindow.empty())
-      execute.Format("ActivateWindow(%s,%s,return)", contextWindow, Paramify(item.GetPath()));
+      execute = StringUtils::Format("ActivateWindow(%s,%s,return)", contextWindow.c_str(), StringUtils::Paramify(item.GetPath()).c_str());
   }
-  else if (item.GetPath().Left(9).Equals("plugin://"))
-    execute.Format("RunPlugin(%s)", Paramify(item.GetPath()));
-  else if (contextWindow == STRINGIZE(WINDOW_SCRIPTS))
-    execute.Format("RunScript(%s)", item.GetPath());
+  /* TODO:STRING_CLEANUP */
+  else if (item.IsScript() && item.GetPath().size() > 9) // plugin://<foo>
+    execute = StringUtils::Format("RunScript(%s)", StringUtils::Paramify(item.GetPath().substr(9)).c_str());
   else if (contextWindow == STRINGIZE(WINDOW_PROGRAMS))
-    execute.Format("RunXBE(%s)", Paramify(item.GetPath()));
+    execute.Format("RunXBE(%s)", StringUtils::Paramify(item.GetPath()).c_str());
   else  // assume a media file
   {
     if (item.IsVideoDb() && item.HasVideoInfoTag())
