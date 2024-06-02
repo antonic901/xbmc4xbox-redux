@@ -215,7 +215,7 @@ private:
   class CGUIWindowManagerIdCache
   {
   public:
-    CGUIWindowManagerIdCache(void) : m_id(WINDOW_INVALID) {}
+    CGUIWindowManagerIdCache(void) : m_id(WINDOW_INVALID), m_window(NULL) {}
     CGUIWindow *Get(int id)
     {
       if (id == m_id)
