@@ -2101,7 +2101,7 @@ bool CApplication::OnKey(CKey& key)
   g_Mouse.SetInactive();
   
   // get the current active window
-  int iWin = GetActiveWindowID();
+  int iWin = g_windowManager.GetActiveWindowID();
 
   // this will be checked for certain keycodes that need
   // special handling if the screensaver is active
@@ -2846,7 +2846,7 @@ bool CApplication::ProcessMouse()
   uint32_t mousecommand = g_Mouse.GetAction();
 
   // Retrieve the corresponding action
-  int iWin = GetActiveWindowID();
+  int iWin = g_windowManager.GetActiveWindowID();
   CKey key(mousecommand | KEY_MOUSE, (unsigned int) 0);
   CAction mouseaction = CButtonTranslator::GetInstance().GetAction(iWin, key);
 
@@ -3042,7 +3042,7 @@ bool CApplication::ProcessJoystickEvent(const std::string& joystickName, int wKe
 #endif
    g_Mouse.SetInactive();
 
-   int iWin = GetActiveWindowID();
+   int iWin = g_windowManager.GetActiveWindowID();
    int actionID;
    CStdString actionName;
    bool fullRange = false;
@@ -3075,37 +3075,6 @@ bool CApplication::ExecuteInputAction(CAction action)
     bResult = OnAction(action);
   }
   return bResult;
-}
-
-int CApplication::GetActiveWindowID(void)
-{
-  // Get the currently active window
-  int iWin = g_windowManager.GetActiveWindow() & WINDOW_ID_MASK;
-
-  // If there is a dialog active get the dialog id instead
-  if (g_windowManager.HasModalDialog())
-    iWin = g_windowManager.GetTopMostModalDialogID() & WINDOW_ID_MASK;
-
-  // If the window is FullScreenVideo check for special cases
-  if (iWin == WINDOW_FULLSCREEN_VIDEO)
-  {
-    // check if we're in a DVD menu
-    if(g_application.m_pPlayer && g_application.m_pPlayer->IsInMenu())
-      iWin = WINDOW_VIDEO_MENU;
-#ifdef HAS_PVR
-    // check for LiveTV and switch to it's virtual window
-    else if (g_PVRManager.IsStarted() && g_application.CurrentFileItem().HasPVRChannelInfoTag())
-      iWin = WINDOW_FULLSCREEN_LIVETV;
-#endif
-  }
-#ifdef HAS_PVR
-  // special casing for PVR radio
-  if (iWin == WINDOW_VISUALISATION && g_PVRManager.IsStarted() && g_application.CurrentFileItem().HasPVRChannelInfoTag())
-    iWin = WINDOW_FULLSCREEN_RADIO;
-#endif
-
-  // Return the window id
-  return iWin;
 }
 
 bool CApplication::ProcessKeyboard()

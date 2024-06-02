@@ -358,7 +358,6 @@ protected:
 
   bool ProcessJoystickEvent(const std::string& joystickName, int button, bool isAxis, float fAmount, unsigned int holdTime = 0);
   bool ExecuteInputAction(CAction action);
-  int  GetActiveWindowID(void);
 
   void CheckForDebugButtonCombo();
   float NavigationIdleTime();

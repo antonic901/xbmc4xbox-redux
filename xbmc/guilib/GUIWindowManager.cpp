@@ -1137,6 +1137,28 @@ int CGUIWindowManager::GetActiveWindow() const
   return WINDOW_INVALID;
 }
 
+
+int CGUIWindowManager::GetActiveWindowID()
+{
+  // Get the currently active window
+  int iWin = GetActiveWindow() & WINDOW_ID_MASK;
+
+  // If there is a dialog active get the dialog id instead
+  if (HasModalDialog())
+    iWin = GetTopMostModalDialogID() & WINDOW_ID_MASK;
+
+  // If the window is FullScreenVideo check for special cases
+  if (iWin == WINDOW_FULLSCREEN_VIDEO)
+  {
+    // check if we're in a DVD menu
+    if (g_application.m_pPlayer && g_application.m_pPlayer->IsInMenu())
+      iWin = WINDOW_VIDEO_MENU;
+  }
+
+  // Return the window id
+  return iWin;
+}
+
 // same as GetActiveWindow() except it first grabs dialogs
 int CGUIWindowManager::GetFocusedWindow() const
 {
