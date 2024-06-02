@@ -196,7 +196,7 @@ public:
   void SetPlaySpeed(int iSpeed);
   bool IsButtonDown(DWORD code);
   bool AnyButtonDown();
-  bool ResetScreenSaverWindow();
+  bool ResetScreenSaverWindow(); // this is MAYBE WakeUpScreenSaverAndDPMS
   double GetTotalTime() const;
   double GetTime() const;
   float GetPercentage() const;

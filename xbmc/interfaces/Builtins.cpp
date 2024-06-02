@@ -307,9 +307,12 @@ int CBuiltins::Execute(const CStdString& execString)
     int iWindow = CButtonTranslator::TranslateWindow(strWindow);
     if (iWindow != WINDOW_INVALID)
     {
-      // disable the screensaver
-      g_application.ResetScreenSaverWindow();
-      g_windowManager.ActivateWindow(iWindow, params, !execute.Equals("activatewindow"));
+      if (iWindow != g_windowManager.GetActiveWindow())
+      {
+        // disable the screensaver
+        g_application.ResetScreenSaverWindow();
+        g_windowManager.ActivateWindow(iWindow, params, !execute.Equals("activatewindow"));
+      }
     }
     else
     {
@@ -323,6 +326,38 @@ int CBuiltins::Execute(const CStdString& execString)
     int subItem = (params.size() > 1) ? atol(params[1].c_str())+1 : 0;
     CGUIMessage msg(GUI_MSG_SETFOCUS, g_windowManager.GetActiveWindow(), controlID, subItem);
     g_windowManager.SendMessage(msg);
+  }
+  else if ((execute == "activatewindowandfocus" || execute == "replacewindowandfocus") && params.size())
+  {
+    std::string strWindow = params[0];
+
+    // confirm the window destination is valid prior to switching
+    int iWindow = CButtonTranslator::TranslateWindow(strWindow);
+    if (iWindow != WINDOW_INVALID)
+    {
+      if (iWindow != g_windowManager.GetActiveWindow())
+      {
+        // disable the screensaver
+        g_application.ResetScreenSaverWindow();
+        vector<string> dummy;
+        g_windowManager.ActivateWindow(iWindow, dummy, execute != "activatewindowandfocus");
+
+        unsigned int iPtr = 1;
+        while (params.size() > iPtr + 1)
+        {
+          CGUIMessage msg(GUI_MSG_SETFOCUS, g_windowManager.GetFocusedWindow(),
+              atol(params[iPtr].c_str()),
+              (params.size() >= iPtr + 2) ? atol(params[iPtr + 1].c_str())+1 : 0);
+          g_windowManager.SendMessage(msg);
+          iPtr += 2;
+        }
+      }
+    }
+    else
+    {
+      CLog::Log(LOGERROR, "Replace/ActivateWindowAndFocus called with invalid destination window: %s", strWindow.c_str());
+      return false;
+    }
   }
   else if (execute.Equals("runscript") && params.size())
   {
