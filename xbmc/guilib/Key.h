@@ -377,6 +377,7 @@
 // PVR related Window and Dialog ID's
 #define WINDOW_DIALOG_PVR_TIMER_SETTING   10604
 #define WINDOW_FULLSCREEN_LIVETV          10614 // virtual window for PVR specific keymap bindings in fullscreen playback (which internally uses WINDOW_FULLSCREEN_VIDEO)
+#define WINDOW_FULLSCREEN_RADIO           10625 // virtual window for PVR radio specific keymaps with fallback to WINDOW_VISUALISATION
 // PVR_WINDOW VIEWS = 10694-10699
 
 //#define WINDOW_VIRTUAL_KEYBOARD           11000

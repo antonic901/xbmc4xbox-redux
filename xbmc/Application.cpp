@@ -2173,7 +2173,7 @@ bool CApplication::OnKey(CKey& key)
   g_Mouse.SetInactive();
   
   // get the current active window
-  int iWin = g_windowManager.GetActiveWindow() & WINDOW_ID_MASK;
+  int iWin = GetActiveWindowID();
 
   // this will be checked for certain keycodes that need
   // special handling if the screensaver is active
@@ -2200,43 +2200,7 @@ bool CApplication::OnKey(CKey& key)
     }  
   }
 
-  // change this if we have a dialog up
-  if (g_windowManager.HasModalDialog())
-  {
-    iWin = g_windowManager.GetTopMostModalDialogID() & WINDOW_ID_MASK;
-  }
-  if (iWin == WINDOW_DIALOG_FULLSCREEN_INFO)
-  { // fullscreen info dialog - special case
-    action = CButtonTranslator::GetInstance().GetAction(iWin, key);
-
-#ifdef HAS_SDL
-    g_Keyboard.Reset();
-#endif
-
-    if (!key.IsAnalogButton())
-      CLog::Log(LOGDEBUG, "%s: %i pressed, trying fullscreen info action %s", __FUNCTION__, (int) key.GetButtonCode(), action.GetName().c_str());
-
-    if (OnAction(action))
-      return true;
-
-    // fallthrough to the main window
-    iWin = WINDOW_FULLSCREEN_VIDEO;
-  }
-  if (iWin == WINDOW_FULLSCREEN_VIDEO)
-  {
-    // current active window is full screen video.
-    if (g_application.m_pPlayer && g_application.m_pPlayer->IsInMenu())
-    {
-      // if player is in some sort of menu, (ie DVDMENU) map buttons differently
-      action = CButtonTranslator::GetInstance().GetAction(WINDOW_VIDEO_MENU, key);
-    }
-    else
-    {
-      // no then use the fullscreen window section of keymap.xml to map key->action
-      action = CButtonTranslator::GetInstance().GetAction(iWin, key);
-    }
-  }
-  else
+  if (iWin != WINDOW_FULLSCREEN_VIDEO)
   {
     // current active window isnt the fullscreen window
     // just use corresponding section from keymap.xml
@@ -3201,6 +3165,11 @@ int CApplication::GetActiveWindowID(void)
       iWin = WINDOW_FULLSCREEN_LIVETV;
 #endif
   }
+#ifdef HAS_PVR
+  // special casing for PVR radio
+  if (iWin == WINDOW_VISUALISATION && g_PVRManager.IsStarted() && g_application.CurrentFileItem().HasPVRChannelInfoTag())
+    iWin = WINDOW_FULLSCREEN_RADIO;
+#endif
 
   // Return the window id
   return iWin;
