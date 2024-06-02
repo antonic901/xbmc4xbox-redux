@@ -5642,7 +5642,21 @@ msgctxt "#13515"
 msgid "No art"
 msgstr ""
 
-#empty strings from id 13516 to 13601
+#empty strings from id 13516 to 13555
+
+#. Label of a setting that allows to select the skip step sizes to use for skipping
+#: system/settings/settings.xml
+msgctxt "#13556"
+msgid "Skip steps"
+msgstr ""
+
+#. Name of a setting to configure the time to wait for subsequent keypresses in order to apply additive skipping
+#: system/settings/settings.xml
+msgctxt "#13557"
+msgid "Skip delay"
+msgstr ""
+
+#empty strings from id 13557 to 13601
 
 #: system/settings/darwin.xml
 msgctxt "#13602"
@@ -12438,6 +12452,20 @@ msgstr ""
 msgctxt "#37015"
 msgid "Browse Into"
 msgstr ""
+
+#. Description of setting "Videos -> Playback -> Skip steps"
+#: system/settings/settings.xml
+msgctxt "#37042"
+msgid "Defines which step sizes to use when pressing the skip buttons. If more steps are selected for a skip direction, these can be applied by subsequent presses on the skip button within the defined skip delay. Forward (positive) and backward (negative) steps can be defined independently."
+msgstr ""
+
+#. Description of setting "Videos -> Playback -> Skip delay"
+#: system/settings/settings.xml
+msgctxt "#37043"
+msgid "Defines the time to wait for subsequent key presses before performing the skip. Only applies when using smart skipping (when using more than one skip step for a direction)."
+msgstr ""
+
+#empty strings from id 37044 to 38009
 
 #strings from id 38600 to 38999 reserved for xbmc4xbox
 

@@ -329,7 +329,7 @@ CApplication::CApplication(void)
   , m_progressTrackingItem(new CFileItem)
   , m_videoInfoScanner(new CVideoInfoScanner)
   , m_musicInfoScanner(new CMusicInfoScanner)
-  , m_seekHandler(new CSeekHandler)
+  , m_seekHandler(&CSeekHandler::Get())
 {
   m_network = NULL;
   m_iPlaySpeed = 1;
@@ -372,8 +372,6 @@ CApplication::CApplication(void)
 CApplication::~CApplication(void)
 {
   delete m_currentStack;
-
-  delete m_seekHandler;
 }
 
 // text out routine for below
@@ -2474,7 +2472,7 @@ bool CApplication::OnAction(CAction &action)
   if (IsPlaying() && action.GetAmount() && (action.GetID() == ACTION_ANALOG_SEEK_FORWARD || action.GetID() == ACTION_ANALOG_SEEK_BACK))
   {
     if (!m_pPlayer->CanSeek()) return false;
-    m_seekHandler->Seek(action.GetID() == ACTION_ANALOG_SEEK_FORWARD, action.GetAmount(), action.GetRepeat());
+    m_seekHandler->Seek(action.GetID() == ACTION_ANALOG_SEEK_FORWARD, action.GetAmount(), action.GetRepeat(), true);
     return true;
   }
   if (action.GetID() == ACTION_SHOW_PLAYLIST)
