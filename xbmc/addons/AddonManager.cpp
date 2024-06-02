@@ -31,7 +31,6 @@
 #include "threads/SingleLock.h"
 #include "FileItem.h"
 #include "LangInfo.h"
-#include "DownloadQueueManager.h"
 #include "inttypes.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"

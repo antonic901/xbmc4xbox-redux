@@ -1576,9 +1576,6 @@
 					RelativePath="..\..\xbmc\utils\DownloadQueue.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\utils\DownloadQueueManager.cpp">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\DynamicDll.cpp">
 				</File>
 				<File
@@ -3086,9 +3083,6 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\utils\DownloadQueue.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\utils\DownloadQueueManager.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\DynamicDll.h">

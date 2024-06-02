@@ -84,7 +84,6 @@
 #include "filesystem/RarManager.h"
 #include "playlists/PlayList.h"
 #include "profiles/ProfilesManager.h"
-#include "utils/DownloadQueueManager.h"
 #include "settings/SettingAddon.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
@@ -1355,7 +1354,6 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIWindowStartup);            // startup window (id 2999)
 
   /* window id's 3000 - 3100 are reserved for python */
-  g_DownloadManager.Initialize();
 
   m_ctrDpad.SetDelays(100, 500); //g_settings.m_iMoveDelayController, g_settings.m_iRepeatDelayController);
 
