@@ -32,6 +32,7 @@
 #include "addons/GUIDialogAddonSettings.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "guilib/GUIKeyboardFactory.h"
+#include "guilib/GUIAudioManager.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogYesNo.h"
@@ -214,6 +215,22 @@ void CBuiltins::GetHelp(CStdString &help)
   }
 }
 
+bool CBuiltins::ActivateWindow(int iWindowID, const std::vector<std::string>& params /* = {} */, bool swappingWindows /* = false */)
+{
+  // don't activate a window if there are active modal dialogs
+  if (g_windowManager.HasModalDialog() && !g_windowManager.GetWindow(iWindowID)->IsDialog())
+  {
+    CLog::Log(LOG_LEVEL_DEBUG, "Activate of window '%i' refused because there are active modal dialogs", iWindowID);
+    g_audioManager.PlayActionSound(CAction(ACTION_ERROR));
+    return false;
+  }
+
+  // disable the screensaver
+  g_application.ResetScreenSaverWindow();
+  g_windowManager.ActivateWindow(iWindowID, params, swappingWindows);
+  return true;
+}
+
 int CBuiltins::Execute(const CStdString& execString)
 {
   // Get the text after the "XBMC."
@@ -319,9 +336,7 @@ int CBuiltins::Execute(const CStdString& execString)
       // activate window only if window and path differ from the current active window
       if (iWindow != g_windowManager.GetActiveWindow() || !bIsSameStartFolder)
       {
-        // disable the screensaver
-        g_application.ResetScreenSaverWindow();
-        g_windowManager.ActivateWindow(iWindow, params, !execute.Equals("activatewindow"));
+        return ActivateWindow(iWindow, params, execute != "activatewindow");
       }
     }
     else
@@ -347,10 +362,8 @@ int CBuiltins::Execute(const CStdString& execString)
     {
       if (iWindow != g_windowManager.GetActiveWindow())
       {
-        // disable the screensaver
-        g_application.ResetScreenSaverWindow();
-        vector<string> dummy;
-        g_windowManager.ActivateWindow(iWindow, dummy, execute != "activatewindowandfocus");
+        if (!ActivateWindow(iWindow, std::vector<std::string>(), execute != "activatewindowandfocus"))
+          return false;
 
         unsigned int iPtr = 1;
         while (params.size() > iPtr + 1)
@@ -1209,7 +1222,10 @@ int CBuiltins::Execute(const CStdString& execString)
 #endif
     CProfilesManager::Get().LoadMasterProfileForLogin();
     g_passwordManager.bMasterUser = false;
-    g_windowManager.ActivateWindow(WINDOW_LOGIN_SCREEN);
+
+    if (!ActivateWindow(WINDOW_LOGIN_SCREEN))
+      return false;
+
     g_application.getNetwork().SetupNetwork();
   }
   else if (execute.Left(18).Equals("system.pwmcontrol"))

@@ -212,7 +212,8 @@ static const ActionMapping actions[] =
         {"mousedrag"         , ACTION_MOUSE_DRAG},
         {"mousemove"         , ACTION_MOUSE_MOVE},
         
-        // Do nothing action
+        // Do nothing / error action
+        { "error"            , ACTION_ERROR},
         { "noop"             , ACTION_NOOP}
 };
 
