@@ -3764,7 +3764,7 @@ PlayBackRet CApplication::PlayFile(const CFileItem& item, bool bRestart)
     }
 
 #ifdef HAS_VIDEO_PLAYBACK
-    if( IsPlayingVideo() )
+    else if( IsPlayingVideo() )
     {
       if (g_windowManager.GetActiveWindow() == WINDOW_VISUALISATION)
         g_windowManager.ActivateWindow(WINDOW_FULLSCREEN_VIDEO);
@@ -3775,6 +3775,13 @@ PlayBackRet CApplication::PlayFile(const CFileItem& item, bool bRestart)
        SwitchToFullScreen();
     }
 #endif
+    else
+    {
+      if (g_windowManager.GetActiveWindow() == WINDOW_VISUALISATION
+      ||  g_windowManager.GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO)
+        g_windowManager.PreviousWindow();
+
+    }
 
     g_audioManager.Enable(false);
   }
