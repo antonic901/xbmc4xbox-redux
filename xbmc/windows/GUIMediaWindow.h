@@ -159,6 +159,8 @@ protected:
    */
   static CStdString RemoveParameterFromPath(const CStdString &strDirectory, const CStdString &strParameter);
 
+  void ProcessRenderLoop(bool renderOnly = false);
+
   XFILE::CVirtualDirectory m_rootDir;
   CGUIViewControl m_viewControl;
 

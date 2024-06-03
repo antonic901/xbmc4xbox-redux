@@ -37,6 +37,8 @@
 #include <list>
 
 class CGUIDialog;
+class CGUIMediaWindow;
+
 enum DialogModalityType;
 
 #define WINDOW_ID_MASK 0xffff
@@ -47,6 +49,8 @@ enum DialogModalityType;
  */
 class CGUIWindowManager
 {
+  friend CGUIDialog;
+  friend CGUIMediaWindow;
 public:
   CGUIWindowManager(void);
   virtual ~CGUIWindowManager(void);
@@ -125,7 +129,6 @@ public:
    */
   void RenderDialogs();
   CGUIWindow* GetWindow(int id) const;
-  void ProcessRenderLoop(bool renderOnly = false);
   void SetCallback(IWindowManagerCallback& callback);
   void DeInitialize();
 
@@ -188,6 +191,8 @@ private:
    * \param force True to ignore checks which refuses opening the window, otherwise false
    */
   void ActivateWindow_Internal(int windowID, const std::vector<std::string> &params, bool swappingWindows, bool force = false);
+
+  void ProcessRenderLoop(bool renderOnly = false);
 
   typedef std::map<int, CGUIWindow *> WindowMap;
   WindowMap m_mapWindows;

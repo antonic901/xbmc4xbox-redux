@@ -67,7 +67,7 @@ bool CGUIDialogBusy::WaitOnEvent(CEvent &event, unsigned int displaytime /* = 10
 
       while(!event.WaitMSec(1))
       {
-        g_windowManager.ProcessRenderLoop(isFromDvdPlayer);
+        dialog->ProcessRenderLoop(isFromDvdPlayer);
         if (allowCancel && dialog->IsCanceled())
         {
           cancelled = true;

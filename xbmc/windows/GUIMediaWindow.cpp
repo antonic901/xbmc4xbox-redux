@@ -214,7 +214,7 @@ bool CGUIMediaWindow::OnBack(int actionID)
 {
   CURL filterUrl(m_strFilterPath);
   if (actionID == ACTION_NAV_BACK && !m_vecItems->IsVirtualDirectoryRoot() &&
-     (m_vecItems->GetPath() != m_startDirectory || (m_canFilterAdvanced && filterUrl.HasOption("filter"))))
+     (!URIUtils::PathEquals(m_vecItems->GetPath(), m_startDirectory, true) || (m_canFilterAdvanced && filterUrl.HasOption("filter"))))
   {
     GoParentFolder();
     return true;
@@ -1282,7 +1282,12 @@ void CGUIMediaWindow::SetHistoryForPath(const CStdString& strDirectory)
         }
       }
 
-      URIUtils::AddSlashAtEnd(strPath);
+      // set the original path exactly as it was passed in
+      if (URIUtils::PathEquals(strPath, strDirectory, true))
+        strPath = strDirectory;
+      else
+        URIUtils::AddSlashAtEnd(strPath);
+
       m_history.AddPathFront(strPath);
       m_history.SetSelectedItem(strPath, strParentPath);
       strPath = strParentPath;
@@ -1449,7 +1454,7 @@ void CGUIMediaWindow::OnInitWindow()
   m_rootDir.SetAllowThreads(false);
 
   // the start directory may change during Refresh
-  bool updateStartDirectory = (m_startDirectory == m_vecItems->GetPath());
+  bool updateStartDirectory = URIUtils::PathEquals(m_vecItems->GetPath(), m_startDirectory, true);
   Refresh();
   if (updateStartDirectory)
     m_startDirectory = m_vecItems->GetPath();
@@ -1936,4 +1941,9 @@ CStdString CGUIMediaWindow::RemoveParameterFromPath(const CStdString &strDirecto
   }
 
   return strDirectory;
+}
+
+void CGUIMediaWindow::ProcessRenderLoop(bool renderOnly)
+{
+  g_windowManager.ProcessRenderLoop(renderOnly);
 }
