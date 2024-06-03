@@ -6,6 +6,8 @@
 		<control type="group">
 			<posx>820</posx>
 			<posy>0</posy>
+			<include>VisibleFadeEffect</include>
+			<visible>!Player.Muted</visible>
 			<control type="image">
 				<posx>0</posx>
 				<posy>-10</posy>
@@ -32,6 +34,16 @@
 					<info>Player.Volume</info>
 				</control>
 			</control>
+		</control>
+		<control type="image">
+			<left>50r</left>
+			<top>2</top>
+			<width>45</width>
+			<height>45</height>
+			<aspectratio>keep</aspectratio>
+			<texture>icon-mute.png</texture>
+			<include>VisibleFadeEffect</include>
+			<visible>Player.Muted</visible>
 		</control>
 	</controls>
 </window>

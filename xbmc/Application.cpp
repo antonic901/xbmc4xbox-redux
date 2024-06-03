@@ -2445,7 +2445,7 @@ bool CApplication::OnAction(CAction &action)
   }
 
   // Check for global volume control
-  if (action.GetAmount() && (action.GetID() == ACTION_VOLUME_UP || action.GetID() == ACTION_VOLUME_DOWN))
+  if (action.GetAmount() && (action.GetID() == ACTION_VOLUME_UP || action.GetID() == ACTION_VOLUME_DOWN || action.GetID() == ACTION_VOLUME_SET))
   {
     if (m_muted)
       UnMute();
@@ -2460,13 +2460,16 @@ bool CApplication::OnAction(CAction &action)
 
     if (action.GetID() == ACTION_VOLUME_UP)
       volume += (int)((float)fabs(action.GetAmount()) * action.GetAmount() * speed);
-    else
+    else if (action.GetID() == ACTION_VOLUME_DOWN)
       volume -= (int)((float)fabs(action.GetAmount()) * action.GetAmount() * speed);
-
-    SetVolume(volume, false);
-
-    // show visual feedback of volume change...
-    ShowVolumeBar(&action);
+    else
+      volume = action.GetAmount() * speed;
+    if (volume != m_volumeLevel)
+    {
+      SetVolume(volume, false);
+      // show visual feedback of volume change...
+      ShowVolumeBar(&action);
+    }
     return true;
   }
   // Check for global seek control

@@ -247,6 +247,11 @@ void CGUIDialog::ResetAutoClose(void)
     m_showStartTime = CTimeUtils::GetFrameTime();
 }
 
+void CGUIDialog::CancelAutoClose(void)
+{
+  m_autoClosing = false;
+}
+
 void CGUIDialog::ProcessRenderLoop(bool renderOnly)
 {
   g_windowManager.ProcessRenderLoop(renderOnly);

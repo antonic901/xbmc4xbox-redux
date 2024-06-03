@@ -93,7 +93,6 @@
 #include "dialogs/GUIDialogSeekBar.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogVolumeBar.h"
-#include "dialogs/GUIDialogMuteBug.h"
 #include "video/dialogs/GUIDialogFileStacking.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogGamepad.h"
@@ -177,7 +176,6 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIDialogNumeric);
   Add(new CGUIDialogGamepad);
   Add(new CGUIDialogButtonMenu);
-  Add(new CGUIDialogMuteBug);
   Add(new CGUIDialogPlayerControls);
   Add(new CGUIDialogSlider);
   Add(new CGUIDialogMusicOSD);

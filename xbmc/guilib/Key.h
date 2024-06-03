@@ -289,6 +289,7 @@
 #define ACTION_SETTINGS_LEVEL_CHANGE  242
 
 #define ACTION_INPUT_TEXT             244
+#define ACTION_VOLUME_SET             245
 
 // The NOOP action can be specified to disable an input event. This is
 // useful in user keyboard.xml etc to disable actions specified in the
@@ -343,7 +344,6 @@
 #define WINDOW_DIALOG_NUMERIC             10109
 #define WINDOW_DIALOG_GAMEPAD             10110
 #define WINDOW_DIALOG_BUTTON_MENU         10111
-#define WINDOW_DIALOG_MUTE_BUG            10113
 #define WINDOW_DIALOG_PLAYER_CONTROLS     10114
 #define WINDOW_DIALOG_SEEK_BAR            10115
 #define WINDOW_DIALOG_MUSIC_OSD           10120

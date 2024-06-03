@@ -2007,9 +2007,6 @@
 					RelativePath="..\..\xbmc\music\dialogs\GUIDialogMusicOSD.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\dialogs\GUIDialogMuteBug.cpp">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\network\GUIDialogNetworkSetup.cpp">
 				</File>
 				<File
@@ -3125,9 +3122,6 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\music\dialogs\GUIDialogMusicScan.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\dialogs\GUIDialogMuteBug.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\dialogs\GUIDialogNumeric.h">

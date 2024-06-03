@@ -1473,9 +1473,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\music\dialogs\GUIDialogMusicOSD.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\dialogs\GUIDialogMuteBug.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogNumeric.cpp">
 				</File>
 				<File
@@ -4051,9 +4048,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\music\dialogs\GUIDialogMusicInfo.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\dialogs\GUIDialogMuteBug.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\dialogs\GUIDialogNumeric.h">
