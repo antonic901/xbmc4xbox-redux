@@ -32,6 +32,7 @@
 
 #include "threads/Event.h"
 #include "threads/Thread.h"
+#include "threads/Atomics.h"
 
 class CURL;
 class CFileItem;
@@ -63,7 +64,7 @@ public:
   static void SetContent(int handle, const CStdString &strContent);
   static void SetProperty(int handle, const CStdString &strProperty, const CStdString &strValue);
   static void SetResolvedUrl(int handle, bool success, const CFileItem* resultItem);
-  static void SetLabel2(int handle, const CStdString& ident);  
+  static void SetLabel2(int handle, const CStdString& ident);
 
 private:
   ADDON::AddonPtr m_addon;
@@ -81,7 +82,7 @@ private:
   CFileItem*     m_fileResult;
   CEvent         m_fetchComplete;
 
-  bool          m_cancelled;    // set to true when we are cancelled
+  atomic<bool>  m_cancelled;
   bool          m_success;      // set by script in EndOfDirectory
   int    m_totalItems;   // set by script in AddDirectoryItem
 

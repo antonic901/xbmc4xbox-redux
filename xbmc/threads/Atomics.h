@@ -40,6 +40,41 @@ private:
   long& m_Lock;
 };
 
+#include <xtl.h>
+
+template<typename T1>
+class atomic
+{
+public:
+  atomic()
+  {
+    InitializeCriticalSection(&m_Mutex);
+  }
+
+  ~atomic()
+  {
+    DeleteCriticalSection(&m_Mutex);
+  }
+  
+  void set(T1 value)
+  {
+    EnterCriticalSection(&m_Mutex);
+    m_value = value;
+    LeaveCriticalSection(&m_Mutex);
+  }
+
+  T1 read()
+  {
+    EnterCriticalSection(&m_Mutex);
+    T1 result = m_value;
+    LeaveCriticalSection(&m_Mutex);
+    return result;
+  }
+
+private: 
+  CRITICAL_SECTION m_Mutex;
+  T1 m_value;
+};
 
 #endif // __ATOMICS_H__
 

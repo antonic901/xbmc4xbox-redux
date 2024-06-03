@@ -73,7 +73,11 @@ void CPluginDirectory::CScriptObserver::Abort()
 }
 
 CPluginDirectory::CPluginDirectory()
+  : m_fetchComplete(true)
+  , m_success(false)
+  , m_totalItems(0)
 {
+  m_cancelled.set(false);
   m_listItems = new CFileItemList;
   m_fileResult = new CFileItem;
 }
@@ -139,7 +143,7 @@ bool CPluginDirectory::StartScript(const CStdString& strPath, bool retrievingDir
   m_listItems->Clear();
   m_listItems->SetPath(strPath);
   m_listItems->SetLabel(m_addon->Name());
-  m_cancelled = false;
+  m_cancelled.set(false);
   m_success = false;
   m_totalItems = 0;
 
@@ -202,7 +206,7 @@ bool CPluginDirectory::AddItem(int handle, const CFileItem *item, int totalItems
   dir->m_listItems->Add(pItem);
   dir->m_totalItems = totalItems;
 
-  return !dir->m_cancelled;
+  return !dir->m_cancelled.read();
 }
 
 bool CPluginDirectory::AddItems(int handle, const CFileItemList *items, int totalItems)
@@ -217,7 +221,7 @@ bool CPluginDirectory::AddItems(int handle, const CFileItemList *items, int tota
   dir->m_listItems->Append(pItemList);
   dir->m_totalItems = totalItems;
 
-  return !dir->m_cancelled;
+  return !dir->m_cancelled.read();
 }
 
 void CPluginDirectory::EndOfDirectory(int handle, bool success, bool replaceListing, bool cacheToDisc)
@@ -283,7 +287,7 @@ void CPluginDirectory::AddSortMethod(int handle, SORT_METHOD sortMethod, const C
       {
         dir->m_listItems->AddSortMethod(SortByBitrate, 623, LABEL_MASKS("%T", "%X"));
         break;
-      }             
+      }
     case SORT_METHOD_SIZE:
       {
         dir->m_listItems->AddSortMethod(SortBySize, 553, LABEL_MASKS("%T", "%I"));
@@ -417,7 +421,7 @@ void CPluginDirectory::AddSortMethod(int handle, SORT_METHOD sortMethod, const C
         dir->m_listItems->AddSortMethod(SortByPlaycount, 567, LABEL_MASKS("%T", "%V"));
         break;
       }
-   
+
     default:
       break;
   }
@@ -475,8 +479,6 @@ bool CPluginDirectory::RunScriptWithParams(const CStdString& strPath)
 
 bool CPluginDirectory::WaitOnScriptResult(const CStdString &scriptPath, int scriptId, const CStdString &scriptName, bool retrievingDir)
 {
-  bool cancelled = false;
-
   // CPluginDirectory::GetDirectory can be called from the main and other threads.
   // If called form the main thread, we need to bring up the BusyDialog in order to
   // keep the render loop alive
@@ -487,35 +489,26 @@ bool CPluginDirectory::WaitOnScriptResult(const CStdString &scriptPath, int scri
       CScriptObserver scriptObs(scriptId, m_fetchComplete);
       if (!CGUIDialogBusy::WaitOnEvent(m_fetchComplete, 200))
       {
-        cancelled = true;
+        m_cancelled.set(true);
       }
       scriptObs.Abort();
     }
   }
   else
   {
-    // kill the script if it does not return within 30 seconds
-    // and we are not waiting for user input
+    // Wait for directory fetch to complete, end, or be cancelled
+    while (!m_cancelled.read()
+        && CScriptInvocationManager::Get().IsRunning(scriptId)
+        && !m_fetchComplete.WaitMSec(20));
+
+    // Give the script 30 seconds to exit before we attempt to stop it
     XbmcThreads::EndTime timer(30000);
-    while (CScriptInvocationManager::Get().IsRunning(scriptId))
-    {
-      if (m_fetchComplete.WaitMSec(1000))
-      {
-        break;
-      }
-      if (g_windowManager.HasModalDialog(std::vector<DialogModalityType>(MODAL)))
-      {
-        timer.Set(30000);
-      }
-      if (timer.IsTimePast())
-      {
-        cancelled = true;
-        break;
-      }
-    }
+    while (!timer.IsTimePast()
+          && CScriptInvocationManager::Get().IsRunning(scriptId)
+          && !m_fetchComplete.WaitMSec(20));
   }
 
-  if (cancelled)
+  if (m_cancelled.read())
   { // cancel our script
     if (scriptId != -1 && CScriptInvocationManager::Get().IsRunning(scriptId))
     {
@@ -524,7 +517,7 @@ bool CPluginDirectory::WaitOnScriptResult(const CStdString &scriptPath, int scri
     }
   }
 
-  return !cancelled && m_success;
+  return !m_cancelled.read() && m_success;
 }
 
 void CPluginDirectory::SetResolvedUrl(int handle, bool success, const CFileItem *resultItem)
@@ -581,7 +574,7 @@ void CPluginDirectory::SetProperty(int handle, const CStdString &strProperty, co
 
 void CPluginDirectory::CancelDirectory()
 {
-  m_cancelled = true;
+  m_cancelled.set(true);
 }
 
 float CPluginDirectory::GetProgress() const
