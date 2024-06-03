@@ -18,7 +18,7 @@
  *
  */
 
-
+#include "Application.h"
 #include "threads/SystemClock.h"
 #include "system.h"
 #include "PluginDirectory.h"
@@ -29,7 +29,7 @@
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "threads/SingleLock.h"
 #include "guilib/GUIWindowManager.h"
-#include "dialogs/GUIDialogProgress.h"
+#include "dialogs/GUIDialogBusy.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
 #include "video/VideoInfoTag.h"
@@ -47,6 +47,30 @@ using namespace ADDON;
 map<int, CPluginDirectory *> CPluginDirectory::globalHandles;
 int CPluginDirectory::handleCounter = 0;
 CCriticalSection CPluginDirectory::m_handleLock;
+
+CPluginDirectory::CScriptObserver::CScriptObserver(int scriptId, CEvent &event) :
+  CThread("scriptobs"), m_scriptId(scriptId), m_event(event)
+{
+  Create();
+}
+
+void CPluginDirectory::CScriptObserver::Process()
+{
+  while (!m_bStop)
+  {
+    if (!CScriptInvocationManager::Get().IsRunning(m_scriptId))
+    {
+      m_event.Set();
+      break;
+    }
+    Sleep(20);
+  }
+}
+
+void CPluginDirectory::CScriptObserver::Abort()
+{
+  m_bStop = true;
+}
 
 CPluginDirectory::CPluginDirectory()
 {
@@ -451,87 +475,40 @@ bool CPluginDirectory::RunScriptWithParams(const CStdString& strPath)
 
 bool CPluginDirectory::WaitOnScriptResult(const CStdString &scriptPath, int scriptId, const CStdString &scriptName, bool retrievingDir)
 {
-  const unsigned int timeBeforeProgressBar = 1500;
-  const unsigned int timeToKillScript = 1000;
-
-  unsigned int startTime = XbmcThreads::SystemClockMillis();
-  CGUIDialogProgress *progressBar = NULL;
   bool cancelled = false;
 
-  CLog::Log(LOGDEBUG, "%s - waiting on the %s (id=%d) plugin...", __FUNCTION__, scriptName.c_str(), scriptId);
-  while (true)
+  // CPluginDirectory::GetDirectory can be called from the main and other threads.
+  // If called form the main thread, we need to bring up the BusyDialog in order to
+  // keep the render loop alive
+  if (g_application.IsCurrentThread())
   {
+    if (!m_fetchComplete.WaitMSec(20))
     {
-      CSingleExit ex(g_graphicsContext);
-      // check if the python script is finished
-      if (m_fetchComplete.WaitMSec(20))
-      { // python has returned
-        CLog::Log(LOGDEBUG, "%s- plugin returned %s", __FUNCTION__, m_success ? "successfully" : "failure");
-        break;
-      }
-    }
-    // check our script is still running
-    if (!CScriptInvocationManager::Get().IsRunning(scriptId))
-    { // check whether we exited normally
-      if (!m_fetchComplete.WaitMSec(0))
-      { // python didn't return correctly
-        CLog::Log(LOGDEBUG, " %s - plugin exited prematurely - terminating", __FUNCTION__);
-        m_success = false;
-      }
-      break;
-    }
-
-    // check whether we should pop up the progress dialog
-    if (!retrievingDir && !progressBar && XbmcThreads::SystemClockMillis() - startTime > timeBeforeProgressBar)
-    { // loading takes more then 1.5 secs, show a progress dialog
-      progressBar = (CGUIDialogProgress *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
-
-      // if script has shown progressbar don't override it
-      if (progressBar && progressBar->IsActive())
+      CScriptObserver scriptObs(scriptId, m_fetchComplete);
+      if (!CGUIDialogBusy::WaitOnEvent(m_fetchComplete, 200))
       {
-        startTime = XbmcThreads::SystemClockMillis();
-        progressBar = NULL;
+        cancelled = true;
       }
-
-      if (progressBar)
-      {
-        progressBar->SetHeading(scriptName);
-        progressBar->SetLine(0, retrievingDir ? 1040 : 10214);
-        progressBar->SetLine(1, "");
-        progressBar->SetLine(2, "");
-        progressBar->ShowProgressBar(retrievingDir);
-        progressBar->Open();
-      }
+      scriptObs.Abort();
     }
-
-    if (progressBar)
-    { // update the progress bar and check for user cancel
-      progressBar->Progress();
-      if (progressBar->IsCanceled())
-      { // user has cancelled our process - cancel our process
-        m_cancelled = true;
-      }
-    }
-
-    if (!cancelled && m_cancelled)
+  }
+  else
+  {
+    // kill the script if it does not return within 30 seconds
+    if (!m_fetchComplete.WaitMSec(30000))
     {
       cancelled = true;
-      startTime = XbmcThreads::SystemClockMillis();
-    }
-
-    if ((cancelled && XbmcThreads::SystemClockMillis() - startTime > timeToKillScript))
-    { // cancel our script
-      if (scriptId != -1 && CScriptInvocationManager::Get().IsRunning(scriptId))
-      {
-        CLog::Log(LOGDEBUG, "%s- cancelling plugin %s (id=%d)", __FUNCTION__, scriptName.c_str(), scriptId);
-        CScriptInvocationManager::Get().Stop(scriptId);
-        break;
-      }
     }
   }
 
-  if (progressBar)
-    CApplicationMessenger::Get().Close(progressBar, false, false);
+  if (cancelled)
+  { // cancel our script
+    if (scriptId != -1 && CScriptInvocationManager::Get().IsRunning(scriptId))
+    {
+      CLog::Log(LOGDEBUG, "%s- cancelling plugin %s (id=%d)", __FUNCTION__, scriptName.c_str(), scriptId);
+      CScriptInvocationManager::Get().Stop(scriptId);
+    }
+  }
 
   return !cancelled && m_success;
 }
