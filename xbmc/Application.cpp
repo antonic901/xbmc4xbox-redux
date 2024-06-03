@@ -1866,7 +1866,7 @@ bool CApplication::LoadUserWindows()
           CGUIControlFactory::GetConditionalVisibility(pRootElement, visibleCondition);
 
           if (strType.Equals("dialog"))
-            pWindow = new CGUIDialog(id + WINDOW_HOME, skinFile);
+            pWindow = new CGUIDialog(id + WINDOW_HOME, skinFile, visibleCondition.empty() ? MODAL : MODELESS);
           else if (strType.Equals("submenu"))
             pWindow = new CGUIDialogSubMenu(id + WINDOW_HOME, skinFile);
           else if (strType.Equals("buttonmenu"))
