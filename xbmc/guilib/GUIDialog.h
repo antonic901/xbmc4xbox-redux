@@ -32,7 +32,7 @@ enum DialogModalityType
 {
   MODELESS,
   MODAL,
-  SYSTEM_MODAL
+  PARENTLESS_MODAL
 };
 
 /*!
@@ -43,7 +43,7 @@ class CGUIDialog :
       public CGUIWindow
 {
 public:
-  CGUIDialog(int id, const CStdString &xmlFile);
+  CGUIDialog(int id, const std::string &xmlFile, DialogModalityType modalityType = MODAL);
   virtual ~CGUIDialog(void);
 
   virtual bool OnAction(const CAction &action);
@@ -52,14 +52,13 @@ public:
   virtual void DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
 
-  virtual void DoModal(int iWindowID = WINDOW_INVALID, const CStdString &param = ""); // modal
-  void Show(); // modeless
+  void Open();
   
   virtual bool OnBack(int actionID);
 
   virtual bool IsDialogRunning() const { return m_active; };
   virtual bool IsDialog() const { return true;};
-  virtual bool IsModalDialog() const { return m_modalityType == MODAL || m_modalityType == SYSTEM_MODAL; };
+  virtual bool IsModalDialog() const { return m_modalityType == MODAL || m_modalityType == PARENTLESS_MODAL; };
   virtual DialogModalityType GetModalityType() const { return m_modalityType; };
 
   void SetAutoClose(unsigned int timeoutMs);
@@ -74,8 +73,8 @@ protected:
   virtual void UpdateVisibility();
 
   friend class CGUIWindowManager;
-  virtual void DoModal_Internal(int iWindowID = WINDOW_INVALID, const CStdString &param = ""); // modal
-  virtual void Show_Internal(); // modeless
+  virtual void Open_Internal();
+  virtual void Open_Internal(bool bProcessRenderLoop);
   virtual void OnDeinitWindow(int nextWindowID);
 
   bool m_wasRunning; ///< \brief true if we were running during the last DoProcess()

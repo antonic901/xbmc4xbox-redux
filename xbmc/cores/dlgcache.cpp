@@ -76,7 +76,7 @@ void CDlgCache::OpenDialog()
     m_pDlg->SetHeading(m_strHeader);
 
   m_pDlg->SetLine(2, m_strLinePrev);
-  m_pDlg->StartModal();
+  m_pDlg->Open();
   bSentCancel = false;
 }
 

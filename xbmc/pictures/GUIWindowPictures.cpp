@@ -242,7 +242,7 @@ void CGUIWindowPictures::OnPrepareFileItems(CFileItemList& items)
         m_dlgProgress->SetLine(0, 505);
         m_dlgProgress->SetLine(1, "");
         m_dlgProgress->SetLine(2, url.GetWithoutUserDetails());
-        m_dlgProgress->StartModal();
+        m_dlgProgress->Open();
         m_dlgProgress->ShowProgressBar(true);
         bProgressVisible = true;
       }
@@ -594,7 +594,7 @@ void CGUIWindowPictures::OnItemInfo(int itemNumber)
   if (pictureInfo)
   {
     pictureInfo->SetPicture(item.get());
-    pictureInfo->DoModal();
+    pictureInfo->Open();
   }
 }
 

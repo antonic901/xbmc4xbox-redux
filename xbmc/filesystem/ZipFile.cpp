@@ -476,7 +476,7 @@ void CZipFile::StartProgressBar()
 {
   if (!m_dlgProgress)
     m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
-  m_dlgProgress->StartModal();
+  m_dlgProgress->Open();
   m_dlgProgress->SetPercentage(0);
   m_dlgProgress->SetHeading(773);
   m_dlgProgress->SetLine(0,"");

@@ -263,7 +263,7 @@ void CGUIDialogAddonInfo::OnChangeLog()
     pDlgInfo->SetText(m_item->GetProperty("Addon.Changelog").asString());
 
   m_changelog = true;
-  pDlgInfo->DoModal();
+  pDlgInfo->Open();
   m_changelog = false;
 }
 
@@ -310,7 +310,7 @@ bool CGUIDialogAddonInfo::ShowForItem(const CFileItemPtr& item)
   if (!dialog->SetItem(item))
     return false;
 
-  dialog->DoModal(); 
+  dialog->Open();
   return true;
 }
 

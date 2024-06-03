@@ -226,7 +226,7 @@ bool CGUIDialogLockSettings::ShowAndGetUserAndPassword(CStdString& strUser, CStd
   dialog->m_strURL = strURL;
   dialog->m_bChanged = false;
   dialog->m_saveUserDetails = saveUserDetails;
-  dialog->DoModal();
+  dialog->Open();
   if (dialog->m_bChanged)
   {
     strUser = dialog->m_strUser;
@@ -260,7 +260,7 @@ bool CGUIDialogLockSettings::ShowAndGetLock(CProfile::CLock &locks, int iButtonL
   dialog->m_bGetUser = false;
   dialog->m_bConditionalDetails = bConditional;
   dialog->m_bDetails = bDetails;
-  dialog->DoModal();
+  dialog->Open();
   if (dialog->m_bChanged)
   {
     locks = dialog->m_locks;

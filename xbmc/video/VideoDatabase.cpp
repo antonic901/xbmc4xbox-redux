@@ -3891,7 +3891,7 @@ void CVideoDatabase::RemoveContentForPath(const CStdString& strPath, CGUIDialogP
       progress->SetLine(1, 313);
       progress->SetLine(2, 330);
       progress->SetPercentage(0);
-      progress->StartModal();
+      progress->Open();
       progress->ShowProgressBar(true);
     }
     vector< pair<int,string> > paths;
@@ -8083,7 +8083,7 @@ void CVideoDatabase::CleanDatabase(CGUIDialogProgressBarHandle* handle, const se
         progress->SetLine(1, 313);
         progress->SetLine(2, 330);
         progress->SetPercentage(0);
-        progress->StartModal();
+        progress->Open();
         progress->ShowProgressBar(true);
       }
     }
@@ -8508,10 +8508,7 @@ std::vector<int> CVideoDatabase::CleanMediaType(const std::string &mediaType, co
             pDialog->SetLine(2, parentPath);
             pDialog->SetChoice(0, 15015);
             pDialog->SetChoice(1, 15014);
-
-            //send message and wait for user input
-            ThreadMessage tMsg = { TMSG_DIALOG_DOMODAL, WINDOW_DIALOG_YES_NO, (unsigned int)g_windowManager.GetActiveWindow() };
-            CApplicationMessenger::Get().SendMessage(tMsg, true);
+            pDialog->Open();
 
             del = !pDialog->IsConfirmed();
           }
@@ -8635,7 +8632,7 @@ void CVideoDatabase::ExportToXML(const CStdString &path, bool singleFiles /* = f
       progress->SetLine(1, "");
       progress->SetLine(2, "");
       progress->SetPercentage(0);
-      progress->StartModal();
+      progress->Open();
       progress->ShowProgressBar(true);
     }
 
@@ -9131,7 +9128,7 @@ void CVideoDatabase::ImportFromXML(const CStdString &path)
       progress->SetLine(1, 330);
       progress->SetLine(2, "");
       progress->SetPercentage(0);
-      progress->StartModal();
+      progress->Open();
       progress->ShowProgressBar(true);
     }
 

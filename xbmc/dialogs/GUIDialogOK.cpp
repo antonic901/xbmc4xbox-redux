@@ -58,7 +58,7 @@ void CGUIDialogOK::ShowAndGetInput(const CVariant &heading, const CVariant &text
     return;
   dialog->SetHeading(heading);
   dialog->SetText(text);
-  dialog->DoModal();
+  dialog->Open();
 }
 
 // \brief Show CGUIDialogOK dialog, then wait for user to dismiss it.
@@ -70,7 +70,7 @@ void CGUIDialogOK::ShowAndGetInput(const CVariant &heading, const CVariant &line
   dialog->SetLine( 0, line0 );
   dialog->SetLine( 1, line1 );
   dialog->SetLine( 2, line2 );
-  dialog->DoModal();
+  dialog->Open();
   return ;
 }
 

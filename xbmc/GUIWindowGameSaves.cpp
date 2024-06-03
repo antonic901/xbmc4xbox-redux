@@ -207,7 +207,7 @@ bool CGUIWindowGameSaves::GetDirectory(const CStdString& strDirectory, CFileItem
       m_dlgProgress->SetLine(0, 20120);
       m_dlgProgress->SetLine(1,"");
       m_dlgProgress->SetLine(2, "");
-      m_dlgProgress->StartModal();
+      m_dlgProgress->Open();
       bProgressVisible = true;
     }
     if (!item->m_bIsFolder)
@@ -346,7 +346,7 @@ bool CGUIWindowGameSaves::DownloadSaves(CFileItem item)
                   pSave = pSave->NextSiblingElement("save");
                 }
                 //pDlg->Sort();
-                pDlg->DoModal();
+                pDlg->Open();
                 int iSelectedSave = pDlg->GetSelectedLabel();
                 CLog::Log(LOGINFO,"GSM: %i",  iSelectedSave);
                 if (iSelectedSave > -1)

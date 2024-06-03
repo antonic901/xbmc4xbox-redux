@@ -2646,7 +2646,7 @@ int CMusicDatabase::Cleanup(CGUIDialogProgress *pDlgProgress)
     pDlgProgress->SetLine(1, 318);
     pDlgProgress->SetLine(2, 330);
     pDlgProgress->SetPercentage(0);
-    pDlgProgress->StartModal();
+    pDlgProgress->Open();
     pDlgProgress->ShowProgressBar(true);
   }
   if (!CleanupSongs())
@@ -2782,7 +2782,7 @@ bool CMusicDatabase::LookupCDDBInfo(bool bRequery/*=false*/)
     pDialogProgress->SetLine(1, 256);
     pDialogProgress->SetLine(2, "");
     pDialogProgress->ShowProgressBar(false);
-    pDialogProgress->StartModal();
+    pDialogProgress->Open();
 
     // get cddb information
     if (!cddb.queryCDinfo(pCdInfo))
@@ -2810,7 +2810,7 @@ bool CMusicDatabase::LookupCDDBInfo(bool bRequery/*=false*/)
           pDlgSelect->Add(strTitle);
           i++;
         }
-        pDlgSelect->DoModal();
+        pDlgSelect->Open();
 
         // Has the user selected a match...
         int iSelectedCD = pDlgSelect->GetSelectedLabel();
@@ -2893,7 +2893,7 @@ void CMusicDatabase::DeleteCDDBInfo()
     }
 
     pDlg->Sort();
-    pDlg->DoModal();
+    pDlg->Open();
 
     // and wait till user selects one
     int iSelectedAlbum = pDlg->GetSelectedLabel();
@@ -5021,7 +5021,7 @@ void CMusicDatabase::ExportToXML(const CStdString &xmlFile, bool singleFiles, bo
       progress->SetLine(1, "");
       progress->SetLine(2, "");
       progress->SetPercentage(0);
-      progress->StartModal();
+      progress->Open();
       progress->ShowProgressBar(true);
     }
 
@@ -5190,7 +5190,7 @@ void CMusicDatabase::ImportFromXML(const CStdString &xmlFile)
       progress->SetLine(1, 330);
       progress->SetLine(2, "");
       progress->SetPercentage(0);
-      progress->StartModal();
+      progress->Open();
       progress->ShowProgressBar(true);
     }
 
@@ -5370,7 +5370,7 @@ void CMusicDatabase::ExportKaraokeInfo(const CStdString & outFile, bool asHTML)
       progress->SetLine(1, "");
       progress->SetLine(2, "");
       progress->SetPercentage(0);
-      progress->StartModal();
+      progress->Open();
       progress->ShowProgressBar(true);
     }
 
@@ -5472,7 +5472,7 @@ void CMusicDatabase::ImportKaraokeInfo(const CStdString & inputFile)
       progress->SetLine(1, "");
       progress->SetLine(2, "");
       progress->SetPercentage(0);
-      progress->StartModal();
+      progress->Open();
       progress->ShowProgressBar(true);
     }
 

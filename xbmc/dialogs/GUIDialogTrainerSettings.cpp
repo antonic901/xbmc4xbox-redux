@@ -142,7 +142,7 @@ bool CGUIDialogTrainerSettings::ShowForTitle(unsigned int iTitleId, CProgramData
   if (!dialog) return false;
   dialog->m_iTitleId = iTitleId;
   dialog->m_database = database;
-  dialog->DoModal();
+  dialog->Open();
   if (dialog->m_bNeedSave)
     return true;
 

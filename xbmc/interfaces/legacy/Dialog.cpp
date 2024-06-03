@@ -37,12 +37,6 @@ namespace XBMCAddon
 {
   namespace xbmcgui
   {
-    static void XBMCWaitForThreadMessage(int message, int param1, int param2)
-    {
-      ThreadMessage tMsg = {(DWORD)message, (DWORD)param1, (DWORD)param2};
-      CApplicationMessenger::Get().SendMessage(tMsg, true);
-    }
-
     Dialog::~Dialog() {}
 
     bool Dialog::yesno(const String& heading, const String& line1, 
@@ -53,8 +47,7 @@ namespace XBMCAddon
                        int autoclose) throw (WindowException)
     {
       DelayedCallGuard dcguard(languageHook);
-      const int window = WINDOW_DIALOG_YES_NO;
-      CGUIDialogYesNo* pDialog = (CGUIDialogYesNo*)g_windowManager.GetWindow(window);
+      CGUIDialogYesNo* pDialog = (CGUIDialogYesNo*)g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO);
       if (pDialog == NULL)
         throw WindowException("Error: Window is NULL, this is not possible :-)");
 
@@ -76,8 +69,7 @@ namespace XBMCAddon
       if (autoclose > 0)
         pDialog->SetAutoClose(autoclose);
 
-      //send message and wait for user input
-      XBMCWaitForThreadMessage(TMSG_DIALOG_DOMODAL, window, ACTIVE_WINDOW);
+      pDialog->Open();
 
       return pDialog->IsConfirmed();
     }
@@ -85,8 +77,7 @@ namespace XBMCAddon
     int Dialog::select(const String& heading, const std::vector<String>& list, int autoclose) throw (WindowException)
     {
       DelayedCallGuard dcguard(languageHook);
-      const int window = WINDOW_DIALOG_SELECT;
-      CGUIDialogSelect* pDialog= (CGUIDialogSelect*)g_windowManager.GetWindow(window);
+      CGUIDialogSelect* pDialog= (CGUIDialogSelect*)g_windowManager.GetWindow(WINDOW_DIALOG_SELECT);
       if (pDialog == NULL)
         throw WindowException("Error: Window is NULL, this is not possible :-)");
 
@@ -103,8 +94,7 @@ namespace XBMCAddon
       if (autoclose > 0)
         pDialog->SetAutoClose(autoclose);
 
-      //send message and wait for user input
-      XBMCWaitForThreadMessage(TMSG_DIALOG_DOMODAL, window, ACTIVE_WINDOW);
+      pDialog->Open();
 
       return pDialog->GetSelectedLabel();
     }
@@ -114,9 +104,7 @@ namespace XBMCAddon
                     const String& line3) throw (WindowException)
     {
       DelayedCallGuard dcguard(languageHook);
-      const int window = WINDOW_DIALOG_OK;
-
-      CGUIDialogOK* pDialog = (CGUIDialogOK*)g_windowManager.GetWindow(window);
+      CGUIDialogOK* pDialog = (CGUIDialogOK*)g_windowManager.GetWindow(WINDOW_DIALOG_OK);
       if (pDialog == NULL)
         throw WindowException("Error: Window is NULL, this is not possible :-)");
 
@@ -129,8 +117,7 @@ namespace XBMCAddon
       if (!line3.empty())
         pDialog->SetLine(2, line3);
 
-      //send message and wait for user input
-      XBMCWaitForThreadMessage(TMSG_DIALOG_DOMODAL, window, ACTIVE_WINDOW);
+      pDialog->Open();
 
       return pDialog->IsConfirmed();
     }
@@ -389,7 +376,7 @@ namespace XBMCAddon
       if (!line3.empty())
         pDialog->SetLine(2, line3);
 
-      pDialog->StartModal();
+      pDialog->Open();
     }
 
     void DialogProgress::update(int percent, const String& line1, 

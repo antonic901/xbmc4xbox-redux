@@ -411,7 +411,7 @@ bool CGUIDialogContentSettings::Show(ADDON::ScraperPtr& scraper, VIDEO::SScanSet
   dialog->m_bSingleItem    = settings.parent_name_root;
   dialog->m_bNoUpdate      = settings.noupdate;
   dialog->m_bNeedSave = false;
-  dialog->DoModal();
+  dialog->Open();
   if (dialog->m_bNeedSave)
   {
     scraper = boost::dynamic_pointer_cast<CScraper>(dialog->m_scraper);

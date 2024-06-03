@@ -102,7 +102,7 @@ bool CGUIDialogYesNo::ShowAndGetInput(int heading, int line0, int line1, int lin
   else
     dialog->SetChoice(1,107);
   dialog->m_bCanceled = false;
-  dialog->DoModal();
+  dialog->Open();
   bCanceled = dialog->m_bCanceled;
   return (dialog->IsConfirmed()) ? true : false;
 }
@@ -124,7 +124,8 @@ bool CGUIDialogYesNo::ShowAndGetInput(const std::string& heading, const std::str
     dialog->SetChoice(0,noLabel);
   if (!yesLabel.empty())
     dialog->SetChoice(1,yesLabel);
-  dialog->DoModal();
+  dialog->Open();
+
   bCanceled = dialog->m_bCanceled;
   return (dialog->IsConfirmed()) ? true : false;
 }

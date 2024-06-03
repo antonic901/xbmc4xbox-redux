@@ -229,7 +229,7 @@ void CGUIDialogMediaFilter::ShowAndEditMediaFilter(const std::string &path, CSma
   if (!dialog->SetPath(path))
     return;
 
-  dialog->DoModal();
+  dialog->Open();
 }
 
 void CGUIDialogMediaFilter::OnWindowLoaded()
@@ -763,7 +763,7 @@ void CGUIDialogMediaFilter::OnBrowse(const Filter &filter, CFileItemList &items,
   if (filter.rule != NULL && !filter.rule->m_parameter.empty())
     pDialog->SetSelected(filter.rule->m_parameter);
 
-  pDialog->DoModal();
+  pDialog->Open();
   if (pDialog->IsConfirmed())
     items.Copy(pDialog->GetSelectedItems());
   else

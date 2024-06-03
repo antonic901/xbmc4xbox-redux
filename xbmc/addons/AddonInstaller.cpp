@@ -180,7 +180,7 @@ bool CAddonInstaller::PromptForInstall(const CStdString &addonID, AddonPtr &addo
         progress->SetLine(1, addon->Name());
         progress->SetLine(2, "");
         progress->SetPercentage(0);
-        progress->StartModal();
+        progress->Open();
         while (true)
         {
           progress->Progress();

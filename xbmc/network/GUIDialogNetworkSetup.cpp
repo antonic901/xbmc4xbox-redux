@@ -103,7 +103,7 @@ bool CGUIDialogNetworkSetup::ShowAndGetNetworkAddress(CStdString &path)
   if (!dialog) return false;
   dialog->Initialize();
   dialog->SetPath(path);
-  dialog->DoModal();
+  dialog->Open();
   path = dialog->ConstructPath();
   return dialog->IsConfirmed();
 }

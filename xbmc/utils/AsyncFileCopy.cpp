@@ -67,7 +67,7 @@ bool CAsyncFileCopy::Copy(const CStdString &from, const CStdString &to, const CS
       dlg->SetLine(0, url1.GetWithoutUserDetails());
       dlg->SetLine(1, url2.GetWithoutUserDetails());
       dlg->SetPercentage(0);
-      dlg->StartModal();
+      dlg->Open();
     }
     // and update the dialog as we go
     if (dlg && dlg->IsDialogRunning())

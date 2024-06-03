@@ -615,7 +615,7 @@ bool CGUIDialogNumeric::ShowAndGetSeconds(std::string &timeString, const std::st
   time.wSecond = seconds - time.wHour * 3600 - time.wMinute * 60;
   pDialog->SetMode(INPUT_TIME_SECONDS, (void *)&time);
   pDialog->SetHeading(heading);
-  pDialog->DoModal();
+  pDialog->Open();
   if (!pDialog->IsConfirmed() || pDialog->IsCanceled())
     return false;
   pDialog->GetOutput(&time);
@@ -630,7 +630,7 @@ bool CGUIDialogNumeric::ShowAndGetTime(SYSTEMTIME &time, const std::string &head
   if (!pDialog) return false;
   pDialog->SetMode(INPUT_TIME, (void *)&time);
   pDialog->SetHeading(heading);
-  pDialog->DoModal();
+  pDialog->Open();
   if (!pDialog->IsConfirmed() || pDialog->IsCanceled())
     return false;
   pDialog->GetOutput(&time);
@@ -643,7 +643,7 @@ bool CGUIDialogNumeric::ShowAndGetDate(SYSTEMTIME &date, const std::string &head
   if (!pDialog) return false;
   pDialog->SetMode(INPUT_DATE, (void *)&date);
   pDialog->SetHeading(heading);
-  pDialog->DoModal();
+  pDialog->Open();
   if (!pDialog->IsConfirmed() || pDialog->IsCanceled())
     return false;
   pDialog->GetOutput(&date);
@@ -656,7 +656,7 @@ bool CGUIDialogNumeric::ShowAndGetIPAddress(std::string &IPAddress, const std::s
   if (!pDialog || IPAddress.empty()) return false;
   pDialog->SetMode(INPUT_IP_ADDRESS, (void *)&IPAddress);
   pDialog->SetHeading(heading);
-  pDialog->DoModal();
+  pDialog->Open();
   if (!pDialog->IsConfirmed() || pDialog->IsCanceled())
     return false;
   pDialog->GetOutput(&IPAddress);
@@ -673,7 +673,7 @@ bool CGUIDialogNumeric::ShowAndGetNumber(std::string& strInput, const std::strin
   if (iAutoCloseTimeoutMs)
     pDialog->SetAutoClose(iAutoCloseTimeoutMs);
 
-  pDialog->DoModal();
+  pDialog->Open();
 
   if (!pDialog->IsAutoClosed() && (!pDialog->IsConfirmed() || pDialog->IsCanceled()))
     return false;
@@ -748,7 +748,7 @@ bool CGUIDialogNumeric::ShowAndVerifyInput(std::string& strToVerify, const std::
   if (!bVerifyInput)
     strInput = strToVerify;
   pDialog->SetMode(INPUT_PASSWORD, (void *)&strInput);
-  pDialog->DoModal();
+  pDialog->Open();
 
   pDialog->GetOutput(&strInput);
 

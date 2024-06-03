@@ -106,7 +106,8 @@ bool CRarManager::CacheRarredFile(CStdString& strPathInCache, const CStdString& 
       pDialog->SetLine(0, 645);
       pDialog->SetLine(1, URIUtils::GetFileName(strPathInRar));
       pDialog->SetLine(2, "");
-      pDialog->DoModal();
+      pDialog->Open();
+
       if (!pDialog->IsConfirmed())
         iRes = 2; // pretend to be canceled
     }

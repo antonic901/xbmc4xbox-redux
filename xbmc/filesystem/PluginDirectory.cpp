@@ -502,7 +502,7 @@ bool CPluginDirectory::WaitOnScriptResult(const CStdString &scriptPath, int scri
         progressBar->SetLine(1, "");
         progressBar->SetLine(2, "");
         progressBar->ShowProgressBar(retrievingDir);
-        progressBar->StartModal();
+        progressBar->Open();
       }
     }
 

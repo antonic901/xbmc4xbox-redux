@@ -275,7 +275,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
       CGUIDialogFullScreenInfo* pDialog = (CGUIDialogFullScreenInfo*)g_windowManager.GetWindow(WINDOW_DIALOG_FULLSCREEN_INFO);
       if (pDialog)
       {
-        pDialog->DoModal();
+        pDialog->Open();
         return true;
       }
       break;
@@ -674,7 +674,7 @@ EVENT_RESULT CGUIWindowFullScreen::OnMouseEvent(const CPoint &point, const CMous
     if (pOSD)
     {
       pOSD->SetAutoClose(3000);
-      pOSD->DoModal();
+      pOSD->Open();
     }
     return EVENT_RESULT_HANDLED;
   }
@@ -1033,6 +1033,6 @@ void CGUIWindowFullScreen::ToggleOSD()
     if (pOSD->IsDialogRunning())
       pOSD->Close();
     else
-      pOSD->DoModal();
+      pOSD->Open();
   }
 }

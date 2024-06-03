@@ -36,7 +36,6 @@ class CGUIMessage;
 class CGUIWindow;
 
 // defines here
-#define TMSG_DIALOG_DOMODAL       100
 #define TMSG_WRITE_SCRIPT_OUTPUT  101
 #define TMSG_EXECUTE_SCRIPT       102
 #define TMSG_EXECUTE_BUILT_IN     103
@@ -76,8 +75,7 @@ class CGUIWindow;
 
 #define TMSG_NETWORKMESSAGE         500
 
-#define TMSG_GUI_DO_MODAL             600
-#define TMSG_GUI_SHOW                 601
+#define TMSG_GUI_DIALOG_OPEN          600
 #define TMSG_GUI_ACTIVATE_WINDOW      604
 #define TMSG_GUI_PYTHON_DIALOG        605
 #define TMSG_GUI_WINDOW_CLOSE         606
@@ -174,8 +172,7 @@ public:
 
   void NetworkMessage(DWORD dwMessage, DWORD dwParam = 0);
 
-  void DoModal(CGUIDialog *pDialog, int iWindowID, const CStdString &param = "");
-  void Show(CGUIDialog *pDialog);
+  void Open(CGUIDialog *pDialog);
   void Close(CGUIWindow *window, bool forceClose, bool waitResult = true, int nextWindowID = 0, bool enableSound = true);
   void ActivateWindow(int windowID, const std::vector<std::string> &params, bool swappingWindows, bool force = false);
   void SendAction(const CAction &action, int windowID = WINDOW_INVALID, bool waitResult=true);

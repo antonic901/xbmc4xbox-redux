@@ -93,9 +93,7 @@ void CAddonStatusHandler::Process()
     pDialog->SetLine(1, 24070);
     pDialog->SetLine(2, 24073);
 
-    //send message and wait for user input
-    ThreadMessage tMsg = {TMSG_DIALOG_DOMODAL, WINDOW_DIALOG_YES_NO, g_windowManager.GetActiveWindow()};
-    CApplicationMessenger::Get().SendMessage(tMsg, true);
+    pDialog->Open();
 
     if (pDialog->IsConfirmed())
       CAddonMgr::Get().GetCallbackForType(m_addon->Type())->RequestRestart(m_addon, false);
@@ -108,10 +106,7 @@ void CAddonStatusHandler::Process()
 
     pDialog->SetHeading(heading);
     pDialog->SetLine(1, 24074);
-
-    //send message and wait for user input
-    ThreadMessage tMsg = {TMSG_DIALOG_DOMODAL, WINDOW_DIALOG_OK, g_windowManager.GetActiveWindow()};
-    CApplicationMessenger::Get().SendMessage(tMsg, true);
+    pDialog->Open();
 
     CAddonMgr::Get().GetCallbackForType(m_addon->Type())->RequestRestart(m_addon, true);
   }
@@ -125,10 +120,7 @@ void CAddonStatusHandler::Process()
     pDialogYesNo->SetLine(1, 24070);
     pDialogYesNo->SetLine(2, 24072);
     pDialogYesNo->SetLine(3, m_message);
-
-    //send message and wait for user input
-    ThreadMessage tMsg = {TMSG_DIALOG_DOMODAL, WINDOW_DIALOG_YES_NO, g_windowManager.GetActiveWindow()};
-    CApplicationMessenger::Get().SendMessage(tMsg, true);
+    pDialogYesNo->Open();
 
     if (!pDialogYesNo->IsConfirmed()) return;
 
@@ -153,10 +145,7 @@ void CAddonStatusHandler::Process()
     pDialog->SetLine(1, 24070);
     pDialog->SetLine(2, 24071);
     pDialog->SetLine(3, m_message);
-
-    //send message and wait for user input
-    ThreadMessage tMsg = {TMSG_DIALOG_DOMODAL, WINDOW_DIALOG_OK, g_windowManager.GetActiveWindow()};
-    CApplicationMessenger::Get().SendMessage(tMsg, true);
+    pDialog->Open();
   }
 }
 

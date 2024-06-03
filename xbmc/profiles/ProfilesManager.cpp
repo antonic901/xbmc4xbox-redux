@@ -319,7 +319,7 @@ bool CProfilesManager::DeleteProfile(size_t index)
   dlgYesNo->SetLine(0, message);
   dlgYesNo->SetLine(1, "");
   dlgYesNo->SetLine(2, "");
-  dlgYesNo->DoModal();
+  dlgYesNo->Open();
 
   if (!dlgYesNo->IsConfirmed())
     return false;

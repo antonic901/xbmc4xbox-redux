@@ -29,10 +29,10 @@
 #include "Application.h"
 #include "ApplicationMessenger.h"
 
-CGUIDialog::CGUIDialog(int id, const CStdString &xmlFile)
+CGUIDialog::CGUIDialog(int id, const std::string &xmlFile, DialogModalityType modalityType /* = MODAL */)
     : CGUIWindow(id, xmlFile)
 {
-  m_modalityType = MODAL;
+  m_modalityType = modalityType;
   m_wasRunning = false;
   m_renderOrder = 1;
   m_autoClosing = false;
@@ -134,7 +134,7 @@ void CGUIDialog::UpdateVisibility()
   if (m_visibleCondition)
   {
     if (m_visibleCondition->Get())
-      Show();
+      Open();
     else
       Close();
   }
@@ -157,79 +157,48 @@ void CGUIDialog::UpdateVisibility()
   }
 }
 
-void CGUIDialog::DoModal_Internal(int iWindowID /*= WINDOW_INVALID */, const CStdString &param /* = "" */)
+void CGUIDialog::Open_Internal()
 {
-  //Lock graphic context here as it is sometimes called from non rendering threads
-  //maybe we should have a critical section per window instead??
-  CSingleLock lock(g_graphicsContext);
-
-  if (!g_windowManager.Initialized())
-    return; // don't do anything
-
-  m_closing = false;
-  m_modalityType = MODAL;
-  // set running before it's added to the window manager, else the auto-show code
-  // could show it as well if we are in a different thread from
-  // the main rendering thread (this should really be handled via
-  // a thread message though IMO)
-  m_active = true;
-  g_windowManager.RegisterDialog(this);
-
-  // active this window...
-  CGUIMessage msg(GUI_MSG_WINDOW_INIT, 0, 0, WINDOW_INVALID, iWindowID);
-  msg.SetStringParam(param);
-  OnMessage(msg);
-
-  if (!m_windowLoaded)
-    Close(true);
-
-  lock.Leave();
-
-  while (m_active && !g_application.m_bStop)
-  {
-    g_windowManager.ProcessRenderLoop();
-  }
+  CGUIDialog::Open_Internal(m_modalityType != MODELESS);
 }
 
-void CGUIDialog::Show_Internal()
+void CGUIDialog::Open_Internal(bool bProcessRenderLoop)
 {
-  //Lock graphic context here as it is sometimes called from non rendering threads
-  //maybe we should have a critical section per window instead??
+  // Lock graphic context here as it is sometimes called from non rendering threads
+  // maybe we should have a critical section per window instead??
   CSingleLock lock(g_graphicsContext);
 
-  if (m_active && !m_closing && !IsAnimating(ANIM_TYPE_WINDOW_CLOSE)) return;
-
-  if (!g_windowManager.Initialized())
-    return; // don't do anything
-
-  m_modalityType = MODELESS;
+  if (!g_windowManager.Initialized() ||
+      (m_active && !m_closing && !IsAnimating(ANIM_TYPE_WINDOW_CLOSE)))
+    return;
 
   // set running before it's added to the window manager, else the auto-show code
-  // could show it as well if we are in a different thread from
-  // the main rendering thread (this should really be handled via
-  // a thread message though IMO)
+  // could show it as well if we are in a different thread from the main rendering
+  // thread (this should really be handled via a thread message though IMO)
   m_active = true;
   m_closing = false;
   g_windowManager.RegisterDialog(this);
 
-  // active this window...
+  // active this window
   CGUIMessage msg(GUI_MSG_WINDOW_INIT, 0, 0);
   OnMessage(msg);
-}
 
-void CGUIDialog::DoModal(int iWindowID /*= WINDOW_INVALID */, const CStdString &param)
-{
-  if (!g_application.IsCurrentThread())
+  // process render loop
+  if (bProcessRenderLoop)
   {
-    // make sure graphics lock is not held
-    CSingleExit leaveIt(g_graphicsContext);
-    CApplicationMessenger::Get().DoModal(this, iWindowID, param);
+    if (!m_windowLoaded)
+      Close(true);
+
+    lock.Leave();
+
+    while (m_active && !g_application.m_bStop)
+    {
+      g_windowManager.ProcessRenderLoop();
+    }
   }
-  else
-    DoModal_Internal(iWindowID, param);
 }
 
-void CGUIDialog::Show()
+void CGUIDialog::Open()
 {
 #ifdef HAS_XBOX_D3D
   if (!g_application.IsCurrentThread() && !g_graphicsContext.IsFullScreenVideo())
@@ -239,10 +208,10 @@ void CGUIDialog::Show()
   {
     // make sure graphics lock is not held
     CSingleExit leaveIt(g_graphicsContext);
-    CApplicationMessenger::Get().Show(this);
+    CApplicationMessenger::Get().Open(this);
   }
   else
-    Show_Internal();
+    Open_Internal();
 }
 
 void CGUIDialog::FrameMove()

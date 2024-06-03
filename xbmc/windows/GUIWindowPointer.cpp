@@ -24,7 +24,7 @@
 #define ID_POINTER 10
 
 CGUIWindowPointer::CGUIWindowPointer(void)
-    : CGUIDialog(WINDOW_DIALOG_POINTER, "Pointer.xml")
+  : CGUIDialog(WINDOW_DIALOG_POINTER, "Pointer.xml", MODELESS)
 {
   m_dwPointer = 0;
   m_loadType = LOAD_ON_GUI_INIT;
@@ -66,7 +66,7 @@ void CGUIWindowPointer::SetPointer(DWORD dwPointer)
 void CGUIWindowPointer::UpdateVisibility()
 {
   if (g_Mouse.IsActive())
-    Show();
+    Open();
   else
     Close();
 }

@@ -129,8 +129,6 @@ protected:
 
   bool ShowIMDB(CFileItem *item, const ADDON::ScraperPtr& content);
 
-  bool CheckMovie(const CStdString& strFileName);
-
   void AddItemToPlayList(const CFileItemPtr &pItem, CFileItemList &queuedItems);
 
   void OnSearch();

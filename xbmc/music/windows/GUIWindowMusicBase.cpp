@@ -333,7 +333,7 @@ void CGUIWindowMusicBase::OnItemInfo(CFileItem *pItem, bool bShowInfo)
     m_dlgProgress->SetLine(0, 501);
     m_dlgProgress->SetLine(1, "");
     m_dlgProgress->SetLine(2, "");
-    m_dlgProgress->StartModal();
+    m_dlgProgress->Open();
     m_dlgProgress->Progress();
     if (m_dlgProgress->IsCanceled())
     {
@@ -396,7 +396,7 @@ void CGUIWindowMusicBase::ShowArtistInfo(const CFileItem *pItem, bool bShowInfo 
         m_dlgProgress->SetLine(0, pItem->GetMusicInfoTag()->GetArtist());
         m_dlgProgress->SetLine(1, "");
         m_dlgProgress->SetLine(2, "");
-        m_dlgProgress->StartModal();
+        m_dlgProgress->Open();
       }
 
       CMusicInfoScanner scanner;
@@ -416,7 +416,7 @@ void CGUIWindowMusicBase::ShowArtistInfo(const CFileItem *pItem, bool bShowInfo 
       CStdString strPath;
       m_musicdatabase.GetArtistPath(params.GetArtistId(), strPath);
       pDlgArtistInfo->SetArtist(artist, strPath);
-      pDlgArtistInfo->DoModal();
+      pDlgArtistInfo->Open();
 
       if (pDlgArtistInfo->NeedRefresh())
       {
@@ -474,7 +474,7 @@ bool CGUIWindowMusicBase::ShowAlbumInfo(const CFileItem *pItem, bool bShowInfo /
         m_dlgProgress->SetLine(0, pItem->GetMusicInfoTag()->GetAlbum());
         m_dlgProgress->SetLine(1, StringUtils::Join(pItem->GetMusicInfoTag()->GetAlbumArtist(), g_advancedSettings.m_musicItemSeparator));
         m_dlgProgress->SetLine(2, "");
-        m_dlgProgress->StartModal();
+        m_dlgProgress->Open();
       }
 
       CMusicInfoScanner scanner;
@@ -496,7 +496,7 @@ bool CGUIWindowMusicBase::ShowAlbumInfo(const CFileItem *pItem, bool bShowInfo /
       CStdString strPath;
       m_musicdatabase.GetAlbumPath(params.GetAlbumId(), strPath);
       pDlgAlbumInfo->SetAlbum(album, strPath);
-      pDlgAlbumInfo->DoModal();
+      pDlgAlbumInfo->Open();
 
       if (pDlgAlbumInfo->NeedRefresh())
       {
@@ -526,7 +526,7 @@ void CGUIWindowMusicBase::ShowSongInfo(CFileItem* pItem)
       return;
 
     dialog->SetSong(pItem);
-    dialog->DoModal(GetID());
+    dialog->Open();
     if (dialog->NeedsUpdate())
       Refresh(true); // update our file list
   }
@@ -1102,7 +1102,7 @@ void CGUIWindowMusicBase::OnRetrieveMusicInfo(CFileItemList& items)
         m_dlgProgress->SetLine(0, 505);
         m_dlgProgress->SetLine(1, "");
         m_dlgProgress->SetLine(2, strStrippedPath );
-        m_dlgProgress->StartModal();
+        m_dlgProgress->Open();
         m_dlgProgress->ShowProgressBar(true);
         bProgressVisible = true;
       }

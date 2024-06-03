@@ -424,7 +424,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const ScraperPtr &info2)
       movieDetails.m_strIMDBNumber = "xx"+movieDetails.m_strIMDBNumber;
     *item->GetVideoInfoTag() = movieDetails;
     pDlgInfo->SetMovie(item);
-    pDlgInfo->DoModal();
+    pDlgInfo->Open();
     needsRefresh = pDlgInfo->NeedRefresh();
     if (!needsRefresh)
       return pDlgInfo->HasUpdatedThumb();
@@ -502,7 +502,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const ScraperPtr &info2)
       pDlgProgress->SetLine(0, movieName);
       pDlgProgress->SetLine(1, "");
       pDlgProgress->SetLine(2, "");
-      pDlgProgress->StartModal();
+      pDlgProgress->Open();
       pDlgProgress->Progress();
 
       // 4b. do the websearch
@@ -521,7 +521,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const ScraperPtr &info2)
           for (unsigned int i = 0; i < movielist.size(); ++i)
             pDlgSelect->Add(movielist[i].strTitle);
           pDlgSelect->EnableButton(true, 413); // manual
-          pDlgSelect->DoModal();
+          pDlgSelect->Open();
 
           // and wait till user selects one
           int iSelectedMovie = pDlgSelect->GetSelectedLabel();
@@ -610,7 +610,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const ScraperPtr &info2)
       pDlgProgress->SetLine(0, movieName);
       pDlgProgress->SetLine(1, scrUrl.strTitle);
       pDlgProgress->SetLine(2, "");
-      pDlgProgress->StartModal();
+      pDlgProgress->Open();
       pDlgProgress->Progress();
       if (bHasInfo)
       {
@@ -657,7 +657,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const ScraperPtr &info2)
 
         *item->GetVideoInfoTag() = movieDetails;
         pDlgInfo->SetMovie(item);
-        pDlgInfo->DoModal();
+        pDlgInfo->Open();
         item->SetArt("thumb", pDlgInfo->GetThumbnail());
         needsRefresh = pDlgInfo->NeedRefresh();
         listNeedsUpdating = true;
@@ -697,38 +697,6 @@ bool CGUIWindowVideoBase::IsCorrectDiskInDrive(const CStdString& strFileName, co
   CStdString dbLabel = strDVDLabel.Left(iLabelCD);
 
   return (dbLabel == label);
-}
-
-bool CGUIWindowVideoBase::CheckMovie(const CStdString& strFileName)
-{
-  if (!m_database.HasMovieInfo(strFileName))
-    return true;
-
-  CVideoInfoTag movieDetails;
-  m_database.GetMovieInfo(strFileName, movieDetails);
-  CFileItem movieFile(movieDetails.m_strFileNameAndPath, false);
-  if (!movieFile.IsOnDVD())
-    return true;
-  CGUIDialogOK *pDlgOK = (CGUIDialogOK*)g_windowManager.GetWindow(WINDOW_DIALOG_OK);
-  if (!pDlgOK)
-    return true;
-  while (1)
-  {
-//    if (IsCorrectDiskInDrive(strFileName, movieDetails.m_strDVDLabel))
- //   {
-      return true;
- //   }
-    pDlgOK->SetHeading( 428);
-    pDlgOK->SetLine( 0, 429 );
-//    pDlgOK->SetLine( 1, movieDetails.m_strDVDLabel );
-    pDlgOK->SetLine( 2, "" );
-    pDlgOK->DoModal();
-    if (!pDlgOK->IsConfirmed())
-    {
-      break;
-    }
-  }
-  return false;
 }
 
 void CGUIWindowVideoBase::OnQueueItem(int iItem)
@@ -1170,7 +1138,7 @@ bool CGUIWindowVideoBase::OnPlayStackPart(int iItem)
   CGUIDialogFileStacking* dlg = (CGUIDialogFileStacking*)g_windowManager.GetWindow(WINDOW_DIALOG_FILESTACKING);
   if (!dlg) return true;
   dlg->SetNumberOfFiles(parts.Size());
-  dlg->DoModal();
+  dlg->Open();
   int selectedFile = dlg->GetSelectedFile();
   if (selectedFile > 0)
   {
@@ -1672,7 +1640,7 @@ void CGUIWindowVideoBase::AddToDatabase(int iItem)
       return;
     pSelect->SetItems(&items);
     pSelect->EnableButton(true, 531); // New Genre
-    pSelect->DoModal();
+    pSelect->Open();
     CStdString strGenre;
     int iSelected = pSelect->GetSelectedLabel();
     if (iSelected >= 0)
@@ -1723,7 +1691,7 @@ void CGUIWindowVideoBase::OnSearch()
     m_dlgProgress->SetLine(0, strSearch);
     m_dlgProgress->SetLine(1, "");
     m_dlgProgress->SetLine(2, "");
-    m_dlgProgress->StartModal();
+    m_dlgProgress->Open();
     m_dlgProgress->Progress();
   }
   CFileItemList items;
@@ -1744,7 +1712,7 @@ void CGUIWindowVideoBase::OnSearch()
       pDlgSelect->Add(pItem->GetLabel());
     }
 
-    pDlgSelect->DoModal();
+    pDlgSelect->Open();
 
     int iItem = pDlgSelect->GetSelectedLabel();
     if (iItem < 0)

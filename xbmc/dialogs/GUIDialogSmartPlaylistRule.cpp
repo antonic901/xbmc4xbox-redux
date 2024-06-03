@@ -338,7 +338,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   if (!m_rule.m_parameter.empty())
     pDialog->SetSelected(m_rule.m_parameter);
 
-  pDialog->DoModal();
+  pDialog->Open();
   if (pDialog->IsConfirmed())
   {
     const CFileItemList &items = pDialog->GetSelectedItems();
@@ -518,7 +518,7 @@ bool CGUIDialogSmartPlaylistRule::EditRule(CSmartPlaylistRule &rule, const CStdS
   
   editor->m_rule = rule;
   editor->m_type = type;
-  editor->DoModal(g_windowManager.GetActiveWindow());
+  editor->Open();
   rule = editor->m_rule;
   return !editor->m_cancelled;
 }

@@ -452,7 +452,7 @@ bool CTuxBoxUtil::ZapToUrl(CURL url, const CStdString &pathOption)
         dialog->SetLine( 0, 21332);
         dialog->SetLine( 1, 21335);
         dialog->SetLine( 2, "" );
-        dialog->DoModal();
+        dialog->Open();
       }
       if (!dialog->IsConfirmed())
       {

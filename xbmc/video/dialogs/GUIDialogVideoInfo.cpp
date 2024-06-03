@@ -455,7 +455,7 @@ void CGUIDialogVideoInfo::OnSearch(CStdString& strSearch)
     progress->SetLine(0, strSearch);
     progress->SetLine(1, "");
     progress->SetLine(2, "");
-    progress->StartModal();
+    progress->Open();
     progress->Progress();
   }
   CFileItemList items;
@@ -476,7 +476,7 @@ void CGUIDialogVideoInfo::OnSearch(CStdString& strSearch)
       pDlgSelect->Add(pItem->GetLabel());
     }
 
-    pDlgSelect->DoModal();
+    pDlgSelect->Open();
 
     int iItem = pDlgSelect->GetSelectedLabel();
     if (iItem < 0)
@@ -570,7 +570,7 @@ void CGUIDialogVideoInfo::OnSearchItemFound(const CFileItem* pItem)
   SetMovie(&item);
   // refresh our window entirely
   Close();
-  DoModal();
+  Open();
 }
 
 void CGUIDialogVideoInfo::ClearCastList()
@@ -643,7 +643,7 @@ string CGUIDialogVideoInfo::ChooseArtType(const CFileItem &videoItem, map<string
   }
 
   dialog->SetItems(&items);
-  dialog->DoModal();
+  dialog->Open();
 
   return dialog->GetSelectedItem()->GetLabel();
 }
@@ -1237,7 +1237,7 @@ bool CGUIDialogVideoInfo::DeleteVideoItemFromDatabase(const CFileItemPtr &item, 
     pDialog->SetLine(1, "");
   }
   pDialog->SetLine(2, "");
-  pDialog->DoModal();
+  pDialog->Open();
 
   if (!pDialog->IsConfirmed())
     return false;
@@ -1409,7 +1409,7 @@ bool CGUIDialogVideoInfo::GetMoviesForSet(const CFileItem *setItem, CFileItemLis
   }
   dialog->SetSelected(selectedIndices);
   dialog->EnableButton(true, 186);
-  dialog->DoModal();
+  dialog->Open();
 
   if (dialog->IsConfirmed())
   {
@@ -1480,7 +1480,7 @@ bool CGUIDialogVideoInfo::GetSetForMovie(const CFileItem *movieItem, CFileItemPt
     }
   }
   dialog->EnableButton(true, 20468); // new set via button
-  dialog->DoModal();
+  dialog->Open();
 
   if (dialog->IsButtonPressed())
   { // creating new set
@@ -1579,7 +1579,7 @@ bool CGUIDialogVideoInfo::GetItemsForTag(const CStdString &strHeading, const std
   dialog->SetHeading(strHeading);
   dialog->SetItems(&listItems);
   dialog->EnableButton(true, 186);
-  dialog->DoModal();
+  dialog->Open();
 
   items.Copy(dialog->GetSelectedItems());
   return items.Size() > 0;
@@ -1904,7 +1904,7 @@ bool CGUIDialogVideoInfo::LinkMovieToTvShow(const CFileItemPtr &item, bool bRemo
     pDialog->Reset();
     pDialog->SetItems(&list);
     pDialog->SetHeading(20356);
-    pDialog->DoModal();
+    pDialog->Open();
     iSelectedLabel = pDialog->GetSelectedLabel();
   }
 

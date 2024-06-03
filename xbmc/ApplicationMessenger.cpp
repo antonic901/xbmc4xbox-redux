@@ -158,7 +158,7 @@ void CApplicationMessenger::SendMessage(ThreadMessage& message, bool wait)
   msg->strParam = message.strParam;
   msg->params = message.params;
 
-  if (msg->dwMessage == TMSG_DIALOG_DOMODAL ||
+  if (msg->dwMessage == TMSG_GUI_DIALOG_OPEN ||
       msg->dwMessage == TMSG_WRITE_SCRIPT_OUTPUT)
     m_vecWindowMessages.push(msg);
   else
@@ -614,14 +614,6 @@ case TMSG_POWERDOWN:
       break;
 
     // Window messages below here...
-    case TMSG_DIALOG_DOMODAL:  //doModel of window
-      {
-        CGUIDialog* pDialog = (CGUIDialog*)g_windowManager.GetWindow(pMsg->dwParam1);
-        if (!pDialog) return ;
-        pDialog->DoModal();
-      }
-      break;
-
     case TMSG_WRITE_SCRIPT_OUTPUT:
       {
         CGUIMessage msg(GUI_MSG_USER, 0, 0);
@@ -637,19 +629,11 @@ case TMSG_POWERDOWN:
       }
       break;
 
-    case TMSG_GUI_DO_MODAL:
+    case TMSG_GUI_DIALOG_OPEN:
       {
         CGUIDialog *pDialog = (CGUIDialog *)pMsg->lpVoid;
         if (pDialog)
-          pDialog->DoModal((int)pMsg->dwParam1, pMsg->strParam);
-      }
-      break;
-
-    case TMSG_GUI_SHOW:
-      {
-        CGUIDialog *pDialog = (CGUIDialog *)pMsg->lpVoid;
-        if (pDialog)
-          pDialog->Show();
+          pDialog->Open();
       }
       break;
 
@@ -990,18 +974,9 @@ void CApplicationMessenger::SwitchToFullscreen()
   SendMessage(tMsg, false);
 }
 
-void CApplicationMessenger::DoModal(CGUIDialog *pDialog, int iWindowID, const CStdString &param)
+void CApplicationMessenger::Open(CGUIDialog *pDialog)
 {
-  ThreadMessage tMsg = {TMSG_GUI_DO_MODAL};
-  tMsg.lpVoid = pDialog;
-  tMsg.dwParam1 = (DWORD)iWindowID;
-  tMsg.strParam = param;
-  SendMessage(tMsg, true);
-}
-
-void CApplicationMessenger::Show(CGUIDialog *pDialog)
-{
-  ThreadMessage tMsg = {TMSG_GUI_SHOW};
+  ThreadMessage tMsg = {TMSG_GUI_DIALOG_OPEN};
   tMsg.lpVoid = pDialog;
   SendMessage(tMsg, true);
 }

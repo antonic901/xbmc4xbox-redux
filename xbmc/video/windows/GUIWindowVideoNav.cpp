@@ -722,7 +722,7 @@ void CGUIWindowVideoNav::OnDeleteItem(CFileItemPtr pItem)
     strLabel.Format(g_localizeStrings.Get(433),pItem->GetLabel());
     pDialog->SetLine(1, strLabel);
     pDialog->SetLine(2, "");;
-    pDialog->DoModal();
+    pDialog->Open();
     if (pDialog->IsConfirmed())
     {
       CFileItemList items;
@@ -744,7 +744,7 @@ void CGUIWindowVideoNav::OnDeleteItem(CFileItemPtr pItem)
     strLabel.Format(g_localizeStrings.Get(433), pItem->GetLabel());
     pDialog->SetLine(1, strLabel);
     pDialog->SetLine(2, "");
-    pDialog->DoModal();
+    pDialog->Open();
     if (pDialog->IsConfirmed())
     {
       CVideoDatabaseDirectory dir;

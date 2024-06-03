@@ -489,7 +489,7 @@ int CGUIWindowAddonBrowser::SelectAddonID(const vector<ADDON::TYPE> &types, CStd
   }
   dialog->SetItems(&items);
   dialog->SetMultiSelection(multipleSelection);
-  dialog->DoModal();
+  dialog->Open();
   if (!multipleSelection && iTypes == 1 && dialog->IsButtonPressed())
   { // switch to the addons browser.
     vector<string> params;

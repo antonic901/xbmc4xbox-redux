@@ -451,7 +451,7 @@ void CGUIWindowPrograms::PopulateTrainersList()
   m_dlgProgress->SetLine(0,38715);
   m_dlgProgress->SetLine(1,"");
   m_dlgProgress->SetLine(2,"");
-  m_dlgProgress->StartModal();
+  m_dlgProgress->Open();
   m_dlgProgress->SetHeading(38709);
   m_dlgProgress->ShowProgressBar(true);
   m_dlgProgress->Progress();
@@ -638,7 +638,7 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
       m_dlgProgress->SetLine(0, 20120);
       m_dlgProgress->SetLine(1,"");
       m_dlgProgress->SetLine(2, item->GetLabel());
-      m_dlgProgress->StartModal();
+      m_dlgProgress->Open();
       bProgressVisible = true;
     }
     if (bProgressVisible)

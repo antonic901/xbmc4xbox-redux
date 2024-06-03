@@ -78,7 +78,7 @@ bool CGUIWindowSettingsScreenCalibration::OnAction(const CAction &action)
       pDialog->SetLine(1, 20327);
       pDialog->SetChoice(0, 222);
       pDialog->SetChoice(1, 186);
-      pDialog->DoModal();
+      pDialog->Open();
       if (pDialog->IsConfirmed())
       {
         g_graphicsContext.ResetScreenParameters(m_Res[m_iCurRes]);

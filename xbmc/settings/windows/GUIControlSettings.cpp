@@ -265,7 +265,7 @@ bool CGUIControlListSetting::OnClick()
   dialog->SetHeading(g_localizeStrings.Get(m_pSetting->GetLabel()));
   dialog->SetItems(&options);
   dialog->SetMultiSelection(control->CanMultiSelect());
-  dialog->DoModal();
+  dialog->Open();
 
   if (!dialog->IsConfirmed())
     return false;

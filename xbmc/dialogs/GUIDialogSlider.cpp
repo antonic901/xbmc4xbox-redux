@@ -110,7 +110,7 @@ void CGUIDialogSlider::ShowAndGetInput(const CStdString &label, float value, flo
   // set the label and value
   slider->Initialize();
   slider->SetSlider(label, value, min, delta, max, callback, callbackData);
-  slider->DoModal();
+  slider->Open();
 }
 
 void CGUIDialogSlider::Display(int label, float value, float min, float delta, float max, ISliderCallback *callback)
@@ -124,5 +124,5 @@ void CGUIDialogSlider::Display(int label, float value, float min, float delta, f
   slider->Initialize();
   slider->SetAutoClose(1000);
   slider->SetSlider(g_localizeStrings.Get(label), value, min, delta, max, callback, NULL);
-  slider->Show();
+  slider->Open();
 }

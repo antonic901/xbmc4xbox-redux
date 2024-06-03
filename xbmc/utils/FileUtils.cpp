@@ -39,7 +39,7 @@ bool CFileUtils::DeleteItem(const CFileItemPtr &item, bool force)
     pDialog->SetLine(0, 125);
     pDialog->SetLine(1, URIUtils::GetFileName(item->GetPath()));
     pDialog->SetLine(2, "");
-    pDialog->DoModal();
+    pDialog->Open();
     if (!pDialog->IsConfirmed()) return false;
   }
 
