@@ -48,12 +48,11 @@ public:
 
   virtual bool OnAction(const CAction &action);
   virtual bool OnMessage(CGUIMessage& message);
-  virtual void FrameMove();
   virtual void DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
 
   void Open(const std::string &param = "");
-  
+
   virtual bool OnBack(int actionID);
 
   virtual bool IsDialogRunning() const { return m_active; };
@@ -73,7 +72,6 @@ protected:
   virtual void OnWindowLoaded();
   virtual void UpdateVisibility();
 
-  friend class CGUIWindowManager;
   virtual void Open_Internal(const std::string &param = "");
   virtual void Open_Internal(bool bProcessRenderLoop, const std::string &param = "");
   virtual void OnDeinitWindow(int nextWindowID);

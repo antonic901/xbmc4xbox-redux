@@ -18,16 +18,14 @@
  *
  */
 
-#include "include.h"
 #include "GUIDialog.h"
 #include "GUIWindowManager.h"
 #include "GUILabelControl.h"
-#include "GUIAudioManager.h"
-#include "GUIInfoManager.h"
 #include "threads/SingleLock.h"
 #include "utils/TimeUtils.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
+#include "guilib/Key.h"
 
 CGUIDialog::CGUIDialog(int id, const std::string &xmlFile, DialogModalityType modalityType /* = MODAL */)
     : CGUIWindow(id, xmlFile)
@@ -213,11 +211,6 @@ void CGUIDialog::Open(const std::string &param /* = "" */)
   }
   else
     Open_Internal(param);
-}
-
-void CGUIDialog::FrameMove()
-{
-  CGUIWindow::FrameMove();
 }
 
 void CGUIDialog::Render()
