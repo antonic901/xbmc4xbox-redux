@@ -22,6 +22,7 @@
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogSelect.h"
+#include "dialogs/GUIDialogTextViewer.h"
 #include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "dialogs/GUIDialogNumeric.h"
@@ -120,6 +121,21 @@ namespace XBMCAddon
       pDialog->Open();
 
       return pDialog->IsConfirmed();
+    }
+
+    void Dialog::textviewer(const String& heading, const String& text)
+    {
+      DelayedCallGuard dcguard(languageHook);
+      const int window = WINDOW_DIALOG_TEXT_VIEWER;
+
+      CGUIDialogTextViewer* pDialog = (CGUIDialogTextViewer*)g_windowManager.GetWindow(window);
+      if (pDialog == NULL)
+        throw WindowException("Error: Window is NULL, this is not possible :-)");
+      if (!heading.empty())
+        pDialog->SetHeading(heading);
+      if (!text.empty())
+        pDialog->SetText(text);
+      pDialog->Open();
     }
 
     Alternative<String, std::vector<String> > Dialog::browse(int type, const String& heading, 
