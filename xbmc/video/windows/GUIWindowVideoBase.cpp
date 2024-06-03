@@ -1019,7 +1019,8 @@ bool CGUIWindowVideoBase::ShowResumeMenu(CFileItem &item)
       int retVal = CGUIDialogContextMenu::ShowAndGetChoice(choices);
       if (retVal < 0)
         return false; // don't do anything
-      item.m_lStartOffset = STARTOFFSET_RESUME;
+      if (retVal == 1)
+        item.m_lStartOffset = STARTOFFSET_RESUME;
     }
   }
   
