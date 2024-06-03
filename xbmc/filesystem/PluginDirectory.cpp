@@ -495,9 +495,23 @@ bool CPluginDirectory::WaitOnScriptResult(const CStdString &scriptPath, int scri
   else
   {
     // kill the script if it does not return within 30 seconds
-    if (!m_fetchComplete.WaitMSec(30000))
+    // and we are not waiting for user input
+    XbmcThreads::EndTime timer(30000);
+    while (CScriptInvocationManager::Get().IsRunning(scriptId))
     {
-      cancelled = true;
+      if (m_fetchComplete.WaitMSec(1000))
+      {
+        break;
+      }
+      if (g_windowManager.HasModalDialog(std::vector<DialogModalityType>(MODAL)))
+      {
+        timer.Set(30000);
+      }
+      if (timer.IsTimePast())
+      {
+        cancelled = true;
+        break;
+      }
     }
   }
 
