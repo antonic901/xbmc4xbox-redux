@@ -324,6 +324,8 @@ const infomap system_labels[] =  {{ "hasnetwork",           SYSTEM_ETHERNET_LINK
                                   { "modchip",              SYSTEM_XBOX_MODCHIP },
                                   { "profilename",          SYSTEM_PROFILENAME },
                                   { "profilethumb",         SYSTEM_PROFILETHUMB },
+                                  { "profilecount",         SYSTEM_PROFILECOUNT },
+                                  { "profileautologin",     SYSTEM_PROFILEAUTOLOGIN },
                                   { "launchxbe",            SYSTEM_LAUNCHING_XBE },
                                   { "progressbar",          SYSTEM_PROGRESS_BAR },
                                   { "friendlyname",         SYSTEM_FRIENDLY_NAME },
@@ -1755,6 +1757,16 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *f
     break;
   case SYSTEM_PROFILENAME:
     strLabel = CProfilesManager::Get().GetCurrentProfile().getName();
+    break;
+  case SYSTEM_PROFILECOUNT:
+    strLabel.Format("%i", CProfilesManager::Get().GetNumberOfProfiles());
+    break;
+  case SYSTEM_PROFILEAUTOLOGIN:
+    {
+      int profileId = CProfilesManager::Get().GetAutoLoginProfileId();
+      if ((profileId < 0) || (!CProfilesManager::Get().GetProfileName(profileId, strLabel)))
+        strLabel = g_localizeStrings.Get(37014); // Last used profile
+    }
     break;
   case SYSTEM_LANGUAGE:
     strLabel = CSettings::Get().GetString("locale.language");

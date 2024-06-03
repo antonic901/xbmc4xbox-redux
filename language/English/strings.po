@@ -12448,6 +12448,11 @@ msgctxt "#36921"
 msgid "songs"
 msgstr ""
 
+#: xbmc/GUIInfoManager.cpp
+msgctxt "#37014"
+msgid "Last used profile"
+msgstr ""
+
 #: xbmc/Windows/GUIMediaWindow.cpp
 msgctxt "#37015"
 msgid "Browse Into"

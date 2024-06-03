@@ -180,6 +180,7 @@ namespace INFO
 #define LCD_TIME_43                 178
 #define LCD_TIME_44                 179
 #define SYSTEM_ALARM_LESS_OR_EQUAL  180
+#define SYSTEM_PROFILECOUNT         181
 #define SYSTEM_STARTUP_WINDOW       187
 
 #define NETWORK_IP_ADDRESS          190
@@ -449,6 +450,8 @@ namespace INFO
 #define FANART_COLOR2               1001
 #define FANART_COLOR3               1002
 #define FANART_IMAGE                1003
+
+#define SYSTEM_PROFILEAUTOLOGIN     1004
 
 #define WINDOW_PROPERTY             9993
 #define WINDOW_IS_TOPMOST           9994
