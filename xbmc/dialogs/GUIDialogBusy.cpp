@@ -93,13 +93,13 @@ CGUIDialogBusy::~CGUIDialogBusy(void)
 {
 }
 
-void CGUIDialogBusy::Open_Internal()
+void CGUIDialogBusy::Open_Internal(const std::string &param /* = "" */)
 {
   m_bCanceled = false;
   m_bLastVisible = true;
   m_progress = 0;
 
-  CGUIDialog::Open_Internal(false);
+  CGUIDialog::Open_Internal(false, param);
 }
 
 void CGUIDialogBusy::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions)

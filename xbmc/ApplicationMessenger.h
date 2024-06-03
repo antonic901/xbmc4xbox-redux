@@ -172,7 +172,7 @@ public:
 
   void NetworkMessage(DWORD dwMessage, DWORD dwParam = 0);
 
-  void Open(CGUIDialog *pDialog);
+  void Open(CGUIDialog *pDialog, const std::string &param = "");
   void Close(CGUIWindow *window, bool forceClose, bool waitResult = true, int nextWindowID = 0, bool enableSound = true);
   void ActivateWindow(int windowID, const std::vector<std::string> &params, bool swappingWindows, bool force = false);
   void SendAction(const CAction &action, int windowID = WINDOW_INVALID, bool waitResult=true);

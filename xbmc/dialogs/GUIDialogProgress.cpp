@@ -58,7 +58,7 @@ void CGUIDialogProgress::SetCanCancel(bool bCanCancel)
     g_windowManager.SendThreadMessage(msg, GetID());
 }
 
-void CGUIDialogProgress::Open()
+void CGUIDialogProgress::Open(const std::string &param /* = "" */)
 {
   CLog::Log(LOGDEBUG, "DialogProgress::StartModal called %s", m_active ? "(already running)!" : "");
 
@@ -67,7 +67,7 @@ void CGUIDialogProgress::Open()
     ShowProgressBar(false);
   }
 
-  CGUIDialog::Open_Internal(false);
+  CGUIDialog::Open_Internal(false, param);
 
   while (m_active && IsAnimating(ANIM_TYPE_WINDOW_OPEN))
   {

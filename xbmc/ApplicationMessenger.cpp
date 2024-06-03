@@ -633,7 +633,8 @@ case TMSG_POWERDOWN:
       {
         CGUIDialog *pDialog = (CGUIDialog *)pMsg->lpVoid;
         if (pDialog)
-          pDialog->Open();
+          // keep in mind this when backporting: https://github.com/xbmc/xbmc/pull/7268
+          pDialog->Open(pMsg->strParam);
       }
       break;
 
@@ -974,10 +975,11 @@ void CApplicationMessenger::SwitchToFullscreen()
   SendMessage(tMsg, false);
 }
 
-void CApplicationMessenger::Open(CGUIDialog *pDialog)
+void CApplicationMessenger::Open(CGUIDialog *pDialog, const std::string &param /* = "" */)
 {
   ThreadMessage tMsg = {TMSG_GUI_DIALOG_OPEN};
   tMsg.lpVoid = pDialog;
+  tMsg.strParam = param;
   SendMessage(tMsg, true);
 }
 

@@ -681,7 +681,7 @@ void CGUIWindowManager::ActivateWindow_Internal(int iWindowID, const vector<stri
     if (!pNewWindow->IsDialogRunning())
     {
       CSingleExit exitit(g_graphicsContext);
-      ((CGUIDialog *)pNewWindow)->Open();
+      ((CGUIDialog *)pNewWindow)->Open(params.size() > 0 ? params[0] : "");
     }
     return;
   }
