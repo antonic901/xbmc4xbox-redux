@@ -20,7 +20,6 @@
 
 #include "windows/GUIWindowPointer.h"
 
-#include <climits>
 #define ID_POINTER 10
 
 CGUIWindowPointer::CGUIWindowPointer(void)
@@ -30,7 +29,7 @@ CGUIWindowPointer::CGUIWindowPointer(void)
   m_loadType = LOAD_ON_GUI_INIT;
   m_needsScaling = false;
   m_active = false;
-  m_renderOrder = INT_MAX;
+  m_renderOrder = RENDER_ORDER_WINDOW_POINTER;
 }
 
 CGUIWindowPointer::~CGUIWindowPointer(void)
@@ -81,7 +80,7 @@ void CGUIWindowPointer::OnWindowLoaded()
   CGUIWindow::OnWindowLoaded();
   DynamicResourceAlloc(false);
   m_dwPointer = 0;
-  m_renderOrder = INT_MAX;
+  m_renderOrder = RENDER_ORDER_WINDOW_POINTER;
 }
 
 void CGUIWindowPointer::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)

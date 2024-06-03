@@ -153,7 +153,7 @@ namespace XBMCAddon
     {
       XBMC_TRACE;
       CSingleLock lock(g_graphicsContext);
-      return getNextAvailalbeWindowId();
+      return getNextAvailableWindowId();
     }
 
     void WindowXML::addItem(const Alternative<String, const ListItem*>& item, int position)
@@ -526,7 +526,22 @@ namespace XBMCAddon
       g_windowManager.RemoveDialog(interceptor->GetID());
       WindowXML::OnDeinitWindow(nextWindowID);
     }
-  
+
+    bool WindowXMLDialog::LoadXML(const String &strPath, const String &strLowerPath)
+    {
+      XBMC_TRACE;
+      if (WindowXML::LoadXML(strPath, strLowerPath))
+      {
+        // Set the render order to the dialog's default in case it's not specified in the skin xml
+        // because this dialog is mapped to CGUIMediaWindow instead of CGUIDialog.
+        // This must be done here, because the render order will be reset before loading the skin xml.
+        if (ref(window)->GetRenderOrder() == RENDER_ORDER_WINDOW)
+          window->SetRenderOrder(RENDER_ORDER_DIALOG);
+        return true;
+      }
+      return false;
+    }
+
   }
 
 }
