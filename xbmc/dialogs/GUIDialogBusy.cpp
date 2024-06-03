@@ -83,7 +83,7 @@ CGUIDialogBusy::CGUIDialogBusy(void)
   : CGUIDialog(WINDOW_DIALOG_BUSY, "DialogBusy.xml"), m_bLastVisible(false)
 {
   m_loadType = LOAD_ON_GUI_INIT;
-  m_bModal = true;
+  m_modalityType = SYSTEM_MODAL;
   m_progress = 0;
 }
 
@@ -95,7 +95,7 @@ void CGUIDialogBusy::Show_Internal()
 {
   m_bCanceled = false;
   m_active = true;
-  m_bModal = true;
+  m_modalityType = SYSTEM_MODAL;
   m_bLastVisible = true;
   m_closing = false;
   m_progress = 0;

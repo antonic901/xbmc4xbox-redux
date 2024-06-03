@@ -28,6 +28,13 @@
 #include "GUIWindow.h"
 #include "Key.h"
 
+enum DialogModalityType
+{
+  MODELESS,
+  MODAL,
+  SYSTEM_MODAL
+};
+
 /*!
  \ingroup winmsg
  \brief
@@ -52,7 +59,8 @@ public:
 
   virtual bool IsDialogRunning() const { return m_active; };
   virtual bool IsDialog() const { return true;};
-  virtual bool IsModalDialog() const { return m_bModal; };
+  virtual bool IsModalDialog() const { return m_modalityType == MODAL || m_modalityType == SYSTEM_MODAL; };
+  virtual DialogModalityType GetModalityType() const { return m_modalityType; };
 
   void SetAutoClose(unsigned int timeoutMs);
   void ResetAutoClose(void);
@@ -71,10 +79,10 @@ protected:
   virtual void OnDeinitWindow(int nextWindowID);
 
   bool m_wasRunning; ///< \brief true if we were running during the last DoProcess()
-  bool m_bModal;
   bool m_autoClosing;
   bool m_enableSound;
   unsigned int m_showStartTime;
   unsigned int m_showDuration;
   bool m_bAutoClosed;
+  DialogModalityType m_modalityType;
 };
