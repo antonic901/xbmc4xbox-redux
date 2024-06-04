@@ -75,6 +75,8 @@ public:
   void SetInitialized();
   void SetLoaded() { m_loaded = true; }
 
+  void AddSection(CSettingSection *section);
+
   void RegisterCallback(ISettingCallback *callback, const std::set<std::string> &settingList);
   void UnregisterCallback(ISettingCallback *callback);
 
