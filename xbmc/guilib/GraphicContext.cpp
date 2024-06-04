@@ -34,6 +34,7 @@
 #endif
 #include "addons/Skin.h"
 #include "TextureManager.h"
+#include "utils/MathUtils.h"
 
 using namespace std;
 
@@ -267,7 +268,38 @@ void CGraphicContext::RestoreViewPort()
   UpdateCameraPosition(m_cameras.top());
 }
 
-const RECT& CGraphicContext::GetViewWindow() const
+void CGraphicContext::SetScissors(const CRect& rect)
+{
+  if (!m_pd3dDevice)
+    return;
+
+  m_scissors = rect;
+  m_scissors.Intersect(CRect(0,0,(float)m_iScreenWidth, (float)m_iScreenHeight));
+
+  D3DRECT scissor;
+  scissor.x1 = MathUtils::round_int(m_scissors.x1);
+  scissor.y1 = MathUtils::round_int(m_scissors.y1);
+  scissor.x2 = MathUtils::round_int(m_scissors.x2);
+  scissor.y2 = MathUtils::round_int(m_scissors.y2);
+  m_pd3dDevice->SetScissors(1, TRUE, &scissor);
+}
+
+void CGraphicContext::ResetScissors()
+{
+  if (!m_pd3dDevice)
+    return;
+
+  m_scissors.SetRect(0, 0, (float)m_iScreenWidth, (float)m_iScreenHeight);
+
+  D3DRECT scissor;
+  scissor.x1 = 0;
+  scissor.y1 = 0;
+  scissor.x2 = CDisplaySettings::Get().GetCurrentResolutionInfo().iWidth;
+  scissor.y2 = CDisplaySettings::Get().GetCurrentResolutionInfo().iHeight;
+  m_pd3dDevice->SetScissors(0, FALSE, &scissor);
+}
+
+const CRect& CGraphicContext::GetViewWindow() const
 {
   return m_videoRect;
 }
@@ -279,22 +311,22 @@ void CGraphicContext::SetViewWindow(float left, float top, float right, float bo
   }
   else
   {
-    m_videoRect.left = (long)(ScaleFinalXCoord(left, top) + 0.5f);
-    m_videoRect.top = (long)(ScaleFinalYCoord(left, top) + 0.5f);
-    m_videoRect.right = (long)(ScaleFinalXCoord(right, bottom) + 0.5f);
-    m_videoRect.bottom = (long)(ScaleFinalYCoord(right, bottom) + 0.5f);
+    m_videoRect.x1 = ScaleFinalXCoord(left, top);
+    m_videoRect.y1 = ScaleFinalYCoord(left, top);
+    m_videoRect.x2 = ScaleFinalXCoord(right, bottom);
+    m_videoRect.y2 = ScaleFinalYCoord(right, bottom);
   }
 }
 
 void CGraphicContext::ClipToViewWindow()
 {
-  D3DRECT clip = { m_videoRect.left, m_videoRect.top, m_videoRect.right, m_videoRect.bottom };
-  if (m_videoRect.left < 0) clip.x1 = 0;
-  if (m_videoRect.top < 0) clip.y1 = 0;
-  if (m_videoRect.left > m_iScreenWidth - 1) clip.x1 = m_iScreenWidth - 1;
-  if (m_videoRect.top > m_iScreenHeight - 1) clip.y1 = m_iScreenHeight - 1;
-  if (m_videoRect.right > m_iScreenWidth) clip.x2 = m_iScreenWidth;
-  if (m_videoRect.bottom > m_iScreenHeight) clip.y2 = m_iScreenHeight;
+  D3DRECT clip = { (long)m_videoRect.x1, (long)m_videoRect.y1, (long)m_videoRect.x2, (long)m_videoRect.y2 };
+  if (m_videoRect.x1 < 0) clip.x1 = 0;
+  if (m_videoRect.y1 < 0) clip.y1 = 0;
+  if (m_videoRect.x1 > m_iScreenWidth - 1) clip.x1 = m_iScreenWidth - 1;
+  if (m_videoRect.y1 > m_iScreenHeight - 1) clip.y1 = m_iScreenHeight - 1;
+  if (m_videoRect.x2 > m_iScreenWidth) clip.x2 = m_iScreenWidth;
+  if (m_videoRect.y2 > m_iScreenHeight) clip.y2 = m_iScreenHeight;
   if (clip.x2 < clip.x1) clip.x2 = clip.x1 + 1;
   if (clip.y2 < clip.y1) clip.y2 = clip.y1 + 1;
 #ifdef HAS_XBOX_D3D
@@ -304,10 +336,10 @@ void CGraphicContext::ClipToViewWindow()
 
 void CGraphicContext::SetFullScreenViewWindow(RESOLUTION &res)
 {
-  m_videoRect.left = CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left;
-  m_videoRect.top = CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top;
-  m_videoRect.right = CDisplaySettings::Get().GetResolutionInfo(res).Overscan.right;
-  m_videoRect.bottom = CDisplaySettings::Get().GetResolutionInfo(res).Overscan.bottom;
+  m_videoRect.x1 = (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left;
+  m_videoRect.y1 = (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top;
+  m_videoRect.x2 = (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.right;
+  m_videoRect.y2 = (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.bottom;
 }
 
 void CGraphicContext::SetFullScreenVideo(bool bOnOff)
@@ -468,6 +500,7 @@ void CGraphicContext::SetVideoResolution(RESOLUTION res, BOOL NeedZ, bool forceC
   SetFullScreenViewWindow(res);
   SetScreenFilters(m_bFullScreenVideo);
 
+  m_scissors.SetRect(0, 0, (float)m_iScreenWidth, (float)m_iScreenHeight);
   m_Resolution = res;
   if (NeedReset)
   {
@@ -792,6 +825,35 @@ void CGraphicContext::RestoreCameraPosition()
   UpdateCameraPosition(m_cameras.top());
 }
 
+CRect CGraphicContext::generateAABB(const CRect &rect) const
+{
+// ------------------------
+// |(x1, y1)      (x2, y2)|
+// |                      |
+// |(x3, y3)      (x4, y4)|
+// ------------------------
+
+  float x1 = rect.x1, x2 = rect.x2, x3 = rect.x1, x4 = rect.x2;
+  float y1 = rect.y1, y2 = rect.y1, y3 = rect.y2, y4 = rect.y2;
+
+  float z = 0.0f;
+  ScaleFinalCoords(x1, y1, z);
+
+  z = 0.0f;
+  ScaleFinalCoords(x2, y2, z);
+
+  z = 0.0f;
+  ScaleFinalCoords(x3, y3, z);
+
+  z = 0.0f;
+  ScaleFinalCoords(x4, y4, z);
+
+  return CRect( min(min(min(x1, x2), x3), x4),
+                min(min(min(y1, y2), y3), y4),
+                max(max(max(x1, x2), x3), x4),
+                max(max(max(y1, y2), y3), y4));
+}
+
 void CGraphicContext::UpdateCameraPosition(const CPoint &camera)
 {
   // NOTE: This routine is currently called (twice) every time there is a <camera>
@@ -853,4 +915,3 @@ void CGraphicContext::SetMediaDir(const CStdString &strMediaDir)
   g_TextureManager.SetTexturePath(strMediaDir);
   m_strMediaDir = strMediaDir;
 }
-

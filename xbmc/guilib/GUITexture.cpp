@@ -27,6 +27,30 @@
 
 using namespace std;
 
+CTextureInfo::CTextureInfo()
+{
+  orientation = 0;
+  useLarge = false;
+}
+
+CTextureInfo::CTextureInfo(const CStdString &file)
+{
+  orientation = 0;
+  useLarge = false;
+  filename = file;
+}
+
+CTextureInfo& CTextureInfo::operator=(const CTextureInfo &right)
+{
+  border = right.border;
+  orientation = right.orientation;
+  diffuse = right.diffuse;
+  filename = right.filename;
+  useLarge = right.useLarge;
+  diffuseColor = right.diffuseColor;
+  return *this;
+}
+
 CGUITextureBase::CGUITextureBase(float posX, float posY, float width, float height, const CTextureInfo& texture)
 {
   m_posX = posX;
@@ -104,12 +128,12 @@ CGUITextureBase::~CGUITextureBase(void)
 {
 }
 
-void CGUITextureBase::AllocateOnDemand()
+bool CGUITextureBase::AllocateOnDemand()
 {
   if (m_visible)
   { // visible, so make sure we're allocated
     if (!IsAllocated() || (m_isAllocated == IN_PROGRESS))
-      AllocResources();
+      return AllocResources();
   }
   else
   { // hidden, so deallocate as applicable
@@ -120,21 +144,29 @@ void CGUITextureBase::AllocateOnDemand()
     m_currentFrame = 0;
     m_frameCounter = 0;
   }
+
+  return false;
+}
+
+bool CGUITextureBase::Process(unsigned int currentTime)
+{
+  bool changed = false;
+  // check if we need to allocate our resources
+  changed |= AllocateOnDemand();
+
+  if (m_texture.size() > 1)
+    changed |= UpdateAnimFrame();
+
+  if (m_invalid)
+    changed |= CalculateSize();
+
+  return changed;
 }
 
 void CGUITextureBase::Render()
 {
-  // check if we need to allocate our resources
-  AllocateOnDemand();
-
   if (!m_visible || !m_texture.size())
     return;
-
-  if (m_texture.size() > 1)
-    UpdateAnimFrame();
-
-  if (m_invalid)
-    CalculateSize();
 
   // see if we need to clip the image
   if (m_vertex.Width() > m_width || m_vertex.Height() > m_height)
@@ -158,11 +190,11 @@ void CGUITextureBase::Render()
 
   // compute the texture coordinates
   float u1, u2, u3, v1, v2, v3;
-  u1 = m_info.border.left;
-  u2 = m_frameWidth - m_info.border.right;
+  u1 = m_info.border.x1;
+  u2 = m_frameWidth - m_info.border.x2;
   u3 = m_frameWidth;
-  v1 = m_info.border.top;
-  v2 = m_frameHeight - m_info.border.bottom;
+  v1 = m_info.border.y1;
+  v2 = m_frameHeight - m_info.border.y2;
   v3 = m_frameHeight;
 
   if (!m_texture.m_texCoordsArePixels)
@@ -180,28 +212,28 @@ void CGUITextureBase::Render()
   //       for flipping
 
   // left segment (0,0,u1,v3)
-  if (m_info.border.left)
+  if (m_info.border.x1)
   {
-    if (m_info.border.top)
-      Render(m_vertex.x1, m_vertex.y1, m_vertex.x1 + m_info.border.left, m_vertex.y1 + m_info.border.top, 0, 0, u1, v1, u3, v3);
-    Render(m_vertex.x1, m_vertex.y1 + m_info.border.top, m_vertex.x1 + m_info.border.left, m_vertex.y2 - m_info.border.bottom, 0, v1, u1, v2, u3, v3);
-    if (m_info.border.bottom)
-      Render(m_vertex.x1, m_vertex.y2 - m_info.border.bottom, m_vertex.x1 + m_info.border.left, m_vertex.y2, 0, v2, u1, v3, u3, v3);
+    if (m_info.border.y1)
+      Render(m_vertex.x1, m_vertex.y1, m_vertex.x1 + m_info.border.x1, m_vertex.y1 + m_info.border.y1, 0, 0, u1, v1, u3, v3);
+    Render(m_vertex.x1, m_vertex.y1 + m_info.border.y1, m_vertex.x1 + m_info.border.x1, m_vertex.y2 - m_info.border.y2, 0, v1, u1, v2, u3, v3);
+    if (m_info.border.y2)
+      Render(m_vertex.x1, m_vertex.y2 - m_info.border.y2, m_vertex.x1 + m_info.border.x1, m_vertex.y2, 0, v2, u1, v3, u3, v3);
   }
   // middle segment (u1,0,u2,v3)
-  if (m_info.border.top)
-    Render(m_vertex.x1 + m_info.border.left, m_vertex.y1, m_vertex.x2 - m_info.border.right, m_vertex.y1 + m_info.border.top, u1, 0, u2, v1, u3, v3);
-  Render(m_vertex.x1 + m_info.border.left, m_vertex.y1 + m_info.border.top, m_vertex.x2 - m_info.border.right, m_vertex.y2 - m_info.border.bottom, u1, v1, u2, v2, u3, v3);
-  if (m_info.border.bottom)
-    Render(m_vertex.x1 + m_info.border.left, m_vertex.y2 - m_info.border.bottom, m_vertex.x2 - m_info.border.right, m_vertex.y2, u1, v2, u2, v3, u3, v3);
+  if (m_info.border.y1)
+    Render(m_vertex.x1 + m_info.border.x1, m_vertex.y1, m_vertex.x2 - m_info.border.x2, m_vertex.y1 + m_info.border.y1, u1, 0, u2, v1, u3, v3);
+  Render(m_vertex.x1 + m_info.border.x1, m_vertex.y1 + m_info.border.y1, m_vertex.x2 - m_info.border.x2, m_vertex.y2 - m_info.border.y2, u1, v1, u2, v2, u3, v3);
+  if (m_info.border.y2)
+    Render(m_vertex.x1 + m_info.border.x1, m_vertex.y2 - m_info.border.y2, m_vertex.x2 - m_info.border.x2, m_vertex.y2, u1, v2, u2, v3, u3, v3);
   // right segment
-  if (m_info.border.right)
+  if (m_info.border.x2)
   { // have a left border
-    if (m_info.border.top)
-      Render(m_vertex.x2 - m_info.border.right, m_vertex.y1, m_vertex.x2, m_vertex.y1 + m_info.border.top, u2, 0, u3, v1, u3, v3);
-    Render(m_vertex.x2 - m_info.border.right, m_vertex.y1 + m_info.border.top, m_vertex.x2, m_vertex.y2 - m_info.border.bottom, u2, v1, u3, v2, u3, v3);
-    if (m_info.border.bottom)
-      Render(m_vertex.x2 - m_info.border.right, m_vertex.y2 - m_info.border.bottom, m_vertex.x2, m_vertex.y2, u2, v2, u3, v3, u3, v3);
+    if (m_info.border.y1)
+      Render(m_vertex.x2 - m_info.border.x2, m_vertex.y1, m_vertex.x2, m_vertex.y1 + m_info.border.y1, u2, 0, u3, v1, u3, v3);
+    Render(m_vertex.x2 - m_info.border.x2, m_vertex.y1 + m_info.border.y1, m_vertex.x2, m_vertex.y2 - m_info.border.y2, u2, v1, u3, v2, u3, v3);
+    if (m_info.border.y2)
+      Render(m_vertex.x2 - m_info.border.x2, m_vertex.y2 - m_info.border.y2, m_vertex.x2, m_vertex.y2, u2, v2, u3, v3, u3, v3);
   }
 
   // close off our renderer
@@ -266,19 +298,20 @@ void CGUITextureBase::PreAllocResources()
     g_TextureManager.PreLoad(m_info.diffuse);
 }
 
-void CGUITextureBase::AllocResources()
+bool CGUITextureBase::AllocResources()
 {
   if (m_info.filename.IsEmpty())
-    return;
+    return false;
 
   if (m_texture.size())
-    return; // already have our texture
+    return false; // already have our texture
 
   // reset our animstate
   m_frameCounter = 0;
   m_currentFrame = 0;
   m_currentLoop = 0;
 
+  bool changed = false;
   bool useLarge = m_info.useLarge || !g_TextureManager.CanLoad(m_info.filename);
   if (useLarge)
   { // we want to use the large image loader, but we first check for bundled textures
@@ -289,6 +322,7 @@ void CGUITextureBase::AllocResources()
       {
         m_isAllocated = NORMAL;
         m_texture = g_TextureManager.GetTexture(m_info.filename);
+        changed = true;
       }
     }
     if (m_isAllocated != NORMAL)
@@ -299,10 +333,11 @@ void CGUITextureBase::AllocResources()
         m_isAllocated = IN_PROGRESS;
 
         if (!texture.size()) // not ready as yet
-          return;
+          return false;
 
         m_isAllocated = LARGE;
         m_texture = texture;
+        changed = true;
       }
       else
         m_isAllocated = LARGE_FAILED;
@@ -316,9 +351,10 @@ void CGUITextureBase::AllocResources()
     // us hitting the disk every frame
     m_isAllocated = images ? NORMAL : NORMAL_FAILED;
     if (!images)
-      return;
+      return false;
 
     m_texture = g_TextureManager.GetTexture(m_info.filename);
+    changed = true;
   }
   m_frameWidth = (float)m_texture.m_width;
   m_frameHeight = (float)m_texture.m_height;
@@ -334,12 +370,14 @@ void CGUITextureBase::AllocResources()
 
   // call our implementation
   Allocate();
+
+  return changed;
 }
 
-void CGUITextureBase::CalculateSize()
+bool CGUITextureBase::CalculateSize()
 {
   if (m_currentFrame >= m_texture.size())
-    return;
+    return false;
 
   m_texCoordsScaleU = 1.0f / m_texture.m_texWidth;
   m_texCoordsScaleV = 1.0f / m_texture.m_texHeight;
@@ -392,6 +430,7 @@ void CGUITextureBase::CalculateSize()
     else
       newPosY = m_posY + (m_height - newHeight) * 0.5f;
   }
+
   m_vertex.SetRect(newPosX, newPosY, newPosX + newWidth, newPosY + newHeight);
 
   // scale the diffuse coords as well
@@ -425,7 +464,9 @@ void CGUITextureBase::CalculateSize()
       m_diffuseOffset = CPoint((m_vertex.x1 - m_posX) / m_vertex.Width() * m_diffuseScaleU, (m_vertex.y1 - m_posY) / m_vertex.Height() * m_diffuseScaleV);
     }
   }
+
   m_invalid = false;
+  return true;
 }
 
 void CGUITextureBase::FreeResources(bool immediately /* = false */)
@@ -464,8 +505,10 @@ void CGUITextureBase::SetInvalid()
   m_invalid = true;
 }
 
-void CGUITextureBase::UpdateAnimFrame()
+bool CGUITextureBase::UpdateAnimFrame()
 {
+  bool changed = false;
+
   m_frameCounter++;
   unsigned int delay = m_texture.m_delays[m_currentFrame];
   if (!delay) delay = 100;
@@ -480,35 +523,46 @@ void CGUITextureBase::UpdateAnimFrame()
         {
           m_currentLoop++;
           m_currentFrame = 0;
+          changed = true;
         }
       }
       else
       {
         // 0 == loop forever
         m_currentFrame = 0;
+        changed = true;
       }
     }
     else
     {
       m_currentFrame++;
+      changed = true;
     }
   }
+
+  return changed;
 }
 
-void CGUITextureBase::SetVisible(bool visible)
+bool CGUITextureBase::SetVisible(bool visible)
 {
+  bool changed = m_visible != visible;
   m_visible = visible;
+  return changed;
 }
 
-void CGUITextureBase::SetAlpha(unsigned char alpha)
+bool CGUITextureBase::SetAlpha(unsigned char alpha)
 {
+  bool changed = m_alpha != alpha;
   m_alpha = alpha;
+  return changed;
 }
 
-void CGUITextureBase::SetDiffuseColor(color_t color)
+bool CGUITextureBase::SetDiffuseColor(color_t color)
 {
+  bool changed = m_diffuseColor != color;
   m_diffuseColor = color;
-  m_info.diffuseColor.Update();
+  changed |= m_info.diffuseColor.Update();
+  return changed;
 }
 
 bool CGUITextureBase::ReadyToRender() const
@@ -553,55 +607,68 @@ void CGUITextureBase::OrientateTexture(CRect &rect, float width, float height, i
   }
 }
 
-void CGUITextureBase::SetWidth(float width)
+bool CGUITextureBase::SetWidth(float width)
 {
-  if (width < m_info.border.left + m_info.border.right)
-    width = m_info.border.left + m_info.border.right;
+  if (width < m_info.border.x1 + m_info.border.x2)
+    width = m_info.border.x1 + m_info.border.x2;
   if (m_width != width)
   {
     m_width = width;
     m_invalid = true;
+    return true;
   }
+  else
+    return false;
 }
 
-void CGUITextureBase::SetHeight(float height)
+bool CGUITextureBase::SetHeight(float height)
 {
-  if (height < m_info.border.top + m_info.border.bottom)
-    height = m_info.border.top + m_info.border.bottom;
+  if (height < m_info.border.y1 + m_info.border.y2)
+    height = m_info.border.y1 + m_info.border.y2;
   if (m_height != height)
   {
     m_height = height;
     m_invalid = true;
+    return true;
   }
+  else
+    return false;
 }
 
-void CGUITextureBase::SetPosition(float posX, float posY)
+bool CGUITextureBase::SetPosition(float posX, float posY)
 {
   if (m_posX != posX || m_posY != posY)
   {
     m_posX = posX;
     m_posY = posY;
     m_invalid = true;
+    return true;
   }
+  else
+    return false;
 }
 
-void CGUITextureBase::SetAspectRatio(const CAspectRatio &aspect)
+bool CGUITextureBase::SetAspectRatio(const CAspectRatio &aspect)
 {
   if (m_aspect != aspect)
   {
     m_aspect = aspect;
     m_invalid = true;
+    return true;
   }
+  else
+    return false;
 }
 
-void CGUITextureBase::SetFileName(const CStdString& filename)
+bool CGUITextureBase::SetFileName(const CStdString& filename)
 {
-  if (m_info.filename.Equals(filename)) return;
+  if (m_info.filename.Equals(filename)) return false;
   // Don't completely free resources here - we may be just changing
   // filenames mid-animation
   FreeResources();
   m_info.filename = filename;
   // Don't allocate resources here as this is done at render time
+  return true;
 }
 
 void CGUITextureBase::SetUseCache(const bool useCache)

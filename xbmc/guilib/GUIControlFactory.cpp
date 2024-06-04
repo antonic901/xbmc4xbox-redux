@@ -364,23 +364,24 @@ bool CGUIControlFactory::GetTexture(const TiXmlNode* pRootNode, const char* strT
   return true;
 }
 
-void CGUIControlFactory::GetRectFromString(const CStdString &string, FRECT &rect)
+void CGUIControlFactory::GetRectFromString(const CStdString &string, CRect &rect)
 {
   // format is rect="left[,top,right,bottom]"
-  std::vector<std::string> strRect = StringUtils::Split(string, ',');
+  CStdStringArray strRect;
+  StringUtils::SplitString(string, ",", strRect);
   if (strRect.size() == 1)
   {
-    rect.left = (float)atof(strRect[0].c_str());
-    rect.top = rect.left;
-    rect.right = rect.left;
-    rect.bottom = rect.left;
+    rect.x1 = (float)atof(strRect[0].c_str());
+    rect.y1 = rect.x1;
+    rect.x2 = rect.x1;
+    rect.y2 = rect.x1;
   }
   else if (strRect.size() == 4)
   {
-    rect.left = (float)atof(strRect[0].c_str());
-    rect.top = (float)atof(strRect[1].c_str());
-    rect.right = (float)atof(strRect[2].c_str());
-    rect.bottom = (float)atof(strRect[3].c_str());
+    rect.x1 = (float)atof(strRect[0].c_str());
+    rect.y1 = (float)atof(strRect[1].c_str());
+    rect.x2 = (float)atof(strRect[2].c_str());
+    rect.y2 = (float)atof(strRect[3].c_str());
   }
 }
 
@@ -451,7 +452,7 @@ bool CGUIControlFactory::GetConditionalVisibility(const TiXmlNode *control, CStd
   return GetConditionalVisibility(control, condition, allowHiddenFocus);
 }
 
-bool CGUIControlFactory::GetAnimations(const TiXmlNode *control, const FRECT &rect, int context, vector<CAnimation> &animations)
+bool CGUIControlFactory::GetAnimations(const TiXmlNode *control, const CRect &rect, int context, vector<CAnimation> &animations)
 {
   const TiXmlElement* node = control->FirstChildElement("animation");
   bool ret = false;
@@ -671,7 +672,7 @@ CStdString CGUIControlFactory::GetType(const TiXmlElement *pControlNode)
   return type;
 }
 
-CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlElement* pControlNode, bool insideContainer)
+CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlElement* pControlNode, bool insideContainer)
 {
   // get the control type
   CStdString strType = GetType(pControlNode);
@@ -722,7 +723,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   CTextureInfo textureRadioOnDisabled, textureRadioOffDisabled;
   CTextureInfo imageNoFocus, imageFocus;
   CGUIInfoLabel texturePath;
-  FRECT borderSize = { 0, 0, 0, 0};
+  CRect borderSize;
 
   float sliderWidth = 150, sliderHeight = 16;
   CPoint offset;
@@ -767,6 +768,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   CLabelInfo labelInfo;
   CLabelInfo spinInfo;
 
+  CGUIInfoColor hitColor(0xFFFFFFFF);
   CGUIInfoColor textColor3;
   CGUIInfoColor headlineColor;
 
@@ -803,9 +805,9 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   // such as buttons etc.  For labels/fadelabels/images it does not matter
 
   GetAlignment(pControlNode, "align", labelInfo.align);
-  if (!GetDimensions(pControlNode, "left", "right", "centerleft", "centerright", "width", (rect.right - rect.left), posX, width, minWidth))
+  if (!GetDimensions(pControlNode, "left", "right", "centerleft", "centerright", "width", rect.Width(), posX, width, minWidth))
   { // didn't get 2 dimensions, so test for old <posx> as well
-    if (GetPosition(pControlNode, "posx", (rect.right - rect.left), posX))
+    if (GetPosition(pControlNode, "posx", rect.Width(), posX))
     { // <posx> available, so use it along with any hacks we used to support
       if (!insideContainer &&
           type == CGUIControl::GUICONTROL_LABEL &&
@@ -813,13 +815,13 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
         posX -= width;
     }
     if (!width) // no width specified, so compute from parent
-      width = max((rect.right - rect.left) - posX, 0.0f);
+      width = max(rect.Width() - posX, 0.0f);
   }
-  if (!GetDimensions(pControlNode, "top", "bottom", "centertop", "centerbottom", "height", (rect.bottom - rect.top), posY, height, minHeight))
+  if (!GetDimensions(pControlNode, "top", "bottom", "centertop", "centerbottom", "height", rect.Height(), posY, height, minHeight))
   {
-    GetPosition(pControlNode, "posy", (rect.bottom - rect.top), posY);
+    GetPosition(pControlNode, "posy", rect.Height(), posY);
     if (!height)
-      height = max((rect.bottom - rect.top) - posY, 0.0f);
+      height = max(rect.Height() - posY, 0.0f);
   }
 
   XMLUtils::GetFloat(pControlNode, "offsetx", offset.x);
@@ -827,6 +829,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
 
   hitRect.SetRect(posX, posY, posX + width, posY + height);
   GetHitRect(pControlNode, hitRect);
+
+  GetInfoColor(pControlNode, "hitrectcolor", hitColor, parentID);
 
   GetActions(pControlNode, "onup",    actions[ACTION_MOVE_UP]);
   GetActions(pControlNode, "ondown",  actions[ACTION_MOVE_DOWN]);
@@ -850,8 +854,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   GetConditionalVisibility(pControlNode, visibleCondition, allowHiddenFocus);
   XMLUtils::GetString(pControlNode, "enable", enableCondition);
 
-  // note: animrect here uses .right and .bottom as width and height respectively (nonstandard)
-  FRECT animRect = { posX, posY, width, height };
+  CRect animRect(posX, posY, posX + width, posY + height);
   GetAnimations(pControlNode, animRect, parentID, animations);
 
   GetInfoColor(pControlNode, "textcolor", labelInfo.textColor, parentID);
@@ -1406,7 +1409,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const FRECT &rect, TiXmlEl
   // things that apply to all controls
   if (control)
   {
-    control->SetHitRect(hitRect);
+    control->SetHitRect(hitRect, hitColor);
     control->SetVisibleCondition(visibleCondition, allowHiddenFocus);
     control->SetEnableCondition(enableCondition);
     control->SetAnimations(animations);

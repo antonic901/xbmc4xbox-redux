@@ -20,8 +20,9 @@
  */
 
 #include "threads/CriticalSection.h"
-#include "guilib/gui3d.h"
-#include "utils/StdString.h"
+#include "guilib/DirtyRegion.h"
+#include "xbox/PlatformDefs.h" // uint32_t
+#include <string>
 
 typedef uint32_t color_t;
 
@@ -30,7 +31,7 @@ class CBaseTexture;
 class CSlideShowPic
 {
 public:
-  enum DISPLAY_EFFECT { EFFECT_NONE = 0, EFFECT_FLOAT, EFFECT_ZOOM, EFFECT_RANDOM, EFFECT_NO_TIMEOUT };
+  enum DISPLAY_EFFECT { EFFECT_NONE = 0, EFFECT_FLOAT, EFFECT_ZOOM, EFFECT_RANDOM, EFFECT_PANORAMA, EFFECT_NO_TIMEOUT };
   enum TRANSISTION_EFFECT { TRANSISTION_NONE = 0, FADEIN_FADEOUT, CROSSFADE, TRANSISTION_ZOOM, TRANSISTION_ROTATE };
 
   struct TRANSISTION
@@ -44,9 +45,11 @@ public:
   ~CSlideShowPic();
 
   void SetTexture(int iSlideNumber, CBaseTexture* pTexture, DISPLAY_EFFECT dispEffect = EFFECT_RANDOM, TRANSISTION_EFFECT transEffect = FADEIN_FADEOUT);
-  void UpdateTexture(CBaseTexture *pTexture);
+  void UpdateTexture(CBaseTexture* pTexture);
+
   bool IsLoaded() const { return m_bIsLoaded;};
   void UnLoad() {m_bIsLoaded = false;};
+  void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   void Render();
   void Close();
   void Reset(DISPLAY_EFFECT dispEffect = EFFECT_RANDOM, TRANSISTION_EFFECT transEffect = FADEIN_FADEOUT);
@@ -77,13 +80,13 @@ public:
 
   void Move(float dX, float dY);
   float GetZoom() const { return m_fZoomAmount;};
-  
+
   bool m_bIsComic;
   bool m_bCanMoveHorizontally;
   bool m_bCanMoveVertically;
 private:
   void SetTexture_Internal(int iSlideNumber, CBaseTexture* pTexture, DISPLAY_EFFECT dispEffect = EFFECT_RANDOM, TRANSISTION_EFFECT transEffect = FADEIN_FADEOUT);
-  void Process();
+  void UpdateVertices(float cur_x[4], float cur_y[4], const float new_x[4], const float new_y[4], CDirtyRegionList &dirtyregions);
   void Render(float *x, float *y, CBaseTexture* pTexture, color_t color, _D3DFILLMODE fillmode = D3DFILL_SOLID );
   CBaseTexture *m_pImage;
 
@@ -93,7 +96,8 @@ private:
   bool m_bIsLoaded;
   bool m_bIsFinished;
   bool m_bDrawNextImage;
-  CStdString m_strFileName;
+  bool m_bIsDirty;
+  std::string m_strFileName;
   float m_fWidth;
   float m_fHeight;
   color_t m_alpha;
@@ -107,6 +111,11 @@ private:
   float m_fZoomAmount;
   float m_fZoomLeft;
   float m_fZoomTop;
+  float m_ax[4], m_ay[4];
+  float m_sx[4], m_sy[4];
+  float m_bx[4], m_by[4];
+  float m_ox[4], m_oy[4];
+
   // transistion and display effects
   DISPLAY_EFFECT m_displayEffect;
   TRANSISTION m_transistionStart;

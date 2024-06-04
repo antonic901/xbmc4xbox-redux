@@ -250,7 +250,7 @@ int CXbmcWeb::xbmcRemoteControl( int eid, webs_t wp, char_t *parameter)
         g_application.m_DefaultIR_Remote.wButtons = xbmcRemoteControls[ cmd].xbmcIRCode;
 #endif
         // send it to the application
-        g_application.FrameMove();
+        g_application.FrameMove(true);
         // return the number of characters written
         return 0;
       }

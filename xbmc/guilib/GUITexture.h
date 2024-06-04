@@ -34,14 +34,6 @@
 
 typedef uint32_t color_t;
 
-struct FRECT
-{
-  float left;
-  float top;
-  float right;
-  float bottom;
-};
-
 // image alignment for <aspect>keep</aspect>, <aspect>scale</aspect> or <aspect>center</aspect>
 #define ASPECT_ALIGN_CENTER  0
 #define ASPECT_ALIGN_LEFT    1
@@ -78,32 +70,11 @@ public:
 class CTextureInfo
 {
 public:
-  CTextureInfo()
-  {
-    memset(&border, 0, sizeof(FRECT));
-    orientation = 0;
-    useLarge = false;
-  };
-
-  CTextureInfo(const CStdString &file)
-  {
-    memset(&border, 0, sizeof(FRECT));
-    orientation = 0;
-    useLarge = false;
-    filename = file;
-  }
-
-  void operator=(const CTextureInfo &right)
-  {
-    memcpy(&border, &right.border, sizeof(FRECT));
-    orientation = right.orientation;
-    diffuse = right.diffuse;
-    filename = right.filename;
-    useLarge = right.useLarge;
-    diffuseColor = right.diffuseColor;
-  };
+  CTextureInfo();
+  CTextureInfo(const CStdString &file);
+  CTextureInfo& operator=(const CTextureInfo &right);
   bool       useLarge;
-  FRECT      border;          // scaled  - unneeded if we get rid of scale on load
+  CRect      border;          // scaled  - unneeded if we get rid of scale on load
   int        orientation;     // orientation of the texture (0 - 7 == EXIForientation - 1)
   CStdString diffuse;         // diffuse overlay texture
   CGUIInfoColor diffuseColor; // diffuse color
@@ -117,23 +88,24 @@ public:
   CGUITextureBase(const CGUITextureBase &left);
   virtual ~CGUITextureBase(void);
 
+  bool Process(unsigned int currentTime);
   void Render();
 
   void DynamicResourceAlloc(bool bOnOff);
   void PreAllocResources();
-  void AllocResources();
+  bool AllocResources();
   void FreeResources(bool immediately = false);
   void SetInvalid();
 
-  void SetVisible(bool visible);
-  void SetAlpha(unsigned char alpha);
-  void SetDiffuseColor(color_t color);
-  void SetPosition(float x, float y);
-  void SetWidth(float width);
-  void SetHeight(float height);
-  void SetFileName(const CStdString &filename);
+  bool SetVisible(bool visible);
+  bool SetAlpha(unsigned char alpha);
+  bool SetDiffuseColor(color_t color);
+  bool SetPosition(float x, float y);
+  bool SetWidth(float width);
+  bool SetHeight(float height);
+  bool SetFileName(const CStdString &filename);
   void SetUseCache(const bool useCache = true);
-  void SetAspectRatio(const CAspectRatio &aspect);
+  bool SetAspectRatio(const CAspectRatio &aspect);
 
   const CStdString& GetFileName() const { return m_info.filename; };
   float GetTextureWidth() const { return m_frameWidth; };
@@ -151,10 +123,10 @@ public:
   bool FailedToAlloc() const { return m_isAllocated == NORMAL_FAILED || m_isAllocated == LARGE_FAILED; };
   bool ReadyToRender() const;
 protected:
-  void CalculateSize();
+  bool CalculateSize();
   void LoadDiffuseImage();
-  void AllocateOnDemand();
-  void UpdateAnimFrame();
+  bool AllocateOnDemand();
+  bool UpdateAnimFrame();
   void Render(float left, float top, float bottom, float right, float u1, float v1, float u2, float v2, float u3, float v3);
   void OrientateTexture(CRect &rect, float width, float height, int orientation);
 

@@ -69,7 +69,7 @@ float CGUIListItemLayout::Size(ORIENTATION orientation) const
   return (orientation == HORIZONTAL) ? m_width : m_height;
 }
 
-void CGUIListItemLayout::Render(CGUIListItem *item, int parentID, unsigned int time)
+void CGUIListItemLayout::Process(CGUIListItem *item, int parentID, unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   if (m_invalidated)
   { // need to update our item
@@ -87,7 +87,12 @@ void CGUIListItemLayout::Render(CGUIListItem *item, int parentID, unsigned int t
   // update visibility, and render
   m_group.SetState(item->IsSelected() || m_isPlaying, m_focused);
   m_group.UpdateVisibility(item);
-  m_group.DoRender(time);
+  m_group.DoProcess(currentTime, dirtyregions);
+}
+
+void CGUIListItemLayout::Render(CGUIListItem *item, int parentID)
+{
+  m_group.DoRender();
 }
 
 void CGUIListItemLayout::SetFocusedItem(unsigned int focus)
@@ -138,7 +143,7 @@ void CGUIListItemLayout::LoadControl(TiXmlElement *child, CGUIControlGroup *grou
 {
   if (!group) return;
 
-  FRECT rect = { group->GetXPosition(), group->GetYPosition(), group->GetXPosition() + group->GetWidth(), group->GetYPosition() + group->GetHeight() };
+  CRect rect(group->GetXPosition(), group->GetYPosition(), group->GetXPosition() + group->GetWidth(), group->GetYPosition() + group->GetHeight());
 
   CGUIControlFactory factory;
   CGUIControl *control = factory.Create(0, rect, child, true);  // true indicating we're inside a list for the

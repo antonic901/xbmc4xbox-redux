@@ -260,17 +260,17 @@ bool CDummyVideoPlayer::SetPlayerState(CStdString state)
 
 void CDummyVideoPlayer::Render()
 {
-  RECT vw = g_graphicsContext.GetViewWindow();
+  const CRect vw = g_graphicsContext.GetViewWindow();
   D3DVIEWPORT8 newviewport;
   D3DVIEWPORT8 oldviewport;
   g_graphicsContext.Get3DDevice()->GetViewport(&oldviewport);
   newviewport.MinZ = 0.0f;
   newviewport.MaxZ = 1.0f;
-  newviewport.X = vw.left;
-  newviewport.Y = vw.top;
-  newviewport.Width = vw.right - vw.left;
-  newviewport.Height = vw.bottom - vw.top;
-  g_graphicsContext.SetClipRegion((float)vw.left, (float)vw.top, (float)vw.right - vw.left, (float)vw.bottom - vw.top);
+  newviewport.X = (DWORD)vw.x1;
+  newviewport.Y = (DWORD)vw.y1;
+  newviewport.Width = (DWORD)vw.Width();
+  newviewport.Height = (DWORD)vw.Height();
+  g_graphicsContext.SetClipRegion(vw.x1, vw.y1, vw.Width(), vw.Height());
   CGUIFont *font = g_fontManager.GetFont("font13");
   if (font)
   {
@@ -281,8 +281,8 @@ void CDummyVideoPlayer::Render()
     int ms = (int)(m_clock % 1000);
     CStdString currentTime;
     currentTime.Format("Video goes here %02i:%02i:%03i", mins, secs, ms);
-    float posX = (vw.left + vw.right) * 0.5f;
-    float posY = (vw.top + vw.bottom) * 0.5f;
+    float posX = (vw.x1 + vw.x2) * 0.5f;
+    float posY = (vw.y1 + vw.y2) * 0.5f;
     CGUITextLayout::DrawText(font, posX, posY, 0xffffffff, 0, currentTime, XBFONT_CENTER_X | XBFONT_CENTER_Y);
   }
   g_graphicsContext.RestoreClipRegion();

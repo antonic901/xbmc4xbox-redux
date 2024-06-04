@@ -40,6 +40,7 @@ public:
   virtual ~CGUIControlGroup(void);
   virtual CGUIControlGroup *Clone() const { return new CGUIControlGroup(*this); };
 
+  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
   virtual bool OnAction(const CAction &action);
   virtual bool OnMessage(CGUIMessage& message);
@@ -55,7 +56,6 @@ public:
 
   virtual void SetInitialVisibility();
 
-  virtual void DoRender(unsigned int currentTime);
   virtual bool IsAnimating(ANIMATION_TYPE anim);
   virtual bool HasAnimation(ANIMATION_TYPE anim);
   virtual void QueueAnimation(ANIMATION_TYPE anim);
@@ -85,7 +85,7 @@ public:
 #ifdef _DEBUG
   virtual void DumpTextureUse();
 #endif
-protected:  
+protected:
   /*!
    \brief Check whether a given control is valid
    Runs through controls and returns whether this control is valid.  Only functional
@@ -113,8 +113,5 @@ protected:
   bool m_defaultAlways;
   int m_focusedControl;
   bool m_renderFocusedLast;
-
-  // render time
-  unsigned int m_renderTime;
 };
 

@@ -129,6 +129,8 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     float m_videoPlayCountMinimumPercent;
     
     bool m_guiKeepInMemory;
+    bool m_guiVisualizeDirtyRegions;
+    int  m_guiAlgorithmDirtyRegions;
 
     unsigned int m_cacheMemBufferSize;
     unsigned int m_networkBufferMode;

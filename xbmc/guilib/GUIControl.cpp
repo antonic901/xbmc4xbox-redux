@@ -24,6 +24,7 @@
 #include "GUIInfoManager.h"
 #include "LocalizeStrings.h"
 #include "GUIWindowManager.h"
+#include "GUITexture.h"
 
 using namespace std;
 
@@ -49,6 +50,7 @@ CGUIControl::CGUIControl()
   m_hasCamera = false;
   m_pushedUpdates = false;
   m_pulseOnSelect = false;
+  m_controlIsDirty = true;
 }
 
 CGUIControl::CGUIControl(int parentID, int controlID, float posX, float posY, float width, float height)
@@ -112,25 +114,83 @@ void CGUIControl::DynamicResourceAlloc(bool bOnOff)
 
 }
 
+// the main processing routine.
+// 1. animate and set animation transform
+// 2. if visible, process
+// 3. reset the animation transform
+void CGUIControl::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+{
+  CRect dirtyRegion = m_renderRegion;
+
+  bool changed = m_bInvalidated && IsVisible();
+
+  changed |= Animate(currentTime);
+
+  if (IsVisible())
+  {
+    m_cachedTransform = g_graphicsContext.AddTransform(m_transform);
+    if (m_hasCamera)
+      g_graphicsContext.SetCameraPosition(m_camera);
+
+    Process(currentTime, dirtyregions);
+    m_bInvalidated = false;
+
+    if (dirtyRegion != m_renderRegion)
+    {
+      dirtyRegion.Union(m_renderRegion);
+      changed = true;
+    }
+
+    if (m_hasCamera)
+      g_graphicsContext.RestoreCameraPosition();
+    g_graphicsContext.RemoveTransform();
+  }
+
+  changed |= m_controlIsDirty;
+
+  m_controlIsDirty = false;
+
+  if (changed)
+  {
+    dirtyregions.push_back(dirtyRegion);
+  }
+}
+
+void CGUIControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+{
+  // update our render region
+  m_renderRegion = g_graphicsContext.generateAABB(CalcRenderRegion());
+}
+
 // the main render routine.
-// 1. animate and set the animation transform
+// 1. set the animation transform
 // 2. if visible, paint
 // 3. reset the animation transform
-void CGUIControl::DoRender(unsigned int currentTime)
+void CGUIControl::DoRender()
 {
-  Animate(currentTime);
-  if (m_hasCamera)
-    g_graphicsContext.SetCameraPosition(m_camera);
   if (IsVisible())
+  {
+    g_graphicsContext.SetTransform(m_cachedTransform);
+    if (m_hasCamera)
+      g_graphicsContext.SetCameraPosition(m_camera);
+
+
+    if (m_hitColor != 0xFFFFFFFF)
+    {
+      color_t color = g_graphicsContext.MergeAlpha(m_hitColor);
+      CGUITexture::DrawQuad(g_graphicsContext.generateAABB(m_hitRect), color);
+    }
+
     Render();
-  if (m_hasCamera)
-    g_graphicsContext.RestoreCameraPosition();
-  g_graphicsContext.RemoveTransform();
+
+    if (m_hasCamera)
+      g_graphicsContext.RestoreCameraPosition();
+    g_graphicsContext.RemoveTransform();
+  }
 }
 
 void CGUIControl::Render()
 {
-  m_bInvalidated = false;
   m_hasRendered = true;
 }
 
@@ -313,6 +373,11 @@ bool CGUIControl::OnMessage(CGUIMessage& message)
     case GUI_MSG_DISABLED:
       SetEnabled(false);
       return true;
+
+    case GUI_MSG_WINDOW_RESIZE:
+      // invalidate controls to get them to recalculate sizing information
+      SetInvalid();
+      return true;
     }
   }
   return false;
@@ -338,7 +403,11 @@ bool CGUIControl::IsDisabled() const
 
 void CGUIControl::SetEnabled(bool bEnable)
 {
-  m_enabled = bEnable;
+  if (bEnable != m_enabled)
+  {
+    m_enabled = bEnable;
+    SetInvalid();
+  }
 }
 
 void CGUIControl::SetEnableCondition(const CStdString &expression)
@@ -355,16 +424,21 @@ void CGUIControl::SetPosition(float posX, float posY)
 {
   if ((m_posX != posX) || (m_posY != posY))
   {
+    MarkDirtyRegion();
+
     m_hitRect += CPoint(posX - m_posX, posY - m_posY);
     m_posX = posX;
     m_posY = posY;
+
     SetInvalid();
   }
 }
 
-void CGUIControl::SetColorDiffuse(const CGUIInfoColor &color)
+bool CGUIControl::SetColorDiffuse(const CGUIInfoColor &color)
 {
+  bool changed = m_diffuseColor != color;
   m_diffuseColor = color;
+  return changed;
 }
 
 float CGUIControl::GetXPosition() const
@@ -387,6 +461,19 @@ float CGUIControl::GetHeight() const
   return m_height;
 }
 
+void CGUIControl::MarkDirtyRegion()
+{
+  m_controlIsDirty = true;
+}
+
+CRect CGUIControl::CalcRenderRegion() const
+{
+  CPoint tl(GetXPosition(), GetYPosition());
+  CPoint br(tl.x + GetWidth(), tl.y + GetHeight());
+
+  return CRect(tl.x, tl.y, br.x, br.y);
+}
+
 void CGUIControl::SetActions(const ActionMap &actions)
 {
   m_actions = actions;
@@ -403,6 +490,7 @@ void CGUIControl::SetWidth(float width)
 {
   if (m_width != width)
   {
+    MarkDirtyRegion();
     m_width = width;
     m_hitRect.x2 = m_hitRect.x1 + width;
     SetInvalid();
@@ -413,6 +501,7 @@ void CGUIControl::SetHeight(float height)
 {
   if (m_height != height)
   {
+    MarkDirtyRegion();
     m_height = height;
     m_hitRect.y2 = m_hitRect.y1 + height;
     SetInvalid();
@@ -476,8 +565,11 @@ bool CGUIControl::OnMouseOver(const CPoint &point)
   if (g_Mouse.GetState() != MOUSE_STATE_DRAG)
     g_Mouse.SetState(MOUSE_STATE_FOCUS);
   if (!CanFocus()) return false;
-  CGUIMessage msg(GUI_MSG_SETFOCUS, GetParentID(), GetID());
-  OnMessage(msg);
+  if (!HasFocus())
+  {
+    CGUIMessage msg(GUI_MSG_SETFOCUS, GetParentID(), GetID());
+    OnMessage(msg);
+  }
   return true;
 }
 
@@ -507,18 +599,24 @@ void CGUIControl::UpdateVisibility(const CGUIListItem *item)
   }
   // and check for conditional enabling - note this overrides SetEnabled() from the code currently
   // this may need to be reviewed at a later date
+  bool enabled = m_enabled;
   if (m_enableCondition)
     m_enabled = m_enableCondition->Get(item);
+
+  if (m_enabled != enabled)
+    MarkDirtyRegion();
+
   m_allowHiddenFocus.Update(item);
-  UpdateColors();
+  if (UpdateColors())
+    MarkDirtyRegion();
   // and finally, update our control information (if not pushed)
   if (!m_pushedUpdates)
     UpdateInfo(item);
 }
 
-void CGUIControl::UpdateColors()
+bool CGUIControl::UpdateColors()
 {
-  m_diffuseColor.Update();
+  return m_diffuseColor.Update();
 }
 
 void CGUIControl::SetInitialVisibility()
@@ -542,6 +640,8 @@ void CGUIControl::SetInitialVisibility()
     m_enabled = m_enableCondition->Get();
   m_allowHiddenFocus.Update();
   UpdateColors();
+
+  MarkDirtyRegion();
 }
 
 void CGUIControl::SetVisibleCondition(const CStdString &expression, const CStdString &allowHiddenFocus)
@@ -558,15 +658,20 @@ void CGUIControl::SetVisibleCondition(const CStdString &expression, const CStdSt
 void CGUIControl::SetAnimations(const vector<CAnimation> &animations)
 {
   m_animations = animations;
+  MarkDirtyRegion();
 }
 
 void CGUIControl::ResetAnimation(ANIMATION_TYPE type)
 {
+  MarkDirtyRegion();
+
   for (unsigned int i = 0; i < m_animations.size(); i++)
   {
     if (m_animations[i].GetType() == type)
       m_animations[i].ResetAnimation();
   }
+
+  MarkDirtyRegion();
 }
 
 void CGUIControl::ResetAnimations()
@@ -602,6 +707,7 @@ bool CGUIControl::CheckAnimation(ANIMATION_TYPE animType)
 
 void CGUIControl::QueueAnimation(ANIMATION_TYPE animType)
 {
+  MarkDirtyRegion();
   if (!CheckAnimation(animType))
     return;
   CAnimation *reverseAnim = GetAnimation((ANIMATION_TYPE)-animType, false);
@@ -705,11 +811,14 @@ void CGUIControl::UpdateStates(ANIMATION_TYPE type, ANIMATION_PROCESS currentPro
   }
 }
 
-void CGUIControl::Animate(unsigned int currentTime)
+bool CGUIControl::Animate(unsigned int currentTime)
 {
   // check visible state outside the loop, as it could change
   GUIVISIBLE visible = m_visible;
+
   m_transform.Reset();
+  bool changed = false;
+
   CPoint center(m_posX + m_width * 0.5f, m_posY + m_height * 0.5f);
   for (unsigned int i = 0; i < m_animations.size(); i++)
   {
@@ -718,6 +827,7 @@ void CGUIControl::Animate(unsigned int currentTime)
     // Update the control states (such as visibility)
     UpdateStates(anim.GetType(), anim.GetProcess(), anim.GetState());
     // and render the animation effect
+    changed |= (anim.GetProcess() != ANIM_PROCESS_NONE);
     anim.RenderAnimation(m_transform, center);
 
 /*    // debug stuff
@@ -735,7 +845,8 @@ void CGUIControl::Animate(unsigned int currentTime)
       }
     }*/
   }
-  g_graphicsContext.AddTransform(m_transform);
+
+  return changed;
 }
 
 bool CGUIControl::IsAnimating(ANIMATION_TYPE animType)
@@ -797,9 +908,10 @@ void CGUIControl::SaveStates(vector<CControlState> &states)
   // empty for now - do nothing with the majority of controls
 }
 
-void CGUIControl::SetHitRect(const CRect &rect)
+void CGUIControl::SetHitRect(const CRect &rect, const CGUIInfoColor &color)
 {
   m_hitRect = rect;
+  m_hitColor = color;
 }
 
 void CGUIControl::SetCamera(const CPoint &camera)

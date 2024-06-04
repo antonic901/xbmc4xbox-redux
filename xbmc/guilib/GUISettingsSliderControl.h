@@ -43,6 +43,7 @@ public:
   virtual ~CGUISettingsSliderControl(void);
   virtual CGUISettingsSliderControl *Clone() const { return new CGUISettingsSliderControl(*this); };
 
+  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
   virtual bool OnAction(const CAction &action);
   virtual void PreAllocResources();
@@ -64,7 +65,7 @@ public:
   virtual bool HitTest(const CPoint &point) const { return m_buttonControl.HitTest(point); };
 
 protected:
-  virtual void UpdateColors();
+  virtual bool UpdateColors();
 
 private:
   CGUIButtonControl m_buttonControl;

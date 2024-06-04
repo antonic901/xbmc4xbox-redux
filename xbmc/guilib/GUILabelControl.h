@@ -43,6 +43,7 @@ public:
   virtual ~CGUILabelControl(void);
   virtual CGUILabelControl *Clone() const { return new CGUILabelControl(*this); };
 
+  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
   virtual void UpdateInfo(const CGUIListItem *item = NULL);
   virtual bool CanFocus() const;
@@ -60,10 +61,16 @@ public:
   void SetWidthControl(float minWidth, bool bScroll);
   void SetAlignment(uint32_t align);
   void SetHighlight(unsigned int start, unsigned int end);
+  void SetSelection(unsigned int start, unsigned int end);
 
 protected:
-  void UpdateColors();
+  bool UpdateColors();
   CStdString ShortenPath(const CStdString &path);
+
+  /*! \brief Return the maximum width of this label control.
+   \return Return the width of the control if available, else the width of the current text.
+   */
+  float GetMaxWidth() const { return m_width ? m_width : m_label.GetTextWidth(); }
 
   CGUILabel m_label;
 
@@ -81,5 +88,7 @@ protected:
 
   unsigned int m_startHighlight;
   unsigned int m_endHighlight;
+  unsigned int m_startSelection;
+  unsigned int m_endSelection;
 };
 #endif

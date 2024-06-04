@@ -31,7 +31,9 @@
 #include "GUIWindow.h"
 #include "IWindowManagerCallback.h"
 #include "IMsgTargetCallback.h"
+#include "DirtyRegionTracker.h"
 #include "utils/GlobalsHandling.h"
+#include "guilib/Key.h"
 #include <list>
 
 class CGUIDialog;
@@ -61,18 +63,35 @@ public:
   void ActivateWindow(int iWindowID, const std::vector<CStdString>& params, bool swappingWindows = false);
   void PreviousWindow();
 
-  void CloseDialogs(bool forceClose = false);
+  void CloseDialogs(bool forceClose = false) const;
 
   // OnAction() runs through our active dialogs and windows and sends the message
   // off to the callbacks (application, python, playlist player) and to the
   // currently focused window(s).  Returns true only if the message is handled.
-  bool OnAction(const CAction &action);
+  bool OnAction(const CAction &action) const;
 
-  /*! \brief Rendering of the current window
-   Render is called every frame to draw the current window.
-   It should only be called from the application thread.
+  /*! \brief Process active controls allowing them to animate before rendering.
    */
-  void Render();
+  void Process(unsigned int currentTime);
+
+  /*! \brief Mark the screen as dirty, forcing a redraw at the next Render()
+   */
+  void MarkDirty();
+
+  /*! \brief Mark a region as dirty, forcing a redraw at the next Render()
+   */
+  void MarkDirty(const CRect& rect);
+
+  /*! \brief Rendering of the current window and any dialogs
+   Render is called every frame to draw the current window and any dialogs.
+   It should only be called from the application thread.
+   Returns true only if it has rendered something.
+   */
+  bool Render();
+
+  /*! \brief Do any post render activities.
+   */
+  void AfterRender();
 
   /*! \brief Per-frame updating of the current window and any dialogs
    FrameMove is called every frame to update the current window and any dialogs
@@ -87,6 +106,10 @@ public:
    */
   bool Initialized() const { return m_initialized; };
 
+  /*! \brief Used for rendering all visible dialogs while we
+   are in CGUIWindowFullscreen and videoplayback is not paused.
+   For more info see CApplication::Render().
+   */
   void RenderDialogs();
   CGUIWindow* GetWindow(int id) const;
   void ProcessRenderLoop(bool renderOnly = false);
@@ -96,10 +119,9 @@ public:
   void RouteToWindow(CGUIWindow* dialog);
   void AddModeless(CGUIWindow* dialog);
   void RemoveDialog(int id);
-  int GetTopMostModalDialogID() const;
+  int GetTopMostModalDialogID(bool ignoreClosing = false) const;
 
-  void SendThreadMessage(CGUIMessage& message);
-  void SendThreadMessage(CGUIMessage& message, int window);
+  void SendThreadMessage(CGUIMessage& message, int window = 0);
   void DispatchThreadMessages();
   // method to removed queued messages with message id in the requested message id list.
   // pMessageIDList: point to first integer of a 0 ends integer array.
@@ -109,7 +131,6 @@ public:
   int GetFocusedWindow() const;
   bool HasModalDialog() const;
   bool HasDialogOnScreen() const;
-  void UpdateModelessVisibility();
   bool IsWindowActive(int id, bool ignoreClosing = true) const;
   bool IsWindowVisible(int id) const;
   bool IsWindowTopMost(int id) const;
@@ -121,10 +142,13 @@ public:
   void DumpTextureUse();
 #endif
 private:
+  void RenderPass() const;
+
   void LoadNotOnDemandWindows();
   void UnloadNotOnDemandWindows();
   void AddToWindowHistory(int newWindowID);
   void ClearWindowHistory();
+  void CloseWindowSync(CGUIWindow *window, int nextWindowID = 0);
   CGUIWindow *GetTopMostDialog() const;
 
   friend class CApplicationMessenger;
@@ -149,6 +173,34 @@ private:
 
   int  m_iNested;
   bool m_initialized;
+
+  CDirtyRegionTracker m_tracker;
+
+private:
+  class CGUIWindowManagerIdCache
+  {
+  public:
+    CGUIWindowManagerIdCache(void) : m_id(WINDOW_INVALID) {}
+    CGUIWindow *Get(int id)
+    {
+      if (id == m_id)
+        return m_window;
+      return NULL;
+    }
+    void Set(int id, CGUIWindow *window)
+    {
+      m_id = id;
+      m_window = window;
+    }
+    void Invalidate(void)
+    {
+      m_id = WINDOW_INVALID;
+    }
+  private:
+    int m_id;
+    CGUIWindow *m_window;
+  };
+  mutable CGUIWindowManagerIdCache m_idCache;
 };
 
 /*!

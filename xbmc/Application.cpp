@@ -151,6 +151,7 @@
 #include "windows/GUIWindowLoginScreen.h"
 #include "addons/GUIWindowAddonBrowser.h"
 #include "music/windows/GUIWindowVisualisation.h"
+#include "windows/GUIWindowPointer.h"
 #include "windows/GUIWindowSystemInfo.h"
 #include "windows/GUIWindowScreensaver.h"
 #include "pictures/GUIWindowSlideShow.h"
@@ -1291,6 +1292,7 @@ HRESULT CApplication::Initialize()
   g_windowManager.Add(new CGUIWindowSettingsProfile);          // window id = 34
   g_windowManager.Add(new CGUIWindow(WINDOW_SKIN_SETTINGS, "SkinSettings.xml"));
   g_windowManager.Add(new CGUIWindowAddonBrowser);          // window id = 40
+  g_windowManager.Add(new CGUIWindowPointer);            // window id = 99
   g_windowManager.Add(new CGUIWindowGameSaves);               // window id = 35
   g_windowManager.Add(new CGUIDialogYesNo);              // window id = 100
   g_windowManager.Add(new CGUIDialogProgress);           // window id = 101
@@ -1793,7 +1795,6 @@ bool CApplication::LoadSkin(const SkinPtr& skin)
   CLog::Log(LOGDEBUG,"Load Skin XML: %.2fms", 1000.f * (end - start) / freq);
 
   CLog::Log(LOGINFO, "  initialize new skin...");
-  m_guiPointer.AllocResources(true);
   g_windowManager.AddMsgTarget(this);
   g_windowManager.AddMsgTarget(&g_playlistPlayer);
   g_windowManager.AddMsgTarget(&g_infoManager);
@@ -1852,9 +1853,6 @@ void CApplication::UnloadSkin(bool forReload /* = false */)
 
   //These windows are not handled by the windowmanager (why not?) so we should unload them manually
   CGUIMessage msg(GUI_MSG_WINDOW_DEINIT, 0, 0);
-  m_guiPointer.OnMessage(msg);
-  m_guiPointer.ResetControlStates();
-  m_guiPointer.FreeResources(true);
 
   delete m_debugLayout;
   m_debugLayout = NULL;
@@ -1985,8 +1983,6 @@ void CApplication::RenderNoPresent()
 
   m_pd3dDevice->BeginScene();
 
-  g_windowManager.UpdateModelessVisibility();
-
   //SWATHWIDTH of 4 improves fillrates (performance investigator)
 #ifdef HAS_XBOX_D3D
   m_pd3dDevice->SetRenderState(D3DRS_SWATHWIDTH, 4);
@@ -2009,15 +2005,6 @@ void CApplication::RenderNoPresent()
       if (iBlinkRecord > 50)
         iBlinkRecord = 0;
     }
-  }
-
-  // Now render any dialogs
-  g_windowManager.RenderDialogs();
-
-  // Render the mouse pointer
-  if (g_Mouse.IsActive())
-  {
-    m_guiPointer.Render();
   }
 
   {
@@ -2069,6 +2056,9 @@ void CApplication::RenderNoPresent()
   m_pd3dDevice->Present( NULL, NULL, NULL, NULL );
 #endif
   g_graphicsContext.Unlock();
+
+  // execute post rendering actions (finalize window closing)
+  g_windowManager.AfterRender();
 
   // reset our info cache - we do this at the end of Render so that it is
   // fresh for the next process(), or after a windowclose animation (where process()
@@ -2276,10 +2266,7 @@ bool CApplication::OnAction(CAction &action)
   }
 
   if (action.IsMouse())
-  {
     g_Mouse.SetActive(true);
-    m_guiPointer.SetPosition(action.GetAmount(0), action.GetAmount(1));
-  }
 
   // in normal case
   // just pass the action to the current window and let it handle it
@@ -2593,38 +2580,43 @@ void CApplication::UpdateLCD()
 #endif
 }
 
-void CApplication::FrameMove()
+void CApplication::FrameMove(bool processEvents)
 {
-  // currently we calculate the repeat time (ie time from last similar keypress) just global as fps
-  float frameTime = m_frameTime.GetElapsedSeconds();
-  m_frameTime.StartZero();
-  // never set a frametime less than 2 fps to avoid problems when debuggin and on breaks
-  if( frameTime > 0.5 ) frameTime = 0.5;
-
-  g_graphicsContext.Lock();
-  // check if there are notifications to display
-  CGUIDialogKaiToast *toast = (CGUIDialogKaiToast *)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
-  if (toast && toast->DoWork())
+  if (processEvents)
   {
-    if (!toast->IsDialogRunning())
+    // currently we calculate the repeat time (ie time from last similar keypress) just global as fps
+    float frameTime = m_frameTime.GetElapsedSeconds();
+    m_frameTime.StartZero();
+    // never set a frametime less than 2 fps to avoid problems when debuggin and on breaks
+    if( frameTime > 0.5 ) frameTime = 0.5;
+
+    g_graphicsContext.Lock();
+    // check if there are notifications to display
+    CGUIDialogKaiToast *toast = (CGUIDialogKaiToast *)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
+    if (toast && toast->DoWork())
     {
-      toast->Show();
+      if (!toast->IsDialogRunning())
+      {
+        toast->Show();
+      }
     }
+    g_graphicsContext.Unlock();
+
+    UpdateLCD();
+
+    // read raw input from controller, remote control, mouse and keyboard
+    ReadInput();
+    // process input actions
+    ProcessMouse();
+    ProcessHTTPApiButtons();
+    ProcessKeyboard();
+    ProcessRemote(frameTime);
+    ProcessGamepad(frameTime);
+    ProcessEventServer(frameTime);
   }
-  g_graphicsContext.Unlock();
-
-  UpdateLCD();
-
-  // read raw input from controller, remote control, mouse and keyboard
-  ReadInput();
-  // process input actions
-  ProcessMouse();
-  ProcessHTTPApiButtons();
-  ProcessKeyboard();
-  ProcessRemote(frameTime);
-  ProcessGamepad(frameTime);
-  ProcessEventServer(frameTime);
-
+  // Process events and animate controls
+  if (!m_bStop)
+    g_windowManager.Process(CTimeUtils::GetFrameTime());
   g_windowManager.FrameMove();
 }
 
@@ -2899,9 +2891,6 @@ bool CApplication::ProcessMouse()
 {
   if (!g_Mouse.IsActive())
     return false;
-
-  // Update the pointer position here so it gets updated even for ACTION_NOOP
-  m_guiPointer.SetPosition((float) g_Mouse.GetX(), (float) g_Mouse.GetY());
 
   // Reset the screensaver and idle timers
   m_idleTimer.StartZero();
@@ -4331,8 +4320,6 @@ bool CApplication::NeedRenderFullScreen()
 {
   if (g_windowManager.GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO)
   {
-    g_windowManager.UpdateModelessVisibility();
-
     if (g_windowManager.HasDialogOnScreen()) return true;
     if (g_Mouse.IsActive()) return true;
 
@@ -4355,9 +4342,6 @@ void CApplication::RenderFullScreen()
 
     if (g_windowManager.HasDialogOnScreen())
       g_windowManager.RenderDialogs();
-    // Render the mouse pointer, if visible...
-    if (g_Mouse.IsActive())
-      g_application.m_guiPointer.Render();
   }
 }
 
@@ -5074,6 +5058,7 @@ void CApplication::Process()
     m_slowTimer.Reset();
     ProcessSlow();
   }
+
 }
 
 // We get called every 500ms

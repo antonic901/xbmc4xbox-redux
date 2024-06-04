@@ -27,7 +27,6 @@
 #include "settings/Settings.h"
 #include "GUIControlFactory.h"
 #include "GUIControlGroup.h"
-#include "GUITexture.h" // FRECT
 
 #include "addons/Skin.h"
 #include "GUIInfoManager.h"
@@ -36,6 +35,9 @@
 #include "input/ButtonTranslator.h"
 #include "utils/XMLUtils.h"
 #include "utils/Variant.h"
+#include "GUIAudioManager.h"
+#include "Application.h"
+#include "ApplicationMessenger.h"
 
 using namespace std;
 
@@ -50,6 +52,8 @@ CGUIWindow::CGUIWindow(int id, const CStdString &xmlFile)
   m_needsScaling = true;
   m_windowLoaded = false;
   m_loadType = LOAD_EVERY_TIME;
+  m_closing = false;
+  m_active = false;
   m_renderOrder = 0;
   m_dynamicResourceAlloc = true;
   m_previousWindow = WINDOW_INVALID;
@@ -187,7 +191,7 @@ bool CGUIWindow::Load(TiXmlElement* pRootElement)
     }
     else if (strValue == "animation" && pChild->FirstChild())
     {
-      FRECT rect = { 0, 0, (float)m_coordsRes.iWidth, (float)m_coordsRes.iHeight };
+      CRect rect(0, 0, (float)m_coordsRes.iWidth, (float)m_coordsRes.iHeight);
       CAnimation anim;
       anim.Create(pChild, rect, GetID());
       m_animations.push_back(anim);
@@ -234,7 +238,7 @@ bool CGUIWindow::Load(TiXmlElement* pRootElement)
       {
         if (strcmpi(pControl->Value(), "control") == 0)
         {
-          FRECT rect = { 0, 0, (float)m_coordsRes.iWidth, (float)m_coordsRes.iHeight };
+          CRect rect(0, 0, (float)m_coordsRes.iWidth, (float)m_coordsRes.iHeight);
           LoadControl(pControl, NULL, rect);
         }
         pControl = pControl->NextSiblingElement();
@@ -250,7 +254,7 @@ bool CGUIWindow::Load(TiXmlElement* pRootElement)
   return true;
 }
 
-void CGUIWindow::LoadControl(TiXmlElement* pControl, CGUIControlGroup *pGroup, const FRECT &rect)
+void CGUIWindow::LoadControl(TiXmlElement* pControl, CGUIControlGroup *pGroup, const CRect &rect)
 {
   // get control type
   CGUIControlFactory factory;
@@ -279,8 +283,8 @@ void CGUIWindow::LoadControl(TiXmlElement* pControl, CGUIControlGroup *pGroup, c
     {
       CGUIControlGroup *grp = (CGUIControlGroup *)pGUIControl;
       TiXmlElement *pSubControl = pControl->FirstChildElement("control");
-      FRECT grpRect = { grp->GetXPosition(), grp->GetYPosition(),
-          grp->GetXPosition() + grp->GetWidth(), grp->GetYPosition() + grp->GetHeight() };
+      CRect grpRect(grp->GetXPosition(), grp->GetYPosition(),
+                    grp->GetXPosition() + grp->GetWidth(), grp->GetYPosition() + grp->GetHeight());
       while (pSubControl)
       {
         LoadControl(pSubControl, grp, grpRect);
@@ -301,7 +305,14 @@ void CGUIWindow::CenterWindow()
   m_posY = (m_coordsRes.iHeight - GetHeight()) / 2;
 }
 
-void CGUIWindow::Render()
+void CGUIWindow::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+{
+  g_graphicsContext.SetRenderingResolution(m_coordsRes, m_needsScaling);
+  g_graphicsContext.ResetWindowTransform();
+  CGUIControlGroup::DoProcess(currentTime, dirtyregions);
+}
+
+void CGUIWindow::DoRender()
 {
   // If we're rendering from a different thread, then we should wait for the main
   // app thread to finish AllocResources(), as dynamic resources (images in particular)
@@ -311,20 +322,51 @@ void CGUIWindow::Render()
 
   g_graphicsContext.SetRenderingResolution(m_coordsRes, m_needsScaling);
 
-   m_renderTime = CTimeUtils::GetFrameTime();
-  // render our window animation - returns false if it needs to stop rendering
-  if (!RenderAnimation(m_renderTime))
-    return;
-
-  if (m_hasCamera)
-    g_graphicsContext.SetCameraPosition(m_camera);
-
-  CGUIControlGroup::Render();
+  g_graphicsContext.ResetWindowTransform();
+  CGUIControlGroup::DoRender();
 }
 
-void CGUIWindow::Close(bool forceClose)
+void CGUIWindow::AfterRender()
 {
-  CLog::Log(LOGERROR,"%s - should never be called on the base class!", __FUNCTION__);
+  // Check to see if we should close at this point
+  // We check after the controls have finished rendering, as we may have to close due to
+  // the controls rendering after the window has finished it's animation
+  // we call the base class instead of this class so that we can find the change
+  if (m_closing && !CGUIControlGroup::IsAnimating(ANIM_TYPE_WINDOW_CLOSE))
+    Close(true);
+}
+
+void CGUIWindow::Close_Internal(bool forceClose /*= false*/, int nextWindowID /*= 0*/, bool enableSound /*= true*/)
+{
+  CSingleLock lock(g_graphicsContext);
+  forceClose |= (nextWindowID == WINDOW_FULLSCREEN_VIDEO);
+  if (forceClose)
+  {
+    CGUIMessage msg(GUI_MSG_WINDOW_DEINIT, 0, 0);
+    OnMessage(msg);
+    m_closing = false;
+  }
+  else if (m_active && !m_closing)
+  {
+    if (enableSound && IsSoundEnabled())
+      g_audioManager.PlayWindowSound(GetID(), SOUND_DEINIT);
+
+    // Perform the window out effect
+    QueueAnimation(ANIM_TYPE_WINDOW_CLOSE);
+    m_closing = true;
+  }
+}
+
+void CGUIWindow::Close(bool forceClose /*= false*/, int nextWindowID /*= 0*/, bool enableSound /*= true*/)
+{
+  if (!g_application.IsCurrentThread())
+  {
+    // make sure graphics lock is not held
+    CSingleExit leaveIt(g_graphicsContext);
+    CApplicationMessenger::Get().Close(this, forceClose, true, nextWindowID, enableSound);
+  }
+  else
+    Close_Internal(forceClose, nextWindowID, enableSound);
 }
 
 bool CGUIWindow::OnAction(const CAction &action)
@@ -415,8 +457,14 @@ EVENT_RESULT CGUIWindow::OnMouseEvent(const CPoint &point, const CMouseEvent &ev
 /// calling the base method.
 void CGUIWindow::OnInitWindow()
 {
+  //  Play the window specific init sound
+  if (IsSoundEnabled())
+    g_audioManager.PlayWindowSound(GetID(), SOUND_INIT);
+
   // set our rendered state
   m_hasRendered = false;
+  m_closing = false;
+  m_active = true;
   ResetAnimations();  // we need to reset our animations as those windows that don't dynamically allocate
                       // need their anims reset. An alternative solution is turning off all non-dynamic
                       // allocation (which in some respects may be nicer, but it kills hdd spindown and the like)
@@ -446,21 +494,9 @@ void CGUIWindow::OnDeinitWindow(int nextWindowID)
   {
     RunUnloadActions();
   }
-  
-  if (nextWindowID != WINDOW_FULLSCREEN_VIDEO)
-  {
-    // Dialog animations are handled in Close() rather than here
-    if (HasAnimation(ANIM_TYPE_WINDOW_CLOSE) && !IsDialog())
-    {
-      // Perform the window out effect
-      QueueAnimation(ANIM_TYPE_WINDOW_CLOSE);
-      while (IsAnimating(ANIM_TYPE_WINDOW_CLOSE))
-      {
-        g_windowManager.ProcessRenderLoop(true);
-      }
-    }
-  }
+
   SaveControlStates();
+  m_active = false;
 }
 
 bool CGUIWindow::OnMessage(CGUIMessage& message)
@@ -591,7 +627,8 @@ bool CGUIWindow::OnMessage(CGUIMessage& message)
       {
         if (message.GetParam1() == GUI_MSG_PAGE_CHANGE ||
             message.GetParam1() == GUI_MSG_REFRESH_THUMBS ||
-            message.GetParam1() == GUI_MSG_REFRESH_LIST)
+            message.GetParam1() == GUI_MSG_REFRESH_LIST ||
+            message.GetParam1() == GUI_MSG_WINDOW_RESIZE)
         { // alter the message accordingly, and send to all controls
           for (iControls it = m_children.begin(); it != m_children.end(); ++it)
           {
@@ -739,17 +776,20 @@ bool CGUIWindow::IsAnimating(ANIMATION_TYPE animType)
 {
   if (!m_animationsEnabled)
     return false;
+  if (animType == ANIM_TYPE_WINDOW_CLOSE)
+    return m_closing;
   return CGUIControlGroup::IsAnimating(animType);
 }
 
-bool CGUIWindow::RenderAnimation(unsigned int time)
+bool CGUIWindow::Animate(unsigned int currentTime)
 {
-  g_graphicsContext.ResetWindowTransform();
   if (m_animationsEnabled)
-    CGUIControlGroup::Animate(time);
+    return CGUIControlGroup::Animate(currentTime);
   else
+  {
     m_transform.Reset();
-  return true;
+    return false;
+  }
 }
 
 void CGUIWindow::DisableAnimations()
@@ -868,15 +908,15 @@ void CGUIWindow::SetDefaults()
   m_clearBackground = 0xff000000; // opaque black -> clear
 }
 
-FRECT CGUIWindow::GetScaledBounds() const
+CRect CGUIWindow::GetScaledBounds() const
 {
   CSingleLock lock(g_graphicsContext);
   g_graphicsContext.SetScalingResolution(m_coordsRes, m_needsScaling);
   CPoint pos(GetPosition());
-  FRECT rect = {pos.x, pos.y, pos.x + m_width, pos.y + m_height};
+  CRect rect(pos.x, pos.y, pos.x + m_width, pos.y + m_height);
   float z = 0;
-  g_graphicsContext.ScaleFinalCoords(rect.left, rect.top, z);
-  g_graphicsContext.ScaleFinalCoords(rect.right, rect.bottom, z);
+  g_graphicsContext.ScaleFinalCoords(rect.x1, rect.y1, z);
+  g_graphicsContext.ScaleFinalCoords(rect.x2, rect.y2, z);
   return rect;
 }
 

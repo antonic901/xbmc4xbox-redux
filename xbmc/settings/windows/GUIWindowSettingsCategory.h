@@ -44,6 +44,7 @@ public:
   virtual bool OnAction(const CAction &action);
   virtual bool OnBack(int actionID);
   virtual void Render();
+  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual int GetID() const { return CGUIWindow::GetID() + m_iSection; };
 
 protected:

@@ -186,6 +186,7 @@ void CGUISpinControl::OnLeft()
   {
     // select the down button
     m_iSelect = SPIN_BUTTON_DOWN;
+    MarkDirtyRegion();
   }
   else
   { // base class
@@ -199,6 +200,7 @@ void CGUISpinControl::OnRight()
   {
     // select the up button
     m_iSelect = SPIN_BUTTON_UP;
+    MarkDirtyRegion();
   }
   else
   { // base class
@@ -370,8 +372,10 @@ void CGUISpinControl::SetInvalid()
   m_imgspinDownDisabled.SetInvalid();
 }
 
-void CGUISpinControl::Render()
+void CGUISpinControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
+  bool changed = false;
+
   if (!HasFocus())
   {
     m_iTypedPos = 0;
@@ -429,7 +433,7 @@ void CGUISpinControl::Render()
 
   }
 
-  m_label.SetText(text);
+  changed |= m_label.SetText(text);
 
   const float space = 5;
   float textWidth = m_label.GetTextWidth() + 2 * m_label.GetLabelInfo().offsetX;
@@ -437,12 +441,25 @@ void CGUISpinControl::Render()
   bool arrowsOnRight(0 != (m_label.GetLabelInfo().align & (XBFONT_RIGHT | XBFONT_CENTER_X)));
   if (!arrowsOnRight)
   {
-    m_imgspinDownFocus.SetPosition(m_posX + textWidth + space, m_posY);
-    m_imgspinDown.SetPosition(m_posX + textWidth + space, m_posY);
-    m_imgspinUpFocus.SetPosition(m_posX + textWidth + space + m_imgspinDown.GetWidth(), m_posY);
-    m_imgspinUp.SetPosition(m_posX + textWidth + space + m_imgspinDown.GetWidth(), m_posY);
+    changed |= m_imgspinDownFocus.SetPosition(m_posX + textWidth + space, m_posY);
+    changed |= m_imgspinDown.SetPosition(m_posX + textWidth + space, m_posY);
+    changed |= m_imgspinUpFocus.SetPosition(m_posX + textWidth + space + m_imgspinDown.GetWidth(), m_posY);
+    changed |= m_imgspinUp.SetPosition(m_posX + textWidth + space + m_imgspinDown.GetWidth(), m_posY);
   }
 
+  changed |= m_imgspinDownFocus.Process(currentTime);
+  changed |= m_imgspinDown.Process(currentTime);
+  changed |= m_imgspinUp.Process(currentTime);
+  changed |= m_imgspinUpFocus.Process(currentTime);
+
+  if (changed)
+    MarkDirtyRegion();
+
+  CGUIControl::Process(currentTime, dirtyregions);
+}
+
+void CGUISpinControl::Render()
+{
   if ( HasFocus() )
   {
     if (m_iSelect == SPIN_BUTTON_UP)
@@ -468,6 +485,11 @@ void CGUISpinControl::Render()
 
   if (m_label.GetLabelInfo().font)
   {
+    const float space = 5;
+    float textWidth = m_label.GetTextWidth() + 2 * m_label.GetLabelInfo().offsetX;
+    // Position the arrows
+    bool arrowsOnRight(0 != (m_label.GetLabelInfo().align & (XBFONT_RIGHT | XBFONT_CENTER_X)));
+
     if (arrowsOnRight)
       RenderText(m_posX - space - textWidth, m_posY, textWidth, m_height);
     else
@@ -531,6 +553,8 @@ void CGUISpinControl::SetValue(int iValue)
   }
   else
     m_iValue = iValue;
+
+  SetInvalid();
 }
 
 void CGUISpinControl::SetFloatValue(float fValue)
@@ -918,10 +942,15 @@ bool CGUISpinControl::HitTest(const CPoint &point) const
 
 bool CGUISpinControl::OnMouseOver(const CPoint &point)
 {
+  int select = m_iSelect;
   if (m_imgspinDownFocus.HitTest(point))
     m_iSelect = SPIN_BUTTON_DOWN;
   else
     m_iSelect = SPIN_BUTTON_UP;
+
+  if (select != m_iSelect)
+    MarkDirtyRegion();
+
   return CGUIControl::OnMouseOver(point);
 }
 
@@ -971,16 +1000,18 @@ void CGUISpinControl::ChangePage(int amount)
   SendWindowMessage(message);
 }
 
-void CGUISpinControl::UpdateColors()
+bool CGUISpinControl::UpdateColors()
 {
-  m_label.UpdateColors();
-  CGUIControl::UpdateColors();
-  m_imgspinDownFocus.SetDiffuseColor(m_diffuseColor);
-  m_imgspinDown.SetDiffuseColor(m_diffuseColor);
-  m_imgspinUp.SetDiffuseColor(m_diffuseColor);
-  m_imgspinUpFocus.SetDiffuseColor(m_diffuseColor);
-  m_imgspinUpDisabled.SetDiffuseColor(m_diffuseColor);
-  m_imgspinDownDisabled.SetDiffuseColor(m_diffuseColor);
+  bool changed = CGUIControl::UpdateColors();
+  changed |= m_label.UpdateColors();
+  changed |= m_imgspinDownFocus.SetDiffuseColor(m_diffuseColor);
+  changed |= m_imgspinDown.SetDiffuseColor(m_diffuseColor);
+  changed |= m_imgspinUp.SetDiffuseColor(m_diffuseColor);
+  changed |= m_imgspinUpFocus.SetDiffuseColor(m_diffuseColor);
+  changed |= m_imgspinUpDisabled.SetDiffuseColor(m_diffuseColor);
+  changed |= m_imgspinDownDisabled.SetDiffuseColor(m_diffuseColor);
+
+  return changed;
 }
 
 bool CGUISpinControl::IsVisible() const

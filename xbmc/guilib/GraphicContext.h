@@ -147,9 +147,13 @@ public:
   bool IsWidescreen() const { return m_bWidescreen; }
   bool SetViewPort(float fx, float fy , float fwidth, float fheight, bool intersectPrevious = false);
   void RestoreViewPort();
-  const RECT& GetViewWindow() const;
+
+  void SetScissors(const CRect &rect);
+  void ResetScissors();
+  const CRect &GetScissors() const { return m_scissors; }
+
+  const CRect& GetViewWindow() const;
   void SetViewWindow(float left, float top, float right, float bottom);
-  void SetFullScreenViewWindow(RESOLUTION &res);
   void ClipToViewWindow();
   void SetFullScreenVideo(bool bOnOff);
   bool IsFullScreenVideo() const;
@@ -244,13 +248,20 @@ public:
       m_groupTransform.pop();
     m_groupTransform.push(m_guiTransform);
   }
-  inline void AddTransform(const TransformMatrix &matrix)
+  inline TransformMatrix AddTransform(const TransformMatrix &matrix)
   {
     ASSERT(m_groupTransform.size());
-    if (m_groupTransform.size())
-      m_groupTransform.push(m_groupTransform.top() * matrix);
-    else
-      m_groupTransform.push(matrix);
+    TransformMatrix absoluteMatrix = m_groupTransform.size() ? m_groupTransform.top() * matrix : matrix;
+    m_groupTransform.push(absoluteMatrix);
+    UpdateFinalTransform(m_groupTransform.top());
+    return absoluteMatrix;
+  }
+  inline void SetTransform(const TransformMatrix &matrix)
+  {
+    // TODO: We only need to add it to the group transform as other transforms may be added on top of this one later on
+    //       Once all transforms are cached then this can be removed and UpdateFinalTransform can be called directly
+    ASSERT(m_groupTransform.size());
+    m_groupTransform.push(matrix);
     UpdateFinalTransform(m_groupTransform.top());
   }
   inline void RemoveTransform()
@@ -264,8 +275,12 @@ public:
       UpdateFinalTransform(TransformMatrix());
   }
 
+  CRect generateAABB(const CRect &rect) const;
+
   int GetMaxTextureSize() const { return m_maxTextureSize; };
 protected:
+  void SetFullScreenViewWindow(RESOLUTION &res);
+
   LPDIRECT3DDEVICE8 m_pd3dDevice;
   D3DPRESENT_PARAMETERS* m_pd3dParams;
   std::stack<D3DVIEWPORT8*> m_viewStack;
@@ -275,7 +290,7 @@ protected:
   int m_iBackBufferCount;
   bool m_bWidescreen;
   CStdString m_strMediaDir;
-  RECT m_videoRect;
+  CRect m_videoRect;
   bool m_bFullScreenVideo;
   bool m_bCalibrating;
   RESOLUTION m_Resolution;
@@ -293,6 +308,8 @@ private:
   TransformMatrix m_guiTransform;
   TransformMatrix m_finalTransform;
   std::stack<TransformMatrix> m_groupTransform;
+
+  CRect m_scissors;
 
   int m_maxTextureSize;
 };

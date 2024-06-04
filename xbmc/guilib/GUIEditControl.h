@@ -85,7 +85,7 @@ public:
   virtual void SetInputValidation(StringValidation::Validator inputValidator, void *data = NULL);
 
 protected:
-  virtual void RenderText();
+  virtual void ProcessText(unsigned int currentTime);
   virtual CGUILabel::COLOR GetTextColor() const;
   CStdStringW GetDisplayedText() const;
   void RecalcLabelPosition();

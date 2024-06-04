@@ -62,7 +62,7 @@ public:
   void SetToggleSelect(const CStdString &toggleSelect);
   bool IsSelected() const { return m_bSelected; };
 protected:
-  virtual void UpdateColors();
+  virtual bool UpdateColors();
   CGUITexture m_imgRadioOnFocus;
   CGUITexture m_imgRadioOnNoFocus;
   CGUITexture m_imgRadioOffFocus;

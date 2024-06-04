@@ -684,6 +684,15 @@ EVENT_RESULT CGUIWindowFullScreen::OnMouseEvent(const CPoint &point, const CMous
   return EVENT_RESULT_UNHANDLED;
 }
 
+void CGUIWindowFullScreen::Process(unsigned int currentTime, CDirtyRegionList &dirtyregion)
+{
+  // TODO: This isn't quite optimal - ideally we'd only be dirtying up the actual video render rect
+  //       which is probably the job of the renderer as it can more easily track resizing etc.
+  MarkDirtyRegion();
+  CGUIWindow::Process(currentTime, dirtyregion);
+  m_renderRegion.SetRect(0, 0, (float)g_graphicsContext.GetWidth(), (float)g_graphicsContext.GetHeight());
+}
+
 // Override of Render() - RenderFullScreen() is where the action takes place
 // this is called from the rendermanager, normally we won't come this way
 // as player thread will handle rendering, and call this itself.

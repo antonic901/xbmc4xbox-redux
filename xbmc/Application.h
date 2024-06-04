@@ -36,8 +36,6 @@ namespace ADDON
   typedef boost::shared_ptr<IAddon> AddonPtr;
 }
 
-#include "windows/GUIWindowPointer.h"   // Mouse pointer
-
 #include "utils/Idle.h"
 #include "utils/DelayController.h"
 #include "cores/IPlayer.h"
@@ -114,7 +112,7 @@ public:
   CApplication(void);
   virtual ~CApplication(void);
   virtual HRESULT Initialize();
-  virtual void FrameMove();
+  virtual void FrameMove(bool processEvents);
   virtual void Render();
 #ifndef HAS_XBOX_D3D
   virtual void RenderNoPresent();
@@ -228,8 +226,6 @@ public:
   CNetwork& getNetwork();
 
   bool ExecuteXBMCAction(std::string action, const CGUIListItemPtr &item = CGUIListItemPtr());
-
-  CGUIWindowPointer m_guiPointer;
 
   CIdleThread m_idleThread;
   MEDIA_DETECT::CAutorun m_Autorun;
