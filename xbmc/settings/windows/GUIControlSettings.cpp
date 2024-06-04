@@ -71,6 +71,9 @@ CGUIControlRadioButtonSetting::CGUIControlRadioButtonSetting(CGUIRadioButtonCont
   : CGUIControlBaseSetting(id, pSetting)
 {
   m_pRadioButton = pRadioButton;
+  if (m_pRadioButton == NULL)
+    return;
+
   m_pRadioButton->SetID(id);
   Update();
 }
@@ -97,6 +100,9 @@ CGUIControlSpinExSetting::CGUIControlSpinExSetting(CGUISpinControlEx *pSpin, int
   : CGUIControlBaseSetting(id, pSetting)
 {
   m_pSpin = pSpin;
+  if (m_pSpin == NULL)
+    return;
+
   m_pSpin->SetID(id);
 
   FillControl();
@@ -145,6 +151,9 @@ void CGUIControlSpinExSetting::Update()
 
 void CGUIControlSpinExSetting::FillControl()
 {
+  if (m_pSpin == NULL)
+    return;
+
   m_pSpin->Clear();
 
   const std::string &controlFormat = m_pSetting->GetControl()->GetFormat();
@@ -239,6 +248,9 @@ CGUIControlListSetting::CGUIControlListSetting(CGUIButtonControl *pButton, int i
   : CGUIControlBaseSetting(id, pSetting)
 {
   m_pButton = pButton;
+  if (m_pButton == NULL)
+    return;
+
   m_pButton->SetID(id);
   Update();
 }
@@ -483,6 +495,9 @@ CGUIControlButtonSetting::CGUIControlButtonSetting(CGUIButtonControl *pButton, i
   : CGUIControlBaseSetting(id, pSetting)
 {
   m_pButton = pButton;
+  if (m_pButton == NULL)
+    return;
+
   m_pButton->SetID(id);
   Update();
 }
@@ -581,6 +596,9 @@ CGUIControlEditSetting::CGUIControlEditSetting(CGUIEditControl *pEdit, int id, C
 {
   const CSettingControlEdit* control = static_cast<const CSettingControlEdit*>(pSetting->GetControl());
   m_pEdit = pEdit;
+  if (m_pEdit == NULL)
+    return;
+
   m_pEdit->SetID(id);
   int heading = m_pSetting->GetLabel();
   if (control->GetHeading() > 0)
@@ -654,6 +672,9 @@ CGUIControlSeparatorSetting::CGUIControlSeparatorSetting(CGUIImage *pImage, int 
     : CGUIControlBaseSetting(id, NULL)
 {
   m_pImage = pImage;
+  if (m_pImage == NULL)
+    return;
+
   m_pImage->SetID(id);
 }
 
