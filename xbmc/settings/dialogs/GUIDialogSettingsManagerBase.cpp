@@ -41,13 +41,6 @@ CSetting* CGUIDialogSettingsManagerBase::GetSetting(const std::string &settingId
   return m_settingsManager->GetSetting(settingId);
 }
 
-ISettingControl* CGUIDialogSettingsManagerBase::CreateControl(const std::string &controlType)
-{
-  assert(m_settingsManager != NULL);
-
-  return m_settingsManager->CreateControl(controlType);
-}
-
 std::set<std::string> CGUIDialogSettingsManagerBase::CreateSettings()
 {
   assert(m_settingsManager != NULL);
@@ -67,4 +60,11 @@ void CGUIDialogSettingsManagerBase::FreeSettingsControls()
   CGUIDialogSettingsBase::FreeSettingsControls();
 
   m_settingsManager->UnregisterCallback(this);
+}
+
+ISettingControl* CGUIDialogSettingsManagerBase::CreateControl(const std::string &controlType)
+{
+  assert(m_settingsManager != NULL);
+
+  return m_settingsManager->CreateControl(controlType);
 }
