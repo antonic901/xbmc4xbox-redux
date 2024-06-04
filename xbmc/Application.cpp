@@ -1283,16 +1283,11 @@ HRESULT CApplication::Initialize()
 
   StartServices();
 
+  if (!LoadSkin(CSettings::Get().GetString("lookandfeel.skin")))
+    LoadSkin(DEFAULT_SKIN);
+
   g_windowManager.CreateWindows();
   /* window id's 3000 - 3100 are reserved for python */
-
-  // Make sure we have at least the default skin
-  string defaultSkin = ((const CSettingString*)CSettings::Get().GetSetting("lookandfeel.skin"))->GetDefault();
-  if (!LoadSkin(CSettings::Get().GetString("lookandfeel.skin")) && !LoadSkin(defaultSkin))
-  {
-    CLog::Log(LOGERROR, "Default skin '%s' not found! Terminating..", defaultSkin.c_str());
-    return E_FAIL;
-  }
 
   m_ctrDpad.SetDelays(100, 500); //g_settings.m_iMoveDelayController, g_settings.m_iRepeatDelayController);
 
