@@ -1177,7 +1177,7 @@
         <setting id="audiooutput.dtshdpassthrough">
           <level>4</level>
         </setting>
-        <setting id="musicplayer.outputtoallspeakers" type="boolean" label="38621" help="">
+        <setting id="musicplayer.outputtoallspeakers" type="boolean" label="252" help="">
           <level>0</level>
           <default>false</default>
           <dependencies>

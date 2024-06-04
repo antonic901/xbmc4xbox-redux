@@ -1,7 +1,7 @@
 #pragma once
 
 /*
- *      Copyright (C) 2005-2013 Team XBMC
+ *      Copyright (C) 2005-2014 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -20,29 +20,46 @@
  *
  */
 
-#include "settings/dialogs/GUIDialogSettings.h"
+#include "settings/dialogs/GUIDialogSettingsManualBase.h"
 
-class CGUIDialogAudioSubtitleSettings :
-      public CGUIDialogSettings
+class CGUIDialogAudioSubtitleSettings : public CGUIDialogSettingsManualBase
 {
 public:
-  CGUIDialogAudioSubtitleSettings(void);
-  virtual ~CGUIDialogAudioSubtitleSettings(void);
+  CGUIDialogAudioSubtitleSettings();
+  virtual ~CGUIDialogAudioSubtitleSettings();
+
+  // specialization of CGUIWindow
   virtual void FrameMove();
 
-  static CStdString FormatDelay(float value, float minimum);
-  static CStdString FormatDecibel(float value, float minimum);
-  
-protected:
-  virtual void CreateSettings();
-  virtual void OnSettingChanged(SettingInfo &setting);
+  static std::string FormatDelay(float value, float interval);
+  static std::string FormatDecibel(float value);
+  static std::string FormatPercentAsDecibel(float value);
 
-  void AddAudioStreams(unsigned int id);
-  void AddSubtitleStreams(unsigned int id);
+protected:
+  // implementations of ISettingCallback
+  virtual void OnSettingChanged(const CSetting *setting);
+  virtual void OnSettingAction(const CSetting *setting);
+
+  // specialization of CGUIDialogSettingsBase
+  virtual bool AllowResettingSettings() const { return false; }
+  virtual void Save();
+
+  // specialization of CGUIDialogSettingsManualBase
+  virtual void InitializeSettings();
+
+  void AddAudioStreams(CSettingGroup *group, const std::string &settingId);
+  void AddSubtitleStreams(CSettingGroup *group, const std::string &settingId);
+
+  static void AudioStreamsOptionFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
+  static void SubtitleStreamsOptionFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
+  
+  static std::string SettingFormatterDelay(const CSettingControlSlider *control, const CVariant &value, const CVariant &minimum, const CVariant &step, const CVariant &maximum);
+  static std::string SettingFormatterPercentAsDecibel(const CSettingControlSlider *control, const CVariant &value, const CVariant &minimum, const CVariant &step, const CVariant &maximum);
 
   float m_volume;
   int m_audioStream;
-  int m_subtitleStream;
+  bool m_audioStreamStereoMode;
   int m_outputmode;
+  int m_subtitleStream;
   bool m_subtitleVisible;
 };

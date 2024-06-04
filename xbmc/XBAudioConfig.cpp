@@ -20,6 +20,7 @@
 
 #include "system.h"
 #include "XBAudioConfig.h"
+#include "guilib/LocalizeStrings.h"
 #include "settings/Settings.h"
 #include "utils/log.h"
 #ifdef HAS_XBOX_HARDWARE
@@ -168,4 +169,10 @@ void XBAudioConfig::Save()
     CLog::Log(LOGNOTICE, "Failed to save audio config!");
   }
 #endif
+}
+
+void XBAudioConfig::SettingAudioOutputFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+{
+  list.push_back(std::make_pair(g_localizeStrings.Get(38630), 0)); // ANALOG
+  list.push_back(std::make_pair(g_localizeStrings.Get(38631), 1)); // DIGITAL
 }

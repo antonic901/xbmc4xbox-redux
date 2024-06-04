@@ -19,6 +19,7 @@
  *
  */
 
+#include "settings/lib/Setting.h"
 #include "settings/lib/ISettingsHandler.h"
 
 #define XC_AUDIO_FLAGS 9
@@ -48,6 +49,7 @@ public:
   bool NeedsSave();
   void Save();
 
+  static void SettingAudioOutputFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
 private:
   DWORD m_dwAudioFlags;
 };

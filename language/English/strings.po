@@ -1019,7 +1019,11 @@ msgctxt "#251"
 msgid "Select destination directory"
 msgstr ""
 
-#empty string with id 254
+#: system/settings/settings.xml
+#: system/settings/xbox.xml
+msgctxt "#252"
+msgid "Output stereo to all speakers"
+msgstr ""
 
 msgctxt "#253"
 msgid "Number of channels"
@@ -5927,7 +5931,10 @@ msgctxt "#14053"
 msgid "GUI filters"
 msgstr ""
 
-#empty string with id 14054
+#: xbmc/video/dialogs/GUIDialogAudioSubtitleSettings.cpp
+msgctxt "#14054"
+msgid "%2.1f dB"
+msgstr ""
 
 msgctxt "#14055"
 msgid "Use background scanning"
@@ -12551,13 +12558,7 @@ msgctxt "#38609"
 msgid "Autoplay pictures"
 msgstr ""
 
-#: xbmc/video/dialogs/GUIDialogAudioSubtitleSettings.cpp
-#: system/settings/xbox.xml
-msgctxt "#38621"
-msgid "Output stereo to all speakers"
-msgstr ""
-
-#empty string with id 38622
+#empty strings from id 38621 to 38622
 
 #: system/settings/xbox.xml
 msgctxt "#38623"
