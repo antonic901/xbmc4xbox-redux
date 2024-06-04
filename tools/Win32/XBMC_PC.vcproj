@@ -2049,12 +2049,6 @@
 					RelativePath="..\..\xbmc\dialogs\GUIDialogSelect.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\settings\GUIDialogSettings.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\settings\GUIDialogSettings.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\dialogs\GUIDialogSlider.cpp">
 				</File>
 				<File
