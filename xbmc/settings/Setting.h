@@ -102,7 +102,8 @@ public:
   // overrides of ISetting
   virtual bool IsVisible() const;
 
-protected:    
+protected:
+  // implementation of ISettingCallback  
   virtual bool OnSettingChanging(const CSetting *setting);
   virtual void OnSettingChanged(const CSetting *setting);
   virtual void OnSettingAction(const CSetting *setting);
