@@ -21,7 +21,7 @@
 #include "system.h"
 #include "XBTimeZone.h"
 #include "LangInfo.h"
-#include "settings/Setting.h"
+#include "settings/lib/Setting.h"
 #include "settings/Settings.h"
 #include "utils/log.h"
 #ifdef HAS_XBOX_HARDWARE

@@ -23,7 +23,7 @@
 
 #include "settings/SettingControl.h"
 #include "settings/SettingCreator.h"
-#include "settings/ISettingCallback.h"
+#include "settings/lib/ISettingCallback.h"
 #include "threads/CriticalSection.h"
 #include "utils/Variant.h"
 

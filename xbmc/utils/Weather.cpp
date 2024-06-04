@@ -28,7 +28,7 @@
 #include "xbox/network.h"
 #include "Util.h"
 #include "Application.h"
-#include "settings/Setting.h"
+#include "settings/lib/Setting.h"
 #include "settings/Settings.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"

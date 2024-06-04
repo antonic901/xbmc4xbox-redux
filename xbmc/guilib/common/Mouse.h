@@ -21,7 +21,7 @@
  *
  */
 
-#include "settings/ISettingCallback.h"
+#include "settings/lib/ISettingCallback.h"
 #include "../Geometry.h"
 
 #define MOUSE_MINIMUM_MOVEMENT 2

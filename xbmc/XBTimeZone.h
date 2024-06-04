@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "settings/ISettingCallback.h"
-#include "settings/ISettingsHandler.h"
+#include "settings/lib/ISettingCallback.h"
+#include "settings/lib/ISettingsHandler.h"
 
 #define XC_DISABLE_DST_FLAG  0x02
 #define XC_DST_SETTING       0x11

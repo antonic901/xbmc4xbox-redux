@@ -22,7 +22,7 @@
 
 #include <vector>
 #include "settings/Settings.h"
-#include "settings/ISettingCallback.h"
+#include "settings/lib/ISettingCallback.h"
 #include "utils/Stopwatch.h"
 
 class CSeekHandler : public ISettingCallback

@@ -19,7 +19,7 @@
  *
  */
 
-#include "settings/ISettingsHandler.h"
+#include "settings/lib/ISettingsHandler.h"
 
 #define XC_AUDIO_FLAGS 9
 

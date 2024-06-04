@@ -21,7 +21,7 @@
  */
 
 #include "cores/IPlayer.h"
-#include "settings/ISettingsHandler.h"
+#include "settings/lib/ISettingsHandler.h"
 
 /*----------------------------------------------------------------------
 |   forward references

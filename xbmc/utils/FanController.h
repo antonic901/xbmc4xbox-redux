@@ -22,7 +22,7 @@
 
 #include "threads/Thread.h"
 #include "Temperature.h"
-#include "settings/ISettingCallback.h"
+#include "settings/lib/ISettingCallback.h"
 
 class CFanController : public ISettingCallback, public CThread
 {

@@ -19,7 +19,7 @@
  *
  */
 
-#include "settings/ISettingCreator.h"
+#include "settings/lib/ISettingCreator.h"
 
 class CSettingCreator : public ISettingCreator
 {

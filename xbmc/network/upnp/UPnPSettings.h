@@ -21,7 +21,7 @@
 
 #include <string>
 
-#include "settings/ISettingsHandler.h"
+#include "settings/lib/ISettingsHandler.h"
 #include "threads/CriticalSection.h"
 
 class CUPnPSettings : public ISettingsHandler

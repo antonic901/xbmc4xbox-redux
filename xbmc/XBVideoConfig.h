@@ -20,7 +20,7 @@
  */
 
 #include "GraphicContext.h"
-#include "settings/ISettingsHandler.h"
+#include "settings/lib/ISettingsHandler.h"
 
 #define XC_VIDEO_FLAGS 8
 

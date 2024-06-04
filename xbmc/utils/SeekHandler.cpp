@@ -19,13 +19,14 @@
  *
  */
 
+#include "system.h" // <xtl.h>
 #include "SeekHandler.h"
 #include "guilib/LocalizeStrings.h"
 #include "GUIInfoManager.h"
 #include "Application.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
-#include "settings/Setting.h"
+#include "settings/lib/Setting.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 

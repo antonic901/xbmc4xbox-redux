@@ -40,7 +40,7 @@
 #include "common/Mouse.h"
 
 #include "utils/GlobalsHandling.h"
-#include "settings/ISettingCallback.h"
+#include "settings/lib/ISettingCallback.h"
 
 /*!
  \ingroup graphics

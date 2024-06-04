@@ -19,8 +19,8 @@
  *
  */
 
-#include "ISettingControl.h"
-#include "ISettingControlCreator.h"
+#include "settings/lib/ISettingControl.h"
+#include "settings/lib/ISettingControlCreator.h"
 
 #define SETTING_XML_ELM_CONTROL_FORMATLABEL  "formatlabel"
 #define SETTING_XML_ELM_CONTROL_HIDDEN       "hidden"

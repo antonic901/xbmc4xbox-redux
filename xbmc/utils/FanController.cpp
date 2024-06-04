@@ -23,7 +23,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "xbox/Undocumented.h"
 #include "xbox/XKExports.h"
-#include "settings/Setting.h"
+#include "settings/lib/Setting.h"
 #include "settings/Settings.h"
 #include "utils/StringUtils.h"
 #include "utils/log.h"

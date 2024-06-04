@@ -28,7 +28,7 @@
 #include "GUIControlFactory.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
-#include "settings/Setting.h"
+#include "settings/lib/Setting.h"
 #include "settings/Settings.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"

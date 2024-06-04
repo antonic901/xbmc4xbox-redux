@@ -20,7 +20,7 @@
  *
  */
 
-#include "settings/ISettingCallback.h"
+#include "settings/lib/ISettingCallback.h"
 #include "utils/StdString.h"
 #include "threads/CriticalSection.h"
 

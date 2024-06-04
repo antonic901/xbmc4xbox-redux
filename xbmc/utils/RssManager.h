@@ -22,8 +22,8 @@
 #include <map>
 #include <vector>
 
-#include "settings/ISettingCallback.h"
-#include "settings/ISettingsHandler.h"
+#include "settings/lib/ISettingCallback.h"
+#include "settings/lib/ISettingsHandler.h"
 #include "threads/CriticalSection.h"
 
 class CRssReader;

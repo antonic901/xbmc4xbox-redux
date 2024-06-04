@@ -28,7 +28,7 @@
 #endif
 #include "LangInfo.h"
 #include "guilib/LocalizeStrings.h"
-#include "settings/Setting.h"
+#include "settings/lib/Setting.h"
 #include "settings/Settings.h"
 #include "threads/SingleLock.h"
 #include "log.h"

@@ -55,7 +55,7 @@
 #include "filesystem/SpecialProtocol.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/AdvancedSettings.h"
-#include "settings/Setting.h"
+#include "settings/lib/Setting.h"
 #include "settings/Settings.h"
 #include "utils/log.h"
 #include "utils/RssManager.h"

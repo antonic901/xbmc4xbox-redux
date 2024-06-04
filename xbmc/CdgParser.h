@@ -25,7 +25,7 @@
 #include "CdgVoiceManager.h" // Karaoke patch (114097)
 #include "threads/Thread.h"
 #include "filesystem/File.h"
-#include "settings/Setting.h"
+#include "settings/lib/Setting.h"
 
 //////////////////////
 //////CdgLoader///////

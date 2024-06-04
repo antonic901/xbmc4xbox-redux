@@ -36,7 +36,7 @@
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
 #include "settings/VideoSettings.h"
-#include "settings/Setting.h"
+#include "settings/lib/Setting.h"
 #include "utils/JobManager.h"
 #include "utils/LangCodeExpander.h"
 #include "utils/log.h"
