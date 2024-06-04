@@ -43,6 +43,8 @@ public:
 
   static CSettings& Get();
 
+  CSettingsManager* GetSettingsManager() const { return m_settingsManager; }
+
   bool Initialize();
   bool Load();
   bool Load(const std::string &file);
