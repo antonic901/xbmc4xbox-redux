@@ -181,7 +181,7 @@ bool CGUIWindowSettingsScreenCalibration::OnMessage(CGUIMessage& message)
 
 void CGUIWindowSettingsScreenCalibration::NextControl()
 { // set the old control invisible and not focused, and choose the next control
-  CGUIControl *pControl = (CGUIControl *)GetControl(m_iControl);
+  CGUIControl *pControl = GetControl(m_iControl);
   if (pControl)
   {
     pControl->SetVisible(false);
@@ -211,7 +211,7 @@ void CGUIWindowSettingsScreenCalibration::ResetControls()
   // disable the UI calibration for our controls
   // and set their limits
   // also, set them to invisible if they don't have focus
-  CGUIMoverControl *pControl = (CGUIMoverControl*)GetControl(CONTROL_TOP_LEFT);
+  CGUIMoverControl *pControl = dynamic_cast<CGUIMoverControl*>(GetControl(CONTROL_TOP_LEFT));
   if (pControl)
   {
     pControl->SetLimits( -CDisplaySettings::Get().GetResolutionInfo(m_Res[m_iCurRes]).iWidth / 4,
@@ -223,7 +223,7 @@ void CGUIWindowSettingsScreenCalibration::ResetControls()
     pControl->SetLocation(CDisplaySettings::Get().GetResolutionInfo(m_Res[m_iCurRes]).Overscan.left,
                           CDisplaySettings::Get().GetResolutionInfo(m_Res[m_iCurRes]).Overscan.top, false);
   }
-  pControl = (CGUIMoverControl*)GetControl(CONTROL_BOTTOM_RIGHT);
+  pControl = dynamic_cast<CGUIMoverControl*>(GetControl(CONTROL_BOTTOM_RIGHT));
   if (pControl)
   {
     pControl->SetLimits(CDisplaySettings::Get().GetResolutionInfo(m_Res[m_iCurRes]).iWidth*3 / 4,
@@ -236,7 +236,7 @@ void CGUIWindowSettingsScreenCalibration::ResetControls()
                           CDisplaySettings::Get().GetResolutionInfo(m_Res[m_iCurRes]).Overscan.bottom, false);
   }
   // Subtitles and OSD controls can only move up and down
-  pControl = (CGUIMoverControl*)GetControl(CONTROL_SUBTITLES);
+  pControl = dynamic_cast<CGUIMoverControl*>(GetControl(CONTROL_SUBTITLES));
   if (pControl)
   {
     pControl->SetLimits(0, CDisplaySettings::Get().GetResolutionInfo(m_Res[m_iCurRes]).iHeight*3 / 4,
@@ -246,7 +246,7 @@ void CGUIWindowSettingsScreenCalibration::ResetControls()
     pControl->SetLocation(0, CDisplaySettings::Get().GetResolutionInfo(m_Res[m_iCurRes]).iSubtitles, false);
   }
   // lastly the pixel ratio control...
-  CGUIResizeControl *pResize = (CGUIResizeControl*)GetControl(CONTROL_PIXEL_RATIO);
+  CGUIResizeControl *pResize = dynamic_cast<CGUIResizeControl*>(GetControl(CONTROL_PIXEL_RATIO));
   if (pResize)
   {
     pResize->SetLimits(CDisplaySettings::Get().GetResolutionInfo(m_Res[m_iCurRes]).iWidth*0.25f, CDisplaySettings::Get().GetResolutionInfo(m_Res[m_iCurRes]).iHeight*0.5f,
@@ -265,7 +265,7 @@ void CGUIWindowSettingsScreenCalibration::UpdateFromControl(int iControl)
   CStdString strStatus;
   if (iControl == CONTROL_PIXEL_RATIO)
   {
-    CGUIResizeControl *pControl = (CGUIResizeControl*)GetControl(CONTROL_PIXEL_RATIO);
+    CGUIControl *pControl = GetControl(CONTROL_PIXEL_RATIO);
     if (pControl)
     {
       float fWidth = (float)pControl->GetWidth();
@@ -280,7 +280,7 @@ void CGUIWindowSettingsScreenCalibration::UpdateFromControl(int iControl)
   }
   else
   {
-    CGUIMoverControl *pControl = (CGUIMoverControl*)GetControl(iControl);
+    const CGUIMoverControl *pControl = dynamic_cast<const CGUIMoverControl*>(GetControl(iControl));
     if (pControl)
     {
       switch (iControl)
@@ -354,7 +354,7 @@ void CGUIWindowSettingsScreenCalibration::DoProcess(unsigned int currentTime, CD
   // process the movers etc.
   for (int i = CONTROL_TOP_LEFT; i <= CONTROL_PIXEL_RATIO; i++)
   {
-    CGUIControl *control = (CGUIControl *)GetControl(i);
+    CGUIControl *control = GetControl(i);
     if (control)
       control->DoProcess(currentTime, dirtyregions);
   }

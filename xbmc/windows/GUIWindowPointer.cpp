@@ -50,12 +50,12 @@ void CGUIWindowPointer::SetPointer(DWORD dwPointer)
 {
   if (m_dwPointer == dwPointer) return ;
   // set the new pointer visible
-  CGUIControl *pControl = (CGUIControl *)GetControl(dwPointer);
+  CGUIControl *pControl = GetControl(dwPointer);
   if (pControl)
   {
     pControl->SetVisible(true);
     // disable the old pointer
-    pControl = (CGUIControl *)GetControl(m_dwPointer);
+    pControl = GetControl(m_dwPointer);
     if (pControl) pControl->SetVisible(false);
     // set pointer to the new one
     m_dwPointer = dwPointer;
