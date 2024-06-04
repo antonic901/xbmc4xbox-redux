@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -176,13 +176,13 @@ void CSkinSettings::Reset()
   // clear all the settings and strings from this skin.
   for (map<int, CSkinBool>::iterator it = m_bools.begin(); it != m_bools.end(); ++it)
   {
-    if (StringUtils::StartsWith(it->second.name, currentSkin))
+    if (StringUtils::StartsWithNoCase(it->second.name, currentSkin))
       it->second.value = false;
   }
 
   for (map<int, CSkinString>::iterator it = m_strings.begin(); it != m_strings.end(); ++it)
   {
-    if (StringUtils::StartsWith(it->second.name, currentSkin))
+    if (StringUtils::StartsWithNoCase(it->second.name, currentSkin))
       it->second.value.clear();
   }
 

@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -55,14 +55,14 @@ bool CSettingPath::Deserialize(const TiXmlNode *node, bool update /* = false */)
 
   if (!CSettingString::Deserialize(node, update))
     return false;
-    
+
   if (m_control != NULL &&
      (m_control->GetType() != "button" || m_control->GetFormat() != "path"))
   {
     CLog::Log(LOGERROR, "CSettingPath: invalid <control> of \"%s\"", m_id.c_str());
     return false;
   }
-    
+
   const TiXmlNode *constraints = node->FirstChild(XML_ELM_CONSTRAINTS);
   if (constraints != NULL)
   {

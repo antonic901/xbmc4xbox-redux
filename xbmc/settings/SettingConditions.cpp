@@ -28,9 +28,6 @@
 #if defined(TARGET_ANDROID)
 #include "android/activity/AndroidFeatures.h"
 #endif // defined(TARGET_ANDROID)
-#if defined(HAVE_LIBCRYSTALHD)
-#include "cores/dvdplayer/DVDCodecs/Video/CrystalHD.h"
-#endif // defined(HAVE_LIBCRYSTALHD)
 #include "cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h"
 #include "guilib/LocalizeStrings.h"
 #include "profiles/ProfilesManager.h"
@@ -39,6 +36,9 @@
 #include "utils/AMLUtils.h"
 #endif // defined(HAS_LIBAMCODEC)
 #include "utils/SystemInfo.h"
+#if defined(TARGET_DARWIN_OSX)
+#include "osx/DarwinUtils.h"
+#endif// defined(TARGET_DARWIN_OSX)
 #ifdef _XBOX
 #include "XBVideoConfig.h"
 #endif
@@ -176,14 +176,23 @@ void CSettingConditions::Initialize()
 
   // add simple conditions
   m_simpleConditions.insert("true");
+#ifdef HAS_UPNP
+  m_simpleConditions.insert("has_upnp");
+#endif
 #ifdef HAS_AIRPLAY
   m_simpleConditions.insert("has_airplay");
 #endif
 #ifdef HAS_EVENT_SERVER
   m_simpleConditions.insert("has_event_server");
 #endif
+#ifdef HAVE_X11
+  m_simpleConditions.insert("have_x11");
+#endif
 #ifdef HAS_GL
   m_simpleConditions.insert("has_gl");
+#endif
+#ifdef HAS_GLX
+  m_simpleConditions.insert("has_glx");
 #endif
 #ifdef HAS_GLES
   m_simpleConditions.insert("has_gles");
@@ -197,8 +206,8 @@ void CSettingConditions::Initialize()
 #ifdef HAS_SDL_JOYSTICK
   m_simpleConditions.insert("has_sdl_joystick");
 #endif
-#ifdef HAS_SKIN_TOUCHED
-  m_simpleConditions.insert("has_skin_touched");
+#ifdef HAS_TOUCH_SKIN
+  m_simpleConditions.insert("has_touch_skin");
 #endif
 #ifdef HAS_TIME_SERVER
   m_simpleConditions.insert("has_time_server");
@@ -209,33 +218,44 @@ void CSettingConditions::Initialize()
 #ifdef HAS_ZEROCONF
   m_simpleConditions.insert("has_zeroconf");
 #endif
-#ifdef HAVE_LIBCRYSTALHD
-  m_simpleConditions.insert("have_libcrystalhd");
-  if (CCrystalHD::GetInstance()->DevicePresent())
-    m_simpleConditions.insert("hascrystalhddevice");
-#endif
 #ifdef HAVE_LIBOPENMAX
   m_simpleConditions.insert("have_libopenmax");
+#endif
+#ifdef HAS_OMXPLAYER
+  m_simpleConditions.insert("has_omxplayer");
 #endif
 #ifdef HAVE_LIBVA
   m_simpleConditions.insert("have_libva");
 #endif
-#ifdef HAVE_LIBVDADECODER
-  m_simpleConditions.insert("have_libvdadecoder");
-  if (g_sysinfo.HasVDADecoder())
-    m_simpleConditions.insert("hasvdadecoder");
-#endif
 #ifdef HAVE_LIBVDPAU
   m_simpleConditions.insert("have_libvdpau");
+#endif
+#ifdef TARGET_ANDROID
+  if (CAndroidFeatures::GetVersion() > 15)
+    m_simpleConditions.insert("has_mediacodec");
+#endif
+#ifdef HAS_LIBSTAGEFRIGHT
+  m_simpleConditions.insert("have_libstagefrightdecoder");
 #endif
 #ifdef HAVE_VIDEOTOOLBOXDECODER
   m_simpleConditions.insert("have_videotoolboxdecoder");
   if (g_sysinfo.HasVideoToolBoxDecoder())
     m_simpleConditions.insert("hasvideotoolboxdecoder");
 #endif
-#ifdef TARGET_DARWIN_IOS_ATV
+#ifdef TARGET_DARWIN_OSX
+  m_simpleConditions.insert("HasVDA");
+#endif
+#ifdef HAS_LIBAMCODEC
+  if (aml_present())
+    m_simpleConditions.insert("have_amcodec");
+#endif
+#ifdef TARGET_DARWIN_IOS_ATV2
   if (g_sysinfo.IsAppleTV2())
     m_simpleConditions.insert("isappletv2");
+#endif
+#ifdef TARGET_DARWIN_OSX
+  if (CDarwinUtils::IsSnowLeopard())
+    m_simpleConditions.insert("osxissnowleopard");
 #endif
 #ifdef _XBOX
   m_simpleConditions.insert("is_xbox");
@@ -244,8 +264,7 @@ void CSettingConditions::Initialize()
 #endif
 #if defined(TARGET_WINDOWS) && defined(HAS_DX)
   m_simpleConditions.insert("has_dx");
-  if (g_sysinfo.IsVistaOrHigher())
-    m_simpleConditions.insert("hasdxva2");
+  m_simpleConditions.insert("hasdxva2");
 #endif
 #if defined(_XBOX) && defined(HAS_XBOX_D3D)
   m_simpleConditions.insert("has_dx8");

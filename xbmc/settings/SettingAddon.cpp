@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include "utils/log.h"
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
+#include "utils/StdString.h"
 
 #define XML_ELM_DEFAULT     "default"
 
@@ -54,7 +55,7 @@ bool CSettingAddon::Deserialize(const TiXmlNode *node, bool update /* = false */
 
   if (!CSettingString::Deserialize(node, update))
     return false;
-    
+
   if (m_control != NULL &&
      (m_control->GetType() != "button" || m_control->GetFormat() != "addon"))
   {
