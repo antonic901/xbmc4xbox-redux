@@ -572,6 +572,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					<File
 						RelativePath=".\xbmc\settings\dialogs\GUIDialogSettings.h">
 					</File>
+					<File
+						RelativePath=".\xbmc\settings\dialogs\GUIDialogSettingsBase.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\dialogs\GUIDialogSettingsBase.h">
+					</File>
 				</Filter>
 				<Filter
 					Name="lib"
