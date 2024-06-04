@@ -506,6 +506,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\SettingControl.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\settings\SettingCreator.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingCreator.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\settings\SettingDefinitions.h">
 				</File>
 				<File
