@@ -21,9 +21,9 @@
 
 #include <set>
 
+#include "settings/SettingControl.h"
+#include "settings/SettingCreator.h"
 #include "settings/ISettingCallback.h"
-#include "settings/ISettingControlCreator.h"
-#include "settings/ISettingCreator.h"
 #include "threads/CriticalSection.h"
 #include "utils/Variant.h"
 
@@ -35,19 +35,13 @@ class CSettingsManager;
 class TiXmlElement;
 class TiXmlNode;
 
-class CSettings : public ISettingCreator, public ISettingControlCreator
+class CSettings : public CSettingCreator, public CSettingControlCreator
 {
 public:
   CSettings();
   virtual ~CSettings();
 
   static CSettings& Get();
-
-  // implementation of ISettingCreator
-  virtual CSetting* CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager = NULL) const;
-
-  // implementation of ISettingControlCreator
-  virtual ISettingControl* CreateControl(const std::string &controlType) const;
 
   bool Initialize();
   bool Load();
