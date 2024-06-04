@@ -8673,7 +8673,15 @@ msgctxt "#21459"
 msgid "mixed"
 msgstr ""
 
-#empty strings from id 21460 to 21799
+#empty strings from id 21460 to 21467
+
+#. Filter (media data) from int value to int value
+#: xbmc/dialogs/GUIDialogMediaFilter.cpp
+msgctxt "#21468"
+msgid "%d to %d"
+msgstr ""
+
+#empty strings from id 21469 to 21799
 
 msgctxt "#21800"
 msgid "File name"
