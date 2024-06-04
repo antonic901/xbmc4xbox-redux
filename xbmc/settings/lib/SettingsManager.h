@@ -105,6 +105,11 @@ public:
   void* GetSettingOptionsFiller(const CSetting *setting);
 
   CSetting* GetSetting(const std::string &id) const;
+  /*!
+   \brief Gets the full list of setting sections.
+   \return List of setting sections
+   */
+  std::vector<CSettingSection*> GetSections() const;
   CSettingSection* GetSection(const std::string &section) const;
   SettingDependencyMap GetDependencies(const std::string &id) const;
   SettingDependencyMap GetDependencies(const CSetting *setting) const;
