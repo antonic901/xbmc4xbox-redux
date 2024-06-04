@@ -19,7 +19,6 @@
  */
 
 #include "dialogs/GUIDialogSeekBar.h"
-#include "GUISliderControl.h"
 #include "Application.h"
 #include "GUIInfoManager.h"
 #include "utils/SeekHandler.h"
@@ -67,23 +66,13 @@ void CGUIDialogSeekBar::FrameMove()
   // update controls
   if (!g_application.GetSeekHandler()->InProgress() && !g_infoManager.m_performingSeek)
   { // position the bar at our current time
-    CGUISliderControl *pSlider = (CGUISliderControl*)GetControl(POPUP_SEEK_PROGRESS);
-    if (pSlider && g_infoManager.GetTotalPlayTime())
-      pSlider->SetPercentage((float)g_infoManager.GetPlayTime()/g_infoManager.GetTotalPlayTime() * 0.1f);
-
-    CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), POPUP_SEEK_LABEL);
-    msg.SetLabel(g_infoManager.GetCurrentPlayTime());
-    OnMessage(msg);
+    CONTROL_SELECT_ITEM(POPUP_SEEK_PROGRESS, (unsigned int)(g_infoManager.GetPlayTime()/g_infoManager.GetTotalPlayTime() * 0.1f));
+    SET_CONTROL_LABEL(POPUP_SEEK_LABEL, g_infoManager.GetCurrentPlayTime());
   }
   else
   {
-    CGUISliderControl *pSlider = (CGUISliderControl*)GetControl(POPUP_SEEK_PROGRESS);
-    if (pSlider)
-      pSlider->SetPercentage(g_application.GetSeekHandler()->GetPercent());
-
-    CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), POPUP_SEEK_LABEL);
-    msg.SetLabel(g_infoManager.GetCurrentSeekTime());
-    OnMessage(msg);
+    CONTROL_SELECT_ITEM(POPUP_SEEK_PROGRESS, (unsigned int)g_application.GetSeekHandler()->GetPercent());
+    SET_CONTROL_LABEL(POPUP_SEEK_LABEL, g_infoManager.GetCurrentSeekTime());
   }
 
   CGUIDialog::FrameMove();

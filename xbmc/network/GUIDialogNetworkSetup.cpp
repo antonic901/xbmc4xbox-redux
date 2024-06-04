@@ -19,7 +19,6 @@
  */
 
 #include "network/GUIDialogNetworkSetup.h"
-#include "GUISpinControlEx.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "guilib/GUIKeyboardFactory.h"
 #include "dialogs/GUIDialogFileBrowser.h"
@@ -114,34 +113,30 @@ void CGUIDialogNetworkSetup::OnInitWindow()
   m_confirmed = false;
 
   CGUIDialog::OnInitWindow();
+
   // Add our protocols
-  CGUISpinControlEx *pSpin = (CGUISpinControlEx *)GetControl(CONTROL_PROTOCOL);
-  if (!pSpin)
-    return;
+  std::vector< std::pair<std::string, int> > labels;
+  labels.push_back(make_pair(g_localizeStrings.Get(20171), NET_PROTOCOL_SMB));
+  labels.push_back(make_pair(g_localizeStrings.Get(20258), NET_PROTOCOL_MYTH));
+  labels.push_back(make_pair(g_localizeStrings.Get(21331), NET_PROTOCOL_TUXBOX));
+  labels.push_back(make_pair(g_localizeStrings.Get(20301), NET_PROTOCOL_HTTPS));
+  labels.push_back(make_pair(g_localizeStrings.Get(20300), NET_PROTOCOL_HTTP));
+  labels.push_back(make_pair(g_localizeStrings.Get(20254), NET_PROTOCOL_DAVS));
+  labels.push_back(make_pair(g_localizeStrings.Get(20253), NET_PROTOCOL_DAV));
+  labels.push_back(make_pair(g_localizeStrings.Get(20173), NET_PROTOCOL_FTP));
+  labels.push_back(make_pair(g_localizeStrings.Get(20174), NET_PROTOCOL_DAAP));
+  labels.push_back(make_pair(g_localizeStrings.Get(20175), NET_PROTOCOL_UPNP));
+  labels.push_back(make_pair(g_localizeStrings.Get(20304), NET_PROTOCOL_RSS));
 
-  pSpin->Clear();
-  pSpin->AddLabel(g_localizeStrings.Get(20171), NET_PROTOCOL_SMB);
-  pSpin->AddLabel(g_localizeStrings.Get(20258), NET_PROTOCOL_MYTH);
-  pSpin->AddLabel(g_localizeStrings.Get(21331), NET_PROTOCOL_TUXBOX);
-  pSpin->AddLabel(g_localizeStrings.Get(20301), NET_PROTOCOL_HTTPS);
-  pSpin->AddLabel(g_localizeStrings.Get(20300), NET_PROTOCOL_HTTP);
-  pSpin->AddLabel(g_localizeStrings.Get(20254), NET_PROTOCOL_DAVS);
-  pSpin->AddLabel(g_localizeStrings.Get(20253), NET_PROTOCOL_DAV);
-  pSpin->AddLabel(g_localizeStrings.Get(20173), NET_PROTOCOL_FTP);
-  pSpin->AddLabel(g_localizeStrings.Get(20174), NET_PROTOCOL_DAAP);
-  pSpin->AddLabel(g_localizeStrings.Get(20175), NET_PROTOCOL_UPNP);
-  pSpin->AddLabel(g_localizeStrings.Get(20304), NET_PROTOCOL_RSS);
-
-  pSpin->SetValue(m_protocol);
+  SET_CONTROL_LABELS(CONTROL_PROTOCOL, m_protocol, &labels);
   OnProtocolChange();
 }
 
 void CGUIDialogNetworkSetup::OnDeinitWindow(int nextWindowID)
 {
   // clear protocol spinner
-  CGUISpinControlEx *pSpin = (CGUISpinControlEx *)GetControl(CONTROL_PROTOCOL);
-  if (pSpin)
-    pSpin->Clear();
+  CGUIMessage msg(GUI_MSG_LABEL_RESET, GetID(), CONTROL_PROTOCOL);
+  OnMessage(msg);
 
   CGUIDialog::OnDeinitWindow(nextWindowID);
 }
@@ -183,10 +178,10 @@ void CGUIDialogNetworkSetup::OnCancel()
 
 void CGUIDialogNetworkSetup::OnProtocolChange()
 {
-  CGUISpinControlEx *pSpin = (CGUISpinControlEx *)GetControl(CONTROL_PROTOCOL);
-  if (!pSpin)
+  CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), CONTROL_PROTOCOL);
+  if (!OnMessage(msg))
     return;
-  m_protocol = (NET_PROTOCOL)pSpin->GetValue();
+  m_protocol = (NET_PROTOCOL)msg.GetParam1();
   // set defaults for the port
   if (m_protocol == NET_PROTOCOL_FTP)
     m_port = "21";
