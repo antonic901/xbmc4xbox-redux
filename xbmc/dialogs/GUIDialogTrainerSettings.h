@@ -1,7 +1,7 @@
 #pragma once
 
 /*
- *      Copyright (C) 2005-2013 Team XBMC
+ *      Copyright (C) 2005-2014 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -20,36 +20,41 @@
  *
  */
 
-#include "settings/dialogs/GUIDialogSettings.h"
-#include "ProgramDatabase.h"
+#include "settings/dialogs/GUIDialogSettingsManualBase.h"
 
+class CProgramDatabase;
 class CTrainer;
 
-class CGUIDialogTrainerSettings : public CGUIDialogSettings
+class CGUIDialogTrainerSettings : public CGUIDialogSettingsManualBase
 {
 public:
-  CGUIDialogTrainerSettings(void);
-  virtual ~CGUIDialogTrainerSettings(void);
-  virtual bool OnMessage(CGUIMessage &message);
+  CGUIDialogTrainerSettings();
+  virtual ~CGUIDialogTrainerSettings();
 
   static bool ShowForTitle(unsigned int iTitleId, CProgramDatabase* database);
-protected:
-  virtual void OnInitWindow();
-  virtual void SetupPage();
-  virtual void CreateSettings();
-  virtual void OnCancel();
-  virtual void OnSettingChanged(SettingInfo &setting);
 
-  void AddBool(unsigned int id, const CStdString& strLabel, unsigned char* on);
-  
-  std::vector<CStdString> m_vecOptions;
+protected:
+  // implementations of ISettingCallback
+  virtual void OnSettingChanged(const CSetting *setting);
+  virtual void OnSettingAction(const CSetting *setting);
+
+  // specialization of CGUIDialogSettingsBase
+  virtual bool AllowResettingSettings() const { return false; }
+  virtual void Save();
+
+  // specialization of CGUIDialogSettingsManualBase
+  virtual void InitializeSettings();
+
+private:
+  std::vector<CTrainer*> m_vecTrainers;
+  std::vector<std::string> m_vecOptions;
+  CProgramDatabase* m_database;
+
   int m_iTrainer;
   int m_iOldTrainer;
   unsigned int m_iTitleId;
-  std::vector<CTrainer*> m_vecTrainers;
-  CProgramDatabase* m_database;
   bool m_bNeedSave;
   bool m_bCanceled;
-  CStdString m_strActive; // active trainer at start - to save db work
+  std::string m_strActive; // active trainer at start - to save db work
 };
 
