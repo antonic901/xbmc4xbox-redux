@@ -19,6 +19,7 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
+#include <math.h>
 
 #include "Addon.h"
 #include "DllAddon.h"

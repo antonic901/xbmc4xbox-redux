@@ -8681,7 +8681,15 @@ msgctxt "#21468"
 msgid "%d to %d"
 msgstr ""
 
-#empty strings from id 21469 to 21799
+#empty string with id 21469
+
+#. Field (e.g. "Genre") [count]
+#: xbmc/dialogs/GUIDialogMediaFilter.cpp
+msgctxt "#21470"
+msgid "%s [%d]"
+msgstr ""
+
+#empty strings from id 21471 to 21799
 
 msgctxt "#21800"
 msgid "File name"
