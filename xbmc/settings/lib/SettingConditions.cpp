@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ bool CSettingConditionCombination::Check() const
     CSettingConditionCombination *combination = static_cast<CSettingConditionCombination*>((*operation).get());
     if (combination == NULL)
       continue;
-    
+
     if (combination->Check())
       ok = true;
     else if (m_operation == BooleanLogicOperationAnd)

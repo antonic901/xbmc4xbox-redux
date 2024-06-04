@@ -1,7 +1,7 @@
 #pragma once
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,6 +35,10 @@
 #include "SettingUpdate.h"
 #include "threads/SharedSection.h"
 
+/*!
+ \ingroup settings
+ \brief Basic setting types available in the settings system.
+ */
 typedef enum {
   SettingTypeNone = 0,
   SettingTypeBool,
@@ -45,6 +49,10 @@ typedef enum {
   SettingTypeList
 } SettingType;
 
+/*!
+ \ingroup settings
+ \brief Levels which every setting is assigned to.
+ */
 typedef enum {
   SettingLevelBasic  = 0,
   SettingLevelStandard,
@@ -59,6 +67,11 @@ typedef enum {
   SettingOptionsTypeDynamic
 } SettingOptionsType;
 
+/*!
+ \ingroup settings
+ \brief Setting base class containing all the properties which are common to
+ all settings independent of the setting type.
+ */
 class CSetting : public ISetting,
                  protected ISettingCallback
 {
@@ -102,7 +115,7 @@ public:
   virtual bool IsVisible() const;
 
 protected:
-  // implementation of ISettingCallback  
+  // implementation of ISettingCallback
   virtual bool OnSettingChanging(const CSetting *setting);
   virtual void OnSettingChanged(const CSetting *setting);
   virtual void OnSettingAction(const CSetting *setting);
@@ -186,6 +199,11 @@ protected:
   int m_maximumItems;
 };
 
+/*!
+ \ingroup settings
+ \brief Boolean setting implementation.
+ \sa CSetting
+ */
 class CSettingBool : public CSetting
 {
 public:
@@ -218,6 +236,11 @@ private:
   bool m_default;
 };
 
+/*!
+ \ingroup settings
+ \brief Integer setting implementation
+ \sa CSetting
+ */
 class CSettingInt : public CSetting
 {
 public:
@@ -284,6 +307,11 @@ private:
   DynamicIntegerSettingOptions m_dynamicOptions;
 };
 
+/*!
+ \ingroup settings
+ \brief Real number setting implementation.
+ \sa CSetting
+ */
 class CSettingNumber : public CSetting
 {
 public:
@@ -309,7 +337,7 @@ public:
   bool SetValue(double value);
   double GetDefault() const { return m_default; }
   void SetDefault(double value);
-    
+
   double GetMinimum() const { return m_min; }
   void SetMinimum(double minimum) { m_min = minimum; }
   double GetStep() const { return m_step; }
@@ -328,6 +356,11 @@ private:
   double m_max;
 };
 
+/*!
+ \ingroup settings
+ \brief String setting implementation.
+ \sa CSetting
+ */
 class CSettingString : public CSetting
 {
 public:
@@ -381,6 +414,15 @@ protected:
   DynamicStringSettingOptions m_dynamicOptions;
 };
 
+/*!
+ \ingroup settings
+ \brief Action setting implementation.
+
+ A setting action will trigger a call to the OnSettingAction() callback method
+ when activated.
+
+ \sa CSetting
+ */
 class CSettingAction : public CSetting
 {
 public:

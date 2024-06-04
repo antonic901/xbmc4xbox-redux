@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ CSetting::CSetting(const std::string &id, CSettingsManager *settingsManager /* =
     m_control(NULL),
     m_changed(false)
 { }
-  
+
 CSetting::CSetting(const std::string &id, const CSetting &setting)
   : ISetting(id, setting.m_settingsManager),
     m_callback(NULL),
@@ -82,7 +82,7 @@ bool CSetting::Deserialize(const TiXmlNode *node, bool update /* = false */)
   int level = -1;
   if (XMLUtils::GetInt(node, SETTING_XML_ELM_LEVEL, level))
     m_level = (SettingLevel)level;
-    
+
   if (m_level < (int)SettingLevelBasic || m_level > (int)SettingLevelInternal)
     m_level = SettingLevelStandard;
 
@@ -145,7 +145,7 @@ bool CSetting::Deserialize(const TiXmlNode *node, bool update /* = false */)
       updateElem = updateElem->NextSiblingElement(SETTING_XML_ELM_UPDATE);
     }
   }
-    
+
   return true;
 }
 
@@ -214,10 +214,10 @@ bool CSetting::OnSettingChanging(const CSetting *setting)
 {
   if (m_callback == NULL)
     return true;
-    
+
   return m_callback->OnSettingChanging(setting);
 }
-  
+
 void CSetting::OnSettingChanged(const CSetting *setting)
 {
   if (m_callback == NULL)
@@ -584,7 +584,7 @@ CSettingBool::CSettingBool(const std::string &id, CSettingsManager *settingsMana
   : CSetting(id, settingsManager),
     m_value(false), m_default(false)
 { }
-  
+
 CSettingBool::CSettingBool(const std::string &id, const CSettingBool &setting)
   : CSetting(id, setting)
 {
@@ -609,7 +609,7 @@ bool CSettingBool::Deserialize(const TiXmlNode *node, bool update /* = false */)
 
   if (!CSetting::Deserialize(node, update))
     return false;
-    
+
   // get the default value
   bool value;
   if (XMLUtils::GetBoolean(node, SETTING_XML_ELM_DEFAULT, value))
@@ -622,7 +622,7 @@ bool CSettingBool::Deserialize(const TiXmlNode *node, bool update /* = false */)
 
   return true;
 }
-  
+
 bool CSettingBool::FromString(const std::string &value)
 {
   bool bValue;
@@ -675,7 +675,7 @@ bool CSettingBool::SetValue(bool value)
   OnSettingChanged(this);
   return true;
 }
-  
+
 void CSettingBool::SetDefault(bool value)
 {
   CExclusiveLock lock(m_critical);
@@ -692,7 +692,7 @@ void CSettingBool::copy(const CSettingBool &setting)
   m_value = setting.m_value;
   m_default = setting.m_default;
 }
-  
+
 bool CSettingBool::fromString(const std::string &strValue, bool &value) const
 {
   if (StringUtils::EqualsNoCase(strValue, "true"))
@@ -716,7 +716,7 @@ CSettingInt::CSettingInt(const std::string &id, CSettingsManager *settingsManage
     m_optionsFiller(NULL),
     m_optionsFillerData(NULL)
 { }
-  
+
 CSettingInt::CSettingInt(const std::string &id, const CSettingInt &setting)
   : CSetting(id, setting),
     m_optionsFiller(NULL),
@@ -1001,7 +1001,7 @@ bool CSettingInt::fromString(const std::string &strValue, int &value)
   char *end = NULL;
   value = (int)strtol(strValue.c_str(), &end, 10);
   if (end != NULL && *end != '\0')
-    return false; 
+    return false;
 
   return true;
 }
@@ -1011,7 +1011,7 @@ CSettingNumber::CSettingNumber(const std::string &id, CSettingsManager *settings
     m_value(0.0), m_default(0.0),
     m_min(0.0), m_step(1.0), m_max(0.0)
 { }
-  
+
 CSettingNumber::CSettingNumber(const std::string &id, const CSettingNumber &setting)
   : CSetting(id, setting)
 {
@@ -1045,7 +1045,7 @@ bool CSettingNumber::Deserialize(const TiXmlNode *node, bool update /* = false *
 
   if (!CSetting::Deserialize(node, update))
     return false;
-    
+
   // get the default value
   double value;
   if (XMLUtils::GetDouble(node, SETTING_XML_ELM_DEFAULT, value))
@@ -1055,7 +1055,7 @@ bool CSettingNumber::Deserialize(const TiXmlNode *node, bool update /* = false *
     CLog::Log(LOGERROR, "CSettingNumber: error reading the default value of \"%s\"", m_id.c_str());
     return false;
   }
-    
+
   const TiXmlNode *constraints = node->FirstChild(SETTING_XML_ELM_CONSTRAINTS);
   if (constraints != NULL)
   {
@@ -1183,7 +1183,7 @@ CSettingString::CSettingString(const std::string &id, CSettingsManager *settings
     m_optionsFiller(NULL),
     m_optionsFillerData(NULL)
 { }
-  
+
 CSettingString::CSettingString(const std::string &id, const CSettingString &setting)
   : CSetting(id, setting),
     m_optionsFiller(NULL),
@@ -1264,7 +1264,7 @@ bool CSettingString::SetValue(const std::string &value)
 
   if (value == m_value)
     return true;
-    
+
   if (!CheckValidity(value))
     return false;
 
@@ -1364,7 +1364,7 @@ void CSettingString::copy(const CSettingString &setting)
   m_optionsFillerData = setting.m_optionsFillerData;
   m_dynamicOptions = setting.m_dynamicOptions;
 }
-  
+
 CSettingAction::CSettingAction(const std::string &id, CSettingsManager *settingsManager /* = NULL */)
   : CSetting(id, settingsManager)
 { }
@@ -1390,6 +1390,6 @@ bool CSettingAction::Deserialize(const TiXmlNode *node, bool update /* = false *
 
   if (!CSetting::Deserialize(node, update))
     return false;
-    
+
   return true;
 }

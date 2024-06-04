@@ -1,7 +1,7 @@
 #pragma once
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,10 +24,22 @@
 class CSetting;
 class CSettingsManager;
 
+/*!
+ \ingroup settings
+ \brief Interface for creating a new setting of a custom setting type.
+ */
 class ISettingCreator
 {
 public:
   virtual ~ISettingCreator() { }
 
+  /*!
+   \brief Creates a new setting of the given custom setting type.
+
+   \param settingType string representation of the setting type
+   \param settingId Identifier of the setting to be created
+   \param settingsManager Reference to the settings manager
+   \return A new setting object of the given (custom) setting type or NULL if the setting type is unknown
+   */
   virtual CSetting* CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager = NULL) const = 0;
 };

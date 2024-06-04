@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ bool CSettingsManager::Initialize(const TiXmlElement *root)
           delete section;
       }
     }
-      
+
     sectionNode = sectionNode->NextSibling(SETTING_XML_ELM_SECTION);
   }
 
@@ -439,7 +439,7 @@ void* CSettingsManager::GetSettingOptionsFiller(const CSetting *setting)
 
       break;
     }
-    
+
     case SettingOptionsFillerTypeString:
     {
       if (setting->GetType() != SettingTypeString)
@@ -644,7 +644,7 @@ void CSettingsManager::AddCondition(const std::string &identifier, SettingCondit
 
   m_conditions.AddCondition(identifier, condition);
 }
-  
+
 bool CSettingsManager::Serialize(TiXmlNode *parent) const
 {
   if (parent == NULL)
@@ -663,20 +663,20 @@ bool CSettingsManager::Serialize(TiXmlNode *parent) const
       CLog::Log(LOGWARNING, "CSettingsManager: unable to save setting \"%s\"", it->first.c_str());
       continue;
     }
-      
+
     TiXmlNode *sectionNode = parent->FirstChild(parts.at(0));
     if (sectionNode == NULL)
     {
       TiXmlElement sectionElement(parts.at(0));
       sectionNode = parent->InsertEndChild(sectionElement);
-        
+
       if (sectionNode == NULL)
       {
         CLog::Log(LOGWARNING, "CSettingsManager: unable to write <%s> tag", parts.at(0).c_str());
         continue;
       }
     }
-      
+
     TiXmlElement settingElement(parts.at(1));
     TiXmlNode *settingNode = sectionNode->InsertEndChild(settingElement);
     if (settingNode == NULL)
@@ -690,14 +690,14 @@ bool CSettingsManager::Serialize(TiXmlNode *parent) const
       if (settingElem != NULL)
         settingElem->SetAttribute(SETTING_XML_ELM_DEFAULT, "true");
     }
-      
+
     TiXmlText value(it->second.setting->ToString());
     settingNode->InsertEndChild(value);
   }
 
   return true;
 }
-  
+
 bool CSettingsManager::Deserialize(const TiXmlNode *node, bool &updated, std::map<std::string, CSetting*> *loadedSettings /* = NULL */)
 {
   updated = false;
@@ -748,13 +748,13 @@ bool CSettingsManager::OnSettingChanging(const CSetting *setting)
 
   return true;
 }
-  
+
 void CSettingsManager::OnSettingChanged(const CSetting *setting)
 {
   CSharedLock lock(m_settingsCritical);
   if (!m_loaded || setting == NULL)
     return;
-    
+
   SettingMap::const_iterator settingIt = m_settings.find(setting->GetId());
   if (settingIt == m_settings.end())
     return;
@@ -762,7 +762,7 @@ void CSettingsManager::OnSettingChanged(const CSetting *setting)
   Setting settingData = settingIt->second;
   // now that we have a copy of the setting's data, we can leave the lock
   lock.Leave();
-    
+
   for (CallbackSet::iterator callback = settingData.callbacks.begin();
         callback != settingData.callbacks.end();
         ++callback)

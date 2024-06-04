@@ -1,7 +1,7 @@
 #pragma once
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,11 @@
 
 class TiXmlNode;
 
+/*!
+ \ingroup settings
+ \brief Interface defining methods to load additional setting values from an
+ XML file being loaded by the settings system.
+ */
 class ISubSettings
 {
 public:
@@ -28,12 +33,14 @@ public:
 
   /*!
    \brief Load settings from the given XML node.
+
    \param settings XML node containing setting values
    \return True if loading the settings was successful, false otherwise.
    */
   virtual bool Load(const TiXmlNode *settings) { return true; }
   /*!
    \brief Save settings to the given XML node.
+
    \param settings XML node in which the settings will be saved
    \return True if saving the settings was successful, false otherwise.
    */

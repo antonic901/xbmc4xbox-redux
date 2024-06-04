@@ -19,6 +19,11 @@
  *
  */
 
+/*!
+ \ingroup settings
+ \brief Interface defining methods being called by the settings system if an
+ action is performed on multiple/all settings
+ */
 class ISettingsHandler
 {
 public:
@@ -26,32 +31,38 @@ public:
 
   /*!
    \brief Settings loading has been initiated.
+
    \return True if the settings should be loaded, false if the loading should be aborted.
    */
   virtual bool OnSettingsLoading() { return true; }
   /*!
    \brief Settings have been loaded.
+
    This callback can be used to trigger loading other settings.
    */
   virtual void OnSettingsLoaded() { }
   /*!
    \brief Settings saving has been initiated.
+
    \return True if the settings should be saved, false if the saving should be aborted.
    */
   virtual bool OnSettingsSaving() const { return true; }
   /*!
    \brief Settings have been saved.
+
    This callback can be used to trigger saving other settings.
    */
   virtual void OnSettingsSaved() { }
   /*!
    \brief Setting values have been unloaded.
+
    This callback can be used to trigger uninitializing any state variables
    (e.g. before re-loading the settings).
    */
   virtual void OnSettingsUnloaded() { }
   /*!
    \brief Settings have been cleared.
+
    This callback can be used to trigger clearing any state variables.
    */
   virtual void OnSettingsCleared() { }

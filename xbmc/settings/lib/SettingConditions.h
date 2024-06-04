@@ -1,7 +1,7 @@
 #pragma once
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ public:
     : ISettingCondition(settingsManager)
   { }
   virtual ~CSettingConditionItem() { }
-  
+
   virtual bool Deserialize(const TiXmlNode *node);
   virtual const char* GetTag() const { return SETTING_XML_ELM_CONDITION; }
   virtual bool Check() const;
@@ -100,7 +100,7 @@ public:
 private:
   CSettingConditionsManager(const CSettingConditionsManager&);
   CSettingConditionsManager const& operator=(CSettingConditionsManager const&);
-  
+
   typedef std::pair<std::string, SettingConditionCheck> SettingConditionPair;
   typedef std::map<std::string, SettingConditionCheck> SettingConditionMap;
 
