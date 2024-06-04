@@ -54,8 +54,8 @@ public:
   void HandleAutorun();
   static void ExecuteAutorun(bool bypassSettings = false, bool ignoreplaying = false, bool restart = false);
 
-  static void SettingOptionAudioCdActionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
-  static void SettingOptionAudioCdEncodersFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
+  static void SettingOptionAudioCdActionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
+  static void SettingOptionAudioCdEncodersFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
 
 protected:
   static void ExecuteXBE(const CStdString &xbeFile);

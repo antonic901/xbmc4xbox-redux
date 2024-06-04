@@ -403,7 +403,7 @@ void CDisplaySettings::UpdateCalibrations()
   }
 }
 
-void CDisplaySettings::SettingOptionsResolutionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
+void CDisplaySettings::SettingOptionsResolutionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
 {
   RESOLUTION res = RES_INVALID;
 
@@ -428,7 +428,7 @@ void CDisplaySettings::SettingOptionsResolutionsFiller(const CSetting *setting, 
     current = res;
 }
 
-void CDisplaySettings::SettingOptionsFramerateconversionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
+void CDisplaySettings::SettingOptionsFramerateconversionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
 {
   list.push_back(make_pair(g_localizeStrings.Get(13340), FRAME_RATE_LEAVE_AS_IS));
   list.push_back(make_pair(g_videoConfig.HasPAL() ? g_localizeStrings.Get(38716) : g_localizeStrings.Get(38717), FRAME_RATE_CONVERT));

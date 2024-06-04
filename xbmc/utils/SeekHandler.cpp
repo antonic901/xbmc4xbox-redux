@@ -182,7 +182,7 @@ void CSeekHandler::Process()
   }
 }
 
-void CSeekHandler::SettingOptionsSeekStepsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
+void CSeekHandler::SettingOptionsSeekStepsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
 {
   std::string label;
   for (std::vector<int>::iterator it = g_advancedSettings.m_videoSeekSteps.begin(); it != g_advancedSettings.m_videoSeekSteps.end(); ++it) {

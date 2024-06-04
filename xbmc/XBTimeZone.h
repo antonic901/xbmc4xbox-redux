@@ -86,7 +86,7 @@ public:
 
   virtual void OnSettingChanged(const CSetting *setting);
 
-  static void SettingOptionsTimezonesFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
+  static void SettingOptionsTimezonesFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
 };
 
 extern XBTimeZone g_timezone;

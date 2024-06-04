@@ -726,7 +726,7 @@ void CCdgParser::ProcessVoice()
 }
 // ... Karaoke patch (114097)
 
-void CCdgParser::SettingOptionsVoiceMasksFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current)
+void CCdgParser::SettingOptionsVoiceMasksFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data)
 {
   std::string strDefaultMask = "None";
   std::vector<std::string> vecMask;

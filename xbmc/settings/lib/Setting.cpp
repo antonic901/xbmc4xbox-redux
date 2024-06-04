@@ -704,12 +704,14 @@ CSettingInt::CSettingInt(const std::string &id, CSettingsManager *settingsManage
   : CSetting(id, settingsManager),
     m_value(0), m_default(0),
     m_min(0), m_step(1), m_max(0),
-    m_optionsFiller(NULL)
+    m_optionsFiller(NULL),
+    m_optionsFillerData(NULL)
 { }
   
 CSettingInt::CSettingInt(const std::string &id, const CSettingInt &setting)
   : CSetting(id, setting),
-    m_optionsFiller(NULL)
+    m_optionsFiller(NULL),
+    m_optionsFillerData(NULL)
 {
   copy(setting);
 }
@@ -718,7 +720,8 @@ CSettingInt::CSettingInt(const std::string &id, int label, int value, CSettingsM
   : CSetting(id, settingsManager),
     m_value(value), m_default(value),
     m_min(0), m_step(1), m_max(0),
-    m_optionsFiller(NULL)
+    m_optionsFiller(NULL),
+    m_optionsFillerData(NULL)
 {
   m_label = label;
 }
@@ -727,7 +730,8 @@ CSettingInt::CSettingInt(const std::string &id, int label, int value, int minimu
   : CSetting(id, settingsManager),
     m_value(value), m_default(value),
     m_min(minimum), m_step(step), m_max(maximum),
-    m_optionsFiller(NULL)
+    m_optionsFiller(NULL),
+    m_optionsFillerData(NULL)
 {
   m_label = label;
 }
@@ -737,7 +741,8 @@ CSettingInt::CSettingInt(const std::string &id, int label, int value, const Stat
     m_value(value), m_default(value),
     m_min(0), m_step(1), m_max(0),
     m_options(options),
-    m_optionsFiller(NULL)
+    m_optionsFiller(NULL),
+    m_optionsFillerData(NULL)
 {
   m_label = label;
 }
@@ -933,7 +938,7 @@ DynamicIntegerSettingOptions CSettingInt::UpdateDynamicOptions()
   }
 
   int bestMatchingValue = m_value;
-  m_optionsFiller(this, options, bestMatchingValue);
+  m_optionsFiller(this, options, bestMatchingValue, m_optionsFillerData);
 
   if (bestMatchingValue != m_value)
     SetValue(bestMatchingValue);
@@ -975,6 +980,7 @@ void CSettingInt::copy(const CSettingInt &setting)
   m_options = setting.m_options;
   m_optionsFillerName = setting.m_optionsFillerName;
   m_optionsFiller = setting.m_optionsFiller;
+  m_optionsFillerData = setting.m_optionsFillerData;
   m_dynamicOptions = setting.m_dynamicOptions;
 }
 
@@ -1165,12 +1171,14 @@ bool CSettingNumber::fromString(const std::string &strValue, double &value)
 CSettingString::CSettingString(const std::string &id, CSettingsManager *settingsManager /* = NULL */)
   : CSetting(id, settingsManager),
     m_allowEmpty(false),
-    m_optionsFiller(NULL)
+    m_optionsFiller(NULL),
+    m_optionsFillerData(NULL)
 { }
   
 CSettingString::CSettingString(const std::string &id, const CSettingString &setting)
   : CSetting(id, setting),
-    m_optionsFiller(NULL)
+    m_optionsFiller(NULL),
+    m_optionsFillerData(NULL)
 {
   copy(setting);
 }
@@ -1179,7 +1187,8 @@ CSettingString::CSettingString(const std::string &id, int label, const std::stri
   : CSetting(id, settingsManager),
     m_value(value), m_default(value),
     m_allowEmpty(false),
-    m_optionsFiller(NULL)
+    m_optionsFiller(NULL),
+    m_optionsFillerData(NULL)
 {
   m_label = label;
 }
@@ -1304,7 +1313,7 @@ DynamicStringSettingOptions CSettingString::UpdateDynamicOptions()
   }
 
   std::string bestMatchingValue = m_value;
-  m_optionsFiller(this, options, bestMatchingValue);
+  m_optionsFiller(this, options, bestMatchingValue, m_optionsFillerData);
 
   if (bestMatchingValue != m_value)
     SetValue(bestMatchingValue);
@@ -1343,6 +1352,7 @@ void CSettingString::copy(const CSettingString &setting)
   m_allowEmpty = setting.m_allowEmpty;
   m_optionsFillerName = setting.m_optionsFillerName;
   m_optionsFiller = setting.m_optionsFiller;
+  m_optionsFillerData = setting.m_optionsFillerData;
   m_dynamicOptions = setting.m_dynamicOptions;
 }
   

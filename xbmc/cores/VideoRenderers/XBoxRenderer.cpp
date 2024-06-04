@@ -1505,7 +1505,7 @@ void CXBoxRenderer::TextureCallback(DWORD dwContext)
   SetEvent((HANDLE)dwContext);
 }
 
-void CXBoxRenderer::SettingOptionsRenderMethodsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
+void CXBoxRenderer::SettingOptionsRenderMethodsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
 {
   list.push_back(make_pair(g_localizeStrings.Get(13355), RENDER_LQ_RGB_SHADER));
   list.push_back(make_pair(g_localizeStrings.Get(13356), RENDER_OVERLAYS));

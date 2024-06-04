@@ -30,7 +30,7 @@ class CSeekHandler : public ISettingCallback
 public:
   static CSeekHandler& Get();
 
-  static void SettingOptionsSeekStepsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
+  static void SettingOptionsSeekStepsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
 
   virtual void OnSettingChanged(const CSetting *setting);
 

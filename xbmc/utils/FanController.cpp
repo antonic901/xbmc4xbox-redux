@@ -415,7 +415,7 @@ void CFanController::CalcSpeed(int targetTemp)
   if (calculatedFanSpeed > 50) {calculatedFanSpeed = 50;}
 }
 
-void CFanController::SettingOptionsSpeedsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
+void CFanController::SettingOptionsSpeedsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
 {
   for (int i=((CSettingInt*)setting)->GetMinimum(); i <= ((CSettingInt*)setting)->GetMaximum(); i += ((CSettingInt*)setting)->GetStep())
     list.push_back(std::make_pair(StringUtils::Format(g_localizeStrings.Get(14047), i * 2), i));
@@ -423,7 +423,7 @@ void CFanController::SettingOptionsSpeedsFiller(const CSetting *setting, std::ve
     current = Instance()->GetFanSpeed();
 }
 
-void CFanController::SettingOptionsTemperaturesFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
+void CFanController::SettingOptionsTemperaturesFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
 {
   for (int i = 40; i <= 68; ++i)
   {

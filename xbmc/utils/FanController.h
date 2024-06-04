@@ -45,8 +45,8 @@ public:
   static void RemoveInstance();
   virtual ~CFanController();
 
-  static void SettingOptionsSpeedsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current); 
-  static void SettingOptionsTemperaturesFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
+  static void SettingOptionsSpeedsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data); 
+  static void SettingOptionsTemperaturesFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
 
 private:
   enum SensorType {
