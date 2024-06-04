@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
+ *      Copyright (C) 2005-2014 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -19,125 +19,147 @@
  */
 
 #include "system.h"
-#include "video/dialogs/GUIDialogVideoSettings.h"
-#include "GUIWindowManager.h"
+#include "GUIDialogVideoSettings.h"
 #include "GUIPassword.h"
-#include "Util.h"
-#include "utils/MathUtils.h"
-#include "LocalizeStrings.h"
-#include "Application.h"
+#include "addons/Skin.h"
 #ifdef HAS_VIDEO_PLAYBACK
 #include "cores/VideoRenderers/RenderManager.h"
+#include "cores/playercorefactory/PlayerCoreFactory.h"
 #endif
-#include "video/VideoDatabase.h"
 #include "dialogs/GUIDialogYesNo.h"
+#include "guilib/GUIWindowManager.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/Settings.h"
 #include "settings/MediaSettings.h"
-#include "addons/Skin.h"
+#include "settings/Settings.h"
+#include "settings/lib/Setting.h"
+#include "settings/lib/SettingsManager.h"
+#include "utils/log.h"
+#include "video/VideoDatabase.h"
+#include "Application.h"
 
-CGUIDialogVideoSettings::CGUIDialogVideoSettings(void)
-    : CGUIDialogSettings(WINDOW_DIALOG_VIDEO_OSD_SETTINGS, "VideoOSDSettings.xml")
+#define SETTING_VIDEO_CROP                "video.crop"
+#define SETTING_VIDEO_VIEW_MODE           "video.viewmode"
+#define SETTING_VIDEO_ZOOM                "video.zoom"
+#define SETTING_VIDEO_PIXEL_RATIO         "video.pixelratio"
+#define SETTING_VIDEO_BRIGHTNESS          "video.brightness"
+#define SETTING_VIDEO_CONTRAST            "video.contrast"
+#define SETTING_VIDEO_GAMMA               "video.gamma"
+#define SETTING_VIDEO_POSTPROCESS         "video.postprocess"
+
+#define SETTING_VIDEO_INTERLACEMETHOD     "video.interlacemethod"
+
+#define SETTING_VIDEO_MAKE_DEFAULT        "video.save"
+#define SETTING_VIDEO_CALIBRATION         "video.calibration"
+
+#define SETTING_VIDEO_FLICKER             "video.flicker"
+#define SETTING_VIDEO_SOFTEN              "video.soften"
+#define SETTING_VIDEO_FILM_GRAIN          "video.filmgrain"
+#define SETTING_VIDEO_NON_INTERLEAVED     "video.noninterleaved"
+#define SETTING_VIDEO_NO_CACHE            "video.nocache"
+#define SETTING_VIDEO_FORCE_INDEX         "video.forceindex"
+
+using namespace std;
+
+CGUIDialogVideoSettings::CGUIDialogVideoSettings()
+    : CGUIDialogSettingsManualBase(WINDOW_DIALOG_VIDEO_OSD_SETTINGS, "VideoOSDSettings.xml"),
+      m_viewModeChanged(false)
+{ }
+
+CGUIDialogVideoSettings::~CGUIDialogVideoSettings()
+{ }
+
+void CGUIDialogVideoSettings::OnSettingChanged(const CSetting *setting)
 {
-}
+  if (setting == NULL)
+    return;
 
-CGUIDialogVideoSettings::~CGUIDialogVideoSettings(void)
-{
-}
+  CGUIDialogSettingsManualBase::OnSettingChanged(setting);
 
-#define VIDEO_SETTINGS_CROP               1
-#define VIDEO_SETTINGS_VIEW_MODE          2
-#define VIDEO_SETTINGS_ZOOM               3
-#define VIDEO_SETTINGS_PIXEL_RATIO        4
-#define VIDEO_SETTINGS_BRIGHTNESS         5
-#define VIDEO_SETTINGS_CONTRAST           6
-#define VIDEO_SETTINGS_GAMMA              7
-#define VIDEO_SETTINGS_INTERLACEMETHOD    8
-// separator 9
-#define VIDEO_SETTINGS_MAKE_DEFAULT       10
+  CVideoSettings &videoSettings = CMediaSettings::Get().GetCurrentVideoSettings();
 
-#define VIDEO_SETTINGS_CALIBRATION        11
-#define VIDEO_SETTINGS_FLICKER            12
-#define VIDEO_SETTINGS_SOFTEN             13
-#define VIDEO_SETTINGS_FILM_GRAIN         14
-#define VIDEO_SETTINGS_NON_INTERLEAVED    15
-#define VIDEO_SETTINGS_NO_CACHE           16
-#define VIDEO_SETTINGS_FORCE_INDEX        17
-
-#define VIDEO_SETTINGS_POSTPROCESS        22
-
-void CGUIDialogVideoSettings::CreateSettings()
-{
-  m_usePopupSliders = g_SkinInfo->HasSkinFile("DialogSlider.xml");
-  // clear out any old settings
-  m_settings.clear();
-  // create our settings
-  {
-    const int entries[] = { 16018, 16019, 20131, 20130, 20129, 16022, 16021, 16020};
-    AddSpin(VIDEO_SETTINGS_INTERLACEMETHOD, 38761, (int*)&CMediaSettings::Get().GetCurrentVideoSettings().m_InterlaceMethod, 8, entries);
-  }
-  AddBool(VIDEO_SETTINGS_CROP, 644, &CMediaSettings::Get().GetCurrentVideoSettings().m_Crop);
-  {
-    const int entries[] = {630, 631, 632, 633, 634, 635, 636 };
-    AddSpin(VIDEO_SETTINGS_VIEW_MODE, 629, &CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode, 7, entries);
-  }
-  AddSlider(VIDEO_SETTINGS_ZOOM, 216, &CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount, 0.5f, 0.01f, 2.0f, FormatFloat);
-  AddSlider(VIDEO_SETTINGS_PIXEL_RATIO, 217, &CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio, 0.5f, 0.01f, 2.0f, FormatFloat);
-  AddBool(VIDEO_SETTINGS_POSTPROCESS, 16400, &CMediaSettings::Get().GetCurrentVideoSettings().m_PostProcess);
-
-  AddSlider(VIDEO_SETTINGS_BRIGHTNESS, 464, &CMediaSettings::Get().GetCurrentVideoSettings().m_Brightness, 0, 1, 100, FormatInteger);
-  AddSlider(VIDEO_SETTINGS_CONTRAST, 465, &CMediaSettings::Get().GetCurrentVideoSettings().m_Contrast, 0, 1, 100, FormatInteger);
-  AddSlider(VIDEO_SETTINGS_GAMMA, 466, &CMediaSettings::Get().GetCurrentVideoSettings().m_Gamma, 0, 1, 100, FormatInteger);
-
-  AddSeparator(8);
-  AddButton(VIDEO_SETTINGS_MAKE_DEFAULT, 12376);
-  m_flickerFilter = CSettings::Get().GetInt("videoplayer.flicker");
-  AddSpin(VIDEO_SETTINGS_FLICKER, 13100, &m_flickerFilter, 0, 5, g_localizeStrings.Get(351).c_str());
-  m_soften = CSettings::Get().GetBool("videoplayer.soften");
-  AddBool(VIDEO_SETTINGS_SOFTEN, 215, &m_soften);
-  AddButton(VIDEO_SETTINGS_CALIBRATION, 214);
-  if (g_application.GetCurrentPlayer() == EPC_MPLAYER)
-  {
-    AddSlider(VIDEO_SETTINGS_FILM_GRAIN, 14058, &CMediaSettings::Get().GetCurrentVideoSettings().m_FilmGrain, 0, 1, 10, FormatInteger);
-    AddBool(VIDEO_SETTINGS_NON_INTERLEAVED, 306, &CMediaSettings::Get().GetCurrentVideoSettings().m_NonInterleaved);
-    AddBool(VIDEO_SETTINGS_NO_CACHE, 431, &CMediaSettings::Get().GetCurrentVideoSettings().m_NoCache);
-    AddButton(VIDEO_SETTINGS_FORCE_INDEX, 12009);
-  }
-}
-
-void CGUIDialogVideoSettings::OnSettingChanged(SettingInfo &setting)
-{
-  // check and update anything that needs it
-  if (setting.id == VIDEO_SETTINGS_NON_INTERLEAVED ||  setting.id == VIDEO_SETTINGS_NO_CACHE)
-    g_application.Restart(true);
-  else if (setting.id == VIDEO_SETTINGS_FILM_GRAIN)
-    g_application.DelayedPlayerRestart();
+  const std::string &settingId = setting->GetId();
+  if (settingId == SETTING_VIDEO_INTERLACEMETHOD)
+    videoSettings.m_InterlaceMethod = static_cast<EINTERLACEMETHOD>(static_cast<const CSettingInt*>(setting)->GetValue());
 #ifdef HAS_VIDEO_PLAYBACK
-  else if (setting.id == VIDEO_SETTINGS_CROP)
-    g_renderManager.AutoCrop(CMediaSettings::Get().GetCurrentVideoSettings().m_Crop);
-  else if (setting.id == VIDEO_SETTINGS_VIEW_MODE)
+  else if (settingId == SETTING_VIDEO_CROP)
   {
-    g_renderManager.SetViewMode(CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode);
-    UpdateSetting(VIDEO_SETTINGS_ZOOM);
-    UpdateSetting(VIDEO_SETTINGS_PIXEL_RATIO);
+    videoSettings.m_Crop = static_cast<const CSettingBool*>(setting)->GetValue();
+    g_renderManager.AutoCrop(videoSettings.m_Crop);
   }
-  else if (setting.id == VIDEO_SETTINGS_ZOOM || setting.id == VIDEO_SETTINGS_PIXEL_RATIO)
+  else if (settingId == SETTING_VIDEO_VIEW_MODE)
   {
-    CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode = ViewModeCustom;
-    g_renderManager.SetViewMode(ViewModeCustom);
-    UpdateSetting(VIDEO_SETTINGS_VIEW_MODE);
+    videoSettings.m_ViewMode = static_cast<const CSettingInt*>(setting)->GetValue();
+
+    g_renderManager.SetViewMode(videoSettings.m_ViewMode);
+
+    m_viewModeChanged = true;
+    m_settingsManager->SetNumber(SETTING_VIDEO_ZOOM, videoSettings.m_CustomZoomAmount);
+    m_settingsManager->SetNumber(SETTING_VIDEO_PIXEL_RATIO, videoSettings.m_CustomPixelRatio);
+    m_viewModeChanged = false;
   }
-#endif
-  else if (setting.id == VIDEO_SETTINGS_BRIGHTNESS || setting.id == VIDEO_SETTINGS_CONTRAST || setting.id == VIDEO_SETTINGS_GAMMA)
-    CUtil::SetBrightnessContrastGammaPercent(CMediaSettings::Get().GetCurrentVideoSettings().m_Brightness, CMediaSettings::Get().GetCurrentVideoSettings().m_Contrast, CMediaSettings::Get().GetCurrentVideoSettings().m_Gamma, true);
-  else if (setting.id == VIDEO_SETTINGS_FLICKER || setting.id == VIDEO_SETTINGS_SOFTEN)
+  else if (settingId == SETTING_VIDEO_ZOOM ||
+           settingId == SETTING_VIDEO_PIXEL_RATIO)
   {
+    if (settingId == SETTING_VIDEO_ZOOM)
+      videoSettings.m_CustomZoomAmount = static_cast<float>(static_cast<const CSettingNumber*>(setting)->GetValue());
+    else if (settingId == SETTING_VIDEO_PIXEL_RATIO)
+      videoSettings.m_CustomPixelRatio = static_cast<float>(static_cast<const CSettingNumber*>(setting)->GetValue());
+
+    if (!m_viewModeChanged)
+    {
+      // try changing the view mode to custom. If it already is set to custom
+      // manually call the render manager
+      if (m_settingsManager->GetInt(SETTING_VIDEO_VIEW_MODE) != ViewModeCustom)
+        m_settingsManager->SetInt(SETTING_VIDEO_VIEW_MODE, ViewModeCustom);
+      else
+        g_renderManager.SetViewMode(videoSettings.m_ViewMode);
+    }
+  }
+  else if (settingId == SETTING_VIDEO_POSTPROCESS)
+    videoSettings.m_PostProcess = static_cast<const CSettingBool*>(setting)->GetValue();
+  else if (settingId == SETTING_VIDEO_BRIGHTNESS)
+  {
+    videoSettings.m_Brightness = static_cast<float>(static_cast<const CSettingInt*>(setting)->GetValue());
+    CUtil::SetBrightnessContrastGammaPercent(videoSettings.m_Brightness, videoSettings.m_Contrast, videoSettings.m_Gamma, true);
+  }
+  else if (settingId == SETTING_VIDEO_CONTRAST)
+  {
+    videoSettings.m_Contrast = static_cast<float>(static_cast<const CSettingInt*>(setting)->GetValue());
+    CUtil::SetBrightnessContrastGammaPercent(videoSettings.m_Brightness, videoSettings.m_Contrast, videoSettings.m_Gamma, true);
+  }
+  else if (settingId == SETTING_VIDEO_GAMMA)
+  {
+    videoSettings.m_Gamma = static_cast<float>(static_cast<const CSettingInt*>(setting)->GetValue());
+    CUtil::SetBrightnessContrastGammaPercent(videoSettings.m_Brightness, videoSettings.m_Contrast, videoSettings.m_Gamma, true);
+  }
+  else if (settingId == SETTING_VIDEO_FLICKER)
+  {
+    CSettings::Get().SetInt("videoplayer.flicker", static_cast<const CSettingInt*>(setting)->GetValue());
     RESOLUTION res = g_graphicsContext.GetVideoResolution();
-    CSettings::Get().SetInt("videoplayer.flicker", m_flickerFilter);
-    CSettings::Get().SetBool("videoplayer.soften", m_soften);
     g_graphicsContext.SetVideoResolution(res);
   }
-  else if (setting.id == VIDEO_SETTINGS_CALIBRATION)
+  else if (settingId == SETTING_VIDEO_SOFTEN)
+  {
+    CSettings::Get().SetBool("videoplayer.soften", static_cast<const CSettingBool*>(setting)->GetValue());
+    RESOLUTION res = g_graphicsContext.GetVideoResolution();
+    g_graphicsContext.SetVideoResolution(res);
+  }
+  else if (settingId == SETTING_VIDEO_NON_INTERLEAVED ||  settingId == SETTING_VIDEO_NO_CACHE)
+    g_application.Restart(true);
+  else if (settingId == SETTING_VIDEO_FILM_GRAIN)
+    g_application.DelayedPlayerRestart();
+#endif
+}
+
+void CGUIDialogVideoSettings::OnSettingAction(const CSetting *setting)
+{
+  if (setting == NULL)
+    return;
+
+  CGUIDialogSettingsManualBase::OnSettingChanged(setting);
+
+  const std::string &settingId = setting->GetId();
+  if (settingId == SETTING_VIDEO_CALIBRATION)
   {
     // launch calibration window
     if (CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE  &&
@@ -145,43 +167,123 @@ void CGUIDialogVideoSettings::OnSettingChanged(SettingInfo &setting)
       return;
     g_windowManager.ForceActivateWindow(WINDOW_SCREEN_CALIBRATION);
   }
-  else if (setting.id == VIDEO_SETTINGS_FORCE_INDEX)
+  // TODO
+  else if (settingId == SETTING_VIDEO_MAKE_DEFAULT)
+    Save();
+  else if (settingId == SETTING_VIDEO_FORCE_INDEX)
   {
     CMediaSettings::Get().GetCurrentVideoSettings().m_bForceIndex = true;
     g_application.Restart(true);
   }
-  else if (setting.id == VIDEO_SETTINGS_MAKE_DEFAULT)
-  {
-    if (CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
-        !g_passwordManager.CheckSettingLevelLock(::SettingLevelExpert))
-      return;
+}
 
-    // prompt user if they are sure
-    if (CGUIDialogYesNo::ShowAndGetInput(12376, 750, 0, 12377))
-    { // reset the settings
-      CVideoDatabase db;
-      db.Open();
-      db.EraseVideoSettings();
-      db.Close();
-      CMediaSettings::Get().GetDefaultVideoSettings() = CMediaSettings::Get().GetCurrentVideoSettings();
-      CMediaSettings::Get().GetDefaultVideoSettings().m_SubtitleStream = -1;
-      CMediaSettings::Get().GetDefaultVideoSettings().m_AudioStream = -1;
-      CSettings::Get().Save();
-    }
+void CGUIDialogVideoSettings::Save()
+{
+  if (CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
+      !g_passwordManager.CheckSettingLevelLock(::SettingLevelExpert))
+    return;
+
+  // prompt user if they are sure
+  if (CGUIDialogYesNo::ShowAndGetInput(12376, 750, 0, 12377))
+  { // reset the settings
+    CVideoDatabase db;
+    if (!db.Open())
+      return;
+    db.EraseVideoSettings();
+    db.Close();
+
+    CMediaSettings::Get().GetDefaultVideoSettings() = CMediaSettings::Get().GetCurrentVideoSettings();
+    CMediaSettings::Get().GetDefaultVideoSettings().m_SubtitleStream = -1;
+    CMediaSettings::Get().GetDefaultVideoSettings().m_AudioStream = -1;
+    CSettings::Get().Save();
   }
 }
 
-CStdString CGUIDialogVideoSettings::FormatInteger(float value, float minimum)
+void CGUIDialogVideoSettings::InitializeSettings()
 {
-  CStdString text;
-  text.Format("%i", MathUtils::round_int(value));
-  return text;
-}
+  CGUIDialogSettingsManualBase::InitializeSettings();
 
-CStdString CGUIDialogVideoSettings::FormatFloat(float value, float minimum)
-{
-  CStdString text;
-  text.Format("%2.2f", value);
-  return text;
-}
+  CSettingCategory *category = AddCategory("audiosubtitlesettings", -1);
+  if (category == NULL)
+  {
+    CLog::Log(LOGERROR, "CGUIDialogVideoSettings: unable to setup settings");
+    return;
+  }
 
+  // get all necessary setting groups
+  CSettingGroup *groupVideo = AddGroup(category);
+  if (groupVideo == NULL)
+  {
+    CLog::Log(LOGERROR, "CGUIDialogVideoSettings: unable to setup settings");
+    return;
+  }
+  CSettingGroup *groupVideoPlayback = AddGroup(category);
+  if (groupVideoPlayback == NULL)
+  {
+    CLog::Log(LOGERROR, "CGUIDialogVideoSettings: unable to setup settings");
+    return;
+  }
+  CSettingGroup *groupSaveAsDefault = AddGroup(category);
+  if (groupSaveAsDefault == NULL)
+  {
+    CLog::Log(LOGERROR, "CGUIDialogVideoSettings: unable to setup settings");
+    return;
+  }
+
+  bool usePopup = g_SkinInfo->HasSkinFile("DialogSlider.xml");
+
+  CVideoSettings &videoSettings = CMediaSettings::Get().GetCurrentVideoSettings();
+  
+  StaticIntegerSettingOptions entries;
+
+  entries.clear();
+  entries.push_back(make_pair(16018, VS_INTERLACEMETHOD_NONE));
+  entries.push_back(make_pair(16019, VS_INTERLACEMETHOD_AUTO));
+  entries.push_back(make_pair(20131, VS_INTERLACEMETHOD_RENDER_BLEND));
+  entries.push_back(make_pair(20130, VS_INTERLACEMETHOD_RENDER_WEAVE_INVERTED));
+  entries.push_back(make_pair(20129, VS_INTERLACEMETHOD_RENDER_WEAVE));
+  entries.push_back(make_pair(16022, VS_INTERLACEMETHOD_RENDER_BOB_INVERTED));
+  entries.push_back(make_pair(16021, VS_INTERLACEMETHOD_RENDER_BOB));
+  entries.push_back(make_pair(16020, VS_INTERLACEMETHOD_DEINTERLACE));
+
+  if (!entries.empty())
+    CSettingInt *settingInterlaceMethod = AddSpinner(groupVideo, SETTING_VIDEO_INTERLACEMETHOD, 16038, 0, static_cast<int>(videoSettings.m_InterlaceMethod), entries);
+
+#ifdef HAS_VIDEO_PLAYBACK
+  /*if (g_renderManager.Supports(RENDERFEATURE_CROP))*/
+    AddToggle(groupVideo, SETTING_VIDEO_CROP, 644, 0, videoSettings.m_Crop);
+
+  /*if (g_renderManager.Supports(RENDERFEATURE_STRETCH) || g_renderManager.Supports(RENDERFEATURE_PIXEL_RATIO))*/
+  {
+    entries.clear();
+    for (int i = 0; i < 7; ++i)
+      entries.push_back(make_pair(630 + i, i));
+    AddSpinner(groupVideo, SETTING_VIDEO_VIEW_MODE, 629, 0, videoSettings.m_ViewMode, entries);
+  }
+  /*if (g_renderManager.Supports(RENDERFEATURE_ZOOM))*/
+    AddSlider(groupVideo, SETTING_VIDEO_ZOOM, 216, 0, videoSettings.m_CustomZoomAmount, "%2.2f", 0.5f, 0.01f, 2.0f, -1, usePopup);
+  /*if (g_renderManager.Supports(RENDERFEATURE_PIXEL_RATIO))*/
+    AddSlider(groupVideo, SETTING_VIDEO_PIXEL_RATIO, 217, 0, videoSettings.m_CustomPixelRatio, "%2.2f", 0.5f, 0.01f, 2.0f, -1, usePopup);
+  /*if (g_renderManager.Supports(RENDERFEATURE_POSTPROCESS))*/
+    AddToggle(groupVideo, SETTING_VIDEO_POSTPROCESS, 16400, 0, videoSettings.m_PostProcess);
+  /*if (g_renderManager.Supports(RENDERFEATURE_BRIGHTNESS))*/
+    AddPercentageSlider(groupVideoPlayback, SETTING_VIDEO_BRIGHTNESS, 464, 0, static_cast<int>(videoSettings.m_Brightness), 14047, 1, 464, usePopup);
+  /*if (g_renderManager.Supports(RENDERFEATURE_CONTRAST))*/
+    AddPercentageSlider(groupVideoPlayback, SETTING_VIDEO_CONTRAST, 465, 0, static_cast<int>(videoSettings.m_Contrast), 14047, 1, 465, usePopup);
+  /*if (g_renderManager.Supports(RENDERFEATURE_GAMMA))*/
+    AddPercentageSlider(groupVideoPlayback, SETTING_VIDEO_GAMMA, 466, 0, static_cast<int>(videoSettings.m_Gamma), 14047, 1, 466, usePopup);
+  AddSpinner(groupSaveAsDefault, SETTING_VIDEO_FLICKER, 13100, 0, CSettings::Get().GetInt("videoplayer.flicker"), 0, 1, 5, -1, 351);
+  AddToggle(groupSaveAsDefault, SETTING_VIDEO_SOFTEN, 215, 0, CSettings::Get().GetBool("videoplayer.soften"));
+  if (g_application.GetCurrentPlayer() == EPC_MPLAYER)
+  {
+    AddSlider(groupVideoPlayback, SETTING_VIDEO_FILM_GRAIN, 14058, 0, videoSettings.m_FilmGrain, "%f", 0.0f, 1.0f, 10.0f);
+    AddToggle(groupVideoPlayback, SETTING_VIDEO_NON_INTERLEAVED, 306, videoSettings.m_NonInterleaved, 0);
+    AddToggle(groupVideoPlayback, SETTING_VIDEO_NO_CACHE, 431, videoSettings.m_NoCache, 0);
+    AddButton(groupSaveAsDefault, SETTING_VIDEO_FORCE_INDEX, 12009, 0);
+  }
+#endif
+
+  // general settings
+  AddButton(groupSaveAsDefault, SETTING_VIDEO_MAKE_DEFAULT, 12376, 0);
+  AddButton(groupSaveAsDefault, SETTING_VIDEO_CALIBRATION, 214, 0);
+}
