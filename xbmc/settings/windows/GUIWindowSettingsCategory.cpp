@@ -90,7 +90,7 @@ static const SettingGroup s_settingGroupMap[] = { { SETTINGS_PICTURES,    "pictu
 CGUIWindowSettingsCategory::CGUIWindowSettingsCategory(void)
     : CGUIWindow(WINDOW_SETTINGS_MYPICTURES, "SettingsCategory.xml"),
       m_settings(CSettings::Get()),
-      m_iCategory(0), m_iSection(0),
+      m_iSetting(0), m_iCategory(0), m_iSection(0),
       m_resetSetting(NULL),
       m_dummyCategory(NULL),
       m_pOriginalSpin(NULL),
@@ -186,7 +186,13 @@ bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
         if (m_delayedSetting != NULL)
         {
           m_delayedTimer.Stop();
-          CGUIMessage message(GUI_MSG_UPDATE_ITEM, GetID(), GetID(), 1); // param1 = 1 for "reset the control if it's invalid"
+          CGUIMessage message(GUI_MSG_UPDATE_ITEM, GetID(), m_delayedSetting->GetID(), 1); // param1 = 1 for "reset the control if it's invalid"
+          g_windowManager.SendThreadMessage(message, GetID());
+        }
+        // update the value of the previous setting (in case it was invalid)
+        else if (m_iSetting >= CONTROL_START_CONTROL && m_iSetting < (int)(CONTROL_START_CONTROL + m_settingControls.size()))
+        {
+          CGUIMessage message(GUI_MSG_UPDATE_ITEM, GetID(), m_iSetting, 1); // param1 = 1 for "reset the control if it's invalid"
           OnMessage(message);
         }
 
@@ -210,6 +216,7 @@ bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
         }
         else if (focusedControl >= CONTROL_START_CONTROL && focusedControl < (int)(CONTROL_START_CONTROL + m_settingControls.size()))
         {
+          m_iSetting = focusedControl;
           CSetting *setting = GetSettingControl(focusedControl)->GetSetting();
           if (setting != NULL)
             SetDescription(setting->GetHelp());
@@ -247,6 +254,15 @@ bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
           OnSettingChanged(m_delayedSetting->GetSetting());
         m_delayedSetting.reset();
         return true;
+      }
+      else if (message.GetControlId() >= CONTROL_START_CONTROL && message.GetControlId() < (int)(CONTROL_START_CONTROL + m_settingControls.size()))
+      {
+        BaseSettingControlPtr settingControl = GetSettingControl(message.GetControlId());
+        if (settingControl.get() != NULL && settingControl->GetSetting() != NULL)
+        {
+          OnSettingChanged(settingControl->GetSetting());
+          return true;
+        }
       }
       break;
     }
@@ -505,7 +521,7 @@ void CGUIWindowSettingsCategory::OnTimeout()
 
   // we send a thread message so that it's processed the following frame (some settings won't
   // like being changed during Render())
-  CGUIMessage message(GUI_MSG_UPDATE_ITEM, GetID(), GetID(), 1); // param1 = 1 for "reset the control if it's invalid"
+  CGUIMessage message(GUI_MSG_UPDATE_ITEM, GetID(), m_delayedSetting->GetID());
   g_windowManager.SendThreadMessage(message, GetID());
 }
 

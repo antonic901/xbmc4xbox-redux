@@ -94,6 +94,7 @@ protected:
   SettingCategoryList m_categories;
   std::vector<BaseSettingControlPtr> m_settingControls;
 
+  int m_iSetting;
   int m_iCategory;
   int m_iSection;
   CSettingAction *m_resetSetting;
