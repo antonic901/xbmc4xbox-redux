@@ -45,6 +45,9 @@ public:
   const SettingList& GetSettings() const { return m_settings; }
   SettingList GetSettings(SettingLevel level) const;
 
+  void AddSetting(CSetting *setting);
+  void AddSettings(const SettingList &settings);
+
 private:
   SettingList m_settings;
 };
@@ -81,6 +84,9 @@ public:
   SettingGroupList GetGroups(SettingLevel level) const;
 
   bool CanAccess() const;
+
+  void AddGroup(CSettingGroup *group);
+  void AddGroups(const SettingGroupList &groups);
 
 private:
   int m_label;
@@ -119,6 +125,9 @@ public:
   void SetHelp(int help) { m_help = help; }
   const SettingCategoryList& GetCategories() const { return m_categories; }
   SettingCategoryList GetCategories(SettingLevel level) const;
+
+  void AddCategory(CSettingCategory *category);
+  void AddCategories(const SettingCategoryList &categories);
 
 private:
   int m_label;
