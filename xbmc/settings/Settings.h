@@ -106,8 +106,6 @@ public:
   bool SetList(const std::string &id, const std::vector<CVariant> &value);
 
   bool LoadSetting(const TiXmlNode *node, const std::string &settingId);
-
-  static std::vector<CVariant> ListToValues(const CSettingList *setting, const std::vector< boost::shared_ptr<CSetting> > &values);
 private:
   CSettings(const CSettings&);
   CSettings const& operator=(CSettings const&);
