@@ -7580,7 +7580,9 @@ msgctxt "#20328"
 msgid "Browse for destination"
 msgstr ""
 
-#empty string with id 20329
+msgctxt "#20329"
+msgid "Movies are in separate folders that match the movie title"
+msgstr ""
 
 msgctxt "#20330"
 msgid "Use folder names for lookups"
