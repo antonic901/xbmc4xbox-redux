@@ -475,13 +475,13 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
       if (!g_passwordManager.IsMasterLockUnlocked(true))
         return false;
 
-      CStdString strNewPassword = "";
+      std::string strNewPassword = "";
       if (!CGUIDialogLockSettings::ShowAndGetLock(share->m_iLockMode,strNewPassword))
         return false;
       // password entry and re-entry succeeded, write out the lock data
       share->m_iHasLock = 2;
       CMediaSourceSettings::Get().UpdateSource(type, share->strName, "lockcode", strNewPassword);
-      strNewPassword.Format("%i",share->m_iLockMode);
+      strNewPassword = StringUtils::Format("%i", share->m_iLockMode);
       CMediaSourceSettings::Get().UpdateSource(type, share->strName, "lockmode", strNewPassword);
       CMediaSourceSettings::Get().UpdateSource(type, share->strName, "badpwdcount", "0");
       CMediaSourceSettings::Get().Save();
@@ -537,10 +537,10 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
       if (!g_passwordManager.IsMasterLockUnlocked(true))
         return false;
 
-      CStdString strNewPW;
+      std::string strNewPW;
       CStdString strNewLockMode;
       if (CGUIDialogLockSettings::ShowAndGetLock(share->m_iLockMode,strNewPW))
-        strNewLockMode.Format("%i",share->m_iLockMode);
+        strNewLockMode = StringUtils::Format("%i",share->m_iLockMode);
       else
         return false;
       // password ReSet and re-entry succeeded, write out the lock data
