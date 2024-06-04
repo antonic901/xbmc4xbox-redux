@@ -107,8 +107,7 @@ protected:
   CGUIEditControl *m_pOriginalEdit;
   CGUIImage *m_pOriginalImage;
   bool newOriginalEdit;
-  
-  BaseSettingControlPtr m_currentSetting; ///< Current setting control
+
   BaseSettingControlPtr m_delayedSetting; ///< Current delayed setting \sa CBaseSettingControl::SetDelayed()
   CTimer m_delayedTimer;                  ///< Delayed setting timer
 
