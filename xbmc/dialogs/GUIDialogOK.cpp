@@ -18,8 +18,10 @@
  *
  */
 
-#include "dialogs/GUIDialogOK.h"
-#include "GUIWindowManager.h"
+#include "GUIDialogOK.h"
+#include "guilib/GUIWindowManager.h"
+#include "guilib/GUIMessage.h"
+#include "utils/Variant.h"
 
 CGUIDialogOK::CGUIDialogOK(void)
     : CGUIDialogBoxBase(WINDOW_DIALOG_OK, "DialogConfirm.xml")
@@ -31,45 +33,43 @@ CGUIDialogOK::~CGUIDialogOK(void)
 
 bool CGUIDialogOK::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  if (message.GetMessage() == GUI_MSG_CLICKED)
   {
-  case GUI_MSG_CLICKED:
+    int iControl = message.GetSenderId();
+    if (iControl == CONTROL_YES_BUTTON)
     {
-      int iControl = message.GetSenderId();
-      if (iControl == CONTROL_YES_BUTTON)
-      {
-        m_bConfirmed = true;
-        Close();
-        return true;
-      }
+      m_bConfirmed = true;
+      Close();
+      return true;
     }
-    break;
   }
   return CGUIDialogBoxBase::OnMessage(message);
 }
 
 // \brief Show CGUIDialogOK dialog, then wait for user to dismiss it.
-void CGUIDialogOK::ShowAndGetInput(const CVariant &heading, const CVariant &text)
+bool CGUIDialogOK::ShowAndGetInput(CVariant heading, CVariant text)
 {
   CGUIDialogOK *dialog = (CGUIDialogOK *)g_windowManager.GetWindow(WINDOW_DIALOG_OK);
   if (!dialog)
-    return;
+    return false;
   dialog->SetHeading(heading);
   dialog->SetText(text);
   dialog->Open();
+  return dialog->IsConfirmed();
 }
 
 // \brief Show CGUIDialogOK dialog, then wait for user to dismiss it.
-void CGUIDialogOK::ShowAndGetInput(const CVariant &heading, const CVariant &line0, const CVariant &line1, const CVariant &line2)
+bool CGUIDialogOK::ShowAndGetInput(CVariant heading, CVariant line0, CVariant line1, CVariant line2)
 {
   CGUIDialogOK *dialog = (CGUIDialogOK *)g_windowManager.GetWindow(WINDOW_DIALOG_OK);
   if (!dialog)
-    return;
-  dialog->SetHeading( heading );
-  dialog->SetLine( 0, line0 );
-  dialog->SetLine( 1, line1 );
-  dialog->SetLine( 2, line2 );
+    return false;
+  dialog->SetHeading(heading);
+  dialog->SetLine(0, line0);
+  dialog->SetLine(1, line1);
+  dialog->SetLine(2, line2);
   dialog->Open();
+  return dialog->IsConfirmed();
 }
 
 void CGUIDialogOK::OnInitWindow()

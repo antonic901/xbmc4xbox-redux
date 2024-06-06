@@ -20,7 +20,10 @@
  *
  */
 
-#include "dialogs/GUIDialogBoxBase.h"
+#include "GUIDialogBoxBase.h"
+
+class CGUIMessage;
+class CVariant;
 
 class CGUIDialogOK :
       public CGUIDialogBoxBase
@@ -29,8 +32,8 @@ public:
   CGUIDialogOK(void);
   virtual ~CGUIDialogOK(void);
   virtual bool OnMessage(CGUIMessage& message);
-  static void ShowAndGetInput(const CVariant &heading, const CVariant &text);
-  static void ShowAndGetInput(const CVariant &heading, const CVariant &line0, const CVariant &line1, const CVariant &line2);
+  static bool ShowAndGetInput(CVariant heading, CVariant text);
+  static bool ShowAndGetInput(CVariant heading, CVariant line0, CVariant line1, CVariant line2);
 protected:
   virtual void OnInitWindow();
   virtual int GetDefaultLabelID(int controlId) const;
