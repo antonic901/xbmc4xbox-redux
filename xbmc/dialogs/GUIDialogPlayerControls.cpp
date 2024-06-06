@@ -18,7 +18,7 @@
  *
  */
 
-#include "dialogs/GUIDialogPlayerControls.h"
+#include "GUIDialogPlayerControls.h"
 
 
 CGUIDialogPlayerControls::CGUIDialogPlayerControls(void)

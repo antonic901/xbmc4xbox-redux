@@ -20,7 +20,7 @@
  *
  */
 
-#include "GUIDialog.h"
+#include "guilib/GUIDialog.h"
 
 class CGUIDialogPlayerControls :
       public CGUIDialog
