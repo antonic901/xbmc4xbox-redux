@@ -18,17 +18,19 @@
  *
  */
 
-#include "dialogs/GUIDialogFavourites.h"
-#include "dialogs/GUIDialogContextMenu.h"
-#include "dialogs/GUIDialogFileBrowser.h"
+#include "GUIDialogFavourites.h"
+#include "GUIDialogContextMenu.h"
+#include "GUIDialogFileBrowser.h"
 #include "filesystem/Directory.h"
 #include "filesystem/FavouritesDirectory.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIWindowManager.h"
 #include "guilib/GUIKeyboardFactory.h"
+#include "guilib/Key.h"
 #include "filesystem/File.h"
 #include "FileItem.h"
-#include "LocalizeStrings.h"
+#include "guilib/LocalizeStrings.h"
 #include "storage/MediaManager.h"
+#include "utils/Variant.h"
 
 using namespace XFILE;
 
@@ -102,7 +104,7 @@ void CGUIDialogFavourites::OnClick(int item)
 
   // grab our message, close the dialog, and send
   CFileItemPtr pItem = (*m_favourites)[item];
-  CStdString execute(pItem->GetPath());
+  std::string execute(pItem->GetPath());
 
   Close();
 
@@ -128,7 +130,9 @@ void CGUIDialogFavourites::OnPopupMenu(int item)
   choices.Add(3, 15015);
   choices.Add(4, 118);
   choices.Add(5, 20019);
-  
+
+  CFileItemPtr itemPtr = m_favourites->Get(item);
+
   int button = CGUIDialogContextMenu::ShowAndGetChoice(choices);
 
   // unhighlight the item
@@ -180,7 +184,7 @@ void CGUIDialogFavourites::OnRename(int item)
   if (item < 0 || item >= m_favourites->Size())
     return;
 
-  CStdString label((*m_favourites)[item]->GetLabel());
+  std::string label((*m_favourites)[item]->GetLabel());
   if (CGUIKeyboardFactory::ShowAndGetInput(label, g_localizeStrings.Get(16008), false))
     (*m_favourites)[item]->SetLabel(label);
 
@@ -213,7 +217,7 @@ void CGUIDialogFavourites::OnSetThumb(int item)
   none->SetLabel(g_localizeStrings.Get(20018));
   items.Add(none);
 
-  CStdString thumb;
+  std::string thumb;
   VECSOURCES sources;
   g_mediaManager.GetLocalDrives(sources);
   if (!CGUIDialogFileBrowser::ShowAndGetImage(items, sources, g_localizeStrings.Get(1030), thumb))
