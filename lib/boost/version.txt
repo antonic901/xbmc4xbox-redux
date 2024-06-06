@@ -1,5 +1,7 @@
-Version 1.47.0
+Version 1.57.0
 
-https://www.boost.org/users/history/version_1_47_0.html
+https://www.boost.org/users/history/version_1_57_0.html
 
 NOTICE: Latest Boost lib which can be fully compiled on VC7.1 (Visual Studio .NET 2003) is Version 1.44.0
+
+DO NOT EXPECT EVERYTHING FROM NEWER VERSIONS OF BOOST WORK ON VC7.1 (C++98)!!!
