@@ -20,13 +20,13 @@
  *
  */
 
-#include "GUIDialog.h"
+#include "guilib/GUIDialog.h"
 
 class CGUIDialogButtonMenu :
       public CGUIDialog
 {
 public:
-  CGUIDialogButtonMenu(int id = WINDOW_DIALOG_BUTTON_MENU, const CStdString &xmlFile = "DialogButtonMenu.xml");
+  CGUIDialogButtonMenu(int id = WINDOW_DIALOG_BUTTON_MENU, const std::string &xmlFile = "DialogButtonMenu.xml");
   virtual ~CGUIDialogButtonMenu(void);
   virtual bool OnMessage(CGUIMessage &message);
   virtual void FrameMove();
