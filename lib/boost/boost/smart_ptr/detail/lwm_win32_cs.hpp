@@ -30,7 +30,7 @@ namespace boost
 namespace detail
 {
 
-#ifndef BOOST_USE_WINDOWS_H
+#if !defined(BOOST_USE_WINDOWS_H) && !defined(_XBOX)
 
 struct critical_section
 {

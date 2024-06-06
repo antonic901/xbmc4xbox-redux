@@ -44,11 +44,11 @@ extern "C" long __cdecl InterlockedExchange( long*, long );
 #elif defined(_MSC_VER) && _MSC_VER >= 1310
 
 #if _MSC_VER < 1400
-
+#ifndef _XBOX
 extern "C" long __cdecl _InterlockedCompareExchange( long volatile *, long, long );
 extern "C" long __cdecl _InterlockedExchangeAdd( long volatile *, long );
 extern "C" long __cdecl _InterlockedExchange( long volatile *, long );
-
+#endif
 #if defined(BOOST_MSVC)
 #pragma intrinsic(_InterlockedCompareExchange)
 #pragma intrinsic(_InterlockedExchangeAdd)
