@@ -19,18 +19,17 @@
  */
 
 #include "Application.h"
-#include "dialogs/GUIDialogBoxBase.h"
+#include "GUIDialogBoxBase.h"
 #include "guilib/LocalizeStrings.h"
 #include "threads/SingleLock.h"
 #include "utils/StringUtils.h"
-
-using namespace std;
+#include "utils/Variant.h"
 
 #define CONTROL_HEADING 1
 #define CONTROL_LINES_START 2
 #define CONTROL_TEXTBOX     9
 
-CGUIDialogBoxBase::CGUIDialogBoxBase(int id, const CStdString &xmlFile)
+CGUIDialogBoxBase::CGUIDialogBoxBase(int id, const std::string &xmlFile)
     : CGUIDialog(id, xmlFile)
 {
   m_bConfirmed = false;
@@ -62,7 +61,7 @@ bool CGUIDialogBoxBase::IsConfirmed() const
   return m_bConfirmed;
 }
 
-void CGUIDialogBoxBase::SetHeading(const CVariant& heading)
+void CGUIDialogBoxBase::SetHeading(CVariant heading)
 {
   std::string label = GetLocalized(heading);
   CSingleLock lock(m_section);
@@ -73,26 +72,23 @@ void CGUIDialogBoxBase::SetHeading(const CVariant& heading)
   }
 }
 
-void CGUIDialogBoxBase::SetLine(unsigned int iLine, const CVariant& line)
+void CGUIDialogBoxBase::SetLine(unsigned int iLine, CVariant line)
 {
   std::string label = GetLocalized(line);
   CSingleLock lock(m_section);
-  vector<string> lines = StringUtils::Split(m_text, "\n");
+  std::vector<std::string> lines = StringUtils::Split(m_text, '\n');
   if (iLine >= lines.size())
     lines.resize(iLine+1);
   lines[iLine] = label;
   std::string text = StringUtils::Join(lines, "\n");
-  if (text != m_text)
-  {
-    m_text = StringUtils::Join(lines, "\n");
-    SetInvalid();
-  }
+  SetText(text);
 }
 
-void CGUIDialogBoxBase::SetText(const CVariant& text)
+void CGUIDialogBoxBase::SetText(CVariant text)
 {
   std::string label = GetLocalized(text);
   CSingleLock lock(m_section);
+  StringUtils::Trim(label, "\n");
   if (label != m_text)
   {
     m_text = label;
@@ -114,12 +110,12 @@ void CGUIDialogBoxBase::SetChoice(int iButton, const CVariant &choice) // iButto
   }
 }
 
-void CGUIDialogBoxBase::Render()
+void CGUIDialogBoxBase::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   if (m_bInvalidated)
   { // take a copy of our labels to save holding the lock for too long
-    string heading, text;
-    vector<string> choices;
+    std::string heading, text;
+    std::vector<std::string> choices;
     choices.reserve(DIALOG_MAX_CHOICES);
     {
       CSingleLock lock(m_section);
@@ -135,7 +131,7 @@ void CGUIDialogBoxBase::Render()
     }
     else
     {
-      vector<string> lines = StringUtils::Split(text, "\n", DIALOG_MAX_LINES);
+      std::vector<std::string> lines = StringUtils::Split(text, "\n", DIALOG_MAX_LINES);
       lines.resize(DIALOG_MAX_LINES);
       for (size_t i = 0 ; i < lines.size(); ++i)
         SET_CONTROL_LABEL(CONTROL_LINES_START + i, lines[i]);
@@ -143,7 +139,7 @@ void CGUIDialogBoxBase::Render()
     for (size_t i = 0 ; i < choices.size() ; ++i)
       SET_CONTROL_LABEL(CONTROL_CHOICES_START + i, choices[i]);
   }
-  CGUIDialog::Render();
+  CGUIDialog::Process(currentTime, dirtyregions);
 }
 
 void CGUIDialogBoxBase::OnInitWindow()
@@ -182,16 +178,16 @@ void CGUIDialogBoxBase::OnDeinitWindow(int nextWindowID)
   CGUIDialog::OnDeinitWindow(nextWindowID);
 }
 
-CStdString CGUIDialogBoxBase::GetLocalized(const CVariant &var) const
+std::string CGUIDialogBoxBase::GetLocalized(const CVariant &var) const
 {
   if (var.isString())
     return var.asString();
   else if (var.isInteger() && var.asInteger())
-    return g_localizeStrings.Get(var.asInteger());
+    return g_localizeStrings.Get((uint32_t)var.asInteger());
   return "";
 }
 
-CStdString CGUIDialogBoxBase::GetDefaultLabel(int controlId) const
+std::string CGUIDialogBoxBase::GetDefaultLabel(int controlId) const
 {
   int labelId = GetDefaultLabelID(controlId);
   return labelId != -1 ? g_localizeStrings.Get(labelId) : "";
