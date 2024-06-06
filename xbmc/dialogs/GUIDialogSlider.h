@@ -20,7 +20,7 @@
  *
  */
 
-#include "GUIDialog.h"
+#include "guilib/GUIDialog.h"
 #include "guilib/ISliderCallback.h"
 
 class CGUIDialogSlider : public CGUIDialog
@@ -30,6 +30,8 @@ public:
   virtual ~CGUIDialogSlider(void);
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnAction(const CAction &action);
+
+  void SetModalityType(DialogModalityType type);
 
   /*! \brief Show the slider dialog and wait for the user to change the value
    Shows the slider until the user is happy with the adjusted value.  Calls back with each change to the callback function
@@ -43,7 +45,7 @@ public:
    \param callbackData pointer to callback-specific data (defaults to NULL)
    \sa ISliderCallback, Display
    */
-  static void ShowAndGetInput(const CStdString &label, float value, float min, float delta, float max, ISliderCallback *callback, void *callbackData = NULL);
+  static void ShowAndGetInput(const std::string &label, float value, float min, float delta, float max, ISliderCallback *callback, void *callbackData = NULL);
 
   /*! \brief Show the slider dialog as a response to user input
    Shows the slider with the given values for a short period of time, used for UI feedback of a set user action.
@@ -58,7 +60,7 @@ public:
    */
   static void Display(int label, float value, float min, float delta, float max, ISliderCallback *callback);
 protected:
-  void SetSlider(const CStdString &label, float value, float min, float delta, float max, ISliderCallback *callback, void *callbackData);
+  void SetSlider(const std::string &label, float value, float min, float delta, float max, ISliderCallback *callback, void *callbackData);
   virtual void OnWindowLoaded();
 
   ISliderCallback *m_callback;
