@@ -18,10 +18,10 @@
  *
  */
 
-#include "dialogs/GUIDialogSubMenu.h"
+#include "GUIDialogSubMenu.h"
 
-CGUIDialogSubMenu::CGUIDialogSubMenu(int id, const CStdString &xmlFile)
-    : CGUIDialog(id, xmlFile)
+CGUIDialogSubMenu::CGUIDialogSubMenu(int id, const std::string &xmlFile)
+    : CGUIDialog(id, xmlFile.c_str())
 {
 }
 
