@@ -1480,6 +1480,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\dialogs\GUIDialogButtonMenu.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\dialogs\GUIDialogCache.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\dialogs\GUIDialogCache.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogContextMenu.cpp">
 				</File>
 				<File
@@ -4085,9 +4091,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\FileSystem\DirectoryHistory.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\cores\dlgcache.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\pictures\DllImageLib.h">
 			</File>
 			<File
@@ -4529,9 +4532,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 		<Filter
 			Name="cores"
 			Filter="">
-			<File
-				RelativePath=".\xbmc\cores\dlgcache.cpp">
-			</File>
 			<File
 				RelativePath=".\xbmc\cores\ModPlayer.cpp">
 			</File>

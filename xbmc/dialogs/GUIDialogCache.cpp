@@ -17,26 +17,26 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
-#include "system.h"
-#include "utils/log.h"
-#include "dlgcache.h"
+
+#include "threads/SystemClock.h"
+#include "GUIDialogCache.h"
 #include "messaging/ApplicationMessenger.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogProgress.h"
+#include "guilib/LocalizeStrings.h"
+#include "utils/log.h"
 #include "threads/SingleLock.h"
-#include "LocalizeStrings.h"
+#include "utils/Variant.h"
 
 extern "C" void mplayer_exit_player(void);
 
 using namespace KODI::MESSAGING;
 
-CDlgCache::CDlgCache(DWORD dwDelay, const CStdString& strHeader, const CStdString& strMsg) : CThread("CDlgCache")
+CGUIDialogCache::CGUIDialogCache(DWORD dwDelay, const std::string& strHeader, const std::string& strMsg) : CThread("GUIDialogCache"),
+  m_strHeader(strHeader),
+  m_strLinePrev(strMsg)
 {
-  m_strHeader = strHeader;
-  m_strLinePrev = strMsg;
   bSentCancel = false;
-  dwDelay = 0;
 
   m_pDlg = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
 
@@ -48,14 +48,14 @@ CDlgCache::CDlgCache(DWORD dwDelay, const CStdString& strHeader, const CStdStrin
     dwDelay = 0;
 
   if(dwDelay == 0)
-    OpenDialog();    
+    OpenDialog();
   else
-    m_dwTimeStamp = GetTickCount() + dwDelay;
+    m_endtime.Set((unsigned int)dwDelay);
 
   Create(true);
 }
 
-void CDlgCache::Close(bool bForceClose)
+void CGUIDialogCache::Close(bool bForceClose)
 {
   bSentCancel = true;
 
@@ -64,21 +64,21 @@ void CDlgCache::Close(bool bForceClose)
   if (m_pDlg && m_pDlg->IsDialogRunning())
     CApplicationMessenger::Get().PostMsg(TMSG_GUI_WINDOW_CLOSE, -1, bForceClose ? 1 : 0, static_cast<void*>(m_pDlg));
 
-  //Set stop, this will kill this object, when thread stops  
+  //Set stop, this will kill this object, when thread stops
   CThread::m_bStop = true;
 }
 
-CDlgCache::~CDlgCache()
+CGUIDialogCache::~CGUIDialogCache()
 {
   if(m_pDlg && m_pDlg->IsDialogRunning())
     m_pDlg->Close();
 }
 
-void CDlgCache::OpenDialog()
+void CGUIDialogCache::OpenDialog()
 {
   if (m_pDlg)
   {
-    if (m_strHeader.IsEmpty())
+    if (m_strHeader.empty())
       m_pDlg->SetHeading(438);
     else
       m_pDlg->SetHeading(m_strHeader);
@@ -89,17 +89,17 @@ void CDlgCache::OpenDialog()
   bSentCancel = false;
 }
 
-void CDlgCache::SetHeader(const CStdString& strHeader)
+void CGUIDialogCache::SetHeader(const std::string& strHeader)
 {
   m_strHeader = strHeader;
 }
 
-void CDlgCache::SetHeader(int nHeader)
+void CGUIDialogCache::SetHeader(int nHeader)
 {
   SetHeader(g_localizeStrings.Get(nHeader));
 }
 
-void CDlgCache::SetMessage(const CStdString& strMessage)
+void CGUIDialogCache::SetMessage(const std::string& strMessage)
 {
   if (m_pDlg)
   {
@@ -108,10 +108,10 @@ void CDlgCache::SetMessage(const CStdString& strMessage)
     m_pDlg->SetLine(2, strMessage);
   }
   m_strLinePrev2 = m_strLinePrev;
-  m_strLinePrev = strMessage; 
+  m_strLinePrev = strMessage;
 }
 
-bool CDlgCache::OnFileCallback(void* pContext, int ipercent, float avgSpeed)
+bool CGUIDialogCache::OnFileCallback(void* pContext, int ipercent, float avgSpeed)
 {
   if (m_pDlg)
   {
@@ -119,25 +119,25 @@ bool CDlgCache::OnFileCallback(void* pContext, int ipercent, float avgSpeed)
     m_pDlg->SetPercentage(ipercent);
   }
 
-  if( IsCanceled() ) 
+  if( IsCanceled() )
     return false;
   else
     return true;
 }
 
-void CDlgCache::Process()
+void CGUIDialogCache::Process()
 {
-  if (m_pDlg)
+  if (!m_pDlg)
     return;
 
   while( true )
   {
-    
+
     { //Section to make the lock go out of scope before sleep
-      
+
       if( CThread::m_bStop ) break;
 
-      try 
+      try
       {
         CSingleLock lock(g_graphicsContext);
         m_pDlg->Progress();
@@ -154,13 +154,13 @@ void CDlgCache::Process()
           mplayer_exit_player(); 
 #endif
         }
-        else if( !m_pDlg->IsDialogRunning() && GetTickCount() > m_dwTimeStamp 
+        else if( !m_pDlg->IsDialogRunning() && m_endtime.IsTimePast()
               && !g_windowManager.IsWindowActive(WINDOW_DIALOG_YES_NO) )
           OpenDialog();
       }
       catch(...)
       {
-        CLog::Log(LOGERROR, "Exception in CDlgCache::Process()");
+        CLog::Log(LOGERROR, "Exception in CGUIDialogCache::Process()");
       }
     }
 
@@ -168,19 +168,19 @@ void CDlgCache::Process()
   }
 }
 
-void CDlgCache::ShowProgressBar(bool bOnOff) 
+void CGUIDialogCache::ShowProgressBar(bool bOnOff)
 {
   if (m_pDlg)
     m_pDlg->ShowProgressBar(bOnOff);
 }
 
-void CDlgCache::SetPercentage(int iPercentage) 
-{ 
+void CGUIDialogCache::SetPercentage(int iPercentage)
+{
   if (m_pDlg)
     m_pDlg->SetPercentage(iPercentage);
 }
 
-bool CDlgCache::IsCanceled() const
+bool CGUIDialogCache::IsCanceled() const
 {
   if (m_pDlg && m_pDlg->IsDialogRunning())
     return m_pDlg->IsCanceled();

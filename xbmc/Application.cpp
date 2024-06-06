@@ -153,7 +153,7 @@
 
 #include "video/dialogs/GUIDialogFullScreenInfo.h"
 #include "guilib/GUIControlFactory.h"
-#include "cores/dlgcache.h"
+#include "dialogs/GUIDialogCache.h"
 #include "utils/URIUtils.h"
 #include "utils/XMLUtils.h"
 #include "addons/AddonInstaller.h"

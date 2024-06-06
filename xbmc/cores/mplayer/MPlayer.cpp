@@ -3,7 +3,7 @@
 #include "MPlayer.h"
 #include "cores/DllLoader/DllLoader.h"
 #include "DllMPlayer.h"
-#include "cores/dlgcache.h"
+#include "dialogs/GUIDialogCache.h"
 #include "Util.h"
 #include "filesystem/SmbFile.h"
 #include "XBAudioConfig.h"
@@ -104,7 +104,7 @@ const char * dvd_audio_stream_types[8] =
 const char * dvd_audio_stream_channels[6] =
   { "mono", "stereo", "unknown", "unknown", "5.1/6.1", "5.1" };
 
-static CDlgCache* m_dlgCache = NULL;
+static CGUIDialogCache* m_dlgCache = NULL;
 static CCriticalSection s_dlgCacheSection;
 
 #define MPLAYERBACKBUFFER 20
@@ -857,14 +857,14 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     {      
       CSingleLock lock(g_graphicsContext);
       CSingleLock lock2(s_dlgCacheSection);
-      m_dlgCache = new CDlgCache(0);
+      m_dlgCache = new CGUIDialogCache(0);
       m_bUseFullRecaching = true;
     }
     else
     {
       CSingleLock lock(g_graphicsContext);
       CSingleLock lock2(s_dlgCacheSection);
-      m_dlgCache = new CDlgCache(3000);
+      m_dlgCache = new CGUIDialogCache(3000);
     }
 
     if (iCacheSize == 0)
