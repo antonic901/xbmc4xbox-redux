@@ -1,7 +1,7 @@
 #pragma once
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2012-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,6 +18,9 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
+
+#include <string>
+#include <vector>
 
 #include "guilib/GUIDialog.h"
 
@@ -57,7 +60,7 @@ public:
   CGUIDialogExtendedProgressBar(void);
   virtual ~CGUIDialogExtendedProgressBar(void) {};
   virtual bool OnMessage(CGUIMessage& message);
-  virtual void Render();
+  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
 
   CGUIDialogProgressBarHandle *GetHandle(const std::string &strTitle);
 
