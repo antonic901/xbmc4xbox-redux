@@ -18,7 +18,7 @@
  *
  */
 
-#include "dialogs/GUIDialogTextViewer.h"
+#include "GUIDialogTextViewer.h"
 #include "GUIUserMessages.h"
 
 #define CONTROL_HEADING  1
