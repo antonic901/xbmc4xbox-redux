@@ -252,7 +252,7 @@ CStdStringArray URIUtils::SplitPath(const CStdString& strPath)
   return dirs;
 }
 
-void URIUtils::GetCommonPath(CStdString& strParent, const CStdString& strPath)
+void URIUtils::GetCommonPath(std::string& strParent, const std::string& strPath)
 {
   // find the common path of parent and path
   unsigned int j = 1;
@@ -299,7 +299,7 @@ CStdString URIUtils::GetParentPath(const CStdString& strPath)
   return strReturn;
 }
 
-bool URIUtils::GetParentPath(const CStdString& strPath, CStdString& strParent)
+bool URIUtils::GetParentPath(const std::string& strPath, std::string& strParent)
 {
   strParent = "";
 

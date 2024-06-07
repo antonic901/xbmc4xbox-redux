@@ -44,10 +44,10 @@ public:
   virtual void OnInitWindow();
   virtual void OnDeinitWindow(int nextWindowID);
 
-  static bool ShowAndGetNetworkAddress(CStdString &path);
+  static bool ShowAndGetNetworkAddress(std::string &path);
 
   CStdString ConstructPath() const;
-  void SetPath(const CStdString &path);
+  void SetPath(const std::string &path);
   bool IsConfirmed() const { return m_confirmed; };
 
 protected:

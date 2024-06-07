@@ -96,7 +96,7 @@ bool CGUIDialogNetworkSetup::OnMessage(CGUIMessage& message)
 
 // \brief Show CGUIDialogNetworkSetup dialog and prompt for a new network address.
 // \return True if the network address is valid, false otherwise.
-bool CGUIDialogNetworkSetup::ShowAndGetNetworkAddress(CStdString &path)
+bool CGUIDialogNetworkSetup::ShowAndGetNetworkAddress(std::string &path)
 {
   CGUIDialogNetworkSetup *dialog = (CGUIDialogNetworkSetup *)g_windowManager.GetWindow(WINDOW_DIALOG_NETWORK_SETUP);
   if (!dialog) return false;
@@ -325,7 +325,7 @@ CStdString CGUIDialogNetworkSetup::ConstructPath() const
   return url.Get();
 }
 
-void CGUIDialogNetworkSetup::SetPath(const CStdString &path)
+void CGUIDialogNetworkSetup::SetPath(const std::string &path)
 {
   CURL url(path);
   const CStdString &protocol = url.GetProtocol();
