@@ -24,6 +24,7 @@
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "guilib/GUIWindowManager.h"
+#include "utils/Variant.h"
 
 using namespace std;
 

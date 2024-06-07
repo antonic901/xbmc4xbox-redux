@@ -20,7 +20,7 @@
  *
  */
 
-#include "dialogs/GUIDialogBoxBase.h"
+#include "GUIDialogBoxBase.h"
 #include "IProgressCallback.h"
 
 class CGUIDialogProgress :
@@ -59,4 +59,7 @@ protected:
   int  m_iMax;
   int m_percentage;
   bool m_showProgress;
+
+private:
+  void Reset();
 };

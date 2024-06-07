@@ -18,31 +18,37 @@
  *
  */
 
-#include "utils/log.h"
-#include "dialogs/GUIDialogProgress.h"
-#include "GUIProgressControl.h"
+#include "GUIDialogProgress.h"
+#include "guilib/GUIProgressControl.h"
 #include "Application.h"
 #include "GUIInfoManager.h"
-#include "GUIWindowManager.h"
-#include "LocalizeStrings.h"
+#include "guilib/GUIWindowManager.h"
+#include "guilib/LocalizeStrings.h"
 #include "threads/SingleLock.h"
-
-using namespace std;
+#include "utils/log.h"
+#include "utils/Variant.h"
 
 CGUIDialogProgress::CGUIDialogProgress(void)
     : CGUIDialogBoxBase(WINDOW_DIALOG_PROGRESS, "DialogConfirm.xml")
 {
-  m_bCanceled = false;
-  m_iCurrent=0;
-  m_iMax=0;
-  m_percentage = 0;
-  m_showProgress = false;
-  m_bCanCancel = true;
+  Reset();
 }
 
 CGUIDialogProgress::~CGUIDialogProgress(void)
 {
 
+}
+
+void CGUIDialogProgress::Reset()
+{
+  CSingleLock lock(m_section);
+  m_bCanceled = false;
+  m_iCurrent = 0;
+  m_iMax = 0;
+  m_percentage = 0;
+  m_showProgress = true;
+  m_bCanCancel = true;
+  SetInvalid();
 }
 
 void CGUIDialogProgress::SetCanCancel(bool bCanCancel)
@@ -54,11 +60,11 @@ void CGUIDialogProgress::SetCanCancel(bool bCanCancel)
 
 void CGUIDialogProgress::Open(const std::string &param /* = "" */)
 {
-  CLog::Log(LOGDEBUG, "DialogProgress::StartModal called %s", m_active ? "(already running)!" : "");
+  CLog::Log(LOGDEBUG, "DialogProgress::Open called %s", m_active ? "(already running)!" : "");
 
   {
     CSingleLock lock(g_graphicsContext);
-    ShowProgressBar(false);
+    ShowProgressBar(true);
   }
 
   CGUIDialog::Open_Internal(false, param);
@@ -89,24 +95,20 @@ bool CGUIDialogProgress::OnMessage(CGUIMessage& message)
   {
 
   case GUI_MSG_WINDOW_DEINIT:
-    SetCanCancel(true);
+    Reset();
     break;
 
   case GUI_MSG_CLICKED:
     {
-      int iAction = message.GetParam1();
-      if (1 || ACTION_SELECT_ITEM == iAction)
+      int iControl = message.GetSenderId();
+      if (iControl == CONTROL_NO_BUTTON && m_bCanCancel && !m_bCanceled)
       {
-        int iControl = message.GetSenderId();
-        if (iControl == CONTROL_NO_BUTTON && m_bCanCancel && !m_bCanceled)
-        {
-          string strHeading = m_strHeading;
-          strHeading.append(" : ");
-          strHeading.append(g_localizeStrings.Get(16024));
-          CGUIDialogBoxBase::SetHeading(strHeading);
-          m_bCanceled = true;
-          return true;
-        }
+        std::string strHeading = m_strHeading;
+        strHeading.append(" : ");
+        strHeading.append(g_localizeStrings.Get(16024));
+        CGUIDialogBoxBase::SetHeading(strHeading);
+        m_bCanceled = true;
+        return true;
       }
     }
     break;
@@ -158,7 +160,8 @@ void CGUIDialogProgress::SetProgressAdvance(int nSteps/*=1*/)
   if (m_iCurrent>m_iMax)
     m_iCurrent=0;
 
-  SetPercentage((m_iCurrent*100)/m_iMax);
+  if (m_iMax > 0)
+    SetPercentage((m_iCurrent*100)/m_iMax);
 }
 
 bool CGUIDialogProgress::Abort()
