@@ -19,7 +19,9 @@
 *
 */
 
-#include <memory>
+#include "system.h" // <xtl.h>
+#include <boost/shared_ptr.hpp>
+#include <boost/move/move.hpp>
 #include <string>
 #include <vector>
 
@@ -37,28 +39,34 @@ class ThreadMessage
   friend CApplicationMessenger;
 public:
   ThreadMessage()
-    : ThreadMessage{ 0, -1, -1, nullptr }
+    : dwMessage( 0 )
+    , param1( -1 )
+    , param2( -1 )
+    , lpVoid( NULL )
   {
   }
 
   explicit ThreadMessage(uint32_t messageId)
-    : ThreadMessage{ messageId, -1, -1, nullptr }
+    : dwMessage( messageId )
+    , param1( -1 )
+    , param2( -1 )
+    , lpVoid( NULL )
   {
   }
 
   ThreadMessage(uint32_t messageId, int p1, int p2, void* payload)
-    : dwMessage{ messageId }
-    , param1{ p1 }
-    , param2{ p2 }
-    , lpVoid{ payload }
+    : dwMessage( messageId )
+    , param1( p1 )
+    , param2( p2 )
+    , lpVoid( payload )
   {
   }
 
   ThreadMessage(uint32_t messageId, int p1, int p2, void* payload, std::string param, std::vector<std::string> vecParams)
-    : dwMessage{ messageId }
-    , param1{ p1 }
-    , param2{ p2 }
-    , lpVoid{ payload }
+    : dwMessage( messageId )
+    , param1( p1 )
+    , param2( p2 )
+    , lpVoid( payload )
 
   {
     strParam = param;
@@ -76,17 +84,6 @@ public:
   {
   }
 
-  ThreadMessage(ThreadMessage&& other)
-    : dwMessage(other.dwMessage),
-    param1(other.param1),
-    param2(other.param2),
-    lpVoid(other.lpVoid),
-    strParam(std::move(other.strParam)),
-    params(std::move(other.params)),
-    waitEvent(std::move(other.waitEvent))
-  {
-  }
-
   ThreadMessage& operator=(const ThreadMessage& other)
   {
     if (this == &other)
@@ -101,20 +98,6 @@ public:
     return *this;
   }
 
-  ThreadMessage& operator=(ThreadMessage&& other)
-  {
-    if (this == &other)
-      return *this;
-    dwMessage = other.dwMessage;
-    param1 = other.param1;
-    param2 = other.param2;
-    lpVoid = other.lpVoid;
-    strParam = std::move(other.strParam);
-    params = std::move(other.params);
-    waitEvent = std::move(other.waitEvent);
-    return *this;
-  }
-
   uint32_t dwMessage;
   int param1;
   int param2;
@@ -123,7 +106,7 @@ public:
   std::vector<std::string> params;
 
 protected:
-  std::shared_ptr<CEvent> waitEvent;
+  boost::shared_ptr<CEvent> waitEvent;
 };
 }
 }

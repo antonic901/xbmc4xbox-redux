@@ -88,9 +88,9 @@ void CApplicationMessenger::Cleanup()
   }
 }
 
-void CApplicationMessenger::SendMsg(ThreadMessage&& message, bool wait)
+void CApplicationMessenger::SendMsg(ThreadMessage& message, bool wait)
 {
-  std::shared_ptr<CEvent> waitEvent;
+  boost::shared_ptr<CEvent> waitEvent;
   if (wait)
   { // check that we're not being called from our application thread, else we'll be waiting
     // forever!
@@ -112,7 +112,7 @@ void CApplicationMessenger::SendMsg(ThreadMessage&& message, bool wait)
   if (g_application.m_bStop)
     return;
 
-  ThreadMessage* msg = new ThreadMessage(std::move(message));
+  ThreadMessage* msg = new ThreadMessage(boost::move(message));
 
   CSingleLock lock (m_critSection);
 
@@ -137,42 +137,42 @@ void CApplicationMessenger::SendMsg(ThreadMessage&& message, bool wait)
 
 void CApplicationMessenger::SendMsg(uint32_t messageId)
 {
-   SendMsg(ThreadMessage{ messageId }, true);
+   SendMsg(ThreadMessage( messageId ), true);
 }
 
 void CApplicationMessenger::SendMsg(uint32_t messageId, int param1, int param2, void* payload)
 {
-  SendMsg(ThreadMessage{ messageId, param1, param2, payload }, true);
+  SendMsg(ThreadMessage( messageId, param1, param2, payload ), true);
 }
 
 void CApplicationMessenger::SendMsg(uint32_t messageId, int param1, int param2, void* payload, std::string strParam)
 {
-  SendMsg(ThreadMessage{ messageId, param1, param2, payload, strParam, std::vector<std::string>{} }, true);
+  SendMsg(ThreadMessage( messageId, param1, param2, payload, strParam, std::vector<std::string>() ), true);
 }
 
 void CApplicationMessenger::SendMsg(uint32_t messageId, int param1, int param2, void* payload, std::string strParam, std::vector<std::string> params)
 {
-  SendMsg(ThreadMessage{ messageId, param1, param2, payload, strParam, params }, true);
+  SendMsg(ThreadMessage( messageId, param1, param2, payload, strParam, params ), true);
 }
 
 void CApplicationMessenger::PostMsg(uint32_t messageId)
 {
-  SendMsg(ThreadMessage{ messageId }, false);
+  SendMsg(ThreadMessage( messageId ), false);
 }
 
 void CApplicationMessenger::PostMsg(uint32_t messageId, int param1, int param2, void* payload)
 {
-  SendMsg(ThreadMessage{ messageId, param1, param2, payload }, false);
+  SendMsg(ThreadMessage( messageId, param1, param2, payload ), false);
 }
 
 void CApplicationMessenger::PostMsg(uint32_t messageId, int param1, int param2, void* payload, std::string strParam)
 {
-  SendMsg(ThreadMessage{ messageId, param1, param2, payload, strParam, std::vector<std::string>{} }, false);
+  SendMsg(ThreadMessage( messageId, param1, param2, payload, strParam, std::vector<std::string>() ), false);
 }
 
 void CApplicationMessenger::PostMsg(uint32_t messageId, int param1, int param2, void* payload, std::string strParam, std::vector<std::string> params)
 {
-  SendMsg(ThreadMessage{ messageId, param1, param2, payload, strParam, params }, false);
+  SendMsg(ThreadMessage( messageId, param1, param2, payload, strParam, params ), false);
 }
 
 void CApplicationMessenger::ProcessMessages()
@@ -188,7 +188,7 @@ void CApplicationMessenger::ProcessMessages()
     //Leave here as the message might make another
     //thread call processmessages or sendmessage
 
-    std::shared_ptr<CEvent> waitEvent = pMsg->waitEvent;
+    boost::shared_ptr<CEvent> waitEvent = pMsg->waitEvent;
     lock.Leave(); // <- see the large comment in SendMessage ^
 
     ProcessMessage(pMsg);
@@ -213,8 +213,8 @@ void CApplicationMessenger::ProcessMessage(ThreadMessage *pMsg)
   CSingleLock lock(m_critSection);
   int mask = pMsg->dwMessage & TMSG_MASK_MESSAGE;
 
-  auto target = m_mapTargets.at(mask);
-  if (target != nullptr)
+  IMessageTarget* target = m_mapTargets.find(mask)->second;
+  if (target != NULL)
   {
     CSingleExit exit(m_critSection);
     target->OnApplicationMessage(pMsg);
@@ -233,7 +233,7 @@ void CApplicationMessenger::ProcessWindowMessages()
 
     // leave here in case we make more thread messages from this one
 
-    std::shared_ptr<CEvent> waitEvent = pMsg->waitEvent;
+    boost::shared_ptr<CEvent> waitEvent = pMsg->waitEvent;
     lock.Leave(); // <- see the large comment in SendMessage ^
 
     ProcessMessage(pMsg);
@@ -250,7 +250,7 @@ void CApplicationMessenger::SendGUIMessage(const CGUIMessage &message, int windo
   ThreadMessage tMsg(TMSG_GUI_MESSAGE);
   tMsg.param1 = windowID == WINDOW_INVALID ? 0 : windowID;
   tMsg.lpVoid = new CGUIMessage(message);
-  SendMsg(std::move(tMsg), waitResult);
+  SendMsg(boost::move(tMsg), waitResult);
 }
 
 void CApplicationMessenger::RegisterReceveiver(IMessageTarget* target)

@@ -26,6 +26,7 @@
 #include "IMsgTargetCallback.h"
 #include "guilib/Key.h"
 #include "utils/GlobalsHandling.h"
+#include "messaging/IMessageTarget.h"
 
 class CFileItem;
 class CFileItemList;

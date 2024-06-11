@@ -20,7 +20,7 @@
  *
  */
 
-#include "input/Key.h"
+#include "guilib/Key.h"
 #include "threads/Thread.h"
 #include "messaging/ThreadMessage.h"
 
@@ -127,7 +127,7 @@ class CDelayedMessage : public CThread
 {
   public:
     CDelayedMessage(ThreadMessage& msg, unsigned int delay);
-    virtual void Process() override;
+    virtual void Process();
 
   private:
     unsigned int   m_delay;
@@ -154,12 +154,12 @@ public:
   void Cleanup();
   // if a message has to be send to the gui, use MSG_TYPE_WINDOW instead
   void SendMsg(uint32_t messageId);
-  void SendMsg(uint32_t messageId, int param1, int param2 = -1, void* payload = nullptr);
+  void SendMsg(uint32_t messageId, int param1, int param2 = -1, void* payload = NULL);
   void SendMsg(uint32_t messageId, int param1, int param2, void* payload, std::string strParam);
   void SendMsg(uint32_t messageId, int param1, int param2, void* payload, std::string strParam, std::vector<std::string> params);
 
   void PostMsg(uint32_t messageId);
-  void PostMsg(uint32_t messageId, int param1, int param2 = -1, void* payload = nullptr);
+  void PostMsg(uint32_t messageId, int param1, int param2 = -1, void* payload = NULL);
   void PostMsg(uint32_t messageId, int param1, int param2, void* payload, std::string strParam);
   void PostMsg(uint32_t messageId, int param1, int param2, void* payload, std::string strParam, std::vector<std::string> params);
 
@@ -179,11 +179,11 @@ public:
 private:
   // private construction, and no assignements; use the provided singleton methods
   CApplicationMessenger();
-  CApplicationMessenger(const CApplicationMessenger&) = delete;
-  CApplicationMessenger const& operator=(CApplicationMessenger const&) = delete;
+  CApplicationMessenger(const CApplicationMessenger&);
+  CApplicationMessenger const& operator=(CApplicationMessenger const&);
   ~CApplicationMessenger();
 
-  void SendMsg(ThreadMessage&& msg, bool wait);
+  void SendMsg(ThreadMessage& msg, bool wait);
   void ProcessMessage(ThreadMessage *pMsg);
 
   std::queue<ThreadMessage*> m_vecMessages;
