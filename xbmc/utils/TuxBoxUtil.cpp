@@ -26,7 +26,7 @@
 #include "filesystem/CurlFile.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "Application.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "GUIInfoManager.h"
 #include "video/VideoInfoTag.h"
 #include "guilib/GUIWindowManager.h"
@@ -43,6 +43,7 @@
 
 using namespace XFILE;
 using namespace std;
+using namespace KODI::MESSAGING;
 
 CTuxBoxUtil g_tuxbox;
 CTuxBoxService g_tuxboxService;
@@ -121,7 +122,7 @@ void CTuxBoxService::Process()
         if (strCurrentServiceName != g_tuxbox.sCurSrvData.service_name && g_application.IsPlaying() && !g_tuxbox.sZapstream.available)
         {
           CLog::Log(LOGDEBUG," - ERROR: Non controlled channel change detected! Stopping current playing stream!");
-          CApplicationMessenger::Get().MediaStop();
+          CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_STOP);
           break;
         }
       }
@@ -611,7 +612,7 @@ bool CTuxBoxUtil::GetZapUrl(const CStdString& strPath, CFileItem &items )
       }
       
       if (g_application.IsPlaying() && !g_tuxbox.sZapstream.available)
-        CApplicationMessenger::Get().MediaStop();
+        CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_STOP);
 
       strLabel.Format("%s: %s %s-%s",items.GetLabel().c_str(), sCurSrvData.current_event_date.c_str(),sCurSrvData.current_event_start.c_str(), sCurSrvData.current_event_start.c_str());
       strLabel2.Format("%s", sCurSrvData.current_event_description.c_str());
@@ -1489,7 +1490,7 @@ bool CTuxBoxUtil::GetVideoSubChannels(CStdString& strVideoSubChannelName, CStdSt
 
   // IsPlaying, Stop it..
   if(g_application.IsPlaying())
-    CApplicationMessenger::Get().MediaStop();
+    CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_STOP);
 
   // popup the context menu
   CContextButtons buttons;

@@ -19,7 +19,7 @@
 // ControlSocket.cpp: Implementierungsdatei
 //
 
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "stdafx.h"
 #include "ControlSocket.h"
 #include "transfersocket.h"
@@ -46,6 +46,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+using namespace KODI::MESSAGING;
 
 /////////////////////////////////////////////////////////////////////////////
 // CControlSocket
@@ -2211,9 +2212,7 @@ void CControlSocket::ParseCommand()
         else
         {
           // send using a threadmessage...
-          ThreadMessage tMsg = {TMSG_EXECUTE_BUILT_IN};
-          tMsg.strParam = fullcommand;
-          CApplicationMessenger::Get().SendMessage(tMsg, true);
+          CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, fullcommand);
           Send(_T("200 Executed built in function."));
         }
 		    return;

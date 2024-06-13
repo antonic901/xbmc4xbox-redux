@@ -31,6 +31,8 @@
 
 #include "defs_from_settings.h"
 
+using namespace KODI::MESSAGING;
+
 #ifdef _XBOX
 static char* inet_ntoa (struct in_addr in)
 {
@@ -440,8 +442,6 @@ bool CNetwork::WaitForSetup(unsigned int iTimeout)
   return true;
 #endif
 }
-
-using namespace KODI::MESSAGING;
 
 /* slightly modified in_ether taken from the etherboot project (http://sourceforge.net/projects/etherboot) */
 bool in_ether (char *bufp, unsigned char *addr)

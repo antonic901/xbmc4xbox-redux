@@ -95,7 +95,7 @@ namespace XBMCAddon
       if (! script)
         return;
 
-      CApplicationMessenger::Get().PostMsg(TMSG_EXECUTE_SCRIPT, -1, -1, nullptr, script);
+      CApplicationMessenger::Get().PostMsg(TMSG_EXECUTE_SCRIPT, -1, -1, NULL, script);
     }
 
     void executebuiltin(const char* function, bool wait /* = false*/)
@@ -104,9 +104,9 @@ namespace XBMCAddon
       if (! function)
         return;
       if (wait)
-        CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, function);
+        CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, function);
       else
-        CApplicationMessenger::Get().PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, function);
+        CApplicationMessenger::Get().PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, function);
     }
 
     String executehttpapi(const char* httpcommand) 

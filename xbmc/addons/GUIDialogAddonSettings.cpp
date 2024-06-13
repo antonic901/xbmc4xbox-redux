@@ -422,7 +422,7 @@ bool CGUIDialogAddonSettings::ShowVirtualKeyboard(int iControl)
             action.Replace("$ID", m_addon->ID());
             if (option)
               bCloseDialog = (strcmpi(option, "close") == 0);
-            CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, action);
+            CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, action);
           }
         }
         else if (type == "date")

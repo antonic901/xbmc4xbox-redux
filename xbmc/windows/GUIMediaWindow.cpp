@@ -1606,7 +1606,7 @@ bool CGUIMediaWindow::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     {
       CStdString action;
       action.Format("contextmenuaction(%i)", button - CONTEXT_BUTTON_USER1);
-      CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, m_vecItems->Get(itemNumber)->GetProperty(action).asString());
+      CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, m_vecItems->Get(itemNumber)->GetProperty(action).asString());
       return true;
     }
   default:

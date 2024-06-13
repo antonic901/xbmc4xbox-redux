@@ -32,6 +32,8 @@
 #include "cores/IPlayer.h"
 #include "settings/MediaSettings.h"
 
+#include <boost/make_shared.hpp>
+
 using namespace KODI::MESSAGING;
 
 namespace XBMCAddon
@@ -107,7 +109,7 @@ namespace XBMCAddon
         else
         {
           CFileItemList *l = new CFileItemList; //don't delete,
-          l->Add(std::make_shared<CFileItem>(item, false));
+          l->Add(boost::make_shared<CFileItem>(item, false));
           CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
         }
       }

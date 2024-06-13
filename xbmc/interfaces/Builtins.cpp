@@ -302,7 +302,7 @@ int CBuiltins::Execute(const CStdString& execString)
   }
   else if (execute.Equals("reset")) //Will reset the xbox, aka soft reset
   {
-    CApplicationMessenger::Get().Reset();
+    CApplicationMessenger::Get().PostMsg(TMSG_RESET);
   }
   else if (execute.Equals("activatewindow") || execute.Equals("replacewindow"))
   {

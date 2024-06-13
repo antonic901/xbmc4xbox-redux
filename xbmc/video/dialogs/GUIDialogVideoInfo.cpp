@@ -58,6 +58,7 @@
 #include "network/upnp/UPnP.h"
 #endif
 #include "utils/FileUtils.h"
+#include "boost/make_shared.hpp"
 
 using namespace std;
 using namespace XFILE::VIDEODATABASEDIRECTORY;
@@ -905,7 +906,7 @@ void CGUIDialogVideoInfo::PlayTrailer()
   if (item.IsPlayList())
   {
     CFileItemList *l = new CFileItemList; //don't delete,
-    l->Add(std::make_shared<CFileItem>(item));
+    l->Add(boost::make_shared<CFileItem>(item));
     CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
   }
   else

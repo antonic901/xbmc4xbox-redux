@@ -19,7 +19,7 @@
 #include "settings/MediaSettings.h"
 #include "FileItem.h"
 #include "utils/URIUtils.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "LangInfo.h"
 #include "utils/CharsetConverter.h"
 
@@ -27,6 +27,7 @@
 
 using namespace std;
 using namespace XFILE;
+using namespace KODI::MESSAGING;
 
 #define KEY_ENTER 13
 #define KEY_TAB 9
@@ -1433,7 +1434,7 @@ void CMPlayer::Process()
         {
           //We need to restart now as interlacing mode has changed
           bWaitingRestart = true;
-          CApplicationMessenger::Get().MediaRestart(false);
+          CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_RESTART);
         }
       }
 
@@ -1889,7 +1890,7 @@ void CMPlayer::SetAudioStream(int iStream)
   CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream = mplayer_getAudioStreamInfo(iStream, NULL);
   options.SetAudioStream(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream);
   //we need to restart after here for change to take effect
-  CApplicationMessenger::Get().MediaRestart(false);
+  CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_RESTART);
 }
 
 bool CMPlayer::CanSeek()
@@ -1918,7 +1919,7 @@ void CMPlayer::SeekTime(__int64 iTime)
     catch(...)
     {
       CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
-      CApplicationMessenger::Get().MediaStop();
+      CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_STOP);
     }
   }
   WaitOnCommand();
@@ -1942,7 +1943,7 @@ __int64 CMPlayer::GetTime()
     catch(...)
     {
       CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
-      CApplicationMessenger::Get().MediaStop();
+      CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_STOP);
     }
   }
 
@@ -1965,7 +1966,7 @@ int CMPlayer::GetTotalTime()
     catch(...)
     {
       CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
-      CApplicationMessenger::Get().MediaStop();
+      CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_STOP);
     }
   }
 

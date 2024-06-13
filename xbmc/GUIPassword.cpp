@@ -285,7 +285,7 @@ void CGUIPassword::UpdateMasterLockRetryCount(bool bResetCount)
         {
           // Shutdown enabled, tell the user we're shutting off
           CGUIDialogOK::ShowAndGetInput(12345, 12346, 12347, 0);
-          CApplicationMessenger::Get().Shutdown();
+          CApplicationMessenger::Get().PostMsg(TMSG_SHUTDOWN);
           return ;
         }
         // Tell the user they ran out of retry attempts

@@ -4933,9 +4933,9 @@ void CGUIInfoManager::OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg)
   {
     if (pMsg->lpVoid)
     {
-      auto infoLabels = static_cast<std::vector<std::string>*>(pMsg->lpVoid);
-      for (auto& param : pMsg->params)
-        infoLabels->push_back(GetLabel(TranslateString(param)));
+      std::vector<std::string>* infoLabels = static_cast<std::vector<std::string>*>(pMsg->lpVoid);
+      for (std::vector<std::string>::iterator it = pMsg->params.begin(); it < pMsg->params.end(); ++it)
+        infoLabels->push_back(GetLabel(TranslateString(*it)));
     }
   }
   break;
@@ -4944,16 +4944,16 @@ void CGUIInfoManager::OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg)
   {
     if (pMsg->lpVoid)
     {
-      auto infoLabels = static_cast<std::vector<bool>*>(pMsg->lpVoid);
-      for (auto& param : pMsg->params)
-        infoLabels->push_back(EvaluateBool(param));
+      std::vector<bool>* infoLabels = static_cast<std::vector<bool>*>(pMsg->lpVoid);
+      for (std::vector<std::string>::iterator it = pMsg->params.begin(); it < pMsg->params.end(); ++it)
+        infoLabels->push_back(EvaluateBool(*it));
     }
   }
   break;
 
   case TMSG_UPDATE_CURRENT_ITEM:
   {
-    auto item = static_cast<CFileItem*>(pMsg->lpVoid);
+    CFileItem* item = static_cast<CFileItem*>(pMsg->lpVoid);
     if (!item)
       return;
     if (pMsg->param1 == 1 && item->HasMusicInfoTag()) // only grab music tag

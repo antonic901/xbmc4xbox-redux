@@ -34,6 +34,8 @@
 #include "guilib/LocalizeStrings.h"
 #include "messaging/ApplicationMessenger.h"
 
+#include "boost/make_shared.hpp"
+
 using namespace PLAYLIST;
 
 CPlayListPlayer g_playlistPlayer;
@@ -640,6 +642,25 @@ void CPlayListPlayer::Clear()
     m_PlaylistEmpty->Clear();
 }
 
+void CPlayListPlayer::Swap(int iPlaylist, int indexItem1, int indexItem2)
+{
+  if (iPlaylist != PLAYLIST_MUSIC && iPlaylist != PLAYLIST_VIDEO)
+    return;
+
+  CPlayList& list = GetPlaylist(iPlaylist);
+  if (list.Swap(indexItem1, indexItem2) && iPlaylist == m_iCurrentPlayList)
+  {
+    if (m_iCurrentSong == indexItem1)
+      m_iCurrentSong = indexItem2;
+    else if (m_iCurrentSong == indexItem2)
+      m_iCurrentSong = indexItem1;
+  }
+
+  // its likely that the playlist changed
+  CGUIMessage msg(GUI_MSG_PLAYLIST_CHANGED, 0, 0);
+  g_windowManager.SendMessage(msg);
+}
+
 int PLAYLIST::CPlayListPlayer::GetMessageMask()
 {
   return TMSG_MASK_PLAYLISTPLAYER;
@@ -717,14 +738,14 @@ void PLAYLIST::CPlayListPlayer::OnApplicationMessage(KODI::MESSAGING::ThreadMess
       CFileItemList *list = static_cast<CFileItemList*>(pMsg->lpVoid);
 
       for (int i = 0; i < playlist.size(); i++)
-        list->Add(std::make_shared<CFileItem>(*playlist[i]));
+        list->Add(boost::make_shared<CFileItem>(*playlist[i]));
     }
     break;
 
   case TMSG_PLAYLISTPLAYER_SWAP:
     if (pMsg->lpVoid)
     {
-      auto indexes = static_cast<std::vector<int>*>(pMsg->lpVoid);
+      std::vector<int>* indexes = static_cast<std::vector<int>*>(pMsg->lpVoid);
       if (indexes->size() == 2)
         Swap(pMsg->param1, indexes->at(0), indexes->at(1));
       delete indexes;
@@ -748,7 +769,7 @@ void PLAYLIST::CPlayListPlayer::OnApplicationMessage(KODI::MESSAGING::ThreadMess
       g_windowManager.PreviousWindow();
 
     g_application.ResetScreenSaver();
-    g_application.WakeUpScreenSaverAndDPMS();
+    g_application.ResetScreenSaverWindow();
 
     //g_application.StopPlaying();
     // play file
@@ -823,7 +844,7 @@ void PLAYLIST::CPlayListPlayer::OnApplicationMessage(KODI::MESSAGING::ThreadMess
       g_windowManager.PreviousWindow();
 
     g_application.ResetScreenSaver();
-    g_application.WakeUpScreenSaverAndDPMS();
+    g_application.ResetScreenSaverWindow();
 
     // stop playing file
     if (g_application.m_pPlayer->IsPlaying()) g_application.StopPlaying();
@@ -831,28 +852,28 @@ void PLAYLIST::CPlayListPlayer::OnApplicationMessage(KODI::MESSAGING::ThreadMess
   break;
 
   case TMSG_MEDIA_PAUSE:
-    if (g_application.m_pPlayer->HasPlayer())
+    if (g_application.m_pPlayer)
     {
       g_application.ResetScreenSaver();
-      g_application.WakeUpScreenSaverAndDPMS();
+      g_application.ResetScreenSaverWindow();
       g_application.m_pPlayer->Pause();
     }
     break;
 
   case TMSG_MEDIA_UNPAUSE:
-    if (g_application.m_pPlayer->IsPausedPlayback())
+    if (g_application.IsPlaying() && g_application.IsPaused()/*g_application.m_pPlayer->IsPausedPlayback()*/)
     {
       g_application.ResetScreenSaver();
-      g_application.WakeUpScreenSaverAndDPMS();
+      g_application.ResetScreenSaverWindow();
       g_application.m_pPlayer->Pause();
     }
     break;
 
   case TMSG_MEDIA_PAUSE_IF_PLAYING:
-    if (g_application.m_pPlayer->IsPlaying() && !g_application.m_pPlayer->IsPaused())
+    if (g_application.IsPlaying() && !g_application.IsPaused())
     {
       g_application.ResetScreenSaver();
-      g_application.WakeUpScreenSaverAndDPMS();
+      g_application.ResetScreenSaverWindow();
       g_application.m_pPlayer->Pause();
     }
     break;

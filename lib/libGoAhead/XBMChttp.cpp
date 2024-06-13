@@ -11,6 +11,7 @@
 
 #include "WebServer.h"
 #include "XBMChttp.h"
+#include "boost/make_shared.hpp"
 #include "GUIInfoManager.h"
 #include "includes.h"
 #include "GUIWindowManager.h"
@@ -18,7 +19,7 @@
 
 #include "playlists/PlayListFactory.h"
 #include "Application.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "Util.h"
 #include "URL.h"
 #include "PlayListPlayer.h"
@@ -72,6 +73,7 @@ using namespace XFILE;
 using namespace PLAYLIST;
 using namespace MUSIC_INFO;
 using namespace ADDON;
+using namespace KODI::MESSAGING;
 
 #define XML_MAX_INNERTEXT_SIZE 256
 #define MAX_PARAS 20
@@ -543,7 +545,9 @@ bool CXbmcHttp::LoadPlayList(CStdString strPath, int iPlaylist, bool clearList, 
   if ((playlist.size() == 1) && (autoStart))
   {
     // just 1 song? then play it (no need to have a playlist of 1 song)
-    CApplicationMessenger::Get().MediaPlay(playlistItem->GetPath());
+    CFileItemList *l = new CFileItemList; //don't delete,
+    l->Add(boost::make_shared<CFileItem>(playlistItem->GetPath(), false));
+    CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
     return true;
   }
 
@@ -557,7 +561,7 @@ bool CXbmcHttp::LoadPlayList(CStdString strPath, int iPlaylist, bool clearList, 
     {
       g_playlistPlayer.SetCurrentPlaylist(iPlaylist);
       g_playlistPlayer.Reset();
-      CApplicationMessenger::Get().PlayListPlayerPlay();
+      CApplicationMessenger::Get().PostMsg(TMSG_PLAYLISTPLAYER_PLAY);
       return true;
     } 
     else
@@ -1908,7 +1912,9 @@ int CXbmcHttp::xbmcPlayerPlayFile(int numParas, CStdString paras[])
   }
   else
   {
-    CApplicationMessenger::Get().MediaPlay(paras[0]);
+    CFileItemList *l = new CFileItemList; //don't delete,
+    l->Add(boost::make_shared<CFileItem>(paras[0], false));
+    CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
     if(g_application.IsPlaying())
       return SetResponse(openTag+"OK");
   }
@@ -2187,7 +2193,7 @@ int CXbmcHttp::xbmcAction(int numParas, CStdString paras[], int theAction)
         pSlideShow->OnAction(CAction(ACTION_PAUSE));
     }
     else
-      CApplicationMessenger::Get().MediaPause();
+      CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_PAUSE);
     return SetResponse(openTag+"OK");
     break;
   case 2:
@@ -2198,7 +2204,7 @@ int CXbmcHttp::xbmcAction(int numParas, CStdString paras[], int theAction)
     }
     else
       //g_application.StopPlaying();
-      CApplicationMessenger::Get().MediaStop();
+      CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_STOP);
     return SetResponse(openTag+"OK");
     break;
   case 3:
@@ -2569,7 +2575,7 @@ int CXbmcHttp::xbmcShowPicture(int numParas, CStdString paras[])
   {
     if (!playableFile(paras[0]))
       return SetResponse(openTag+"Error:Unable to open file");
-    CApplicationMessenger::Get().PictureShow(paras[0]);
+    CApplicationMessenger::Get().PostMsg(TMSG_PICTURE_SHOW, -1, -1, NULL, paras[0]);
     return SetResponse(openTag+"OK");
   }
 }
@@ -2594,7 +2600,7 @@ int CXbmcHttp::xbmcExecBuiltIn(int numParas, CStdString paras[])
     return SetResponse(openTag+"Error:Missing parameter");
   else
   {
-    CApplicationMessenger::Get().ExecBuiltIn(paras[0]);
+    CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, paras[0]);
     return SetResponse(openTag+"OK");
   }
 }

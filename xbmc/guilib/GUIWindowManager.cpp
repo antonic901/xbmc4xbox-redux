@@ -117,8 +117,6 @@
 #include "dialogs/GUIDialogMediaFilter.h"
 #include "video/dialogs/GUIDialogSubtitles.h"
 
-#include "addons/AddonCallbacksGUI.h"
-
 using namespace std;
 using namespace KODI::MESSAGING;
 
@@ -626,7 +624,7 @@ void CGUIWindowManager::ActivateWindow(int iWindowID, const vector<string>& para
   {
     // make sure graphics lock is not held
     CSingleExit leaveIt(g_graphicsContext);
-    CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTIVATE_WINDOW, iWindowID, swappingWindows ? 1 : 0, nullptr, "", params);
+    CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTIVATE_WINDOW, iWindowID, swappingWindows ? 1 : 0, NULL, "", params);
   }
   else
   {
@@ -765,15 +763,6 @@ void CGUIWindowManager::OnApplicationMessage(ThreadMessage* pMsg)
   case TMSG_GUI_ACTIVATE_WINDOW:
   {
     ActivateWindow(pMsg->param1, pMsg->params, pMsg->param2 > 0);
-  }
-  break;
-
-  case TMSG_GUI_ADDON_DIALOG:
-  {
-    if (pMsg->lpVoid)
-    { // TODO: This is ugly - really these python dialogs should just be normal XBMC dialogs
-      static_cast<ADDON::CGUIAddonWindowDialog *>(pMsg->lpVoid)->Show_Internal(pMsg->param2 > 0);
-    }
   }
   break;
 

@@ -481,7 +481,8 @@ bool CAddonInstallJob::OnPreInstall()
   // check whether this is an active skin - we need to unload it if so
   if (CSettings::Get().GetString("lookandfeel.skin") == m_addon->ID())
   {
-    CApplicationMessenger::Get().ExecBuiltIn("UnloadSkin", true);
+    CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, "UnloadSkin");
+
     return true;
   }
 
