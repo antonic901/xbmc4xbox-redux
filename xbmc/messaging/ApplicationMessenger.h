@@ -36,6 +36,7 @@
 #define TMSG_MASK_GUIINFOMANAGER  (1<<28)
 #define TMSG_MASK_WINDOWMANAGER   (1<<27)
 #define TMSG_MASK_PERIPHERALS     (1<<26)
+#define TMSG_MASK_XBOX            (1<<25) // define messages used only on Xbox
 
 // defines here
 #define TMSG_PLAYLISTPLAYER_PLAY          TMSG_MASK_PLAYLISTPLAYER + 0
@@ -112,6 +113,9 @@
 #define TMSG_GUI_MESSAGE              TMSG_MASK_WINDOWMANAGER + 7
 
 
+#define TMSG_HTTPAPI                TMSG_MASK_XBOX + 2
+
+
 #define TMSG_CALLBACK             800
 
 
@@ -176,6 +180,12 @@ public:
 
   void RegisterReceveiver(IMessageTarget* target);
 
+#ifdef _XBOX
+  std::string GetResponse();
+  int SetResponse(std::string response);
+  void HttpApi(std::string cmd, bool wait = false);
+#endif
+
 private:
   // private construction, and no assignements; use the provided singleton methods
   CApplicationMessenger();
@@ -190,6 +200,11 @@ private:
   std::queue<ThreadMessage*> m_vecWindowMessages;
   std::map<int, IMessageTarget*> m_mapTargets;
   CCriticalSection m_critSection;
+
+#ifdef _XBOX
+  CCriticalSection m_critBuffer;
+  std::string bufferResponse;
+#endif
 };
 }
 }

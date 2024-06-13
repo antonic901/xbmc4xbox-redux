@@ -259,5 +259,32 @@ void CApplicationMessenger::RegisterReceveiver(IMessageTarget* target)
   m_mapTargets.insert(std::make_pair(target->GetMessageMask(), target));
 }
 
+#ifdef _XBOX
+int CApplicationMessenger::SetResponse(std::string response)
+{
+  CSingleLock lock (m_critBuffer);
+  bufferResponse=response;
+  lock.Leave();
+  return 0;
+}
+
+std::string CApplicationMessenger::GetResponse()
+{
+  std::string tmp;
+  CSingleLock lock (m_critBuffer);
+  tmp=bufferResponse;
+  lock.Leave();
+  return tmp;
+}
+
+void CApplicationMessenger::HttpApi(std::string cmd, bool wait)
+{
+  SetResponse("");
+  ThreadMessage tMsg(TMSG_HTTPAPI);
+  tMsg.strParam = cmd;
+  SendMsg(boost::move(tMsg), wait);
+}
+#endif
+
 }
 }
