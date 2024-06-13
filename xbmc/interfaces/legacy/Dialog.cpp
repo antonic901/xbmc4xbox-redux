@@ -97,7 +97,7 @@ namespace XBMCAddon
 
       pDialog->Open();
 
-      return pDialog->GetSelectedLabel();
+      return pDialog->GetSelectedItem();
     }
 
     bool Dialog::ok(const String& heading, const String& line1, 

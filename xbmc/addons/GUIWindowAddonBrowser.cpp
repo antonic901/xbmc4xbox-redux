@@ -487,7 +487,7 @@ int CGUIWindowAddonBrowser::SelectAddonID(const vector<ADDON::TYPE> &types, CStd
         item->Select(true);
     }
   }
-  dialog->SetItems(&items);
+  dialog->SetItems(items);
   dialog->SetMultiSelection(multipleSelection);
   dialog->Open();
   if (!multipleSelection && iTypes == 1 && dialog->IsButtonPressed())
@@ -498,12 +498,11 @@ int CGUIWindowAddonBrowser::SelectAddonID(const vector<ADDON::TYPE> &types, CStd
     g_windowManager.ActivateWindow(WINDOW_ADDON_BROWSER, params);
     return 2;
   }
-  if (!multipleSelection && dialog->GetSelectedLabel() == -1)
+  if (!multipleSelection && dialog->GetSelectedItem() == -1)
     return 0;
   addonIDs.clear();
-  const CFileItemList& list = dialog->GetSelectedItems();
-  for (int i = 0 ; i < list.Size() ; i++)
-    addonIDs.push_back(list.Get(i)->GetPath());
+  for (std::vector<int>::const_iterator it = dialog->GetSelectedItems().begin(); it < dialog->GetSelectedItems().end(); ++it)
+    addonIDs.push_back(items.Get(*it)->GetPath());
   return 1;
 }
 

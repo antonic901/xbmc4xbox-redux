@@ -524,7 +524,7 @@ bool CGUIWindowVideoBase::ShowIMDB(CFileItem *item, const ScraperPtr &info2)
           pDlgSelect->Open();
 
           // and wait till user selects one
-          int iSelectedMovie = pDlgSelect->GetSelectedLabel();
+          int iSelectedMovie = pDlgSelect->GetSelectedItem();
           if (iSelectedMovie >= 0)
           {
             scrUrl = movielist[iSelectedMovie];
@@ -1639,11 +1639,11 @@ void CGUIWindowVideoBase::AddToDatabase(int iItem)
     CFileItemList items;
     if (!CDirectory::GetDirectory("videodb://movies/genres/", items))
       return;
-    pSelect->SetItems(&items);
+    pSelect->SetItems(items);
     pSelect->EnableButton(true, 531); // New Genre
     pSelect->Open();
     CStdString strGenre;
-    int iSelected = pSelect->GetSelectedLabel();
+    int iSelected = pSelect->GetSelectedItem();
     if (iSelected >= 0)
       strGenre = items[iSelected]->GetLabel();
     else if (!pSelect->IsButtonPressed())
@@ -1715,7 +1715,7 @@ void CGUIWindowVideoBase::OnSearch()
 
     pDlgSelect->Open();
 
-    int iItem = pDlgSelect->GetSelectedLabel();
+    int iItem = pDlgSelect->GetSelectedItem();
     if (iItem < 0)
       return;
 

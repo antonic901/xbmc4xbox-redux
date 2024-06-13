@@ -640,7 +640,7 @@ bool CWeather::GetSearchResults(const CStdString &strSearch, CStdString &strResu
   pDlgSelect->EnableButton(true, 222); //'Cancel' button returns to weather settings
   pDlgSelect->Open();
 
-  if (pDlgSelect->GetSelectedLabel() < 0)
+  if (pDlgSelect->GetSelectedItem() < 0)
   {
     if (pDlgSelect->IsButtonPressed())
     {
@@ -650,8 +650,8 @@ bool CWeather::GetSearchResults(const CStdString &strSearch, CStdString &strResu
   }
 
   //copy the selected code into the settings
-  if (pDlgSelect->GetSelectedLabel() >= 0)
-    strResult = pDlgSelect->GetSelectedLabelText();
+  if (pDlgSelect->GetSelectedItem() >= 0)
+    strResult = pDlgSelect->GetSelectedFileItem()->GetLabel();
 
   if (pDlgProgress)
     pDlgProgress->Close();

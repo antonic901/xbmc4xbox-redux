@@ -20,56 +20,60 @@
  *
  */
 
-#include "dialogs/GUIDialogBoxBase.h"
-#include "GUIListItem.h"
+#include <string>
+#include <vector>
+
+#include "GUIDialogBoxBase.h"
 #include "view/GUIViewControl.h"
+#include "boost/move/unique_ptr.hpp"
 
 class CFileItem;
 class CFileItemList;
 
-class CGUIDialogSelect :
-      public CGUIDialogBoxBase
+class CGUIDialogSelect : public CGUIDialogBoxBase
 {
 public:
-  CGUIDialogSelect(void);
+  CGUIDialogSelect();
   virtual ~CGUIDialogSelect(void);
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnBack(int actionID);
 
   void Reset();
-  void Add(const CStdString& strLabel);
-  void Add(const CFileItem* pItem);
-  void Add(const CFileItemList& items);
-  void SetItems(CFileItemList* items);
-  int GetSelectedLabel() const;
-  const CStdString& GetSelectedLabelText();
-  const CFileItemPtr GetSelectedItem();
-  const CFileItemList& GetSelectedItems() const;
-  void EnableButton(bool enable, int string);
+  int  Add(const std::string& strLabel);
+  int  Add(const CFileItem& item);
+  void SetItems(const CFileItemList& items);
+  const CFileItemPtr GetSelectedFileItem() const;
+  int GetSelectedItem() const;
+  const std::vector<int>& GetSelectedItems() const;
+  void EnableButton(bool enable, int label);
   bool IsButtonPressed();
   void Sort(bool bSortOrder = true);
   void SetSelected(int iSelected);
-  void SetSelected(const CStdString &strSelectedLabel);
+  void SetSelected(const std::string &strSelectedLabel);
   void SetSelected(std::vector<int> selectedIndexes);
-  void SetSelected(const std::vector<CStdString> &selectedLabels);
+  void SetSelected(const std::vector<std::string> &selectedLabels);
   void SetUseDetails(bool useDetails);
   void SetMultiSelection(bool multiSelection);
+
 protected:
-  virtual CGUIControl *CGUIDialogSelect::GetFirstFocusableControl(int id);
+  CGUIDialogSelect(int windowid);
+  virtual CGUIControl *GetFirstFocusableControl(int id);
   virtual void OnWindowLoaded();
   virtual void OnInitWindow();
+  virtual void OnDeinitWindow(int nextWindowID);
   virtual void OnWindowUnload();
-  void SetupButton();
 
+  virtual void OnSelect(int idx);
+
+private:
   bool m_bButtonEnabled;
-  int m_buttonString;
   bool m_bButtonPressed;
-  int m_iSelected;
+  int m_buttonLabel;
+  CFileItemPtr m_selectedItem;
   bool m_useDetails;
   bool m_multiSelection;
 
-  CFileItemList* m_selectedItems;
-  CFileItemList* m_vecListInternal;
-  CFileItemList* m_vecList;
+  std::vector<int> m_selectedItems;
+  boost::movelib::unique_ptr<CFileItemList> m_vecList;
   CGUIViewControl m_viewControl;
 };

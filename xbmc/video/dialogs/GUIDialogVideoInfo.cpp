@@ -480,7 +480,7 @@ void CGUIDialogVideoInfo::OnSearch(CStdString& strSearch)
 
     pDlgSelect->Open();
 
-    int iItem = pDlgSelect->GetSelectedLabel();
+    int iItem = pDlgSelect->GetSelectedItem();
     if (iItem < 0)
       return;
 
@@ -659,7 +659,7 @@ string CGUIDialogVideoInfo::ChooseArtType(const CFileItem &videoItem, map<string
     items.Add(item);
   }
 
-  dialog->SetItems(&items);
+  dialog->SetItems(items);
   dialog->Open();
 
   if (dialog->IsButtonPressed())
@@ -672,7 +672,7 @@ string CGUIDialogVideoInfo::ChooseArtType(const CFileItem &videoItem, map<string
     return strArtworkName;
   }
 
-  return dialog->GetSelectedItem()->GetProperty("type").asString();
+  return dialog->GetSelectedFileItem()->GetProperty("type").asString();
 }
 
 void CGUIDialogVideoInfo::OnGetArt()
@@ -1425,7 +1425,7 @@ bool CGUIDialogVideoInfo::GetMoviesForSet(const CFileItem *setItem, CFileItemLis
   dialog->Reset();
   dialog->SetMultiSelection(true);
   dialog->SetHeading(strHeading);
-  dialog->SetItems(&listItems);
+  dialog->SetItems(listItems);
   vector<int> selectedIndices;
   for (int i = 0; i < originalMovies.Size(); i++)
   {
@@ -1444,7 +1444,8 @@ bool CGUIDialogVideoInfo::GetMoviesForSet(const CFileItem *setItem, CFileItemLis
 
   if (dialog->IsConfirmed())
   {
-    selectedMovies.Copy(dialog->GetSelectedItems());
+    for (std::vector<int>::const_iterator it = dialog->GetSelectedItems().begin(); it < dialog->GetSelectedItems().end(); ++it)
+      selectedMovies.Add(listItems.Get(*it));
     return (selectedMovies.Size() > 0);
   }
   else
@@ -1498,7 +1499,7 @@ bool CGUIDialogVideoInfo::GetSetForMovie(const CFileItem *movieItem, CFileItemPt
   strHeading.Format(g_localizeStrings.Get(20466));
   dialog->Reset();
   dialog->SetHeading(strHeading);
-  dialog->SetItems(&listItems);
+  dialog->SetItems(listItems);
   if (currentSetId >= 0)
   {
     for (int listIndex = 0; listIndex < listItems.Size(); listIndex++) 
@@ -1532,7 +1533,7 @@ bool CGUIDialogVideoInfo::GetSetForMovie(const CFileItem *movieItem, CFileItemPt
   }
   else if (dialog->IsConfirmed())
   {
-    selectedSet = dialog->GetSelectedItem();
+    selectedSet = dialog->GetSelectedFileItem();
     return (selectedSet != NULL);
   }
   else
@@ -1608,11 +1609,12 @@ bool CGUIDialogVideoInfo::GetItemsForTag(const CStdString &strHeading, const std
   dialog->Reset();
   dialog->SetMultiSelection(true);
   dialog->SetHeading(strHeading);
-  dialog->SetItems(&listItems);
+  dialog->SetItems(listItems);
   dialog->EnableButton(true, 186);
   dialog->Open();
 
-  items.Copy(dialog->GetSelectedItems());
+  for (std::vector<int>::const_iterator it = dialog->GetSelectedItems().begin(); it < dialog->GetSelectedItems().end(); ++it)
+    items.Add(listItems.Get(*it));
   return items.Size() > 0;
 }
 
@@ -1933,10 +1935,10 @@ bool CGUIDialogVideoInfo::LinkMovieToTvShow(const CFileItemPtr &item, bool bRemo
     list.Sort(SortByLabel, SortOrderAscending, CSettings::Get().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
     CGUIDialogSelect* pDialog = (CGUIDialogSelect*)g_windowManager.GetWindow(WINDOW_DIALOG_SELECT);
     pDialog->Reset();
-    pDialog->SetItems(&list);
+    pDialog->SetItems(list);
     pDialog->SetHeading(20356);
     pDialog->Open();
-    iSelectedLabel = pDialog->GetSelectedLabel();
+    iSelectedLabel = pDialog->GetSelectedItem();
   }
 
   if (iSelectedLabel > -1)

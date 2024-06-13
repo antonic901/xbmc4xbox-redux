@@ -170,7 +170,7 @@ bool CDatabaseQueryRule::Save(TiXmlNode *parent) const
   rule.SetAttribute("field", TranslateField(m_field).c_str());
   rule.SetAttribute("operator", TranslateOperator(m_operator).c_str());
 
-  for (vector<CStdString>::const_iterator it = m_parameter.begin(); it != m_parameter.end(); it++)
+  for (vector<std::string>::const_iterator it = m_parameter.begin(); it != m_parameter.end(); it++)
   {
     TiXmlElement value("value");
     TiXmlText text(it->c_str());
@@ -192,7 +192,7 @@ bool CDatabaseQueryRule::Save(CVariant &obj) const
   obj["operator"] = TranslateOperator(m_operator);
 
   obj["value"] = CVariant(CVariant::VariantTypeArray);
-  for (vector<CStdString>::const_iterator it = m_parameter.begin(); it != m_parameter.end(); it++)
+  for (vector<std::string>::const_iterator it = m_parameter.begin(); it != m_parameter.end(); it++)
     obj["value"].push_back(*it);
 
   return true;
@@ -227,13 +227,12 @@ void CDatabaseQueryRule::GetAvailableOperators(std::vector<std::string> &operato
 
 CStdString CDatabaseQueryRule::GetParameter() const
 {
-  return StringUtils::JoinString(m_parameter, DATABASEQUERY_RULE_VALUE_SEPARATOR);
+  return StringUtils::Join(m_parameter, DATABASEQUERY_RULE_VALUE_SEPARATOR);
 }
 
-void CDatabaseQueryRule::SetParameter(const CStdString &value)
+void CDatabaseQueryRule::SetParameter(const std::string &value)
 {
-  m_parameter.clear();
-  StringUtils::SplitString(value, DATABASEQUERY_RULE_VALUE_SEPARATOR, m_parameter);
+  m_parameter = StringUtils::Split(value, DATABASEQUERY_RULE_VALUE_SEPARATOR);
 }
 
 void CDatabaseQueryRule::SetParameter(const std::vector<CStdString> &values)
@@ -361,7 +360,7 @@ CStdString CDatabaseQueryRule::GetWhereClause(const CDatabase &db, const CStdStr
 
   // now the query parameter
   CStdString wholeQuery;
-  for (vector<CStdString>::const_iterator it = m_parameter.begin(); it != m_parameter.end(); ++it)
+  for (vector<std::string>::const_iterator it = m_parameter.begin(); it != m_parameter.end(); ++it)
   {
     CStdString query = "(" + FormatWhereClause(negate, operatorString, *it, db, strType) + ")";
 

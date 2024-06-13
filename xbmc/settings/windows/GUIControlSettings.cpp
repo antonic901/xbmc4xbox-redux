@@ -286,18 +286,17 @@ bool CGUIControlListSetting::OnClick()
 
   dialog->Reset();
   dialog->SetHeading(g_localizeStrings.Get(m_pSetting->GetLabel()));
-  dialog->SetItems(&options);
+  dialog->SetItems(options);
   dialog->SetMultiSelection(control->CanMultiSelect());
   dialog->Open();
 
   if (!dialog->IsConfirmed())
     return false;
 
-  const CFileItemList &items = dialog->GetSelectedItems();
   std::vector<CVariant> values;
-  for (int index = 0; index < items.Size(); index++)
+  for (std::vector<int>::const_iterator it = dialog->GetSelectedItems().begin(); it < dialog->GetSelectedItems().end(); ++it)
   {
-    const CFileItemPtr item = items[index];
+    const CFileItemPtr item = options.Get(*it);
     if (item == NULL || !item->HasProperty("value"))
       return false;
 

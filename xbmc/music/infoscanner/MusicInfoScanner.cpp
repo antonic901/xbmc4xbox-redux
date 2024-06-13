@@ -1082,7 +1082,7 @@ INFO_RET CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album, const ADDON::
             CStdString strTemp = StringUtils::Format("[%0.2f]  %s", relevance, info.GetTitle2().c_str());
             CFileItem item(strTemp);
             item.m_idepth = i; // use this to hold the index of the album in the scraper
-            pDlg->Add(&item);
+            pDlg->Add(item);
           }
           if (relevance > .99f) // we're so close, no reason to search further
             break;
@@ -1094,7 +1094,7 @@ INFO_RET CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album, const ADDON::
           pDlg->Open();
 
           // and wait till user selects one
-          if (pDlg->GetSelectedLabel() < 0)
+          if (pDlg->GetSelectedItem() < 0)
           { // none chosen
             if (!pDlg->IsButtonPressed())
               return INFO_CANCELLED;
@@ -1117,7 +1117,7 @@ INFO_RET CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album, const ADDON::
 
             return DownloadAlbumInfo(newAlbum, info, albumInfo, pDialog);
           }
-          iSelectedAlbum = pDlg->GetSelectedItem()->m_idepth;
+          iSelectedAlbum = pDlg->GetSelectedFileItem()->m_idepth;
         }
       }
       else
@@ -1278,12 +1278,12 @@ INFO_RET CMusicInfoScanner::DownloadArtistInfo(const CArtist& artist, const ADDO
             }
             item.SetLabel(strTemp);
             item.m_idepth = i; // use this to hold the index of the album in the scraper
-            pDlg->Add(&item);
+            pDlg->Add(item);
           }
           pDlg->Open();
 
           // and wait till user selects one
-          if (pDlg->GetSelectedLabel() < 0)
+          if (pDlg->GetSelectedItem() < 0)
           { // none chosen
             if (!pDlg->IsButtonPressed())
               return INFO_CANCELLED;
@@ -1302,7 +1302,7 @@ INFO_RET CMusicInfoScanner::DownloadArtistInfo(const CArtist& artist, const ADDO
             newArtist.strArtist = strNewArtist;
             return DownloadArtistInfo(newArtist, info, artistInfo, pDialog);
           }
-          iSelectedArtist = pDlg->GetSelectedItem()->m_idepth;
+          iSelectedArtist = pDlg->GetSelectedFileItem()->m_idepth;
         }
       }
     }
