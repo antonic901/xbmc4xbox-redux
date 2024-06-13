@@ -28,8 +28,8 @@
 #include "filesystem/Directory.h"
 #include "settings/Settings.h"
 #include "messaging/ApplicationMessenger.h"
+#include "messaging/helpers/DialogHelper.h"
 #include "utils/JobManager.h"
-#include "dialogs/GUIDialogYesNo.h"
 #include "addons/AddonManager.h"
 #include "addons/Repository.h"
 #include "guilib/GUIWindowManager.h"      // for callback
@@ -42,6 +42,8 @@ using namespace std;
 using namespace XFILE;
 using namespace ADDON;
 using namespace KODI::MESSAGING;
+
+using namespace KODI::MESSAGING::HELPERS;
 
 struct find_map : public binary_function<CAddonInstaller::JobMap::value_type, unsigned int, bool>
 {
@@ -167,9 +169,12 @@ bool CAddonInstaller::PromptForInstall(const CStdString &addonID, AddonPtr &addo
   database.Open();
   if (database.GetAddon(addonID, addon))
   { // yes - ask user if they want it installed
-    if (!CGUIDialogYesNo::ShowAndGetInput(g_localizeStrings.Get(24076), g_localizeStrings.Get(24100),
-                                          addon->Name().c_str(), g_localizeStrings.Get(24101)))
+    if (HELPERS::ShowYesNoDialogLines(24076, 24100, addon->Name(), 24101) !=
+      YES)
+    {
       return false;
+    }
+
     if (Install(addonID, true))
     {
       CGUIDialogProgress *progress = (CGUIDialogProgress *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
@@ -596,8 +601,7 @@ void CAddonInstallJob::OnPostInstall(bool reloadAddon)
   }
   if (m_addon->Type() == ADDON_SKIN)
   {
-    if (reloadAddon || CGUIDialogYesNo::ShowAndGetInput(m_addon->Name(),
-                                                        g_localizeStrings.Get(24099),"",""))
+    if (reloadAddon || (HELPERS::ShowYesNoDialogText(m_addon->Name(), 24099) == YES))
     {
       CGUIDialogKaiToast *toast = (CGUIDialogKaiToast *)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
       if (toast)

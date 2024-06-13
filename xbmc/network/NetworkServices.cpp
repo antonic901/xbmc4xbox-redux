@@ -21,11 +21,11 @@
 #include "NetworkServices.h"
 #include "Application.h"
 #include "messaging/ApplicationMessenger.h"
+#include "messaging/helpers/DialogHelper.h"
 #include "GUIInfoManager.h"
 #include "Util.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogOK.h"
-#include "dialogs/GUIDialogYesNo.h"
 #include "guilib/LocalizeStrings.h"
 #include "xbox/Network.h"
 #include "xbox/IoSupport.h"
@@ -37,6 +37,8 @@
 #ifdef HAS_UPNP
 #include "network/upnp/UPnP.h"
 #endif // HAS_UPNP
+
+using namespace KODI::MESSAGING::HELPERS;
 
 #ifdef HAS_WEB_SERVER
 #include "libGoAhead/WebServer.h"
@@ -263,7 +265,7 @@ void CNetworkServices::OnSettingChanged(const CSetting *setting)
   {
     // okey we really don't need to restart, only deinit samba, but that could be damn hard if something is playing
     // TODO - General way of handling setting changes that require restart
-    if (CGUIDialogYesNo::ShowAndGetInput(14038, 14039, 14040, -1, -1))
+    if (HELPERS::ShowYesNoDialogText(14038, 14039) == YES)
     {
       CSettings::Get().Save();
       CApplicationMessenger::Get().PostMsg(TMSG_RESTARTAPP);
@@ -646,10 +648,8 @@ bool CNetworkServices::StopEventServer(bool bWait, bool promptuser)
   {
     if (server->GetNumberOfClients() > 0)
     {
-      bool cancelled = false;
-      if (!CGUIDialogYesNo::ShowAndGetInput(13140, 13141, 13142, 20022,
-                                            -1, -1, cancelled, 10000)
-          || cancelled)
+      if (HELPERS::ShowYesNoDialogText(13140, 13141, "", "", 10000) != 
+        YES)
       {
         CLog::Log(LOGNOTICE, "ES: Not stopping event server");
         return false;

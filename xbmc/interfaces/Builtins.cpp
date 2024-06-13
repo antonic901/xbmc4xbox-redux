@@ -26,6 +26,7 @@
 #include "utils/SeekHandler.h"
 #include "Application.h"
 #include "messaging/ApplicationMessenger.h"
+#include "messaging/helpers/DialogHelper.h"
 #include "Autorun.h"
 #include "Builtins.h"
 #include "input/ButtonTranslator.h"
@@ -36,7 +37,6 @@
 #include "guilib/GUIAudioManager.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogNumeric.h"
-#include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "GUIUserMessages.h"
 #include "windows/GUIWindowLoginScreen.h"
@@ -94,6 +94,8 @@ using namespace XFILE;
 using namespace ADDON;
 using namespace KODI::MESSAGING;
 using namespace MEDIA_DETECT;
+
+using namespace KODI::MESSAGING::HELPERS;
 
 typedef struct
 {
@@ -1340,19 +1342,27 @@ int CBuiltins::Execute(const CStdString& execString)
     bool cancelled=false;
 
     if (params.size() > 1)
-      singleFile = StringUtils::EqualsNoCase(params[1], "true");
+      singleFile = StringUtils::EqualsNoCase(params[1], "false");
     else
-      singleFile = CGUIDialogYesNo::ShowAndGetInput(iHeading,20426,20427,-1,20428,20429,cancelled);
+    {
+      DialogResponse result = HELPERS::ShowYesNoDialogText(iHeading, 20426, 20428, 20429);
+      cancelled = result == CANCELLED;
+      singleFile = result != YES;
+    }
 
     if (cancelled)
         return -1;
 
-    if (singleFile)
+    if (!singleFile)
     {
       if (params.size() > 2)
         thumbs = StringUtils::EqualsNoCase(params[2], "true");
       else
-        thumbs = CGUIDialogYesNo::ShowAndGetInput(iHeading,20430,-1,-1,cancelled);
+      {
+        DialogResponse result = HELPERS::ShowYesNoDialogText(iHeading, 20430, 20428, 20429);
+        cancelled = result == CANCELLED;
+        thumbs = result == YES;
+      }
     }
 
     if (cancelled)
@@ -1363,18 +1373,26 @@ int CBuiltins::Execute(const CStdString& execString)
       if (params.size() > 4)
         actorThumbs = StringUtils::EqualsNoCase(params[4], "true");
       else
-        actorThumbs = CGUIDialogYesNo::ShowAndGetInput(iHeading,20436,-1,-1,cancelled);
+      {
+        DialogResponse result = HELPERS::ShowYesNoDialogText(iHeading, 20436);
+        cancelled = result == CANCELLED;
+        actorThumbs = result == YES;
+      }
     }
 
     if (cancelled)
       return -1;
 
-    if (singleFile)
+    if (!singleFile)
     {
       if (params.size() > 3)
         overwrite = StringUtils::EqualsNoCase(params[3], "true");
       else
-        overwrite = CGUIDialogYesNo::ShowAndGetInput(iHeading,20431,-1,-1,cancelled);
+      {
+        DialogResponse result = HELPERS::ShowYesNoDialogText(iHeading, 20431);
+        cancelled = result == CANCELLED;
+        overwrite = result == YES;
+      }
     }
 
     if (cancelled)
@@ -1382,7 +1400,7 @@ int CBuiltins::Execute(const CStdString& execString)
 
     if (params.size() > 2)
       path=params[2];
-    if (singleFile || !path.IsEmpty() ||
+    if (!singleFile || !path.empty() ||
         CGUIDialogFileBrowser::ShowAndGetDirectory(shares,
           g_localizeStrings.Get(661), path, true))
     {

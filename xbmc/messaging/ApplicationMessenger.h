@@ -112,6 +112,24 @@
 #define TMSG_GUI_ADDON_DIALOG         TMSG_MASK_WINDOWMANAGER + 6
 #define TMSG_GUI_MESSAGE              TMSG_MASK_WINDOWMANAGER + 7
 
+/*!
+  \def TMSG_GUI_DIALOG_YESNO
+  \brief Message sent through CApplicationMessenger to open a yes/no dialog box
+  There's two ways to send this message, a short and concise way and a more
+  flexible way allowing more customization.
+  Option 1:
+  CApplicationMessenger::Get().SendMsg(TMSG_GUI_DIALOG_YESNO, 123, 456);
+  123: This is the string id for the heading
+  456: This is the string id for the text
+  Option 2:
+  \a HELPERS::DialogYesNoMessage options.
+  Fill in options
+  CApplicationMessenger::Get().SendMsg(TMSG_GUI_DIALOG_YESNO, -1, -1, static_cast<void*>(&options));
+  \returns -1 for cancelled, 0 for No and 1 for Yes
+  \sa HELPERS::DialogYesNoMessage
+*/
+#define TMSG_GUI_DIALOG_YESNO             TMSG_MASK_WINDOWMANAGER + 8
+
 
 #define TMSG_SLIDESHOW_SCREENSAVER  TMSG_MASK_XBOX + 1
 #define TMSG_HTTPAPI                TMSG_MASK_XBOX + 2
@@ -158,10 +176,10 @@ public:
 
   void Cleanup();
   // if a message has to be send to the gui, use MSG_TYPE_WINDOW instead
-  void SendMsg(uint32_t messageId);
-  void SendMsg(uint32_t messageId, int param1, int param2 = -1, void* payload = NULL);
-  void SendMsg(uint32_t messageId, int param1, int param2, void* payload, std::string strParam);
-  void SendMsg(uint32_t messageId, int param1, int param2, void* payload, std::string strParam, std::vector<std::string> params);
+  int SendMsg(uint32_t messageId);
+  int SendMsg(uint32_t messageId, int param1, int param2 = -1, void* payload = NULL);
+  int SendMsg(uint32_t messageId, int param1, int param2, void* payload, std::string strParam);
+  int SendMsg(uint32_t messageId, int param1, int param2, void* payload, std::string strParam, std::vector<std::string> params);
 
   void PostMsg(uint32_t messageId);
   void PostMsg(uint32_t messageId, int param1, int param2 = -1, void* payload = NULL);
@@ -194,7 +212,7 @@ private:
   CApplicationMessenger const& operator=(CApplicationMessenger const&);
   ~CApplicationMessenger();
 
-  void SendMsg(ThreadMessage& msg, bool wait);
+  int SendMsg(ThreadMessage& msg, bool wait);
   void ProcessMessage(ThreadMessage *pMsg);
 
   std::queue<ThreadMessage*> m_vecMessages;

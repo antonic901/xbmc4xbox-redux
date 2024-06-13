@@ -19,10 +19,11 @@
  */
 
 #include "DisplaySettings.h"
-#include "dialogs/GUIDialogYesNo.h"
 #include "guilib/GraphicContext.h"
 #include "guilib/gui3d.h"
 #include "guilib/LocalizeStrings.h"
+#include "messaging/ApplicationMessenger.h"
+#include "messaging/helpers/DialogHelper.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
@@ -33,6 +34,10 @@
 #include "XBVideoConfig.h"
 
 #include "defs_from_settings.h"
+
+using namespace KODI::MESSAGING;
+
+using namespace KODI::MESSAGING::HELPERS;
 
 // 0.1 second increments
 #define MAX_REFRESH_CHANGE_DELAY 200
@@ -197,8 +202,8 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
       // check if this setting is temporarily blocked from showing the dialog
       if (m_ignoreSettingChanging.find(make_pair(settingId, false)) == m_ignoreSettingChanging.end())
       {
-        bool cancelled = false;
-        if (!CGUIDialogYesNo::ShowAndGetInput(13110, 13111, 20022, 20022, -1, -1, cancelled, 10000))
+        if (HELPERS::ShowYesNoDialogText(13110, 13111, "", "", 10000) !=
+          YES)
         {
           // we need to ignore the next OnSettingChanging() call for
           // the same setting which is executed to broadcast that

@@ -28,6 +28,7 @@
 #include "TextureDatabase.h"
 #include "filesystem/File.h"
 #include "filesystem/PluginDirectory.h"
+#include "messaging/helpers/DialogHelper.h"
 #include "settings/Settings.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
@@ -39,6 +40,9 @@
 using namespace std;
 using namespace XFILE;
 using namespace ADDON;
+using namespace KODI::MESSAGING;
+
+using namespace KODI::MESSAGING::HELPERS;
 
 AddonPtr CRepository::Clone() const
 {
@@ -293,14 +297,14 @@ bool CRepositoryUpdateJob::DoWork()
       {
         if (database.IsAddonBroken(newAddon->ID()).empty())
         {
-          std::string line = g_localizeStrings.Get(24096);
+          int line = 24096;
           if (newAddon->Props().broken == "DEPSNOTMET")
-            line = g_localizeStrings.Get(24104);
-          if (addon && CGUIDialogYesNo::ShowAndGetInput(newAddon->Name(),
-                                               line,
-                                               g_localizeStrings.Get(24097),
-                                               ""))
+            line = 24104;
+          if (addon && HELPERS::ShowYesNoDialogLines(addon->Name(), line, 24097, "")
+            == YES)
+          {
             CAddonMgr::Get().DisableAddon(newAddon->ID());
+          }
         }
       }
       database.BreakAddon(newAddon->ID(), newAddon->Props().broken);

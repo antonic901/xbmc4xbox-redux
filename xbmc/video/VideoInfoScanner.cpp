@@ -33,9 +33,10 @@
 #include "filesystem/File.h"
 #include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "dialogs/GUIDialogProgress.h"
-#include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogOK.h"
 #include "interfaces/AnnouncementManager.h"
+#include "messaging/ApplicationMessenger.h"
+#include "messaging/helpers/DialogHelper.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "utils/StringUtils.h"
@@ -53,6 +54,9 @@
 using namespace std;
 using namespace XFILE;
 using namespace ADDON;
+using namespace KODI::MESSAGING;
+
+using namespace KODI::MESSAGING::HELPERS;
 
 namespace VIDEO
 {
@@ -1844,7 +1848,7 @@ namespace VIDEO
       CGUIDialogOK::ShowAndGetInput(20448,20449,20022,20022);
       return false;
     }
-    return CGUIDialogYesNo::ShowAndGetInput(20448,20449,20450,20022);
+    return HELPERS::ShowYesNoDialogText(20448, 20450) == YES;
   }
 
   bool CVideoInfoScanner::ProgressCancelled(CGUIDialogProgress* progress, int heading, const CStdString &line1)

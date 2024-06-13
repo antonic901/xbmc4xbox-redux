@@ -51,6 +51,7 @@
 #include "GUIPassword.h"
 #include "messaging/ThreadMessage.h"
 #include "messaging/ApplicationMessenger.h"
+#include "messaging/helpers/DialogHelper.h"
 #include "SectionLoader.h"
 #include "cores/DllLoader/DllLoaderContainer.h"
 #include "GUIUserMessages.h"
@@ -144,7 +145,6 @@
 
 // Dialog includes
 #include "video/dialogs/GUIDialogVideoBookmarks.h"
-#include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogSubMenu.h"
@@ -242,6 +242,8 @@ using namespace EVENTSERVER;
 #endif
 using namespace ANNOUNCEMENT;
 using namespace KODI::MESSAGING;
+
+using namespace KODI::MESSAGING::HELPERS;
 
 // uncomment this if you want to use release libs in the debug build.
 // Atm this saves you 7 mb of memory
@@ -1560,8 +1562,8 @@ void CApplication::ReloadSkin(bool confirm/*=false*/)
        user as to whether they want to keep the current skin. */
     if (confirm && !m_skinReverting)
     {
-      bool cancelled;
-      if (!CGUIDialogYesNo::ShowAndGetInput(13123, 13111, -1, -1, -1, -1, cancelled, 10000))
+      if (HELPERS::ShowYesNoDialogText(13123, 13111, "", "", 10000) != 
+        YES)
       {
         m_skinReverting = true;
         if (oldSkin.empty())

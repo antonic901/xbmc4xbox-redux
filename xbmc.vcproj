@@ -4003,6 +4003,16 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\messaging\ThreadMessage.h">
 				</File>
+				<Filter
+					Name="helpers"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\messaging\helpers\DialogHelper.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\messaging\helpers\DialogHelper.h">
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

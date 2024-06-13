@@ -18,13 +18,16 @@
  *
  */
 
-#include "dialogs/GUIDialogYesNo.h"
-#include "GUIWindowManager.h"
+#include "GUIDialogYesNo.h"
+#include "guilib/GUIWindowManager.h"
+#include "guilib/Key.h"
+#include "messaging/helpers/DialogHelper.h"
 
 CGUIDialogYesNo::CGUIDialogYesNo(int overrideId /* = -1 */)
     : CGUIDialogBoxBase(overrideId == -1 ? WINDOW_DIALOG_YES_NO : overrideId, "DialogConfirm.xml")
 {
   m_bConfirmed = false;
+  m_bCanceled = false;
 }
 
 CGUIDialogYesNo::~CGUIDialogYesNo()
@@ -76,70 +79,92 @@ void CGUIDialogYesNo::OnInitWindow()
   CGUIDialogBoxBase::OnInitWindow();
 }
 
-// \brief Show CGUIDialogYesNo dialog, then wait for user to dismiss it.
-// \return true if user selects Yes, false if user selects No.
-bool CGUIDialogYesNo::ShowAndGetInput(int heading, int line0, int line1, int line2, bool& bCanceled)
+bool CGUIDialogYesNo::ShowAndGetInput(CVariant heading, CVariant line0, CVariant line1, CVariant line2, bool &bCanceled)
 {
-  return ShowAndGetInput(heading,line0,line1,line2,-1,-1,bCanceled);
+  return ShowAndGetInput(heading, line0, line1, line2, bCanceled, "", "", NO_TIMEOUT);
 }
 
-bool CGUIDialogYesNo::ShowAndGetInput(int heading, int line0, int line1, int line2, int iNoLabel, int iYesLabel)
+bool CGUIDialogYesNo::ShowAndGetInput(CVariant heading, CVariant line0, CVariant line1, CVariant line2, CVariant noLabel /* = "" */, CVariant yesLabel /* = "" */)
 {
-  bool bDummy;
-  return ShowAndGetInput(heading,line0,line1,line2,iNoLabel,iYesLabel,bDummy);
+  bool bDummy(false);
+  return ShowAndGetInput(heading, line0, line1, line2, bDummy, noLabel, yesLabel, NO_TIMEOUT);
 }
 
-bool CGUIDialogYesNo::ShowAndGetInput(int heading, int line0, int line1, int line2, int iNoLabel, int iYesLabel, bool& bCanceled, unsigned int autoCloseTime)
+bool CGUIDialogYesNo::ShowAndGetInput(CVariant heading, CVariant line0, CVariant line1, CVariant line2, bool &bCanceled, CVariant noLabel, CVariant yesLabel, unsigned int autoCloseTime)
 {
-  CGUIDialogYesNo *dialog = (CGUIDialogYesNo *)g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO);
-  if (!dialog) return false;
+  CGUIDialogYesNo *dialog = static_cast<CGUIDialogYesNo *>(g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO));
+  if (!dialog)
+    return false;
+
   dialog->SetHeading(heading);
   dialog->SetLine(0, line0);
   dialog->SetLine(1, line1);
   dialog->SetLine(2, line2);
   if (autoCloseTime)
     dialog->SetAutoClose(autoCloseTime);
-  if (iNoLabel != -1)
-    dialog->SetChoice(0,iNoLabel);
-  else
-    dialog->SetChoice(0,106);
-  if (iYesLabel != -1)
-    dialog->SetChoice(1,iYesLabel);
-  else
-    dialog->SetChoice(1,107);
+  dialog->SetChoice(0, !noLabel.empty() ? noLabel : 106);
+  dialog->SetChoice(1, !yesLabel.empty() ? yesLabel : 107);
   dialog->m_bCanceled = false;
   dialog->Open();
+
   bCanceled = dialog->m_bCanceled;
   return (dialog->IsConfirmed()) ? true : false;
 }
 
-bool CGUIDialogYesNo::ShowAndGetInput(const CStdString& heading, const CStdString& line0, const CStdString& line1, const CStdString& line2, const CStdString& noLabel, const CStdString& yesLabel)
+bool CGUIDialogYesNo::ShowAndGetInput(CVariant heading, CVariant text)
 {
-  bool bDummy;
-  return ShowAndGetInput(heading,line0,line1,line2,bDummy,noLabel,yesLabel);
+  bool bDummy(false);
+  return ShowAndGetInput(heading, text, "", "", bDummy);
 }
 
-bool CGUIDialogYesNo::ShowAndGetInput(const std::string& heading, const std::string& text, bool& bCanceled, const std::string& noLabel, const std::string& yesLabel)
+bool CGUIDialogYesNo::ShowAndGetInput(CVariant heading, CVariant text, bool &bCanceled, CVariant noLabel /* = "" */, CVariant yesLabel /* = "" */, unsigned int autoCloseTime)
 {
-  CGUIDialogYesNo *dialog = (CGUIDialogYesNo *)g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO);
-  if (!dialog) return false;
+  CGUIDialogYesNo *dialog = static_cast<CGUIDialogYesNo *>(g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO));
+  if (!dialog)
+    return false;
+
   dialog->SetHeading(heading);
   dialog->SetText(text);
+  if (autoCloseTime)
+    dialog->SetAutoClose(autoCloseTime);
   dialog->m_bCanceled = false;
-  if (!noLabel.empty())
-    dialog->SetChoice(0,noLabel);
-  if (!yesLabel.empty())
-    dialog->SetChoice(1,yesLabel);
+  dialog->SetChoice(0, !noLabel.empty() ? noLabel : 106);
+  dialog->SetChoice(1, !yesLabel.empty() ? yesLabel : 107);
   dialog->Open();
 
   bCanceled = dialog->m_bCanceled;
   return (dialog->IsConfirmed()) ? true : false;
 }
 
-bool CGUIDialogYesNo::ShowAndGetInput(const CStdString& heading, const CStdString& line0, const CStdString& line1, const CStdString& line2, bool& bCanceled, const CStdString& noLabel, const CStdString& yesLabel)
+int CGUIDialogYesNo::ShowAndGetInput(const KODI::MESSAGING::HELPERS::DialogYesNoMessage& options)
 {
-  std::string text = line0 + "\n" + line1 + "\n" + line2;
-  return ShowAndGetInput(heading, text, bCanceled, noLabel, yesLabel);
+  //Set default yes/no labels, these might be overwritten further down if specified
+  //by the caller
+  SetChoice(0, 106);
+  SetChoice(1, 107);
+  if (!options.heading.isNull())
+    SetHeading(options.heading);
+  if (!options.text.isNull())
+    SetText(options.text);
+  if (!options.noLabel.isNull())
+    SetChoice(0, options.noLabel);
+  if (!options.yesLabel.isNull())
+    SetChoice(1, options.yesLabel);
+  if (options.autoclose > 0)
+    SetAutoClose(options.autoclose);
+  m_bCanceled = false;
+
+  for (size_t i = 0; i < 3; ++i)
+  {
+    if (!options.lines[i].isNull())
+      SetLine(i, options.lines[i]);
+  }
+
+  Open();
+  if (m_bCanceled)
+    return -1;
+
+  return IsConfirmed() ? 1 : 0;
 }
 
 int CGUIDialogYesNo::GetDefaultLabelID(int controlId) const

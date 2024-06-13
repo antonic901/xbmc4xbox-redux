@@ -80,7 +80,8 @@ public:
     lpVoid(other.lpVoid),
     strParam(other.strParam),
     params(other.params),
-    waitEvent(other.waitEvent)
+    waitEvent(other.waitEvent),
+    result(other.result)
   {
   }
 
@@ -95,6 +96,7 @@ public:
     strParam = other.strParam;
     params = other.params;
     waitEvent = other.waitEvent;
+    result = other.result;
     return *this;
   }
 
@@ -105,8 +107,17 @@ public:
   std::string strParam;
   std::vector<std::string> params;
 
+  void SetResult(int res)
+  {
+    //On posted messages result will be zero, since they can't
+    //retreive the response we silently ignore this to let message
+    //handlers not have to worry about it
+    if (result)
+      *result = res;
+  }
 protected:
   boost::shared_ptr<CEvent> waitEvent;
+  boost::shared_ptr<int> result;
 };
 }
 }

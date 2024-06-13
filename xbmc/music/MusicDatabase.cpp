@@ -64,12 +64,16 @@
 #include "utils/XMLUtils.h"
 #include "URL.h"
 #include "playlists/SmartPlayList.h"
+#include "messaging/helpers/DialogHelper.h"
 
 using namespace std;
 using namespace AUTOPTR;
 using namespace XFILE;
 using namespace MUSICDATABASEDIRECTORY;
+using namespace KODI::MESSAGING;
+
 using ADDON::AddonPtr;
+using namespace KODI::MESSAGING::HELPERS;
 
 #define RECENTLY_PLAYED_LIMIT 25
 #define MIN_FULL_SEARCH_LENGTH 3
@@ -2929,7 +2933,7 @@ void CMusicDatabase::Clean()
     return;
   }
 
-  if (CGUIDialogYesNo::ShowAndGetInput(313, 333, 0, 0))
+  if (HELPERS::ShowYesNoDialogText(313, 333) == YES)
   {
     CGUIDialogProgress* dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
     if (dlgProgress)
