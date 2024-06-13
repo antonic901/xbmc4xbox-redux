@@ -18,7 +18,7 @@
  *
  */
 
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "threads/SystemClock.h"
 #include "video/VideoDatabase.h"
 #include "video/windows/GUIWindowVideoBase.h"
@@ -62,6 +62,7 @@ using namespace dbiplus;
 using namespace XFILE;
 using namespace VIDEO;
 using namespace ADDON;
+using namespace KODI::MESSAGING;
 
 //********************************************************************************************************************************
 CVideoDatabase::CVideoDatabase(void)

@@ -36,13 +36,15 @@
 #include "utils/XMLUtils.h"
 #include "GUIAudioManager.h"
 #include "Application.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "utils/Variant.h"
 #include "utils/StringUtils.h"
 
 #ifdef HAS_PERFORMANCE_SAMPLE
 #include "utils/PerformanceSample.h"
 #endif
+
+using namespace KODI::MESSAGING;
 
 bool CGUIWindow::icompare::operator()(const std::string &s1, const std::string &s2) const
 {
@@ -398,7 +400,11 @@ void CGUIWindow::Close(bool forceClose /*= false*/, int nextWindowID /*= 0*/, bo
   {
     // make sure graphics lock is not held
     CSingleExit leaveIt(g_graphicsContext);
-    CApplicationMessenger::Get().Close(this, forceClose, true, nextWindowID, enableSound);
+    int param2 = (forceClose ? 0x01 : 0) | (enableSound ? 0x02 : 0);
+    if (bWait)
+      CApplicationMessenger::Get().SendMsg(TMSG_GUI_WINDOW_CLOSE, nextWindowID, param2, static_cast<void*>(this));
+    else
+      CApplicationMessenger::Get().PostMsg(TMSG_GUI_WINDOW_CLOSE, nextWindowID, param2, static_cast<void*>(this));
   }
   else
     Close_Internal(forceClose, nextWindowID, enableSound);

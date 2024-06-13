@@ -19,7 +19,7 @@
  */
 
 #include "AlarmClock.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "LocalizeStrings.h"
 #include "threads/SingleLock.h"
 #include "utils/log.h"
@@ -27,6 +27,7 @@
 
 CAlarmClock g_alarmClock;
 
+using namespace KODI::MESSAGING;
 using namespace std;
 
 CAlarmClock::CAlarmClock() : CThread("CAlarmClock"), m_bIsRunning(false)
@@ -115,7 +116,7 @@ void CAlarmClock::Stop(const CStdString& strName, bool bSilent /* false */)
   }
   else
   {
-    CApplicationMessenger::Get().ExecBuiltIn(iter->second.m_strCommand);
+    CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, iter->second.m_strCommand);
     if (iter->second.m_loop)
     {
       iter->second.watch.Reset();

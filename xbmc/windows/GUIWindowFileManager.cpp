@@ -21,7 +21,7 @@
 #include "utils/log.h"
 #include "windows/GUIWindowFileManager.h"
 #include "Application.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "xbox/xbeheader.h"
@@ -63,6 +63,7 @@ using namespace std;
 using namespace XFILE;
 using namespace MEDIA_DETECT;
 using namespace PLAYLIST;
+using namespace KODI::MESSAGING;
 
 #define ACTION_COPY                     1
 #define ACTION_MOVE                     2

@@ -19,7 +19,9 @@
  */
 
 #include "LangInfo.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
+#include "FileItem.h"
+#include "Util.h"
 #include "FileItem.h"
 #include "Util.h"
 #include "filesystem/Directory.h"
@@ -36,6 +38,7 @@
 #include "utils/XMLUtils.h"
 
 using namespace std;
+using namespace KODI::MESSAGING;
 
 CLangInfo g_langInfo;
 
@@ -455,7 +458,7 @@ bool CLangInfo::SetLanguage(const std::string &strLanguage)
 
   // also tell our weather and skin to reload as these are localized
   g_weatherManager.Refresh();
-  CApplicationMessenger::Get().ExecBuiltIn("ReloadSkin", false);
+  CApplicationMessenger::Get().PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, "ReloadSkin");
 
   return true;
 }

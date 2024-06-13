@@ -37,12 +37,13 @@
 #include "utils/log.h"
 #include "utils/TimeUtils.h"
 #include "utils/StringUtils.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "URL.h"
 
 using namespace XFILE;
 using namespace std;
 using namespace ADDON;
+using namespace KODI::MESSAGING;
 
 map<int, CPluginDirectory *> CPluginDirectory::globalHandles;
 int CPluginDirectory::handleCounter = 0;

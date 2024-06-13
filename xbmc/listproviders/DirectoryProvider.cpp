@@ -31,7 +31,7 @@
 #include "utils/URIUtils.h"
 #include "utils/log.h"
 #include "threads/SingleLock.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "music/dialogs/GUIDialogMusicInfo.h"
 #include "addons/GUIDialogAddonInfo.h"
 #include "FileItem.h"
@@ -45,6 +45,7 @@
 using namespace std;
 using namespace XFILE;
 using namespace ANNOUNCEMENT;
+using namespace KODI::MESSAGING;
 
 class CDirectoryJob : public CJob
 {

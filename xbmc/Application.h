@@ -95,7 +95,8 @@ typedef enum
 } PlayBackRet;
 
 class CApplication : public CXBApplicationEx, public IPlayerCallback, public IMsgTargetCallback,
-                     public ISettingCallback, public ISettingsHandler, public ISubSettings
+                     public ISettingCallback, public ISettingsHandler, public ISubSettings,
+                     public KODI::MESSAGING::IMessageTarget
 {
 public:
 
@@ -151,6 +152,10 @@ public:
   virtual void OnPlayBackSeek(int iTime, int seekOffset);
   virtual void OnPlayBackSeekChapter(int iChapter);
   virtual void OnPlayBackSpeedChanged(int iSpeed);
+
+  virtual int  GetMessageMask();
+  virtual void OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg);
+
   bool PlayMedia(const CFileItem& item, int iPlaylist = PLAYLIST_MUSIC);
   bool ProcessAndStartPlaylist(const CStdString& strPlayList, PLAYLIST::CPlayList& playlist, int iPlaylist, int track=0);
   PlayBackRet PlayFile(const CFileItem& item, bool bRestart = false);

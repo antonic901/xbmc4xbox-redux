@@ -30,6 +30,7 @@
 #include "Temperature.h"
 #include "threads/CriticalSection.h"
 #include "IMsgTargetCallback.h"
+#include "messaging/IMessageTarget.h"
 #include "inttypes.h"
 #include "interfaces/info/InfoBool.h"
 #include "interfaces/info/SkinVariable.h"
@@ -623,7 +624,8 @@ private:
  \ingroup strings
  \brief
  */
-class CGUIInfoManager : public IMsgTargetCallback
+class CGUIInfoManager : public IMsgTargetCallback,
+                        public KODI::MESSAGING::IMessageTarget
 {
 public:
   CGUIInfoManager(void);
@@ -631,6 +633,9 @@ public:
 
   void Clear();
   virtual bool OnMessage(CGUIMessage &message);
+
+  virtual int GetMessageMask();
+  virtual void OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg);
 
   /*! \brief Register a boolean condition/expression
    This routine allows controls or other clients of the info manager to register

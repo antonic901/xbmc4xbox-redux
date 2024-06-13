@@ -27,7 +27,7 @@
 #include "NfoFile.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogOK.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
@@ -35,6 +35,7 @@
 
 using namespace std;
 using namespace VIDEO;
+using namespace KODI::MESSAGING;
 
 #ifndef __GNUC__
 #pragma warning (disable:4018)

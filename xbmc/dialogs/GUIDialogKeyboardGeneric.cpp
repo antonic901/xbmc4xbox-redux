@@ -30,9 +30,11 @@
 #include "GUIDialogKeyboardGeneric.h"
 #include "utils/TimeUtils.h"
 #include "utils/RegExp.h"
-#include "ApplicationMessenger.h"
+#include "utils/StringUtils.h"
+#include "messaging/ApplicationMessenger.h"
 #include "utils/CharsetConverter.h"
 
+using namespace KODI::MESSAGING;
 
 // Symbol mapping (based on MS virtual keyboard - may need improving)
 static char symbol_map[37] = ")!@#$%^&*([]{}-_=+;:\'\",.<>/?\\|`~    ";

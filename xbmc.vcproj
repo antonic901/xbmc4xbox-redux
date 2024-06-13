@@ -992,9 +992,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\AlarmClock.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\ApplicationMessenger.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\utils\Archive.cpp">
 				</File>
 				<File
@@ -3985,6 +3982,22 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\media\MediaType.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="messaging"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\messaging\ApplicationMessenger.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\messaging\ApplicationMessenger.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\messaging\IMessageTarget.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\messaging\ThreadMessage.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -4007,9 +4020,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\Application.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\ApplicationMessenger.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\Archive.h">

@@ -32,7 +32,7 @@
 #include "filesystem/MultiPathDirectory.h"
 #include "GUIPassword.h"
 #include "Application.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "xbox/network.h"
 #include "utils/RegExp.h"
 #include "PartyModeManager.h"
@@ -84,6 +84,7 @@
 
 using namespace std;
 using namespace ADDON;
+using namespace KODI::MESSAGING;
 
 CGUIMediaWindow::CGUIMediaWindow(int id, const char *xmlFile)
     : CGUIWindow(id, xmlFile)
@@ -1605,7 +1606,7 @@ bool CGUIMediaWindow::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     {
       CStdString action;
       action.Format("contextmenuaction(%i)", button - CONTEXT_BUTTON_USER1);
-      CApplicationMessenger::Get().ExecBuiltIn(m_vecItems->Get(itemNumber)->GetProperty(action).asString());
+      CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, m_vecItems->Get(itemNumber)->GetProperty(action).asString());
       return true;
     }
   default:

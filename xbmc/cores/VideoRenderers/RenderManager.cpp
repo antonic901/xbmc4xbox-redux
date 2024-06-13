@@ -28,7 +28,7 @@
 #include "RGBRenderer.h"
 #include "RGBRendererV2.h"
 #include "Application.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "settings/Settings.h"
 #include "settings/MediaSettings.h"
 
@@ -36,6 +36,7 @@
 
 CXBoxRenderManager g_renderManager;
 
+using namespace KODI::MESSAGING;
 
 #define MAXPRESENTDELAY 500
 
@@ -90,7 +91,7 @@ bool CXBoxRenderManager::Configure(unsigned int width, unsigned int height, unsi
     if( flags & CONF_FLAGS_FULLSCREEN )
     {
       lock.Leave();
-      CApplicationMessenger::Get().SwitchToFullscreen();
+      CApplicationMessenger::Get().PostMsg(TMSG_SWITCHTOFULLSCREEN);
       lock.Enter();
     }
     m_pRenderer->Update(false);

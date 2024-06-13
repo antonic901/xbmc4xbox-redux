@@ -24,8 +24,10 @@
 #include "threads/SingleLock.h"
 #include "utils/TimeUtils.h"
 #include "Application.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "guilib/Key.h"
+
+using namespace KODI::MESSAGING;
 
 CGUIDialog::CGUIDialog(int id, const std::string &xmlFile, DialogModalityType modalityType /* = MODAL */)
     : CGUIWindow(id, xmlFile)
@@ -207,7 +209,7 @@ void CGUIDialog::Open(const std::string &param /* = "" */)
   {
     // make sure graphics lock is not held
     CSingleExit leaveIt(g_graphicsContext);
-    CApplicationMessenger::Get().Open(this, param);
+    CApplicationMessenger::Get().SendMsg(TMSG_GUI_DIALOG_OPEN, -1, -1, static_cast<void*>(this), param);
   }
   else
     Open_Internal(param);

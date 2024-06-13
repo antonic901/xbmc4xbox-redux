@@ -25,7 +25,7 @@
 #include "AlarmClock.h"
 #include "utils/SeekHandler.h"
 #include "Application.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "Autorun.h"
 #include "Builtins.h"
 #include "input/ButtonTranslator.h"
@@ -92,6 +92,7 @@
 using namespace std;
 using namespace XFILE;
 using namespace ADDON;
+using namespace KODI::MESSAGING;
 using namespace MEDIA_DETECT;
 
 typedef struct
@@ -237,11 +238,11 @@ int CBuiltins::Execute(const CStdString& execString)
   
   if (execute.Equals("reboot") || execute.Equals("restart"))  //Will reboot the xbox, aka cold reboot
   {
-    CApplicationMessenger::Get().Restart();
+    CApplicationMessenger::Get().PostMsg(TMSG_RESTART);
   }
   else if (execute.Equals("shutdown"))
   {
-    CApplicationMessenger::Get().Shutdown();
+    CApplicationMessenger::Get().PostMsg(TMSG_SHUTDOWN);
   }
   else if (execute.Equals("dashboard"))
   {
@@ -252,23 +253,23 @@ int CBuiltins::Execute(const CStdString& execString)
   }
   else if (execute.Equals("powerdown"))
   {
-    CApplicationMessenger::Get().Powerdown();
+    CApplicationMessenger::Get().PostMsg(TMSG_POWERDOWN);
   }
   else if (execute.Equals("restartapp"))
   {
-    CApplicationMessenger::Get().RestartApp();
+    CApplicationMessenger::Get().PostMsg(TMSG_RESTARTAPP);
   }
   else if (execute.Equals("hibernate"))
   {
-    CApplicationMessenger::Get().Hibernate();
+    CApplicationMessenger::Get().PostMsg(TMSG_HIBERNATE);
   }
   else if (execute.Equals("suspend"))
   {
-    CApplicationMessenger::Get().Suspend();
+    CApplicationMessenger::Get().PostMsg(TMSG_SUSPEND);
   }
   else if (execute.Equals("quit"))
   {
-    CApplicationMessenger::Get().Quit();
+    CApplicationMessenger::Get().PostMsg(TMSG_QUIT);
   }
   else if (execute.Equals("loadprofile") && CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE)
   {
@@ -894,7 +895,7 @@ int CBuiltins::Execute(const CStdString& execString)
     {
       if(params.size() > 1 && StringUtils::EqualsNoCase(params[1], "showVolumeBar"))
       {
-        CApplicationMessenger::Get().ShowVolumeBar(oldVolume < volume);
+        CApplicationMessenger::Get().PostMsg(TMSG_VOLUME_SHOW, oldVolume < volume ? ACTION_VOLUME_UP : ACTION_VOLUME_DOWN);
       }
     }
   }
@@ -1487,7 +1488,7 @@ int CBuiltins::Execute(const CStdString& execString)
     if (CButtonTranslator::TranslateActionString(params[0].c_str(), actionID))
     {
       int windowID = params.size() == 2 ? CButtonTranslator::TranslateWindow(params[1]) : WINDOW_INVALID;
-      CApplicationMessenger::Get().SendAction(CAction(actionID), windowID);
+      CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTION, windowID, -1, static_cast<void*>(new CAction(actionID)));
     }
   }
   else if (execute.Equals("setproperty") && params.size() >= 2)

@@ -24,7 +24,7 @@
 #ifdef HAS_XBOX_NETWORK
 #include "Undocumented.h"
 #endif
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "network/NetworkServices.h"
 #include "settings/Settings.h"
 #include "utils/log.h"
@@ -291,7 +291,7 @@ void CNetwork::NetworkDown()
   m_lastlink = 0;
   m_laststate = 0;
   m_networkup = false;
-  CApplicationMessenger::Get().NetworkMessage(SERVICES_DOWN, 0);
+  CApplicationMessenger::Get().PostMsg(TMSG_NETWORKMESSAGE, SERVICES_DOWN, 0);
 }
 
 void CNetwork::NetworkUp()
@@ -316,7 +316,7 @@ void CNetwork::NetworkUp()
 
   m_networkup = true;
   
-  CApplicationMessenger::Get().NetworkMessage(SERVICES_UP, 0);
+  CApplicationMessenger::Get().PostMsg(TMSG_NETWORKMESSAGE, SERVICES_UP, 0);
 }
 
 /* update network state, call repeatedly while return value is XNET_GET_XNADDR_PENDING */
@@ -440,6 +440,8 @@ bool CNetwork::WaitForSetup(unsigned int iTimeout)
   return true;
 #endif
 }
+
+using namespace KODI::MESSAGING;
 
 /* slightly modified in_ether taken from the etherboot project (http://sourceforge.net/projects/etherboot) */
 bool in_ether (char *bufp, unsigned char *addr)

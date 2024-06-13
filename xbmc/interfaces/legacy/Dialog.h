@@ -25,7 +25,6 @@
 #include "WindowException.h"
 #include "AddonClass.h"
 #include "AddonString.h"
-#include "ApplicationMessenger.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "Alternative.h"

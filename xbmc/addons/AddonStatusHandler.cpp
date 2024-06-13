@@ -21,12 +21,14 @@
 #include "AddonStatusHandler.h"
 #include "AddonManager.h"
 #include "threads/SingleLock.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "GUIWindowManager.h"
 #include "GUIDialogAddonSettings.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogOK.h"
 #include "utils/log.h"
+
+using namespace KODI::MESSAGING;
 
 namespace ADDON
 {

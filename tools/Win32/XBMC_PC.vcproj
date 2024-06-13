@@ -1525,9 +1525,6 @@
 					RelativePath="..\..\xbmc\utils\AlarmClock.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\ApplicationMessenger.cpp">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\utils\Archive.cpp">
 				</File>
 				<File
@@ -3002,9 +2999,6 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\Application.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\ApplicationMessenger.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\utils\Archive.h">

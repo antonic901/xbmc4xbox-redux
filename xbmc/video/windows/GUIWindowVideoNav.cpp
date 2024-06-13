@@ -41,7 +41,7 @@
 #include "filesystem/File.h"
 #include "FileItem.h"
 #include "Application.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"
@@ -61,6 +61,7 @@
 
 using namespace XFILE;
 using namespace VIDEODATABASEDIRECTORY;
+using namespace KODI::MESSAGING;
 using namespace std;
 
 #define CONTROL_BTNVIEWASICONS     2
@@ -1013,7 +1014,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
                                                                         m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_strTitle),
                                                                         song))
       {
-        CApplicationMessenger::Get().PlayFile(song);
+        CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, 0, 0, static_cast<void*>(new CFileItem(song)));
       }
       return true;
     }

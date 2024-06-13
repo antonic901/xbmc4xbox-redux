@@ -21,13 +21,15 @@
 #include "system.h"
 #include "utils/log.h"
 #include "dlgcache.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "threads/SingleLock.h"
 #include "LocalizeStrings.h"
 
 extern "C" void mplayer_exit_player(void);
+
+using namespace KODI::MESSAGING;
 
 CDlgCache::CDlgCache(DWORD dwDelay, const CStdString& strHeader, const CStdString& strMsg) : CThread("CDlgCache")
 {
@@ -60,7 +62,7 @@ void CDlgCache::Close(bool bForceClose)
   // we cannot wait for the app thread to process the close message
   // as this might happen during player startup which leads to a deadlock
   if (m_pDlg && m_pDlg->IsDialogRunning())
-    CApplicationMessenger::Get().Close(m_pDlg,bForceClose,false);
+    CApplicationMessenger::Get().PostMsg(TMSG_GUI_WINDOW_CLOSE, -1, bForceClose ? 1 : 0, static_cast<void*>(m_pDlg));
 
   //Set stop, this will kill this object, when thread stops  
   CThread::m_bStop = true;

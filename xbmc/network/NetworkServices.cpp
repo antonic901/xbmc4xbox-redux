@@ -20,7 +20,7 @@
 
 #include "NetworkServices.h"
 #include "Application.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "GUIInfoManager.h"
 #include "Util.h"
 #include "dialogs/GUIDialogKaiToast.h"
@@ -61,6 +61,7 @@
 #include "utils/RssManager.h"
 #include "SectionLoader.h"
 
+using namespace KODI::MESSAGING;
 using namespace std;
 #ifdef HAS_EVENT_SERVER
 using namespace EVENTSERVER;
@@ -265,7 +266,7 @@ void CNetworkServices::OnSettingChanged(const CSetting *setting)
     if (CGUIDialogYesNo::ShowAndGetInput(14038, 14039, 14040, -1, -1))
     {
       CSettings::Get().Save();
-      CApplicationMessenger::Get().RestartApp();
+      CApplicationMessenger::Get().PostMsg(TMSG_RESTARTAPP);
     }
   }
 }

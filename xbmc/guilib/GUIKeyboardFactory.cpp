@@ -19,7 +19,7 @@
  */
 
 #include "Application.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "LocalizeStrings.h"
 #include "GUIKeyboardFactory.h"
 #include "dialogs/GUIDialogOK.h"
@@ -34,6 +34,8 @@
 #if defined(TARGET_DARWIN_IOS)
 #include "dialogs/GUIDialogKeyboardTouch.h"
 #endif
+
+using namespace KODI::MESSAGING;
 
 CGUIKeyboard *CGUIKeyboardFactory::g_activedKeyboard = NULL;
 FILTERING CGUIKeyboardFactory::m_filtering = FILTERING_NONE;
