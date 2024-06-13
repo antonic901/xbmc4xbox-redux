@@ -25,7 +25,7 @@
 #include "system.h"
 #include "Util.h"
 #include "Application.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 
 #include "UPnP.h"
 #include "UPnPInternal.h"
@@ -47,6 +47,7 @@
 
 using namespace std;
 using namespace UPNP;
+using namespace KODI::MESSAGING;
 
 extern CGUIInfoManager g_infoManager;
 

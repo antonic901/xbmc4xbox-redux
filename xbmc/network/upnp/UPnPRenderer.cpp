@@ -4,7 +4,7 @@
 #include "UPnPInternal.h"
 #include "Platinum.h"
 #include "Application.h"
-#include "ApplicationMessenger.h"
+#include "messaging/ApplicationMessenger.h"
 #include "FileItem.h"
 #include "GUIInfoManager.h"
 #include "guilib/GUIWindowManager.h"
@@ -15,6 +15,10 @@
 #include "ThumbLoader.h"
 #include "URL.h"
 #include "utils/URIUtils.h"
+
+#include <boost/make_shared.hpp>
+
+using namespace KODI::MESSAGING;
 
 namespace UPNP
 {
@@ -298,7 +302,7 @@ CUPnPRenderer::OnNext(PLT_ActionReference& action)
         }
         slideshow->ShowNext();
     } else {
-        CApplicationMessenger::Get().PlayListPlayerNext();
+        CApplicationMessenger::Get().SendMsg(TMSG_PLAYLISTPLAYER_NEXT);
     }
     return NPT_SUCCESS;
 }
@@ -310,7 +314,7 @@ NPT_Result
 CUPnPRenderer::OnPause(PLT_ActionReference& action)
 {
     if (!g_application.IsPaused())
-        CApplicationMessenger::Get().MediaPause();
+        CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_PAUSE);
     return NPT_SUCCESS;
 }
 
@@ -321,7 +325,7 @@ NPT_Result
 CUPnPRenderer::OnPlay(PLT_ActionReference& action)
 {
     if (g_application.IsPaused()) {
-        CApplicationMessenger::Get().MediaPause();
+        CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_PAUSE);
     } else if (!g_application.IsPlaying()) {
         NPT_String uri, meta;
         PLT_Service* service;
@@ -342,7 +346,7 @@ CUPnPRenderer::OnPlay(PLT_ActionReference& action)
 NPT_Result
 CUPnPRenderer::OnPrevious(PLT_ActionReference& action)
 {
-    CApplicationMessenger::Get().PlayListPlayerPrevious();
+    CApplicationMessenger::Get().SendMsg(TMSG_PLAYLISTPLAYER_PREV);
     return NPT_SUCCESS;
 }
 
@@ -352,7 +356,7 @@ CUPnPRenderer::OnPrevious(PLT_ActionReference& action)
 NPT_Result
 CUPnPRenderer::OnStop(PLT_ActionReference& action)
 {
-    CApplicationMessenger::Get().MediaStop();
+    CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_STOP);
     return NPT_SUCCESS;
 }
 
@@ -442,13 +446,23 @@ CUPnPRenderer::PlayMedia(const char* uri, const char* meta, PLT_Action* action)
         } else if(object->m_ObjectClass.type.StartsWith("object.item.imageItem")) {
             bImageFile = true;
         }
-        bImageFile?CApplicationMessenger::Get().PictureShow(item.GetPath())
-                  :CApplicationMessenger::Get().MediaPlay(item);
+        if (bImageFile)
+          CApplicationMessenger::Get().PostMsg(TMSG_PICTURE_SHOW, -1, -1, NULL, item.GetPath());
+        else {
+          CFileItemList *l = new CFileItemList; //don't delete,
+          l->Add(boost::make_shared<CFileItem>(item));
+          CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
+        }
     } else {
         bImageFile = NPT_String(PLT_MediaObject::GetUPnPClass(uri)).StartsWith("object.item.imageItem", true);
 
-        bImageFile?CApplicationMessenger::Get().PictureShow((const char*)uri)
-                  :CApplicationMessenger::Get().MediaPlay((const char*)uri);
+        if (bImageFile)
+          CApplicationMessenger::Get().PostMsg(TMSG_PICTURE_SHOW, -1, -1, NULL, (const char*)uri);
+        else {
+          CFileItemList *l = new CFileItemList; //don't delete,
+          l->Add(boost::make_shared<CFileItem>((const char*)uri, false));
+          CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
+        }
     }
 
     if (!g_application.IsPlaying()) {
