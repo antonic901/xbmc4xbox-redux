@@ -72,4 +72,3 @@ protected:
 
   CProfile::CLock m_locks;
 };
-

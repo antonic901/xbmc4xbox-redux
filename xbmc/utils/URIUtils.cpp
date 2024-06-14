@@ -498,6 +498,26 @@ bool URIUtils::IsProtocol(const std::string& url, const std::string &type)
   return StringUtils::StartsWithNoCase(url, type + "://");
 }
 
+bool URIUtils::PathHasParent(std::string path, std::string parent, bool translate /* = false */)
+{
+  if (translate)
+  {
+    path = CSpecialProtocol::TranslatePath(path);
+    parent = CSpecialProtocol::TranslatePath(parent);
+  }
+
+  if (parent.empty())
+    return false;
+
+  if (path == parent)
+    return true;
+
+  // Make sure parent has a trailing slash
+  AddSlashAtEnd(parent);
+
+  return StringUtils::StartsWith(path, parent);
+}
+
 bool URIUtils::PathStarts(const std::string& url, const char *start)
 {
   return StringUtils::StartsWith(url, start);

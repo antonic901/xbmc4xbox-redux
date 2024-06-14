@@ -94,6 +94,17 @@ public:
    */
   static bool IsProtocol(const std::string& url, const std::string& type);
 
+  /*! \brief Check whether a path has a given parent.
+   Comparison is case-sensitive.
+   Use IsProtocol() to compare the protocol portion only.
+   \param path a std::string path.
+   \param parent the string the parent of the path should be compared against.
+   \param translate whether to translate any special paths into real paths
+   \return true if the path has the given parent string, false otherwise.
+   \sa IsProtocol, PathEquals
+   */
+  static bool PathHasParent(std::string path, std::string parent, bool translate = false);
+
   /*! \brief Check whether a path starts with a given start.
    Comparison is case-sensitive.
    Use IsProtocol() to compare the protocol portion only.

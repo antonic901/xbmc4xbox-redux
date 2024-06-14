@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2005-2014 Team XBMC
+ *      Copyright (C) 2005-2013 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -19,24 +19,28 @@
  */
 
 #include "GUIDialogProfileSettings.h"
-#include "FileItem.h"
-#include "GUIPassword.h"
-#include "Util.h"
+
+#include <utility>
+
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "dialogs/GUIDialogYesNo.h"
+#include "FileItem.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
 #include "guilib/GUIKeyboardFactory.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
-#include "profiles/ProfilesManager.h"
+#include "GUIPassword.h"
 #include "profiles/dialogs/GUIDialogLockSettings.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/lib/Setting.h"
 #include "settings/windows/GUIControlSettings.h"
 #include "storage/MediaManager.h"
-#include "utils/log.h"
-#include "utils/URIUtils.h"
 #include "Util.h"
+#include "utils/log.h"
+#include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
+#include "utils/Variant.h"
 
 #define SETTING_PROFILE_NAME          "profile.name"
 #define SETTING_PROFILE_IMAGE         "profile.image"
@@ -83,8 +87,8 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
     dialog->m_thumb.clear();
 
     // prompt for a name
-    CStdString profileName;
-    if (!CGUIKeyboardFactory::ShowAndGetInput(profileName, g_localizeStrings.Get(20093),false) || profileName.empty())
+    std::string profileName;
+    if (!CGUIKeyboardFactory::ShowAndGetInput(profileName, g_localizeStrings.Get(20093), false) || profileName.empty())
       return false;
     dialog->m_name = profileName;
 
@@ -103,7 +107,7 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
     std::string userDir = defaultDir;
     if (GetProfilePath(userDir, false)) // can't be the master user
     {
-      if (!StringUtils::StartsWith(userDir, defaultDir)) // user chose a different folder
+      if (!URIUtils::PathHasParent(userDir, defaultDir)) // user chose a different folder
         XFILE::CDirectory::Remove(URIUtils::AddFileToFolder("special://masterprofile/", defaultDir));
     }
     dialog->m_directory = userDir;
@@ -132,9 +136,9 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
       if (dialog->m_name.empty() || dialog->m_directory.empty())
         return false;
 
-      /*CStdString strLabel;
+      /*std::string strLabel;
       strLabel.Format(g_localizeStrings.Get(20047),dialog->m_strName);
-      if (!CGUIDialogYesNo::ShowAndGetInput(g_localizeStrings.Get(20058),strLabel,dialog->m_strDirectory,""))
+      if (!CGUIDialogYesNo::ShowAndGetInput(20058, strLabel, dialog->m_strDirectory, ""))
       {
         CDirectory::Remove(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(), dialog->m_strDirectory));
         return false;
@@ -143,9 +147,9 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
       // check for old profile settings
       CProfile profile(dialog->m_directory, dialog->m_name, CProfilesManager::Get().GetNextProfileId());
       CProfilesManager::Get().AddProfile(profile);
-      bool exists = XFILE::CFile::Exists(URIUtils::AddFileToFolder("special://masterprofile/", dialog->m_directory + "/guisettings.xml"));
+      bool exists = XFILE::CFile::Exists(URIUtils::AddFileToFolder("special://masterprofile/", dialog->m_directory, "guisettings.xml"));
 
-      if (exists && !CGUIDialogYesNo::ShowAndGetInput(20058, 20104, 20105, 20022))
+      if (exists && !CGUIDialogYesNo::ShowAndGetInput(20058, 20104))
         exists = false;
 
       if (!exists)
@@ -153,15 +157,15 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
         // copy masterprofile guisettings to new profile guisettings
         // If the user selects 'start fresh', do nothing as a fresh
         // guisettings.xml will be created on first profile use.
-        if (CGUIDialogYesNo::ShowAndGetInput(20058,20048,20102,20022,20044,20064))
+        if (CGUIDialogYesNo::ShowAndGetInput(20058, 20048, "", "", 20044, 20064))
         {
           XFILE::CFile::Copy(URIUtils::AddFileToFolder("special://masterprofile/", "guisettings.xml"),
-                              URIUtils::AddFileToFolder("special://masterprofile/", dialog->m_directory + "/guisettings.xml"));
+                              URIUtils::AddFileToFolder("special://masterprofile/", dialog->m_directory, "guisettings.xml"));
         }
       }
 
-      exists = XFILE::CFile::Exists(URIUtils::AddFileToFolder("special://masterprofile/", dialog->m_directory + "/sources.xml"));
-      if (exists && !CGUIDialogYesNo::ShowAndGetInput(20058, 20106, 20105, 20022))
+      exists = XFILE::CFile::Exists(URIUtils::AddFileToFolder("special://masterprofile/", dialog->m_directory, "sources.xml"));
+      if (exists && !CGUIDialogYesNo::ShowAndGetInput(20058, 20106))
         exists = false;
 
       if (!exists)
@@ -169,16 +173,16 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
         if ((dialog->m_sourcesMode & 2) == 2)
           // prompt user to copy masterprofile's sources.xml file
           // If 'start fresh' (no) is selected, do nothing.
-          if (CGUIDialogYesNo::ShowAndGetInput(20058, 20071, 20102, 20022, 20044, 20064))
+          if (CGUIDialogYesNo::ShowAndGetInput(20058, 20071, "", "", 20044, 20064))
           {
             XFILE::CFile::Copy(URIUtils::AddFileToFolder("special://masterprofile/", "sources.xml"),
-                                URIUtils::AddFileToFolder("special://masterprofile/", dialog->m_directory + "/sources.xml"));
+                                URIUtils::AddFileToFolder("special://masterprofile/", dialog->m_directory, "sources.xml"));
           }
       }
     }
 
     /*if (!dialog->m_bIsNewUser)
-      if (!CGUIDialogYesNo::ShowAndGetInput(20067,20103,20022,20022))
+      if (!CGUIDialogYesNo::ShowAndGetInput(20067, 20103))
         return false;*/
 
     CProfile *profile = CProfilesManager::Get().GetProfile(iProfile);
@@ -251,12 +255,12 @@ void CGUIDialogProfileSettings::OnSettingAction(const CSetting *setting)
     item->SetLabel(g_localizeStrings.Get(20018));
     items.Add(item);
 
-    CStdString thumb;
+    std::string thumb;
     if (CGUIDialogFileBrowser::ShowAndGetImage(items, shares, g_localizeStrings.Get(1030), thumb) &&
-        !thumb.Equals("thumb://Current"))
+        !StringUtils::EqualsNoCase(thumb, "thumb://Current"))
     {
       m_needsSaving = true;
-      m_thumb = thumb.Equals("thumb://None") ? "" : thumb;
+      m_thumb = StringUtils::EqualsNoCase(thumb, "thumb://None") ? "" : thumb;
 
       UpdateProfileImage();
     }
@@ -275,7 +279,7 @@ void CGUIDialogProfileSettings::OnSettingAction(const CSetting *setting)
     {
       if (CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE && !m_isDefault)
       {
-        if (CGUIDialogYesNo::ShowAndGetInput(20066, 20118, 20119, 20022))
+        if (CGUIDialogYesNo::ShowAndGetInput(20066, 20118))
           g_passwordManager.SetMasterLockMode(false);
         if (CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE)
           return;
@@ -353,11 +357,11 @@ void CGUIDialogProfileSettings::InitializeSettings()
     }
 
     StaticIntegerSettingOptions entries;
-    entries.push_back(std::make_pair(0, 20062));
-    entries.push_back(std::make_pair(1, 20063));
-    entries.push_back(std::make_pair(2, 20061));
+    entries.push_back(std::make_pair(20062, 0));
+    entries.push_back(std::make_pair(20063, 1));
+    entries.push_back(std::make_pair(20061, 2));
     if (CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE)
-      entries.push_back(std::make_pair(3, 20107));
+      entries.push_back(std::make_pair(20107, 3));
 
     AddSpinner(groupMedia, SETTING_PROFILE_MEDIA, 20060, 0, m_dbMode, entries);
     AddSpinner(groupMedia, SETTING_PROFILE_MEDIA_SOURCES, 20094, 0, m_sourcesMode, entries);
@@ -372,7 +376,7 @@ bool CGUIDialogProfileSettings::GetProfilePath(std::string &directory, bool isDe
   share.strPath = "special://masterprofile/profiles/";
   shares.push_back(share);
 
-  CStdString strDirectory;
+  std::string strDirectory;
   if (directory.empty())
     strDirectory = share.strPath;
   else
