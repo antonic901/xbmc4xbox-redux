@@ -26,20 +26,20 @@
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "profiles/dialogs/GUIDialogProfileSettings.h"
-#include "xbox/network.h"
-#include "utils/Weather.h"
+#include "xbox/Network.h"
+#include "utils/URIUtils.h"
 #include "GUIPassword.h"
 #include "windows/GUIWindowLoginScreen.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIWindowManager.h"
 #include "filesystem/Directory.h"
 #include "FileItem.h"
-#include "utils/URIUtils.h"
-#include "LocalizeStrings.h"
+#include "guilib/Key.h"
+#include "guilib/LocalizeStrings.h"
+#include "utils/Variant.h"
 
 using namespace XFILE;
 
 #define CONTROL_PROFILES 2
-#define CONTROL_LASTLOADED_PROFILE 3
 #define CONTROL_LOGINSCREEN 4
 #define CONTROL_AUTOLOGIN 5
 
@@ -171,7 +171,7 @@ bool CGUIWindowSettingsProfile::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_AUTOLOGIN)
       {
-    	  int currentId = CProfilesManager::Get().GetAutoLoginProfileId();
+        int currentId = CProfilesManager::Get().GetAutoLoginProfileId();
         int profileId;
         if (GetAutoLoginProfileChoice(profileId) && (currentId != profileId))
         {
@@ -195,7 +195,6 @@ void CGUIWindowSettingsProfile::LoadList()
   {
     const CProfile *profile = CProfilesManager::Get().GetProfile(i);
     CFileItemPtr item(new CFileItem(profile->getName()));
-    item->SetPath("");
     item->SetLabel2(profile->getDate());
     item->SetArt("thumb", profile->getThumb());
     item->SetOverlayImage(profile->getLockMode() == LOCK_MODE_EVERYONE ? CGUIListItem::ICON_OVERLAY_NONE : CGUIListItem::ICON_OVERLAY_LOCKED);
@@ -203,7 +202,6 @@ void CGUIWindowSettingsProfile::LoadList()
   }
   {
     CFileItemPtr item(new CFileItem(g_localizeStrings.Get(20058)));
-    item->SetPath("");
     m_listItems->Add(item);
   }
   CGUIMessage msg(GUI_MSG_LABEL_BIND, GetID(), CONTROL_PROFILES, 0, 0, m_listItems);
@@ -250,11 +248,11 @@ bool CGUIWindowSettingsProfile::GetAutoLoginProfileChoice(int &iProfile)
   for (unsigned int i = 0; i < CProfilesManager::Get().GetNumberOfProfiles(); i++)
   {
     const CProfile *profile = CProfilesManager::Get().GetProfile(i);
-    CStdString locked = g_localizeStrings.Get(profile->getLockMode() > 0 ? 20166 : 20165);
+    std::string locked = g_localizeStrings.Get(profile->getLockMode() > 0 ? 20166 : 20165);
     CFileItemPtr item(new CFileItem(profile->getName()));
-    item->SetProperty("Addon.Summary", locked); // lock setting
-    CStdString thumb = profile->getThumb();
-    if (thumb.IsEmpty())
+    item->SetLabel2(locked); // lock setting
+    std::string thumb = profile->getThumb();
+    if (thumb.empty())
       thumb = "DefaultUser.png";
     item->SetIconImage(thumb);
     items.Add(item);
@@ -262,6 +260,7 @@ bool CGUIWindowSettingsProfile::GetAutoLoginProfileChoice(int &iProfile)
 
   dialog->SetHeading(20093); // Profile name
   dialog->Reset();
+  dialog->SetUseDetails(true);
   dialog->SetItems(items);
   dialog->SetSelected(autoLoginProfileId);
   dialog->Open();
