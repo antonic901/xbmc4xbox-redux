@@ -18,6 +18,12 @@
  *
  */
 
+#include <map>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <limits.h>
 
 #include "GUIDialogContentSettings.h"
@@ -44,8 +50,8 @@
 #define SETTING_EXCLUDE               "exclude"
 #define SETTING_NO_UPDATING           "noupdating"
 
-using namespace std;
 using namespace ADDON;
+
 
 CGUIDialogContentSettings::CGUIDialogContentSettings()
   : CGUIDialogSettingsManualBase(WINDOW_DIALOG_CONTENT_SETTINGS, "DialogSettings.xml"),
@@ -96,7 +102,7 @@ bool CGUIDialogContentSettings::Show(ADDON::ScraperPtr& scraper, VIDEO::SScanSet
     dialog->SetContent(content != CONTENT_NONE ? content : scraper->Content());
     dialog->SetScraper(scraper);
     // toast selected but disabled scrapers
-    if (!scraper->Enabled())
+    if (CAddonMgr::Get().IsAddonDisabled(scraper->ID()))
       CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Error, g_localizeStrings.Get(24024), scraper->Name(), 2000, true);
   }
 
@@ -226,10 +232,11 @@ void CGUIDialogContentSettings::OnSettingAction(const CSetting *setting)
 
       dialog->Open();
       // Selected item has not changes - in case of cancel or the user selecting the same item
-      if (!dialog->IsConfirmed() || dialog->GetSelectedItem() == iSelected)
+      int newSelected = dialog->GetSelectedItem();
+      if (!dialog->IsConfirmed() || newSelected < 0 || newSelected == iSelected)
         return;
 
-      DynamicIntegerSettingOption selected = labels.at(dialog->GetSelectedItem());
+      DynamicIntegerSettingOption selected = labels.at(newSelected);
       m_content = static_cast<CONTENT_TYPE>(selected.second);
 
       AddonPtr scraperAddon;
@@ -243,10 +250,13 @@ void CGUIDialogContentSettings::OnSettingAction(const CSetting *setting)
   else if (settingId == SETTING_SCRAPER_LIST)
   {
     ADDON::TYPE type = ADDON::ScraperTypeFromContent(m_content);
-    std::string selectedAddonId = m_scraper->ID();
+    std::string currentScraperId;
+    if (m_scraper != NULL)
+      currentScraperId = m_scraper->ID();
+    std::string selectedAddonId = currentScraperId;
 
     if (CGUIWindowAddonBrowser::SelectAddonID(type, selectedAddonId, false) == 1
-        && selectedAddonId != m_scraper->ID())
+        && selectedAddonId != currentScraperId)
     {
       AddonPtr scraperAddon;
       CAddonMgr::Get().GetAddon(selectedAddonId, scraperAddon);
@@ -284,7 +294,7 @@ void CGUIDialogContentSettings::SetupView()
   else
   {
     ToggleState(SETTING_SCRAPER_LIST, true);
-    if (m_scraper != NULL && m_scraper->Enabled())
+    if (m_scraper != NULL && !CAddonMgr::Get().IsAddonDisabled(m_scraper->ID()))
     {
       SetLabel2(SETTING_SCRAPER_LIST, m_scraper->Name());
       if (m_scraper && m_scraper->Supports(m_content) && m_scraper->HasSettings())
@@ -329,8 +339,8 @@ void CGUIDialogContentSettings::InitializeSettings()
   if (subsetting != NULL)
     subsetting->SetParent(SETTING_SCRAPER_LIST);
 
-  group = AddGroup(category, 20322);
-  if (category == NULL)
+  CSettingGroup *groupDetails = AddGroup(category, 20322);
+  if (groupDetails == NULL)
   {
     CLog::Log(LOGERROR, "CGUIDialogContentSettings: unable to setup scanning settings");
     return;
@@ -339,18 +349,18 @@ void CGUIDialogContentSettings::InitializeSettings()
   {
     case CONTENT_TVSHOWS:
     {
-      AddToggle(group, SETTING_CONTAINS_SINGLE_ITEM, 20379, 0, m_containsSingleItem, false, m_showScanSettings);
-      AddToggle(group, SETTING_NO_UPDATING, 20432, 0, m_noUpdating, false, m_showScanSettings);
+      AddToggle(groupDetails, SETTING_CONTAINS_SINGLE_ITEM, 20379, 0, m_containsSingleItem, false, m_showScanSettings);
+      AddToggle(groupDetails, SETTING_NO_UPDATING, 20432, 0, m_noUpdating, false, m_showScanSettings);
       break;
     }
 
     case CONTENT_MOVIES:
     case CONTENT_MUSICVIDEOS:
     {
-      AddToggle(group, SETTING_USE_DIRECTORY_NAMES, m_content == CONTENT_MOVIES ? 20329 : 20330, 0, m_useDirectoryNames, false, m_showScanSettings);
-      CSettingBool *settingScanRecursive = AddToggle(group, SETTING_SCAN_RECURSIVE, 20346, 0, m_scanRecursive, false, m_showScanSettings);
-      CSettingBool *settingContainsSingleItem = AddToggle(group, SETTING_CONTAINS_SINGLE_ITEM, 20383, 0, m_containsSingleItem, false, m_showScanSettings);
-      AddToggle(group, SETTING_NO_UPDATING, 20432, 0, m_noUpdating, false, m_showScanSettings);
+      AddToggle(groupDetails, SETTING_USE_DIRECTORY_NAMES, m_content == CONTENT_MOVIES ? 20329 : 20330, 0, m_useDirectoryNames, false, m_showScanSettings);
+      CSettingBool *settingScanRecursive = AddToggle(groupDetails, SETTING_SCAN_RECURSIVE, 20346, 0, m_scanRecursive, false, m_showScanSettings);
+      CSettingBool *settingContainsSingleItem = AddToggle(groupDetails, SETTING_CONTAINS_SINGLE_ITEM, 20383, 0, m_containsSingleItem, false, m_showScanSettings);
+      AddToggle(groupDetails, SETTING_NO_UPDATING, 20432, 0, m_noUpdating, false, m_showScanSettings);
 
       // define an enable dependency with (m_useDirectoryNames && !m_containsSingleItem) || !m_useDirectoryNames
       CSettingDependency dependencyScanRecursive(SettingDependencyTypeEnable, m_settingsManager);
@@ -382,7 +392,7 @@ void CGUIDialogContentSettings::InitializeSettings()
 
     case CONTENT_NONE:
     default:
-      AddToggle(group, SETTING_EXCLUDE, 20380, 0, m_exclude, false, !m_showScanSettings);
+      AddToggle(groupDetails, SETTING_EXCLUDE, 20380, 0, m_exclude, false, !m_showScanSettings);
       break;
   }
 }
