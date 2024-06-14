@@ -19,16 +19,19 @@
  */
 
 #include "GUIDialogLockSettings.h"
-#include "URL.h"
+
+#include <utility>
+
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogGamepad.h"
-#include "guilib/GUIKeyboardFactory.h"
 #include "dialogs/GUIDialogNumeric.h"
+#include "guilib/GUIKeyboardFactory.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "settings/lib/Setting.h"
 #include "settings/lib/SettingSection.h"
 #include "settings/windows/GUIControlSettings.h"
+#include "URL.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 
@@ -161,7 +164,7 @@ void CGUIDialogLockSettings::OnSettingAction(const CSetting *setting)
     choices.Add(4, 12339);
     int choice = CGUIDialogContextMenu::ShowAndGetChoice(choices);
 
-    CStdString newPassword;
+    std::string newPassword;
     LockType iLockMode = LOCK_MODE_UNKNOWN;
     bool bResult = false;
     switch(choice)
@@ -216,7 +219,7 @@ void CGUIDialogLockSettings::OnCancel()
 void CGUIDialogLockSettings::SetupView()
 {
   CGUIDialogSettingsManualBase::SetupView();
-  
+
   // set the title
   if (m_getUser)
     SetHeading(StringUtils::Format(g_localizeStrings.Get(20152).c_str(), CURL::Decode(m_url).c_str()));
@@ -283,7 +286,7 @@ void CGUIDialogLockSettings::InitializeSettings()
     settingsLevelOptions.push_back(std::make_pair(10038,  LOCK_LEVEL::ADVANCED));
     settingsLevelOptions.push_back(std::make_pair(10039,  LOCK_LEVEL::EXPERT));
     AddSpinner(groupDetails, SETTING_LOCK_SETTINGS, 20043, 0, static_cast<int>(m_locks.settings), settingsLevelOptions);
-    
+
     AddToggle(groupDetails, SETTING_LOCK_ADDONMANAGER, 24090, 0, m_locks.addonManager);
   }
 
