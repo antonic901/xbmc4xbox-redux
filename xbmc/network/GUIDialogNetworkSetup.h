@@ -20,21 +20,23 @@
  *
  */
 
-#include "GUIDialog.h"
+#include "settings/dialogs/GUIDialogSettingsManualBase.h"
 
-class CGUIDialogNetworkSetup :
-      public CGUIDialog
+class CGUIDialogNetworkSetup : public CGUIDialogSettingsManualBase
 {
 public:
   enum NET_PROTOCOL { NET_PROTOCOL_SMB = 0,
+                      NET_PROTOCOL_XBMSP,
                       NET_PROTOCOL_FTP,
                       NET_PROTOCOL_HTTP,
                       NET_PROTOCOL_HTTPS,
                       NET_PROTOCOL_DAV,
                       NET_PROTOCOL_DAVS,
-                      NET_PROTOCOL_DAAP,
                       NET_PROTOCOL_UPNP,
                       NET_PROTOCOL_RSS,
+                      NET_PROTOCOL_SFTP,
+                      NET_PROTOCOL_NFS,
+                      NET_PROTOCOL_DAAP,
                       NET_PROTOCOL_MYTH,
                       NET_PROTOCOL_TUXBOX};
   CGUIDialogNetworkSetup(void);
@@ -46,11 +48,22 @@ public:
 
   static bool ShowAndGetNetworkAddress(std::string &path);
 
-  CStdString ConstructPath() const;
+  std::string ConstructPath() const;
   void SetPath(const std::string &path);
   bool IsConfirmed() const { return m_confirmed; };
 
 protected:
+  // implementations of ISettingCallback
+  virtual void OnSettingChanged(const CSetting *setting);
+  virtual void OnSettingAction(const CSetting *setting);
+
+  // specialization of CGUIDialogSettingsBase
+  virtual void Save() { }
+  virtual void SetupView();
+
+  // specialization of CGUIDialogSettingsManualBase
+  virtual void InitializeSettings();
+
   void OnProtocolChange();
   void OnServerBrowse();
   void OnOK();
@@ -58,11 +71,11 @@ protected:
   void UpdateButtons();
 
   NET_PROTOCOL m_protocol;
-  CStdString m_server;
-  CStdString m_path;
-  CStdString m_username;
-  CStdString m_password;
-  CStdString m_port;
+  std::string m_server;
+  std::string m_path;
+  std::string m_username;
+  std::string m_password;
+  std::string m_port;
 
   bool m_confirmed;
 };

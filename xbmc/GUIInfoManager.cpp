@@ -3140,7 +3140,7 @@ CStdString CGUIInfoManager::GetImage(int info, int contextWindow, std::string *f
   {
     CStdString thumb = CProfilesManager::Get().GetCurrentProfile().getThumb();
     if (thumb.IsEmpty())
-      thumb = "unknown-user.png";
+      thumb = "DefaultUser.png";
     return thumb;
   }
   else if (info == MUSICPLAYER_COVER)

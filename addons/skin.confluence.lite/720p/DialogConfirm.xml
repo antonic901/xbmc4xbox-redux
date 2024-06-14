@@ -13,8 +13,6 @@
 			<param name="DialogHeaderWidth" value="570" />
 			<param name="DialogHeaderLabel" value="" />
 			<param name="DialogHeaderId" value="1" />
-			<param name="CloseButtonLeft" value="560" />
-			<param name="CloseButtonNav" value="9000" />
 		</include>
 		<control type="textbox" id="9">
 			<description>text</description>

@@ -5,12 +5,12 @@
 	<include file="ViewsFileMode.xml" />
 	<include file="ViewsPictures.xml" />
 	<include file="ViewsAddonBrowser.xml"/>
-	
+
 	<include file="IncludesCodecFlagging.xml" />
 	<include file="IncludesHomeRecentlyAdded.xml" />
 	<include file="IncludesHomeMenuItems.xml" />
 	<include file="IncludesBackgroundBuilding.xml" />
-	
+
 	<constant name="FanartCrossfadeTime">500</constant>
 	<constant name="IconCrossfadeTime">400</constant>
 
@@ -24,6 +24,37 @@
 		<value condition="!Player.DisplayAfterSeek + Player.Seeking">$LOCALIZE[31046]</value>
 	</variable>
 
+	<include name="DialogBackgroundCommons">
+		<control type="image">
+			<description>background image</description>
+			<left>0</left>
+			<top>0</top>
+			<width>$PARAM[DialogBackgroundWidth]</width>
+			<height>$PARAM[DialogBackgroundHeight]</height>
+			<texture border="40">$VAR[SelectBack]</texture>
+		</control>
+		<control type="image">
+			<description>Dialog Header image</description>
+			<left>40</left>
+			<top>16</top>
+			<width>$PARAM[DialogHeaderWidth]</width>
+			<height>40</height>
+			<texture>dialogheader.png</texture>
+		</control>
+		<control type="label" id="$PARAM[DialogHeaderId]">
+			<description>header label</description>
+			<left>40</left>
+			<top>20</top>
+			<width>$PARAM[DialogHeaderWidth]</width>
+			<height>30</height>
+			<font>font13_title</font>
+			<label>$PARAM[DialogHeaderLabel]</label>
+			<align>center</align>
+			<aligny>center</aligny>
+			<textcolor>selected</textcolor>
+			<shadowcolor>black</shadowcolor>
+		</control>
+	</include>
 	<include name="BehindDialogFadeOut">
 		<control type="image">
 			<posx>0</posx>
@@ -140,7 +171,7 @@
 	</include>
 	<include name="CommonNowPlaying">
 		<control type="group">
-			<visible>Player.HasMedia</visible> 
+			<visible>Player.HasMedia</visible>
 		<!--<visible>!SubString(Window(videolibrary).Property(TvTunesIsAlive),True)</visible> -->
 			<include>VisibleFadeEffect</include>
 			<animation effect="fade" time="250" condition="Window.Previous(Home)">WindowOpen</animation>

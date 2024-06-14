@@ -190,7 +190,7 @@ void CGUIWindowLoginScreen::Update()
     item->SetLabel2(strLabel);
     item->SetArt("thumb", profile->getThumb());
     if (profile->getThumb().IsEmpty() || profile->getThumb().Equals("-"))
-      item->SetArt("thumb", "unknown-user.png");
+      item->SetArt("thumb", "DefaultUser.png");
     item->SetLabelPreformated(true);
     m_vecItems->Add(item);
   }

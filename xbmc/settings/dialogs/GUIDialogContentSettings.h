@@ -36,14 +36,9 @@ class CGUIDialogContentSettings : public CGUIDialogSettingsManualBase
 {
 public:
   CGUIDialogContentSettings();
-  virtual ~CGUIDialogContentSettings();
-
-  // specializations of CGUIControl
-  virtual bool OnMessage(CGUIMessage &message);
 
   // specialization of CGUIWindow
   virtual bool HasListItems() const { return true; };
-  virtual CFileItemPtr GetCurrentListItem(int offset = 0);
 
   CONTENT_TYPE GetContent() const { return m_content; }
   void SetContent(CONTENT_TYPE content);
@@ -68,19 +63,21 @@ protected:
 
   // implementations of ISettingCallback
   virtual void OnSettingChanged(const CSetting *setting);
+  virtual void OnSettingAction(const CSetting *setting);
 
   // specialization of CGUIDialogSettingsBase
   virtual bool AllowResettingSettings() const { return false; }
   virtual void Save();
-  virtual void OnOkay();
-  virtual void OnCancel();
   virtual void SetupView();
 
   // specialization of CGUIDialogSettingsManualBase
   virtual void InitializeSettings();
 
 private:
-  bool m_needsSaving;
+  void SetLabel2(const std::string &settingid, const std::string &label);
+  void ToggleState(const std::string &settingid, bool enabled);
+  void SetFocus(const std::string &settingid);
+
   /*!
   * @brief The currently selected content type
   */
@@ -100,6 +97,4 @@ private:
   bool m_containsSingleItem;
   bool m_exclude;
   bool m_noUpdating;
-
-  CFileItemList* m_vecItems;
 };

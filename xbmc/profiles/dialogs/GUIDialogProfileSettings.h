@@ -57,7 +57,7 @@ protected:
    */
   static bool GetProfilePath(std::string &directory, bool isDefault);
 
-  void updateProfileName();
+  void UpdateProfileImage();
   void updateProfileDirectory();
 
   bool m_needsSaving;
@@ -71,6 +71,5 @@ protected:
   bool m_showDetails;
 
   CProfile::CLock m_locks;
-  std::string m_defaultImage;
 };
 
