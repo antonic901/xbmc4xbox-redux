@@ -12523,7 +12523,19 @@ msgctxt "#37043"
 msgid "Defines the time to wait for subsequent key presses before performing the skip. Only applies when using smart skipping (when using more than one skip step for a direction)."
 msgstr ""
 
-#empty strings from id 37044 to 38009
+#empty strings from id 37044 to 38023
+
+#: \xbmc\settings\dialogs\GUIDialogContentSettings.cpp
+msgctxt "#38024"
+msgid "Information provider selection"
+msgstr ""
+
+#: \xbmc\settings\dialogs\GUIDialogContentSettings.cpp
+msgctxt "#38025"
+msgid "Choose information provider"
+msgstr ""
+
+#empty strings from id 38026 to 38599
 
 #strings from id 38600 to 38999 reserved for xbmc4xbox
 

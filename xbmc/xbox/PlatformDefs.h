@@ -69,6 +69,27 @@ typedef int ssize_t;
 extern "C" char * strptime(const char *buf, const char *fmt, struct tm *tm);
 extern "C" int strverscmp (const char *s1, const char *s2);
 
+/*! \brief This is nullptr implementation from C++11.
+ It doesn't work for pointers from boost library. For
+ that use boost built in method reset()
+ */
+const                         /* this is a const object...     */
+class nullptr_t
+{
+public:
+   template<class T>          /* convertible to any type       */
+   operator T*() const        /* of null non-member            */
+      { return 0; }           /* pointer...                    */
+
+   template<class C, class T> /* or any type of null           */
+      operator T C::*() const /* member pointer...             */
+      { return 0; }   
+
+private:
+   void operator&() const;    /* Can't take address of nullptr */
+
+} nullptr = {};               /* and whose name is nullptr     */
+
 #endif // _WIN32
 
 #endif //__PLATFORM_DEFS_H__
