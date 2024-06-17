@@ -251,7 +251,7 @@ CStdString CSysInfoJob::GetSystemUpTime(bool bTotalUptime)
   return strSystemUptime;
 }
 
-CStdString CSysInfo::TranslateInfo(int info) const
+std::string CSysInfo::TranslateInfo(int info) const
 {
   switch(info)
   {

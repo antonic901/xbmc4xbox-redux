@@ -43,11 +43,11 @@ class TiXmlElement;
 
 struct day_forecast
 {
-  CStdString m_icon;
-  CStdString m_overview;
-  CStdString m_day;
-  CStdString m_high;
-  CStdString m_low;
+  std::string m_icon;
+  std::string m_overview;
+  std::string m_day;
+  std::string m_high;
+  std::string m_low;
 };
 
 #define NUM_DAYS 7
@@ -103,11 +103,11 @@ public:
   const CWeatherInfo &GetInfo() const;
 private:
   bool LoadWeather(const CStdString& strWeatherFile); //parse strWeatherFile
-  void GetString(const TiXmlElement* pRootElement, const CStdString& strTagName, CStdString &value, const CStdString& strDefaultValue);
+  void GetString(const TiXmlElement* pRootElement, const CStdString& strTagName, std::string &value, const CStdString& strDefaultValue);
   void GetInteger(const TiXmlElement* pRootElement, const CStdString& strTagName, int& iValue);
-  void LocalizeOverview(CStdString &str);
+  void LocalizeOverview(std::string &str);
   void LocalizeOverviewToken(CStdString &str);
-  void LocalizeDay(CStdString &day);
+  void LocalizeDay(std::string &day);
   void LoadLocalizedToken();
   int ConvertSpeed(int speed);
   std::map<CStdString, int> m_localizedTokens;
@@ -141,8 +141,8 @@ public:
 
 protected:
   virtual CJob *GetJob() const;
-  virtual CStdString TranslateInfo(int info) const;
-  virtual CStdString BusyInfo(int info) const;
+  virtual std::string TranslateInfo(int info) const;
+  virtual std::string BusyInfo(int info) const;
   virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
 
   virtual void OnSettingChanged(const CSetting *setting);

@@ -18,10 +18,10 @@
  *
  */
 
+#include "system.h"
 #include "LangInfo.h"
+#include "Application.h"
 #include "messaging/ApplicationMessenger.h"
-#include "FileItem.h"
-#include "Util.h"
 #include "FileItem.h"
 #include "Util.h"
 #include "filesystem/Directory.h"
@@ -37,37 +37,35 @@
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
 
+#include <algorithm>
+
 using namespace std;
 using namespace KODI::MESSAGING;
-
-CLangInfo g_langInfo;
 
 #define TEMP_UNIT_STRINGS 20027
 
 #define SPEED_UNIT_STRINGS 20200
 
-CLangInfo::CRegion::CRegion(const CRegion& region)
+CLangInfo::CRegion::CRegion(const CRegion& region):
+  m_strGuiCharSet(region.m_strGuiCharSet),
+  m_strSubtitleCharSet(region.m_strSubtitleCharSet),
+  m_strDVDMenuLanguage(region.m_strDVDMenuLanguage),
+  m_strDVDAudioLanguage(region.m_strDVDAudioLanguage),
+  m_strDVDSubtitleLanguage(region.m_strDVDSubtitleLanguage),
+  m_strLangLocaleName(region.m_strLangLocaleName),
+  m_strLangLocaleCodeTwoChar(region.m_strLangLocaleCodeTwoChar),
+  m_strRegionLocaleName(region.m_strRegionLocaleName),
+  m_forceUnicodeFont(region.m_forceUnicodeFont),
+  m_strName(region.m_strName),
+  m_strDateFormatLong(region.m_strDateFormatLong),
+  m_strDateFormatShort(region.m_strDateFormatShort),
+  m_strTimeFormat(region.m_strTimeFormat),
+  m_strTimeZone(region.m_strTimeZone)
 {
-  m_strName=region.m_strName;
-  m_forceUnicodeFont=region.m_forceUnicodeFont;
-  m_strGuiCharSet=region.m_strGuiCharSet;
-  m_strSubtitleCharSet=region.m_strSubtitleCharSet;
-  m_strDVDMenuLanguage=region.m_strDVDMenuLanguage;
-  m_strDVDAudioLanguage=region.m_strDVDAudioLanguage;
-  m_strDVDSubtitleLanguage=region.m_strDVDSubtitleLanguage;
-  m_strLangLocaleName = region.m_strLangLocaleName;
-  m_strLangLocaleCodeTwoChar = region.m_strLangLocaleCodeTwoChar;
-  m_strRegionLocaleName = region.m_strRegionLocaleName;
-
-  m_strDateFormatShort=region.m_strDateFormatShort;
-  m_strDateFormatLong=region.m_strDateFormatLong;
-  m_strTimeFormat=region.m_strTimeFormat;
   m_strMeridiemSymbols[MERIDIEM_SYMBOL_PM]=region.m_strMeridiemSymbols[MERIDIEM_SYMBOL_PM];
   m_strMeridiemSymbols[MERIDIEM_SYMBOL_AM]=region.m_strMeridiemSymbols[MERIDIEM_SYMBOL_AM];
-  m_strTimeFormat=region.m_strTimeFormat;
   m_tempUnit=region.m_tempUnit;
   m_speedUnit=region.m_speedUnit;
-  m_strTimeZone = region.m_strTimeZone;
 }
 
 CLangInfo::CRegion::CRegion()
@@ -100,55 +98,57 @@ void CLangInfo::CRegion::SetDefaults()
   m_strTimeZone.clear();
 }
 
-void CLangInfo::CRegion::SetTempUnit(const CStdString& strUnit)
+void CLangInfo::CRegion::SetTempUnit(const std::string& strUnit)
 {
-  if (strUnit.Equals("F"))
+  std::string unit(strUnit); StringUtils::ToLower(unit);
+  if (unit == "f")
     m_tempUnit=TEMP_UNIT_FAHRENHEIT;
-  else if (strUnit.Equals("K"))
+  else if (unit == "k")
     m_tempUnit=TEMP_UNIT_KELVIN;
-  else if (strUnit.Equals("C"))
+  else if (unit == "c")
     m_tempUnit=TEMP_UNIT_CELSIUS;
-  else if (strUnit.Equals("Re"))
+  else if (unit == "re")
     m_tempUnit=TEMP_UNIT_REAUMUR;
-  else if (strUnit.Equals("Ra"))
+  else if (unit == "ra")
     m_tempUnit=TEMP_UNIT_RANKINE;
-  else if (strUnit.Equals("Ro"))
+  else if (unit == "ro")
     m_tempUnit=TEMP_UNIT_ROMER;
-  else if (strUnit.Equals("De"))
+  else if (unit == "de")
     m_tempUnit=TEMP_UNIT_DELISLE;
-  else if (strUnit.Equals("N"))
+  else if (unit == "n")
     m_tempUnit=TEMP_UNIT_NEWTON;
 }
 
-void CLangInfo::CRegion::SetSpeedUnit(const CStdString& strUnit)
+void CLangInfo::CRegion::SetSpeedUnit(const std::string& strUnit)
 {
-  if (strUnit.Equals("kmh"))
+  std::string unit(strUnit); StringUtils::ToLower(unit);
+  if (unit == "kmh")
     m_speedUnit=SPEED_UNIT_KMH;
-  else if (strUnit.Equals("mpmin"))
+  else if (unit == "mpmin")
     m_speedUnit=SPEED_UNIT_MPMIN;
-  else if (strUnit.Equals("mps"))
+  else if (unit == "mps")
     m_speedUnit=SPEED_UNIT_MPS;
-  else if (strUnit.Equals("fth"))
+  else if (unit == "fth")
     m_speedUnit=SPEED_UNIT_FTH;
-  else if (strUnit.Equals("ftm"))
+  else if (unit == "ftm")
     m_speedUnit=SPEED_UNIT_FTMIN;
-  else if (strUnit.Equals("fts"))
+  else if (unit == "fts")
     m_speedUnit=SPEED_UNIT_FTS;
-  else if (strUnit.Equals("mph"))
+  else if (unit == "mph")
     m_speedUnit=SPEED_UNIT_MPH;
-  else if (strUnit.Equals("kts"))
+  else if (unit == "kts")
     m_speedUnit=SPEED_UNIT_KTS;
-  else if (strUnit.Equals("beaufort"))
+  else if (unit == "beaufort")
     m_speedUnit=SPEED_UNIT_BEAUFORT;
-  else if (strUnit.Equals("inchs"))
+  else if (unit == "inchs")
     m_speedUnit=SPEED_UNIT_INCHPS;
-  else if (strUnit.Equals("yards"))
+  else if (unit == "yards")
     m_speedUnit=SPEED_UNIT_YARDPS;
-  else if (strUnit.Equals("fpf"))
+  else if (unit == "fpf")
     m_speedUnit=SPEED_UNIT_FPF;
 }
 
-void CLangInfo::CRegion::SetTimeZone(const CStdString& strTimeZone)
+void CLangInfo::CRegion::SetTimeZone(const std::string& strTimeZone)
 {
   m_strTimeZone = strTimeZone;
 }
@@ -157,7 +157,7 @@ void CLangInfo::CRegion::SetTimeZone(const CStdString& strTimeZone)
 // sorting & transformations
 void CLangInfo::CRegion::SetGlobalLocale()
 {
-  CStdString strLocale;
+  std::string strLocale;
   if (m_strRegionLocaleName.length() > 0)
   {
     strLocale = m_strLangLocaleName + "_" + m_strRegionLocaleName;
@@ -172,8 +172,9 @@ void CLangInfo::CRegion::SetGlobalLocale()
   // decimal separator is changed depending of the current language
   // (ie. "," in French or Dutch instead of "."). This breaks atof() and
   // others similar functions.
-#if defined(TARGET_FREEBSD) || defined(TARGET_DARWIN_OSX)
-  // on FreeBSD and darwin libstdc++ is compiled with "generic" locale support
+#if defined(TARGET_FREEBSD) || defined(TARGET_DARWIN_OSX) || defined(__UCLIBC__)
+  // on FreeBSD, darwin and uClibc-based systems libstdc++ is compiled with
+  // "generic" locale support
   if (setlocale(LC_COLLATE, strLocale.c_str()) == NULL
   || setlocale(LC_CTYPE, strLocale.c_str()) == NULL)
   {
@@ -185,7 +186,7 @@ void CLangInfo::CRegion::SetGlobalLocale()
   locale current_locale = locale::classic(); // C-Locale
   try
   {
-    locale lcl = locale(strLocale);
+    locale lcl = locale(strLocale.c_str());
     strLocale = lcl.name();
     current_locale = current_locale.combine< collate<wchar_t> >(lcl);
     current_locale = current_locale.combine< ctype<wchar_t> >(lcl);
@@ -197,6 +198,7 @@ void CLangInfo::CRegion::SetGlobalLocale()
     strLocale = "C";
   }
 
+  g_langInfo.m_locale = current_locale; // TODO: move to CLangInfo class
   locale::global(current_locale);
 #endif
   g_charsetConverter.resetSystemCharset();
@@ -275,7 +277,7 @@ bool CLangInfo::Load(const std::string& strFileName, bool onlyCheckLanguage /*= 
     m_languageCodeGeneral = m_defaultRegion.m_strLangLocaleName;
 #endif
 
-  CStdString tmp;
+  std::string tmp;
   if (g_LangCodeExpander.ConvertToTwoCharCode(tmp, m_defaultRegion.m_strLangLocaleName))
     m_defaultRegion.m_strLangLocaleCodeTwoChar = tmp;
 
@@ -285,17 +287,15 @@ bool CLangInfo::Load(const std::string& strFileName, bool onlyCheckLanguage /*= 
     const TiXmlElement *pGui = pCharSets->FirstChildElement("gui");
     if (pGui && !pGui->NoChildren())
     {
-      CStdString strForceUnicodeFont = XMLUtils::GetAttribute(pGui, "unicodefont");
-
-      if (strForceUnicodeFont.Equals("true"))
+      if (StringUtils::EqualsNoCase(XMLUtils::GetAttribute(pGui, "unicodefont"), "true"))
         m_defaultRegion.m_forceUnicodeFont=true;
 
-      m_defaultRegion.m_strGuiCharSet=pGui->FirstChild()->Value();
+      m_defaultRegion.m_strGuiCharSet=pGui->FirstChild()->ValueStr();
     }
 
     const TiXmlNode *pSubtitle = pCharSets->FirstChild("subtitle");
     if (pSubtitle && !pSubtitle->NoChildren())
-      m_defaultRegion.m_strSubtitleCharSet=pSubtitle->FirstChild()->Value();
+      m_defaultRegion.m_strSubtitleCharSet=pSubtitle->FirstChild()->ValueStr();
   }
 
   const TiXmlNode *pDVD = pRootElement->FirstChild("dvd");
@@ -303,15 +303,15 @@ bool CLangInfo::Load(const std::string& strFileName, bool onlyCheckLanguage /*= 
   {
     const TiXmlNode *pMenu = pDVD->FirstChild("menu");
     if (pMenu && !pMenu->NoChildren())
-      m_defaultRegion.m_strDVDMenuLanguage=pMenu->FirstChild()->Value();
+      m_defaultRegion.m_strDVDMenuLanguage=pMenu->FirstChild()->ValueStr();
 
     const TiXmlNode *pAudio = pDVD->FirstChild("audio");
     if (pAudio && !pAudio->NoChildren())
-      m_defaultRegion.m_strDVDAudioLanguage=pAudio->FirstChild()->Value();
+      m_defaultRegion.m_strDVDAudioLanguage=pAudio->FirstChild()->ValueStr();
 
     const TiXmlNode *pSubtitle = pDVD->FirstChild("subtitle");
     if (pSubtitle && !pSubtitle->NoChildren())
-      m_defaultRegion.m_strDVDSubtitleLanguage=pSubtitle->FirstChild()->Value();
+      m_defaultRegion.m_strDVDSubtitleLanguage=pSubtitle->FirstChild()->ValueStr();
   }
 
   const TiXmlNode *pRegions = pRootElement->FirstChild("regions");
@@ -339,11 +339,11 @@ bool CLangInfo::Load(const std::string& strFileName, bool onlyCheckLanguage /*= 
 
       const TiXmlNode *pDateLong=pRegion->FirstChild("datelong");
       if (pDateLong && !pDateLong->NoChildren())
-        region.m_strDateFormatLong=pDateLong->FirstChild()->Value();
+        region.m_strDateFormatLong=pDateLong->FirstChild()->ValueStr();
 
       const TiXmlNode *pDateShort=pRegion->FirstChild("dateshort");
       if (pDateShort && !pDateShort->NoChildren())
-        region.m_strDateFormatShort=pDateShort->FirstChild()->Value();
+        region.m_strDateFormatShort=pDateShort->FirstChild()->ValueStr();
 
       const TiXmlElement *pTime=pRegion->FirstChildElement("time");
       if (pTime && !pTime->NoChildren())
@@ -355,15 +355,15 @@ bool CLangInfo::Load(const std::string& strFileName, bool onlyCheckLanguage /*= 
 
       const TiXmlNode *pTempUnit=pRegion->FirstChild("tempunit");
       if (pTempUnit && !pTempUnit->NoChildren())
-        region.SetTempUnit(pTempUnit->FirstChild()->Value());
+        region.SetTempUnit(pTempUnit->FirstChild()->ValueStr());
 
       const TiXmlNode *pSpeedUnit=pRegion->FirstChild("speedunit");
       if (pSpeedUnit && !pSpeedUnit->NoChildren())
-        region.SetSpeedUnit(pSpeedUnit->FirstChild()->Value());
+        region.SetSpeedUnit(pSpeedUnit->FirstChild()->ValueStr());
 
       const TiXmlNode *pTimeZone=pRegion->FirstChild("timezone");
       if (pTimeZone && !pTimeZone->NoChildren())
-        region.SetTimeZone(pTimeZone->FirstChild()->Value());
+        region.SetTimeZone(pTimeZone->FirstChild()->ValueStr());
 
       m_regions.insert(PAIR_REGIONS(region.m_strName, region));
 
@@ -372,7 +372,7 @@ bool CLangInfo::Load(const std::string& strFileName, bool onlyCheckLanguage /*= 
 
     if (!onlyCheckLanguage)
     {
-      const CStdString& strName = CSettings::Get().GetString("locale.country");
+      const std::string& strName = CSettings::Get().GetString("locale.country");
       SetCurrentRegion(strName);
     }
   }
@@ -390,23 +390,23 @@ bool CLangInfo::CheckLanguage(const std::string& language)
   return li.Load("special://xbmc/language/" + language + "/langinfo.xml", true);
 }
 
-void CLangInfo::LoadTokens(const TiXmlNode* pTokens, vector<CStdString>& vecTokens)
+void CLangInfo::LoadTokens(const TiXmlNode* pTokens, vector<std::string>& vecTokens)
 {
   if (pTokens && !pTokens->NoChildren())
   {
     const TiXmlElement *pToken = pTokens->FirstChildElement("token");
     while (pToken)
     {
-      CStdString strSep= " ._";
+      std::string strSep= " ._";
       if (pToken->Attribute("separators"))
         strSep = pToken->Attribute("separators");
       if (pToken->FirstChild() && pToken->FirstChild()->Value())
       {
         if (strSep.empty())
-          vecTokens.push_back(pToken->FirstChild()->Value());
+          vecTokens.push_back(pToken->FirstChild()->ValueStr());
         else
           for (unsigned int i=0;i<strSep.size();++i)
-            vecTokens.push_back(CStdString(pToken->FirstChild()->Value())+strSep[i]);
+            vecTokens.push_back(pToken->FirstChild()->ValueStr()+strSep[i]);
       }
       pToken = pToken->NextSiblingElement();
     }
@@ -423,14 +423,14 @@ void CLangInfo::SetDefaults()
   // Set the default region, we may be unable to load langinfo.xml
   m_currentRegion=&m_defaultRegion;
 
-  m_systemLocale = std::locale::classic();
+  m_locale = std::locale::classic();
 
   m_languageCodeGeneral = "eng";
 }
 
-CStdString CLangInfo::GetGuiCharSet() const
+std::string CLangInfo::GetGuiCharSet() const
 {
-  CStdString strCharSet;
+  std::string strCharSet;
   strCharSet=CSettings::Get().GetString("locale.charset");
   if (strCharSet=="DEFAULT")
     strCharSet=m_currentRegion->m_strGuiCharSet;
@@ -438,9 +438,9 @@ CStdString CLangInfo::GetGuiCharSet() const
   return strCharSet;
 }
 
-CStdString CLangInfo::GetSubtitleCharSet() const
+std::string CLangInfo::GetSubtitleCharSet() const
 {
-  CStdString strCharSet=CSettings::Get().GetString("subtitles.charset");
+  std::string strCharSet=CSettings::Get().GetString("subtitles.charset");
   if (strCharSet=="DEFAULT")
     strCharSet=m_currentRegion->m_strSubtitleCharSet;
 
@@ -469,7 +469,7 @@ bool CLangInfo::CheckLoadLanguage(const std::string &language)
 }
 
 // three char language code (not win32 specific)
-const CStdString& CLangInfo::GetAudioLanguage() const
+const std::string& CLangInfo::GetAudioLanguage() const
 {
   if (!m_audioLanguage.empty())
     return m_audioLanguage;
@@ -487,7 +487,7 @@ void CLangInfo::SetAudioLanguage(const std::string& language)
 }
 
 // three char language code (not win32 specific)
-const CStdString& CLangInfo::GetSubtitleLanguage() const
+const std::string& CLangInfo::GetSubtitleLanguage() const
 {
   if (!m_subtitleLanguage.empty())
     return m_subtitleLanguage;
@@ -507,7 +507,7 @@ void CLangInfo::SetSubtitleLanguage(const std::string& language)
 // two character codes as defined in ISO639
 const std::string CLangInfo::GetDVDMenuLanguage() const
 {
-  CStdString code;
+  std::string code;
   if (!g_LangCodeExpander.ConvertToTwoCharCode(code, m_currentRegion->m_strLangLocaleName))
     code = m_currentRegion->m_strDVDMenuLanguage;
   
@@ -517,7 +517,7 @@ const std::string CLangInfo::GetDVDMenuLanguage() const
 // two character codes as defined in ISO639
 const std::string CLangInfo::GetDVDAudioLanguage() const
 {
-  CStdString code;
+  std::string code;
   if (!g_LangCodeExpander.ConvertToTwoCharCode(code, m_audioLanguage))
     code = m_currentRegion->m_strDVDAudioLanguage;
   
@@ -527,28 +527,25 @@ const std::string CLangInfo::GetDVDAudioLanguage() const
 // two character codes as defined in ISO639
 const std::string CLangInfo::GetDVDSubtitleLanguage() const
 {
-  CStdString code;
+  std::string code;
   if (!g_LangCodeExpander.ConvertToTwoCharCode(code, m_subtitleLanguage))
     code = m_currentRegion->m_strDVDSubtitleLanguage;
   
   return code;
 }
 
-const std::string CLangInfo::GetLanguageLocale(bool twochar /* = false */) const
+const std::string& CLangInfo::GetLanguageLocale() const
 {
-  if (twochar)
-    return m_currentRegion->m_strLangLocaleCodeTwoChar;
-
-  return m_currentRegion->m_strLangLocaleName;
+  return m_currentRegion->m_strLangLocaleCodeTwoChar;
 }
 
-const CStdString& CLangInfo::GetRegionLocale() const
+const std::string& CLangInfo::GetRegionLocale() const
 {
   return m_currentRegion->m_strRegionLocaleName;
 }
 
 // Returns the format string for the date of the current language
-const CStdString& CLangInfo::GetDateFormat(bool bLongDate/*=false*/) const
+const std::string& CLangInfo::GetDateFormat(bool bLongDate/*=false*/) const
 {
   if (bLongDate)
     return m_currentRegion->m_strDateFormatLong;
@@ -557,28 +554,28 @@ const CStdString& CLangInfo::GetDateFormat(bool bLongDate/*=false*/) const
 }
 
 // Returns the format string for the time of the current language
-const CStdString& CLangInfo::GetTimeFormat() const
+const std::string& CLangInfo::GetTimeFormat() const
 {
   return m_currentRegion->m_strTimeFormat;
 }
 
-const CStdString& CLangInfo::GetTimeZone() const
+const std::string& CLangInfo::GetTimeZone() const
 {
   return m_currentRegion->m_strTimeZone;
 }
 
 // Returns the AM/PM symbol of the current language
-const CStdString& CLangInfo::GetMeridiemSymbol(MERIDIEM_SYMBOL symbol) const
+const std::string& CLangInfo::GetMeridiemSymbol(MERIDIEM_SYMBOL symbol) const
 {
   return m_currentRegion->m_strMeridiemSymbols[symbol];
 }
 
 // Fills the array with the region names available for this language
-void CLangInfo::GetRegionNames(CStdStringArray& array)
+void CLangInfo::GetRegionNames(vector<string>& array)
 {
   for (ITMAPREGIONS it=m_regions.begin(); it!=m_regions.end(); ++it)
   {
-    CStdString strName=it->first;
+    std::string strName=it->first;
     if (strName=="N/A")
       strName=g_localizeStrings.Get(416);
     array.push_back(strName);
@@ -587,7 +584,7 @@ void CLangInfo::GetRegionNames(CStdStringArray& array)
 
 // Set the current region by its name, names from GetRegionNames() are valid.
 // If the region is not found the first available region is set.
-void CLangInfo::SetCurrentRegion(const CStdString& strName)
+void CLangInfo::SetCurrentRegion(const std::string& strName)
 {
   ITMAPREGIONS it=m_regions.find(strName);
   if (it!=m_regions.end())
@@ -601,7 +598,7 @@ void CLangInfo::SetCurrentRegion(const CStdString& strName)
 }
 
 // Returns the current region set for this language
-const CStdString& CLangInfo::GetCurrentRegion() const
+const std::string& CLangInfo::GetCurrentRegion() const
 {
   return m_currentRegion->m_strName;
 }
@@ -612,7 +609,7 @@ CLangInfo::TEMP_UNIT CLangInfo::GetTempUnit() const
 }
 
 // Returns the temperature unit string for the current language
-const CStdString& CLangInfo::GetTempUnitString() const
+const std::string& CLangInfo::GetTempUnitString() const
 {
   return g_localizeStrings.Get(TEMP_UNIT_STRINGS+m_currentRegion->m_tempUnit);
 }
@@ -623,7 +620,7 @@ CLangInfo::SPEED_UNIT CLangInfo::GetSpeedUnit() const
 }
 
 // Returns the speed unit string for the current language
-const CStdString& CLangInfo::GetSpeedUnitString() const
+const std::string& CLangInfo::GetSpeedUnitString() const
 {
   return g_localizeStrings.Get(SPEED_UNIT_STRINGS+m_currentRegion->m_speedUnit);
 }
@@ -642,17 +639,17 @@ void CLangInfo::SettingOptionsStreamLanguagesFiller(const CSetting *setting, std
 
 void CLangInfo::SettingOptionsRegionsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data)
 {
-  CStdStringArray regions;
+  vector<string> regions;
   g_langInfo.GetRegionNames(regions);
   sort(regions.begin(), regions.end(), sortstringbyname());
 
   bool match = false;
   for (unsigned int i = 0; i < regions.size(); ++i)
   {
-    CStdString region = regions[i];
+    std::string region = regions[i];
     list.push_back(make_pair(region, region));
 
-    if (!match && region.Equals(((CSettingString*)setting)->GetValue().c_str()))
+    if (!match && region == ((CSettingString*)setting)->GetValue())
     {
       match = true;
       current = region;

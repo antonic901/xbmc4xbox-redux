@@ -222,7 +222,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
 
     bool m_bVideoScannerIgnoreErrors;
 
-    std::vector<CStdString> m_vecTokens; // cleaning strings tied to language
+    std::vector<std::string> m_vecTokens; // cleaning strings tied to language
     //TuxBox
     int m_iTuxBoxStreamtsPort;
     bool m_bTuxBoxSubMenuSelection;

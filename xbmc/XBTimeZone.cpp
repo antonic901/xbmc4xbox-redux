@@ -24,6 +24,7 @@
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "xbox/Undocumented.h"
 #endif
@@ -829,10 +830,10 @@ int XBTimeZone::GetTimeZoneIndex()
   {
     // if we fail to get the timezone or it is not set, use the default for the region in langinfo
     g_langInfo.GetTimeZone();
-    if (!g_langInfo.GetTimeZone().IsEmpty())
+    if (!g_langInfo.GetTimeZone().empty())
     {
       int i=0;
-      while (i < GetNumberOfTimeZones() && !g_langInfo.GetTimeZone().Equals(GetTimeZoneName(i)))
+      while (i < GetNumberOfTimeZones() && g_langInfo.GetTimeZone() != GetTimeZoneName(i))
         i++;
 
       if (i < GetNumberOfTimeZones())
@@ -985,7 +986,7 @@ void XBTimeZone::SettingOptionsTimezonesFiller(const CSetting *setting, std::vec
 {
   current = ((const CSettingInt*)setting)->GetValue();
   bool found = false;
-  for (unsigned int i = 0; i < GetNumberOfTimeZones(); i++)
+  for (int i = 0; i < GetNumberOfTimeZones(); i++)
   {
     if (!found && i == current)
       found = true;

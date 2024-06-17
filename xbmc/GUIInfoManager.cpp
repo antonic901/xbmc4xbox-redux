@@ -2021,7 +2021,7 @@ bool CGUIInfoManager::GetInt(int &value, int info, int contextWindow, const CGUI
       }
 #ifdef HAS_XBOX_HARDWARE
     case SYSTEM_HDD_TEMPERATURE:
-      value = atoi(g_sysinfo.GetInfo(LCD_HDD_TEMPERATURE));
+      value = atoi(g_sysinfo.GetInfo(LCD_HDD_TEMPERATURE).c_str());
       return true;
     case SYSTEM_CPU_TEMPERATURE:
       value = atoi(CFanController::Instance()->GetCPUTemp().ToString().c_str());
