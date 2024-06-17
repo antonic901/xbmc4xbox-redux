@@ -5919,7 +5919,7 @@ bool CVideoDatabase::GetSeasonsNav(const CStdString& strBaseDir, CFileItemList& 
         if (iSeason == 0)
           strLabel = g_localizeStrings.Get(20381);
         else
-          strLabel.Format(g_localizeStrings.Get(20358),iSeason);
+          strLabel.Format(g_localizeStrings.Get(20358).c_str(),iSeason);
         CFileItemPtr pItem(new CFileItem(strLabel));
 
         CVideoDbUrl itemUrl = videoUrl;
@@ -5959,7 +5959,7 @@ bool CVideoDatabase::GetSeasonsNav(const CStdString& strBaseDir, CFileItemList& 
         if (iSeason == 0)
           strLabel = g_localizeStrings.Get(20381);
         else
-          strLabel.Format(g_localizeStrings.Get(20358),iSeason);
+          strLabel.Format(g_localizeStrings.Get(20358).c_str(),iSeason);
         CFileItemPtr pItem(new CFileItem(strLabel));
 
         CVideoDbUrl itemUrl = videoUrl;

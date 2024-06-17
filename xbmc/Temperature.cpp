@@ -22,6 +22,7 @@
 #include "LangInfo.h"
 #include "Temperature.h"
 #include "LocalizeStrings.h"
+#include "utils/StdString.h"
 
 
 CTemperature::CTemperature()

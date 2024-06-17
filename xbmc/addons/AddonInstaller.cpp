@@ -207,7 +207,7 @@ bool CAddonInstaller::PromptForInstall(const CStdString &addonID, AddonPtr &addo
   return false;
 }
 
-bool CAddonInstaller::Install(const CStdString &addonID, bool force, const CStdString &referer, bool background)
+bool CAddonInstaller::Install(const CStdString &addonID, bool force, const CStdString &referer, bool background, bool modal /* = false */)
 {
   AddonPtr addon;
   bool addonInstalled = CAddonMgr::Get().GetAddon(addonID, addon);

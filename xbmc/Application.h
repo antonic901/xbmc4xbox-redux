@@ -270,7 +270,8 @@ public:
 
   int GlobalIdleTime();
 
-  bool SetLanguage(const CStdString &strLanguage);
+  bool SetLanguage(const std::string &strLanguage);
+  bool LoadLanguage(bool reload);
 
   ReplayGainSettings& GetReplayGainSettings() { return m_replayGainSettings; }
 
@@ -398,10 +399,11 @@ protected:
 
   std::vector<IActionListener *> m_actionListeners;
 
+  bool m_fallbackLanguageLoaded;
+
 private:
   CCriticalSection                m_critSection;                 /*!< critical section for all changes to this class, except for changes to triggers */
 };
 
 XBMC_GLOBAL_REF(CApplication,g_application);
 #define g_application XBMC_GLOBAL_USE(CApplication)
-extern CStdString g_LoadErrorStr;

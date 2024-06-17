@@ -1805,7 +1805,7 @@ int CXbmcHttp::xbmcGetGUIStatus()
   output += openTag+"ActiveWindow:" + tmp;
   if (pWindow)
   {
-    output += closeTag+openTag+"ActiveWindowName:" + g_localizeStrings.Get(iWin) ; 
+    output += StringUtils::Format("%s%sActiveWindowName:%s", closeTag, openTag, g_localizeStrings.Get(iWin).c_str());
     CGUIControl* pControl=pWindow->GetFocusedControl();
     if (pControl)
     {

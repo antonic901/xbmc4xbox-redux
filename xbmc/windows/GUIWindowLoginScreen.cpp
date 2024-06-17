@@ -298,13 +298,11 @@ void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
   // let CApplication know that we are logging into a new profile
   g_application.SetLoggingIn(true);
 
-  // uncomment after backporting language addons
-  // pay attention to https://github.com/xbmc/xbmc/commit/c4cfa88ce7760e123dc047b9a946a943c5e4fbcc
-  /*if (!g_application.LoadLanguage(true))
+  if (!g_application.LoadLanguage(true))
   {
     CLog::Log(LOGFATAL, "CGUIWindowLoginScreen: unable to load language for profile \"%s\"", CProfilesManager::Get().GetCurrentProfile().getName().c_str());
     return;
-  }*/
+  }
 
   g_weatherManager.Refresh();
 

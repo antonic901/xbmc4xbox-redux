@@ -331,7 +331,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   pDialog->Reset();
   pDialog->SetItems(items);
   CStdString strHeading;
-  strHeading.Format(g_localizeStrings.Get(13401),g_localizeStrings.Get(iLabel));
+  strHeading.Format(g_localizeStrings.Get(13401).c_str(),g_localizeStrings.Get(iLabel).c_str());
   pDialog->SetHeading(strHeading);
   pDialog->SetMultiSelection(m_rule.m_field != FieldPlaylist && m_rule.m_field != FieldVirtualFolder);
 

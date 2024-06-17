@@ -381,7 +381,7 @@ void StringUtils::ToLower(wstring &str)
 
 void StringUtils::ToCapitalize(std::wstring &str)
 {
-  const std::locale& loc = g_langInfo.GetLocale();
+  const std::locale& loc = g_langInfo.GetSystemLocale();
   bool isFirstLetter = true;
   for (std::wstring::iterator it = str.begin(); it < str.end(); ++it)
   {
@@ -763,7 +763,7 @@ int64_t StringUtils::AlphaNumericCompare(const wchar_t *left, const wchar_t *rig
   wchar_t *ld, *rd;
   wchar_t lc, rc;
   int64_t lnum, rnum;
-  const collate<wchar_t>& coll = use_facet< collate<wchar_t> >(g_langInfo.GetLocale());
+  const collate<wchar_t>& coll = use_facet< collate<wchar_t> >(g_langInfo.GetSystemLocale());
   int cmp_res = 0;
   while (*l != 0 && *r != 0)
   {
@@ -1236,7 +1236,7 @@ void StringUtils::ToCapitalize(CStdString &str)
 
 void StringUtils::ToCapitalize(CStdStringW &str)
 {
-  const std::locale& loc = g_langInfo.GetLocale();
+  const std::locale& loc = g_langInfo.GetSystemLocale();
   bool isFirstLetter = true;
   for (CStdStringW::iterator it = str.begin(); it < str.end(); ++it)
   {

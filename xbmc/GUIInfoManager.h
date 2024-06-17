@@ -708,7 +708,7 @@ public:
   int GetTotalPlayTime() const;
   float GetSeekPercent() const;
   CStdString GetCurrentPlayTimeRemaining(TIME_FORMAT format) const;
-  CStdString GetVersion();
+  std::string GetVersion();
   CStdString GetBuild();
 
   bool GetDisplayAfterSeek();

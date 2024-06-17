@@ -51,7 +51,7 @@ public:
    \return true on successful install, false on failure.
    \sa DoInstall
    */
-  bool Install(const CStdString &addonID, bool force = false, const CStdString &referer="", bool background = true);
+  bool Install(const CStdString &addonID, bool force = false, const CStdString &referer="", bool background = true, bool modal = false);
 
   /*! \brief Install an addon from the given zip path
    \param path the zip file to install from

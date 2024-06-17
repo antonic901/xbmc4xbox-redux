@@ -611,10 +611,10 @@ bool CGUIWindowVideoNav::GetFilteredItems(const CStdString &filter, CFileItemLis
 void CGUIWindowVideoNav::DoSearch(const CStdString& strSearch, CFileItemList& items)
 {
   CFileItemList tempItems;
-  CStdString strGenre = g_localizeStrings.Get(515); // Genre
-  CStdString strActor = g_localizeStrings.Get(20337); // Actor
-  CStdString strDirector = g_localizeStrings.Get(20339); // Director
-  CStdString strMovie = g_localizeStrings.Get(20338); // Movie
+  std::string strGenre = g_localizeStrings.Get(515); // Genre
+  std::string strActor = g_localizeStrings.Get(20337); // Actor
+  std::string strDirector = g_localizeStrings.Get(20339); // Director
+  std::string strMovie = g_localizeStrings.Get(20338); // Movie
 
   //get matching names
   m_database.GetMoviesByName(strSearch, tempItems);
@@ -720,7 +720,7 @@ void CGUIWindowVideoNav::OnDeleteItem(CFileItemPtr pItem)
     CGUIDialogYesNo* pDialog = (CGUIDialogYesNo*)g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO);
     pDialog->SetLine(0, g_localizeStrings.Get(432));
     CStdString strLabel;
-    strLabel.Format(g_localizeStrings.Get(433),pItem->GetLabel());
+    strLabel.Format(g_localizeStrings.Get(433).c_str(),pItem->GetLabel());
     pDialog->SetLine(1, strLabel);
     pDialog->SetLine(2, "");;
     pDialog->Open();
@@ -742,7 +742,7 @@ void CGUIWindowVideoNav::OnDeleteItem(CFileItemPtr pItem)
     CGUIDialogYesNo* pDialog = (CGUIDialogYesNo*)g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO);
     pDialog->SetHeading(432);
     CStdString strLabel;
-    strLabel.Format(g_localizeStrings.Get(433), pItem->GetLabel());
+    strLabel.Format(g_localizeStrings.Get(433).c_str(), pItem->GetLabel());
     pDialog->SetLine(1, strLabel);
     pDialog->SetLine(2, "");
     pDialog->Open();
@@ -1066,14 +1066,14 @@ bool CGUIWindowVideoNav::OnClick(int iItem)
 
     if (!videodb.GetSingleValue("tag", "tag.idTag", videodb.PrepareSQL("tag.strTag = '%s' AND tag.idTag IN (SELECT taglinks.idTag FROM taglinks WHERE taglinks.media_type = '%s')", strTag.c_str(), mediaType.c_str())).empty())
     {
-      CStdString strError; strError.Format(g_localizeStrings.Get(20463), strTag.c_str());
+      CStdString strError; strError.Format(g_localizeStrings.Get(20463).c_str(), strTag.c_str());
       CGUIDialogOK::ShowAndGetInput(20462, "", strError, "");
       return true;
     }
 
     int idTag = videodb.AddTag(strTag);
     CFileItemList items;
-    CStdString strLabel; strLabel.Format(g_localizeStrings.Get(20464), localizedType.c_str());
+    CStdString strLabel; strLabel.Format(g_localizeStrings.Get(20464).c_str(), localizedType.c_str());
     if (CGUIDialogVideoInfo::GetItemsForTag(strLabel, mediaType, items, idTag))
     {
       for (int index = 0; index < items.Size(); index++)

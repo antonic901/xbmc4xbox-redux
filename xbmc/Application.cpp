@@ -307,8 +307,6 @@ using namespace KODI::MESSAGING::HELPERS;
 
 #define MAX_FFWD_SPEED 5
 
-CStdString g_LoadErrorStr;
-
 #ifdef HAS_XBOX_D3D
 static void WaitCallback(DWORD flags)
 {
@@ -481,7 +479,6 @@ void CApplication::InitBasicD3D()
 void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetwork)
 {
   // XBMC couldn't start for some reason...
-  // g_LoadErrorStr should contain the reason
   CLog::Log(LOGWARNING, "Emergency recovery console starting...");
 
   bool HaveGamepad = true; // should always have the gamepad when we get here
@@ -515,7 +512,7 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
   int iLine = 0;
   FEH_TextOut(pFont, iLine++, L"XBMC Fatal Error:");
   char buf[500];
-  strncpy(buf, g_LoadErrorStr.c_str(), 500);
+  strncpy(buf, "Check xbmc log file for more information.", 500);
   buf[499] = 0;
   char* pNewline = strtok(buf, "\n");
   while (pNewline)
@@ -707,11 +704,9 @@ LONG WINAPI CApplication::UnhandledExceptionFilter(struct _EXCEPTION_POINTERS *E
   }
 #undef STRINGIFY_EXCEPTION
 
-  g_LoadErrorStr.Format("%s (0x%08x)\n at 0x%08x",
+  CLog::Log(LOGFATAL, "%s (0x%08x)\n at 0x%08x",
                         pExceptionString, ExceptionInfo->ExceptionRecord->ExceptionCode,
                         ExceptionInfo->ExceptionRecord->ExceptionAddress);
-
-  CLog::Log(LOGFATAL, "%s", g_LoadErrorStr.c_str());
 
   return ExceptionInfo->ExceptionRecord->ExceptionCode;
 }
@@ -998,7 +993,7 @@ HRESULT CApplication::Create(HWND hWnd)
   if (!CSettings::Get().Initialize())
     return false;
 
-  g_LoadErrorStr = "Unable to load settings";
+  CLog::Log(LOGERROR, "Unable to load settings");
   
   // load the actual values
   if (!CSettings::Get().Load())
@@ -1032,7 +1027,7 @@ HRESULT CApplication::Create(HWND hWnd)
 #ifdef HAS_GAMEPAD
   if (m_DefaultGamepad.bAnalogButtons[XINPUT_GAMEPAD_Y] && m_DefaultGamepad.bAnalogButtons[XINPUT_GAMEPAD_WHITE])
   {
-    g_LoadErrorStr = "Key code detected for Error Recovery mode";
+    CLog::Log(LOGERROR, "Key code detected for Error Recovery mode");
     FatalErrorHandler(true, true, true);
   }
 #endif
@@ -1124,28 +1119,6 @@ HRESULT CApplication::Create(HWND hWnd)
     CUtil::LaunchXbe(temp2,("D:\\"+strTemp.substr(iLastSlash+1)).c_str(),NULL,ForceVideo,ForceCountry);
   }
 #endif
-
-  // Load the langinfo to have user charset <-> utf-8 conversion
-  CStdString strLanguage = CSettings::Get().GetString("locale.language");
-  strLanguage[0] = toupper(strLanguage[0]);
-
-  // Load the langinfo to have user charset <-> utf-8 conversion
-  CStdString strLangInfoPath;
-  strLangInfoPath.Format("special://xbmc/language/%s/langinfo.xml", strLanguage.c_str());
-
-  CLog::Log(LOGINFO, "load language info file:%s", strLangInfoPath.c_str());
-  g_langInfo.Load(strLangInfoPath);
-
-  CStdString strKeyboardLayoutConfigurationPath;
-  strKeyboardLayoutConfigurationPath.Format("Q:\\language\\%s\\keyboardmap.xml", CSettings::Get().GetString("locale.language"));
-  CLog::Log(LOGINFO, "load keyboard layout configuration info file: %s", strKeyboardLayoutConfigurationPath.c_str());
-  g_keyboardLayoutConfiguration.Load(strKeyboardLayoutConfigurationPath);
-
-  CStdString strLanguagePath = "special://xbmc/language/";
-
-  CLog::Log(LOGINFO, "load %s language file, from path: %s", strLanguage.c_str(), strLanguagePath.c_str());
-  if (!g_localizeStrings.Load(strLanguagePath, strLanguage))
-    FatalErrorHandler(true, false, true);
 
   CLog::Log(LOGINFO, "load keymapping");
   if (!CButtonTranslator::GetInstance().Load())
@@ -1282,7 +1255,9 @@ HRESULT CApplication::Initialize()
   CUtil::WipeDir("special://temp/");
   CDirectory::Create("special://temp/temp"); // temp directory for python and dllGetTempPathA
 
-  CreateDirectory("Q:\\language", NULL);
+  // load the language and its translated strings
+  if (!LoadLanguage(false))
+    return false;
 
   /* setup network based on our settings */
   /* network will start it's init procedure */
@@ -1293,6 +1268,8 @@ HRESULT CApplication::Initialize()
   CDatabaseManager::Get().Initialize();
 
   StartServices();
+
+  bool uiInitializationFinished = true;
 
   if (!LoadSkin(CSettings::Get().GetString("lookandfeel.skin")))
     LoadSkin(DEFAULT_SKIN);
@@ -1315,11 +1292,18 @@ HRESULT CApplication::Initialize()
   // check if we should use the login screen
   if (CProfilesManager::Get().UsingLoginScreen())
   {
+    // the login screen still needs to perform additional initialization
+    uiInitializationFinished = false;
+
     g_windowManager.ActivateWindow(WINDOW_LOGIN_SCREEN);
   }
   else
   {
-    g_windowManager.ActivateWindow(g_SkinInfo->GetFirstWindow());
+    int firstWindow = g_SkinInfo->GetFirstWindow();
+    // the startup window is considered part of the initialization as it most likely switches to the final window
+    uiInitializationFinished = firstWindow != WINDOW_STARTUP_ANIM;
+
+    g_windowManager.ActivateWindow(firstWindow);
   }
 
   //g_sysinfo.Refresh();
@@ -1360,6 +1344,14 @@ HRESULT CApplication::Initialize()
 
   // reset our screensaver (starts timers etc.)
   ResetScreenSaver();
+
+  // if the user interfaces has been fully initialized let everyone know
+  if (uiInitializationFinished)
+  {
+    CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UI_READY);
+    g_windowManager.SendThreadMessage(msg);
+  }
+
   return S_OK;
 }
 
@@ -4960,6 +4952,11 @@ bool CApplication::OnMessage(CGUIMessage& message)
         if (m_itemCurrentFile->IsOnDVD())
           StopPlaying();
       }
+      else if (message.GetParam1() == GUI_MSG_UI_READY)
+      {
+        if (m_fallbackLanguageLoaded)
+          CGUIDialogOK::ShowAndGetInput(24133, 24134);
+      }
     }
     break;
 
@@ -5973,29 +5970,24 @@ void CApplication::InitDirectoriesXbox()
   g_advancedSettings.m_logFolder = "special://home/";
 }
 
-bool CApplication::SetLanguage(const CStdString &strLanguage)
+bool CApplication::SetLanguage(const std::string &strLanguage)
 {
-  CStdString strPreviousLanguage = CSettings::Get().GetString("locale.language");
-  if (strLanguage != strPreviousLanguage)
-  {
-    CStdString strLangInfoPath = StringUtils::Format("special://xbmc/language/%s/langinfo.xml", strLanguage.c_str());
-    if (!g_langInfo.Load(strLangInfoPath))
-      return false;
+  // nothing to be done if the language hasn't changed
+  if (strLanguage == CSettings::Get().GetString("locale.language"))
+    return true;
 
-    CSettings::Get().SetString("locale.language", strLanguage);
+  return CSettings::Get().SetString("locale.language", strLanguage);
+}
 
-    CStdString strKeyboardLayoutConfigurationPath;
-    strKeyboardLayoutConfigurationPath.Format("special://xbmc/language/%s/keyboardmap.xml", strLanguage.c_str());
-    CLog::Log(LOGINFO, "load keyboard layout configuration info file: %s", strKeyboardLayoutConfigurationPath.c_str());
-    g_keyboardLayoutConfiguration.Load(strKeyboardLayoutConfigurationPath);
+bool CApplication::LoadLanguage(bool reload)
+{
+  // load the configured langauge
+  if (!g_langInfo.SetLanguage(m_fallbackLanguageLoaded, "", reload))
+    return false;
 
-    if (!g_localizeStrings.Load("special://xbmc/language/", strLanguage))
-      return false;
-
-    // also tell our weather and skin to reload as these are localized
-    g_weatherManager.Refresh();
-    ReloadSkin();
-  }
+  // set the proper audio and subtitle languages
+  g_langInfo.SetAudioLanguage(CSettings::Get().GetString("locale.audiolanguage"));
+  g_langInfo.SetSubtitleLanguage(CSettings::Get().GetString("locale.subtitlelanguage"));
 
   return true;
 }

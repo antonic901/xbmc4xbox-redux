@@ -217,6 +217,7 @@ void CSettings::Uninitialize()
   m_settingsManager->UnregisterSettingOptionsFiller("fanspeeds");
   m_settingsManager->UnregisterSettingOptionsFiller("fontheights");
   m_settingsManager->UnregisterSettingOptionsFiller("fonts");
+  m_settingsManager->UnregisterSettingOptionsFiller("languagenames");
   m_settingsManager->UnregisterSettingOptionsFiller("framerateconversions");
   m_settingsManager->UnregisterSettingOptionsFiller("regions");
   m_settingsManager->UnregisterSettingOptionsFiller("rendermethods");
@@ -566,6 +567,7 @@ void CSettings::InitializeOptionFillers()
   m_settingsManager->RegisterSettingOptionsFiller("charsets", CCharsetConverter::SettingOptionsCharsetsFiller);
   m_settingsManager->RegisterSettingOptionsFiller("fanspeeds", CFanController::SettingOptionsSpeedsFiller);
   m_settingsManager->RegisterSettingOptionsFiller("fonts", GUIFontManager::SettingOptionsFontsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("languagenames", CLangInfo::SettingOptionsLanguageNamesFiller);
   m_settingsManager->RegisterSettingOptionsFiller("fontheights", GUIFontManager::SettingOptionsSubtitleHeightsFiller);
   m_settingsManager->RegisterSettingOptionsFiller("framerateconversions", CDisplaySettings::SettingOptionsFramerateconversionsFiller);
   m_settingsManager->RegisterSettingOptionsFiller("regions", CLangInfo::SettingOptionsRegionsFiller);

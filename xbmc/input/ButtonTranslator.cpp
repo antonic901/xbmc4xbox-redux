@@ -34,8 +34,6 @@
 using namespace std;
 using namespace XFILE;
 
-extern CStdString g_LoadErrorStr;
-
 typedef struct
 {
   const char* name;
@@ -337,7 +335,7 @@ CButtonTranslator::CButtonTranslator()
 CButtonTranslator::~CButtonTranslator()
 {}
 
-bool CButtonTranslator::Load()
+bool CButtonTranslator::Load(bool AlwaysLoad)
 {
   translatorMap.clear();
 
@@ -376,7 +374,7 @@ bool CButtonTranslator::Load()
 
   if (!success)
   {
-    g_LoadErrorStr.Format("Error loading keymaps from: %s or %s", systemKeymapDirPath.c_str(), userKeymapDirPath.c_str());
+    CLog::Log(LOGERROR, "Error loading keymaps from: %s or %s", systemKeymapDirPath.c_str(), userKeymapDirPath.c_str());
     return false;
   }
 
