@@ -453,7 +453,7 @@ void CLangInfo::SetDefaults()
 std::string CLangInfo::GetGuiCharSet() const
 {
   CSettingString* charsetSetting = static_cast<CSettingString*>(CSettings::Get().GetSetting("locale.charset"));
-  if (charsetSetting->IsDefault())
+  if (charsetSetting == NULL || charsetSetting->IsDefault())
     return m_strGuiCharSet;
 
   return charsetSetting->GetValue();
