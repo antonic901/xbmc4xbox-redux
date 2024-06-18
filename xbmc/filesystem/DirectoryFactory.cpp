@@ -126,6 +126,7 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
   // Is this same as url.IsProtocol("mem")?
   if (StringUtils::StartsWith(url.GetProtocol(), "mem")) return new CMemUnitDirectory();
 #endif
+  if (url.IsProtocol("resource")) return new CResourceDirectory();
 
   if( g_application.getNetwork().IsAvailable(true) )
   {
@@ -147,7 +148,6 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
     if (url.IsProtocol("myth")) return new CMythDirectory();
     if (url.IsProtocol("cmyth")) return new CMythDirectory();
     if (url.IsProtocol("rss")) return new CRSSDirectory();
-    if (url.IsProtocol("resource")) return new CResourceDirectory();
   }
 
   CLog::Log(LOGWARNING, "%s - Unsupported protocol(%s) in %s", __FUNCTION__, url.GetProtocol().c_str(), url.Get().c_str() );

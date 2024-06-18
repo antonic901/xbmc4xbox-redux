@@ -87,6 +87,8 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
   else if (url.IsProtocol("cdda")) return new CCDDAFile();
   else if (url.IsProtocol("mem")) return new CMemUnitFile();
 #endif
+  if (url.IsProtocol("resource")) return new CResourceDirectory();
+
   if( g_application.getNetwork().IsAvailable() )
   {
     if (url.IsProtocol("ftp")
@@ -106,7 +108,6 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
     else if (url.IsProtocol("rtv")) return new CRTVFile();
     else if (url.IsProtocol("daap")) return new CDAAPFile();
     else if (url.IsProtocol("upnp")) return new CUPnPFile();
-    else if (url.IsProtocol("resource")) return new CResourceFile();
 #endif
   }
 
