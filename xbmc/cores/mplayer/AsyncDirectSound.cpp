@@ -29,6 +29,7 @@
 #include "AudioContext.h"
 #include "CdgParser.h"
 #include "MPlayer.h"
+#include "addons/Visualisation.h" // AUDIO_BUFFER_SIZE
 
 #define CALC_DELAY_START   0
 #define CALC_DELAY_STARTED 1
@@ -72,7 +73,11 @@ void CASyncDirectSound::DoWork()
 {
   if (m_VisBytes && m_pCallback)
   {
-    m_pCallback->OnAudioData(m_VisBuffer, m_VisBytes);
+    // Convert to floats
+    float buffer[2*AUDIO_BUFFER_SIZE];
+    for (int i = 0; i < 2*AUDIO_BUFFER_SIZE; i++)
+      buffer[i] = (float)m_VisBuffer[i];
+    m_pCallback->OnAudioData(buffer, m_VisBytes);
     m_VisBytes = 0;
   }
 }

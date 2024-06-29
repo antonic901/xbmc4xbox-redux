@@ -25,6 +25,7 @@
 #include "SectionLoader.h"
 #include "FileItem.h"
 #include "filesystem/File.h"
+#include "addons/Visualisation.h" // AUDIO_BUFFER_SIZE
 
 using namespace XFILE;
 
@@ -65,7 +66,13 @@ void ModCallback(unsigned char* p, int s)
   if (m_pCallback)
   {
     if (call)
-      m_pCallback->OnAudioData(p, s);
+    {
+      // Convert to floats
+      float buffer[2*AUDIO_BUFFER_SIZE];
+      for (int i = 0; i < 2*AUDIO_BUFFER_SIZE; i++)
+        buffer[i] = (float)p[i];
+      m_pCallback->OnAudioData(buffer, s);
+    }
     call = !call;
   }
 }

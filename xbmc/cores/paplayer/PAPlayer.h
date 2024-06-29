@@ -179,7 +179,7 @@ private:
   CFileItem*        m_nextFile;
 
   // stuff for visualisation
-  BYTE             m_visBuffer[PACKET_SIZE];
+  float            m_visBuffer[PACKET_SIZE];
   unsigned int     m_visBufferLength;
   IAudioCallback*  m_pCallback;
 };
