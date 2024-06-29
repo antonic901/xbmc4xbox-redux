@@ -211,7 +211,7 @@ class CJobManager
   class CLambdaJob : public CJob
   {
   public:
-    CLambdaJob(F& f) : m_f(boost::forward<F>(f)) {};
+    CLambdaJob(const F& f) : m_f(boost::forward<F>(f)) {};
     bool DoWork()
     {
       m_f();
