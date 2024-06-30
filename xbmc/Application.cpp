@@ -5960,12 +5960,13 @@ bool CApplication::IsCurrentThread() const
 void CApplication::InitDirectoriesXbox()
 {
   // map our special drives to the correct drive letter
+  CSpecialProtocol::SetXBMCBinPath("Q:\\");
   CSpecialProtocol::SetXBMCPath("Q:\\"); // Use Q as ie. F doesn't exist yet!!!
   CSpecialProtocol::SetHomePath("Q:\\home");
-  CSpecialProtocol::SetTempPath("Z:\\");
-
   // First profile is always the Master Profile
   CSpecialProtocol::SetMasterProfilePath("Q:\\home\\userdata");
+  CSpecialProtocol::SetTempPath("Z:\\");
+  CSpecialProtocol::SetXBMCBinAddonPath("Q:\\addons");
 
   g_advancedSettings.m_logFolder = "special://home/";
 

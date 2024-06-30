@@ -54,6 +54,8 @@ class CSpecialProtocol
 public:
   static void SetProfilePath(const CStdString &path);
   static void SetXBMCPath(const CStdString &path);
+  static void SetXBMCBinPath(const std::string &path);
+  static void SetXBMCBinAddonPath(const std::string &path);
   static void SetHomePath(const CStdString &path);
   static void SetUserHomePath(const CStdString &path);
   static void SetMasterProfilePath(const CStdString &path);
