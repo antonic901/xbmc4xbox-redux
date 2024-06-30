@@ -1,0 +1,30 @@
+<addons>
+  <!-- when you add new default addon add it here too -->
+  <addon>kodi.resource</addon>
+  <addon>metadata.albums.tadb.com</addon>
+  <addon>metadata.artists.tadb.com</addon>
+  <addon>metadata.common.fanart.tv</addon>
+  <addon>metadata.common.tadb.com</addon>
+  <addon>metadata.common.themoviedb.org</addon>
+  <addon>metadata.local</addon>
+  <addon>metadata.movies.themoviedb.org</addon>
+  <addon>metadata.musicvideos.nfo</addon>
+  <addon>metadata.tvshows.themoviedb.org</addon>
+  <addon>repository.xbmc4xbox.org</addon>
+  <addon>resource.language.en_gb</addon>
+  <addon>resource.uisounds.confluence</addon>
+  <addon>screensaver.xbmc.builtin.black</addon>
+  <addon>screensaver.xbmc.builtin.dim</addon>
+  <addon>screensaver.xbmc.builtin.slideshow</addon>
+  <addon>skin.confluence.lite</addon>
+  <addon>visualization.milkdrop</addon>
+  <addon>weather.xbmc.builtin</addon>
+  <addon>webinterface.default</addon>
+  <addon>xbmc.addon</addon>
+  <addon>xbmc.core</addon>
+  <addon>xbmc.debug</addon>
+  <addon>xbmc.gui</addon>
+  <addon>xbmc.metadata</addon>
+  <addon>xbmc.python</addon>
+  <addon>xbmc.webinterface</addon>
+</addons>
