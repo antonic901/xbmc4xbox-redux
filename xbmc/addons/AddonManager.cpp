@@ -1042,7 +1042,7 @@ std::string CAddonMgr::GetPlatformLibraryName(cp_cfg_element_t *base) const
 #endif
   libraryName = GetExtValue(base, "@library_osx");
 #elif defined(_XBOX)
-  libraryName = GetExtValue(base, "@xbox");
+  libraryName = GetExtValue(base, "@library_xbox");
 #endif
 
   return libraryName;
