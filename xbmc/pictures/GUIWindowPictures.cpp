@@ -472,10 +472,7 @@ void CGUIWindowPictures::GetContextButtons(int itemNumber, CContextButtons &butt
       }
 
       if (!item->IsPlugin() && !item->IsScript() && !m_vecItems->IsPlugin())
-      {
-        buttons.Add(CONTEXT_BUTTON_GOTO_ROOT, 20128);
         buttons.Add(CONTEXT_BUTTON_SWITCH_MEDIA, 523);
-      }
     }
   }
   CGUIMediaWindow::GetContextButtons(itemNumber, buttons);
@@ -515,9 +512,6 @@ bool CGUIWindowPictures::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     return true;
   case CONTEXT_BUTTON_SETTINGS:
     g_windowManager.ActivateWindow(WINDOW_SETTINGS_MYPICTURES);
-    return true;
-  case CONTEXT_BUTTON_GOTO_ROOT:
-    Update("");
     return true;
   case CONTEXT_BUTTON_SWITCH_MEDIA:
     CGUIDialogContextMenu::SwitchMedia("pictures", m_vecItems->GetPath());

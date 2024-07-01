@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2012-2014 Team XBMC
- *      http://xbmc.org
+ *      Copyright (C) 2012-2015 Team Kodi
+ *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
+ *  along with Kodi; see the file COPYING.  If not, see
  *  <http://www.gnu.org/licenses/>.
  *
  */
@@ -32,7 +32,9 @@
 #include "settings/lib/Setting.h"
 #include "settings/windows/GUIControlSettings.h"
 #include "utils/log.h"
+#include "utils/SortUtils.h"
 #include "utils/StringUtils.h"
+#include "utils/Variant.h"
 #include "video/VideoDatabase.h"
 #include "video/VideoDbUrl.h"
 
@@ -52,6 +54,7 @@
 static const CGUIDialogMediaFilter::Filter filterList[] = {
   { "movies",       FieldTitle,         556,    SettingTypeString,  "edit",   "string",   CDatabaseQueryRule::OPERATOR_CONTAINS },
   { "movies",       FieldRating,        563,    SettingTypeNumber,  "range",  "number",   CDatabaseQueryRule::OPERATOR_BETWEEN },
+  { "movies",       FieldUserRating,    38018,  SettingTypeInteger, "range",  "integer",  CDatabaseQueryRule::OPERATOR_BETWEEN },
   //{ "movies",       FieldTime,          180,    SettingTypeInteger, "range",  "time",     CDatabaseQueryRule::OPERATOR_BETWEEN },
   { "movies",       FieldInProgress,    575,    SettingTypeInteger, "toggle", "",         CDatabaseQueryRule::OPERATOR_FALSE },
   { "movies",       FieldYear,          562,    SettingTypeInteger, "range",  "integer",  CDatabaseQueryRule::OPERATOR_BETWEEN },
@@ -63,7 +66,8 @@ static const CGUIDialogMediaFilter::Filter filterList[] = {
 
   { "tvshows",      FieldTitle,         556,    SettingTypeString,  "edit",   "string",   CDatabaseQueryRule::OPERATOR_CONTAINS },
   //{ "tvshows",      FieldTvShowStatus,  126,    SettingTypeList,    "list",   "string",   CDatabaseQueryRule::OPERATOR_EQUALS },
-  { "tvshows",      FieldRating,        563,    SettingTypeNumber,  "range",  "integer",  CDatabaseQueryRule::OPERATOR_BETWEEN },
+  { "tvshows",      FieldRating,        563,    SettingTypeNumber,  "range",  "number",   CDatabaseQueryRule::OPERATOR_BETWEEN },
+  { "tvshows",      FieldUserRating,    38018,  SettingTypeInteger, "range",  "integer",  CDatabaseQueryRule::OPERATOR_BETWEEN },
   { "tvshows",      FieldInProgress,    575,    SettingTypeInteger, "toggle", "",         CDatabaseQueryRule::OPERATOR_FALSE },
   { "tvshows",      FieldYear,          562,    SettingTypeInteger, "range",  "integer",  CDatabaseQueryRule::OPERATOR_BETWEEN },
   { "tvshows",      FieldTag,           20459,  SettingTypeList,    "list",   "string",   CDatabaseQueryRule::OPERATOR_EQUALS },
@@ -74,12 +78,15 @@ static const CGUIDialogMediaFilter::Filter filterList[] = {
 
   { "episodes",     FieldTitle,         556,    SettingTypeString,  "edit",   "string",   CDatabaseQueryRule::OPERATOR_CONTAINS },
   { "episodes",     FieldRating,        563,    SettingTypeNumber,  "range",  "number",   CDatabaseQueryRule::OPERATOR_BETWEEN },
+  { "episodes",     FieldUserRating,    38018,  SettingTypeInteger, "range",  "integer",  CDatabaseQueryRule::OPERATOR_BETWEEN },
   { "episodes",     FieldAirDate,       20416,  SettingTypeInteger, "range",  "date",     CDatabaseQueryRule::OPERATOR_BETWEEN },
   { "episodes",     FieldInProgress,    575,    SettingTypeInteger, "toggle", "",         CDatabaseQueryRule::OPERATOR_FALSE },
   { "episodes",     FieldActor,         20337,  SettingTypeList,    "list",   "string",   CDatabaseQueryRule::OPERATOR_EQUALS },
   { "episodes",     FieldDirector,      20339,  SettingTypeList,    "list",   "string",   CDatabaseQueryRule::OPERATOR_EQUALS },
 
   { "musicvideos",  FieldTitle,         556,    SettingTypeString,  "edit",   "string",   CDatabaseQueryRule::OPERATOR_CONTAINS },
+  { "musicvideos",  FieldRating,        563,    SettingTypeNumber,  "range",  "number",   CDatabaseQueryRule::OPERATOR_BETWEEN },
+  { "musicvideos",  FieldUserRating,    38018,  SettingTypeInteger, "range",  "integer",  CDatabaseQueryRule::OPERATOR_BETWEEN },
   { "musicvideos",  FieldArtist,        557,    SettingTypeList,    "list",   "string",   CDatabaseQueryRule::OPERATOR_EQUALS },
   { "musicvideos",  FieldAlbum,         558,    SettingTypeList,    "list",   "string",   CDatabaseQueryRule::OPERATOR_EQUALS },
   //{ "musicvideos",  FieldTime,          180,    SettingTypeInteger, "range",  "time",  CDatabaseQueryRule::OPERATOR_BETWEEN },
@@ -93,26 +100,28 @@ static const CGUIDialogMediaFilter::Filter filterList[] = {
   { "artists",      FieldGenre,         515,    SettingTypeList,    "list",   "string",   CDatabaseQueryRule::OPERATOR_EQUALS },
 
   { "albums",       FieldAlbum,         556,    SettingTypeString,  "edit",   "string",   CDatabaseQueryRule::OPERATOR_CONTAINS },
-  { "albums",       FieldArtist,        557,    SettingTypeList,    "list",   "string",   CDatabaseQueryRule::OPERATOR_EQUALS },
-  { "albums",       FieldRating,        563,    SettingTypeInteger, "range",  "integer",  CDatabaseQueryRule::OPERATOR_BETWEEN },
+//  { "albums",       FieldArtist,        557,    SettingTypeList,    "list",   "string",   CDatabaseQueryRule::OPERATOR_EQUALS },
+  { "albums",       FieldAlbumArtist,   566,    SettingTypeList,    "list",   "string",   CDatabaseQueryRule::OPERATOR_EQUALS },
+  { "albums",       FieldRating,        563,    SettingTypeNumber,  "range",  "number",   CDatabaseQueryRule::OPERATOR_BETWEEN },
+  { "albums",       FieldUserRating,    38018,  SettingTypeInteger, "range",  "integer",  CDatabaseQueryRule::OPERATOR_BETWEEN },
   { "albums",       FieldAlbumType,     564,    SettingTypeList,    "list",   "string",   CDatabaseQueryRule::OPERATOR_EQUALS },
   { "albums",       FieldYear,          562,    SettingTypeInteger, "range",  "integer",  CDatabaseQueryRule::OPERATOR_BETWEEN },
   { "albums",       FieldGenre,         515,    SettingTypeList,    "list",   "string",   CDatabaseQueryRule::OPERATOR_EQUALS },
   { "albums",       FieldMusicLabel,    21899,  SettingTypeList,    "list",   "string",   CDatabaseQueryRule::OPERATOR_EQUALS },
+  { "albums",       FieldCompilation,   204,    SettingTypeBool,    "toggle", "",         CDatabaseQueryRule::OPERATOR_FALSE },
 
   { "songs",        FieldTitle,         556,    SettingTypeString,  "edit",   "string",   CDatabaseQueryRule::OPERATOR_CONTAINS },
   { "songs",        FieldAlbum,         558,    SettingTypeList,    "list",   "string",   CDatabaseQueryRule::OPERATOR_EQUALS },
   { "songs",        FieldArtist,        557,    SettingTypeList,    "list",   "string",   CDatabaseQueryRule::OPERATOR_EQUALS },
   { "songs",        FieldTime,          180,    SettingTypeInteger, "range",  "time",     CDatabaseQueryRule::OPERATOR_BETWEEN },
-  { "songs",        FieldRating,        563,    SettingTypeInteger, "range",  "integer",  CDatabaseQueryRule::OPERATOR_BETWEEN },
+  { "songs",        FieldRating,        563,    SettingTypeNumber,  "range",  "number",   CDatabaseQueryRule::OPERATOR_BETWEEN },
+  { "songs",        FieldUserRating,    38018,  SettingTypeInteger, "range",  "integer",  CDatabaseQueryRule::OPERATOR_BETWEEN },
   { "songs",        FieldYear,          562,    SettingTypeInteger, "range",  "integer",  CDatabaseQueryRule::OPERATOR_BETWEEN },
   { "songs",        FieldGenre,         515,    SettingTypeList,    "list",   "string",   CDatabaseQueryRule::OPERATOR_EQUALS },
   { "songs",        FieldPlaycount,     567,    SettingTypeInteger, "range",  "integer",  CDatabaseQueryRule::OPERATOR_BETWEEN },
 };
 
 #define NUM_FILTERS sizeof(filterList) / sizeof(CGUIDialogMediaFilter::Filter)
-
-using namespace std;
 
 CGUIDialogMediaFilter::CGUIDialogMediaFilter()
   : CGUIDialogSettingsManualBase(WINDOW_DIALOG_MEDIA_FILTER, "DialogSettings.xml"),
@@ -136,7 +145,7 @@ bool CGUIDialogMediaFilter::OnMessage(CGUIMessage& message)
         m_filter->Reset();
         m_filter->SetType(m_mediaType);
 
-        for (map<std::string, Filter>::iterator filter = m_filters.begin(); filter != m_filters.end(); filter++)
+        for (std::map<std::string, Filter>::iterator filter = m_filters.begin(); filter != m_filters.end(); filter++)
         {
           filter->second.rule = NULL;
           filter->second.setting->Reset();
@@ -204,13 +213,13 @@ void CGUIDialogMediaFilter::OnSettingChanged(const CSetting *setting)
 {
   CGUIDialogSettingsManualBase::OnSettingChanged(setting);
 
-  map<std::string, Filter>::iterator it = m_filters.find(setting->GetId());
+  std::map<std::string, Filter>::iterator it = m_filters.find(setting->GetId());
   if (it == m_filters.end())
     return;
-  
+
   bool remove = false;
   Filter& filter = it->second;
- 
+
   if (filter.controlType == "edit")
   {
     std::string value = setting->ToString();
@@ -277,11 +286,6 @@ void CGUIDialogMediaFilter::OnSettingChanged(const CSetting *setting)
           strValueLower = CDateTime(static_cast<time_t>(valueLower)).GetAsDBDate();
           strValueUpper = CDateTime(static_cast<time_t>(valueUpper)).GetAsDBDate();
         }
-        else if (filter.controlFormat == "time")
-        {
-          strValueLower = CDateTime(static_cast<time_t>(valueLower)).GetAsLocalizedTime("mm:ss");
-          strValueUpper = CDateTime(static_cast<time_t>(valueUpper)).GetAsLocalizedTime("mm:ss");
-        }
         else
         {
           strValueLower = values.at(0).asString();
@@ -337,7 +341,7 @@ void CGUIDialogMediaFilter::SetupView()
   CGUIDialogSettingsManualBase::SetupView();
 
   // set the heading label based on the media type
-  uint32_t localizedMediaId = 0; 
+  uint32_t localizedMediaId = 0;
   if (m_mediaType == "movies")
     localizedMediaId = 20342;
   else if (m_mediaType == "tvshows")
@@ -403,7 +407,7 @@ void CGUIDialogMediaFilter::InitializeSettings()
       }
     }
 
-    std::string settingId = StringUtils::Format("filter.%s.%d", filter.mediaType.c_str(), filter.field); 
+    std::string settingId = StringUtils::Format("filter.%s.%d", filter.mediaType.c_str(), filter.field);
     if (filter.controlType == "edit")
     {
       CVariant data;
@@ -413,7 +417,7 @@ void CGUIDialogMediaFilter::InitializeSettings()
       if (filter.settingType == SettingTypeString)
         filter.setting = AddEdit(group, settingId, filter.label, 0, data.asString(), true, false, filter.label, true);
       else if (filter.settingType == SettingTypeInteger)
-        filter.setting = AddEdit(group, settingId, filter.label, 0, static_cast<int>(data.asInteger()), 0, 1, 0, false, filter.label, true);
+        filter.setting = AddEdit(group, settingId, filter.label, 0, static_cast<int>(data.asInteger()), 0, 1, 0, false,  static_cast<int>(filter.label), true);
       else if (filter.settingType == SettingTypeNumber)
         filter.setting = AddEdit(group, settingId, filter.label, 0, data.asFloat(), 0.0f, 1.0f, 0.0f, false, filter.label, true);
     }
@@ -424,16 +428,16 @@ void CGUIDialogMediaFilter::InitializeSettings()
         value = filter.rule->m_operator == CDatabaseQueryRule::OPERATOR_TRUE ? CHECK_YES : CHECK_NO;
 
       StaticIntegerSettingOptions entries;
-      entries.push_back(pair<int, int>(CHECK_LABEL_ALL, CHECK_ALL));
-      entries.push_back(pair<int, int>(CHECK_LABEL_NO,  CHECK_NO));
-      entries.push_back(pair<int, int>(CHECK_LABEL_YES, CHECK_YES));
+      entries.push_back(std::pair<int, int>(CHECK_LABEL_ALL, CHECK_ALL));
+      entries.push_back(std::pair<int, int>(CHECK_LABEL_NO,  CHECK_NO));
+      entries.push_back(std::pair<int, int>(CHECK_LABEL_YES, CHECK_YES));
 
       filter.setting = AddSpinner(group, settingId, filter.label, 0, value, entries, true);
     }
     else if (filter.controlType == "list")
     {
       std::vector<std::string> values;
-      if (filter.rule != NULL && filter.rule->m_parameter.size() > 0)
+      if (filter.rule != NULL && !filter.rule->m_parameter.empty())
       {
         values = StringUtils::Split(filter.rule->GetParameter(), DATABASEQUERY_RULE_VALUE_SEPARATOR);
         if (values.size() == 1 && values.at(0).empty())
@@ -466,7 +470,7 @@ void CGUIDialogMediaFilter::InitializeSettings()
 
         // don't create the filter if there's no real range
         if (min == max)
-          break;
+          continue;
 
         int iValueLower = valueLower.isNull() ? min : static_cast<int>(valueLower.asInteger());
         int iValueUpper = valueUpper.isNull() ? max : static_cast<int>(valueUpper.asInteger());
@@ -487,7 +491,7 @@ void CGUIDialogMediaFilter::InitializeSettings()
 
         // don't create the filter if there's no real range
         if (min == max)
-          break;
+          continue;
 
         float fValueLower = valueLower.isNull() ? min : valueLower.asFloat();
         float fValueUpper = valueUpper.isNull() ? max : valueUpper.asFloat();
@@ -570,7 +574,7 @@ bool CGUIDialogMediaFilter::SetPath(const std::string &path)
 
 void CGUIDialogMediaFilter::UpdateControls()
 {
-  for (map<std::string, Filter>::iterator itFilter = m_filters.begin(); itFilter != m_filters.end(); itFilter++)
+  for (std::map<std::string, Filter>::iterator itFilter = m_filters.begin(); itFilter != m_filters.end(); itFilter++)
   {
     if (itFilter->second.controlType != "list")
       continue;
@@ -640,7 +644,7 @@ int CGUIDialogMediaFilter::GetItems(const Filter &filter, std::vector<std::strin
     CDatabase::Filter dbfilter;
     dbfilter.where = tmpFilter.GetWhereClause(videodb, playlists);
 
-    VIDEODB_CONTENT_TYPE type = VIDEODB_CONTENT_MOVIES;    
+    VIDEODB_CONTENT_TYPE type = VIDEODB_CONTENT_MOVIES;
     if (m_mediaType == "tvshows")
       type = VIDEODB_CONTENT_TVSHOWS;
     else if (m_mediaType == "episodes")
@@ -670,10 +674,10 @@ int CGUIDialogMediaFilter::GetItems(const Filter &filter, std::vector<std::strin
     std::set<std::string> playlists;
     CDatabase::Filter dbfilter;
     dbfilter.where = tmpFilter.GetWhereClause(musicdb, playlists);
-    
+
     if (filter.field == FieldGenre)
       musicdb.GetGenresNav(m_dbUrl->ToString(), selectItems, dbfilter, countOnly);
-    else if (filter.field == FieldArtist)
+    else if (filter.field == FieldArtist || filter.field == FieldAlbumArtist)
       musicdb.GetArtistsNav(m_dbUrl->ToString(), selectItems, m_mediaType == "albums", -1, -1, -1, dbfilter, SortDescription(), countOnly);
     else if (filter.field == FieldAlbum)
       musicdb.GetAlbumsNav(m_dbUrl->ToString(), selectItems, -1, -1, dbfilter, SortDescription(), countOnly);
@@ -746,12 +750,12 @@ void CGUIDialogMediaFilter::GetStringListOptions(const CSetting *setting, std::v
 
 void CGUIDialogMediaFilter::GetRange(const Filter &filter, int &min, int &interval, int &max)
 {
-  if (filter.field == FieldRating &&
-     (m_mediaType == "albums" || m_mediaType == "songs"))
+  if (filter.field == FieldUserRating &&
+     (m_mediaType == "movies" || m_mediaType == "tvshows" || m_mediaType == "episodes"|| m_mediaType == "musicvideos" || m_mediaType == "albums" || m_mediaType == "songs"))
   {
     min = 0;
     interval = 1;
-    max = 5;
+    max = 10;
   }
   else if (filter.field == FieldYear)
   {
@@ -761,8 +765,8 @@ void CGUIDialogMediaFilter::GetRange(const Filter &filter, int &min, int &interv
 
     if (m_mediaType == "movies" || m_mediaType == "tvshows" || m_mediaType == "musicvideos")
     {
-      CStdString table;
-      CStdString year;
+      std::string table;
+      std::string year;
       if (m_mediaType == "movies")
       {
         table = "movie_view";
@@ -785,7 +789,7 @@ void CGUIDialogMediaFilter::GetRange(const Filter &filter, int &min, int &interv
     }
     else if (m_mediaType == "albums" || m_mediaType == "songs")
     {
-      CStdString table;
+      std::string table;
       if (m_mediaType == "albums")
         table = "albumview";
       else if (m_mediaType == "songs")
@@ -794,8 +798,8 @@ void CGUIDialogMediaFilter::GetRange(const Filter &filter, int &min, int &interv
         return;
 
       CDatabase::Filter filter;
-      filter.where = DatabaseUtils::GetField(FieldYear, m_mediaType, DatabaseQueryPartWhere) + " > 0";
-      GetMinMax(table, DatabaseUtils::GetField(FieldYear, m_mediaType, DatabaseQueryPartSelect), min, max, filter);
+      filter.where = DatabaseUtils::GetField(FieldYear, CMediaTypes::FromString(m_mediaType), DatabaseQueryPartWhere) + " > 0";
+      GetMinMax(table, DatabaseUtils::GetField(FieldYear, CMediaTypes::FromString(m_mediaType), DatabaseQueryPartSelect), min, max, filter);
     }
   }
   else if (filter.field == FieldAirDate)
@@ -806,8 +810,8 @@ void CGUIDialogMediaFilter::GetRange(const Filter &filter, int &min, int &interv
 
     if (m_mediaType == "episodes")
     {
-      CStdString field = StringUtils::Format("CAST(strftime(\"%%s\", c%02d) AS INTEGER)", VIDEODB_ID_EPISODE_AIRED);
-      
+      std::string field = StringUtils::Format("CAST(strftime(\"%%s\", c%02d) AS INTEGER)", VIDEODB_ID_EPISODE_AIRED);
+
       GetMinMax("episode_view", field, min, max);
       interval = 60 * 60 * 24 * 7; // 1 week
     }
@@ -835,7 +839,7 @@ void CGUIDialogMediaFilter::GetRange(const Filter &filter, int &min, int &interv
 void CGUIDialogMediaFilter::GetRange(const Filter &filter, float &min, float &interval, float &max)
 {
   if (filter.field == FieldRating &&
-     (m_mediaType == "movies" || m_mediaType == "tvshows" || m_mediaType == "episodes"))
+     (m_mediaType == "movies" || m_mediaType == "tvshows" || m_mediaType == "episodes" || m_mediaType == "musicvideos" || m_mediaType == "albums" || m_mediaType == "songs"))
   {
     min = 0.0f;
     interval = 0.1f;

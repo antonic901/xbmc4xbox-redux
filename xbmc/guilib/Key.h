@@ -288,6 +288,8 @@
 
 #define ACTION_FILTER                 233
 
+#define ACTION_SWITCH_PLAYER          234
+
 #define ACTION_SETTINGS_RESET         241
 #define ACTION_SETTINGS_LEVEL_CHANGE  242
 

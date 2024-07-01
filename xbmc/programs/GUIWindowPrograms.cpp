@@ -184,7 +184,6 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
           buttons.Add(CONTEXT_BUTTON_TRAINER_OPTIONS, 38712); // trainer options
       }
       buttons.Add(CONTEXT_BUTTON_SCAN_TRAINERS, 38709); // scan trainers
-      buttons.Add(CONTEXT_BUTTON_GOTO_ROOT, 20128); // Go to Root
     }  
   }
   CGUIMediaWindow::GetContextButtons(itemNumber, buttons);
@@ -248,10 +247,6 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 
   case CONTEXT_BUTTON_SETTINGS:
     g_windowManager.ActivateWindow(WINDOW_SETTINGS_MYPROGRAMS);
-    return true;
-
-  case CONTEXT_BUTTON_GOTO_ROOT:
-    Update("");
     return true;
 
   case CONTEXT_BUTTON_LAUNCH:
