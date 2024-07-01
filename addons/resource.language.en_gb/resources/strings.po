@@ -6681,7 +6681,22 @@ msgctxt "#17999"
 msgid "%i days"
 msgstr ""
 
-#empty strings from id 18000 to 19999
+#empty strings from id 18000 to 19032
+
+#: xbmc/event/windows/GUIWindowEventLog.cpp
+#: xbmc/pvr/addons/PVRClients.cpp
+#: xbmc/pvr/dialogs/GUIDialogPVRGuideInfo.cpp
+#: xbmc/pvr/PVRManager.cpp
+#: xbmc/pvr/timers/PVRTimers.cpp
+#: xbmc/pvr/windows/GUIWindowPVRBase.cpp
+#: xbmc/pvr/windows/GUIWindowPVRChannels.cpp
+#: xbmc/video/windows/GUIWindowVideoBase.cpp
+#: addons/skin.estuary/1080i/VideoOSD.xml
+msgctxt "#19033"
+msgid "Information"
+msgstr ""
+
+#empty strings from id 19034 to 19999
 
 #: system/settings/settings.xml
 msgctxt "#20000"

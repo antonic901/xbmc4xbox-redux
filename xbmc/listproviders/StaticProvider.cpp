@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,8 +21,6 @@
 #include "StaticProvider.h"
 #include "utils/XMLUtils.h"
 #include "utils/TimeUtils.h"
-
-using namespace std;
 
 CStaticListProvider::CStaticListProvider(const TiXmlElement *element, int parentID)
 : IListProvider(parentID),
@@ -72,18 +70,18 @@ bool CStaticListProvider::Update(bool forceRefresh)
   else if (CTimeUtils::GetFrameTime() - m_updateTime > 1000)
   {
     m_updateTime = CTimeUtils::GetFrameTime();
-    for (vector<CGUIStaticItemPtr>::iterator i = m_items.begin(); i != m_items.end(); ++i)
+    for (std::vector<CGUIStaticItemPtr>::iterator i = m_items.begin(); i != m_items.end(); ++i)
       (*i)->UpdateProperties(m_parentID);
   }
-  for (vector<CGUIStaticItemPtr>::iterator i = m_items.begin(); i != m_items.end(); ++i)
+  for (std::vector<CGUIStaticItemPtr>::iterator i = m_items.begin(); i != m_items.end(); ++i)
     changed |= (*i)->UpdateVisibility(m_parentID);
-  return changed; // TODO: Also returned changed if properties are changed (if so, need to update scroll to letter).
+  return changed; //! @todo Also returned changed if properties are changed (if so, need to update scroll to letter).
 }
 
-void CStaticListProvider::Fetch(vector<CGUIListItemPtr> &items) const
+void CStaticListProvider::Fetch(std::vector<CGUIListItemPtr> &items) const
 {
   items.clear();
-  for (vector<CGUIStaticItemPtr>::const_iterator i = m_items.begin(); i != m_items.end(); ++i)
+  for (std::vector<CGUIStaticItemPtr>::const_iterator i = m_items.begin(); i != m_items.end(); ++i)
   {
     if ((*i)->IsVisible())
       items.push_back(*i);
@@ -100,10 +98,15 @@ int CStaticListProvider::GetDefaultItem() const
 {
   if (m_defaultItem >= 0)
   {
-    for (vector<CGUIStaticItemPtr>::const_iterator i = m_items.begin(); i != m_items.end(); ++i)
+    unsigned int offset = 0;
+    for (std::vector<CGUIStaticItemPtr>::const_iterator i = m_items.begin(); i != m_items.end(); ++i)
     {
-      if ((*i)->m_iprogramCount == m_defaultItem && (*i)->IsVisible())
-        return i - m_items.begin();
+      if ((*i)->IsVisible())
+      {
+        if ((*i)->m_iprogramCount == m_defaultItem && (*i)->IsVisible())
+          return offset;
+        offset++;
+      }
     }
   }
   return -1;

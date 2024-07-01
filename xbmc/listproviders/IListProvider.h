@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 
 #include "system.h" // <xtl.h>
 #include <vector>
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
 
 class TiXmlNode;
 class CGUIListItem;
@@ -62,9 +62,8 @@ public:
 
   /*! \brief Reset the current list of items.
    Derived classes may choose to ignore this.
-   \param immediately whether the content of the provider should be cleared.
    */
-  virtual void Reset(bool immediately = false) {};
+  virtual void Reset() {};
 
   /*! \brief Click event on an item.
    \param item the item that was clicked.

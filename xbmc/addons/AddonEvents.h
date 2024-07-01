@@ -19,6 +19,7 @@
  */
 #pragma once
 
+#include <boost/move/move.hpp>
 #include <string>
 
 namespace ADDON

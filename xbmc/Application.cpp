@@ -1269,6 +1269,11 @@ HRESULT CApplication::Initialize()
     uiInitializationFinished = firstWindow != WINDOW_STARTUP_ANIM;
 
     g_windowManager.ActivateWindow(firstWindow);
+
+    if (!m_ServiceManager->Init3())
+    {
+      CLog::Log(LOGERROR, "Application - Init3 failed");
+    }
   }
 
   //g_sysinfo.Refresh();
@@ -2620,15 +2625,6 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
 #ifndef _XBOX
     *static_cast<bool*>(pMsg->lpVoid) = DestroyWindow();
     SetRenderGUI(false);
-#endif
-    break;
-
-  case TMSG_SETPVRMANAGERSTATE:
-#ifndef _XBOX
-    if (pMsg->param1 != 0)
-      StartPVRManager();
-    else
-      StopPVRManager();
 #endif
     break;
 

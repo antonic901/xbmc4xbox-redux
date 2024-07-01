@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include "addons/AddonEvents.h"
 #include "IListProvider.h"
 #include "guilib/GUIStaticItem.h"
 #include "utils/Job.h"
@@ -28,14 +30,18 @@
 #include "interfaces/IAnnouncer.h"
 
 class TiXmlElement;
+class CVariant;
 
-typedef enum
+namespace InfoTagType
 {
-  VIDEO,
-  AUDIO,
-  PICTURE,
-  PROGRAM
-} InfoTagType;
+  enum TagType
+  {
+    VIDEO,
+    AUDIO,
+    PICTURE,
+    PROGRAM
+  };
+}
 
 class CDirectoryProvider :
   public IListProvider,
@@ -46,7 +52,7 @@ public:
   typedef enum
   {
     OK,
-    PENDING,
+    INVALIDATED,
     DONE
   } UpdateState;
 
@@ -56,7 +62,7 @@ public:
   virtual bool Update(bool forceRefresh);
   virtual void Announce(ANNOUNCEMENT::AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data);
   virtual void Fetch(std::vector<CGUIListItemPtr> &items) const;
-  virtual void Reset(bool immediately = false);
+  virtual void Reset();
   virtual bool OnClick(const CGUIListItemPtr &item);
   bool OnInfo(const CGUIListItemPtr &item);
   bool OnContextMenu(const CGUIListItemPtr &item);
@@ -65,23 +71,24 @@ public:
   // callback from directory job
   virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
 private:
-  unsigned int     m_updateTime;
   UpdateState      m_updateState;
-  bool             m_isDbUpdating;
   bool             m_isAnnounced;
   unsigned int     m_jobID;
   CGUIInfoLabel    m_url;
   CGUIInfoLabel    m_target;
+  CGUIInfoLabel    m_sortMethod;
+  CGUIInfoLabel    m_sortOrder;
   CGUIInfoLabel    m_limit;
   std::string      m_currentUrl;
   std::string      m_currentTarget;   ///< \brief node.target property on the list as a whole
+  SortDescription  m_currentSort;
   unsigned int     m_currentLimit;
   std::vector<CGUIStaticItemPtr> m_items;
-  std::vector<InfoTagType> m_itemTypes;
+  std::vector<InfoTagType::TagType> m_itemTypes;
   CCriticalSection m_section;
 
-  void FireJob();
-  void RegisterListProvider(bool hasLibraryContent);
   bool UpdateURL();
   bool UpdateLimit();
+  bool UpdateSort();
+  void OnAddonEvent(const ADDON::AddonEvent& event);
 };
