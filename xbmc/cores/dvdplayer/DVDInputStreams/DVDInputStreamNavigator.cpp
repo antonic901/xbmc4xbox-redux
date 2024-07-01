@@ -850,7 +850,7 @@ std::string CDVDInputStreamNavigator::GetSubtitleStreamLanguage(int iId)
     if (subp_attributes.type == DVD_SUBPICTURE_TYPE_Language ||
         subp_attributes.type == DVD_SUBPICTURE_TYPE_NotSpecified)
     {
-      if (!g_LangCodeExpander.Lookup(strLanguage, subp_attributes.lang_code)) strLanguage = "Unknown";
+      if (!g_LangCodeExpander.Lookup(subp_attributes.lang_code, strLanguage)) strLanguage = "Unknown";
 
       switch (subp_attributes.lang_extension)
       {
@@ -949,7 +949,7 @@ std::string CDVDInputStreamNavigator::GetAudioStreamLanguage(int iId)
   int streamId = ConvertAudioStreamId_XBMCToExternal(iId);
   if( m_dll.dvdnav_get_audio_info(m_dvdnav, streamId, &audio_attributes) == DVDNAV_STATUS_OK )
   {
-    if (!g_LangCodeExpander.Lookup(strLanguage, audio_attributes.lang_code)) strLanguage = "Unknown";
+    if (!g_LangCodeExpander.Lookup(audio_attributes.lang_code, strLanguage)) strLanguage = "Unknown";
 
     switch( audio_attributes.lang_extension )
     {

@@ -200,71 +200,6 @@ void CWeatherJob::LocalizeOverview(std::string &str)
   str = StringUtils::TrimRight(str, " ");
 }
 
-// input param must be kmh
-int CWeatherJob::ConvertSpeed(int curSpeed)
-{
-  switch (g_langInfo.GetSpeedUnit())
-  {
-  case CLangInfo::SPEED_UNIT_KMH:
-    break;
-  case CLangInfo::SPEED_UNIT_MPS:
-    curSpeed=(int)(curSpeed * (1000.0 / 3600.0) + 0.5);
-    break;
-  case CLangInfo::SPEED_UNIT_MPH:
-    curSpeed=(int)(curSpeed / (8.0 / 5.0));
-    break;
-  case CLangInfo::SPEED_UNIT_MPMIN:
-    curSpeed=(int)(curSpeed * (1000.0 / 3600.0) + 0.5*60);
-    break;
-  case CLangInfo::SPEED_UNIT_FTH:
-    curSpeed=(int)(curSpeed * 3280.8398888889f);
-    break;
-  case CLangInfo::SPEED_UNIT_FTMIN:
-    curSpeed=(int)(curSpeed * 54.6805555556f);
-    break;
-  case CLangInfo::SPEED_UNIT_FTS:
-    curSpeed=(int)(curSpeed * 0.911344f);
-    break;
-  case CLangInfo::SPEED_UNIT_KTS:
-    curSpeed=(int)(curSpeed * 0.5399568f);
-    break;
-  case CLangInfo::SPEED_UNIT_INCHPS:
-    curSpeed=(int)(curSpeed * 10.9361388889f);
-    break;
-  case CLangInfo::SPEED_UNIT_YARDPS:
-    curSpeed=(int)(curSpeed * 0.3037814722f);
-    break;
-  case CLangInfo::SPEED_UNIT_FPF:
-    curSpeed=(int)(curSpeed * 1670.25f);
-    break;
-  case CLangInfo::SPEED_UNIT_BEAUFORT:
-    {
-      float knot=(float)curSpeed * 0.5399568f; // to kts first
-      if(knot<=1.0) curSpeed=0;
-      if(knot>1.0 && knot<3.5) curSpeed=1;
-      if(knot>=3.5 && knot<6.5) curSpeed=2;
-      if(knot>=6.5 && knot<10.5) curSpeed=3;
-      if(knot>=10.5 && knot<16.5) curSpeed=4;
-      if(knot>=16.5 && knot<21.5) curSpeed=5;
-      if(knot>=21.5 && knot<27.5) curSpeed=6;
-      if(knot>=27.5 && knot<33.5) curSpeed=7;
-      if(knot>=33.5 && knot<40.5) curSpeed=8;
-      if(knot>=40.5 && knot<47.5) curSpeed=9;
-      if(knot>=47.5 && knot<55.5) curSpeed=10;
-      if(knot>=55.5 && knot<63.5) curSpeed=11;
-      if(knot>=63.5 && knot<74.5) curSpeed=12;
-      if(knot>=74.5 && knot<80.5) curSpeed=13;
-      if(knot>=80.5 && knot<89.5) curSpeed=14;
-      if(knot>=89.5) curSpeed=15;
-    }
-    break;
-  default:
-    assert(false);
-  }
-
-  return curSpeed;
-}
-
 bool CWeatherJob::LoadWeather(const CStdString &weatherXML)
 {
   int iTmpInt;
@@ -330,16 +265,15 @@ bool CWeatherJob::LoadWeather(const CStdString &weatherXML)
 
     GetInteger(pElement, "tmp", iTmpInt);    //current temp
     CTemperature temp=CTemperature::CreateFromCelsius(iTmpInt);
-    m_info.currentTemperature.Format("%2.0f", temp.ToLocale());
+    m_info.currentTemperature = g_langInfo.GetTemperatureAsString(temp);
     GetInteger(pElement, "flik", iTmpInt);    //current 'Feels Like'
     CTemperature tempFlik=CTemperature::CreateFromCelsius(iTmpInt);
-    m_info.currentFeelsLike.Format("%2.0f", tempFlik.ToLocale());
+    m_info.currentFeelsLike = g_langInfo.GetTemperatureAsString(tempFlik);
 
     TiXmlElement *pNestElement = pElement->FirstChildElement("wind"); //current wind
     if (pNestElement)
     {
       GetInteger(pNestElement, "s", iTmpInt);   //current wind strength
-      iTmpInt = ConvertSpeed(iTmpInt);    //convert speed if needed
       GetString(pNestElement, "t", iTmpStr, "N");  //current wind direction
 
       //From <dir eg NW> at <speed> km/h   g_localizeStrings.Get(407)
@@ -351,9 +285,9 @@ bool CWeatherJob::LoadWeather(const CStdString &weatherXML)
       if (iTmpStr ==  "CALM")
         m_info.currentWind = szCalm;
       else
-        m_info.currentWind.Format("%s %s %s %i %s",
+        m_info.currentWind.Format("%s %s %s %s",
               szWindFrom.c_str(), iTmpStr,
-              szWindAt.c_str(), iTmpInt, g_langInfo.GetSpeedUnitString().c_str());
+              szWindAt.c_str(), g_langInfo.GetSpeedAsString(CSpeed::CreateFromKilometresPerHour(iTmpInt)).c_str());
     }
 
     GetInteger(pElement, "hmid", iTmpInt);    //current humidity
@@ -370,7 +304,7 @@ bool CWeatherJob::LoadWeather(const CStdString &weatherXML)
 
     GetInteger(pElement, "dewp", iTmpInt);    //current dew point
     CTemperature dewPoint=CTemperature::CreateFromCelsius(iTmpInt);
-    m_info.currentDewPoint.Format("%2.0f", dewPoint.ToLocale());
+    m_info.currentDewPoint = g_langInfo.GetTemperatureAsString(dewPoint);
   }
   //future forcast
   pElement = pRootElement->FirstChildElement("dayf");
@@ -394,7 +328,7 @@ bool CWeatherJob::LoadWeather(const CStdString &weatherXML)
         else
         {
           CTemperature temp=CTemperature::CreateFromCelsius(atoi(iTmpStr));
-          m_info.forecast[i].m_high = StringUtils::Format("%2.0f", temp.ToLocale());
+          m_info.forecast[i].m_high = g_langInfo.GetTemperatureAsString(temp);
         }
 
         GetString(pOneDayElement, "low", iTmpStr, "");
@@ -403,7 +337,7 @@ bool CWeatherJob::LoadWeather(const CStdString &weatherXML)
         else
         {
           CTemperature temp=CTemperature::CreateFromCelsius(atoi(iTmpStr));
-          m_info.forecast[i].m_low = StringUtils::Format("%2.0f", temp.ToLocale());
+          m_info.forecast[i].m_low = g_langInfo.GetTemperatureAsString(temp);
         }
 
         TiXmlElement *pDayTimeElement = pOneDayElement->FirstChildElement("part"); //grab the first day/night part (should be day)

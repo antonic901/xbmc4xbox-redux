@@ -195,7 +195,15 @@ public:
   static int FindBestMatch(const std::string &str, const std::vector<std::string> &strings, double &matchscore);
   static bool ContainsKeyword(const std::string &str, const std::vector<std::string> &keywords);
 
+  /*! \brief Convert the string of binary chars to the actual string.
 
+  Convert the string representation of binary chars to the actual string.
+  For example \1\2\3 is converted to a string with binary char \1, \2 and \3
+
+  \param param String to convert
+  \return Converted string
+  */
+  static std::string BinaryStringToString(const std::string& in);
   /*! \brief Format the string with locale separators.
 
   Format the string with locale separators.

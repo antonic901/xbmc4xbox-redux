@@ -131,7 +131,7 @@ void CDemuxStream::GetStreamName( std::string& strInfo )
   else
   {
     CStdString name;
-    g_LangCodeExpander.Lookup( name, language );
+    g_LangCodeExpander.Lookup( language, name );
     strInfo = name;
   }
 }

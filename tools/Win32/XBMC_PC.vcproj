@@ -1786,9 +1786,6 @@
 					RelativePath="..\..\xbmc\utils\SystemInfo.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\Temperature.cpp">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\utils\Thread.cpp">
 				</File>
 				<File
@@ -3371,9 +3368,6 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\utils\StringUtils.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\Temperature.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\utils\Thread.h">

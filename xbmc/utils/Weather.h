@@ -109,7 +109,6 @@ private:
   void LocalizeOverviewToken(CStdString &str);
   void LocalizeDay(std::string &day);
   void LoadLocalizedToken();
-  int ConvertSpeed(int speed);
   std::map<CStdString, int> m_localizedTokens;
   typedef std::map<CStdString, int>::const_iterator ilocalizedTokens;
 

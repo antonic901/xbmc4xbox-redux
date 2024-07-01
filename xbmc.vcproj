@@ -1072,6 +1072,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\SortUtils.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\Speed.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Speed.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\Splash.cpp">
 				</File>
 				<File
@@ -1102,7 +1108,46 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\SystemInfo.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\Temperature.cpp">
+					RelativePath=".\xbmc\utils\Temperature.cpp">
+					<FileConfiguration
+						Name="Debug|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile_FastCap|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release_LTCG|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug Xbox No Memory Tracking|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Temperature.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\ThumbnailCache.cpp">
@@ -4852,9 +4897,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\SystemInfo.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\Temperature.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\ThumbnailCache.h">

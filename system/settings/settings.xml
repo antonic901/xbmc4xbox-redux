@@ -150,7 +150,7 @@
       </group>
       <group id="2">
         <setting id="locale.timezonecountry" type="string" label="14079" help="36117">
-          <level>2</level>
+          <level>1</level>
           <default>default</default> <!-- will be properly set on startup -->
           <constraints>
             <options>timezonecountries</options>
@@ -158,7 +158,7 @@
           <control type="list" format="string" />
         </setting>
         <setting id="locale.timezone" type="integer" label="14080" help="36118">
-          <level>2</level>
+          <level>1</level>
           <default>default</default> <!-- will be properly set on startup -->
           <constraints>
             <options>timezones</options>
@@ -169,21 +169,74 @@
           <control type="list" format="string" />
         </setting>
       </group>
-      <group id="4">
-        <setting id="locale.audiolanguage" type="string" label="285" help="36119">
+      <group id="3">
+        <setting id="locale.shortdateformat" type="string" label="14109" help="36173">
           <level>1</level>
-          <default>original</default>
+          <default>regional</default>
           <constraints>
-            <options>streamlanguages</options>
+            <options>shortdateformats</options>
           </constraints>
+          <dependencies>
+            <dependency type="update" setting="locale.country" />
+          </dependencies>
           <control type="list" format="string" />
         </setting>
-        <setting id="locale.subtitlelanguage" type="string" label="286" help="36120">
+        <setting id="locale.longdateformat" type="string" label="14110" help="36215">
           <level>1</level>
-          <default>original</default>
+          <default>regional</default>
           <constraints>
-            <options>streamlanguages</options>
+            <options>longdateformats</options>
           </constraints>
+          <dependencies>
+            <dependency type="update" setting="locale.country" />
+          </dependencies>
+          <control type="list" format="string" />
+        </setting>
+        <setting id="locale.timeformat" type="string" label="14107" help="36167">
+          <level>1</level>
+          <default>regional</default>
+          <constraints>
+            <options>timeformats</options>
+          </constraints>
+          <dependencies>
+            <dependency type="update" setting="locale.country" />
+            <dependency type="update" setting="locale.use24hourclock" />
+          </dependencies>
+          <control type="list" format="string" />
+        </setting>
+        <setting id="locale.use24hourclock" type="string" label="14108" help="36168">
+          <level>1</level>
+          <default>regional</default>
+          <constraints>
+            <options>24hourclockformats</options>
+          </constraints>
+          <dependencies>
+            <dependency type="update" setting="locale.country" />
+          </dependencies>
+          <control type="list" format="string" />
+        </setting>
+      </group>
+      <group id="4">
+        <setting id="locale.temperatureunit" type="string" label="14105" help="36140">
+          <level>1</level>
+          <default>regional</default>
+          <constraints>
+            <options>temperatureunits</options>
+          </constraints>
+          <dependencies>
+            <dependency type="update" setting="locale.country" />
+          </dependencies>
+          <control type="list" format="string" />
+        </setting>
+        <setting id="locale.speedunit" type="string" label="14106" help="36142">
+          <level>1</level>
+          <default>regional</default>
+          <constraints>
+            <options>speedunits</options>
+          </constraints>
+          <dependencies>
+            <dependency type="update" setting="locale.country" />
+          </dependencies>
           <control type="list" format="string" />
         </setting>
       </group>
@@ -393,6 +446,14 @@
     </category>
     <category id="videoplayer" label="14086" help="36151">
       <group id="1">
+        <setting id="locale.audiolanguage" type="string" label="285" help="36119">
+          <level>1</level>
+          <default>original</default>
+          <constraints>
+            <options>streamlanguages</options>
+          </constraints>
+          <control type="list" format="string" />
+        </setting>
         <setting id="videoplayer.autoplaynextitem" type="boolean" label="13433" help="36152">
           <level>1</level>
           <default>false</default>
@@ -687,6 +748,16 @@
     </category>
     <category id="subtitles" label="287" help="36184">
       <group id="1">
+        <setting id="locale.subtitlelanguage" type="string" label="286" help="36120">
+          <level>1</level>
+          <default>original</default>
+          <constraints>
+            <options>streamlanguages</options>
+          </constraints>
+          <control type="list" format="string" />
+        </setting>
+      </group>
+      <group id="2">
         <setting id="subtitles.font" type="string" label="14089" help="36185">
           <level>1</level>
           <default>arial.ttf</default>
@@ -761,7 +832,7 @@
           <control type="toggle" />
         </setting>
       </group>
-      <group id="2">
+      <group id="3">
         <setting id="subtitles.savetomoviefolder" type="boolean" label="24115" help="24106">
           <level>1</level>
           <default>true</default>

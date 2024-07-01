@@ -29,14 +29,6 @@
           <control type="toggle" />
         </setting>
       </group>
-      <group id="4">
-        <setting id="locale.audiolanguage">
-          <level>4</level>
-        </setting>
-        <setting id="locale.subtitlelanguage">
-          <level>4</level>
-        </setting>
-      </group>
     </category>
     <category id="filelists">
       <group id="1">
@@ -60,6 +52,11 @@
       </group>
     </category>
     <category id="videoplayer">
+      <group id="1">
+        <setting id="locale.audiolanguage">
+          <level>4</level>
+        </setting>
+      </group>
       <group id="2">
         <setting id="videoplayer.displayresolution" type="integer" label="169" help="">
           <level>1</level>
@@ -394,6 +391,11 @@
     </category>
     <category id="subtitles">
       <group id="1">
+        <setting id="locale.subtitlelanguage">
+          <level>4</level>
+        </setting>
+      </group>
+      <group id="2">
         <setting id="subtitles.height">
           <constraints>
             <options>fontheights</options>
@@ -403,7 +405,7 @@
           <level>4</level>
         </setting>
       </group>
-      <group id="2">
+      <group id="3">
         <setting id="subtitles.align">
           <level>4</level>
         </setting>

@@ -505,7 +505,7 @@ void CGUIDialogSubtitles::OnDownloadComplete(const CFileItemList *items, const s
 
   // Extract the language and appropriate extension
   CStdString strSubLang;
-  g_LangCodeExpander.ConvertToTwoCharCode(strSubLang, language);
+  g_LangCodeExpander.ConvertToISO6391(language, strSubLang);
 
   // Iterate over all items to transfer
   for (unsigned int i = 0; i < vecFiles.size() && i < (unsigned int) items->Size(); i++)

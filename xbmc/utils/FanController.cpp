@@ -427,7 +427,7 @@ void CFanController::SettingOptionsTemperaturesFiller(const CSetting *setting, s
 {
   for (int i = 40; i <= 68; ++i)
   {
-    CTemperature temp = CTemperature::CreateFromCelsius(i);
-    list.push_back(std::make_pair(temp.ToString(), i));
+    std::string strTemp = g_langInfo.GetTemperatureAsString(CTemperature::CreateFromCelsius(i));
+    list.push_back(std::make_pair(strTemp, i));
   }
 }

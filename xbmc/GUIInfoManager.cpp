@@ -1312,7 +1312,9 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *f
     strLabel = strLabel.Trim();
     break;
   case WEATHER_TEMPERATURE:
-    strLabel.Format("%s%s", g_weatherManager.GetInfo(WEATHER_LABEL_CURRENT_TEMP), g_langInfo.GetTempUnitString().c_str());
+    strLabel = StringUtils::Format("%s%s",
+                                   g_weatherManager.GetInfo(WEATHER_LABEL_CURRENT_TEMP).c_str(),
+                                   g_langInfo.GetTemperatureUnitString().c_str());
     break;
   case WEATHER_LOCATION:
     strLabel = g_weatherManager.GetInfo(WEATHER_LABEL_LOCATION);
@@ -1782,7 +1784,7 @@ CStdString CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *f
     strLabel = g_langInfo.GetEnglishLanguageName();
     break;
   case SYSTEM_TEMPERATURE_UNITS:
-    strLabel = g_langInfo.GetTempUnitString();
+    strLabel = g_langInfo.GetTemperatureUnitString();
     break;
   case SYSTEM_PROGRESS_BAR:
     {
@@ -2034,10 +2036,10 @@ bool CGUIInfoManager::GetInt(int &value, int info, int contextWindow, const CGUI
       value = atoi(g_sysinfo.GetInfo(LCD_HDD_TEMPERATURE).c_str());
       return true;
     case SYSTEM_CPU_TEMPERATURE:
-      value = atoi(CFanController::Instance()->GetCPUTemp().ToString().c_str());
+      value = atoi(CFanController::Instance()->GetCPUTemp().ToString(g_langInfo.GetTemperatureUnit()).c_str());
       return true;
     case SYSTEM_GPU_TEMPERATURE:
-      value = atoi(CFanController::Instance()->GetGPUTemp().ToString().c_str());
+      value = atoi(CFanController::Instance()->GetGPUTemp().ToString(g_langInfo.GetTemperatureUnit()).c_str());
       return true;
     case SYSTEM_FAN_SPEED:
       value = CFanController::Instance()->GetFanSpeed() * 2;
@@ -3912,11 +3914,11 @@ string CGUIInfoManager::GetSystemHeatInfo(int info)
   {
     case LCD_CPU_TEMPERATURE:
     case SYSTEM_CPU_TEMPERATURE:
-      return m_cpuTemp.ToString();
+      return g_langInfo.GetTemperatureAsString(m_cpuTemp);
       break;
     case LCD_GPU_TEMPERATURE:
     case SYSTEM_GPU_TEMPERATURE:
-      return m_gpuTemp.ToString();
+      return g_langInfo.GetTemperatureAsString(m_gpuTemp);
       break;
     case LCD_FAN_SPEED:
     case SYSTEM_FAN_SPEED:

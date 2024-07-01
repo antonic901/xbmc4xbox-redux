@@ -222,11 +222,20 @@ void CSettings::Uninitialize()
   m_settingsManager->UnregisterSettingOptionsFiller("languagenames");
   m_settingsManager->UnregisterSettingOptionsFiller("framerateconversions");
   m_settingsManager->UnregisterSettingOptionsFiller("regions");
+  m_settingsManager->UnregisterSettingOptionsFiller("shortdateformats");
+  m_settingsManager->UnregisterSettingOptionsFiller("longdateformats");
+  m_settingsManager->UnregisterSettingOptionsFiller("timeformats");
+  m_settingsManager->UnregisterSettingOptionsFiller("24hourclockformats");
+  m_settingsManager->UnregisterSettingOptionsFiller("speedunits");
+  m_settingsManager->UnregisterSettingOptionsFiller("temperatureunits");
   m_settingsManager->UnregisterSettingOptionsFiller("rendermethods");
   m_settingsManager->UnregisterSettingOptionsFiller("resolutions");
   m_settingsManager->UnregisterSettingOptionsFiller("videoseeksteps");
   m_settingsManager->UnregisterSettingOptionsFiller("startupwindows");
-  m_settingsManager->UnregisterSettingOptionsFiller("streamlanguages");
+  m_settingsManager->UnregisterSettingOptionsFiller("audiostreamlanguages");
+  m_settingsManager->UnregisterSettingOptionsFiller("subtitlestreamlanguages");
+  m_settingsManager->UnregisterSettingOptionsFiller("subtitledownloadlanguages");
+  m_settingsManager->UnregisterSettingOptionsFiller("iso6391languages");
   m_settingsManager->UnregisterSettingOptionsFiller("skincolors");
   m_settingsManager->UnregisterSettingOptionsFiller("skinfonts");
   m_settingsManager->UnregisterSettingOptionsFiller("skinthemes");
@@ -574,6 +583,12 @@ void CSettings::InitializeOptionFillers()
   m_settingsManager->RegisterSettingOptionsFiller("fontheights", GUIFontManager::SettingOptionsSubtitleHeightsFiller);
   m_settingsManager->RegisterSettingOptionsFiller("framerateconversions", CDisplaySettings::SettingOptionsFramerateconversionsFiller);
   m_settingsManager->RegisterSettingOptionsFiller("regions", CLangInfo::SettingOptionsRegionsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("shortdateformats", CLangInfo::SettingOptionsShortDateFormatsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("longdateformats", CLangInfo::SettingOptionsLongDateFormatsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("timeformats", CLangInfo::SettingOptionsTimeFormatsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("24hourclockformats", CLangInfo::SettingOptions24HourClockFormatsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("speedunits", CLangInfo::SettingOptionsSpeedUnitsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("temperatureunits", CLangInfo::SettingOptionsTemperatureUnitsFiller);
 #ifdef HAS_XBOX_D3D
   m_settingsManager->RegisterSettingOptionsFiller("rendermethods", CXBoxRenderer::SettingOptionsRenderMethodsFiller);
 #else
@@ -583,7 +598,10 @@ void CSettings::InitializeOptionFillers()
 //   m_settingsManager->RegisterSettingOptionsFiller("shutdownstates", CPowerManager::SettingOptionsShutdownStatesFiller);
   m_settingsManager->RegisterSettingOptionsFiller("videoseeksteps", CSeekHandler::SettingOptionsSeekStepsFiller);
   m_settingsManager->RegisterSettingOptionsFiller("startupwindows", ADDON::CSkinInfo::SettingOptionsStartupWindowsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("streamlanguages", CLangInfo::SettingOptionsStreamLanguagesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("audiostreamlanguages", CLangInfo::SettingOptionsAudioStreamLanguagesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("subtitlestreamlanguages", CLangInfo::SettingOptionsSubtitleStreamLanguagesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("subtitledownloadlanguages", CLangInfo::SettingOptionsSubtitleDownloadlanguagesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("iso6391languages", CLangInfo::SettingOptionsISO6391LanguagesFiller);
   m_settingsManager->RegisterSettingOptionsFiller("skincolors", ADDON::CSkinInfo::SettingOptionsSkinColorsFiller);
   m_settingsManager->RegisterSettingOptionsFiller("skinfonts", ADDON::CSkinInfo::SettingOptionsSkinFontsFiller);
   m_settingsManager->RegisterSettingOptionsFiller("skinthemes", ADDON::CSkinInfo::SettingOptionsSkinThemesFiller);
