@@ -503,7 +503,7 @@ bool CUtil::GetVolumeFromFileName(const CStdString& strFileName, CStdString& str
   return false;
 }
 
-void CUtil::CleanString(const CStdString& strFileName, CStdString& strTitle, CStdString& strTitleAndYear, CStdString& strYear, bool bRemoveExtension /* = false */, bool bCleanChars /* = true */)
+void CUtil::CleanString(const CStdString& strFileName, std::string& strTitle, std::string& strTitleAndYear, std::string& strYear, bool bRemoveExtension /* = false */, bool bCleanChars /* = true */)
 {
   strTitleAndYear = strFileName;
 
@@ -539,7 +539,7 @@ void CUtil::CleanString(const CStdString& strFileName, CStdString& strTitle, CSt
     }
     int j=0;
     if ((j=reTags.RegFind(strFileName.c_str())) > 0)
-      strTitleAndYear = strTitleAndYear.Mid(0, j);
+      strTitleAndYear = strTitleAndYear.substr(0, j);
   }
 
   // final cleanup - special characters used instead of spaces:
@@ -550,26 +550,27 @@ void CUtil::CleanString(const CStdString& strFileName, CStdString& strTitle, CSt
   if (bCleanChars)
   {
     bool initialDots = true;
-    bool alreadyContainsSpace = (strTitleAndYear.Find(' ') >= 0);
+    bool alreadyContainsSpace = (strTitleAndYear.find(' ') != std::string::npos);
 
     for (int i = 0; i < (int)strTitleAndYear.size(); i++)
     {
-      char c = strTitleAndYear.GetAt(i);
+      char c = strTitleAndYear[i];
 
       if (c != '.')
         initialDots = false;
 
       if ((c == '_') || ((!alreadyContainsSpace) && !initialDots && (c == '.')))
       {
-        strTitleAndYear.SetAt(i, ' ');
+        strTitleAndYear[i] = ' ';
       }
     }
   }
 
-  strTitle = strTitleAndYear.Trim();
+  StringUtils::Trim(strTitleAndYear);
+  strTitle = strTitleAndYear;
 
   // append year
-  if (!strYear.IsEmpty())
+  if (!strYear.empty())
     strTitleAndYear = strTitle + " (" + strYear + ")";
 
   // restore extension if needed
@@ -3512,7 +3513,7 @@ CStdString CUtil::GetDefaultFolderThumb(const CStdString &folderThumb)
   return "";
 }
 
-void CUtil::GetSkinThemes(vector<CStdString>& vecTheme)
+void CUtil::GetSkinThemes(std::vector<std::string>& vecTheme)
 {
   CStdString strPath = URIUtils::AddFileToFolder(g_graphicsContext.GetMediaDir(), "media");
   CFileItemList items;

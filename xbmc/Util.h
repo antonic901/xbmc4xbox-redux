@@ -63,18 +63,6 @@ typedef enum
   VIDEO_PAL60
 } F_VIDEO;
 
-struct sortstringbyname
-{
-  bool operator()(const CStdString& strItem1, const CStdString& strItem2)
-  {
-    CStdString strLine1 = strItem1;
-    CStdString strLine2 = strItem2;
-    strLine1 = strLine1.ToLower();
-    strLine2 = strLine2.ToLower();
-    return strcmp(strLine1.c_str(), strLine2.c_str()) < 0;
-  }
-};
-
 struct XBOXDETECTION
 {
   std::vector<CStdString> client_ip;
@@ -89,7 +77,7 @@ public:
   CUtil(void);
   virtual ~CUtil(void);
   static bool GetVolumeFromFileName(const CStdString& strFileName, CStdString& strFileTitle, CStdString& strVolumeNumber);
-  static void CleanString(const CStdString& strFileName, CStdString& strTitle, CStdString& strTitleAndYear, CStdString& strYear, bool bRemoveExtension = false, bool bCleanChars = true);
+  static void CleanString(const CStdString& strFileName, std::string& strTitle, std::string& strTitleAndYear, std::string& strYear, bool bRemoveExtension = false, bool bCleanChars = true);
   static CStdString GetTitleFromPath(const CURL& url, bool bIsFolder = false);
   static CStdString GetTitleFromPath(const CStdString& strFileNameAndPath, bool bIsFolder = false);
   static void GetQualifiedFilename(const std::string &strBasePath, std::string &strFilename);
@@ -174,7 +162,7 @@ public:
   static bool AutoDetectionPing(CStdString strFTPUserName, CStdString strFTPPass, CStdString strNickName, int iFTPPort);
   static bool AutoDetection();
   static void AutoDetectionGetSource(VECSOURCES &share);
-  static void GetSkinThemes(std::vector<CStdString>& vecTheme);
+  static void GetSkinThemes(std::vector<std::string>& vecTheme);
   static void GetRecursiveListing(const CStdString& strPath, CFileItemList& items, const CStdString& strMask, unsigned int flags = 0 /* DIR_FLAG_DEFAULTS */);
   static void GetRecursiveDirsListing(const CStdString& strPath, CFileItemList& items, unsigned int flags = 0 /* DIR_FLAG_DEFAULTS */);
   static void WipeDir(const CStdString& strPath);

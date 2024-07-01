@@ -21,12 +21,15 @@
 
 #include "IMsgTargetCallback.h"
 #include "messaging/IMessageTarget.h"
+#include "ServiceBroker.h"
 #include <boost/shared_ptr.hpp>
 
 #define PLAYLIST_NONE    -1
 #define PLAYLIST_MUSIC   0
 #define PLAYLIST_VIDEO   1
 #define PLAYLIST_PICTURE 2
+
+#define g_playlistPlayer CServiceBroker::GetPlaylistPlayer()
 
 class CFileItem; typedef boost::shared_ptr<CFileItem> CFileItemPtr;
 class CFileItemList;
@@ -196,9 +199,3 @@ protected:
 };
 
 }
-
-/*!
- \ingroup windows 
- \brief Global instance of playlist player
- */
-extern PLAYLIST::CPlayListPlayer g_playlistPlayer;

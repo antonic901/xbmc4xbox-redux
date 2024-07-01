@@ -312,7 +312,7 @@ void CGUIWindowWeather::CallScript()
   if (!StringUtils::EqualsNoCase(CSettings::Get().GetString("weather.addon"), DEFAULT_WEATHER_ADDON))
   {
     AddonPtr addon;
-    if (!ADDON::CAddonMgr::Get().GetAddon(CSettings::Get().GetString("weather.addon"), addon, ADDON_SCRIPT_WEATHER))
+    if (!ADDON::CAddonMgr::GetInstance().GetAddon(CSettings::Get().GetString("weather.addon"), addon, ADDON_SCRIPT_WEATHER))
       return;
 
     // initialize our sys.argv variables

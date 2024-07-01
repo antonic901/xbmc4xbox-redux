@@ -47,6 +47,12 @@ namespace ADDON
 }
 typedef boost::shared_ptr<ADDON::CLanguageResource> LanguageResourcePtr;
 
+typedef enum MeridiemSymbol
+{
+  MeridiemSymbolPM = 0,
+  MeridiemSymbolAM
+} MeridiemSymbol;
+
 class CLangInfo : public ISettingCallback
 {
 public:
@@ -102,7 +108,7 @@ public:
   // or a three char language code
   // or a language name in english (as used by XBMC)
   void SetAudioLanguage(const std::string& language);
-  
+
   // three char language code (not win32 specific)
   const std::string& GetSubtitleLanguage() const;
   // language can either be a two char language code as defined in ISO639
@@ -142,6 +148,7 @@ public:
 
   const std::string& GetTimeFormat() const;
   const std::string& GetMeridiemSymbol(MERIDIEM_SYMBOL symbol) const;
+  static const std::string& MeridiemSymbolToString(MeridiemSymbol symbol) { return ""; }; // TODO: implement this
 
   typedef enum _TEMP_UNIT
   {

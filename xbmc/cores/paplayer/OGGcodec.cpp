@@ -22,6 +22,7 @@
 #include "OGGcodec.h"
 #include "music/tags/OggTag.h"
 #include "FileItem.h"
+#include "filesystem/IFileTypes.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 
@@ -73,7 +74,7 @@ bool OGGCodec::Init(const CStdString &strFile1, unsigned int filecache)
   CFileItem item(strFile, false);
 
   //  Open the file to play
-  if (!m_file.Open(strFile, READ_CACHED))
+  if (!m_file.Open(strFile, XFILE::READ_CACHED))
   {
     CLog::Log(LOGERROR, "OGGCodec: Can't open %s", strFile1.c_str());
     return false;

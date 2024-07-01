@@ -36,6 +36,7 @@
 #include "video/VideoDatabase.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
+#include "Util.h"
 #ifdef HAS_CDDA_RIPPER
 #include "cdrip/CDDARipper.h"
 #endif

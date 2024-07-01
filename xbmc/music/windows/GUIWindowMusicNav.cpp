@@ -20,6 +20,7 @@
 
 #include "GUIWindowMusicNav.h"
 #include "addons/AddonManager.h"
+#include "addons/AddonSystemSettings.h"
 #include "utils/FileUtils.h"
 #include "utils/URIUtils.h"
 #include "PlayListPlayer.h"
@@ -706,7 +707,8 @@ bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       if (!m_musicdatabase.GetScraperForPath(path, scraper, ADDON::ScraperTypeFromContent(content)))
       {
         ADDON::AddonPtr defaultScraper;
-        if (ADDON::CAddonMgr::Get().GetDefault(ADDON::ScraperTypeFromContent(content), defaultScraper))
+        if (ADDON::CAddonSystemSettings::GetInstance().GetActive(
+            ADDON::ScraperTypeFromContent(content), defaultScraper))
         {
           scraper = boost::dynamic_pointer_cast<ADDON::CScraper>(defaultScraper);
         }

@@ -96,7 +96,7 @@ void CAdvancedSettings::OnSettingAction(const CSetting *setting)
   if (settingId == "debug.setextraloglevel")
   {
     AddonPtr addon;
-    CAddonMgr::Get().GetAddon("xbmc.debug", addon);
+    CAddonMgr::GetInstance().GetAddon("xbmc.debug", addon);
     CGUIDialogAddonSettings::ShowAndGetInput(addon, true);
     SetExtraLogsFromAddon(addon.get());
   }
@@ -165,6 +165,8 @@ void CAdvancedSettings::Initialize()
   // the following setting determines the readRate of a player data
   // as multiply of the default data read rate
   m_cacheReadFactor = 4.0f;
+
+  m_addonPackageFolderSize = 200;
 
   m_slideshowPanAmount = 2.5f;
   m_slideshowZoomAmount = 5.0f;
@@ -605,6 +607,7 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
   XMLUtils::GetInt(pRootElement, "playlisttimeout", m_playlistTimeout, 0, 5000);
 
   XMLUtils::GetBoolean(pRootElement,"virtualshares", m_bVirtualShares);
+  XMLUtils::GetUInt(pRootElement, "packagefoldersize", m_addonPackageFolderSize);
   XMLUtils::GetBoolean(pRootElement,"navigatevirtualkeyboard", m_bNavVKeyboard);
 
   //Tuxbox

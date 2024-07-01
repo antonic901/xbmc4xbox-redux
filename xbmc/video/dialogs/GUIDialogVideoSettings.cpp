@@ -36,6 +36,7 @@
 #include "utils/log.h"
 #include "video/VideoDatabase.h"
 #include "Application.h"
+#include "Util.h"
 
 #define SETTING_VIDEO_CROP                "video.crop"
 #define SETTING_VIDEO_VIEW_MODE           "video.viewmode"

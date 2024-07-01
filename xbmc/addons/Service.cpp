@@ -21,32 +21,25 @@
 #include "AddonManager.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "utils/log.h"
-
-using namespace std;
+#include "system.h"
 
 namespace ADDON
 {
 
-CService::CService(const cp_extension_t *ext)
-  : CAddon(ext), m_type(UNKNOWN), m_startOption(LOGIN)
+boost::movelib::unique_ptr<CService> CService::FromExtension(AddonProps props, const cp_extension_t* ext)
 {
-  BuildServiceType();
-
-  CStdString start = CAddonMgr::Get().GetExtValue(ext->configuration, "@start");
-  if (start.Equals("startup"))
-    m_startOption = STARTUP;
+  START_OPTION startOption(LOGIN);
+  std::string start = CAddonMgr::GetInstance().GetExtValue(ext->configuration, "@start");
+  if (start == "startup")
+    startOption = STARTUP;
+  return boost::movelib::unique_ptr<CService>(new CService(boost::move(props), TYPE(UNKNOWN), startOption));
 }
 
 
-CService::CService(const AddonProps &props)
-  : CAddon(props), m_type(UNKNOWN), m_startOption(LOGIN)
+CService::CService(AddonProps props, TYPE type, START_OPTION startOption)
+  : CAddon(boost::move(props)), m_type(type), m_startOption(startOption)
 {
   BuildServiceType();
-}
-
-AddonPtr CService::Clone() const
-{
-  return AddonPtr(new CService(*this));
 }
 
 bool CService::Start()
@@ -92,17 +85,17 @@ bool CService::Stop()
 
 void CService::BuildServiceType()
 {
-  CStdString str = LibPath();
-  CStdString ext;
+  std::string str = LibPath();
+  std::string ext;
 
   size_t p = str.find_last_of('.');
-  if (p != string::npos)
+  if (p != std::string::npos)
     ext = str.substr(p + 1);
 
 #ifdef HAS_PYTHON
-  CStdString pythonExt = ADDON_PYTHON_EXT;
+  std::string pythonExt = ADDON_PYTHON_EXT;
   pythonExt.erase(0, 2);
-  if ( ext.Equals(pythonExt) )
+  if ( ext == pythonExt )
     m_type = PYTHON;
   else
 #endif

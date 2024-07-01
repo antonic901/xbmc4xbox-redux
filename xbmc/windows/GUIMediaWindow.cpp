@@ -21,7 +21,7 @@
 #include "GUIMediaWindow.h"
 #include "Application.h"
 #include "messaging/ApplicationMessenger.h"
-//#include "ContextMenuManager.h"
+#include "ContextMenuManager.h"
 #include "FileItemListModification.h"
 #include "GUIPassword.h"
 #include "GUIUserMessages.h"
@@ -659,7 +659,7 @@ bool CGUIMediaWindow::GetDirectory(const std::string &strDirectory, CFileItemLis
   CLog::Log(LOGDEBUG,"  ParentPath = [%s]", CURL::GetRedacted(strParentPath).c_str());
 
   if (pathToUrl.IsProtocol("plugin"))
-    CAddonMgr::Get().UpdateLastUsed(pathToUrl.GetHostName());
+    CAddonMgr::GetInstance().UpdateLastUsed(pathToUrl.GetHostName());
 
   // see if we can load a previously cached folder
   CFileItemList cachedItems(strDirectory);
@@ -930,11 +930,11 @@ bool CGUIMediaWindow::OnClick(int iItem, const std::string &player)
     // execute the script
     CURL url(pItem->GetPath());
     AddonPtr addon;
-    if (CAddonMgr::Get().GetAddon(url.GetHostName(), addon, ADDON_SCRIPT))
+    if (CAddonMgr::GetInstance().GetAddon(url.GetHostName(), addon, ADDON_SCRIPT))
     {
       if (!CScriptInvocationManager::Get().Stop(addon->LibPath()))
       {
-        CAddonMgr::Get().UpdateLastUsed(addon->ID());
+        CAddonMgr::GetInstance().UpdateLastUsed(addon->ID());
         CScriptInvocationManager::Get().ExecuteAsync(addon->LibPath(), addon);
       }
       return true;
@@ -1025,7 +1025,7 @@ bool CGUIMediaWindow::OnClick(int iItem, const std::string &player)
     {
       CURL url(m_vecItems->GetPath());
       AddonPtr addon;
-      if (CAddonMgr::Get().GetAddon(url.GetHostName(),addon))
+      if (CAddonMgr::GetInstance().GetAddon(url.GetHostName(),addon))
       {
         PluginPtr plugin = boost::dynamic_pointer_cast<CPluginSource>(addon);
         if (plugin && plugin->Provides(CPluginSource::AUDIO))
@@ -1550,68 +1550,68 @@ void CGUIMediaWindow::SetupShares()
   }
 }
 
+bool InRange(int i, std::pair<int, int> range) { return i >= range.first && i < range.second; }
+
 bool CGUIMediaWindow::OnPopupMenu(int itemIdx)
 {
-  //auto InRange = [](int i, std::pair<int, int> range){ return i >= range.first && i < range.second; };
+  if (itemIdx < 0 || itemIdx >= m_vecItems->Size())
+   return false;
 
-  //if (itemIdx < 0 || itemIdx >= m_vecItems->Size())
-  //  return false;
+  CFileItemPtr item = m_vecItems->Get(itemIdx);
+  if (!item)
+   return false;
 
-  //auto item = m_vecItems->Get(itemIdx);
-  //if (!item)
-  //  return false;
+  CContextButtons buttons;
 
-  //CContextButtons buttons;
+  //Add items from plugin
+  {
+   int i = 0;
+   while (item->HasProperty(StringUtils::Format("contextmenulabel(%i)", i)))
+   {
+     buttons.push_back(std::make_pair(-buttons.size(), item->GetProperty(StringUtils::Format("contextmenulabel(%i)", i)).asString()));
+     ++i;
+   }
+  }
+  std::pair<int, std::size_t> pluginMenuRange = std::make_pair(0, buttons.size());
 
-  ////Add items from plugin
-  //{
-  //  int i = 0;
-  //  while (item->HasProperty(StringUtils::Format("contextmenulabel(%i)", i)))
-  //  {
-  //    buttons.emplace_back(-buttons.size(), item->GetProperty(StringUtils::Format("contextmenulabel(%i)", i)).asString());
-  //    ++i;
-  //  }
-  //}
-  //auto pluginMenuRange = std::make_pair(0, buttons.size());
+  //Add the global menu
+  ContextMenuView globalMenu = CContextMenuManager::GetInstance().GetItems(*item, CContextMenuManager::MAIN);
+  std::pair<std::size_t, std::size_t> globalMenuRange = std::make_pair(buttons.size(), buttons.size() + globalMenu.size());
+  for (ContextMenuView::const_iterator it = globalMenu.begin(); it != globalMenu.end(); ++it)
+   buttons.push_back(std::make_pair(-buttons.size(), (*it)->GetLabel(*item)));
 
-  ////Add the global menu
-  //auto globalMenu = CContextMenuManager::GetInstance().GetItems(*item, CContextMenuManager::MAIN);
-  //auto globalMenuRange = std::make_pair(buttons.size(), buttons.size() + globalMenu.size());
-  //for (const auto& menu : globalMenu)
-  //  buttons.emplace_back(-buttons.size(), menu->GetLabel(*item));
+  //Add legacy items from windows
+  std::pair<std::size_t, int> windowMenuRange = std::make_pair(buttons.size(), -1);
+  GetContextButtons(itemIdx, buttons);
+  windowMenuRange.second = buttons.size();
 
-  ////Add legacy items from windows
-  //auto windowMenuRange = std::make_pair(buttons.size(), -1);
-  //GetContextButtons(itemIdx, buttons);
-  //windowMenuRange.second = buttons.size();
+  //Add addon menus
+  ContextMenuView addonMenu = CContextMenuManager::GetInstance().GetAddonItems(*item, CContextMenuManager::MAIN);
+  std::pair<std::size_t, std::size_t> addonMenuRange = std::make_pair(buttons.size(), buttons.size() + addonMenu.size());
+  for (ContextMenuView::const_iterator it = addonMenu.begin(); it != addonMenu.end(); ++it)
+   buttons.push_back(std::make_pair(-buttons.size(), (*it)->GetLabel(*item)));
 
-  ////Add addon menus
-  //auto addonMenu = CContextMenuManager::GetInstance().GetAddonItems(*item, CContextMenuManager::MAIN);
-  //auto addonMenuRange = std::make_pair(buttons.size(), buttons.size() + addonMenu.size());
-  //for (const auto& menu : addonMenu)
-  //  buttons.emplace_back(-buttons.size(), menu->GetLabel(*item));
+  if (buttons.empty())
+   return true;
 
-  //if (buttons.empty())
-  //  return true;
+  int idx = CGUIDialogContextMenu::Show(buttons);
+  if (idx < 0 || idx >= static_cast<int>(buttons.size()))
+   return false;
 
-  //int idx = CGUIDialogContextMenu::Show(buttons);
-  //if (idx < 0 || idx >= static_cast<int>(buttons.size()))
-  //  return false;
+  if (InRange(idx, pluginMenuRange))
+  {
+   CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr,
+       item->GetProperty(StringUtils::Format("contextmenuaction(%i)", idx - pluginMenuRange.first)).asString());
+   return true;
+  }
 
-  //if (InRange(idx, pluginMenuRange))
-  //{
-  //  CApplicationMessenger::GetInstance().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr,
-  //      item->GetProperty(StringUtils::Format("contextmenuaction(%i)", idx - pluginMenuRange.first)).asString());
-  //  return true;
-  //}
+  if (InRange(idx, windowMenuRange))
+   return OnContextButton(itemIdx, static_cast<CONTEXT_BUTTON>(buttons[idx].first));
 
-  //if (InRange(idx, windowMenuRange))
-  //  return OnContextButton(itemIdx, static_cast<CONTEXT_BUTTON>(buttons[idx].first));
+  if (InRange(idx, globalMenuRange))
+   return CONTEXTMENU::LoopFrom(*globalMenu[idx - globalMenuRange.first], item);
 
-  //if (InRange(idx, globalMenuRange))
-  //  return CONTEXTMENU::LoopFrom(*globalMenu[idx - globalMenuRange.first], item);
-
-  //return CONTEXTMENU::LoopFrom(*addonMenu[idx - addonMenuRange.first], item);
+  return CONTEXTMENU::LoopFrom(*addonMenu[idx - addonMenuRange.first], item);
   return false;
 }
 

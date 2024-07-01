@@ -13,6 +13,8 @@
 #include "XBMChttp.h"
 #include "boost/make_shared.hpp"
 #include "GUIInfoManager.h"
+#include "addons/AddonManager.h"
+#include "addons/AddonSystemSettings.h"
 #include "includes.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
@@ -31,7 +33,6 @@
 #include "GUIButtonControl.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "music/infoscanner/MusicInfoScraper.h"
-#include "addons/AddonManager.h"
 #include "music/MusicDatabase.h"
 #include "pictures/GUIWindowSlideShow.h"
 #include "windows/GUIMediaWindow.h"
@@ -440,7 +441,7 @@ int CXbmcHttp::displayDir(int numParas, CStdString paras[])
     if (!aLine.IsEmpty())
     {
       if (option=="1" || option=="showdate")
-        output += aLine + "  ;" + itm->m_dateTime.GetAsLocalizedDateTime();
+        output += aLine + "  ;" + itm->m_dateTime.GetAsLocalizedDateTime().c_str();
       else
         output += aLine;
     }
@@ -1487,13 +1488,13 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
         if (!tagVal->m_strOriginalTitle.empty())
           output+=closeTag+openTag+"Original Title"+tag+":"+tagVal->m_strOriginalTitle.c_str();
         if (tagVal->m_premiered.IsValid())
-          output+=closeTag+openTag+"Premiered"+tag+":"+tagVal->m_premiered.GetAsLocalizedDate();
+          output+=closeTag+openTag+"Premiered"+tag+":"+tagVal->m_premiered.GetAsLocalizedDate().c_str();
         if (!tagVal->m_strStatus.empty())
           output+=closeTag+openTag+"Status"+tag+":"+tagVal->m_strStatus.c_str();
         if (!tagVal->m_strProductionCode.empty())
           output+=closeTag+openTag+"Production Code"+tag+":"+tagVal->m_strProductionCode.c_str();
         if (tagVal->m_firstAired.IsValid())
-          output+=closeTag+openTag+"First Aired"+tag+":"+tagVal->m_firstAired.GetAsLocalizedDate();
+          output+=closeTag+openTag+"First Aired"+tag+":"+tagVal->m_firstAired.GetAsLocalizedDate().c_str();
         if (tagVal->HasYear())
           output.Format("%s%i",output+closeTag+openTag+"Year"+tag+":",tagVal->GetYear());
         if (tagVal->m_iSeason != -1)
@@ -2304,7 +2305,7 @@ int CXbmcHttp::xbmcLookupAlbum(int numParas, CStdString paras[])
   double relevance;
   bool rel = false;
   AddonPtr addon;
-  if (!CAddonMgr::Get().GetDefault(ADDON_SCRAPER_ALBUMS, addon))
+  if (!ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON_SCRAPER_ALBUMS, addon))
     return -1;
   ScraperPtr info = boost::dynamic_pointer_cast<CScraper>(addon);
   if (!info)

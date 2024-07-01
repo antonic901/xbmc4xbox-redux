@@ -1508,3 +1508,11 @@ bool StringUtils::ValidateUUID(const CStdString &uuid)
   guidRE.RegComp(ADDON_GUID_RE);
   return (guidRE.RegFind(uuid.c_str()) == 0);
 }
+
+uint64_t StringUtils::ToUint64(std::string str, uint64_t fallback)
+{
+  std::istringstream iss(str);
+  uint64_t result(fallback);
+  iss >> result;
+  return result;
+}

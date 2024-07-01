@@ -24,62 +24,135 @@
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
 #include "filesystem/SpecialProtocol.h"
-#include "utils/XMLUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/POUtils.h"
 #include "filesystem/Directory.h"
+#include "threads/SharedSection.h"
 #include "threads/SingleLock.h"
 #include "utils/StringUtils.h"
 
 CLocalizeStrings g_localizeStrings;
 CLocalizeStrings g_localizeStringsTemp;
 
-CLocalizeStrings::CLocalizeStrings(void)
+/*! \brief Tries to load ids and strings from a strings.xml file to the `strings` map..
+ * It should only be called from the LoadStr2Mem function to try a PO file first.
+ \param pathname The directory name, where we look for the strings file.
+ \param strings [out] The resulting strings map.
+ \param encoding Encoding of the strings.
+ \param offset An offset value to place strings from the id value.
+ \return false if no strings.xml file was loaded.
+ */
+static bool LoadXML(const std::string &filename, std::map<uint32_t, LocStr>& strings,
+    std::string &encoding, uint32_t offset = 0)
 {
-
-}
-
-CLocalizeStrings::~CLocalizeStrings(void)
-{
-
-}
-
-std::string CLocalizeStrings::ToUTF8(const std::string& strEncoding, const std::string& str)
-{
-  if (strEncoding.empty())
-    return str;
-
-  std::string ret;
-  g_charsetConverter.ToUtf8(strEncoding, str, ret);
-  return ret;
-}
-
-void CLocalizeStrings::ClearSkinStrings()
-{
-  // clear the skin strings
-  Clear(31000, 31999);
-}
-
-bool CLocalizeStrings::LoadSkinStrings(const std::string& path, const std::string& language)
-{
-  ClearSkinStrings();
-  // load the skin strings in.
-  std::string encoding;
-  if (!LoadStr2Mem(path, language, encoding))
+  CXBMCTinyXML xmlDoc;
+  if (!xmlDoc.LoadFile(filename))
   {
-    if (StringUtils::EqualsNoCase(language, ADDON_LANGUAGE_DEFAULT)) // no fallback, nothing to do
-      return false;
+    CLog::Log(LOGDEBUG, "unable to load %s: %s at line %d", filename.c_str(), xmlDoc.ErrorDesc(), xmlDoc.ErrorRow());
+    return false;
   }
 
-  // load the fallback
-  if (!StringUtils::EqualsNoCase(language, ADDON_LANGUAGE_DEFAULT))
-    LoadStr2Mem(path, ADDON_LANGUAGE_DEFAULT, encoding);
+  TiXmlElement* pRootElement = xmlDoc.RootElement();
+  if (!pRootElement || pRootElement->NoChildren() ||
+      pRootElement->ValueStr()!="strings")
+  {
+    CLog::Log(LOGERROR, "%s Doesn't contain <strings>", filename.c_str());
+    return false;
+  }
 
+  const std::size_t originalSize = strings.size();
+  const TiXmlElement *pChild = pRootElement->FirstChildElement("string");
+  while (pChild)
+  {
+    // Load old style language file with id as attribute
+    const char* attrId=pChild->Attribute("id");
+    if (attrId && !pChild->NoChildren())
+    {
+      uint32_t id = atoi(attrId) + offset;
+      if (strings.find(id) == strings.end())
+        strings[id].strTranslated = pChild->FirstChild()->Value();
+    }
+    pChild = pChild->NextSiblingElement("string");
+  }
+  CLog::Log(LOGDEBUG, "LocalizeStrings: loaded %lu strings from file %s", strings.size() - originalSize, filename.c_str());
   return true;
 }
 
-bool CLocalizeStrings::LoadStr2Mem(const std::string &pathname_in, const std::string &language,
-                                   std::string &encoding, uint32_t offset /* = 0 */)
+/*! \brief Tries to load ids and strings from a strings.po file to the `strings` map.
+ * It should only be called from the LoadStr2Mem function to have a fallback.
+ \param pathname The directory name, where we look for the strings file.
+ \param strings [out] The resulting strings map.
+ \param encoding Encoding of the strings. For PO files we only use utf-8.
+ \param offset An offset value to place strings from the id value.
+ \param bSourceLanguage If we are loading the source English strings.po.
+ \return false if no strings.po file was loaded.
+ */
+static bool LoadPO(const std::string &filename, std::map<uint32_t, LocStr>& strings,
+    std::string &encoding, uint32_t offset = 0 , bool bSourceLanguage = false)
+{
+  CPODocument PODoc;
+  if (!PODoc.LoadFile(filename))
+    return false;
+
+  int counter = 0;
+
+  while ((PODoc.GetNextEntry()))
+  {
+    uint32_t id;
+    if (PODoc.GetEntryType() == ID_FOUND)
+    {
+      bool bStrInMem = strings.find((id = PODoc.GetEntryID()) + offset) != strings.end();
+      PODoc.ParseEntry(bSourceLanguage);
+
+      if (bSourceLanguage && !PODoc.GetMsgid().empty())
+      {
+        if (bStrInMem && (strings[id + offset].strOriginal.empty() ||
+                          PODoc.GetMsgid() == strings[id + offset].strOriginal))
+          continue;
+        else if (bStrInMem)
+          CLog::Log(LOGDEBUG,
+              "POParser: id:%i was recently re-used in the English string file, which is not yet "
+                  "changed in the translated file. Using the English string instead", id);
+        strings[id + offset].strTranslated = PODoc.GetMsgid();
+        counter++;
+      }
+      else if (!bSourceLanguage && !bStrInMem && !PODoc.GetMsgstr().empty())
+      {
+        strings[id + offset].strTranslated = PODoc.GetMsgstr();
+        strings[id + offset].strOriginal = PODoc.GetMsgid();
+        counter++;
+      }
+    }
+    else if (PODoc.GetEntryType() == MSGID_FOUND)
+    {
+      //! @todo implement reading of non-id based string entries from the PO files.
+      //! These entries would go into a separate memory map, using hash codes for fast look-up.
+      //! With this memory map we can implement using gettext(), ngettext(), pgettext() calls,
+      //! so that we don't have to use new IDs for new strings. Even we can start converting
+      //! the ID based calls to normal gettext calls.
+    }
+    else if (PODoc.GetEntryType() == MSGID_PLURAL_FOUND)
+    {
+      //! @todo implement reading of non-id based pluralized string entries from the PO files.
+      //! We can store the pluralforms for each language, in the langinfo.xml files.
+    }
+  }
+
+  CLog::Log(LOGDEBUG, "LocalizeStrings: loaded %i strings from file %s", counter, filename.c_str());
+  return true;
+}
+
+/*! \brief Loads language ids and strings to memory map `strings`.
+ * It tries to load a strings.po file first. If doesn't exist, it loads a strings.xml file instead.
+ \param pathname The directory name, where we look for the strings file.
+ \param language We load the strings for this language. Fallback language is always English.
+ \param strings [out] The resulting strings map.
+ \param encoding Encoding of the strings. For PO files we only use utf-8.
+ \param offset An offset value to place strings from the id value.
+ \return false if no strings.po or strings.xml file was loaded.
+ */
+static bool LoadStr2Mem(const std::string &pathname_in, const std::string &language,
+    std::map<uint32_t, LocStr>& strings,  std::string &encoding, uint32_t offset = 0 )
 {
   std::string pathname = CSpecialProtocol::TranslatePathConvertCase(pathname_in + language);
   if (!XFILE::CDirectory::Exists(pathname))
@@ -94,160 +167,97 @@ bool CLocalizeStrings::LoadStr2Mem(const std::string &pathname_in, const std::st
     }
 
     if (!exists)
-    {
-      CLog::Log(LOGDEBUG,
-                "LocalizeStrings: no translation available in currently set gui language, at path %s",
-                pathname.c_str());
       return false;
-    }
   }
 
-  if (LoadPO(URIUtils::AddFileToFolder(pathname, "strings.po"), encoding, offset,
-             StringUtils::EqualsNoCase(language, CORE_LANGUAGE_DEFAULT) || StringUtils::EqualsNoCase(language, ADDON_LANGUAGE_DEFAULT)))
+  bool useSourceLang = StringUtils::EqualsNoCase(language, LANGUAGE_DEFAULT) || StringUtils::EqualsNoCase(language, LANGUAGE_OLD_DEFAULT);
+  if (LoadPO(URIUtils::AddFileToFolder(pathname, "strings.po"), strings, encoding, offset, useSourceLang))
     return true;
 
-  CLog::Log(LOGDEBUG, "LocalizeStrings: no strings.po file exist at %s, fallback to strings.xml",
-            pathname.c_str());
-  return LoadXML(URIUtils::AddFileToFolder(pathname, "strings.xml"), encoding, offset);
+  return LoadXML(URIUtils::AddFileToFolder(pathname, "strings.xml"), strings, encoding, offset);
 }
 
-bool CLocalizeStrings::LoadPO(const std::string &filename, std::string &encoding,
-                              uint32_t offset /* = 0 */, bool bSourceLanguage)
+static bool LoadWithFallback(const std::string& path, const std::string& language, std::map<uint32_t, LocStr>& strings)
 {
-  CPODocument PODoc;
-  if (!PODoc.LoadFile(filename))
-    return false;
-
-  int counter = 0;
-
-  while ((PODoc.GetNextEntry()))
+  std::string encoding;
+  if (!LoadStr2Mem(path, language, strings, encoding))
   {
-    uint32_t id;
-    if (PODoc.GetEntryType() == ID_FOUND)
-    {
-      bool bStrInMem = m_strings.find((id = PODoc.GetEntryID()) + offset) != m_strings.end();
-      PODoc.ParseEntry(bSourceLanguage);
-
-      if (bSourceLanguage && !PODoc.GetMsgid().empty())
-      {
-        if (bStrInMem && (m_strings[id + offset].strOriginal.empty() ||
-            PODoc.GetMsgid() == m_strings[id + offset].strOriginal))
-          continue;
-        else if (bStrInMem)
-          CLog::Log(LOGDEBUG,
-                    "POParser: id:%i was recently re-used in the English string file, which is not yet "
-                    "changed in the translated file. Using the English string instead", id);
-        m_strings[id + offset].strTranslated = PODoc.GetMsgid();
-        counter++;
-      }
-      else if (!bSourceLanguage && !bStrInMem && !PODoc.GetMsgstr().empty())
-      {
-        m_strings[id + offset].strTranslated = PODoc.GetMsgstr();
-        m_strings[id + offset].strOriginal = PODoc.GetMsgid();
-        counter++;
-      }
-    }
-    else if (PODoc.GetEntryType() == MSGID_FOUND)
-    {
-      // TODO: implement reading of non-id based string entries from the PO files.
-      // These entries would go into a separate memory map, using hash codes for fast look-up.
-      // With this memory map we can implement using gettext(), ngettext(), pgettext() calls,
-      // so that we don't have to use new IDs for new strings. Even we can start converting
-      // the ID based calls to normal gettext calls.
-    }
-    else if (PODoc.GetEntryType() == MSGID_PLURAL_FOUND)
-    {
-      // TODO: implement reading of non-id based pluralized string entries from the PO files.
-      // We can store the pluralforms for each language, in the langinfo.xml files.
-    }
+    if (StringUtils::EqualsNoCase(language, LANGUAGE_DEFAULT)) // no fallback, nothing to do
+      return false;
   }
 
-  CLog::Log(LOGDEBUG, "POParser: loaded %i strings from file %s", counter, filename.c_str());
+  // load the fallback
+  if (!StringUtils::EqualsNoCase(language, LANGUAGE_DEFAULT))
+    LoadStr2Mem(path, LANGUAGE_DEFAULT, strings, encoding);
+
   return true;
 }
 
-bool CLocalizeStrings::LoadXML(const std::string &filename, std::string &encoding, uint32_t offset /* = 0 */)
+CLocalizeStrings::CLocalizeStrings(void)
 {
-  CXBMCTinyXML xmlDoc;
-  if (!xmlDoc.LoadFile(filename))
-  {
-    CLog::Log(LOGDEBUG, "unable to load %s: %s at line %d", filename.c_str(), xmlDoc.ErrorDesc(), xmlDoc.ErrorRow());
-    return false;
-  }
 
-  TiXmlElement* pRootElement = xmlDoc.RootElement();
-  if (!pRootElement || pRootElement->NoChildren() ||
-       pRootElement->ValueStr()!="strings")
-  {
-    CLog::Log(LOGERROR, "%s Doesn't contain <strings>", filename.c_str());
-    return false;
-  }
+}
 
-  const TiXmlElement *pChild = pRootElement->FirstChildElement("string");
-  while (pChild)
-  {
-    // Load old style language file with id as attribute
-    const char* attrId=pChild->Attribute("id");
-    if (attrId && !pChild->NoChildren())
-    {
-      uint32_t id = atoi(attrId) + offset;
-      if (m_strings.find(id) == m_strings.end())
-        m_strings[id].strTranslated = pChild->FirstChild()->Value();
-    }
-    pChild = pChild->NextSiblingElement("string");
-  }
-  return true;
+CLocalizeStrings::~CLocalizeStrings(void)
+{
+
+}
+
+void CLocalizeStrings::ClearSkinStrings()
+{
+  // clear the skin strings
+  CExclusiveLock lock(m_stringsMutex);
+  Clear(31000, 31999);
+}
+
+bool CLocalizeStrings::LoadSkinStrings(const std::string& path, const std::string& language)
+{
+  //! @todo shouldn't hold lock while loading file
+  CExclusiveLock lock(m_stringsMutex);
+  ClearSkinStrings();
+  // load the skin strings in.
+  return LoadWithFallback(path, language, m_strings);
 }
 
 bool CLocalizeStrings::Load(const std::string& strPathName, const std::string& strLanguage)
 {
-  bool bLoadFallback = !StringUtils::EqualsNoCase(strLanguage, CORE_LANGUAGE_DEFAULT);
-
-  std::string encoding;
-  CSingleLock lock(m_critSection);
-  Clear();
-
-  if (!LoadStr2Mem(strPathName, strLanguage, encoding))
-  {
-    // try loading the fallback
-    if (!bLoadFallback || !LoadStr2Mem(strPathName, CORE_LANGUAGE_DEFAULT, encoding))
-      return false;
-
-    bLoadFallback = false;
-  }
-
-  if (bLoadFallback)
-    LoadStr2Mem(strPathName, CORE_LANGUAGE_DEFAULT, encoding);
+  std::map<uint32_t, LocStr> strings;
+  if (!LoadWithFallback(strPathName, strLanguage, strings))
+    return false;
 
   // fill in the constant strings
-  m_strings[20022].strTranslated = "";
-  m_strings[20027].strTranslated = "°F";
-  m_strings[20028].strTranslated = "K";
-  m_strings[20029].strTranslated = "°C";
-  m_strings[20030].strTranslated = "°Ré";
-  m_strings[20031].strTranslated = "°Ra";
-  m_strings[20032].strTranslated = "°Rø";
-  m_strings[20033].strTranslated = "°De";
-  m_strings[20034].strTranslated = "°N";
+  strings[20022].strTranslated = "";
+  strings[20027].strTranslated = "°F";
+  strings[20028].strTranslated = "K";
+  strings[20029].strTranslated = "°C";
+  strings[20030].strTranslated = "°Ré";
+  strings[20031].strTranslated = "°Ra";
+  strings[20032].strTranslated = "°Rø";
+  strings[20033].strTranslated = "°De";
+  strings[20034].strTranslated = "°N";
 
-  m_strings[20200].strTranslated = "km/h";
-  m_strings[20201].strTranslated = "m/min";
-  m_strings[20202].strTranslated = "m/s";
-  m_strings[20203].strTranslated = "ft/h";
-  m_strings[20204].strTranslated = "ft/min";
-  m_strings[20205].strTranslated = "ft/s";
-  m_strings[20206].strTranslated = "mph";
-  m_strings[20207].strTranslated = "kts";
-  m_strings[20208].strTranslated = "Beaufort";
-  m_strings[20209].strTranslated = "inch/s";
-  m_strings[20210].strTranslated = "yard/s";
-  m_strings[20211].strTranslated = "Furlong/Fortnight";
+  strings[20200].strTranslated = "km/h";
+  strings[20201].strTranslated = "m/min";
+  strings[20202].strTranslated = "m/s";
+  strings[20203].strTranslated = "ft/h";
+  strings[20204].strTranslated = "ft/min";
+  strings[20205].strTranslated = "ft/s";
+  strings[20206].strTranslated = "mph";
+  strings[20207].strTranslated = "kts";
+  strings[20208].strTranslated = "Beaufort";
+  strings[20209].strTranslated = "inch/s";
+  strings[20210].strTranslated = "yard/s";
+  strings[20211].strTranslated = "Furlong/Fortnight";
 
+  CExclusiveLock lock(m_stringsMutex);
+  Clear();
+  m_strings = boost::move(strings);
   return true;
 }
 
 const std::string& CLocalizeStrings::Get(uint32_t dwCode) const
 {
+  CSharedLock lock(m_stringsMutex);
   ciStrings i = m_strings.find(dwCode);
   if (i == m_strings.end())
   {
@@ -258,11 +268,13 @@ const std::string& CLocalizeStrings::Get(uint32_t dwCode) const
 
 void CLocalizeStrings::Clear()
 {
+  CExclusiveLock lock(m_stringsMutex);
   m_strings.clear();
 }
 
 void CLocalizeStrings::Clear(uint32_t start, uint32_t end)
 {
+  CExclusiveLock lock(m_stringsMutex);
   iStrings it = m_strings.begin();
   while (it != m_strings.end())
   {
@@ -271,4 +283,32 @@ void CLocalizeStrings::Clear(uint32_t start, uint32_t end)
     else
       ++it;
   }
+}
+
+bool CLocalizeStrings::LoadAddonStrings(const std::string& path, const std::string& language, const std::string& addonId)
+{
+  std::map<uint32_t, LocStr> strings;
+  if (!LoadWithFallback(path, language, strings))
+    return false;
+
+  CExclusiveLock lock(m_addonStringsMutex);
+  std::map<std::string, std::map<uint32_t, LocStr> >::iterator it = m_addonStrings.find(addonId);
+  if (it != m_addonStrings.end())
+    m_addonStrings.erase(it);
+
+  return m_addonStrings.insert(std::make_pair(std::string(addonId), boost::move(strings))).second;
+}
+
+std::string CLocalizeStrings::GetAddonString(const std::string& addonId, uint32_t code)
+{
+  CSharedLock lock(m_addonStringsMutex);
+  std::map<std::string, std::map<uint32_t, LocStr> >::iterator i = m_addonStrings.find(addonId);
+  if (i == m_addonStrings.end())
+    return StringUtils::Empty;
+
+  std::map<uint32_t, LocStr>::iterator j = i->second.find(code);
+  if (j == i->second.end())
+    return StringUtils::Empty;
+
+  return j->second.strTranslated;
 }

@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2010 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,20 +13,23 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 #include "AddonStatusHandler.h"
 #include "AddonManager.h"
 #include "threads/SingleLock.h"
 #include "messaging/ApplicationMessenger.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIWindowManager.h"
 #include "GUIDialogAddonSettings.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogOK.h"
+#include "dialogs/GUIDialogKaiToast.h"
+#include "settings/Settings.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
+#include "utils/Variant.h"
 
 using namespace KODI::MESSAGING;
 
@@ -43,10 +46,13 @@ namespace ADDON
 
 CCriticalSection CAddonStatusHandler::m_critSection;
 
-CAddonStatusHandler::CAddonStatusHandler(const CStdString &addonID, ADDON_STATUS status, CStdString message, bool sameThread)
-  : CThread("CAddonStatusHandler:" + addonID)
+CAddonStatusHandler::CAddonStatusHandler(const std::string &addonID, ADDON_STATUS status, std::string message, bool sameThread)
+  : CThread(("AddonStatus " + addonID).c_str()),
+    m_status(ADDON_STATUS_UNKNOWN)
 {
-  if (!CAddonMgr::Get().GetAddon(addonID, m_addon))
+  //! @todo The status handled CAddonStatusHandler by is related to the class, not the instance
+  //! having CAddonMgr construct an instance makes no sense
+  if (!CAddonMgr::GetInstance().GetAddon(addonID, m_addon))
     return;
 
   CLog::Log(LOGINFO, "Called Add-on status handler for '%u' of clientName:%s, clientID:%s (same Thread=%s)", status, m_addon->Name().c_str(), m_addon->ID().c_str(), sameThread ? "yes" : "no");
@@ -61,7 +67,6 @@ CAddonStatusHandler::CAddonStatusHandler(const CStdString &addonID, ADDON_STATUS
   else
   {
     Create(true, THREAD_MINSTACKSIZE);
-    SetPriority(-15);
   }
 }
 
@@ -72,6 +77,7 @@ CAddonStatusHandler::~CAddonStatusHandler()
 
 void CAddonStatusHandler::OnStartup()
 {
+  SetPriority(GetMinPriority());
 }
 
 void CAddonStatusHandler::OnExit()
@@ -82,26 +88,10 @@ void CAddonStatusHandler::Process()
 {
   CSingleLock lock(m_critSection);
 
-  CStdString heading;
-  heading.Format("%s: %s", TranslateType(m_addon->Type(), true).c_str(), m_addon->Name().c_str());
+  std::string heading = StringUtils::Format("%s: %s", TranslateType(m_addon->Type(), true).c_str(), m_addon->Name().c_str());
 
-  /* AddOn lost connection to his backend (for ones that use Network) */
-  if (m_status == ADDON_STATUS_LOST_CONNECTION)
-  {
-    CGUIDialogYesNo* pDialog = (CGUIDialogYesNo*)g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO);
-    if (!pDialog) return;
-
-    pDialog->SetHeading(heading);
-    pDialog->SetLine(1, 24070);
-    pDialog->SetLine(2, 24073);
-
-    pDialog->Open();
-
-    if (pDialog->IsConfirmed())
-      CAddonMgr::Get().GetCallbackForType(m_addon->Type())->RequestRestart(m_addon, false);
-  }
   /* Request to restart the AddOn and data structures need updated */
-  else if (m_status == ADDON_STATUS_NEED_RESTART)
+  if (m_status == ADDON_STATUS_NEED_RESTART)
   {
     CGUIDialogOK* pDialog = (CGUIDialogOK*)g_windowManager.GetWindow(WINDOW_DIALOG_OK);
     if (!pDialog) return;
@@ -110,7 +100,7 @@ void CAddonStatusHandler::Process()
     pDialog->SetLine(1, 24074);
     pDialog->Open();
 
-    CAddonMgr::Get().GetCallbackForType(m_addon->Type())->RequestRestart(m_addon, true);
+    CAddonMgr::GetInstance().GetCallbackForType(m_addon->Type())->RequestRestart(m_addon, true);
   }
   /* Some required settings are missing/invalid */
   else if ((m_status == ADDON_STATUS_NEED_SETTINGS) || (m_status == ADDON_STATUS_NEED_SAVEDSETTINGS))
@@ -131,23 +121,10 @@ void CAddonStatusHandler::Process()
 
     if (CGUIDialogAddonSettings::ShowAndGetInput(m_addon))
     {
-      //todo doesn't dialogaddonsettings save these automatically? should do
+      //! @todo Doesn't dialogaddonsettings save these automatically? It should do this.
       m_addon->SaveSettings();
-      CAddonMgr::Get().GetCallbackForType(m_addon->Type())->RequestRestart(m_addon, true);
+      CAddonMgr::GetInstance().GetCallbackForType(m_addon->Type())->RequestRestart(m_addon, true);
     }
-  }
-  /* A unknown event has occurred */
-  else if (m_status == ADDON_STATUS_UNKNOWN)
-  {
-    //CAddonMgr::Get().DisableAddon(m_addon->ID());
-    CGUIDialogOK* pDialog = (CGUIDialogOK*)g_windowManager.GetWindow(WINDOW_DIALOG_OK);
-    if (!pDialog) return;
-
-    pDialog->SetHeading(heading);
-    pDialog->SetLine(1, 24070);
-    pDialog->SetLine(2, 24071);
-    pDialog->SetLine(3, m_message);
-    pDialog->Open();
   }
 }
 

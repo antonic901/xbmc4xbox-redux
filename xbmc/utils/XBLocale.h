@@ -19,10 +19,11 @@
  *
  */
 
+#include <set>
 #include <string>
 
 /*!
- \brief Class representing a full locale of the form [language[_territory][.codeset][@modifier]].
+ \brief Class representing a full locale of the form `[language[_territory][.codeset][@modifier]]`.
  */
 class CLocale
 {
@@ -41,7 +42,7 @@ public:
 
   /*!
    \brief Parses the given string representation and turns it into a locale.
-   
+
    \param locale String representation of a locale
    */
   static CLocale FromString(const std::string& locale);
@@ -55,7 +56,7 @@ public:
    \details A locale is considered valid if at least the language code is set.
    */
   bool IsValid() const { return m_valid; }
-  
+
   /*!
    \brief Returns the (lower-case) ISO 639-1 language code of the locale.
    */
@@ -72,12 +73,12 @@ public:
    \brief Returns the modifier of the locale.
    */
   const std::string& GetModifier() const { return m_modifier; }
-  
+
   /*!
    \brief Returns the full string representation of the locale.
 
    \details The format of the string representation is
-   [language[_territory][.codeset][@modifier]] where the language is
+   `[language[_territory][.codeset][@modifier]]` where the language is
    represented as a (lower-case) two character ISO 639-1 code and the territory
    is represented as a (upper-case) two character ISO 3166-1 Alpha-2 code.
    */
@@ -86,7 +87,7 @@ public:
    \brief Returns the full string representation of the locale in lowercase.
 
    \details The format of the string representation is
-   [language[_territory][.codeset][@modifier]] where the language is
+   `language[_territory][.codeset][@modifier]]` where the language is
    represented as a two character ISO 639-1 code and the territory is
    represented as a two character ISO 3166-1 Alpha-2 code.
    */
@@ -95,7 +96,7 @@ public:
    \brief Returns the short string representation of the locale.
 
    \details The format of the short string representation is
-   [language[_territory] where the language is represented as a (lower-case)
+   `[language[_territory]` where the language is represented as a (lower-case)
    two character ISO 639-1 code and the territory is represented as a
    (upper-case) two character ISO 3166-1 Alpha-2 code.
    */
@@ -104,12 +105,12 @@ public:
    \brief Returns the short string representation of the locale in lowercase.
 
    \details The format of the short string representation is
-   [language[_territory] where the language is represented as a two character
+   `[language[_territory]` where the language is represented as a two character
    ISO 639-1 code and the territory is represented as a two character
    ISO 3166-1 Alpha-2 code.
    */
   std::string ToShortStringLC() const;
-  
+
   /*!
    \brief Checks if the given string representation of a locale exactly matches
           the locale.
@@ -131,11 +132,22 @@ public:
   */
   bool Matches(const std::string& locale) const;
 
+  /*!
+  \brief Tries to find the locale in the given list that matches this locale
+         best.
+
+  \param locales List of string representations of locales
+  \return Best matching locale from the given list or empty string.
+  */
+  std::string FindBestMatch(const std::set<std::string>& locales) const;
+
 private:
   static bool CheckValidity(const std::string& language, const std::string& territory, const std::string& codeset, const std::string& modifier);
   static bool ParseLocale(const std::string &locale, std::string &language, std::string &territory, std::string &codeset, std::string &modifier);
 
   void Initialize();
+
+  int GetMatchRank(const std::string& locale) const;
 
   bool m_valid;
   std::string m_language;
@@ -143,3 +155,4 @@ private:
   std::string m_codeset;
   std::string m_modifier;
 };
+

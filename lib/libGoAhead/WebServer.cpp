@@ -11,12 +11,13 @@
 
 #include "WebServer.h"
 #include "Application.h"
+#include "addons/AddonManager.h"
+#include "addons/AddonSystemSettings.h"
 #include "XBMCweb.h"
 #include "filesystem/SpecialProtocol.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
 #include "xbox/Network.h"
-#include "addons/AddonManager.h"
 
 #ifdef SPYCE_SUPPORT
 #include "SpyceModule.h"
@@ -138,7 +139,7 @@ bool CWebServer::Start(int port, bool wait)
 
   AddonPtr addon;
   CStdString strURL;
-  CAddonMgr::Get().GetDefault(ADDON_WEB_INTERFACE,addon);
+  ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::ADDON_WEB_INTERFACE, addon);
   if (addon)
   {
     strURL = URIUtils::AddFileToFolder(addon->Path(),strURL);

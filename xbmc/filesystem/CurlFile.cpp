@@ -565,6 +565,10 @@ void CCurlFile::SetCommonOptions(CReadState* state)
   if( m_contentencoding.length() > 0 )
     g_curlInterface.easy_setopt(h, CURLOPT_ENCODING, m_contentencoding.c_str());
 
+  // setup Accept-Encoding if requested
+  if (m_acceptencoding.length() > 0)
+    g_curlInterface.easy_setopt(h, CURLOPT_ACCEPT_ENCODING, m_contentencoding.c_str());
+
   if (m_userAgent.length() > 0)
     g_curlInterface.easy_setopt(h, CURLOPT_USERAGENT, m_userAgent.c_str());
   else /* set some default agent as shoutcast doesn't return proper stuff otherwise */
@@ -793,6 +797,8 @@ void CCurlFile::ParseAndCorrectUrl(CURL &url2)
           SetCookie(value);
         else if (name.Equals("Encoding"))
           SetContentEncoding(value);
+        else if (name == "acceptencoding")
+          SetAcceptEncoding(value);
         else if (name.Equals("noshout") && value.Equals("true"))
           m_skipshout = true;
         else
@@ -814,14 +820,14 @@ bool CCurlFile::Post(const CStdString& strURL, const CStdString& strPostData, CS
   return Service(strURL, strHTML);
 }
 
-bool CCurlFile::Get(const CStdString& strURL, CStdString& strHTML)
+bool CCurlFile::Get(const std::string& strURL, std::string& strHTML)
 {
   m_postdata = "";
   m_postdataset = false;
   return Service(strURL, strHTML);
 }
 
-bool CCurlFile::Service(const CStdString& strURL, CStdString& strHTML)
+bool CCurlFile::Service(const std::string& strURL, std::string& strHTML)
 {
   const CURL pathToUrl(strURL);
   if (Open(pathToUrl))
@@ -836,7 +842,7 @@ bool CCurlFile::Service(const CStdString& strURL, CStdString& strHTML)
   return false;
 }
 
-bool CCurlFile::ReadData(CStdString& strHTML)
+bool CCurlFile::ReadData(std::string& strHTML)
 {
   int size_read = 0;
   int data_size = 0;
@@ -1642,7 +1648,7 @@ bool CCurlFile::GetHttpHeader(const CURL &url, CHttpHeader &headers)
   }
 }
 
-bool CCurlFile::GetMimeType(const CURL &url, CStdString &content, CStdString useragent)
+bool CCurlFile::GetMimeType(const CURL &url, std::string &content, CStdString useragent)
 {
   CCurlFile file;
   if (!useragent.IsEmpty())
@@ -1727,4 +1733,11 @@ int CCurlFile::IoControl(EIoControl request, void* param)
     return m_seekable ? 1 : 0;
 
   return -1;
+}
+
+double CCurlFile::GetDownloadSpeed()
+{
+  double res = 0.0f;
+  g_curlInterface.easy_getinfo(m_state->m_easyHandle, CURLINFO_SPEED_DOWNLOAD, &res);
+  return res;
 }

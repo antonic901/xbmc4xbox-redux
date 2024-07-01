@@ -1,7 +1,7 @@
 #pragma once
 /*
 *      Copyright (C) 2005-2013 Team XBMC
-*      http://www.xbmc.org
+*      http://xbmc.org
 *
 *  This Program is free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
@@ -14,22 +14,25 @@
 *  GNU General Public License for more details.
 *
 *  You should have received a copy of the GNU General Public License
-*  along with XBMC; see the file COPYING.  If not, write to
-*  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-*  http://www.gnu.org/copyleft/gpl.html
+*  along with XBMC; see the file COPYING.  If not, see
+*  <http://www.gnu.org/licenses/>.
 *
 */
 
-#include "system.h"
+#include "system.h" // <xtl.h>
+#include <stdint.h>
 
-#include "boost/shared_ptr.hpp"
-#include "utils/StdString.h"
-#include "XBDateTime.h"
-
-#include "boost/enable_shared_from_this.hpp"
-
-#include <set>
 #include <map>
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
+#include <boost/enable_shared_from_this.hpp>
+#include <boost/move/unique_ptr.hpp>
+#include <set>
+#include <string>
+#include <boost/move/move.hpp>
+#include <boost/range/algorithm/remove_if.hpp>
+#include <vector>
+#include "XBDateTime.h"
 
 class TiXmlElement;
 
@@ -41,6 +44,9 @@ namespace ADDON
     ADDON_VIZ,
     ADDON_SKIN,
     ADDON_PVRDLL,
+    ADDON_ADSPDLL,
+    ADDON_INPUTSTREAM,
+    ADDON_PERIPHERALDLL,
     ADDON_SCRIPT,
     ADDON_SCRIPT_WEATHER,
     ADDON_SUBTITLE_MODULE,
@@ -55,16 +61,21 @@ namespace ADDON
     ADDON_REPOSITORY,
     ADDON_WEB_INTERFACE,
     ADDON_SERVICE,
+    ADDON_AUDIOENCODER,
+    ADDON_CONTEXT_ITEM,
+    ADDON_AUDIODECODER,
+    ADDON_RESOURCE_IMAGES,
     ADDON_RESOURCE_LANGUAGE,
     ADDON_RESOURCE_UISOUNDS,
     ADDON_VIDEO, // virtual addon types
     ADDON_AUDIO,
     ADDON_IMAGE,
     ADDON_EXECUTABLE,
-    ADDON_VIZ_LIBRARY, // add noninstallable after this and installable before
     ADDON_SCRAPER_LIBRARY,
     ADDON_SCRIPT_LIBRARY,
-    ADDON_SCRIPT_MODULE
+    ADDON_SCRIPT_MODULE,
+    ADDON_GAME_CONTROLLER,
+    ADDON_MAX
   } TYPE;
 
   class IAddon;
@@ -78,62 +89,56 @@ namespace ADDON
 
   class CAddonMgr;
   class AddonVersion;
-  typedef std::map<CStdString, std::pair<const AddonVersion, bool> > ADDONDEPS;
-  typedef std::map<CStdString, CStdString> InfoMap;
+  typedef std::map<std::string, std::pair<const AddonVersion, bool> > ADDONDEPS;
+  typedef std::map<std::string, std::string> InfoMap;
   class AddonProps;
 
   class IAddon : public boost::enable_shared_from_this<IAddon>
   {
   public:
     virtual ~IAddon() {};
-    virtual AddonPtr Clone() const =0;
     virtual TYPE Type() const =0;
+    virtual TYPE FullType() const =0;
     virtual bool IsType(TYPE type) const =0;
-    virtual AddonProps Props() const =0;
-    virtual AddonProps& Props() =0;
-    virtual const CStdString ID() const =0;
-    virtual const CStdString Name() const =0;
-    virtual bool Enabled() const =0;
+    virtual std::string ID() const =0;
+    virtual std::string Name() const =0;
     virtual bool IsInUse() const =0;
-    virtual const AddonVersion Version() const =0;
-    virtual const AddonVersion MinVersion() const =0;
-    virtual const CStdString Summary() const =0;
-    virtual const CStdString Description() const =0;
-    virtual const CStdString Path() const =0;
-    virtual const CStdString Profile() const =0;
-    virtual const CStdString LibPath() const =0;
-    virtual const CStdString ChangeLog() const =0;
-    virtual const CStdString FanArt() const =0;
-    virtual const CStdString Author() const =0;
-    virtual const CStdString Icon() const =0;
-    virtual int  Stars() const =0;
-    virtual const CStdString Disclaimer() const =0;
-    virtual const std::string Broken() const =0;
+    virtual AddonVersion Version() const =0;
+    virtual AddonVersion MinVersion() const =0;
+    virtual std::string Summary() const =0;
+    virtual std::string Description() const =0;
+    virtual std::string Path() const =0;
+    virtual std::string Profile() const =0;
+    virtual std::string LibPath() const =0;
+    virtual std::string ChangeLog() const =0;
+    virtual std::string FanArt() const =0;
+    virtual std::vector<std::string> Screenshots() const =0;
+    virtual std::string Author() const =0;
+    virtual std::string Icon() const =0;
+    virtual std::string Disclaimer() const =0;
+    virtual std::string Broken() const =0;
     virtual CDateTime InstallDate() const =0;
     virtual CDateTime LastUpdated() const =0;
     virtual CDateTime LastUsed() const =0;
+    virtual std::string Origin() const =0;
+    virtual uint64_t PackageSize() const =0;
     virtual const InfoMap &ExtraInfo() const =0;
     virtual bool HasSettings() =0;
     virtual void SaveSettings() =0;
-    virtual void UpdateSetting(const CStdString& key, const CStdString& value) =0;
-    virtual CStdString GetSetting(const CStdString& key) =0;
+    virtual void UpdateSetting(const std::string& key, const std::string& value) =0;
+    virtual std::string GetSetting(const std::string& key) =0;
     virtual TiXmlElement* GetSettingsXML() =0;
-    virtual CStdString GetString(uint32_t id) =0;
     virtual const ADDONDEPS &GetDeps() const =0;
     virtual AddonVersion GetDependencyVersion(const std::string &dependencyID) const =0;
     virtual bool MeetsVersion(const AddonVersion &version) const =0;
     virtual bool ReloadSettings() =0;
-
-  protected:
-    virtual bool LoadSettings(bool bForce = false) =0;
-
-  private:
-    friend class CAddonMgr;
-    virtual bool IsAddonLibrary() =0;
-    virtual void Enable() =0;
-    virtual void Disable() =0;
-    virtual bool LoadStrings() =0;
-    virtual void ClearStrings() =0;
+    virtual void OnDisabled() =0;
+    virtual void OnEnabled() =0;
+    virtual AddonPtr GetRunningInstance() const=0;
+    virtual void OnPreInstall() =0;
+    virtual void OnPostInstall(bool update, bool modal) =0;
+    virtual void OnPreUnInstall() =0;
+    virtual void OnPostUnInstall() =0;
   };
 };
 

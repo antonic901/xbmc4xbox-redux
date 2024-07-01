@@ -45,6 +45,11 @@ void CJSONVariantParser::push_buffer(const unsigned char *buffer, unsigned int l
   }
 }
 
+CVariant CJSONVariantParser::Parse(const std::string& json)
+{
+  return Parse(reinterpret_cast<const unsigned char*>(json.c_str()), json.length());
+}
+
 CVariant CJSONVariantParser::Parse(const unsigned char *json, unsigned int length)
 {
   CSimpleParseCallback callback;

@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2011 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -101,11 +100,31 @@ namespace ADDON
     return (CompareComponent(mRevision.c_str(), other.mRevision.c_str()) < 0);
   }
 
+  bool AddonVersion::operator>(const AddonVersion & other) const
+  {
+    return !(*this <= other);
+  }
+
   bool AddonVersion::operator==(const AddonVersion& other) const
   {
     return mEpoch == other.mEpoch
       && CompareComponent(mUpstream.c_str(), other.mUpstream.c_str()) == 0
       && CompareComponent(mRevision.c_str(), other.mRevision.c_str()) == 0;
+  }
+
+  bool AddonVersion::operator!=(const AddonVersion & other) const
+  {
+    return !(*this == other);
+  }
+
+  bool AddonVersion::operator<=(const AddonVersion& other) const
+  {
+    return *this < other || *this == other;
+  }
+
+  bool AddonVersion::operator>=(const AddonVersion & other) const
+  {
+    return !(*this < other);
   }
 
   bool AddonVersion::empty() const
@@ -124,15 +143,15 @@ namespace ADDON
     return out;
   }
 
-  bool AddonVersion::SplitFileName(CStdString& ID, CStdString& version,
-                                   const CStdString& filename)
+  bool AddonVersion::SplitFileName(std::string& ID, std::string& version,
+                                   const std::string& filename)
   {
-    int dpos = filename.rfind("-");
-    if (dpos < 0)
+    size_t dpos = filename.rfind("-");
+    if (dpos == std::string::npos)
       return false;
-    ID = filename.Mid(0,dpos);
-    version = filename.Mid(dpos+1);
-    version = version.Mid(0,version.size()-4);
+    ID = filename.substr(0, dpos);
+    version = filename.substr(dpos + 1);
+    version = version.substr(0, version.size() - 4);
 
     return true;
   }

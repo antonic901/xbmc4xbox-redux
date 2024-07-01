@@ -23,6 +23,7 @@
 #ifndef HAS_XBOX_AUDIO
 #include "mmreg.h"
 #endif
+#include "filesystem/IFileTypes.h"
 
 typedef struct
 {
@@ -55,7 +56,7 @@ WAVCodec::~WAVCodec()
 
 bool WAVCodec::Init(const CStdString &strFile, unsigned int filecache)
 {
-  if (!m_file.Open(strFile, READ_CACHED))
+  if (!m_file.Open(strFile, XFILE::READ_CACHED))
     return false;
 
   // read header

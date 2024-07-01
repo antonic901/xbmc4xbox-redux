@@ -29,18 +29,23 @@ namespace ADDON
 class CLanguageResource : public CResource
 {
 public:
-  CLanguageResource(const AddonProps &props)
-    : CResource(props)
-  { }
-  CLanguageResource(const cp_extension_t *ext);
-  virtual ~CLanguageResource() { }
+  static boost::movelib::unique_ptr<CLanguageResource> FromExtension(AddonProps props, const cp_extension_t* ext);
 
-  virtual AddonPtr Clone() const;
+  explicit CLanguageResource(AddonProps props) : CResource(boost::move(props)), m_forceUnicodeFont(false) {};
+
+  CLanguageResource(AddonProps props,
+      const CLocale& locale,
+      const std::string& charsetGui,
+      bool forceUnicodeFont,
+      const std::string& charsetSubtitle,
+      const std::string& dvdLanguageMenu,
+      const std::string& dvdLanguageAudio,
+      const std::string& dvdLanguageSubtitle,
+      const std::set<std::string>& sortTokens);
 
   virtual bool IsInUse() const;
 
-  virtual bool OnPreInstall();
-  virtual void OnPostInstall(bool restart, bool update);
+  virtual void OnPostInstall(bool update, bool modal);
 
   virtual bool IsAllowed(const std::string &file) const;
 
@@ -62,8 +67,6 @@ public:
   static bool FindLanguageAddonByName(const std::string &legacyLanguage, std::string &addonId, const VECADDONS &languageAddons = VECADDONS());
 
 private:
-  CLanguageResource(const CLanguageResource &rhs);
-
   CLocale m_locale;
 
   std::string m_charsetGui;

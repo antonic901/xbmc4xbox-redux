@@ -25,6 +25,8 @@
 #include "Autorun.h"
 #include "LangInfo.h"
 #include "Util.h"
+#include "addons/AddonSystemSettings.h"
+#include "addons/RepositoryUpdater.h"
 #include "addons/Skin.h"
 #include "cores/playercorefactory/PlayerCoreFactory.h"
 #ifdef HAS_XBOX_D3D
@@ -251,6 +253,7 @@ void CSettings::Uninitialize()
   m_settingsManager->UnregisterCallback(&CNetworkServices::Get());
   m_settingsManager->UnregisterCallback(&g_passwordManager);
   m_settingsManager->UnregisterCallback(&CRssManager::Get());
+  m_settingsManager->UnregisterCallback(&ADDON::CRepositoryUpdater::GetInstance());
 #if defined(TARGET_LINUX) || defined(_XBOX)
   m_settingsManager->UnregisterCallback(&g_timezone);
 #endif // defined(TARGET_LINUX)
@@ -803,6 +806,10 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("weather.areacode2");
   settingSet.insert("weather.areacode3");
   m_settingsManager->RegisterCallback(&g_weatherManager, settingSet);
+
+  settingSet.clear();
+  settingSet.insert("general.addonupdates");
+  m_settingsManager->RegisterCallback(&ADDON::CRepositoryUpdater::GetInstance(), settingSet);
 }
 
 bool CSettings::Reset()

@@ -34,5 +34,6 @@ public:
   virtual bool Create(const CURL& url);
   virtual bool Exists(const CURL& url);
   virtual bool Remove(const CURL& url);
+  virtual bool RemoveRecursive(const CURL& url);
 };
 }

@@ -98,6 +98,7 @@ public:
   CFileItem(const MUSIC_INFO::CMusicInfoTag& music);
   CFileItem(const CVideoInfoTag& movie);
   CFileItem(const CMediaSource& share);
+  CFileItem(boost::shared_ptr<const ADDON::IAddon> addonInfo);
   virtual ~CFileItem(void);
   virtual CGUIListItem *Clone() const { return new CFileItem(*this); };
 
@@ -258,8 +259,8 @@ public:
     return m_pictureInfoTag;
   }
 
-  bool HasAddonInfo() const { return false; } // @todo BACKPORT: https://github.com/xbmc/xbmc/pull/9051
-  const boost::shared_ptr<const ADDON::IAddon> GetAddonInfo() const { return boost::shared_ptr<const ADDON::IAddon>(); } // @todo BACKPORT: https://github.com/xbmc/xbmc/pull/9051
+  bool HasAddonInfo() const { return m_addonInfo != NULL; }
+  const boost::shared_ptr<const ADDON::IAddon> GetAddonInfo() const { return m_addonInfo; }
 
   CPictureInfoTag* GetPictureInfoTag();
 
@@ -354,7 +355,7 @@ public:
    */
   bool ContentLookup() { return m_doContentLookup; };
 
-  /*! 
+  /*!
    *\brief Lookup via HTTP HEAD request might not be needed, use this setter to
    * disable ContentLookup.
    */
@@ -435,6 +436,7 @@ private:
   MUSIC_INFO::CMusicInfoTag* m_musicInfoTag;
   CVideoInfoTag* m_videoInfoTag;
   CPictureInfoTag* m_pictureInfoTag;
+  boost::shared_ptr<const ADDON::IAddon> m_addonInfo;
   bool m_bIsAlbum;
 
   CCueDocumentPtr m_cueDocument;

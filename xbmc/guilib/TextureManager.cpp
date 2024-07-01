@@ -26,6 +26,7 @@
 #include "threads/SingleLock.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "addons/Skin.h"
 #ifdef _DEBUG
@@ -455,8 +456,8 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
       int iImages = AnimatedGifSet.LoadGIF(strPath.c_str());
       if (iImages == 0)
       {
-        CStdString rootPath = strPath.Left(g_SkinInfo->Path().GetLength());
-        if (0 == rootPath.CompareNoCase(g_SkinInfo->Path()))
+        CStdString rootPath = strPath.Left(g_SkinInfo->Path().size());
+        if (StringUtils::CompareNoCase(rootPath, g_SkinInfo->Path()))
           CLog::Log(LOGERROR, "Texture manager unable to load file: %s", strPath.c_str());
         return 0;
       }

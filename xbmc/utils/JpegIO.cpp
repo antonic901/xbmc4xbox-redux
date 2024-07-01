@@ -70,7 +70,7 @@ bool CJpegIO::Open(const CStdString &texturePath, unsigned int minx, unsigned in
   m_texturePath = texturePath;
 
   XFILE::CFile file;
-  if (file.Open(m_texturePath.c_str(), READ_TRUNCATED))
+  if (file.Open(m_texturePath.c_str(), XFILE::READ_TRUNCATED))
   {
     /*
      GetLength() will typically return values that fall into three cases:

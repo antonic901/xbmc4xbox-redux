@@ -85,7 +85,7 @@ bool CGUIDialogContextMenu::OnMessage(CGUIMessage &message)
   if (message.GetMessage() == GUI_MSG_CLICKED)
   { // someone has been clicked - deinit...
     if (message.GetSenderId() >= BUTTON_START && message.GetSenderId() <= BUTTON_END)
-      m_clickedButton = (int)m_buttons[message.GetSenderId() - BUTTON_START].first;
+      m_clickedButton = message.GetSenderId() - BUTTON_START;
     Close();
     return true;
   }
@@ -208,15 +208,6 @@ void CGUIDialogContextMenu::GetContextButtons(const CStdString &type, const CFil
   // Add buttons to the ContextMenu that should be visible for both sources and autosourced items
   if (item && (item->IsDVD() || item->IsCDDA()))
   {
-    // We need to check if there is a detected is inserted!
-    if ( MEDIA_DETECT::CDetectDVDMedia::IsDiscInDrive() )
-    {
-      buttons.Add(CONTEXT_BUTTON_PLAY_DISC, 341); // Play CD/DVD!
-      if (CGUIWindowVideoBase::HasResumeItemOffset(item.get()))
-      {
-        buttons.Add(CONTEXT_BUTTON_RESUME_DISC, CGUIWindowVideoBase::GetResumeString(*(item.get())));     // Resume Disc
-      }
-    }
     buttons.Add(CONTEXT_BUTTON_EJECT_DISC, 13391);  // Eject/Load CD/DVD!
   }
 
@@ -235,13 +226,6 @@ void CGUIDialogContextMenu::GetContextButtons(const CStdString &type, const CFil
       bool isAddon = ADDON::TranslateContent(url.GetProtocol()) != CONTENT_NONE;
       if (!share->m_ignore && !isAddon)
         buttons.Add(CONTEXT_BUTTON_EDIT_SOURCE, 1027); // Edit Source
-      else
-      {
-        ADDON::AddonPtr plugin;
-        if (ADDON::CAddonMgr::Get().GetAddon(url.GetHostName(), plugin, ADDON::ADDON_PLUGIN))
-        if (plugin->HasSettings())
-          buttons.Add(CONTEXT_BUTTON_PLUGIN_SETTINGS, 1045); // Plugin Settings
-      }
       if (type != "video")
         buttons.Add(CONTEXT_BUTTON_SET_DEFAULT, 13335); // Set as Default
       if (!share->m_ignore)
@@ -251,8 +235,6 @@ void CGUIDialogContextMenu::GetContextButtons(const CStdString &type, const CFil
     }
     if (!GetDefaultShareNameByType(type).IsEmpty())
       buttons.Add(CONTEXT_BUTTON_CLEAR_DEFAULT, 13403); // Clear Default
-
-    buttons.Add(CONTEXT_BUTTON_ADD_SOURCE, 1026); // Add Source
   }
   if (share && LOCK_MODE_EVERYONE != CProfilesManager::Get().GetMasterProfile().getLockMode())
   {
@@ -280,30 +262,10 @@ void CGUIDialogContextMenu::GetContextButtons(const CStdString &type, const CFil
 
 bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileItemPtr item, CONTEXT_BUTTON button)
 {
-  // Add Source doesn't require a valid share
-  if (button == CONTEXT_BUTTON_ADD_SOURCE)
-  {
-    if (CProfilesManager::Get().IsMasterProfile())
-    {
-      if (!g_passwordManager.IsMasterLockUnlocked(true))
-        return false;
-    }
-    else if (!CProfilesManager::Get().GetCurrentProfile().canWriteSources() && !g_passwordManager.IsProfileLockUnlocked())
-      return false;
-
-    return CGUIDialogMediaSource::ShowAndAddMediaSource(type);
-  }
-
   // buttons that are available on both sources and autosourced items
   if (!item) return false;
   switch (button)
   {
-  case CONTEXT_BUTTON_PLAY_DISC:
-    return MEDIA_DETECT::CAutorun::PlayDisc(true); // restart
-
-  case CONTEXT_BUTTON_RESUME_DISC:
-    return MEDIA_DETECT::CAutorun::PlayDisc();
-
   case CONTEXT_BUTTON_EJECT_DISC:
 #ifdef _WIN32PC
     if( item->GetPath()[0] ) CIoSupport::EjectTray( true, item->GetPath()[0] ); // TODO: detect tray state
@@ -454,9 +416,6 @@ bool CGUIDialogContextMenu::OnContextButton(const CStdString &type, const CFileI
       g_windowManager.SendThreadMessage(msg);
       return true;
     }
-
-  case CONTEXT_BUTTON_PLAY_DISC:
-    return MEDIA_DETECT::CAutorun::PlayDisc();
 
   case CONTEXT_BUTTON_EJECT_DISC:
     if (CIoSupport::GetTrayState() == TRAY_OPEN)
@@ -661,6 +620,21 @@ void CGUIDialogContextMenu::SwitchMedia(const CStdString& strType, const CStdStr
   }
 }
 
+int CGUIDialogContextMenu::Show(const CContextButtons& choices)
+{
+  CGUIDialogContextMenu *dialog = static_cast<CGUIDialogContextMenu*>(g_windowManager.GetWindow(WINDOW_DIALOG_CONTEXT_MENU));
+  if (!dialog)
+    return -1;
+
+  dialog->m_buttons = choices;
+  dialog->Initialize();
+  dialog->SetInitialVisibility();
+  dialog->SetupButtons();
+  dialog->PositionAtCurrentFocus();
+  dialog->Open();
+  return dialog->m_clickedButton;
+}
+
 int CGUIDialogContextMenu::ShowAndGetChoice(const CContextButtons &choices)
 {
   if (choices.size() == 0)
@@ -674,7 +648,10 @@ int CGUIDialogContextMenu::ShowAndGetChoice(const CContextButtons &choices)
     pMenu->SetupButtons();
     pMenu->PositionAtCurrentFocus();
     pMenu->Open();
-    return pMenu->m_clickedButton;
+
+    int idx = pMenu->m_clickedButton;
+    if (idx != -1)
+      return choices[idx].first;
   }
   return -1;
 }

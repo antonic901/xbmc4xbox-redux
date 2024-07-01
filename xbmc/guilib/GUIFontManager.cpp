@@ -35,6 +35,7 @@
 #include "utils/StringUtils.h"
 #include "FileItem.h"
 #include "URL.h"
+#include "Util.h"
 
 #ifdef TARGET_POSIX
 #include "filesystem/SpecialProtocol.h"
@@ -488,7 +489,7 @@ void GUIFontManager::SettingOptionsSubtitleHeightsFiller(const CSetting *setting
       strPath += "/";
       XFILE::CDirectory::GetDirectory(strPath, items);
       int iCurrentSize = 0;
-      
+
       bool found = false;
       for (int i = 0; i < items.Size(); ++i)
       {
@@ -502,7 +503,7 @@ void GUIFontManager::SettingOptionsSubtitleHeightsFiller(const CSetting *setting
           list.push_back(std::make_pair(StringUtils::Format("%i", iCurrentSize), iCurrentSize));
         }
       }
-      
+
       if (!found)
         current = iCurrentSize;
     }

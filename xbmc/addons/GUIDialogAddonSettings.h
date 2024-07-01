@@ -1,7 +1,7 @@
 #pragma once
 /*
- *      Copyright (C) 2005-2008 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -14,14 +14,18 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <map>
+#include <string>
+#include <vector>
+#include <boost/algorithm/cxx11/all_of.hpp>
+
 #include "dialogs/GUIDialogBoxBase.h"
-#include "Addon.h"
+#include "IAddon.h"
 
 class CGUIDialogAddonSettings : public CGUIDialogBoxBase
 {
@@ -38,7 +42,7 @@ public:
   static bool ShowAndGetInput(const ADDON::AddonPtr &addon, bool saveToDisk = true);
   virtual void DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions);
 
-  CStdString GetCurrentID() const;
+  std::string GetCurrentID() const;
 protected:
   virtual void OnInitWindow();
   virtual int GetDefaultLabelID(int controlId) const;
@@ -49,7 +53,7 @@ private:
    \param subsetting whether the character string should be prefixed by "- ", defaults to false
    \return the localized addon string
    */
-  CStdString GetString(const char *value, bool subSetting = false) const;
+  std::string GetString(const char *value, bool subSetting = false) const;
 
   /*! \brief return a the values for a fileenum setting
    \param path the path to use for files
@@ -57,13 +61,13 @@ private:
    \param options any options, such as "hideext" to hide extensions
    \return the filenames in the path that match the mask
    */
-  std::vector<std::string> GetFileEnumValues(const CStdString &path, const CStdString &mask, const CStdString &options) const;
+  std::vector<std::string> GetFileEnumValues(const std::string &path, const std::string &mask, const std::string &options) const;
 
   /*! \brief Translate list of addon IDs to list of addon names
    \param addonIDslist comma seperated list of addon IDs
    \return comma seperated list of addon names
    */
-  CStdString GetAddonNames(const CStdString& addonIDslist) const;
+  std::string GetAddonNames(const std::string& addonIDslist) const;
 
   void CreateSections();
   void FreeSections();
@@ -72,23 +76,21 @@ private:
   void UpdateFromControls();
   void EnableControls();
   void SetDefaultSettings();
-  bool GetCondition(const CStdString &condition, const int controlId);
+  bool GetCondition(const std::string &condition, const int controlId);
 
   void SaveSettings(void);
   bool ShowVirtualKeyboard(int iControl);
-  bool TranslateSingleString(const CStdString &strCondition, std::vector<CStdString> &enableVec);
+  bool TranslateSingleString(const std::string &strCondition, std::vector<std::string> &enableVec);
 
   const TiXmlElement *GetFirstSetting() const;
 
   ADDON::AddonPtr m_addon;
-  CStdString m_strHeading;
-  std::map<CStdString,CStdString> m_buttonValues;
-  bool m_changed;
+  std::map<std::string,std::string> m_buttonValues;
   bool m_saveToDisk; // whether the addon settings should be saved to disk or just stored locally in the addon
 
   unsigned int m_currentSection;
   unsigned int m_totalSections;
 
-  std::map<CStdString,CStdString> m_settings; // local storage of values
+  std::map<std::string,std::string> m_settings; // local storage of values
 };
 

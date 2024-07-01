@@ -64,10 +64,11 @@ namespace XFILE
       virtual CStdString GetMimeType()                           { return m_state->m_httpheader.GetMimeType(); }
       virtual int IoControl(EIoControl request, void* param);
       virtual std::string GetContentCharset(void)                { return GetServerReportedCharset(); }
+      virtual double GetDownloadSpeed();
 
       bool Post(const CStdString& strURL, const CStdString& strPostData, CStdString& strHTML);
-      bool Get(const CStdString& strURL, CStdString& strHTML);
-      bool ReadData(CStdString& strHTML);
+      bool Get(const std::string& strURL, std::string& strHTML);
+      bool ReadData(std::string& strHTML);
       bool Download(const CStdString& strURL, const CStdString& strFileName, LPDWORD pdwSize = NULL);
       bool IsInternet(bool checkDNS = true);
       void Cancel();
@@ -78,6 +79,7 @@ namespace XFILE
       void SetCustomRequest(CStdString &request)                 { m_customrequest = request; }
       void UseOldHttpVersion(bool bUse)                          { m_useOldHttpVersion = bUse; }
       void SetContentEncoding(CStdString encoding)               { m_contentencoding = encoding; }
+      void SetAcceptEncoding(const std::string& encoding)        { m_acceptencoding = encoding; }
       void SetTimeout(int connecttimeout)                        { m_connecttimeout = connecttimeout; }
       void SetLowSpeedTime(int lowspeedtime)                     { m_lowspeedtime = lowspeedtime; }
       void SetPostData(CStdString postdata)                      { m_postdata = postdata; }
@@ -95,7 +97,7 @@ namespace XFILE
 
       /* static function that will get content type of a file */
       static bool GetHttpHeader(const CURL &url, CHttpHeader &headers);
-      static bool GetMimeType(const CURL &url, CStdString &content, CStdString useragent="");
+      static bool GetMimeType(const CURL &url, std::string &content, CStdString useragent="");
 
       /* static function that will get cookies stored by CURL in RFC 2109 format */
       static bool GetCookies(const CURL &url, std::string &cookies);
@@ -151,7 +153,7 @@ namespace XFILE
       void SetCommonOptions(CReadState* state);
       void SetRequestHeaders(CReadState* state);
       void SetCorrectHeaders(CReadState* state);
-      bool Service(const CStdString& strURL, CStdString& strHTML);
+      bool Service(const std::string& strURL, std::string& strHTML);
 
     protected:
       CReadState*     m_state;
@@ -168,6 +170,7 @@ namespace XFILE
       std::string     m_proxypassword;
       CStdString      m_customrequest;
       CStdString      m_contentencoding;
+      std::string     m_acceptencoding;
       CStdString      m_ftpauth;
       CStdString      m_ftpport;
       CStdString      m_binary;

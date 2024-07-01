@@ -201,6 +201,11 @@ CFileItem::CFileItem(const CMediaSource& share)
   FillInMimeType(false);
 }
 
+CFileItem::CFileItem(boost::shared_ptr<const ADDON::IAddon> addonInfo) : m_addonInfo(boost::move(addonInfo))
+{
+  Initialize();
+}
+
 CFileItem::~CFileItem(void)
 {
   delete m_musicInfoTag;
@@ -259,6 +264,8 @@ const CFileItem& CFileItem::operator=(const CFileItem& item)
     delete m_pictureInfoTag;
     m_pictureInfoTag = NULL;
   }
+
+  m_addonInfo = item.m_addonInfo;
 
   m_lStartOffset = item.m_lStartOffset;
   m_lStartPartNumber = item.m_lStartPartNumber;
@@ -1360,13 +1367,13 @@ bool CFileItem::LoadTracksFromCueDocument(CFileItemList& scannedItems)
       {
         if (song.strAlbum.empty() && !tag.GetAlbum().empty())
           song.strAlbum = tag.GetAlbum();
-        //Pass album artist to final MusicInfoTag object via setting song album artist vector. 
+        //Pass album artist to final MusicInfoTag object via setting song album artist vector.
         if (song.GetAlbumArtist().empty() && !tag.GetAlbumArtist().empty())
           song.SetAlbumArtist(tag.GetAlbumArtist());
         if (song.genre.empty() && !tag.GetGenre().empty())
           song.genre = tag.GetGenre();
         //Pass artist to final MusicInfoTag object via setting song artist description string only.
-        //Artist credits not used during loading from cue sheet. 
+        //Artist credits not used during loading from cue sheet.
         if (song.strArtistDesc.empty() && !tag.GetArtistString().empty())
           song.strArtistDesc = tag.GetArtistString();
         if (tag.GetDiscNumber())

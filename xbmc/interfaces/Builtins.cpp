@@ -44,8 +44,10 @@
 #include "addons/GUIWindowAddonBrowser.h"
 #include "addons/Addon.h" // for TranslateType, TranslateContent
 #include "addons/AddonInstaller.h"
+#include "addons/AddonSystemSettings.h"
 #include "addons/AddonManager.h"
 #include "addons/PluginSource.h"
+#include "addons/RepositoryUpdater.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "network/NetworkServices.h"
 #include "LCD.h"
@@ -393,13 +395,13 @@ int CBuiltins::Execute(const CStdString& execString)
     {
       AddonPtr addon;
       std::string scriptpath;
-      if (CAddonMgr::Get().GetAddon(params[0], addon))
+      if (CAddonMgr::GetInstance().GetAddon(params[0], addon))
       {
         //Get the correct extension point to run
-        if (CAddonMgr::Get().GetAddon(params[0], addon, ADDON_SCRIPT) ||
-            CAddonMgr::Get().GetAddon(params[0], addon, ADDON_SCRIPT_WEATHER) ||
-            CAddonMgr::Get().GetAddon(params[0], addon, ADDON_SCRIPT_LYRICS) ||
-            CAddonMgr::Get().GetAddon(params[0], addon, ADDON_SCRIPT_LIBRARY))
+        if (CAddonMgr::GetInstance().GetAddon(params[0], addon, ADDON_SCRIPT) ||
+            CAddonMgr::GetInstance().GetAddon(params[0], addon, ADDON_SCRIPT_WEATHER) ||
+            CAddonMgr::GetInstance().GetAddon(params[0], addon, ADDON_SCRIPT_LYRICS) ||
+            CAddonMgr::GetInstance().GetAddon(params[0], addon, ADDON_SCRIPT_LIBRARY))
           scriptpath = addon->LibPath();
         else
           CLog::Log(LOGERROR, "RunScript called for invalid add-on id '%s'. Not a script.", params[0].c_str());
@@ -422,7 +424,7 @@ int CBuiltins::Execute(const CStdString& execString)
 
     // Test to see if the param is an addon ID
     AddonPtr script;
-    if (CAddonMgr::Get().GetAddon(params[0], script))
+    if (CAddonMgr::GetInstance().GetAddon(params[0], script))
       scriptpath = script->LibPath();
 
     CScriptInvocationManager::Get().Stop(scriptpath);
@@ -513,7 +515,7 @@ int CBuiltins::Execute(const CStdString& execString)
     {
       AddonPtr addon;
       CStdString cmd;
-      if (CAddonMgr::Get().GetAddon(params[0],addon,ADDON_PLUGIN))
+      if (CAddonMgr::GetInstance().GetAddon(params[0],addon,ADDON_PLUGIN))
       {
         PluginPtr plugin = boost::dynamic_pointer_cast<CPluginSource>(addon);
         CStdString addonid = params[0];
@@ -547,10 +549,10 @@ int CBuiltins::Execute(const CStdString& execString)
           // (params[1] ... params[x]) separated by a comma to RunPlugin
           cmd = StringUtils::Format("RunPlugin(%s)", StringUtils::Join(params, ",").c_str());
       }
-      else if (CAddonMgr::Get().GetAddon(params[0], addon, ADDON_SCRIPT) ||
-               CAddonMgr::Get().GetAddon(params[0], addon, ADDON_SCRIPT_WEATHER) ||
-               CAddonMgr::Get().GetAddon(params[0], addon, ADDON_SCRIPT_LYRICS) ||
-               CAddonMgr::Get().GetAddon(params[0], addon, ADDON_SCRIPT_LIBRARY))
+      else if (CAddonMgr::GetInstance().GetAddon(params[0], addon, ADDON_SCRIPT) ||
+               CAddonMgr::GetInstance().GetAddon(params[0], addon, ADDON_SCRIPT_WEATHER) ||
+               CAddonMgr::GetInstance().GetAddon(params[0], addon, ADDON_SCRIPT_LYRICS) ||
+               CAddonMgr::GetInstance().GetAddon(params[0], addon, ADDON_SCRIPT_LIBRARY))
         // Pass the script name (params[0]) and all the parameters
         // (params[1] ... params[x]) separated by a comma to RunScript
         cmd = StringUtils::Format("RunScript(%s)", StringUtils::Join(params, ",").c_str());
@@ -1085,7 +1087,7 @@ int CBuiltins::Execute(const CStdString& execString)
   else if (execute.Equals("skin.theme"))
   {
     // enumerate themes
-    vector<CStdString> vecTheme;
+    std::vector<std::string> vecTheme;
     CUtil::GetSkinThemes(vecTheme);
 
     int iTheme = -1;
@@ -1096,7 +1098,7 @@ int CBuiltins::Execute(const CStdString& execString)
       {
         CStdString strTmpTheme(CSettings::Get().GetString("lookandfeel.skintheme"));
         URIUtils::RemoveExtension(strTmpTheme);
-        if (vecTheme[i].Equals(strTmpTheme))
+        if (StringUtils::EqualsNoCase(vecTheme[i], strTmpTheme))
         {
           iTheme=i;
           break;
@@ -1258,7 +1260,7 @@ int CBuiltins::Execute(const CStdString& execString)
     if (CVideoLibraryQueue::GetInstance().IsRunning())
       CVideoLibraryQueue::GetInstance().CancelAllJobs();
 
-    ADDON::CAddonMgr::Get().StopServices(true);
+    ADDON::CAddonMgr::GetInstance().StopServices(true);
 
     g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
     g_application.getNetwork().Deinitialize();
@@ -1568,7 +1570,7 @@ int CBuiltins::Execute(const CStdString& execString)
   {
     AddonPtr addon;
     ADDON::TYPE type = TranslateType(params[0]);
-    if (CAddonMgr::Get().GetDefault(type, addon))
+    if (CAddonSystemSettings::GetInstance().GetActive(type, addon))
     {
       CGUIDialogAddonSettings::ShowAndGetInput(addon);
       if (type == ADDON_VIZ)
@@ -1582,18 +1584,22 @@ int CBuiltins::Execute(const CStdString& execString)
     if (type != ADDON_UNKNOWN && 
         CGUIWindowAddonBrowser::SelectAddonID(type,addonID,false))
     {
-      CAddonMgr::Get().SetDefault(type,addonID);
+      CAddonSystemSettings::GetInstance().SetActive(type, addonID);
       if (type == ADDON_VIZ)
         g_windowManager.SendMessage(GUI_MSG_VISUALISATION_RELOAD, 0, 0);
     }
   }
   else if (execute.Equals("updateaddonrepos"))
   {
-    CAddonInstaller::Get().UpdateRepos(true);
+    CRepositoryUpdater::GetInstance().CheckForUpdates();
   }
-  else if (execute.Equals("installfromzip"))
+  else if (execute.Equals("installaddon"))
   {
-    CGUIWindowAddonBrowser::InstallFromZip();
+    const std::string& addonid = params[0];
+
+    AddonPtr addon;
+    CAddonInstaller::GetInstance().InstallModal(addonid, addon);
+
     return 0;
   }
   else if (execute.Equals("toggledebug"))

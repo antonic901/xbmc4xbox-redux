@@ -22,7 +22,6 @@
 #include "utils/log.h"
 #include "CdgParser.h"
 #include "Application.h"
-#include "Util.h"
 #include "utils/URIUtils.h"
 #include "AudioContext.h"
 #include "GUIInfoManager.h"

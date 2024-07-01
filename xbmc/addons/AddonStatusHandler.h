@@ -1,7 +1,7 @@
 #pragma once
 /*
- *      Copyright (C) 2005-2010 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -14,9 +14,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -24,6 +23,7 @@
 #include "IAddon.h"
 #include "include/xbmc_addon_types.h"
 #include "threads/CriticalSection.h"
+#include <string>
 
 namespace ADDON
 {
@@ -37,7 +37,7 @@ namespace ADDON
   class CAddonStatusHandler : private CThread
   {
     public:
-      CAddonStatusHandler(const CStdString &addonID, ADDON_STATUS status, CStdString message, bool sameThread = true);
+      CAddonStatusHandler(const std::string &addonID, ADDON_STATUS status, std::string message, bool sameThread = true);
       ~CAddonStatusHandler();
 
       /* Thread handling */
@@ -49,7 +49,7 @@ namespace ADDON
       static CCriticalSection   m_critSection;
       AddonPtr                  m_addon;
       ADDON_STATUS              m_status;
-      CStdString                m_message;
+      std::string               m_message;
   };
 
 

@@ -160,6 +160,7 @@
 #include "utils/XMLUtils.h"
 #include "addons/AddonInstaller.h"
 #include "addons/AddonManager.h"
+#include "addons/RepositoryUpdater.h"
 #include "music/tags/MusicInfoTag.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 
@@ -711,6 +712,12 @@ extern "C" void __stdcall update_emu_environ();
 
 HRESULT CApplication::Create(HWND hWnd)
 {
+  m_ServiceManager.reset(new CServiceManager());
+  if (!m_ServiceManager->Init1())
+  {
+    return false;
+  }
+
 #if defined(HAS_LINUX_NETWORK)
   m_network = new CNetworkLinux();
 #elif defined(HAS_WIN32_NETWORK)
@@ -1005,21 +1012,14 @@ HRESULT CApplication::Create(HWND hWnd)
   // initialize the addon database (must be before the addon manager is init'd)
   CDatabaseManager::Get().Initialize(true);
 
-#ifdef HAS_PYTHON
-  CScriptInvocationManager::Get().RegisterLanguageInvocationHandler(&g_pythonParser, ".py");
-#endif // HAS_PYTHON
-
-  // start-up Addons Framework
-  // currently bails out if either cpluff Dll is unavailable or system dir can not be scanned
-  if (!CAddonMgr::Get().Init())
+  if (!m_ServiceManager->Init2())
   {
-    CLog::Log(LOGFATAL, "CApplication::Create: Unable to start CAddonMgr");
     FatalErrorHandler(true, true, true);
   }
 
   // set logging from debug add-on
   AddonPtr addon;
-  CAddonMgr::Get().GetAddon("xbmc.debug", addon);
+  CAddonMgr::GetInstance().GetAddon("xbmc.debug", addon);
   if (addon)
     g_advancedSettings.SetExtraLogsFromAddon(addon.get());
 
@@ -1292,13 +1292,15 @@ HRESULT CApplication::Initialize()
 #ifdef __APPLE__
   g_xbmcHelper.CaptureAllInput();
 #endif
-  CAddonMgr::Get().StartServices(false);
+  CAddonMgr::GetInstance().StartServices(false);
 
   // configure seek handler
   CSeekHandler::Get().Configure();
 
   // register action listeners
   RegisterActionListener(&CSeekHandler::Get());
+
+  CRepositoryUpdater::GetInstance().Start();
 
   CLog::Log(LOGNOTICE, "initialize done");
 
@@ -1617,7 +1619,7 @@ bool CApplication::Save(TiXmlNode *settings) const
 bool CApplication::LoadSkin(const CStdString& skinID)
 {
   AddonPtr addon;
-  if (CAddonMgr::Get().GetAddon(skinID, addon))
+  if (CAddonMgr::GetInstance().GetAddon(skinID, addon))
   {
     if (LoadSkin(boost::dynamic_pointer_cast<ADDON::CSkinInfo>(addon)))
       return true;
@@ -1782,7 +1784,7 @@ void CApplication::UnloadSkin(bool forReload /* = false */)
 bool CApplication::LoadUserWindows()
 {
   // Start from wherever home.xml is
-  std::vector<CStdString> vecSkinPath;
+  std::vector<std::string> vecSkinPath;
   g_SkinInfo->GetSkinPaths(vecSkinPath);
   for (unsigned int i = 0;i < vecSkinPath.size();++i)
   {
@@ -3468,8 +3470,6 @@ HRESULT CApplication::Cleanup()
   {
     g_windowManager.DestroyWindows();
 
-    CAddonMgr::Get().DeInit();
-
     CLog::Log(LOGNOTICE, "unload sections");
     CSectionLoader::UnloadAll();
     // reset our d3d params before we destroy
@@ -3509,6 +3509,13 @@ HRESULT CApplication::Cleanup()
 
     delete m_network;
     m_network = NULL;
+
+    // Cleanup was called more than once on exit during my tests
+    if (m_ServiceManager)
+    {
+      m_ServiceManager->Deinit();
+      m_ServiceManager.reset();
+    }
 
     return S_OK;
   }
@@ -3585,7 +3592,7 @@ void CApplication::Stop(bool bLCDStop)
     UnloadSkin();
 
     // Stop services before unloading Python
-    CAddonMgr::Get().StopServices(false);
+    CAddonMgr::GetInstance().StopServices(false);
 
     // unregister action listeners
     UnregisterActionListener(&CSeekHandler::Get());
@@ -3609,8 +3616,6 @@ void CApplication::Stop(bool bLCDStop)
   {
     CLog::Log(LOGERROR, "Exception in CApplication::Stop()");
   }
-
-  Destroy();
 }
 
 bool CApplication::PlayMedia(const CFileItem& item, const std::string &player, int iPlaylist)
@@ -3810,11 +3815,11 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
   return PLAYBACK_FAIL;
 }
 
-PlayBackRet CApplication::PlayFile(const CFileItem& item, const std::string& player, bool bRestart)
+PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bool bRestart)
 {
   // Ensure the MIME type has been retrieved for http:// and shout:// streams
   if (item.GetMimeType().empty())
-    const_cast<CFileItem&>(item).FillInMimeType();
+    item.FillInMimeType();
 
   if (!bRestart)
   {
@@ -3842,7 +3847,7 @@ PlayBackRet CApplication::PlayFile(const CFileItem& item, const std::string& pla
   { // we modify the item so that it becomes a real URL
     CFileItem item_new(item);
     if (XFILE::CPluginDirectory::GetPluginResult(item.GetPath(), item_new))
-      return PlayFile(item_new, player, false);
+      return PlayFile(boost::move(item_new), player, false);
     return PLAYBACK_FAIL;
   }
 
@@ -3850,7 +3855,7 @@ PlayBackRet CApplication::PlayFile(const CFileItem& item, const std::string& pla
   {
     CFileItem item_new(item);
     if (XFILE::CUPnPDirectory::GetResource(item.GetURL(), item_new))
-      return PlayFile(item_new, player, false);
+      return PlayFile(boost::move(item_new), player, false);
     return PLAYBACK_FAIL;
   }
 
@@ -4577,14 +4582,14 @@ bool CApplication::ResetScreenSaverWindow()
     }
     else if (m_screenSaver->ID() == "screensaver.xbmc.builtin.dim")
     {
-      if (!m_screenSaver->GetSetting("level").IsEmpty())
-        fFadeLevel = 1.0f - 0.01f * (float)atof(m_screenSaver->GetSetting("level"));
+      if (!m_screenSaver->GetSetting("level").empty())
+        fFadeLevel = 1.0f - 0.01f * (float)atof(m_screenSaver->GetSetting("level").c_str());
     }
     else if (m_screenSaver->ID() == "screensaver.xbmc.builtin.black")
     {
       fFadeLevel = 0;
     }
-    else if (!m_screenSaver->ID().IsEmpty())
+    else if (!m_screenSaver->ID().empty())
     { // we're in screensaver window
       if (g_windowManager.GetActiveWindow() == WINDOW_SCREENSAVER)
         g_windowManager.PreviousWindow();  // show the previous window
@@ -4652,7 +4657,7 @@ void CApplication::ActivateScreenSaver(bool forceType /*= false */)
 
   // Get Screensaver Mode
   m_screenSaver.reset();
-  if (!CAddonMgr::Get().GetAddon(CSettings::Get().GetString("screensaver.mode"), m_screenSaver))
+  if (!CAddonMgr::GetInstance().GetAddon(CSettings::Get().GetString("screensaver.mode"), m_screenSaver))
     m_screenSaver.reset(new CScreenSaver(""));
 
   // disable screensaver lock from the login screen
@@ -4662,7 +4667,7 @@ void CApplication::ActivateScreenSaver(bool forceType /*= false */)
     // set to Dim in the case of a dialog on screen or playing video
     if (g_windowManager.HasModalDialog() || (IsPlayingVideo() && CSettings::Get().GetBool("screensaver.usedimonpause")))
     {
-      if (!CAddonMgr::Get().GetAddon("screensaver.xbmc.builtin.dim", m_screenSaver))
+      if (!CAddonMgr::GetInstance().GetAddon("screensaver.xbmc.builtin.dim", m_screenSaver))
         m_screenSaver.reset(new CScreenSaver(""));
     }
     // Check if we are Playing Audio and Vis instead Screensaver!
@@ -4691,14 +4696,14 @@ void CApplication::ActivateScreenSaver(bool forceType /*= false */)
   }
   else if (m_screenSaver->ID() == "screensaver.xbmc.builtin.dim")
   {
-    if (!m_screenSaver->GetSetting("level").IsEmpty())
-      fFadeLevel = 1.0f - 0.01f * (float)atof(m_screenSaver->GetSetting("level"));
+    if (!m_screenSaver->GetSetting("level").empty())
+      fFadeLevel = 1.0f - 0.01f * (float)atof(m_screenSaver->GetSetting("level").c_str());
   }
   else if (m_screenSaver->ID() == "screensaver.xbmc.builtin.black")
   {
     fFadeLevel = 0;
   }
-  else if (!m_screenSaver->ID().IsEmpty())
+  else if (!m_screenSaver->ID().empty())
   {
     g_windowManager.ActivateWindow(WINDOW_SCREENSAVER);
     return ;
@@ -5330,9 +5335,6 @@ void CApplication::ProcessSlow()
 
   //Check to see if current playing Title has changed and whether we should broadcast the fact
   CheckForTitleChange();
-
-  if (!IsPlayingVideo())
-    CAddonInstaller::Get().UpdateRepos();
 }
 
 // Global Idle Time in Seconds
@@ -6168,7 +6170,7 @@ void CApplication::OnSettingAction(const CSetting *setting)
   else if (settingId == "screensaver.settings")
   {
     AddonPtr addon;
-    if (CAddonMgr::Get().GetAddon(CSettings::Get().GetString("screensaver.mode"), addon, ADDON_SCREENSAVER))
+    if (CAddonMgr::GetInstance().GetAddon(CSettings::Get().GetString("screensaver.mode"), addon, ADDON_SCREENSAVER))
       CGUIDialogAddonSettings::ShowAndGetInput(addon);
   }
   else if (settingId == "videoscreen.guicalibration")

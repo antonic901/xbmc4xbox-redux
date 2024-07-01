@@ -41,6 +41,7 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "video/VideoDatabase.h"
+#include "Util.h"
 #ifdef _XBOX
 #include "filesystem/Directory.h"
 #include "XBAudioConfig.h"

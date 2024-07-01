@@ -1,7 +1,7 @@
 #pragma once
 /*
- *      Copyright (C) 2005-2010 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -14,68 +14,75 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "Addon.h"
 #include "utils/Job.h"
+#include "utils/ProgressJob.h"
 
 namespace ADDON
 {
-  class CRepository;
-  typedef boost::shared_ptr<CRepository> RepositoryPtr;
   class CRepository : public CAddon
   {
   public:
-    virtual AddonPtr Clone() const;
-    CRepository(const AddonProps& props);
-    CRepository(const cp_extension_t *props);
-    virtual ~CRepository();
-
-    std::string Checksum() const;
-
-    /*! \brief Get the md5 hash for an addon.
-     \param the addon in question.
-     \return the md5 hash for the given addon, empty if non exists.
-     */
-    std::string GetAddonHash(const AddonPtr& addon) const;
-
     struct DirInfo
     {
-      DirInfo() : version("0.0.0"), compressed(false), zipped(false), hashes(false) {}
+      DirInfo() : version("0.0.0"), hashes(false) {}
       AddonVersion version;
       std::string info;
       std::string checksum;
       std::string datadir;
-      bool compressed;
-      bool zipped;
       bool hashes;
     };
 
     typedef std::vector<DirInfo> DirList;
-    DirList m_dirs;
 
-    static VECADDONS Parse(const DirInfo& dir);
+    static boost::movelib::unique_ptr<CRepository> FromExtension(AddonProps props, const cp_extension_t* ext);
+
+    explicit CRepository(AddonProps props) : CAddon(boost::move(props)) {};
+    CRepository(AddonProps props, DirList dirs);
+
+    /*! \brief Get the md5 hash for an addon.
+     \param the addon in question.
+     */
+    bool GetAddonHash(const AddonPtr& addon, std::string& checksum) const;
+
+    enum FetchStatus
+    {
+      STATUS_OK,
+      STATUS_NOT_MODIFIED,
+      STATUS_ERROR
+    };
+
+    FetchStatus FetchIfChanged(const std::string& oldChecksum, std::string& checksum, VECADDONS& addons) const;
+
   private:
-    static std::string FetchChecksum(const std::string& url);
-    CRepository(const CRepository &rhs);
+    static bool FetchChecksum(const std::string& url, std::string& checksum);
+    static bool FetchIndex(const DirInfo& repo, VECADDONS& addons);
+
+    DirList m_dirs;
   };
 
-  class CRepositoryUpdateJob : public CJob
+  typedef boost::shared_ptr<CRepository> RepositoryPtr;
+
+
+  class CRepositoryUpdateJob : public CProgressJob
   {
   public:
-    CRepositoryUpdateJob(const VECADDONS& repos);
+    CRepositoryUpdateJob(const RepositoryPtr& repo);
     virtual ~CRepositoryUpdateJob() {}
-
-    virtual const char *GetType() const { return "repoupdate"; };
     virtual bool DoWork();
-  private:
-    VECADDONS GrabAddons(RepositoryPtr& repo);
+    const RepositoryPtr& GetAddon() const { return m_repo; };
 
-    VECADDONS m_repos;
+  private:
+    const RepositoryPtr m_repo;
   };
 }
 

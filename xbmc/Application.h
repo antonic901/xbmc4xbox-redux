@@ -27,6 +27,7 @@
 #include "guilib/Key.h"
 #include "utils/GlobalsHandling.h"
 #include "messaging/IMessageTarget.h"
+#include "ServiceManager.h"
 
 class CFileItem;
 class CFileItemList;
@@ -159,7 +160,7 @@ public:
 
   bool PlayMedia(const CFileItem& item, const std::string &player, int iPlaylist = PLAYLIST_MUSIC);
   bool ProcessAndStartPlaylist(const CStdString& strPlayList, PLAYLIST::CPlayList& playlist, int iPlaylist, int track=0);
-  PlayBackRet PlayFile(const CFileItem& item, const std::string& player, bool bRestart = false);
+  PlayBackRet PlayFile(CFileItem item, const std::string& player, bool bRestart = false);
   void SaveFileState(bool bForeground = false);
   void UpdateFileState();
   void StopPlaying();
@@ -295,6 +296,8 @@ public:
    \param listener The listener to unregister
    */
   void UnregisterActionListener(IActionListener *listener);
+
+  boost::movelib::unique_ptr<CServiceManager> m_ServiceManager;
 
   bool SwitchToFullScreen(bool force = false);
 

@@ -24,6 +24,7 @@
 #include "NfoFile.h"
 #include "video/VideoInfoDownloader.h"
 #include "addons/AddonManager.h"
+#include "addons/AddonSystemSettings.h"
 #include "filesystem/File.h"
 #include "FileItem.h"
 #include "music/Album.h"
@@ -48,7 +49,7 @@ CNfoFile::NFOResult CNfoFile::Create(const std::string& strPath,
 
   AddonPtr addon;
   ScraperPtr defaultScraper;
-  if (CAddonMgr::Get().GetDefault(m_type, addon))
+  if (CAddonSystemSettings::GetInstance().GetActive(m_type, addon))
     defaultScraper = boost::dynamic_pointer_cast<CScraper>(addon);
 
   if (m_type == ADDON_SCRAPER_ALBUMS)
@@ -98,7 +99,7 @@ CNfoFile::NFOResult CNfoFile::Create(const std::string& strPath,
 
   // Add all scrapers except selected and default
   VECADDONS addons;
-  CAddonMgr::Get().GetAddons(m_type, addons);
+  CAddonMgr::GetInstance().GetAddons(addons, m_type);
 
   for (unsigned i = 0; i < addons.size(); ++i)
   {

@@ -21,6 +21,7 @@
 #include "utils/log.h"
 #include "MP3codec.h"
 #include "FileItem.h"
+#include "filesystem/IFileTypes.h"
 
 using namespace MUSIC_INFO;
 
@@ -134,7 +135,7 @@ bool MP3Codec::Init(const CStdString &strFile, unsigned int filecache)
   int result = -1;
   __int64 length = 0;
 
-  if (!m_file.Open(strFile, READ_CACHED))
+  if (!m_file.Open(strFile, XFILE::READ_CACHED))
   {
     CLog::Log(LOGERROR, "MP3Codec: Unable to open file %s", strFile.c_str());
     goto error;

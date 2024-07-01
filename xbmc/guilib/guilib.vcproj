@@ -677,6 +677,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\IRenderingCallback.h">
+			</File>
+			<File
 				RelativePath=".\ISliderCallback.h">
 			</File>
 			<File

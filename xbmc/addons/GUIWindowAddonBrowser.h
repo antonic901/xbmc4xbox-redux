@@ -1,8 +1,8 @@
 #pragma once
 
 /*
- *      Copyright (C) 2005-2010 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,15 +15,19 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
-#include "addons/Addon.h"
-#include "windows/GUIMediaWindow.h"
+#include <string>
+#include <vector>
+#include "Addon.h"
+#include "AddonEvents.h"
+#include "RepositoryUpdater.h"
 #include "ThumbLoader.h"
+#include "windows/GUIMediaWindow.h"
+
 
 class CFileItem;
 class CFileItemList;
@@ -34,41 +38,49 @@ public:
   CGUIWindowAddonBrowser(void);
   virtual ~CGUIWindowAddonBrowser(void);
   virtual bool OnMessage(CGUIMessage& message);
-//  virtual bool OnAction(const CAction &action);
 
   /*! \brief Popup a selection dialog with a list of addons of the given type
    \param type the type of addon wanted
    \param addonID [in/out] the addon ID of the (pre) selected item
    \param showNone whether there should be a "None" item in the list (defaults to false)
-   \return 1 if an addon was selected, 2 if "Get More" was chosen, or 0 if an error occurred or if the selection process was cancelled
+   \param showDetails whether to show details of the addons or not
+   \param showInstalled whether installed addons should be in the list
+   \param showInstallable whether installable addons should be in the list
+   \param showMore whether to show the "Get More" button (only makes sense if showInstalled is true and showInstallable is false)
+   \return 1 if an addon was selected or multiple selection was specified, 2 if "Get More" was chosen, 0 if the selection process was cancelled or -1 if an error occurred or
    */
-  static int SelectAddonID(ADDON::TYPE type, std::string &addonID, bool showNone = false);
-  static int SelectAddonID(const std::vector<ADDON::TYPE> &types, std::string &addonID, bool showNone = false);
+  static int SelectAddonID(ADDON::TYPE type, std::string &addonID, bool showNone = false, bool showDetails = true, bool showInstalled = true, bool showInstallable = false, bool showMore = true);
+  static int SelectAddonID(const std::vector<ADDON::TYPE> &types, std::string &addonID, bool showNone = false, bool showDetails = true, bool showInstalled = true, bool showInstallable = false, bool showMore = true);
   /*! \brief Popup a selection dialog with a list of addons of the given type
    \param type the type of addon wanted
    \param addonIDs [in/out] array of (pre) selected addon IDs
    \param showNone whether there should be a "None" item in the list (defaults to false)
+   \param showDetails whether to show details of the addons or not
    \param multipleSelection allow selection of multiple addons, if set to true showNone will automaticly switch to false
-   \return 1 if an addon was selected or multiple selection was specified, 2 if "Get More" was chosen, or 0 if an error occurred or if the selection process was cancelled
+   \param showInstalled whether installed addons should be in the list
+   \param showInstallable whether installable addons should be in the list
+   \param showMore whether to show the "Get More" button (only makes sense if showInstalled is true and showInstallable is false)
+   \return 1 if an addon was selected or multiple selection was specified, 2 if "Get More" was chosen, 0 if the selection process was cancelled or -1 if an error occurred or
    */
-  static int SelectAddonID(ADDON::TYPE type, std::vector<std::string> &addonIDs, bool showNone = false, bool multipleSelection = true);
-  static int SelectAddonID(const std::vector<ADDON::TYPE> &types, std::vector<std::string> &addonIDs, bool showNone = false, bool multipleSelection = true);
+  static int SelectAddonID(ADDON::TYPE type, std::vector<std::string> &addonIDs, bool showNone = false, bool showDetails = true, bool multipleSelection = true, bool showInstalled = true, bool showInstallable = false, bool showMore = true);
+  static int SelectAddonID(const std::vector<ADDON::TYPE> &types, std::vector<std::string> &addonIDs, bool showNone = false, bool showDetails = true, bool multipleSelection = true, bool showInstalled = true, bool showInstallable = false, bool showMore = true);
 
-  static void InstallFromZip();
+  bool UseFileDirectories() { return false; }
 
 protected:
-  /* \brief set label2 of an item based on the Addon.Status property
-   \param item the item to update
-   */
-  void SetItemLabel2(CFileItemPtr item);
-
-  virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
-  virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
-  virtual bool OnClick(int iItem);
+  virtual bool OnClick(int iItem, const std::string &player = "");
   virtual void UpdateButtons();
-  virtual bool GetDirectory(const CStdString &strDirectory, CFileItemList &items);
-  virtual bool Update(const CStdString &strDirectory);
-  virtual CStdString GetStartFolder(const CStdString &dir);
+  virtual bool GetDirectory(const std::string &strDirectory, CFileItemList &items);
+  virtual bool Update(const std::string &strDirectory, bool updateFilterPath = true);
+  virtual std::string GetStartFolder(const std::string &dir);
+
+  std::string GetRootPath() const { return "addons://"; }
+
 private:
+  void SetProperties();
+  void UpdateStatus(const CFileItemPtr& item);
+  void OnEvent(const ADDON::CRepositoryUpdater::RepositoryUpdated& event);
+  void OnEvent(const ADDON::AddonEvent& event);
   CProgramThumbLoader m_thumbLoader;
 };
+

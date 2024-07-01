@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2005-2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,30 +13,33 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
+#include "system.h"
 #include "Visualisation.h"
-#include "utils/fft.h"
 #include "GUIInfoManager.h"
 #include "Application.h"
 #include "guilib/GraphicContext.h"
 #include "guilib/Key.h"
 #include "music/tags/MusicInfoTag.h"
-#include "settings/DisplaySettings.h"
 #include "settings/AdvancedSettings.h"
-#include "settings/DisplaySettings.h"
+#include "settings/Settings.h"
+#include "utils/URIUtils.h"
+#include "utils/StringUtils.h"
+#ifdef TARGET_POSIX
+#include <dlfcn.h>
+#include "filesystem/SpecialProtocol.h"
+#endif
 
-using namespace std;
 using namespace MUSIC_INFO;
 using namespace ADDON;
 
 CAudioBuffer::CAudioBuffer(int iSize)
 {
   m_iLen = iSize;
-  m_pBuffer = new short[iSize];
+  m_pBuffer = new float[iSize];
 }
 
 CAudioBuffer::~CAudioBuffer()
@@ -44,67 +47,46 @@ CAudioBuffer::~CAudioBuffer()
   delete [] m_pBuffer;
 }
 
-const short* CAudioBuffer::Get() const
+const float* CAudioBuffer::Get() const
 {
   return m_pBuffer;
 }
 
-void CAudioBuffer::Set(const unsigned char* psBuffer, int iSize, int iBitsPerSample)
+void CAudioBuffer::Set(const float* psBuffer, int iSize)
 {
   if (iSize<0)
-  {
     return;
-  }
-
-  if (iBitsPerSample == 16)
-  {
-    iSize /= 2;
-    for (int i = 0; i < iSize && i < m_iLen; i++)
-    { // 16 bit -> convert to short directly
-      m_pBuffer[i] = ((short *)psBuffer)[i];
-    }
-  }
-  else if (iBitsPerSample == 8)
-  {
-    for (int i = 0; i < iSize && i < m_iLen; i++)
-    { // 8 bit -> convert to signed short by multiplying by 256
-      m_pBuffer[i] = ((short)((char *)psBuffer)[i]) << 8;
-    }
-  }
-  else // assume 24 bit data
-  {
-    iSize /= 3;
-    for (int i = 0; i < iSize && i < m_iLen; i++)
-    { // 24 bit -> ignore least significant byte and convert to signed short
-      m_pBuffer[i] = (((int)psBuffer[3 * i + 1]) << 0) + (((int)((char *)psBuffer)[3 * i + 2]) << 8);
-    }
-  }
-  for (int i = iSize; i < m_iLen;++i) m_pBuffer[i] = 0;
+  memcpy(m_pBuffer, psBuffer, iSize * sizeof(float));
+  for (int i = iSize; i < m_iLen; ++i) m_pBuffer[i] = 0;
 }
 
-bool CVisualisation::Create(int x, int y, int w, int h)
+bool CVisualisation::Create(int x, int y, int w, int h, void *device)
 {
   m_pInfo = new VIS_PROPS;
+#ifdef HAS_XBOX_D3D
   m_pInfo->device     = g_graphicsContext.Get3DDevice();
+#else
+  m_pInfo->device     = NULL;
+#endif
   m_pInfo->x = x;
   m_pInfo->y = y;
   m_pInfo->width = w;
   m_pInfo->height = h;
-  m_pInfo->pixelRatio = CDisplaySettings::Get().GetResolutionInfo(g_graphicsContext.GetVideoResolution()).fPixelRatio;
+  m_pInfo->pixelRatio = g_graphicsContext.GetResInfo().fPixelRatio;
 
   m_pInfo->name = strdup(Name().c_str());
   m_pInfo->presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
   m_pInfo->profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
   m_pInfo->submodule = NULL;
 
-  if (CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::Create())
+  if (CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::Create() == ADDON_STATUS_OK)
   {
     // Start the visualisation
-    CStdString strFile = URIUtils::GetFileName(g_application.CurrentFile());
+    std::string strFile = URIUtils::GetFileName(g_application.CurrentFile());
     CLog::Log(LOGDEBUG, "Visualisation::Start()\n");
     try
     {
-      m_pStruct->Start(m_iChannels, m_iSamplesPerSec, m_iBitsPerSample, strFile);
+      m_pStruct->Start(m_iChannels, m_iSamplesPerSec, m_iBitsPerSample, strFile.c_str());
     }
     catch (std::exception e)
     {
@@ -112,7 +94,7 @@ bool CVisualisation::Create(int x, int y, int w, int h)
       return false;
     }
 
-    GetPresets();
+    m_hasPresets = GetPresets();
 
     if (GetSubModules())
       m_pInfo->submodule = strdup(CSpecialProtocol::TranslatePath(m_submodules.front()).c_str());
@@ -129,7 +111,7 @@ bool CVisualisation::Create(int x, int y, int w, int h)
   return false;
 }
 
-void CVisualisation::Start(int iChannels, int iSamplesPerSec, int iBitsPerSample, const CStdString strSongName)
+void CVisualisation::Start(int iChannels, int iSamplesPerSec, int iBitsPerSample, const std::string &strSongName)
 {
   // notify visz. that new song has been started
   // pass it the nr of audio channels, sample rate, bits/sample and offcourse the songname
@@ -146,7 +128,7 @@ void CVisualisation::Start(int iChannels, int iSamplesPerSec, int iBitsPerSample
   }
 }
 
-void CVisualisation::AudioData(const short* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
+void CVisualisation::AudioData(const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
 {
   // pass audio data to visz.
   // audio data: is short audiodata [channel][iAudioDataLength] containing the raw audio data
@@ -223,19 +205,23 @@ bool CVisualisation::OnAction(VIS_ACTION action, void *param)
       if ( action == VIS_ACTION_UPDATE_TRACK && param )
       {
         const CMusicInfoTag* tag = (const CMusicInfoTag*)param;
+        std::string artist(tag->GetArtistString());
+        std::string albumArtist(tag->GetAlbumArtistString());
+        std::string genre(StringUtils::Join(tag->GetGenre(), g_advancedSettings.m_musicItemSeparator));
+
         VisTrack track;
         track.title       = tag->GetTitle().c_str();
-        track.artist      = StringUtils::Join(tag->GetArtist(), g_advancedSettings.m_musicItemSeparator).c_str();
+        track.artist      = artist.c_str();
         track.album       = tag->GetAlbum().c_str();
-        track.albumArtist = StringUtils::Join(tag->GetAlbumArtist(), g_advancedSettings.m_musicItemSeparator).c_str();
-        track.genre       = StringUtils::Join(tag->GetGenre(), g_advancedSettings.m_musicItemSeparator).c_str();
+        track.albumArtist = albumArtist.c_str();
+        track.genre       = genre.c_str();
         track.comment     = tag->GetComment().c_str();
         track.lyrics      = tag->GetLyrics().c_str();
         track.trackNumber = tag->GetTrackNumber();
         track.discNumber  = tag->GetDiscNumber();
         track.duration    = tag->GetDuration();
         track.year        = tag->GetYear();
-        track.rating      = tag->GetRating();
+        track.rating      = tag->GetUserrating();
 
         return m_pStruct->OnAction(action, &track);
       }
@@ -263,7 +249,7 @@ void CVisualisation::OnInitialize(int iChannels, int iSamplesPerSec, int iBitsPe
   CLog::Log(LOGDEBUG, "OnInitialize() done");
 }
 
-void CVisualisation::OnAudioData(const unsigned char* pAudioData, int iAudioDataLength)
+void CVisualisation::OnAudioData(const float* pAudioData, int iAudioDataLength)
 {
   if (!m_pStruct)
     return ;
@@ -273,41 +259,30 @@ void CVisualisation::OnAudioData(const unsigned char* pAudioData, int iAudioData
     return;
 
   // Save our audio data in the buffers
-  auto_ptr<CAudioBuffer> pBuffer ( new CAudioBuffer(2*AUDIO_BUFFER_SIZE) );
-  pBuffer->Set(pAudioData, iAudioDataLength, m_iBitsPerSample);
+  boost::movelib::unique_ptr<CAudioBuffer> pBuffer ( new CAudioBuffer(iAudioDataLength) );
+  pBuffer->Set(pAudioData, iAudioDataLength);
   m_vecBuffers.push_back( pBuffer.release() );
 
   if ( (int)m_vecBuffers.size() < m_iNumBuffers) return ;
 
-  auto_ptr<CAudioBuffer> ptrAudioBuffer ( m_vecBuffers.front() );
+  boost::movelib::unique_ptr<CAudioBuffer> ptrAudioBuffer ( m_vecBuffers.front() );
   m_vecBuffers.pop_front();
   // Fourier transform the data if the vis wants it...
   if (m_bWantsFreq)
   {
-    // Convert to floats
-    const short* psAudioData = ptrAudioBuffer->Get();
-    for (int i = 0; i < 2*AUDIO_BUFFER_SIZE; i++)
-    {
-      m_fFreq[i] = (float)psAudioData[i];
-    }
+    const float *psAudioData = ptrAudioBuffer->Get();
 
-    // FFT the data
-    twochanwithwindow(m_fFreq, AUDIO_BUFFER_SIZE);
+    if (!m_transform)
+      m_transform.reset(new RFFT(AUDIO_BUFFER_SIZE/2, false)); // half due to stereo
 
-    // Normalize the data
-    float fMinData = (float)AUDIO_BUFFER_SIZE * AUDIO_BUFFER_SIZE * 3 / 8 * 0.5 * 0.5; // 3/8 for the Hann window, 0.5 as minimum amplitude
-    float fInvMinData = 1.0f/fMinData;
-    for (int i = 0; i < AUDIO_BUFFER_SIZE + 2; i++)
-    {
-      m_fFreq[i] *= fInvMinData;
-    }
+    m_transform->calc(psAudioData, m_fFreq);
 
     // Transfer data to our visualisation
-    AudioData(ptrAudioBuffer->Get(), AUDIO_BUFFER_SIZE, m_fFreq, AUDIO_BUFFER_SIZE);
+    AudioData(psAudioData, iAudioDataLength, m_fFreq, AUDIO_BUFFER_SIZE/2); // half due to complex-conjugate
   }
   else
   { // Transfer data to our visualisation
-    AudioData(ptrAudioBuffer->Get(), AUDIO_BUFFER_SIZE, NULL, 0);
+    AudioData(ptrAudioBuffer->Get(), iAudioDataLength, NULL, 0);
   }
   return ;
 }
@@ -332,13 +307,13 @@ void CVisualisation::ClearBuffers()
   m_bWantsFreq = false;
   m_iNumBuffers = 0;
 
-  while (m_vecBuffers.size() > 0)
+  while (!m_vecBuffers.empty())
   {
     CAudioBuffer* pAudioBuffer = m_vecBuffers.front();
     delete pAudioBuffer;
     m_vecBuffers.pop_front();
   }
-  for (int j = 0; j < AUDIO_BUFFER_SIZE*2; j++)
+  for (int j = 0; j < AUDIO_BUFFER_SIZE; j++)
   {
     m_fFreq[j] = 0.0f;
   }
@@ -371,7 +346,7 @@ bool CVisualisation::UpdateTrack()
   return handled;
 }
 
-bool CVisualisation::GetPresetList(std::vector<CStdString> &vecpresets)
+bool CVisualisation::GetPresetList(std::vector<std::string> &vecpresets)
 {
   vecpresets = m_presets;
   return !m_presets.empty();
@@ -404,7 +379,7 @@ bool CVisualisation::GetPresets()
   return (!m_presets.empty());
 }
 
-bool CVisualisation::GetSubModuleList(std::vector<CStdString> &vecmodules)
+bool CVisualisation::GetSubModuleList(std::vector<std::string> &vecmodules)
 {
   vecmodules = m_submodules;
   return !m_submodules.empty();
@@ -437,11 +412,11 @@ bool CVisualisation::GetSubModules()
   return (!m_submodules.empty());
 }
 
-CStdString CVisualisation::GetFriendlyName(const CStdString& strVisz,
-                                           const CStdString& strSubModule)
+std::string CVisualisation::GetFriendlyName(const std::string& strVisz,
+                                            const std::string& strSubModule)
 {
   // should be of the format "moduleName (visName)"
-  return CStdString(strSubModule + " (" + strVisz + ")");
+  return strSubModule + " (" + strVisz + ")";
 }
 
 bool CVisualisation::IsLocked()
@@ -487,7 +462,7 @@ unsigned CVisualisation::GetPreset()
   return index;
 }
 
-CStdString CVisualisation::GetPresetName()
+std::string CVisualisation::GetPresetName()
 {
   if (!m_presets.empty())
     return m_presets[GetPreset()];
@@ -495,3 +470,7 @@ CStdString CVisualisation::GetPresetName()
     return "";
 }
 
+bool CVisualisation::IsInUse() const
+{
+  return CSettings::Get().GetString("musicplayer.visualisation") == ID();
+}

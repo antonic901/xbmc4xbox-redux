@@ -21,6 +21,7 @@
 #include "utils/log.h"
 #include "FLACcodec.h"
 #include "music/tags/FlacTag.h"
+#include "filesystem/IFileTypes.h"
 
 using namespace MUSIC_INFO;
 
@@ -51,7 +52,7 @@ bool FLACCodec::Init(const CStdString &strFile, unsigned int filecache)
   if (!m_dll.Load())
     return false;
 
-  if (!m_file.Open(strFile, READ_CACHED))
+  if (!m_file.Open(strFile, XFILE::READ_CACHED))
     return false;
 
   m_pFlacDecoder=m_dll.FLAC__stream_decoder_new();

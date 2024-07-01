@@ -57,7 +57,7 @@ bool CResourceFile::TranslatePath(const CURL &url, std::string &translatedPath)
     return false;
 
   AddonPtr addon;
-  if (!CAddonMgr::Get().GetAddon(addonId, addon, ADDON_UNKNOWN, true) || addon == NULL)
+  if (!CAddonMgr::GetInstance().GetAddon(addonId, addon, ADDON_UNKNOWN, true) || addon == NULL)
     return false;
 
   boost::shared_ptr<CResource> resource = boost::dynamic_pointer_cast<ADDON::CResource>(addon);

@@ -263,7 +263,7 @@ CFileItemPtr CGUIWindowLoginScreen::GetCurrentListItem(int offset)
 void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
 {
   // stop service addons and give it some time before we start it again
-  ADDON::CAddonMgr::Get().StopServices(true);
+  ADDON::CAddonMgr::GetInstance().StopServices(true);
 
   if (profile != 0 || !CProfilesManager::Get().IsMasterProfile())
   {
@@ -293,7 +293,7 @@ void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
   }
 
   // reload the add-ons, or we will first load all add-ons from the master account without checking disabled status
-  ADDON::CAddonMgr::Get().ReInit();
+  ADDON::CAddonMgr::GetInstance().ReInit();
 
   // let CApplication know that we are logging into a new profile
   g_application.SetLoggingIn(true);
@@ -311,7 +311,7 @@ void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
 #endif
 
   // start services which should run on login
-  ADDON::CAddonMgr::Get().StartServices(false);
+  ADDON::CAddonMgr::GetInstance().StartServices(false);
 
   int firstWindow = g_SkinInfo->GetFirstWindow();
   // the startup window is considered part of the initialization as it most likely switches to the final window

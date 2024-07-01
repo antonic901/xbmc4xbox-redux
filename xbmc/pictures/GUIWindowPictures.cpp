@@ -444,7 +444,7 @@ void CGUIWindowPictures::GetContextButtons(int itemNumber, CContextButtons &butt
   if (itemNumber >= 0 && itemNumber < m_vecItems->Size())
     item = m_vecItems->Get(itemNumber);
 
-  if (item && !item->GetProperty("pluginreplacecontextitems").asBoolean())
+  if (item)
   {
     if ( m_vecItems->IsVirtualDirectoryRoot() || m_vecItems->GetPath() == "sources://pictures/" )
     {
@@ -471,9 +471,7 @@ void CGUIWindowPictures::GetContextButtons(int itemNumber, CContextButtons &butt
         }
       }
 
-      if (item->IsPlugin() || item->IsScript() || m_vecItems->IsPlugin())
-        buttons.Add(CONTEXT_BUTTON_PLUGIN_SETTINGS, 1045);
-      else
+      if (!item->IsPlugin() && !item->IsScript() && !m_vecItems->IsPlugin())
       {
         buttons.Add(CONTEXT_BUTTON_GOTO_ROOT, 20128);
         buttons.Add(CONTEXT_BUTTON_SWITCH_MEDIA, 523);
@@ -481,8 +479,6 @@ void CGUIWindowPictures::GetContextButtons(int itemNumber, CContextButtons &butt
     }
   }
   CGUIMediaWindow::GetContextButtons(itemNumber, buttons);
-  if (item && !item->GetProperty("pluginreplacecontextitems").asBoolean())
-    buttons.Add(CONTEXT_BUTTON_SETTINGS, 5);                  // Settings
 }
 
 bool CGUIWindowPictures::OnContextButton(int itemNumber, CONTEXT_BUTTON button)

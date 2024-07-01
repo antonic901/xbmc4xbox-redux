@@ -58,8 +58,6 @@
 #include "interfaces/python/PythonInvoker.h"
 
 #ifdef _XBOX
-XBPython g_pythonParser;
-
 #define PYTHON_DLL "special://xbmc/system/python/python27.dll"
 #endif
 

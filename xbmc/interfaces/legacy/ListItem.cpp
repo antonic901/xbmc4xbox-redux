@@ -573,27 +573,32 @@ namespace XBMCAddon
     void ListItem::addContextMenuItems(const std::vector<Tuple<String,String> >& items, bool replaceItems /* = false */)
       throw (ListItemException)
     {
-      int itemCount = 0;
-      for (std::vector<Tuple<String,String> >::const_iterator iter = items.begin(); iter < items.end(); ++iter, ++itemCount)
+      for (int i = 0; i < items.size(); ++i)
       {
         const Tuple<String, StringOrInt> &tuple = items[i];
         if (tuple.GetNumValuesSet() != 2)
           throw ListItemException("Must pass in a list of tuples of pairs of strings. One entry in the list only has %d elements.",tuple.GetNumValuesSet());
-        std::string uText = tuple.first();
-        std::string uAction = tuple.second();
 
         LOCKGUI;
-        String property;
-        property = StringUtils::Format("contextmenulabel(%i)", itemCount);
-        item->SetProperty(property, uText);
-
-        property = StringUtils::Format("contextmenuaction(%i)", itemCount);
-        item->SetProperty(property, uAction);
+        item->SetProperty(StringUtils::Format("contextmenulabel(%i)", i), tuple.first());
+        item->SetProperty(StringUtils::Format("contextmenuaction(%i)", i), tuple.second());
       }
+    }
 
-      // set our replaceItems status
-      if (replaceItems)
-        item->SetProperty("pluginreplacecontextitems", replaceItems);
-    } // end addContextMenuItems
+    xbmc::InfoTagVideo* ListItem::getVideoInfoTag()
+    {
+      LOCKGUI;
+      if (item->HasVideoInfoTag())
+        return new xbmc::InfoTagVideo(*item->GetVideoInfoTag());
+      return new xbmc::InfoTagVideo();
+    }
+
+    xbmc::InfoTagMusic* ListItem::getMusicInfoTag()
+    {
+      LOCKGUI;
+      if (item->HasMusicInfoTag())
+        return new xbmc::InfoTagMusic(*item->GetMusicInfoTag());
+      return new xbmc::InfoTagMusic();
+    }
   }
 }

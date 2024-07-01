@@ -188,11 +188,25 @@ bool CPythonInvoker::execute(const std::string &script, const std::vector<std::s
   URIUtils::RemoveSlashAtEnd(scriptDir);
   addPath(scriptDir);
 
-  // add on any addon modules the user has installed
-  ADDON::VECADDONS addons;
-  ADDON::CAddonMgr::Get().GetAddons(ADDON::ADDON_SCRIPT_MODULE, addons);
-  for (unsigned int i = 0; i < addons.size(); ++i)
-    addPath(CSpecialProtocol::TranslatePath(addons[i]->LibPath()));
+  // add all addon module dependecies to path
+  if (m_addon)
+  {
+    std::set<std::string> paths;
+    getAddonModuleDeps(m_addon, paths);
+    for (std::set<std::string>::const_iterator it = paths.begin(); it != paths.end(); ++it)
+      addPath(*it);
+  }
+  else
+  { // for backwards compatibility.
+    // we don't have any addon so just add all addon modules installed
+    CLog::Log(LOGWARNING, "CPythonInvoker(%d): Script invoked without an addon. Adding all addon "
+        "modules installed to python path as fallback. This behaviour will be removed in future "
+        "version.", GetId());
+    ADDON::VECADDONS addons;
+    ADDON::CAddonMgr::GetInstance().GetAddons(addons, ADDON::ADDON_SCRIPT_MODULE);
+    for (unsigned int i = 0; i < addons.size(); ++i)
+      addPath(CSpecialProtocol::TranslatePath(addons[i]->LibPath()));
+  }
 
   // we want to use sys.path so it includes site-packages
   // if this fails, default to using Py_GetPath
@@ -622,6 +636,26 @@ bool CPythonInvoker::initializeModule(PythonModuleInitialization module)
 
   module();
   return true;
+}
+
+void CPythonInvoker::getAddonModuleDeps(const ADDON::AddonPtr& addon, std::set<std::string>& paths)
+{
+  ADDON::ADDONDEPS deps = addon->GetDeps();
+  for (ADDON::ADDONDEPS::const_iterator it = deps.begin(); it != deps.end(); ++it)
+  {
+    //Check if dependency is a module addon
+    ADDON::AddonPtr dependency;
+    if (ADDON::CAddonMgr::GetInstance().GetAddon(it->first, dependency, ADDON::ADDON_SCRIPT_MODULE))
+    {
+      std::string path = CSpecialProtocol::TranslatePath(dependency->LibPath());
+      if (paths.find(path) == paths.end())
+      {
+        // add it and its dependencies
+        paths.insert(path);
+        getAddonModuleDeps(dependency, paths);
+      }
+    }
+  }
 }
 
 void CPythonInvoker::addPath(const std::string& path)

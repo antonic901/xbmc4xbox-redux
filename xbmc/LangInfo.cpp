@@ -22,10 +22,10 @@
 #include "Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "FileItem.h"
-#include "Util.h"
 #include "addons/AddonInstaller.h"
 #include "addons/AddonManager.h"
 #include "addons/LanguageResource.h"
+#include "addons/RepositoryUpdater.h"
 #include "filesystem/Directory.h"
 #include "guilib/LocalizeStrings.h"
 #include "settings/AdvancedSettings.h"
@@ -174,7 +174,7 @@ void CLangInfo::CRegion::SetGlobalLocale()
   {
     g_langInfo.m_originalLocale = std::locale(strLocale.c_str());
   }
-  catch (std::runtime_error) 
+  catch (std::runtime_error)
   {
     CLog::Log(LOGERROR, "failed to set m_originalLocale to %s", strLocale.c_str());
     g_langInfo.m_originalLocale = std::locale("");
@@ -455,7 +455,7 @@ void CLangInfo::SetDefaults()
   m_strDVDAudioLanguage = "en";
   m_strDVDSubtitleLanguage = "en";
   m_sortTokens.clear();
-  
+
   m_languageCodeGeneral = "eng";
 }
 
@@ -488,7 +488,7 @@ LanguageResourcePtr CLangInfo::GetLanguageAddon(const std::string& locale /* = "
     addonId = CSettings::Get().GetString("locale.language");
 
   ADDON::AddonPtr addon;
-  if (ADDON::CAddonMgr::Get().GetAddon(addonId, addon, ADDON::ADDON_RESOURCE_LANGUAGE, true) && addon != NULL)
+  if (ADDON::CAddonMgr::GetInstance().GetAddon(addonId, addon, ADDON::ADDON_RESOURCE_LANGUAGE, true) && addon != NULL)
     return boost::dynamic_pointer_cast<ADDON::CLanguageResource>(addon);
 
   return LanguageResourcePtr();
@@ -508,6 +508,8 @@ bool CLangInfo::SetLanguage(const std::string &strLanguage /* = "" */, bool relo
   bool fallback;
   return SetLanguage(fallback, strLanguage, reloadServices);
 }
+
+bool isNotLanguageAddon(const ADDON:: AddonPtr& addon) { return !addon->IsType(ADDON::ADDON_RESOURCE_LANGUAGE); }
 
 bool CLangInfo::SetLanguage(bool& fallback, const std::string &strLanguage /* = "" */, bool reloadServices /* = true */)
 {
@@ -544,15 +546,18 @@ bool CLangInfo::SetLanguage(bool& fallback, const std::string &strLanguage /* = 
       if (addondb.Open())
       {
         // update the addon repositories to check if there's a matching language addon available for download
-        CAddonInstaller::Get().UpdateRepos(true, true);
+        if (ADDON::CRepositoryUpdater::GetInstance().CheckForUpdates())
+          ADDON::CRepositoryUpdater::GetInstance().Await();
 
         ADDON::VECADDONS languageAddons;
-        if (addondb.GetAddons(languageAddons, ADDON::ADDON_RESOURCE_LANGUAGE) && !languageAddons.empty())
+        if (addondb.GetRepositoryContent(languageAddons) && !languageAddons.empty())
         {
+          languageAddons.erase(std::remove_if(languageAddons.begin(), languageAddons.end(),
+            isNotLanguageAddon), languageAddons.end());
           // try to get the proper language addon by its name from all available language addons
           if (ADDON::CLanguageResource::FindLanguageAddonByName(language, newLanguage, languageAddons))
           {
-            if (CAddonInstaller::Get().Install(newLanguage, true, "", false, false))
+            if (CAddonInstaller::GetInstance().InstallOrUpdate(newLanguage, false, false))
             {
               CLog::Log(LOGINFO, "CLangInfo: successfully installed language addon \"%s\" matching current language \"%s\"", newLanguage.c_str(), language.c_str());
               foundMatchingAddon = true;
@@ -597,6 +602,18 @@ bool CLangInfo::SetLanguage(bool& fallback, const std::string &strLanguage /* = 
   {
     CLog::Log(LOGFATAL, "CLangInfo: failed to load %s language strings", language.c_str());
     return false;
+  }
+
+  ADDON::VECADDONS addons;
+  if (ADDON::CAddonMgr::GetInstance().GetInstalledAddons(addons))
+  {
+    std::string locale = CSettings::Get().GetString("locale.language");
+    for (ADDON::VECADDONS::const_iterator it = addons.begin(); it != addons.end(); ++it)
+    {
+      const ADDON::AddonPtr &addon = *it;
+      std::string path = URIUtils::AddFileToFolder(addon->Path(), "resources/language/");
+      g_localizeStrings.LoadAddonStrings(path, locale, addon->ID());
+    }
   }
 
   if (reloadServices)
@@ -656,7 +673,7 @@ const std::string CLangInfo::GetDVDMenuLanguage() const
   std::string code;
   if (!g_LangCodeExpander.ConvertToTwoCharCode(code, m_currentRegion->m_strLangLocaleName))
     code = m_strDVDMenuLanguage;
-  
+
   return code;
 }
 
@@ -666,7 +683,7 @@ const std::string CLangInfo::GetDVDAudioLanguage() const
   std::string code;
   if (!g_LangCodeExpander.ConvertToTwoCharCode(code, m_audioLanguage))
     code = m_strDVDAudioLanguage;
-  
+
   return code;
 }
 
@@ -676,7 +693,7 @@ const std::string CLangInfo::GetDVDSubtitleLanguage() const
   std::string code;
   if (!g_LangCodeExpander.ConvertToTwoCharCode(code, m_subtitleLanguage))
     code = m_strDVDSubtitleLanguage;
-  
+
   return code;
 }
 
@@ -792,7 +809,7 @@ void CLangInfo::SettingOptionsLanguageNamesFiller(const CSetting *setting, std::
 {
   // find languages...
   ADDON::VECADDONS addons;
-  if (!ADDON::CAddonMgr::Get().GetAddons(ADDON::ADDON_RESOURCE_LANGUAGE, addons, true))
+  if (!ADDON::CAddonMgr::GetInstance().GetAddons(addons, ADDON::ADDON_RESOURCE_LANGUAGE))
     return;
 
   for (ADDON::VECADDONS::const_iterator addon = addons.begin(); addon != addons.end(); ++addon)

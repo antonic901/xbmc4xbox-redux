@@ -36,7 +36,8 @@
 #include "AddonString.h"
 #include "Tuple.h"
 #include "commons/Exception.h"
-
+#include "InfoTagVideo.h"
+#include "InfoTagMusic.h"
 
 namespace XBMCAddon
 {
@@ -279,7 +280,7 @@ namespace XBMCAddon
        * items               : list - [(label, action,)*] A list of tuples consisting of label and action pairs.
        *   - label           : string or unicode - item's label.
        *   - action          : string or unicode - any built-in function to perform.
-       * replaceItems        : [opt] bool - True=only your items will show/False=your items will be added to context menu(Default).
+       * replaceItems        : [opt] bool - Deprecated.
        * \n
        * List of functions - http://wiki.xbmc.org/?title=List_of_Built_In_Functions \n
        * \n
@@ -388,6 +389,16 @@ namespace XBMCAddon
        * getfilename() -- Returns the filename of this PlayListItem.\n
        */
       String getfilename();
+
+      /**
+       * getVideoInfoTag() -- returns the VideoInfoTag for this item.
+       */
+      xbmc::InfoTagVideo* getVideoInfoTag();
+
+      /**
+       * getMusicInfoTag() -- returns the MusicInfoTag for this item.
+       */
+      xbmc::InfoTagMusic* getMusicInfoTag();
     };
 
     typedef std::vector<ListItem*> ListItemList;

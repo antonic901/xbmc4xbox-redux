@@ -136,6 +136,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     bool m_guiKeepInMemory;
     bool m_guiVisualizeDirtyRegions;
     int  m_guiAlgorithmDirtyRegions;
+    unsigned int m_addonPackageFolderSize;
 
     unsigned int m_cacheMemSize;
     unsigned int m_cacheBufferMode;

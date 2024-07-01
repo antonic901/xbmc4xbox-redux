@@ -83,7 +83,7 @@ using namespace XFILE;
 #define LOCALIZED_TOKEN_FIRSTID   370
 #define LOCALIZED_TOKEN_LASTID   395
 #define LOCALIZED_TOKEN_FIRSTID2 1396
-#define LOCALIZED_TOKEN_LASTID2   1450 
+#define LOCALIZED_TOKEN_LASTID2   1450
 /*
 FIXME'S
 >strings are not centered
@@ -453,7 +453,7 @@ void CWeatherJob::LocalizeDay(std::string &day)
 void CWeatherJob::LoadLocalizedToken()
 {
   // We load the english strings in to get our tokens
-  std::string language = CORE_LANGUAGE_DEFAULT;
+  std::string language = LANGUAGE_DEFAULT;
   CSettingString* languageSetting = static_cast<CSettingString*>(CSettings::Get().GetSetting("locale.language"));
   if (languageSetting != NULL)
     language = languageSetting->GetDefault();
@@ -494,7 +494,7 @@ void CWeatherJob::LoadLocalizedToken()
 
   // We load the tokens from the strings.xml file
   CStdString strLanguagePath = URIUtils::AddFileToFolder(CLangInfo::GetLanguagePath(language), "strings.xml");
-  
+
   CXBMCTinyXML xmlDoc;
   if (!xmlDoc.LoadFile(strLanguagePath) || !xmlDoc.RootElement())
   {
@@ -794,7 +794,7 @@ void CWeather::OnSettingAction(const CSetting *setting)
   if (settingId == "weather.addonsettings")
   {
     AddonPtr addon;
-    if (CAddonMgr::Get().GetAddon(CSettings::Get().GetString("weather.addon"), addon, ADDON_SCRIPT_WEATHER) && addon != NULL)
+    if (CAddonMgr::GetInstance().GetAddon(CSettings::Get().GetString("weather.addon"), addon, ADDON_SCRIPT_WEATHER) && addon != NULL)
     { // TODO: maybe have ShowAndGetInput return a bool if settings changed, then only reset weather if true.
       CGUIDialogAddonSettings::ShowAndGetInput(addon);
       Refresh();

@@ -52,6 +52,8 @@ public:
 
   static CVariant Parse(const unsigned char *json, unsigned int length);
 
+  static CVariant Parse(const std::string& json);
+
 private:
   static CVariant ConvertJsonValueToCVariant(const Json::Value &jsonValue);
 

@@ -24,6 +24,7 @@
 #include <utility>
 
 #include "addons/AddonManager.h"
+#include "addons/AddonSystemSettings.h"
 #include "addons/Scraper.h"
 #include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "dialogs/GUIDialogProgress.h"
@@ -789,10 +790,10 @@ int CMusicInfoScanner::RetrieveMusicInfo(const std::string& strDirectory, CFileI
   ADDON::AddonPtr addon;
   ADDON::ScraperPtr albumScraper;
   ADDON::ScraperPtr artistScraper;
-  if(ADDON::CAddonMgr::Get().GetDefault(ADDON::ADDON_SCRAPER_ALBUMS, addon))
+  if(ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::ADDON_SCRAPER_ALBUMS, addon))
     albumScraper = boost::dynamic_pointer_cast<ADDON::CScraper>(addon);
 
-  if(ADDON::CAddonMgr::Get().GetDefault(ADDON::ADDON_SCRAPER_ARTISTS, addon))
+  if(ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::ADDON_SCRAPER_ARTISTS, addon))
     artistScraper = boost::dynamic_pointer_cast<ADDON::CScraper>(addon);
 
   // Add each album

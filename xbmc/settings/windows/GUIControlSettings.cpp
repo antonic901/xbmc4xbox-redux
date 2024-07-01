@@ -603,7 +603,7 @@ void CGUIControlButtonSetting::Update(bool updateDisplayOnly /* = false */)
       if (controlFormat == "addon")
       {
         ADDON::AddonPtr addon;
-        if (ADDON::CAddonMgr::Get().GetAddon(strValue, addon))
+        if (ADDON::CAddonMgr::GetInstance().GetAddon(strValue, addon))
           strText = addon->Name();
         if (strText.empty())
           strText = g_localizeStrings.Get(231); // None

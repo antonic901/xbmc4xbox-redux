@@ -27,11 +27,6 @@
 namespace ADDON
 {
 
-AddonPtr CUISoundsResource::Clone() const
-{
-  return AddonPtr(new CUISoundsResource(*this));
-}
-
 bool CUISoundsResource::IsAllowed(const std::string& file) const
 {
   return StringUtils::EqualsNoCase(file, "sounds.xml")
@@ -43,7 +38,7 @@ bool CUISoundsResource::IsInUse() const
   return CSettings::Get().GetString("lookandfeel.soundskin") == ID();
 }
 
-void CUISoundsResource::OnPostInstall(bool restart, bool update, bool modal)
+void CUISoundsResource::OnPostInstall(bool update, bool modal)
 {
   if (IsInUse())
     g_audioManager.Load();

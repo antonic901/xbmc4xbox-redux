@@ -566,7 +566,16 @@ const infomap listitem_labels[]= {{ "thumb",            LISTITEM_THUMB },
                                   { "discnumber",       LISTITEM_DISC_NUMBER },
                                   { "dateadded",        LISTITEM_DATE_ADDED },
                                   { "dbtype",           LISTITEM_DBTYPE },
-                                  { "dbid",             LISTITEM_DBID }};
+                                  { "dbid",             LISTITEM_DBID },
+                                  { "addonname",        LISTITEM_ADDON_NAME },
+                                  { "addonversion",     LISTITEM_ADDON_VERSION },
+                                  { "addoncreator",     LISTITEM_ADDON_CREATOR },
+                                  { "addonsummary",     LISTITEM_ADDON_SUMMARY },
+                                  { "addondescription", LISTITEM_ADDON_DESCRIPTION },
+                                  { "addondisclaimer",  LISTITEM_ADDON_DISCLAIMER },
+                                  { "addonbroken",      LISTITEM_ADDON_BROKEN },
+                                  { "addontype",        LISTITEM_ADDON_TYPE },
+};
 
 const infomap visualisation[] =  {{ "locked",           VISUALISATION_LOCKED },
                                   { "preset",           VISUALISATION_PRESET },
@@ -2636,7 +2645,7 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
       case SYSTEM_HAS_ADDON:
         {
           AddonPtr addon;
-          bReturn = CAddonMgr::Get().GetAddon(m_stringParameters[info.GetData1()],addon) && addon;
+          bReturn = CAddonMgr::GetInstance().GetAddon(m_stringParameters[info.GetData1()],addon) && addon;
           break;
         }
       case SYSTEM_IDLE_TIME:
@@ -3110,9 +3119,9 @@ CStdString CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextWi
     // in the future.
     AddonPtr addon;
     if (info.GetData2() == 0)
-      CAddonMgr::Get().GetAddon(const_cast<CGUIInfoManager*>(this)->GetLabel(info.GetData1(), contextWindow),addon,ADDON_UNKNOWN,false);
+      CAddonMgr::GetInstance().GetAddon(const_cast<CGUIInfoManager*>(this)->GetLabel(info.GetData1(), contextWindow),addon,ADDON_UNKNOWN,false);
     else
-      CAddonMgr::Get().GetAddon(m_stringParameters[info.GetData1()],addon,ADDON_UNKNOWN,false);
+      CAddonMgr::GetInstance().GetAddon(m_stringParameters[info.GetData1()],addon,ADDON_UNKNOWN,false);
     if (addon && info.m_info == SYSTEM_ADDON_TITLE)
       return addon->Name();
     if (addon && info.m_info == SYSTEM_ADDON_ICON)
@@ -4469,7 +4478,44 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, std::s
         return dbid;
       }
     break;
+  case LISTITEM_ADDON_NAME:
+    if (item->HasAddonInfo())
+      return item->GetAddonInfo()->Name();
+    break;
+  case LISTITEM_ADDON_VERSION:
+    if (item->HasAddonInfo())
+      return item->GetAddonInfo()->Version().asString();
+    break;
+  case LISTITEM_ADDON_CREATOR:
+    if (item->HasAddonInfo())
+      return item->GetAddonInfo()->Author();
+    break;
+  case LISTITEM_ADDON_SUMMARY:
+    if (item->HasAddonInfo())
+      return item->GetAddonInfo()->Summary();
+    break;
+  case LISTITEM_ADDON_DESCRIPTION:
+    if (item->HasAddonInfo())
+      return item->GetAddonInfo()->Description();
+    break;
+  case LISTITEM_ADDON_DISCLAIMER:
+    if (item->HasAddonInfo())
+      return item->GetAddonInfo()->Disclaimer();
+    break;
+  case LISTITEM_ADDON_BROKEN:
+    if (item->HasAddonInfo())
+    {
+      if (item->GetAddonInfo()->Broken() == "DEPSNOTMET")
+        return g_localizeStrings.Get(24044);
+      return item->GetAddonInfo()->Broken();
+    }
+    break;
+  case LISTITEM_ADDON_TYPE:
+    if (item->HasAddonInfo())
+      return ADDON::TranslateType(item->GetAddonInfo()->Type(),true);
+    break;
   }
+
   return "";
 }
 

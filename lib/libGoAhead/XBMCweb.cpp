@@ -15,6 +15,7 @@
 #include "messaging/ApplicationMessenger.h"
 #include "GUIInfoManager.h"
 #include "boost/make_shared.hpp"
+#include "music/MusicDatabase.h"
 #include "XBMCweb.h"
 
 #include "Util.h"
@@ -23,7 +24,6 @@
 #include "filesystem/ZipManager.h"
 #include "playlists/PlayListFactory.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
-#include "music/MusicDatabase.h"
 #include "music/tags/MusicInfoTag.h"
 #include "FileItem.h"
 #include "playlists/PlayList.h"

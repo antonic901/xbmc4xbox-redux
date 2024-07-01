@@ -259,7 +259,7 @@ PopulateObjectFromTag(CVideoInfoTag&         tag,
           object.m_Recorded.series_title = tag.m_strShowTitle.c_str();
           object.m_Recorded.episode_number = tag.m_iSeason * 100 + tag.m_iEpisode;
           object.m_Title = object.m_Recorded.series_title + " - " + object.m_Recorded.program_title;
-          object.m_Date = tag.m_firstAired.GetAsLocalizedDate();
+          object.m_Date = tag.m_firstAired.GetAsLocalizedDate().c_str();
           if(tag.m_iSeason != -1)
               object.m_ReferenceID = NPT_String::Format("videodb://tvshows/titles/%i", tag.m_iDbId);
         } else {
@@ -369,7 +369,7 @@ BuildObject(CFileItem&                    item,
 
         // set date
         if (object->m_Date.IsEmpty() && item.m_dateTime.IsValid()) {
-            object->m_Date = item.m_dateTime.GetAsLocalizedDate();
+            object->m_Date = item.m_dateTime.GetAsLocalizedDate().c_str();
         }
 
         if (upnp_server) {
@@ -480,7 +480,7 @@ BuildObject(CFileItem&                    item,
                   if(!tag.m_firstAired.IsValid() && tag.HasYear())
                     container->m_Date = NPT_String::FromInteger(tag.GetYear()) + "-01-01";
                   else
-                    container->m_Date = tag.m_firstAired.GetAsLocalizedDate();
+                    container->m_Date = tag.m_firstAired.GetAsLocalizedDate().c_str();
 
                   for (unsigned int index = 0; index < tag.m_genre.size(); index++)
                     container->m_Affiliation.genre.Add(tag.m_genre.at(index).c_str());

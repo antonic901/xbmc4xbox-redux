@@ -5,7 +5,7 @@
 		<system>1</system>
 		<left>185</left>
 		<top>60</top>
-		<origin x="185" y="10">!IsEmpty(ListItem.Property(Addon.broken))</origin>
+		<origin x="185" y="10">!IsEmpty(ListItem.AddonBroken)</origin>
 	</coordinates>
 	<include>dialogeffect</include>
 	<controls>
@@ -77,7 +77,7 @@
 				<align>left</align>
 				<aligny>center</aligny>
 				<font>font13</font>
-				<label>[B]$INFO[ListItem.Property(Addon.Name)][/B]</label>
+				<label>[B]$INFO[ListItem.AddonName][/B]</label>
 				<textcolor>white</textcolor>
 				<scroll>true</scroll>
 			</control>
@@ -102,7 +102,7 @@
 					<top>0</top>
 					<width>440</width>
 					<height>25</height>
-					<label fallback="416">$INFO[ListItem.Property(Addon.Type)]</label>
+					<label fallback="416">$INFO[ListItem.AddonType]</label>
 					<align>left</align>
 					<aligny>center</aligny>
 					<font>font13</font>
@@ -126,7 +126,7 @@
 					<top>30</top>
 					<width>440</width>
 					<height>25</height>
-					<label fallback="416">$INFO[ListItem.Property(Addon.Creator)]</label>
+					<label fallback="416">$INFO[ListItem.AddonCreator]</label>
 					<align>left</align>
 					<aligny>center</aligny>
 					<font>font13</font>
@@ -195,7 +195,7 @@
 					<top>120</top>
 					<width>440</width>
 					<height>25</height>
-					<label fallback="416">$INFO[ListItem.Property(Addon.Summary)]</label>
+					<label fallback="416">$INFO[ListItem.AddonSummary]</label>
 					<align>left</align>
 					<aligny>center</aligny>
 					<font>font13</font>
@@ -222,7 +222,7 @@
 					<textcolor>blue</textcolor>
 				</control>
 				<control type="group">
-					<visible>!IsEmpty(ListItem.Property(Addon.Disclaimer))</visible>
+					<visible>!IsEmpty(ListItem.AddonDisclaimer)</visible>
 					<control type="label">
 						<description>Description Page Count</description>
 						<left>310</left>
@@ -244,7 +244,7 @@
 						<font>font13</font>
 						<align>justify</align>
 						<textcolor>white</textcolor>
-						<label>$INFO[ListItem.Property(Addon.Description)]</label>
+						<label>$INFO[ListItem.AddonDescription]</label>
 						<pagecontrol>60</pagecontrol>
 					</control>
 					<control type="scrollbar" id="60">
@@ -283,12 +283,12 @@
 						<font>font12</font>
 						<align>left</align>
 						<textcolor>white</textcolor>
-						<label>$INFO[ListItem.Property(Addon.Disclaimer)]</label>
+						<label>$INFO[ListItem.AddonDisclaimer]</label>
 						<autoscroll time="2000" delay="3000" repeat="5000">true</autoscroll>
 					</control>
 				</control>
 				<control type="group">
-					<visible>IsEmpty(ListItem.Property(Addon.Disclaimer))</visible>
+					<visible>IsEmpty(ListItem.AddonDisclaimer)</visible>
 					<control type="label">
 						<description>Description Page Count</description>
 						<left>310</left>
@@ -310,7 +310,7 @@
 						<font>font13</font>
 						<align>justify</align>
 						<textcolor>white</textcolor>
-						<label>$INFO[ListItem.Property(Addon.Description)]</label>
+						<label>$INFO[ListItem.AddonDescription]</label>
 						<pagecontrol>61</pagecontrol>
 					</control>
 					<control type="scrollbar" id="61">
@@ -390,7 +390,7 @@
 				</control>
 			</control>
 			<control type="group">
-				<visible>!IsEmpty(ListItem.Property(Addon.broken))</visible>
+				<visible>!IsEmpty(ListItem.AddonBroken)</visible>
 				<left>0</left>
 				<top>600</top>
 				<control type="image">
@@ -429,7 +429,7 @@
 					<width>800</width>
 					<height>50</height>
 					<font>font13</font>
-					<label>$INFO[ListItem.Property(Addon.broken)]</label>
+					<label>$INFO[ListItem.AddonBroken]</label>
 					<align>left</align>
 					<textcolor>white</textcolor>
 					<shadowcolor>black</shadowcolor>

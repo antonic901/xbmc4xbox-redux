@@ -39,8 +39,6 @@
 using namespace PLAYLIST;
 using namespace KODI::MESSAGING;
 
-CPlayListPlayer g_playlistPlayer;
-
 CPlayListPlayer::CPlayListPlayer(void)
 {
   m_PlaylistMusic = new CPlayList(PLAYLIST_MUSIC);

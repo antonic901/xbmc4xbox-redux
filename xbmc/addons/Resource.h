@@ -22,6 +22,7 @@
 #include <memory>
 
 #include "addons/Addon.h"
+#include "utils/URIUtils.h"
 
 namespace ADDON
 {
@@ -31,20 +32,20 @@ class CResource : public CAddon
 public:
   virtual ~CResource() { }
 
-  virtual AddonPtr Clone() const = 0;
-
   virtual bool IsAllowed(const std::string &file) const = 0;
 
+  virtual std::string GetFullPath(const std::string &filePath) const
+  {
+    return URIUtils::AddFileToFolder(GetResourcePath(), filePath);
+  }
+
 protected:
-  CResource(const AddonProps &props)
-    : CAddon(props)
-  { }
-  CResource(const cp_extension_t *ext)
-    : CAddon(ext)
-  { }
-  CResource(const CResource &rhs)
-    : CAddon(rhs)
-  { }
+  explicit CResource(AddonProps props) : CAddon(boost::move(props)) {}
+
+  std::string GetResourcePath() const
+  {
+    return URIUtils::AddFileToFolder(Path(), "resources");
+  }
 };
 
 }

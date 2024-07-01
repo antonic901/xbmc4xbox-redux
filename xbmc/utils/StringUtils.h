@@ -239,6 +239,7 @@ public:
   static void Tokenize(const std::string& input, std::vector<std::string>& tokens, const std::string& delimiters);
   static std::vector<std::string> Tokenize(const std::string& input, const char delimiter);
   static void Tokenize(const std::string& input, std::vector<std::string>& tokens, const char delimiter);
+  static uint64_t ToUint64(std::string str, uint64_t fallback);
 
 /* ####################################################################################################################### */
 
@@ -261,6 +262,14 @@ public:
   static bool ValidateUUID(const CStdString &uuid); // NB only validates syntax
 private:
   static std::string m_lastUUID;
+};
+
+struct sortstringbyname
+{
+  bool operator()(const std::string& strItem1, const std::string& strItem2)
+  {
+    return StringUtils::CompareNoCase(strItem1, strItem2) < 0;
+  }
 };
 
 #endif

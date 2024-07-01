@@ -1,7 +1,7 @@
 #pragma once
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2012-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -14,9 +14,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -34,6 +33,25 @@ public:
   static std::string GetMimeType(const CFileItem &item);
   static std::string GetMimeType(const CURL &url, bool lookup = true);
 
+  enum EFileType
+  {
+    FileTypeUnknown = 0,
+    FileTypeHtml,
+    FileTypeXml,
+    FileTypePlainText,
+    FileTypeZip,
+    FileTypeGZip,
+    FileTypeRar,
+    FileTypeBmp,
+    FileTypeGif,
+    FileTypePng,
+    FileTypeJpeg,
+  };
+  static EFileType GetFileTypeFromMime(const std::string& mimeType);
+  static EFileType GetFileTypeFromContent(const std::string& fileContent);
+
 private:
+  static bool parseMimeType(const std::string& mimeType, std::string& type, std::string& subtype);
+
   static std::map<std::string, std::string> m_mimetypes;
 };

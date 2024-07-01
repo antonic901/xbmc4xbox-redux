@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2011 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,15 +13,12 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
 #include <string>
-#include <boost/operators.hpp>
-#include "utils/StdString.h"
 
 namespace ADDON
 {
@@ -37,24 +34,29 @@ namespace ADDON
 
     See here for more info: http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version
     */
-  class AddonVersion : public boost::totally_ordered<AddonVersion> {
+  class AddonVersion
+  {
   public:
     AddonVersion(const AddonVersion& other) { *this = other; }
     explicit AddonVersion(const std::string& version);
-    ~AddonVersion() {};
+    virtual ~AddonVersion() {};
 
     int Epoch() const { return mEpoch; }
     const std::string &Upstream() const { return mUpstream; }
     const std::string &Revision() const { return mRevision; }
 
     AddonVersion& operator=(const AddonVersion& other);
-    bool operator<(const AddonVersion& other) const;
+    bool operator< (const AddonVersion& other) const;
+    bool operator> (const AddonVersion& other) const;
+    bool operator<=(const AddonVersion& other) const;
+    bool operator>=(const AddonVersion& other) const;
     bool operator==(const AddonVersion& other) const;
+    bool operator!=(const AddonVersion& other) const;
     std::string asString() const;
     bool empty() const;
 
-    static bool SplitFileName(CStdString& ID, CStdString& version,
-                              const CStdString& filename);
+    static bool SplitFileName(std::string& ID, std::string& version,
+                              const std::string& filename);
 
   protected:
     int mEpoch;

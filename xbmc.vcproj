@@ -395,6 +395,18 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\Application.cpp">
 			</File>
 			<File
+				RelativePath=".\xbmc\ContextMenuItem.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\ContextMenuItem.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\ContextMenuManager.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\ContextMenuManager.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\CueDocument.cpp">
 			</File>
 			<File
@@ -408,6 +420,18 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\InfoScanner.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\ServiceBroker.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\ServiceBroker.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\ServiceManager.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\ServiceManager.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\Socket.cpp">
@@ -841,12 +865,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\FanController.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\fft.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\fft.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\FileItem.cpp">
 				</File>
 				<File
@@ -955,6 +973,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\memutil.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\Mime.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Mime.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\NfoFile.cpp">
 				</File>
 				<File
@@ -995,6 +1019,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\RegExp.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\rfft.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\rfft.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\RingBuffer.cpp">
@@ -3133,6 +3163,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\interfaces\python\CallbackHandler.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\interfaces\python\ContextItemAddonInvoker.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\python\ContextItemAddonInvoker.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\interfaces\python\LanguageHook.cpp">
 						<FileConfiguration
 							Name="Debug|Xbox">
@@ -3282,6 +3318,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\addons\Addon.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\addons\AddonBuilder.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\AddonBuilder.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\addons\AddonDatabase.cpp">
 				</File>
 				<File
@@ -3289,6 +3331,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\addons\AddonDll.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\AddonEvents.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\addons\AddonInstaller.cpp">
@@ -3309,16 +3354,40 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\addons\AddonStatusHandler.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\addons\AddonSystemSettings.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\AddonSystemSettings.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\addons\AddonVersion.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\addons\AddonVersion.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\addons\ContextMenuAddon.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\ContextMenuAddon.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\ContextMenus.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\ContextMenus.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\addons\DllAddon.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\addons\DllLibCPluff.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\FilesystemInstaller.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\FilesystemInstaller.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\addons\GUIDialogAddonInfo.cpp">
@@ -3348,6 +3417,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\addons\IAddon.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\addons\ImageResource.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\ImageResource.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\addons\LanguageResource.cpp">
 				</File>
 				<File
@@ -3364,6 +3439,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\addons\Repository.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\RepositoryUpdater.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\RepositoryUpdater.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\addons\Resource.h">
@@ -3410,6 +3491,23 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\addons\Webinterface.h">
 				</File>
+				<Filter
+					Name="binary"
+					Filter="">
+					<Filter
+						Name="interfaces"
+						Filter="">
+						<File
+							RelativePath=".\xbmc\addons\binary\interfaces\AddonInterfaces.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\addons\binary\interfaces\AddonInterfaces.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\addons\binary\interfaces\IAddonInterface.h">
+						</File>
+					</Filter>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="xbox"
@@ -3702,6 +3800,48 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\video\Bookmark.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\video\ContextMenus.cpp">
+					<FileConfiguration
+						Name="Debug|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile_FastCap|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release_LTCG|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug Xbox No Memory Tracking|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\xbmc\video\ContextMenus.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\video\Episode.h">
 				</File>
 				<File
@@ -3893,6 +4033,48 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\music\Artist.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\music\ContextMenus.cpp">
+					<FileConfiguration
+						Name="Debug|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile_FastCap|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release_LTCG|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug Xbox No Memory Tracking|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\xbmc\music\ContextMenus.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\music\CueInfoLoader.cpp">
@@ -4265,6 +4447,29 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="contrib"
+				Filter="">
+				<Filter
+					Name="kissfft"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\contrib\kissfft\_kiss_fft_guts.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\contrib\kissfft\kiss_fft.c">
+					</File>
+					<File
+						RelativePath=".\xbmc\contrib\kissfft\kiss_fft.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\contrib\kissfft\kiss_fftr.c">
+					</File>
+					<File
+						RelativePath=".\xbmc\contrib\kissfft\kiss_fftr.h">
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -4353,6 +4558,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\DynamicDll.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\utils\EventStream.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\utils\EventStreamDetail.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\FanController.h">

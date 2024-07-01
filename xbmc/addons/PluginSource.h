@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2010 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 #pragma once
@@ -31,10 +30,12 @@ public:
 
   enum Content { UNKNOWN, AUDIO, IMAGE, EXECUTABLE, VIDEO };
 
-  CPluginSource(const cp_extension_t *ext);
-  CPluginSource(const AddonProps &props);
-  virtual ~CPluginSource() {}
-  virtual AddonPtr Clone() const;
+  static boost::movelib::unique_ptr<CPluginSource> FromExtension(AddonProps props, const cp_extension_t* ext);
+
+  explicit CPluginSource(AddonProps props);
+  CPluginSource(AddonProps props, const std::string& provides);
+
+  virtual TYPE FullType() const;
   virtual bool IsType(TYPE type) const;
   bool Provides(const Content& content) const
   {
@@ -46,13 +47,13 @@ public:
     return m_providedContent.size() > 1;
   }
 
-  static Content Translate(const CStdString &content);
+  static Content Translate(const std::string &content);
 private:
   /*! \brief Set the provided content for this plugin
    If no valid content types are passed in, we set the EXECUTABLE type
    \param content a space-separated list of content types
    */
-  void SetProvides(const CStdString &content);
+  void SetProvides(const std::string &content);
   std::set<Content> m_providedContent;
 };
 

@@ -20,6 +20,7 @@
 
 #include "CDDAcodec.h"
 #include "libcdio/sector.h"
+#include "filesystem/IFileTypes.h"
 
 #define SECTOR_COUNT 55 // max. sectors that can be read at once
 #define MAX_BUFFER_SIZE 2*SECTOR_COUNT*CDIO_CD_FRAMESIZE_RAW
@@ -51,7 +52,7 @@ CDDACodec::~CDDACodec()
 
 bool CDDACodec::Init(const CStdString &strFile, unsigned int filecache)
 {
-  if (!m_file.Open(strFile, READ_CACHED))
+  if (!m_file.Open(strFile, XFILE::READ_CACHED))
     return false;
 
   //  Calculate total time of the track

@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2010 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,57 +13,52 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
+
 #include "PluginSource.h"
+
+#include <utility>
+
 #include "AddonManager.h"
 #include "utils/StringUtils.h"
-
-using namespace std;
 
 namespace ADDON
 {
 
-CPluginSource::CPluginSource(const AddonProps &props)
-  : CAddon(props)
+boost::movelib::unique_ptr<CPluginSource> CPluginSource::FromExtension(AddonProps props, const cp_extension_t* ext)
 {
-  CStdString provides;
-  InfoMap::const_iterator i = Props().extrainfo.find("provides");
-  if (i != Props().extrainfo.end())
+  std::string provides = CAddonMgr::GetInstance().GetExtValue(ext->configuration, "provides");
+  if (!provides.empty())
+    props.extrainfo.insert(make_pair("provides", provides));
+  return boost::movelib::unique_ptr<CPluginSource>(new CPluginSource(boost::move(props), provides));
+}
+
+CPluginSource::CPluginSource(AddonProps props) : CAddon(boost::move(props))
+{
+  std::string provides;
+  InfoMap::const_iterator i = m_props.extrainfo.find("provides");
+  if (i != m_props.extrainfo.end())
     provides = i->second;
   SetProvides(provides);
 }
 
-CPluginSource::CPluginSource(const cp_extension_t *ext)
-  : CAddon(ext)
+CPluginSource::CPluginSource(AddonProps props, const std::string& provides)
+  : CAddon(boost::move(props))
 {
-  CStdString provides;
-  if (ext)
-  {
-    provides = CAddonMgr::Get().GetExtValue(ext->configuration, "provides");
-    if (!provides.IsEmpty())
-      Props().extrainfo.insert(make_pair("provides", provides));
-  }
   SetProvides(provides);
 }
 
-AddonPtr CPluginSource::Clone() const
+void CPluginSource::SetProvides(const std::string &content)
 {
-  return AddonPtr(new CPluginSource(*this));
-}
-
-void CPluginSource::SetProvides(const CStdString &content)
-{
-  vector<CStdString> provides;
-  if (!content.IsEmpty())
+  if (!content.empty())
   {
-    StringUtils::SplitString(content, " ", provides);
-    for (unsigned int i = 0; i < provides.size(); ++i)
+    std::vector<std::string> provides = StringUtils::Split(content, ' ');
+    for (std::vector<std::string>::const_iterator i = provides.begin(); i != provides.end(); ++i)
     {
-      Content content = Translate(provides[i]);
+      Content content = Translate(*i);
       if (content != UNKNOWN)
         m_providedContent.insert(content);
     }
@@ -72,18 +67,32 @@ void CPluginSource::SetProvides(const CStdString &content)
     m_providedContent.insert(EXECUTABLE);
 }
 
-CPluginSource::Content CPluginSource::Translate(const CStdString &content)
+CPluginSource::Content CPluginSource::Translate(const std::string &content)
 {
-  if (content.Equals("audio"))
+  if (content == "audio")
     return CPluginSource::AUDIO;
-  else if (content.Equals("image"))
+  else if (content == "image")
     return CPluginSource::IMAGE;
-  else if (content.Equals("executable"))
+  else if (content == "executable")
     return CPluginSource::EXECUTABLE;
-  else if (content.Equals("video"))
+  else if (content == "video")
     return CPluginSource::VIDEO;
   else
     return CPluginSource::UNKNOWN;
+}
+
+TYPE CPluginSource::FullType() const
+{
+  if (Provides(VIDEO))
+    return ADDON_VIDEO;
+  if (Provides(AUDIO))
+    return ADDON_AUDIO;
+  if (Provides(IMAGE))
+    return ADDON_IMAGE;
+  if (Provides(EXECUTABLE))
+    return ADDON_EXECUTABLE;
+
+  return CAddon::FullType();
 }
 
 bool CPluginSource::IsType(TYPE type) const

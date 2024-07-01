@@ -25,6 +25,7 @@
 // CFlacTag in 2003 by JMarshall
 //------------------------------
 #include "music/tags/VorbisTag.h"
+#include "filesystem/File.h"
 
 namespace MUSIC_INFO
 {

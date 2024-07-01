@@ -73,7 +73,7 @@ bool CHDDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 
   FILETIME localTime;
   CAutoPtrFind hFind ( FindFirstFile(strSearchMask.c_str(), &wfd));
-  
+
   // on error, check if path exists at all, this will return true if empty folder
   if (!hFind.isValid())
     return Exists(url);
@@ -172,4 +172,53 @@ bool CHDDirectory::Exists(const CURL& url)
     return false;
   if (FILE_ATTRIBUTE_DIRECTORY & attributes) return true;
   return false;
+}
+
+bool CHDDirectory::RemoveRecursive(const CURL& url)
+{
+  std::string pathWithSlash(url.Get());
+  if (!pathWithSlash.empty() && pathWithSlash.at(pathWithSlash.size() - 1) != '\\')
+    pathWithSlash.push_back('\\');
+
+  // Do we need this here? If we get to this point we are already in Q:\\path\to\file format
+  std::string basePath = pathWithSlash/*CWIN32Util::ConvertPathToWin32Form(pathWithSlash)*/;
+  if (basePath.empty())
+    return false;
+
+  std::string searchMask = basePath + '*';
+
+  HANDLE hSearch;
+  WIN32_FIND_DATA findData = {};
+
+  hSearch = FindFirstFile(searchMask.c_str(), &findData);
+
+  if (hSearch == INVALID_HANDLE_VALUE)
+    return GetLastError() == ERROR_FILE_NOT_FOUND ? Exists(url) : false; // return true if directory exist and empty
+
+  do
+  {
+    std::string itemName(findData.cFileName);
+    if (itemName == "." || itemName == "..")
+      continue;
+
+    std::string path = basePath + itemName;
+    if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+    {
+      CURL url(path);
+      if (!RemoveRecursive(url))
+        return false;
+
+      if (FALSE == RemoveDirectory(path.c_str()))
+        return false;
+    }
+    else
+    {
+      if (FALSE == DeleteFile(path.c_str()))
+        return false;
+    }
+  } while (FindNextFile(hSearch, &findData));
+
+  FindClose(hSearch);
+
+  return true;
 }
