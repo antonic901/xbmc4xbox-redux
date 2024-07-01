@@ -1252,9 +1252,6 @@
 				<File
 					RelativePath="..\..\xbmc\music\windows\GUIWindowMusicPlaylistEditor.h">
 				</File>
-				<File
-					RelativePath="..\..\xbmc\music\windows\GUIWindowMusicSongs.cpp">
-				</File>
 			</Filter>
 			<Filter
 				Name="GUI Video"
@@ -3152,9 +3149,6 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\music\windows\GUIWindowMusicPlaylist.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\music\windows\GUIWindowMusicSongs.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\pictures\GUIWindowPictures.h">

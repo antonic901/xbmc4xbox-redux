@@ -99,8 +99,10 @@ public:
                                 const CStdString& version);
 
 protected:
-  virtual bool CreateTables();
-  virtual bool UpdateOldVersion(int version);
-  virtual int GetMinVersion() const { return 15; }
+  virtual void CreateTables();
+  virtual void CreateAnalytics();
+  virtual void UpdateTables(int version);
+  virtual int GetMinSchemaVersion() const { return 15; }
+  virtual int GetSchemaVersion() const { return 16; }
   const char *GetBaseDBName() const { return "Addons"; }
 };

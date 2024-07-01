@@ -85,7 +85,7 @@ void CGUIDialogAudioSubtitleSettings::FrameMove()
   if (g_application.m_pPlayer)
   {
     const CVideoSettings &videoSettings = CMediaSettings::Get().GetCurrentVideoSettings();
-    
+
     // these settings can change on the fly
     m_settingsManager->SetNumber(SETTING_AUDIO_DELAY, videoSettings.m_AudioDelay);
     m_settingsManager->SetInt(SETTING_AUDIO_STREAM, g_application.m_pPlayer->GetAudioStream());
@@ -127,7 +127,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(const CSetting *setting)
     return;
 
   CGUIDialogSettingsManualBase::OnSettingChanged(setting);
-  
+
   CVideoSettings &videoSettings = CMediaSettings::Get().GetCurrentVideoSettings();
   const std::string &settingId = setting->GetId();
   if (settingId == SETTING_AUDIO_VOLUME)
@@ -205,7 +205,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingAction(const CSetting *setting)
     return;
 
   CGUIDialogSettingsManualBase::OnSettingAction(setting);
-  
+
   const std::string &settingId = setting->GetId();
   if (settingId == SETTING_SUBTITLE_BROWSER)
   {
@@ -222,7 +222,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingAction(const CSetting *setting)
     if (CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked() != -1 && !CSettings::Get().GetString("subtitles.custompath").empty())
     {
       CMediaSource share;
-      std::vector<CStdString> paths;
+      std::vector<std::string> paths;
       paths.push_back(URIUtils::GetDirectory(strPath));
       paths.push_back(CSettings::Get().GetString("subtitles.custompath"));
       share.FromNameAndPaths("video",g_localizeStrings.Get(21367),paths);
@@ -240,7 +240,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingAction(const CSetting *setting)
         if (XFILE::CFile::Exists(URIUtils::ReplaceExtension(strPath, ".idx")))
           strPath = URIUtils::ReplaceExtension(strPath, ".idx");
       }
-      
+
       int id = g_application.m_pPlayer->AddSubtitle(strPath);
       if (id >= 0)
       {
@@ -262,10 +262,10 @@ void CGUIDialogAudioSubtitleSettings::OnSettingAction(const CSetting *setting)
         {
           // get player state, needed for dvd's
           CStdString state = g_application.m_pPlayer->GetPlayerState();
-          
+
           if (g_application.GetCurrentPlayer() == EPC_MPLAYER)
               g_application.m_pPlayer->CloseFile(); // to conserve memory if unraring
-              
+
           if (XFILE::CFile::Copy(strPath,"special://temp/subtitle"+strExt+".keep"))
           {
             CStdString strPath2;
@@ -308,7 +308,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingAction(const CSetting *setting)
             {
               CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleCached = false;
               // reopen the file
-              if ( g_application.PlayFile(g_application.CurrentFileItem(), true) && g_application.m_pPlayer )
+              if ( g_application.PlayFile(g_application.CurrentFileItem(), "", true) && g_application.m_pPlayer )
               {
                 // and seek to the position
                 g_application.m_pPlayer->SetPlayerState(state);
@@ -437,7 +437,7 @@ void CGUIDialogAudioSubtitleSettings::InitializeSettings()
     ->Add(CSettingDependencyConditionPtr(new CSettingDependencyCondition(SETTING_AUDIO_DIGITAL_ANALOG, "1", SettingDependencyOperatorEquals, false, m_settingsManager)));
   SettingDependencies depsAudioOutputPassthroughDisabled;
   depsAudioOutputPassthroughDisabled.push_back(dependencyAudioOutputPassthroughDisabled);
-  
+
   // audio settings
   // audio volume setting
   m_volume = g_application.GetVolume(false) * 0.01f;
@@ -456,7 +456,7 @@ void CGUIDialogAudioSubtitleSettings::InitializeSettings()
     CSettingNumber *settingAudioDelay = AddSlider(groupAudio, SETTING_AUDIO_DELAY, 297, 0, videoSettings.m_AudioDelay, 0, -g_advancedSettings.m_videoAudioDelayRange, 0.025f, g_advancedSettings.m_videoAudioDelayRange, -1, usePopup);
     static_cast<CSettingControlSlider*>(settingAudioDelay->GetControl())->SetFormatter(SettingFormatterDelay);
   }
-  
+
   // audio stream setting
   /*if (SupportsAudioFeature(IPC_AUD_SELECT_STREAM))*/
     AddAudioStreams(groupAudio, SETTING_AUDIO_STREAM);

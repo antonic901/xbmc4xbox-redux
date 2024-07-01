@@ -19,30 +19,28 @@
  */
 
 #include "ProgramDatabase.h"
-#include "Util.h"
-#include "xbox/xbeheader.h"
-#include "windows/GUIWindowFileManager.h"
-#include "FileItem.h"
+
+#include "dbwrappers/dataset.h"
 #include "filesystem/File.h"
+#include "FileItem.h"
 #include "settings/Settings.h"
 #include "settings/MediaSourceSettings.h"
 #include "utils/Crc32.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
-#include "dbwrappers/dataset.h"
+#include "Util.h"
+#include "xbox/xbeheader.h"
+#include "windows/GUIWindowFileManager.h"
 
 using namespace XFILE;
 
 //********************************************************************************************************************************
 CProgramDatabase::CProgramDatabase(void)
-{
-}
+{ }
 
 //********************************************************************************************************************************
 CProgramDatabase::~CProgramDatabase(void)
-{
-
-}
+{ }
 
 //********************************************************************************************************************************
 bool CProgramDatabase::Open()
@@ -50,46 +48,23 @@ bool CProgramDatabase::Open()
   return CDatabase::Open();
 }
 
-bool CProgramDatabase::CreateTables()
+void CProgramDatabase::CreateTables()
 {
-
-  try
-  {
-    CDatabase::CreateTables();
-
-    CLog::Log(LOGINFO, "create files table");
-    m_pDS->exec("CREATE TABLE files ( idFile integer primary key, strFilename text, titleId integer, xbedescription text, iTimesPlayed integer, lastAccessed integer, iRegion integer, iSize integer)\n");
-    CLog::Log(LOGINFO, "create trainers table");
-    m_pDS->exec("CREATE TABLE trainers (idKey integer auto_increment primary key, idCRC integer, idTitle integer, strTrainerPath text, strSettings text, Active integer)\n");
-    CLog::Log(LOGINFO, "create files index");
-    m_pDS->exec("CREATE INDEX idxFiles ON files(strFilename)");
-    CLog::Log(LOGINFO, "create files - titleid index");
-    m_pDS->exec("CREATE INDEX idxTitleIdFiles ON files(titleId)");
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR, "programdatabase::unable to create tables:%lu", GetLastError());
-    return false;
-  }
-
-  return true;
+  CLog::Log(LOGINFO, "create files table");
+  m_pDS->exec("CREATE TABLE files ( idFile integer primary key, strFilename text, titleId integer, xbedescription text, iTimesPlayed integer, lastAccessed integer, iRegion integer, iSize integer)\n");
+  CLog::Log(LOGINFO, "create trainers table");
+  m_pDS->exec("CREATE TABLE trainers (idKey integer auto_increment primary key, idCRC integer, idTitle integer, strTrainerPath text, strSettings text, Active integer)\n");
 }
 
-bool CProgramDatabase::UpdateOldVersion(int version)
+void CProgramDatabase::CreateAnalytics()
 {
-  if (NULL == m_pDB.get()) return false;
-  if (NULL == m_pDS.get()) return false;
-  if (NULL == m_pDS2.get()) return false;
+  CLog::Log(LOGINFO, "%s - creating indicies", __FUNCTION__);
+  m_pDS->exec("CREATE INDEX idxFiles ON files(strFilename)");
+  m_pDS->exec("CREATE INDEX idxTitleIdFiles ON files(titleId)");
+}
 
-  try
-  {
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR, "Error attempting to update the database version!");
-    return false;
-  }
-  return true;
+void CProgramDatabase::UpdateTables(int version)
+{
 }
 
 int CProgramDatabase::GetRegion(const CStdString& strFilenameAndPath)
@@ -525,7 +500,7 @@ bool CProgramDatabase::AddProgramInfo(CFileItem *item, unsigned int titleID)
     item->m_dateTime.GetAsTimeStamp(time);
 
     ULARGE_INTEGER lastAccessed;
-    lastAccessed.u.LowPart = time.dwLowDateTime; 
+    lastAccessed.u.LowPart = time.dwLowDateTime;
     lastAccessed.u.HighPart = time.dwHighDateTime;
 
     CStdString strPath = URIUtils::GetDirectory(item->GetPath());
@@ -631,7 +606,7 @@ bool CProgramDatabase::SetDescription(const CStdString& strFileName, const CStdS
 }
 
 bool CProgramDatabase::GetArbitraryQuery(const CStdString& strQuery,      const CStdString& strOpenRecordSet, const CStdString& strCloseRecordSet,
-                                         const CStdString& strOpenRecord, const CStdString& strCloseRecord,   const CStdString& strOpenField, 
+                                         const CStdString& strOpenRecord, const CStdString& strCloseRecord,   const CStdString& strOpenField,
 										 const CStdString& strCloseField,       CStdString& strResult)
 {
   try

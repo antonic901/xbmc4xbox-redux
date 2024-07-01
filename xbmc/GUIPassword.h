@@ -89,7 +89,7 @@ public:
   bool LockSource(const CStdString& strType, const CStdString& strName, bool bState);
   void LockSources(bool lock);
   void RemoveSourceLocks();
-  bool IsDatabasePathUnlocked(CStdString& strPath, VECSOURCES& VECSOURCES);
+  bool IsDatabasePathUnlocked(std::string& strPath, VECSOURCES& VECSOURCES);
 
   virtual void OnSettingAction(const CSetting *setting);
 

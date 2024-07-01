@@ -45,6 +45,7 @@
 #include "music/tags/MusicInfoTagLoaderDatabase.h"
 #include "music/tags/MusicInfoTagLoaderASAP.h"
 
+#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "FileItem.h"
 
@@ -56,21 +57,20 @@ CMusicInfoTagLoaderFactory::CMusicInfoTagLoaderFactory()
 CMusicInfoTagLoaderFactory::~CMusicInfoTagLoaderFactory()
 {}
 
-IMusicInfoTagLoader* CMusicInfoTagLoaderFactory::CreateLoader(const CStdString& strFileName)
+IMusicInfoTagLoader* CMusicInfoTagLoaderFactory::CreateLoader(const CFileItem& item)
 {
   // dont try to read the tags for streams & shoutcast
-  CFileItem item(strFileName, false);
   if (item.IsInternetStream())
     return NULL;
 
   if (item.IsMusicDb())
     return new CMusicInfoTagLoaderDatabase();
 
-  CStdString strExtension = URIUtils::GetExtension(strFileName);
-  strExtension.ToLower();
-  strExtension.TrimLeft('.');
+  std::string strExtension = URIUtils::GetExtension(item.GetPath());
+  StringUtils::ToLower(strExtension);
+  StringUtils::TrimLeft(strExtension, ".");
 
-  if (strExtension.IsEmpty())
+  if (strExtension.empty())
     return NULL;
 
   if (strExtension == "mp3")

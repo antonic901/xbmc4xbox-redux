@@ -19,12 +19,11 @@
  */
 
 #include "DirectoryNodeSingles.h"
-#include "QueryParams.h"
 #include "music/MusicDatabase.h"
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 
-CDirectoryNodeSingles::CDirectoryNodeSingles(const CStdString& strName, CDirectoryNode* pParent)
+CDirectoryNodeSingles::CDirectoryNodeSingles(const std::string& strName, CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_SINGLES, strName, pParent)
 {
 
@@ -36,9 +35,7 @@ bool CDirectoryNodeSingles::GetContent(CFileItemList& items) const
   if (!musicdatabase.Open())
     return false;
 
-  CDatabase::Filter filter;
-  filter.where = "idAlbum IN (SELECT idAlbum FROM album WHERE strAlbum = '')";
-  bool bSuccess=musicdatabase.GetSongsByWhere(BuildPath(), filter, items);
+  bool bSuccess = musicdatabase.GetSongsFullByWhere(BuildPath(), CDatabase::Filter(), items, SortDescription(), true);
 
   musicdatabase.Close();
 

@@ -73,8 +73,8 @@ public:
   const CStdString& getGenre() const;
   const CStdString& getTrackArtist(int track) const;
   const CStdString& getTrackTitle(int track) const;
-  void getDiskArtist(CStdString& strdisk_artist) const;
-  void getDiskTitle(CStdString& strdisk_title) const;
+  void getDiskArtist(std::string& strdisk_artist) const;
+  void getDiskTitle(std::string& strdisk_title) const;
   const CStdString& getTrackExtended(int track) const;
   unsigned long calc_disc_id(int nr_of_tracks, toc cdtoc[]);
   const CStdString& getInexactArtist(int select) const;

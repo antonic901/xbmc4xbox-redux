@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2016 Team Kodi
+ *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,7 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with Kodi; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -23,7 +24,6 @@
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
 
-using namespace std;
 using namespace XFILE;
 
 CVideoDbUrl::CVideoDbUrl()
@@ -39,7 +39,7 @@ bool CVideoDbUrl::parse()
   if (!m_url.IsProtocol("videodb") || m_url.GetFileName().empty())
     return false;
 
-  CStdString path = m_url.Get();
+  std::string path = m_url.Get();
   VIDEODATABASEDIRECTORY::NODE_TYPE dirType = CVideoDatabaseDirectory::GetDirectoryType(path);
   VIDEODATABASEDIRECTORY::NODE_TYPE childType = CVideoDatabaseDirectory::GetDirectoryChildType(path);
 
@@ -57,6 +57,7 @@ bool CVideoDbUrl::parse()
     case VIDEODATABASEDIRECTORY::NODE_TYPE_SEASONS:
     case VIDEODATABASEDIRECTORY::NODE_TYPE_EPISODES:
     case VIDEODATABASEDIRECTORY::NODE_TYPE_RECENTLY_ADDED_EPISODES:
+    case VIDEODATABASEDIRECTORY::NODE_TYPE_INPROGRESS_TVSHOWS:
       m_type = "tvshows";
       break;
 
@@ -82,6 +83,7 @@ bool CVideoDbUrl::parse()
 
     case VIDEODATABASEDIRECTORY::NODE_TYPE_TVSHOWS_OVERVIEW:
     case VIDEODATABASEDIRECTORY::NODE_TYPE_TITLE_TVSHOWS:
+    case VIDEODATABASEDIRECTORY::NODE_TYPE_INPROGRESS_TVSHOWS:
       m_type = "tvshows";
       m_itemType = "tvshows";
       break;
@@ -133,6 +135,7 @@ bool CVideoDbUrl::parse()
       break;
 
     case VIDEODATABASEDIRECTORY::NODE_TYPE_MUSICVIDEOS_ALBUM:
+      m_type = "musicvideos";
       m_itemType = "albums";
       break;
 
@@ -159,31 +162,37 @@ bool CVideoDbUrl::parse()
 
   // add options based on the QueryParams
   if (queryParams.GetActorId() != -1)
-    AddOption("actorid", queryParams.GetActorId());
+  {
+    std::string optionName = "actorid";
+    if (m_type == "musicvideos")
+      optionName = "artistid";
+
+    AddOption(optionName, (int)queryParams.GetActorId());
+  }
   if (queryParams.GetAlbumId() != -1)
-    AddOption("albumid", queryParams.GetAlbumId());
+    AddOption("albumid", (int)queryParams.GetAlbumId());
   if (queryParams.GetCountryId() != -1)
-    AddOption("countryid", queryParams.GetCountryId());
+    AddOption("countryid", (int)queryParams.GetCountryId());
   if (queryParams.GetDirectorId() != -1)
-    AddOption("directorid", queryParams.GetDirectorId());
+    AddOption("directorid", (int)queryParams.GetDirectorId());
   if (queryParams.GetEpisodeId() != -1)
-    AddOption("episodeid", queryParams.GetEpisodeId());
+    AddOption("episodeid", (int)queryParams.GetEpisodeId());
   if (queryParams.GetGenreId() != -1)
-    AddOption("genreid", queryParams.GetGenreId());
+    AddOption("genreid", (int)queryParams.GetGenreId());
   if (queryParams.GetMovieId() != -1)
-    AddOption("movieid", queryParams.GetMovieId());
+    AddOption("movieid", (int)queryParams.GetMovieId());
   if (queryParams.GetMVideoId() != -1)
-    AddOption("musicvideoid", queryParams.GetMVideoId());
+    AddOption("musicvideoid", (int)queryParams.GetMVideoId());
   if (queryParams.GetSeason() != -1 && queryParams.GetSeason() >= -2)
-    AddOption("season", queryParams.GetSeason());
+    AddOption("season", (int)queryParams.GetSeason());
   if (queryParams.GetSetId() != -1)
-    AddOption("setid", queryParams.GetSetId());
+    AddOption("setid", (int)queryParams.GetSetId());
   if (queryParams.GetStudioId() != -1)
-    AddOption("studioid", queryParams.GetStudioId());
+    AddOption("studioid", (int)queryParams.GetStudioId());
   if (queryParams.GetTvShowId() != -1)
-    AddOption("tvshowid", queryParams.GetTvShowId());
+    AddOption("tvshowid", (int)queryParams.GetTvShowId());
   if (queryParams.GetYear() != -1)
-    AddOption("year", queryParams.GetYear());
+    AddOption("year", (int)queryParams.GetYear());
 
   return true;
 }

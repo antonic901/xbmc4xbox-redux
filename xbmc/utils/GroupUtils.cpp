@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2012-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,57 +18,65 @@
  *
  */
 
+#include "GroupUtils.h"
+
 #include <map>
 #include <set>
 
-#include "GroupUtils.h"
 #include "FileItem.h"
+#include "filesystem/MultiPathDirectory.h"
 #include "utils/StringUtils.h"
-#include "utils/Variant.h"
+#include "utils/URIUtils.h"
 #include "video/VideoDbUrl.h"
 #include "video/VideoInfoTag.h"
-#include "utils/URIUtils.h"
-#include "filesystem/MultiPathDirectory.h"
 
-using namespace std;
-
-typedef map<int, set<CFileItemPtr> > SetMap;
+typedef std::map<int, std::set<CFileItemPtr> > SetMap;
 
 bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileItemList &items, CFileItemList &groupedItems, GroupAttribute groupAttributes /* = GroupAttributeNone */)
 {
-  if (items.Size() <= 0 || groupBy == GroupByNone)
+  CFileItemList ungroupedItems;
+  return Group(groupBy, baseDir, items, groupedItems, ungroupedItems, groupAttributes);
+}
+
+bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileItemList &items, CFileItemList &groupedItems, CFileItemList &ungroupedItems, GroupAttribute groupAttributes /* = GroupAttributeNone */)
+{
+  if (groupBy == GroupByNone)
     return false;
+
+  // nothing to do if there are no items to group
+  if (items.Size() <= 0)
+    return true;
 
   SetMap setMap;
   for (int index = 0; index < items.Size(); index++)
   {
-    bool add = true;
+    bool ungrouped = true;
     const CFileItemPtr item = items.Get(index);
 
     // group by sets
     if ((groupBy & GroupBySet) &&
-        item->HasVideoInfoTag() && item->GetVideoInfoTag()->m_iSetId > 0)
+      item->HasVideoInfoTag() && item->GetVideoInfoTag()->m_iSetId > 0)
     {
-      add = false;
+      ungrouped = false;
       setMap[item->GetVideoInfoTag()->m_iSetId].insert(item);
     }
 
-    if (add)
-      groupedItems.Add(item);
+    if (ungrouped)
+      ungroupedItems.Add(item);
   }
 
-  if ((groupBy & GroupBySet) && setMap.size() > 0)
+  if ((groupBy & GroupBySet) && !setMap.empty())
   {
     CVideoDbUrl itemsUrl;
     if (!itemsUrl.FromString(baseDir))
       return false;
 
-    for (SetMap::const_iterator set = setMap.begin(); set != setMap.end(); set++)
+    for (SetMap::const_iterator set = setMap.begin(); set != setMap.end(); ++set)
     {
-      // only one item in the set, so just re-add it
+      // only one item in the set, so add it to the ungrouped items
       if (set->second.size() == 1 && (groupAttributes & GroupAttributeIgnoreSingleItems))
       {
-        groupedItems.Add(*set->second.begin());
+        ungroupedItems.Add(*set->second.begin());
         continue;
       }
 
@@ -76,7 +84,7 @@ bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileI
       pItem->GetVideoInfoTag()->m_iDbId = set->first;
       pItem->GetVideoInfoTag()->m_type = MediaTypeVideoCollection;
 
-      std::string basePath = StringUtils::Format("videodb://movies/sets/%ld/", set->first);
+      std::string basePath = StringUtils::Format("videodb://movies/sets/%i/", set->first);
       CVideoDbUrl videoUrl;
       if (!videoUrl.FromString(basePath))
         pItem->SetPath(basePath);
@@ -90,23 +98,25 @@ bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileI
       CVideoInfoTag* setInfo = pItem->GetVideoInfoTag();
       setInfo->m_strPath = pItem->GetPath();
       setInfo->m_strTitle = pItem->GetLabel();
+      setInfo->m_strPlot = (*set->second.begin())->GetVideoInfoTag()->m_strSetOverview;
 
       int ratings = 0;
+      float totalRatings = 0;
       int iWatched = 0; // have all the movies been played at least once?
-      std::set<CStdString> pathSet;
-      for (std::set<CFileItemPtr>::const_iterator movie = set->second.begin(); movie != set->second.end(); movie++)
+      std::set<std::string> pathSet;
+      for (std::set<CFileItemPtr>::const_iterator movie = set->second.begin(); movie != set->second.end(); ++movie)
       {
         CVideoInfoTag* movieInfo = (*movie)->GetVideoInfoTag();
         // handle rating
-        if (movieInfo->m_fRating > 0.0f)
+        if (movieInfo->GetRating().rating > 0.0f)
         {
           ratings++;
-          setInfo->m_fRating += movieInfo->m_fRating;
+          totalRatings += movieInfo->GetRating().rating;
         }
 
         // handle year
-        if (movieInfo->m_iYear > setInfo->m_iYear)
-          setInfo->m_iYear = movieInfo->m_iYear;
+        if (movieInfo->GetYear() > setInfo->GetYear())
+          setInfo->SetYear(movieInfo->GetYear());
 
         // handle lastplayed
         if (movieInfo->m_lastPlayed.IsValid() && movieInfo->m_lastPlayed > setInfo->m_lastPlayed)
@@ -131,7 +141,7 @@ bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileI
       setInfo->m_basePath = XFILE::CMultiPathDirectory::ConstructMultiPath(pathSet);
 
       if (ratings > 1)
-        pItem->GetVideoInfoTag()->m_fRating /= ratings;
+        pItem->GetVideoInfoTag()->SetRating(totalRatings / ratings);
 
       setInfo->m_playCount = iWatched >= (int)set->second.size() ? (setInfo->m_playCount / set->second.size()) : 0;
       pItem->SetProperty("total", (int)set->second.size());
@@ -146,11 +156,14 @@ bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileI
   return true;
 }
 
-bool GroupUtils::GroupAndSort(GroupBy groupBy, const std::string &baseDir, const CFileItemList &items, const SortDescription &sortDescription, CFileItemList &groupedItems, GroupAttribute groupAttributes /* = GroupAttributeNone */)
+bool GroupUtils::GroupAndMix(GroupBy groupBy, const std::string &baseDir, const CFileItemList &items, CFileItemList &groupedItemsMixed, GroupAttribute groupAttributes /* = GroupAttributeNone */)
 {
-  if (!Group(groupBy, baseDir, items, groupedItems, groupAttributes))
+  CFileItemList ungroupedItems;
+  if (!Group(groupBy, baseDir, items, groupedItemsMixed, ungroupedItems, groupAttributes))
     return false;
 
-  groupedItems.Sort(sortDescription);
+  // add all the ungrouped items as well
+  groupedItemsMixed.Append(ungroupedItems);
+
   return true;
 }

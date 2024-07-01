@@ -153,13 +153,6 @@ bool CGUIDialogMediaSource::ShowAndAddMediaSource(const CStdString &type)
       share.m_strThumbnailImage = dialog->m_paths->Get(0)->GetArt("thumb");
     }
     CMediaSourceSettings::Get().AddShare(type, share);
-
-    if (type == "video")
-    {
-      if (dialog->m_bRunScan)
-        CGUIWindowVideoBase::OnScan(share.strPath, true);
-
-    }
   }
   dialog->m_paths->Clear();
   return confirmed;
@@ -498,9 +491,9 @@ void CGUIDialogMediaSource::OnPathAdd()
   HighlightItem(m_paths->Size() - 1);
 }
 
-vector<CStdString> CGUIDialogMediaSource::GetPaths()
+std::vector<std::string> CGUIDialogMediaSource::GetPaths()
 {
-  vector<CStdString> paths;
+  std::vector<std::string> paths;
   for (int i = 0; i < m_paths->Size(); i++)
   {
     if (!m_paths->Get(i)->GetPath().IsEmpty())

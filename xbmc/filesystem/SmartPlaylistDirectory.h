@@ -20,11 +20,11 @@
  */
 
 #include "IFileDirectory.h"
-#include "utils/SortUtils.h"
+#include <string>
 
 class CSmartPlaylist;
 
-namespace XFILE 
+namespace XFILE
 {
   class CSmartPlaylistDirectory : public IFileDirectory
   {
@@ -36,8 +36,8 @@ namespace XFILE
     virtual bool ContainsFiles(const CURL& url);
     virtual bool Remove(const CURL& url);
 
-    static bool GetDirectory(const CSmartPlaylist &playlist, CFileItemList& items, const CStdString &strBaseDir = "", bool filter = false);
+    static bool GetDirectory(const CSmartPlaylist &playlist, CFileItemList& items, const std::string &strBaseDir = "", bool filter = false);
 
-    static CStdString GetPlaylistByName(const CStdString& name, const CStdString& playlistType);
+    static std::string GetPlaylistByName(const std::string& name, const std::string& playlistType);
   };
 }

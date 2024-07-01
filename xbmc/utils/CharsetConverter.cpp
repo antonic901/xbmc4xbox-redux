@@ -287,6 +287,7 @@ enum StdConversionType /* Keep it in sync with CCharsetConverter::CInnerConverte
   Utf16LEtoUtf8,
   Utf8toW,
   Utf8ToSystem,
+  SystemToUtf8,
   Ucs2CharsetToUtf8,
   NumberOfStdConversionTypes /* Dummy sentinel entry */
 };
@@ -331,6 +332,7 @@ CConverterType CCharsetConverter::CInnerConverter::m_stdConversion[NumberOfStdCo
   /* Utf16LEtoUtf8 */       CConverterType("UTF-16LE",      "UTF-8", CCharsetConverter::m_Utf8CharMaxSize),
   /* Utf8toW */             CConverterType(UTF8_SOURCE,     WCHAR_CHARSET),
   /* Utf8ToSystem */        CConverterType(UTF8_SOURCE,     SystemCharset),
+  /* SystemToUtf8 */        CConverterType(SystemCharset,   UTF8_SOURCE),
   /* Ucs2CharsetToUtf8 */   CConverterType("UCS-2LE",       "UTF-8", CCharsetConverter::m_Utf8CharMaxSize)
 };
 
@@ -647,6 +649,7 @@ void CCharsetConverter::reset(void)
 void CCharsetConverter::resetSystemCharset(void)
 {
   CInnerConverter::m_stdConversion[Utf8ToSystem].Reset();
+  CInnerConverter::m_stdConversion[SystemToUtf8].Reset();
 }
 
 void CCharsetConverter::resetUserCharset(void)
@@ -783,7 +786,7 @@ bool CCharsetConverter::utf8ToStringCharset(std::string& stringSrcDst)
   return utf8ToStringCharset(strSrc, stringSrcDst);
 }
 
-bool CCharsetConverter::ToUtf8(const std::string& strSourceCharset, const std::string& stringSrc, std::string& utf8StringDst)
+bool CCharsetConverter::ToUtf8(const std::string& strSourceCharset, const std::string& stringSrc, std::string& utf8StringDst, bool failOnBadChar /*= false*/)
 {
   if (strSourceCharset == "UTF-8")
   { // simple case - no conversion necessary
@@ -791,7 +794,7 @@ bool CCharsetConverter::ToUtf8(const std::string& strSourceCharset, const std::s
     return true;
   }
   
-  return CInnerConverter::customConvert(strSourceCharset, "UTF-8", stringSrc, utf8StringDst);
+  return CInnerConverter::customConvert(strSourceCharset, "UTF-8", stringSrc, utf8StringDst, failOnBadChar);
 }
 
 bool CCharsetConverter::utf8To(const std::string& strDestCharset, const std::string& utf8StringSrc, std::string& stringDst)
@@ -933,6 +936,11 @@ bool CCharsetConverter::isValidUtf8(const char* buf, unsigned int len)
 bool CCharsetConverter::isValidUtf8(const std::string& str)
 {
   return isValidUtf8(str.c_str(), str.size());
+}
+
+bool CCharsetConverter::systemToUtf8(const std::string& sysStringSrc, std::string& utf8StringDst, bool failOnBadChar /*= false*/)
+{
+  return CInnerConverter::stdConvert(SystemToUtf8, sysStringSrc, utf8StringDst, failOnBadChar);
 }
 
 bool CCharsetConverter::utf8logicalToVisualBiDi(const std::string& utf8StringSrc, std::string& utf8StringDst, bool failOnBadString /*= false*/)

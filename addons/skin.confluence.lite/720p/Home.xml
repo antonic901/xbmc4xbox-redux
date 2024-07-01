@@ -1,6 +1,10 @@
 <window id="0">
 	<defaultcontrol always="true">9000</defaultcontrol>
 	<allowoverlay>no</allowoverlay>
+	<onunload condition="Container(9000).Hasfocus(10) | Container(9000).Hasfocus(11) | ControlGroup(9010).HasFocus | ControlGroup(9016).HasFocus | ControlGroup(9017).HasFocus">SetProperty(VideosDirectLink,True)</onunload>
+	<onunload condition="Control.HasFocus(9000) + Container(9000).Hasfocus(2)">ClearProperty(VideosDirectLink)</onunload>
+	<onunload condition="ControlGroup(9011).HasFocus">SetProperty(MusicDirectLink,True)</onunload>
+	<onunload condition="Control.HasFocus(9000) + Container(9000).Hasfocus(3)">ClearProperty(MusicDirectLink)</onunload>
 	<controls>
 		<include>CommonBackground</include>
 		<control type="image">
@@ -471,7 +475,8 @@
 					</item>
 					<item id="2">
 						<label>31953</label>
-						<onclick>ActivateWindow(Videos,Files,return)</onclick>
+						<onclick condition="String.IsEqual(Window.Property(VideosDirectLink),True)">ActivateWindow(Videos)</onclick>
+						<onclick condition="!String.IsEqual(Window.Property(VideosDirectLink),True)">ActivateWindow(Videos,root)</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoVideosButton)</visible>
@@ -492,7 +497,8 @@
 					</item>
 					<item id="3">
 						<label>31956</label>
-						<onclick>ActivateWindow(Music)</onclick>
+						<onclick condition="String.IsEqual(Window.Property(MusicDirectLink),True)">ActivateWindow(Music)</onclick>
+						<onclick condition="!String.IsEqual(Window.Property(MusicDirectLink),True)">ActivateWindow(Music,root)</onclick>
 						<icon>-</icon>
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoMusicButton)</visible>
@@ -560,7 +566,7 @@
 			<onup>9001</onup>
 			<ondown>20</ondown>
 			<control type="fixedlist" id="700">
-				<animation effect="slide" start="0,0" end="-91,0" time="0" condition="StringCompare(Container(700).NumItems,2) | StringCompare(Container(700).NumItems,4)">conditional</animation>
+				<animation effect="slide" start="0,0" end="-91,0" time="0" condition="String.IsEqual(Container(700).NumItems,2) | String.IsEqual(Container(700).NumItems,4)">conditional</animation>
 				<visible>Container(9000).HasFocus(2) | Container(9000).HasFocus(10) | Container(9000).HasFocus(11)</visible>
 				<visible>!IsEmpty(Skin.String(HomeVideosButton1)) | !IsEmpty(Skin.String(HomeVideosButton2)) | !IsEmpty(Skin.String(HomeVideosButton3)) | !IsEmpty(Skin.String(HomeVideosButton4)) | !IsEmpty(Skin.String(HomeVideosButton5))</visible>
 				<onleft>700</onleft>
@@ -573,7 +579,7 @@
 				</content>
 			</control>
 			<control type="fixedlist" id="703">
-				<animation effect="slide" start="0,0" end="-91,0" time="0" condition="StringCompare(Container(703).NumItems,2) | StringCompare(Container(703).NumItems,4)">conditional</animation>
+				<animation effect="slide" start="0,0" end="-91,0" time="0" condition="String.IsEqual(Container(703).NumItems,2) | String.IsEqual(Container(703).NumItems,4)">conditional</animation>
 				<visible>Container(9000).HasFocus(3)</visible>
 				<visible>!IsEmpty(Skin.String(HomeMusicButton1)) | !IsEmpty(Skin.String(HomeMusicButton2)) | !IsEmpty(Skin.String(HomeMusicButton3)) | !IsEmpty(Skin.String(HomeMusicButton4)) | !IsEmpty(Skin.String(HomeMusicButton5))</visible>
 				<onleft>703</onleft>
@@ -586,7 +592,7 @@
 				</content>
 			</control>
 			<control type="fixedlist" id="704">
-				<animation effect="slide" start="0,0" end="-91,0" time="0" condition="StringCompare(Container(704).NumItems,2) | StringCompare(Container(704).NumItems,4)">conditional</animation>
+				<animation effect="slide" start="0,0" end="-91,0" time="0" condition="String.IsEqual(Container(704).NumItems,2) | String.IsEqual(Container(704).NumItems,4)">conditional</animation>
 				<visible>Container(9000).HasFocus(4)</visible>
 				<visible>!IsEmpty(Skin.String(HomePictureButton1)) | !IsEmpty(Skin.String(HomePictureButton2)) | !IsEmpty(Skin.String(HomePictureButton3)) | !IsEmpty(Skin.String(HomePictureButton4)) | !IsEmpty(Skin.String(HomePictureButton5))</visible>
 				<onleft>704</onleft>
@@ -599,7 +605,7 @@
 				</content>
 			</control>
 			<control type="fixedlist" id="705">
-				<animation effect="slide" start="0,0" end="-91,0" time="0" condition="StringCompare(Container(705).NumItems,2) | StringCompare(Container(705).NumItems,4)">conditional</animation>
+				<animation effect="slide" start="0,0" end="-91,0" time="0" condition="String.IsEqual(Container(705).NumItems,2) | String.IsEqual(Container(705).NumItems,4)">conditional</animation>
 				<visible>Container(9000).HasFocus(1)</visible>
 				<visible>!IsEmpty(Skin.String(HomeProgramButton1)) | !IsEmpty(Skin.String(HomeProgramButton2)) | !IsEmpty(Skin.String(HomeProgramButton3)) | !IsEmpty(Skin.String(HomeProgramButton4)) | !IsEmpty(Skin.String(HomeProgramButton5))</visible>
 				<onleft>705</onleft>

@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2012-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,15 +19,16 @@
  */
 
 #include "MusicThumbLoader.h"
+
+#include <utility>
+
 #include "FileItem.h"
-#include "TextureDatabase.h"
+#include "music/infoscanner/MusicInfoScanner.h"
 #include "music/tags/MusicInfoTag.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
-#include "music/infoscanner/MusicInfoScanner.h"
-#include "music/Artist.h"
+#include "TextureDatabase.h"
 #include "video/VideoThumbLoader.h"
 
-using namespace std;
 using namespace MUSIC_INFO;
 
 CMusicThumbLoader::CMusicThumbLoader() : CThumbLoader()
@@ -104,7 +105,7 @@ bool CMusicThumbLoader::LoadItemCached(CFileItem* pItem)
       int idArtist = m_musicDatabase->GetArtistByName(artist);
       if (idArtist >= 0)
       {
-        string fanart = m_musicDatabase->GetArtForItem(idArtist, MediaTypeArtist, "fanart");
+        std::string fanart = m_musicDatabase->GetArtForItem(idArtist, MediaTypeArtist, "fanart");
         if (!fanart.empty())
         {
           pItem->SetArt("artist.fanart", fanart);
@@ -159,7 +160,7 @@ bool CMusicThumbLoader::LoadItemLookup(CFileItem* pItem)
       if (!FillThumb(*pItem, false)) // Check for user thumbs but ignore folder thumbs
       {
         // No user thumb, use embedded art
-        CStdString thumb = CTextureUtils::GetWrappedImageURL(pItem->GetPath(), "music");
+        std::string thumb = CTextureUtils::GetWrappedImageURL(pItem->GetPath(), "music");
         pItem->SetArt("thumb", thumb);
       }
     }
@@ -177,15 +178,16 @@ bool CMusicThumbLoader::FillThumb(CFileItem &item, bool folderThumbs /* = true *
 {
   if (item.HasArt("thumb"))
     return true;
-  CStdString thumb = GetCachedImage(item, "thumb");
-  if (thumb.IsEmpty())
+  std::string thumb = GetCachedImage(item, "thumb");
+  if (thumb.empty())
   {
     thumb = item.GetUserMusicThumb(false, folderThumbs);
-    if (!thumb.IsEmpty())
+    if (!thumb.empty())
       SetCachedImage(item, "thumb", thumb);
   }
-  item.SetArt("thumb", thumb);
-  return !thumb.IsEmpty();
+  if (!thumb.empty())
+    item.SetArt("thumb", thumb);
+  return !thumb.empty();
 }
 
 bool CMusicThumbLoader::FillLibraryArt(CFileItem &item)
@@ -194,7 +196,7 @@ bool CMusicThumbLoader::FillLibraryArt(CFileItem &item)
   if (tag.GetDatabaseId() > -1 && !tag.GetType().empty())
   {
     m_musicDatabase->Open();
-    map<string, string> artwork;
+    std::map<std::string, std::string> artwork;
     if (m_musicDatabase->GetArtForItem(tag.GetDatabaseId(), tag.GetType(), artwork))
       item.SetArt(artwork);
     else if (tag.GetType() == MediaTypeSong)
@@ -208,13 +210,13 @@ bool CMusicThumbLoader::FillLibraryArt(CFileItem &item)
       if (i != m_albumArt.end())
       {
         item.AppendArt(i->second, MediaTypeAlbum);
-        for (map<string, string>::const_iterator j = i->second.begin(); j != i->second.end(); ++j)
+        for (std::map<std::string, std::string>::const_iterator j = i->second.begin(); j != i->second.end(); ++j)
           item.SetArtFallback(j->first, "album." + j->first);
       }
     }
     if (tag.GetType() == MediaTypeSong || tag.GetType() == MediaTypeAlbum)
     { // fanart from the artist
-      string fanart = m_musicDatabase->GetArtistArtForItem(tag.GetDatabaseId(), tag.GetType(), "fanart");
+      std::string fanart = m_musicDatabase->GetArtistArtForItem(tag.GetDatabaseId(), tag.GetType(), "fanart");
       if (!fanart.empty())
       {
         item.SetArt("artist.fanart", fanart);
@@ -238,7 +240,8 @@ bool CMusicThumbLoader::FillLibraryArt(CFileItem &item)
 
 bool CMusicThumbLoader::GetEmbeddedThumb(const std::string &path, EmbeddedArt &art)
 {
-  auto_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(path));
+  CFileItem item(path, false);
+  boost::movelib::unique_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(item));
   CMusicInfoTag tag;
   if (NULL != pLoader.get())
     pLoader->Load(path, tag, &art);

@@ -781,13 +781,13 @@ const CStdString& Xcddb::getTrackTitle(int track) const
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-void Xcddb::getDiskTitle(CStdString& strdisk_title) const
+void Xcddb::getDiskTitle(std::string& strdisk_title) const
 {
   strdisk_title = m_strDisk_title;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-void Xcddb::getDiskArtist(CStdString& strdisk_artist) const
+void Xcddb::getDiskArtist(std::string& strdisk_artist) const
 {
   strdisk_artist = m_strDisk_artist;
 }

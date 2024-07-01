@@ -24,6 +24,7 @@
 
 #include "boost/shared_ptr.hpp"
 #include "utils/StdString.h"
+#include "XBDateTime.h"
 
 #include "boost/enable_shared_from_this.hpp"
 
@@ -107,6 +108,10 @@ namespace ADDON
     virtual const CStdString Icon() const =0;
     virtual int  Stars() const =0;
     virtual const CStdString Disclaimer() const =0;
+    virtual const std::string Broken() const =0;
+    virtual CDateTime InstallDate() const =0;
+    virtual CDateTime LastUpdated() const =0;
+    virtual CDateTime LastUsed() const =0;
     virtual const InfoMap &ExtraInfo() const =0;
     virtual bool HasSettings() =0;
     virtual void SaveSettings() =0;

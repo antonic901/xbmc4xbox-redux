@@ -158,7 +158,7 @@ bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& 
         g_charsetConverter.wToUTF8((LPWSTR)(pData.get()+iOffset), utf8String);
         tag.SetTitle(utf8String);
       }
-      
+
       if (nAuthorSize)
       {
         utf8String = "";
@@ -410,7 +410,7 @@ void CMusicInfoTagLoaderWMA::SetTagValueString(const CStdString& strFrameName, c
   }
   else if (strFrameName == "WM/PartOfSet")
   {
-    tag.SetPartOfSet(atoi(strValue.c_str()));
+    tag.SetDiscNumber(atoi(strValue.c_str()));
   }
   //else if (strFrameName=="WM/Track") // Old Tracknumber, should not be used anymore
   else if (strFrameName == "WM/Year")

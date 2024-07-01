@@ -203,8 +203,8 @@ CURL CDVDInputStreamFFmpeg::GetM3UBestBandwidthStream(const CURL &url, size_t ba
     else if (StringUtils::StartsWith(strLine, M3U::StreamMarker))
     {
       // parse the line so we can pull out the bandwidth
-      const map< CStdString, CStdString > params = M3U::ParseStreamLine(strLine);
-      const map< CStdString, CStdString >::const_iterator it = params.find(M3U::BandwidthMarker);
+      const map< std::string, std::string > params = M3U::ParseStreamLine(strLine);
+      const map< std::string, std::string >::const_iterator it = params.find(M3U::BandwidthMarker);
 
       if (it != params.end())
       {

@@ -18,7 +18,6 @@
  *
  */
 
-#include "system.h"
 #include "PlaylistDirectory.h"
 #include "PlayListPlayer.h"
 #include "URL.h"
@@ -54,6 +53,8 @@ bool CPlaylistDirectory::GetDirectory(const CURL& url, CFileItemList &items)
   for (int i = 0; i < playlist.size(); ++i)
   {
     CFileItemPtr item = playlist[i];
+    item->SetProperty("playlistposition", i);
+    item->SetProperty("playlisttype", playlistTyp);
     //item->m_iprogramCount = i; // the programCount is set as items are added!
     items.Add(item);
   }

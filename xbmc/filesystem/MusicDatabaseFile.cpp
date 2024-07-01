@@ -20,11 +20,9 @@
 
 #include "MusicDatabaseFile.h"
 #include "music/MusicDatabase.h"
-#include "Util.h"
-#include "utils/URIUtils.h"
 #include "URL.h"
-
-#include <sys/stat.h>
+#include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
 
 using namespace XFILE;
 
@@ -37,14 +35,14 @@ CMusicDatabaseFile::~CMusicDatabaseFile(void)
   Close();
 }
 
-CStdString CMusicDatabaseFile::TranslateUrl(const CURL& url)
+std::string CMusicDatabaseFile::TranslateUrl(const CURL& url)
 {
   CMusicDatabase musicDatabase;
   if (!musicDatabase.Open())
     return "";
-  
-  CStdString strFileName=URIUtils::GetFileName(url.Get());
-  CStdString strExtension = URIUtils::GetExtension(strFileName);
+
+  std::string strFileName=URIUtils::GetFileName(url.Get());
+  std::string strExtension = URIUtils::GetExtension(strFileName);
   URIUtils::RemoveExtension(strFileName);
 
   if (!StringUtils::IsNaturalNumber(strFileName))
@@ -55,11 +53,12 @@ CStdString CMusicDatabaseFile::TranslateUrl(const CURL& url)
   CSong song;
   if (!musicDatabase.GetSong(idSong, song))
     return "";
-  
+
+  StringUtils::ToLower(strExtension);
   if (!URIUtils::HasExtension(song.strFileName, strExtension))
     return "";
- 
-  return song.strFileName; 
+
+  return song.strFileName;
 }
 
 bool CMusicDatabaseFile::Open(const CURL& url)
@@ -69,7 +68,7 @@ bool CMusicDatabaseFile::Open(const CURL& url)
 
 bool CMusicDatabaseFile::Exists(const CURL& url)
 {
-  return !TranslateUrl(url).IsEmpty();
+  return !TranslateUrl(url).empty();
 }
 
 int CMusicDatabaseFile::Stat(const CURL& url, struct __stat64* buffer)

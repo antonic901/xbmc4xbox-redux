@@ -33,13 +33,10 @@
 #include "CharsetConverter.h"
 #include "utils/fstrcmp.h"
 #include "Util.h"
-#include "LangInfo.h"
-#include <locale>
 #include <functional>
 
 #include <assert.h>
 #include <math.h>
-#include <sstream>
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
@@ -507,6 +504,18 @@ std::string& StringUtils::TrimRight(std::string &str, const char* const chars)
   return str;
 }
 
+int StringUtils::ReturnDigits(const std::string& str)
+{
+  std::stringstream ss;
+  for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
+  {
+    const char &character = *it;
+    if (isdigit(character))
+      ss << character;
+  }
+  return atoi(ss.str().c_str());
+}
+
 std::string& StringUtils::RemoveDuplicatedSpacesAndTabs(std::string& str)
 {
   std::string::iterator it = str.begin();
@@ -739,6 +748,58 @@ std::vector<std::string> StringUtils::Split(const std::string& input, const char
   return results;
 }
 
+std::vector<std::string> StringUtils::SplitMulti(const std::vector<std::string> &input, const std::vector<std::string> &delimiters, unsigned int iMaxStrings /* = 0 */)
+{
+  if (input.empty())
+    return std::vector<std::string>();
+
+  std::vector<std::string> results(input);
+
+  if (delimiters.empty() || (iMaxStrings > 0 && iMaxStrings <= input.size()))
+    return results;
+
+  std::vector<std::string> strings1;
+  if (iMaxStrings == 0)
+  {
+    for (size_t di = 0; di < delimiters.size(); di++)
+    {
+      for (size_t i = 0; i < results.size(); i++)
+      {
+        std::vector<std::string> substrings = StringUtils::Split(results[i], delimiters[di]);
+        for (size_t j = 0; j < substrings.size(); j++)
+          strings1.push_back(substrings[j]);
+      }
+      results = strings1;
+      strings1.clear();
+    }
+    return results;
+  }
+
+  // Control the number of strings input is split into, keeping the original strings.
+  // Note iMaxStrings > input.size()
+  int iNew = iMaxStrings - results.size();
+  for (size_t di = 0; di < delimiters.size(); di++)
+  {
+    for (size_t i = 0; i < results.size(); i++)
+    {
+      if (iNew > 0)
+      {
+        std::vector<std::string> substrings = StringUtils::Split(results[i], delimiters[di], iNew + 1);
+        iNew = iNew - substrings.size() + 1;
+        for (size_t j = 0; j < substrings.size(); j++)
+          strings1.push_back(substrings[j]);
+      }
+      else
+        strings1.push_back(results[i]);
+    }
+    results = strings1;
+    iNew = iMaxStrings - results.size();
+    strings1.clear();
+    if ((iNew <= 0))
+      break;  //Stop trying any more delimiters
+  }
+  return results;
+}
 
 // returns the number of occurrences of strFind in strInput.
 int StringUtils::FindNumber(const std::string& strInput, const std::string &strFind)

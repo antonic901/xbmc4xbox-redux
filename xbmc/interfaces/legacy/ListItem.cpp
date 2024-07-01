@@ -282,7 +282,7 @@ namespace XBMCAddon
           const String value(alt.which() == first ? alt.former() : emptyString);
 
           if (key == "year")
-            item->GetVideoInfoTag()->m_iYear = strtol(value.c_str(), NULL, 10);
+            item->GetVideoInfoTag()->SetYear(strtol(value.c_str(), NULL, 10));
           else if (key == "episode")
             item->GetVideoInfoTag()->m_iEpisode = strtol(value.c_str(), NULL, 10);
           else if (key == "season")
@@ -294,7 +294,7 @@ namespace XBMCAddon
           else if (key == "count")
             item->m_iprogramCount = strtol(value.c_str(), NULL, 10);
           else if (key == "rating")
-            item->GetVideoInfoTag()->m_fRating = (float)strtod(value.c_str(), NULL);
+            item->GetVideoInfoTag()->SetRating((float)strtod(value.c_str(), NULL));
           else if (key == "size")
             item->m_dwSize = (int64_t)strtoll(value.c_str(), NULL, 10);
           else if (key == "watched") // backward compat - do we need it?
@@ -370,7 +370,11 @@ namespace XBMCAddon
           else if (key == "tvshowtitle")
             item->GetVideoInfoTag()->m_strShowTitle = value;
           else if (key == "premiered")
-            item->GetVideoInfoTag()->m_premiered.SetFromDateString(value);
+          {
+            CDateTime premiered;
+            premiered.SetFromDateString(value);
+            item->GetVideoInfoTag()->SetPremiered(premiered);
+          }
           else if (key == "status")
             item->GetVideoInfoTag()->m_strStatus = value;
           else if (key == "code")
@@ -384,7 +388,7 @@ namespace XBMCAddon
           else if (key == "album")
             item->GetVideoInfoTag()->m_strAlbum = value;
           else if (key == "votes")
-            item->GetVideoInfoTag()->m_strVotes = value;
+            item->GetVideoInfoTag()->SetVotes(StringUtils::ReturnDigits(value));
           else if (key == "trailer")
             item->GetVideoInfoTag()->m_strTrailer = value;
           else if (key == "date")
@@ -450,8 +454,6 @@ namespace XBMCAddon
             item->GetMusicInfoTag()->SetMusicBrainzAlbumID(value);
           else if (key == "musicbrainzalbumartistid")
             item->GetMusicInfoTag()->SetMusicBrainzAlbumArtistID(StringUtils::Split(value, g_advancedSettings.m_musicItemSeparator));
-          else if (key == "musicbrainztrmid")
-            item->GetMusicInfoTag()->SetMusicBrainzTRMID(value);
           else if (key == "comment")
             item->GetMusicInfoTag()->SetComment(value);
           else if (key == "date")
@@ -574,7 +576,7 @@ namespace XBMCAddon
       int itemCount = 0;
       for (std::vector<Tuple<String,String> >::const_iterator iter = items.begin(); iter < items.end(); ++iter, ++itemCount)
       {
-        Tuple<String,String> tuple = *iter;
+        const Tuple<String, StringOrInt> &tuple = items[i];
         if (tuple.GetNumValuesSet() != 2)
           throw ListItemException("Must pass in a list of tuples of pairs of strings. One entry in the list only has %d elements.",tuple.GetNumValuesSet());
         std::string uText = tuple.first();

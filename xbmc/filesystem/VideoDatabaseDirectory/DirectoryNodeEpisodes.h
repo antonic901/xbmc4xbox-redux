@@ -28,9 +28,10 @@ namespace XFILE
     class CDirectoryNodeEpisodes : public CDirectoryNode
     {
     public:
-      CDirectoryNodeEpisodes(const CStdString& strEntryName, CDirectoryNode* pParent);
+      CDirectoryNodeEpisodes(const std::string& strEntryName, CDirectoryNode* pParent);
     protected:
       virtual bool GetContent(CFileItemList& items) const;
+      NODE_TYPE GetChildType() const;
     };
   }
 }

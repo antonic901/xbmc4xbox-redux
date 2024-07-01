@@ -24,6 +24,7 @@
  *
  */
 
+#include "addons/IAddon.h"
 #include "GUIListItem.h"
 #include "utils/Archive.h"
 #include "utils/ISerializable.h"
@@ -50,6 +51,12 @@ class CSong;
 class CGenre;
 
 class CURL;
+
+class CFileItemList;
+
+class CFileItemList;
+class CCueDocument;
+typedef boost::shared_ptr<CCueDocument> CCueDocumentPtr;
 
 /* special startoffset used to indicate that we wish to resume */
 #define STARTOFFSET_RESUME (-1)
@@ -116,9 +123,17 @@ public:
   bool Exists(bool bUseCache = true) const;
 
   /*!
+   \brief Check whether an item is an optical media folder or its parent.
+    This will return the non-empty path to the playable entry point of the media
+    one or two levels down (VIDEO_TS.IFO for DVDs or index.bdmv for BDs).
+    The returned path will be empty if folder does not meet this criterion.
+   \return non-empty string if item is optical media folder, empty otherwise.
+   */
+  std::string GetOpticalMediaPath() const;
+  /*!
    \brief Check whether an item is a video item. Note that this returns true for
     anything with a video info tag, so that may include eg. folders.
-   \return true if item is video, false otherwise. 
+   \return true if item is video, false otherwise.
    */
   bool IsVideo() const;
 
@@ -127,7 +142,7 @@ public:
   /*!
    \brief Check whether an item is a picture item. Note that this returns true for
     anything with a picture info tag, so that may include eg. folders.
-   \return true if item is picture, false otherwise. 
+   \return true if item is picture, false otherwise.
    */
   bool IsPicture() const;
   bool IsLyrics() const;
@@ -136,7 +151,7 @@ public:
   /*!
    \brief Check whether an item is an audio item. Note that this returns true for
     anything with a music info tag, so that may include eg. folders.
-   \return true if item is audio, false otherwise. 
+   \return true if item is audio, false otherwise.
    */
   bool IsAudio() const;
 
@@ -156,6 +171,7 @@ public:
   bool IsShortCut() const;
   bool IsNFO() const;
   bool IsDVDImage() const;
+  bool IsDiscImage() const { return IsDVDImage(); }; // TODO: rename IsDVDImage() to IsDiscImage()
   bool IsOpticalMediaFile() const;
   bool IsDVDFile(bool bVobs = true, bool bIfos = true) const;
   bool IsBDFile() const;
@@ -178,6 +194,7 @@ public:
   bool IsMultiPath() const;
   bool IsMusicDb() const;
   bool IsVideoDb() const;
+  bool IsPVRRecording() const { return false; };
   bool IsType(const char *ext) const;
   bool IsVirtualDirectoryRoot() const;
   bool IsReadOnly() const;
@@ -242,6 +259,7 @@ public:
   }
 
   bool HasAddonInfo() const { return false; } // @todo BACKPORT: https://github.com/xbmc/xbmc/pull/9051
+  const boost::shared_ptr<const ADDON::IAddon> GetAddonInfo() const { return boost::shared_ptr<const ADDON::IAddon>(); } // @todo BACKPORT: https://github.com/xbmc/xbmc/pull/9051
 
   CPictureInfoTag* GetPictureInfoTag();
 
@@ -355,7 +373,7 @@ public:
    \param replaceLabels whether to replace labels (defaults to true)
    */
   void UpdateInfo(const CFileItem &item, bool replaceLabels = true);
-  
+
   bool IsSamePath(const CFileItem *item) const;
 
   bool IsAlbum() const;
@@ -394,6 +412,10 @@ public:
   int m_iHasLock; // 0 - no lock 1 - lock, but unlocked 2 - locked
   int m_iBadPwdCount;
 
+  void SetCueDocument(const CCueDocumentPtr& cuePtr);
+  void LoadEmbeddedCue();
+  bool HasCueDocument() const;
+  bool LoadTracksFromCueDocument(CFileItemList& scannedItems);
 private:
   /*! \brief initialize all members of this class (not CGUIListItem members) to default values.
    Called from constructors, and from Reset()
@@ -414,6 +436,8 @@ private:
   CVideoInfoTag* m_videoInfoTag;
   CPictureInfoTag* m_pictureInfoTag;
   bool m_bIsAlbum;
+
+  CCueDocumentPtr m_cueDocument;
 };
 
 /*!
@@ -505,8 +529,9 @@ public:
   int GetObjectCount() const;
   void FilterCueItems();
   void RemoveExtensions();
+  void SetIgnoreURLOptions(bool ignoreURLOptions);
   void SetFastLookup(bool fastLookup);
-  bool Contains(const CStdString& fileName) const;
+  bool Contains(const std::string& fileName) const;
   bool GetFastLookup() const { return m_fastLookup; };
 
   /*! \brief stack a CFileItemList
@@ -523,7 +548,7 @@ public:
    The file list may be cached based on which window we're viewing in, as different
    windows will be listing different portions of the same URL (eg viewing music files
    versus viewing video files)
-   
+
    \param windowID id of the window that's loading this list (defaults to 0)
    \return true if we loaded from the cache, false otherwise.
    \sa Save,RemoveDiscCache
@@ -531,11 +556,11 @@ public:
   bool Load(int windowID = 0);
 
   /*! \brief save a CFileItemList to the cache
-   
+
    The file list may be cached based on which window we're viewing in, as different
    windows will be listing different portions of the same URL (eg viewing music files
    versus viewing video files)
-   
+
    \param windowID id of the window that's saving this list (defaults to 0)
    \return true if successful, false otherwise.
    \sa Load,RemoveDiscCache
@@ -545,11 +570,11 @@ public:
   bool CacheToDiscAlways() const { return m_cacheToDisc == CACHE_ALWAYS; }
   bool CacheToDiscIfSlow() const { return m_cacheToDisc == CACHE_IF_SLOW; }
   /*! \brief remove a previously cached CFileItemList from the cache
-   
+
    The file list may be cached based on which window we're viewing in, as different
    windows will be listing different portions of the same URL (eg viewing music files
    versus viewing video files)
-   
+
    \param windowID id of the window whose cache we which to remove (defaults to 0)
    \sa Save,Load
    */
@@ -571,7 +596,7 @@ public:
   void AddSortMethod(SortBy sortBy, SortAttribute sortAttributes, int buttonLabel, const LABEL_MASKS &labelMasks);
   void AddSortMethod(SortDescription sortDescription, int buttonLabel, const LABEL_MASKS &labelMasks);
   bool HasSortDetails() const { return m_sortDetails.size() != 0; };
-  const std::vector<SORT_METHOD_DETAILS> &GetSortDetails() const { return m_sortDetails; };
+  const std::vector<GUIViewSortDetails> &GetSortDetails() const { return m_sortDetails; };
 
   /*! \brief Specify whether this list should be sorted with folders separate from files
    By default we sort with folders listed (and sorted separately) except for those sort modes
@@ -605,6 +630,7 @@ private:
 
   VECFILEITEMS m_items;
   MAPFILEITEMS m_map;
+  bool m_ignoreURLOptions;
   bool m_fastLookup;
   SortDescription m_sortDescription;
   bool m_sortIgnoreFolders;
@@ -612,7 +638,7 @@ private:
   bool m_replaceListing;
   CStdString m_content;
 
-  std::vector<SORT_METHOD_DETAILS> m_sortDetails;
+  std::vector<GUIViewSortDetails> m_sortDetails;
 
   CCriticalSection m_lock;
 };

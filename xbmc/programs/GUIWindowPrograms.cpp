@@ -43,6 +43,7 @@
 #include "LocalizeStrings.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
+#include "view/GUIViewState.h"
 
 using namespace XFILE;
 

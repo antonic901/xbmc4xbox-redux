@@ -19,20 +19,14 @@
  */
 
 #include "DirectoryNodeRecentlyAddedMusicVideos.h"
-#include "QueryParams.h"
 #include "video/VideoDatabase.h"
 
 using namespace XFILE::VIDEODATABASEDIRECTORY;
 
-CDirectoryNodeRecentlyAddedMusicVideos::CDirectoryNodeRecentlyAddedMusicVideos(const CStdString& strName, CDirectoryNode* pParent)
+CDirectoryNodeRecentlyAddedMusicVideos::CDirectoryNodeRecentlyAddedMusicVideos(const std::string& strName, CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_RECENTLY_ADDED_MUSICVIDEOS, strName, pParent)
 {
 
-}
-
-NODE_TYPE CDirectoryNodeRecentlyAddedMusicVideos::GetChildType() const
-{
-  return NODE_TYPE_TITLE_MUSICVIDEOS;
 }
 
 bool CDirectoryNodeRecentlyAddedMusicVideos::GetContent(CFileItemList& items) const

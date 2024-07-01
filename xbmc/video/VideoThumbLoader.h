@@ -1,7 +1,7 @@
 #pragma once
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2012-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
  */
 
 #include <map>
+#include <vector>
 #include "ThumbLoader.h"
 #include "utils/JobManager.h"
 #include "FileItem.h"
@@ -38,7 +39,7 @@ class CVideoDatabase;
 class CThumbExtractor : public CJob
 {
 public:
-  CThumbExtractor(const CFileItem& item, const CStdString& listpath, bool thumb, const CStdString& strTarget="");
+  CThumbExtractor(const CFileItem& item, const std::string& listpath, bool thumb, const std::string& strTarget="", int64_t pos = -1, bool fillStreamDetails = true);
   virtual ~CThumbExtractor();
 
   /*!
@@ -53,10 +54,12 @@ public:
 
   virtual bool operator==(const CJob* job) const;
 
-  CStdString m_target; ///< thumbpath
-  CStdString m_listpath; ///< path used in fileitem list
+  std::string m_target; ///< thumbpath
+  std::string m_listpath; ///< path used in fileitem list
   CFileItem  m_item;
   bool       m_thumb; ///< extract thumb?
+  int64_t    m_pos; ///< position to extract thumb from
+  bool m_fillStreamDetails; ///< fill in stream details?
 };
 
 class CVideoThumbLoader : public CThumbLoader, public CJobQueue
@@ -99,7 +102,7 @@ public:
    \param item a video CFileItem.
    \return a URL for the embedded thumb.
    */
-  static CStdString GetEmbeddedThumbURL(const CFileItem &item);
+  static std::string GetEmbeddedThumbURL(const CFileItem &item);
 
   /*! \brief helper function to fill the art for a video library item
    \param item a video CFileItem
@@ -127,4 +130,11 @@ protected:
   CVideoDatabase *m_videoDatabase;
   typedef std::map<int, std::map<std::string, std::string> > ArtCache;
   ArtCache m_showArt;
+  ArtCache m_seasonArt;
+
+  /*! \brief Tries to detect missing data/info from a file and adds those
+   \param item The CFileItem to process
+   \return void
+   */
+  void DetectAndAddMissingItemData(CFileItem &item);
 };

@@ -18,10 +18,15 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#include "threads/Thread.h"
+
+#include <set>
+#include <string>
+#include <vector>
+
+#include "InfoScanner.h"
+#include "NfoFile.h"
 #include "VideoDatabase.h"
 #include "addons/Scraper.h"
-#include "NfoFile.h"
 
 class CRegExp;
 class CFileItem;
@@ -39,21 +44,6 @@ namespace VIDEO
     bool exclude;           /* exclude this path from scraping */
   } SScanSettings;
 
-  enum SCAN_STATE { PREPARING = 0, REMOVING_OLD, CLEANING_UP_DATABASE, FETCHING_MOVIE_INFO, FETCHING_MUSICVIDEO_INFO, FETCHING_TVSHOW_INFO, COMPRESSING_DATABASE, WRITING_CHANGES };
-
-  class IVideoInfoScannerObserver
-  {
-  public:
-    virtual ~IVideoInfoScannerObserver() { }
-    virtual void OnStateChanged(SCAN_STATE state) = 0;
-    virtual void OnDirectoryChanged(const CStdString& strDirectory) = 0;
-    virtual void OnDirectoryScanned(const CStdString& strDirectory) = 0;
-    virtual void OnSetProgress(int currentItem, int itemCount)=0;
-    virtual void OnSetCurrentProgress(int currentItem, int itemCount)=0;
-    virtual void OnSetTitle(const CStdString& strTitle) = 0;
-    virtual void OnFinished() = 0;
-  };
-
   /*! \brief return values from the information lookup functions
    */
   enum INFO_RET { INFO_CANCELLED,
@@ -63,7 +53,7 @@ namespace VIDEO
                   INFO_NOT_FOUND,
                   INFO_ADDED };
 
-  class CVideoInfoScanner : CThread
+  class CVideoInfoScanner : public CInfoScanner
   {
   public:
     CVideoInfoScanner();
@@ -73,9 +63,8 @@ namespace VIDEO
      \param strDirectory path to scan
      \param scanAll whether to scan everything not already scanned (regardless of whether the user normally doesn't want a folder scanned.) Defaults to false.
      */
-    void Start(const CStdString& strDirectory, bool scanAll = false);
-    bool IsScanning();
-    void CleanDatabase(CGUIDialogProgressBarHandle* handle=NULL, const std::set<int>* paths=NULL, bool showProgress=true);
+    void Start(const std::string& strDirectory, bool scanAll = false);
+    bool IsScanning() const { return m_bRunning; }
     void Stop();
 
     //! \brief Set whether or not to show a progress dialog
@@ -104,7 +93,7 @@ namespace VIDEO
      */
     bool RetrieveVideoInfo(CFileItemList& items, bool bDirNames, CONTENT_TYPE content, bool useLocal = true, CScraperUrl *pURL = NULL, bool fetchEpisodes = true, CGUIDialogProgress* pDlgProgress = NULL);
 
-    static void ApplyThumbToFolder(const CStdString &folder, const CStdString &imdbThumb);
+    static void ApplyThumbToFolder(const std::string &folder, const std::string &imdbThumb);
     static bool DownloadFailed(CGUIDialogProgress* pDlgProgress);
     CNfoFile::NFOResult CheckForNFOFile(CFileItem* pItem, bool bGrabAny, ADDON::ScraperPtr& scraper, CScraperUrl& scrUrl);
 
@@ -135,9 +124,11 @@ namespace VIDEO
     static std::string GetImage(CFileItem *pItem, bool useLocal, bool bApplyToDir, const std::string &type = "");
     static std::string GetFanart(CFileItem *pItem, bool useLocal);
 
+    bool EnumerateEpisodeItem(const CFileItem *item, EPISODELIST& episodeList);
+
   protected:
     virtual void Process();
-    bool DoScan(const CStdString& strDirectory);
+    bool DoScan(const std::string& strDirectory);
 
     INFO_RET RetrieveInfoForTvShow(CFileItem *pItem, bool bDirNames, ADDON::ScraperPtr &scraper, bool useLocal, CScraperUrl* pURL, bool fetchEpisodes, CGUIDialogProgress* pDlgProgress);
     INFO_RET RetrieveInfoForMovie(CFileItem *pItem, bool bDirNames, ADDON::ScraperPtr &scraper, bool useLocal, CScraperUrl* pURL, CGUIDialogProgress* pDlgProgress);
@@ -150,7 +141,7 @@ namespace VIDEO
      \param line1   string to set for the first line
      \return true if the user has cancelled the scanner, false otherwise
      */
-    bool ProgressCancelled(CGUIDialogProgress* progress, int heading, const CStdString &line1);
+    bool ProgressCancelled(CGUIDialogProgress* progress, int heading, const std::string &line1);
 
     /*! \brief Find a url for the given video using the given scraper
      \param videoName name of the video to lookup
@@ -159,10 +150,10 @@ namespace VIDEO
      \param progress CGUIDialogProgress bar
      \return >0 on success, <0 on failure (cancellation), and 0 on no info found
      */
-    int FindVideo(const CStdString &videoName, const ADDON::ScraperPtr &scraper, CScraperUrl &url, CGUIDialogProgress *progress);
+    int FindVideo(const std::string &videoName, const ADDON::ScraperPtr &scraper, CScraperUrl &url, CGUIDialogProgress *progress);
 
     /*! \brief Retrieve detailed information for an item from an online source, optionally supplemented with local data
-     TODO: sort out some better return codes.
+     @todo sort out some better return codes.
      \param pItem item to retrieve online details for.
      \param url URL to use to retrieve online details.
      \param scraper Scraper that handles parsing the online data.
@@ -192,30 +183,46 @@ namespace VIDEO
      \param actors - vector of SActorInfo
      \param strPath - path on filesystem to look for local thumbs
      */
-    void FetchActorThumbs(std::vector<SActorInfo>& actors, const CStdString& strPath);
+    void FetchActorThumbs(std::vector<SActorInfo>& actors, const std::string& strPath);
 
-    static int GetPathHash(const CFileItemList &items, CStdString &hash);
+    static int GetPathHash(const CFileItemList &items, std::string &hash);
 
     /*! \brief Retrieve a "fast" hash of the given directory (if available)
      Performs a stat() on the directory, and uses modified time to create a "fast"
      hash of the folder. If no modified time is available, the create time is used,
      and if neither are available, an empty hash is returned.
+     In case exclude from scan expressions are present, the string array will be appended
+     to the md5 hash to ensure we're doing a re-scan whenever the user modifies those.
      \param directory folder to hash
-     \return the hash of the folder of the form "fast<datetime>"
+     \param excludes string array of exclude expressions
+     \return the md5 hash of the folder"
      */
-    CStdString GetFastHash(const CStdString &directory) const;
+    std::string GetFastHash(const std::string &directory, const std::vector<std::string> &excludes) const;
+
+    /*! \brief Retrieve a "fast" hash of the given directory recursively (if available)
+     Performs a stat() on the directory, and uses modified time to create a "fast"
+     hash of each folder. If no modified time is available, the create time is used,
+     and if neither are available, an empty hash is returned.
+     In case exclude from scan expressions are present, the string array will be appended
+     to the md5 hash to ensure we're doing a re-scan whenever the user modifies those.
+     \param directory folder to hash (recursively)
+     \param excludes string array of exclude expressions
+     \return the md5 hash of the folder
+     */
+    std::string GetRecursiveFastHash(const std::string &directory, const std::vector<std::string> &excludes) const;
 
     /*! \brief Decide whether a folder listing could use the "fast" hash
      Fast hashing can be done whenever the folder contains no scannable subfolders, as the
      fast hash technique uses modified time to determine when folder content changes, which
      is generally not propogated up the directory tree.
      \param items the directory listing
+     \param excludes string array of exclude expressions
      \return true if this directory listing can be fast hashed, false otherwise
      */
-    bool CanFastHash(const CFileItemList &items) const;
+    bool CanFastHash(const CFileItemList &items, const std::vector<std::string> &excludes) const;
 
     /*! \brief Process a series folder, filling in episode details and adding them to the database.
-     TODO: Ideally we would return INFO_HAVE_ALREADY if we don't have to update any episodes
+     @todo Ideally we would return INFO_HAVE_ALREADY if we don't have to update any episodes
      and we should return INFO_NOT_FOUND only if no information is found for any of
      the episodes. INFO_ADDED then indicates we've added one or more episodes.
      \param files the episode files to process.
@@ -227,30 +234,24 @@ namespace VIDEO
      */
     INFO_RET OnProcessSeriesFolder(EPISODELIST& files, const ADDON::ScraperPtr &scraper, bool useLocal, const CVideoInfoTag& showInfo, CGUIDialogProgress* pDlgProgress = NULL);
 
-    void EnumerateSeriesFolder(CFileItem* item, EPISODELIST& episodeList);
-    bool EnumerateEpisodeItem(const CFileItem *item, EPISODELIST& episodeList);
+    bool EnumerateSeriesFolder(CFileItem* item, EPISODELIST& episodeList);
     bool ProcessItemByVideoInfoTag(const CFileItem *item, EPISODELIST &episodeList);
 
-    CStdString GetnfoFile(CFileItem *item, bool bGrabAny=false) const;
-
-    /*! \brief Retrieve the parent folder of an item, accounting for stacks and files in rars.
-     \param item a media item.
-     \return the folder that contains the item.
-     */
-    CStdString GetParentDir(const CFileItem &item) const;
+    std::string GetnfoFile(CFileItem *item, bool bGrabAny=false) const;
 
     bool m_showDialog;
     CGUIDialogProgressBarHandle* m_handle;
     int m_currentItem;
     int m_itemCount;
+    bool m_bStop;
     bool m_bRunning;
     bool m_bCanInterrupt;
     bool m_bClean;
     bool m_scanAll;
-    CStdString m_strStartDir;
+    std::string m_strStartDir;
     CVideoDatabase m_database;
-    std::set<CStdString> m_pathsToScan;
-    std::set<CStdString> m_pathsToCount;
+    std::set<std::string> m_pathsToScan;
+    std::set<std::string> m_pathsToCount;
     std::set<int> m_pathsToClean;
     CNfoFile m_nfoReader;
   };

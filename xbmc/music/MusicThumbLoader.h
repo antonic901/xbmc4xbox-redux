@@ -1,7 +1,7 @@
 #pragma once
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2012-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,13 +42,13 @@ public:
   virtual bool LoadItem(CFileItem* pItem);
   virtual bool LoadItemCached(CFileItem* pItem);
   virtual bool LoadItemLookup(CFileItem* pItem);
-  
+
   /*! \brief helper function to fill the art for a video library item
    \param item a video CFileItem
    \return true if we fill art, false otherwise
    */
   virtual bool FillLibraryArt(CFileItem &item);
-  
+
   /*! \brief Fill the thumb of a music file/folder item
    First uses a cached thumb from a previous run, then checks for a local thumb
    and caches it for the next run
@@ -56,7 +56,7 @@ public:
    \return true if we fill the thumb, false otherwise
    */
   virtual bool FillThumb(CFileItem &item, bool folderThumbs = true);
-  
+
   static bool GetEmbeddedThumb(const std::string &path, MUSIC_INFO::EmbeddedArt &art);
 
 protected:

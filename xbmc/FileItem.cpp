@@ -27,6 +27,7 @@
 #include "Shortcut.h"
 #include "utils/Crc32.h"
 #include "filesystem/DirectoryCache.h"
+#include "filesystem/File.h"
 #include "filesystem/StackDirectory.h"
 #include "filesystem/CurlFile.h"
 #include "filesystem/MultiPathDirectory.h"
@@ -46,7 +47,6 @@
 #include "pictures/PictureInfoTag.h"
 #include "music/Artist.h"
 #include "music/Album.h"
-#include "music/Song.h"
 #include "URL.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/AdvancedSettings.h"
@@ -1202,7 +1202,7 @@ void CFileItem::UpdateInfo(const CFileItem &item, bool replaceLabels /*=true*/)
 void CFileItem::SetFromVideoInfoTag(const CVideoInfoTag &video)
 {
   SetLabel(video.m_strTitle);
-  if (video.m_strFileNameAndPath.IsEmpty())
+  if (video.m_strFileNameAndPath.empty())
   {
     m_strPath = video.m_strPath;
     URIUtils::AddSlashAtEnd(m_strPath);
@@ -1225,7 +1225,7 @@ void CFileItem::SetFromAlbum(const CAlbum &album)
 {
   SetLabel(album.strAlbum);
   m_bIsFolder = true;
-  m_strLabel2 = StringUtils::Join(album.artist, g_advancedSettings.m_musicItemSeparator);
+  m_strLabel2 = album.GetAlbumArtistString();
   GetMusicInfoTag()->SetAlbum(album);
   m_bIsAlbum = true;
   CMusicDatabase::SetPropertiesFromAlbum(*this,album);
@@ -1274,6 +1274,125 @@ bool CFileItem::IsPath(const std::string& path) const
   return URIUtils::PathEquals(m_strPath, path);
 }
 
+std::string CFileItem::GetOpticalMediaPath() const
+{
+  std::string path;
+  std::string dvdPath;
+  path = URIUtils::AddFileToFolder(GetPath(), "VIDEO_TS.IFO");
+  if (CFile::Exists(path))
+    dvdPath = path;
+  else
+  {
+    dvdPath = URIUtils::AddFileToFolder(GetPath(), "VIDEO_TS");
+    path = URIUtils::AddFileToFolder(dvdPath, "VIDEO_TS.IFO");
+    dvdPath.clear();
+    if (CFile::Exists(path))
+      dvdPath = path;
+  }
+#ifdef HAVE_LIBBLURAY
+  if (dvdPath.empty())
+  {
+    path = URIUtils::AddFileToFolder(GetPath(), "index.bdmv");
+    if (CFile::Exists(path))
+      dvdPath = path;
+    else
+    {
+      dvdPath = URIUtils::AddFileToFolder(GetPath(), "BDMV");
+      path = URIUtils::AddFileToFolder(dvdPath, "index.bdmv");
+      dvdPath.clear();
+      if (CFile::Exists(path))
+        dvdPath = path;
+    }
+  }
+#endif
+  return dvdPath;
+}
+
+void CFileItem::SetCueDocument(const CCueDocumentPtr& cuePtr)
+{
+  m_cueDocument = cuePtr;
+}
+
+void CFileItem::LoadEmbeddedCue()
+{
+  CMusicInfoTag& tag = *GetMusicInfoTag();
+  if (!tag.Loaded())
+    return;
+
+  const std::string embeddedCue = tag.GetCueSheet();
+  if (!embeddedCue.empty())
+  {
+    CCueDocumentPtr cuesheet(new CCueDocument);
+    if (cuesheet->ParseTag(embeddedCue))
+    {
+      std::vector<std::string> MediaFileVec;
+      cuesheet->GetMediaFiles(MediaFileVec);
+      for (std::vector<std::string>::iterator itMedia = MediaFileVec.begin(); itMedia != MediaFileVec.end(); itMedia++)
+        cuesheet->UpdateMediaFile(*itMedia, GetPath());
+      SetCueDocument(cuesheet);
+    }
+  }
+}
+
+bool CFileItem::HasCueDocument() const
+{
+  return (nullptr != m_cueDocument.get());
+}
+
+bool CFileItem::LoadTracksFromCueDocument(CFileItemList& scannedItems)
+{
+  if (!m_cueDocument)
+    return false;
+
+  CMusicInfoTag& tag = *GetMusicInfoTag();
+
+  VECSONGS tracks;
+  m_cueDocument->GetSongs(tracks);
+  m_cueDocument.reset();
+
+  int tracksFound = 0;
+  for (VECSONGS::iterator it = tracks.begin(); it != tracks.end(); ++it)
+  {
+    CSong& song = *it;
+    if (song.strFileName == GetPath())
+    {
+      if (tag.Loaded())
+      {
+        if (song.strAlbum.empty() && !tag.GetAlbum().empty())
+          song.strAlbum = tag.GetAlbum();
+        //Pass album artist to final MusicInfoTag object via setting song album artist vector. 
+        if (song.GetAlbumArtist().empty() && !tag.GetAlbumArtist().empty())
+          song.SetAlbumArtist(tag.GetAlbumArtist());
+        if (song.genre.empty() && !tag.GetGenre().empty())
+          song.genre = tag.GetGenre();
+        //Pass artist to final MusicInfoTag object via setting song artist description string only.
+        //Artist credits not used during loading from cue sheet. 
+        if (song.strArtistDesc.empty() && !tag.GetArtistString().empty())
+          song.strArtistDesc = tag.GetArtistString();
+        if (tag.GetDiscNumber())
+          song.iTrack |= (tag.GetDiscNumber() << 16); // see CMusicInfoTag::GetDiscNumber()
+        if (!tag.GetCueSheet().empty())
+          song.strCueSheet = tag.GetCueSheet();
+
+        SYSTEMTIME dateTime;
+        tag.GetReleaseDate(dateTime);
+        if (dateTime.wYear)
+          song.iYear = dateTime.wYear;
+        if (song.embeddedArt.empty() && !tag.GetCoverArtInfo().empty())
+          song.embeddedArt = tag.GetCoverArtInfo();
+      }
+
+      if (!song.iDuration && tag.GetDuration() > 0)
+      { // must be the last song
+        song.iDuration = (tag.GetDuration() * 75 - song.iStartOffset + 37) / 75;
+      }
+      scannedItems.Add(CFileItemPtr(new CFileItem(song)));
+      ++tracksFound;
+    }
+  }
+  return 0 != tracksFound;
+}
+
 /////////////////////////////////////////////////////////////////////////////////
 /////
 ///// CFileItemList
@@ -1282,6 +1401,7 @@ bool CFileItem::IsPath(const std::string& path) const
 
 CFileItemList::CFileItemList()
 {
+  m_ignoreURLOptions = false;
   m_fastLookup = false;
   m_bIsFolder = true;
   m_cacheToDisc = CACHE_IF_SLOW;
@@ -1291,6 +1411,7 @@ CFileItemList::CFileItemList()
 
 CFileItemList::CFileItemList(const CStdString& strPath) : CFileItem(strPath, true)
 {
+  m_ignoreURLOptions = false;
   m_fastLookup = false;
   m_cacheToDisc = CACHE_IF_SLOW;
   m_sortIgnoreFolders = false;
@@ -1322,6 +1443,17 @@ const CFileItemPtr CFileItemList::operator[] (const CStdString& strPath) const
   return Get(strPath);
 }
 
+void CFileItemList::SetIgnoreURLOptions(bool ignoreURLOptions)
+{
+  m_ignoreURLOptions = ignoreURLOptions;
+
+  if (m_fastLookup)
+  {
+    m_fastLookup = false; // Force SetFastlookup to clear map
+    SetFastLookup(true);  // and regenerate map
+  }
+}
+
 void CFileItemList::SetFastLookup(bool fastLookup)
 {
   CSingleLock lock(m_lock);
@@ -1332,9 +1464,7 @@ void CFileItemList::SetFastLookup(bool fastLookup)
     for (unsigned int i=0; i < m_items.size(); i++)
     {
       CFileItemPtr pItem = m_items[i];
-      CStdString path(pItem->GetPath());
-      path.ToLower();
-      m_map.insert(MAPFILEITEMSPAIR(path, pItem));
+      m_map.insert(MAPFILEITEMSPAIR(m_ignoreURLOptions ? CURL(pItem->GetPath()).GetWithoutOptions() : pItem->GetPath(), pItem));
     }
   }
   if (!fastLookup && m_fastLookup)
@@ -1342,20 +1472,18 @@ void CFileItemList::SetFastLookup(bool fastLookup)
   m_fastLookup = fastLookup;
 }
 
-bool CFileItemList::Contains(const CStdString& fileName) const
+bool CFileItemList::Contains(const std::string& fileName) const
 {
   CSingleLock lock(m_lock);
 
-  // checks case insensitive
-  CStdString checkPath(fileName);
-  checkPath.ToLower();
   if (m_fastLookup)
-    return m_map.find(checkPath) != m_map.end();
+    return m_map.find(m_ignoreURLOptions ? CURL(fileName).GetWithoutOptions() : fileName) != m_map.end();
+
   // slow method...
   for (unsigned int i = 0; i < m_items.size(); i++)
   {
     const CFileItemPtr pItem = m_items[i];
-    if (pItem->GetPath().Equals(checkPath))
+    if (pItem->IsPath(m_ignoreURLOptions ? CURL(fileName).GetWithoutOptions() : fileName))
       return true;
   }
   return false;
@@ -1397,9 +1525,7 @@ void CFileItemList::Add(const CFileItemPtr &pItem)
   m_items.push_back(pItem);
   if (m_fastLookup)
   {
-    CStdString path(pItem->GetPath());
-    path.ToLower();
-    m_map.insert(MAPFILEITEMSPAIR(path, pItem));
+    m_map.insert(MAPFILEITEMSPAIR(m_ignoreURLOptions ? CURL(pItem->GetPath()).GetWithoutOptions() : pItem->GetPath(), pItem));
   }
 }
 
@@ -1417,9 +1543,7 @@ void CFileItemList::AddFront(const CFileItemPtr &pItem, int itemPosition)
   }
   if (m_fastLookup)
   {
-    CStdString path(pItem->GetPath());
-    path.ToLower();
-    m_map.insert(MAPFILEITEMSPAIR(path, pItem));
+    m_map.insert(MAPFILEITEMSPAIR(m_ignoreURLOptions ? CURL(pItem->GetPath()).GetWithoutOptions() : pItem->GetPath(), pItem));
   }
 }
 
@@ -1434,9 +1558,7 @@ void CFileItemList::Remove(CFileItem* pItem)
       m_items.erase(it);
       if (m_fastLookup)
       {
-        CStdString path(pItem->GetPath());
-        path.ToLower();
-        m_map.erase(path);
+        m_map.erase(m_ignoreURLOptions ? CURL(pItem->GetPath()).GetWithoutOptions() : pItem->GetPath());
       }
       break;
     }
@@ -1452,9 +1574,7 @@ void CFileItemList::Remove(int iItem)
     CFileItemPtr pItem = *(m_items.begin() + iItem);
     if (m_fastLookup)
     {
-      CStdString path(pItem->GetPath());
-      path.ToLower();
-      m_map.erase(path);
+      m_map.erase(m_ignoreURLOptions ? CURL(pItem->GetPath()).GetWithoutOptions() : pItem->GetPath());
     }
     m_items.erase(m_items.begin() + iItem);
   }
@@ -1539,7 +1659,7 @@ CFileItemPtr CFileItemList::Get(const CStdString& strPath)
   pathToCheck.ToLower();
   if (m_fastLookup)
   {
-    IMAPFILEITEMS it=m_map.find(pathToCheck);
+    IMAPFILEITEMS it = m_map.find(m_ignoreURLOptions ? CURL(strPath).GetWithoutOptions() : strPath);
     if (it != m_map.end())
       return it->second;
 
@@ -1549,7 +1669,7 @@ CFileItemPtr CFileItemList::Get(const CStdString& strPath)
   for (unsigned int i = 0; i < m_items.size(); i++)
   {
     CFileItemPtr pItem = m_items[i];
-    if (pItem->GetPath().Equals(pathToCheck))
+    if (pItem->IsPath(m_ignoreURLOptions ? CURL(strPath).GetWithoutOptions() : strPath))
       return pItem;
   }
 
@@ -1564,7 +1684,7 @@ const CFileItemPtr CFileItemList::Get(const CStdString& strPath) const
   pathToCheck.ToLower();
   if (m_fastLookup)
   {
-    map<CStdString, CFileItemPtr>::const_iterator it=m_map.find(pathToCheck);
+    std::map<CStdString, CFileItemPtr>::const_iterator it = m_map.find(m_ignoreURLOptions ? CURL(strPath).GetWithoutOptions() : strPath);
     if (it != m_map.end())
       return it->second;
 
@@ -1574,7 +1694,7 @@ const CFileItemPtr CFileItemList::Get(const CStdString& strPath) const
   for (unsigned int i = 0; i < m_items.size(); i++)
   {
     CFileItemPtr pItem = m_items[i];
-    if (pItem->GetPath().Equals(pathToCheck))
+    if (pItem->IsPath(m_ignoreURLOptions ? CURL(strPath).GetWithoutOptions() : strPath))
       return pItem;
   }
 
@@ -1696,6 +1816,8 @@ void CFileItemList::Archive(CArchive& ar)
 
     ar << (int)(m_items.size() - i);
 
+    ar << m_ignoreURLOptions;
+
     ar << m_fastLookup;
 
     ar << (int)m_sortDescription.sortBy;
@@ -1707,7 +1829,7 @@ void CFileItemList::Archive(CArchive& ar)
     ar << (int)m_sortDetails.size();
     for (unsigned int j = 0; j < m_sortDetails.size(); ++j)
     {
-      const SORT_METHOD_DETAILS &details = m_sortDetails[j];
+      const GUIViewSortDetails &details = m_sortDetails[j];
       ar << (int)details.m_sortDescription.sortBy;
       ar << (int)details.m_sortDescription.sortOrder;
       ar << (int)details.m_sortDescription.sortAttributes;
@@ -1736,9 +1858,9 @@ void CFileItemList::Archive(CArchive& ar)
         pParent.reset(new CFileItem(*pItem));
     }
 
+    SetIgnoreURLOptions(false);
     SetFastLookup(false);
     Clear();
-
 
     CFileItem::Archive(ar);
 
@@ -1755,7 +1877,10 @@ void CFileItemList::Archive(CArchive& ar)
     else
       m_items.reserve(iSize);
 
-    bool fastLookup=false;
+    bool ignoreURLOptions = false;
+    ar >> ignoreURLOptions;
+
+    bool fastLookup = false;
     ar >> fastLookup;
 
     int tempint;
@@ -1773,7 +1898,7 @@ void CFileItemList::Archive(CArchive& ar)
     ar >> detailSize;
     for (unsigned int j = 0; j < detailSize; ++j)
     {
-      SORT_METHOD_DETAILS details;
+      GUIViewSortDetails details;
       ar >> (int&)tempint;
       details.m_sortDescription.sortBy = (SortBy)tempint;
       ar >> (int&)tempint;
@@ -1797,6 +1922,7 @@ void CFileItemList::Archive(CArchive& ar)
       Add(pItem);
     }
 
+    SetIgnoreURLOptions(ignoreURLOptions);
     SetFastLookup(fastLookup);
   }
 }
@@ -1868,7 +1994,6 @@ void CFileItemList::FilterCueItems()
 {
   CSingleLock lock(m_lock);
   // Handle .CUE sheet files...
-  VECSONGS itemstoadd;
   CStdStringArray itemstodelete;
   for (int i = 0; i < (int)m_items.size(); i++)
   {
@@ -1877,23 +2002,19 @@ void CFileItemList::FilterCueItems()
     { // see if it's a .CUE sheet
       if (pItem->IsCUESheet())
       {
-        CCueDocument cuesheet;
-        if (cuesheet.Parse(pItem->GetPath()))
+        CCueDocumentPtr cuesheet(new CCueDocument);
+        if (cuesheet->ParseFile(pItem->GetPath()))
         {
-          VECSONGS newitems;
-          cuesheet.GetSongs(newitems);
-
-          std::vector<CStdString> MediaFileVec;
-          cuesheet.GetMediaFiles(MediaFileVec);
+          std::vector<std::string> MediaFileVec;
+          cuesheet->GetMediaFiles(MediaFileVec);
 
           // queue the cue sheet and the underlying media file for deletion
-          for(std::vector<CStdString>::iterator itMedia = MediaFileVec.begin(); itMedia != MediaFileVec.end(); itMedia++)
+          for(std::vector<std::string>::iterator itMedia = MediaFileVec.begin(); itMedia != MediaFileVec.end(); itMedia++)
           {
-            CStdString strMediaFile = *itMedia;
+            std::string strMediaFile = *itMedia;
             CStdString fileFromCue = strMediaFile; // save the file from the cue we're matching against,
                                                    // as we're going to search for others here...
             bool bFoundMediaFile = CFile::Exists(strMediaFile);
-            // queue the cue sheet and the underlying media file for deletion
             if (!bFoundMediaFile)
             {
               // try file in same dir, not matching case...
@@ -1930,61 +2051,22 @@ void CFileItemList::FilterCueItems()
             }
             if (bFoundMediaFile)
             {
-              itemstodelete.push_back(pItem->GetPath());
-              itemstodelete.push_back(strMediaFile);
-              // get the additional stuff (year, genre etc.) from the underlying media files tag.
-              CMusicInfoTag tag;
-              auto_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(strMediaFile));
-              if (NULL != pLoader.get())
+              cuesheet->UpdateMediaFile(fileFromCue, strMediaFile);
+              // apply CUE for later processing
+              for (int j = 0; j < (int)m_items.size(); j++)
               {
-                // get id3tag
-                pLoader->Load(strMediaFile, tag);
+                CFileItemPtr pItem = m_items[j];
+                if (stricmp(pItem->GetPath().c_str(), strMediaFile.c_str()) == 0)
+                  pItem->SetCueDocument(cuesheet);
               }
-              // fill in any missing entries from underlying media file
-              for (int j = 0; j < (int)newitems.size(); j++)
-              {
-                CSong song = newitems[j];
-                // only for songs that actually match the current media file
-                if (song.strFileName == fileFromCue)
-                {
-                  // we might have a new media file from the above matching code
-                  song.strFileName = strMediaFile;
-                  if (tag.Loaded())
-                  {
-                    if (song.strAlbum.empty() && !tag.GetAlbum().empty()) song.strAlbum = tag.GetAlbum();
-                    if (song.albumArtist.empty() && !tag.GetAlbumArtist().empty()) song.albumArtist = tag.GetAlbumArtist();
-                    if (song.genre.empty() && !tag.GetGenre().empty()) song.genre = tag.GetGenre();
-                    if (song.artist.empty() && !tag.GetArtist().empty()) song.artist = tag.GetArtist();
-                    if (tag.GetDiscNumber()) song.iTrack |= (tag.GetDiscNumber() << 16); // see CMusicInfoTag::GetDiscNumber()
-                    SYSTEMTIME dateTime;
-                    tag.GetReleaseDate(dateTime);
-                    if (dateTime.wYear) song.iYear = dateTime.wYear;
-                    if (song.embeddedArt.empty() && !tag.GetCoverArtInfo().empty())
-                      song.embeddedArt = tag.GetCoverArtInfo();
-                  }
-                  if (!song.iDuration && tag.GetDuration() > 0)
-                  { // must be the last song
-                    song.iDuration = (tag.GetDuration() * 75 - song.iStartOffset + 37) / 75;
-                  }
-                  // add this item to the list
-                  itemstoadd.push_back(song);
-                }
-              }
-            }
-            else
-            { // remove the .cue sheet from the directory
-              itemstodelete.push_back(pItem->GetPath());
             }
           }
         }
-        else
-        { // remove the .cue sheet from the directory (can't parse it - no point listing it)
-          itemstodelete.push_back(pItem->GetPath());
-        }
+        itemstodelete.push_back(pItem->GetPath());
       }
     }
   }
-  // now delete the .CUE files and underlying media files.
+  // now delete the .CUE files.
   for (int i = 0; i < (int)itemstodelete.size(); i++)
   {
     for (int j = 0; j < (int)m_items.size(); j++)
@@ -1996,13 +2078,6 @@ void CFileItemList::FilterCueItems()
         break;
       }
     }
-  }
-  // and add the files from the .CUE sheet
-  for (int i = 0; i < (int)itemstoadd.size(); i++)
-  {
-    // now create the file item, and add to the item list.
-    CFileItemPtr pItem(new CFileItem(itemstoadd[i]));
-    m_items.push_back(pItem);
   }
 }
 
@@ -2041,9 +2116,9 @@ void CFileItemList::StackFolders()
   // Precompile our REs
   VECCREGEXP folderRegExps;
   CRegExp folderRegExp(true);
-  const CStdStringArray& strFolderRegExps = g_advancedSettings.m_folderStackRegExps;
+  const std::vector<std::string>& strFolderRegExps = g_advancedSettings.m_folderStackRegExps;
 
-  CStdStringArray::const_iterator strExpression = strFolderRegExps.begin();
+  std::vector<std::string>::const_iterator strExpression = strFolderRegExps.begin();
   while (strExpression != strFolderRegExps.end())
   {
     if (!folderRegExp.RegComp(*strExpression))
@@ -2141,8 +2216,8 @@ void CFileItemList::StackFiles()
   // Precompile our REs
   VECCREGEXP stackRegExps;
   CRegExp tmpRegExp(true);
-  const CStdStringArray& strStackRegExps = g_advancedSettings.m_videoStackRegExps;
-  CStdStringArray::const_iterator strRegExp = strStackRegExps.begin();
+  const std::vector<std::string>& strStackRegExps = g_advancedSettings.m_videoStackRegExps;
+  std::vector<std::string>::const_iterator strRegExp = strStackRegExps.begin();
   while (strRegExp != strStackRegExps.end())
   {
     if (tmpRegExp.RegComp(*strRegExp))
@@ -2582,7 +2657,7 @@ CStdString CFileItem::GetFolderThumb(const CStdString &folderJPG /* = "folder.jp
   CStdString strFolder = m_strPath;
 
   if (IsStack() ||
-      URIUtils::IsInRAR(strFolder) || 
+      URIUtils::IsInRAR(strFolder) ||
       URIUtils::IsInZIP(strFolder))
   {
     URIUtils::GetParentPath(m_strPath,strFolder);
@@ -2919,7 +2994,7 @@ void CFileItemList::AddSortMethod(SortBy sortBy, SortAttribute sortAttributes, i
 
 void CFileItemList::AddSortMethod(SortDescription sortDescription, int buttonLabel, const LABEL_MASKS &labelMasks)
 {
-  SORT_METHOD_DETAILS sort;
+  GUIViewSortDetails sort;
   sort.m_sortDescription = sortDescription;
   sort.m_buttonLabel = buttonLabel;
   sort.m_labelMasks = labelMasks;
@@ -3005,9 +3080,9 @@ CStdString CFileItem::FindTrailer() const
   // Precompile our REs
   VECCREGEXP matchRegExps;
   CRegExp tmpRegExp(true);
-  const CStdStringArray& strMatchRegExps = g_advancedSettings.m_trailerMatchRegExps;
+  const std::vector<std::string>& strMatchRegExps = g_advancedSettings.m_trailerMatchRegExps;
 
-  CStdStringArray::const_iterator strRegExp = strMatchRegExps.begin();
+  std::vector<std::string>::const_iterator strRegExp = strMatchRegExps.begin();
   while (strRegExp != strMatchRegExps.end())
   {
     if (tmpRegExp.RegComp(*strRegExp))

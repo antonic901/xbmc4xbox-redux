@@ -103,7 +103,7 @@ bool CVirtualDirectory::GetDirectory(const CURL& url, CFileItemList &items, bool
  \note The parameter \e strPath can not be a share with directory. Eg. "iso9660://dir" will return \e false.
     It must be "iso9660://".
  */
-bool CVirtualDirectory::IsSource(const CStdString& strPath, VECSOURCES *sources, CStdString *name) const
+bool CVirtualDirectory::IsSource(const std::string& strPath, VECSOURCES *sources, std::string *name) const
 {
   CStdString strPathCpy = strPath;
   strPathCpy.TrimRight("/");

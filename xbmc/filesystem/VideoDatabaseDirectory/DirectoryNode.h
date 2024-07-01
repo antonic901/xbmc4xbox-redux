@@ -1,7 +1,7 @@
 #pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *      Copyright (C) 2016 Team Kodi
+ *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -14,13 +14,13 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
+ *  along with Kodi; see the file COPYING.  If not, see
  *  <http://www.gnu.org/licenses/>.
  *
  */
 
-#include "utils/StdString.h"
 #include "utils/UrlOptions.h"
+#include <string>
 
 class CFileItemList;
 
@@ -54,7 +54,8 @@ namespace XFILE
       NODE_TYPE_MUSICVIDEOS_ALBUM,
       NODE_TYPE_SETS,
       NODE_TYPE_COUNTRY,
-      NODE_TYPE_TAGS
+      NODE_TYPE_TAGS,
+      NODE_TYPE_INPROGRESS_TVSHOWS
     } NODE_TYPE;
 
     typedef struct {
@@ -62,44 +63,42 @@ namespace XFILE
       std::string id;
       int         label;
     } Node;
-    
+
     class CDirectoryNode
     {
     public:
-      static CDirectoryNode* ParseURL(const CStdString& strPath);
-      static void GetDatabaseInfo(const CStdString& strPath, CQueryParams& params);
+      static CDirectoryNode* ParseURL(const std::string& strPath);
+      static void GetDatabaseInfo(const std::string& strPath, CQueryParams& params);
       virtual ~CDirectoryNode();
 
       NODE_TYPE GetType() const;
 
       bool GetChilds(CFileItemList& items);
       virtual NODE_TYPE GetChildType() const;
-      virtual CStdString GetLocalizedName() const;
+      virtual std::string GetLocalizedName() const;
 
       CDirectoryNode* GetParent() const;
 
-      bool CanCache() const;
-    protected:
-      CDirectoryNode(NODE_TYPE Type, const CStdString& strName, CDirectoryNode* pParent);
-      static CDirectoryNode* CreateNode(NODE_TYPE Type, const CStdString& strName, CDirectoryNode* pParent);
+      std::string BuildPath() const;
 
-      void AddOptions(const CStdString &options);
+      virtual bool CanCache() const;
+    protected:
+      CDirectoryNode(NODE_TYPE Type, const std::string& strName, CDirectoryNode* pParent);
+      static CDirectoryNode* CreateNode(NODE_TYPE Type, const std::string& strName, CDirectoryNode* pParent);
+
+      void AddOptions(const std::string &options);
       void CollectQueryParams(CQueryParams& params) const;
 
-      const CStdString& GetName() const;
+      const std::string& GetName() const;
       int GetID() const;
       void RemoveParent();
 
       virtual bool GetContent(CFileItemList& items) const;
 
-      CStdString BuildPath() const;
-
-    private:
-      void AddQueuingFolder(CFileItemList& items) const;
 
     private:
       NODE_TYPE m_Type;
-      CStdString m_strName;
+      std::string m_strName;
       CDirectoryNode* m_pParent;
       CUrlOptions m_options;
     };

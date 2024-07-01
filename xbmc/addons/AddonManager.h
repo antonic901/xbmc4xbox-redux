@@ -128,6 +128,8 @@ namespace ADDON
      */
     bool IsAddonDisabled(const std::string& ID);
 
+    void UpdateLastUsed(const std::string& id) { /*TODO: impement this*/ };
+
     /* libcpluff */
     CStdString GetExtValue(cp_cfg_element_t *base, const char *path);
 

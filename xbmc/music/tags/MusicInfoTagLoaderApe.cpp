@@ -49,14 +49,13 @@ bool CMusicInfoTagLoaderApe::Load(const CStdString& strFileName, CMusicInfoTag& 
       tag.SetAlbumArtist(myTag.GetAlbumArtist());
       tag.SetGenre(myTag.GetGenre());
       tag.SetTrackNumber(myTag.GetTrackNum());
-      tag.SetPartOfSet(myTag.GetDiscNum());
+      tag.SetDiscNumber(myTag.GetDiscNum());
       tag.SetComment(myTag.GetComment());
       tag.SetLyrics(myTag.GetLyrics());
       tag.SetMusicBrainzAlbumArtistID(StringUtils::Split(myTag.GetMusicBrainzAlbumArtistID(), g_advancedSettings.m_musicItemSeparator));
       tag.SetMusicBrainzAlbumID(myTag.GetMusicBrainzAlbumID());
       tag.SetMusicBrainzArtistID(StringUtils::Split(myTag.GetMusicBrainzArtistID(), g_advancedSettings.m_musicItemSeparator));
       tag.SetMusicBrainzTrackID(myTag.GetMusicBrainzTrackID());
-      tag.SetMusicBrainzTRMID(myTag.GetMusicBrainzTRMID());
       SYSTEMTIME dateTime;
       ZeroMemory(&dateTime, sizeof(SYSTEMTIME));
       dateTime.wYear = atoi(myTag.GetYear());

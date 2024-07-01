@@ -19,10 +19,11 @@
  */
 
 #include "system.h" // <xtl.h>
-#include "LangInfo.h"
 #include "Temperature.h"
-#include "LocalizeStrings.h"
+#include "utils/Archive.h"
 #include "utils/StdString.h"
+#include "guilib/LocalizeStrings.h"
+#include "LangInfo.h"
 
 
 CTemperature::CTemperature()

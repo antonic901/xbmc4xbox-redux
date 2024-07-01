@@ -134,7 +134,7 @@ bool CDirectoryTuxBox::GetDirectory(const CURL& url2, CFileItemList &items)
       // parse returned xml
       CXBMCTinyXML doc;
       data.Replace("></",">-</"); //FILL EMPTY ELEMENTS WITH "-"!
-      doc.Parse(data.c_str());
+      doc.Parse(data);
       TiXmlElement *root = doc.RootElement();
       if(root == NULL)
       {

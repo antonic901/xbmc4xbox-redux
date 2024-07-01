@@ -69,6 +69,7 @@
 #include "filesystem/ZipManager.h"
 
 #include "utils/URIUtils.h"
+#include "video/VideoLibraryQueue.h"
 #include "xbox/xbeheader.h"
 #include "xbox/network.h"
 #include "libGoAhead/XBMChttp.h"
@@ -628,7 +629,7 @@ int CBuiltins::Execute(const CStdString& execString)
     else
     {
       // play media
-      if (!g_application.PlayMedia(item, item.IsAudio() ? PLAYLIST_MUSIC : PLAYLIST_VIDEO))
+      if (!g_application.PlayMedia(item, "", item.IsAudio() ? PLAYLIST_MUSIC : PLAYLIST_VIDEO))
       {
         CLog::Log(LOGERROR, "XBMC.PlayMedia could not play media: %s", params[0].c_str());
         return false;
@@ -979,7 +980,7 @@ int CBuiltins::Execute(const CStdString& execString)
       g_playlistPlayer.PlayNext(pos); 
     // we start playing the 'other' playlist so we need to use play to initialize the player state 
     else 
-      g_playlistPlayer.Play(pos);   
+      g_playlistPlayer.Play(pos, "");   
   }
   else if (execute.Equals("playlist.clear"))
   {
@@ -1254,8 +1255,8 @@ int CBuiltins::Execute(const CStdString& execString)
     if (g_application.IsMusicScanning())
       g_application.StopMusicScan();
 
-    if (g_application.IsVideoScanning())
-      g_application.StopVideoScan();
+    if (CVideoLibraryQueue::GetInstance().IsRunning())
+      CVideoLibraryQueue::GetInstance().CancelAllJobs();
 
     ADDON::CAddonMgr::Get().StopServices(true);
 

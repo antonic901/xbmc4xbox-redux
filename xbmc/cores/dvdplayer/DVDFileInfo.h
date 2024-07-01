@@ -31,7 +31,7 @@ class CDVDFileInfo
 {
 public:
   // Extract a thumbnail immage from the media at strPath, optionally populating a streamdetails class with the data
-  static bool ExtractThumb(const CStdString &strPath, CTextureDetails &details, CStreamDetails *pStreamDetails);
+  static bool ExtractThumb(const CStdString &strPath, CTextureDetails &details, CStreamDetails *pStreamDetails, int pos=-1);
   
   // GetFileMetaData will fill pItem's properties according to what can be extracted from the file.
   static void GetFileMetaData(const CStdString &strPath, CFileItem *pItem); 

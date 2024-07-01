@@ -28,6 +28,7 @@
 #include <vector>
 #include "Artist.h"
 #include "Song.h"
+#include "XBDateTime.h"
 #include "utils/ScraperUrl.h"
 
 class TiXmlNode;
@@ -36,7 +37,16 @@ class CAlbum
 {
 public:
   CAlbum(const CFileItem& item);
-  CAlbum() { idAlbum = 0; iRating = 0; iYear = 0; iTimesPlayed = 0; };
+  CAlbum()
+    : idAlbum(-1)
+    , fRating(-1)
+    , iUserrating(-1)
+    , iVotes(-1)
+    , iYear(-1)
+    , bCompilation(false)
+    , iTimesPlayed(0)
+    , releaseType(Album)
+  {};
   bool operator<(const CAlbum &a) const;
   void MergeScrapedAlbum(const CAlbum& album, bool override = true);
 
@@ -45,8 +55,8 @@ public:
     idAlbum = -1;
     strAlbum.clear();
     strMusicBrainzAlbumID.clear();
-    artist.clear();
     artistCredits.clear();
+    strArtistDesc.clear();
     genre.clear();
     thumbURL.Clear();
     moods.clear();
@@ -58,16 +68,53 @@ public:
     strType.clear();
     strPath.clear();
     m_strDateOfRelease.clear();
-    iRating=-1;
-    iYear=-1;
+    fRating = -1;
+    iUserrating = -1;
+    iVotes = -1;
+    iYear = -1;
     bCompilation = false;
     iTimesPlayed = 0;
+    dateAdded.Reset();
+    lastPlayed.Reset();
     songs.clear();
     infoSongs.clear();
+    releaseType = Album;
   }
 
-  CStdString GetArtistString() const;
-  CStdString GetGenreString() const;
+  /*! \brief Get album artist names from the vector of artistcredits objects
+  \return album artist names as a vector of strings
+  */
+  const std::vector<std::string> GetAlbumArtist() const;
+
+  /*! \brief Get album artist MusicBrainz IDs from the vector of artistcredits objects
+  \return album artist MusicBrainz IDs as a vector of strings
+  */
+  const std::vector<std::string> GetMusicBrainzAlbumArtistID() const;
+  std::string GetGenreString() const;
+
+  /*! \brief Get album artist names from the artist decription string (if it exists)
+             or concatenated from the vector of artistcredits objects
+  \return album artist names as a single string
+  */
+  const std::string GetAlbumArtistString() const;
+
+  /*! \brief Get album artist IDs (for json rpc) from the vector of artistcredits objects
+  \return album artist IDs as a vector of integers
+  */
+  const std::vector<int> GetArtistIDArray() const;
+
+  typedef enum ReleaseType {
+    Album = 0,
+    Single
+  } ReleaseType;
+
+  std::string GetReleaseType() const;
+  void SetReleaseType(const std::string& strReleaseType);
+  void SetDateAdded(const std::string& strDateAdded);
+  void SetLastPlayed(const std::string& strLastPlayed);
+
+  static std::string ReleaseTypeToString(ReleaseType releaseType);
+  static ReleaseType ReleaseTypeFromString(const std::string& strReleaseType);
 
   /*! \brief Load album information from an XML file.
    See CVideoInfoTag::Load for a description of the types of elements we load.
@@ -77,12 +124,12 @@ public:
    \sa CVideoInfoTag::Load
    */
   bool Load(const TiXmlElement *element, bool append = false, bool prioritise = false);
-  bool Save(TiXmlNode *node, const CStdString &tag, const CStdString& strPath);
+  bool Save(TiXmlNode *node, const std::string &tag, const std::string& strPath);
 
   long idAlbum;
   std::string strAlbum;
-  CStdString strMusicBrainzAlbumID;
-  std::vector<std::string> artist;
+  std::string strMusicBrainzAlbumID;
+  std::string strArtistDesc;
   VECARTISTCREDITS artistCredits;
   std::vector<std::string> genre;
   CScraperUrl thumbURL;
@@ -90,17 +137,22 @@ public:
   std::vector<std::string> styles;
   std::vector<std::string> themes;
   std::map<std::string, std::string> art;
-  CStdString strReview;
-  CStdString strLabel;
-  CStdString strType;
-  CStdString strPath;
-  CStdString m_strDateOfRelease;
-  int iRating;
+  std::string strReview;
+  std::string strLabel;
+  std::string strType;
+  std::string strPath;
+  std::string m_strDateOfRelease;
+  float fRating;
+  int iUserrating;
+  int iVotes;
   int iYear;
   bool bCompilation;
   int iTimesPlayed;
+  CDateTime dateAdded;
+  CDateTime lastPlayed;
   VECSONGS songs;     ///< Local songs
   VECSONGS infoSongs; ///< Scraped songs
+  ReleaseType releaseType;
 };
 
 typedef std::vector<CAlbum> VECALBUMS;

@@ -20,6 +20,9 @@
  */
 
 #include "FileItem.h"
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace PLAYLIST
 {
@@ -28,14 +31,14 @@ class CPlayList
 public:
   CPlayList(int id = -1);
   virtual ~CPlayList(void) {};
-  virtual bool Load(const CStdString& strFileName);
+  virtual bool Load(const std::string& strFileName);
   virtual bool LoadData(std::istream &stream);
-  virtual bool LoadData(const CStdString& strData);
-  virtual void Save(const CStdString& strFileName) const {};
+  virtual bool LoadData(const std::string& strData);
+  virtual void Save(const std::string& strFileName) const {};
 
   void Add(CPlayList& playlist);
   void Add(const CFileItemPtr &pItem);
-	void Add(CFileItemList& items);
+  void Add(CFileItemList& items);
 
   // for Party Mode
   void Insert(CPlayList& playlist, int iPosition = -1);
@@ -43,8 +46,8 @@ public:
   void Insert(const CFileItemPtr& item, int iPosition = -1);
 
   int FindOrder(int iOrder) const;
-  const CStdString& GetName() const;
-  void Remove(const CStdString& strFileName);
+  const std::string& GetName() const;
+  void Remove(const std::string& strFileName);
   void Remove(int position);
   bool Swap(int position1, int position2);
   bool Expand(int position); // expands any playlist at position into this playlist
@@ -67,12 +70,12 @@ public:
 
   void UpdateItem(const CFileItem *item);
 
-  const CStdString& ResolveURL(const CFileItemPtr &item) const;
+  const std::string& ResolveURL(const CFileItemPtr &item) const;
 
 protected:
   int m_id;
-  CStdString m_strPlayListName;
-  CStdString m_strBasePath;
+  std::string m_strPlayListName;
+  std::string m_strBasePath;
   int m_iPlayableItems;
   bool m_bShuffled;
   bool m_bWasPlayed;
@@ -90,4 +93,6 @@ private:
   void AnnounceClear();
   void AnnounceAdd(const CFileItemPtr& item, int pos);
 };
+
+typedef boost::shared_ptr<CPlayList> CPlayListPtr;
 }

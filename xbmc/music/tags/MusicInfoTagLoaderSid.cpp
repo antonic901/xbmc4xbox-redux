@@ -149,32 +149,27 @@ bool CMusicInfoTagLoaderSid::Load(const CStdString& strFileName, CMusicInfoTag& 
     }
     if(reg.RegFind(temp3) > -1)
     {
-      char* szTitle = reg.GetReplaceString("\\1");
-      char* szArtist = reg.GetReplaceString("\\2");
-      char* szMins = NULL;
-      char* szSecs = NULL;
+      std::string strTitle = reg.GetReplaceString("\\1");
+      std::string strArtist = reg.GetReplaceString("\\2");
+      std::string strMins;
+      std::string strSecs;
       CRegExp reg2;
       reg2.RegComp("(.*) \\(([0-9]*):([0-9]*)\\)");
-      if (reg2.RegFind(szTitle) > -1)
+      if (reg2.RegFind(strTitle.c_str()) > -1)
       {
-        szMins = reg2.GetReplaceString("\\2");
-        szSecs = reg2.GetReplaceString("\\3");
-        char* szTemp = reg2.GetReplaceString("\\1");
-        free(szTitle);
-        szTitle = szTemp;
+        strMins = reg2.GetReplaceString("\\2");
+        strSecs = reg2.GetReplaceString("\\3");
+        std::string strTemp = reg2.GetReplaceString("\\1");
+        strTitle = strTemp;
       }
       tag.SetLoaded(true);
       tag.SetURL(strFileToLoad);
       tag.SetTrackNumber(iTrack);
-      if (szMins && szSecs)
-        tag.SetDuration(atoi(szMins)*60+atoi(szSecs));
+      if (!strMins.empty() && !strSecs.empty())
+        tag.SetDuration(atoi(strMins.c_str())*60+atoi(strSecs.c_str()));
 
-      tag.SetTitle(szTitle);
-      tag.SetArtist(szArtist);
-      free(szTitle);
-      free(szArtist);
-      free(szMins);
-      free(szSecs);
+      tag.SetTitle(strTitle);
+      tag.SetArtist(strArtist);
     }
   }
 
@@ -208,27 +203,22 @@ bool CMusicInfoTagLoaderSid::Load(const CStdString& strFileName, CMusicInfoTag& 
       return( false );
     }
     if( reg.RegFind(temp) >= 0 ) {
-      char* szTitle = reg.GetReplaceString("\\1");
-      char* szArtist = reg.GetReplaceString("\\2");
-      char* szYear = reg.GetReplaceString("\\3");
-      char* szMins = reg.GetReplaceString("\\4");
-      char* szSecs = reg.GetReplaceString("\\5");
+      std::string strTitle = reg.GetReplaceString("\\1");
+      std::string strArtist = reg.GetReplaceString("\\2");
+      std::string strYear = reg.GetReplaceString("\\3");
+      std::string strMins = reg.GetReplaceString("\\4");
+      std::string strSecs = reg.GetReplaceString("\\5");
       tag.SetLoaded(true);
       tag.SetTrackNumber(iTrack);
       if (tag.GetDuration() == 0)
-        tag.SetDuration(atoi(szMins)*60+atoi(szSecs));
+        tag.SetDuration(atoi(strMins.c_str())*60+atoi(strSecs.c_str()));
       if (tag.GetTitle() == "")
-        tag.SetTitle(szTitle);
+        tag.SetTitle(strTitle);
       if (tag.GetArtist().empty())
-        tag.SetArtist(szArtist);
+        tag.SetArtist(strArtist);
       SYSTEMTIME dateTime;
-      dateTime.wYear = atoi(szYear);
+      dateTime.wYear = atoi(strYear.c_str());
       tag.SetReleaseDate(dateTime);
-      free(szTitle);
-      free(szArtist);
-      free(szYear);
-      free(szMins);
-      free(szSecs);
       f2.close();
       return( true );
     }

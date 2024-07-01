@@ -18,7 +18,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#include "playlists/PlayList.h"
+#include "PlayList.h"
 
 namespace PLAYLIST
 {
@@ -28,7 +28,7 @@ class CPlayListXML :
 public:
   CPlayListXML(void);
   virtual ~CPlayListXML(void);
-  virtual bool Load(const CStdString& strFileName);
-  virtual void Save(const CStdString& strFileName) const;
+  virtual bool Load(const std::string& strFileName);
+  virtual void Save(const std::string& strFileName) const;
 };
 }

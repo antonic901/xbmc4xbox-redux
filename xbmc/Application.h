@@ -157,9 +157,9 @@ public:
   virtual int  GetMessageMask();
   virtual void OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg);
 
-  bool PlayMedia(const CFileItem& item, int iPlaylist = PLAYLIST_MUSIC);
+  bool PlayMedia(const CFileItem& item, const std::string &player, int iPlaylist = PLAYLIST_MUSIC);
   bool ProcessAndStartPlaylist(const CStdString& strPlayList, PLAYLIST::CPlayList& playlist, int iPlaylist, int track=0);
-  PlayBackRet PlayFile(const CFileItem& item, bool bRestart = false);
+  PlayBackRet PlayFile(const CFileItem& item, const std::string& player, bool bRestart = false);
   void SaveFileState(bool bForeground = false);
   void UpdateFileState();
   void StopPlaying();
@@ -228,10 +228,10 @@ public:
   bool IsMusicScanning() const;
   bool IsVideoScanning() const;
 
-  void StartVideoCleanup();
+  void StartVideoCleanup(bool userInitiated = true);
 
-  void StartVideoScan(const CStdString &path, bool scanAll = false);
-  void StartMusicScan(const CStdString &path, int flags = 0);
+  void StartVideoScan(const CStdString &path, bool userInitiated = true, bool scanAll = false);
+  void StartMusicScan(const CStdString &path, bool userInitiated = true, int flags = 0);
   void StartMusicAlbumScan(const CStdString& strDirectory, bool refresh=false);
   void StartMusicArtistScan(const CStdString& strDirectory, bool refresh=false);
 
@@ -357,7 +357,6 @@ protected:
 
   static LONG WINAPI UnhandledExceptionFilter(struct _EXCEPTION_POINTERS *ExceptionInfo);
 
-  VIDEO::CVideoInfoScanner *m_videoInfoScanner;
   MUSIC_INFO::CMusicInfoScanner *m_musicInfoScanner;
 
   bool m_muted;

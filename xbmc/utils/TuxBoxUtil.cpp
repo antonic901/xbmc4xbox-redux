@@ -781,7 +781,7 @@ bool CTuxBoxUtil::GetHttpXML(CURL url,CStdString strRequestType)
       CXBMCTinyXML doc;
       TiXmlElement *XMLRoot=NULL;
       strTmp.Replace("></",">-</"); //FILL EMPTY ELEMENTS WITH "-"!
-      doc.Parse(strTmp.c_str());
+      doc.Parse(strTmp);
       strTmp.Empty();
 
       XMLRoot = doc.RootElement();

@@ -144,7 +144,7 @@ bool CDAVDirectory::GetDirectory(const CURL& url, CFileItemList &items)
   dav.ReadData(strResponse);
 
   CXBMCTinyXML davResponse;
-  davResponse.Parse(strResponse.c_str());
+  davResponse.Parse(strResponse);
 
   if (!davResponse.Parse(strResponse))
   {

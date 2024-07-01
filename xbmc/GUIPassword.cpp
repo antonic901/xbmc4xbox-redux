@@ -479,7 +479,7 @@ void CGUIPassword::RemoveSourceLocks()
   g_windowManager.SendThreadMessage(msg);
 }
 
-bool CGUIPassword::IsDatabasePathUnlocked(CStdString& strPath, VECSOURCES& vecSources)
+bool CGUIPassword::IsDatabasePathUnlocked(std::string& strPath, VECSOURCES& vecSources)
 {
   if (g_passwordManager.bMasterUser || CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE)
     return true;

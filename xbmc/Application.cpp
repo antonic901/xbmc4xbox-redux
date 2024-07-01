@@ -34,6 +34,7 @@
 #include "PlayListPlayer.h"
 #include "Autorun.h"
 #include "video/Bookmark.h"
+#include "video/VideoLibraryQueue.h"
 #include "network/NetworkServices.h"
 #include "utils/LangCodeExpander.h"
 #include "GUIInfoManager.h"
@@ -330,7 +331,6 @@ CApplication::CApplication(void)
   , m_itemCurrentFile(new CFileItem)
   , m_stackFileItemToUpdate(new CFileItem)
   , m_progressTrackingItem(new CFileItem)
-  , m_videoInfoScanner(new CVideoInfoScanner)
   , m_musicInfoScanner(new CMusicInfoScanner)
 {
   m_network = NULL;
@@ -2274,7 +2274,7 @@ bool CApplication::OnAction(CAction &action)
         CMusicDatabase db;
         if (db.Open())      // OpenForWrite() ?
         {
-          db.SetSongRating(m_itemCurrentFile->GetPath(), m_itemCurrentFile->GetMusicInfoTag()->GetRating());
+          db.SetSongUserrating(m_itemCurrentFile->GetPath(), m_itemCurrentFile->GetMusicInfoTag()->GetUserrating());
           db.Close();
         }
         // send a message to all windows to tell them to update the fileitem (eg playlistplayer, media windows)
@@ -3222,8 +3222,8 @@ void  CApplication::CheckForTitleChange()
       if (m_pXbmcHttp && tagVal)
       {
         CStdString msg="";
-        if (!tagVal->GetTitle().IsEmpty())
-          msg=m_pXbmcHttp->GetOpenTag()+"AudioTitle:"+tagVal->GetTitle()+m_pXbmcHttp->GetCloseTag();
+        if (!tagVal->GetTitle().empty())
+          msg=m_pXbmcHttp->GetOpenTag()+"AudioTitle:"+tagVal->GetTitle().c_str()+m_pXbmcHttp->GetCloseTag();
         if (!tagVal->GetArtist().empty())
           msg+=m_pXbmcHttp->GetOpenTag()+"AudioArtist:"+StringUtils::Join(tagVal->GetArtist(), g_advancedSettings.m_musicItemSeparator).c_str()+m_pXbmcHttp->GetCloseTag();
         if (m_prevMedia!=msg)
@@ -3553,8 +3553,8 @@ void CApplication::Stop(bool bLCDStop)
     if (m_musicInfoScanner->IsScanning())
       m_musicInfoScanner->Stop();
 
-    if (m_videoInfoScanner->IsScanning())
-      m_videoInfoScanner->Stop();
+    if (CVideoLibraryQueue::GetInstance().IsRunning())
+      CVideoLibraryQueue::GetInstance().CancelAllJobs();
 
     StopServices();
     //Sleep(5000);
@@ -3613,14 +3613,14 @@ void CApplication::Stop(bool bLCDStop)
   Destroy();
 }
 
-bool CApplication::PlayMedia(const CFileItem& item, int iPlaylist)
+bool CApplication::PlayMedia(const CFileItem& item, const std::string &player, int iPlaylist)
 {
   //If item is a plugin, expand out now and run ourselves again
   if (item.IsPlugin())
   {
     CFileItem item_new(item);
     if (XFILE::CPluginDirectory::GetPluginResult(item.GetPath(), item_new))
-      return PlayMedia(item_new, iPlaylist);
+      return PlayMedia(item_new, player, iPlaylist);
     return false;
   }
   if (item.IsSmartPlayList())
@@ -3660,7 +3660,7 @@ bool CApplication::PlayMedia(const CFileItem& item, int iPlaylist)
   }
 
   //nothing special just play
-  return PlayFile(item, false) == PLAYBACK_OK;
+  return PlayFile(item, player, false) == PLAYBACK_OK;
 }
 
 // PlayStack()
@@ -3720,7 +3720,7 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
     movieList[selectedFile - 1]->m_lStartOffset = startoffset > 0 ? STARTOFFSET_RESUME : 0;
     movieList[selectedFile - 1]->SetProperty("stackFileItemToUpdate", true);
     *m_stackFileItemToUpdate = item;
-    return PlayFile(*(movieList[selectedFile - 1]));
+    return PlayFile(*(movieList[selectedFile - 1]), "");
   }
   // case 2: all other stacks
   else
@@ -3800,17 +3800,17 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
           long start = (i > 0) ? (*m_currentStack)[i-1]->m_lEndOffset : 0;
           item.m_lStartOffset = (long)(seconds - start) * 75;
           m_currentStackPosition = i;
-          return PlayFile(item, true);
+          return PlayFile(item, "", true);
         }
       }
     }
 
-    return PlayFile(*(*m_currentStack)[0], true);
+    return PlayFile(*(*m_currentStack)[0], "", true);
   }
   return PLAYBACK_FAIL;
 }
 
-PlayBackRet CApplication::PlayFile(const CFileItem& item, bool bRestart)
+PlayBackRet CApplication::PlayFile(const CFileItem& item, const std::string& player, bool bRestart)
 {
   // Ensure the MIME type has been retrieved for http:// and shout:// streams
   if (item.GetMimeType().empty())
@@ -3842,7 +3842,7 @@ PlayBackRet CApplication::PlayFile(const CFileItem& item, bool bRestart)
   { // we modify the item so that it becomes a real URL
     CFileItem item_new(item);
     if (XFILE::CPluginDirectory::GetPluginResult(item.GetPath(), item_new))
-      return PlayFile(item_new, false);
+      return PlayFile(item_new, player, false);
     return PLAYBACK_FAIL;
   }
 
@@ -3850,7 +3850,7 @@ PlayBackRet CApplication::PlayFile(const CFileItem& item, bool bRestart)
   {
     CFileItem item_new(item);
     if (XFILE::CUPnPDirectory::GetResource(item.GetURL(), item_new))
-      return PlayFile(item_new, false);
+      return PlayFile(item_new, player, false);
     return PLAYBACK_FAIL;
   }
 
@@ -3879,7 +3879,7 @@ PlayBackRet CApplication::PlayFile(const CFileItem& item, bool bRestart)
 
       // keep the tuxbox:// url as playing url
       // and give the new url to the player
-      ret = PlayFile(item_new, true);
+      ret = PlayFile(item_new, player, true);
       if(ret == PLAYBACK_OK)
       {
         if(!g_tuxboxService.IsRunning())
@@ -4448,7 +4448,7 @@ void CApplication::UpdateFileState()
         // Update bookmark for save
         m_progressTrackingVideoResumeBookmark.player = CPlayerCoreFactory::Get().GetPlayerName(m_eCurrentPlayer);
         m_progressTrackingVideoResumeBookmark.playerState = m_pPlayer->GetPlayerState();
-        m_progressTrackingVideoResumeBookmark.thumbNailImage.Empty();
+        m_progressTrackingVideoResumeBookmark.thumbNailImage.empty();
 
         if (g_advancedSettings.m_videoIgnorePercentAtEnd > 0 &&
             GetTotalTime() - GetTime() < 0.01f * g_advancedSettings.m_videoIgnorePercentAtEnd * GetTotalTime())
@@ -4735,7 +4735,7 @@ void CApplication::CheckShutdown()
   if (m_musicInfoScanner->IsScanning())
     resetTimer = true;
 
-  if (m_videoInfoScanner->IsScanning())
+  if (CVideoLibraryQueue::GetInstance().IsRunning())
     resetTimer = true;
 
   if (g_windowManager.IsWindowActive(WINDOW_DIALOG_PROGRESS)) // progress dialog is onscreen
@@ -5034,7 +5034,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
       {
         if (m_itemCurrentFile->IsStack() && m_currentStack->Size() > 0 && m_currentStackPosition < m_currentStack->Size() - 1)
         { // just play the next item in the stack
-          PlayFile(*(*m_currentStack)[++m_currentStackPosition], true);
+          PlayFile(*(*m_currentStack)[++m_currentStackPosition], "", true);
           return true;
         }
       }
@@ -5177,7 +5177,7 @@ bool CApplication::ExecuteXBMCAction(std::string actionStr, const CGUIListItemPt
     }
     else if (item.IsAudio() || item.IsVideo())
     { // an audio or video file
-      PlayFile(item);
+      PlayFile(item , "");
     }
     else
       return false;
@@ -5391,7 +5391,7 @@ void CApplication::Restart(bool bSamePosition)
   if (false == bSamePosition)
   {
     // no, then just reopen the file and start at the beginning
-    PlayFile(*m_itemCurrentFile, true);
+    PlayFile(*m_itemCurrentFile, "", true);
     return ;
   }
 
@@ -5405,7 +5405,7 @@ void CApplication::Restart(bool bSamePosition)
   m_itemCurrentFile->m_lStartOffset = (long)(time * 75.0);
 
   // reopen the file
-  if ( PlayFile(*m_itemCurrentFile, true) == PLAYBACK_OK && m_pPlayer )
+  if ( PlayFile(*m_itemCurrentFile, "", true) == PLAYBACK_OK && m_pPlayer )
     m_pPlayer->SetPlayerState(state);
 }
 
@@ -5779,7 +5779,7 @@ void CApplication::UpdateLibraries()
 
 bool CApplication::IsVideoScanning() const
 {
-  return m_videoInfoScanner->IsScanning();
+  return CVideoLibraryQueue::GetInstance().IsScanningLibrary();
 }
 
 bool CApplication::IsMusicScanning() const
@@ -5789,8 +5789,7 @@ bool CApplication::IsMusicScanning() const
 
 void CApplication::StopVideoScan()
 {
-  if (m_videoInfoScanner->IsScanning())
-    m_videoInfoScanner->Stop();
+  CVideoLibraryQueue::GetInstance().StopLibraryScanning();
 }
 
 void CApplication::StopMusicScan()
@@ -5799,25 +5798,24 @@ void CApplication::StopMusicScan()
     m_musicInfoScanner->Stop();
 }
 
-void CApplication::StartVideoCleanup()
+void CApplication::StartVideoCleanup(bool userInitiated /* = true */)
 {
-  if (m_videoInfoScanner->IsScanning())
+  if (userInitiated && CVideoLibraryQueue::GetInstance().IsRunning())
     return;
 
-  m_videoInfoScanner->CleanDatabase();
+  std::set<int> paths;
+  if (userInitiated)
+    CVideoLibraryQueue::GetInstance().CleanLibraryModal(paths);
+  else
+    CVideoLibraryQueue::GetInstance().CleanLibrary(paths, false);
 }
 
-void CApplication::StartVideoScan(const CStdString &strDirectory, bool scanAll)
+void CApplication::StartVideoScan(const CStdString &strDirectory, bool userInitiated /* = true */, bool scanAll)
 {
-  if (m_videoInfoScanner->IsScanning())
-    return;
-
-  m_videoInfoScanner->ShowDialog(true);
-
-  m_videoInfoScanner->Start(strDirectory,scanAll);
+  CVideoLibraryQueue::GetInstance().ScanLibrary(strDirectory, scanAll, userInitiated);
 }
 
-void CApplication::StartMusicScan(const CStdString &strDirectory, int flags)
+void CApplication::StartMusicScan(const CStdString &strDirectory, bool userInitiated /* = true */, int flags)
 {
   if (m_musicInfoScanner->IsScanning())
     return;
@@ -5826,7 +5824,7 @@ void CApplication::StartMusicScan(const CStdString &strDirectory, int flags)
   { // setup default flags
     if (CSettings::Get().GetBool("musiclibrary.downloadinfo"))
       flags |= CMusicInfoScanner::SCAN_ONLINE;
-    if (CSettings::Get().GetBool("musiclibrary.backgroundupdate"))
+    if (!userInitiated || CSettings::Get().GetBool("musiclibrary.backgroundupdate"))
       flags |= CMusicInfoScanner::SCAN_BACKGROUND;
   }
 
@@ -5911,7 +5909,7 @@ bool CApplication::ProcessAndStartPlaylist(const CStdString& strPlayList, CPlayL
     // start playing it
     g_playlistPlayer.SetCurrentPlaylist(iPlaylist);
     g_playlistPlayer.Reset();
-    g_playlistPlayer.Play(track);
+    g_playlistPlayer.Play(track, "");
     return true;
   }
   return false;

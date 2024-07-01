@@ -77,7 +77,7 @@ int CVorbisTag::ParseTagEntry(CStdString& strTagEntry)
 
   if ( strTagType == "DISCNUMBER" )
   {
-    tag.SetPartOfSet(atoi(strTagValue));
+    tag.SetDiscNumber(atoi(strTagValue));
   }
 
   if ( strTagType == "DATE" )
@@ -110,11 +110,6 @@ int CVorbisTag::ParseTagEntry(CStdString& strTagEntry)
   if ( strTagType == "MUSICBRAINZ_ALBUMARTISTID" )
   {
     tag.SetMusicBrainzAlbumArtistID(StringUtils::Split(strTagValue, g_advancedSettings.m_musicItemSeparator));
-  }
-
-  if ( strTagType == "MUSICBRAINZ_TRMID" )
-  {
-    tag.SetMusicBrainzTRMID(strTagValue);
   }
 
   if ( strTagType == "COMMENT" || strTagType == "DESCRIPTION" )

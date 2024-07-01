@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2008 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,27 +13,19 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
 #include "VideoInfoDownloader.h"
-#include "Util.h"
-#include "utils/XMLUtils.h"
-#include "utils/RegExp.h"
-#include "utils/ScraperParser.h"
-#include "NfoFile.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogOK.h"
 #include "messaging/ApplicationMessenger.h"
 #include "guilib/GUIWindowManager.h"
-#include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
-#include "utils/URIUtils.h"
+#include "utils/Variant.h"
 
-using namespace std;
 using namespace VIDEO;
 using namespace KODI::MESSAGING;
 
@@ -42,7 +34,7 @@ using namespace KODI::MESSAGING;
 #endif
 
 CVideoInfoDownloader::CVideoInfoDownloader(const ADDON::ScraperPtr &scraper) :
-  CThread("CVideoInfoDownloader"), m_info(scraper)
+  CThread("VideoInfoDownloader"), m_state(DO_NOTHING), m_found(0), m_info(scraper)
 {
   m_http = new XFILE::CCurlFile;
 }
@@ -53,7 +45,7 @@ CVideoInfoDownloader::~CVideoInfoDownloader()
 }
 
 // return value: 0 = we failed, -1 = we failed and reported an error, 1 = success
-int CVideoInfoDownloader::InternalFindMovie(const CStdString &strMovie,
+int CVideoInfoDownloader::InternalFindMovie(const std::string &strMovie,
                                             MOVIELIST& movielist,
                                             bool cleanChars /* = true */)
 {
@@ -119,7 +111,7 @@ void CVideoInfoDownloader::Process()
   m_state = DO_NOTHING;
 }
 
-int CVideoInfoDownloader::FindMovie(const CStdString &strMovie,
+int CVideoInfoDownloader::FindMovie(const std::string &strMovie,
                                     MOVIELIST& movieList,
                                     CGUIDialogProgress *pProgress /* = NULL */)
 {
@@ -158,6 +150,11 @@ int CVideoInfoDownloader::FindMovie(const CStdString &strMovie,
     success = InternalFindMovie(strMovie, movieList, false);
   }
   return success;
+}
+
+bool CVideoInfoDownloader::GetArtwork(CVideoInfoTag &details)
+{
+  return m_info->GetArtwork(*m_http, details);
 }
 
 bool CVideoInfoDownloader::GetDetails(const CScraperUrl &url,

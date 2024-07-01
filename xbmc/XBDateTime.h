@@ -20,6 +20,7 @@
  *
  */
 
+#include "utils/IArchivable.h"
 #include "utils/StdString.h"
 #include "utils/Archive.h"
 

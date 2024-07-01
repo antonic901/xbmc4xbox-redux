@@ -35,33 +35,38 @@ class CGUIDialogMusicInfo :
 public:
   CGUIDialogMusicInfo(void);
   virtual ~CGUIDialogMusicInfo(void);
-  virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
-  void SetAlbum(const CAlbum& album, const CStdString &path);
-  void SetArtist(const CArtist& artist, const CStdString &path);
-  bool NeedRefresh() const;
+  bool OnMessage(CGUIMessage& message);
+  bool OnAction(const CAction &action);
+  void SetAlbum(const CAlbum& album, const std::string &path);
+  void SetArtist(const CArtist& artist, const std::string &path);
+  bool NeedRefresh() const { return m_bRefresh; };
+  bool NeedsUpdate() const { return m_needsUpdate; };
   bool HasUpdatedThumb() const { return m_hasUpdatedThumb; };
 
-  virtual bool HasListItems() const { return true; };
-  virtual CFileItemPtr GetCurrentListItem(int offset = 0);
+  bool HasListItems() const { return true; };
+  CFileItemPtr GetCurrentListItem(int offset = 0);
   const CFileItemList& CurrentDirectory() const { return *m_albumSongs; };
   static void AddItemPathToFileBrowserSources(VECSOURCES &sources, const CFileItem &item);
 
   static void ShowFor(CFileItem item);
 protected:
-  virtual void OnInitWindow();
+  void OnInitWindow();
   void Update();
-  void SetLabel(int iControl, const CStdString& strLabel);
+  void SetLabel(int iControl, const std::string& strLabel);
   void OnGetThumb();
   void OnGetFanart();
-  void SetSongs(const VECSONGS &songs);
-  void SetDiscography();
+  void SetSongs(const VECSONGS &songs) const;
+  void SetDiscography() const;
   void OnSearch(const CFileItem* pItem);
+  void OnSetUserrating() const;
+  void SetUserrating(int userrating) const;
 
   CAlbum m_album;
   CArtist m_artist;
+  int m_startUserrating;
   bool m_bViewReview;
   bool m_bRefresh;
+  bool m_needsUpdate;
   bool m_hasUpdatedThumb;
   bool m_bArtistInfo;
   CFileItemPtr   m_albumItem;

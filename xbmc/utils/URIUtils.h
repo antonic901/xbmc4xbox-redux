@@ -60,7 +60,7 @@ public:
   static bool HasExtension(const CStdString& strFileName, const CStdString& strExtensions);
   static bool HasExtension(const CURL& url, const CStdString& strExtensions);
 
-  static void RemoveExtension(CStdString& strFileName);
+  static void RemoveExtension(std::string& strFileName);
   static CStdString ReplaceExtension(const CStdString& strFile,
                                      const CStdString& strNewExtension);
   static void Split(const CStdString& strFileNameAndPath, 
@@ -72,6 +72,12 @@ public:
   static void GetCommonPath(std::string& strPath, const std::string& strPath2);
   static CStdString GetParentPath(const CStdString& strPath);
   static bool GetParentPath(const std::string& strPath, std::string& strParent);
+
+  /*! \brief Retrieve the base path, accounting for stacks and files in rars.
+   \param strPath path.
+   \return the folder that contains the item.
+   */
+  static std::string GetBasePath(const std::string& strPath);
 
   /* \brief Change the base path of a URL: fromPath/fromFile -> toPath/toFile
     Handles changes in path separator and filename URL encoding if necessary to derive toFile.
@@ -133,6 +139,7 @@ public:
   static bool IsDOSPath(const CStdString &path);
   static bool IsDVD(const CStdString& strFile);
   static bool IsFTP(const CStdString& strFile);
+  static bool IsHTTP(const std::string& strFile);
   static bool IsHD(const CStdString& strFileName);
   static bool IsHDHomeRun(const CStdString& strFile);
   static bool IsSlingbox(const CStdString& strFile);

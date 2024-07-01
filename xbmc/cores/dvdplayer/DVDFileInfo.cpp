@@ -68,7 +68,7 @@ bool CDVDFileInfo::GetFileDuration(const CStdString &path, int& duration)
     return false;
 }
 
-bool CDVDFileInfo::ExtractThumb(const CStdString &strPath, CTextureDetails &details, CStreamDetails *pStreamDetails)
+bool CDVDFileInfo::ExtractThumb(const CStdString &strPath, CTextureDetails &details, CStreamDetails *pStreamDetails, int pos)
 {
   unsigned int nTime = XbmcThreads::SystemClockMillis();
   CFileItem item(strPath, false);
@@ -153,7 +153,7 @@ bool CDVDFileInfo::ExtractThumb(const CStdString &strPath, CTextureDetails &deta
     if (pVideoCodec)
     {
       int nTotalLen = pDemuxer->GetStreamLength();
-      int nSeekTo = nTotalLen / 3;
+      int nSeekTo = (pos==-1?nTotalLen / 3:pos);
 
       CLog::Log(LOGDEBUG,"%s - seeking to pos %dms (total: %dms) in %s", __FUNCTION__, nSeekTo, nTotalLen, strPath.c_str());
       if (pDemuxer->SeekTime(nSeekTo, true))

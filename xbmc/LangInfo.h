@@ -117,6 +117,8 @@ public:
 
   const std::string& GetRegionLocale() const;
 
+  const std::locale& GetOriginalLocale() const;
+
   /*!
   \brief Returns the full locale of the current language.
   */
@@ -230,6 +232,7 @@ protected:
   CRegion* m_currentRegion; // points to the current region
   CRegion m_defaultRegion; // default, will be used if no region available via langinfo.xml
   std::locale m_systemLocale;     // current locale, matching GUI settings
+  std::locale m_originalLocale; // original locale, without changes of collate
 
   LanguageResourcePtr m_languageAddon;
 

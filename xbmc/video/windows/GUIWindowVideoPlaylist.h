@@ -20,7 +20,7 @@
  *
  */
 
-#include "video/windows/GUIWindowVideoBase.h"
+#include "GUIWindowVideoBase.h"
 
 class CGUIWindowVideoPlaylist : public CGUIWindowVideoBase
 {
@@ -33,7 +33,7 @@ public:
   virtual bool OnBack(int actionID);
 
 protected:
-  virtual bool OnPlayMedia(int iItem);
+  virtual bool OnPlayMedia(int iItem, const std::string &player = "");
   virtual void UpdateButtons();
   void MarkPlaying();
 

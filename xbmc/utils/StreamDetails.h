@@ -19,9 +19,9 @@
  *
  */
 
-#include "utils/StdString.h"
-#include "Archive.h"
+#include "utils/IArchivable.h"
 #include "ISerializable.h"
+#include "utils/StdString.h"
 #include <vector>
 
 class CStreamDetails;
@@ -60,6 +60,8 @@ public:
   int m_iDuration;
   float m_fAspect;
   CStdString m_strCodec;
+  std::string m_strStereoMode;
+  std::string m_strLanguage;
 };
 
 class CStreamDetailAudio : public CStreamDetail
@@ -112,6 +114,8 @@ public:
   int GetVideoHeight(int idx = 0) const;
   int GetVideoDuration(int idx = 0) const;
   void SetVideoDuration(int idx, const int duration);
+  std::string GetStereoMode(int idx = 0) const { return ""; };
+  std::string GetVideoLanguage(int idx = 0) const { return ""; };
 
   CStdString GetAudioCodec(int idx = 0) const;
   CStdString GetAudioLanguage(int idx = 0) const;

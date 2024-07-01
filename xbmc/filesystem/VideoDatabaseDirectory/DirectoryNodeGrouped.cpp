@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2016 Team Kodi
+ *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
+ *  along with Kodi; see the file COPYING.  If not, see
  *  <http://www.gnu.org/licenses/>.
  *
  */
@@ -21,10 +21,11 @@
 #include "DirectoryNodeGrouped.h"
 #include "QueryParams.h"
 #include "video/VideoDatabase.h"
+#include "video/VideoDbUrl.h"
 
 using namespace XFILE::VIDEODATABASEDIRECTORY;
 
-CDirectoryNodeGrouped::CDirectoryNodeGrouped(NODE_TYPE type, const CStdString& strName, CDirectoryNode* pParent)
+CDirectoryNodeGrouped::CDirectoryNodeGrouped(NODE_TYPE type, const std::string& strName, CDirectoryNode* pParent)
   : CDirectoryNode(type, strName, pParent)
 { }
 
@@ -46,7 +47,7 @@ NODE_TYPE CDirectoryNodeGrouped::GetChildType() const
   return NODE_TYPE_TITLE_TVSHOWS;
 }
 
-CStdString CDirectoryNodeGrouped::GetLocalizedName() const
+std::string CDirectoryNodeGrouped::GetLocalizedName() const
 {
   CVideoDatabase db;
   if (db.Open())
@@ -68,7 +69,12 @@ bool CDirectoryNodeGrouped::GetContent(CFileItemList& items) const
   if (itemType.empty())
     return false;
 
-  return videodatabase.GetItems(BuildPath(), (VIDEODB_CONTENT_TYPE)params.GetContentType(), itemType, items);
+  // make sure to translate all IDs in the path into URL parameters
+  CVideoDbUrl videoUrl;
+  if (!videoUrl.FromString(BuildPath()))
+    return false;
+
+  return videodatabase.GetItems(videoUrl.ToString(), (VIDEODB_CONTENT_TYPE)params.GetContentType(), itemType, items);
 }
 
 std::string CDirectoryNodeGrouped::GetContentType() const
@@ -113,6 +119,7 @@ std::string CDirectoryNodeGrouped::GetContentType(const CQueryParams &params) co
     case NODE_TYPE_RECENTLY_ADDED_EPISODES:
     case NODE_TYPE_RECENTLY_ADDED_MOVIES:
     case NODE_TYPE_RECENTLY_ADDED_MUSICVIDEOS:
+    case NODE_TYPE_INPROGRESS_TVSHOWS:
     case NODE_TYPE_ROOT:
     case NODE_TYPE_SEASONS:
     case NODE_TYPE_TITLE_MOVIES:

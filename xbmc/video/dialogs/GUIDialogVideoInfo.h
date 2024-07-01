@@ -31,23 +31,24 @@ class CGUIDialogVideoInfo :
 public:
   CGUIDialogVideoInfo(void);
   virtual ~CGUIDialogVideoInfo(void);
-  virtual bool OnMessage(CGUIMessage& message);
+  bool OnMessage(CGUIMessage& message);
+  bool OnAction(const CAction &action);
   void SetMovie(const CFileItem *item);
   bool NeedRefresh() const;
   bool RefreshAll() const;
   bool HasUpdatedThumb() const { return m_hasUpdatedThumb; };
+  bool HasUpdatedUserrating() const { return m_hasUpdatedUserrating; };
 
   std::string GetThumbnail() const;
-  virtual CFileItemPtr GetCurrentListItem(int offset = 0) { return m_movieItem; }
+  CFileItemPtr GetCurrentListItem(int offset = 0) { return m_movieItem; }
   const CFileItemList& CurrentDirectory() const { return *m_castList; };
-  virtual bool HasListItems() const { return true; };
+  bool HasListItems() const { return true; };
 
   static std::string ChooseArtType(const CFileItem &item, std::map<std::string, std::string> &currentArt);
   static void AddItemPathToFileBrowserSources(VECSOURCES &sources, const CFileItem &item);
 
   static int ManageVideoItem(const CFileItemPtr &item);
   static bool UpdateVideoItemTitle(const CFileItemPtr &pItem);
-  static bool MarkWatched(const CFileItemPtr &item, bool bMark);
   static bool CanDeleteVideoItem(const CFileItemPtr &item);
   static bool DeleteVideoItemFromDatabase(const CFileItemPtr &item, bool unavailable = false);
   static bool DeleteVideoItem(const CFileItemPtr &item, bool unavailable = false);
@@ -57,7 +58,7 @@ public:
   static bool GetSetForMovie(const CFileItem *movieItem, CFileItemPtr &selectedSet);
   static bool SetMovieSet(const CFileItem *movieItem, const CFileItem *selectedSet);
 
-  static bool GetItemsForTag(const CStdString &strHeading, const std::string &type, CFileItemList &items, int idTag = -1, bool showAll = true);
+  static bool GetItemsForTag(const std::string &strHeading, const std::string &type, CFileItemList &items, int idTag = -1, bool showAll = true);
   static bool AddItemsToTag(const CFileItemPtr &tagItem);
   static bool RemoveItemsFromTag(const CFileItemPtr &tagItem);
 
@@ -68,18 +69,33 @@ public:
   static void ShowFor(const CFileItem& item);
 
 protected:
-  virtual void OnInitWindow();
+  void OnInitWindow();
   void Update();
-  void SetLabel(int iControl, const CStdString& strLabel);
+  void SetLabel(int iControl, const std::string& strLabel);
+  void SetUserrating(int userrating) const;
 
   // link cast to movies
   void ClearCastList();
-  void OnSearch(CStdString& strSearch);
-  void DoSearch(CStdString& strSearch, CFileItemList& items);
+  /**
+   * \brief Search the current directory for a string got from the virtual keyboard
+   * \param strSearch The search string
+   */
+  void OnSearch(std::string& strSearch);
+  /**
+   * \brief Make the actual search for the OnSearch function.
+   * \param strSearch The search string
+   * \param items Items Found
+   */
+  void DoSearch(std::string& strSearch, CFileItemList& items) const;
+  /**
+   * \brief React on the selected search item
+   * \param pItem Search result item
+   */
   void OnSearchItemFound(const CFileItem* pItem);
   void Play(bool resume = false);
   void OnGetArt();
   void OnGetFanart();
+  void OnSetUserrating() const;
   void PlayTrailer();
 
   static bool UpdateVideoItemSortTitle(const CFileItemPtr &pItem);
@@ -96,4 +112,6 @@ protected:
   bool m_bRefresh;
   bool m_bRefreshAll;
   bool m_hasUpdatedThumb;
+  bool m_hasUpdatedUserrating;
+  int m_startUserrating;
 };

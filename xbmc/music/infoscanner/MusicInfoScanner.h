@@ -18,10 +18,11 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#include "threads/Thread.h"
-#include "music/MusicDatabase.h"
+#include "InfoScanner.h"
 #include "MusicAlbumInfo.h"
 #include "MusicInfoScraper.h"
+#include "music/MusicDatabase.h"
+#include "threads/Thread.h"
 
 class CAlbum;
 class CArtist;
@@ -31,17 +32,17 @@ namespace MUSIC_INFO
 {
 /*! \brief return values from the information lookup functions
  */
-enum INFO_RET 
-{ 
+enum INFO_RET
+{
   INFO_CANCELLED,
   INFO_ERROR,
   INFO_NOT_NEEDED,
   INFO_HAVE_ALREADY,
   INFO_NOT_FOUND,
-  INFO_ADDED 
+  INFO_ADDED
 };
 
-class CMusicInfoScanner : CThread, public IRunnable
+class CMusicInfoScanner : CThread, public IRunnable, public CInfoScanner
 {
 public:
   /*! \brief Flags for controlling the scanning process
@@ -54,11 +55,14 @@ public:
   CMusicInfoScanner();
   virtual ~CMusicInfoScanner();
 
-  void Start(const CStdString& strDirectory, int flags);
-  void FetchAlbumInfo(const CStdString& strDirectory, bool refresh=false);
-  void FetchArtistInfo(const CStdString& strDirectory, bool refresh=false);
+  void Start(const std::string& strDirectory, int flags);
+  void StartCleanDatabase();
+  void FetchAlbumInfo(const std::string& strDirectory, bool refresh = false);
+  void FetchArtistInfo(const std::string& strDirectory, bool refresh = false);
   bool IsScanning();
-  void Stop();
+  void Stop(bool wait = false);
+
+  void CleanDatabase(bool showProgress = true);
 
   //! \brief Set whether or not to show a progress dialog
   void ShowDialog(bool show) { m_showDialog = show; }
@@ -67,29 +71,29 @@ public:
    This takes a list of FileItems and turns it into a tree of Albums,
    Artists, and Songs.
    Albums are defined uniquely by the album name and album artist.
-   
+
    \param songs [in/out] list of songs to categorise - albumartist field may be altered.
    \param albums [out] albums found within these songs.
    */
   static void FileItemsToAlbums(CFileItemList& items, VECALBUMS& albums, MAPSONGS* songsMap = NULL);
 
   /*! \brief Fixup albums and songs
-   
+
    If albumartist is not available in a song, we determine it from the
    common portion of each song's artist list.
-   
+
    eg the common artist for
    Bob Dylan / Tom Petty / Roy Orbison
    Bob Dylan / Tom Petty
    would be "Bob Dylan / Tom Petty".
-   
+
    If all songs that share an album
    1. have a non-empty album name
    2. have at least two different primary artists
    3. have no album artist set
    4. and no track numbers overlap
    we assume it is a various artists album, and set the albumartist field accordingly.
-   
+
    */
   static void FixupAlbums(VECALBUMS &albums);
 
@@ -108,7 +112,7 @@ public:
    \param albums [in/out] list of albums to categorise - art field may be altered.
    \param path [in] path containing albums.
    */
-  static void FindArtForAlbums(VECALBUMS &albums, const CStdString &path);
+  static void FindArtForAlbums(VECALBUMS &albums, const std::string &path);
 
   /*! \brief Update the database information for a MusicDB album
    Given an album, search and update its info with the given scraper.
@@ -120,7 +124,7 @@ public:
    \param pDialog [in] a progress dialog which this and downstream functions can update with status, if required
    */
   INFO_RET UpdateDatabaseAlbumInfo(CAlbum& album, const ADDON::ScraperPtr& scraper, bool bAllowSelection, CGUIDialogProgress* pDialog = NULL);
- 
+
   /*! \brief Update the database information for a MusicDB artist
    Given an artist, search and update its info with the given scraper.
    If info is found, update the database and artwork with the new
@@ -172,7 +176,7 @@ protected:
    \param items [in] list of FileItems to scan
    \param scannedItems [in] list to populate with the scannedItems
    */
-  int RetrieveMusicInfo(const CStdString& strDirectory, CFileItemList& items);
+  int RetrieveMusicInfo(const std::string& strDirectory, CFileItemList& items);
 
   /*! \brief Scan in the ID3/Ogg/FLAC tags for a bunch of FileItems
     Given a list of FileItems, scan in the tags for those FileItems
@@ -182,23 +186,23 @@ protected:
    \param scannedItems [in] list to populate with the scannedItems
    */
   INFO_RET ScanTags(const CFileItemList& items, CFileItemList& scannedItems);
-  int GetPathHash(const CFileItemList &items, CStdString &hash);
+  int GetPathHash(const CFileItemList &items, std::string &hash);
   void GetAlbumArtwork(long id, const CAlbum &artist);
 
-  bool DoScan(const CStdString& strDirectory);
+  bool DoScan(const std::string& strDirectory);
 
   virtual void Run();
   int CountFiles(const CFileItemList& items, bool recursive);
-  int CountFilesRecursively(const CStdString& strPath);
+  int CountFilesRecursively(const std::string& strPath);
 
   /*! \brief Resolve a MusicBrainzID to a URL
-   If we have a MusicBrainz ID for an artist or album, 
+   If we have a MusicBrainz ID for an artist or album,
    resolve it to an MB URL and set up the scrapers accordingly.
-   
+
    \param preferredScraper [in] A ScraperPtr to the preferred album/artist scraper.
    \param musicBrainzURL [out] will be populated with the MB URL for the artist/album.
    */
-  bool ResolveMusicBrainz(const CStdString &strMusicBrainzID, const ADDON::ScraperPtr &preferredScraper, CScraperUrl &musicBrainzURL);
+  bool ResolveMusicBrainz(const std::string &strMusicBrainzID, const ADDON::ScraperPtr &preferredScraper, CScraperUrl &musicBrainzURL);
 
 protected:
   bool m_showDialog;
@@ -216,6 +220,7 @@ protected:
   std::map<CArtistCredit, CArtist> m_artistCache;
 
   std::set<std::string> m_pathsToScan;
+  std::set<std::string> m_seenPaths;
   int m_flags;
   CThread m_fileCountReader;
 };

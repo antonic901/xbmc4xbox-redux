@@ -18,7 +18,6 @@
  *
  */
 
-#include "system.h"
 #include "LangInfo.h"
 #include "Application.h"
 #include "messaging/ApplicationMessenger.h"
@@ -169,6 +168,16 @@ void CLangInfo::CRegion::SetGlobalLocale()
 #ifdef TARGET_POSIX
     strLocale += ".UTF-8";
 #endif
+  }
+
+  try
+  {
+    g_langInfo.m_originalLocale = std::locale(strLocale.c_str());
+  }
+  catch (std::runtime_error) 
+  {
+    CLog::Log(LOGERROR, "failed to set m_originalLocale to %s", strLocale.c_str());
+    g_langInfo.m_originalLocale = std::locale("");
   }
 
   CLog::Log(LOGDEBUG, "trying to set locale to %s", strLocale.c_str());
@@ -683,6 +692,11 @@ const CLocale& CLangInfo::GetLocale() const
 const std::string& CLangInfo::GetRegionLocale() const
 {
   return m_currentRegion->m_strRegionLocaleName;
+}
+
+const std::locale& CLangInfo::GetOriginalLocale() const
+{
+  return m_originalLocale;
 }
 
 // Returns the format string for the date of the current language

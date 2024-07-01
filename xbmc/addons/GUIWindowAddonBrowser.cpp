@@ -48,6 +48,7 @@
 #include "settings/AdvancedSettings.h"
 #include "storage/MediaManager.h"
 #include "LangInfo.h"
+#include "view/GUIViewState.h"
 
 #define CONTROL_AUTOUPDATE    5
 #define CONTROL_SHUTUP        6

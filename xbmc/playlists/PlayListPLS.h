@@ -18,7 +18,11 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#include "playlists/PlayList.h"
+
+#include <string>
+#include <vector>
+
+#include "PlayList.h"
 
 namespace PLAYLIST
 {
@@ -28,15 +32,15 @@ class CPlayListPLS :
 public:
   CPlayListPLS(void);
   virtual ~CPlayListPLS(void);
-  virtual bool Load(const CStdString& strFileName);
-  virtual void Save(const CStdString& strFileName) const;
+  virtual bool Load(const std::string& strFileName);
+  virtual void Save(const std::string& strFileName) const;
   virtual bool Resize(std::vector<int>::size_type newSize);
 };
 
 class CPlayListASX : public CPlayList
 {
 public:
-  virtual bool LoadData(std::istream &stream);  
+  virtual bool LoadData(std::istream &stream);
 protected:
   bool LoadAsxIniInfo(std::istream &stream);
 };

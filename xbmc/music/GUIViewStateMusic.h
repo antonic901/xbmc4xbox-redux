@@ -30,8 +30,8 @@ protected:
   virtual VECSOURCES& GetSources();
   virtual int GetPlaylist();
   virtual bool AutoPlayNextItem();
-  virtual CStdString GetLockType();
-  virtual CStdString GetExtensions();
+  virtual std::string GetLockType();
+  virtual std::string GetExtensions();
 };
 
 class CGUIViewStateMusicSearch : public CGUIViewStateWindowMusic
@@ -83,16 +83,6 @@ private:
   void AddOnlineShares();
 };
 
-class CGUIViewStateWindowMusicSongs : public CGUIViewStateWindowMusic
-{
-public:
-  CGUIViewStateWindowMusicSongs(const CFileItemList& items);
-
-protected:
-  virtual void SaveViewState();
-  virtual VECSOURCES& GetSources();
-};
-
 class CGUIViewStateWindowMusicPlaylist : public CGUIViewStateWindowMusic
 {
 public:
@@ -104,14 +94,4 @@ protected:
   virtual bool AutoPlayNextItem();
   virtual bool HideParentDirItems();
   virtual VECSOURCES& GetSources();
-};
-
-class CGUIViewStateMusicShoutcast : public CGUIViewStateWindowMusic
-{
-public:
-  CGUIViewStateMusicShoutcast(const CFileItemList& items);
-
-protected:
-  virtual bool AutoPlayNextItem();
-  virtual void SaveViewState();
 };

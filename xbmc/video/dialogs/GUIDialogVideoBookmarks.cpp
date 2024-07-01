@@ -146,7 +146,7 @@ void CGUIDialogVideoBookmarks::Update()
   /* push in the resume mark first */
   if( videoDatabase.GetResumeBookMark(g_application.CurrentFile(), resumemark) )
     m_bookmarks.insert(m_bookmarks.begin(), resumemark);
-  
+
   if (g_application.CurrentFileItem().HasVideoInfoTag() && g_application.CurrentFileItem().GetVideoInfoTag()->m_iEpisode > -1)
   {
     vector<CVideoInfoTag> episodes;
@@ -231,7 +231,7 @@ void CGUIDialogVideoBookmarks::AddBookmark(CVideoInfoTag* tag)
   if( g_application.m_pPlayer )
     bookmark.playerState = g_application.m_pPlayer->GetPlayerState();
   else
-    bookmark.playerState.Empty();
+    bookmark.playerState.clear();
 
   bookmark.player = CPlayerCoreFactory::Get().GetPlayerName(g_application.GetCurrentPlayer());
 
@@ -262,10 +262,10 @@ void CGUIDialogVideoBookmarks::AddBookmark(CVideoInfoTag* tag)
     // compute the thumb name + create the thumb image
     Crc32 crc;
     crc.ComputeFromLowerCase(g_application.CurrentFile());
-    bookmark.thumbNailImage.Format("%08x_%i.jpg", (unsigned __int32) crc, m_vecItems->Size() + 1);
+    bookmark.thumbNailImage = StringUtils::Format("%08x_%i.jpg", (unsigned __int32) crc, m_vecItems->Size() + 1);
     bookmark.thumbNailImage = URIUtils::AddFileToFolder(CProfilesManager::Get().GetBookmarksThumbFolder(), bookmark.thumbNailImage);
     if (!CPicture::CreateThumbnailFromSurface((BYTE *)lockedRect.pBits, width, height, lockedRect.Pitch, bookmark.thumbNailImage))
-      bookmark.thumbNailImage.Empty();
+      bookmark.thumbNailImage.clear();
     surface->UnlockRect();
     surface->Release();
     texture->Release();

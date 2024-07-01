@@ -64,6 +64,7 @@ public:
   bool CheckNetwork(int count);
   bool SetupNetwork();
   bool IsEthernetConnected();
+  bool IsConnected() { return IsEthernetConnected(); };
   bool IsAvailable(bool wait = false);
   bool IsInited() { return m_inited; }
 

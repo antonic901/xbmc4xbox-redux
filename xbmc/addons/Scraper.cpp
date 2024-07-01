@@ -184,7 +184,7 @@ bool CScraper::SetPathSettings(CONTENT_TYPE content, const CStdString& xml)
     return true;
 
   CXBMCTinyXML doc;
-  doc.Parse(xml.c_str());
+  doc.Parse(xml);
   m_userSettingsLoaded = SettingsFromXML(doc);
 
   return m_userSettingsLoaded;
@@ -256,7 +256,7 @@ vector<CStdString> CScraper::Run(const CStdString& function,
     g_charsetConverter.unknownToUTF8(strXML);
 
   CXBMCTinyXML doc;
-  doc.Parse(strXML.c_str(),0,TIXML_ENCODING_UTF8);
+  doc.Parse(strXML, TIXML_ENCODING_UTF8);
   if (!doc.RootElement())
   {
     CLog::Log(LOGERROR, "%s: Unable to parse XML",__FUNCTION__);
@@ -442,7 +442,7 @@ CScraperUrl CScraper::NfoUrl(const CStdString &sNfoContent)
   for (unsigned int i=0; i < vcsOut.size(); ++i)
   {
     CXBMCTinyXML doc;
-    doc.Parse(vcsOut[i], 0, TIXML_ENCODING_UTF8);
+    doc.Parse(vcsOut[i], TIXML_ENCODING_UTF8);
     CheckScraperError(doc.RootElement());
 
     if (doc.RootElement())
@@ -504,7 +504,7 @@ CScraperUrl CScraper::ResolveIDToUrl(const CStdString& externalID)
   for (unsigned int i=0; i < vcsOut.size(); ++i)
   {
     CXBMCTinyXML doc;
-    doc.Parse(vcsOut[i], 0, TIXML_ENCODING_UTF8);
+    doc.Parse(vcsOut[i], TIXML_ENCODING_UTF8);
     CheckScraperError(doc.RootElement());
 
     if (doc.RootElement())
@@ -599,7 +599,7 @@ std::vector<CScraperUrl> CScraper::FindMovie(XFILE::CCurlFile &fcurl, const CStd
   for (CStdStringArray::const_iterator i = vcsOut.begin(); i != vcsOut.end(); ++i)
   {
     CXBMCTinyXML doc;
-    doc.Parse(*i, 0, TIXML_ENCODING_UTF8);
+    doc.Parse(*i, TIXML_ENCODING_UTF8);
     if (!doc.RootElement())
     {
       CLog::Log(LOGERROR, "%s: Unable to parse XML", __FUNCTION__);
@@ -725,7 +725,7 @@ std::vector<CMusicAlbumInfo> CScraper::FindAlbum(CCurlFile &fcurl, const CStdStr
   for (CStdStringArray::const_iterator i = vcsOut.begin(); i != vcsOut.end(); ++i)
   {
     CXBMCTinyXML doc;
-    doc.Parse(*i, 0, TIXML_ENCODING_UTF8);
+    doc.Parse(*i, TIXML_ENCODING_UTF8);
     TiXmlHandle xhDoc(&doc);
 
     for (TiXmlElement* pxeAlbum = xhDoc.FirstChild("results").FirstChild("entity").Element();
@@ -817,7 +817,7 @@ std::vector<CMusicArtistInfo> CScraper::FindArtist(CCurlFile &fcurl,
   for (CStdStringArray::const_iterator i = vcsOut.begin(); i != vcsOut.end(); ++i)
   {
     CXBMCTinyXML doc;
-    doc.Parse(*i, 0, TIXML_ENCODING_UTF8);
+    doc.Parse(*i, TIXML_ENCODING_UTF8);
     if (!doc.RootElement())
     {
       CLog::Log(LOGERROR, "%s: Unable to parse XML", __FUNCTION__);
@@ -941,7 +941,7 @@ bool CScraper::GetVideoDetails(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl
   for (CStdStringArray::const_iterator i = vcsOut.begin(); i != vcsOut.end(); ++i)
   {
     CXBMCTinyXML doc;
-    doc.Parse(*i, 0, TIXML_ENCODING_UTF8);
+    doc.Parse(*i, TIXML_ENCODING_UTF8);
     if (!doc.RootElement())
     {
       CLog::Log(LOGERROR, "%s: Unable to parse XML", __FUNCTION__);
@@ -976,7 +976,7 @@ bool CScraper::GetAlbumDetails(CCurlFile &fcurl, const CScraperUrl &scurl, CAlbu
   for (CStdStringArray::const_iterator i = vcsOut.begin(); i != vcsOut.end(); ++i)
   {
     CXBMCTinyXML doc;
-    doc.Parse(*i, 0, TIXML_ENCODING_UTF8);
+    doc.Parse(*i, TIXML_ENCODING_UTF8);
     if (!doc.RootElement())
     {
       CLog::Log(LOGERROR, "%s: Unable to parse XML", __FUNCTION__);
@@ -1012,7 +1012,7 @@ bool CScraper::GetArtistDetails(CCurlFile &fcurl, const CScraperUrl &scurl,
   for (vector<CStdString>::const_iterator i = vcsOut.begin(); i != vcsOut.end(); ++i)
   {
     CXBMCTinyXML doc;
-    doc.Parse(*i, 0, TIXML_ENCODING_UTF8);
+    doc.Parse(*i, TIXML_ENCODING_UTF8);
     if (!doc.RootElement())
     {
       CLog::Log(LOGERROR, "%s: Unable to parse XML", __FUNCTION__);
@@ -1020,6 +1020,35 @@ bool CScraper::GetArtistDetails(CCurlFile &fcurl, const CScraperUrl &scurl,
     }
 
     fRet = artist.Load(doc.RootElement(), i != vcsOut.begin());
+  }
+  return fRet;
+}
+
+bool CScraper::GetArtwork(XFILE::CCurlFile &fcurl, CVideoInfoTag &details)
+{
+  if (!details.HasUniqueID())
+    return false;
+
+  CLog::Log(LOGDEBUG, "%s: Reading artwork for '%s' using %s scraper "
+    "(file: '%s', content: '%s', version: '%s')", __FUNCTION__, details.GetUniqueID().c_str(),
+    Name().c_str(), Path().c_str(), ADDON::TranslateContent(Content()).c_str(), Version().asString().c_str());
+
+  std::vector<CStdString> vcsIn;
+  CScraperUrl scurl;
+  vcsIn.push_back(details.GetUniqueID());
+  std::vector<CStdString> vcsOut = RunNoThrow("GetArt", scurl, fcurl, &vcsIn);
+
+  bool fRet(false);
+  for (std::vector<CStdString>::const_iterator it = vcsOut.begin(); it != vcsOut.end(); ++it)
+  {
+    CXBMCTinyXML doc;
+    doc.Parse(*it, TIXML_ENCODING_UTF8);
+    if (!doc.RootElement())
+    {
+      CLog::Log(LOGERROR, "%s: Unable to parse XML", __FUNCTION__);
+      return false;
+    }
+    fRet = details.Load(doc.RootElement(), it != vcsOut.begin());
   }
   return fRet;
 }

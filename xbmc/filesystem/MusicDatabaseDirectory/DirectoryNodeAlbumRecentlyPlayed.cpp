@@ -21,11 +21,11 @@
 #include "DirectoryNodeAlbumRecentlyPlayed.h"
 #include "music/MusicDatabase.h"
 #include "FileItem.h"
-#include "LocalizeStrings.h"
+#include "utils/StringUtils.h"
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 
-CDirectoryNodeAlbumRecentlyPlayed::CDirectoryNodeAlbumRecentlyPlayed(const CStdString& strName, CDirectoryNode* pParent)
+CDirectoryNodeAlbumRecentlyPlayed::CDirectoryNodeAlbumRecentlyPlayed(const std::string& strName, CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_ALBUM_RECENTLY_PLAYED, strName, pParent)
 {
 
@@ -36,10 +36,10 @@ NODE_TYPE CDirectoryNodeAlbumRecentlyPlayed::GetChildType() const
   if (GetName()=="-1")
     return NODE_TYPE_ALBUM_RECENTLY_PLAYED_SONGS;
 
-  return NODE_TYPE_SONG; 
+  return NODE_TYPE_SONG;
 }
 
-CStdString CDirectoryNodeAlbumRecentlyPlayed::GetLocalizedName() const
+std::string CDirectoryNodeAlbumRecentlyPlayed::GetLocalizedName() const
 {
   if (GetID() == -1)
     return g_localizeStrings.Get(15102); // All Albums
@@ -65,8 +65,7 @@ bool CDirectoryNodeAlbumRecentlyPlayed::GetContent(CFileItemList& items) const
   for (int i=0; i<(int)albums.size(); ++i)
   {
     CAlbum& album=albums[i];
-    CStdString strDir;
-    strDir.Format("%s%ld/", BuildPath().c_str(), album.idAlbum);
+    std::string strDir = StringUtils::Format("%s%ld/", BuildPath().c_str(), album.idAlbum);
     CFileItemPtr pItem(new CFileItem(strDir, album));
     items.Add(pItem);
   }

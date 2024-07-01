@@ -19,7 +19,7 @@
  *
  */
 #include "URL.h"
-#include "playlists/PlayList.h"
+#include "PlayList.h"
 
 namespace PLAYLIST
 {
@@ -31,6 +31,8 @@ public:
   static const char *InfoMarker;
   static const char *ArtistMarker;
   static const char *AlbumMarker;
+  static const char *PropertyMarker;
+  static const char *VLCOptMarker;
   static const char *StreamMarker;
   static const char *BandwidthMarker;
   static const char *OffsetMarker;
@@ -38,9 +40,9 @@ public:
 public:
   CPlayListM3U(void);
   virtual ~CPlayListM3U(void);
-  virtual bool Load(const CStdString& strFileName);
-  virtual void Save(const CStdString& strFileName) const;
+  virtual bool Load(const std::string& strFileName);
+  virtual void Save(const std::string& strFileName) const;
 
-  static std::map< CStdString, CStdString > ParseStreamLine(const CStdString &streamLine);
+  static std::map<std::string,std::string> ParseStreamLine(const std::string &streamLine);
 };
 }

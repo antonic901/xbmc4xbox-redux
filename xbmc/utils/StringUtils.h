@@ -31,13 +31,14 @@
 #ifndef __STRINGUTILS_H_
 #define __STRINGUTILS_H_
 
-#include <vector>
-
 #include <stdarg.h>
 #include <stdint.h>
 #include <string>
 #include <vector>
+#include <sstream>
+#include <locale>
 
+#include "LangInfo.h"
 #include "XBDateTime.h"
 #include "StdString.h"
 #include "utils/params_check_macros.h"
@@ -71,6 +72,7 @@ public:
   static bool EqualsNoCase(const char *s1, const char *s2);
   static int  CompareNoCase(const std::string &str1, const std::string &str2);
   static int  CompareNoCase(const char *s1, const char *s2);
+  static int ReturnDigits(const std::string &str);
   static std::string Left(const std::string &str, size_t count);
   static std::string Mid(const std::string &str, size_t first, size_t count = std::string::npos);
   static std::string Right(const std::string &str, size_t count);
@@ -107,6 +109,22 @@ public:
    */
   static std::vector<std::string> Split(const std::string& input, const std::string& delimiter, unsigned int iMaxStrings = 0);
   static std::vector<std::string> Split(const std::string& input, const char delimiter, size_t iMaxStrings = 0);
+
+  /*! \brief Splits the given input strings using the given delimiters into further separate strings.
+
+  If the given input string vector is empty the result will be an empty array (not
+  an array containing an empty string).
+
+  Delimiter strings are applied in order, so once the (optional) maximum number of
+  items is produced no other delimters are applied. This produces different results
+  to applying all delimiters at once e.g. "a/b#c/d" becomes "a", "b#c", "d" rather
+  than "a", "b", "c/d"
+
+  \param input Input vector of strings each to be split
+  \param delimiters Delimiter strings to be used to split the input strings
+  \param iMaxStrings (optional) Maximum number of resulting split strings
+  */
+  static std::vector<std::string> SplitMulti(const std::vector<std::string> &input, const std::vector<std::string> &delimiters, unsigned int iMaxStrings = 0);
   static int FindNumber(const std::string& strInput, const std::string &strFind);
   static int64_t AlphaNumericCompare(const wchar_t *left, const wchar_t *right);
   static long TimeStringToSeconds(const std::string &timeString);
@@ -176,6 +194,29 @@ public:
   static double CompareFuzzy(const std::string &left, const std::string &right);
   static int FindBestMatch(const std::string &str, const std::vector<std::string> &strings, double &matchscore);
   static bool ContainsKeyword(const std::string &str, const std::vector<std::string> &keywords);
+
+
+  /*! \brief Format the string with locale separators.
+
+  Format the string with locale separators.
+  For example 10000.57 in en-us is '10,000.57' but in italian is '10.000,57'
+
+  \param param String to format
+  \return Formatted string
+  */
+  template<typename T>
+  static std::string FormatNumber(T num)
+  {
+    std::stringstream ss;
+// ifdef is needed because when you set _ITERATOR_DEBUG_LEVEL=0 and you use custom numpunct you will get runtime error in debug mode
+// for more info https://connect.microsoft.com/VisualStudio/feedback/details/2655363
+#if !(defined(_DEBUG) && (defined(TARGET_WINDOWS) || defined(_XBOX)))
+    ss.imbue(g_langInfo.GetOriginalLocale());
+#endif
+    ss.precision(1);
+    ss << std::fixed << num;
+    return ss.str();
+  }
 
   /*! \brief Escapes the given string to be able to be used as a parameter.
 

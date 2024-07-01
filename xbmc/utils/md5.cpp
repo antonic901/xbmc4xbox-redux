@@ -62,6 +62,13 @@ void XBMC::XBMC_MD5::getDigest(CStdString& digest)
       szBuf[15]);
 }
 
+std::string XBMC::XBMC_MD5::getDigest()
+{
+  CStdString digest;
+  getDigest(digest);
+  return digest;
+}
+
 CStdString XBMC::XBMC_MD5::GetMD5(const CStdString &text)
 {
   if (text.IsEmpty())

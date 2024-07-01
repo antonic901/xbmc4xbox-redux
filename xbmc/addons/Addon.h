@@ -87,6 +87,9 @@ public:
   CStdString broken;
   InfoMap    extrainfo;
   int        stars;
+  CDateTime installDate;
+  CDateTime lastUpdated;
+  CDateTime lastUsed;
 private:
   void BuildDependencies(const cp_plugin_info_t *plugin);
 };
@@ -159,6 +162,10 @@ public:
   const CStdString Icon() const;
   int Stars() const { return m_props.stars; }
   const CStdString Disclaimer() const { return m_props.disclaimer; }
+  const std::string Broken() const { return m_props.broken; }
+  CDateTime InstallDate() const { return m_props.installDate; }
+  CDateTime LastUpdated() const { return m_props.lastUpdated; }
+  CDateTime LastUsed() const { return m_props.lastUsed; }
   const InfoMap &ExtraInfo() const { return m_props.extrainfo; }
   const ADDONDEPS &GetDeps() const { return m_props.dependencies; }
 

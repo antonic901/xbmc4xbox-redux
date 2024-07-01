@@ -35,7 +35,7 @@ CGUIViewStateAddonBrowser::CGUIViewStateAddonBrowser(const CFileItemList& items)
 {
   AddSortMethod(SortByLabel, SortAttributeIgnoreFolders, 551, LABEL_MASKS("%L", "%I", "%L", ""));  // Filename, Size | Foldername, empty
   AddSortMethod(SortByDate, 552, LABEL_MASKS("%L", "%J", "%L", "%J"));  // Filename, Date | Foldername, Date
-  SetSortMethod(SortByLabel, SortAttributeIgnoreFolders);
+  SetSortMethod(SortByLabel);
 
   SetViewAsControl(DEFAULT_VIEW_AUTO);
 
@@ -48,7 +48,7 @@ void CGUIViewStateAddonBrowser::SaveViewState()
   SaveViewToDb(m_items.GetPath(), WINDOW_ADDON_BROWSER);
 }
 
-CStdString CGUIViewStateAddonBrowser::GetExtensions()
+std::string CGUIViewStateAddonBrowser::GetExtensions()
 {
   return "";
 }

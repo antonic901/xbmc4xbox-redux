@@ -26,8 +26,6 @@
 #include "guilib/GUIWindowManager.h"
 #include "utils/Variant.h"
 
-using namespace std;
-
 CProgressJob::CProgressJob()
   : m_modal(false),
     m_autoClose(true),
@@ -56,13 +54,10 @@ CProgressJob::~CProgressJob()
 
 bool CProgressJob::ShouldCancel(unsigned int progress, unsigned int total) const
 {
-  if (m_progressDialog != NULL)
-  {
-    if (IsCancelled())
-      return true;
+  if (IsCancelled())
+    return true;
 
-    SetProgress(progress, total);
-  }
+  SetProgress(progress, total);
 
   return CJob::ShouldCancel(progress, total);
 }
@@ -85,9 +80,8 @@ bool CProgressJob::DoModal()
   // do the work
   bool result = DoWork();
 
-  // close the progress dialog
-  if (m_autoClose)
-    m_progressDialog->Close();
+  // mark the progress dialog as finished (will close it)
+  MarkFinished();
   m_modal = false;
 
   return result;
@@ -183,7 +177,12 @@ void CProgressJob::MarkFinished()
   if (m_progress != NULL)
   {
     if (m_updateProgress)
+    {
       m_progress->MarkFinished();
+      // We don't own this pointer and it will be deleted after it's marked finished
+      // just set it to nullptr so we don't try to use it again
+      m_progress = nullptr;
+    }
   }
   else if (m_progressDialog != NULL && m_autoClose)
     m_progressDialog->Close();
@@ -195,4 +194,9 @@ bool CProgressJob::IsCancelled() const
     return m_progressDialog->IsCanceled();
 
   return false;
+}
+
+bool CProgressJob::HasProgressIndicator() const
+{
+  return m_progress != nullptr || m_progressDialog != nullptr;
 }

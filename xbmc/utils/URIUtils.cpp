@@ -113,7 +113,7 @@ bool URIUtils::HasExtension(const CStdString& strFileName, const CStdString& str
   return false;
 }
 
-void URIUtils::RemoveExtension(CStdString& strFileName)
+void URIUtils::RemoveExtension(std::string& strFileName)
 {
   if(IsURL(strFileName))
   {
@@ -407,6 +407,28 @@ bool URIUtils::GetParentPath(const std::string& strPath, std::string& strParent)
   return true;
 }
 
+std::string URIUtils::GetBasePath(const std::string& strPath)
+{
+  std::string strCheck(strPath);
+  if (IsStack(strPath))
+    strCheck = CStackDirectory::GetFirstStackedFile(strPath);
+
+  std::string strDirectory = GetDirectory(strCheck);
+  if (IsInRAR(strCheck))
+  {
+    std::string strPath=strDirectory;
+    GetParentPath(strPath, strDirectory);
+  }
+  if (IsStack(strPath))
+  {
+    strCheck = strDirectory;
+    RemoveSlashAtEnd(strCheck);
+    if (GetFileName(strCheck).size() == 3 && StringUtils::StartsWithNoCase(GetFileName(strCheck), "cd"))
+      strDirectory = GetDirectory(strCheck);
+  }
+  return strDirectory;
+}
+
 std::string URLEncodePath(const std::string& strPath)
 {
   vector<string> segments = StringUtils::Split(strPath, "/");
@@ -549,7 +571,7 @@ bool URIUtils::IsRemote(const CStdString& strFile)
 
   if(IsMultiPath(strFile))
   { // virtual paths need to be checked separately
-    vector<CStdString> paths;
+    vector<std::string> paths;
     if (CMultiPathDirectory::GetPaths(strFile, paths))
     {
       for (unsigned int i = 0; i < paths.size(); i++)
@@ -840,6 +862,22 @@ bool URIUtils::IsFTP(const CStdString& strFile)
 
   return IsProtocol(strFile2, "ftp")  ||
          IsProtocol(strFile2, "ftps");
+}
+
+bool URIUtils::IsHTTP(const std::string& strFile)
+{
+  if (IsStack(strFile))
+    return IsHTTP(CStackDirectory::GetFirstStackedFile(strFile));
+
+  if (IsSpecial(strFile))
+    return IsHTTP(CSpecialProtocol::TranslatePath(strFile));
+
+  CURL url(strFile);
+  if (HasParentInHostname(url))
+    return IsHTTP(url.GetHostName());
+
+  return IsProtocol(strFile, "http") ||
+         IsProtocol(strFile, "https");
 }
 
 bool URIUtils::IsDAV(const CStdString& strFile)

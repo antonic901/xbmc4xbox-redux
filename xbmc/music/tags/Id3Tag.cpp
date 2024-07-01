@@ -104,7 +104,7 @@ bool CID3Tag::Parse()
 
   tag.SetTrackNumber(GetTrack());
 
-  tag.SetPartOfSet(GetPartOfSet());
+  tag.SetDiscNumber(GetPartOfSet());
 
   tag.SetGenre(GetGenre());
 
@@ -129,7 +129,7 @@ bool CID3Tag::Parse()
     tag.SetAlbumArtist(g_localizeStrings.Get(340)); // Various Artists
   tag.SetCompilation(GetCompilation());
 
-  if (!tag.GetTitle().IsEmpty() || !tag.GetArtist().empty() || !tag.GetAlbum().IsEmpty())
+  if (!tag.GetTitle().empty() || !tag.GetArtist().empty() || !tag.GetAlbum().empty())
     tag.SetLoaded();
 
   SYSTEMTIME dateTime;
@@ -147,7 +147,6 @@ bool CID3Tag::Parse()
   tag.SetMusicBrainzArtistID(StringUtils::Split(GetUserText("MusicBrainz Artist Id"), g_advancedSettings.m_musicItemSeparator));
   tag.SetMusicBrainzAlbumID(GetUserText("MusicBrainz Album Id"));
   tag.SetMusicBrainzAlbumArtistID(StringUtils::Split(GetUserText("MusicBrainz Album Artist Id"), g_advancedSettings.m_musicItemSeparator));
-  tag.SetMusicBrainzTRMID(GetUserText("MusicBrainz TRM Id"));
 
   // extract Cover Art and save as album thumb
   bool bFound = false;
@@ -312,7 +311,7 @@ CStdString CID3Tag::GetLyrics() const
   union id3_field *field;
   frame = m_dll.id3_tag_findframe (m_tag, "USLT", 0);
   if (!frame) return "";
-  
+
   /* Find the encoding used, stored in frame 0 */
   field = m_dll.id3_frame_field (frame, 0);
 
@@ -323,7 +322,7 @@ CStdString CID3Tag::GetLyrics() const
   /* The last field contains the data */
   field = m_dll.id3_frame_field (frame, frame->nfields-1);
   if (!field) return "";
-   
+
   if(field->type != ID3_FIELD_TYPE_STRINGFULL) return "";
 
   ucs4 = m_dll.id3_field_getfullstring (field);
@@ -506,7 +505,7 @@ CStdString CID3Tag::ParseMP3Genre(const CStdString& str) const
         t = strTemp;
         strTemp.clear();
       }
-      
+
       // remove any leading or trailing white space
       // from temp string
       t.Trim();

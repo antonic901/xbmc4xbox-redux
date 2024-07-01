@@ -20,10 +20,10 @@
  *
  */
 
-#include "music/windows/GUIWindowMusicBase.h"
+#include "GUIWindowMusicBase.h"
 #include "BackgroundInfoLoader.h"
 
-class CGUIWindowMusicPlayList : public CGUIWindowMusicBase, public IBackgroundLoaderObserver
+class CGUIWindowMusicPlayList : public CGUIWindowMusicBase
 {
 public:
   CGUIWindowMusicPlayList(void);
@@ -37,19 +37,19 @@ public:
   void MoveItem(int iStart, int iDest);
 
 protected:
-  virtual void GoParentFolder() {};
+  virtual bool GoParentFolder() { return false; };
   virtual void UpdateButtons();
   virtual void OnItemLoaded(CFileItem* pItem);
-  virtual bool Update(const CStdString& strDirectory, bool updateFilterPath = true);
+  virtual bool Update(const std::string& strDirectory, bool updateFilterPath = true);
   virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
   void OnMove(int iItem, int iAction);
-  virtual bool OnPlayMedia(int iItem);
+  virtual bool OnPlayMedia(int iItem, const std::string &player = "");
 
   void SavePlayList();
   void ClearPlayList();
   void MarkPlaying();
-  
+
   bool MoveCurrentPlayListItem(int iItem, int iAction, bool bUpdate = true);
 
   int m_movingFrom;

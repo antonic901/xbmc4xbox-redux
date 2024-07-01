@@ -38,7 +38,7 @@ typedef std::string MediaType;
 #define MediaTypeSeason           "season"
 #define MediaTypeEpisode          "episode"
 
-class MediaTypes
+class CMediaTypes
 {
 public:
   static bool IsValidMediaType(const MediaType &mediaType);

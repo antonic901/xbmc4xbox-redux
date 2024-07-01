@@ -30,6 +30,7 @@
 #include "pictures/PictureInfoLoader.h"
 #include "GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
+#include "view/GUIViewState.h"
 #include "filesystem/File.h"
 #include "playlists/PlayList.h"
 #include "LocalizeStrings.h"
@@ -74,7 +75,7 @@ void CGUIWindowPictures::OnInitWindow()
     if (path.Equals(m_vecItems->GetPath()))
     {
       m_viewControl.SetSelectedItem(wndw->GetCurrentSlide()->GetPath());
-      m_iSelectedItem = m_viewControl.GetSelectedItem();
+      SaveSelectedItemInHistory();
     }
     m_slideShowStarted = false;
   }

@@ -41,6 +41,7 @@
 #include "utils/log.h"
 #include "utils/URIUtils.h"
 #include "URL.h"
+#include "view/GUIViewState.h"
 
 using namespace XFILE;
 
@@ -61,7 +62,7 @@ CGUIWindowGameSaves::~CGUIWindowGameSaves()
 {
 }
 
-void CGUIWindowGameSaves::GoParentFolder()
+bool CGUIWindowGameSaves::GoParentFolder()
 {
   if (m_history.GetParentPath() == m_vecItems->GetPath())
     m_history.RemoveParentPath();
@@ -88,6 +89,7 @@ void CGUIWindowGameSaves::GoParentFolder()
     Update(strParent);
   }
   m_history.RemoveSelectedItem(strOldPath); //Delete current path
+  return true;
 }
 
 bool CGUIWindowGameSaves::OnClick(int iItem)
@@ -175,7 +177,7 @@ bool CGUIWindowGameSaves::OnPlayMedia(int iItem)
   return true;
 }
 
-bool CGUIWindowGameSaves::GetDirectory(const CStdString& strDirectory, CFileItemList& items)
+bool CGUIWindowGameSaves::GetDirectory(const std::string& strDirectory, CFileItemList& items)
 {
   if (!m_rootDir.GetDirectory(CURL(strDirectory),items,false))
     return false;

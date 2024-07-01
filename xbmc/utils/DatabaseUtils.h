@@ -1,7 +1,7 @@
 #pragma once
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2012-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,8 +19,9 @@
  *
  */
 
+#include <system.h> // <xtl.h>
 #include <map>
-#include <memory>
+#include <boost/move/unique_ptr.hpp>
 #include <set>
 #include <string>
 #include <vector>
@@ -59,6 +60,12 @@ typedef enum {
   FieldVirtualFolder,
   FieldRandom,
   FieldDateTaken,
+  FieldAudioCount,
+  FieldSubtitleCount,
+
+  FieldInstallDate,
+  FieldLastUpdated,
+  FieldLastUsed,
 
   // fields retrievable from the database
   FieldId,
@@ -78,6 +85,7 @@ typedef enum {
   FieldInProgress,
   FieldRating,
   FieldComment,
+  FieldRole,
   FieldDateAdded,
   FieldTvShowTitle,
   FieldPlot,
@@ -107,6 +115,7 @@ typedef enum {
   FieldStyles,
   FieldAlbumType,
   FieldMusicLabel,
+  FieldCompilation,
   FieldTrailer,
   FieldVideoResolution,
   FieldVideoAspectRatio,
@@ -117,12 +126,17 @@ typedef enum {
   FieldSubtitleLanguage,
   FieldProductionCode,
   FieldTag,
+  FieldChannelName,
+  FieldChannelNumber,
   FieldInstruments,
   FieldBiography,
   FieldBorn,
   FieldBandFormed,
   FieldDisbanded,
   FieldDied,
+  FieldStereoMode,
+  FieldUserRating,
+  FieldRelevance, // Used for actors' appearences
   FieldMax
 } Field;
 
@@ -147,9 +161,9 @@ public:
   static int GetField(Field field, const MediaType &mediaType);
   static int GetFieldIndex(Field field, const MediaType &mediaType);
   static bool GetSelectFields(const Fields &fields, const MediaType &mediaType, FieldList &selectFields);
-  
+
   static bool GetFieldValue(const dbiplus::field_value &fieldValue, CVariant &variantValue);
-  static bool GetDatabaseResults(const MediaType &mediaType, const FieldList &fields, const std::auto_ptr<dbiplus::Dataset> &dataset, DatabaseResults &results);
+  static bool GetDatabaseResults(const MediaType &mediaType, const FieldList &fields, const boost::movelib::unique_ptr<dbiplus::Dataset> &dataset, DatabaseResults &results);
 
   static std::string BuildLimitClause(int end, int start = 0);
 

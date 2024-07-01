@@ -21,7 +21,8 @@
 
 #pragma once
 
-#include "boost/shared_ptr.hpp"
+#include "system.h" // <xtl.h>
+#include <boost/shared_ptr.hpp>
 
 /**
  * This file contains the pattern for moving "globals" from the BSS Segment to the heap.

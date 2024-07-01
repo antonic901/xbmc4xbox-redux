@@ -27,8 +27,8 @@ class CGUIViewStateWindowPictures : public CGUIViewState
 public:
   CGUIViewStateWindowPictures(const CFileItemList& items);
 
-  virtual CStdString GetLockType();
-  virtual CStdString GetExtensions();
+  virtual std::string GetLockType();
+  virtual std::string GetExtensions();
   virtual VECSOURCES& GetSources();
 
 protected:

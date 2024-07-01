@@ -18,9 +18,8 @@
  *
  */
 
-#include "playlists/PlayListURL.h"
+#include "PlayListURL.h"
 #include "filesystem/File.h"
-#include "Util.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
 
@@ -39,10 +38,10 @@ CPlayListURL::CPlayListURL(void)
 CPlayListURL::~CPlayListURL(void)
 {}
 
-bool CPlayListURL::Load(const CStdString& strFileName)
+bool CPlayListURL::Load(const std::string& strFileName)
 {
   char szLine[4096];
-  CStdString strLine;
+  std::string strLine;
 
   Clear();
 
@@ -61,15 +60,17 @@ bool CPlayListURL::Load(const CStdString& strFileName)
     strLine = szLine;
     StringUtils::RemoveCRLF(strLine);
 
-    if (strLine.Left(18) == "[InternetShortcut]")
+    if (StringUtils::StartsWith(strLine, "[InternetShortcut]"))
     {
-      file.ReadString(szLine,1024);
-      strLine  = szLine;
-      StringUtils::RemoveCRLF(strLine);
-      if (strLine.Left(4) == "URL=")
+      if (file.ReadString(szLine,1024))
       {
-        CFileItemPtr newItem(new CFileItem(strLine.Mid(4),false));
-        Add(newItem);
+        strLine  = szLine;
+        StringUtils::RemoveCRLF(strLine);
+        if (StringUtils::StartsWith(strLine, "URL="))
+        {
+          CFileItemPtr newItem(new CFileItem(strLine.substr(4), false));
+          Add(newItem);
+        }
       }
     }
   }

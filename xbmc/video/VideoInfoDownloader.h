@@ -1,8 +1,8 @@
 #pragma once
 
 /*
- *      Copyright (C) 2005-2008 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,18 +15,18 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
 #include "threads/Thread.h"
-#include "video/VideoInfoTag.h"
+#include "VideoInfoTag.h"
 #include "addons/Scraper.h"
 #include "Episode.h"
-#include "XBDateTime.h"
 #include "filesystem/CurlFile.h"
+#include <string>
+#include <vector>
 
 // forward declarations
 class CXBMCTinyXML;
@@ -53,7 +53,14 @@ public:
    \param pProgress progress bar to update as we go. If NULL we run on thread, if non-NULL we run off thread.
    \return 1 on success, -1 on a scraper-specific error, 0 on some other error
    */
-  int FindMovie(const CStdString& strMovie, MOVIELIST& movielist, CGUIDialogProgress *pProgress = NULL);
+  int FindMovie(const std::string& strMovie, MOVIELIST& movielist, CGUIDialogProgress *pProgress = NULL);
+
+  /*! \brief Fetch art URLs for an item with our scraper
+   \param details the video info tag structure to fill with art.
+   \return true on success, false on failure.
+   */
+  bool GetArtwork(CVideoInfoTag &details);
+
   bool GetDetails(const CScraperUrl& url, CVideoInfoTag &movieDetails, CGUIDialogProgress *pProgress = NULL);
   bool GetEpisodeDetails(const CScraperUrl& url, CVideoInfoTag &movieDetails, CGUIDialogProgress *pProgress = NULL);
   bool GetEpisodeList(const CScraperUrl& url, VIDEO::EPISODELIST& details, CGUIDialogProgress *pProgress = NULL);
@@ -68,7 +75,7 @@ protected:
                       GET_EPISODE_DETAILS = 4 };
 
   XFILE::CCurlFile*   m_http;
-  CStdString          m_strMovie;
+  std::string          m_strMovie;
   MOVIELIST           m_movieList;
   CVideoInfoTag       m_movieDetails;
   CScraperUrl         m_url;
@@ -81,6 +88,6 @@ protected:
   void Process();
   void CloseThread();
 
-  int InternalFindMovie(const CStdString& strMovie, MOVIELIST& movielist, bool cleanChars = true);
+  int InternalFindMovie(const std::string& strMovie, MOVIELIST& movielist, bool cleanChars = true);
 };
 

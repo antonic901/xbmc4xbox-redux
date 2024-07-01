@@ -1211,7 +1211,7 @@ int CXbmcHttp::xbmcGetTagFromFilename(int numParas, CStdString paras[])
     tag->SetReleaseDate(systime);
     tag->SetTrackNumber(song.iTrack);
     tag->SetAlbum(song.strAlbum);
-    tag->SetArtist(song.artist);
+    tag->SetArtist(song.GetArtist());
     tag->SetGenre(song.genre);
     tag->SetTitle(song.strTitle);
     tag->SetDuration(song.iDuration);
@@ -1242,8 +1242,8 @@ int CXbmcHttp::xbmcGetTagFromFilename(int numParas, CStdString paras[])
     CStdString output, tmp;
 
     output = openTag+"Artist:" + StringUtils::Join(tag->GetArtist(), g_advancedSettings.m_musicItemSeparator).c_str();
-    output += closeTag+openTag+"Album:" + tag->GetAlbum();
-    output += closeTag+openTag+"Title:" + tag->GetTitle();
+    output += closeTag+openTag+"Album:" + tag->GetAlbum().c_str();
+    output += closeTag+openTag+"Title:" + tag->GetTitle().c_str();
     tmp.Format("%i", tag->GetTrackNumber());
     output += closeTag+openTag+"Track number:" + tmp;
     tmp.Format("%i", tag->GetDuration());
@@ -1327,16 +1327,15 @@ int CXbmcHttp::xbmcGetMovieDetails(int numParas, CStdString paras[])
       m_database.Open();
       if (m_database.HasMovieInfo(paras[0].c_str()))
       {
-        CStdString thumb, output, tmp;
+        CStdString thumb, output;
         m_database.GetMovieInfo(paras[0].c_str(),aMovieRec);
-        tmp.Format("%i", aMovieRec.m_iYear);
+        CStdString tmp = StringUtils::Format("%i", aMovieRec.GetYear());
         output = closeTag+openTag+"Year:" + tmp;
         output += closeTag+openTag+"Director:" + StringUtils::Join(aMovieRec.m_director, g_advancedSettings.m_videoItemSeparator).c_str();
         output += closeTag+openTag+"Title:" + aMovieRec.m_strTitle.c_str();
-        output += closeTag+openTag+"Plot:" + aMovieRec.m_strPlot;
+        output += closeTag+openTag+"Plot:" + aMovieRec.m_strPlot.c_str();
         output += closeTag+openTag+"Genre:" + StringUtils::Join(aMovieRec.m_genre, g_advancedSettings.m_videoItemSeparator).c_str();
-        CStdString strRating;
-        strRating.Format("%3.3f", aMovieRec.m_fRating);
+        CStdString strRating = StringUtils::Format("%3.3f", aMovieRec.GetRating().rating);
         if (strRating=="") strRating="0.0";
         output += closeTag+openTag+"Rating:" + strRating;
         CStdString cast = aMovieRec.GetCast(true);
@@ -1477,26 +1476,26 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
           output+=closeTag+openTag+"Director"+tag+":"+StringUtils::Join(tagVal->m_director, g_advancedSettings.m_videoItemSeparator).c_str();
         if (tagVal->m_writingCredits.size() > 0)
           output+=closeTag+openTag+"Writer"+tag+":"+StringUtils::Join(tagVal->m_writingCredits, g_advancedSettings.m_videoItemSeparator).c_str();
-        if (!tagVal->m_strTagLine.IsEmpty())
-          output+=closeTag+openTag+"Tagline"+tag+":"+tagVal->m_strTagLine;
-        if (!tagVal->m_strPlotOutline.IsEmpty())
-          output+=closeTag+openTag+"Plotoutline"+tag+":"+tagVal->m_strPlotOutline;
-        if (!tagVal->m_strPlot.IsEmpty())
-          output+=closeTag+openTag+"Plot"+tag+":"+tagVal->m_strPlot;    
-        if (tagVal->m_fRating != 0.0f)  // only non-zero ratings are of interest
-          output.Format("%s%03.1f (%s %s)",output+closeTag+openTag+"Rating"+tag+":",tagVal->m_fRating, tagVal->m_strVotes, g_localizeStrings.Get(20350));
-        if (!tagVal->m_strOriginalTitle.IsEmpty())
-          output+=closeTag+openTag+"Original Title"+tag+":"+tagVal->m_strOriginalTitle;
+        if (!tagVal->m_strTagLine.empty())
+          output+=closeTag+openTag+"Tagline"+tag+":"+tagVal->m_strTagLine.c_str();
+        if (!tagVal->m_strPlotOutline.empty())
+          output+=closeTag+openTag+"Plotoutline"+tag+":"+tagVal->m_strPlotOutline.c_str();
+        if (!tagVal->m_strPlot.empty())
+          output+=closeTag+openTag+"Plot"+tag+":"+tagVal->m_strPlot.c_str();    
+        if (tagVal->GetRating().rating != 0.0f)  // only non-zero ratings are of interest
+          output.Format("%s%03.1f (%s %s)",output+closeTag+openTag+"Rating"+tag+":",tagVal->GetRating().rating, tagVal->GetRating().votes, g_localizeStrings.Get(20350));
+        if (!tagVal->m_strOriginalTitle.empty())
+          output+=closeTag+openTag+"Original Title"+tag+":"+tagVal->m_strOriginalTitle.c_str();
         if (tagVal->m_premiered.IsValid())
           output+=closeTag+openTag+"Premiered"+tag+":"+tagVal->m_premiered.GetAsLocalizedDate();
-        if (!tagVal->m_strStatus.IsEmpty())
-          output+=closeTag+openTag+"Status"+tag+":"+tagVal->m_strStatus;
-        if (!tagVal->m_strProductionCode.IsEmpty())
-          output+=closeTag+openTag+"Production Code"+tag+":"+tagVal->m_strProductionCode;
+        if (!tagVal->m_strStatus.empty())
+          output+=closeTag+openTag+"Status"+tag+":"+tagVal->m_strStatus.c_str();
+        if (!tagVal->m_strProductionCode.empty())
+          output+=closeTag+openTag+"Production Code"+tag+":"+tagVal->m_strProductionCode.c_str();
         if (tagVal->m_firstAired.IsValid())
           output+=closeTag+openTag+"First Aired"+tag+":"+tagVal->m_firstAired.GetAsLocalizedDate();
-        if (tagVal->m_iYear != 0)
-          output.Format("%s%i",output+closeTag+openTag+"Year"+tag+":",tagVal->m_iYear);
+        if (tagVal->HasYear())
+          output.Format("%s%i",output+closeTag+openTag+"Year"+tag+":",tagVal->GetYear());
         if (tagVal->m_iSeason != -1)
           output.Format("%s%i",output+closeTag+openTag+"Season"+tag+":",tagVal->m_iSeason);
         if (tagVal->m_iEpisode != -1)
@@ -1525,8 +1524,8 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
       output+=closeTag+openTag+"SongNo:"+tmp;  // current item # in playlist
       output+=closeTag+openTag+"Type"+tag+":Audio";
       const CMusicInfoTag* tagVal=g_infoManager.GetCurrentSongTag();
-      if (tagVal && !tagVal->GetTitle().IsEmpty())
-        output+=closeTag+openTag+"Title"+tag+":"+tagVal->GetTitle();
+      if (tagVal && !tagVal->GetTitle().empty())
+        output+=closeTag+openTag+"Title"+tag+":"+tagVal->GetTitle().c_str();
       if (tagVal && tagVal->GetTrackNumber())
       {
         CStdString tmp;
@@ -1535,8 +1534,8 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
       }
       if (tagVal && !tagVal->GetArtist().empty())
         output+=closeTag+openTag+"Artist"+tag+":"+StringUtils::Join(tagVal->GetArtist(), g_advancedSettings.m_musicItemSeparator).c_str();
-      if (tagVal && !tagVal->GetAlbum().IsEmpty())
-        output+=closeTag+openTag+"Album"+tag+":"+tagVal->GetAlbum();
+      if (tagVal && !tagVal->GetAlbum().empty())
+        output+=closeTag+openTag+"Album"+tag+":"+tagVal->GetAlbum().c_str();
       //now have enough info to check for a change
       if (lastPlayingInfo!=output)
       {
@@ -1549,9 +1548,9 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
       if (tagVal && !tagVal->GetGenre().empty())
         output+=closeTag+openTag+"Genre"+tag+":"+StringUtils::Join(tagVal->GetGenre(), g_advancedSettings.m_musicItemSeparator).c_str();
       if (tagVal && tagVal->GetYear())
-        output+=closeTag+openTag+"Year"+tag+":"+tagVal->GetYearString();
-      if (tagVal && tagVal->GetURL())
-        output+=closeTag+openTag+"URL"+tag+":"+tagVal->GetURL();
+        output+=closeTag+openTag+"Year"+tag+":"+tagVal->GetYearString().c_str();
+      if (tagVal && !tagVal->GetURL().empty())
+        output+=closeTag+openTag+"URL"+tag+":"+tagVal->GetURL().c_str();
       if (tagVal && g_infoManager.GetMusicLabel(MUSICPLAYER_LYRICS))
         output+=closeTag+openTag+"Lyrics"+tag+":"+g_infoManager.GetMusicLabel(MUSICPLAYER_LYRICS);
 
@@ -2052,7 +2051,7 @@ int CXbmcHttp::xbmcSetPlayListSong(int numParas, CStdString paras[])
     return SetResponse(openTag+"Error:Missing song number");
   else
   {
-    g_playlistPlayer.Play(atoi(paras[0].c_str()));
+    g_playlistPlayer.Play(atoi(paras[0].c_str()), "");
     return SetResponse(openTag+"OK");
   }
 }
@@ -2119,7 +2118,7 @@ CStdString CXbmcHttp::GetCloseTag()
 CKey CXbmcHttp::GetKey()
 {
   if (repeatKeyRate!=0)
-    if ((XbmcThreads::SystemClockMillis() - MarkTime) >=  repeatKeyRate)
+    if ((XbmcThreads::SystemClockMillis() - MarkTime) >=  (unsigned int)repeatKeyRate)
     {
       MarkTime=XbmcThreads::SystemClockMillis();
       key=lastKey;
@@ -2342,10 +2341,10 @@ int CXbmcHttp::xbmcLookupAlbum(int numParas, CStdString paras[])
           for (int i=0; i < iAlbumCount; ++i)
           {
             CMusicAlbumInfo& info = scraper.GetAlbum(i);
-            albums += closeTag+openTag + info.GetTitle2() + "<@@>" + info.GetAlbumURL().m_url[0].m_url;
+            albums += closeTag+openTag + info.GetTitle2().c_str() + "<@@>" + info.GetAlbumURL().m_url[0].m_url;
             if (rel)
             {
-              relevance = CUtil::AlbumRelevance(info.GetAlbum().strAlbum, album, StringUtils::Join(info.GetAlbum().artist, g_advancedSettings.m_musicItemSeparator), artist);
+              relevance = CUtil::AlbumRelevance(info.GetAlbum().strAlbum, album, StringUtils::Join(info.GetAlbum().GetAlbumArtist(), g_advancedSettings.m_musicItemSeparator), artist);
               tmp.Format("%f",relevance);
               albums += "<@@@>"+tmp;
             }
@@ -2382,7 +2381,7 @@ int CXbmcHttp::xbmcChooseAlbum(int numParas, CStdString paras[])
         if (musicInfo.GetAlbum().thumbURL.m_url.size() > 0)
          output=openTag+"image:" + musicInfo.GetAlbum().thumbURL.m_url[0].m_url;
 
-        output+=closeTag+openTag+"review:" + musicInfo.GetAlbum().strReview;
+        output+=closeTag+openTag+"review:" + musicInfo.GetAlbum().strReview.c_str();
         return SetResponse(output) ;
       }
       else

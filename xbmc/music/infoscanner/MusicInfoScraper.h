@@ -20,12 +20,17 @@
  *
  */
 
-#include "music/infoscanner/MusicAlbumInfo.h"
-#include "music/infoscanner/MusicArtistInfo.h"
+#include <vector>
+
+#include "MusicAlbumInfo.h"
+#include "MusicArtistInfo.h"
 #include "addons/Scraper.h"
 #include "threads/Thread.h"
 
-namespace XFILE { class CCurlFile; }
+namespace XFILE
+{
+class CurlFile;
+}
 
 namespace MUSIC_GRABBER
 {
@@ -34,10 +39,10 @@ class CMusicInfoScraper : public CThread
 public:
   CMusicInfoScraper(const ADDON::ScraperPtr &scraper);
   virtual ~CMusicInfoScraper(void);
-  void FindAlbumInfo(const CStdString& strAlbum, const CStdString& strArtist = "");
+  void FindAlbumInfo(const std::string& strAlbum, const std::string& strArtist = "");
   void LoadAlbumInfo(int iAlbum);
-  void FindArtistInfo(const CStdString& strArtist);
-  void LoadArtistInfo(int iArtist, const CStdString &strSearch);
+  void FindArtistInfo(const std::string& strArtist);
+  void LoadArtistInfo(int iArtist, const std::string &strSearch);
   bool Completed();
   bool Succeeded();
   void Cancel();
@@ -65,7 +70,7 @@ public:
    \param fallbackScraper name of scraper to use as a fallback
    \return true if we have a valid scraper (or the default is valid).
    */
-  bool CheckValidOrFallback(const CStdString &fallbackScraper);
+  bool CheckValidOrFallback(const std::string &fallbackScraper);
 protected:
   void FindAlbumInfo();
   void LoadAlbumInfo();
@@ -75,9 +80,9 @@ protected:
   virtual void Process();
   std::vector<CMusicAlbumInfo> m_vecAlbums;
   std::vector<CMusicArtistInfo> m_vecArtists;
-  CStdString m_strAlbum;
-  CStdString m_strArtist;
-  CStdString m_strSearch;
+  std::string m_strAlbum;
+  std::string m_strArtist;
+  std::string m_strSearch;
   int m_iAlbum;
   int m_iArtist;
   bool m_bSucceeded;

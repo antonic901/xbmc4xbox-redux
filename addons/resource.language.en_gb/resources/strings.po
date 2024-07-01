@@ -8876,7 +8876,13 @@ msgctxt "#21843"
 msgid "Orientation"
 msgstr ""
 
-#empty strings from id 21844 to 21859
+#empty string with id 21844
+
+msgctxt "#21845"
+msgid "Scan to library"
+msgstr ""
+
+#empty strings from id 21846 to 21859
 
 msgctxt "#21860"
 msgid "Supplemental categories"
@@ -9874,7 +9880,57 @@ msgctxt "#29802"
 msgid "Passthrough Audio in use"
 msgstr ""
 
-#empty strings from id 29803 to 33000
+#empty strings from id 29803 to 29986
+
+#. Node title for music artist role, plural of #38036
+#: system/library/music/musicroles/Remixers.xml
+msgctxt "#29987"
+msgid "Remixers"
+msgstr ""
+
+#. Node title for music artist role, plural of #38037
+#: system/library/music/musicroles/Arrangers.xml
+msgctxt "#29988"
+msgid "Arrangers"
+msgstr ""
+
+#. Node title for music artist role, plural of #29903
+#: system/library/music/musicroles/Composers.xml
+msgctxt "#29989"
+msgid "Composers"
+msgstr ""
+
+#. Node title for music artist role, plural of #29905
+#: system/library/music/musicroles/Conductors.xml
+msgctxt "#29990"
+msgid "Conductors"
+msgstr ""
+
+#. Node title for music artist role, plural of #38040
+#: system/library/music/musicroles/DJ.xml
+msgctxt "#29991"
+msgid "DJ Mixers"
+msgstr ""
+
+#. Node title for music artist role, plural of #38035
+#: system/library/music/musicroles/Lyricists.xml
+msgctxt "#29992"
+msgid "Lyricists"
+msgstr ""
+
+#. Node title for music artist role, plural of #38034
+#: system/library/music/musicroles/Orchestras.xml
+msgctxt "#29993"
+msgid "Orchestras"
+msgstr ""
+
+#. Title for music artist roles node
+#: system/library/music/musicroles/index.xml
+msgctxt "#29994"
+msgid "Roles"
+msgstr ""
+
+#empty strings from id 29995 to 33000
 #strings 30000 thru 30999 reserved for plug-ins and plug-in settings
 #strings 31000 thru 31999 reserved for skins
 #strings 32000 thru 32999 reserved for scripts

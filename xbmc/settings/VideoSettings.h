@@ -43,6 +43,11 @@ enum EINTERLACEMETHOD
   VS_INTERLACEMETHOD_DEINTERLACE=7
 };
 
+enum ESCALINGMETHOD
+{
+  VS_SCALINGMETHOD_MAX // do not use and keep as last enum value.
+};
+
 enum ESKIPLOOPFILTER
 {
   VS_SKIPLOOP_DEFAULT,
@@ -74,10 +79,13 @@ public:
   bool m_NonInterleaved;
   bool m_bForceIndex;
   EINTERLACEMETHOD m_InterlaceMethod;
+  ESCALINGMETHOD   m_ScalingMethod;
   float m_FilmGrain;
   int m_ViewMode;   // current view mode
   float m_CustomZoomAmount; // custom setting zoom amount
   float m_CustomPixelRatio; // custom setting pixel ratio
+  float m_CustomVerticalShift; // custom setting vertical shift
+  bool  m_CustomNonLinStretch;
   int m_AudioStream;
   float m_VolumeAmplification;
   bool m_OutputToAllSpeakers;
@@ -93,6 +101,9 @@ public:
   float m_Sharpness;
   float m_AudioDelay;
   int m_ResumeTime;
+  int m_StereoMode;
+  bool m_StereoInvert;
+  int m_VideoStream;
   bool m_Crop;
   int m_CropTop;
   int m_CropBottom;

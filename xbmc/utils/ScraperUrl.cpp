@@ -120,7 +120,7 @@ bool CScraperUrl::ParseString(CStdString strUrl)
     g_charsetConverter.unknownToUTF8(strUrl);
 
   CXBMCTinyXML doc;
-  doc.Parse(strUrl.c_str(),0,TIXML_ENCODING_UTF8);
+  doc.Parse(strUrl, TIXML_ENCODING_UTF8);
 
   TiXmlElement* pElement = doc.RootElement();
   if (!pElement)
@@ -262,7 +262,7 @@ bool CScraperUrl::ParseEpisodeGuide(CStdString strUrls)
     g_charsetConverter.unknownToUTF8(strUrls);
 
   CXBMCTinyXML doc;
-  doc.Parse(strUrls.c_str(),0,TIXML_ENCODING_UTF8);
+  doc.Parse(strUrls, TIXML_ENCODING_UTF8);
   if (doc.RootElement())
   {
     TiXmlHandle docHandle( &doc );
@@ -290,7 +290,7 @@ CStdString CScraperUrl::GetThumbURL(const CScraperUrl::SUrlEntry &entry)
   return entry.m_url + "|Referer=" + spoof;
 }
 
-void CScraperUrl::GetThumbURLs(std::vector<CStdString> &thumbs, const std::string &type, int season) const
+void CScraperUrl::GetThumbURLs(std::vector<std::string> &thumbs, const std::string &type, int season) const
 {
   for (vector<SUrlEntry>::const_iterator iter = m_url.begin(); iter != m_url.end(); ++iter)
   {

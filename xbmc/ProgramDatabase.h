@@ -19,6 +19,7 @@
  *
  */
 #include "dbwrappers/Database.h"
+#include "utils/StdString.h"
 
 typedef std::vector<CStdString> VECPROGRAMPATHS;
 
@@ -31,7 +32,7 @@ class CProgramDatabase : public CDatabase
 {
 public:
   CProgramDatabase(void);
-  virtual ~CProgramDatabase(void);
+  virtual ~CProgramDatabase();
   virtual bool Open();
 
   bool AddTrainer(int iTitleId, const CStdString& strText);
@@ -61,10 +62,11 @@ public:
                          const CStdString& strOpenRecord, const CStdString& strCloseRecord, const CStdString& strOpenField, const CStdString& strCloseField, CStdString& strResult);
 
 protected:
-  virtual bool CreateTables();
-  virtual bool UpdateOldVersion(int version);
-  virtual int GetMinVersion() const { return 3; };
-  const char *GetBaseDBName() const { return "MyPrograms"; };
+  virtual void CreateTables();
+  virtual void CreateAnalytics();
+  virtual void UpdateTables(int version);
+  virtual int GetSchemaVersion() const { return 1; }
+  const char *GetBaseDBName() const { return "MyPrograms"; }
 
   FILETIME TimeStampToLocalTime( unsigned __int64 timeStamp );
 };

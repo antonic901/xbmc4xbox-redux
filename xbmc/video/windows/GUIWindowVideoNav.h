@@ -20,9 +20,26 @@
  *
  */
 
-#include "video/windows/GUIWindowVideoBase.h"
+#include "GUIWindowVideoBase.h"
+#include <boost/core/scoped_enum.hpp>
 
 class CFileItemList;
+
+BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(SelectFirstUnwatchedItem, unsigned int)
+{
+    NEVER = 0,
+    ON_FIRST_ENTRY = 1,
+    ALWAYS = 2
+}
+BOOST_SCOPED_ENUM_DECLARE_END(SelectFirstUnwatchedItem)
+
+enum IncludeAllSeasonsAndSpecials
+{
+  NEITHER = 0,
+  BOTH = 1,
+  ALL_SEASONS = 2,
+  SPECIALS = 3
+};
 
 class CGUIWindowVideoNav : public CGUIWindowVideoBase
 {
@@ -34,9 +51,15 @@ public:
   virtual bool OnAction(const CAction &action);
   virtual bool OnMessage(CGUIMessage& message);
 
-  virtual void OnPrepareFileItems(CFileItemList &items);
-
   virtual void OnItemInfo(const CFileItem& fileItem, ADDON::ScraperPtr &info);
+
+  /*! \brief Load video information from the database for these items (public static version)
+   Useful for grabbing information for file listings, from watched status to full metadata
+   \param items the items to load information for.
+   \param database open database object to retrieve the data from
+   \param allowReplaceLabels allow label replacement if according GUI setting is enabled
+   */
+  static void LoadVideoInfo(CFileItemList &items, CVideoDatabase &database, bool allowReplaceLabels = true);
 
 protected:
   /*! \brief Load video information from the database for these items
@@ -46,21 +69,28 @@ protected:
   void LoadVideoInfo(CFileItemList &items);
 
   bool ApplyWatchedFilter(CFileItemList &items);
-  virtual bool GetFilteredItems(const CStdString &filter, CFileItemList &items);
+  virtual bool GetFilteredItems(const std::string &filter, CFileItemList &items);
 
   virtual void OnItemLoaded(CFileItem* pItem) {};
+
   // override base class methods
-  virtual bool GetDirectory(const CStdString &strDirectory, CFileItemList &items);
+  virtual bool Update(const std::string &strDirectory, bool updateFilterPath = true);
+  virtual bool GetDirectory(const std::string &strDirectory, CFileItemList &items);
   virtual void UpdateButtons();
-  virtual void DoSearch(const CStdString& strSearch, CFileItemList& items);
+  virtual void DoSearch(const std::string& strSearch, CFileItemList& items);
   virtual void PlayItem(int iItem);
   virtual void OnDeleteItem(CFileItemPtr pItem);
   virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
-  virtual bool OnClick(int iItem);
-  virtual CStdString GetStartFolder(const CStdString &dir);
-
-  virtual CStdString GetQuickpathName(const CStdString& strPath) const;
+  bool OnAddMediaSource();
+  virtual bool OnClick(int iItem, const std::string &player = "");
+  virtual std::string GetStartFolder(const std::string &dir);
 
   VECSOURCES m_shares;
+
+private:
+  virtual SelectFirstUnwatchedItem GetSettingSelectFirstUnwatchedItem();
+  virtual IncludeAllSeasonsAndSpecials GetSettingIncludeAllSeasonsAndSpecials();
+  virtual int GetFirstUnwatchedItemIndex(bool includeAllSeasons, bool includeSpecials);
+  void SelectFirstUnwatched();
 };

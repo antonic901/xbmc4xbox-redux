@@ -92,15 +92,15 @@ public:
   static void CleanString(const CStdString& strFileName, CStdString& strTitle, CStdString& strTitleAndYear, CStdString& strYear, bool bRemoveExtension = false, bool bCleanChars = true);
   static CStdString GetTitleFromPath(const CURL& url, bool bIsFolder = false);
   static CStdString GetTitleFromPath(const CStdString& strFileNameAndPath, bool bIsFolder = false);
-  static void GetQualifiedFilename(const CStdString &strBasePath, CStdString &strFilename);
+  static void GetQualifiedFilename(const std::string &strBasePath, std::string &strFilename);
   static bool InstallTrainer(CTrainer& trainer);
   static bool RemoveTrainer();
   static bool PatchCountryVideo(F_COUNTRY Country, F_VIDEO Video);
   static void RunShortcut(const char* szPath);
   static void RunXBE(const char* szPath, char* szParameters = NULL, F_VIDEO ForceVideo=VIDEO_NULL, F_COUNTRY ForceCountry=COUNTRY_NULL, CUSTOM_LAUNCH_DATA* pData=NULL);
-  static void LaunchXbe(const char* szPath, const char* szXbe, const char* szParameters, F_VIDEO ForceVideo=VIDEO_NULL, F_COUNTRY ForceCountry=COUNTRY_NULL, CUSTOM_LAUNCH_DATA* pData=NULL); 
+  static void LaunchXbe(const char* szPath, const char* szXbe, const char* szParameters, F_VIDEO ForceVideo=VIDEO_NULL, F_COUNTRY ForceCountry=COUNTRY_NULL, CUSTOM_LAUNCH_DATA* pData=NULL);
   static void GetHomePath(CStdString& strPath);
-  static bool ExcludeFileOrFolder(const CStdString& strFileOrFolder, const CStdStringArray& regexps);
+  static bool ExcludeFileOrFolder(const CStdString& strFileOrFolder, const std::vector<std::string>& regexps);
   static void GetFileAndProtocol(const CStdString& strURL, CStdString& strDir);
   static int GetDVDIfoTitle(const CStdString& strPathFile);
   static bool CacheXBEIcon(const CStdString& strFilePath, const CStdString& strIcon);
@@ -155,7 +155,7 @@ public:
   static CStdString MakeLegalPath(const CStdString &strPath, int LegalType=LEGAL_NONE);
 #endif
   static CStdString ValidatePath(const CStdString &path, bool bFixDoubleSlashes = false); ///< return a validated path, with correct directory separators.
-  
+
   static bool IsUsingTTFSubtitles();
   static void SplitParams(const std::string &paramString, std::vector<std::string> &parameters);
   static void SplitExecFunction(const std::string &execString, std::string &function, std::vector<std::string> &parameters);
@@ -204,7 +204,7 @@ public:
   static CStdString GetDefaultFolderThumb(const CStdString &folderThumb);
 
   static void BootToDash();
-  
+
   static void InitRandomSeed();
 
   // Get decimal integer representation of roman digit, ivxlcdm are valid
@@ -216,6 +216,11 @@ public:
 
   static bool CanBindPrivileged();
   static bool ValidatePort(int port);
+
+  /*!
+   * \brief Thread-safe random number generation
+   */
+  static int GetRandomNumber();
 };
 
 

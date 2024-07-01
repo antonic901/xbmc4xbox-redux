@@ -30,6 +30,7 @@
 #endif // _MSC_VER > 1000
 
 #include <iostream>
+#include "utils/auto_buffer.h"
 #include "utils/StdString.h"
 #include "IFileTypes.h"
 #include "xbox/PlatformDefs.h"
@@ -40,6 +41,7 @@ class CURL;
 namespace XFILE
 {
 
+using ::XUTILS::auto_buffer;
 class IFile;
 
 class IFileCallback
@@ -94,6 +96,7 @@ public:
   int GetChunkSize();
   std::string GetContentMimeType(void);
   std::string GetContentCharset(void);
+  unsigned int LoadFile(const std::string &filename, auto_buffer& outputBuffer);
 
   // will return a size, that is aligned to chunk size
   // but always greater or equal to the file's chunk size

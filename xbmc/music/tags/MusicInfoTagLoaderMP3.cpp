@@ -127,7 +127,7 @@ bool CMusicInfoTagLoaderMP3::Load(const CStdString& strFileName, CMusicInfoTag& 
       if (apeTag.GetTrackNum())
         tag.SetTrackNumber(apeTag.GetTrackNum());
       if (apeTag.GetDiscNum())
-        tag.SetPartOfSet(apeTag.GetDiscNum());
+        tag.SetDiscNumber(apeTag.GetDiscNum());
       if (apeTag.GetComment().size())
         tag.SetComment(apeTag.GetComment());
       if (apeTag.GetReplayGain().iHasGainInfo)
@@ -182,7 +182,7 @@ int CMusicInfoTagLoaderMP3::IsMp3FrameHeader(unsigned long head)
   const long freqs[9] = { 44100, 48000, 32000,
 			 22050, 24000, 16000 ,
 			 11025 , 12000 , 8000 };
-  
+
  const int tabsel_123[2][3][16] = {
   { {128,32,64,96,128,160,192,224,256,288,320,352,384,416,448,},
     {128,32,48,56, 64, 80, 96,112,128,160,192,224,256,320,384,},
@@ -214,9 +214,9 @@ int CMusicInfoTagLoaderMP3::IsMp3FrameHeader(unsigned long head)
     return 0;
 
   int srate = 0;
-	if(!((head >> 20) &  1)) 
-		srate			= 6 + ((head>>10)&0x3);		
-	else 
+	if(!((head >> 20) &  1))
+		srate			= 6 + ((head>>10)&0x3);
+	else
 		srate			= ((head>>10)&0x3) + ((1-((head >> 19) &  1)) * 3);
 
  	int framesize = tabsel_123[1 - ((head >> 19) &  1)][(4-((head>>17)&3))-1][((head>>12)&0xf)]*144000/(freqs[srate]<<(1 - ((head >> 19) &  1)))+((head>>9)&0x1);
@@ -409,9 +409,9 @@ int CMusicInfoTagLoaderMP3::ReadDuration(const CStdString& strFileName)
     }*/
 
     if (
-      (i == firstValidFrameLocation) || 
+      (i == firstValidFrameLocation) ||
       (
-        (firstValidFrameLocation == -1) && 
+        (firstValidFrameLocation == -1) &&
         (IsMp3FrameHeader(mpegheader))
       )
     )

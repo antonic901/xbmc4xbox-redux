@@ -864,6 +864,9 @@ protected:
   int m_libraryHasMovieSets;
 
   CCriticalSection m_critInfo;
+
+private:
+  static std::string FormatRatingAndVotes(float rating, int votes);
 };
 
 /*!

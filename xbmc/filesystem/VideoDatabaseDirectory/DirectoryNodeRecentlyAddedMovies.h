@@ -28,10 +28,9 @@ namespace XFILE
     class CDirectoryNodeRecentlyAddedMovies : public CDirectoryNode
     {
     public:
-      CDirectoryNodeRecentlyAddedMovies(const CStdString& strEntryName, CDirectoryNode* pParent);
+      CDirectoryNodeRecentlyAddedMovies(const std::string& strEntryName, CDirectoryNode* pParent);
     protected:
       virtual bool GetContent(CFileItemList& items) const;
-      virtual NODE_TYPE GetChildType() const;
     };
   }
 }

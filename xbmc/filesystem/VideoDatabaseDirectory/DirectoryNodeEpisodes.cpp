@@ -24,7 +24,7 @@
 
 using namespace XFILE::VIDEODATABASEDIRECTORY;
 
-CDirectoryNodeEpisodes::CDirectoryNodeEpisodes(const CStdString& strName, CDirectoryNode* pParent)
+CDirectoryNodeEpisodes::CDirectoryNodeEpisodes(const std::string& strName, CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_EPISODES, strName, pParent)
 {
 
@@ -39,8 +39,6 @@ bool CDirectoryNodeEpisodes::GetContent(CFileItemList& items) const
   CQueryParams params;
   CollectQueryParams(params);
 
-  CStdString strBaseDir=BuildPath();
-
   int season = (int)params.GetSeason();
   if (season == -2)
     season = -1;
@@ -50,4 +48,9 @@ bool CDirectoryNodeEpisodes::GetContent(CFileItemList& items) const
   videodatabase.Close();
 
   return bSuccess;
+}
+
+NODE_TYPE CDirectoryNodeEpisodes::GetChildType() const
+{
+  return NODE_TYPE_EPISODES;
 }

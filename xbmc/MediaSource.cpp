@@ -35,7 +35,7 @@ bool CMediaSource::IsWritable() const
   return CUtil::SupportsWriteFileOperations(strPath);
 }
 
-void CMediaSource::FromNameAndPaths(const CStdString &category, const CStdString &name, const vector<CStdString> &paths)
+void CMediaSource::FromNameAndPaths(const CStdString &category, const CStdString &name, const std::vector<std::string> &paths)
 {
   vecPaths = paths;
   if (paths.size() == 0)

@@ -18,19 +18,21 @@
  *
  */
 
+#include <iostream>
+#include <string>
+
 #include "PlayListB4S.h"
 #include "Util.h"
 #include "utils/XBMCTinyXML.h"
-#include "settings/AdvancedSettings.h"
 #include "music/tags/MusicInfoTag.h"
 #include "filesystem/File.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/XMLUtils.h"
 
 using namespace XFILE;
 using namespace PLAYLIST;
-using namespace std;
 
 /* ------------------------ example b4s playlist file ---------------------------------
  <?xml version="1.0" encoding='UTF-8' standalone="yes"?>
@@ -55,7 +57,7 @@ CPlayListB4S::~CPlayListB4S(void)
 {}
 
 
-bool CPlayListB4S::LoadData(istream& stream)
+bool CPlayListB4S::LoadData(std::istream& stream)
 {
   CXBMCTinyXML xmlDoc;
 
@@ -79,12 +81,12 @@ bool CPlayListB4S::LoadData(istream& stream)
   if (!pEntryElement) return false;
   while (pEntryElement)
   {
-    CStdString strFileName = XMLUtils::GetAttribute(pEntryElement, "Playstring");
-    int iColon = strFileName.Find(":");
-    if (iColon > 0)
+    std::string strFileName = XMLUtils::GetAttribute(pEntryElement, "Playstring");
+    size_t iColon = strFileName.find(":");
+    if (iColon != std::string::npos)
     {
       iColon++;
-      strFileName = strFileName.Right((int)strFileName.size() - iColon);
+      strFileName.erase(0, iColon);
     }
     if (strFileName.size())
     {
@@ -97,7 +99,7 @@ bool CPlayListB4S::LoadData(istream& stream)
       }
       if (pNodeInfo)
       {
-        CStdString strInfo = pNodeInfo->FirstChild()->Value();
+        std::string strInfo = pNodeInfo->FirstChild()->Value();
         strFileName = URIUtils::SubstitutePath(strFileName);
         CUtil::GetQualifiedFilename(m_strBasePath, strFileName);
         CFileItemPtr newItem(new CFileItem(strInfo));
@@ -111,10 +113,10 @@ bool CPlayListB4S::LoadData(istream& stream)
   return true;
 }
 
-void CPlayListB4S::Save(const CStdString& strFileName) const
+void CPlayListB4S::Save(const std::string& strFileName) const
 {
   if (!m_vecItems.size()) return ;
-  CStdString strPlaylist = strFileName;
+  std::string strPlaylist = strFileName;
   strPlaylist = CUtil::MakeLegalPath(strPlaylist);
   CFile file;
   if (!file.OpenForWrite(strPlaylist, true))
@@ -122,19 +124,19 @@ void CPlayListB4S::Save(const CStdString& strFileName) const
     CLog::Log(LOGERROR, "Could not save B4S playlist: [%s]", strPlaylist.c_str());
     return ;
   }
-  CStdString write;
-  write.AppendFormat("<?xml version=%c1.0%c encoding='UTF-8' standalone=%cyes%c?>\n", 34, 34, 34, 34);
-  write.AppendFormat("<WinampXML>\n");
-  write.AppendFormat("  <playlist num_entries=%c%i%c label=%c%s%c>\n", 34, m_vecItems.size(), 34, 34, m_strPlayListName.c_str(), 34);
+  std::string write;
+  write += StringUtils::Format("<?xml version=%c1.0%c encoding='UTF-8' standalone=%cyes%c?>\n", 34, 34, 34, 34);
+  write += StringUtils::Format("<WinampXML>\n");
+  write += StringUtils::Format("  <playlist num_entries=%c%" PRIuS"%c label=%c%s%c>\n", 34, m_vecItems.size(), 34, 34, m_strPlayListName.c_str(), 34);
   for (int i = 0; i < (int)m_vecItems.size(); ++i)
   {
     const CFileItemPtr item = m_vecItems[i];
-    write.AppendFormat("    <entry Playstring=%cfile:%s%c>\n", 34, item->GetPath().c_str(), 34 );
-    write.AppendFormat("      <Name>%s</Name>\n", item->GetLabel().c_str());
-    write.AppendFormat("      <Length>%u</Length>\n", item->GetMusicInfoTag()->GetDuration());
+    write += StringUtils::Format("    <entry Playstring=%cfile:%s%c>\n", 34, item->GetPath().c_str(), 34 );
+    write += StringUtils::Format("      <Name>%s</Name>\n", item->GetLabel().c_str());
+    write += StringUtils::Format("      <Length>%u</Length>\n", item->GetMusicInfoTag()->GetDuration());
   }
-  write.AppendFormat("  </playlist>\n");
-  write.AppendFormat("</WinampXML>\n");
+  write += StringUtils::Format("  </playlist>\n");
+  write += StringUtils::Format("</WinampXML>\n");
   file.Write(write.c_str(), write.size());
   file.Close();
 }

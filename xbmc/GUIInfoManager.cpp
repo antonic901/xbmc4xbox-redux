@@ -51,6 +51,7 @@
 #include "GUIPassword.h"
 #include "LangInfo.h"
 #include "GUIInfoManager.h"
+#include "view/GUIViewState.h"
 #include <stack>
 #include "xbox/network.h"
 #include "pictures/GUIWindowSlideShow.h"
@@ -2849,7 +2850,7 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
         {
           const CGUIViewState *viewState = ((CGUIMediaWindow*)window)->GetViewState();
           if (viewState)
-            bReturn = ((unsigned int)viewState->GetDisplaySortOrder() == info.GetData1());
+            bReturn = ((unsigned int)viewState->GetSortOrder() == info.GetData1());
         }
         break;
       }
@@ -3603,30 +3604,32 @@ CStdString CGUIInfoManager::GetVideoLabel(int item)
       break;
     case VIDEOPLAYER_RATING:
       {
-        CStdString strRating;
-        if (m_currentFile->GetVideoInfoTag()->m_fRating > 0.f)
-          strRating.Format("%.1f", m_currentFile->GetVideoInfoTag()->m_fRating);
+        std::string strRating;
+        float rating = m_currentFile->GetVideoInfoTag()->GetRating().rating;
+        if (rating > 0.f)
+          strRating = StringUtils::FormatNumber(rating);
         return strRating;
       }
       break;
     case VIDEOPLAYER_RATING_AND_VOTES:
       {
-        CStdString strRatingAndVotes;
-        if (m_currentFile->GetVideoInfoTag()->m_fRating > 0.f)
+        std::string strRatingAndVotes;
+        CRating rating = m_currentFile->GetVideoInfoTag()->GetRating();
+        if (rating.rating > 0.f)
         {
-          if (m_currentFile->GetVideoInfoTag()->m_strVotes.IsEmpty())
-            strRatingAndVotes.Format("%.1f", m_currentFile->GetVideoInfoTag()->m_fRating);
+          if (rating.votes == 0)
+            strRatingAndVotes = StringUtils::FormatNumber(rating.rating);
           else
-            strRatingAndVotes.Format("%.1f (%s %s)", m_currentFile->GetVideoInfoTag()->m_fRating, m_currentFile->GetVideoInfoTag()->m_strVotes, g_localizeStrings.Get(20350));
+            strRatingAndVotes = FormatRatingAndVotes(rating.rating, rating.votes);
         }
         return strRatingAndVotes;
       }
       break;
     case VIDEOPLAYER_YEAR:
       {
-        CStdString strYear;
-        if (m_currentFile->GetVideoInfoTag()->m_iYear > 0)
-          strYear.Format("%i", m_currentFile->GetVideoInfoTag()->m_iYear);
+        std::string strYear;
+        if (m_currentFile->GetVideoInfoTag()->HasYear())
+          strYear = StringUtils::Format("%i", m_currentFile->GetVideoInfoTag()->GetYear());
         return strYear;
       }
       break;
@@ -3807,7 +3810,7 @@ void CGUIInfoManager::SetCurrentSong(CFileItem &item)
   *m_currentFile = item;
 
   m_currentFile->LoadMusicTag();
-  if (m_currentFile->GetMusicInfoTag()->GetTitle().IsEmpty())
+  if (m_currentFile->GetMusicInfoTag()->GetTitle().empty())
   {
     // No title in tag, show filename only
     m_currentFile->GetMusicInfoTag()->SetTitle(CUtil::GetTitleFromPath(m_currentFile->GetPath()));
@@ -4121,7 +4124,7 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, std::s
     if (item->HasVideoInfoTag())
       return StringUtils::Join(item->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator);
     if (item->HasMusicInfoTag())
-      return StringUtils::Join(item->GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator);
+      return item->GetMusicInfoTag()->GetArtistString();
     break;
   case LISTITEM_ALBUM_ARTIST:
     if (item->HasMusicInfoTag())
@@ -4138,16 +4141,14 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, std::s
       return item->GetMusicInfoTag()->GetAlbum();
     break;
   case LISTITEM_YEAR:
-    if (item->HasVideoInfoTag())
     {
-      CStdString strResult;
-      if (item->GetVideoInfoTag()->m_iYear > 0)
-        strResult.Format("%i",item->GetVideoInfoTag()->m_iYear);
-      return strResult;
+      std::string year;
+      if (item->HasVideoInfoTag() && item->GetVideoInfoTag()->HasYear())
+        year = StringUtils::Format("%i", item->GetVideoInfoTag()->GetYear());
+      if (item->HasMusicInfoTag())
+        year = item->GetMusicInfoTag()->GetYearString();
+      return year;
     }
-    if (item->HasMusicInfoTag())
-      return item->GetMusicInfoTag()->GetYearString();
-    break;
   case LISTITEM_PREMIERED:
     if (item->HasVideoInfoTag())
     {
@@ -4192,24 +4193,38 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, std::s
     break;
   case LISTITEM_RATING:
     {
-      CStdString rating;
-      if (item->HasVideoInfoTag() && item->GetVideoInfoTag()->m_fRating > 0.f) // movie rating
-        rating.Format("%.1f", item->GetVideoInfoTag()->m_fRating);
-      else if (item->HasMusicInfoTag() && item->GetMusicInfoTag()->GetRating() > '0')
-      { // song rating.  Images will probably be better than numbers for this in the long run
-        rating = item->GetMusicInfoTag()->GetRating();
-      }
+      std::string rating;
+      float r = 0.f;
+      if (item->HasVideoInfoTag()) // movie rating
+        r = item->GetVideoInfoTag()->GetRating().rating;
+      if (r > 0.f)
+        rating = StringUtils::FormatNumber(r);
+      else if (item->HasMusicInfoTag() && item->GetMusicInfoTag()->GetRating() > 0.f) // song rating
+        rating = StringUtils::FormatNumber(item->GetMusicInfoTag()->GetRating());
       return rating;
     }
   case LISTITEM_RATING_AND_VOTES:
     {
-      if (item->HasVideoInfoTag() && item->GetVideoInfoTag()->m_fRating > 0.f) // movie rating
+      CRating r(0.f, 0);
+      if (item->HasVideoInfoTag()) // video rating & votes
+        r = item->GetVideoInfoTag()->GetRating();
+      if (r.rating > 0.f)
       {
-        CStdString strRatingAndVotes;
-        if (item->GetVideoInfoTag()->m_strVotes.IsEmpty())
-          strRatingAndVotes.Format("%.1f", item->GetVideoInfoTag()->m_fRating);
+        std::string strRatingAndVotes;
+        if (r.votes == 0)
+          strRatingAndVotes = StringUtils::FormatNumber(r.rating);
         else
-          strRatingAndVotes.Format("%.1f (%s %s)", item->GetVideoInfoTag()->m_fRating, item->GetVideoInfoTag()->m_strVotes, g_localizeStrings.Get(20350));
+          strRatingAndVotes = FormatRatingAndVotes(r.rating, r.votes);
+        return strRatingAndVotes;
+      }
+      else if (item->HasMusicInfoTag() && item->GetMusicInfoTag()->GetRating() > 0.f) // music rating & votes
+      {
+        std::string strRatingAndVotes;
+        if (item->GetMusicInfoTag()->GetVotes() <= 0)
+          strRatingAndVotes = StringUtils::FormatNumber(item->GetMusicInfoTag()->GetRating());
+        else
+          strRatingAndVotes = FormatRatingAndVotes(item->GetMusicInfoTag()->GetRating(), 
+                                                   item->GetMusicInfoTag()->GetVotes());
         return strRatingAndVotes;
       }
     }
@@ -4480,7 +4495,7 @@ CStdString CGUIInfoManager::GetItemImage(const CFileItem *item, int info, std::s
       CStdString rating;
       if (item->HasVideoInfoTag())
       { // rating for videos is assumed 0..10, so convert to 0..5
-        rating.Format("rating%d.png", (long)((item->GetVideoInfoTag()->m_fRating * 0.5f) + 0.5f));
+        rating.Format("rating%d.png", (long)((item->GetVideoInfoTag()->GetRating().rating * 0.5f) + 0.5f));
       }
       else if (item->HasMusicInfoTag())
       { // song rating.
@@ -4966,4 +4981,11 @@ void CGUIInfoManager::OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg)
   default:
     break;
   }
+}
+
+std::string CGUIInfoManager::FormatRatingAndVotes(float rating, int votes)
+{
+  return StringUtils::Format(g_localizeStrings.Get(20350).c_str(),
+                             StringUtils::FormatNumber(rating).c_str(),
+                             StringUtils::FormatNumber(votes).c_str());
 }

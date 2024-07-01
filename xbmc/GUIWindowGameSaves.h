@@ -31,15 +31,15 @@ public:
 
 protected:
   
-  //virtual bool Update(const CStdString &strDirectory);
-  void GoParentFolder();
+  //virtual bool Update(const std::string &strDirectory);
+  virtual bool GoParentFolder();
   virtual bool OnPlayMedia(int iItem);
-  virtual bool GetDirectory(const CStdString& strDirectory, CFileItemList& items);
+  virtual bool GetDirectory(const std::string& strDirectory, CFileItemList& items);
   virtual bool OnClick(int iItem);
   virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
   //bool DownloadSaves(CFileItem item);
   bool m_bViewOutput;
   VECSOURCES m_shares;
-  CStdString m_strParentPath;
+  std::string m_strParentPath;
 };

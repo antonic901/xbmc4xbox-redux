@@ -137,12 +137,13 @@ public:
 
   static bool utf8ToStringCharset(std::string& stringSrcDst);
   static bool utf8ToSystem(std::string& stringSrcDst, bool failOnBadChar = false);
+  static bool systemToUtf8(const std::string& sysStringSrc, std::string& utf8StringDst, bool failOnBadChar = false);
 
   static bool utf8To(const std::string& strDestCharset, const std::string& utf8StringSrc, std::string& stringDst);
   static bool utf8To(const std::string& strDestCharset, const std::string& utf8StringSrc, std::u16string& utf16StringDst);
   static bool utf8To(const std::string& strDestCharset, const std::string& utf8StringSrc, std::u32string& utf32StringDst);
 
-  static bool ToUtf8(const std::string& strSourceCharset, const std::string& stringSrc, std::string& utf8StringDst);
+  static bool ToUtf8(const std::string& strSourceCharset, const std::string& stringSrc, std::string& utf8StringDst, bool failOnBadChar = false);
 
   static bool isValidUtf8(const std::string& str);
 

@@ -29,7 +29,7 @@
  */
 
 #include "GUIControlGroup.h"
-#include <memory>
+#include <boost/move/unique_ptr.hpp>
 #include "boost/shared_ptr.hpp"
 #include "threads/CriticalSection.h"
 

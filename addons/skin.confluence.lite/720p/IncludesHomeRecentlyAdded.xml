@@ -27,10 +27,10 @@
 					<shadowcolor>black</shadowcolor>
 				</control>
 				<control type="list" id="8000">
-					<animation effect="slide" start="0,0" end="90,0" time="0" condition="StringCompare(Container(8000).NumItems,4)">conditional</animation>
-					<animation effect="slide" start="0,0" end="180,0" time="0" condition="StringCompare(Container(8000).NumItems,3)">conditional</animation>
-					<animation effect="slide" start="0,0" end="270,0" time="0" condition="StringCompare(Container(8000).NumItems,2)">conditional</animation>
-					<animation effect="slide" start="0,0" end="360,0" time="0" condition="StringCompare(Container(8000).NumItems,1)">conditional</animation>
+					<animation effect="slide" start="0,0" end="90,0" time="0" condition="String.IsEqual(Container(8000).NumItems,4)">conditional</animation>
+					<animation effect="slide" start="0,0" end="180,0" time="0" condition="String.IsEqual(Container(8000).NumItems,3)">conditional</animation>
+					<animation effect="slide" start="0,0" end="270,0" time="0" condition="String.IsEqual(Container(8000).NumItems,2)">conditional</animation>
+					<animation effect="slide" start="0,0" end="360,0" time="0" condition="String.IsEqual(Container(8000).NumItems,1)">conditional</animation>
 					<left>0</left>
 					<top>0</top>
 					<width>900</width>
@@ -262,9 +262,9 @@
 					<shadowcolor>black</shadowcolor>
 				</control>
 				<control type="list" id="8001">
-					<animation effect="slide" start="0,0" end="120,0" time="0" condition="StringCompare(Container(8001).NumItems,3)">conditional</animation>
-					<animation effect="slide" start="0,0" end="240,0" time="0" condition="StringCompare(Container(8001).NumItems,2)">conditional</animation>
-					<animation effect="slide" start="0,0" end="360,0" time="0" condition="StringCompare(Container(8001).NumItems,1)">conditional</animation>
+					<animation effect="slide" start="0,0" end="120,0" time="0" condition="String.IsEqual(Container(8001).NumItems,3)">conditional</animation>
+					<animation effect="slide" start="0,0" end="240,0" time="0" condition="String.IsEqual(Container(8001).NumItems,2)">conditional</animation>
+					<animation effect="slide" start="0,0" end="360,0" time="0" condition="String.IsEqual(Container(8001).NumItems,1)">conditional</animation>
 					<left>0</left>
 					<top>0</top>
 					<width>960</width>
@@ -525,9 +525,9 @@
 					<shadowcolor>black</shadowcolor>
 				</control>
 				<control type="list" id="8002">
-					<animation effect="slide" start="0,0" end="100,0" time="0" condition="StringCompare(Container(8002).NumItems,3)">conditional</animation>
-					<animation effect="slide" start="0,0" end="200,0" time="0" condition="StringCompare(Container(8002).NumItems,2)">conditional</animation>
-					<animation effect="slide" start="0,0" end="300,0" time="0" condition="StringCompare(Container(8002).NumItems,1)">conditional</animation>
+					<animation effect="slide" start="0,0" end="100,0" time="0" condition="String.IsEqual(Container(8002).NumItems,3)">conditional</animation>
+					<animation effect="slide" start="0,0" end="200,0" time="0" condition="String.IsEqual(Container(8002).NumItems,2)">conditional</animation>
+					<animation effect="slide" start="0,0" end="300,0" time="0" condition="String.IsEqual(Container(8002).NumItems,1)">conditional</animation>
 					<left>0</left>
 					<top>0</top>
 					<width>800</width>

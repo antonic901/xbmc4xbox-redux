@@ -20,10 +20,12 @@
  *
  */
 
-#include "utils/StdString.h"
+#include <system.h> // <xtl.h>
 #include "sqlitedataset.h"
 
-#include <memory>
+#include <boost/move/unique_ptr.hpp>
+#include <string>
+#include <vector>
 
 class DatabaseSettings; // forward
 class CDbUrl;
@@ -52,7 +54,22 @@ public:
     std::string group;
     std::string limit;
   };
-  
+
+  class ExistsSubQuery
+  {
+  public:
+    ExistsSubQuery(const std::string &table) : tablename(table) {};
+    ExistsSubQuery(const std::string &table, const std::string &parameter) : tablename(table), param(parameter) {};
+    void AppendJoin(const std::string &strJoin);
+    void AppendWhere(const std::string &strWhere, bool combineWithAnd = true);
+    bool BuildSQL(std::string &strSQL);
+    
+    std::string tablename;
+    std::string param;
+    std::string join;
+    std::string where;
+  };
+
   CDatabase(void);
   virtual ~CDatabase(void);
   bool IsOpen();
@@ -67,8 +84,7 @@ public:
   void RollbackTransaction();
   bool InTransaction();
 
-  static CStdString FormatSQL(CStdString strStmt, ...);
-  CStdString PrepareSQL(CStdString strStmt, ...) const;
+  std::string PrepareSQL(std::string strStmt, ...) const;
 
   /*!
    * @brief Get a single value from a table.
@@ -79,31 +95,30 @@ public:
    * @param strOrderBy If set, use this ORDER BY clause.
    * @return The requested value or an empty string if it wasn't found.
    */
-  CStdString GetSingleValue(const CStdString &strTable, const CStdString &strColumn, const CStdString &strWhereClause = CStdString(), const CStdString &strOrderBy = CStdString());
-  CStdString GetSingleValue(const CStdString &query);
+  std::string GetSingleValue(const std::string &strTable, const std::string &strColumn, const std::string &strWhereClause = std::string(), const std::string &strOrderBy = std::string());
+  std::string GetSingleValue(const std::string &query);
 
   /*! \brief Get a single value from a query on a dataset.
    \param query the query in question.
    \param ds the dataset to use for the query.
    \return the value from the query, empty on failure.
    */
-  std::string GetSingleValue(const std::string &query, std::auto_ptr<dbiplus::Dataset> &ds);
+  std::string GetSingleValue(const std::string &query, boost::movelib::unique_ptr<dbiplus::Dataset> &ds);
 
   /*!
    * @brief Delete values from a table.
-   * @remarks The value of the strWhereClause parameter has to be PrepareSQL'ed when used.
    * @param strTable The table to delete the values from.
-   * @param strWhereClause If set, use this WHERE clause.
+   * @param filter The Filter to apply to this query.
    * @return True if the query was executed successfully, false otherwise.
    */
-  bool DeleteValues(const CStdString &strTable, const CStdString &strWhereClause = CStdString());
+  bool DeleteValues(const std::string &strTable, const Filter &filter = Filter());
 
   /*!
    * @brief Execute a query that does not return any result.
    * @param strQuery The query to execute.
    * @return True if the query was executed successfully, false otherwise.
    */
-  bool ExecuteQuery(const CStdString &strQuery);
+  bool ExecuteQuery(const std::string &strQuery);
 
   /*!
    * @brief Execute a query that returns a result.
@@ -111,7 +126,7 @@ public:
    * @param strQuery The query to execute.
    * @return True if the query was executed successfully, false otherwise.
    */
-  bool ResultQuery(const CStdString &strQuery);
+  bool ResultQuery(const std::string &strQuery);
 
   /*!
    * @brief Open a new dataset.
@@ -124,7 +139,7 @@ public:
    * @param strQuery The query to queue.
    * @return True if the query was added successfully, false otherwise.
    */
-  bool QueueInsertQuery(const CStdString &strQuery);
+  bool QueueInsertQuery(const std::string &strQuery);
 
   /*!
    * @brief Commit all queries in the queue.
@@ -133,39 +148,63 @@ public:
   bool CommitInsertQueries();
 
   virtual bool GetFilter(CDbUrl &dbUrl, Filter &filter, SortDescription &sorting) { return true; }
-  virtual bool BuildSQL(const CStdString &strBaseDir, const CStdString &strQuery, Filter &filter, CStdString &strSQL, CDbUrl &dbUrl);
-  virtual bool BuildSQL(const CStdString &strBaseDir, const CStdString &strQuery, Filter &filter, CStdString &strSQL, CDbUrl &dbUrl, SortDescription &sorting);
+  virtual bool BuildSQL(const std::string &strBaseDir, const std::string &strQuery, Filter &filter, std::string &strSQL, CDbUrl &dbUrl);
+  virtual bool BuildSQL(const std::string &strBaseDir, const std::string &strQuery, Filter &filter, std::string &strSQL, CDbUrl &dbUrl, SortDescription &sorting);
 
 protected:
   friend class CDatabaseManager;
   bool Update(const DatabaseSettings &db);
 
-  void Split(const CStdString& strFileNameAndPath, CStdString& strPath, CStdString& strFileName);
-  DWORD ComputeCRC(const CStdString &text);
+  void Split(const std::string& strFileNameAndPath, std::string& strPath, std::string& strFileName);
+  DWORD ComputeCRC(const std::string &text);
 
   virtual bool Open();
-  virtual bool CreateTables();
-  virtual void CreateViews() {};
-  virtual bool UpdateOldVersion(int version) { return true; };
 
-  virtual int GetMinVersion() const=0;
+  /*! \brief Create database tables and analytics as needed.
+   Calls CreateTables() and CreateAnalytics() on child classes.
+   */
+  bool CreateDatabase();
+
+  /* \brief Create tables for the current database schema.
+   Will be called on database creation.
+   */
+  virtual void CreateTables()=0;
+
+  /* \brief Create views, indices and triggers for the current database schema.
+   Will be called on database creation and database update.
+   */
+  virtual void CreateAnalytics()=0;
+
+  /* \brief Update database tables to the current version.
+   Note that analytics (views, indices, triggers) are not present during this
+   function, so don't rely on them.
+   */
+  virtual void UpdateTables(int version) {};
+
+  /* \brief The minimum schema version that we support updating from.
+   */
+  virtual int GetMinSchemaVersion() const { return 0; };
+
+  /* \brief The current schema version.
+   */
+  virtual int GetSchemaVersion() const=0;
   virtual const char *GetBaseDBName() const=0;
 
   int GetDBVersion();
-  bool UpdateVersion(const CStdString &dbName);
+  bool UpdateVersion(const std::string &dbName);
 
-  bool BuildSQL(const CStdString &strQuery, const Filter &filter, CStdString &strSQL);
+  bool BuildSQL(const std::string &strQuery, const Filter &filter, std::string &strSQL);
 
   bool m_sqlite; ///< \brief whether we use sqlite (defaults to true)
   
-  std::auto_ptr<dbiplus::Database> m_pDB;
-  std::auto_ptr<dbiplus::Dataset> m_pDS;
-  std::auto_ptr<dbiplus::Dataset> m_pDS2;
+  boost::movelib::unique_ptr<dbiplus::Database> m_pDB;
+  boost::movelib::unique_ptr<dbiplus::Dataset> m_pDS;
+  boost::movelib::unique_ptr<dbiplus::Dataset> m_pDS2;
 
 private:
   void InitSettings(DatabaseSettings &dbSettings);
-  bool Connect(const CStdString &dbName, const DatabaseSettings &db, bool create);
-  bool UpdateVersionNumber();
+  bool Connect(const std::string &dbName, const DatabaseSettings &db, bool create);
+  void UpdateVersionNumber();
 
   bool m_bMultiWrite; /*!< True if there are any queries in the queue, false otherwise */
 

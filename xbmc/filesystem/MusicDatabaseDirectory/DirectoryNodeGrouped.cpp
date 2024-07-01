@@ -19,12 +19,11 @@
  */
 
 #include "DirectoryNodeGrouped.h"
-#include "QueryParams.h"
 #include "music/MusicDatabase.h"
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 
-CDirectoryNodeGrouped::CDirectoryNodeGrouped(NODE_TYPE type, const CStdString& strName, CDirectoryNode* pParent)
+CDirectoryNodeGrouped::CDirectoryNodeGrouped(NODE_TYPE type, const std::string& strName, CDirectoryNode* pParent)
   : CDirectoryNode(type, strName, pParent)
 { }
 
@@ -36,7 +35,7 @@ NODE_TYPE CDirectoryNodeGrouped::GetChildType() const
   return NODE_TYPE_ARTIST;
 }
 
-CStdString CDirectoryNodeGrouped::GetLocalizedName() const
+std::string CDirectoryNodeGrouped::GetLocalizedName() const
 {
   CMusicDatabase db;
   if (db.Open())
@@ -59,6 +58,8 @@ std::string CDirectoryNodeGrouped::GetContentType() const
   {
     case NODE_TYPE_GENRE:
       return "genres";
+    case NODE_TYPE_ROLE:
+      return "roles";
     case NODE_TYPE_YEAR:
       return "years";
     default:

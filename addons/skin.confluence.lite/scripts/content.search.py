@@ -242,9 +242,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
 		self.getControl( 191 ).setLabel( '[B]' + xbmc.getLocalizedString(342) + '[/B]' )
 		# fields: 0=title, 1=rating, 2=year, 3=duration, 4=mpaa, 5=genre, 6=trailer, 7=fileName, 8=path, 9=plotOutline, 10=plot
 		if self.GET_ACTOR_MOVIES == 'true':
-			moviesSQL = 'SELECT c00, c05, c07, c11, c12, c14, c19, strFileName, strPath, c03, c01 FROM movieview WHERE idMovie IN (SELECT DISTINCT idMovie FROM actorlinkmovie WHERE idActor = %s)' % ( self.SEARCH_STRING, ) 
+			moviesSQL = 'SELECT c00, c05, c07, c11, c12, c14, c19, strFileName, strPath, c03, c01 FROM movie_view WHERE idMovie IN (SELECT DISTINCT idMovie FROM actorlinkmovie WHERE idActor = %s)' % ( self.SEARCH_STRING, ) 
 		else:
-			moviesSQL = 'SELECT c00, c05, c07, c11, c12, c14, c19, strFileName, strPath, c03, c01 FROM movieview WHERE c00 LIKE "%' + self.SEARCH_STRING + '%"'
+			moviesSQL = 'SELECT c00, c05, c07, c11, c12, c14, c19, strFileName, strPath, c03, c01 FROM movie_view WHERE c00 LIKE "%' + self.SEARCH_STRING + '%"'
 		
 		log( 'searchMovies().sql = ' + moviesSQL )
 		
@@ -290,9 +290,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
 		self.getControl( 191 ).setLabel( '[B]' + xbmc.getLocalizedString(20343) + '[/B]' )
 		# fields: 0=showID, 1=title, 2=plot, 3=rating, 4=year, 5=genre, 6=mpaa, 7=studio, 8=path
 		if self.GET_ACTOR_MOVIES == 'true':
-			tvshowsSQL = 'SELECT idShow, c00, c01, c04, c05, c08, c13, c14, strPath FROM tvshowview WHERE idShow IN (SELECT DISTINCT idShow FROM actorLinkTvShow WHERE idActor = %s)' % ( self.SEARCH_STRING, )
+			tvshowsSQL = 'SELECT idShow, c00, c01, c04, c05, c08, c13, c14, strPath FROM tvshow_view WHERE idShow IN (SELECT DISTINCT idShow FROM actorLinkTvShow WHERE idActor = %s)' % ( self.SEARCH_STRING, )
 		else:
-			tvshowsSQL = 'SELECT idShow, c00, c01, c04, c05, c08, c13, c14, strPath FROM tvshowview WHERE c00 LIKE "%' + self.SEARCH_STRING + '%"'
+			tvshowsSQL = 'SELECT idShow, c00, c01, c04, c05, c08, c13, c14, strPath FROM tvshow_view WHERE c00 LIKE "%' + self.SEARCH_STRING + '%"'
 		
 		log( 'searchTvShows().sql = ' + tvshowsSQL )
 		
@@ -340,9 +340,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
 		self.getControl( 191 ).setLabel( '[B]' + xbmc.getLocalizedString(20360) + '[/B]' )
 		# fields: 0=showTitle, 1=episodeTitle, 2=season, 3=episodeNo, 4=rating, 5=fileName, 6=path, 7=mpaa, 8=firstAired, 9=rating, 10=plot
 		if self.GET_ACTOR_EPISODES == 'true':
-			episodesSQL = 'SELECT strTitle, c00, c12, c13, c03, strFileName, strPath, mpaa, c05, c03, c01 FROM episodeview WHERE idEpisode IN (SELECT DISTINCT idEpisode FROM actorLinkEpisode WHERE idActor = %s)' % ( self.SEARCH_STRING, )
+			episodesSQL = 'SELECT strTitle, c00, c12, c13, c03, strFileName, strPath, mpaa, c05, c03, c01 FROM episode_view WHERE idEpisode IN (SELECT DISTINCT idEpisode FROM actorLinkEpisode WHERE idActor = %s)' % ( self.SEARCH_STRING, )
 		else:
-			episodesSQL = 'SELECT strTitle, c00, c12, c13, c03, strFileName, strPath, mpaa, c05, c03, c01 FROM episodeview WHERE c00 LIKE "%' + self.SEARCH_STRING + '%"'
+			episodesSQL = 'SELECT strTitle, c00, c12, c13, c03, strFileName, strPath, mpaa, c05, c03, c01 FROM episode_view WHERE c00 LIKE "%' + self.SEARCH_STRING + '%"'
 		
 		log( 'searchTvEpisodes().sql = ' + episodesSQL )
 		

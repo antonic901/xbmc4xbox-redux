@@ -56,6 +56,7 @@ CFile::CFile()
 //*********************************************************************************************
 CFile::~CFile()
 {
+  Close();
   if (m_pFile)
     SAFE_DELETE(m_pFile);
   if (m_pBuffer)
@@ -65,15 +66,6 @@ CFile::~CFile()
 }
 
 //*********************************************************************************************
-
-class CAutoBuffer
-{
-  char* p;
-public:
-  explicit CAutoBuffer(size_t s) { p = (char*)malloc(s); }
-  ~CAutoBuffer() { free(p); }
-char* get() { return p; }
-};
 
 bool CFile::Copy(const CStdString& strFileName, const CStdString& strDest, XFILE::IFileCallback* pCallback, void* pContext)
 {
@@ -139,7 +131,7 @@ bool CFile::Copy(const CURL& url2, const CURL& dest, XFILE::IFileCallback* pCall
     // 128k is optimal for xbox
     static const int iBufferSize = 128 * 1024;
 
-    CAutoBuffer buffer(iBufferSize);
+    auto_buffer buffer(iBufferSize);
     ssize_t iRead, iWrite;
 
     UINT64 llFileSize = file.GetLength();
@@ -288,13 +280,13 @@ bool CFile::Open(const CURL& file, const unsigned int flags)
           }
         }
         else
-        {        
+        {
           if (!m_pFile->Open(url))
           {
             SAFE_DELETE(m_pFile);
             return false;
           }
-        }      
+        }
       }
     }
     catch (...)
@@ -366,7 +358,7 @@ bool CFile::Exists(const CStdString& strFileName, bool bUseCache /* = true */)
 bool CFile::Exists(const CURL& file, bool bUseCache /* = true */)
 {
   CURL url(URIUtils::SubstitutePath(file));
-  
+
   try
   {
     if (bUseCache)
@@ -395,7 +387,7 @@ bool CFile::Exists(const CURL& file, bool bUseCache /* = true */)
       auto_ptr<IFile> pImp(pRedirectEx->m_pNewFileImp);
       auto_ptr<CURL> pNewUrl(pRedirectEx->m_pNewUrl);
       delete pRedirectEx;
-        
+
       if (pNewUrl.get())
       {
         if (pImp.get() && !pImp->Exists(*pNewUrl))
@@ -403,7 +395,7 @@ bool CFile::Exists(const CURL& file, bool bUseCache /* = true */)
           return false;
         }
       }
-      else     
+      else
       {
         if (pImp.get() && !pImp->Exists(url))
         {
@@ -466,7 +458,7 @@ int CFile::Stat(const CURL& file, struct __stat64* buffer)
       auto_ptr<IFile> pImp(pRedirectEx->m_pNewFileImp);
       auto_ptr<CURL> pNewUrl(pRedirectEx->m_pNewUrl);
       delete pRedirectEx;
-        
+
       if (pNewUrl.get())
       {
         if (pImp.get() && !pImp->Stat(*pNewUrl, buffer))
@@ -474,7 +466,7 @@ int CFile::Stat(const CURL& file, struct __stat64* buffer)
           return false;
         }
       }
-      else     
+      else
       {
         if (pImp.get() && !pImp->Stat(url, buffer))
         {
@@ -858,6 +850,64 @@ std::string CFile::GetContentCharset(void)
   if (!m_pFile)
     return "";
   return m_pFile->GetContentCharset();
+}
+
+unsigned int CFile::LoadFile(const std::string &filename, auto_buffer& outputBuffer)
+{
+  static const unsigned int max_file_size = 0x7FFFFFFF;
+  static const unsigned int min_chunk_size = 64 * 1024U;
+  static const unsigned int max_chunk_size = 2048 * 1024U;
+
+  outputBuffer.clear();
+  if (filename.empty())
+    return 0;
+
+  if (!Open(filename, READ_TRUNCATED))
+    return 0;
+
+  /*
+  GetLength() will typically return values that fall into three cases:
+  1. The real filesize. This is the typical case.
+  2. Zero. This is the case for some http:// streams for example.
+  3. Some value smaller than the real filesize. This is the case for an expanding file.
+  In order to handle all three cases, we read the file in chunks, relying on Read()
+  returning 0 at EOF.  To minimize (re)allocation of the buffer, the chunksize in
+  cases 1 and 3 is set to one byte larger than the value returned by GetLength().
+  The chunksize in case 2 is set to the lowest value larger than min_chunk_size aligned
+  to GetChunkSize().
+  We fill the buffer entirely before reallocation.  Thus, reallocation never occurs in case 1
+  as the buffer is larger than the file, so we hit EOF before we hit the end of buffer.
+  To minimize reallocation, we double the chunksize each read while chunksize is lower
+  than max_chunk_size.
+  */
+  int64_t filesize = GetLength();
+  if (filesize > max_file_size)
+    return 0; /* file is too large for this function */
+
+  unsigned int chunksize = (filesize > 0) ? (unsigned int)(filesize + 1) : GetChunkSize(GetChunkSize(), min_chunk_size);
+  unsigned int total_read = 0;
+  while (true)
+  {
+    if (total_read == outputBuffer.size())
+    { // (re)alloc
+      if (outputBuffer.size() >= max_file_size)
+      {
+        outputBuffer.clear();
+        return 0;
+      }
+      outputBuffer.resize(outputBuffer.size() + chunksize);
+      if (chunksize < max_chunk_size)
+        chunksize *= 2;
+    }
+    unsigned int read = Read(outputBuffer.get() + total_read, outputBuffer.size() - total_read);
+    total_read += read;
+    if (!read)
+      break;
+  }
+
+  outputBuffer.resize(total_read);
+
+  return total_read;
 }
 
 //*********************************************************************************************

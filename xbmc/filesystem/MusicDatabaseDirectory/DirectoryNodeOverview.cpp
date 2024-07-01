@@ -21,7 +21,8 @@
 #include "DirectoryNodeOverview.h"
 #include "FileItem.h"
 #include "music/MusicDatabase.h"
-#include "LocalizeStrings.h"
+#include "guilib/LocalizeStrings.h"
+#include "utils/StringUtils.h"
 
 namespace XFILE
 {
@@ -38,14 +39,14 @@ namespace XFILE
                                 { NODE_TYPE_ALBUM_RECENTLY_ADDED,  "recentlyaddedalbums",  359 },
                                 { NODE_TYPE_ALBUM_RECENTLY_PLAYED, "recentlyplayedalbums", 517 },
                                 { NODE_TYPE_ALBUM_COMPILATIONS,    "compilations",         521 },
+                                { NODE_TYPE_ROLE,                  "roles",              38033 },
                               };
   };
 };
 
-using namespace std;
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 
-CDirectoryNodeOverview::CDirectoryNodeOverview(const CStdString& strName, CDirectoryNode* pParent)
+CDirectoryNodeOverview::CDirectoryNodeOverview(const std::string& strName, CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_OVERVIEW, strName, pParent)
 {
 
@@ -54,15 +55,15 @@ CDirectoryNodeOverview::CDirectoryNodeOverview(const CStdString& strName, CDirec
 NODE_TYPE CDirectoryNodeOverview::GetChildType() const
 {
   for (unsigned int i = 0; i < sizeof(OverviewChildren) / sizeof(Node); ++i)
-    if (GetName().Equals(OverviewChildren[i].id.c_str()))
+    if (GetName() == OverviewChildren[i].id)
       return OverviewChildren[i].node;
   return NODE_TYPE_NONE;
 }
 
-CStdString CDirectoryNodeOverview::GetLocalizedName() const
+std::string CDirectoryNodeOverview::GetLocalizedName() const
 {
   for (unsigned int i = 0; i < sizeof(OverviewChildren) / sizeof(Node); ++i)
-    if (GetName().Equals(OverviewChildren[i].id.c_str()))
+    if (GetName() == OverviewChildren[i].id)
       return g_localizeStrings.Get(OverviewChildren[i].label);
   return "";
 }
@@ -70,30 +71,25 @@ CStdString CDirectoryNodeOverview::GetLocalizedName() const
 bool CDirectoryNodeOverview::GetContent(CFileItemList& items) const
 {
   CMusicDatabase musicDatabase;
-  bool showSingles = false;
-  if (musicDatabase.Open())
-  {
-    CDatabase::Filter filter("idAlbum IN (SELECT idAlbum FROM album WHERE strAlbum = '')");
-    if (musicDatabase.GetSongsCount(filter) > 0)
-      showSingles = true;
-  }
+  musicDatabase.Open();
+
+  bool hasSingles = (musicDatabase.GetSinglesCount() > 0);
+  bool hasCompilations = (musicDatabase.GetCompilationAlbumsCount() > 0);
 
   for (unsigned int i = 0; i < sizeof(OverviewChildren) / sizeof(Node); ++i)
   {
-    if (i == 3 && !showSingles) // singles
+    if (i == 3 && !hasSingles)
       continue;
-    if (i == 9 && musicDatabase.GetCompilationAlbumsCount() == 0) // compilations
+    if (i == 9 && !hasCompilations)
       continue;
 
     CFileItemPtr pItem(new CFileItem(g_localizeStrings.Get(OverviewChildren[i].label)));
-    CStdString strDir;
-    strDir.Format("%s/", OverviewChildren[i].id);
+    std::string strDir = StringUtils::Format("%s/", OverviewChildren[i].id.c_str());
     pItem->SetPath(BuildPath() + strDir);
     pItem->m_bIsFolder = true;
     pItem->SetCanQueue(false);
     items.Add(pItem);
   }
 
-  items.SetPath("");
   return true;
 }

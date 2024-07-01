@@ -111,7 +111,7 @@ bool CPartyModeManager::Enable(PartyModeContext context /*= PARTYMODECONTEXT_MUS
     CMusicDatabase db;
     if (db.Open())
     {
-      set<CStdString> playlists;
+      std::set<std::string> playlists;
       if ( playlistLoaded )
         m_strCurrentFilterMusic = playlist.GetWhereClause(db, playlists);
 
@@ -140,7 +140,7 @@ bool CPartyModeManager::Enable(PartyModeContext context /*= PARTYMODECONTEXT_MUS
     CVideoDatabase db;
     if (db.Open())
     {
-      set<CStdString> playlists;
+      std::set<std::string> playlists;
       if ( playlistLoaded )
         m_strCurrentFilterVideo = playlist.GetWhereClause(db, playlists);
 
@@ -495,7 +495,7 @@ void CPartyModeManager::SendUpdateMessage()
 void CPartyModeManager::Play(int iPos)
 {
   // move current song to the top if its not there
-  g_playlistPlayer.Play(iPos);
+  g_playlistPlayer.Play(iPos, "");
   CLog::Log(LOGINFO,"PARTY MODE MANAGER: Playing song at %i", iPos);
   Process();
 }

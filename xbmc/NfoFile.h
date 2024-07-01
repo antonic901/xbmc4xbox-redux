@@ -24,19 +24,15 @@
 #if !defined(AFX_NfoFile_H__641CCF68_6D2A_426E_9204_C0E4BEF12D00__INCLUDED_)
 #define AFX_NfoFile_H__641CCF68_6D2A_426E_9204_C0E4BEF12D00__INCLUDED_
 
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+#include <string>
 
-#include "utils/XBMCTinyXML.h"
 #include "addons/Scraper.h"
-#include "utils/CharsetConverter.h"
-#include "utils/XMLUtils.h"
 
 class CNfoFile
 {
 public:
-  CNfoFile() : m_doc(NULL), m_headofdoc(NULL) {}
+  CNfoFile() : m_headPos(0), m_type(ADDON::ADDON_UNKNOWN) {}
   virtual ~CNfoFile() { Close(); }
 
   enum NFOResult
@@ -45,32 +41,23 @@ public:
     FULL_NFO     = 1,
     URL_NFO      = 2,
     COMBINED_NFO = 3,
-    ERROR_NFO    = 4
+    ERROR_NFO    = 4,
+    PARTIAL_NFO  = 5
   };
 
-  NFOResult Create(const CStdString&, const ADDON::ScraperPtr&, int episode=-1,
-                   const CStdString& strPath2="");
+  NFOResult Create(const std::string&, const ADDON::ScraperPtr&, int episode=-1);
   template<class T>
-    bool GetDetails(T& details,const char* document=NULL, bool prioritise=false)
+    bool GetDetails(T& details, const char* document=NULL,
+                    bool prioritise=false)
   {
     CXBMCTinyXML doc;
-    CStdString strDoc;
     if (document)
-      strDoc = document;
+      doc.Parse(document, TIXML_ENCODING_UNKNOWN);
+    else if (m_headPos < m_doc.size())
+      doc.Parse(m_doc.substr(m_headPos), TIXML_ENCODING_UNKNOWN);
     else
-      strDoc = m_headofdoc;
+      return false;
 
-    CStdString encoding;
-    XMLUtils::GetEncoding(&doc, encoding);
-
-    CStdString strUtf8(strDoc);
-    if (encoding.IsEmpty())
-      g_charsetConverter.unknownToUTF8(strUtf8);
-    else
-      g_charsetConverter.ToUtf8(encoding, strDoc, strUtf8);
-
-    doc.Clear();
-    doc.Parse(strUtf8.c_str(),0,TIXML_ENCODING_UTF8);
     return details.Load(doc.RootElement(), true, prioritise);
   }
 
@@ -80,13 +67,13 @@ public:
   const CScraperUrl &ScraperUrl() const { return m_scurl; }
 
 private:
-  char* m_doc;
-  char* m_headofdoc;
+  std::string m_doc;
+  size_t m_headPos;
   ADDON::ScraperPtr m_info;
   ADDON::TYPE m_type;
   CScraperUrl m_scurl;
 
-  int Load(const CStdString&);
+  int Load(const std::string&);
   int Scrape(ADDON::ScraperPtr& scraper);
 };
 

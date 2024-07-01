@@ -198,7 +198,7 @@ static void ParseItemMRSS(CFileItem* item, SResources& resources, TiXmlElement* 
   {
     CStdString scheme = XMLUtils::GetAttribute(item_child, "scheme");
     if(scheme == "urn:user")
-      vtag->m_fRating = (float)atof(text.c_str());
+      vtag->SetRating((float)atof(text.c_str()));
     else
       vtag->m_strMPAARating = text;
   }
@@ -316,9 +316,9 @@ static void ParseItemVoddler(CFileItem* item, SResources& resources, TiXmlElemen
     resources.push_back(res);
   }
   else if(name == "year")
-    vtag->m_iYear = atoi(text);
+    vtag->SetYear(atoi(text.c_str()));
   else if(name == "rating")
-    vtag->m_fRating = (float)atof(text);
+    vtag->SetRating((float)atof(text.c_str()));
   else if(name == "tagline")
     vtag->m_strTagLine = text;
   else if(name == "posterwall")
@@ -369,7 +369,7 @@ static void ParseItemZink(CFileItem* item, SResources& resources, TiXmlElement* 
   else if(name == "airdate")
     vtag->m_firstAired.SetFromDateString(text);
   else if(name == "userrating")
-    vtag->m_fRating = (float)atof(text.c_str());
+    vtag->SetRating((float)atof(text.c_str()));
   else if(name == "duration")
     vtag->m_duration = atoi(text);
   else if(name == "durationstr")
@@ -530,14 +530,14 @@ static void ParseItem(CFileItem* item, TiXmlElement* root, const CStdString& pat
     if(item->HasProperty("duration")    && !vtag->GetDuration())
       vtag->m_duration = StringUtils::TimeStringToSeconds(item->GetProperty("duration").asString());
 
-    if(item->HasProperty("description") && vtag->m_strPlot.IsEmpty())
+    if(item->HasProperty("description") && vtag->m_strPlot.empty())
       vtag->m_strPlot = item->GetProperty("description").asString();
 
-    if(vtag->m_strPlotOutline.IsEmpty() && !vtag->m_strPlot.IsEmpty())
+    if(vtag->m_strPlotOutline.empty() && !vtag->m_strPlot.empty())
     {
-      int pos = vtag->m_strPlot.Find('\n');
-      if(pos >= 0)
-        vtag->m_strPlotOutline = vtag->m_strPlot.Left(pos);
+      size_t pos = vtag->m_strPlot.find('\n');
+      if(pos != std::string::npos)
+        vtag->m_strPlotOutline = vtag->m_strPlot.substr(0, pos);
       else
         vtag->m_strPlotOutline = vtag->m_strPlot;
     }

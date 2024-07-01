@@ -21,11 +21,10 @@
 #include "DirectoryNodeYearAlbum.h"
 #include "QueryParams.h"
 #include "music/MusicDatabase.h"
-#include "LocalizeStrings.h"
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 
-CDirectoryNodeYearAlbum::CDirectoryNodeYearAlbum(const CStdString& strName, CDirectoryNode* pParent)
+CDirectoryNodeYearAlbum::CDirectoryNodeYearAlbum(const std::string& strName, CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_YEAR_ALBUM, strName, pParent)
 {
 
@@ -39,7 +38,7 @@ NODE_TYPE CDirectoryNodeYearAlbum::GetChildType() const
   return NODE_TYPE_SONG;
 }
 
-CStdString CDirectoryNodeYearAlbum::GetLocalizedName() const
+std::string CDirectoryNodeYearAlbum::GetLocalizedName() const
 {
   if (GetID() == -1)
     return g_localizeStrings.Get(15102); // All Albums

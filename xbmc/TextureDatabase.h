@@ -36,10 +36,13 @@ public:
   static void GetAvailableFields(std::vector<std::string> &fieldList);
 protected:
   virtual int                 TranslateField(const char *field) const;
-  virtual CStdString          TranslateField(int field) const;
-  virtual CStdString          GetField(int field, const CStdString& type) const;
+  virtual std::string         TranslateField(int field) const;
+  virtual std::string         GetField(int field, const std::string& type) const;
   virtual FIELD_TYPE          GetFieldType(int field) const;
-  virtual CStdString          FormatParameter(const CStdString &negate, const CStdString &oper, const CDatabase &db, const CStdString &type) const;
+  virtual std::string         FormatParameter(const std::string &negate,
+                                              const std::string &oper,
+                                              const CDatabase &db,
+                                              const std::string &type) const;
 };
 
 class CTextureUtils
@@ -124,8 +127,9 @@ protected:
    */
   unsigned int GetURLHash(const CStdString &url) const;
 
-  virtual bool CreateTables();
-  virtual bool UpdateOldVersion(int version);
-  virtual int GetMinVersion() const { return 12; };
+  virtual void CreateTables();
+  virtual void CreateAnalytics();
+  virtual void UpdateTables(int version);
+  virtual int GetSchemaVersion() const { return 13; };
   const char *GetBaseDBName() const { return "Textures"; };
 };

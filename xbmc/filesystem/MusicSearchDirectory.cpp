@@ -27,7 +27,6 @@
 #include "guilib/LocalizeStrings.h"
 
 using namespace XFILE;
-using namespace XFILE;
 
 CMusicSearchDirectory::CMusicSearchDirectory(void)
 {
@@ -41,9 +40,9 @@ bool CMusicSearchDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
   // break up our path
   // format is:  musicsearch://<url encoded search string>
-  CStdString search(url.GetHostName());
+  std::string search(url.GetHostName());
 
-  if (search.IsEmpty())
+  if (search.empty())
     return false;
 
   // and retrieve the search details
@@ -53,7 +52,7 @@ bool CMusicSearchDirectory::GetDirectory(const CURL& url, CFileItemList &items)
   db.Open();
   db.Search(search, items);
   db.Close();
-  CLog::Log(LOGDEBUG, "%s (%s) took %lu ms",
+  CLog::Log(LOGDEBUG, "%s (%s) took %u ms",
             __FUNCTION__, url.GetRedacted().c_str(), XbmcThreads::SystemClockMillis() - time);
   items.SetLabel(g_localizeStrings.Get(137)); // Search
   return true;

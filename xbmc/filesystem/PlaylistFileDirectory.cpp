@@ -19,14 +19,11 @@
  */
 
 #include "PlaylistFileDirectory.h"
-#include "utils/log.h"
 #include "playlists/PlayListFactory.h"
-#include "music/tags/MusicInfoTag.h"
 #include "File.h"
 #include "URL.h"
 #include "playlists/PlayList.h"
 
-using namespace std;
 using namespace PLAYLIST;
 
 namespace XFILE
@@ -41,8 +38,8 @@ namespace XFILE
 
   bool CPlaylistFileDirectory::GetDirectory(const CURL& url, CFileItemList& items)
   {
-    const CStdString pathToUrl = url.Get();
-    auto_ptr<CPlayList> pPlayList (CPlayListFactory::Create(pathToUrl));
+    const std::string pathToUrl = url.Get();
+    boost::movelib::unique_ptr<CPlayList> pPlayList (CPlayListFactory::Create(pathToUrl));
     if ( NULL != pPlayList.get())
     {
       // load it
@@ -63,8 +60,8 @@ namespace XFILE
 
   bool CPlaylistFileDirectory::ContainsFiles(const CURL& url)
   {
-    const CStdString pathToUrl = url.Get();
-    auto_ptr<CPlayList> pPlayList (CPlayListFactory::Create(pathToUrl));
+    const std::string pathToUrl = url.Get();
+    boost::movelib::unique_ptr<CPlayList> pPlayList (CPlayListFactory::Create(pathToUrl));
     if ( NULL != pPlayList.get())
     {
       // load it
@@ -77,7 +74,7 @@ namespace XFILE
   }
 
   bool CPlaylistFileDirectory::Remove(const CURL& url)
-  { 
+  {
     return XFILE::CFile::Delete(url);
   }
 }
