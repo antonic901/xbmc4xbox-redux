@@ -79,7 +79,7 @@
         </setting>
         <setting id="lookandfeel.soundskin" type="addon" label="15108" help="36110">
           <level>0</level>
-          <default>resource.uisounds.confluence</default>
+          <default>resource.uisounds.kodi</default>
           <constraints>
             <addontype>kodi.resource.uisounds</addontype>
             <allowempty>true</allowempty>
@@ -2885,17 +2885,13 @@
     </category>
     <category id="general" label="" help="36412">
       <group id="1">
-        <setting id="general.addonautoupdate" type="boolean" label="0" help="36413">
-          <level>4</level>
-          <default>true</default>
-        </setting>
-        <setting id="general.addonnotifications" type="boolean" label="0" help="36414">
-          <level>4</level>
-          <default>true</default>
-        </setting>
         <setting id="general.addonforeignfilter" type="boolean" label="0" help="36415">
           <level>4</level>
           <default>false</default>
+        </setting>
+        <setting id="general.addonbrokenfilter" type="boolean" label="0" help="36415">
+          <level>4</level>
+          <default>true</default>
         </setting>
       </group>
     </category>

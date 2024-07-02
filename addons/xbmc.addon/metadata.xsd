@@ -7,9 +7,14 @@
         <xs:element name="summary" type="translatedString" minOccurs="1" maxOccurs="unbounded"/>
         <xs:element name="description" type="translatedString" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element name="disclaimer" type="translatedString" minOccurs="0"/>
-        <xs:element name="license" type="xs:string"/>
         <xs:element name="platform" type="platformList" minOccurs="0"/>
         <xs:element name="supportedcontent" type="contentList" minOccurs="0"/>
+        <xs:element name="language" type="xs:string"  minOccurs="0"/>
+        <xs:element name="license" type="xs:string"  minOccurs="0"/>
+        <xs:element name="forum" type="xs:string" minOccurs="0"/>
+        <xs:element name="website" type="xs:string" minOccurs="0"/>
+        <xs:element name="source" type="xs:string" minOccurs="0"/>
+        <xs:element name="email" type="xs:string" minOccurs="0"/>
         <xs:element name="broken" type="xs:string" minOccurs="0"/>
       </xs:sequence>
       <xs:attribute name="point" type="xs:string" use="required"/>
@@ -33,8 +38,12 @@
     <xs:restriction base="xs:string">
       <xs:enumeration value="linux"/>
       <xs:enumeration value="osx"/>
-      <xs:enumeration value="wingl"/>
+      <xs:enumeration value="osx64"/>
+      <xs:enumeration value="osx32"/>
+      <xs:enumeration value="ios"/>
       <xs:enumeration value="windx"/>
+      <xs:enumeration value="android"/>
+      <xs:enumeration value="xbox"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="platformList">
