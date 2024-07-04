@@ -58,7 +58,7 @@ namespace XFILE
 
     IFile *GetFileImp();
 
-    virtual CStdString GetContent();
+    virtual std::string GetContent();
     virtual std::string GetContentCharset(void);
 
   private:

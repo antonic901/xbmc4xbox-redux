@@ -585,11 +585,11 @@ AVDictionary *CDVDDemuxFFmpeg::GetFFMpegOptionsFromInput()
 
   if (url.IsProtocol("http") || url.IsProtocol("https"))
   {
-    std::map<CStdString, CStdString> protocolOptions;
+    std::map<std::string, std::string> protocolOptions;
     url.GetProtocolOptions(protocolOptions);
     std::string headers;
     bool hasUserAgent = false;
-    for(std::map<CStdString, CStdString>::const_iterator it = protocolOptions.begin(); it != protocolOptions.end(); ++it)
+    for(std::map<std::string, std::string> ::const_iterator it = protocolOptions.begin(); it != protocolOptions.end(); ++it)
     {
       const CStdString &name = it->first;
       const CStdString &value = it->second;

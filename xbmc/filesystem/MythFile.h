@@ -53,7 +53,7 @@ public:
   virtual int           Stat(const CURL& url, struct __stat64* buffer) { return -1; }
   virtual void          Close();
   virtual ssize_t       Read(void* buffer, size_t size);
-  virtual CStdString    GetContent() { return ""; }
+  virtual std::string   GetContent() { return ""; }
   virtual bool          SkipNext();
 
   virtual bool          Delete(const CURL& url);

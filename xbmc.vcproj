@@ -808,6 +808,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\AutoSwitch.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\Base64.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Base64.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\BitstreamStats.cpp">
 				</File>
 				<File

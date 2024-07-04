@@ -189,7 +189,7 @@ bool CScraperUrl::Get(const SUrlEntry& scrURL, std::string& strHTML, XFILE::CCur
   CStdString strCachePath;
 
   if (scrURL.m_isgz)
-    http.SetContentEncoding("gzip");
+    http.SetAcceptEncoding("gzip");
 
   if (!scrURL.m_cache.IsEmpty())
   {

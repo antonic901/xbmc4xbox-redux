@@ -263,6 +263,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     int m_curlconnecttimeout;
     int m_curllowspeedtime;
     int m_curlretries;
+    bool m_curlDisableIPV6;
 
     bool m_splashImage;
 

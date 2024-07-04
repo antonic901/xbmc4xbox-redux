@@ -119,7 +119,7 @@ CStdString CSysInfoJob::GetInternetState()
   m_info.haveInternetState = http.IsInternet();
   if (m_info.haveInternetState)
     return g_localizeStrings.Get(13296);
-  else if (http.IsInternet(false))
+  else if (http.IsInternet())
     return g_localizeStrings.Get(13274);
   else // NOT Connected to the Internet!
     return g_localizeStrings.Get(13297);

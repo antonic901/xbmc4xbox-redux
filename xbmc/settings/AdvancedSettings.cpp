@@ -301,6 +301,8 @@ void CAdvancedSettings::Initialize()
   m_curlconnecttimeout = 10;
   m_curllowspeedtime = 20;
   m_curlretries = 2;
+  m_curlDisableIPV6 = true;      //Certain hardware/OS combinations have trouble
+                                  //with ipv6.
 
   m_splashImage = true;
 

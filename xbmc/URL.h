@@ -112,7 +112,7 @@ public:
   void SetOption(const CStdString &key, const CStdString &value);
   void RemoveOption(const CStdString &key);
 
-  void GetProtocolOptions(std::map<CStdString, CStdString> &options) const;
+  void GetProtocolOptions(std::map<std::string, std::string> &options) const;
   bool HasProtocolOption(const CStdString &key) const;
   bool GetProtocolOption(const CStdString &key, CStdString &value) const;
   CStdString GetProtocolOption(const CStdString &key) const;
