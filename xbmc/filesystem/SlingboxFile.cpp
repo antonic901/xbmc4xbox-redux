@@ -51,7 +51,7 @@ bool CSlingboxFile::Open(const CURL& url)
     uiPort = (unsigned int)url.GetPort();
   else
     uiPort = 5001;
-  m_pSlingbox->SetAddress(url.GetHostName(), uiPort);
+  m_pSlingbox->SetAddress(url.GetHostName().c_str(), uiPort);
 
   // Prepare to connect to the Slingbox
   bool bAdmin;

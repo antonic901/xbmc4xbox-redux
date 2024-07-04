@@ -88,7 +88,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     static void GetCustomTVRegexps(TiXmlElement *pRootElement, SETTINGS_TVSHOWLIST& settings);
     static void GetCustomRegexps(TiXmlElement *pRootElement, std::vector<std::string>& settings);
     static void GetCustomRegexpReplacers(TiXmlElement *pRootElement, std::vector<std::string>& settings);
-    static void GetCustomExtensions(TiXmlElement *pRootElement, CStdString& extensions);
+    static void GetCustomExtensions(TiXmlElement *pRootElement, std::string& extensions);
 
     bool m_DisableModChipDetection;
     bool m_bPowerSave;
@@ -295,9 +295,9 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     void ParseSettingsFile(const CStdString &file);
 
     // runtime settings which cannot be set from advancedsettings.xml
-    CStdString m_pictureExtensions;
-    CStdString m_musicExtensions;
-    CStdString m_videoExtensions;
+    std::string m_pictureExtensions;
+    std::string m_musicExtensions;
+    std::string m_videoExtensions;
     CStdString m_discStubExtensions;
     CStdString m_subtitlesExtensions;
 

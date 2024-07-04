@@ -640,5 +640,5 @@ bool CMythDirectory::SupportsWriteFileOperations(const CStdString& strPath)
 bool CMythDirectory::IsLiveTV(const CStdString& strPath)
 {
   CURL url(strPath);
-  return url.GetFileName().Left(9) == "channels/";
+  return StringUtils::StartsWith(url.GetFileName(), "channels/");
 }

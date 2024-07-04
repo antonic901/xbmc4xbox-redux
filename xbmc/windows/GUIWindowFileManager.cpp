@@ -830,7 +830,7 @@ void CGUIWindowFileManager::GoParentFolder(int iList)
   if (url.IsProtocol("rar") || url.IsProtocol("zip"))
   {
     // check for step-below, if, unmount rar
-    if (url.GetFileName().IsEmpty())
+    if (url.GetFileName().empty())
       if (url.IsProtocol("zip"))
         g_ZipManager.release(m_Directory[iList]->GetPath()); // release resources
   }

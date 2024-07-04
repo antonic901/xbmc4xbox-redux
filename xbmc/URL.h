@@ -46,15 +46,15 @@ public:
   bool HasPort() const;
 
   int GetPort() const;
-  const CStdString& GetHostName() const;
+  const std::string& GetHostName() const;
   const CStdString& GetDomain() const;
   const CStdString& GetUserName() const;
   const CStdString& GetPassWord() const;
-  const CStdString& GetFileName() const;
+  const std::string& GetFileName() const;
   const CStdString& GetProtocol() const;
   const CStdString GetTranslatedProtocol() const;
   const CStdString& GetFileType() const;
-  const CStdString& GetShareName() const;
+  const std::string& GetShareName() const;
   const CStdString& GetOptions() const;
   const CStdString& GetProtocolOptions() const;
   const CStdString GetFileNameWithoutPath() const; /* return the filename excluding path */
@@ -64,7 +64,7 @@ public:
   CStdString Get() const;
   std::string GetWithoutOptions() const;
   std::string GetWithoutUserDetails(bool redact = false) const;
-  CStdString GetWithoutFilename() const;
+  std::string GetWithoutFilename() const;
   std::string GetRedacted() const;
   static std::string GetRedacted(const std::string& path);
   bool IsLocal() const;
@@ -121,12 +121,12 @@ public:
 
 protected:
   int m_iPort;
-  CStdString m_strHostName;
-  CStdString m_strShareName;
+  std::string m_strHostName;
+  std::string m_strShareName;
   CStdString m_strDomain;
   CStdString m_strUserName;
   CStdString m_strPassword;
-  CStdString m_strFileName;
+  std::string m_strFileName;
   CStdString m_strProtocol;
   CStdString m_strFileType;
   CStdString m_strOptions;

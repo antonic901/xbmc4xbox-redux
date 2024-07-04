@@ -347,7 +347,7 @@ CStdString CUtil::GetTitleFromPath(const CURL& url, bool bIsFolder /* = false */
   // Windows SMB Network (SMB)
   else if (url.IsProtocol("smb") && strFilename.empty())
   {
-    if (url.GetHostName().IsEmpty())
+    if (url.GetHostName().empty())
     {
       strFilename = g_localizeStrings.Get(20171);
     }
@@ -2667,7 +2667,7 @@ int CUtil::GetMatchingSource(const CStdString& strPath1, VECSOURCES& VECSOURCES,
     if (share.strPath.substr(0,8) == "shout://")
     {
       CURL url(share.strPath);
-      if (strPath.Equals(url.GetHostName()))
+      if (strPath == url.GetHostName())
         return i;
     }
 

@@ -120,9 +120,9 @@ bool CMythFile::SetupConnection(const CURL& url, bool control, bool event, bool 
 
 bool CMythFile::SetupRecording(const CURL& url)
 {
-  if (url.GetFileName().Left(11) != "recordings/" &&
-      url.GetFileName().Left(7)  != "movies/" &&
-      url.GetFileName().Left(8)  != "tvshows/")
+  if (StringUtils::StartsWith(url.GetFileName(), "recordings/") ||
+      StringUtils::StartsWith(url.GetFileName(), "movies/") ||
+      StringUtils::StartsWith(url.GetFileName(), "tvshows/"))
     return false;
 
   if(!SetupConnection(url, true, false, false))
@@ -188,7 +188,7 @@ bool CMythFile::SetupRecording(const CURL& url)
 
 bool CMythFile::SetupLiveTV(const CURL& url)
 {
-  if (url.GetFileName().Left(9) != "channels/")
+  if (!StringUtils::StartsWith(url.GetFileName(), "channels/"))
     return false;
 
   if(!SetupConnection(url, true, true, true))
@@ -271,13 +271,13 @@ bool CMythFile::SetupLiveTV(const CURL& url)
 
 bool CMythFile::SetupFile(const CURL& url)
 {
-  if (url.GetFileName().Left(6) != "files/")
+  if (!StringUtils::StartsWith(url.GetFileName(), "files/"))
     return false;
 
   if(!SetupConnection(url, true, false, false))
     return false;
 
-  m_filename = url.GetFileName().Mid(6);
+  m_filename = url.GetFileName().substr(6);
 
   m_file = m_dll->conn_connect_path((char*)m_filename.c_str(), m_control, 16*1024, 4096);
   if(!m_file)

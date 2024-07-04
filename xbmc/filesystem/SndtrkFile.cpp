@@ -38,7 +38,7 @@ CSndtrkFile::~CSndtrkFile()
 //*********************************************************************************************
 bool CSndtrkFile::Open(const CURL& url)
 {
-  m_hFile.attach( CreateFile(url.GetFileName(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL));
+  m_hFile.attach( CreateFile(url.GetFileName().c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL));
   if ( !m_hFile.isValid() ) return false;
 
   m_i64FilePos = 0;

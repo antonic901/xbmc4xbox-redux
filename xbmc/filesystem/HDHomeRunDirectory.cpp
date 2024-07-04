@@ -48,7 +48,7 @@ bool CHomeRunDirectory::GetDirectory(const CURL& url, CFileItemList &items)
   if(!m_pdll->IsLoaded())
     return false;
 
-  if(url.GetHostName().IsEmpty())
+  if(url.GetHostName().empty())
   {
     // no hostname, list all available devices
       struct hdhomerun_discover_device_t result_list[64];

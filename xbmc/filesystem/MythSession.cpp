@@ -193,7 +193,7 @@ void CMythSession::SetFileItemMetaData(CFileItem &item, cmyth_proginfo_t program
    * Set further FileItem and VideoInfoTag meta-data based on whether it is LiveTV or not.
    */
   CURL url(item.GetPath());
-  if (url.GetFileName().Left(9) == "channels/")
+  if (StringUtils::StartsWith(url.GetFileName(), "channels/"))
   {
     /*
      * Prepend the channel number onto the FileItem title for the listing so it's clear what is

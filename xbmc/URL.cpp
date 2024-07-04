@@ -276,13 +276,13 @@ void CURL::Parse(const CStdString& strURL1)
     iPos = iSlash + 1;
     if (iEnd > iPos)
     {
-      m_strFileName = strURL.Mid(iPos, iEnd - iPos);
+      m_strFileName = strURL.substr(iPos, iEnd - iPos);
 
-      iSlash = m_strFileName.Find("/");
-      if(iSlash < 0)
+      iSlash = m_strFileName.find("/");
+      if(iSlash == std::string::npos)
         m_strShareName = m_strFileName;
       else
-        m_strShareName = m_strFileName.Left(iSlash);
+        m_strShareName = m_strFileName.substr(0, iSlash);
     }
   }
 
@@ -295,13 +295,12 @@ void CURL::Parse(const CStdString& strURL1)
   {
     if (m_strHostName != "" && m_strFileName != "")
     {
-      CStdString strFileName = m_strFileName;
-      m_strFileName.Format("%s/%s", m_strHostName.c_str(), strFileName.c_str());
+      m_strFileName = StringUtils::Format("%s/%s", m_strHostName.c_str(), m_strFileName.c_str());
       m_strHostName = "";
     }
     else
     {
-      if (!m_strHostName.IsEmpty() && strURL[iEnd-1]=='/')
+      if (!m_strHostName.empty() && strURL[iEnd-1]=='/')
         m_strFileName = m_strHostName + "/";
       else
         m_strFileName = m_strHostName;
@@ -309,7 +308,7 @@ void CURL::Parse(const CStdString& strURL1)
     }
   }
 
-  m_strFileName.Replace("\\", "/");
+  StringUtils::Replace(m_strFileName, '\\', '/');
 
   /* update extension */
   SetFileName(m_strFileName);
@@ -408,12 +407,12 @@ int CURL::GetPort() const
 }
 
 
-const CStdString& CURL::GetHostName() const
+const std::string& CURL::GetHostName() const
 {
   return m_strHostName;
 }
 
-const CStdString&  CURL::GetShareName() const
+const std::string&  CURL::GetShareName() const
 {
   return m_strShareName;
 }
@@ -433,7 +432,7 @@ const CStdString& CURL::GetPassWord() const
   return m_strPassword;
 }
 
-const CStdString& CURL::GetFileName() const
+const std::string& CURL::GetFileName() const
 {
   return m_strFileName;
 }
@@ -616,7 +615,7 @@ std::string CURL::GetWithoutUserDetails(bool redact) const
   return strURL;
 }
 
-CStdString CURL::GetWithoutFilename() const
+std::string CURL::GetWithoutFilename() const
 {
   if (m_strProtocol == "")
     return "";

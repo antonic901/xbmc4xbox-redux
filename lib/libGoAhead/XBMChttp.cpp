@@ -2775,11 +2775,11 @@ int CXbmcHttp::xbmcConfig(int numParas, CStdString paras[])
   {
     //getoption has been deprecated so the following is just to prevent (my) legacy client code breaking (to be removed later)
     if (paras[1]=="pictureextensions")
-      response=openTag+g_advancedSettings.m_pictureExtensions;
+      response=openTag+g_advancedSettings.m_pictureExtensions.c_str();
     else if (paras[1]=="videoextensions")
-      response=openTag+g_advancedSettings.m_videoExtensions;
+      response=openTag+g_advancedSettings.m_videoExtensions.c_str();
     else if (paras[1]=="musicextensions")
-      response=openTag+g_advancedSettings.m_musicExtensions;
+      response=openTag+g_advancedSettings.m_musicExtensions.c_str();
     else
       response=openTag+"Error:Function is deprecated";
     //ret=XbmcWebsHttpAPIConfigGetOption(response, argc, argv);

@@ -1,7 +1,7 @@
 #pragma once
 /*
  *      Copyright (C) 2005-2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,10 +21,12 @@
 
 #include <map>
 #include <vector>
+#include <string>
+
+#include "threads/CriticalSection.h"
 
 #include "settings/lib/ISettingCallback.h"
 #include "settings/lib/ISettingsHandler.h"
-#include "threads/CriticalSection.h"
 
 class CRssReader;
 class IRssObserver;
@@ -59,11 +61,11 @@ public:
 
 protected:
   CRssManager();
-  CRssManager(const CRssManager&);
-  CRssManager const& operator=(CRssManager const&);
   ~CRssManager();
 
 private:
+  CRssManager(const CRssManager&);
+  CRssManager& operator=(const CRssManager&);
   struct READERCONTROL
   {
     int controlID;

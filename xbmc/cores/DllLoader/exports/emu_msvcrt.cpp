@@ -628,16 +628,16 @@ extern "C"
     }
     // non-local files. handle through IDirectory-class - only supports '*.bah' or '*.*'
     CStdString strMask;
-    if (url.GetFileName().Find("*.*") != string::npos)
+    if (url.GetFileName().find("*.*") != string::npos)
     {
       CStdString strReplaced = url.GetFileName();
       strReplaced.Replace("*.*","");
       url.SetFileName(strReplaced);
     }
-    else if (url.GetFileName().Find("*.") != string::npos)
+    else if (url.GetFileName().find("*.") != string::npos)
     {
       strMask = URIUtils::GetExtension(url.GetFileName());
-      url.SetFileName(url.GetFileName().Left(url.GetFileName().Find("*.")));
+      url.SetFileName(url.GetFileName().substr(0, url.GetFileName().find("*.")));
     }
     int iDirSlot=0; // locate next free directory
     while ((vecDirsOpen[iDirSlot].Directory) && (iDirSlot<MAX_OPEN_DIRS)) iDirSlot++;
