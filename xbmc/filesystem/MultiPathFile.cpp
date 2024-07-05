@@ -39,7 +39,7 @@ CMultiPathFile::~CMultiPathFile(void)
 bool CMultiPathFile::Open(const CURL& url)
 {
   // grab the filename off the url
-  CStdString path, fileName;
+  std::string path, fileName;
   URIUtils::Split(url.Get(), path, fileName);
   std::vector<std::string> vecPaths;
   if (!CMultiPathDirectory::GetPaths(path, vecPaths))
@@ -58,7 +58,7 @@ bool CMultiPathFile::Open(const CURL& url)
 bool CMultiPathFile::Exists(const CURL& url)
 {
   // grab the filename off the url
-  CStdString path, fileName;
+  std::string path, fileName;
   URIUtils::Split(url.Get(), path, fileName);
   std::vector<std::string> vecPaths;
   if (!CMultiPathDirectory::GetPaths(path, vecPaths))
@@ -77,7 +77,7 @@ bool CMultiPathFile::Exists(const CURL& url)
 int CMultiPathFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   // grab the filename off the url
-  CStdString path, fileName;
+  std::string path, fileName;
   URIUtils::Split(url.Get(), path, fileName);
   std::vector<std::string> vecPaths;
   if (!CMultiPathDirectory::GetPaths(path, vecPaths))

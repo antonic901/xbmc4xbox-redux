@@ -99,7 +99,7 @@ bool CDVDInputStreamHTSP::Open()
   if(!m_session.Connect(url.GetHostName(), url.GetPort()))
     return false;
 
-  if(!url.GetUserName().IsEmpty())
+  if(!url.GetUserName().empty())
     m_session.Auth(url.GetUserName(), url.GetPassWord());
 
   m_session.SendEnableAsync();

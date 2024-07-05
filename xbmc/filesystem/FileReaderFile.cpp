@@ -41,19 +41,20 @@ CFileFileReader::~CFileFileReader()
 //*********************************************************************************************
 bool CFileFileReader::Open(const CURL& url)
 {
-  CStdString strURL = url.Get();
-  strURL = strURL.Mid(13);
+  // URL is of the form filereader://<foo>
+  std::string strURL = url.Get();
+  strURL = strURL.substr(13);
   return m_reader.Open(strURL,READ_CACHED);
 }
 
 bool CFileFileReader::Exists(const CURL& url)
 {
-  return CFile::Exists(url.Get().Mid(13));
+  return CFile::Exists(url.Get().substr(13));
 }
 
 int CFileFileReader::Stat(const CURL& url, struct __stat64* buffer)
 {
-  return CFile::Stat(url.Get().Mid(13),buffer);
+  return CFile::Stat(url.Get().substr(13), buffer);
 }
 
 

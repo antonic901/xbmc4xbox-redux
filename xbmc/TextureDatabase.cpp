@@ -146,7 +146,7 @@ CStdString CTextureUtils::UnwrapImageURL(const CStdString &image)
   if (StringUtils::StartsWith(image, "image://"))
   {
     CURL url(image);
-    if (url.GetUserName().IsEmpty() && url.GetOptions().IsEmpty())
+    if (url.GetUserName().empty() && url.GetOptions().empty())
       return url.GetHostName();
   }
   return image;

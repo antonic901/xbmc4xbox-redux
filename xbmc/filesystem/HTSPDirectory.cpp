@@ -166,7 +166,7 @@ bool CHTSPDirectorySession::Open(const CURL& url)
     return false;
   }
 
-  if(!url.GetUserName().IsEmpty())
+  if(!url.GetUserName().empty())
     m_session.Auth(url.GetUserName(), url.GetPassWord());
 
   if(!m_session.SendEnableAsync())

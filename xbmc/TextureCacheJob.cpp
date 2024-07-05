@@ -131,7 +131,7 @@ CStdString CTextureCacheJob::DecodeImageURL(const CStdString &url, unsigned int 
     // format is image://[type@]<url_encoded_path>?options
     CURL thumbURL(url);
 
-    if (!thumbURL.GetUserName().IsEmpty())
+    if (!thumbURL.GetUserName().empty())
     {
       if (thumbURL.GetUserName() == "music")
         additional_info = "music";
@@ -142,7 +142,7 @@ CStdString CTextureCacheJob::DecodeImageURL(const CStdString &url, unsigned int 
     image = thumbURL.GetHostName();
     CURL::Decode(image);
 
-    CStdString optionString = thumbURL.GetOptions().Mid(1);
+    CStdString optionString = thumbURL.GetOptions().substr(1);
     optionString.TrimRight('/'); // in case XBMC adds a slash
 
     std::vector<CStdString> options;

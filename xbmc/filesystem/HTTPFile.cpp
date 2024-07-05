@@ -46,7 +46,7 @@ ssize_t CHTTPFile::Write(const void* lpBuf, size_t uiBufSize)
   if (!m_openedforwrite)
     return -1;
 
-  CStdString myPostData((char*) lpBuf);
+  std::string myPostData((char*) lpBuf);
   if (myPostData.length() != uiBufSize)
     return -1;
 

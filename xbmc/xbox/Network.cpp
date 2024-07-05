@@ -666,3 +666,16 @@ bool CNetwork::WakeOnLan(char* mac)
   CLog::Log(LOGINFO, "%s - Magic packet send to '%s'", __FUNCTION__, mac);
   return true;
 }
+
+bool CNetwork::IsLocalHost(const std::string& hostname)
+{
+  if (hostname.empty())
+    return false;
+
+  if (StringUtils::StartsWith(hostname, "127.")
+      || (hostname == "::1")
+      || StringUtils::EqualsNoCase(hostname, "localhost"))
+    return true;
+
+  return m_networkinfo.ip == hostname;
+}

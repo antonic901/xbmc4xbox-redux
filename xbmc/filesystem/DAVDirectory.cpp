@@ -178,11 +178,11 @@ bool CDAVDirectory::GetDirectory(const CURL& url, CFileItemList &items)
         URIUtils::AddSlashAtEnd(itemPath);
 
       // Add back protocol options
-      if (!url2.GetProtocolOptions().IsEmpty())
+      if (!url2.GetProtocolOptions().empty())
         itemPath += "|" + url2.GetProtocolOptions();
       item.SetPath(itemPath);
 
-      if (!item.GetPath().Equals(url.Get()))
+      if (!item.IsURL(url))
       {
         CFileItemPtr pItem(new CFileItem(item));
         items.Add(pItem);

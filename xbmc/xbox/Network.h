@@ -79,6 +79,9 @@ public:
   void NetworkMessage(EMESSAGE message, DWORD dwParam);
 
   struct network_info m_networkinfo;
+
+   // Return true if given name or ip address corresponds to localhost
+   bool IsLocalHost(const std::string& hostname);
 protected:
   bool  m_networkup;  /* true if network is available */
   bool  m_inited;     /* true if initalized() has been called */

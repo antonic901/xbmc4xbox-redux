@@ -19,59 +19,130 @@
  *
  */
 
-#include "utils/StdString.h"
+#include <stdlib.h>
+#include <string>
 #include "utils/UrlOptions.h"
+
+#ifdef TARGET_WINDOWS
+#undef SetPort // WIN32INCLUDES this is defined as SetPortA in WinSpool.h which is being included _somewhere_
+#endif
 
 class CURL
 {
 public:
-  explicit CURL(const CStdString& strURL);
-  CURL();
+  explicit CURL(const std::string& strURL)
+  {
+    Parse(strURL);
+  }
+
+  CURL():m_iPort(0) {}
   virtual ~CURL(void);
 
   // explicit equals operator for std::string comparison
   bool operator==(const std::string &url) const { return Get() == url; }
 
   void Reset();
-  void Parse(const CStdString& strURL);
-  void SetFileName(const CStdString& strFileName);
-  void SetHostName(const CStdString& strHostName);
-  void SetUserName(const CStdString& strUserName);
-  void SetPassword(const CStdString& strPassword);
-  void SetProtocol(const CStdString& strProtocol);
-  void SetOptions(const CStdString& strOptions);
-  void SetProtocolOptions(const CStdString& strOptions);
-  void SetPort(int port);
+  void Parse(const std::string& strURL);
+  void SetFileName(const std::string& strFileName);
+  void SetHostName(const std::string& strHostName)
+  {
+    m_strHostName = strHostName;
+  }
 
-  bool HasPort() const;
+  void SetUserName(const std::string& strUserName)
+  {
+    m_strUserName = strUserName;
+  }
 
-  int GetPort() const;
-  const std::string& GetHostName() const;
-  const CStdString& GetDomain() const;
-  const CStdString& GetUserName() const;
-  const CStdString& GetPassWord() const;
-  const std::string& GetFileName() const;
-  const CStdString& GetProtocol() const;
-  const CStdString GetTranslatedProtocol() const;
-  const CStdString& GetFileType() const;
-  const std::string& GetShareName() const;
-  const CStdString& GetOptions() const;
-  const CStdString& GetProtocolOptions() const;
-  const CStdString GetFileNameWithoutPath() const; /* return the filename excluding path */
+  void SetPassword(const std::string& strPassword)
+  {
+    m_strPassword = strPassword;
+  }
+
+  void SetProtocol(const std::string& strProtocol);
+  void SetOptions(const std::string& strOptions);
+  void SetProtocolOptions(const std::string& strOptions);
+  void SetPort(int port)
+  {
+    m_iPort = port;
+  }
+
+  bool HasPort() const
+  {
+    return (m_iPort != 0);
+  }
+
+  int GetPort() const
+  {
+    return m_iPort;
+  }
+
+  const std::string& GetHostName() const
+  {
+    return m_strHostName;
+  }
+
+  const std::string& GetDomain() const
+  {
+    return m_strDomain;
+  }
+
+  const std::string& GetUserName() const
+  {
+    return m_strUserName;
+  }
+
+  const std::string& GetPassWord() const
+  {
+    return m_strPassword;
+  }
+
+  const std::string& GetFileName() const
+  {
+    return m_strFileName;
+  }
+
+  const std::string& GetProtocol() const
+  {
+    return m_strProtocol;
+  }
+
+  const std::string GetTranslatedProtocol() const;
+
+  const std::string& GetFileType() const
+  {
+    return m_strFileType;
+  }
+
+  const std::string& GetShareName() const
+  {
+      return m_strShareName;
+  }
+
+  const std::string& GetOptions() const
+  {
+    return m_strOptions;
+  }
+
+  const std::string& GetProtocolOptions() const
+  {
+    return m_strProtocolOptions;
+  }
+
+  const std::string GetFileNameWithoutPath() const; /* return the filename excluding path */
 
   char GetDirectorySeparator() const;
 
-  CStdString Get() const;
+  std::string Get() const;
   std::string GetWithoutOptions() const;
   std::string GetWithoutUserDetails(bool redact = false) const;
   std::string GetWithoutFilename() const;
   std::string GetRedacted() const;
   static std::string GetRedacted(const std::string& path);
   bool IsLocal() const;
-  static bool IsFileOnly(const CStdString &url); ///< return true if there are no directories in the url.
-  static bool IsFullPath(const CStdString &url); ///< return true if the url includes the full path
-  static void Decode(CStdString& strURLData);
-  static void Encode(CStdString& strURLData);
+  bool IsLocalHost() const;
+  static bool IsFileOnly(const std::string &url); ///< return true if there are no directories in the url.
+  static bool IsFullPath(const std::string &url); ///< return true if the url includes the full path
   static std::string Decode(const std::string& strURLData);
   static std::string Encode(const std::string& strURLData);
 
@@ -104,33 +175,33 @@ public:
   {
     return m_strFileType == type;
   }
-  
-  void GetOptions(std::map<CStdString, CStdString> &options) const;
-  bool HasOption(const CStdString &key) const;
-  bool GetOption(const CStdString &key, CStdString &value) const;
-  CStdString GetOption(const CStdString &key) const;
-  void SetOption(const CStdString &key, const CStdString &value);
-  void RemoveOption(const CStdString &key);
+
+  void GetOptions(std::map<std::string, std::string> &options) const;
+  bool HasOption(const std::string &key) const;
+  bool GetOption(const std::string &key, std::string &value) const;
+  std::string GetOption(const std::string &key) const;
+  void SetOption(const std::string &key, const std::string &value);
+  void RemoveOption(const std::string &key);
 
   void GetProtocolOptions(std::map<std::string, std::string> &options) const;
-  bool HasProtocolOption(const CStdString &key) const;
-  bool GetProtocolOption(const CStdString &key, CStdString &value) const;
-  CStdString GetProtocolOption(const CStdString &key) const;
-  void SetProtocolOption(const CStdString &key, const CStdString &value);
-  void RemoveProtocolOption(const CStdString &key);
+  bool HasProtocolOption(const std::string &key) const;
+  bool GetProtocolOption(const std::string &key, std::string &value) const;
+  std::string GetProtocolOption(const std::string &key) const;
+  void SetProtocolOption(const std::string &key, const std::string &value);
+  void RemoveProtocolOption(const std::string &key);
 
 protected:
   int m_iPort;
   std::string m_strHostName;
   std::string m_strShareName;
-  CStdString m_strDomain;
-  CStdString m_strUserName;
-  CStdString m_strPassword;
+  std::string m_strDomain;
+  std::string m_strUserName;
+  std::string m_strPassword;
   std::string m_strFileName;
-  CStdString m_strProtocol;
-  CStdString m_strFileType;
-  CStdString m_strOptions;
-  CStdString m_strProtocolOptions;
+  std::string m_strProtocol;
+  std::string m_strFileType;
+  std::string m_strOptions;
+  std::string m_strProtocolOptions;
   CUrlOptions m_options;
   CUrlOptions m_protocolOptions;
 };

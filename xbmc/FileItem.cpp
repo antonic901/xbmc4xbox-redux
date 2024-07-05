@@ -911,13 +911,13 @@ bool CFileItem::IsHD() const
 bool CFileItem::IsMusicDb() const
 {
   CURL url(m_strPath);
-  return url.GetProtocol().Equals("musicdb");
+  return url.IsProtocol("musicdb");
 }
 
 bool CFileItem::IsVideoDb() const
 {
   CURL url(m_strPath);
-  return url.GetProtocol().Equals("videodb");
+  return url.IsProtocol("videodb");
 }
 
 bool CFileItem::IsVirtualDirectoryRoot() const
@@ -928,7 +928,7 @@ bool CFileItem::IsVirtualDirectoryRoot() const
 bool CFileItem::IsMemoryUnit() const
 {
   CURL url(m_strPath);
-  return url.GetProtocol().Left(3).Equals("mem");
+  return url.GetProtocol().substr(0, 3) == "mem";
 }
 
 bool CFileItem::IsRemovable() const
