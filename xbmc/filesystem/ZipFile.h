@@ -20,14 +20,10 @@
  *
  */
 
-
 #include "IFile.h"
-#include "zlib/zlib.h"
-#include "utils/log.h"
-#include "GUIWindowManager.h"
-#include "dialogs/GUIDialogProgress.h"
-#include "filesystem/File.h"
-#include "filesystem/ZipManager.h"
+#include <zlib/zlib.h>
+#include "File.h"
+#include "ZipManager.h"
 
 namespace XFILE
 {
@@ -36,11 +32,12 @@ namespace XFILE
   public:
     CZipFile();
     virtual ~CZipFile();
-  
+
     virtual int64_t GetPosition();
     virtual int64_t GetLength();
     virtual bool Open(const CURL& url);
     virtual bool Exists(const CURL& url);
+    virtual int Stat(struct __stat64* buffer);
     virtual int Stat(const CURL& url, struct __stat64* buffer);
     virtual ssize_t Read(void* lpBuf, size_t uiBufSize);
     //virtual bool ReadString(char *szLine, int iLineLength);
@@ -57,8 +54,6 @@ namespace XFILE
     bool InitDecompress();
     bool FillBuffer();
     void DestroyBuffer(void* lpBuffer, int iBufSize);
-    void StartProgressBar();
-    void StopProgressBar();
     CFile mFile;
     SZipEntry mZipItem;
     int64_t m_iFilePos; // position in _uncompressed_ data read
@@ -71,8 +66,7 @@ namespace XFILE
     size_t m_iDataInStringBuffer;
     int m_iRead;
     bool m_bFlush;
-    bool m_bUseProgressBar;
-    CGUIDialogProgress* m_dlgProgress; // used if seeking is required..
+    bool m_bCached;
   };
 }
 

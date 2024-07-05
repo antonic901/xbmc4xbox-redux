@@ -1593,6 +1593,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\DAVFile.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\filesystem\Directorization.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\Directory.cpp">
 				</File>
 				<File

@@ -23,19 +23,23 @@
 
 // See http://www.pkware.com/documents/casestudies/APPNOTE.TXT
 #define ZIP_LOCAL_HEADER 0x04034b50
+#define ZIP_DATA_RECORD_HEADER 0x08074b50
 #define ZIP_CENTRAL_HEADER 0x02014b50
 #define ZIP_END_CENTRAL_HEADER 0x06054b50
+#define ZIP_SPLIT_ARCHIVE_HEADER 0x30304b50
 #define LHDR_SIZE 30
 #define CHDR_SIZE 46
 #define ECDREC_SIZE 22
 
-#include  "utils/StdString.h"
-
+#include <stdint.h>
 #include <memory.h>
+#include <string>
 #include <vector>
 #include <map>
 
 class CURL;
+
+static const std::string PATH_TRAVERSAL("(^|\\/|\\\\)\\.\\.($|\\/|\\\\)");
 
 struct SZipEntry {
   unsigned int header;
@@ -74,7 +78,7 @@ struct SZipEntry {
     offset = 0;
     name[0] = '\0';
   }
-  
+
   SZipEntry(const SZipEntry& SNewItem)
   {
     memcpy(&header,&SNewItem.header,sizeof(unsigned int));
@@ -104,14 +108,14 @@ public:
 
   bool GetZipList(const CURL& url, std::vector<SZipEntry>& items);
   bool GetZipEntry(const CURL& url, SZipEntry& item);
-  bool ExtractArchive(const CStdString& strArchive, const CStdString& strPath);
-  bool ExtractArchive(const CURL& archive, const CStdString& strPath);
-  void release(const CStdString& strPath); // release resources used by list zip
+  bool ExtractArchive(const std::string& strArchive, const std::string& strPath);
+  bool ExtractArchive(const CURL& archive, const std::string& strPath);
+  void release(const std::string& strPath); // release resources used by list zip
   static void readHeader(const char* buffer, SZipEntry& info);
   static void readCHeader(const char* buffer, SZipEntry& info);
 private:
-  std::map<CStdString,std::vector<SZipEntry> > mZipMap;
-  std::map<CStdString,int64_t> mZipDate;
+  std::map<std::string,std::vector<SZipEntry> > mZipMap;
+  std::map<std::string,int64_t> mZipDate;
 };
 
 extern CZipManager g_ZipManager;

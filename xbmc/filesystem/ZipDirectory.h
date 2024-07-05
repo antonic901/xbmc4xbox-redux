@@ -19,10 +19,9 @@
  *
  */
 
-
 #include "IFileDirectory.h"
 
-namespace XFILE 
+namespace XFILE
 {
   class CZipDirectory : public IFileDirectory
   {
