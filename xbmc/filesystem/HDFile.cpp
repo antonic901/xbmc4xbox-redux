@@ -163,7 +163,7 @@ ssize_t CFileHD::Read(void *lpBuf, size_t uiBufSize)
 }
 
 //*********************************************************************************************
-int CFileHD::Write(const void *lpBuf, int64_t uiBufSize)
+ssize_t CFileHD::Write(const void* lpBuf, size_t uiBufSize)
 {
   if (!m_hFile.isValid())
     return 0;

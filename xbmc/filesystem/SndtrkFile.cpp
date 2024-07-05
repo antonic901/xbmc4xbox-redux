@@ -142,10 +142,10 @@ int64_t CSndtrkFile::GetPosition()
 }
 
 
-int CSndtrkFile::Write(const void* lpBuf, int64_t uiBufSize)
+ssize_t CSndtrkFile::Write(const void* lpBuf, size_t uiBufSize)
 {
   if (!m_hFile.isValid()) return -1;
   DWORD dwNumberOfBytesWritten = 0;
   WriteFile((HANDLE)m_hFile, lpBuf, (DWORD)uiBufSize, &dwNumberOfBytesWritten, NULL);
-  return (int)dwNumberOfBytesWritten;
+  return (ssize_t)dwNumberOfBytesWritten;
 }

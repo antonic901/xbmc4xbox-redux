@@ -324,7 +324,7 @@ void CFileCache::Process()
       continue;
     }
 
-    int iRead = 0;
+    ssize_t iRead = 0;
     if (!cacheReachEOF)
       iRead = m_source.Read(buffer.get(), maxWrite);
     if (iRead == 0)
@@ -445,6 +445,9 @@ ssize_t CFileCache::Read(void* lpBuf, size_t uiBufSize)
     return -1;
   }
   int64_t iRc;
+
+  if (uiBufSize > SSIZE_MAX)
+    uiBufSize = SSIZE_MAX;
 
 retry:
   // attempt to read

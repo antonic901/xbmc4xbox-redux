@@ -514,7 +514,7 @@ void CSmbFile::Close()
   m_fd = -1;
 }
 
-int CSmbFile::Write(const void* lpBuf, int64_t uiBufSize)
+ssize_t CSmbFile::Write(const void* lpBuf, size_t uiBufSize)
 {
   if (m_fd == -1) return -1;
   DWORD dwNumberOfBytesWritten = 0;
@@ -524,7 +524,7 @@ int CSmbFile::Write(const void* lpBuf, int64_t uiBufSize)
   CSingleLock lock(smb);
   dwNumberOfBytesWritten = smbc_write(m_fd, (void*)lpBuf, (DWORD)uiBufSize);
 
-  return (int)dwNumberOfBytesWritten;
+  return dwNumberOfBytesWritten;
 }
 
 bool CSmbFile::Delete(const CURL& url)

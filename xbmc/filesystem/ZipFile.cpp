@@ -443,9 +443,9 @@ bool CZipFile::ReadString(char* szLine, int iLineLength)
 
 bool CZipFile::FillBuffer()
 {
-  unsigned int sToRead = 65535;
+  ssize_t sToRead = 65535;
   if (m_iZipFilePos+65535 > mZipItem.csize)
-    sToRead = static_cast<int>(mZipItem.csize-m_iZipFilePos);
+    sToRead = mZipItem.csize-m_iZipFilePos;
 
   if (sToRead <= 0)
     return false; // eof!

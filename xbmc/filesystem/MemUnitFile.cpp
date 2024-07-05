@@ -74,7 +74,7 @@ ssize_t CMemUnitFile::Read(void *lpBuf, size_t uiBufSize)
   return m_fileSystem->Read(lpBuf, uiBufSize);
 }
 
-int CMemUnitFile::Write(const void* lpBuf, int64_t uiBufSize)
+ssize_t CMemUnitFile::Write(const void* lpBuf, size_t uiBufSize)
 {
   if (!m_fileSystem) return 0;
   return m_fileSystem->Write(lpBuf, uiBufSize);
