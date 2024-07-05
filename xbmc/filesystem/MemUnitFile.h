@@ -45,7 +45,7 @@ namespace XFILE
 
   protected:
     IFileSystem *GetFileSystem(const CURL &url);
-    CStdString   GetPath(const CURL& url);
+    std::string  GetPath(const CURL& url);
     IFileSystem *m_fileSystem;
   };
 };

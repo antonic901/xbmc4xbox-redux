@@ -133,7 +133,7 @@ ssize_t CRTVFile::Read(void *lpBuf, size_t uiBufSize)
   if(m_filePos + lenread > m_fileSize)
   {
     CLog::Log(LOGWARNING, "%s - RTV library read passed filesize, returning last chunk", __FUNCTION__);
-    lenread = (m_fileSize - m_filePos);
+    lenread = (ssize_t)(m_fileSize - m_filePos);
     m_filePos = m_fileSize;
     return lenread;
   }  

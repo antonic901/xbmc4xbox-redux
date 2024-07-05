@@ -19,6 +19,7 @@
  */
 
 #include "RSSDirectory.h"
+
 #include "FileItem.h"
 #include "CurlFile.h"
 #include "settings/AdvancedSettings.h"
@@ -32,6 +33,7 @@
 #include "video/VideoInfoTag.h"
 #include "utils/log.h"
 #include "threads/SingleLock.h"
+#include "URL.h"
 
 using namespace XFILE;
 using namespace std;

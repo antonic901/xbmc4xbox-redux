@@ -39,6 +39,7 @@
 #include "utils/StringUtils.h"
 #include "messaging/ApplicationMessenger.h"
 #include "URL.h"
+#include "URL.h"
 
 using namespace XFILE;
 using namespace std;

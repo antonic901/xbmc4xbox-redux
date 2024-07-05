@@ -27,6 +27,7 @@
 #include "cores/dvdplayer/DVDStreamInfo.h"
 #include "cores/dvdplayer/DVDCodecs/DVDFactoryCodec.h"
 #include "utils/log.h"
+#include "URL.h"
 
 #include "AudioDecoder.h"
 

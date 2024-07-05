@@ -115,7 +115,6 @@ bool CScraperUrl::ParseString(CStdString strUrl)
   if (strUrl.IsEmpty())
     return false;
 
-  // ok, now parse the xml file
   if (!XMLUtils::HasUTF8Declaration(strUrl))
     g_charsetConverter.unknownToUTF8(strUrl);
 
@@ -198,14 +197,12 @@ bool CScraperUrl::Get(const SUrlEntry& scrURL, std::string& strHTML, XFILE::CCur
     if (XFILE::CFile::Exists(strCachePath))
     {
       XFILE::CFile file;
-      file.Open(strCachePath);
-      char* temp = new char[(int)file.GetLength()];
-      file.Read(temp,file.GetLength());
-      strHTML.clear();
-      strHTML.append(temp,temp+file.GetLength());
-      file.Close();
-      delete[] temp;
-      return true;
+      XFILE::auto_buffer buffer;
+      if (file.LoadFile(strCachePath, buffer) > 0)
+      {
+        strHTML.assign(buffer.get(), buffer.length());
+        return true;
+      }
     }
   }
 
@@ -225,6 +222,7 @@ bool CScraperUrl::Get(const SUrlEntry& scrURL, std::string& strHTML, XFILE::CCur
       return false;
 
   strHTML = strHTML1;
+  std::string fileCharset(http.GetServerReportedCharset());
 
   if (scrURL.m_url.Find(".zip") > -1 )
   {
@@ -233,9 +231,17 @@ bool CScraperUrl::Get(const SUrlEntry& scrURL, std::string& strHTML, XFILE::CCur
     int iSize = file.UnpackFromMemory(strBuffer,strHTML,scrURL.m_isgz);
     if (iSize)
     {
+      fileCharset.clear();
       strHTML.clear();
       strHTML.append(strBuffer.c_str(),strBuffer.data()+iSize);
     }
+  }
+
+  if (!fileCharset.empty() && fileCharset != "UTF-8")
+  {
+    std::string converted;
+    if (g_charsetConverter.ToUtf8(fileCharset, strHTML, converted) && !converted.empty())
+      strHTML = converted;
   }
 
   if (!scrURL.m_cache.IsEmpty())

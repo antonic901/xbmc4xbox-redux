@@ -27,6 +27,7 @@
 #include "settings/AdvancedSettings.h"
 #include "utils/log.h"
 #include "utils/XBMCTinyXML.h"
+#include "URL.h"
 
 extern "C"
 {

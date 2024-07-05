@@ -21,6 +21,8 @@
 #ifndef ISO9660_H
 #define ISO9660_H
 #pragma once
+#include <vector>
+
 #include "xbox/IoSupport.h"
 #include "IFile.h"
 #include "system.h"

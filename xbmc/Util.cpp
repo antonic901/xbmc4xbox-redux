@@ -102,6 +102,7 @@
 #include "utils/URIUtils.h"
 #include "cores/dvdplayer/DVDSubtitles/DVDSubtitleTagSami.h"
 #include "cores/dvdplayer/DVDSubtitles/DVDSubtitleStream.h"
+#include "URL.h"
 #include "LocalizeStrings.h"
 #include "utils/md5.h"
 #include "utils/CharsetConverter.h"

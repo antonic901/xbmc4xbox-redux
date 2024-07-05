@@ -20,6 +20,7 @@
 
 #include "utils/log.h"
 #include "TimidityCodec.h"
+#include "URL.h"
 #include "cores/DllLoader/DllLoader.h"
 #include "filesystem/File.h"
 

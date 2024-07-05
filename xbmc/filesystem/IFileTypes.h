@@ -48,6 +48,9 @@ namespace XFILE
 /* indicate that caller will do write operations before reading  */
   static const unsigned int READ_AFTER_WRITE = 0x80;
 
+/* indicate that caller want to reopen a file if its already open  */
+  static const unsigned int READ_REOPEN = 0x100;
+
 struct SNativeIoControl
 {
   int   request;

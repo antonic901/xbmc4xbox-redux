@@ -29,6 +29,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#ifdef _XBOX
+#include <xtl.h>
+#endif
 #include "IFile.h"
 
 typedef struct rtv_data * RTVD;

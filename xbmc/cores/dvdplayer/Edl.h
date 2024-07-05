@@ -23,7 +23,6 @@
 
 #include <vector>
 #include "utils/StdString.h"
-#include "URL.h"
 #include "xbox/PlatformDefs.h"
 
 class CEdl

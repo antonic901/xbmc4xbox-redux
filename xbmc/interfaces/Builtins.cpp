@@ -62,6 +62,7 @@
 #include "settings/SkinSettings.h"
 #include "utils/StringUtils.h"
 #include "Util.h"
+#include "URL.h"
 #include "video/VideoDatabase.h"
 #include "music/MusicDatabase.h"
 

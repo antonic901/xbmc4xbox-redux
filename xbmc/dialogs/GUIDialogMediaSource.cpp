@@ -36,6 +36,7 @@
 #include "LocalizeStrings.h"
 #include "utils/StringUtils.h"
 #include "PasswordManager.h"
+#include "URL.h"
 
 using namespace std;
 using namespace XFILE;

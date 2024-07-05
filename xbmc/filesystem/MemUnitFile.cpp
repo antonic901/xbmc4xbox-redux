@@ -22,6 +22,7 @@
 #include "utils/MemoryUnitManager.h"
 #include "MemoryUnits/IFileSystem.h"
 #include "MemoryUnits/IDevice.h"
+#include "utils/StringUtils.h"
 #include "URL.h"
 
 using namespace XFILE;
@@ -163,9 +164,9 @@ IFileSystem *CMemUnitFile::GetFileSystem(const CURL& url)
   return g_memoryUnitManager.GetFileSystem(unit);
 }
 
-CStdString CMemUnitFile::GetPath(const CURL& url)
+std::string CMemUnitFile::GetPath(const CURL& url)
 {
-  CStdString path = url.GetFileName();
-  path.Replace("\\", "/");
+  std::string path = url.GetFileName();
+  StringUtils::Replace(path, "\\", "/");
   return path;
 }

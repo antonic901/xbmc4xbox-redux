@@ -27,6 +27,7 @@
 #include "GUIUserMessages.h"
 #include "Application.h"
 #include "Util.h"
+#include "URL.h"
 #include "utils/MathUtils.h"
 #include "utils/SeekHandler.h"
 #include "utils/TuxBoxUtil.h"
