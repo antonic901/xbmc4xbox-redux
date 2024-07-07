@@ -19,7 +19,7 @@
  */
 
 #include "system.h"
-#include "interfaces/Builtins.h"
+#include "interfaces/builtins/Builtins.h"
 #include "ButtonTranslator.h"
 #include "profiles/ProfilesManager.h"
 #include "guilib/Key.h"
@@ -767,7 +767,7 @@ bool CButtonTranslator::TranslateActionString(const char *szAction, int &action)
   action = ACTION_NONE;
   CStdString strAction = szAction;
   strAction.ToLower();
-  if (CBuiltins::HasCommand(strAction)) action = ACTION_BUILT_IN_FUNCTION;
+  if (CBuiltins::GetInstance().HasCommand(strAction)) action = ACTION_BUILT_IN_FUNCTION;
   
   for (unsigned int index=0;index < sizeof(actions)/sizeof(actions[0]);++index)
   {

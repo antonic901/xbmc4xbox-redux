@@ -27,7 +27,7 @@
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "guilib/Key.h"
-#include "interfaces/Builtins.h"
+#include "interfaces/builtins/Builtins.h"
 #include "music/MusicDatabase.h"
 #include "messaging/ApplicationMessenger.h"
 #include "messaging/helpers/DialogHelper.h"
@@ -291,14 +291,11 @@ void CMediaSettings::OnSettingAction(const CSetting *setting)
   }
   else */if (settingId == "musiclibrary.cleanup")
   {
-    CMusicDatabase musicdatabase;
-    musicdatabase.Clean();
-    CUtil::DeleteMusicDatabaseDirectoryCache();
-    /*if (HELPERS::ShowYesNoDialogText(313, 333) == DialogResponse::YES)
-      g_application.StartMusicCleanup(true);*/
+    if (HELPERS::ShowYesNoDialogText(313, 333) == HELPERS::YES)
+      g_application.StartMusicCleanup(true);
   }
   else if (settingId == "musiclibrary.export")
-    CBuiltins::Execute("exportlibrary(music)");
+    CBuiltins::GetInstance().Execute("exportlibrary(music)");
   else if (settingId == "musiclibrary.import")
   {
     CStdString path;
@@ -314,11 +311,11 @@ void CMediaSettings::OnSettingAction(const CSetting *setting)
   }
   else if (settingId == "videolibrary.cleanup")
   {
-    if (HELPERS::ShowYesNoDialogText(313, 333) == YES)
-      g_application.StartVideoCleanup();
+    if (HELPERS::ShowYesNoDialogText(313, 333) == HELPERS::YES)
+      g_application.StartVideoCleanup(true);
   }
   else if (settingId == "videolibrary.export")
-    CBuiltins::Execute("exportlibrary(video)");
+    CBuiltins::GetInstance().Execute("exportlibrary(video)");
   else if (settingId == "videolibrary.import")
   {
     CStdString path;

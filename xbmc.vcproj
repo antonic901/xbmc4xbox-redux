@@ -2748,34 +2748,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\interfaces\AnnouncementManager.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\interfaces\Builtins.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\interfaces\Builtins.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\interfaces\IActionListener.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\interfaces\IAnnouncer.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\interfaces\info\InfoBool.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\interfaces\info\InfoBool.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\interfaces\info\InfoExpression.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\interfaces\info\InfoExpression.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\interfaces\info\SkinVariable.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\interfaces\info\SkinVariable.h">
 				</File>
 				<Filter
 					Name="legacy"
@@ -3337,6 +3313,122 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\interfaces\generic\ScriptInvocationManager.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="builtins"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\AddonBuiltins.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\AddonBuiltins.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\ApplicationBuiltins.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\ApplicationBuiltins.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\Builtins.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\Builtins.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\GUIBuiltins.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\GUIBuiltins.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\GUIContainerBuiltins.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\GUIContainerBuiltins.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\GUIControlBuiltins.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\GUIControlBuiltins.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\LibraryBuiltins.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\LibraryBuiltins.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\OpticalBuiltins.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\OpticalBuiltins.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\PictureBuiltins.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\PictureBuiltins.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\PlayerBuiltins.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\PlayerBuiltins.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\ProfileBuiltins.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\ProfileBuiltins.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\SkinBuiltins.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\SkinBuiltins.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\SystemBuiltins.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\SystemBuiltins.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\WeatherBuiltins.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\WeatherBuiltins.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\XboxBuiltins.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\builtins\XboxBuiltins.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="info"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\interfaces\info\InfoBool.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\info\InfoBool.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\info\InfoExpression.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\info\InfoExpression.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\info\SkinVariable.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\info\SkinVariable.h">
 					</File>
 				</Filter>
 			</Filter>

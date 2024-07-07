@@ -232,6 +232,7 @@ public:
   void StartVideoCleanup(bool userInitiated = true);
 
   void StartVideoScan(const CStdString &path, bool userInitiated = true, bool scanAll = false);
+  void StartMusicCleanup(bool userInitiated = true);
   void StartMusicScan(const CStdString &path, bool userInitiated = true, int flags = 0);
   void StartMusicAlbumScan(const CStdString& strDirectory, bool refresh=false);
   void StartMusicArtistScan(const CStdString& strDirectory, bool refresh=false);

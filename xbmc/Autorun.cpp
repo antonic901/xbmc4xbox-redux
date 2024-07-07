@@ -41,7 +41,7 @@
 #include "cdrip/CDDARipper.h"
 #endif
 #ifdef _XBOX
-#include "interfaces/Builtins.h"
+#include "interfaces/builtins/Builtins.h"
 #include "utils/Trainer.h"
 #include "xbox/xbeheader.h"
 #include "ProgramDatabase.h"
@@ -273,7 +273,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
           bPlaying = true;
           CStdString strExec;
           strExec.Format("XBMC.RecursiveSlideShow(%s)", pItem->GetPath().c_str());
-          CBuiltins::Execute(strExec);
+          CBuiltins::GetInstance().Execute(strExec);
           return true;
         }
       }
@@ -349,7 +349,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
         bPlaying = true;
         CStdString strExec;
         strExec.Format("XBMC.RecursiveSlideShow(%s)", strDrive.c_str());
-        CBuiltins::Execute(strExec);
+        CBuiltins::GetInstance().Execute(strExec);
         break;
       }
     }

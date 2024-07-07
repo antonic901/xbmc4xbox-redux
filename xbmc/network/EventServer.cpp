@@ -22,7 +22,7 @@
 
 #ifdef HAS_EVENT_SERVER
 
-#include "interfaces/Builtins.h"
+#include "interfaces/builtins/Builtins.h"
 #include "EventServer.h"
 #include "EventPacket.h"
 #include "EventClient.h"
@@ -324,7 +324,7 @@ bool CEventServer::ExecuteNextAction()
       switch(actionEvent.actionType)
       {
       case AT_EXEC_BUILTIN:
-        CBuiltins::Execute(actionEvent.actionName);
+        CBuiltins::GetInstance().Execute(actionEvent.actionName);
         break;
 
       case AT_BUTTON:

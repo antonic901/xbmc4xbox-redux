@@ -1,7 +1,6 @@
 #pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
+ *      Copyright (C) 2005-2015 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -20,18 +19,12 @@
  *
  */
 
-#include "utils/StdString.h"
-#include <string>
-#include <vector>
+#include "Builtins.h"
 
-class CBuiltins
+//! \brief Class providing weather related built-in commands.
+class CXboxBuiltins
 {
 public:
-  static bool HasCommand(const CStdString& execString);
-  static void GetHelp(CStdString &help);
-  static int Execute(const CStdString& execString);
-
-private:
-  static bool ActivateWindow(int iWindowID, const std::vector<std::string>& params = std::vector<std::string>(), bool swappingWindows = false);
+  //! \brief Returns the map of operations.
+  CBuiltins::CommandMap GetOperations() const;
 };
-

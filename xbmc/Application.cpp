@@ -22,7 +22,7 @@
 #include "threads/SystemClock.h"
 #include "system.h"
 #include "Application.h"
-#include "interfaces/Builtins.h"
+#include "interfaces/builtins/Builtins.h"
 #include "utils/Variant.h"
 #include "utils/Splash.h"
 #include "LangInfo.h"
@@ -2214,7 +2214,7 @@ bool CApplication::OnAction(CAction &action)
   // built in functions : execute the built-in
   if (action.GetID() == ACTION_BUILT_IN_FUNCTION)
   {
-    CBuiltins::Execute(action.GetName());
+    CBuiltins::GetInstance().Execute(action.GetName());
     m_navigationTimer.StartZero();
     return true;
   }
@@ -2492,7 +2492,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
 
   case TMSG_QUIT:
 #ifdef _XBOX
-    CBuiltins::Execute("XBMC.Dashboard()");
+    CBuiltins::GetInstance().Execute("XBMC.Dashboard()");
 #else
     Stop(EXITCODE_QUIT);
 #endif
@@ -2714,7 +2714,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
     break;
 
   case TMSG_EXECUTE_BUILT_IN:
-    CBuiltins::Execute(pMsg->strParam.c_str());
+    CBuiltins::GetInstance().Execute(pMsg->strParam.c_str());
     break;
 
   case TMSG_PICTURE_SHOW:
@@ -5154,8 +5154,8 @@ bool CApplication::ExecuteXBMCAction(std::string actionStr, const CGUIListItemPt
     actionStr = CGUIInfoLabel::GetLabel(actionStr);
 
   // user has asked for something to be executed
-  if (CBuiltins::HasCommand(actionStr))
-    CBuiltins::Execute(actionStr);
+  if (CBuiltins::GetInstance().HasCommand(actionStr))
+    CBuiltins::GetInstance().Execute(actionStr);
   else
   {
     // try translating the action from our ButtonTranslator
@@ -5820,6 +5820,20 @@ void CApplication::StartVideoCleanup(bool userInitiated /* = true */)
 void CApplication::StartVideoScan(const CStdString &strDirectory, bool userInitiated /* = true */, bool scanAll)
 {
   CVideoLibraryQueue::GetInstance().ScanLibrary(strDirectory, scanAll, userInitiated);
+}
+
+void CApplication::StartMusicCleanup(bool userInitiated /* = true */)
+{
+  if (m_musicInfoScanner->IsScanning())
+    return;
+
+  if (userInitiated)
+    m_musicInfoScanner->CleanDatabase(true);
+  else
+  {
+    m_musicInfoScanner->ShowDialog(false);
+    m_musicInfoScanner->StartCleanDatabase();
+  }
 }
 
 void CApplication::StartMusicScan(const CStdString &strDirectory, bool userInitiated /* = true */, int flags)

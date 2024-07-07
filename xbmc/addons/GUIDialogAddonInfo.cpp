@@ -44,7 +44,7 @@
 #include "utils/log.h"
 #include "utils/Variant.h"
 #include "Util.h"
-#include "interfaces/Builtins.h"
+#include "interfaces/builtins/Builtins.h"
 
 #include <functional>
 #include <utility>
@@ -347,7 +347,7 @@ void CGUIDialogAddonInfo::OnSelect()
   Close();
 
   if (CanOpen() || CanRun())
-    CBuiltins::Execute("RunAddon(" + m_localAddon->ID() + ")");
+    CBuiltins::GetInstance().Execute("RunAddon(" + m_localAddon->ID() + ")");
   else if (CanUse())
     CAddonSystemSettings::GetInstance().SetActive(m_localAddon->Type(), m_localAddon->ID());
 }

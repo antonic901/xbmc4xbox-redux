@@ -342,7 +342,7 @@ function Restart(){
 }
 
 function Shutdown(){
-	doCommand("Shutdown()");
+	doCommand("Powerdown()");
 }
 function ToDash(){
 	doCommand("Exit()");

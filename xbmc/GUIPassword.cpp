@@ -185,10 +185,10 @@ bool CGUIPassword::SetMasterLockMode(bool bDetails)
 bool CGUIPassword::IsProfileLockUnlocked(int iProfile)
 {
   bool bDummy;
-  return IsProfileLockUnlocked(iProfile,bDummy);
+  return IsProfileLockUnlocked(iProfile,bDummy,true);
 }
 
-bool CGUIPassword::IsProfileLockUnlocked(int iProfile, bool& bCanceled)
+bool CGUIPassword::IsProfileLockUnlocked(int iProfile, bool& bCanceled, bool prompt)
 {
   if (g_passwordManager.bMasterUser)
     return true;
@@ -196,12 +196,16 @@ bool CGUIPassword::IsProfileLockUnlocked(int iProfile, bool& bCanceled)
   if (iProfile == -1)
     iProfileToCheck = CProfilesManager::Get().GetCurrentProfileIndex();
   if (iProfileToCheck == 0)
-    return IsMasterLockUnlocked(true,bCanceled);
+    return IsMasterLockUnlocked(prompt,bCanceled);
   else
   {
     CProfile *profile = CProfilesManager::Get().GetProfile(iProfileToCheck);
     if (!profile)
       return false;
+
+    if (!prompt)
+      return (profile->getLockMode() == LOCK_MODE_EVERYONE);
+
     if (profile->getDate().IsEmpty() &&
        (CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE ||
         profile->getLockMode() == LOCK_MODE_EVERYONE))
