@@ -576,6 +576,9 @@ const infomap listitem_labels[]= {{ "thumb",            LISTITEM_THUMB },
                                   { "addondisclaimer",  LISTITEM_ADDON_DISCLAIMER },
                                   { "addonbroken",      LISTITEM_ADDON_BROKEN },
                                   { "addontype",        LISTITEM_ADDON_TYPE },
+                                  { "addoninstalldate", LISTITEM_ADDON_INSTALL_DATE },
+                                  { "addonlastupdated", LISTITEM_ADDON_LAST_UPDATED },
+                                  { "addonlastused",    LISTITEM_ADDON_LAST_USED },
 };
 
 const infomap visualisation[] =  {{ "locked",           VISUALISATION_LOCKED },
@@ -4516,6 +4519,18 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, std::s
   case LISTITEM_ADDON_TYPE:
     if (item->HasAddonInfo())
       return ADDON::TranslateType(item->GetAddonInfo()->Type(),true);
+    break;
+  case LISTITEM_ADDON_INSTALL_DATE:
+    if (item->HasAddonInfo())
+      return item->GetAddonInfo()->InstallDate().GetAsLocalizedDateTime();
+    break;
+  case LISTITEM_ADDON_LAST_UPDATED:
+    if (item->HasAddonInfo() && item->GetAddonInfo()->LastUpdated().IsValid())
+      return item->GetAddonInfo()->LastUpdated().GetAsLocalizedDateTime();
+    break;
+  case LISTITEM_ADDON_LAST_USED:
+    if (item->HasAddonInfo() && item->GetAddonInfo()->LastUsed().IsValid())
+      return item->GetAddonInfo()->LastUsed().GetAsLocalizedDateTime();
     break;
   }
 
