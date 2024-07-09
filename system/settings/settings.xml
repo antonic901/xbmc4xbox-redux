@@ -9,7 +9,9 @@
           <constraints>
             <addontype>xbmc.gui.skin</addontype>
           </constraints>
-          <control type="button" format="addon" />
+          <control type="button" format="addon">
+            <show more="true" details="true">installed</show>
+          </control>
         </setting>
         <setting id="lookandfeel.skinsettings" type="action" parent="lookandfeel.skin" label="21417" help="36104">
           <level>0</level>
@@ -303,7 +305,9 @@
           <updates>
             <update type="change" />
           </updates>
-          <control type="button" format="addon" />
+          <control type="button" format="addon">
+            <show more="true" details="true">installed</show>
+          </control>
         </setting>
         <setting id="screensaver.settings" parent="screensaver.mode" type="action" label="21417" help="36130">
           <level>0</level>
@@ -862,7 +866,9 @@
           <constraints>
             <addontype>xbmc.subtitle.module</addontype>
           </constraints>
-          <control type="button" format="addon" />
+          <control type="button" format="addon">
+            <show more="true" details="true">installed</show>
+          </control>
         </setting>
         <setting id="subtitles.movie" type="addon" label="24118" help="24119">
           <level>1</level>
@@ -870,7 +876,9 @@
           <constraints>
             <addontype>xbmc.subtitle.module</addontype>
           </constraints>
-          <control type="button" format="addon" />
+          <control type="button" format="addon">
+            <show more="true" details="true">installed</show>
+          </control>
         </setting>
         <setting id="subtitles.custompath" type="path" label="21366" help="36191">
           <level>1</level>
@@ -1382,7 +1390,9 @@
           <constraints>
             <addontype>xbmc.metadata.scraper.albums</addontype>
           </constraints>
-          <control type="button" format="addon" />
+          <control type="button" format="addon">
+            <show more="true" details="true">installed</show>
+          </control>
         </setting>
         <setting id="musiclibrary.artistsscraper" type="addon" label="20194" help="36258">
           <level>1</level>
@@ -1390,7 +1400,9 @@
           <constraints>
             <addontype>xbmc.metadata.scraper.artists</addontype>
           </constraints>
-          <control type="button" format="addon" />
+          <control type="button" format="addon">
+            <show more="true" details="true">installed</show>
+          </control>
         </setting>
         <setting id="musiclibrary.overridetags" type="boolean" label="20220" help="20221">
           <level>1</level>
@@ -1539,7 +1551,9 @@
             <addontype>xbmc.player.musicviz</addontype>
             <allowempty>true</allowempty>
           </constraints>
-          <control type="button" format="addon" />
+          <control type="button" format="addon">
+            <show more="true" details="true">installed</show>
+          </control>
         </setting>
       </group>
     </category>
@@ -1899,7 +1913,9 @@
             <addontype>xbmc.python.weather</addontype>
             <allowempty>true</allowempty>
           </constraints>
-          <control type="button" format="addon" />
+          <control type="button" format="addon">
+            <show more="true" details="true">installed</show>
+          </control>
         </setting>
         <setting id="weather.addonsettings" type="action" parent="weather.addon" label="21417" help="36419">
           <level>0</level>
@@ -1996,7 +2012,9 @@
           <constraints>
             <addontype>xbmc.webinterface</addontype>
           </constraints>
-          <control type="button" format="addon" />
+          <control type="button" format="addon">
+            <show more="true" details="true">installed</show>
+          </control>
         </setting>
       </group>
     </category>
