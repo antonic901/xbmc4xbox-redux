@@ -9679,7 +9679,7 @@ msgstr ""
 
 #: xbmc/addons/guidialogaddoninfo.cpp
 msgctxt "#24054"
-msgid "Changelog"
+msgid "What's new"
 msgstr ""
 
 #. Used in the Add-on Manager

@@ -574,6 +574,7 @@ const infomap listitem_labels[]= {{ "thumb",            LISTITEM_THUMB },
                                   { "addonsummary",     LISTITEM_ADDON_SUMMARY },
                                   { "addondescription", LISTITEM_ADDON_DESCRIPTION },
                                   { "addondisclaimer",  LISTITEM_ADDON_DISCLAIMER },
+                                  { "addonnews",        LISTITEM_ADDON_NEWS },
                                   { "addonbroken",      LISTITEM_ADDON_BROKEN },
                                   { "addontype",        LISTITEM_ADDON_TYPE },
                                   { "addoninstalldate", LISTITEM_ADDON_INSTALL_DATE },
@@ -4507,6 +4508,10 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, std::s
   case LISTITEM_ADDON_DISCLAIMER:
     if (item->HasAddonInfo())
       return item->GetAddonInfo()->Disclaimer();
+    break;
+  case LISTITEM_ADDON_NEWS:
+    if (item->HasAddonInfo())
+      return item->GetAddonInfo()->ChangeLog();
     break;
   case LISTITEM_ADDON_BROKEN:
     if (item->HasAddonInfo())
