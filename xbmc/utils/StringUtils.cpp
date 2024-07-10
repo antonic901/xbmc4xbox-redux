@@ -1023,11 +1023,11 @@ std::string StringUtils::BinaryStringToString(const std::string& in)
   out.reserve(in.size() / 2);
   for (const char *cur = in.c_str(), *end = cur + in.size(); cur != end; ++cur) {
     if (*cur == '\\') {
-      ++cur;                                                                             
+      ++cur;
       if (cur == end) {
         break;
       }
-      if (isdigit(*cur)) {                                                             
+      if (isdigit(*cur)) {
         char* end;
         unsigned long num = strtol(cur, &end, 10);
         cur = end - 1;
@@ -1538,4 +1538,23 @@ uint64_t StringUtils::ToUint64(std::string str, uint64_t fallback)
   uint64_t result(fallback);
   iss >> result;
   return result;
+}
+
+std::string StringUtils::FormatFileSize(uint64_t bytes)
+{
+  unsigned int iSize = 6;
+  std::string units[6] = {"B", "kB", "MB", "GB", "TB", "PB"};
+  if (bytes < 1000)
+    return Format("%" PRIu64 "B", bytes);
+
+  int i = 0;
+  double value = static_cast<double>(bytes);
+  while (i < static_cast<int>(iSize) - 1 && value >= 999.5)
+  {
+    ++i;
+    value /= 1024.0;
+  }
+  int decimals = value < 9.995 ? 2 : (value < 99.95 ? 1 : 0);
+  std::string frmt = "%.0" + Format("%d", decimals) + "f%s";
+  return Format(frmt.c_str(), value, units[i].c_str());
 }
