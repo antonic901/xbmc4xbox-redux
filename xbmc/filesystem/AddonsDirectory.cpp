@@ -624,7 +624,8 @@ void CAddonsDirectory::GenerateAddonListing(const CURL &path,
     const VECADDONS& addons, CFileItemList &items, const std::string label)
 {
   std::set<std::string> outdated;
-  for (VECADDONS::const_iterator it = CAddonMgr::GetInstance().GetAvailableUpdates().begin(); it != CAddonMgr::GetInstance().GetAvailableUpdates().end(); ++it)
+  VECADDONS vecUpdates = CAddonMgr::GetInstance().GetAvailableUpdates();
+  for (VECADDONS::const_iterator it = vecUpdates.begin(); it != vecUpdates.end(); ++it)
     outdated.insert((*it)->ID());
 
   items.ClearItems();
