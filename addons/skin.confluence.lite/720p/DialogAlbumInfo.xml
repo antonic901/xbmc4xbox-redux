@@ -117,9 +117,9 @@
 						<scrolltime>200</scrolltime>
 						<itemlayout height="30">
 							<control type="label">
-								<left>140</left>
+								<left>0</left>
 								<top>0</top>
-								<width>160</width>
+								<width>140</width>
 								<height>30</height>
 								<font>font13</font>
 								<align>right</align>
@@ -152,9 +152,9 @@
 								<include>VisibleFadeEffect</include>
 							</control>
 							<control type="label">
-								<left>140</left>
+								<left>0</left>
 								<top>0</top>
-								<width>160</width>
+								<width>140</width>
 								<height>30</height>
 								<font>font13</font>
 								<align>right</align>
@@ -270,7 +270,7 @@
 						<scrolltime>200</scrolltime>
 						<itemlayout height="30">
 							<control type="label">
-								<left>165</left>
+								<left>5</left>
 								<top>0</top>
 								<width>160</width>
 								<height>30</height>
@@ -305,7 +305,7 @@
 								<include>VisibleFadeEffect</include>
 							</control>
 							<control type="label">
-								<left>165</left>
+								<left>5</left>
 								<top>0</top>
 								<width>160</width>
 								<height>30</height>
@@ -506,7 +506,7 @@
 							<label>([COLOR=selected][B]$INFO[ListItem.TrackNumber][/B][/COLOR]) - $INFO[ListItem.Label]</label>
 						</control>
 						<control type="label">
-							<left>420</left>
+							<left>220</left>
 							<top>0</top>
 							<width>200</width>
 							<height>40</height>
@@ -546,7 +546,7 @@
 							<label>([COLOR=selected][B]$INFO[ListItem.TrackNumber][/B][/COLOR]) - $INFO[ListItem.Label]</label>
 						</control>
 						<control type="label">
-							<left>420</left>
+							<left>220</left>
 							<top>0</top>
 							<width>200</width>
 							<height>40</height>

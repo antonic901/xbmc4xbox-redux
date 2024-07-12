@@ -96,23 +96,23 @@
 					<height>210</height>
 					<texture border="5">button-nofocus.png</texture>
 				</control>
-				<control type="image"> 
-					<left>250</left> 
-					<top>465</top> 
-					<width>410</width> 
-					<height>200</height> 
-					<aspectratio>keep</aspectratio> 
-					<texture background="true">$INFO[ListItem.Icon]</texture> 
-					<visible>!SubString(Control.GetLabel(416),*)</visible> 
-				</control> 
-				<control type="image"> 
-					<left>250</left> 
-					<top>465</top> 
-					<width>410</width> 
-					<height>200</height> 
-					<aspectratio>keep</aspectratio> 
-					<texture background="true" flipx="true">$INFO[ListItem.Icon]</texture> 
-					<visible>SubString(Control.GetLabel(416),*)</visible> 
+				<control type="image">
+					<left>250</left>
+					<top>465</top>
+					<width>410</width>
+					<height>200</height>
+					<aspectratio>keep</aspectratio>
+					<texture background="true">$INFO[ListItem.Icon]</texture>
+					<visible>!SubString(Control.GetLabel(416),*)</visible>
+				</control>
+				<control type="image">
+					<left>250</left>
+					<top>465</top>
+					<width>410</width>
+					<height>200</height>
+					<aspectratio>keep</aspectratio>
+					<texture background="true" flipx="true">$INFO[ListItem.Icon]</texture>
+					<visible>SubString(Control.GetLabel(416),*)</visible>
 				</control>
 				<control type="panel" id="450">
 					<left>20</left>
@@ -139,6 +139,7 @@
 							<width>38</width>
 							<height>38</height>
 							<texture>$INFO[ListItem.Icon]</texture>
+							<aspectratio>keep</aspectratio>
 						</control>
 						<control type="label">
 							<left>55</left>
@@ -175,6 +176,7 @@
 							<width>38</width>
 							<height>38</height>
 							<texture>$INFO[ListItem.Icon]</texture>
+							<aspectratio>keep</aspectratio>
 						</control>
 						<control type="label">
 							<left>55</left>
@@ -214,6 +216,7 @@
 							<width>38</width>
 							<height>38</height>
 							<texture>$INFO[ListItem.Icon]</texture>
+							<aspectratio>keep</aspectratio>
 						</control>
 						<control type="label">
 							<left>55</left>
@@ -250,6 +253,7 @@
 							<width>38</width>
 							<height>38</height>
 							<texture>$INFO[ListItem.Icon]</texture>
+							<aspectratio>keep</aspectratio>
 						</control>
 						<control type="label">
 							<left>55</left>

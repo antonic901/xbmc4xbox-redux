@@ -403,7 +403,7 @@
 						<texture>HomeSeperator.png</texture>
 					</control>
 					<control type="label">
-						<left>150</left>
+						<left>5</left>
 						<top>0</top>
 						<width>290</width>
 						<height>60</height>
@@ -430,7 +430,7 @@
 						<texture>HomeSeperator.png</texture>
 					</control>
 					<control type="label">
-						<left>150</left>
+						<left>5</left>
 						<top>0</top>
 						<width>290</width>
 						<height>60</height>
@@ -441,7 +441,7 @@
 						<label>$INFO[ListItem.Label]</label>
 					</control>
 					<control type="label">
-						<left>150</left>
+						<left>5</left>
 						<top>0</top>
 						<width>290</width>
 						<height>60</height>
@@ -780,5 +780,5 @@
 			<include>Window_OpenClose_Animation</include>
 			<animation effect="slide" start="0,0" end="-40,0" time="100" condition="Player.Muted">conditional</animation>
 		</control>
-	</controls>	
+	</controls>
 </window>

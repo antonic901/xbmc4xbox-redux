@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <includes>
 	<include name="CommonRootView">
 		<control type="group">
@@ -36,7 +37,7 @@
 						<label>$INFO[ListItem.Label]</label>
 					</control>
 					<control type="label">
-						<left>680</left>
+						<left>280</left>
 						<top>0</top>
 						<width>400</width>
 						<height>40</height>
@@ -49,7 +50,7 @@
 						<visible>!Window.IsVisible(Videos)</visible>
 					</control>
 					<control type="label">
-						<left>620</left>
+						<left>220</left>
 						<top>0</top>
 						<width>400</width>
 						<height>40</height>
@@ -68,6 +69,7 @@
 						<width>40</width>
 						<height>26</height>
 						<texture>$INFO[ListItem.VideoResolution,flagging/lists/,.png]</texture>
+						<aspectratio>keep</aspectratio>
 						<visible>Window.IsVisible(Videos) + [Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]</visible>
 					</control>
 					<control type="image">
@@ -76,6 +78,7 @@
 						<width>20</width>
 						<height>16</height>
 						<texture>$INFO[ListItem.Overlay]</texture>
+						<aspectratio>keep</aspectratio>
 						<visible>Window.IsVisible(Videos) + !ListItem.IsResumable</visible>
 					</control>
 					<control type="image">
@@ -127,7 +130,7 @@
 						<label>$INFO[ListItem.Label]</label>
 					</control>
 					<control type="label">
-						<left>680</left>
+						<left>280</left>
 						<top>0</top>
 						<width>400</width>
 						<height>40</height>
@@ -140,7 +143,7 @@
 						<visible>!Window.IsVisible(Videos)</visible>
 					</control>
 					<control type="label">
-						<left>620</left>
+						<left>220</left>
 						<top>0</top>
 						<width>400</width>
 						<height>40</height>
@@ -159,6 +162,7 @@
 						<width>40</width>
 						<height>26</height>
 						<texture>$INFO[ListItem.VideoResolution,flagging/lists/,.png]</texture>
+						<aspectratio>keep</aspectratio>
 						<visible>Window.IsVisible(Videos) + [Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]</visible>
 					</control>
 					<control type="image">
@@ -167,6 +171,7 @@
 						<width>20</width>
 						<height>16</height>
 						<texture>$INFO[ListItem.Overlay]</texture>
+						<aspectratio>keep</aspectratio>
 						<visible>Window.IsVisible(Videos) + !ListItem.IsResumable</visible>
 					</control>
 					<control type="image">
@@ -248,6 +253,7 @@
 						<bordertexture border="5">button-nofocus.png</bordertexture>
 						<bordersize>5</bordersize>
 						<texture background="true">$INFO[Listitem.Icon]</texture>
+						<aspectratio>keep</aspectratio>
 						<visible>!Container.Content(Episodes)</visible>
 					</control>
 					<control type="image">
@@ -262,7 +268,7 @@
 						<visible>Container.Content(Episodes)</visible>
 					</control>
 					<control type="label">
-						<left>108</left>
+						<left>8</left>
 						<top>160</top>
 						<width>200</width>
 						<height>25</height>
@@ -282,7 +288,7 @@
 						<texture>$INFO[ListItem.Overlay]</texture>
 					</control>
 				</itemlayout>
-				<focusedlayout condition="!Container.Content(Movies) + !Container.Content(Seasons) + !Container.Content(TVShows)+ !Container.Content(Sets)" height="186" width="216">
+				<focusedlayout condition="!Container.Content(Movies) + !Container.Content(Seasons) + !Container.Content(TVShows) + !Container.Content(Sets)" height="186" width="216">
 					<control type="image">
 						<left>1</left>
 						<top>0</top>
@@ -291,6 +297,7 @@
 						<bordertexture border="5">folder-focus.png</bordertexture>
 						<bordersize>5</bordersize>
 						<texture background="true">$INFO[Listitem.Icon]</texture>
+						<aspectratio>keep</aspectratio>
 						<visible>!Container.Content(Episodes)</visible>
 					</control>
 					<control type="image">
@@ -305,7 +312,7 @@
 						<visible>Container.Content(Episodes)</visible>
 					</control>
 					<control type="label">
-						<left>108</left>
+						<left>8</left>
 						<top>160</top>
 						<width>200</width>
 						<height>25</height>
@@ -334,9 +341,10 @@
 						<bordertexture border="5">button-nofocus.png</bordertexture>
 						<bordersize>5</bordersize>
 						<texture background="true">$INFO[Listitem.Icon]</texture>
+						<aspectratio>keep</aspectratio>
 					</control>
 					<control type="label">
-						<left>108</left>
+						<left>8</left>
 						<top>240</top>
 						<width>200</width>
 						<height>25</height>
@@ -365,9 +373,10 @@
 						<bordertexture border="5">folder-focus.png</bordertexture>
 						<bordersize>5</bordersize>
 						<texture background="true">$INFO[Listitem.Icon]</texture>
+						<aspectratio>keep</aspectratio>
 					</control>
 					<control type="label">
-						<left>108</left>
+						<left>8</left>
 						<top>240</top>
 						<width>200</width>
 						<height>25</height>
@@ -433,6 +442,7 @@
 						<bordertexture border="5">button-nofocus.png</bordertexture>
 						<bordersize>5</bordersize>
 						<texture background="true">$INFO[Listitem.Icon]</texture>
+						<aspectratio>keep</aspectratio>
 						<visible>IsEmpty(ListItem.Art(banner))</visible>
 					</control>
 					<control type="image">
@@ -443,6 +453,7 @@
 						<bordertexture border="5">button-nofocus.png</bordertexture>
 						<bordersize>5</bordersize>
 						<texture background="true">$INFO[Listitem.Art(banner)]</texture>
+						<aspectratio>keep</aspectratio>
 						<visible>!IsEmpty(ListItem.Art(banner))</visible>
 					</control>
 					<control type="image">
@@ -463,6 +474,7 @@
 						<bordertexture border="5">folder-focus.png</bordertexture>
 						<bordersize>5</bordersize>
 						<texture background="true">$INFO[Listitem.Icon]</texture>
+						<aspectratio>keep</aspectratio>
 						<visible>IsEmpty(ListItem.Art(banner))</visible>
 					</control>
 					<control type="image">
@@ -473,6 +485,7 @@
 						<bordertexture border="5">folder-focus.png</bordertexture>
 						<bordersize>5</bordersize>
 						<texture background="true">$INFO[Listitem.Art(banner)]</texture>
+						<aspectratio>keep</aspectratio>
 						<visible>!IsEmpty(ListItem.Art(banner))</visible>
 					</control>
 					<control type="image">
@@ -533,6 +546,7 @@
 						<width>40</width>
 						<height>32</height>
 						<texture background="true">$INFO[ListItem.Icon]</texture>
+						<aspectratio>keep</aspectratio>
 					</control>
 					<control type="label">
 						<left>60</left>
@@ -547,7 +561,7 @@
 						<label>$INFO[ListItem.Label]</label>
 					</control>
 					<control type="label">
-						<left>1060</left>
+						<left>60</left>
 						<top>0</top>
 						<width>1000</width>
 						<height>40</height>
@@ -560,7 +574,7 @@
 						<visible>!Window.IsVisible(Videos)</visible>
 					</control>
 					<control type="label">
-						<left>1005</left>
+						<left>65</left>
 						<top>0</top>
 						<width>940</width>
 						<height>40</height>
@@ -579,6 +593,7 @@
 						<width>40</width>
 						<height>26</height>
 						<texture>$INFO[ListItem.VideoResolution,flagging/lists/,.png]</texture>
+						<aspectratio>keep</aspectratio>
 						<visible>Window.IsVisible(Videos) + [Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]</visible>
 					</control>
 					<control type="image">
@@ -587,6 +602,7 @@
 						<width>20</width>
 						<height>16</height>
 						<texture>$INFO[ListItem.Overlay]</texture>
+						<aspectratio>keep</aspectratio>
 						<visible>Window.IsVisible(Videos) + !ListItem.IsResumable</visible>
 					</control>
 					<control type="image">
@@ -631,6 +647,7 @@
 						<width>40</width>
 						<height>32</height>
 						<texture background="true">$INFO[ListItem.Icon]</texture>
+						<aspectratio>keep</aspectratio>
 					</control>
 					<control type="label">
 						<left>60</left>
@@ -645,7 +662,7 @@
 						<label>$INFO[ListItem.Label]</label>
 					</control>
 					<control type="label">
-						<left>1060</left>
+						<left>60</left>
 						<top>0</top>
 						<width>1000</width>
 						<height>40</height>
@@ -658,7 +675,7 @@
 						<visible>!Window.IsVisible(Videos)</visible>
 					</control>
 					<control type="label">
-						<left>1005</left>
+						<left>65</left>
 						<top>0</top>
 						<width>940</width>
 						<height>40</height>
@@ -677,6 +694,7 @@
 						<width>40</width>
 						<height>26</height>
 						<texture>$INFO[ListItem.VideoResolution,flagging/lists/,.png]</texture>
+						<aspectratio>keep</aspectratio>
 						<visible>Window.IsVisible(Videos) + [Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]</visible>
 					</control>
 					<control type="image">
@@ -685,6 +703,7 @@
 						<width>20</width>
 						<height>16</height>
 						<texture>$INFO[ListItem.Overlay]</texture>
+						<aspectratio>keep</aspectratio>
 						<visible>Window.IsVisible(Videos) + !ListItem.IsResumable</visible>
 					</control>
 					<control type="image">
