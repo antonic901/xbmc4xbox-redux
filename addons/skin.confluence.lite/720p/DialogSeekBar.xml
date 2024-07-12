@@ -6,12 +6,12 @@
 	<controls>
 		<control type="group">
 			<visible>player.chaptercount + Window.IsVisible(FullScreenVideo)</visible>
-			<posx>665r</posx>
-			<posy>-6</posy>
+			<left>665r</left>
+			<top>-6</top>
 			<include>VisibleFadeEffect</include>
 			<control type="image">
-				<posx>0</posx>
-				<posy>0</posy>
+				<left>0</left>
+				<top>0</top>
 				<width>150</width>
 				<height>70</height>
 				<colordiffuse>EEFFFFFF</colordiffuse>
@@ -19,8 +19,8 @@
 			</control>
 			<control type="label" id="1">
 				<description>Chapter Pos No</description>
-				<posx>20</posx>
-				<posy>10</posy>
+				<left>20</left>
+				<top>10</top>
 				<width>110</width>
 				<height>20</height>
 				<align>center</align>
@@ -32,8 +32,8 @@
 			</control>
 			<control type="label" id="1">
 				<description>Chapter Pos No</description>
-				<posx>20</posx>
-				<posy>30</posy>
+				<left>20</left>
+				<top>30</top>
 				<width>110</width>
 				<height>20</height>
 				<align>center</align>
@@ -45,53 +45,53 @@
 			</control>
 		</control>
 		<control type="group">
-			<posx>520r</posx>
-			<posy>-6</posy>
+			<left>520r</left>
+			<top>-6</top>
 			<control type="image">
-				<posx>0</posx>
-				<posy>0</posy>
+				<left>0</left>
+				<top>0</top>
 				<width>370</width>
 				<height>70</height>
 				<colordiffuse>EEFFFFFF</colordiffuse>
 				<texture border="12">OverlayDialogBackground.png</texture>
 			</control>
 			<control type="group">
-				<posx>260</posx>
-				<posy>10</posy>
+				<left>260</left>
+				<top>10</top>
 				<control type="image">
-					<posx>10</posx>
-					<posy>0</posy>
+					<left>10</left>
+					<top>0</top>
 					<width>80</width>
 					<height>50</height>
 					<texture>OSDSeekFrame.png</texture>
 				</control>
 				<control type="image">
-					<posx>0</posx>
-					<posy>3</posy>
+					<left>0</left>
+					<top>3</top>
 					<width>20</width>
 					<height>44</height>
 					<texture>OSDSeekRewind.png</texture>
 					<visible>Player.Rewinding</visible>
 				</control>
 				<control type="image">
-					<posx>80</posx>
-					<posy>3</posy>
+					<left>80</left>
+					<top>3</top>
 					<width>20</width>
 					<height>44</height>
 					<texture>OSDSeekForward.png</texture>
 					<visible>Player.Forwarding</visible>
 				</control>
 				<control type="image">
-					<posx>31</posx>
-					<posy>4</posy>
+					<left>31</left>
+					<top>4</top>
 					<width>40</width>
 					<height>40</height>
 					<texture>OSDPause.png</texture>
 					<visible>Player.Paused</visible>
 				</control>
 				<control type="image">
-					<posx>31</posx>
-					<posy>4</posy>
+					<left>31</left>
+					<top>4</top>
 					<width>40</width>
 					<height>40</height>
 					<texture>OSDPlay.png</texture>
@@ -99,40 +99,40 @@
 				</control>
 
 				<control type="image">
-					<posx>28</posx>
-					<posy>4</posy>
+					<left>28</left>
+					<top>4</top>
 					<width>40</width>
 					<height>40</height>
 					<texture>OSD2x.png</texture>
 					<visible>Player.Rewinding2x</visible>
 				</control>
 				<control type="image">
-					<posx>25</posx>
-					<posy>4</posy>
+					<left>25</left>
+					<top>4</top>
 					<width>40</width>
 					<height>40</height>
 					<texture>OSD4x.png</texture>
 					<visible>Player.Rewinding4x</visible>
 				</control>
 				<control type="image">
-					<posx>22</posx>
-					<posy>4</posy>
+					<left>22</left>
+					<top>4</top>
 					<width>40</width>
 					<height>40</height>
 					<texture>OSD8x.png</texture>
 					<visible>Player.Rewinding8x</visible>
 				</control>
 				<control type="image">
-					<posx>19</posx>
-					<posy>4</posy>
+					<left>19</left>
+					<top>4</top>
 					<width>40</width>
 					<height>40</height>
 					<texture>OSD16x.png</texture>
 					<visible>Player.Rewinding16x</visible>
 				</control>
 				<control type="image">
-					<posx>17</posx>
-					<posy>4</posy>
+					<left>17</left>
+					<top>4</top>
 					<width>40</width>
 					<height>40</height>
 					<texture>OSD32x.png</texture>
@@ -140,40 +140,40 @@
 				</control>
 
 				<control type="image">
-					<posx>34</posx>
-					<posy>4</posy>
+					<left>34</left>
+					<top>4</top>
 					<width>40</width>
 					<height>40</height>
 					<texture>OSD2x.png</texture>
 					<visible>Player.Forwarding2x</visible>
 				</control>
 				<control type="image">
-					<posx>37</posx>
-					<posy>4</posy>
+					<left>37</left>
+					<top>4</top>
 					<width>40</width>
 					<height>40</height>
 					<texture>OSD4x.png</texture>
 					<visible>Player.Forwarding4x</visible>
 				</control>
 				<control type="image">
-					<posx>40</posx>
-					<posy>4</posy>
+					<left>40</left>
+					<top>4</top>
 					<width>40</width>
 					<height>40</height>
 					<texture>OSD8x.png</texture>
 					<visible>Player.Forwarding8x</visible>
 				</control>
 				<control type="image">
-					<posx>43</posx>
-					<posy>4</posy>
+					<left>43</left>
+					<top>4</top>
 					<width>40</width>
 					<height>40</height>
 					<texture>OSD16x.png</texture>
 					<visible>Player.Forwarding16x</visible>
 				</control>
 				<control type="image">
-					<posx>45</posx>
-					<posy>4</posy>
+					<left>45</left>
+					<top>4</top>
 					<width>40</width>
 					<height>40</height>
 					<texture>OSD32x.png</texture>
@@ -183,8 +183,8 @@
 
 			<control type="label">
 				<description>Playing Label</description>
-				<posx>20</posx>
-				<posy>7</posy>
+				<left>20</left>
+				<top>7</top>
 				<width>240</width>
 				<height>20</height>
 				<align>left</align>
@@ -196,8 +196,8 @@
 			</control>
 			<control type="label">
 				<description>Paused Label</description>
-				<posx>20</posx>
-				<posy>7</posy>
+				<left>20</left>
+				<top>7</top>
 				<width>240</width>
 				<height>20</height>
 				<align>left</align>
@@ -209,8 +209,8 @@
 			</control>
 			<control type="label">
 				<description>Cache Label</description>
-				<posx>20</posx>
-				<posy>7</posy>
+				<left>20</left>
+				<top>7</top>
 				<width>240</width>
 				<height>20</height>
 				<align>left</align>
@@ -222,8 +222,8 @@
 			</control>
 			<control type="label">
 				<description>Seeking Label</description>
-				<posx>20</posx>
-				<posy>7</posy>
+				<left>20</left>
+				<top>7</top>
 				<width>240</width>
 				<height>20</height>
 				<align>left</align>
@@ -234,8 +234,8 @@
 			</control>
 			<control type="label">
 				<description>FF Label</description>
-				<posx>20</posx>
-				<posy>7</posy>
+				<left>20</left>
+				<top>7</top>
 				<width>240</width>
 				<height>20</height>
 				<align>left</align>
@@ -247,8 +247,8 @@
 			</control>
 			<control type="label">
 				<description>RW Label</description>
-				<posx>20</posx>
-				<posy>7</posy>
+				<left>20</left>
+				<top>7</top>
 				<width>240</width>
 				<height>20</height>
 				<align>left</align>
@@ -260,8 +260,8 @@
 			</control>
 			<control type="label">
 				<description>Elapsed Time Label</description>
-				<posx>20</posx>
-				<posy>23</posy>
+				<left>20</left>
+				<top>23</top>
 				<width>240</width>
 				<height>20</height>
 				<font>font13_title</font>
@@ -273,8 +273,8 @@
 			</control>
 			<control type="label">
 				<description>Seek Time Label</description>
-				<posx>20</posx>
-				<posy>23</posy>
+				<left>20</left>
+				<top>23</top>
 				<width>240</width>
 				<height>20</height>
 				<font>font13_title</font>
@@ -286,8 +286,8 @@
 			</control>
 			<control type="progress">
 				<description>ProgressbarCache</description>
-				<posx>20</posx>
-				<posy>45</posy>
+				<left>20</left>
+				<top>45</top>
 				<width>240</width>
 				<height>15</height>
 				<info>Player.ProgressCache</info>
@@ -296,8 +296,8 @@
 			</control>
 			<control type="progress" id="23">
 				<description>Progressbar</description>
-				<posx>20</posx>
-				<posy>45</posy>
+				<left>20</left>
+				<top>45</top>
 				<width>240</width>
 				<height>15</height>
 				<info>Player.Progress</info>
@@ -305,8 +305,8 @@
 			</control>
 			<control type="slider" id="401">
 				<description>Seek Slider</description>
-				<posx>20</posx>
-				<posy>42</posy>
+				<left>20</left>
+				<top>42</top>
 				<width>240</width>
 				<height>12</height>
 				<texturesliderbar>seekslider.png</texturesliderbar>

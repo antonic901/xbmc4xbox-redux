@@ -2,22 +2,22 @@
 	<defaultcontrol>5</defaultcontrol>
 	<coordinates>
 		<system>1</system>
-		<posx>290</posx>
-		<posy>75</posy>
+		<left>290</left>
+		<top>75</top>
 	</coordinates>
 	<include>dialogeffect</include>
 	<controls>
 		<control type="image">
 			<description>background image</description>
-			<posx>0</posx>
-			<posy>0</posy>
+			<left>0</left>
+			<top>0</top>
 			<width>700</width>
 			<height>570</height>
 			<texture border="40">DialogBack.png</texture>
 		</control>
 		<control type="image">
-			<posx>80</posx>
-			<posy>10</posy>
+			<left>80</left>
+			<top>10</top>
 			<width>450</width>
 			<height>90</height>
 			<aspectratio>stretch</aspectratio>
@@ -25,8 +25,8 @@
 		</control>
 		<control type="label">
 			<description>header label</description>
-			<posx>20</posx>
-			<posy>18</posy>
+			<left>20</left>
+			<top>18</top>
 			<width>660</width>
 			<height>30</height>
 			<font>font13_title</font>
@@ -37,16 +37,16 @@
 			<shadowcolor>black</shadowcolor>
 		</control>
 		<control type="image">
-			<posx>40</posx>
-			<posy>56</posy>
+			<left>40</left>
+			<top>56</top>
 			<width>660</width>
 			<height>2</height>
 			<texture>separator.png</texture>
 		</control>
 		<control type="label" id="3">
 			<description>No Settings Label</description>
-			<posx>40</posx>
-			<posy>148</posy>
+			<left>40</left>
+			<top>148</top>
 			<width>660</width>
 			<align>center</align>
 			<label>$LOCALIZE[38713]</label>
@@ -55,8 +55,8 @@
 		
 		<control type="grouplist" id="5">
 			<description>control area</description>
-			<posx>20</posx>
-			<posy>80</posy>
+			<left>20</left>
+			<top>80</top>
 			<width>660</width>
 			<height>400</height>
 			<itemgap>-1</itemgap>
@@ -68,8 +68,8 @@
 		</control>
 		<control type="button" id="7">
 			<description>Default Button</description>
-			<posx>0</posx>
-			<posy>0</posy>
+			<left>0</left>
+			<top>0</top>
 			<height>40</height>
 			<font>font13</font>
 			<textcolor>grey2</textcolor>
@@ -79,8 +79,8 @@
 		</control>
 		<control type="radiobutton" id="8">
 			<description>Default RadioButton</description>
-			<posx>0</posx>
-			<posy>0</posy>
+			<left>0</left>
+			<top>0</top>
 			<height>40</height>
 			<font>font13</font>
 			<textcolor>grey2</textcolor>
@@ -90,8 +90,8 @@
 		</control>
 		<control type="spincontrolex" id="9">
 			<description>Default SpinControlex</description>
-			<posx>0</posx>
-			<posy>0</posy>
+			<left>0</left>
+			<top>0</top>
 			<height>40</height>
 			<font>font13</font>
 			<textcolor>grey2</textcolor>
@@ -108,8 +108,8 @@
 		</control>
 		<control type="button" id="28">
 			<description>Ok Button</description>
-			<posx>145</posx>
-			<posy>500</posy>
+			<left>145</left>
+			<top>500</top>
 			<width>200</width>
 			<height>40</height>
 			<align>center</align>
@@ -125,8 +125,8 @@
 		</control>
 		<control type="button" id="29">
 			<description>Cancel Button</description>
-			<posx>355</posx>
-			<posy>500</posy>
+			<left>355</left>
+			<top>500</top>
 			<width>200</width>
 			<height>40</height>
 			<align>center</align>

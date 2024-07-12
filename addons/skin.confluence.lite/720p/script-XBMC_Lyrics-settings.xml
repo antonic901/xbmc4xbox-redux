@@ -2,14 +2,14 @@
 	<defaultcontrol>201</defaultcontrol>
 	<coordinates>
 		<system>1</system>
-		<posx>220</posx>
-		<posy>85</posy>
+		<left>220</left>
+		<top>85</top>
 	</coordinates>
 	<include>dialogeffect</include>
 	<controls>
 		<control type="image">
-			<posx>-220</posx>
-			<posy>-85</posy>
+			<left>-220</left>
+			<top>-85</top>
 			<width>1280</width>
 			<height>720</height>
 			<texture>black-back.png</texture>
@@ -21,22 +21,22 @@
 			<include>VisibleFadeEffect</include>
 			<control type="image">
 				<description>background image</description>
-				<posx>0</posx>
-				<posy>0</posy>
+				<left>0</left>
+				<top>0</top>
 				<width>840</width>
 				<height>550</height>
 				<texture border="40">DialogBack.png</texture>
 			</control>
 			<control type="image">
-				<posx>230</posx>
-				<posy>10</posy>
+				<left>230</left>
+				<top>10</top>
 				<width>570</width>
 				<height>528</height>
 				<texture border="5">black-back2.png</texture>
 			</control>
 			<control type="image">
-				<posx>230</posx>
-				<posy>10</posy>
+				<left>230</left>
+				<top>10</top>
 				<width>570</width>
 				<height>100</height>
 				<aspectratio>stretch</aspectratio>
@@ -44,8 +44,8 @@
 			</control>
 			<control type="label">
 				<description>header label</description>
-				<posx>240</posx>
-				<posy>20</posy>
+				<left>240</left>
+				<top>20</top>
 				<width>550</width>
 				<height>30</height>
 				<font>font24_title</font>
@@ -57,8 +57,8 @@
 			</control>
 			<control type="label" id="30">
 				<description>Version label</description>
-				<posx>790</posx>
-				<posy>23</posy>
+				<left>790</left>
+				<top>23</top>
 				<width>300</width>
 				<height>30</height>
 				<font>font10</font>
@@ -70,8 +70,8 @@
 			</control>
 			<!-- ** Required ** Do not change id's or type's -->
 			<control type="scrollbar" id="60">
-				<posx>803</posx>
-				<posy>70</posy>
+				<left>803</left>
+				<top>70</top>
 				<width>25</width>
 				<height>440</height>
 				<texturesliderbackground border="0,14,0,14">ScrollBarV.png</texturesliderbackground>
@@ -85,8 +85,8 @@
 				<orientation>vertical</orientation>
 			</control>
 			<control type="grouplist" id="9000">
-				<posx>230</posx>
-				<posy>70</posy>
+				<left>230</left>
+				<top>70</top>
 				<width>570</width>
 				<height>440</height>
 				<itemgap>-1</itemgap>
@@ -97,8 +97,8 @@
 				<ondown>9000</ondown>
 				<control type="button" id="201">
 					<description>Setting1 Button</description>
-					<posx>0</posx>
-					<posy>0</posy>
+					<left>0</left>
+					<top>0</top>
 					<width>570</width>
 					<height>40</height>
 					<font>font13</font>
@@ -128,8 +128,8 @@
 				</control>
 				<control type="button" id="203">
 					<description>Setting2 Button</description>
-					<posx>0</posx>
-					<posy>0</posy>
+					<left>0</left>
+					<top>0</top>
 					<width>570</width>
 					<height>40</height>
 					<label>$LOCALIZE[SCRIPT203]</label>
@@ -213,8 +213,8 @@
 				</control>
 				<control type="button" id="207">
 					<description>Setting7 Button</description>
-					<posx>0</posx>
-					<posy>0</posy>
+					<left>0</left>
+					<top>0</top>
 					<width>570</width>
 					<height>40</height>
 					<label>$LOCALIZE[SCRIPT207]</label>
@@ -232,8 +232,8 @@
 				</control>
 				<control type="button" id="208">
 					<description>Setting8 Button</description>
-					<posx>0</posx>
-					<posy>0</posy>
+					<left>0</left>
+					<top>0</top>
 					<width>570</width>
 					<height>40</height>
 					<label>$LOCALIZE[SCRIPT208]</label>
@@ -258,12 +258,12 @@
 			</control>
 			<!-- ** Required ** Do not change id's or type's -->
 			<control type="group" id="2000">
-				<posx>10</posx>
-				<posy>20</posy>
+				<left>10</left>
+				<top>20</top>
 				<control type="image">
 					<description>LOGO</description>
-					<posx>0</posx>
-					<posy>10</posy>
+					<left>0</left>
+					<top>10</top>
 					<width>220</width>
 					<height>80</height>
 					<aspectratio>keep</aspectratio>
@@ -271,8 +271,8 @@
 				</control>
 				<control type="button" id="250">
 					<description>OK button</description>
-					<posx>0</posx>
-					<posy>90</posy>
+					<left>0</left>
+					<top>90</top>
 					<width>215</width>
 					<height>51</height>
 					<label>$LOCALIZE[SCRIPT250]</label>
@@ -287,8 +287,8 @@
 				</control>
 				<control type="button" id="251">
 					<description>Cancel button</description>
-					<posx>0</posx>
-					<posy>140</posy>
+					<left>0</left>
+					<top>140</top>
 					<width>215</width>
 					<height>51</height>
 					<label>$LOCALIZE[SCRIPT251]</label>
@@ -303,8 +303,8 @@
 				</control>
 				<control type="button" id="252">
 					<description>Update button</description>
-					<posx>0</posx>
-					<posy>190</posy>
+					<left>0</left>
+					<top>190</top>
 					<width>215</width>
 					<height>51</height>
 					<label>$LOCALIZE[SCRIPT252]</label>
@@ -319,8 +319,8 @@
 				</control>
 				<control type="button" id="254">
 					<description>Play button</description>
-					<posx>0</posx>
-					<posy>240</posy>
+					<left>0</left>
+					<top>240</top>
 					<width>215</width>
 					<height>51</height>
 					<label>$LOCALIZE[SCRIPT254]</label>
@@ -335,8 +335,8 @@
 				</control>
 				<control type="button" id="255">
 					<description>Defaults button</description>
-					<posx>0</posx>
-					<posy>290</posy>
+					<left>0</left>
+					<top>290</top>
 					<width>215</width>
 					<height>51</height>
 					<label>$LOCALIZE[SCRIPT255]</label>
@@ -351,8 +351,8 @@
 				</control>
 				<control type="button" id="253">
 					<description>Credits button</description>
-					<posx>0</posx>
-					<posy>340</posy>
+					<left>0</left>
+					<top>340</top>
 					<width>215</width>
 					<height>51</height>
 					<label>$LOCALIZE[SCRIPT253]</label>

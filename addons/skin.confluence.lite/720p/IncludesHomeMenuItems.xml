@@ -530,8 +530,8 @@
 	<include name="CurrentlyPlayingMediaControls">
 		<control type="group">
 			<description>Controls for currently playing media</description>
-			<posx>545r</posx>
-			<posy>370</posy>
+			<left>545r</left>
+			<top>370</top>
 			<animation effect="slide" start="0,0" end="365,0" time="300" condition="!Player.HasMedia">conditional</animation>
 			<animation type="WindowOpen" reversible="false">
 				<effect type="zoom" start="80" end="100" center="640,360" easing="out" tween="back" time="300" />
@@ -543,8 +543,8 @@
 			</animation>
 			<control type="image">
 				<description>Background End image</description>
-				<posx>0</posx>
-				<posy>0</posy>
+				<left>0</left>
+				<top>0</top>
 				<width>35</width>
 				<height>35</height>
 				<colordiffuse>CCFFFFFF</colordiffuse>
@@ -553,8 +553,8 @@
 			<control type="radiobutton" id="608">
 				<colordiffuse>CCFFFFFF</colordiffuse>
 				<description>Content Search</description>
-				<posx>35</posx>
-				<posy>0</posy>
+				<left>35</left>
+				<top>0</top>
 				<height>35</height>
 				<width>145</width>
 				<textwidth>150</textwidth>
@@ -577,23 +577,23 @@
 				<ondown>9000</ondown>
 			</control>
 			<control type="group" id="600">
-				<posx>180</posx>
+				<left>180</left>
 				<onup>9003</onup>
 				<ondown>9000</ondown>
 				<defaultcontrol>-</defaultcontrol>
 				<enable>Player.HasMedia</enable>
 				<control type="image">
 					<description>Background image</description>
-					<posx>0</posx>
-					<posy>0</posy>
+					<left>0</left>
+					<top>0</top>
 					<width>205</width>
 					<height>35</height>
 					<texture flipy="true" border="0,5,0,0">HomeSubNF.png</texture>
 					<colordiffuse>CCFFFFFF</colordiffuse>
 				</control>
 				<control type="button" id="601">
-					<posx>10</posx>
-					<posy>2</posy>
+					<left>10</left>
+					<top>2</top>
 					<width>30</width>
 					<height>30</height>
 					<label>-</label>
@@ -606,8 +606,8 @@
 					<onclick>XBMC.PlayerControl(Previous)</onclick>
 				</control>
 				<control type="button" id="602">
-					<posx>40</posx>
-					<posy>2</posy>
+					<left>40</left>
+					<top>2</top>
 					<width>30</width>
 					<height>30</height>
 					<label>-</label>
@@ -620,8 +620,8 @@
 					<onclick>XBMC.PlayerControl(Rewind)</onclick>
 				</control>
 				<control type="togglebutton" id="603">
-					<posx>70</posx>
-					<posy>2</posy>
+					<left>70</left>
+					<top>2</top>
 					<width>30</width>
 					<height>30</height>
 					<label>-</label>
@@ -637,8 +637,8 @@
 					<onclick>XBMC.PlayerControl(Play)</onclick>
 				</control>
 				<control type="button" id="604">
-					<posx>100</posx>
-					<posy>2</posy>
+					<left>100</left>
+					<top>2</top>
 					<width>30</width>
 					<height>30</height>
 					<label>-</label>
@@ -652,8 +652,8 @@
 					<onclick>XBMC.PlayerControl(Stop)</onclick>
 				</control>
 				<control type="button" id="605">
-					<posx>130</posx>
-					<posy>2</posy>
+					<left>130</left>
+					<top>2</top>
 					<width>30</width>
 					<height>30</height>
 					<label>-</label>
@@ -666,8 +666,8 @@
 					<onclick>XBMC.PlayerControl(Forward)</onclick>
 				</control>
 				<control type="button" id="606">
-					<posx>160</posx>
-					<posy>2</posy>
+					<left>160</left>
+					<top>2</top>
 					<width>30</width>
 					<height>30</height>
 					<label>-</label>
@@ -683,8 +683,8 @@
 			<control type="radiobutton" id="607">
 				<colordiffuse>CCFFFFFF</colordiffuse>
 				<description>Go to fullscreen Playback</description>
-				<posx>385</posx>
-				<posy>0</posy>
+				<left>385</left>
+				<top>0</top>
 				<height>35</height>
 				<width>160</width>
 				<textwidth>150</textwidth>

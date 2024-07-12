@@ -4,8 +4,8 @@
 			<visible>Control.IsVisible(50)</visible>
 			<include>VisibleFadeEffect</include>
 			<control type="list" id="50">
-				<posx>70</posx>
-				<posy>78</posy>
+				<left>70</left>
+				<top>78</top>
 				<width>690</width>
 				<height>561</height>
 				<onleft>2</onleft>
@@ -17,15 +17,15 @@
 				<scrolltime>200</scrolltime>
 				<itemlayout height="40" width="580">
 					<control type="image">
-						<posx>0</posx>
-						<posy>0</posy>
+						<left>0</left>
+						<top>0</top>
 						<width>690</width>
 						<height>41</height>
 						<texture border="0,2,0,2">MenuItemNF.png</texture>
 					</control>
 					<control type="label">
-						<posx>10</posx>
-						<posy>0</posy>
+						<left>10</left>
+						<top>0</top>
 						<width>660</width>
 						<height>40</height>
 						<font>font13</font>
@@ -36,8 +36,8 @@
 						<label>$INFO[ListItem.Label]</label>
 					</control>
 					<control type="label">
-						<posx>680</posx>
-						<posy>0</posy>
+						<left>680</left>
+						<top>0</top>
 						<width>400</width>
 						<height>40</height>
 						<font>font12</font>
@@ -49,8 +49,8 @@
 						<visible>!Window.IsVisible(Videos)</visible>
 					</control>
 					<control type="label">
-						<posx>620</posx>
-						<posy>0</posy>
+						<left>620</left>
+						<top>0</top>
 						<width>400</width>
 						<height>40</height>
 						<font>font12</font>
@@ -63,24 +63,24 @@
 						<animation effect="slide" start="0,0" end="40,0" delay="0" time="0" condition="![Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]">conditional</animation>
 					</control>
 					<control type="image">
-						<posx>625</posx>
-						<posy>8</posy>
+						<left>625</left>
+						<top>8</top>
 						<width>40</width>
 						<height>26</height>
 						<texture>$INFO[ListItem.VideoResolution,flagging/lists/,.png]</texture>
 						<visible>Window.IsVisible(Videos) + [Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]</visible>
 					</control>
 					<control type="image">
-						<posx>665</posx>
-						<posy>14</posy>
+						<left>665</left>
+						<top>14</top>
 						<width>20</width>
 						<height>16</height>
 						<texture>$INFO[ListItem.Overlay]</texture>
 						<visible>Window.IsVisible(Videos) + !ListItem.IsResumable</visible>
 					</control>
 					<control type="image">
-						<posx>665</posx>
-						<posy>14</posy>
+						<left>665</left>
+						<top>14</top>
 						<width>16</width>
 						<height>16</height>
 						<texture>OverlayWatching.png</texture>
@@ -89,8 +89,8 @@
 				</itemlayout>
 				<focusedlayout height="40" width="580">
 					<control type="image">
-						<posx>0</posx>
-						<posy>0</posy>
+						<left>0</left>
+						<top>0</top>
 						<width>690</width>
 						<height>41</height>
 						<texture border="0,2,0,2">MenuItemNF.png</texture>
@@ -98,8 +98,8 @@
 						<include>VisibleFadeEffect</include>
 					</control>
 					<control type="image">
-						<posx>0</posx>
-						<posy>0</posy>
+						<left>0</left>
+						<top>0</top>
 						<width>690</width>
 						<height>41</height>
 						<texture border="0,2,0,2">MenuItemFO.png</texture>
@@ -107,16 +107,16 @@
 						<include>VisibleFadeEffect</include>
 					</control>
 					<control type="image">
-						<posx>490</posx>
-						<posy>4</posy>
+						<left>490</left>
+						<top>4</top>
 						<width>200</width>
 						<height>33</height>
 						<texture border="0,0,14,0">MediaItemDetailBG.png</texture>
 						<visible>Control.HasFocus(50) + !IsEmpty(ListItem.Label2)</visible>
 					</control>
 					<control type="label">
-						<posx>10</posx>
-						<posy>0</posy>
+						<left>10</left>
+						<top>0</top>
 						<width>660</width>
 						<height>40</height>
 						<font>font13</font>
@@ -127,8 +127,8 @@
 						<label>$INFO[ListItem.Label]</label>
 					</control>
 					<control type="label">
-						<posx>680</posx>
-						<posy>0</posy>
+						<left>680</left>
+						<top>0</top>
 						<width>400</width>
 						<height>40</height>
 						<font>font12</font>
@@ -140,8 +140,8 @@
 						<visible>!Window.IsVisible(Videos)</visible>
 					</control>
 					<control type="label">
-						<posx>620</posx>
-						<posy>0</posy>
+						<left>620</left>
+						<top>0</top>
 						<width>400</width>
 						<height>40</height>
 						<font>font12</font>
@@ -154,24 +154,24 @@
 						<animation effect="slide" start="0,0" end="40,0" delay="0" time="0" condition="![Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]">conditional</animation>
 					</control>
 					<control type="image">
-						<posx>625</posx>
-						<posy>8</posy>
+						<left>625</left>
+						<top>8</top>
 						<width>40</width>
 						<height>26</height>
 						<texture>$INFO[ListItem.VideoResolution,flagging/lists/,.png]</texture>
 						<visible>Window.IsVisible(Videos) + [Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]</visible>
 					</control>
 					<control type="image">
-						<posx>665</posx>
-						<posy>14</posy>
+						<left>665</left>
+						<top>14</top>
 						<width>20</width>
 						<height>16</height>
 						<texture>$INFO[ListItem.Overlay]</texture>
 						<visible>Window.IsVisible(Videos) + !ListItem.IsResumable</visible>
 					</control>
 					<control type="image">
-						<posx>665</posx>
-						<posy>14</posy>
+						<left>665</left>
+						<top>14</top>
 						<width>16</width>
 						<height>16</height>
 						<texture>OverlayWatching.png</texture>
@@ -180,8 +180,8 @@
 				</focusedlayout>
 			</control>
 			<control type="scrollbar" id="60">
-				<posx>760</posx>
-				<posy>85</posy>
+				<left>760</left>
+				<top>85</top>
 				<width>25</width>
 				<height>550</height>
 				<texturesliderbackground border="0,14,0,14">ScrollBarV.png</texturesliderbackground>
@@ -196,12 +196,12 @@
 				<visible>Control.IsVisible(50)</visible>
 			</control>
 			<control type="group">
-				<posx>850</posx>
-				<posy>100</posy>
+				<left>850</left>
+				<top>100</top>
 				<visible>Control.IsVisible(50)</visible>
 				<control type="image">
-					<posx>0</posx>
-					<posy>0</posy>
+					<left>0</left>
+					<top>0</top>
 					<width>360</width>
 					<height>540</height>
 					<aspectratio aligny="bottom">keep</aspectratio>
@@ -211,8 +211,8 @@
 					<bordersize>8</bordersize>
 				</control>
 				<control type="image">
-					<posx>8</posx>
-					<posy>532</posy>
+					<left>8</left>
+					<top>532</top>
 					<width>344</width>
 					<height>524</height>
 					<aspectratio aligny="top">keep</aspectratio>
@@ -227,8 +227,8 @@
 			<visible>Control.IsVisible(500)</visible>
 			<include>VisibleFadeEffect</include>
 			<control type="panel" id="500">
-				<posx>90</posx>
-				<posy>80</posy>
+				<left>90</left>
+				<top>80</top>
 				<width>1080</width>
 				<height>558</height>
 				<onleft>2</onleft>
@@ -241,8 +241,8 @@
 				<preloaditems>2</preloaditems>
 				<itemlayout condition="!Container.Content(Movies) + !Container.Content(Seasons) + !Container.Content(TVShows) + !Container.Content(Sets)" height="186" width="216">
 					<control type="image">
-						<posx>1</posx>
-						<posy>0</posy>
+						<left>1</left>
+						<top>0</top>
 						<width>214</width>
 						<height>160</height>
 						<bordertexture border="5">button-nofocus.png</bordertexture>
@@ -251,8 +251,8 @@
 						<visible>!Container.Content(Episodes)</visible>
 					</control>
 					<control type="image">
-						<posx>1</posx>
-						<posy>0</posy>
+						<left>1</left>
+						<top>0</top>
 						<width>214</width>
 						<height>160</height>
 						<aspectratio>scale</aspectratio>
@@ -262,8 +262,8 @@
 						<visible>Container.Content(Episodes)</visible>
 					</control>
 					<control type="label">
-						<posx>108</posx>
-						<posy>160</posy>
+						<left>108</left>
+						<top>160</top>
 						<width>200</width>
 						<height>25</height>
 						<font>font12</font>
@@ -274,8 +274,8 @@
 						<info>ListItem.Label</info>
 					</control>
 					<control type="image">
-						<posx>170</posx>
-						<posy>130</posy>
+						<left>170</left>
+						<top>130</top>
 						<width>30</width>
 						<height>30</height>
 						<aspectratio>keep</aspectratio>
@@ -284,8 +284,8 @@
 				</itemlayout>
 				<focusedlayout condition="!Container.Content(Movies) + !Container.Content(Seasons) + !Container.Content(TVShows)+ !Container.Content(Sets)" height="186" width="216">
 					<control type="image">
-						<posx>1</posx>
-						<posy>0</posy>
+						<left>1</left>
+						<top>0</top>
 						<width>214</width>
 						<height>160</height>
 						<bordertexture border="5">folder-focus.png</bordertexture>
@@ -294,8 +294,8 @@
 						<visible>!Container.Content(Episodes)</visible>
 					</control>
 					<control type="image">
-						<posx>1</posx>
-						<posy>0</posy>
+						<left>1</left>
+						<top>0</top>
 						<width>214</width>
 						<height>160</height>
 						<aspectratio>scale</aspectratio>
@@ -305,8 +305,8 @@
 						<visible>Container.Content(Episodes)</visible>
 					</control>
 					<control type="label">
-						<posx>108</posx>
-						<posy>160</posy>
+						<left>108</left>
+						<top>160</top>
 						<width>200</width>
 						<height>25</height>
 						<font>font12</font>
@@ -317,8 +317,8 @@
 						<info>ListItem.Label</info>
 					</control>
 					<control type="image">
-						<posx>180</posx>
-						<posy>130</posy>
+						<left>180</left>
+						<top>130</top>
 						<width>30</width>
 						<height>30</height>
 						<aspectratio>keep</aspectratio>
@@ -327,8 +327,8 @@
 				</focusedlayout>
 				<itemlayout condition="Container.Content(Movies) | Container.Content(Seasons) | Container.Content(TVShows) | Container.Content(Sets)" height="279" width="216">
 					<control type="image">
-						<posx>1</posx>
-						<posy>0</posy>
+						<left>1</left>
+						<top>0</top>
 						<width>214</width>
 						<height>240</height>
 						<bordertexture border="5">button-nofocus.png</bordertexture>
@@ -336,8 +336,8 @@
 						<texture background="true">$INFO[Listitem.Icon]</texture>
 					</control>
 					<control type="label">
-						<posx>108</posx>
-						<posy>240</posy>
+						<left>108</left>
+						<top>240</top>
 						<width>200</width>
 						<height>25</height>
 						<font>font12</font>
@@ -348,8 +348,8 @@
 						<info>ListItem.Label</info>
 					</control>
 					<control type="image">
-						<posx>170</posx>
-						<posy>210</posy>
+						<left>170</left>
+						<top>210</top>
 						<width>30</width>
 						<height>30</height>
 						<aspectratio>keep</aspectratio>
@@ -358,8 +358,8 @@
 				</itemlayout>
 				<focusedlayout condition="Container.Content(Movies) | Container.Content(Seasons) | Container.Content(TVShows) | Container.Content(Sets)" height="276" width="216">
 					<control type="image">
-						<posx>1</posx>
-						<posy>0</posy>
+						<left>1</left>
+						<top>0</top>
 						<width>214</width>
 						<height>240</height>
 						<bordertexture border="5">folder-focus.png</bordertexture>
@@ -367,8 +367,8 @@
 						<texture background="true">$INFO[Listitem.Icon]</texture>
 					</control>
 					<control type="label">
-						<posx>108</posx>
-						<posy>240</posy>
+						<left>108</left>
+						<top>240</top>
 						<width>200</width>
 						<height>25</height>
 						<font>font12</font>
@@ -379,8 +379,8 @@
 						<info>ListItem.Label</info>
 					</control>
 					<control type="image">
-						<posx>170</posx>
-						<posy>210</posy>
+						<left>170</left>
+						<top>210</top>
 						<width>30</width>
 						<height>30</height>
 						<aspectratio>keep</aspectratio>
@@ -389,8 +389,8 @@
 				</focusedlayout>
 			</control>
 			<control type="scrollbar" id="60">
-				<posx>1170</posx>
-				<posy>80</posy>
+				<left>1170</left>
+				<top>80</top>
 				<width>25</width>
 				<height>550</height>
 				<texturesliderbackground border="0,14,0,14">ScrollBarV.png</texturesliderbackground>
@@ -412,8 +412,8 @@
 			<include>VisibleFadeEffect</include>
 			<control type="panel" id="505">
 				<visible>!Container.Content(Movies) + !Container.Content(Episodes) + !Container.Content(Seasons) + !Container.Content(MusicVideos) + !Container.Content(Addons)</visible>
-				<posx>95</posx>
-				<posy>80</posy>
+				<left>95</left>
+				<top>80</top>
 				<width>1080</width>
 				<height>550</height>
 				<onleft>2</onleft>
@@ -426,8 +426,8 @@
 				<preloaditems>2</preloaditems>
 				<itemlayout height="110" width="540">
 					<control type="image">
-						<posx>1</posx>
-						<posy>0</posy>
+						<left>1</left>
+						<top>0</top>
 						<width>538</width>
 						<height>105</height>
 						<bordertexture border="5">button-nofocus.png</bordertexture>
@@ -436,8 +436,8 @@
 						<visible>IsEmpty(ListItem.Art(banner))</visible>
 					</control>
 					<control type="image">
-						<posx>1</posx>
-						<posy>0</posy>
+						<left>1</left>
+						<top>0</top>
 						<width>538</width>
 						<height>105</height>
 						<bordertexture border="5">button-nofocus.png</bordertexture>
@@ -446,8 +446,8 @@
 						<visible>!IsEmpty(ListItem.Art(banner))</visible>
 					</control>
 					<control type="image">
-						<posx>500</posx>
-						<posy>70</posy>
+						<left>500</left>
+						<top>70</top>
 						<width>35</width>
 						<height>35</height>
 						<aspectratio>keep</aspectratio>
@@ -456,8 +456,8 @@
 				</itemlayout>
 				<focusedlayout height="110" width="540">
 					<control type="image">
-						<posx>1</posx>
-						<posy>0</posy>
+						<left>1</left>
+						<top>0</top>
 						<width>538</width>
 						<height>105</height>
 						<bordertexture border="5">folder-focus.png</bordertexture>
@@ -466,8 +466,8 @@
 						<visible>IsEmpty(ListItem.Art(banner))</visible>
 					</control>
 					<control type="image">
-						<posx>1</posx>
-						<posy>0</posy>
+						<left>1</left>
+						<top>0</top>
 						<width>538</width>
 						<height>105</height>
 						<bordertexture border="5">folder-focus.png</bordertexture>
@@ -476,8 +476,8 @@
 						<visible>!IsEmpty(ListItem.Art(banner))</visible>
 					</control>
 					<control type="image">
-						<posx>500</posx>
-						<posy>70</posy>
+						<left>500</left>
+						<top>70</top>
 						<width>35</width>
 						<height>35</height>
 						<aspectratio>keep</aspectratio>
@@ -486,8 +486,8 @@
 				</focusedlayout>
 			</control>
 			<control type="scrollbar" id="60">
-				<posx>1170</posx>
-				<posy>80</posy>
+				<left>1170</left>
+				<top>80</top>
 				<width>25</width>
 				<height>550</height>
 				<texturesliderbackground border="0,14,0,14">ScrollBarV.png</texturesliderbackground>
@@ -508,8 +508,8 @@
 			<visible>Control.IsVisible(51)</visible>
 			<include>VisibleFadeEffect</include>
 			<control type="list" id="51">
-				<posx>95</posx>
-				<posy>78</posy>
+				<left>95</left>
+				<top>78</top>
 				<width>1080</width>
 				<height>561</height>
 				<onleft>2</onleft>
@@ -521,22 +521,22 @@
 				<scrolltime>200</scrolltime>
 				<itemlayout height="40" width="1080">
 					<control type="image">
-						<posx>0</posx>
-						<posy>0</posy>
+						<left>0</left>
+						<top>0</top>
 						<width>1080</width>
 						<height>41</height>
 						<texture border="0,2,0,2">MenuItemNF.png</texture>
 					</control>
 					<control type="image">
-						<posx>10</posx>
-						<posy>4</posy>
+						<left>10</left>
+						<top>4</top>
 						<width>40</width>
 						<height>32</height>
 						<texture background="true">$INFO[ListItem.Icon]</texture>
 					</control>
 					<control type="label">
-						<posx>60</posx>
-						<posy>0</posy>
+						<left>60</left>
+						<top>0</top>
 						<width>950</width>
 						<height>40</height>
 						<font>font13</font>
@@ -547,8 +547,8 @@
 						<label>$INFO[ListItem.Label]</label>
 					</control>
 					<control type="label">
-						<posx>1060</posx>
-						<posy>0</posy>
+						<left>1060</left>
+						<top>0</top>
 						<width>1000</width>
 						<height>40</height>
 						<font>font12</font>
@@ -560,8 +560,8 @@
 						<visible>!Window.IsVisible(Videos)</visible>
 					</control>
 					<control type="label">
-						<posx>1005</posx>
-						<posy>0</posy>
+						<left>1005</left>
+						<top>0</top>
 						<width>940</width>
 						<height>40</height>
 						<font>font12</font>
@@ -574,24 +574,24 @@
 						<animation effect="slide" start="0,0" end="40,0" delay="0" time="0" condition="![Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]">conditional</animation>
 					</control>
 					<control type="image">
-						<posx>1010</posx>
-						<posy>8</posy>
+						<left>1010</left>
+						<top>8</top>
 						<width>40</width>
 						<height>26</height>
 						<texture>$INFO[ListItem.VideoResolution,flagging/lists/,.png]</texture>
 						<visible>Window.IsVisible(Videos) + [Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]</visible>
 					</control>
 					<control type="image">
-						<posx>1050</posx>
-						<posy>14</posy>
+						<left>1050</left>
+						<top>14</top>
 						<width>20</width>
 						<height>16</height>
 						<texture>$INFO[ListItem.Overlay]</texture>
 						<visible>Window.IsVisible(Videos) + !ListItem.IsResumable</visible>
 					</control>
 					<control type="image">
-						<posx>1050</posx>
-						<posy>14</posy>
+						<left>1050</left>
+						<top>14</top>
 						<width>16</width>
 						<height>16</height>
 						<texture>OverlayWatching.png</texture>
@@ -600,8 +600,8 @@
 				</itemlayout>
 				<focusedlayout height="40" width="1080">
 					<control type="image">
-						<posx>0</posx>
-						<posy>0</posy>
+						<left>0</left>
+						<top>0</top>
 						<width>1080</width>
 						<height>41</height>
 						<texture border="0,2,0,2">MenuItemNF.png</texture>
@@ -609,8 +609,8 @@
 						<include>VisibleFadeEffect</include>
 					</control>
 					<control type="image">
-						<posx>0</posx>
-						<posy>0</posy>
+						<left>0</left>
+						<top>0</top>
 						<width>1080</width>
 						<height>41</height>
 						<texture border="0,2,0,2">MenuItemFO.png</texture>
@@ -618,23 +618,23 @@
 						<include>VisibleFadeEffect</include>
 					</control>
 					<control type="image">
-						<posx>875</posx>
-						<posy>4</posy>
+						<left>875</left>
+						<top>4</top>
 						<width>200</width>
 						<height>33</height>
 						<texture border="0,0,14,0">MediaItemDetailBG.png</texture>
 						<visible>Control.HasFocus(51) + !IsEmpty(ListItem.Label2)</visible>
 					</control>
 					<control type="image">
-						<posx>10</posx>
-						<posy>4</posy>
+						<left>10</left>
+						<top>4</top>
 						<width>40</width>
 						<height>32</height>
 						<texture background="true">$INFO[ListItem.Icon]</texture>
 					</control>
 					<control type="label">
-						<posx>60</posx>
-						<posy>0</posy>
+						<left>60</left>
+						<top>0</top>
 						<width>950</width>
 						<height>40</height>
 						<font>font13</font>
@@ -645,8 +645,8 @@
 						<label>$INFO[ListItem.Label]</label>
 					</control>
 					<control type="label">
-						<posx>1060</posx>
-						<posy>0</posy>
+						<left>1060</left>
+						<top>0</top>
 						<width>1000</width>
 						<height>40</height>
 						<font>font12</font>
@@ -658,8 +658,8 @@
 						<visible>!Window.IsVisible(Videos)</visible>
 					</control>
 					<control type="label">
-						<posx>1005</posx>
-						<posy>0</posy>
+						<left>1005</left>
+						<top>0</top>
 						<width>940</width>
 						<height>40</height>
 						<font>font12</font>
@@ -672,24 +672,24 @@
 						<animation effect="slide" start="0,0" end="40,0" delay="0" time="0" condition="![Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]">conditional</animation>
 					</control>
 					<control type="image">
-						<posx>1010</posx>
-						<posy>8</posy>
+						<left>1010</left>
+						<top>8</top>
 						<width>40</width>
 						<height>26</height>
 						<texture>$INFO[ListItem.VideoResolution,flagging/lists/,.png]</texture>
 						<visible>Window.IsVisible(Videos) + [Container.Content(Movies) | Container.Content(Episodes) | Container.Content(MusicVideos)]</visible>
 					</control>
 					<control type="image">
-						<posx>1050</posx>
-						<posy>14</posy>
+						<left>1050</left>
+						<top>14</top>
 						<width>20</width>
 						<height>16</height>
 						<texture>$INFO[ListItem.Overlay]</texture>
 						<visible>Window.IsVisible(Videos) + !ListItem.IsResumable</visible>
 					</control>
 					<control type="image">
-						<posx>1050</posx>
-						<posy>14</posy>
+						<left>1050</left>
+						<top>14</top>
 						<width>16</width>
 						<height>16</height>
 						<texture>OverlayWatching.png</texture>
@@ -698,8 +698,8 @@
 				</focusedlayout>
 			</control>
 			<control type="scrollbar" id="60">
-				<posx>1170</posx>
-				<posy>80</posy>
+				<left>1170</left>
+				<top>80</top>
 				<width>25</width>
 				<height>550</height>
 				<texturesliderbackground border="0,14,0,14">ScrollBarV.png</texturesliderbackground>

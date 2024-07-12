@@ -7,16 +7,16 @@
 			<visible>[Player.ShowInfo | Window.IsActive(VideoOSD)] + ![Window.IsVisible(123) | Window.IsVisible(124) | Window.IsVisible(125)]</visible>
 			<animation effect="fade" time="200">VisibleChange</animation>
 			<control type="image" id="1">
-				<posx>0</posx>
-				<posy>-150</posy>
+				<left>0</left>
+				<top>-150</top>
 				<width>1280</width>
 				<height>256</height>
 				<texture flipy="true">HomeNowPlayingBack.png</texture>
 			</control>
 			<control type="label" id="1">
 				<description>Chapter Count Header label</description>
-				<posx>30</posx>
-				<posy>5</posy>
+				<left>30</left>
+				<top>5</top>
 				<width>1000</width>
 				<height>25</height>
 				<align>left</align>
@@ -29,8 +29,8 @@
 			</control>
 			<control type="label" id="1">
 				<description>Clock label</description>
-				<posx>20r</posx>
-				<posy>5</posy>
+				<left>20r</left>
+				<top>5</top>
 				<width>200</width>
 				<height>30</height>
 				<align>right</align>
@@ -41,16 +41,16 @@
 				<label>$INFO[System.Time]</label>
 			</control>
 			<control type="image" id="1">
-				<posx>0</posx>
-				<posy>230r</posy>
+				<left>0</left>
+				<top>230r</top>
 				<width>1280</width>
 				<height>230</height>
 				<texture>HomeNowPlayingBack.png</texture>
 			</control>
 			<control type="image" id="1">
 				<description>cover image</description>
-				<posx>20</posx>
-				<posy>260r</posy>
+				<left>20</left>
+				<top>260r</top>
 				<width>300</width>
 				<height>230</height>
 				<texture fallback="DefaultVideoCover.png">$INFO[Player.Art(thumb)]</texture>
@@ -61,8 +61,8 @@
 			</control>
 			<control type="image" id="1">
 				<description>Movie cover image</description>
-				<posx>20</posx>
-				<posy>350r</posy>
+				<left>20</left>
+				<top>350r</top>
 				<width>300</width>
 				<height>330</height>
 				<texture fallback="DefaultVideoCover.png">$INFO[Player.Art(thumb)]</texture>
@@ -72,12 +72,12 @@
 				<visible>VideoPlayer.Content(Movies)</visible>
 			</control>
 			<control type="group" id="1">
-				<posx>330</posx>
-				<posy>175r</posy>
+				<left>330</left>
+				<top>175r</top>
 				<control type="label" id="1">
 					<description>Heading label</description>
-					<posx>0</posx>
-					<posy>0</posy>
+					<left>0</left>
+					<top>0</top>
 					<width>910</width>
 					<height>25</height>
 					<align>left</align>
@@ -89,8 +89,8 @@
 				</control>
 				<control type="label" id="1">
 					<description>Studio label</description>
-					<posx>20</posx>
-					<posy>30</posy>
+					<left>20</left>
+					<top>30</top>
 					<width>910</width>
 					<height>25</height>
 					<align>left</align>
@@ -102,8 +102,8 @@
 				</control>
 				<control type="label" id="1">
 					<description>TV Show label</description>
-					<posx>20</posx>
-					<posy>30</posy>
+					<left>20</left>
+					<top>30</top>
 					<width>910</width>
 					<height>25</height>
 					<align>left</align>
@@ -115,8 +115,8 @@
 				</control>
 				<control type="label" id="1">
 					<description>Music Info label</description>
-					<posx>20</posx>
-					<posy>30</posy>
+					<left>20</left>
+					<top>30</top>
 					<width>910</width>
 					<height>25</height>
 					<align>left</align>
@@ -127,8 +127,8 @@
 					<visible>VideoPlayer.Content(MusicVideos)</visible>
 				</control>
 				<control type="grouplist" id="1">
-					<posx>20</posx>
-					<posy>60</posy>
+					<left>20</left>
+					<top>60</top>
 					<width>910</width>
 					<height>35</height>
 					<itemgap>5</itemgap>
@@ -183,8 +183,8 @@
 					</control>
 				</control>
 				<control type="label" id="1">
-					<posx>0</posx>
-					<posy>120</posy>
+					<left>0</left>
+					<top>120</top>
 					<width>910</width>
 					<height>25</height>
 					<label>$LOCALIZE[31049] $INFO[Player.FinishTime]</label>
@@ -198,11 +198,11 @@
 				</control>
 			</control>
 			<control type="group" id="1">
-				<posx>330</posx>
-				<posy>85r</posy>
+				<left>330</left>
+				<top>85r</top>
 				<control type="label" id="1">
-					<posx>0</posx>
-					<posy>0</posy>
+					<left>0</left>
+					<top>0</top>
 					<width>100</width>
 					<height>40</height>
 					<font>font13</font>
@@ -212,8 +212,8 @@
 				</control>
 				<control type="progress" id="1">
 					<description>ProgressbarCache</description>
-					<posx>100</posx>
-					<posy>15</posy>
+					<left>100</left>
+					<top>15</top>
 					<width>720</width>
 					<height>16</height>
 					<info>Player.ProgressCache</info>
@@ -221,15 +221,15 @@
 				</control>
 				<control type="progress" id="1">
 					<description>Progressbar</description>
-					<posx>100</posx>
-					<posy>15</posy>
+					<left>100</left>
+					<top>15</top>
 					<width>720</width>
 					<height>16</height>
 					<info>Player.Progress</info>
 				</control>
 				<control type="label" id="1">
-					<posx>920</posx>
-					<posy>0</posy>
+					<left>920</left>
+					<top>0</top>
 					<width>100</width>
 					<height>40</height>
 					<font>font13</font>
@@ -241,13 +241,13 @@
 		</control>
 		<!-- codec info -->
 		<control type="group" id="0">
-			<posx>0</posx>
-			<posy>20</posy>
+			<left>0</left>
+			<top>20</top>
 			<animation effect="fade" time="200">VisibleChange</animation>
 			<control type="image">
 				<description>media info background image</description>
-				<posx>0</posx>
-				<posy>0</posy>
+				<left>0</left>
+				<top>0</top>
 				<width>1280</width>
 				<height>140</height>
 				<colordiffuse>AAFFFFFF</colordiffuse>
@@ -255,8 +255,8 @@
 			</control>
 			<control type="label" id="10">
 				<description>row 1 label</description>
-				<posx>50</posx>
-				<posy>10</posy>
+				<left>50</left>
+				<top>10</top>
 				<width>1180</width>
 				<height>30</height>
 				<align>left</align>
@@ -266,8 +266,8 @@
 			</control>
 			<control type="label" id="11">
 				<description>row 2 label</description>
-				<posx>50</posx>
-				<posy>55</posy>
+				<left>50</left>
+				<top>55</top>
 				<width>1180</width>
 				<height>30</height>
 				<align>left</align>
@@ -277,8 +277,8 @@
 			</control>
 			<control type="label" id="12">
 				<description>row 3 label</description>
-				<posx>50</posx>
-				<posy>100</posy>
+				<left>50</left>
+				<top>100</top>
 				<width>1180</width>
 				<height>30</height>
 				<align>left</align>

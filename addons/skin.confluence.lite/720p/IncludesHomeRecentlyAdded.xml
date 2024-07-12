@@ -8,15 +8,15 @@
 			<animation effect="fade" time="300" delay="1000">WindowOpen</animation>
 			<animation effect="fade" time="200">WindowClose</animation>
 			<control type="group">
-				<posx>190</posx>
-				<posy>50</posy>
+				<left>190</left>
+				<top>50</top>
 				<visible>Library.HasContent(Movies)</visible>
 				<visible>Container(9000).Hasfocus(10) + !Skin.HasSetting(HomepageHideRecentlyAddedVideo)</visible>
 				<include>VisibleFadeEffect</include>
 				<control type="label">
 					<description>Title label</description>
-					<posx>180</posx>
-					<posy>220</posy>
+					<left>180</left>
+					<top>220</top>
 					<height>20</height>
 					<width>540</width>
 					<label>20386</label>
@@ -31,8 +31,8 @@
 					<animation effect="slide" start="0,0" end="180,0" time="0" condition="StringCompare(Container(8000).NumItems,3)">conditional</animation>
 					<animation effect="slide" start="0,0" end="270,0" time="0" condition="StringCompare(Container(8000).NumItems,2)">conditional</animation>
 					<animation effect="slide" start="0,0" end="360,0" time="0" condition="StringCompare(Container(8000).NumItems,1)">conditional</animation>
-					<posx>0</posx>
-					<posy>0</posy>
+					<left>0</left>
+					<top>0</top>
 					<width>900</width>
 					<height>220</height>
 					<onleft>8000</onleft>
@@ -46,15 +46,15 @@
 					<itemlayout height="220" width="180">
 						<control type="image">
 							<description>background</description>
-							<posx>0</posx>
-							<posy>0</posy>
+							<left>0</left>
+							<top>0</top>
 							<width>180</width>
 							<height>220</height>
 							<texture border="15">RecentAddedBack.png</texture>
 						</control>
 						<control type="image">
-							<posx>10</posx>
-							<posy>10</posy>
+							<left>10</left>
+							<top>10</top>
 							<width>160</width>
 							<height>170</height>
 							<texture background="true">$INFO[ListItem.Icon]</texture>
@@ -62,8 +62,8 @@
 							<bordersize>5</bordersize>
 						</control>
 						<control type="label">
-							<posx>90</posx>
-							<posy>185</posy>
+							<left>90</left>
+							<top>185</top>
 							<width>150</width>
 							<height>20</height>
 							<font>font12</font>
@@ -78,15 +78,15 @@
 					<focusedlayout height="220" width="180">
 						<control type="image">
 							<description>background</description>
-							<posx>0</posx>
-							<posy>0</posy>
+							<left>0</left>
+							<top>0</top>
 							<width>180</width>
 							<height>220</height>
 							<texture border="15">RecentAddedBack.png</texture>
 						</control>
 						<control type="image">
-							<posx>10</posx>
-							<posy>10</posy>
+							<left>10</left>
+							<top>10</top>
 							<width>160</width>
 							<height>170</height>
 							<texture background="true">$INFO[ListItem.Icon]</texture>
@@ -95,8 +95,8 @@
 							<visible>Control.HasFocus(8000)</visible>
 						</control>
 						<control type="image">
-							<posx>10</posx>
-							<posy>10</posy>
+							<left>10</left>
+							<top>10</top>
 							<width>160</width>
 							<height>170</height>
 							<texture>$INFO[ListItem.Icon]</texture>
@@ -105,8 +105,8 @@
 							<visible>!Control.HasFocus(8000)</visible>
 						</control>
 						<control type="label">
-							<posx>90</posx>
-							<posy>185</posy>
+							<left>90</left>
+							<top>185</top>
 							<width>150</width>
 							<height>20</height>
 							<font>font12</font>
@@ -118,8 +118,8 @@
 							<label>$INFO[ListItem.Label]</label>
 						</control>
 						<control type="label">
-							<posx>90</posx>
-							<posy>185</posy>
+							<left>90</left>
+							<top>185</top>
 							<width>150</width>
 							<height>20</height>
 							<font>font12</font>
@@ -216,8 +216,8 @@
 				</control>
 				<control type="button">
 					<description>left Arrow</description>
-					<posx>-40</posx>
-					<posy>90</posy>
+					<left>-40</left>
+					<top>90</top>
 					<width>30</width>
 					<height>40</height>
 					<texturefocus>arrow-big-left.png</texturefocus>
@@ -228,8 +228,8 @@
 				</control>
 				<control type="button">
 					<description>right Arrow</description>
-					<posx>910</posx>
-					<posy>90</posy>
+					<left>910</left>
+					<top>90</top>
 					<width>30</width>
 					<height>40</height>
 					<texturefocus>arrow-big-right.png</texturefocus>
@@ -240,15 +240,15 @@
 				</control>
 			</control>
 			<control type="group">
-				<posx>160</posx>
-				<posy>50</posy>
+				<left>160</left>
+				<top>50</top>
 				<visible>Library.HasContent(TVShows)</visible>
 				<visible>Container(9000).Hasfocus(11) + !Skin.HasSetting(HomepageHideRecentlyAddedVideo)</visible>
 				<include>VisibleFadeEffect</include>
 				<control type="label">
 					<description>Title label</description>
-					<posx>240</posx>
-					<posy>220</posy>
+					<left>240</left>
+					<top>220</top>
 					<height>20</height>
 					<width>480</width>
 					<label>20387</label>
@@ -262,8 +262,8 @@
 					<animation effect="slide" start="0,0" end="120,0" time="0" condition="StringCompare(Container(8001).NumItems,3)">conditional</animation>
 					<animation effect="slide" start="0,0" end="240,0" time="0" condition="StringCompare(Container(8001).NumItems,2)">conditional</animation>
 					<animation effect="slide" start="0,0" end="360,0" time="0" condition="StringCompare(Container(8001).NumItems,1)">conditional</animation>
-					<posx>0</posx>
-					<posy>0</posy>
+					<left>0</left>
+					<top>0</top>
 					<width>960</width>
 					<height>240</height>
 					<onleft>8001</onleft>
@@ -279,15 +279,15 @@
 					<itemlayout height="220" width="240">
 						<control type="image">
 							<description>background</description>
-							<posx>0</posx>
-							<posy>0</posy>
+							<left>0</left>
+							<top>0</top>
 							<width>240</width>
 							<height>220</height>
 							<texture border="15">RecentAddedBack.png</texture>
 						</control>
 						<control type="image">
-							<posx>10</posx>
-							<posy>10</posy>
+							<left>10</left>
+							<top>10</top>
 							<width>220</width>
 							<height>155</height>
 							<aspectratio>scale</aspectratio>
@@ -296,8 +296,8 @@
 							<bordersize>5</bordersize>
 						</control>
 						<control type="label">
-							<posx>120</posx>
-							<posy>168</posy>
+							<left>120</left>
+							<top>168</top>
 							<width>200</width>
 							<height>20</height>
 							<font>font10</font>
@@ -309,8 +309,8 @@
 							<label>$INFO[ListItem.Label2]</label>
 						</control>
 						<control type="label">
-							<posx>120</posx>
-							<posy>185</posy>
+							<left>120</left>
+							<top>185</top>
 							<width>200</width>
 							<height>20</height>
 							<font>font12</font>
@@ -325,15 +325,15 @@
 					<focusedlayout height="220" width="240">
 						<control type="image">
 							<description>background</description>
-							<posx>0</posx>
-							<posy>0</posy>
+							<left>0</left>
+							<top>0</top>
 							<width>240</width>
 							<height>220</height>
 							<texture border="15">RecentAddedBack.png</texture>
 						</control>
 						<control type="image">
-							<posx>10</posx>
-							<posy>10</posy>
+							<left>10</left>
+							<top>10</top>
 							<width>220</width>
 							<height>155</height>
 							<aspectratio>scale</aspectratio>
@@ -343,8 +343,8 @@
 							<visible>Control.HasFocus(8001)</visible>
 						</control>
 						<control type="image">
-							<posx>10</posx>
-							<posy>10</posy>
+							<left>10</left>
+							<top>10</top>
 							<width>220</width>
 							<height>155</height>
 							<aspectratio>scale</aspectratio>
@@ -354,8 +354,8 @@
 							<visible>!Control.HasFocus(8001)</visible>
 						</control>
 						<control type="label">
-							<posx>120</posx>
-							<posy>168</posy>
+							<left>120</left>
+							<top>168</top>
 							<width>200</width>
 							<height>20</height>
 							<font>font10</font>
@@ -367,8 +367,8 @@
 							<label>$INFO[ListItem.Label2]</label>
 						</control>
 						<control type="label">
-							<posx>120</posx>
-							<posy>185</posy>
+							<left>120</left>
+							<top>185</top>
 							<width>200</width>
 							<height>20</height>
 							<font>font12</font>
@@ -380,8 +380,8 @@
 							<label>$INFO[ListItem.Label]</label>
 						</control>
 						<control type="label">
-							<posx>120</posx>
-							<posy>185</posy>
+							<left>120</left>
+							<top>185</top>
 							<width>200</width>
 							<height>20</height>
 							<font>font12</font>
@@ -478,8 +478,8 @@
 				</control>
 				<control type="button">
 					<description>left Arrow</description>
-					<posx>-40</posx>
-					<posy>90</posy>
+					<left>-40</left>
+					<top>90</top>
 					<width>30</width>
 					<height>40</height>
 					<texturefocus>arrow-big-left.png</texturefocus>
@@ -490,8 +490,8 @@
 				</control>
 				<control type="button">
 					<description>right Arrow</description>
-					<posx>970</posx>
-					<posy>90</posy>
+					<left>970</left>
+					<top>90</top>
 					<width>30</width>
 					<height>40</height>
 					<texturefocus>arrow-big-right.png</texturefocus>
@@ -503,15 +503,15 @@
 			</control>
 
 			<control type="group">
-				<posx>240</posx>
-				<posy>50</posy>
+				<left>240</left>
+				<top>50</top>
 				<visible>Library.HasContent(Music)</visible>
 				<visible>Container(9000).Hasfocus(3) + !Skin.HasSetting(HomepageHideRecentlyAddedAlbums)</visible>
 				<include>VisibleFadeEffect</include>
 				<control type="label">
 					<description>Title label</description>
-					<posx>160</posx>
-					<posy>220</posy>
+					<left>160</left>
+					<top>220</top>
 					<height>20</height>
 					<width>480</width>
 					<label>359</label>
@@ -525,8 +525,8 @@
 					<animation effect="slide" start="0,0" end="100,0" time="0" condition="StringCompare(Container(8002).NumItems,3)">conditional</animation>
 					<animation effect="slide" start="0,0" end="200,0" time="0" condition="StringCompare(Container(8002).NumItems,2)">conditional</animation>
 					<animation effect="slide" start="0,0" end="300,0" time="0" condition="StringCompare(Container(8002).NumItems,1)">conditional</animation>
-					<posx>0</posx>
-					<posy>0</posy>
+					<left>0</left>
+					<top>0</top>
 					<width>800</width>
 					<height>240</height>
 					<onleft>8002</onleft>
@@ -540,15 +540,15 @@
 					<itemlayout height="220" width="200">
 						<control type="image">
 							<description>background</description>
-							<posx>0</posx>
-							<posy>0</posy>
+							<left>0</left>
+							<top>0</top>
 							<width>200</width>
 							<height>220</height>
 							<texture border="15">RecentAddedBack.png</texture>
 						</control>
 						<control type="image">
-							<posx>10</posx>
-							<posy>10</posy>
+							<left>10</left>
+							<top>10</top>
 							<width>180</width>
 							<height>155</height>
 							<aspectratio>keep</aspectratio>
@@ -557,8 +557,8 @@
 							<bordersize>5</bordersize>
 						</control>
 						<control type="label">
-							<posx>100</posx>
-							<posy>170</posy>
+							<left>100</left>
+							<top>170</top>
 							<width>180</width>
 							<height>20</height>
 							<font>font10</font>
@@ -570,8 +570,8 @@
 							<label>$INFO[ListItem.Label2]</label>
 						</control>
 						<control type="label">
-							<posx>100</posx>
-							<posy>190</posy>
+							<left>100</left>
+							<top>190</top>
 							<width>180</width>
 							<height>20</height>
 							<font>font12</font>
@@ -586,15 +586,15 @@
 					<focusedlayout height="220" width="200">
 						<control type="image">
 							<description>background</description>
-							<posx>0</posx>
-							<posy>0</posy>
+							<left>0</left>
+							<top>0</top>
 							<width>200</width>
 							<height>220</height>
 							<texture border="15">RecentAddedBack.png</texture>
 						</control>
 						<control type="image">
-							<posx>10</posx>
-							<posy>10</posy>
+							<left>10</left>
+							<top>10</top>
 							<width>180</width>
 							<height>155</height>
 							<aspectratio>keep</aspectratio>
@@ -604,8 +604,8 @@
 							<visible>Control.HasFocus(8002)</visible>
 						</control>
 						<control type="image">
-							<posx>10</posx>
-							<posy>10</posy>
+							<left>10</left>
+							<top>10</top>
 							<width>180</width>
 							<height>155</height>
 							<aspectratio>keep</aspectratio>
@@ -615,8 +615,8 @@
 							<visible>!Control.HasFocus(8002)</visible>
 						</control>
 						<control type="label">
-							<posx>100</posx>
-							<posy>170</posy>
+							<left>100</left>
+							<top>170</top>
 							<width>180</width>
 							<height>20</height>
 							<font>font10</font>
@@ -628,8 +628,8 @@
 							<label>$INFO[ListItem.Label2]</label>
 						</control>
 						<control type="label">
-							<posx>100</posx>
-							<posy>190</posy>
+							<left>100</left>
+							<top>190</top>
 							<width>180</width>
 							<height>20</height>
 							<font>font12</font>
@@ -641,8 +641,8 @@
 							<label>$INFO[ListItem.Label]</label>
 						</control>
 						<control type="label">
-							<posx>100</posx>
-							<posy>190</posy>
+							<left>100</left>
+							<top>190</top>
 							<width>180</width>
 							<height>20</height>
 							<font>font12</font>
@@ -749,8 +749,8 @@
 				</control>
 				<control type="button">
 					<description>left Arrow</description>
-					<posx>-40</posx>
-					<posy>90</posy>
+					<left>-40</left>
+					<top>90</top>
 					<width>30</width>
 					<height>40</height>
 					<texturefocus>arrow-big-left.png</texturefocus>
@@ -761,8 +761,8 @@
 				</control>
 				<control type="button">
 					<description>right Arrow</description>
-					<posx>810</posx>
-					<posy>90</posy>
+					<left>810</left>
+					<top>90</top>
 					<width>30</width>
 					<height>40</height>
 					<texturefocus>arrow-big-right.png</texturefocus>
