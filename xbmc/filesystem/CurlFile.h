@@ -96,6 +96,7 @@ namespace XFILE
       const CHttpHeader& GetHttpHeader() const { return m_state->m_httpheader; }
       std::string GetServerReportedCharset(void);
       std::string GetURL(void);
+      std::string GetRedirectURL();
 
       /* static function that will get content type of a file */
       static bool GetHttpHeader(const CURL &url, CHttpHeader &headers);
@@ -159,6 +160,7 @@ namespace XFILE
       void SetRequestHeaders(CReadState* state);
       void SetCorrectHeaders(CReadState* state);
       bool Service(const std::string& strURL, std::string& strHTML);
+      std::string GetInfoString(int infoType);
 
     protected:
       CReadState*     m_state;
