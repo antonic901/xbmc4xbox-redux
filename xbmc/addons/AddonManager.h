@@ -249,8 +249,8 @@ namespace ADDON
     bool IsCompatible(const IAddon& addon);
 
     static AddonPtr Factory(const cp_plugin_info_t* plugin, TYPE type);
-    static bool Factory(const cp_plugin_info_t* plugin, TYPE type, CAddonBuilder& builder, bool ignoreExtensions = false);
-    static void FillCpluffMetadata(const cp_plugin_info_t* plugin, CAddonBuilder& builder);
+    static bool Factory(const cp_plugin_info_t* plugin, TYPE type, CAddonBuilder& builder, bool ignoreExtensions = false, std::string assetBasePath = "");
+    static void FillCpluffMetadata(const cp_plugin_info_t* plugin, CAddonBuilder& builder, std::string const& assetBasePath);
 
   private:
     void OnEventSubmit(const std::string& id, const CDateTime& time);
