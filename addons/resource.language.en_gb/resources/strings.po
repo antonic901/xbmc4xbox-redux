@@ -1244,7 +1244,19 @@ msgctxt "#306"
 msgid "Non-interleaved"
 msgstr ""
 
-#empty strings from id 307 to 311
+#empty strings from id 307 to 309
+
+#. Setting in international settings
+#: system/settings/settings.xml
+msgctxt "#310"
+msgid "Keyboard layouts"
+msgstr ""
+
+#. Keyboard layout name e.g. "English QWERTY"
+#: xbmc/input/KeyboardLayout.cpp
+msgctxt "#311"
+msgid "%s %s"
+msgstr ""
 
 msgctxt "#312"
 msgid "(0=auto)"
@@ -12477,7 +12489,13 @@ msgctxt "#36431"
 msgid "Defines whether video decoding should be performed in software (requires more CPU) or with hardware acceleration where possible."
 msgstr ""
 
-#empty strings from id 36432 to 36499
+#. Description for international setting #310: Keyboard layouts
+#: system/settings/settings.xml
+msgctxt "#36432"
+msgid "Select virtual keyboard layouts."
+msgstr ""
+
+#empty strings from id 36433 to 36499
 #end reservation
 
 #: system/settings/settings.xml
