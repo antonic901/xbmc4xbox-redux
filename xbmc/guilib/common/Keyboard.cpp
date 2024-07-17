@@ -69,6 +69,11 @@ WCHAR CKeyboard::GetUnicode()
   CLog::Log(LOGDEBUG, "shift is pressed bool: %d ", GetShift());
 #endif
 
+  // TODO: if we ever need to re-add support for this you can bring back
+  // https://github.com/rkalz/xbmc4xbox/blob/master/xbmc/input/KeyboardLayoutConfiguration.h which
+  // was used to create mapping for different keyboard layouts. Once you add this back, load config inside
+  // CApplication::Create(). Example: https://github.com/rkalz/xbmc4xbox/blob/master/xbmc/Application.cpp#L1086
+  /*
   if (GetRAlt())
   {
     if (g_keyboardLayoutConfiguration.containsDeriveXbmcCharFromVkeyWithRalt(key))
@@ -122,6 +127,7 @@ WCHAR CKeyboard::GetUnicode()
 #endif
     return resultUnicode;
   };
+  */
   
   return lowLevelUnicode;
 }
