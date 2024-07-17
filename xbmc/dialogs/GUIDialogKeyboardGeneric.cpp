@@ -25,7 +25,7 @@
 #include "guilib/GUILabelControl.h"
 #include "guilib/GUIWindowManager.h"
 #include "input/KeyboardLayoutManager.h"
-#include "input/Key.h"
+#include "guilib/Key.h"
 #include "guilib/LocalizeStrings.h"
 #include "GUIUserMessages.h"
 #include "GUIDialogNumeric.h"
@@ -37,7 +37,6 @@
 #include "utils/StringUtils.h"
 #include "messaging/ApplicationMessenger.h"
 #include "utils/CharsetConverter.h"
-#include "windowing/WindowingFactory.h"
 
 using namespace KODI::MESSAGING;
 
@@ -81,7 +80,7 @@ CGUIDialogKeyboardGeneric::CGUIDialogKeyboardGeneric()
   m_loadType = KEEP_IN_MEMORY;
   m_isKeyboardNavigationMode = false;
   m_previouslyFocusedButton = 0;
-  m_codingtable = NULL;
+  m_codingtable.reset();
   m_pos = 0;
   m_listwidth = 600;
   m_hzcode = "";
@@ -89,7 +88,6 @@ CGUIDialogKeyboardGeneric::CGUIDialogKeyboardGeneric()
 
 void CGUIDialogKeyboardGeneric::OnWindowLoaded()
 {
-  g_Windowing.EnableTextInput(false);
   CGUIEditControl *edit = (CGUIEditControl *)GetControl(CTL_EDIT);
   if (edit)
   {
@@ -131,7 +129,7 @@ void CGUIDialogKeyboardGeneric::OnInitWindow()
   m_currentLayout = 0;
   m_layouts.clear();
   const KeyboardLayouts& keyboardLayouts = CKeyboardLayoutManager::GetInstance().GetLayouts();
-  std::vector<CVariant> layoutNames = CSettings::GetInstance().GetList(CSettings::SETTING_LOCALE_KEYBOARDLAYOUTS);
+  std::vector<CVariant> layoutNames = CSettings::Get().GetList("locale.keyboardlayouts");
 
   for (std::vector<CVariant>::const_iterator layoutName = layoutNames.begin(); layoutName != layoutNames.end(); ++layoutName)
   {
@@ -323,7 +321,7 @@ bool CGUIDialogKeyboardGeneric::OnMessage(CGUIMessage& message)
       if (code == m_hzcode)
       {
         int response = message.GetParam1();
-        auto words = m_codingtable->GetResponse(response);
+        std::vector<std::wstring> words = m_codingtable->GetResponse(response);
         m_words.insert(m_words.end(), words.begin(), words.end());
         ShowWordList(0);
       }
@@ -493,9 +491,10 @@ void CGUIDialogKeyboardGeneric::UpdateButtons()
 
 void CGUIDialogKeyboardGeneric::OnDeinitWindow(int nextWindowID)
 {
-  for (auto& layout : m_layouts)
+  for (std::vector<CKeyboardLayout>::iterator it = m_layouts.begin(); it != m_layouts.end(); ++it)
   {
-    auto codingTable = layout.GetCodingTable();
+    CKeyboardLayout &layout = *it;
+    IInputCodingTablePtr codingTable = layout.GetCodingTable();
     if (codingTable && codingTable->IsInitialized())
       codingTable->Deinitialize();
   }

@@ -21,9 +21,8 @@
 #include "Keyboard.h"
 #include "LanguageHook.h"
 
-#include "guilib/GUIWindowManager.h"
 #include "guilib/GUIKeyboardFactory.h"
-#include "dialogs/GUIDialogKeyboardGeneric.h"
+#include "utils/Variant.h"
 #include "messaging/ApplicationMessenger.h"
 
 using namespace KODI::MESSAGING;

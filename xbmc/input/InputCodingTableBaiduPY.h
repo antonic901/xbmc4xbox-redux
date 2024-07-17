@@ -34,13 +34,13 @@ public:
   CInputCodingTableBaiduPY(const std::string& strUrl);
   virtual ~CInputCodingTableBaiduPY() {}
 
-  virtual void Initialize() override;
-  virtual void Deinitialize() override;
-  virtual bool IsInitialized() const override;
-  virtual bool GetWordListPage(const std::string& strCode, bool isFirstPage) override;
-  virtual void Process() override;
+  virtual void Initialize();
+  virtual void Deinitialize();
+  virtual bool IsInitialized() const;
+  virtual bool GetWordListPage(const std::string& strCode, bool isFirstPage);
+  virtual void Process();
 
-  virtual std::vector<std::wstring> GetResponse(int response) override;
+  virtual std::vector<std::wstring> GetResponse(int response);
 private:
   std::wstring UnicodeToWString(const std::string& unicode);
   void HandleResponse(const std::string& strCode, const std::string& response);
@@ -54,7 +54,7 @@ private:
   bool m_initialized;
 
   std::deque<std::string> m_work;
-  std::map<int, std::vector<std::wstring>> m_responses;
+  std::map<int, std::vector<std::wstring> > m_responses;
   CEvent            m_Event;
   CCriticalSection  m_CS;
 };

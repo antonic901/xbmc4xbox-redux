@@ -20,8 +20,10 @@
 *
 */
 
+#include "system.h" // <xtl.h>
+
 #include <string>
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <vector>
 
 class IInputCodingTable
@@ -60,4 +62,4 @@ protected:
   std::string m_codechars;
 };
 
-typedef std::shared_ptr<IInputCodingTable> IInputCodingTablePtr;
+typedef boost::shared_ptr<IInputCodingTable> IInputCodingTablePtr;

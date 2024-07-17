@@ -31,11 +31,11 @@
 
 CInputCodingTableBaiduPY::CInputCodingTableBaiduPY(const std::string& strUrl) :
   CThread("BaiduPYApi"),
-  m_messageCounter{ 0 },
-  m_api_begin{ 0 },
-  m_api_end{ 20 },
-  m_api_nomore{ false },
-  m_initialized{ false }
+  m_messageCounter( 0 ),
+  m_api_begin( 0 ),
+  m_api_end( 20 ),
+  m_api_nomore( false ),
+  m_initialized( false )
 {
   m_url = strUrl;
   m_codechars = "abcdefghijklmnopqrstuvwxyz";
@@ -54,7 +54,7 @@ void CInputCodingTableBaiduPY::Process()
       if (m_work.empty())
         break;
 
-      auto work = m_work.front();
+      std::string work = m_work.front();
       m_work.pop_front();
       lock.Leave();
 
@@ -117,7 +117,7 @@ std::wstring CInputCodingTableBaiduPY::UnicodeToWString(const std::string& unico
 std::vector<std::wstring> CInputCodingTableBaiduPY::GetResponse(int response)
 {
   CSingleLock lock(m_CS);
-  auto words = m_responses.at(response);
+  std::vector<std::wstring> words = m_responses.find(response)->second;
   m_responses.erase(response);
   return words;
 }

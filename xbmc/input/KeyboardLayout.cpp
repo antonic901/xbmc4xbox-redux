@@ -31,7 +31,7 @@
 
 CKeyboardLayout::CKeyboardLayout()
 {
-  m_codingtable = NULL;
+  m_codingtable.reset();
 }
 
 CKeyboardLayout::~CKeyboardLayout()
@@ -71,7 +71,7 @@ bool CKeyboardLayout::Load(const TiXmlElement* element)
   if (element->Attribute("codingtable"))
     m_codingtable = IInputCodingTablePtr(CInputCodingTableFactory::CreateCodingTable(element->Attribute("codingtable"), element));
   else
-    m_codingtable = NULL;
+    m_codingtable.reset();
   while (keyboard != NULL)
   {
     // parse modifiers keys
