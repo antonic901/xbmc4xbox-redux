@@ -18,6 +18,10 @@
 		<value condition="Player.HasVideo">ActivateWindow(videoplaylist)</value>
 		<value condition="Player.HasAudio">ActivateWindow(musicplaylist)</value>
 	</variable>
+	<variable name="SelectBack">
+		<value condition="![Window.IsVisible(FullscreenVideo) | Window.IsVisible(Visualisation)]">DialogBack.png</value>
+		<value>DialogBack2.png</value>
+	</variable>
 	<variable name="SeekLabel">
 		<value condition="!IsEmpty(Player.SeekStepSize) + ![player.forwarding | player.rewinding]">$LOCALIZE[31046][COLOR=grey] $INFO[Player.SeekStepSize][/COLOR]</value>
 		<value condition="Player.DisplayAfterSeek + ![player.forwarding | player.rewinding]">$LOCALIZE[31046][COLOR=grey] $INFO[Player.SeekOffset][/COLOR]</value>
@@ -922,5 +926,15 @@
 	<include name="VisibleFadeEffect">
 		<animation effect="fade" time="300">Visible</animation>
 		<animation effect="fade" time="300">Hidden</animation>
+	</include>
+	<include name="KeyboardButton">
+		<width>50</width>
+		<height>50</height>
+		<texturenofocus border="3">KeyboardKeyNF.png</texturenofocus>
+		<texturefocus border="5">KeyboardKey.png</texturefocus>
+		<align>center</align>
+		<aligny>center</aligny>
+		<font>font13</font>
+		<focusedcolor>black</focusedcolor>
 	</include>
 </includes>
