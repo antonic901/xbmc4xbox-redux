@@ -1,6 +1,5 @@
 #include "..\include.h"
 #include "Keyboard.h"
-#include "input/KeyboardLayoutConfiguration.h"
 #include "utils/log.h"
 
 //

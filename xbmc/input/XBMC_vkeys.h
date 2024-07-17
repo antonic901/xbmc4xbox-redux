@@ -12,9 +12,9 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    You should have received a copy of the GNU General Public License
+    along with XBMC; see the file COPYING.  If not, see
+    <http://www.gnu.org/licenses/>.
 
     Sam Lantinga
     slouken@libsdl.org
@@ -188,6 +188,9 @@ typedef enum {
   XBMCVK_LAUNCH_APP2         = 0xC1,
   XBMCVK_LAUNCH_FILE_BROWSER = 0xC2,
   XBMCVK_LAUNCH_MEDIA_CENTER = 0xC3,
+  XBMCVK_MEDIA_REWIND        = 0xC4,
+  XBMCVK_MEDIA_FASTFORWARD   = 0xC5,
+  XBMCVK_MEDIA_RECORD        = 0xC6,
 
   XBMCVK_LCONTROL       = 0xD0,
   XBMCVK_RCONTROL       = 0xD1,
@@ -205,6 +208,20 @@ typedef enum {
   XBMCVK_SCROLLLOCK     = 0xDC,
   XBMCVK_PAUSE          = 0XDD,
   XBMCVK_POWER          = 0XDE,
+  XBMCVK_SLEEP          = 0XDF,
+  XBMCVK_GUIDE          = 0xE0,
+  XBMCVK_SETTINGS       = 0xE1,
+  XBMCVK_INFO           = 0xE2,
+  XBMCVK_RED            = 0xE3,
+  XBMCVK_GREEN          = 0xE4,
+  XBMCVK_YELLOW         = 0xE5,
+  XBMCVK_BLUE           = 0xE6,
+  XBMCVK_ZOOM           = 0xE7,
+  XBMCVK_TEXT           = 0xE8,
+  XBMCVK_FAVORITES      = 0xE9,
+  XBMCVK_HOMEPAGE       = 0xEA,
+  XBMCVK_CONFIG         = 0xEB,
+  XBMCVK_EPG            = 0xEC,
 
   XBMCVK_LAST           = 0xFF
 } XBMCVKey;

@@ -147,6 +147,11 @@
 #define GUI_MSG_USER         1000
 
 /*!
+\brief Complete to get codingtable page
+*/
+#define GUI_MSG_CODINGTABLE_LOOKUP_COMPLETED 65000
+
+/*!
  \ingroup winmsg
  \brief
  */

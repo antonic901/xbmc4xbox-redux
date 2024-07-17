@@ -1624,12 +1624,6 @@
 					RelativePath="..\..\xbmc\utils\JpegIO.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\input\KeyboardLayoutConfiguration.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\input\KeyboardLayoutConfiguration.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\utils\LabelFormatter.cpp">
 				</File>
 				<File

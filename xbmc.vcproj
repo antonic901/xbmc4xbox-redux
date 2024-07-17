@@ -826,9 +826,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\BooleanLogic.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\input\ButtonTranslator.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\Cdg.cpp">
 				</File>
 				<File
@@ -935,12 +932,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\JSONVariantWriter.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\input\KeyboardLayoutConfiguration.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\input\KeyboardLayoutConfiguration.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\LabelFormatter.cpp">
@@ -4616,6 +4607,55 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="input"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\input\ButtonTranslator.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\input\ButtonTranslator.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\input\InputCodingTable.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\input\InputCodingTableBaiduPY.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\input\InputCodingTableBaiduPY.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\input\InputCodingTableBasePY.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\input\InputCodingTableBasePY.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\input\InputCodingTableFactory.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\input\InputCodingTableFactory.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\input\InputCodingTableKorean.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\input\InputCodingTableKorean.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\input\KeyboardLayout.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\input\KeyboardLayout.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\input\KeyboardLayoutManager.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\input\KeyboardLayoutManager.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -4659,9 +4699,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\AutoSwitch.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\input\ButtonTranslator.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\Cdg.h">

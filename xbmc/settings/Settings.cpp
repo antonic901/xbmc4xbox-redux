@@ -37,6 +37,7 @@
 #include "guilib/GUIAudioManager.h"
 #include "guilib/GUIFontManager.h"
 #include "guilib/LocalizeStrings.h"
+#include "input/KeyboardLayoutManager.h"
 #include "guilib/common/Mouse.h"
 #include "network/NetworkServices.h"
 #include "network/upnp/UPnPSettings.h"
@@ -241,6 +242,7 @@ void CSettings::Uninitialize()
   m_settingsManager->UnregisterSettingOptionsFiller("skinthemes");
   m_settingsManager->UnregisterSettingOptionsFiller("targettemperatures");
   m_settingsManager->UnregisterSettingOptionsFiller("timezones");
+  m_settingsManager->UnregisterSettingOptionsFiller("keyboardlayouts");
   m_settingsManager->UnregisterSettingOptionsFiller("voicemasks");
 
   // unregister ISettingCallback implementations
@@ -607,6 +609,7 @@ void CSettings::InitializeOptionFillers()
   m_settingsManager->RegisterSettingOptionsFiller("skinthemes", ADDON::CSkinInfo::SettingOptionsSkinThemesFiller);
   m_settingsManager->RegisterSettingOptionsFiller("targettemperatures", CFanController::SettingOptionsTemperaturesFiller);
   m_settingsManager->RegisterSettingOptionsFiller("timezones", XBTimeZone::SettingOptionsTimezonesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("keyboardlayouts", CKeyboardLayoutManager::SettingOptionsKeyboardLayoutsFiller);
   m_settingsManager->RegisterSettingOptionsFiller("voicemasks", CCdgParser::SettingOptionsVoiceMasksFiller);
 }
 

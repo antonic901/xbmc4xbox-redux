@@ -94,7 +94,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "utils/SeekHandler.h"
 
-#include "input/KeyboardLayoutConfiguration.h"
+#include "input/KeyboardLayoutManager.h"
 
 #if HAVE_SDL_VERSION == 1
 #include <SDL/SDL.h>
@@ -1022,6 +1022,13 @@ HRESULT CApplication::Create(HWND hWnd)
   CServiceBroker::GetAddonMgr().GetAddon("xbmc.debug", addon);
   if (addon)
     g_advancedSettings.SetExtraLogsFromAddon(addon.get());
+
+  // load the keyboard layouts
+  if (!CKeyboardLayoutManager::GetInstance().Load())
+  {
+    CLog::Log(LOGFATAL, "CApplication::Create: Unable to load keyboard layouts");
+    FatalErrorHandler(true, true, true);
+  }
 
   // Check for WHITE + Y for forced Error Handler (to recover if something screwy happens)
 #ifdef HAS_GAMEPAD
