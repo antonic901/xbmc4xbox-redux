@@ -104,6 +104,7 @@ namespace INFO
 #define PLAYER_PROGRESS_CACHE        48
 #define PLAYER_ITEM_ART              49
 #define PLAYER_SEEKSTEPSIZE          56
+#define PLAYER_SEEKNUMERIC           61
 
 #define WEATHER_CONDITIONS          100
 #define WEATHER_TEMPERATURE         101

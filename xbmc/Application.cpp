@@ -2892,7 +2892,7 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
     ProcessEventServer(frameTime);
     if (processGUI)
     {
-      CSeekHandler::Get().Process();
+      CSeekHandler::Get().FrameMove();
     }
   }
   if (processGUI)

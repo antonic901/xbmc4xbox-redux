@@ -33,6 +33,7 @@
 #include "addons/Skin.h"
 #include "GUITexture.h"
 #include "utils/Variant.h"
+#include "utils/SeekHandler.h"
 #include "utils/log.h"
 
 #include "windows/GUIWindowHome.h"
@@ -1279,6 +1280,15 @@ int CGUIWindowManager::GetActiveWindowID()
     // check if we're in a DVD menu
     if (g_application.m_pPlayer && g_application.m_pPlayer->IsInMenu())
       iWin = WINDOW_VIDEO_MENU;
+    // special casing for numeric seek
+    else if (CSeekHandler::Get().HasTimeCode())
+      iWin = WINDOW_VIDEO_TIME_SEEK;
+  }
+  if (iWin == WINDOW_VISUALISATION)
+  {
+    // special casing for numeric seek
+    if (CSeekHandler::Get().HasTimeCode())
+      iWin = WINDOW_VIDEO_TIME_SEEK;
   }
 
   // Return the window id

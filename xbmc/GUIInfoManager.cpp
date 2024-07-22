@@ -224,7 +224,7 @@ const infomap player_times[] =   {{ "seektime",         PLAYER_SEEKTIME },
                                   { "timespeed",        PLAYER_TIME_SPEED },
                                   { "time",             PLAYER_TIME },
                                   { "duration",         PLAYER_DURATION },
-                                  { "finishtime",       PLAYER_FINISH_TIME }};
+                                  { "seeknumeric",      PLAYER_SEEKNUMERIC } };
 
 const infomap weather[] =        {{ "isfetched",        WEATHER_IS_FETCHED },
                                   { "conditions",       WEATHER_CONDITIONS },         // labels from here
@@ -3035,6 +3035,16 @@ CStdString CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextWi
       return "-" + strSeekSize;
     if (seekSize > 0)
       return "+" + strSeekSize;
+  }
+  else if (info.m_info == PLAYER_SEEKNUMERIC)
+  {
+    if (!CSeekHandler::Get().HasTimeCode())
+      return "";
+    int seekTimeCode = CSeekHandler::Get().GetTimeCodeSeconds();
+    TIME_FORMAT format = (TIME_FORMAT)info.GetData1();
+    if (format == TIME_FORMAT_GUESS && seekTimeCode >= 3600)
+      format = TIME_FORMAT_HH_MM_SS;
+    return StringUtils::SecondsToTimeString(seekTimeCode, format);
   }
   else if (info.m_info == PLAYER_ITEM_ART)
   {
