@@ -42,6 +42,7 @@
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "Application.h"
+#include "messaging/ApplicationMessenger.h"
 #include "DVDPerformanceCounter.h"
 #include "filesystem/File.h"
 #include "settings/AdvancedSettings.h"
@@ -60,6 +61,7 @@
 #include "utils/LangCodeExpander.h"
 
 using namespace std;
+using namespace KODI::MESSAGING;
 
 void CSelectionStreams::Clear(StreamType type, StreamSource source)
 {
@@ -3344,7 +3346,7 @@ int CDVDPlayer::GetChapter()
   return m_State.chapter;
 }
 
-void CDVDPlayer::GetChapterName(CStdString& strChapterName)
+void CDVDPlayer::GetChapterName(std::string& strChapterName)
 {
   CSingleLock lock(m_StateSection);
   strChapterName = m_State.chapter_name;
@@ -3584,7 +3586,7 @@ void CDVDPlayer::UpdateApplication(double timeout)
     if(pStream->UpdateItem(item))
     {
       g_application.CurrentFileItem() = item;
-      g_infoManager.SetCurrentItem(item);
+      CApplicationMessenger::Get().PostMsg(TMSG_UPDATE_CURRENT_ITEM, 0, -1, static_cast<void*>(new CFileItem(item)));
     }
   }
   m_UpdateApplication = CDVDClock::GetAbsoluteClock();

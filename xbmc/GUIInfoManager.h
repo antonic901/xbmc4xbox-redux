@@ -47,11 +47,13 @@ namespace MUSIC_INFO
 {
   class CMusicInfoTag;
 }
+#ifndef _XBOX
 namespace PVR
 {
   class CPVRRadioRDSInfoTag;
   typedef std::shared_ptr<PVR::CPVRRadioRDSInfoTag> CPVRRadioRDSInfoTagPtr;
 }
+#endif
 class CVideoInfoTag;
 class CFileItem;
 class CGUIListItem;
@@ -63,12 +65,13 @@ namespace INFO
 
 // forward
 class CGUIWindow;
+#ifndef _XBOX
 namespace EPG
 {
   class CEpgInfoTag;
   typedef std::shared_ptr<EPG::CEpgInfoTag> CEpgInfoTagPtr;
 }
-
+#endif
 
 
 // structure to hold multiple integer data
@@ -114,10 +117,10 @@ public:
   virtual ~CGUIInfoManager(void);
 
   void Clear();
-  virtual bool OnMessage(CGUIMessage &message) override;
+  virtual bool OnMessage(CGUIMessage &message);
 
-  virtual int GetMessageMask() override;
-  virtual void OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg) override;
+  virtual int GetMessageMask();
+  virtual void OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg);
 
   /*! \brief Register a boolean condition/expression
    This routine allows controls or other clients of the info manager to register
@@ -137,7 +140,7 @@ public:
    \return the value of the evaluated expression.
    \sa Register
    */
-  bool EvaluateBool(const std::string &expression, int context = 0, const CGUIListItemPtr &item = nullptr);
+  bool EvaluateBool(const std::string &expression, int context = 0, const CGUIListItemPtr &item = CGUIListItemPtr());
 
   int TranslateString(const std::string &strCondition);
 
@@ -175,7 +178,9 @@ public:
   void SetCurrentVideoTag(const CVideoInfoTag &tag);
 
   const MUSIC_INFO::CMusicInfoTag *GetCurrentSongTag() const;
+#ifndef _XBOX
   const PVR::CPVRRadioRDSInfoTagPtr GetCurrentRadioRDSInfoTag() const;
+#endif
   const CVideoInfoTag* GetCurrentMovieTag() const;
 
   std::string GetRadioRDSLabel(int item);
@@ -293,11 +298,13 @@ protected:
   int AddMultiInfo(const GUIInfo &info);
   int AddListItemProp(const std::string &str, int offset=0);
 
+#ifndef _XBOX
   /*!
    * @brief Get the EPG tag that is currently active
    * @return the currently active tag or NULL if no active tag was found
    */
   EPG::CEpgInfoTagPtr GetEpgInfoTag() const;
+#endif
 
   void SetCurrentItemJob(const CFileItemPtr item);
 
@@ -313,6 +320,8 @@ protected:
   // Current playing stuff
   CFileItem* m_currentFile;
   std::string m_currentMovieThumb;
+  unsigned int m_lastMusicBitrateTime;
+  unsigned int m_MusicBitrate;
   CFileItem* m_currentSlide;
 
   // fan stuff
@@ -324,8 +333,8 @@ protected:
   //Fullscreen OSD Stuff
   unsigned int m_AfterSeekTimeout;
   int m_seekOffset;
-  std::atomic_bool m_playerShowTime;
-  std::atomic_bool m_playerShowInfo;
+  bool m_playerShowTime;
+  bool m_playerShowInfo;
 
   // FPS counters
   float m_fps;
@@ -349,10 +358,8 @@ protected:
 
   //Count of artists in music library contributing to song by role e.g. composers, conductors etc.
   //For checking visibiliy of custom nodes for a role.
-  std::vector<std::pair<std::string, int>> m_libraryRoleCounts;
+  std::vector<std::pair<std::string, int> > m_libraryRoleCounts;
 
-  SPlayerVideoStreamInfo m_videoInfo;
-  SPlayerAudioStreamInfo m_audioInfo;
   bool m_isPvrChannelPreview;
 
   CCriticalSection m_critInfo;

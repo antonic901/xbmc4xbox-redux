@@ -212,7 +212,7 @@ public:
 
   virtual int  GetChapterCount();
   virtual int  GetChapter();
-  virtual void GetChapterName(CStdString& strChapterName);
+  virtual void GetChapterName(std::string& strChapterName);
   virtual int  SeekChapter(int iChapter);
 
   virtual void SeekTime(int64_t iTime);
