@@ -4782,6 +4782,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\dialogs\GUIDialogYesNo.h">
 			</File>
 			<File
+				RelativePath=".\xbmc\guiinfo\GUIInfoLabels.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\GUIInfoManager.h">
 			</File>
 			<File
