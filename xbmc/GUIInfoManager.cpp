@@ -6103,30 +6103,30 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
     strLabel = StringUtils::Format("%2.3f s", CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay);
     break;
   case PLAYER_CHAPTER:
-    if(g_application.m_pPlayer->IsPlaying())
+    if(g_application.IsPlaying())
       strLabel = StringUtils::Format("%02d", g_application.m_pPlayer->GetChapter());
     break;
   case PLAYER_CHAPTERCOUNT:
-    if(g_application.m_pPlayer->IsPlaying())
+    if(g_application.IsPlaying())
       strLabel = StringUtils::Format("%02d", g_application.m_pPlayer->GetChapterCount());
     break;
   case PLAYER_CHAPTERNAME:
-    if(g_application.m_pPlayer->IsPlaying())
+    if(g_application.IsPlaying())
       g_application.m_pPlayer->GetChapterName(strLabel);
     break;
   case PLAYER_CACHELEVEL:
     {
       int iLevel = 0;
-      if(g_application.m_pPlayer->IsPlaying() && GetInt(iLevel, PLAYER_CACHELEVEL) && iLevel >= 0)
+      if(g_application.IsPlaying() && GetInt(iLevel, PLAYER_CACHELEVEL) && iLevel >= 0)
         strLabel = StringUtils::Format("%i", iLevel);
     }
     break;
   case PLAYER_TIME:
-    if(g_application.m_pPlayer->IsPlaying())
+    if(g_application.IsPlaying())
       strLabel = GetCurrentPlayTime(TIME_FORMAT_HH_MM);
     break;
   case PLAYER_DURATION:
-    if(g_application.m_pPlayer->IsPlaying())
+    if(g_application.IsPlaying())
       strLabel = GetDuration(TIME_FORMAT_HH_MM);
     break;
   case PLAYER_PATH:
@@ -7019,7 +7019,7 @@ bool CGUIInfoManager::GetInt(int &value, int info, int contextWindow, const CGUI
     case PLAYER_CHAPTER:
     case PLAYER_CHAPTERCOUNT:
       {
-        if( g_application.m_pPlayer->IsPlaying())
+        if( g_application.IsPlaying())
         {
           switch( info )
           {
@@ -7463,7 +7463,7 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
     CGUIWindowSlideShow *slideShow = (CGUIWindowSlideShow *)g_windowManager.GetWindow(WINDOW_SLIDESHOW);
     bReturn = (slideShow && slideShow->GetCurrentSlide() && slideShow->GetCurrentSlide()->IsVideo());
   }
-  else if (g_application.m_pPlayer->IsPlaying())
+  else if (g_application.IsPlaying())
   {
     switch (condition)
     {
@@ -8803,7 +8803,7 @@ const std::string CGUIInfoManager::GetMusicPlaylistInfo(const GUIInfo& info)
 
 std::string CGUIInfoManager::GetPlaylistLabel(int item, int playlistid /* = PLAYLIST_NONE */) const
 {
-  if (playlistid <= PLAYLIST_NONE && !g_application.m_pPlayer->IsPlaying())
+  if (playlistid <= PLAYLIST_NONE && !g_application.IsPlaying())
     return "";
 
   int iPlaylist = playlistid == PLAYLIST_NONE ? g_playlistPlayer.GetCurrentPlaylist() : playlistid;
@@ -9013,7 +9013,7 @@ std::string CGUIInfoManager::GetRadioRDSLabel(int item)
 
 std::string CGUIInfoManager::GetMusicLabel(int item)
 {
-  if (!g_application.m_pPlayer->IsPlaying() || !m_currentFile->HasMusicInfoTag()) return "";
+  if (!g_application.IsPlaying() || !m_currentFile->HasMusicInfoTag()) return "";
 
   switch (item)
   {
@@ -9207,7 +9207,7 @@ std::string CGUIInfoManager::GetMusicTagLabel(int info, const CFileItem *item)
 
 std::string CGUIInfoManager::GetVideoLabel(int item)
 {
-  if (!g_application.m_pPlayer->IsPlaying())
+  if (!g_application.IsPlaying())
     return "";
 
 #ifndef _XBOX
@@ -9591,7 +9591,7 @@ std::string CGUIInfoManager::GetVideoLabel(int item)
 
 int64_t CGUIInfoManager::GetPlayTime() const
 {
-  if (g_application.m_pPlayer->IsPlaying())
+  if (g_application.IsPlaying())
   {
     int64_t lPTS = (int64_t)(g_application.GetTime() * 1000);
     if (lPTS < 0) lPTS = 0;
@@ -9604,7 +9604,7 @@ std::string CGUIInfoManager::GetCurrentPlayTime(TIME_FORMAT format) const
 {
   if (format == TIME_FORMAT_GUESS && GetTotalPlayTime() >= 3600)
     format = TIME_FORMAT_HH_MM_SS;
-  if (g_application.m_pPlayer->IsPlaying())
+  if (g_application.IsPlaying())
     return StringUtils::SecondsToTimeString(MathUtils::round_int(GetPlayTime()/1000.0), format);
   return "";
 }
@@ -9650,7 +9650,7 @@ std::string CGUIInfoManager::GetCurrentPlayTimeRemaining(TIME_FORMAT format) con
   if (format == TIME_FORMAT_GUESS && GetTotalPlayTime() >= 3600)
     format = TIME_FORMAT_HH_MM_SS;
   int timeRemaining = GetPlayTimeRemaining();
-  if (timeRemaining && g_application.m_pPlayer->IsPlaying())
+  if (timeRemaining && g_application.IsPlaying())
     return StringUtils::SecondsToTimeString(timeRemaining, format);
   return "";
 }
@@ -9951,7 +9951,7 @@ void CGUIInfoManager::UpdateFPS()
 
 void CGUIInfoManager::UpdateAVInfo()
 {
-  if(g_application.m_pPlayer->IsPlaying())
+  if(g_application.IsPlaying())
   {
 #ifndef _XBOX
     if (CServiceBroker::GetDataCacheCore().HasAVInfoChanges())
