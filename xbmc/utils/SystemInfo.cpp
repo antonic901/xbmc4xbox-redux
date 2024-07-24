@@ -24,13 +24,16 @@
 #include "system.h"
 #include "SystemInfo.h"
 #include <conio.h>
+#include "LangInfo.h"
 #include "cores/DllLoader/DllLoader.h"
 #include "GUIInfoManager.h"
+#include "guiinfo/GUIInfoLabels.h"
 #include "filesystem/CurlFile.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/TimeUtils.h"
+#include "utils/Temperature.h"
 #include "utils/log.h"
 #include "utils/XMLUtils.h"
 #ifdef HAS_XBOX_HARDWARE
@@ -258,7 +261,7 @@ std::string CSysInfo::TranslateInfo(int info) const
 #ifdef HAS_XBOX_HARDWARE
   case SYSTEM_MPLAYER_VERSION:
     return m_info.mplayerversion;
-  case SYSTEM_KERNEL_VERSION:
+  case SYSTEM_OS_VERSION_INFO:
     return m_info.kernelVersion;
   case SYSTEM_CPUFREQUENCY:
     return m_info.cpuFrequency;

@@ -43,6 +43,13 @@
 #include <map>
 #include <vector>
 
+// NOTE: Version string MUST NOT contain spaces.  It is used in the HTTP request user agent.
+#ifdef SVN_REV
+#define VERSION_STRING "3.6-DEV-r"SVN_REV
+#else
+#define VERSION_STRING "3.6-DEV"
+#endif
+
 namespace MUSIC_INFO
 {
   class CMusicInfoTag;
@@ -158,6 +165,9 @@ public:
   std::string GetImage(int info, int contextWindow, std::string *fallback = NULL);
 
   std::string GetTime(TIME_FORMAT format = TIME_FORMAT_GUESS) const;
+#ifdef HAS_XBOX_HARDWARE
+  std::string GetLcdTime(int _eInfo) const;
+#endif
   std::string GetDate(bool bNumbersOnly = false);
   std::string GetDuration(TIME_FORMAT format = TIME_FORMAT_GUESS) const;
 
@@ -203,8 +213,10 @@ public:
   bool GetDisplayAfterSeek();
   void SetDisplayAfterSeek(unsigned int timeOut = 2500, int seekOffset = 0);
   void SetShowTime(bool showtime) { m_playerShowTime = showtime; };
+  void SetShowCodec(bool showcodec) { m_playerShowCodec = showcodec; };
   void SetShowInfo(bool showinfo);
   bool GetShowInfo() const { return m_playerShowInfo; }
+  void ToggleShowCodec() { m_playerShowCodec = !m_playerShowCodec; };
   bool ToggleShowInfo();
   bool IsPlayerChannelPreviewActive() const;
 
@@ -222,6 +234,10 @@ public:
   bool GetItemInt(int &value, const CGUIListItem *item, int info) const;
   std::string GetItemLabel(const CFileItem *item, int info, std::string *fallback = NULL);
   std::string GetItemImage(const CFileItem *item, int info, std::string *fallback = NULL);
+
+  // Called from tuxbox service thread to update current status
+  void UpdateFromTuxBox();
+  void SetLaunchingXBEName(const std::string &name) { m_launchingXBE = name; };
 
   /*! \brief containers call here to specify that the focus is changing
    \param id control id
@@ -250,6 +266,7 @@ public:
 
 protected:
   friend class INFO::InfoSingle;
+  friend class CGUIWindowFullScreen;
   bool GetBool(int condition, int contextWindow = 0, const CGUIListItem *item=NULL);
   int TranslateSingleString(const std::string &strCondition, bool &listItemDependent);
 
@@ -334,12 +351,15 @@ protected:
   unsigned int m_AfterSeekTimeout;
   int m_seekOffset;
   bool m_playerShowTime;
+  bool m_playerShowCodec;
   bool m_playerShowInfo;
 
   // FPS counters
   float m_fps;
   unsigned int m_frameCounter;
   unsigned int m_lastFPSTime;
+
+  std::string m_launchingXBE;
 
   std::map<int, int> m_containerMoves;  // direction of list moving
   int m_nextWindowID;

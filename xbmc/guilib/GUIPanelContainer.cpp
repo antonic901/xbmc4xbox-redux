@@ -19,7 +19,7 @@
  */
 
 #include "GUIPanelContainer.h"
-#include "GUIInfoManager.h"
+#include "guiinfo/GUIInfoLabels.h"
 #include "guilib/Key.h"
 #include "utils/StringUtils.h"
 

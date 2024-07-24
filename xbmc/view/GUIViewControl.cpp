@@ -26,6 +26,7 @@
 #include "GUIInfoManager.h"
 #include "LocalizeStrings.h"
 #include "guilib/IGUIContainer.h"
+#include "utils/StringUtils.h"
 
 CGUIViewControl::CGUIViewControl(void)
 {

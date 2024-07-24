@@ -48,6 +48,7 @@
 #include "threads/SingleLock.h"
 #include "input/ButtonTranslator.h"
 #include "utils/SeekHandler.h"
+#include "guiinfo/GUIInfoLabels.h"
 
 #include <stdio.h>
 

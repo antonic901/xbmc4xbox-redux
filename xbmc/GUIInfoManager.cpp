@@ -94,16 +94,12 @@
 #endif
 
 #ifdef _XBOX
+#include "utils/LCD.h"
+#include "utils/TuxBoxUtil.h"
 #include "utils/FanController.h"
 #include "defs_from_settings.h"
 #endif
 
-// NOTE: Version string MUST NOT contain spaces.  It is used in the HTTP request user agent.
-#ifdef SVN_REV
-#define VERSION_STRING "3.6-DEV-r"SVN_REV
-#else
-#define VERSION_STRING "3.6-DEV"
-#endif
 #define SYSHEATUPDATEINTERVAL 60000
 
 using namespace XFILE;
@@ -115,6 +111,10 @@ using namespace PVR;
 using namespace INFO;
 #ifndef _XBOX
 using namespace EPG;
+#endif
+
+#ifdef _XBOX
+CGUIInfoManager g_infoManager;
 #endif
 
 class CSetCurrentItemJob : public CJob
@@ -147,6 +147,7 @@ CGUIInfoManager::CGUIInfoManager(void) :
   m_frameCounter = 0;
   m_lastFPSTime = 0;
   m_playerShowTime = false;
+  m_playerShowCodec = false;
   m_playerShowInfo = false;
   m_fps = 0.0f;
   ResetLibraryBools();
@@ -1174,6 +1175,51 @@ const infomap system_labels[] =  {{ "hasnetwork",       SYSTEM_ETHERNET_LINK_ACT
                                   { "isfullscreen",     SYSTEM_ISFULLSCREEN },
                                   { "isstandalone",     SYSTEM_ISSTANDALONE },
                                   { "loggedon",         SYSTEM_LOGGEDON },
+#ifdef HAS_XBOX_HARDWARE
+                                  { "hddbootdate",      SYSTEM_HDD_BOOTDATE },
+                                  { "hddcyclecount",    SYSTEM_HDD_CYCLECOUNT },
+                                  { "dvdinfomodel",     SYSTEM_DVD_MODEL },
+                                  { "dvdinfofirmware",  SYSTEM_DVD_FIRMWARE },
+                                  { "mplayerversion",   SYSTEM_MPLAYER_VERSION },
+                                  { "xboxversion",      SYSTEM_XBOX_VERSION },
+                                  { "xboxproduceinfo",  SYSTEM_XBOX_PRODUCE_INFO },
+                                  { "xboxserial",       SYSTEM_XBOX_SERIAL },
+                                  { "xberegion",        SYSTEM_XBE_REGION },
+                                  { "dvdzone",          SYSTEM_DVD_ZONE },
+                                  { "bios",             SYSTEM_XBOX_BIOS },
+                                  { "modchip",          SYSTEM_XBOX_MODCHIP },
+                                  { "avpackinfo",       SYSTEM_AV_PACK_INFO },
+                                  { "freespace(c)",     SYSTEM_FREE_SPACE_C },
+                                  { "usedspace(c)",     SYSTEM_USED_SPACE_C },
+                                  { "totalspace(c)",    SYSTEM_TOTAL_SPACE_C },
+                                  { "usedspacepercent(c)",SYSTEM_USED_SPACE_PERCENT_C },
+                                  { "freespacepercent(c)",SYSTEM_FREE_SPACE_PERCENT_C },
+                                  { "freespace(e)",     SYSTEM_FREE_SPACE_E },
+                                  { "usedspace(e)",     SYSTEM_USED_SPACE_E },
+                                  { "totalspace(e)",    SYSTEM_TOTAL_SPACE_E },
+                                  { "usedspacepercent(e)",SYSTEM_USED_SPACE_PERCENT_E },
+                                  { "freespacepercent(e)",SYSTEM_FREE_SPACE_PERCENT_E },
+                                  { "freespace(f)",     SYSTEM_FREE_SPACE_F },
+                                  { "usedspace(f)",     SYSTEM_USED_SPACE_F },
+                                  { "totalspace(f)",    SYSTEM_TOTAL_SPACE_F },
+                                  { "usedspacepercent(f)",SYSTEM_USED_SPACE_PERCENT_F },
+                                  { "freespacepercent(f)",SYSTEM_FREE_SPACE_PERCENT_F },
+                                  { "freespace(g)",     SYSTEM_FREE_SPACE_G },
+                                  { "usedspace(g)",     SYSTEM_USED_SPACE_G },
+                                  { "totalspace(g)",    SYSTEM_TOTAL_SPACE_G },
+                                  { "usedspacepercent(g)",SYSTEM_USED_SPACE_PERCENT_G },
+                                  { "freespacepercent(g)",SYSTEM_FREE_SPACE_PERCENT_G },
+                                  { "usedspace(x)",     SYSTEM_USED_SPACE_X },
+                                  { "freespace(x)",     SYSTEM_FREE_SPACE_X },
+                                  { "totalspace(x)",    SYSTEM_TOTAL_SPACE_X },
+                                  { "usedspace(y)",     SYSTEM_USED_SPACE_Y },
+                                  { "freespace(y)",     SYSTEM_FREE_SPACE_Y },
+                                  { "totalspace(y)",    SYSTEM_TOTAL_SPACE_Y },
+                                  { "usedspace(z)",     SYSTEM_USED_SPACE_Z },
+                                  { "freespace(z)",     SYSTEM_FREE_SPACE_Z },
+                                  { "totalspace(z)",    SYSTEM_TOTAL_SPACE_Z },
+                                  { "dvdtraystate",     SYSTEM_DVD_TRAY_STATE },
+#endif
                                   { "showexitbutton",   SYSTEM_SHOW_EXIT_BUTTON },
                                   { "canpowerdown",     SYSTEM_CAN_POWERDOWN },
                                   { "cansuspend",       SYSTEM_CAN_SUSPEND },
@@ -1267,6 +1313,28 @@ const infomap system_param[] =   {{ "hasalarm",         SYSTEM_HAS_ALARM },
                                   { "setting",          SYSTEM_SETTING },
                                   { "hasaddon",         SYSTEM_HAS_ADDON },
                                   { "coreusage",        SYSTEM_GET_CORE_USAGE }};
+
+#ifdef HAS_XBOX_HARDWARE
+const infomap lcd_labels[] =     {{ "playicon",         LCD_PLAY_ICON },
+                                  { "progressbar",      LCD_PROGRESS_BAR },
+                                  { "cputemperature",   LCD_CPU_TEMPERATURE },
+                                  { "gputemperature",   LCD_GPU_TEMPERATURE },
+                                  { "hddtemperature",   LCD_HDD_TEMPERATURE },
+                                  { "fanspeed",         LCD_FAN_SPEED },
+                                  { "date",             LCD_DATE },
+                                  { "freespace(c)",     LCD_FREE_SPACE_C },
+                                  { "freespace(e)",     LCD_FREE_SPACE_E },
+                                  { "freespace(f)",     LCD_FREE_SPACE_F },
+                                  { "freespace(g)",     LCD_FREE_SPACE_G },
+                                  { "time21",           LCD_TIME_21 },
+                                  { "time22",           LCD_TIME_22 },
+                                  { "timewide21",       LCD_TIME_W21 },
+                                  { "timewide22",       LCD_TIME_W22 },
+                                  { "time41",           LCD_TIME_41 },
+                                  { "time42",           LCD_TIME_42 },
+                                  { "time43",           LCD_TIME_43 },
+                                  { "time44",           LCD_TIME_44 }};
+#endif
 
 /// \page modules__General__List_of_gui_access
 /// \section modules__General__List_of_gui_access_Network Network
@@ -5451,6 +5519,22 @@ int CGUIInfoManager::TranslateSingleString(const std::string &strCondition, bool
           StringUtils::ToLower(label);
           return AddMultiInfo(GUIInfo(SYSTEM_ADDON_VERSION, ConditionalStringParameter(label), 1));
         }
+#ifdef HAS_XBOX_HARDWARE
+        else if (prop.name == "controllerport")
+        {
+          int i_ControllerPort = atoi(param.c_str());
+          if (i_ControllerPort == 1)
+            return SYSTEM_CONTROLLER_PORT_1;
+          else if (i_ControllerPort == 2)
+            return SYSTEM_CONTROLLER_PORT_2;
+          else if (i_ControllerPort == 3)
+            return SYSTEM_CONTROLLER_PORT_3;
+          else if (i_ControllerPort == 4)
+            return SYSTEM_CONTROLLER_PORT_4;
+          else
+            return SYSTEM_CONTROLLER_PORT_1;
+        }
+#endif
         else if (prop.name == "idletime")
           return AddMultiInfo(GUIInfo(SYSTEM_IDLE_TIME, atoi(param.c_str())));
       }
@@ -6001,6 +6085,11 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
   case SYSTEM_DATE:
     strLabel = GetDate();
     break;
+#ifdef HAS_XBOX_HARDWARE
+  case LCD_DATE:
+    strLabel = GetDate(true);
+    break;
+#endif
   case SYSTEM_FPS:
     strLabel = StringUtils::Format("%02.2f", m_fps);
     break;
@@ -6365,6 +6454,37 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
     strLabel = GetMusicPartyModeLabel(info);
   break;
 
+#ifdef HAS_XBOX_HARDWARE
+  case SYSTEM_FREE_SPACE_C:
+  case SYSTEM_FREE_SPACE_E:
+  case SYSTEM_FREE_SPACE_F:
+  case SYSTEM_FREE_SPACE_G:
+  case SYSTEM_FREE_SPACE_X:
+  case SYSTEM_FREE_SPACE_Y:
+  case SYSTEM_FREE_SPACE_Z:
+  case SYSTEM_USED_SPACE_C:
+  case SYSTEM_USED_SPACE_E:
+  case SYSTEM_USED_SPACE_F:
+  case SYSTEM_USED_SPACE_G:
+  case SYSTEM_USED_SPACE_X:
+  case SYSTEM_USED_SPACE_Y:
+  case SYSTEM_USED_SPACE_Z:
+  case SYSTEM_USED_SPACE_PERCENT_C:
+  case SYSTEM_USED_SPACE_PERCENT_E:
+  case SYSTEM_USED_SPACE_PERCENT_F:
+  case SYSTEM_USED_SPACE_PERCENT_G:
+  case SYSTEM_TOTAL_SPACE_C:
+  case SYSTEM_TOTAL_SPACE_E:
+  case SYSTEM_TOTAL_SPACE_F:
+  case SYSTEM_TOTAL_SPACE_G:
+  case SYSTEM_TOTAL_SPACE_X:
+  case SYSTEM_TOTAL_SPACE_Y:
+  case SYSTEM_TOTAL_SPACE_Z:
+  case SYSTEM_FREE_SPACE_PERCENT_C:
+  case SYSTEM_FREE_SPACE_PERCENT_E:
+  case SYSTEM_FREE_SPACE_PERCENT_F:
+  case SYSTEM_FREE_SPACE_PERCENT_G:
+#endif
   case SYSTEM_FREE_SPACE:
   case SYSTEM_USED_SPACE:
   case SYSTEM_TOTAL_SPACE:
@@ -6373,6 +6493,22 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
     return g_sysinfo.GetHddSpaceInfo(info);
   break;
 
+#ifdef HAS_XBOX_HARDWARE
+  case LCD_FREE_SPACE_C:
+  case LCD_FREE_SPACE_E:
+  case LCD_FREE_SPACE_F:
+  case LCD_FREE_SPACE_G:
+    return g_sysinfo.GetHddSpaceInfo(info, true);
+    break;
+
+  case SYSTEM_DVD_TRAY_STATE:
+    return g_sysinfo.GetTrayState();
+    break;
+
+  case LCD_CPU_TEMPERATURE:
+  case LCD_GPU_TEMPERATURE:
+  case LCD_FAN_SPEED:
+#endif
   case SYSTEM_CPU_TEMPERATURE:
   case SYSTEM_GPU_TEMPERATURE:
   case SYSTEM_FAN_SPEED:
@@ -6380,6 +6516,29 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
     return GetSystemHeatInfo(info);
     break;
 
+#ifdef HAS_XBOX_HARDWARE
+  case LCD_HDD_TEMPERATURE:
+  case SYSTEM_HDD_MODEL:
+  case SYSTEM_HDD_SERIAL:
+  case SYSTEM_HDD_FIRMWARE:
+  case SYSTEM_HDD_PASSWORD:
+  case SYSTEM_HDD_LOCKSTATE:
+  case SYSTEM_DVD_MODEL:
+  case SYSTEM_DVD_FIRMWARE:
+  case SYSTEM_HDD_TEMPERATURE:
+  case SYSTEM_XBOX_MODCHIP:
+  case SYSTEM_XBOX_VERSION:
+  case SYSTEM_AV_PACK_INFO:
+  case SYSTEM_XBOX_SERIAL:
+  case SYSTEM_XBE_REGION:
+  case SYSTEM_DVD_ZONE:
+  case SYSTEM_XBOX_PRODUCE_INFO:
+  case SYSTEM_XBOX_BIOS:
+  case SYSTEM_HDD_LOCKKEY:
+  case SYSTEM_HDD_CYCLECOUNT:
+  case SYSTEM_HDD_BOOTDATE:
+  case SYSTEM_MPLAYER_VERSION:
+#endif
   case SYSTEM_VIDEO_ENCODER_INFO:
   case NETWORK_MAC_ADDRESS:
   case SYSTEM_OS_VERSION_INFO:
@@ -6398,12 +6557,27 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
 #endif
     break;
 
+#ifdef HAS_XBOX_HARDWARE
+  case SYSTEM_CONTROLLER_PORT_1:
+    return g_sysinfo.GetUnits(1);
+    break;
+  case SYSTEM_CONTROLLER_PORT_2:
+    return g_sysinfo.GetUnits(2);
+    break;
+  case SYSTEM_CONTROLLER_PORT_3:
+    return g_sysinfo.GetUnits(3);
+    break;
+  case SYSTEM_CONTROLLER_PORT_4:
+    return g_sysinfo.GetUnits(4);
+    break;
+#endif
+
   case SYSTEM_SCREEN_RESOLUTION:
     {
       strLabel = StringUtils::Format("%ix%i %s %02.2f fps.",
         CDisplaySettings::Get().GetCurrentResolutionInfo().iWidth,
         CDisplaySettings::Get().GetCurrentResolutionInfo().iHeight,
-        CDisplaySettings::Get().GetCurrentResolutionInfo().strMode,
+        CDisplaySettings::Get().GetCurrentResolutionInfo().strMode.c_str(),
         GetFPS());
     }
     return strLabel;
@@ -6629,12 +6803,39 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
     strLabel = CSettings::Get().GetString("services.devicename");
     break;
   case SYSTEM_STEREOSCOPIC_MODE:
+#ifndef _XBOX
     {
       int stereoMode = CSettings::Get().GetInt("videoscreen.stereoscopicmode");
       strLabel = StringUtils::Format("%i", stereoMode);
     }
+#endif
     break;
-
+#ifdef HAS_XBOX_HARDWARE
+  case LCD_PLAY_ICON:
+    {
+      int iPlaySpeed = g_application.GetPlaySpeed();
+      if (g_application.IsPaused())
+        strLabel = "\7";
+      else if (iPlaySpeed < 1)
+        strLabel = StringUtils::Format("\3:%ix", iPlaySpeed);
+      else if (iPlaySpeed > 1)
+        strLabel = StringUtils::Format("\4:%ix", iPlaySpeed);
+      else
+        strLabel = "\5";
+    }
+    break;
+  case LCD_TIME_21:
+  case LCD_TIME_22:
+  case LCD_TIME_W21:
+  case LCD_TIME_W22:
+  case LCD_TIME_41:
+  case LCD_TIME_42:
+  case LCD_TIME_43:
+  case LCD_TIME_44:
+    //alternatively, set strLabel
+    return GetLcdTime( info );
+    break;
+#endif
   case SKIN_THEME:
     strLabel = CSettings::Get().GetString("lookandfeel.skintheme");
     break;
@@ -6645,6 +6846,12 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
     if (g_SkinInfo)
       strLabel = g_SkinInfo->GetCurrentAspect();
     break;
+#ifdef HAS_XBOX_HARDWARE
+  case LCD_PROGRESS_BAR:
+    if (g_lcd)
+      strLabel = g_lcd->GetProgressBar(g_application.GetTime(), g_application.GetTotalTime());
+    break;
+#endif
   case NETWORK_IP_ADDRESS:
     {
       return g_application.getNetwork().m_networkinfo.ip;
@@ -6673,6 +6880,13 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
   case NETWORK_DHCP_ADDRESS:
     {
       return g_application.getNetwork().m_networkinfo.dhcpserver;
+    }
+    break;
+  case NETWORK_IS_DHCP:
+    {
+      if(g_application.getNetwork().m_networkinfo.DHCP)
+        return g_localizeStrings.Get(148); // is dhcp ip
+      return g_localizeStrings.Get(147); // is fixed ip
     }
     break;
   case NETWORK_LINK_STATE:
@@ -6858,6 +7072,25 @@ bool CGUIInfoManager::GetInt(int &value, int info, int contextWindow, const CGUI
           value = bar->GetPercentage();
         return true;
       }
+#ifdef HAS_XBOX_HARDWARE
+    case SYSTEM_HDD_TEMPERATURE:
+      value = atoi(g_sysinfo.GetInfo(LCD_HDD_TEMPERATURE).c_str());
+      return true;
+    case SYSTEM_FREE_SPACE_C:
+    case SYSTEM_FREE_SPACE_E:
+    case SYSTEM_FREE_SPACE_F:
+    case SYSTEM_FREE_SPACE_G:
+    case SYSTEM_FREE_SPACE_X:
+    case SYSTEM_FREE_SPACE_Y:
+    case SYSTEM_FREE_SPACE_Z:
+    case SYSTEM_USED_SPACE_C:
+    case SYSTEM_USED_SPACE_E:
+    case SYSTEM_USED_SPACE_F:
+    case SYSTEM_USED_SPACE_G:
+    case SYSTEM_USED_SPACE_X:
+    case SYSTEM_USED_SPACE_Y:
+    case SYSTEM_USED_SPACE_Z:
+#endif
     case SYSTEM_FREE_SPACE:
     case SYSTEM_USED_SPACE:
       {
@@ -7053,6 +7286,8 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
 
   else if (condition == PLAYER_SHOWINFO)
     bReturn = m_playerShowInfo;
+  else if (condition == PLAYER_SHOWCODEC)
+    bReturn = m_playerShowCodec;
   else if (condition == PLAYER_IS_CHANNEL_PREVIEW_ACTIVE)
     bReturn = IsPlayerChannelPreviewActive();
   else if (condition >= MULTI_INFO_START && condition <= MULTI_INFO_END)
@@ -8365,6 +8600,67 @@ std::string CGUIInfoManager::GetTime(TIME_FORMAT format) const
   return LocalizeTime(time, format);
 }
 
+#ifdef HAS_XBOX_HARDWARE
+std::string CGUIInfoManager::GetLcdTime(int _eInfo) const
+{
+  UINT nCharset, nLine;
+  std::string strLcdTime, strTimeMarker;
+  CDateTime time = CDateTime::GetCurrentDateTime();
+
+  switch (_eInfo)
+  {
+    case LCD_TIME_21:
+      nCharset = 1; // CUSTOM_CHARSET_SMALLCHAR;
+      nLine = 0;
+      strTimeMarker = ".";
+      break;
+    case LCD_TIME_22:
+      nCharset = 1; // CUSTOM_CHARSET_SMALLCHAR;
+      nLine = 1;
+      strTimeMarker = ".";
+      break;
+    case LCD_TIME_W21:
+      nCharset = 2; // CUSTOM_CHARSET_MEDIUMCHAR;
+      nLine = 0;
+      strTimeMarker = ".";
+      break;
+    case LCD_TIME_W22:
+      nCharset = 2; // CUSTOM_CHARSET_MEDIUMCHAR;
+      nLine = 1;
+      strTimeMarker = ".";
+      break;
+    case LCD_TIME_41:
+      nCharset = 3; // CUSTOM_CHARSET_BIGCHAR;
+      nLine = 0;
+      strTimeMarker = " ";
+      break;
+    case LCD_TIME_42:
+      nCharset = 3; // CUSTOM_CHARSET_BIGCHAR;
+      nLine = 1;
+      strTimeMarker = "o";
+      break;
+    case LCD_TIME_43:
+      nCharset = 3; // CUSTOM_CHARSET_BIGCHAR;
+      nLine = 2;
+      strTimeMarker = "o";
+      break;
+    case LCD_TIME_44:
+      nCharset = 3; // CUSTOM_CHARSET_BIGCHAR;
+      nLine = 3;
+      strTimeMarker = " ";
+      break;
+  }
+
+  strLcdTime += g_lcd->GetBigDigit( nCharset, time.GetHour()  , nLine, 2, 2, true );
+  strLcdTime += strTimeMarker;
+  strLcdTime += g_lcd->GetBigDigit( nCharset, time.GetMinute(), nLine, 2, 2, false );
+  strLcdTime += strTimeMarker;
+  strLcdTime += g_lcd->GetBigDigit( nCharset, time.GetSecond(), nLine, 2, 2, false );
+
+  return strLcdTime;
+}
+#endif
+
 std::string CGUIInfoManager::LocalizeTime(const CDateTime &time, TIME_FORMAT format) const
 {
   const std::string timeFormat = g_langInfo.GetTimeFormat();
@@ -9519,12 +9815,21 @@ std::string CGUIInfoManager::GetSystemHeatInfo(int info)
   std::string text;
   switch(info)
   {
+#ifdef HAS_XBOX_HARDWARE
+    case LCD_CPU_TEMPERATURE:
+#endif
     case SYSTEM_CPU_TEMPERATURE:
       return m_cpuTemp.IsValid() ? g_langInfo.GetTemperatureAsString(m_cpuTemp) : "?";
       break;
+#ifdef HAS_XBOX_HARDWARE
+    case LCD_GPU_TEMPERATURE:
+#endif
     case SYSTEM_GPU_TEMPERATURE:
       return m_gpuTemp.IsValid() ? g_langInfo.GetTemperatureAsString(m_gpuTemp) : "?";
       break;
+#ifdef HAS_XBOX_HARDWARE
+    case LCD_FAN_SPEED:
+#endif
     case SYSTEM_FAN_SPEED:
       text = StringUtils::Format("%i%%", m_fanSpeed * 2);
       break;
@@ -11113,6 +11418,51 @@ void CGUIInfoManager::ResetCache()
   CSingleLock lock(m_critInfo);
   for (std::vector<InfoPtr>::iterator i = m_bools.begin(); i != m_bools.end(); ++i)
     (*i)->SetDirty();
+}
+
+// Called from tuxbox service thread to update current status
+void CGUIInfoManager::UpdateFromTuxBox()
+{
+  if(g_tuxbox.vVideoSubChannel.mode)
+    m_currentFile->GetVideoInfoTag()->m_strTitle = g_tuxbox.vVideoSubChannel.current_name;
+
+  // Set m_currentMovieDuration
+  if(!g_tuxbox.sCurSrvData.current_event_duration.empty() &&
+    !g_tuxbox.sCurSrvData.next_event_description.empty() &&
+    g_tuxbox.sCurSrvData.current_event_duration != "-" &&
+    g_tuxbox.sCurSrvData.next_event_description != "-")
+  {
+    StringUtils::Replace(g_tuxbox.sCurSrvData.current_event_duration, "(","");
+    StringUtils::Replace(g_tuxbox.sCurSrvData.current_event_duration, ")","");
+
+    m_currentMovieDuration = StringUtils::Format("%s: %s %s (%s - %s)",
+                                                 g_localizeStrings.Get(180).c_str(),
+                                                 g_tuxbox.sCurSrvData.current_event_duration.c_str(),
+                                                 g_localizeStrings.Get(12391).c_str(),
+                                                 g_tuxbox.sCurSrvData.current_event_time.c_str(),
+                                                 g_tuxbox.sCurSrvData.next_event_time.c_str());
+  }
+
+  //Set strVideoGenre
+  if (!g_tuxbox.sCurSrvData.current_event_description.empty() &&
+    !g_tuxbox.sCurSrvData.next_event_description.empty() &&
+    g_tuxbox.sCurSrvData.current_event_description != "-" &&
+    g_tuxbox.sCurSrvData.next_event_description != "-")
+  {
+    std::string genre = StringUtils::Format("%s %s  -  (%s: %s)",
+                                           g_localizeStrings.Get(143).c_str(),
+                                           g_tuxbox.sCurSrvData.current_event_description.c_str(),
+                                           g_localizeStrings.Get(209).c_str(),
+                                           g_tuxbox.sCurSrvData.next_event_description.c_str());
+    m_currentFile->GetVideoInfoTag()->m_genre = StringUtils::Split(genre, g_advancedSettings.m_videoItemSeparator);
+  }
+
+  //Set m_currentMovie.m_director
+  if (g_tuxbox.sCurSrvData.current_event_details != "-" &&
+    !g_tuxbox.sCurSrvData.current_event_details.empty())
+  {
+    m_currentFile->GetVideoInfoTag()->m_director = StringUtils::Split(g_tuxbox.sCurSrvData.current_event_details, g_advancedSettings.m_videoItemSeparator);
+  }
 }
 
 std::string CGUIInfoManager::GetPictureLabel(int info)

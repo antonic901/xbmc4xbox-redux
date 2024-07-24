@@ -40,6 +40,7 @@
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "GUIInfoManager.h"
+#include "guiinfo/GUIInfoLabels.h"
 #include "video/VideoInfoTag.h"
 #include "UPnPSettings.h"
 #include "utils/URIUtils.h"
@@ -420,7 +421,7 @@ CUPnPServer*
 CUPnP::CreateServer(int port /* = 0 */)
 {
     CUPnPServer* device =
-        new CUPnPServer(g_infoManager.GetLabel(SYSTEM_FRIENDLY_NAME),
+        new CUPnPServer(g_infoManager.GetLabel(SYSTEM_FRIENDLY_NAME).c_str(),
                         CUPnPSettings::Get().GetServerUUID().length()?CUPnPSettings::Get().GetServerUUID().c_str():NULL,
                         port);
 

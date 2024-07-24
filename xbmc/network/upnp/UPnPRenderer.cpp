@@ -15,6 +15,7 @@
 #include "ThumbLoader.h"
 #include "URL.h"
 #include "utils/URIUtils.h"
+#include "guiinfo/GUIInfoLabels.h"
 
 #include <boost/make_shared.hpp>
 

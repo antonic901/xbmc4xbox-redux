@@ -19,10 +19,10 @@
  */
 
 #include "system.h"
-#include "windows/GUIWindowSystemInfo.h"
+#include "GUIWindowSystemInfo.h"
 #include "GUIInfoManager.h"
-#include "GUIWindowManager.h"
-#include "LocalizeStrings.h"
+#include "guilib/LocalizeStrings.h"
+#include "guiinfo/GUIInfoLabels.h"
 
 #define CONTROL_BT_HDD			92
 #define CONTROL_BT_DVD      93
@@ -50,7 +50,7 @@ bool CGUIWindowSystemInfo::OnMessage(CGUIMessage& message)
       CGUIWindow::OnMessage(message);
       ResetLabels();
       SET_CONTROL_LABEL(50, g_infoManager.GetTime(TIME_FORMAT_HH_MM_SS) + " | " + g_infoManager.GetDate());
-      SET_CONTROL_LABEL(51, g_localizeStrings.Get(144)+" "+g_infoManager.GetVersion());
+      SET_CONTROL_LABEL(51, g_localizeStrings.Get(144)+" "+g_infoManager.GetLabel(SYSTEM_BUILD_VERSION));
       SET_CONTROL_LABEL(52, "XBMC4Xbox " + g_infoManager.GetLabel(SYSTEM_BUILD_VERSION) +
                             " (Compiled : " + g_infoManager.GetLabel(SYSTEM_BUILD_DATE)+")");
       SET_CONTROL_LABEL(53, g_infoManager.GetLabel(SYSTEM_MPLAYER_VERSION));
@@ -87,7 +87,7 @@ void CGUIWindowSystemInfo::FrameMove()
     SetControlLabel(i++, "%s: %s", 150, NETWORK_IP_ADDRESS);
     SetControlLabel(i++, "%s %s", 13287, SYSTEM_SCREEN_RESOLUTION);
 #ifdef HAS_SYSINFO
-    SetControlLabel(i++, "%s %s", 13283, SYSTEM_KERNEL_VERSION);
+    SetControlLabel(i++, "%s %s", 13283, SYSTEM_OS_VERSION_INFO);
 #endif
     SetControlLabel(i++, "%s: %s", 12390, SYSTEM_UPTIME);
     SetControlLabel(i++, "%s: %s", 12394, SYSTEM_TOTALUPTIME);
@@ -143,7 +143,7 @@ void CGUIWindowSystemInfo::FrameMove()
     SetControlLabel(i++, "%s: %s", 149, NETWORK_MAC_ADDRESS);
 #endif
     SetControlLabel(i++, "%s: %s", 150, NETWORK_IP_ADDRESS);
-    SetControlLabel(i++, "%s: %s", 13159, NETWORK_SUBNET_ADDRESS);
+    SetControlLabel(i++, "%s: %s", 13159, NETWORK_SUBNET_MASK);
     SetControlLabel(i++, "%s: %s", 13160, NETWORK_GATEWAY_ADDRESS);
     SetControlLabel(i++, "%s: %s", 13161, NETWORK_DNS1_ADDRESS);
     SetControlLabel(i++, "%s: %s", 20307, NETWORK_DNS2_ADDRESS);

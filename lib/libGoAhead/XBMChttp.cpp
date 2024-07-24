@@ -12,6 +12,7 @@
 #include "WebServer.h"
 #include "XBMChttp.h"
 #include "boost/make_shared.hpp"
+#include "guiinfo/GUIInfoLabels.h"
 #include "GUIInfoManager.h"
 #include "addons/AddonManager.h"
 #include "addons/AddonSystemSettings.h"
@@ -1552,8 +1553,8 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
         output+=closeTag+openTag+"Year"+tag+":"+tagVal->GetYearString().c_str();
       if (tagVal && !tagVal->GetURL().empty())
         output+=closeTag+openTag+"URL"+tag+":"+tagVal->GetURL().c_str();
-      if (tagVal && g_infoManager.GetMusicLabel(MUSICPLAYER_LYRICS))
-        output+=closeTag+openTag+"Lyrics"+tag+":"+g_infoManager.GetMusicLabel(MUSICPLAYER_LYRICS);
+      if (tagVal && !g_infoManager.GetMusicLabel(MUSICPLAYER_LYRICS).empty())
+        output+=closeTag+openTag+"Lyrics"+tag+":"+g_infoManager.GetMusicLabel(MUSICPLAYER_LYRICS).c_str();
 
       // TODO: Should this be a tagitem member?? (wouldn't have vbr updates though)
       CStdString bitRate(g_infoManager.GetMusicLabel(MUSICPLAYER_BITRATE)); 
@@ -1567,7 +1568,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
       copyThumb(thumb,thumbFn);
       output+=closeTag+openTag+"Thumb"+tag+":"+thumb;
     }
-    output+=closeTag+openTag+"Time:"+g_infoManager.GetCurrentPlayTime();
+    output+=closeTag+openTag+"Time:"+g_infoManager.GetCurrentPlayTime().c_str();
     output+=closeTag+openTag+"Duration:";
     if (g_application.IsPlayingVideo())
       output += g_infoManager.GetDuration();
@@ -1598,7 +1599,7 @@ int CXbmcHttp::xbmcGetMusicLabel(int numParas, CStdString paras[])
   else
   {
     int item=(int)atoi(paras[0].c_str());
-    return SetResponse(openTag+g_infoManager.GetMusicLabel(item));
+    return SetResponse(openTag+g_infoManager.GetMusicLabel(item).c_str());
   }
 }
 
@@ -1609,7 +1610,7 @@ int CXbmcHttp::xbmcGetVideoLabel(int numParas, CStdString paras[])
   else
   {
     int item=(int)atoi(paras[0].c_str());
-    return SetResponse(openTag+g_infoManager.GetVideoLabel(item));
+    return SetResponse(openTag+g_infoManager.GetVideoLabel(item).c_str());
   }
 }
 
