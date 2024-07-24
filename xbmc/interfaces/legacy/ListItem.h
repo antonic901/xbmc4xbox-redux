@@ -310,6 +310,24 @@ namespace XBMCAddon
       void setAvailableFanart(const std::vector<Properties>& images);
 
       /**
+       * addAvailableThumb(url, aspect = "", referrer = "", cache = "", post = False, isgz = False, season = 0) -- Adds a thumb to available thumbs (needed for scrapers)
+       * \n
+       * url                 : string - image path URL.\n
+       * aspect              : [opt] string - image type.\n
+       * referrer            : [opt] string - referrer URL.\n
+       * cache               : [opt] string - filename in cache.\n
+       * post                : [opt] bool - use POST to retrieve the image, default False.\n
+       * isgz                : [opt] bool - use GZIP to retrieve the image, default False.\n
+       * season              : [opt] integer - number of season in case of season thumb.\n
+       *
+       * example:
+       *   - listitem.addAvailableThumb(path_to_image_1, "1.77")
+       *
+       * @python_v18 New function added.
+       */
+      void addAvailableThumb(std::string url, std::string aspect = "", std::string referrer = "", std::string cache = "", bool post = false, bool isgz = false, int season = -1);
+
+      /**
        * addStreamInfo(type, values) -- Add a stream with details.\n
        * \n
        * type              : string - type of stream(video/audio/subtitle).\n
