@@ -379,6 +379,10 @@ namespace XBMCAddon
           }
           else if (key == "status")
             item->GetVideoInfoTag()->m_strStatus = value;
+          else if (key == "setoverview")
+            item->GetVideoInfoTag()->SetSetOverview(value);
+          else if (key == "tag")
+            item->GetVideoInfoTag()->SetTags(StringUtils::Split(value, g_advancedSettings.m_videoItemSeparator));
           else if (key == "code")
             item->GetVideoInfoTag()->m_strProductionCode = value;
           else if (key == "aired")

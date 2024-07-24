@@ -221,6 +221,8 @@ namespace XBMCAddon
        *     - tvshowtitle   : string (Heroes)
        *     - premiered     : string (2005-03-04)
        *     - status        : string (Continuing) - status of a TVshow
+       *     - setoverview   : string (All Batman movies) - overview of the collection
+       *     - tag           : string (cult) - movie tag
        *     - code          : string (tt0110293) - IMDb code
        *     - aired         : string (2008-12-07)
        *     - credits       : string (Andy Kaufman) - writing credits
