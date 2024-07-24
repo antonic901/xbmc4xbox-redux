@@ -61,13 +61,15 @@ namespace XBMCAddon
     public:
 #ifndef SWIG
       CFileItemPtr item;
+      bool m_offscreen;
 #endif
 
       ListItem(const String& label = emptyString, 
                const String& label2 = emptyString,
                const String& iconImage = emptyString,
                const String& thumbnailImage = emptyString,
-               const String& path = emptyString);
+               const String& path = emptyString,
+               bool offscreen = false);
 
 #ifndef SWIG
       inline ListItem(CFileItemPtr pitem) : item(pitem) {}
