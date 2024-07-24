@@ -200,6 +200,10 @@ namespace XBMCAddon
        *     - year          : integer (2009)
        *     - episode       : integer (4)
        *     - season        : integer (1)
+       *     - sortepisode   : integer (4)
+       *     - sortseason    : integer (1)
+       *     - episodeguide  : string (Episode guide)
+       *     - showlink      : string (Battlestar Galactica) or list of strings (["Battlestar Galactica", "Caprica"])
        *     - top250        : integer (192)
        *     - tracknumber   : integer (3)
        *     - rating        : float (6.4) - range is 0..10
