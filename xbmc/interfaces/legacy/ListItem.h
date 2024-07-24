@@ -292,6 +292,24 @@ namespace XBMCAddon
       void setCast(const std::vector<Properties>& actors);
 
       /**
+       * setAvailableFanart(images) -- Sets available images (needed for scrapers)
+       * \n
+       * images              : list of dictionaries (see below for relevant keys).\n
+       *
+       * - Keys:
+       *     - image         : string (http://www.someurl.com/someimage.png)
+       *     - preview       : [opt] string (http://www.someurl.com/somepreviewimage.png)
+       *     - colors        : [opt] string (either comma separated Kodi hex values ("FFFFFFFF,DDDDDDDD") or TVDB RGB Int Triplets ("|68,69,59|69,70,58|78,78,68|"))
+       *
+       * example:
+       *   - fanart = [{"image": path_to_image_1, "preview": path_to_preview_1}, {"image": path_to_image_2, "preview": path_to_preview_2}]
+       *   - listitem.setAvailableFanart(fanart)
+       *
+       * @python_v18 New function added.
+       */
+      void setAvailableFanart(const std::vector<Properties>& images);
+
+      /**
        * addStreamInfo(type, values) -- Add a stream with details.\n
        * \n
        * type              : string - type of stream(video/audio/subtitle).\n
