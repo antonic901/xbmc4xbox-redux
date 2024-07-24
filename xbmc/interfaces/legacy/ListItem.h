@@ -195,7 +195,8 @@ namespace XBMCAddon
        *     - size          : long (1024) - size in bytes
        *     - date          : string (%d.%m.%Y / 01.01.2009) - file date
        * - Video Values:
-       *     - genre         : string (Comedy)
+       *     - genre         : string (Comedy) or list of strings (["Comedy", "Animation", "Drama"])
+       *     - country       : string (Germany) or list of strings (["Germany", "Italy", "France"])
        *     - year          : integer (2009)
        *     - episode       : integer (4)
        *     - season        : integer (1)
@@ -207,7 +208,7 @@ namespace XBMCAddon
        *     - overlay       : integer (2) - range is 0..8.  See GUIListItem.h for values
        *     - cast          : list (Michal C. Hall)
        *     - castandrole   : list (Michael C. Hall|Dexter)
-       *     - director      : string (Dagur Kari)
+       *     - director      : string (Dagur Kari) or list of strings (["Dagur Kari", "Quentin Tarantino", "Chrstopher Nolan"])
        *     - mpaa          : string (PG-13)
        *     - plot          : string (Long Description)
        *     - plotoutline   : string (Short Description)
@@ -215,17 +216,17 @@ namespace XBMCAddon
        *     - originaltitle : string (Big Fan)
        *     - sorttitle     : string (Big Fan)
        *     - duration      : string (3:18)
-       *     - studio        : string (Warner Bros.)
+       *     - studio        : string (Warner Bros.) or list of strings (["Warner Bros.", "Disney", "Paramount"])
        *     - tagline       : string (An awesome movie) - short description of movie
-       *     - writer        : string (Robert D. Siegel)
+       *     - writer        : string (Robert D. Siegel) or list of strings (["Robert D. Siegel", "Jonathan Nolan", "J.K. Rowling"])
        *     - tvshowtitle   : string (Heroes)
        *     - premiered     : string (2005-03-04)
        *     - status        : string (Continuing) - status of a TVshow
        *     - setoverview   : string (All Batman movies) - overview of the collection
-       *     - tag           : string (cult) - movie tag
+       *     - tag           : string (cult) - or list of strings (["cult", "documentary", "best movies"]) movie tag
        *     - code          : string (tt0110293) - IMDb code
        *     - aired         : string (2008-12-07)
-       *     - credits       : string (Andy Kaufman) - writing credits
+       *     - credits       : string (Andy Kaufman) or list of strings (["Dagur Kari", "Quentin Tarantino", "Chrstopher Nolan"]) - writing credits
        *     - lastplayed    : string (%Y-%m-%d %h:%m:%s = 2009-04-05 23:16:04)
        *     - album         : string (The Joshua Tree)
        *     - artist        : list (['U2'])
@@ -422,6 +423,9 @@ namespace XBMCAddon
        * getMusicInfoTag() -- returns the MusicInfoTag for this item.
        */
       xbmc::InfoTagMusic* getMusicInfoTag();
+
+private:
+      std::vector<std::string> getStringArray(const InfoLabelValue& alt, const std::string& tag, std::string value = "");
     };
 
     typedef std::vector<ListItem*> ListItemList;
