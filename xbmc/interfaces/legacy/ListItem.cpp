@@ -515,6 +515,31 @@ namespace XBMCAddon
       }
     } // end ListItem::setInfo
 
+    void ListItem::setCast(const std::vector<Properties>& actors)
+    {
+      LOCKGUI;
+      item->GetVideoInfoTag()->m_cast.clear();
+      for (std::vector<Properties>::const_iterator itt = actors.begin(); itt != actors.end(); ++itt)
+      {
+        const XBMCAddon::Properties &dictionary = *itt;
+        SActorInfo info;
+        for (ADDON::InfoMap::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
+        {
+          const String& key = it->first;
+          const String& value = it->second;
+          if (key == "name")
+            info.strName = value;
+          else if (key == "role")
+            info.strRole = value;
+          else if (key == "thumbnail")
+            info.thumbUrl = CScraperUrl(value);
+          else if (key == "order")
+            info.order = strtol(value.c_str(), NULL, 10);
+        }
+        item->GetVideoInfoTag()->m_cast.push_back(boost::move(info));
+      }
+    }
+
     void ListItem::addStreamInfo(const char* cType, const Properties& dictionary)
     {
       LOCKGUIIF(m_offscreen);

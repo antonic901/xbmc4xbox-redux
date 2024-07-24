@@ -253,6 +253,25 @@ namespace XBMCAddon
       void setInfo(const char* type, const InfoLabelDict& infoLabels) throw (WrongTypeException);
 
       /**
+       * setCast(actors) -- Sets cast including thumbnails
+       * \n
+       * actors             : list of dictionaries (see below for relevant keys).\n
+       *
+       * - Keys:
+       *     - name          : string (Michael C. Hall)
+       *     - role          : string (Dexter)
+       *     - thumbnail     : string (http://www.someurl.com/someimage.png)
+       *     - order         : integer (1)
+       *
+       * example:
+       *   - actors = [{"name": "Actor 1", "role": "role 1"}, {"name": "Actor 2", "role": "role 2"}]
+       *   - listitem.setCast(actors)
+       *
+       * @python_v17 New function added.
+       */
+      void setCast(const std::vector<Properties>& actors);
+
+      /**
        * addStreamInfo(type, values) -- Add a stream with details.\n
        * \n
        * type              : string - type of stream(video/audio/subtitle).\n
