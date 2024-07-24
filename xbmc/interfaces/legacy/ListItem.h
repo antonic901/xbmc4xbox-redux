@@ -160,6 +160,19 @@ namespace XBMCAddon
       void setArt(const Properties& dictionary);
 
       /**
+       * addSeason(number, name = "") -- Adds a season with name to a listitem
+       * \n
+       * number              : int - the number of the season.\n
+       * name                : string - the name of the season. Default "".\n
+       *
+       * example:
+       *   - listitem.addSeason(1, "Murder House")
+       *
+       * @python_v18 New function added.
+       */
+      void addSeason(int number, std::string name = "");
+
+      /**
        * select(selected) -- Sets the listitem's selected status.\n
        * \n
        * selected        : bool - True=selected/False=not selected\n
