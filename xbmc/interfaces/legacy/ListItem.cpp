@@ -35,7 +35,7 @@ namespace XBMCAddon
 {
   namespace xbmcgui
   {
-    ListItem::ListItem(const String& label, 
+    ListItem::ListItem(const String& label,
                        const String& label2,
                        const String& iconImage,
                        const String& thumbnailImage,
@@ -146,6 +146,24 @@ namespace XBMCAddon
       }
     }
 
+    void ListItem::setUniqueIDs(const Properties& dictionary)
+    {
+      if (!item) return;
+
+      LOCKGUI;
+      CVideoInfoTag& vtag = *item->GetVideoInfoTag();
+      for (Properties::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
+        vtag.SetUniqueID(it->second, it->first);
+    }
+
+    void ListItem::setRating(std::string type, float rating, int votes /* = 0 */, bool defaultt /* = false */)
+    {
+      if (!item) return;
+
+      LOCKGUI;
+      item->GetVideoInfoTag()->SetRating(rating, votes, type, defaultt);
+    }
+
     void ListItem::addSeason(int number, std::string name /* = "" */)
     {
       if (!item) return;
@@ -229,6 +247,30 @@ namespace XBMCAddon
         value = item->GetProperty(lowerKey).asString();
 
       return value.c_str();
+    }
+
+    String ListItem::getArt(const char* key)
+    {
+      LOCKGUIIF(m_offscreen);
+      return item->GetArt(key);
+    }
+
+    String ListItem::getUniqueID(const char* key)
+    {
+      LOCKGUI;
+      return item->GetVideoInfoTag()->GetUniqueID(key);
+    }
+
+    float ListItem::getRating(const char* key)
+    {
+      LOCKGUI;
+      return item->GetVideoInfoTag()->GetRating(key).rating;
+    }
+
+    int ListItem::getVotes(const char* key)
+    {
+      LOCKGUI;
+      return item->GetVideoInfoTag()->GetRating(key).votes;
     }
 
     void ListItem::setPath(const String& path)
@@ -335,7 +377,7 @@ namespace XBMCAddon
             for (std::vector<InfoLabelStringOrTuple>::const_iterator viter = listValue.begin(); viter != listValue.end(); ++viter)
             {
               const InfoLabelStringOrTuple& castEntry = *viter;
-              // castEntry can be a string meaning it's the actor or it can be a tuple meaning it's the 
+              // castEntry can be a string meaning it's the actor or it can be a tuple meaning it's the
               //  actor and the role.
               const String& actor = castEntry.which() == first ? castEntry.former() : castEntry.later().first();
               SActorInfo info;
@@ -349,13 +391,13 @@ namespace XBMCAddon
           {
             if (alt.which() != second)
               throw WrongTypeException("When using \"artist\" you need to supply a list of strings for the value in the dictionary");
-            
+
             item->GetVideoInfoTag()->m_artist.clear();
 
             const std::vector<InfoLabelStringOrTuple>& listValue = alt.later();
             for (std::vector<InfoLabelStringOrTuple>::const_iterator viter = listValue.begin(); viter != listValue.end(); ++viter)
             {
-              
+
               const InfoLabelStringOrTuple& castEntry = *viter;
               const String& actor = castEntry.which() == first ? castEntry.former() : castEntry.later().first();
               item->GetVideoInfoTag()->m_artist.push_back(actor);
@@ -397,10 +439,14 @@ namespace XBMCAddon
           }
           else if (key == "status")
             item->GetVideoInfoTag()->m_strStatus = value;
+          else if (key == "set")
+            item->GetVideoInfoTag()->m_strSet = value;
           else if (key == "setoverview")
             item->GetVideoInfoTag()->SetSetOverview(value);
           else if (key == "tag")
             item->GetVideoInfoTag()->SetTags(getStringArray(alt, key, value));
+          else if (key == "imdbnumber")
+            item->GetVideoInfoTag()->SetUniqueID(value);
           else if (key == "code")
             item->GetVideoInfoTag()->m_strProductionCode = value;
           else if (key == "aired")
@@ -413,6 +459,8 @@ namespace XBMCAddon
             item->GetVideoInfoTag()->SetVotes(StringUtils::ReturnDigits(value));
           else if (key == "trailer")
             item->GetVideoInfoTag()->m_strTrailer = value;
+          else if (key == "path")
+            videotag->GetVideoInfoTag()->m_strPath = value;
           else if (key == "date")
           {
             if (value.length() == 10)
@@ -661,6 +709,17 @@ namespace XBMCAddon
         LOCKGUIIF(m_offscreen);
         item->SetProperty(StringUtils::Format("contextmenulabel(%i)", i), tuple.first());
         item->SetProperty(StringUtils::Format("contextmenuaction(%i)", i), tuple.second());
+      }
+    }
+
+    void ListItem::setSubtitles(const std::vector<String>& paths)
+    {
+      LOCKGUIIF(m_offscreen);
+      unsigned int i = 1;
+      for (std::vector<String>::const_iterator it = paths.begin(); it != paths.end(); ++it, i++)
+      {
+        String property = StringUtils::Format("subtitle:%u", i);
+        item->SetProperty(property, *it);
       }
     }
 

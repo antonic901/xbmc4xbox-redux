@@ -160,6 +160,41 @@ namespace XBMCAddon
       void setArt(const Properties& dictionary);
 
       /**
+       * setUniqueIDs(values) -- Sets the listitem's uniqueID
+       * \n
+       * values              : dictionary - pairs of { label: value }.\n
+       *
+       * - Some example values (any string possible):
+       *     - imdb          : string - uniqueid name
+       *     - tvdb          : string - uniqueid name
+       *     - tmdb          : string - uniqueid name
+       *     - anidb         : string - uniqueid name
+       *
+       * example:
+       *   - listitem.setUniqueIDs({ 'imdb': 'tt8938399', 'tmdb' : '9837493' })
+       */
+      void setUniqueIDs(const Properties& dictionary);
+
+      /**
+       * setRating(type, rating, votes = 0, defaultt = False) -- Sets a listitem's rating
+       * \n
+       * type                : string - the type of the rating. Any string.\n
+       * rating              : float - the value of the rating.\n
+       * votes               : int - the number of votes. Default 0.\n
+       * defaultt            : bool - is the default rating? Default False.\n
+       *
+       * - Some example type (any string possible):
+       *     - imdb          : string - rating type
+       *     - tvdb          : string - rating type
+       *     - tmdb          : string - rating type
+       *     - anidb         : string - rating type
+       *
+       * example:
+       *   - listitem.setRating("imdb", 4.6, 8940, True)
+       */
+      void setRating(std::string type, float rating, int votes = 0, bool defaultt = false);
+
+      /**
        * addSeason(number, name = "") -- Adds a season with name to a listitem
        * \n
        * number              : int - the number of the season.\n
@@ -171,6 +206,76 @@ namespace XBMCAddon
        * @python_v18 New function added.
        */
       void addSeason(int number, std::string name = "");
+
+      /**
+       * getArt(key) -- Returns a listitem art path as a string, similar to an infolabel
+       * \n
+       * key                : string - art name.\n
+       *
+       * - Some default art values (any string possible):
+       *     - thumb         : string - image path
+       *     - poster        : string - image path
+       *     - banner        : string - image path
+       *     - fanart        : string - image path
+       *     - clearart      : string - image path
+       *     - clearlogo     : string - image path
+       *     - landscape     : string - image path
+       *     - icon          : string - image path
+       *
+       * example:
+       *   - poster = listitem.getArt('poster')
+       *
+       * @python_v17 New function added.
+       */
+      String getArt(const char* key);
+
+      /**
+       * getUniqueID(key) -- Returns a listitem uniqueID as a string, similar to an infolabel
+       * \n
+       * key                : string - uniqueID name.\n
+       *
+       * - Some default uniqueID values (any string possible):
+       *     - imdb          : string - uniqueid name
+       *     - tvdb          : string - uniqueid name
+       *     - tmdb          : string - uniqueid name
+       *     - anidb         : string - uniqueid name
+       *
+       * example:
+       *   - uniqueID = listitem.getUniqueID('imdb')
+       */
+      String getUniqueID(const char* key);
+
+      /**
+       * getRating(key) -- Returns a listitem rating as a float
+       * \n
+       * key                : string - rating type.\n
+       *
+       * - Some default key values (any string possible):
+       *     - imdb          : string - type name
+       *     - tvdb          : string - type name
+       *     - tmdb          : string - type name
+       *     - anidb         : string - type name
+       *
+       * example:
+       *   - rating = listitem.getRating('imdb')
+       */
+      float getRating(const char* key);
+
+      /**
+       * getVotes(key) -- Returns a listitem votes as an integer
+       * \n
+       * key                : string - rating type.\n
+       *
+       * - Some default key values (any string possible):
+       *     - imdb          : string - type name
+       *     - tvdb          : string - type name
+       *     - tmdb          : string - type name
+       *     - anidb         : string - type name
+       *
+       * example:
+       *   - votes = listitem.getVotes('imdb')
+       */
+      int getVotes(const char* key);
 
       /**
        * select(selected) -- Sets the listitem's selected status.\n
@@ -451,6 +556,18 @@ namespace XBMCAddon
        * enable : bool
        */
       void setContentLookup(bool enable);
+
+      /**
+       * setSubtitles(subtitleFiles) -- Sets subtitles for this listitem
+       * \n
+       * subtitleFiles       : list with paths to subtitle files.\n
+       *
+       * example:
+       *   - listitem.setSubtitles(['special://temp/example.srt', 'http://example.com/example.srt'])
+       *
+       * @python_v14 New function added.
+       */
+      void setSubtitles(const std::vector<String>& subtitleFiles);
 
       /**
        * getdescription() -- Returns the description of this PlayListItem.\n
