@@ -1,21 +1,9 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #pragma once
@@ -23,21 +11,17 @@
 #include <map>
 #include <vector>
 
-#include "cores/playercorefactory/PlayerCoreFactory.h"
-
 #include "AddonClass.h"
 #include "Tuple.h"
 #include "Dictionary.h"
 #include "Alternative.h"
-#include "CallbackHandler.h"
 #include "ListItem.h"
-#include "music/tags/MusicInfoTag.h"
 #include "FileItem.h"
 #include "AddonString.h"
-#include "Tuple.h"
 #include "commons/Exception.h"
 #include "InfoTagVideo.h"
 #include "InfoTagMusic.h"
+
 
 namespace XBMCAddon
 {
@@ -51,11 +35,37 @@ namespace XBMCAddon
     // This type is either a String or a list of InfoLabelStringOrTuple types
     typedef Alternative<StringOrInt, std::vector<InfoLabelStringOrTuple> > InfoLabelValue;
 
-    // The type contains the dictionary values for the ListItem::setInfo call. 
+    // The type contains the dictionary values for the ListItem::setInfo call.
     // The values in the dictionary can be either a String, or a list of items.
     // If it's a list of items then the items can be either a String or a Tuple.
     typedef Dictionary<InfoLabelValue> InfoLabelDict;
 
+    //
+    /// \defgroup python_xbmcgui_listitem ListItem
+    /// \ingroup python_xbmcgui
+    /// @{
+    /// @brief **Selectable window list item.**
+    ///
+    /// The list item control is used for creating item lists in Kodi
+    ///
+    /// \python_class{ ListItem([label, label2, iconImage, thumbnailImage, path]) }
+    ///
+    /// @param label                [opt] string
+    /// @param label2               [opt] string
+    /// @param iconImage            __Deprecated. Use setArt__
+    /// @param thumbnailImage       __Deprecated. Use setArt__
+    /// @param path                 [opt] string
+    ///
+    ///
+    ///-----------------------------------------------------------------------
+    /// @python_v16 **iconImage** and **thumbnailImage** are deprecated. Use **setArt()**.
+    ///
+    /// **Example:**
+    /// ~~~~~~~~~~~~~{.py}
+    /// ...
+    /// listitem = xbmcgui.ListItem('Casino Royale')
+    /// ...
+    /// ~~~~~~~~~~~~~
     class ListItem : public AddonClass
     {
     public:
@@ -64,7 +74,7 @@ namespace XBMCAddon
       bool m_offscreen;
 #endif
 
-      ListItem(const String& label = emptyString, 
+      ListItem(const String& label = emptyString,
                const String& label2 = emptyString,
                const String& iconImage = emptyString,
                const String& thumbnailImage = emptyString,
@@ -72,10 +82,12 @@ namespace XBMCAddon
                bool offscreen = false);
 
 #ifndef SWIG
-      inline ListItem(CFileItemPtr pitem) : item(pitem) {}
+      inline explicit ListItem(CFileItemPtr pitem) :
+        item(pitem), m_offscreen(false)
+      {}
 
-      static inline AddonClass::Ref<ListItem> fromString(const String& str) 
-      { 
+      static inline AddonClass::Ref<ListItem> fromString(const String& str)
+      {
         AddonClass::Ref<ListItem> ret = AddonClass::Ref<ListItem>(new ListItem());
         ret->item.reset(new CFileItem(str));
         return ret;
@@ -160,9 +172,22 @@ namespace XBMCAddon
       void setArt(const Properties& dictionary);
 
       /**
-       * setUniqueIDs(values) -- Sets the listitem's uniqueID
+       * setIsFolder(isFolder) -- Sets if this listitem is a folder
+       * \n
+       * isFolder            : bool - True=folder / False=not a folder (default).\n
+       *
+       * example:
+       *   - listitem.setIsFolder(True)
+       *
+       * @python_v18 New function added.
+       */
+      void setIsFolder(bool isFolder);
+
+      /**
+       * setUniqueIDs(values, defaultrating = "") -- Sets the listitem's uniqueID
        * \n
        * values              : dictionary - pairs of { label: value }.\n
+       * defaultrating       : [opt] string - the name of default rating.\n
        *
        * - Some example values (any string possible):
        *     - imdb          : string - uniqueid name
@@ -171,9 +196,9 @@ namespace XBMCAddon
        *     - anidb         : string - uniqueid name
        *
        * example:
-       *   - listitem.setUniqueIDs({ 'imdb': 'tt8938399', 'tmdb' : '9837493' })
+       *   - listitem.setUniqueIDs({ 'imdb': 'tt8938399', 'tmdb' : '9837493' }, "imdb")
        */
-      void setUniqueIDs(const Properties& dictionary);
+      void setUniqueIDs(const Properties& dictionary, const String& defaultrating = "");
 
       /**
        * setRating(type, rating, votes = 0, defaultt = False) -- Sets a listitem's rating
@@ -375,7 +400,7 @@ namespace XBMCAddon
        * example:\n
        *   - self.list.getSelectedItem().setInfo('video', { 'Genre': 'Comedy' })n\n
        */
-      void setInfo(const char* type, const InfoLabelDict& infoLabels) throw (WrongTypeException);
+      void setInfo(const char* type, const InfoLabelDict& infoLabels);
 
       /**
        * setCast(actors) -- Sets cast including thumbnails
@@ -415,22 +440,22 @@ namespace XBMCAddon
       void setAvailableFanart(const std::vector<Properties>& images);
 
       /**
-       * addAvailableThumb(url, aspect = "", referrer = "", cache = "", post = False, isgz = False, season = 0) -- Adds a thumb to available thumbs (needed for scrapers)
+       * addAvailableArtwork(url, art_type, referrer = "", cache = "", post = False, isgz = False, season = 0) -- Add an image to available artworks (needed for video scrapers)
        * \n
-       * url                 : string - image path URL.\n
-       * aspect              : [opt] string - image type.\n
-       * referrer            : [opt] string - referrer URL.\n
+       * url                 : string - image path url.\n
+       * art_type            : string - image type.\n
+       * referrer            : [opt] string - referrer url.\n
        * cache               : [opt] string - filename in cache.\n
-       * post                : [opt] bool - use POST to retrieve the image, default False.\n
-       * isgz                : [opt] bool - use GZIP to retrieve the image, default False.\n
+       * post                : [opt] bool - use post to retrieve the image (default False).\n
+       * isgz                : [opt] bool - use gzip to retrieve the image (default False).\n
        * season              : [opt] integer - number of season in case of season thumb.\n
        *
        * example:
-       *   - listitem.addAvailableThumb(path_to_image_1, "1.77")
+       *   - listitem.addAvailableArtwork(path_to_image_1, "thumb")
        *
        * @python_v18 New function added.
        */
-      void addAvailableThumb(std::string url, std::string aspect = "", std::string referrer = "", std::string cache = "", bool post = false, bool isgz = false, int season = -1);
+      void addAvailableArtwork(std::string url, std::string art_type = "", std::string referrer = "", std::string cache = "", bool post = false, bool isgz = false, int season = -1);
 
       /**
        * addStreamInfo(type, values) -- Add a stream with details.\n
@@ -472,7 +497,7 @@ namespace XBMCAddon
        * example:
        *   - listitem.addContextMenuItems([('Theater Showtimes', 'XBMC.RunScript(special://home/scripts/showtimes/default.py,Iron Man)',)])n
        */
-      void addContextMenuItems(const std::vector<Tuple<String,String> >& items, bool replaceItems = false) throw (ListItemException);
+      void addContextMenuItems(const std::vector<Tuple<String,String> >& items, bool replaceItems = false);
 
       /**
        * setProperty(key, value) -- Sets a listitem property, similar to an infolabel.\n
@@ -493,6 +518,18 @@ namespace XBMCAddon
        *   - self.list.getSelectedItem().setProperty('StartOffset', '256.4')
        */
       void setProperty(const char * key, const String& value);
+
+      /**
+       * setProperties(values) -- Sets multiple properties for listitem's
+       * \n
+       * values              : dictionary - pairs of { label: value }.\n
+       *
+       * example:
+       *   - listitem.setProperties({ 'AspectRatio': '1.85', 'StartOffset' : '256.4' })
+       *
+       * @python_v18 New function added.
+       */
+      void setProperties(const Properties& dictionary);
 
       /**
        * getProperty(key) -- Returns a listitem property as a string, similar to an infolabel.\n
@@ -573,7 +610,7 @@ namespace XBMCAddon
        * getdescription() -- Returns the description of this PlayListItem.\n
        */
       String getdescription();
-      
+
       /**
        * getduration() -- Returns the duration of this PlayListItem\n
        */
@@ -583,6 +620,15 @@ namespace XBMCAddon
        * getfilename() -- Returns the filename of this PlayListItem.\n
        */
       String getfilename();
+
+      /**
+       * getPath() -- Returns the path of this listitem
+       * \n
+       * @return string - filename\n
+       *
+       * @python_v17 New function added.
+       */
+      String getPath();
 
       /**
        * getVideoInfoTag() -- returns the VideoInfoTag for this item.
@@ -596,10 +642,13 @@ namespace XBMCAddon
 
 private:
       std::vector<std::string> getStringArray(const InfoLabelValue& alt, const std::string& tag, std::string value = "");
+
+      CVideoInfoTag* GetVideoInfoTag();
+      const CVideoInfoTag* GetVideoInfoTag() const;
     };
 
     typedef std::vector<ListItem*> ListItemList;
-    
+
   }
 }
 
