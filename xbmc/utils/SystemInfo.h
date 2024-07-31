@@ -162,7 +162,7 @@ public:
   CStdString GetTrayState();
 #endif
 
-  CStdString GetUserAgent();
+  static CStdString GetUserAgent();
   bool HasInternet() const;
   static CStdString GetKernelVersion();
   static CStdString GetXBVerInfo();

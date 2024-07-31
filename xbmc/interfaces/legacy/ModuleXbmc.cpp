@@ -50,6 +50,7 @@
 #include "utils/FileUtils.h"
 #include "utils/LangCodeExpander.h"
 #include "utils/StringUtils.h"
+#include "utils/SystemInfo.h"
 #include "CallbackHandler.h"
 #include "AddonUtils.h"
 
@@ -535,6 +536,11 @@ namespace XBMCAddon
         return "";
       }
       return convertedLanguage;
+    }
+
+    String getUserAgent()
+    {
+      return CSysInfo::GetUserAgent();
     }
 
     int getSERVER_WEBSERVER() { return CApplication::ES_WEBSERVER; }
