@@ -18,28 +18,23 @@
  *
  */
 
-#include "system.h"
-#include "GUIUserMessages.h"
-#include "dialogs/GUIDialogOK.h"
 #include "GUIWindowWeather.h"
-#include "utils/Weather.h"
-#include "guilib/GUIWindowManager.h"
-#include "utils/URIUtils.h"
-#include "interfaces/generic/ScriptInvocationManager.h"
+
+#include <utility>
+
+#include "dialogs/GUIDialogOK.h"
+#include "GUIUserMessages.h"
 #include "LangInfo.h"
-#include "ServiceBroker.h"
-#include "utils/log.h"
-#include "utils/SystemInfo.h"
-#include "addons/AddonManager.h"
-#include "settings/Settings.h"
 #include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
+#include "utils/Variant.h"
+#include "utils/Weather.h"
 
 using namespace ADDON;
 
 #define CONTROL_BTNREFRESH             2
 #define CONTROL_SELECTLOCATION         3
 #define CONTROL_LABELUPDATED          11
-#define CONTROL_IMAGELOGO            101
 
 #define CONTROL_STATICTEMP           223
 #define CONTROL_STATICFEEL           224
@@ -57,17 +52,15 @@ using namespace ADDON;
 #define LOCALIZED_TOKEN_FIRSTID      370
 #define LOCALIZED_TOKEN_LASTID       395
 
-DWORD timeToCallScript = 1000;
 /*
 FIXME'S
 >strings are not centered
 */
 
 CGUIWindowWeather::CGUIWindowWeather(void)
-    : CGUIWindow(WINDOW_WEATHER, "MyWeather.xml")
+    : CGUIWindow(WINDOW_WEATHER, "MyWeather.xml"), m_maxLocation(0)
 {
   m_loadType = KEEP_IN_MEMORY;
-  iScriptId = -1;
 }
 
 CGUIWindowWeather::~CGUIWindowWeather(void)
@@ -86,10 +79,6 @@ bool CGUIWindowWeather::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_SELECTLOCATION)
       {
-        // stop the script timer here, so the user has a full second
-        if (m_scriptTimer.IsRunning())
-          m_scriptTimer.Stop();
-
         CGUIMessage msg(GUI_MSG_ITEM_SELECTED,GetID(),CONTROL_SELECTLOCATION);
         OnMessage(msg);
 
@@ -107,23 +96,6 @@ bool CGUIWindowWeather::OnMessage(CGUIMessage& message)
     {
       UpdateLocations();
       SetProperties();
-      if (g_windowManager.GetActiveWindow() == WINDOW_WEATHER)
-      {
-        if (!CSettings::Get().GetString("weather.addon").empty())
-          m_scriptTimer.StartZero();
-      }
-      else
-        CallScript();
-    }
-    break;
-  case GUI_MSG_WINDOW_INIT:
-    {
-      if (!g_sysinfo.HasInternet())
-      {
-        CGUIDialogOK::ShowAndGetInput(8,21451,20022,20022);
-        g_windowManager.PreviousWindow();
-        return true;
-      }
     }
     break;
   case GUI_MSG_ITEM_SELECT:
@@ -137,11 +109,11 @@ bool CGUIWindowWeather::OnMessage(CGUIMessage& message)
     break;
   case GUI_MSG_MOVE_OFFSET:
     {
-      if (message.GetSenderId() == 0) //handle only message from builtin
+      if (message.GetSenderId() == 0 && m_maxLocation > 0) //handle only message from builtin
       {
-        // Clamp location between 1 and MAX_LOCATION
-        int v = (g_weatherManager.GetArea() + message.GetParam1() - 1) % MAX_LOCATION + 1;
-        if (v < 1) v += MAX_LOCATION;
+        // Clamp location between 1 and m_maxLocation
+        int v = (g_weatherManager.GetArea() + message.GetParam1() - 1) % m_maxLocation + 1;
+        if (v < 1) v += m_maxLocation;
         SetLocation(v);
         return true;
       }
@@ -165,18 +137,28 @@ void CGUIWindowWeather::OnInitWindow()
 void CGUIWindowWeather::UpdateLocations()
 {
   if (!IsActive()) return;
+  m_maxLocation = strtol(GetProperty("Locations").asString().c_str(),0,10);
+  if (m_maxLocation < 1) return;
 
   std::vector< std::pair<std::string, int> > labels;
 
-  int iCurWeather = g_weatherManager.GetArea();
+  unsigned int iCurWeather = g_weatherManager.GetArea();
 
-  for (unsigned int i = 1; i <= MAX_LOCATION; i++)
+  if (iCurWeather > m_maxLocation)
+  {
+    g_weatherManager.SetArea(m_maxLocation);
+    iCurWeather = m_maxLocation;
+    ClearProperties();
+    g_weatherManager.Refresh();
+  }
+
+  for (unsigned int i = 1; i <= m_maxLocation; i++)
   {
     std::string strLabel = g_weatherManager.GetLocation(i);
     if (strLabel.size() > 1) //got the location string yet?
     {
       size_t iPos = strLabel.rfind(", ");
-      if (iPos)
+      if (iPos != std::string::npos)
       {
         std::string strLabel2(strLabel);
         strLabel = strLabel2.substr(0,iPos);
@@ -198,7 +180,7 @@ void CGUIWindowWeather::UpdateLocations()
 
 void CGUIWindowWeather::UpdateButtons()
 {
-    CONTROL_ENABLE(CONTROL_BTNREFRESH);
+  CONTROL_ENABLE(CONTROL_BTNREFRESH);
 
   SET_CONTROL_LABEL(CONTROL_BTNREFRESH, 184);   //Refresh
 
@@ -237,13 +219,6 @@ void CGUIWindowWeather::FrameMove()
   // update our controls
   UpdateButtons();
 
-  // call weather script
-  if (m_scriptTimer.IsRunning() && m_scriptTimer.GetElapsedMilliseconds() > timeToCallScript)
-  {
-    m_scriptTimer.Stop();
-    CallScript();
-  }
-
   CGUIWindow::FrameMove();
 }
 
@@ -253,16 +228,16 @@ void CGUIWindowWeather::FrameMove()
  */
 void CGUIWindowWeather::SetLocation(int loc)
 {
-  if (loc < 1 || loc > MAX_LOCATION)
+  if (loc < 1 || loc > (int)m_maxLocation)
     return;
-
   // Avoid a settings write if old location == new location
   if (g_weatherManager.GetArea() != loc)
   {
+    ClearProperties();
     g_weatherManager.SetArea(loc);
-    CStdString strLabel = g_weatherManager.GetLocation(loc);
-    int iPos = strLabel.ReverseFind(", ");
-    if (iPos)
+    std::string strLabel = g_weatherManager.GetLocation(loc);
+    size_t iPos = strLabel.rfind(", ");
+    if (iPos != std::string::npos)
       strLabel = strLabel.substr(0, iPos);
     SET_CONTROL_LABEL(CONTROL_SELECTLOCATION, strLabel);
   }
@@ -275,9 +250,6 @@ void CGUIWindowWeather::SetProperties()
   int iCurWeather = g_weatherManager.GetArea();
   SetProperty("Location", g_weatherManager.GetLocation(iCurWeather));
   SetProperty("LocationIndex", iCurWeather);
-  CStdString strSetting;
-  strSetting.Format("weather.areacode%i", iCurWeather);
-  SetProperty("AreaCode", CWeather::GetAreaCode(CSettings::Get().GetString(strSetting)));
   SetProperty("Updated", g_weatherManager.GetLastUpdateTime());
   SetProperty("Current.ConditionIcon", g_weatherManager.GetInfo(WEATHER_IMAGE_CURRENT_ICON));
   SetProperty("Current.Condition", g_weatherManager.GetInfo(WEATHER_LABEL_CURRENT_COND));
@@ -288,15 +260,15 @@ void CGUIWindowWeather::SetProperties()
   SetProperty("Current.DewPoint", g_weatherManager.GetInfo(WEATHER_LABEL_CURRENT_DEWP));
   SetProperty("Current.Humidity", g_weatherManager.GetInfo(WEATHER_LABEL_CURRENT_HUMI));
   // we use the icons code number for fanart as it's the safest way
-  CStdString fanartcode = URIUtils::GetFileName(g_weatherManager.GetInfo(WEATHER_IMAGE_CURRENT_ICON));
+  std::string fanartcode = URIUtils::GetFileName(g_weatherManager.GetInfo(WEATHER_IMAGE_CURRENT_ICON));
   URIUtils::RemoveExtension(fanartcode);
   SetProperty("Current.FanartCode", fanartcode);
 
   // Future weather
-  CStdString day;
+  std::string day;
   for (int i = 0; i < NUM_DAYS; i++)
   {
-    day.Format("Day%i.", i);
+    day = StringUtils::Format("Day%i.", i);
     SetProperty(day + "Title", g_weatherManager.GetForecast(i).m_day);
     SetProperty(day + "HighTemp", g_weatherManager.GetForecast(i).m_high);
     SetProperty(day + "LowTemp", g_weatherManager.GetForecast(i).m_low);
@@ -308,37 +280,32 @@ void CGUIWindowWeather::SetProperties()
   }
 }
 
-void CGUIWindowWeather::CallScript()
+void CGUIWindowWeather::ClearProperties()
 {
-  if (!StringUtils::EqualsNoCase(CSettings::Get().GetString("weather.addon"), DEFAULT_WEATHER_ADDON))
+  // Current weather
+  SetProperty("Location", "");
+  SetProperty("LocationIndex", "");
+  SetProperty("Updated", "");
+  SetProperty("Current.ConditionIcon", "");
+  SetProperty("Current.Condition", "");
+  SetProperty("Current.Temperature", "");
+  SetProperty("Current.FeelsLike", "");
+  SetProperty("Current.UVIndex", "");
+  SetProperty("Current.Wind", "");
+  SetProperty("Current.DewPoint", "");
+  SetProperty("Current.Humidity", "");
+  SetProperty("Current.FanartCode", "");
+
+  // Future weather
+  std::string day;
+  for (int i = 0; i < NUM_DAYS; i++)
   {
-    AddonPtr addon;
-    if (!CServiceBroker::GetAddonMgr().GetAddon(CSettings::Get().GetString("weather.addon"), addon, ADDON_SCRIPT_WEATHER))
-      return;
-
-    // initialize our sys.argv variables
-    std::vector<std::string> argv;
-    argv.push_back(addon->LibPath());
-
-    // if script is running we wait for another timeout only when in weather window
-    if (g_windowManager.GetActiveWindow() == WINDOW_WEATHER)
-    {
-      if (iScriptId != -1 && CScriptInvocationManager::Get().IsRunning(iScriptId))
-      {
-        m_scriptTimer.StartZero();
-        return;
-      }
-      iScriptId = -1;
-    }
-
-    // get the current locations area code
-    CStdString strSetting;
-    strSetting.Format("weather.areacode%i", g_weatherManager.GetArea());
-    argv.push_back(CWeather::GetAreaCode(CSettings::Get().GetString(strSetting)));
-
-    // call our script, passing the areacode
-    iScriptId = CScriptInvocationManager::Get().ExecuteAsync(argv[0], addon, argv);
-
-    CLog::Log(LOGDEBUG, "%s - Weather script called: %s (%s)", __FUNCTION__, argv[0].c_str(), argv[1].c_str());
+    day = StringUtils::Format("Day%i.", i);
+    SetProperty(day + "Title", "");
+    SetProperty(day + "HighTemp", "");
+    SetProperty(day + "LowTemp", "");
+    SetProperty(day + "Outlook", "");
+    SetProperty(day + "OutlookIcon", "");
+    SetProperty(day + "FanartCode", "");
   }
 }

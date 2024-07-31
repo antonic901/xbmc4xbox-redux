@@ -21,7 +21,6 @@
  */
 
 #include "guilib/GUIWindow.h"
-#include "utils/Stopwatch.h"
 
 class CGUIWindowWeather : public CGUIWindow
 {
@@ -37,9 +36,8 @@ protected:
   void UpdateButtons();
   void UpdateLocations();
   void SetProperties();
-  void CallScript();
+  void ClearProperties();
   void SetLocation(int loc);
 
-  int iScriptId; // some hack to make current weather work with new way of launching scripts (not originally in XBMC)
-  CStopWatch m_scriptTimer;
+  unsigned int m_maxLocation;
 };
