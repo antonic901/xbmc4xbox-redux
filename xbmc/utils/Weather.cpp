@@ -31,6 +31,10 @@
 #include "Application.h"
 #include "filesystem/Directory.h"
 #include "filesystem/ZipManager.h"
+#ifdef _XBOX
+#include "filesystem/CurlFile.h"
+#include "utils/JSONVariantParser.h"
+#endif
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "guilib/Key.h"
@@ -96,6 +100,20 @@ bool CWeatherJob::DoWork()
   CLog::Log(LOGINFO, "WEATHER: Downloading weather");
   // call our script, passing the areacode
   int scriptId = -1;
+#ifdef _XBOX
+  if (addon->ID() == "weather.xbmc.builtin")
+  {
+    if (FetchInternalWeather())
+    {
+      SetFromProperties();
+
+      // and send a message that we're done
+      CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_WEATHER_FETCHED);
+      g_windowManager.SendThreadMessage(msg);
+    }
+  }
+  else
+#endif
   if ((scriptId = CScriptInvocationManager::Get().ExecuteAsync(argv[0], addon, argv)) >= 0)
   {
     while (true)
@@ -121,6 +139,57 @@ const CWeatherInfo &CWeatherJob::GetInfo() const
 {
   return m_info;
 }
+
+#ifdef _XBOX
+bool CWeatherJob::FetchInternalWeather() const
+{
+  float lat = 40.71f;
+  float lon = -74.01f;
+  std::string strLocale = g_langInfo.GetLocale().GetLanguageCode();
+
+  std::string strURL = StringUtils::Format(
+    "http://api.weatherapi.com/v1/forecast.json?key=be7c11e4b6f04d1fb8d142241221112&q=%f,%f&days=7&aqi=no&alerts=no&lang=%s", lat, lon, strLocale.c_str()
+  );
+
+  XFILE::CCurlFile httpUtil;
+  std::string bodyResponse;
+  if (!httpUtil.Get(strURL, bodyResponse))
+  {
+    CLog::Log(LOGWARNING, "Internal weather fetching failed");
+    return false;
+  }
+  CVariant obj = CJSONVariantParser::Parse((const unsigned char *)bodyResponse.c_str(), bodyResponse.size());
+
+  CGUIWindow* window = g_windowManager.GetWindow(WINDOW_WEATHER);
+  window->SetProperty("Current.Condition", obj["current"]["condition"]["text"].asString());
+  window->SetProperty("Current.OutlookIcon", StringUtils::Format("https:%s", obj["current"]["condition"]["icon"].asString().c_str()));
+  window->SetProperty("Current.Temperature", obj["current"]["temp_c"].asString());
+  window->SetProperty("Current.FeelsLike", obj["current"]["feelslike_c"].asString());
+  window->SetProperty("Current.UVIndex", obj["current"]["uv"].asString());
+  window->SetProperty("Current.Wind", obj["current"]["wind_kph"].asString());
+  window->SetProperty("Current.WindDirection", obj["current"]["wind_dir"].asString());
+  window->SetProperty("Current.DewPoint", obj["current"]["dewpoint_c"].asString());
+  window->SetProperty("Current.Humidity", obj["current"]["humidity"].asString());
+  window->SetProperty("Current.Location", obj["location"]["name"].asString());
+
+  for (int i = 0; i < 5; ++i)
+  {
+    CDateTime dateTime = CDateTime::FromDBDate(obj["forecast"]["forecastday"][i]["date"].asString());
+    std::string strDay = StringUtils::Format("Day%i.Title",i);
+    window->SetProperty(strDay, g_localizeStrings.Get(dateTime.GetDayOfWeek() + 10));
+    strDay = StringUtils::Format("Day%i.HighTemp",i);
+    window->SetProperty(strDay, obj["forecast"]["forecastday"][i]["day"]["maxtemp_c"].asString());
+    strDay = StringUtils::Format("Day%i.LowTemp",i);
+    window->SetProperty(strDay, obj["forecast"]["forecastday"][i]["day"]["mintemp_c"].asString());
+    strDay = StringUtils::Format("Day%i.OutlookIcon",i);
+    window->SetProperty(strDay, StringUtils::Format("https:%s", obj["forecast"]["forecastday"][i]["day"]["condition"]["icon"].asString().c_str()));
+    strDay = StringUtils::Format("Day%i.Outlook",i);
+    window->SetProperty(strDay,  obj["forecast"]["forecastday"][i]["day"]["condition"]["text"].asString());
+  }
+
+  return true;
+}
+#endif
 
 void CWeatherJob::LocalizeOverviewToken(std::string &token)
 {

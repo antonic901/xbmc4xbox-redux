@@ -119,7 +119,7 @@
 				</control>
 				<control type="label">
 					<description>current temp Value</description>
-					<left>195</left>
+					<left>15</left>
 					<top>175</top>
 					<width>180</width>
 					<height>40</height>
@@ -175,7 +175,7 @@
 				</control>
 				<control type="label">
 					<description>current feels like label</description>
-					<left>170</left>
+					<left>0</left>
 					<top>400</top>
 					<width>170</width>
 					<height>35</height>
@@ -188,7 +188,7 @@
 				</control>
 				<control type="label">
 					<description>current dew label</description>
-					<left>170</left>
+					<left>0</left>
 					<top>430</top>
 					<width>170</width>
 					<height>35</height>
@@ -201,7 +201,7 @@
 				</control>
 				<control type="label">
 					<description>current humidity label</description>
-					<left>170</left>
+					<left>0</left>
 					<top>460</top>
 					<width>170</width>
 					<height>35</height>
@@ -214,7 +214,7 @@
 				</control>
 				<control type="label">
 					<description>current UV Index label</description>
-					<left>170</left>
+					<left>0</left>
 					<top>490</top>
 					<width>170</width>
 					<height>35</height>
@@ -227,7 +227,7 @@
 				</control>
 				<control type="label">
 					<description>current Wind label</description>
-					<left>170</left>
+					<left>0</left>
 					<top>520</top>
 					<width>170</width>
 					<height>35</height>

@@ -69,37 +69,37 @@ msgstr ""
 
 #empty string with id 10
 
-#: Used in Confluence
+#. Weather token
 msgctxt "#11"
 msgid "Monday"
 msgstr ""
 
-#: Used in Confluence
+#. Weather token
 msgctxt "#12"
 msgid "Tuesday"
 msgstr ""
 
-#: Used in Confluence
+#. Weather token
 msgctxt "#13"
 msgid "Wednesday"
 msgstr ""
 
-#: Used in Confluence
+#. Weather token
 msgctxt "#14"
 msgid "Thursday"
 msgstr ""
 
-#: Used in Confluence
+#. Weather token
 msgctxt "#15"
 msgid "Friday"
 msgstr ""
 
-#: Used in Confluence
+#. Weather token
 msgctxt "#16"
 msgid "Saturday"
 msgstr ""
 
-#: Used in Confluence
+#. Weather token
 msgctxt "#17"
 msgid "Sunday"
 msgstr ""
@@ -1776,7 +1776,12 @@ msgctxt "#433"
 msgid "Really remove '%s'?"
 msgstr ""
 
-#empty strings from id 434 to 436
+#. From <wind dir.> at <speed> <unit>
+msgctxt "#434"
+msgid "From %s at %i %s"
+msgstr ""
+
+#empty strings from id 435 to 436
 
 msgctxt "#437"
 msgid "Removable disk"
