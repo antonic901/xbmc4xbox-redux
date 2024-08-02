@@ -590,32 +590,6 @@
           <default>weather.xbmc.builtin</default>
         </setting>
       </group>
-      <group id="2">
-        <setting id="weather.areacode1" type="string" label="14019" help="">
-          <level>0</level>
-          <default>USNY0996 - New York, NY</default>
-          <dependencies>
-            <dependency type="visible" setting="weather.addon">weather.xbmc.builtin</dependency>
-          </dependencies>
-          <control type="button" format="action" />
-        </setting>
-        <setting id="weather.areacode2" type="string" label="14020" help="">
-          <level>0</level>
-          <default>UKXX0085 - London, United Kingdom</default>
-          <dependencies>
-            <dependency type="visible" setting="weather.addon">weather.xbmc.builtin</dependency>
-          </dependencies>
-          <control type="button" format="action" />
-        </setting>
-        <setting id="weather.areacode3" type="string" label="14021" help="">
-          <level>0</level>
-          <default>JAXX0085 - Tokyo, Japan</default>
-          <dependencies>
-            <dependency type="visible" setting="weather.addon">weather.xbmc.builtin</dependency>
-          </dependencies>
-          <control type="button" format="action" />
-        </setting>
-      </group>
     </category>
   </section>
   <section id="services">

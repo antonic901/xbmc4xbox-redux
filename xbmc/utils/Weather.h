@@ -101,7 +101,7 @@ public:
   const CWeatherInfo &GetInfo() const;
 private:
 #ifdef _XBOX
-  bool FetchInternalWeather() const;
+  bool FetchInternalWeather(std::string strLat, std::string strLon) const;
 #endif
   void LocalizeOverview(std::string &str);
   void LocalizeOverviewToken(std::string &str);

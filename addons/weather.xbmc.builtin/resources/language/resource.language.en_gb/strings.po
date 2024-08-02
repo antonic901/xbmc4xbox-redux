@@ -1,0 +1,39 @@
+# Kodi Media Center language file
+# Addon Name: Gismeteo
+# Addon id: weather.gismeteo
+# Addon Provider: vl.maksime
+
+msgid ""
+msgstr ""
+
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+
+msgctxt "#32101"
+msgid "Location setup"
+msgstr ""
+
+msgctxt "#32110"
+msgid "Current Location"
+msgstr ""
+
+msgctxt "#32111"
+msgid "Location 1"
+msgstr ""
+
+msgctxt "#32112"
+msgid "Location 2"
+msgstr ""
+
+msgctxt "#32113"
+msgid "Location 3"
+msgstr ""
+
+msgctxt "#32114"
+msgid "Location 4"
+msgstr ""
+
+msgctxt "#32115"
+msgid "Location 5"
+msgstr ""

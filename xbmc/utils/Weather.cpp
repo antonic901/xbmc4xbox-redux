@@ -103,7 +103,10 @@ bool CWeatherJob::DoWork()
 #ifdef _XBOX
   if (addon->ID() == "weather.xbmc.builtin")
   {
-    if (FetchInternalWeather())
+    int iCurrentLocation = atoi(addon->GetSetting("CurrentLocation").c_str());
+    std::string lat = addon->GetSetting(StringUtils::Format("Location%iLAT", iCurrentLocation + 1));
+    std::string lon = addon->GetSetting(StringUtils::Format("Location%iLON", iCurrentLocation + 1));
+    if (FetchInternalWeather(lat, lon))
     {
       SetFromProperties();
 
@@ -141,14 +144,11 @@ const CWeatherInfo &CWeatherJob::GetInfo() const
 }
 
 #ifdef _XBOX
-bool CWeatherJob::FetchInternalWeather() const
+bool CWeatherJob::FetchInternalWeather(std::string strLat, std::string strLon) const
 {
-  float lat = 40.71f;
-  float lon = -74.01f;
   std::string strLocale = g_langInfo.GetLocale().GetLanguageCode();
-
   std::string strURL = StringUtils::Format(
-    "http://api.weatherapi.com/v1/forecast.json?key=be7c11e4b6f04d1fb8d142241221112&q=%f,%f&days=7&aqi=no&alerts=no&lang=%s", lat, lon, strLocale.c_str()
+    "http://api.weatherapi.com/v1/forecast.json?key=be7c11e4b6f04d1fb8d142241221112&q=%s,%s&days=7&aqi=no&alerts=no&lang=%s", strLat.c_str(), strLon.c_str(), strLocale.c_str()
   );
 
   XFILE::CCurlFile httpUtil;

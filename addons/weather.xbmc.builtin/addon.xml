@@ -1,15 +1,16 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="weather.xbmc.builtin"
-       name="Weather.com (standard)"
-       version="1.0.0"
-       provider-name="Team XBMC">
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="weather.xbmc.builtin" version="1.0.0" name="Weather API (Internal Weather)" provider-name="Team XBMC">
   <requires>
-    <import addon="xbmc.python" version="2.0"/>
+    <import addon="xbmc.python" version="2.19.0"/>
   </requires>
-  <extension point="xbmc.python.weather" library=""/>
+	<extension point="xbmc.python.weather" library="default.py"/>
   <extension point="xbmc.addon.metadata">
-    <summary>Current weather conditions.</summary>
-    <description>This is the default weather source.[CR][CR]It provides current weather conditions and a four day outlook.</description>
+		<summary lang="en_GB">Internal weather provided by Weather API.</summary>
+    <description>This is the default weather source. It provides current weather conditions and a five day outlook.</description>
     <platform>all</platform>
+		<website>https://www.weatherapi.com/</website>
+		<assets>
+			<icon>icon.png</icon>
+		</assets>
   </extension>
 </addon>
