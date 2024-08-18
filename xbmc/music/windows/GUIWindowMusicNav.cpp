@@ -101,7 +101,7 @@ bool CGUIWindowMusicNav::OnMessage(CGUIMessage& message)
 
       // is this the first time the window is opened?
       if (m_vecItems->GetPath() == "?" && message.GetStringParam().empty())
-        message.SetStringParam(CSettings::Get().GetString("mymusic.defaultlibview"));
+        message.SetStringParam(CSettings::GetInstance().GetString("mymusic.defaultlibview"));
 
       if (!CGUIWindowMusicBase::OnMessage(message))
         return false;
@@ -509,9 +509,9 @@ void CGUIWindowMusicNav::GetContextButtons(int itemNumber, CContextButtons &butt
           nodetype == NODE_TYPE_OVERVIEW ||
           nodetype == NODE_TYPE_TOP100))
       {
-        if (!item->IsPath(CSettings::Get().GetString("mymusic.defaultlibview")))
+        if (!item->IsPath(CSettings::GetInstance().GetString("mymusic.defaultlibview")))
           buttons.Add(CONTEXT_BUTTON_SET_DEFAULT, 13335); // set default
-        if (!CSettings::Get().GetString("mymusic.defaultlibview").empty())
+        if (!CSettings::GetInstance().GetString("mymusic.defaultlibview").empty())
           buttons.Add(CONTEXT_BUTTON_CLEAR_DEFAULT, 13403); // clear default
       }
       NODE_TYPE childtype = dir.GetDirectoryChildType(item->GetPath());
@@ -557,7 +557,7 @@ void CGUIWindowMusicNav::GetContextButtons(int itemNumber, CContextButtons &butt
                       && (item->IsPlayList() || item->IsSmartPlayList()))
         buttons.Add(CONTEXT_BUTTON_DELETE, 117);
 
-      if (!item->IsReadOnly() && CSettings::Get().GetBool("filelists.allowfiledeletion"))
+      if (!item->IsReadOnly() && CSettings::GetInstance().GetBool("filelists.allowfiledeletion"))
       {
         buttons.Add(CONTEXT_BUTTON_DELETE, 117);
         buttons.Add(CONTEXT_BUTTON_RENAME, 118);
@@ -629,13 +629,13 @@ bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     return true;
 
   case CONTEXT_BUTTON_SET_DEFAULT:
-    CSettings::Get().SetString("mymusic.defaultlibview", GetQuickpathName(item->GetPath()));
-    CSettings::Get().Save();
+    CSettings::GetInstance().SetString("mymusic.defaultlibview", GetQuickpathName(item->GetPath()));
+    CSettings::GetInstance().Save();
     return true;
 
   case CONTEXT_BUTTON_CLEAR_DEFAULT:
-    CSettings::Get().SetString("mymusic.defaultlibview", "");
-    CSettings::Get().Save();
+    CSettings::GetInstance().SetString("mymusic.defaultlibview", "");
+    CSettings::GetInstance().Save();
     return true;
 
   case CONTEXT_BUTTON_GO_TO_ARTIST:

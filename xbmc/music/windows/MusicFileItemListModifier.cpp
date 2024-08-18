@@ -58,7 +58,7 @@ void CMusicFileItemListModifier::AddQueuingFolder(CFileItemList& items)
     return;
 
   // always show "all" items by default
-  if (!CSettings::Get().GetBool("musiclibrary.showallitems"))
+  if (!CSettings::GetInstance().GetBool("musiclibrary.showallitems"))
     return;
 
   // no need for "all" item when only one item

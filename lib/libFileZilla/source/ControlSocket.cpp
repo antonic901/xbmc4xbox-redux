@@ -1591,7 +1591,7 @@ void CControlSocket::ParseCommand()
 				CStdString result;
 				int error = m_pOwner->m_pPermissions->GetFileName(m_status.user, args, m_CurrentDir, FOP_CREATENEW, result);
 #if defined(_XBOX)
-				if (CSettings::Get().GetBool("services.ftpautofatx"))
+				if (CSettings::GetInstance().GetBool("services.ftpautofatx"))
 					CUtil::GetFatXQualifiedPath(result);
 #endif
 				if (error)
@@ -1615,7 +1615,7 @@ void CControlSocket::ParseCommand()
 				CStdString result, logical;
 				int error = m_pOwner->m_pPermissions->GetDirName(m_status.user, args, m_CurrentDir, DOP_CREATE, result, logical);
 #if defined(_XBOX)
-				if (CSettings::Get().GetBool("services.ftpautofatx"))
+				if (CSettings::GetInstance().GetBool("services.ftpautofatx"))
 					CUtil::GetFatXQualifiedPath(result);
 #endif       
 				if (error)

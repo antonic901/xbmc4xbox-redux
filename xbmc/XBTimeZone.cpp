@@ -966,8 +966,8 @@ void XBTimeZone::SetDST(BOOL bEnable)
 
 void XBTimeZone::OnSettingsLoaded()
 {
-  CSettings::Get().SetInt("locale.timezone", GetTimeZoneIndex());
-  CSettings::Get().SetBool("locale.usedst", GetDST());
+  CSettings::GetInstance().SetInt("locale.timezone", GetTimeZoneIndex());
+  CSettings::GetInstance().SetBool("locale.usedst", GetDST());
 }
 
 void XBTimeZone::OnSettingChanged(const CSetting *setting)

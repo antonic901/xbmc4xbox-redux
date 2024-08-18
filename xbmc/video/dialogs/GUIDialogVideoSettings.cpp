@@ -135,13 +135,13 @@ void CGUIDialogVideoSettings::OnSettingChanged(const CSetting *setting)
   }
   else if (settingId == SETTING_VIDEO_FLICKER)
   {
-    CSettings::Get().SetInt("videoplayer.flicker", static_cast<const CSettingInt*>(setting)->GetValue());
+    CSettings::GetInstance().SetInt("videoplayer.flicker", static_cast<const CSettingInt*>(setting)->GetValue());
     RESOLUTION res = g_graphicsContext.GetVideoResolution();
     g_graphicsContext.SetVideoResolution(res);
   }
   else if (settingId == SETTING_VIDEO_SOFTEN)
   {
-    CSettings::Get().SetBool("videoplayer.soften", static_cast<const CSettingBool*>(setting)->GetValue());
+    CSettings::GetInstance().SetBool("videoplayer.soften", static_cast<const CSettingBool*>(setting)->GetValue());
     RESOLUTION res = g_graphicsContext.GetVideoResolution();
     g_graphicsContext.SetVideoResolution(res);
   }
@@ -164,7 +164,7 @@ void CGUIDialogVideoSettings::OnSettingAction(const CSetting *setting)
   {
     // launch calibration window
     if (CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE  &&
-        g_passwordManager.CheckSettingLevelLock(CSettings::Get().GetSetting("videoscreen.guicalibration")->GetLevel()))
+        g_passwordManager.CheckSettingLevelLock(CSettings::GetInstance().GetSetting("videoscreen.guicalibration")->GetLevel()))
       return;
     g_windowManager.ForceActivateWindow(WINDOW_SCREEN_CALIBRATION);
   }
@@ -196,7 +196,7 @@ void CGUIDialogVideoSettings::Save()
     CMediaSettings::Get().GetDefaultVideoSettings() = CMediaSettings::Get().GetCurrentVideoSettings();
     CMediaSettings::Get().GetDefaultVideoSettings().m_SubtitleStream = -1;
     CMediaSettings::Get().GetDefaultVideoSettings().m_AudioStream = -1;
-    CSettings::Get().Save();
+    CSettings::GetInstance().Save();
   }
 }
 
@@ -283,8 +283,8 @@ void CGUIDialogVideoSettings::InitializeSettings()
     AddPercentageSlider(groupVideoPlayback, SETTING_VIDEO_CONTRAST, 465, 0, static_cast<int>(videoSettings.m_Contrast), 14047, 1, 465, usePopup);
   /*if (g_renderManager.Supports(RENDERFEATURE_GAMMA))*/
     AddPercentageSlider(groupVideoPlayback, SETTING_VIDEO_GAMMA, 466, 0, static_cast<int>(videoSettings.m_Gamma), 14047, 1, 466, usePopup);
-  AddSpinner(groupSaveAsDefault, SETTING_VIDEO_FLICKER, 13100, 0, CSettings::Get().GetInt("videoplayer.flicker"), 0, 1, 5, -1, 351);
-  AddToggle(groupSaveAsDefault, SETTING_VIDEO_SOFTEN, 215, 0, CSettings::Get().GetBool("videoplayer.soften"));
+  AddSpinner(groupSaveAsDefault, SETTING_VIDEO_FLICKER, 13100, 0, CSettings::GetInstance().GetInt("videoplayer.flicker"), 0, 1, 5, -1, 351);
+  AddToggle(groupSaveAsDefault, SETTING_VIDEO_SOFTEN, 215, 0, CSettings::GetInstance().GetBool("videoplayer.soften"));
   if (g_application.GetCurrentPlayer() == EPC_MPLAYER)
   {
     AddSlider(groupVideoPlayback, SETTING_VIDEO_FILM_GRAIN, 14058, 0, videoSettings.m_FilmGrain, "%f", 0.0f, 1.0f, 10.0f);

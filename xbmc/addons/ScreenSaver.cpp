@@ -38,7 +38,7 @@ CScreenSaver::CScreenSaver(const char *addonID)
 
 bool CScreenSaver::IsInUse() const
 {
-  return CSettings::Get().GetString("screensaver.mode") == ID();
+  return CSettings::GetInstance().GetString("screensaver.mode") == ID();
 }
 
 bool CScreenSaver::CreateScreenSaver()

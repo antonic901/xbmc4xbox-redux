@@ -334,18 +334,18 @@ SortDescription CGUIViewState::SetNextSortMethod(int direction /* = 1 */)
 
 bool CGUIViewState::HideExtensions()
 {
-  return !CSettings::Get().GetBool("filelists.showextensions");
+  return !CSettings::GetInstance().GetBool("filelists.showextensions");
 }
 
 bool CGUIViewState::HideParentDirItems()
 {
-  return !CSettings::Get().GetBool("filelists.showparentdiritems");
+  return !CSettings::GetInstance().GetBool("filelists.showparentdiritems");
 }
 
 bool CGUIViewState::DisableAddSourceButtons()
 {
   if (CProfilesManager::Get().GetCurrentProfile().canWriteSources() || g_passwordManager.bMasterUser)
-    return !CSettings::Get().GetBool("filelists.showaddsourcebuttons");
+    return !CSettings::GetInstance().GetBool("filelists.showaddsourcebuttons");
 
   return true;
 }
@@ -452,7 +452,7 @@ void CGUIViewState::LoadViewState(const std::string &path, int windowID)
     return;
 
   CViewState state;
-  if (db.GetViewState(path, windowID, state, CSettings::Get().GetString("lookandfeel.skin")) ||
+  if (db.GetViewState(path, windowID, state, CSettings::GetInstance().GetString("lookandfeel.skin")) ||
       db.GetViewState(path, windowID, state, ""))
   {
     SetViewAsControl(state.m_viewMode);
@@ -471,11 +471,11 @@ void CGUIViewState::SaveViewToDb(const std::string &path, int windowID, CViewSta
   if (viewState != NULL)
     *viewState = state;
 
-  db.SetViewState(path, windowID, state, CSettings::Get().GetString("lookandfeel.skin"));
+  db.SetViewState(path, windowID, state, CSettings::GetInstance().GetString("lookandfeel.skin"));
   db.Close();
 
   if (viewState != NULL)
-    CSettings::Get().Save();
+    CSettings::GetInstance().Save();
 }
 
 void CGUIViewState::AddPlaylistOrder(const CFileItemList &items, LABEL_MASKS label_masks)

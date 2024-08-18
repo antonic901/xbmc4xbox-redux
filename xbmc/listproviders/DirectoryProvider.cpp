@@ -340,7 +340,7 @@ bool CDirectoryProvider::OnClick(const CGUIListItemPtr &item)
   CFileItem fileItem(*boost::static_pointer_cast<CFileItem>(item));
 
   if (fileItem.HasVideoInfoTag()
-      && CSettings::Get().GetInt("myvideos.selectaction") == SELECT_ACTION_INFO
+      && CSettings::GetInstance().GetInt("myvideos.selectaction") == SELECT_ACTION_INFO
       && OnInfo(item))
     return true;
 
@@ -450,7 +450,7 @@ bool CDirectoryProvider::UpdateSort()
   m_currentSort.sortOrder = sortOrder;
   m_currentSort.sortAttributes = SortAttributeIgnoreFolders;
 
-  if (CSettings::Get().GetBool("filelists.ignorethewhensorting"))
+  if (CSettings::GetInstance().GetBool("filelists.ignorethewhensorting"))
     m_currentSort.sortAttributes = static_cast<SortAttribute>(m_currentSort.sortAttributes | SortAttributeIgnoreArticle);
 
   return true;

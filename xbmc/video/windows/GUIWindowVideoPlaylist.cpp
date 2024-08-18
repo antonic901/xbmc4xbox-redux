@@ -129,7 +129,7 @@ bool CGUIWindowVideoPlaylist::OnMessage(CGUIMessage& message)
         {
           g_playlistPlayer.SetShuffle(PLAYLIST_VIDEO, !(g_playlistPlayer.IsShuffled(PLAYLIST_VIDEO)));
           CMediaSettings::Get().SetVideoPlaylistShuffled(g_playlistPlayer.IsShuffled(PLAYLIST_VIDEO));
-          CSettings::Get().Save();
+          CSettings::GetInstance().Save();
           UpdateButtons();
           Refresh();
         }
@@ -172,7 +172,7 @@ bool CGUIWindowVideoPlaylist::OnMessage(CGUIMessage& message)
 
         // save settings
         CMediaSettings::Get().SetVideoPlaylistRepeat(g_playlistPlayer.GetRepeat(PLAYLIST_VIDEO) == PLAYLIST::REPEAT_ALL);
-        CSettings::Get().Save();
+        CSettings::GetInstance().Save();
 
         UpdateButtons();
       }
@@ -379,7 +379,7 @@ void CGUIWindowVideoPlaylist::SavePlayList()
     strNewFileName = CUtil::MakeLegalFileName(strNewFileName);
     strNewFileName += ".m3u";
     std::string strPath = URIUtils::AddFileToFolder(
-      CSettings::Get().GetString("system.playlistspath"),
+      CSettings::GetInstance().GetString("system.playlistspath"),
       "video",
       strNewFileName);
 

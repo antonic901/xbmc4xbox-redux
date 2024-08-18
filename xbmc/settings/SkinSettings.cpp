@@ -130,8 +130,9 @@ bool CSkinSettings::Save(TiXmlNode *settings) const
   }
 
   TiXmlElement* settingsElement = settingsNode->ToElement();
-  for (const auto& setting : m_settings)
+  for (std::set<ADDON::CSkinSettingPtr>::const_iterator it = m_settings.begin(); it != m_settings.end(); ++it)
   {
+    const ADDON::CSkinSettingPtr &setting = *it;
     if (!setting->Serialize(settingsElement))
       CLog::Log(LOGWARNING, "CSkinSettings: unable to save setting \"%s\"", setting->name.c_str());
   }
@@ -147,7 +148,7 @@ void CSkinSettings::Clear()
 
 void CSkinSettings::MigrateSettings(const ADDON::SkinPtr& skin)
 {
-  if (skin == nullptr)
+  if (skin == NULL)
     return;
 
   CSingleLock lock(m_critical);
@@ -155,8 +156,9 @@ void CSkinSettings::MigrateSettings(const ADDON::SkinPtr& skin)
   bool settingsMigrated = false;
   const std::string& skinId = skin->ID();
   std::set<ADDON::CSkinSettingPtr> settingsCopy(m_settings.begin(), m_settings.end());
-  for (const auto& setting : settingsCopy)
+  for (std::set<ADDON::CSkinSettingPtr>::const_iterator it = settingsCopy.begin(); it != settingsCopy.end(); ++it)
   {
+    const ADDON::CSkinSettingPtr &setting = *it;
     if (!StringUtils::StartsWith(setting->name, skinId + "."))
       continue;
 
@@ -166,13 +168,13 @@ void CSkinSettings::MigrateSettings(const ADDON::SkinPtr& skin)
     {
       int settingNumber = skin->TranslateString(settingName);
       if (settingNumber >= 0)
-        skin->SetString(settingNumber, std::dynamic_pointer_cast<ADDON::CSkinSettingString>(setting)->value);
+        skin->SetString(settingNumber, boost::dynamic_pointer_cast<ADDON::CSkinSettingString>(setting)->value);
     }
     else if (setting->GetType() == "bool")
     {
       int settingNumber = skin->TranslateBool(settingName);
       if (settingNumber >= 0)
-        skin->SetBool(settingNumber, std::dynamic_pointer_cast<ADDON::CSkinSettingBool>(setting)->value);
+        skin->SetBool(settingNumber, boost::dynamic_pointer_cast<ADDON::CSkinSettingBool>(setting)->value);
     }
 
     m_settings.erase(setting);

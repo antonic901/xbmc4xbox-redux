@@ -47,14 +47,14 @@ XBVideoConfig::~XBVideoConfig()
 void XBVideoConfig::OnSettingsLoaded()
 {
   if (HasLetterbox())
-    CSettings::Get().SetInt("videooutput.aspect", VIDEO_LETTERBOX);
+    CSettings::GetInstance().SetInt("videooutput.aspect", VIDEO_LETTERBOX);
   else if (HasWidescreen())
-    CSettings::Get().SetInt("videooutput.aspect", VIDEO_WIDESCREEN);
+    CSettings::GetInstance().SetInt("videooutput.aspect", VIDEO_WIDESCREEN);
   else
-    CSettings::Get().SetInt("videooutput.aspect", VIDEO_NORMAL);
-  CSettings::Get().SetBool("videooutput.hd480p", Has480p());
-  CSettings::Get().SetBool("videooutput.hd720p", Has720p());
-  CSettings::Get().SetBool("videooutput.hd1080i", Has1080i());
+    CSettings::GetInstance().SetInt("videooutput.aspect", VIDEO_NORMAL);
+  CSettings::GetInstance().SetBool("videooutput.hd480p", Has480p());
+  CSettings::GetInstance().SetBool("videooutput.hd720p", Has720p());
+  CSettings::GetInstance().SetBool("videooutput.hd1080i", Has1080i());
 }
 
 bool XBVideoConfig::HasPAL() const

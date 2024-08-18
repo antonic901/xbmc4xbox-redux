@@ -72,21 +72,21 @@ bool CDirectoryNodeOverview::GetContent(CFileItemList& items) const
   std::vector<std::pair<const char*, int> > vec;
   if (hasMovies)
   {
-    if (CSettings::Get().GetBool("myvideos.flatten"))
+    if (CSettings::GetInstance().GetBool("myvideos.flatten"))
       vec.push_back(std::make_pair("movies/titles", 342));
     else
       vec.push_back(std::make_pair("movies", 342));   // Movies
   }
   if (hasTvShows)
   {
-    if (CSettings::Get().GetBool("myvideos.flatten"))
+    if (CSettings::GetInstance().GetBool("myvideos.flatten"))
       vec.push_back(std::make_pair("tvshows/titles", 20343));
     else
       vec.push_back(std::make_pair("tvshows", 20343)); // TV Shows
   }
   if (hasMusicVideos)
   {
-    if (CSettings::Get().GetBool("myvideos.flatten"))
+    if (CSettings::GetInstance().GetBool("myvideos.flatten"))
       vec.push_back(std::make_pair("musicvideos/titles", 20389));
     else
       vec.push_back(std::make_pair("musicvideos", 20389)); // Music Videos

@@ -468,7 +468,7 @@ static void ParseItem(CFileItem* item, TiXmlElement* root, const std::string& pa
   else if(FindMime(resources, "image/"))
     mime = "image/";
 
-  int maxrate = CSettings::Get().GetInt("network.bandwidth");
+  int maxrate = CSettings::GetInstance().GetInt("network.bandwidth");
   if(maxrate == 0)
     maxrate = INT_MAX;
 

@@ -23,7 +23,7 @@
 #include "GUIWindowSettingsCategory.h"
 #include "GUIPassword.h"
 #include "GUIUserMessages.h"
-#include "input/Key.h"
+#include "guilib/Key.h"
 #include "settings/DisplaySettings.h"
 #include "settings/Settings.h"
 #include "settings/lib/SettingSection.h"
@@ -109,9 +109,9 @@ bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
     {
       if (message.GetParam1() == GUI_MSG_WINDOW_RESIZE)
       {
-        if (IsActive() && CDisplaySettings::GetInstance().GetCurrentResolution() != g_graphicsContext.GetVideoResolution())
+        if (IsActive() && CDisplaySettings::Get().GetCurrentResolution() != g_graphicsContext.GetVideoResolution())
         {
-          CDisplaySettings::GetInstance().SetCurrentResolution(g_graphicsContext.GetVideoResolution(), true);
+          CDisplaySettings::Get().SetCurrentResolution(g_graphicsContext.GetVideoResolution(), true);
           CreateSettings();
         }
       }
@@ -129,10 +129,10 @@ bool CGUIWindowSettingsCategory::OnAction(const CAction &action)
     case ACTION_SETTINGS_LEVEL_CHANGE:
     {
       //Test if we can access the new level
-      if (!g_passwordManager.CheckSettingLevelLock(CViewStateSettings::GetInstance().GetNextSettingLevel(), true))
+      if (!g_passwordManager.CheckSettingLevelLock(CViewStateSettings::Get().GetNextSettingLevel(), true))
         return false;
 
-      CViewStateSettings::GetInstance().CycleSettingLevel();
+      CViewStateSettings::Get().CycleSettingLevel();
       CSettings::GetInstance().Save();
 
       // try to keep the current position
@@ -140,7 +140,7 @@ bool CGUIWindowSettingsCategory::OnAction(const CAction &action)
       if (m_iCategory >= 0 && m_iCategory < (int)m_categories.size())
         oldCategory = m_categories[m_iCategory]->GetId();
 
-      SET_CONTROL_LABEL(CONTRL_BTN_LEVELS, 10036 + (int)CViewStateSettings::GetInstance().GetSettingLevel());
+      SET_CONTROL_LABEL(CONTRL_BTN_LEVELS, 10036 + (int)CViewStateSettings::Get().GetSettingLevel());
       // only re-create the categories, the settings will be created later
       SetupControls(false);
 
@@ -177,13 +177,13 @@ bool CGUIWindowSettingsCategory::OnBack(int actionID)
 
 void CGUIWindowSettingsCategory::OnWindowLoaded()
 {
-  SET_CONTROL_LABEL(CONTRL_BTN_LEVELS, 10036 + (int)CViewStateSettings::GetInstance().GetSettingLevel());
+  SET_CONTROL_LABEL(CONTRL_BTN_LEVELS, 10036 + (int)CViewStateSettings::Get().GetSettingLevel());
   CGUIDialogSettingsManagerBase::OnWindowLoaded();
 }
 
 int CGUIWindowSettingsCategory::GetSettingLevel() const
 {
-  return (int)CViewStateSettings::GetInstance().GetSettingLevel();
+  return (int)CViewStateSettings::Get().GetSettingLevel();
 }
 
 CSettingSection* CGUIWindowSettingsCategory::GetSection()
@@ -211,15 +211,16 @@ void CGUIWindowSettingsCategory::FocusElement(const std::string& elementId)
       SET_CONTROL_FOCUS(CONTROL_SETTINGS_START_BUTTONS + i, 0);
       return;
     }
-    for (const auto& group: m_categories[i]->GetGroups())
+    SettingGroupList vecGroups = m_categories[i]->GetGroups();
+    for (SettingGroupList::const_iterator it = vecGroups.begin(); it != vecGroups.end(); ++it)
     {
-      for (const auto& setting : group->GetSettings())
+      for (SettingList::const_iterator it2 = (*it)->GetSettings().begin(); it2 != (*it)->GetSettings().end(); ++it2)
       {
-        if (setting->GetId() == elementId)
+        if ((*it2)->GetId() == elementId)
         {
           SET_CONTROL_FOCUS(CONTROL_SETTINGS_START_BUTTONS + i, 0);
 
-          auto control = GetSettingControl(elementId);
+          BaseSettingControlPtr control = GetSettingControl(elementId);
           if (control)
             SET_CONTROL_FOCUS(control->GetID(), 0);
           else

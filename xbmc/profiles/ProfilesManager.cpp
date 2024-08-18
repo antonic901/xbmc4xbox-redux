@@ -88,11 +88,11 @@ bool CProfilesManager::OnSettingsLoading()
 void CProfilesManager::OnSettingsLoaded()
 {
   // check them all
-  string strDir = CSettings::Get().GetString("system.playlistspath");
+  string strDir = CSettings::GetInstance().GetString("system.playlistspath");
   if (strDir == "set default" || strDir.empty())
   {
     strDir = "special://profile/playlists/";
-    CSettings::Get().SetString("system.playlistspath", strDir.c_str());
+    CSettings::GetInstance().SetString("system.playlistspath", strDir.c_str());
   }
 
   CDirectory::Create(strDir);
@@ -240,24 +240,24 @@ bool CProfilesManager::LoadProfile(size_t index)
     return true;
 
   // unload any old settings
-  CSettings::Get().Unload();
+  CSettings::GetInstance().Unload();
 
   SetCurrentProfileId(index);
 
   // load the new settings
-  if (!CSettings::Get().Load())
+  if (!CSettings::GetInstance().Load())
   {
     CLog::Log(LOGFATAL, "CProfilesManager: unable to load settings for profile \"%s\"", m_profiles.at(index).getName().c_str());
     return false;
   }
-  CSettings::Get().SetLoaded();
+  CSettings::GetInstance().SetLoaded();
 
   CreateProfileFolders();
 
   CDatabaseManager::Get().Initialize();
   CButtonTranslator::GetInstance().Load(true);
 
-  g_Mouse.SetEnabled(CSettings::Get().GetBool("input.enablemouse"));
+  g_Mouse.SetEnabled(CSettings::GetInstance().GetBool("input.enablemouse"));
 
   g_infoManager.ResetCache();
   g_infoManager.ResetLibraryBools();
@@ -267,8 +267,8 @@ bool CProfilesManager::LoadProfile(size_t index)
     CXBMCTinyXML doc;
     if (doc.LoadFile(URIUtils::AddFileToFolder(GetUserDataFolder(), "guisettings.xml")))
     {
-      CSettings::Get().LoadSetting(doc.RootElement(), "masterlock.maxretries");
-      CSettings::Get().LoadSetting(doc.RootElement(), "masterlock.startuplock");
+      CSettings::GetInstance().LoadSetting(doc.RootElement(), "masterlock.maxretries");
+      CSettings::GetInstance().LoadSetting(doc.RootElement(), "masterlock.startuplock");
     }
   }
 
@@ -324,7 +324,7 @@ bool CProfilesManager::DeleteProfile(size_t index)
   if (index == m_currentProfile)
   {
     LoadProfile(0);
-    CSettings::Get().Save();
+    CSettings::GetInstance().Save();
   }
 
   CFileItemPtr item = CFileItemPtr(new CFileItem(URIUtils::AddFileToFolder(GetUserDataFolder(), strDirectory)));

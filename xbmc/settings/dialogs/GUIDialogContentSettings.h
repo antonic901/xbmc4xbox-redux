@@ -38,7 +38,7 @@ public:
   CGUIDialogContentSettings();
 
   // specialization of CGUIWindow
-  bool HasListItems() const override { return true; };
+  bool HasListItems() const { return true; };
 
   CONTENT_TYPE GetContent() const { return m_content; }
   void SetContent(CONTENT_TYPE content);
@@ -59,19 +59,19 @@ public:
 
 protected:
   // specializations of CGUIWindow
-  void OnInitWindow() override;
+  void OnInitWindow();
 
   // implementations of ISettingCallback
-  void OnSettingChanged(const CSetting *setting) override;
-  void OnSettingAction(const CSetting *setting) override;
+  void OnSettingChanged(const CSetting *setting);
+  void OnSettingAction(const CSetting *setting);
 
   // specialization of CGUIDialogSettingsBase
-  bool AllowResettingSettings() const override { return false; }
-  void Save() override;
-  void SetupView() override;
+  bool AllowResettingSettings() const { return false; }
+  void Save();
+  void SetupView();
 
   // specialization of CGUIDialogSettingsManualBase
-  void InitializeSettings() override;
+  void InitializeSettings();
 
 private:
   void SetLabel2(const std::string &settingid, const std::string &label);

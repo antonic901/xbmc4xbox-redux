@@ -83,7 +83,7 @@ void CFanController::OnExit()
 
 void CFanController::Process()
 {
-  if (!CSettings::Get().GetBool("system.autotemperature")) return ;
+  if (!CSettings::GetInstance().GetBool("system.autotemperature")) return ;
   int interval = 500;
   tooHotLoopCount = 0;
   tooColdLoopCount = 0;
@@ -164,8 +164,8 @@ void CFanController::OnSettingChanged(const CSetting *setting)
   {
     if (((CSettingBool*)setting)->GetValue())
     {
-      CSettings::Get().SetBool("system.fanspeedcontrol", false);
-      CFanController::Instance()->Start(CSettings::Get().GetInt("system.targettemperature"), CSettings::Get().GetInt("system.minfanspeed") );
+      CSettings::GetInstance().SetBool("system.fanspeedcontrol", false);
+      CFanController::Instance()->Start(CSettings::GetInstance().GetInt("system.targettemperature"), CSettings::GetInstance().GetInt("system.minfanspeed") );
     }
     else
       CFanController::Instance()->Stop();
@@ -173,16 +173,16 @@ void CFanController::OnSettingChanged(const CSetting *setting)
   else if (settingId == "system.fanspeed")
   {
     int iSpeed = ((CSettingInt*)setting)->GetValue();
-    CSettings::Get().SetInt("system.fanspeed", iSpeed);
+    CSettings::GetInstance().SetInt("system.fanspeed", iSpeed);
     CFanController::Instance()->SetFanSpeed(iSpeed);
   }
   else if (settingId == "system.fanspeedcontrol")
   {
     if (((CSettingBool*)setting)->GetValue())
     {
-      CSettings::Get().SetBool("system.autotemperature", false);
+      CSettings::GetInstance().SetBool("system.autotemperature", false);
       CFanController::Instance()->Stop();
-      CFanController::Instance()->SetFanSpeed(CSettings::Get().GetInt("system.fanspeed"));
+      CFanController::Instance()->SetFanSpeed(CSettings::GetInstance().GetInt("system.fanspeed"));
     }
     else
       CFanController::Instance()->RestoreStartupSpeed();

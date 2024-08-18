@@ -1067,7 +1067,7 @@ bool CSettings::SaveAvpackSettings(TiXmlNode *io_pRoot) const
 std::string CSettings::GetFFmpegDllFolder() const
 {
   std::string folder = "Q:\\system\\players\\dvdplayer\\";
-  if (CSettings::Get().GetBool("videoplayer.allcodecs"))
+  if (CSettings::GetInstance().GetBool("videoplayer.allcodecs"))
     folder += "full\\";
   return folder;
 }
@@ -1086,12 +1086,12 @@ std::string CSettings::GetPlayerName(const int& player) const
 
 std::string CSettings::GetDefaultVideoPlayerName() const
 {
-  return GetPlayerName(CSettings::Get().GetInt("videoplayer.defaultplayer"));
+  return GetPlayerName(CSettings::GetInstance().GetInt("videoplayer.defaultplayer"));
 }
 
 std::string CSettings::GetDefaultAudioPlayerName() const
 {
-  return GetPlayerName(CSettings::Get().GetInt("musicplayer.defaultplayer"));
+  return GetPlayerName(CSettings::GetInstance().GetInt("musicplayer.defaultplayer"));
 }
 
 std::string CSettings::GetAvpackSettingsFile() const

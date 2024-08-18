@@ -312,17 +312,11 @@
 #define WINDOW_MUSIC                      10005 // virtual window to return the music start window.
 #define WINDOW_VIDEOS                     10006
 #define WINDOW_SYSTEM_INFORMATION         10007
-#define WINDOW_SCREEN_CALIBRATION          10011
+#define WINDOW_SCREEN_CALIBRATION         10011
 
-#define WINDOW_SETTINGS_START             10012
-#define WINDOW_SETTINGS_MYPICTURES        10012
-#define WINDOW_SETTINGS_MYPROGRAMS        10013
-#define WINDOW_SETTINGS_MYWEATHER         10014
-#define WINDOW_SETTINGS_MYMUSIC           10015
+#define WINDOW_SETTINGS_START             10016
 #define WINDOW_SETTINGS_SYSTEM            10016
-#define WINDOW_SETTINGS_MYVIDEOS          10017
-#define WINDOW_SETTINGS_SERVICE           10018 // former (Eden) WINDOW_SETTINGS_NETWORK
-#define WINDOW_SETTINGS_APPEARANCE        10019
+#define WINDOW_SETTINGS_SERVICE           10018
 
 #define WINDOW_SCRIPTS                    10020
 #define WINDOW_SETTINGS_MYPVR             10021
@@ -334,7 +328,7 @@
 #define WINDOW_LOGIN_SCREEN               10029
 
 #define WINDOW_SETTINGS_PLAYER            10030
-#define WINDOW_SETTINGS_LIBRARY           10031
+#define WINDOW_SETTINGS_MEDIA             10031
 #define WINDOW_SETTINGS_INTERFACE         10032
 
 #define WINDOW_SETTINGS_PROFILES          10034

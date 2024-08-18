@@ -256,7 +256,7 @@ std::string CConverterType::ResolveSpecialCharset(enum SpecialCharset charset)
     return g_langInfo.GetSubtitleCharSet();
   case KaraokeCharset:
     {
-      CSetting* karaokeSetting = CSettings::Get().GetSetting("karaoke.charset");
+      CSetting* karaokeSetting = CSettings::GetInstance().GetSetting("karaoke.charset");
       if (karaokeSetting == NULL || ((CSettingString*)karaokeSetting)->GetValue() == "DEFAULT")
         return g_langInfo.GetGuiCharSet();
 

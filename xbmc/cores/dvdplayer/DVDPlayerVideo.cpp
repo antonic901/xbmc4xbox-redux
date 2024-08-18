@@ -83,8 +83,8 @@ CDVDPlayerVideo::CDVDPlayerVideo( CDVDClock* pClock
   m_iDroppedRequest = 0;
   m_fForcedAspectRatio = 0;
   m_iNrOfPicturesNotToSkip = 0;
-  m_messageQueue.SetMaxDataSize(CSettings::Get().GetInt("dvdplayercache.video") * 1024);
-  m_messageQueue.SetMaxTimeSize(CSettings::Get().GetInt("dvdplayercache.videotime"));
+  m_messageQueue.SetMaxDataSize(CSettings::GetInstance().GetInt("dvdplayercache.video") * 1024);
+  m_messageQueue.SetMaxTimeSize(CSettings::GetInstance().GetInt("dvdplayercache.videotime"));
   g_dvdPerformanceCounter.EnableVideoQueue(&m_messageQueue);
 
   m_iCurrentPts = DVD_NOPTS_VALUE;

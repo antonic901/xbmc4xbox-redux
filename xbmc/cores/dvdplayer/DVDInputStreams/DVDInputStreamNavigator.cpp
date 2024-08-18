@@ -99,7 +99,7 @@ bool CDVDInputStreamNavigator::Open()
   }
   free(strDVDFile);
 
-  int region = CSettings::Get().GetInt("dvds.playerregion");
+  int region = CSettings::GetInstance().GetInt("dvds.playerregion");
   int mask = 0;
   if(region > 0)
     mask = 1 << (region-1);
@@ -174,7 +174,7 @@ bool CDVDInputStreamNavigator::Open()
   }
 
   // jump directly to title menu
-  if(CSettings::Get().GetBool("dvds.automenu"))
+  if(CSettings::GetInstance().GetBool("dvds.automenu"))
   {
     int len, event;
     uint8_t buf[2048];

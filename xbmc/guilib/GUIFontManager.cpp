@@ -480,12 +480,12 @@ void GUIFontManager::SettingOptionsSubtitleHeightsFiller(const CSetting *setting
   }
   else
   {
-    if (CSettings::Get().GetString("subtitles.font").size())
+    if (CSettings::GetInstance().GetString("subtitles.font").size())
     {
       //find font sizes...
       CFileItemList items;
       CStdString strPath = "special://xbmc/system/players/mplayer/font/";
-      strPath += CSettings::Get().GetString("subtitles.font");
+      strPath += CSettings::GetInstance().GetString("subtitles.font");
       strPath += "/";
       XFILE::CDirectory::GetDirectory(strPath, items);
       int iCurrentSize = 0;

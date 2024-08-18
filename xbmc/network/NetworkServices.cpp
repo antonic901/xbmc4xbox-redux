@@ -114,7 +114,7 @@ bool CNetworkServices::OnSettingChanging(const CSetting *setting)
     if (IsWebserverRunning() && !StopWebserver())
       return false;
 
-    if (CSettings::Get().GetBool("services.webserver"))
+    if (CSettings::GetInstance().GetBool("services.webserver"))
     {
       if (!StartWebserver())
       {
@@ -192,7 +192,7 @@ bool CNetworkServices::OnSettingChanging(const CSetting *setting)
   else if (settingId == "services.esallinterfaces")
   {
 #ifdef HAS_EVENT_SERVER
-    if (CSettings::Get().GetBool("services.esenabled"))
+    if (CSettings::GetInstance().GetBool("services.esenabled"))
     {
       if (!StopEventServer(true, true))
         return false;
@@ -210,7 +210,7 @@ bool CNetworkServices::OnSettingChanging(const CSetting *setting)
   else if (settingId == "services.esinitialdelay" ||
            settingId == "services.escontinuousdelay")
   {
-    if (CSettings::Get().GetBool("services.esenabled"))
+    if (CSettings::GetInstance().GetBool("services.esenabled"))
       return RefreshEventServer();
   }
 #endif // HAS_EVENT_SERVER
@@ -267,7 +267,7 @@ void CNetworkServices::OnSettingChanged(const CSetting *setting)
     // TODO - General way of handling setting changes that require restart
     if (HELPERS::ShowYesNoDialogText(14038, 14039) == YES)
     {
-      CSettings::Get().Save();
+      CSettings::GetInstance().Save();
       CApplicationMessenger::Get().PostMsg(TMSG_RESTARTAPP);
     }
   }
@@ -276,11 +276,11 @@ void CNetworkServices::OnSettingChanged(const CSetting *setting)
 void CNetworkServices::Start()
 {
   StartTimeServer();
-  if (CSettings::Get().GetBool("services.webserver") && !StartWebserver())
+  if (CSettings::GetInstance().GetBool("services.webserver") && !StartWebserver())
     CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33101), g_localizeStrings.Get(33100));
   StartFtpServer();
   StartUPnP();
-  if (CSettings::Get().GetBool("services.esenabled") && !StartEventServer())
+  if (CSettings::GetInstance().GetBool("services.esenabled") && !StartEventServer())
     CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33102), g_localizeStrings.Get(33100));
   StartRss();
 }
@@ -304,7 +304,7 @@ bool CNetworkServices::StartTimeServer()
   if (!g_application.getNetwork().IsAvailable())
     return false;
 
-  if (!CSettings::Get().GetBool("services.timeserver"))
+  if (!CSettings::GetInstance().GetBool("services.timeserver"))
     return false;
 
   if(!IsTimeServerRunning())
@@ -358,10 +358,10 @@ bool CNetworkServices::StartWebserver()
   if (!g_application.getNetwork().IsAvailable())
     return false;
 
-  if (!CSettings::Get().GetBool("services.webserver"))
+  if (!CSettings::GetInstance().GetBool("services.webserver"))
     return false;
 
-  int webPort = CSettings::Get().GetInt("services.webserverport");
+  int webPort = CSettings::GetInstance().GetInt("services.webserverport");
   if (!ValidatePort(webPort))
   {
     CLog::Log(LOGERROR, "Cannot start Web Server on port %i", webPort);
@@ -383,10 +383,10 @@ bool CNetworkServices::StartWebserver()
 
   if (m_webserver)
   {
-    m_webserver->SetUserName(CSettings::Get().GetString("services.webserverusername").c_str());
-    m_webserver->SetPassword(CSettings::Get().GetString("services.webserverpassword").c_str());
+    m_webserver->SetUserName(CSettings::GetInstance().GetString("services.webserverusername").c_str());
+    m_webserver->SetPassword(CSettings::GetInstance().GetString("services.webserverpassword").c_str());
   }
-  if (m_webserver && m_pXbmcHttp && CSettings::Get().GetInt("services.httpapibroadcastlevel")>=1)
+  if (m_webserver && m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
     CApplicationMessenger::Get().HttpApi("broadcastlevel; StartUp;1");
   return true;
 #endif // HAS_WEB_SERVER
@@ -424,7 +424,7 @@ bool CNetworkServices::StartFtpServer()
   if (!g_application.getNetwork().IsAvailable())
     return false;
 
-  if (!CSettings::Get().GetBool("services.ftpserver"))
+  if (!CSettings::GetInstance().GetBool("services.ftpserver"))
     return false;
 
   CLog::Log(LOGNOTICE, "XBFileZilla: Starting...");
@@ -546,8 +546,8 @@ bool CNetworkServices::SetFTPServerUserPass()
   // TODO: Read the FileZilla Server XML and Set it here!
   // Get GUI USER and pass and set pass to FTP Server
   CStdString strFtpUserName, strFtpUserPassword;
-  strFtpUserName      = CSettings::Get().GetString("services.ftpserveruser");
-  strFtpUserPassword  = CSettings::Get().GetString("services.ftpserverpassword");
+  strFtpUserName      = CSettings::GetInstance().GetString("services.ftpserveruser");
+  strFtpUserPassword  = CSettings::GetInstance().GetString("services.ftpserverpassword");
 
   if(strFtpUserPassword.size() == 0)
   { // PopUp OK and Display: FTP Server Password is empty! Try Again!
@@ -572,7 +572,7 @@ bool CNetworkServices::SetFTPServerUserPass()
         if (p_ftpUser->SetPassword(strFtpUserPassword.c_str()) != XFS_INVALID_PARAMETERS)
         {
           p_ftpUser->CommitChanges();
-          CSettings::Get().SetString("services.ftpserverpassword",strFtpUserPassword.c_str());
+          CSettings::GetInstance().SetString("services.ftpserverpassword",strFtpUserPassword.c_str());
           CGUIDialogOK::ShowAndGetInput(728, 0, 1247, 0);
           return true;
         }
@@ -602,7 +602,7 @@ int CNetworkServices::GetFtpServerPort()
 bool CNetworkServices::StartEventServer()
 {
 #ifdef HAS_EVENT_SERVER
-  if (!CSettings::Get().GetBool("services.esenabled"))
+  if (!CSettings::GetInstance().GetBool("services.esenabled"))
     return false;
 
   if (IsEventServerRunning())
@@ -675,7 +675,7 @@ bool CNetworkServices::StopEventServer(bool bWait, bool promptuser)
 bool CNetworkServices::RefreshEventServer()
 {
 #ifdef HAS_EVENT_SERVER
-  if (!CSettings::Get().GetBool("services.esenabled"))
+  if (!CSettings::GetInstance().GetBool("services.esenabled"))
     return false;
 
   if (!IsEventServerRunning())
@@ -715,7 +715,7 @@ bool CNetworkServices::StopUPnP(bool bWait)
 bool CNetworkServices::StartUPnPClient()
 {
 #ifdef HAS_UPNP
-  if (!CSettings::Get().GetBool("services.upnpcontroller"))
+  if (!CSettings::GetInstance().GetBool("services.upnpcontroller"))
     return false;
 
   CLog::Log(LOGNOTICE, "starting upnp controller");
@@ -750,7 +750,7 @@ bool CNetworkServices::StopUPnPClient()
 bool CNetworkServices::StartUPnPRenderer()
 {
 #ifdef HAS_UPNP
-  if (!CSettings::Get().GetBool("services.upnprenderer"))
+  if (!CSettings::GetInstance().GetBool("services.upnprenderer"))
     return false;
 
   CLog::Log(LOGNOTICE, "starting upnp renderer");
@@ -784,7 +784,7 @@ bool CNetworkServices::StopUPnPRenderer()
 bool CNetworkServices::StartUPnPServer()
 {
 #ifdef HAS_UPNP
-  if (!CSettings::Get().GetBool("services.upnpserver"))
+  if (!CSettings::GetInstance().GetBool("services.upnpserver"))
     return false;
 
   CLog::Log(LOGNOTICE, "starting upnp server");

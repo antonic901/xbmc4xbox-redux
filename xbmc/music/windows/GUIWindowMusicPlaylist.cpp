@@ -142,7 +142,7 @@ bool CGUIWindowMusicPlayList::OnMessage(CGUIMessage& message)
         {
           g_playlistPlayer.SetShuffle(PLAYLIST_MUSIC, !(g_playlistPlayer.IsShuffled(PLAYLIST_MUSIC)));
           CMediaSettings::Get().SetMusicPlaylistShuffled(g_playlistPlayer.IsShuffled(PLAYLIST_MUSIC));
-          CSettings::Get().Save();
+          CSettings::GetInstance().Save();
           UpdateButtons();
           Refresh();
         }
@@ -192,7 +192,7 @@ bool CGUIWindowMusicPlayList::OnMessage(CGUIMessage& message)
 
         // save settings
         CMediaSettings::Get().SetMusicPlaylistRepeat(g_playlistPlayer.GetRepeat(PLAYLIST_MUSIC) == PLAYLIST::REPEAT_ALL);
-        CSettings::Get().Save();
+        CSettings::GetInstance().Save();
 
         UpdateButtons();
       }
@@ -290,7 +290,7 @@ void CGUIWindowMusicPlayList::SavePlayList()
     strNewFileName = CUtil::MakeLegalFileName(strNewFileName);
     strNewFileName += ".m3u";
     std::string strPath = URIUtils::AddFileToFolder(
-      CSettings::Get().GetString("system.playlistspath"),
+      CSettings::GetInstance().GetString("system.playlistspath"),
       "music",
       strNewFileName);
 
@@ -450,9 +450,9 @@ void CGUIWindowMusicPlayList::OnItemLoaded(CFileItem* pItem)
 {
   if (pItem->HasMusicInfoTag() && pItem->GetMusicInfoTag()->Loaded())
   { // set label 1+2 from tags
-    std::string strTrack=CSettings::Get().GetString("musicfiles.nowplayingtrackformat");
+    std::string strTrack=CSettings::GetInstance().GetString("musicfiles.nowplayingtrackformat");
     if (strTrack.empty())
-      strTrack = CSettings::Get().GetString("musicfiles.trackformat");
+      strTrack = CSettings::GetInstance().GetString("musicfiles.trackformat");
     CLabelFormatter formatter(strTrack, "%D");
     formatter.FormatLabels(pItem);
   } // if (pItem->m_musicInfoTag.Loaded())

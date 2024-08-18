@@ -285,7 +285,7 @@ void CGUIAudioManager::PlayPythonSound(const CStdString& strFileName)
 
 std::string GetSoundSkinPath()
 {
-  CSettingString* setting = static_cast<CSettingString*>(CSettings::Get().GetSetting("lookandfeel.soundskin"));
+  CSettingString* setting = static_cast<CSettingString*>(CSettings::GetInstance().GetSetting("lookandfeel.soundskin"));
   std::string value = setting->GetValue();
   if (value.empty())
     return "";
@@ -410,7 +410,7 @@ bool CGUIAudioManager::LoadWindowSound(TiXmlNode* pWindowNode, const CStdString&
 void CGUIAudioManager::Enable(bool bEnable)
 {
   // Enable/Disable has no effect if nav sounds are turned off
-  if (CSettings::Get().GetString("lookandfeel.soundskin")=="OFF")
+  if (CSettings::GetInstance().GetString("lookandfeel.soundskin")=="OFF")
     bEnable = false;
 
   if (bEnable)

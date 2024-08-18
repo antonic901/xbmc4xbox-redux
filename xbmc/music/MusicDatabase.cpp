@@ -3261,7 +3261,7 @@ error:
 bool CMusicDatabase::LookupCDDBInfo(bool bRequery/*=false*/)
 {
 #ifdef HAS_DVD_DRIVE
-  if (!CSettings::Get().GetBool("audiocds.usecddb"))
+  if (!CSettings::GetInstance().GetBool("audiocds.usecddb"))
     return false;
 
   // check network connectivity
@@ -4723,7 +4723,7 @@ void CMusicDatabase::UpdateTables(int version)
   {
     m_pDS->exec("ALTER TABLE song ADD dateAdded text");
     CMediaSettings::Get().SetMusicNeedsUpdate(53);
-    CSettings::Get().Save();
+    CSettings::GetInstance().Save();
   }
   if (version < 54)
   {
@@ -5022,7 +5022,7 @@ void CMusicDatabase::UpdateTables(int version)
     // Prompt for rescan of library to read tags that were not processed by previous versions
     // and accomodate changes to the way some tags are processed
     CMediaSettings::Get().SetMusicNeedsUpdate(60);
-    CSettings::Get().Save();
+    CSettings::GetInstance().Save();
   }
 }
 
@@ -5832,7 +5832,7 @@ bool CMusicDatabase::GetItems(const std::string &strBaseDir, const std::string &
   else if (StringUtils::EqualsNoCase(itemType, "roles"))
     return GetRolesNav(strBaseDir, items, filter);
   else if (StringUtils::EqualsNoCase(itemType, "artists"))
-    return GetArtistsNav(strBaseDir, items, !CSettings::Get().GetBool("musiclibrary.showcompilationartists"), -1, -1, -1, filter, sortDescription);
+    return GetArtistsNav(strBaseDir, items, !CSettings::GetInstance().GetBool("musiclibrary.showcompilationartists"), -1, -1, -1, filter, sortDescription);
   else if (StringUtils::EqualsNoCase(itemType, "albums"))
     return GetAlbumsByWhere(strBaseDir, filter, items, sortDescription);
   else if (StringUtils::EqualsNoCase(itemType, "songs"))
@@ -6381,7 +6381,7 @@ bool CMusicDatabase::GetFilter(CDbUrl &musicUrl, Filter &filter, SortDescription
       if (xsp.GetOrder() != SortByNone)
         sorting.sortBy = xsp.GetOrder();
       sorting.sortOrder = xsp.GetOrderAscending() ? SortOrderAscending : SortOrderDescending;
-      if (CSettings::Get().GetBool("filelists.ignorethewhensorting"))
+      if (CSettings::GetInstance().GetBool("filelists.ignorethewhensorting"))
         sorting.sortAttributes = SortAttributeIgnoreArticle;
     }
   }

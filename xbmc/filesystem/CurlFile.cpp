@@ -769,7 +769,7 @@ void CCurlFile::ParseAndCorrectUrl(CURL &url2)
   else if( url2.IsProtocol("http")
        ||  url2.IsProtocol("https"))
   {
-    const CSettings &s = CSettings::Get();
+    const CSettings &s = CSettings::GetInstance();
     if (m_proxyhost.empty()
         && s.GetBool("network.usehttpproxy")
         && !s.GetString("network.httpproxyserver").empty()

@@ -504,9 +504,9 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
       vecPPOptions.push_back("ci");
     }
 
-    if ( CSettings::Get().GetBool("postprocessing.enable") )
+    if ( CSettings::GetInstance().GetBool("postprocessing.enable") )
     {
-      if (CSettings::Get().GetBool("postprocessing.auto"))
+      if (CSettings::GetInstance().GetBool("postprocessing.auto"))
       {
         // enable auto quality &postprocessing
         m_vecOptions.push_back("-autoq");
@@ -520,31 +520,31 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
         // manual postprocessing
         CStdString strOpt;
 
-        if ( CSettings::Get().GetBool("postprocessing.dering") )
+        if ( CSettings::GetInstance().GetBool("postprocessing.dering") )
         { // add dering filter
           vecPPOptions.push_back("dr:a");
         }
-        if (CSettings::Get().GetBool("postprocessing.verticaldeblocking"))
+        if (CSettings::GetInstance().GetBool("postprocessing.verticaldeblocking"))
         {
           // add vertical deblocking filter
-          if (CSettings::Get().GetInt("postprocessing.verticaldeblocklevel") > 0) 
-            strOpt.Format("vb:%i", CSettings::Get().GetInt("postprocessing.verticaldeblocklevel"));
+          if (CSettings::GetInstance().GetInt("postprocessing.verticaldeblocklevel") > 0) 
+            strOpt.Format("vb:%i", CSettings::GetInstance().GetInt("postprocessing.verticaldeblocklevel"));
           else 
             strOpt = "vb:a";
 
           vecPPOptions.push_back(strOpt);
         }
-        if (CSettings::Get().GetBool("postprocessing.horizontaldeblocking"))
+        if (CSettings::GetInstance().GetBool("postprocessing.horizontaldeblocking"))
         {
           // add horizontal deblocking filter
-          if (CSettings::Get().GetInt("postprocessing.horizontaldeblocklevel") > 0) 
-            strOpt.Format("hb:%i", CSettings::Get().GetInt("postprocessing.horizontaldeblocklevel"));
+          if (CSettings::GetInstance().GetInt("postprocessing.horizontaldeblocklevel") > 0) 
+            strOpt.Format("hb:%i", CSettings::GetInstance().GetInt("postprocessing.horizontaldeblocklevel"));
           else 
             strOpt = "hb:a";
 
           vecPPOptions.push_back(strOpt);
         }
-        if (CSettings::Get().GetBool("postprocessing.autobrightnesscontrastlevels"))
+        if (CSettings::GetInstance().GetBool("postprocessing.autobrightnesscontrastlevels"))
         {
           // add auto brightness/contrast levels
           vecPPOptions.push_back("al");
@@ -925,7 +925,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
 
       /* also we don't want to flip the subtitle since that will be handled by our rendering instead */
     }
-    else if (CSettings::Get().GetBool("subtitles.flipbidicharset"))
+    else if (CSettings::GetInstance().GetBool("subtitles.flipbidicharset"))
     {
       options.SetFlipBiDiCharset(strCharset);
     }
@@ -948,12 +948,12 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
 
       // if we're using digital out
       // then try using direct passtrough
-      if (CSettings::Get().GetInt("audiooutput.mode") == AUDIO_DIGITAL)
+      if (CSettings::GetInstance().GetInt("audiooutput.mode") == AUDIO_DIGITAL)
       {
         options.SetAC3PassTru(bSupportsAC3Out);
         options.SetDTSPassTru(bSupportsDTSOut);
 
-        if ((CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers && bIsVideo) || (CSettings::Get().GetBool("musicplayer.outputtoallspeakers")) && (!bIsVideo))
+        if ((CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers && bIsVideo) || (CSettings::GetInstance().GetBool("musicplayer.outputtoallspeakers")) && (!bIsVideo))
           options.SetLimitedHWAC3(true); //Will limit hwac3 to not kick in on 2.0 channel streams
       }
     }
@@ -1048,7 +1048,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
 
     //Enable smoothing of audio clock to create smoother playback.
     //This is now done in mplayer.conf
-    //if( CSettings::Get().GetBool("filters.useautosync") )
+    //if( CSettings::GetInstance().GetBool("filters.useautosync") )
     //  options.SetAutoSync(30);
 
     if( CMediaSettings::Get().GetCurrentVideoSettings().m_InterlaceMethod == VS_INTERLACEMETHOD_DEINTERLACE )
@@ -1146,7 +1146,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
       }
 
       // do we need 2 do frame rate conversions ?
-      if (CSettings::Get().GetInt("videoplayer.framerateconversions") == FRAME_RATE_CONVERT && file.IsVideo() )
+      if (CSettings::GetInstance().GetInt("videoplayer.framerateconversions") == FRAME_RATE_CONVERT && file.IsVideo() )
       {
         if (g_videoConfig.HasPAL())
         {
@@ -1249,7 +1249,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
 
     if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream < -1)
     { // check + fix up the stereo/left/right setting
-      bool bAudioOnAllSpeakers = (CSettings::Get().GetInt("audiooutput.mode") == AUDIO_DIGITAL) && ((CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers && HasVideo()) || (CSettings::Get().GetBool("musicplayer.outputtoallspeakers") && !HasVideo()));
+      bool bAudioOnAllSpeakers = (CSettings::GetInstance().GetInt("audiooutput.mode") == AUDIO_DIGITAL) && ((CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers && HasVideo()) || (CSettings::GetInstance().GetBool("musicplayer.outputtoallspeakers") && !HasVideo()));
       xbox_audio_switch_channel(-1 - CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream, bAudioOnAllSpeakers);
     }
     bIsVideo = HasVideo();
@@ -1991,28 +1991,28 @@ int CMPlayer::GetCacheSize(bool bFileOnHD, bool bFileOnISO, bool bFileOnUDF, boo
 
   if (bFileOnHD)
   {
-    if ( bIsDVD ) return CSettings::Get().GetInt("cache.harddisk");
-    if ( bIsVideo) return CSettings::Get().GetInt("cache.harddisk");
-    if ( bIsAudio) return CSettings::Get().GetInt("cache.harddisk");
+    if ( bIsDVD ) return CSettings::GetInstance().GetInt("cache.harddisk");
+    if ( bIsVideo) return CSettings::GetInstance().GetInt("cache.harddisk");
+    if ( bIsAudio) return CSettings::GetInstance().GetInt("cache.harddisk");
   }
   if (bFileOnISO || bFileOnUDF)
   {
-    if ( bIsDVD ) return CSettings::Get().GetInt("cachedvd.dvdrom");
-    if ( bIsVideo) return CSettings::Get().GetInt("cachevideo.dvdrom");
-    if ( bIsAudio) return CSettings::Get().GetInt("cacheaudio.dvdrom");
+    if ( bIsDVD ) return CSettings::GetInstance().GetInt("cachedvd.dvdrom");
+    if ( bIsVideo) return CSettings::GetInstance().GetInt("cachevideo.dvdrom");
+    if ( bIsAudio) return CSettings::GetInstance().GetInt("cacheaudio.dvdrom");
   }
   if (bFileOnLAN)
   {
-    if ( bIsDVD ) return CSettings::Get().GetInt("cachedvd.lan");
-    if ( bIsVideo) return CSettings::Get().GetInt("cachevideo.lan");
-    if ( bIsAudio) return CSettings::Get().GetInt("cacheaudio.lan");
+    if ( bIsDVD ) return CSettings::GetInstance().GetInt("cachedvd.lan");
+    if ( bIsVideo) return CSettings::GetInstance().GetInt("cachevideo.lan");
+    if ( bIsAudio) return CSettings::GetInstance().GetInt("cacheaudio.lan");
   }
 
   // assume bFileOnInternet
-  if ( bIsVideo) return CSettings::Get().GetInt("cachevideo.internet");
-  if ( bIsAudio) return CSettings::Get().GetInt("cacheaudio.internet");
+  if ( bIsVideo) return CSettings::GetInstance().GetInt("cachevideo.internet");
+  if ( bIsAudio) return CSettings::GetInstance().GetInt("cacheaudio.internet");
   //File is on internet however we don't know what type.
-  return CSettings::Get().GetInt("cacheunknown.internet");
+  return CSettings::GetInstance().GetInt("cacheunknown.internet");
   //Apperently fixes DreamBox playback.
   //return 4096;
 }

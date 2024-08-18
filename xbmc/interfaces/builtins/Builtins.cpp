@@ -121,7 +121,7 @@ bool CBuiltins::IsSystemPowerdownCommand(const std::string& execString)
   else if (execute == "shutdown")
   {
 #ifndef _XBOX
-    switch (CSettings::Get().GetInt("powermanagement.shutdownstate"))
+    switch (CSettings::GetInstance().GetInt("powermanagement.shutdownstate"))
     {
       case POWERSTATE_SHUTDOWN:
       case POWERSTATE_SUSPEND:

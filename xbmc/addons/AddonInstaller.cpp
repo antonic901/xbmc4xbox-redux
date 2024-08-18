@@ -617,7 +617,7 @@ bool CAddonInstallJob::DoWork()
   }
 
   g_localizeStrings.LoadAddonStrings(URIUtils::AddFileToFolder(m_addon->Path(), "resources/language/"),
-      CSettings::Get().GetString("locale.language"), m_addon->ID());
+      CSettings::GetInstance().GetString("locale.language"), m_addon->ID());
 
   ADDON::OnPostInstall(m_addon, m_isUpdate, IsModal());
 
@@ -629,7 +629,7 @@ bool CAddonInstallJob::DoWork()
       database.SetLastUpdated(m_addon->ID(), CDateTime::GetCurrentDateTime());
   }
 
-  bool notify = (CSettings::Get().GetBool("general.addonnotifications")
+  bool notify = (CSettings::GetInstance().GetBool("general.addonnotifications")
         || !m_isAutoUpdate) && !IsModal();
 
   if (m_isAutoUpdate && !m_addon->Broken().empty())

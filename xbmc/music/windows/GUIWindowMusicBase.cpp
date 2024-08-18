@@ -1108,7 +1108,7 @@ bool CGUIWindowMusicBase::OnPlayMedia(int iItem, const std::string &player)
   { // single music file - if we get here then we have autoplaynextitem turned off or queuebydefault
     // turned on, but we still want to use the playlist player in order to handle more queued items
     // following etc.
-    if ( (CSettings::Get().GetBool("musicplayer.queuebydefault") && g_windowManager.GetActiveWindow() != WINDOW_MUSIC_PLAYLIST_EDITOR) )
+    if ( (CSettings::GetInstance().GetBool("musicplayer.queuebydefault") && g_windowManager.GetActiveWindow() != WINDOW_MUSIC_PLAYLIST_EDITOR) )
     {
       //! @todo Should the playlist be cleared if nothing is already playing?
       OnQueueItem(iItem);
@@ -1192,7 +1192,7 @@ void CGUIWindowMusicBase::UpdateThumb(const CAlbum &album, const std::string &pa
 void CGUIWindowMusicBase::OnRetrieveMusicInfo(CFileItemList& items)
 {
   if (items.GetFolderCount()==items.Size() || items.IsMusicDb() ||
-     (!CSettings::Get().GetBool("musicfiles.usetags") && !items.IsCDDA()))
+     (!CSettings::GetInstance().GetBool("musicfiles.usetags") && !items.IsCDDA()))
   {
     return;
   }
@@ -1333,21 +1333,21 @@ void CGUIWindowMusicBase::OnInitWindow()
         int flags = CMusicInfoScanner::SCAN_RESCAN;
         // When set to fetch information on update enquire about scraping that as well
         // It may take some time, so the user may want to do it later by "Query Info For All"
-        if (CSettings::Get().GetBool("musiclibrary.downloadinfo"))
+        if (CSettings::GetInstance().GetBool("musiclibrary.downloadinfo"))
           if (CGUIDialogYesNo::ShowAndGetInput(799, 38061))
             flags |= CMusicInfoScanner::SCAN_ONLINE;
-        if (CSettings::Get().GetBool("musiclibrary.backgroundupdate"))
+        if (CSettings::GetInstance().GetBool("musiclibrary.backgroundupdate"))
           flags |= CMusicInfoScanner::SCAN_BACKGROUND;
         g_application.StartMusicScan("", true, flags);
         CMediaSettings::Get().SetMusicNeedsUpdate(0); // once is enough (user may interrupt, but that's up to them)
-        CSettings::Get().Save();
+        CSettings::GetInstance().Save();
       }
     }
     else
     {
       // no need to force a rescan if there's no music in the library or if a library scan is already active
       CMediaSettings::Get().SetMusicNeedsUpdate(0);
-      CSettings::Get().Save();
+      CSettings::GetInstance().Save();
     }
   }
 }

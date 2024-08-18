@@ -20,7 +20,9 @@
  *
  */
 
+#include <map>
 #include <vector>
+
 #include "guilib/Key.h"
 #include "interfaces/IActionListener.h"
 #include "settings/Settings.h"

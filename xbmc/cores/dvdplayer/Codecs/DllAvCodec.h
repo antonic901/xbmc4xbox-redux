@@ -144,7 +144,7 @@ public:
 class DllAvCodec : public DllDynamic, DllAvCodecInterface
 {
 public:
-  DllAvCodec() : DllDynamic( CSettings::Get().GetFFmpegDllFolder() + "avcodec-54.dll") {}
+  DllAvCodec() : DllDynamic( CSettings::GetInstance().GetFFmpegDllFolder() + "avcodec-54.dll") {}
 
   DEFINE_FUNC_ALIGNED1(void, __cdecl, avcodec_flush_buffers, AVCodecContext*)
   DEFINE_FUNC_ALIGNED3(int, __cdecl, avcodec_open2_dont_call, AVCodecContext*, AVCodec *, AVDictionary **)

@@ -91,7 +91,7 @@ void CGUIDialogAudioSubtitleSettings::FrameMove()
     m_settingsManager->SetNumber(SETTING_AUDIO_DELAY, videoSettings.m_AudioDelay);
     m_settingsManager->SetInt(SETTING_AUDIO_STREAM, g_application.m_pPlayer->GetAudioStream());
     m_settingsManager->SetBool(SETTING_AUDIO_OUTPUT_TO_ALL_SPEAKERS, videoSettings.m_OutputToAllSpeakers);
-    m_settingsManager->SetInt(SETTING_AUDIO_DIGITAL_ANALOG, CSettings::Get().GetInt("audiooutput.mode"));
+    m_settingsManager->SetInt(SETTING_AUDIO_DIGITAL_ANALOG, CSettings::GetInstance().GetInt("audiooutput.mode"));
 
     m_settingsManager->SetBool(SETTING_SUBTITLE_ENABLE, videoSettings.m_SubtitleOn);
     m_settingsManager->SetNumber(SETTING_SUBTITLE_DELAY, videoSettings.m_SubtitleDelay);
@@ -158,7 +158,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(const CSetting *setting)
         // update the screen setting...
         videoSettings.m_AudioStream = -1 - m_audioStream;
         // call monkeyh1's code here...
-        bool bAudioOnAllSpeakers = (CSettings::Get().GetInt("audiooutput.mode") == AUDIO_DIGITAL) && CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers;
+        bool bAudioOnAllSpeakers = (CSettings::GetInstance().GetInt("audiooutput.mode") == AUDIO_DIGITAL) && CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers;
 #if defined(HAS_VIDEO_PLAYBACK) && defined(HAS_XBOX_HARDWARE)
         xbox_audio_switch_channel(m_audioStream, bAudioOnAllSpeakers);
 #endif
@@ -180,7 +180,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(const CSetting *setting)
   else if (settingId == SETTING_AUDIO_DIGITAL_ANALOG)
   {
     m_outputmode = static_cast<const CSettingBool*>(setting)->GetValue();
-    CSettings::Get().SetInt("audiooutput.mode", m_outputmode);
+    CSettings::GetInstance().SetInt("audiooutput.mode", m_outputmode);
     g_application.Restart();
   }
   else if (settingId == SETTING_SUBTITLE_ENABLE)
@@ -220,12 +220,12 @@ void CGUIDialogAudioSubtitleSettings::OnSettingAction(const CSetting *setting)
     if (g_application.GetCurrentPlayer() == EPC_DVDPLAYER)
       strMask = ".srt|.rar|.zip|.ifo|.smi|.sub|.idx|.ass|.ssa|.txt";
     VECSOURCES shares(*CMediaSourceSettings::Get().GetSources("video"));
-    if (CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked() != -1 && !CSettings::Get().GetString("subtitles.custompath").empty())
+    if (CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked() != -1 && !CSettings::GetInstance().GetString("subtitles.custompath").empty())
     {
       CMediaSource share;
       std::vector<std::string> paths;
       paths.push_back(URIUtils::GetDirectory(strPath));
-      paths.push_back(CSettings::Get().GetString("subtitles.custompath"));
+      paths.push_back(CSettings::GetInstance().GetString("subtitles.custompath"));
       share.FromNameAndPaths("video",g_localizeStrings.Get(21367),paths);
       shares.push_back(share);
       strPath = share.strPath;
@@ -385,7 +385,7 @@ void CGUIDialogAudioSubtitleSettings::Save()
   CMediaSettings::Get().GetDefaultVideoSettings() = CMediaSettings::Get().GetCurrentVideoSettings();
   CMediaSettings::Get().GetDefaultVideoSettings().m_SubtitleStream = -1;
   CMediaSettings::Get().GetDefaultVideoSettings().m_AudioStream = -1;
-  CSettings::Get().Save();
+  CSettings::GetInstance().Save();
 }
 
 void CGUIDialogAudioSubtitleSettings::SetupView()
@@ -473,7 +473,7 @@ void CGUIDialogAudioSubtitleSettings::InitializeSettings()
   // audio digital/analog setting
   if(g_audioConfig.HasDigitalOutput())
   {
-    m_outputmode = CSettings::Get().GetInt("audiooutput.mode");
+    m_outputmode = CSettings::GetInstance().GetInt("audiooutput.mode");
     AddSpinner(groupAudio, SETTING_AUDIO_DIGITAL_ANALOG, 38629, 0, m_outputmode, XBAudioConfig::SettingAudioOutputFiller);
   }
 

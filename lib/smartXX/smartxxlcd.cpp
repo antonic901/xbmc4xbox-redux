@@ -74,7 +74,7 @@ CSmartXXLCD::CSmartXXLCD()
   m_iColumns = 20;        // display rows each line
   m_iBackLight=32;
 
-  if (CSettings::Get().GetInt("lcd.type") == LCD_TYPE_LCD_KS0073)
+  if (CSettings::GetInstance().GetInt("lcd.type") == LCD_TYPE_LCD_KS0073)
   {
     // Special case: it's the KS0073
     m_iRow1adr = 0x00;
@@ -101,7 +101,7 @@ CSmartXXLCD::~CSmartXXLCD()
 void CSmartXXLCD::Initialize()
 {
   StopThread();
-  if (CSettings::Get().GetInt("lcd.type") == LCD_TYPE_NONE)
+  if (CSettings::GetInstance().GetInt("lcd.type") == LCD_TYPE_NONE)
   {
     CLog::Log(LOGINFO, "lcd not used");
     return;
@@ -123,14 +123,14 @@ void CSmartXXLCD::SetContrast(int iContrast)
 //*************************************************************************************************************
 void CSmartXXLCD::Stop()
 {
-  if (CSettings::Get().GetInt("lcd.type") == LCD_TYPE_NONE) return;
+  if (CSettings::GetInstance().GetInt("lcd.type") == LCD_TYPE_NONE) return;
   StopThread();
 }
 
 //*************************************************************************************************************
 void CSmartXXLCD::SetLine(int iLine, const CStdString& strLine)
 {
-  if (CSettings::Get().GetInt("lcd.type") == LCD_TYPE_NONE) return;
+  if (CSettings::GetInstance().GetInt("lcd.type") == LCD_TYPE_NONE) return;
   if (iLine < 0 || iLine >= (int)m_iRows) return;
 
   CStdString strLineLong=strLine;
@@ -395,7 +395,7 @@ void CSmartXXLCD::DisplayProgressBar(unsigned char percent, unsigned char charcn
 //************************************************************************************************************************
 void CSmartXXLCD::DisplaySetBacklight(unsigned char level)
 {
-  if (CSettings::Get().GetInt("lcd.type")==LCD_TYPE_VFD)
+  if (CSettings::GetInstance().GetInt("lcd.type")==LCD_TYPE_VFD)
   {
     //VFD:(value 0 to 3 = 100%, 75%, 50%, 25%)
     if (level<0) level=0;
@@ -404,7 +404,7 @@ void CSmartXXLCD::DisplaySetBacklight(unsigned char level)
     level/=25;
     DisplayOut(DISP_FUNCTION_SET | DISP_N_FLAG | level,CMD);
   }
-  else //if (CSettings::Get().GetInt("lcd.type")==LCD_TYPE_LCD_HD44780)
+  else //if (CSettings::GetInstance().GetInt("lcd.type")==LCD_TYPE_LCD_HD44780)
   {
     if (g_sysinfo.SmartXXModCHIP().Equals("SmartXX V3"))
     {
@@ -445,7 +445,7 @@ void CSmartXXLCD::DisplaySetBacklight(unsigned char level)
 void CSmartXXLCD::DisplaySetContrast(unsigned char level)
 {
   // can't set contrast with a VFD
-  if (CSettings::Get().GetInt("lcd.type")==LCD_TYPE_VFD)
+  if (CSettings::GetInstance().GetInt("lcd.type")==LCD_TYPE_VFD)
     return;
 
   if (g_sysinfo.SmartXXModCHIP().Equals("SmartXX V3"))
@@ -542,8 +542,8 @@ void CSmartXXLCD::Process()
   m_iRow2adr = g_advancedSettings.m_lcdAddress2;
   m_iRow3adr = g_advancedSettings.m_lcdAddress3;
   m_iRow4adr = g_advancedSettings.m_lcdAddress4;
-  m_iBackLight= CSettings::Get().GetInt("lcd.backlight");
-  m_iContrast = CSettings::Get().GetInt("lcd.contrast");
+  m_iBackLight= CSettings::GetInstance().GetInt("lcd.backlight");
+  m_iContrast = CSettings::GetInstance().GetInt("lcd.contrast");
   if (m_iRows >= MAX_ROWS) m_iRows=MAX_ROWS-1;
 
   DisplayInit();

@@ -473,5 +473,5 @@ std::string CVisualisation::GetPresetName()
 
 bool CVisualisation::IsInUse() const
 {
-  return CSettings::Get().GetString("musicplayer.visualisation") == ID();
+  return CSettings::GetInstance().GetString("musicplayer.visualisation") == ID();
 }

@@ -326,7 +326,7 @@ CSettingDependencyConditionCombinationPtr CSettingDependency::And()
 
   m_operation->SetOperation(BooleanLogicOperationAnd);
 
-  return std::dynamic_pointer_cast<CSettingDependencyConditionCombination>(m_operation);
+  return boost::dynamic_pointer_cast<CSettingDependencyConditionCombination>(m_operation);
 }
 
 CSettingDependencyConditionCombinationPtr CSettingDependency::Or()
@@ -336,7 +336,7 @@ CSettingDependencyConditionCombinationPtr CSettingDependency::Or()
 
   m_operation->SetOperation(BooleanLogicOperationOr);
 
-  return std::dynamic_pointer_cast<CSettingDependencyConditionCombination>(m_operation);
+  return boost::dynamic_pointer_cast<CSettingDependencyConditionCombination>(m_operation);
 }
 
 bool CSettingDependency::setType(const std::string &type)

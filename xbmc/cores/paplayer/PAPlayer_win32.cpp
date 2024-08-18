@@ -85,7 +85,7 @@ bool PAPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
 {
   if (m_currentlyCrossFading) CloseFileInternal(false); //user seems to be in a hurry
 
-  m_crossFading = CSettings::Get().GetInt("musicplayer.crossfade");
+  m_crossFading = CSettings::GetInstance().GetInt("musicplayer.crossfade");
   //no crossfading for cdda, cd-reading goes mad and no crossfading for last.fm doesn't like two connections
   if (file.IsCDDA()) m_crossFading = 0;
   if (m_crossFading && IsPlaying())
@@ -156,14 +156,14 @@ bool PAPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
 
 void PAPlayer::UpdateCrossFadingTime(const CFileItem& file)
 {
-  if (m_crossFading = CSettings::Get().GetInt("musicplayer.crossfade"))
+  if (m_crossFading = CSettings::GetInstance().GetInt("musicplayer.crossfade"))
   {
     if (
       m_crossFading &&
       (
         file.IsCDDA() ||
         (
-          file.HasMusicInfoTag() && !CSettings::Get().GetBool("musicplayer.crossfadealbumtracks") &&
+          file.HasMusicInfoTag() && !CSettings::GetInstance().GetBool("musicplayer.crossfadealbumtracks") &&
           (m_currentFile->GetMusicInfoTag()->GetAlbum() != "") &&
           (m_currentFile->GetMusicInfoTag()->GetAlbum() == file.GetMusicInfoTag()->GetAlbum()) &&
           (m_currentFile->GetMusicInfoTag()->GetDiscNumber() == file.GetMusicInfoTag()->GetDiscNumber()) &&
@@ -361,7 +361,7 @@ bool PAPlayer::CreateStream(int num, int channels, int samplerate, int bitspersa
   DSMIXBINVOLUMEPAIR dsmbvp8[8];
   int iMixBinCount;
 
-  if ((channels == 2) && (CSettings::Get().GetBool("musicplayer.outputtoallspeakers")))
+  if ((channels == 2) && (CSettings::GetInstance().GetBool("musicplayer.outputtoallspeakers")))
     g_audioContext.GetMixBin(dsmbvp8, &iMixBinCount, &dwCMask, DSMIXBINTYPE_STEREOALL, channels);
   else
     g_audioContext.GetMixBin(dsmbvp8, &iMixBinCount, &dwCMask, DSMIXBINTYPE_STANDARD, channels);

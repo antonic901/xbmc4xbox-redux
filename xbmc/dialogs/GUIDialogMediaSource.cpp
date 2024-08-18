@@ -242,7 +242,7 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
     share1.strName = "SAP Streams";
     extraShares.push_back(share1);
 
-    if (CSettings::Get().GetString("audiocds.recordingpath") != "")
+    if (CSettings::GetInstance().GetString("audiocds.recordingpath") != "")
     {
       share1.strPath = "special://recordings/";
       share1.strName = g_localizeStrings.Get(21883);
@@ -287,7 +287,7 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
   {
     CMediaSource share1;
     share1.m_ignore = true;
-    if (CSettings::Get().GetString("debug.screenshotpath") != "")
+    if (CSettings::GetInstance().GetString("debug.screenshotpath") != "")
     {
       share1.strPath = "special://screenshots/";
       share1.strName = g_localizeStrings.Get(20008);

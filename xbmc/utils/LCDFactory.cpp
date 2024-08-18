@@ -14,7 +14,7 @@ CLCDFactory::~CLCDFactory(void)
 
 ILCD* CLCDFactory::Create()
 {
-  switch (CSettings::Get().GetInt("lcd.modchip"))
+  switch (CSettings::GetInstance().GetInt("lcd.modchip"))
   {
   case MODCHIP_XENIUM:
     return new CXeniumLCD();

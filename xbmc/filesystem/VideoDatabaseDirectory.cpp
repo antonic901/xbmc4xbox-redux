@@ -237,7 +237,7 @@ std::string CVideoDatabaseDirectory::GetIcon(const std::string &strDirectory)
   case NODE_TYPE_TITLE_MOVIES:
     if (URIUtils::PathEquals(path, "videodb://movies/titles/"))
     {
-      if (CSettings::Get().GetBool("myvideos.flatten"))
+      if (CSettings::GetInstance().GetBool("myvideos.flatten"))
         return "DefaultMovies.png";
       return "DefaultMovieTitle.png";
     }
@@ -245,7 +245,7 @@ std::string CVideoDatabaseDirectory::GetIcon(const std::string &strDirectory)
   case NODE_TYPE_TITLE_TVSHOWS:
     if (URIUtils::PathEquals(path, "videodb://tvshows/titles/"))
     {
-      if (CSettings::Get().GetBool("myvideos.flatten"))
+      if (CSettings::GetInstance().GetBool("myvideos.flatten"))
         return "DefaultTVShows.png";
       return "DefaultTVShowTitle.png";
     }
@@ -253,7 +253,7 @@ std::string CVideoDatabaseDirectory::GetIcon(const std::string &strDirectory)
   case NODE_TYPE_TITLE_MUSICVIDEOS:
     if (URIUtils::PathEquals(path, "videodb://musicvideos/titles/"))
     {
-      if (CSettings::Get().GetBool("myvideos.flatten"))
+      if (CSettings::GetInstance().GetBool("myvideos.flatten"))
         return "DefaultMusicVideos.png";
       return "DefaultMusicVideoTitle.png";
     }

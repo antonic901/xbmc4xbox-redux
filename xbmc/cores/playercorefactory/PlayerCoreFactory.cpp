@@ -109,8 +109,8 @@ PLAYERCOREID CPlayerCoreFactory::GetPlayerCore(const CStdString& strCoreName) co
   {
     // Dereference "*default*player" aliases
     CStdString strRealCoreName;
-    if (strCoreName.Equals("audiodefaultplayer", false)) strRealCoreName = CSettings::Get().GetDefaultAudioPlayerName();
-    else if (strCoreName.Equals("videodefaultplayer", false)) strRealCoreName = CSettings::Get().GetDefaultVideoPlayerName();
+    if (strCoreName.Equals("audiodefaultplayer", false)) strRealCoreName = CSettings::GetInstance().GetDefaultAudioPlayerName();
+    else if (strCoreName.Equals("videodefaultplayer", false)) strRealCoreName = CSettings::GetInstance().GetDefaultVideoPlayerName();
     else strRealCoreName = strCoreName;
 
     for(PLAYERCOREID i = 0; i < m_vecCoreConfigs.size(); i++)
@@ -186,7 +186,7 @@ void CPlayerCoreFactory::GetPlayers( const CFileItem& item, VECPLAYERCORES &vecC
 
     if (bAdd)
     {
-      if( CSettings::Get().GetInt("audiooutput.mode") == AUDIO_ANALOG )
+      if( CSettings::GetInstance().GetInt("audiooutput.mode") == AUDIO_ANALOG )
       {
         CLog::Log(LOGDEBUG, "CPlayerCoreFactory::GetPlayers: adding PAPlayer (%d)", EPC_PAPLAYER);
         vecCores.push_back(EPC_PAPLAYER);

@@ -82,10 +82,10 @@ void CAddonSystemSettings::OnSettingChanged(const CSetting* setting)
   using namespace KODI::MESSAGING::HELPERS;
 
   if (setting->GetId() == "addons.unknownsources"
-    && CSettings::Get().GetBool("addons.unknownsources")
+    && CSettings::GetInstance().GetBool("addons.unknownsources")
     && ShowYesNoDialogText(19098, 36618) != YES)
   {
-    CSettings::Get().SetBool("addons.unknownsources", false);
+    CSettings::GetInstance().SetBool("addons.unknownsources", false);
   }
 }
 
@@ -94,7 +94,7 @@ bool CAddonSystemSettings::GetActive(const TYPE& type, AddonPtr& addon)
   std::map<ADDON::TYPE, std::string>::const_iterator it = m_activeSettings.find(type);
   if (it != m_activeSettings.end())
   {
-    std::string settingValue = CSettings::Get().GetString(it->second);
+    std::string settingValue = CSettings::GetInstance().GetString(it->second);
     return CServiceBroker::GetAddonMgr().GetAddon(settingValue, addon, type);
   }
   return false;
@@ -105,7 +105,7 @@ bool CAddonSystemSettings::SetActive(const TYPE& type, const std::string& addonI
   std::map<ADDON::TYPE, std::string>::const_iterator it = m_activeSettings.find(type);
   if (it != m_activeSettings.end())
   {
-    CSettings::Get().SetString(it->second, addonID);
+    CSettings::GetInstance().SetString(it->second, addonID);
     return true;
   }
   return false;
@@ -123,7 +123,7 @@ bool CAddonSystemSettings::UnsetActive(const AddonPtr& addon)
   if (it == m_activeSettings.end())
     return true;
 
-  CSettingString *setting = static_cast<CSettingString*>(CSettings::Get().GetSetting(it->second));
+  CSettingString *setting = static_cast<CSettingString*>(CSettings::GetInstance().GetSetting(it->second));
   if (setting->GetValue() != addon->ID())
     return true;
 
@@ -153,7 +153,7 @@ std::vector<std::string> CAddonSystemSettings::MigrateAddons(boost::function<voi
   if (getIncompatible().empty())
     return std::vector<std::string>();
 
-  if (CSettings::Get().GetInt("general.addonupdates") == AUTO_UPDATES_ON)
+  if (CSettings::GetInstance().GetInt("general.addonupdates") == AUTO_UPDATES_ON)
   {
     onMigrate();
 

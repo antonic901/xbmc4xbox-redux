@@ -417,7 +417,7 @@ bool CCdgRenderer::InitGraphics()
 
   // set the colours
   m_bgAlpha = 0;
-  if (CSettings::Get().GetString("musicplayer.visualisation") == "None")
+  if (CSettings::GetInstance().GetString("musicplayer.visualisation") == "None")
     m_bgAlpha = 0xff000000;
   m_fgAlpha = 0xff000000;
 
@@ -553,7 +553,7 @@ bool CCdgParser::Start(CStdString strSongPath)
     g_windowManager.ActivateWindow(WINDOW_VISUALISATION);
 
   // Karaoke patch (114097) ...
-  if ( CSettings::Get().GetBool("karaoke.voiceenabled") )
+  if ( CSettings::GetInstance().GetBool("karaoke.voiceenabled") )
   {
     CDG_VOICE_MANAGER_CONFIG VoiceConfig;
     VoiceConfig.dwVoicePacketTime = 20;       // 20ms (can't be lower than this)

@@ -93,15 +93,15 @@ bool CGUIWindowAddonBrowser::OnMessage(CGUIMessage& message)
       int iControl = message.GetSenderId();
       if (iControl == CONTROL_FOREIGNFILTER)
       {
-        CSettings::Get().ToggleBool("general.addonforeignfilter");
-        CSettings::Get().Save();
+        CSettings::GetInstance().ToggleBool("general.addonforeignfilter");
+        CSettings::GetInstance().Save();
         Refresh();
         return true;
       }
       else if (iControl == CONTROL_BROKENFILTER)
       {
-        CSettings::Get().ToggleBool("general.addonbrokenfilter");
-        CSettings::Get().Save();
+        CSettings::GetInstance().ToggleBool("general.addonbrokenfilter");
+        CSettings::GetInstance().Save();
         Refresh();
         return true;
       }
@@ -192,7 +192,7 @@ bool CGUIWindowAddonBrowser::OnClick(int iItem, const std::string &player)
   {
     using namespace KODI::MESSAGING::HELPERS;
 
-    if (!CSettings::Get().GetBool("addons.unknownsources"))
+    if (!CSettings::GetInstance().GetBool("addons.unknownsources"))
     {
       if (ShowYesNoDialogText(13106, 36617, 186, 10004) == YES)
         g_windowManager.ActivateWindow(WINDOW_SETTINGS_SYSTEM, "addons.unknownsources");
@@ -244,8 +244,8 @@ bool CGUIWindowAddonBrowser::OnClick(int iItem, const std::string &player)
 
 void CGUIWindowAddonBrowser::UpdateButtons()
 {
-  SET_CONTROL_SELECTED(GetID(),CONTROL_FOREIGNFILTER, CSettings::Get().GetBool("general.addonforeignfilter"));
-  SET_CONTROL_SELECTED(GetID(),CONTROL_BROKENFILTER, CSettings::Get().GetBool("general.addonbrokenfilter"));
+  SET_CONTROL_SELECTED(GetID(),CONTROL_FOREIGNFILTER, CSettings::GetInstance().GetBool("general.addonforeignfilter"));
+  SET_CONTROL_SELECTED(GetID(),CONTROL_BROKENFILTER, CSettings::GetInstance().GetBool("general.addonbrokenfilter"));
   CONTROL_ENABLE(CONTROL_CHECK_FOR_UPDATES);
   CONTROL_ENABLE(CONTROL_SETTINGS);
 
@@ -283,7 +283,7 @@ bool CGUIWindowAddonBrowser::GetDirectory(const std::string& strDirectory, CFile
 
   if (result && CAddonsDirectory::IsRepoDirectory(CURL(strDirectory)))
   {
-    if (CSettings::Get().GetBool("general.addonforeignfilter"))
+    if (CSettings::GetInstance().GetBool("general.addonforeignfilter"))
     {
       int i = 0;
       while (i < items.Size())
@@ -295,7 +295,7 @@ bool CGUIWindowAddonBrowser::GetDirectory(const std::string& strDirectory, CFile
           ++i;
       }
     }
-    if (CSettings::Get().GetBool("general.addonbrokenfilter"))
+    if (CSettings::GetInstance().GetBool("general.addonbrokenfilter"))
     {
       for (int i = items.Size() - 1; i >= 0; i--)
       {

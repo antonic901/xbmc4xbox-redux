@@ -273,17 +273,17 @@ bool CDisplaySettings::OnSettingUpdate(CSetting* &setting, const char *oldSettin
 void CDisplaySettings::SetCurrentResolution(RESOLUTION resolution, bool save /* = false */)
 {
   if (save)
-    CSettings::Get().SetInt("videoscreen.resolution", (int)resolution);
+    CSettings::GetInstance().SetInt("videoscreen.resolution", (int)resolution);
 
   m_currentResolution = resolution;
 
   // SetChanged() is added in PVR pull request
-  CSettings::Get().Save()/*g_guiSettings.SetChanged()*/;
+  CSettings::GetInstance().Save()/*g_guiSettings.SetChanged()*/;
 }
 
 RESOLUTION CDisplaySettings::GetDisplayResolution() const
 {
-  return (RESOLUTION)CSettings::Get().GetInt("videoscreen.resolution");
+  return (RESOLUTION)CSettings::GetInstance().GetInt("videoscreen.resolution");
 }
 
 const RESOLUTION_INFO& CDisplaySettings::GetResolutionInfo(size_t index) const

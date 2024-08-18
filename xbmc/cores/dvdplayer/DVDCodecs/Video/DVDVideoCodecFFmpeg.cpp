@@ -79,7 +79,7 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
     m_pCodecContext->flags |= CODEC_FLAG_EMU_EDGE;
 
   // allow non spec compliant speedup tricks
-  if (CSettings::Get().GetBool("videoplayer.fast"))
+  if (CSettings::GetInstance().GetBool("videoplayer.fast"))
     m_pCodecContext->flags2 |= CODEC_FLAG2_FAST;
 
   // if we don't do this, then some codecs seem to fail.
@@ -95,7 +95,7 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   }
 
   AVDiscard discardVals[] = {AVDISCARD_DEFAULT, AVDISCARD_NONREF, AVDISCARD_BIDIR, AVDISCARD_NONKEY, AVDISCARD_ALL};
-  AVDiscard avDiscard = discardVals[CSettings::Get().GetInt("videoplayer.skiploopfilter")];
+  AVDiscard avDiscard = discardVals[CSettings::GetInstance().GetInt("videoplayer.skiploopfilter")];
   if (avDiscard != AVDISCARD_DEFAULT)
     m_pCodecContext->skip_loop_filter = avDiscard;
 

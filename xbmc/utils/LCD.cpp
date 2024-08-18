@@ -31,7 +31,7 @@ using namespace std;
 void ILCD::StringToLCDCharSet(CStdString& strText)
 {
   //0 = HD44780, 1=KS0073
-  unsigned int iLCDContr = CSettings::Get().GetInt("lcd.type") == LCD_TYPE_LCD_KS0073 ? 1 : 0;
+  unsigned int iLCDContr = CSettings::GetInstance().GetInt("lcd.type") == LCD_TYPE_LCD_KS0073 ? 1 : 0;
   //the timeline is using blocks
   //a block is used at address 0xA0, smallBlocks at address 0xAC-0xAF
 

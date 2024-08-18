@@ -129,21 +129,21 @@ extern "C" void __stdcall init_emu_environ()
 extern "C" void __stdcall update_emu_environ()
 {
   // Use a proxy, if the GUI was configured as such
-  if (CSettings::Get().GetBool("network.usehttpproxy")
-      && !CSettings::Get().GetString("network.httpproxyserver").empty()
-      && !CSettings::Get().GetString("network.httpproxyport").empty()
-      && CSettings::Get().GetInt("network.httpproxytype") == 0)
+  if (CSettings::GetInstance().GetBool("network.usehttpproxy")
+      && !CSettings::GetInstance().GetString("network.httpproxyserver").empty()
+      && !CSettings::GetInstance().GetString("network.httpproxyport").empty()
+      && CSettings::GetInstance().GetInt("network.httpproxytype") == 0)
   {
     CStdString strProxy;
-    if (!CSettings::Get().GetString("network.httpproxyusername").empty() &&
-        !CSettings::Get().GetString("network.httpproxypassword").empty())
+    if (!CSettings::GetInstance().GetString("network.httpproxyusername").empty() &&
+        !CSettings::GetInstance().GetString("network.httpproxypassword").empty())
     {
-      strProxy.Format("%s:%s@", CSettings::Get().GetString("network.httpproxyusername").c_str(),
-                                CSettings::Get().GetString("network.httpproxypassword").c_str());
+      strProxy.Format("%s:%s@", CSettings::GetInstance().GetString("network.httpproxyusername").c_str(),
+                                CSettings::GetInstance().GetString("network.httpproxypassword").c_str());
     }
 
-    strProxy += CSettings::Get().GetString("network.httpproxyserver");
-    strProxy += ":" + CSettings::Get().GetString("network.httpproxyport");
+    strProxy += CSettings::GetInstance().GetString("network.httpproxyserver");
+    strProxy += ":" + CSettings::GetInstance().GetString("network.httpproxyport");
 
     dll_putenv(("HTTP_PROXY=http://" +strProxy).c_str());
     dll_putenv(("HTTPS_PROXY=http://" +strProxy).c_str());

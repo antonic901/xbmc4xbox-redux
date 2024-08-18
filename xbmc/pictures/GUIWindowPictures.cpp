@@ -134,8 +134,8 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_SHUFFLE)
       {
-        CSettings::Get().ToggleBool("slideshow.shuffle");
-        CSettings::Get().Save();
+        CSettings::GetInstance().ToggleBool("slideshow.shuffle");
+        CSettings::GetInstance().Save();
       }
       else if (m_viewControl.HasControl(iControl))  // list/thumb control
       {
@@ -146,7 +146,7 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
         if (iAction == ACTION_DELETE_ITEM)
         {
           // is delete allowed?
-          if (CSettings::Get().GetBool("filelists.allowfiledeletion"))
+          if (CSettings::GetInstance().GetBool("filelists.allowfiledeletion"))
             OnDeleteItem(iItem);
           else
             return false;
@@ -173,7 +173,7 @@ void CGUIWindowPictures::UpdateButtons()
   CGUIMediaWindow::UpdateButtons();
 
   // Update the shuffle button
-  SET_CONTROL_SELECTED(GetID(), CONTROL_SHUFFLE, CSettings::Get().GetBool("slideshow.shuffle"));
+  SET_CONTROL_SELECTED(GetID(), CONTROL_SHUFFLE, CSettings::GetInstance().GetBool("slideshow.shuffle"));
 
   // check we can slideshow or recursive slideshow
   int nFolders = m_vecItems->GetFolderCount();
@@ -207,7 +207,7 @@ void CGUIWindowPictures::OnPrepareFileItems(CFileItemList& items)
     if (StringUtils::EqualsNoCase(items[i]->GetLabel(), "folder.jpg"))
       items.Remove(i);
 
-  if (items.GetFolderCount()==items.Size() || !CSettings::Get().GetBool("pictures.usetags"))
+  if (items.GetFolderCount()==items.Size() || !CSettings::GetInstance().GetBool("pictures.usetags"))
     return;
 
   // Start the music info loader thread
@@ -260,7 +260,7 @@ bool CGUIWindowPictures::Update(const CStdString &strDirectory, bool updateFilte
     return false;
 
   m_vecItems->SetArt("thumb", "");
-  if (CSettings::Get().GetBool("pictures.generatethumbs"))
+  if (CSettings::GetInstance().GetBool("pictures.generatethumbs"))
     m_thumbLoader.Load(*m_vecItems);
 
   CStdString thumb = m_thumbLoader.GetCachedImage(*m_vecItems, "thumb");
@@ -390,7 +390,7 @@ void CGUIWindowPictures::OnSlideShowRecursive(const CStdString &strPicture)
 
     SortDescription sorting = m_guiState->GetSortMethod();
     pSlideShow->RunSlideShow(strPicture, true,
-                             CSettings::Get().GetBool("slideshow.shuffle"),false,
+                             CSettings::GetInstance().GetBool("slideshow.shuffle"),false,
                              "", true,
                              sorting.sortBy, sorting.sortOrder, sorting.sortAttributes,
                              strExtensions);
@@ -464,7 +464,7 @@ void CGUIWindowPictures::GetContextButtons(int itemNumber, CContextButtons &butt
 
         if (!m_thumbLoader.IsLoading())
           buttons.Add(CONTEXT_BUTTON_REFRESH_THUMBS, 13315);         // Create Thumbnails
-        if (CSettings::Get().GetBool("filelists.allowfiledeletion") && !item->IsReadOnly())
+        if (CSettings::GetInstance().GetBool("filelists.allowfiledeletion") && !item->IsReadOnly())
         {
           buttons.Add(CONTEXT_BUTTON_DELETE, 117);
           buttons.Add(CONTEXT_BUTTON_RENAME, 118);
@@ -509,9 +509,6 @@ bool CGUIWindowPictures::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     return true;
   case CONTEXT_BUTTON_RENAME:
     OnRenameItem(itemNumber);
-    return true;
-  case CONTEXT_BUTTON_SETTINGS:
-    g_windowManager.ActivateWindow(WINDOW_SETTINGS_MYPICTURES);
     return true;
   case CONTEXT_BUTTON_SWITCH_MEDIA:
     CGUIDialogContextMenu::SwitchMedia("pictures", m_vecItems->GetPath());

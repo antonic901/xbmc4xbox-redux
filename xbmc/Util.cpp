@@ -404,7 +404,7 @@ CStdString CUtil::GetTitleFromPath(const CURL& url, bool bIsFolder /* = false */
     strFilename = URIUtils::GetFileName(url.GetHostName());
 
   // now remove the extension if needed
-  if (!CSettings::Get().GetBool("filelists.showextensions") && !bIsFolder)
+  if (!CSettings::GetInstance().GetBool("filelists.showextensions") && !bIsFolder)
   {
     URIUtils::RemoveExtension(strFilename);
     return strFilename;
@@ -970,7 +970,7 @@ cleanup:
       }
       ourmemaddr=(PVOID *)(((unsigned int) ourmemaddr) + sizeof(igk_main_toy));
 
-      if (CSettings::Get().GetInt("lcd.mode") > 0 && CSettings::Get().GetInt("lcd.type") == MODCHIP_SMARTXX)
+      if (CSettings::GetInstance().GetInt("lcd.mode") > 0 && CSettings::GetInstance().GetInt("lcd.type") == MODCHIP_SMARTXX)
       {
         memcpy(ourmemaddr, lcd_toy_xx, sizeof(lcd_toy_xx));
         _asm
@@ -1671,14 +1671,14 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
   CStdString strFileNameNoExt(URIUtils::ReplaceExtension(strFileName, ""));
   strLookInPaths.push_back(strPath);
 
-  if (!CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked() && !CSettings::Get().GetString("subtitles.custompath").empty()) // to avoid checking non-existent directories (network) every time..
+  if (!CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked() && !CSettings::GetInstance().GetString("subtitles.custompath").empty()) // to avoid checking non-existent directories (network) every time..
   {
-    if (!g_application.getNetwork().IsAvailable() && !URIUtils::IsHD(CSettings::Get().GetString("subtitles.custompath")))
+    if (!g_application.getNetwork().IsAvailable() && !URIUtils::IsHD(CSettings::GetInstance().GetString("subtitles.custompath")))
     {
       CLog::Log(LOGINFO,"CUtil::CacheSubtitles: disabling alternate subtitle directory for this session, it's nonaccessible");
       CMediaSettings::Get().SetAdditionalSubtitleDirectoryChecked(-1); // disabled
     }
-    else if (!CDirectory::Exists(CSettings::Get().GetString("subtitles.custompath")))
+    else if (!CDirectory::Exists(CSettings::GetInstance().GetString("subtitles.custompath")))
     {
       CLog::Log(LOGINFO,"CUtil::CacheSubtitles: disabling alternate subtitle directory for this session, it's nonexistant");
       CMediaSettings::Get().SetAdditionalSubtitleDirectoryChecked(-1); // disabled
@@ -1736,7 +1736,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
   // this is last because we dont want to check any common subdirs or cd-dirs in the alternate <subtitles> dir.
   if (CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked() == 1)
   {
-    strPath = CSettings::Get().GetString("subtitles.custompath");
+    strPath = CSettings::GetInstance().GetString("subtitles.custompath");
     if (!URIUtils::HasSlashAtEnd(strPath))
       strPath += "/"; //Should work for both remote and local files
     strLookInPaths.push_back(strPath);
@@ -1767,7 +1767,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
         URIUtils::Split(items[j]->GetPath(), strPath, strItem);
 
         // is this a rar-file ..
-        if ((URIUtils::IsRAR(strItem) || URIUtils::IsZIP(strItem)) && CSettings::Get().GetBool("subtitles.searchrars"))
+        if ((URIUtils::IsRAR(strItem) || URIUtils::IsZIP(strItem)) && CSettings::GetInstance().GetBool("subtitles.searchrars"))
         {
           CStdString strRar = URIUtils::AddFileToFolder(strLookInPaths[step],strFileNameNoExt+URIUtils::GetExtension(strItem));
           CStdString strItemWithPath = URIUtils::AddFileToFolder(strLookInPaths[step],strItem);
@@ -1930,8 +1930,8 @@ void CUtil::PrepareSubtitleFonts()
   CStdString strFontPath = "special://xbmc/system/players/mplayer/font";
 
   if( IsUsingTTFSubtitles()
-    || CSettings::Get().GetInt("subtitles.height") == 0
-    || CSettings::Get().GetString("subtitles.font").size() == 0)
+    || CSettings::GetInstance().GetInt("subtitles.height") == 0
+    || CSettings::GetInstance().GetString("subtitles.font").size() == 0)
   {
     /* delete all files in the font dir, so mplayer doesn't try to load them */
 
@@ -1954,8 +1954,8 @@ void CUtil::PrepareSubtitleFonts()
     CStdString strPath;
     strPath.Format("%s\\%s\\%i",
                   strFontPath.c_str(),
-                  CSettings::Get().GetString("Subtitles.Font").c_str(),
-                  CSettings::Get().GetInt("Subtitles.Height"));
+                  CSettings::GetInstance().GetString("Subtitles.Font").c_str(),
+                  CSettings::GetInstance().GetInt("Subtitles.Height"));
 
     CStdString strSearchMask = strPath + "\\*.*";
     WIN32_FIND_DATA wfd;
@@ -1988,9 +1988,9 @@ __int64 CUtil::ToInt64(DWORD dwHigh, DWORD dwLow)
 
 void CUtil::PlayDVD(const CStdString& strProtocol, bool restart)
 {
-  if (CSettings::Get().GetBool("dvds.useexternaldvdplayer") && !CSettings::Get().GetString("dvds.externaldvdplayer").empty())
+  if (CSettings::GetInstance().GetBool("dvds.useexternaldvdplayer") && !CSettings::GetInstance().GetString("dvds.externaldvdplayer").empty())
   {
-    RunXBE(CSettings::Get().GetString("dvds.externaldvdplayer").c_str());
+    RunXBE(CSettings::GetInstance().GetString("dvds.externaldvdplayer").c_str());
   }
   else
   {
@@ -2177,7 +2177,7 @@ void CUtil::TakeScreenshot()
 
   bool promptUser = false;
   // check to see if we have a screenshot folder yet
-  CStdString strDir/* = CSettings::Get().GetString("debug.screenshotpath", false)*/;
+  CStdString strDir/* = CSettings::GetInstance().GetString("debug.screenshotpath", false)*/;
   if (strDir.IsEmpty())
   {
     strDir = "special://temp/";
@@ -2201,7 +2201,7 @@ void CUtil::TakeScreenshot()
         screenShots.push_back(file);
       if (promptUser)
       { // grab the real directory
-        CStdString newDir = CSettings::Get().GetString("debug.screenshotpath");
+        CStdString newDir = CSettings::GetInstance().GetString("debug.screenshotpath");
         if (!newDir.IsEmpty())
         {
           for (unsigned int i = 0; i < screenShots.size(); i++)
@@ -2468,7 +2468,7 @@ CStdString CUtil::ValidatePath(const CStdString &path, bool bFixDoubleSlashes /*
 
 bool CUtil::IsUsingTTFSubtitles()
 {
-  return URIUtils::HasExtension(CSettings::Get().GetString("subtitles.font"), ".ttf");
+  return URIUtils::HasExtension(CSettings::GetInstance().GetString("subtitles.font"), ".ttf");
 }
 
 void CUtil::SplitExecFunction(const std::string &execString, std::string &function, vector<string> &parameters)
@@ -2762,7 +2762,7 @@ CStdString CUtil::TranslateSpecialSource(const CStdString &strSpecial)
       return URIUtils::AddFileToFolder("special://cdrips/", strSpecial.Mid(7));
     // this one will be removed post 2.0
     else if (StringUtils::StartsWithNoCase(strSpecial, "$playlists"))
-      return URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), strSpecial.Mid(10));
+      return URIUtils::AddFileToFolder(CSettings::GetInstance().GetString("system.playlistspath"), strSpecial.Mid(10));
   }
   return strSpecial;
 }
@@ -2770,16 +2770,16 @@ CStdString CUtil::TranslateSpecialSource(const CStdString &strSpecial)
 CStdString CUtil::MusicPlaylistsLocation()
 {
   std::vector<std::string> vec;
-  vec.push_back(URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "music"));
-  vec.push_back(URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "mixed"));
+  vec.push_back(URIUtils::AddFileToFolder(CSettings::GetInstance().GetString("system.playlistspath"), "music"));
+  vec.push_back(URIUtils::AddFileToFolder(CSettings::GetInstance().GetString("system.playlistspath"), "mixed"));
   return XFILE::CMultiPathDirectory::ConstructMultiPath(vec);
 }
 
 CStdString CUtil::VideoPlaylistsLocation()
 {
   std::vector<std::string> vec;
-  vec.push_back(URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "video"));
-  vec.push_back(URIUtils::AddFileToFolder(CSettings::Get().GetString("system.playlistspath"), "mixed"));
+  vec.push_back(URIUtils::AddFileToFolder(CSettings::GetInstance().GetString("system.playlistspath"), "video"));
+  vec.push_back(URIUtils::AddFileToFolder(CSettings::GetInstance().GetString("system.playlistspath"), "mixed"));
   return XFILE::CMultiPathDirectory::ConstructMultiPath(vec);
 }
 
@@ -2928,7 +2928,7 @@ int CUtil::GMTZoneCalc(int iRescBiases, int iHour, int iMinute, int &iMinuteNew)
 bool CUtil::AutoDetection()
 {
   bool bReturn=false;
-  if (CSettings::Get().GetBool("autodetect.onoff"))
+  if (CSettings::GetInstance().GetBool("autodetect.onoff"))
   {
     static unsigned int pingTimer = 0;
     if( XbmcThreads::SystemClockMillis() - pingTimer < (unsigned int)g_advancedSettings.m_autoDetectPingTime * 1000)
@@ -2937,9 +2937,9 @@ bool CUtil::AutoDetection()
 
   // send ping and request new client info
   if ( CUtil::AutoDetectionPing(
-    CSettings::Get().GetBool("Autodetect.senduserpw") ? CSettings::Get().GetString("services.ftpserveruser"):"anonymous",
-    CSettings::Get().GetBool("Autodetect.senduserpw") ? CSettings::Get().GetString("services.ftpserverpassword"):"anonymous",
-    CSettings::Get().GetString("autodetect.nickname"),21 /*Our FTP Port! TODO: Extract FTP from FTP Server settings!*/) )
+    CSettings::GetInstance().GetBool("Autodetect.senduserpw") ? CSettings::GetInstance().GetString("services.ftpserveruser"):"anonymous",
+    CSettings::GetInstance().GetBool("Autodetect.senduserpw") ? CSettings::GetInstance().GetString("services.ftpserverpassword"):"anonymous",
+    CSettings::GetInstance().GetString("autodetect.nickname"),21 /*Our FTP Port! TODO: Extract FTP from FTP Server settings!*/) )
   {
     CStdString strFTPPath, strNickName, strFtpUserName, strFtpPassword, strFtpPort, strBoosMode;
     CStdStringArray arSplit;
@@ -2970,7 +2970,7 @@ bool CUtil::AutoDetection()
         v_xboxclients.client_informed[i]=true;
 
         //YES NO PopUP: ask for connecting to the detected client via Filemanger!
-        if (CSettings::Get().GetBool("autodetect.popupinfo") && CGUIDialogYesNo::ShowAndGetInput(38703, 0, 38708, 0))
+        if (CSettings::GetInstance().GetBool("autodetect.popupinfo") && CGUIDialogYesNo::ShowAndGetInput(38703, 0, 38708, 0))
         {
           g_windowManager.ActivateWindow(WINDOW_FILES, strFTPPath); //Open in MyFiles
         }
@@ -3408,22 +3408,25 @@ double CUtil::AlbumRelevance(const CStdString& strAlbumTemp1, const CStdString& 
   return fRelevance;
 }
 
-bool CUtil::MakeShortenPath(CStdString StrInput, CStdString& StrOutput, int iTextMaxLength)
+bool CUtil::MakeShortenPath(std::string StrInput, std::string& StrOutput, size_t iTextMaxLength)
 {
-  int iStrInputSize = StrInput.size();
-  if((iStrInputSize <= 0) || (iTextMaxLength >= iStrInputSize))
-    return false;
+  size_t iStrInputSize = StrInput.size();
+  if(iStrInputSize <= 0 || iTextMaxLength >= iStrInputSize)
+  {
+    StrOutput = StrInput;
+    return true;
+  }
 
   char cDelim = '\0';
   size_t nGreaterDelim, nPos;
 
   nPos = StrInput.find_last_of( '\\' );
-  if ( nPos != CStdString::npos )
+  if (nPos != std::string::npos)
     cDelim = '\\';
   else
   {
     nPos = StrInput.find_last_of( '/' );
-    if ( nPos != CStdString::npos )
+    if (nPos != std::string::npos)
       cDelim = '/';
   }
   if ( cDelim == '\0' )
@@ -3432,23 +3435,27 @@ bool CUtil::MakeShortenPath(CStdString StrInput, CStdString& StrOutput, int iTex
   if (nPos == StrInput.size() - 1)
   {
     StrInput.erase(StrInput.size() - 1);
-    nPos = StrInput.find_last_of( cDelim );
+    nPos = StrInput.find_last_of(cDelim);
   }
   while( iTextMaxLength < iStrInputSize )
   {
     nPos = StrInput.find_last_of( cDelim, nPos );
     nGreaterDelim = nPos;
-    if ( nPos != CStdString::npos )
-      nPos = StrInput.find_last_of( cDelim, nPos - 1 );
-    if ( nPos == CStdString::npos ) break;
+
+    if (nPos == std::string::npos || nPos == 0)
+      break;
+
+    nPos = StrInput.find_last_of( cDelim, nPos - 1 );
+
+    if ( nPos == std::string::npos)
+      break;
     if ( nGreaterDelim > nPos ) StrInput.replace( nPos + 1, nGreaterDelim - nPos - 1, ".." );
     iStrInputSize = StrInput.size();
   }
   // replace any additional /../../ with just /../ if necessary
-  CStdString replaceDots;
-  replaceDots.Format("..%c..", cDelim);
+  std::string replaceDots = StringUtils::Format("..%c..", cDelim);
   while (StrInput.size() > (unsigned int)iTextMaxLength)
-    if (!StrInput.Replace(replaceDots, ".."))
+    if (!StringUtils::Replace(StrInput, replaceDots, ".."))
       break;
   // finally, truncate our string to force inside our max text length,
   // replacing the last 2 characters with ".."
@@ -3457,7 +3464,7 @@ bool CUtil::MakeShortenPath(CStdString StrInput, CStdString& StrOutput, int iTex
   // "smb://../Playboy Swimsuit Cal.."
   if (iTextMaxLength > 2 && StrInput.size() > (unsigned int)iTextMaxLength)
   {
-    StrInput = StrInput.Left(iTextMaxLength - 2);
+    StrInput.erase(iTextMaxLength - 2);
     StrInput += "..";
   }
   StrOutput = StrInput;
@@ -3743,7 +3750,7 @@ void CUtil::GetHomePath(CStdString& strPath)
 
 bool CUtil::RunFFPatchedXBE(CStdString szPath1, CStdString& szNewPath)
 {
-  if (!CSettings::Get().GetBool("myprograms.autoffpatch"))
+  if (!CSettings::GetInstance().GetBool("myprograms.autoffpatch"))
   {
     CLog::Log(LOGDEBUG, "%s - Auto Filter Flicker is off. Skipping Filter Flicker Patching.", __FUNCTION__);
     return false;

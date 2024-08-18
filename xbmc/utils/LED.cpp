@@ -210,7 +210,7 @@ void ILEDSmartxxRGB::OnExit()
   // SmartXX OPX port for RGB-Red is the same port for display brightness control
   // Restoring brightness value from the settings 
   if ( g_sysinfo.SmartXXModCHIP().Equals("SmartXX OPX") )
-    g_lcd->SetBackLight(CSettings::Get().GetInt("lcd.backlight"));
+    g_lcd->SetBackLight(CSettings::GetInstance().GetInt("lcd.backlight"));
 
 	CLog::Log(LOGDEBUG,"Stopping SmartXX RGB LED thread");
 }

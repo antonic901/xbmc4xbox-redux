@@ -42,7 +42,7 @@ void CPictureInfoLoader::OnLoaderStart()
   m_mapFileItems->SetFastLookup(true);
 
   m_tagReads = 0;
-  m_loadTags = CSettings::Get().GetBool("pictures.usetags");
+  m_loadTags = CSettings::GetInstance().GetBool("pictures.usetags");
 
   if (m_pProgressCallback)
     m_pProgressCallback->SetProgressMax(m_pVecItems->GetFileCount());

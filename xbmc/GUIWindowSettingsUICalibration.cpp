@@ -40,7 +40,7 @@ bool CGUIWindowSettingsUICalibration::OnAction(const CAction &action)
 {
   if (action.wID == ACTION_PREVIOUS_MENU)
   {
-    CSettings::Get().Save();
+    CSettings::GetInstance().Save();
     m_gWindowManager.PreviousWindow();
     return true;
   }

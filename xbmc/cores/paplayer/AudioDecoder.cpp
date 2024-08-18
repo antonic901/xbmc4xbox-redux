@@ -76,13 +76,13 @@ bool CAudioDecoder::Create(const CFileItem &file, __int64 seekOffset, unsigned i
   m_eof = false;
 
   // get correct cache size
-  unsigned int filecache = CSettings::Get().GetInt("cacheaudio.internet");
+  unsigned int filecache = CSettings::GetInstance().GetInt("cacheaudio.internet");
   if ( file.IsHD() )
-    filecache = CSettings::Get().GetInt("cache.harddisk");
+    filecache = CSettings::GetInstance().GetInt("cache.harddisk");
   else if ( file.IsOnDVD() )
-    filecache = CSettings::Get().GetInt("cacheaudio.dvdrom");
+    filecache = CSettings::GetInstance().GetInt("cacheaudio.dvdrom");
   else if ( file.IsOnLAN() )
-    filecache = CSettings::Get().GetInt("cacheaudio.lan");
+    filecache = CSettings::GetInstance().GetInt("cacheaudio.lan");
 
   // create our codec
   m_codec=CodecFactory::CreateCodecDemux(file.GetPath(), file.GetMimeType(), filecache * 1024);

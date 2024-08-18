@@ -175,13 +175,13 @@ namespace XBMCAddon
     String getSkinDir()
     {
       XBMC_TRACE;
-      return CSettings::Get().GetString("lookandfeel.skin");
+      return CSettings::GetInstance().GetString("lookandfeel.skin");
     }
 
     String getLanguage(int format /* = CLangCodeExpander::ENGLISH_NAME */, bool region /*= false*/)
     {
       XBMC_TRACE;
-      CStdString lang = CSettings::Get().GetString("locale.language");
+      CStdString lang = CSettings::GetInstance().GetString("locale.language");
 
       switch (format)
       {

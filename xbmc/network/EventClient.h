@@ -156,8 +156,8 @@ namespace EVENTCLIENT
 
     void RefreshSettings()
     {
-      m_iRepeatDelay = CSettings::Get().GetInt("services.esinitialdelay");
-      m_iRepeatSpeed = CSettings::Get().GetInt("services.escontinuousdelay");
+      m_iRepeatDelay = CSettings::GetInstance().GetInt("services.esinitialdelay");
+      m_iRepeatSpeed = CSettings::GetInstance().GetInt("services.escontinuousdelay");
     }
 
     SOCKETS::CAddress& Address()

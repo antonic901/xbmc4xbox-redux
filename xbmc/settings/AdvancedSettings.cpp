@@ -55,11 +55,11 @@ void CAdvancedSettings::OnSettingsLoaded()
   Load();
 
   // default players?
-  CLog::Log(LOGNOTICE, "Default Video Player: %s", CSettings::Get().GetDefaultVideoPlayerName().c_str());
-  CLog::Log(LOGNOTICE, "Default Audio Player: %s", CSettings::Get().GetDefaultAudioPlayerName().c_str());
+  CLog::Log(LOGNOTICE, "Default Video Player: %s", CSettings::GetInstance().GetDefaultVideoPlayerName().c_str());
+  CLog::Log(LOGNOTICE, "Default Audio Player: %s", CSettings::GetInstance().GetDefaultAudioPlayerName().c_str());
 
   // setup any logging...
-  if (CSettings::Get().GetBool("debug.showloginfo"))
+  if (CSettings::GetInstance().GetBool("debug.showloginfo"))
   {
     m_logLevel = std::max(m_logLevelHint, LOG_LEVEL_DEBUG_FREEMEM);
     CLog::Log(LOGNOTICE, "Enabled debug logging due to GUI setting (%d)", m_logLevel);
@@ -577,10 +577,10 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
     const char* hide = pElement->Attribute("hide");
     if (hide == NULL || strnicmp("false", hide, 4) != 0)
     {
-      CSetting *setting = CSettings::Get().GetSetting("debug.showloginfo");
+      CSetting *setting = CSettings::GetInstance().GetSetting("debug.showloginfo");
       if (setting != NULL)
         setting->SetVisible(false);
-      setting = CSettings::Get().GetSetting("debug.setextraloglevel");
+      setting = CSettings::GetInstance().GetSetting("debug.setextraloglevel");
       if (setting != NULL)
         setting->SetVisible(false);
     }
@@ -829,7 +829,7 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
   }
 
   // load in the settings overrides
-  CSettings::Get().Load(pRootElement, true);  // true to hide the settings we read in
+  CSettings::GetInstance().Load(pRootElement, true);  // true to hide the settings we read in
 
   TiXmlElement* pDatabase = pRootElement->FirstChildElement("videodatabase");
   if (pDatabase)

@@ -290,11 +290,11 @@ bool CDVDAudioCodecPassthroughFFmpeg::SupportsFormat(CDVDStreamInfo &hints)
 bool CDVDAudioCodecPassthroughFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options)
 {
   // TODO - move this stuff somewhere else
-  if (CSettings::Get().GetInt("audiooutput.mode") == AUDIO_DIGITAL)
+  if (CSettings::GetInstance().GetInt("audiooutput.mode") == AUDIO_DIGITAL)
   {
-    m_bSupportsAC3Out = CSettings::Get().GetBool("audiooutput.ac3passthrough");
-    m_bSupportsDTSOut = CSettings::Get().GetBool("audiooutput.dtspassthrough");
-    m_bSupportsAACOut = CSettings::Get().GetBool("audiooutput.aacpassthrough");
+    m_bSupportsAC3Out = CSettings::GetInstance().GetBool("audiooutput.ac3passthrough");
+    m_bSupportsDTSOut = CSettings::GetInstance().GetBool("audiooutput.dtspassthrough");
+    m_bSupportsAACOut = CSettings::GetInstance().GetBool("audiooutput.aacpassthrough");
   }
   else
     return false;

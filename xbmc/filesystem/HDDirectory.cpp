@@ -137,7 +137,7 @@ bool CHDDirectory::Create(const CURL& url)
 
   // okey this is really evil, since the create will succeed
   // the caller will have no idea that a different directory was created
-  if (CSettings::Get().GetBool("services.ftpautofatx"))
+  if (CSettings::GetInstance().GetBool("services.ftpautofatx"))
   {
     CStdString strPath2(strPath1);
     CUtil::GetFatXQualifiedPath(strPath1);

@@ -57,7 +57,7 @@ bool CDVDInputStreamFFmpeg::Open()
   if (m_item.IsInternetStream() && (m_item.IsType(".m3u8") || m_item.GetMimeType() == "application/vnd.apple.mpegurl"))
   {
     // get the available bandwidth and  determine the most appropriate stream
-    int bandwidth = CSettings::Get().GetInt("network.bandwidth");
+    int bandwidth = CSettings::GetInstance().GetInt("network.bandwidth");
     if(bandwidth <= 0)
       bandwidth = INT_MAX;
     const CURL playlist_url = m_item.GetURL();

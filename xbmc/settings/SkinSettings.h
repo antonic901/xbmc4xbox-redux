@@ -33,9 +33,9 @@ class CSkinSettings : public ISubSettings
 public:
   static CSkinSettings& Get();
 
-  virtual bool Load(const TiXmlNode *settings) override;
-  virtual bool Save(TiXmlNode *settings) const override;
-  virtual void Clear() override;
+  virtual bool Load(const TiXmlNode *settings);
+  virtual bool Save(TiXmlNode *settings) const;
+  virtual void Clear();
 
   void MigrateSettings(const ADDON::SkinPtr& skin);
 

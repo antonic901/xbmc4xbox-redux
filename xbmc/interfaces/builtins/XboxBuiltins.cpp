@@ -31,8 +31,8 @@
  */
 static int RunDashboard(const std::vector<std::string>& params)
 {
-  if (CSettings::Get().GetBool("myprograms.usedashpath"))
-    CUtil::RunXBE(CSettings::Get().GetString("myprograms.dashboard").c_str());
+  if (CSettings::GetInstance().GetBool("myprograms.usedashpath"))
+    CUtil::RunXBE(CSettings::GetInstance().GetString("myprograms.dashboard").c_str());
   else
     CUtil::BootToDash();
 
@@ -52,7 +52,7 @@ static int RunXBE(const std::vector<std::string>& params)
   else if (item.IsXBE())
   {
     int iRegion;
-    if (CSettings::Get().GetBool("myprograms.gameautoregion"))
+    if (CSettings::GetInstance().GetBool("myprograms.gameautoregion"))
     {
       CXBE xbe;
       iRegion = xbe.ExtractGameRegion(params[0]);

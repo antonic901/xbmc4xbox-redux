@@ -395,12 +395,12 @@ bool CNetwork::SetupNetwork()
   {
     CLog::Log(LOGDEBUG, "%s - Setting up network...", __FUNCTION__);
     
-    Initialize(CSettings::Get().GetInt("network.assignment"),
-      CSettings::Get().GetString("network.ipaddress").c_str(),
-      CSettings::Get().GetString("network.subnet").c_str(),
-      CSettings::Get().GetString("network.gateway").c_str(),
-      CSettings::Get().GetString("network.dns").c_str(),
-      CSettings::Get().GetString("network.dns2").c_str());
+    Initialize(CSettings::GetInstance().GetInt("network.assignment"),
+      CSettings::GetInstance().GetString("network.ipaddress").c_str(),
+      CSettings::GetInstance().GetString("network.subnet").c_str(),
+      CSettings::GetInstance().GetString("network.gateway").c_str(),
+      CSettings::GetInstance().GetString("network.dns").c_str(),
+      CSettings::GetInstance().GetString("network.dns2").c_str());
       
     return true;
   }

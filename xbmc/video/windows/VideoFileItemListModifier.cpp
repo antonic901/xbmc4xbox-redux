@@ -55,7 +55,7 @@ void CVideoFileItemListModifier::AddQueuingFolder(CFileItemList& items)
   CFileItemPtr pItem;
 
   // always show "all" items by default
-  if (!CSettings::Get().GetBool("videolibrary.showallitems"))
+  if (!CSettings::GetInstance().GetBool("videolibrary.showallitems"))
     return;
 
   // no need for "all" item when only one item

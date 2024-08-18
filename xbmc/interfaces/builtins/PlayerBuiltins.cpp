@@ -278,11 +278,11 @@ static int PlayerControl(const std::vector<std::string>& params)
     {
       case PLAYLIST_MUSIC:
         CMediaSettings::Get().SetMusicPlaylistShuffled(g_playlistPlayer.IsShuffled(iPlaylist));
-        CSettings::Get().Save();
+        CSettings::GetInstance().Save();
         break;
       case PLAYLIST_VIDEO:
         CMediaSettings::Get().SetVideoPlaylistShuffled(g_playlistPlayer.IsShuffled(iPlaylist));
-        CSettings::Get().Save();
+        CSettings::GetInstance().Save();
       default:
         break;
     }
@@ -326,11 +326,11 @@ static int PlayerControl(const std::vector<std::string>& params)
     {
       case PLAYLIST_MUSIC:
         CMediaSettings::Get().SetMusicPlaylistRepeat(state == PLAYLIST::REPEAT_ALL);
-        CSettings::Get().Save();
+        CSettings::GetInstance().Save();
         break;
       case PLAYLIST_VIDEO:
         CMediaSettings::Get().SetVideoPlaylistRepeat(state == PLAYLIST::REPEAT_ALL);
-        CSettings::Get().Save();
+        CSettings::GetInstance().Save();
     }
 
     // send messages so now playing window can get updated

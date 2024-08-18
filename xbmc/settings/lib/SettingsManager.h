@@ -57,10 +57,10 @@ public:
   virtual ~CSettingsManager();
 
   // implementation of ISettingCreator
-  virtual CSetting* CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager = NULL) const override;
+  virtual CSetting* CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager = NULL) const;
 
   // implementation of ISettingControlCreator
-  virtual ISettingControl* CreateControl(const std::string &controlType) const override;
+  virtual ISettingControl* CreateControl(const std::string &controlType) const;
 
   /*!
    \brief Initializes the settings manager using the setting definitions
@@ -86,7 +86,7 @@ public:
    \param root XML node
    \return True if the setting values were successfully saved, false otherwise
    */
-  virtual bool Save(TiXmlNode *root) const override;
+  virtual bool Save(TiXmlNode *root) const;
   /*!
    \brief Unloads the previously loaded setting values.
 
@@ -100,7 +100,7 @@ public:
    returns to the uninitialized state. Any registered callbacks or
    implementations stay registered.
    */
-  void Clear() override;
+  void Clear();
 
   /*!
   \brief Loads the setting being represented by the given XML node with the
@@ -317,7 +317,7 @@ public:
    \param id Setting identifier
    \return List of values of the setting with the given identifier
    */
-  std::vector< std::shared_ptr<CSetting> > GetList(const std::string &id) const;
+  std::vector< boost::shared_ptr<CSetting> > GetList(const std::string &id) const;
 
   /*!
    \brief Sets the boolean value of the setting with the given identifier.
@@ -365,7 +365,7 @@ public:
    \param value Values to set
    \return True if setting the values was successful, false otherwise
    */
-  bool SetList(const std::string &id, const std::vector< std::shared_ptr<CSetting> > &value);
+  bool SetList(const std::string &id, const std::vector< boost::shared_ptr<CSetting> > &value);
 
   /*!
    \brief Gets the setting conditions manager used by the settings manager.
@@ -396,22 +396,22 @@ public:
 
 private:
   // implementation of ISettingCallback
-  virtual bool OnSettingChanging(const CSetting *setting) override;
-  virtual void OnSettingChanged(const CSetting *setting) override;
-  virtual void OnSettingAction(const CSetting *setting) override;
-  virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode) override;
-  virtual void OnSettingPropertyChanged(const CSetting *setting, const char *propertyName) override;
+  virtual bool OnSettingChanging(const CSetting *setting);
+  virtual void OnSettingChanged(const CSetting *setting);
+  virtual void OnSettingAction(const CSetting *setting);
+  virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
+  virtual void OnSettingPropertyChanged(const CSetting *setting, const char *propertyName);
 
   // implementation of ISettingsHandler
-  virtual bool OnSettingsLoading() override;
-  virtual void OnSettingsLoaded() override;
-  virtual void OnSettingsUnloaded() override;
-  virtual bool OnSettingsSaving() const override;
-  virtual void OnSettingsSaved() const override;
-  virtual void OnSettingsCleared() override;
+  virtual bool OnSettingsLoading();
+  virtual void OnSettingsLoaded();
+  virtual void OnSettingsUnloaded();
+  virtual bool OnSettingsSaving() const;
+  virtual void OnSettingsSaved() const;
+  virtual void OnSettingsCleared();
 
   // implementation of ISubSettings
-  virtual bool Load(const TiXmlNode *settings) override;
+  virtual bool Load(const TiXmlNode *settings);
 
   bool Serialize(TiXmlNode *parent) const;
   bool Deserialize(const TiXmlNode *node, bool &updated, std::map<std::string, CSetting*> *loadedSettings = NULL);

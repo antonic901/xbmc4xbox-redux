@@ -23,6 +23,7 @@
 #include <set>
 #include <utility>
 
+#include "ServiceBroker.h"
 #include "addons/AddonManager.h"
 #include "addons/GUIWindowAddonBrowser.h"
 #include "dialogs/GUIDialogFileBrowser.h"
@@ -79,8 +80,9 @@ static bool GetIntegerOptions(const CSetting* setting, DynamicIntegerSettingOpti
 
     pSettingInt = static_cast<const CSettingInt*>(settingList->GetDefinition());
     std::vector<CVariant> list = CSettingUtils::GetList(settingList);
-    for (const auto& itValue : list)
+    for (std::vector<CVariant>::const_iterator it = list.begin(); it != list.end(); ++it)
     {
+      const CVariant &itValue = *it;
       if (!itValue.isInteger())
         return false;
       selectedOptions.insert((int)itValue.asInteger());
@@ -94,16 +96,22 @@ static bool GetIntegerOptions(const CSetting* setting, DynamicIntegerSettingOpti
     case SettingOptionsTypeStatic:
     {
       const StaticIntegerSettingOptions& settingOptions = pSettingInt->GetOptions();
-      for (const auto& option : settingOptions)
+      for (StaticIntegerSettingOptions::const_iterator it = settingOptions.begin(); it != settingOptions.end(); ++it)
+      {
+        const StaticIntegerSettingOption &option = *it;
         options.push_back(std::make_pair(g_localizeStrings.Get(option.first), option.second));
+      }
       break;
     }
 
     case SettingOptionsTypeDynamic:
     {
       DynamicIntegerSettingOptions settingOptions = const_cast<CSettingInt*>(pSettingInt)->UpdateDynamicOptions();
-      for (const auto& option : settingOptions)
+      for (DynamicIntegerSettingOptions::const_iterator it = settingOptions.begin(); it != settingOptions.end(); ++it)
+      {
+        const DynamicIntegerSettingOption &option = *it;
         options.push_back(std::make_pair(option.first, option.second));
+      }
       break;
     }
 
@@ -147,8 +155,9 @@ static bool GetStringOptions(const CSetting* setting, DynamicStringSettingOption
 
     pSettingString = static_cast<const CSettingString*>(settingList->GetDefinition());
     std::vector<CVariant> list = CSettingUtils::GetList(settingList);
-    for (const auto& itValue : list)
+    for (std::vector<CVariant>::const_iterator it = list.begin(); it != list.end(); ++it)
     {
+      const CVariant &itValue = *it;
       if (!itValue.isString())
         return false;
       selectedOptions.insert(itValue.asString());
@@ -317,8 +326,11 @@ void CGUIControlSpinExSetting::FillControl()
         return;
 
       // add them to the spinner
-      for (const auto& option : options)
+      for (DynamicStringSettingOptions::const_iterator it = options.begin(); it != options.end(); ++it)
+      {
+        const DynamicStringSettingOption &option = *it;
         m_pSpin->AddLabel(option.first, option.second);
+      }
 
       // and set the current value
       m_pSpin->SetStringValue(*selectedValues.begin());
@@ -335,8 +347,11 @@ void CGUIControlSpinExSetting::FillIntegerSettingControl()
     return;
 
   // add them to the spinner
-  for (const auto& option : options)
+  for (DynamicIntegerSettingOptions::const_iterator it = options.begin(); it != options.end(); ++it)
+  {
+    const DynamicIntegerSettingOption &option = *it;
     m_pSpin->AddLabel(option.first, option.second);
+  }
 
   // and set the current value
   m_pSpin->SetValue(*selectedValues.begin());
@@ -372,7 +387,7 @@ bool CGUIControlListSetting::OnClick()
   const CSettingControlList *control = static_cast<const CSettingControlList*>(m_pSetting->GetControl());
 
   dialog->Reset();
-  dialog->SetHeading(CVariant{g_localizeStrings.Get(m_pSetting->GetLabel())});
+  dialog->SetHeading(g_localizeStrings.Get(m_pSetting->GetLabel()));
   dialog->SetItems(options);
   dialog->SetMultiSelection(control->CanMultiSelect());
   dialog->Open();
@@ -381,8 +396,9 @@ bool CGUIControlListSetting::OnClick()
     return false;
 
   std::vector<CVariant> values;
-  for (int i : dialog->GetSelectedItems())
+  for (std::vector<int>::const_iterator it = dialog->GetSelectedItems().begin(); it < dialog->GetSelectedItems().end(); ++it)
   {
+    const int &i = *it;
     const CFileItemPtr item = options.Get(i);
     if (item == NULL || !item->HasProperty("value"))
       return false;
@@ -490,8 +506,11 @@ bool CGUIControlListSetting::GetIntegerItems(const CSetting *setting, CFileItemL
     return false;
 
   // turn them into CFileItems and add them to the item list
-  for (const auto& option : options)
+  for (DynamicIntegerSettingOptions::const_iterator it = options.begin(); it != options.end(); ++it)
+  {
+    const DynamicIntegerSettingOption &option = *it;
     items.Add(GetFileItem(option.first, option.second, selectedValues));
+  }
 
   return true;
 }
@@ -505,8 +524,11 @@ bool CGUIControlListSetting::GetStringItems(const CSetting *setting, CFileItemLi
     return false;
 
   // turn them into CFileItems and add them to the item list
-  for (const auto& option : options)
+  for (DynamicStringSettingOptions::const_iterator it = options.begin(); it != options.end(); ++it)
+  {
+    const DynamicStringSettingOption &option = *it;
     items.Add(GetFileItem(option.first, option.second, selectedValues));
+  }
 
   return true;
 }
@@ -610,7 +632,7 @@ void CGUIControlButtonSetting::Update(bool updateDisplayOnly /* = false */)
       if (controlFormat == "addon")
       {
         ADDON::AddonPtr addon;
-        if (ADDON::CAddonMgr::GetInstance().GetAddon(strValue, addon))
+        if (CServiceBroker::GetAddonMgr().GetAddon(strValue, addon))
           strText = addon->Name();
         if (strText.empty())
           strText = g_localizeStrings.Get(231); // None
@@ -674,9 +696,10 @@ bool CGUIControlButtonSetting::GetPath(CSettingPath *pathSetting)
 
   VECSOURCES shares;
   const std::vector<std::string>& sources = pathSetting->GetSources();
-  for (const auto& source : sources)
+  for (std::vector<std::string>::const_iterator it = sources.begin(); it != sources.end(); ++it)
   {
-    VECSOURCES *sources = CMediaSourceSettings::GetInstance().GetSources(source);
+    const std::string &source = *it;
+    VECSOURCES *sources = CMediaSourceSettings::Get().GetSources(source);
     if (sources != NULL)
       shares.insert(shares.end(), sources->begin(), sources->end());
   }

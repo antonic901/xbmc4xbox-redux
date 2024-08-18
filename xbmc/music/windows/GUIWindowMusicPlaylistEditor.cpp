@@ -386,7 +386,7 @@ void CGUIWindowMusicPlaylistEditor::OnSavePlaylist()
     PLAYLIST::CPlayListM3U playlist;
     playlist.Add(*m_playlist);
     std::string path = URIUtils::AddFileToFolder(
-      CSettings::Get().GetString("system.playlistspath"),
+      CSettings::GetInstance().GetString("system.playlistspath"),
       "music",
       name + ".m3u");
 
@@ -398,7 +398,7 @@ void CGUIWindowMusicPlaylistEditor::OnSavePlaylist()
 void CGUIWindowMusicPlaylistEditor::AppendToPlaylist(CFileItemList &newItems)
 {
   OnRetrieveMusicInfo(newItems);
-  FormatItemLabels(newItems, LABEL_MASKS(CSettings::Get().GetString("musicfiles.trackformat"), "%D", "%L", ""));
+  FormatItemLabels(newItems, LABEL_MASKS(CSettings::GetInstance().GetString("musicfiles.trackformat"), "%D", "%L", ""));
   m_playlist->Append(newItems);
   UpdatePlaylist();
 }

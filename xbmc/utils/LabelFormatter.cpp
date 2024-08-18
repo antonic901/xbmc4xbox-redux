@@ -116,7 +116,7 @@ CLabelFormatter::CLabelFormatter(const std::string &mask, const std::string &mas
   AssembleMask(0, mask);
   AssembleMask(1, mask2);
   // save a bool for faster lookups
-  m_hideFileExtensions = !CSettings::Get().GetBool("filelists.showextensions");
+  m_hideFileExtensions = !CSettings::GetInstance().GetBool("filelists.showextensions");
 }
 
 std::string CLabelFormatter::GetContent(unsigned int label, const CFileItem *item) const

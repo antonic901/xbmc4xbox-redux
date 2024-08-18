@@ -17,7 +17,7 @@ CXeniumLCD::CXeniumLCD()
   m_iBackLight=32;
   m_iLCDContrast=50;      // Extra Xenium feature
 
-  if (CSettings::Get().GetInt("lcd.type") == LCD_TYPE_LCD_KS0073)
+  if (CSettings::GetInstance().GetInt("lcd.type") == LCD_TYPE_LCD_KS0073)
   {
     // Special case: it's the KS0073
     m_iRow1adr = 0x00;
@@ -44,7 +44,7 @@ CXeniumLCD::~CXeniumLCD()
 void CXeniumLCD::Initialize()
 {
   StopThread();
-  if (CSettings::Get().GetInt("lcd.type") == LCD_TYPE_NONE) 
+  if (CSettings::GetInstance().GetInt("lcd.type") == LCD_TYPE_NONE) 
   {
     CLog::Log(LOGINFO, "lcd not used");
     return;
@@ -65,14 +65,14 @@ void CXeniumLCD::SetContrast(int iContrast)
 //*************************************************************************************************************
 void CXeniumLCD::Stop()
 {
-  if (CSettings::Get().GetInt("lcd.type") == LCD_TYPE_NONE) return;
+  if (CSettings::GetInstance().GetInt("lcd.type") == LCD_TYPE_NONE) return;
   StopThread();
 }
 
 //*************************************************************************************************************
 void CXeniumLCD::SetLine(int iLine, const CStdString& strLine)
 {
-  if (CSettings::Get().GetInt("lcd.type") == LCD_TYPE_NONE) return;
+  if (CSettings::GetInstance().GetInt("lcd.type") == LCD_TYPE_NONE) return;
   if (iLine < 0 || iLine >= (int)m_iRows) return;
   
   CStdString strLineLong=strLine;
@@ -196,8 +196,8 @@ void CXeniumLCD::Process()
   m_iRow2adr = g_advancedSettings.m_lcdAddress2;
   m_iRow3adr = g_advancedSettings.m_lcdAddress3;
   m_iRow4adr = g_advancedSettings.m_lcdAddress4;
-  m_iBackLight= CSettings::Get().GetInt("lcd.backlight");
-  m_iLCDContrast = CSettings::Get().GetInt("lcd.contrast");
+  m_iBackLight= CSettings::GetInstance().GetInt("lcd.backlight");
+  m_iLCDContrast = CSettings::GetInstance().GetInt("lcd.contrast");
   if (m_iRows >= MAX_ROWS) m_iRows=MAX_ROWS-1;
 
   DisplayInit();

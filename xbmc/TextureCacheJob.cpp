@@ -119,7 +119,7 @@ bool CTextureCacheJob::CacheTexture(CBaseTexture **out_texture)
 #ifdef _XBOX
       { // load cached image
         delete texture;
-        *out_texture = CBaseTexture::LoadFromFile(CTextureCache::GetCachedPath(m_details.file), width, height, CSettings::Get().GetBool("pictures.useexifrotation"));
+        *out_texture = CBaseTexture::LoadFromFile(CTextureCache::GetCachedPath(m_details.file), width, height, CSettings::GetInstance().GetBool("pictures.useexifrotation"));
       }
 #else
         *out_texture = texture;
@@ -183,7 +183,7 @@ CBaseTexture *CTextureCacheJob::LoadImage(const std::string &image, unsigned int
       && !StringUtils::StartsWithNoCase(file.GetMimeType(), "image/") && !StringUtils::EqualsNoCase(file.GetMimeType(), "application/octet-stream")) // ignore non-pictures
     return NULL;
 
-  CBaseTexture *texture = CBaseTexture::LoadFromFile(image, width, height, CSettings::Get().GetBool("pictures.useexifrotation"));
+  CBaseTexture *texture = CBaseTexture::LoadFromFile(image, width, height, CSettings::GetInstance().GetBool("pictures.useexifrotation"));
   if (!texture)
     return NULL;
 

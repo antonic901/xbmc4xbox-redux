@@ -137,7 +137,6 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   CFileItemPtr item = m_vecItems->Get(itemNumber);
   if (item)
   {
-    buttons.Add(CONTEXT_BUTTON_SETTINGS, 5); // Settings
     if ( m_vecItems->IsVirtualDirectoryRoot() || m_vecItems->GetPath() == "sources://programs/" )
     {
       CGUIDialogContextMenu::GetContextButtons("programs", item, buttons);
@@ -147,7 +146,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
       if (item->IsXBE() || item->IsShortCut())
       {
         CStdString strLaunch = g_localizeStrings.Get(518); // Launch
-        if (CSettings::Get().GetBool("myprograms.gameautoregion"))
+        if (CSettings::GetInstance().GetBool("myprograms.gameautoregion"))
         {
           int iRegion = GetRegion(itemNumber);
           if (iRegion == VIDEO_NTSCM)
@@ -169,7 +168,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
         if (CDirectory::Exists(strGameSavepath))
           buttons.Add(CONTEXT_BUTTON_GAMESAVES, 38778);         // Goto GameSaves
   
-        if (CSettings::Get().GetBool("myprograms.gameautoregion"))
+        if (CSettings::GetInstance().GetBool("myprograms.gameautoregion"))
           buttons.Add(CONTEXT_BUTTON_LAUNCH_IN, 519); // launch in video mode
   
         if (g_passwordManager.IsMasterLockUnlocked(false) || CProfilesManager::Get().GetCurrentProfile().canWriteDatabases())
@@ -244,10 +243,6 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       Update(m_vecItems->GetPath());
       return true;
     }
-
-  case CONTEXT_BUTTON_SETTINGS:
-    g_windowManager.ActivateWindow(WINDOW_SETTINGS_MYPROGRAMS);
-    return true;
 
   case CONTEXT_BUTTON_LAUNCH:
     OnClick(itemNumber);
@@ -394,7 +389,7 @@ bool CGUIWindowPrograms::OnPlayMedia(int iItem)
 
 int CGUIWindowPrograms::GetRegion(int iItem, bool bReload)
 {
-  if (!CSettings::Get().GetBool("myprograms.gameautoregion"))
+  if (!CSettings::GetInstance().GetBool("myprograms.gameautoregion"))
     return 0;
 
   int iRegion;
@@ -411,7 +406,7 @@ int CGUIWindowPrograms::GetRegion(int iItem, bool bReload)
   }
   if (iRegion == -1)
   {
-    if (CSettings::Get().GetBool("myprograms.gameautoregion"))
+    if (CSettings::GetInstance().GetBool("myprograms.gameautoregion"))
     {
       CXBE xbe;
       iRegion = xbe.ExtractGameRegion(m_vecItems->Get(iItem)->GetPath());
@@ -459,7 +454,7 @@ void CGUIWindowPrograms::PopulateTrainersList()
     strLine.Format("%s %i / %i",g_localizeStrings.Get(38710).c_str(), i+1,vecTrainerPath.size());
     m_dlgProgress->SetLine(1,strLine);
     m_dlgProgress->Progress();
-    //if (!CFile::Exists(vecTrainerPath[i]) || vecTrainerPath[i].find(CSettings::Get().GetString("myprograms.trainerpath",false)) == -1)
+    //if (!CFile::Exists(vecTrainerPath[i]) || vecTrainerPath[i].find(CSettings::GetInstance().GetString("myprograms.trainerpath",false)) == -1)
     //  m_database.RemoveTrainer(vecTrainerPath[i]);
     if (m_dlgProgress->IsCanceled())
     {
@@ -470,9 +465,9 @@ void CGUIWindowPrograms::PopulateTrainersList()
   }
   if (!bBreak)
   {
-    //CLog::Log(LOGDEBUG,"trainerpath %s",CSettings::Get().GetString("myprograms.trainerpath",false).c_str());
-    directory.GetDirectory(CSettings::Get().GetString("myprograms.trainerpath").c_str(),trainers,".xbtf|.etm");
-    //if (CSettings::Get().GetString("myprograms.trainerpath",false).IsEmpty())
+    //CLog::Log(LOGDEBUG,"trainerpath %s",CSettings::GetInstance().GetString("myprograms.trainerpath",false).c_str());
+    directory.GetDirectory(CSettings::GetInstance().GetString("myprograms.trainerpath").c_str(),trainers,".xbtf|.etm");
+    //if (CSettings::GetInstance().GetString("myprograms.trainerpath",false).IsEmpty())
     //{
     //  m_database.RollbackTransaction();
     //  m_dlgProgress->Close();
@@ -480,7 +475,7 @@ void CGUIWindowPrograms::PopulateTrainersList()
     //  return;
     //}
 
-    directory.GetDirectory(CSettings::Get().GetString("myprograms.trainerpath").c_str(),archives,".rar|.zip",false); // TODO: ZIP SUPPORT
+    directory.GetDirectory(CSettings::GetInstance().GetString("myprograms.trainerpath").c_str(),archives,".rar|.zip",false); // TODO: ZIP SUPPORT
     for( int i=0;i<archives.Size();++i)
     {
       if (stricmp(URIUtils::GetExtension(archives[i]->GetPath()),".rar") == 0)

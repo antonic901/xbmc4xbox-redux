@@ -230,17 +230,11 @@ static const ActionMapping windows[] =
         {"systeminfo"               , WINDOW_SYSTEM_INFORMATION},
         {"screencalibration"        , WINDOW_SCREEN_CALIBRATION},
         {"guicalibration"           , WINDOW_SCREEN_CALIBRATION},
-        {"picturessettings"         , WINDOW_SETTINGS_MYPICTURES},
-        {"programssettings"         , WINDOW_SETTINGS_MYPROGRAMS},
-        {"weathersettings"          , WINDOW_SETTINGS_MYWEATHER},
-        {"musicsettings"            , WINDOW_SETTINGS_MYMUSIC},
         {"systemsettings"           , WINDOW_SETTINGS_SYSTEM},
-        {"videossettings"           , WINDOW_SETTINGS_MYVIDEOS},
         {"networksettings"          , WINDOW_SETTINGS_SERVICE}, // backward compat
         {"servicesettings"          , WINDOW_SETTINGS_SERVICE},
-        {"appearancesettings"       , WINDOW_SETTINGS_APPEARANCE},
         {"playersettings"           , WINDOW_SETTINGS_PLAYER },
-        {"librarysettings"          , WINDOW_SETTINGS_LIBRARY },
+        {"mediasettings"            , WINDOW_SETTINGS_MEDIA },
         {"interfacesettings"        , WINDOW_SETTINGS_INTERFACE },
         {"videofiles"               , WINDOW_VIDEO_FILES},
         {"videolibrary"             , WINDOW_VIDEO_NAV},
@@ -688,7 +682,7 @@ void CButtonTranslator::MapWindowActions(TiXmlNode *pWindow, int windowID)
   }
   if ((pDevice = pWindow->FirstChild("remote")) != NULL)
   { // map remote actions
-    bool bUseMCE = CSettings::Get().GetBool("system.mceremote");
+    bool bUseMCE = CSettings::GetInstance().GetBool("system.mceremote");
     TiXmlElement *pRemote;
     CStdString remoteName;
     while (pDevice)

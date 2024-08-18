@@ -101,7 +101,7 @@ void CMusicInfoScanner::Process()
 
     m_musicDatabase.Open();
 
-    if (m_showDialog && !CSettings::Get().GetBool("musiclibrary.backgroundupdate"))
+    if (m_showDialog && !CSettings::GetInstance().GetBool("musiclibrary.backgroundupdate"))
     {
       CGUIDialogExtendedProgressBar* dialog =
         (CGUIDialogExtendedProgressBar*)g_windowManager.GetWindow(WINDOW_DIALOG_EXT_PROGRESS);
@@ -366,7 +366,7 @@ void CMusicInfoScanner::FetchArtistInfo(const std::string& strDirectory,
   if (strDirectory.empty())
   {
     m_musicDatabase.Open();
-    m_musicDatabase.GetArtistsNav("musicdb://artists/", items, !CSettings::Get().GetBool("musiclibrary.showcompilationartists"), -1);
+    m_musicDatabase.GetArtistsNav("musicdb://artists/", items, !CSettings::GetInstance().GetBool("musiclibrary.showcompilationartists"), -1);
     m_musicDatabase.Close();
   }
   else
@@ -831,7 +831,7 @@ int CMusicInfoScanner::RetrieveMusicInfo(const std::string& strDirectory, CFileI
       if (!albumScraper || !artistScraper)
         continue;
 
-      bool albumartistsonly = !CSettings::Get().GetBool("musiclibrary.showcompilationartists");
+      bool albumartistsonly = !CSettings::GetInstance().GetBool("musiclibrary.showcompilationartists");
 
       INFO_RET albumScrapeStatus = INFO_NOT_FOUND;
       if (!m_musicDatabase.HasAlbumBeenScraped(album->idAlbum))
@@ -1023,7 +1023,7 @@ loop:
   }
   else if (albumDownloadStatus == INFO_ADDED)
   {
-    bool overridetags = CSettings::Get().GetBool("musiclibrary.overridetags");
+    bool overridetags = CSettings::GetInstance().GetBool("musiclibrary.overridetags");
     album.MergeScrapedAlbum(albumInfo.GetAlbum(), overridetags);
     m_musicDatabase.Open();
     m_musicDatabase.UpdateAlbum(album, overridetags);
@@ -1059,7 +1059,7 @@ loop:
   }
   else if (artistDownloadStatus == INFO_ADDED)
   {
-    artist.MergeScrapedArtist(artistInfo.GetArtist(), CSettings::Get().GetBool("musiclibrary.overridetags"));
+    artist.MergeScrapedArtist(artistInfo.GetArtist(), CSettings::GetInstance().GetBool("musiclibrary.overridetags"));
     m_musicDatabase.Open();
     m_musicDatabase.UpdateArtist(artist);
     m_musicDatabase.GetArtistPath(artist.idArtist, artist.strPath);
@@ -1130,7 +1130,7 @@ INFO_RET CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album, const ADDON::
       CLog::Log(LOGERROR,"Unable to find an url in nfo file: %s", strNfo.c_str());
   }
 
-  if (!scraper.CheckValidOrFallback(CSettings::Get().GetString("musiclibrary.albumsscraper")))
+  if (!scraper.CheckValidOrFallback(CSettings::GetInstance().GetString("musiclibrary.albumsscraper")))
   { // the current scraper is invalid, as is the default - bail
     CLog::Log(LOGERROR, "%s - current and default scrapers are invalid.  Pick another one", __FUNCTION__);
     return INFO_ERROR;

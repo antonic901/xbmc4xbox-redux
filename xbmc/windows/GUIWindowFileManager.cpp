@@ -450,7 +450,7 @@ bool CGUIWindowFileManager::Update(int iList, const CStdString &strDirectory)
 
   CStdString strParentPath;
   URIUtils::GetParentPath(strDirectory, strParentPath);
-  if (strDirectory.IsEmpty() && (m_vecItems[iList]->Size() == 0 || CSettings::Get().GetBool("filelists.showaddsourcebuttons")))
+  if (strDirectory.IsEmpty() && (m_vecItems[iList]->Size() == 0 || CSettings::GetInstance().GetBool("filelists.showaddsourcebuttons")))
   { // add 'add source button'
     CStdString strLabel = g_localizeStrings.Get(1026);
     CFileItemPtr pItem(new CFileItem(strLabel));
@@ -462,7 +462,7 @@ bool CGUIWindowFileManager::Update(int iList, const CStdString &strDirectory)
     pItem->SetSpecialSort(SortSpecialOnBottom);
     m_vecItems[iList]->Add(pItem);
   }
-  else if (items.IsEmpty() || CSettings::Get().GetBool("filelists.showparentdiritems"))
+  else if (items.IsEmpty() || CSettings::GetInstance().GetBool("filelists.showparentdiritems"))
   {
     CFileItemPtr pItem(new CFileItem(".."));
     pItem->SetPath((m_rootDir.IsSource(strDirectory) ? "" : strParentPath));
@@ -615,7 +615,7 @@ void CGUIWindowFileManager::OnStart(CFileItem *pItem)
   if (pItem->IsXBE())
   {
     int iRegion;
-    if (CSettings::Get().GetBool("myprograms.gameautoregion"))
+    if (CSettings::GetInstance().GetBool("myprograms.gameautoregion"))
     {
       CXBE xbe;
       iRegion = xbe.ExtractGameRegion(pItem->GetPath());

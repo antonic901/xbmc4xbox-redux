@@ -122,7 +122,7 @@ bool CFileHD::OpenForWrite(const CURL& url, bool bOverWrite)
   // make sure it's a legal FATX filename (we are writing to the harddisk)
   CStdString strPath = GetLocal(url);
 
-  if (CSettings::Get().GetBool("services.ftpautofatx")) // allow overriding
+  if (CSettings::GetInstance().GetBool("services.ftpautofatx")) // allow overriding
   {
     CStdString strPathOriginal = strPath;
     CUtil::GetFatXQualifiedPath(strPath);

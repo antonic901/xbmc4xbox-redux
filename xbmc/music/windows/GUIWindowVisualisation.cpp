@@ -61,7 +61,7 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
   case ACTION_SHOW_INFO:
     {
       m_initTimer.Stop();
-      CSettings::Get().SetBool("mymusic.songthumbinvis", g_infoManager.ToggleShowInfo());
+      CSettings::GetInstance().SetBool("mymusic.songthumbinvis", g_infoManager.ToggleShowInfo());
       return true;
     }
     break;
@@ -72,7 +72,7 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
 
   case ACTION_SHOW_GUI:
     // save the settings
-    CSettings::Get().Save();
+    CSettings::GetInstance().Save();
     g_windowManager.PreviousWindow();
     return true;
     break;
@@ -153,7 +153,7 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
   case GUI_MSG_WINDOW_DEINIT:
     {
       if (IsActive()) // save any changed settings from the OSD
-        CSettings::Get().Save();
+        CSettings::GetInstance().Save();
 
       // close all active modal dialogs
       g_windowManager.CloseInternalModalDialogs(true);
@@ -175,7 +175,7 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
       CGUIWindow::OnMessage(message);
       if (g_infoManager.GetCurrentSongTag())
         m_tag = *g_infoManager.GetCurrentSongTag();
-      if (CSettings::Get().GetBool("mymusic.songthumbinvis"))
+      if (CSettings::GetInstance().GetBool("mymusic.songthumbinvis"))
       { // always on
         m_initTimer.Stop();
       }
@@ -229,7 +229,7 @@ void CGUIWindowVisualisation::FrameMove()
   if (m_initTimer.IsRunning() && m_initTimer.GetElapsedSeconds() > (float)g_advancedSettings.m_songInfoDuration)
   {
     m_initTimer.Stop();
-    if (!CSettings::Get().GetBool("mymusic.songthumbinvis"))
+    if (!CSettings::GetInstance().GetBool("mymusic.songthumbinvis"))
     { // reached end of fade in, fade out again
       g_infoManager.SetShowInfo(false);
     }
@@ -261,7 +261,7 @@ void CGUIWindowVisualisation::AllocResources(bool forceLoad)
 void CGUIWindowVisualisation::FreeResources(bool forceUnload)
 {
   // Save changed settings from music OSD
-  CSettings::Get().Save();
+  CSettings::GetInstance().Save();
   CGUIWindow *pWindow;
   pWindow = g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_OSD);
   if (pWindow) pWindow->FreeResources(true);

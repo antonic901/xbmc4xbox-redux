@@ -193,7 +193,7 @@ bool CMusicInfoLoader::LoadItemLookup(CFileItem* pItem)
             pItem->SetArt("thumb", song.strThumb);
         }
       }
-      else if (CSettings::Get().GetBool("musicfiles.usetags") || pItem->IsCDDA())
+      else if (CSettings::GetInstance().GetBool("musicfiles.usetags") || pItem->IsCDDA())
       { // Nothing found, load tag from file,
         // always try to load cddb info
         // get correct tag parser

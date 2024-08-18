@@ -389,8 +389,8 @@ bool CVideoThumbLoader::LoadItemLookup(CFileItem* pItem)
             m_videoDatabase->SetArtForItem(info->m_iDbId, info->m_type, "thumb", thumbURL);
         }
       }
-      else if (CSettings::Get().GetBool("myvideos.extractthumb") &&
-               CSettings::Get().GetBool("myvideos.extractflags"))
+      else if (CSettings::GetInstance().GetBool("myvideos.extractthumb") &&
+               CSettings::GetInstance().GetBool("myvideos.extractflags"))
       {
         CFileItem item(*pItem);
         std::string path(item.GetPath());
@@ -406,7 +406,7 @@ bool CVideoThumbLoader::LoadItemLookup(CFileItem* pItem)
     }
 
     // flag extraction
-    if (CSettings::Get().GetBool("myvideos.extractflags") &&
+    if (CSettings::GetInstance().GetBool("myvideos.extractflags") &&
        (!pItem->HasVideoInfoTag()                     ||
         !pItem->GetVideoInfoTag()->HasStreamDetails() ) )
     {
