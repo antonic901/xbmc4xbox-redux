@@ -6638,7 +6638,15 @@ msgctxt "#14110"
 msgid "Long date format"
 msgstr ""
 
-#empty strings from id 14111 to 14199
+#empty strings from id 14111 to 14124
+
+#. This is in the context of input devices!
+#: system/settings/settings.xml
+msgctxt "#14125"
+msgid "Input"
+msgstr ""
+
+#empty strings from id 14126 to 14199
 
 #: system/settings/settings.xml
 msgctxt "#14200"
@@ -6774,27 +6782,24 @@ msgctxt "#14231"
 msgid "Processing"
 msgstr "
 
-#: system/settings/settings.xml
-msgctxt "#14232"
-msgid "Stereoscopic 3D"
-msgstr "
-
-#: system/settings/settings.xml
-msgctxt "#14233"
-msgid "Teletext"
-msgstr "
-
-#: system/settings/settings.xml
-msgctxt "#14234"
-msgid "Blu-ray"
-msgstr "
+#empty strings from id 14232 to 14234
 
 #: system/settings/settings.xml
 msgctxt "#14235"
 msgid "Download Services"
 msgstr "
 
-#empty strings from id 14236 to id 14239
+#: system/settings/settings.xml
+msgctxt "#14236"
+msgid "Video Library"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#14237"
+msgid "Music Library"
+msgstr ""
+
+#empty strings from id 14238 to 14239
 
 #: system/settings/settings.xml
 msgctxt "#14240"
@@ -6806,7 +6811,20 @@ msgctxt "#14241"
 msgid "Metadata"
 msgstr "
 
-#empty strings from id 14242 to 14244
+#: system/settings/settings.xml
+msgctxt "#14242"
+msgid "Videos..."
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#14243"
+msgid "Music..."
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#14244"
+msgid "Pictures..."
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14245"
@@ -6864,7 +6882,12 @@ msgctxt "#14260"
 msgid "Debug"
 msgstr "
 
-#empty strings from id 14261 to 14269
+#: system/settings/settings.xml
+msgctxt "#14261"
+msgid "Configure skin..."
+msgstr ""
+
+#empty strings from id 14262 to 14269
 
 #: system/settings/settings.xml
 msgctxt "#14270"
@@ -7763,7 +7786,14 @@ msgctxt "#19033"
 msgid "Information"
 msgstr ""
 
-#empty strings from id 19034 to 19999
+#empty strings from id 19034 to 19176
+
+#: system/settings/settings.xml
+msgctxt "#19177"
+msgid "Playback"
+msgstr ""
+
+#empty strings from id 19178 to 19999
 
 #: system/settings/settings.xml
 msgctxt "#20000"
@@ -9542,7 +9572,9 @@ msgctxt "#21360"
 msgid "Share my libraries"
 msgstr ""
 
-#empty string with id 21361
+msgctxt "#21361"
+msgid "Look for remote UPnP players"
+msgstr ""
 
 #: xbmc/video/dialogs/GUIDialogVideoBookmarks.cpp
 msgctxt "#21362"
@@ -14198,7 +14230,15 @@ msgctxt "#36618"
 msgid "Add-ons will be given access to personal data stored on this device. By allowing, you agree that you are solely responsible for any loss of data, unwanted behaviour, or damage to your device. Proceed?"
 msgstr ""
 
-#empty strings from id 36619 to 36899
+#empty strings from id 36619 to 36626
+
+#. Label of a group, that allows configuration of the system SMB client
+#: system/settings/settings.xml
+msgctxt "#36627"
+msgid "Client"
+msgstr ""
+
+#empty strings from id 36628 to 36899
 
 #: xbmc/media/MediaType.cpp
 msgctxt "#36900"
@@ -14724,6 +14764,20 @@ msgstr ""
 #: system/settings/settings.xml
 msgctxt "#38111"
 msgid "This category contains other settings for the GUI interface"
+msgstr ""
+
+#empty strings from id 38112 to 38206
+
+#. Description of setting "Pictures -> Show EXIF picture information" with label #38207
+#: system/settings/settings.xml
+msgctxt "#38207"
+msgid "Show EXIF picture information"
+msgstr ""
+
+#. Help text of setting "Pictures -> Show EXIF picture information" with label #38208
+#: system/settings/settings.xml
+msgctxt "#38208"
+msgid "If EXIF information exists (date, time, camera used, etc.), it will be displayed."
 msgstr ""
 
 #strings from id 38600 to 38999 reserved for xbmc4xbox
