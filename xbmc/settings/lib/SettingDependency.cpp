@@ -18,6 +18,10 @@
  *
  */
 
+#include <memory>
+#include <set>
+#include <string>
+
 #include <stdlib.h>
 
 #include "SettingDependency.h"
@@ -173,12 +177,12 @@ bool CSettingDependencyCondition::setTarget(const std::string &target)
 bool CSettingDependencyCondition::setOperator(const std::string &op)
 {
   size_t length = 0;
-  if (StringUtils::EndsWith(op, "is"))
+  if (StringUtils::EndsWithNoCase(op, "is"))
   {
     m_operator = SettingDependencyOperatorEquals;
     length = 2;
   }
-  else if (StringUtils::EndsWith(op, "contains"))
+  else if (StringUtils::EndsWithNoCase(op, "contains"))
   {
     m_operator = SettingDependencyOperatorContains;
     length = 8;
@@ -322,7 +326,7 @@ CSettingDependencyConditionCombinationPtr CSettingDependency::And()
 
   m_operation->SetOperation(BooleanLogicOperationAnd);
 
-  return boost::dynamic_pointer_cast<CSettingDependencyConditionCombination>(m_operation);
+  return std::dynamic_pointer_cast<CSettingDependencyConditionCombination>(m_operation);
 }
 
 CSettingDependencyConditionCombinationPtr CSettingDependency::Or()
@@ -332,7 +336,7 @@ CSettingDependencyConditionCombinationPtr CSettingDependency::Or()
 
   m_operation->SetOperation(BooleanLogicOperationOr);
 
-  return boost::dynamic_pointer_cast<CSettingDependencyConditionCombination>(m_operation);
+  return std::dynamic_pointer_cast<CSettingDependencyConditionCombination>(m_operation);
 }
 
 bool CSettingDependency::setType(const std::string &type)

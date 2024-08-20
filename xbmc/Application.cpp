@@ -6202,6 +6202,22 @@ void CApplication::OnSettingAction(const CSetting *setting)
   }
   else if (settingId == "videoscreen.guicalibration")
     g_windowManager.ActivateWindow(WINDOW_SCREEN_CALIBRATION);
+  else if (settingId == "source.videos")
+  {
+    std::vector<std::string> params;
+    params.push_back("library://video/files.xml");
+    params.push_back("return");
+    g_windowManager.ActivateWindow(WINDOW_VIDEO_NAV, params);
+  }
+  else if (settingId == "source.music")
+  {
+    std::vector<std::string> params;
+    params.push_back("library://music/files.xml");
+    params.push_back("return");
+    g_windowManager.ActivateWindow(WINDOW_MUSIC_NAV, params);
+  }
+  else if (settingId == "source.pictures")
+    g_windowManager.ActivateWindow(WINDOW_PICTURES);
 }
 
 bool CApplication::OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode)

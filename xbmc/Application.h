@@ -280,6 +280,11 @@ public:
 
   int GlobalIdleTime();
 
+  bool IsStandAlone()
+  {
+    return true;
+  }
+
   bool SetLanguage(const std::string &strLanguage);
   bool LoadLanguage(bool reload);
 

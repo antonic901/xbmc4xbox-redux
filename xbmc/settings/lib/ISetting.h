@@ -81,16 +81,19 @@ public:
   const int GetLabel() const { return m_label; }
   /*!
    \brief Sets the localizeable label ID of the setting group.
+
    \param label Localizeable label ID of the setting group
    */
   void SetLabel(int label) { m_label = label; }
   /*!
    \brief Gets the localizeable help ID of the setting group.
+
    \return Localizeable help ID of the setting group
    */
   const int GetHelp() const { return m_help; }
   /*!
    \brief Sets the localizeable help ID of the setting group.
+
    \param label Localizeable help ID of the setting group
    */
   void SetHelp(int help) { m_help = help; }

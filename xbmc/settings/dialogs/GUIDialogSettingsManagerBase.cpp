@@ -18,10 +18,11 @@
  *
  */
 
+#include <set>
+#include <string>
+
 #include "GUIDialogSettingsManagerBase.h"
 #include "settings/lib/SettingsManager.h"
-
-using namespace std;
 
 CGUIDialogSettingsManagerBase::CGUIDialogSettingsManagerBase(int windowId, const std::string &xmlFile)
     : CGUIDialogSettingsBase(windowId, xmlFile),
@@ -61,7 +62,7 @@ void CGUIDialogSettingsManagerBase::FreeSettingsControls()
   m_settingsManager->UnregisterCallback(this);
 }
 
-ISettingControl* CGUIDialogSettingsManagerBase::CreateControl(const std::string &controlType)
+ISettingControl* CGUIDialogSettingsManagerBase::CreateControl(const std::string &controlType) const
 {
   assert(m_settingsManager != NULL);
 

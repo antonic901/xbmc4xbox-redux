@@ -239,6 +239,9 @@ static const ActionMapping windows[] =
         {"networksettings"          , WINDOW_SETTINGS_SERVICE}, // backward compat
         {"servicesettings"          , WINDOW_SETTINGS_SERVICE},
         {"appearancesettings"       , WINDOW_SETTINGS_APPEARANCE},
+        {"playersettings"           , WINDOW_SETTINGS_PLAYER },
+        {"librarysettings"          , WINDOW_SETTINGS_LIBRARY },
+        {"interfacesettings"        , WINDOW_SETTINGS_INTERFACE },
         {"videofiles"               , WINDOW_VIDEO_FILES},
         {"videolibrary"             , WINDOW_VIDEO_NAV},
         {"videoplaylist"            , WINDOW_VIDEO_PLAYLIST},

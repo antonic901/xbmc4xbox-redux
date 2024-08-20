@@ -58,7 +58,7 @@ bool CSettingControlCheckmark::SetFormat(const std::string &format)
   return format.empty() || StringUtils::EqualsNoCase(format, "boolean");
 }
 
-bool CSettingControlSpinner::Deserialize(const TiXmlNode *node, bool update /* = false */)
+bool CSettingControlFormattedRange::Deserialize(const TiXmlNode *node, bool update /* = false */)
 {
   if (!ISettingControl::Deserialize(node, update))
     return false;
@@ -146,7 +146,6 @@ bool CSettingControlButton::Deserialize(const TiXmlNode *node, bool update /* = 
   XMLUtils::GetInt(node, SETTING_XML_ELM_CONTROL_HEADING, m_heading);
   XMLUtils::GetBoolean(node, SETTING_XML_ELM_CONTROL_HIDEVALUE, m_hideValue);
 
-
   if (m_format == "addon")
   {
     std::string strShowAddons;
@@ -204,7 +203,8 @@ bool CSettingControlButton::SetFormat(const std::string &format)
 {
   if (!StringUtils::EqualsNoCase(format, "path") &&
       !StringUtils::EqualsNoCase(format, "addon") &&
-      !StringUtils::EqualsNoCase(format, "action"))
+      !StringUtils::EqualsNoCase(format, "action") &&
+      !StringUtils::EqualsNoCase(format, "infolabel"))
     return false;
 
   m_format = format;
@@ -215,7 +215,7 @@ bool CSettingControlButton::SetFormat(const std::string &format)
 
 bool CSettingControlList::Deserialize(const TiXmlNode *node, bool update /* = false */)
 {
-  if (!ISettingControl::Deserialize(node, update))
+  if (!CSettingControlFormattedRange::Deserialize(node, update))
     return false;
 
   XMLUtils::GetInt(node, SETTING_XML_ELM_CONTROL_HEADING, m_heading);

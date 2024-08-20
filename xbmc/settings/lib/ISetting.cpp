@@ -18,13 +18,12 @@
  *
  */
 
+#include <string>
+
 #include "ISetting.h"
 #include "SettingDefinitions.h"
-#include "utils/log.h"
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
-
-using namespace std;
 
 ISetting::ISetting(const std::string &id, CSettingsManager *settingsManager /* = NULL */)
   : m_id(id),

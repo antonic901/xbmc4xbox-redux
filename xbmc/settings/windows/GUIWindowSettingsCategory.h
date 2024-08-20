@@ -47,6 +47,12 @@ protected:
   virtual CSettingSection* GetSection();
   virtual void Save();
 
+  /*!
+   * Set focus to a category or setting in this window. The setting/category must be active in the
+   * current level.
+   */
+  void FocusElement(const std::string& elementId);
+
   CSettings& m_settings;
   int m_iSection;
   bool m_returningFromSkinLoad; // true if we are returning from loading the skin

@@ -24,9 +24,6 @@
 #include "utils/log.h"
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
-#include "utils/StdString.h"
-
-#define XML_ELM_DEFAULT     "default"
 
 CSettingAddon::CSettingAddon(const std::string &id, CSettingsManager *settingsManager /* = NULL */)
   : CSettingString(id, settingsManager),
@@ -41,7 +38,7 @@ CSettingAddon::CSettingAddon(const std::string &id, int label, const std::string
 CSettingAddon::CSettingAddon(const std::string &id, const CSettingAddon &setting)
   : CSettingString(id, setting)
 {
-  copy(setting);
+  copyaddontype(setting);
 }
 
 CSetting* CSettingAddon::Clone(const std::string &id) const
@@ -64,7 +61,7 @@ bool CSettingAddon::Deserialize(const TiXmlNode *node, bool update /* = false */
   }
 
   bool ok = false;
-  CStdString strAddonType;
+  std::string strAddonType;
   const TiXmlNode *constraints = node->FirstChild("constraints");
   if (constraints != NULL)
   {
@@ -86,7 +83,7 @@ bool CSettingAddon::Deserialize(const TiXmlNode *node, bool update /* = false */
   return true;
 }
 
-void CSettingAddon::copy(const CSettingAddon &setting)
+void CSettingAddon::copyaddontype(const CSettingAddon &setting)
 {
   CSettingString::Copy(setting);
 

@@ -1,6 +1,6 @@
 /*
  *      Copyright (C) 2005-2013 Team XBMC
- *      http://www.xbmc.org
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,23 +36,37 @@
 #include "guilib/GraphicContext.h"
 #include "guilib/GUIAudioManager.h"
 #include "guilib/GUIFontManager.h"
-#include "guilib/LocalizeStrings.h"
-#include "input/KeyboardLayoutManager.h"
 #include "guilib/common/Mouse.h"
+#include "input/KeyboardLayoutManager.h"
+#if defined(TARGET_POSIX)
+#include "linux/LinuxTimezone.h"
+#endif // defined(TARGET_POSIX)
 #include "network/NetworkServices.h"
 #include "network/upnp/UPnPSettings.h"
+#if defined(TARGET_DARWIN_OSX)
+#include "platform/darwin/osx/XBMCHelper.h"
+#endif // defined(TARGET_DARWIN_OSX)
+#if defined(TARGET_DARWIN)
+#include "platform/darwin/DarwinUtils.h"
+#endif
+#if defined(TARGET_DARWIN_IOS)
+#include "SettingAddon.h"
+#endif
+#if defined(TARGET_RASPBERRY_PI)
+#include "linux/RBP.h"
+#endif
+#if defined(HAS_LIBAMCODEC)
+#include "utils/AMLUtils.h"
+#endif // defined(HAS_LIBAMCODEC)
 #include "profiles/ProfilesManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
-#include "settings/SettingAddon.h"
 #include "settings/SettingConditions.h"
-#include "settings/SettingControl.h"
-#include "settings/lib/SettingsManager.h"
-#include "settings/SettingPath.h"
 #include "settings/SettingUtils.h"
 #include "settings/SkinSettings.h"
+#include "settings/lib/SettingsManager.h"
 #include "threads/SingleLock.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
@@ -62,6 +76,7 @@
 #include "utils/Weather.h"
 #include "utils/XBMCTinyXML.h"
 #include "utils/SeekHandler.h"
+#include "utils/Variant.h"
 #include "view/ViewStateSettings.h"
 #ifdef _XBOX
 #include "utils/FanController.h"
@@ -91,7 +106,7 @@ CSettings::~CSettings()
   delete m_settingsManager;
 }
 
-CSettings& CSettings::Get()
+CSettings& CSettings::GetInstance()
 {
   static CSettings sSettings;
   return sSettings;
@@ -119,7 +134,7 @@ bool CSettings::Initialize()
 
   m_settingsManager->SetInitialized();
 
-  InitializeISettingsHandlers();  
+  InitializeISettingsHandlers();
   InitializeISubSettings();
   InitializeISettingCallbacks();
 
@@ -140,7 +155,7 @@ bool CSettings::Load(const std::string &file)
   if (!XFILE::CFile::Exists(file) || !xmlDoc.LoadFile(file) ||
       !m_settingsManager->Load(xmlDoc.RootElement(), updated))
   {
-    CLog::Log(LOGERROR, "CSettingsManager: unable to load settings from %s, creating new default settings", file.c_str());
+    CLog::Log(LOGERROR, "CSettings: unable to load settings from %s, creating new default settings", file.c_str());
     if (!Reset())
       return false;
 
@@ -411,6 +426,8 @@ bool CSettings::Initialize(const std::string &file)
     return false;
   }
 
+  CLog::Log(LOGDEBUG, "CSettings: loaded settings definition from %s", file.c_str());
+
   TiXmlElement *root = xmlDoc.RootElement();
   if (root == NULL)
     return false;
@@ -428,7 +445,32 @@ bool CSettings::InitializeDefinitions()
 #if defined(TARGET_WINDOWS)
   if (CFile::Exists(SETTINGS_XML_FOLDER "win32.xml") && !Initialize(SETTINGS_XML_FOLDER "win32.xml"))
     CLog::Log(LOGFATAL, "Unable to load win32-specific settings definitions");
-#if defined(TARGET_DARWIN)
+#elif defined(TARGET_ANDROID)
+  if (CFile::Exists(SETTINGS_XML_FOLDER "android.xml") && !Initialize(SETTINGS_XML_FOLDER "android.xml"))
+    CLog::Log(LOGFATAL, "Unable to load android-specific settings definitions");
+#if defined(HAS_LIBAMCODEC)
+  if (aml_present() && CFile::Exists(SETTINGS_XML_FOLDER "aml-android.xml") && !Initialize(SETTINGS_XML_FOLDER "aml-android.xml"))
+    CLog::Log(LOGFATAL, "Unable to load aml-android-specific settings definitions");
+#endif // defined(HAS_LIBAMCODEC)
+#elif defined(TARGET_RASPBERRY_PI)
+  if (CFile::Exists(SETTINGS_XML_FOLDER "rbp.xml") && !Initialize(SETTINGS_XML_FOLDER "rbp.xml"))
+    CLog::Log(LOGFATAL, "Unable to load rbp-specific settings definitions");
+  if (g_RBP.RasberryPiVersion() > 1 && CFile::Exists(SETTINGS_XML_FOLDER "rbp2.xml") && !Initialize(SETTINGS_XML_FOLDER "rbp2.xml"))
+    CLog::Log(LOGFATAL, "Unable to load rbp2-specific settings definitions");
+#elif defined(TARGET_FREEBSD)
+  if (CFile::Exists(SETTINGS_XML_FOLDER "freebsd.xml") && !Initialize(SETTINGS_XML_FOLDER "freebsd.xml"))
+    CLog::Log(LOGFATAL, "Unable to load freebsd-specific settings definitions");
+#elif defined(HAS_IMXVPU)
+  if (CFile::Exists(SETTINGS_XML_FOLDER "imx6.xml") && !Initialize(SETTINGS_XML_FOLDER "imx6.xml"))
+    CLog::Log(LOGFATAL, "Unable to load imx6-specific settings definitions");
+#elif defined(TARGET_LINUX)
+  if (CFile::Exists(SETTINGS_XML_FOLDER "linux.xml") && !Initialize(SETTINGS_XML_FOLDER "linux.xml"))
+    CLog::Log(LOGFATAL, "Unable to load linux-specific settings definitions");
+#if defined(HAS_LIBAMCODEC)
+  if (aml_present() && CFile::Exists(SETTINGS_XML_FOLDER "aml-linux.xml") && !Initialize(SETTINGS_XML_FOLDER "aml-linux.xml"))
+    CLog::Log(LOGFATAL, "Unable to load aml-linux-specific settings definitions");
+#endif // defined(HAS_LIBAMCODEC)
+#elif defined(TARGET_DARWIN)
   if (CFile::Exists(SETTINGS_XML_FOLDER "darwin.xml") && !Initialize(SETTINGS_XML_FOLDER "darwin.xml"))
     CLog::Log(LOGFATAL, "Unable to load darwin-specific settings definitions");
 #if defined(TARGET_DARWIN_OSX)
@@ -437,24 +479,7 @@ bool CSettings::InitializeDefinitions()
 #elif defined(TARGET_DARWIN_IOS)
   if (CFile::Exists(SETTINGS_XML_FOLDER "darwin_ios.xml") && !Initialize(SETTINGS_XML_FOLDER "darwin_ios.xml"))
     CLog::Log(LOGFATAL, "Unable to load ios-specific settings definitions");
-#if defined(TARGET_DARWIN_IOS_ATV2)
-  if (CFile::Exists(SETTINGS_XML_FOLDER "darwin_ios_atv2.xml") && !Initialize(SETTINGS_XML_FOLDER "darwin_ios_atv2.xml"))
-    CLog::Log(LOGFATAL, "Unable to load atv2-specific settings definitions");
 #endif
-#endif
-#elif defined(TARGET_ANDROID)
-  if (CFile::Exists(SETTINGS_XML_FOLDER "android.xml") && !Initialize(SETTINGS_XML_FOLDER "android.xml"))
-    CLog::Log(LOGFATAL, "Unable to load android-specific settings definitions");
-#elif defined(TARGET_RASPBERRY_PI)
-  if (CFile::Exists(SETTINGS_XML_FOLDER "rbp.xml") && !Initialize(SETTINGS_XML_FOLDER "rbp.xml"))
-    CLog::Log(LOGFATAL, "Unable to load rbp-specific settings definitions");
-#elif defined(TARGET_FREEBSD)
-  if (CFile::Exists(SETTINGS_XML_FOLDER "freebsd.xml") && !Initialize(SETTINGS_XML_FOLDER "freebsd.xml"))
-    CLog::Log(LOGFATAL, "Unable to load freebsd-specific settings definitions");
-#endif
-#elif defined(TARGET_LINUX)
-  if (CFile::Exists(SETTINGS_XML_FOLDER "linux.xml") && !Initialize(SETTINGS_XML_FOLDER "linux.xml"))
-    CLog::Log(LOGFATAL, "Unable to load linux-specific settings definitions");
 #elif defined(_XBOX)
   if (CFile::Exists(SETTINGS_XML_FOLDER "xbox.xml") && !Initialize(SETTINGS_XML_FOLDER "xbox.xml"))
     CLog::Log(LOGFATAL, "Unable to load xbox-specific settings definitions");
@@ -494,20 +519,14 @@ void CSettings::InitializeVisibility()
 {
   // hide some settings if necessary
 #if defined(TARGET_DARWIN)
-  CSettingString* timezonecountry = (CSettingString*)m_settingsManager->GetSetting("locale.timezonecountry");
-  CSettingString* timezone = (CSettingString*)m_settingsManager->GetSetting("locale.timezone");
-  #if defined(TARGET_DARWIN)
-  if (!g_sysinfo.IsAppleTV2() || GetIOSVersion() >= 4.3)
+  CSettingString* timezonecountry = (CSettingString*)m_settingsManager->GetSetting(CSettings::SETTING_LOCALE_TIMEZONECOUNTRY);
+  CSettingString* timezone = (CSettingString*)m_settingsManager->GetSetting(CSettings::SETTING_LOCALE_TIMEZONE);
+
+  if (CDarwinUtils::GetIOSVersion() >= 4.3)
   {
     timezonecountry->SetRequirementsMet(false);
     timezone->SetRequirementsMet(false);
   }
-  #endif
-
-  if (timezonecountry->IsVisible())
-    timezonecountry->SetDefault(g_timezone.GetCountryByTimezone(g_timezone.GetOSConfiguredTimezone()));
-  if (timezone->IsVisible())
-    timezone->SetDefault(g_timezone.GetOSConfiguredTimezone());
 #endif
 }
 
@@ -640,7 +659,11 @@ void CSettings::InitializeISettingsHandlers()
   m_settingsManager->RegisterSettingsHandler(&CUPnPSettings::Get());
 #endif
   m_settingsManager->RegisterSettingsHandler(&CRssManager::Get());
+  m_settingsManager->RegisterSettingsHandler(&g_langInfo);
   m_settingsManager->RegisterSettingsHandler(&g_application);
+#if defined(TARGET_LINUX) && !defined(TARGET_ANDROID) && !defined(__UCLIBC__)
+  m_settingsManager->RegisterSettingsHandler(&g_timezone);
+#endif
 #ifdef _XBOX
   m_settingsManager->RegisterSettingsHandler(&g_audioConfig);
   m_settingsManager->RegisterSettingsHandler(&g_videoConfig);
@@ -742,6 +765,9 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("screensaver.settings");
   settingSet.insert("system.ledcolour");
   settingSet.insert("videoscreen.guicalibration");
+  settingSet.insert("source.videos");
+  settingSet.insert("source.music");
+  settingSet.insert("source.pictures");
   m_settingsManager->RegisterCallback(&g_application, settingSet);
 
   settingSet.clear();
@@ -769,6 +795,12 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("locale.subtitlelanguage");
   settingSet.insert("locale.language");
   settingSet.insert("locale.country");
+  settingSet.insert("locale.shortdateformat");
+  settingSet.insert("locale.longdateformat");
+  settingSet.insert("locale.timeformat");
+  settingSet.insert("locale.use24hourclock");
+  settingSet.insert("locale.temperatureunit");
+  settingSet.insert("locale.speedunit");
   m_settingsManager->RegisterCallback(&g_langInfo, settingSet);
 
 #if defined(HAS_SDL_JOYSTICK)
@@ -823,14 +855,17 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.clear();
   settingSet.insert("weather.addon");
   settingSet.insert("weather.addonsettings");
-  settingSet.insert("weather.areacode1");
-  settingSet.insert("weather.areacode2");
-  settingSet.insert("weather.areacode3");
   m_settingsManager->RegisterCallback(&g_weatherManager, settingSet);
 
   settingSet.clear();
   settingSet.insert("general.addonupdates");
   m_settingsManager->RegisterCallback(&ADDON::CRepositoryUpdater::GetInstance(), settingSet);
+
+  settingSet.clear();
+  settingSet.insert("addons.showrunning");
+  settingSet.insert("addons.managedependencies");
+  settingSet.insert("addons.unknownsources");
+  m_settingsManager->RegisterCallback(&ADDON::CAddonSystemSettings::GetInstance(), settingSet);
 }
 
 bool CSettings::Reset()
@@ -839,7 +874,7 @@ bool CSettings::Reset()
   // try to delete the settings file
   if (XFILE::CFile::Exists(settingsFile, false) && !XFILE::CFile::Delete(settingsFile))
     CLog::Log(LOGWARNING, "Unable to delete old settings file at %s", settingsFile.c_str());
-  
+
   // unload any loaded settings
   Unload();
 
@@ -1029,46 +1064,42 @@ bool CSettings::SaveAvpackSettings(TiXmlNode *io_pRoot) const
   return false;
 }
 
-CStdString CSettings::GetFFmpegDllFolder() const
+std::string CSettings::GetFFmpegDllFolder() const
 {
-  CStdString folder = "Q:\\system\\players\\dvdplayer\\";
+  std::string folder = "Q:\\system\\players\\dvdplayer\\";
   if (CSettings::Get().GetBool("videoplayer.allcodecs"))
     folder += "full\\";
   return folder;
 }
 
-CStdString CSettings::GetPlayerName(const int& player) const
+std::string CSettings::GetPlayerName(const int& player) const
 {
-  CStdString strPlayer;
-  
   if (player == PLAYER_PAPLAYER)
-    strPlayer = "paplayer";
-  else
+    return "paplayer";
   if (player == PLAYER_MPLAYER)
-    strPlayer = "mplayer";
-  else
+    return "mplayer";
   if (player == PLAYER_DVDPLAYER)
-    strPlayer = "dvdplayer";
+    return "dvdplayer";
 
-  return strPlayer;
+  return "";
 }
 
-CStdString CSettings::GetDefaultVideoPlayerName() const
+std::string CSettings::GetDefaultVideoPlayerName() const
 {
   return GetPlayerName(CSettings::Get().GetInt("videoplayer.defaultplayer"));
 }
 
-CStdString CSettings::GetDefaultAudioPlayerName() const
+std::string CSettings::GetDefaultAudioPlayerName() const
 {
   return GetPlayerName(CSettings::Get().GetInt("musicplayer.defaultplayer"));
 }
 
-CStdString CSettings::GetAvpackSettingsFile() const
+std::string CSettings::GetAvpackSettingsFile() const
 {
-  CStdString  strAvpackSettingsFile;
   if (CProfilesManager::Get().GetCurrentProfileIndex() == 0)
-    strAvpackSettingsFile = "T:\\avpacksettings.xml";
+    return "T:\\avpacksettings.xml";
   else
-    strAvpackSettingsFile = "P:\\avpacksettings.xml";
-  return strAvpackSettingsFile;
+    return "P:\\avpacksettings.xml";
+
+  return "";
 }

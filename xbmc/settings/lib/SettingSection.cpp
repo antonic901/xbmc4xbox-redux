@@ -72,7 +72,7 @@ CSettingGroup::~CSettingGroup()
     delete *setting;
   m_settings.clear();
   if (m_control)
-    delete m_control; 
+    delete m_control;
 }
 
 bool CSettingGroup::Deserialize(const TiXmlNode *node, bool update /* = false */)

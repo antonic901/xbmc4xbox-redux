@@ -19,13 +19,16 @@
  */
 
 #include "SettingsManager.h"
+
+#include <algorithm>
+#include <utility>
+
 #include "SettingDefinitions.h"
 #include "SettingSection.h"
 #include "Setting.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "utils/XBMCTinyXML.h"
-
 
 CSettingsManager::CSettingsManager()
   : m_initialized(false), m_loaded(false)
@@ -607,17 +610,17 @@ bool CSettingsManager::SetString(const std::string &id, const std::string &value
   return ((CSettingString*)setting)->SetValue(value);
 }
 
-std::vector< boost::shared_ptr<CSetting> > CSettingsManager::GetList(const std::string &id) const
+std::vector< std::shared_ptr<CSetting> > CSettingsManager::GetList(const std::string &id) const
 {
   CSharedLock lock(m_settingsCritical);
   CSetting *setting = GetSetting(id);
   if (setting == NULL || setting->GetType() != SettingTypeList)
-    return std::vector< boost::shared_ptr<CSetting> >();
+    return std::vector< std::shared_ptr<CSetting> >();
 
   return ((CSettingList*)setting)->GetValue();
 }
 
-bool CSettingsManager::SetList(const std::string &id, const std::vector< boost::shared_ptr<CSetting> > &value)
+bool CSettingsManager::SetList(const std::string &id, const std::vector< std::shared_ptr<CSetting> > &value)
 {
   CSharedLock lock(m_settingsCritical);
   CSetting *setting = GetSetting(id);
@@ -636,13 +639,13 @@ void CSettingsManager::AddCondition(const std::string &condition)
   m_conditions.AddCondition(condition);
 }
 
-void CSettingsManager::AddCondition(const std::string &identifier, SettingConditionCheck condition)
+void CSettingsManager::AddCondition(const std::string &identifier, SettingConditionCheck condition, void *data /*= NULL*/)
 {
   CExclusiveLock lock(m_critical);
   if (identifier.empty() || condition == NULL)
     return;
 
-  m_conditions.AddCondition(identifier, condition);
+  m_conditions.AddCondition(identifier, condition, data);
 }
 
 bool CSettingsManager::Serialize(TiXmlNode *parent) const

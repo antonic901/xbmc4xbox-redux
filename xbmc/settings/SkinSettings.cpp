@@ -18,6 +18,9 @@
  *
  */
 
+#include <memory>
+#include <string>
+
 #include "SkinSettings.h"
 #include "GUIInfoManager.h"
 #include "addons/Skin.h"
@@ -28,8 +31,6 @@
 #include "utils/XBMCTinyXML.h"
 
 #define XML_SKINSETTINGS  "skinsettings"
-
-using namespace std;
 
 CSkinSettings::CSkinSettings()
 {
@@ -45,22 +46,22 @@ CSkinSettings& CSkinSettings::Get()
   return sSkinSettings;
 }
 
-int CSkinSettings::TranslateString(const string &setting)
+int CSkinSettings::TranslateString(const std::string &setting)
 {
   return g_SkinInfo->TranslateString(setting);
 }
 
-const string& CSkinSettings::GetString(int setting) const
+const std::string& CSkinSettings::GetString(int setting) const
 {
   return g_SkinInfo->GetString(setting);
 }
 
-void CSkinSettings::SetString(int setting, const string &label)
+void CSkinSettings::SetString(int setting, const std::string &label)
 {
   g_SkinInfo->SetString(setting, label);
 }
 
-int CSkinSettings::TranslateBool(const string &setting)
+int CSkinSettings::TranslateBool(const std::string &setting)
 {
   return g_SkinInfo->TranslateBool(setting);
 }
@@ -75,7 +76,7 @@ void CSkinSettings::SetBool(int setting, bool set)
   g_SkinInfo->SetBool(setting, set);
 }
 
-void CSkinSettings::Reset(const string &setting)
+void CSkinSettings::Reset(const std::string &setting)
 {
   g_SkinInfo->Reset(setting);
 }
@@ -116,7 +117,7 @@ bool CSkinSettings::Save(TiXmlNode *settings) const
 
   CSingleLock lock(m_critical);
 
-   if (m_settings.empty())
+  if (m_settings.empty())
     return true;
 
   // add the <skinsettings> tag
@@ -129,9 +130,8 @@ bool CSkinSettings::Save(TiXmlNode *settings) const
   }
 
   TiXmlElement* settingsElement = settingsNode->ToElement();
-  for (std::set<ADDON::CSkinSettingPtr>::const_iterator it = m_settings.begin(); it != m_settings.end(); ++it)
+  for (const auto& setting : m_settings)
   {
-    const ADDON::CSkinSettingPtr &setting = *it;
     if (!setting->Serialize(settingsElement))
       CLog::Log(LOGWARNING, "CSkinSettings: unable to save setting \"%s\"", setting->name.c_str());
   }
@@ -147,7 +147,7 @@ void CSkinSettings::Clear()
 
 void CSkinSettings::MigrateSettings(const ADDON::SkinPtr& skin)
 {
-  if (skin == NULL)
+  if (skin == nullptr)
     return;
 
   CSingleLock lock(m_critical);
@@ -155,9 +155,8 @@ void CSkinSettings::MigrateSettings(const ADDON::SkinPtr& skin)
   bool settingsMigrated = false;
   const std::string& skinId = skin->ID();
   std::set<ADDON::CSkinSettingPtr> settingsCopy(m_settings.begin(), m_settings.end());
-  for (std::set<ADDON::CSkinSettingPtr>::const_iterator it = settingsCopy.begin(); it != settingsCopy.end(); ++it)
+  for (const auto& setting : settingsCopy)
   {
-    const ADDON::CSkinSettingPtr &setting = *it;
     if (!StringUtils::StartsWith(setting->name, skinId + "."))
       continue;
 
@@ -167,13 +166,13 @@ void CSkinSettings::MigrateSettings(const ADDON::SkinPtr& skin)
     {
       int settingNumber = skin->TranslateString(settingName);
       if (settingNumber >= 0)
-        skin->SetString(settingNumber, boost::dynamic_pointer_cast<ADDON::CSkinSettingString>(setting)->value);
+        skin->SetString(settingNumber, std::dynamic_pointer_cast<ADDON::CSkinSettingString>(setting)->value);
     }
     else if (setting->GetType() == "bool")
     {
       int settingNumber = skin->TranslateBool(settingName);
       if (settingNumber >= 0)
-        skin->SetBool(settingNumber, boost::dynamic_pointer_cast<ADDON::CSkinSettingBool>(setting)->value);
+        skin->SetBool(settingNumber, std::dynamic_pointer_cast<ADDON::CSkinSettingBool>(setting)->value);
     }
 
     m_settings.erase(setting);
@@ -186,6 +185,7 @@ void CSkinSettings::MigrateSettings(const ADDON::SkinPtr& skin)
     skin->SaveSettings();
 
     // save the guisettings.xml
-    CSettings::Get().Save();
+    CSettings::GetInstance().Save();
   }
 }
+
