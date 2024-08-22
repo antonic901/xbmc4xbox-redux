@@ -100,6 +100,12 @@ void CJpegParse::ProcessSOFn(const unsigned char *section, const unsigned short 
 //--------------------------------------------------------------------------
 unsigned char *CJpegParse::GetSection (FILE *infile, const unsigned short sectionLength)
 {
+  if (sectionLength < 2)
+  {
+    printf("JpgParse: invalid section length");
+    return NULL;
+  }
+
   unsigned char *sectionBuffer = new unsigned char[sectionLength];
   if (sectionBuffer == NULL)
   {
@@ -201,7 +207,9 @@ bool CJpegParse::ExtractInfo (FILE *infile)
         if (NULL == section)
           return false;
 
-        strncpy(m_ExifInfo.Comments, (char *)&section[2], min(itemlen-2, MAX_COMMENT));
+        unsigned short length = min(itemlen - 2, MAX_COMMENT);
+        strncpy(m_ExifInfo.FileComment, (char *)&section[2], length);
+        m_ExifInfo.FileComment[length] = '\0';
         ReleaseSection(section);
       }
       break;
