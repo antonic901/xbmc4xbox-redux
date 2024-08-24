@@ -26,6 +26,7 @@
 #include "threads/CriticalSection.h"
 #include "threads/Event.h"
 #include "SlideShowPicture.h"
+#include "DllImageLib.h"
 #include "utils/SortUtils.h"
 
 class CFileItemList;
@@ -65,19 +66,19 @@ public:
   CGUIWindowSlideShow(void);
   virtual ~CGUIWindowSlideShow() {};
 
-  bool OnMessage(CGUIMessage& message) override;
-  EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event) override;
-  bool OnAction(const CAction &action) override;
-  void Render() override;
-  void Process(unsigned int currentTime, CDirtyRegionList &regions) override;
-  void OnDeinitWindow(int nextWindowID) override;
+  bool OnMessage(CGUIMessage& message);
+  EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
+  bool OnAction(const CAction &action);
+  void Render();
+  void Process(unsigned int currentTime, CDirtyRegionList &regions);
+  void OnDeinitWindow(int nextWindowID);
 
   void Reset();
   void Add(const CFileItem *picture);
   bool IsPlaying() const;
   void Select(const std::string& strPicture);
   void GetSlideShowContents(CFileItemList &list);
-  std::shared_ptr<const CFileItem> GetCurrentSlide();
+  boost::shared_ptr<const CFileItem> GetCurrentSlide();
   void RunSlideShow(const std::string &strPath, bool bRecursive = false,
                     bool bRandom = false, bool bNotRandom = false,
                     const std::string &beginSlidePath="", bool startSlideShow = true,
@@ -90,7 +91,7 @@ public:
                    SortOrder order = SortOrderAscending,
                    SortAttribute sortAttributes = SortAttributeNone,
                    const std::string &strExtensions="");
-  void StartSlideShow();
+  void StartSlideShow(bool screensaver=false);
   bool InSlideShow() const;
   void OnLoadPic(int iPic, int iSlideNumber, const std::string &strFileName, CBaseTexture* pTexture, bool bFullSize);
   int NumSlides() const;
@@ -142,6 +143,7 @@ private:
 
   bool m_bShuffled;
   bool m_bSlideShow;
+  bool m_bScreensaver;
   bool m_bPause;
   bool m_bPlayingVideo;
   bool m_bErrorMessage;
@@ -155,6 +157,7 @@ private:
   CBackgroundPicLoader* m_pBackgroundLoader;
   int m_iLastFailedNextSlide;
   bool m_bLoadNextPic;
+  DllImageLib m_ImageLib;
   RESOLUTION m_Resolution;
   CPoint m_firstGesturePoint;
 };

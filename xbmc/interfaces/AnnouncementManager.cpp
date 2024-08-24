@@ -99,20 +99,22 @@ void CAnnouncementManager::Announce(AnnouncementFlag flag, const char *sender, c
   Announce(flag, sender, message, CFileItemPtr(), data);
 }
 
-void CAnnouncementManager::Announce(AnnouncementFlag flag, const char *sender, const char *message, CFileItemPtr item)
+void CAnnouncementManager::Announce(AnnouncementFlag flag, const char *sender, const char *message, const boost::shared_ptr<const CFileItem>& item)
 {
   CVariant data;
   Announce(flag, sender, message, item, data);
 }
 
-void CAnnouncementManager::Announce(AnnouncementFlag flag, const char *sender, const char *message, CFileItemPtr item, CVariant &data)
+void CAnnouncementManager::Announce(AnnouncementFlag flag, const char *sender, const char *message, const boost::shared_ptr<const CFileItem>& item, const CVariant &data)
 {
   CAnnounceData announcement;
   announcement.flag = flag;
   announcement.sender = sender;
   announcement.message = message;
-  announcement.item = item;
   announcement.data = data;
+
+  if (item.get())
+    announcement.item = CFileItemPtr(new CFileItem(*item));
 
   {
     CSingleLock lock (m_critSection);

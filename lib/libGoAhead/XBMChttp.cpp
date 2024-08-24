@@ -1389,7 +1389,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
   CGUIWindowSlideShow *pSlideShow = (CGUIWindowSlideShow *)g_windowManager.GetWindow(WINDOW_SLIDESHOW);
   if (g_windowManager.GetActiveWindow() == WINDOW_SLIDESHOW && pSlideShow)
   {
-    const CFileItemPtr slide = pSlideShow->GetCurrentSlide();
+    const boost::shared_ptr<const CFileItem>& slide = pSlideShow->GetCurrentSlide();
     output=openTag+"Filename:"+slide->GetPath();
     if (lastPlayingInfo!=output)
     {
@@ -2012,7 +2012,8 @@ int CXbmcHttp::xbmcGetSlideshowContents()
     return SetResponse(openTag+"Error");
   else
   {
-    const CFileItemList &slideshowContents = pSlideShow->GetSlideShowContents();
+    CFileItemList slideshowContents;
+    pSlideShow->GetSlideShowContents(slideshowContents);
     if (slideshowContents.Size()==0)
       list=openTag+"[Empty]" ;
     else
@@ -2588,7 +2589,7 @@ int CXbmcHttp::xbmcGetCurrentSlide()
     return SetResponse(openTag+"Error:Could not access slideshown");
   else
   {
-    const CFileItemPtr slide=pSlideShow->GetCurrentSlide();
+    const boost::shared_ptr<const CFileItem>& slide=pSlideShow->GetCurrentSlide();
     if (!slide)
       return SetResponse(openTag + "[None]");
     return SetResponse(openTag + slide->GetPath());

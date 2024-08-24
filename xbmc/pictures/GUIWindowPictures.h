@@ -22,6 +22,7 @@
 
 #include "windows/GUIMediaWindow.h"
 #include "PictureThumbLoader.h"
+#include "pictures/DllImageLib.h"
 
 class CGUIDialogProgress;
 
@@ -30,33 +31,34 @@ class CGUIWindowPictures : public CGUIMediaWindow, public IBackgroundLoaderObser
 public:
   CGUIWindowPictures(void);
   virtual ~CGUIWindowPictures(void);
-  bool OnMessage(CGUIMessage& message) override;
-  void OnInitWindow() override;
+  bool OnMessage(CGUIMessage& message);
+  void OnInitWindow();
 
 protected:
-  bool GetDirectory(const std::string &strDirectory, CFileItemList& items) override;
+  bool GetDirectory(const std::string &strDirectory, CFileItemList& items);
   void OnItemInfo(int item);
-  bool OnClick(int iItem, const std::string &player = "") override;
-  void UpdateButtons() override;
-  void OnPrepareFileItems(CFileItemList& items) override;
-  bool Update(const std::string &strDirectory, bool updateFilterPath = true) override;
-  void GetContextButtons(int itemNumber, CContextButtons &buttons) override;
-  bool OnContextButton(int itemNumber, CONTEXT_BUTTON button) override;
-  bool OnAddMediaSource() override;
-  std::string GetStartFolder(const std::string &dir) override;
+  bool OnClick(int iItem, const std::string &player = "");
+  void UpdateButtons();
+  void OnPrepareFileItems(CFileItemList& items);
+  bool Update(const std::string &strDirectory, bool updateFilterPath = true);
+  void GetContextButtons(int itemNumber, CContextButtons &buttons);
+  bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
+  bool OnAddMediaSource();
+  std::string GetStartFolder(const std::string &dir);
 
   void OnRegenerateThumbs();
-  bool OnPlayMedia(int iItem, const std::string &player = "") override;
+  bool OnPlayMedia(int iItem, const std::string &player = "");
   bool ShowPicture(int iItem, bool startSlideShow);
   void OnShowPictureRecursive(const std::string& strPath);
   void OnSlideShow(const std::string& strPicture);
   void OnSlideShow();
   void OnSlideShowRecursive(const std::string& strPicture);
   void OnSlideShowRecursive();
-  void OnItemLoaded(CFileItem* pItem) override;
-  void LoadPlayList(const std::string& strPlayList) override;
+  void OnItemLoaded(CFileItem* pItem);
+  void LoadPlayList(const std::string& strPlayList);
 
   CGUIDialogProgress* m_dlgProgress;
+  DllImageLib m_ImageLib;
 
   CPictureThumbLoader m_thumbLoader;
   bool m_slideShowStarted;

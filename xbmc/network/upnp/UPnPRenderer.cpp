@@ -297,11 +297,7 @@ NPT_Result
 CUPnPRenderer::OnNext(PLT_ActionReference& action)
 {
     if (g_windowManager.GetActiveWindow() == WINDOW_SLIDESHOW) {
-        CGUIWindowSlideShow *slideshow = (CGUIWindowSlideShow *)g_windowManager.GetWindow(WINDOW_SLIDESHOW);
-        if (slideshow == NULL) {
-            return NPT_FAILURE;
-        }
-        slideshow->ShowNext();
+        CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTION, WINDOW_SLIDESHOW, -1, static_cast<void*>(new CAction(ACTION_NEXT_PICTURE)));
     } else {
         CApplicationMessenger::Get().SendMsg(TMSG_PLAYLISTPLAYER_NEXT);
     }

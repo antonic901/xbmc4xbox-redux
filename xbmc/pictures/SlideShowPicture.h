@@ -21,10 +21,9 @@
 
 #include "threads/CriticalSection.h"
 #include "guilib/DirtyRegion.h"
+#include "xbox/PlatformDefs.h" // uint32_t
 #include <string>
-#ifdef HAS_DX
-#include "guilib/GUIShaderDX.h"
-#endif
+
 typedef uint32_t color_t;
 
 class CBaseTexture;
@@ -88,7 +87,7 @@ public:
 private:
   void SetTexture_Internal(int iSlideNumber, CBaseTexture* pTexture, DISPLAY_EFFECT dispEffect = EFFECT_RANDOM, TRANSISTION_EFFECT transEffect = FADEIN_FADEOUT);
   void UpdateVertices(float cur_x[4], float cur_y[4], const float new_x[4], const float new_y[4], CDirtyRegionList &dirtyregions);
-  void Render(float *x, float *y, CBaseTexture* pTexture, color_t color);
+  void Render(float *x, float *y, CBaseTexture* pTexture, color_t color, _D3DFILLMODE fillmode = D3DFILL_SOLID );
   CBaseTexture *m_pImage;
 
   int m_iOriginalWidth;
@@ -133,8 +132,4 @@ private:
   bool m_bTransistionImmediately;
 
   CCriticalSection m_textureAccess;
-#ifdef HAS_DX
-  ID3D11Buffer*    m_vb;
-  bool             UpdateVertexBuffer(Vertex *vertecies);
-#endif
 };

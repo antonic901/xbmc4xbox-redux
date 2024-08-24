@@ -26,7 +26,7 @@
 #include "settings/Settings.h"
 #include "filesystem/Directory.h"
 #include "guilib/LocalizeStrings.h"
-#include "guilib/WindowIDs.h"
+#include "guilib/Key.h"
 #include "view/ViewStateSettings.h"
 
 using namespace XFILE;
@@ -52,7 +52,7 @@ CGUIViewStateWindowPictures::CGUIViewStateWindowPictures(const CFileItemList& it
     AddSortMethod(SortByDateTaken, 577, LABEL_MASKS("%L", "%t", "%L", "%J"));  // Filename, DateTaken | Foldername, Date
     AddSortMethod(SortByFile, 561, LABEL_MASKS("%L", "%I", "%L", ""));  // Filename, Size | FolderName, empty
 
-    const CViewState *viewState = CViewStateSettings::GetInstance().Get("pictures");
+    const CViewState *viewState = CViewStateSettings::Get().Get("pictures");
     SetSortMethod(viewState->m_sortDescription);
     SetViewAsControl(viewState->m_viewMode);
     SetSortOrder(viewState->m_sortDescription.sortOrder);
@@ -62,7 +62,7 @@ CGUIViewStateWindowPictures::CGUIViewStateWindowPictures(const CFileItemList& it
 
 void CGUIViewStateWindowPictures::SaveViewState()
 {
-  SaveViewToDb(m_items.GetPath(), WINDOW_PICTURES, CViewStateSettings::GetInstance().Get("pictures"));
+  SaveViewToDb(m_items.GetPath(), WINDOW_PICTURES, CViewStateSettings::Get().Get("pictures"));
 }
 
 std::string CGUIViewStateWindowPictures::GetLockType()
@@ -73,7 +73,7 @@ std::string CGUIViewStateWindowPictures::GetLockType()
 std::string CGUIViewStateWindowPictures::GetExtensions()
 {
   std::string extensions = g_advancedSettings.m_pictureExtensions;
-  if (CSettings::GetInstance().GetBool(CSettings::SETTING_PICTURES_SHOWVIDEOS))
+  if (CSettings::GetInstance().GetBool("pictures.showvideos"))
     extensions += "|" + g_advancedSettings.m_videoExtensions;
 
   return extensions;
@@ -81,7 +81,7 @@ std::string CGUIViewStateWindowPictures::GetExtensions()
 
 VECSOURCES& CGUIViewStateWindowPictures::GetSources()
 {
-  VECSOURCES *pictureSources = CMediaSourceSettings::GetInstance().GetSources("pictures");
+  VECSOURCES *pictureSources = CMediaSourceSettings::Get().GetSources("pictures");
 
   // Guard against source type not existing
   if (pictureSources == nullptr)

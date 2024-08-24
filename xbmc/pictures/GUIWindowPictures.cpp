@@ -32,7 +32,7 @@
 #include "playlists/PlayListFactory.h"
 #include "PictureInfoLoader.h"
 #include "guilib/GUIWindowManager.h"
-#include "input/Key.h"
+#include "guilib/Key.h"
 #include "dialogs/GUIDialogOK.h"
 #include "view/GUIViewState.h"
 #include "PlayListPlayer.h"
@@ -104,6 +104,10 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
       if (m_thumbLoader.IsLoading())
         m_thumbLoader.StopThread();
 
+      if (message.GetParam1() != WINDOW_SLIDESHOW)
+      {
+        m_ImageLib.Unload();
+      }
     }
     break;
 
@@ -111,9 +115,14 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
     {
       // is this the first time accessing this window?
       if (m_vecItems->GetPath() == "?" && message.GetStringParam().empty())
-        message.SetStringParam(CMediaSourceSettings::GetInstance().GetDefaultSource("pictures"));
+        message.SetStringParam(CMediaSourceSettings::Get().GetDefaultSource("pictures"));
 
       m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
+
+      if (message.GetParam1() != WINDOW_SLIDESHOW)
+      {
+        m_ImageLib.Load();
+      }
     }
     break;
 
@@ -130,7 +139,7 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_SHUFFLE)
       {
-        CSettings::GetInstance().ToggleBool(CSettings::SETTING_SLIDESHOW_SHUFFLE);
+        CSettings::GetInstance().ToggleBool("slideshow.shuffle");
         CSettings::GetInstance().Save();
       }
       else if (m_viewControl.HasControl(iControl))  // list/thumb control
@@ -142,7 +151,7 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
         if (iAction == ACTION_DELETE_ITEM)
         {
           // is delete allowed?
-          if (CSettings::GetInstance().GetBool(CSettings::SETTING_FILELISTS_ALLOWFILEDELETION))
+          if (CSettings::GetInstance().GetBool("filelists.allowfiledeletion"))
             OnDeleteItem(iItem);
           else
             return false;
@@ -169,7 +178,7 @@ void CGUIWindowPictures::UpdateButtons()
   CGUIMediaWindow::UpdateButtons();
 
   // Update the shuffle button
-  SET_CONTROL_SELECTED(GetID(), CONTROL_SHUFFLE, CSettings::GetInstance().GetBool(CSettings::SETTING_SLIDESHOW_SHUFFLE));
+  SET_CONTROL_SELECTED(GetID(), CONTROL_SHUFFLE, CSettings::GetInstance().GetBool("slideshow.shuffle"));
 
   // check we can slideshow or recursive slideshow
   int nFolders = m_vecItems->GetFolderCount();
@@ -203,7 +212,7 @@ void CGUIWindowPictures::OnPrepareFileItems(CFileItemList& items)
     if (StringUtils::EqualsNoCase(items[i]->GetLabel(), "folder.jpg"))
       items.Remove(i);
 
-  if (items.GetFolderCount()==items.Size() || !CSettings::GetInstance().GetBool(CSettings::SETTING_PICTURES_USETAGS))
+  if (items.GetFolderCount()==items.Size() || !CSettings::GetInstance().GetBool("pictures.usetags"))
     return;
 
   // Start the music info loader thread
@@ -226,10 +235,10 @@ void CGUIWindowPictures::OnPrepareFileItems(CFileItemList& items)
       { // tag loading takes more then 1.5 secs, show a progress dialog
         CURL url(items.GetPath());
 
-        m_dlgProgress->SetHeading(CVariant{189});
-        m_dlgProgress->SetLine(0, CVariant{505});
-        m_dlgProgress->SetLine(1, CVariant{""});
-        m_dlgProgress->SetLine(2, CVariant{url.GetWithoutUserDetails()});
+        m_dlgProgress->SetHeading(189);
+        m_dlgProgress->SetLine(0, 505);
+        m_dlgProgress->SetLine(1, "");
+        m_dlgProgress->SetLine(2, url.GetWithoutUserDetails());
         m_dlgProgress->Open();
         m_dlgProgress->ShowProgressBar(true);
         bProgressVisible = true;
@@ -256,7 +265,7 @@ bool CGUIWindowPictures::Update(const std::string &strDirectory, bool updateFilt
     return false;
 
   m_vecItems->SetArt("thumb", "");
-  if (CSettings::GetInstance().GetBool(CSettings::SETTING_PICTURES_GENERATETHUMBS))
+  if (CSettings::GetInstance().GetBool("pictures.generatethumbs"))
     m_thumbLoader.Load(*m_vecItems);
 
   CPictureThumbLoader thumbLoader;
@@ -294,7 +303,7 @@ bool CGUIWindowPictures::GetDirectory(const std::string &strDirectory, CFileItem
     return false;
 
   std::string label;
-  if (items.GetLabel().empty() && m_rootDir.IsSource(items.GetPath(), CMediaSourceSettings::GetInstance().GetSources("pictures"), &label))
+  if (items.GetLabel().empty() && m_rootDir.IsSource(items.GetPath(), CMediaSourceSettings::Get().GetSources("pictures"), &label))
     items.SetLabel(label);
 
   if (items.GetContent().empty() && !items.IsVirtualDirectoryRoot() && !items.IsPlugin())
@@ -318,7 +327,7 @@ bool CGUIWindowPictures::ShowPicture(int iItem, bool startSlideShow)
 
 #ifdef HAS_DVD_DRIVE
   if (pItem->IsDVD())
-    return MEDIA_DETECT::CAutorun::PlayDiscAskResume(m_vecItems->Get(iItem)->GetPath());
+    return MEDIA_DETECT::CAutorun::PlayDisc();
 #endif
 
   if (pItem->m_bIsShareOrDrive)
@@ -327,7 +336,7 @@ bool CGUIWindowPictures::ShowPicture(int iItem, bool startSlideShow)
   CGUIWindowSlideShow *pSlideShow = (CGUIWindowSlideShow *)g_windowManager.GetWindow(WINDOW_SLIDESHOW);
   if (!pSlideShow)
     return false;
-  if (g_application.m_pPlayer->IsPlayingVideo())
+  if (g_application.IsPlayingVideo())
     g_application.StopPlaying();
 
   pSlideShow->Reset();
@@ -336,7 +345,7 @@ bool CGUIWindowPictures::ShowPicture(int iItem, bool startSlideShow)
     CFileItemPtr pItem = m_vecItems->Get(i);
     if (!pItem->m_bIsFolder && !(URIUtils::IsRAR(pItem->GetPath()) ||
           URIUtils::IsZIP(pItem->GetPath())) && (pItem->IsPicture() || (
-                                CSettings::GetInstance().GetBool(CSettings::SETTING_PICTURES_SHOWVIDEOS) &&
+                                CSettings::GetInstance().GetBool("pictures.showvideos") &&
                                 pItem->IsVideo())))
     {
       pSlideShow->Add(pItem.get());
@@ -349,7 +358,7 @@ bool CGUIWindowPictures::ShowPicture(int iItem, bool startSlideShow)
   pSlideShow->Select(strPicture);
 
   if (startSlideShow)
-    pSlideShow->StartSlideShow();
+    pSlideShow->StartSlideShow(false);
   else
   {
     CVariant param;
@@ -370,7 +379,7 @@ void CGUIWindowPictures::OnShowPictureRecursive(const std::string& strPath)
   if (pSlideShow)
   {
     // stop any video
-    if (g_application.m_pPlayer->IsPlayingVideo())
+    if (g_application.IsPlayingVideo())
       g_application.StopPlaying();
 
     SortDescription sorting = m_guiState->GetSortMethod();
@@ -401,7 +410,7 @@ void CGUIWindowPictures::OnSlideShowRecursive(const std::string &strPicture)
 
     SortDescription sorting = m_guiState->GetSortMethod();
     pSlideShow->RunSlideShow(strPicture, true,
-                             CSettings::GetInstance().GetBool(CSettings::SETTING_SLIDESHOW_SHUFFLE),false,
+                             CSettings::GetInstance().GetBool("slideshow.shuffle"),false,
                              "", true,
                              sorting.sortBy, sorting.sortOrder, sorting.sortAttributes,
                              strExtensions);
@@ -476,7 +485,7 @@ void CGUIWindowPictures::GetContextButtons(int itemNumber, CContextButtons &butt
 
         if (!m_thumbLoader.IsLoading())
           buttons.Add(CONTEXT_BUTTON_REFRESH_THUMBS, 13315);         // Create Thumbnails
-        if (CSettings::GetInstance().GetBool(CSettings::SETTING_FILELISTS_ALLOWFILEDELETION) && !item->IsReadOnly())
+        if (CSettings::GetInstance().GetBool("filelists.allowfiledeletion") && !item->IsReadOnly())
         {
           buttons.Add(CONTEXT_BUTTON_DELETE, 117);
           buttons.Add(CONTEXT_BUTTON_RENAME, 118);
@@ -544,12 +553,12 @@ void CGUIWindowPictures::OnItemLoaded(CFileItem *pItem)
 void CGUIWindowPictures::LoadPlayList(const std::string& strPlayList)
 {
   CLog::Log(LOGDEBUG,"CGUIWindowPictures::LoadPlayList()... converting playlist into slideshow: %s", strPlayList.c_str());
-  std::unique_ptr<CPlayList> pPlayList (CPlayListFactory::Create(strPlayList));
+  boost::movelib::unique_ptr<CPlayList> pPlayList (CPlayListFactory::Create(strPlayList));
   if ( NULL != pPlayList.get())
   {
     if (!pPlayList->Load(strPlayList))
     {
-      CGUIDialogOK::ShowAndGetInput(CVariant{6}, CVariant{477});
+      CGUIDialogOK::ShowAndGetInput(6, 477);
       return ; //hmmm unable to load playlist?
     }
   }
@@ -561,7 +570,7 @@ void CGUIWindowPictures::LoadPlayList(const std::string& strPlayList)
     CGUIWindowSlideShow *pSlideShow = (CGUIWindowSlideShow *)g_windowManager.GetWindow(WINDOW_SLIDESHOW);
     if (!pSlideShow)
       return;
-    if (g_application.m_pPlayer->IsPlayingVideo())
+    if (g_application.IsPlayingVideo())
       g_application.StopPlaying();
 
     // convert playlist items into slideshow items

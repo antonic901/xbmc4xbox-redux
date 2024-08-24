@@ -45,8 +45,10 @@ namespace ANNOUNCEMENT
 
     void Announce(AnnouncementFlag flag, const char *sender, const char *message);
     void Announce(AnnouncementFlag flag, const char *sender, const char *message, CVariant &data);
-    void Announce(AnnouncementFlag flag, const char *sender, const char *message, CFileItemPtr item);
-    void Announce(AnnouncementFlag flag, const char *sender, const char *message, CFileItemPtr item, CVariant &data);
+    void Announce(AnnouncementFlag flag, const char *sender, const char *message,
+        const boost::shared_ptr<const CFileItem>& item);
+    void Announce(AnnouncementFlag flag, const char *sender, const char *message,
+        const boost::shared_ptr<const CFileItem>& item, const CVariant &data);
 
   protected:
     void Process();

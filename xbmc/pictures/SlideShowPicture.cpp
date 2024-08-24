@@ -24,12 +24,9 @@
 #include "guilib/Texture.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
-#include "windowing/WindowingFactory.h"
 #include "threads/SingleLock.h"
-#ifndef _USE_MATH_DEFINES
-#define _USE_MATH_DEFINES
-#endif
-#include <math.h>
+
+#define M_PI       3.14159265358979323846
 
 #define IMMEDIATE_TRANSISTION_TIME          20
 
@@ -52,9 +49,6 @@ CSlideShowPic::CSlideShowPic() : m_alpha(0)
 
   m_bCanMoveHorizontally = false;
   m_bCanMoveVertically = false;
-#ifdef HAS_DX
-  m_vb = NULL;
-#endif
 }
 
 CSlideShowPic::~CSlideShowPic()
@@ -76,9 +70,6 @@ void CSlideShowPic::Close()
   m_bTransistionImmediately = false;
   m_bIsDirty = true;
   m_alpha = 0;
-#ifdef HAS_DX
-  SAFE_RELEASE(m_vb);
-#endif
 }
 
 void CSlideShowPic::Reset(DISPLAY_EFFECT dispEffect, TRANSISTION_EFFECT transEffect)
@@ -118,10 +109,6 @@ void CSlideShowPic::SetTexture_Internal(int iSlideNumber, CBaseTexture* pTexture
   m_pImage = pTexture;
   m_fWidth = (float)pTexture->GetWidth();
   m_fHeight = (float)pTexture->GetHeight();
-  if (CSettings::GetInstance().GetBool(CSettings::SETTING_SLIDESHOW_HIGHQUALITYDOWNSCALING))
-  { // activate mipmapping when high quality downscaling is 'on'
-    pTexture->SetMipmapping();
-  }
   // reset our counter
   m_iCounter = 0;
   // initialize our transistion effect
@@ -142,7 +129,7 @@ void CSlideShowPic::SetTexture_Internal(int iSlideNumber, CBaseTexture* pTexture
   // the +1's make sure it actually occurs
   float fadeTime = 0.2f;
   if (m_displayEffect != EFFECT_NO_TIMEOUT)
-    fadeTime = std::min(0.2f*CSettings::GetInstance().GetInt(CSettings::SETTING_SLIDESHOW_STAYTIME), 3.0f);
+    fadeTime = std::min(0.2f*CSettings::GetInstance().GetInt("slideshow.staytime"), 3.0f);
   m_transistionStart.length = (int)(g_graphicsContext.GetFPS() * fadeTime); // transition time in frames
   m_transistionEnd.type = transEffect;
   m_transistionEnd.length = m_transistionStart.length;
@@ -168,7 +155,7 @@ void CSlideShowPic::SetTexture_Internal(int iSlideNumber, CBaseTexture* pTexture
   m_fPosX = m_fPosY = 0.0f;
   m_fPosZ = 1.0f;
   m_fVelocityX = m_fVelocityY = m_fVelocityZ = 0.0f;
-  int iFrames = std::max((int)(g_graphicsContext.GetFPS() * CSettings::GetInstance().GetInt(CSettings::SETTING_SLIDESHOW_STAYTIME)), 1);
+  int iFrames = std::max((int)(g_graphicsContext.GetFPS() * CSettings::GetInstance().GetInt("slideshow.staytime")), 1);
   if (m_displayEffect == EFFECT_PANORAMA)
   {
     RESOLUTION_INFO res = g_graphicsContext.GetResInfo();
@@ -255,6 +242,10 @@ void CSlideShowPic::UpdateTexture(CBaseTexture* pTexture)
   CSingleLock lock(m_textureAccess);
   if (m_pImage)
   {
+#ifdef HAS_XBOX_D3D
+    while (m_pImage->GetTextureObject()->IsBusy())
+      Sleep(1);
+#endif
     delete m_pImage;
     m_pImage = NULL;
   }
@@ -709,7 +700,7 @@ void CSlideShowPic::Rotate(float fRotateAngle, bool immediate /* = false */)
   m_transistionTemp.length = IMMEDIATE_TRANSISTION_TIME;
   m_fTransistionAngle = (float)fRotateAngle / (float)m_transistionTemp.length;
   // reset the timer
-  m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(g_graphicsContext.GetFPS() * CSettings::GetInstance().GetInt(CSettings::SETTING_SLIDESHOW_STAYTIME));
+  m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(g_graphicsContext.GetFPS() * CSettings::GetInstance().GetInt("slideshow.staytime"));
 }
 
 void CSlideShowPic::Zoom(float fZoom, bool immediate /* = false */)
@@ -726,7 +717,7 @@ void CSlideShowPic::Zoom(float fZoom, bool immediate /* = false */)
   m_transistionTemp.length = IMMEDIATE_TRANSISTION_TIME;
   m_fTransistionZoom = (fZoom - m_fZoomAmount) / (float)m_transistionTemp.length;
   // reset the timer
-  m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(g_graphicsContext.GetFPS() * CSettings::GetInstance().GetInt(CSettings::SETTING_SLIDESHOW_STAYTIME));
+  m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(g_graphicsContext.GetFPS() * CSettings::GetInstance().GetInt("slideshow.staytime"));
   // turn off the render effects until we're back down to normal zoom
   m_bNoEffect = true;
 }
@@ -736,7 +727,7 @@ void CSlideShowPic::Move(float fDeltaX, float fDeltaY)
   m_fZoomLeft += fDeltaX;
   m_fZoomTop += fDeltaY;
   // reset the timer
- // m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(g_graphicsContext.GetFPS() * CSettings::GetInstance().GetInt(CSettings::SETTING_SLIDESHOW_STAYTIME));
+ // m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(g_graphicsContext.GetFPS() * CSettings::GetInstance().GetInt("slideshow.staytime"));
 }
 
 void CSlideShowPic::Render()
@@ -750,238 +741,93 @@ void CSlideShowPic::Render()
 
   Render(m_bx, m_by, NULL, PICTURE_VIEW_BOX_BACKGROUND);
   Render(m_sx, m_sy, m_pImage, 0xFFFFFFFF);
-  Render(m_ox, m_oy, NULL, PICTURE_VIEW_BOX_COLOR);
+  Render(m_ox, m_oy, NULL, PICTURE_VIEW_BOX_COLOR, D3DFILL_WIREFRAME);
 }
 
-#ifdef HAS_DX
-bool CSlideShowPic::UpdateVertexBuffer(Vertex* vericies)
+void CSlideShowPic::Render(float *x, float *y, CBaseTexture* pTexture, color_t color, _D3DFILLMODE fillmode)
 {
-  if (!m_vb) // create new
+  struct VERTEX
   {
-    CD3D11_BUFFER_DESC desc(sizeof(Vertex) * 5, D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
-    D3D11_SUBRESOURCE_DATA initData = {};
-    initData.pSysMem = vericies;
-    initData.SysMemPitch = sizeof(Vertex) * 5;
-    if (SUCCEEDED(g_Windowing.Get3D11Device()->CreateBuffer(&desc, &initData, &m_vb)))
-      return true;
-  }
-  else // update
-  {
-    ID3D11DeviceContext* pContext = g_Windowing.Get3D11Context();
-    D3D11_MAPPED_SUBRESOURCE res;
-    if (SUCCEEDED(pContext->Map(m_vb, 0, D3D11_MAP_WRITE_DISCARD, 0, &res)))
-    {
-      memcpy(res.pData, vericies, sizeof(Vertex) * 5);
-      pContext->Unmap(m_vb, 0);
-      return true;
-    }
-  }
+    D3DXVECTOR4 p;
+    D3DCOLOR col;
+    FLOAT tu, tv;
+  };
+  static const DWORD FVF_VERTEX = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 
-  return false;
-}
-#endif
+  VERTEX vertex[5];
 
-void CSlideShowPic::Render(float *x, float *y, CBaseTexture* pTexture, color_t color)
-{
-#ifdef HAS_DX
-  static const DWORD FVF_VERTEX = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
-
-  Vertex vertex[5];
   for (int i = 0; i < 4; i++)
   {
-    vertex[i].pos = XMFLOAT3( x[i], y[i], 0);
-    CD3DHelper::XMStoreColor(&vertex[i].color, color);
-    vertex[i].texCoord = XMFLOAT2(0.0f, 0.0f);
-    vertex[i].texCoord2 = XMFLOAT2(0.0f, 0.0f);
+#ifdef HAS_XBOX_D3D
+    vertex[i].p = D3DXVECTOR4( x[i], y[i], 0, 0 );
+#else
+    vertex[i].p = D3DXVECTOR4( x[i], y[i], 0, 1.0f);
+#endif
+    vertex[i].tu = 0;
+    vertex[i].tv = 0;
+    vertex[i].col = color;
   }
 
-  if (pTexture)
-  {
-    vertex[1].texCoord.x = vertex[2].texCoord.x = (float) pTexture->GetWidth() / pTexture->GetTextureWidth();
-    vertex[2].texCoord.y = vertex[3].texCoord.y = (float) pTexture->GetHeight() / pTexture->GetTextureHeight();
-  }
-  else
-  {
-    vertex[1].texCoord.x = vertex[2].texCoord.x = 1.0f;
-    vertex[2].texCoord.y = vertex[3].texCoord.y = 1.0f;
-  }
+#ifdef HAS_XBOX_D3D
+  vertex[1].tu = m_fWidth;
+  vertex[2].tu = m_fWidth;
+  vertex[2].tv = m_fHeight;
+  vertex[3].tv = m_fHeight;
+#else
+  vertex[1].tu = 1.0f;
+  vertex[2].tu = 1.0f;
+  vertex[2].tv = 1.0f;
+  vertex[3].tv = 1.0f;
+#endif
+
   vertex[4] = vertex[0]; // Not used when pTexture != NULL
-
-  CGUIShaderDX* pGUIShader = g_Windowing.GetGUIShader();
-  pGUIShader->Begin(SHADER_METHOD_RENDER_TEXTURE_BLEND);
 
   // Set state to render the image
   if (pTexture)
   {
-    pTexture->LoadToGPU();
-    CDXTexture* dxTexture = reinterpret_cast<CDXTexture*>(pTexture);
-    ID3D11ShaderResourceView* shaderRes = dxTexture->GetShaderResource();
-    pGUIShader->SetShaderViews(1, &shaderRes);
-    pGUIShader->DrawQuad(vertex[0], vertex[1], vertex[2], vertex[3]);
-  }
-  else
-  {
-    if (!UpdateVertexBuffer(vertex))
-      return;
-
-    ID3D11DeviceContext* pContext = g_Windowing.Get3D11Context();
-
-    unsigned stride = sizeof(Vertex);
-    unsigned offset = 0;
-    pContext->IASetVertexBuffers(0, 1, &m_vb, &stride, &offset);
-    pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-
-    pGUIShader->Draw(5, 0);
-    pGUIShader->RestoreBuffers();
-  }
-
-#elif defined(HAS_GL)
-  if (pTexture)
-  {
-    int unit = 0;
-    pTexture->LoadToGPU();
-    pTexture->BindToUnit(unit++);
-
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);          // Turn Blending On
-
-    // diffuse coloring
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-    glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-    glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE0);
-    glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-    glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
-    glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-
-    if(g_Windowing.UseLimitedColor())
-    {
-      // compress range
-      pTexture->BindToUnit(unit++); // dummy bind
-      const GLfloat rgba1[4] = {(235.0 - 16.0f) / 255.0f, (235.0 - 16.0f) / 255.0f, (235.0 - 16.0f) / 255.0f, 1.0f};
-      glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE , GL_COMBINE);
-      glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, rgba1);
-      glTexEnvi (GL_TEXTURE_ENV, GL_COMBINE_RGB , GL_MODULATE);
-      glTexEnvi (GL_TEXTURE_ENV, GL_SOURCE0_RGB , GL_PREVIOUS);
-      glTexEnvi (GL_TEXTURE_ENV, GL_SOURCE1_RGB , GL_CONSTANT);
-      glTexEnvi (GL_TEXTURE_ENV, GL_OPERAND0_RGB , GL_SRC_COLOR);
-      glTexEnvi (GL_TEXTURE_ENV, GL_OPERAND1_RGB , GL_SRC_COLOR);
-      glTexEnvi (GL_TEXTURE_ENV, GL_COMBINE_ALPHA , GL_REPLACE);
-      glTexEnvi (GL_TEXTURE_ENV, GL_SOURCE0_ALPHA , GL_PREVIOUS);
-
-      // transition
-      pTexture->BindToUnit(unit++); // dummy bind
-      const GLfloat rgba2[4] = {16.0f / 255.0f, 16.0f / 255.0f, 16.0f / 255.0f, 0.0f};
-      glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE , GL_COMBINE);
-      glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, rgba2);
-      glTexEnvi (GL_TEXTURE_ENV, GL_COMBINE_RGB , GL_ADD);
-      glTexEnvi (GL_TEXTURE_ENV, GL_SOURCE0_RGB , GL_PREVIOUS);
-      glTexEnvi (GL_TEXTURE_ENV, GL_SOURCE1_RGB , GL_CONSTANT);
-      glTexEnvi (GL_TEXTURE_ENV, GL_OPERAND0_RGB , GL_SRC_COLOR);
-      glTexEnvi (GL_TEXTURE_ENV, GL_OPERAND1_RGB , GL_SRC_COLOR);
-      glTexEnvi (GL_TEXTURE_ENV, GL_COMBINE_ALPHA , GL_REPLACE);
-      glTexEnvi (GL_TEXTURE_ENV, GL_SOURCE0_ALPHA , GL_PREVIOUS);
-    }
-  }
-  else
-    glDisable(GL_TEXTURE_2D);
-  glPolygonMode(GL_FRONT_AND_BACK, pTexture ? GL_FILL : GL_LINE);
-
-  glBegin(GL_QUADS);
-  float u1 = 0, u2 = 1, v1 = 0, v2 = 1;
-  if (pTexture)
-  {
-    u2 = (float)pTexture->GetWidth() / pTexture->GetTextureWidth();
-    v2 = (float)pTexture->GetHeight() / pTexture->GetTextureHeight();
-  }
-
-  glColor4ub((GLubyte)GET_R(color), (GLubyte)GET_G(color), (GLubyte)GET_B(color), (GLubyte)GET_A(color));
-  glTexCoord2f(u1, v1);
-  glVertex3f(x[0], y[0], 0);
-
-  // Bottom-left vertex (corner)
-  glColor4ub((GLubyte)GET_R(color), (GLubyte)GET_G(color), (GLubyte)GET_B(color), (GLubyte)GET_A(color));
-  glTexCoord2f(u2, v1);
-  glVertex3f(x[1], y[1], 0);
-
-  // Bottom-right vertex (corner)
-  glColor4ub((GLubyte)GET_R(color), (GLubyte)GET_G(color), (GLubyte)GET_B(color), (GLubyte)GET_A(color));
-  glTexCoord2f(u2, v2);
-  glVertex3f(x[2], y[2], 0);
-
-  // Top-right vertex (corner)
-  glColor4ub((GLubyte)GET_R(color), (GLubyte)GET_G(color), (GLubyte)GET_B(color), (GLubyte)GET_A(color));
-  glTexCoord2f(u1, v2);
-  glVertex3f(x[3], y[3], 0);
-
-  glEnd();
-#elif defined(HAS_GLES)
-  if (pTexture)
-  {
+#ifdef HAS_XBOX_D3D
+    g_graphicsContext.Get3DDevice()->SetTexture( 0, pTexture->GetTextureObject() );
+#else
     pTexture->LoadToGPU();
     pTexture->BindToUnit(0);
-
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);          // Turn Blending On
-
-    g_Windowing.EnableGUIShader(SM_TEXTURE);
-  }
-  else
-  {
-    glDisable(GL_TEXTURE_2D);
-
-    g_Windowing.EnableGUIShader(SM_DEFAULT);
+#endif
   }
 
-  float u1 = 0, u2 = 1, v1 = 0, v2 = 1;
+  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
+  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
+  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
+  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_MODULATE );
+  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
+  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
+  g_graphicsContext.Get3DDevice()->SetTextureStageState( 1, D3DTSS_COLOROP, D3DTOP_DISABLE );
+  g_graphicsContext.Get3DDevice()->SetTextureStageState( 1, D3DTSS_ALPHAOP, D3DTOP_DISABLE );
+  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP );
+  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP );
+  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR /*g_settings.m_minFilter*/ );
+  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_MINFILTER, D3DTEXF_LINEAR /*g_settings.m_maxFilter*/ );
+  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_ZENABLE, FALSE );
+  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_FOGENABLE, FALSE );
+  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_FOGTABLEMODE, D3DFOG_NONE );
+  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_FILLMODE, fillmode );
+  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
+  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
+  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+#ifdef HAS_XBOX_D3D
+  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_YUVENABLE, FALSE);
+#else
+  g_graphicsContext.Get3DDevice()->SetRenderState(D3DRS_LIGHTING, FALSE);
+#endif
+  g_graphicsContext.Get3DDevice()->SetVertexShader( FVF_VERTEX );
+  // Render the image
   if (pTexture)
   {
-    u2 = (float)pTexture->GetWidth() / pTexture->GetTextureWidth();
-    v2 = (float)pTexture->GetHeight() / pTexture->GetTextureHeight();
-  }
-
-  GLubyte col[4];
-  GLfloat ver[4][3];
-  GLfloat tex[4][2];
-  GLubyte idx[4] = {0, 1, 3, 2};        //determines order of triangle strip
-
-  GLint posLoc  = g_Windowing.GUIShaderGetPos();
-  GLint tex0Loc = g_Windowing.GUIShaderGetCoord0();
-  GLint uniColLoc= g_Windowing.GUIShaderGetUniCol();
-
-  glVertexAttribPointer(posLoc,  3, GL_FLOAT, 0, 0, ver);
-  glVertexAttribPointer(tex0Loc, 2, GL_FLOAT, 0, 0, tex);
-
-  glEnableVertexAttribArray(posLoc);
-  glEnableVertexAttribArray(tex0Loc);
-
-  // Setup Colour values
-  col[0] = (GLubyte)GET_R(color);
-  col[1] = (GLubyte)GET_G(color);
-  col[2] = (GLubyte)GET_B(color);
-  col[3] = (GLubyte)GET_A(color);
-
-  for (int i=0; i<4; i++)
-  {
-    // Setup vertex position values
-    ver[i][0] = x[i];
-    ver[i][1] = y[i];
-    ver[i][2] = 0.0f;
-  }
-  // Setup texture coordinates
-  tex[0][0] = tex[3][0] = u1;
-  tex[0][1] = tex[1][1] = v1;
-  tex[1][0] = tex[2][0] = u2;
-  tex[2][1] = tex[3][1] = v2;
-
-  glUniform4f(uniColLoc,(col[0] / 255.0f), (col[1] / 255.0f), (col[2] / 255.0f), (col[3] / 255.0f));
-  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, idx);
-
-  glDisableVertexAttribArray(posLoc);
-  glDisableVertexAttribArray(tex0Loc);
-
-  g_Windowing.DisableGUIShader();
+#ifdef HAS_XBOX_D3D
+    g_graphicsContext.Get3DDevice()->DrawPrimitiveUP( D3DPT_QUADLIST, 1, vertex, sizeof(VERTEX) );
 #else
-// SDL render
-  g_Windowing.BlitToScreen(m_pImage, NULL, NULL);
+    g_graphicsContext.Get3DDevice()->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, vertex, sizeof(VERTEX) );
 #endif
+    g_graphicsContext.Get3DDevice()->SetTexture(0, NULL);
+  } else
+    g_graphicsContext.Get3DDevice()->DrawPrimitiveUP( D3DPT_LINESTRIP, 4, vertex, sizeof(VERTEX) );
 }
