@@ -19,7 +19,6 @@
  *
  */
 
-#include "utils/StdString.h"
 #include "utils/JobManager.h"
 #include "ThumbLoader.h"
 
@@ -37,7 +36,9 @@ public:
 
   /*!
    \brief Callback from CThumbExtractor on completion of a generated image
+
    Performs the callbacks and updates the GUI.
+
    \sa CImageLoader, IJobCallback
    */
   virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);

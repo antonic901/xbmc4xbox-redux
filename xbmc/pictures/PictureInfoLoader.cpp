@@ -18,14 +18,15 @@
  *
  */
 
-#include "pictures/PictureInfoLoader.h"
-#include "pictures/PictureInfoTag.h"
+#include "PictureInfoLoader.h"
+#include "PictureInfoTag.h"
 #include "settings/Settings.h"
 #include "FileItem.h"
 
 CPictureInfoLoader::CPictureInfoLoader()
 {
   m_mapFileItems = new CFileItemList;
+  m_tagReads = 0;
 }
 
 CPictureInfoLoader::~CPictureInfoLoader()
@@ -42,7 +43,7 @@ void CPictureInfoLoader::OnLoaderStart()
   m_mapFileItems->SetFastLookup(true);
 
   m_tagReads = 0;
-  m_loadTags = CSettings::GetInstance().GetBool("pictures.usetags");
+  m_loadTags = CSettings::GetInstance().GetBool(CSettings::SETTING_PICTURES_USETAGS);
 
   if (m_pProgressCallback)
     m_pProgressCallback->SetProgressMax(m_pVecItems->GetFileCount());
@@ -58,7 +59,7 @@ bool CPictureInfoLoader::LoadItem(CFileItem* pItem)
 
 bool CPictureInfoLoader::LoadItemCached(CFileItem* pItem)
 {
-  if (pItem->m_bIsFolder || pItem->IsZIP() || pItem->IsRAR() || pItem->IsCBR() || pItem->IsCBZ() || pItem->IsInternetStream() || pItem->IsVideo())
+  if (!pItem->IsPicture() || pItem->IsZIP() || pItem->IsRAR() || pItem->IsCBR() || pItem->IsCBZ() || pItem->IsInternetStream() || pItem->IsVideo())
     return false;
 
   if (pItem->HasPictureInfoTag())
