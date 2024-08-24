@@ -1216,8 +1216,23 @@ void CGUIWindowSlideShow::AddItems(const std::string &strPath, path_set *recursi
 
 void CGUIWindowSlideShow::GetCheckedSize(float width, float height, int &maxWidth, int &maxHeight)
 {
+#ifdef _XBOX
+  if (width * height > MAX_PICTURE_SIZE)
+  {
+    float fScale = sqrt((float)MAX_PICTURE_SIZE / (width * height));
+    width = fScale * width;
+    height = fScale * height;
+  }
+  maxWidth = (int)width;
+  maxHeight = (int)height;
+  if (maxWidth > g_graphicsContext.GetMaxTextureSize())
+    maxWidth = g_graphicsContext.GetMaxTextureSize();
+  if (maxHeight > g_graphicsContext.GetMaxTextureSize())
+    maxHeight = g_graphicsContext.GetMaxTextureSize();
+#else
   maxWidth = g_graphicsContext.GetMaxTextureSize();
   maxHeight = g_graphicsContext.GetMaxTextureSize();
+#endif
 }
 
 std::string CGUIWindowSlideShow::GetPicturePath(CFileItem *item)
