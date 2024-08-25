@@ -185,10 +185,10 @@
     <category id="music">
       <group id="3">
         <setting id="musiclibrary.albumsscraper">
-          <default>-</default>
+          <default>metadata.albums.theaudiodb.com</default>
         </setting>
         <setting id="musiclibrary.artistsscraper">
-          <default>-</default>
+          <default>metadata.artists.theaudiodb.com</default>
         </setting>
       </group>
     </category>

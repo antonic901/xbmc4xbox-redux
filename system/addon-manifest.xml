@@ -1,9 +1,13 @@
 <addons>
   <!-- when you add new default addon add it here too -->
   <addon>kodi.resource</addon>
+  <addon>metadata.albums.theaudiodb.com</addon>
+  <addon>metadata.artists.theaudiodb.com</addon>
   <addon>metadata.common.fanart.tv</addon>
+  <addon>metadata.common.theaudiodb.com</addon>
   <addon>metadata.common.themoviedb.org</addon>
   <addon>metadata.local</addon>
+  <addon>metadata.musicvideos.theaudiodb.com</addon>
   <addon>metadata.movies.themoviedb.org</addon>
   <addon>metadata.tvshows.themoviedb.org</addon>
   <addon>repository.xbmc4xbox.org</addon>

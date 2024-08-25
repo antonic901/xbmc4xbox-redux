@@ -1,0 +1,35 @@
+[B]1.2.3[/B]
+Fixed: switch links to https
+
+[B]1.2.1[/B]
+Fixed: won't get search results
+
+[B]1.2.0[/B]
+Added Theme Support
+
+[B]1.1.0[/B]
+Update author name
+
+[B]1.1.0[/B]
+Added: Styles and Moods
+
+[B]1.0.7[/B]
+Updated language files from Transifex
+
+[B]1.0.6[/B]
+Updated language files from Transifex
+
+[B]1.0.4[/B]
+Updated language files from Transifex
+
+[B]1.0.3[/B]
+Updated language files from Transifex
+
+[B]1.0.2[/B]
+Updated language files from Transifex
+
+[B]1.0.1[/B]
+Tuned: Artist Splitter
+
+[B]1.0.0[/B]
+Initial version

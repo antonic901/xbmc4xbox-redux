@@ -1,0 +1,33 @@
+[B]1.1.2[/B]
+Fixed: switch links to https
+
+[B]1.1.1[/B]
+Update author name
+
+[B]1.1.0[/B]
+Added: Styles and Moods
+Fixed: Discography
+
+[B]1.0.8[/B]
+Updated language files from Transifex
+
+[B]1.0.7[/B]
+Updated language files from Transifex
+
+[B]1.0.5[/B]
+Updated language files from Transifex
+
+[B]1.0.4[/B]
+Updated language files from Transifex
+
+[B]1.0.3[/B]
+Updated language files from Transifex
+
+[B]1.0.2[/B]
+Tuned: Artist Splitter
+
+[B]1.0.1[/B]
+Changed: New Scraper Icon
+
+[B]1.0.0[/B]
+Initial version

@@ -1,0 +1,46 @@
+[B]1.3.5[/B]
+- Fixed scraping of artist name when enclosed in "
+
+[B]1.3.4[/B]
+- changed: switched to https
+
+[B]1.3.3[/B]
+- Fixed artist apostrophes (thx roura97311)
+
+[B]1.3.2[/B]
+- Move icon into root for backwards compatibility
+
+[B]1.3.1[/B]
+- Updated the Add-on with new artwork resources
+
+[B]1.3.0[/B]
+- New API key from TADB
+
+[B]1.2.9[/B]
+- Update author name
+
+[B]1.2.8[/B]
+- Broken due to website overload. Please use other scraper. 
+
+[B]1.2.7[/B]
+- Fixed: Allow for apostrophes in artist/title
+
+[B]1.2.1[/B]
+- Fixed: Allow for dashes in artist/title (v12.2+ required)
+
+[B]1.2.0[/B]
+- Added: NfoURL function
+- Added: Album thumbs from theaudiodb.com
+
+[B]1.1.1[/B]
+- Fixed Workaround: Scraper won't return 'Unable to Connect to Remote Server' in case of year is available from the folder/file name
+
+[B]1.1.0[/B]
+- Workaround: Scraper won't return 'Unable to Connect to Remote Server' in case of unexpected folder/file naming conventions
+- Added: Music Video Director
+- Added: Music Video Studio
+- Changed: Scrape Music Video screenshot instead of album thumb if available
+- Changed: Trust search result ordering from TheAudioDb.com
+- Changed: Scrape Album genre instead of track genre for now
+- Added: Scrape Album Year
+- Added: Scraper description (stating current limitations)
