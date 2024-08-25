@@ -185,10 +185,10 @@
     <category id="music">
       <group id="3">
         <setting id="musiclibrary.albumsscraper">
-          <default>metadata.albums.tadb.com</default>
+          <default>-</default>
         </setting>
         <setting id="musiclibrary.artistsscraper">
-          <default>metadata.albums.tadb.com</default>
+          <default>-</default>
         </setting>
       </group>
     </category>
