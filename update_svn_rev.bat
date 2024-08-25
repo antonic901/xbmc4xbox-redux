@@ -1,40 +1,27 @@
 @echo off
-REM subwcrev is included in the tortoise svn client: http://tortoisesvn.net/downloads
 
 REM Current directory including drive
 SET CWD=%~dp0
 
 SET REV_FILE="%CWD%xbmc\xbox\svn_rev.h"
-SET SVN_TEMPLATE="%CWD%xbmc\xbox\svn_rev.tmpl"
 
+REM Remove existing revision file if it exists
 IF EXIST %REV_FILE% del %REV_FILE%
 
-SET SUBWCREV=""
+REM Set SVN_REV
+SET SVN_REV=4.0 Beta 1
 
-IF EXIST "%ProgramFiles(x86)%\TortoiseSVN\bin\subwcrev.exe" SET SUBWCREV="%ProgramFiles(x86)%\TortoiseSVN\bin\subwcrev.exe"
-IF EXIST "%ProgramFiles%\TortoiseSVN\bin\subwcrev.exe"      SET SUBWCREV="%ProgramFiles%\TortoiseSVN\bin\subwcrev.exe"
-IF EXIST "%ProgramW6432%\TortoiseSVN\bin\subwcrev.exe" SET SUBWCREV="%ProgramW6432%\TortoiseSVN\bin\subwcrev.exe"
+REM Get the current date and time
+FOR /F "tokens=2 delims==" %%I IN ('wmic os get localdatetime /value') DO SET DATETIME=%%I
+SET SVN_DATE=%DATETIME:~0,4%-%DATETIME:~4,2%-%DATETIME:~6,2% %DATETIME:~8,2%:%DATETIME:~10,2%
 
-IF NOT EXIST %SUBWCREV% (
-   ECHO subwcrev.exe not found in expected locations, skipping generation
-   GOTO SKIPSUBWCREV
-)
+REM Create the svn_rev.h file with the defined revision and date
+(
+    ECHO #define SVN_REV "%SVN_REV%"
+    ECHO #define SVN_DATE "%SVN_DATE%"
+) > %REV_FILE%
 
-%SUBWCREV% %SVN_TEMPLATE% %REV_FILE% -f
-
-REM Generate the SVN revision header if it does not exist
-IF NOT EXIST %REV_FILE% (
-   ECHO Generating SVN revision header from SVN repo
-   %SUBWCREV% "%CWD%." %SVN_TEMPLATE% %REV_FILE% -f
-)
-
-:SKIPSUBWCREV
-
-REM Copy the default unknown revision header if the generation did not occur
-IF NOT EXIST %REV_FILE% (
-   ECHO using default svn revision unknown header
-   copy %CWD%xbmc\xbox\svn_rev.unknown %REV_FILE%
-)
-
+REM Clean up variables
 SET REV_FILE=
-SET SUBWCREV=
+SET SVN_REV=
+SET SVN_DATE=
