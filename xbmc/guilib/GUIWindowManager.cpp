@@ -59,6 +59,7 @@
 #include "GUIWindowGameSaves.h"
 #include "pictures/GUIWindowPictures.h"
 #include "windows/GUIWindowWeather.h"
+#include "windows/GUIWindowInsignia.h"
 #include "windows/GUIWindowLoginScreen.h"
 #include "addons/GUIWindowAddonBrowser.h"
 #include "music/windows/GUIWindowVisualisation.h"
@@ -231,6 +232,7 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIDialogVideoOSD);
   Add(new CGUIWindowScreensaver);
   Add(new CGUIWindowWeather);
+  Add(new CGUIWindowInsignia);
   Add(new CGUIWindowStartup);
   Add(new CGUIWindowSplash);
 }
@@ -306,6 +308,7 @@ bool CGUIWindowManager::DestroyWindows()
     Delete(WINDOW_PICTURES);
     Delete(WINDOW_GAMESAVES);
     Delete(WINDOW_WEATHER);
+    Delete(WINDOW_INSIGNIA);
 
     Remove(WINDOW_SETTINGS_SERVICE);
     Remove(WINDOW_SETTINGS_MYPVR);

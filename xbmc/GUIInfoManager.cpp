@@ -98,6 +98,7 @@
 #include "utils/TuxBoxUtil.h"
 #include "utils/FanController.h"
 #include "defs_from_settings.h"
+#include "utils/Insignia.h"
 #endif
 
 #define SYSHEATUPDATEINTERVAL 60000
@@ -705,6 +706,11 @@ const infomap weather[] =        {{ "isfetched",        WEATHER_IS_FETCHED },
                                   { "location",         WEATHER_LOCATION },
                                   { "fanartcode",       WEATHER_FANART_CODE },
                                   { "plugin",           WEATHER_PLUGIN }};
+
+const infomap insignia[] =       {{ "isfetched",        INSIGNIA_IS_FETCHED },
+                                  { "gamessupported",   INSIGNIA_GAMES_SUPPORTED },   // labels from here
+                                  { "onlineusers",      INSIGNIA_ONLINE_USERS },
+                                  { "registeredusers",  INSIGNIA_REGISTERED_USERS }};
 
 /// \page modules__General__List_of_gui_access
 /// \section modules__General__List_of_gui_access_System System
@@ -5447,6 +5453,14 @@ int CGUIInfoManager::TranslateSingleString(const std::string &strCondition, bool
           return weather[i].val;
       }
     }
+    else if (cat.name == "insignia")
+    {
+      for (size_t i = 0; i < sizeof(insignia) / sizeof(infomap); i++)
+      {
+        if (prop.name == insignia[i].str)
+          return insignia[i].val;
+      }
+    }
     else if (cat.name == "network")
     {
       for (size_t i = 0; i < sizeof(network_labels) / sizeof(infomap); i++)
@@ -6081,6 +6095,15 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
     break;
   case WEATHER_PLUGIN:
     strLabel = CSettings::GetInstance().GetString("weather.addon");
+    break;
+  case INSIGNIA_GAMES_SUPPORTED:
+    strLabel = g_insigniaManager.GetInfo(INSIGNIA_LABEL_GAMES_SUPPORTED);
+    break;
+  case INSIGNIA_REGISTERED_USERS:
+    strLabel = g_insigniaManager.GetInfo(INSIGNIA_LABEL_REGISTERED_USERS);
+    break;
+  case INSIGNIA_ONLINE_USERS:
+    strLabel = g_insigniaManager.GetInfo(INSIGNIA_LABEL_ONLINE_USERS);
     break;
   case SYSTEM_DATE:
     strLabel = GetDate();
@@ -7335,6 +7358,8 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
     bReturn = g_windowManager.HasModalDialog();
   else if (condition == WEATHER_IS_FETCHED)
     bReturn = g_weatherManager.IsFetched();
+  else if (condition == INSIGNIA_IS_FETCHED)
+    bReturn = g_insigniaManager.IsFetched();
   else if (condition >= PVR_CONDITIONS_START && condition <= PVR_CONDITIONS_END)
     bReturn = false/*g_PVRManager.TranslateBoolInfo(condition)*/;
   else if (condition >= ADSP_CONDITIONS_START && condition <= ADSP_CONDITIONS_END)

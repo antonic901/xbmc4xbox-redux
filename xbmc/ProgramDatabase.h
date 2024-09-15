@@ -53,7 +53,7 @@ public:
   bool SetTitleId(const CStdString& strFilenameAndPath, int idTitle);
   bool IncTimesPlayed(const CStdString& strFileName1);
   bool SetDescription(const CStdString& strFileName1, const CStdString& strDescription);
-  bool GetXBEPathByTitleId(const int idTitle, CStdString& strPathAndFilename);
+  bool GetXBEPathByTitleId(const int idTitle, std::string& strPathAndFilename);
 
   int GetProgramInfo(CFileItem *item);
   bool AddProgramInfo(CFileItem *item, unsigned int titleID);

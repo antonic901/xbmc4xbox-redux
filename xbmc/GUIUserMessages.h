@@ -135,3 +135,6 @@
 
 // Sent to text field to support 'input method'
 #define GUI_MSG_INPUT_TEXT_EDIT       GUI_MSG_USER + 38
+
+// Message is sent by the background info loader when it is finished with fetching a Insignia data.
+#define GUI_MSG_INSIGNIA_FETCHED      GUI_MSG_USER + 39

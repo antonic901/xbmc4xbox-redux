@@ -192,7 +192,7 @@ bool CProgramDatabase::SetTitleId(const CStdString& strFileName, int idTitle)
   return false;
 }
 
-bool CProgramDatabase::GetXBEPathByTitleId(const int idTitle, CStdString& strPathAndFilename)
+bool CProgramDatabase::GetXBEPathByTitleId(const int idTitle, std::string& strPathAndFilename)
 {
   try
   {
@@ -204,7 +204,7 @@ bool CProgramDatabase::GetXBEPathByTitleId(const int idTitle, CStdString& strPat
     if (m_pDS->num_rows() > 0)
     {
       strPathAndFilename = m_pDS->fv("files.strFilename").get_asString();
-      strPathAndFilename.Replace('/', '\\');
+      StringUtils::Replace(strPathAndFilename, '/', '\\');
       m_pDS->close();
       return true;
     }

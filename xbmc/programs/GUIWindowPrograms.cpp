@@ -347,6 +347,12 @@ bool CGUIWindowPrograms::OnPlayMedia(int iItem, const std::string &player)
   if ( iItem < 0 || iItem >= (int)m_vecItems->Size() ) return false;
   CFileItemPtr pItem = m_vecItems->Get(iItem);
 
+  if (StringUtils::StartsWithNoCase(pItem->GetPath(), "insignia://"))
+  {
+    g_windowManager.ActivateWindow(WINDOW_INSIGNIA);
+    return true;
+  }
+
   if (pItem->IsDVD())
     return MEDIA_DETECT::CAutorun::PlayDisc();
 
@@ -607,6 +613,15 @@ bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItem
 #ifdef _XBOX
   if (items.IsVirtualDirectoryRoot())
   {
+    CFileItemPtr pItem(new CFileItem());
+    pItem->SetPath("insignia://");
+    pItem->SetIconImage("insignia/logo.png");
+    pItem->SetLabel(g_localizeStrings.Get(38901));
+    pItem->SetLabelPreformated(true);
+    pItem->SetProperty("overview", g_localizeStrings.Get(38902));
+    pItem->SetSpecialSort(SortSpecialOnTop);
+    items.Add(pItem);
+
     items.SetLabel("");
     return true;
   }

@@ -15350,4 +15350,16 @@ msgctxt "#38791"
 msgid "Apply flicker filter setting to games"
 msgstr ""
 
+msgctxt "#38901"
+msgid "Play on Insignia"
+msgstr ""
+
+msgctxt "#38902"
+msgid "Online Matchmaking functionality is restored for the original Xbox console, allowing you to play online with friends and strangers, just like back in the day!"
+msgstr ""
+
+msgctxt "#38903"
+msgid "Game is not installed"
+msgstr ""
+
 #empty strings from id 38791 to 38999

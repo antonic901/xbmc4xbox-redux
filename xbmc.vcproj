@@ -904,6 +904,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\InfoLoader.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\Insignia.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Insignia.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\IRssObserver.h">
 				</File>
 				<File
@@ -1424,6 +1430,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\windows\GUIWindowHome.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\windows\GUIWindowInsignia.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\windows\GUIWindowInsignia.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\windows\GUIWindowLoginScreen.cpp">
