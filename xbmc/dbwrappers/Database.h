@@ -20,8 +20,10 @@
  *
  */
 
-#include <system.h> // <xtl.h>
-#include "sqlitedataset.h"
+namespace dbiplus {
+  class Database;
+  class Dataset;
+}
 
 #include <boost/move/unique_ptr.hpp>
 #include <string>
@@ -63,12 +65,13 @@ public:
     void AppendJoin(const std::string &strJoin);
     void AppendWhere(const std::string &strWhere, bool combineWithAnd = true);
     bool BuildSQL(std::string &strSQL);
-    
+
     std::string tablename;
     std::string param;
     std::string join;
     std::string where;
   };
+
 
   CDatabase(void);
   virtual ~CDatabase(void);
@@ -83,12 +86,14 @@ public:
   virtual bool CommitTransaction();
   void RollbackTransaction();
   bool InTransaction();
+  void CopyDB(const std::string& latestDb);
+  void DropAnalytics();
 
   std::string PrepareSQL(std::string strStmt, ...) const;
 
   /*!
    * @brief Get a single value from a table.
-   * @remarks The values of the strWhereClause and strOrderBy parameters have to be PrepareSQL'ed when used.
+   * @remarks The values of the strWhereClause and strOrderBy parameters have to be FormatSQL'ed when used.
    * @param strTable The table to get the value from.
    * @param strColumn The column to get.
    * @param strWhereClause If set, use this WHERE clause.
@@ -152,12 +157,6 @@ public:
   bool CommitMultipleExecute();
 
   /*!
-   * @brief Open a new dataset.
-   * @return True if the dataset was created successfully, false otherwise.
-   */
-  bool OpenDS();
-
-  /*!
    * @brief Put an INSERT or REPLACE query in the queue.
    * @param strQuery The query to queue.
    * @return True if the query was added successfully, false otherwise.
@@ -174,12 +173,12 @@ public:
   virtual bool BuildSQL(const std::string &strBaseDir, const std::string &strQuery, Filter &filter, std::string &strSQL, CDbUrl &dbUrl);
   virtual bool BuildSQL(const std::string &strBaseDir, const std::string &strQuery, Filter &filter, std::string &strSQL, CDbUrl &dbUrl, SortDescription &sorting);
 
+  bool Connect(const std::string &dbName, const DatabaseSettings &db, bool create);
+
 protected:
   friend class CDatabaseManager;
-  bool Update(const DatabaseSettings &db);
 
   void Split(const std::string& strFileNameAndPath, std::string& strPath, std::string& strFileName);
-  DWORD ComputeCRC(const std::string &text);
 
   virtual bool Open();
 
@@ -214,23 +213,20 @@ protected:
   virtual const char *GetBaseDBName() const=0;
 
   int GetDBVersion();
-  bool UpdateVersion(const std::string &dbName);
 
   bool BuildSQL(const std::string &strQuery, const Filter &filter, std::string &strSQL);
 
   bool m_sqlite; ///< \brief whether we use sqlite (defaults to true)
-  
+
   boost::movelib::unique_ptr<dbiplus::Database> m_pDB;
   boost::movelib::unique_ptr<dbiplus::Dataset> m_pDS;
   boost::movelib::unique_ptr<dbiplus::Dataset> m_pDS2;
 
 private:
   void InitSettings(DatabaseSettings &dbSettings);
-  bool Connect(const std::string &dbName, const DatabaseSettings &db, bool create);
   void UpdateVersionNumber();
 
   bool m_bMultiWrite; /*!< True if there are any queries in the queue, false otherwise */
-
   unsigned int m_openCount;
 
   bool m_multipleExecute;

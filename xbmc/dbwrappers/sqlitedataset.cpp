@@ -3,7 +3,7 @@
  *
  * Project:SQLiteDataset C++ Dynamic Library
  * Module: SQLiteDataset class realisation file
- * Author: Leo Seib      E-Mail: leoseib@web.de 
+ * Author: Leo Seib      E-Mail: leoseib@web.de
  * Begin: 5/04/2002
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,8 +26,6 @@
  *
  **********************************************************************/
 
-
-#include "system.h"
 #include <iostream>
 #ifdef _XBOX
 #include <fstream>
@@ -36,12 +34,19 @@
 
 #include "sqlitedataset.h"
 #include "utils/log.h"
+#include "system.h" // for Sleep(), OutputDebugString() and GetLastError()
 #include "utils/URIUtils.h"
-#ifdef _XBOX
 #include "filesystem/File.h"
+
+#ifdef TARGET_WINDOWS
+#pragma comment(lib, "sqlite3.lib")
 #endif
 
-using namespace std;
+#ifdef TARGET_POSIX
+#include "linux/XTimeUtils.h"
+#endif
+
+using namespace XFILE;
 
 namespace dbiplus {
 //************* Callback function ***************************
@@ -65,7 +70,7 @@ int callback(void* res_ptr,int ncol, char** reslt,char** cols)
     sql_record *rec = new sql_record;
     rec->resize(ncol);
     for (int i=0; i<ncol; i++)
-    { 
+    {
       field_value &v = rec->at(i);
       if (reslt[i] == NULL)
       {
@@ -79,13 +84,12 @@ int callback(void* res_ptr,int ncol, char** reslt,char** cols)
     }
     r->records.push_back(rec);
   }
-  return 0;  
+  return 0;
 }
 
 static int busy_callback(void*, int busyCount)
 {
   Sleep(100);
-  OutputDebugString("SQLite collision\n");
   return 1;
 }
 
@@ -93,7 +97,7 @@ static int busy_callback(void*, int busyCount)
 
 SqliteDatabase::SqliteDatabase() {
 
-  active = false;  
+  active = false;
   _in_transaction = false;    // for transaction
 
   error = "Unknown database error";//S_NO_CONNECTION;
@@ -110,7 +114,7 @@ SqliteDatabase::~SqliteDatabase() {
 
 
 Dataset* SqliteDatabase::CreateDataset() const {
-  return new SqliteDataset((SqliteDatabase*)this); 
+  return new SqliteDataset((SqliteDatabase*)this);
 }
 
 void SqliteDatabase::setHostName(const char *newHost) {
@@ -124,13 +128,13 @@ void SqliteDatabase::setHostName(const char *newHost) {
   if ( (host[1] == ':') && isalpha(host[0]))
   {
     size_t pos = 0;
-    while ( (pos = host.find("/", pos)) != string::npos )
+    while ( (pos = host.find("/", pos)) != std::string::npos )
       host.replace(pos++, 1, "\\");
   }
   else
   {
     size_t pos = 0;
-    while ( (pos = host.find("\\", pos)) != string::npos )
+    while ( (pos = host.find("\\", pos)) != std::string::npos )
       host.replace(pos++, 1, "/");
   }
 }
@@ -198,6 +202,7 @@ int SqliteDatabase::setErr(int err_code, const char * qry){
     break;
   default : error = "Undefined SQLite error";
   }
+  error = "[" + db + "] " + error;
   error += "\nQuery: ";
   error += qry;
   error += "\n";
@@ -212,7 +217,7 @@ int SqliteDatabase::connect(bool create) {
   if (host.empty() || db.empty())
     return DB_CONNECTION_NONE;
 
-  CLog::Log(LOGDEBUG, "Connecting to sqlite:%s:%s", host.c_str(), db.c_str());
+  //CLog::Log(LOGDEBUG, "Connecting to sqlite:%s:%s", host.c_str(), db.c_str());
 
   std::string db_fullpath = URIUtils::AddFileToFolder(host, db);
 
@@ -224,6 +229,25 @@ int SqliteDatabase::connect(bool create) {
     int flags = SQLITE_OPEN_READWRITE;
     if (create)
       flags |= SQLITE_OPEN_CREATE;
+#endif
+
+    if (CFile::Exists(db_fullpath.c_str()))
+    {
+      CFile file;
+      if (file.Open(db_fullpath.c_str()))
+      {
+        if (file.GetLength() == 0)
+        {
+          file.Close();
+          CLog::Log(LOGWARNING, "Found zero byte SQLite database, deleting %s", db_fullpath.c_str());
+          CFile::Delete(db_fullpath.c_str());
+        }
+        else
+          file.Close();
+      }
+    }
+
+#ifndef _XBOX
     if (sqlite3_open_v2(db_fullpath.c_str(), &conn, flags, NULL)==SQLITE_OK)
 #else
     if (!create && !XFILE::CFile::Exists(db_fullpath))
@@ -240,12 +264,11 @@ int SqliteDatabase::connect(bool create) {
       active = true;
       return DB_CONNECTION_OK;
     }
-    CLog::Log(LOGERROR, "unable to open database:%s (%u)", db_fullpath.c_str(), GetLastError());
+
     return DB_CONNECTION_NONE;
   }
   catch(...)
   {
-    CLog::Log(LOGERROR, "Unable to open database: %s (%lu)", db_fullpath.c_str(),GetLastError());
   }
   return DB_CONNECTION_NONE;
 }
@@ -279,12 +302,13 @@ int SqliteDatabase::create() {
 }
 
 int SqliteDatabase::copy(const char *backup_name) {
-  if (active == false) throw DbErrors("Can't copy database: no active connection...");
+  if (active == false)
+    throw DbErrors("Can't copy database: no active connection...");
 
-  CLog::Log(LOGDEBUG, "Copying from %s to %s at %s", backup_name, db.c_str(), host.c_str());
+  CLog::Log(LOGDEBUG, "Copying from %s to %s at %s", db.c_str(), backup_name, host.c_str());
 
   int rc;
-  string backup_db = backup_name;
+  std::string backup_db = backup_name;
 
   // Our SQLite currently doesn't support 'sqlite3_backup'. When we get SQLite 3.6.11 compiled for Xbox use code inside this block
 #ifndef _XBOX
@@ -299,7 +323,7 @@ int SqliteDatabase::copy(const char *backup_name) {
   if ( backup_db.find(".db") != (backup_db.length()-3) )
     backup_db += ".db";
 
-  string backup_path = host + backup_db;
+  std::string backup_path = host + backup_db;
 
   /* Open the database file identified by zFilename. Exit early if this fails
   ** for any reason. */
@@ -318,6 +342,9 @@ int SqliteDatabase::copy(const char *backup_name) {
   }
 
   (void)sqlite3_close(pFile);
+
+  if( rc != SQLITE_OK )
+    throw DbErrors("Can't copy database. (%d)", rc);
 #else
   if (backup_name[0] == '/' || backup_name[0] == '\\')
     backup_db = backup_db.substr(1);
@@ -326,11 +353,11 @@ int SqliteDatabase::copy(const char *backup_name) {
   if ( backup_db.find(".db") != (backup_db.length()-3) )
     backup_db += ".db";
 
-  string backup_path = URIUtils::AddFileToFolder(host, backup_db);
-  string original_path = URIUtils::AddFileToFolder(host, db);
+  std::string backup_path = URIUtils::AddFileToFolder(host, backup_db);
+  std::string original_path = URIUtils::AddFileToFolder(host, db);
 
-  ifstream original_file(original_path.c_str(), ios::binary);
-  ofstream destination_file(backup_path.c_str(), ios::binary);
+  std::ifstream original_file(original_path.c_str(), std::ios::binary);
+  std::ofstream destination_file(backup_path.c_str(), std::ios::binary);
 
   if (!original_file.is_open() || !destination_file.is_open())
     throw exception();
@@ -338,6 +365,7 @@ int SqliteDatabase::copy(const char *backup_name) {
   destination_file << original_file.rdbuf();
   rc = 1;
 #endif
+
   return rc;
 }
 
@@ -351,12 +379,12 @@ int SqliteDatabase::drop_analytics(void) {
   result_set res;
 
   CLog::Log(LOGDEBUG, "Cleaning indexes from database %s at %s", db.c_str(), host.c_str());
-  sprintf(sqlcmd, "SELECT name FROM sqlite_master WHERE type == 'index'");
+  sprintf(sqlcmd, "SELECT name FROM sqlite_master WHERE type == 'index' AND sql IS NOT NULL");
   if ((last_err = sqlite3_exec(conn, sqlcmd, &callback, &res, NULL)) != SQLITE_OK) return DB_UNEXPECTED_RESULT;
 
   for (size_t i=0; i < res.records.size(); i++) {
     sprintf(sqlcmd,"DROP INDEX '%s'", res.records[i]->at(0).get_asString().c_str());
-    if ((last_err = sqlite3_exec(conn, sqlcmd, NULL, NULL, NULL) != SQLITE_OK)) return DB_UNEXPECTED_RESULT;
+    if ((last_err = sqlite3_exec(conn, sqlcmd, NULL, NULL, NULL)) != SQLITE_OK) return DB_UNEXPECTED_RESULT;
   }
   res.clear();
 
@@ -366,7 +394,7 @@ int SqliteDatabase::drop_analytics(void) {
 
   for (size_t i=0; i < res.records.size(); i++) {
     sprintf(sqlcmd,"DROP VIEW '%s'", res.records[i]->at(0).get_asString().c_str());
-    if ((last_err = sqlite3_exec(conn, sqlcmd, NULL, NULL, NULL) != SQLITE_OK)) return DB_UNEXPECTED_RESULT;
+    if ((last_err = sqlite3_exec(conn, sqlcmd, NULL, NULL, NULL)) != SQLITE_OK) return DB_UNEXPECTED_RESULT;
   }
   res.clear();
 
@@ -376,7 +404,7 @@ int SqliteDatabase::drop_analytics(void) {
 
   for (size_t i=0; i < res.records.size(); i++) {
     sprintf(sqlcmd,"DROP TRIGGER '%s'", res.records[i]->at(0).get_asString().c_str());
-    if ((last_err = sqlite3_exec(conn, sqlcmd, NULL, NULL, NULL) != SQLITE_OK)) return DB_UNEXPECTED_RESULT;
+    if ((last_err = sqlite3_exec(conn, sqlcmd, NULL, NULL, NULL)) != SQLITE_OK) return DB_UNEXPECTED_RESULT;
   }
   // res would be cleared on destruct
 
@@ -399,19 +427,19 @@ long SqliteDatabase::nextid(const char* sname) {
   result_set res;
   char sqlcmd[512];
   sprintf(sqlcmd,"select nextid from %s where seq_name = '%s'",sequence_table.c_str(), sname);
-  if (last_err = sqlite3_exec(getHandle(),sqlcmd,&callback,&res,NULL) != SQLITE_OK) {
+  if ((last_err = sqlite3_exec(getHandle(),sqlcmd,&callback,&res,NULL)) != SQLITE_OK) {
     return DB_UNEXPECTED_RESULT;
     }
-  if (res.records.size() == 0) {
+  if (res.records.empty()) {
     id = 1;
     sprintf(sqlcmd,"insert into %s (nextid,seq_name) values (%d,'%s')",sequence_table.c_str(),id,sname);
-    if (last_err = sqlite3_exec(conn,sqlcmd,NULL,NULL,NULL) != SQLITE_OK) return DB_UNEXPECTED_RESULT;
+    if ((last_err = sqlite3_exec(conn,sqlcmd,NULL,NULL,NULL)) != SQLITE_OK) return DB_UNEXPECTED_RESULT;
     return id;
   }
   else {
     id = res.records[0]->at(0).get_asInt()+1;
     sprintf(sqlcmd,"update %s set nextid=%d where seq_name = '%s'",sequence_table.c_str(),id,sname);
-    if (last_err = sqlite3_exec(conn,sqlcmd,NULL,NULL,NULL) != SQLITE_OK) return DB_UNEXPECTED_RESULT;
+    if ((last_err = sqlite3_exec(conn,sqlcmd,NULL,NULL,NULL)) != SQLITE_OK) return DB_UNEXPECTED_RESULT;
     return id;
   }
   return DB_UNEXPECTED_RESULT;
@@ -438,29 +466,29 @@ void SqliteDatabase::rollback_transaction() {
   if (active) {
     sqlite3_exec(conn,"rollback",NULL,NULL,NULL);
     _in_transaction = false;
-  }  
+  }
 }
 
 
 // methods for formatting
 // ---------------------------------------------
-string SqliteDatabase::vprepare(const char *format, va_list args)
+std::string SqliteDatabase::vprepare(const char *format, va_list args)
 {
-  string strFormat = format;
-  string strResult = "";
+  std::string strFormat = format;
+  std::string strResult = "";
   char *p;
   size_t pos;
 
   //  %q is the sqlite format string for %s.
   //  Any bad character, like "'", will be replaced with a proper one
   pos = 0;
-  while ( (pos = strFormat.find("%s", pos)) != string::npos )
+  while ( (pos = strFormat.find("%s", pos)) != std::string::npos )
     strFormat.replace(pos++, 2, "%q");
 
   //  the %I64 enhancement is not supported by sqlite3_vmprintf
   //  must be %ll instead
   pos = 0;
-  while ( (pos = strFormat.find("%I64", pos)) != string::npos )
+  while ( (pos = strFormat.find("%I64", pos)) != std::string::npos )
     strFormat.replace(pos++, 4, "%ll");
 
   p = sqlite3_vmprintf(strFormat.c_str(), args);
@@ -512,17 +540,17 @@ sqlite3* SqliteDataset::handle(){
 }
 
 void SqliteDataset::make_query(StringList &_sql) {
-  string query;
+  std::string query;
+  if (db == NULL) throw DbErrors("No Database Connection");
 
  try {
 
-  if (db == NULL) throw DbErrors("No Database Connection");
   if (autocommit) db->start_transaction();
 
 
-  for (list<string>::iterator i =_sql.begin(); i!=_sql.end(); i++) {
+  for (std::list<std::string>::iterator i =_sql.begin(); i!=_sql.end(); ++i) {
   query = *i;
-  char* err=NULL; 
+  char* err=NULL;
   Dataset::parse_sql(query);
   if (db->setErr(sqlite3_exec(this->handle(),query.c_str(),NULL,NULL,&err),query.c_str())!=SQLITE_OK) {
     throw DbErrors(db->getErrorMsg());
@@ -533,7 +561,7 @@ void SqliteDataset::make_query(StringList &_sql) {
   if (db->in_transaction() && autocommit) db->commit_transaction();
 
   active = true;
-  ds_state = dsSelect;    
+  ds_state = dsSelect;
   if (autorefresh)
     refresh();
 
@@ -564,7 +592,7 @@ void SqliteDataset::make_deletion() {
 
 void SqliteDataset::fill_fields() {
   //cout <<"rr "<<result.records.size()<<"|" << frecno <<"\n";
-  if ((db == NULL) || (result.record_header.size() == 0) || (result.records.size() < (unsigned int)frecno)) return;
+  if ((db == NULL) || (result.record_header.empty()) || (result.records.size() < (unsigned int)frecno)) return;
 
   if (fields_object->size() == 0) // Filling columns name
   {
@@ -597,19 +625,20 @@ void SqliteDataset::fill_fields() {
 //------------- public functions implementation -----------------//
 bool SqliteDataset::dropIndex(const char *table, const char *index)
 {
-  string sql;
+  std::string sql;
 
   sql = static_cast<SqliteDatabase*>(db)->prepare("DROP INDEX IF EXISTS %s", index);
 
   return (exec(sql) == SQLITE_OK);
 }
 
-int SqliteDataset::exec(const string &sql) {
+
+int SqliteDataset::exec(const std::string &sql) {
   if (!handle()) throw DbErrors("No Database Connection");
-  string qry = sql;
+  std::string qry = sql;
   int res;
   exec_res.clear();
-  
+
   // Strip size constraints from indexes (not supported in sqlite)
   //
   // Example:
@@ -617,18 +646,18 @@ int SqliteDataset::exec(const string &sql) {
   //   after:  CREATE UNIQUE INDEX ixPath ON path ( strPath )
   //
   // NOTE: unexpected results occur if brackets are not matched
-  if ( qry.find("CREATE UNIQUE INDEX") != string::npos ||
-      (qry.find("CREATE INDEX") != string::npos))
+  if ( qry.find("CREATE UNIQUE INDEX") != std::string::npos ||
+      (qry.find("CREATE INDEX") != std::string::npos))
   {
     size_t pos = 0;
     size_t pos2 = 0;
 
-    if ( (pos = qry.find("(")) != string::npos )
+    if ( (pos = qry.find("(")) != std::string::npos )
     {
       pos++;
-      while ( (pos = qry.find("(", pos)) != string::npos )
+      while ( (pos = qry.find("(", pos)) != std::string::npos )
       {
-        if ( (pos2 = qry.find(")", pos)) != string::npos )
+        if ( (pos2 = qry.find(")", pos)) != std::string::npos )
         {
           qry.replace(pos, pos2-pos+1, "");
           pos = pos2;
@@ -640,14 +669,14 @@ int SqliteDataset::exec(const string &sql) {
   // before: DROP INDEX foo ON table
   // after:  DROP INDEX foo
   size_t pos = qry.find("DROP INDEX ");
-  if ( pos != string::npos )
+  if ( pos != std::string::npos )
   {
     pos = qry.find(" ON ", pos+1);
 
-    if ( pos != string::npos )
+    if ( pos != std::string::npos )
       qry = qry.substr(0, pos);
   }
-  
+
   if((res = db->setErr(sqlite3_exec(handle(),qry.c_str(),&callback,&exec_res,&errmsg),qry.c_str())) == SQLITE_OK)
     return res;
   else
@@ -670,13 +699,17 @@ bool SqliteDataset::query(const std::string &query) {
     std::string qry = query;
     int fs = qry.find("select");
     int fS = qry.find("SELECT");
-    if (!( fs >= 0 || fS >=0))                                 
-         throw DbErrors("MUST be select SQL!"); 
+    if (!( fs >= 0 || fS >=0))
+         throw DbErrors("MUST be select SQL!");
 
   close();
 
   sqlite3_stmt *stmt = NULL;
+#ifndef _XBOX
+  if (db->setErr(sqlite3_prepare_v2(handle(),query.c_str(),-1,&stmt, NULL),query.c_str()) != SQLITE_OK)
+#else
   if (db->setErr(sqlite3_prepare(handle(),query.c_str(),-1,&stmt, NULL),query.c_str()) != SQLITE_OK)
+#endif
     throw DbErrors(db->getErrorMsg());
 
   // column headers
@@ -726,17 +759,17 @@ bool SqliteDataset::query(const std::string &query) {
   else
   {
     throw DbErrors(db->getErrorMsg());
-  }  
+  }
 }
 
-void SqliteDataset::open(const string &sql) {
+void SqliteDataset::open(const std::string &sql) {
   set_select_sql(sql);
   open();
 }
 
 void SqliteDataset::open() {
   if (select_sql.size()) {
-    query(select_sql.c_str()); 
+    query(select_sql);
   }
   else {
     ds_state = dsInactive;
@@ -799,7 +832,7 @@ void SqliteDataset::next(void) {
   free_row();
 #endif
   Dataset::next();
-  if (!eof()) 
+  if (!eof())
       fill_fields();
 }
 
@@ -820,7 +853,7 @@ bool SqliteDataset::seek(int pos) {
   if (ds_state == dsSelect) {
     Dataset::seek(pos);
     fill_fields();
-    return true;  
+    return true;
     }
   return false;
 }

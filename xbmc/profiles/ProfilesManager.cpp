@@ -137,11 +137,11 @@ bool CProfilesManager::Load(const std::string &file)
         XMLUtils::GetBoolean(rootElement, XML_LOGIN_SCREEN, m_usingLoginScreen);
         XMLUtils::GetInt(rootElement, XML_AUTO_LOGIN, m_autoLoginProfile);
         XMLUtils::GetInt(rootElement, XML_NEXTID, m_nextProfileId);
-        
+
         CStdString defaultDir("special://home/userdata");
         if (!CDirectory::Exists(defaultDir))
           defaultDir = "special://xbmc/userdata";
-        
+
         const TiXmlElement* pProfile = rootElement->FirstChildElement(XML_PROFILE);
         while (pProfile)
         {
@@ -209,7 +209,7 @@ bool CProfilesManager::Save(const std::string &file) const
   XMLUtils::SetInt(pRoot, XML_LAST_LOADED, m_currentProfile);
   XMLUtils::SetBoolean(pRoot, XML_LOGIN_SCREEN, m_usingLoginScreen);
   XMLUtils::SetInt(pRoot, XML_AUTO_LOGIN, m_autoLoginProfile);
-  XMLUtils::SetInt(pRoot, XML_NEXTID, m_nextProfileId);      
+  XMLUtils::SetInt(pRoot, XML_NEXTID, m_nextProfileId);
 
   for (vector<CProfile>::const_iterator profile = m_profiles.begin(); profile != m_profiles.end(); profile++)
     profile->Save(pRoot);
@@ -254,7 +254,7 @@ bool CProfilesManager::LoadProfile(size_t index)
 
   CreateProfileFolders();
 
-  CDatabaseManager::Get().Initialize();
+  CDatabaseManager::GetInstance().Initialize();
   CButtonTranslator::GetInstance().Load(true);
 
   g_Mouse.SetEnabled(CSettings::GetInstance().GetBool("input.enablemouse"));

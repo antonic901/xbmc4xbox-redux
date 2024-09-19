@@ -31,85 +31,82 @@
  **********************************************************************/
 
 #include "qry_dat.h"
+#include "system.h" // for PRId64
+
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifndef __GNUC__
 #pragma warning (disable:4800)
 #pragma warning (disable:4715)
 #endif
 
-#ifndef PRId64
-#ifdef _MSC_VER
-#define PRId64 "I64d"
-#endif
-#endif
-
-using namespace std;
-
 namespace dbiplus {
 
-//Constructors 
-field_value::field_value(){
-  str_value = "";
-  field_type = ft_String;
-  is_null = false;
-  }
-
-field_value::field_value(const char *s) {
-  str_value = s;
+//Constructors
+field_value::field_value()
+{
   field_type = ft_String;
   is_null = false;
 }
-  
+
+field_value::field_value(const char *s):
+  str_value(s)
+{
+  field_type = ft_String;
+  is_null = false;
+}
+
 field_value::field_value(const bool b) {
-  bool_value = b; 
+  bool_value = b;
   field_type = ft_Boolean;
   is_null = false;
 }
 
 field_value::field_value(const char c) {
-  char_value = c; 
+  char_value = c;
   field_type = ft_Char;
   is_null = false;
 }
-  
+
 field_value::field_value(const short s) {
-  short_value = s; 
+  short_value = s;
   field_type = ft_Short;
   is_null = false;
 }
-  
+
 field_value::field_value(const unsigned short us) {
-  ushort_value = us; 
+  ushort_value = us;
   field_type = ft_UShort;
   is_null = false;
 }
-  
+
 field_value::field_value(const int i) {
-  int_value = i; 
+  int_value = i;
   field_type = ft_Int;
   is_null = false;
 }
-  
+
 field_value::field_value(const unsigned int ui) {
-  uint_value = ui; 
+  uint_value = ui;
   field_type = ft_UInt;
   is_null = false;
 }
-  
+
 field_value::field_value(const float f) {
-  float_value = f; 
+  float_value = f;
   field_type = ft_Float;
   is_null = false;
 }
-  
+
 field_value::field_value(const double d) {
-  double_value = d; 
+  double_value = d;
   field_type = ft_Double;
   is_null = false;
 }
-  
+
 field_value::field_value(const int64_t i) {
-  int64_value = i; 
+  int64_value = i;
   field_type = ft_Int64;
   is_null = false;
 }
@@ -122,7 +119,7 @@ field_value::field_value (const field_value & fv) {
     }
     case ft_Boolean:{
       set_asBool(fv.get_asBool());
-      break;     
+      break;
     }
     case ft_Char: {
       set_asChar(fv.get_asChar());
@@ -168,17 +165,17 @@ field_value::~field_value(){
 
   }
 
-  
+
 //Conversations functions
-string field_value::get_asString() const {
-    string tmp;
+std::string field_value::get_asString() const {
+    std::string tmp;
     switch (field_type) {
     case ft_String: {
       tmp = str_value;
       return tmp;
     }
     case ft_Boolean:{
-      if (bool_value) 
+      if (bool_value)
 	return tmp = "True";
       else
 	return tmp = "False";
@@ -198,12 +195,12 @@ string field_value::get_asString() const {
     }
     case ft_Int: {
       char t[12];
-      sprintf(t,"%ld",int_value);
+      sprintf(t,"%d",int_value);
       return tmp = t;
     }
     case ft_UInt: {
       char t[12];
-      sprintf(t,"%lu",uint_value);
+      sprintf(t,"%u",uint_value);
       return tmp = t;
     }
     case ft_Float: {
@@ -218,7 +215,7 @@ string field_value::get_asString() const {
     }
     case ft_Int64: {
       char t[23];
-      sprintf(t,"%"PRId64,int64_value);
+      sprintf(t,"%" PRId64,int64_value);
       return tmp = t;
     }
     default:
@@ -270,7 +267,7 @@ bool field_value::get_asBool() const {
       return false;
     }
   }
-  
+
 
 char field_value::get_asChar() const {
   switch (field_type) {
@@ -278,11 +275,10 @@ char field_value::get_asChar() const {
       return str_value[0];
     }
     case ft_Boolean:{
-      char c;
-      if (bool_value) 
-	return c='T';
+      if (bool_value)
+	return 'T';
       else
-	return c='F';
+	return 'F';
     }
     case ft_Char: {
       return  char_value;
@@ -299,12 +295,12 @@ char field_value::get_asChar() const {
     }
     case ft_Int: {
       char t[12];
-      sprintf(t,"%ld",int_value);
+      sprintf(t,"%d",int_value);
       return t[0];
     }
     case ft_UInt: {
       char t[12];
-      sprintf(t,"%lu",uint_value);
+      sprintf(t,"%u",uint_value);
       return t[0];
     }
     case ft_Float: {
@@ -319,7 +315,7 @@ char field_value::get_asChar() const {
     }
     case ft_Int64: {
       char t[24];
-      sprintf(t,"%"PRId64,int64_value);
+      sprintf(t,"%" PRId64,int64_value);
       return t[0];
     }
     default:
@@ -591,7 +587,7 @@ int64_t field_value::get_asInt64() const {
 
 field_value& field_value::operator= (const field_value & fv) {
   if ( this == &fv ) return *this;
-  
+
   is_null = fv.get_isNull();
 
   switch (fv.get_fType()) {
@@ -603,7 +599,7 @@ field_value& field_value::operator= (const field_value & fv) {
     case ft_Boolean:{
       set_asBool(fv.get_asBool());
       return *this;
-      break;     
+      break;
     }
     case ft_Char: {
       set_asChar(fv.get_asChar());
@@ -657,55 +653,55 @@ void field_value::set_asString(const char *s) {
   str_value = s;
   field_type = ft_String;}
 
-void field_value::set_asString(const string & s) {
+void field_value::set_asString(const std::string & s) {
   str_value = s;
   field_type = ft_String;}
-  
+
 void field_value::set_asBool(const bool b) {
-  bool_value = b; 
+  bool_value = b;
   field_type = ft_Boolean;}
-  
+
 void field_value::set_asChar(const char c) {
-  char_value = c; 
+  char_value = c;
   field_type = ft_Char;}
-  
+
 void field_value::set_asShort(const short s) {
-  short_value = s; 
+  short_value = s;
   field_type = ft_Short;}
-  
+
 void field_value::set_asUShort(const unsigned short us) {
-  ushort_value = us; 
+  ushort_value = us;
   field_type = ft_UShort;
 }
 
 void field_value::set_asInt(const int i) {
-  int_value = i; 
+  int_value = i;
   field_type = ft_Int;
 }
-  
+
 void field_value::set_asUInt(const unsigned int ui) {
-  int_value = ui; 
+  int_value = ui;
   field_type = ft_UInt;
 }
-  
+
 void field_value::set_asFloat(const float f) {
-  float_value = f; 
+  float_value = f;
   field_type = ft_Float;}
-  
+
 void field_value::set_asDouble(const double d) {
-  double_value = d; 
+  double_value = d;
   field_type = ft_Double;}
 
 void field_value::set_asInt64(const int64_t i) {
-  int64_value = i; 
+  int64_value = i;
   field_type = ft_Int64;}
-  
+
 fType field_value::get_field_type() {
   return field_type;}
 
-  
-string field_value::gft() {
-    string tmp;
+
+std::string field_value::gft() {
+    std::string tmp;
     switch (field_type) {
     case ft_String: {
       tmp.assign("string");
@@ -746,4 +742,4 @@ string field_value::gft() {
   return tmp;
   }
 
-} //namespace 
+} //namespace

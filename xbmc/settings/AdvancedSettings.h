@@ -20,6 +20,7 @@
  */
 
 #include <set>
+#include <string>
 #include <vector>
 
 #include "settings/lib/ISettingCallback.h"
@@ -42,12 +43,34 @@ namespace ADDON
 class DatabaseSettings
 {
 public:
-  CStdString type;
-  CStdString host;
-  CStdString port;
-  CStdString user;
-  CStdString pass;
-  CStdString name;
+  DatabaseSettings() { Reset(); }
+  void Reset()
+  {
+    type.clear();
+    host.clear();
+    port.clear();
+    user.clear();
+    pass.clear();
+    name.clear();
+    key.clear();
+    cert.clear();
+    ca.clear();
+    capath.clear();
+    ciphers.clear();
+    compression = false;
+  };
+  std::string type;
+  std::string host;
+  std::string port;
+  std::string user;
+  std::string pass;
+  std::string name;
+  std::string key;
+  std::string cert;
+  std::string ca;
+  std::string capath;
+  std::string ciphers;
+  bool compression;
 };
 
 struct TVShowRegexp

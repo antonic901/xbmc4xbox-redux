@@ -1010,7 +1010,7 @@ HRESULT CApplication::Create(HWND hWnd)
   update_emu_environ();//apply the GUI settings
 
   // initialize the addon database (must be before the addon manager is init'd)
-  CDatabaseManager::Get().Initialize(true);
+  CDatabaseManager::GetInstance().Initialize(true);
 
   if (!m_ServiceManager->Init2())
   {
@@ -1234,7 +1234,7 @@ HRESULT CApplication::Initialize()
     m_network->WaitForSetup();
 
   // initialize (and update as needed) our databases
-  CDatabaseManager::Get().Initialize();
+  CDatabaseManager::GetInstance().Initialize();
 
   StartServices();
 

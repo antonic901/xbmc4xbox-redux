@@ -1,3 +1,5 @@
+#pragma once
+
 /**********************************************************************
  * Copyright (c) 2004, Leo Seib, Hannover
  *
@@ -26,9 +28,6 @@
  *
  **********************************************************************/
 
-#ifndef _SQLITEDATASET_H
-#define _SQLITEDATASET_H
-
 #include <stdio.h>
 #include "dataset.h"
 #include "sqLite/sqlite3.h"
@@ -52,7 +51,7 @@ public:
 /* destructor */
   ~SqliteDatabase();
 
-  Dataset *CreateDataset() const; 
+  Dataset *CreateDataset() const;
 
 /* func. returns connection handle with SQLite-server */
   sqlite3 *getHandle() {  return conn; }
@@ -95,7 +94,7 @@ public:
 /* virtual methods for formatting */
   virtual std::string vprepare(const char *format, va_list args);
 
-  bool in_transaction() {return _in_transaction;}; 	
+  bool in_transaction() {return _in_transaction;};
 
 };
 
@@ -136,7 +135,7 @@ public:
 /* destructor */
   ~SqliteDataset();
 
-/* set autorefresh boolean value (if true - refresh the data after edit() 
+/* set autorefresh boolean value (if true - refresh the data after edit()
 or insert() operations default = false) */
   void set_autorefresh(bool val);
 
@@ -174,4 +173,4 @@ or insert() operations default = false) */
   virtual bool dropIndex(const char *table, const char *index);
 };
 } //namespace
-#endif
+
