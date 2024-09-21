@@ -18,22 +18,19 @@
  *
  */
 
-
 #include "system.h"
 #include "VirtualDirectory.h"
-#include "DirectoryFactory.h"
 #include "URL.h"
 #include "Util.h"
+#include "utils/URIUtils.h"
+#include "utils/StringUtils.h"
 #include "Directory.h"
-#include "DirectoryCache.h"
 #include "SourcesDirectory.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "utils/MemoryUnitManager.h"
 #endif
 #include "storage/DetectDVDType.h"
-#include "filesystem/File.h"
 #include "FileItem.h"
-#include "utils/URIUtils.h"
 
 using namespace XFILE;
 
@@ -75,15 +72,15 @@ bool CVirtualDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 }
 bool CVirtualDirectory::GetDirectory(const CURL& url, CFileItemList &items, bool bUseFileDirectories)
 {
-  CStdString strPath = url.Get();
+  std::string strPath = url.Get();
   int flags = m_flags;
   if (!bUseFileDirectories)
     flags |= DIR_FLAG_NO_FILE_DIRS;
-  if (!strPath.IsEmpty() && strPath != "files://")
+  if (!strPath.empty() && strPath != "files://")
     return CDirectory::GetDirectory(strPath, items, m_strFileMask, flags, m_allowThreads);
 
   // if strPath is blank, clear the list (to avoid parent items showing up)
-  if (strPath.IsEmpty())
+  if (strPath.empty())
     items.Clear();
 
   // return the root listing
@@ -105,15 +102,14 @@ bool CVirtualDirectory::GetDirectory(const CURL& url, CFileItemList &items, bool
  */
 bool CVirtualDirectory::IsSource(const std::string& strPath, VECSOURCES *sources, std::string *name) const
 {
-  CStdString strPathCpy = strPath;
-  strPathCpy.TrimRight("/");
-  strPathCpy.TrimRight("\\");
+  std::string strPathCpy = strPath;
+  StringUtils::TrimRight(strPathCpy, "/\\");
 
   // just to make sure there's no mixed slashing in share/default defines
   // ie. f:/video and f:\video was not be recognised as the same directory,
   // resulting in navigation to a lower directory then the share.
   if(URIUtils::IsDOSPath(strPathCpy))
-    strPathCpy.Replace("/", "\\");
+    StringUtils::Replace(strPathCpy, '/', '\\');
 
   VECSOURCES shares;
   if (sources)
@@ -123,11 +119,10 @@ bool CVirtualDirectory::IsSource(const std::string& strPath, VECSOURCES *sources
   for (int i = 0; i < (int)shares.size(); ++i)
   {
     const CMediaSource& share = shares.at(i);
-    CStdString strShare = share.strPath;
-    strShare.TrimRight("/");
-    strShare.TrimRight("\\");
+    std::string strShare = share.strPath;
+    StringUtils::TrimRight(strShare, "/\\");
     if(URIUtils::IsDOSPath(strShare))
-      strShare.Replace("/", "\\");
+      StringUtils::Replace(strShare, '/', '\\');
     if (strShare == strPathCpy)
     {
       if (name)
@@ -145,7 +140,7 @@ bool CVirtualDirectory::IsSource(const std::string& strPath, VECSOURCES *sources
  \note The parameter \e path CAN be a share with directory. Eg. "iso9660://dir" will
        return the same as "iso9660://".
  */
-bool CVirtualDirectory::IsInSource(const CStdString &path) const
+bool CVirtualDirectory::IsInSource(const std::string &path) const
 {
   bool isSourceName;
   VECSOURCES shares;
@@ -157,12 +152,13 @@ bool CVirtualDirectory::IsInSource(const CStdString &path) const
     for (unsigned int i = 0; i < shares.size(); i++)
     {
       CMediaSource &share = shares[i];
-      if (URIUtils::IsOnDVD(share.strPath) && share.strPath.Equals(path.Left(share.strPath.GetLength())))
+      if (URIUtils::IsOnDVD(share.strPath) &&
+          URIUtils::PathHasParent(path, share.strPath))
         return true;
     }
     return false;
   }
-  // TODO: May need to handle other special cases that GetMatchingSource() fails on
+  //! @todo May need to handle other special cases that GetMatchingSource() fails on
   return (iShare > -1);
 }
 
@@ -175,20 +171,46 @@ void CVirtualDirectory::GetSources(VECSOURCES &shares) const
   {
 #ifdef HAS_XBOX_HARDWARE
     g_memoryUnitManager.GetMemoryUnitSources(shares);
-#endif
     CUtil::AutoDetectionGetSource(shares);
+#else
+    g_mediaManager.GetRemovableDrives(shares);
+#endif
   }
 
+#ifdef HAS_DVD_DRIVE
   // and update our dvd share
   for (unsigned int i = 0; i < shares.size(); ++i)
   {
     CMediaSource& share = shares[i];
     if (share.m_iDriveType == CMediaSource::SOURCE_TYPE_DVD)
     {
+#ifdef _XBOX
       share.strStatus = MEDIA_DETECT::CDetectDVDMedia::GetDVDLabel();
       share.strPath = MEDIA_DETECT::CDetectDVDMedia::GetDVDPath();
+#else
+      if(g_mediaManager.IsAudio(share.strPath))
+      {
+        share.strStatus = "Audio-CD";
+        share.strPath = "cdda://local/";
+        share.strDiskUniqueId = "";
+      }
+      else
+      {
+        share.strStatus = g_mediaManager.GetDiskLabel(share.strPath);
+        share.strDiskUniqueId = g_mediaManager.GetDiskUniqueId(share.strPath);
+        if (!share.strPath.length()) // unmounted CD
+        {
+          if (g_mediaManager.GetDiscPath() == "iso9660://")
+            share.strPath = "iso9660://";
+          else
+            // share is unmounted and not iso9660, discard it
+            shares.erase(shares.begin() + i--);
+        }
+      }
+#endif
     }
   }
+#endif
 }
 }
 

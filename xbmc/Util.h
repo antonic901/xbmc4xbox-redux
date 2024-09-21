@@ -108,7 +108,7 @@ public:
   static bool ShortenFileName(CStdString& strFileNameAndPath);
   static bool IsWritable(const CStdString& strFile);
   static bool IsPicture(const CStdString& strFile);
-  static void GetDVDDriveIcon( const CStdString& strPath, CStdString& strIcon );
+  static void GetDVDDriveIcon( const std::string& strPath, std::string& strIcon );
   static void RemoveTempFiles();
   static void ClearTempFonts();
   static void DeleteGUISettings();

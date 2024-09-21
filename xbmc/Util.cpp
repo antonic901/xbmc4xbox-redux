@@ -1491,7 +1491,7 @@ bool CUtil::ShortenFileName(CStdString& strFileNameAndPath)
 }
 
 
-void CUtil::GetDVDDriveIcon( const CStdString& strPath, CStdString& strIcon )
+void CUtil::GetDVDDriveIcon( const std::string& strPath, std::string& strIcon )
 {
   if ( !CDetectDVDMedia::IsDiscInDrive() )
   {
