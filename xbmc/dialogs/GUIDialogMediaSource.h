@@ -20,8 +20,10 @@
  *
  */
 
-#include "GUIDialog.h"
-#include "video/VideoInfoScanner.h"
+#include <string>
+#include <vector>
+
+#include "guilib/GUIDialog.h"
 
 class CFileItemList;
 class CMediaSource;
@@ -35,14 +37,14 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
   virtual void OnDeinitWindow(int nextWindowID);
   virtual bool OnBack(int actionID);
-  static bool ShowAndAddMediaSource(const CStdString &type);
-  static bool ShowAndEditMediaSource(const CStdString &type, const CMediaSource &share);
-  static bool ShowAndEditMediaSource(const CStdString &type, const CStdString &share);
+  static bool ShowAndAddMediaSource(const std::string &type);
+  static bool ShowAndEditMediaSource(const std::string &type, const CMediaSource &share);
+  static bool ShowAndEditMediaSource(const std::string &type, const std::string &share);
 
   bool IsConfirmed() const { return m_confirmed; };
 
   void SetShare(const CMediaSource &share);
-  void SetTypeOfMedia(const CStdString &type, bool editNotAdd = false);
+  void SetTypeOfMedia(const std::string &type, bool editNotAdd = false);
 protected:
   void OnPathBrowse(int item);
   void OnPath(int item);
@@ -54,15 +56,11 @@ protected:
   int GetSelectedItem();
   void HighlightItem(int item);
 
-  std::vector<std::string> GetPaths();
+  std::vector<std::string> GetPaths() const;
 
-  CStdString m_type;
-  CStdString m_name;
+  std::string m_type;
+  std::string m_name;
   CFileItemList* m_paths;
   bool m_confirmed;
-  ADDON::ScraperPtr m_info;
-  bool m_bRunScan;
   bool m_bNameChanged;
-
-  VIDEO::SScanSettings m_settings;
 };
