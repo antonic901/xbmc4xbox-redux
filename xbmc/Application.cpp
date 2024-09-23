@@ -5783,14 +5783,14 @@ void CApplication::UpdateLibraries()
 {
   if (CSettings::GetInstance().GetBool("videolibrary.updateonstartup"))
   {
-    CLog::Log(LOGNOTICE, "%s - Starting video library startup scan", __FUNCTION__);
-    StartVideoScan("");
+    CLog::Log(LOGNOTICE, "Starting video library startup scan");
+    StartVideoScan("", !CSettings::GetInstance().GetBool("videolibrary.backgroundupdate"));
   }
- 
-  if (CSettings::GetInstance().GetBool("musiclibrary.updateonstartup"))
+
+  if (CSettings::GetInstance().GetBool("musiclibrary.backgroundupdate"))
   {
-    CLog::Log(LOGNOTICE, "%s - Starting music library startup scan", __FUNCTION__);
-    StartMusicScan("");
+    CLog::Log(LOGNOTICE, "Starting music library startup scan");
+    StartMusicScan("", !CSettings::GetInstance().GetBool("musiclibrary.backgroundupdate"));
   }
 }
 
@@ -5824,10 +5824,10 @@ void CApplication::StartVideoCleanup(bool userInitiated /* = true */)
   if (userInitiated)
     CVideoLibraryQueue::GetInstance().CleanLibraryModal(paths);
   else
-    CVideoLibraryQueue::GetInstance().CleanLibrary(paths, false);
+    CVideoLibraryQueue::GetInstance().CleanLibrary(paths, true);
 }
 
-void CApplication::StartVideoScan(const CStdString &strDirectory, bool userInitiated /* = true */, bool scanAll)
+void CApplication::StartVideoScan(const std::string &strDirectory, bool userInitiated /* = true */, bool scanAll /* = false */)
 {
   CVideoLibraryQueue::GetInstance().ScanLibrary(strDirectory, scanAll, userInitiated);
 }
@@ -5846,7 +5846,7 @@ void CApplication::StartMusicCleanup(bool userInitiated /* = true */)
   }
 }
 
-void CApplication::StartMusicScan(const CStdString &strDirectory, bool userInitiated /* = true */, int flags)
+void CApplication::StartMusicScan(const std::string &strDirectory, bool userInitiated /* = true */, int flags /* = 0 */)
 {
   if (m_musicInfoScanner->IsScanning())
     return;
@@ -5865,7 +5865,7 @@ void CApplication::StartMusicScan(const CStdString &strDirectory, bool userIniti
   m_musicInfoScanner->Start(strDirectory, flags);
 }
 
-void CApplication::StartMusicAlbumScan(const CStdString& strDirectory,
+void CApplication::StartMusicAlbumScan(const std::string& strDirectory,
                                        bool refresh)
 {
   if (m_musicInfoScanner->IsScanning())
@@ -5876,7 +5876,7 @@ void CApplication::StartMusicAlbumScan(const CStdString& strDirectory,
   m_musicInfoScanner->FetchAlbumInfo(strDirectory,refresh);
 }
 
-void CApplication::StartMusicArtistScan(const CStdString& strDirectory,
+void CApplication::StartMusicArtistScan(const std::string& strDirectory,
                                         bool refresh)
 {
   if (m_musicInfoScanner->IsScanning())
