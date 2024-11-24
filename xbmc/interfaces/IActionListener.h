@@ -20,12 +20,12 @@
  *
  */
 
-#include "guilib/Key.h"
+class CAction;
 
 class IActionListener
 {
 public:
   virtual ~IActionListener() {};
-  
+
   virtual bool OnAction(const CAction &action) = 0;
 };

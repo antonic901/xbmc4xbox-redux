@@ -1,6 +1,6 @@
 #pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
+ *      Copyright (C) 2005-2014 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -27,6 +27,8 @@
 #include "threads/Event.h"
 #include "utils/Variant.h"
 
+class CVariant;
+
 namespace ANNOUNCEMENT
 {
   class CAnnouncementManager : public CThread
@@ -44,7 +46,7 @@ namespace ANNOUNCEMENT
     void RemoveAnnouncer(IAnnouncer *listener);
 
     void Announce(AnnouncementFlag flag, const char *sender, const char *message);
-    void Announce(AnnouncementFlag flag, const char *sender, const char *message, CVariant &data);
+    void Announce(AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data);
     void Announce(AnnouncementFlag flag, const char *sender, const char *message,
         const boost::shared_ptr<const CFileItem>& item);
     void Announce(AnnouncementFlag flag, const char *sender, const char *message,
@@ -52,8 +54,8 @@ namespace ANNOUNCEMENT
 
   protected:
     void Process();
-    void DoAnnounce(AnnouncementFlag flag, const char *sender, const char *message, CFileItemPtr item, CVariant &data);
-    void DoAnnounce(AnnouncementFlag flag, const char *sender, const char *message, CVariant &data);
+    void DoAnnounce(AnnouncementFlag flag, const char *sender, const char *message, CFileItemPtr item, const CVariant &data);
+    void DoAnnounce(AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data);
 
     struct CAnnounceData
     {
