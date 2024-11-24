@@ -1947,9 +1947,6 @@
 					RelativePath="..\..\xbmc\dialogs\GUIDialogFileBrowser.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\video\dialogs\GUIDialogFileStacking.cpp">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\video\dialogs\GUIDialogFullScreenInfo.cpp">
 				</File>
 				<File
@@ -3050,9 +3047,6 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\dialogs\GUIDialogContextMenu.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\video\dialogs\GUIDialogFileStacking.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\dialogs\GUIDialogGamepad.h">
