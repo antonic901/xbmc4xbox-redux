@@ -28,14 +28,17 @@
  *
  */
 
-#include "GUIWindow.h"
-#include "IWindowManagerCallback.h"
-#include "IMsgTargetCallback.h"
-#include "DirtyRegionTracker.h"
-#include "utils/GlobalsHandling.h"
-#include "guilib/Key.h"
-#include "messaging/IMessageTarget.h"
 #include <list>
+#include <utility>
+#include <vector>
+
+#include "DirtyRegionTracker.h"
+#include "guilib/Key.h"
+#include "GUIWindow.h"
+#include "IMsgTargetCallback.h"
+#include "IWindowManagerCallback.h"
+#include "messaging/IMessageTarget.h"
+#include "utils/GlobalsHandling.h"
 
 class CGUIDialog;
 class CGUIMediaWindow;
@@ -72,9 +75,9 @@ public:
   void AddCustomWindow(CGUIWindow* pWindow);
   void Remove(int id);
   void Delete(int id);
-  void ActivateWindow(int iWindowID, const CStdString &strPath = "");
+  void ActivateWindow(int iWindowID, const std::string &strPath = "");
   void ForceActivateWindow(int iWindowID, const std::string &strPath = "");
-  void ChangeActiveWindow(int iNewID, const CStdString &strPath = "");
+  void ChangeActiveWindow(int iNewID, const std::string &strPath = "");
   void ActivateWindow(int iWindowID, const std::vector<std::string>& params, bool swappingWindows = false, bool force = false);
   void PreviousWindow();
 
@@ -101,12 +104,20 @@ public:
    */
   void MarkDirty(const CRect& rect);
 
+  /*! \brief Get the current dirty region
+   */
+  CDirtyRegionList GetDirty() { return m_tracker.GetDirtyRegions(); }
+
   /*! \brief Rendering of the current window and any dialogs
    Render is called every frame to draw the current window and any dialogs.
    It should only be called from the application thread.
    Returns true only if it has rendered something.
    */
   bool Render();
+
+#ifndef HAS_XBOX_D3D
+  void RenderEx() const;
+#endif
 
   /*! \brief Do any post render activities.
    */
@@ -135,11 +146,13 @@ public:
   */
   bool DestroyWindows();
 
+#ifdef HAS_XBOX_D3D
   /*! \brief Used for rendering all visible dialogs while we
    are in CGUIWindowFullscreen and videoplayback is not paused.
    For more info see CApplication::Render().
    */
   void RenderDialogs();
+#endif
   CGUIWindow* GetWindow(int id) const;
   void SetCallback(IWindowManagerCallback& callback);
   void DeInitialize();
@@ -166,9 +179,9 @@ public:
   bool IsWindowActive(int id, bool ignoreClosing = true) const;
   bool IsWindowVisible(int id) const;
   bool IsWindowTopMost(int id) const;
-  bool IsWindowActive(const CStdString &xmlFile, bool ignoreClosing = true) const;
-  bool IsWindowVisible(const CStdString &xmlFile) const;
-  bool IsWindowTopMost(const CStdString &xmlFile) const;
+  bool IsWindowActive(const std::string &xmlFile, bool ignoreClosing = true) const;
+  bool IsWindowVisible(const std::string &xmlFile) const;
+  bool IsWindowTopMost(const std::string &xmlFile) const;
   /*! \brief Checks if the given window is an addon window.
    *
    * \return true if the given window is an addon window, otherwise false.
@@ -232,7 +245,7 @@ private:
   class CGUIWindowManagerIdCache
   {
   public:
-    CGUIWindowManagerIdCache(void) : m_id(WINDOW_INVALID), m_window(NULL) {}
+    CGUIWindowManagerIdCache(void) : m_id(WINDOW_INVALID), m_window(nullptr) {}
     CGUIWindow *Get(int id)
     {
       if (id == m_id)
