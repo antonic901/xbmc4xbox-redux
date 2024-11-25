@@ -961,11 +961,6 @@ bool URIUtils::IsVTP(const CStdString& strFile)
   return IsProtocol(strFile, "vtp");
 }
 
-bool URIUtils::IsHTSP(const CStdString& strFile)
-{
-  return IsProtocol(strFile, "htsp");
-}
-
 bool URIUtils::IsLiveTV(const CStdString& strFile)
 {
   CStdString strFileWithoutSlash(strFile);
@@ -974,7 +969,6 @@ bool URIUtils::IsLiveTV(const CStdString& strFile)
   if(IsVTP(strFile)
   || IsHDHomeRun(strFile)
   || IsSlingbox(strFile)
-  || IsHTSP(strFile)
   || IsProtocol(strFile, "sap")
   ||(StringUtils::EndsWithNoCase(strFileWithoutSlash, ".pvr") && !PathStarts(strFileWithoutSlash, "pvr://recordings")))
     return true;

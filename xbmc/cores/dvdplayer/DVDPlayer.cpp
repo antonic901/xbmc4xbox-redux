@@ -511,8 +511,7 @@ bool CDVDPlayer::OpenInputStream()
 
   // find any available external subtitles for non dvd files
   if (!m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD)
-  &&  !m_pInputStream->IsStreamType(DVDSTREAM_TYPE_TV)
-  &&  !m_pInputStream->IsStreamType(DVDSTREAM_TYPE_HTSP))
+  &&  !m_pInputStream->IsStreamType(DVDSTREAM_TYPE_TV))
   {
     // find any available external subtitles
     std::vector<std::string> filenames;
@@ -1387,8 +1386,7 @@ bool CDVDPlayer::CheckStartCaching(CCurrentStream& current)
     || m_dvdPlayerVideo.GetLevel() > 50)
       return false;
 
-    if(m_pInputStream->IsStreamType(DVDSTREAM_TYPE_HTSP)
-    || m_pInputStream->IsStreamType(DVDSTREAM_TYPE_TV))
+    if(m_pInputStream->IsStreamType(DVDSTREAM_TYPE_TV))
       SetCaching(CACHESTATE_INIT);
     else
     {

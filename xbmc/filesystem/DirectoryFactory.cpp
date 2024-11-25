@@ -62,7 +62,6 @@
 #include "SndtrkDirectory.h"
 #include "DAAPDirectory.h"
 #include "MemUnitDirectory.h"
-#include "HTSPDirectory.h"
 #endif
 #ifdef HAS_UPNP
 #include "UPnPDirectory.h"
@@ -135,7 +134,6 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
     if (url.IsProtocol("smb")) return new CSMBDirectory();
     if (url.IsProtocol("daap")) return new CDAAPDirectory();
     if (url.IsProtocol("rtv")) return new CRTVDirectory();
-    if (url.IsProtocol("htsp")) return new CHTSPDirectory();
 #endif
 #ifdef HAS_UPNP
     if (url.IsProtocol("upnp")) return new CUPnPDirectory();

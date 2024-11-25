@@ -26,9 +26,7 @@
 
 #include "DVDDemuxFFmpeg.h"
 #include "DVDDemuxShoutcast.h"
-#ifdef HAS_FILESYSTEM
-#include "DVDDemuxHTSP.h"
-#endif
+
 using namespace std;
 
 CDVDDemux* CDVDFactoryDemuxer::CreateDemuxer(CDVDInputStream* pInputStream)
@@ -48,16 +46,7 @@ CDVDDemux* CDVDFactoryDemuxer::CreateDemuxer(CDVDInputStream* pInputStream)
         return NULL;
     }
   }
-#ifdef HAS_FILESYSTEM
-  if (pInputStream->IsStreamType(DVDSTREAM_TYPE_HTSP))
-  {
-    auto_ptr<CDVDDemuxHTSP> demuxer(new CDVDDemuxHTSP());
-    if(demuxer->Open(pInputStream))
-      return demuxer.release();
-    else
-      return NULL;
-  }
-#endif
+
   auto_ptr<CDVDDemuxFFmpeg> demuxer(new CDVDDemuxFFmpeg());
   if(demuxer->Open(pInputStream))
     return demuxer.release();

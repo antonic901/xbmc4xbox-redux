@@ -1695,18 +1695,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\HDHomeRunFile.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\FileSystem\HTSPDirectory.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\HTSPDirectory.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\HTSPSession.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\HTSPSession.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\FileSystem\HTTPDirectory.cpp">
 				</File>
 				<File
@@ -5353,9 +5341,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxFFmpeg.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxHTSP.cpp">
-					</File>
-					<File
 						RelativePath=".\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxShoutcast.cpp">
 					</File>
 					<File
@@ -5412,9 +5397,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamFile.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamHTSP.cpp">
 					</File>
 					<File
 						RelativePath=".\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamHttp.cpp">
