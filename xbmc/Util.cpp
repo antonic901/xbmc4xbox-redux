@@ -2608,8 +2608,6 @@ int CUtil::GetMatchingSource(const CStdString& strPath1, VECSOURCES& VECSOURCES,
 
   if (checkURL.IsProtocol("shout"))
     strPath = checkURL.GetHostName();
-  if (checkURL.IsProtocol("tuxbox"))
-    return 1;
   if (checkURL.IsProtocol("plugin"))
     return 1;
   if (checkURL.IsProtocol("multipath"))

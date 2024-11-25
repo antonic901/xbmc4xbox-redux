@@ -235,8 +235,6 @@ public:
   std::string GetItemLabel(const CFileItem *item, int info, std::string *fallback = NULL);
   std::string GetItemImage(const CFileItem *item, int info, std::string *fallback = NULL);
 
-  // Called from tuxbox service thread to update current status
-  void UpdateFromTuxBox();
   void SetLaunchingXBEName(const std::string &name) { m_launchingXBE = name; };
 
   /*! \brief containers call here to specify that the focus is changing

@@ -398,7 +398,6 @@ const std::string CURL::GetTranslatedProtocol() const
   if (IsProtocol("shout")
    || IsProtocol("daap")
    || IsProtocol("dav")
-   || IsProtocol("tuxbox")
    || IsProtocol("mms")
    || IsProtocol("rss"))
     return "http";

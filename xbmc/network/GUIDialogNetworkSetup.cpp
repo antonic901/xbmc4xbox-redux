@@ -203,7 +203,6 @@ void CGUIDialogNetworkSetup::InitializeSettings()
   labels.push_back(std::make_pair(20175, NET_PROTOCOL_UPNP));
   labels.push_back(std::make_pair(20304, NET_PROTOCOL_RSS));
   labels.push_back(std::make_pair(20258, NET_PROTOCOL_MYTH));
-  labels.push_back(std::make_pair(21331, NET_PROTOCOL_TUXBOX));
   labels.push_back(std::make_pair(20174, NET_PROTOCOL_DAAP));
 #ifdef HAS_FILESYSTEM_NFS
   labels.push_back(std::make_pair(20259, NET_PROTOCOL_NFS));
@@ -273,8 +272,7 @@ void CGUIDialogNetworkSetup::OnProtocolChange()
       m_port = "21";
     else if (m_protocol == NET_PROTOCOL_HTTP ||
        m_protocol == NET_PROTOCOL_RSS ||
-       m_protocol == NET_PROTOCOL_DAV ||
-       m_protocol == NET_PROTOCOL_TUXBOX)
+       m_protocol == NET_PROTOCOL_DAV)
       m_port = "80";
     else if (m_protocol == NET_PROTOCOL_HTTPS || m_protocol == NET_PROTOCOL_DAVS)
       m_port = "443";
@@ -321,7 +319,6 @@ void CGUIDialogNetworkSetup::UpdateButtons()
     SET_CONTROL_LABEL2(pathControlID, m_path);
     CONTROL_ENABLE_ON_CONDITION(pathControlID, m_protocol != NET_PROTOCOL_UPNP &&
                                                m_protocol != NET_PROTOCOL_DAAP &&
-                                               m_protocol != NET_PROTOCOL_TUXBOX &&
                                                m_protocol != NET_PROTOCOL_MYTH);
     if (m_protocol == NET_PROTOCOL_FTP ||
         m_protocol == NET_PROTOCOL_HTTP ||
@@ -367,7 +364,6 @@ void CGUIDialogNetworkSetup::UpdateButtons()
                                                m_protocol == NET_PROTOCOL_DAVS ||
                                                m_protocol == NET_PROTOCOL_RSS ||
                                                m_protocol == NET_PROTOCOL_SFTP ||
-                                               m_protocol == NET_PROTOCOL_TUXBOX ||
                                                m_protocol == NET_PROTOCOL_MYTH ||
                                                m_protocol == NET_PROTOCOL_DAAP);
 
@@ -400,8 +396,7 @@ void CGUIDialogNetworkSetup::UpdateButtons()
                                                                         m_protocol == NET_PROTOCOL_RSS ||
                                                                         m_protocol == NET_PROTOCOL_SFTP ||
                                                                         m_protocol == NET_PROTOCOL_DAAP ||
-                                                                        m_protocol == NET_PROTOCOL_MYTH ||
-                                                                        m_protocol == NET_PROTOCOL_TUXBOX));
+                                                                        m_protocol == NET_PROTOCOL_MYTH));
   }
 }
 
@@ -430,8 +425,6 @@ std::string CGUIDialogNetworkSetup::ConstructPath() const
     url.SetProtocol("sftp");
   else if (m_protocol == NET_PROTOCOL_DAAP)
     url.SetProtocol("daap");
-  else if (m_protocol == NET_PROTOCOL_TUXBOX)
-    url.SetProtocol("tuxbox");
   else if (m_protocol == NET_PROTOCOL_MYTH)
 
   if (!m_username.empty())
@@ -451,8 +444,7 @@ std::string CGUIDialogNetworkSetup::ConstructPath() const
        (m_protocol == NET_PROTOCOL_SFTP) ||
        (m_protocol == NET_PROTOCOL_NFS) ||
        (m_protocol == NET_PROTOCOL_DAAP && !m_server.empty()) ||
-       (m_protocol == NET_PROTOCOL_MYTH) ||
-       (m_protocol == NET_PROTOCOL_TUXBOX))
+       (m_protocol == NET_PROTOCOL_MYTH))
       && !m_port.empty() && atoi(m_port.c_str()) > 0)
   {
     url.SetPort(atoi(m_port.c_str()));
@@ -487,8 +479,6 @@ void CGUIDialogNetworkSetup::SetPath(const std::string &path)
     m_protocol = NET_PROTOCOL_SFTP;
   else if (url.IsProtocol("daap"))
     m_protocol = NET_PROTOCOL_DAAP;
-  else if (url.IsProtocol("tuxbox"))
-    m_protocol = NET_PROTOCOL_TUXBOX;
   else if (url.IsProtocol("myth"))
     m_protocol = NET_PROTOCOL_MYTH;
   else

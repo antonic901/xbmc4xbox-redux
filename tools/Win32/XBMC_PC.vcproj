@@ -1792,12 +1792,6 @@
 					RelativePath="..\..\xbmc\utils\Trainer.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\utils\TuxBoxUtil.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\utils\TuxBoxUtil.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\utils\URIUtils.cpp">
 				</File>
 				<File
@@ -2494,18 +2488,6 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\StackDirectory.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\TuxBoxDirectory.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\TuxBoxDirectory.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\TuxBoxFile.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\TuxBoxFile.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\UPnPDirectory.cpp">

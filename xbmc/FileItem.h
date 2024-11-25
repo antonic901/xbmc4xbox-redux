@@ -212,7 +212,6 @@ public:
   bool IsFileFolder(EFileFolderType types = EFILEFOLDER_MASK_ALL) const;
   bool IsMemoryUnit() const;
   bool IsRemovable() const;
-  bool IsTuxBox() const;
   bool IsMythTV() const;
   bool IsHDHomeRun() const;
   bool IsSlingbox() const;

@@ -95,7 +95,6 @@
 
 #ifdef _XBOX
 #include "utils/LCD.h"
-#include "utils/TuxBoxUtil.h"
 #include "utils/FanController.h"
 #include "defs_from_settings.h"
 #include "utils/Insignia.h"
@@ -11443,51 +11442,6 @@ void CGUIInfoManager::ResetCache()
   CSingleLock lock(m_critInfo);
   for (std::vector<InfoPtr>::iterator i = m_bools.begin(); i != m_bools.end(); ++i)
     (*i)->SetDirty();
-}
-
-// Called from tuxbox service thread to update current status
-void CGUIInfoManager::UpdateFromTuxBox()
-{
-  if(g_tuxbox.vVideoSubChannel.mode)
-    m_currentFile->GetVideoInfoTag()->m_strTitle = g_tuxbox.vVideoSubChannel.current_name;
-
-  // Set m_currentMovieDuration
-  if(!g_tuxbox.sCurSrvData.current_event_duration.empty() &&
-    !g_tuxbox.sCurSrvData.next_event_description.empty() &&
-    g_tuxbox.sCurSrvData.current_event_duration != "-" &&
-    g_tuxbox.sCurSrvData.next_event_description != "-")
-  {
-    StringUtils::Replace(g_tuxbox.sCurSrvData.current_event_duration, "(","");
-    StringUtils::Replace(g_tuxbox.sCurSrvData.current_event_duration, ")","");
-
-    m_currentMovieDuration = StringUtils::Format("%s: %s %s (%s - %s)",
-                                                 g_localizeStrings.Get(180).c_str(),
-                                                 g_tuxbox.sCurSrvData.current_event_duration.c_str(),
-                                                 g_localizeStrings.Get(12391).c_str(),
-                                                 g_tuxbox.sCurSrvData.current_event_time.c_str(),
-                                                 g_tuxbox.sCurSrvData.next_event_time.c_str());
-  }
-
-  //Set strVideoGenre
-  if (!g_tuxbox.sCurSrvData.current_event_description.empty() &&
-    !g_tuxbox.sCurSrvData.next_event_description.empty() &&
-    g_tuxbox.sCurSrvData.current_event_description != "-" &&
-    g_tuxbox.sCurSrvData.next_event_description != "-")
-  {
-    std::string genre = StringUtils::Format("%s %s  -  (%s: %s)",
-                                           g_localizeStrings.Get(143).c_str(),
-                                           g_tuxbox.sCurSrvData.current_event_description.c_str(),
-                                           g_localizeStrings.Get(209).c_str(),
-                                           g_tuxbox.sCurSrvData.next_event_description.c_str());
-    m_currentFile->GetVideoInfoTag()->m_genre = StringUtils::Split(genre, g_advancedSettings.m_videoItemSeparator);
-  }
-
-  //Set m_currentMovie.m_director
-  if (g_tuxbox.sCurSrvData.current_event_details != "-" &&
-    !g_tuxbox.sCurSrvData.current_event_details.empty())
-  {
-    m_currentFile->GetVideoInfoTag()->m_director = StringUtils::Split(g_tuxbox.sCurSrvData.current_event_details, g_advancedSettings.m_videoItemSeparator);
-  }
 }
 
 std::string CGUIInfoManager::GetPictureLabel(int info)

@@ -70,7 +70,6 @@
 #include "xbox/Network.h"
 #include "ZipDirectory.h"
 #include "RarDirectory.h"
-#include "TuxBoxDirectory.h"
 #include "HDHomeRunDirectory.h"
 #include "SlingboxDirectory.h"
 #include "MythDirectory.h"
@@ -130,7 +129,6 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
 
   if( g_application.getNetwork().IsAvailable(true) )
   {
-    if (url.IsProtocol("tuxbox")) return new CDirectoryTuxBox();
     if (url.IsProtocol("ftp") ||  url.IsProtocol("ftpx") ||  url.IsProtocol("ftps")) return new CFTPDirectory();
     if (url.IsProtocol("http") || url.IsProtocol("https")) return new CHTTPDirectory();
     if (url.IsProtocol("dav") || url.IsProtocol("davs")) return new CDAVDirectory();

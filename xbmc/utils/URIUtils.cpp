@@ -642,9 +642,6 @@ bool URIUtils::IsOnLAN(const CStdString& strPath)
   if(IsPlugin(strPath))
     return false;
 
-  if(IsTuxBox(strPath))
-    return true;
-
   if(IsUPnP(strPath))
     return true;
 
@@ -950,11 +947,6 @@ bool URIUtils::IsMemCard(const CStdString& strFile)
   return IsProtocol(strFile, "mem");
 }
 
-bool URIUtils::IsTuxBox(const CStdString& strFile)
-{
-  return IsProtocol(strFile, "tuxbox");
-}
-
 bool URIUtils::IsMythTV(const CStdString& strFile)
 {
   return IsProtocol(strFile, "myth");
@@ -985,8 +977,7 @@ bool URIUtils::IsLiveTV(const CStdString& strFile)
   CStdString strFileWithoutSlash(strFile);
   RemoveSlashAtEnd(strFileWithoutSlash);
 
-  if(IsTuxBox(strFile)
-  || IsVTP(strFile)
+  if(IsVTP(strFile)
   || IsHDHomeRun(strFile)
   || IsSlingbox(strFile)
   || IsHTSP(strFile)

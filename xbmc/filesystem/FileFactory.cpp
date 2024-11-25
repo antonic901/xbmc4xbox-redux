@@ -43,7 +43,6 @@
 #include "MultiPathFile.h"
 #include "ResourceFile.h"
 #include "Application.h"
-#include "TuxBoxFile.h"
 #include "HDHomeRunFile.h"
 #include "SlingboxFile.h"
 #include "ImageFile.h"
@@ -98,7 +97,6 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
     ||  url.IsProtocol("https")) return new CCurlFile();
     else if (url.IsProtocol("dav") || url.IsProtocol("davs")) return new CDAVFile();
     else if (url.IsProtocol("shout")) return new CShoutcastFile();
-    else if (url.IsProtocol("tuxbox")) return new CTuxBoxFile();
     else if (url.IsProtocol("hdhomerun")) return new CHomeRunFile();
     else if (url.IsProtocol("sling")) return new CSlingboxFile();
     else if (url.IsProtocol("myth")) return new CMythFile();

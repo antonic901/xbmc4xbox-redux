@@ -982,11 +982,6 @@ bool CFileItem::IsDAAP() const
   return URIUtils::IsDAAP(m_strPath);
 }
 
-bool CFileItem::IsTuxBox() const
-{
-  return URIUtils::IsTuxBox(m_strPath);
-}
-
 bool CFileItem::IsMythTV() const
 {
   return URIUtils::IsMythTV(m_strPath);
