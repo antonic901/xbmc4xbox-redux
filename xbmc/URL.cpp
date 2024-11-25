@@ -188,7 +188,6 @@ void CURL::Parse(const std::string& strURL1)
   if(  IsProtocolEqual(strProtocol2, "http")
     || IsProtocolEqual(strProtocol2, "https")
     || IsProtocolEqual(strProtocol2, "plugin")
-    || IsProtocolEqual(strProtocol2, "hdhomerun")
     || IsProtocolEqual(strProtocol2, "addons")
     || IsProtocolEqual(strProtocol2, "rtsp"))
     sep = "?;#|";
@@ -396,9 +395,7 @@ const std::string CURL::GetTranslatedProtocol() const
     return "ftp";
 
   if (IsProtocol("shout")
-   || IsProtocol("daap")
    || IsProtocol("dav")
-   || IsProtocol("tuxbox")
    || IsProtocol("mms")
    || IsProtocol("rss"))
     return "http";

@@ -26,7 +26,6 @@ class CGUIDialogNetworkSetup : public CGUIDialogSettingsManualBase
 {
 public:
   enum NET_PROTOCOL { NET_PROTOCOL_SMB = 0,
-                      NET_PROTOCOL_XBMSP,
                       NET_PROTOCOL_FTP,
                       NET_PROTOCOL_HTTP,
                       NET_PROTOCOL_HTTPS,
@@ -35,10 +34,7 @@ public:
                       NET_PROTOCOL_UPNP,
                       NET_PROTOCOL_RSS,
                       NET_PROTOCOL_SFTP,
-                      NET_PROTOCOL_NFS,
-                      NET_PROTOCOL_DAAP,
-                      NET_PROTOCOL_MYTH,
-                      NET_PROTOCOL_TUXBOX};
+                      NET_PROTOCOL_NFS};
   CGUIDialogNetworkSetup(void);
   virtual ~CGUIDialogNetworkSetup(void);
   virtual bool OnMessage(CGUIMessage& message);

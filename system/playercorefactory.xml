@@ -10,8 +10,7 @@
   </players>
 
   <rules>
-    <rule name="rtv" protocols="rtv" player="DVDPlayer" />
-    <rule name="hdhomerun/myth/rtmp/mms/udp" protocols="hdhomerun|myth|cmyth|rtmp|mms|mmsh|udp" player="DVDPlayer" />
+    <rule name="rtmp/mms/udp" protocols="rtmp|mms|mmsh|udp" player="DVDPlayer" />
     <rule name="lastfm/shout" protocols="lastfm|shout" player="PAPlayer" />
 
     <!-- dvdplayer can play standard rtsp streams -->

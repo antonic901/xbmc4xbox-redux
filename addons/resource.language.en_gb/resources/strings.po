@@ -8507,9 +8507,7 @@ msgctxt "#20171"
 msgid "Windows network (SMB)"
 msgstr ""
 
-msgctxt "#20172"
-msgid "XBMSP server"
-msgstr ""
+#empty string with id 20172
 
 #: xbmc/network/GUIDialogNetworkSetup.cpp
 msgctxt "#20173"

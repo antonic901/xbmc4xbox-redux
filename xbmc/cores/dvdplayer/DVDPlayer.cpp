@@ -27,7 +27,6 @@
 #include "DVDInputStreams/DVDInputStreamFile.h"
 #include "DVDInputStreams/DVDFactoryInputStream.h"
 #include "DVDInputStreams/DVDInputStreamNavigator.h"
-#include "DVDInputStreams/DVDInputStreamTV.h"
 
 #include "DVDDemuxers/DVDDemux.h"
 #include "DVDDemuxers/DVDDemuxUtils.h"
@@ -511,8 +510,7 @@ bool CDVDPlayer::OpenInputStream()
 
   // find any available external subtitles for non dvd files
   if (!m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD)
-  &&  !m_pInputStream->IsStreamType(DVDSTREAM_TYPE_TV)
-  &&  !m_pInputStream->IsStreamType(DVDSTREAM_TYPE_HTSP))
+  &&  !m_pInputStream->IsStreamType(DVDSTREAM_TYPE_TV))
   {
     // find any available external subtitles
     std::vector<std::string> filenames;
@@ -1387,8 +1385,7 @@ bool CDVDPlayer::CheckStartCaching(CCurrentStream& current)
     || m_dvdPlayerVideo.GetLevel() > 50)
       return false;
 
-    if(m_pInputStream->IsStreamType(DVDSTREAM_TYPE_HTSP)
-    || m_pInputStream->IsStreamType(DVDSTREAM_TYPE_TV))
+    if(m_pInputStream->IsStreamType(DVDSTREAM_TYPE_TV))
       SetCaching(CACHESTATE_INIT);
     else
     {
@@ -1961,8 +1958,7 @@ void CDVDPlayer::HandleMessages()
       }
       else if (pMsg->IsType(CDVDMsg::PLAYER_SET_RECORD))
       {
-        if (m_pInputStream && m_pInputStream->IsStreamType(DVDSTREAM_TYPE_TV))
-          static_cast<CDVDInputStreamTV*>(m_pInputStream)->Record(*(CDVDMsgBool*)pMsg);
+        // NOTICE: support for PVR needed in order to record
       }
       else if (pMsg->IsType(CDVDMsg::GENERAL_FLUSH))
       {
@@ -3476,12 +3472,7 @@ void CDVDPlayer::UpdatePlayState(double timeout)
   if(m_pInputStream)
   {
     // override from input stream if needed
-
-    if (m_pInputStream->IsStreamType(DVDSTREAM_TYPE_TV))
-    {
-      state.canrecord = static_cast<CDVDInputStreamTV*>(m_pInputStream)->CanRecord();
-      state.recording = static_cast<CDVDInputStreamTV*>(m_pInputStream)->IsRecording();
-    }
+    // NOTICE: code related to PVR
 
     CDVDInputStream::IDisplayTime* pDisplayTime = dynamic_cast<CDVDInputStream::IDisplayTime*>(m_pInputStream);
     if (pDisplayTime)

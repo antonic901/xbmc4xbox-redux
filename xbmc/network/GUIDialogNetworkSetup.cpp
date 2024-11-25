@@ -202,9 +202,6 @@ void CGUIDialogNetworkSetup::InitializeSettings()
   labels.push_back(std::make_pair(20173, NET_PROTOCOL_FTP));
   labels.push_back(std::make_pair(20175, NET_PROTOCOL_UPNP));
   labels.push_back(std::make_pair(20304, NET_PROTOCOL_RSS));
-  labels.push_back(std::make_pair(20258, NET_PROTOCOL_MYTH));
-  labels.push_back(std::make_pair(21331, NET_PROTOCOL_TUXBOX));
-  labels.push_back(std::make_pair(20174, NET_PROTOCOL_DAAP));
 #ifdef HAS_FILESYSTEM_NFS
   labels.push_back(std::make_pair(20259, NET_PROTOCOL_NFS));
 #endif
@@ -273,17 +270,12 @@ void CGUIDialogNetworkSetup::OnProtocolChange()
       m_port = "21";
     else if (m_protocol == NET_PROTOCOL_HTTP ||
        m_protocol == NET_PROTOCOL_RSS ||
-       m_protocol == NET_PROTOCOL_DAV ||
-       m_protocol == NET_PROTOCOL_TUXBOX)
+       m_protocol == NET_PROTOCOL_DAV)
       m_port = "80";
     else if (m_protocol == NET_PROTOCOL_HTTPS || m_protocol == NET_PROTOCOL_DAVS)
       m_port = "443";
     else if (m_protocol == NET_PROTOCOL_SFTP)
       m_port = "22";
-    else if (m_protocol == NET_PROTOCOL_DAAP)
-      m_port = "3689";
-    else if (m_protocol == NET_PROTOCOL_MYTH)
-      m_port = "6543";
     else
       m_port = "0";
 
@@ -307,10 +299,7 @@ void CGUIDialogNetworkSetup::UpdateButtons()
     {
       SET_CONTROL_LABEL(addressControlID, 1009);  // Server Address
     }
-    if (m_protocol == NET_PROTOCOL_DAAP)
-      SendMessage(GUI_MSG_SET_TYPE, addressControlID, CGUIEditControl::INPUT_TYPE_IPADDRESS, 1016);
-    else
-      SendMessage(GUI_MSG_SET_TYPE, addressControlID, CGUIEditControl::INPUT_TYPE_TEXT, 1016);
+    SendMessage(GUI_MSG_SET_TYPE, addressControlID, CGUIEditControl::INPUT_TYPE_TEXT, 1016);
   }
 
   // remote path
@@ -319,10 +308,7 @@ void CGUIDialogNetworkSetup::UpdateButtons()
   {
     int pathControlID = pathControl->GetID();
     SET_CONTROL_LABEL2(pathControlID, m_path);
-    CONTROL_ENABLE_ON_CONDITION(pathControlID, m_protocol != NET_PROTOCOL_UPNP &&
-                                               m_protocol != NET_PROTOCOL_DAAP &&
-                                               m_protocol != NET_PROTOCOL_TUXBOX &&
-                                               m_protocol != NET_PROTOCOL_MYTH);
+    CONTROL_ENABLE_ON_CONDITION(pathControlID, m_protocol != NET_PROTOCOL_UPNP);
     if (m_protocol == NET_PROTOCOL_FTP ||
         m_protocol == NET_PROTOCOL_HTTP ||
         m_protocol == NET_PROTOCOL_HTTPS ||
@@ -348,8 +334,7 @@ void CGUIDialogNetworkSetup::UpdateButtons()
     int userControlID = userControl->GetID();
     SET_CONTROL_LABEL2(userControlID, m_username);
     CONTROL_ENABLE_ON_CONDITION(userControlID, m_protocol != NET_PROTOCOL_UPNP &&
-                                               m_protocol != NET_PROTOCOL_NFS &&
-                                               m_protocol != NET_PROTOCOL_DAAP);
+                                               m_protocol != NET_PROTOCOL_NFS);
 
     SendMessage(GUI_MSG_SET_TYPE, userControlID, CGUIEditControl::INPUT_TYPE_TEXT, 1019);
   }
@@ -366,10 +351,7 @@ void CGUIDialogNetworkSetup::UpdateButtons()
                                                m_protocol == NET_PROTOCOL_DAV ||
                                                m_protocol == NET_PROTOCOL_DAVS ||
                                                m_protocol == NET_PROTOCOL_RSS ||
-                                               m_protocol == NET_PROTOCOL_SFTP ||
-                                               m_protocol == NET_PROTOCOL_TUXBOX ||
-                                               m_protocol == NET_PROTOCOL_MYTH ||
-                                               m_protocol == NET_PROTOCOL_DAAP);
+                                               m_protocol == NET_PROTOCOL_SFTP);
 
     SendMessage(GUI_MSG_SET_TYPE, portControlID, CGUIEditControl::INPUT_TYPE_NUMBER, 1018);
   }
@@ -381,8 +363,7 @@ void CGUIDialogNetworkSetup::UpdateButtons()
     int passControlID = passControl->GetID();
     SET_CONTROL_LABEL2(passControlID, m_password);
     CONTROL_ENABLE_ON_CONDITION(passControlID, m_protocol != NET_PROTOCOL_UPNP &&
-                                                  m_protocol != NET_PROTOCOL_NFS &&
-                                                  m_protocol != NET_PROTOCOL_DAAP);
+                                                  m_protocol != NET_PROTOCOL_NFS);
 
     SendMessage(GUI_MSG_SET_TYPE, passControlID, CGUIEditControl::INPUT_TYPE_PASSWORD, 12326);
   }
@@ -398,10 +379,7 @@ void CGUIDialogNetworkSetup::UpdateButtons()
                                                                         m_protocol == NET_PROTOCOL_DAV ||
                                                                         m_protocol == NET_PROTOCOL_DAVS ||
                                                                         m_protocol == NET_PROTOCOL_RSS ||
-                                                                        m_protocol == NET_PROTOCOL_SFTP ||
-                                                                        m_protocol == NET_PROTOCOL_DAAP ||
-                                                                        m_protocol == NET_PROTOCOL_MYTH ||
-                                                                        m_protocol == NET_PROTOCOL_TUXBOX));
+                                                                        m_protocol == NET_PROTOCOL_SFTP));
   }
 }
 
@@ -428,11 +406,6 @@ std::string CGUIDialogNetworkSetup::ConstructPath() const
     url.SetProtocol("nfs");
   else if (m_protocol == NET_PROTOCOL_SFTP)
     url.SetProtocol("sftp");
-  else if (m_protocol == NET_PROTOCOL_DAAP)
-    url.SetProtocol("daap");
-  else if (m_protocol == NET_PROTOCOL_TUXBOX)
-    url.SetProtocol("tuxbox");
-  else if (m_protocol == NET_PROTOCOL_MYTH)
 
   if (!m_username.empty())
   {
@@ -449,10 +422,7 @@ std::string CGUIDialogNetworkSetup::ConstructPath() const
        (m_protocol == NET_PROTOCOL_DAVS) ||
        (m_protocol == NET_PROTOCOL_RSS) ||
        (m_protocol == NET_PROTOCOL_SFTP) ||
-       (m_protocol == NET_PROTOCOL_NFS) ||
-       (m_protocol == NET_PROTOCOL_DAAP && !m_server.empty()) ||
-       (m_protocol == NET_PROTOCOL_MYTH) ||
-       (m_protocol == NET_PROTOCOL_TUXBOX))
+       (m_protocol == NET_PROTOCOL_NFS))
       && !m_port.empty() && atoi(m_port.c_str()) > 0)
   {
     url.SetPort(atoi(m_port.c_str()));
@@ -485,12 +455,6 @@ void CGUIDialogNetworkSetup::SetPath(const std::string &path)
     m_protocol = NET_PROTOCOL_NFS;
   else if (url.IsProtocol("sftp") || url.IsProtocol("ssh"))
     m_protocol = NET_PROTOCOL_SFTP;
-  else if (url.IsProtocol("daap"))
-    m_protocol = NET_PROTOCOL_DAAP;
-  else if (url.IsProtocol("tuxbox"))
-    m_protocol = NET_PROTOCOL_TUXBOX;
-  else if (url.IsProtocol("myth"))
-    m_protocol = NET_PROTOCOL_MYTH;
   else
     m_protocol = NET_PROTOCOL_SMB;  // default to smb
   m_username = url.GetUserName();

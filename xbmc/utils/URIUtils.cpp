@@ -23,7 +23,6 @@
 #include "Application.h"
 #include "FileItem.h"
 #include "filesystem/MultiPathDirectory.h"
-#include "filesystem/MythDirectory.h"
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/StackDirectory.h"
 #include "network/DNSNameCache.h"
@@ -635,15 +634,9 @@ bool URIUtils::IsOnLAN(const CStdString& strPath)
 
   if(IsSpecial(strPath))
     return IsOnLAN(CSpecialProtocol::TranslatePath(strPath));
-
-  if(IsDAAP(strPath))
-    return true;
   
   if(IsPlugin(strPath))
     return false;
-
-  if(IsTuxBox(strPath))
-    return true;
 
   if(IsUPnP(strPath))
     return true;
@@ -935,11 +928,6 @@ bool URIUtils::IsInternetStream(const CURL& url, bool bStrictCheck /* = false */
   return false;
 }
 
-bool URIUtils::IsDAAP(const CStdString& strFile)
-{
-  return IsProtocol(strFile, "daap");
-}
-
 bool URIUtils::IsUPnP(const CStdString& strFile)
 {
   return IsProtocol(strFile, "upnp");
@@ -950,34 +938,9 @@ bool URIUtils::IsMemCard(const CStdString& strFile)
   return IsProtocol(strFile, "mem");
 }
 
-bool URIUtils::IsTuxBox(const CStdString& strFile)
-{
-  return IsProtocol(strFile, "tuxbox");
-}
-
-bool URIUtils::IsMythTV(const CStdString& strFile)
-{
-  return IsProtocol(strFile, "myth");
-}
-
-bool URIUtils::IsHDHomeRun(const CStdString& strFile)
-{
-  return IsProtocol(strFile, "hdhomerun");
-}
-
-bool URIUtils::IsSlingbox(const CStdString& strFile)
-{
-  return IsProtocol(strFile, "sling");
-}
-
 bool URIUtils::IsVTP(const CStdString& strFile)
 {
   return IsProtocol(strFile, "vtp");
-}
-
-bool URIUtils::IsHTSP(const CStdString& strFile)
-{
-  return IsProtocol(strFile, "htsp");
 }
 
 bool URIUtils::IsLiveTV(const CStdString& strFile)
@@ -985,16 +948,9 @@ bool URIUtils::IsLiveTV(const CStdString& strFile)
   CStdString strFileWithoutSlash(strFile);
   RemoveSlashAtEnd(strFileWithoutSlash);
 
-  if(IsTuxBox(strFile)
-  || IsVTP(strFile)
-  || IsHDHomeRun(strFile)
-  || IsSlingbox(strFile)
-  || IsHTSP(strFile)
+  if(IsVTP(strFile)
   || IsProtocol(strFile, "sap")
   ||(StringUtils::EndsWithNoCase(strFileWithoutSlash, ".pvr") && !PathStarts(strFileWithoutSlash, "pvr://recordings")))
-    return true;
-
-  if (IsMythTV(strFile) && CMythDirectory::IsLiveTV(strFile))
     return true;
 
   return false;

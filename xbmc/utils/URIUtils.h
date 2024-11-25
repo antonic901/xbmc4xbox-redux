@@ -134,16 +134,12 @@ public:
   static bool IsAddonsPath(const CStdString& strFile);
   static bool IsSourcesPath(const CStdString& strFile);
   static bool IsCDDA(const CStdString& strFile);
-  static bool IsDAAP(const CStdString& strFile);
   static bool IsDAV(const CStdString& strFile);
   static bool IsDOSPath(const CStdString &path);
   static bool IsDVD(const CStdString& strFile);
   static bool IsFTP(const CStdString& strFile);
   static bool IsHTTP(const std::string& strFile);
   static bool IsHD(const CStdString& strFileName);
-  static bool IsHDHomeRun(const CStdString& strFile);
-  static bool IsSlingbox(const CStdString& strFile);
-  static bool IsHTSP(const CStdString& strFile);
   static bool IsInArchive(const CStdString& strFile);
   static bool IsInRAR(const CStdString& strFile);
   static bool IsInternetStream(const std::string& path, bool bStrictCheck = false);
@@ -155,7 +151,6 @@ public:
   static bool IsPVRRecording(const CStdString& strFile);
   static bool IsMultiPath(const CStdString& strPath);
   static bool IsMusicDb(const CStdString& strFile);
-  static bool IsMythTV(const CStdString& strFile);
   static bool IsNfs(const CStdString& strFile);  
   static bool IsAfp(const CStdString& strFile);    
   static bool IsOnDVD(const CStdString& strFile);
@@ -168,7 +163,6 @@ public:
   static bool IsSmb(const CStdString& strFile);
   static bool IsSpecial(const CStdString& strFile);
   static bool IsStack(const CStdString& strFile);
-  static bool IsTuxBox(const CStdString& strFile);
   static bool IsUPnP(const CStdString& strFile);
   static bool IsMemCard(const CStdString& strFile);
   static bool IsURL(const CStdString& strFile);

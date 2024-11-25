@@ -58,11 +58,8 @@
 #include "ISO9660Directory.h"
 #include "SMBDirectory.h"
 #include "CDDADirectory.h"
-#include "RTVDirectory.h"
 #include "SndtrkDirectory.h"
-#include "DAAPDirectory.h"
 #include "MemUnitDirectory.h"
-#include "HTSPDirectory.h"
 #endif
 #ifdef HAS_UPNP
 #include "UPnPDirectory.h"
@@ -70,10 +67,6 @@
 #include "xbox/Network.h"
 #include "ZipDirectory.h"
 #include "RarDirectory.h"
-#include "TuxBoxDirectory.h"
-#include "HDHomeRunDirectory.h"
-#include "SlingboxDirectory.h"
-#include "MythDirectory.h"
 #include "FileItem.h"
 #include "URL.h"
 #include "RSSDirectory.h"
@@ -130,23 +123,15 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
 
   if( g_application.getNetwork().IsAvailable(true) )
   {
-    if (url.IsProtocol("tuxbox")) return new CDirectoryTuxBox();
     if (url.IsProtocol("ftp") ||  url.IsProtocol("ftpx") ||  url.IsProtocol("ftps")) return new CFTPDirectory();
     if (url.IsProtocol("http") || url.IsProtocol("https")) return new CHTTPDirectory();
     if (url.IsProtocol("dav") || url.IsProtocol("davs")) return new CDAVDirectory();
 #ifdef HAS_FILESYSTEM
     if (url.IsProtocol("smb")) return new CSMBDirectory();
-    if (url.IsProtocol("daap")) return new CDAAPDirectory();
-    if (url.IsProtocol("rtv")) return new CRTVDirectory();
-    if (url.IsProtocol("htsp")) return new CHTSPDirectory();
 #endif
 #ifdef HAS_UPNP
     if (url.IsProtocol("upnp")) return new CUPnPDirectory();
 #endif
-    if (url.IsProtocol("hdhomerun")) return new CHomeRunDirectory();
-    if (url.IsProtocol("sling")) return new CSlingboxDirectory();
-    if (url.IsProtocol("myth")) return new CMythDirectory();
-    if (url.IsProtocol("cmyth")) return new CMythDirectory();
     if (url.IsProtocol("rss")) return new CRSSDirectory();
   }
 

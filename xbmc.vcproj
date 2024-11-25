@@ -68,7 +68,7 @@
 				InsertFile=".\media\dsstdfx.bin,dsstdfx,r"
 				FormatUD="TRUE"
 				NoLibWarn="TRUE"
-				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;LIBXDAAP;PLATINUM;LCODE"
+				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;PLATINUM;LCODE"
 				TitleID="0xFACE008"
 				MediaTypes="0x80000007"
 				TitleName="XBMC Debug"/>
@@ -131,7 +131,7 @@
 				IncludeDebugInfo="TRUE"
 				InsertFile=".\media\dsstdfx.bin,dsstdfx,r"
 				NoLibWarn="TRUE"
-				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;LIBXDAAP;PLATINUM;LCODE"
+				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;PLATINUM;LCODE"
 				TitleID="0xFACE008"
 				MediaTypes="0x80000007"
 				TitleName="XBMC Profile"/>
@@ -195,7 +195,7 @@
 				IncludeDebugInfo="TRUE"
 				InsertFile=".\media\dsstdfx.bin,dsstdfx,r"
 				NoLibWarn="TRUE"
-				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;LIBXDAAP;PLATINUM;LCODE"
+				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;PLATINUM;LCODE"
 				TitleID="0xFACE008"
 				MediaTypes="0x80000007"
 				TitleName="XBMC Profile_FastCap"/>
@@ -258,7 +258,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				StackSize="0x80000"
 				InsertFile=".\media\dsstdfx.bin,dsstdfx,r"
 				FormatUD="TRUE"
-				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;LIBXDAAP;PLATINUM;LCODE"
+				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;PLATINUM;LCODE"
 				TitleID="0xFACE008"
 				MediaTypes="0x80000007"
 				TitleName="XBMC"
@@ -319,7 +319,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				FileName="$(TargetDir)default.xbe"
 				StackSize="0x80000"
 				InsertFile=".\media\dsstdfx.bin,dsstdfx,r"
-				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;LIBXDAAP;PLATINUM;LCODE"
+				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;PLATINUM;LCODE"
 				TitleID="0xFACE008"
 				MediaTypes="0x80000007"
 				TitleName="XBMC"/>
@@ -378,7 +378,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				IncludeDebugInfo="TRUE"
 				InsertFile=".\media\dsstdfx.bin,dsstdfx,r"
 				NoLibWarn="TRUE"
-				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;LIBXDAAP;PLATINUM;LCODE"
+				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;PLATINUM;LCODE"
 				TitleID="0xFACE008"
 				MediaTypes="0x80000007"
 				TitleName="XBMC"/>
@@ -1162,12 +1162,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\Trainer.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\TuxBoxUtil.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\TuxBoxUtil.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\utils\URIUtils.cpp">
 				</File>
 				<File
@@ -1563,18 +1557,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\CurlFile.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\FileSystem\DAAPDirectory.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\DAAPDirectory.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\DAAPFile.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\DAAPFile.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\FileSystem\DAVCommon.cpp">
 				</File>
 				<File
@@ -1618,9 +1600,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\cores\paplayer\DllASAP.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\DllHDHomeRun.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\DllLibCurl.cpp">
@@ -1687,30 +1666,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\HDFile.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\HDHomeRunDirectory.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\HDHomeRunDirectory.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\HDHomeRunFile.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\HDHomeRunFile.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\HTSPDirectory.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\HTSPDirectory.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\HTSPSession.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\HTSPSession.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\HTTPDirectory.cpp">
@@ -1800,24 +1755,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\MusicSearchDirectory.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\FileSystem\MythDirectory.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\MythDirectory.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\MythFile.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\MythFile.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\MythSession.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\MythSession.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\FileSystem\NptXbmcFile.cpp">
 				</File>
 				<File
@@ -1899,12 +1836,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\RSSDirectory.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\FileSystem\RTVDirectory.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\RTVFile.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\FileSystem\ShoutcastFile.cpp">
 				</File>
 				<File
@@ -1915,18 +1846,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\SIDFileDirectory.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\SlingboxDirectory.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\SlingboxDirectory.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\SlingboxFile.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\SlingboxFile.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\SmartPlaylistDirectory.cpp">
@@ -1987,18 +1906,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\StackDirectory.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\TuxBoxDirectory.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\TuxBoxDirectory.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\TuxBoxFile.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\TuxBoxFile.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\UPnPDirectory.cpp">
@@ -4959,12 +4866,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\utils\RssReader.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\FileSystem\RTVDirectory.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileSystem\RTVFile.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\SectionLoader.h">
 			</File>
 			<File
@@ -5389,9 +5290,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxFFmpeg.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxHTSP.cpp">
-					</File>
-					<File
 						RelativePath=".\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxShoutcast.cpp">
 					</File>
 					<File
@@ -5450,9 +5348,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamFile.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamHTSP.cpp">
-					</File>
-					<File
 						RelativePath=".\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamHttp.cpp">
 					</File>
 					<File
@@ -5481,12 +5376,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamStack.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamTV.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamTV.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\cores\dvdplayer\DVDInputStreams\DVDStateSerializer.cpp">
@@ -6347,16 +6236,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Filter="">
 				<File
 					RelativePath=".\lib\sqLite\sqlite.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="SlingboxLib"
-				Filter="">
-				<File
-					RelativePath=".\lib\SlingboxLib\SlingboxLib.cpp">
-				</File>
-				<File
-					RelativePath=".\lib\SlingboxLib\SlingboxLib.h">
 				</File>
 			</Filter>
 			<Filter

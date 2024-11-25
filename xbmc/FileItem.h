@@ -191,7 +191,6 @@ public:
   bool IsRemote() const;
   bool IsSmb() const;
   bool IsURL() const;
-  bool IsDAAP() const;
   bool IsStack() const;
   bool IsMultiPath() const;
   bool IsMusicDb() const;
@@ -212,10 +211,6 @@ public:
   bool IsFileFolder(EFileFolderType types = EFILEFOLDER_MASK_ALL) const;
   bool IsMemoryUnit() const;
   bool IsRemovable() const;
-  bool IsTuxBox() const;
-  bool IsMythTV() const;
-  bool IsHDHomeRun() const;
-  bool IsSlingbox() const;
   bool IsVTP() const;
   bool IsPVR() const;
   bool IsLiveTV() const;

@@ -40,7 +40,6 @@
 #include "FileSystem/RSSDirectory.h"
 #include "filesystem/ZipManager.h"
 #include "filesystem/RarManager.h"
-#include "filesystem/MythDirectory.h"
 #include "filesystem/VideoDatabaseDirectory.h"
 #ifdef HAS_UPNP
 #include "filesystem/UPnPDirectory.h"
@@ -356,33 +355,9 @@ CStdString CUtil::GetTitleFromPath(const CURL& url, bool bIsFolder /* = false */
       strFilename = url.GetHostName();
     }
   }
-  // iTunes music share (DAAP)
-  else if (url.IsProtocol("daap") && strFilename.empty())
-    strFilename = g_localizeStrings.Get(20174);
-
-  // HDHomerun Devices
-  else if (url.IsProtocol("hdhomerun") && strFilename.empty())
-    strFilename = "HDHomerun Devices";
-
-  // Slingbox Devices
-  else if (url.IsProtocol("sling"))
-    strFilename = "Slingbox";
-
-  // ReplayTV Devices
-  else if (url.IsProtocol("rtv"))
-    strFilename = "ReplayTV Devices";
-
-  // HTS Tvheadend client
-  else if (url.IsProtocol("htsp"))
-    strFilename = g_localizeStrings.Get(20256);
-
   // VDR Streamdev client
   else if (url.IsProtocol("vtp"))
     strFilename = g_localizeStrings.Get(20257);
-
-  // MythTV client
-  else if (url.IsProtocol("myth"))
-    strFilename = g_localizeStrings.Get(20258);
 
   // SAP Streams
   else if (url.IsProtocol("sap") && strFilename.empty())
@@ -1658,8 +1633,6 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
 
   CFileItem item(strMovie, false);
   if (item.IsInternetStream()) return ;
-  if (item.IsHDHomeRun()) return ;
-  if (item.IsSlingbox()) return ;
   if (item.IsPlayList()) return ;
   if (!item.IsVideo()) return ;
 
@@ -2608,8 +2581,6 @@ int CUtil::GetMatchingSource(const CStdString& strPath1, VECSOURCES& VECSOURCES,
 
   if (checkURL.IsProtocol("shout"))
     strPath = checkURL.GetHostName();
-  if (checkURL.IsProtocol("tuxbox"))
-    return 1;
   if (checkURL.IsProtocol("plugin"))
     return 1;
   if (checkURL.IsProtocol("multipath"))
@@ -3486,15 +3457,6 @@ bool CUtil::SupportsWriteFileOperations(const CStdString& strPath)
     return true;
   if (URIUtils::IsDAV(strPath))
     return true;
-  if (URIUtils::IsMythTV(strPath))
-  {
-    /*
-     * Can't use CFile::Exists() to check whether the myth:// path supports file operations because
-     * it hits the directory cache on the way through, which has the Live Channels and Guide
-     * items cached.
-     */
-    return CMythDirectory::SupportsWriteFileOperations(strPath);
-  }
   if (URIUtils::IsStack(strPath))
     return SupportsWriteFileOperations(CStackDirectory::GetFirstStackedFile(strPath));
   if (URIUtils::IsMultiPath(strPath))

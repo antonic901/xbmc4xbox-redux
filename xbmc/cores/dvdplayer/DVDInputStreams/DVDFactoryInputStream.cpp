@@ -25,11 +25,7 @@
 #include "DVDInputStreamNavigator.h"
 #include "DVDInputStreamHttp.h"
 #include "DVDInputStreamFFmpeg.h"
-#include "DVDInputStreamTV.h"
 #include "DVDInputStreamRTMP.h"
-#ifdef HAS_FILESYSTEM
-#include "DVDInputStreamHTSP.h"
-#endif
 #ifdef ENABLE_DVDINPUTSTREAM_STACK
 #include "DVDInputStreamStack.h"
 #endif
@@ -59,11 +55,6 @@ CDVDInputStream* CDVDFactoryInputStream::CreateInputStream(IDVDPlayer* pPlayer, 
        || file.substr(0, 7) == "mmst://"
        || file.substr(0, 7) == "mmsh://")
     return new CDVDInputStreamFFmpeg(fileitem);
-  else if(file.substr(0, 8) == "sling://"
-       || file.substr(0, 7) == "myth://"
-       || file.substr(0, 8) == "cmyth://"
-       || file.substr(0, 8) == "gmyth://")
-    return new CDVDInputStreamTV(fileitem);
 #ifdef ENABLE_DVDINPUTSTREAM_STACK
   else if(file.substr(0, 8) == "stack://")
     return new CDVDInputStreamStack(fileitem);
@@ -74,10 +65,6 @@ CDVDInputStream* CDVDFactoryInputStream::CreateInputStream(IDVDPlayer* pPlayer, 
        || file.substr(0, 9) == "rtmpte://"
        || file.substr(0, 8) == "rtmps://")
     return new CDVDInputStreamRTMP(fileitem);
-#ifdef HAS_FILESYSTEM
-  else if(file.substr(0, 7) == "htsp://")
-    return new CDVDInputStreamHTSP(fileitem);
-#endif
   else if (fileitem.IsInternetStream())
   {
     if (fileitem.IsType(".m3u8"))

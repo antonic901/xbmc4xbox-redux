@@ -85,14 +85,6 @@
         <!--   <path>UDF:</path>          					!-->
         <!-- </bookmark>                  					!-->
         <bookmark>
-            <name>XBMSP Network Share</name>
-            <path>xbms://192.168.0.1:1400/</path>
-        </bookmark>
-        <bookmark>
-            <name>XBMSP Network Servers (Auto-Discover)</name>
-            <path>xbms://</path>
-        </bookmark>
-        <bookmark>
             <name>SMB Network Share</name>
             <!--    You can use one of these following formats: 		!-->
             <!-- smb://domain;user:password@ip/share/directory/ 		!-->
@@ -102,19 +94,8 @@
             <path>smb://DOMAIN;username:pwd@MyWindowsServer/movies/</path>
         </bookmark>
         <bookmark>
-            <name>TuxBox Client</name>
-            <!--    You can use one of these following formats: 		!-->
-            <!-- tuxbox://user:password@ip_tuxbox:port/             !-->
-            <!-- tuxbox://ip_tuxbox:port/                           !-->
-            <path>tuxbox://root:dreambox@192.168.0.110:80/</path>
-        </bookmark>
-        <bookmark>
             <name>WORKGROUP (SMB) Network</name>
             <path>smb://</path>
-        </bookmark>
-        <bookmark>
-            <name>ReplayTV</name>
-            <path>rtv://*/</path>
         </bookmark>
         <bookmark>
             <name>UPnP Media Servers (Auto-Discover)</name>
@@ -155,14 +136,6 @@
         <!--  <path>cdda://</path>          					!-->
         <!-- </bookmark>                  					!-->
         <bookmark>
-            <name>XBMSP Network Share</name>
-            <path>xbms://192.168.0.1:1400/</path>
-        </bookmark>
-        <bookmark>
-            <name>XBMSP Network Servers (Auto-Discover)</name>
-            <path>xbms://</path>
-        </bookmark>
-        <bookmark>
             <name>SMB Network Share</name>
             <!--    You can use one of these following formats: 		!-->
             <!-- smb://domain;user:password@ip/share/directory/ 		!-->
@@ -174,11 +147,6 @@
         <bookmark>
             <name>WORKGROUP (SMB) Network</name>
             <path>smb://</path>
-        </bookmark>
-        <bookmark>
-            <name>iTunes Network Share (DAAP)</name>
-            <!-- only use an IP address here !-->
-            <path>daap://192.168.1.100</path>
         </bookmark>
         <bookmark>
             <name>UPnP Media Servers (Auto-Discover)</name>
@@ -210,14 +178,6 @@
         <!--   <name>UDF</name>           					!-->
         <!--   <path>UDF:</path>          					!-->
         <!-- </bookmark>                  					!-->
-        <bookmark>
-            <name>XBMSP Network Share</name>
-            <path>xbms://192.168.0.1:1400/</path>
-        </bookmark>
-        <bookmark>
-            <name>XBMSP Network Servers (Auto-Discover)</name>
-            <path>xbms://</path>
-        </bookmark>
         <bookmark>
             <name>SMB Network Share</name>
             <!--    You can use one of these following formats: 		!-->
@@ -273,14 +233,6 @@
         <!--   <name>UDF</name>           					!-->
         <!--   <path>UDF:</path>          					!-->
         <!-- </bookmark>                  					!-->
-        <bookmark>
-            <name>XBMSP Network Share</name>
-            <path>xbms://192.168.0.1:1400/</path>
-        </bookmark>
-        <bookmark>
-            <name>XBMSP Network Servers (Auto-Discover)</name>
-            <path>xbms://</path>
-        </bookmark>
         <bookmark>
             <name>SMB Network Share</name>
             <!-- You can use one of these following formats:    		!-->

@@ -62,20 +62,10 @@
 #include "filesystem/StackDirectory.h"
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/DllLibCurl.h"
-#ifdef HAS_FILESYSTEM_DAAP
-#include "filesystem/DAAPFile.h"
-#endif
-#ifdef HAS_FILESYSTEM_MYTH
-#include "filesystem/MythSession.h"
-#endif
 #include "filesystem/PluginDirectory.h"
 #ifdef HAS_FILESYSTEM_SAP
 #include "filesystem/SAPDirectory.h"
 #endif
-#ifdef HAS_FILESYSTEM_HTSP
-#include "filesystem/HTSPDirectory.h"
-#endif
-#include "utils/TuxBoxUtil.h"
 #include "utils/SystemInfo.h"
 #include "utils/TimeUtils.h"
 #include "GUILargeTextureManager.h"
@@ -259,8 +249,6 @@ using namespace KODI::MESSAGING::HELPERS;
 #if defined(_DEBUG) && !defined(USE_RELEASE_LIBS)
  #ifdef HAS_FILESYSTEM
   #pragma comment (lib,"lib/libsmb/libsmbd.lib")      // SECTIONNAME=LIBSMB
-  #pragma comment (lib,"lib/libxdaap/libxdaapd.lib") // SECTIONNAME=LIBXDAAP
-  #pragma comment (lib,"lib/libRTV/libRTVd.lib")    // SECTIONNAME=LIBRTV
  #endif
  #ifdef _XBOX
   #pragma comment (lib,"lib/libGoAhead/goaheadd.lib") // SECTIONNAME=LIBHTTP
@@ -284,8 +272,6 @@ using namespace KODI::MESSAGING::HELPERS;
 #else
  #ifdef HAS_FILESYSTEM
   #pragma comment (lib,"lib/libsmb/libsmb.lib")
-  #pragma comment (lib,"lib/libxdaap/libxdaap.lib") // SECTIONNAME=LIBXDAAP
-  #pragma comment (lib,"lib/libRTV/libRTV.lib")
  #endif
  #ifdef _XBOX
   #pragma comment (lib,"lib/libGoAhead/goahead.lib")
@@ -3590,10 +3576,6 @@ void CApplication::Stop(bool bLCDStop)
       m_pPlayer.reset();
     }
 
-#ifdef HAS_FILESYSTEM
-    CLog::Log(LOGNOTICE, "stop daap clients");
-    g_DaapClient.Release();
-#endif
     //g_lcd->StopThread();
     CApplicationMessenger::Get().Cleanup();
 
@@ -3876,35 +3858,6 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
   // will recall with restart set to true
   if (item.IsStack())
     return PlayStack(item, bRestart);
-
-  //Is TuxBox, this should probably be moved to CFileTuxBox
-  if(item.IsTuxBox())
-  {
-    CLog::Log(LOGDEBUG, "%s - TuxBox URL Detected %s",__FUNCTION__, item.GetPath().c_str());
-
-    if(g_tuxboxService.IsRunning())
-      g_tuxboxService.Stop();
-
-    PlayBackRet ret = PLAYBACK_FAIL;
-    CFileItem item_new;
-    if(g_tuxbox.CreateNewItem(item, item_new))
-    {
-
-      // Make sure it doesn't have a player
-      // so we actually select one normally
-      m_eCurrentPlayer = EPC_NONE;
-
-      // keep the tuxbox:// url as playing url
-      // and give the new url to the player
-      ret = PlayFile(item_new, player, true);
-      if(ret == PLAYBACK_OK)
-      {
-        if(!g_tuxboxService.IsRunning())
-          g_tuxboxService.Start();
-      }
-    }
-    return ret;
-  }
 
   CPlayerOptions options;
   
@@ -5312,12 +5265,6 @@ void CApplication::ProcessSlow()
   // check for any idle curl connections
   g_curlInterface.CheckIdle();
 
-  // check for any idle myth sessions
-  CMythSession::CheckIdle();
-#ifdef HAS_FILESYSTEM
-  // check for any idle htsp sessions
-  HTSP::CHTSPDirectorySession::CheckIdle();
-#endif
 #ifdef HAS_TIME_SERVER
   // check for any needed sntp update
   if(CNetworkServices::Get().IsTimeServerRunning() && CNetworkServices::Get().IsTimeServerUpdateNeeded())

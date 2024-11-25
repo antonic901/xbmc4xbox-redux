@@ -506,12 +506,6 @@
 						RelativePath="..\..\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamRTMP.h">
 					</File>
 					<File
-						RelativePath="..\..\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamTV.cpp">
-					</File>
-					<File
-						RelativePath="..\..\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamTV.h">
-					</File>
-					<File
 						RelativePath="..\..\xbmc\cores\dvdplayer\DVDInputStreams\DVDStateSerializer.cpp">
 					</File>
 					<File
@@ -1792,12 +1786,6 @@
 					RelativePath="..\..\xbmc\utils\Trainer.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\utils\TuxBoxUtil.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\utils\TuxBoxUtil.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\utils\URIUtils.cpp">
 				</File>
 				<File
@@ -2256,12 +2244,6 @@
 					RelativePath="..\..\xbmc\FileSystem\DirectoryHistory.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\FileSystem\DllHDHomeRun.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\DllLibCMyth.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\FileSystem\DllLibCurl.cpp">
 				</File>
 				<File
@@ -2308,18 +2290,6 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\HDFile.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\HDHomeRunDirectory.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\HDHomeRunDirectory.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\HDHomeRunFile.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\HDHomeRunFile.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\HTTPDirectory.cpp">
@@ -2385,24 +2355,6 @@
 					RelativePath="..\..\xbmc\FileSystem\MusicSearchDirectory.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\FileSystem\MythDirectory.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\MythDirectory.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\MythFile.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\MythFile.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\MythSession.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\MythSession.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\FileSystem\NptXbmcFile.cpp">
 				</File>
 				<File
@@ -2454,18 +2406,6 @@
 					RelativePath="..\..\xbmc\FileSystem\ShoutcastFile.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\FileSystem\SlingboxDirectory.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\SlingboxDirectory.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\SlingboxFile.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\SlingboxFile.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\FileSystem\SmartPlaylistDirectory.cpp">
 				</File>
 				<File
@@ -2494,18 +2434,6 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\StackDirectory.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\TuxBoxDirectory.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\TuxBoxDirectory.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\TuxBoxFile.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\TuxBoxFile.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\UPnPDirectory.cpp">
@@ -3872,16 +3800,6 @@
 				</File>
 				<File
 					RelativePath="..\..\lib\libscrobbler\scrobbler.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="SlingboxLib"
-				Filter="">
-				<File
-					RelativePath="..\..\lib\SlingboxLib\SlingboxLib.cpp">
-				</File>
-				<File
-					RelativePath="..\..\lib\SlingboxLib\SlingboxLib.h">
 				</File>
 			</Filter>
 		</Filter>

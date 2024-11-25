@@ -29,11 +29,9 @@
 #ifdef HAS_FILESYSTEM
 #include "ISOFile.h"
 #include "SMBFile.h"
-#include "RTVFile.h"
 #include "SndtrkFile.h"
 #include "CDDAFile.h"
 #include "MemUnitFile.h"
-#include "DAAPFile.h"
 #endif
 #include "ZipFile.h"
 #include "RarFile.h"
@@ -43,11 +41,7 @@
 #include "MultiPathFile.h"
 #include "ResourceFile.h"
 #include "Application.h"
-#include "TuxBoxFile.h"
-#include "HDHomeRunFile.h"
-#include "SlingboxFile.h"
 #include "ImageFile.h"
-#include "MythFile.h"
 #include "URL.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
@@ -98,15 +92,8 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
     ||  url.IsProtocol("https")) return new CCurlFile();
     else if (url.IsProtocol("dav") || url.IsProtocol("davs")) return new CDAVFile();
     else if (url.IsProtocol("shout")) return new CShoutcastFile();
-    else if (url.IsProtocol("tuxbox")) return new CTuxBoxFile();
-    else if (url.IsProtocol("hdhomerun")) return new CHomeRunFile();
-    else if (url.IsProtocol("sling")) return new CSlingboxFile();
-    else if (url.IsProtocol("myth")) return new CMythFile();
-    else if (url.IsProtocol("cmyth")) return new CMythFile();
 #ifdef HAS_FILESYSTEM
     else if (url.IsProtocol("smb")) return new CSmbFile();
-    else if (url.IsProtocol("rtv")) return new CRTVFile();
-    else if (url.IsProtocol("daap")) return new CDAAPFile();
     else if (url.IsProtocol("upnp")) return new CUPnPFile();
 #endif
   }
