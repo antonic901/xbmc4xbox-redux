@@ -85,14 +85,6 @@
         <!--   <path>UDF:</path>          					!-->
         <!-- </bookmark>                  					!-->
         <bookmark>
-            <name>XBMSP Network Share</name>
-            <path>xbms://192.168.0.1:1400/</path>
-        </bookmark>
-        <bookmark>
-            <name>XBMSP Network Servers (Auto-Discover)</name>
-            <path>xbms://</path>
-        </bookmark>
-        <bookmark>
             <name>SMB Network Share</name>
             <!--    You can use one of these following formats: 		!-->
             <!-- smb://domain;user:password@ip/share/directory/ 		!-->
@@ -148,14 +140,6 @@
         <!--  <path>cdda://</path>          					!-->
         <!-- </bookmark>                  					!-->
         <bookmark>
-            <name>XBMSP Network Share</name>
-            <path>xbms://192.168.0.1:1400/</path>
-        </bookmark>
-        <bookmark>
-            <name>XBMSP Network Servers (Auto-Discover)</name>
-            <path>xbms://</path>
-        </bookmark>
-        <bookmark>
             <name>SMB Network Share</name>
             <!--    You can use one of these following formats: 		!-->
             <!-- smb://domain;user:password@ip/share/directory/ 		!-->
@@ -203,14 +187,6 @@
         <!--   <name>UDF</name>           					!-->
         <!--   <path>UDF:</path>          					!-->
         <!-- </bookmark>                  					!-->
-        <bookmark>
-            <name>XBMSP Network Share</name>
-            <path>xbms://192.168.0.1:1400/</path>
-        </bookmark>
-        <bookmark>
-            <name>XBMSP Network Servers (Auto-Discover)</name>
-            <path>xbms://</path>
-        </bookmark>
         <bookmark>
             <name>SMB Network Share</name>
             <!--    You can use one of these following formats: 		!-->
@@ -266,14 +242,6 @@
         <!--   <name>UDF</name>           					!-->
         <!--   <path>UDF:</path>          					!-->
         <!-- </bookmark>                  					!-->
-        <bookmark>
-            <name>XBMSP Network Share</name>
-            <path>xbms://192.168.0.1:1400/</path>
-        </bookmark>
-        <bookmark>
-            <name>XBMSP Network Servers (Auto-Discover)</name>
-            <path>xbms://</path>
-        </bookmark>
         <bookmark>
             <name>SMB Network Share</name>
             <!-- You can use one of these following formats:    		!-->
