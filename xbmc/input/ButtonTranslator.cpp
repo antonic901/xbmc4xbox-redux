@@ -225,9 +225,9 @@ static const ActionMapping windows[] =
         {"filemanager"              , WINDOW_FILES},
         {"files"                    , WINDOW_FILES}, // backward compat
         {"settings"                 , WINDOW_SETTINGS_MENU},
-        {"music"                    , WINDOW_MUSIC},
-        {"video"                    , WINDOW_VIDEOS}, // backward compat
-        {"videos"                   , WINDOW_VIDEOS},
+        {"music"                    , WINDOW_MUSIC_NAV},
+        {"video"                    , WINDOW_VIDEO_NAV}, // backward compat
+        {"videos"                   , WINDOW_VIDEO_NAV},
         {"systeminfo"               , WINDOW_SYSTEM_INFORMATION},
         {"screencalibration"        , WINDOW_SCREEN_CALIBRATION},
         {"guicalibration"           , WINDOW_SCREEN_CALIBRATION}, // backward compat
