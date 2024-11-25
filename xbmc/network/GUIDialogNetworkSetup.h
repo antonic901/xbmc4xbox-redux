@@ -26,6 +26,7 @@ class CGUIDialogNetworkSetup : public CGUIDialogSettingsManualBase
 {
 public:
   enum NET_PROTOCOL { NET_PROTOCOL_SMB = 0,
+                      NET_PROTOCOL_XBMSP,
                       NET_PROTOCOL_FTP,
                       NET_PROTOCOL_HTTP,
                       NET_PROTOCOL_HTTPS,
@@ -54,6 +55,7 @@ protected:
   virtual void OnSettingAction(const CSetting *setting);
 
   // specialization of CGUIDialogSettingsBase
+  bool AllowResettingSettings() const { return false; }
   virtual void Save() { }
   virtual void SetupView();
 
