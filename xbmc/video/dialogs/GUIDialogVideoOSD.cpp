@@ -41,7 +41,8 @@ void CGUIDialogVideoOSD::FrameMove()
     if (g_Mouse.IsActive() || g_windowManager.IsWindowActive(WINDOW_DIALOG_AUDIO_OSD_SETTINGS)
                            || g_windowManager.IsWindowActive(WINDOW_DIALOG_VIDEO_OSD_SETTINGS)
                            || g_windowManager.IsWindowActive(WINDOW_DIALOG_VIDEO_BOOKMARKS))
-      SetAutoClose(100); // enough for 10fps
+      // extend show time by original value
+      SetAutoClose(m_showDuration);
   }
   CGUIDialog::FrameMove();
 }
