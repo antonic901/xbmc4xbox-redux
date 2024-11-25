@@ -795,6 +795,13 @@
         </setting>
       </group>
     </category>
+    <category id="addons">
+      <group id="1">
+        <setting id="general.addonupdates">
+          <default>2</default>
+        </setting>
+      </group>
+    </category>
     <category id="cache" label="439" help="36399">
       <group id="1" label="Player">
         <setting id="dvdplayercache.video" type="integer" label="38750" help="">
