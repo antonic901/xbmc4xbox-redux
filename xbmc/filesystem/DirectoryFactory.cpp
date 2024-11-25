@@ -59,7 +59,6 @@
 #include "SMBDirectory.h"
 #include "CDDADirectory.h"
 #include "SndtrkDirectory.h"
-#include "DAAPDirectory.h"
 #include "MemUnitDirectory.h"
 #endif
 #ifdef HAS_UPNP
@@ -131,7 +130,6 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
     if (url.IsProtocol("dav") || url.IsProtocol("davs")) return new CDAVDirectory();
 #ifdef HAS_FILESYSTEM
     if (url.IsProtocol("smb")) return new CSMBDirectory();
-    if (url.IsProtocol("daap")) return new CDAAPDirectory();
 #endif
 #ifdef HAS_UPNP
     if (url.IsProtocol("upnp")) return new CUPnPDirectory();

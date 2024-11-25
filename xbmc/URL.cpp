@@ -396,7 +396,6 @@ const std::string CURL::GetTranslatedProtocol() const
     return "ftp";
 
   if (IsProtocol("shout")
-   || IsProtocol("daap")
    || IsProtocol("dav")
    || IsProtocol("mms")
    || IsProtocol("rss"))

@@ -62,9 +62,6 @@
 #include "filesystem/StackDirectory.h"
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/DllLibCurl.h"
-#ifdef HAS_FILESYSTEM_DAAP
-#include "filesystem/DAAPFile.h"
-#endif
 #include "filesystem/PluginDirectory.h"
 #ifdef HAS_FILESYSTEM_SAP
 #include "filesystem/SAPDirectory.h"
@@ -252,7 +249,6 @@ using namespace KODI::MESSAGING::HELPERS;
 #if defined(_DEBUG) && !defined(USE_RELEASE_LIBS)
  #ifdef HAS_FILESYSTEM
   #pragma comment (lib,"lib/libsmb/libsmbd.lib")      // SECTIONNAME=LIBSMB
-  #pragma comment (lib,"lib/libxdaap/libxdaapd.lib") // SECTIONNAME=LIBXDAAP
  #endif
  #ifdef _XBOX
   #pragma comment (lib,"lib/libGoAhead/goaheadd.lib") // SECTIONNAME=LIBHTTP
@@ -276,7 +272,6 @@ using namespace KODI::MESSAGING::HELPERS;
 #else
  #ifdef HAS_FILESYSTEM
   #pragma comment (lib,"lib/libsmb/libsmb.lib")
-  #pragma comment (lib,"lib/libxdaap/libxdaap.lib") // SECTIONNAME=LIBXDAAP
  #endif
  #ifdef _XBOX
   #pragma comment (lib,"lib/libGoAhead/goahead.lib")
@@ -3581,10 +3576,6 @@ void CApplication::Stop(bool bLCDStop)
       m_pPlayer.reset();
     }
 
-#ifdef HAS_FILESYSTEM
-    CLog::Log(LOGNOTICE, "stop daap clients");
-    g_DaapClient.Release();
-#endif
     //g_lcd->StopThread();
     CApplicationMessenger::Get().Cleanup();
 

@@ -149,11 +149,6 @@
             <path>smb://</path>
         </bookmark>
         <bookmark>
-            <name>iTunes Network Share (DAAP)</name>
-            <!-- only use an IP address here !-->
-            <path>daap://192.168.1.100</path>
-        </bookmark>
-        <bookmark>
             <name>UPnP Media Servers (Auto-Discover)</name>
             <path>upnp://</path>
         </bookmark>

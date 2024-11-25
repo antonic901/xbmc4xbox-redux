@@ -68,7 +68,7 @@
 				InsertFile=".\media\dsstdfx.bin,dsstdfx,r"
 				FormatUD="TRUE"
 				NoLibWarn="TRUE"
-				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;LIBXDAAP;PLATINUM;LCODE"
+				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;PLATINUM;LCODE"
 				TitleID="0xFACE008"
 				MediaTypes="0x80000007"
 				TitleName="XBMC Debug"/>
@@ -131,7 +131,7 @@
 				IncludeDebugInfo="TRUE"
 				InsertFile=".\media\dsstdfx.bin,dsstdfx,r"
 				NoLibWarn="TRUE"
-				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;LIBXDAAP;PLATINUM;LCODE"
+				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;PLATINUM;LCODE"
 				TitleID="0xFACE008"
 				MediaTypes="0x80000007"
 				TitleName="XBMC Profile"/>
@@ -195,7 +195,7 @@
 				IncludeDebugInfo="TRUE"
 				InsertFile=".\media\dsstdfx.bin,dsstdfx,r"
 				NoLibWarn="TRUE"
-				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;LIBXDAAP;PLATINUM;LCODE"
+				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;PLATINUM;LCODE"
 				TitleID="0xFACE008"
 				MediaTypes="0x80000007"
 				TitleName="XBMC Profile_FastCap"/>
@@ -258,7 +258,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				StackSize="0x80000"
 				InsertFile=".\media\dsstdfx.bin,dsstdfx,r"
 				FormatUD="TRUE"
-				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;LIBXDAAP;PLATINUM;LCODE"
+				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;PLATINUM;LCODE"
 				TitleID="0xFACE008"
 				MediaTypes="0x80000007"
 				TitleName="XBMC"
@@ -319,7 +319,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				FileName="$(TargetDir)default.xbe"
 				StackSize="0x80000"
 				InsertFile=".\media\dsstdfx.bin,dsstdfx,r"
-				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;LIBXDAAP;PLATINUM;LCODE"
+				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;PLATINUM;LCODE"
 				TitleID="0xFACE008"
 				MediaTypes="0x80000007"
 				TitleName="XBMC"/>
@@ -378,7 +378,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				IncludeDebugInfo="TRUE"
 				InsertFile=".\media\dsstdfx.bin,dsstdfx,r"
 				NoLibWarn="TRUE"
-				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;LIBXDAAP;PLATINUM;LCODE"
+				NoPreload="LIBSMB;ISO9660;LIBHTTP;LIBMP4;PLATINUM;LCODE"
 				TitleID="0xFACE008"
 				MediaTypes="0x80000007"
 				TitleName="XBMC"/>
@@ -1555,18 +1555,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\CurlFile.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\DAAPDirectory.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\DAAPDirectory.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\DAAPFile.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\DAAPFile.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\DAVCommon.cpp">

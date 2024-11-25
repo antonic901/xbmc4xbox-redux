@@ -634,9 +634,6 @@ bool URIUtils::IsOnLAN(const CStdString& strPath)
 
   if(IsSpecial(strPath))
     return IsOnLAN(CSpecialProtocol::TranslatePath(strPath));
-
-  if(IsDAAP(strPath))
-    return true;
   
   if(IsPlugin(strPath))
     return false;
@@ -929,11 +926,6 @@ bool URIUtils::IsInternetStream(const CURL& url, bool bStrictCheck /* = false */
     return true;
 
   return false;
-}
-
-bool URIUtils::IsDAAP(const CStdString& strFile)
-{
-  return IsProtocol(strFile, "daap");
 }
 
 bool URIUtils::IsUPnP(const CStdString& strFile)
