@@ -938,11 +938,6 @@ bool URIUtils::IsMemCard(const CStdString& strFile)
   return IsProtocol(strFile, "mem");
 }
 
-bool URIUtils::IsHDHomeRun(const CStdString& strFile)
-{
-  return IsProtocol(strFile, "hdhomerun");
-}
-
 bool URIUtils::IsSlingbox(const CStdString& strFile)
 {
   return IsProtocol(strFile, "sling");
@@ -959,7 +954,6 @@ bool URIUtils::IsLiveTV(const CStdString& strFile)
   RemoveSlashAtEnd(strFileWithoutSlash);
 
   if(IsVTP(strFile)
-  || IsHDHomeRun(strFile)
   || IsSlingbox(strFile)
   || IsProtocol(strFile, "sap")
   ||(StringUtils::EndsWithNoCase(strFileWithoutSlash, ".pvr") && !PathStarts(strFileWithoutSlash, "pvr://recordings")))

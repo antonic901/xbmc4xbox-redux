@@ -355,10 +355,6 @@ CStdString CUtil::GetTitleFromPath(const CURL& url, bool bIsFolder /* = false */
       strFilename = url.GetHostName();
     }
   }
-  // HDHomerun Devices
-  else if (url.IsProtocol("hdhomerun") && strFilename.empty())
-    strFilename = "HDHomerun Devices";
-
   // Slingbox Devices
   else if (url.IsProtocol("sling"))
     strFilename = "Slingbox";
@@ -1641,7 +1637,6 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
 
   CFileItem item(strMovie, false);
   if (item.IsInternetStream()) return ;
-  if (item.IsHDHomeRun()) return ;
   if (item.IsSlingbox()) return ;
   if (item.IsPlayList()) return ;
   if (!item.IsVideo()) return ;

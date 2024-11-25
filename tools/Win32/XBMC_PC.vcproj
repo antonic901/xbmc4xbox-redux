@@ -2250,9 +2250,6 @@
 					RelativePath="..\..\xbmc\FileSystem\DirectoryHistory.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\FileSystem\DllHDHomeRun.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\FileSystem\DllLibCurl.cpp">
 				</File>
 				<File
@@ -2299,18 +2296,6 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\HDFile.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\HDHomeRunDirectory.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\HDHomeRunDirectory.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\HDHomeRunFile.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\HDHomeRunFile.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\HTTPDirectory.cpp">

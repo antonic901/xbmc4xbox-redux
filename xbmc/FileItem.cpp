@@ -977,11 +977,6 @@ bool CFileItem::IsURL() const
   return URIUtils::IsURL(m_strPath);
 }
 
-bool CFileItem::IsHDHomeRun() const
-{
-  return URIUtils::IsHDHomeRun(m_strPath);
-}
-
 bool CFileItem::IsSlingbox() const
 {
   return URIUtils::IsSlingbox(m_strPath);

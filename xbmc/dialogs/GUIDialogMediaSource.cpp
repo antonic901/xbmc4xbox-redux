@@ -301,10 +301,6 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
     share1.strName = g_localizeStrings.Get(20171);
     extraShares.push_back(share1);
 
-    share1.strPath = "hdhomerun://";
-    share1.strName = "HDHomerun Devices";
-    extraShares.push_back(share1);
-
     share1.strPath = "sap://";
     share1.strName = "SAP Streams";
     extraShares.push_back(share1);
