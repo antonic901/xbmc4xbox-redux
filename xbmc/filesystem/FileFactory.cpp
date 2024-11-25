@@ -29,7 +29,6 @@
 #ifdef HAS_FILESYSTEM
 #include "ISOFile.h"
 #include "SMBFile.h"
-#include "RTVFile.h"
 #include "SndtrkFile.h"
 #include "CDDAFile.h"
 #include "MemUnitFile.h"
@@ -100,7 +99,6 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
     else if (url.IsProtocol("sling")) return new CSlingboxFile();
 #ifdef HAS_FILESYSTEM
     else if (url.IsProtocol("smb")) return new CSmbFile();
-    else if (url.IsProtocol("rtv")) return new CRTVFile();
     else if (url.IsProtocol("daap")) return new CDAAPFile();
     else if (url.IsProtocol("upnp")) return new CUPnPFile();
 #endif

@@ -1863,12 +1863,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\RSSDirectory.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\FileSystem\RTVDirectory.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\RTVFile.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\FileSystem\ShoutcastFile.cpp">
 				</File>
 				<File
@@ -4909,12 +4903,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\RssReader.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileSystem\RTVDirectory.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\FileSystem\RTVFile.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\SectionLoader.h">

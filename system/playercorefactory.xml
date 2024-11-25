@@ -10,7 +10,6 @@
   </players>
 
   <rules>
-    <rule name="rtv" protocols="rtv" player="DVDPlayer" />
     <rule name="hdhomerun/rtmp/mms/udp" protocols="hdhomerun|rtmp|mms|mmsh|udp" player="DVDPlayer" />
     <rule name="lastfm/shout" protocols="lastfm|shout" player="PAPlayer" />
 

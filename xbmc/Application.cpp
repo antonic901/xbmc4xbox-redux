@@ -253,7 +253,6 @@ using namespace KODI::MESSAGING::HELPERS;
  #ifdef HAS_FILESYSTEM
   #pragma comment (lib,"lib/libsmb/libsmbd.lib")      // SECTIONNAME=LIBSMB
   #pragma comment (lib,"lib/libxdaap/libxdaapd.lib") // SECTIONNAME=LIBXDAAP
-  #pragma comment (lib,"lib/libRTV/libRTVd.lib")    // SECTIONNAME=LIBRTV
  #endif
  #ifdef _XBOX
   #pragma comment (lib,"lib/libGoAhead/goaheadd.lib") // SECTIONNAME=LIBHTTP
@@ -278,7 +277,6 @@ using namespace KODI::MESSAGING::HELPERS;
  #ifdef HAS_FILESYSTEM
   #pragma comment (lib,"lib/libsmb/libsmb.lib")
   #pragma comment (lib,"lib/libxdaap/libxdaap.lib") // SECTIONNAME=LIBXDAAP
-  #pragma comment (lib,"lib/libRTV/libRTV.lib")
  #endif
  #ifdef _XBOX
   #pragma comment (lib,"lib/libGoAhead/goahead.lib")

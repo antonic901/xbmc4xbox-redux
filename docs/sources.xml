@@ -98,10 +98,6 @@
             <path>smb://</path>
         </bookmark>
         <bookmark>
-            <name>ReplayTV</name>
-            <path>rtv://*/</path>
-        </bookmark>
-        <bookmark>
             <name>UPnP Media Servers (Auto-Discover)</name>
             <path>upnp://</path>
         </bookmark>

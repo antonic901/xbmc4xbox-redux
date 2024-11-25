@@ -367,10 +367,6 @@ CStdString CUtil::GetTitleFromPath(const CURL& url, bool bIsFolder /* = false */
   else if (url.IsProtocol("sling"))
     strFilename = "Slingbox";
 
-  // ReplayTV Devices
-  else if (url.IsProtocol("rtv"))
-    strFilename = "ReplayTV Devices";
-
   // VDR Streamdev client
   else if (url.IsProtocol("vtp"))
     strFilename = g_localizeStrings.Get(20257);

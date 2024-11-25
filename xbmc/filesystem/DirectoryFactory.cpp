@@ -58,7 +58,6 @@
 #include "ISO9660Directory.h"
 #include "SMBDirectory.h"
 #include "CDDADirectory.h"
-#include "RTVDirectory.h"
 #include "SndtrkDirectory.h"
 #include "DAAPDirectory.h"
 #include "MemUnitDirectory.h"
@@ -133,7 +132,6 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
 #ifdef HAS_FILESYSTEM
     if (url.IsProtocol("smb")) return new CSMBDirectory();
     if (url.IsProtocol("daap")) return new CDAAPDirectory();
-    if (url.IsProtocol("rtv")) return new CRTVDirectory();
 #endif
 #ifdef HAS_UPNP
     if (url.IsProtocol("upnp")) return new CUPnPDirectory();
