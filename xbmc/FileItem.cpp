@@ -977,11 +977,6 @@ bool CFileItem::IsURL() const
   return URIUtils::IsURL(m_strPath);
 }
 
-bool CFileItem::IsSlingbox() const
-{
-  return URIUtils::IsSlingbox(m_strPath);
-}
-
 bool CFileItem::IsVTP() const
 {
   return URIUtils::IsVTP(m_strPath);

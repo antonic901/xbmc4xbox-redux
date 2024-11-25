@@ -355,10 +355,6 @@ CStdString CUtil::GetTitleFromPath(const CURL& url, bool bIsFolder /* = false */
       strFilename = url.GetHostName();
     }
   }
-  // Slingbox Devices
-  else if (url.IsProtocol("sling"))
-    strFilename = "Slingbox";
-
   // VDR Streamdev client
   else if (url.IsProtocol("vtp"))
     strFilename = g_localizeStrings.Get(20257);
@@ -1637,7 +1633,6 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
 
   CFileItem item(strMovie, false);
   if (item.IsInternetStream()) return ;
-  if (item.IsSlingbox()) return ;
   if (item.IsPlayList()) return ;
   if (!item.IsVideo()) return ;
 

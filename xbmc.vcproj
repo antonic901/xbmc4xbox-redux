@@ -1848,18 +1848,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\SIDFileDirectory.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\FileSystem\SlingboxDirectory.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\SlingboxDirectory.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\SlingboxFile.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileSystem\SlingboxFile.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\FileSystem\SmartPlaylistDirectory.cpp">
 				</File>
 				<File
@@ -5390,12 +5378,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamStack.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamTV.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\cores\dvdplayer\DVDInputStreams\DVDInputStreamTV.h">
-					</File>
-					<File
 						RelativePath=".\xbmc\cores\dvdplayer\DVDInputStreams\DVDStateSerializer.cpp">
 					</File>
 					<File
@@ -6254,16 +6236,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Filter="">
 				<File
 					RelativePath=".\lib\sqLite\sqlite.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="SlingboxLib"
-				Filter="">
-				<File
-					RelativePath=".\lib\SlingboxLib\SlingboxLib.cpp">
-				</File>
-				<File
-					RelativePath=".\lib\SlingboxLib\SlingboxLib.h">
 				</File>
 			</Filter>
 			<Filter

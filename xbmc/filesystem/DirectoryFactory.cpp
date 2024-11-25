@@ -67,7 +67,6 @@
 #include "xbox/Network.h"
 #include "ZipDirectory.h"
 #include "RarDirectory.h"
-#include "SlingboxDirectory.h"
 #include "FileItem.h"
 #include "URL.h"
 #include "RSSDirectory.h"
@@ -133,7 +132,6 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
 #ifdef HAS_UPNP
     if (url.IsProtocol("upnp")) return new CUPnPDirectory();
 #endif
-    if (url.IsProtocol("sling")) return new CSlingboxDirectory();
     if (url.IsProtocol("rss")) return new CRSSDirectory();
   }
 
