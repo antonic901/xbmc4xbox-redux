@@ -1,4 +1,23 @@
-#include "include.h"
+/*
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
+ *
+ *  This Program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
+ *
+ *  This Program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
+ *
+ */
+
 #include "GUIVisualisationControl.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
@@ -6,9 +25,9 @@
 #include "addons/AddonManager.h"
 #include "addons/AddonSystemSettings.h"
 #include "addons/Visualisation.h"
-#include "guilib/IRenderingCallback.h"
+#include "utils/log.h"
+#include "guilib/Key.h"
 
-using namespace std;
 using namespace ADDON;
 
 #define LABEL_ROW1 10
@@ -22,7 +41,7 @@ CGUIVisualisationControl::CGUIVisualisationControl(int parentID, int controlID, 
 }
 
 CGUIVisualisationControl::CGUIVisualisationControl(const CGUIVisualisationControl &from)
-: CGUIRenderingControl(from)
+  : CGUIRenderingControl(from), m_bAttemptedLoad(false), m_addon()
 {
   ControlType = GUICONTROL_VISUALISATION;
 }
@@ -33,7 +52,7 @@ bool CGUIVisualisationControl::OnMessage(CGUIMessage &message)
   {
   case GUI_MSG_GET_VISUALISATION:
     message.SetPointer(m_addon.get());
-    return m_addon;
+    return m_addon != NULL;
   case GUI_MSG_VISUALISATION_RELOAD:
     FreeResources(true);
     return true;
@@ -72,7 +91,7 @@ bool CGUIVisualisationControl::OnAction(const CAction &action)
   }
 }
 
-void CGUIVisualisationControl::Render()
+void CGUIVisualisationControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   if (g_application.IsPlayingAudio())
   {
@@ -93,7 +112,7 @@ void CGUIVisualisationControl::Render()
       m_bAttemptedLoad = true;
     }
   }
-  CGUIRenderingControl::Render();
+  CGUIRenderingControl::Process(currentTime, dirtyregions);
 }
 
 void CGUIVisualisationControl::FreeResources(bool immediately)
@@ -106,7 +125,8 @@ void CGUIVisualisationControl::FreeResources(bool immediately)
   CGUIMessage msg(GUI_MSG_VISUALISATION_UNLOADING, m_controlID, 0);
   g_windowManager.SendMessage(msg);
   CLog::Log(LOGDEBUG, "FreeVisualisation() started");
-  CGUIRenderingControl::FreeResources();
+  CGUIRenderingControl::FreeResources(immediately);
   m_addon.reset();
   CLog::Log(LOGDEBUG, "FreeVisualisation() done");
 }
+

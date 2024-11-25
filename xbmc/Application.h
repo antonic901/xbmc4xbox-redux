@@ -142,6 +142,7 @@ public:
   void ReloadSkin(bool confirm = false);
   const std::string& CurrentFile();
   CFileItem& CurrentFileItem();
+  boost::shared_ptr<CFileItem> CurrentFileItemPtr();
   CFileItem& CurrentUnstackedItem();
   virtual bool OnMessage(CGUIMessage& message);
   PLAYERCOREID GetCurrentPlayer();

@@ -1,9 +1,26 @@
+/*
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
+ *
+ *  This Program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
+ *
+ *  This Program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
+ *
+ */
+
 #include "GUIRenderingControl.h"
-#include "GUIUserMessages.h"
 #include "threads/SingleLock.h"
 #include "guilib/IRenderingCallback.h"
-
-using namespace std;
 
 #define LABEL_ROW1 10
 #define LABEL_ROW2 11
@@ -63,7 +80,7 @@ void CGUIRenderingControl::UpdateVisibility(const CGUIListItem *item)
 
 void CGUIRenderingControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
-  // TODO Add processing to the addon so it could mark when actually changing
+  //! @todo Add processing to the addon so it could mark when actually changing
   CSingleLock lock(m_rendering);
   if (m_callback && m_callback->IsDirty())
     MarkDirtyRegion();
@@ -89,13 +106,13 @@ void CGUIRenderingControl::Render()
   CGUIControl::Render();
 }
 
-void CGUIRenderingControl::FreeResources()
+void CGUIRenderingControl::FreeResources(bool immediately)
 {
   CSingleLock lock(m_rendering);
 
   if (!m_callback) return;
 
-  g_graphicsContext.CaptureStateBlock(); //TODO locking
+  g_graphicsContext.CaptureStateBlock(); //! @todo locking
   m_callback->Stop();
   g_graphicsContext.ApplyStateBlock();
   m_callback = NULL;

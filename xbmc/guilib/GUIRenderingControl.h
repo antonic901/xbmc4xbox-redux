@@ -1,7 +1,7 @@
 #pragma once
 /*
- *      Copyright (C) 2005-2010 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -14,13 +14,13 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
 #include "GUIControl.h"
+
 class IRenderingCallback;
 
 class CGUIRenderingControl : public CGUIControl
@@ -28,12 +28,12 @@ class CGUIRenderingControl : public CGUIControl
 public:
   CGUIRenderingControl(int parentID, int controlID, float posX, float posY, float width, float height);
   CGUIRenderingControl(const CGUIRenderingControl &from);
-  virtual CGUIRenderingControl *Clone() const { return new CGUIRenderingControl(*this); }; //TODO check for naughties
+  virtual CGUIRenderingControl *Clone() const { return new CGUIRenderingControl(*this); }; //! @todo check for naughties
 
   virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
   virtual void UpdateVisibility(const CGUIListItem *item = NULL);
-  virtual void FreeResources();
+  virtual void FreeResources(bool immediately = false);
   virtual bool CanFocus() const { return false; }
   virtual bool CanFocusFromPoint(const CPoint &point) const;
   bool InitCallback(IRenderingCallback *callback);

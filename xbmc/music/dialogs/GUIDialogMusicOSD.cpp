@@ -18,22 +18,24 @@
  *
  */
 
-#include "music/dialogs/GUIDialogMusicOSD.h"
-#include "Application.h"
-#include "GUIWindowManager.h"
+#include "GUIDialogMusicOSD.h"
+#include "guilib/GUIWindowManager.h"
+#include "guilib/Key.h"
 #include "GUIUserMessages.h"
 #include "settings/Settings.h"
 #include "addons/GUIWindowAddonBrowser.h"
+#include "dialogs/GUIDialogSelect.h"
+#include "Application.h"
+#include "FileItem.h"
+#include "music/tags/MusicInfoTag.h"
+#include "music/MusicDatabase.h"
 
 #define CONTROL_VIS_BUTTON       500
 #define CONTROL_LOCK_BUTTON      501
 
-using ADDON::CVisualisation;
-
 CGUIDialogMusicOSD::CGUIDialogMusicOSD(void)
     : CGUIDialog(WINDOW_DIALOG_MUSIC_OSD, "MusicOSD.xml")
 {
-  m_pVisualisation = NULL;
   m_loadType = KEEP_IN_MEMORY;
 }
 
@@ -50,8 +52,8 @@ bool CGUIDialogMusicOSD::OnMessage(CGUIMessage &message)
       unsigned int iControl = message.GetSenderId();
       if (iControl == CONTROL_VIS_BUTTON)
       {
-        CStdString addonID;
-        if (CGUIWindowAddonBrowser::SelectAddonID(ADDON::ADDON_VIZ, addonID) == 1)
+        std::string addonID;
+        if (CGUIWindowAddonBrowser::SelectAddonID(ADDON::ADDON_VIZ, addonID, true) == 1)
         {
           CSettings::GetInstance().SetString("musicplayer.visualisation", addonID);
           CSettings::GetInstance().Save();
@@ -66,17 +68,6 @@ bool CGUIDialogMusicOSD::OnMessage(CGUIMessage &message)
       return true;
     }
     break;
-  case GUI_MSG_WINDOW_DEINIT:
-  case GUI_MSG_VISUALISATION_UNLOADING:
-    {
-      m_pVisualisation = NULL;
-    }
-    break;
-  case GUI_MSG_VISUALISATION_LOADED:
-    {
-      if (message.GetPointer())
-        m_pVisualisation = (CVisualisation *)message.GetPointer();
-    }
   }
   return CGUIDialog::OnMessage(message);
 }
@@ -85,12 +76,50 @@ bool CGUIDialogMusicOSD::OnAction(const CAction &action)
 {
   switch (action.GetID())
   {
-  case ACTION_SHOW_OSD:
-    Close();
-    return true;
+    case ACTION_SHOW_OSD:
+      Close();
+      return true;
 
-  default:
-    break;
+    case ACTION_SET_RATING:
+    {
+      CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect *>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
+      if (dialog)
+      {
+        dialog->SetHeading( 38023 );
+        dialog->Add(g_localizeStrings.Get(38022));
+        for (int i = 1; i <= 10; i++)
+          dialog->Add(StringUtils::Format("%s: %i", g_localizeStrings.Get(563).c_str(), i));
+
+        CFileItemPtr track = g_application.CurrentFileItemPtr();
+        dialog->SetSelected(track->GetMusicInfoTag()->GetUserrating());
+
+        dialog->Open();
+
+        int userrating = dialog->GetSelectedItem();
+
+        if (userrating < 0) userrating = 0;
+        if (userrating > 10) userrating = 10;
+        if (userrating != track->GetMusicInfoTag()->GetUserrating())
+        {
+          track->GetMusicInfoTag()->SetUserrating(userrating);
+          // send a message to all windows to tell them to update the fileitem (eg playlistplayer, media windows)
+          CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_ITEM, 0, track);
+          g_windowManager.SendMessage(msg);
+
+          CMusicDatabase db;
+          if (db.Open())
+          {
+            db.SetSongUserrating(track->GetMusicInfoTag()->GetURL(), userrating);
+            db.Close();
+          }
+        }
+
+      }
+      return true;
+    }
+
+    default:
+      break;
   }
 
   return CGUIDialog::OnAction(action);
@@ -101,25 +130,11 @@ void CGUIDialogMusicOSD::FrameMove()
   if (m_autoClosing)
   {
     // check for movement of mouse or a submenu open
-    if (g_Mouse.IsActive() || g_windowManager.IsWindowActive(WINDOW_DIALOG_VIS_SETTINGS)
-                           || g_windowManager.IsWindowActive(WINDOW_DIALOG_VIS_PRESET_LIST))
-      SetAutoClose(100); // enough for 10fps
+    if (g_Mouse.IsActive() ||
+        g_windowManager.IsWindowActive(WINDOW_DIALOG_VIS_SETTINGS) ||
+        g_windowManager.IsWindowActive(WINDOW_DIALOG_VIS_PRESET_LIST))
+      // extend show time by original value
+      SetAutoClose(m_showDuration);
   }
   CGUIDialog::FrameMove();
 }
-
-void CGUIDialogMusicOSD::OnInitWindow()
-{
-  ResetControlStates();
-  CGUIDialog::OnInitWindow();
-}
-
-EVENT_RESULT CGUIDialogMusicOSD::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
-{
-  if (event.m_id == ACTION_MOUSE_LEFT_CLICK)
-  { // pause
-    return g_application.OnAction(CAction(ACTION_PAUSE)) ? EVENT_RESULT_HANDLED : EVENT_RESULT_UNHANDLED;
-  }
-  return CGUIDialog::OnMouseEvent(point, event);
-}
-

@@ -268,6 +268,8 @@
 #define ACTION_SUBTITLE_DELAY         162
 #define ACTION_MENU                   163
 
+#define ACTION_SET_RATING             164
+
 #define ACTION_PASTE                  180
 #define ACTION_NEXT_CONTROL           181
 #define ACTION_PREV_CONTROL           182

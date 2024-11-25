@@ -4594,7 +4594,9 @@ void CApplication::CheckScreenSaver()
   if (IsPlayingVideo() && !m_pPlayer->IsPaused()) // are we playing video and it is not paused?
     resetTimer = true;
 
-  if (IsPlayingAudio() && g_windowManager.GetActiveWindow() == WINDOW_VISUALISATION) // are we playing some music in fullscreen vis?
+  // are we playing some music in fullscreen vis?
+  if (IsPlayingAudio() && g_windowManager.GetActiveWindow() == WINDOW_VISUALISATION
+      && !CSettings::GetInstance().GetString("musicplayer.visualisation").empty())
     resetTimer = true;
 
   if (resetTimer)
@@ -5376,6 +5378,11 @@ void CApplication::Restart(bool bSamePosition)
 const std::string& CApplication::CurrentFile()
 {
   return m_itemCurrentFile->GetPath();
+}
+
+boost::shared_ptr<CFileItem> CApplication::CurrentFileItemPtr()
+{
+  return m_itemCurrentFile;
 }
 
 CFileItem& CApplication::CurrentFileItem()

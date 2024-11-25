@@ -18,16 +18,15 @@
  *
  */
 
-#include "system.h"
-#include "music/windows/GUIWindowVisualisation.h"
-#include "GUIVisualisationControl.h"
+#include "GUIWindowVisualisation.h"
 #include "Application.h"
+#include "FileItem.h"
 #include "music/dialogs/GUIDialogMusicOSD.h"
-#include "GUIInfoManager.h"
-#include "input/ButtonTranslator.h"
-#include "music/dialogs/GUIDialogVisualisationPresetList.h"
-#include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
+#include "GUIInfoManager.h"
+#include "guilib/GUIWindowManager.h"
+#include "input/ButtonTranslator.h"
+#include "guilib/Key.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 
@@ -47,6 +46,19 @@ CGUIWindowVisualisation::CGUIWindowVisualisation(void)
 
 bool CGUIWindowVisualisation::OnAction(const CAction &action)
 {
+#ifndef _XBOX
+  if (CSettings::GetInstance().GetBool(CSettings::SETTING_PVRPLAYBACK_CONFIRMCHANNELSWITCH) &&
+      g_infoManager.IsPlayerChannelPreviewActive() &&
+      (action.GetID() == ACTION_SELECT_ITEM || CButtonTranslator::GetInstance().GetGlobalAction(action.GetButtonCode()).GetID() == ACTION_SELECT_ITEM))
+  {
+    // If confirm channel switch is active, channel preview is currently shown
+    // and the button that caused this action matches (global) action "Select" (OK)
+    // switch to the channel currently displayed within the preview.
+    g_application.m_pPlayer->SwitchChannel(g_application.CurrentFileItem().GetPVRChannelInfoTag());
+    return true;
+  }
+#endif
+
   bool passToVis = false;
   switch (action.GetID())
   {
@@ -82,7 +94,6 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
       if (!m_bShowPreset)
       {
         m_lockedTimer.StartZero();
-        g_infoManager.SetShowCodec(true);
       }
       passToVis = true;
     }
@@ -91,7 +102,6 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
     {
       if (!m_lockedTimer.IsRunning() || m_bShowPreset)
         m_bShowPreset = !m_bShowPreset;
-      g_infoManager.SetShowCodec(m_bShowPreset);
       return true;
     }
     break;
@@ -104,8 +114,8 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
       g_infoManager.SetShowInfo(true);
     }
     break;
-    // TODO: These should be mapped to it's own function - at the moment it's overriding
-    // the global action of fastforward/rewind and OSD.
+    //! @todo These should be mapped to it's own function - at the moment it's overriding
+    //! the global action of fastforward/rewind and OSD.
 /*  case KEY_BUTTON_Y:
     g_application.m_CdgParser.Pause();
     return true;
@@ -146,7 +156,7 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
     }
     break;
   case GUI_MSG_VISUALISATION_ACTION:
-  { 
+  {
     CAction action(message.GetParam1());
     return OnAction(action);
   }
@@ -170,11 +180,11 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
       }
 
       // hide or show the preset button(s)
-      g_infoManager.SetShowCodec(m_bShowPreset);
       g_infoManager.SetShowInfo(true);  // always show the info initially.
       CGUIWindow::OnMessage(message);
       if (g_infoManager.GetCurrentSongTag())
         m_tag = *g_infoManager.GetCurrentSongTag();
+
       if (CSettings::GetInstance().GetBool("mymusic.songthumbinvis"))
       { // always on
         m_initTimer.Stop();
@@ -197,10 +207,6 @@ EVENT_RESULT CGUIWindowVisualisation::OnMouseEvent(const CPoint &point, const CM
     OnAction(CAction(ACTION_SHOW_GUI));
     return EVENT_RESULT_HANDLED;
   }
-  if (event.m_id == ACTION_MOUSE_LEFT_CLICK)
-  { // no control found to absorb this click - toggle the track INFO
-    return g_application.OnAction(CAction(ACTION_PAUSE)) ? EVENT_RESULT_HANDLED : EVENT_RESULT_UNHANDLED;
-  }
   if (event.m_id != ACTION_MOUSE_MOVE || event.m_offsetX || event.m_offsetY)
   { // some other mouse action has occurred - bring up the OSD
     CGUIDialog *pOSD = (CGUIDialog *)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_OSD);
@@ -216,7 +222,6 @@ EVENT_RESULT CGUIWindowVisualisation::OnMouseEvent(const CPoint &point, const CM
 
 void CGUIWindowVisualisation::FrameMove()
 {
-  g_application.ResetScreenSaver();
   // check for a tag change
   const CMusicInfoTag* tag = g_infoManager.GetCurrentSongTag();
   if (tag && *tag != m_tag)
@@ -238,37 +243,6 @@ void CGUIWindowVisualisation::FrameMove()
   if (m_lockedTimer.IsRunning() && m_lockedTimer.GetElapsedSeconds() > START_FADE_LENGTH)
   {
     m_lockedTimer.Stop();
-    if (!m_bShowPreset)
-    {
-      g_infoManager.SetShowCodec(false);
-    }
   }
   CGUIWindow::FrameMove();
 }
-
-void CGUIWindowVisualisation::AllocResources(bool forceLoad)
-{
-  CGUIWindow::AllocResources(forceLoad);
-  CGUIWindow *pWindow;
-  pWindow = g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_OSD);
-  if (pWindow) pWindow->AllocResources(true);
-  pWindow = g_windowManager.GetWindow(WINDOW_DIALOG_VIS_SETTINGS);
-  if (pWindow) pWindow->AllocResources(true);
-  pWindow = g_windowManager.GetWindow(WINDOW_DIALOG_VIS_PRESET_LIST);
-  if (pWindow) pWindow->AllocResources(true);
-}
-
-void CGUIWindowVisualisation::FreeResources(bool forceUnload)
-{
-  // Save changed settings from music OSD
-  CSettings::GetInstance().Save();
-  CGUIWindow *pWindow;
-  pWindow = g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_OSD);
-  if (pWindow) pWindow->FreeResources(true);
-  pWindow = g_windowManager.GetWindow(WINDOW_DIALOG_VIS_SETTINGS);
-  if (pWindow) pWindow->FreeResources(true);
-  pWindow = g_windowManager.GetWindow(WINDOW_DIALOG_VIS_PRESET_LIST);
-  if (pWindow) pWindow->FreeResources(true);
-  CGUIWindow::FreeResources(forceUnload);
-}
-
