@@ -46,7 +46,6 @@
 #include "HDHomeRunFile.h"
 #include "SlingboxFile.h"
 #include "ImageFile.h"
-#include "MythFile.h"
 #include "URL.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
@@ -99,8 +98,6 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
     else if (url.IsProtocol("shout")) return new CShoutcastFile();
     else if (url.IsProtocol("hdhomerun")) return new CHomeRunFile();
     else if (url.IsProtocol("sling")) return new CSlingboxFile();
-    else if (url.IsProtocol("myth")) return new CMythFile();
-    else if (url.IsProtocol("cmyth")) return new CMythFile();
 #ifdef HAS_FILESYSTEM
     else if (url.IsProtocol("smb")) return new CSmbFile();
     else if (url.IsProtocol("rtv")) return new CRTVFile();

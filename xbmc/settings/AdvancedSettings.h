@@ -260,8 +260,6 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
 
     std::set<std::string> m_vecTokens;
 
-    int m_iMythMovieLength;         // minutes
-
     // EDL Commercial Break
     bool m_bEdlMergeShortCommBreaks;
     int m_iEdlMaxCommBreakLength;   // seconds

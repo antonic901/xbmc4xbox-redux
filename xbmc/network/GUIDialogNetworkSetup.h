@@ -35,8 +35,7 @@ public:
                       NET_PROTOCOL_RSS,
                       NET_PROTOCOL_SFTP,
                       NET_PROTOCOL_NFS,
-                      NET_PROTOCOL_DAAP,
-                      NET_PROTOCOL_MYTH};
+                      NET_PROTOCOL_DAAP};
   CGUIDialogNetworkSetup(void);
   virtual ~CGUIDialogNetworkSetup(void);
   virtual bool OnMessage(CGUIMessage& message);

@@ -65,9 +65,6 @@
 #ifdef HAS_FILESYSTEM_DAAP
 #include "filesystem/DAAPFile.h"
 #endif
-#ifdef HAS_FILESYSTEM_MYTH
-#include "filesystem/MythSession.h"
-#endif
 #include "filesystem/PluginDirectory.h"
 #ifdef HAS_FILESYSTEM_SAP
 #include "filesystem/SAPDirectory.h"
@@ -5282,8 +5279,6 @@ void CApplication::ProcessSlow()
   // check for any idle curl connections
   g_curlInterface.CheckIdle();
 
-  // check for any idle myth sessions
-  CMythSession::CheckIdle();
 #ifdef HAS_FILESYSTEM
   // check for any idle htsp sessions
   HTSP::CHTSPDirectorySession::CheckIdle();

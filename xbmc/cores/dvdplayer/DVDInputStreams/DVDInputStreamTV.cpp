@@ -19,7 +19,6 @@
  */
 
 #include "DVDInputStreamTV.h"
-#include "filesystem/MythFile.h"
 #include "Filesystem/SlingboxFile.h"
 #include "URL.h"
 
@@ -52,12 +51,6 @@ bool CDVDInputStreamTV::Open()
     m_pFile       = new CSlingboxFile();
     m_pLiveTV     = ((CSlingboxFile*)m_pFile)->GetLiveTV();
     m_pRecordable = NULL;
-  }
-  else
-  {
-    m_pFile       = new CMythFile();
-    m_pLiveTV     = ((CMythFile*)m_pFile)->GetLiveTV();
-    m_pRecordable = ((CMythFile*)m_pFile)->GetRecordable();
   }
 
   CURL url = m_item.GetURL();

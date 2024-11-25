@@ -72,7 +72,6 @@
 #include "RarDirectory.h"
 #include "HDHomeRunDirectory.h"
 #include "SlingboxDirectory.h"
-#include "MythDirectory.h"
 #include "FileItem.h"
 #include "URL.h"
 #include "RSSDirectory.h"
@@ -143,8 +142,6 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
 #endif
     if (url.IsProtocol("hdhomerun")) return new CHomeRunDirectory();
     if (url.IsProtocol("sling")) return new CSlingboxDirectory();
-    if (url.IsProtocol("myth")) return new CMythDirectory();
-    if (url.IsProtocol("cmyth")) return new CMythDirectory();
     if (url.IsProtocol("rss")) return new CRSSDirectory();
   }
 

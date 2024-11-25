@@ -44,7 +44,6 @@
 
 #define LOGSAMBA  (1 << (LOGMASKBIT+0))
 #define LOGCURL   (1 << (LOGMASKBIT+1))
-#define LOGCMYTH  (1 << (LOGMASKBIT+2))
 #define LOGFFMPEG (1 << (LOGMASKBIT+3))
 #define LOGRTMP   (1 << (LOGMASKBIT+4))
 #define LOGDBUS   (1 << (LOGMASKBIT+5))

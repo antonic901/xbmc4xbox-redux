@@ -2253,9 +2253,6 @@
 					RelativePath="..\..\xbmc\FileSystem\DllHDHomeRun.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\FileSystem\DllLibCMyth.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\FileSystem\DllLibCurl.cpp">
 				</File>
 				<File
@@ -2377,24 +2374,6 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\MusicSearchDirectory.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\MythDirectory.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\MythDirectory.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\MythFile.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\MythFile.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\MythSession.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\FileSystem\MythSession.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\FileSystem\NptXbmcFile.cpp">

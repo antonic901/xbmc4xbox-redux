@@ -40,7 +40,6 @@
 #include "FileSystem/RSSDirectory.h"
 #include "filesystem/ZipManager.h"
 #include "filesystem/RarManager.h"
-#include "filesystem/MythDirectory.h"
 #include "filesystem/VideoDatabaseDirectory.h"
 #ifdef HAS_UPNP
 #include "filesystem/UPnPDirectory.h"
@@ -379,10 +378,6 @@ CStdString CUtil::GetTitleFromPath(const CURL& url, bool bIsFolder /* = false */
   // VDR Streamdev client
   else if (url.IsProtocol("vtp"))
     strFilename = g_localizeStrings.Get(20257);
-
-  // MythTV client
-  else if (url.IsProtocol("myth"))
-    strFilename = g_localizeStrings.Get(20258);
 
   // SAP Streams
   else if (url.IsProtocol("sap") && strFilename.empty())
@@ -3484,15 +3479,6 @@ bool CUtil::SupportsWriteFileOperations(const CStdString& strPath)
     return true;
   if (URIUtils::IsDAV(strPath))
     return true;
-  if (URIUtils::IsMythTV(strPath))
-  {
-    /*
-     * Can't use CFile::Exists() to check whether the myth:// path supports file operations because
-     * it hits the directory cache on the way through, which has the Live Channels and Guide
-     * items cached.
-     */
-    return CMythDirectory::SupportsWriteFileOperations(strPath);
-  }
   if (URIUtils::IsStack(strPath))
     return SupportsWriteFileOperations(CStackDirectory::GetFirstStackedFile(strPath));
   if (URIUtils::IsMultiPath(strPath))
