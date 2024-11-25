@@ -20,10 +20,12 @@
  *
  */
 
-#include "GUIWindow.h"
+#include <string>
+#include <vector>
+
+#include "guilib/GUIWindow.h"
 #include "filesystem/VirtualDirectory.h"
 #include "filesystem/DirectoryHistory.h"
-#include "threads/CriticalSection.h"
 #include "utils/JobManager.h"
 
 class CFileItem;
@@ -32,7 +34,7 @@ class CGUIDialogProgress;
 
 class CGUIWindowFileManager :
       public CGUIWindow,
-      public CJobQueue 
+      public CJobQueue
 {
 public:
 
@@ -43,16 +45,16 @@ public:
   virtual bool OnBack(int actionID);
   const CFileItem &CurrentDirectory(int indx) const;
 
-  static __int64 CalculateFolderSize(const CStdString &strDirectory, CGUIDialogProgress *pProgress = NULL);
+  static int64_t CalculateFolderSize(const std::string &strDirectory, CGUIDialogProgress *pProgress = NULL);
 
   virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
 protected:
   virtual void OnInitWindow();
-  void SetInitialPath(const CStdString &path);
+  void SetInitialPath(const std::string &path);
   void GoParentFolder(int iList);
   void UpdateControl(int iList, int item);
-  bool Update(int iList, const CStdString &strDirectory); //???
-  void OnStart(CFileItem *pItem);
+  bool Update(int iList, const std::string &strDirectory); //???
+  void OnStart(CFileItem *pItem, const std::string &player);
   bool SelectItem(int iList, int &item);
   void ClearFileItems(int iList);
   void OnClick(int iList, int iItem);
@@ -68,9 +70,9 @@ protected:
   void Refresh();
   void Refresh(int iList);
   int GetSelectedItem(int iList);
-  bool HaveDiscOrConnection( CStdString& strPath, int iDriveType );
-  void GetDirectoryHistoryString(const CFileItem* pItem, CStdString& strHistoryString);
-  bool GetDirectory(int iList, const CStdString &strDirectory, CFileItemList &items);
+  bool HaveDiscOrConnection( std::string& strPath, int iDriveType );
+  void GetDirectoryHistoryString(const CFileItem* pItem, std::string& strHistoryString);
+  bool GetDirectory(int iList, const std::string &strDirectory, CFileItemList &items);
   int NumSelected(int iList);
   int GetFocusedList() const;
   // functions to check for actions that we can perform
@@ -82,18 +84,17 @@ protected:
   void OnPopupMenu(int iList, int iItem, bool bContextDriven = true);
   void ShowShareErrorMessage(CFileItem* pItem);
   void UpdateItemCounts();
-  void SetSourcesWithLocal(VECSOURCES sources);
 
-  // 
+  //
   bool bCheckShareConnectivity;
-  CStdString strCheckSharePath;
+  std::string strCheckSharePath;
 
 
   XFILE::CVirtualDirectory m_rootDir;
   CFileItemList* m_vecItems[2];
   typedef std::vector <CFileItem*> ::iterator ivecItems;
   CFileItem* m_Directory[2];
-  CStdString m_strParentPath[2];
+  std::string m_strParentPath[2];
   CDirectoryHistory m_history[2];
 
   int m_errorHeading, m_errorLine;
