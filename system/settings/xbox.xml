@@ -182,7 +182,30 @@
     </category>
   </section>
   <section id="media">
+    <category id="video">
+      <group id="1">
+        <setting id="myvideos.extractflags">
+          <default>false</default>
+        </setting>
+        <setting id="myvideos.extractthumb">
+          <default>false</default>
+        </setting>
+        <setting id="myvideos.extractchapterthumbs">
+          <default>false</default>
+        </setting>
+      </group>
+      <group id="3">
+        <setting id="videolibrary.actorthumbs">
+          <default>false</default>
+        </setting>
+      </group>
+    </category>
     <category id="music">
+      <group id="2">
+        <setting id="musicfiles.usetags">
+          <default>false</default>
+        </setting>
+      </group>
       <group id="3">
         <setting id="musiclibrary.albumsscraper">
           <default>metadata.albums.theaudiodb.com</default>
