@@ -1323,7 +1323,7 @@ void CGUIWindowMusicBase::OnInitWindow()
   CGUIMediaWindow::OnInitWindow();
   // Prompt for rescan of library to read music file tags that were not processed by previous versions
   // and accomodate any changes to the way some tags are processed
-  if (CMediaSettings::Get().GetMusicNeedsUpdate() != 0)
+  if (m_musicdatabase.GetMusicNeedsTagScan() != 0)
   {
     if (g_infoManager.GetLibraryBool(LIBRARY_HAS_MUSIC) && !g_application.IsMusicScanning())
     {
@@ -1339,15 +1339,13 @@ void CGUIWindowMusicBase::OnInitWindow()
         if (CSettings::GetInstance().GetBool("musiclibrary.backgroundupdate"))
           flags |= CMusicInfoScanner::SCAN_BACKGROUND;
         g_application.StartMusicScan("", true, flags);
-        CMediaSettings::Get().SetMusicNeedsUpdate(0); // once is enough (user may interrupt, but that's up to them)
-        CSettings::GetInstance().Save();
+        m_musicdatabase.SetMusicTagScanVersion(); // once is enough (user may interrupt, but that's up to them)
       }
     }
     else
     {
       // no need to force a rescan if there's no music in the library or if a library scan is already active
-      CMediaSettings::Get().SetMusicNeedsUpdate(0);
-      CSettings::GetInstance().Save();
+      m_musicdatabase.SetMusicTagScanVersion();
     }
   }
 }

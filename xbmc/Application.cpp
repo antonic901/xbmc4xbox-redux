@@ -141,6 +141,7 @@
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogSubMenu.h"
 #include "dialogs/GUIDialogButtonMenu.h"
+#include "dialogs/GUIDialogYesNo.h"
 #include "addons/GUIDialogAddonSettings.h"
 
 #include "video/dialogs/GUIDialogFullScreenInfo.h"
@@ -5844,6 +5845,11 @@ void CApplication::StartMusicScan(const std::string &strDirectory, bool userInit
       flags |= CMusicInfoScanner::SCAN_ONLINE;
     if (!userInitiated || CSettings::GetInstance().GetBool("musiclibrary.backgroundupdate"))
       flags |= CMusicInfoScanner::SCAN_BACKGROUND;
+    // Ask for full rescan of music files
+    //! @todo replace with a music library setting in UI
+    if (g_advancedSettings.m_bMusicLibraryPromptFullTagScan)
+      if (CGUIDialogYesNo::ShowAndGetInput( 799 ,  38062 ))
+        flags |= CMusicInfoScanner::SCAN_RESCAN;
   }
 
   if (!(flags & CMusicInfoScanner::SCAN_BACKGROUND))

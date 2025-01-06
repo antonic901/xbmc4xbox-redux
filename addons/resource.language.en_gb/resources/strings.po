@@ -14698,6 +14698,52 @@ msgctxt "#38042"
 msgid "[Missing]"
 msgstr ""
 
+#. Title album artists node
+#: system/library/music/musicroles/albumartists.xml
+msgctxt "#38043"
+msgid "Album artists"
+msgstr ""
+
+#. Title all artists node
+#: system/library/music/musicroles/allartists.xml
+msgctxt "#38044"
+msgid "Song & album artists"
+msgstr ""
+
+#. Title all contributors node (any role e.g. composer, piano, producer, engineer)
+#: system/library/music/musicroles/allcontributors.xml
+msgctxt "#38045"
+msgid "All contributors"
+msgstr ""
+
+#. Title all roles node
+#: system/library/music/musicroles/allroles.xml
+msgctxt "#38046"
+msgid "All roles"
+msgstr ""
+
+#empty strings from id 38047 to 38059
+
+#. Question when forced rescan of music tags needed after upgrade from previous version of Kodi
+#: xbmc/music/windows/GUIWindowMusicBase.cpp
+msgctxt "#38060"
+msgid "Music library needs to rescan tags from files. Would you like to scan now?"
+msgstr ""
+
+#. Extra scraping question on upgrade from previous version
+#: xbmc/music/windows/GUIWindowMusicBase.cpp
+msgctxt "#38061"
+msgid "Fetch additional information for albums and artists? This could take some time so you may prefer to do this later"
+msgstr ""
+
+#. Full tag scanning question on library update (by default tags are only scanned when the file has changed since last time)
+#: xbmc/Application.cpp
+msgctxt "#38062"
+msgid "Do full tag scan even when music files are unchanged?"
+msgstr ""
+
+#empty strings from id 38063 to 38099
+
 #. Description of section #14200 "Player""
 #: system/settings/settings.xml
 msgctxt "#38100"
