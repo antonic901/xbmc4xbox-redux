@@ -2266,16 +2266,16 @@ bool CApplication::OnAction(CAction &action)
     if (tag)
     {
       *m_itemCurrentFile->GetMusicInfoTag() = *tag;
-      char rating = tag->GetRating();
+      int userrating = tag->GetUserrating();
       bool needsUpdate(false);
-      if (rating > '0' && action.GetID() == ACTION_DECREASE_RATING)
+      if (userrating > 0 && action.GetID() == ACTION_DECREASE_RATING)
       {
-        m_itemCurrentFile->GetMusicInfoTag()->SetRating(rating - 1);
+        m_itemCurrentFile->GetMusicInfoTag()->SetUserrating(userrating - 1);
         needsUpdate = true;
       }
-      else if (rating < '5' && action.GetID() == ACTION_INCREASE_RATING)
+      else if (userrating < 10 && action.GetID() == ACTION_INCREASE_RATING)
       {
-        m_itemCurrentFile->GetMusicInfoTag()->SetRating(rating + 1);
+        m_itemCurrentFile->GetMusicInfoTag()->SetUserrating(userrating + 1);
         needsUpdate = true;
       }
       if (needsUpdate)
@@ -2284,6 +2284,39 @@ bool CApplication::OnAction(CAction &action)
         if (db.Open())      // OpenForWrite() ?
         {
           db.SetSongUserrating(m_itemCurrentFile->GetPath(), m_itemCurrentFile->GetMusicInfoTag()->GetUserrating());
+          db.Close();
+        }
+        // send a message to all windows to tell them to update the fileitem (eg playlistplayer, media windows)
+        CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_ITEM, 0, m_itemCurrentFile);
+        g_windowManager.SendMessage(msg);
+      }
+    }
+    return true;
+  }
+  else if ((action.GetID() == ACTION_INCREASE_RATING || action.GetID() == ACTION_DECREASE_RATING) && IsPlayingVideo())
+  {
+    const CVideoInfoTag *tag = g_infoManager.GetCurrentMovieTag();
+    if (tag)
+    {
+      *m_itemCurrentFile->GetVideoInfoTag() = *tag;
+      int rating = tag->m_iUserRating;
+      bool needsUpdate(false);
+      if (rating > 1 && action.GetID() == ACTION_DECREASE_RATING)
+      {
+        m_itemCurrentFile->GetVideoInfoTag()->m_iUserRating = rating - 1;
+        needsUpdate = true;
+      }
+      else if (rating < 10 && action.GetID() == ACTION_INCREASE_RATING)
+      {
+        m_itemCurrentFile->GetVideoInfoTag()->m_iUserRating = rating + 1;
+        needsUpdate = true;
+      }
+      if (needsUpdate)
+      {
+        CVideoDatabase db;
+        if (db.Open())
+        {
+          db.SetVideoUserRating(m_itemCurrentFile->GetVideoInfoTag()->m_iDbId, m_itemCurrentFile->GetVideoInfoTag()->m_iUserRating, m_itemCurrentFile->GetVideoInfoTag()->m_type);
           db.Close();
         }
         // send a message to all windows to tell them to update the fileitem (eg playlistplayer, media windows)
