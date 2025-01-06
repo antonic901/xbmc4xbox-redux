@@ -6348,6 +6348,20 @@ std::string CMusicDatabase::GetArtistArtForItem(int mediaId, const std::string &
   return GetSingleValue(query, m_pDS2);
 }
 
+bool CMusicDatabase::RemoveArtForItem(int mediaId, const MediaType & mediaType, const std::string & artType)
+{
+  return ExecuteQuery(PrepareSQL("DELETE FROM art WHERE media_id=%i AND media_type='%s' AND type='%s'", mediaId, mediaType.c_str(), artType.c_str()));
+}
+
+bool CMusicDatabase::RemoveArtForItem(int mediaId, const MediaType & mediaType, const std::set<std::string>& artTypes)
+{
+  bool result = true;
+  for (std::set<std::string>::const_iterator it = artTypes.begin(); it != artTypes.end(); ++it)
+    result &= RemoveArtForItem(mediaId, mediaType, (*it));
+
+  return result;
+}
+
 bool CMusicDatabase::GetFilter(CDbUrl &musicUrl, Filter &filter, SortDescription &sorting)
 {
   if (!musicUrl.IsValid())
