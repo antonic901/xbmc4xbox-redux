@@ -122,7 +122,8 @@ public:
    \param strComment [in] the ids of the added songs
    \param strMood [in] the mood of the added song
    \param strThumb [in] the ids of the added songs
-   \param artistString [in] the assembled artist string
+   \param artistDisp [in] the assembled artist name(s) display string
+   \param artistSort [in] the artist name(s) sort string
    \param genres [in] a vector of genres to which this song belongs
    \param iTrack [in] the track number and disc number of the song
    \param iDuration [in] the duration of the song
@@ -143,7 +144,8 @@ public:
               const std::string& strComment,
               const std::string& strMood,
               const std::string& strThumb,
-              const std::string &artistString, const std::vector<std::string>& genres,
+              const std::string &artistDisp, const std::string &artistSort,
+              const std::vector<std::string>& genres,
               int iTrack, int iDuration, int iYear,
               const int iTimesPlayed, int iStartOffset, int iEndOffset,
               const CDateTime& dtLastPlayed, float rating, int userrating, int votes);
@@ -170,7 +172,8 @@ public:
    \param strComment [in] the ids of the added songs
    \param strMood [in] the mood of the added song
    \param strThumb [in] the ids of the added songs
-   \param artistString [in] the full artist string
+   \param artistDisp [in] the artist name(s) display string
+   \param artistSort [in] the artist name(s) sort string
    \param genres [in] a vector of genres to which this song belongs
    \param iTrack [in] the track number and disc number of the song
    \param iDuration [in] the duration of the song
@@ -188,7 +191,8 @@ public:
                  const std::string& strTitle, const std::string& strMusicBrainzTrackID,
                  const std::string& strPathAndFileName, const std::string& strComment,
                  const std::string& strMood, const std::string& strThumb,
-                 const std::string& artistString, const std::vector<std::string>& genres,
+                 const std::string &artistDisp, const std::string &artistSort,
+                 const std::vector<std::string>& genres,
                  int iTrack, int iDuration, int iYear,
                  int iTimesPlayed, int iStartOffset, int iEndOffset,
                  const CDateTime& dtLastPlayed, float rating, int userrating, int votes);
@@ -221,7 +225,8 @@ public:
   /*! \brief Add an album to the database
    \param strAlbum the album title
    \param strMusicBrainzAlbumID the Musicbrainz Id
-   \param strArtist the album artist name(s)
+   \param strArtist the album artist name(s) display string
+   \param strArtistSort the album artist name(s) sort string
    \param strGenre the album genre(s)
    \param year the year
    \param strRecordLabel the recording lable
@@ -231,9 +236,11 @@ public:
    \return the id of the album
    */
   int  AddAlbum(const std::string& strAlbum, const std::string& strMusicBrainzAlbumID,
-                const std::string& strArtist, const std::string& strGenre, int year,
+                const std::string& strArtist, const std::string& strArtistSort,
+                const std::string& strGenre, int year,
                 const std::string& strRecordLabel, const std::string& strType,
                 bool bCompilation, CAlbum::ReleaseType releaseType);
+
   /*! \brief retrieve an album, optionally with all songs.
    \param idAlbum the database id of the album.
    \param album [out] the album to fill.
@@ -244,7 +251,8 @@ public:
   int  UpdateAlbum(int idAlbum, const CAlbum &album);
   int  UpdateAlbum(int idAlbum,
                    const std::string& strAlbum, const std::string& strMusicBrainzAlbumID,
-                   const std::string& strArtist, const std::string& strGenre,
+                   const std::string& strArtist, const std::string& strArtistSort,
+                   const std::string& strGenre,
                    const std::string& strMoods, const std::string& strStyles,
                    const std::string& strThemes, const std::string& strReview,
                    const std::string& strImage, const std::string& strLabel,
@@ -273,11 +281,13 @@ public:
   /////////////////////////////////////////////////
   bool UpdateArtist(const CArtist& artist);
 
+  int  AddArtist(const std::string& strArtist, const std::string& strMusicBrainzArtistID, const std::string& strSortName);
   int  AddArtist(const std::string& strArtist, const std::string& strMusicBrainzArtistID);
   bool GetArtist(int idArtist, CArtist& artist, bool fetchAll = true);
   bool GetArtistExists(int idArtist);
   int  UpdateArtist(int idArtist,
-                    const std::string& strArtist, const std::string& strMusicBrainzArtistID,
+                    const std::string& strArtist, const std::string& strSortName,
+                    const std::string& strMusicBrainzArtistID,
                     const std::string& strBorn, const std::string& strFormed,
                     const std::string& strGenres, const std::string& strMoods,
                     const std::string& strStyles, const std::string& strInstruments,
@@ -294,6 +304,12 @@ public:
   std::string GetArtistById(int id);
   int GetArtistByName(const std::string& strArtist);
   std::string GetRoleById(int id);
+
+  /*! \brief Propagate artist sort name into the concatenated artist sort name strings
+  held for songs and albums
+  \param int idArtist to propagate sort name for, -1 means all artists
+  */
+  bool UpdateArtistSortNames(int idArtist = -1);
 
   /////////////////////////////////////////////////
   // Cuesheets
@@ -330,8 +346,8 @@ public:
   int AddRole(const std::string &strRole);
   bool AddSongArtist(int idArtist, int idSong, const std::string& strRole, const std::string& strArtist, int iOrder);
   bool AddSongArtist(int idArtist, int idSong, int idRole, const std::string& strArtist, int iOrder);
-  int  AddSongContributor(int idSong, const std::string& strRole, const std::string& strArtist);
-  void AddSongContributors(int idSong, const VECMUSICROLES& contributors);
+  int  AddSongContributor(int idSong, const std::string& strRole, const std::string& strArtist, const std::string &strSort);
+  void AddSongContributors(int idSong, const VECMUSICROLES& contributors, const std::string &strSort);
   int GetRoleByName(const std::string& strRole);
   bool GetRolesByArtist(int idArtist, CFileItem* item);
   bool GetSongsByArtist(int idArtist, std::vector<int>& songs);
@@ -558,7 +574,6 @@ protected:
 
   const char *GetBaseDBName() const { return "MyMusic"; };
 
-
 private:
   /*! \brief (Re)Create the generic database views for songs and albums
    */
@@ -603,6 +618,7 @@ private:
   {
     song_idSong=0,
     song_strArtists,
+    song_strArtistSort,
     song_strGenres,
     song_strTitle,
     song_iTrack,
@@ -623,6 +639,7 @@ private:
     song_strPath,
     song_bCompilation,
     song_strAlbumArtists,
+    song_strAlbumArtistSort,
     song_strAlbumReleaseType,
     song_mood,
     song_dateAdded,
@@ -637,6 +654,7 @@ private:
     album_strAlbum,
     album_strMusicBrainzAlbumID,
     album_strArtists,
+    album_strArtistSort,
     album_strGenres,
     album_iYear,
     album_strMoods,
@@ -657,6 +675,8 @@ private:
     album_enumCount // end of the enum, do not add past here
   } AlbumFields;
 
+  // Fields should be ordered as they
+  // appear in the songartistview/albumartistview
   static enum _ArtistCreditFields
   {
     // used for GetAlbum to get the cascaded album/song artist credits
@@ -665,15 +685,19 @@ private:
     artistCredit_idRole,
     artistCredit_strRole,
     artistCredit_strArtist,
+    artistCredit_strSortName,
     artistCredit_strMusicBrainzArtistID,
     artistCredit_iOrder,
     artistCredit_enumCount
   } ArtistCreditFields;
 
+  // Fields should be ordered as they
+  // appear in the artistview
   static enum _ArtistFields
   {
     artist_idArtist=0,
     artist_strArtist,
+    artist_strSortName,
     artist_strMusicBrainzArtistID,
     artist_strBorn,
     artist_strFormed,

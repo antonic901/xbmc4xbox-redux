@@ -100,6 +100,8 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
   SortAttribute sortAttribute = SortAttributeNone;
   if (CSettings::GetInstance().GetBool("filelists.ignorethewhensorting"))
     sortAttribute = SortAttributeIgnoreArticle;
+  if (g_advancedSettings.m_musicUseArtistSortName)
+    sortAttribute = static_cast<SortAttribute>(sortAttribute | SortAttributeUseArtistSortName);
 
   switch (NodeType)
   {
@@ -332,7 +334,8 @@ CGUIViewStateMusicSmartPlaylist::CGUIViewStateMusicSmartPlaylist(const CFileItem
   SortAttribute sortAttribute = SortAttributeNone;
   if (CSettings::GetInstance().GetBool("filelists.ignorethewhensorting"))
     sortAttribute = SortAttributeIgnoreArticle;
-
+  if (g_advancedSettings.m_musicUseArtistSortName)
+    sortAttribute = static_cast<SortAttribute>(sortAttribute | SortAttributeUseArtistSortName);
   const CViewState *viewState = CViewStateSettings::Get().Get("musicnavsongs");
 
   if (items.GetContent() == "songs" || items.GetContent() == "mixed")
@@ -414,6 +417,9 @@ CGUIViewStateMusicPlaylist::CGUIViewStateMusicPlaylist(const CFileItemList& item
   if (CSettings::GetInstance().GetBool("filelists.ignorethewhensorting"))
     sortAttribute = SortAttributeIgnoreArticle;
 
+  if (g_advancedSettings.m_musicUseArtistSortName)
+    sortAttribute = static_cast<SortAttribute>(sortAttribute | SortAttributeUseArtistSortName);
+
   std::string strTrack=CSettings::GetInstance().GetString("musicfiles.trackformat");
   AddSortMethod(SortByPlaylistOrder, 559, LABEL_MASKS(strTrack, "%D"));
   AddSortMethod(SortByTrackNumber, 554, LABEL_MASKS(strTrack, "%D"));  // Userdefined, Duration| empty, empty
@@ -444,6 +450,8 @@ CGUIViewStateWindowMusicNav::CGUIViewStateWindowMusicNav(const CFileItemList& it
   SortAttribute sortAttribute = SortAttributeNone;
   if (CSettings::GetInstance().GetBool("filelists.ignorethewhensorting"))
     sortAttribute = SortAttributeIgnoreArticle;
+  if (g_advancedSettings.m_musicUseArtistSortName)
+    sortAttribute = static_cast<SortAttribute>(sortAttribute | SortAttributeUseArtistSortName);
 
   if (items.IsVirtualDirectoryRoot())
   {

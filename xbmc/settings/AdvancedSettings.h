@@ -238,6 +238,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     bool m_bMusicLibraryAllItemsOnBottom;
     bool m_bMusicLibraryCleanOnUpdate;
     bool m_bMusicLibraryPromptFullTagScan;
+    bool m_bMusicLibraryArtistSortOnUpdate;
     CStdString m_strMusicLibraryAlbumFormat;
     CStdString m_strMusicLibraryAlbumFormatRight;
     bool m_prioritiseAPEv2tags;
@@ -245,6 +246,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     std::vector<std::string> m_musicArtistSeparators;
     CStdString m_videoItemSeparator;
     std::vector<CStdString> m_musicTagsFromFileFilters;
+    bool m_musicUseArtistSortName;
 
     bool m_bVideoLibraryHideAllItems;
     bool m_bVideoLibraryAllItemsOnBottom;

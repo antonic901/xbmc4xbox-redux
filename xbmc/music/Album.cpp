@@ -54,6 +54,9 @@ CAlbum::CAlbum(const CFileItem& item)
   genre = tag.GetGenre();
   std::vector<std::string> musicBrainzAlbumArtistHints = tag.GetMusicBrainzAlbumArtistHints();
   strArtistDesc = tag.GetAlbumArtistString();
+  strArtistSort = tag.GetAlbumArtistSort();
+  //Split the artist sort string to try and get sort names for individual artists
+  std::vector<std::string> artistSort = StringUtils::Split(strArtistSort, g_advancedSettings.m_musicItemSeparator);
 
   if (!tag.GetMusicBrainzAlbumArtistID().empty())
   { // Have musicbrainz artist info, so use it
@@ -92,7 +95,7 @@ CAlbum::CAlbum(const CFileItem& item)
 
       // Do hints exist yet mis-match
       if (!musicBrainzAlbumArtistHints.empty() &&
-          musicBrainzAlbumArtistHints.size() != tag.GetMusicBrainzAlbumArtistID().size())
+        musicBrainzAlbumArtistHints.size() != tag.GetMusicBrainzAlbumArtistID().size())
       {
         if (tag.GetAlbumArtist().size() == tag.GetMusicBrainzAlbumArtistID().size())
           // Album artist name count matches, use that as hints
@@ -143,14 +146,23 @@ CAlbum::CAlbum(const CFileItem& item)
         musicBrainzAlbumArtistHints = tag.GetAlbumArtist();
     }
 
+    // Try to get number of artist sort names and musicbrainz ids to match. Split sort names
+    // further using multiple possible delimiters, over single separator applied in Tag loader
+    if (artistSort.size() != tag.GetMusicBrainzAlbumArtistID().size())
+    {
+      std::string tempArray[] = {";", ":", "|", "#"};
+      std::vector<std::string> temp(tempArray, tempArray + sizeof(tempArray) / sizeof(tempArray[0]));
+      artistSort = StringUtils::SplitMulti(artistSort, temp);
+    }
+
     for (size_t i = 0; i < tag.GetMusicBrainzAlbumArtistID().size(); i++)
     {
       std::string artistId = tag.GetMusicBrainzAlbumArtistID()[i];
       std::string artistName;
       /*
-         We try and get the mbrainzid <-> name matching from the hints and match on the same index.
+         We try and get the musicbrainz id <-> name matching from the hints and match on the same index.
          Some album artist hints could be blank (if populated from artist or artist hints).
-         If not found, use the mbrainzid and hope we later on can update that entry
+         If not found, use the musicbrainz id and hope we later on can update that entry.
          If we have more names than musicbrainz id they are ingored, but raise a warning.
       */
 
@@ -159,8 +171,18 @@ CAlbum::CAlbum(const CFileItem& item)
       if (artistName.empty())
         artistName = artistId;
 
-      CArtistCredit artistCredit(StringUtils::Trim(artistName), tag.GetMusicBrainzAlbumArtistID()[i]);
-      artistCredits.push_back(artistCredit);
+      // Use artist sort name providing we have as many as we have mbid,
+      // otherwise something is wrong with them so ignore and leave blank
+      if (artistSort.size() == tag.GetMusicBrainzAlbumArtistID().size())
+      {
+        CArtistCredit artistCredit(StringUtils::Trim(artistName), StringUtils::Trim(artistSort[i]), artistId);
+        artistCredits.push_back(artistCredit);
+      }
+      else
+      {
+        CArtistCredit artistCredit(StringUtils::Trim(artistName), "", artistId);
+        artistCredits.push_back(artistCredit);
+      }
     }
   }
   else
@@ -175,10 +197,20 @@ CAlbum::CAlbum(const CFileItem& item)
       // Split album artist names further using multiple possible delimiters, over single separator applied in Tag loader
       albumArtists = StringUtils::SplitMulti(albumArtists, g_advancedSettings.m_musicArtistSeparators);
 
-    for (std::vector<std::string>::iterator it = albumArtists.begin(); it != albumArtists.end(); ++it)
+    if (artistSort.size() != albumArtists.size())
+    { // Split artist sort names further using multiple possible delimiters, over single separator applied in Tag loader
+      std::string tempArray[] = {";", ":", "|", "#"};
+      std::vector<std::string> temp(tempArray, tempArray + sizeof(tempArray) / sizeof(tempArray[0]));
+      artistSort = StringUtils::SplitMulti(artistSort, temp);
+    }
+
+    for (size_t i = 0; i < albumArtists.size(); i++)
     {
-      std::string artistname = *it;
-      artistCredits.push_back(StringUtils::Trim(artistname));
+      artistCredits.push_back(StringUtils::Trim(albumArtists[i]));
+      // Set artist sort name providing we have as many as we have artists,
+      // otherwise something is wrong with them so ignore rather than guess.
+      if (artistSort.size() == albumArtists.size())
+        artistCredits.back().SetSortName(StringUtils::Trim(artistSort[i]));
     }
   }
 
@@ -210,6 +242,9 @@ void CAlbum::MergeScrapedAlbum(const CAlbum& source, bool override /* = true */)
   if (override)
     bCompilation = source.bCompilation;
   //  iTimesPlayed = source.iTimesPlayed; // times played is derived from songs
+
+  if ((override && !source.strArtistSort.empty()) || strArtistSort.empty())
+    strArtistSort = source.strArtistSort;
   for (std::map<std::string, std::string>::const_iterator i = source.art.begin(); i != source.art.end(); ++i)
   {
     if (override || art.find(i->first) == art.end())
@@ -288,6 +323,22 @@ const std::string CAlbum::GetAlbumArtistString() const
   std::string artistString;
   if (!artistvector.empty())
     artistString = StringUtils::Join(artistvector, g_advancedSettings.m_musicItemSeparator);
+  return artistString;
+}
+
+const std::string CAlbum::GetAlbumArtistSort() const
+{
+  //The stored artist sort name string takes precidence but a
+  //value could be created from individual sort names held in artistcredits
+  if (!strArtistSort.empty())
+    return strArtistSort;
+  std::vector<std::string> artistvector;
+  for (VECARTISTCREDITS::const_iterator it = artistCredits.begin(); it != artistCredits.end(); ++it)
+    if (!(*it).GetSortName().empty())
+      artistvector.push_back((*it).GetSortName());
+  std::string artistString;
+  if (!artistvector.empty())
+    artistString = StringUtils::Join(artistvector, "; ");
   return artistString;
 }
 
