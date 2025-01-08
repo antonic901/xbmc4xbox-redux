@@ -6793,10 +6793,12 @@ void CMusicDatabase::ExportToXML(const CLibExportSettings& settings,  CGUIDialog
           }
         }
 
-        if ((current % 50) == 0 && progressDialog != NULL)
+        if ((current % 50) == 0 && progressDialog)
         {
           progressDialog->SetLine(1,  album.strAlbum );
           progressDialog->SetPercentage(current * 100 / total);
+          if (progressDialog->IsCanceled())
+            return;
         }
         current++;
       }
@@ -6909,10 +6911,12 @@ void CMusicDatabase::ExportToXML(const CLibExportSettings& settings,  CGUIDialog
           TiXmlDeclaration decl("1.0", "UTF-8", "yes");
           xmlDoc.InsertEndChild(decl);
         }
-        if ((current % 50) == 0 && progressDialog != NULL)
+        if ((current % 50) == 0 && progressDialog)
         {
           progressDialog->SetLine(1,  artist.strArtist );
           progressDialog->SetPercentage(current * 100 / total);
+          if (progressDialog->IsCanceled())
+            return;
         }
         current++;
       }
