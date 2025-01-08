@@ -155,7 +155,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     int  m_videoBusyDialogDelay_ms;
 
     float m_videoPlayCountMinimumPercent;
-    
+
     bool m_guiKeepInMemory;
     bool m_guiVisualizeDirtyRegions;
     int  m_guiAlgorithmDirtyRegions;
@@ -223,7 +223,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     int m_sambaclienttimeout;
     CStdString m_sambadoscodepage;
     bool m_sambastatfiles;
-   
+
     bool m_bHTTPDirectoryStatFilesize;
 
     bool m_bFTPThumbs;
@@ -237,7 +237,6 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     int m_iMusicLibraryDateAdded;
     bool m_bMusicLibraryAllItemsOnBottom;
     bool m_bMusicLibraryCleanOnUpdate;
-    bool m_bMusicLibraryPromptFullTagScan;
     bool m_bMusicLibraryArtistSortOnUpdate;
     CStdString m_strMusicLibraryAlbumFormat;
     CStdString m_strMusicLibraryAlbumFormatRight;
@@ -281,7 +280,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
 
     int m_playlistRetries;
     int m_playlistTimeout;
-    bool m_bVirtualShares; 
+    bool m_bVirtualShares;
     bool m_bNavVKeyboard; // if true we navigate the virtual keyboard using cursor keys
 
     bool m_karaokeChangeGenreForKaraokeSongs;

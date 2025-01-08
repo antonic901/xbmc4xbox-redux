@@ -464,6 +464,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\DisplaySettings.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\settings\LibExportSettings.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\LibExportSettings.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\settings\MediaSettings.cpp">
 				</File>
 				<File
@@ -598,6 +604,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\settings\dialogs\GUIDialogContentSettings.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\dialogs\GUIDialogLibExportSettings.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\dialogs\GUIDialogLibExportSettings.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\settings\dialogs\GUIDialogSettingsBase.cpp">
@@ -4151,6 +4163,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\music\MusicInfoLoader.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\music\MusicLibraryQueue.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\music\MusicLibraryQueue.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\music\MusicThumbLoader.cpp">
 				</File>
 				<File
@@ -4485,6 +4503,28 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\music\windows\MusicFileItemListModifier.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="jobs"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\music\jobs\MusicLibraryExportJob.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\jobs\MusicLibraryExportJob.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\jobs\MusicLibraryJob.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\jobs\MusicLibraryJob.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\jobs\MusicLibraryProgressJob.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\jobs\MusicLibraryProgressJob.h">
 					</File>
 				</Filter>
 			</Filter>

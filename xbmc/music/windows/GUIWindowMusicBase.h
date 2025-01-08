@@ -50,7 +50,7 @@ public:
 
   void OnItemInfo(CFileItem *pItem, bool bShowInfo = false);
 
-  void DoScan(const std::string &strPath);
+  void DoScan(const std::string &strPath, bool bRescan = false);
 
   /*! \brief Prompt the user if he wants to start a scan for this folder
   \param path the path to assign content for
@@ -79,7 +79,7 @@ protected:
   virtual std::string GetStartFolder(const std::string &dir);
   virtual void OnItemLoaded(CFileItem* pItem) {}
 
-  virtual void OnScan(int iItem);
+  virtual void OnScan(int iItem, bool bPromptRescan = false);
 
   virtual bool CheckFilterAdvanced(CFileItemList &items) const;
   virtual bool CanContainFilter(const std::string &strDirectory) const;

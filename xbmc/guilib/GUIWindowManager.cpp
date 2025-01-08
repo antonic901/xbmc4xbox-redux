@@ -89,6 +89,7 @@
 #include "profiles/dialogs/GUIDialogProfileSettings.h"
 #include "profiles/dialogs/GUIDialogLockSettings.h"
 #include "settings/dialogs/GUIDialogContentSettings.h"
+#include "settings/dialogs/GUIDialogLibExportSettings.h"
 #include "dialogs/GUIDialogBusy.h"
 #include "dialogs/GUIDialogKeyboardGeneric.h"
 #include "dialogs/GUIDialogYesNo.h"
@@ -217,6 +218,8 @@ void CGUIWindowManager::CreateWindows()
 
   Add(new CGUIDialogContentSettings);
 
+  Add(new CGUIDialogLibExportSettings);
+
   Add(new CGUIDialogMediaFilter);
   Add(new CGUIDialogSubtitles);
 
@@ -279,6 +282,7 @@ bool CGUIWindowManager::DestroyWindows()
     Delete(WINDOW_DIALOG_AUDIO_OSD_SETTINGS);
     Delete(WINDOW_DIALOG_VIDEO_BOOKMARKS);
     Delete(WINDOW_DIALOG_CONTENT_SETTINGS);
+    Delete(WINDOW_DIALOG_LIBEXPORT_SETTINGS);
     Delete(WINDOW_DIALOG_FAVOURITES);
     Delete(WINDOW_DIALOG_SONG_INFO);
     Delete(WINDOW_DIALOG_SMART_PLAYLIST_EDITOR);

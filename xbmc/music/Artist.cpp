@@ -59,8 +59,13 @@ void CArtist::MergeScrapedArtist(const CArtist& source, bool override /* = true 
   strDied = source.strDied;
   strDisbanded = source.strDisbanded;
   yearsActive = source.yearsActive;
-  thumbURL = source.thumbURL;
-  fanart = source.fanart;
+
+  thumbURL = source.thumbURL; // Available remote thumbs
+  fanart = source.fanart;  // Available remote fanart
+  // Current artwork - thumb, fanart etc., to be stored in art table
+  if (!source.art.empty())
+    art = source.art;
+
   discography = source.discography;
 }
 
@@ -89,6 +94,7 @@ bool CArtist::Load(const TiXmlElement *artist, bool append, bool prioritise)
   size_t iThumbCount = thumbURL.m_url.size();
   std::string xmlAdd = thumbURL.m_xml;
 
+  // Available artist thumbs
   const TiXmlElement* thumb = artist->FirstChildElement("thumb");
   while (thumb)
   {
@@ -109,6 +115,8 @@ bool CArtist::Load(const TiXmlElement *artist, bool append, bool prioritise)
            thumbURL.m_url.end());
     thumbURL.m_xml = xmlAdd;
   }
+
+  // Discography
   const TiXmlElement* node = artist->FirstChildElement("album");
   while (node)
   {
@@ -125,7 +133,7 @@ bool CArtist::Load(const TiXmlElement *artist, bool append, bool prioritise)
     node = node->NextSiblingElement("album");
   }
 
-  // fanart
+  // Available artist fanart
   const TiXmlElement *fanart2 = artist->FirstChildElement("fanart");
   if (fanart2)
   {
@@ -139,6 +147,18 @@ bool CArtist::Load(const TiXmlElement *artist, bool append, bool prioritise)
     else
       fanart.m_xml << *fanart2;
     fanart.Unpack();
+  }
+
+  // Current artwork  - thumb, fanart etc. (the chosen art, not the lists of those available)
+  node = artist->FirstChildElement("art");
+  if (node)
+  {
+    const TiXmlNode *artdetailNode = node->FirstChild();
+    while (artdetailNode && artdetailNode->FirstChild())
+    {
+      art.insert(make_pair(artdetailNode->ValueStr(), artdetailNode->FirstChild()->ValueStr()));
+      artdetailNode = artdetailNode->NextSibling();
+    }
   }
 
   return true;
@@ -166,6 +186,7 @@ bool CArtist::Save(TiXmlNode *node, const std::string &tag, const std::string& s
   XMLUtils::SetString(artist,                 "biography", strBiography);
   XMLUtils::SetString(artist,                      "died", strDied);
   XMLUtils::SetString(artist,                 "disbanded", strDisbanded);
+  // Available thumbs
   if (!thumbURL.m_xml.empty())
   {
     CXBMCTinyXML doc;
@@ -178,6 +199,7 @@ bool CArtist::Save(TiXmlNode *node, const std::string &tag, const std::string& s
     }
   }
   XMLUtils::SetString(artist,        "path", strPath);
+  // Available fanart
   if (fanart.m_xml.size())
   {
     CXBMCTinyXML doc;
@@ -185,7 +207,7 @@ bool CArtist::Save(TiXmlNode *node, const std::string &tag, const std::string& s
     artist->InsertEndChild(*doc.RootElement());
   }
 
-  // albums
+  // Discography
   for (std::vector<std::pair<std::string,std::string> >::const_iterator it = discography.begin(); it != discography.end(); ++it)
   {
     // add a <album> tag

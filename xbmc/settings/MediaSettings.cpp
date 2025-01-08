@@ -26,9 +26,11 @@
 #include "Util.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogFileBrowser.h"
+#include "settings/dialogs/GUIDialogLibExportSettings.h"
 #include "guilib/Key.h"
 #include "interfaces/builtins/Builtins.h"
 #include "music/MusicDatabase.h"
+#include "music/MusicLibraryQueue.h"
 #include "messaging/ApplicationMessenger.h"
 #include "messaging/helpers/DialogHelper.h"
 #include "profiles/ProfilesManager.h"
@@ -295,7 +297,14 @@ void CMediaSettings::OnSettingAction(const CSetting *setting)
       g_application.StartMusicCleanup(true);
   }
   else if (settingId == "musiclibrary.export")
-    CBuiltins::GetInstance().Execute("exportlibrary(music)");
+  {
+    CLibExportSettings m_musicExportSettings;
+    if (CGUIDialogLibExportSettings::Show(m_musicExportSettings))
+    {
+      // Export music library showing progress dialog
+      CMusicLibraryQueue::GetInstance().ExportLibrary(m_musicExportSettings, true);
+    }
+  }
   else if (settingId == "musiclibrary.import")
   {
     CStdString path;
