@@ -117,20 +117,6 @@ using namespace EPG;
 CGUIInfoManager g_infoManager;
 #endif
 
-class CSetCurrentItemJob : public CJob
-{
-  CFileItemPtr m_itemCurrentFile;
-public:
-  CSetCurrentItemJob(const CFileItem& item) : m_itemCurrentFile(boost::make_shared<CFileItem>(item)) { }
-  ~CSetCurrentItemJob(void) {}
-
-  bool DoWork(void)
-  {
-    g_infoManager.SetCurrentItemJob(m_itemCurrentFile);
-    return true;
-  }
-};
-
 CGUIInfoManager::CGUIInfoManager(void) :
     Observable()
 {
@@ -9676,18 +9662,14 @@ void CGUIInfoManager::ResetCurrentItem()
 
 void CGUIInfoManager::SetCurrentItem(const CFileItem &item)
 {
-  CSetCurrentItemJob *job = new CSetCurrentItemJob(item);
-  CJobManager::GetInstance().AddJob(job, NULL);
-}
-
-void CGUIInfoManager::SetCurrentItemJob(const CFileItemPtr item)
-{
   ResetCurrentItem();
 
-  if (item->IsAudio())
-    SetCurrentSong(*item);
+  CFileItem newItem(item);
+
+  if (newItem.IsAudio())
+    SetCurrentSong(newItem);
   else
-    SetCurrentMovie(*item);
+    SetCurrentMovie(newItem);
 
 #ifndef _XBOX
   if (item->HasPVRRadioRDSInfoTag())
