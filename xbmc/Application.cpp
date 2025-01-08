@@ -4959,7 +4959,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
         g_playlistPlayer.SetCurrentSong(m_nextPlaylistItem);
         *m_itemCurrentFile = *item;
       }
-      g_infoManager.SetCurrentItem(m_itemCurrentFile);
+      g_infoManager.SetCurrentItem(*m_itemCurrentFile);
       g_partyModeManager.OnSongChange(true);
 
       CheckNetworkHDSpinDown(true);

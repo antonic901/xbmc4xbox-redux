@@ -121,7 +121,7 @@ class CSetCurrentItemJob : public CJob
 {
   CFileItemPtr m_itemCurrentFile;
 public:
-  CSetCurrentItemJob(const CFileItemPtr item) : m_itemCurrentFile(item) { }
+  CSetCurrentItemJob(const CFileItem& item) : m_itemCurrentFile(boost::make_shared<CFileItem>(item)) { }
   ~CSetCurrentItemJob(void) {}
 
   bool DoWork(void)
@@ -9686,7 +9686,7 @@ void CGUIInfoManager::ResetCurrentItem()
   m_currentMovieDuration = "";
 }
 
-void CGUIInfoManager::SetCurrentItem(const CFileItemPtr item)
+void CGUIInfoManager::SetCurrentItem(const CFileItem &item)
 {
   CSetCurrentItemJob *job = new CSetCurrentItemJob(item);
   CJobManager::GetInstance().AddJob(job, NULL);
@@ -11844,13 +11844,12 @@ void CGUIInfoManager::OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg)
     if (!item)
       return;
 
-    CFileItemPtr itemptr(item);
     if (pMsg->param1 == 1 && item->HasMusicInfoTag()) // only grab music tag
       SetCurrentSongTag(*item->GetMusicInfoTag());
     else if (pMsg->param1 == 2 && item->HasVideoInfoTag()) // only grab video tag
       SetCurrentVideoTag(*item->GetVideoInfoTag());
     else
-      SetCurrentItem(itemptr);
+      SetCurrentItem(*item);
   }
   break;
 
