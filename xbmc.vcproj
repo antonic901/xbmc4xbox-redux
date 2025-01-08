@@ -4175,6 +4175,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\music\MusicThumbLoader.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\music\MusicUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\music\MusicUtils.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\music\Song.cpp">
 				</File>
 				<File

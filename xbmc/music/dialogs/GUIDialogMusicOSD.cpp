@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
+ *      Copyright (C) 2005-2018 Team Kodi
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -19,16 +19,11 @@
  */
 
 #include "GUIDialogMusicOSD.h"
-#include "guilib/GUIWindowManager.h"
-#include "guilib/Key.h"
-#include "GUIUserMessages.h"
-#include "settings/Settings.h"
 #include "addons/GUIWindowAddonBrowser.h"
-#include "dialogs/GUIDialogSelect.h"
-#include "Application.h"
-#include "FileItem.h"
-#include "music/tags/MusicInfoTag.h"
-#include "music/MusicDatabase.h"
+#include "guilib/GUIWindowManager.h"
+#include "GUIUserMessages.h"
+#include "guilib/Key.h"
+#include "settings/Settings.h"
 
 #define CONTROL_VIS_BUTTON       500
 #define CONTROL_LOCK_BUTTON      501
@@ -79,44 +74,6 @@ bool CGUIDialogMusicOSD::OnAction(const CAction &action)
     case ACTION_SHOW_OSD:
       Close();
       return true;
-
-    case ACTION_SET_RATING:
-    {
-      CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect *>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
-      if (dialog)
-      {
-        dialog->SetHeading( 38023 );
-        dialog->Add(g_localizeStrings.Get(38022));
-        for (int i = 1; i <= 10; i++)
-          dialog->Add(StringUtils::Format("%s: %i", g_localizeStrings.Get(563).c_str(), i));
-
-        CFileItemPtr track = g_application.CurrentFileItemPtr();
-        dialog->SetSelected(track->GetMusicInfoTag()->GetUserrating());
-
-        dialog->Open();
-
-        int userrating = dialog->GetSelectedItem();
-
-        if (userrating < 0) userrating = 0;
-        if (userrating > 10) userrating = 10;
-        if (userrating != track->GetMusicInfoTag()->GetUserrating())
-        {
-          track->GetMusicInfoTag()->SetUserrating(userrating);
-          // send a message to all windows to tell them to update the fileitem (eg playlistplayer, media windows)
-          CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_ITEM, 0, track);
-          g_windowManager.SendMessage(msg);
-
-          CMusicDatabase db;
-          if (db.Open())
-          {
-            db.SetSongUserrating(track->GetMusicInfoTag()->GetURL(), userrating);
-            db.Close();
-          }
-        }
-
-      }
-      return true;
-    }
 
     default:
       break;

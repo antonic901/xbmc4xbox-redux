@@ -1,7 +1,7 @@
 #pragma once
 
 /*
- *      Copyright (C) 2005-2013 Team XBMC
+ *      Copyright (C) 2005-2018 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -21,8 +21,8 @@
  */
 
 #include "guilib/GUIDialog.h"
-
-class CFileItem;
+#include "FileItem.h"
+#include "threads/Event.h"
 
 class CGUIDialogSongInfo :
       public CGUIDialog
@@ -31,24 +31,30 @@ public:
   CGUIDialogSongInfo(void);
   virtual ~CGUIDialogSongInfo(void);
   virtual bool OnMessage(CGUIMessage& message);
-  void SetSong(CFileItem *item);
-  virtual bool OnAction(const CAction &action);
+  bool SetSong(CFileItem* item);
+  void SetArtTypeList(CFileItemList& artlist);
+  bool OnAction(const CAction& action);
   virtual bool OnBack(int actionID);
-  bool NeedsUpdate() const { return m_needsUpdate; };
+  bool HasUpdatedUserrating() const { return m_hasUpdatedUserrating; };
 
   virtual bool HasListItems() const { return true; };
   virtual CFileItemPtr GetCurrentListItem(int offset = 0);
+  const CFileItemList& CurrentDirectory() const { return m_artTypeList; };
+  bool IsCancelled() const { return m_cancelled; };
+  void FetchComplete();
+
 protected:
   virtual void OnInitWindow();
   void Update();
-  bool DownloadThumbnail(const std::string &thumbFile);
-  void OnGetThumb();
+  void OnGetArt();
   void SetUserrating(int userrating);
   void OnSetUserrating();
 
   CFileItemPtr m_song;
+  CFileItemList m_artTypeList;
+  CEvent m_event;
   int m_startUserrating;
   bool m_cancelled;
-  bool m_needsUpdate;
+  bool m_hasUpdatedUserrating;
   long m_albumId;
 };

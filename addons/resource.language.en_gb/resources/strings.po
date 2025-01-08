@@ -6133,10 +6133,18 @@ msgstr ""
 
 #: xbmc/video/dialogs/GUIDialogVideoInfo.cpp
 msgctxt "#13516"
-msgid "Add art"
+msgid "Add art type"
 msgstr ""
 
-#empty strings from id 13517 to 13555
+#empty strings from id 13517 to 13520
+
+#. Heading for selection of a type of art e.g. "thumb", "poster", "fanart" etc. 
+#: xbmc/music/MusicUtils.cpp
+msgctxt "#13521"
+msgid "Choose art type"
+msgstr ""
+
+#empty strings from id 13522 to 13555
 
 #. Label of a setting that allows to select the skip step sizes to use for skipping
 #: system/settings/settings.xml
