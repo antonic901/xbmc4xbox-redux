@@ -268,8 +268,24 @@ bool CRecentlyAddedJob::UpdateMusic()
     {
       CAlbum& album=albums[j];
       std::string value = StringUtils::Format("%lu", j + 1);
-      std::string strThumb = musicdatabase.GetArtForItem(album.idAlbum, MediaTypeAlbum, "thumb");
-      std::string strFanart = musicdatabase.GetArtistArtForItem(album.idAlbum, MediaTypeAlbum, "fanart");
+      std::string strThumb;
+      std::string strFanart;
+      bool artfound = false;
+      std::vector<ArtForThumbLoader> art;
+      // Get album thumb and fanart for first album artist
+      artfound = musicdatabase.GetArtForItem(-1, album.idAlbum, -1, true, art);
+      if (artfound)
+      {
+        for (std::vector<ArtForThumbLoader>::const_iterator it = art.begin(); it != art.end(); ++it)
+        {
+          ArtForThumbLoader artitem = *it;
+          if (artitem.mediaType == MediaTypeAlbum && artitem.artType == "thumb")
+            strThumb = artitem.url;
+          else if (artitem.mediaType == MediaTypeArtist && artitem.artType == "fanart")
+            strFanart = artitem.url;
+        }
+      }
+
       std::string strDBpath = StringUtils::Format("musicdb://albums/%li/", album.idAlbum);
 
       home->SetProperty("LatestAlbum." + value + ".Title"   , album.strAlbum);
