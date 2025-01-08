@@ -24,6 +24,7 @@
 #include "GUIWindowMusicBase.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #include "dialogs/GUIDialogFileBrowser.h"
+#include "music/dialogs/GUIDialogInfoProviderSettings.h"
 #include "music/dialogs/GUIDialogMusicInfo.h"
 #include "playlists/PlayListFactory.h"
 #include "Util.h"
@@ -80,7 +81,6 @@ using namespace PLAYLIST;
 using namespace MUSIC_GRABBER;
 using namespace MUSIC_INFO;
 using namespace KODI::MESSAGING;
-using namespace KODI::MESSAGING::HELPERS;
 
 #define CONTROL_BTNVIEWASICONS  2
 #define CONTROL_BTNSORTBY       3
@@ -1436,36 +1436,18 @@ void CGUIWindowMusicBase::OnAssignContent(const std::string &path)
   // Music scrapers are not source specific, so unlike video there is no content selection logic here.
   // Called on having added a music source, this starts scanning items into library when required
 
+  // "Add to library" yes/no dialog with additional "settings" custom button
   // "Do you want to add the media from this source to your library?"
-  if (CGUIDialogYesNo::ShowAndGetInput( 20444 ,  20447 ))
+  HELPERS::DialogResponse rep = HELPERS::CUSTOM;
+  while (rep == HELPERS::CUSTOM)
   {
-    if (CSettings::GetInstance().GetBool("musiclibrary.downloadinfo"))
-    {
-      // Scraping as well so check artist info folder setting before scanning, may want to scrape artist info from nfo files
-      std::string folder = CSettings::GetInstance().GetString("musiclibrary.artistsfolder");
-      if (folder.empty())
-      {
-        //"Do you have local artist information (NFO) and art files that you want to fetch? Set the location of these artist folders now"
-        //Settings (YES) button allows user to enter the artist info folder
-        if (HELPERS::ShowYesNoDialogText(20223, 38320, 186, 10004) == YES)
-        {
-          // Choose artist info folder
-          VECSOURCES shares;
-          g_mediaManager.GetLocalDrives(shares);
-          g_mediaManager.GetNetworkLocations(shares);
-#ifndef _XBOX
-          g_mediaManager.GetRemovableDrives(shares);
-#endif
-          std::string strDirectory = "default location";
-          if (CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(20223), strDirectory, true))
-          {
-            if (!strDirectory.empty())
-              CSettings::GetInstance().SetString("musiclibrary.artistsfolder", strDirectory);
-          }
-        }
-      }
-    }
-    g_application.StartMusicScan(path, true);
+    rep = HELPERS::ShowYesNoCustomDialog(20444, 20447, 106, 107, 10004);
+    if (rep == HELPERS::CUSTOM)
+      // Edit default info provider settings so can be applied during scan
+      CGUIDialogInfoProviderSettings::Show();
   }
+  if (rep == HELPERS::YES)
+    g_application.StartMusicScan(path, true);
+
 }
 

@@ -4184,6 +4184,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					Name="dialogs"
 					Filter="">
 					<File
+						RelativePath=".\xbmc\music\dialogs\GUIDialogInfoProviderSettings.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\dialogs\GUIDialogInfoProviderSettings.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\music\dialogs\GUIDialogMusicInfo.cpp">
 					</File>
 					<File

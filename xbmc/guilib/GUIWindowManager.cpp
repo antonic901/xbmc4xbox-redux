@@ -45,6 +45,7 @@
 #include "music/windows/GUIWindowMusicNav.h"
 #include "music/windows/GUIWindowMusicPlaylistEditor.h"
 #include "video/windows/GUIWindowVideoPlaylist.h"
+#include "music/dialogs/GUIDialogInfoProviderSettings.h"
 #include "music/dialogs/GUIDialogMusicInfo.h"
 #include "video/dialogs/GUIDialogVideoInfo.h"
 #include "video/windows/GUIWindowVideoNav.h"
@@ -220,6 +221,8 @@ void CGUIWindowManager::CreateWindows()
 
   Add(new CGUIDialogLibExportSettings);
 
+  Add(new CGUIDialogInfoProviderSettings);
+
   Add(new CGUIDialogMediaFilter);
   Add(new CGUIDialogSubtitles);
 
@@ -282,6 +285,7 @@ bool CGUIWindowManager::DestroyWindows()
     Delete(WINDOW_DIALOG_AUDIO_OSD_SETTINGS);
     Delete(WINDOW_DIALOG_VIDEO_BOOKMARKS);
     Delete(WINDOW_DIALOG_CONTENT_SETTINGS);
+    Delete(WINDOW_DIALOG_INFOPROVIDER_SETTINGS);
     Delete(WINDOW_DIALOG_LIBEXPORT_SETTINGS);
     Delete(WINDOW_DIALOG_FAVOURITES);
     Delete(WINDOW_DIALOG_SONG_INFO);

@@ -285,6 +285,7 @@ static const ActionMapping windows[] =
         {"musicfiles"               , WINDOW_MUSIC_FILES}, // backward compat
         {"musiclibrary"             , WINDOW_MUSIC_NAV}, // backward compat
         {"musicplaylisteditor"      , WINDOW_MUSIC_PLAYLIST_EDITOR},
+        {"infoprovidersettings"     , WINDOW_DIALOG_INFOPROVIDER_SETTINGS},
         {"selectdialog"             , WINDOW_DIALOG_SELECT},
         {"musicinformation"         , WINDOW_DIALOG_MUSIC_INFO},
         {"okdialog"                 , WINDOW_DIALOG_OK},
