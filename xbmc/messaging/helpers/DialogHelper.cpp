@@ -32,11 +32,17 @@ namespace HELPERS
 {
 DialogResponse ShowYesNoDialogText(CVariant heading, CVariant text, CVariant noLabel, CVariant yesLabel, uint32_t autoCloseTimeout)
 {
+  return ShowYesNoCustomDialog(heading, text, noLabel, yesLabel, "", autoCloseTimeout);
+}
+
+DialogResponse ShowYesNoCustomDialog(CVariant heading, CVariant text, CVariant noLabel, CVariant yesLabel, CVariant customLabel, uint32_t autoCloseTimeout)
+{
   DialogYesNoMessage options;
   options.heading = boost::move(heading);
   options.text = boost::move(text);
   options.noLabel = boost::move(noLabel);
   options.yesLabel = boost::move(yesLabel);
+  options.customLabel = boost::move(customLabel);
   options.autoclose = autoCloseTimeout;
 
   switch (CApplicationMessenger::Get().SendMsg(TMSG_GUI_DIALOG_YESNO, -1, -1, static_cast<void*>(&options)))
@@ -47,6 +53,8 @@ DialogResponse ShowYesNoDialogText(CVariant heading, CVariant text, CVariant noL
     return NO;
   case 1:
     return YES;
+  case 2:
+    return CUSTOM;
   default:
     //If we get here someone changed the return values without updating this code
     assert(false);
@@ -56,7 +64,8 @@ DialogResponse ShowYesNoDialogText(CVariant heading, CVariant text, CVariant noL
   return CANCELLED;
 }
 
-DialogResponse ShowYesNoDialogLines(CVariant heading, CVariant line0, CVariant line1, CVariant line2, CVariant noLabel, CVariant yesLabel, uint32_t autoCloseTimeout)
+DialogResponse ShowYesNoDialogLines(CVariant heading, CVariant line0, CVariant line1, CVariant line2,
+  CVariant noLabel, CVariant yesLabel, uint32_t autoCloseTimeout)
 {
   DialogYesNoMessage options;
   options.heading = boost::move(heading);
@@ -65,6 +74,7 @@ DialogResponse ShowYesNoDialogLines(CVariant heading, CVariant line0, CVariant l
   options.lines[2] = boost::move(line2);
   options.noLabel = boost::move(noLabel);
   options.yesLabel = boost::move(yesLabel);
+  options.customLabel = "";
   options.autoclose = autoCloseTimeout;
 
   switch (CApplicationMessenger::Get().SendMsg(TMSG_GUI_DIALOG_YESNO, -1, -1, static_cast<void*>(&options)))
@@ -75,6 +85,8 @@ DialogResponse ShowYesNoDialogLines(CVariant heading, CVariant line0, CVariant l
     return NO;
   case 1:
     return YES;
+  case 2:
+    return CUSTOM;
   default:
     //If we get here someone changed the return values without updating this code
     assert(false);
