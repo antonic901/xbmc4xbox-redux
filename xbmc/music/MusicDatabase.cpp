@@ -3071,10 +3071,14 @@ bool CMusicDatabase::CleanupSongsByIds(const std::string &strSongIds)
   return false;
 }
 
-bool CMusicDatabase::CleanupSongs()
+bool CMusicDatabase::CleanupSongs(CGUIDialogProgress* progressDialog /*= nullptr*/)
 {
   try
   {
+    int total;
+    // Count total number of songs
+    total = (int)strtol(GetSingleValue("SELECT COUNT(1) FROM song", m_pDS).c_str(), nullptr, 10);
+
     // run through all songs and get all unique path ids
     int iLIMIT = 1000;
     for (int i=0;;i+=iLIMIT)
@@ -3097,7 +3101,20 @@ bool CMusicDatabase::CleanupSongs()
       }
       m_pDS->close();
       std::string strSongIds = "(" + StringUtils::Join(songIds, ",") + ")";
-      CLog::Log(LOGDEBUG,"Checking songs from song ID list: %s",strSongIds.c_str());
+      if (progressDialog)
+      {
+        int percentage = i * 100 / total;
+        if (percentage > progressDialog->GetPercentage())
+        {
+          progressDialog->SetPercentage(percentage);
+          progressDialog->Progress();
+        }
+        if (progressDialog->IsCanceled())
+        {
+          m_pDS->close();
+          return false;
+        }
+      }
       if (!CleanupSongsByIds(strSongIds)) return false;
     }
     return true;
@@ -3301,43 +3318,40 @@ bool CMusicDatabase::CleanupOrphanedItems()
   return true;
 }
 
-int CMusicDatabase::Cleanup(bool bShowProgress /* = true */)
+int CMusicDatabase::Cleanup(CGUIDialogProgress* progressDialog /*= nullptr*/)
 {
   if (NULL == m_pDB.get()) return ERROR_DATABASE;
   if (NULL == m_pDS.get()) return ERROR_DATABASE;
 
   int ret = ERROR_OK;
-  CGUIDialogProgress* pDlgProgress = NULL;
   unsigned int time = XbmcThreads::SystemClockMillis();
   CLog::Log(LOGNOTICE, "%s: Starting musicdatabase cleanup ..", __FUNCTION__);
   ANNOUNCEMENT::CAnnouncementManager::GetInstance().Announce(ANNOUNCEMENT::AudioLibrary, "xbmc", "OnCleanStarted");
 
   // first cleanup any songs with invalid paths
-  if (bShowProgress)
+  if (progressDialog)
   {
-    pDlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
-    if (pDlgProgress)
-    {
-      pDlgProgress->SetHeading(700);
-      pDlgProgress->SetLine(0, "");
-      pDlgProgress->SetLine(1, 318);
-      pDlgProgress->SetLine(2, 330);
-      pDlgProgress->SetPercentage(0);
-      pDlgProgress->Open();
-      pDlgProgress->ShowProgressBar(true);
-    }
+    progressDialog->SetLine(1, 318);
+    progressDialog->SetLine(2, 330);
+    progressDialog->SetPercentage(0);
+    progressDialog->Progress();
   }
-  if (!CleanupSongs())
+  if (!CleanupSongs(progressDialog))
   {
     ret = ERROR_REORG_SONGS;
     goto error;
   }
   // then the albums that are not linked to a song or to album, or whose path is removed
-  if (pDlgProgress)
+  if (progressDialog)
   {
-    pDlgProgress->SetLine(1, 326);
-    pDlgProgress->SetPercentage(20);
-    pDlgProgress->Progress();
+    progressDialog->SetLine(1, 326);
+    progressDialog->SetPercentage(20);
+    progressDialog->Progress();
+    if (progressDialog->IsCanceled())
+    {
+      ret = ERROR_CANCEL;
+      goto error;
+    }
   }
   if (!CleanupAlbums())
   {
@@ -3345,11 +3359,16 @@ int CMusicDatabase::Cleanup(bool bShowProgress /* = true */)
     goto error;
   }
   // now the paths
-  if (pDlgProgress)
+  if (progressDialog)
   {
-    pDlgProgress->SetLine(1, 324);
-    pDlgProgress->SetPercentage(40);
-    pDlgProgress->Progress();
+    progressDialog->SetLine(1, 324);
+    progressDialog->SetPercentage(40);
+    progressDialog->Progress();
+    if (progressDialog->IsCanceled())
+    {
+      ret = ERROR_CANCEL;
+      goto error;
+    }
   }
   if (!CleanupPaths())
   {
@@ -3357,11 +3376,16 @@ int CMusicDatabase::Cleanup(bool bShowProgress /* = true */)
     goto error;
   }
   // and finally artists + genres
-  if (pDlgProgress)
+  if (progressDialog)
   {
-    pDlgProgress->SetLine(1, 320);
-    pDlgProgress->SetPercentage(60);
-    pDlgProgress->Progress();
+    progressDialog->SetLine(1, 320);
+    progressDialog->SetPercentage(60);
+    progressDialog->Progress();
+    if (progressDialog->IsCanceled())
+    {
+      ret = ERROR_CANCEL;
+      goto error;
+    }
   }
   if (!CleanupArtists())
   {
@@ -3369,11 +3393,16 @@ int CMusicDatabase::Cleanup(bool bShowProgress /* = true */)
     goto error;
   }
   //Genres, roles and info settings progess in one step
-  if (pDlgProgress)
+  if (progressDialog)
   {
-    pDlgProgress->SetLine(1, 322);
-    pDlgProgress->SetPercentage(80);
-    pDlgProgress->Progress();
+    progressDialog->SetLine(1, 322);
+    progressDialog->SetPercentage(80);
+    progressDialog->Progress();
+    if (progressDialog->IsCanceled())
+    {
+      ret = ERROR_CANCEL;
+      goto error;
+    }
   }
   if (!CleanupGenres())
   {
@@ -3391,11 +3420,16 @@ int CMusicDatabase::Cleanup(bool bShowProgress /* = true */)
     goto error;
   }
   // commit transaction
-  if (pDlgProgress)
+  if (progressDialog)
   {
-    pDlgProgress->SetLine(1, 328);
-    pDlgProgress->SetPercentage(90);
-    pDlgProgress->Progress();
+    progressDialog->SetLine(1, 328);
+    progressDialog->SetPercentage(90);
+    progressDialog->Progress();
+    if (progressDialog->IsCanceled())
+    {
+      ret = ERROR_CANCEL;
+      goto error;
+    }
   }
   if (!CommitTransaction())
   {
@@ -3403,12 +3437,11 @@ int CMusicDatabase::Cleanup(bool bShowProgress /* = true */)
     goto error;
   }
   // and compress the database
-  if (pDlgProgress)
+  if (progressDialog)
   {
-    pDlgProgress->SetLine(1, 331);
-    pDlgProgress->SetPercentage(100);
-    pDlgProgress->Progress();
-    pDlgProgress->Close();
+    progressDialog->SetLine(1, 331);
+    progressDialog->SetPercentage(100);
+    progressDialog->Close();
   }
   time = XbmcThreads::SystemClockMillis() - time;
   CLog::Log(LOGNOTICE, "%s: Cleaning musicdatabase done. Operation took %s", __FUNCTION__, StringUtils::SecondsToTimeString(time / 1000).c_str());

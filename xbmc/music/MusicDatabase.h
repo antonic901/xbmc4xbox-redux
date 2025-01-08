@@ -102,7 +102,7 @@ public:
   virtual bool CommitTransaction();
   void EmptyCache();
   void Clean();
-  int  Cleanup(bool bShowProgress=true);
+  int  Cleanup(CGUIDialogProgress* progressDialog = nullptr);
   bool LookupCDDBInfo(bool bRequery=false);
   void DeleteCDDBInfo();
 
@@ -605,7 +605,7 @@ private:
   void GetFileItemFromDataset(CFileItem* item, const CMusicDbUrl &baseUrl);
   void GetFileItemFromDataset(const dbiplus::sql_record* const record, CFileItem* item, const CMusicDbUrl &baseUrl);
   void GetFileItemFromArtistCredits(VECARTISTCREDITS& artistCredits, CFileItem* item);
-  bool CleanupSongs();
+  bool CleanupSongs(CGUIDialogProgress* progressDialog = nullptr);
   bool CleanupSongsByIds(const std::string &strSongIds);
   bool CleanupPaths();
   bool CleanupAlbums();

@@ -42,7 +42,7 @@ enum INFO_RET
   INFO_ADDED
 };
 
-class CMusicInfoScanner : CThread, public IRunnable, public CInfoScanner
+class CMusicInfoScanner : public IRunnable, public CInfoScanner
 {
 public:
   /*! \brief Flags for controlling the scanning process
@@ -50,19 +50,18 @@ public:
   enum SCAN_FLAGS { SCAN_NORMAL     = 0,
                     SCAN_ONLINE     = 1 << 0,
                     SCAN_BACKGROUND = 1 << 1,
-                    SCAN_RESCAN     = 1 << 2 };
+                    SCAN_RESCAN     = 1 << 2,
+                    SCAN_ARTISTS    = 1 << 3,
+                    SCAN_ALBUMS     = 1 << 4 };
 
   CMusicInfoScanner();
   virtual ~CMusicInfoScanner();
 
   void Start(const std::string& strDirectory, int flags);
-  void StartCleanDatabase();
   void FetchAlbumInfo(const std::string& strDirectory, bool refresh = false);
   void FetchArtistInfo(const std::string& strDirectory, bool refresh = false);
   bool IsScanning();
-  void Stop(bool wait = false);
-
-  void CleanDatabase(bool showProgress = true);
+  void Stop();
 
   //! \brief Set whether or not to show a progress dialog
   void ShowDialog(bool show) { m_showDialog = show; }
@@ -100,6 +99,8 @@ public:
   INFO_RET UpdateArtistInfo(CArtist& artist, const ADDON::ScraperPtr& scraper, bool bAllowSelection, CGUIDialogProgress* pDialog = NULL);
 
 protected:
+  virtual void Process();
+  bool DoScan(const std::string& strDirectory);
 
   /*! \brief Find art for albums
    Based on the albums in the folder, finds whether we have unique album art
@@ -176,9 +177,6 @@ protected:
    */
   std::map<std::string, std::string> GetArtistArtwork(const CArtist& artist, unsigned int level = 3);
 
-protected:
-  virtual void Process();
-
   /*! \brief Scan in the ID3/Ogg/FLAC tags for a bunch of FileItems
    Given a list of FileItems, scan in the tags for those FileItems
    and populate a new FileItemList with the files that were successfully scanned.
@@ -203,8 +201,6 @@ protected:
   int GetPathHash(const CFileItemList &items, std::string &hash);
   void GetAlbumArtwork(long id, const CAlbum &artist);
 
-  bool DoScan(const std::string& strDirectory);
-
   virtual void Run();
   int CountFiles(const CFileItemList& items, bool recursive);
   int CountFilesRecursively(const std::string& strPath);
@@ -218,11 +214,13 @@ protected:
    */
   bool ResolveMusicBrainz(const std::string &strMusicBrainzID, const ADDON::ScraperPtr &preferredScraper, CScraperUrl &musicBrainzURL);
 
-protected:
+  void ScannerWait(unsigned int milliseconds);
+
   bool m_showDialog;
   CGUIDialogProgressBarHandle* m_handle;
   int m_currentItem;
   int m_itemCount;
+  bool m_bStop;
   bool m_bRunning;
   bool m_bCanInterrupt;
   bool m_bClean;

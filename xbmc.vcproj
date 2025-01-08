@@ -4515,6 +4515,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					Name="jobs"
 					Filter="">
 					<File
+						RelativePath=".\xbmc\music\jobs\MusicLibraryCleaningJob.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\jobs\MusicLibraryCleaningJob.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\music\jobs\MusicLibraryExportJob.cpp">
 					</File>
 					<File
@@ -4531,6 +4537,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\music\jobs\MusicLibraryProgressJob.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\jobs\MusicLibraryScanningJob.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\jobs\MusicLibraryScanningJob.h">
 					</File>
 				</Filter>
 			</Filter>

@@ -41,6 +41,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "GUIUserMessages.h"
 #include "interfaces/AnnouncementManager.h"
+#include "music/MusicLibraryQueue.h"
 #include "music/MusicThumbLoader.h"
 #include "music/tags/MusicInfoTag.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
@@ -65,11 +66,11 @@ using namespace MUSIC_GRABBER;
 using namespace ADDON;
 
 CMusicInfoScanner::CMusicInfoScanner()
-: CThread("MusicInfoScanner"),
-  m_needsCleanup(false),
+: m_needsCleanup(false),
   m_scanType(0),
   m_fileCountReader(this, "MusicFileCounter")
 {
+  m_bStop = false;
   m_bRunning = false;
   m_showDialog = false;
   m_handle = NULL;
@@ -86,12 +87,13 @@ CMusicInfoScanner::~CMusicInfoScanner()
 
 void CMusicInfoScanner::Process()
 {
+  m_bStop = false;
   ANNOUNCEMENT::CAnnouncementManager::GetInstance().Announce(ANNOUNCEMENT::AudioLibrary, "xbmc", "OnScanStarted");
   try
   {
     if (m_bClean)
     {
-      CleanDatabase(false);
+      CMusicLibraryQueue::GetInstance().CleanLibrary(false);
       m_bRunning = false;
 
       return;
@@ -125,7 +127,6 @@ void CMusicInfoScanner::Process()
       m_itemCount=-1;
 
       // Create the thread to count all files to be scanned
-      SetPriority( GetMinPriority() );
       if (m_handle)
         m_fileCountReader.Create();
 
@@ -289,7 +290,7 @@ void CMusicInfoScanner::Process()
 void CMusicInfoScanner::Start(const std::string& strDirectory, int flags)
 {
   m_fileCountReader.StopThread();
-  StopThread();
+
   m_pathsToScan.clear();
   m_seenPaths.clear();
   m_albumsAdded.clear();
@@ -308,29 +309,14 @@ void CMusicInfoScanner::Start(const std::string& strDirectory, int flags)
   m_bClean = false;
 
   m_scanType = 0;
-  Create();
   m_bRunning = true;
-}
-
-void CMusicInfoScanner::StartCleanDatabase()
-{
-  m_fileCountReader.StopThread();
-  StopThread();
-  m_pathsToScan.clear();
-  m_seenPaths.clear();
-  m_flags = SCAN_BACKGROUND;
-  m_bClean = true;
-
-  m_scanType = 0;
-  Create();
-  m_bRunning = true;
+  Process();
 }
 
 void CMusicInfoScanner::FetchAlbumInfo(const std::string& strDirectory,
                                        bool refresh)
 {
   m_fileCountReader.StopThread();
-  StopThread();
   m_pathsToScan.clear();
 
   CFileItemList items;
@@ -384,15 +370,14 @@ void CMusicInfoScanner::FetchAlbumInfo(const std::string& strDirectory,
   m_musicDatabase.Close();
 
   m_scanType = 1;
-  Create();
   m_bRunning = true;
+  Process();
 }
 
 void CMusicInfoScanner::FetchArtistInfo(const std::string& strDirectory,
                                         bool refresh)
 {
   m_fileCountReader.StopThread();
-  StopThread();
   m_pathsToScan.clear();
   CFileItemList items;
 
@@ -446,8 +431,8 @@ void CMusicInfoScanner::FetchArtistInfo(const std::string& strDirectory,
   m_musicDatabase.Close();
 
   m_scanType = 2;
-  Create();
   m_bRunning = true;
+  Process();
 }
 
 bool CMusicInfoScanner::IsScanning()
@@ -455,24 +440,12 @@ bool CMusicInfoScanner::IsScanning()
   return m_bRunning;
 }
 
-void CMusicInfoScanner::Stop(bool wait /* = false*/)
+void CMusicInfoScanner::Stop()
 {
   if (m_bCanInterrupt)
     m_musicDatabase.Interupt();
 
-  StopThread(wait);
-}
-
-void CMusicInfoScanner::CleanDatabase(bool showProgress /* = true */)
-{
-  CMusicDatabase musicdatabase;
-  if (!musicdatabase.Open())
-    return;
-
-  musicdatabase.Cleanup(showProgress);
-  musicdatabase.Close();
-
-  CUtil::DeleteMusicDatabaseDirectoryCache();
+  m_bStop = true;
 }
 
 static void OnDirectoryScanned(const std::string& strDirectory)
@@ -1356,7 +1329,7 @@ INFO_RET CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album, const ADDON::
         scraper.Cancel();
         return INFO_CANCELLED;
       }
-      Sleep(1);
+      ScannerWait(1);
     }
     /*
     Finding album may request data from Musicbrainz.
@@ -1364,7 +1337,7 @@ INFO_RET CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album, const ADDON::
     the server returns 503 errors for all calls from that IP address.
     To stay below the rate-limit threshold wait 1s before proceeding
     */
-    Sleep(1000);
+    ScannerWait(1000);
   }
 
   CGUIDialogSelect *pDlg = NULL;
@@ -1480,7 +1453,7 @@ INFO_RET CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album, const ADDON::
       scraper.Cancel();
       return INFO_CANCELLED;
     }
-    Sleep(1);
+    ScannerWait(1);
   }
 
   if (!scraper.Succeeded())
@@ -1493,7 +1466,7 @@ INFO_RET CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album, const ADDON::
   To stay below the rate-limit threshold wait 1s before proceeding incase
   next action is to scrape another album or artist
   */
-  Sleep(1000);
+  ScannerWait(1000);
 
   albumInfo = scraper.GetAlbum(iSelectedAlbum);
 
@@ -1617,7 +1590,7 @@ INFO_RET CMusicInfoScanner::DownloadArtistInfo(const CArtist& artist, const ADDO
         scraper.Cancel();
         return INFO_CANCELLED;
       }
-      Sleep(1);
+      ScannerWait(1);
     }
   }
 
@@ -1692,7 +1665,7 @@ INFO_RET CMusicInfoScanner::DownloadArtistInfo(const CArtist& artist, const ADDO
   To stay below the rate-limit threshold wait 1s before proceeding incase next
   action is to scrape another album or artist
   */
-  Sleep(1000);
+  ScannerWait(1000);
 
   scraper.LoadArtistInfo(iSelectedArtist, artist.strArtist);
   while (!scraper.Completed())
@@ -1702,7 +1675,7 @@ INFO_RET CMusicInfoScanner::DownloadArtistInfo(const CArtist& artist, const ADDO
       scraper.Cancel();
       return INFO_CANCELLED;
     }
-    Sleep(1);
+    ScannerWait(1);
   }
 
   if (!scraper.Succeeded())
@@ -1740,6 +1713,17 @@ bool CMusicInfoScanner::ResolveMusicBrainz(const std::string &strMusicBrainzID, 
   }
 
   return bMusicBrainz;
+}
+
+void CMusicInfoScanner::ScannerWait(unsigned int milliseconds)
+{
+  if (milliseconds > 10)
+  {
+    CEvent m_StopEvent;
+    m_StopEvent.WaitMSec(milliseconds);
+  }
+  else
+    XbmcThreads::ThreadSleep(milliseconds);
 }
 
 std::map<std::string, std::string> CMusicInfoScanner::GetArtistArtwork(const CArtist& artist, unsigned int level /* = 3*/)
