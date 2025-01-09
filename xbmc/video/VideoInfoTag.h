@@ -105,10 +105,20 @@ public:
     return m_strFileNameAndPath;
   };
 
+  /*! \brief set the duration in seconds
+   \param duration the duration to set
+   */
+  void SetDuration(int duration);
+
   /*! \brief retrieve the duration in seconds.
    Prefers the duration from stream details if available.
    */
   unsigned int GetDuration() const;
+
+  /*! \brief retrieve the duration in seconds.
+   Ignores the duration from stream details even if available.
+   */
+  unsigned int GetStaticDuration() const;
 
   /*! \brief get the duration in seconds from a minute string
    \param runtime the runtime string from a scraper or similar
@@ -159,6 +169,58 @@ public:
   void SetNamedSeasons(std::map<int, std::string> namedSeasons);
   void SetUserrating(int userrating);
 
+  /*!
+   * @brief Get this videos's play count.
+   * @return True the play count.
+   */
+  virtual int GetPlayCount() const;
+
+  /*!
+   * @brief Set this videos's play count.
+   * @param count play count.
+   * @return True if play count was set successfully, false otherwise.
+   */
+  virtual bool SetPlayCount(int count);
+
+  /*!
+   * @brief Increment this videos's play count.
+   * @return True if play count was increased successfully, false otherwise.
+   */
+  virtual bool IncrementPlayCount();
+
+  /*!
+  * @brief Reset playcount
+  */
+  virtual void ResetPlayCount();
+
+  /*!
+  * @brief Check if the playcount is set
+  * @return True if play count value is set
+  */
+  virtual bool IsPlayCountSet() const;
+
+  /*!
+   * @brief Get this videos's resume point.
+   * @return the resume point.
+   */
+  virtual CBookmark GetResumePoint() const;
+
+  /*!
+   * @brief Set this videos's resume point.
+   * @param resumePoint resume point.
+   * @return True if resume point was set successfully, false otherwise.
+   */
+  virtual bool SetResumePoint(const CBookmark &resumePoint);
+
+  /*!
+   * @brief Set this videos's resume point.
+   * @param timeInSeconds the time of the resume point
+   * @param totalTimeInSeconds the total time of the video
+   * @param playerState the player state
+   * @return True if resume point was set successfully, false otherwise.
+   */
+  bool SetResumePoint(double timeInSeconds, double totalTimeInSeconds, const std::string &playerState = "");
+
   std::string m_basePath; // the base path of the video, for folder-based lookups
   int m_parentPathID;      // the parent path id where the base path of the video lies
   std::vector<std::string> m_director;
@@ -175,9 +237,13 @@ public:
   std::vector<std::string> m_artist;
   std::vector< SActorInfo > m_cast;
   typedef std::vector< SActorInfo >::const_iterator iCast;
-  std::string m_strSet;
-  int m_iSetId;
-  std::string m_strSetOverview;
+  struct SetInfo //!< Struct holding information about a movie set
+  {
+    std::string title; //!< Title of the movie set
+    int id; //!< ID of movie set in database
+    std::string overview; //!< Overview/description of the movie set
+  };
+  SetInfo m_set; //!< Assigned movie set
   std::vector<std::string> m_tags;
   std::string m_strFile;
   std::string m_strPath;
@@ -237,6 +303,8 @@ private:
   std::map<std::string, std::string> m_uniqueIDs;
   std::string Trim(std::string &value);
   std::vector<std::string> Trim(std::vector<std::string> &items);
+
+  static const int PLAYCOUNT_NOT_SET = -1;
 };
 
 typedef std::vector<CVideoInfoTag> VECMOVIES;

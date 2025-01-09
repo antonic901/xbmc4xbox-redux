@@ -1,23 +1,12 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
+#include <cstdlib>
 #include <sstream>
 
 #include "ListItem.h"
@@ -30,16 +19,19 @@
 #include "utils/Variant.h"
 #include "utils/StringUtils.h"
 #include "settings/AdvancedSettings.h"
+#include "Util.h"
 
 namespace XBMCAddon
 {
   namespace xbmcgui
   {
-    ListItem::ListItem(const String& label, 
+    ListItem::ListItem(const String& label,
                        const String& label2,
                        const String& iconImage,
                        const String& thumbnailImage,
-                       const String& path)
+                       const String& path,
+                       bool offscreen) :
+      m_offscreen(offscreen)
     {
       item.reset();
 
@@ -71,7 +63,7 @@ namespace XBMCAddon
 
       String ret;
       {
-        LOCKGUI;
+        LOCKGUIIF(m_offscreen);
         ret = item->GetLabel();
       }
 
@@ -84,7 +76,7 @@ namespace XBMCAddon
 
       String ret;
       {
-        LOCKGUI;
+        LOCKGUIIF(m_offscreen);
         ret = item->GetLabel2();
       }
 
@@ -96,7 +88,7 @@ namespace XBMCAddon
       if (!item) return;
       // set label
       {
-        LOCKGUI;
+        LOCKGUIIF(m_offscreen);
         item->SetLabel(label);
       }
     }
@@ -106,7 +98,7 @@ namespace XBMCAddon
       if (!item) return;
       // set label
       {
-        LOCKGUI;
+        LOCKGUIIF(m_offscreen);
         item->SetLabel2(label);
       }
     }
@@ -115,7 +107,7 @@ namespace XBMCAddon
     {
       if (!item) return;
       {
-        LOCKGUI;
+        LOCKGUIIF(m_offscreen);
         item->SetIconImage(iconImage);
       }
     }
@@ -124,7 +116,7 @@ namespace XBMCAddon
     {
       if (!item) return;
       {
-        LOCKGUI;
+        LOCKGUIIF(m_offscreen);
         item->SetArt("thumb", thumbFilename);
       }
     }
@@ -133,22 +125,60 @@ namespace XBMCAddon
     {
       if (!item) return;
       {
-        LOCKGUI;
+        LOCKGUIIF(m_offscreen);
         for (Properties::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
         {
           std::string artName = it->first;
           StringUtils::ToLower(artName);
-          const std::string artFilename(it->second.c_str());
-          item->SetArt(artName, artFilename);
+          if (artName == "icon")
+            item->SetIconImage(it->second);
+          else
+            item->SetArt(artName, it->second);
         }
       }
+    }
+
+    void ListItem::setIsFolder(bool isFolder)
+    {
+      if (!item)
+        return;
+      {
+        LOCKGUIIF(m_offscreen);
+        item->m_bIsFolder = isFolder;
+      }
+    }
+
+    void ListItem::setUniqueIDs(const Properties& dictionary, const String& defaultrating /* = "" */)
+    {
+      if (!item) return;
+
+      LOCKGUIIF(m_offscreen);
+      CVideoInfoTag& vtag = *GetVideoInfoTag();
+      for (Properties::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
+        vtag.SetUniqueID(it->second, it->first, it->first == defaultrating);
+    }
+
+    void ListItem::setRating(std::string type, float rating, int votes /* = 0 */, bool defaultt /* = false */)
+    {
+      if (!item) return;
+
+      LOCKGUIIF(m_offscreen);
+      GetVideoInfoTag()->SetRating(rating, votes, type, defaultt);
+    }
+
+    void ListItem::addSeason(int number, std::string name /* = "" */)
+    {
+      if (!item) return;
+
+      LOCKGUIIF(m_offscreen);
+      GetVideoInfoTag()->m_namedSeasons[number] = name;
     }
 
     void ListItem::select(bool selected)
     {
       if (!item) return;
       {
-        LOCKGUI;
+        LOCKGUIIF(m_offscreen);
         item->Select(selected);
       }
     }
@@ -160,7 +190,7 @@ namespace XBMCAddon
 
       bool ret;
       {
-        LOCKGUI;
+        LOCKGUIIF(m_offscreen);
         ret = item->IsSelected();
       }
 
@@ -169,7 +199,7 @@ namespace XBMCAddon
 
     void ListItem::setProperty(const char * key, const String& value)
     {
-      LOCKGUI;
+      LOCKGUIIF(m_offscreen);
       String lowerKey = key;
       StringUtils::ToLower(lowerKey);
       if (lowerKey == "startoffset")
@@ -182,9 +212,17 @@ namespace XBMCAddon
         item->SetMimeType(value.c_str());
       }
       else if (lowerKey == "totaltime")
-        item->GetVideoInfoTag()->m_resumePoint.totalTimeInSeconds = (float)atof(value.c_str());
+      {
+        CBookmark resumePoint(GetVideoInfoTag()->m_resumePoint);
+        resumePoint.totalTimeInSeconds = static_cast<float>(atof(value.c_str()));
+        GetVideoInfoTag()->SetResumePoint(resumePoint);
+      }
       else if (lowerKey == "resumetime")
-        item->GetVideoInfoTag()->m_resumePoint.timeInSeconds = (float)atof(value.c_str());
+      {
+        CBookmark resumePoint(GetVideoInfoTag()->m_resumePoint);
+        resumePoint.timeInSeconds = static_cast<float>(atof(value.c_str()));
+        GetVideoInfoTag()->SetResumePoint(resumePoint);
+      }
       else if (lowerKey == "specialsort")
       {
         if (value == "bottom")
@@ -198,9 +236,15 @@ namespace XBMCAddon
         item->SetProperty(lowerKey, value);
     }
 
+    void ListItem::setProperties(const Properties& dictionary)
+    {
+      for (Properties::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
+        setProperty(it->first.c_str(), it->second);
+    }
+
     String ListItem::getProperty(const char* key)
     {
-      LOCKGUI;
+      LOCKGUIIF(m_offscreen);
       String lowerKey = key;
       StringUtils::ToLower(lowerKey);
       std::string value;
@@ -210,32 +254,56 @@ namespace XBMCAddon
         value = StringUtils::Format("%f", item->m_lStartOffset / 75.0);
       }
       else if (lowerKey == "totaltime")
-        value = StringUtils::Format("%f", item->GetVideoInfoTag()->m_resumePoint.totalTimeInSeconds);
+        value = StringUtils::Format("%f", GetVideoInfoTag()->m_resumePoint.totalTimeInSeconds);
       else if (lowerKey == "resumetime")
-        value = StringUtils::Format("%f", item->GetVideoInfoTag()->m_resumePoint.timeInSeconds);
+        value = StringUtils::Format("%f", GetVideoInfoTag()->m_resumePoint.timeInSeconds);
       else if (lowerKey == "fanart_image")
         value = item->GetArt("fanart");
       else
         value = item->GetProperty(lowerKey).asString();
 
-      return value.c_str();
+      return value;
+    }
+
+    String ListItem::getArt(const char* key)
+    {
+      LOCKGUIIF(m_offscreen);
+      return item->GetArt(key);
+    }
+
+    String ListItem::getUniqueID(const char* key)
+    {
+      LOCKGUIIF(m_offscreen);
+      return GetVideoInfoTag()->GetUniqueID(key);
+    }
+
+    float ListItem::getRating(const char* key)
+    {
+      LOCKGUIIF(m_offscreen);
+      return GetVideoInfoTag()->GetRating(key).rating;
+    }
+
+    int ListItem::getVotes(const char* key)
+    {
+      LOCKGUIIF(m_offscreen);
+      return GetVideoInfoTag()->GetRating(key).votes;
     }
 
     void ListItem::setPath(const String& path)
     {
-      LOCKGUI;
+      LOCKGUIIF(m_offscreen);
       item->SetPath(path);
     }
 
     void ListItem::setMimeType(const String& mimetype)
     {
-      LOCKGUI;
+      LOCKGUIIF(m_offscreen);
       item->SetMimeType(mimetype);
     }
 
     void ListItem::setContentLookup(bool enable)
     {
-      LOCKGUI;
+      LOCKGUIIF(m_offscreen);
       item->SetContentLookup(enable);
     }
 
@@ -256,7 +324,7 @@ namespace XBMCAddon
       if (item->HasVideoInfoTag())
       {
         std::ostringstream oss;
-        oss << item->GetVideoInfoTag()->GetDuration() / 60;
+        oss << GetVideoInfoTag()->GetDuration() / 60;
         return oss.str();
       }
       return "0";
@@ -267,12 +335,19 @@ namespace XBMCAddon
       return item->GetPath();
     }
 
-    void ListItem::setInfo(const char* type, const InfoLabelDict& infoLabels) throw (WrongTypeException)
+    String ListItem::getPath()
     {
-      LOCKGUI;
+      LOCKGUIIF(m_offscreen);
+      return item->GetPath();
+    }
+
+    void ListItem::setInfo(const char* type, const InfoLabelDict& infoLabels)
+    {
+      LOCKGUIIF(m_offscreen);
 
       if (strcmpi(type, "video") == 0)
       {
+        CVideoInfoTag &videotag = *GetVideoInfoTag();
         for (InfoLabelDict::const_iterator it = infoLabels.begin(); it != infoLabels.end(); ++it)
         {
           String key = it->first;
@@ -281,116 +356,141 @@ namespace XBMCAddon
           const InfoLabelValue& alt = it->second;
           const String value(alt.which() == first ? alt.former() : emptyString);
 
-          if (key == "year")
-            item->GetVideoInfoTag()->SetYear(strtol(value.c_str(), NULL, 10));
+          if (key == "dbid")
+            videotag.m_iDbId = strtol(value.c_str(), nullptr, 10);
+          else if (key == "year")
+            videotag.SetYear(strtol(value.c_str(), nullptr, 10));
           else if (key == "episode")
-            item->GetVideoInfoTag()->m_iEpisode = strtol(value.c_str(), NULL, 10);
+            videotag.m_iEpisode = strtol(value.c_str(), nullptr, 10);
           else if (key == "season")
-            item->GetVideoInfoTag()->m_iSeason = strtol(value.c_str(), NULL, 10);
+            videotag.m_iSeason = strtol(value.c_str(), nullptr, 10);
+          else if (key == "sortepisode")
+            videotag.m_iSpecialSortEpisode = strtol(value.c_str(), nullptr, 10);
+          else if (key == "sortseason")
+            videotag.m_iSpecialSortSeason = strtol(value.c_str(), nullptr, 10);
+          else if (key == "episodeguide")
+            videotag.SetEpisodeGuide(value);
+          else if (key == "showlink")
+            videotag.SetShowLink(getStringArray(alt, key, value));
           else if (key == "top250")
-            item->GetVideoInfoTag()->m_iTop250 = strtol(value.c_str(), NULL, 10);
+            videotag.m_iTop250 = strtol(value.c_str(), nullptr, 10);
+          else if (key == "setid")
+            videotag.m_set.id = strtol(value.c_str(), nullptr, 10);
           else if (key == "tracknumber")
-            item->GetVideoInfoTag()->m_iTrack = strtol(value.c_str(), NULL, 10);
+            videotag.m_iTrack = strtol(value.c_str(), nullptr, 10);
           else if (key == "count")
-            item->m_iprogramCount = strtol(value.c_str(), NULL, 10);
+            item->m_iprogramCount = strtol(value.c_str(), nullptr, 10);
           else if (key == "rating")
-            item->GetVideoInfoTag()->SetRating((float)strtod(value.c_str(), NULL));
+            videotag.SetRating(static_cast<float>(strtod(value.c_str(), nullptr)));
+          else if (key == "userrating")
+            videotag.m_iUserRating = strtol(value.c_str(), nullptr, 10);
           else if (key == "size")
-            item->m_dwSize = (int64_t)strtoll(value.c_str(), NULL, 10);
+            item->m_dwSize = (int64_t)strtoll(value.c_str(), nullptr, 10);
           else if (key == "watched") // backward compat - do we need it?
-            item->GetVideoInfoTag()->m_playCount = strtol(value.c_str(), NULL, 10);
+            videotag.SetPlayCount(strtol(value.c_str(), nullptr, 10));
           else if (key == "playcount")
-            item->GetVideoInfoTag()->m_playCount = strtol(value.c_str(), NULL, 10);
+            videotag.SetPlayCount(strtol(value.c_str(), nullptr, 10));
           else if (key == "overlay")
           {
-            long overlay = strtol(value.c_str(), NULL, 10);
+            long overlay = strtol(value.c_str(), nullptr, 10);
             if (overlay >= 0 && overlay <= 8)
-              item->SetOverlayImage((CGUIListItem::GUIIconOverlay)overlay);
+              item->SetOverlayImage(static_cast<CGUIListItem::GUIIconOverlay>(overlay));
           }
           else if (key == "cast" || key == "castandrole")
           {
             if (alt.which() != second)
               throw WrongTypeException("When using \"cast\" or \"castandrole\" you need to supply a list of tuples for the value in the dictionary");
 
-            item->GetVideoInfoTag()->m_cast.clear();
+            videotag.m_cast.clear();
             const std::vector<InfoLabelStringOrTuple>& listValue = alt.later();
             for (std::vector<InfoLabelStringOrTuple>::const_iterator viter = listValue.begin(); viter != listValue.end(); ++viter)
             {
               const InfoLabelStringOrTuple& castEntry = *viter;
-              // castEntry can be a string meaning it's the actor or it can be a tuple meaning it's the 
+              // castEntry can be a string meaning it's the actor or it can be a tuple meaning it's the
               //  actor and the role.
               const String& actor = castEntry.which() == first ? castEntry.former() : castEntry.later().first();
               SActorInfo info;
               info.strName = actor;
               if (castEntry.which() == second)
-                info.strRole = (const String&)(castEntry.later().second());
-              item->GetVideoInfoTag()->m_cast.push_back(info);
+                info.strRole = static_cast<const String&>(castEntry.later().second());
+              videotag.m_cast.push_back(info);
             }
           }
           else if (key == "artist")
           {
             if (alt.which() != second)
               throw WrongTypeException("When using \"artist\" you need to supply a list of strings for the value in the dictionary");
-            
-            item->GetVideoInfoTag()->m_artist.clear();
+
+            videotag.m_artist.clear();
 
             const std::vector<InfoLabelStringOrTuple>& listValue = alt.later();
             for (std::vector<InfoLabelStringOrTuple>::const_iterator viter = listValue.begin(); viter != listValue.end(); ++viter)
             {
-              
               const InfoLabelStringOrTuple& castEntry = *viter;
               const String& actor = castEntry.which() == first ? castEntry.former() : castEntry.later().first();
-              item->GetVideoInfoTag()->m_artist.push_back(actor);
+              videotag.m_artist.push_back(actor);
             }
           }
           else if (key == "genre")
-            item->GetVideoInfoTag()->m_genre = StringUtils::Split(value, g_advancedSettings.m_videoItemSeparator);
+            videotag.SetGenre(getStringArray(alt, key, value));
+          else if (key == "country")
+            videotag.SetCountry(getStringArray(alt, key, value));
           else if (key == "director")
-            item->GetVideoInfoTag()->m_director = StringUtils::Split(value, g_advancedSettings.m_videoItemSeparator);
+            videotag.SetDirector(getStringArray(alt, key, value));
           else if (key == "mpaa")
-            item->GetVideoInfoTag()->m_strMPAARating = value;
+            videotag.SetMPAARating(value);
           else if (key == "plot")
-            item->GetVideoInfoTag()->m_strPlot = value;
+            videotag.SetPlot(value);
           else if (key == "plotoutline")
-            item->GetVideoInfoTag()->m_strPlotOutline = value;
+            videotag.SetPlotOutline(value);
           else if (key == "title")
-            item->GetVideoInfoTag()->m_strTitle = value;
+            videotag.SetTitle(value);
           else if (key == "originaltitle")
-            item->GetVideoInfoTag()->m_strOriginalTitle = value;
+            videotag.SetOriginalTitle(value);
           else if (key == "sorttitle")
-            item->GetVideoInfoTag()->m_strSortTitle = value;
+            videotag.SetSortTitle(value);
           else if (key == "duration")
-            item->GetVideoInfoTag()->m_duration = CVideoInfoTag::GetDurationFromMinuteString(value);
+            videotag.SetDuration(strtol(value.c_str(), nullptr, 10));
           else if (key == "studio")
-            item->GetVideoInfoTag()->m_studio = StringUtils::Split(value, g_advancedSettings.m_videoItemSeparator);            
+            videotag.SetStudio(getStringArray(alt, key, value));
           else if (key == "tagline")
-            item->GetVideoInfoTag()->m_strTagLine = value;
-          else if (key == "writer")
-            item->GetVideoInfoTag()->m_writingCredits = StringUtils::Split(value, g_advancedSettings.m_videoItemSeparator);
+            videotag.SetTagLine(value);
+          else if (key == "writer" || key == "credits")
+            videotag.SetWritingCredits(getStringArray(alt, key, value));
           else if (key == "tvshowtitle")
-            item->GetVideoInfoTag()->m_strShowTitle = value;
+            videotag.SetShowTitle(value);
           else if (key == "premiered")
           {
             CDateTime premiered;
             premiered.SetFromDateString(value);
-            item->GetVideoInfoTag()->SetPremiered(premiered);
+            videotag.SetPremiered(premiered);
           }
           else if (key == "status")
-            item->GetVideoInfoTag()->m_strStatus = value;
+            videotag.SetStatus(value);
+          else if (key == "set")
+            videotag.SetSet(value);
+          else if (key == "setoverview")
+            videotag.SetSetOverview(value);
+          else if (key == "tag")
+            videotag.SetTags(getStringArray(alt, key, value));
+          else if (key == "imdbnumber")
+            videotag.SetUniqueID(value);
           else if (key == "code")
-            item->GetVideoInfoTag()->m_strProductionCode = value;
+            videotag.SetProductionCode(value);
           else if (key == "aired")
-            item->GetVideoInfoTag()->m_firstAired.SetFromDateString(value);
-          else if (key == "credits")
-            item->GetVideoInfoTag()->m_writingCredits = StringUtils::Split(value, g_advancedSettings.m_videoItemSeparator);
+            videotag.m_firstAired.SetFromDateString(value);
           else if (key == "lastplayed")
-            item->GetVideoInfoTag()->m_lastPlayed.SetFromDBDateTime(value);
+            videotag.m_lastPlayed.SetFromDBDateTime(value);
           else if (key == "album")
-            item->GetVideoInfoTag()->m_strAlbum = value;
+            videotag.SetAlbum(value);
           else if (key == "votes")
-            item->GetVideoInfoTag()->SetVotes(StringUtils::ReturnDigits(value));
+            videotag.SetVotes(StringUtils::ReturnDigits(value));
           else if (key == "trailer")
-            item->GetVideoInfoTag()->m_strTrailer = value;
+            videotag.SetTrailer(value);
+          else if (key == "path")
+            videotag.SetPath(value);
+          else if (key == "filenameandpath")
+            videotag.SetFileNameAndPath(value);
           else if (key == "date")
           {
             if (value.length() == 10)
@@ -404,11 +504,40 @@ namespace XBMCAddon
               CLog::Log(LOGERROR,"NEWADDON Invalid Date Format \"%s\"",value.c_str());
           }
           else if (key == "dateadded")
-            item->GetVideoInfoTag()->m_dateAdded.SetFromDBDateTime(value.c_str());
+            videotag.m_dateAdded.SetFromDBDateTime(value.c_str());
+          else if (key == "mediatype")
+          {
+            if (CMediaTypes::IsValidMediaType(value))
+              videotag.m_type = value;
+            else
+              CLog::Log(LOGWARNING, "Invalid media type \"%s\"", value.c_str());
+          }
+          else
+            CLog::Log(LOGERROR,"NEWADDON Unknown Video Info Key \"%s\"", key.c_str());
         }
       }
       else if (strcmpi(type, "music") == 0)
       {
+        std::string type;
+        for (InfoLabelDict::const_iterator it = infoLabels.begin(); it != infoLabels.end(); ++it)
+        {
+          String key = it->first;
+          StringUtils::ToLower(key);
+          const InfoLabelValue& alt = it->second;
+          const String value(alt.which() == first ? alt.former() : emptyString);
+
+          if (key == "mediatype")
+          {
+            if (CMediaTypes::IsValidMediaType(value))
+            {
+              type = value;
+              item->GetMusicInfoTag()->SetType(value);
+            }
+            else
+              CLog::Log(LOGWARNING, "Invalid media type \"%s\"", value.c_str());
+          }
+        }
+        MUSIC_INFO::CMusicInfoTag &musictag = *item->GetMusicInfoTag();
         for (InfoLabelDict::const_iterator it = infoLabels.begin(); it != infoLabels.end(); ++it)
         {
           String key = it->first;
@@ -417,45 +546,51 @@ namespace XBMCAddon
           const InfoLabelValue& alt = it->second;
           const String value(alt.which() == first ? alt.former() : emptyString);
 
-          // TODO: add the rest of the infolabels
-          if (key == "tracknumber")
-            item->GetMusicInfoTag()->SetTrackNumber(strtol(value.c_str(), NULL, 10));
+          //! @todo add the rest of the infolabels
+          if (key == "dbid" && !type.empty())
+            musictag.SetDatabaseId(strtol(value.c_str(), NULL, 10), type);
+          else if (key == "tracknumber")
+            musictag.SetTrackNumber(strtol(value.c_str(), NULL, 10));
+          else if (key == "discnumber")
+            musictag.SetDiscNumber(strtol(value.c_str(), nullptr, 10));
           else if (key == "count")
-            item->m_iprogramCount = strtol(value.c_str(), NULL, 10);
+            item->m_iprogramCount = strtol(value.c_str(), nullptr, 10);
           else if (key == "size")
-            item->m_dwSize = (int64_t)strtoll(value.c_str(), NULL, 10);
+            item->m_dwSize = static_cast<int64_t>(strtoll(value.c_str(), nullptr, 10));
           else if (key == "duration")
-            item->GetMusicInfoTag()->SetDuration(strtol(value.c_str(), NULL, 10));
+            musictag.SetDuration(strtol(value.c_str(), nullptr, 10));
           else if (key == "year")
-            item->GetMusicInfoTag()->SetYear(strtol(value.c_str(), NULL, 10));
+            musictag.SetYear(strtol(value.c_str(), nullptr, 10));
           else if (key == "listeners")
-            item->GetMusicInfoTag()->SetListeners(strtol(value.c_str(), NULL, 10));
+            musictag.SetListeners(strtol(value.c_str(), nullptr, 10));
           else if (key == "playcount")
-            item->GetMusicInfoTag()->SetPlayCount(strtol(value.c_str(), NULL, 10));
+            musictag.SetPlayCount(strtol(value.c_str(), nullptr, 10));
           else if (key == "genre")
-            item->GetMusicInfoTag()->SetGenre(value);
+            musictag.SetGenre(value);
           else if (key == "album")
-            item->GetMusicInfoTag()->SetAlbum(value);
+            musictag.SetAlbum(value);
           else if (key == "artist")
-            item->GetMusicInfoTag()->SetArtist(value);
+            musictag.SetArtist(value);
           else if (key == "title")
-            item->GetMusicInfoTag()->SetTitle(value);
+            musictag.SetTitle(value);
           else if (key == "rating")
-            item->GetMusicInfoTag()->SetRating(value[0]);
+            musictag.SetRating(static_cast<float>(strtod(value.c_str(), nullptr)));
+          else if (key == "userrating")
+            musictag.SetUserrating(strtol(value.c_str(), nullptr, 10));
           else if (key == "lyrics")
-            item->GetMusicInfoTag()->SetLyrics(value);
+            musictag.SetLyrics(value);
           else if (key == "lastplayed")
-            item->GetMusicInfoTag()->SetLastPlayed(value);
+            musictag.SetLastPlayed(value);
           else if (key == "musicbrainztrackid")
-            item->GetMusicInfoTag()->SetMusicBrainzTrackID(value);
+            musictag.SetMusicBrainzTrackID(value);
           else if (key == "musicbrainzartistid")
-            item->GetMusicInfoTag()->SetMusicBrainzArtistID(StringUtils::Split(value, g_advancedSettings.m_musicItemSeparator));
+            musictag.SetMusicBrainzArtistID(StringUtils::Split(value, g_advancedSettings.m_musicItemSeparator));
           else if (key == "musicbrainzalbumid")
-            item->GetMusicInfoTag()->SetMusicBrainzAlbumID(value);
+            musictag.SetMusicBrainzAlbumID(value);
           else if (key == "musicbrainzalbumartistid")
-            item->GetMusicInfoTag()->SetMusicBrainzAlbumArtistID(StringUtils::Split(value, g_advancedSettings.m_musicItemSeparator));
+            musictag.SetMusicBrainzAlbumArtistID(StringUtils::Split(value, g_advancedSettings.m_musicItemSeparator));
           else if (key == "comment")
-            item->GetMusicInfoTag()->SetComment(value);
+            musictag.SetComment(value);
           else if (key == "date")
           {
             if (strlen(value.c_str()) == 10)
@@ -466,12 +601,12 @@ namespace XBMCAddon
               item->m_dateTime.SetDate(year, month, day);
             }
           }
-          else
+          else if (key != "mediatype")
             CLog::Log(LOGERROR,"NEWADDON Unknown Music Info Key \"%s\"", key.c_str());
 
           // This should probably be set outside of the loop but since the original
           //  implementation set it inside of the loop, I'll leave it that way. - Jim C.
-          item->GetMusicInfoTag()->SetLoaded(true);
+          musictag.SetLoaded(true);
         }
       }
       else if (strcmpi(type,"pictures") == 0)
@@ -485,9 +620,9 @@ namespace XBMCAddon
           const String value(alt.which() == first ? alt.former() : emptyString);
 
           if (key == "count")
-            item->m_iprogramCount = strtol(value.c_str(), NULL, 10);
+            item->m_iprogramCount = strtol(value.c_str(), nullptr, 10);
           else if (key == "size")
-            item->m_dwSize = (int64_t)strtoll(value.c_str(), NULL, 10);
+            item->m_dwSize = static_cast<int64_t>(strtoll(value.c_str(), nullptr, 10));
           else if (key == "title")
             item->m_strTitle = value;
           else if (key == "picturepath")
@@ -505,7 +640,8 @@ namespace XBMCAddon
           else
           {
             const String& exifkey = key;
-            if (!StringUtils::StartsWithNoCase(exifkey, "exif:") || exifkey.length() < 6) continue;
+            if (!StringUtils::StartsWithNoCase(exifkey, "exif:") || exifkey.length() < 6)
+              continue;
             int info = CPictureInfoTag::TranslateString(StringUtils::Mid(exifkey,5));
             item->GetPictureInfoTag()->SetInfo(info, value);
           }
@@ -513,9 +649,66 @@ namespace XBMCAddon
       }
     } // end ListItem::setInfo
 
+    void ListItem::setCast(const std::vector<Properties>& actors)
+    {
+      LOCKGUIIF(m_offscreen);
+      GetVideoInfoTag()->m_cast.clear();
+      for (std::vector<Properties>::const_iterator itt = actors.begin(); itt != actors.end(); ++itt)
+      {
+        const XBMCAddon::Properties &dictionary = *itt;
+        SActorInfo info;
+        for (ADDON::InfoMap::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
+        {
+          const String& key = it->first;
+          const String& value = it->second;
+          if (key == "name")
+            info.strName = value;
+          else if (key == "role")
+            info.strRole = value;
+          else if (key == "thumbnail")
+            info.thumbUrl = CScraperUrl(value);
+          else if (key == "order")
+            info.order = strtol(value.c_str(), nullptr, 10);
+        }
+        GetVideoInfoTag()->m_cast.push_back(boost::move(info));
+      }
+    }
+
+    void ListItem::setAvailableFanart(const std::vector<Properties>& images)
+    {
+      LOCKGUIIF(m_offscreen);
+      GetVideoInfoTag()->m_fanart.Clear();
+      for (std::vector<Properties>::const_iterator itt = images.begin(); itt != images.end(); ++itt)
+      {
+        const XBMCAddon::Properties &dictionary = *itt;
+        std::string image;
+        std::string preview;
+        std::string colors;
+        for (XBMCAddon::Properties::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
+        {
+          const String& key = it->first;
+          const String& value = it->second;
+          if (key == "image")
+            image = value;
+          else if (key == "preview")
+            preview = value;
+          else if (key == "colors")
+            colors = value;
+        }
+        GetVideoInfoTag()->m_fanart.AddFanart(image, preview, colors);
+      }
+      GetVideoInfoTag()->m_fanart.Pack();
+    }
+
+    void ListItem::addAvailableArtwork(std::string url, std::string art_type, std::string referrer, std::string cache, bool post, bool isgz, int season)
+    {
+      LOCKGUIIF(m_offscreen);
+      GetVideoInfoTag()->m_strPictureURL.AddElement(url, art_type, referrer, cache, post, isgz, season);
+    }
+
     void ListItem::addStreamInfo(const char* cType, const Properties& dictionary)
     {
-      LOCKGUI;
+      LOCKGUIIF(m_offscreen);
 
       if (strcmpi(cType, "video") == 0)
       {
@@ -528,15 +721,19 @@ namespace XBMCAddon
           if (key == "codec")
             video->m_strCodec = value;
           else if (key == "aspect")
-            video->m_fAspect = (float)atof(value.c_str());
+            video->m_fAspect = static_cast<float>(atof(value.c_str()));
           else if (key == "width")
-            video->m_iWidth = strtol(value.c_str(), NULL, 10);
+            video->m_iWidth = strtol(value.c_str(), nullptr, 10);
           else if (key == "height")
-            video->m_iHeight = strtol(value.c_str(), NULL, 10);
+            video->m_iHeight = strtol(value.c_str(), nullptr, 10);
           else if (key == "duration")
-            video->m_iDuration = strtol(value.c_str(), NULL, 10);
+            video->m_iDuration = strtol(value.c_str(), nullptr, 10);
+          else if (key == "stereomode")
+            video->m_strStereoMode = value;
+          else if (key == "language")
+            video->m_strLanguage = value;
         }
-        item->GetVideoInfoTag()->m_streamDetails.AddStream(video);
+        GetVideoInfoTag()->m_streamDetails.AddStream(video);
       }
       else if (strcmpi(cType, "audio") == 0)
       {
@@ -551,9 +748,9 @@ namespace XBMCAddon
           else if (key == "language")
             audio->m_strLanguage = value;
           else if (key == "channels")
-            audio->m_iChannels = strtol(value.c_str(), NULL, 10);
+            audio->m_iChannels = strtol(value.c_str(), nullptr, 10);
         }
-        item->GetVideoInfoTag()->m_streamDetails.AddStream(audio);
+        GetVideoInfoTag()->m_streamDetails.AddStream(audio);
       }
       else if (strcmpi(cType, "subtitle") == 0)
       {
@@ -566,39 +763,85 @@ namespace XBMCAddon
           if (key == "language")
             subtitle->m_strLanguage = value;
         }
-        item->GetVideoInfoTag()->m_streamDetails.AddStream(subtitle);
+        GetVideoInfoTag()->m_streamDetails.AddStream(subtitle);
       }
+      GetVideoInfoTag()->m_streamDetails.DetermineBestStreams();
     } // end ListItem::addStreamInfo
 
     void ListItem::addContextMenuItems(const std::vector<Tuple<String,String> >& items, bool replaceItems /* = false */)
-      throw (ListItemException)
     {
-      for (int i = 0; i < items.size(); ++i)
+      for (size_t i = 0; i < items.size(); ++i)
       {
         const Tuple<String, StringOrInt> &tuple = items[i];
         if (tuple.GetNumValuesSet() != 2)
           throw ListItemException("Must pass in a list of tuples of pairs of strings. One entry in the list only has %d elements.",tuple.GetNumValuesSet());
 
-        LOCKGUI;
-        item->SetProperty(StringUtils::Format("contextmenulabel(%i)", i), tuple.first());
-        item->SetProperty(StringUtils::Format("contextmenuaction(%i)", i), tuple.second());
+        LOCKGUIIF(m_offscreen);
+        item->SetProperty(StringUtils::Format("contextmenulabel(%zu)", i), tuple.first());
+        item->SetProperty(StringUtils::Format("contextmenuaction(%zu)", i), tuple.second());
+      }
+    }
+
+    void ListItem::setSubtitles(const std::vector<String>& paths)
+    {
+      LOCKGUIIF(m_offscreen);
+      unsigned int i = 1;
+      for (std::vector<String>::const_iterator it = paths.begin(); it != paths.end(); ++it)
+      {
+        String property = StringUtils::Format("subtitle:%u", i++);
+        item->SetProperty(property, *it);
       }
     }
 
     xbmc::InfoTagVideo* ListItem::getVideoInfoTag()
     {
-      LOCKGUI;
+      LOCKGUIIF(m_offscreen);
       if (item->HasVideoInfoTag())
-        return new xbmc::InfoTagVideo(*item->GetVideoInfoTag());
+        return new xbmc::InfoTagVideo(*GetVideoInfoTag());
       return new xbmc::InfoTagVideo();
     }
 
     xbmc::InfoTagMusic* ListItem::getMusicInfoTag()
     {
-      LOCKGUI;
+      LOCKGUIIF(m_offscreen);
       if (item->HasMusicInfoTag())
         return new xbmc::InfoTagMusic(*item->GetMusicInfoTag());
       return new xbmc::InfoTagMusic();
+    }
+
+    std::vector<std::string> ListItem::getStringArray(const InfoLabelValue& alt, const std::string& tag, std::string value)
+    {
+      if (alt.which() == first)
+      {
+        if (value.empty())
+          value = alt.former();
+        return StringUtils::Split(value, g_advancedSettings.m_videoItemSeparator);
+      }
+
+      std::vector<std::string> els;
+      std::vector<XBMCAddon::xbmcgui::InfoLabelStringOrTuple> vecInfoLabel = alt.later();
+      for (std::vector<XBMCAddon::xbmcgui::InfoLabelStringOrTuple>::const_iterator it = vecInfoLabel.begin(); it != vecInfoLabel.end(); ++it)
+      {
+        const XBMCAddon::xbmcgui::InfoLabelStringOrTuple &el = *it;
+        if (el.which() == second)
+          throw WrongTypeException("When using \"%s\" you need to supply a string or list of strings for the value in the dictionary", tag.c_str());
+        els.push_back(el.former());
+      }
+      return els;
+    }
+
+    CVideoInfoTag* ListItem::GetVideoInfoTag()
+    {
+      // make sure the playcount is reset to -1
+      if (!item->HasVideoInfoTag())
+        item->GetVideoInfoTag()->ResetPlayCount();
+
+      return item->GetVideoInfoTag();
+    }
+
+    const CVideoInfoTag* ListItem::GetVideoInfoTag() const
+    {
+      return item->GetVideoInfoTag();
     }
   }
 }

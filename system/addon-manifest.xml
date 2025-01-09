@@ -6,10 +6,14 @@
   <addon>metadata.common.fanart.tv</addon>
   <addon>metadata.common.theaudiodb.com</addon>
   <addon>metadata.common.themoviedb.org</addon>
+  <addon>metadata.generic.albums</addon>
+  <addon>metadata.generic.artists</addon>
   <addon>metadata.local</addon>
   <addon>metadata.musicvideos.theaudiodb.com</addon>
   <addon>metadata.movies.themoviedb.org</addon>
+  <addon>metadata.themoviedb.org.python</addon>
   <addon>metadata.tvshows.themoviedb.org</addon>
+  <addon>metadata.tvshows.themoviedb.org.python</addon>
   <addon>repository.xbmc4xbox.org</addon>
   <addon>resource.images.weathericons.default</addon>
   <addon>resource.language.en_gb</addon>

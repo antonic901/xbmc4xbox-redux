@@ -755,7 +755,7 @@
         </setting>
         <setting id="musiclibrary.albumsscraper" type="addon" label="20193" help="36257">
           <level>1</level>
-          <default>metadata.album.universal</default>
+          <default>metadata.generic.albums</default>
           <constraints>
             <addontype>xbmc.metadata.scraper.albums</addontype>
           </constraints>
@@ -765,7 +765,7 @@
         </setting>
         <setting id="musiclibrary.artistsscraper" type="addon" label="20194" help="36258">
           <level>1</level>
-          <default>metadata.artists.universal</default>
+          <default>metadata.generic.artists</default>
           <constraints>
             <addontype>xbmc.metadata.scraper.artists</addontype>
           </constraints>
@@ -823,14 +823,14 @@
       <group id="1">
         <setting id="scrapers.moviesdefault" type="addon" label="21413" help="36198">
           <level>4</level>
-          <default>metadata.themoviedb.org</default>
+          <default>metadata.movies.themoviedb.org</default>
           <constraints>
             <addontype>xbmc.metadata.scraper.movies</addontype>
           </constraints>
         </setting>
         <setting id="scrapers.tvshowsdefault" type="addon" label="21414" help="36199">
           <level>4</level>
-          <default>metadata.tvdb.com</default>
+          <default>metadata.tvshows.themoviedb.org</default>
           <constraints>
             <addontype>xbmc.metadata.scraper.tvshows</addontype>
           </constraints>
