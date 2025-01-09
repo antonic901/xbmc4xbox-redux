@@ -261,7 +261,8 @@ public:
   void StartMusicArtistScan(const std::string& strDirectory, bool refresh = false);
 
   void UpdateLibraries();
-  void CheckMusicPlaylist();
+
+  void UpdateCurrentPlayArt();
 
   CNetwork& getNetwork();
 

@@ -72,6 +72,7 @@
 #include "GUIUserMessages.h"
 #include "video/dialogs/GUIDialogVideoInfo.h"
 #include "music/dialogs/GUIDialogMusicInfo.h"
+#include "music/dialogs/GUIDialogSongInfo.h"
 #include "storage/MediaManager.h"
 #include "utils/TimeUtils.h"
 #include "threads/SingleLock.h"
@@ -8029,7 +8030,9 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
           if (window)
           {
             if (window->GetID() == WINDOW_DIALOG_MUSIC_INFO)
-              content = ((CGUIDialogMusicInfo *)window)->CurrentDirectory().GetContent();
+              content = static_cast<CGUIDialogMusicInfo*>(window)->GetContent();
+            else if (window->GetID() == WINDOW_DIALOG_SONG_INFO)
+              content = static_cast<CGUIDialogSongInfo*>(window)->GetContent();
             else if (window->GetID() == WINDOW_DIALOG_VIDEO_INFO)
               content = ((CGUIDialogVideoInfo *)window)->CurrentDirectory().GetContent();
           }

@@ -39,10 +39,12 @@ public:
 
   virtual bool HasListItems() const { return true; };
   virtual CFileItemPtr GetCurrentListItem(int offset = 0);
-  const CFileItemList& CurrentDirectory() const { return m_artTypeList; };
+  std::string GetContent();
+  //const CFileItemList& CurrentDirectory() const { return m_artTypeList; };
   bool IsCancelled() const { return m_cancelled; };
   void FetchComplete();
 
+  static void ShowFor(CFileItem* pItem);
 protected:
   virtual void OnInitWindow();
   void Update();

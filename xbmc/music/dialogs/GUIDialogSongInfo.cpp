@@ -33,8 +33,11 @@
 #include "music/MusicUtils.h"
 #include "music/tags/MusicInfoTag.h"
 #include "music/windows/GUIWindowMusicBase.h"
+#include "profiles/ProfilesManager.h"
+#include "ServiceBroker.h"
 #include "settings/MediaSourceSettings.h"
 #include "storage/MediaManager.h"
+#include "TextureCache.h"
 #include "Util.h"
 
 #include <boost/make_shared.hpp>
@@ -70,7 +73,11 @@ public:
     // Fetch tag data from library using filename of item path, or scanning file
     // (if item does not already have this loaded)
     if (!m_song->LoadMusicTag())
+    {
+      // Stop SongInfoDialog waiting
+      dialog->FetchComplete();
       return false;
+    }
     if (dialog->IsCancelled())
       return false;
     // Fetch album and primary song artist data from library as properties
@@ -173,15 +180,7 @@ bool CGUIDialogSongInfo::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_ALBUMINFO)
       {
-        CGUIWindowMusicBase *window = (CGUIWindowMusicBase *)g_windowManager.GetWindow(WINDOW_MUSIC_NAV);
-        if (window)
-        {
-          CFileItem item(*m_song);
-          std::string path = StringUtils::Format("musicdb://albums/%li",m_albumId);
-          item.SetPath(path);
-          item.m_bIsFolder = true;
-          window->OnItemInfo(&item, true);
-        }
+        CGUIDialogMusicInfo::ShowForAlbum(m_albumId);
         return true;
       }
       else if (iControl == CONTROL_BTN_GET_THUMB)
@@ -201,17 +200,7 @@ bool CGUIDialogSongInfo::OnMessage(CGUIMessage& message)
             break;
           int idArtist = m_song->GetMusicInfoTag()->GetContributors()[iItem].GetArtistId();
           if (idArtist > 0)
-          {
-              CGUIWindowMusicBase *window = (CGUIWindowMusicBase *)g_windowManager.GetWindow(WINDOW_MUSIC_NAV);
-              if (window)
-              {
-                CFileItem item(*m_song);
-                std::string path = StringUtils::Format("musicdb://artists/%li", idArtist);
-                item.SetPath(path);
-                item.m_bIsFolder = true;
-                window->OnItemInfo(&item, true);
-              }
-          }
+            CGUIDialogMusicInfo::ShowForArtist(idArtist);
           return true;
         }
       }
@@ -268,6 +257,11 @@ void CGUIDialogSongInfo::OnInitWindow()
   else
     CONTROL_ENABLE(CONTROL_USERRATING);
 
+  // Disable the Choose Art button if the user isn't allowed it
+  const CProfilesManager &profileManager = CProfilesManager::Get();
+  CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_GET_THUMB,
+    profileManager.GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser);
+
   SET_CONTROL_HIDDEN(CONTROL_BTN_REFRESH);
   SET_CONTROL_LABEL(CONTROL_USERRATING, 38023);
   SET_CONTROL_LABEL(CONTROL_BTN_GET_THUMB, 13511);
@@ -319,12 +313,6 @@ bool CGUIDialogSongInfo::SetSong(CFileItem* item)
     return false;
   }
 
-  // CurrentDirectory() returns m_artTypeList (a convenient CFileItemList)
-  // Set content so can return dialog CONTAINER_CONTENT as "songs"
-  m_artTypeList.SetContent("songs");
-  // Copy art from ListItem so CONTAINER_ART returns song art
-  m_artTypeList.SetArt(m_song->GetArt());
-
   // Store initial userrating
   m_startUserrating = m_song->GetMusicInfoTag()->GetUserrating();
   m_hasUpdatedUserrating = false;
@@ -339,6 +327,11 @@ void CGUIDialogSongInfo::SetArtTypeList(CFileItemList& artlist)
 CFileItemPtr CGUIDialogSongInfo::GetCurrentListItem(int offset)
 {
   return m_song;
+}
+
+std::string CGUIDialogSongInfo::GetContent()
+{
+  return "songs";
 }
 
 /*
@@ -407,6 +400,20 @@ void CGUIDialogSongInfo::OnGetArt()
       item->SetLabel(g_localizeStrings.Get(20017));
       items.Add(item);
     }
+  }
+
+  // Clear these local images from cache so user will see any recent
+  // local file changes immediately
+  for (int i = 0; items.Size(); ++i)
+  {
+    CFileItemPtr &item = items[i];
+    std::string thumb(item->GetArt("thumb"));
+    if (thumb.empty())
+      continue;
+    CTextureCache::Get().ClearCachedImage(thumb);
+    // Remove any thumbnail of local image too (created when browsing files)
+    std::string thumbthumb(CTextureUtils::GetWrappedThumbURL(thumb));
+    CTextureCache::Get().ClearCachedImage(thumbthumb);
   }
 
   if (bHasArt && !bFallback)
@@ -489,4 +496,30 @@ void CGUIDialogSongInfo::OnSetUserrating()
     return;
 
   SetUserrating(userrating);
+}
+
+void CGUIDialogSongInfo::ShowFor(CFileItem* pItem)
+{
+  if (pItem->m_bIsFolder)
+    return;
+  if (!pItem->IsMusicDb())
+    pItem->LoadMusicTag();
+  if (!pItem->HasMusicInfoTag())
+    return;
+
+  CGUIDialogSongInfo *dialog = static_cast<CGUIDialogSongInfo*>(g_windowManager.
+    GetWindow(WINDOW_DIALOG_SONG_INFO));
+  if (dialog)
+  {
+    if (dialog->SetSong(pItem))  // Fetch full song info asynchronously
+    {
+      dialog->Open();
+      if (dialog->HasUpdatedUserrating())
+      {
+        CGUIWindowMusicBase *window = static_cast<CGUIWindowMusicBase*>(g_windowManager.GetWindow(WINDOW_MUSIC_NAV));
+        if (window)
+          window->RefreshContent("songs");
+      }
+    }
+  }
 }
