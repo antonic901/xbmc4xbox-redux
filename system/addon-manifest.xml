@@ -6,6 +6,8 @@
   <addon>metadata.common.fanart.tv</addon>
   <addon>metadata.common.theaudiodb.com</addon>
   <addon>metadata.common.themoviedb.org</addon>
+  <addon>metadata.generic.albums</addon>
+  <addon>metadata.generic.artists</addon>
   <addon>metadata.local</addon>
   <addon>metadata.musicvideos.theaudiodb.com</addon>
   <addon>metadata.movies.themoviedb.org</addon>
