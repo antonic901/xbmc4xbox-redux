@@ -231,6 +231,8 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     CStdString m_musicThumbs;
     CStdString m_dvdThumbs;
     CStdString m_fanartImages;
+    std::vector<std::string> m_musicArtistExtraArt;
+    std::vector<std::string> m_musicAlbumExtraArt;
 
     bool m_bMusicLibraryHideAllItems;
     int m_iMusicLibraryRecentlyAddedItems;

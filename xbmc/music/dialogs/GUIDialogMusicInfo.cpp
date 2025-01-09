@@ -42,6 +42,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "music/windows/GUIWindowMusicNav.h"
 #include "profiles/ProfilesManager.h"
+#include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
 #include "storage/MediaManager.h"
@@ -473,6 +474,7 @@ void CGUIDialogMusicInfo::SetAlbum(const CAlbum& album, const std::string &path)
   m_item->SetPath(album.strPath);
 
   m_startUserrating = m_album.iUserrating;
+  m_fallbackartpath.clear();
   m_bArtistInfo = false;
   m_hasUpdatedUserrating = false;
   m_hasRefreshed = false;
@@ -683,17 +685,37 @@ std::string CGUIDialogMusicInfo::GetContent()
 void CGUIDialogMusicInfo::AddItemPathToFileBrowserSources(VECSOURCES &sources, const CFileItem &item)
 {
   std::string itemDir;
+  std::string artistFolder;
 
-  if (item.HasMusicInfoTag() && item.GetMusicInfoTag()->GetType() == MediaTypeSong)
-    itemDir = URIUtils::GetParentPath(item.GetMusicInfoTag()->GetURL());
-  else
-    itemDir = item.GetPath();
+  itemDir = item.GetPath();
+  if (item.HasMusicInfoTag())
+  {
+    if (item.GetMusicInfoTag()->GetType() == MediaTypeSong)
+      itemDir = URIUtils::GetParentPath(item.GetMusicInfoTag()->GetURL());
 
+    // For artist add Artist Info Folder path to browser sources
+    if (item.GetMusicInfoTag()->GetType() == MediaTypeArtist)
+    {
+      artistFolder = CSettings::GetInstance().GetString("musiclibrary.artistsfolder");
+      if (!artistFolder.empty() && artistFolder.compare(itemDir) == 0)
+        itemDir.clear();  // skip *item when artist not have a unique path
+    }
+  }
+  // Add "*Item folder" path to file browser sources
   if (!itemDir.empty() && CDirectory::Exists(itemDir))
   {
     CMediaSource itemSource;
     itemSource.strName = g_localizeStrings.Get(36041);
     itemSource.strPath = itemDir;
+    sources.push_back(itemSource);
+  }
+
+  // For artist add Artist Info Folder path to browser sources
+  if (!artistFolder.empty() && CDirectory::Exists(artistFolder))
+  {
+    CMediaSource itemSource;
+    itemSource.strName = "* " + g_localizeStrings.Get(20223);
+    itemSource.strPath = artistFolder;
     sources.push_back(itemSource);
   }
 }
@@ -802,47 +824,62 @@ void CGUIDialogMusicInfo::OnGetArt()
     }
   }
 
-  // Local art
-  // Album and artist thumbs can be found in local files
-  //! @todo: other art types could also be found locally especially artist fanart e.g "fanart.jpg"
-  std::string localThumb;
-  bool existsThumb = false;
-  if (type == "thumb")
+  std::string localArt;
+  std::vector<std::string> paths;
+  if (m_bArtistInfo)
   {
-    if (m_bArtistInfo)
+    // Individual artist subfolder within the Artist Information Folder
+    paths.push_back(m_artist.strPath);
+    // Fallback local to music files (when there is a unique folder)
+    paths.push_back(m_fallbackartpath);
+  }
+  else
+    // Album folder, when a unique one exists, no fallback
+    paths.push_back(m_album.strPath);
+  for (std::vector<std::string>::const_iterator it = paths.begin(); it != paths.end(); ++it)
+  {
+    const std::string &path = *it;
+    if (!localArt.empty() && CFile::Exists(localArt))
+      break;
+    if (!path.empty())
     {
-      // First look for thumb in the artists folder, the primary location
-      if (!m_artist.strPath.empty())
-      {
-        localThumb = URIUtils::AddFileToFolder(m_artist.strPath, "folder.jpg");
-        existsThumb = CFile::Exists(localThumb);
-      }
-      // If not there fall back local to music files when there is a unique artist folder
-      if (!existsThumb && !m_fallbackartpath.empty())
-      {
-        localThumb = URIUtils::AddFileToFolder(m_fallbackartpath, "folder.jpg");
-        existsThumb = CFile::Exists(localThumb);
-      }
-    }
-    else
-    {
-      localThumb = m_item->GetUserMusicThumb(true);
-      if (m_item->IsMusicDb())
-      {
-        CFileItem item(m_item->GetMusicInfoTag()->GetURL(), false);
-        localThumb = item.GetUserMusicThumb(true);
-      }
-    }
+      CFileItem item(path, true);
+      if (type == "thumb")
+        // Local music thumbnail images named by <musicthumbs>
+        localArt = item.GetUserMusicThumb(true);
+      else if (type == "fanart")
+        // Local fanart images named by <fanart>
+        localArt = item.GetLocalFanart();
+      else
+      { // Check case and ext insenitively for local images with type as name
+        // e.g. <arttype>.jpg
+        CFileItemList items;
+        CDirectory::GetDirectory(path, items,
+            g_advancedSettings.m_pictureExtensions,
+            DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO);
 
-    if (CFile::Exists(localThumb))
-    {
-      CFileItemPtr item(new CFileItem("thumb://Local", false));
-      item->SetArt("thumb", localThumb);
-      item->SetLabel(g_localizeStrings.Get(20017));
-      items.Add(item);
+        for (int j = 0; j < items.Size(); j++)
+        {
+          std::string strCandidate = URIUtils::GetFileName(items[j]->GetPath());
+          URIUtils::RemoveExtension(strCandidate);
+          if (StringUtils::EqualsNoCase(strCandidate, type))
+          {
+            localArt = items[j]->GetPath();
+            break;
+          }
+        }
+      }
     }
   }
+  if (!localArt.empty() && CFile::Exists(localArt))
+  {
+    CFileItemPtr item(new CFileItem("Local Art: " + localArt, false));
+    item->SetArt("thumb", localArt);
+    item->SetLabel(g_localizeStrings.Get(13514)); // "Local art"
+    items.Add(item);
+  }
 
+  // No art
   if (bHasArt && !bFallback)
   { // Actually has this type of art (not a fallback) so
     // allow the user to delete it by selecting "no art".
@@ -907,8 +944,8 @@ void CGUIDialogMusicInfo::OnGetArt()
     }
     else if (result == "thumb://Thumb")
       newArt = m_item->GetArt("thumb");
-    else if (result == "thumb://Local")
-      newArt = localThumb;
+    else if (StringUtils::StartsWith(result, "Local Art: "))
+      newArt = localArt;
     else if (CFile::Exists(result))
       newArt = result;
     else // none
