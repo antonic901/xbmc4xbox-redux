@@ -2171,7 +2171,11 @@ msgctxt "#505"
 msgid "Loading media information from files..."
 msgstr ""
 
-#empty string with id 506
+#. label for library update progress bar when checking for new or changed media files
+#: xbmc/music/infoscanner/MusicInfoScanner.cpp
+msgctxt "#506"
+msgid "Checking media files..."
+msgstr ""
 
 msgctxt "#507"
 msgid "Sort by: Usage"
