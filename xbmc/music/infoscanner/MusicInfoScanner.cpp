@@ -71,14 +71,9 @@ CMusicInfoScanner::CMusicInfoScanner()
   m_fileCountReader(this, "MusicFileCounter")
 {
   m_bStop = false;
-  m_bRunning = false;
-  m_showDialog = false;
-  m_handle = NULL;
-  m_bCanInterrupt = false;
   m_currentItem=0;
   m_itemCount=0;
   m_flags = 0;
-  m_bClean = false;
 }
 
 CMusicInfoScanner::~CMusicInfoScanner()
@@ -435,11 +430,6 @@ void CMusicInfoScanner::FetchArtistInfo(const std::string& strDirectory,
   Process();
 }
 
-bool CMusicInfoScanner::IsScanning()
-{
-  return m_bRunning;
-}
-
 void CMusicInfoScanner::Stop()
 {
   if (m_bCanInterrupt)
@@ -547,7 +537,8 @@ bool CMusicInfoScanner::DoScan(const std::string& strDirectory)
   return !m_bStop;
 }
 
-INFO_RET CMusicInfoScanner::ScanTags(const CFileItemList& items, CFileItemList& scannedItems)
+CInfoScanner::INFO_RET CMusicInfoScanner::ScanTags(const CFileItemList& items,
+                                                   CFileItemList& scannedItems)
 {
   std::vector<std::string> regexps = g_advancedSettings.m_audioExcludeFromScanRegExps;
 
@@ -787,7 +778,11 @@ void CMusicInfoScanner::FileItemsToAlbums(CFileItemList& items, VECALBUMS& album
   }
 }
 
-INFO_RET MUSIC_INFO::CMusicInfoScanner::UpdateAlbumInfo(CAlbum& album, const ADDON::ScraperPtr& scraper, bool bAllowSelection, CGUIDialogProgress* pDialog)
+CInfoScanner::INFO_RET
+CMusicInfoScanner::UpdateAlbumInfo(CAlbum& album,
+                                   const ADDON::ScraperPtr& scraper,
+                                   bool bAllowSelection,
+                                   CGUIDialogProgress* pDialog)
 {
   m_musicDatabase.Open();
   INFO_RET result = UpdateDatabaseAlbumInfo(album, scraper, bAllowSelection, pDialog);
@@ -795,7 +790,11 @@ INFO_RET MUSIC_INFO::CMusicInfoScanner::UpdateAlbumInfo(CAlbum& album, const ADD
   return result;
 }
 
-INFO_RET MUSIC_INFO::CMusicInfoScanner::UpdateArtistInfo(CArtist& artist, const ADDON::ScraperPtr& scraper, bool bAllowSelection, CGUIDialogProgress* pDialog)
+CInfoScanner::INFO_RET
+CMusicInfoScanner::UpdateArtistInfo(CArtist& artist,
+                                    const ADDON::ScraperPtr& scraper,
+                                    bool bAllowSelection,
+                                    CGUIDialogProgress* pDialog)
 {
   m_musicDatabase.Open();
   INFO_RET result = UpdateDatabaseArtistInfo(artist, scraper, bAllowSelection, pDialog);
@@ -1164,7 +1163,11 @@ int CMusicInfoScanner::GetPathHash(const CFileItemList &items, std::string &hash
   return count;
 }
 
-INFO_RET CMusicInfoScanner::UpdateDatabaseAlbumInfo(CAlbum& album, const ADDON::ScraperPtr& scraper, bool bAllowSelection, CGUIDialogProgress* pDialog /* = NULL */)
+CInfoScanner::INFO_RET
+CMusicInfoScanner::UpdateDatabaseAlbumInfo(CAlbum& album,
+                                           const ADDON::ScraperPtr& scraper,
+                                           bool bAllowSelection,
+                                           CGUIDialogProgress* pDialog /* = NULL */)
 {
   if (!scraper)
     return INFO_ERROR;
@@ -1206,7 +1209,11 @@ loop:
   return albumDownloadStatus;
 }
 
-INFO_RET CMusicInfoScanner::UpdateDatabaseArtistInfo(CArtist& artist, const ADDON::ScraperPtr& scraper, bool bAllowSelection, CGUIDialogProgress* pDialog /* = NULL */)
+CInfoScanner::INFO_RET
+CMusicInfoScanner::UpdateDatabaseArtistInfo(CArtist& artist,
+                                            const ADDON::ScraperPtr& scraper,
+                                            bool bAllowSelection,
+                                            CGUIDialogProgress* pDialog /* = NULL */)
 {
   if (!scraper)
     return INFO_ERROR;
@@ -1247,7 +1254,12 @@ loop:
 
 #define THRESHOLD .95f
 
-INFO_RET CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album, const ADDON::ScraperPtr& info, CMusicAlbumInfo& albumInfo, bool bUseScrapedMBID, CGUIDialogProgress* pDialog)
+CInfoScanner::INFO_RET
+CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album,
+                                     const ADDON::ScraperPtr& info,
+                                     CMusicAlbumInfo& albumInfo,
+                                     bool bUseScrapedMBID,
+                                     CGUIDialogProgress* pDialog)
 {
   if (m_handle)
   {
@@ -1492,7 +1504,12 @@ void CMusicInfoScanner::GetAlbumArtwork(long id, const CAlbum &album)
   }
 }
 
-INFO_RET CMusicInfoScanner::DownloadArtistInfo(const CArtist& artist, const ADDON::ScraperPtr& info, MUSIC_GRABBER::CMusicArtistInfo& artistInfo, bool bUseScrapedMBID, CGUIDialogProgress* pDialog)
+CInfoScanner::INFO_RET
+CMusicInfoScanner::DownloadArtistInfo(const CArtist& artist,
+                                      const ADDON::ScraperPtr& info,
+                                      MUSIC_GRABBER::CMusicArtistInfo& artistInfo,
+                                      bool bUseScrapedMBID,
+                                      CGUIDialogProgress* pDialog)
 {
   if (m_handle)
   {

@@ -18,20 +18,64 @@
  *
  */
 #pragma once
+
+#include <set>
 #include <string>
 #include <vector>
+
+class CGUIDialogProgressBarHandle;
 
 class CInfoScanner
 {
 public:
-  virtual ~CInfoScanner();
+  /*!
+    \brief Return values from the information lookup functions.
+   */
+  enum INFO_RET
+  {
+    INFO_CANCELLED,
+    INFO_ERROR,
+    INFO_NOT_NEEDED,
+    INFO_HAVE_ALREADY,
+    INFO_NOT_FOUND,
+    INFO_ADDED
+  };
+
+  //! \brief Empty destructor.
+  virtual ~CInfoScanner() { };
+
   virtual bool DoScan(const std::string& strDirectory) = 0;
+
   /*! \brief Check if the folder is excluded from scanning process
    \param strDirectory Directory to scan
    \param regexps Regular expression to exclude from the scan
    \return true if there is a .nomedia file or one of the regexps is a match
    */
   bool IsExcluded(const std::string& strDirectory, const std::vector<std::string> &regexps);
+
+  //! \brief Set whether or not to show a progress dialog.
+  void ShowDialog(bool show) { m_showDialog = show; }
+
+  //! \brief Returns whether or not a scan is in progress.
+  bool IsScanning() const { return m_bRunning; }
+
+protected:
+  //! \brief Protected constructor to only allow subclass instances.
+  CInfoScanner()
+    : m_showDialog(false)
+    , m_handle(NULL)
+    , m_bRunning(false)
+    , m_bCanInterrupt(false)
+    , m_bClean(false)
+  { };
+
+  std::set<std::string> m_pathsToScan; //!< Set of paths to scan
+  bool m_showDialog; //!< Whether or not to show progress bar dialog
+  CGUIDialogProgressBarHandle* m_handle; //!< Progress bar handle
+  bool m_bRunning; //!< Whether or not scanner is running
+  bool m_bCanInterrupt; //!< Whether or not scanner is currently interruptable
+  bool m_bClean; //!< Whether or not to perform cleaning during scanning
+
 private:
   bool HasNoMedia(const std::string& strDirectory) const;
 };

@@ -25,8 +25,6 @@
 #include "utils/log.h"
 #include "utils/URIUtils.h"
 
-CInfoScanner::~CInfoScanner() {}
-
 bool CInfoScanner::HasNoMedia(const std::string &strDirectory) const
 {
   std::string noMediaFile = URIUtils::AddFileToFolder(strDirectory, ".nomedia");

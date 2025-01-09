@@ -412,7 +412,7 @@ void CGUIWindowMusicBase::ShowArtistInfo(const CFileItem *pItem, bool bShowInfo 
       }
 
       CMusicInfoScanner scanner;
-      if (scanner.UpdateArtistInfo(artist, scraper, bShowInfo, m_dlgProgress) != INFO_ADDED)
+      if (scanner.UpdateArtistInfo(artist, scraper, bShowInfo, m_dlgProgress) != CInfoScanner::INFO_ADDED)
       {
         CGUIDialogOK::ShowAndGetInput(21889, 20199);
         break;
@@ -491,7 +491,7 @@ bool CGUIWindowMusicBase::ShowAlbumInfo(const CFileItem *pItem, bool bShowInfo /
       }
 
       CMusicInfoScanner scanner;
-      if (scanner.UpdateAlbumInfo(album, scraper, bShowInfo, m_dlgProgress) != INFO_ADDED)
+      if (scanner.UpdateAlbumInfo(album, scraper, bShowInfo, m_dlgProgress) != CInfoScanner::INFO_ADDED)
       {
         CGUIDialogOK::ShowAndGetInput(185, 500);
         if (m_dlgProgress)
