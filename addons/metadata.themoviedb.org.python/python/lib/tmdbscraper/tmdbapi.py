@@ -16,8 +16,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # pylint: disable=missing-docstring
 
-"""Functions to interact with TMDb API."""
+u"""Functions to interact with TMDb API."""
 
+from __future__ import absolute_import
 from . import api_utils
 import xbmc
 try:
@@ -28,23 +29,23 @@ except ImportError:
 
 
 HEADERS = (
-    ('User-Agent', 'Kodi Movie scraper by Team Kodi'),
-    ('Accept', 'application/json'),
+    (u'User-Agent', u'Kodi Movie scraper by Team Kodi'),
+    (u'Accept', u'application/json'),
 )
 api_utils.set_headers(dict(HEADERS))
 
-TMDB_PARAMS = {'api_key': 'f090bb54758cabf231fb605d3e3e0468'}
-BASE_URL = 'https://api.themoviedb.org/3/{}'
-SEARCH_URL = BASE_URL.format('search/movie')
-FIND_URL = BASE_URL.format('find/{}')
-MOVIE_URL = BASE_URL.format('movie/{}')
-COLLECTION_URL = BASE_URL.format('collection/{}')
-CONFIG_URL = BASE_URL.format('configuration')
+TMDB_PARAMS = {u'api_key': u'f090bb54758cabf231fb605d3e3e0468'}
+BASE_URL = u'https://api.themoviedb.org/3/{}'
+SEARCH_URL = BASE_URL.format(u'search/movie')
+FIND_URL = BASE_URL.format(u'find/{}')
+MOVIE_URL = BASE_URL.format(u'movie/{}')
+COLLECTION_URL = BASE_URL.format(u'collection/{}')
+CONFIG_URL = BASE_URL.format(u'configuration')
 
 
 def search_movie(query, year=None, language=None):
     # type: (Text) -> List[InfoType]
-    """
+    u"""
     Search for a movie
 
     :param title: movie title to search
@@ -52,35 +53,35 @@ def search_movie(query, year=None, language=None):
     :param language: the language filter for TMDb (optional)
     :return: a list with found movies
     """
-    xbmc.log('using title of %s to find movie' % query, xbmc.LOGDEBUG)
+    xbmc.log(u'using title of %s to find movie' % query, xbmc.LOGDEBUG)
     theurl = SEARCH_URL
     params = _set_params(None, language)
-    params['query'] = query
+    params[u'query'] = query
     if year is not None:
-        params['year'] = str(year)
+        params[u'year'] = unicode(year)
     return api_utils.load_info(theurl, params=params)
 
 
 def find_movie_by_external_id(external_id, language=None):
     # type: (Text) -> List[InfoType]
-    """
+    u"""
     Find movie based on external ID
 
     :param mid: external ID
     :param language: the language filter for TMDb (optional)
     :return: the movie or error
     """
-    xbmc.log('using external id of %s to find movie' % external_id, xbmc.LOGDEBUG)
+    xbmc.log(u'using external id of %s to find movie' % external_id, xbmc.LOGDEBUG)
     theurl = FIND_URL.format(external_id)
     params = _set_params(None, language)
-    params['external_source'] = 'imdb_id'
+    params[u'external_source'] = u'imdb_id'
     return api_utils.load_info(theurl, params=params)
 
 
 
 def get_movie(mid, language=None, append_to_response=None):
     # type: (Text) -> List[InfoType]
-    """
+    u"""
     Get movie details
 
     :param mid: TMDb movie ID
@@ -88,14 +89,14 @@ def get_movie(mid, language=None, append_to_response=None):
     :append_to_response: the additional data to get from TMDb (optional)
     :return: the movie or error
     """
-    xbmc.log('using movie id of %s to get movie details' % mid, xbmc.LOGDEBUG)
+    xbmc.log(u'using movie id of %s to get movie details' % mid, xbmc.LOGDEBUG)
     theurl = MOVIE_URL.format(mid)
     return api_utils.load_info(theurl, params=_set_params(append_to_response, language))
 
 
 def get_collection(collection_id, language=None, append_to_response=None):
     # type: (Text) -> List[InfoType]
-    """
+    u"""
     Get movie collection information
 
     :param collection_id: TMDb collection ID
@@ -103,30 +104,30 @@ def get_collection(collection_id, language=None, append_to_response=None):
     :append_to_response: the additional data to get from TMDb (optional)
     :return: the movie or error
     """
-    xbmc.log('using collection id of %s to get collection details' % collection_id, xbmc.LOGDEBUG)
+    xbmc.log(u'using collection id of %s to get collection details' % collection_id, xbmc.LOGDEBUG)
     theurl = COLLECTION_URL.format(collection_id)
     return api_utils.load_info(theurl, params=_set_params(append_to_response, language))
 
 
 def get_configuration():
     # type: (Text) -> List[InfoType]
-    """
+    u"""
     Get configuration information
 
     :return: configuration details or error
     """
-    xbmc.log('getting configuration details', xbmc.LOGDEBUG)
+    xbmc.log(u'getting configuration details', xbmc.LOGDEBUG)
     return api_utils.load_info(CONFIG_URL, params=TMDB_PARAMS.copy())
 
 
 def _set_params(append_to_response, language):
     params = TMDB_PARAMS.copy()
-    img_lang = 'en,null'
+    img_lang = u'en,null'
     if language is not None:
-        params['language'] = language
-        img_lang = '%s,en,null' % language[0:2]
+        params[u'language'] = language
+        img_lang = u'%s,en,null' % language[0:2]
     if append_to_response is not None:
-        params['append_to_response'] = append_to_response
-        if 'images' in append_to_response:
-            params['include_image_language'] = img_lang
+        params[u'append_to_response'] = append_to_response
+        if u'images' in append_to_response:
+            params[u'include_image_language'] = img_lang
     return params

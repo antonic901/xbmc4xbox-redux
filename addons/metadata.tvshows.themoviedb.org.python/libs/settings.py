@@ -16,7 +16,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # pylint: disable=missing-docstring
 
-import json, sys, urllib.parse
+from __future__ import absolute_import
+import json, sys
+import urllib2, urllib, urlparse
 from .utils import logger
 from . import api_utils
 from xbmcaddon import Addon
@@ -28,69 +30,69 @@ def _get_date_numeric(datetime_):
 
 
 def _get_configuration():
-    logger.debug('getting configuration details')
-    return api_utils.load_info('https://api.themoviedb.org/3/configuration', params={'api_key': TMDB_CLOWNCAR}, verboselog=VERBOSELOG)
+    logger.debug(u'getting configuration details')
+    return api_utils.load_info(u'https://api.themoviedb.org/3/configuration', params={u'api_key': TMDB_CLOWNCAR}, verboselog=VERBOSELOG)
 
 
 def _load_base_urls():
-    image_root_url = ADDON.getSettingString('originalUrl')
-    preview_root_url = ADDON.getSettingString('previewUrl')
-    last_updated = ADDON.getSettingString('lastUpdated')
+    image_root_url = ADDON.getSettingString(u'originalUrl')
+    preview_root_url = ADDON.getSettingString(u'previewUrl')
+    last_updated = ADDON.getSettingString(u'lastUpdated')
     if not image_root_url or not preview_root_url or not last_updated or \
             float(last_updated) < _get_date_numeric(datetime.now() - timedelta(days=30)):
         conf = _get_configuration()
         if conf:
-            image_root_url = conf['images']['secure_base_url'] + 'original'
-            preview_root_url = conf['images']['secure_base_url'] + 'w780'
-            ADDON.setSetting('originalUrl', image_root_url)
-            ADDON.setSetting('previewUrl', preview_root_url)
-            ADDON.setSetting('lastUpdated', str(_get_date_numeric(datetime.now())))
+            image_root_url = conf[u'images'][u'secure_base_url'] + u'original'
+            preview_root_url = conf[u'images'][u'secure_base_url'] + u'w780'
+            ADDON.setSetting(u'originalUrl', image_root_url)
+            ADDON.setSetting(u'previewUrl', preview_root_url)
+            ADDON.setSetting(u'lastUpdated', unicode(_get_date_numeric(datetime.now())))
     return image_root_url, preview_root_url
 
 
 ADDON = Addon()
-TMDB_CLOWNCAR = 'af3a53eb387d57fc935e9128468b1899'
-FANARTTV_CLOWNCAR = 'b018086af0e1478479adfc55634db97d'
-TRAKT_CLOWNCAR = '90901c6be3b2de5a4fa0edf9ab5c75e9a5a0fef2b4ee7373d8b63dcf61f95697'
+TMDB_CLOWNCAR = u'af3a53eb387d57fc935e9128468b1899'
+FANARTTV_CLOWNCAR = u'b018086af0e1478479adfc55634db97d'
+TRAKT_CLOWNCAR = u'90901c6be3b2de5a4fa0edf9ab5c75e9a5a0fef2b4ee7373d8b63dcf61f95697'
 MAXIMAGES = 350
-FANARTTV_MAPPING = { 'showbackground': 'backdrops',
-                     'tvposter': 'posters',
-                     'tvbanner': 'banner',
-                     'hdtvlogo': 'clearlogo',
-                     'clearlogo': 'clearlogo',
-                     'hdclearart': 'clearart',
-                     'clearart': 'clearart',
-                     'tvthumb': 'landscape',
-                     'characterart': 'characterart',
-                     'seasonposter':'seasonposters',
-                     'seasonbanner':'seasonbanner',
-                     'seasonthumb': 'seasonlandscape'
+FANARTTV_MAPPING = { u'showbackground': u'backdrops',
+                     u'tvposter': u'posters',
+                     u'tvbanner': u'banner',
+                     u'hdtvlogo': u'clearlogo',
+                     u'clearlogo': u'clearlogo',
+                     u'hdclearart': u'clearart',
+                     u'clearart': u'clearart',
+                     u'tvthumb': u'landscape',
+                     u'characterart': u'characterart',
+                     u'seasonposter':u'seasonposters',
+                     u'seasonbanner':u'seasonbanner',
+                     u'seasonthumb': u'seasonlandscape'
                    }
 
 try:
-    source_params = dict(urllib.parse.parse_qsl(sys.argv[2]))
+    source_params = dict(urlparse.parse_qsl(sys.argv[2]))
 except IndexError:
     source_params = {}
-source_settings = json.loads(source_params.get('pathSettings', {}))
+source_settings = json.loads(source_params.get(u'pathSettings', {}))
 
-KEEPTITLE =source_settings.get('keeporiginaltitle', ADDON.getSettingBool('keeporiginaltitle'))
-CATLANDSCAPE = source_settings.get('cat_landscape', True)
-VERBOSELOG =  source_settings.get('verboselog', ADDON.getSettingBool('verboselog'))
-LANG = source_settings.get('language', ADDON.getSettingString('language'))
-CERT_COUNTRY = source_settings.get('tmdbcertcountry', ADDON.getSettingString('tmdbcertcountry')).lower()
+KEEPTITLE =source_settings.get(u'keeporiginaltitle', ADDON.getSettingBool(u'keeporiginaltitle'))
+CATLANDSCAPE = source_settings.get(u'cat_landscape', True)
+VERBOSELOG =  source_settings.get(u'verboselog', ADDON.getSettingBool(u'verboselog'))
+LANG = source_settings.get(u'language', ADDON.getSettingString(u'language'))
+CERT_COUNTRY = source_settings.get(u'tmdbcertcountry', ADDON.getSettingString(u'tmdbcertcountry')).lower()
 IMAGEROOTURL, PREVIEWROOTURL = _load_base_urls()
 
-if source_settings.get('usecertprefix', ADDON.getSettingBool('usecertprefix')):
-    CERT_PREFIX = source_settings.get('certprefix', ADDON.getSettingString('certprefix'))
+if source_settings.get(u'usecertprefix', ADDON.getSettingBool(u'usecertprefix')):
+    CERT_PREFIX = source_settings.get(u'certprefix', ADDON.getSettingString(u'certprefix'))
 else:
-    CERT_PREFIX = ''
-primary_rating = source_settings.get('ratings', ADDON.getSettingString('ratings')).lower()
+    CERT_PREFIX = u''
+primary_rating = source_settings.get(u'ratings', ADDON.getSettingString(u'ratings')).lower()
 RATING_TYPES = [primary_rating]
-if source_settings.get('imdbanyway', ADDON.getSettingBool('imdbanyway')) and primary_rating != 'imdb':
-    RATING_TYPES.append('imdb')
-if source_settings.get('traktanyway', ADDON.getSettingBool('traktanyway')) and primary_rating != 'trakt':
-    RATING_TYPES.append('trakt')
-if source_settings.get('tmdbanyway', ADDON.getSettingBool('tmdbanyway')) and primary_rating != 'tmdb':
-    RATING_TYPES.append('tmdb')
-FANARTTV_ENABLE = source_settings.get('enable_fanarttv', ADDON.getSettingBool('enable_fanarttv'))
-FANARTTV_CLIENTKEY = source_settings.get('fanarttv_clientkey', ADDON.getSettingString('fanarttv_clientkey'))
+if source_settings.get(u'imdbanyway', ADDON.getSettingBool(u'imdbanyway')) and primary_rating != u'imdb':
+    RATING_TYPES.append(u'imdb')
+if source_settings.get(u'traktanyway', ADDON.getSettingBool(u'traktanyway')) and primary_rating != u'trakt':
+    RATING_TYPES.append(u'trakt')
+if source_settings.get(u'tmdbanyway', ADDON.getSettingBool(u'tmdbanyway')) and primary_rating != u'tmdb':
+    RATING_TYPES.append(u'tmdb')
+FANARTTV_ENABLE = source_settings.get(u'enable_fanarttv', ADDON.getSettingBool(u'enable_fanarttv'))
+FANARTTV_CLIENTKEY = source_settings.get(u'fanarttv_clientkey', ADDON.getSettingString(u'fanarttv_clientkey'))

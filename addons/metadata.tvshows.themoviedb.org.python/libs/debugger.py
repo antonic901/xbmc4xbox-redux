@@ -18,7 +18,7 @@
 #
 # This is based on the metadata.tvmaze scrapper by Roman Miroshnychenko aka Roman V.M.
 
-"""
+u"""
 Provides a context manager that writes extended debugging info
 in the Kodi log on unhandled exceptions
 """
@@ -41,7 +41,7 @@ except ImportError:
 
 def _format_vars(variables):
     # type: (Dict[Text, Any]) -> Text
-    """
+    u"""
     Format variables dictionary
 
     :param variables: variables dict
@@ -50,18 +50,18 @@ def _format_vars(variables):
     :rtype: str
     """
     var_list = [(var, val) for var, val in variables.items()
-                if not (var.startswith('__') or var.endswith('__'))]
+                if not (var.startswith(u'__') or var.endswith(u'__'))]
     var_list.sort(key=lambda i: i[0])
     lines = []
     for var, val in var_list:
-        lines.append('{0} = {1}'.format(var, pformat(val)))
-    return '\n'.join(lines)
+        lines.append(u'{0} = {1}'.format(var, pformat(val)))
+    return u'\n'.join(lines)
 
 
 @contextmanager
 def debug_exception(logger_func=logger.error):
     # type: (Callable[[Text], None]) -> Generator[None]
-    """
+    u"""
     Diagnostic helper context manager
 
     It controls execution within its context and writes extended
@@ -88,24 +88,24 @@ def debug_exception(logger_func=logger.error):
     """
     try:
         yield
-    except Exception as exc:
+    except Exception, exc:
         frame_info = inspect.trace(5)[-1]
-        logger_func('*** Unhandled exception detected: {} {} ***'.format(type(exc), exc))
-        logger_func('*** Start diagnostic info ***')
-        logger_func('System info: {0}'.format(uname()))
-        logger_func('OS info: {0}'.format(xbmc.getInfoLabel('System.OSVersionInfo')))
-        logger_func('Kodi version: {0}'.format(
-            xbmc.getInfoLabel('System.BuildVersion')))
-        logger_func('File: {0}'.format(frame_info[1]))
-        context = ''
+        logger_func(u'*** Unhandled exception detected: {} {} ***'.format(type(exc), exc))
+        logger_func(u'*** Start diagnostic info ***')
+        logger_func(u'System info: {0}'.format(uname()))
+        logger_func(u'OS info: {0}'.format(xbmc.getInfoLabel(u'System.OSVersionInfo')))
+        logger_func(u'Kodi version: {0}'.format(
+            xbmc.getInfoLabel(u'System.BuildVersion')))
+        logger_func(u'File: {0}'.format(frame_info[1]))
+        context = u''
         if frame_info[4] is not None:
             for i, line in enumerate(frame_info[4], frame_info[2] - frame_info[5]):
                 if i == frame_info[2]:
-                    context += '{0}:>{1}'.format(str(i).rjust(5), line)
+                    context += u'{0}:>{1}'.format(unicode(i).rjust(5), line)
                 else:
-                    context += '{0}: {1}'.format(str(i).rjust(5), line)
-        logger_func('Code context:\n' + context)
-        logger_func('Global variables:\n' + _format_vars(frame_info[0].f_globals))
-        logger_func('Local variables:\n' + _format_vars(frame_info[0].f_locals))
-        logger_func('**** End diagnostic info ****')
+                    context += u'{0}: {1}'.format(unicode(i).rjust(5), line)
+        logger_func(u'Code context:\n' + context)
+        logger_func(u'Global variables:\n' + _format_vars(frame_info[0].f_globals))
+        logger_func(u'Local variables:\n' + _format_vars(frame_info[0].f_locals))
+        logger_func(u'**** End diagnostic info ****')
         raise exc

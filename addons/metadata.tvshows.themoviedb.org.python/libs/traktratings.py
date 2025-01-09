@@ -16,7 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # pylint: disable=missing-docstring
 
-"""Functions to interact with Trakt API"""
+u"""Functions to interact with Trakt API"""
 
 from __future__ import absolute_import, unicode_literals
 
@@ -30,16 +30,16 @@ except ImportError:
 
 
 HEADERS = (
-    ('User-Agent', 'Kodi TV Show scraper by Team Kodi; contact pkscout@kodi.tv'),
-    ('Accept', 'application/json'),
-    ('trakt-api-key', settings.TRAKT_CLOWNCAR),
-    ('trakt-api-version', '2'),
-    ('Content-Type', 'application/json'),
+    (u'User-Agent', u'Kodi TV Show scraper by Team Kodi; contact pkscout@kodi.tv'),
+    (u'Accept', u'application/json'),
+    (u'trakt-api-key', settings.TRAKT_CLOWNCAR),
+    (u'trakt-api-version', u'2'),
+    (u'Content-Type', u'application/json'),
 )
 api_utils.set_headers(dict(HEADERS))
 
-SHOW_URL = 'https://api.trakt.tv/shows/{}'
-EP_URL = SHOW_URL + '/seasons/{}/episodes/{}/ratings'
+SHOW_URL = u'https://api.trakt.tv/shows/{}'
+EP_URL = SHOW_URL + u'/seasons/{}/episodes/{}/ratings'
 
 
 def get_details(imdb_id, season=None, episode=None):
@@ -49,10 +49,10 @@ def get_details(imdb_id, season=None, episode=None):
         params = None
     else:
         url = SHOW_URL.format(imdb_id)
-        params = {'extended': 'full'}
+        params = {u'extended': u'full'}
     resp = api_utils.load_info(url, params=params, default={}, verboselog=settings.VERBOSELOG)
-    rating =resp.get('rating')
-    votes = resp.get('votes')
+    rating =resp.get(u'rating')
+    votes = resp.get(u'votes')
     if votes and rating:
-        result['ratings'] = {'trakt': {'votes': votes, 'rating': rating}}
+        result[u'ratings'] = {u'trakt': {u'votes': votes, u'rating': rating}}
     return result

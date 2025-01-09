@@ -16,7 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # pylint: disable=missing-docstring
 
-"""Misc utils"""
+u"""Misc utils"""
 
 from __future__ import absolute_import, unicode_literals
 
@@ -28,18 +28,18 @@ try:
 except ImportError:
     pass
 
-ADDON_ID = 'metadata.tvshows.themoviedb.org.python'
+ADDON_ID = u'metadata.tvshows.themoviedb.org.python'
 ADDON = Addon()
 
 
-class logger:
-    log_message_prefix = '[{} ({})]: '.format(ADDON_ID, ADDON.getAddonInfo('version'))
+class logger(object):
+    log_message_prefix = u'[{} ({})]: '.format(ADDON_ID, ADDON.getAddonInfo(u'version'))
 
     @staticmethod
     def log(message, level=xbmc.LOGDEBUG):
         # type: (Text, int) -> None
-        if isinstance(message, bytes):
-            message = message.decode('utf-8')
+        if isinstance(message, str):
+            message = message.decode(u'utf-8')
         message = logger.log_message_prefix + message
         xbmc.log(message, level)
 
@@ -61,7 +61,7 @@ class logger:
 
 def safe_get(dct, key, default=None):
     # type: (Dict[Text, Any], Text, Any) -> Any
-    """
+    u"""
     Get a key from dict
 
     Returns the respective value or default if key is missing or the value is None.

@@ -16,7 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # pylint: disable=missing-docstring
 
-"""Functions to interact with Trakt API."""
+u"""Functions to interact with Trakt API."""
 
 from __future__ import absolute_import, unicode_literals
 
@@ -30,26 +30,26 @@ except ImportError:
 
 
 HEADERS = (
-    ('User-Agent', 'Kodi Movie scraper by Team Kodi'),
-    ('Accept', 'application/json'),
-    ('trakt-api-key', '5f2dc73b6b11c2ac212f5d8b4ec8f3dc4b727bb3f026cd254d89eda997fe64ae'),
-    ('trakt-api-version', '2'),
-    ('Content-Type', 'application/json'),
+    (u'User-Agent', u'Kodi Movie scraper by Team Kodi'),
+    (u'Accept', u'application/json'),
+    (u'trakt-api-key', u'5f2dc73b6b11c2ac212f5d8b4ec8f3dc4b727bb3f026cd254d89eda997fe64ae'),
+    (u'trakt-api-version', u'2'),
+    (u'Content-Type', u'application/json'),
 )
 api_utils.set_headers(dict(HEADERS))
 
-MOVIE_URL = 'https://api.trakt.tv/movies/{}'
+MOVIE_URL = u'https://api.trakt.tv/movies/{}'
 
 
 def get_trakt_ratinginfo(uniqueids):
     imdb_id = get_imdb_id(uniqueids)
     result = {}
     url = MOVIE_URL.format(imdb_id)
-    params = {'extended': 'full'}
+    params = {u'extended': u'full'}
     movie_info = api_utils.load_info(url, params=params, default={})
     if(movie_info):
-        if 'votes' in movie_info and 'rating' in movie_info:
-            result['ratings'] = {'trakt': {'votes': int(movie_info['votes']), 'rating': float(movie_info['rating'])}}
-        elif 'rating' in movie_info:
-            result['ratings'] = {'trakt': {'rating': float(movie_info['rating'])}}
+        if u'votes' in movie_info and u'rating' in movie_info:
+            result[u'ratings'] = {u'trakt': {u'votes': int(movie_info[u'votes']), u'rating': float(movie_info[u'rating'])}}
+        elif u'rating' in movie_info:
+            result[u'ratings'] = {u'trakt': {u'rating': float(movie_info[u'rating'])}}
     return result

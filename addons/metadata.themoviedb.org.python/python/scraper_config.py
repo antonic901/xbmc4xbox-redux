@@ -8,75 +8,75 @@ def configure_scraped_details(details, settings):
     return details
 
 def configure_tmdb_artwork(details, settings):
-    if 'available_art' not in details:
+    if u'available_art' not in details:
         return details
 
-    art = details['available_art']
-    fanart_enabled = settings.getSettingBool('fanart')
+    art = details[u'available_art']
+    fanart_enabled = settings.getSettingBool(u'fanart')
     if not fanart_enabled:
-        if 'fanart' in art:
-            del art['fanart']
-        if 'set.fanart' in art:
-            del art['set.fanart']
-    if not settings.getSettingBool('landscape'):
-        if 'landscape' in art:
+        if u'fanart' in art:
+            del art[u'fanart']
+        if u'set.fanart' in art:
+            del art[u'set.fanart']
+    if not settings.getSettingBool(u'landscape'):
+        if u'landscape' in art:
             if fanart_enabled:
-                art['fanart'] = art.get('fanart', []) + art['landscape']
-            del art['landscape']
-        if 'set.landscape' in art:
+                art[u'fanart'] = art.get(u'fanart', []) + art[u'landscape']
+            del art[u'landscape']
+        if u'set.landscape' in art:
             if fanart_enabled:
-                art['set.fanart'] = art.get('set.fanart', []) + art['set.landscape']
-            del art['set.landscape']
+                art[u'set.fanart'] = art.get(u'set.fanart', []) + art[u'set.landscape']
+            del art[u'set.landscape']
 
     return details
 
 def is_fanarttv_configured(settings):
-    return settings.getSettingBool('enable_fanarttv_artwork')
+    return settings.getSettingBool(u'enable_fanarttv_artwork')
 
 def _configure_rating_prefix(details, settings):
-    if details['info'].get('mpaa'):
-        details['info']['mpaa'] = settings.getSettingString('certprefix') + details['info']['mpaa']
+    if details[u'info'].get(u'mpaa'):
+        details[u'info'][u'mpaa'] = settings.getSettingString(u'certprefix') + details[u'info'][u'mpaa']
     return details
 
 def _configure_keeporiginaltitle(details, settings):
-    if settings.getSettingBool('keeporiginaltitle'):
-        details['info']['title'] = details['info']['originaltitle']
+    if settings.getSettingBool(u'keeporiginaltitle'):
+        details[u'info'][u'title'] = details[u'info'][u'originaltitle']
     return details
 
 def _configure_trailer(details, settings):
-    if details['info'].get('trailer') and not settings.getSettingBool('trailer'):
-        del details['info']['trailer']
+    if details[u'info'].get(u'trailer') and not settings.getSettingBool(u'trailer'):
+        del details[u'info'][u'trailer']
     return details
 
 def _configure_multiple_studios(details, settings):
-    if not settings.getSettingBool('multiple_studios'):
-        details['info']['studio'] = details['info']['studio'][:1]
+    if not settings.getSettingBool(u'multiple_studios'):
+        details[u'info'][u'studio'] = details[u'info'][u'studio'][:1]
     return details
 
 def _configure_default_rating(details, settings):
-    imdb_default = bool(details['ratings'].get('imdb')) and settings.getSettingString('RatingS') == 'IMDb'
-    trakt_default = bool(details['ratings'].get('trakt')) and settings.getSettingString('RatingS') == 'Trakt'
-    default_rating = 'themoviedb'
+    imdb_default = bool(details[u'ratings'].get(u'imdb')) and settings.getSettingString(u'RatingS') == u'IMDb'
+    trakt_default = bool(details[u'ratings'].get(u'trakt')) and settings.getSettingString(u'RatingS') == u'Trakt'
+    default_rating = u'themoviedb'
     if imdb_default:
-        default_rating = 'imdb'
+        default_rating = u'imdb'
     elif trakt_default:
-        default_rating = 'trakt'
-    if default_rating not in details['ratings']:
-        default_rating = list(details['ratings'].keys())[0] if details['ratings'] else None
-    for rating_type in details['ratings'].keys():
-        details['ratings'][rating_type]['default'] = rating_type == default_rating
+        default_rating = u'trakt'
+    if default_rating not in details[u'ratings']:
+        default_rating = list(details[u'ratings'].keys())[0] if details[u'ratings'] else None
+    for rating_type in details[u'ratings'].keys():
+        details[u'ratings'][rating_type][u'default'] = rating_type == default_rating
     return details
 
 def _configure_tags(details, settings):
-    if not settings.getSettingBool('add_tags'):
-        del details['info']['tag']
+    if not settings.getSettingBool(u'add_tags'):
+        del details[u'info'][u'tag']
     return details
 
 # pylint: disable=invalid-name
 try:
     basestring
 except NameError: # py2 / py3
-    basestring = str
+    basestring = unicode
 
 #pylint: disable=redefined-builtin
 class PathSpecificSettings(object):
@@ -95,7 +95,7 @@ class PathSpecificSettings(object):
         return self._inner_get_setting(id, float, 0.0)
 
     def getSettingString(self, id):
-        return self._inner_get_setting(id, basestring, '')
+        return self._inner_get_setting(id, basestring, u'')
 
     def _inner_get_setting(self, setting_id, setting_type, default):
         value = self.data.get(setting_id)
@@ -106,6 +106,6 @@ class PathSpecificSettings(object):
 
     def _log_bad_value(self, value, setting_id):
         if value is None:
-            self.log("requested setting ({0}) was not found.".format(setting_id))
+            self.log(u"requested setting ({0}) was not found.".format(setting_id))
         else:
-            self.log('failed to load value "{0}" for setting {1}'.format(value, setting_id))
+            self.log(u'failed to load value "{0}" for setting {1}'.format(value, setting_id))

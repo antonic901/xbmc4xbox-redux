@@ -18,14 +18,15 @@
 # IMDb ratings based on code in metadata.themoviedb.org.python by Team Kodi
 # pylint: disable=missing-docstring
 
+from __future__ import absolute_import
 import re
 from . import api_utils
 from . import get_imdb_id
 
-IMDB_RATINGS_URL = 'https://www.imdb.com/title/{}/'
-IMDB_RATING_REGEX = re.compile(r'itemprop="ratingValue".*?>.*?([\d.]+).*?<')
-IMDB_VOTES_REGEX = re.compile(r'itemprop="ratingCount".*?>.*?([\d,]+).*?<')
-IMDB_TOP250_REGEX = re.compile(r'Top Rated Movies #(\d+)')
+IMDB_RATINGS_URL = u'https://www.imdb.com/title/{}/'
+IMDB_RATING_REGEX = re.compile(ur'itemprop="ratingValue".*?>.*?([\d.]+).*?<')
+IMDB_VOTES_REGEX = re.compile(ur'itemprop="ratingCount".*?>.*?([\d,]+).*?<')
+IMDB_TOP250_REGEX = re.compile(ur'Top Rated Movies #(\d+)')
 
 def get_details(uniqueids):
     imdb_id = get_imdb_id(uniqueids)
@@ -35,15 +36,15 @@ def get_details(uniqueids):
     return _assemble_imdb_result(votes, rating, top250)
 
 def _get_ratinginfo(imdb_id):
-    response = api_utils.load_info(IMDB_RATINGS_URL.format(imdb_id), default = '', resp_type='text')
+    response = api_utils.load_info(IMDB_RATINGS_URL.format(imdb_id), default = u'', resp_type=u'text')
     return _parse_imdb_result(response)
 
 def _assemble_imdb_result(votes, rating, top250):
     result = {}
     if top250:
-        result['info'] = {'top250': top250}
+        result[u'info'] = {u'top250': top250}
     if votes and rating:
-        result['ratings'] = {'imdb': {'votes': votes, 'rating': rating}}
+        result[u'ratings'] = {u'imdb': {u'votes': votes, u'rating': rating}}
     return result
 
 def _parse_imdb_result(input_html):
@@ -62,7 +63,7 @@ def _parse_imdb_rating(input_html):
 def _parse_imdb_votes(input_html):
     match = re.search(IMDB_VOTES_REGEX, input_html)
     if (match):
-        return int(match.group(1).replace(',', ''))
+        return int(match.group(1).replace(u',', u''))
     return None
 
 def _parse_imdb_top250(input_html):

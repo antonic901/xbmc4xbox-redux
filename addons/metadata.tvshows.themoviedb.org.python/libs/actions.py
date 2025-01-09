@@ -18,11 +18,12 @@
 #
 # This is based on the metadata.tvmaze scrapper by Roman Miroshnychenko aka Roman V.M.
 
-"""Plugin route actions"""
+u"""Plugin route actions"""
 
 from __future__ import absolute_import, unicode_literals
 
-import sys, urllib.parse
+import sys
+import urllib2, urllib, urlparse
 import xbmcgui, xbmcplugin
 from . import tmdb, data_utils
 from .utils import logger, safe_get
@@ -36,15 +37,15 @@ HANDLE = int(sys.argv[1])  # type: int
 
 def find_show(title, year=None):
     # type: (Union[Text, bytes], Optional[Text]) -> None
-    """Find a show by title"""
-    if not isinstance(title, str):
-        title = title.decode('utf-8')
-    logger.debug('Searching for TV show {} ({})'.format(title, year))
+    u"""Find a show by title"""
+    if not isinstance(title, unicode):
+        title = title.decode(u'utf-8')
+    logger.debug(u'Searching for TV show {} ({})'.format(title, year))
     search_results = tmdb.search_show(title, year)
     for search_result in search_results:
-        show_name = search_result['name']
-        if safe_get(search_result, 'first_air_date') is not None:
-            show_name += ' ({})'.format(search_result['first_air_date'][:4])
+        show_name = search_result[u'name']
+        if safe_get(search_result, u'first_air_date') is not None:
+            show_name += u' ({})'.format(search_result[u'first_air_date'][:4])
         list_item = xbmcgui.ListItem(show_name, offscreen=True)
         show_info = search_result
         list_item = data_utils.add_main_show_info(list_item, show_info, full_info=False)
@@ -52,7 +53,7 @@ def find_show(title, year=None):
         # that is used to get information about a specific TV show.
         xbmcplugin.addDirectoryItem(
             HANDLE,
-            url=str(search_result['id']),
+            url=unicode(search_result[u'id']),
             listitem=list_item,
             isFolder=True
         )
@@ -60,7 +61,7 @@ def find_show(title, year=None):
 
 def get_show_id_from_nfo(nfo):
     # type: (Text) -> None
-    """
+    u"""
     Get show ID by NFO file contents
 
     This function is called first instead of find_show
@@ -68,22 +69,22 @@ def get_show_id_from_nfo(nfo):
 
     :param nfo: the contents of a NFO file
     """
-    if isinstance(nfo, bytes):
-        nfo = nfo.decode('utf-8', 'replace')
-    logger.debug('Parsing NFO file:\n{}'.format(nfo))
+    if isinstance(nfo, str):
+        nfo = nfo.decode(u'utf-8', u'replace')
+    logger.debug(u'Parsing NFO file:\n{}'.format(nfo))
     parse_result, named_seasons = data_utils.parse_nfo_url(nfo)
     if parse_result:
-        if parse_result.provider == 'themoviedb':
+        if parse_result.provider == u'themoviedb':
             show_info = tmdb.load_show_info(parse_result.show_id, ep_grouping=parse_result.ep_grouping, named_seasons=named_seasons)
         else:
             show_info = None
         if show_info is not None:
-            list_item = xbmcgui.ListItem(show_info['name'], offscreen=True)
+            list_item = xbmcgui.ListItem(show_info[u'name'], offscreen=True)
             # "url" is some string that unique identifies a show.
             # It may be an actual URL of a TV show page.
             xbmcplugin.addDirectoryItem(
                 HANDLE,
-                url=str(show_info['id']),
+                url=unicode(show_info[u'id']),
                 listitem=list_item,
                 isFolder=True
             )
@@ -91,11 +92,11 @@ def get_show_id_from_nfo(nfo):
 
 def get_details(show_id):
     # type: (Text) -> None
-    """Get details about a specific show"""
-    logger.debug('Getting details for show id {}'.format(show_id))
+    u"""Get details about a specific show"""
+    logger.debug(u'Getting details for show id {}'.format(show_id))
     show_info = tmdb.load_show_info(show_id)
     if show_info is not None:
-        list_item = xbmcgui.ListItem(show_info['name'], offscreen=True)
+        list_item = xbmcgui.ListItem(show_info[u'name'], offscreen=True)
         list_item = data_utils.add_main_show_info(list_item, show_info, full_info=True)
         xbmcplugin.setResolvedUrl(HANDLE, True, list_item)
     else:
@@ -104,7 +105,7 @@ def get_details(show_id):
 
 def get_episode_list(show_id):  # pylint: disable=missing-docstring
     # type: (Text) -> None
-    logger.debug('Getting episode list for show id {}'.format(show_id))
+    logger.debug(u'Getting episode list for show id {}'.format(show_id))
     if not show_id.isdigit():
         # Kodi has a bug: when a show directory contains an XML NFO file with
         # episodeguide URL, that URL is always passed here regardless of
@@ -112,7 +113,7 @@ def get_episode_list(show_id):  # pylint: disable=missing-docstring
         parse_result, named_seasons = data_utils.parse_nfo_url(show_id)
         if not parse_result:
             return
-        if parse_result.provider == 'themoviedb' or parse_result.provider == 'tmdb':
+        if parse_result.provider == u'themoviedb' or parse_result.provider == u'tmdb':
             show_info = tmdb.load_show_info(parse_result.show_id)
         else:
             return
@@ -120,17 +121,17 @@ def get_episode_list(show_id):  # pylint: disable=missing-docstring
         show_info = tmdb.load_show_info(show_id)
     if show_info is not None:
         theindex = 0
-        for episode in show_info['episodes']:
-            epname = episode.get('name', 'Episode ' + str(episode['episode_number']))
+        for episode in show_info[u'episodes']:
+            epname = episode.get(u'name', u'Episode ' + unicode(episode[u'episode_number']))
             list_item = xbmcgui.ListItem(epname, offscreen=True)
             list_item = data_utils.add_episode_info(list_item, episode, full_info=False)
-            encoded_ids = urllib.parse.urlencode(
-                {'show_id': str(show_info['id']), 'episode_id': str(theindex)}
+            encoded_ids = urllib.urlencode(
+                {u'show_id': unicode(show_info[u'id']), u'episode_id': unicode(theindex)}
             )
             theindex = theindex + 1
             # Below "url" is some unique ID string (may be an actual URL to an episode page)
             # that allows to retrieve information about a specific episode.
-            url = urllib.parse.quote(encoded_ids)
+            url = urllib.quote(encoded_ids)
             xbmcplugin.addDirectoryItem(
                 HANDLE,
                 url=url,
@@ -141,14 +142,14 @@ def get_episode_list(show_id):  # pylint: disable=missing-docstring
 
 def get_episode_details(encoded_ids):  # pylint: disable=missing-docstring
     # type: (Text) -> None
-    encoded_ids = urllib.parse.unquote(encoded_ids)
-    decoded_ids = dict(urllib.parse.parse_qsl(encoded_ids))
-    logger.debug('Getting episode details for {}'.format(decoded_ids))
+    encoded_ids = urllib.unquote(encoded_ids)
+    decoded_ids = dict(urlparse.parse_qsl(encoded_ids))
+    logger.debug(u'Getting episode details for {}'.format(decoded_ids))
     episode_info = tmdb.load_episode_info(
-        decoded_ids['show_id'], decoded_ids['episode_id']
+        decoded_ids[u'show_id'], decoded_ids[u'episode_id']
     )
     if episode_info:
-        list_item = xbmcgui.ListItem(episode_info['name'], offscreen=True)
+        list_item = xbmcgui.ListItem(episode_info[u'name'], offscreen=True)
         list_item = data_utils.add_episode_info(list_item, episode_info, full_info=True)
         xbmcplugin.setResolvedUrl(HANDLE, True, list_item)
     else:
@@ -157,17 +158,17 @@ def get_episode_details(encoded_ids):  # pylint: disable=missing-docstring
 
 def get_artwork(show_id):
     # type: (Text) -> None
-    """
+    u"""
     Get available artwork for a show
 
     :param show_id: default unique ID set by setUniqueIDs() method
     """
     if not show_id:
       return
-    logger.debug('Getting artwork for show ID {}'.format(show_id))
+    logger.debug(u'Getting artwork for show ID {}'.format(show_id))
     show_info = tmdb.load_show_info(show_id)
     if show_info is not None:
-        list_item = xbmcgui.ListItem(show_info['name'], offscreen=True)
+        list_item = xbmcgui.ListItem(show_info[u'name'], offscreen=True)
         list_item = data_utils.set_show_artwork(show_info, list_item)
         xbmcplugin.setResolvedUrl(HANDLE, True, list_item)
     else:
@@ -176,32 +177,32 @@ def get_artwork(show_id):
 
 def router(paramstring):
     # type: (Text) -> None
-    """
+    u"""
     Route addon calls
 
     :param paramstring: url-encoded query string
     :raises RuntimeError: on unknown call action
     """
-    params = dict(urllib.parse.parse_qsl(paramstring))
-    logger.debug('Called addon with params: {}'.format(sys.argv))
-    if params['action'] == 'find':
-        logger.debug('performing find action')
-        find_show(params['title'], params.get('year'))
-    elif params['action'].lower() == 'nfourl':
-        logger.debug('performing nfourl action')
-        get_show_id_from_nfo(params['nfo'])
-    elif params['action'] == 'getdetails':
-        logger.debug('performing getdetails action')
-        get_details(params['url'])
-    elif params['action'] == 'getepisodelist':
-        logger.debug('performing getepisodelist action')
-        get_episode_list(params['url'])
-    elif params['action'] == 'getepisodedetails':
-        logger.debug('performing getepisodedetails action')
-        get_episode_details(params['url'])
-    elif params['action'] == 'getartwork':
-        logger.debug('performing getartwork action')
-        get_artwork(params.get('id'))
+    params = dict(urlparse.parse_qsl(paramstring))
+    logger.debug(u'Called addon with params: {}'.format(sys.argv))
+    if params[u'action'] == u'find':
+        logger.debug(u'performing find action')
+        find_show(params[u'title'], params.get(u'year'))
+    elif params[u'action'].lower() == u'nfourl':
+        logger.debug(u'performing nfourl action')
+        get_show_id_from_nfo(params[u'nfo'])
+    elif params[u'action'] == u'getdetails':
+        logger.debug(u'performing getdetails action')
+        get_details(params[u'url'])
+    elif params[u'action'] == u'getepisodelist':
+        logger.debug(u'performing getepisodelist action')
+        get_episode_list(params[u'url'])
+    elif params[u'action'] == u'getepisodedetails':
+        logger.debug(u'performing getepisodedetails action')
+        get_episode_details(params[u'url'])
+    elif params[u'action'] == u'getartwork':
+        logger.debug(u'performing getartwork action')
+        get_artwork(params.get(u'id'))
     else:
-        raise RuntimeError('Invalid addon call: {}'.format(sys.argv))
+        raise RuntimeError(u'Invalid addon call: {}'.format(sys.argv))
     xbmcplugin.endOfDirectory(HANDLE)

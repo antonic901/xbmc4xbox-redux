@@ -18,14 +18,16 @@
 #
 # This is based on the metadata.tvmaze scrapper by Roman Miroshnychenko aka Roman V.M.
 
-"""Cache-related functionality"""
+u"""Cache-related functionality"""
 
+from __future__ import with_statement
 from __future__ import absolute_import, unicode_literals
 
 import os, pickle
 import xbmc, xbmcvfs
 
 from .utils import ADDON, logger
+from io import open
 
 try:
     from typing import Optional, Text, Dict, Any  # pylint: disable=unused-import
@@ -36,11 +38,11 @@ except ImportError:
 
 def _get_cache_directory():  # pylint: disable=missing-docstring
     # type: () -> Text
-    temp_dir = xbmcvfs.translatePath('special://temp')
-    cache_dir = os.path.join(temp_dir, 'scrapers', ADDON.getAddonInfo('id'))
+    temp_dir = xbmcvfs.translatePath(u'special://temp')
+    cache_dir = os.path.join(temp_dir, u'scrapers', ADDON.getAddonInfo(u'id'))
     if not xbmcvfs.exists(cache_dir):
         xbmcvfs.mkdir(cache_dir)
-    logger.debug('the cache dir is ' + cache_dir)
+    logger.debug(u'the cache dir is ' + cache_dir)
     return cache_dir
 
 
@@ -49,32 +51,32 @@ CACHE_DIR = _get_cache_directory()  # type: Text
 
 def cache_show_info(show_info):
     # type: (Dict[Text, Any]) -> None
-    """
+    u"""
     Save show_info dict to cache
     """
-    file_name = str(show_info['id']) + '.pickle'
+    file_name = unicode(show_info[u'id']) + u'.pickle'
     cache = {
-        'show_info': show_info
+        u'show_info': show_info
     }
-    with open(os.path.join(CACHE_DIR, file_name), 'wb') as fo:
+    with open(os.path.join(CACHE_DIR, file_name), u'wb') as fo:
         pickle.dump(cache, fo, protocol=2)
 
 
 def load_show_info_from_cache(show_id):
     # type: (Text) -> Optional[Dict[Text, Any]]
-    """
+    u"""
     Load show info from a local cache
 
     :param show_id: show ID on TVmaze
     :return: show_info dict or None
     """
-    file_name = str(show_id) + '.pickle'
+    file_name = unicode(show_id) + u'.pickle'
     try:
-        with open(os.path.join(CACHE_DIR, file_name), 'rb') as fo:
+        with open(os.path.join(CACHE_DIR, file_name), u'rb') as fo:
             load_kwargs = {}
-            load_kwargs['encoding'] = 'bytes'
+            load_kwargs[u'encoding'] = u'bytes'
             cache = pickle.load(fo, **load_kwargs)
-        return cache['show_info']
-    except (IOError, pickle.PickleError) as exc:
-        logger.debug('Cache message: {} {}'.format(type(exc), exc))
+        return cache[u'show_info']
+    except (IOError, pickle.PickleError), exc:
+        logger.debug(u'Cache message: {} {}'.format(type(exc), exc))
         return None

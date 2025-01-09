@@ -15,14 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Functions to interact with various web site APIs"""
+u"""Functions to interact with various web site APIs"""
 
 from __future__ import absolute_import, unicode_literals
 
 import json
-from urllib.request import Request, urlopen
-from urllib.error import URLError
-from urllib.parse import urlencode
+from urllib2 import Request, urlopen
+from urllib2 import URLError
+from urllib import urlencode
 from pprint import pformat
 from .utils import logger
 try:
@@ -38,9 +38,9 @@ def set_headers(headers):
     HEADERS.update(headers)
 
 
-def load_info(url, params=None, default=None, resp_type = 'json', verboselog=False):
+def load_info(url, params=None, default=None, resp_type = u'json', verboselog=False):
     # type: (Text, Optional[Dict[Text, Union[Text, List[Text]]]]) -> Union[dict, list]
-    """
+    u"""
     Load info from external api
 
     :param url: API endpoint URL
@@ -50,23 +50,23 @@ def load_info(url, params=None, default=None, resp_type = 'json', verboselog=Fal
     :return: API response or default on error
     """
     if params:
-        url = url + '?' + urlencode(params)
-    logger.debug('Calling URL "{}"'.format(url))
+        url = url + u'?' + urlencode(params)
+    logger.debug(u'Calling URL "{}"'.format(url))
     req = Request(url, headers=HEADERS)
     try:
         response = urlopen(req)
-    except URLError as e:
-        if hasattr(e, 'reason'):
-            logger.debug('failed to reach the remote site\nReason: {}'.format(e.reason))
-        elif hasattr(e, 'code'):
-            logger.debug('remote site unable to fulfill the request\nError code: {}'.format(e.code))
+    except URLError, e:
+        if hasattr(e, u'reason'):
+            logger.debug(u'failed to reach the remote site\nReason: {}'.format(e.reason))
+        elif hasattr(e, u'code'):
+            logger.debug(u'remote site unable to fulfill the request\nError code: {}'.format(e.code))
         response = None
     if response is None:
         resp = default
-    elif resp_type.lower() == 'json':
-        resp = json.loads(response.read().decode('utf-8'))
+    elif resp_type.lower() == u'json':
+        resp = json.loads(response.read().decode(u'utf-8'))
     else:
-        resp = response.read().decode('utf-8')
+        resp = response.read().decode(u'utf-8')
     if verboselog:
-        logger.debug('the api response:\n{}'.format(pformat(resp)))
+        logger.debug(u'the api response:\n{}'.format(pformat(resp)))
     return resp

@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from datetime import datetime, timedelta
 from . import tmdbapi
 
@@ -18,171 +19,171 @@ class TMDBMovieScraper(object):
     def search(self, title, year=None):
         search_media_id = _parse_media_id(title)
         if search_media_id:
-            if search_media_id['type'] == 'tmdb':
-                result = _get_movie(search_media_id['id'], self.language, True)
+            if search_media_id[u'type'] == u'tmdb':
+                result = _get_movie(search_media_id[u'id'], self.language, True)
                 result = [result]
             else:
-                response = tmdbapi.find_movie_by_external_id(search_media_id['id'], language=self.language)
-                theerror = response.get('error')
+                response = tmdbapi.find_movie_by_external_id(search_media_id[u'id'], language=self.language)
+                theerror = response.get(u'error')
                 if theerror:
-                    return 'error: {}'.format(theerror)
-                result = response.get('movie_results')
-            if 'error' in result:
+                    return u'error: {}'.format(theerror)
+                result = response.get(u'movie_results')
+            if u'error' in result:
                 return result
         else:
             response = tmdbapi.search_movie(query=title, year=year, language=self.language)
-            theerror = response.get('error')
+            theerror = response.get(u'error')
             if theerror:
-                return 'error: {}'.format(theerror)
-            result = response['results']
+                return u'error: {}'.format(theerror)
+            result = response[u'results']
         urls = self.urls
 
         def is_best(item):
-            return item['title'].lower() == title and (
-                not year or item.get('release_date', '').startswith(year))
+            return item[u'title'].lower() == title and (
+                not year or item.get(u'release_date', u'').startswith(year))
         if result and not is_best(result[0]):
-            best_first = next((item for item in result if is_best(item)), None)
+            best_first = (item for item in result if is_best(item)), None.next()
             if best_first:
                 result = [best_first] + [item for item in result if item is not best_first]
 
         for item in result:
-            if item.get('poster_path'):
-                item['poster_path'] = urls['preview'] + item['poster_path']
-            if item.get('backdrop_path'):
-                item['backdrop_path'] = urls['preview'] + item['backdrop_path']
+            if item.get(u'poster_path'):
+                item[u'poster_path'] = urls[u'preview'] + item[u'poster_path']
+            if item.get(u'backdrop_path'):
+                item[u'backdrop_path'] = urls[u'preview'] + item[u'backdrop_path']
         return result
 
     def get_details(self, uniqueids):
-        media_id = uniqueids.get('tmdb') or uniqueids.get('imdb')
+        media_id = uniqueids.get(u'tmdb') or uniqueids.get(u'imdb')
         details = self._gather_details(media_id)
         if not details:
             return None
-        if details.get('error'):
+        if details.get(u'error'):
             return details
         return self._assemble_details(**details)
 
     def _gather_details(self, media_id):
         movie = _get_movie(media_id, self.language)
-        if not movie or movie.get('error'):
+        if not movie or movie.get(u'error'):
             return movie
 
         # don't specify language to get English text for fallback
         movie_fallback = _get_movie(media_id)
 
-        collection = _get_moviecollection(movie['belongs_to_collection'].get('id'), self.language) if \
-            movie['belongs_to_collection'] else None
-        collection_fallback = _get_moviecollection(movie['belongs_to_collection'].get('id')) if \
-            movie['belongs_to_collection'] else None
+        collection = _get_moviecollection(movie[u'belongs_to_collection'].get(u'id'), self.language) if \
+            movie[u'belongs_to_collection'] else None
+        collection_fallback = _get_moviecollection(movie[u'belongs_to_collection'].get(u'id')) if \
+            movie[u'belongs_to_collection'] else None
 
-        return {'movie': movie, 'movie_fallback': movie_fallback, 'collection': collection,
-            'collection_fallback': collection_fallback}
+        return {u'movie': movie, u'movie_fallback': movie_fallback, u'collection': collection,
+            u'collection_fallback': collection_fallback}
 
     def _assemble_details(self, movie, movie_fallback, collection, collection_fallback):
         info = {
-            'title': movie['title'],
-            'originaltitle': movie['original_title'],
-            'plot': movie.get('overview') or movie_fallback.get('overview'),
-            'tagline': movie.get('tagline') or movie_fallback.get('tagline'),
-            'studio': _get_names(movie['production_companies']),
-            'genre': _get_names(movie['genres']),
-            'country': _get_names(movie['production_countries']),
-            'credits': _get_cast_members(movie['casts'], 'crew', 'Writing', ['Screenplay', 'Writer', 'Author']),
-            'director': _get_cast_members(movie['casts'], 'crew', 'Directing', ['Director']),
-            'premiered': movie['release_date'],
-            'tag': _get_names(movie['keywords']['keywords'])
+            u'title': movie[u'title'],
+            u'originaltitle': movie[u'original_title'],
+            u'plot': movie.get(u'overview') or movie_fallback.get(u'overview'),
+            u'tagline': movie.get(u'tagline') or movie_fallback.get(u'tagline'),
+            u'studio': _get_names(movie[u'production_companies']),
+            u'genre': _get_names(movie[u'genres']),
+            u'country': _get_names(movie[u'production_countries']),
+            u'credits': _get_cast_members(movie[u'casts'], u'crew', u'Writing', [u'Screenplay', u'Writer', u'Author']),
+            u'director': _get_cast_members(movie[u'casts'], u'crew', u'Directing', [u'Director']),
+            u'premiered': movie[u'release_date'],
+            u'tag': _get_names(movie[u'keywords'][u'keywords'])
         }
 
-        if 'countries' in movie['releases']:
+        if u'countries' in movie[u'releases']:
             certcountry = self.certification_country.upper()
-            for country in movie['releases']['countries']:
-                if country['iso_3166_1'] == certcountry and country['certification']:
-                    info['mpaa'] = country['certification']
+            for country in movie[u'releases'][u'countries']:
+                if country[u'iso_3166_1'] == certcountry and country[u'certification']:
+                    info[u'mpaa'] = country[u'certification']
                     break
 
-        trailer = _parse_trailer(movie.get('trailers', {}), movie_fallback.get('trailers', {}))
+        trailer = _parse_trailer(movie.get(u'trailers', {}), movie_fallback.get(u'trailers', {}))
         if trailer:
-            info['trailer'] = trailer
+            info[u'trailer'] = trailer
         if collection:
-            info['set'] = collection.get('name') or collection_fallback.get('name')
-            info['setoverview'] = collection.get('overview') or collection_fallback.get('overview')
-        if movie.get('runtime'):
-            info['duration'] = movie['runtime'] * 60
+            info[u'set'] = collection.get(u'name') or collection_fallback.get(u'name')
+            info[u'setoverview'] = collection.get(u'overview') or collection_fallback.get(u'overview')
+        if movie.get(u'runtime'):
+            info[u'duration'] = movie[u'runtime'] * 60
 
-        ratings = {'themoviedb': {'rating': float(movie['vote_average']), 'votes': int(movie['vote_count'])}}
-        uniqueids = {'tmdb': movie['id'], 'imdb': movie['imdb_id']}
+        ratings = {u'themoviedb': {u'rating': float(movie[u'vote_average']), u'votes': int(movie[u'vote_count'])}}
+        uniqueids = {u'tmdb': movie[u'id'], u'imdb': movie[u'imdb_id']}
         cast = [{
-                'name': actor['name'],
-                'role': actor['character'],
-                'thumbnail': self.urls['original'] + actor['profile_path']
-                    if actor['profile_path'] else "",
-                'order': actor['order']
+                u'name': actor[u'name'],
+                u'role': actor[u'character'],
+                u'thumbnail': self.urls[u'original'] + actor[u'profile_path']
+                    if actor[u'profile_path'] else u"",
+                u'order': actor[u'order']
             }
-            for actor in movie['casts'].get('cast', [])
+            for actor in movie[u'casts'].get(u'cast', [])
         ]
         available_art = _parse_artwork(movie, collection, self.urls, self.language)
 
-        _info = {'set_tmdbid': movie['belongs_to_collection'].get('id')
-            if movie['belongs_to_collection'] else None}
+        _info = {u'set_tmdbid': movie[u'belongs_to_collection'].get(u'id')
+            if movie[u'belongs_to_collection'] else None}
 
-        return {'info': info, 'ratings': ratings, 'uniqueids': uniqueids, 'cast': cast,
-            'available_art': available_art, '_info': _info}
+        return {u'info': info, u'ratings': ratings, u'uniqueids': uniqueids, u'cast': cast,
+            u'available_art': available_art, u'_info': _info}
 
 def _parse_media_id(title):
-    if title.startswith('tt') and title[2:].isdigit():
-        return {'type': 'imdb', 'id':title} # IMDB ID works alone because it is clear
+    if title.startswith(u'tt') and title[2:].isdigit():
+        return {u'type': u'imdb', u'id':title} # IMDB ID works alone because it is clear
     title = title.lower()
-    if title.startswith('tmdb/') and title[5:].isdigit(): # TMDB ID
-        return {'type': 'tmdb', 'id':title[5:]}
-    elif title.startswith('imdb/tt') and title[7:].isdigit(): # IMDB ID with prefix to match
-        return {'type': 'imdb', 'id':title[5:]}
+    if title.startswith(u'tmdb/') and title[5:].isdigit(): # TMDB ID
+        return {u'type': u'tmdb', u'id':title[5:]}
+    elif title.startswith(u'imdb/tt') and title[7:].isdigit(): # IMDB ID with prefix to match
+        return {u'type': u'imdb', u'id':title[5:]}
     return None
 
 def _get_movie(mid, language=None, search=False):
     details = None if search else \
-        'trailers,images,releases,casts,keywords' if language is not None else \
-        'trailers'
+        u'trailers,images,releases,casts,keywords' if language is not None else \
+        u'trailers'
     response = tmdbapi.get_movie(mid, language=language, append_to_response=details)
-    theerror = response.get('error')
+    theerror = response.get(u'error')
     if theerror:
-        return 'error: {}'.format(theerror)
+        return u'error: {}'.format(theerror)
     else:
         return response
 
 def _get_moviecollection(collection_id, language=None):
     if not collection_id:
         return None
-    details = 'images'
+    details = u'images'
     response = tmdbapi.get_collection(collection_id, language=language, append_to_response=details)
-    theerror = response.get('error')
+    theerror = response.get(u'error')
     if theerror:
-        return 'error: {}'.format(theerror)
+        return u'error: {}'.format(theerror)
     else:
         return response
 
 def _parse_artwork(movie, collection, urlbases, language):
     if language:
         # Image languages don't have regional variants
-        language = language.split('-')[0]
+        language = language.split(u'-')[0]
     posters = []
     landscape = []
     fanart = []
-    if 'images' in movie:
-        posters = _get_images_with_fallback(movie['images']['posters'], urlbases, language)
-        landscape = _get_images(movie['images']['backdrops'], urlbases, language)
-        fanart = _get_images(movie['images']['backdrops'], urlbases, None)
+    if u'images' in movie:
+        posters = _get_images_with_fallback(movie[u'images'][u'posters'], urlbases, language)
+        landscape = _get_images(movie[u'images'][u'backdrops'], urlbases, language)
+        fanart = _get_images(movie[u'images'][u'backdrops'], urlbases, None)
 
     setposters = []
     setlandscape = []
     setfanart = []
-    if collection and 'images' in collection:
-        setposters = _get_images_with_fallback(collection['images']['posters'], urlbases, language)
-        setlandscape = _get_images(collection['images']['backdrops'], urlbases, language)
-        setfanart = _get_images(collection['images']['backdrops'], urlbases, None)
+    if collection and u'images' in collection:
+        setposters = _get_images_with_fallback(collection[u'images'][u'posters'], urlbases, language)
+        setlandscape = _get_images(collection[u'images'][u'backdrops'], urlbases, language)
+        setfanart = _get_images(collection[u'images'][u'backdrops'], urlbases, None)
 
-    return {'poster': posters, 'landscape': landscape, 'fanart': fanart,
-        'set.poster': setposters, 'set.landscape': setlandscape, 'set.fanart': setfanart}
+    return {u'poster': posters, u'landscape': landscape, u'fanart': fanart,
+        u'set.poster': setposters, u'set.landscape': setlandscape, u'set.fanart': setfanart}
 
-def _get_images_with_fallback(imagelist, urlbases, language, language_fallback='en'):
+def _get_images_with_fallback(imagelist, urlbases, language, language_fallback=u'en'):
     images = _get_images(imagelist, urlbases, language)
 
     # Add backup images
@@ -195,14 +196,14 @@ def _get_images_with_fallback(imagelist, urlbases, language, language_fallback='
 
     return images
 
-def _get_images(imagelist, urlbases, language='_any'):
+def _get_images(imagelist, urlbases, language=u'_any'):
     result = []
     for img in imagelist:
-        if language != '_any' and img['iso_639_1'] != language:
+        if language != u'_any' and img[u'iso_639_1'] != language:
             continue
         result.append({
-            'url': urlbases['original'] + img['file_path'],
-            'preview': urlbases['preview'] + img['file_path'],
+            u'url': urlbases[u'original'] + img[u'file_path'],
+            u'preview': urlbases[u'preview'] + img[u'file_path'],
         })
     return result
 
@@ -211,34 +212,34 @@ def _get_date_numeric(datetime_):
 
 def _load_base_urls(url_settings):
     urls = {}
-    urls['original'] = url_settings.getSettingString('originalUrl')
-    urls['preview'] = url_settings.getSettingString('previewUrl')
-    last_updated = url_settings.getSettingString('lastUpdated')
-    if not urls['original'] or not urls['preview'] or not last_updated or \
+    urls[u'original'] = url_settings.getSettingString(u'originalUrl')
+    urls[u'preview'] = url_settings.getSettingString(u'previewUrl')
+    last_updated = url_settings.getSettingString(u'lastUpdated')
+    if not urls[u'original'] or not urls[u'preview'] or not last_updated or \
             float(last_updated) < _get_date_numeric(datetime.now() - timedelta(days=30)):
         conf = tmdbapi.get_configuration()
         if conf:
-            urls['original'] = conf['images']['secure_base_url'] + 'original'
-            urls['preview'] = conf['images']['secure_base_url'] + 'w780'
-            url_settings.setSetting('originalUrl', urls['original'])
-            url_settings.setSetting('previewUrl', urls['preview'])
-            url_settings.setSetting('lastUpdated', str(_get_date_numeric(datetime.now())))
+            urls[u'original'] = conf[u'images'][u'secure_base_url'] + u'original'
+            urls[u'preview'] = conf[u'images'][u'secure_base_url'] + u'w780'
+            url_settings.setSetting(u'originalUrl', urls[u'original'])
+            url_settings.setSetting(u'previewUrl', urls[u'preview'])
+            url_settings.setSetting(u'lastUpdated', unicode(_get_date_numeric(datetime.now())))
     return urls
 
 def _parse_trailer(trailers, fallback):
-    if trailers.get('youtube'):
-        return 'plugin://plugin.video.youtube/?action=play_video&videoid='+trailers['youtube'][0]['source']
-    if fallback.get('youtube'):
-        return 'plugin://plugin.video.youtube/?action=play_video&videoid='+fallback['youtube'][0]['source']
+    if trailers.get(u'youtube'):
+        return u'plugin://plugin.video.youtube/?action=play_video&videoid='+trailers[u'youtube'][0][u'source']
+    if fallback.get(u'youtube'):
+        return u'plugin://plugin.video.youtube/?action=play_video&videoid='+fallback[u'youtube'][0][u'source']
     return None
 
 def _get_names(items):
-    return [item['name'] for item in items] if items else []
+    return [item[u'name'] for item in items] if items else []
 
 def _get_cast_members(casts, casttype, department, jobs):
     result = []
     if casttype in casts:
         for cast in casts[casttype]:
-            if cast['department'] == department and cast['job'] in jobs and cast['name'] not in result:
-                result.append(cast['name'])
+            if cast[u'department'] == department and cast[u'job'] in jobs and cast[u'name'] not in result:
+                result.append(cast[u'name'])
     return result
