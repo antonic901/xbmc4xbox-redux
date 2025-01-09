@@ -1,60 +1,61 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import division
 def musicbrainz_artistfind(data, artist):
     artists = []
-    for item in data.get('artists',[]):
+    for item in data.get(u'artists',[]):
         artistdata = {}
-        artistdata['artist'] = item['name']
-        artistdata['thumb'] = ''
-        artistdata['genre'] = ''
-        artistdata['born'] = item['life-span'].get('begin', '')
-        if 'type' in item:
-            artistdata['type'] = item['type']
-        if 'gender' in item:
-            artistdata['gender'] = item['gender']
-        if 'disambiguation' in item:
-            artistdata['disambiguation'] = item['disambiguation']
-        artistdata['mbartistid'] = item['id']
-        if item.get('score',1):
-            artistdata['relevance'] = str(item['score'] / 100.00)
+        artistdata[u'artist'] = item[u'name']
+        artistdata[u'thumb'] = u''
+        artistdata[u'genre'] = u''
+        artistdata[u'born'] = item[u'life-span'].get(u'begin', u'')
+        if u'type' in item:
+            artistdata[u'type'] = item[u'type']
+        if u'gender' in item:
+            artistdata[u'gender'] = item[u'gender']
+        if u'disambiguation' in item:
+            artistdata[u'disambiguation'] = item[u'disambiguation']
+        artistdata[u'mbartistid'] = item[u'id']
+        if item.get(u'score',1):
+            artistdata[u'relevance'] = unicode(item[u'score'] / 100.00)
         artists.append(artistdata)
     return artists
 
 def musicbrainz_artistdetails(data):
     artistdata = {}
-    artistdata['artist'] = data['name']
-    artistdata['mbartistid'] = data['id']
-    artistdata['type'] = data['type']
-    artistdata['gender'] = data['gender']
-    artistdata['disambiguation'] = data['disambiguation']
-    if data.get('life-span','') and data.get('type',''):
-        begin = data['life-span'].get('begin', '')
-        end = data['life-span'].get('end', '')
-        if data['type'] in ['Group', 'Orchestra', 'Choir']:
-            artistdata['formed'] = begin
-            artistdata['disbanded'] = end
-        elif data['type'] in ['Person', 'Character']:
-            artistdata['born'] = begin
-            artistdata['died'] = end
+    artistdata[u'artist'] = data[u'name']
+    artistdata[u'mbartistid'] = data[u'id']
+    artistdata[u'type'] = data[u'type']
+    artistdata[u'gender'] = data[u'gender']
+    artistdata[u'disambiguation'] = data[u'disambiguation']
+    if data.get(u'life-span',u'') and data.get(u'type',u''):
+        begin = data[u'life-span'].get(u'begin', u'')
+        end = data[u'life-span'].get(u'end', u'')
+        if data[u'type'] in [u'Group', u'Orchestra', u'Choir']:
+            artistdata[u'formed'] = begin
+            artistdata[u'disbanded'] = end
+        elif data[u'type'] in [u'Person', u'Character']:
+            artistdata[u'born'] = begin
+            artistdata[u'died'] = end
     albums = []
-    for item in data.get('release-groups',[]):
+    for item in data.get(u'release-groups',[]):
         albumdata = {}
-        albumdata['title'] = item.get('title','')
-        albumdata['year'] = item.get('first-release-date','')
-        albumdata['musicbrainzreleasegroupid'] = item.get('id','')
+        albumdata[u'title'] = item.get(u'title',u'')
+        albumdata[u'year'] = item.get(u'first-release-date',u'')
+        albumdata[u'musicbrainzreleasegroupid'] = item.get(u'id',u'')
         albums.append(albumdata)
     if albums:
-        artistdata['albums'] = albums
-    for item in data['relations']:
-        if item['type'] == 'allmusic':
-            artistdata['allmusic'] = item['url']['resource']
-        elif item['type'] == 'discogs':
-            dataid = item['url']['resource'].rsplit('/', 1)[1]
-            artistdata['discogs'] = dataid
-        elif item['type'] == 'wikidata':
-            dataid = item['url']['resource'].rsplit('/', 1)[1]
-            artistdata['wikidata'] = dataid
-        elif item['type'] == 'wikipedia':
-            dataid = item['url']['resource'].rsplit('/', 1)[1]
-            artistdata['wikipedia'] = dataid
+        artistdata[u'albums'] = albums
+    for item in data[u'relations']:
+        if item[u'type'] == u'allmusic':
+            artistdata[u'allmusic'] = item[u'url'][u'resource']
+        elif item[u'type'] == u'discogs':
+            dataid = item[u'url'][u'resource'].rsplit(u'/', 1)[1]
+            artistdata[u'discogs'] = dataid
+        elif item[u'type'] == u'wikidata':
+            dataid = item[u'url'][u'resource'].rsplit(u'/', 1)[1]
+            artistdata[u'wikidata'] = dataid
+        elif item[u'type'] == u'wikipedia':
+            dataid = item[u'url'][u'resource'].rsplit(u'/', 1)[1]
+            artistdata[u'wikipedia'] = dataid
     return artistdata

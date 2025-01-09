@@ -1,33 +1,34 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import datetime
 import difflib
 import time
 import re
 
 def allmusic_albumfind(data, artist, album):
-    data = data.decode('utf-8')
+    data = data.decode(u'utf-8')
     albums = []
-    albumlist = re.findall('class="album">\s*(.*?)\s*</li', data, re.S)
+    albumlist = re.findall(u'class="album">\s*(.*?)\s*</li', data, re.S)
     for item in albumlist:
         albumdata = {}
-        albumartist = re.search('class="artist">.*?>(.*?)</a', item, re.S)
+        albumartist = re.search(u'class="artist">.*?>(.*?)</a', item, re.S)
         if albumartist:
-            albumdata['artist'] = albumartist.group(1)
+            albumdata[u'artist'] = albumartist.group(1)
         else: # classical album
             continue
-        albumname = re.search('class="title">.*?>(.*?)</a', item, re.S)
+        albumname = re.search(u'class="title">.*?>(.*?)</a', item, re.S)
         if albumname:
-            albumdata['album'] = albumname.group(1)
+            albumdata[u'album'] = albumname.group(1)
         else: # not likely to happen, but just in case
             continue
         # filter inaccurate results
-        artistmatch = difflib.SequenceMatcher(None, artist.lower(), albumdata['artist'].lower()).ratio()
-        albummatch = difflib.SequenceMatcher(None, album.lower(), albumdata['album'].lower()).ratio()
+        artistmatch = difflib.SequenceMatcher(None, artist.lower(), albumdata[u'artist'].lower()).ratio()
+        albummatch = difflib.SequenceMatcher(None, album.lower(), albumdata[u'album'].lower()).ratio()
         if artistmatch > 0.90 and albummatch > 0.90:
-            albumurl = re.search('class="title">\s*<a href="(.*?)"', item)
+            albumurl = re.search(u'class="title">\s*<a href="(.*?)"', item)
             if albumurl:
-                albumdata['url'] = albumurl.group(1)
+                albumdata[u'url'] = albumurl.group(1)
             else: # not likely to happen, but just in case
                 continue
             albums.append(albumdata)
@@ -36,78 +37,78 @@ def allmusic_albumfind(data, artist, album):
     return albums
 
 def allmusic_albumdetails(data):
-    data = data.decode('utf-8')
+    data = data.decode(u'utf-8')
     albumdata = {}
-    releasedata = re.search('class="release-date">.*?<span>(.*?)<', data, re.S)
+    releasedata = re.search(u'class="release-date">.*?<span>(.*?)<', data, re.S)
     if releasedata:
         dateformat = releasedata.group(1)
         if len(dateformat) > 4:
             try:
                 # month day, year
-                albumdata['releasedate'] = datetime.datetime(*(time.strptime(dateformat, '%B %d, %Y')[0:3])).strftime('%Y-%m-%d')
+                albumdata[u'releasedate'] = datetime.datetime(*(time.strptime(dateformat, u'%B %d, %Y')[0:3])).strftime(u'%Y-%m-%d')
             except:
                 # month, year
-                albumdata['releasedate'] = datetime.datetime(*(time.strptime(dateformat, '%B, %Y')[0:3])).strftime('%Y-%m')
+                albumdata[u'releasedate'] = datetime.datetime(*(time.strptime(dateformat, u'%B, %Y')[0:3])).strftime(u'%Y-%m')
         else:
             # year
-            albumdata['releasedate'] = dateformat
-    yeardata = re.search('class="year".*?>\s*(.*?)\s*<', data)
+            albumdata[u'releasedate'] = dateformat
+    yeardata = re.search(u'class="year".*?>\s*(.*?)\s*<', data)
     if yeardata:
-        albumdata['year'] = yeardata.group(1)
-    genredata = re.search('class="genre">.*?">(.*?)<', data, re.S)
+        albumdata[u'year'] = yeardata.group(1)
+    genredata = re.search(u'class="genre">.*?">(.*?)<', data, re.S)
     if genredata:
-        albumdata['genre'] = genredata.group(1)
-    styledata = re.search('class="styles">.*?div>\s*(.*?)\s*</div', data, re.S)
+        albumdata[u'genre'] = genredata.group(1)
+    styledata = re.search(u'class="styles">.*?div>\s*(.*?)\s*</div', data, re.S)
     if styledata:
-        stylelist = re.findall('">(.*?)<', styledata.group(1))
+        stylelist = re.findall(u'">(.*?)<', styledata.group(1))
         if stylelist:
-            albumdata['styles'] =  ' / '.join(stylelist)
-    mooddata = re.search('class="moods">.*?div>\s*(.*?)\s*</div', data, re.S)
+            albumdata[u'styles'] =  u' / '.join(stylelist)
+    mooddata = re.search(u'class="moods">.*?div>\s*(.*?)\s*</div', data, re.S)
     if mooddata:
-        moodlist = re.findall('">(.*?)<', mooddata.group(1))
+        moodlist = re.findall(u'">(.*?)<', mooddata.group(1))
         if moodlist:
-            albumdata['moods'] =  ' / '.join(moodlist)
-    themedata = re.search('class="themes">.*?div>\s*(.*?)\s*</div', data, re.S)
+            albumdata[u'moods'] =  u' / '.join(moodlist)
+    themedata = re.search(u'class="themes">.*?div>\s*(.*?)\s*</div', data, re.S)
     if themedata:
-        themelist = re.findall('">(.*?)<', themedata.group(1))
+        themelist = re.findall(u'">(.*?)<', themedata.group(1))
         if themelist:
-            albumdata['themes'] =  ' / '.join(themelist)
-    ratingdata = re.search('itemprop="ratingValue">\s*(.*?)\s*</div', data)
+            albumdata[u'themes'] =  u' / '.join(themelist)
+    ratingdata = re.search(u'itemprop="ratingValue">\s*(.*?)\s*</div', data)
     if ratingdata:
-        albumdata['rating'] = ratingdata.group(1)
-    albumdata['votes'] = ''
-    titledata = re.search('class="album-title".*?>\s*(.*?)\s*<', data, re.S)
+        albumdata[u'rating'] = ratingdata.group(1)
+    albumdata[u'votes'] = u''
+    titledata = re.search(u'class="album-title".*?>\s*(.*?)\s*<', data, re.S)
     if titledata:
-        albumdata['album'] = titledata.group(1)
-    labeldata = re.search('class="label-catalog".*?<.*?>(.*?)<', data, re.S)
+        albumdata[u'album'] = titledata.group(1)
+    labeldata = re.search(u'class="label-catalog".*?<.*?>(.*?)<', data, re.S)
     if labeldata:
-        albumdata['label'] = labeldata.group(1)
-    artistdata = re.search('class="album-artist".*?<span.*?>\s*(.*?)\s*</span', data, re.S)
+        albumdata[u'label'] = labeldata.group(1)
+    artistdata = re.search(u'class="album-artist".*?<span.*?>\s*(.*?)\s*</span', data, re.S)
     if artistdata:
-        artistlist = re.findall('">(.*?)<', artistdata.group(1))
+        artistlist = re.findall(u'">(.*?)<', artistdata.group(1))
         artists = []
         for item in artistlist:
             artistinfo = {}
-            artistinfo['artist'] = item
+            artistinfo[u'artist'] = item
             artists.append(artistinfo)
         if artists:
-            albumdata['artist'] = artists
-            albumdata['artist_description'] = ' / '.join(artistlist)
-    thumbsdata = re.search('class="album-contain".*?src="(.*?)"', data, re.S)
+            albumdata[u'artist'] = artists
+            albumdata[u'artist_description'] = u' / '.join(artistlist)
+    thumbsdata = re.search(u'class="album-contain".*?src="(.*?)"', data, re.S)
     if thumbsdata:
         thumbs = []
         thumbdata = {}
-        thumb = thumbsdata.group(1).rstrip('?partner=allrovi.com')
+        thumb = thumbsdata.group(1).rstrip(u'?partner=allrovi.com')
         # ignore internal blank thumb
-        if thumb.startswith('http'):
+        if thumb.startswith(u'http'):
             # 0=largest / 1=75 / 2=150 / 3=250 / 4=400 / 5=500 / 6=1080
-            if thumb.endswith('f=5'):
-                thumbdata['image'] = thumb.replace('f=5', 'f=0')
-                thumbdata['preview'] = thumb.replace('f=5', 'f=2')
+            if thumb.endswith(u'f=5'):
+                thumbdata[u'image'] = thumb.replace(u'f=5', u'f=0')
+                thumbdata[u'preview'] = thumb.replace(u'f=5', u'f=2')
             else:
-                thumbdata['image'] = thumb
-                thumbdata['preview'] = thumb
-            thumbdata['aspect'] = 'thumb'
+                thumbdata[u'image'] = thumb
+                thumbdata[u'preview'] = thumb
+            thumbdata[u'aspect'] = u'thumb'
             thumbs.append(thumbdata)
-            albumdata['thumb'] = thumbs
+            albumdata[u'thumb'] = thumbs
     return albumdata

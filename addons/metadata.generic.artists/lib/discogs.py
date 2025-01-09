@@ -1,45 +1,46 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import difflib
 
 def discogs_artistfind(data, artist):
     artists = []
-    for item in data.get('results',[]):
+    for item in data.get(u'results',[]):
         artistdata = {}
-        artistdata['artist'] = item['title']
+        artistdata[u'artist'] = item[u'title']
         # filter inaccurate results
-        match = difflib.SequenceMatcher(None, artist.lower(), item['title'].lower()).ratio()
+        match = difflib.SequenceMatcher(None, artist.lower(), item[u'title'].lower()).ratio()
         score = round(match, 2)
         if score > 0.90:
-            artistdata['thumb'] = item['thumb']
-            artistdata['genre'] = ''
-            artistdata['born'] = ''
-            artistdata['dcid'] = item['id']
+            artistdata[u'thumb'] = item[u'thumb']
+            artistdata[u'genre'] = u''
+            artistdata[u'born'] = u''
+            artistdata[u'dcid'] = item[u'id']
             # discogs does not provide relevance, use our own
-            artistdata['relevance'] = str(score)
+            artistdata[u'relevance'] = unicode(score)
             artists.append(artistdata)
     return artists
 
 def discogs_artistdetails(data):
     artistdata = {}
-    artistdata['artist'] = data['name']
-    artistdata['biography'] = data['profile']
-    if 'images' in data:
+    artistdata[u'artist'] = data[u'name']
+    artistdata[u'biography'] = data[u'profile']
+    if u'images' in data:
         thumbs = []
-        for item in data['images']:
+        for item in data[u'images']:
             thumbdata = {}
-            thumbdata['image'] = item['uri']
-            thumbdata['preview'] = item['uri150']
-            thumbdata['aspect'] = 'thumb'
+            thumbdata[u'image'] = item[u'uri']
+            thumbdata[u'preview'] = item[u'uri150']
+            thumbdata[u'aspect'] = u'thumb'
             thumbs.append(thumbdata)
-        artistdata['thumb'] = thumbs
+        artistdata[u'thumb'] = thumbs
     return artistdata
 
 def discogs_artistalbums(data):
     albums = []
-    for item in data['releases']:
-        if item['role'] == 'Main':
+    for item in data[u'releases']:
+        if item[u'role'] == u'Main':
             albumdata = {}
-            albumdata['title'] = item['title']
-            albumdata['year'] = str(item.get('year', ''))
+            albumdata[u'title'] = item[u'title']
+            albumdata[u'year'] = unicode(item.get(u'year', u''))
             albums.append(albumdata)
     return albums

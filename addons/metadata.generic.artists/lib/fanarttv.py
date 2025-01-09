@@ -3,46 +3,46 @@
 def fanarttv_artistart(data):
     artistdata = {}
     extras = []
-    if 'artistbackground' in data:
+    if u'artistbackground' in data:
         fanart = []
-        for item in data['artistbackground']:
+        for item in data[u'artistbackground']:
             fanartdata = {}
-            fanartdata['image'] = item['url']
-            fanartdata['preview'] = item['url'].replace('/fanart/', '/preview/')
-            fanartdata['aspect'] = 'fanart'
+            fanartdata[u'image'] = item[u'url']
+            fanartdata[u'preview'] = item[u'url'].replace(u'/fanart/', u'/preview/')
+            fanartdata[u'aspect'] = u'fanart'
             fanart.append(fanartdata)
-        artistdata['fanart'] = fanart
-    if 'artistthumb' in data:
+        artistdata[u'fanart'] = fanart
+    if u'artistthumb' in data:
         thumbs = []
-        for item in data['artistthumb']:
+        for item in data[u'artistthumb']:
             thumbdata = {}
-            thumbdata['image'] = item['url']
-            thumbdata['preview'] = item['url'].replace('/fanart/', '/preview/')
-            thumbdata['aspect'] = 'thumb'
+            thumbdata[u'image'] = item[u'url']
+            thumbdata[u'preview'] = item[u'url'].replace(u'/fanart/', u'/preview/')
+            thumbdata[u'aspect'] = u'thumb'
             thumbs.append(thumbdata)
         if thumbs:
-            artistdata['thumb'] = thumbs
-    if 'musicbanner' in data:
-        for item in data['musicbanner']:
+            artistdata[u'thumb'] = thumbs
+    if u'musicbanner' in data:
+        for item in data[u'musicbanner']:
             extradata = {}
-            extradata['image'] = item['url']
-            extradata['preview'] = item['url'].replace('/fanart/', '/preview/')
-            extradata['aspect'] = 'banner'
+            extradata[u'image'] = item[u'url']
+            extradata[u'preview'] = item[u'url'].replace(u'/fanart/', u'/preview/')
+            extradata[u'aspect'] = u'banner'
             extras.append(extradata)
-    if 'hdmusiclogo' in data:
-        for item in data['hdmusiclogo']:
+    if u'hdmusiclogo' in data:
+        for item in data[u'hdmusiclogo']:
             extradata = {}
-            extradata['image'] = item['url']
-            extradata['preview'] = item['url'].replace('/fanart/', '/preview/')
-            extradata['aspect'] = 'clearlogo'
+            extradata[u'image'] = item[u'url']
+            extradata[u'preview'] = item[u'url'].replace(u'/fanart/', u'/preview/')
+            extradata[u'aspect'] = u'clearlogo'
             extras.append(extradata)
-    elif 'musiclogo' in data:
-        for item in data['musiclogo']:
+    elif u'musiclogo' in data:
+        for item in data[u'musiclogo']:
             extradata = {}
-            extradata['image'] = item['url']
-            extradata['preview'] = item['url'].replace('/fanart/', '/preview/')
-            extradata['aspect'] = 'clearlogo'
+            extradata[u'image'] = item[u'url']
+            extradata[u'preview'] = item[u'url'].replace(u'/fanart/', u'/preview/')
+            extradata[u'aspect'] = u'clearlogo'
             extras.append(extradata)
     if extras:
-        artistdata['extras'] = extras
+        artistdata[u'extras'] = extras
     return artistdata

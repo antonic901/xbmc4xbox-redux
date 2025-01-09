@@ -1,123 +1,123 @@
 # -*- coding: utf-8 -*-
 
 def theaudiodb_artistdetails(data):
-    if data.get('artists',[]):
-        item = data['artists'][0]
+    if data.get(u'artists',[]):
+        item = data[u'artists'][0]
         artistdata = {}
         extras = []
-        artistdata['artist'] = item['strArtist']
+        artistdata[u'artist'] = item[u'strArtist']
         # api inconsistent
-        if item.get('intFormedYear','') and item['intFormedYear'] != '0':
-            artistdata['formed'] = item['intFormedYear']
-        if item.get('intBornYear','') and item['intBornYear'] != '0':
-            artistdata['born'] = item['intBornYear']
-        if item.get('intDiedYear','') and item['intDiedYear'] != '0':
-            artistdata['died'] = item['intDiedYear']
-        if item.get('strDisbanded','') and item['strDisbanded'] != '0':
-            artistdata['disbanded'] = item['strDisbanded']
-        if item.get('strStyle',''):
-            artistdata['styles'] = item['strStyle']
-        if item.get('strGenre',''):
-            artistdata['genre'] = item['strGenre']
-        if item.get('strMood',''):
-            artistdata['moods'] = item['strMood']
-        if item.get('strGender',''):
-            artistdata['gender'] = item['strGender']
-        if item.get('strBiographyEN',''):
-            artistdata['biographyEN'] = item['strBiographyEN']
-        if item.get('strBiographyDE',''):
-            artistdata['biographyDE'] = item['strBiographyDE']
-        if item.get('strBiographyFR',''):
-            artistdata['biographyFR'] = item['strBiographyFR']
-        if item.get('strBiographyCN',''):
-            artistdata['biographyCN'] = item['strBiographyCN']
-        if item.get('strBiographyIT',''):
-            artistdata['biographyIT'] = item['strBiographyIT']
-        if item.get('strBiographyJP',''):
-            artistdata['biographyJP'] = item['strBiographyJP']
-        if item.get('strBiographyRU',''):
-            artistdata['biographyRU'] = item['strBiographyRU']
-        if item.get('strBiographyES',''):
-            artistdata['biographyES'] = item['strBiographyES']
-        if item.get('strBiographyPT',''):
-            artistdata['biographyPT'] = item['strBiographyPT']
-        if item.get('strBiographySE',''):
-            artistdata['biographySE'] = item['strBiographySE']
-        if item.get('strBiographyNL',''):
-            artistdata['biographyNL'] = item['strBiographyNL']
-        if item.get('strBiographyHU',''):
-            artistdata['biographyHU'] = item['strBiographyHU']
-        if item.get('strBiographyNO',''):
-            artistdata['biographyNO'] = item['strBiographyNO']
-        if item.get('strBiographyIL',''):
-            artistdata['biographyIL'] = item['strBiographyIL']
-        if item.get('strBiographyPL',''):
-            artistdata['biographyPL'] = item['strBiographyPL']
-        if item.get('strMusicBrainzID',''):
-            artistdata['mbartistid'] = item['strMusicBrainzID']
-        if item.get('strArtistFanart',''):
+        if item.get(u'intFormedYear',u'') and item[u'intFormedYear'] != u'0':
+            artistdata[u'formed'] = item[u'intFormedYear']
+        if item.get(u'intBornYear',u'') and item[u'intBornYear'] != u'0':
+            artistdata[u'born'] = item[u'intBornYear']
+        if item.get(u'intDiedYear',u'') and item[u'intDiedYear'] != u'0':
+            artistdata[u'died'] = item[u'intDiedYear']
+        if item.get(u'strDisbanded',u'') and item[u'strDisbanded'] != u'0':
+            artistdata[u'disbanded'] = item[u'strDisbanded']
+        if item.get(u'strStyle',u''):
+            artistdata[u'styles'] = item[u'strStyle']
+        if item.get(u'strGenre',u''):
+            artistdata[u'genre'] = item[u'strGenre']
+        if item.get(u'strMood',u''):
+            artistdata[u'moods'] = item[u'strMood']
+        if item.get(u'strGender',u''):
+            artistdata[u'gender'] = item[u'strGender']
+        if item.get(u'strBiographyEN',u''):
+            artistdata[u'biographyEN'] = item[u'strBiographyEN']
+        if item.get(u'strBiographyDE',u''):
+            artistdata[u'biographyDE'] = item[u'strBiographyDE']
+        if item.get(u'strBiographyFR',u''):
+            artistdata[u'biographyFR'] = item[u'strBiographyFR']
+        if item.get(u'strBiographyCN',u''):
+            artistdata[u'biographyCN'] = item[u'strBiographyCN']
+        if item.get(u'strBiographyIT',u''):
+            artistdata[u'biographyIT'] = item[u'strBiographyIT']
+        if item.get(u'strBiographyJP',u''):
+            artistdata[u'biographyJP'] = item[u'strBiographyJP']
+        if item.get(u'strBiographyRU',u''):
+            artistdata[u'biographyRU'] = item[u'strBiographyRU']
+        if item.get(u'strBiographyES',u''):
+            artistdata[u'biographyES'] = item[u'strBiographyES']
+        if item.get(u'strBiographyPT',u''):
+            artistdata[u'biographyPT'] = item[u'strBiographyPT']
+        if item.get(u'strBiographySE',u''):
+            artistdata[u'biographySE'] = item[u'strBiographySE']
+        if item.get(u'strBiographyNL',u''):
+            artistdata[u'biographyNL'] = item[u'strBiographyNL']
+        if item.get(u'strBiographyHU',u''):
+            artistdata[u'biographyHU'] = item[u'strBiographyHU']
+        if item.get(u'strBiographyNO',u''):
+            artistdata[u'biographyNO'] = item[u'strBiographyNO']
+        if item.get(u'strBiographyIL',u''):
+            artistdata[u'biographyIL'] = item[u'strBiographyIL']
+        if item.get(u'strBiographyPL',u''):
+            artistdata[u'biographyPL'] = item[u'strBiographyPL']
+        if item.get(u'strMusicBrainzID',u''):
+            artistdata[u'mbartistid'] = item[u'strMusicBrainzID']
+        if item.get(u'strArtistFanart',u''):
             fanart = []
             fanartdata = {}
-            fanartdata['image'] = item['strArtistFanart']
-            fanartdata['preview'] = item['strArtistFanart'] + '/preview'
-            fanartdata['aspect'] = 'fanart'
+            fanartdata[u'image'] = item[u'strArtistFanart']
+            fanartdata[u'preview'] = item[u'strArtistFanart'] + u'/preview'
+            fanartdata[u'aspect'] = u'fanart'
             fanart.append(fanartdata)
-            if item['strArtistFanart2']:
+            if item[u'strArtistFanart2']:
                 fanartdata = {}
-                fanartdata['image'] = item['strArtistFanart2']
-                fanartdata['preview'] = item['strArtistFanart2'] + '/preview'
-                fanartdata['aspect'] = 'fanart'
+                fanartdata[u'image'] = item[u'strArtistFanart2']
+                fanartdata[u'preview'] = item[u'strArtistFanart2'] + u'/preview'
+                fanartdata[u'aspect'] = u'fanart'
                 fanart.append(fanartdata)
-                if item['strArtistFanart3']:
+                if item[u'strArtistFanart3']:
                     fanartdata = {}
-                    fanartdata['image'] = item['strArtistFanart3']
-                    fanartdata['preview'] = item['strArtistFanart3'] + '/preview'
-                    fanartdata['aspect'] = 'fanart'
+                    fanartdata[u'image'] = item[u'strArtistFanart3']
+                    fanartdata[u'preview'] = item[u'strArtistFanart3'] + u'/preview'
+                    fanartdata[u'aspect'] = u'fanart'
                     fanart.append(fanartdata)
-            artistdata['fanart'] = fanart
-        if item.get('strArtistThumb',''):
+            artistdata[u'fanart'] = fanart
+        if item.get(u'strArtistThumb',u''):
             thumbs = []
             thumbdata = {}
-            thumbdata['image'] = item['strArtistThumb']
-            thumbdata['preview'] = item['strArtistThumb'] + '/preview'
-            thumbdata['aspect'] = 'thumb'
+            thumbdata[u'image'] = item[u'strArtistThumb']
+            thumbdata[u'preview'] = item[u'strArtistThumb'] + u'/preview'
+            thumbdata[u'aspect'] = u'thumb'
             thumbs.append(thumbdata)
-            artistdata['thumb'] = thumbs
-        if item.get('strArtistLogo',''):
+            artistdata[u'thumb'] = thumbs
+        if item.get(u'strArtistLogo',u''):
             extradata = {}
-            extradata['image'] = item['strArtistLogo']
-            extradata['preview'] = item['strArtistLogo'] + '/preview'
-            extradata['aspect'] = 'clearlogo'
+            extradata[u'image'] = item[u'strArtistLogo']
+            extradata[u'preview'] = item[u'strArtistLogo'] + u'/preview'
+            extradata[u'aspect'] = u'clearlogo'
             extras.append(extradata)
-        if item.get('strArtistClearart',''):
+        if item.get(u'strArtistClearart',u''):
             extradata = {}
-            extradata['image'] = item['strArtistClearart']
-            extradata['preview'] = item['strArtistClearart'] + '/preview'
-            extradata['aspect'] = 'clearart'
+            extradata[u'image'] = item[u'strArtistClearart']
+            extradata[u'preview'] = item[u'strArtistClearart'] + u'/preview'
+            extradata[u'aspect'] = u'clearart'
             extras.append(extradata)
-        if item.get('strArtistWideThumb',''):
+        if item.get(u'strArtistWideThumb',u''):
             extradata = {}
-            extradata['image'] = item['strArtistWideThumb']
-            extradata['preview'] = item['strArtistWideThumb'] + '/preview'
-            extradata['aspect'] = 'landscape'
+            extradata[u'image'] = item[u'strArtistWideThumb']
+            extradata[u'preview'] = item[u'strArtistWideThumb'] + u'/preview'
+            extradata[u'aspect'] = u'landscape'
             extras.append(extradata)
-        if item.get('strArtistBanner',''):
+        if item.get(u'strArtistBanner',u''):
             extradata = {}
-            extradata['image'] = item['strArtistBanner']
-            extradata['preview'] = item['strArtistBanner'] + '/preview'
-            extradata['aspect'] = 'banner'
+            extradata[u'image'] = item[u'strArtistBanner']
+            extradata[u'preview'] = item[u'strArtistBanner'] + u'/preview'
+            extradata[u'aspect'] = u'banner'
             extras.append(extradata)
         if extras:
-            artistdata['extras'] = extras
+            artistdata[u'extras'] = extras
         return artistdata
 
 def theaudiodb_artistalbums(data):
     albums = []
-    albumlist = data.get('album',[])
+    albumlist = data.get(u'album',[])
     if albumlist:
-        for item in data.get('album',[]):
+        for item in data.get(u'album',[]):
             albumdata = {}
-            albumdata['title'] = item['strAlbum']
-            albumdata['year'] = item.get('intYearReleased', '')
+            albumdata[u'title'] = item[u'strAlbum']
+            albumdata[u'year'] = item.get(u'intYearReleased', u'')
             albums.append(albumdata)
     return albums
