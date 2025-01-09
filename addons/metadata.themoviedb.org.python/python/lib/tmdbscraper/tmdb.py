@@ -212,9 +212,9 @@ def _get_date_numeric(datetime_):
 
 def _load_base_urls(url_settings):
     urls = {}
-    urls[u'original'] = url_settings.getSettingString(u'originalUrl')
-    urls[u'preview'] = url_settings.getSettingString(u'previewUrl')
-    last_updated = url_settings.getSettingString(u'lastUpdated')
+    urls[u'original'] = url_settings.getSetting(u'originalUrl')
+    urls[u'preview'] = url_settings.getSetting(u'previewUrl')
+    last_updated = url_settings.getSetting(u'lastUpdated')
     if not urls[u'original'] or not urls[u'preview'] or not last_updated or \
             float(last_updated) < _get_date_numeric(datetime.now() - timedelta(days=30)):
         conf = tmdbapi.get_configuration()

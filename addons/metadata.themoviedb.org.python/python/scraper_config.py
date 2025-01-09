@@ -12,13 +12,13 @@ def configure_tmdb_artwork(details, settings):
         return details
 
     art = details[u'available_art']
-    fanart_enabled = settings.getSettingBool(u'fanart')
+    fanart_enabled = bool(settings.getSetting(u'fanart'))
     if not fanart_enabled:
         if u'fanart' in art:
             del art[u'fanart']
         if u'set.fanart' in art:
             del art[u'set.fanart']
-    if not settings.getSettingBool(u'landscape'):
+    if not bool(settings.getSetting(u'landscape')):
         if u'landscape' in art:
             if fanart_enabled:
                 art[u'fanart'] = art.get(u'fanart', []) + art[u'landscape']
@@ -31,31 +31,31 @@ def configure_tmdb_artwork(details, settings):
     return details
 
 def is_fanarttv_configured(settings):
-    return settings.getSettingBool(u'enable_fanarttv_artwork')
+    return bool(settings.getSetting(u'enable_fanarttv_artwork'))
 
 def _configure_rating_prefix(details, settings):
     if details[u'info'].get(u'mpaa'):
-        details[u'info'][u'mpaa'] = settings.getSettingString(u'certprefix') + details[u'info'][u'mpaa']
+        details[u'info'][u'mpaa'] = settings.getSetting(u'certprefix') + details[u'info'][u'mpaa']
     return details
 
 def _configure_keeporiginaltitle(details, settings):
-    if settings.getSettingBool(u'keeporiginaltitle'):
+    if bool(settings.getSetting(u'keeporiginaltitle')):
         details[u'info'][u'title'] = details[u'info'][u'originaltitle']
     return details
 
 def _configure_trailer(details, settings):
-    if details[u'info'].get(u'trailer') and not settings.getSettingBool(u'trailer'):
+    if details[u'info'].get(u'trailer') and not bool(settings.getSetting(u'trailer')):
         del details[u'info'][u'trailer']
     return details
 
 def _configure_multiple_studios(details, settings):
-    if not settings.getSettingBool(u'multiple_studios'):
+    if not bool(settings.getSetting(u'multiple_studios')):
         details[u'info'][u'studio'] = details[u'info'][u'studio'][:1]
     return details
 
 def _configure_default_rating(details, settings):
-    imdb_default = bool(details[u'ratings'].get(u'imdb')) and settings.getSettingString(u'RatingS') == u'IMDb'
-    trakt_default = bool(details[u'ratings'].get(u'trakt')) and settings.getSettingString(u'RatingS') == u'Trakt'
+    imdb_default = bool(details[u'ratings'].get(u'imdb')) and settings.getSetting(u'RatingS') == u'IMDb'
+    trakt_default = bool(details[u'ratings'].get(u'trakt')) and settings.getSetting(u'RatingS') == u'Trakt'
     default_rating = u'themoviedb'
     if imdb_default:
         default_rating = u'imdb'
@@ -68,7 +68,7 @@ def _configure_default_rating(details, settings):
     return details
 
 def _configure_tags(details, settings):
-    if not settings.getSettingBool(u'add_tags'):
+    if not bool(settings.getSetting(u'add_tags')):
         del details[u'info'][u'tag']
     return details
 

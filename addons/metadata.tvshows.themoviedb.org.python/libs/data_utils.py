@@ -266,7 +266,7 @@ def add_main_show_info(list_item, show_info, full_info=True):
         if image:
             theurl = settings.IMAGEROOTURL + image
             previewurl = settings.PREVIEWROOTURL + image
-            list_item.addAvailableArtwork(theurl, art_type=u'poster', preview=previewurl)
+            list_item.addAvailableArtwork(theurl, art_type=u'poster')
     logger.debug(u'adding tv show information for %s to list item' % video[u'tvshowtitle'])
     list_item.setInfo(u'video', video)
     # This is needed for getting artwork

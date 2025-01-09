@@ -35,9 +35,9 @@ def _get_configuration():
 
 
 def _load_base_urls():
-    image_root_url = ADDON.getSettingString(u'originalUrl')
-    preview_root_url = ADDON.getSettingString(u'previewUrl')
-    last_updated = ADDON.getSettingString(u'lastUpdated')
+    image_root_url = ADDON.getSetting(u'originalUrl')
+    preview_root_url = ADDON.getSetting(u'previewUrl')
+    last_updated = ADDON.getSetting(u'lastUpdated')
     if not image_root_url or not preview_root_url or not last_updated or \
             float(last_updated) < _get_date_numeric(datetime.now() - timedelta(days=30)):
         conf = _get_configuration()
@@ -73,26 +73,26 @@ try:
     source_params = dict(urlparse.parse_qsl(sys.argv[2]))
 except IndexError:
     source_params = {}
-source_settings = json.loads(source_params.get(u'pathSettings', {}))
+source_settings = json.loads(source_params.get(u'pathSettings', u'{}'))
 
-KEEPTITLE =source_settings.get(u'keeporiginaltitle', ADDON.getSettingBool(u'keeporiginaltitle'))
+KEEPTITLE =source_settings.get(u'keeporiginaltitle', bool(ADDON.getSetting(u'keeporiginaltitle')))
 CATLANDSCAPE = source_settings.get(u'cat_landscape', True)
-VERBOSELOG =  source_settings.get(u'verboselog', ADDON.getSettingBool(u'verboselog'))
-LANG = source_settings.get(u'language', ADDON.getSettingString(u'language'))
-CERT_COUNTRY = source_settings.get(u'tmdbcertcountry', ADDON.getSettingString(u'tmdbcertcountry')).lower()
+VERBOSELOG =  source_settings.get(u'verboselog', bool(ADDON.getSetting(u'verboselog')))
+LANG = source_settings.get(u'language', ADDON.getSetting(u'language'))
+CERT_COUNTRY = source_settings.get(u'tmdbcertcountry', ADDON.getSetting(u'tmdbcertcountry')).lower()
 IMAGEROOTURL, PREVIEWROOTURL = _load_base_urls()
 
-if source_settings.get(u'usecertprefix', ADDON.getSettingBool(u'usecertprefix')):
-    CERT_PREFIX = source_settings.get(u'certprefix', ADDON.getSettingString(u'certprefix'))
+if source_settings.get(u'usecertprefix', bool(ADDON.getSetting(u'usecertprefix'))):
+    CERT_PREFIX = source_settings.get(u'certprefix', ADDON.getSetting(u'certprefix'))
 else:
     CERT_PREFIX = u''
-primary_rating = source_settings.get(u'ratings', ADDON.getSettingString(u'ratings')).lower()
+primary_rating = source_settings.get(u'ratings', ADDON.getSetting(u'ratings')).lower()
 RATING_TYPES = [primary_rating]
-if source_settings.get(u'imdbanyway', ADDON.getSettingBool(u'imdbanyway')) and primary_rating != u'imdb':
+if source_settings.get(u'imdbanyway', bool(ADDON.getSetting(u'imdbanyway'))) and primary_rating != u'imdb':
     RATING_TYPES.append(u'imdb')
-if source_settings.get(u'traktanyway', ADDON.getSettingBool(u'traktanyway')) and primary_rating != u'trakt':
+if source_settings.get(u'traktanyway', bool(ADDON.getSetting(u'traktanyway'))) and primary_rating != u'trakt':
     RATING_TYPES.append(u'trakt')
-if source_settings.get(u'tmdbanyway', ADDON.getSettingBool(u'tmdbanyway')) and primary_rating != u'tmdb':
+if source_settings.get(u'tmdbanyway', bool(ADDON.getSetting(u'tmdbanyway'))) and primary_rating != u'tmdb':
     RATING_TYPES.append(u'tmdb')
-FANARTTV_ENABLE = source_settings.get(u'enable_fanarttv', ADDON.getSettingBool(u'enable_fanarttv'))
-FANARTTV_CLIENTKEY = source_settings.get(u'fanarttv_clientkey', ADDON.getSettingString(u'fanarttv_clientkey'))
+FANARTTV_ENABLE = source_settings.get(u'enable_fanarttv', bool(ADDON.getSetting(u'enable_fanarttv')))
+FANARTTV_CLIENTKEY = source_settings.get(u'fanarttv_clientkey', ADDON.getSetting(u'fanarttv_clientkey'))

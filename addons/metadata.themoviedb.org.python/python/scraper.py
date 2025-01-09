@@ -22,8 +22,8 @@ def log(msg, level=xbmc.LOGDEBUG):
     xbmc.log(msg=u'[{addon}]: {msg}'.format(addon=ID, msg=msg), level=level)
 
 def get_tmdb_scraper(settings):
-    language = settings.getSettingString(u'language')
-    certcountry = settings.getSettingString(u'tmdbcertcountry')
+    language = settings.getSetting(u'language')
+    certcountry = settings.getSetting(u'tmdbcertcountry')
     return TMDBMovieScraper(ADDON_SETTINGS, language, certcountry)
 
 def search_for_movie(title, year, handle, settings):
@@ -99,7 +99,7 @@ def get_details(input_uniqueids, handle, settings):
 
     details = configure_tmdb_artwork(details, settings)
 
-    if settings.getSettingString(u'RatingS') == u'IMDb' or settings.getSettingBool(u'imdbanyway'):
+    if settings.getSetting(u'RatingS') == u'IMDb' or bool(settings.getSetting(u'imdbanyway')):
         imdbinfo = get_imdb_details(details[u'uniqueids'])
         if u'error' in imdbinfo:
             header = u"The Movie Database Python error with website IMDB"
@@ -107,14 +107,14 @@ def get_details(input_uniqueids, handle, settings):
         else:
             details = combine_scraped_details_info_and_ratings(details, imdbinfo)
 
-    if settings.getSettingString(u'RatingS') == u'Trakt' or settings.getSettingBool(u'traktanyway'):
+    if settings.getSetting(u'RatingS') == u'Trakt' or bool(settings.getSetting(u'traktanyway')):
         traktinfo = get_trakt_ratinginfo(details[u'uniqueids'])
         details = combine_scraped_details_info_and_ratings(details, traktinfo)
 
     if is_fanarttv_configured(settings):
         fanarttv_info = get_fanarttv_artwork(details[u'uniqueids'],
-            settings.getSettingString(u'fanarttv_clientkey'),
-            settings.getSettingString(u'fanarttv_language'),
+            settings.getSetting(u'fanarttv_clientkey'),
+            settings.getSetting(u'fanarttv_language'),
             details[u'_info'][u'set_tmdbid'])
         details = combine_scraped_details_available_artwork(details, fanarttv_info)
 
