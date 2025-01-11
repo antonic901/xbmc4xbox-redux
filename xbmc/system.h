@@ -151,6 +151,6 @@ WINBASEAPI BOOL WINAPI QueryPerformanceFrequencyXbox(LARGE_INTEGER *lpFrequency)
 #define SVN_REV "Unknown"
 #endif
 
-#define DEFAULT_SKIN          "skin.confluence.lite"
+#define DEFAULT_SKIN          "skin.estuary"
 #define DEFAULT_WEATHER_ADDON "weather.xbmc.builtin"
 #define DEFAULT_WEB_INTERFACE "webinterface.default"

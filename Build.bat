@@ -225,10 +225,10 @@ GOTO:EOF
     ECHO subst q: /D >>%RUN_ME%
   )
 
-  cd "addons/skin.confluence.lite"
+  cd "addons/skin.estuary"
   CALL build.bat
   cd ..\..
-  xcopy "addons/skin.confluence.lite\BUILD\Confluence Lite" "%~1\addons\skin.confluence.lite" /E /Q /I /Y /EXCLUDE:exclude.txt
+  xcopy "addons/skin.estuary\BUILD\skin.estuary" "%~1\addons\skin.estuary" /E /Q /I /Y /EXCLUDE:exclude.txt
 
   
   xcopy addons %~1\addons /E /Q /I /Y /EXCLUDE:exclude.txt
