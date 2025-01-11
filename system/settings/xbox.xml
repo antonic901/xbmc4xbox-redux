@@ -1139,13 +1139,6 @@
     </category>
   </section>
   <section id="interface">
-    <category id="skin">
-      <group id="1">
-        <setting id="lookandfeel.skin">
-          <default>skin.confluence.lite</default>
-        </setting>
-      </group>
-    </category>
     <category id="regional">
       <group id="3">
         <setting id="locale.usedst" type="boolean" label="14075" help="">
