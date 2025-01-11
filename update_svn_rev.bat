@@ -9,7 +9,7 @@ REM Remove existing revision file if it exists
 IF EXIST %REV_FILE% del %REV_FILE%
 
 REM Set SVN_REV
-SET SVN_REV=4.0 Beta 1
+SET SVN_REV=Beta_1
 
 REM Get the current date and time
 FOR /F "tokens=2 delims==" %%I IN ('wmic os get localdatetime /value') DO SET DATETIME=%%I

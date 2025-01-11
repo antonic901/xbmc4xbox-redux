@@ -38,9 +38,9 @@
 
 // NOTE: Version string MUST NOT contain spaces.  It is used in the HTTP request user agent.
 #ifdef SVN_REV
-#define VERSION_STRING "3.6-DEV-r"SVN_REV
+#define VERSION_STRING "4.0-DEV-"SVN_REV
 #else
-#define VERSION_STRING "3.6-DEV"
+#define VERSION_STRING "4.0-DEV"
 #endif
 
 namespace MUSIC_INFO
