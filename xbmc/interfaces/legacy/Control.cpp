@@ -202,9 +202,9 @@ namespace XBMCAddon
 
       // if texture is supplied use it, else get default ones
       strTextureFocus = focusTexture ? focusTexture :
-        XBMCAddonUtils::getDefaultImage((char*)"button", (char*)"texturefocus", (char*)"button-focus.png");
+        XBMCAddonUtils::getDefaultImage((char*)"button", (char*)"texturefocus");
       strTextureNoFocus = noFocusTexture ? noFocusTexture :
-        XBMCAddonUtils::getDefaultImage((char*)"button", (char*)"texturenofocus", (char*)"button-nofocus.jpg");
+        XBMCAddonUtils::getDefaultImage((char*)"button", (char*)"texturenofocus");
       
       if (font) strFont = font;
       if (_textColor) sscanf( _textColor, "%x", &textColor );
@@ -369,15 +369,15 @@ namespace XBMCAddon
 
       // if texture is supplied use it, else get default ones
       strTextureBg = texturebg ? texturebg : 
-        XBMCAddonUtils::getDefaultImage((char*)"progress", (char*)"texturebg", (char*)"progress_back.png");
+        XBMCAddonUtils::getDefaultImage((char*)"progress", (char*)"texturebg");
       strTextureLeft = textureleft ? textureleft : 
-        XBMCAddonUtils::getDefaultImage((char*)"progress", (char*)"lefttexture", (char*)"progress_left.png");
+        XBMCAddonUtils::getDefaultImage((char*)"progress", (char*)"lefttexture");
       strTextureMid = texturemid ? texturemid : 
-        XBMCAddonUtils::getDefaultImage((char*)"progress", (char*)"midtexture", (char*)"progress_mid.png");
+        XBMCAddonUtils::getDefaultImage((char*)"progress", (char*)"midtexture");
       strTextureRight = textureright ? textureright : 
-        XBMCAddonUtils::getDefaultImage((char*)"progress", (char*)"righttexture", (char*)"progress_right.png");
+        XBMCAddonUtils::getDefaultImage((char*)"progress", (char*)"righttexture");
       strTextureOverlay = textureoverlay ? textureoverlay : 
-        XBMCAddonUtils::getDefaultImage((char*)"progress", (char*)"overlaytexture", (char*)"progress_over.png");
+        XBMCAddonUtils::getDefaultImage((char*)"progress", (char*)"overlaytexture");
     }
 
     void ControlProgress::setPercent(float pct) throw (UnimplementedException)
@@ -423,11 +423,11 @@ namespace XBMCAddon
 
       // if texture is supplied use it, else get default ones
       strTextureBack = textureback ? textureback : 
-        XBMCAddonUtils::getDefaultImage((char*)"slider", (char*)"texturesliderbar", (char*)"osd_slider_bg_2.png");
+        XBMCAddonUtils::getDefaultImage((char*)"slider", (char*)"texturesliderbar");
       strTexture = texture ? texture : 
-        XBMCAddonUtils::getDefaultImage((char*)"slider", (char*)"textureslidernib", (char*)"osd_slider_nibNF.png");
+        XBMCAddonUtils::getDefaultImage((char*)"slider", (char*)"textureslidernib");
       strTextureFoc = texturefocus ? texturefocus : 
-        XBMCAddonUtils::getDefaultImage((char*)"slider", (char*)"textureslidernibfocus", (char*)"osd_slider_nib.png");
+        XBMCAddonUtils::getDefaultImage((char*)"slider", (char*)"textureslidernibfocus");
     }
 
     float ControlSlider::getPercent() throw (UnimplementedException)
@@ -500,9 +500,9 @@ namespace XBMCAddon
 
       // if texture is supplied use it, else get default ones
       strTextureFocus = focusTexture ? focusTexture :
-        XBMCAddonUtils::getDefaultImage((char*)"button", (char*)"texturefocus", (char*)"button-focus.png");
+        XBMCAddonUtils::getDefaultImage((char*)"button", (char*)"texturefocus");
       strTextureNoFocus = noFocusTexture ? noFocusTexture :
-        XBMCAddonUtils::getDefaultImage((char*)"button", (char*)"texturenofocus", (char*)"button-nofocus.jpg");
+        XBMCAddonUtils::getDefaultImage((char*)"button", (char*)"texturenofocus");
 
       if (focusOnTexture && noFocusOnTexture)
       {
@@ -512,7 +512,7 @@ namespace XBMCAddon
       else
       {
         strTextureRadioOnFocus = strTextureRadioOnNoFocus = focusTexture ? focusTexture :
-          XBMCAddonUtils::getDefaultImage((char*)"radiobutton", (char*)"textureradiofocus", (char*)"radiobutton-focus.png");
+          XBMCAddonUtils::getDefaultImage((char*)"radiobutton", (char*)"textureradiofocus");
       }
 
       if (focusOffTexture && noFocusOffTexture)
@@ -523,7 +523,7 @@ namespace XBMCAddon
       else
       {
         strTextureRadioOffFocus = strTextureRadioOffNoFocus = noFocusTexture ? noFocusTexture :
-          XBMCAddonUtils::getDefaultImage((char*)"radiobutton", (char*)"textureradiofocus", (char*)"radiobutton-focus.png");
+          XBMCAddonUtils::getDefaultImage((char*)"radiobutton", (char*)"textureradiofocus");
       }
 
       if (font) strFont = font;
@@ -833,12 +833,12 @@ namespace XBMCAddon
       dwHeight = 16;
 
       // get default images
-      strTextureUp = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"textureup", (char*)"scroll-up.png");
-      strTextureDown = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"texturedown", (char*)"scroll-down.png");
-      strTextureUpFocus = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"textureupfocus", (char*)"scroll-up-focus.png");
-      strTextureDownFocus = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"texturedownfocus", (char*)"scroll-down-focus.png");
-      strTextureUpDisabled = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"textureupdisabled", (char*)"scroll-up.png");
-      strTextureDownDisabled = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"texturedowndisabled", (char*)"scroll-down.png");
+      strTextureUp = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"textureup");
+      strTextureDown = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"texturedown");
+      strTextureUpFocus = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"textureupfocus");
+      strTextureDownFocus = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"texturedownfocus");
+      strTextureUpDisabled = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"textureupdisabled");
+      strTextureDownDisabled = XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"texturedowndisabled");
     }
 
     void ControlSpin::setTextures(const char* up, const char* down, 
@@ -951,10 +951,10 @@ namespace XBMCAddon
 
     {
       strTextureFocus = focusTexture ? focusTexture :
-        XBMCAddonUtils::getDefaultImage((char*)"edit", (char*)"texturefocus", (char*)"button-focus.png");
+        XBMCAddonUtils::getDefaultImage((char*)"edit", (char*)"texturefocus");
 
       strTextureNoFocus = noFocusTexture ? noFocusTexture :
-        XBMCAddonUtils::getDefaultImage((char*)"edit", (char*)"texturenofocus", (char*)"button-focus.png");
+        XBMCAddonUtils::getDefaultImage((char*)"edit", (char*)"texturenofocus");
 
       if (font) strFont = font;
       if (_textColor) sscanf( _textColor, "%x", &textColor );
@@ -1056,10 +1056,10 @@ namespace XBMCAddon
         sscanf( cselectedColor, "%x", &selectedColor );
 
       strTextureButton = cbuttonTexture ? cbuttonTexture :
-        XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"texturenofocus", (char*)"list-nofocus.png");
+        XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"texturenofocus");
 
       strTextureButtonFocus = cbuttonFocusTexture ? cbuttonFocusTexture :
-        XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"texturefocus", (char*)"list-focus.png");
+        XBMCAddonUtils::getDefaultImage((char*)"listcontrol", (char*)"texturefocus");
 
       // default values for spin control
       pControlSpin->dwPosX = dwWidth - 35;
