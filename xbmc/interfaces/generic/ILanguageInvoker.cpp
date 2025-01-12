@@ -48,7 +48,7 @@ bool ILanguageInvoker::Stop(bool abort /* = false */)
 
 bool ILanguageInvoker::IsActive() const
 {
-  return GetState() > InvokerStateUninitialized && GetState() < InvokerStateDone;
+  return GetState() > InvokerStateUninitialized && GetState() < InvokerStateScriptDone;
 }
 
 bool ILanguageInvoker::IsRunning() const
@@ -84,13 +84,13 @@ void ILanguageInvoker::onAbortRequested()
 void ILanguageInvoker::onExecutionFailed()
 {
   if (m_invocationHandler)
-    m_invocationHandler->OnScriptEnded(this);
+    m_invocationHandler->OnExecutionEnded(this);
 }
 
 void ILanguageInvoker::onExecutionDone()
 {
   if (m_invocationHandler)
-    m_invocationHandler->OnScriptEnded(this);
+    m_invocationHandler->OnExecutionEnded(this);
 }
 
 void ILanguageInvoker::onExecutionFinalized()
