@@ -450,7 +450,6 @@ bool CPythonInvoker::stop(bool abort)
 
   if (m_threadState != NULL)
   {
-    PyThreadState* old(nullptr);
     if (IsRunning())
     {
       setState(InvokerStateStopping);
@@ -458,11 +457,14 @@ bool CPythonInvoker::stop(bool abort)
       lock.Leave();
 
       PyEval_AcquireLock();
-      old = PyThreadState_Swap((PyThreadState*)m_threadState);
+      PyThreadState* old = PyThreadState_Swap((PyThreadState*)m_threadState);
 
       //tell xbmc.Monitor to call onAbortRequested()
-      if (m_addon != NULL)
+      if (m_addon)
+      {
+        CLog::Log(LOGDEBUG, "CPythonInvoker(%d, %s): trigger Monitor abort request", GetId(), m_sourceFile.c_str());
         onAbortRequested();
+      }
 
       PyObject *m;
       m = PyImport_AddModule((char*)"xbmc");
@@ -470,7 +472,6 @@ bool CPythonInvoker::stop(bool abort)
         CLog::Log(LOGERROR, "CPythonInvoker(%d, %s): failed to set abortRequested", GetId(), m_sourceFile.c_str());
 
       PyThreadState_Swap(old);
-      old = NULL;
       PyEval_ReleaseLock();
     }
     else
@@ -510,7 +511,7 @@ bool CPythonInvoker::stop(bool abort)
     // so we need to recheck for m_threadState == NULL
     if (m_threadState != NULL)
     {
-      old = PyThreadState_Swap((PyThreadState*)m_threadState);
+      PyThreadState* old = PyThreadState_Swap((PyThreadState*)m_threadState);
       for (PyThreadState* state = ((PyThreadState*)m_threadState)->interp->tstate_head; state; state = state->next)
       {
         // Raise a SystemExit exception in python threads
@@ -518,15 +519,12 @@ bool CPythonInvoker::stop(bool abort)
         state->async_exc = PyExc_SystemExit;
         Py_XINCREF(state->async_exc);
       }
+      PyThreadState_Swap(old);
 
       // If a dialog entered its doModal(), we need to wake it to see the exception
       pulseGlobalEvent();
       m_threadState = nullptr;
     }
-
-    if (old != NULL)
-      PyThreadState_Swap(old);
-
     lock.Leave();
     PyEval_ReleaseLock();
 
