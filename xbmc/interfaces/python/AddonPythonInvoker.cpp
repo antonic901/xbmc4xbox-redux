@@ -65,7 +65,7 @@
   ""
 
 #define RUNSCRIPT_POSTSCRIPT \
-        "print '-->Python Interpreter Initialized<--'\n" \
+        "print('-->Python Interpreter Initialized<--')\n" \
         ""
 
 #if defined(TARGET_ANDROID)
