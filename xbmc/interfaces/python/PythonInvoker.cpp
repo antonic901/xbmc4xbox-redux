@@ -95,7 +95,7 @@ static std::vector<std::vector<wchar_t> > storeArgumentsCCompatible(std::vector<
                 stringToCharVector);
 
   if (output.empty())
-    output.push_back(std::vector<char>(1u, '\0'));
+    output.push_back(std::vector<wchar_t>(1u, L'\0'));
 
   return output;
 }
@@ -153,8 +153,9 @@ bool CPythonInvoker::Execute(const std::string &script, const std::vector<std::s
 bool CPythonInvoker::execute(const std::string &script, const std::vector<std::string> &arguments)
 {
   std::vector<std::wstring> w_arguments;
-  for (auto argument : arguments)
+  for (std::vector<std::string>::const_iterator it = arguments.begin(); it != arguments.end(); ++it)
   {
+    const std::string &argument = *it;
     std::wstring w_argument;
     g_charsetConverter.utf8ToW(argument, w_argument);
     w_arguments.push_back(w_argument);
@@ -169,7 +170,7 @@ bool CPythonInvoker::execute(const std::string& script, const std::vector<std::w
 
   // copy the arguments into a local buffer
   unsigned int argc = arguments.size();
-  std::vector<std::vector<wchar_t>> argvStorage = storeArgumentsCCompatible(arguments);
+  std::vector<std::vector<wchar_t> > argvStorage = storeArgumentsCCompatible(arguments);
   std::vector<wchar_t*> argv = getCPointersToArguments(argvStorage);
 
   CLog::Log(LOGDEBUG, "CPythonInvoker(%d, %s): start processing", GetId(), m_sourceFile.c_str());
@@ -210,8 +211,8 @@ bool CPythonInvoker::execute(const std::string& script, const std::vector<std::w
   {
     std::set<std::string> paths;
     getAddonModuleDeps(m_addon, paths);
-    for (const auto& it : paths)
-      addPath(it);
+    for (std::set<std::string>::const_iterator it = paths.begin(); it != paths.end(); ++it)
+      addPath(*it);
   }
   else
   { // for backwards compatibility.
@@ -221,8 +222,8 @@ bool CPythonInvoker::execute(const std::string& script, const std::vector<std::w
         "version.", GetId());
     ADDON::VECADDONS addons;
     CServiceBroker::GetAddonMgr().GetAddons(addons, ADDON::ADDON_SCRIPT_MODULE);
-    for (const auto& addon : addons)
-      addPath(CSpecialProtocol::TranslatePath(addon->LibPath()));
+    for (ADDON::VECADDONS::const_iterator it = addons.begin(); it != addons.end(); ++it)
+      addPath(CSpecialProtocol::TranslatePath((*it)->LibPath()));
   }
 
   // we want to use sys.path so it includes site-packages
