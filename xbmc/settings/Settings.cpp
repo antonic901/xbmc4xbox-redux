@@ -547,7 +547,7 @@ void CSettings::InitializeDefaults()
     timezone->SetDefault(g_timezone.GetOSConfiguredTimezone());
 #endif // defined(_LINUX)
 
-#if defined(TARGET_WINDOWS) || defined(_XBOX)
+#if defined(TARGET_WINDOWS)
   #if defined(HAS_DX) || defined(HAS_XBOX_D3D)
   ((CSettingString*)m_settingsManager->GetSetting("musicplayer.visualisation"))->SetDefault("visualization.milkdrop");
   #endif

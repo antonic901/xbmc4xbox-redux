@@ -79,9 +79,6 @@
     </category>
     <category id="musicplayer">
       <group id="2">
-        <setting id="musicplayer.visualisation">
-          <default>visualization.milkdrop</default>
-        </setting>
         <setting id="musicplayer.defaultplayer" type="integer" label="38784" help="">
           <level>2</level>
           <default>2</default> <!-- PLAYER_PAPLAYER -->
