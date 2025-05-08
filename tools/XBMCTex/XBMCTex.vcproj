@@ -132,7 +132,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="SDL.lib SDLmain.lib SDL_image.lib"
+				AdditionalDependencies="SDL2.lib SDL2_image.lib"
 				OutputFile="$(OutDir)/XBMCTex.exe"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="libci.lib,libm.lib,libirc.lib,libc"

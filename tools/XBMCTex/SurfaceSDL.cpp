@@ -3,6 +3,7 @@
 
 #ifdef USE_SDL
 #include <stdio.h>
+#include <stdlib.h>
 #include "xbox.h"
 
 CGraphicsDevice g_device;
@@ -45,10 +46,21 @@ bool CSurface::Create(unsigned int width, unsigned int height, CSurface::FORMAT 
   }
   m_bpp = (format == FMT_PALETTED) ? 1 : 4;
 
-  m_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, m_width, m_height, m_bpp * 8, 
-                                  0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+  Uint32 rmask = 0x00ff0000;
+  Uint32 gmask = 0x0000ff00;
+  Uint32 bmask = 0x000000ff;
+  Uint32 amask = 0xff000000;
 
-  if (0 == m_surface)
+  if (format == FMT_PALETTED)
+  {
+    m_surface = SDL_CreateRGBSurface(0, m_width, m_height, 8, 0, 0, 0, 0);
+  }
+  else
+  {
+    m_surface = SDL_CreateRGBSurface(0, m_width, m_height, 32, rmask, gmask, bmask, amask);
+  }
+
+  if (!m_surface)
     return false;
 
   Clear();
@@ -76,27 +88,55 @@ bool CSurface::CreateFromFile(const char *Filename, FORMAT format)
   if (!original)
     return false;
 
+  bool isPalettized = (original->format->BitsPerPixel == 8 && original->format->palette != NULL);
+
+  if (format == FMT_PALETTED && isPalettized)
+  {
+    // Keep original if format matches
+    m_surface = original;
+    original = NULL; // ownership transferred
+
+    m_info.width = m_surface->w;
+    m_info.height = m_surface->h;
+    m_info.format = format;
+    m_width = PadPow2(m_info.width);
+    m_height = PadPow2(m_info.height);
+    m_bpp = 1;
+
+    ClampToEdge();  // simulate GL_CLAMP_TO_EDGE
+    return true;
+  }
+
+  // Otherwise fall back to ARGB
   if (!Create(original->w, original->h, format))
   {
     SDL_FreeSurface(original);
     return false;
   }
 
-  // copy into our surface
-  SDL_SetAlpha(original, 0, 255);
+  SDL_SetSurfaceBlendMode(original, SDL_BLENDMODE_NONE);
   int ret = SDL_BlitSurface(original, NULL, m_surface, NULL);
+
+  // If original was palettized and we created an 8-bit surface manually
+  if (original->format->palette && m_surface->format->palette)
+  {
+    SDL_SetPaletteColors(m_surface->format->palette,
+                         original->format->palette->colors,
+                         0,
+                         original->format->palette->ncolors);
+  }
+
   SDL_FreeSurface(original);
-
   ClampToEdge();
-
-  return (0 == ret);
+  return (ret == 0);
 }
 
 void CSurface::ClampToEdge()
 {
   // fix up the last row and column to simulate clamp_to_edge
-  if (!m_info.width || !m_info.height == 0)
+  if (!m_info.width || !m_info.height)
     return; // invalid texture
+
   CSurfaceRect rect;
   if (Lock(&rect))
   {
@@ -104,14 +144,22 @@ void CSurface::ClampToEdge()
     {
       BYTE *src = rect.pBits + y * rect.Pitch;
       for (unsigned int x = m_info.width; x < m_width; x++)
-        memcpy(src + x*m_bpp, src + (m_info.width - 1)*m_bpp, m_bpp);
+      {
+        if (m_info.width >= 1)
+          memcpy(src + x * m_bpp, src + (m_info.width - 1) * m_bpp, m_bpp);
+      }
     }
-    BYTE *src = rect.pBits + (m_info.height - 1) * rect.Pitch;
-    for (unsigned int y = m_info.height; y < m_height; y++)
+
+    if (m_info.height >= 1)
     {
-      BYTE *dest = rect.pBits + y * rect.Pitch;
-      memcpy(dest, src, rect.Pitch);
+      BYTE *src = rect.pBits + (m_info.height - 1) * rect.Pitch;
+      for (unsigned int y = m_info.height; y < m_height; y++)
+      {
+        BYTE *dest = rect.pBits + y * rect.Pitch;
+        memcpy(dest, src, rect.Pitch);
+      }
     }
+
     Unlock();
   }
 }
@@ -120,10 +168,12 @@ bool CSurface::Lock(CSurfaceRect *rect)
 {
   if (m_surface && rect)
   {
-    SDL_LockSurface(m_surface);
-    rect->pBits = (BYTE *)m_surface->pixels;
-    rect->Pitch = m_surface->pitch;
-    return true;
+    if (SDL_LockSurface(m_surface) == 0)
+    {
+      rect->pBits = (BYTE *)m_surface->pixels;
+      rect->Pitch = m_surface->pitch;
+      return true;
+    }
   }
   return false;
 }
@@ -148,6 +198,21 @@ CGraphicsDevice::~CGraphicsDevice()
 
 bool CGraphicsDevice::Create()
 {
+  putenv("SDL_VIDEODRIVER=dummy");
+
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
+  {
+    printf("SDL Initialization failed: %s\n", SDL_GetError());
+    return false;
+  }
+
+  if (!(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF) & (IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF)))
+  {
+    printf("SDL_image Initialization failed: %s\n", IMG_GetError());
+    SDL_Quit();
+    return false;
+  }
+
   return true;
 }
 

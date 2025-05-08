@@ -11,8 +11,10 @@
 #include <windows.h>
 #endif
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
+#define SDL_MAIN_HANDLED
+#include <SDL2/SDL.h>
+#undef main // SDL doesn't seem to care about SDL_MAIN_HANDLED
+#include <SDL2/SDL_image.h>
 
 class CSurfaceRect
 {
