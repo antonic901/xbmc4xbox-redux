@@ -40,7 +40,7 @@ bool CServiceManager::Init1()
   m_announcementManager->Start();
 
   m_XBPython.reset(new XBPython());
-  CScriptInvocationManager::Get().RegisterLanguageInvocationHandler(m_XBPython.get(), ".py");
+  CScriptInvocationManager::GetInstance().RegisterLanguageInvocationHandler(m_XBPython.get(), ".py");
 
   m_playlistPlayer.reset(new PLAYLIST::CPlayListPlayer());
 
@@ -72,7 +72,7 @@ void CServiceManager::Deinit()
 {
   m_contextMenuManager.reset();
   m_addonMgr.reset();
-  CScriptInvocationManager::Get().UnregisterLanguageInvocationHandler(m_XBPython.get());
+  CScriptInvocationManager::GetInstance().UnregisterLanguageInvocationHandler(m_XBPython.get());
   m_XBPython.reset();
   m_announcementManager.reset();
 }

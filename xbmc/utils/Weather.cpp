@@ -117,11 +117,11 @@ bool CWeatherJob::DoWork()
   }
   else
 #endif
-  if ((scriptId = CScriptInvocationManager::Get().ExecuteAsync(argv[0], addon, argv)) >= 0)
+  if ((scriptId = CScriptInvocationManager::GetInstance().ExecuteAsync(argv[0], addon, argv)) >= 0)
   {
     while (true)
     {
-      if (!CScriptInvocationManager::Get().IsRunning(scriptId))
+      if (!CScriptInvocationManager::GetInstance().IsRunning(scriptId))
         break;
       Sleep(100);
     }

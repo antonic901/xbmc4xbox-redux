@@ -2756,7 +2756,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
     break;
 
   case TMSG_EXECUTE_SCRIPT:
-    CScriptInvocationManager::Get().ExecuteAsync(pMsg->strParam);
+    CScriptInvocationManager::GetInstance().ExecuteAsync(pMsg->strParam);
     break;
 
   case TMSG_EXECUTE_BUILT_IN:
@@ -3647,7 +3647,7 @@ void CApplication::Stop(bool bLCDStop)
     // stop all remaining scripts; must be done after skin has been unloaded,
     // not before some windows still need it when deinitializing during skin
     // unloading
-    CScriptInvocationManager::Get().Uninitialize();
+    CScriptInvocationManager::GetInstance().Uninitialize();
 
 #ifdef HAS_LCD
     if (g_lcd && bLCDStop)
@@ -5192,7 +5192,7 @@ bool CApplication::ExecuteXBMCAction(std::string actionStr, const CGUIListItemPt
     CFileItem item(actionStr, false);
     if (item.IsPythonScript())
     { // a python script
-      CScriptInvocationManager::Get().ExecuteAsync(item.GetPath());
+      CScriptInvocationManager::GetInstance().ExecuteAsync(item.GetPath());
     }
     else if (item.IsXBE())
     { // an XBE
@@ -5236,13 +5236,13 @@ void CApplication::Process()
     CStdString strAutoExecPy = CSpecialProtocol::TranslatePath("special://profile/autoexec.py");
 
     if (XFILE::CFile::Exists(strAutoExecPy))
-      CScriptInvocationManager::Get().ExecuteAsync(strAutoExecPy);
+      CScriptInvocationManager::GetInstance().ExecuteAsync(strAutoExecPy);
     else
       CLog::Log(LOGDEBUG, "no profile autoexec.py (%s) found, skipping", strAutoExecPy.c_str());
   }
 
   // handle any active scripts
-  CScriptInvocationManager::Get().Process();
+  CScriptInvocationManager::GetInstance().Process();
 
   // process messages, even if a movie is playing
   CApplicationMessenger::Get().ProcessMessages();

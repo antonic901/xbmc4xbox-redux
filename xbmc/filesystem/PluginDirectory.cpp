@@ -60,7 +60,7 @@ void CPluginDirectory::CScriptObserver::Process()
 {
   while (!m_bStop)
   {
-    if (!CScriptInvocationManager::Get().IsRunning(m_scriptId))
+    if (!CScriptInvocationManager::GetInstance().IsRunning(m_scriptId))
     {
       m_event.Set();
       break;
@@ -160,7 +160,7 @@ bool CPluginDirectory::StartScript(const CStdString& strPath, bool retrievingDir
   CLog::Log(LOGDEBUG, "%s - calling plugin %s('%s','%s','%s')", __FUNCTION__, m_addon->Name().c_str(), argv[0].c_str(), argv[1].c_str(), argv[2].c_str());
   bool success = false;
   CStdString file = m_addon->LibPath();
-  int id = CScriptInvocationManager::Get().ExecuteAsync(file, m_addon, argv);
+  int id = CScriptInvocationManager::GetInstance().ExecuteAsync(file, m_addon, argv);
   if (id >= 0)
   { // wait for our script to finish
     CStdString scriptName = m_addon->Name();
@@ -471,7 +471,7 @@ bool CPluginDirectory::RunScriptWithParams(const CStdString& strPath)
 
   // run the script
   CLog::Log(LOGDEBUG, "%s - calling plugin %s('%s','%s','%s')", __FUNCTION__, addon->Name().c_str(), argv[0].c_str(), argv[1].c_str(), argv[2].c_str());
-  if (CScriptInvocationManager::Get().ExecuteAsync(addon->LibPath(), addon, argv) >= 0)
+  if (CScriptInvocationManager::GetInstance().ExecuteAsync(addon->LibPath(), addon, argv) >= 0)
     return true;
   else
     CLog::Log(LOGERROR, "Unable to run plugin %s", addon->Name().c_str());
@@ -500,22 +500,22 @@ bool CPluginDirectory::WaitOnScriptResult(const CStdString &scriptPath, int scri
   {
     // Wait for directory fetch to complete, end, or be cancelled
     while (!m_cancelled.read()
-        && CScriptInvocationManager::Get().IsRunning(scriptId)
+        && CScriptInvocationManager::GetInstance().IsRunning(scriptId)
         && !m_fetchComplete.WaitMSec(20));
 
     // Give the script 30 seconds to exit before we attempt to stop it
     XbmcThreads::EndTime timer(30000);
     while (!timer.IsTimePast()
-          && CScriptInvocationManager::Get().IsRunning(scriptId)
+          && CScriptInvocationManager::GetInstance().IsRunning(scriptId)
           && !m_fetchComplete.WaitMSec(20));
   }
 
   if (m_cancelled.read())
   { // cancel our script
-    if (scriptId != -1 && CScriptInvocationManager::Get().IsRunning(scriptId))
+    if (scriptId != -1 && CScriptInvocationManager::GetInstance().IsRunning(scriptId))
     {
       CLog::Log(LOGDEBUG, "%s- cancelling plugin %s (id=%d)", __FUNCTION__, scriptName.c_str(), scriptId);
-      CScriptInvocationManager::Get().Stop(scriptId);
+      CScriptInvocationManager::GetInstance().Stop(scriptId);
     }
   }
 

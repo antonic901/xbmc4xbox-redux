@@ -208,7 +208,7 @@ static int RunScript(const std::vector<std::string>& params)
     if (!filename.empty())
       argv[0] = filename;
 
-    CScriptInvocationManager::Get().ExecuteAsync(scriptpath, addon, argv);
+    CScriptInvocationManager::GetInstance().ExecuteAsync(scriptpath, addon, argv);
   }
 
   return 0;
@@ -283,7 +283,7 @@ static int StopScript(const std::vector<std::string>& params)
   AddonPtr script;
   if (CServiceBroker::GetAddonMgr().GetAddon(params[0], script))
     scriptpath = script->LibPath();
-  CScriptInvocationManager::Get().Stop(scriptpath);
+  CScriptInvocationManager::GetInstance().Stop(scriptpath);
 
   return 0;
 }

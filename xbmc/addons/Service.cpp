@@ -50,7 +50,7 @@ bool CService::Start()
   {
 #ifdef HAS_PYTHON
   case PYTHON:
-    ret = (CScriptInvocationManager::Get().ExecuteAsync(LibPath(), this->shared_from_this()) != -1);
+    ret = (CScriptInvocationManager::GetInstance().ExecuteAsync(LibPath(), this->shared_from_this()) != -1);
     break;
 #endif
 
@@ -71,7 +71,7 @@ bool CService::Stop()
   {
 #ifdef HAS_PYTHON
   case PYTHON:
-    ret = CScriptInvocationManager::Get().Stop(LibPath());
+    ret = CScriptInvocationManager::GetInstance().Stop(LibPath());
     break;
 #endif
 

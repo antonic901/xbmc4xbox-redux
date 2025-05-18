@@ -43,13 +43,13 @@ bool CScreenSaver::IsInUse() const
 
 bool CScreenSaver::CreateScreenSaver()
 {
-  if (CScriptInvocationManager::Get().HasLanguageInvoker(LibPath()))
+  if (CScriptInvocationManager::GetInstance().HasLanguageInvoker(LibPath()))
   {
     // Don't allow a previously-scheduled alarm to kill our new screensaver
     g_alarmClock.Stop(SCRIPT_ALARM, true);
 
-    if (!CScriptInvocationManager::Get().Stop(LibPath()))
-      CScriptInvocationManager::Get().ExecuteAsync(LibPath(), AddonPtr(new CScreenSaver(*this)));
+    if (!CScriptInvocationManager::GetInstance().Stop(LibPath()))
+      CScriptInvocationManager::GetInstance().ExecuteAsync(LibPath(), AddonPtr(new CScreenSaver(*this)));
     return true;
   }
  // pass it the screen width,height

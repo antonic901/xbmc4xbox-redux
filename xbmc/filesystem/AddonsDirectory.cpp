@@ -358,7 +358,7 @@ static void OutdatedAddons(const CURL& path, CFileItemList &items)
   }
 }
 
-bool addonIsNotRunning(const AddonPtr& addon) { return !CScriptInvocationManager::Get().IsRunning(addon->LibPath()); }
+bool addonIsNotRunning(const AddonPtr& addon) { return !CScriptInvocationManager::GetInstance().IsRunning(addon->LibPath()); }
 
 static void RunningAddons(const CURL& path, CFileItemList &items)
 {
