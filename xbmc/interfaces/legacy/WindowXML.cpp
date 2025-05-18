@@ -164,7 +164,7 @@ namespace XBMCAddon
 
       // Tells the window to add the item to FileItem vector
       {
-        XBMCAddonUtils::GuiLock lock(languageHook);
+        XBMCAddonUtils::GuiLock lock(languageHook, false);
 
         //----------------------------------------------------
         // Former AddItem call
@@ -192,7 +192,7 @@ namespace XBMCAddon
     void WindowXML::addItems(const std::vector<Alternative<String, const XBMCAddon::xbmcgui::ListItem* > > & items)
     {
     XBMC_TRACE;
-    XBMCAddonUtils::GuiLock lock(languageHook);
+    XBMCAddonUtils::GuiLock lock(languageHook, false);
     for (std::vector<Alternative<String, const XBMCAddon::xbmcgui::ListItem* > >::const_iterator it = items.begin(); it != items.end(); ++it)
       {
         XBMCAddon::Alternative<XBMCAddon::String, const XBMCAddon::xbmcgui::ListItem *> item = *it;
@@ -208,7 +208,7 @@ namespace XBMCAddon
     {
       XBMC_TRACE;
       // Tells the window to remove the item at the specified position from the FileItem vector
-      XBMCAddonUtils::GuiLock lock(languageHook);
+      XBMCAddonUtils::GuiLock lock(languageHook, false);
       A(m_vecItems)->Remove(position);
       A(m_viewControl).SetItems(*(A(m_vecItems)));
     }
@@ -216,7 +216,7 @@ namespace XBMCAddon
     int WindowXML::getCurrentListPosition()
     {
       XBMC_TRACE;
-      XBMCAddonUtils::GuiLock lock(languageHook);
+      XBMCAddonUtils::GuiLock lock(languageHook, false);
       int listPos = A(m_viewControl).GetSelectedItem();
       return listPos;
     }
@@ -224,13 +224,13 @@ namespace XBMCAddon
     void WindowXML::setCurrentListPosition(int position)
     {
       XBMC_TRACE;
-      XBMCAddonUtils::GuiLock lock(languageHook);
+      XBMCAddonUtils::GuiLock lock(languageHook, false);
       A(m_viewControl).SetSelectedItem(position);
     }
 
     ListItem* WindowXML::getListItem(int position)
     {
-      XBMCAddonUtils::GuiLock lock(languageHook);
+      XBMCAddonUtils::GuiLock lock(languageHook, false);
       //CFileItemPtr fi = pwx->GetListItem(listPos);
       CFileItemPtr fi;
       {
@@ -260,7 +260,7 @@ namespace XBMCAddon
     void WindowXML::clearList()
     {
       XBMC_TRACE;
-      XBMCAddonUtils::GuiLock lock(languageHook);
+      XBMCAddonUtils::GuiLock lock(languageHook, false);
       A(ClearFileItems());
 
       A(m_viewControl).SetItems(*(A(m_vecItems)));
@@ -275,7 +275,7 @@ namespace XBMCAddon
     int WindowXML::getCurrentContainerId()
     {
       XBMC_TRACE;
-      XBMCAddonUtils::GuiLock lock(languageHook);
+      XBMCAddonUtils::GuiLock lock(languageHook, false);
       return A(m_viewControl.GetCurrentControl());
     }
 

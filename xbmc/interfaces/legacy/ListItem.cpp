@@ -63,7 +63,7 @@ namespace XBMCAddon
 
       String ret;
       {
-        LOCKGUIIF(m_offscreen);
+        XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
         ret = item->GetLabel();
       }
 
@@ -76,7 +76,7 @@ namespace XBMCAddon
 
       String ret;
       {
-        LOCKGUIIF(m_offscreen);
+        XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
         ret = item->GetLabel2();
       }
 
@@ -88,7 +88,7 @@ namespace XBMCAddon
       if (!item) return;
       // set label
       {
-        LOCKGUIIF(m_offscreen);
+        XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
         item->SetLabel(label);
       }
     }
@@ -98,7 +98,7 @@ namespace XBMCAddon
       if (!item) return;
       // set label
       {
-        LOCKGUIIF(m_offscreen);
+        XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
         item->SetLabel2(label);
       }
     }
@@ -107,7 +107,7 @@ namespace XBMCAddon
     {
       if (!item) return;
       {
-        LOCKGUIIF(m_offscreen);
+        XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
         item->SetIconImage(iconImage);
       }
     }
@@ -116,7 +116,7 @@ namespace XBMCAddon
     {
       if (!item) return;
       {
-        LOCKGUIIF(m_offscreen);
+        XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
         item->SetArt("thumb", thumbFilename);
       }
     }
@@ -125,7 +125,7 @@ namespace XBMCAddon
     {
       if (!item) return;
       {
-        LOCKGUIIF(m_offscreen);
+        XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
         for (Properties::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
         {
           std::string artName = it->first;
@@ -143,7 +143,7 @@ namespace XBMCAddon
       if (!item)
         return;
       {
-        LOCKGUIIF(m_offscreen);
+        XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
         item->m_bIsFolder = isFolder;
       }
     }
@@ -152,7 +152,7 @@ namespace XBMCAddon
     {
       if (!item) return;
 
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       CVideoInfoTag& vtag = *GetVideoInfoTag();
       for (Properties::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
         vtag.SetUniqueID(it->second, it->first, it->first == defaultrating);
@@ -162,7 +162,7 @@ namespace XBMCAddon
     {
       if (!item) return;
 
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       GetVideoInfoTag()->SetRating(rating, votes, type, defaultt);
     }
 
@@ -170,7 +170,7 @@ namespace XBMCAddon
     {
       if (!item) return;
 
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       GetVideoInfoTag()->m_namedSeasons[number] = name;
     }
 
@@ -178,7 +178,7 @@ namespace XBMCAddon
     {
       if (!item) return;
       {
-        LOCKGUIIF(m_offscreen);
+        XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
         item->Select(selected);
       }
     }
@@ -190,7 +190,7 @@ namespace XBMCAddon
 
       bool ret;
       {
-        LOCKGUIIF(m_offscreen);
+        XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
         ret = item->IsSelected();
       }
 
@@ -199,7 +199,7 @@ namespace XBMCAddon
 
     void ListItem::setProperty(const char * key, const String& value)
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       String lowerKey = key;
       StringUtils::ToLower(lowerKey);
       if (lowerKey == "startoffset")
@@ -213,13 +213,13 @@ namespace XBMCAddon
       }
       else if (lowerKey == "totaltime")
       {
-        CBookmark resumePoint(GetVideoInfoTag()->m_resumePoint);
+        CBookmark resumePoint(GetVideoInfoTag()->GetResumePoint());
         resumePoint.totalTimeInSeconds = static_cast<float>(atof(value.c_str()));
         GetVideoInfoTag()->SetResumePoint(resumePoint);
       }
       else if (lowerKey == "resumetime")
       {
-        CBookmark resumePoint(GetVideoInfoTag()->m_resumePoint);
+        CBookmark resumePoint(GetVideoInfoTag()->GetResumePoint());
         resumePoint.timeInSeconds = static_cast<float>(atof(value.c_str()));
         GetVideoInfoTag()->SetResumePoint(resumePoint);
       }
@@ -244,7 +244,7 @@ namespace XBMCAddon
 
     String ListItem::getProperty(const char* key)
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       String lowerKey = key;
       StringUtils::ToLower(lowerKey);
       std::string value;
@@ -254,9 +254,9 @@ namespace XBMCAddon
         value = StringUtils::Format("%f", item->m_lStartOffset / 75.0);
       }
       else if (lowerKey == "totaltime")
-        value = StringUtils::Format("%f", GetVideoInfoTag()->m_resumePoint.totalTimeInSeconds);
+        value = StringUtils::Format("%f", GetVideoInfoTag()->GetResumePoint().totalTimeInSeconds);
       else if (lowerKey == "resumetime")
-        value = StringUtils::Format("%f", GetVideoInfoTag()->m_resumePoint.timeInSeconds);
+        value = StringUtils::Format("%f", GetVideoInfoTag()->GetResumePoint().timeInSeconds);
       else if (lowerKey == "fanart_image")
         value = item->GetArt("fanart");
       else
@@ -267,43 +267,43 @@ namespace XBMCAddon
 
     String ListItem::getArt(const char* key)
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       return item->GetArt(key);
     }
 
     String ListItem::getUniqueID(const char* key)
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       return GetVideoInfoTag()->GetUniqueID(key);
     }
 
     float ListItem::getRating(const char* key)
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       return GetVideoInfoTag()->GetRating(key).rating;
     }
 
     int ListItem::getVotes(const char* key)
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       return GetVideoInfoTag()->GetRating(key).votes;
     }
 
     void ListItem::setPath(const String& path)
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       item->SetPath(path);
     }
 
     void ListItem::setMimeType(const String& mimetype)
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       item->SetMimeType(mimetype);
     }
 
     void ListItem::setContentLookup(bool enable)
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       item->SetContentLookup(enable);
     }
 
@@ -337,13 +337,13 @@ namespace XBMCAddon
 
     String ListItem::getPath()
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       return item->GetPath();
     }
 
     void ListItem::setInfo(const char* type, const InfoLabelDict& infoLabels)
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
 
       if (strcmpi(type, "video") == 0)
       {
@@ -642,6 +642,7 @@ namespace XBMCAddon
             const String& exifkey = key;
             if (!StringUtils::StartsWithNoCase(exifkey, "exif:") || exifkey.length() < 6)
               continue;
+
             int info = CPictureInfoTag::TranslateString(StringUtils::Mid(exifkey,5));
             item->GetPictureInfoTag()->SetInfo(info, value);
           }
@@ -651,7 +652,7 @@ namespace XBMCAddon
 
     void ListItem::setCast(const std::vector<Properties>& actors)
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       GetVideoInfoTag()->m_cast.clear();
       for (std::vector<Properties>::const_iterator itt = actors.begin(); itt != actors.end(); ++itt)
       {
@@ -676,7 +677,7 @@ namespace XBMCAddon
 
     void ListItem::setAvailableFanart(const std::vector<Properties>& images)
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       GetVideoInfoTag()->m_fanart.Clear();
       for (std::vector<Properties>::const_iterator itt = images.begin(); itt != images.end(); ++itt)
       {
@@ -702,13 +703,13 @@ namespace XBMCAddon
 
     void ListItem::addAvailableArtwork(std::string url, std::string art_type, std::string referrer, std::string cache, bool post, bool isgz, int season)
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       GetVideoInfoTag()->m_strPictureURL.AddElement(url, art_type, referrer, cache, post, isgz, season);
     }
 
     void ListItem::addStreamInfo(const char* cType, const Properties& dictionary)
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
 
       if (strcmpi(cType, "video") == 0)
       {
@@ -776,7 +777,7 @@ namespace XBMCAddon
         if (tuple.GetNumValuesSet() != 2)
           throw ListItemException("Must pass in a list of tuples of pairs of strings. One entry in the list only has %d elements.",tuple.GetNumValuesSet());
 
-        LOCKGUIIF(m_offscreen);
+        XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
         item->SetProperty(StringUtils::Format("contextmenulabel(%zu)", i), tuple.first());
         item->SetProperty(StringUtils::Format("contextmenuaction(%zu)", i), tuple.second());
       }
@@ -784,7 +785,7 @@ namespace XBMCAddon
 
     void ListItem::setSubtitles(const std::vector<String>& paths)
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       unsigned int i = 1;
       for (std::vector<String>::const_iterator it = paths.begin(); it != paths.end(); ++it)
       {
@@ -795,7 +796,7 @@ namespace XBMCAddon
 
     xbmc::InfoTagVideo* ListItem::getVideoInfoTag()
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       if (item->HasVideoInfoTag())
         return new xbmc::InfoTagVideo(*GetVideoInfoTag());
       return new xbmc::InfoTagVideo();
@@ -803,7 +804,7 @@ namespace XBMCAddon
 
     xbmc::InfoTagMusic* ListItem::getMusicInfoTag()
     {
-      LOCKGUIIF(m_offscreen);
+      XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       if (item->HasMusicInfoTag())
         return new xbmc::InfoTagMusic(*item->GetMusicInfoTag());
       return new xbmc::InfoTagMusic();

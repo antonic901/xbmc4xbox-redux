@@ -1,21 +1,9 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "AddonUtils.h"
@@ -25,25 +13,26 @@
 #include "LanguageHook.h"
 #ifdef ENABLE_XBMC_TRACE_API
 #include "utils/log.h"
-#include "threads/ThreadLocal.h"
 #endif
 
 namespace XBMCAddonUtils
 {
-  GuiLock::GuiLock(XBMCAddon::LanguageHook* languageHook)
-    : m_languageHook(languageHook)
+  GuiLock::GuiLock(XBMCAddon::LanguageHook* languageHook, bool offScreen)
+    : m_languageHook(languageHook), m_offScreen(offScreen)
   {
     if (!m_languageHook)
       m_languageHook = XBMCAddon::LanguageHook::GetLanguageHook();
     if (m_languageHook)
       m_languageHook->DelayedCallOpen();
 
-    g_graphicsContext.Lock();
+    if (!m_offScreen)
+      g_graphicsContext.Lock();
   }
 
   GuiLock::~GuiLock()
   {
-    g_graphicsContext.Unlock();
+    if (!m_offScreen)
+      g_graphicsContext.Unlock();
 
     if (m_languageHook)
       m_languageHook->DelayedCallClose();
@@ -51,7 +40,7 @@ namespace XBMCAddonUtils
 
   static char defaultImage[1024];
 
-  const char *getDefaultImage(char* cControlType, char* cTextureType)
+  const char *getDefaultImage(const char* cControlType, const char* cTextureType)
   {
     // create an xml block so that we can resolve our defaults
     // <control type="type">
@@ -80,7 +69,7 @@ namespace XBMCAddonUtils
   }
 
 #ifdef ENABLE_XBMC_TRACE_API
-  static XbmcThreads::ThreadLocal<TraceGuard> tlParent;
+  static thread_local TraceGuard* tlParent;
 
   static char** getSpacesArray(int size)
   {
@@ -103,19 +92,19 @@ namespace XBMCAddonUtils
 
   TraceGuard::TraceGuard(const char* _function) :function(_function)
   {
-    parent = tlParent.get();
+    parent = tlParent;
     depth = parent == NULL ? 0 : parent->depth + 1;
 
-    tlParent.set(this);
+    tlParent = this;
 
     CLog::Log(LOGDEBUG, "%sNEWADDON Entering %s", spaces[depth], function);
   }
 
   TraceGuard::TraceGuard() :function(NULL)
   {
-    parent = tlParent.get();
+    parent = tlParent;
     depth = parent == NULL ? 0 : parent->depth + 1;
-    tlParent.set(this);
+    tlParent = this;
     // silent
   }
 
@@ -125,7 +114,7 @@ namespace XBMCAddonUtils
       CLog::Log(LOGDEBUG, "%sNEWADDON Leaving %s", spaces[depth], function);
 
     // need to pop the stack
-    tlParent.set(this->parent);
+    tlParent = this->parent;
   }
 #endif
 

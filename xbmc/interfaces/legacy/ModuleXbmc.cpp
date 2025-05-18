@@ -369,7 +369,7 @@ namespace XBMCAddon
 
       bool ret;
       {
-        XBMCAddonUtils::GuiLock lock(nullptr);
+        XBMCAddonUtils::GuiLock lock(nullptr, false);
 
         int id = g_windowManager.GetTopMostModalDialogID();
         if (id == WINDOW_INVALID) id = g_windowManager.GetActiveWindow();
