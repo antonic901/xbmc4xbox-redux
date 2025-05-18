@@ -41,14 +41,14 @@ namespace XBMCAddon
 
   /**
    * This class is primarily for Python support (hence the "Retarded"
-   *  prefix). Python (et. al. Retarded languages) require that 
+   *  prefix). Python (et. al. Retarded languages) require that
    *  the context within which a callback executes is under the control
    *  of the language. Therefore, this handler is used to queue
    *  messages over to a language controlled thread for eventual
    *  execution.
    *
-   * TODO: Allow a cross thread synchronous execution.
-   * TODO: Fix the stupid means of calling the clearPendingCalls by passing
+   * @todo Allow a cross thread synchronous execution.
+   * Fix the stupid means of calling the clearPendingCalls by passing
    *  userData which is specific to the handler/language type.
    */
   class RetardedAsynchCallbackHandler : public CallbackHandler

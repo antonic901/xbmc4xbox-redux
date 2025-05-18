@@ -18,13 +18,12 @@
  *
  */
 
-// TODO: Need a uniform way of returning an error status
+//! @todo Need a uniform way of returning an error status
 
 #if (defined HAVE_CONFIG_H) && (!defined TARGET_WINDOWS)
   #include "config.h"
 #endif
-
-#include "xbox/IoSupport.h"
+#include "xbox/Network.h"
 
 #include "ModuleXbmc.h"
 
@@ -41,17 +40,15 @@
 #include "utils/Crc32.h"
 #include "FileItem.h"
 #include "LangInfo.h"
+#include "PlayListPlayer.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "guilib/TextureManager.h"
 #include "Util.h"
-#include "URL.h"
 #include "storage/MediaManager.h"
-#include "utils/FileUtils.h"
 #include "utils/LangCodeExpander.h"
 #include "utils/StringUtils.h"
 #include "utils/SystemInfo.h"
-#include "CallbackHandler.h"
 #include "AddonUtils.h"
 
 #include "LanguageHook.h"
@@ -59,8 +56,13 @@
 #include "threads/SystemClock.h"
 #include "Exception.h"
 #include <vector>
+#include "utils/log.h"
 
 using namespace KODI::MESSAGING;
+
+#ifdef TARGET_POSIX
+#include "linux/XMemUtils.h"
+#endif
 
 namespace XBMCAddon
 {
@@ -74,7 +76,7 @@ namespace XBMCAddon
     {
       // check for a valid loglevel
       if (level < LOGDEBUG || level > LOGNONE)
-        level = LOGNOTICE;
+        level = LOGDEBUG;
       CLog::Log(level, "%s", msg);
     }
 
@@ -96,7 +98,7 @@ namespace XBMCAddon
       if (! script)
         return;
 
-      CApplicationMessenger::Get().PostMsg(TMSG_EXECUTE_SCRIPT, -1, -1, NULL, script);
+      CApplicationMessenger::Get().PostMsg(TMSG_EXECUTE_SCRIPT, -1, -1, nullptr, script);
     }
 
     void executebuiltin(const char* function, bool wait /* = false*/)
@@ -105,9 +107,9 @@ namespace XBMCAddon
       if (! function)
         return;
       if (wait)
-        CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, function);
+        CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, function);
       else
-        CApplicationMessenger::Get().PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, function);
+        CApplicationMessenger::Get().PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, function);
     }
 
     String executehttpapi(const char* httpcommand) 
@@ -181,7 +183,7 @@ namespace XBMCAddon
     String getLanguage(int format /* = CLangCodeExpander::ENGLISH_NAME */, bool region /*= false*/)
     {
       XBMC_TRACE;
-      CStdString lang = g_langInfo.GetEnglishLanguageName();
+      std::string lang = g_langInfo.GetEnglishLanguageName();
 
       switch (format)
       {
@@ -189,19 +191,19 @@ namespace XBMCAddon
         {
           if (region)
           {
-            CStdString region = "-" + g_langInfo.GetCurrentRegion();
+            std::string region = "-" + g_langInfo.GetCurrentRegion();
             return (lang += region);
           }
           return lang;
         }
       case CLangCodeExpander::ISO_639_1:
         {
-          CStdString langCode;
+          std::string langCode;
           g_LangCodeExpander.ConvertToISO6391(lang, langCode);
           if (region)
           {
-            CStdString region = g_langInfo.GetRegionLocale();
-            CStdString region2Code;
+            std::string region = g_langInfo.GetRegionLocale();
+            std::string region2Code;
             g_LangCodeExpander.ConvertToISO6391(region, region2Code);
             region2Code = "-" + region2Code;
             return (langCode += region2Code);
@@ -210,12 +212,12 @@ namespace XBMCAddon
         }
       case CLangCodeExpander::ISO_639_2:
         {
-          CStdString langCode;
+          std::string langCode;
           g_LangCodeExpander.ConvertToISO6392T(lang, langCode);
           if (region)
           {
-            CStdString region = g_langInfo.GetRegionLocale();
-            CStdString region3Code;
+            std::string region = g_langInfo.GetRegionLocale();
+            std::string region3Code;
             g_LangCodeExpander.ConvertToISO6392T(region, region3Code);
             region3Code = "-" + region3Code;
             return (langCode += region3Code);
@@ -316,10 +318,7 @@ namespace XBMCAddon
       //doesn't seem to be a single InfoTag?
       //try full blown GuiInfoLabel then
       if (ret == 0)
-      {
-        CGUIInfoLabel label(cLine);
-        return label.GetLabel(0);
-      }
+        return CGUIInfoLabel::GetLabel(cLine);
       else
         return g_infoManager.GetLabel(ret);
     }
@@ -355,7 +354,7 @@ namespace XBMCAddon
       DelayedCallGuard dg;
       g_audioManager.Stop();
     }
-    
+
     void enableNavSounds(bool yesNo)
     {
       XBMC_TRACE;
@@ -370,7 +369,7 @@ namespace XBMCAddon
 
       bool ret;
       {
-        LOCKGUI;
+        XBMCAddonUtils::GuiLock lock(nullptr);
 
         int id = g_windowManager.GetTopMostModalDialogID();
         if (id == WINDOW_INVALID) id = g_windowManager.GetActiveWindow();
@@ -410,11 +409,11 @@ namespace XBMCAddon
     {
       XBMC_TRACE;
       CFileItem item(path, false);
-      CStdString strName = item.GetMovieName(usefoldername);
+      std::string strName = item.GetMovieName(usefoldername);
 
-      CStdString strTitleAndYear;
-      CStdString strTitle;
-      CStdString strYear;
+      std::string strTitleAndYear;
+      std::string strTitle;
+      std::string strYear;
       CUtil::CleanString(strName, strTitle, strTitleAndYear, strYear, usefoldername);
       return Tuple<String,String>(strTitle,strYear);
     }
@@ -428,7 +427,7 @@ namespace XBMCAddon
     String getRegion(const char* id)
     {
       XBMC_TRACE;
-      CStdString result;
+      std::string result;
 
       if (strcmpi(id, "datelong") == 0)
         {
@@ -443,6 +442,13 @@ namespace XBMCAddon
           result = g_langInfo.GetDateFormat(false);
           StringUtils::Replace(result, "MM", "%m");
           StringUtils::Replace(result, "DD", "%d");
+#ifdef TARGET_WINDOWS
+          StringUtils::Replace(result, "M", "%#m");
+          StringUtils::Replace(result, "D", "%#d");
+#else
+          StringUtils::Replace(result, "M", "%-m");
+          StringUtils::Replace(result, "D", "%-d");
+#endif
           StringUtils::Replace(result, "YYYY", "%Y");
         }
       else if (strcmpi(id, "tempunit") == 0)
@@ -466,7 +472,7 @@ namespace XBMCAddon
       return result;
     }
 
-    // TODO: Add a mediaType enum
+    //! @todo Add a mediaType enum
     String getSupportedMedia(const char* mediaType)
     {
       XBMC_TRACE;
@@ -474,11 +480,11 @@ namespace XBMCAddon
       if (strcmpi(mediaType, "video") == 0)
         result = g_advancedSettings.m_videoExtensions;
       else if (strcmpi(mediaType, "music") == 0)
-        result = g_advancedSettings.m_musicExtensions;
+        result = g_advancedSettings.GetMusicExtensions();
       else if (strcmpi(mediaType, "picture") == 0)
         result = g_advancedSettings.m_pictureExtensions;
 
-      // TODO:
+      //! @todo implement
       //    else
       //      return an error
 
@@ -495,24 +501,22 @@ namespace XBMCAddon
     bool startServer(int iTyp, bool bStart, bool bWait)
     {
       XBMC_TRACE;
-      //DelayedCallGuard dg;
-      //return g_application.StartServer((CApplication::ESERVERS)iTyp, bStart != 0, bWait != 0);
       return false;
     }
 
     void audioSuspend()
-    {  
-      //CAEFactory::Suspend();
+    {
+      THROW_UNIMP("audiosuspend");
     }
 
     void audioResume()
-    { 
-      //CAEFactory::Resume();
+    {
+      THROW_UNIMP("audioresume");
     }
 
     String convertLanguage(const char* language, int format)
     {
-      CStdString convertedLanguage;
+      std::string convertedLanguage;
       switch (format)
       {
       case CLangCodeExpander::ENGLISH_NAME:
@@ -553,10 +557,12 @@ namespace XBMCAddon
 
     int getPLAYLIST_MUSIC() { return PLAYLIST_MUSIC; }
     int getPLAYLIST_VIDEO() { return PLAYLIST_VIDEO; }
+#ifdef _XBOX
     int getPLAYER_CORE_AUTO() { return EPC_NONE; }
     int getPLAYER_CORE_DVDPLAYER() { return EPC_DVDPLAYER; }
     int getPLAYER_CORE_MPLAYER() { return EPC_MPLAYER; }
     int getPLAYER_CORE_PAPLAYER() { return EPC_PAPLAYER; }
+#endif
     int getTRAY_OPEN() { return TRAY_OPEN; }
     int getDRIVE_NOT_READY() { return DRIVE_NOT_READY; }
     int getTRAY_CLOSED_NO_MEDIA() { return TRAY_CLOSED_NO_MEDIA; }
@@ -583,7 +589,6 @@ namespace XBMCAddon
 
 #define CAPTUREFLAG_CONTINUOUS  0x01 //after a render is done, render a new one immediately
 #define CAPTUREFLAG_IMMEDIATELY 0x02 //read out immediately after render, this can cause a busy wait
-#endif
 
     // render capture user states
     int getCAPTURE_STATE_WORKING() { return CAPTURESTATE_WORKING; }
@@ -593,12 +598,13 @@ namespace XBMCAddon
     // render capture flags
     int getCAPTURE_FLAG_CONTINUOUS() { return (int)CAPTUREFLAG_CONTINUOUS; }
     int getCAPTURE_FLAG_IMMEDIATELY() { return (int)CAPTUREFLAG_IMMEDIATELY; }
+#endif
 
     // language string formats
-    int getISO_639_1() { return CLangCodeExpander::ISO_639_1; } 
+    int getISO_639_1() { return CLangCodeExpander::ISO_639_1; }
     int getISO_639_2(){ return CLangCodeExpander::ISO_639_2; }
     int getENGLISH_NAME() { return CLangCodeExpander::ENGLISH_NAME; }
 
-    const int lLOGNOTICE = LOGNOTICE;
+    const int lLOGDEBUG = LOGDEBUG;
   }
 }

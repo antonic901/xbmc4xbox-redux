@@ -62,11 +62,11 @@ namespace XBMCAddon
           CGUIMessage msg(GUI_MSG_WINDOW_INIT,0,0);
           w->OnMessage(msg);
           w->window->setActive(true);
-          // TODO: Figure out how to clean up the CAction
+          //! @todo Figure out how to clean up the CAction
           return true;
         }
         break;
-        
+
       case HACK_CUSTOM_ACTION_CLOSING:
         {
           // This is from the CGUIPythonWindowXMLDialog::Show_Internal

@@ -36,20 +36,16 @@
 #endif
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
-#include "profiles/ProfilesManager.h"
 #include "utils/JSONVariantWriter.h"
 #include "utils/log.h"
-#include "pythreadstate.h"
-#include "utils/TimeUtils.h"
+#include "utils/Variant.h"
 #include "Util.h"
-#include "guilib/GraphicContext.h"
 #ifdef TARGET_WINDOWS
 #include "utils/Environment.h"
 #endif
 #include "settings/AdvancedSettings.h"
 
 #include "threads/SystemClock.h"
-#include "addons/Addon.h"
 #include "interfaces/AnnouncementManager.h"
 
 #include "interfaces/legacy/Monitor.h"
@@ -98,16 +94,24 @@ void XBPython::Announce(AnnouncementFlag flag, const char *sender, const char *m
   if (flag & VideoLibrary)
   {
    if (strcmp(message, "OnScanFinished") == 0)
-     OnDatabaseUpdated("video");
+     OnScanFinished("video");
    else if (strcmp(message, "OnScanStarted") == 0)
-     OnDatabaseScanStarted("video");
+     OnScanStarted("video");
+   else if (strcmp(message, "OnCleanStarted") == 0)
+     OnCleanStarted("video");
+   else if (strcmp(message, "OnCleanFinished") == 0)
+     OnCleanFinished("video");
   }
   else if (flag & AudioLibrary)
   {
    if (strcmp(message, "OnScanFinished") == 0)
-     OnDatabaseUpdated("music");
+     OnScanFinished("music");
    else if (strcmp(message, "OnScanStarted") == 0)
-     OnDatabaseScanStarted("music");
+     OnScanStarted("music");
+   else if (strcmp(message, "OnCleanStarted") == 0)
+     OnCleanStarted("music");
+   else if (strcmp(message, "OnCleanFinished") == 0)
+     OnCleanFinished("music");
   }
   else if (flag & GUI)
   {
@@ -115,6 +119,10 @@ void XBPython::Announce(AnnouncementFlag flag, const char *sender, const char *m
      OnScreensaverDeactivated();
    else if (strcmp(message, "OnScreensaverActivated") == 0)
      OnScreensaverActivated();
+   else if (strcmp(message, "OnDPMSDeactivated") == 0)
+     OnDPMSDeactivated();
+   else if (strcmp(message, "OnDPMSActivated") == 0)
+     OnDPMSActivated();
   }
 
   OnNotification(sender, std::string(ANNOUNCEMENT::AnnouncementFlagToString(flag)) + "." + std::string(message), CJSONVariantWriter::Write(data, g_advancedSettings.m_jsonOutputCompact));
@@ -276,7 +284,7 @@ void XBPython::UnregisterPythonMonitorCallBack(XBMCAddon::xbmc::Monitor* pCallba
   }
 }
 
-void XBPython::OnSettingsChanged(const CStdString &ID)
+void XBPython::OnSettingsChanged(const std::string &ID)
 {
   XBMC_TRACE;
   LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
@@ -309,25 +317,73 @@ void XBPython::OnScreensaverDeactivated()
   }
 }
 
-void XBPython::OnDatabaseUpdated(const std::string &database)
+void XBPython::OnDPMSActivated()
+{
+#ifndef _XBOX
+  XBMC_TRACE;
+  LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
+  for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
+    if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)))
+      (*it)->OnDPMSActivated();
+  }
+#endif
+}
+
+void XBPython::OnDPMSDeactivated()
+{
+#ifndef _XBOX
+  XBMC_TRACE;
+  LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
+  for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
+    if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)))
+      (*it)->OnDPMSDeactivated();
+  }
+#endif
+}
+
+void XBPython::OnScanStarted(const std::string &library)
 {
   XBMC_TRACE;
   LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
   for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
   {
     if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)))
-      (*it)->OnDatabaseUpdated(database);
+      (*it)->OnScanStarted(library);
   }
 }
 
-void XBPython::OnDatabaseScanStarted(const std::string &database)
+void XBPython::OnScanFinished(const std::string &library)
 {
   XBMC_TRACE;
   LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
   for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
   {
     if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)))
-      (*it)->OnDatabaseScanStarted(database);
+      (*it)->OnScanFinished(library);
+  }
+}
+
+void XBPython::OnCleanStarted(const std::string &library)
+{
+  XBMC_TRACE;
+  LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
+  for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
+    if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)))
+      (*it)->OnCleanStarted(library);
+  }
+}
+
+void XBPython::OnCleanFinished(const std::string &library)
+{
+  XBMC_TRACE;
+  LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>,tmp,m_vecMonitorCallbackList);
+  for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
+  {
+    if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList,(*it)))
+      (*it)->OnCleanFinished(library);
   }
 }
 
@@ -528,9 +584,9 @@ bool XBPython::OnScriptInitialized(ILanguageInvoker *invoker)
     }
 #endif
 
-
     // Darwin packs .pyo files, we need PYTHONOPTIMIZE on in order to load them.
-#if defined(TARGET_DARWIN)
+    // linux built with unified builds only packages the pyo files so need it
+#if defined(TARGET_DARWIN) || defined(TARGET_LINUX)
     setenv("PYTHONOPTIMIZE", "1", 1);
 #endif
     // Info about interesting python envvars available
@@ -552,7 +608,6 @@ bool XBPython::OnScriptInitialized(ILanguageInvoker *invoker)
       CLog::Log(LOGDEBUG, "PYTHONHOME -> %s", CSpecialProtocol::TranslatePath("special://frameworks").c_str());
       CLog::Log(LOGDEBUG, "PYTHONPATH -> %s", CSpecialProtocol::TranslatePath("special://frameworks").c_str());
     }
-    setenv("PYTHONCASEOK", "1", 1); //This line should really be removed
 #elif defined(TARGET_WINDOWS)
     // because the third party build of python is compiled with vs2008 we need
     // a hack to set the PYTHONPATH
@@ -565,14 +620,6 @@ bool XBPython::OnScriptInitialized(ILanguageInvoker *invoker)
     CEnvironment::putenv(buf);
     buf = "OS=win32";
     CEnvironment::putenv(buf);
-
-#elif defined(TARGET_ANDROID)
-    std::string apkPath = getenv("XBMC_ANDROID_APK");
-    apkPath += "/assets/python2.6";
-    setenv("PYTHONHOME", apkPath.c_str(), 1);
-    setenv("PYTHONPATH", "", 1);
-    setenv("PYTHONOPTIMIZE", "", 1);
-    setenv("PYTHONNOUSERSITE", "1", 1);
 #endif
 #endif
 
@@ -621,22 +668,16 @@ void XBPython::OnScriptAbortRequested(ILanguageInvoker *invoker)
 {
   XBMC_TRACE;
 
-  std::string addonId;
+  long invokerId(-1);
   if (invoker != NULL)
-  {
-    const ADDON::AddonPtr& addon = invoker->GetAddon();
-    if (addon != NULL)
-      addonId = addon->ID();
-  }
+    invokerId = invoker->GetId();
 
   LOCK_AND_COPY(std::vector<XBMCAddon::xbmc::Monitor*>, tmp, m_vecMonitorCallbackList);
   for (MonitorCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
   {
     if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList, (*it)))
     {
-      if (addonId.empty())
-        (*it)->OnAbortRequested();
-      else if ((*it)->GetId() == addonId)
+      if (invokerId < 0 || (*it)->GetInvokerId() == invokerId)
         (*it)->OnAbortRequested();
     }
   }

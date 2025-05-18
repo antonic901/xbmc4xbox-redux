@@ -21,6 +21,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "interfaces/generic/ILanguageInvoker.h"
 #include "threads/CriticalSection.h"
@@ -29,7 +30,7 @@
 class CPythonInvoker : public ILanguageInvoker
 {
 public:
-  CPythonInvoker(ILanguageInvocationHandler *invocationHandler);
+  explicit CPythonInvoker(ILanguageInvocationHandler *invocationHandler);
   virtual ~CPythonInvoker();
 
   virtual bool Execute(const std::string &script, const std::vector<std::string> &arguments = std::vector<std::string>());
@@ -37,7 +38,7 @@ public:
   virtual bool IsStopping() const { return m_stop || ILanguageInvoker::IsStopping(); }
 
   typedef void (*PythonModuleInitialization)();
-  
+
 protected:
   // implementation of ILanguageInvoker
   virtual bool execute(const std::string &script, const std::vector<std::string> &arguments);

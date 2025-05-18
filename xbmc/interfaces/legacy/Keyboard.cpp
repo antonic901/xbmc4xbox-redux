@@ -32,7 +32,7 @@ namespace XBMCAddon
   namespace xbmc
   {
 
-    Keyboard::Keyboard(const String& line /* = nullString*/, const String& heading/* = nullString*/, bool hidden/* = false*/) 
+    Keyboard::Keyboard(const String& line /* = nullString*/, const String& heading/* = nullString*/, bool hidden/* = false*/)
       : strDefault(line), strHeading(heading), bHidden(hidden), bConfirmed(false)
     {
     }
@@ -44,7 +44,7 @@ namespace XBMCAddon
       DelayedCallGuard dg(languageHook);
       // using keyboardfactory method to get native keyboard if there is.
       strText = strDefault;
-      CStdString text(strDefault);
+      std::string text(strDefault);
       bConfirmed = CGUIKeyboardFactory::ShowAndGetInput(text, strHeading, true, bHidden, autoclose * 1000);
       strText = text;
     }

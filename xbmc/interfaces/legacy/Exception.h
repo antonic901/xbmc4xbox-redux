@@ -19,12 +19,7 @@
  */
 #pragma once
 
-#include "AddonString.h"
-#include "AddonUtils.h"
-#include "swighelper.h"
-
 #include "utils/log.h"
-#include "utils/StdString.h"
 #include "commons/Exception.h"
 
 #ifndef SWIG
@@ -33,18 +28,18 @@ namespace XBMCAddon
   XBMCCOMMONS_STANDARD_EXCEPTION(WrongTypeException);
 
   /**
-   * UnimplementedException Can be used in places like the 
+   * UnimplementedException Can be used in places like the
    *  Control hierarchy where the
-   *  requirements of dynamic language usage force us to add 
-   *  unimplmenented methods to a class hierarchy. See the 
+   *  requirements of dynamic language usage force us to add
+   *  unimplmenented methods to a class hierarchy. See the
    *  detailed explanation on the class Control for more.
    */
   class UnimplementedException : public XbmcCommons::Exception
   {
   public:
     inline UnimplementedException(const UnimplementedException& other) : Exception(other) { }
-    inline UnimplementedException(const char* classname, const char* methodname) : 
-      Exception("UnimplementedException") 
+    inline UnimplementedException(const char* classname, const char* methodname) :
+      Exception("UnimplementedException")
     { SetMessage("Unimplemented method: %s::%s(...)", classname, methodname); }
   };
 
@@ -56,15 +51,15 @@ namespace XBMCAddon
   {
   public:
     inline UnhandledException(const UnhandledException& other) : Exception(other) { }
-    inline UnhandledException(const char* _message,...) : Exception("UnhandledException") { XBMCCOMMONS_COPYVARARGS(_message); } 
+    inline UnhandledException(const char* _message,...) : Exception("UnhandledException") { XBMCCOMMONS_COPYVARARGS(_message); }
   };
 }
 #endif
 
 /**
- * These macros allow the easy declaration (and definition) of parent 
+ * These macros allow the easy declaration (and definition) of parent
  *  class virtual methods that are not implemented until the child class.
- *  This is to support the idosyncracies of dynamically typed scripting 
+ *  This is to support the idosyncracies of dynamically typed scripting
  *  languages. See the comment in AddonControl.h for more details.
  */
 #define THROW_UNIMP(classname) throw UnimplementedException(classname, __FUNCTION__)

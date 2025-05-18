@@ -26,7 +26,6 @@
 #include "threads/Thread.h"
 #include "interfaces/IAnnouncer.h"
 #include "interfaces/generic/ILanguageInvocationHandler.h"
-#include "addons/IAddon.h"
 #include "ServiceBroker.h"
 
 #include <boost/shared_ptr.hpp>
@@ -35,6 +34,7 @@
 #define g_pythonParser CServiceBroker::GetXBPython()
 
 class CPythonInvoker;
+class CVariant;
 
 typedef struct {
   int id;
@@ -83,11 +83,15 @@ public:
   void UnregisterPythonPlayerCallBack(IPlayerCallback* pCallback);
   void RegisterPythonMonitorCallBack(XBMCAddon::xbmc::Monitor* pCallback);
   void UnregisterPythonMonitorCallBack(XBMCAddon::xbmc::Monitor* pCallback);
-  void OnSettingsChanged(const CStdString &strings);
+  void OnSettingsChanged(const std::string &strings);
   void OnScreensaverActivated();
   void OnScreensaverDeactivated();
-  void OnDatabaseUpdated(const std::string &database);
-  void OnDatabaseScanStarted(const std::string &database);
+  void OnDPMSActivated();
+  void OnDPMSDeactivated();
+  void OnScanStarted(const std::string &library);
+  void OnScanFinished(const std::string &library);
+  void OnCleanStarted(const std::string &library);
+  void OnCleanFinished(const std::string &library);
   void OnNotification(const std::string &sender, const std::string &method, const std::string &data);
 
   virtual void Process();

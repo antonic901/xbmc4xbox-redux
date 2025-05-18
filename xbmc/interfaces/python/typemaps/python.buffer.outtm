@@ -20,5 +20,4 @@
  */
     boolean ispointer = swigTypeParser.SwigType_ispointer(type)
     String accessor = ispointer ? '->' : '.'
-%>
 %>${result} = PyByteArray_FromStringAndSize((char*)${api}${accessor}curPosition(),${api}${accessor}remaining());

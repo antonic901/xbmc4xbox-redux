@@ -24,7 +24,6 @@
 #include "XBPython.h"
 
 #include "interfaces/legacy/AddonUtils.h"
-#include "utils/GlobalsHandling.h"
 #include "PyContext.h"
 
 namespace XBMCAddon
@@ -81,7 +80,7 @@ namespace XBMCAddon
     // we're going to assume we're not in control of the interpreter. This (apparently)
     // can be the case. E.g. Libspotify manages to call into a script using a ctypes
     // extention but under the control of an Interpreter we know nothing about. In
-    // cases like this we're going to use a global interpreter 
+    // cases like this we're going to use a global interpreter
     AddonClass::Ref<PythonLanguageHook> PythonLanguageHook::GetIfExists(PyInterpreterState* interp)
     {
       XBMC_TRACE;
@@ -121,7 +120,7 @@ namespace XBMCAddon
      * See PythonCallbackHandler::PythonCallbackHandler for more details
      */
     XBMCAddon::CallbackHandler* PythonLanguageHook::GetCallbackHandler()
-    { 
+    {
       XBMC_TRACE;
       return new PythonCallbackHandler();
     }
@@ -157,13 +156,30 @@ namespace XBMCAddon
       return "";
     }
 
+    long PythonLanguageHook::GetInvokerId()
+    {
+      XBMC_TRACE;
+
+      // Get a reference to the main module
+      // and global dictionary
+      PyObject* main_module = PyImport_AddModule((char*)"__main__");
+      PyObject* global_dict = PyModule_GetDict(main_module);
+      // Extract a reference to the function "func_name"
+      // from the global dictionary
+      PyObject* pyid = PyDict_GetItemString(global_dict, "__xbmcinvokerid__");
+      if (pyid)
+        return PyLong_AsLong(pyid);
+      return -1;
+    }
+
+
     void PythonLanguageHook::RegisterPlayerCallback(IPlayerCallback* player) { XBMC_TRACE; g_pythonParser.RegisterPythonPlayerCallBack(player); }
     void PythonLanguageHook::UnregisterPlayerCallback(IPlayerCallback* player) { XBMC_TRACE; g_pythonParser.UnregisterPythonPlayerCallBack(player); }
     void PythonLanguageHook::RegisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor) { XBMC_TRACE; g_pythonParser.RegisterPythonMonitorCallBack(monitor); }
     void PythonLanguageHook::UnregisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor) { XBMC_TRACE; g_pythonParser.UnregisterPythonMonitorCallBack(monitor); }
 
     bool PythonLanguageHook::WaitForEvent(CEvent& hEvent, unsigned int milliseconds)
-    { 
+    {
       XBMC_TRACE;
       return g_pythonParser.WaitForEvent(hEvent,milliseconds);
     }

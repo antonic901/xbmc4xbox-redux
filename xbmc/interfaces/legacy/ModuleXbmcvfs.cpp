@@ -24,6 +24,7 @@
 #include "filesystem/Directory.h"
 #include "utils/FileUtils.h"
 #include "utils/URIUtils.h"
+#include "URL.h"
 #include "Util.h"
 
 namespace XBMCAddon
@@ -49,23 +50,23 @@ namespace XBMCAddon
     {
       DelayedCallGuard dg;
       return XFILE::CFile::Rename(file,newFile);
-    }  
+    }
 
     // check for a file or folder existance, mimics Pythons os.path.exists()
     bool exists(const String& path)
     {
       DelayedCallGuard dg;
       if (URIUtils::HasSlashAtEnd(path, true))
-        return XFILE::CDirectory::Exists(path);
+        return XFILE::CDirectory::Exists(path, false);
       return XFILE::CFile::Exists(path, false);
-    }      
+    }
 
     // make a directory
     bool mkdir(const String& path)
     {
       DelayedCallGuard dg;
       return XFILE::CDirectory::Create(path);
-    }      
+    }
 
     // make all directories along the path
     bool mkdirs(const String& path)
@@ -78,12 +79,13 @@ namespace XBMCAddon
     {
       DelayedCallGuard dg;
       return (force ? CFileUtils::DeleteItem(path,force) : XFILE::CDirectory::Remove(path));
-    }      
+    }
 
     Tuple<std::vector<String>, std::vector<String> > listdir(const String& path)
     {
+      DelayedCallGuard dg;
       CFileItemList items;
-      CStdString strSource;
+      std::string strSource;
       strSource = path;
       XFILE::CDirectory::GetDirectory(strSource, items, "", XFILE::DIR_FLAG_NO_FILE_DIRS);
 
@@ -93,17 +95,22 @@ namespace XBMCAddon
 
       for (int i=0; i < items.Size(); i++)
       {
-        CStdString itemPath = items[i]->GetPath();
-        
+        std::string itemPath = items[i]->GetPath();
+
         if (URIUtils::HasSlashAtEnd(itemPath)) // folder
         {
           URIUtils::RemoveSlashAtEnd(itemPath);
-          CStdString strFileName = URIUtils::GetFileName(itemPath);
+          std::string strFileName = URIUtils::GetFileName(itemPath);
+          if (strFileName.empty())
+          {
+            CURL url(itemPath);
+            strFileName = url.GetHostName();
+          }
           ret.first().push_back(strFileName);
         }
         else // file
         {
-          CStdString strFileName = URIUtils::GetFileName(itemPath);
+          std::string strFileName = URIUtils::GetFileName(itemPath);
           ret.second().push_back(strFileName);
         }
       }

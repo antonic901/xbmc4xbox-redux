@@ -29,10 +29,10 @@
  */
 //#define LOG_LIFECYCLE_EVENTS
 
-/** 
+/**
  * Defining XBMC_ADDON_DEBUG_MEMORY will make the Acquire and Release
  *  methods virtual allow the developer to overload them in a sub-class
- *  and set breakpoints to aid in debugging. It will also cause the 
+ *  and set breakpoints to aid in debugging. It will also cause the
  *  reference counting mechanism to never actually delete any AddonClass
  *  instance allowing for the tracking of more references to (supposedly)
  *  deallocated classes.
@@ -44,8 +44,9 @@
 #include "AddonString.h"
 #include "threads/SingleLock.h"
 #include "threads/Atomics.h"
+#ifdef XBMC_ADDON_DEBUG_MEMORY
 #include "utils/log.h"
-
+#endif
 #include "AddonUtils.h"
 
 namespace XBMCAddon
@@ -59,7 +60,7 @@ namespace XBMCAddon
    * It also provides some means for debugging "lifecycle" events (see the above
    *  description of LOG_LIFECYCLE_EVENTS).
    *
-   * If a scripting language bindings require specific handling there is a 
+   * If a scripting language bindings require specific handling there is a
    *  hook to add in these language specifics that can be set here.
    */
   class AddonClass : public CCriticalSection
@@ -116,7 +117,7 @@ namespace XBMCAddon
     static short getNumAddonClasses();
 
 #ifdef XBMC_ADDON_DEBUG_MEMORY
-    virtual 
+    virtual
 #else
     inline
 #endif
@@ -136,7 +137,7 @@ namespace XBMCAddon
 
 
 #ifdef XBMC_ADDON_DEBUG_MEMORY
-    virtual 
+    virtual
 #else
     inline
 #endif
@@ -144,7 +145,7 @@ namespace XBMCAddon
 #ifndef XBMC_ADDON_DEBUG_MEMORY
     {
 #ifdef LOG_LIFECYCLE_EVENTS
-      CLog::Log(LOGDEBUG,"NEWADDON REFCNT incrementing to %ld on %s 0x%lx", 
+      CLog::Log(LOGDEBUG,"NEWADDON REFCNT incrementing to %ld on %s 0x%lx",
                 AtomicIncrement((long*)&refs),GetClassname(), (long)(((void*)this)));
 #else
       AtomicIncrement((long*)&refs);

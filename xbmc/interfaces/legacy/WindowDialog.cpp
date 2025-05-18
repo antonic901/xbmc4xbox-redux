@@ -22,12 +22,13 @@
 
 #include "guilib/GUIWindow.h"
 #include "guilib/GUIWindowManager.h"
+#include "WindowInterceptor.h"
 
 namespace XBMCAddon
 {
   namespace xbmcgui
   {
-    WindowDialog::WindowDialog() throw(WindowException) :
+    WindowDialog::WindowDialog() :
       Window(true), WindowDialogMixin(this)
     {
       CSingleLock lock(g_graphicsContext);

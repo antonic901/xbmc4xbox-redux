@@ -54,12 +54,12 @@ namespace XBMCAddon
 
     String InfoTagMusic::getArtist()
     {
-      return StringUtils::Join(infoTag->GetArtist(), g_advancedSettings.m_musicItemSeparator);
+      return infoTag->GetArtistString();
     }
 
     String InfoTagMusic::getAlbumArtist()
     {
-      return StringUtils::Join(infoTag->GetAlbumArtist(), g_advancedSettings.m_musicItemSeparator);
+      return infoTag->GetAlbumArtistString();
     }
 
     String InfoTagMusic::getAlbum()
@@ -75,6 +75,16 @@ namespace XBMCAddon
     int InfoTagMusic::getDuration()
     {
       return infoTag->GetDuration();
+    }
+
+    int InfoTagMusic::getRating()
+    {
+      return infoTag->GetRating();
+    }
+
+    int InfoTagMusic::getUserRating()
+    {
+      return infoTag->GetUserrating();
     }
 
     int InfoTagMusic::getTrack()

@@ -49,8 +49,12 @@
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
+#ifdef TARGET_POSIX
+#include "linux/XTimeUtils.h"
+#endif
 
 #ifdef TARGET_WINDOWS
+#pragma comment(lib, "python27.lib")
 extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
 #else
 #define fopen_utf8 fopen
@@ -65,7 +69,6 @@ extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
 // Time before ill-behaved scripts are terminated
 #define PYTHON_SCRIPT_TIMEOUT 5000 // ms
 
-using namespace std;
 using namespace XFILE;
 using namespace KODI::MESSAGING;
 
@@ -79,9 +82,9 @@ extern "C"
 
 CCriticalSection CPythonInvoker::s_critical;
 
-static const CStdString getListOfAddonClassesAsString(XBMCAddon::AddonClass::Ref<XBMCAddon::Python::PythonLanguageHook>& languageHook)
+static const std::string getListOfAddonClassesAsString(XBMCAddon::AddonClass::Ref<XBMCAddon::Python::PythonLanguageHook>& languageHook)
 {
-  CStdString message;
+  std::string message;
   CSingleLock l(*(languageHook.get()));
   std::set<XBMCAddon::AddonClass*>& acs = languageHook->GetRegisteredAddonClasses();
   bool firstTime = true;
@@ -184,7 +187,7 @@ bool CPythonInvoker::execute(const std::string &script, const std::vector<std::s
 
   // get path from script file name and add python path's
   // this is used for python so it will search modules from script path first
-  CStdString scriptDir = URIUtils::GetDirectory(realFilename);
+  std::string scriptDir = URIUtils::GetDirectory(realFilename);
   URIUtils::RemoveSlashAtEnd(scriptDir);
   addPath(scriptDir);
 
@@ -370,7 +373,7 @@ bool CPythonInvoker::execute(const std::string &script, const std::vector<std::s
     }
     if (old != s)
     {
-      CLog::Log(LOGINFO, "CPythonInvoker(%d, %s): waiting on thread %"PRIu64, GetId(), m_sourceFile.c_str(), (uint64_t)s->thread_id);
+      CLog::Log(LOGINFO, "CPythonInvoker(%d, %s): waiting on thread %" PRIu64, GetId(), m_sourceFile.c_str(), (uint64_t)s->thread_id);
       old = s;
     }
 
@@ -482,7 +485,6 @@ bool CPythonInvoker::stop(bool abort)
       // on TMSG_GUI_PYTHON_DIALOG messages, so pump the message loop.
       if (g_application.IsCurrentThread())
       {
-        CSingleExit ex(g_graphicsContext);
         CApplicationMessenger::Get().ProcessMessages();
       }
     }
@@ -577,6 +579,9 @@ void CPythonInvoker::onPythonModuleInitialization(void* moduleDict)
   PyObject *pyxbmcapiversion = PyString_FromString(version.asString().c_str());
   PyDict_SetItemString(moduleDictionary, "__xbmcapiversion__", pyxbmcapiversion);
 
+  PyObject *pyinvokerid = PyLong_FromLong(GetId());
+  PyDict_SetItemString(moduleDictionary, "__xbmcinvokerid__", pyinvokerid);
+
   CLog::Log(LOGDEBUG, "CPythonInvoker(%d, %s): instantiating addon using automatically obtained id of \"%s\" dependent on version %s of the xbmc.python api",
             GetId(), m_sourceFile.c_str(), m_addon->ID().c_str(), version.asString().c_str());
 }
@@ -594,24 +599,14 @@ void CPythonInvoker::onError(const std::string &exceptionType /* = "" */, const 
   CGUIDialogKaiToast *pDlgToast = (CGUIDialogKaiToast*)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
   if (pDlgToast != NULL)
   {
-    CStdString desc;
-    CStdString script;
-    if (m_addon.get() != NULL)
-      script = m_addon->Name();
+    std::string message;
+    if (m_addon && !m_addon->Name().empty())
+      message = StringUtils::Format(g_localizeStrings.Get(2102).c_str(), m_addon->Name().c_str());
+    else if (m_sourceFile == CSpecialProtocol::TranslatePath("special://profile/autoexec.py"))
+      message = StringUtils::Format(g_localizeStrings.Get(2102).c_str(), "autoexec.py");
     else
-    {
-      CStdString path;
-      URIUtils::Split(m_sourceFile.c_str(), path, script);
-      if (script.Equals("default.py"))
-      {
-        CStdString path2;
-        URIUtils::RemoveSlashAtEnd(path);
-        URIUtils::Split(path, path2, script);
-      }
-    }
-
-    desc = StringUtils::Format(g_localizeStrings.Get(2100).c_str(), script.c_str());
-    pDlgToast->QueueNotification(CGUIDialogKaiToast::Error, g_localizeStrings.Get(257), desc);
+       message = g_localizeStrings.Get(2103);
+    pDlgToast->QueueNotification(CGUIDialogKaiToast::Error, message, g_localizeStrings.Get(2104));
   }
 }
 

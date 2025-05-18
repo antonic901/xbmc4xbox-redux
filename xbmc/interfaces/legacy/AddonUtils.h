@@ -42,19 +42,22 @@
  * This file contains the public definitions for the Addon api. It's meant to be used
  * by those writing language bindings.
  */
+
+namespace XBMCAddon
+{
+class LanguageHook;
+}
+
 namespace XBMCAddonUtils
 {
-  //***********************************************************
-  // Some simple helpers
-  void guiLock();
-  void guiUnlock();
-  //***********************************************************
-
   class GuiLock
   {
   public:
-    GuiLock() { guiLock(); }
-    ~GuiLock() { guiUnlock(); }
+    GuiLock(XBMCAddon::LanguageHook* languageHook);
+    ~GuiLock();
+
+  protected:
+    XBMCAddon::LanguageHook* m_languageHook;
   };
 
   class InvertSingleLockGuard
@@ -64,11 +67,6 @@ namespace XBMCAddonUtils
     InvertSingleLockGuard(CSingleLock& _lock) : lock(_lock) { lock.Leave(); }
     ~InvertSingleLockGuard() { lock.Enter(); }
   };
-
-#define LOCKGUI XBMCAddonUtils::GuiLock __gl
-#define LOCKGUIIF(cond) boost::movelib::unique_ptr<XBMCAddonUtils::GuiLock> __gl; \
-                        if (!(cond)) \
-                          __gl.reset(new XBMCAddonUtils::GuiLock)
 
   /*
    * Looks in references.xml for image name

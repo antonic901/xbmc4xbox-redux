@@ -42,6 +42,11 @@ namespace XBMCAddon
       delete infoTag;
     }
 
+    int InfoTagVideo::getDbId()
+    {
+      return infoTag->m_iDbId;
+    }
+
     String InfoTagVideo::getDirector()
     {
       return StringUtils::Join(infoTag->m_director, g_advancedSettings.m_videoItemSeparator);
@@ -77,9 +82,19 @@ namespace XBMCAddon
       return infoTag->m_strPictureURL.GetFirstThumb().m_url;
     }
 
+    String InfoTagVideo::getTVShowTitle()
+    {
+      return infoTag->m_strShowTitle;
+    }
+
     String InfoTagVideo::getTitle()
     {
       return infoTag->m_strTitle;
+    }
+
+    String InfoTagVideo::getMediaType()
+    {
+      return infoTag->m_type;
     }
 
     String InfoTagVideo::getVotes()
@@ -107,6 +122,16 @@ namespace XBMCAddon
       return infoTag->GetUniqueID();
     }
 
+    int InfoTagVideo::getSeason()
+    {
+      return infoTag->m_iSeason;
+    }
+
+    int InfoTagVideo::getEpisode()
+    {
+      return infoTag->m_iEpisode;
+    }
+
     int InfoTagVideo::getYear()
     {
       return infoTag->GetYear();
@@ -115,6 +140,11 @@ namespace XBMCAddon
     double InfoTagVideo::getRating()
     {
       return infoTag->GetRating().rating;
+    }
+
+    int InfoTagVideo::getUserRating()
+    {
+      return infoTag->m_iUserRating;
     }
 
     int InfoTagVideo::getPlayCount()
@@ -134,12 +164,17 @@ namespace XBMCAddon
 
     String InfoTagVideo::getPremiered()
     {
-      return infoTag->m_premiered.GetAsLocalizedDate();
+      return infoTag->GetPremiered().GetAsLocalizedDate();
     }
 
     String InfoTagVideo::getFirstAired()
     {
       return infoTag->m_firstAired.GetAsLocalizedDate();
+    }
+
+    String InfoTagVideo::getTrailer()
+    {
+      return infoTag->m_strTrailer;
     }
   }
 }

@@ -39,7 +39,7 @@ module.findAll( { it.name() == 'typetab' } ).each {  SwigTypeParser.appendTypeTa
 // ---------------------------------------------------------
 
 // ---------------------------------------------------------
-// Flatten out all of the method/function nodes, whether inside 
+// Flatten out all of the method/function nodes, whether inside
 //  classes or not, into 'methods'
 List methods = module.depthFirst().findAll { it.name() == 'function' || it.name() == 'constructor' || it.name() == 'destructor' }
 // ---------------------------------------------------------
@@ -68,6 +68,7 @@ Helper.setup(this,classes,
       'p.q(const).char' : '${result} = PyString_FromString(${api});',
       (Pattern.compile('''(p.){0,1}XbmcCommons::Buffer''')) : new File('typemaps/python.buffer.outtm'),
       (Pattern.compile('''boost::shared_ptr<\\(.*\\)>''')) : new File('typemaps/python.boost_shared_ptr.outtm'),
+      (Pattern.compile('''boost::movelib::unique_ptr<\\(.*\\)>''')) : new File('typemaps/python.boost_shared_ptr.outtm'),
       (Pattern.compile('''(p.){0,1}std::vector<\\(.*\\)>''')) : new File('typemaps/python.vector.outtm'),
       (Pattern.compile('''(p.){0,1}Tuple<\\(.*\\)>''')) : new File('typemaps/python.Tuple.outtm'),
       (Pattern.compile('''(p.){0,1}Alternative<\\(.*\\)>''')) : new File('typemaps/python.Alternative.outtm')
@@ -80,7 +81,7 @@ Helper.setup(this,classes,
      * appear here as it gets converted directly within the PyArg_ParseTupleAndKeywords
      * call.
      */
-    [ 
+    [
       'std::string' : 'if (${slarg}) PyXBMCGetUnicodeString(${api},${slarg},false,"${api}","${method.@name}");',
       (Pattern.compile('''(p.){0,1}std::vector<\\(.*\\)>''')) : new File('typemaps/python.vector.intm'),
       (Pattern.compile('''(p.){0,1}Tuple(3){0,1}<\\(.*\\)>''')) : new File('typemaps/python.Tuple.intm'),
@@ -135,7 +136,7 @@ void doMethod(Node method, MethodType methodType)
   String returns = constructor ? 'p.' + clazz : (destructor ? 'void' : Helper.getReturnSwigType(method))
   Node classnode = Helper.findClassNode(method)
   String classNameAsVariable = clazz == null ? null : PythonTools.getClassNameAsVariable(classnode)
-  boolean useKeywordParsing = !('true' == classnode?.@feature_python_nokwds || 'true' == method?.@feature_python_nokwds) 
+  boolean useKeywordParsing = !('true' == classnode?.@feature_python_nokwds || 'true' == method?.@feature_python_nokwds)
 
   // do the docs
   if (!constructor && !destructor)
@@ -148,14 +149,14 @@ void doMethod(Node method, MethodType methodType)
 <%  }
   }
 %>
-  static <% if(methodType == MethodType.destructor) { %>void<% } else { %>PyObject*<% } %> ${module.@name}_${PythonTools.getPyMethodName(method,methodType)} (<%= ((clazz == null) ? "PyObject" : 
-                   (constructor ? "PyTypeObject" : 'PyHolder')) %>* ${constructor ? 'pytype' : 'self'} <% 
+  static <% if(methodType == MethodType.destructor) { %>void<% } else { %>PyObject*<% } %> ${module.@name}_${PythonTools.getPyMethodName(method,methodType)} (<%= ((clazz == null) ? "PyObject" :
+                   (constructor ? "PyTypeObject" : 'PyHolder')) %>* ${constructor ? 'pytype' : 'self'} <%
                    if (doAsMappingIndex) { %>, PyObject* py${params[0].@name}<% }
                    else if (methodType != MethodType.destructor) { %> , PyObject *args, PyObject *kwds <%} %> )
   {
     XBMC_TRACE;
 <%  if (numParams > 0)
-    { 
+    {
       if (useKeywordParsing && !doAsMappingIndex)
       { %>
     static const char *keywords[] = {<%
@@ -163,8 +164,8 @@ void doMethod(Node method, MethodType methodType)
           "${it.@name}",<% } %>
           NULL};
 <%    }
-      params.each { 
-%>         
+      params.each {
+%>
     ${SwigTypeParser.SwigType_str(SwigTypeParser.convertTypeToLTypeForParam(it.@type))} ${it.@name} ${it.@value != null ? ' = ' + it.@value : ''};<%
         if (!PythonTools.parameterCanBeUsedDirectly(it) && !doAsMappingIndex)
         { %>
@@ -211,7 +212,7 @@ void doMethod(Node method, MethodType methodType)
     if (clazz && !constructor) {
       %>((${clazz}*)retrieveApiInstance((PyObject*)self,&Ty${classNameAsVariable}_Type,"${Helper.callingName(method)}","${clazz}"))-> <%
     }
-    if (constructor && classnode.@feature_director) { 
+    if (constructor && classnode.@feature_director) {
     %>(&(Ty${classNameAsVariable}_Type.pythonType) != pytype) ? new ${classNameAsVariable}_Director(<% params.eachWithIndex { param, i -> %> ${param.@name}${i < params.size() - 1 ? "," : ""} <% } %>) : <% }
 
     // Here is the actual call ... if this is a Director we need to do an upCall (from Python)
@@ -229,7 +230,7 @@ void doMethod(Node method, MethodType methodType)
 %>
     }
     catch (const XBMCAddon::WrongTypeException& e)
-    { 
+    {
       CLog::Log(LOGERROR,"EXCEPTION: %s",e.GetMessage());
       PyErr_SetString(PyExc_TypeError, e.GetMessage()); <%
       if (!destructor) {  %>
@@ -237,7 +238,7 @@ void doMethod(Node method, MethodType methodType)
       } %>
     }
     catch (const XbmcCommons::Exception& e)
-    { 
+    {
       CLog::Log(LOGERROR,"EXCEPTION: %s",e.GetMessage());
       PyErr_SetString(PyExc_RuntimeError, e.GetMessage()); <%
       if (!destructor) {  %>
@@ -261,18 +262,18 @@ void doMethod(Node method, MethodType methodType)
     if (constructor) {
       %>    result = makePythonInstance(apiResult,pytype,false);<%
     }
-    else { 
+    else {
 %>    ${Helper.getOutConversion(returns,'result',method)}<%
     }
     if (constructor && method.@feature_director) { %>
-    if (&(Ty${classNameAsVariable}_Type.pythonType) != pytype) 
+    if (&(Ty${classNameAsVariable}_Type.pythonType) != pytype)
       ((${classNameAsVariable}_Director*)apiResult)->setPyObjectForDirector(result);<%
     }
  %>
 
-    return result; <% } 
+    return result; <% }
     else { %>
-    self->ob_type->tp_free((PyObject*)self); 
+    self->ob_type->tp_free((PyObject*)self);
     <%
     }
     %>
@@ -284,11 +285,11 @@ void doMethod(Node method, MethodType methodType)
  * This method writes out the instance of a TypeInfo (which includes
  * The PyTypeObject as a member) for the class node provided.
  *
- * If classNameAsVariable is not null then the class name as a 
+ * If classNameAsVariable is not null then the class name as a
  * variable will be appended to it.
  */
 void doClassTypeInfo(Node clazz, List classNameAsVariables = null)
-{ 
+{
   String classNameAsVariable = PythonTools.getClassNameAsVariable(clazz)
   String fullClassName = Helper.findFullClassName(clazz)
   classNameAsVariables?.add(classNameAsVariable)
@@ -298,7 +299,7 @@ void doClassTypeInfo(Node clazz, List classNameAsVariables = null)
   TypeInfo Ty${classNameAsVariable}_Type(typeid(${fullClassName}));<%
 %>
   //=========================================================================
-<%    
+<%
 }
 
 /**
@@ -306,14 +307,14 @@ void doClassTypeInfo(Node clazz, List classNameAsVariables = null)
  *  create an external reference to its TypeInfo instance.
  */
 void doExternClassTypeInfo(String knownType)
-{ 
+{
   String classNameAsVariable = knownType.replaceAll('::','_')
 %>
   //=========================================================================
-  // These variables define the type ${knownType} from another module 
+  // These variables define the type ${knownType} from another module
   extern TypeInfo Ty${classNameAsVariable}_Type;
   //=========================================================================
-<%    
+<%
 }
 
 /*******************************************************************************/
@@ -322,10 +323,10 @@ void doExternClassTypeInfo(String knownType)
  *  and class oddities (like comparators, as_mapping, etc.). These include:
  *
  * 1) comparator *_cmp python method as long as there's an operator==, an
- *    operator>, AND an operator<. 
+ *    operator>, AND an operator<.
  * 2) it will create a python "as_mapping" method as long as there's both
  *    an operator[], AND a .size() method on the class.
- * 3) it will handle the explicitly defined rich compare (_rcmp) if the 
+ * 3) it will handle the explicitly defined rich compare (_rcmp) if the
  *    feature is included in the .i file using %feature("python:rcmp")
  * 4) The array of PyMethodDefs for the class definition
  * 5) It will handle public fields as if the were python properties by:
@@ -338,7 +339,7 @@ void doExternClassTypeInfo(String knownType)
  *  method (see #6 above) will be appended to it.
  */
 void doClassMethodInfo(Node clazz, List initTypeCalls)
-{ 
+{
   String classNameAsVariable = PythonTools.getClassNameAsVariable(clazz)
   String fullClassName = Helper.findFullClassName(clazz)
   String initTypeCall = "initPy${classNameAsVariable}_Type"
@@ -384,7 +385,7 @@ void doClassMethodInfo(Node clazz, List initTypeCalls)
   }
 
   if (indexOp)
-  { 
+  {
     sizeNode =  clazz.function.find { it.@name == "size" }
     if (sizeNode)
       doAsMapping = true
@@ -392,7 +393,7 @@ void doClassMethodInfo(Node clazz, List initTypeCalls)
       System.err.println ("Warning: class ${fullClassName} has an inconsistent operator set. To get a as_mapping you must implement 'size' as well as operator[]")
   }
 
-  if (doComparator){ 
+  if (doComparator){
 %>
   static int ${module.@name}_${classNameAsVariable}_cmp(PyObject* obj1, PyObject* obj2)
   {
@@ -440,7 +441,7 @@ void doClassMethodInfo(Node clazz, List initTypeCalls)
     List tmpl = []
     tmpl.addAll(clazz.attributes().keySet())
     List newMethodKeys = tmpl.findAll { it.startsWith('feature_python_method_') }
-    newMethodKeys.each { key -> 
+    newMethodKeys.each { key ->
       String featureEntry = clazz.attribute(key)
       String methodName = key.substring('feature_python_method_'.length()) %>
     {(char*)"${methodName}", (PyCFunction)${module.@name}_${PythonTools.getClassNameAsVariable(clazz)}_${methodName}, METH_VARARGS|METH_KEYWORDS, NULL},
@@ -519,19 +520,19 @@ void doClassMethodInfo(Node clazz, List initTypeCalls)
     {
       CLog::Log(LOGERROR,"EXCEPTION: %s",e.GetMessage());
       PyErr_SetString(PyExc_TypeError, e.GetMessage());
-      return NULL;
+      return -1;
     }
     catch (const XbmcCommons::Exception& e)
     {
       CLog::Log(LOGERROR,"EXCEPTION: %s",e.GetMessage());
       PyErr_SetString(PyExc_RuntimeError, e.GetMessage());
-      return NULL;
+      return -1;
     }
     catch (...)
     {
       CLog::Log(LOGERROR,"EXCEPTION: Unknown exception thrown from the call \"${classNameAsVariable}_getMember()\"");
       PyErr_SetString(PyExc_RuntimeError, "Unknown exception thrown from the call \"${classNameAsVariable}_getMember()\"");
-      return NULL;
+      return -1;
     }
 
 <%
@@ -543,7 +544,7 @@ void doClassMethodInfo(Node clazz, List initTypeCalls)
         ${Helper.getInConversion(returns, 'tmp', 'value', it)}
         if (PyErr_Occurred())
           throw PythonBindings::PythonToCppException();
-        
+
         theObj->${it.@sym_name} = tmp;
       }
       else<%
@@ -581,13 +582,13 @@ void doClassMethodInfo(Node clazz, List initTypeCalls)
       ${Helper.getOutConversion('p.' + clazz.@feature_iterable,'result',clazz)}
     }
     catch (const XBMCAddon::WrongTypeException& e)
-    { 
+    {
       CLog::Log(LOGERROR,"EXCEPTION: %s",e.GetMessage());
       PyErr_SetString(PyExc_TypeError, e.GetMessage());
       return NULL;
     }
     catch (const XbmcCommons::Exception& e)
-    { 
+    {
       CLog::Log(LOGERROR,"EXCEPTION: %s",e.GetMessage());
       PyErr_SetString(PyExc_RuntimeError, e.GetMessage());
       return NULL;
@@ -622,13 +623,13 @@ void doClassMethodInfo(Node clazz, List initTypeCalls)
       }
     }
     catch (const XBMCAddon::WrongTypeException& e)
-    { 
+    {
       CLog::Log(LOGERROR,"EXCEPTION: %s",e.GetMessage());
       PyErr_SetString(PyExc_TypeError, e.GetMessage());
       return NULL;
     }
     catch (const XbmcCommons::Exception& e)
-    { 
+    {
       CLog::Log(LOGERROR,"EXCEPTION: %s",e.GetMessage());
       PyErr_SetString(PyExc_RuntimeError, e.GetMessage());
       return NULL;
@@ -732,7 +733,7 @@ List getAllVirtualMethods(Node clazz)
 {
   List ret = []
   ret.addAll(clazz.findAll({ it.name() == 'function' && it.@storage && it.@storage == 'virtual' }))
-  if (clazz.baselist) { 
+  if (clazz.baselist) {
     if (clazz.baselist[0].base) clazz.baselist[0].base.each {
         Node baseclassnode = Helper.findClassNodeByName(module,it.@name,clazz)
         if (baseclassnode && baseclassnode.@feature_director) ret.addAll(getAllVirtualMethods(baseclassnode))
@@ -786,7 +787,7 @@ Helper.getInsertNodes(module, 'header').each { %>${Helper.unescape(it)}<% }
 namespace PythonBindings
 {
 <%
-  // initTypeCalls is the 
+  // initTypeCalls is the
   List initTypeCalls = []
   List classNameAsVariables = []
 
@@ -796,11 +797,11 @@ namespace PythonBindings
 
   // first, find all of the declared known api types
   Set<String> knownApiTypes = new HashSet<String>()
-  module.depthFirst().each 
-  { 
+  module.depthFirst().each
+  {
     String attr = it.attribute('feature_knownapitypes')
     if (attr != null)
-    { 
+    {
       attr.trim().split(',').each { knownApiTypes.add(it) }
     }
   }
@@ -812,7 +813,7 @@ namespace PythonBindings
 
 <%
 //=========================================================================
-// Do the directors. For every class that can be extended in python, we 
+// Do the directors. For every class that can be extended in python, we
 // need to create a Director instance with bridging calls. This chunk of
 // code will generate those classes.
   classes.findAll({ it.@feature_director != null }).each { clazz ->
@@ -820,8 +821,8 @@ namespace PythonBindings
     constructor = clazz.constructor[0]
 %>
   //=========================================================================
-  // This class is the Director for ${Helper.findFullClassName(clazz)}. 
-  // It provides the "reverse bridge" from C++ to Python to support 
+  // This class is the Director for ${Helper.findFullClassName(clazz)}.
+  // It provides the "reverse bridge" from C++ to Python to support
   // cross-language polymorphism.
   //=========================================================================
   class ${PythonTools.getClassNameAsVariable(clazz)}_Director : public Director, public ${clazz.@name}
@@ -833,7 +834,7 @@ namespace PythonBindings
       inline ${PythonTools.getClassNameAsVariable(clazz)}_Director(<%
         List params = constructor?.parm
         params.eachWithIndex { param, i -> %>${SwigTypeParser.SwigType_str(param.@type)} ${param.@name}${i < params.size() - 1 ? "," : ""} <% }
-        %>) : ${Helper.findFullClassName(constructor)}(<% 
+        %>) : ${Helper.findFullClassName(constructor)}(<%
         params.eachWithIndex { param, i -> %> ${param.@name}${i < params.size() - 1 ? "," : ""} <% } %>) { } <%
       }
 %>
@@ -864,7 +865,7 @@ namespace PythonBindings
           throw PythonBindings::PythonToCppException();
       }
 <%    }
-      
+
 %>
   };
 <%
@@ -881,7 +882,7 @@ namespace PythonBindings
     List tmpl = []
     tmpl.addAll(node.attributes().keySet())
     List newMethodKeys = tmpl.findAll { it.startsWith('feature_python_method_') }
-    newMethodKeys.each { key -> 
+    newMethodKeys.each { key ->
       String featureEntry = node.attribute(key)
       String methodName = key.substring('feature_python_method_'.length()) %>
   static PyObject* ${module.@name}_${PythonTools.getClassNameAsVariable(node)}_${methodName}(PyObject* self, PyObject *args, PyObject *kwds)
@@ -901,7 +902,7 @@ namespace PythonBindings
     {NULL, NULL, 0, NULL}
   };
 
-  // This is the call that will call all of the other initializes 
+  // This is the call that will call all of the other initializes
   //  for all of the classes in this module
   static void initTypes()
   {
@@ -944,19 +945,23 @@ namespace PythonBindings
    }%>
 
    // constants
-   PyModule_AddStringConstant(module, (char*)"__author__", (char*)"Team XBMC <http://xbmc.org>");
+   PyModule_AddStringConstant(module, (char*)"__author__", (char*)"Team XBMC <http://xbmc.tv>");
    PyModule_AddStringConstant(module, (char*)"__date__", (char*)"${new Date().toString()}");
-   PyModule_AddStringConstant(module, (char*)"__version__", (char*)"2.19.0");
+   PyModule_AddStringConstant(module, (char*)"__version__", (char*)"2.25.0");
    PyModule_AddStringConstant(module, (char*)"__credits__", (char*)"Team XBMC");
    PyModule_AddStringConstant(module, (char*)"__platform__", (char*)"ALL");
 
    // need to handle constants
-<% module.depthFirst().findAll( { it.name() == 'constant'} ).each { 
-     String pyCall = 
-        (it.@type == 'int' || it.@type == 'long' || it.@type == 'unsigned int' || it.@type == 'unsigned long' || it.@type == 'bool') ? 
+<% module.depthFirst().findAll( { it.name() == 'constant'} ).each {
+     String pyCall =
+        (it.@type == 'int' || it.@type == 'long' || it.@type == 'unsigned int' || it.@type == 'unsigned long' || it.@type == 'bool') ?
         'PyModule_AddIntConstant' : 'PyModule_AddStringConstant' %>
    ${pyCall}(module,"${it.@sym_name}",${it.@value}); <%
   } %>
   }
 
 } // end PythonBindings namespace for python type definitions
+
+<%
+Helper.getInsertNodes(module, 'footer').each { %>${Helper.unescape(it)}<% }
+%>

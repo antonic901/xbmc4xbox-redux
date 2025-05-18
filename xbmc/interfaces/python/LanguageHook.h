@@ -60,7 +60,7 @@ namespace XBMCAddon
       virtual void DelayedCallOpen();
       virtual void DelayedCallClose();
       virtual void MakePendingCalls();
-      
+
       /**
        * PythonCallbackHandler expects to be instantiated PER AddonClass instance
        *  that is to be used as a callback. This is why this cannot be instantited
@@ -77,6 +77,7 @@ namespace XBMCAddon
 
       virtual String GetAddonId();
       virtual String GetAddonVersion();
+      virtual long GetInvokerId();
 
       virtual void RegisterPlayerCallback(IPlayerCallback* player);
       virtual void UnregisterPlayerCallback(IPlayerCallback* player);
