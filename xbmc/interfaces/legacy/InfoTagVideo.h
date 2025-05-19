@@ -1,27 +1,15 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "video/VideoInfoTag.h"
-#include "AddonClass.h"
-
 #pragma once
+
+#include "AddonClass.h"
+#include "video/VideoInfoTag.h"
 
 namespace XBMCAddon
 {
@@ -60,10 +48,10 @@ namespace XBMCAddon
 
     public:
 #ifndef SWIG
-      InfoTagVideo(const CVideoInfoTag& tag);
+      explicit InfoTagVideo(const CVideoInfoTag& tag);
 #endif
       InfoTagVideo();
-      virtual ~InfoTagVideo();
+      ~InfoTagVideo() override;
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
@@ -563,6 +551,78 @@ namespace XBMCAddon
       getTrailer();
 #else
       String getTrailer();
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_InfoTagVideo
+      /// @brief \python_func{ getArtist() }
+      ///-----------------------------------------------------------------------
+      /// To get the artist name (for musicvideos)
+      ///
+      /// @return [std::vector<std::string>] Artist name
+      ///
+      ///
+      ///-----------------------------------------------------------------------
+      /// @python_v18 New function added.
+      ///
+      getArtist();
+#else
+      std::vector<std::string> getArtist();
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_InfoTagVideo
+      /// @brief \python_func{ getAlbum() }
+      ///-----------------------------------------------------------------------
+      /// To get the album name (for musicvideos)
+      ///
+      /// @return [string] Album name
+      ///
+      ///
+      ///-----------------------------------------------------------------------
+      /// @python_v18 New function added.
+      ///
+      getAlbum();
+#else
+      String getAlbum();
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_InfoTagVideo
+      /// @brief \python_func{ getTrack() }
+      ///-----------------------------------------------------------------------
+      /// To get the track number (for musicvideos)
+      ///
+      /// @return [int] Track number
+      ///
+      ///
+      ///-----------------------------------------------------------------------
+      /// @python_v18 New function added.
+      ///
+      getTrack();
+#else
+      int getTrack();
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_InfoTagVideo
+      /// @brief \python_func{ getDuration() }
+      ///-----------------------------------------------------------------------
+      /// To get the duration
+      ///
+      /// @return [unsigned int] Duration
+      ///
+      ///
+      ///-----------------------------------------------------------------------
+      /// @python_v18 New function added.
+      ///
+      getDuration();
+#else
+      unsigned int getDuration();
 #endif
     };
   }

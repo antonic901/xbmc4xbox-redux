@@ -1,22 +1,12 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
 
 #include "AddonString.h"
 #include "Tuple.h"
@@ -56,7 +46,7 @@ namespace XBMCAddon
     /// Write a string to Kodi's log file and the debug window.
     ///
     /// @param msg                 string - text to output.
-    /// @param level               [opt] integer - log level to ouput at.
+    /// @param level               [opt] integer - log level to output at.
     ///                            <em>(default=LOGDEBUG)</em>
     ///  |  Value:         | Description:                                      |
     ///  |----------------:|---------------------------------------------------|
@@ -180,7 +170,7 @@ namespace XBMCAddon
     /// **Example:**
     /// ~~~~~~~~~~~~~{.py}
     /// ..
-    /// xbmc.executebuiltin('RunXBE(c:\\avalaunch.xbe)')
+    /// xbmc.executebuiltin('Skin.SetString(abc,def)')
     /// ..
     /// ~~~~~~~~~~~~~
     ///
@@ -257,7 +247,7 @@ namespace XBMCAddon
     ///                             localize.
     /// @return                     Localized 'unicode string'
     ///
-    /// @note See strings.xml in `\language\{yourlanguage}\` for which id
+    /// @note See strings.po in `\language\{yourlanguage}\` for which id
     ///        you need for a string.
     ///
     ///
@@ -641,7 +631,7 @@ namespace XBMCAddon
     ///
     /// @param filename              string or unicode - filename/path to
     ///                              make legal
-    /// @paran fatX                  [opt] bool - True=Xbox file system(Default)
+    /// @param fatX                  [opt] bool - True=Xbox file system(Default)
     /// @return                      Legal filename or path as a string
     ///
     ///
@@ -981,57 +971,34 @@ namespace XBMCAddon
 #else
     String convertLanguage(const char* language, int format);
 #endif
-
-#ifdef DOXYGEN_SHOULD_USE_THIS
-    ///
-    /// \ingroup python_xbmc
-    /// @brief \python_func{ executehttpapi(httpcommand) }
-    ///-----------------------------------------------------------------------
-    /// @python_v12 Completely removed.
-    ///
-#endif
     //@}
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-    SWIG_CONSTANT_FROM_GETTER(int,SERVER_WEBSERVER);
-    SWIG_CONSTANT_FROM_GETTER(int,SERVER_AIRPLAYSERVER);
-    SWIG_CONSTANT_FROM_GETTER(int,SERVER_UPNPSERVER);
-    SWIG_CONSTANT_FROM_GETTER(int,SERVER_UPNPRENDERER);
-    SWIG_CONSTANT_FROM_GETTER(int,SERVER_EVENTSERVER);
-    SWIG_CONSTANT_FROM_GETTER(int,SERVER_JSONRPCSERVER);
-    SWIG_CONSTANT_FROM_GETTER(int,SERVER_ZEROCONF);
+    SWIG_CONSTANT_FROM_GETTER(int, SERVER_WEBSERVER);
+    SWIG_CONSTANT_FROM_GETTER(int, SERVER_AIRPLAYSERVER);
+    SWIG_CONSTANT_FROM_GETTER(int, SERVER_UPNPSERVER);
+    SWIG_CONSTANT_FROM_GETTER(int, SERVER_UPNPRENDERER);
+    SWIG_CONSTANT_FROM_GETTER(int, SERVER_EVENTSERVER);
+    SWIG_CONSTANT_FROM_GETTER(int, SERVER_JSONRPCSERVER);
+    SWIG_CONSTANT_FROM_GETTER(int, SERVER_ZEROCONF);
 
-    SWIG_CONSTANT_FROM_GETTER(int,PLAYLIST_MUSIC);
-    SWIG_CONSTANT_FROM_GETTER(int,PLAYLIST_VIDEO);
-#ifdef _XBOX
-    SWIG_CONSTANT_FROM_GETTER(int,PLAYER_CORE_AUTO);
-    SWIG_CONSTANT_FROM_GETTER(int,PLAYER_CORE_DVDPLAYER);
-    SWIG_CONSTANT_FROM_GETTER(int,PLAYER_CORE_MPLAYER);
-    SWIG_CONSTANT_FROM_GETTER(int,PLAYER_CORE_PAPLAYER);
-#endif
-    SWIG_CONSTANT_FROM_GETTER(int,TRAY_OPEN);
-    SWIG_CONSTANT_FROM_GETTER(int,DRIVE_NOT_READY);
-    SWIG_CONSTANT_FROM_GETTER(int,TRAY_CLOSED_NO_MEDIA);
-    SWIG_CONSTANT_FROM_GETTER(int,TRAY_CLOSED_MEDIA_PRESENT);
-    SWIG_CONSTANT_FROM_GETTER(int,LOGDEBUG);
-    SWIG_CONSTANT_FROM_GETTER(int,LOGINFO);
-    SWIG_CONSTANT_FROM_GETTER(int,LOGNOTICE);
-    SWIG_CONSTANT_FROM_GETTER(int,LOGWARNING);
-    SWIG_CONSTANT_FROM_GETTER(int,LOGERROR);
-    SWIG_CONSTANT_FROM_GETTER(int,LOGSEVERE);
-    SWIG_CONSTANT_FROM_GETTER(int,LOGFATAL);
-    SWIG_CONSTANT_FROM_GETTER(int,LOGNONE);
+    SWIG_CONSTANT_FROM_GETTER(int, PLAYLIST_MUSIC);
+    SWIG_CONSTANT_FROM_GETTER(int, PLAYLIST_VIDEO);
+    SWIG_CONSTANT_FROM_GETTER(int, TRAY_OPEN);
+    SWIG_CONSTANT_FROM_GETTER(int, DRIVE_NOT_READY);
+    SWIG_CONSTANT_FROM_GETTER(int, TRAY_CLOSED_NO_MEDIA);
+    SWIG_CONSTANT_FROM_GETTER(int, TRAY_CLOSED_MEDIA_PRESENT);
+    SWIG_CONSTANT_FROM_GETTER(int, LOGDEBUG);
+    SWIG_CONSTANT_FROM_GETTER(int, LOGINFO);
+    SWIG_CONSTANT_FROM_GETTER(int, LOGNOTICE);
+    SWIG_CONSTANT_FROM_GETTER(int, LOGWARNING);
+    SWIG_CONSTANT_FROM_GETTER(int, LOGERROR);
+    SWIG_CONSTANT_FROM_GETTER(int, LOGSEVERE);
+    SWIG_CONSTANT_FROM_GETTER(int, LOGFATAL);
+    SWIG_CONSTANT_FROM_GETTER(int, LOGNONE);
 
-#ifdef _XBOX
-    SWIG_CONSTANT_FROM_GETTER(int,CAPTURE_STATE_WORKING);
-    SWIG_CONSTANT_FROM_GETTER(int,CAPTURE_STATE_DONE);
-    SWIG_CONSTANT_FROM_GETTER(int,CAPTURE_STATE_FAILED);
-
-    SWIG_CONSTANT_FROM_GETTER(int,CAPTURE_FLAG_CONTINUOUS);
-    SWIG_CONSTANT_FROM_GETTER(int,CAPTURE_FLAG_IMMEDIATELY);
-#endif
-    SWIG_CONSTANT_FROM_GETTER(int,ISO_639_1);
-    SWIG_CONSTANT_FROM_GETTER(int,ISO_639_2);
-    SWIG_CONSTANT_FROM_GETTER(int,ENGLISH_NAME);
+    SWIG_CONSTANT_FROM_GETTER(int, ISO_639_1);
+    SWIG_CONSTANT_FROM_GETTER(int, ISO_639_2);
+    SWIG_CONSTANT_FROM_GETTER(int, ENGLISH_NAME);
 #if 0
     void registerMonitor(Monitor* monitor);
     void unregisterMonitor(Monitor* monitor);

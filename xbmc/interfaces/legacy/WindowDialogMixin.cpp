@@ -1,28 +1,18 @@
- /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+/*
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "WindowDialogMixin.h"
-#include "WindowInterceptor.h"
 
-#include "messaging/ApplicationMessenger.h"
+#include "ServiceBroker.h"
+#include "WindowInterceptor.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
+#include "messaging/ApplicationMessenger.h"
 
 using namespace KODI::MESSAGING;
 
@@ -33,7 +23,7 @@ namespace XBMCAddon
     void WindowDialogMixin::show()
     {
       XBMC_TRACE;
-      CApplicationMessenger::Get().SendMsg(TMSG_GUI_PYTHON_DIALOG, HACK_CUSTOM_ACTION_OPENING, 0, static_cast<void*>(w->window->get()));
+      CApplicationMessenger::GetInstance().SendMsg(TMSG_GUI_PYTHON_DIALOG, HACK_CUSTOM_ACTION_OPENING, 0, static_cast<void*>(w->window->get()));
     }
 
     void WindowDialogMixin::close()
@@ -42,7 +32,7 @@ namespace XBMCAddon
       w->bModal = false;
       w->PulseActionEvent();
 
-      CApplicationMessenger::Get().SendMsg(TMSG_GUI_PYTHON_DIALOG, HACK_CUSTOM_ACTION_CLOSING, 0, static_cast<void*>(w->window->get()));
+      CApplicationMessenger::GetInstance().SendMsg(TMSG_GUI_PYTHON_DIALOG, HACK_CUSTOM_ACTION_CLOSING, 0, static_cast<void*>(w->window->get()));
 
       w->iOldWindowId = 0;
     }
@@ -57,7 +47,7 @@ namespace XBMCAddon
       case HACK_CUSTOM_ACTION_OPENING:
         {
           // This is from the CGUIPythonWindowXMLDialog::Show_Internal
-          g_windowManager.RegisterDialog(w->window->get());
+          CServiceBroker::GetGUI()->GetWindowManager().RegisterDialog(w->window->get());
           // active this dialog...
           CGUIMessage msg(GUI_MSG_WINDOW_INIT,0,0);
           w->OnMessage(msg);

@@ -1,29 +1,19 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "CallbackHandler.h"
+
 #include "AddonUtils.h"
-#include "threads/SingleLock.h"
-#include <vector>
 #include "commons/Exception.h"
+#include "threads/SingleLock.h"
 #include "utils/log.h"
+
+#include <vector>
 
 namespace XBMCAddon
 {
@@ -61,16 +51,13 @@ namespace XBMCAddon
     CallbackQueue::iterator iter = g_callQueue.begin();
     while (iter != g_callQueue.end())
     {
-      AddonClass::Ref<AsyncCallbackMessage> cur(*iter);
+      if ((*iter)->handler.get() == this) // then this message is because of me
       {
-        if (cur->handler.get() == this) // then this message is because of me
-        {
-          g_callQueue.erase(iter);
-          iter = g_callQueue.begin();
-        }
-        else
-          ++iter;
+        g_callQueue.erase(iter);
+        iter = g_callQueue.begin();
       }
+      else
+        ++iter;
     }
   }
 
@@ -100,7 +87,7 @@ namespace XBMCAddon
 
           // we need to grab the object lock to see if the object of the call
           //  is deallocating. holding this lock should prevent it from
-          //  deallocating durring the execution of this call.
+          //  deallocating during the execution of this call.
 #ifdef ENABLE_XBMC_TRACE_API
           CLog::Log(LOGDEBUG,"%sNEWADDON executing callback 0x%lx",_tg.getSpaces(),(long)(p->cb.get()));
 #endif
@@ -117,13 +104,13 @@ namespace XBMCAddon
             catch (XbmcCommons::Exception& e) { e.LogThrowMessage(); }
             catch (...)
             {
-              CLog::Log(LOGERROR,"Unknown exception while executeing callback 0x%lx", (long)(p->cb.get()));
+              CLog::Log(LOGERROR,"Unknown exception while executing callback 0x%lx", (long)(p->cb.get()));
             }
           }
         }
 
         // since the state of the iterator may have been corrupted by
-        //  the changing state of the list from another thread durring
+        //  the changing state of the list from another thread during
         //  the releasing fo the lock in the immediately preceeding
         //  codeblock, we need to reset it before continuing the loop
         iter = g_callQueue.begin();

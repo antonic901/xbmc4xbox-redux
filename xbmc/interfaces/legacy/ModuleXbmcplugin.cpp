@@ -1,27 +1,15 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "ModuleXbmcplugin.h"
 
-#include "filesystem/PluginDirectory.h"
 #include "FileItem.h"
+#include "filesystem/PluginDirectory.h"
 
 namespace XBMCAddon
 {
@@ -31,6 +19,8 @@ namespace XBMCAddon
     bool addDirectoryItem(int handle, const String& url, const xbmcgui::ListItem* listItem,
                           bool isFolder, int totalItems)
     {
+      if (listItem == nullptr)
+        throw new XBMCAddon::WrongTypeException("None not allowed as argument for listitem");
       AddonClass::Ref<xbmcgui::ListItem> pListItem(listItem);
       pListItem->item->SetPath(url);
       pListItem->item->m_bIsFolder = isFolder;
@@ -39,18 +29,16 @@ namespace XBMCAddon
       return XFILE::CPluginDirectory::AddItem(handle, pListItem->item.get(), totalItems);
     }
 
-    bool addDirectoryItems(int handle, 
-                           const std::vector<Tuple<String,const XBMCAddon::xbmcgui::ListItem*,bool> >& items, 
+    bool addDirectoryItems(int handle,
+                           const std::vector<Tuple<String,const XBMCAddon::xbmcgui::ListItem*,bool> >& items,
                            int totalItems)
     {
       CFileItemList fitems;
-      for (std::vector<Tuple<String,const XBMCAddon::xbmcgui::ListItem*,bool> >::const_iterator item = items.begin();
-           item < items.end(); ++item )
+      for (const auto& item : items)
       {
-        const Tuple<String,const XBMCAddon::xbmcgui::ListItem*,bool>* pItem = &(*item);
-        const String& url = pItem->first();
-        const XBMCAddon::xbmcgui::ListItem *pListItem = pItem->second();
-        bool bIsFolder = pItem->GetNumValuesSet() > 2 ? pItem->third() : false;
+        const String& url = item.first();
+        const XBMCAddon::xbmcgui::ListItem* pListItem = item.second();
+        bool bIsFolder = item.GetNumValuesSet() > 2 ? item.third() : false;
         pListItem->item->SetPath(url);
         pListItem->item->m_bIsFolder = bIsFolder;
         fitems.Add(pListItem->item);
@@ -60,7 +48,7 @@ namespace XBMCAddon
       return XFILE::CPluginDirectory::AddItems(handle, &fitems, totalItems);
     }
 
-    void endOfDirectory(int handle, bool succeeded, bool updateListing, 
+    void endOfDirectory(int handle, bool succeeded, bool updateListing,
                         bool cacheToDisc)
     {
       // tell the directory class that we're done
@@ -69,6 +57,8 @@ namespace XBMCAddon
 
     void setResolvedUrl(int handle, bool succeeded, const xbmcgui::ListItem* listItem)
     {
+      if (listItem == nullptr)
+        throw new XBMCAddon::WrongTypeException("None not allowed as argument for listitem");
       AddonClass::Ref<xbmcgui::ListItem> pListItem(listItem);
       XFILE::CPluginDirectory::SetResolvedUrl(handle, succeeded, pListItem->item.get());
     }
@@ -103,7 +93,7 @@ namespace XBMCAddon
       XFILE::CPluginDirectory::SetProperty(handle, "plugincategory", category);
     }
 
-    void setPluginFanart(int handle, const char* image, 
+    void setPluginFanart(int handle, const char* image,
                          const char* color1,
                          const char* color2,
                          const char* color3)
@@ -122,6 +112,6 @@ namespace XBMCAddon
     {
       XFILE::CPluginDirectory::SetProperty(handle, key, value);
     }
-    
+
   }
 }

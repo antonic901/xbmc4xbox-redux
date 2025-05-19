@@ -1,28 +1,16 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <Python.h>
-
 #include "PyContext.h"
-#include "threads/ThreadLocal.h"
+
 #include "utils/log.h"
+
+#include <Python.h>
 
 namespace XBMCAddon
 {
@@ -30,24 +18,24 @@ namespace XBMCAddon
   {
     struct PyContextState
     {
-      inline PyContextState(bool pcreatedByGilRelease = false) : 
-        value(0), state(NULL), gilReleasedDepth(0), createdByGilRelease(pcreatedByGilRelease) {}
+      inline explicit PyContextState(bool pcreatedByGilRelease = false) :
+        state(NULL), createdByGilRelease(pcreatedByGilRelease) {}
 
-      int value;
+      int value = 0;
       PyThreadState* state;
-      int gilReleasedDepth;
+      int gilReleasedDepth = 0;
       bool createdByGilRelease;
     };
 
-    static XbmcThreads::ThreadLocal<PyContextState> tlsPyContextState;
+    static thread_local PyContextState* tlsPyContextState;
 
     void* PyContext::enterContext()
     {
-      PyContextState* cur = tlsPyContextState.get();
+      PyContextState* cur = tlsPyContextState;
       if (cur == NULL)
       {
         cur = new PyContextState();
-        tlsPyContextState.set(cur);
+        tlsPyContextState = cur;
       }
 
       // increment the count
@@ -59,7 +47,7 @@ namespace XBMCAddon
     void PyContext::leaveContext()
     {
       // here we ASSUME that the constructor was called.
-      PyContextState* cur = tlsPyContextState.get();
+      PyContextState* cur = tlsPyContextState;
       cur->value--;
       int curlevel = cur->value;
 
@@ -73,14 +61,14 @@ namespace XBMCAddon
       if (curlevel == 0)
       {
         // clear the tlsPyContextState
-        tlsPyContextState.set(NULL);
+        tlsPyContextState = NULL;
         delete cur;
       }
     }
 
     void PyGILLock::releaseGil()
     {
-      PyContextState* cur = tlsPyContextState.get();
+      PyContextState* cur = tlsPyContextState;
 
       // This means we're not within the python context, but
       // because we may be in a thread spawned by python itself,
@@ -105,7 +93,7 @@ namespace XBMCAddon
 
     void PyGILLock::acquireGil()
     {
-      PyContextState* cur = tlsPyContextState.get(); 
+      PyContextState* cur = tlsPyContextState;
 
       // it's not possible for cur to be NULL (and if it is, we want to fail anyway).
 

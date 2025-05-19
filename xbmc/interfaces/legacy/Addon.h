@@ -1,30 +1,17 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #pragma once
 
-#include "addons/IAddon.h"
-
-#include "AddonString.h"
 #include "AddonClass.h"
+#include "AddonString.h"
 #include "Exception.h"
+#include "addons/IAddon.h"
 
 namespace XBMCAddon
 {
@@ -76,9 +63,11 @@ namespace XBMCAddon
 
       String getAddonVersion();
 
+      bool UpdateSettingInActiveDialog(const char* id, const String& value);
+
     public:
-      Addon(const char* id = NULL);
-      virtual ~Addon();
+      explicit Addon(const char* id = NULL);
+      ~Addon() override;
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
@@ -140,6 +129,122 @@ namespace XBMCAddon
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_xbmcaddon
+      /// @brief \python_func{ xbmcaddon.Addon([id]).getSettingBool(id) }
+      ///-----------------------------------------------------------------------
+      /// Returns the value of a setting as a boolean.
+      ///
+      /// @param id                      string - id of the setting that the module
+      ///                                needs to access.
+      /// @return                        Setting as a boolean
+      ///
+      ///
+      ///-----------------------------------------------------------------------
+      /// @python_v18
+      /// New function added.
+      ///
+      ///
+      /// **Example:**
+      /// ~~~~~~~~~~~~~{.py}
+      /// ..
+      /// enabled = self.Addon.getSettingBool('enabled')
+      /// ..
+      /// ~~~~~~~~~~~~~
+      ///
+      getSettingBool(...);
+#else
+      bool getSettingBool(const char* id);
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_xbmcaddon
+      /// @brief \python_func{ xbmcaddon.Addon([id]).getSettingInt(id) }
+      ///-----------------------------------------------------------------------
+      /// Returns the value of a setting as an integer.
+      ///
+      /// @param id                      string - id of the setting that the module
+      ///                                needs to access.
+      /// @return                        Setting as an integer
+      ///
+      ///
+      ///-----------------------------------------------------------------------
+      /// @python_v18
+      /// New function added.
+      ///
+      ///
+      /// **Example:**
+      /// ~~~~~~~~~~~~~{.py}
+      /// ..
+      /// max = self.Addon.getSettingInt('max')
+      /// ..
+      /// ~~~~~~~~~~~~~
+      ///
+      getSettingInt(...);
+#else
+      int getSettingInt(const char* id);
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_xbmcaddon
+      /// @brief \python_func{ xbmcaddon.Addon([id]).getSettingNumber(id) }
+      ///-----------------------------------------------------------------------
+      /// Returns the value of a setting as a floating point number.
+      ///
+      /// @param id                      string - id of the setting that the module
+      ///                                needs to access.
+      /// @return                        Setting as a floating point number
+      ///
+      ///
+      ///-----------------------------------------------------------------------
+      /// @python_v18
+      /// New function added.
+      ///
+      ///
+      /// **Example:**
+      /// ~~~~~~~~~~~~~{.py}
+      /// ..
+      /// max = self.Addon.getSettingNumber('max')
+      /// ..
+      /// ~~~~~~~~~~~~~
+      ///
+      getSettingNumber(...);
+#else
+      double getSettingNumber(const char* id);
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_xbmcaddon
+      /// @brief \python_func{ xbmcaddon.Addon([id]).getSettingString(id) }
+      ///-----------------------------------------------------------------------
+      /// Returns the value of a setting as a unicode string.
+      ///
+      /// @param id                      string - id of the setting that the module
+      ///                                needs to access.
+      /// @return                        Setting as a unicode string
+      ///
+      ///
+      ///-----------------------------------------------------------------------
+      /// @python_v18
+      /// New function added.
+      ///
+      ///
+      /// **Example:**
+      /// ~~~~~~~~~~~~~{.py}
+      /// ..
+      /// apikey = self.Addon.getSettingString('apikey')
+      /// ..
+      /// ~~~~~~~~~~~~~
+      ///
+      getSettingString(...);
+#else
+      String getSettingString(const char* id);
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_xbmcaddon
       /// @brief \python_func{ xbmcaddon.Addon([id]).setSetting(id, value) }
       ///-----------------------------------------------------------------------
       /// Sets a script setting.
@@ -152,6 +257,9 @@ namespace XBMCAddon
       ///
       ///
       ///-----------------------------------------------------------------------
+      /// @python_v13
+      /// **id** is optional as it will be auto detected for this add-on instance.
+      ///
       ///
       /// **Example:**
       /// ~~~~~~~~~~~~~{.py}
@@ -163,6 +271,134 @@ namespace XBMCAddon
       setSetting(...);
 #else
       void setSetting(const char* id, const String& value);
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_xbmcaddon
+      /// @brief \python_func{ xbmcaddon.Addon([id]).setSettingBool(id, value) }
+      ///-----------------------------------------------------------------------
+      /// Sets a script setting.
+      ///
+      /// @param id                  string - id of the setting that the module needs to access.
+      /// @param value               boolean - value of the setting.
+      /// @return                    True if the value of the setting was set, false otherwise
+      ///
+      ///
+      /// @note You can use the above as keywords for arguments.
+      ///
+      ///
+      ///-----------------------------------------------------------------------
+      /// @python_v18
+      /// New function added.
+      ///
+      ///
+      /// **Example:**
+      /// ~~~~~~~~~~~~~{.py}
+      /// ..
+      /// self.Addon.setSettingBool(id='enabled', value=True)
+      /// ..
+      /// ~~~~~~~~~~~~~
+      ///
+      setSettingBool(...);
+#else
+      bool setSettingBool(const char* id, bool value);
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_xbmcaddon
+      /// @brief \python_func{ xbmcaddon.Addon([id]).setSettingInt(id, value) }
+      ///-----------------------------------------------------------------------
+      /// Sets a script setting.
+      ///
+      /// @param id                  string - id of the setting that the module needs to access.
+      /// @param value               integer - value of the setting.
+      /// @return                    True if the value of the setting was set, false otherwise
+      ///
+      ///
+      /// @note You can use the above as keywords for arguments.
+      ///
+      ///
+      ///-----------------------------------------------------------------------
+      /// @python_v18
+      /// New function added.
+      ///
+      ///
+      /// **Example:**
+      /// ~~~~~~~~~~~~~{.py}
+      /// ..
+      /// self.Addon.setSettingInt(id='max', value=5)
+      /// ..
+      /// ~~~~~~~~~~~~~
+      ///
+      setSettingInt(...);
+#else
+      bool setSettingInt(const char* id, int value);
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_xbmcaddon
+      /// @brief \python_func{ xbmcaddon.Addon([id]).setSettingNumber(id, value) }
+      ///-----------------------------------------------------------------------
+      /// Sets a script setting.
+      ///
+      /// @param id                  string - id of the setting that the module needs to access.
+      /// @param value               float - value of the setting.
+      /// @return                    True if the value of the setting was set, false otherwise
+      ///
+      ///
+      /// @note You can use the above as keywords for arguments.
+      ///
+      ///
+      ///-----------------------------------------------------------------------
+      /// @python_v18
+      /// New function added.
+      ///
+      ///
+      /// **Example:**
+      /// ~~~~~~~~~~~~~{.py}
+      /// ..
+      /// self.Addon.setSettingNumber(id='max', value=5.5)
+      /// ..
+      /// ~~~~~~~~~~~~~
+      ///
+      setSettingNumber(...);
+#else
+      bool setSettingNumber(const char* id, double value);
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_xbmcaddon
+      /// @brief \python_func{ xbmcaddon.Addon([id]).setSettingString(id, value) }
+      ///-----------------------------------------------------------------------
+      /// Sets a script setting.
+      ///
+      /// @param id                  string - id of the setting that the module needs to access.
+      /// @param value               string or unicode - value of the setting.
+      /// @return                    True if the value of the setting was set, false otherwise
+      ///
+      ///
+      /// @note You can use the above as keywords for arguments.
+      ///
+      ///
+      ///-----------------------------------------------------------------------
+      /// @python_v18
+      /// New function added.
+      ///
+      ///
+      /// **Example:**
+      /// ~~~~~~~~~~~~~{.py}
+      /// ..
+      /// self.Addon.setSettingString(id='username', value='teamkodi')
+      /// ..
+      /// ~~~~~~~~~~~~~
+      ///
+      setSettingString(...);
+#else
+      bool setSettingString(const char* id, const String& value);
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS

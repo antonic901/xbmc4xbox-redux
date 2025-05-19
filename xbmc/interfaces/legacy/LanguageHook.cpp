@@ -1,52 +1,40 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "LanguageHook.h"
-#include "threads/ThreadLocal.h"
+
 #include "utils/GlobalsHandling.h"
 
 namespace XBMCAddon
 {
   // just need a place for the vtab
-  LanguageHook::~LanguageHook() {}
+  LanguageHook::~LanguageHook() = default;
 
-  static XbmcThreads::ThreadLocal<LanguageHook> addonLanguageHookTls;
-  static bool threadLocalInitilialized = false;
-  static xbmcutil::InitFlag initer(threadLocalInitilialized);
+  static thread_local LanguageHook* addonLanguageHookTls;
+  static bool threadLocalInitialized = false;
+  static xbmcutil::InitFlag initer(threadLocalInitialized);
 
   void LanguageHook::SetLanguageHook(LanguageHook* languageHook)
   {
     XBMC_TRACE;
     languageHook->Acquire();
-    addonLanguageHookTls.set(languageHook);
+    addonLanguageHookTls = languageHook;
   }
 
   LanguageHook* LanguageHook::GetLanguageHook()
   {
-    return threadLocalInitilialized ? addonLanguageHookTls.get() : NULL;
+    return threadLocalInitialized ? addonLanguageHookTls : NULL;
   }
 
   void LanguageHook::ClearLanguageHook()
   {
-    LanguageHook* lh = addonLanguageHookTls.get();
-    addonLanguageHookTls.set(NULL);
+    LanguageHook* lh = addonLanguageHookTls;
+    addonLanguageHookTls = NULL;
     if (lh)
       lh->Release();
   }

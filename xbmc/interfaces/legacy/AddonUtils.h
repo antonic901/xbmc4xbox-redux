@@ -19,7 +19,7 @@
 
 #include "threads/SingleLock.h"
 
-#include <boost/move/unique_ptr.hpp>
+#include <memory>
 #include <vector>
 
 #ifdef TARGET_WINDOWS
@@ -45,8 +45,8 @@ namespace XBMCAddonUtils
     ~GuiLock();
 
   protected:
-    XBMCAddon::LanguageHook* m_languageHook;
-    bool m_offScreen;
+    XBMCAddon::LanguageHook* m_languageHook = nullptr;
+    bool m_offScreen = false;
   };
 
   class InvertSingleLockGuard

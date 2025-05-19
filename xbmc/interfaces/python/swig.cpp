@@ -1,27 +1,16 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "LanguageHook.h"
 #include "swig.h"
-#include "utils/StringUtils.h"
+
+#include "LanguageHook.h"
 #include "interfaces/legacy/AddonString.h"
+#include "utils/StringUtils.h"
 
 #include <string>
 
@@ -29,28 +18,16 @@ namespace PythonBindings
 {
   TypeInfo::TypeInfo(const std::type_info& ti) : swigType(NULL), parentType(NULL), typeIndex(ti)
   {
-#ifndef _XBOX
     static PyTypeObject py_type_object_header = { PyObject_HEAD_INIT(NULL) 0};
     static int size = (long*)&(py_type_object_header.tp_name) - (long*)&py_type_object_header;
     memcpy(&(this->pythonType), &py_type_object_header, size);
-#endif
   }
-
-#ifdef _XBOX
-  void TypeInfo::reset()
-  {
-    static PyTypeObject py_type_object_header = { PyObject_HEAD_INIT(NULL) 0};
-    int size = (long*)&(py_type_object_header.tp_name) - (long*)&py_type_object_header;
-    memset(&(this->pythonType), 0, sizeof(PyTypeObject));
-    memcpy(&(this->pythonType), &py_type_object_header, size);
-  }
-#endif
 
   class PyObjectDecrementor
   {
     PyObject* obj;
   public:
-    inline PyObjectDecrementor(PyObject* pyobj) : obj(pyobj) {}
+    inline explicit PyObjectDecrementor(PyObject* pyobj) : obj(pyobj) {}
     inline ~PyObjectDecrementor() { Py_XDECREF(obj); }
 
     inline PyObject* get() { return obj; }
@@ -216,16 +193,16 @@ namespace PythonBindings
       PyObject *tracebackModule = PyImport_ImportModule("traceback");
       if (tracebackModule != NULL)
       {
-        char format_exception[] = "format_exception";
-        char zeros[] = "000";
-        PyObject *tbList = PyObject_CallMethod(tracebackModule, format_exception, zeros, exc_type, exc_value == NULL ? Py_None : exc_value, exc_traceback == NULL ? Py_None : exc_traceback);
+        char method[] = "format_exception";
+        char format[] = "OOO";
+        PyObject *tbList = PyObject_CallMethod(tracebackModule, method, format, exc_type, exc_value == NULL ? Py_None : exc_value, exc_traceback == NULL ? Py_None : exc_traceback);
 
         if (tbList)
         {
           PyObject *emptyString = PyString_FromString("");
-          char join[] = "join";
-          char zero[] = "O";
-          PyObject *strRetval = PyObject_CallMethod(emptyString, join, zero, tbList);
+          char method[] = "join";
+          char format[] = "O";
+          PyObject *strRetval = PyObject_CallMethod(emptyString, method, format, tbList);
           Py_DECREF(emptyString);
 
           if (strRetval)
@@ -289,7 +266,7 @@ namespace PythonBindings
         throw XBMCAddon::WrongTypeException("Incorrect type passed to \"%s\", was expecting a \"%s\" but received a \"%s\"",
                                  methodNameForErrorString,expectedType,typeInfo->swigType);
     }
-    return const_cast<XBMCAddon::AddonClass*>(reinterpret_cast<const PyHolder*>(pythonObj)->pSelf);
+    return const_cast<XBMCAddon::AddonClass*>(pythonObj->pSelf);
   }
 
   /**
@@ -393,20 +370,16 @@ namespace PythonBindings
     return (PyObject*)self;
   }
 
-  std::map<XbmcCommons::type_index, const TypeInfo*> typeInfoLookup;
+  std::map<std::type_index, const TypeInfo*> typeInfoLookup;
 
   void registerAddonClassTypeInformation(const TypeInfo* classInfo)
   {
-#ifdef _XBOX
-    if (typeInfoLookup.find(classInfo->typeIndex) != typeInfoLookup.end())
-      return;
-#endif
     typeInfoLookup[classInfo->typeIndex] = classInfo;
   }
 
   const TypeInfo* getTypeInfoForInstance(XBMCAddon::AddonClass* obj)
   {
-    XbmcCommons::type_index ti(typeid(*obj));
+    std::type_index ti(typeid(*obj));
     return typeInfoLookup[ti];
   }
 

@@ -1,28 +1,15 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #pragma once
 
 #include "AddonClass.h"
 #include "CallbackHandler.h"
-
 #include "threads/Event.h"
 
 /**
@@ -42,10 +29,10 @@ namespace XBMCAddon
   class LanguageHook : public AddonClass
   {
   protected:
-    inline LanguageHook() {}
+    inline LanguageHook() = default;
 
   public:
-    virtual ~LanguageHook();
+    ~LanguageHook() override;
 
     /**
      * If the scripting language needs special handling for calls
@@ -82,7 +69,7 @@ namespace XBMCAddon
     virtual CallbackHandler* GetCallbackHandler() { return NULL; }
 
     /**
-     * This is a callback method that can be overriden to receive a callback
+     * This is a callback method that can be overridden to receive a callback
      *  when an AddonClass that has this language hook is on is being constructed.
      *  It is called from the constructor of AddonClass so the implementor
      *  cannot assume the subclasses have been built or that calling a
@@ -91,7 +78,7 @@ namespace XBMCAddon
     virtual void Constructing(AddonClass* beingConstructed) { }
 
     /**
-     * This is a callback method that can be overriden to receive a callback
+     * This is a callback method that can be overridden to receive a callback
      *  when an AddonClass that has this language hook is on is being destructed.
      *  It is called from the destructor of AddonClass so the implementor
      *  should assume the subclasses have been torn down and that calling a
@@ -104,7 +91,7 @@ namespace XBMCAddon
      *  I can think to do it requires an InheritableThreadLocal C++ equivalent,
      *  I'm going to defer to this technique for now.
      *
-     * Currently (for python) the scripting languge has the Addon id injected
+     * Currently (for python) the scripting language has the Addon id injected
      *  into it as a global variable. Therefore the only way to retrieve it is
      *  to use scripting language specific calls. So until I figure out a
      *  better way to do this, this is how I need to retrieve it.
@@ -135,13 +122,13 @@ namespace XBMCAddon
   class DelayedCallGuard
   {
     LanguageHook* languageHook;
-    bool clearOnExit;
+    bool clearOnExit = false;
 
   public:
-    inline DelayedCallGuard(LanguageHook* languageHook_) : languageHook(languageHook_), clearOnExit(false)
+    inline explicit DelayedCallGuard(LanguageHook* languageHook_) : languageHook(languageHook_)
     { if (languageHook) languageHook->DelayedCallOpen(); }
 
-    inline DelayedCallGuard() : languageHook(LanguageHook::GetLanguageHook()), clearOnExit(false)
+    inline DelayedCallGuard() : languageHook(LanguageHook::GetLanguageHook())
     { if (languageHook) languageHook->DelayedCallOpen(); }
 
     inline ~DelayedCallGuard()
@@ -156,7 +143,7 @@ namespace XBMCAddon
   class SetLanguageHookGuard
   {
   public:
-    inline SetLanguageHookGuard(LanguageHook* languageHook) { LanguageHook::SetLanguageHook(languageHook); }
+    inline explicit SetLanguageHookGuard(LanguageHook* languageHook) { LanguageHook::SetLanguageHook(languageHook); }
     inline ~SetLanguageHookGuard() { LanguageHook::ClearLanguageHook(); }
   };
 

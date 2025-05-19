@@ -1,21 +1,9 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "AddonClass.h"
@@ -42,7 +30,7 @@ namespace XBMCAddon
 #endif
   }
 
-  AddonClass::AddonClass() : refs(0L), m_isDeallocating(false),
+  AddonClass::AddonClass() : refs(0L),
                              languageHook(NULL)
   {
 #ifdef XBMC_ADDON_DEBUG_MEMORY
@@ -70,13 +58,13 @@ namespace XBMCAddon
       CLog::Log(LOGERROR,"NEWADDON REFCNT Releasing dead class %s 0x%lx",
                 GetClassname(), (long)(((void*)this)));
 
-    long ct = AtomicDecrement((long*)&refs);
+    long ct = --refs;
 #ifdef LOG_LIFECYCLE_EVENTS
-    CLog::Log(LOGDEBUG,"NEWADDON REFCNT decrementing to %ld on %s 0x%lx", refs, GetClassname(), (long)(((void*)this)));
+    CLog::Log(LOGDEBUG,"NEWADDON REFCNT decrementing to %ld on %s 0x%lx", refs.load(), GetClassname(), (long)(((void*)this)));
 #endif
     if(ct == 0)
     {
-        ((AddonClass*)this)->isDeleted = true;
+        const_cast<AddonClass*>(this)->isDeleted = true;
         // we're faking a delete but not doing it so call the destructor explicitly
         this->~AddonClass();
     }
@@ -90,9 +78,9 @@ namespace XBMCAddon
 
 #ifdef LOG_LIFECYCLE_EVENTS
     CLog::Log(LOGDEBUG,"NEWADDON REFCNT incrementing to %ld on %s 0x%lx",
-              AtomicIncrement((long*)&refs),GetClassname(), (long)(((void*)this)));
+              ++refs, GetClassname(), (long)(((void*)this)));
 #else
-    AtomicIncrement((long*)&refs);
+    ++refs;
 #endif
   }
 #endif

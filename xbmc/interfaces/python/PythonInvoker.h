@@ -1,33 +1,22 @@
-#pragma once
 /*
- *      Copyright (C) 2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2013-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
+
+#include "interfaces/generic/ILanguageInvoker.h"
+#include "interfaces/legacy/Addon.h"
+#include "interfaces/python/LanguageHook.h"
+#include "threads/CriticalSection.h"
+#include "threads/Event.h"
 
 #include <map>
 #include <string>
 #include <vector>
-
-#include "interfaces/generic/ILanguageInvoker.h"
-#include "interfaces/python/LanguageHook.h"
-#include "interfaces/legacy/Addon.h"
-#include "threads/CriticalSection.h"
-#include "threads/Event.h"
 
 struct _ts;
 
@@ -35,21 +24,21 @@ class CPythonInvoker : public ILanguageInvoker
 {
 public:
   explicit CPythonInvoker(ILanguageInvocationHandler *invocationHandler);
-  virtual ~CPythonInvoker();
+  ~CPythonInvoker() override;
 
-  virtual bool Execute(const std::string &script, const std::vector<std::string> &arguments = std::vector<std::string>());
+  bool Execute(const std::string &script, const std::vector<std::string> &arguments = std::vector<std::string>()) override;
 
-  virtual bool IsStopping() const { return m_stop || ILanguageInvoker::IsStopping(); }
+  bool IsStopping() const override { return m_stop || ILanguageInvoker::IsStopping(); }
 
   typedef void (*PythonModuleInitialization)();
 
 protected:
   // implementation of ILanguageInvoker
-  virtual bool execute(const std::string &script, const std::vector<std::string> &arguments);
+  bool execute(const std::string &script, const std::vector<std::string> &arguments) override;
   virtual void executeScript(void *fp, const std::string &script, void *module, void *moduleDict);
-  virtual bool stop(bool abort);
-  virtual void onExecutionDone();
-  virtual void onExecutionFailed();
+  bool stop(bool abort) override;
+  void onExecutionDone() override;
+  void onExecutionFailed() override;
 
   // custom virtual methods
   virtual std::map<std::string, PythonModuleInitialization> getModules() const;
@@ -79,7 +68,7 @@ private:
   CEvent m_stoppedEvent;
 
   XBMCAddon::AddonClass::Ref<XBMCAddon::Python::PythonLanguageHook> m_languageHook;
-  bool m_systemExitThrown;
+  bool m_systemExitThrown = false;
 
   static CCriticalSection s_critical;
 };

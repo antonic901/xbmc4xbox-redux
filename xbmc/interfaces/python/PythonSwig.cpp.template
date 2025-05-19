@@ -1,22 +1,10 @@
 <%
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 %>
 <%
@@ -68,8 +56,8 @@ Helper.setup(this,classes,
       'std::string' : new File('typemaps/python.string.outtm'),
       'p.q(const).char' : '${result} = PyString_FromString(${api});',
       (Pattern.compile('''(p.){0,1}XbmcCommons::Buffer''')) : new File('typemaps/python.buffer.outtm'),
-      (Pattern.compile('''boost::shared_ptr<\\(.*\\)>''')) : new File('typemaps/python.boost_shared_ptr.outtm'),
-      (Pattern.compile('''boost::movelib::unique_ptr<\\(.*\\)>''')) : new File('typemaps/python.boost_shared_ptr.outtm'),
+      (Pattern.compile('''std::shared_ptr<\\(.*\\)>''')) : new File('typemaps/python.smart_ptr.outtm'),
+      (Pattern.compile('''std::unique_ptr<\\(.*\\)>''')) : new File('typemaps/python.smart_ptr.outtm'),
       (Pattern.compile('''(p.){0,1}std::vector<\\(.*\\)>''')) : new File('typemaps/python.vector.outtm'),
       (Pattern.compile('''(p.){0,1}Tuple<\\(.*\\)>''')) : new File('typemaps/python.Tuple.outtm'),
       (Pattern.compile('''(p.){0,1}Alternative<\\(.*\\)>''')) : new File('typemaps/python.Alternative.outtm')
@@ -189,7 +177,7 @@ void doMethod(Node method, MethodType methodType)
 <%  }
     }
     // now actually invoke the method
-    if (returns != "void") { %>    ${SwigTypeParser.SwigType_lstr(returns)} apiResult;<%   }
+    if (returns != "void") { %>    ${SwigTypeParser.SwigType_str(returns)} apiResult;<%   }
 %>
     try
     {
@@ -209,7 +197,7 @@ void doMethod(Node method, MethodType methodType)
     if (!destructor) {
     if (constructor || !clazz) {  %>      XBMCAddon::SetLanguageHookGuard slhg(XBMCAddon::Python::PythonLanguageHook::GetIfExists(PyThreadState_Get()->interp).get());<% println() }
 %>      <%
-    if (returns != "void") { %>apiResult = (${SwigTypeParser.SwigType_lstr(returns)})<% }
+    if (returns != "void") { %>apiResult = <% }
     if (clazz && !constructor) {
       %>((${clazz}*)retrieveApiInstance((PyObject*)self,&Ty${classNameAsVariable}_Type,"${Helper.callingName(method)}","${clazz}"))-> <%
     }
@@ -471,7 +459,7 @@ void doClassMethodInfo(Node clazz, List initTypeCalls)
      String returns = Helper.getPropertyReturnSwigType(it);
 %>   if (strcmp((char*)name, "${it.@sym_name}") == 0)
       {
-        ${SwigTypeParser.SwigType_lstr(returns)} apiResult = (${SwigTypeParser.SwigType_lstr(returns)})theObj->${it.@sym_name};
+        ${SwigTypeParser.SwigType_lstr(returns)} apiResult = theObj->${it.@sym_name};
         ${Helper.getOutConversion(returns, 'result', it)}
       }
       else<%
@@ -661,9 +649,6 @@ void doClassMethodInfo(Node clazz, List initTypeCalls)
                 );
 <%  } %>
 
-#ifdef _XBOX
-    Ty${classNameAsVariable}_Type.reset();
-#endif
     PyTypeObject& pythonType = Ty${classNameAsVariable}_Type.pythonType;
     pythonType.tp_name = "${module.@name}.${clazz.@sym_name}";
     pythonType.tp_basicsize = sizeof(PyHolder);
@@ -745,24 +730,11 @@ List getAllVirtualMethods(Node clazz)
 
 %>
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 // ************************************************************************
@@ -777,6 +749,7 @@ Helper.getInsertNodes(module, 'begin').each { %>${Helper.unescape(it)}<% }
 
 #include <Python.h>
 #include <string>
+#include "CompileInfo.h"
 #include "interfaces/python/LanguageHook.h"
 #include "interfaces/python/swig.h"
 #include "interfaces/python/PyContext.h"
@@ -908,14 +881,10 @@ namespace PythonBindings
   //  for all of the classes in this module
   static void initTypes()
   {
-#ifndef _XBOX
     static bool typesAlreadyInitialized = false;
     if (!typesAlreadyInitialized)
     {
       typesAlreadyInitialized = true;
-#else
-    {
-#endif
 <%
       initTypeCalls.each { %>
       ${it}();<%
@@ -947,10 +916,10 @@ namespace PythonBindings
    }%>
 
    // constants
-   PyModule_AddStringConstant(module, "__author__", "Team XBMC <http://xbmc.tv>");
-   PyModule_AddStringConstant(module, "__date__", "${new Date().toString()}");
-   PyModule_AddStringConstant(module, "__version__", "2.25.0");
-   PyModule_AddStringConstant(module, "__credits__", "Team XBMC");
+   PyModule_AddStringConstant(module, "__author__", "Team Kodi <http://kodi.tv>");
+   PyModule_AddStringConstant(module, "__date__", CCompileInfo::GetBuildDate().c_str());
+   PyModule_AddStringConstant(module, "__version__", "2.26.0");
+   PyModule_AddStringConstant(module, "__credits__", "Team Kodi");
    PyModule_AddStringConstant(module, "__platform__", "ALL");
 
    // need to handle constants

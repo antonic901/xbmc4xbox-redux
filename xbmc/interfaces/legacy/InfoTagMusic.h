@@ -1,27 +1,15 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "music/tags/MusicInfoTag.h"
-#include "AddonClass.h"
-
 #pragma once
+
+#include "AddonClass.h"
+#include "music/tags/MusicInfoTag.h"
 
 namespace XBMCAddon
 {
@@ -59,10 +47,28 @@ namespace XBMCAddon
 
     public:
 #ifndef SWIG
-      InfoTagMusic(const MUSIC_INFO::CMusicInfoTag& tag);
+      explicit InfoTagMusic(const MUSIC_INFO::CMusicInfoTag& tag);
 #endif
       InfoTagMusic();
-      virtual ~InfoTagMusic();
+      ~InfoTagMusic() override;
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_InfoTagMusic
+      /// @brief \python_func{ getDbId() }
+      ///-----------------------------------------------------------------------
+      /// Get identification number of tag in database.
+      ///
+      /// @return [integer] database id.
+      ///
+      ///
+      ///-----------------------------------------------------------------------
+      /// @python_v18 New function added.
+      ///
+      getDbId();
+#else
+      int getDbId();
+#endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
@@ -98,6 +104,30 @@ namespace XBMCAddon
       getTitle();
 #else
       String getTitle();
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_InfoTagMusic
+      /// @brief \python_func{ getMediaType() }
+      ///-----------------------------------------------------------------------
+      /// Get the media type of the music item.
+      ///
+      /// @return [string] media type
+      ///
+      /// Available strings about media type for music:
+      /// | String         | Description                                       |
+      /// |---------------:|:--------------------------------------------------|
+      /// | artist         | If it is defined as an artist
+      /// | album          | If it is defined as an album
+      /// | song           | If it is defined as a song
+      ///
+      ///-----------------------------------------------------------------------
+      /// @python_v18 New function added.
+      ///
+      getMediaType();
+#else
+      String getMediaType();
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS

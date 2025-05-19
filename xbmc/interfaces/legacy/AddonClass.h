@@ -1,21 +1,9 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #pragma once
@@ -43,11 +31,13 @@
 
 #include "AddonString.h"
 #include "threads/SingleLock.h"
-#include "threads/Atomics.h"
 #ifdef XBMC_ADDON_DEBUG_MEMORY
 #include "utils/log.h"
 #endif
 #include "AddonUtils.h"
+
+#include <atomic>
+#include <typeindex>
 
 namespace XBMCAddon
 {
@@ -66,11 +56,11 @@ namespace XBMCAddon
   class AddonClass : public CCriticalSection
   {
   private:
-    long   refs;
-    bool m_isDeallocating;
+    mutable std::atomic<long> refs;
+    bool m_isDeallocating = false;
 
     // no copying
-    inline AddonClass(const AddonClass&);
+    inline AddonClass(const AddonClass&) = delete;
 
 #ifdef XBMC_ADDON_DEBUG_MEMORY
     bool isDeleted;
@@ -83,7 +73,7 @@ namespace XBMCAddon
      * This method is meant to be called from the destructor of the
      *  lowest level class.
      *
-     * It's virtual because it's a conveinent place to receive messages that
+     * It's virtual because it's a convenient place to receive messages that
      *  we're about to go be deleted but prior to any real tear-down.
      *
      * Any overloading classes need to remember to pass the call up the chain.
@@ -124,7 +114,7 @@ namespace XBMCAddon
     void Release() const
 #ifndef XBMC_ADDON_DEBUG_MEMORY
     {
-      long ct = AtomicDecrement((long*)&refs);
+      long ct = --refs;
 #ifdef LOG_LIFECYCLE_EVENTS
       CLog::Log(LOGDEBUG,"NEWADDON REFCNT decrementing to %ld on %s 0x%lx", ct,GetClassname(), (long)(((void*)this)));
 #endif
@@ -146,9 +136,9 @@ namespace XBMCAddon
     {
 #ifdef LOG_LIFECYCLE_EVENTS
       CLog::Log(LOGDEBUG,"NEWADDON REFCNT incrementing to %ld on %s 0x%lx",
-                AtomicIncrement((long*)&refs),GetClassname(), (long)(((void*)this)));
+                ++refs, GetClassname(), (long)(((void*)this)));
 #else
-      AtomicIncrement((long*)&refs);
+      ++refs;
 #endif
     }
 #else
@@ -172,7 +162,7 @@ namespace XBMCAddon
 
       /**
        * operator= should work with either another smart pointer or a pointer since it will
-       * be able to convert a pointer to a smart pointer using one of the above constuctors.
+       * be able to convert a pointer to a smart pointer using one of the above constructors.
        *
        * Note: There is a trick here. The temporary variable is necessary because otherwise the
        * following code will fail:

@@ -1,42 +1,28 @@
 /*
- *      Copyright (C) 2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2013-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
-
-#if (defined HAVE_CONFIG_H) && (!defined TARGET_WINDOWS)
-  #include "config.h"
-#endif
 
 // python.h should always be included first before any other includes
 #include <Python.h>
 #include <iterator>
 #include <osdefs.h>
 
-#include "system.h"
 #include "PythonInvoker.h"
 #include "Application.h"
+#include "ServiceBroker.h"
 #include "messaging/ApplicationMessenger.h"
 #include "addons/AddonManager.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
-#include "guilib/GraphicContext.h"
+#include "guilib/GUIComponent.h"
+#include "windowing/GraphicContext.h"
 #include "guilib/GUIWindowManager.h"
+#include "guilib/LocalizeStrings.h"
 #include "interfaces/python/PyContext.h"
 #include "interfaces/python/pythreadstate.h"
 #include "interfaces/python/swig.h"
@@ -49,11 +35,10 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #ifdef TARGET_POSIX
-#include "linux/XTimeUtils.h"
+#include "platform/posix/XTimeUtils.h"
 #endif
 
 #ifdef TARGET_WINDOWS
-#pragma comment(lib, "python27.lib")
 extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
 #else
 #define fopen_utf8 fopen
@@ -87,49 +72,41 @@ static const std::string getListOfAddonClassesAsString(XBMCAddon::AddonClass::Re
   CSingleLock l(*(languageHook.get()));
   std::set<XBMCAddon::AddonClass*>& acs = languageHook->GetRegisteredAddonClasses();
   bool firstTime = true;
-  for (std::set<XBMCAddon::AddonClass*>::iterator iter = acs.begin(); iter != acs.end(); ++iter)
+  for (const auto& iter : acs)
   {
     if (!firstTime)
       message += ",";
     else
       firstTime = false;
-    message += (*iter)->GetClassname();
+    message += iter->GetClassname();
   }
 
   return message;
 }
 
-std::vector<char> stringToCharVector(const std::string& s) {
-    return std::vector<char>(s.c_str(), s.c_str() + s.length() + 1);
-}
-
-static std::vector<std::vector<char> > storeArgumentsCCompatible(std::vector<std::string> const & input)
+static std::vector<std::vector<char>> storeArgumentsCCompatible(std::vector<std::string> const & input)
 {
-  std::vector<std::vector<char> > output;
+  std::vector<std::vector<char>> output;
   std::transform(input.begin(), input.end(), std::back_inserter(output),
-                stringToCharVector);
+                [](std::string const & i) { return std::vector<char>(i.c_str(), i.c_str() + i.length() + 1); });
 
   if (output.empty())
-    output.push_back(std::vector<char>(1u, '\0'));
+    output.emplace_back(1u, '\0');
 
   return output;
 }
 
-char* charVectorToPointer(std::vector<char>& v) {
-    return &v[0];
-}
-
-static std::vector<char *> getCPointersToArguments(std::vector<std::vector<char> > & input)
+static std::vector<char *> getCPointersToArguments(std::vector<std::vector<char>> & input)
 {
   std::vector<char *> output;
   std::transform(input.begin(), input.end(), std::back_inserter(output),
-                charVectorToPointer);
+                [](std::vector<char> & i) { return &i[0]; });
   return output;
 }
 
 CPythonInvoker::CPythonInvoker(ILanguageInvocationHandler *invocationHandler)
   : ILanguageInvoker(invocationHandler),
-    m_threadState(NULL), m_stop(false), m_systemExitThrown(false)
+    m_threadState(NULL), m_stop(false)
 { }
 
 CPythonInvoker::~CPythonInvoker()
@@ -173,7 +150,7 @@ bool CPythonInvoker::execute(const std::string &script, const std::vector<std::s
 
   // copy the arguments into a local buffer
   unsigned int argc = arguments.size();
-  std::vector<std::vector<char> > argvStorage = storeArgumentsCCompatible(arguments);
+  std::vector<std::vector<char>> argvStorage = storeArgumentsCCompatible(arguments);
   std::vector<char *> argv = getCPointersToArguments(argvStorage);
 
   CLog::Log(LOGDEBUG, "CPythonInvoker(%d, %s): start processing", GetId(), m_sourceFile.c_str());
@@ -216,8 +193,8 @@ bool CPythonInvoker::execute(const std::string &script, const std::vector<std::s
     {
       std::set<std::string> paths;
       getAddonModuleDeps(m_addon, paths);
-      for (std::set<std::string>::const_iterator it = paths.begin(); it != paths.end(); ++it)
-        addPath(*it);
+      for (const auto& it : paths)
+        addPath(it);
     }
     else
     { // for backwards compatibility.
@@ -293,11 +270,6 @@ bool CPythonInvoker::execute(const std::string &script, const std::vector<std::s
 
   PyEval_AcquireLock();
   PyThreadState_Swap(m_threadState);
-
-#ifdef _XBOX
-  // without this os.getcwd() will return empty string
-  xbp_chdir(scriptDir.c_str());
-#endif
 
   bool failed = false;
   std::string exceptionType, exceptionValue, exceptionTraceback;
@@ -495,7 +467,7 @@ bool CPythonInvoker::stop(bool abort)
       // on TMSG_GUI_PYTHON_DIALOG messages, so pump the message loop.
       if (g_application.IsCurrentThread())
       {
-        CApplicationMessenger::Get().ProcessMessages();
+        CApplicationMessenger::GetInstance().ProcessMessages();
       }
     }
 
@@ -654,9 +626,9 @@ void CPythonInvoker::onDeinitialization()
 void CPythonInvoker::onError(const std::string &exceptionType /* = "" */, const std::string &exceptionValue /* = "" */, const std::string &exceptionTraceback /* = "" */)
 {
   CPyThreadState releaseGil;
-  CSingleLock gc(g_graphicsContext);
+  CSingleLock gc(CServiceBroker::GetWinSystem()->GetGfxContext());
 
-  CGUIDialogKaiToast *pDlgToast = (CGUIDialogKaiToast*)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
+  CGUIDialogKaiToast *pDlgToast = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogKaiToast>(WINDOW_DIALOG_KAI_TOAST);
   if (pDlgToast != NULL)
   {
     std::string message;
@@ -677,10 +649,11 @@ const char* CPythonInvoker::getInitializationScript() const
 
 void CPythonInvoker::initializeModules(const std::map<std::string, PythonModuleInitialization> &modules)
 {
-  for (std::map<std::string, PythonModuleInitialization>::const_iterator module = modules.begin(); module != modules.end(); ++module)
+  for (const auto& module : modules)
   {
-    if (!initializeModule(module->second))
-      CLog::Log(LOGWARNING, "CPythonInvoker(%d, %s): unable to initialize python module \"%s\"", GetId(), m_sourceFile.c_str(), module->first.c_str());
+    if (!initializeModule(module.second))
+      CLog::Log(LOGWARNING, "CPythonInvoker(%d, %s): unable to initialize python module \"%s\"",
+                GetId(), m_sourceFile.c_str(), module.first.c_str());
   }
 }
 
@@ -695,12 +668,11 @@ bool CPythonInvoker::initializeModule(PythonModuleInitialization module)
 
 void CPythonInvoker::getAddonModuleDeps(const ADDON::AddonPtr& addon, std::set<std::string>& paths)
 {
-  ADDON::ADDONDEPS deps = addon->GetDeps();
-  for (ADDON::ADDONDEPS::const_iterator it = deps.begin(); it != deps.end(); ++it)
+  for (const auto& it : addon->GetDependencies())
   {
     //Check if dependency is a module addon
     ADDON::AddonPtr dependency;
-    if (CServiceBroker::GetAddonMgr().GetAddon(it->first, dependency, ADDON::ADDON_SCRIPT_MODULE))
+    if (CServiceBroker::GetAddonMgr().GetAddon(it.id, dependency, ADDON::ADDON_SCRIPT_MODULE))
     {
       std::string path = CSpecialProtocol::TranslatePath(dependency->LibPath());
       if (paths.find(path) == paths.end())

@@ -1,27 +1,18 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "ModuleXbmcgui.h"
+
 #include "LanguageHook.h"
-#include "guilib/GraphicContext.h"
+#include "ServiceBroker.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
+#include "windowing/GraphicContext.h"
 
 #define NOTIFICATION_INFO     "info"
 #define NOTIFICATION_WARNING  "warning"
@@ -34,15 +25,27 @@ namespace XBMCAddon
     long getCurrentWindowId()
     {
       DelayedCallGuard dg;
-      CSingleLock gl(g_graphicsContext);
-      return g_windowManager.GetActiveWindow();
+      CSingleLock gl(CServiceBroker::GetWinSystem()->GetGfxContext());
+      return CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
     }
 
     long getCurrentWindowDialogId()
     {
       DelayedCallGuard dg;
-      CSingleLock gl(g_graphicsContext);
-      return g_windowManager.GetTopMostModalDialogID();
+      CSingleLock gl(CServiceBroker::GetWinSystem()->GetGfxContext());
+      return CServiceBroker::GetGUI()->GetWindowManager().GetTopmostModalDialog();
+    }
+
+    long getScreenHeight()
+    {
+      XBMC_TRACE;
+      return CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight();
+    }
+
+    long getScreenWidth()
+    {
+      XBMC_TRACE;
+      return CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth();
     }
 
     const char* getNOTIFICATION_INFO()    { return NOTIFICATION_INFO; }
