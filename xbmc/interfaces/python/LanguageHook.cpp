@@ -86,9 +86,10 @@ namespace XBMCAddon
 
     bool PythonLanguageHook::IsAddonClassInstanceRegistered(AddonClass* obj)
     {
-      for (const auto& iter : hooks)
+      for (std::map<PyInterpreterState*,AddonClass::Ref<PythonLanguageHook> >::iterator iter = hooks.begin();
+           iter != hooks.end(); ++iter)
       {
-        if (iter.second->HasRegisteredAddonClassInstance(obj))
+        if (iter->second->HasRegisteredAddonClassInstance(obj))
           return true;
       }
       return false;

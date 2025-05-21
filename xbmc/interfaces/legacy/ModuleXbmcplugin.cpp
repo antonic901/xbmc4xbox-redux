@@ -34,8 +34,9 @@ namespace XBMCAddon
                            int totalItems)
     {
       CFileItemList fitems;
-      for (const auto& item : items)
+      for (std::vector<Tuple<String,const XBMCAddon::xbmcgui::ListItem*,bool> >::const_iterator it = items.begin(); it != items.end(); ++it)
       {
+        const XBMCAddon::Tuple<XBMCAddon::String, const XBMCAddon::xbmcgui::ListItem *, bool> &item = *it;
         const String& url = item.first();
         const XBMCAddon::xbmcgui::ListItem* pListItem = item.second();
         bool bIsFolder = item.GetNumValuesSet() > 2 ? item.third() : false;

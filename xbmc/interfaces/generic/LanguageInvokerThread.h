@@ -20,7 +20,7 @@ class CLanguageInvokerThread : public ILanguageInvoker, protected CThread
 {
 public:
   CLanguageInvokerThread(LanguageInvokerPtr invoker, CScriptInvocationManager *invocationManager, bool reuseable);
-  ~CLanguageInvokerThread() override;
+  ~CLanguageInvokerThread();
 
   virtual InvokerState GetState() const;
 
@@ -30,13 +30,13 @@ public:
   virtual void Release();
 
 protected:
-  bool execute(const std::string &script, const std::vector<std::string> &arguments) override;
-  bool stop(bool wait) override;
+  virtual bool execute(const std::string &script, const std::vector<std::string> &arguments);
+  virtual bool stop(bool wait);
 
-  void OnStartup() override;
-  void Process() override;
-  void OnExit() override;
-  void OnException() override;
+  virtual void OnStartup();
+  virtual void Process();
+  virtual void OnExit();
+  virtual void OnException();
 
 private:
   LanguageInvokerPtr m_invoker;
@@ -46,7 +46,7 @@ private:
 
   std::mutex m_mutex;
   std::condition_variable m_condition;
-  bool m_restart = false;
-  bool m_reusable = false;
+  bool m_restart;
+  bool m_reusable;
 };
 

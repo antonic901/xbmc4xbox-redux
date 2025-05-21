@@ -138,7 +138,7 @@ bool CPluginDirectory::StartScript(const std::string& strPath, bool retrievingDi
   std::string basePath(url.Get());
   // reset our wait event, and grab a new handle
   m_fetchComplete.Reset();
-  int handle = CScriptInvocationManager::Get().GetReusablePluginHandle(m_addon->LibPath());
+  int handle = CScriptInvocationManager::GetInstance().GetReusablePluginHandle(m_addon->LibPath());
 
   if (handle < 0)
     handle = getNewHandle(this);

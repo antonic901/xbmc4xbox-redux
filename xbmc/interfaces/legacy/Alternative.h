@@ -18,11 +18,13 @@ namespace XBMCAddon
   {
   public:
   private:
-    WhichAlternative pos = none;
+    WhichAlternative pos;
     T1 d1;
     T2 d2;
 
   public:
+    Alternative() : pos(none) {}
+
     inline WhichAlternative which() const { return pos; }
 
     inline T1& former()

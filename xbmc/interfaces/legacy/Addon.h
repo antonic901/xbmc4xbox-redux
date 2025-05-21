@@ -67,7 +67,7 @@ namespace XBMCAddon
 
     public:
       explicit Addon(const char* id = NULL);
-      ~Addon() override;
+      virtual ~Addon();
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///

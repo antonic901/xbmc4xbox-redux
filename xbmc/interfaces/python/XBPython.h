@@ -9,14 +9,14 @@
 #pragma once
 
 #include "ServiceBroker.h"
-#include "cores/IPlayerCallback.h"
+#include "cores/IPlayer.h"
 #include "interfaces/IAnnouncer.h"
 #include "interfaces/generic/ILanguageInvocationHandler.h"
 #include "threads/CriticalSection.h"
 #include "threads/Event.h"
 #include "threads/Thread.h"
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <vector>
 
 #define g_pythonParser CServiceBroker::GetXBPython()
@@ -55,21 +55,21 @@ class XBPython :
 {
 public:
   XBPython();
-  ~XBPython() override;
-  void OnPlayBackEnded() override;
-  void OnPlayBackStarted(const CFileItem &file) override;
-  void OnAVStarted(const CFileItem &file) override;
-  void OnAVChange() override;
-  void OnPlayBackPaused() override;
-  void OnPlayBackResumed() override;
-  void OnPlayBackStopped() override;
-  void OnPlayBackError() override;
-  void OnPlayBackSpeedChanged(int iSpeed) override;
-  void OnPlayBackSeek(int64_t iTime, int64_t seekOffset) override;
-  void OnPlayBackSeekChapter(int iChapter) override;
-  void OnQueueNextItem() override;
+  virtual ~XBPython();
+  virtual void OnPlayBackEnded();
+  virtual void OnPlayBackStarted();
+  virtual void OnAVStarted(const CFileItem &file);
+  virtual void OnAVChange();
+  virtual void OnPlayBackPaused();
+  virtual void OnPlayBackResumed();
+  virtual void OnPlayBackStopped();
+  virtual void OnPlayBackError();
+  virtual void OnPlayBackSpeedChanged(int iSpeed);
+  virtual void OnPlayBackSeek(int iTime, int seekOffset);
+  virtual void OnPlayBackSeekChapter(int iChapter);
+  virtual void OnQueueNextItem();
 
-  void Announce(ANNOUNCEMENT::AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data) override;
+  virtual void Announce(ANNOUNCEMENT::AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data);
   void RegisterPythonPlayerCallBack(IPlayerCallback* pCallback);
   void UnregisterPythonPlayerCallBack(IPlayerCallback* pCallback);
   void RegisterPythonMonitorCallBack(XBMCAddon::xbmc::Monitor* pCallback);
@@ -85,15 +85,15 @@ public:
   void OnCleanFinished(const std::string &library);
   void OnNotification(const std::string &sender, const std::string &method, const std::string &data);
 
-  void Process() override;
-  void PulseGlobalEvent() override;
-  void Uninitialize() override;
-  bool OnScriptInitialized(ILanguageInvoker *invoker) override;
-  void OnScriptStarted(ILanguageInvoker *invoker) override;
-  void OnScriptAbortRequested(ILanguageInvoker *invoker) override;
-  void OnExecutionEnded(ILanguageInvoker *invoker) override;
-  void OnScriptFinalized(ILanguageInvoker *invoker) override;
-  ILanguageInvoker* CreateInvoker() override;
+  virtual void Process();
+  virtual void PulseGlobalEvent();
+  virtual void Uninitialize();
+  virtual bool OnScriptInitialized(ILanguageInvoker *invoker);
+  virtual void OnScriptStarted(ILanguageInvoker *invoker);
+  virtual void OnScriptAbortRequested(ILanguageInvoker *invoker);
+  virtual void OnExecutionEnded(ILanguageInvoker *invoker);
+  virtual void OnScriptFinalized(ILanguageInvoker *invoker);
+  virtual ILanguageInvoker* CreateInvoker();
 
   bool WaitForEvent(CEvent& hEvent, unsigned int milliseconds);
 
@@ -101,8 +101,14 @@ public:
   void UnregisterExtensionLib(LibraryLoader *pLib);
   void UnloadExtensionLibs();
 
+#ifdef _XBOX // SpyceModule.cpp
+  void* getMainThreadState() { CSingleLock lock(m_critSection); return m_mainThreadState; };
+  void Finalize();
+private:
+#else
 private:
   void Finalize();
+#endif
 
   CCriticalSection    m_critSection;
   bool              FileExist(const char* strFile);

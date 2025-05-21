@@ -42,18 +42,20 @@ namespace XBMCAddon
     class Action : public AddonClass
     {
     public:
-      Action() = default;
+      Action() : id(-1), fAmount1(0.0f), fAmount2(0.0f),
+                 fRepeat(0.0f), buttonCode(0), strAction("")
+      { }
 
 #ifndef SWIG
       explicit Action(const CAction& caction) { setFromCAction(caction); }
 
       void setFromCAction(const CAction& caction);
 
-      long id = -1;
-      float fAmount1 = 0.0f;
-      float fAmount2 = 0.0f;
-      float fRepeat = 0.0f;
-      unsigned long buttonCode = 0;
+      long id;
+      float fAmount1;
+      float fAmount2;
+      float fRepeat;
+      unsigned long buttonCode;
       std::string strAction;
 
       // Not sure if this is correct but it's here for now.
@@ -189,7 +191,7 @@ namespace XBMCAddon
     class Window : public AddonCallback
     {
       friend class WindowDialogMixin;
-      bool isDisposed = false;
+      bool isDisposed;
 
       void doAddControl(Control* pControl, CCriticalSection* gcontext, bool wait);
       void doRemoveControl(Control* pControl, CCriticalSection* gcontext, bool wait);
@@ -197,19 +199,19 @@ namespace XBMCAddon
     protected:
 #ifndef SWIG
       InterceptorBase* window;
-      int iWindowId = -1;
+      int iWindowId;
 
       std::vector<AddonClass::Ref<Control> > vecControls;
-      int iOldWindowId = 0;
-      int iCurrentControlId = 3000;
-      bool bModal = false;
+      int iOldWindowId;
+      int iCurrentControlId;
+      bool bModal;
       CEvent m_actionEvent;
 
-      bool canPulse = false;
+      bool canPulse;
 
       // I REALLY hate this ... but it's the simplest fix right now.
-      bool existingWindow = true;
-      bool destroyAfterDeInit = false;
+      bool existingWindow;
+      bool destroyAfterDeInit;
 
       /**
        * This only takes a boolean to allow subclasses to explicitly use it. A
@@ -219,7 +221,7 @@ namespace XBMCAddon
        */
       explicit Window(bool discrim);
 
-      void deallocating() override;
+      virtual void deallocating();
 
       /**
        * This helper retrieves the next available id. It is assumed that the
@@ -253,7 +255,7 @@ namespace XBMCAddon
     public:
       explicit Window(int existingWindowId = -1);
 
-      ~Window() override;
+      virtual ~Window();
 
 #ifndef SWIG
       SWIGHIDDENVIRTUAL bool    OnMessage(CGUIMessage& message);

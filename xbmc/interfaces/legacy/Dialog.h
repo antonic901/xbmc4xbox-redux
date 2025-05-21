@@ -46,8 +46,8 @@ namespace XBMCAddon
     {
     public:
 
-      inline Dialog() = default;
-      ~Dialog() override;
+      inline Dialog() {}
+      virtual ~Dialog();
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
@@ -223,7 +223,7 @@ namespace XBMCAddon
       ///
       multiselect(...);
 #else
-      std::unique_ptr<std::vector<int> > multiselect(const String& heading, const std::vector<Alternative<String, const ListItem* > > & options, int autoclose=0, const std::vector<int>& preselect = std::vector<int>(), bool useDetails=false);
+      boost::movelib::unique_ptr<std::vector<int> > multiselect(const String& heading, const std::vector<Alternative<String, const ListItem* > > & options, int autoclose=0, const std::vector<int>& preselect = std::vector<int>(), bool useDetails=false);
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
@@ -618,16 +618,16 @@ namespace XBMCAddon
     ///
     class DialogProgress : public AddonClass
     {
-      CGUIDialogProgress* dlg = nullptr;
-      bool                open = false;
+      CGUIDialogProgress* dlg;
+      bool                open;
 
     protected:
-      void deallocating() override;
+      virtual void deallocating();
 
     public:
 
-      DialogProgress() = default;
-      ~DialogProgress() override;
+      DialogProgress() : dlg(nullptr), open(false) {}
+      virtual ~DialogProgress();
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
@@ -759,11 +759,11 @@ namespace XBMCAddon
     {
 
     protected:
-      void deallocating() override;
+      virtual void deallocating();
 
     public:
-      DialogBusy() = default;
-      ~DialogBusy() override;
+      DialogBusy() {}
+      virtual ~DialogBusy();
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
@@ -861,17 +861,17 @@ namespace XBMCAddon
     ///
     class DialogProgressBG : public AddonClass
     {
-      CGUIDialogExtendedProgressBar* dlg = nullptr;
-      CGUIDialogProgressBarHandle* handle = nullptr;
-      bool open = false;
+      CGUIDialogExtendedProgressBar* dlg;
+      CGUIDialogProgressBarHandle* handle;
+      bool open;
 
     protected:
-      void deallocating() override;
+      virtual void deallocating();
 
     public:
 
-      DialogProgressBG() = default;
-      ~DialogProgressBG() override;
+      DialogProgressBG() : dlg(nullptr), handle(nullptr), open(false) {}
+      virtual ~DialogProgressBG();
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///

@@ -10,10 +10,8 @@
 
 #include "AddonUtils.h"
 #include "LanguageHook.h"
-#include "ServiceBroker.h"
 #include "WindowException.h"
 #include "guilib/GUIButtonControl.h"
-#include "guilib/GUIComponent.h"
 #include "guilib/GUIControlFactory.h"
 #include "guilib/GUIEditControl.h"
 #include "guilib/GUIFadeLabelControl.h"
@@ -66,7 +64,7 @@ namespace XBMCAddon
       CGUIMessage msg(GUI_MSG_LABEL_ADD, iParentId, iControlId);
       msg.SetLabel(label);
 
-      CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg, iParentId);
+      g_windowManager.SendThreadMessage(msg, iParentId);
     }
 
     void ControlFadeLabel::reset()
@@ -74,7 +72,7 @@ namespace XBMCAddon
       CGUIMessage msg(GUI_MSG_LABEL_RESET, iParentId, iControlId);
 
       vecLabels.clear();
-      CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg, iParentId);
+      g_windowManager.SendThreadMessage(msg, iParentId);
     }
 
     CGUIControl* ControlFadeLabel::Create()
@@ -134,7 +132,7 @@ namespace XBMCAddon
       msg.SetLabel(text);
 
       // send message
-      CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg, iParentId);
+      g_windowManager.SendThreadMessage(msg, iParentId);
     }
 
     String ControlTextBox::getText()
@@ -149,7 +147,7 @@ namespace XBMCAddon
     {
       // create message
       CGUIMessage msg(GUI_MSG_LABEL_RESET, iParentId, iControlId);
-      CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg, iParentId);
+      g_windowManager.SendThreadMessage(msg, iParentId);
     }
 
     void ControlTextBox::scroll(long position)
@@ -192,7 +190,7 @@ namespace XBMCAddon
                                  const char* _shadowColor, const char* _focusedColor) :
       textOffsetX(_textOffsetX), textOffsetY(_textOffsetY),
       align(alignment), strFont("font13"), textColor(0xffffffff), disabledColor(0x60ffffff),
-      iAngle(angle), focusedColor(0xffffffff)
+      iAngle(angle), shadowColor(0), focusedColor(0xffffffff)
     {
       dwPosX = x;
       dwPosY = y;
@@ -334,7 +332,7 @@ namespace XBMCAddon
 
       XBMCAddonUtils::GuiLock lock(languageHook, false);
       if (pGUIControl)
-        static_cast<CGUIImage*>(pGUIControl)->SetColorDiffuse(GUILIB::GUIINFO::CGUIInfoColor(colorDiffuse));
+        static_cast<CGUIImage*>(pGUIControl)->SetColorDiffuse(colorDiffuse);
     }
 
     CGUIControl* ControlImage::Create()
@@ -347,7 +345,7 @@ namespace XBMCAddon
         static_cast<CGUIImage*>(pGUIControl)->SetAspectRatio((CAspectRatio::ASPECT_RATIO)aspectRatio);
 
       if (pGUIControl && colorDiffuse)
-        static_cast<CGUIImage*>(pGUIControl)->SetColorDiffuse(GUILIB::GUIINFO::CGUIInfoColor(colorDiffuse));
+        static_cast<CGUIImage*>(pGUIControl)->SetColorDiffuse(colorDiffuse);
 
       return pGUIControl;
     }
@@ -402,7 +400,7 @@ namespace XBMCAddon
          CTextureInfo(strTextureOverlay));
 
       if (pGUIControl && colorDiffuse)
-        static_cast<CGUIProgressControl*>(pGUIControl)->SetColorDiffuse(GUILIB::GUIINFO::CGUIInfoColor(colorDiffuse));
+        static_cast<CGUIProgressControl*>(pGUIControl)->SetColorDiffuse(colorDiffuse);
 
       return pGUIControl;
     }
@@ -745,9 +743,9 @@ namespace XBMCAddon
 
         TiXmlElement pNode("animation");
         std::vector<std::string> attrs = StringUtils::Split(cAttr, " ");
-        for (const auto& i : attrs)
+        for (std::vector<std::string>::const_iterator i = attrs.begin(); i != attrs.end(); ++i)
         {
-          std::vector<std::string> attrs2 = StringUtils::Split(i, "=");
+          std::vector<std::string> attrs2 = StringUtils::Split(*i, "=");
           if (attrs2.size() == 2)
             pNode.SetAttribute(attrs2[0], attrs2[1]);
         }
@@ -902,7 +900,7 @@ namespace XBMCAddon
       */
     }
 
-    ControlSpin::~ControlSpin() = default;
+    ControlSpin::~ControlSpin() {}
     // ============================================================
 
     // ============================================================
@@ -934,7 +932,7 @@ namespace XBMCAddon
         sscanf( p_disabledColor, "%x", &disabledColor );
     }
 
-    ControlLabel::~ControlLabel() = default;
+    ControlLabel::~ControlLabel() {}
 
     CGUIControl* ControlLabel::Create()
     {
@@ -966,7 +964,7 @@ namespace XBMCAddon
       strText = label;
       CGUIMessage msg(GUI_MSG_LABEL_SET, iParentId, iControlId);
       msg.SetLabel(strText);
-      CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg, iParentId);
+      g_windowManager.SendThreadMessage(msg, iParentId);
     }
 
     String ControlLabel::getLabel()
@@ -1032,7 +1030,7 @@ namespace XBMCAddon
       strText = label;
       CGUIMessage msg(GUI_MSG_LABEL_SET, iParentId, iControlId);
       msg.SetLabel(strText);
-      CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg, iParentId);
+      g_windowManager.SendThreadMessage(msg, iParentId);
     }
 
     String ControlEdit::getLabel()
@@ -1049,13 +1047,13 @@ namespace XBMCAddon
       msg.SetLabel(text);
 
       // send message
-      CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg, iParentId);
+      g_windowManager.SendThreadMessage(msg, iParentId);
     }
 
     String ControlEdit::getText()
     {
       CGUIMessage msg(GUI_MSG_ITEM_SELECTED, iParentId, iControlId);
-      CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg, iParentId);
+      g_windowManager.SendMessage(msg, iParentId);
 
       return msg.GetLabel();
     }
@@ -1065,7 +1063,7 @@ namespace XBMCAddon
       if (pGUIControl)
       {
         XBMCAddonUtils::GuiLock(languageHook, false);
-        static_cast<CGUIEditControl*>(pGUIControl)->SetInputType(static_cast<CGUIEditControl::INPUT_TYPE>(type), CVariant{heading});
+        static_cast<CGUIEditControl*>(pGUIControl)->SetInputType(static_cast<CGUIEditControl::INPUT_TYPE>(type), heading);
       }
     }
 
@@ -1114,7 +1112,7 @@ namespace XBMCAddon
       pControlSpin->dwPosY = dwHeight - 15;
     }
 
-    ControlList::~ControlList() = default;
+    ControlList::~ControlList() { }
 
     CGUIControl* ControlList::Create()
     {
@@ -1163,8 +1161,8 @@ namespace XBMCAddon
     {
       XBMC_TRACE;
 
-      for (const auto& iter : items)
-        addItem(iter, false);
+      for (std::vector<Alternative<String, const XBMCAddon::xbmcgui::ListItem* > >::const_iterator iter = items.begin(); iter != items.end(); ++iter)
+        addItem(*iter,false);
       sendLabelBind(vecItems.size());
     }
 
@@ -1190,7 +1188,7 @@ namespace XBMCAddon
 
       CGUIMessage msg(GUI_MSG_LABEL_BIND, iParentId, iControlId, 0, 0, items);
       msg.SetPointer(items.get());
-      CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg, iParentId);
+      g_windowManager.SendThreadMessage(msg, iParentId);
     }
 
     void ControlList::selectItem(long item)
@@ -1199,7 +1197,7 @@ namespace XBMCAddon
       CGUIMessage msg(GUI_MSG_ITEM_SELECT, iParentId, iControlId, item);
 
       // send message
-      CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg, iParentId);
+      g_windowManager.SendThreadMessage(msg, iParentId);
     }
 
     void ControlList::removeItem(int index)
@@ -1216,7 +1214,7 @@ namespace XBMCAddon
     {
       CGUIMessage msg(GUI_MSG_LABEL_RESET, iParentId, iControlId);
 
-      CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg, iParentId);
+      g_windowManager.SendThreadMessage(msg, iParentId);
 
       // delete all items from vector
       // delete all ListItem from vector

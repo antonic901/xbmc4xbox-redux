@@ -29,10 +29,10 @@ namespace XBMCAddon
   class LanguageHook : public AddonClass
   {
   protected:
-    inline LanguageHook() = default;
+    inline LanguageHook() {}
 
   public:
-    ~LanguageHook() override;
+    virtual ~LanguageHook();
 
     /**
      * If the scripting language needs special handling for calls
@@ -122,13 +122,13 @@ namespace XBMCAddon
   class DelayedCallGuard
   {
     LanguageHook* languageHook;
-    bool clearOnExit = false;
+    bool clearOnExit;
 
   public:
     inline explicit DelayedCallGuard(LanguageHook* languageHook_) : languageHook(languageHook_)
     { if (languageHook) languageHook->DelayedCallOpen(); }
 
-    inline DelayedCallGuard() : languageHook(LanguageHook::GetLanguageHook())
+    inline DelayedCallGuard() : languageHook(LanguageHook::GetLanguageHook()), clearOnExit(false)
     { if (languageHook) languageHook->DelayedCallOpen(); }
 
     inline ~DelayedCallGuard()

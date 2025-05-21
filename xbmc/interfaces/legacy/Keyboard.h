@@ -59,11 +59,11 @@ namespace XBMCAddon
       String strHeading;
       bool bHidden;
       String strText;
-      bool bConfirmed = false;
+      bool bConfirmed;
 #endif
 
       Keyboard(const String& line = emptyString, const String& heading = emptyString, bool hidden = false);
-      ~Keyboard() override;
+      virtual ~Keyboard();
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///

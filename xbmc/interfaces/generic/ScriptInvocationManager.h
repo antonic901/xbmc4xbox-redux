@@ -13,12 +13,12 @@
 #include "threads/CriticalSection.h"
 
 #include <map>
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <set>
 #include <vector>
 
 class CLanguageInvokerThread;
-typedef std::shared_ptr<CLanguageInvokerThread> CLanguageInvokerThreadPtr;
+typedef boost::shared_ptr<CLanguageInvokerThread> CLanguageInvokerThreadPtr;
 
 class CScriptInvocationManager
 {
@@ -124,9 +124,9 @@ protected:
   void OnExecutionDone(int scriptId);
 
 private:
-  CScriptInvocationManager() = default;
-  CScriptInvocationManager(const CScriptInvocationManager&) = delete;
-  CScriptInvocationManager const& operator=(CScriptInvocationManager const&) = delete;
+  CScriptInvocationManager();
+  CScriptInvocationManager(const CScriptInvocationManager&);
+  CScriptInvocationManager const& operator=(CScriptInvocationManager const&);
   virtual ~CScriptInvocationManager();
 
   typedef struct {
@@ -145,6 +145,6 @@ private:
   int m_lastPluginHandle;
 
   std::map<std::string, int> m_scriptPaths;
-  int m_nextId = 0;
-  mutable CCriticalSection m_critSection;
+  int m_nextId;
+  CCriticalSection m_critSection;
 };

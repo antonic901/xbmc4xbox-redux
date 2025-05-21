@@ -8,9 +8,7 @@
 
 #include "WindowDialogMixin.h"
 
-#include "ServiceBroker.h"
 #include "WindowInterceptor.h"
-#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "messaging/ApplicationMessenger.h"
 
@@ -23,7 +21,7 @@ namespace XBMCAddon
     void WindowDialogMixin::show()
     {
       XBMC_TRACE;
-      CApplicationMessenger::GetInstance().SendMsg(TMSG_GUI_PYTHON_DIALOG, HACK_CUSTOM_ACTION_OPENING, 0, static_cast<void*>(w->window->get()));
+      CApplicationMessenger::Get().SendMsg(TMSG_GUI_PYTHON_DIALOG, HACK_CUSTOM_ACTION_OPENING, 0, static_cast<void*>(w->window->get()));
     }
 
     void WindowDialogMixin::close()
@@ -32,7 +30,7 @@ namespace XBMCAddon
       w->bModal = false;
       w->PulseActionEvent();
 
-      CApplicationMessenger::GetInstance().SendMsg(TMSG_GUI_PYTHON_DIALOG, HACK_CUSTOM_ACTION_CLOSING, 0, static_cast<void*>(w->window->get()));
+      CApplicationMessenger::Get().SendMsg(TMSG_GUI_PYTHON_DIALOG, HACK_CUSTOM_ACTION_CLOSING, 0, static_cast<void*>(w->window->get()));
 
       w->iOldWindowId = 0;
     }
@@ -47,7 +45,7 @@ namespace XBMCAddon
       case HACK_CUSTOM_ACTION_OPENING:
         {
           // This is from the CGUIPythonWindowXMLDialog::Show_Internal
-          CServiceBroker::GetGUI()->GetWindowManager().RegisterDialog(w->window->get());
+          g_windowManager.RegisterDialog(w->window->get());
           // active this dialog...
           CGUIMessage msg(GUI_MSG_WINDOW_INIT,0,0);
           w->OnMessage(msg);

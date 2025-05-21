@@ -13,11 +13,10 @@
 #include "Alternative.h"
 #include "Exception.h"
 #include "InfoTagMusic.h"
-#include "InfoTagRadioRDS.h"
 #include "InfoTagVideo.h"
 #include "ListItem.h"
 #include "PlayList.h"
-#include "cores/IPlayerCallback.h"
+#include "cores/playercorefactory/PlayerCoreFactory.h"
 #include "swighelper.h"
 
 #include <vector>
@@ -60,6 +59,9 @@ namespace XBMCAddon
     {
     private:
       int iPlayList;
+#ifdef _XBOX
+      EPLAYERCORES playerCore;
+#endif
 
       void playStream(const String& item = emptyString, const XBMCAddon::xbmcgui::ListItem* listitem = NULL, bool windowed = false);
       void playPlaylist(const PlayList* playlist = NULL,
@@ -76,7 +78,7 @@ namespace XBMCAddon
       //  construction of a Player needs to identify whether or not any
       //  callbacks will be executed asynchronously or not.
       explicit Player(int playerCore = 0);
-      ~Player(void) override;
+      virtual ~Player(void);
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
@@ -679,25 +681,6 @@ namespace XBMCAddon
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_Player
-      /// @brief \python_func{ getRadioRDSInfoTag() }
-      ///-----------------------------------------------------------------------
-      /// To get Radio RDS info tag
-      ///
-      /// Returns the RadioRDSInfoTag of the current playing 'Radio Song if.
-      /// present'.
-      ///
-      /// @return                    Radio RDS info tag
-      /// @throws Exception          If player is not playing a file or current
-      ///                            file is not a rds file.
-      ///
-      getRadioRDSInfoTag();
-#else
-      InfoTagRadioRDS* getRadioRDSInfoTag();
-#endif
-
-#ifdef DOXYGEN_SHOULD_USE_THIS
-      ///
-      /// \ingroup python_Player
       /// @brief \python_func{ getTotalTime() }
       ///-----------------------------------------------------------------------
       /// To get total playing time.
@@ -751,57 +734,19 @@ namespace XBMCAddon
       void setAudioStream(int iStream);
 #endif
 
-#ifdef DOXYGEN_SHOULD_USE_THIS
-      ///
-      /// \ingroup python_Player
-      /// @brief \python_func{ getAvailableVideoStreams() }
-      ///-----------------------------------------------------------------------
-      /// Get Video stream names
-      ///
-      /// @return                    List of video streams as name
-      ///
-      getAvailableVideoStreams();
-#else
-      std::vector<String> getAvailableVideoStreams();
-#endif
-
-#ifdef DOXYGEN_SHOULD_USE_THIS
-      ///
-      /// \ingroup python_Player
-      /// @brief \python_func{ setVideoStream(stream) }
-      ///-----------------------------------------------------------------------
-      /// Set Video Stream.
-      ///
-      /// @param iStream             [int] Video stream to select for play
-      ///
-      ///
-      ///-----------------------------------------------------------------------
-      ///
-      /// **Example:**
-      /// ~~~~~~~~~~~~~{.py}
-      /// ...
-      /// xbmc.Player().setVideoStream(1)
-      /// ...
-      /// ~~~~~~~~~~~~~
-      ///
-      setVideoStream(...);
-#else
-      void setVideoStream(int iStream);
-#endif
-
 #if !defined SWIG && !defined DOXYGEN_SHOULD_SKIP_THIS
-      void OnPlayBackStarted(const CFileItem& file) override;
-      void OnAVStarted(const CFileItem& file) override;
-      void OnAVChange() override;
-      void OnPlayBackEnded() override;
-      void OnPlayBackStopped() override;
-      void OnPlayBackError() override;
-      void OnPlayBackPaused() override;
-      void OnPlayBackResumed() override;
-      void OnQueueNextItem() override;
-      void OnPlayBackSpeedChanged(int iSpeed) override;
-      void OnPlayBackSeek(int64_t iTime, int64_t seekOffset) override;
-      void OnPlayBackSeekChapter(int iChapter) override;
+      SWIGHIDDENVIRTUAL void OnPlayBackStarted();
+      SWIGHIDDENVIRTUAL void OnAVStarted(const CFileItem& file);
+      SWIGHIDDENVIRTUAL void OnAVChange();
+      SWIGHIDDENVIRTUAL void OnPlayBackEnded();
+      SWIGHIDDENVIRTUAL void OnPlayBackStopped();
+      SWIGHIDDENVIRTUAL void OnPlayBackError();
+      SWIGHIDDENVIRTUAL void OnPlayBackPaused();
+      SWIGHIDDENVIRTUAL void OnPlayBackResumed();
+      SWIGHIDDENVIRTUAL void OnQueueNextItem();
+      SWIGHIDDENVIRTUAL void OnPlayBackSpeedChanged(int iSpeed);
+      SWIGHIDDENVIRTUAL void OnPlayBackSeek(int64_t iTime, int64_t seekOffset);
+      SWIGHIDDENVIRTUAL void OnPlayBackSeekChapter(int iChapter);
 #endif
 
     protected:

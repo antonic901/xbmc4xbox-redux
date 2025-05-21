@@ -29,7 +29,7 @@ namespace XBMCAddon
       inline explicit WindowDialogMixin(Window* window) : w(window) {}
 
     public:
-      virtual ~WindowDialogMixin() = default;
+      virtual ~WindowDialogMixin() {}
 
       SWIGHIDDENVIRTUAL void show();
       SWIGHIDDENVIRTUAL void close();

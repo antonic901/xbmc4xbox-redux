@@ -8,17 +8,13 @@
 
 //! @todo Need a uniform way of returning an error status
 
-#include "network/Network.h"
+#include "xbox/Network.h"
 
 #include "ModuleXbmc.h"
 
 #include "Application.h"
-#include "ServiceBroker.h"
 #include "messaging/ApplicationMessenger.h"
 #include "aojsonrpc.h"
-#ifndef TARGET_WINDOWS
-#include "platform/posix/XTimeUtils.h"
-#endif
 #include "guilib/LocalizeStrings.h"
 #include "GUIInfoManager.h"
 #include "guilib/GUIAudioManager.h"
@@ -29,21 +25,19 @@
 #include "FileItem.h"
 #include "LangInfo.h"
 #include "PlayListPlayer.h"
+#include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
-#include "settings/SettingsComponent.h"
 #include "guilib/TextureManager.h"
 #include "Util.h"
-#include "cores/AudioEngine/Interfaces/AE.h"
-#include "input/WindowTranslator.h"
+#include "input/ButtonTranslator.h"
 #include "storage/MediaManager.h"
-#include "utils/FileExtensionProvider.h"
 #include "utils/LangCodeExpander.h"
-#include "utils/MemUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/SystemInfo.h"
 #include "AddonUtils.h"
 
 #include "LanguageHook.h"
+#include "Exception.h"
 
 #include "threads/SystemClock.h"
 #include <vector>
@@ -71,13 +65,13 @@ namespace XBMCAddon
     void shutdown()
     {
       XBMC_TRACE;
-      CApplicationMessenger::GetInstance().PostMsg(TMSG_SHUTDOWN);
+      CApplicationMessenger::Get().PostMsg(TMSG_SHUTDOWN);
     }
 
     void restart()
     {
       XBMC_TRACE;
-      CApplicationMessenger::GetInstance().PostMsg(TMSG_RESTART);
+      CApplicationMessenger::Get().PostMsg(TMSG_RESTART);
     }
 
     void executescript(const char* script)
@@ -86,7 +80,7 @@ namespace XBMCAddon
       if (! script)
         return;
 
-      CApplicationMessenger::GetInstance().PostMsg(TMSG_EXECUTE_SCRIPT, -1, -1, nullptr, script);
+      CApplicationMessenger::Get().PostMsg(TMSG_EXECUTE_SCRIPT, -1, -1, nullptr, script);
     }
 
     void executebuiltin(const char* function, bool wait /* = false*/)
@@ -105,7 +99,7 @@ namespace XBMCAddon
       if (StringUtils::EqualsNoCase(execute, "activatewindow") ||
           StringUtils::EqualsNoCase(execute, "closedialog"))
       {
-        int win = CWindowTranslator::TranslateWindow(params[0]);
+        int win = CButtonTranslator::TranslateWindow(params[0]);
         if (win == WINDOW_DIALOG_BUSY)
         {
           CLog::Log(LOGWARNING, "addons must not activate DialogBusy");
@@ -114,14 +108,15 @@ namespace XBMCAddon
       }
 
       if (wait)
-        CApplicationMessenger::GetInstance().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, function);
+        CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, function);
       else
-        CApplicationMessenger::GetInstance().PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, function);
+        CApplicationMessenger::Get().PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, function);
     }
 
     String executeJSONRPC(const char* jsonrpccommand)
     {
       XBMC_TRACE;
+#ifdef HAS_JSONRPC
       DelayedCallGuard dg;
       String ret;
 
@@ -134,6 +129,9 @@ namespace XBMCAddon
       CAddOnTransport::CAddOnClient client;
 
       return JSONRPC::CJSONRPC::MethodCall(/*method*/ jsonrpccommand, &transport, &client);
+#else
+      THROW_UNIMP("executeJSONRPC");
+#endif
     }
 
     void sleep(long timemillis)
@@ -174,7 +172,7 @@ namespace XBMCAddon
     String getSkinDir()
     {
       XBMC_TRACE;
-      return CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_LOOKANDFEEL_SKIN);
+      return CSettings::GetInstance().GetString("lookandfeel.skin");
     }
 
     String getLanguage(int format /* = CLangCodeExpander::ENGLISH_NAME */, bool region /*= false*/)
@@ -210,12 +208,12 @@ namespace XBMCAddon
       case CLangCodeExpander::ISO_639_2:
         {
           std::string langCode;
-          g_LangCodeExpander.ConvertToISO6392B(lang, langCode);
+          g_LangCodeExpander.ConvertToISO6392T(lang, langCode);
           if (region)
           {
             std::string region = g_langInfo.GetRegionLocale();
             std::string region3Code;
-            g_LangCodeExpander.ConvertToISO6392B(region, region3Code);
+            g_LangCodeExpander.ConvertToISO6392T(region, region3Code);
             region3Code = "-" + region3Code;
             return (langCode += region3Code);
           }
@@ -231,26 +229,42 @@ namespace XBMCAddon
     {
       XBMC_TRACE;
       char cTitleIP[32];
+#ifdef _XBOX
+      XNADDR xna;
+      XNetGetTitleXnAddr(&xna);
+      XNetInAddrToString(xna.ina, cTitleIP, 32);
+#else
       sprintf(cTitleIP, "127.0.0.1");
-      CNetworkInterface* iface = CServiceBroker::GetNetwork().GetFirstConnectedInterface();
+      CNetworkInterface* iface = g_application.getNetwork().GetFirstConnectedInterface();
       if (iface)
         return iface->GetCurrentIPAddress();
-
+#endif
       return cTitleIP;
     }
 
     long getDVDState()
     {
       XBMC_TRACE;
+#ifdef _XBOX
+      return CIoSupport::GetTrayState();
+#else
       return g_mediaManager.GetDriveStatus();
+#endif
     }
 
     long getFreeMem()
     {
+#ifdef _XBOX
+      MEMORYSTATUS stat;
+      GlobalMemoryStatus(&stat);
+      return (long)(stat.dwAvailPhys  / ( 1024 * 1024 ));
+#else
       XBMC_TRACE;
-      KODI::MEMORY::MemoryStatus stat;
-      KODI::MEMORY::GetMemoryStatus(&stat);
-      return static_cast<long>(stat.availPhys  / ( 1024 * 1024 ));
+      MEMORYSTATUSEX stat;
+      stat.dwLength = sizeof(MEMORYSTATUSEX);
+      GlobalMemoryStatusEx(&stat);
+      return (long)(stat.ullAvailPhys  / ( 1024 * 1024 ));
+#endif
     }
 
     // getCpuTemp() method
@@ -295,14 +309,13 @@ namespace XBMCAddon
         return ret;
       }
 
-      CGUIInfoManager& infoMgr = CServiceBroker::GetGUI()->GetInfoManager();
-      int ret = infoMgr.TranslateString(cLine);
+      int ret = g_infoManager.TranslateString(cLine);
       //doesn't seem to be a single InfoTag?
       //try full blown GuiInfoLabel then
       if (ret == 0)
-        return GUILIB::GUIINFO::CGUIInfoLabel::GetLabel(cLine);
+        return CGUIInfoLabel::GetLabel(cLine);
       else
-        return infoMgr.GetLabel(ret);
+        return g_infoManager.GetLabel(ret);
     }
 
     String getInfoImage(const char * infotag)
@@ -314,9 +327,8 @@ namespace XBMCAddon
           return ret;
         }
 
-      CGUIInfoManager& infoMgr = CServiceBroker::GetGUI()->GetInfoManager();
-      int ret = infoMgr.TranslateString(infotag);
-      return infoMgr.GetImage(ret, WINDOW_INVALID);
+      int ret = g_infoManager.TranslateString(infotag);
+      return g_infoManager.GetImage(ret, WINDOW_INVALID);
     }
 
     void playSFX(const char* filename, bool useCached)
@@ -325,10 +337,9 @@ namespace XBMCAddon
       if (!filename)
         return;
 
-      CGUIComponent* gui = CServiceBroker::GetGUI();
-      if (XFILE::CFile::Exists(filename) && gui)
+      if (XFILE::CFile::Exists(filename))
       {
-        gui->GetAudioManager().PlayPythonSound(filename,useCached);
+        g_audioManager.PlayPythonSound(filename);
       }
     }
 
@@ -336,17 +347,13 @@ namespace XBMCAddon
     {
       XBMC_TRACE;
       DelayedCallGuard dg;
-      CGUIComponent* gui = CServiceBroker::GetGUI();
-      if (gui)
-        gui->GetAudioManager().Stop();
+      g_audioManager.Stop();
     }
 
     void enableNavSounds(bool yesNo)
     {
       XBMC_TRACE;
-      CGUIComponent* gui = CServiceBroker::GetGUI();
-      if (gui)
-        gui->GetAudioManager().Enable(yesNo);
+      g_audioManager.Enable(yesNo);
     }
 
     bool getCondVisibility(const char *condition)
@@ -359,10 +366,9 @@ namespace XBMCAddon
       {
         XBMCAddonUtils::GuiLock lock(nullptr, false);
 
-        int id = CServiceBroker::GetGUI()->GetWindowManager().GetTopmostModalDialog();
-        if (id == WINDOW_INVALID)
-          id = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
-        ret = CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool(condition,id);
+        int id = g_windowManager.GetTopMostModalDialogID();
+        if (id == WINDOW_INVALID) id = g_windowManager.GetActiveWindow();
+        ret = g_infoManager.EvaluateBool(condition,id);
       }
 
       return ret;
@@ -377,8 +383,9 @@ namespace XBMCAddon
     String getCacheThumbName(const String& path)
     {
       XBMC_TRACE;
-      auto crc = Crc32::ComputeFromLowerCase(path);
-      return StringUtils::Format("%08x.tbn", crc);
+      Crc32 crc;
+      crc.ComputeFromLowerCase(path);
+      return StringUtils::Format("%08x.tbn", (unsigned __int32)crc);;
     }
 
     String makeLegalFilename(const String& filename, bool fatX)
@@ -466,11 +473,11 @@ namespace XBMCAddon
       XBMC_TRACE;
       String result;
       if (strcmpi(mediaType, "video") == 0)
-        result = CServiceBroker::GetFileExtensionProvider().GetVideoExtensions();
+        result = g_advancedSettings.m_videoExtensions;
       else if (strcmpi(mediaType, "music") == 0)
-        result = CServiceBroker::GetFileExtensionProvider().GetMusicExtensions();
+        result = g_advancedSettings.GetMusicExtensions();
       else if (strcmpi(mediaType, "picture") == 0)
-        result = CServiceBroker::GetFileExtensionProvider().GetPictureExtensions();
+        result = g_advancedSettings.m_pictureExtensions;
 
       //! @todo implement
       //    else
@@ -482,29 +489,24 @@ namespace XBMCAddon
     bool skinHasImage(const char* image)
     {
       XBMC_TRACE;
-      return CServiceBroker::GetGUI()->GetTextureManager().HasTexture(image);
+      return g_TextureManager.HasTexture(image);
     }
 
 
     bool startServer(int iTyp, bool bStart, bool bWait)
     {
       XBMC_TRACE;
-      DelayedCallGuard dg;
-      return g_application.StartServer((CApplication::ESERVERS)iTyp, bStart != 0, bWait != 0);
+      return false;
     }
 
     void audioSuspend()
     {
-      IAE *ae = CServiceBroker::GetActiveAE();
-      if (ae)
-        ae->Suspend();
+      THROW_UNIMP("audiosuspend");
     }
 
     void audioResume()
     {
-      IAE *ae = CServiceBroker::GetActiveAE();
-      if (ae)
-        ae->Resume();
+      THROW_UNIMP("audioresume");
     }
 
     String convertLanguage(const char* language, int format)
@@ -518,7 +520,7 @@ namespace XBMCAddon
           // maybe it's a check whether the language exists or not
           if (convertedLanguage.empty())
           {
-            g_LangCodeExpander.ConvertToISO6392B(language, convertedLanguage);
+            g_LangCodeExpander.ConvertToISO6392T(language, convertedLanguage);
             g_LangCodeExpander.Lookup(convertedLanguage, convertedLanguage);
           }
           break;
@@ -527,7 +529,7 @@ namespace XBMCAddon
         g_LangCodeExpander.ConvertToISO6391(language, convertedLanguage);
         break;
       case CLangCodeExpander::ISO_639_2:
-        g_LangCodeExpander.ConvertToISO6392B(language, convertedLanguage);
+        g_LangCodeExpander.ConvertToISO6392T(language, convertedLanguage);
         break;
       default:
         return "";
@@ -550,6 +552,12 @@ namespace XBMCAddon
 
     int getPLAYLIST_MUSIC() { return PLAYLIST_MUSIC; }
     int getPLAYLIST_VIDEO() { return PLAYLIST_VIDEO; }
+#ifdef _XBOX
+    int getPLAYER_CORE_AUTO() { return EPC_NONE; }
+    int getPLAYER_CORE_DVDPLAYER() { return EPC_DVDPLAYER; }
+    int getPLAYER_CORE_MPLAYER() { return EPC_MPLAYER; }
+    int getPLAYER_CORE_PAPLAYER() { return EPC_PAPLAYER; }
+#endif
     int getTRAY_OPEN() { return TRAY_OPEN; }
     int getDRIVE_NOT_READY() { return DRIVE_NOT_READY; }
     int getTRAY_CLOSED_NO_MEDIA() { return TRAY_CLOSED_NO_MEDIA; }
@@ -562,6 +570,30 @@ namespace XBMCAddon
     int getLOGSEVERE() { return LOGSEVERE; }
     int getLOGFATAL() { return LOGFATAL; }
     int getLOGNONE() { return LOGNONE; }
+
+#ifdef _XBOX
+    enum ECAPTURESTATE
+    {
+      CAPTURESTATE_WORKING,
+      CAPTURESTATE_NEEDSRENDER,
+      CAPTURESTATE_NEEDSREADOUT,
+      CAPTURESTATE_DONE,
+      CAPTURESTATE_FAILED,
+      CAPTURESTATE_NEEDSDELETE
+    };
+
+#define CAPTUREFLAG_CONTINUOUS  0x01 //after a render is done, render a new one immediately
+#define CAPTUREFLAG_IMMEDIATELY 0x02 //read out immediately after render, this can cause a busy wait
+
+    // render capture user states
+    int getCAPTURE_STATE_WORKING() { return CAPTURESTATE_WORKING; }
+    int getCAPTURE_STATE_DONE(){ return CAPTURESTATE_DONE; }
+    int getCAPTURE_STATE_FAILED() { return CAPTURESTATE_FAILED; }
+
+    // render capture flags
+    int getCAPTURE_FLAG_CONTINUOUS() { return (int)CAPTUREFLAG_CONTINUOUS; }
+    int getCAPTURE_FLAG_IMMEDIATELY() { return (int)CAPTUREFLAG_IMMEDIATELY; }
+#endif
 
     // language string formats
     int getISO_639_1() { return CLangCodeExpander::ISO_639_1; }

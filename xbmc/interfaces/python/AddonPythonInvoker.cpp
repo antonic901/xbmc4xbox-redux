@@ -7,6 +7,7 @@
  */
 
 // python.h should always be included first before any other includes
+#include "system.h"
 #include "AddonPythonInvoker.h"
 
 #include <utility>
@@ -64,7 +65,6 @@
 #endif
 
 namespace PythonBindings {
-  void initModule_xbmcdrm(void);
   void initModule_xbmcgui(void);
   void initModule_xbmc(void);
   void initModule_xbmcplugin(void);
@@ -82,7 +82,6 @@ typedef struct
 
 static PythonModule PythonModules[] =
   {
-    { "xbmcdrm",    initModule_xbmcdrm    },
     { "xbmcgui",    initModule_xbmcgui    },
     { "xbmc",       initModule_xbmc       },
     { "xbmcplugin", initModule_xbmcplugin },
@@ -90,19 +89,22 @@ static PythonModule PythonModules[] =
     { "xbmcvfs",    initModule_xbmcvfs    }
   };
 
+#define PythonModulesSize sizeof(PythonModules) / sizeof(PythonModule)
+
 CAddonPythonInvoker::CAddonPythonInvoker(ILanguageInvocationHandler *invocationHandler)
   : CPythonInvoker(invocationHandler)
 { }
 
-CAddonPythonInvoker::~CAddonPythonInvoker() = default;
+CAddonPythonInvoker::~CAddonPythonInvoker()
+{ }
 
 std::map<std::string, CPythonInvoker::PythonModuleInitialization> CAddonPythonInvoker::getModules() const
 {
   static std::map<std::string, PythonModuleInitialization> modules;
   if (modules.empty())
   {
-    for (const PythonModule& pythonModule : PythonModules)
-      modules.insert(std::make_pair(pythonModule.name, pythonModule.initialization));
+    for (size_t i = 0; i < PythonModulesSize; i++)
+      modules.insert(std::make_pair(PythonModules[i].name, PythonModules[i].initialization));
   }
 
   return modules;

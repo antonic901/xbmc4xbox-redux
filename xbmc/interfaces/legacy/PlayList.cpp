@@ -29,11 +29,11 @@ namespace XBMCAddon
           iPlayList != PLAYLIST_VIDEO)
         throw PlayListException("PlayList does not exist");
 
-      pPlayList = &CServiceBroker::GetPlaylistPlayer().GetPlaylist(playList);
+      pPlayList = &g_playlistPlayer.GetPlaylist(playList);
       iPlayList = playList;
     }
 
-    PlayList::~PlayList() = default;
+    PlayList::~PlayList()  { }
 
     void PlayList::add(const String& url, XBMCAddon::xbmcgui::ListItem* listitem, int index)
     {
@@ -69,8 +69,8 @@ namespace XBMCAddon
 
         // load a playlist like .m3u, .pls
         // first get correct factory to load playlist
-        std::unique_ptr<CPlayList> pPlayList (CPlayListFactory::Create(item));
-        if (nullptr != pPlayList)
+        std::auto_ptr<CPlayList> pPlayList (CPlayListFactory::Create(item));
+        if (NULL != pPlayList.get())
         {
           // load it
           if (!pPlayList->Load(item.GetPath()))
@@ -78,7 +78,7 @@ namespace XBMCAddon
             return false;
 
           // clear current playlist
-          CServiceBroker::GetPlaylistPlayer().ClearPlaylist(this->iPlayList);
+          g_playlistPlayer.ClearPlaylist(this->iPlayList);
 
           // add each item of the playlist to the playlistplayer
           for (int i=0; i < pPlayList->size(); ++i)
@@ -125,7 +125,7 @@ namespace XBMCAddon
 
     int PlayList::getposition()
     {
-      return CServiceBroker::GetPlaylistPlayer().GetCurrentSong();
+      return g_playlistPlayer.GetCurrentSong();
     }
 
     XBMCAddon::xbmcgui::ListItem* PlayList::operator [](long i)

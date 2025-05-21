@@ -10,7 +10,9 @@
 namespace XBMCAddon
 {
   // need a place to put the vtab
-  AddonCallback::~AddonCallback() = default;
+  AddonCallback::~AddonCallback()
+  {
+  }
 
   void AddonCallback::invokeCallback(Callback* callback)
   {

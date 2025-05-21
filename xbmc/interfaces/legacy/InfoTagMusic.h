@@ -50,7 +50,7 @@ namespace XBMCAddon
       explicit InfoTagMusic(const MUSIC_INFO::CMusicInfoTag& tag);
 #endif
       InfoTagMusic();
-      ~InfoTagMusic() override;
+      virtual ~InfoTagMusic();
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///

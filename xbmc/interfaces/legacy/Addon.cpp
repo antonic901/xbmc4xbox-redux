@@ -10,10 +10,10 @@
 
 #include "GUIUserMessages.h"
 #include "LanguageHook.h"
+#include "Exception.h"
 #include "ServiceBroker.h"
 #include "addons/AddonManager.h"
-#include "addons/settings/GUIDialogAddonSettings.h"
-#include "guilib/GUIComponent.h"
+#include "addons/GUIDialogAddonSettings.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/StringUtils.h"
@@ -31,19 +31,19 @@ namespace XBMCAddon
     bool Addon::UpdateSettingInActiveDialog(const char* id, const String& value)
     {
       ADDON::AddonPtr addon(pAddon);
-      if (!CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_ADDON_SETTINGS))
+      if (!g_windowManager.IsWindowActive(WINDOW_DIALOG_ADDON_SETTINGS))
         return false;
 
-      CGUIDialogAddonSettings* dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogAddonSettings>(WINDOW_DIALOG_ADDON_SETTINGS);
-      if (dialog->GetCurrentAddonID() != addon->ID())
+      CGUIDialogAddonSettings* dialog = dynamic_cast<CGUIDialogAddonSettings*>(g_windowManager.GetWindow(WINDOW_DIALOG_ADDON_SETTINGS));
+      if (dialog->GetCurrentID() != addon->ID())
         return false;
 
       CGUIMessage message(GUI_MSG_SETTING_UPDATED, 0, 0);
       std::vector<std::string> params;
-      params.emplace_back(id);
+      params.push_back(id);
       params.push_back(value);
       message.SetStringParams(params);
-      CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(message, WINDOW_DIALOG_ADDON_SETTINGS);
+      g_windowManager.SendThreadMessage(message, WINDOW_DIALOG_ADDON_SETTINGS);
 
       return true;
     }
@@ -84,38 +84,26 @@ namespace XBMCAddon
 
     bool Addon::getSettingBool(const char* id)
     {
-      bool value = false;
-      if (!pAddon->GetSettingBool(id, value))
-        throw XBMCAddon::WrongTypeException("Invalid setting type");
-
-      return value;
+      THROW_UNIMP("getSettingBool");
+      return false;
     }
 
     int Addon::getSettingInt(const char* id)
     {
-      int value = 0;
-      if (!pAddon->GetSettingInt(id, value))
-        throw XBMCAddon::WrongTypeException("Invalid setting type");
-
-      return value;
+      THROW_UNIMP("getSettingInt");
+      return 0;
     }
 
     double Addon::getSettingNumber(const char* id)
     {
-      double value = 0.0;
-      if (!pAddon->GetSettingNumber(id, value))
-        throw XBMCAddon::WrongTypeException("Invalid setting type");
-
-      return value;
+      THROW_UNIMP("getSettingNumber");
+      return 0;
     }
 
     String Addon::getSettingString(const char* id)
     {
-      std::string value;
-      if (!pAddon->GetSettingString(id, value))
-        throw XBMCAddon::WrongTypeException("Invalid setting type");
-
-      return value;
+      THROW_UNIMP("getSettingString");
+      return "";
     }
 
     void Addon::setSetting(const char* id, const String& value)
@@ -131,62 +119,26 @@ namespace XBMCAddon
 
     bool Addon::setSettingBool(const char* id, bool value)
     {
-      DelayedCallGuard dcguard(languageHook);
-      ADDON::AddonPtr addon(pAddon);
-      if (UpdateSettingInActiveDialog(id, value ? "true" : "false"))
-        return true;
-
-      if (!addon->UpdateSettingBool(id, value))
-        throw XBMCAddon::WrongTypeException("Invalid setting type");
-
-      addon->SaveSettings();
-
-      return true;
+      THROW_UNIMP("setSettingBool");
+      return false;
     }
 
     bool Addon::setSettingInt(const char* id, int value)
     {
-      DelayedCallGuard dcguard(languageHook);
-      ADDON::AddonPtr addon(pAddon);
-      if (UpdateSettingInActiveDialog(id, StringUtils::Format("%d", value)))
-        return true;
-
-      if (!addon->UpdateSettingInt(id, value))
-        throw XBMCAddon::WrongTypeException("Invalid setting type");
-
-      addon->SaveSettings();
-
-      return true;
+      THROW_UNIMP("setSettingInt");
+      return false;
     }
 
     bool Addon::setSettingNumber(const char* id, double value)
     {
-      DelayedCallGuard dcguard(languageHook);
-      ADDON::AddonPtr addon(pAddon);
-      if (UpdateSettingInActiveDialog(id, StringUtils::Format("%f", value)))
-        return true;
-
-      if (!addon->UpdateSettingNumber(id, value))
-        throw XBMCAddon::WrongTypeException("Invalid setting type");
-
-      addon->SaveSettings();
-
-      return true;
+      THROW_UNIMP("setSettingNumber");
+      return false;
     }
 
     bool Addon::setSettingString(const char* id, const String& value)
     {
-      DelayedCallGuard dcguard(languageHook);
-      ADDON::AddonPtr addon(pAddon);
-      if (UpdateSettingInActiveDialog(id, value))
-        return true;
-
-      if (!addon->UpdateSettingString(id, value))
-        throw XBMCAddon::WrongTypeException("Invalid setting type");
-
-      addon->SaveSettings();
-
-      return true;
+      THROW_UNIMP("setSettingString");
+      return false;
     }
 
     void Addon::openSettings()
@@ -194,7 +146,7 @@ namespace XBMCAddon
       DelayedCallGuard dcguard(languageHook);
       // show settings dialog
       ADDON::AddonPtr addon(pAddon);
-      CGUIDialogAddonSettings::ShowForAddon(addon);
+      CGUIDialogAddonSettings::ShowAndGetInput(addon);
     }
 
     String Addon::getAddonInfo(const char* id)
@@ -224,7 +176,7 @@ namespace XBMCAddon
       else if (strcmpi(id, "summary") == 0)
         return pAddon->Summary();
       else if (strcmpi(id, "type") == 0)
-        return ADDON::CAddonInfo::TranslateType(pAddon->Type());
+        return ADDON::TranslateType(pAddon->Type());
       else if (strcmpi(id, "version") == 0)
         return pAddon->Version().asString();
       else

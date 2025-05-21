@@ -21,11 +21,11 @@ namespace XBMCAddon
   {
 
     Keyboard::Keyboard(const String& line /* = nullString*/, const String& heading/* = nullString*/, bool hidden/* = false*/)
-      : strDefault(line), strHeading(heading), bHidden(hidden)
+      : strDefault(line), strHeading(heading), bHidden(hidden), bConfirmed(false)
     {
     }
 
-    Keyboard::~Keyboard() = default;
+    Keyboard::~Keyboard() {}
 
     void Keyboard::doModal(int autoclose)
     {
@@ -33,7 +33,7 @@ namespace XBMCAddon
       // using keyboardfactory method to get native keyboard if there is.
       strText = strDefault;
       std::string text(strDefault);
-      bConfirmed = CGUIKeyboardFactory::ShowAndGetInput(text, CVariant{strHeading}, true, bHidden, autoclose * 1000);
+      bConfirmed = CGUIKeyboardFactory::ShowAndGetInput(text, strHeading, true, bHidden, autoclose * 1000);
       strText = text;
     }
 

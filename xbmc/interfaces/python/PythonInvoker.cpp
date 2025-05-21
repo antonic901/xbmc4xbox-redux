@@ -11,6 +11,7 @@
 #include <iterator>
 #include <osdefs.h>
 
+#include "system.h"
 #include "PythonInvoker.h"
 #include "Application.h"
 #include "ServiceBroker.h"
@@ -19,8 +20,7 @@
 #include "dialogs/GUIDialogKaiToast.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
-#include "guilib/GUIComponent.h"
-#include "windowing/GraphicContext.h"
+#include "guilib/GraphicContext.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "interfaces/python/PyContext.h"
@@ -72,41 +72,49 @@ static const std::string getListOfAddonClassesAsString(XBMCAddon::AddonClass::Re
   CSingleLock l(*(languageHook.get()));
   std::set<XBMCAddon::AddonClass*>& acs = languageHook->GetRegisteredAddonClasses();
   bool firstTime = true;
-  for (const auto& iter : acs)
+  for (std::set<XBMCAddon::AddonClass*>::iterator iter = acs.begin(); iter != acs.end(); ++iter)
   {
     if (!firstTime)
       message += ",";
     else
       firstTime = false;
-    message += iter->GetClassname();
+    message += (*iter)->GetClassname();
   }
 
   return message;
 }
 
-static std::vector<std::vector<char>> storeArgumentsCCompatible(std::vector<std::string> const & input)
+std::vector<char> stringToCharVector(const std::string& s) {
+    return std::vector<char>(s.c_str(), s.c_str() + s.length() + 1);
+}
+
+static std::vector<std::vector<char> > storeArgumentsCCompatible(std::vector<std::string> const & input)
 {
-  std::vector<std::vector<char>> output;
+  std::vector<std::vector<char> > output;
   std::transform(input.begin(), input.end(), std::back_inserter(output),
-                [](std::string const & i) { return std::vector<char>(i.c_str(), i.c_str() + i.length() + 1); });
+                stringToCharVector);
 
   if (output.empty())
-    output.emplace_back(1u, '\0');
+    output.push_back(std::vector<char>(1u, '\0'));
 
   return output;
 }
 
-static std::vector<char *> getCPointersToArguments(std::vector<std::vector<char>> & input)
+char* charVectorToPointer(std::vector<char>& v) {
+    return &v[0];
+}
+
+static std::vector<char *> getCPointersToArguments(std::vector<std::vector<char> > & input)
 {
   std::vector<char *> output;
   std::transform(input.begin(), input.end(), std::back_inserter(output),
-                [](std::vector<char> & i) { return &i[0]; });
+                charVectorToPointer);
   return output;
 }
 
 CPythonInvoker::CPythonInvoker(ILanguageInvocationHandler *invocationHandler)
   : ILanguageInvoker(invocationHandler),
-    m_threadState(NULL), m_stop(false)
+    m_threadState(NULL), m_stop(false), m_systemExitThrown(false)
 { }
 
 CPythonInvoker::~CPythonInvoker()
@@ -150,7 +158,7 @@ bool CPythonInvoker::execute(const std::string &script, const std::vector<std::s
 
   // copy the arguments into a local buffer
   unsigned int argc = arguments.size();
-  std::vector<std::vector<char>> argvStorage = storeArgumentsCCompatible(arguments);
+  std::vector<std::vector<char> > argvStorage = storeArgumentsCCompatible(arguments);
   std::vector<char *> argv = getCPointersToArguments(argvStorage);
 
   CLog::Log(LOGDEBUG, "CPythonInvoker(%d, %s): start processing", GetId(), m_sourceFile.c_str());
@@ -193,8 +201,8 @@ bool CPythonInvoker::execute(const std::string &script, const std::vector<std::s
     {
       std::set<std::string> paths;
       getAddonModuleDeps(m_addon, paths);
-      for (const auto& it : paths)
-        addPath(it);
+      for (std::set<std::string>::const_iterator it = paths.begin(); it != paths.end(); ++it)
+        addPath(*it);
     }
     else
     { // for backwards compatibility.
@@ -270,6 +278,11 @@ bool CPythonInvoker::execute(const std::string &script, const std::vector<std::s
 
   PyEval_AcquireLock();
   PyThreadState_Swap(m_threadState);
+
+#ifdef _XBOX
+  // without this os.getcwd() will return empty string
+  xbp_chdir(scriptDir.c_str());
+#endif
 
   bool failed = false;
   std::string exceptionType, exceptionValue, exceptionTraceback;
@@ -467,7 +480,7 @@ bool CPythonInvoker::stop(bool abort)
       // on TMSG_GUI_PYTHON_DIALOG messages, so pump the message loop.
       if (g_application.IsCurrentThread())
       {
-        CApplicationMessenger::GetInstance().ProcessMessages();
+        CApplicationMessenger::Get().ProcessMessages();
       }
     }
 
@@ -626,9 +639,9 @@ void CPythonInvoker::onDeinitialization()
 void CPythonInvoker::onError(const std::string &exceptionType /* = "" */, const std::string &exceptionValue /* = "" */, const std::string &exceptionTraceback /* = "" */)
 {
   CPyThreadState releaseGil;
-  CSingleLock gc(CServiceBroker::GetWinSystem()->GetGfxContext());
+  CSingleLock gc(g_graphicsContext);
 
-  CGUIDialogKaiToast *pDlgToast = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogKaiToast>(WINDOW_DIALOG_KAI_TOAST);
+  CGUIDialogKaiToast *pDlgToast = dynamic_cast<CGUIDialogKaiToast*>(g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST));
   if (pDlgToast != NULL)
   {
     std::string message;
@@ -649,11 +662,11 @@ const char* CPythonInvoker::getInitializationScript() const
 
 void CPythonInvoker::initializeModules(const std::map<std::string, PythonModuleInitialization> &modules)
 {
-  for (const auto& module : modules)
+  for (std::map<std::string, PythonModuleInitialization>::const_iterator module = modules.begin(); module != modules.end(); ++module)
   {
-    if (!initializeModule(module.second))
+    if (!initializeModule(module->second))
       CLog::Log(LOGWARNING, "CPythonInvoker(%d, %s): unable to initialize python module \"%s\"",
-                GetId(), m_sourceFile.c_str(), module.first.c_str());
+                GetId(), m_sourceFile.c_str(), module->first.c_str());
   }
 }
 
@@ -668,11 +681,12 @@ bool CPythonInvoker::initializeModule(PythonModuleInitialization module)
 
 void CPythonInvoker::getAddonModuleDeps(const ADDON::AddonPtr& addon, std::set<std::string>& paths)
 {
-  for (const auto& it : addon->GetDependencies())
+  ADDON::ADDONDEPS deps = addon->GetDeps();
+  for (ADDON::ADDONDEPS::const_iterator it = deps.begin(); it != deps.end(); ++it)
   {
     //Check if dependency is a module addon
     ADDON::AddonPtr dependency;
-    if (CServiceBroker::GetAddonMgr().GetAddon(it.id, dependency, ADDON::ADDON_SCRIPT_MODULE))
+    if (CServiceBroker::GetAddonMgr().GetAddon(it->first, dependency, ADDON::ADDON_SCRIPT_MODULE))
     {
       std::string path = CSpecialProtocol::TranslatePath(dependency->LibPath());
       if (paths.find(path) == paths.end())

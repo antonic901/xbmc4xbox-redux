@@ -36,8 +36,7 @@
 #endif
 #include "AddonUtils.h"
 
-#include <atomic>
-#include <typeindex>
+#include <threads/Atomics.h>
 
 namespace XBMCAddon
 {
@@ -56,11 +55,11 @@ namespace XBMCAddon
   class AddonClass : public CCriticalSection
   {
   private:
-    mutable std::atomic<long> refs;
-    bool m_isDeallocating = false;
+    long refs;
+    bool m_isDeallocating;
 
     // no copying
-    inline AddonClass(const AddonClass&) = delete;
+    inline AddonClass(const AddonClass&);
 
 #ifdef XBMC_ADDON_DEBUG_MEMORY
     bool isDeleted;
@@ -114,7 +113,7 @@ namespace XBMCAddon
     void Release() const
 #ifndef XBMC_ADDON_DEBUG_MEMORY
     {
-      long ct = --refs;
+      long ct = AtomicDecrement((long*)&refs);
 #ifdef LOG_LIFECYCLE_EVENTS
       CLog::Log(LOGDEBUG,"NEWADDON REFCNT decrementing to %ld on %s 0x%lx", ct,GetClassname(), (long)(((void*)this)));
 #endif
@@ -136,9 +135,9 @@ namespace XBMCAddon
     {
 #ifdef LOG_LIFECYCLE_EVENTS
       CLog::Log(LOGDEBUG,"NEWADDON REFCNT incrementing to %ld on %s 0x%lx",
-                ++refs, GetClassname(), (long)(((void*)this)));
+                AtomicIncrement((long*)&refs), GetClassname(), (long)(((void*)this)));
 #else
-      ++refs;
+      AtomicIncrement((long*)&refs);
 #endif
     }
 #else

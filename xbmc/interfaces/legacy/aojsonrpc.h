@@ -8,6 +8,7 @@
 
 #pragma once
 
+#ifdef HAS_JSONRPC
 #include "interfaces/json-rpc/ITransportLayer.h"
 #include "interfaces/json-rpc/JSONRPC.h"
 
@@ -28,3 +29,4 @@ public:
     bool SetAnnouncementFlags(int flags) override { return true; }
   };
 };
+#endif

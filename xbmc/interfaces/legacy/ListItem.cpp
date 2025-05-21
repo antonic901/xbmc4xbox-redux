@@ -9,14 +9,10 @@
 #include "ListItem.h"
 
 #include "AddonUtils.h"
-#include "ServiceBroker.h"
 #include "Util.h"
-#include "games/GameTypes.h"
-#include "games/tags/GameInfoTag.h"
 #include "music/tags/MusicInfoTag.h"
 #include "pictures/PictureInfoTag.h"
 #include "settings/AdvancedSettings.h"
-#include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
 #include "utils/log.h"
@@ -122,11 +118,11 @@ namespace XBMCAddon
       if (!item) return;
       {
         XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
-        for (const auto& it: dictionary)
+        for (Properties::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
         {
-          std::string artName = it.first;
+          std::string artName = it->first;
           StringUtils::ToLower(artName);
-          item->SetArt(artName, it.second);
+          item->SetArt(artName, it->second);
         }
       }
     }
@@ -147,8 +143,8 @@ namespace XBMCAddon
 
       XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       CVideoInfoTag& vtag = *GetVideoInfoTag();
-      for (const auto& it : dictionary)
-        vtag.SetUniqueID(it.second, it.first, it.first == defaultrating);
+      for (Properties::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
+        vtag.SetUniqueID(it->second, it->first, it->first == defaultrating);
     }
 
     void ListItem::setRating(std::string type, float rating, int votes /* = 0 */, bool defaultt /* = false */)
@@ -198,7 +194,7 @@ namespace XBMCAddon
       if (lowerKey == "startoffset")
       { // special case for start offset - don't actually store in a property,
         // we store it in item.m_lStartOffset instead
-        item->m_lStartOffset = CUtil::ConvertSecsToMilliSecs(atof(value.c_str())); // we store the offset in frames, or 1/75th of a second
+        item->m_lStartOffset = (int)(atof(value.c_str()) * 75.0); // we store the offset in frames, or 1/75th of a second
       }
       else if (lowerKey == "mimetype")
       { // special case for mime type - don't actually stored in a property,
@@ -231,8 +227,8 @@ namespace XBMCAddon
 
     void ListItem::setProperties(const Properties& dictionary)
     {
-      for (const auto& it: dictionary)
-        setProperty(it.first.c_str(), it.second);
+      for (Properties::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
+        setProperty(it->first.c_str(), it->second);
     }
 
     String ListItem::getProperty(const char* key)
@@ -244,7 +240,7 @@ namespace XBMCAddon
       if (lowerKey == "startoffset")
       { // special case for start offset - don't actually store in a property,
         // we store it in item.m_lStartOffset instead
-        value = StringUtils::Format("%f", CUtil::ConvertMilliSecsToSecs(item->m_lStartOffset));
+        value = StringUtils::Format("%f", item->m_lStartOffset / 75.0);
       }
       else if (lowerKey == "totaltime")
         value = StringUtils::Format("%f", GetVideoInfoTag()->GetResumePoint().totalTimeInSeconds);
@@ -317,7 +313,7 @@ namespace XBMCAddon
       if (item->HasVideoInfoTag())
       {
         std::ostringstream oss;
-        oss << GetVideoInfoTag()->GetDuration();
+        oss << GetVideoInfoTag()->GetDuration() / 60;
         return oss.str();
       }
       return "0";
@@ -340,13 +336,13 @@ namespace XBMCAddon
 
       if (strcmpi(type, "video") == 0)
       {
-        auto& videotag = *GetVideoInfoTag();
-        for (const auto& it: infoLabels)
+        CVideoInfoTag &videotag = *GetVideoInfoTag();
+        for (InfoLabelDict::const_iterator it = infoLabels.begin(); it != infoLabels.end(); ++it)
         {
-          String key = it.first;
+          String key = it->first;
           StringUtils::ToLower(key);
 
-          const InfoLabelValue& alt = it.second;
+          const InfoLabelValue& alt = it->second;
           const String value(alt.which() == first ? alt.former() : emptyString);
 
           if (key == "dbid")
@@ -395,8 +391,10 @@ namespace XBMCAddon
               throw WrongTypeException("When using \"cast\" or \"castandrole\" you need to supply a list of tuples for the value in the dictionary");
 
             videotag.m_cast.clear();
-            for (const auto& castEntry: alt.later())
+            const std::vector<InfoLabelStringOrTuple>& listValue = alt.later();
+            for (std::vector<InfoLabelStringOrTuple>::const_iterator viter = listValue.begin(); viter != listValue.end(); ++viter)
             {
+              const InfoLabelStringOrTuple& castEntry = *viter;
               // castEntry can be a string meaning it's the actor or it can be a tuple meaning it's the
               //  actor and the role.
               const String& actor = castEntry.which() == first ? castEntry.former() : castEntry.later().first();
@@ -414,8 +412,10 @@ namespace XBMCAddon
 
             videotag.m_artist.clear();
 
-            for (const auto& castEntry: alt.later())
+            const std::vector<InfoLabelStringOrTuple>& listValue = alt.later();
+            for (std::vector<InfoLabelStringOrTuple>::const_iterator viter = listValue.begin(); viter != listValue.end(); ++viter)
             {
+              const InfoLabelStringOrTuple& castEntry = *viter;
               const String& actor = castEntry.which() == first ? castEntry.former() : castEntry.later().first();
               videotag.m_artist.push_back(actor);
             }
@@ -508,7 +508,7 @@ namespace XBMCAddon
       else if (strcmpi(type, "music") == 0)
       {
         std::string type;
-        for (auto it = infoLabels.begin(); it != infoLabels.end(); ++it)
+        for (InfoLabelDict::const_iterator it = infoLabels.begin(); it != infoLabels.end(); ++it)
         {
           String key = it->first;
           StringUtils::ToLower(key);
@@ -526,13 +526,13 @@ namespace XBMCAddon
               CLog::Log(LOGWARNING, "Invalid media type \"%s\"", value.c_str());
           }
         }
-        auto& musictag = *item->GetMusicInfoTag();
-        for (const auto& it : infoLabels)
+        MUSIC_INFO::CMusicInfoTag &musictag = *item->GetMusicInfoTag();
+        for (InfoLabelDict::const_iterator it = infoLabels.begin(); it != infoLabels.end(); ++it)
         {
-          String key = it.first;
+          String key = it->first;
           StringUtils::ToLower(key);
 
-          const InfoLabelValue& alt = it.second;
+          const InfoLabelValue& alt = it->second;
           const String value(alt.which() == first ? alt.former() : emptyString);
 
           //! @todo add the rest of the infolabels
@@ -573,11 +573,11 @@ namespace XBMCAddon
           else if (key == "musicbrainztrackid")
             musictag.SetMusicBrainzTrackID(value);
           else if (key == "musicbrainzartistid")
-            musictag.SetMusicBrainzArtistID(StringUtils::Split(value, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
+            musictag.SetMusicBrainzArtistID(StringUtils::Split(value, g_advancedSettings.m_musicItemSeparator));
           else if (key == "musicbrainzalbumid")
             musictag.SetMusicBrainzAlbumID(value);
           else if (key == "musicbrainzalbumartistid")
-            musictag.SetMusicBrainzAlbumArtistID(StringUtils::Split(value, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
+            musictag.SetMusicBrainzAlbumArtistID(StringUtils::Split(value, g_advancedSettings.m_musicItemSeparator));
           else if (key == "comment")
             musictag.SetComment(value);
           else if (key == "date")
@@ -600,12 +600,12 @@ namespace XBMCAddon
       }
       else if (strcmpi(type,"pictures") == 0)
       {
-        for (const auto& it: infoLabels)
+        for (InfoLabelDict::const_iterator it = infoLabels.begin(); it != infoLabels.end(); ++it)
         {
-          String key = it.first;
+          String key = it->first;
           StringUtils::ToLower(key);
 
-          const InfoLabelValue& alt = it.second;
+          const InfoLabelValue& alt = it->second;
           const String value(alt.which() == first ? alt.former() : emptyString);
 
           if (key == "count")
@@ -632,53 +632,9 @@ namespace XBMCAddon
             if (!StringUtils::StartsWithNoCase(exifkey, "exif:") || exifkey.length() < 6)
               continue;
 
-            item->GetPictureInfoTag()->SetInfo(StringUtils::Mid(exifkey, 5), value);
+            int info = CPictureInfoTag::TranslateString(StringUtils::Mid(exifkey, 5));
+            item->GetPictureInfoTag()->SetInfo(info, value);
           }
-        }
-      }
-      else if (StringUtils::EqualsNoCase(type, "game"))
-      {
-        auto& gametag = *item->GetGameInfoTag();
-        for (const auto& it: infoLabels)
-        {
-          String key = it.first;
-          StringUtils::ToLower(key);
-
-          const InfoLabelValue& alt = it.second;
-          const String value(alt.which() == first ? alt.former() : emptyString);
-
-          if (key == "title")
-          {
-            item->m_strTitle = value;
-            gametag.SetTitle(value);
-          }
-          else if (key == "platform")
-            gametag.SetPlatform(value);
-          else if (key == "genres")
-          {
-            if (alt.which() != second)
-              throw WrongTypeException("When using \"genres\" you need to supply a list of strings for the value in the dictionary");
-
-            std::vector<std::string> genres;
-
-            for (const auto& genreEntry: alt.later())
-            {
-              const String& genre = genreEntry.which() == first ? genreEntry.former() : genreEntry.later().first();
-              genres.emplace_back(std::move(genre));
-            }
-
-            gametag.SetGenres(genres);
-          }
-          else if (key == "publisher")
-            gametag.SetPublisher(value);
-          else if (key == "developer")
-            gametag.SetDeveloper(value);
-          else if (key == "overview")
-            gametag.SetOverview(value);
-          else if (key == "year")
-            gametag.SetYear(strtol(value.c_str(), nullptr, 10));
-          else if (key == "gameclient")
-            gametag.SetGameClient(value);
         }
       }
     } // end ListItem::setInfo
@@ -687,10 +643,10 @@ namespace XBMCAddon
     {
       XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       GetVideoInfoTag()->m_cast.clear();
-      for (const auto& dictionary: actors)
+      for (std::vector<Properties>::const_iterator dictionary = actors.begin(); dictionary != actors.end(); ++dictionary)
       {
         SActorInfo info;
-        for (auto it = dictionary.begin(); it != dictionary.end(); ++it)
+        for (ADDON::InfoMap::const_iterator it = (*dictionary).begin(); it != (*dictionary).end(); ++it)
         {
           const String& key = it->first;
           const String& value = it->second;
@@ -703,7 +659,7 @@ namespace XBMCAddon
           else if (key == "order")
             info.order = strtol(value.c_str(), nullptr, 10);
         }
-        GetVideoInfoTag()->m_cast.push_back(std::move(info));
+        GetVideoInfoTag()->m_cast.push_back(boost::move(info));
       }
     }
 
@@ -711,15 +667,15 @@ namespace XBMCAddon
     {
       XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       GetVideoInfoTag()->m_fanart.Clear();
-      for (const auto& dictionary : images)
+      for (std::vector<Properties>::const_iterator dictionary = images.begin(); dictionary != images.end(); ++dictionary)
       {
         std::string image;
         std::string preview;
         std::string colors;
-        for (const auto& it: dictionary)
+        for (XBMCAddon::Properties::const_iterator it = (*dictionary).begin(); it != (*dictionary).end(); ++it)
         {
-          const String& key = it.first;
-          const String& value = it.second;
+          const String& key = it->first;
+          const String& value = it->second;
           if (key == "image")
             image = value;
           else if (key == "preview")
@@ -735,7 +691,7 @@ namespace XBMCAddon
     void ListItem::addAvailableArtwork(std::string url, std::string art_type, std::string preview, std::string referrer, std::string cache, bool post, bool isgz, int season)
     {
       XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
-      GetVideoInfoTag()->m_strPictureURL.AddElement(url, art_type, preview, referrer, cache, post, isgz, season);
+      GetVideoInfoTag()->m_strPictureURL.AddElement(url, art_type, referrer, cache, post, isgz, season);
     }
 
     void ListItem::addStreamInfo(const char* cType, const Properties& dictionary)
@@ -745,10 +701,10 @@ namespace XBMCAddon
       if (strcmpi(cType, "video") == 0)
       {
         CStreamDetailVideo* video = new CStreamDetailVideo;
-        for (const auto& it: dictionary)
+        for (Properties::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
         {
-          const String& key = it.first;
-          const String value(it.second.c_str());
+          const String& key = it->first;
+          const String value(it->second.c_str());
 
           if (key == "codec")
             video->m_strCodec = value;
@@ -770,10 +726,10 @@ namespace XBMCAddon
       else if (strcmpi(cType, "audio") == 0)
       {
         CStreamDetailAudio* audio = new CStreamDetailAudio;
-        for (const auto& it: dictionary)
+        for (Properties::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
         {
-          const String& key = it.first;
-          const String& value = it.second;
+          const String& key = it->first;
+          const String& value = it->second;
 
           if (key == "codec")
             audio->m_strCodec = value;
@@ -787,10 +743,10 @@ namespace XBMCAddon
       else if (strcmpi(cType, "subtitle") == 0)
       {
         CStreamDetailSubtitle* subtitle = new CStreamDetailSubtitle;
-        for (const auto& it: dictionary)
+        for (Properties::const_iterator it = dictionary.begin(); it != dictionary.end(); ++it)
         {
-          const String& key = it.first;
-          const String& value = it.second;
+          const String& key = it->first;
+          const String& value = it->second;
 
           if (key == "language")
             subtitle->m_strLanguage = value;
@@ -804,7 +760,7 @@ namespace XBMCAddon
     {
       for (size_t i = 0; i < items.size(); ++i)
       {
-        auto& tuple = items[i];
+        const Tuple<String, StringOrInt> &tuple = items[i];
         if (tuple.GetNumValuesSet() != 2)
           throw ListItemException("Must pass in a list of tuples of pairs of strings. One entry in the list only has %d elements.",tuple.GetNumValuesSet());
 
@@ -818,10 +774,10 @@ namespace XBMCAddon
     {
       XBMCAddonUtils::GuiLock lock(languageHook, m_offscreen);
       unsigned int i = 1;
-      for (const auto& it: paths)
+      for (std::vector<String>::const_iterator it = paths.begin(); it != paths.end(); ++it)
       {
         String property = StringUtils::Format("subtitle:%u", i++);
-        item->SetProperty(property, it);
+        item->SetProperty(property, *it);
       }
     }
 
@@ -847,15 +803,16 @@ namespace XBMCAddon
       {
         if (value.empty())
           value = alt.former();
-        return StringUtils::Split(value, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
+        return StringUtils::Split(value, g_advancedSettings.m_videoItemSeparator);
       }
 
       std::vector<std::string> els;
-      for (const auto& el : alt.later())
+      std::vector<XBMCAddon::xbmcgui::InfoLabelStringOrTuple> vecInfoLabel = alt.later();
+      for (std::vector<XBMCAddon::xbmcgui::InfoLabelStringOrTuple>::const_iterator el = vecInfoLabel.begin(); el != vecInfoLabel.end(); ++el)
       {
-        if (el.which() == second)
+        if ((*el).which() == second)
           throw WrongTypeException("When using \"%s\" you need to supply a string or list of strings for the value in the dictionary", tag.c_str());
-        els.emplace_back(el.former());
+        els.push_back((*el).former());
       }
       return els;
     }

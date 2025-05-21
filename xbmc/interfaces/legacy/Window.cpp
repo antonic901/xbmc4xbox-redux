@@ -9,11 +9,9 @@
 #include "Window.h"
 
 #include "Application.h"
-#include "ServiceBroker.h"
 #include "WindowException.h"
 #include "WindowInterceptor.h"
 #include "guilib/GUIButtonControl.h"
-#include "guilib/GUIComponent.h"
 #include "guilib/GUIEditControl.h"
 #include "guilib/GUIRadioButtonControl.h"
 #include "guilib/GUIWindowManager.h"
@@ -22,14 +20,14 @@
 
 using namespace KODI::MESSAGING;
 
-#define ACTIVE_WINDOW CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow()
+#define ACTIVE_WINDOW g_windowManager.GetActiveWindow()
 
 
 namespace XBMCAddon
 {
   namespace xbmcgui
   {
-    thread_local ref* InterceptorBase::upcallTls;
+    XbmcThreads::ThreadLocal<ref> InterceptorBase::upcallTls;
 
     /**
      * Used in add/remove control. It only locks if it's given a
@@ -72,15 +70,15 @@ namespace XBMCAddon
       inline ProxyExistingWindowInterceptor(CGUIWindow* window) :
         cguiwindow(window) { XBMC_TRACE; }
 
-      CGUIWindow* get() override;
+      virtual CGUIWindow* get();
     };
 
     CGUIWindow* ProxyExistingWindowInterceptor::get() { XBMC_TRACE; return cguiwindow; }
 
     Window::Window(bool discrim):
-      window(NULL),
-      m_actionEvent(true),
-      canPulse(true), existingWindow(false)
+      isDisposed(false), window(NULL), iWindowId(-1),
+      iOldWindowId(0), iCurrentControlId(3000), bModal(false), m_actionEvent(true),
+      canPulse(true), existingWindow(false), destroyAfterDeInit(false)
     {
       XBMC_TRACE;
     }
@@ -89,11 +87,12 @@ namespace XBMCAddon
      * This just creates a default window.
      */
     Window::Window(int existingWindowId) :
-      window(NULL),
-      m_actionEvent(true)
+      isDisposed(false), window(NULL), iWindowId(-1),
+      iOldWindowId(0), iCurrentControlId(3000), bModal(false), m_actionEvent(true),
+      canPulse(false), existingWindow(true), destroyAfterDeInit(false)
     {
       XBMC_TRACE;
-      SingleLockWithDelayGuard gslock(CServiceBroker::GetWinSystem()->GetGfxContext(),languageHook);
+      SingleLockWithDelayGuard gslock(g_graphicsContext,languageHook);
 
       if (existingWindowId == -1)
       {
@@ -107,7 +106,7 @@ namespace XBMCAddon
       {
         // user specified window id, use this one if it exists
         // It is not possible to capture key presses or button presses
-        CGUIWindow* pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(existingWindowId);
+        CGUIWindow* pWindow = g_windowManager.GetWindow(existingWindowId);
         if (!pWindow)
           throw WindowException("Window id does not exist");
 
@@ -134,11 +133,11 @@ namespace XBMCAddon
       XBMC_TRACE;
 
       //! @todo rework locking
-      // Python GIL and CServiceBroker::GetWinSystem()->GetGfxContext() are deadlock happy
+      // Python GIL and g_graphicsContext are deadlock happy
       // dispose is called from GUIWindowManager and in this case DelayGuard must not be used.
       if (!g_application.IsCurrentThread())
       {
-        SingleLockWithDelayGuard gslock(CServiceBroker::GetWinSystem()->GetGfxContext(), languageHook);
+        SingleLockWithDelayGuard gslock(g_graphicsContext, languageHook);
       }
 
       if (!isDisposed)
@@ -153,12 +152,12 @@ namespace XBMCAddon
         {
           if (ACTIVE_WINDOW == iWindowId && !g_application.m_bStop)
           {
-            if(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(iOldWindowId))
+            if(g_windowManager.GetWindow(iOldWindowId))
             {
-              CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(iOldWindowId);
+              g_windowManager.ActivateWindow(iOldWindowId);
             }
             // old window does not exist anymore, switch to home
-            else CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_HOME);
+            else g_windowManager.ActivateWindow(WINDOW_HOME);
           }
 
         }
@@ -189,13 +188,13 @@ namespace XBMCAddon
         {
           if (window)
           {
-            if (CServiceBroker::GetGUI()->GetWindowManager().IsWindowVisible(ref(window)->GetID()))
+            if (g_windowManager.IsWindowVisible(ref(window)->GetID()))
             {
               destroyAfterDeInit = true;
               close();
             }
             else
-              CServiceBroker::GetGUI()->GetWindowManager().Delete(ref(window)->GetID());
+              g_windowManager.Delete(ref(window)->GetID());
           }
         }
 
@@ -210,7 +209,7 @@ namespace XBMCAddon
       iWindowId = _window->get()->GetID();
 
       if (!existingWindow)
-        CServiceBroker::GetGUI()->GetWindowManager().Add(window->get());
+        g_windowManager.Add(window->get());
     }
 
     int Window::getNextAvailableWindowId()
@@ -220,10 +219,10 @@ namespace XBMCAddon
       // get first window id that is not in use
       int id = WINDOW_PYTHON_START;
       // if window 13099 is in use it means python can't create more windows
-      if (CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_PYTHON_END))
+      if (g_windowManager.GetWindow(WINDOW_PYTHON_END))
         throw WindowException("maximum number of windows reached");
 
-      while(id < WINDOW_PYTHON_END && CServiceBroker::GetGUI()->GetWindowManager().GetWindow(id) != NULL) id++;
+      while(id < WINDOW_PYTHON_END && g_windowManager.GetWindow(id) != NULL) id++;
       return id;
     }
 
@@ -368,7 +367,7 @@ namespace XBMCAddon
 
       // It got this far so means the control isn't actually in the vector of controls
       // so lets add it to save doing all that next time
-      vecControls.emplace_back(pControl);
+      vecControls.push_back(pControl);
 
       // return the control with increased reference (+1)
       return pControl;
@@ -423,7 +422,7 @@ namespace XBMCAddon
       // call the OnDeinitWindow on CGUIWindow
       ref(window)->OnDeinitWindow(nextWindowID);
       if (destroyAfterDeInit)
-        CServiceBroker::GetGUI()->GetWindowManager().Delete(window->get()->GetID());
+        g_windowManager.Delete(window->get()->GetID());
     }
 
     void Window::onAction(Action* action)
@@ -489,7 +488,7 @@ namespace XBMCAddon
       DelayedCallGuard dcguard(languageHook);
       popActiveWindowId();
 
-      CApplicationMessenger::GetInstance().SendMsg(TMSG_GUI_ACTIVATE_WINDOW, iWindowId, 0);
+      CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTIVATE_WINDOW, iWindowId, 0);
     }
 
     void Window::setFocus(Control* pControl)
@@ -499,20 +498,20 @@ namespace XBMCAddon
         throw WindowException("Object should be of type Control");
 
       CGUIMessage msg = CGUIMessage(GUI_MSG_SETFOCUS,pControl->iParentId, pControl->iControlId);
-      CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg, pControl->iParentId);
+      g_windowManager.SendThreadMessage(msg, pControl->iParentId);
     }
 
     void Window::setFocusId(int iControlId)
     {
       XBMC_TRACE;
       CGUIMessage msg = CGUIMessage(GUI_MSG_SETFOCUS,iWindowId,iControlId);
-      CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg, iWindowId);
+      g_windowManager.SendThreadMessage(msg, iWindowId);
     }
 
     Control* Window::getFocus()
     {
       XBMC_TRACE;
-      SingleLockWithDelayGuard gslock(CServiceBroker::GetWinSystem()->GetGfxContext(),languageHook);
+      SingleLockWithDelayGuard gslock(g_graphicsContext,languageHook);
 
       int iControlId = ref(window)->GetFocusedControlID();
       if(iControlId == -1)
@@ -524,7 +523,7 @@ namespace XBMCAddon
     long Window::getFocusId()
     {
       XBMC_TRACE;
-      SingleLockWithDelayGuard gslock(CServiceBroker::GetWinSystem()->GetGfxContext(),languageHook);
+      SingleLockWithDelayGuard gslock(g_graphicsContext,languageHook);
       int iControlId = ref(window)->GetFocusedControlID();
       if(iControlId == -1)
         throw WindowException("No control in this window has focus");
@@ -535,7 +534,7 @@ namespace XBMCAddon
     {
       XBMC_TRACE;
       DelayedCallGuard dg(languageHook);
-      doRemoveControl(pControl,&CServiceBroker::GetWinSystem()->GetGfxContext(),true);
+      doRemoveControl(pControl,&g_graphicsContext,true);
     }
 
     void Window::doRemoveControl(Control* pControl, CCriticalSection* gcontext, bool wait)
@@ -564,7 +563,7 @@ namespace XBMCAddon
 
       CGUIMessage msg(GUI_MSG_REMOVE_CONTROL, 0, 0);
       msg.SetPointer(pControl->pGUIControl);
-      CApplicationMessenger::GetInstance().SendGUIMessage(msg, iWindowId, wait);
+      CApplicationMessenger::Get().SendGUIMessage(msg, iWindowId, wait);
 
       // initialize control to zero
       pControl->pGUIControl = NULL;
@@ -584,7 +583,7 @@ namespace XBMCAddon
     long Window::getHeight()
     {
       XBMC_TRACE;
-      SingleLockWithDelayGuard gslock(CServiceBroker::GetWinSystem()->GetGfxContext(), languageHook);
+      SingleLockWithDelayGuard gslock(g_graphicsContext, languageHook);
       RESOLUTION_INFO resInfo = ref(window)->GetCoordsRes();
       return resInfo.iHeight;
     }
@@ -592,7 +591,7 @@ namespace XBMCAddon
     long Window::getWidth()
     {
       XBMC_TRACE;
-      SingleLockWithDelayGuard gslock(CServiceBroker::GetWinSystem()->GetGfxContext(), languageHook);
+      SingleLockWithDelayGuard gslock(g_graphicsContext, languageHook);
       RESOLUTION_INFO resInfo = ref(window)->GetCoordsRes();
       return resInfo.iWidth;
     }
@@ -600,7 +599,7 @@ namespace XBMCAddon
     long Window::getResolution()
     {
       XBMC_TRACE;
-      return (long)CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
+      return (long)g_graphicsContext.GetVideoResolution();
     }
 
     void Window::setCoordinateResolution(long res)
@@ -612,7 +611,7 @@ namespace XBMCAddon
     void Window::setProperty(const char* key, const String& value)
     {
       XBMC_TRACE;
-      SingleLockWithDelayGuard gslock(CServiceBroker::GetWinSystem()->GetGfxContext(),languageHook);
+      SingleLockWithDelayGuard gslock(g_graphicsContext,languageHook);
       std::string lowerKey = key;
       StringUtils::ToLower(lowerKey);
 
@@ -622,7 +621,7 @@ namespace XBMCAddon
     String Window::getProperty(const char* key)
     {
       XBMC_TRACE;
-      SingleLockWithDelayGuard gslock(CServiceBroker::GetWinSystem()->GetGfxContext(),languageHook);
+      SingleLockWithDelayGuard gslock(g_graphicsContext,languageHook);
       std::string lowerKey = key;
       StringUtils::ToLower(lowerKey);
       std::string value = ref(window)->GetProperty(lowerKey).asString();
@@ -633,7 +632,7 @@ namespace XBMCAddon
     {
       XBMC_TRACE;
       if (!key) return;
-      SingleLockWithDelayGuard gslock(CServiceBroker::GetWinSystem()->GetGfxContext(),languageHook);
+      SingleLockWithDelayGuard gslock(g_graphicsContext,languageHook);
 
       std::string lowerKey = key;
       StringUtils::ToLower(lowerKey);
@@ -643,7 +642,7 @@ namespace XBMCAddon
     void Window::clearProperties()
     {
       XBMC_TRACE;
-      SingleLockWithDelayGuard gslock(CServiceBroker::GetWinSystem()->GetGfxContext(),languageHook);
+      SingleLockWithDelayGuard gslock(g_graphicsContext,languageHook);
       ref(window)->ClearProperties();
     }
 
@@ -657,7 +656,7 @@ namespace XBMCAddon
 
       {
         DelayedCallGuard dcguard(languageHook);
-        CApplicationMessenger::GetInstance().SendMsg(TMSG_GUI_PREVIOUS_WINDOW, iOldWindowId, 0);
+        CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTIVATE_WINDOW, iOldWindowId, 0);
       }
 
       iOldWindowId = 0;
@@ -704,7 +703,7 @@ namespace XBMCAddon
     {
       XBMC_TRACE;
       DelayedCallGuard dg(languageHook);
-      doAddControl(pControl,&CServiceBroker::GetWinSystem()->GetGfxContext(),true);
+      doAddControl(pControl,&g_graphicsContext,true);
     }
 
     void Window::doAddControl(Control* pControl, CCriticalSection* gcontext, bool wait)
@@ -740,19 +739,19 @@ namespace XBMCAddon
       pControl->pGUIControl->SetAction(ACTION_MOVE_RIGHT, CGUIAction(pControl->iControlRight));
 
       // add control to list and allocate resources for the control
-      vecControls.emplace_back(pControl);
+      vecControls.push_back(pControl);
       pControl->pGUIControl->AllocResources();
 
       // This calls the CGUIWindow parent class to do the final add
       CGUIMessage msg(GUI_MSG_ADD_CONTROL, 0, 0);
       msg.SetPointer(pControl->pGUIControl);
-      CApplicationMessenger::GetInstance().SendGUIMessage(msg, iWindowId, wait);
+      CApplicationMessenger::Get().SendGUIMessage(msg, iWindowId, wait);
     }
 
     void Window::addControls(std::vector<Control*> pControls)
     {
       XBMC_TRACE;
-      SingleLockWithDelayGuard gslock(CServiceBroker::GetWinSystem()->GetGfxContext(),languageHook);
+      SingleLockWithDelayGuard gslock(g_graphicsContext,languageHook);
       int count = 1; int size = pControls.size();
       for (std::vector<Control*>::iterator iter = pControls.begin(); iter != pControls.end(); count++, ++iter)
         doAddControl(*iter,NULL, count == size);
@@ -762,7 +761,7 @@ namespace XBMCAddon
     {
       XBMC_TRACE;
       DelayedCallGuard dg(languageHook);
-      return GetControlById(iControlId,&CServiceBroker::GetWinSystem()->GetGfxContext());
+      return GetControlById(iControlId,&g_graphicsContext);
     }
 
     void Action::setFromCAction(const CAction& action)

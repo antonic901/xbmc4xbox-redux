@@ -15,6 +15,7 @@ CLanguageInvokerThread::CLanguageInvokerThread(LanguageInvokerPtr invoker, CScri
     CThread("LanguageInvoker"),
     m_invoker(invoker),
     m_invocationManager(invocationManager),
+    m_restart(false),
     m_reusable(reuseable)
 { }
 

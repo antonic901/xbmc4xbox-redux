@@ -8,9 +8,7 @@
 
 #include "WindowDialog.h"
 
-#include "ServiceBroker.h"
 #include "WindowInterceptor.h"
-#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindow.h"
 #include "guilib/GUIWindowManager.h"
 
@@ -21,7 +19,7 @@ namespace XBMCAddon
     WindowDialog::WindowDialog() :
       Window(true), WindowDialogMixin(this)
     {
-      CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
+      CSingleLock lock(g_graphicsContext);
       InterceptorBase* interceptor = new Interceptor<CGUIWindow>("CGUIWindow", this, getNextAvailableWindowId());
       // set the render order to the dialog's default because this dialog is mapped to CGUIWindow instead of CGUIDialog
       interceptor->SetRenderOrder(RENDER_ORDER_DIALOG);
@@ -65,7 +63,7 @@ namespace XBMCAddon
 
     void WindowDialog::OnDeinitWindow(int nextWindowID)
     {
-      CServiceBroker::GetGUI()->GetWindowManager().RemoveDialog(iWindowId);
+      g_windowManager.RemoveDialog(iWindowId);
       Window::OnDeinitWindow(nextWindowID);
     }
 
