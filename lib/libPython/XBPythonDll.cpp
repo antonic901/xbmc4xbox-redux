@@ -140,6 +140,7 @@ extern "C"
   FUNCTION4(Py_EndInterpreter)
   FUNCTION4(PyThreadState_Swap)
   FUNCTION8(PyErr_SetString)
+  FUNCTION12(PyErr_NormalizeException)
   FUNCTION4(PyThreadState_New)
   FUNCTION(PyErr_Print)
   FUNCTION(PyErr_Occurred)
@@ -343,6 +344,7 @@ extern "C"
       dll.ResolveExport(DLL_FUNCTION(Py_EndInterpreter)) &&
       dll.ResolveExport(DLL_FUNCTION(PyThreadState_Swap)) &&
       dll.ResolveExport(DLL_FUNCTION(PyErr_SetString)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyErr_NormalizeException)) &&
       dll.ResolveExport(DLL_FUNCTION(PyThreadState_New)) &&
       dll.ResolveExport(DLL_FUNCTION(PyErr_Print)) &&
       dll.ResolveExport(DLL_FUNCTION(PyErr_Occurred)) &&
