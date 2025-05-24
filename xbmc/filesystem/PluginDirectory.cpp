@@ -163,7 +163,11 @@ bool CPluginDirectory::StartScript(const std::string& strPath, bool retrievingDi
   bool success = false;
   std::string file = m_addon->LibPath();
   bool reuseLanguageInvoker = false;
+#ifdef _XBOX
+  if (g_application.m_128MBHack && m_addon->ExtraInfo().find("reuselanguageinvoker") != m_addon->ExtraInfo().end())
+#else
   if (m_addon->ExtraInfo().find("reuselanguageinvoker") != m_addon->ExtraInfo().end())
+#endif
     reuseLanguageInvoker = m_addon->ExtraInfo().find("reuselanguageinvoker")->second == "true";
 
   int id = CScriptInvocationManager::GetInstance().ExecuteAsync(file, m_addon, argv, reuseLanguageInvoker, handle);

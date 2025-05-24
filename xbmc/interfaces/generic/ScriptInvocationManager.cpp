@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "Application.h"
 #include "filesystem/File.h"
 #include "interfaces/generic/ILanguageInvocationHandler.h"
 #include "interfaces/generic/ILanguageInvoker.h"
@@ -290,6 +291,12 @@ int CScriptInvocationManager::ExecuteAsync(const std::string &script,
   m_scriptPaths.insert(std::make_pair(script, m_lastInvokerThread->GetId()));
   // After we leave the lock, m_lastInvokerThread can be released -> copy!
   CLanguageInvokerThreadPtr invokerThread = m_lastInvokerThread;
+
+#ifdef _XBOX
+  if (!g_application.m_128MBHack)
+    m_lastInvokerThread.reset();
+#endif
+
   lock.Leave();
   invokerThread->Execute(script, arguments);
 
