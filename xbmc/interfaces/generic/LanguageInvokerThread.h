@@ -44,8 +44,8 @@ private:
   std::string m_script;
   std::vector<std::string> m_args;
 
-  std::mutex m_mutex;
-  std::condition_variable m_condition;
+  CCriticalSection m_mutex;
+  XbmcThreads::ConditionVariable m_condition;
   bool m_restart;
   bool m_reusable;
 };
