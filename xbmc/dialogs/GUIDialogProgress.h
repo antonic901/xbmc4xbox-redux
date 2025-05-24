@@ -22,6 +22,7 @@
 
 #include "GUIDialogBoxBase.h"
 #include "IProgressCallback.h"
+#include "threads/Event.h"
 
 class CGUIDialogProgress :
       public CGUIDialogBoxBase, public IProgressCallback
@@ -48,6 +49,13 @@ public:
    \return true if the dialog is closed, false if the user cancels early.
    */
   bool Wait(int progresstime = 10);
+
+  /*! \brief Wait on an event or for the progress dialog to be canceled, while
+  regularly rendering to allow for pointer movement or progress to be shown.
+  \param event the CEvent to wait on.
+  \return true if the event completed, false if cancelled.
+  */
+  bool WaitOnEvent(CEvent& event);
 
   // Implements IProgressCallback
   virtual void SetProgressMax(int iMax);

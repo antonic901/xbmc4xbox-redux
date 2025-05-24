@@ -1,36 +1,25 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
 
 #include "IDirectory.h"
 #include "SortFileItem.h"
-
-#include <string>
-#include <map>
-#include "threads/CriticalSection.h"
 #include "addons/IAddon.h"
-#include "PlatformDefs.h"
-
+#include "threads/CriticalSection.h"
 #include "threads/Event.h"
 #include "threads/Thread.h"
 #include "threads/Atomics.h"
+
+#include <map>
+#include <string>
+
+#include "PlatformDefs.h"
 
 class CURL;
 class CFileItem;
@@ -49,8 +38,8 @@ public:
   virtual bool Exists(const CURL& url) { return true; }
   virtual float GetProgress() const;
   virtual void CancelDirectory();
-  static bool RunScriptWithParams(const std::string& strPath);
-  static bool GetPluginResult(const std::string& strPath, CFileItem &resultItem);
+  static bool RunScriptWithParams(const std::string& strPath, bool resume);
+  static bool GetPluginResult(const std::string& strPath, CFileItem &resultItem, bool resume);
 
   // callbacks from python
   static bool AddItem(int handle, const CFileItem *item, int totalItems);
@@ -66,7 +55,7 @@ public:
 
 private:
   ADDON::AddonPtr m_addon;
-  bool StartScript(const std::string& strPath, bool retrievingDir);
+  bool StartScript(const std::string& strPath, bool retrievingDir, bool resume);
   bool WaitOnScriptResult(const std::string &scriptPath, int scriptId, const std::string &scriptName, bool retrievingDir);
 
   static std::map<int,CPluginDirectory*> globalHandles;
@@ -82,7 +71,7 @@ private:
   CFileItem*     m_fileResult;
   CEvent         m_fetchComplete;
 
-  atomic<bool>  m_cancelled;
+  atomic<bool> m_cancelled;
   bool          m_success;      // set by script in EndOfDirectory
   int    m_totalItems;   // set by script in AddDirectoryItem
 
@@ -92,7 +81,7 @@ private:
     CScriptObserver(int scriptId, CEvent &event);
     void Abort();
   protected:
-    void Process();
+    virtual void Process();
     int m_scriptId;
     CEvent &m_event;
   };
