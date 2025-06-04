@@ -31,9 +31,10 @@ class CPlayerCoreConfig
 friend class CPlayerCoreFactory;
 
 public:
-  CPlayerCoreConfig(CStdString name, const EPLAYERCORES eCore, const TiXmlElement* pConfig)
+  CPlayerCoreConfig(CStdString name, std::string type, const EPLAYERCORES eCore, const TiXmlElement* pConfig)
   {
     m_name = name;
+    m_type = type;
     m_eCore = eCore;
     m_bPlaysAudio = false;
     m_bPlaysVideo = false;
@@ -81,6 +82,9 @@ public:
       default: return NULL; 
     }
 
+    pPlayer->m_name = m_name;
+    pPlayer->m_type = m_type;
+
     if (pPlayer->Initialize(m_config))
     {
       return pPlayer;
@@ -94,6 +98,7 @@ public:
 
 private:
   CStdString m_name;
+  std::string m_type;
   bool m_bPlaysAudio;
   bool m_bPlaysVideo;
   EPLAYERCORES m_eCore;
