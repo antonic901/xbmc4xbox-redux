@@ -365,6 +365,8 @@ protected:
   //For checking visibiliy of custom nodes for a role.
   std::vector<std::pair<std::string, int> > m_libraryRoleCounts;
 
+  SPlayerVideoStreamInfo m_videoInfo;
+  SPlayerAudioStreamInfo m_audioInfo;
   bool m_isPvrChannelPreview;
 
   CCriticalSection m_critInfo;

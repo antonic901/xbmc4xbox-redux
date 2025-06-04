@@ -30,6 +30,8 @@
 #include "utils/TimeUtils.h"
 #include "utils/MathUtils.h"
 #include "threads/SingleLock.h"
+#include "cores/DataCacheCore.h"
+#include "ServiceBroker.h"
 
 #include <sstream>
 #include <iomanip>
@@ -176,6 +178,7 @@ void CDVDPlayerAudio::OpenStream( CDVDStreamInfo &hints, CDVDAudioCodec* codec )
   m_errortime = CurrentHostCounter();
   m_silence = false;
 
+  CServiceBroker::GetDataCacheCore().SignalAudioInfoChange();
 }
 
 void CDVDPlayerAudio::CloseStream(bool bWaitForBuffers)
@@ -513,6 +516,8 @@ void CDVDPlayerAudio::Process()
 
       if(!m_dvdAudio.Create(audioframe, m_streaminfo.codec))
         CLog::Log(LOGERROR, "%s - failed to create audio renderer", __FUNCTION__);
+
+      CServiceBroker::GetDataCacheCore().SignalAudioInfoChange();
     }
 
     // Zero out the frame data if we are supposed to silence the audio

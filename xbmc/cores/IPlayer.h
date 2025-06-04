@@ -24,6 +24,8 @@
 #include "guilib/Geometry.h"
 #include "Key.h"
 
+#define CURRENT_STREAM -1
+
 class TiXmlElement; 
 class CStreamDetails;
 

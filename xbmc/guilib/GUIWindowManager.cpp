@@ -1071,9 +1071,7 @@ void CGUIWindowManager::FrameMove()
   for (iDialog it = dialogs.begin(); it != dialogs.end(); ++it)
     (*it)->FrameMove();
 
-#ifndef HAS_XBOX_D3D
   g_infoManager.UpdateAVInfo();
-#endif
 }
 
 void CGUIWindowManager::RenderDialogs()

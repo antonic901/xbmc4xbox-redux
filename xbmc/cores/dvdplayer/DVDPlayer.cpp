@@ -38,9 +38,11 @@
 #include "DVDFileInfo.h"
 
 #include "GUIInfoManager.h"
+#include "cores/DataCacheCore.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "Application.h"
+#include "ServiceBroker.h"
 #include "messaging/ApplicationMessenger.h"
 #include "DVDPerformanceCounter.h"
 #include "filesystem/File.h"
@@ -334,6 +336,8 @@ void CSelectionStreams::Update(CDVDInputStream* input, CDVDDemux* demuxer)
       Update(s);
     }
   }
+  CServiceBroker::GetDataCacheCore().SignalAudioInfoChange();
+  CServiceBroker::GetDataCacheCore().SignalVideoInfoChange();
 }
 
 CDVDPlayer::CDVDPlayer(IPlayerCallback& callback)
@@ -2607,6 +2611,8 @@ bool CDVDPlayer::OpenAudioStream(int iStream, int source)
   /* audio normally won't consume full cpu, so let it have prio */
   m_dvdPlayerAudio.SetPriority(GetPriority()+1);
 
+  CServiceBroker::GetDataCacheCore().SignalAudioInfoChange();
+
   return true;
 }
 
@@ -2665,6 +2671,9 @@ bool CDVDPlayer::OpenVideoStream(int iStream, int source)
   /* use same priority for video thread as demuxing thread, as */
   /* otherwise demuxer will starve if video consumes the full cpu */
   m_dvdPlayerVideo.SetPriority(GetPriority());
+
+  CServiceBroker::GetDataCacheCore().SignalVideoInfoChange();
+
   return true;
 
 }
