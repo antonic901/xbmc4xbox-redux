@@ -2036,7 +2036,7 @@ void CMPlayer::DoAudioWork()
   xbox_audio_do_work();
 }
 
-bool CMPlayer::GetSubtitleExtension(CStdString &strSubtitleExtension)
+bool CMPlayer::GetSubtitleExtension(std::string &strSubtitleExtension)
 {
   strSubtitleExtension = _SubtitleExtension;
   return (!_SubtitleExtension.IsEmpty());

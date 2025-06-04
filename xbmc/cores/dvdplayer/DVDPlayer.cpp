@@ -422,7 +422,7 @@ bool CDVDPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
   }
 }
 
-bool CDVDPlayer::CloseFile()
+bool CDVDPlayer::CloseFile(bool reopen)
 {
   CLog::Log(LOGNOTICE, "CDVDPlayer::CloseFile()");
 

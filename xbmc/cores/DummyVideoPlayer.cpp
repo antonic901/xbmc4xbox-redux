@@ -57,7 +57,7 @@ bool CDummyVideoPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &op
   }
 }
 
-bool CDummyVideoPlayer::CloseFile()
+bool CDummyVideoPlayer::CloseFile(bool reopen)
 {
   StopThread();
   return true;

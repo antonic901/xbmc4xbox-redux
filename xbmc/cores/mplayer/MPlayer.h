@@ -169,7 +169,7 @@ public:
   virtual void SetSubtitle(int iStream);
   virtual bool GetSubtitleVisible();
   virtual void SetSubtitleVisible(bool bVisible);
-  virtual bool GetSubtitleExtension(CStdString &strSubtitleExtension);
+  virtual bool GetSubtitleExtension(std::string &strSubtitleExtension);
 
   virtual int GetAudioStreamCount();
   virtual int GetAudioStream();
