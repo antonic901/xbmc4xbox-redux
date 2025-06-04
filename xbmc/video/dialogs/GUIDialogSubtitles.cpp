@@ -211,7 +211,7 @@ void CGUIDialogSubtitles::Render()
       }
       m_updateSubsList = false;
     }
-    
+
     int control = GetFocusedControlID();
     // nothing has focus
     if (!control)
@@ -252,7 +252,7 @@ void CGUIDialogSubtitles::FillServices()
   else
     // Set default service for filemode and movies
     defaultService = CSettings::GetInstance().GetString("subtitles.movie");
-  
+
   std::string service = addons.front()->ID();
   for (VECADDONS::const_iterator addonIt = addons.begin(); addonIt != addons.end(); addonIt++)
   {
@@ -341,13 +341,12 @@ void CGUIDialogSubtitles::Search(const std::string &search/*=""*/)
 
   if(StringUtils::EqualsNoCase(preferredLanguage, "original"))
   {
-    CStdString strLanguage;
+    SPlayerAudioStreamInfo info;
+    std::string strLanguage;
 
-    int currentAudio = g_application.m_pPlayer->GetAudioStream();
-    CStdString strStreamLanguage;
-    g_application.m_pPlayer->GetAudioStreamLanguage(currentAudio, strStreamLanguage);
+    g_application.m_pPlayer->GetAudioStreamInfo(CURRENT_STREAM, info);
 
-    if (!g_LangCodeExpander.Lookup(strLanguage, strStreamLanguage))
+    if (!g_LangCodeExpander.Lookup(info.language, strLanguage))
       strLanguage = "Unknown";
 
     preferredLanguage = strLanguage;

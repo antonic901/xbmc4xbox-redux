@@ -466,13 +466,13 @@ namespace XBMCAddon
       XBMC_TRACE;
       if (g_application.m_pPlayer)
       {
-        int i = g_application.m_pPlayer->GetSubtitle();
-        CStdString strName;
-        g_application.m_pPlayer->GetSubtitleName(i, strName);
+        SPlayerSubtitleStreamInfo info;
+        g_application.m_pPlayer->GetSubtitleStreamInfo(g_application.m_pPlayer->GetSubtitle(), info);
 
-        if (strName == "Unknown(Invalid)")
-          strName = "";
-        return strName;
+        if (info.language.length() > 0)
+          return info.language;
+        else
+          return info.name;
       }
 
       return NULL;
@@ -486,12 +486,13 @@ namespace XBMCAddon
         std::vector<String> ret(subtitleCount);
         for (int iStream=0; iStream < subtitleCount; iStream++)
         {
-          CStdString strName;
-          std::string FullLang;
-          g_application.m_pPlayer->GetSubtitleName(iStream, strName);
-          if (!g_LangCodeExpander.Lookup(FullLang, strName))
-            FullLang = strName;
-          ret[iStream] = FullLang;
+          SPlayerSubtitleStreamInfo info;
+          g_application.m_pPlayer->GetSubtitleStreamInfo(iStream, info);
+
+          if (info.language.length() > 0)
+            ret[iStream] = info.language;
+          else
+            ret[iStream] = info.name;
         }
         return ret;
       }
@@ -520,13 +521,13 @@ namespace XBMCAddon
         std::vector<String> ret(streamCount);
         for (int iStream=0; iStream < streamCount; iStream++)
         {
-          CStdString strName;
-          CStdString FullLang;
-          g_application.m_pPlayer->GetAudioStreamLanguage(iStream, strName);
-          g_LangCodeExpander.Lookup(FullLang, strName);
-          if (FullLang.empty())
-            g_application.m_pPlayer->GetAudioStreamName(iStream, FullLang);
-          ret[iStream] = FullLang;
+          SPlayerAudioStreamInfo info;
+          g_application.m_pPlayer->GetAudioStreamInfo(iStream, info);
+
+          if (info.language.length() > 0)
+            ret[iStream] = info.language;
+          else
+            ret[iStream] = info.name;
         }
         return ret;
       }

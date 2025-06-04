@@ -571,19 +571,18 @@ void CGUIDialogAudioSubtitleSettings::AudioStreamsOptionFiller(const CSetting *s
   for (int i = 0; i < audioStreamCount; ++i)
   {
     std::string strItem;
-    CStdString strLanguage;
+    std::string strLanguage;
 
-    CStdString name, language;
-    g_application.m_pPlayer->GetAudioStreamName(i, name);
-    g_application.m_pPlayer->GetAudioStreamLanguage(i, language);
+    SPlayerAudioStreamInfo info;
+    g_application.m_pPlayer->GetAudioStreamInfo(i, info);
 
-    if (!g_LangCodeExpander.Lookup(strLanguage, language))
+    if (!g_LangCodeExpander.Lookup(info.language, strLanguage))
       strLanguage = g_localizeStrings.Get(13205); // Unknown
 
-    if (name.length() == 0)
+    if (info.name.length() == 0)
       strItem = strLanguage;
     else
-      strItem = StringUtils::Format("%s - %s", strLanguage.c_str(), name.c_str());
+      strItem = StringUtils::Format("%s - %s", strLanguage.c_str(), info.name.c_str());
 
     strItem += StringUtils::Format(" (%i/%i)", i + 1, audioStreamCount);
     list.push_back(make_pair(strItem, i));
@@ -603,20 +602,19 @@ void CGUIDialogAudioSubtitleSettings::SubtitleStreamsOptionFiller(const CSetting
   // cycle through each subtitle and add it to our entry list
   for (int i = 0; i < subtitleStreamCount; ++i)
   {
-    CStdString name, language;
-    g_application.m_pPlayer->GetSubtitleName(i, name);
-    g_application.m_pPlayer->GetSubtitleLanguage(i, language);
+    SPlayerSubtitleStreamInfo info;
+    g_application.m_pPlayer->GetSubtitleStreamInfo(i, info);
 
-    CStdString strItem;
-    CStdString strLanguage;
+    std::string strItem;
+    std::string strLanguage;
 
-    if (!g_LangCodeExpander.Lookup(strLanguage, language))
+    if (!g_LangCodeExpander.Lookup(info.language, strLanguage))
       strLanguage = g_localizeStrings.Get(13205); // Unknown
 
-    if (name.length() == 0)
+    if (info.name.length() == 0)
       strItem = strLanguage;
     else
-      strItem = StringUtils::Format("%s - %s", strLanguage.c_str(), name.c_str());
+      strItem = StringUtils::Format("%s - %s", strLanguage.c_str(), info.name.c_str());
 
     strItem += StringUtils::Format(" (%i/%i)", i + 1, subtitleStreamCount);
 
