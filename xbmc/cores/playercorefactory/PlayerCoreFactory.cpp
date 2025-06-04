@@ -318,19 +318,19 @@ bool CPlayerCoreFactory::LoadConfiguration(const std::string &file, bool clear)
       delete *it;
     m_vecCoreConfigs.clear();
     // Builtin players; hard-coded because re-ordering them would break scripts
-    CPlayerCoreConfig* dvdplayer = new CPlayerCoreConfig("DVDPlayer", EPC_DVDPLAYER, NULL);
+    CPlayerCoreConfig* dvdplayer = new CPlayerCoreConfig("DVDPlayer", "video", EPC_DVDPLAYER, NULL);
     dvdplayer->m_bPlaysAudio = dvdplayer->m_bPlaysVideo = true;
     m_vecCoreConfigs.push_back(dvdplayer);
 
-    CPlayerCoreConfig* mplayer = new CPlayerCoreConfig("MPlayer", EPC_MPLAYER, NULL);
+    CPlayerCoreConfig* mplayer = new CPlayerCoreConfig("MPlayer", "video", EPC_MPLAYER, NULL);
     mplayer->m_bPlaysAudio = mplayer->m_bPlaysVideo = true;
     m_vecCoreConfigs.push_back(mplayer);
 
-    CPlayerCoreConfig* paplayer = new CPlayerCoreConfig("PAPlayer", EPC_PAPLAYER, NULL);
+    CPlayerCoreConfig* paplayer = new CPlayerCoreConfig("PAPlayer", "music", EPC_PAPLAYER, NULL);
     paplayer->m_bPlaysAudio = true;
     m_vecCoreConfigs.push_back(paplayer);
 
-    CPlayerCoreConfig* modplayer = new CPlayerCoreConfig("MODPlayer", EPC_MODPLAYER, NULL);
+    CPlayerCoreConfig* modplayer = new CPlayerCoreConfig("MODPlayer", "video", EPC_MODPLAYER, NULL);
     modplayer->m_bPlaysAudio = true;
     m_vecCoreConfigs.push_back(modplayer);
 
@@ -365,7 +365,7 @@ bool CPlayerCoreFactory::LoadConfiguration(const std::string &file, bool clear)
 
       if (eCore != EPC_NONE)
       {
-        m_vecCoreConfigs.push_back(new CPlayerCoreConfig(name, eCore, pPlayer));
+        m_vecCoreConfigs.push_back(new CPlayerCoreConfig(name, eCore == EPC_PAPLAYER ? "music" : "video", eCore, pPlayer));
       }
 
       pPlayer = pPlayer->NextSiblingElement("player");
