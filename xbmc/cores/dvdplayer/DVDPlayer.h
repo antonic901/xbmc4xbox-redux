@@ -165,7 +165,7 @@ public:
   virtual void RegisterAudioCallback(IAudioCallback* pCallback) { m_dvdPlayerAudio.RegisterAudioCallback(pCallback); }
   virtual void UnRegisterAudioCallback()                        { m_dvdPlayerAudio.UnRegisterAudioCallback(); }
   virtual bool OpenFile(const CFileItem& file, const CPlayerOptions &options);
-  virtual bool CloseFile();
+  virtual bool CloseFile(bool reopen = false);
   virtual bool IsPlaying() const;
   virtual void Pause();
   virtual bool IsPaused() const;
@@ -202,7 +202,7 @@ public:
   virtual void SetSubtitle(int iStream);
   virtual bool GetSubtitleVisible();
   virtual void SetSubtitleVisible(bool bVisible);
-  virtual bool GetSubtitleExtension(CStdString &strSubtitleExtension) { return false; }
+  virtual bool GetSubtitleExtension(std::string &strSubtitleExtension) { return false; }
   virtual int  AddSubtitle(const CStdString& strSubPath);
 
   virtual int GetAudioStreamCount();

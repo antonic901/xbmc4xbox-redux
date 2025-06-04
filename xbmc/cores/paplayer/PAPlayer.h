@@ -53,7 +53,7 @@ public:
   virtual bool OpenFile(const CFileItem& file, const CPlayerOptions &options);
   virtual bool QueueNextFile(const CFileItem &file);
   virtual void OnNothingToQueueNotify();
-  virtual bool CloseFile()       { return CloseFileInternal(true); }
+  virtual bool CloseFile(bool reopen = false)       { return CloseFileInternal(true); }
   virtual bool CloseFileInternal(bool bAudioDevice = true);
   virtual bool IsPlaying() const { return m_bIsPlaying; }
   virtual void Pause();

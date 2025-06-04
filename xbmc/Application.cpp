@@ -4811,7 +4811,7 @@ bool CApplication::MustBlockHDSpinDown(bool bCheckThisForNormalSpinDown)
       return false;
     }
     //don't allow hd spindown when playing files with vobsub subtitles.
-    CStdString strSubTitelExtension;
+    std::string strSubTitelExtension;
     if (m_pPlayer->GetSubtitleExtension(strSubTitelExtension))
     {
       return (strSubTitelExtension == ".idx");
