@@ -21,6 +21,7 @@
  */
 
 #include "IAudioCallback.h"
+#include "guilib/Geometry.h"
 #include "Key.h"
 
 class TiXmlElement; 
@@ -62,6 +63,56 @@ public:
   bool    video_only; /* player is not allowed to play audio streams, video streams only */
 };
 
+struct SPlayerAudioStreamInfo
+{
+  bool valid;
+  int bitrate;
+  int channels;
+  int samplerate;
+  int bitspersample;
+  std::string language;
+  std::string name;
+  std::string audioCodecName;
+
+  SPlayerAudioStreamInfo()
+  {
+    valid = false;
+    bitrate = 0;
+    channels = 0;
+    samplerate = 0;
+    bitspersample = 0;
+  }
+};
+
+struct SPlayerSubtitleStreamInfo
+{
+  std::string language;
+  std::string name;
+};
+
+struct SPlayerVideoStreamInfo
+{
+  bool valid;
+  int bitrate;
+  float videoAspectRatio;
+  int height;
+  int width;
+  std::string language;
+  std::string name;
+  std::string videoCodecName;
+  CRect SrcRect;
+  CRect DestRect;
+  std::string stereoMode;
+
+  SPlayerVideoStreamInfo()
+  {
+    valid = false;
+    bitrate = 0;
+    videoAspectRatio = 1.0f;
+    height = 0;
+    width = 0;
+  }
+};
 
 class IPlayer
 {
@@ -74,7 +125,7 @@ public:
   virtual bool OpenFile(const CFileItem& file, const CPlayerOptions& options){ return false;}
   virtual bool QueueNextFile(const CFileItem &file) { return false; }
   virtual void OnNothingToQueueNotify() {}
-  virtual bool CloseFile(){ return true;}
+  virtual bool CloseFile(bool reopen = false){ return true;}
   virtual bool IsPlaying() const { return false;}
   virtual bool CanPause() { return true; };
   virtual void Pause() = 0;
@@ -87,6 +138,7 @@ public:
   virtual void SeekPercentage(float fPercent = 0){}
   virtual float GetPercentage(){ return 0;}
   virtual float GetCachePercentage(){ return 0;}
+  virtual void SetMute(bool bOnOff){}
   virtual void SetVolume(long nVolume){}
   virtual void SetDynamicRangeCompression(long drc){}
   virtual void GetAudioInfo( CStdString& strAudioInfo) = 0;
@@ -111,7 +163,7 @@ public:
   virtual void SetSubtitle(int iStream){};
   virtual bool GetSubtitleVisible(){ return false;};
   virtual void SetSubtitleVisible(bool bVisible){};
-  virtual bool GetSubtitleExtension(CStdString &strSubtitleExtension){ return false;};
+  virtual bool GetSubtitleExtension(std::string &strSubtitleExtension){ return false;};
   virtual int  AddSubtitle(const CStdString& strSubPath) {return -1;};
 
   virtual int  GetAudioStreamCount()  { return 0; }
@@ -120,9 +172,12 @@ public:
   virtual void SetAudioStream(int iStream){};
   virtual void GetAudioStreamLanguage(int iStream, CStdString &strLanguage){};
 
+  virtual std::string GetRadioText(unsigned int line) { return ""; };
+
   virtual int  GetChapterCount()                               { return 0; }
   virtual int  GetChapter()                                    { return -1; }
   virtual void GetChapterName(std::string& strChapterName)     { return; }
+  virtual int64_t GetChapterPos(int chapterIdx=-1)             { return -1; }
   virtual int  SeekChapter(int iChapter)                       { return -1; }
 //  virtual bool GetChapterInfo(int chapter, SChapterInfo &info) { return false; }
 
@@ -174,6 +229,11 @@ public:
   virtual CStdString GetPlayerState() { return ""; };
   virtual bool SetPlayerState(CStdString state) { return false;};
   
+  virtual std::string GetPlayingTitle() { return ""; };
+
+  std::string m_name;
+  std::string m_type;
+
 protected:
   IPlayerCallback& m_callback;
 };
