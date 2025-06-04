@@ -203,11 +203,9 @@ void CGUIDialogVideoBookmarks::Clear()
 void CGUIDialogVideoBookmarks::GotoBookmark(int item)
 {
   if (item < 0 || item >= (int)m_bookmarks.size()) return;
-  if (g_application.m_pPlayer)
-  {
-    g_application.m_pPlayer->SetPlayerState(m_bookmarks[item].playerState);
-    g_application.SeekTime((double)m_bookmarks[item].timeInSeconds);
-  }
+
+  g_application.m_pPlayer->SetPlayerState(m_bookmarks[item].playerState);
+  g_application.SeekTime((double)m_bookmarks[item].timeInSeconds);
 }
 
 void CGUIDialogVideoBookmarks::ClearBookmarks()

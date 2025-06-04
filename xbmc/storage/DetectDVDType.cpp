@@ -392,7 +392,7 @@ bool CDetectDVDMedia::IsDiscInDrive()
     if ((clock() - m_LastPoll) > 5000)
     {
       // only poll if we're not playing media from the drive
-      if (!(g_application.IsPlaying() && g_application.CurrentFileItem().IsOnDVD()))
+      if (!(g_application.m_pPlayer->IsPlaying() && g_application.CurrentFileItem().IsOnDVD()))
       {
         CLog::Log(LOGINFO, "Polling PC-DVDROM...");
 

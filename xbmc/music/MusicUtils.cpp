@@ -134,7 +134,7 @@ namespace MUSIC_UTILS
       }
 
       // Similarly update the art of the currently playing song so it shows on OSD
-      if (g_application.IsPlayingAudio() && g_application.CurrentFileItem().HasMusicInfoTag())
+      if (g_application.m_pPlayer->IsPlayingAudio() && g_application.CurrentFileItem().HasMusicInfoTag())
       {
         CFileItemPtr songitem = CFileItemPtr(new CFileItem(g_application.CurrentFileItem()));
         if (HasSongExtraArtChanged(songitem, type, itemID, db))

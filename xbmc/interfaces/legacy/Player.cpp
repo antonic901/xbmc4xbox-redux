@@ -337,19 +337,19 @@ namespace XBMCAddon
     bool Player::isPlaying()
     {
       XBMC_TRACE;
-      return g_application.IsPlaying();
+      return g_application.m_pPlayer->IsPlaying();
     }
 
     bool Player::isPlayingAudio()
     {
       XBMC_TRACE;
-      return g_application.IsPlayingAudio();
+      return g_application.m_pPlayer->IsPlayingAudio();
     }
 
     bool Player::isPlayingVideo()
     {
       XBMC_TRACE;
-      return g_application.IsPlayingVideo();
+      return g_application.m_pPlayer->IsPlayingVideo();
     }
 
     bool Player::isPlayingRDS()
@@ -367,7 +367,7 @@ namespace XBMCAddon
     String Player::getPlayingFile()
     {
       XBMC_TRACE;
-      if (g_application.m_pPlayer && !g_application.m_pPlayer->IsPlaying())
+      if (!g_application.m_pPlayer->IsPlaying())
         throw PlayerException("XBMC is not playing any file");
 
       return g_application.CurrentFile();
@@ -376,7 +376,7 @@ namespace XBMCAddon
     InfoTagVideo* Player::getVideoInfoTag()
     {
       XBMC_TRACE;
-      if (!g_application.IsPlayingVideo())
+      if (!g_application.m_pPlayer->IsPlayingVideo())
         throw PlayerException("XBMC is not playing any videofile");
 
       const CVideoInfoTag* movie = g_infoManager.GetCurrentMovieTag();
@@ -389,7 +389,7 @@ namespace XBMCAddon
     InfoTagMusic* Player::getMusicInfoTag()
     {
       XBMC_TRACE;
-      if (g_application.IsPlayingVideo() || !g_application.IsPlayingAudio())
+      if (g_application.m_pPlayer->IsPlayingVideo() || !g_application.m_pPlayer->IsPlayingAudio())
         throw PlayerException("XBMC is not playing any music file");
 
       const MUSIC_INFO::CMusicInfoTag* tag = g_infoManager.GetCurrentSongTag();
@@ -402,7 +402,7 @@ namespace XBMCAddon
     void Player::updateInfoTag(const XBMCAddon::xbmcgui::ListItem* item)
     {
       XBMC_TRACE;
-      if (!g_application.IsPlaying())
+      if (!g_application.m_pPlayer->IsPlaying())
         throw PlayerException("Kodi is not playing any file");
 
       CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_ITEM, 0, item->item);
@@ -439,7 +439,7 @@ namespace XBMCAddon
     void Player::setSubtitles(const char* cLine)
     {
       XBMC_TRACE;
-      if (g_application.m_pPlayer)
+      if (g_application.m_pPlayer->HasPlayer())
       {
         int nStream = g_application.m_pPlayer->AddSubtitle(cLine);
         if(nStream >= 0)
@@ -455,7 +455,7 @@ namespace XBMCAddon
     void Player::showSubtitles(bool bVisible)
     {
       XBMC_TRACE;
-      if (g_application.m_pPlayer)
+      if (g_application.m_pPlayer->HasPlayer())
       {
         g_application.m_pPlayer->SetSubtitleVisible(bVisible != 0);
       }
@@ -464,7 +464,7 @@ namespace XBMCAddon
     String Player::getSubtitles()
     {
       XBMC_TRACE;
-      if (g_application.m_pPlayer)
+      if (g_application.m_pPlayer->HasPlayer())
       {
         SPlayerSubtitleStreamInfo info;
         g_application.m_pPlayer->GetSubtitleStreamInfo(g_application.m_pPlayer->GetSubtitle(), info);
@@ -480,7 +480,7 @@ namespace XBMCAddon
 
     std::vector<String> Player::getAvailableSubtitleStreams()
     {
-      if (g_application.m_pPlayer)
+      if (g_application.m_pPlayer->HasPlayer())
       {
         int subtitleCount = g_application.m_pPlayer->GetSubtitleCount();
         std::vector<String> ret(subtitleCount);
@@ -502,7 +502,7 @@ namespace XBMCAddon
 
     void Player::setSubtitleStream(int iStream)
     {
-      if (g_application.m_pPlayer)
+      if (g_application.m_pPlayer->HasPlayer())
       {
         int streamCount = g_application.m_pPlayer->GetSubtitleCount();
         if(iStream < streamCount)
@@ -515,7 +515,7 @@ namespace XBMCAddon
 
     std::vector<String> Player::getAvailableAudioStreams()
     {
-      if (g_application.m_pPlayer)
+      if (g_application.m_pPlayer->HasPlayer())
       {
         int streamCount = g_application.m_pPlayer->GetAudioStreamCount();
         std::vector<String> ret(streamCount);
@@ -537,7 +537,7 @@ namespace XBMCAddon
 
     void Player::setAudioStream(int iStream)
     {
-      if (g_application.m_pPlayer)
+      if (g_application.m_pPlayer->HasPlayer())
       {
         int streamCount = g_application.m_pPlayer->GetAudioStreamCount();
         if(iStream < streamCount)

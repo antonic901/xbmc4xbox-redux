@@ -157,7 +157,7 @@ static unsigned int video_config(unsigned int width, unsigned int height, unsign
   m_iLastFieldFlags = 0;
 
   float fps = 25.00f;
-  if (g_application.m_pPlayer)
+  if (g_application.m_pPlayer->HasPlayer())
     fps = g_application.m_pPlayer->GetActualFPS();
 
   unsigned flags = 0;

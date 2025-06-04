@@ -83,7 +83,7 @@ void CGUIDialogAudioSubtitleSettings::FrameMove()
   if (newVolume != m_volume)
     m_settingsManager->SetNumber(SETTING_AUDIO_VOLUME, newVolume);
 
-  if (g_application.m_pPlayer)
+  if (g_application.m_pPlayer->HasPlayer())
   {
     const CVideoSettings &videoSettings = CMediaSettings::Get().GetCurrentVideoSettings();
 
@@ -259,7 +259,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingAction(const CSetting *setting)
         double time = g_application.GetTime();
 
         // Playback could end and delete m_pPlayer while dialog is up so make sure it's valid
-       	if (g_application.m_pPlayer)
+       	if (g_application.m_pPlayer->HasPlayer())
         {
           // get player state, needed for dvd's
           CStdString state = g_application.m_pPlayer->GetPlayerState();

@@ -231,7 +231,7 @@ void CXBoxRenderManager::FlipPage(DWORD delay /* = 0LL*/, int source /*= -1*/, E
   m_presentfield = sync;
 
   CSingleLock lock2(g_graphicsContext);
-  if( g_graphicsContext.IsFullScreenVideo() && !g_application.IsPaused() )
+  if( g_graphicsContext.IsFullScreenVideo() && !g_application.m_pPlayer->IsPaused() )
   {
     lock2.Leave();
 
@@ -451,7 +451,7 @@ void CXBoxRenderManager::Process()
       CSharedLock lock(m_sharedSection);
       CSingleLock lock2(g_graphicsContext);
 
-      if( m_pRenderer && g_graphicsContext.IsFullScreenVideo() && !g_application.IsPaused() )
+      if( m_pRenderer && g_graphicsContext.IsFullScreenVideo() && !g_application.m_pPlayer->IsPaused() )
         Present();
     }
     catch(...)

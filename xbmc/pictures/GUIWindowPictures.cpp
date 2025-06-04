@@ -336,7 +336,7 @@ bool CGUIWindowPictures::ShowPicture(int iItem, bool startSlideShow)
   CGUIWindowSlideShow *pSlideShow = (CGUIWindowSlideShow *)g_windowManager.GetWindow(WINDOW_SLIDESHOW);
   if (!pSlideShow)
     return false;
-  if (g_application.IsPlayingVideo())
+  if (g_application.m_pPlayer->IsPlayingVideo())
     g_application.StopPlaying();
 
   pSlideShow->Reset();
@@ -379,7 +379,7 @@ void CGUIWindowPictures::OnShowPictureRecursive(const std::string& strPath)
   if (pSlideShow)
   {
     // stop any video
-    if (g_application.IsPlayingVideo())
+    if (g_application.m_pPlayer->IsPlayingVideo())
       g_application.StopPlaying();
 
     SortDescription sorting = m_guiState->GetSortMethod();
@@ -570,7 +570,7 @@ void CGUIWindowPictures::LoadPlayList(const std::string& strPlayList)
     CGUIWindowSlideShow *pSlideShow = (CGUIWindowSlideShow *)g_windowManager.GetWindow(WINDOW_SLIDESHOW);
     if (!pSlideShow)
       return;
-    if (g_application.IsPlayingVideo())
+    if (g_application.m_pPlayer->IsPlayingVideo())
       g_application.StopPlaying();
 
     // convert playlist items into slideshow items

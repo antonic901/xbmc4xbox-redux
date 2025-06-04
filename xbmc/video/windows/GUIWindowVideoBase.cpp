@@ -157,11 +157,11 @@ bool CGUIWindowVideoBase::OnMessage(CGUIMessage& message)
         else if (iAction == ACTION_PLAYER_PLAY)
         {
           // if playback is paused or playback speed != 1, return
-          if (g_application.IsPlayingVideo())
+          if (g_application.m_pPlayer->IsPlayingVideo())
           {
-            if (g_application.IsPlaying() && (g_application.GetPlaySpeed() == 0))
+            if (g_application.m_pPlayer->IsPausedPlayback())
               return false;
-            if (g_application.GetPlaySpeed() != 1)
+            if (g_application.m_pPlayer->GetPlaySpeed() != 1)
               return false;
           }
 
@@ -422,18 +422,7 @@ void CGUIWindowVideoBase::OnQueueItem(int iItem)
   // Determine the proper list to queue this element
   int playlist = g_playlistPlayer.GetCurrentPlaylist();
   if (playlist == PLAYLIST_NONE)
-#ifdef _XBOX
-  {
-    if (g_application.IsPlayingVideo())
-      playlist = PLAYLIST_VIDEO;
-    else if (g_application.IsPlayingAudio())
-      playlist = PLAYLIST_MUSIC;
-    else
-      playlist = PLAYLIST_NONE;
-  }
-#else
     playlist = g_application.m_pPlayer->GetPreferredPlaylist();
-#endif
   if (playlist == PLAYLIST_NONE)
     playlist = PLAYLIST_VIDEO;
 
@@ -1162,7 +1151,7 @@ void CGUIWindowVideoBase::PlayMovie(const CFileItem *item, const std::string &pl
   // play movie...
   g_playlistPlayer.Play(0, player);
 
-  if(!g_application.IsPlayingVideo())
+  if(!g_application.m_pPlayer->IsPlayingVideo())
     m_thumbLoader.Load(*m_vecItems);
 }
 

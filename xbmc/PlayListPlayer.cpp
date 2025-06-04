@@ -530,8 +530,8 @@ void CPlayListPlayer::ReShuffle(int iPlaylist, int iPosition)
   else if (iPlaylist == m_iCurrentPlayList)
   {
     if (
-      (g_application.IsPlayingAudio() && iPlaylist == PLAYLIST_MUSIC) ||
-      (g_application.IsPlayingVideo() && iPlaylist == PLAYLIST_VIDEO)
+      (g_application.m_pPlayer->IsPlayingAudio() && iPlaylist == PLAYLIST_MUSIC) ||
+      (g_application.m_pPlayer->IsPlayingVideo() && iPlaylist == PLAYLIST_VIDEO)
       )
     {
       g_playlistPlayer.GetPlaylist(iPlaylist).Shuffle(m_iCurrentSong + 2);
@@ -846,12 +846,12 @@ void PLAYLIST::CPlayListPlayer::OnApplicationMessage(KODI::MESSAGING::ThreadMess
     g_application.ResetScreenSaverWindow();
 
     // stop playing file
-    if (g_application.IsPlaying()) g_application.StopPlaying();
+    if (g_application.m_pPlayer->IsPlaying()) g_application.StopPlaying();
   }
   break;
 
   case TMSG_MEDIA_PAUSE:
-    if (g_application.m_pPlayer)
+    if (g_application.m_pPlayer->HasPlayer())
     {
       g_application.ResetScreenSaver();
       g_application.ResetScreenSaverWindow();
@@ -860,7 +860,7 @@ void PLAYLIST::CPlayListPlayer::OnApplicationMessage(KODI::MESSAGING::ThreadMess
     break;
 
   case TMSG_MEDIA_UNPAUSE:
-    if (g_application.IsPlaying() && g_application.IsPaused()/*g_application.m_pPlayer->IsPausedPlayback()*/)
+    if (g_application.m_pPlayer->IsPausedPlayback())
     {
       g_application.ResetScreenSaver();
       g_application.ResetScreenSaverWindow();
@@ -869,7 +869,7 @@ void PLAYLIST::CPlayListPlayer::OnApplicationMessage(KODI::MESSAGING::ThreadMess
     break;
 
   case TMSG_MEDIA_PAUSE_IF_PLAYING:
-    if (g_application.IsPlaying() && !g_application.IsPaused())
+    if (g_application.m_pPlayer->IsPlaying() && !g_application.m_pPlayer->IsPaused())
     {
       g_application.ResetScreenSaver();
       g_application.ResetScreenSaverWindow();

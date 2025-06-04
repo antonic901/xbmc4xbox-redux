@@ -196,7 +196,7 @@ bool CGUIWindowMusicBase::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_BTNREC)
       {
-        if (g_application.IsPlayingAudio() )
+        if (g_application.m_pPlayer->IsPlayingAudio() )
         {
           if (g_application.m_pPlayer->CanRecord() )
           {
@@ -234,11 +234,11 @@ bool CGUIWindowMusicBase::OnMessage(CGUIMessage& message)
         else if (iAction == ACTION_PLAYER_PLAY)
         {
           // if playback is paused or playback speed != 1, return
-          if (g_application.IsPlayingAudio())
+          if (g_application.m_pPlayer->IsPlayingAudio())
           {
-            if (g_application.IsPlaying() && (g_application.GetPlaySpeed() == 0))
+            if (g_application.m_pPlayer->IsPlaying() && (g_application.m_pPlayer->GetPlaySpeed() == 0))
               return false;
-            if (g_application.GetPlaySpeed() != 1)
+            if (g_application.m_pPlayer->GetPlaySpeed() != 1)
               return false;
           }
 
@@ -374,18 +374,7 @@ void CGUIWindowMusicBase::OnQueueItem(int iItem)
   // Determine the proper list to queue this element
   int playlist = g_playlistPlayer.GetCurrentPlaylist();
   if (playlist == PLAYLIST_NONE)
-#ifdef _XBOX
-  {
-    if (g_application.IsPlayingVideo())
-      playlist = PLAYLIST_VIDEO;
-    else if (g_application.IsPlayingAudio())
-      playlist = PLAYLIST_MUSIC;
-    else
-      playlist = PLAYLIST_NONE;
-  }
-#else
     playlist = g_application.m_pPlayer->GetPreferredPlaylist();
-#endif
   if (playlist == PLAYLIST_NONE)
     playlist = PLAYLIST_MUSIC;
 
@@ -534,7 +523,7 @@ void CGUIWindowMusicBase::UpdateButtons()
   else
     SET_CONTROL_LABEL(CONTROL_BTNSCAN, 102); // Scan
 
-  bool bIsPlaying = g_application.IsPlayingAudio();
+  bool bIsPlaying = g_application.m_pPlayer->IsPlayingAudio();
   bool bCanRecord = false;
   bool bIsRecording = false;
 

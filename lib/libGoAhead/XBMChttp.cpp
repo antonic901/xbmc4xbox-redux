@@ -1442,14 +1442,14 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
     CStdString strPath(url.GetWithoutUserDetails());
     CURL::Decode(strPath);
     output = openTag + "Filename:" + strPath;  // currently playing item filename
-    if (g_application.IsPlaying())
+    if (g_application.m_pPlayer->IsPlaying())
       if (!g_application.m_pPlayer->IsPaused()) 
         output+=closeTag+openTag+"PlayStatus:Playing";
       else
         output+=closeTag+openTag+"PlayStatus:Paused";
     else
       output+=closeTag+openTag+"PlayStatus:Stopped";
-    if (g_application.IsPlayingVideo())
+    if (g_application.m_pPlayer->IsPlayingVideo())
     { // Video information
       tmp.Format("%i",g_playlistPlayer.GetCurrentSong());
       output+=closeTag+openTag+"VideoNo:"+tmp;  // current item # in playlist
@@ -1520,7 +1520,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
       copyThumb(thumb,thumbFn);
       output+=closeTag+openTag+"Thumb"+tag+":"+thumb;
     }
-    else if (g_application.IsPlayingAudio())
+    else if (g_application.m_pPlayer->IsPlayingAudio())
     { // Audio information
       tmp.Format("%i",g_playlistPlayer.GetCurrentSong());
       output+=closeTag+openTag+"SongNo:"+tmp;  // current item # in playlist
@@ -1570,7 +1570,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
     }
     output+=closeTag+openTag+"Time:"+g_infoManager.GetCurrentPlayTime().c_str();
     output+=closeTag+openTag+"Duration:";
-    if (g_application.IsPlayingVideo())
+    if (g_application.m_pPlayer->IsPlayingVideo())
       output += g_infoManager.GetDuration();
     else
       output += g_infoManager.GetDuration();
@@ -1616,7 +1616,7 @@ int CXbmcHttp::xbmcGetVideoLabel(int numParas, CStdString paras[])
 
 int CXbmcHttp::xbmcGetPercentage()
 {
-  if (g_application.m_pPlayer)
+  if (g_application.m_pPlayer->HasPlayer())
   {
     CStdString tmp;
     tmp.Format("%i",(int)g_application.GetPercentage());
@@ -1632,7 +1632,7 @@ int CXbmcHttp::xbmcSeekPercentage(int numParas, CStdString paras[], bool relativ
     return SetResponse(openTag+"Error:Missing Parameter");
   else
   {
-    if (g_application.m_pPlayer)
+    if (g_application.m_pPlayer->HasPlayer())
     {
       float percent=(float)atof(paras[0].c_str());
       if (relative)
@@ -1757,7 +1757,7 @@ int CXbmcHttp::xbmcAddToSlideshow(int numParas, CStdString paras[])
 int CXbmcHttp::xbmcSetPlaySpeed(int numParas, CStdString paras[])
 {
   if (numParas>0) {
-    g_application.SetPlaySpeed(atoi(paras[0]));
+    g_application.m_pPlayer->SetPlaySpeed(atoi(paras[0]));
     return SetResponse(openTag+"OK");
   }
   else
@@ -1767,7 +1767,7 @@ int CXbmcHttp::xbmcSetPlaySpeed(int numParas, CStdString paras[])
 int CXbmcHttp::xbmcGetPlaySpeed()
 {
   CStdString strSpeed;
-  strSpeed.Format("%i", g_application.GetPlaySpeed());
+  strSpeed.Format("%i", g_application.m_pPlayer->GetPlaySpeed());
   return SetResponse(openTag + strSpeed );
 }
 
@@ -1916,7 +1916,7 @@ int CXbmcHttp::xbmcPlayerPlayFile(int numParas, CStdString paras[])
     CFileItemList *l = new CFileItemList; //don't delete,
     l->Add(boost::make_shared<CFileItem>(paras[0], false));
     CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
-    if(g_application.IsPlaying())
+    if(g_application.m_pPlayer->IsPlaying())
       return SetResponse(openTag+"OK");
   }
   return SetResponse(openTag+"Error:Could not play file");
@@ -2085,7 +2085,7 @@ int CXbmcHttp::xbmcRemoveFromPlayList(int numParas, CStdString paras[])
     else
       itemToRemove=FindPathInPlayList(iPlaylist, strItem);
     // The current playing song can't be removed
-    if (g_playlistPlayer.GetCurrentPlaylist() == PLAYLIST_MUSIC && g_application.IsPlayingAudio()
+    if (g_playlistPlayer.GetCurrentPlaylist() == PLAYLIST_MUSIC && g_application.m_pPlayer->IsPlayingAudio()
       && g_playlistPlayer.GetCurrentSong() == itemToRemove)
       return SetResponse(openTag+"Error:Can't remove current playing song");
     if (itemToRemove<0 || itemToRemove>=g_playlistPlayer.GetPlaylist(iPlaylist).size())
@@ -2093,7 +2093,7 @@ int CXbmcHttp::xbmcRemoveFromPlayList(int numParas, CStdString paras[])
     g_playlistPlayer.GetPlaylist(PLAYLIST_MUSIC).Remove(itemToRemove);
 
     // Correct the current playing song in playlistplayer
-    if (g_playlistPlayer.GetCurrentPlaylist() == PLAYLIST_MUSIC && g_application.IsPlayingAudio())
+    if (g_playlistPlayer.GetCurrentPlaylist() == PLAYLIST_MUSIC && g_application.m_pPlayer->IsPlayingAudio())
     {
       int iCurrentSong = g_playlistPlayer.GetCurrentSong();
       if (itemToRemove <= iCurrentSong)
@@ -2871,7 +2871,7 @@ int CXbmcHttp::xbmcSpinDownHardDisk(int numParas, CStdString paras[])
 	  return SetResponse(openTag+"Error:Can't spin down now (modal dialog)");
   if (g_application.MustBlockHDSpinDown())
 	  return SetResponse(openTag+"Error:Can't spin down now (must block)");
-  if (g_application.IsPlaying() && g_application.CurrentFileItem().IsHD())
+  if (g_application.m_pPlayer->IsPlaying() && g_application.CurrentFileItem().IsHD())
 	  return SetResponse(openTag+"Error:Can't spin down now (playing media on hard disk)");
   #ifdef HAS_XBOX_HARDWARE
     XKHDD::SpindownHarddisk();
@@ -2998,7 +2998,7 @@ int CXbmcHttp::xbmcRecordStatus(int numParas, CStdString paras[])
 {
   if (numParas!=0)
     return SetResponse(openTag+"Error:Too many parameters");
-  else if( g_application.IsPlaying() && g_application.m_pPlayer && g_application.m_pPlayer->CanRecord())
+  else if( g_application.m_pPlayer->IsPlaying() && g_application.m_pPlayer->CanRecord())
     return SetResponse(g_application.m_pPlayer->IsRecording()?openTag+"Recording":openTag+"Not recording");
   else
     return SetResponse(openTag+"Can't record");
