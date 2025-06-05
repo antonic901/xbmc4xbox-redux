@@ -20,6 +20,7 @@
 
 #include "ServiceManager.h"
 #include "ContextMenuManager.h"
+#include "cores/DataCacheCore.h"
 #include "PlayListPlayer.h"
 #include "utils/log.h"
 #include "interfaces/AnnouncementManager.h"
@@ -55,6 +56,8 @@ bool CServiceManager::Init2()
     CLog::Log(LOGFATAL, "CServiceManager::Init: Unable to start CAddonMgr");
     return false;
   }
+
+  m_dataCacheCore.reset(new CDataCacheCore());
 
   m_contextMenuManager.reset(new CContextMenuManager(*m_addonMgr.get()));
 
@@ -97,9 +100,20 @@ CContextMenuManager& CServiceManager::GetContextMenuManager()
   return *m_contextMenuManager;
 }
 
+CDataCacheCore& CServiceManager::GetDataCacheCore()
+{
+  return *m_dataCacheCore;
+}
+
 PLAYLIST::CPlayListPlayer& CServiceManager::GetPlaylistPlayer()
 {
   return *m_playlistPlayer;
+}
+
+// deleters for unique_ptr
+void CServiceManager::delete_dataCacheCore::operator()(CDataCacheCore *p) const
+{
+  delete p;
 }
 
 void CServiceManager::delete_contextMenuManager::operator()(CContextMenuManager *p) const

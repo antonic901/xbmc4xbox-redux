@@ -41,6 +41,11 @@ CContextMenuManager& CServiceBroker::GetContextMenuManager()
   return g_application.m_ServiceManager->GetContextMenuManager();
 }
 
+CDataCacheCore &CServiceBroker::GetDataCacheCore()
+{
+  return g_application.m_ServiceManager->GetDataCacheCore();
+}
+
 PLAYLIST::CPlayListPlayer &CServiceBroker::GetPlaylistPlayer()
 {
   return g_application.m_ServiceManager->GetPlaylistPlayer();

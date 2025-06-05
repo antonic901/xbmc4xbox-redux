@@ -5063,6 +5063,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			Name="cores"
 			Filter="">
 			<File
+				RelativePath=".\xbmc\cores\DataCacheCore.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\cores\DataCacheCore.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\cores\ModPlayer.cpp">
 			</File>
 			<File

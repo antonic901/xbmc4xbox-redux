@@ -38,6 +38,7 @@ namespace PLAYLIST
 
 class CContextMenuManager;
 class XBPython;
+class CDataCacheCore;
 
 class CServiceManager
 {
@@ -53,10 +54,16 @@ public:
   ANNOUNCEMENT::CAnnouncementManager& GetAnnouncementManager();
   XBPython& GetXBPython();
   CContextMenuManager& GetContextMenuManager();
+  CDataCacheCore& GetDataCacheCore();
 
   PLAYLIST::CPlayListPlayer& GetPlaylistPlayer();
 
 protected:
+  struct delete_dataCacheCore
+  {
+    void operator()(CDataCacheCore *p) const;
+  };
+
   struct delete_contextMenuManager
   {
     void operator()(CContextMenuManager *p) const;
@@ -66,5 +73,6 @@ protected:
   boost::movelib::unique_ptr<ANNOUNCEMENT::CAnnouncementManager> m_announcementManager;
   boost::movelib::unique_ptr<XBPython> m_XBPython;
   boost::movelib::unique_ptr<CContextMenuManager, delete_contextMenuManager> m_contextMenuManager;
+  boost::movelib::unique_ptr<CDataCacheCore, delete_dataCacheCore> m_dataCacheCore;
   boost::movelib::unique_ptr<PLAYLIST::CPlayListPlayer> m_playlistPlayer;
 };
