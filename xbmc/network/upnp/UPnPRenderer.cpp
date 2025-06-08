@@ -11,9 +11,6 @@
 #include "pictures/GUIWindowSlideShow.h"
 #include "pictures/PictureInfoTag.h"
 #include "profiles/ProfilesManager.h"
-#include "TextureDatabase.h"
-#include "ThumbLoader.h"
-#include "URL.h"
 #include "utils/URIUtils.h"
 #include "guiinfo/GUIInfoLabels.h"
 
@@ -123,7 +120,7 @@ CUPnPRenderer::SetupServices(PLT_DeviceData& data)
 |   CUPnPRenderer::ProcessHttpRequest
 +---------------------------------------------------------------------*/
 NPT_Result
-CUPnPRenderer::ProcessHttpGetRequest(NPT_HttpRequest&              request,
+CUPnPRenderer::ProcessHttpRequest(NPT_HttpRequest&              request,
                                   const NPT_HttpRequestContext& context,
                                   NPT_HttpResponse&             response)
 {
@@ -133,7 +130,7 @@ CUPnPRenderer::ProcessHttpGetRequest(NPT_HttpRequest&              request,
     NPT_String  protocol   = request.GetProtocol();
     NPT_HttpUrl url        = request.GetUrl();
 
-    if (url.GetPath() == "/thumb") {
+    if (url.GetPath() == "/thumb.jpg") {
         NPT_HttpUrlQuery query(url.GetQuery());
         NPT_String filepath = query.GetField("path");
         if (!filepath.IsEmpty()) {
@@ -147,14 +144,20 @@ CUPnPRenderer::ProcessHttpGetRequest(NPT_HttpRequest&              request,
                 return NPT_SUCCESS;
             }
 
+            // ensure that the request's path is a valid thumb path
+            if (URIUtils::IsRemote(filepath.GetChars()) ||
+                !filepath.StartsWith(CProfilesManager::Get().GetUserDataFolder().c_str())) {
+                response.SetStatus(404, "Not Found");
+                return NPT_SUCCESS;
+            }
+
             // prevent hackers from accessing files outside of our root
             if ((filepath.Find("/..") >= 0) || (filepath.Find("\\..") >=0)) {
                 return NPT_FAILURE;
             }
 
             // open the file
-            CStdString path = CURL::Decode((const char*) filepath);
-            NPT_File file(path.c_str());
+            NPT_File file(filepath);
             NPT_Result result = file.Open(NPT_FILE_OPEN_MODE_READ);
             if (NPT_FAILED(result)) {
                 response.SetStatus(404, "Not Found");
@@ -255,22 +258,12 @@ NPT_Result
 CUPnPRenderer::GetMetadata(NPT_String& meta)
 {
     NPT_Result res = NPT_FAILURE;
-    CFileItem item(g_application.CurrentFileItem());
+    const CFileItem &item = g_application.CurrentFileItem();
     NPT_String file_path, tmp;
-
-    // we pass an empty CThumbLoader reference, as it can't be used
-    // without CUPnPServer enabled
-    NPT_Reference<CThumbLoader> thumb_loader;
-    PLT_MediaObject* object = BuildObject(item, file_path, false, thumb_loader, false);
+    PLT_MediaObject* object = BuildObject(item, file_path, false);
     if (object) {
-        // fetch the item's artwork
-        CStdString thumb;
-        if (object->m_ObjectClass.type == "object.item.audioItem.musicTrack")
-            thumb = g_infoManager.GetImage(MUSICPLAYER_COVER, -1);
-        else
-            thumb = g_infoManager.GetImage(VIDEOPLAYER_COVER, -1);
-
-        thumb = CTextureUtils::GetWrappedImageURL(thumb);
+        // fetch the path to the thumbnail
+        CStdString thumb = g_infoManager.GetImage(MUSICPLAYER_COVER, -1); //TODO: Only audio for now
             
         NPT_String ip = g_application.getNetwork().m_networkinfo.ip;
 
@@ -280,7 +273,7 @@ CUPnPRenderer::GetMetadata(NPT_String& meta)
         object->m_ExtraInfo.album_art_uri = NPT_HttpUrl(
             ip,
             m_URLDescription.GetPort(),
-            "/thumb",
+            "/thumb.jpg",
             query.ToString()).ToString();
 
         res = PLT_Didl::ToDidl(*object, "*", tmp);

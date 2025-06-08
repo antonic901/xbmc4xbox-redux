@@ -22,7 +22,6 @@
 #include "PltMediaConnect.h"
 #include "FileItem.h"
 
-class CThumbLoader;
 class PLT_MediaObject;
 class PLT_HttpRequestContext;
 
@@ -87,7 +86,6 @@ private:
     PLT_MediaObject* Build(CFileItemPtr                  item,
                            bool                          with_count,
                            const PLT_HttpRequestContext& context,
-                           NPT_Reference<CThumbLoader>&  thumbLoader,
                            const char*                   parent_id = NULL);
     NPT_Result       BuildResponse(PLT_ActionReference&          action,
                                    CFileItemList&                items,

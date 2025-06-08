@@ -1,8 +1,7 @@
 #include "UPnPServer.h"
 #include "UPnPInternal.h"
 #include "Platinum.h"
-#include "video/VideoThumbLoader.h"
-#include "music/MusicThumbLoader.h"
+#include "ThumbLoader.h"
 #include "filesystem/Directory.h"
 #include "filesystem/MusicDatabaseDirectory.h"
 #include "filesystem/VideoDatabaseDirectory.h"
@@ -54,9 +53,9 @@ PLT_MediaObject*
 CUPnPServer::Build(CFileItemPtr                  item,
                    bool                          with_count,
                    const PLT_HttpRequestContext& context,
-                   NPT_Reference<CThumbLoader>&  thumb_loader,
                    const char*                   parent_id /* = NULL */)
 {
+    CThumbLoader thumb_loader;
     PLT_MediaObject* object = NULL;
     NPT_String       path = item->GetPath().c_str();
 
@@ -122,6 +121,9 @@ CUPnPServer::Build(CFileItemPtr                  item,
                     }
                 }
 
+                if (!item->HasArt("thumb") )
+                    item->SetArt("thumb", thumb_loader.GetCachedImage(*item, "thumb"));
+
                 if (item->GetLabel().empty()) {
                     /* if no label try to grab it from node type */
                     CStdString label;
@@ -165,11 +167,14 @@ CUPnPServer::Build(CFileItemPtr                  item,
                         item->SetLabelPreformated(true);
                     }
                 }
+
+                if (!item->HasArt("thumb") )
+                    item->SetArt("thumb", thumb_loader.GetCachedImage(*item, "thumb"));
             }
         }
 
         // not a virtual path directory, new system
-        object = BuildObject(*item.get(), file_path, with_count, thumb_loader, &context, this);
+        object = BuildObject(*item.get(), file_path, with_count, &context, this);
 
         // set parent id if passed, otherwise it should have been determined
         if (object && parent_id) {
@@ -240,7 +245,6 @@ CUPnPServer::OnBrowseMetadata(PLT_ActionReference&          action,
     NPT_String                     id = TranslateWMPObjectId(object_id);
     vector<CStdString>             paths;
     CFileItemPtr                   item;
-    NPT_Reference<CThumbLoader>    thumb_loader;
 
     CLog::Log(LOGINFO, "Received UPnP Browse Metadata request for object '%s'", (const char*)object_id);
 
@@ -251,7 +255,7 @@ CUPnPServer::OnBrowseMetadata(PLT_ActionReference&          action,
             item.reset(new CFileItem((const char*)id, true));
             item->SetLabel("Root");
             item->SetLabelPreformated(true);
-            object = Build(item, true, context, thumb_loader);
+            object = Build(item, true, context);
         } else {
             return NPT_FAILURE;
         }
@@ -270,16 +274,7 @@ CUPnPServer::OnBrowseMetadata(PLT_ActionReference&          action,
 //        }
 //#endif
 
-        if (item->IsVideoDb()) {
-            thumb_loader = NPT_Reference<CThumbLoader>(new CVideoThumbLoader());
-        }
-        else if (item->IsMusicDb()) {
-            thumb_loader = NPT_Reference<CThumbLoader>(new CMusicThumbLoader());
-        }
-        if (!thumb_loader.IsNull()) {
-            thumb_loader->OnLoaderStart();
-        }
-        object = Build(item, true, context, thumb_loader, parent.empty()?NULL:parent.c_str());
+        object = Build(item, true, context, parent.empty()?NULL:parent.c_str());
     }
 
     if (object.IsNull()) {
@@ -391,21 +386,6 @@ CUPnPServer::BuildResponse(PLT_ActionReference&          action,
         starting_index,
         requested_count);
 
-    // we will reuse this ThumbLoader for all items
-    NPT_Reference<CThumbLoader> thumb_loader;
-
-    // this isn't ideal, just grabbing first item to identify the content type
-    // of this FileItemList, but there's no other option
-    if (!items.IsEmpty() && items.Get(0)->HasVideoInfoTag()) {
-        thumb_loader = NPT_Reference<CThumbLoader>(new CVideoThumbLoader());
-    }
-    else if (!items.IsEmpty() && items.Get(0)->HasMusicInfoTag()) {
-        thumb_loader = NPT_Reference<CThumbLoader>(new CMusicThumbLoader());
-    }
-    if (!thumb_loader.IsNull()) {
-        thumb_loader->OnLoaderStart();
-    }
-
     // won't return more than UPNP_MAX_RETURNED_ITEMS items at a time to keep things smooth
     // 0 requested means as many as possible
     NPT_UInt32 max_count  = (requested_count == 0)?m_MaxReturnedItems:min((unsigned long)requested_count, (unsigned long)m_MaxReturnedItems);
@@ -415,7 +395,7 @@ CUPnPServer::BuildResponse(PLT_ActionReference&          action,
     NPT_String didl = didl_header;
     PLT_MediaObjectReference object;
     for (unsigned long i=starting_index; i<stop_index; ++i) {
-        object = Build(items[i], true, context, thumb_loader, parent_id);
+        object = Build(items[i], true, context, parent_id);
         if (object.IsNull()) {
             continue;
         }

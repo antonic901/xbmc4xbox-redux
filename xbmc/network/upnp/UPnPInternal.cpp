@@ -33,12 +33,8 @@
 #include "filesystem/StackDirectory.h"
 #include "filesystem/MusicDatabaseDirectory.h"
 #include "filesystem/VideoDatabaseDirectory.h"
-#include "video/VideoDatabase.h"
 #include "video/VideoInfoTag.h"
-#include "music/MusicDatabase.h"
 #include "music/tags/MusicInfoTag.h"
-#include "TextureDatabase.h"
-#include "ThumbLoader.h"
 
 using namespace MUSIC_INFO;
 using namespace XFILE;
@@ -304,17 +300,14 @@ PopulateObjectFromTag(CVideoInfoTag&         tag,
 |   BuildObject
 +---------------------------------------------------------------------*/
 PLT_MediaObject*
-BuildObject(CFileItem&                    item,
+BuildObject(const CFileItem&              item,
             NPT_String&                   file_path,
             bool                          with_count,
-            NPT_Reference<CThumbLoader>&  thumb_loader,
             const PLT_HttpRequestContext* context /* = NULL */,
             CUPnPServer*                  upnp_server /* = NULL */)
 {
     PLT_MediaItemResource resource;
     PLT_MediaObject*      object = NULL;
-    std::string thumb, fanart;
-    bool fetched_art(false);
 
     CLog::Log(LOGDEBUG, "Building didl for object '%s'", (const char*)item.GetPath().c_str());
 
@@ -535,26 +528,24 @@ BuildObject(CFileItem&                    item,
             object->m_Title = title;
         }
     }
-    // determine the correct artwork for this item
-    if (!thumb_loader.IsNull())
-        fetched_art = thumb_loader->FillLibraryArt(item);
-
-    // finally apply the found artwork
-    if (fetched_art && upnp_server) {
+    // set a thumbnail if we have one
+    if (item.HasArt("thumb") && upnp_server) {
         object->m_ExtraInfo.album_art_uri = upnp_server->BuildSafeResourceUri(
             (*ips.GetFirstItem()).ToString(),
-            CTextureUtils::GetWrappedImageURL(item.GetArt("thumb")).c_str());
-
+            item.GetArt("thumb").c_str());
         // Set DLNA profileID by extension, defaulting to JPEG.
-        if (URIUtils::HasExtension(thumb, ".png")) {
+        NPT_String ext = URIUtils::GetExtension(item.GetArt("thumb")).c_str();
+        if (strcmp(ext, ".png") == 0) {
             object->m_ExtraInfo.album_art_uri_dlna_profile = "PNG_TN";
         } else {
             object->m_ExtraInfo.album_art_uri_dlna_profile = "JPEG_TN";
         }
+    }
 
-        std::string fanart = item.GetArt("fanart");
-        if (!fanart.empty())
-            upnp_server->AddSafeResourceUri(object, ips, CTextureUtils::GetWrappedImageURL(fanart).c_str(), "xbmc.org:*:fanart:*");
+    if (upnp_server) {
+        if (item.HasArt("fanart")) {
+            upnp_server->AddSafeResourceUri(object, ips, item.GetArt("fanart").c_str(), "xbmc.org:*:fanart:*");
+        }
     }
 
     return object;
