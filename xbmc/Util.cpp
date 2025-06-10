@@ -2089,7 +2089,7 @@ void CUtil::TakeScreenshot(const CStdString& strFileName, bool flashScreen)
     LPDIRECT3DSURFACE8 lpSurface = NULL;
     g_graphicsContext.Lock();
     CStdString strFileNameTranslated = CSpecialProtocol::TranslatePath(strFileName);
-    if (g_application.IsPlayingVideo())
+    if (g_application.m_pPlayer->IsPlayingVideo())
     {
 #ifdef HAS_VIDEO_PLAYBACK
       g_renderManager.SetupScreenshot();

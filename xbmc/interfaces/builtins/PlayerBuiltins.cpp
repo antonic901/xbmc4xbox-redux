@@ -122,10 +122,10 @@ static int PlayerControl(const std::vector<std::string>& params)
   if (paramlow ==  "play")
   { // play/pause
     // either resume playing, or pause
-    if (g_application.IsPlaying())
+    if (g_application.m_pPlayer->IsPlaying())
     {
-      if (g_application.GetPlaySpeed() != 1)
-        g_application.SetPlaySpeed(1);
+      if (g_application.m_pPlayer->GetPlaySpeed() != 1)
+        g_application.m_pPlayer->SetPlaySpeed(1);
       else
         g_application.m_pPlayer->Pause();
     }
@@ -138,7 +138,7 @@ static int PlayerControl(const std::vector<std::string>& params)
   {
     if (g_application.m_pPlayer->IsPlaying() && !g_application.m_pPlayer->IsPaused())
     {
-      int playSpeed = g_application.GetPlaySpeed();
+      int playSpeed = g_application.m_pPlayer->GetPlaySpeed();
       if (playSpeed >= 0.75 && playSpeed <= 1.55)
         playSpeed = 1;
 
@@ -158,7 +158,7 @@ static int PlayerControl(const std::vector<std::string>& params)
       if (playSpeed > 32 || playSpeed < -32)
         playSpeed = 1;
 
-      g_application.SetPlaySpeed(playSpeed);
+      g_application.m_pPlayer->SetPlaySpeed(playSpeed, false);
     }
   }
   else if (paramlow =="tempoup" || paramlow == "tempodown")
@@ -167,7 +167,7 @@ static int PlayerControl(const std::vector<std::string>& params)
     if (g_application.m_pPlayer->SupportsTempo() &&
         g_application.m_pPlayer->IsPlaying() && !g_application.m_pPlayer->IsPaused())
     {
-      float playSpeed = g_application.GetPlaySpeed();
+      float playSpeed = g_application.m_pPlayer->GetPlaySpeed();
       if (playSpeed >= 0.75 && playSpeed <= 1.55)
       {
         if (paramlow == "tempodown" && playSpeed > 0.85)
@@ -176,7 +176,7 @@ static int PlayerControl(const std::vector<std::string>& params)
           playSpeed += 0.1;
 
         playSpeed = floor(playSpeed * 100 + 0.5) / 100;
-        g_application.SetPlaySpeed(playSpeed);
+        g_application.m_pPlayer->SetPlaySpeed(playSpeed);
       }
     }
 #endif

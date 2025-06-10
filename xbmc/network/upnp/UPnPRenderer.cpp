@@ -202,15 +202,15 @@ CUPnPRenderer::UpdateState()
     buffer.Format("%d", 256 * (volume * 60 - 60) / 100);
     rct->SetStateVariable("VolumeDb", buffer.c_str());
 
-    if (g_application.IsPlaying() || g_application.IsPaused()) {
-        if (g_application.IsPaused()) {
+    if (g_application.m_pPlayer->IsPlaying() || g_application.m_pPlayer->IsPaused()) {
+        if (g_application.m_pPlayer->IsPaused()) {
             avt->SetStateVariable("TransportState", "PAUSED_PLAYBACK");
         } else {
             avt->SetStateVariable("TransportState", "PLAYING");
         }
 
         avt->SetStateVariable("TransportStatus", "OK");
-        avt->SetStateVariable("TransportPlaySpeed", (const char*)NPT_String::FromInteger(g_application.GetPlaySpeed()));
+        avt->SetStateVariable("TransportPlaySpeed", (const char*)NPT_String::FromInteger(g_application.m_pPlayer->GetPlaySpeed()));
         avt->SetStateVariable("NumberOfTracks", "1");
         avt->SetStateVariable("CurrentTrack", "1");
 
@@ -303,7 +303,7 @@ CUPnPRenderer::OnNext(PLT_ActionReference& action)
 NPT_Result
 CUPnPRenderer::OnPause(PLT_ActionReference& action)
 {
-    if (!g_application.IsPaused())
+    if (!g_application.m_pPlayer->IsPaused())
         CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_PAUSE);
     return NPT_SUCCESS;
 }
@@ -314,9 +314,9 @@ CUPnPRenderer::OnPause(PLT_ActionReference& action)
 NPT_Result
 CUPnPRenderer::OnPlay(PLT_ActionReference& action)
 {
-    if (g_application.IsPaused()) {
+    if (g_application.m_pPlayer->IsPaused()) {
         CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_PAUSE);
-    } else if (!g_application.IsPlaying()) {
+    } else if (!g_application.m_pPlayer->IsPlaying()) {
         NPT_String uri, meta;
         PLT_Service* service;
         // look for value set previously by SetAVTransportURI
@@ -365,7 +365,7 @@ CUPnPRenderer::OnSetAVTransportURI(PLT_ActionReference& action)
 
     // if not playing already, just keep around uri & metadata
     // and wait for play command
-    if (!g_application.IsPlaying()) {
+    if (!g_application.m_pPlayer->IsPlaying()) {
         service->SetStateVariable("TransportState", "STOPPED");
         service->SetStateVariable("TransportStatus", "OK");
         service->SetStateVariable("TransportPlaySpeed", "1");
@@ -455,7 +455,7 @@ CUPnPRenderer::PlayMedia(const char* uri, const char* meta, PLT_Action* action)
         }
     }
 
-    if (!g_application.IsPlaying()) {
+    if (!g_application.m_pPlayer->IsPlaying()) {
         service->SetStateVariable("TransportState", "STOPPED");
         service->SetStateVariable("TransportStatus", "ERROR_OCCURRED");
     } else {
@@ -500,7 +500,7 @@ CUPnPRenderer::OnSetMute(PLT_ActionReference& action)
 NPT_Result
 CUPnPRenderer::OnSeek(PLT_ActionReference& action)
 {
-    if (!g_application.IsPlaying()) return NPT_ERROR_INVALID_STATE;
+    if (!g_application.m_pPlayer->IsPlaying()) return NPT_ERROR_INVALID_STATE;
 
     NPT_String unit, target;
     NPT_CHECK_SEVERE(action->GetArgumentValue("Unit", unit));

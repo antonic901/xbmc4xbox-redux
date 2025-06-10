@@ -1069,7 +1069,7 @@ void CXBoxRenderer::Render(DWORD flags)
       g_application.RenderFullScreen();
     }
 
-    if (!g_application.IsPaused())
+    if (!g_application.m_pPlayer->IsPaused())
     {
       g_application.RenderMemoryStatus();
     }

@@ -597,7 +597,7 @@ void CGUIDialogSubtitles::ClearServices()
 
 void CGUIDialogSubtitles::SetSubtitles(const std::string &subtitle)
 {
-  if (g_application.m_pPlayer)
+  if (g_application.m_pPlayer->HasPlayer())
   {
     int nStream = g_application.m_pPlayer->AddSubtitle(subtitle);
     if(nStream >= 0)

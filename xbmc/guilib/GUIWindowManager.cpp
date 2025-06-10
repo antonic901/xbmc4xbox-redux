@@ -1331,7 +1331,7 @@ int CGUIWindowManager::GetActiveWindowID()
   if (iWin == WINDOW_FULLSCREEN_VIDEO)
   {
     // check if we're in a DVD menu
-    if (g_application.m_pPlayer && g_application.m_pPlayer->IsInMenu())
+    if (g_application.m_pPlayer->IsInMenu())
       iWin = WINDOW_VIDEO_MENU;
 #ifndef _XBOX
     // check for LiveTV and switch to it's virtual window
