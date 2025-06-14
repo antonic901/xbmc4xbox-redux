@@ -136,6 +136,7 @@
 #include "windows/GUIWindowScreensaver.h"
 #include "video/windows/GUIWindowFullScreen.h"
 #include "video/dialogs/GUIDialogVideoOSD.h"
+#include "video/PlayerController.h"
 
 // Dialog includes
 #include "video/dialogs/GUIDialogVideoBookmarks.h"
@@ -1317,6 +1318,7 @@ HRESULT CApplication::Initialize()
 
   // register action listeners
   RegisterActionListener(&CSeekHandler::Get());
+  RegisterActionListener(&CPlayerController::GetInstance());
 
   CRepositoryUpdater::GetInstance().Start();
 
@@ -3650,6 +3652,7 @@ void CApplication::Stop(bool bLCDStop)
 
     // unregister action listeners
     UnregisterActionListener(&CSeekHandler::Get());
+    UnregisterActionListener(&CPlayerController::GetInstance());
 
     // stop all remaining scripts; must be done after skin has been unloaded,
     // not before some windows still need it when deinitializing during skin
