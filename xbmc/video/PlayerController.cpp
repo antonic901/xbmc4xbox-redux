@@ -131,12 +131,12 @@ bool CPlayerController::OnAction(const CAction &action)
 
       case ACTION_SUBTITLE_DELAY_MIN:
       {
-        CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay -= 0.1f;
-        if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay < -g_advancedSettings.m_videoSubsDelayRange)
-          CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay = -g_advancedSettings.m_videoSubsDelayRange;
-        g_application.m_pPlayer->SetSubTitleDelay(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay);
+        CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay -= 0.1f;
+        if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay < -g_advancedSettings.m_videoSubsDelayRange)
+          CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay = -g_advancedSettings.m_videoSubsDelayRange;
+        g_application.m_pPlayer->SetSubTitleDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
 
-        ShowSlider(action.GetID(), 22006, CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay,
+        ShowSlider(action.GetID(), 22006, CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay,
                                           -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
                                            g_advancedSettings.m_videoSubsDelayRange);
         return true;
@@ -144,12 +144,12 @@ bool CPlayerController::OnAction(const CAction &action)
 
       case ACTION_SUBTITLE_DELAY_PLUS:
       {
-        CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay += 0.1f;
-        if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay > g_advancedSettings.m_videoSubsDelayRange)
-          CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay = g_advancedSettings.m_videoSubsDelayRange;
-        g_application.m_pPlayer->SetSubTitleDelay(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay);
+        CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay += 0.1f;
+        if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay > g_advancedSettings.m_videoSubsDelayRange)
+          CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay = g_advancedSettings.m_videoSubsDelayRange;
+        g_application.m_pPlayer->SetSubTitleDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
 
-        ShowSlider(action.GetID(), 22006, CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay,
+        ShowSlider(action.GetID(), 22006, CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay,
                                           -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
                                            g_advancedSettings.m_videoSubsDelayRange);
         return true;
@@ -157,7 +157,7 @@ bool CPlayerController::OnAction(const CAction &action)
 
       case ACTION_SUBTITLE_DELAY:
       {
-        ShowSlider(action.GetID(), 22006, CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay,
+        ShowSlider(action.GetID(), 22006, CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay,
                                           -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
                                            g_advancedSettings.m_videoSubsDelayRange, true);
         return true;
@@ -165,7 +165,7 @@ bool CPlayerController::OnAction(const CAction &action)
 
       case ACTION_AUDIO_DELAY:
       {
-        ShowSlider(action.GetID(), 297, CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay,
+        ShowSlider(action.GetID(), 297, CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay,
                                         -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
                                          g_advancedSettings.m_videoAudioDelayRange, true);
         return true;
@@ -173,12 +173,12 @@ bool CPlayerController::OnAction(const CAction &action)
 
       case ACTION_AUDIO_DELAY_MIN:
       {
-        CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay -= 0.025f;
-        if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay < -g_advancedSettings.m_videoAudioDelayRange)
-          CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay = -g_advancedSettings.m_videoAudioDelayRange;
-        g_application.m_pPlayer->SetAVDelay(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay);
+        CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay -= 0.025f;
+        if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay < -g_advancedSettings.m_videoAudioDelayRange)
+          CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay = -g_advancedSettings.m_videoAudioDelayRange;
+        g_application.m_pPlayer->SetAVDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay);
 
-        ShowSlider(action.GetID(), 297, CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay,
+        ShowSlider(action.GetID(), 297, CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay,
                                         -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
                                          g_advancedSettings.m_videoAudioDelayRange);
         return true;
@@ -186,12 +186,12 @@ bool CPlayerController::OnAction(const CAction &action)
 
       case ACTION_AUDIO_DELAY_PLUS:
       {
-        CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay += 0.025f;
-        if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay > g_advancedSettings.m_videoAudioDelayRange)
-          CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay = g_advancedSettings.m_videoAudioDelayRange;
-        g_application.m_pPlayer->SetAVDelay(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay);
+        CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay += 0.025f;
+        if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay > g_advancedSettings.m_videoAudioDelayRange)
+          CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay = g_advancedSettings.m_videoAudioDelayRange;
+        g_application.m_pPlayer->SetAVDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay);
 
-        ShowSlider(action.GetID(), 297, CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay,
+        ShowSlider(action.GetID(), 297, CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay,
                                         -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
                                          g_advancedSettings.m_videoAudioDelayRange);
         return true;
@@ -223,45 +223,45 @@ bool CPlayerController::OnAction(const CAction &action)
 
       case ACTION_ZOOM_IN:
       {
-        CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomZoomAmount += 0.01f;
-        if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomZoomAmount > 2.f)
-          CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomZoomAmount = 2.f;
-        CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode = ViewModeCustom;
+        CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount += 0.01f;
+        if (CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount > 2.f)
+          CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount = 2.f;
+        CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode = ViewModeCustom;
         g_application.m_pPlayer->SetRenderViewMode(ViewModeCustom);
-        ShowSlider(action.GetID(), 216, CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomZoomAmount, 0.5f, 0.1f, 2.0f);
+        ShowSlider(action.GetID(), 216, CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount, 0.5f, 0.1f, 2.0f);
         return true;
       }
 
       case ACTION_ZOOM_OUT:
       {
-        CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomZoomAmount -= 0.01f;
-        if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomZoomAmount < 0.5f)
-          CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomZoomAmount = 0.5f;
-        CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode = ViewModeCustom;
+        CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount -= 0.01f;
+        if (CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount < 0.5f)
+          CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount = 0.5f;
+        CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode = ViewModeCustom;
         g_application.m_pPlayer->SetRenderViewMode(ViewModeCustom);
-        ShowSlider(action.GetID(), 216, CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomZoomAmount, 0.5f, 0.1f, 2.0f);
+        ShowSlider(action.GetID(), 216, CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount, 0.5f, 0.1f, 2.0f);
         return true;
       }
 
       case ACTION_INCREASE_PAR:
       {
-        CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomPixelRatio += 0.01f;
-        if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomPixelRatio > 2.f)
-          CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomZoomAmount = 2.f;
-        CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode = ViewModeCustom;
+        CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio += 0.01f;
+        if (CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio > 2.f)
+          CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount = 2.f;
+        CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode = ViewModeCustom;
         g_application.m_pPlayer->SetRenderViewMode(ViewModeCustom);
-        ShowSlider(action.GetID(), 217, CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomPixelRatio, 0.5f, 0.1f, 2.0f);
+        ShowSlider(action.GetID(), 217, CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio, 0.5f, 0.1f, 2.0f);
         return true;
       }
 
       case ACTION_DECREASE_PAR:
       {
-        CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomPixelRatio -= 0.01f;
-        if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomZoomAmount < 0.5f)
-          CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomPixelRatio = 0.5f;
-        CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode = ViewModeCustom;
+        CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio -= 0.01f;
+        if (CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount < 0.5f)
+          CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio = 0.5f;
+        CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode = ViewModeCustom;
         g_application.m_pPlayer->SetRenderViewMode(ViewModeCustom);
-        ShowSlider(action.GetID(), 217, CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomPixelRatio, 0.5f, 0.1f, 2.0f);
+        ShowSlider(action.GetID(), 217, CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio, 0.5f, 0.1f, 2.0f);
         return true;
       }
 
@@ -299,13 +299,13 @@ void CPlayerController::OnSliderChange(void *data, CGUISliderControl *slider)
   {
     if (m_sliderAction == ACTION_AUDIO_DELAY)
     {
-      CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay = slider->GetFloatValue();
-      g_application.m_pPlayer->SetAVDelay(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay);
+      CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay = slider->GetFloatValue();
+      g_application.m_pPlayer->SetAVDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay);
     }
     else if (m_sliderAction == ACTION_SUBTITLE_DELAY)
     {
-      CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay = slider->GetFloatValue();
-      g_application.m_pPlayer->SetSubTitleDelay(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay);
+      CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay = slider->GetFloatValue();
+      g_application.m_pPlayer->SetSubTitleDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
     }
   }
 }
