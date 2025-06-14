@@ -3916,6 +3916,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\video\GUIViewStateVideo.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\video\PlayerController.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\video\PlayerController.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\video\VideoDatabase.cpp">
 				</File>
 				<File
