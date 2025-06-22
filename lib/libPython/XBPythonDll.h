@@ -24,6 +24,7 @@
 
 #define _Py_NoneStruct (*((PyObject*)pointer__Py_NoneStruct))
 #define _Py_NotImplementedStruct (*((PyObject*)pointer__Py_NotImplementedStruct))
+#define _Py_FalseStruct (*((PyObject*)pointer__Py_FalseStruct))
 #define _Py_TrueStruct (*((PyObject*)pointer__Py_TrueStruct))
 #define _Py_ZeroStruct (*((PyObject*)pointer__Py_ZeroStruct))
 #define PyString_Type (*((PyTypeObject*)pointer_PyString_Type))
@@ -45,6 +46,7 @@
 #define PyExc_KeyboardInterrupt ((PyObject*)(*(long*)pointer_PyExc_KeyboardInterrupt))
 #define PyExc_RuntimeError ((PyObject*)(*(long*)pointer_PyExc_RuntimeError))
 #define PyExc_ReferenceError ((PyObject*)(*(long*)pointer_PyExc_ReferenceError))
+#define PyExc_OSError ((PyObject*)(*(long*)pointer_PyExc_OSError))
 /* Allow our modules to be compatible with Python2.4.
    http://www.python.org/dev/peps/pep-0353/ */
 #if PY_VERSION_HEX < 0x02050000 && !defined(PY_SSIZE_T_MIN)
@@ -62,6 +64,7 @@ class LibraryLoader;
 
   extern DATA_OBJECT(_Py_NoneStruct)
   extern DATA_OBJECT(_Py_NotImplementedStruct)
+  extern DATA_OBJECT(_Py_FalseStruct)
   extern DATA_OBJECT(_Py_TrueStruct)
   extern DATA_OBJECT(_Py_ZeroStruct)
   extern DATA_OBJECT(PyString_Type)
@@ -83,6 +86,7 @@ class LibraryLoader;
   extern DATA_OBJECT(PyExc_KeyboardInterrupt)
   extern DATA_OBJECT(PyExc_RuntimeError)
   extern DATA_OBJECT(PyExc_ReferenceError)
+  extern DATA_OBJECT(PyExc_OSError)
 
   bool python_load_dll(LibraryLoader& dll);
 
