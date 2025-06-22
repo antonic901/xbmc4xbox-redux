@@ -217,10 +217,6 @@ void CAddonMgr::FillCpluffMetadata(const cp_plugin_info_t* plugin, CAddonBuilder
       if (!metaString.empty())
         extrainfo.insert(std::make_pair("language", metaString));
 
-      metaString = CServiceBroker::GetAddonMgr().GetExtValue(metadata->configuration, "reuselanguageinvoker");
-      if (!metaString.empty())
-        extrainfo.insert(std::make_pair("reuselanguageinvoker", metaString));
-
       if (!extrainfo.empty())
         builder.SetExtrainfo(boost::move(extrainfo));
     }

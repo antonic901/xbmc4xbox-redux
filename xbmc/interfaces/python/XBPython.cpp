@@ -43,6 +43,10 @@
 #define PYTHON_DLL "special://xbmc/system/python/python27.dll"
 #endif
 
+using namespace ANNOUNCEMENT;
+
+PyThreadState* savestate;
+
 XBPython::XBPython()
 {
   m_bInitialized      = false;
@@ -425,21 +429,19 @@ void XBPython::OnNotification(const std::string &sender, const std::string &meth
   }
 }
 
-/**
-* Check for file and print an error if needed
-*/
-bool XBPython::FileExist(const char* strFile)
+#ifdef _XBOX
+bool FileExist(const char* strFile)
 {
   if (!strFile)
     return false;
 
-  if (!XFILE::CFile::Exists(strFile))
-  {
-    CLog::Log(LOGERROR, "Python: Cannot find '%s'", strFile);
-    return false;
-  }
-  return true;
+  if (XFILE::CFile::Exists(strFile))
+    return true;
+
+  CLog::Log(LOGERROR, "Python: Cannot find '%s'", strFile);
+  return false;
 }
+#endif
 
 void XBPython::RegisterExtensionLib(LibraryLoader *pLib)
 {
@@ -499,8 +501,7 @@ void XBPython::Finalize()
     m_mainThreadState = NULL; // clear the main thread state before releasing the lock
     {
       CSingleExit exit(m_critSection);
-      PyEval_AcquireLock();
-      PyThreadState_Swap(curTs);
+      PyEval_AcquireThread(curTs);
 
       Py_Finalize();
       PyEval_ReleaseLock();
@@ -516,7 +517,7 @@ void XBPython::Finalize()
 #endif
 #if defined(TARGET_POSIX) && !defined(TARGET_DARWIN) && !defined(TARGET_FREEBSD)
     // we can't release it on windows, as this is done in UnloadPythonDlls() for win32 (see above).
-    // The implementation for linux needs looking at - UnloadPythonDlls() currently only searches for "python27.dll"
+    // The implementation for linux needs looking at - UnloadPythonDlls() currently only searches for "python36.dll"
     // The implementation for osx can never unload the python dylib.
     DllLoaderContainer::ReleaseModule(m_pDll);
 #endif
@@ -586,21 +587,20 @@ bool XBPython::OnScriptInitialized(ILanguageInvoker *invoker)
 
     if (!m_pDll || !python_load_dll(*m_pDll))
     {
-      CLog::Log(LOGFATAL, "Python: error loading python27.dll");
+      CLog::Log(LOGFATAL, "Python: error loading python34.dll");
       Finalize();
       return false;
     }
-#endif
 
-    // first we check if all necessary files are installed
-#ifndef TARGET_POSIX
-    if (!FileExist("special://xbmc/system/python/python27.zlib") ||
+    if (!FileExist("special://xbmc/system/python/python34.zlib") ||
+      !FileExist("special://xbmc/system/python/DLLs/_bz2.pyd") ||
+      !FileExist("special://xbmc/system/python/DLLs/_ctypes.pyd") ||
+      !FileExist("special://xbmc/system/python/DLLs/_decimal.pyd") ||
       !FileExist("special://xbmc/system/python/DLLs/_elementtree.pyd") ||
       !FileExist("special://xbmc/system/python/DLLs/_hashlib.pyd") ||
       !FileExist("special://xbmc/system/python/DLLs/_socket.pyd") ||
-      !FileExist("special://xbmc/system/python/DLLs/_ssl.pyd") ||
       !FileExist("special://xbmc/system/python/DLLs/_sqlite3.pyd") ||
-      !FileExist("special://xbmc/system/python/DLLs/bz2.pyd") ||
+      !FileExist("special://xbmc/system/python/DLLs/_ssl.pyd") ||
       !FileExist("special://xbmc/system/python/DLLs/pyexpat.pyd") ||
       !FileExist("special://xbmc/system/python/DLLs/select.pyd") ||
       !FileExist("special://xbmc/system/python/DLLs/unicodedata.pyd"))
@@ -628,8 +628,8 @@ bool XBPython::OnScriptInitialized(ILanguageInvoker *invoker)
     // check if we are running as real xbmc.app or just binary
     if (!CUtil::GetFrameworksPath(true).empty())
     {
-      // using external python, it's build looking for xxx/lib/python2.6
-      // so point it to frameworks which is where python2.6 is located
+      // using external python, it's build looking for xxx/lib/python3.7
+      // so point it to frameworks which is where python3.7 is located
       setenv("PYTHONHOME", CSpecialProtocol::TranslatePath("special://frameworks").c_str(), 1);
       setenv("PYTHONPATH", CSpecialProtocol::TranslatePath("special://frameworks").c_str(), 1);
       CLog::Log(LOGDEBUG, "PYTHONHOME -> %s", CSpecialProtocol::TranslatePath("special://frameworks").c_str());
@@ -639,7 +639,7 @@ bool XBPython::OnScriptInitialized(ILanguageInvoker *invoker)
     // because the third party build of python is compiled with vs2008 we need
     // a hack to set the PYTHONPATH
     std::string buf;
-    buf = "PYTHONPATH=" + CSpecialProtocol::TranslatePath("special://xbmc/system/python/DLLs") + ";" + CSpecialProtocol::TranslatePath("special://xbmc/system/python/Lib");
+    buf = "PYTHONPATH=" + CSpecialProtocol::TranslatePath("special://xbmc/system/python/Lib");
     CEnvironment::putenv(buf);
     buf = "PYTHONOPTIMIZE=1";
     CEnvironment::putenv(buf);
@@ -654,25 +654,22 @@ bool XBPython::OnScriptInitialized(ILanguageInvoker *invoker)
 #endif
 #endif
 
-    if (PyEval_ThreadsInitialized())
-      PyEval_AcquireLock();
-    else
-      PyEval_InitThreads();
-
     Py_Initialize();
-    PyEval_ReleaseLock();
 
     // If this is not the first time we initialize Python, the interpreter
     // lock already exists and we need to lock it as PyEval_InitThreads
     // would not do that in that case.
-    PyEval_AcquireLock();
-    const char* python_argv[1] = { "" };
+    if (PyEval_ThreadsInitialized() && !PyGILState_Check())
+      PyEval_RestoreThread((PyThreadState*)m_mainThreadState);
+    else
+      PyEval_InitThreads();
+    const wchar_t* python_argv[1] = {L""};
     //! @bug libpython isn't const correct
-    PySys_SetArgv(1, const_cast<char**>(python_argv));
+    PySys_SetArgv(1, const_cast<wchar_t**>(python_argv));
 
     if (!(m_mainThreadState = PyThreadState_Get()))
       CLog::Log(LOGERROR, "Python threadstate is NULL.");
-    PyEval_ReleaseLock();
+    savestate = PyEval_SaveThread();
 
     m_bInitialized = true;
   }
@@ -715,7 +712,7 @@ void XBPython::OnScriptAbortRequested(ILanguageInvoker *invoker)
   }
 }
 
-void XBPython::OnExecutionEnded(ILanguageInvoker *invoker)
+void XBPython::OnScriptEnded(ILanguageInvoker* invoker)
 {
   CSingleLock lock(m_vecPyList);
   PyList::iterator it = m_vecPyList.begin();
@@ -724,9 +721,9 @@ void XBPython::OnExecutionEnded(ILanguageInvoker *invoker)
     if (it->id == invoker->GetId())
     {
       if (it->pyThread->IsStopping())
-        CLog::Log(LOGINFO, "Python interpreter interrupted by user");
+        CLog::Log(LOGINFO, "Python script interrupted by user");
       else
-        CLog::Log(LOGINFO, "Python interpreter stopped");
+        CLog::Log(LOGINFO, "Python script stopped");
       it->bDone = true;
     }
     ++it;

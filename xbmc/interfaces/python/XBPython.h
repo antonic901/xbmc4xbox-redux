@@ -91,7 +91,7 @@ public:
   virtual bool OnScriptInitialized(ILanguageInvoker *invoker);
   virtual void OnScriptStarted(ILanguageInvoker *invoker);
   virtual void OnScriptAbortRequested(ILanguageInvoker *invoker);
-  virtual void OnExecutionEnded(ILanguageInvoker *invoker);
+  virtual void OnScriptEnded(ILanguageInvoker* invoker);
   virtual void OnScriptFinalized(ILanguageInvoker *invoker);
   virtual ILanguageInvoker* CreateInvoker();
 
@@ -111,8 +111,6 @@ private:
 #endif
 
   CCriticalSection    m_critSection;
-  bool              FileExist(const char* strFile);
-
   void*             m_mainThreadState;
   bool              m_bInitialized;
   int               m_iDllScriptCounter; // to keep track of the total scripts running that need the dll
