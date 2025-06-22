@@ -11,5 +11,5 @@ Spyce dir:
 ssl dir:
   Contains cert.pem which holds root certificates for use with the python _ssl library.
 
-python27.zlib
+python34.zlib
   This is a zip archive containing the core .py python libraries

@@ -40,7 +40,7 @@
 #include "ServiceBroker.h"
 
 #ifdef _XBOX
-#define PYTHON_DLL "special://xbmc/system/python/python27.dll"
+#define PYTHON_DLL "special://xbmc/system/python/python34.dll"
 #endif
 
 using namespace ANNOUNCEMENT;
