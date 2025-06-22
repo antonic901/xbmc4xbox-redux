@@ -314,7 +314,7 @@ void DllLoaderContainer::UnRegisterDll(LibraryLoader* pDll)
 
 void DllLoaderContainer::UnloadPythonDlls()
 {
-  // unload all dlls that python27.dll could have loaded
+  // unload all dlls that python34.dll could have loaded
   for (int i = 0; m_dlls[i] != NULL && i < m_iNrOfDlls; i++)
   {
     char* name = m_dlls[i]->GetName();
@@ -326,11 +326,11 @@ void DllLoaderContainer::UnloadPythonDlls()
     }
   }
 
-  // last dll to unload, python27.dll
+  // last dll to unload, python34.dll
   for (int i = 0; m_dlls[i] != NULL && i < m_iNrOfDlls; i++)
   {
     char* name = m_dlls[i]->GetName();
-    if (strstr(name, "python27.dll") != NULL)
+    if (strstr(name, "python34.dll") != NULL)
     {
       LibraryLoader* pDll = m_dlls[i];
       pDll->IncrRef();
