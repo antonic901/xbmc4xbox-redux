@@ -885,7 +885,11 @@ namespace PythonBindings
     }
   }
 
+#ifdef _XBOX
+  static struct PyModuleDef createModule =
+#else
   static struct PyModuleDef createModule
+#endif
   {
       PyModuleDef_HEAD_INIT,
       "${module.@name}",
