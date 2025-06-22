@@ -109,8 +109,6 @@ private:
 #endif
 
   CCriticalSection    m_critSection;
-  bool              FileExist(const char* strFile);
-
   void*             m_mainThreadState;
   bool              m_bInitialized;
   int               m_iDllScriptCounter; // to keep track of the total scripts running that need the dll
