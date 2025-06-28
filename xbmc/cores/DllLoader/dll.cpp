@@ -284,3 +284,21 @@ extern "C" DWORD WINAPI dllGetModuleFileNameA(HMODULE hModule, LPSTR lpFilename,
   
   return 0;
 }
+
+extern "C" DWORD WINAPI dllGetModuleFileNameW(HMODULE hModule, LPWSTR lpFilename, DWORD nSize)
+{
+  DWORD ret;
+  PCHAR lpFilename2 = (PCHAR)malloc(nSize);
+
+  ret = dllGetModuleFileNameA(hModule, lpFilename2, nSize);
+
+  if(ERROR_SUCCESS != ret)
+  {
+    MultiByteToWideChar(65001, 0x0, lpFilename2, -1, lpFilename, nSize);
+    free(lpFilename2);
+    return ret;
+  }
+
+  free(lpFilename2);
+  return 0;
+}
