@@ -638,6 +638,7 @@ extern "C" int WINAPI dllSetEnvironmentVariableA(const char *name, const char *v
 extern "C" int WINAPI dllCreateDirectoryA(const char *pathname, void *sa);
 
 extern "C" DWORD WINAPI dllWaitForSingleObject(HANDLE hHandle, DWORD dwMiliseconds);
+extern "C" DWORD WINAPI dllWaitForSingleObjectEx(HANDLE hHandle, DWORD dwMiliseconds, BOOL bAlertable);
 extern "C" DWORD WINAPI dllWaitForMultipleObjects(DWORD nCount, CONST HANDLE *lpHandles, BOOL fWaitAll, DWORD dwMilliseconds);
 extern "C" BOOL WINAPI dllGetProcessAffinityMask(HANDLE hProcess, LPDWORD lpProcessAffinityMask, LPDWORD lpSystemAffinityMask);
 
