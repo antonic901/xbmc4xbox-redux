@@ -29,5 +29,6 @@ extern "C" BOOL __stdcall dllFreeLibrary(HINSTANCE hLibModule);
 extern "C" FARPROC __stdcall dllGetProcAddress(HMODULE hModule, LPCSTR function);
 extern "C" HMODULE WINAPI dllGetModuleHandleA(LPCSTR lpModuleName);
 extern "C" DWORD WINAPI dllGetModuleFileNameA(HMODULE hModule, LPSTR lpFilename, DWORD nSize);
+extern "C" DWORD WINAPI dllGetModuleFileNameW(HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
 
 #endif

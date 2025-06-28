@@ -552,6 +552,7 @@ extern "C" BOOL WINAPI dllFreeLibrary(HINSTANCE hLibModule);
 extern "C" FARPROC WINAPI dllGetProcAddress(HMODULE hModule, LPCSTR function);
 extern "C" HMODULE WINAPI dllGetModuleHandleA(LPCSTR lpModuleName);
 extern "C" DWORD WINAPI dllGetModuleFileNameA(HMODULE hModule, LPSTR lpFilename, DWORD nSize);
+extern "C" DWORD WINAPI dllGetModuleFileNameW(HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
 
 //GetSystemInfo are hardcoded for Xbox only.
 extern "C" void WINAPI dllGetSystemInfo(LPSYSTEM_INFO lpSystemInfo);
