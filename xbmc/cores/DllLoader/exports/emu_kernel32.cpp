@@ -814,6 +814,14 @@ extern "C" DWORD WINAPI dllWaitForSingleObject(HANDLE hHandle, DWORD dwMilisecon
   return WaitForSingleObject(hHandle, dwMiliseconds);
 }
 
+extern "C" DWORD WINAPI dllWaitForSingleObjectEx(HANDLE hHandle, DWORD dwMiliseconds, BOOL bAlertable)
+{
+#ifdef API_DEBUG
+  CLog::Log(LOGDEBUG, "WaitForSingleObjectEx(0x%x, %d, %i)", hHandle, dwMiliseconds, bAlertable);
+#endif
+  return WaitForSingleObjectEx(hHandle, dwMiliseconds, bAlertable);
+}
+
 extern "C" DWORD WINAPI dllWaitForMultipleObjects(DWORD nCount, CONST HANDLE *lpHandles, BOOL fWaitAll, DWORD dwMilliseconds)
 {
 #ifdef API_DEBUG
