@@ -626,6 +626,7 @@ extern "C" BOOL WINAPI dllFileTimeToSystemTime(CONST FILETIME *lpFileTime, LPSYS
 extern "C" DWORD WINAPI dllGetTimeZoneInformation(LPTIME_ZONE_INFORMATION lpTimeZoneInformation);
 
 extern "C" DWORD WINAPI dllGetFileAttributesA(LPCSTR lpFileName);
+extern "C" DWORD WINAPI dllGetFileAttributesW(LPCWSTR lpFileName);
 
 extern "C" UINT WINAPI dllGetCurrentDirectoryA(UINT c, LPSTR s);
 extern "C" UINT WINAPI dllSetCurrentDirectoryA(const char *pathname);

@@ -98,6 +98,27 @@ extern "C" DWORD WINAPI dllGetFileAttributesA(LPCSTR lpFileName)
   return GetFileAttributesA(str);
 }
 
+extern "C" DWORD WINAPI dllGetFileAttributesW(LPCWSTR lpFileName)
+{
+  DWORD ret;
+  PCHAR lpFilename2;
+
+  ret = WideCharToMultiByte(65001, 0x0, lpFileName, -1, NULL, 0, NULL, NULL);
+  lpFilename2 = (PCHAR)malloc(ret);
+  ret = WideCharToMultiByte(65001, 0x0, lpFileName, -1, lpFilename2, ret, NULL, NULL);
+
+  ret = dllGetFileAttributesA(lpFilename2);
+
+  if(ERROR_SUCCESS != ret)
+  {
+    free(lpFilename2);
+    return ret;
+  }
+
+  free(lpFilename2);
+  return ERROR_SUCCESS;
+}
+
 struct SThreadWrapper
 {
   LPTHREAD_START_ROUTINE lpStartAddress;

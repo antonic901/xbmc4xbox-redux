@@ -36,6 +36,7 @@ Export export_kernel32[] =
   { "FindFirstFileA",                               -1, FindFirstFileA,                               NULL },
   { "FindNextFileA",                                -1, FindNextFileA,                                NULL },
   { "GetFileAttributesA",                           -1, dllGetFileAttributesA,                        NULL },
+  { "GetFileAttributesW",                           -1, dllGetFileAttributesW,                        NULL },
   { "GetLastError",                                 -1, GetLastError,                                 NULL },
   { "SetUnhandledExceptionFilter",                  -1, dllSetUnhandledExceptionFilter,               NULL },
   { "Sleep",                                        -1, dllSleep,                                     NULL },
