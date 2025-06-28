@@ -59,6 +59,9 @@ extern "C"
   LONG WINAPI dllRegOpenKeyExA (HKEY hKey, LPCSTR lpSubKey, DWORD ulOptions,
                                 REGSAM samDesired, PHKEY phkResult);
 
+  LONG WINAPI dllRegOpenKeyExW (HKEY hKey, LPCWSTR lpSubKey, DWORD ulOptions,
+                                REGSAM samDesired, PHKEY phkResult);
+
   LONG WINAPI dllRegEnumKeyExA (HKEY hKey, DWORD dwIndex, LPTSTR lpName,
                                 LPDWORD lpcName, LPDWORD lpReserved, LPTSTR lpClass,
                                 LPDWORD lpcClass, PFILETIME lpftLastWriteTime);
