@@ -110,6 +110,7 @@ Export export_kernel32[] =
 
   { "DeleteFileA",                                  -1, DeleteFileA,                                  NULL },
   { "GetModuleFileNameA",                           -1, dllGetModuleFileNameA,                        NULL },
+  { "GetModuleFileNameW",                           -1, dllGetModuleFileNameW,                        NULL },
   { "GlobalAlloc",                                  -1, GlobalAlloc,                                  NULL },
   { "GlobalLock",                                   -1, GlobalLock,                                   NULL },
   { "GlobalUnlock",                                 -1, GlobalUnlock,                                 NULL },
