@@ -26,6 +26,7 @@ Export export_advapi32[] =
 {
   { "RegCloseKey",                -1, dllRegCloseKey,                NULL },
   { "RegOpenKeyExA",              -1, dllRegOpenKeyExA,              NULL },
+  { "RegOpenKeyExW",              -1, dllRegOpenKeyExW,              NULL },
   { "RegOpenKeyA",                -1, dllRegOpenKeyA,                NULL },
   { "RegSetValueA",               -1, dllRegSetValueA,               NULL },
   { "RegEnumKeyExA",              -1, dllRegEnumKeyExA,              NULL },

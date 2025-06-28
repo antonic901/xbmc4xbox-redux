@@ -391,6 +391,28 @@ LONG WINAPI dllRegOpenKeyExA(HKEY key, LPCSTR subkey, DWORD reserved, REGSAM acc
   return 0;
 }
 
+LONG WINAPI dllRegOpenKeyExW(HKEY key, LPCWSTR subkey, DWORD reserved, REGSAM access, PHKEY newkey)
+{
+  dbgprintf("RegOpenKeyExW - this is wrapper around RegOpenKeyExA");
+
+  DWORD ret;
+  PCHAR subkey2;
+
+  ret = WideCharToMultiByte(65001, 0x0, subkey, -1, NULL, 0, NULL, NULL);
+  subkey2 = (PCHAR)malloc(ret);
+  ret = WideCharToMultiByte(65001, 0x0, subkey, -1, subkey2, ret, NULL, NULL);
+
+  ret = dllRegOpenKeyExA(key, subkey2, reserved, access, newkey);
+  if (ERROR_SUCCESS != ret)
+  {
+    free(subkey2);
+    return ret;
+  }
+
+  free(subkey2);
+  return ERROR_SUCCESS;
+}
+
 LONG WINAPI dllRegCloseKey(HKEY key)
 {
   if(key==HKEY_LOCAL_MACHINE)
