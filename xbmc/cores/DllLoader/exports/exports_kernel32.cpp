@@ -59,6 +59,7 @@ Export export_kernel32[] =
   { "CreateEventA",                                 -1, CreateEventA,                                 NULL },
   { "ResetEvent",                                   -1, ResetEvent,                                   NULL },
   { "WaitForSingleObject",                          -1, dllWaitForSingleObject,                       NULL },
+  { "WaitForSingleObjectEx",                        -1, dllWaitForSingleObjectEx,                     NULL },
   { "LoadLibraryA",                                 -1, dllLoadLibraryA,                              track_LoadLibraryA },
   { "FreeLibrary",                                  -1, dllFreeLibrary,                               track_FreeLibrary },
   { "GetProcAddress",                               -1, dllGetProcAddress,                            NULL },
