@@ -55,6 +55,7 @@ Export export_kernel32[] =
   { "GetCurrentProcessId",                          -1, dllGetCurrentProcessId,                       NULL },
   { "GetSystemTimeAsFileTime",                      -1, GetSystemTimeAsFileTime,                      NULL },
   { "OutputDebugStringA",                           -1, OutputDebugString,                            NULL },
+  { "OutputDebugStringW",                           -1, dllOutputDebugStringW,                        NULL },
   { "DisableThreadLibraryCalls",                    -1, dllDisableThreadLibraryCalls,                 NULL },
   { "GlobalMemoryStatus",                           -1, GlobalMemoryStatus,                           NULL },
   { "CreateEventA",                                 -1, CreateEventA,                                 NULL },
