@@ -1621,7 +1621,34 @@ extern "C"
     
     return NULL;
   }
-  
+
+  wchar_t* dll__wgetenv(const wchar_t* szKey)
+  {
+    wchar_t* value = NULL;
+
+    DWORD ret;
+    char* szKey2;
+    char* value2 = NULL;
+
+    ret = WideCharToMultiByte(65001, 0x0, szKey, -1, NULL, 0, NULL, NULL);
+    szKey2 = (char*)malloc(ret);
+    ret = WideCharToMultiByte(65001, 0x0, szKey, -1, szKey2, ret, NULL, NULL);
+
+    value2 = dll_getenv(szKey2);
+    if (value2 != NULL)
+    {
+      ret = MultiByteToWideChar(65001, 0x0, value2, -1, NULL, 0);
+      value = (wchar_t*)malloc(ret * sizeof(wchar_t));
+      ret = MultiByteToWideChar(65001, 0x0, value2, -1, value, ret);
+
+      free(szKey2);
+      return value;
+    }
+
+    free(szKey2);
+    return NULL;
+  }
+
   int dll_ctype(int i)
   {
     not_implement("msvcrt.dll fake function dll_ctype() called\n");
