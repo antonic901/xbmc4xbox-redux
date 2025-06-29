@@ -1108,3 +1108,14 @@ extern "C" BOOL WINAPI dllDVDReadFileLayerChangeHack(HANDLE hFile, LPVOID lpBuff
   }
   return ret;
 }
+
+extern "C" void WINAPI dllOutputDebugStringW(LPCWSTR lpOutputString)
+{
+  DWORD ret;
+  LPSTR lpOutputString2;
+
+  ret = WideCharToMultiByte(65001, 0x0, lpOutputString, -1, NULL, 0, NULL, NULL);
+  lpOutputString2 = (char*)malloc(ret);
+  ret = WideCharToMultiByte(65001, 0x0, lpOutputString, -1, lpOutputString2, ret, NULL, NULL);
+  OutputDebugString(lpOutputString2);
+}
