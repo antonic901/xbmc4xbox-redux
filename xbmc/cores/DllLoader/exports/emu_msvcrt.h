@@ -76,6 +76,7 @@ extern "C"
   __off64_t dll_lseeki64(int fd, __off64_t lPos, int iWhence);
   __off_t dll_lseek(int fd, __off_t lPos, int iWhence);
   char* dll_getenv(const char* szKey);
+  wchar_t* dll__wgetenv(const wchar_t* szKey);
   int dll_fclose (FILE * stream);
   intptr_t dll_findfirst(const char *file, struct _finddata_t *data);
   int dll_findnext(intptr_t f, _finddata_t* data);

@@ -132,6 +132,7 @@ extern "C" void* dll_fseek();
 extern "C" void* dll_ftell();
 extern "C" void* dll_getc();
 extern "C" void* dll_getenv();
+extern "C" void* dll__wgetenv();
 extern "C" void* dll_putc();
 extern "C" void* rand();
 extern "C" void* remove();
@@ -396,6 +397,7 @@ Export export_msvcrt[] =
   { "ftell",                      -1, dll_ftell,                     NULL },
   { "getc",                       -1, dll_getc,                      NULL },
   { "getenv",                     -1, dll_getenv,                    NULL },
+  { "_wgetenv",                   -1, dll__wgetenv,                  NULL },
   { "rand",                       -1, rand,                          NULL },
   { "remove",                     -1, remove,                        NULL },
   { "rewind",                     -1, dll_rewind,                    NULL },
