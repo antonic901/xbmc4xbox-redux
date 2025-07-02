@@ -221,5 +221,7 @@ Export export_kernel32[] =
   { "GetFileSize",                                  -1, GetFileSize,                                  NULL },
   { "FindResourceA",                                -1, dllFindResourceA,                             NULL },
   { "LoadResource",                                 -1, dllLoadResource,                              NULL },
+  { "GetHandleInformation",                         -1, dllGetHandleInformation,                      NULL },
+  { "SetHandleInformation",                         -1, dllSetHandleInformation,                      NULL },
   { NULL,                                         NULL, NULL,                                         NULL }
 };

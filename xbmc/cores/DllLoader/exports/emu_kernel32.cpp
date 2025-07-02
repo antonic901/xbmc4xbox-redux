@@ -1119,3 +1119,15 @@ extern "C" void WINAPI dllOutputDebugStringW(LPCWSTR lpOutputString)
   ret = WideCharToMultiByte(65001, 0x0, lpOutputString, -1, lpOutputString2, ret, NULL, NULL);
   OutputDebugString(lpOutputString2);
 }
+
+extern "C" BOOL WINAPI dllGetHandleInformation(HANDLE hObject, LPDWORD lpdwFlags)
+{
+  not_implement("kernel32.dll fake function GetHandleInformation called\n");
+  return TRUE;
+}
+
+extern "C" BOOL WINAPI dllSetHandleInformation(HANDLE hObject, DWORD dwMask, DWORD dwFlags)
+{
+  not_implement("kernel32.dll fake function SetHandleInformation called\n");
+  return TRUE;
+}
