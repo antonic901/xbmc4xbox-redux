@@ -683,5 +683,7 @@ extern "C" DWORD WINAPI dllGetTempPathA(DWORD nBufferLength, LPTSTR lpBuffer);
 extern "C" BOOL WINAPI dllDVDReadFileLayerChangeHack(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBytesRead, LPOVERLAPPED lpOverlapped);
 
 extern "C" void WINAPI dllOutputDebugStringW(LPCWSTR lpOutputString);
+extern "C" BOOL WINAPI dllGetHandleInformation(HANDLE hObject, LPDWORD lpdwFlags);
+extern "C" BOOL WINAPI dllSetHandleInformation(HANDLE hObject, DWORD dwMask, DWORD dwFlags);
 
 #endif // _EMU_KERNEL32_H_
