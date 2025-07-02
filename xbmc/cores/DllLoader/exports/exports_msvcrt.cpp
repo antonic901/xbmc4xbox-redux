@@ -110,6 +110,7 @@ extern "C" void* dll_pclose();
 extern "C" void* dll_popen();
 extern "C" void* dll_sleep();
 extern "C" void* dll_stat();
+extern "C" void* dll_wstat();
 extern "C" void* dll_strdup();
 extern "C" void* _swab();
 extern "C" void* dll_findclose();
@@ -373,6 +374,7 @@ Export export_msvcrt[] =
   { "_popen",                     -1, dll_popen,                     NULL },
   { "_sleep",                     -1, dll_sleep,                     NULL },
   { "_stat",                      -1, dll_stat,                      NULL },
+  { "_wstat",                     -1, dll_wstat,                     NULL },
   { "_strdup",                    -1, _strdup,                       track_strdup },
   { "_swab",                      -1, _swab,                         NULL },
   { "_findclose",                 -1, dll_findclose,                 NULL },

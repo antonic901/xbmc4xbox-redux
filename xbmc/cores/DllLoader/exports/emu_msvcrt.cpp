@@ -1358,6 +1358,21 @@ extern "C"
     return -1;
   }
 
+  int dll_wstat(const wchar_t *path, struct _stat *buffer)
+  {
+    DWORD ret;
+    char* path2;
+
+    ret = WideCharToMultiByte(65001, 0x0, path, -1, NULL, 0, NULL, NULL);
+    path2 = (char*)malloc(ret);
+    ret = WideCharToMultiByte(65001, 0x0, path, -1, path2, ret, NULL, NULL);
+
+    ret = dll_stat(path2, buffer);
+
+    free(path2);
+    return ret;
+  }
+
   int dll_stati64(const char *path, struct _stati64 *buffer)
   {
     struct __stat64 a;
