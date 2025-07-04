@@ -91,6 +91,13 @@ extern "C" void* strtod();
 extern "C" void* strtok();
 extern "C" void* strtol();
 extern "C" void* strtoul();
+extern "C" void* wcschr();
+extern "C" void* wcscpy();
+extern "C" void* wcsncpy();
+extern "C" void* wcsrchr();
+extern "C" void* wcstok();
+extern "C" void* wcstombs();
+extern "C" void* mbstowcs();
 extern "C" void* tan();
 extern "C" void* tanh();
 extern "C" void* time();
@@ -345,6 +352,13 @@ Export export_msvcrt[] =
   { "strtok",                     -1, strtok,                        NULL },
   { "strtol",                     -1, strtol,                        NULL },
   { "strtoul",                    -1, strtoul,                       NULL },
+  { "wcschr",                     -1, wcschr,                        NULL },
+  { "wcscpy",                     -1, wcscpy,                        NULL },
+  { "wcsncpy",                    -1, wcsncpy,                       NULL },
+  { "wcsrchr",                    -1, wcsrchr,                       NULL },
+  { "wcstok",                     -1, wcstok,                        NULL },
+  { "wcstombs",                   -1, wcstombs,                      NULL },
+  { "mbstowcs",                   -1, mbstowcs,                      NULL },
   { "tan",                        -1, tan,                           NULL },
   { "tanh",                       -1, tanh,                          NULL },
   { "time",                       -1, time,                          NULL },
