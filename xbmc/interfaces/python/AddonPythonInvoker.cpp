@@ -94,15 +94,29 @@ static PythonModule PythonModules[] =
 CAddonPythonInvoker::CAddonPythonInvoker(ILanguageInvocationHandler *invocationHandler)
   : CPythonInvoker(invocationHandler)
 {
+  // DLL is not loaded at this point, so we can not inject modules
+#ifndef _XBOX
+  PyImport_AppendInittab("xbmcgui", PyInit_Module_xbmcgui);
+  PyImport_AppendInittab("xbmc", PyInit_Module_xbmc);
+  PyImport_AppendInittab("xbmcplugin", PyInit_Module_xbmcplugin);
+  PyImport_AppendInittab("xbmcaddon", PyInit_Module_xbmcaddon);
+  PyImport_AppendInittab("xbmcvfs", PyInit_Module_xbmcvfs);
+#endif
+}
+
+CAddonPythonInvoker::~CAddonPythonInvoker()
+{ }
+
+#ifdef _XBOX
+void CAddonPythonInvoker::InjectModules()
+{
   PyImport_AppendInittab("xbmcgui", PyInit_Module_xbmcgui);
   PyImport_AppendInittab("xbmc", PyInit_Module_xbmc);
   PyImport_AppendInittab("xbmcplugin", PyInit_Module_xbmcplugin);
   PyImport_AppendInittab("xbmcaddon", PyInit_Module_xbmcaddon);
   PyImport_AppendInittab("xbmcvfs", PyInit_Module_xbmcvfs);
 }
-
-CAddonPythonInvoker::~CAddonPythonInvoker()
-{ }
+#endif
 
 std::map<std::string, CPythonInvoker::PythonModuleInitialization> CAddonPythonInvoker::getModules() const
 {

@@ -609,6 +609,9 @@ bool XBPython::OnScriptInitialized(ILanguageInvoker *invoker)
       Finalize();
       return false;
     }
+
+    // we inject XBMC modules after DLL is succesfully loaded
+    static_cast<CAddonPythonInvoker*>(invoker)->InjectModules();
 #endif
 
     // Darwin packs .pyo files, we need PYTHONOPTIMIZE on in order to load them.
