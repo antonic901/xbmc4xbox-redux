@@ -16,6 +16,11 @@ public:
   explicit CAddonPythonInvoker(ILanguageInvocationHandler *invocationHandler);
   virtual ~CAddonPythonInvoker();
 
+#ifdef _XBOX
+  // used to inject XBMC modules after Python DLL is loaded
+  void CAddonPythonInvoker::InjectModules();
+#endif
+
 protected:
   // overrides of CPythonInvoker
   virtual std::map<std::string, PythonModuleInitialization> getModules() const;
