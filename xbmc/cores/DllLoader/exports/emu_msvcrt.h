@@ -132,6 +132,7 @@ extern "C"
   FILE* dll_freopen(const char *path, const char *mode, FILE *stream);
   int dll_fscanf(FILE *stream, const char *format , ...);
   int dll_setvbuf(FILE *stream, char *buf, int type, size_t size);
+  double dll_CIatan2(double y, double x);
 
 }
 
