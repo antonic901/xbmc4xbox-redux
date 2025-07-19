@@ -1727,6 +1727,11 @@ extern "C"
               __FUNCTION__);
     return 0;
   }
+
+  double dll_CIatan2(double y, double x)
+  {
+    return atan2(y, x);
+  }
 }
 
 
