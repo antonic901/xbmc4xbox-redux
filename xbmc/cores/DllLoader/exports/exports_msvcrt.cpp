@@ -277,6 +277,7 @@ extern "C" void* _aligned_malloc();
 extern "C" void* _aligned_free();
 extern "C" void* _aligned_realloc();
 extern "C" void* _callnewh();
+extern "C" void* dll_CIatan2();
 
 // tracker functions
 extern "C" void* track_close();
@@ -533,6 +534,7 @@ Export export_msvcrt[] =
   { "_aligned_free",              -1, _aligned_free,                 NULL },
   { "_aligned_realloc",           -1, _aligned_realloc,              NULL },
   { "_callnewh",                  -1, _callnewh,                     NULL },
+  { "_CIatan2",                   -1, dll_CIatan2,                   NULL },
   { NULL,                         -1, NULL,                          NULL }
 };
 
