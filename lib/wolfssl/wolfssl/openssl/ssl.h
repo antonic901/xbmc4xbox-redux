@@ -668,7 +668,7 @@ wolfSSL_X509_STORE_set_verify_cb((WOLFSSL_X509_STORE *)(s), (WOLFSSL_X509_STORE_
 
 #define X509_OBJECT_free_contents       wolfSSL_X509_OBJECT_free_contents
 
-#define X509_check_purpose(...)         0
+#define X509_check_purpose(cert, purpose, flags) 0
 
 #define OCSP_parse_url                  wolfSSL_OCSP_parse_url
 
@@ -787,7 +787,7 @@ wolfSSL_X509_STORE_set_verify_cb((WOLFSSL_X509_STORE *)(s), (WOLFSSL_X509_STORE_
 #define ASN1_STRING_set_default_mask_asc(...) 1
 #endif
 
-#define ASN1_PRINTABLE_type(...)        V_ASN1_PRINTABLESTRING
+#define ASN1_PRINTABLE_type(s, len)     V_ASN1_PRINTABLESTRING
 
 #define ASN1_UTCTIME_pr                 wolfSSL_ASN1_UTCTIME_pr
 
