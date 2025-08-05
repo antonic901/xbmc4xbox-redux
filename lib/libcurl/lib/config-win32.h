@@ -26,6 +26,36 @@
 /*               Hand crafted config file for Windows               */
 /* ================================================================ */
 
+#define vsnprintf _vsnprintf
+#define WINVER 0x0501
+#define _WIN32_WINNT 0x0501
+#define _WIN32_WINNT_WIN2K 0x0500
+
+#define USE_WOLFSSL 1
+
+#define HAVE_ZLIB_H 1
+#define HAVE_LIBZ 1
+
+#define CURL_DISABLE_LDAP
+#define CURL_DISABLE_TELNET
+#define CURL_DISABLE_DICT
+#define CURL_DISABLE_TFTP
+#define CURL_DISABLE_RTMP
+#define CURL_DISABLE_IMAP
+#define CURL_DISABLE_POP3
+#define CURL_DISABLE_RTSP
+#define CURL_DISABLE_GOPHER
+#define CURL_DISABLE_SMB
+#define CURL_DISABLE_MQTT
+#define CURL_DISABLE_IPV6
+#define CURL_DISABLE_NTLM
+#define CURL_DISABLE_CRYPTO_AUTH
+
+#define USE_SYNC_DNS 1
+//#define USE_THREADS_WIN32 1
+
+#undef USE_WINDOWS_SSPI
+
 /* ---------------------------------------------------------------- */
 /*                          HEADER FILES                            */
 /* ---------------------------------------------------------------- */
@@ -36,14 +66,8 @@
 /* Define if you have the <assert.h> header file. */
 #define HAVE_ASSERT_H 1
 
-/* Define if you have the <crypto.h> header file. */
-/* #define HAVE_CRYPTO_H 1 */
-
 /* Define if you have the <errno.h> header file. */
 #define HAVE_ERRNO_H 1
-
-/* Define if you have the <err.h> header file. */
-/* #define HAVE_ERR_H 1 */
 
 /* Define if you have the <fcntl.h> header file. */
 #define HAVE_FCNTL_H 1
@@ -82,9 +106,6 @@
 
 /* Define if you have the <signal.h> header file. */
 #define HAVE_SIGNAL_H 1
-
-/* Define if you have the <sgtty.h> header file. */
-/* #define HAVE_SGTTY_H 1 */
 
 /* Define if you have the <ssl.h> header file. */
 /* #define HAVE_SSL_H 1 */
@@ -141,9 +162,6 @@
 /* Define if you have the <windows.h> header file. */
 #define HAVE_WINDOWS_H 1
 
-/* Define if you have the <winsock.h> header file. */
-#define HAVE_WINSOCK_H 1
-
 /* Define if you have the <winsock2.h> header file. */
 #ifndef __SALFORDC__
 #define HAVE_WINSOCK2_H 1
@@ -157,9 +175,6 @@
 /* ---------------------------------------------------------------- */
 /*                        OTHER HEADER INFO                         */
 /* ---------------------------------------------------------------- */
-
-/* Define if sig_atomic_t is an available typedef. */
-#define HAVE_SIG_ATOMIC_T 1
 
 /* Define if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -191,9 +206,6 @@
 /* Define to 1 if you have the getsockname function. */
 #define HAVE_GETSOCKNAME 1
 
-/* Define if you have the gethostbyaddr function. */
-#define HAVE_GETHOSTBYADDR 1
-
 /* Define if you have the gethostname function. */
 #define HAVE_GETHOSTNAME 1
 
@@ -201,10 +213,10 @@
 /* #define HAVE_GETPASS 1 */
 
 /* Define if you have the getservbyname function. */
-#define HAVE_GETSERVBYNAME 1
+#undef HAVE_GETSERVBYNAME
 
 /* Define if you have the getprotobyname function. */
-#define HAVE_GETPROTOBYNAME
+#undef HAVE_GETPROTOBYNAME
 
 /* Define if you have the gettimeofday function. */
 /* #define HAVE_GETTIMEOFDAY 1 */
@@ -218,9 +230,6 @@
 /* Define if you have a working ioctlsocket FIONBIO function. */
 #define HAVE_IOCTLSOCKET_FIONBIO 1
 
-/* Define if you have the perror function. */
-#define HAVE_PERROR 1
-
 /* Define if you have the RAND_screen function when using SSL. */
 #define HAVE_RAND_SCREEN 1
 
@@ -229,7 +238,7 @@
 
 /* Define if you have the `CRYPTO_cleanup_all_ex_data' function.
    This is present in OpenSSL versions after 0.9.6b */
-#define HAVE_CRYPTO_CLEANUP_ALL_EX_DATA 1
+#undef HAVE_CRYPTO_CLEANUP_ALL_EX_DATA
 
 /* Define if you have the select function. */
 #define HAVE_SELECT 1
@@ -276,21 +285,6 @@
 #ifndef __BORLANDC__
 #define HAVE_UTIME 1
 #endif
-
-/* Define to the type qualifier of arg 1 for getnameinfo. */
-#define GETNAMEINFO_QUAL_ARG1 const
-
-/* Define to the type of arg 1 for getnameinfo. */
-#define GETNAMEINFO_TYPE_ARG1 struct sockaddr *
-
-/* Define to the type of arg 2 for getnameinfo. */
-#define GETNAMEINFO_TYPE_ARG2 socklen_t
-
-/* Define to the type of args 4 and 6 for getnameinfo. */
-#define GETNAMEINFO_TYPE_ARG46 DWORD
-
-/* Define to the type of arg 7 for getnameinfo. */
-#define GETNAMEINFO_TYPE_ARG7 int
 
 /* Define if you have the recv function. */
 #define HAVE_RECV 1
@@ -414,12 +408,10 @@
 
 #ifdef USE_LWIPSOCK
 #  undef USE_WINSOCK
-#  undef HAVE_WINSOCK_H
 #  undef HAVE_WINSOCK2_H
 #  undef HAVE_WS2TCPIP_H
 #  undef HAVE_ERRNO_H
 #  undef HAVE_GETHOSTNAME
-#  undef HAVE_GETNAMEINFO
 #  undef LWIP_POSIX_SOCKETS_IO_NAMES
 #  undef RECV_TYPE_ARG1
 #  undef RECV_TYPE_ARG3
@@ -446,11 +438,9 @@
   #undef byte
   #undef word
   #undef USE_WINSOCK
-  #undef HAVE_WINSOCK_H
   #undef HAVE_WINSOCK2_H
   #undef HAVE_WS2TCPIP_H
   #define HAVE_GETADDRINFO
-  #define HAVE_GETNAMEINFO
   #define HAVE_SYS_IOCTL_H
   #define HAVE_SYS_SOCKET_H
   #define HAVE_NETINET_IN_H
@@ -580,7 +570,7 @@ Vista
 #  endif
 #endif
 
-/* Availability of freeaddrinfo, getaddrinfo, getnameinfo and if_nametoindex
+/* Availability of freeaddrinfo, getaddrinfo, and if_nametoindex
    functions is quite convoluted, compiler dependent and even build target
    dependent. */
 #if defined(HAVE_WS2TCPIP_H)
@@ -588,17 +578,14 @@ Vista
 #    define HAVE_FREEADDRINFO           1
 #    define HAVE_GETADDRINFO            1
 #    define HAVE_GETADDRINFO_THREADSAFE 1
-#    define HAVE_GETNAMEINFO            1
 #  elif defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0501)
 #    define HAVE_FREEADDRINFO           1
 #    define HAVE_GETADDRINFO            1
 #    define HAVE_GETADDRINFO_THREADSAFE 1
-#    define HAVE_GETNAMEINFO            1
 #  elif defined(_MSC_VER) && (_MSC_VER >= 1200)
 #    define HAVE_FREEADDRINFO           1
 #    define HAVE_GETADDRINFO            1
 #    define HAVE_GETADDRINFO_THREADSAFE 1
-#    define HAVE_GETNAMEINFO            1
 #  endif
 #endif
 
@@ -713,22 +700,8 @@ Vista
 #define USE_WIN32_CRYPTO
 #endif
 
-/* On MinGW the ADDRESS_FAMILY typedef was committed alongside LUP_SECURE,
-   so we use it to check for the presence of the typedef. */
-#include <ws2tcpip.h>
-#if !defined(__MINGW32__) || defined(LUP_SECURE)
 /* Define to use Unix sockets. */
-#define USE_UNIX_SOCKETS
-#if !defined(UNIX_PATH_MAX)
-  /* Replicating logic present in afunix.h of newer Windows 10 SDK versions */
-# define UNIX_PATH_MAX 108
-  /* !checksrc! disable TYPEDEFSTRUCT 1 */
-  typedef struct sockaddr_un {
-    ADDRESS_FAMILY sun_family;
-    char sun_path[UNIX_PATH_MAX];
-  } SOCKADDR_UN, *PSOCKADDR_UN;
-#endif
-#endif
+#undef USE_UNIX_SOCKETS
 
 /* ---------------------------------------------------------------- */
 /*                       ADDITIONAL DEFINITIONS                     */
