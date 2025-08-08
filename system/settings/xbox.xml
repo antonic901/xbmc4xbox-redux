@@ -253,6 +253,13 @@
             <heading>657</heading>
           </control>
         </setting>
+        <setting id="myprograms.trainerscan" type="action" label="38709" help="">
+          <level>1</level>
+          <dependencies>
+            <dependency type="enable" setting="myprograms.trainerpath" operator="!is"></dependency>
+          </dependencies>
+          <control type="button" format="action" />
+        </setting>
       </group>
       <group id="3">
         <setting id="myprograms.usedashpath" type="boolean" label="38720" help="">

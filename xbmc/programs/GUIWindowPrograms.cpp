@@ -181,10 +181,8 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
             buttons.Add(CONTEXT_BUTTON_RENAME, 38693); // edit xbe title
         }
 
-        if (m_database.ItemHasTrainer(dwTitleId))
-          buttons.Add(CONTEXT_BUTTON_TRAINER_OPTIONS, 38712); // trainer options
+        buttons.Add(CONTEXT_BUTTON_TRAINER_OPTIONS, 38712); // trainer options
       }
-      buttons.Add(CONTEXT_BUTTON_SCAN_TRAINERS, 38709); // scan trainers
     }
   }
   CGUIMediaWindow::GetContextButtons(itemNumber, buttons);
@@ -233,16 +231,7 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 
   case CONTEXT_BUTTON_TRAINER_OPTIONS:
     {
-      DWORD dwTitleId = CUtil::GetXbeID(item->GetPath());
-      if (CGUIDialogTrainerSettings::ShowForTitle(dwTitleId,&m_database))
-        Update(m_vecItems->GetPath());
-      return true;
-    }
-
-  case CONTEXT_BUTTON_SCAN_TRAINERS:
-    {
-      PopulateTrainersList();
-      Update(m_vecItems->GetPath());
+      CGUIDialogTrainerSettings::ShowForTitle(item);
       return true;
     }
 
@@ -371,14 +360,26 @@ bool CGUIWindowPrograms::OnPlayMedia(int iItem, const std::string &player)
     dwTitleId = m_database.GetTitleId(pItem->GetPath());
   if (!dwTitleId)
     dwTitleId = CUtil::GetXbeID(pItem->GetPath());
-  CStdString strTrainer = m_database.GetActiveTrainer(dwTitleId);
-  if (strTrainer != "")
+
+  // Load active trainer
+  CFileItemList items;
+  if (m_database.GetTrainers(items, dwTitleId))
   {
-    CTrainer trainer;
-    if (trainer.Load(strTrainer))
+    for (int i = 0; i < items.Size(); ++i)
     {
-      m_database.GetTrainerOptions(strTrainer,dwTitleId,trainer.GetOptions(),trainer.GetNumberOfOptions());
-      CUtil::InstallTrainer(trainer);
+      if (items[i]->GetProperty("isactive").asBoolean())
+      {
+        CTrainer* trainer = new CTrainer(items[i]->GetProperty("idtrainer").asInteger32());
+        if (trainer->Load(items[i]->GetPath()))
+        {
+          m_database.GetTrainerOptions(trainer->GetTrainerId(), dwTitleId, trainer->GetOptions(), trainer->GetNumberOfOptions());
+          CTrainer::InstallTrainer(*trainer);
+        }
+        else
+        {
+          delete trainer;
+        }
+      }
     }
   }
 
@@ -435,148 +436,6 @@ int CGUIWindowPrograms::GetRegion(int iItem, bool bReload)
     return CXBE::FilterRegion(iRegion,true);
   else
     return CXBE::FilterRegion(iRegion);
-}
-
-void CGUIWindowPrograms::PopulateTrainersList()
-{
-  CDirectory directory;
-  CFileItemList trainers;
-  CFileItemList archives;
-  CFileItemList inArchives;
-  // first, remove any dead items
-  std::vector<CStdString> vecTrainerPath;
-  m_database.GetAllTrainers(vecTrainerPath);
-  CGUIDialogProgress* m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
-  m_dlgProgress->SetLine(0,38715);
-  m_dlgProgress->SetLine(1,"");
-  m_dlgProgress->SetLine(2,"");
-  m_dlgProgress->Open();
-  m_dlgProgress->SetHeading(38709);
-  m_dlgProgress->ShowProgressBar(true);
-  m_dlgProgress->Progress();
-
-  bool bBreak=false;
-  bool bDatabaseState = m_database.IsOpen();
-  if (!bDatabaseState)
-    m_database.Open();
-  m_database.BeginTransaction();
-  for (unsigned int i=0;i<vecTrainerPath.size();++i)
-  {
-    m_dlgProgress->SetPercentage((int)((float)i/(float)vecTrainerPath.size()*100.f));
-    CStdString strLine;
-    strLine.Format("%s %i / %i",g_localizeStrings.Get(38710).c_str(), i+1,vecTrainerPath.size());
-    m_dlgProgress->SetLine(1,strLine);
-    m_dlgProgress->Progress();
-    //if (!CFile::Exists(vecTrainerPath[i]) || vecTrainerPath[i].find(CSettings::GetInstance().GetString("myprograms.trainerpath",false)) == -1)
-    //  m_database.RemoveTrainer(vecTrainerPath[i]);
-    if (m_dlgProgress->IsCanceled())
-    {
-      bBreak = true;
-      m_database.RollbackTransaction();
-      break;
-    }
-  }
-  if (!bBreak)
-  {
-    //CLog::Log(LOGDEBUG,"trainerpath %s",CSettings::GetInstance().GetString("myprograms.trainerpath",false).c_str());
-    directory.GetDirectory(CSettings::GetInstance().GetString("myprograms.trainerpath").c_str(),trainers,".xbtf|.etm",DIR_FLAG_DEFAULTS);
-    //if (CSettings::GetInstance().GetString("myprograms.trainerpath",false).IsEmpty())
-    //{
-    //  m_database.RollbackTransaction();
-    //  m_dlgProgress->Close();
-
-    //  return;
-    //}
-
-    directory.GetDirectory(CSettings::GetInstance().GetString("myprograms.trainerpath").c_str(),archives,".rar|.zip",DIR_FLAG_DEFAULTS); // TODO: ZIP SUPPORT
-    for( int i=0;i<archives.Size();++i)
-    {
-      if (stricmp(URIUtils::GetExtension(archives[i]->GetPath()),".rar") == 0)
-      {
-        g_RarManager.GetFilesInRar(inArchives,archives[i]->GetPath(),false);
-        CHDDirectory dir;
-        dir.SetMask(".xbtf|.etm");
-        for (int j=0;j<inArchives.Size();++j)
-          if (dir.IsAllowed(inArchives[j]->GetURL()))
-          {
-            CFileItemPtr item(new CFileItem(*inArchives[j]));
-            CStdString strPathInArchive = item->GetPath();
-            CStdString path;
-            URIUtils::CreateArchivePath(path, "rar", archives[i]->GetPath(), strPathInArchive,"");
-            item->SetPath(path);
-            trainers.Add(item);
-          }
-      }
-      if (stricmp(URIUtils::GetExtension(archives[i]->GetPath()),".zip")==0)
-      {
-        // add trainers in zip
-        CStdString strZipPath;
-        URIUtils::CreateArchivePath(strZipPath,"zip",archives[i]->GetPath(),"");
-        CFileItemList zipTrainers;
-        directory.GetDirectory(strZipPath,zipTrainers,".etm|.xbtf",DIR_FLAG_DEFAULTS);
-        for (int j=0;j<zipTrainers.Size();++j)
-        {
-          CFileItemPtr item(new CFileItem(*zipTrainers[j]));
-          trainers.Add(item);
-        }
-      }
-    }
-    if (!m_dlgProgress)
-      m_dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
-    m_dlgProgress->SetPercentage(0);
-    m_dlgProgress->ShowProgressBar(true);
-
-    CLog::Log(LOGDEBUG,"# trainers %i",trainers.Size());
-    m_dlgProgress->SetLine(1,"");
-    int j=0;
-    while (j < trainers.Size())
-    {
-      if (trainers[j]->m_bIsFolder)
-        trainers.Remove(j);
-      else
-        j++;
-    }
-    for (int i=0;i<trainers.Size();++i)
-    {
-      CLog::Log(LOGDEBUG,"found trainer %s",trainers[i]->GetPath().c_str());
-      m_dlgProgress->SetPercentage((int)((float)(i)/trainers.Size()*100.f));
-      CStdString strLine;
-      strLine.Format("%s %i / %i",g_localizeStrings.Get(38710).c_str(), i+1,trainers.Size());
-      m_dlgProgress->SetLine(0,strLine);
-      m_dlgProgress->SetLine(2,"");
-      m_dlgProgress->Progress();
-      if (m_database.HasTrainer(trainers[i]->GetPath())) // skip existing trainers
-        continue;
-
-      CTrainer trainer;
-      if (trainer.Load(trainers[i]->GetPath()))
-      {
-        m_dlgProgress->SetLine(1,trainer.GetName());
-        m_dlgProgress->SetLine(2,"");
-        m_dlgProgress->Progress();
-        unsigned int iTitle1, iTitle2, iTitle3;
-        trainer.GetTitleIds(iTitle1,iTitle2,iTitle3);
-        if (iTitle1)
-          m_database.AddTrainer(iTitle1,trainers[i]->GetPath());
-        if (iTitle2)
-          m_database.AddTrainer(iTitle2,trainers[i]->GetPath());
-        if (iTitle3)
-          m_database.AddTrainer(iTitle3,trainers[i]->GetPath());
-      }
-      if (m_dlgProgress->IsCanceled())
-      {
-        m_database.RollbackTransaction();
-        break;
-      }
-    }
-  }
-  m_database.CommitTransaction();
-  m_dlgProgress->Close();
-
-  if (!bDatabaseState)
-    m_database.Close();
-  else
-    Update(m_vecItems->GetPath());
 }
 
 bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItemList &items)
@@ -701,15 +560,6 @@ bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItem
         dwTitleID = CUtil::GetXbeID(item->GetPath());
         if (!item->IsOnDVD())
           m_database.AddProgramInfo(item.get(), dwTitleID);
-      }
-
-      // SetOverlayIcons()
-      if (m_database.ItemHasTrainer(dwTitleID))
-      {
-        if (m_database.GetActiveTrainer(dwTitleID) != "")
-          item->SetOverlayImage(CGUIListItem::ICON_OVERLAY_TRAINED);
-        else
-          item->SetOverlayImage(CGUIListItem::ICON_OVERLAY_HAS_TRAINER);
       }
     }
     if (!shortcutPath.IsEmpty())

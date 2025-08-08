@@ -27,6 +27,8 @@ typedef std::vector<CStdString> VECPROGRAMPATHS;
 #define COMPARE_PERCENTAGE_MIN 0.50f // 50%
 
 class CFileItem;
+class CFileItemList;
+class CTrainer;
 
 class CProgramDatabase : public CDatabase
 {
@@ -35,16 +37,13 @@ public:
   virtual ~CProgramDatabase();
   virtual bool Open();
 
-  bool AddTrainer(int iTitleId, const CStdString& strText);
-  bool RemoveTrainer(const CStdString& strText);
-  bool GetTrainers(unsigned int iTitleId, std::vector<CStdString>& vecTrainers);
-  bool GetAllTrainers(std::vector<CStdString>& vecTrainers);
-  bool SetTrainerOptions(const CStdString& strTrainerPath, unsigned int iTitleId, unsigned char* data, int numOptions);
-  bool GetTrainerOptions(const CStdString& strTrainerPath, unsigned int iTitleId, unsigned char* data, int numOptions);
-  void SetTrainerActive(const CStdString& strTrainerPath, unsigned int iTitleId, bool bActive);
-  CStdString GetActiveTrainer(unsigned int iTitleId);
-  bool HasTrainer(const CStdString& strTrainerPath);
-  bool ItemHasTrainer(unsigned int iTitleId);
+  // Trainers
+  bool AddTrainer(int idTitle, CTrainer &trainer);
+  bool RemoveTrainer(int idTrainer);
+  bool SetTrainer(int idTitle, CTrainer *trainer);
+  bool GetTrainers(CFileItemList& items, unsigned int idTitle = 0);
+  bool GetTrainerOptions(int idTrainer, unsigned int iTitleId, unsigned char* data, int numOptions);
+  bool HasTrainer(const std::string& strTrainerPath);
 
   int GetRegion(const CStdString& strFilenameAndPath);
   bool SetRegion(const CStdString& strFilenameAndPath, int iRegion=-1);

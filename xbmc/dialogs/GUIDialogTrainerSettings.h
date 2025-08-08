@@ -22,7 +22,7 @@
 
 #include "settings/dialogs/GUIDialogSettingsManualBase.h"
 
-class CProgramDatabase;
+class CSetting;
 class CTrainer;
 
 class CGUIDialogTrainerSettings : public CGUIDialogSettingsManualBase
@@ -30,13 +30,19 @@ class CGUIDialogTrainerSettings : public CGUIDialogSettingsManualBase
 public:
   CGUIDialogTrainerSettings();
   virtual ~CGUIDialogTrainerSettings();
+  virtual bool OnMessage(CGUIMessage &message);
 
-  static bool ShowForTitle(unsigned int iTitleId, CProgramDatabase* database);
+  static void ShowForTitle(const CFileItemPtr pItem);
 
 protected:
+  static void IntegerOptionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
+
   // implementations of ISettingCallback
   virtual void OnSettingChanged(const CSetting *setting);
   virtual void OnSettingAction(const CSetting *setting);
+
+  // specialization of CGUIDialogSettingsManualBase
+  virtual void SetupView();
 
   // specialization of CGUIDialogSettingsBase
   virtual bool AllowResettingSettings() const { return false; }
@@ -45,16 +51,18 @@ protected:
   // specialization of CGUIDialogSettingsManualBase
   virtual void InitializeSettings();
 
-private:
-  std::vector<CTrainer*> m_vecTrainers;
-  std::vector<std::string> m_vecOptions;
-  CProgramDatabase* m_database;
+  void SetExecutable(const std::string strExecutable) { m_strExecutable = strExecutable; }
 
-  int m_iTrainer;
-  int m_iOldTrainer;
+private:
+  void Reset();
+  void ResetTrainer(bool bClearTrainers = false);
+
+  std::vector<CTrainer*> m_trainers;
+  std::vector<std::string> m_trainerOptions;
+  std::vector<std::string> m_selectedTrainerOptions;
+
+  CTrainer* m_trainer;
   unsigned int m_iTitleId;
-  bool m_bNeedSave;
-  bool m_bCanceled;
-  std::string m_strActive; // active trainer at start - to save db work
+  std::string m_strExecutable;
 };
 

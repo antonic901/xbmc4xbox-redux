@@ -107,15 +107,27 @@ void CAutorun::ExecuteXBE(const CStdString &xbeFile)
 
   CProgramDatabase database;
   database.Open();
+
+  // Load active trainer
   DWORD dwTitleId = CUtil::GetXbeID(xbeFile);
-  CStdString strTrainer = database.GetActiveTrainer(dwTitleId);
-  if (strTrainer != "")
+  CFileItemList items;
+  if (database.GetTrainers(items, dwTitleId))
   {
-    CTrainer trainer;
-    if (trainer.Load(strTrainer))
+    for (int i = 0; i < items.Size(); ++i)
     {
-      database.GetTrainerOptions(strTrainer,dwTitleId,trainer.GetOptions(),trainer.GetNumberOfOptions());
-      CUtil::InstallTrainer(trainer);
+      if (items[i]->GetProperty("isactive").asBoolean())
+      {
+        CTrainer* trainer = new CTrainer(items[i]->GetProperty("idtrainer").asInteger32());
+        if (trainer->Load(items[i]->GetPath()))
+        {
+          database.GetTrainerOptions(trainer->GetTrainerId(), dwTitleId, trainer->GetOptions(), trainer->GetNumberOfOptions());
+          CTrainer::InstallTrainer(*trainer);
+        }
+        else
+        {
+          delete trainer;
+        }
+      }
     }
   }
 

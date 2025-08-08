@@ -6142,7 +6142,7 @@ msgstr ""
 
 #empty strings from id 13517 to 13520
 
-#. Heading for selection of a type of art e.g. "thumb", "poster", "fanart" etc. 
+#. Heading for selection of a type of art e.g. "thumb", "poster", "fanart" etc.
 #: xbmc/music/MusicUtils.cpp
 msgctxt "#13521"
 msgid "Choose art type"
@@ -15234,12 +15234,7 @@ msgctxt "#38673"
 msgid "Xecuter3"
 msgstr ""
 
-#empty string with id 38691
-
-#: system/settings/xbox.xml
-msgctxt "#38692"
-msgid "Make stored archives with one file transparent"
-msgstr ""
+#empty string from id 38691 to 38692
 
 #: xbmc/programs/GUIWindowPrograms.cpp
 msgctxt "#38693"
@@ -15302,7 +15297,10 @@ msgctxt "#38710"
 msgid "Trainer"
 msgstr ""
 
-#empty string with id 38711
+#: xbmc/programs/dialogs/GUIDialogTrainerSettings.cpp
+msgctxt "#38711"
+msgid "Choose hacks..."
+msgstr ""
 
 #: xbmc/dialogs/GUIDialogTrainerSettings.cpp
 #: xbmc/programs/GUIWindowPrograms.cpp

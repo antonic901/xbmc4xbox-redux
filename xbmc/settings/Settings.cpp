@@ -753,6 +753,7 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("musicplayer.replaygainnogainpreamp");
   settingSet.insert("musicplayer.replaygaintype");
   settingSet.insert("musicplayer.replaygainavoidclipping");
+  settingSet.insert("myprograms.trainerscan");
   settingSet.insert("network.assignment");
   settingSet.insert("network.ipaddress");
   settingSet.insert("network.subnet");

@@ -1,5 +1,4 @@
-#ifndef _TRAINER_H_
-#define _TRAINER_H_
+#pragma once
 
 /*
  *      Copyright (C) 2005-2013 Team XBMC
@@ -24,67 +23,49 @@
 // parts generously donated by team xored - thanks!
 
 #include <vector>
+#include <string>
 
-#include "utils/StdString.h"
-
-class CTrainer 
+class CTrainer
 {
 public:
-  CTrainer();
+  CTrainer(int idTrainer = 0);
   ~CTrainer();
 
-  bool Load(const CStdString& strPath);
-  inline const CStdString& GetName() const
-  {
-    return m_vecText[0];
-  }
+  static bool InstallTrainer(CTrainer& trainer);
+  static bool RemoveTrainer();
+
+  bool Load(const std::string& strPath);
   void GetTitleIds(unsigned int& title1, unsigned int& title2, unsigned int& title3) const;
-  void GetOptionLabels(std::vector<CStdString>& vecOptionLabels) const;
-  
+  void GetOptionLabels(std::vector<std::string>& vecOptionLabels) const;
+
   void SetOptions(unsigned char* options); // copies 100 entries!!!
-  inline int GetNumberOfOptions() const
-  {
-    return m_vecText.size()-2;
-  }
-  inline const unsigned char* data() const
-  {
-    return m_pTrainerData;
-  }
 
-  inline unsigned char* data()
-  {
-    return m_pTrainerData;
-  }
+  inline const std::string& GetName() const { return m_vecText[0]; }
+  inline int GetNumberOfOptions() const { return m_vecText.size()-2; }
+  inline unsigned char* GetOptions() { return m_pTrainerData+m_iOptions; }
+  inline const std::string& GetPath() { return m_strPath; }
+  inline const int GetTrainerId() { return m_idTrainer; }
 
-  inline unsigned char* GetOptions()
-  {
-    return m_pTrainerData+m_iOptions;
-  }
+  inline bool IsXBTF() const { return m_bIsXBTF; }
+  inline int Size() const { return m_iSize; }
 
-  inline bool IsXBTF() const
-  {
-    return m_bIsXBTF;
-  }
+  inline const unsigned char* data() const { return m_pTrainerData; }
+  inline unsigned char* data() { return m_pTrainerData; }
 
-  inline const CStdString& GetPath()
-  {
-    return m_strPath;
-  }
+  /*! \brief Look for trainers
+   Search for trainers and import new trainers into database.
+   */
+  static bool ScanTrainers();
 
-  inline int Size() const
-  {
-    return m_iSize;
-  }
 protected:
   unsigned char* m_pData;
   unsigned char* m_pTrainerData; // no alloc
   unsigned int m_iSize;
   unsigned int m_iNumOptions;
   unsigned int m_iOptions;
+  int m_idTrainer;
   bool m_bIsXBTF;
   char m_szCreationKey[200];
-  std::vector<CStdString> m_vecText;
-  CStdString m_strPath;
+  std::vector<std::string> m_vecText;
+  std::string m_strPath;
 };
-
-#endif

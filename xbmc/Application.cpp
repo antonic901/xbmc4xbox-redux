@@ -221,6 +221,7 @@
 #include "utils/LED.h"
 #include "utils/MemoryUnitManager.h"
 #include "utils/FanController.h"
+#include "utils/Trainer.h"
 #include "xbox/IoSupport.h"
 #include "xbox/XKEEPROM.h"
 #include "xbox/XKHDD.h"
@@ -6150,6 +6151,8 @@ void CApplication::OnSettingAction(const CSetting *setting)
   }
   else if (settingId == "source.pictures")
     g_windowManager.ActivateWindow(WINDOW_PICTURES);
+  else if (settingId == "myprograms.trainerscan")
+    CTrainer::ScanTrainers();
 }
 
 bool CApplication::OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode)

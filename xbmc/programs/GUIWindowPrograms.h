@@ -33,7 +33,6 @@ public:
   virtual ~CGUIWindowPrograms(void);
   virtual bool OnMessage(CGUIMessage& message);
 
-  void PopulateTrainersList();
 protected:
   virtual void OnItemLoaded(CFileItem* pItem) {};
   virtual bool Update(const std::string& strDirectory, bool updateFilterPath = true);

@@ -28,6 +28,7 @@
 #include "utils/Crc32.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
+#include "utils/Trainer.h"
 #include "Util.h"
 #include "xbox/xbeheader.h"
 #include "windows/GUIWindowFileManager.h"
@@ -52,8 +53,9 @@ void CProgramDatabase::CreateTables()
 {
   CLog::Log(LOGINFO, "create files table");
   m_pDS->exec("CREATE TABLE files ( idFile integer primary key, strFilename text, titleId integer, xbedescription text, iTimesPlayed integer, lastAccessed integer, iRegion integer, iSize integer)\n");
+
   CLog::Log(LOGINFO, "create trainers table");
-  m_pDS->exec("CREATE TABLE trainers (idKey integer auto_increment primary key, idCRC integer, idTitle integer, strTrainerPath text, strSettings text, Active integer)\n");
+  m_pDS->exec("CREATE TABLE trainers (idTrainer integer primary key, idTitle integer, strTrainerPath text, strSettings text, Active integer)\n");
 }
 
 void CProgramDatabase::CreateAnalytics()
@@ -218,229 +220,164 @@ bool CProgramDatabase::GetXBEPathByTitleId(const int idTitle, std::string& strPa
   return false;
 }
 
-bool CProgramDatabase::ItemHasTrainer(unsigned int iTitleId)
+bool CProgramDatabase::AddTrainer(int idTitle, CTrainer &trainer)
 {
-  CStdString strSQL;
+  std::string strSQL;
   try
   {
-    strSQL = PrepareSQL("select * from trainers where idTitle=%u", iTitleId);
-    if (!m_pDS->query(strSQL.c_str()))
-      return false;
-    if (m_pDS->num_rows())
-      return true;
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS.get()) return false;
 
-    return false;
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR,"error checking for title's trainers (%s)",strSQL.c_str());
-  }
-  return false;
-}
-
-bool CProgramDatabase::HasTrainer(const CStdString& strTrainerPath)
-{
-  CStdString strSQL;
-  Crc32 crc; crc.ComputeFromLowerCase(strTrainerPath);
-  try
-  {
-    strSQL = PrepareSQL("select * from trainers where idCRC=%u", (unsigned __int32) crc);
-    if (!m_pDS->query(strSQL.c_str()))
-      return false;
-    if (m_pDS->num_rows())
-      return true;
-
-    return false;
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR,"error checking for trainer existance (%s)",strSQL.c_str());
-  }
-  return false;
-}
-
-bool CProgramDatabase::AddTrainer(int iTitleId, const CStdString& strTrainerPath)
-{
-  CStdString strSQL;
-  Crc32 crc; crc.ComputeFromLowerCase(strTrainerPath);
-  try
-  {
-    char temp[101];
-    for( int i=0;i<100;++i)
-      temp[i] = '0';
-    temp[100] = '\0';
-    strSQL=PrepareSQL("insert into trainers (idKey,idCRC,idTitle,strTrainerPath,strSettings,Active) values(NULL,%u,%u,'%s','%s',%i)",(unsigned __int32)crc,iTitleId,strTrainerPath.c_str(),temp,0);
-    if (!m_pDS->exec(strSQL.c_str()))
-      return false;
-
-    return true;
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR,"programdatabase: unable to add trainer (%s)",strSQL.c_str());
-  }
-  return false;
-}
-
-bool CProgramDatabase::RemoveTrainer(const CStdString& strTrainerPath)
-{
-  CStdString strSQL;
-  Crc32 crc; crc.ComputeFromLowerCase(strTrainerPath);
-  try
-  {
-    strSQL=PrepareSQL("delete from trainers where idCRC=%u", (unsigned __int32)crc);
-    if (!m_pDS->exec(strSQL.c_str()))
-      return false;
-
-    return true;
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR,"programdatabase: unable to remove trainer (%s)",strSQL.c_str());
-  }
-  return false;
-}
-
-bool CProgramDatabase::GetTrainers(unsigned int iTitleId, std::vector<CStdString>& vecTrainers)
-{
-  vecTrainers.clear();
-  CStdString strSQL;
-  try
-  {
-    strSQL = PrepareSQL("select * from trainers where idTitle=%u", iTitleId);
-    if (!m_pDS->query(strSQL.c_str()))
-      return false;
-
-    while (!m_pDS->eof())
-    {
-      vecTrainers.push_back(m_pDS->fv("strTrainerPath").get_asString());
-      m_pDS->next();
-    }
-
-    return true;
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR,"programdatabase: error reading trainers for %i (%s)",iTitleId,strSQL.c_str());
-  }
-  return false;
-
-}
-
-bool CProgramDatabase::GetAllTrainers(std::vector<CStdString>& vecTrainers)
-{
-  vecTrainers.clear();
-  CStdString strSQL;
-  try
-  {
-    strSQL = PrepareSQL("select distinct strTrainerPath from trainers");//PrepareSQL("select * from trainers");
-    if (!m_pDS->query(strSQL.c_str()))
-      return false;
-
-    while (!m_pDS->eof())
-    {
-      vecTrainers.push_back(m_pDS->fv("strTrainerPath").get_asString());
-      m_pDS->next();
-    }
-
-    return true;
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR,"programdatabase: error reading trainers (%s)",strSQL.c_str());
-  }
-  return false;
-}
-
-bool CProgramDatabase::SetTrainerOptions(const CStdString& strTrainerPath, unsigned int iTitleId, unsigned char* data, int numOptions)
-{
-  CStdString strSQL;
-  Crc32 crc; crc.ComputeFromLowerCase(strTrainerPath);
-  try
-  {
-    char temp[101];
+    char* temp = new char[trainer.GetNumberOfOptions() + 1];
     int i;
-    for (i=0;i<numOptions && i<100;++i)
+    for(i = 0; i < trainer.GetNumberOfOptions(); ++i)
+      temp[i] = '0';
+    temp[i] = '\0';
+
+    strSQL = PrepareSQL("insert into trainers (idTrainer, idTitle, strTrainerPath, strSettings, Active) values (NULL, %u, '%s', '%s', %i)", idTitle, trainer.GetPath().c_str(), temp, 0);
+    m_pDS->exec(strSQL.c_str());
+
+    delete[] temp;
+    return true;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strSQL.c_str());
+  }
+  return false;
+}
+
+bool CProgramDatabase::RemoveTrainer(int idTrainer)
+{
+  std::string strSQL;
+  try
+  {
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS.get()) return false;
+
+    strSQL = PrepareSQL("delete from trainers where idTrainer=%i", idTrainer);
+    return m_pDS->exec(strSQL.c_str()) == 0;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strSQL.c_str());
+  }
+  return false;
+}
+
+bool CProgramDatabase::SetTrainer(int idTitle, CTrainer *trainer)
+{
+  std::string strSQL;
+  try
+  {
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS.get()) return false;
+
+    // deactivate all trainers
+    strSQL = PrepareSQL("update trainers set Active=%u where idTitle=%u", 0, idTitle);
+    m_pDS->exec(strSQL.c_str());
+
+    if (trainer == nullptr)
+      return true;
+
+    // set current trainer as active
+    char* temp = new char[trainer->GetNumberOfOptions() + 1];
+    int i;
+    for (i = 0; i < trainer->GetNumberOfOptions(); ++i)
     {
-      if (data[i] == 1)
+      if (trainer->GetOptions()[i] == 1)
         temp[i] = '1';
       else
         temp[i] = '0';
     }
     temp[i] = '\0';
 
-    strSQL = PrepareSQL("update trainers set strSettings='%s' where idCRC=%u and idTitle=%u", temp, (unsigned __int32)crc,iTitleId);
-    if (m_pDS->exec(strSQL.c_str()))
-      return true;
+    strSQL = PrepareSQL("update trainers set Active=%u, strSettings='%s' where idTrainer=%i and idTitle=%u", 1, temp, trainer->GetTrainerId(), idTitle);
+    m_pDS->exec(strSQL.c_str());
 
-    return false;
+    delete[] temp;
+    return true;
   }
   catch (...)
   {
-    CLog::Log(LOGERROR,"CProgramDatabase::SetTrainerOptions failed (%s)",strSQL.c_str());
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strSQL.c_str());
   }
-
   return false;
 }
 
-void CProgramDatabase::SetTrainerActive(const CStdString& strTrainerPath, unsigned int iTitleId, bool bActive)
+bool CProgramDatabase::GetTrainers(CFileItemList& items, unsigned int idTitle /* = 0 */)
 {
-  CStdString strSQL;
-  Crc32 crc; crc.ComputeFromLowerCase(strTrainerPath);
+  std::string strSQL;
   try
   {
-    strSQL = PrepareSQL("update trainers set Active=%u where idCRC=%u and idTitle=%u", bActive?1:0, (unsigned __int32)crc, iTitleId);
-    m_pDS->exec(strSQL.c_str());
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR,"CProgramDatabase::SetTrainerOptions failed (%s)",strSQL.c_str());
-  }
-}
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS.get()) return false;
 
-CStdString CProgramDatabase::GetActiveTrainer(unsigned int iTitleId)
-{
-  CStdString strSQL;
-  try
-  {
-    strSQL = PrepareSQL("select * from trainers where idTitle=%u and Active=1", iTitleId);
+    strSQL = PrepareSQL("select * from trainers");
+    if (idTitle)
+      strSQL += PrepareSQL(" where idTitle = %u", idTitle);
     if (!m_pDS->query(strSQL.c_str()))
-      return "";
+      return false;
 
-    if (!m_pDS->eof())
-      return m_pDS->fv("strTrainerPath").get_asString();
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR,"programdatabase: error finding active trainer for %i (%s)",iTitleId,strSQL.c_str());
-  }
-
-  return "";
-}
-
-bool CProgramDatabase::GetTrainerOptions(const CStdString& strTrainerPath, unsigned int iTitleId, unsigned char* data, int numOptions)
-{
-  CStdString strSQL;
-  Crc32 crc; crc.ComputeFromLowerCase(strTrainerPath);
-  try
-  {
-    strSQL = PrepareSQL("select * from trainers where idCRC=%u and idTitle=%u", (unsigned __int32)crc, iTitleId);
-    if (m_pDS->query(strSQL.c_str()))
+    while (!m_pDS->eof())
     {
-      CStdString strSettings = m_pDS->fv("strSettings").get_asString();
-      for (int i=0;i<numOptions && i < 100;++i)
-        data[i] = strSettings[i]=='1'?1:0;
-
-      return true;
+      std::string strPath = m_pDS->fv("strTrainerPath").get_asString();
+      CFileItemPtr pItem(new CFileItem(strPath, false));
+      items.Add(pItem);
+      pItem->SetProperty("idtrainer", m_pDS->fv("idTrainer").get_asInt());
+      pItem->SetProperty("isactive", m_pDS->fv("Active").get_asBool());
+      m_pDS->next();
     }
 
-    return false;
+    return true;
   }
   catch (...)
   {
-    CLog::Log(LOGERROR,"CProgramDatabase::GetTrainerOptions failed (%s)",strSQL.c_str());
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strSQL.c_str());
   }
+  return false;
+}
 
+bool CProgramDatabase::GetTrainerOptions(int idTrainer, unsigned int idTitle, unsigned char* data, int numOptions)
+{
+  std::string strSQL;
+  try
+  {
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS.get()) return false;
+
+    strSQL = PrepareSQL("select * from trainers where idTrainer=%i and idTitle=%u", idTrainer, idTitle);
+    if (!m_pDS->query(strSQL.c_str()))
+      return false;
+
+    std::string strSettings = m_pDS->fv("strSettings").get_asString();
+    for (int i = 0; i < numOptions && i < 100; i++)
+      data[i] = strSettings[i] == '1' ? 1 : 0;
+
+    return true;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strSQL.c_str());
+  }
+  return false;
+}
+
+bool CProgramDatabase::HasTrainer(const std::string& strTrainerPath)
+{
+  std::string strSQL;
+  try
+  {
+    if (NULL == m_pDB.get()) return false;
+    if (NULL == m_pDS.get()) return false;
+
+    strSQL = PrepareSQL("SELECT strTrainerPath FROM trainers WHERE strTrainerPath='%s'", strTrainerPath.c_str());
+    return !GetSingleValue(strSQL).empty();
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strSQL.c_str());
+  }
   return false;
 }
 
