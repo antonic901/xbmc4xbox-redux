@@ -278,7 +278,9 @@ void CGraphicContext::SetScissors(const CRect& rect)
   m_scissors = rect;
   m_scissors.Intersect(CRect(0, 0, (float)m_iScreenWidth, (float)m_iScreenHeight));
 
-#ifdef _XBOX
+  // In IDirect3DDevice8::SetScissors, scissors are inverted. We pass to the scissors
+  // what we DON'T want to modify. We draw at most 4 Rects to invert the original
+  // Rect. See https://github.com/antonic901/xbmc4xbox-redux/issues/161
   D3DRECT scissors[4];
   int scissorCount = 0;
 
@@ -319,14 +321,6 @@ void CGraphicContext::SetScissors(const CRect& rect)
   }
 
   m_pd3dDevice->SetScissors(scissorCount, TRUE, scissors);
-#else
-  D3DRECT scissor;
-  scissor.x1 = MathUtils::round_int(m_scissors.x1);
-  scissor.y1 = MathUtils::round_int(m_scissors.y1);
-  scissor.x2 = MathUtils::round_int(m_scissors.x2);
-  scissor.y2 = MathUtils::round_int(m_scissors.y2);
-  m_pd3dDevice->SetScissors(1, TRUE, &scissor);
-#endif
 }
 
 void CGraphicContext::ResetScissors()
@@ -336,12 +330,7 @@ void CGraphicContext::ResetScissors()
 
   m_scissors.SetRect(0, 0, (float)m_iScreenWidth, (float)m_iScreenHeight);
 
-  D3DRECT scissor;
-  scissor.x1 = 0;
-  scissor.y1 = 0;
-  scissor.x2 = CDisplaySettings::Get().GetCurrentResolutionInfo().iWidth;
-  scissor.y2 = CDisplaySettings::Get().GetCurrentResolutionInfo().iHeight;
-  m_pd3dDevice->SetScissors(0, FALSE, &scissor);
+  m_pd3dDevice->SetScissors(0, FALSE, NULL);
 }
 
 const CRect& CGraphicContext::GetViewWindow() const
@@ -724,24 +713,20 @@ void CGraphicContext::Clear(color_t color)
 {
   if (!m_pd3dDevice) return;
 
-#ifdef _XBOX
+  // IDirect3DDevice8::Clear doesn't respect IDirect3DDevice8::SetScissors on the Xbox, so we call Clear with
+  // the last scissor region, which should be equal to the last dirty region or the entire screen if
+  // dirty regions are disabled.
   D3DRECT d3dRect;
   d3dRect.x1 = MathUtils::round_int(m_scissors.x1);
   d3dRect.y1 = MathUtils::round_int(m_scissors.y1);
   d3dRect.x2 = MathUtils::round_int(m_scissors.x2);
   d3dRect.y2 = MathUtils::round_int(m_scissors.y2);
 
+  // Not trying to clear the zbuffer when there is none is 7 fps faster (pal resolution)
   if ((!m_pd3dParams) || (m_pd3dParams->EnableAutoDepthStencil == TRUE))
     m_pd3dDevice->Clear(1L, &d3dRect, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3D_CLEAR_STENCIL, color, 1.0f, 0L);
   else
     m_pd3dDevice->Clear(1L, &d3dRect, D3DCLEAR_TARGET, color, 1.0f, 0L);
-#else
-  //Not trying to clear the zbuffer when there is none is 7 fps faster (pal resolution)
-  if ((!m_pd3dParams) || (m_pd3dParams->EnableAutoDepthStencil == TRUE))
-    m_pd3dDevice->Clear( 0L, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3D_CLEAR_STENCIL, color, 1.0f, 0L );
-  else
-    m_pd3dDevice->Clear( 0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L );
-#endif
 }
 
 void CGraphicContext::CaptureStateBlock()

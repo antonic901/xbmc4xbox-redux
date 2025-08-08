@@ -6,6 +6,7 @@ Debug Xbox No Memory Tracking/
 Profile/
 Profile_FastCap/
 .vscode/
+.idea/
 xbmc/interfaces/python/generated/
 tools/BuildDependencies/
 svn_rev.h
