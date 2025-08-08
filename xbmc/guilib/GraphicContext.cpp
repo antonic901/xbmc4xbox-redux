@@ -276,14 +276,57 @@ void CGraphicContext::SetScissors(const CRect& rect)
     return;
 
   m_scissors = rect;
-  m_scissors.Intersect(CRect(0,0,(float)m_iScreenWidth, (float)m_iScreenHeight));
+  m_scissors.Intersect(CRect(0, 0, (float)m_iScreenWidth, (float)m_iScreenHeight));
 
+#ifdef _XBOX
+  D3DRECT scissors[4];
+  int scissorCount = 0;
+
+  if (m_scissors.y1 > 0)
+  {
+    scissors[scissorCount].x1 = 0;
+    scissors[scissorCount].y1 = 0;
+    scissors[scissorCount].x2 = m_iScreenWidth;
+    scissors[scissorCount].y2 = MathUtils::round_int(m_scissors.y1);
+    scissorCount++;
+  }
+
+  if (m_scissors.y2 < m_iScreenHeight)
+  {
+    scissors[scissorCount].x1 = 0;
+    scissors[scissorCount].y1 = MathUtils::round_int(m_scissors.y2);
+    scissors[scissorCount].x2 = m_iScreenWidth;
+    scissors[scissorCount].y2 = m_iScreenHeight;
+    scissorCount++;
+  }
+
+  if (m_scissors.x1 > 0)
+  {
+    scissors[scissorCount].x1 = 0;
+    scissors[scissorCount].y1 = MathUtils::round_int(m_scissors.y1);
+    scissors[scissorCount].x2 = MathUtils::round_int(m_scissors.x1);
+    scissors[scissorCount].y2 = MathUtils::round_int(m_scissors.y2);
+    scissorCount++;
+  }
+
+  if (m_scissors.x2 < m_iScreenWidth)
+  {
+    scissors[scissorCount].x1 = MathUtils::round_int(m_scissors.x2);
+    scissors[scissorCount].y1 = MathUtils::round_int(m_scissors.y1);
+    scissors[scissorCount].x2 = m_iScreenWidth;
+    scissors[scissorCount].y2 = MathUtils::round_int(m_scissors.y2);
+    scissorCount++;
+  }
+
+  m_pd3dDevice->SetScissors(scissorCount, TRUE, scissors);
+#else
   D3DRECT scissor;
   scissor.x1 = MathUtils::round_int(m_scissors.x1);
   scissor.y1 = MathUtils::round_int(m_scissors.y1);
   scissor.x2 = MathUtils::round_int(m_scissors.x2);
   scissor.y2 = MathUtils::round_int(m_scissors.y2);
   m_pd3dDevice->SetScissors(1, TRUE, &scissor);
+#endif
 }
 
 void CGraphicContext::ResetScissors()
@@ -680,11 +723,25 @@ float CGraphicContext::GetPixelRatio(RESOLUTION iRes) const
 void CGraphicContext::Clear(color_t color)
 {
   if (!m_pd3dDevice) return;
+
+#ifdef _XBOX
+  D3DRECT d3dRect;
+  d3dRect.x1 = MathUtils::round_int(m_scissors.x1);
+  d3dRect.y1 = MathUtils::round_int(m_scissors.y1);
+  d3dRect.x2 = MathUtils::round_int(m_scissors.x2);
+  d3dRect.y2 = MathUtils::round_int(m_scissors.y2);
+
+  if ((!m_pd3dParams) || (m_pd3dParams->EnableAutoDepthStencil == TRUE))
+    m_pd3dDevice->Clear(1L, &d3dRect, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3D_CLEAR_STENCIL, color, 1.0f, 0L);
+  else
+    m_pd3dDevice->Clear(1L, &d3dRect, D3DCLEAR_TARGET, color, 1.0f, 0L);
+#else
   //Not trying to clear the zbuffer when there is none is 7 fps faster (pal resolution)
   if ((!m_pd3dParams) || (m_pd3dParams->EnableAutoDepthStencil == TRUE))
     m_pd3dDevice->Clear( 0L, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3D_CLEAR_STENCIL, color, 1.0f, 0L );
   else
     m_pd3dDevice->Clear( 0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L );
+#endif
 }
 
 void CGraphicContext::CaptureStateBlock()
