@@ -18,10 +18,22 @@ namespace PythonBindings
 {
   TypeInfo::TypeInfo(const std::type_info& ti) : swigType(NULL), parentType(NULL), typeIndex(ti)
   {
+#ifndef _XBOX
     static PyTypeObject py_type_object_header = {PyVarObject_HEAD_INIT(NULL, 0)};
     static int size = (long*)&(py_type_object_header.tp_name) - (long*)&py_type_object_header;
     memcpy(&(this->pythonType), &py_type_object_header, size);
+#endif
   }
+
+#ifdef _XBOX
+  void TypeInfo::reset()
+  {
+    static PyTypeObject py_type_object_header = {PyVarObject_HEAD_INIT(NULL, 0)};
+    int size = (long*)&(py_type_object_header.tp_name) - (long*)&py_type_object_header;
+    memset(&(this->pythonType), 0, sizeof(PyTypeObject));
+    memcpy(&(this->pythonType), &py_type_object_header, size);
+  }
+#endif
 
   class PyObjectDecrementor
   {
@@ -364,16 +376,20 @@ namespace PythonBindings
     return (PyObject*)self;
   }
 
-  std::map<std::type_index, const TypeInfo*> typeInfoLookup;
+  std::map<XbmcCommons::type_index, const TypeInfo*> typeInfoLookup;
 
   void registerAddonClassTypeInformation(const TypeInfo* classInfo)
   {
+#ifdef _XBOX
+    if (typeInfoLookup.find(classInfo->typeIndex) != typeInfoLookup.end())
+      return;
+#endif
     typeInfoLookup[classInfo->typeIndex] = classInfo;
   }
 
   const TypeInfo* getTypeInfoForInstance(XBMCAddon::AddonClass* obj)
   {
-    std::type_index ti(typeid(*obj));
+    XbmcCommons::type_index ti(typeid(*obj));
     return typeInfoLookup[ti];
   }
 

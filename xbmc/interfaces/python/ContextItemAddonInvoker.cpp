@@ -23,7 +23,7 @@ CContextItemAddonInvoker::CContextItemAddonInvoker(
 {
 }
 
-CContextItemAddonInvoker::~CContextItemAddonInvoker() = default;
+CContextItemAddonInvoker::~CContextItemAddonInvoker() {}
 
 void CContextItemAddonInvoker::onPythonModuleInitialization(void* moduleDict)
 {
