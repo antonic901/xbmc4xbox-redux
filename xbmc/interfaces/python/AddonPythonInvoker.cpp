@@ -7,7 +7,6 @@
  */
 
 // python.h should always be included first before any other includes
-#include "system.h"
 #include "AddonPythonInvoker.h"
 
 #include <utility>
@@ -20,7 +19,6 @@
 #define RUNSCRIPT_PREAMBLE \
         "" \
         "import " MODULE "\n" \
-        "xbmc.abortRequested = False\n" \
         "class xbmcout:\n" \
         "  def __init__(self, loglevel=" MODULE ".LOGDEBUG):\n" \
         "    self.ll=loglevel\n" \
@@ -48,6 +46,12 @@
   "sys.modules['pkg_resources'] = pkg_resources\n" \
   ""
 
+#define RUNSCRIPT_SETUP_ENVIROMENT_VARIABLES \
+  "" \
+  "from os import environ\n" \
+  "environ['SSL_CERT_FILE'] = 'system/certs/cacert.pem'\n" \
+  ""
+
 #define RUNSCRIPT_POSTSCRIPT \
         "print('-->Python Interpreter Initialized<--')\n" \
         ""
@@ -57,6 +61,11 @@
 #define RUNSCRIPT_COMPLIANT \
   RUNSCRIPT_PREAMBLE RUNSCRIPT_SETUPTOOLS_HACK RUNSCRIPT_POSTSCRIPT
 
+#elif defined(TARGET_WINDOWS_STORE)
+
+#define RUNSCRIPT_COMPLIANT \
+  RUNSCRIPT_PREAMBLE RUNSCRIPT_SETUP_ENVIROMENT_VARIABLES RUNSCRIPT_POSTSCRIPT
+
 #else
 
 #define RUNSCRIPT_COMPLIANT \
@@ -65,6 +74,7 @@
 #endif
 
 namespace PythonBindings {
+PyObject* PyInit_Module_xbmcdrm(void);
 PyObject* PyInit_Module_xbmcgui(void);
 PyObject* PyInit_Module_xbmc(void);
 PyObject* PyInit_Module_xbmcplugin(void);
@@ -82,6 +92,7 @@ typedef struct
 
 static PythonModule PythonModules[] =
   {
+    { "xbmcdrm",    PyInit_Module_xbmcdrm    },
     { "xbmcgui",    PyInit_Module_xbmcgui    },
     { "xbmc",       PyInit_Module_xbmc       },
     { "xbmcplugin", PyInit_Module_xbmcplugin },
@@ -89,42 +100,26 @@ static PythonModule PythonModules[] =
     { "xbmcvfs",    PyInit_Module_xbmcvfs    }
   };
 
-#define PythonModulesSize sizeof(PythonModules) / sizeof(PythonModule)
-
 CAddonPythonInvoker::CAddonPythonInvoker(ILanguageInvocationHandler *invocationHandler)
   : CPythonInvoker(invocationHandler)
 {
-  // DLL is not loaded at this point, so we can not inject modules
-#ifndef _XBOX
-  PyImport_AppendInittab("xbmcgui", PyInit_Module_xbmcgui);
-  PyImport_AppendInittab("xbmc", PyInit_Module_xbmc);
-  PyImport_AppendInittab("xbmcplugin", PyInit_Module_xbmcplugin);
-  PyImport_AppendInittab("xbmcaddon", PyInit_Module_xbmcaddon);
-  PyImport_AppendInittab("xbmcvfs", PyInit_Module_xbmcvfs);
-#endif
-}
-
-CAddonPythonInvoker::~CAddonPythonInvoker()
-{ }
-
-#ifdef _XBOX
-void CAddonPythonInvoker::InjectModules()
-{
+  PyImport_AppendInittab("xbmcdrm", PyInit_Module_xbmcdrm);
   PyImport_AppendInittab("xbmcgui", PyInit_Module_xbmcgui);
   PyImport_AppendInittab("xbmc", PyInit_Module_xbmc);
   PyImport_AppendInittab("xbmcplugin", PyInit_Module_xbmcplugin);
   PyImport_AppendInittab("xbmcaddon", PyInit_Module_xbmcaddon);
   PyImport_AppendInittab("xbmcvfs", PyInit_Module_xbmcvfs);
 }
-#endif
+
+CAddonPythonInvoker::~CAddonPythonInvoker() = default;
 
 std::map<std::string, CPythonInvoker::PythonModuleInitialization> CAddonPythonInvoker::getModules() const
 {
   static std::map<std::string, PythonModuleInitialization> modules;
   if (modules.empty())
   {
-    for (size_t i = 0; i < PythonModulesSize; i++)
-      modules.insert(std::make_pair(PythonModules[i].name, PythonModules[i].initialization));
+    for (const PythonModule& pythonModule : PythonModules)
+      modules.insert(std::make_pair(pythonModule.name, pythonModule.initialization));
   }
 
   return modules;
