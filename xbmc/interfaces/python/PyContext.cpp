@@ -7,7 +7,7 @@
  */
 
 #include "PyContext.h"
-
+#include "threads/ThreadLocal.h"
 #include "utils/log.h"
 
 #include <Python.h>
@@ -19,23 +19,23 @@ namespace XBMCAddon
     struct PyContextState
     {
       inline explicit PyContextState(bool pcreatedByGilRelease = false) :
-        state(NULL), createdByGilRelease(pcreatedByGilRelease) {}
+        value(0), state(NULL), gilReleasedDepth(0), createdByGilRelease(pcreatedByGilRelease) {}
 
-      int value = 0;
+      int value;
       PyThreadState* state;
-      int gilReleasedDepth = 0;
+      int gilReleasedDepth;
       bool createdByGilRelease;
     };
 
-    static thread_local PyContextState* tlsPyContextState;
+    static XbmcThreads::ThreadLocal<PyContextState> tlsPyContextState;
 
     void* PyContext::enterContext()
     {
-      PyContextState* cur = tlsPyContextState;
+      PyContextState* cur = tlsPyContextState.get();
       if (cur == NULL)
       {
         cur = new PyContextState();
-        tlsPyContextState = cur;
+        tlsPyContextState.set(cur);
       }
 
       // increment the count
@@ -47,7 +47,7 @@ namespace XBMCAddon
     void PyContext::leaveContext()
     {
       // here we ASSUME that the constructor was called.
-      PyContextState* cur = tlsPyContextState;
+      PyContextState* cur = tlsPyContextState.get();
       cur->value--;
       int curlevel = cur->value;
 
@@ -61,14 +61,14 @@ namespace XBMCAddon
       if (curlevel == 0)
       {
         // clear the tlsPyContextState
-        tlsPyContextState = NULL;
+        tlsPyContextState.set(NULL);
         delete cur;
       }
     }
 
     void PyGILLock::releaseGil()
     {
-      PyContextState* cur = tlsPyContextState;
+      PyContextState* cur = tlsPyContextState.get();
 
       // This means we're not within the python context, but
       // because we may be in a thread spawned by python itself,
@@ -93,7 +93,7 @@ namespace XBMCAddon
 
     void PyGILLock::acquireGil()
     {
-      PyContextState* cur = tlsPyContextState;
+      PyContextState* cur = tlsPyContextState.get(); 
 
       // it's not possible for cur to be NULL (and if it is, we want to fail anyway).
 

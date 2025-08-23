@@ -17,8 +17,9 @@ CLanguageInvokerThread::CLanguageInvokerThread(LanguageInvokerPtr invoker,
                                                bool reuseable)
   : ILanguageInvoker(NULL),
     CThread("LanguageInvoker"),
-    m_invoker(std::move(invoker)),
+    m_invoker(boost::move(invoker)),
     m_invocationManager(invocationManager),
+    m_restart(false),
     m_reusable(reuseable)
 { }
 
@@ -38,7 +39,7 @@ InvokerState CLanguageInvokerThread::GetState() const
 void CLanguageInvokerThread::Release()
 {
   m_bStop = true;
-  m_condition.notify_one();
+  m_condition.notify();
 }
 
 bool CLanguageInvokerThread::execute(const std::string &script, const std::vector<std::string> &arguments)
@@ -51,9 +52,9 @@ bool CLanguageInvokerThread::execute(const std::string &script, const std::vecto
 
   if (CThread::IsRunning())
   {
-    std::unique_lock<std::mutex> lck(m_mutex);
+    CSingleLock lck(m_mutex);
     m_restart = true;
-    m_condition.notify_one();
+    m_condition.notify();
   }
   else
     Create();
@@ -100,7 +101,7 @@ void CLanguageInvokerThread::Process()
   if (m_invoker == NULL)
     return;
 
-  std::unique_lock<std::mutex> lckdl(m_mutex);
+  CSingleLock lckdl(m_mutex);
   do
   {
     m_restart = false;
@@ -109,7 +110,10 @@ void CLanguageInvokerThread::Process()
     if (m_invoker->GetState() != InvokerStateScriptDone)
       m_reusable = false;
 
-    m_condition.wait(lckdl, [this] { return m_bStop || m_restart || !m_reusable; });
+    while (!(m_bStop || m_restart || !m_reusable))
+    {
+      m_condition.wait(lckdl);
+    }
 
   } while (m_reusable && !m_bStop);
 }

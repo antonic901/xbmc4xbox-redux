@@ -19,7 +19,8 @@ ILanguageInvoker::ILanguageInvoker(ILanguageInvocationHandler *invocationHandler
     m_invocationHandler(invocationHandler)
 { }
 
-ILanguageInvoker::~ILanguageInvoker() = default;
+ILanguageInvoker::~ILanguageInvoker()
+{ }
 
 bool ILanguageInvoker::Execute(const std::string &script, const std::vector<std::string> &arguments /* = std::vector<std::string>() */)
 {

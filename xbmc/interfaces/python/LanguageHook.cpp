@@ -88,9 +88,10 @@ namespace XBMCAddon
 
     bool PythonLanguageHook::IsAddonClassInstanceRegistered(AddonClass* obj)
     {
-      for (const auto& iter : hooks)
+      for (std::map<PyInterpreterState*,AddonClass::Ref<PythonLanguageHook> >::iterator iter = hooks.begin();
+           iter != hooks.end(); ++iter)
       {
-        if (iter.second->HasRegisteredAddonClassInstance(obj))
+        if (iter->second->HasRegisteredAddonClassInstance(obj))
           return true;
       }
       return false;
@@ -179,28 +180,28 @@ namespace XBMCAddon
     void PythonLanguageHook::RegisterPlayerCallback(IPlayerCallback* player)
     {
       XBMC_TRACE;
-      CServiceBroker::GetXBPython().RegisterPythonPlayerCallBack(player);
+      g_pythonParser.RegisterPythonPlayerCallBack(player);
     }
     void PythonLanguageHook::UnregisterPlayerCallback(IPlayerCallback* player)
     {
       XBMC_TRACE;
-      CServiceBroker::GetXBPython().UnregisterPythonPlayerCallBack(player);
+      g_pythonParser.UnregisterPythonPlayerCallBack(player);
     }
     void PythonLanguageHook::RegisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor)
     {
       XBMC_TRACE;
-      CServiceBroker::GetXBPython().RegisterPythonMonitorCallBack(monitor);
+      g_pythonParser.RegisterPythonMonitorCallBack(monitor);
     }
     void PythonLanguageHook::UnregisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor)
     {
       XBMC_TRACE;
-      CServiceBroker::GetXBPython().UnregisterPythonMonitorCallBack(monitor);
+      g_pythonParser.UnregisterPythonMonitorCallBack(monitor);
     }
 
     bool PythonLanguageHook::WaitForEvent(CEvent& hEvent, unsigned int milliseconds)
     {
       XBMC_TRACE;
-      return CServiceBroker::GetXBPython().WaitForEvent(hEvent, milliseconds);
+      return g_pythonParser.WaitForEvent(hEvent, milliseconds);
     }
 
     void PythonLanguageHook::RegisterAddonClassInstance(AddonClass* obj)

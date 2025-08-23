@@ -8,9 +8,10 @@
 
 #pragma once
 
+#include "system.h" // xtl.h
 #include "addons/IAddon.h"
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <string>
 #include <vector>
 
@@ -74,4 +75,4 @@ private:
   ILanguageInvocationHandler *m_invocationHandler;
 };
 
-typedef std::shared_ptr<ILanguageInvoker> LanguageInvokerPtr;
+typedef boost::shared_ptr<ILanguageInvoker> LanguageInvokerPtr;

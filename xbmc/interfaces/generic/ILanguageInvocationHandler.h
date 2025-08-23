@@ -13,8 +13,8 @@ class ILanguageInvoker;
 class ILanguageInvocationHandler
 {
 public:
-  ILanguageInvocationHandler() = default;
-  virtual ~ILanguageInvocationHandler() = default;
+  ILanguageInvocationHandler() { }
+  virtual ~ILanguageInvocationHandler() { }
 
   virtual bool Initialize() { return true; }
   virtual void Process() { }
