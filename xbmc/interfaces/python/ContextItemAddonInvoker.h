@@ -13,17 +13,17 @@
 #include <memory>
 
 class CFileItem;
-typedef boost::shared_ptr<CFileItem> CFileItemPtr;
+typedef std::shared_ptr<CFileItem> CFileItemPtr;
 
 class CContextItemAddonInvoker : public CAddonPythonInvoker
 {
 public:
   explicit CContextItemAddonInvoker(ILanguageInvocationHandler *invocationHandler,
                                     const CFileItemPtr& item);
-  virtual ~CContextItemAddonInvoker();
+  ~CContextItemAddonInvoker() override;
 
 protected:
-  virtual void onPythonModuleInitialization(void* moduleDict);
+  void onPythonModuleInitialization(void* moduleDict) override;
 
 private:
   const CFileItemPtr m_item;

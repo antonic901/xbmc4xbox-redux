@@ -7,7 +7,6 @@
  */
 
 // python.h should always be included first before any other includes
-#include "system.h"
 #include "ContextItemAddonInvoker.h"
 
 #include "interfaces/python/swig.h"
@@ -24,9 +23,7 @@ CContextItemAddonInvoker::CContextItemAddonInvoker(
 {
 }
 
-CContextItemAddonInvoker::~CContextItemAddonInvoker()
-{
-}
+CContextItemAddonInvoker::~CContextItemAddonInvoker() = default;
 
 void CContextItemAddonInvoker::onPythonModuleInitialization(void* moduleDict)
 {

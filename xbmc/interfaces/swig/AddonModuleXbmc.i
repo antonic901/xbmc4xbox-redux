@@ -14,6 +14,7 @@
 #endif
 
 #include "interfaces/legacy/Player.h"
+#include "interfaces/legacy/RenderCapture.h"
 #include "interfaces/legacy/Keyboard.h"
 #include "interfaces/legacy/ModuleXbmc.h"
 #include "interfaces/legacy/Monitor.h"
@@ -33,8 +34,6 @@ using namespace xbmc;
 
 %include "interfaces/legacy/swighelper.h"
 
-%feature("python:coerceToUnicode") XBMCAddon::xbmc::getLocalizedString "true"
-
 %include "interfaces/legacy/AddonString.h"
 %include "interfaces/legacy/ModuleXbmc.h"
 
@@ -46,7 +45,10 @@ using namespace xbmc;
 
 %include "interfaces/legacy/Player.h"
 
+%include "interfaces/legacy/RenderCapture.h"
+
 %include "interfaces/legacy/InfoTagMusic.h"
+%include "interfaces/legacy/InfoTagRadioRDS.h"
 %include "interfaces/legacy/InfoTagVideo.h"
 %include "interfaces/legacy/Keyboard.h"
 %include "interfaces/legacy/PlayList.h"

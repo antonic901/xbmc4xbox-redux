@@ -11,13 +11,12 @@
 #include "interfaces/legacy/AddonClass.h"
 #include "interfaces/legacy/Exception.h"
 #include "interfaces/legacy/Window.h"
-#include "commons/typeindex.h"
 
 #include <stdint.h>
 #include <string>
+#include <typeindex>
 
 #include <Python.h>
-#include "libPython/XBPythonDll.h"
 
 namespace PythonBindings
 {
@@ -40,12 +39,9 @@ namespace PythonBindings
     const char* swigType;
     TypeInfo* parentType;
     PyTypeObject pythonType;
-    const XbmcCommons::type_index typeIndex;
+    const std::type_index typeIndex;
 
     explicit TypeInfo(const std::type_info& ti);
-#ifdef _XBOX
-    void reset();
-#endif
   };
 
   // This will hold the pointer to the api type, whether known or unknown

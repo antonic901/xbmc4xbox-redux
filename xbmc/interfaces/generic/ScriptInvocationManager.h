@@ -13,12 +13,12 @@
 #include "threads/CriticalSection.h"
 
 #include <map>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <set>
 #include <vector>
 
 class CLanguageInvokerThread;
-typedef boost::shared_ptr<CLanguageInvokerThread> CLanguageInvokerThreadPtr;
+typedef std::shared_ptr<CLanguageInvokerThread> CLanguageInvokerThreadPtr;
 
 class CScriptInvocationManager
 {
@@ -32,7 +32,12 @@ public:
   void RegisterLanguageInvocationHandler(ILanguageInvocationHandler *invocationHandler, const std::set<std::string> &extensions);
   void UnregisterLanguageInvocationHandler(ILanguageInvocationHandler *invocationHandler);
   bool HasLanguageInvoker(const std::string &script) const;
-  LanguageInvokerPtr GetLanguageInvoker(const std::string& script) const;
+  LanguageInvokerPtr GetLanguageInvoker(const std::string& script);
+
+  /*!
+  * \brief Returns addon_handle if last reusable invoker is ready to use.
+  */
+  int GetReusablePluginHandle(const std::string& script);
 
   /*!
    * \brief Executes the given script asynchronously in a separate thread.
@@ -42,7 +47,11 @@ public:
    * \param arguments (Optional) List of arguments passed to the script
    * \return -1 if an error occurred, otherwise the ID of the script
    */
-  int ExecuteAsync(const std::string &script, const ADDON::AddonPtr &addon = ADDON::AddonPtr(), const std::vector<std::string> &arguments = std::vector<std::string>());
+  int ExecuteAsync(const std::string& script,
+                   const ADDON::AddonPtr& addon = ADDON::AddonPtr(),
+                   const std::vector<std::string>& arguments = std::vector<std::string>(),
+                   bool reuseable = false,
+                   int pluginHandle = -1);
   /*!
   * \brief Executes the given script asynchronously in a separate thread.
   *
@@ -52,7 +61,12 @@ public:
   * \param arguments (Optional) List of arguments passed to the script
   * \return -1 if an error occurred, otherwise the ID of the script
   */
-  int ExecuteAsync(const std::string &script, LanguageInvokerPtr languageInvoker, const ADDON::AddonPtr &addon = ADDON::AddonPtr(), const std::vector<std::string> &arguments = std::vector<std::string>());
+  int ExecuteAsync(const std::string& script,
+                   const LanguageInvokerPtr& languageInvoker,
+                   const ADDON::AddonPtr& addon = ADDON::AddonPtr(),
+                   const std::vector<std::string>& arguments = std::vector<std::string>(),
+                   bool reuseable = false,
+                   int pluginHandle = -1);
 
   /*!
   * \brief Executes the given script synchronously.
@@ -70,7 +84,11 @@ public:
   * \param waitShutdown (Optional) Whether to wait when having to forcefully stop the script's execution or not.
   * \return -1 if an error occurred, 0 if the script terminated or ETIMEDOUT if the given timeout expired
   */
-  int ExecuteSync(const std::string &script, const ADDON::AddonPtr &addon = ADDON::AddonPtr(), const std::vector<std::string> &arguments = std::vector<std::string>(), uint32_t timeoutMs = 0, bool waitShutdown = false);
+  int ExecuteSync(const std::string& script,
+                  const ADDON::AddonPtr& addon = ADDON::AddonPtr(),
+                  const std::vector<std::string>& arguments = std::vector<std::string>(),
+                  uint32_t timeoutMs = 0,
+                  bool waitShutdown = false);
   /*!
   * \brief Executes the given script synchronously.
   *
@@ -88,9 +106,20 @@ public:
   * \param waitShutdown (Optional) Whether to wait when having to forcefully stop the script's execution or not.
   * \return -1 if an error occurred, 0 if the script terminated or ETIMEDOUT if the given timeout expired
   */
-  int ExecuteSync(const std::string &script, LanguageInvokerPtr languageInvoker, const ADDON::AddonPtr &addon = ADDON::AddonPtr(), const std::vector<std::string> &arguments = std::vector<std::string>(), uint32_t timeoutMs = 0, bool waitShutdown = false);
+  int ExecuteSync(const std::string& script,
+                  const LanguageInvokerPtr& languageInvoker,
+                  const ADDON::AddonPtr& addon = ADDON::AddonPtr(),
+                  const std::vector<std::string>& arguments = std::vector<std::string>(),
+                  uint32_t timeoutMs = 0,
+                  bool waitShutdown = false);
   bool Stop(int scriptId, bool wait = false);
   bool Stop(const std::string &scriptPath, bool wait = false);
+
+  /*!
+   *\brief Stop all running scripts
+   *\param wait if kodi should wait for each script to finish (default false)
+  */
+  void StopRunningScripts(bool wait = false);
 
   bool IsRunning(int scriptId) const;
   bool IsRunning(const std::string& scriptPath) const;
@@ -98,12 +127,12 @@ public:
 protected:
   friend class CLanguageInvokerThread;
 
-  void OnScriptEnded(int scriptId);
+  void OnExecutionDone(int scriptId);
 
 private:
-  CScriptInvocationManager();
-  CScriptInvocationManager(const CScriptInvocationManager&);
-  CScriptInvocationManager const& operator=(CScriptInvocationManager const&);
+  CScriptInvocationManager() = default;
+  CScriptInvocationManager(const CScriptInvocationManager&) = delete;
+  CScriptInvocationManager const& operator=(CScriptInvocationManager const&) = delete;
   virtual ~CScriptInvocationManager();
 
   typedef struct {
@@ -118,7 +147,10 @@ private:
 
   LanguageInvocationHandlerMap m_invocationHandlers;
   LanguageInvokerThreadMap m_scripts;
+  CLanguageInvokerThreadPtr m_lastInvokerThread;
+  int m_lastPluginHandle = -1;
+
   std::map<std::string, int> m_scriptPaths;
-  int m_nextId;
-  CCriticalSection m_critSection;
+  int m_nextId = 0;
+  mutable CCriticalSection m_critSection;
 };

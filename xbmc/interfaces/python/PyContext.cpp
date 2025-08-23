@@ -7,7 +7,7 @@
  */
 
 #include "PyContext.h"
-#include "threads/ThreadLocal.h"
+
 #include "utils/log.h"
 
 #include <Python.h>
@@ -19,23 +19,23 @@ namespace XBMCAddon
     struct PyContextState
     {
       inline explicit PyContextState(bool pcreatedByGilRelease = false) :
-        value(0), state(NULL), gilReleasedDepth(0), createdByGilRelease(pcreatedByGilRelease) {}
+        state(NULL), createdByGilRelease(pcreatedByGilRelease) {}
 
-      int value;
+      int value = 0;
       PyThreadState* state;
-      int gilReleasedDepth;
+      int gilReleasedDepth = 0;
       bool createdByGilRelease;
     };
 
-    static XbmcThreads::ThreadLocal<PyContextState> tlsPyContextState;
+    static thread_local PyContextState* tlsPyContextState;
 
     void* PyContext::enterContext()
     {
-      PyContextState* cur = tlsPyContextState.get();
+      PyContextState* cur = tlsPyContextState;
       if (cur == NULL)
       {
         cur = new PyContextState();
-        tlsPyContextState.set(cur);
+        tlsPyContextState = cur;
       }
 
       // increment the count
@@ -47,7 +47,7 @@ namespace XBMCAddon
     void PyContext::leaveContext()
     {
       // here we ASSUME that the constructor was called.
-      PyContextState* cur = tlsPyContextState.get();
+      PyContextState* cur = tlsPyContextState;
       cur->value--;
       int curlevel = cur->value;
 
@@ -61,14 +61,14 @@ namespace XBMCAddon
       if (curlevel == 0)
       {
         // clear the tlsPyContextState
-        tlsPyContextState.set(NULL);
+        tlsPyContextState = NULL;
         delete cur;
       }
     }
 
     void PyGILLock::releaseGil()
     {
-      PyContextState* cur = tlsPyContextState.get();
+      PyContextState* cur = tlsPyContextState;
 
       // This means we're not within the python context, but
       // because we may be in a thread spawned by python itself,
@@ -93,7 +93,7 @@ namespace XBMCAddon
 
     void PyGILLock::acquireGil()
     {
-      PyContextState* cur = tlsPyContextState.get(); 
+      PyContextState* cur = tlsPyContextState;
 
       // it's not possible for cur to be NULL (and if it is, we want to fail anyway).
 

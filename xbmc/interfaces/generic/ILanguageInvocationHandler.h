@@ -13,8 +13,8 @@ class ILanguageInvoker;
 class ILanguageInvocationHandler
 {
 public:
-  ILanguageInvocationHandler() { }
-  virtual ~ILanguageInvocationHandler() { }
+  ILanguageInvocationHandler() = default;
+  virtual ~ILanguageInvocationHandler() = default;
 
   virtual bool Initialize() { return true; }
   virtual void Process() { }
@@ -23,8 +23,8 @@ public:
 
   virtual bool OnScriptInitialized(ILanguageInvoker *invoker) { return true; }
   virtual void OnScriptStarted(ILanguageInvoker *invoker) { }
-  virtual void OnScriptAbortRequested(ILanguageInvoker *invoker) { }
-  virtual void OnScriptEnded(ILanguageInvoker *invoker) { }
+  virtual void NotifyScriptAborting(ILanguageInvoker *invoker) { }
+  virtual void OnExecutionEnded(ILanguageInvoker* invoker) {}
   virtual void OnScriptFinalized(ILanguageInvoker *invoker) { }
 
   virtual ILanguageInvoker* CreateInvoker() = 0;

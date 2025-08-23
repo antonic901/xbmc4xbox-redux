@@ -20,7 +20,8 @@
 #include "interfaces/legacy/WindowDialog.h"
 #include "interfaces/legacy/Dialog.h"
 #include "interfaces/legacy/WindowXML.h"
-#include "guilib/Key.h"
+#include "input/actions/ActionIDs.h"
+#include "input/Key.h"
 
 using namespace XBMCAddon;
 using namespace xbmcgui;
@@ -48,8 +49,6 @@ using namespace xbmcgui;
 
 %include "interfaces/legacy/ListItem.h"
 
-%feature("python:coerceToUnicode") XBMCAddon::xbmcgui::ControlButton::getLabel "true"
-%feature("python:coerceToUnicode") XBMCAddon::xbmcgui::ControlButton::getLabel2 "true"
 %include "interfaces/legacy/Control.h"
 
 %include "interfaces/legacy/Dialog.h"
@@ -108,4 +107,5 @@ using namespace xbmcgui;
 
 %include "interfaces/legacy/WindowXML.h"
 
-%include "guilib/Key.h"
+%include "input/actions/ActionIDs.h"
+%include "input/Key.h"

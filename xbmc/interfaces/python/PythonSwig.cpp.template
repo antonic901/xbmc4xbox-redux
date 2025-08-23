@@ -56,8 +56,8 @@ Helper.setup(this,classes,
       'std::string' : new File('typemaps/python.string.outtm'),
       'p.q(const).char' : '${result} = PyUnicode_FromString(${api});',
       (Pattern.compile('''(p.){0,1}XbmcCommons::Buffer''')) : new File('typemaps/python.buffer.outtm'),
-      (Pattern.compile('''boost::shared_ptr<\\(.*\\)>''')) : new File('typemaps/python.boost_shared_ptr.outtm'),
-      (Pattern.compile('''boost::movelib::unique_ptr<\\(.*\\)>''')) : new File('typemaps/python.boost_shared_ptr.outtm'),
+      (Pattern.compile('''std::shared_ptr<\\(.*\\)>''')) : new File('typemaps/python.smart_ptr.outtm'),
+      (Pattern.compile('''std::unique_ptr<\\(.*\\)>''')) : new File('typemaps/python.smart_ptr.outtm'),
       (Pattern.compile('''(p.){0,1}std::vector<\\(.*\\)>''')) : new File('typemaps/python.vector.outtm'),
       (Pattern.compile('''(p.){0,1}Tuple<\\(.*\\)>''')) : new File('typemaps/python.Tuple.outtm'),
       (Pattern.compile('''(p.){0,1}Alternative<\\(.*\\)>''')) : new File('typemaps/python.Alternative.outtm')
@@ -640,9 +640,6 @@ void doClassMethodInfo(Node clazz, List initTypeCalls)
                 );
 <%  } %>
 
-#ifdef _XBOX
-    Ty${classNameAsVariable}_Type.reset();
-#endif
     PyTypeObject& pythonType = Ty${classNameAsVariable}_Type.pythonType;
     pythonType.tp_name = "${module.@name}.${clazz.@sym_name}";
     pythonType.tp_basicsize = sizeof(PyHolder);
@@ -735,6 +732,7 @@ Helper.getInsertNodes(module, 'begin').each { %>${Helper.unescape(it)}<% }
 
 #include <Python.h>
 #include <string>
+#include "CompileInfo.h"
 #include "interfaces/python/LanguageHook.h"
 #include "interfaces/python/swig.h"
 #include "interfaces/python/PyContext.h"
@@ -865,14 +863,10 @@ namespace PythonBindings
   //  for all of the classes in this module
   static void initTypes()
   {
-#ifndef _XBOX
     static bool typesAlreadyInitialized = false;
     if (!typesAlreadyInitialized)
     {
       typesAlreadyInitialized = true;
-#else
-    {
-#endif
 <%
       initTypeCalls.each { %>
       ${it}();<%
@@ -885,11 +879,7 @@ namespace PythonBindings
     }
   }
 
-#ifdef _XBOX
-  static struct PyModuleDef createModule =
-#else
   static struct PyModuleDef createModule
-#endif
   {
       PyModuleDef_HEAD_INIT,
       "${module.@name}",
@@ -917,10 +907,10 @@ namespace PythonBindings
    }%>
 
    // constants
-   PyModule_AddStringConstant(module, "__author__", "Team XBMC <http://xbmc.tv>");
-   PyModule_AddStringConstant(module, "__date__", "${new Date().toString()}");
-   PyModule_AddStringConstant(module, "__version__", "2.26.0");
-   PyModule_AddStringConstant(module, "__credits__", "Team XBMC");
+   PyModule_AddStringConstant(module, "__author__", "Team Kodi <http://kodi.tv>");
+   PyModule_AddStringConstant(module, "__date__", CCompileInfo::GetBuildDate().c_str());
+   PyModule_AddStringConstant(module, "__version__", "3.0.0");
+   PyModule_AddStringConstant(module, "__credits__", "Team Kodi");
    PyModule_AddStringConstant(module, "__platform__", "ALL");
 
    // need to handle constants
