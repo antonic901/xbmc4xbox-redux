@@ -11,8 +11,10 @@
 
 #include "CallbackHandler.h"
 #include "PyContext.h"
+#include "ServiceBroker.h"
 #include "XBPython.h"
 #include "interfaces/legacy/AddonUtils.h"
+#include "utils/log.h"
 
 namespace XBMCAddon
 {
@@ -86,10 +88,9 @@ namespace XBMCAddon
 
     bool PythonLanguageHook::IsAddonClassInstanceRegistered(AddonClass* obj)
     {
-      for (std::map<PyInterpreterState*,AddonClass::Ref<PythonLanguageHook> >::iterator iter = hooks.begin();
-           iter != hooks.end(); ++iter)
+      for (const auto& iter : hooks)
       {
-        if (iter->second->HasRegisteredAddonClassInstance(obj))
+        if (iter.second->HasRegisteredAddonClassInstance(obj))
           return true;
       }
       return false;
@@ -120,6 +121,11 @@ namespace XBMCAddon
       // Get a reference to the main module
       // and global dictionary
       PyObject* main_module = PyImport_AddModule("__main__");
+      if (!main_module)
+      {
+        CLog::Log(LOGDEBUG, "PythonLanguageHook::{}: __main__ returns null", __FUNCTION__);
+        return "";
+      }
       PyObject* global_dict = PyModule_GetDict(main_module);
       // Extract a reference to the function "func_name"
       // from the global dictionary
@@ -135,6 +141,11 @@ namespace XBMCAddon
       // Get a reference to the main module
       // and global dictionary
       PyObject* main_module = PyImport_AddModule("__main__");
+      if (!main_module)
+      {
+        CLog::Log(LOGDEBUG, "PythonLanguageHook::{}: __main__ returns null", __FUNCTION__);
+        return "";
+      }
       PyObject* global_dict = PyModule_GetDict(main_module);
       // Extract a reference to the function "func_name"
       // from the global dictionary
@@ -151,6 +162,11 @@ namespace XBMCAddon
       // Get a reference to the main module
       // and global dictionary
       PyObject* main_module = PyImport_AddModule("__main__");
+      if (!main_module)
+      {
+        CLog::Log(LOGDEBUG, "PythonLanguageHook::{}: __main__ returns null", __FUNCTION__);
+        return -1;
+      }
       PyObject* global_dict = PyModule_GetDict(main_module);
       // Extract a reference to the function "func_name"
       // from the global dictionary
@@ -160,16 +176,31 @@ namespace XBMCAddon
       return -1;
     }
 
-
-    void PythonLanguageHook::RegisterPlayerCallback(IPlayerCallback* player) { XBMC_TRACE; g_pythonParser.RegisterPythonPlayerCallBack(player); }
-    void PythonLanguageHook::UnregisterPlayerCallback(IPlayerCallback* player) { XBMC_TRACE; g_pythonParser.UnregisterPythonPlayerCallBack(player); }
-    void PythonLanguageHook::RegisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor) { XBMC_TRACE; g_pythonParser.RegisterPythonMonitorCallBack(monitor); }
-    void PythonLanguageHook::UnregisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor) { XBMC_TRACE; g_pythonParser.UnregisterPythonMonitorCallBack(monitor); }
+    void PythonLanguageHook::RegisterPlayerCallback(IPlayerCallback* player)
+    {
+      XBMC_TRACE;
+      CServiceBroker::GetXBPython().RegisterPythonPlayerCallBack(player);
+    }
+    void PythonLanguageHook::UnregisterPlayerCallback(IPlayerCallback* player)
+    {
+      XBMC_TRACE;
+      CServiceBroker::GetXBPython().UnregisterPythonPlayerCallBack(player);
+    }
+    void PythonLanguageHook::RegisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor)
+    {
+      XBMC_TRACE;
+      CServiceBroker::GetXBPython().RegisterPythonMonitorCallBack(monitor);
+    }
+    void PythonLanguageHook::UnregisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor)
+    {
+      XBMC_TRACE;
+      CServiceBroker::GetXBPython().UnregisterPythonMonitorCallBack(monitor);
+    }
 
     bool PythonLanguageHook::WaitForEvent(CEvent& hEvent, unsigned int milliseconds)
     {
       XBMC_TRACE;
-      return g_pythonParser.WaitForEvent(hEvent,milliseconds);
+      return CServiceBroker::GetXBPython().WaitForEvent(hEvent, milliseconds);
     }
 
     void PythonLanguageHook::RegisterAddonClassInstance(AddonClass* obj)

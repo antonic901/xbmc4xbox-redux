@@ -9,6 +9,8 @@
 #pragma once
 
 #include "interfaces/generic/ILanguageInvoker.h"
+#include "interfaces/legacy/Addon.h"
+#include "interfaces/python/LanguageHook.h"
 #include "threads/CriticalSection.h"
 #include "threads/Event.h"
 
@@ -21,21 +23,23 @@ typedef struct _object PyObject;
 class CPythonInvoker : public ILanguageInvoker
 {
 public:
-  explicit CPythonInvoker(ILanguageInvocationHandler *invocationHandler);
-  virtual ~CPythonInvoker();
+  explicit CPythonInvoker(ILanguageInvocationHandler* invocationHandler);
+  ~CPythonInvoker() override;
 
-  virtual bool Execute(const std::string &script, const std::vector<std::string> &arguments = std::vector<std::string>());
+  bool Execute(const std::string& script,
+               const std::vector<std::string>& arguments = std::vector<std::string>()) override;
 
-  virtual bool IsStopping() const { return m_stop || ILanguageInvoker::IsStopping(); }
+  bool IsStopping() const override { return m_stop || ILanguageInvoker::IsStopping(); }
 
   typedef PyObject* (*PythonModuleInitialization)();
 
 protected:
   // implementation of ILanguageInvoker
-  virtual bool execute(const std::string &script, const std::vector<std::string> &arguments);
+  bool execute(const std::string& script, const std::vector<std::string>& arguments) override;
   virtual void executeScript(FILE* fp, const std::string& script, PyObject* moduleDict);
-  virtual bool stop(bool abort);
-  virtual void onExecutionFailed();
+  bool stop(bool abort) override;
+  void onExecutionDone() override;
+  void onExecutionFailed() override;
 
   // custom virtual methods
   virtual std::map<std::string, PythonModuleInitialization> getModules() const = 0;
@@ -45,15 +49,17 @@ protected:
   virtual void onPythonModuleInitialization(void* moduleDict);
   virtual void onDeinitialization();
 
-  virtual void onSuccess() { }
-  virtual void onAbort() { }
-  virtual void onError(const std::string &exceptionType = "", const std::string &exceptionValue = "", const std::string &exceptionTraceback = "");
+  virtual void onSuccess() {}
+  virtual void onAbort() {}
+  virtual void onError(const std::string& exceptionType = "",
+                       const std::string& exceptionValue = "",
+                       const std::string& exceptionTraceback = "");
 
   std::string m_sourceFile;
   CCriticalSection m_critical;
 
 private:
-  void initializeModules(const std::map<std::string, PythonModuleInitialization> &modules);
+  void initializeModules(const std::map<std::string, PythonModuleInitialization>& modules);
   bool initializeModule(PythonModuleInitialization module);
   void addPath(const std::string& path); // add path in UTF-8 encoding
   void getAddonModuleDeps(const ADDON::AddonPtr& addon, std::set<std::string>& paths);
@@ -61,9 +67,12 @@ private:
   FILE* PyFile_AsFileWithMode(PyObject* py_file, const char* mode);
 
   std::string m_pythonPath;
-  void* m_threadState;
+  PyThreadState* m_threadState;
   bool m_stop;
   CEvent m_stoppedEvent;
+
+  XBMCAddon::AddonClass::Ref<XBMCAddon::Python::PythonLanguageHook> m_languageHook;
+  bool m_systemExitThrown = false;
 
   static CCriticalSection s_critical;
 };
