@@ -24,22 +24,22 @@ class CPythonInvoker : public ILanguageInvoker
 {
 public:
   explicit CPythonInvoker(ILanguageInvocationHandler* invocationHandler);
-  ~CPythonInvoker() override;
+  virtual ~CPythonInvoker();
 
-  bool Execute(const std::string& script,
-               const std::vector<std::string>& arguments = std::vector<std::string>()) override;
+  virtual bool Execute(const std::string& script,
+               const std::vector<std::string>& arguments = std::vector<std::string>());
 
-  bool IsStopping() const override { return m_stop || ILanguageInvoker::IsStopping(); }
+  virtual bool IsStopping() const { return m_stop || ILanguageInvoker::IsStopping(); }
 
   typedef PyObject* (*PythonModuleInitialization)();
 
 protected:
   // implementation of ILanguageInvoker
-  bool execute(const std::string& script, const std::vector<std::string>& arguments) override;
+  virtual bool execute(const std::string& script, const std::vector<std::string>& arguments);
   virtual void executeScript(FILE* fp, const std::string& script, PyObject* moduleDict);
-  bool stop(bool abort) override;
-  void onExecutionDone() override;
-  void onExecutionFailed() override;
+  virtual bool stop(bool abort);
+  virtual void onExecutionDone();
+  virtual void onExecutionFailed();
 
   // custom virtual methods
   virtual std::map<std::string, PythonModuleInitialization> getModules() const = 0;
@@ -72,7 +72,7 @@ private:
   CEvent m_stoppedEvent;
 
   XBMCAddon::AddonClass::Ref<XBMCAddon::Python::PythonLanguageHook> m_languageHook;
-  bool m_systemExitThrown = false;
+  bool m_systemExitThrown;
 
   static CCriticalSection s_critical;
 };

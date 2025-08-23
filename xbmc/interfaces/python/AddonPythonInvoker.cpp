@@ -74,7 +74,6 @@
 #endif
 
 namespace PythonBindings {
-PyObject* PyInit_Module_xbmcdrm(void);
 PyObject* PyInit_Module_xbmcgui(void);
 PyObject* PyInit_Module_xbmc(void);
 PyObject* PyInit_Module_xbmcplugin(void);
@@ -92,7 +91,6 @@ typedef struct
 
 static PythonModule PythonModules[] =
   {
-    { "xbmcdrm",    PyInit_Module_xbmcdrm    },
     { "xbmcgui",    PyInit_Module_xbmcgui    },
     { "xbmc",       PyInit_Module_xbmc       },
     { "xbmcplugin", PyInit_Module_xbmcplugin },
@@ -100,26 +98,41 @@ static PythonModule PythonModules[] =
     { "xbmcvfs",    PyInit_Module_xbmcvfs    }
   };
 
+#define PythonModulesSize sizeof(PythonModules) / sizeof(PythonModule)
+
 CAddonPythonInvoker::CAddonPythonInvoker(ILanguageInvocationHandler *invocationHandler)
   : CPythonInvoker(invocationHandler)
 {
-  PyImport_AppendInittab("xbmcdrm", PyInit_Module_xbmcdrm);
+  // DLL is not loaded at this point, so we can not inject modules
+#ifndef _XBOX
+  PyImport_AppendInittab("xbmcgui", PyInit_Module_xbmcgui);
+  PyImport_AppendInittab("xbmc", PyInit_Module_xbmc);
+  PyImport_AppendInittab("xbmcplugin", PyInit_Module_xbmcplugin);
+  PyImport_AppendInittab("xbmcaddon", PyInit_Module_xbmcaddon);
+  PyImport_AppendInittab("xbmcvfs", PyInit_Module_xbmcvfs);
+#endif
+}
+
+CAddonPythonInvoker::~CAddonPythonInvoker() {}
+
+#ifdef _XBOX
+void CAddonPythonInvoker::InjectModules()
+{
   PyImport_AppendInittab("xbmcgui", PyInit_Module_xbmcgui);
   PyImport_AppendInittab("xbmc", PyInit_Module_xbmc);
   PyImport_AppendInittab("xbmcplugin", PyInit_Module_xbmcplugin);
   PyImport_AppendInittab("xbmcaddon", PyInit_Module_xbmcaddon);
   PyImport_AppendInittab("xbmcvfs", PyInit_Module_xbmcvfs);
 }
-
-CAddonPythonInvoker::~CAddonPythonInvoker() = default;
+#endif
 
 std::map<std::string, CPythonInvoker::PythonModuleInitialization> CAddonPythonInvoker::getModules() const
 {
   static std::map<std::string, PythonModuleInitialization> modules;
   if (modules.empty())
   {
-    for (const PythonModule& pythonModule : PythonModules)
-      modules.insert(std::make_pair(pythonModule.name, pythonModule.initialization));
+    for (size_t i = 0; i < PythonModulesSize; i++)
+      modules.insert(std::make_pair(PythonModules[i].name, PythonModules[i].initialization));
   }
 
   return modules;
