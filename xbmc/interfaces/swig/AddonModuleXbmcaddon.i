@@ -32,7 +32,6 @@ using namespace xbmcaddon;
 %include "interfaces/legacy/swighelper.h"
 %include "interfaces/legacy/AddonString.h"
 
-%feature("python:coerceToUnicode") XBMCAddon::xbmcaddon::Addon::getLocalizedString "true"
 %include "interfaces/legacy/Addon.h"
 %nodefaultctor Settings;
 %include "interfaces/legacy/Settings.h"
