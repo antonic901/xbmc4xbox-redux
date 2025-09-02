@@ -2,6 +2,7 @@
 #define USER_SETTINGS_H
 
 #define vsnprintf _vsnprintf
+#define snprintf _snprintf
 
 #undef _WIN32_WINNT
 #define _WIN32_WINNT 0x0501

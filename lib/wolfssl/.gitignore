@@ -368,3 +368,8 @@ IDE/XCODE/Index
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
+
+# Xbox
+.sconsign.dblite
+xbox/objs
+xbox/wolfssl.lib

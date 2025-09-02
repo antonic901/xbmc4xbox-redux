@@ -1,0 +1,282 @@
+import os
+import hashlib
+
+env = Environment(
+    tools=['clang', 'clangxx', 'mslink', 'mslib'],
+    CC='clang',
+    CXX='clang++',
+    LINK='lld-link',
+    AR='llvm-lib',
+    SHLIBSUFFIX='.dll',
+    LIBSUFFIX='.lib'
+)
+
+INTERMEDIATE_DIR = 'objs'
+env['ENV']['PATH'] = os.environ['PATH']
+
+# Note: Only use forward slashes for paths, regardless of platform!
+# Set the path to LSDK here, or copy it from system env if it's declared there:
+env['LSDK'] = os.environ['LSDK'].replace("\\", "/")
+CLANG_INCLUDES = os.path.join(os.popen('clang -print-resource-dir').read().strip(), "include").replace("\\", "/")
+
+# Nuke these to avoid flag injection from SCons.
+env['SHCCFLAGS'] = []
+env['CCFLAGS'] = []
+env['CFLAGS'] = []
+env['LINKFLAGS'] = []
+env['CPPPATH'] = []
+env['CXXPATH'] = []
+env['LIBS'] = []
+env['LIBPATH'] = []
+
+# Clang flags.
+env.Append(CFLAGS=[
+    # Platform flags
+    '-target', 'i386-pc-win32'
+    '-march=pentium3',
+    '-nostdinc',
+
+    # Behavior flags
+    '-Wno-nonportable-include-path',
+
+    # Runtime flags
+    '-fmsc-version=1310',
+    '-fms-runtime-lib=dll',
+
+    # Optimization flags
+    '-Os',
+    '-flto'
+])
+
+env.Append(CPPDEFINES=[
+    # MD
+    '_DLL',
+
+    # Platform
+    'WIN32',
+    '_XBOX',
+
+    # Debug
+    'NDEBUG',
+
+    # libcurl
+    'BUILDING_LIBCURL',
+])
+
+env.Append(CPPPATH=[
+    # Source includes
+    '../../include',
+    '../../lib',
+    '../../../wolfssl',
+    '../../../zlib',
+
+    # Include LSDK headers in the right order.
+    CLANG_INCLUDES,
+    '$LSDK/VC7/include',
+    '$LSDK/VC7_PSDK/include'
+])
+
+env.Append(LINKFLAGS=[
+    "-subsystem:windows",
+    "-fixed",
+    "-base:0x1E000000",
+    "-merge:.edata=.edataxb",
+    "/nodefaultlib",
+    "/defaultlib:msvcrt.lib"
+])
+
+env.Append(LIBS=[
+    "msvcrt.lib",
+    'kernel32.lib',
+    'wldap32.lib',
+    'ws2_32.lib',
+    'advapi32.lib',
+    'oldnames.lib',
+    '../../../zlib/zlib.lib',
+    SConscript(
+        '../../../wolfssl/xbox/SConstruct',
+        chdir=True
+    )
+])
+
+env.Append(LIBPATH=[
+    # Include LSDK libs in the right order.
+    "$LSDK/VC7/lib",
+    "$LSDK/VC7_PSDK/lib",
+])
+
+sources = [
+    '../../lib/altsvc.c',
+    '../../lib/amigaos.c',
+    '../../lib/asyn-ares.c',
+    '../../lib/asyn-thread.c',
+    '../../lib/base64.c',
+    '../../lib/c-hyper.c',
+    '../../lib/conncache.c',
+    '../../lib/connect.c',
+    '../../lib/content_encoding.c',
+    '../../lib/cookie.c',
+    '../../lib/curl_addrinfo.c',
+    '../../lib/curl_ctype.c',
+    '../../lib/curl_des.c',
+    '../../lib/curl_endian.c',
+    '../../lib/curl_fnmatch.c',
+    '../../lib/curl_get_line.c',
+    '../../lib/curl_gethostname.c',
+    '../../lib/curl_gssapi.c',
+    '../../lib/curl_memrchr.c',
+    '../../lib/curl_multibyte.c',
+    '../../lib/curl_ntlm_core.c',
+    '../../lib/curl_ntlm_wb.c',
+    '../../lib/curl_path.c',
+    '../../lib/curl_range.c',
+    '../../lib/curl_rtmp.c',
+    '../../lib/curl_sasl.c',
+    '../../lib/curl_sspi.c',
+    '../../lib/curl_threads.c',
+    '../../lib/dict.c',
+    '../../lib/doh.c',
+    '../../lib/dotdot.c',
+    '../../lib/dynbuf.c',
+    '../../lib/easy.c',
+    '../../lib/easygetopt.c',
+    '../../lib/easyoptions.c',
+    '../../lib/escape.c',
+    '../../lib/file.c',
+    '../../lib/fileinfo.c',
+    '../../lib/formdata.c',
+    '../../lib/ftp.c',
+    '../../lib/ftplistparser.c',
+    '../../lib/getenv.c',
+    '../../lib/getinfo.c',
+    '../../lib/gopher.c',
+    '../../lib/hash.c',
+    '../../lib/hmac.c',
+    '../../lib/hostasyn.c',
+    '../../lib/hostcheck.c',
+    '../../lib/hostip.c',
+    '../../lib/hostip4.c',
+    '../../lib/hostip6.c',
+    '../../lib/hostsyn.c',
+    '../../lib/hsts.c',
+    '../../lib/http.c',
+    '../../lib/http2.c',
+    '../../lib/http_aws_sigv4.c',
+    '../../lib/http_chunks.c',
+    '../../lib/http_digest.c',
+    '../../lib/http_negotiate.c',
+    '../../lib/http_ntlm.c',
+    '../../lib/http_proxy.c',
+    '../../lib/idn_win32.c',
+    '../../lib/if2ip.c',
+    '../../lib/imap.c',
+    '../../lib/inet_ntop.c',
+    '../../lib/inet_pton.c',
+    '../../lib/krb5.c',
+    '../../lib/ldap.c',
+    '../../lib/llist.c',
+    '../../lib/md4.c',
+    '../../lib/md5.c',
+    '../../lib/memdebug.c',
+    '../../lib/mime.c',
+    '../../lib/mprintf.c',
+    '../../lib/mqtt.c',
+    '../../lib/multi.c',
+    '../../lib/netrc.c',
+    '../../lib/non-ascii.c',
+    '../../lib/nonblock.c',
+    '../../lib/nwlib.c',
+    '../../lib/nwos.c',
+    '../../lib/openldap.c',
+    '../../lib/parsedate.c',
+    '../../lib/pingpong.c',
+    '../../lib/pop3.c',
+    '../../lib/progress.c',
+    '../../lib/psl.c',
+    '../../lib/rand.c',
+    '../../lib/rename.c',
+    '../../lib/rtsp.c',
+    '../../lib/select.c',
+    '../../lib/sendf.c',
+    '../../lib/setopt.c',
+    '../../lib/sha256.c',
+    '../../lib/share.c',
+    '../../lib/slist.c',
+    '../../lib/smb.c',
+    '../../lib/smtp.c',
+    '../../lib/socketpair.c',
+    '../../lib/socks.c',
+    '../../lib/socks_gssapi.c',
+    '../../lib/socks_sspi.c',
+    '../../lib/speedcheck.c',
+    '../../lib/splay.c',
+    '../../lib/strcase.c',
+    '../../lib/strdup.c',
+    '../../lib/strerror.c',
+    '../../lib/strtok.c',
+    '../../lib/strtoofft.c',
+    '../../lib/system_win32.c',
+    '../../lib/telnet.c',
+    '../../lib/tftp.c',
+    '../../lib/timeval.c',
+    '../../lib/transfer.c',
+    '../../lib/url.c',
+    '../../lib/urlapi.c',
+    '../../lib/version.c',
+    '../../lib/version_win32.c',
+    '../../lib/warnless.c',
+    '../../lib/wildcard.c',
+    '../../lib/x509asn1.c',
+    '../../lib/vauth/cleartext.c',
+    '../../lib/vauth/cram.c',
+    '../../lib/vauth/digest.c',
+    '../../lib/vauth/digest_sspi.c',
+    '../../lib/vauth/gsasl.c',
+    '../../lib/vauth/krb5_gssapi.c',
+    '../../lib/vauth/krb5_sspi.c',
+    '../../lib/vauth/ntlm.c',
+    '../../lib/vauth/ntlm_sspi.c',
+    '../../lib/vauth/oauth2.c',
+    '../../lib/vauth/spnego_gssapi.c',
+    '../../lib/vauth/spnego_sspi.c',
+    '../../lib/vauth/vauth.c',
+    '../../lib/vquic/ngtcp2.c',
+    '../../lib/vquic/quiche.c',
+    '../../lib/vquic/vquic.c',
+    '../../lib/vssh/libssh.c',
+    '../../lib/vssh/libssh2.c',
+    '../../lib/vssh/wolfssh.c',
+    '../../lib/vtls/bearssl.c',
+    '../../lib/vtls/gskit.c',
+    '../../lib/vtls/gtls.c',
+    '../../lib/vtls/keylog.c',
+    '../../lib/vtls/mbedtls.c',
+    '../../lib/vtls/mbedtls_threadlock.c',
+    '../../lib/vtls/mesalink.c',
+    '../../lib/vtls/nss.c',
+    '../../lib/vtls/openssl.c',
+    '../../lib/vtls/rustls.c',
+    '../../lib/vtls/schannel.c',
+    '../../lib/vtls/schannel_verify.c',
+    '../../lib/vtls/sectransp.c',
+    '../../lib/vtls/vtls.c',
+    '../../lib/vtls/wolfssl.c',
+]
+
+objs = []
+
+
+for src in sources:
+    base = os.path.splitext(os.path.basename(src))[0]
+    hash_suffix = hashlib.md5(src.encode()).hexdigest()[:8]
+    obj_name = f"{base}_{hash_suffix}"
+    obj = env.SharedObject(target=os.path.join(INTERMEDIATE_DIR, obj_name), source=src)
+    objs.append(obj)
+
+dll = env.SharedLibrary(
+    target='libcurl.dll',
+    source=objs,
+    WINDOWS_EXPORT_ALL_SYMBOLS=True
+)
+
+Default(dll)

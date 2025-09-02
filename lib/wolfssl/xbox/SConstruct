@@ -1,0 +1,161 @@
+import os
+import hashlib
+
+env = Environment(
+    tools=['clang', 'clangxx', 'mslink', 'mslib'],
+    CC='clang',
+    CXX='clang++',
+    LINK='lld-link',
+    AR='llvm-lib',
+    SHLIBSUFFIX='.dll',
+    LIBSUFFIX='.lib'
+)
+
+INTERMEDIATE_DIR = 'objs'
+env['ENV']['PATH'] = os.environ['PATH']
+
+# Note: Only use forward slashes for paths, regardless of platform!
+# Set the path to LSDK here, or copy it from system env if it's declared there:
+env['LSDK'] = os.environ['LSDK'].replace("\\", "/")
+CLANG_INCLUDES = os.path.join(os.popen('clang -print-resource-dir').read().strip(), "include").replace("\\", "/")
+
+# Nuke these to avoid flag injection from SCons.
+env['SHCCFLAGS'] = []
+env['CCFLAGS'] = []
+env['CFLAGS'] = []
+env['LINKFLAGS'] = []
+env['CPPPATH'] = []
+env['CXXPATH'] = []
+env['LIBS'] = []
+env['LIBPATH'] = []
+
+# Clang flags.
+env.Append(CFLAGS=[
+    # Platform flags
+    '-target', 'i386-pc-win32'
+    '-march=pentium3',
+    '-nostdinc',
+
+    # Behavior flags
+    '-Wno-nonportable-include-path',
+
+    # Runtime flags
+    '-fmsc-version=1310',
+    '-fms-runtime-lib=dll',
+
+    # Optimization flags
+    '-Os',
+    '-flto'
+])
+
+# Base defines
+env.Append(CPPDEFINES=[
+    # MD
+    '_DLL',
+
+    # Platform
+    'WIN32',
+    '_XBOX',
+
+    # Debug
+    'NDEBUG',
+
+    # WolfSSL
+    'WOLFSSL_LIB',
+    'WOLFSSL_USER_SETTINGS',
+    'CYASSL_USER_SETTINGS',
+    'WOLFSSL_NOT_WINDOWS_API',
+    'USE_WOLF_STRTOK',
+    'WOLFSSL_SP_MATH_ALL',
+    'USE_FAST_MATH',
+])
+
+env.Append(CPPPATH=[
+    # Source includes
+    '..',
+    '.',
+
+    # LSDK includes
+    CLANG_INCLUDES,
+    '$LSDK/VC7/include',
+    '$LSDK/VC7_PSDK/include',
+])
+
+# Sources
+sources = [
+    '../wolfcrypt/src/aes.c',
+    '../wolfcrypt/src/arc4.c',
+    '../wolfcrypt/src/asn.c',
+    '../wolfcrypt/src/blake2b.c',
+    '../wolfcrypt/src/blake2s.c',
+    '../wolfcrypt/src/camellia.c',
+    '../wolfcrypt/src/chacha.c',
+    '../wolfcrypt/src/chacha20_poly1305.c',
+    '../wolfcrypt/src/coding.c',
+    '../src/crl.c',
+    '../wolfcrypt/src/des3.c',
+    '../wolfcrypt/src/dh.c',
+    '../wolfcrypt/src/dsa.c',
+    '../wolfcrypt/src/ecc.c',
+    '../wolfcrypt/src/error.c',
+    '../wolfcrypt/src/fe_low_mem.c',
+    '../wolfcrypt/src/fe_operations.c',
+    '../wolfcrypt/src/ge_low_mem.c',
+    '../wolfcrypt/src/ge_operations.c',
+    '../wolfcrypt/src/hash.c',
+    '../wolfcrypt/src/hc128.c',
+    '../wolfcrypt/src/hmac.c',
+    '../wolfcrypt/src/integer.c',
+    '../src/internal.c',
+    '../src/keys.c',
+    '../wolfcrypt/src/logging.c',
+    '../wolfcrypt/src/md2.c',
+    '../wolfcrypt/src/md4.c',
+    '../wolfcrypt/src/md5.c',
+    '../wolfcrypt/src/memory.c',
+    '../src/ocsp.c',
+    '../wolfcrypt/src/pkcs12.c',
+    '../wolfcrypt/src/pkcs7.c',
+    '../wolfcrypt/src/poly1305.c',
+    '../wolfcrypt/src/pwdbased.c',
+    '../wolfcrypt/src/rabbit.c',
+    '../wolfcrypt/src/random.c',
+    '../wolfcrypt/src/rc2.c',
+    '../wolfcrypt/src/ripemd.c',
+    '../wolfcrypt/src/rsa.c',
+    '../wolfcrypt/src/sha.c',
+    '../wolfcrypt/src/sha256.c',
+    '../wolfcrypt/src/sha512.c',
+    '../wolfcrypt/src/signature.c',
+    '../wolfcrypt/src/sp_c32.c',
+    '../wolfcrypt/src/sp_c64.c',
+    '../wolfcrypt/src/sp_int.c',
+    '../wolfcrypt/src/sp_x86_64.c',
+    '../src/ssl.c',
+    '../wolfcrypt/src/tfm.c',
+    '../src/tls.c',
+    '../src/tls13.c',
+    '../wolfcrypt/src/wc_encrypt.c',
+    '../wolfcrypt/src/wc_pkcs11.c',
+    '../wolfcrypt/src/wc_port.c',
+    '../wolfcrypt/src/wolfevent.c',
+    '../src/wolfio.c',
+    '../wolfcrypt/src/wolfmath.c',
+]
+
+objs = []
+
+for src in sources:
+    base = os.path.splitext(os.path.basename(src))[0]
+    hash_suffix = hashlib.md5(src.encode()).hexdigest()[:8]
+    obj_name = f"{base}_{hash_suffix}"
+    obj = env.Object(target=os.path.join(INTERMEDIATE_DIR, obj_name), source=src)
+    objs.append(obj)
+
+lib = env.StaticLibrary(
+    target='wolfssl.lib',
+    source=objs
+)
+
+Default(lib)
+Return('lib')
