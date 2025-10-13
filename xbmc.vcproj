@@ -1803,6 +1803,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\PluginDirectory.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\RarDirectory.cpp">
 				</File>
 				<File

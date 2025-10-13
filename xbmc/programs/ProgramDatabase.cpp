@@ -284,6 +284,11 @@ bool CProgramDatabase::GetPathContent(const std::string& strPath, CFileItemList 
   if (idPath < 0)
     return false;
 
+  return GetPathContent(idPath, items);
+}
+
+bool CProgramDatabase::GetPathContent(const int idPath, CFileItemList &items)
+{
   try
   {
     if (NULL == m_pDB.get())
@@ -327,7 +332,7 @@ bool CProgramDatabase::GetPathContent(const std::string& strPath, CFileItemList 
   }
   catch(...)
   {
-    CLog::Log(LOGERROR, "%s unable to retrieve items (%s)", __FUNCTION__, strPath.c_str());
+    CLog::Log(LOGERROR, "%s unable to retrieve items (%s)", __FUNCTION__);
   }
   return false;
 }

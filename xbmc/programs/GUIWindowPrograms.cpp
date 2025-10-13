@@ -11,6 +11,7 @@
 #include "dialogs/GUIDialogMediaSource.h"
 #include "guilib/LocalizeStrings.h"
 #include "FileItem.h"
+#include "utils/StringUtils.h"
 
 CGUIWindowPrograms::CGUIWindowPrograms(void)
     : CGUIMediaWindow(WINDOW_PROGRAMS, "MyPrograms.xml")
@@ -102,7 +103,15 @@ bool CGUIWindowPrograms::Update(const std::string &strDirectory, bool updateFilt
 
 bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItemList &items)
 {
-  if (!CGUIMediaWindow::GetDirectory(strDirectory, items))
+  std::string strDirectory1(strDirectory);
+  if (!strDirectory.empty())
+  {
+    int idPath = m_database.GetPathId(strDirectory);
+    if (idPath >= 0)
+      strDirectory1 = StringUtils::Format("programdb://paths/%i/", idPath);
+  }
+
+  if (!CGUIMediaWindow::GetDirectory(strDirectory1, items))
     return false;
 
   if (items.IsVirtualDirectoryRoot())
@@ -117,11 +126,6 @@ bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItem
     items.Add(pItem);
 
     items.SetLabel("");
-  }
-  else
-  {
-    items.Clear();
-    return m_database.GetPathContent(strDirectory, items);
   }
 
   return true;

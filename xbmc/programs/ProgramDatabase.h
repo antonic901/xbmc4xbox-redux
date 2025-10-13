@@ -45,6 +45,7 @@ public:
 
   bool ScanPathContent(const std::string& strPath);
   bool GetPathContent(const std::string& strPath, CFileItemList &items);
+  bool GetPathContent(const int idPath, CFileItemList &items);
 
 private:
   virtual void CreateTables();
