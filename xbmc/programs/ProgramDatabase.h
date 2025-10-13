@@ -12,6 +12,8 @@
 #include "dbwrappers/Database.h"
 #include "XBDateTime.h"
 
+class CFileItemList;
+
 #define PROGRAMDB_MAX_COLUMNS 24
 
 typedef enum
@@ -42,6 +44,7 @@ public:
   int AddProgram(const std::string& strFilenameAndPath, const int idPath);
 
   bool ScanPathContent(const std::string& strPath);
+  bool GetPathContent(const std::string& strPath, CFileItemList &items);
 
 private:
   virtual void CreateTables();
@@ -49,4 +52,6 @@ private:
 
   virtual int GetSchemaVersion() const;
   const char *GetBaseDBName() const { return "MyPrograms"; };
+
+  int RunQuery(const std::string &sql);
 };

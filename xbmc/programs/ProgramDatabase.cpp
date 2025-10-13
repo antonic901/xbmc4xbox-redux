@@ -62,6 +62,20 @@ int CProgramDatabase::GetSchemaVersion() const
   return 1;
 }
 
+int CProgramDatabase::RunQuery(const std::string &sql)
+{
+  unsigned int time = XbmcThreads::SystemClockMillis();
+  int rows = -1;
+  if (m_pDS->query(sql))
+  {
+    rows = m_pDS->num_rows();
+    if (rows == 0)
+      m_pDS->close();
+  }
+  CLog::Log(LOGDEBUG, "%s took %d ms for %d items query: %s", __FUNCTION__, XbmcThreads::SystemClockMillis() - time, rows, sql.c_str());
+  return rows;
+}
+
 int CProgramDatabase::GetPathId(const std::string& strPath)
 {
   std::string strSQL;
@@ -262,4 +276,58 @@ bool CProgramDatabase::ScanPathContent(const std::string& strPath)
   }
 
   return true;
+}
+
+bool CProgramDatabase::GetPathContent(const std::string& strPath, CFileItemList &items)
+{
+  int idPath = GetPathId(strPath);
+  if (idPath < 0)
+    return false;
+
+  try
+  {
+    if (NULL == m_pDB.get())
+      return false;
+    if (NULL == m_pDS.get())
+      return false;
+
+    std::string strSQL = PrepareSQL("select * from program where idPath=%i", idPath);
+    int iRowsFound = RunQuery(strSQL);
+    if (iRowsFound <= 0)
+      return false;
+
+    // store the total value of items as a property
+    items.SetProperty("total", iRowsFound);
+
+    while (!m_pDS->eof())
+    {
+      CFileItemPtr pItem(new CFileItem());
+      std::string path = m_pDS->fv(PROGRAMDB_ID_PATH + 2).get_asString();
+      std::string title = m_pDS->fv(PROGRAMDB_ID_TITLE + 2).get_asString();
+      std::string plot = m_pDS->fv(PROGRAMDB_ID_PLOT + 2).get_asString();
+      std::string poster = m_pDS->fv(PROGRAMDB_ID_POSTER + 2).get_asString();
+      std::string fanart = m_pDS->fv(PROGRAMDB_ID_FANART + 2).get_asString();
+      std::string trailer = m_pDS->fv(PROGRAMDB_ID_TRAILER + 2).get_asString();
+      pItem->SetPath(path);
+      pItem->SetLabel(title);
+      pItem->SetProperty("title", title);
+      pItem->SetLabel2(plot);
+      pItem->SetProperty("overview", plot);
+      pItem->SetProperty("trailer", trailer);
+      pItem->SetArt("poster", poster);
+      pItem->SetArt("fanart", fanart);
+
+      items.Add(pItem);
+      m_pDS->next();
+    }
+
+    // cleanup
+    m_pDS->close();
+    return true;
+  }
+  catch(...)
+  {
+    CLog::Log(LOGERROR, "%s unable to retrieve items (%s)", __FUNCTION__, strPath.c_str());
+  }
+  return false;
 }

@@ -118,6 +118,11 @@ bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItem
 
     items.SetLabel("");
   }
+  else
+  {
+    items.Clear();
+    return m_database.GetPathContent(strDirectory, items);
+  }
 
   return true;
 }
