@@ -1868,12 +1868,6 @@
 					RelativePath="..\..\xbmc\music\MusicDatabase.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\ProgramDatabase.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\ProgramDatabase.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\music\Song.cpp">
 				</File>
 				<File
@@ -2120,9 +2114,6 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\windows\GUIWindowPointer.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\programs\GUIWindowPrograms.cpp">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\windows\GUIWindowScreensaver.cpp">
@@ -3056,9 +3047,6 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\windows\GUIWindowPointer.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\programs\GUIWindowPrograms.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\windows\GUIWindowScreensaver.h">
