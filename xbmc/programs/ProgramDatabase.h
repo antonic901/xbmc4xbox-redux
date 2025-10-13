@@ -10,8 +10,16 @@
 #include <string>
 
 #include "dbwrappers/Database.h"
+#include "XBDateTime.h"
 
 #define PROGRAMDB_MAX_COLUMNS 24
+
+typedef enum
+{
+  PROGRAMDB_ID_MIN = -1,
+  PROGRAMDB_ID_PATH = 0,
+  PROGRAMDB_ID_MAX
+} PROGRAMDB_IDS;
 
 class CProgramDatabase : public CDatabase
 {
@@ -20,6 +28,12 @@ public:
   virtual ~CProgramDatabase();
 
   virtual bool Open();
+
+  int GetPathId(const std::string& strPath);
+  int GetProgramId(const std::string& strFilenameAndPath);
+
+  int AddPath(const std::string& strPath, const CDateTime& dateAdded = CDateTime());
+  int AddProgram(const std::string& strFilenameAndPath, const int idPath);
 
 private:
   virtual void CreateTables();
