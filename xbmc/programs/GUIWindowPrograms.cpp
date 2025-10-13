@@ -32,11 +32,46 @@ bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
     {
       if (m_thumbLoader.IsLoading())
         m_thumbLoader.StopThread();
-    }
+          }
     break;
   }
 
   return CGUIMediaWindow::OnMessage(message);
+}
+
+void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &buttons)
+{
+  CFileItemPtr item;
+  if (itemNumber >= 0 && itemNumber < m_vecItems->Size())
+    item = m_vecItems->Get(itemNumber);
+
+  CGUIMediaWindow::GetContextButtons(itemNumber, buttons);
+
+  if (!item)
+  {
+    // nothing to do here
+  }
+  else if (item->IsHD())
+  {
+    buttons.Add(CONTEXT_BUTTON_SCAN, 13349);
+  }
+}
+
+bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
+{
+  if (itemNumber < 0 || itemNumber >= m_vecItems->Size())
+    return false;
+
+  CFileItemPtr item = m_vecItems->Get(itemNumber);
+  switch (button)
+  {
+  case CONTEXT_BUTTON_SCAN:
+    {
+      // TODO: to actual scraping
+    }
+  }
+
+  return CGUIMediaWindow::OnContextButton(itemNumber, button);
 }
 
 bool CGUIWindowPrograms::OnAddMediaSource()

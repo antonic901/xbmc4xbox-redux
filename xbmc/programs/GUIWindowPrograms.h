@@ -23,5 +23,8 @@ protected:
   virtual bool GetDirectory(const std::string &strDirectory, CFileItemList &items);
   virtual bool OnAddMediaSource();
 
+  virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
+  virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
+
   CProgramThumbLoader m_thumbLoader;
 };
