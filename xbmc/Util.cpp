@@ -2281,6 +2281,11 @@ void CUtil::DeleteVideoDatabaseDirectoryCache()
   CUtil::DeleteDirectoryCache("vdb-");
 }
 
+void CUtil::DeleteProgramDatabaseDirectoryCache()
+{
+  CUtil::DeleteDirectoryCache("10001-");
+}
+
 void CUtil::DeleteDirectoryCache(const CStdString &prefix)
 {
   CStdString searchPath = "special://temp/";
