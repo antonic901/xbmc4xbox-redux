@@ -8,6 +8,7 @@
  */
 
 #include "windows/GUIMediaWindow.h"
+#include "ProgramDatabase.h"
 #include "ThumbLoader.h"
 
 class CGUIWindowPrograms : public CGUIMediaWindow, public IBackgroundLoaderObserver
@@ -25,6 +26,8 @@ protected:
 
   virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
+
+  CProgramDatabase m_database;
 
   CProgramThumbLoader m_thumbLoader;
 };

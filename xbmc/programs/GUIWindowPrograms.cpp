@@ -32,7 +32,15 @@ bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
     {
       if (m_thumbLoader.IsLoading())
         m_thumbLoader.StopThread();
-          }
+      m_database.Close();
+    }
+    break;
+
+  case GUI_MSG_WINDOW_INIT:
+    {
+      m_database.Open();
+      return CGUIMediaWindow::OnMessage(message);
+    }
     break;
   }
 
@@ -67,7 +75,7 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   {
   case CONTEXT_BUTTON_SCAN:
     {
-      // TODO: to actual scraping
+      return m_database.ScanPathContent(item->GetPath());
     }
   }
 

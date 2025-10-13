@@ -18,6 +18,12 @@ typedef enum
 {
   PROGRAMDB_ID_MIN = -1,
   PROGRAMDB_ID_PATH = 0,
+  PROGRAMDB_ID_TYPE = 1,
+  PROGRAMDB_ID_TITLE = 2,
+  PROGRAMDB_ID_PLOT = 3,
+  PROGRAMDB_ID_TRAILER = 19,
+  PROGRAMDB_ID_POSTER = 20,
+  PROGRAMDB_ID_FANART = 21,
   PROGRAMDB_ID_MAX
 } PROGRAMDB_IDS;
 
@@ -34,6 +40,8 @@ public:
 
   int AddPath(const std::string& strPath, const CDateTime& dateAdded = CDateTime());
   int AddProgram(const std::string& strFilenameAndPath, const int idPath);
+
+  bool ScanPathContent(const std::string& strPath);
 
 private:
   virtual void CreateTables();
