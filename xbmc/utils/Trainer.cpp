@@ -26,7 +26,6 @@
 #include "filesystem/Directory.h"
 #include "filesystem/RarManager.h"
 #include "dialogs/GUIDialogProgress.h"
-#include "ProgramDatabase.h"
 #include "guilib/LocalizeStrings.h"
 #include "guilib/GUIWindowManager.h"
 #include "settings/Settings.h"
@@ -698,134 +697,134 @@ bool CTrainer::ScanTrainers()
   if (!progress)
     return false;
 
-  CProgramDatabase database;
-  if (!database.Open())
-    return false;
+  //CProgramDatabase database;
+  //if (!database.Open())
+  //  return false;
 
-  std::string strTrainersPath = CSettings::GetInstance().GetString("myprograms.trainerpath");
-  if (strTrainersPath.empty())
-    return false;
+  //std::string strTrainersPath = CSettings::GetInstance().GetString("myprograms.trainerpath");
+  //if (strTrainersPath.empty())
+  //  return false;
 
-  CLog::Log(LOGDEBUG, "Looking for trainers inside: %s", strTrainersPath.c_str());
+  //CLog::Log(LOGDEBUG, "Looking for trainers inside: %s", strTrainersPath.c_str());
 
-  // first, remove any dead items
-  CFileItemList items;
-  database.GetTrainers(items);
+  //// first, remove any dead items
+  //CFileItemList items;
+  //database.GetTrainers(items);
 
-  progress->SetHeading(38709);
-  progress->SetLine(0, 38715);
-  progress->SetLine(1, "");
-  progress->SetLine(2, "");
-  progress->SetPercentage(0);
-  progress->Open();
-  progress->ShowProgressBar(true);
-  progress->Progress();
+  //progress->SetHeading(38709);
+  //progress->SetLine(0, 38715);
+  //progress->SetLine(1, "");
+  //progress->SetLine(2, "");
+  //progress->SetPercentage(0);
+  //progress->Open();
+  //progress->ShowProgressBar(true);
+  //progress->Progress();
 
-  database.BeginTransaction();
-  for (int i = 0; i < items.Size(); i++)
-  {
-    CFileItemPtr item = items[i];
-    std::string strLine = StringUtils::Format("%s %i / %i", g_localizeStrings.Get(38710).c_str(), i+1, items.Size());
+  //database.BeginTransaction();
+  //for (int i = 0; i < items.Size(); i++)
+  //{
+  //  CFileItemPtr item = items[i];
+  //  std::string strLine = StringUtils::Format("%s %i / %i", g_localizeStrings.Get(38710).c_str(), i+1, items.Size());
 
-    progress->SetPercentage((int)((float)i / (float)items.Size() * 100.f));
-    progress->SetLine(1, strLine);
-    progress->Progress();
+  //  progress->SetPercentage((int)((float)i / (float)items.Size() * 100.f));
+  //  progress->SetLine(1, strLine);
+  //  progress->Progress();
 
-    if (!CFile::Exists(item->GetPath()) || item->GetPath().find(strTrainersPath) == std::string::npos)
-      database.RemoveTrainer(item->GetProperty("idtrainer").asInteger32());
+  //  if (!CFile::Exists(item->GetPath()) || item->GetPath().find(strTrainersPath) == std::string::npos)
+  //    database.RemoveTrainer(item->GetProperty("idtrainer").asInteger32());
 
-    if (progress->IsCanceled())
-    {
-      database.RollbackTransaction();
-      return false;
-    }
-  }
+  //  if (progress->IsCanceled())
+  //  {
+  //    database.RollbackTransaction();
+  //    return false;
+  //  }
+  //}
 
-  CFileItemList trainers, archives;
-  CDirectory::GetDirectory(strTrainersPath, trainers, ".xbtf|.etm", DIR_FLAG_DEFAULTS);
-  CDirectory::GetDirectory(strTrainersPath, archives, ".rar|.zip", DIR_FLAG_DEFAULTS);
-  for(int i = 0; i < archives.Size(); i++)
-  {
-    if (URIUtils::HasExtension(archives[i]->GetPath(), ".rar"))
-    { // add trainers in rar
-      CFileItemList inArchives;
-      g_RarManager.GetFilesInRar(inArchives, archives[i]->GetPath());
-      for (int j = 0; j < inArchives.Size(); j++)
-      {
-        if (URIUtils::HasExtension(inArchives[j]->GetURL().Get(), ".xbtf|.etm"))
-        {
-          CFileItemPtr item(new CFileItem(*inArchives[j]));
-          std::string strPathInArchive = item->GetPath();
-          CURL url = URIUtils::CreateArchivePath("zip", CURL(archives[i]->GetPath()), strPathInArchive);
-          item->SetURL(url);
-          trainers.Add(item);
-        }
-      }
-    }
-    else if (URIUtils::HasExtension(archives[i]->GetPath(), ".zip"))
-    { // add trainers in zip
-      CFileItemList zipTrainers;
-      CURL url = URIUtils::CreateArchivePath("zip", CURL(archives[i]->GetPath()));
-      CDirectory::GetDirectory(url, zipTrainers, ".xbtf|.etm", DIR_FLAG_DEFAULTS);
-      for (int j = 0; j < zipTrainers.Size(); j++)
-      {
-        CFileItemPtr item(new CFileItem(*zipTrainers[j]));
-        trainers.Add(item);
-      }
-    }
-  }
+  //CFileItemList trainers, archives;
+  //CDirectory::GetDirectory(strTrainersPath, trainers, ".xbtf|.etm", DIR_FLAG_DEFAULTS);
+  //CDirectory::GetDirectory(strTrainersPath, archives, ".rar|.zip", DIR_FLAG_DEFAULTS);
+  //for(int i = 0; i < archives.Size(); i++)
+  //{
+  //  if (URIUtils::HasExtension(archives[i]->GetPath(), ".rar"))
+  //  { // add trainers in rar
+  //    CFileItemList inArchives;
+  //    g_RarManager.GetFilesInRar(inArchives, archives[i]->GetPath());
+  //    for (int j = 0; j < inArchives.Size(); j++)
+  //    {
+  //      if (URIUtils::HasExtension(inArchives[j]->GetURL().Get(), ".xbtf|.etm"))
+  //      {
+  //        CFileItemPtr item(new CFileItem(*inArchives[j]));
+  //        std::string strPathInArchive = item->GetPath();
+  //        CURL url = URIUtils::CreateArchivePath("zip", CURL(archives[i]->GetPath()), strPathInArchive);
+  //        item->SetURL(url);
+  //        trainers.Add(item);
+  //      }
+  //    }
+  //  }
+  //  else if (URIUtils::HasExtension(archives[i]->GetPath(), ".zip"))
+  //  { // add trainers in zip
+  //    CFileItemList zipTrainers;
+  //    CURL url = URIUtils::CreateArchivePath("zip", CURL(archives[i]->GetPath()));
+  //    CDirectory::GetDirectory(url, zipTrainers, ".xbtf|.etm", DIR_FLAG_DEFAULTS);
+  //    for (int j = 0; j < zipTrainers.Size(); j++)
+  //    {
+  //      CFileItemPtr item(new CFileItem(*zipTrainers[j]));
+  //      trainers.Add(item);
+  //    }
+  //  }
+  //}
 
-  // Now, look for new trainers
-  progress->SetLine(1, "");
-  progress->SetPercentage(0);
-  progress->ShowProgressBar(true);
+  //// Now, look for new trainers
+  //progress->SetLine(1, "");
+  //progress->SetPercentage(0);
+  //progress->ShowProgressBar(true);
 
-  // remove folders
-  for (int j = 0; j < trainers.Size(); j++)
-  {
-    if (trainers[j]->m_bIsFolder)
-    {
-      trainers.Remove(j);
-      j--; // don't confuse loop
-    }
-  }
-  CLog::Log(LOGDEBUG,"Found %i trainers", trainers.Size());
+  //// remove folders
+  //for (int j = 0; j < trainers.Size(); j++)
+  //{
+  //  if (trainers[j]->m_bIsFolder)
+  //  {
+  //    trainers.Remove(j);
+  //    j--; // don't confuse loop
+  //  }
+  //}
+  //CLog::Log(LOGDEBUG,"Found %i trainers", trainers.Size());
 
-  for (int i = 0; i < trainers.Size(); i++)
-  {
-    std::string strLine = StringUtils::Format("%s %i / %i", g_localizeStrings.Get(38710).c_str(), i+1, trainers.Size());
-    progress->SetLine(0, strLine);
-    progress->SetPercentage((int)((float)(i) / trainers.Size() *100.f));
-    progress->Progress();
+  //for (int i = 0; i < trainers.Size(); i++)
+  //{
+  //  std::string strLine = StringUtils::Format("%s %i / %i", g_localizeStrings.Get(38710).c_str(), i+1, trainers.Size());
+  //  progress->SetLine(0, strLine);
+  //  progress->SetPercentage((int)((float)(i) / trainers.Size() *100.f));
+  //  progress->Progress();
 
-    // skip existing trainers
-    if (database.HasTrainer(trainers[i]->GetPath()))
-      continue;
+  //  // skip existing trainers
+  //  if (database.HasTrainer(trainers[i]->GetPath()))
+  //    continue;
 
-    CTrainer trainer;
-    if (trainer.Load(trainers[i]->GetPath()))
-    {
-      progress->SetLine(1, trainer.GetName());
-      progress->Progress();
-      unsigned int iTitle1, iTitle2, iTitle3;
-      trainer.GetTitleIds(iTitle1, iTitle2, iTitle3);
-      if (iTitle1)
-        database.AddTrainer(iTitle1, trainer);
-      if (iTitle2)
-        database.AddTrainer(iTitle2, trainer);
-      if (iTitle3)
-        database.AddTrainer(iTitle3, trainer);
-    }
+  //  CTrainer trainer;
+  //  if (trainer.Load(trainers[i]->GetPath()))
+  //  {
+  //    progress->SetLine(1, trainer.GetName());
+  //    progress->Progress();
+  //    unsigned int iTitle1, iTitle2, iTitle3;
+  //    trainer.GetTitleIds(iTitle1, iTitle2, iTitle3);
+  //    if (iTitle1)
+  //      database.AddTrainer(iTitle1, trainer);
+  //    if (iTitle2)
+  //      database.AddTrainer(iTitle2, trainer);
+  //    if (iTitle3)
+  //      database.AddTrainer(iTitle3, trainer);
+  //  }
 
-    if (progress->IsCanceled())
-    {
-      database.RollbackTransaction();
-      return false;
-    }
-  }
+  //  if (progress->IsCanceled())
+  //  {
+  //    database.RollbackTransaction();
+  //    return false;
+  //  }
+  //}
 
-  database.CommitTransaction();
-  database.Close();
-  progress->Close();
+  //database.CommitTransaction();
+  //database.Close();
+  //progress->Close();
   return true;
 }

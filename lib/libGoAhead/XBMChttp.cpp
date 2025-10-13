@@ -30,7 +30,6 @@
 #include "filesystem/CDDADirectory.h"
 #include "filesystem/SpecialProtocol.h"
 #include "video/VideoDatabase.h"
-#include "ProgramDatabase.h"
 #include "GUIButtonControl.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "music/infoscanner/MusicInfoScraper.h"
@@ -1018,24 +1017,7 @@ int CXbmcHttp::xbmcQueryVideoDataBase(int numParas, CStdString paras[])
 
 int CXbmcHttp::xbmcQueryProgramDataBase(int numParas, CStdString paras[])
 {
-  if (numParas==0)
-    return SetResponse(openTag+"Error:Missing Parameter");
-  else
-  {
-    CProgramDatabase programdatabase;
-    if (programdatabase.Open())
-    {
-      CStdString result;
-      if (programdatabase.GetArbitraryQuery(paras[0], openRecordSet, closeRecordSet, openRecord, closeRecord, openField, closeField, result))
-        return SetResponse(result);
-      else
-        return SetResponse(openTag+"Error:"+result);
-      programdatabase.Close();
-    }
-    else
-      return SetResponse(openTag+"Error:Could not open database");
-  }
-  return true;
+  return SetResponse("Error: Deprecated!");
 }
 
 int CXbmcHttp::xbmcExecVideoDataBase(int numParas, CStdString paras[])
