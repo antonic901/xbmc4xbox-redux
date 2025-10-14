@@ -50,6 +50,7 @@ public:
 
   int SetDetailsForItem(const CFileItem &item);
 
+  void DeleteProgram(const std::string& strFilenameAndPath);
   void RemoveContentForPath(const std::string& strPath);
 
 private:

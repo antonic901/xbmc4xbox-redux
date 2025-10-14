@@ -74,6 +74,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   else if (item->IsXBE())
   {
     buttons.Add(CONTEXT_BUTTON_PLAY_TRAILER, StringUtils::Format("%s %s", g_localizeStrings.Get(208).c_str(), g_localizeStrings.Get(20410).c_str()));
+    buttons.Add(CONTEXT_BUTTON_DELETE, 117);
   }
 }
 
@@ -103,6 +104,18 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   case CONTEXT_BUTTON_SCAN:
     {
       CProgramLibraryQueue::GetInstance().ScanLibrary(item->GetPath());
+      return true;
+    }
+  case CONTEXT_BUTTON_DELETE:
+    {
+      if (CGUIDialogYesNo::ShowAndGetInput(646, StringUtils::Format(g_localizeStrings.Get(433).c_str(), item->GetLabel().c_str())))
+      {
+        m_database.DeleteProgram(item->GetPath());
+        CUtil::DeleteProgramDatabaseDirectoryCache();
+        int select = itemNumber >= m_vecItems->Size() - 1 ? itemNumber - 1 : itemNumber;
+        Refresh(true);
+        m_viewControl.SetSelectedItem(select);
+      }
       return true;
     }
   case CONTEXT_BUTTON_PLAY_TRAILER:
