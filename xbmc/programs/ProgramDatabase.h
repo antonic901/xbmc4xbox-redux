@@ -50,6 +50,8 @@ public:
 
   int SetDetailsForItem(const CFileItem &item);
 
+  void RemoveContentForPath(const std::string& strPath);
+
 private:
   virtual void CreateTables();
   virtual void CreateAnalytics();

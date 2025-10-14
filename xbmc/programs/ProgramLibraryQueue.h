@@ -43,6 +43,8 @@ public:
    */
   void ScanLibrary(const std::string& directory, bool showProgress = true);
 
+  void CleanLibrary(const std::string& directory, bool showProgress = true);
+
   /*!
    \brief Adds the given job to the queue.
 

@@ -304,3 +304,25 @@ bool CProgramDatabase::GetPathContent(const int idPath, CFileItemList &items)
   }
   return false;
 }
+
+void CProgramDatabase::RemoveContentForPath(const std::string& strPath)
+{
+  int idPath = GetPathId(strPath);
+  if (idPath < 0)
+    return;
+
+  try
+  {
+    if (NULL == m_pDB.get())
+      return;
+    if (NULL == m_pDS.get())
+      return;
+
+    std::string strSQL = PrepareSQL("delete from program where idPath=%i", idPath);
+    m_pDS->exec(strSQL);
+  }
+  catch(...)
+  {
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strPath.c_str());
+  }
+}

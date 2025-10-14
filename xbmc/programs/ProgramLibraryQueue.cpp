@@ -24,6 +24,7 @@
 #include "GUIUserMessages.h"
 #include "threads/SingleLock.h"
 #include "Util.h"
+#include "programs/jobs/ProgramLibraryCleaningJob.h"
 #include "programs/jobs/ProgramLibraryJob.h"
 #include "programs/jobs/ProgramLibraryScanningJob.h"
 
@@ -49,6 +50,11 @@ CProgramLibraryQueue& CProgramLibraryQueue::GetInstance()
 void CProgramLibraryQueue::ScanLibrary(const std::string& directory, bool showProgress /* = true */)
 {
   AddJob(new CProgramLibraryScanningJob(directory, showProgress));
+}
+
+void CProgramLibraryQueue::CleanLibrary(const std::string& directory, bool showProgress /* = true */)
+{
+  AddJob(new CProgramLibraryCleaningJob(directory, showProgress));
 }
 
 void CProgramLibraryQueue::AddJob(CProgramLibraryJob *job)

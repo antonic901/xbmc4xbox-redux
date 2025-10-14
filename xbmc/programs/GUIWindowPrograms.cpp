@@ -9,10 +9,12 @@
 #include "programs/GUIWindowPrograms.h"
 
 #include "dialogs/GUIDialogMediaSource.h"
+#include "dialogs/GUIDialogYesNo.h"
 #include "guilib/LocalizeStrings.h"
 #include "FileItem.h"
 #include "programs/ProgramLibraryQueue.h"
 #include "messaging/ApplicationMessenger.h"
+#include "Util.h"
 #include "utils/StringUtils.h"
 
 using namespace KODI::MESSAGING;
@@ -84,6 +86,14 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 
   if (CGUIDialogContextMenu::OnContextButton("programs", item, button))
   {
+    if (button == CONTEXT_BUTTON_REMOVE_SOURCE)
+    {
+      if (CGUIDialogYesNo::ShowAndGetInput(20375, 20340))
+      {
+        CProgramLibraryQueue::GetInstance().CleanLibrary(item->GetPath());
+        CUtil::DeleteProgramDatabaseDirectoryCache();
+      }
+    }
     Refresh();
     return true;
   }
