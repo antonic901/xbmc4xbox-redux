@@ -11,6 +11,7 @@
 #include "dialogs/GUIDialogMediaSource.h"
 #include "guilib/LocalizeStrings.h"
 #include "FileItem.h"
+#include "programs/ProgramLibraryQueue.h"
 #include "utils/StringUtils.h"
 
 CGUIWindowPrograms::CGUIWindowPrograms(void)
@@ -76,7 +77,8 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   {
   case CONTEXT_BUTTON_SCAN:
     {
-      return m_database.ScanPathContent(item->GetPath());
+      CProgramLibraryQueue::GetInstance().ScanLibrary(item->GetPath());
+      return true;
     }
   }
 

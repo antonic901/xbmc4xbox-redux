@@ -8,6 +8,7 @@
  */
 
 #include "InfoScanner.h"
+#include "ProgramDatabase.h"
 
 namespace PROGRAM
 {
@@ -25,5 +26,7 @@ namespace PROGRAM
     virtual bool DoScan(const std::string& strDirectory);
 
     bool m_bStop;
+    std::string m_strDirectory;
+    CProgramDatabase m_database;
   };
 }

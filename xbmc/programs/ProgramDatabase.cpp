@@ -193,89 +193,54 @@ int CProgramDatabase::AddProgram(const std::string& strFilenameAndPath, const in
   return -1;
 }
 
-bool CProgramDatabase::ScanPathContent(const std::string& strPath)
+int CProgramDatabase::SetDetailsForItem(const CFileItem &item)
 {
-  if (NULL == m_pDB.get())
-    return false;
-  if (NULL == m_pDS.get())
-    return false;
+  int idProgram = GetProgramId(item.GetPath());
+  if (idProgram < 0)
+    return -1;
 
-  int idPath = AddPath(strPath);
-  if (idPath < 0)
-    return false;
-
-  CFileItemList items;
-  if(!CDirectory::GetDirectory(strPath, items, ".xbe", DIR_FLAG_DEFAULTS))
-    return false;
-
-  for (int i = 0; i < items.Size(); ++i)
+  try
   {
-    CFileItemPtr item = items[i];
-
-    std::string strPath = item->m_bIsFolder ? URIUtils::AddFileToFolder(item->GetPath(), "default.xbe") : item->GetPath();
-    if (!CFile::Exists(strPath))
-      continue;
-
-    int idProgram = AddProgram(strPath, idPath);
-    if (idProgram < 0)
+    if (NULL == m_pDB.get())
+      return false;
+    if (NULL == m_pDS.get())
       return false;
 
-    std::string strRootPath = item->m_bIsFolder ? item->GetPath() : URIUtils::GetParentPath(item->GetPath());
-    std::string strNFO = URIUtils::AddFileToFolder(strRootPath, "_resources", "default.xml");
+    std::string value;
+    std::vector<std::string> conditions;
 
-    CXBMCTinyXML doc;
-    if (doc.LoadFile(strNFO) && doc.RootElement())
-    {
-        const TiXmlElement* element = doc.RootElement();
-        std::string value;
-        std::vector<std::string> conditions;
+    value = item.GetProperty("type").asString();
+    if (!value.empty())
+      conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_TYPE, value.c_str()));
 
-        // parse title and plot
-        conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_TYPE, "game"));
-        if (XMLUtils::GetString(element, "title", value))
-          conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_TITLE, value.c_str()));
-        if (XMLUtils::GetString(element, "overview", value))
-          conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_PLOT, value.c_str()));
+    value = item.GetProperty("title").asString();
+    if (!value.empty())
+      conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_TITLE, value.c_str()));
 
-        // look for poster and fanart artwork
-        value = URIUtils::AddFileToFolder(strRootPath, "_resources", "artwork", "poster.jpg");
-        if (!CFile::Exists(value))
-        {
-          value = URIUtils::AddFileToFolder(strRootPath, "_resources", "artwork", "poster.png");
-          if (!CFile::Exists(value))
-            value.clear();
-        }
-        if (!value.empty())
-          conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_POSTER, value.c_str()));
+    value = item.GetProperty("overview").asString();
+    if (!value.empty())
+      conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_PLOT, value.c_str()));
 
-        value = URIUtils::AddFileToFolder(strRootPath, "_resources", "artwork", "fanart.jpg");
-        if (!CFile::Exists(value))
-        {
-          value = URIUtils::AddFileToFolder(strRootPath, "_resources", "artwork", "fanart.png");
-          if (!CFile::Exists(value))
-            value.clear();
-        }
-        if (!value.empty())
-          conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_FANART, value.c_str()));
+    value = item.GetProperty("trailer").asString();
+    if (!value.empty())
+      conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_TRAILER, value.c_str()));
 
-        // look for local trailer
-        value = URIUtils::AddFileToFolder(strRootPath, "_resources", "media", "preview.mp4");
-        if (!CFile::Exists(value))
-        {
-          value = URIUtils::AddFileToFolder(strRootPath, "_resources", "artwork", "preview.xmv");
-          if (!CFile::Exists(value))
-            value.clear();
-        }
-        if (!value.empty())
-          conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_TRAILER, value.c_str()));
+    value = item.GetArt("poster");
+    if (!value.empty())
+      conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_POSTER, value.c_str()));
 
-        // construct SQL query and run it
-        std::string sql = "UPDATE program SET " + StringUtils::Join(conditions, ",") + PrepareSQL(" where idProgram=%i", idProgram);
-        m_pDS->exec(sql);
-    }
+    value = item.GetArt("fanart");
+    if (!value.empty())
+      conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_FANART, value.c_str()));
+
+    std::string sql = "UPDATE program SET " + StringUtils::Join(conditions, ",") + PrepareSQL(" where idProgram=%i", idProgram);
+    m_pDS->exec(sql);
   }
-
-  return true;
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, item.GetPath().c_str());
+  }
+  return -1;
 }
 
 bool CProgramDatabase::GetPathContent(const std::string& strPath, CFileItemList &items)

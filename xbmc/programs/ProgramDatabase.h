@@ -12,6 +12,7 @@
 #include "dbwrappers/Database.h"
 #include "XBDateTime.h"
 
+class CFileItem;
 class CFileItemList;
 
 #define PROGRAMDB_MAX_COLUMNS 24
@@ -43,9 +44,10 @@ public:
   int AddPath(const std::string& strPath, const CDateTime& dateAdded = CDateTime());
   int AddProgram(const std::string& strFilenameAndPath, const int idPath);
 
-  bool ScanPathContent(const std::string& strPath);
   bool GetPathContent(const std::string& strPath, CFileItemList &items);
   bool GetPathContent(const int idPath, CFileItemList &items);
+
+  int SetDetailsForItem(const CFileItem &item);
 
 private:
   virtual void CreateTables();
