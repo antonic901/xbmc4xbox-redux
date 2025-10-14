@@ -12,7 +12,10 @@
 #include "guilib/LocalizeStrings.h"
 #include "FileItem.h"
 #include "programs/ProgramLibraryQueue.h"
+#include "messaging/ApplicationMessenger.h"
 #include "utils/StringUtils.h"
+
+using namespace KODI::MESSAGING;
 
 CGUIWindowPrograms::CGUIWindowPrograms(void)
     : CGUIMediaWindow(WINDOW_PROGRAMS, "MyPrograms.xml")
@@ -65,6 +68,10 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   {
     buttons.Add(CONTEXT_BUTTON_SCAN, 13349);
   }
+  else if (item->IsXBE())
+  {
+    buttons.Add(CONTEXT_BUTTON_PLAY_TRAILER, StringUtils::Format("%s %s", g_localizeStrings.Get(208).c_str(), g_localizeStrings.Get(20410).c_str()));
+  }
 }
 
 bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
@@ -78,6 +85,13 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   case CONTEXT_BUTTON_SCAN:
     {
       CProgramLibraryQueue::GetInstance().ScanLibrary(item->GetPath());
+      return true;
+    }
+  case CONTEXT_BUTTON_PLAY_TRAILER:
+    {
+      CFileItem playItem(*item);
+      playItem.SetPath(item->GetProperty("trailer").asString());
+      CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, 0, 0, static_cast<void*>(new CFileItem(playItem)));
       return true;
     }
   }
