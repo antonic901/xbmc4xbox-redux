@@ -61,7 +61,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   {
     // nothing to do here
   }
-  else if (item->IsHD())
+  else if (item->IsHD() && !item->IsXBE())
   {
     buttons.Add(CONTEXT_BUTTON_SCAN, 13349);
   }
