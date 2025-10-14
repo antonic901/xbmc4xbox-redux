@@ -17,6 +17,7 @@
 #include "utils/log.h"
 #include "utils/URIUtils.h"
 #include "utils/XMLUtils.h"
+#include "windows/GUIWindowFileManager.h"
 
 using namespace XFILE;
 
@@ -152,6 +153,10 @@ namespace PROGRAM
         }
         if (!value.empty())
           pItem->SetArt("fanart", value);
+
+        int64_t iSize = CGUIWindowFileManager::CalculateFolderSize(strRootPath);
+        if (iSize > 0)
+          pItem->SetProperty("size", iSize);
 
         m_database.SetDetailsForItem(*pItem);
 

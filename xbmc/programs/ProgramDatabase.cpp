@@ -233,6 +233,8 @@ int CProgramDatabase::SetDetailsForItem(const CFileItem &item)
     if (!value.empty())
       conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_FANART, value.c_str()));
 
+    conditions.push_back(PrepareSQL("c%02d=%I64u", PROGRAMDB_ID_SIZE, item.GetProperty("size").asInteger()));
+
     std::string sql = "UPDATE program SET " + StringUtils::Join(conditions, ",") + PrepareSQL(" where idProgram=%i", idProgram);
     m_pDS->exec(sql);
   }
@@ -286,6 +288,7 @@ bool CProgramDatabase::GetPathContent(const int idPath, CFileItemList &items)
       pItem->SetProperty("trailer", trailer);
       pItem->SetArt("poster", poster);
       pItem->SetArt("fanart", fanart);
+      pItem->m_dwSize = m_pDS->fv(PROGRAMDB_ID_SIZE + 2).get_asInt64();
 
       items.Add(pItem);
       m_pDS->next();
