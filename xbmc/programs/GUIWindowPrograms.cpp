@@ -67,6 +67,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   else if (item->IsHD() && !item->IsXBE())
   {
     buttons.Add(CONTEXT_BUTTON_SCAN, 13349);
+    CGUIDialogContextMenu::GetContextButtons("programs", item, buttons);
   }
   else if (item->IsXBE())
   {
@@ -80,6 +81,13 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     return false;
 
   CFileItemPtr item = m_vecItems->Get(itemNumber);
+
+  if (CGUIDialogContextMenu::OnContextButton("programs", item, button))
+  {
+    Refresh();
+    return true;
+  }
+
   switch (button)
   {
   case CONTEXT_BUTTON_SCAN:
