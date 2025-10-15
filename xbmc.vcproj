@@ -4630,6 +4630,40 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\programs\ProgramDatabase.h">
 				</File>
+				<File
+					RelativePath=".\xbmc\programs\ProgramInfoScanner.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\ProgramInfoScanner.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\ProgramLibraryQueue.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\ProgramLibraryQueue.h">
+				</File>
+				<Filter
+					Name="jobs"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\programs\jobs\ProgramLibraryCleaningJob.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\programs\jobs\ProgramLibraryCleaningJob.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\programs\jobs\ProgramLibraryJob.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\programs\jobs\ProgramLibraryJob.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\programs\jobs\ProgramLibraryScanningJob.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\programs\jobs\ProgramLibraryScanningJob.h">
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
