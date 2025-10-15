@@ -23,6 +23,7 @@ protected:
   virtual bool Update(const std::string& strDirectory, bool updateFilterPath = true);
   virtual bool GetDirectory(const std::string &strDirectory, CFileItemList &items);
   virtual bool OnAddMediaSource();
+  virtual std::string GetStartFolder(const std::string &dir);
 
   virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);

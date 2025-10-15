@@ -165,6 +165,16 @@ bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItem
   if (!CGUIMediaWindow::GetDirectory(strDirectory1, items))
     return false;
 
+  // don't allow the view state to change these
+  if (StringUtils::StartsWithNoCase(strDirectory, "addons://"))
+  {
+    for (int i=0;i<items.Size();++i)
+    {
+      items[i]->SetLabel2(items[i]->GetProperty("Addon.Version").asString());
+      items[i]->SetLabelPreformated(true);
+    }
+  }
+
   if (items.IsVirtualDirectoryRoot())
   {
     CFileItemPtr pItem(new CFileItem());
@@ -180,4 +190,12 @@ bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItem
   }
 
   return true;
+}
+
+std::string CGUIWindowPrograms::GetStartFolder(const std::string &dir)
+{
+  if (dir == "Plugins" || dir == "Addons")
+    return "addons://sources/executable/";
+
+  return CGUIMediaWindow::GetStartFolder(dir);
 }
