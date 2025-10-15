@@ -63,6 +63,8 @@ public:
   void DeleteProgram(const std::string& strFilenameAndPath);
   void RemoveContentForPath(const std::string& strPath);
 
+  std::string GetXBEPathByTitleId(const std::string& idTitle);
+
 private:
   virtual void CreateTables();
   virtual void CreateAnalytics();

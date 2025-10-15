@@ -514,3 +514,29 @@ void CProgramDatabase::RemoveContentForPath(const std::string& strPath)
     CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strPath.c_str());
   }
 }
+
+std::string CProgramDatabase::GetXBEPathByTitleId(const std::string& idTitle)
+{
+  try
+  {
+    if (NULL == m_pDB.get())
+      return "";
+    if (NULL == m_pDS.get())
+      return "";
+
+    std::string strPath;
+
+    std::string strSQL = PrepareSQL("select c%02d from program where c%02d='%s'", PROGRAMDB_ID_PATH, PROGRAMDB_ID_UNIQUE_ID, idTitle.c_str());
+    m_pDS->query(strSQL);
+    if (!m_pDS->eof())
+      strPath = m_pDS->fv(StringUtils::Format("c%02d", PROGRAMDB_ID_PATH).c_str()).get_asString();
+
+    m_pDS->close();
+    return strPath;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s (%i) failed", __FUNCTION__, idTitle);
+  }
+  return "";
+}

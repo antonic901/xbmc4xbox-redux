@@ -11,6 +11,7 @@
 #include "dialogs/GUIDialogMediaSource.h"
 #include "dialogs/GUIDialogTrainerSettings.h"
 #include "dialogs/GUIDialogYesNo.h"
+#include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "FileItem.h"
 #include "programs/ProgramLibraryQueue.h"
@@ -148,6 +149,22 @@ bool CGUIWindowPrograms::Update(const std::string &strDirectory, bool updateFilt
     return false;
 
   m_thumbLoader.Load(*m_vecItems);
+
+  return true;
+}
+
+bool CGUIWindowPrograms::OnPlayMedia(int iItem, const std::string& player)
+{
+  if (iItem < 0 || iItem >= m_vecItems->Size())
+    return false;
+
+  CFileItemPtr pItem = m_vecItems->Get(iItem);
+
+  if (StringUtils::StartsWithNoCase(pItem->GetPath(), "insignia://"))
+  {
+    g_windowManager.ActivateWindow(WINDOW_INSIGNIA);
+    return true;
+  }
 
   return true;
 }
