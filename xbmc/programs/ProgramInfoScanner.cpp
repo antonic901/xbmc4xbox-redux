@@ -14,6 +14,7 @@
 #include "filesystem/File.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
+#include "Util.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
 #include "utils/XMLUtils.h"
@@ -117,6 +118,11 @@ namespace PROGRAM
         CFileItemPtr pItem(new CFileItem());
         pItem->SetPath(strPath);
         pItem->SetProperty("type", "game");
+
+        unsigned int xbeID = CUtil::GetXbeID(strPath);
+        std::stringstream ss;
+        ss << std::hex << std::uppercase << xbeID;    
+        pItem->SetProperty("uniqueid", ss.str());
 
         if (XMLUtils::GetString(element, "title", value))
           pItem->SetProperty("title", value);

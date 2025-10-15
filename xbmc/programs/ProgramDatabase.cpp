@@ -375,6 +375,10 @@ int CProgramDatabase::SetDetailsForItem(const CFileItem &item)
     if (!value.empty())
       conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_TYPE, value.c_str()));
 
+    value = item.GetProperty("uniqueid").asString();
+    if (!value.empty())
+      conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_UNIQUE_ID, value.c_str()));
+
     value = item.GetProperty("title").asString();
     if (!value.empty())
       conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_TITLE, value.c_str()));
