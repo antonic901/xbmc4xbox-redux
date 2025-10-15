@@ -126,6 +126,11 @@ namespace PROGRAM
 
         if (XMLUtils::GetString(element, "title", value))
           pItem->SetProperty("title", value);
+        else
+        {
+          CUtil::GetXBEDescription(strPath, value);
+          pItem->SetProperty("title", value);
+        }
 
         if (XMLUtils::GetString(element, "overview", value))
           pItem->SetProperty("overview", value);

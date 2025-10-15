@@ -89,7 +89,7 @@ public:
   static void GetFileAndProtocol(const CStdString& strURL, CStdString& strDir);
   static int GetDVDIfoTitle(const CStdString& strPathFile);
   static bool CacheXBEIcon(const CStdString& strFilePath, const CStdString& strIcon);
-  static bool GetXBEDescription(const CStdString& strFileName, CStdString& strDescription);
+  static bool GetXBEDescription(const std::string& strFileName, std::string& strDescription);
   static bool SetXBEDescription(const CStdString& strFileName, const CStdString& strDescription);
   static DWORD GetXbeID( const CStdString& strFilePath);
 

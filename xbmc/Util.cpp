@@ -734,7 +734,7 @@ bool CUtil::GetDirectoryName(const CStdString& strFileName, CStdString& strDescr
   return true;
 }
 
-bool CUtil::GetXBEDescription(const CStdString& strFileName, CStdString& strDescription)
+bool CUtil::GetXBEDescription(const std::string& strFileName, std::string& strDescription)
 {
   _XBE_CERTIFICATE HC;
   _XBE_HEADER HS;
