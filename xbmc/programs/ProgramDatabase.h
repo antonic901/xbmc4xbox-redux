@@ -14,6 +14,7 @@
 
 class CFileItem;
 class CFileItemList;
+class CTrainer;
 
 #define PROGRAMDB_MAX_COLUMNS 24
 
@@ -38,6 +39,14 @@ public:
   virtual ~CProgramDatabase();
 
   virtual bool Open();
+
+  // Trainers
+  bool AddTrainer(int idTitle, CTrainer &trainer);
+  bool RemoveTrainer(int idTrainer);
+  bool SetTrainer(int idTitle, CTrainer *trainer);
+  bool GetTrainers(CFileItemList& items, unsigned int idTitle = 0);
+  bool GetTrainerOptions(int idTrainer, unsigned int iTitleId, unsigned char* data, int numOptions);
+  bool HasTrainer(const std::string& strTrainerPath);
 
   int GetPathId(const std::string& strPath);
   int GetProgramId(const std::string& strFilenameAndPath);

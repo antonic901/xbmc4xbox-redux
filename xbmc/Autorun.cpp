@@ -44,6 +44,7 @@
 #include "interfaces/builtins/Builtins.h"
 #include "utils/Trainer.h"
 #include "xbox/xbeheader.h"
+#include "programs/ProgramDatabase.h"
 #endif
 
 #include "defs_from_settings.h"
@@ -104,33 +105,33 @@ void CAutorun::ExecuteXBE(const CStdString &xbeFile)
   else
     iRegion = 0;
 
-  //CProgramDatabase database;
-  //database.Open();
+  CProgramDatabase database;
+  database.Open();
 
-  //// Load active trainer
-  //DWORD dwTitleId = CUtil::GetXbeID(xbeFile);
-  //CFileItemList items;
-  //if (database.GetTrainers(items, dwTitleId))
-  //{
-  //  for (int i = 0; i < items.Size(); ++i)
-  //  {
-  //    if (items[i]->GetProperty("isactive").asBoolean())
-  //    {
-  //      CTrainer* trainer = new CTrainer(items[i]->GetProperty("idtrainer").asInteger32());
-  //      if (trainer->Load(items[i]->GetPath()))
-  //      {
-  //        database.GetTrainerOptions(trainer->GetTrainerId(), dwTitleId, trainer->GetOptions(), trainer->GetNumberOfOptions());
-  //        CTrainer::InstallTrainer(*trainer);
-  //      }
-  //      else
-  //      {
-  //        delete trainer;
-  //      }
-  //    }
-  //  }
-  //}
+  // Load active trainer
+  DWORD dwTitleId = CUtil::GetXbeID(xbeFile);
+  CFileItemList items;
+  if (database.GetTrainers(items, dwTitleId))
+  {
+   for (int i = 0; i < items.Size(); ++i)
+   {
+     if (items[i]->GetProperty("isactive").asBoolean())
+     {
+       CTrainer* trainer = new CTrainer(items[i]->GetProperty("idtrainer").asInteger32());
+       if (trainer->Load(items[i]->GetPath()))
+       {
+         database.GetTrainerOptions(trainer->GetTrainerId(), dwTitleId, trainer->GetOptions(), trainer->GetNumberOfOptions());
+         CTrainer::InstallTrainer(*trainer);
+       }
+       else
+       {
+         delete trainer;
+       }
+     }
+   }
+  }
 
-  //database.Close();
+  database.Close();
   CUtil::RunXBE(xbeFile.c_str(), NULL,F_VIDEO(iRegion));
 }
 

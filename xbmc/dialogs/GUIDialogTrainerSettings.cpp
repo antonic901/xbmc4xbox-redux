@@ -23,6 +23,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "FileItem.h"
+#include "programs/ProgramDatabase.h"
 #include "settings/lib/Setting.h"
 #include "settings/windows/GUIControlSettings.h"
 #include "utils/Variant.h"
@@ -186,12 +187,12 @@ void CGUIDialogTrainerSettings::OnSettingAction(const CSetting *setting)
 
 void CGUIDialogTrainerSettings::Save()
 {
-  //CProgramDatabase database;
-  //if (database.Open())
-  //{
-  //  database.SetTrainer(m_iTitleId, m_trainer);
-  //  database.Close();
-  //}
+  CProgramDatabase database;
+  if (database.Open())
+  {
+    database.SetTrainer(m_iTitleId, m_trainer);
+    database.Close();
+  }
 }
 
 void CGUIDialogTrainerSettings::InitializeSettings()
@@ -215,36 +216,36 @@ void CGUIDialogTrainerSettings::InitializeSettings()
   if (!m_iTitleId)
     m_iTitleId = CUtil::GetXbeID(m_strExecutable);
 
-  //CProgramDatabase database;
-  //if (database.Open())
-  //{
-  //  // Load trainer settings
-  //  CFileItemList items;
-  //  database.GetTrainers(items, m_iTitleId);
-  //  for (int i = 0; i < items.Size(); i++)
-  //  {
-  //    CFileItemPtr item = items[i];
-  //    CTrainer *trainer = new CTrainer(item->GetProperty("idtrainer").asInteger32());
-  //    if (trainer->Load(item->GetPath()))
-  //    {
-  //      database.GetTrainerOptions(trainer->GetTrainerId(), m_iTitleId, trainer->GetOptions(), trainer->GetNumberOfOptions());
-  //      m_trainers.push_back(trainer);
-  //      if (item->GetProperty("isactive").asBoolean())
-  //      {
-  //        m_trainer = trainer;
-  //        trainer->GetOptionLabels(m_trainerOptions);
-  //        for (unsigned int i = 0; i < m_trainerOptions.size(); i++)
-  //        {
-  //          if (m_trainer->GetOptions()[i] == 1)
-  //            m_selectedTrainerOptions.push_back(m_trainerOptions[i]);
-  //        }
-  //      }
-  //    }
-  //    else
-  //      delete trainer;
-  //  }
-  //  database.Close();
-  //}
+  CProgramDatabase database;
+  if (database.Open())
+  {
+    // Load trainer settings
+    CFileItemList items;
+    database.GetTrainers(items, m_iTitleId);
+    for (int i = 0; i < items.Size(); i++)
+    {
+      CFileItemPtr item = items[i];
+      CTrainer *trainer = new CTrainer(item->GetProperty("idtrainer").asInteger32());
+      if (trainer->Load(item->GetPath()))
+      {
+        database.GetTrainerOptions(trainer->GetTrainerId(), m_iTitleId, trainer->GetOptions(), trainer->GetNumberOfOptions());
+        m_trainers.push_back(trainer);
+        if (item->GetProperty("isactive").asBoolean())
+        {
+          m_trainer = trainer;
+          trainer->GetOptionLabels(m_trainerOptions);
+          for (unsigned int i = 0; i < m_trainerOptions.size(); i++)
+          {
+            if (m_trainer->GetOptions()[i] == 1)
+              m_selectedTrainerOptions.push_back(m_trainerOptions[i]);
+          }
+        }
+      }
+      else
+        delete trainer;
+    }
+    database.Close();
+  }
 
   AddList(group, SETTING_TRAINER_LIST, 38710, 0, m_trainer ? m_trainer->GetTrainerId() : 0, IntegerOptionsFiller, 38710);
   CSettingAction *btnHacks = AddButton(group, SETTING_TRAINER_HACKS, 38711, 0);

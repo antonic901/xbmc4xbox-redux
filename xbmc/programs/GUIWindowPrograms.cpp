@@ -9,6 +9,7 @@
 #include "programs/GUIWindowPrograms.h"
 
 #include "dialogs/GUIDialogMediaSource.h"
+#include "dialogs/GUIDialogTrainerSettings.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "guilib/LocalizeStrings.h"
 #include "FileItem.h"
@@ -16,6 +17,7 @@
 #include "messaging/ApplicationMessenger.h"
 #include "Util.h"
 #include "utils/StringUtils.h"
+#include "utils/Trainer.h"
 
 using namespace KODI::MESSAGING;
 
@@ -75,6 +77,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   {
     buttons.Add(CONTEXT_BUTTON_PLAY_TRAILER, StringUtils::Format("%s %s", g_localizeStrings.Get(208).c_str(), g_localizeStrings.Get(20410).c_str()));
     buttons.Add(CONTEXT_BUTTON_DELETE, 117);
+    buttons.Add(CONTEXT_BUTTON_TRAINER_OPTIONS, 38712);
   }
 }
 
@@ -119,6 +122,11 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CFileItem playItem(*item);
       playItem.SetPath(item->GetProperty("trailer").asString());
       CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, 0, 0, static_cast<void*>(new CFileItem(playItem)));
+      return true;
+    }
+  case CONTEXT_BUTTON_TRAINER_OPTIONS:
+    {
+      CGUIDialogTrainerSettings::ShowForTitle(item);
       return true;
     }
   }
