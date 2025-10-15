@@ -24,6 +24,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "programs/ProgramDatabase.h"
+#include "Util.h"
 
 CProgramLibraryCleaningJob::CProgramLibraryCleaningJob(const std::string& directory, bool showProgress /* = true */)
   : m_directory(directory),
@@ -67,5 +68,6 @@ bool CProgramLibraryCleaningJob::Work(CProgramDatabase &db)
     handle->MarkFinished();
   handle = NULL;
 
+  CUtil::DeleteProgramDatabaseDirectoryCache();
   return true;
 }

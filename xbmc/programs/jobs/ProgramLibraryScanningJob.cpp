@@ -20,6 +20,7 @@
 
 #include "ProgramLibraryScanningJob.h"
 #include "programs/ProgramDatabase.h"
+#include "Util.h"
 
 CProgramLibraryScanningJob::CProgramLibraryScanningJob(const std::string& directory, bool showProgress /* = true */)
   : m_scanner(),
@@ -56,5 +57,6 @@ bool CProgramLibraryScanningJob::Work(CProgramDatabase &db)
   m_scanner.ShowDialog(m_showProgress);
   m_scanner.Start(m_directory);
 
+  CUtil::DeleteProgramDatabaseDirectoryCache();
   return true;
 }

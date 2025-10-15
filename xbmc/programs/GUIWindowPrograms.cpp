@@ -87,13 +87,9 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 
   if (CGUIDialogContextMenu::OnContextButton("programs", item, button))
   {
-    if (button == CONTEXT_BUTTON_REMOVE_SOURCE)
+    if (button == CONTEXT_BUTTON_REMOVE_SOURCE && CGUIDialogYesNo::ShowAndGetInput(20375, 20340))
     {
-      if (CGUIDialogYesNo::ShowAndGetInput(20375, 20340))
-      {
-        CProgramLibraryQueue::GetInstance().CleanLibrary(item->GetPath());
-        CUtil::DeleteProgramDatabaseDirectoryCache();
-      }
+      CProgramLibraryQueue::GetInstance().CleanLibrary(item->GetPath());
     }
     Refresh();
     return true;
