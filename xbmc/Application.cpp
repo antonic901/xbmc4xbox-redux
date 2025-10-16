@@ -928,7 +928,7 @@ HRESULT CApplication::Create(HWND hWnd)
       char szXBEFileName[1024];
 
       CIoSupport::GetXbePath(szXBEFileName);
-      LAUNCHERS::CProgramLauncher::LaunchProgram(szXBEFileName, false, false);
+      LAUNCHERS::CProgramLauncher::LaunchProgram(szXBEFileName);
     }
     m_pd3dDevice->Release();
   }
@@ -2678,7 +2678,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
     char szXBEFileName[1024];
 
     CIoSupport::GetXbePath(szXBEFileName);
-    LAUNCHERS::CProgramLauncher::LaunchProgram(szXBEFileName, false, false);
+    LAUNCHERS::CProgramLauncher::LaunchProgram(szXBEFileName);
   }
 #endif
     break;

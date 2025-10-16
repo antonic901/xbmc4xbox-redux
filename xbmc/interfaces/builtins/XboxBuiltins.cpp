@@ -33,7 +33,7 @@
 static int RunDashboard(const std::vector<std::string>& params)
 {
   if (CSettings::GetInstance().GetBool("myprograms.usedashpath"))
-    LAUNCHERS::CProgramLauncher::LaunchProgram(CSettings::GetInstance().GetString("myprograms.dashboard"), false, false);
+    LAUNCHERS::CProgramLauncher::LaunchProgram(CSettings::GetInstance().GetString("myprograms.dashboard"));
   else
     CUtil::BootToDash();
 

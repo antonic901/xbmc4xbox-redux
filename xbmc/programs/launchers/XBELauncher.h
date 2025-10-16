@@ -36,7 +36,7 @@ namespace LAUNCHERS
     virtual bool LoadSettings();
 
   private:
-    virtual bool Launch(bool bLoadSettings, bool bAllowRegionSwitching);
+    virtual bool Launch();
     virtual bool IsSupported();
 
     std::string m_strExecutable;

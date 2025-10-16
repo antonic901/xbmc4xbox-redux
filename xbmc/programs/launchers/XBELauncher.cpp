@@ -117,7 +117,7 @@ CTrainer* CXBELauncher::LoadTrainer(unsigned int iTitleID)
   return nullptr;
 }
 
-bool CXBELauncher::Launch(bool bLoadSettings, bool bAllowRegionSwitching)
+bool CXBELauncher::Launch()
 {
   if (!m_database->Open())
     return false;
@@ -125,8 +125,7 @@ bool CXBELauncher::Launch(bool bLoadSettings, bool bAllowRegionSwitching)
   if (!IsSupported())
     return false;
 
-  if (bLoadSettings)
-    LoadSettings();
+  LoadSettings();
 
   // install trainer if available
   m_trainer = LoadTrainer(CUtil::GetXbeID(m_strExecutable));
@@ -146,14 +145,10 @@ bool CXBELauncher::Launch(bool bLoadSettings, bool bAllowRegionSwitching)
       strExecutable = strPatchedExecutable;
   }
 
-  int iRegion = 0;
   // apply video mode switching
-  if (bAllowRegionSwitching)
-  {
-    iRegion = m_settings->iForceRegion;
-    if (!iRegion && CSettings::GetInstance().GetBool("myprograms.gameautoregion"))
-      iRegion = CGUIDialogProgramSettings::GetXBERegion(m_strExecutable);
-  }
+  int iRegion = m_settings->iForceRegion;
+  if (!iRegion && CSettings::GetInstance().GetBool("myprograms.gameautoregion"))
+    iRegion = CGUIDialogProgramSettings::GetXBERegion(m_strExecutable);
 
   // look for default executable
   if (!URIUtils::IsOnDVD(m_strExecutable) && !m_settings->strExecutable.empty() && !CSettings::GetInstance().GetBool("myprograms.autoffpatch"))

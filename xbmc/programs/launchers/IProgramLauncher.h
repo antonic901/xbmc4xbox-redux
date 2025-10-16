@@ -20,7 +20,7 @@ public:
   \param bAllowRegionSwitching specify if launcher is allowed to force region
   \return Returns true if the program was successfully launched, false otherwise.
   */
-  virtual bool Launch(bool bLoadSettings, bool bAllowRegionSwitching) = 0;
+  virtual bool Launch() = 0;
 
 protected:
   /*!

@@ -1481,7 +1481,7 @@ void CUtil::PlayDVD(const CStdString& strProtocol, bool restart)
 {
   if (CSettings::GetInstance().GetBool("dvds.useexternaldvdplayer") && !CSettings::GetInstance().GetString("dvds.externaldvdplayer").empty())
   {
-    LAUNCHERS::CProgramLauncher::LaunchProgram(CSettings::GetInstance().GetString("dvds.externaldvdplayer"), false, false);
+    LAUNCHERS::CProgramLauncher::LaunchProgram(CSettings::GetInstance().GetString("dvds.externaldvdplayer"));
   }
   else
   {
