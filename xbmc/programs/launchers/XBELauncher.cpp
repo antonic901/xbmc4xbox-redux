@@ -41,6 +41,9 @@ CXBELauncher::~CXBELauncher(void)
 
 bool CXBELauncher::LoadSettings()
 {
+  if (URIUtils::IsOnDVD(m_strExecutable))
+    return true;
+
   CGUIDialogProgramSettings::LoadSettings(m_strExecutable, *m_settings);
   return true;
 }
@@ -136,7 +139,7 @@ bool CXBELauncher::Launch(bool bLoadSettings, bool bAllowRegionSwitching)
   std::string strExecutable = m_strExecutable;
 
   // apply flicker filter
-  if (CSettings::GetInstance().GetBool("myprograms.autoffpatch"))
+  if (!URIUtils::IsOnDVD(m_strExecutable) && CSettings::GetInstance().GetBool("myprograms.autoffpatch"))
   {
     std::string strPatchedExecutable;
     if (ApplyFFPatch(m_strExecutable, strPatchedExecutable))
@@ -153,13 +156,14 @@ bool CXBELauncher::Launch(bool bLoadSettings, bool bAllowRegionSwitching)
   }
 
   // look for default executable
-  if (!m_settings->strExecutable.empty() && !CSettings::GetInstance().GetBool("myprograms.autoffpatch"))
+  if (!URIUtils::IsOnDVD(m_strExecutable) && !m_settings->strExecutable.empty() && !CSettings::GetInstance().GetBool("myprograms.autoffpatch"))
   {
     std::string strParentPath = URIUtils::GetParentPath(m_strExecutable);
     strExecutable = URIUtils::AddFileToFolder(strParentPath, m_settings->strExecutable);
   }
 
-  m_database->UpdateLastPlayed(m_strExecutable);
+  if (!URIUtils::IsOnDVD(m_strExecutable))
+    m_database->UpdateLastPlayed(m_strExecutable);
 
   CUtil::RunXBE(strExecutable.c_str(), NULL, F_VIDEO(iRegion));
   return true;
