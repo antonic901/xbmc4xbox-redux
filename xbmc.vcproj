@@ -4664,6 +4664,25 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\programs\jobs\ProgramLibraryScanningJob.h">
 					</File>
 				</Filter>
+				<Filter
+					Name="launchers"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\programs\launchers\IProgramLauncher.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\programs\launchers\LauncherFactory.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\programs\launchers\LauncherFactory.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\programs\launchers\ProgramLauncher.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\programs\launchers\ProgramLauncher.h">
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
