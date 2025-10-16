@@ -28,35 +28,35 @@
 // ******************************************************
 
 #include "FilterFlickerPatch.h"
+
 #include "filesystem/File.h"
 #include "settings/Settings.h"
-#include "log.h"
+#include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
+#include "utils/log.h"
 
 using namespace XFILE;
 
 int patchCount=0;
 UINT patches[50][2];
 
-bool CGFFPatch::FFPatch(CStdString m_FFPatchFilePath, CStdString &strNEW_FFPatchFilePath)  // apply the patch
+bool CGFFPatch::FFPatch(const std::string& m_FFPatchFilePath, std::string &strNEW_FFPatchFilePath)  // apply the patch
 {
   CFile xbe;
-  CStdString tmp;
 	UINT location, startPos;
 	BOOL results=FALSE;
- 
+
   CLog::Log(LOGDEBUG, __FUNCTION__" - Opening file: %s",m_FFPatchFilePath.c_str());
   if (!xbe.Open(m_FFPatchFilePath))
   {
     CLog::Log(LOGDEBUG, __FUNCTION__" - ERROR: Opening file: %s",m_FFPatchFilePath.c_str());
     return false;
   }
-  
+
   xbe.Open(m_FFPatchFilePath);
   int size = (int)xbe.GetLength();
-	tmp.Format("%d", (size/1024) );
-	
-  CLog::Log(LOGDEBUG, __FUNCTION__" - File size is:%s kb",tmp.c_str());
-	
+  CLog::Log(LOGDEBUG, __FUNCTION__" - File size is:%d kb", (size/1024));
+
   BYTE* pbuffer = new BYTE[size+1];
 	if ( pbuffer == NULL )
 	{
@@ -90,7 +90,7 @@ bool CGFFPatch::FFPatch(CStdString m_FFPatchFilePath, CStdString &strNEW_FFPatch
 			CLog::Log(LOGDEBUG, __FUNCTION__" - File not patched, exiting");
 			return false;
 		}
-		
+
     patches[patchCount][0] = location;
 		patches[patchCount][1] = examinePatch(&pbuffer[0],location);
 		if (patches[patchCount][1] > 0)
@@ -123,8 +123,11 @@ bool CGFFPatch::FFPatch(CStdString m_FFPatchFilePath, CStdString &strNEW_FFPatch
 		{
       // Create a new file with the patch!
       CFile file;
-      CStdString strNewFFPFile;
-      strNewFFPFile.Format("%s_ffp.xbe",m_FFPatchFilePath.Left(m_FFPatchFilePath.GetLength()-4));
+			std::string strFilename = URIUtils::GetFileName(m_FFPatchFilePath);
+			URIUtils::RemoveExtension(strFilename);
+			strFilename = StringUtils::Format("%s_ffp.xbe", strFilename.c_str());
+      std::string strNewFFPFile = URIUtils::GetParentPath(m_FFPatchFilePath);
+			strNewFFPFile = URIUtils::AddFileToFolder(strNewFFPFile, strFilename);
       if(file.OpenForWrite(strNewFFPFile.c_str(),true))
       {
         file.Write(&pbuffer[0],size);
@@ -145,7 +148,7 @@ BOOL CGFFPatch::applyPatches(BYTE* pbuffer, int patchCount)
 
 		for (int i=0; i<patchCount; i++)
 		{
-			 
+
       bool bDoPatch = true; //can be setting controlled
       if (bDoPatch) // PatchMethod: 1, 2, 3, 4
 			{
@@ -176,7 +179,7 @@ BOOL CGFFPatch::Patch1(BYTE* pbuffer, UINT location)
 	UINT tmp=location;
 	replaceConditionalJump(&pbuffer[0], tmp, 0x20);
 	pbuffer[location-1] = flickerVal;
-  CLog::Log(LOGDEBUG, __FUNCTION__" - Patching type 1, finished.");	
+  CLog::Log(LOGDEBUG, __FUNCTION__" - Patching type 1, finished.");
 	return TRUE;
 }
 
@@ -200,10 +203,10 @@ BOOL CGFFPatch::Patch3(BYTE* pbuffer, UINT location)
 	UINT tmp=location;
 	replaceConditionalJump(&pbuffer[0], tmp, 0x20);
 	pbuffer[tmp] = pbuffer[location-2];		// move the solitary push
-	pbuffer[location-2] = 0x6a;				// replace current byte with 2byte sequence 
+	pbuffer[location-2] = 0x6a;				// replace current byte with 2byte sequence
 	pbuffer[location-1] = flickerVal;
 	replaceConditionalJump(&pbuffer[0], tmp, 10);	// see if there's a 2nd conditional jump we need to worry about.
-	CLog::Log(LOGDEBUG, __FUNCTION__" - Patching type 3, finished.");		
+	CLog::Log(LOGDEBUG, __FUNCTION__" - Patching type 3, finished.");
 	return TRUE;
 }
 
@@ -213,7 +216,7 @@ BOOL CGFFPatch::Patch4(BYTE* pbuffer, UINT location)
 	UINT tmp=location;
 	replaceConditionalJump(&pbuffer[0], tmp, 0x20);
 	pbuffer[tmp] = pbuffer[location-4];		// move the 2 bytes before the pushes start.  Prolly an "xor reg,reg"
-	pbuffer[tmp+1] = pbuffer[location-3];		
+	pbuffer[tmp+1] = pbuffer[location-3];
 	pbuffer[location-4] = pbuffer[location-2];	// move the push statement up 2 bytes
 	pbuffer[location-3] = 0x6a;					// add in push [flickerval]
   pbuffer[location-2] = flickerVal;
@@ -235,15 +238,13 @@ void CGFFPatch::replaceConditionalJump(BYTE* pbuffer, UINT &location, UINT range
 BOOL CGFFPatch::findConditionalJump(BYTE* pbuffer, UINT &location, UINT range)
 {
 	CLog::Log(LOGDEBUG, __FUNCTION__" - Locate conditional jump...");
-	CStdString tmp;
 	for (UINT i=location; i>(location-range); i--)		// should be within ~20 bytes
 	{
     //if ( (pbuffer[i] == 0x74) && (pbuffer[i+1] < range+0x10) )
     if ( (pbuffer[i] == 0x74) && (pbuffer[i+1] < range+0x10) && (pbuffer[i-3] != 0x8b) )
     {
 			location = i;
-				tmp.Format("%x", i);
-				CLog::Log(LOGDEBUG, __FUNCTION__" - found at:0x",tmp.c_str());
+			CLog::Log(LOGDEBUG, __FUNCTION__" - found at:0x%x", i);
 			return TRUE;
 		}
 	}
@@ -255,22 +256,22 @@ int CGFFPatch::examinePatch(BYTE* pbuffer, UINT location)
 	UINT tmp=location;
 	if (findConditionalJump(&pbuffer[0], tmp, 0x20) == FALSE)
 		return 0;
-	if ( (pbuffer[location-2] == 0x6a) && 
-		 (pbuffer[location-1] >= 0 ) && 
+	if ( (pbuffer[location-2] == 0x6a) &&
+		 (pbuffer[location-1] >= 0 ) &&
 		 (pbuffer[location-1] < 6 ) &&
 		 ( (pbuffer[location-3] == 0) && (pbuffer[location-4] == 0x6a) || ((pbuffer[location-3] & 0x50) == 0x50) ) )
 		return 1;
-	if ( ((pbuffer[location-1] & 0x50) == 0x50) && 
-		 (pbuffer[location-2] == 0) && 
+	if ( ((pbuffer[location-1] & 0x50) == 0x50) &&
+		 (pbuffer[location-2] == 0) &&
 		 (pbuffer[location-3] == 0x6a) )
 		return 2;
 
-  if ( ((pbuffer[location-1] & 0x50) == 0x50) && 
+  if ( ((pbuffer[location-1] & 0x50) == 0x50) &&
 		 ((pbuffer[location-2] & 0x50) == 0x50) &&
-		  (pbuffer[location-3] == 0x00) )			
+		  (pbuffer[location-3] == 0x00) )
 		return 3;
 
-  if ( ((pbuffer[location-1] & 0x50) == 0x50) && 
+  if ( ((pbuffer[location-1] & 0x50) == 0x50) &&
 		 ((pbuffer[location-2] & 0x50) == 0x50) &&
 		  (pbuffer[location-5] == 0x00) )
 		return 4;
@@ -281,8 +282,8 @@ UINT CGFFPatch::searchData(BYTE* pBuffer, UINT startPos, UINT size)
 {
 	for (UINT i=startPos; i<size; i++)
 	{
-		if ( (pBuffer[i] == 0x6a) && 
-			 (pBuffer[i+1] == 0x0b) && 
+		if ( (pBuffer[i] == 0x6a) &&
+			 (pBuffer[i+1] == 0x0b) &&
 			 ((pBuffer[i+2] & 0x50) == 0x50) &&
 			 (pBuffer[i+3] == 0xff) )
 			return i;

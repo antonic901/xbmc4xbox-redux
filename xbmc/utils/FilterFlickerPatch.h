@@ -20,12 +20,13 @@
  *
  */
 
-#include "utils/StdString.h"
+#include <xtl.h>
+#include <string>
 
 class CGFFPatch
 {
   public:
-    bool FFPatch(CStdString m_FFPatchFilePath, CStdString &strNEW_FFPatchFilePath); //
+    bool FFPatch(const std::string& m_FFPatchFilePath, std::string &strNEW_FFPatchFilePath); //
   private:
     BOOL applyPatches(BYTE* pbuffer, int patchCount);
     BOOL Patch1(BYTE* pbuffer, UINT location);

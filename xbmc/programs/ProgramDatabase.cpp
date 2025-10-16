@@ -45,7 +45,7 @@ void CProgramDatabase::CreateTables()
   for (int i = 0; i < PROGRAMDB_MAX_COLUMNS; i++)
     columns += StringUtils::Format(",c%02d text", i);
 
-  columns += ", playCount integer, lastPlayed text, dateAdded text)";
+  columns += ", playCount integer, lastPlayed text, dateAdded text, strSettings text)";
   m_pDS->exec(columns);
 
   CLog::Log(LOGINFO, "create trainers table");
@@ -515,6 +515,81 @@ void CProgramDatabase::RemoveContentForPath(const std::string& strPath)
   catch(...)
   {
     CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strPath.c_str());
+  }
+}
+
+bool CProgramDatabase::SetProgramSettings(const std::string& strFileNameAndPath, const std::string& strSettings)
+{
+  std::string strSQL = "";
+  try
+  {
+    if (NULL == m_pDB.get())
+      return false;
+    if (NULL == m_pDS.get())
+      return false;
+
+    int idProgram = GetProgramId(strFileNameAndPath);
+    if (idProgram < 0)
+      return false;
+
+    strSQL = PrepareSQL("UPDATE program SET strSettings='%s' WHERE idProgram=%i", strSettings.c_str(), idProgram);
+    m_pDS->exec(strSQL);
+    return true;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strSQL.c_str());
+  }
+  return false;
+}
+
+bool CProgramDatabase::GetProgramSettings(const std::string& strFileNameAndPath, std::string& strSettings)
+{
+  std::string strSQL = "";
+  try
+  {
+    if (NULL == m_pDB.get())
+      return false;
+    if (NULL == m_pDS.get())
+      return false;
+
+    int idProgram = GetProgramId(strFileNameAndPath);
+    if (idProgram < 0)
+      return false;
+
+    strSQL = PrepareSQL("SELECT strSettings FROM program WHERE idProgram=%i", idProgram);
+    m_pDS->query(strSQL);
+    if (!m_pDS->eof())
+      strSettings = m_pDS->fv("strSettings").get_asString();
+    m_pDS->close();
+    return !strSettings.empty();
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strSQL.c_str());
+  }
+  return false;
+}
+
+void CProgramDatabase::UpdateLastPlayed(const std::string& strFilenameAndPath)
+{
+  int idProgram = GetProgramId(strFilenameAndPath);
+  if (idProgram < 0)
+    return;
+
+  try
+  {
+    if (NULL == m_pDB.get())
+      return;
+    if (NULL == m_pDS.get())
+      return;
+
+    std::string strSQL = PrepareSQL("UPDATE program SET lastPlayed='%s', playCount=playCount + 1 WHERE idProgram=%i", CDateTime::GetCurrentDateTime().GetAsDBDateTime().c_str(), idProgram);
+    m_pDS->exec(strSQL);
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
   }
 }
 

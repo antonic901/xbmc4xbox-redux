@@ -63,6 +63,16 @@ public:
   void DeleteProgram(const std::string& strFilenameAndPath);
   void RemoveContentForPath(const std::string& strPath);
 
+  // Program settings
+  bool SetProgramSettings(const std::string& strFileNameAndPath, const std::string& strSettings);
+  bool GetProgramSettings(const std::string& strFileNameAndPath, std::string& strSettings);
+
+  /*! \brief Update the last played time of program
+   Updates the last played date and play count
+   \param strFilenameAndPath program to update the last played time for
+   */
+  void UpdateLastPlayed(const std::string& strFilenameAndPath);
+
   std::string GetXBEPathByTitleId(const std::string& idTitle);
 
 private:

@@ -4682,6 +4682,22 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					<File
 						RelativePath=".\xbmc\programs\launchers\ProgramLauncher.h">
 					</File>
+					<File
+						RelativePath=".\xbmc\programs\launchers\XBELauncher.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\programs\launchers\XBELauncher.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="dialogs"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\programs\dialogs\GUIDialogProgramSettings.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\programs\dialogs\GUIDialogProgramSettings.h">
+					</File>
 				</Filter>
 			</Filter>
 		</Filter>

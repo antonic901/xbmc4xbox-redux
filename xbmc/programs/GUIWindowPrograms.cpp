@@ -15,6 +15,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "FileItem.h"
 #include "programs/ProgramLibraryQueue.h"
+#include "programs/dialogs/GUIDialogProgramSettings.h"
 #include "messaging/ApplicationMessenger.h"
 #include "Util.h"
 #include "utils/StringUtils.h"
@@ -76,6 +77,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   }
   else if (item->IsXBE())
   {
+    buttons.Add(CONTEXT_BUTTON_LAUNCH_IN, 519);
     buttons.Add(CONTEXT_BUTTON_PLAY_TRAILER, StringUtils::Format("%s %s", g_localizeStrings.Get(208).c_str(), g_localizeStrings.Get(20410).c_str()));
     buttons.Add(CONTEXT_BUTTON_DELETE, 117);
     buttons.Add(CONTEXT_BUTTON_TRAINER_OPTIONS, 38712);
@@ -116,6 +118,11 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         Refresh(true);
         m_viewControl.SetSelectedItem(select);
       }
+      return true;
+    }
+  case CONTEXT_BUTTON_LAUNCH_IN:
+    {
+      CGUIDialogProgramSettings::ShowForTitle(item);
       return true;
     }
   case CONTEXT_BUTTON_PLAY_TRAILER:
