@@ -64,6 +64,7 @@
 #endif
 #ifdef _XBOX
 #include "xbox/xbeheader.h"
+#include "programs/launchers/ProgramLauncher.h"
 #endif
 
 using namespace XFILE;
@@ -659,20 +660,7 @@ void CGUIWindowFileManager::OnStart(CFileItem *pItem, const std::string &player)
 #endif
 #ifdef _XBOX
   if (pItem->IsXBE())
-  {
-    int iRegion;
-    if (CSettings::GetInstance().GetBool("myprograms.gameautoregion"))
-    {
-      CXBE xbe;
-      iRegion = xbe.ExtractGameRegion(pItem->GetPath());
-      if (iRegion < 1 || iRegion > 7)
-        iRegion = 0;
-      iRegion = xbe.FilterRegion(iRegion);
-    }
-    else
-      iRegion = 0;
-    CUtil::RunXBE(pItem->GetPath().c_str(),NULL,F_VIDEO(iRegion));
-  }
+    LAUNCHERS::CProgramLauncher::LaunchProgram(pItem->GetPath());
   else if (pItem->IsShortCut())
     CUtil::RunShortcut(pItem->GetPath().c_str());
 #endif

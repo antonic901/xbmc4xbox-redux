@@ -20,6 +20,7 @@
 
 #include "XboxBuiltins.h"
 
+#include "programs/launchers/ProgramLauncher.h"
 #include "Util.h"
 #include "FileItem.h"
 #include "settings/Settings.h"
@@ -32,7 +33,7 @@
 static int RunDashboard(const std::vector<std::string>& params)
 {
   if (CSettings::GetInstance().GetBool("myprograms.usedashpath"))
-    CUtil::RunXBE(CSettings::GetInstance().GetString("myprograms.dashboard").c_str());
+    LAUNCHERS::CProgramLauncher::LaunchProgram(CSettings::GetInstance().GetString("myprograms.dashboard"), false, false);
   else
     CUtil::BootToDash();
 
@@ -49,22 +50,8 @@ static int RunXBE(const std::vector<std::string>& params)
   item.SetPath(params[0]);
   if (item.IsShortCut())
     CUtil::RunShortcut(params[0].c_str());
-  else if (item.IsXBE())
-  {
-    int iRegion;
-    if (CSettings::GetInstance().GetBool("myprograms.gameautoregion"))
-    {
-      CXBE xbe;
-      iRegion = xbe.ExtractGameRegion(params[0]);
-      if (iRegion < 1 || iRegion > 7)
-        iRegion = 0;
-      iRegion = xbe.FilterRegion(iRegion);
-    }
-    else
-      iRegion = 0;
-
-    CUtil::RunXBE(params[0].c_str(),NULL,F_VIDEO(iRegion));
-  }
+  else
+    LAUNCHERS::CProgramLauncher::LaunchProgram(params[0]);
 
   return 0;
 }

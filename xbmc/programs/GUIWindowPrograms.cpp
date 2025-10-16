@@ -16,6 +16,7 @@
 #include "FileItem.h"
 #include "programs/ProgramLibraryQueue.h"
 #include "programs/dialogs/GUIDialogProgramSettings.h"
+#include "programs/launchers/ProgramLauncher.h"
 #include "messaging/ApplicationMessenger.h"
 #include "Util.h"
 #include "utils/StringUtils.h"
@@ -173,35 +174,7 @@ bool CGUIWindowPrograms::OnPlayMedia(int iItem, const std::string& player)
     return true;
   }
 
-  if (!pItem->IsXBE())
-    return false;
-
-  unsigned int idTitle = CUtil::GetXbeID(pItem->GetPath());
-
-  // Load active trainer
-  CFileItemList items;
-  if (m_database.GetTrainers(items, idTitle))
-  {
-    for (int i = 0; i < items.Size(); ++i)
-    {
-      if (items[i]->GetProperty("isactive").asBoolean())
-      {
-        CTrainer* trainer = new CTrainer(items[i]->GetProperty("idtrainer").asInteger32());
-        if (trainer->Load(items[i]->GetPath()))
-        {
-          m_database.GetTrainerOptions(trainer->GetTrainerId(), idTitle, trainer->GetOptions(), trainer->GetNumberOfOptions());
-          CTrainer::InstallTrainer(*trainer);
-        }
-        else
-        {
-          delete trainer;
-        }
-      }
-    }
-  }
-
-  CUtil::RunXBE(pItem->GetPath().c_str());
-  return true;
+  return LAUNCHERS::CProgramLauncher::LaunchProgram(pItem->GetPath());
 }
 
 bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItemList &items)
