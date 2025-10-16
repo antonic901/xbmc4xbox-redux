@@ -58,6 +58,7 @@
 #endif
 #include "settings/windows/GUIWindowSettingsScreenCalibration.h"
 #include "programs/GUIWindowPrograms.h"
+#include "programs/dialogs/GUIDialogProgramSettings.h"
 #include "GUIWindowGameSaves.h"
 #include "pictures/GUIWindowPictures.h"
 #include "windows/GUIWindowWeather.h"
@@ -244,6 +245,7 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIWindowWeather);
 #ifdef _XBOX
   Add(new CGUIWindowInsignia);
+  Add(new CGUIDialogProgramSettings);
 #endif
   Add(new CGUIWindowStartup);
   Add(new CGUIWindowSplash);
