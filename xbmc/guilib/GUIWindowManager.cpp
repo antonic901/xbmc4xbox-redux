@@ -59,7 +59,7 @@
 #include "settings/windows/GUIWindowSettingsScreenCalibration.h"
 #include "programs/GUIWindowPrograms.h"
 #include "programs/dialogs/GUIDialogProgramSettings.h"
-#include "GUIWindowGameSaves.h"
+#include "programs/windows/GUIWindowGameSaves.h"
 #include "pictures/GUIWindowPictures.h"
 #include "windows/GUIWindowWeather.h"
 #include "windows/GUIWindowInsignia.h"

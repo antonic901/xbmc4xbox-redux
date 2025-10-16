@@ -53,6 +53,15 @@ bool CXBELauncher::IsSupported()
   return URIUtils::HasExtension(m_strExecutable, ".xbe");
 }
 
+CVariant CXBELauncher::GetTitleID(const std::string& strExecutable, bool bAsHex /* = false */)
+{
+  unsigned int titleId = CUtil::GetXbeID(strExecutable);
+  if (!bAsHex)
+    return titleId;
+
+  return StringUtils::Format("%08X", titleId);
+}
+
 bool CXBELauncher::ApplyFFPatch(const std::string& strExecutable, std::string& strPatchedExecutable)
 {
   RESOLUTION res = CDisplaySettings::Get().GetCurrentResolution();

@@ -13773,7 +13773,7 @@ msgstr ""
 #: IncludesHomeHorizontal.xml
 #: IncludesHomeVertical.xml
 msgctxt "#38772"
-msgid "Game saves"
+msgid "No game saves for this game"
 msgstr ""
 
 #: xbmc/GUIWindowGameSaves.cpp

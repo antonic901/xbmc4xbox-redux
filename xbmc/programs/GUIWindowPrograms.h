@@ -17,6 +17,7 @@ public:
   CGUIWindowPrograms(void);
   virtual ~CGUIWindowPrograms(void);
   virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnClick(int iItem, const std::string &player = "");
 
 protected:
   virtual void OnItemLoaded(CFileItem* pItem) {};

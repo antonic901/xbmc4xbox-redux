@@ -12,6 +12,7 @@
 
 #include <string>
 
+class CVariant;
 class CTrainer;
 class CProgramDatabase;
 struct SProgramSettings;
@@ -23,6 +24,8 @@ namespace LAUNCHERS
   public:
     CXBELauncher(std::string strExecutable);
     virtual ~CXBELauncher(void);
+
+    static CVariant GetTitleID(const std::string& strExecutable, bool bAsHex = false);
 
     static CTrainer* LoadTrainer(unsigned int iTitleID);
 

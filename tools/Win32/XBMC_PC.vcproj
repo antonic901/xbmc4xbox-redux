@@ -2071,12 +2071,6 @@
 					RelativePath="..\..\xbmc\windows\GUIMediaWindow.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\GUIViewStateGameSaves.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\GUIViewStateGameSaves.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\pictures\GUIViewStatePictures.cpp">
 				</File>
 				<File
@@ -2093,12 +2087,6 @@
 				</File>
 				<File
 					RelativePath="..\..\xbmc\video\windows\GUIWindowFullScreen.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\GUIWindowGameSaves.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\GUIWindowGameSaves.h">
 				</File>
 				<File
 					RelativePath="..\..\xbmc\windows\GUIWindowHome.cpp">

@@ -8,19 +8,23 @@
 
 #include "programs/GUIWindowPrograms.h"
 
+#include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #include "dialogs/GUIDialogTrainerSettings.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "FileItem.h"
+#include "filesystem/Directory.h"
 #include "programs/ProgramLibraryQueue.h"
 #include "programs/dialogs/GUIDialogProgramSettings.h"
 #include "programs/launchers/ProgramLauncher.h"
+#include "programs/launchers/XBELauncher.h"
 #include "messaging/ApplicationMessenger.h"
 #include "Util.h"
 #include "utils/StringUtils.h"
 #include "utils/Trainer.h"
+#include "utils/URIUtils.h"
 
 using namespace KODI::MESSAGING;
 
@@ -59,6 +63,27 @@ bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
   return CGUIMediaWindow::OnMessage(message);
 }
 
+bool CGUIWindowPrograms::OnClick(int iItem, const std::string &player)
+{
+  if (iItem < 0 || iItem >= m_vecItems->Size())
+    return false;
+
+  CFileItemPtr item = m_vecItems->Get(iItem);
+
+  if (item->GetPath() == "insignia://")
+  {
+    g_windowManager.ActivateWindow(WINDOW_INSIGNIA);
+    return true;
+  }
+  else if (item->GetPath() == "gamesaves://")
+  {
+    g_windowManager.ActivateWindow(WINDOW_GAMESAVES);
+    return true;
+  }
+
+  return CGUIMediaWindow::OnClick(iItem, player);
+}
+
 void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &buttons)
 {
   CFileItemPtr item;
@@ -82,6 +107,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
     buttons.Add(CONTEXT_BUTTON_PLAY_TRAILER, StringUtils::Format("%s %s", g_localizeStrings.Get(208).c_str(), g_localizeStrings.Get(20410).c_str()));
     buttons.Add(CONTEXT_BUTTON_DELETE, 117);
     buttons.Add(CONTEXT_BUTTON_TRAINER_OPTIONS, 38712);
+    buttons.Add(CONTEXT_BUTTON_GAMESAVES, 38779);
   }
 }
 
@@ -138,6 +164,16 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CGUIDialogTrainerSettings::ShowForTitle(item);
       return true;
     }
+  case CONTEXT_BUTTON_GAMESAVES:
+    {
+      std::string strTitleId = LAUNCHERS::CXBELauncher::GetTitleID(item->GetPath(), true).asString();
+      std::string strSaveGamePath = URIUtils::AddFileToFolder("E:\\UDATA\\", strTitleId);
+      if (XFILE::CDirectory::Exists(strSaveGamePath))
+        g_windowManager.ActivateWindow(WINDOW_GAMESAVES, strSaveGamePath);
+      else
+        CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(38779), g_localizeStrings.Get(38772));
+      return true;
+    }
   }
 
   return CGUIMediaWindow::OnContextButton(itemNumber, button);
@@ -166,15 +202,7 @@ bool CGUIWindowPrograms::OnPlayMedia(int iItem, const std::string& player)
   if (iItem < 0 || iItem >= m_vecItems->Size())
     return false;
 
-  CFileItemPtr pItem = m_vecItems->Get(iItem);
-
-  if (StringUtils::StartsWithNoCase(pItem->GetPath(), "insignia://"))
-  {
-    g_windowManager.ActivateWindow(WINDOW_INSIGNIA);
-    return true;
-  }
-
-  return LAUNCHERS::CProgramLauncher::LaunchProgram(pItem->GetPath());
+  return LAUNCHERS::CProgramLauncher::LaunchProgram(m_vecItems->Get(iItem)->GetPath());
 }
 
 bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItemList &items)
@@ -210,6 +238,15 @@ bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItem
     pItem->SetProperty("overview", g_localizeStrings.Get(38902));
     pItem->SetSpecialSort(SortSpecialOnTop);
     items.Add(pItem);
+
+    CFileItemPtr pItem2(new CFileItem());
+    pItem2->SetPath("gamesaves://");
+    pItem2->SetIconImage("DefaultGames.png");
+    pItem2->SetLabel(g_localizeStrings.Get(38772));
+    pItem2->SetLabelPreformated(true);
+    pItem2->SetProperty("overview", g_localizeStrings.Get(38779));
+    pItem2->SetSpecialSort(SortSpecialOnTop);
+    items.Add(pItem2);
 
     items.SetLabel("");
   }
