@@ -61,6 +61,7 @@
 #include "CDDADirectory.h"
 #include "SndtrkDirectory.h"
 #include "MemUnitDirectory.h"
+#include "GameSavesDirectory.h"
 #endif
 #ifdef HAS_UPNP
 #include "UPnPDirectory.h"
@@ -112,12 +113,13 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
   if (url.IsProtocol("programdb")) return new CProgramDatabaseDirectory();
   if (url.IsProtocol("library")) return new CLibraryDirectory();
   if (url.IsProtocol("favourites")) return new CFavouritesDirectory();
-  if (url.IsProtocol("filereader")) 
+  if (url.IsProtocol("filereader"))
   {
     CURL url2(url.GetFileName());
     return CFactoryDirectory::Create(url2);
   }
 #ifdef HAS_XBOX_HARDWARE
+  if (url.IsProtocol("gamesaves")) return new CGameSavesDirectory();
   // Is this same as url.IsProtocol("mem")?
   if (StringUtils::StartsWith(url.GetProtocol(), "mem")) return new CMemUnitDirectory();
 #endif

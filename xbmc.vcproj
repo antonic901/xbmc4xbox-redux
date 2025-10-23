@@ -1653,6 +1653,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\FTPParse.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\filesystem\GameSavesDirectory.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\filesystem\GameSavesDirectory.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\HDDirectory.cpp">
 				</File>
 				<File
