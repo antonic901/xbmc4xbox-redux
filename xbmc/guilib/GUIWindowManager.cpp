@@ -59,7 +59,6 @@
 #include "settings/windows/GUIWindowSettingsScreenCalibration.h"
 #include "programs/GUIWindowPrograms.h"
 #include "programs/dialogs/GUIDialogProgramSettings.h"
-#include "programs/windows/GUIWindowGameSaves.h"
 #include "pictures/GUIWindowPictures.h"
 #include "windows/GUIWindowWeather.h"
 #include "windows/GUIWindowInsignia.h"
@@ -172,9 +171,6 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIWindow(WINDOW_SKIN_SETTINGS, "SkinSettings.xml"));
   Add(new CGUIWindowAddonBrowser);
   Add(new CGUIWindowPointer);
-#ifdef _XBOX
-  Add(new CGUIWindowGameSaves);
-#endif
   Add(new CGUIDialogYesNo);
   Add(new CGUIDialogProgress);
   Add(new CGUIDialogExtendedProgressBar);
@@ -319,7 +315,6 @@ bool CGUIWindowManager::DestroyWindows()
     Delete(WINDOW_HOME);
     Delete(WINDOW_PROGRAMS);
     Delete(WINDOW_PICTURES);
-    Delete(WINDOW_GAMESAVES);
     Delete(WINDOW_WEATHER);
     Delete(WINDOW_INSIGNIA);
 

@@ -88,7 +88,7 @@ public:
   static bool ExcludeFileOrFolder(const CStdString& strFileOrFolder, const std::vector<std::string>& regexps);
   static void GetFileAndProtocol(const CStdString& strURL, CStdString& strDir);
   static int GetDVDIfoTitle(const CStdString& strPathFile);
-  static bool CacheXBEIcon(const CStdString& strFilePath, const CStdString& strIcon);
+  static bool CacheXBEIcon(const std::string& strFilePath, const std::string& strIcon);
   static bool GetXBEDescription(const std::string& strFileName, std::string& strDescription);
   static bool SetXBEDescription(const CStdString& strFileName, const CStdString& strDescription);
   static DWORD GetXbeID( const CStdString& strFilePath);

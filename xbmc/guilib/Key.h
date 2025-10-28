@@ -333,7 +333,6 @@
 
 #define WINDOW_SETTINGS_PROFILES          10034
 #define WINDOW_SKIN_SETTINGS              10035
-#define WINDOW_GAMESAVES                  10036
 
 #define WINDOW_ADDON_BROWSER              10040
 

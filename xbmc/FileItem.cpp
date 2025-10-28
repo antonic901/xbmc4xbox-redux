@@ -2974,62 +2974,44 @@ std::string CFileItem::GetLocalMetadataPath() const
   return parent;
 }
 
-std::string CFileItem::GetCachedGameSaveThumb() const
+std::string CFileItem::GetGameSaveThumb() const
 {
-  if (URIUtils::HasExtension(m_strPath, ".xbx")) // savemeta.xbx - cache thumb
-  { // get the locally cached thumb
-    Crc32 crc;
-    crc.ComputeFromLowerCase(m_strPath);
-    std::string crcThumb = StringUtils::Format("%08x.tbn", (unsigned __int32)crc);
+  std::string strPath(m_strPath);
+  URIUtils::RemoveSlashAtEnd(strPath);
+  std::vector<std::string> Path = StringUtils::Split(strPath, "://");
 
-    std::string thumb = URIUtils::AddFileToFolder(CProfilesManager::Get().GetGameSaveThumbFolder(), crcThumb);
-    CLog::Log(LOGDEBUG, "Thumb (%s)",thumb.c_str());
-    if (!CFile::Exists(thumb))
-    {
-      std::string strTitleImage = URIUtils::GetDirectory(m_strPath);
-      std::string strParent = URIUtils::GetParentPath(strTitleImage);
-      strTitleImage = URIUtils::AddFileToFolder(strTitleImage,"saveimage.xbx");
-      std::string strParentSave = URIUtils::AddFileToFolder(strParent,"saveimage.xbx");
-      std::string strParentTitle = URIUtils::AddFileToFolder(strParent,"titleimage.xbx");
-      //URIUtils::AddFileToFolder(strTitleImageCur,"titleimage.xbx",m_strPath);
-      if (CFile::Exists(strTitleImage))
-        CUtil::CacheXBEIcon(strTitleImage, thumb);
-      else if (CFile::Exists(strParentSave))
-        CUtil::CacheXBEIcon(strParentSave,thumb);
-      else if (CFile::Exists(strParentTitle))
-        CUtil::CacheXBEIcon(strParentTitle,thumb);
-      else
-        thumb = "";
-    }
-    return thumb;
-  }
-  else if (CDirectory::Exists(m_strPath))
+  Crc32 crc;
+  crc.ComputeFromLowerCase(m_strPath);
+  std::string thumb = URIUtils::AddFileToFolder(CProfilesManager::Get().GetGameSaveThumbFolder(), StringUtils::Format("%08x.tbn", (unsigned __int32)crc));
+  if (!CFile::Exists(thumb))
   {
-    // get the save game id
-    std::string fullPath(m_strPath);
-    URIUtils::RemoveSlashAtEnd(fullPath);
-    std::string fileName = URIUtils::GetFileName(fullPath);
+    std::string strSavegamePath = "E:\\UDATA\\" + Path.back();
 
-    std::string thumb = StringUtils::Format("%s\\%s.tbn", CProfilesManager::Get().GetGameSaveThumbFolder().c_str(), fileName.c_str());
-    CLog::Log(LOGDEBUG, "Thumb (%s)",thumb.c_str());
-    if (!CFile::Exists(thumb))
+    std::string strPath = URIUtils::AddFileToFolder(strSavegamePath, "TitleImage.xbx");
+    if (StringUtils::Split(Path.back(), '/').size() > 1)
+      strPath = URIUtils::AddFileToFolder(strSavegamePath, "SaveImage.xbx");
+    if (CFile::Exists(strPath) && CUtil::CacheXBEIcon(strPath, thumb))
+      return thumb;
+
+    strPath = URIUtils::AddFileToFolder(strSavegamePath, "SaveImage.xbx");
+    if (StringUtils::Split(Path.back(), '/').size() > 1)
+      strPath = URIUtils::AddFileToFolder(strSavegamePath, "TitleImage.xbx");
+    if (CFile::Exists(strPath) && CUtil::CacheXBEIcon(strPath, thumb))
+      return thumb;
+
+    if (StringUtils::Split(Path.back(), '/').size() > 1)
     {
-      std::string titleimageXBX = URIUtils::AddFileToFolder(m_strPath, "titleimage.xbx");
-      std::string saveimageXBX = URIUtils::AddFileToFolder(m_strPath,"saveimage.xbx");
+      strSavegamePath = URIUtils::GetParentPath(strSavegamePath);
+      strPath = URIUtils::AddFileToFolder(strSavegamePath, "SaveImage.xbx");
+      if (CFile::Exists(strPath) && CUtil::CacheXBEIcon(strPath, thumb))
+        return thumb;
 
-      /*if (CFile::Exists(saveimageXBX))
-      {
-        CUtil::CacheXBEIcon(saveimageXBX, thumb);
-        CLog::Log(LOGDEBUG, "saveimageXBX  (%s)",saveimageXBX.c_str());
-      }*/
-      if (CFile::Exists(titleimageXBX))
-      {
-        CLog::Log(LOGDEBUG, "titleimageXBX  (%s)",titleimageXBX.c_str());
-        CUtil::CacheXBEIcon(titleimageXBX, thumb);
-      }
+      strPath = URIUtils::AddFileToFolder(strSavegamePath, "TitleImage.xbx");
+      if (CFile::Exists(strPath) && CUtil::CacheXBEIcon(strPath, thumb))
+        return thumb;
     }
-    return thumb;
   }
+
   return "";
 }
 
@@ -3094,37 +3076,6 @@ bool CFileItem::LoadMusicTag()
     }
   }
   return false;
-}
-
-void CFileItem::SetCachedGameSavesThumb()
-{
-  if (IsParentFolder()) return;
-  std::string thumb = GetCachedGameSaveThumb();
-  if (CFile::Exists(thumb))
-    SetArt("thumb", thumb);
-}
-
-void CFileItemList::SetCachedGameSavesThumbs()
-{
-  // TODO: Investigate caching time to see if it speeds things up
-  for (unsigned int i = 0; i < m_items.size(); ++i)
-  {
-    CFileItemPtr pItem = m_items[i];
-    pItem->SetCachedGameSavesThumb();
-  }
-}
-
-void CFileItemList::SetGameSavesThumbs()
-{
-  // No User thumbs
-  // TODO: Is there a speed up if we cache the program thumbs first?
-  for (unsigned int i = 0; i < m_items.size(); i++)
-  {
-    CFileItemPtr pItem = m_items[i];
-    if (pItem->IsParentFolder())
-      continue;
-    pItem->SetCachedGameSavesThumb();
-  }
 }
 
 void CFileItemList::Swap(unsigned int item1, unsigned int item2)

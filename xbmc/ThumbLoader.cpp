@@ -128,6 +128,15 @@ std::string CProgramThumbLoader::GetLocalThumb(const CFileItem &item)
   if (item.IsAddonsPath())
     return "";
 
+#ifdef _XBOX
+  if (URIUtils::IsProtocol(item.GetPath(), "gamesaves"))
+  {
+    std::string gamesaveThumb = item.GetGameSaveThumb();
+    if (CFile::Exists(gamesaveThumb))
+      return gamesaveThumb;
+  }
+  else
+#endif
   // look for the thumb
   if (item.m_bIsFolder)
   {

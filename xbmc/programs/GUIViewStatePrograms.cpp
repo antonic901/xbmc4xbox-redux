@@ -28,6 +28,7 @@
 #include "guilib/Key.h"
 #include "settings/Settings.h"
 #include "view/ViewStateSettings.h"
+#include "URL.h"
 
 using namespace XFILE;
 
@@ -35,10 +36,13 @@ CGUIViewStateWindowPrograms::CGUIViewStateWindowPrograms(const CFileItemList& it
 {
   AddSortMethod(SortByLabel, 551, LABEL_MASKS("%K", "%I", "%L", ""),  // Titel, Size | Foldername, empty
     CSettings::GetInstance().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+  if (!items.GetURL().IsProtocol("gamesaves"))
+  {
   AddSortMethod(SortByDate, 552, LABEL_MASKS("%K", "%J", "%L", "%J"));  // Titel, Date | Foldername, Date
   AddSortMethod(SortByProgramCount, 565, LABEL_MASKS("%K", "%C", "%L", ""));  // Titel, Count | Foldername, empty
   AddSortMethod(SortBySize, 553, LABEL_MASKS("%K", "%I", "%K", "%I"));  // Filename, Size | Foldername, Size
   AddSortMethod(SortByFile, 561, LABEL_MASKS("%L", "%I", "%L", ""));  // Filename, Size | FolderName, empty
+  }
 
   const CViewState *viewState = CViewStateSettings::Get().Get("programs");
   SetSortMethod(viewState->m_sortDescription);
@@ -50,7 +54,7 @@ CGUIViewStateWindowPrograms::CGUIViewStateWindowPrograms(const CFileItemList& it
 
 void CGUIViewStateWindowPrograms::SaveViewState()
 {
-  SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAMS, CViewStateSettings::Get().Get("programs")); 
+  SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAMS, CViewStateSettings::Get().Get("programs"));
 }
 
 std::string CGUIViewStateWindowPrograms::GetLockType()

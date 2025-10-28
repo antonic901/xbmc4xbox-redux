@@ -634,22 +634,26 @@ int CUtil::GetDVDIfoTitle(const CStdString& strFile)
   return atoi(strFilename.Mid(4, 2).c_str());
 }
 
-bool CUtil::CacheXBEIcon(const CStdString& strFilePath, const CStdString& strIcon)
+bool CUtil::CacheXBEIcon(const std::string& strFilePath, const std::string& strIcon)
 {
-  bool success(false);
+  bool success = false;
+
+  Crc32 crc;
+  crc.ComputeFromLowerCase(strFilePath);
+  std::string strTempFile = StringUtils::Format("Z:\\%08x.tbn", (unsigned __int32) crc);
+
   // extract icon from .xbe
-  CStdString localFile;
-  g_charsetConverter.utf8ToStringCharset(strFilePath, localFile);
-  CXBE xbeReader;
-  CStdString strTempFile = URIUtils::AddFileToFolder(g_advancedSettings.m_cachePath,"1.xpr");
   if (URIUtils::HasExtension(strFilePath, ".xbx"))
   {
-  ::CopyFile(strFilePath.c_str(), strTempFile.c_str(),FALSE);
+    ::CopyFile(strFilePath.c_str(), strTempFile.c_str(), FALSE);
   }
   else
   {
-  if (!xbeReader.ExtractIcon(localFile, strTempFile.c_str()))
-    return false;
+    std::string localFile;
+    g_charsetConverter.utf8ToStringCharset(strFilePath, localFile);
+    CXBE xbeReader;
+    if (!xbeReader.ExtractIcon(localFile, strTempFile.c_str()))
+      return false;
   }
 
   CXBPackedResource* pPackedResource = new CXBPackedResource();
@@ -677,12 +681,11 @@ bool CUtil::CacheXBEIcon(const CStdString& strFilePath, const CStdString& strIco
           D3DXLoadSurfaceFromSurface(dest, NULL, NULL, source, NULL, NULL, D3DX_FILTER_NONE, 0);
           D3DLOCKED_RECT lr;
           dest->LockRect(&lr, NULL, 0);
-          bool success = CPicture::CreateThumbnailFromSurface((BYTE *)lr.pBits, iWidth, iHeight, lr.Pitch, strIcon);
+          success = CPicture::CreateThumbnailFromSurface((BYTE *)lr.pBits, iWidth, iHeight, lr.Pitch, strIcon);
           dest->UnlockRect();
           SAFE_RELEASE(source);
           SAFE_RELEASE(dest);
           SAFE_RELEASE(linTexture);
-          success = true;
         }
         // end of CPicture::CreateThumbnailFromSwizzledTexture
       }
@@ -690,7 +693,6 @@ bool CUtil::CacheXBEIcon(const CStdString& strFilePath, const CStdString& strIco
     }
   }
   delete pPackedResource;
-  CFile::Delete(strTempFile);
   return success;
 }
 

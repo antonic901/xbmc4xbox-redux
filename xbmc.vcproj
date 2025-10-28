@@ -4607,12 +4607,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Name="programs"
 				Filter="">
 				<File
-					RelativePath=".\xbmc\programs\GUIViewStateGameSaves.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\programs\GUIViewStateGameSaves.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\programs\GUIViewStatePrograms.cpp">
 				</File>
 				<File
@@ -4697,16 +4691,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\programs\dialogs\GUIDialogProgramSettings.h">
-					</File>
-				</Filter>
-				<Filter
-					Name="windows"
-					Filter="">
-					<File
-						RelativePath=".\xbmc\programs\windows\GUIWindowGameSaves.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\programs\windows\GUIWindowGameSaves.h">
 					</File>
 				</Filter>
 			</Filter>

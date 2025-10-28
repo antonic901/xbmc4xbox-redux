@@ -22,6 +22,7 @@
 #include "programs/launchers/XBELauncher.h"
 #include "messaging/ApplicationMessenger.h"
 #include "Util.h"
+#include "utils/FileUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/Trainer.h"
 #include "utils/URIUtils.h"
@@ -75,11 +76,6 @@ bool CGUIWindowPrograms::OnClick(int iItem, const std::string &player)
     g_windowManager.ActivateWindow(WINDOW_INSIGNIA);
     return true;
   }
-  else if (item->GetPath() == "gamesaves://")
-  {
-    g_windowManager.ActivateWindow(WINDOW_GAMESAVES);
-    return true;
-  }
 
   return CGUIMediaWindow::OnClick(iItem, player);
 }
@@ -95,6 +91,10 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   if (!item)
   {
     // nothing to do here
+  }
+  else if (URIUtils::IsProtocol(item->GetPath(), "gamesaves"))
+  {
+    buttons.Add(CONTEXT_BUTTON_DELETE, 117);
   }
   else if (item->IsHD() && !item->IsXBE())
   {
@@ -139,7 +139,16 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     {
       if (CGUIDialogYesNo::ShowAndGetInput(646, StringUtils::Format(g_localizeStrings.Get(433).c_str(), item->GetLabel().c_str())))
       {
-        m_database.DeleteProgram(item->GetPath());
+        if (URIUtils::IsProtocol(item->GetPath(), "gamesaves"))
+        {
+          std::vector<std::string> Path = StringUtils::Split(item->GetPath(), "://");
+          if (!CFileUtils::DeleteItem("E:\\UDATA\\" + Path.back() + "\\", true))
+            return false;
+        }
+        else
+        {
+          m_database.DeleteProgram(item->GetPath());
+        }
         CUtil::DeleteProgramDatabaseDirectoryCache();
         int select = itemNumber >= m_vecItems->Size() - 1 ? itemNumber - 1 : itemNumber;
         Refresh(true);
@@ -169,7 +178,7 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       std::string strTitleId = LAUNCHERS::CXBELauncher::GetTitleID(item->GetPath(), true).asString();
       std::string strSaveGamePath = URIUtils::AddFileToFolder("E:\\UDATA\\", strTitleId);
       if (XFILE::CDirectory::Exists(strSaveGamePath))
-        g_windowManager.ActivateWindow(WINDOW_GAMESAVES, strSaveGamePath);
+        Update("gamesaves://" + strTitleId);
       else
         CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(38779), g_localizeStrings.Get(38772));
       return true;
@@ -239,10 +248,9 @@ bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItem
     pItem->SetSpecialSort(SortSpecialOnTop);
     items.Add(pItem);
 
-    CFileItemPtr pItem2(new CFileItem());
-    pItem2->SetPath("gamesaves://");
+    CFileItemPtr pItem2(new CFileItem("gamesaves://", true));
     pItem2->SetIconImage("DefaultGames.png");
-    pItem2->SetLabel(g_localizeStrings.Get(38772));
+    pItem2->SetLabel(g_localizeStrings.Get(38779));
     pItem2->SetLabelPreformated(true);
     pItem2->SetProperty("overview", g_localizeStrings.Get(38779));
     pItem2->SetSpecialSort(SortSpecialOnTop);

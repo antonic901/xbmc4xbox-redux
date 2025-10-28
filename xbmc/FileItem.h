@@ -306,7 +306,7 @@ public:
   CPictureInfoTag* GetPictureInfoTag();
 
   // Gets the cached thumb filename (no existence checks)
-  std::string GetCachedGameSaveThumb() const;
+  std::string GetGameSaveThumb() const;
 
   /*!
    \brief Get the local fanart for this item if it exists
@@ -338,9 +338,6 @@ public:
    \sa GetLocalArt, FindLocalArt
    */
   bool SkipLocalArt() const;
-
-  // Sets the cached thumb for the item if it exists
-  void SetCachedGameSavesThumb();
 
   // Gets the .tbn file associated with this item
   std::string GetTBNFile() const;
@@ -640,9 +637,6 @@ public:
    */
   void RemoveDiscCache(int windowID = 0) const;
   bool AlwaysCache() const;
-
-  void SetCachedGameSavesThumbs();
-  void SetGameSavesThumbs();
 
   void Swap(unsigned int item1, unsigned int item2);
 
