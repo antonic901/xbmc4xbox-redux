@@ -34,14 +34,18 @@ using namespace XFILE;
 
 CGUIViewStateWindowPrograms::CGUIViewStateWindowPrograms(const CFileItemList& items) : CGUIViewState(items)
 {
-  AddSortMethod(SortByLabel, 551, LABEL_MASKS("%K", "%I", "%L", ""),  // Titel, Size | Foldername, empty
-    CSettings::GetInstance().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
-  if (!items.GetURL().IsProtocol("gamesaves"))
+  if (items.GetURL().IsProtocol("gamesaves"))
   {
-  AddSortMethod(SortByDate, 552, LABEL_MASKS("%K", "%J", "%L", "%J"));  // Titel, Date | Foldername, Date
-  AddSortMethod(SortByProgramCount, 565, LABEL_MASKS("%K", "%C", "%L", ""));  // Titel, Count | Foldername, empty
-  AddSortMethod(SortBySize, 553, LABEL_MASKS("%K", "%I", "%K", "%I"));  // Filename, Size | Foldername, Size
-  AddSortMethod(SortByFile, 561, LABEL_MASKS("%L", "%I", "%L", ""));  // Filename, Size | FolderName, empty
+    AddSortMethod(SortByLabel, 551, LABEL_MASKS("%K", "%I", "%L", ""), SortAttributeIgnoreFolders); // Title, Size | Foldername, empty
+  }
+  else
+  {
+    AddSortMethod(SortByLabel, 551, LABEL_MASKS("%K", "%I", "%L", ""),  // Titel, Size | Foldername, empty
+      CSettings::GetInstance().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+    AddSortMethod(SortByDate, 552, LABEL_MASKS("%K", "%J", "%L", "%J"));  // Titel, Date | Foldername, Date
+    AddSortMethod(SortByProgramCount, 565, LABEL_MASKS("%K", "%C", "%L", ""));  // Titel, Count | Foldername, empty
+    AddSortMethod(SortBySize, 553, LABEL_MASKS("%K", "%I", "%K", "%I"));  // Filename, Size | Foldername, Size
+    AddSortMethod(SortByFile, 561, LABEL_MASKS("%L", "%I", "%L", ""));  // Filename, Size | FolderName, empty
   }
 
   const CViewState *viewState = CViewStateSettings::Get().Get("programs");
