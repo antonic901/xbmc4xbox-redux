@@ -725,3 +725,43 @@ msgstr ""
 msgctxt "#31161"
 msgid "Numeric pad"
 msgstr ""
+
+#: /xml/DialogProgramInfo.xml
+msgctxt "#31200"
+msgid "Screenshots not available"
+msgstr ""
+
+#: /xml/DialogProgramInfo.xml
+msgctxt "#31201"
+msgid "Publisher"
+msgstr ""
+
+#: /xml/DialogProgramInfo.xml
+msgctxt "#31202"
+msgid "Developer"
+msgstr ""
+
+#: /xml/DialogProgramInfo.xml
+msgctxt "#31203"
+msgid "Descriptor"
+msgstr ""
+
+#: /xml/DialogProgramInfo.xml
+msgctxt "#31204"
+msgid "Release date"
+msgstr ""
+
+#: /xml/DialogProgramInfo.xml
+msgctxt "#31205"
+msgid "General feature"
+msgstr ""
+
+#: /xml/DialogProgramInfo.xml
+msgctxt "#31206"
+msgid "Online feature"
+msgstr ""
+
+#: /xml/DialogProgramInfo.xml
+msgctxt "#31207"
+msgid "Platform"
+msgstr ""
