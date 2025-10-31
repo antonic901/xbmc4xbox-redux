@@ -58,6 +58,7 @@
 #endif
 #include "settings/windows/GUIWindowSettingsScreenCalibration.h"
 #include "programs/GUIWindowPrograms.h"
+#include "programs/dialogs/GUIDialogProgramInfo.h"
 #include "programs/dialogs/GUIDialogProgramSettings.h"
 #include "pictures/GUIWindowPictures.h"
 #include "windows/GUIWindowWeather.h"
@@ -241,6 +242,7 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIWindowWeather);
 #ifdef _XBOX
   Add(new CGUIWindowInsignia);
+  Add(new CGUIDialogProgramInfo);
   Add(new CGUIDialogProgramSettings);
 #endif
   Add(new CGUIWindowStartup);
@@ -296,6 +298,8 @@ bool CGUIWindowManager::DestroyWindows()
     Delete(WINDOW_DIALOG_SLIDER);
     Delete(WINDOW_DIALOG_MEDIA_FILTER);
     Delete(WINDOW_DIALOG_SUBTITLES);
+    Delete(WINDOW_DIALOG_PROGRAM_INFO);
+    Delete(WINDOW_DIALOG_PROGRAM_SETTINGS);
 
     Delete(WINDOW_DIALOG_TEXT_VIEWER);
     Delete(WINDOW_STARTUP_ANIM);

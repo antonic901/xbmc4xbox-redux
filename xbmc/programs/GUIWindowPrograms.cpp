@@ -17,6 +17,7 @@
 #include "FileItem.h"
 #include "filesystem/Directory.h"
 #include "programs/ProgramLibraryQueue.h"
+#include "programs/dialogs/GUIDialogProgramInfo.h"
 #include "programs/dialogs/GUIDialogProgramSettings.h"
 #include "programs/launchers/ProgramLauncher.h"
 #include "programs/launchers/XBELauncher.h"
@@ -26,6 +27,7 @@
 #include "utils/StringUtils.h"
 #include "utils/Trainer.h"
 #include "utils/URIUtils.h"
+#include "utils/XMLUtils.h"
 
 using namespace KODI::MESSAGING;
 
@@ -80,6 +82,60 @@ bool CGUIWindowPrograms::OnClick(int iItem, const std::string &player)
   return CGUIMediaWindow::OnClick(iItem, player);
 }
 
+void CGUIWindowPrograms::OnItemInfo(CFileItemPtr item)
+{
+  std::string strRootPath = URIUtils::GetParentPath(item->GetPath());
+  std::string strTempPath = URIUtils::AddFileToFolder(strRootPath, "_resources", "default.xml");
+  CXBMCTinyXML doc;
+  if (doc.LoadFile(strTempPath) && doc.RootElement())
+  {
+    const TiXmlElement* synopsis = doc.RootElement();
+    std::string value;
+    float fValue;
+    int iValue;
+
+    if (XMLUtils::GetString(synopsis, "developer", value))
+      item->SetProperty("developer", value);
+
+    if (XMLUtils::GetString(synopsis, "publisher", value))
+      item->SetProperty("publisher", value);
+
+    if (XMLUtils::GetString(synopsis, "features_general", value))
+      item->SetProperty("features_general", value);
+
+    if (XMLUtils::GetString(synopsis, "features_online", value))
+      item->SetProperty("features_online", value);
+
+    if (XMLUtils::GetString(synopsis, "esrb", value))
+      item->SetProperty("esrb", value);
+
+    if (XMLUtils::GetString(synopsis, "esrb_descriptors", value))
+      item->SetProperty("esrb_descriptors", value);
+
+    if (XMLUtils::GetString(synopsis, "genre", value))
+      item->SetProperty("genre", value);
+
+    if (XMLUtils::GetString(synopsis, "release_date", value))
+      item->SetProperty("release_date", value);
+
+    if (XMLUtils::GetInt(synopsis, "year", iValue))
+      item->SetProperty("year", iValue);
+
+    if (XMLUtils::GetFloat(synopsis, "rating", fValue))
+      item->SetProperty("rating", fValue);
+
+    if (XMLUtils::GetString(synopsis, "platform", value))
+      item->SetProperty("platform", value);
+
+    if (XMLUtils::GetString(synopsis, "exclusive", value))
+      item->SetProperty("exclusive", value);
+  }
+
+  CGUIDialogProgramInfo *dialog = static_cast<CGUIDialogProgramInfo*>(g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_INFO));
+  dialog->SetProgram(item.get());
+  dialog->Open();
+}
+
 void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &buttons)
 {
   CFileItemPtr item;
@@ -103,6 +159,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   }
   else if (item->IsXBE())
   {
+    buttons.Add(CONTEXT_BUTTON_INFO, 19033);
     buttons.Add(CONTEXT_BUTTON_LAUNCH_IN, 519);
     buttons.Add(CONTEXT_BUTTON_PLAY_TRAILER, StringUtils::Format("%s %s", g_localizeStrings.Get(208).c_str(), g_localizeStrings.Get(20410).c_str()));
     buttons.Add(CONTEXT_BUTTON_DELETE, 117);
@@ -154,6 +211,11 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         Refresh(true);
         m_viewControl.SetSelectedItem(select);
       }
+      return true;
+    }
+  case CONTEXT_BUTTON_INFO:
+    {
+      OnItemInfo(item);
       return true;
     }
   case CONTEXT_BUTTON_LAUNCH_IN:
