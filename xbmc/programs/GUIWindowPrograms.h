@@ -20,8 +20,6 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnClick(int iItem, const std::string &player = "");
 
-  void OnItemInfo(CFileItemPtr item);
-
 protected:
   virtual void OnItemLoaded(CFileItem* pItem) {};
   virtual bool Update(const std::string& strDirectory, bool updateFilterPath = true);

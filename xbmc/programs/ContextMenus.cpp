@@ -17,6 +17,7 @@
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "programs/dialogs/GUIDialogProgramInfo.h"
 #include "utils/URIUtils.h"
+#include "utils/XMLUtils.h"
 
 
 namespace CONTEXTMENU
@@ -34,7 +35,56 @@ bool CProgramInfoBase::IsVisible(const CFileItem& item) const
 
 bool CProgramInfoBase::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
-  // CGUIDialogVideoInfo::ShowFor(*item);
+  std::string strRootPath = URIUtils::GetParentPath(item->GetPath());
+  std::string strTempPath = URIUtils::AddFileToFolder(strRootPath, "_resources", "default.xml");
+  CXBMCTinyXML doc;
+  if (doc.LoadFile(strTempPath) && doc.RootElement())
+  {
+    const TiXmlElement* synopsis = doc.RootElement();
+    std::string value;
+    float fValue;
+    int iValue;
+
+    if (XMLUtils::GetString(synopsis, "developer", value))
+      item->SetProperty("developer", value);
+
+    if (XMLUtils::GetString(synopsis, "publisher", value))
+      item->SetProperty("publisher", value);
+
+    if (XMLUtils::GetString(synopsis, "features_general", value))
+      item->SetProperty("features_general", value);
+
+    if (XMLUtils::GetString(synopsis, "features_online", value))
+      item->SetProperty("features_online", value);
+
+    if (XMLUtils::GetString(synopsis, "esrb", value))
+      item->SetProperty("esrb", value);
+
+    if (XMLUtils::GetString(synopsis, "esrb_descriptors", value))
+      item->SetProperty("esrb_descriptors", value);
+
+    if (XMLUtils::GetString(synopsis, "genre", value))
+      item->SetProperty("genre", value);
+
+    if (XMLUtils::GetString(synopsis, "release_date", value))
+      item->SetProperty("release_date", value);
+
+    if (XMLUtils::GetInt(synopsis, "year", iValue))
+      item->SetProperty("year", iValue);
+
+    if (XMLUtils::GetFloat(synopsis, "rating", fValue))
+      item->SetProperty("rating", fValue);
+
+    if (XMLUtils::GetString(synopsis, "platform", value))
+      item->SetProperty("platform", value);
+
+    if (XMLUtils::GetString(synopsis, "exclusive", value))
+      item->SetProperty("exclusive", value);
+  }
+
+  CGUIDialogProgramInfo *dialog = static_cast<CGUIDialogProgramInfo*>(g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_INFO));
+  dialog->SetProgram(item.get());
+  dialog->Open();
   return true;
 }
 
