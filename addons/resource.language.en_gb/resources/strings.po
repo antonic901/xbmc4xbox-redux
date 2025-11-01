@@ -13504,25 +13504,12 @@ msgctxt "#38710"
 msgid "Trainer"
 msgstr ""
 
-#: xbmc/programs/dialogs/GUIDialogTrainerSettings.cpp
+#: xbmc/programs/dialogs/GUIDialogProgramSettings.cpp
 msgctxt "#38711"
 msgid "Choose hacks..."
 msgstr ""
 
-#: xbmc/dialogs/GUIDialogTrainerSettings.cpp
-#: xbmc/programs/GUIWindowPrograms.cpp
-#: TrainerSettings.xml
-msgctxt "#38712"
-msgid "Trainer settings"
-msgstr ""
-
-#: LockSettings.xml
-#: TrainerSettings.xml
-msgctxt "#38713"
-msgid "All registered trainers are missing. Update your list"
-msgstr ""
-
-#empty string with id 38714
+#empty strings from id 38712 to 38714
 
 #: xbmc/programs/GUIWindowPrograms.cpp
 msgctxt "#38715"

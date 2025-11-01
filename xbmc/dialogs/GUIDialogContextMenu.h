@@ -120,8 +120,7 @@ enum CONTEXT_BUTTON { CONTEXT_BUTTON_CANCELLED = 0,
                       CONTEXT_BUTTON_LAUNCH, // used to launch XBE
                       CONTEXT_BUTTON_LAUNCH_IN,
                       CONTEXT_BUTTON_GAMESAVES,
-                      CONTEXT_BUTTON_COPY, // used to copy Game Saves
-                      CONTEXT_BUTTON_TRAINER_OPTIONS
+                      CONTEXT_BUTTON_COPY // used to copy Game Saves
                     };
 
 class CContextButtons : public std::vector< std::pair<unsigned int, std::string> >

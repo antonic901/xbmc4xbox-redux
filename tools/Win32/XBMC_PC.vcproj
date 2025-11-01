@@ -2019,12 +2019,6 @@
 					RelativePath="..\..\xbmc\dialogs\GUIDialogTextViewer.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\dialogs\GUIDialogTrainerSettings.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\dialogs\GUIDialogTrainerSettings.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\video\dialogs\GUIDialogVideoBookmarks.cpp">
 				</File>
 				<File

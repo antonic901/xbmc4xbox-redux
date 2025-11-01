@@ -79,7 +79,6 @@
 #include "music/dialogs/GUIDialogMusicOSD.h"
 #include "music/dialogs/GUIDialogVisualisationPresetList.h"
 #include "dialogs/GUIDialogTextViewer.h"
-#include "dialogs/GUIDialogTrainerSettings.h"
 #include "network/GUIDialogNetworkSetup.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #ifdef HAS_GL
@@ -195,9 +194,6 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIDialogAudioSubtitleSettings);
   Add(new CGUIDialogVideoBookmarks);
   // Don't add the filebrowser dialog - it's created and added when it's needed
-#ifdef _XBOX
-  Add(new CGUIDialogTrainerSettings);
-#endif
   Add(new CGUIDialogNetworkSetup);
   Add(new CGUIDialogMediaSource);
   Add(new CGUIDialogProfileSettings);
@@ -276,7 +272,6 @@ bool CGUIWindowManager::DestroyWindows()
     Delete(WINDOW_DIALOG_OK);
     Delete(WINDOW_DIALOG_KEYBOARD);
     Delete(WINDOW_FULLSCREEN_VIDEO);
-    Delete(WINDOW_DIALOG_TRAINER_SETTINGS);
     Delete(WINDOW_DIALOG_PROFILE_SETTINGS);
     Delete(WINDOW_DIALOG_LOCK_SETTINGS);
     Delete(WINDOW_DIALOG_NETWORK_SETUP);
