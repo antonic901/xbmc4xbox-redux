@@ -16,6 +16,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "programs/dialogs/GUIDialogProgramInfo.h"
+#include "programs/dialogs/GUIDialogProgramSettings.h"
 #include "utils/URIUtils.h"
 #include "utils/XMLUtils.h"
 
@@ -85,6 +86,22 @@ bool CProgramInfoBase::Execute(const boost::shared_ptr<CFileItem>& item) const
   CGUIDialogProgramInfo *dialog = static_cast<CGUIDialogProgramInfo*>(g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_INFO));
   dialog->SetProgram(item.get());
   dialog->Open();
+  return true;
+}
+
+CProgramSettings::CProgramSettings()
+  : CStaticContextMenuAction(519)
+{
+}
+
+bool CProgramSettings::IsVisible(const CFileItem& item) const
+{
+  return item.IsXBE();
+}
+
+bool CProgramSettings::Execute(const boost::shared_ptr<CFileItem>& item) const
+{
+  CGUIDialogProgramSettings::ShowForTitle(item);
   return true;
 }
 

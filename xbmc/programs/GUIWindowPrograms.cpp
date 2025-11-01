@@ -16,8 +16,6 @@
 #include "FileItem.h"
 #include "filesystem/Directory.h"
 #include "programs/ProgramLibraryQueue.h"
-#include "programs/dialogs/GUIDialogProgramInfo.h"
-#include "programs/dialogs/GUIDialogProgramSettings.h"
 #include "programs/launchers/ProgramLauncher.h"
 #include "programs/launchers/XBELauncher.h"
 #include "messaging/ApplicationMessenger.h"
@@ -103,7 +101,6 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   }
   else if (item->IsXBE())
   {
-    buttons.Add(CONTEXT_BUTTON_LAUNCH_IN, 519);
     buttons.Add(CONTEXT_BUTTON_DELETE, 117);
     buttons.Add(CONTEXT_BUTTON_GAMESAVES, 38779);
   }
@@ -152,11 +149,6 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         Refresh(true);
         m_viewControl.SetSelectedItem(select);
       }
-      return true;
-    }
-  case CONTEXT_BUTTON_LAUNCH_IN:
-    {
-      CGUIDialogProgramSettings::ShowForTitle(item);
       return true;
     }
   case CONTEXT_BUTTON_GAMESAVES:

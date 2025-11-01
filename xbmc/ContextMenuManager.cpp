@@ -80,6 +80,7 @@ void CContextMenuManager::Init()
   m_items.push_back(boost::make_shared<CONTEXTMENU::CSongInfo>());
   m_items.push_back(boost::make_shared<CONTEXTMENU::CMarkWatched>());
   m_items.push_back(boost::make_shared<CONTEXTMENU::CMarkUnWatched>());
+  m_items.push_back(boost::make_shared<CONTEXTMENU::CProgramSettings>());
   m_items.push_back(boost::make_shared<CONTEXTMENU::CProgramInfoBase>());
   m_items.push_back(boost::make_shared<CONTEXTMENU::CScriptLaunch>());
   ReloadAddonItems();

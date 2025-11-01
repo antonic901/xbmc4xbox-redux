@@ -117,7 +117,6 @@ enum CONTEXT_BUTTON { CONTEXT_BUTTON_CANCELLED = 0,
                       CONTEXT_BUTTON_DELETE_ALL,
                       CONTEXT_BUTTON_HELP,
                       CONTEXT_BUTTON_ACTIVE_ADSP_SETTINGS,
-                      CONTEXT_BUTTON_LAUNCH_IN,
                       CONTEXT_BUTTON_GAMESAVES
                     };
 
