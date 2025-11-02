@@ -68,6 +68,9 @@ public:
   bool SetProgramSettings(const std::string& strFileNameAndPath, const std::string& strSettings);
   bool GetProgramSettings(const std::string& strFileNameAndPath, std::string& strSettings);
 
+  // Emulators
+  bool GetEmulators(const std::string& shortname, CFileItemList& emulators);
+
   /*! \brief Update the last played time of program
    Updates the last played date and play count
    \param strFilenameAndPath program to update the last played time for

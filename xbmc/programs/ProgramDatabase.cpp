@@ -601,6 +601,66 @@ void CProgramDatabase::UpdateLastPlayed(const std::string& strFilenameAndPath)
   }
 }
 
+bool CProgramDatabase::GetEmulators(const std::string& shortname, CFileItemList &emulators)
+{
+  std::string strSQL = PrepareSQL("SELECT * FROM program WHERE c%02d='app'", PROGRAMDB_ID_TYPE);
+  try
+  {
+    if (NULL == m_pDB.get())
+      return false;
+    if (NULL == m_pDS.get())
+      return false;
+
+    std::vector<std::string> shortnames = StringUtils::Split(shortname, "|");
+    strSQL += PrepareSQL(" AND (c%02d LIKE '%%%s%%'", PROGRAMDB_ID_SYSTEM, shortnames[0].c_str());
+    for (unsigned int i = 1; i < shortnames.size(); ++i)
+    {
+      strSQL += PrepareSQL(" OR c%02d LIKE '%%%s%%'", PROGRAMDB_ID_SYSTEM, shortnames[i].c_str());
+    }
+    strSQL += ")";
+
+    int iRowsFound = RunQuery(strSQL);
+    if (iRowsFound <= 0)
+      return false;
+
+    while (!m_pDS->eof())
+    {
+      CFileItemPtr pItem(new CFileItem());
+      std::string path = m_pDS->fv(PROGRAMDB_ID_PATH + 2).get_asString();
+      std::string type = m_pDS->fv(PROGRAMDB_ID_TYPE + 2).get_asString();
+      std::string system = m_pDS->fv(PROGRAMDB_ID_SYSTEM + 2).get_asString();
+      std::string title = m_pDS->fv(PROGRAMDB_ID_TITLE + 2).get_asString();
+      std::string plot = m_pDS->fv(PROGRAMDB_ID_PLOT + 2).get_asString();
+      std::string poster = m_pDS->fv(PROGRAMDB_ID_POSTER + 2).get_asString();
+      std::string fanart = m_pDS->fv(PROGRAMDB_ID_FANART + 2).get_asString();
+      std::string trailer = m_pDS->fv(PROGRAMDB_ID_TRAILER + 2).get_asString();
+      pItem->SetPath(path);
+      pItem->SetProperty("type", type);
+      pItem->SetProperty("system", system);
+      pItem->SetLabel(title);
+      pItem->SetProperty("title", title);
+      pItem->SetLabel2(plot);
+      pItem->SetProperty("overview", plot);
+      pItem->SetProperty("trailer", trailer);
+      pItem->SetArt("poster", poster);
+      pItem->SetArt("fanart", fanart);
+      pItem->m_dwSize = m_pDS->fv(PROGRAMDB_ID_SIZE + 2).get_asInt64();
+
+      emulators.Add(pItem);
+      m_pDS->next();
+    }
+
+    // cleanup
+    m_pDS->close();
+    return true;
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strSQL.c_str());
+  }
+  return false;
+}
+
 std::string CProgramDatabase::GetXBEPathByTitleId(const std::string& idTitle)
 {
   try
