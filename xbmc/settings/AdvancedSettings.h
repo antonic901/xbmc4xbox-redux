@@ -314,6 +314,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     std::string m_pictureExtensions;
     std::string m_musicExtensions;
     std::string m_videoExtensions;
+    std::string m_programExtensions;
     CStdString m_discStubExtensions;
     CStdString m_subtitlesExtensions;
 
