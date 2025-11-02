@@ -378,6 +378,10 @@ int CProgramDatabase::SetDetailsForItem(const CFileItem &item)
     if (!value.empty())
       conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_TYPE, value.c_str()));
 
+    value = item.GetProperty("system").asString();
+    if (!value.empty())
+      conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_SYSTEM, value.c_str()));
+
     value = item.GetProperty("uniqueid").asString();
     if (!value.empty())
       conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_UNIQUE_ID, value.c_str()));
@@ -444,12 +448,16 @@ bool CProgramDatabase::GetPathContent(const int idPath, CFileItemList &items)
     {
       CFileItemPtr pItem(new CFileItem());
       std::string path = m_pDS->fv(PROGRAMDB_ID_PATH + 2).get_asString();
+      std::string type = m_pDS->fv(PROGRAMDB_ID_TYPE + 2).get_asString();
+      std::string system = m_pDS->fv(PROGRAMDB_ID_SYSTEM + 2).get_asString();
       std::string title = m_pDS->fv(PROGRAMDB_ID_TITLE + 2).get_asString();
       std::string plot = m_pDS->fv(PROGRAMDB_ID_PLOT + 2).get_asString();
       std::string poster = m_pDS->fv(PROGRAMDB_ID_POSTER + 2).get_asString();
       std::string fanart = m_pDS->fv(PROGRAMDB_ID_FANART + 2).get_asString();
       std::string trailer = m_pDS->fv(PROGRAMDB_ID_TRAILER + 2).get_asString();
       pItem->SetPath(path);
+      pItem->SetProperty("type", type);
+      pItem->SetProperty("system", system);
       pItem->SetLabel(title);
       pItem->SetProperty("title", title);
       pItem->SetLabel2(plot);

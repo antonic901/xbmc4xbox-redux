@@ -28,5 +28,8 @@ namespace PROGRAM
     bool m_bStop;
     std::string m_strDirectory;
     CProgramDatabase m_database;
+
+  private:
+    bool DoScraping(const std::string& strDirectory, bool recursive = false);
   };
 }

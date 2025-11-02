@@ -14,6 +14,7 @@
 #include "filesystem/File.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
+#include "settings/AdvancedSettings.h"
 #include "Util.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
@@ -79,34 +80,51 @@ namespace PROGRAM
 
   bool CProgramInfoScanner::DoScan(const std::string& strDirectory)
   {
+    return DoScraping(strDirectory);
+  }
+
+  bool CProgramInfoScanner::DoScraping(const std::string& strDirectory, bool recursive /* = false */)
+  {
     if (m_handle)
       m_handle->SetText(g_localizeStrings.Get(20415));
 
-    int idPath = m_database.AddPath(strDirectory);
+    int idPath = -1;
+    if (recursive)
+      idPath = m_database.GetPathId(URIUtils::GetParentPath(strDirectory));
+    else
+      idPath = m_database.AddPath(strDirectory);
+
     if (idPath < 0)
       return false;
 
     CFileItemList items;
-    if(!CDirectory::GetDirectory(strDirectory, items, ".xbe", DIR_FLAG_DEFAULTS))
+    if(!CDirectory::GetDirectory(strDirectory, items, g_advancedSettings.m_programExtensions, DIR_FLAG_DEFAULTS))
       return false;
 
     for (int i = 0; i < items.Size(); ++i)
     {
       CFileItemPtr item = items[i];
-      if (!item->m_bIsFolder)
+      if (item->m_bIsFolder && recursive)
         continue;
 
-      std::string strPath = URIUtils::AddFileToFolder(item->GetPath(), "default.xbe");
-      if (!CFile::Exists(strPath))
+      if (item->m_bIsFolder && !recursive)
+      {
+        DoScraping(item->GetPath(), true);
+        continue;
+      }
+
+      std::string strFilename = URIUtils::GetFileName(item->GetPath());
+      URIUtils::RemoveExtension(strFilename);
+      if (!StringUtils::EqualsNoCase(strFilename, "default"))
         continue;
 
       if (m_handle)
-        m_handle->SetTitle(item->GetPath());
+        m_handle->SetTitle(strDirectory);
 
-      if (m_database.AddProgram(strPath, idPath) < 0)
+      if (m_database.AddProgram(item->GetPath(), idPath) < 0)
         return false;
 
-      std::string strRootPath = item->GetPath();
+      std::string strRootPath = strDirectory;
       std::string strNFO = URIUtils::AddFileToFolder(strRootPath, "_resources", "default.xml");
 
       CXBMCTinyXML doc;
@@ -116,19 +134,32 @@ namespace PROGRAM
         std::string value;
 
         CFileItemPtr pItem(new CFileItem());
-        pItem->SetPath(strPath);
+        pItem->SetPath(item->GetPath());
         pItem->SetProperty("type", "game");
+        pItem->SetProperty("system", "xbox");
 
-        unsigned int xbeID = CUtil::GetXbeID(strPath);
-        std::stringstream ss;
-        ss << std::hex << std::uppercase << xbeID;    
-        pItem->SetProperty("uniqueid", ss.str());
+        if (XMLUtils::GetString(element, "type", value))
+          pItem->SetProperty("type", value);
+
+        if (XMLUtils::GetString(element, "system", value))
+          pItem->SetProperty("system", value);
+
+        if (item->IsXBE())
+        {
+          unsigned int xbeID = CUtil::GetXbeID(item->GetPath());
+          std::stringstream ss;
+          ss << std::hex << std::uppercase << xbeID;
+          pItem->SetProperty("uniqueid", ss.str());
+        }
 
         if (XMLUtils::GetString(element, "title", value))
           pItem->SetProperty("title", value);
         else
         {
-          CUtil::GetXBEDescription(strPath, value);
+          if (item->IsXBE())
+            CUtil::GetXBEDescription(item->GetPath(), value);
+          else
+            value = URIUtils::GetFileName(URIUtils::GetParentPath(item->GetPath()));
           pItem->SetProperty("title", value);
         }
 
