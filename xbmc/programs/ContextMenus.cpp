@@ -113,9 +113,9 @@ bool CProgramSettings::Execute(const boost::shared_ptr<CFileItem>& item) const
   return true;
 }
 
-std::string CScriptLaunch::GetLabel(const CFileItem& item) const
+CScriptLaunch::CScriptLaunch()
+  : CStaticContextMenuAction(247)
 {
-  return g_localizeStrings.Get(247);
 }
 
 bool CScriptLaunch::IsVisible(const CFileItem& item) const

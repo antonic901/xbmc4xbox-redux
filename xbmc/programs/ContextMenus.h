@@ -31,9 +31,10 @@ public:
   bool Execute(const boost::shared_ptr<CFileItem>& item) const;
 };
 
-struct CScriptLaunch : IContextMenuItem
+class CScriptLaunch : public CStaticContextMenuAction
 {
-  std::string GetLabel(const CFileItem& item) const;
+public:
+  CScriptLaunch();
   bool IsVisible(const CFileItem& item) const;
   bool Execute(const boost::shared_ptr<CFileItem>& _item) const;
 };
