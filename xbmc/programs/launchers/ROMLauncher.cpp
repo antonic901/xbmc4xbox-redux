@@ -24,6 +24,10 @@ using namespace LAUNCHERS;
 #define CUSTOM_LAUNCH "special://temp/emu_launch.xbe"
 
 SystemMapping Systems[] = {
+                            {"Nintendo Entertainment System", "nes", ".nes"},
+                            {"Sega Master System", "mastersystem", ".sms"},
+                            {"Sega Megadrive / Genesis", "megadrive|genesis", ".md"},
+                            {"Super Nintendo Entertainment System", "snes", ".sfc"}
                           };
 
 CROMLauncher::CROMLauncher(std::string strExecutable)
