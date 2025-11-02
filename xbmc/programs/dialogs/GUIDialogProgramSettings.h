@@ -17,8 +17,9 @@ typedef struct SProgramSettings
 {
   SProgramSettings() { Reset(); }
   std::string strExecutable;  /* which executable to launch */
+  std::string strEmulator; /* path to emulator */
   int iForceRegion; /* force game region */
-  void Reset() { strExecutable.clear(); iForceRegion = 0; }
+  void Reset() { strExecutable.clear(); strExecutable.clear(); iForceRegion = 0; }
 } SProgramSettings;
 
 class CGUIDialogProgramSettings : public CGUIDialogSettingsManualBase

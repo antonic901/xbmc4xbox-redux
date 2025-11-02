@@ -13849,3 +13849,7 @@ msgid "Game is not installed"
 msgstr ""
 
 #empty strings from id 38791 to 38999
+
+msgctxt "#38995"
+msgid "Default emulator"
+msgstr ""

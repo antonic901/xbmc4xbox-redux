@@ -15,6 +15,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "programs/ProgramDatabase.h"
 #include "programs/launchers/ProgramLauncher.h"
+#include "programs/launchers/ROMLauncher.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/lib/Setting.h"
 #include "settings/windows/GUIControlSettings.h"
@@ -27,6 +28,7 @@
 
 
 #define SETTING_EXECUTABLE            "programexecutable"
+#define SETTING_EMULATOR              "defaultemulator"
 #define SETTING_FORCEREGION           "programforceregion"
 #define SETTING_TRAINER_LIST          "trainerlist"
 #define SETTING_TRAINER_HACKS         "trainerchoosehacks"
@@ -94,6 +96,10 @@ void CGUIDialogProgramSettings::LoadSettings(const std::string& strExecutable, S
         XMLUtils::GetString(element, SETTING_EXECUTABLE, programSettings.strExecutable);
         if (isXBE)
           XMLUtils::GetInt(element, SETTING_FORCEREGION, programSettings.iForceRegion);
+        else
+        { // everything else is ROM
+          XMLUtils::GetString(element, SETTING_EMULATOR, programSettings.strEmulator);
+        }
       }
     }
   }
@@ -188,6 +194,10 @@ void CGUIDialogProgramSettings::SaveSettings(const std::string& strExecutable, c
       XMLUtils::SetString(pRoot, SETTING_EXECUTABLE, settings.strExecutable);
       if (isXBE)
         XMLUtils::SetInt(pRoot, SETTING_FORCEREGION, settings.iForceRegion);
+      else
+      { // everything else is ROM
+        XMLUtils::SetString(pRoot, SETTING_EMULATOR, settings.strEmulator);
+      }
 
       TiXmlPrinter printer;
       printer.SetIndent("");
@@ -255,6 +265,16 @@ void CGUIDialogProgramSettings::StringOptionsFiller(const CSetting *setting, std
       }
     }
   }
+  else if (setting->GetId() == SETTING_EMULATOR)
+  {
+    list.push_back(std::pair<std::string, std::string>(g_localizeStrings.Get(231), "none"));
+    CFileItemList emulators;
+    if (LAUNCHERS::CROMLauncher::FindEmulators(programSettings->m_strExecutable, emulators))
+    {
+      for (int i = 0; i < emulators.Size(); ++i)
+        list.push_back(std::pair<std::string, std::string>(emulators[i]->GetLabel(), emulators[i]->GetPath()));
+    }
+  }
 }
 
 void CGUIDialogProgramSettings::OnSettingChanged(const CSetting *setting)
@@ -268,6 +288,10 @@ void CGUIDialogProgramSettings::OnSettingChanged(const CSetting *setting)
   if (settingId == SETTING_EXECUTABLE)
   {
     m_settings.strExecutable = ((CSettingString*)setting)->GetValue();
+  }
+  else if (settingId == SETTING_EMULATOR)
+  {
+    m_settings.strEmulator = ((CSettingString*)setting)->GetValue();
   }
   else if (settingId == SETTING_FORCEREGION)
   {
@@ -396,11 +420,15 @@ void CGUIDialogProgramSettings::InitializeSettings()
     btnHacks->SetDependencies(deps);
     deps.clear();
   }
+  else
+  { // everything else is ROM
+    AddList(group, SETTING_EMULATOR, 38995, 0, m_settings.strEmulator, StringOptionsFiller, 38995);
+  }
 }
 
 void CGUIDialogProgramSettings::ShowForTitle(const CFileItemPtr pItem)
 {
-  CGUIDialogProgramSettings *dialog = (CGUIDialogProgramSettings *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SETTINGS);
+  CGUIDialogProgramSettings *dialog = static_cast<CGUIDialogProgramSettings *>(g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SETTINGS));
   if (dialog == nullptr)
     return;
 
