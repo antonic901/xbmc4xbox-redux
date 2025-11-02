@@ -10,6 +10,7 @@
 
 #include "URL.h"
 #include "XBELauncher.h"
+#include "ROMLauncher.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
@@ -33,6 +34,9 @@ IProgramLauncher* CLauncherFactory::Create(const CURL& url)
 
   if (url.IsFileType("xbe"))
     return new CXBELauncher(url.Get());
+
+  if (URIUtils::HasExtension(url.Get(), g_advancedSettings.m_programExtensions))
+    return new CROMLauncher(url.Get());
 
   CLog::Log(LOGWARNING, "%s - unsupported executable: %s", __FUNCTION__, url.Get().c_str());
   return NULL;
