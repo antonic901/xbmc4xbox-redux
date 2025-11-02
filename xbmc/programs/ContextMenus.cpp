@@ -8,15 +8,17 @@
 
 #include "ContextMenus.h"
 
-#include "FileItem.h"
 #include "addons/Addon.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "filesystem/AddonsDirectory.h"
+#include "FileItem.h"
 #include "guilib/GUIWindowManager.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "programs/dialogs/GUIDialogProgramInfo.h"
 #include "programs/dialogs/GUIDialogProgramSettings.h"
+#include "settings/AdvancedSettings.h"
+#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/XMLUtils.h"
 
@@ -31,7 +33,10 @@ CProgramInfoBase::CProgramInfoBase()
 
 bool CProgramInfoBase::IsVisible(const CFileItem& item) const
 {
-  return item.IsXBE();
+  if (item.m_bIsFolder)
+    return false;
+
+  return URIUtils::HasExtension(item.GetPath(), g_advancedSettings.m_programExtensions);
 }
 
 bool CProgramInfoBase::Execute(const boost::shared_ptr<CFileItem>& item) const
@@ -96,7 +101,10 @@ CProgramSettings::CProgramSettings()
 
 bool CProgramSettings::IsVisible(const CFileItem& item) const
 {
-  return item.IsXBE();
+  if (item.m_bIsFolder)
+    return false;
+
+  return URIUtils::HasExtension(item.GetPath(), g_advancedSettings.m_programExtensions);
 }
 
 bool CProgramSettings::Execute(const boost::shared_ptr<CFileItem>& item) const
@@ -115,7 +123,7 @@ bool CScriptLaunch::IsVisible(const CFileItem& item) const
   if (item.m_bIsFolder)
     return URIUtils::IsDOSPath(item.GetPath());
 
-  return item.IsDefaultXBE();
+  return URIUtils::HasExtension(item.GetPath(), g_advancedSettings.m_programExtensions);
 }
 
 bool CScriptLaunch::Execute(const boost::shared_ptr<CFileItem>& item) const

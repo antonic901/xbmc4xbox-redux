@@ -19,6 +19,7 @@
 #include "programs/launchers/ProgramLauncher.h"
 #include "programs/launchers/XBELauncher.h"
 #include "messaging/ApplicationMessenger.h"
+#include "settings/AdvancedSettings.h"
 #include "Util.h"
 #include "utils/FileUtils.h"
 #include "utils/StringUtils.h"
@@ -94,15 +95,16 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   {
     buttons.Add(CONTEXT_BUTTON_DELETE, 117);
   }
-  else if (item->IsHD() && !item->IsXBE())
+  else if (item->m_bIsFolder && item->IsHD())
   {
     buttons.Add(CONTEXT_BUTTON_SCAN, 13349);
     CGUIDialogContextMenu::GetContextButtons("programs", item, buttons);
   }
-  else if (item->IsXBE())
+  else if (URIUtils::HasExtension(item->GetPath(), g_advancedSettings.m_programExtensions))
   {
     buttons.Add(CONTEXT_BUTTON_DELETE, 117);
-    buttons.Add(CONTEXT_BUTTON_GAMESAVES, 38779);
+    if (item->IsXBE())
+      buttons.Add(CONTEXT_BUTTON_GAMESAVES, 38779);
   }
 }
 
