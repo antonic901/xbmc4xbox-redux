@@ -145,6 +145,7 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         else
         {
           m_database.DeleteProgram(item->GetPath());
+          CFileUtils::DeleteItem(URIUtils::GetParentPath(item->GetPath()));
         }
         CUtil::DeleteProgramDatabaseDirectoryCache();
         int select = itemNumber >= m_vecItems->Size() - 1 ? itemNumber - 1 : itemNumber;
