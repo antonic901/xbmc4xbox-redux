@@ -4713,6 +4713,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\programs\launchers\ProgramLauncher.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\programs\launchers\ROMLauncher.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\programs\launchers\ROMLauncher.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\programs\launchers\XBELauncher.cpp">
 					</File>
 					<File
