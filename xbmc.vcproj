@@ -4667,6 +4667,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\programs\ProgramInfoScanner.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\programs\ProgramInfoTag.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\programs\ProgramInfoTag.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\programs\ProgramLibraryQueue.cpp">
 				</File>
 				<File
