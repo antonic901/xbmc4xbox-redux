@@ -9,6 +9,7 @@
 
 #include "InfoScanner.h"
 #include "ProgramDatabase.h"
+#include "addons/Scraper.h"
 
 namespace PROGRAM
 {
@@ -30,6 +31,6 @@ namespace PROGRAM
     CProgramDatabase m_database;
 
   private:
-    bool DoScraping(const std::string& strDirectory, bool recursive = false);
+    bool DoScraping(const std::string& strDirectory, const ADDON::ScraperPtr& scraper, bool recursive = false);
   };
 }

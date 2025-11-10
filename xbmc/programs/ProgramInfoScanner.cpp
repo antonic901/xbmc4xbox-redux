@@ -8,20 +8,22 @@
 
 #include "ProgramInfoScanner.h"
 
-#include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "FileItem.h"
+#include "TextureCache.h"
+#include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
+#include "programs/ProgramInfoTag.h"
 #include "settings/AdvancedSettings.h"
-#include "Util.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/XMLUtils.h"
-#include "windows/GUIWindowFileManager.h"
 
 using namespace XFILE;
+using namespace ADDON;
 
 namespace PROGRAM
 {
@@ -80,10 +82,58 @@ namespace PROGRAM
 
   bool CProgramInfoScanner::DoScan(const std::string& strDirectory)
   {
-    return DoScraping(strDirectory);
+    ScraperPtr& scraper = m_database.GetScraperForPath(strDirectory);
+    return DoScraping(strDirectory, scraper);
   }
 
-  bool CProgramInfoScanner::DoScraping(const std::string& strDirectory, bool recursive /* = false */)
+  void GetArtwork(CFileItem *item)
+  {
+    std::string strArtworkPath = URIUtils::GetParentPath(item->GetPath());
+    strArtworkPath = URIUtils::AddFileToFolder(strArtworkPath, "_resources", "artwork");
+
+    CFileItemList items;
+    CDirectory::GetDirectory(strArtworkPath, items, g_advancedSettings.m_pictureExtensions, DIR_FLAG_DEFAULTS);
+    for (int i = 0; i < items.Size(); ++i)
+    {
+      CFileItemPtr pItem = items[i];
+      if (items[i]->m_bIsFolder)
+        continue;
+
+      std::string strFileName = URIUtils::GetFileName(pItem->GetPath());
+      URIUtils::RemoveExtension(strFileName);
+
+      if (StringUtils::EqualsNoCase(strFileName, "poster") || StringUtils::EqualsNoCase(strFileName, "fanart"))
+        item->SetArt(strFileName, pItem->GetPath());
+    }
+
+    for (CGUIListItem::ArtMap::const_iterator it = item->GetArt().begin(); it != item->GetArt().end(); ++it)
+      CTextureCache::Get().BackgroundCacheImage(it->second);
+  }
+
+  std::string GetNFO(const CFileItem *item)
+  {
+    std::string strNFO;
+
+    std::string strPath = item->m_bIsFolder ? item->GetPath() : URIUtils::GetDirectory(item->GetPath());
+    if (!item->m_bIsFolder)
+    {
+      strNFO = URIUtils::ReplaceExtension(item->GetPath(), ".nfo");
+      if (CFile::Exists(strNFO))
+        return strNFO;
+
+      strNFO = URIUtils::AddFileToFolder(strPath, "program.nfo");
+      if (CFile::Exists(strNFO))
+        return strNFO;
+
+      strNFO = URIUtils::AddFileToFolder(strPath, "_resources", "default.xml");
+      if (CFile::Exists(strNFO))
+        return strNFO;
+    }
+
+    return "";
+  }
+
+  bool CProgramInfoScanner::DoScraping(const std::string& strDirectory, const ScraperPtr& scraper, bool recursive /* = false */)
   {
     if (m_handle)
       m_handle->SetText(g_localizeStrings.Get(20415));
@@ -109,7 +159,7 @@ namespace PROGRAM
 
       if (item->m_bIsFolder && !recursive)
       {
-        DoScraping(item->GetPath(), true);
+        DoScraping(item->GetPath(), scraper, true);
         if (m_handle)
           m_handle->SetPercentage(i * 100.f / items.Size());
         continue;
@@ -130,78 +180,34 @@ namespace PROGRAM
       if (m_database.AddProgram(item->GetPath(), idPath) < 0)
         return false;
 
-      CFileItemPtr pItem(new CFileItem());
-      pItem->SetPath(item->GetPath());
-      pItem->SetProperty("type", "game");
-      pItem->SetProperty("system", "xbox");
-      pItem->SetProperty("title", strTemp);
+      CProgramInfoTag tag;
+      tag.SetFileNameAndPath(item->GetPath());
 
-      std::string strNFO = URIUtils::AddFileToFolder(strDirectory, "_resources", "default.xml");
-
-      CXBMCTinyXML doc;
-      if (doc.LoadFile(strNFO) && doc.RootElement())
+      if (scraper->ID() == "metadata.local")
       {
-        const TiXmlElement* element = doc.RootElement();
-        std::string value;
-
-        if (XMLUtils::GetString(element, "type", value))
-          pItem->SetProperty("type", value);
-
-        if (XMLUtils::GetString(element, "system", value))
-          pItem->SetProperty("system", value);
-
-        if (item->IsXBE())
-        {
-          unsigned int xbeID = CUtil::GetXbeID(item->GetPath());
-          std::stringstream ss;
-          ss << std::hex << std::uppercase << xbeID;
-          pItem->SetProperty("uniqueid", ss.str());
-        }
-
-        if (XMLUtils::GetString(element, "title", value))
-          pItem->SetProperty("title", value);
-        else if (item->IsXBE())
-          CUtil::GetXBEDescription(item->GetPath(), value);
-
-        if (XMLUtils::GetString(element, "overview", value))
-          pItem->SetProperty("overview", value);
-
-        value = URIUtils::AddFileToFolder(strDirectory, "_resources", "media", "preview.mp4");
-        if (!CFile::Exists(value))
-        {
-          value = URIUtils::AddFileToFolder(strDirectory, "_resources", "artwork", "preview.xmv");
-          if (!CFile::Exists(value))
-            value.clear();
-        }
-        if (!value.empty())
-          pItem->SetProperty("trailer", value);
-
-        value = URIUtils::AddFileToFolder(strDirectory, "_resources", "artwork", "poster.jpg");
-        if (!CFile::Exists(value))
-        {
-          value = URIUtils::AddFileToFolder(strDirectory, "_resources", "artwork", "poster.png");
-          if (!CFile::Exists(value))
-            value.clear();
-        }
-        if (!value.empty())
-          pItem->SetArt("poster", value);
-
-        value = URIUtils::AddFileToFolder(strDirectory, "_resources", "artwork", "fanart.jpg");
-        if (!CFile::Exists(value))
-        {
-          value = URIUtils::AddFileToFolder(strDirectory, "_resources", "artwork", "fanart.png");
-          if (!CFile::Exists(value))
-            value.clear();
-        }
-        if (!value.empty())
-          pItem->SetArt("fanart", value);
+        CXBMCTinyXML doc;
+        std::string strNFO = GetNFO(item.get());
+        if (!strNFO.empty() && doc.LoadFile(strNFO) && doc.RootElement())
+          tag.Load(doc.RootElement());
+      }
+      else
+      {
+        scraper->GetProgramDetails(item->GetPath(), tag);
       }
 
-      int64_t iSize = CGUIWindowFileManager::CalculateFolderSize(strDirectory);
-      if (iSize > 0)
-        pItem->SetProperty("size", iSize);
+      // set default values if not present
+      if (tag.m_strFileNameAndPath.empty())
+        tag.SetFileNameAndPath(item->GetPath());
+      if (tag.m_type.empty())
+        tag.SetType("game");
+      if (tag.m_strSystem.empty())
+        tag.SetSystem("xbox");
+      if (tag.m_strTitle.empty())
+        tag.SetTitle(strTemp);
 
-      m_database.SetDetailsForItem(*pItem);
+      CFileItemPtr pItem(new CFileItem(tag));
+      GetArtwork(pItem.get());
+      m_database.SetDetailsForItem(pItem.get());
     }
 
     return true;

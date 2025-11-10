@@ -14,12 +14,14 @@
 #include "dbwrappers/dataset.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
+#include "settings/AdvancedSettings.h"
 #include "utils/StringUtils.h"
 #include "utils/Trainer.h"
 #include "utils/URIUtils.h"
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
 #include "utils/log.h"
+#include "windows/GUIWindowFileManager.h"
 
 using namespace dbiplus;
 using namespace XFILE;
@@ -81,6 +83,89 @@ int CProgramDatabase::RunQuery(const std::string &sql)
   }
   CLog::Log(LOGDEBUG, "%s took %d ms for %d items query: %s", __FUNCTION__, XbmcThreads::SystemClockMillis() - time, rows, sql.c_str());
   return rows;
+}
+
+std::string CProgramDatabase::GetValueString(const CProgramInfoTag &details, int min, int max, const SDbTableOffsets *offsets) const
+{
+  std::vector<std::string> conditions;
+  for (int i = min + 1; i < max; ++i)
+  {
+    switch (offsets[i].type)
+    {
+    case PROGRAMDB_TYPE_STRING:
+      conditions.push_back(PrepareSQL("c%02d='%s'", i, ((std::string*)(((char*)&details)+offsets[i].offset))->c_str()));
+      break;
+    case PROGRAMDB_TYPE_INT:
+      conditions.push_back(PrepareSQL("c%02d='%i'", i, *(int*)(((char*)&details)+offsets[i].offset)));
+      break;
+    case PROGRAMDB_TYPE_COUNT:
+      {
+        int value = *(int*)(((char*)&details)+offsets[i].offset);
+        if (value)
+          conditions.push_back(PrepareSQL("c%02d=%i", i, value));
+        else
+          conditions.push_back(PrepareSQL("c%02d=NULL", i));
+      }
+      break;
+    case PROGRAMDB_TYPE_BOOL:
+      conditions.push_back(PrepareSQL("c%02d='%s'", i, *(bool*)(((char*)&details)+offsets[i].offset)?"true":"false"));
+      break;
+    case PROGRAMDB_TYPE_FLOAT:
+      conditions.push_back(PrepareSQL("c%02d='%f'", i, *(float*)(((char*)&details)+offsets[i].offset)));
+      break;
+    case PROGRAMDB_TYPE_STRINGARRAY:
+      conditions.push_back(PrepareSQL("c%02d='%s'", i, StringUtils::Join(*((std::vector<std::string>*)(((char*)&details)+offsets[i].offset)),
+                                                                          g_advancedSettings.m_programItemSeparator).c_str()));
+      break;
+    case PROGRAMDB_TYPE_DATE:
+      conditions.push_back(PrepareSQL("c%02d='%s'", i, ((CDateTime*)(((char*)&details)+offsets[i].offset))->GetAsDBDate().c_str()));
+      break;
+    case PROGRAMDB_TYPE_DATETIME:
+      conditions.push_back(PrepareSQL("c%02d='%s'", i, ((CDateTime*)(((char*)&details)+offsets[i].offset))->GetAsDBDateTime().c_str()));
+      break;
+    case PROGRAMDB_TYPE_UNUSED: // Skip the unused field to avoid populating unused data
+      continue;
+    }
+  }
+  return StringUtils::Join(conditions, ",");
+}
+
+void CProgramDatabase::GetDetailsFromDB(const dbiplus::sql_record* const record, int min, int max, const SDbTableOffsets *offsets, CProgramInfoTag &details, int idxOffset)
+{
+  for (int i = min + 1; i < max; i++)
+  {
+    switch (offsets[i].type)
+    {
+    case PROGRAMDB_TYPE_STRING:
+      *(std::string*)(((char*)&details)+offsets[i].offset) = record->at(i+idxOffset).get_asString();
+      break;
+    case PROGRAMDB_TYPE_INT:
+    case PROGRAMDB_TYPE_COUNT:
+      *(int*)(((char*)&details)+offsets[i].offset) = record->at(i+idxOffset).get_asInt();
+      break;
+    case PROGRAMDB_TYPE_BOOL:
+      *(bool*)(((char*)&details)+offsets[i].offset) = record->at(i+idxOffset).get_asBool();
+      break;
+    case PROGRAMDB_TYPE_FLOAT:
+      *(float*)(((char*)&details)+offsets[i].offset) = record->at(i+idxOffset).get_asFloat();
+      break;
+    case PROGRAMDB_TYPE_STRINGARRAY:
+    {
+      std::string value = record->at(i+idxOffset).get_asString();
+      if (!value.empty())
+        *(std::vector<std::string>*)(((char*)&details)+offsets[i].offset) = StringUtils::Split(value, g_advancedSettings.m_programItemSeparator);
+      break;
+    }
+    case PROGRAMDB_TYPE_DATE:
+      ((CDateTime*)(((char*)&details)+offsets[i].offset))->SetFromDBDate(record->at(i+idxOffset).get_asString());
+      break;
+    case PROGRAMDB_TYPE_DATETIME:
+      ((CDateTime*)(((char*)&details)+offsets[i].offset))->SetFromDBDateTime(record->at(i+idxOffset).get_asString());
+      break;
+    case PROGRAMDB_TYPE_UNUSED: // Skip the unused field to avoid populating unused data
+      continue;
+    }
+  }
 }
 
 bool CProgramDatabase::AddTrainer(int idTitle, CTrainer &trainer)
@@ -361,9 +446,9 @@ int CProgramDatabase::AddProgram(const std::string& strFilenameAndPath, const in
   return -1;
 }
 
-int CProgramDatabase::SetDetailsForItem(const CFileItem &item)
+int CProgramDatabase::SetDetailsForItem(const CFileItem* item)
 {
-  int idProgram = GetProgramId(item.GetPath());
+  int idProgram = GetProgramId(item->GetPath());
   if (idProgram < 0)
     return -1;
 
@@ -374,49 +459,23 @@ int CProgramDatabase::SetDetailsForItem(const CFileItem &item)
     if (NULL == m_pDS.get())
       return false;
 
-    std::string value;
-    std::vector<std::string> conditions;
+    std::string sql = "UPDATE program SET " + GetValueString(*item->GetProgramInfoTag(), PROGRAMDB_ID_MIN, PROGRAMDB_ID_MAX, DbProgramOffsets);
+    std::string strParentPath = URIUtils::GetParentPath(item->GetPath());
+    sql += PrepareSQL(", c%02d=%I64u", PROGRAMDB_ID_SIZE, CGUIWindowFileManager::CalculateFolderSize(strParentPath));
 
-    value = item.GetProperty("type").asString();
-    if (!value.empty())
-      conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_TYPE, value.c_str()));
+    if (item->HasArt("poster"))
+      sql += PrepareSQL(", c%02d='%s'", PROGRAMDB_ID_POSTER, item->GetArt("poster").c_str());
+    if (item->HasArt("fanart"))
+      sql += PrepareSQL(", c%02d='%s'", PROGRAMDB_ID_FANART, item->GetArt("fanart").c_str());
 
-    value = item.GetProperty("system").asString();
-    if (!value.empty())
-      conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_SYSTEM, value.c_str()));
-
-    value = item.GetProperty("uniqueid").asString();
-    if (!value.empty())
-      conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_UNIQUE_ID, value.c_str()));
-
-    value = item.GetProperty("title").asString();
-    if (!value.empty())
-      conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_TITLE, value.c_str()));
-
-    value = item.GetProperty("overview").asString();
-    if (!value.empty())
-      conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_PLOT, value.c_str()));
-
-    value = item.GetProperty("trailer").asString();
-    if (!value.empty())
-      conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_TRAILER, value.c_str()));
-
-    value = item.GetArt("poster");
-    if (!value.empty())
-      conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_POSTER, value.c_str()));
-
-    value = item.GetArt("fanart");
-    if (!value.empty())
-      conditions.push_back(PrepareSQL("c%02d='%s'", PROGRAMDB_ID_FANART, value.c_str()));
-
-    conditions.push_back(PrepareSQL("c%02d=%I64u", PROGRAMDB_ID_SIZE, item.GetProperty("size").asInteger()));
-
-    std::string sql = "UPDATE program SET " + StringUtils::Join(conditions, ",") + PrepareSQL(" where idProgram=%i", idProgram);
+    sql += PrepareSQL(" where idProgram=%i", idProgram);
     m_pDS->exec(sql);
+
+    return idProgram;
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, item.GetPath().c_str());
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, item->GetPath().c_str());
   }
   return -1;
 }
@@ -708,45 +767,26 @@ std::string CProgramDatabase::GetXBEPathByTitleId(const std::string& idTitle)
 
 void CProgramDatabase::GetDetailsForItem(boost::movelib::unique_ptr<dbiplus::Dataset> &pDS, CFileItem* pItem)
 {
-  std::string value = pDS->fv(PROGRAMDB_ID_PATH + 2).get_asString();
-  if (!value.empty())
-    pItem->SetPath(value);
+  const dbiplus::sql_record* const record = pDS->get_sql_record();
+  if (record == NULL)
+    return;
 
-  value = pDS->fv(PROGRAMDB_ID_TYPE + 2).get_asString();
-  if (!value.empty())
-    pItem->SetProperty("type", value);
+  pItem->m_dwSize = record->at(PROGRAMDB_ID_SIZE + 2).get_asInt64();
 
-  value = pDS->fv(PROGRAMDB_ID_SYSTEM + 2).get_asString();
-  if (!value.empty())
-    pItem->SetProperty("system", value);
-
-  value = pDS->fv(PROGRAMDB_ID_TITLE + 2).get_asString();
-  if (!value.empty())
-  {
-    pItem->SetLabel(value);
-    pItem->SetProperty("title", value);
-  }
-
-  value = pDS->fv(PROGRAMDB_ID_PLOT + 2).get_asString();
-  if (!value.empty())
-  {
-    pItem->SetLabel2(value);
-    pItem->SetProperty("overview", value);
-  }
-
-  value = pDS->fv(PROGRAMDB_ID_POSTER + 2).get_asString();
+  std::string value = record->at(PROGRAMDB_ID_POSTER + 2).get_asString();
   if (!value.empty())
     pItem->SetArt("poster", value);
-
-  value = pDS->fv(PROGRAMDB_ID_FANART + 2).get_asString();
+  value = record->at(PROGRAMDB_ID_FANART + 2).get_asString();
   if (!value.empty())
     pItem->SetArt("fanart", value);
 
-  value = pDS->fv(PROGRAMDB_ID_TRAILER + 2).get_asString();
-  if (!value.empty())
-    pItem->SetProperty("trailer", value);
-
-  pItem->m_dwSize = pDS->fv(PROGRAMDB_ID_SIZE + 2).get_asInt64();
+  CProgramInfoTag details;
+  details.m_iDbId = record->at(0).get_asInt();
+  details.m_playCount = record->at(PROGRAMDB_DETAILS_PROGRAM_PLAYCOUNT).get_asInt();
+  details.m_lastPlayed.SetFromDBDateTime(record->at(PROGRAMDB_DETAILS_PROGRAM_LASTPLAYED).get_asString());
+  details.m_dateAdded.SetFromDBDateTime(record->at(PROGRAMDB_DETAILS_PROGRAM_DATEADDED).get_asString());
+  GetDetailsFromDB(record, PROGRAMDB_ID_MIN, PROGRAMDB_ID_MAX, DbProgramOffsets, details);
+  pItem->SetFromProgramInfoTag(details);
 }
 
 bool CProgramDatabase::GetRecentlyPlayedGames(CFileItemList &items)
