@@ -42,6 +42,7 @@ namespace MUSIC_INFO
 {
   class CMusicInfoTag;
 }
+class CProgramInfoTag;
 class CVideoInfoTag;
 class CPictureInfoTag;
 
@@ -97,6 +98,7 @@ public:
   CFileItem(const CArtist& artist);
   CFileItem(const CGenre& genre);
   CFileItem(const MUSIC_INFO::CMusicInfoTag& music);
+  CFileItem(const CProgramInfoTag& program);
   CFileItem(const CVideoInfoTag& movie);
   CFileItem(const CMediaSource& share);
   CFileItem(boost::shared_ptr<const ADDON::IAddon> addonInfo);
@@ -194,6 +196,7 @@ public:
   bool IsStack() const;
   bool IsMultiPath() const;
   bool IsMusicDb() const;
+  bool IsProgramDb() const;
   bool IsVideoDb() const;
   bool IsEPG() const;
   bool IsPVRChannel() const;
@@ -239,6 +242,18 @@ public:
   inline const MUSIC_INFO::CMusicInfoTag* GetMusicInfoTag() const
   {
     return m_musicInfoTag;
+  }
+
+  inline bool HasProgramInfoTag() const
+  {
+    return m_programInfoTag != NULL;
+  }
+
+  CProgramInfoTag* GetProgramInfoTag();
+
+  inline const CProgramInfoTag* GetProgramInfoTag() const
+  {
+    return m_programInfoTag;
   }
 
   inline bool HasVideoInfoTag() const
@@ -426,6 +441,12 @@ public:
 
   bool IsAlbum() const;
 
+  /*! \brief Sets details using the information from the CProgramInfoTag object
+   Sets the programinfotag and uses its information to set the label and path.
+   \param program program details to use and set
+   */
+  void SetFromProgramInfoTag(const CProgramInfoTag &program);
+
   /*! \brief Sets details using the information from the CVideoInfoTag object
    Sets the videoinfotag and uses its information to set the label and path.
    \param video video details to use and set
@@ -488,6 +509,7 @@ private:
   std::string m_extrainfo;
   bool m_doContentLookup;
   MUSIC_INFO::CMusicInfoTag* m_musicInfoTag;
+  CProgramInfoTag* m_programInfoTag;
   CVideoInfoTag* m_videoInfoTag;
   CPictureInfoTag* m_pictureInfoTag;
   boost::shared_ptr<const ADDON::IAddon> m_addonInfo;

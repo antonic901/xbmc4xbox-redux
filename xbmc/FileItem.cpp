@@ -44,6 +44,7 @@
 #include "threads/SingleLock.h"
 #include "music/tags/MusicInfoTag.h"
 #include "pictures/PictureInfoTag.h"
+#include "programs/ProgramInfoTag.h"
 #include "music/Artist.h"
 #include "music/Album.h"
 #include "URL.h"
@@ -105,6 +106,12 @@ CFileItem::CFileItem(const CMusicInfoTag& music)
   FillInMimeType(false);
 }
 
+CFileItem::CFileItem(const CProgramInfoTag& program)
+{
+  Initialize();
+  SetFromProgramInfoTag(program);
+}
+
 CFileItem::CFileItem(const CVideoInfoTag& movie)
 {
   Initialize();
@@ -135,6 +142,7 @@ CFileItem::CFileItem(const CGenre& genre)
 
 CFileItem::CFileItem(const CFileItem& item)
 : m_musicInfoTag(NULL),
+  m_programInfoTag(NULL),
   m_videoInfoTag(NULL),
   m_pictureInfoTag(NULL)
 {
@@ -220,10 +228,12 @@ CFileItem::CFileItem(boost::shared_ptr<const ADDON::IAddon> addonInfo) : m_addon
 CFileItem::~CFileItem(void)
 {
   delete m_musicInfoTag;
+  delete m_programInfoTag;
   delete m_videoInfoTag;
   delete m_pictureInfoTag;
 
   m_musicInfoTag = NULL;
+  m_programInfoTag = NULL;
   m_videoInfoTag = NULL;
   m_pictureInfoTag = NULL;
 }
@@ -254,6 +264,19 @@ const CFileItem& CFileItem::operator=(const CFileItem& item)
   {
     delete m_musicInfoTag;
     m_musicInfoTag = NULL;
+  }
+
+  if (item.m_programInfoTag)
+  {
+    if (m_programInfoTag)
+      *m_programInfoTag = *item.m_programInfoTag;
+    else
+      m_programInfoTag = new CProgramInfoTag(*item.m_programInfoTag);
+  }
+  else
+  {
+    delete m_programInfoTag;
+    m_programInfoTag = NULL;
   }
 
   if (item.m_videoInfoTag)
@@ -307,6 +330,7 @@ const CFileItem& CFileItem::operator=(const CFileItem& item)
 void CFileItem::Initialize()
 {
   m_musicInfoTag = NULL;
+  m_programInfoTag = NULL;
   m_videoInfoTag = NULL;
   m_pictureInfoTag = NULL;
   m_bLabelPreformated = false;
@@ -346,6 +370,8 @@ void CFileItem::Reset()
   m_mimetype.clear();
   delete m_musicInfoTag;
   m_musicInfoTag=NULL;
+  delete m_programInfoTag;
+  m_programInfoTag=NULL;
   delete m_videoInfoTag;
   m_videoInfoTag=NULL;
   delete m_pictureInfoTag;
@@ -391,6 +417,13 @@ void CFileItem::Archive(CArchive& ar)
     {
       ar << 1;
       ar << *m_musicInfoTag;
+    }
+    else
+      ar << 0;
+    if (m_programInfoTag)
+    {
+      ar << 1;
+      ar << *m_programInfoTag;
     }
     else
       ar << 0;
@@ -444,6 +477,8 @@ void CFileItem::Archive(CArchive& ar)
       ar >> *GetMusicInfoTag();
     ar >> iType;
     if (iType == 1)
+      ar >> *GetProgramInfoTag();
+    if (iType == 1)
       ar >> *GetVideoInfoTag();
     ar >> iType;
     if (iType == 1)
@@ -468,6 +503,9 @@ void CFileItem::Serialize(CVariant& value) const
 
   if (m_musicInfoTag)
     (*m_musicInfoTag).Serialize(value["musicInfoTag"]);
+
+  if (m_programInfoTag)
+    (*m_programInfoTag).Serialize(value["programInfoTag"]);
 
   if (m_videoInfoTag)
     (*m_videoInfoTag).Serialize(value["videoInfoTag"]);
@@ -517,6 +555,9 @@ void CFileItem::ToSortable(SortItem &sortable, Field field) const
 
   if (HasMusicInfoTag())
     GetMusicInfoTag()->ToSortable(sortable, field);
+
+  if (HasProgramInfoTag())
+    GetProgramInfoTag()->ToSortable(sortable, field);
 
   if (HasVideoInfoTag())
     GetVideoInfoTag()->ToSortable(sortable, field);
@@ -601,6 +642,9 @@ bool CFileItem::IsVideo() const
   if (HasMusicInfoTag())
     return false;
 
+  if (HasProgramInfoTag())
+    return false;
+
   if (HasPictureInfoTag())
     return false;
 
@@ -679,6 +723,9 @@ bool CFileItem::IsAudio() const
   if (HasMusicInfoTag())
     return true;
 
+  if (HasProgramInfoTag())
+    return false;
+
   if (HasVideoInfoTag())
     return false;
 
@@ -709,6 +756,9 @@ bool CFileItem::IsPicture() const
     return true;
 
   if (HasMusicInfoTag())
+    return false;
+
+  if (HasProgramInfoTag())
     return false;
 
   if (HasVideoInfoTag())
@@ -1002,6 +1052,11 @@ bool CFileItem::IsMusicDb() const
   return URIUtils::IsMusicDb(m_strPath);
 }
 
+bool CFileItem::IsProgramDb() const
+{
+  return URIUtils::IsProgramDb(m_strPath);
+}
+
 bool CFileItem::IsVideoDb() const
 {
   return URIUtils::IsVideoDb(m_strPath);
@@ -1256,6 +1311,12 @@ bool CFileItem::IsSamePath(const CFileItem *item) const
       return (item->GetProperty("item_start") == GetProperty("item_start"));
     return true;
   }
+  if (HasProgramInfoTag() && item->HasProgramInfoTag())
+  {
+    if (m_programInfoTag->m_iDbId != -1 && item->m_programInfoTag->m_iDbId != -1)
+      return ((m_programInfoTag->m_iDbId == item->m_programInfoTag->m_iDbId) &&
+        (m_programInfoTag->m_type == item->m_programInfoTag->m_type));
+  }
   if (HasVideoInfoTag() && item->HasVideoInfoTag())
   {
     if (m_videoInfoTag->m_iDbId != -1 && item->m_videoInfoTag->m_iDbId != -1)
@@ -1267,6 +1328,11 @@ bool CFileItem::IsSamePath(const CFileItem *item) const
     CFileItem dbItem(m_musicInfoTag->GetURL(), false);
     if (HasProperty("item_start"))
       dbItem.SetProperty("item_start", GetProperty("item_start"));
+    return dbItem.IsSamePath(item);
+  }
+  if (IsProgramDb() && HasProgramInfoTag())
+  {
+    CFileItem dbItem(m_programInfoTag->m_strFileNameAndPath, false);
     return dbItem.IsSamePath(item);
   }
   if (IsVideoDb() && HasVideoInfoTag())
@@ -1281,6 +1347,11 @@ bool CFileItem::IsSamePath(const CFileItem *item) const
     CFileItem dbItem(item->m_musicInfoTag->GetURL(), false);
     if (item->HasProperty("item_start"))
       dbItem.SetProperty("item_start", item->GetProperty("item_start"));
+    return IsSamePath(&dbItem);
+  }
+  if (item->IsProgramDb() && item->HasProgramInfoTag())
+  {
+    CFileItem dbItem(item->m_programInfoTag->m_strFileNameAndPath, false);
     return IsSamePath(&dbItem);
   }
   if (item->IsVideoDb() && item->HasVideoInfoTag())
@@ -1302,6 +1373,11 @@ bool CFileItem::IsAlbum() const
 
 void CFileItem::UpdateInfo(const CFileItem &item, bool replaceLabels /*=true*/)
 {
+  if (item.HasProgramInfoTag())
+  {
+    *GetProgramInfoTag() = *item.GetProgramInfoTag();
+    SetInvalid();
+  }
   if (item.HasVideoInfoTag())
   { // copy info across
     //! @todo premiered info is normally stored in m_dateTime by the db
@@ -1329,6 +1405,19 @@ void CFileItem::UpdateInfo(const CFileItem &item, bool replaceLabels /*=true*/)
   if (!item.GetIconImage().empty())
     SetIconImage(item.GetIconImage());
   AppendProperties(item);
+}
+
+void CFileItem::SetFromProgramInfoTag(const CProgramInfoTag &program)
+{
+  if (!program.m_strTitle.empty())
+    SetLabel(program.m_strTitle);
+  if (!program.m_strFileNameAndPath.empty())
+  {
+    m_strPath = program.m_strFileNameAndPath;
+    m_bIsFolder = URIUtils::HasSlashAtEnd(m_strPath);
+  }
+
+  *GetProgramInfoTag() = program;
 }
 
 void CFileItem::SetFromVideoInfoTag(const CVideoInfoTag &video)
@@ -3136,6 +3225,14 @@ void CFileItemList::ClearSortState()
   m_sortDescription.sortBy = SortByNone;
   m_sortDescription.sortOrder = SortOrderNone;
   m_sortDescription.sortAttributes = SortAttributeNone;
+}
+
+CProgramInfoTag* CFileItem::GetProgramInfoTag()
+{
+  if (!m_programInfoTag)
+    m_programInfoTag = new CProgramInfoTag;
+
+  return m_programInfoTag;
 }
 
 CVideoInfoTag* CFileItem::GetVideoInfoTag()
