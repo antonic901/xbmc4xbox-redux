@@ -266,6 +266,7 @@ void CAdvancedSettings::Initialize()
   m_musicArtistSeparators.push_back(" feat. ");
   m_musicArtistSeparators.push_back(" ft. ");
   m_videoItemSeparator = " / ";
+  m_programItemSeparator = " / ";
   m_iMusicLibraryDateAdded = 1; // prefer mtime over ctime and current time
 
   m_bVideoLibraryHideAllItems = false;
