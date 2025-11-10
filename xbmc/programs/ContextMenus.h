@@ -38,4 +38,12 @@ public:
   bool IsVisible(const CFileItem& item) const;
   bool Execute(const boost::shared_ptr<CFileItem>& _item) const;
 };
+
+class CScraperConfig : public CStaticContextMenuAction
+{
+public:
+  CScraperConfig();
+  bool IsVisible(const CFileItem& item) const;
+  bool Execute(const boost::shared_ptr<CFileItem>& _item) const;
+};
 }

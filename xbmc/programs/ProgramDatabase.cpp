@@ -8,19 +8,22 @@
 
 #include "ProgramDatabase.h"
 
+#include "FileItem.h"
+#include "ServiceBroker.h"
+#include "addons/AddonManager.h"
 #include "dbwrappers/dataset.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
-#include "FileItem.h"
-#include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "utils/Trainer.h"
 #include "utils/URIUtils.h"
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
+#include "utils/log.h"
 
 using namespace dbiplus;
 using namespace XFILE;
+using namespace ADDON;
 
 CProgramDatabase::CProgramDatabase(void)
 {
@@ -37,7 +40,7 @@ bool CProgramDatabase::Open()
 void CProgramDatabase::CreateTables()
 {
   CLog::Log(LOGINFO, "create path table");
-  m_pDS->exec("CREATE TABLE path (idPath integer primary key, strPath text, strContent text, strHash text, dateAdded text)");
+  m_pDS->exec("CREATE TABLE path (idPath integer primary key, strPath text, strContent text, strHash text, strScraper text, dateAdded text)");
 
   CLog::Log(LOGINFO, "create program table");
   std::string columns = "CREATE TABLE program (idProgram integer primary key, idPath integer";
@@ -505,6 +508,60 @@ void CProgramDatabase::RemoveContentForPath(const std::string& strPath)
   {
     CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strPath.c_str());
   }
+}
+
+void CProgramDatabase::SetScraperForPath(const std::string& strPath, const ScraperPtr& scraper)
+{
+  try
+  {
+    if (NULL == m_pDB.get())
+      return;
+    if (NULL == m_pDS.get())
+      return;
+
+    int idPath = AddPath(strPath);
+    if (idPath < 0)
+      return;
+
+    std::string strSQL = PrepareSQL("UPDATE path SET strScraper='%s'", scraper->ID().c_str());
+    m_pDS->exec(strSQL);
+  }
+  catch(...)
+  {
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strPath.c_str());
+  }
+}
+
+ScraperPtr CProgramDatabase::GetScraperForPath(const std::string& strPath)
+{
+  try
+  {
+    if (NULL == m_pDB.get())
+      return ScraperPtr();
+    if (NULL == m_pDS.get())
+      return ScraperPtr();
+
+    int idPath = GetPathId(strPath);
+    if (idPath < 0)
+      return ScraperPtr();
+
+    std::string strSQL = PrepareSQL("SELECT strScraper FROM path WHERE idPath=%i", idPath);
+    m_pDS->query(strSQL);
+
+    std::string scraperID = m_pDS->fv("strScraper").get_asString();
+    if (scraperID.empty())
+      return ScraperPtr();
+
+    AddonPtr addon;
+    if (CServiceBroker::GetAddonMgr().GetAddon(scraperID, addon))
+      return boost::dynamic_pointer_cast<CScraper>(addon);
+  }
+  catch(...)
+  {
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strPath.c_str());
+  }
+
+  return ScraperPtr();
 }
 
 bool CProgramDatabase::SetProgramSettings(const std::string& strFileNameAndPath, const std::string& strSettings)

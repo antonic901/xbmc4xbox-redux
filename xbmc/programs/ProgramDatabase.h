@@ -7,8 +7,12 @@
  *  See LICENSE.md for more information.
  */
 
+#pragma once
+
 #include <string>
 
+#include "ProgramInfoTag.h"
+#include "addons/Scraper.h"
 #include "dbwrappers/Database.h"
 #include "XBDateTime.h"
 
@@ -63,6 +67,10 @@ public:
 
   void DeleteProgram(const std::string& strFilenameAndPath);
   void RemoveContentForPath(const std::string& strPath);
+
+  // scraper settings
+  void SetScraperForPath(const std::string& strPath, const ADDON::ScraperPtr& scraper);
+  ADDON::ScraperPtr GetScraperForPath(const std::string& strPath);
 
   // Program settings
   bool SetProgramSettings(const std::string& strFileNameAndPath, const std::string& strSettings);

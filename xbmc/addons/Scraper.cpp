@@ -39,7 +39,7 @@
 #include "utils/StringUtils.h"
 #include "music/MusicDatabase.h"
 #include "video/VideoDatabase.h"
-#include "programs/ProgramInfoTag.h"
+#include "programs/ProgramDatabase.h"
 #include "music/Album.h"
 #include "music/Artist.h"
 #include "Util.h"

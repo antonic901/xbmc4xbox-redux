@@ -9,7 +9,10 @@
 #include "ContextMenus.h"
 
 #include "FileItem.h"
+#include "ServiceBroker.h"
 #include "addons/Addon.h"
+#include "addons/GUIWindowAddonBrowser.h"
+#include "addons/Scraper.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "filesystem/AddonsDirectory.h"
@@ -118,5 +121,39 @@ bool CScriptLaunch::Execute(const boost::shared_ptr<CFileItem>& item) const
 
   CGUIDialogKaiToast::QueueNotification(StringUtils::Format(g_localizeStrings.Get(13328).c_str(), g_localizeStrings.Get(247).c_str()), g_localizeStrings.Get(161));
   return false;
+};
+
+CScraperConfig::CScraperConfig()
+  : CStaticContextMenuAction(10132)
+{
+}
+
+bool CScraperConfig::IsVisible(const CFileItem& item) const
+{
+  return item.m_bIsFolder && URIUtils::IsDOSPath(item.GetPath());
+}
+
+bool CScraperConfig::Execute(const boost::shared_ptr<CFileItem>& item) const
+{
+  CProgramDatabase database;
+  if (!database.Open())
+    return false;
+
+  std::string currentScraperId;
+  ADDON::ScraperPtr scraper = database.GetScraperForPath(item->GetPath());
+  if (scraper)
+    currentScraperId = scraper->ID();
+  std::string selectedAddonId = currentScraperId;
+
+  if (CGUIWindowAddonBrowser::SelectAddonID(ADDON::ADDON_SCRAPER_PROGRAMS, selectedAddonId, false) == 1
+      && selectedAddonId != currentScraperId)
+  {
+    ADDON::AddonPtr scraperAddon;
+    CServiceBroker::GetAddonMgr().GetAddon(selectedAddonId, scraperAddon);
+    scraper = boost::dynamic_pointer_cast<ADDON::CScraper>(scraperAddon);
+    database.SetScraperForPath(item->GetPath(), scraper);
+  }
+
+  return true;
 };
 }
