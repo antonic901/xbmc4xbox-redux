@@ -991,6 +991,10 @@ bool URIUtils::IsAfp(const CStdString& strFile)
   return IsProtocol(strFile2, "afp");
 }
 
+bool URIUtils::IsProgramDb(const std::string& strFile)
+{
+  return IsProtocol(strFile, "programdb");
+}
 
 bool URIUtils::IsVideoDb(const CStdString& strFile)
 {

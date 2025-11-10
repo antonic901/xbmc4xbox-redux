@@ -166,6 +166,7 @@ public:
   static bool IsUPnP(const CStdString& strFile);
   static bool IsMemCard(const CStdString& strFile);
   static bool IsURL(const CStdString& strFile);
+  static bool IsProgramDb(const std::string& strFile);
   static bool IsVideoDb(const CStdString& strFile);
   static bool IsVTP(const CStdString& strFile);
   static bool IsAPK(const CStdString& strFile);
