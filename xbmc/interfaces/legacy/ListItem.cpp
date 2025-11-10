@@ -16,6 +16,7 @@
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
 #include "utils/log.h"
+#include "programs/ProgramInfoTag.h"
 #include "video/VideoInfoTag.h"
 
 #include <cstdlib>
@@ -637,6 +638,87 @@ namespace XBMCAddon
           }
         }
       }
+      if (strcmpi(type, "program") == 0)
+      {
+        CProgramInfoTag &programtag = *GetProgramInfoTag();
+        for (InfoLabelDict::const_iterator it = infoLabels.begin(); it != infoLabels.end(); ++it)
+        {
+          String key = it->first;
+          StringUtils::ToLower(key);
+
+          const InfoLabelValue& alt = it->second;
+          const String value(alt.which() == first ? alt.former() : emptyString);
+
+          if (key == "dbid")
+            programtag.m_iDbId = strtol(value.c_str(), nullptr, 10);
+          else if (key == "year")
+            programtag.SetYear(strtol(value.c_str(), nullptr, 10));
+          else if (key == "rating")
+            programtag.SetRating(static_cast<float>(strtod(value.c_str(), nullptr)));
+          else if (key == "developer")
+            programtag.SetDeveloper(getStringArray(alt, key, value));
+          else if (key == "publisher")
+            programtag.SetPublisher(getStringArray(alt, key, value));
+          else if (key == "genre")
+            programtag.SetGenre(getStringArray(alt, key, value));
+          else if (key == "generalfeature")
+            programtag.SetGeneralFeature(getStringArray(alt, key, value));
+          else if (key == "onlinefeature")
+            programtag.SetOnlineFeature(getStringArray(alt, key, value));
+          else if (key == "platform")
+            programtag.SetPlatform(getStringArray(alt, key, value));
+          else if (key == "esrb")
+            programtag.SetESRB(value);
+          else if (key == "system")
+            programtag.SetSystem(value);
+          else if (key == "exclusive")
+          {
+            std::string strValue = value;
+            StringUtils::ToLower(strValue);
+            programtag.SetExclusive(strValue == "true" || strValue == "yes" || strValue == "1");
+          }
+          else if (key == "plot" || key == "overview")
+            programtag.SetPlot(value);
+          else if (key == "title")
+            programtag.SetTitle(value);
+          else if (key == "releasedate")
+          {
+            CDateTime releasedate;
+            releasedate.SetFromDateString(value);
+            programtag.SetReleaseDate(releasedate);
+          }
+          else if (key == "tag")
+            programtag.SetTags(getStringArray(alt, key, value));
+          else if (key == "lastplayed")
+            programtag.m_lastPlayed.SetFromDBDateTime(value);
+          else if (key == "trailer")
+            programtag.SetTrailer(value);
+          else if (key == "path")
+            programtag.SetFileNameAndPath(value);
+          else if (key == "filenameandpath")
+            programtag.SetFileNameAndPath(value);
+          else if (key == "date")
+          {
+            if (value.length() == 10)
+            {
+              int year = atoi(value.substr(value.size() - 4).c_str());
+              int month = atoi(value.substr(3, 4).c_str());
+              int day = atoi(value.substr(0, 2).c_str());
+              item->m_dateTime.SetDate(year, month, day);
+            }
+            else
+              CLog::Log(LOGERROR,"NEWADDON Invalid Date Format \"%s\"",value.c_str());
+          }
+          else if (key == "dateadded")
+            programtag.m_dateAdded.SetFromDBDateTime(value.c_str());
+          else if (key == "mediatype")
+          {
+            programtag.m_type = value;
+          }
+          else
+            CLog::Log(LOGERROR,"NEWADDON Unknown Program Info Key \"%s\"", key.c_str());
+        }
+      }
     } // end ListItem::setInfo
 
     void ListItem::setCast(const std::vector<Properties>& actors)
@@ -815,6 +897,16 @@ namespace XBMCAddon
         els.push_back((*el).former());
       }
       return els;
+    }
+
+    CProgramInfoTag* ListItem::GetProgramInfoTag()
+    {
+      return item->GetProgramInfoTag();
+    }
+
+    const CProgramInfoTag* ListItem::GetProgramInfoTag() const
+    {
+      return item->GetProgramInfoTag();
     }
 
     CVideoInfoTag* ListItem::GetVideoInfoTag()

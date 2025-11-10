@@ -1180,6 +1180,8 @@ namespace XBMCAddon
 private:
       std::vector<std::string> getStringArray(const InfoLabelValue& alt, const std::string& tag, std::string value = "");
 
+      CProgramInfoTag* GetProgramInfoTag();
+      const CProgramInfoTag* GetProgramInfoTag() const;
       CVideoInfoTag* GetVideoInfoTag();
       const CVideoInfoTag* GetVideoInfoTag() const;
     };
