@@ -39,6 +39,7 @@
 #include "utils/StringUtils.h"
 #include "music/MusicDatabase.h"
 #include "video/VideoDatabase.h"
+#include "programs/ProgramInfoTag.h"
 #include "music/Album.h"
 #include "music/Artist.h"
 #include "Util.h"
@@ -797,6 +798,13 @@ void DetailsFromFileItem<CArtist>(const CFileItem& item, CArtist& artist)
 }
 
 template<>
+void DetailsFromFileItem<CProgramInfoTag>(const CFileItem& item, CProgramInfoTag& tag)
+{
+  if (item.HasProgramInfoTag())
+    tag = *item.GetProgramInfoTag();
+}
+
+template<>
 void DetailsFromFileItem<CVideoInfoTag>(const CFileItem& item, CVideoInfoTag& tag)
 {
   if (item.HasVideoInfoTag())
@@ -1248,6 +1256,21 @@ EPISODELIST CScraper::GetEpisodeList(XFILE::CCurlFile &fcurl, const CScraperUrl 
   }
 
   return vcep;
+}
+
+// takes URL; returns true and populates program details on success, false otherwise
+bool CScraper::GetProgramDetails(const CScraperUrl &scurl, CProgramInfoTag &program)
+{
+  if (!m_isPython)
+    return false;
+
+  CLog::Log(LOGDEBUG, "%s: Reading %s '%s' using %s scraper "
+    "(file: '%s', content: '%s', version: '%s')", __FUNCTION__,
+    "program", scurl.m_url[0].m_url.c_str(), Name().c_str(), Path().c_str(),
+    ADDON::TranslateContent(Content()).c_str(), Version().asString().c_str());
+
+  program.Reset();
+  return PythonDetails(ID(), "url", scurl.m_url.front().m_url, "getdetails", program);
 }
 
 // takes URL; returns true and populates video details on success, false otherwise
