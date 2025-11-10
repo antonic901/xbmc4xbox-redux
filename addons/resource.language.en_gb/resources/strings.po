@@ -7921,7 +7921,7 @@ msgstr ""
 #empty string with id 20119
 
 msgctxt "#20120"
-msgid "Loading program information"
+msgid "Program information"
 msgstr ""
 
 msgctxt "#20121"
