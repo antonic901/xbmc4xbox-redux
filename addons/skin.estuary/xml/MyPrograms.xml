@@ -33,7 +33,7 @@
 						<top>240</top>
 						<width>525</width>
 						<bottom>100</bottom>
-						<label>$INFO[ListItem.Tagline,[I],[/I][CR][CR]]$INFO[ListItem.Property(overview)][CR][CR]</label>
+						<label>$INFO[ListItem.Tagline,[I],[/I][CR][CR]]$INFO[ListItem.Plot][CR][CR]</label>
 						<autoscroll delay="10000" time="3000" repeat="10000">Skin.HasSetting(autoscroll)</autoscroll>
 					</control>
 					<control type="textbox">
@@ -46,7 +46,7 @@
 						<font>font27</font>
 						<textcolor>80FFFFFF</textcolor>
 						<label>$LOCALIZE[19055]</label>
-						<visible>String.IsEmpty(ListItem.Property(overview)) + !ListItem.IsParentFolder</visible>
+						<visible>String.IsEmpty(ListItem.Plot) + !ListItem.IsParentFolder</visible>
 					</control>
 				</control>
 			</control>
