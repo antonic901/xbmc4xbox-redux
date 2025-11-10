@@ -20,6 +20,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "programs/ProgramDatabase.h"
+#include "programs/ProgramLibraryQueue.h"
 #include "programs/dialogs/GUIDialogProgramInfo.h"
 #include "programs/dialogs/GUIDialogProgramSettings.h"
 #include "settings/AdvancedSettings.h"
@@ -154,6 +155,30 @@ bool CScraperConfig::Execute(const boost::shared_ptr<CFileItem>& item) const
     database.SetScraperForPath(item->GetPath(), scraper);
   }
 
+  return true;
+};
+
+CContentScan::CContentScan()
+  : CStaticContextMenuAction(13349)
+{
+}
+
+bool CContentScan::IsVisible(const CFileItem& item) const
+{
+  if (!item.m_bIsFolder || !item.IsHD())
+    return false;
+
+  CProgramDatabase database;
+  if (!database.Open())
+    return false;
+
+  ADDON::ScraperPtr scraper = database.GetScraperForPath(item.GetPath());
+  return scraper != NULL;
+}
+
+bool CContentScan::Execute(const boost::shared_ptr<CFileItem>& item) const
+{
+  CProgramLibraryQueue::GetInstance().ScanLibrary(item->GetPath());
   return true;
 };
 }

@@ -18,15 +18,12 @@
 #include "programs/ProgramLibraryQueue.h"
 #include "programs/launchers/ProgramLauncher.h"
 #include "programs/launchers/XBELauncher.h"
-#include "messaging/ApplicationMessenger.h"
 #include "settings/AdvancedSettings.h"
 #include "Util.h"
 #include "utils/FileUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/Trainer.h"
 #include "utils/URIUtils.h"
-
-using namespace KODI::MESSAGING;
 
 CGUIWindowPrograms::CGUIWindowPrograms(void)
     : CGUIMediaWindow(WINDOW_PROGRAMS, "MyPrograms.xml")
@@ -97,7 +94,6 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   }
   else if (item->m_bIsFolder && item->IsHD())
   {
-    buttons.Add(CONTEXT_BUTTON_SCAN, 13349);
     CGUIDialogContextMenu::GetContextButtons("programs", item, buttons);
   }
   else if (URIUtils::HasExtension(item->GetPath(), g_advancedSettings.m_programExtensions))
@@ -127,11 +123,6 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 
   switch (button)
   {
-  case CONTEXT_BUTTON_SCAN:
-    {
-      CProgramLibraryQueue::GetInstance().ScanLibrary(item->GetPath());
-      return true;
-    }
   case CONTEXT_BUTTON_DELETE:
     {
       if (CGUIDialogYesNo::ShowAndGetInput(646, StringUtils::Format(g_localizeStrings.Get(433).c_str(), item->GetLabel().c_str())))
