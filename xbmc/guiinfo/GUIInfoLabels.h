@@ -880,6 +880,12 @@
 #define LISTITEM_ADDON_NEWS         (LISTITEM_START + 178)
 #define LISTITEM_ADDON_SIZE         (LISTITEM_START + 179)
 
+#define LISTITEM_DEVELOPER          (LISTITEM_START + 190)
+#define LISTITEM_PUBLISHER          (LISTITEM_START + 191)
+#define LISTITEM_GENERALFEATURE     (LISTITEM_START + 193)
+#define LISTITEM_ONLINEFEATURE      (LISTITEM_START + 194)
+#define LISTITEM_PLATFORM           (LISTITEM_START + 195)
+
 //! @todo There are issues with the LISTITEM_PROPERTY range, breakage occurs when more than 200 properties are used in skins.
 #define LISTITEM_PROPERTY_START     (LISTITEM_START + 200)
 #define LISTITEM_PROPERTY_END       (LISTITEM_PROPERTY_START + 2300)
