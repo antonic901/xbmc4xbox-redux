@@ -10,7 +10,7 @@
     •
     <a href="https://discord.com/channels/770816616937160745/1050581194401652736">community</a>
     •
-    <a href="https://github.com/antonic901/xbmc4xbox.github.io">add-ons</a>
+    <a href="https://github.com/xbmc4xbox/xbmc4xbox.github.io">add-ons</a>
   </strong>
 </p>
 
