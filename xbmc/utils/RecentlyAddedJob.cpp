@@ -33,12 +33,46 @@
 #include "music/MusicThumbLoader.h"
 #include "video/VideoThumbLoader.h"
 #include "settings/Settings.h"
+#include "programs/ProgramDatabase.h"
+#include "programs/ProgramInfoTag.h"
 
 #define NUM_ITEMS 10
 
 CRecentlyAddedJob::CRecentlyAddedJob(int flag)
 {
   m_flag = flag;
+}
+
+bool CRecentlyAddedJob::UpdateProgram()
+{
+  CGUIWindow* window = g_windowManager.GetWindow(WINDOW_HOME);
+
+  if (window == nullptr)
+    return false;
+
+  CLog::Log(LOGDEBUG, "CRecentlyAddedJob::UpdatePrograms() - Running RecentlyAdded home screen update");
+
+  CProgramDatabase database;
+  if (!database.Open())
+    return false;
+
+  CFileItemList items;
+  if (database.GetRecentlyPlayedGames(items))
+  {
+    for (int i = 0; i < items.Size(); ++i)
+    {
+      CFileItemPtr item = items.Get(i);
+      std::string value = StringUtils::Format("%i", i + 1);
+
+      window->SetProperty("RecentlyPlayedGame." + value + ".Title"       , item->GetLabel());
+      window->SetProperty("RecentlyPlayedGame." + value + ".Path"        , item->GetProgramInfoTag()->m_strFileNameAndPath);
+      window->SetProperty("RecentlyPlayedGame." + value + ".Icon"        , item->GetArt("poster"));
+      window->SetProperty("RecentlyPlayedGame." + value + ".Fanart"      , item->GetArt("fanart"));
+    }
+  }
+
+  database.Close();
+  return true;
 }
 
 bool CRecentlyAddedJob::UpdateVideo()
@@ -382,6 +416,9 @@ bool CRecentlyAddedJob::DoWork()
 
   if (m_flag & Video)
     ret &= UpdateVideo();
+
+  if (m_flag & Program)
+    ret &= UpdateProgram();
 
   if (m_flag & Totals)
     ret &= UpdateTotal();
