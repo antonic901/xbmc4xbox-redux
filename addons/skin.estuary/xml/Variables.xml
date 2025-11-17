@@ -259,6 +259,7 @@
 	<variable name="HomeFanartVar">
 		<value condition="Skin.HasSetting(no_fanart)"></value>
 		<value condition="Window.IsActive(musicinformation) | Window.IsActive(movieinformation) | Window.IsActive(addoninformation) | Window.IsActive(pictureinfo) | Window.IsVisible(script-script.extendedinfo-DialogVideoInfo.xml) | Window.IsVisible(script-script.extendedinfo-DialogInfo.xml) | Window.IsVisible(script-script.extendedinfo-VideoList.xml) | Window.IsActive(programinformation)">$INFO[Window(home).Property(infobackground)]</value>
+		<value condition="!String.IsEmpty(Container(3100).ListItem.Property(fanart)) + Control.HasFocus(3100)">$INFO[Container(3100).ListItem.Property(fanart)]</value>
 		<value condition="!String.IsEmpty(Container(5100).ListItem.Art(fanart)) + Control.HasFocus(5100)">$INFO[Container(5100).ListItem.Art(fanart)]</value>
 		<value condition="!String.IsEmpty(Container(5200).ListItem.Art(fanart)) + Control.HasFocus(5200)">$INFO[Container(5200).ListItem.Art(fanart)]</value>
 		<value condition="!String.IsEmpty(Container(5300).ListItem.Art(fanart)) + Control.HasFocus(5300)">$INFO[Container(5300).ListItem.Art(fanart)]</value>

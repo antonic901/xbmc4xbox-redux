@@ -120,6 +120,12 @@
 				<pagecontrol>60</pagecontrol>
 				<ondown>610</ondown>
 				<visible>Container(9000).HasFocus(2)</visible>
+				<control type="radiobutton" id="618">
+					<label>$LOCALIZE[15016]</label>
+					<include>DefaultSettingButton</include>
+					<selected>!Skin.HasSetting(HomeMenuNoGameButton)</selected>
+					<onclick>Skin.ToggleSetting(HomeMenuNoGameButton)</onclick>
+				</control>
 				<control type="radiobutton" id="611">
 					<label>$LOCALIZE[342]</label>
 					<include>DefaultSettingButton</include>

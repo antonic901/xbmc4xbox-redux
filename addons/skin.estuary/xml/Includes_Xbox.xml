@@ -1,5 +1,150 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <includes>
+	<include name="WidgetRecentlyPlayedGames">
+		<definition>
+			<include content="CategoryLabel">
+				<param name="label">$PARAM[widget_header]</param>
+				<param name="list_id" value="$PARAM[list_id]"/>
+			</include>
+			<control type="panel" id="$PARAM[list_id]">
+				<left>0</left>
+				<top>115</top>
+				<right>0</right>
+				<height>100%</height>
+				<include content="WidgetListCommon">
+					<param name="list_id" value="$PARAM[list_id]"/>
+					<param name="list_orientation" value="vertical"/>
+				</include>
+				<itemlayout width="310" height="486">
+					<control type="group">
+						<left>68</left>
+						<top>10</top>
+						<control type="group">
+							<control type="image">
+								<left>15</left>
+								<top>-10</top>
+								<width>290</width>
+								<height>400</height>
+								<texture background="true">$INFO[ListItem.Icon]</texture>
+								<aspectratio>scale</aspectratio>
+								<bordertexture border="21">overlays/shadow.png</bordertexture>
+								<bordersize>20</bordersize>
+							</control>
+						</control>
+					</control>
+				</itemlayout>
+				<focusedlayout width="310" height="486">
+					<control type="group">
+						<depth>DepthContentPopout</depth>
+						<left>68</left>
+						<top>10</top>
+						<animation type="Focus">
+							<effect type="zoom" start="100" end="110" time="200" tween="sine" easing="inout" center="230,130" />
+						</animation>
+						<animation type="Unfocus">
+							<effect type="zoom" start="110" end="100" time="200" tween="sine" easing="inout" center="230,130" />
+						</animation>
+						<control type="group">
+							<control type="image">
+								<left>11</left>
+								<top>-14</top>
+								<width>298</width>
+								<height>408</height>
+								<texture colordiffuse="button_focus">colors/grey.png</texture>
+								<bordertexture border="21">overlays/shadow.png</bordertexture>
+								<bordersize>20</bordersize>
+								<include condition="true">Animation_FocusTextureFade</include>
+							</control>
+							<control type="image">
+								<left>15</left>
+								<top>-10</top>
+								<width>290</width>
+								<height>400</height>
+								<texture background="true">$INFO[ListItem.Icon]</texture>
+								<aspectratio>scale</aspectratio>
+								<bordertexture border="21">overlays/shadow.png</bordertexture>
+								<bordersize>20</bordersize>
+							</control>
+						</control>
+					</control>
+				</focusedlayout>
+				<content>
+					<item id="1">
+						<label>$INFO[Window.Property(RecentlyPlayedGame.1.Title)]</label>
+						<label2>-</label2>
+						<icon>$INFO[Window.Property(RecentlyPlayedGame.1.Icon)]</icon>
+						<thumb>-</thumb>
+						<onclick>PlayMedia($INFO[Window.Property(RecentlyPlayedGame.1.Path)])</onclick>
+						<visible>!String.IsEmpty(Window.Property(RecentlyPlayedGame.1.Title))</visible>
+						<property name="fanart">$INFO[Window.Property(RecentlyPlayedGame.1.Fanart)]</property>
+					</item>
+					<item id="2">
+						<label>$INFO[Window.Property(RecentlyPlayedGame.2.Title)]</label>
+						<label2>-</label2>
+						<icon>$INFO[Window.Property(RecentlyPlayedGame.2.Icon)]</icon>
+						<thumb>-</thumb>
+						<onclick>PlayMedia($INFO[Window.Property(RecentlyPlayedGame.2.Path)])</onclick>
+						<visible>!String.IsEmpty(Window.Property(RecentlyPlayedGame.2.Title))</visible>
+						<property name="fanart">$INFO[Window.Property(RecentlyPlayedGame.2.Fanart)]</property>
+					</item>
+					<item id="3">
+						<label>$INFO[Window.Property(RecentlyPlayedGame.3.Title)]</label>
+						<label2>-</label2>
+						<icon>$INFO[Window.Property(RecentlyPlayedGame.3.Icon)]</icon>
+						<thumb>-</thumb>
+						<onclick>PlayMedia($INFO[Window.Property(RecentlyPlayedGame.3.Path)])</onclick>
+						<visible>!String.IsEmpty(Window.Property(RecentlyPlayedGame.3.Title))</visible>
+						<property name="fanart">$INFO[Window.Property(RecentlyPlayedGame.3.Fanart)]</property>
+					</item>
+					<item id="4">
+						<label>$INFO[Window.Property(RecentlyPlayedGame.4.Title)]</label>
+						<label2>-</label2>
+						<icon>$INFO[Window.Property(RecentlyPlayedGame.4.Icon)]</icon>
+						<thumb>-</thumb>
+						<onclick>PlayMedia($INFO[Window.Property(RecentlyPlayedGame.4.Path)])</onclick>
+						<visible>!String.IsEmpty(Window.Property(RecentlyPlayedGame.4.Title))</visible>
+						<property name="fanart">$INFO[Window.Property(RecentlyPlayedGame.4.Fanart)]</property>
+					</item>
+					<item id="5">
+						<label>$INFO[Window.Property(RecentlyPlayedGame.5.Title)]</label>
+						<label2>-</label2>
+						<icon>$INFO[Window.Property(RecentlyPlayedGame.5.Icon)]</icon>
+						<thumb>-</thumb>
+						<onclick>PlayMedia($INFO[Window.Property(RecentlyPlayedGame.5.Path)])</onclick>
+						<visible>!String.IsEmpty(Window.Property(RecentlyPlayedGame.5.Title))</visible>
+						<property name="fanart">$INFO[Window.Property(RecentlyPlayedGame.5.Fanart)]</property>
+					</item>
+					<item id="6">
+						<label>$INFO[Window.Property(RecentlyPlayedGame.6.Title)]</label>
+						<label2>-</label2>
+						<icon>$INFO[Window.Property(RecentlyPlayedGame.6.Icon)]</icon>
+						<thumb>-</thumb>
+						<onclick>PlayMedia($INFO[Window.Property(RecentlyPlayedGame.6.Path)])</onclick>
+						<visible>!String.IsEmpty(Window.Property(RecentlyPlayedGame.6.Title))</visible>
+						<property name="fanart">$INFO[Window.Property(RecentlyPlayedGame.6.Fanart)]</property>
+					</item>
+					<item id="7">
+						<label>$INFO[Window.Property(RecentlyPlayedGame.7.Title)]</label>
+						<label2>-</label2>
+						<icon>$INFO[Window.Property(RecentlyPlayedGame.7.Icon)]</icon>
+						<thumb>-</thumb>
+						<onclick>PlayMedia($INFO[Window.Property(RecentlyPlayedGame.7.Path)])</onclick>
+						<visible>!String.IsEmpty(Window.Property(RecentlyPlayedGame.7.Title))</visible>
+						<property name="fanart">$INFO[Window.Property(RecentlyPlayedGame.7.Fanart)]</property>
+					</item>
+					<item id="8">
+						<label>$INFO[Window.Property(RecentlyPlayedGame.8.Title)]</label>
+						<label2>-</label2>
+						<icon>$INFO[Window.Property(RecentlyPlayedGame.8.Icon)]</icon>
+						<thumb>-</thumb>
+						<onclick>PlayMedia($INFO[Window.Property(RecentlyPlayedGame.8.Path)])</onclick>
+						<visible>!String.IsEmpty(Window.Property(RecentlyPlayedGame.8.Title))</visible>
+						<property name="fanart">$INFO[Window.Property(RecentlyPlayedGame.8.Fanart)]</property>
+					</item>
+				</content>
+			</control>
+		</definition>
+	</include>
 	<include name="WidgetRecentlyAddedMovies">
 		<definition>
 			<include content="CategoryLabel">
