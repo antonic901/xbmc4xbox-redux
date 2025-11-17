@@ -467,6 +467,7 @@
 #define SYSTEM_TOTAL_SPACE_Z        703
 #endif
 
+#define LIBRARY_HAS_GAMES           719
 #define LIBRARY_HAS_MUSIC           720
 #define LIBRARY_HAS_VIDEO           721
 #define LIBRARY_HAS_MOVIES          722

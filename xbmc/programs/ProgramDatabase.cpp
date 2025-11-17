@@ -358,6 +358,34 @@ int CProgramDatabase::GetPathId(const std::string& strPath)
   return -1;
 }
 
+bool CProgramDatabase::HasContent(const std::string& strContent)
+{
+  std::string strSQL;
+  bool result = false;
+  try
+  {
+    if (NULL == m_pDB.get())
+      return -1;
+    if (NULL == m_pDS.get())
+      return -1;
+
+    strSQL = "SELECT count(1) FROM program";
+    if (!strContent.empty())
+      strSQL += PrepareSQL(" WHERE c%02d='%s'", PROGRAMDB_ID_TYPE, strContent.c_str());
+    m_pDS->query(strSQL);
+
+    if (!m_pDS->eof())
+      result = (m_pDS->fv(0).get_asInt() > 0);
+
+    m_pDS->close();
+  }
+  catch (...)
+  {
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, strSQL.c_str());
+  }
+  return result;
+}
+
 int CProgramDatabase::AddPath(const std::string& strPath)
 {
   std::string strSQL;

@@ -9,6 +9,7 @@
 #include "ProgramInfoScanner.h"
 
 #include "FileItem.h"
+#include "GUIInfoManager.h"
 #include "TextureCache.h"
 #include "Util.h"
 #include "dialogs/GUIDialogExtendedProgressBar.h"
@@ -61,6 +62,7 @@ namespace PROGRAM
       CLog::Log(LOGERROR, "%s: Exception while scanning.", __FUNCTION__);
     }
 
+    g_infoManager.ResetLibraryBools();
     m_database.Close();
     m_bRunning = false;
 

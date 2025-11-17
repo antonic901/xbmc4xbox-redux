@@ -110,6 +110,8 @@ public:
   int GetPathId(const std::string& strPath);
   int GetProgramId(const std::string& strFilenameAndPath);
 
+  bool HasContent(const std::string& strContent);
+
   int AddPath(const std::string& strPath);
   int AddProgram(const std::string& strFilenameAndPath, const int idPath);
 
