@@ -1,53 +1,50 @@
-from test.test_support import run_unittest, verbose
+from test.support import verbose
 import unittest
 import locale
 import sys
 import codecs
-
-
-enUS_locale = None
-
-def get_enUS_locale():
-    global enUS_locale
-    if sys.platform == 'darwin':
-        import os
-        tlocs = ("en_US.UTF-8", "en_US.ISO8859-1", "en_US")
-        if int(os.uname()[2].split('.')[0]) < 10:
-            # The locale test work fine on OSX 10.6, I (ronaldoussoren)
-            # haven't had time yet to verify if tests work on OSX 10.5
-            # (10.4 is known to be bad)
-            raise unittest.SkipTest("Locale support on MacOSX is minimal")
-    if sys.platform.startswith("win"):
-        tlocs = ("En", "English")
-    else:
-        tlocs = ("en_US.UTF-8", "en_US.US-ASCII", "en_US")
-    oldlocale = locale.setlocale(locale.LC_NUMERIC)
-    for tloc in tlocs:
-        try:
-            locale.setlocale(locale.LC_NUMERIC, tloc)
-        except locale.Error:
-            continue
-        break
-    else:
-        raise unittest.SkipTest(
-            "Test locale not supported (tried %s)" % (', '.join(tlocs)))
-    enUS_locale = tloc
-    locale.setlocale(locale.LC_NUMERIC, oldlocale)
-
 
 class BaseLocalizedTest(unittest.TestCase):
     #
     # Base class for tests using a real locale
     #
 
-    def setUp(self):
-        self.oldlocale = locale.setlocale(self.locale_type)
-        locale.setlocale(self.locale_type, enUS_locale)
-        if verbose:
-            print "testing with \"%s\"..." % enUS_locale,
+    @classmethod
+    def setUpClass(cls):
+        if sys.platform == 'darwin':
+            import os
+            tlocs = ("en_US.UTF-8", "en_US.ISO8859-1", "en_US")
+            if int(os.uname().release.split('.')[0]) < 10:
+                # The locale test work fine on OSX 10.6, I (ronaldoussoren)
+                # haven't had time yet to verify if tests work on OSX 10.5
+                # (10.4 is known to be bad)
+                raise unittest.SkipTest("Locale support on MacOSX is minimal")
+        elif sys.platform.startswith("win"):
+            tlocs = ("En", "English")
+        else:
+            tlocs = ("en_US.UTF-8", "en_US.ISO8859-1",
+                     "en_US.US-ASCII", "en_US")
+        try:
+            oldlocale = locale.setlocale(locale.LC_NUMERIC)
+            for tloc in tlocs:
+                try:
+                    locale.setlocale(locale.LC_NUMERIC, tloc)
+                except locale.Error:
+                    continue
+                break
+            else:
+                raise unittest.SkipTest("Test locale not supported "
+                                        "(tried %s)" % (', '.join(tlocs)))
+            cls.enUS_locale = tloc
+        finally:
+            locale.setlocale(locale.LC_NUMERIC, oldlocale)
 
-    def tearDown(self):
-        locale.setlocale(self.locale_type, self.oldlocale)
+    def setUp(self):
+        oldlocale = locale.setlocale(self.locale_type)
+        self.addCleanup(locale.setlocale, self.locale_type, oldlocale)
+        locale.setlocale(self.locale_type, self.enUS_locale)
+        if verbose:
+            print("testing with %r..." % self.enUS_locale, end=' ', flush=True)
 
 
 class BaseCookedTest(unittest.TestCase):
@@ -60,7 +57,6 @@ class BaseCookedTest(unittest.TestCase):
 
     def tearDown(self):
         locale._override_localeconv = {}
-
 
 class CCookedTest(BaseCookedTest):
     # A cooked "C" locale
@@ -116,7 +112,7 @@ class FrFRCookedTest(BaseCookedTest):
     # and a non-ASCII currency symbol.
 
     cooked_values = {
-        'currency_symbol': '\xe2\x82\xac',
+        'currency_symbol': '\u20ac',
         'decimal_point': ',',
         'frac_digits': 2,
         'grouping': [3, 3, 0],
@@ -328,7 +324,7 @@ class TestFrFRNumberFormatting(FrFRCookedTest, BaseFormattingTest):
         self._test_format("%-10d", 4200, grouping=True, out='4 200'.ljust(10))
 
     def test_currency(self):
-        euro = u'\u20ac'.encode('utf-8')
+        euro = '\u20ac'
         self._test_currency(50000, "50000,00 " + euro)
         self._test_currency(50000, "50 000,00 " + euro, grouping=True)
         # XXX is the trailing space a bug?
@@ -336,40 +332,37 @@ class TestFrFRNumberFormatting(FrFRCookedTest, BaseFormattingTest):
             grouping=True, international=True)
 
 
-class TestStringMethods(BaseLocalizedTest):
-    locale_type = locale.LC_CTYPE
+class TestCollation(unittest.TestCase):
+    # Test string collation functions
 
-    if sys.platform != 'sunos5' and not sys.platform.startswith("win"):
-        # Test BSD Rune locale's bug for isctype functions.
+    def test_strcoll(self):
+        self.assertLess(locale.strcoll('a', 'b'), 0)
+        self.assertEqual(locale.strcoll('a', 'a'), 0)
+        self.assertGreater(locale.strcoll('b', 'a'), 0)
 
-        def test_isspace(self):
-            self.assertEqual('\x20'.isspace(), True)
-            self.assertEqual('\xa0'.isspace(), False)
-            self.assertEqual('\xa1'.isspace(), False)
+    def test_strxfrm(self):
+        self.assertLess(locale.strxfrm('a'), locale.strxfrm('b'))
 
-        def test_isalpha(self):
-            self.assertEqual('\xc0'.isalpha(), False)
 
-        def test_isalnum(self):
-            self.assertEqual('\xc0'.isalnum(), False)
+class TestEnUSCollation(BaseLocalizedTest, TestCollation):
+    # Test string collation functions with a real English locale
 
-        def test_isupper(self):
-            self.assertEqual('\xc0'.isupper(), False)
+    locale_type = locale.LC_ALL
 
-        def test_islower(self):
-            self.assertEqual('\xc0'.islower(), False)
+    def setUp(self):
+        enc = codecs.lookup(locale.getpreferredencoding(False) or 'ascii').name
+        if enc not in ('utf-8', 'iso8859-1', 'cp1252'):
+            raise unittest.SkipTest('encoding not suitable')
+        if enc != 'iso8859-1' and (sys.platform == 'darwin' or
+                                   sys.platform.startswith('freebsd')):
+            raise unittest.SkipTest('wcscoll/wcsxfrm have known bugs')
+        BaseLocalizedTest.setUp(self)
 
-        def test_lower(self):
-            self.assertEqual('\xcc\x85'.lower(), '\xcc\x85')
+    def test_strcoll_with_diacritic(self):
+        self.assertLess(locale.strcoll('à', 'b'), 0)
 
-        def test_upper(self):
-            self.assertEqual('\xed\x95\xa0'.upper(), '\xed\x95\xa0')
-
-        def test_strip(self):
-            self.assertEqual('\xed\x95\xa0'.strip(), '\xed\x95\xa0')
-
-        def test_split(self):
-            self.assertEqual('\xec\xa0\xbc'.split(), ['\xec\xa0\xbc'])
+    def test_strxfrm_with_diacritic(self):
+        self.assertLess(locale.strxfrm('à'), locale.strxfrm('b'))
 
 
 class NormalizeTest(unittest.TestCase):
@@ -378,7 +371,8 @@ class NormalizeTest(unittest.TestCase):
 
     def test_locale_alias(self):
         for localename, alias in locale.locale_alias.items():
-            self.check(localename, alias)
+            with self.subTest(locale=(localename, alias)):
+                self.check(localename, alias)
 
     def test_empty(self):
         self.check('', '')
@@ -390,6 +384,7 @@ class NormalizeTest(unittest.TestCase):
     def test_english(self):
         self.check('en', 'en_US.ISO8859-1')
         self.check('EN', 'en_US.ISO8859-1')
+        self.check('en.iso88591', 'en_US.ISO8859-1')
         self.check('en_US', 'en_US.ISO8859-1')
         self.check('en_us', 'en_US.ISO8859-1')
         self.check('en_GB', 'en_GB.ISO8859-1')
@@ -398,7 +393,10 @@ class NormalizeTest(unittest.TestCase):
         self.check('en_US:UTF-8', 'en_US.UTF-8')
         self.check('en_US.ISO8859-1', 'en_US.ISO8859-1')
         self.check('en_US.US-ASCII', 'en_US.ISO8859-1')
+        self.check('en_US.88591', 'en_US.ISO8859-1')
+        self.check('en_US.885915', 'en_US.ISO8859-15')
         self.check('english', 'en_EN.ISO8859-1')
+        self.check('english_uk.ascii', 'en_GB.ISO8859-1')
 
     def test_hyphenated_encoding(self):
         self.check('az_AZ.iso88599e', 'az_AZ.ISO8859-9E')
@@ -418,14 +416,16 @@ class NormalizeTest(unittest.TestCase):
     def test_euro_modifier(self):
         self.check('de_DE@euro', 'de_DE.ISO8859-15')
         self.check('en_US.ISO8859-15@euro', 'en_US.ISO8859-15')
+        self.check('de_DE.utf8@euro', 'de_DE.UTF-8')
 
     def test_latin_modifier(self):
         self.check('be_BY.UTF-8@latin', 'be_BY.UTF-8@latin')
         self.check('sr_RS.UTF-8@latin', 'sr_RS.UTF-8@latin')
+        self.check('sr_RS.UTF-8@latn', 'sr_RS.UTF-8@latin')
 
     def test_valencia_modifier(self):
         self.check('ca_ES.UTF-8@valencia', 'ca_ES.UTF-8@valencia')
-        self.check('ca_ES@valencia', 'ca_ES.UTF-8@valencia')
+        self.check('ca_ES@valencia', 'ca_ES.ISO8859-15@valencia')
         self.check('ca@valencia', 'ca_ES.ISO8859-1@valencia')
 
     def test_devanagari_modifier(self):
@@ -442,6 +442,39 @@ class NormalizeTest(unittest.TestCase):
         self.check('sd_IN', 'sd_IN.UTF-8')
         self.check('sd', 'sd_IN.UTF-8')
 
+    def test_euc_encoding(self):
+        self.check('ja_jp.euc', 'ja_JP.eucJP')
+        self.check('ja_jp.eucjp', 'ja_JP.eucJP')
+        self.check('ko_kr.euc', 'ko_KR.eucKR')
+        self.check('ko_kr.euckr', 'ko_KR.eucKR')
+        self.check('zh_cn.euc', 'zh_CN.eucCN')
+        self.check('zh_tw.euc', 'zh_TW.eucTW')
+        self.check('zh_tw.euctw', 'zh_TW.eucTW')
+
+    def test_japanese(self):
+        self.check('ja', 'ja_JP.eucJP')
+        self.check('ja.jis', 'ja_JP.JIS7')
+        self.check('ja.sjis', 'ja_JP.SJIS')
+        self.check('ja_jp', 'ja_JP.eucJP')
+        self.check('ja_jp.ajec', 'ja_JP.eucJP')
+        self.check('ja_jp.euc', 'ja_JP.eucJP')
+        self.check('ja_jp.eucjp', 'ja_JP.eucJP')
+        self.check('ja_jp.iso-2022-jp', 'ja_JP.JIS7')
+        self.check('ja_jp.iso2022jp', 'ja_JP.JIS7')
+        self.check('ja_jp.jis', 'ja_JP.JIS7')
+        self.check('ja_jp.jis7', 'ja_JP.JIS7')
+        self.check('ja_jp.mscode', 'ja_JP.SJIS')
+        self.check('ja_jp.pck', 'ja_JP.SJIS')
+        self.check('ja_jp.sjis', 'ja_JP.SJIS')
+        self.check('ja_jp.ujis', 'ja_JP.eucJP')
+        self.check('ja_jp.utf8', 'ja_JP.UTF-8')
+        self.check('japan', 'ja_JP.eucJP')
+        self.check('japanese', 'ja_JP.eucJP')
+        self.check('japanese-euc', 'ja_JP.eucJP')
+        self.check('japanese.euc', 'ja_JP.eucJP')
+        self.check('japanese.sjis', 'ja_JP.SJIS')
+        self.check('jp_jp', 'ja_JP.eucJP')
+
 
 class TestMiscellaneous(unittest.TestCase):
     def test_getpreferredencoding(self):
@@ -451,10 +484,10 @@ class TestMiscellaneous(unittest.TestCase):
             # If encoding non-empty, make sure it is valid
             codecs.lookup(enc)
 
-    if hasattr(locale, "strcoll"):
-        def test_strcoll_3303(self):
-            # test crasher from bug #3303
-            self.assertRaises(TypeError, locale.strcoll, u"a", None)
+    def test_strcoll_3303(self):
+        # test crasher from bug #3303
+        self.assertRaises(TypeError, locale.strcoll, "a", None)
+        self.assertRaises(TypeError, locale.strcoll, b"a", None)
 
     def test_setlocale_category(self):
         locale.setlocale(locale.LC_ALL)
@@ -469,59 +502,27 @@ class TestMiscellaneous(unittest.TestCase):
 
     def test_getsetlocale_issue1813(self):
         # Issue #1813: setting and getting the locale under a Turkish locale
-        oldlocale = locale.getlocale()
+        oldlocale = locale.setlocale(locale.LC_CTYPE)
         self.addCleanup(locale.setlocale, locale.LC_CTYPE, oldlocale)
-        for loc in ('tr_TR', 'tr_TR.UTF-8', 'tr_TR.ISO8859-9'):
-            try:
-                locale.setlocale(locale.LC_CTYPE, loc)
-                break
-            except locale.Error:
-                continue
-        else:
+        try:
+            locale.setlocale(locale.LC_CTYPE, 'tr_TR')
+        except locale.Error:
             # Unsupported locale on this system
             self.skipTest('test needs Turkish locale')
-        loc = locale.getlocale()
-        try:
-            locale.setlocale(locale.LC_CTYPE, loc)
-        except Exception as e:
-            self.fail("Failed to set locale %r (default locale is %r): %r" %
-                      (loc, oldlocale, e))
-        self.assertEqual(loc, locale.getlocale())
-
-    def test_normalize_issue12752(self):
-        # Issue #1813 caused a regression where locale.normalize() would no
-        # longer accept unicode strings.
-        self.assertEqual(locale.normalize(u'en_US'), 'en_US.ISO8859-1')
-
-    def test_setlocale_unicode(self):
-        oldlocale = locale.getlocale()
-        self.addCleanup(locale.setlocale, locale.LC_CTYPE, oldlocale)
-
-        user_locale = locale.setlocale(locale.LC_CTYPE, '')
-        unicode_locale = user_locale.decode('utf-8')
-
-        user_locale2 = locale.setlocale(locale.LC_CTYPE, unicode_locale)
-        self.assertEqual(user_locale, user_locale2)
-
-
-def test_main():
-    tests = [
-        TestMiscellaneous,
-        TestFormatPatternArg,
-        TestLocaleFormatString,
-        TestEnUSNumberFormatting,
-        TestCNumberFormatting,
-        TestFrFRNumberFormatting,
-    ]
-    # SkipTest can't be raised inside unittests, handle it manually instead
-    try:
-        get_enUS_locale()
-    except unittest.SkipTest as e:
+        loc = locale.getlocale(locale.LC_CTYPE)
         if verbose:
-            print "Some tests will be disabled: %s" % e
-    else:
-        tests += [TestNumberFormatting, TestStringMethods]
-    run_unittest(*tests)
+            print('testing with %a' % (loc,), end=' ', flush=True)
+        locale.setlocale(locale.LC_CTYPE, loc)
+        self.assertEqual(loc, locale.getlocale(locale.LC_CTYPE))
+
+    def test_invalid_locale_format_in_localetuple(self):
+        with self.assertRaises(TypeError):
+            locale.setlocale(locale.LC_ALL, b'fi_FI')
+
+    def test_invalid_iterable_in_localetuple(self):
+        with self.assertRaises(TypeError):
+            locale.setlocale(locale.LC_ALL, (b'not', b'valid'))
+
 
 if __name__ == '__main__':
-    test_main()
+    unittest.main()

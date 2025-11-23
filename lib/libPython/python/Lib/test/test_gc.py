@@ -1,6 +1,8 @@
 import unittest
-from test.support import (verbose, run_unittest, start_threads,
-                          requires_type_collecting)
+from test.support import (verbose, refcount_test, run_unittest,
+                            strip_python_stderr, cpython_only, start_threads)
+from test.script_helper import assert_python_ok, make_script, temp_dir
+
 import sys
 import time
 import gc
@@ -10,6 +12,15 @@ try:
     import threading
 except ImportError:
     threading = None
+
+try:
+    from _testcapi import with_tp_del
+except ImportError:
+    def with_tp_del(cls):
+        class C(object):
+            def __new__(cls, *args, **kwargs):
+                raise TypeError('requires _testcapi.with_tp_del')
+        return C
 
 ### Support code
 ###############################################################################
@@ -38,6 +49,21 @@ class GC_Detector(object):
         # gc collects it.
         self.wr = weakref.ref(C1055820(666), it_happened)
 
+@with_tp_del
+class Uncollectable(object):
+    """Create a reference cycle with multiple __del__ methods.
+
+    An object in a reference cycle will never have zero references,
+    and so must be garbage collected.  If one or more objects in the
+    cycle have __del__ methods, the gc refuses to guess an order,
+    and leaves the cycle uncollected."""
+    def __init__(self, partner=None):
+        if partner is None:
+            self.partner = Uncollectable(partner=self)
+        else:
+            self.partner = partner
+    def __tp_del__(self):
+        pass
 
 ### Tests
 ###############################################################################
@@ -91,7 +117,6 @@ class GCTests(unittest.TestCase):
         del a
         self.assertNotEqual(gc.collect(), 0)
 
-    @requires_type_collecting
     def test_newinstance(self):
         class A(object):
             pass
@@ -126,11 +151,13 @@ class GCTests(unittest.TestCase):
         del a
         self.assertNotEqual(gc.collect(), 0)
 
-    def test_finalizer(self):
+    @cpython_only
+    def test_legacy_finalizer(self):
         # A() is uncollectable if it is part of a cycle, make sure it shows up
         # in gc.garbage.
+        @with_tp_del
         class A:
-            def __del__(self): pass
+            def __tp_del__(self): pass
         class B:
             pass
         a = A()
@@ -150,11 +177,13 @@ class GCTests(unittest.TestCase):
             self.fail("didn't find obj in garbage (finalizer)")
         gc.garbage.remove(obj)
 
-    def test_finalizer_newclass(self):
+    @cpython_only
+    def test_legacy_finalizer_newclass(self):
         # A() is uncollectable if it is part of a cycle, make sure it shows up
         # in gc.garbage.
+        @with_tp_del
         class A(object):
-            def __del__(self): pass
+            def __tp_del__(self): pass
         class B(object):
             pass
         a = A()
@@ -178,11 +207,12 @@ class GCTests(unittest.TestCase):
         # Tricky: f -> d -> f, code should call d.clear() after the exec to
         # break the cycle.
         d = {}
-        exec("def f(): pass\n") in d
+        exec("def f(): pass\n", d)
         gc.collect()
         del d
         self.assertEqual(gc.collect(), 2)
 
+    @refcount_test
     def test_frame(self):
         def f():
             frame = sys._getframe()
@@ -247,30 +277,43 @@ class GCTests(unittest.TestCase):
     # The following two tests are fragile:
     # They precisely count the number of allocations,
     # which is highly implementation-dependent.
-    # For example:
-    # - disposed tuples are not freed, but reused
-    # - the call to assertEqual somehow avoids building its args tuple
+    # For example, disposed tuples are not freed, but reused.
+    # To minimize variations, though, we first store the get_count() results
+    # and check them at the end.
+    @refcount_test
     def test_get_count(self):
-        # Avoid future allocation of method object
-        assertEqual = self._baseAssertEqual
         gc.collect()
-        assertEqual(gc.get_count(), (0, 0, 0))
-        a = dict()
-        # since gc.collect(), we created two objects:
-        # the dict, and the tuple returned by get_count()
-        assertEqual(gc.get_count(), (2, 0, 0))
+        a, b, c = gc.get_count()
+        x = []
+        d, e, f = gc.get_count()
+        self.assertEqual((b, c), (0, 0))
+        self.assertEqual((e, f), (0, 0))
+        # This is less fragile than asserting that a equals 0.
+        self.assertLess(a, 5)
+        # Between the two calls to get_count(), at least one object was
+        # created (the list).
+        self.assertGreater(d, a)
 
+    @refcount_test
     def test_collect_generations(self):
-        # Avoid future allocation of method object
-        assertEqual = self.assertEqual
         gc.collect()
-        a = dict()
+        # This object will "trickle" into generation N + 1 after
+        # each call to collect(N)
+        x = []
         gc.collect(0)
-        assertEqual(gc.get_count(), (0, 1, 0))
+        # x is now in gen 1
+        a, b, c = gc.get_count()
         gc.collect(1)
-        assertEqual(gc.get_count(), (0, 0, 1))
+        # x is now in gen 2
+        d, e, f = gc.get_count()
         gc.collect(2)
-        assertEqual(gc.get_count(), (0, 0, 0))
+        # x is now in gen 3
+        g, h, i = gc.get_count()
+        # We don't check a, d, g since their exact values depends on
+        # internal implementation details of the interpreter.
+        self.assertEqual((b, c), (1, 0))
+        self.assertEqual((e, f), (0, 1))
+        self.assertEqual((h, i), (0, 0))
 
     def test_trashcan(self):
         class Ouch:
@@ -351,8 +394,8 @@ class GCTests(unittest.TestCase):
             while not exit:
                 make_nested()
 
-        old_checkinterval = sys.getcheckinterval()
-        sys.setcheckinterval(3)
+        old_switchinterval = sys.getswitchinterval()
+        sys.setswitchinterval(1e-5)
         try:
             exit = []
             threads = []
@@ -362,7 +405,7 @@ class GCTests(unittest.TestCase):
             with start_threads(threads, lambda: exit.append(1)):
                 time.sleep(1.0)
         finally:
-            sys.setcheckinterval(old_checkinterval)
+            sys.setswitchinterval(old_switchinterval)
         gc.collect()
         self.assertEqual(len(C.inits), len(C.dels))
 
@@ -478,7 +521,7 @@ class GCTests(unittest.TestCase):
 
         got = gc.get_referents([1, 2], {3: 4}, (0, 0, 0))
         got.sort()
-        self.assertEqual(got, [0, 0] + range(5))
+        self.assertEqual(got, [0, 0] + list(range(5)))
 
         self.assertEqual(gc.get_referents(1, 'a', 4j), [])
 
@@ -493,23 +536,19 @@ class GCTests(unittest.TestCase):
         self.assertFalse(gc.is_tracked(1.0 + 5.0j))
         self.assertFalse(gc.is_tracked(True))
         self.assertFalse(gc.is_tracked(False))
+        self.assertFalse(gc.is_tracked(b"a"))
         self.assertFalse(gc.is_tracked("a"))
-        self.assertFalse(gc.is_tracked(u"a"))
-        self.assertFalse(gc.is_tracked(bytearray("a")))
+        self.assertFalse(gc.is_tracked(bytearray(b"a")))
         self.assertFalse(gc.is_tracked(type))
         self.assertFalse(gc.is_tracked(int))
         self.assertFalse(gc.is_tracked(object))
         self.assertFalse(gc.is_tracked(object()))
 
-        class OldStyle:
-            pass
-        class NewStyle(object):
+        class UserClass:
             pass
         self.assertTrue(gc.is_tracked(gc))
-        self.assertTrue(gc.is_tracked(OldStyle))
-        self.assertTrue(gc.is_tracked(OldStyle()))
-        self.assertTrue(gc.is_tracked(NewStyle))
-        self.assertTrue(gc.is_tracked(NewStyle()))
+        self.assertTrue(gc.is_tracked(UserClass))
+        self.assertTrue(gc.is_tracked(UserClass()))
         self.assertTrue(gc.is_tracked([]))
         self.assertTrue(gc.is_tracked(set()))
 
@@ -536,6 +575,270 @@ class GCTests(unittest.TestCase):
             # If the callback resurrected one of these guys, the instance
             # would be damaged, with an empty __dict__.
             self.assertEqual(x, None)
+
+    def test_bug21435(self):
+        # This is a poor test - its only virtue is that it happened to
+        # segfault on Tim's Windows box before the patch for 21435 was
+        # applied.  That's a nasty bug relying on specific pieces of cyclic
+        # trash appearing in exactly the right order in finalize_garbage()'s
+        # input list.
+        # But there's no reliable way to force that order from Python code,
+        # so over time chances are good this test won't really be testing much
+        # of anything anymore.  Still, if it blows up, there's _some_
+        # problem ;-)
+        gc.collect()
+
+        class A:
+            pass
+
+        class B:
+            def __init__(self, x):
+                self.x = x
+
+            def __del__(self):
+                self.attr = None
+
+        def do_work():
+            a = A()
+            b = B(A())
+
+            a.attr = b
+            b.attr = a
+
+        do_work()
+        gc.collect() # this blows up (bad C pointer) when it fails
+
+    @cpython_only
+    def test_garbage_at_shutdown(self):
+        import subprocess
+        code = """if 1:
+            import gc
+            import _testcapi
+            @_testcapi.with_tp_del
+            class X:
+                def __init__(self, name):
+                    self.name = name
+                def __repr__(self):
+                    return "<X %%r>" %% self.name
+                def __tp_del__(self):
+                    pass
+
+            x = X('first')
+            x.x = x
+            x.y = X('second')
+            del x
+            gc.set_debug(%s)
+        """
+        def run_command(code):
+            p = subprocess.Popen([sys.executable, "-Wd", "-c", code],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE)
+            stdout, stderr = p.communicate()
+            p.stdout.close()
+            p.stderr.close()
+            self.assertEqual(p.returncode, 0)
+            self.assertEqual(stdout.strip(), b"")
+            return strip_python_stderr(stderr)
+
+        stderr = run_command(code % "0")
+        self.assertIn(b"ResourceWarning: gc: 2 uncollectable objects at "
+                      b"shutdown; use", stderr)
+        self.assertNotIn(b"<X 'first'>", stderr)
+        # With DEBUG_UNCOLLECTABLE, the garbage list gets printed
+        stderr = run_command(code % "gc.DEBUG_UNCOLLECTABLE")
+        self.assertIn(b"ResourceWarning: gc: 2 uncollectable objects at "
+                      b"shutdown", stderr)
+        self.assertTrue(
+            (b"[<X 'first'>, <X 'second'>]" in stderr) or
+            (b"[<X 'second'>, <X 'first'>]" in stderr), stderr)
+        # With DEBUG_SAVEALL, no additional message should get printed
+        # (because gc.garbage also contains normally reclaimable cyclic
+        # references, and its elements get printed at runtime anyway).
+        stderr = run_command(code % "gc.DEBUG_SAVEALL")
+        self.assertNotIn(b"uncollectable objects at shutdown", stderr)
+
+    def test_gc_main_module_at_shutdown(self):
+        # Create a reference cycle through the __main__ module and check
+        # it gets collected at interpreter shutdown.
+        code = """if 1:
+            import weakref
+            class C:
+                def __del__(self):
+                    print('__del__ called')
+            l = [C()]
+            l.append(l)
+            """
+        rc, out, err = assert_python_ok('-c', code)
+        self.assertEqual(out.strip(), b'__del__ called')
+
+    def test_gc_ordinary_module_at_shutdown(self):
+        # Same as above, but with a non-__main__ module.
+        with temp_dir() as script_dir:
+            module = """if 1:
+                import weakref
+                class C:
+                    def __del__(self):
+                        print('__del__ called')
+                l = [C()]
+                l.append(l)
+                """
+            code = """if 1:
+                import sys
+                sys.path.insert(0, %r)
+                import gctest
+                """ % (script_dir,)
+            make_script(script_dir, 'gctest', module)
+            rc, out, err = assert_python_ok('-c', code)
+            self.assertEqual(out.strip(), b'__del__ called')
+
+    def test_get_stats(self):
+        stats = gc.get_stats()
+        self.assertEqual(len(stats), 3)
+        for st in stats:
+            self.assertIsInstance(st, dict)
+            self.assertEqual(set(st),
+                             {"collected", "collections", "uncollectable"})
+            self.assertGreaterEqual(st["collected"], 0)
+            self.assertGreaterEqual(st["collections"], 0)
+            self.assertGreaterEqual(st["uncollectable"], 0)
+        # Check that collection counts are incremented correctly
+        if gc.isenabled():
+            self.addCleanup(gc.enable)
+            gc.disable()
+        old = gc.get_stats()
+        gc.collect(0)
+        new = gc.get_stats()
+        self.assertEqual(new[0]["collections"], old[0]["collections"] + 1)
+        self.assertEqual(new[1]["collections"], old[1]["collections"])
+        self.assertEqual(new[2]["collections"], old[2]["collections"])
+        gc.collect(2)
+        new = gc.get_stats()
+        self.assertEqual(new[0]["collections"], old[0]["collections"] + 1)
+        self.assertEqual(new[1]["collections"], old[1]["collections"])
+        self.assertEqual(new[2]["collections"], old[2]["collections"] + 1)
+
+
+class GCCallbackTests(unittest.TestCase):
+    def setUp(self):
+        # Save gc state and disable it.
+        self.enabled = gc.isenabled()
+        gc.disable()
+        self.debug = gc.get_debug()
+        gc.set_debug(0)
+        gc.callbacks.append(self.cb1)
+        gc.callbacks.append(self.cb2)
+        self.othergarbage = []
+
+    def tearDown(self):
+        # Restore gc state
+        del self.visit
+        gc.callbacks.remove(self.cb1)
+        gc.callbacks.remove(self.cb2)
+        gc.set_debug(self.debug)
+        if self.enabled:
+            gc.enable()
+        # destroy any uncollectables
+        gc.collect()
+        for obj in gc.garbage:
+            if isinstance(obj, Uncollectable):
+                obj.partner = None
+        del gc.garbage[:]
+        del self.othergarbage
+        gc.collect()
+
+    def preclean(self):
+        # Remove all fluff from the system.  Invoke this function
+        # manually rather than through self.setUp() for maximum
+        # safety.
+        self.visit = []
+        gc.collect()
+        garbage, gc.garbage[:] = gc.garbage[:], []
+        self.othergarbage.append(garbage)
+        self.visit = []
+
+    def cb1(self, phase, info):
+        self.visit.append((1, phase, dict(info)))
+
+    def cb2(self, phase, info):
+        self.visit.append((2, phase, dict(info)))
+        if phase == "stop" and hasattr(self, "cleanup"):
+            # Clean Uncollectable from garbage
+            uc = [e for e in gc.garbage if isinstance(e, Uncollectable)]
+            gc.garbage[:] = [e for e in gc.garbage
+                             if not isinstance(e, Uncollectable)]
+            for e in uc:
+                e.partner = None
+
+    def test_collect(self):
+        self.preclean()
+        gc.collect()
+        # Algorithmically verify the contents of self.visit
+        # because it is long and tortuous.
+
+        # Count the number of visits to each callback
+        n = [v[0] for v in self.visit]
+        n1 = [i for i in n if i == 1]
+        n2 = [i for i in n if i == 2]
+        self.assertEqual(n1, [1]*2)
+        self.assertEqual(n2, [2]*2)
+
+        # Count that we got the right number of start and stop callbacks.
+        n = [v[1] for v in self.visit]
+        n1 = [i for i in n if i == "start"]
+        n2 = [i for i in n if i == "stop"]
+        self.assertEqual(n1, ["start"]*2)
+        self.assertEqual(n2, ["stop"]*2)
+
+        # Check that we got the right info dict for all callbacks
+        for v in self.visit:
+            info = v[2]
+            self.assertTrue("generation" in info)
+            self.assertTrue("collected" in info)
+            self.assertTrue("uncollectable" in info)
+
+    def test_collect_generation(self):
+        self.preclean()
+        gc.collect(2)
+        for v in self.visit:
+            info = v[2]
+            self.assertEqual(info["generation"], 2)
+
+    @cpython_only
+    def test_collect_garbage(self):
+        self.preclean()
+        # Each of these cause four objects to be garbage: Two
+        # Uncolectables and their instance dicts.
+        Uncollectable()
+        Uncollectable()
+        C1055820(666)
+        gc.collect()
+        for v in self.visit:
+            if v[1] != "stop":
+                continue
+            info = v[2]
+            self.assertEqual(info["collected"], 2)
+            self.assertEqual(info["uncollectable"], 8)
+
+        # We should now have the Uncollectables in gc.garbage
+        self.assertEqual(len(gc.garbage), 4)
+        for e in gc.garbage:
+            self.assertIsInstance(e, Uncollectable)
+
+        # Now, let our callback handle the Uncollectable instances
+        self.cleanup=True
+        self.visit = []
+        gc.garbage[:] = []
+        gc.collect()
+        for v in self.visit:
+            if v[1] != "stop":
+                continue
+            info = v[2]
+            self.assertEqual(info["collected"], 0)
+            self.assertEqual(info["uncollectable"], 4)
+
+        # Uncollectables should be gone
+        self.assertEqual(len(gc.garbage), 0)
+
 
 class GCTogglingTests(unittest.TestCase):
     def setUp(self):
@@ -690,12 +993,12 @@ def test_main():
 
     try:
         gc.collect() # Delete 2nd generation garbage
-        run_unittest(GCTests, GCTogglingTests)
+        run_unittest(GCTests, GCTogglingTests, GCCallbackTests)
     finally:
         gc.set_debug(debug)
         # test gc.enable() even if GC is disabled by default
         if verbose:
-            print "restoring automatic collection"
+            print("restoring automatic collection")
         # make sure to always test gc.enable()
         gc.enable()
         assert gc.isenabled()

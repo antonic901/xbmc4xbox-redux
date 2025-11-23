@@ -1,4 +1,3 @@
-
 :mod:`chunk` --- Read IFF chunked data
 ======================================
 
@@ -51,12 +50,12 @@ new instance can be instantiated. At the end of the file, creating a new
 instance will fail with an :exc:`EOFError` exception.
 
 
-.. class:: Chunk(file[, align, bigendian, inclheader])
+.. class:: Chunk(file, align=True, bigendian=True, inclheader=False)
 
    Class which represents a chunk.  The *file* argument is expected to be a
    file-like object.  An instance of this class is specifically allowed.  The
-   only method that is needed is :meth:`~file.read`.  If the methods
-   :meth:`~file.seek` and :meth:`~file.tell` are present and don't
+   only method that is needed is :meth:`~io.IOBase.read`.  If the methods
+   :meth:`~io.IOBase.seek` and :meth:`~io.IOBase.tell` are present and don't
    raise an exception, they are also used.
    If these methods are present and raise an exception, they are expected to not
    have altered the object.  If the optional argument *align* is true, chunks
@@ -86,8 +85,9 @@ instance will fail with an :exc:`EOFError` exception.
       Close and skip to the end of the chunk.  This does not close the
       underlying file.
 
-   The remaining methods will raise :exc:`IOError` if called after the
-   :meth:`close` method has been called.
+   The remaining methods will raise :exc:`OSError` if called after the
+   :meth:`close` method has been called.  Before Python 3.3, they used to
+   raise :exc:`IOError`, now an alias of :exc:`OSError`.
 
 
    .. method:: isatty()
@@ -95,7 +95,7 @@ instance will fail with an :exc:`EOFError` exception.
       Returns ``False``.
 
 
-   .. method:: seek(pos[, whence])
+   .. method:: seek(pos, whence=0)
 
       Set the chunk's current position.  The *whence* argument is optional and
       defaults to ``0`` (absolute file positioning); other values are ``1``
@@ -109,19 +109,19 @@ instance will fail with an :exc:`EOFError` exception.
       Return the current position into the chunk.
 
 
-   .. method:: read([size])
+   .. method:: read(size=-1)
 
       Read at most *size* bytes from the chunk (less if the read hits the end of
       the chunk before obtaining *size* bytes).  If the *size* argument is
-      negative or omitted, read all data until the end of the chunk.  The bytes
-      are returned as a string object.  An empty string is returned when the end
-      of the chunk is encountered immediately.
+      negative or omitted, read all data until the end of the chunk.  An empty
+      bytes object is returned when the end of the chunk is encountered
+      immediately.
 
 
    .. method:: skip()
 
       Skip to the end of the chunk.  All further calls to :meth:`read` for the
-      chunk will return ``''``.  If you are not interested in the contents of
+      chunk will return ``b''``.  If you are not interested in the contents of
       the chunk, this method should be called so that the file points to the
       start of the next chunk.
 

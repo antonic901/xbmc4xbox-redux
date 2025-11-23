@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """\
 List python source files.
@@ -22,18 +22,18 @@ __all__ = ["has_python_ext", "looks_like_python", "can_be_compiled", "walk_pytho
 
 import os, re
 
-binary_re = re.compile('[\x00-\x08\x0E-\x1F\x7F]')
+binary_re = re.compile(br'[\x00-\x08\x0E-\x1F\x7F]')
 
 debug = False
 
 def print_debug(msg):
-    if debug: print msg
+    if debug: print(msg)
 
 
 def _open(fullpath):
     try:
         size = os.stat(fullpath).st_size
-    except OSError, err: # Permission denied - ignore the file
+    except OSError as err: # Permission denied - ignore the file
         print_debug("%s: permission denied: %s" % (fullpath, err))
         return None
 
@@ -42,8 +42,8 @@ def _open(fullpath):
         return None
 
     try:
-        return open(fullpath, 'rU')
-    except IOError, err: # Access denied, or a special file - ignore it
+        return open(fullpath, "rb")
+    except IOError as err: # Access denied, or a special file - ignore it
         print_debug("%s: access denied: %s" % (fullpath, err))
         return None
 
@@ -55,8 +55,8 @@ def looks_like_python(fullpath):
     if infile is None:
         return False
 
-    line = infile.readline()
-    infile.close()
+    with infile:
+        line = infile.readline()
 
     if binary_re.search(line):
         # file appears to be binary
@@ -65,7 +65,7 @@ def looks_like_python(fullpath):
 
     if fullpath.endswith(".py") or fullpath.endswith(".pyw"):
         return True
-    elif "python" in line:
+    elif b"python" in line:
         # disguised Python script (e.g. CGI)
         return True
 
@@ -76,12 +76,12 @@ def can_be_compiled(fullpath):
     if infile is None:
         return False
 
-    code = infile.read()
-    infile.close()
+    with infile:
+        code = infile.read()
 
     try:
         compile(code, fullpath, "exec")
-    except Exception, err:
+    except Exception as err:
         print_debug("%s: cannot compile: %s" % (fullpath, err))
         return False
 
@@ -124,7 +124,7 @@ def walk_python_files(paths, is_python=looks_like_python, exclude_dirs=None):
 if __name__ == "__main__":
     # Two simple examples/tests
     for fullpath in walk_python_files(['.']):
-        print fullpath
-    print "----------"
+        print(fullpath)
+    print("----------")
     for fullpath in walk_python_files(['.'], is_python=can_be_compiled):
-        print fullpath
+        print(fullpath)

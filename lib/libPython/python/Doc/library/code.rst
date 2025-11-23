@@ -1,4 +1,3 @@
-
 :mod:`code` --- Interpreter base classes
 ========================================
 
@@ -6,13 +5,12 @@
    :synopsis: Facilities to implement read-eval-print loops.
 
 
-
 The ``code`` module provides facilities to implement read-eval-print loops in
 Python.  Two classes and convenience functions are included which can be used to
 build applications which provide an interactive interpreter prompt.
 
 
-.. class:: InteractiveInterpreter([locals])
+.. class:: InteractiveInterpreter(locals=None)
 
    This class deals with parsing and interpreter state (the user's namespace); it
    does not deal with input buffering or prompting or input file naming (the
@@ -22,25 +20,25 @@ build applications which provide an interactive interpreter prompt.
    ``'__doc__'`` set to ``None``.
 
 
-.. class:: InteractiveConsole([locals[, filename]])
+.. class:: InteractiveConsole(locals=None, filename="<console>")
 
    Closely emulate the behavior of the interactive Python interpreter. This class
    builds on :class:`InteractiveInterpreter` and adds prompting using the familiar
    ``sys.ps1`` and ``sys.ps2``, and input buffering.
 
 
-.. function:: interact([banner[, readfunc[, local]]])
+.. function:: interact(banner=None, readfunc=None, local=None)
 
-   Convenience function to run a read-eval-print loop.  This creates a new instance
-   of :class:`InteractiveConsole` and sets *readfunc* to be used as the
-   :meth:`InteractiveConsole.raw_input` method, if provided.  If *local* is
+   Convenience function to run a read-eval-print loop.  This creates a new
+   instance of :class:`InteractiveConsole` and sets *readfunc* to be used as
+   the :meth:`InteractiveConsole.raw_input` method, if provided.  If *local* is
    provided, it is passed to the :class:`InteractiveConsole` constructor for
    use as the default namespace for the interpreter loop.  The :meth:`interact`
    method of the instance is then run with *banner* passed as the banner to
    use, if provided.  The console object is discarded after use.
 
 
-.. function:: compile_command(source[, filename[, symbol]])
+.. function:: compile_command(source, filename="<input>", symbol="single")
 
    This function is useful for programs that want to emulate Python's interpreter
    main loop (a.k.a. the read-eval-print loop).  The tricky part is to determine
@@ -67,7 +65,7 @@ Interactive Interpreter Objects
 -------------------------------
 
 
-.. method:: InteractiveInterpreter.runsource(source[, filename[, symbol]])
+.. method:: InteractiveInterpreter.runsource(source, filename="<input>", symbol="single")
 
    Compile and run some source in the interpreter. Arguments are the same as for
    :func:`compile_command`; the default for *filename* is ``'<input>'``, and for
@@ -100,7 +98,7 @@ Interactive Interpreter Objects
    with it.
 
 
-.. method:: InteractiveInterpreter.showsyntaxerror([filename])
+.. method:: InteractiveInterpreter.showsyntaxerror(filename=None)
 
    Display the syntax error that just occurred.  This does not display a stack
    trace because there isn't one for syntax errors. If *filename* is given, it is
@@ -132,13 +130,16 @@ The :class:`InteractiveConsole` class is a subclass of
 interpreter objects as well as the following additions.
 
 
-.. method:: InteractiveConsole.interact([banner])
+.. method:: InteractiveConsole.interact(banner=None)
 
-   Closely emulate the interactive Python console. The optional banner argument
+   Closely emulate the interactive Python console. The optional *banner* argument
    specify the banner to print before the first interaction; by default it prints a
    banner similar to the one printed by the standard Python interpreter, followed
    by the class name of the console object in parentheses (so as not to confuse
    this with the real interpreter -- since it's so close!).
+
+   .. versionchanged:: 3.4
+      To suppress printing any banner, pass an empty string.
 
 
 .. method:: InteractiveConsole.push(line)
@@ -158,10 +159,10 @@ interpreter objects as well as the following additions.
    Remove any unhandled source text from the input buffer.
 
 
-.. method:: InteractiveConsole.raw_input([prompt])
+.. method:: InteractiveConsole.raw_input(prompt="")
 
    Write a prompt and read a line.  The returned line does not include the trailing
    newline.  When the user enters the EOF key sequence, :exc:`EOFError` is raised.
-   The base implementation uses the built-in function :func:`raw_input`; a subclass
-   may replace this with a different implementation.
+   The base implementation reads from ``sys.stdin``; a subclass may replace this
+   with a different implementation.
 

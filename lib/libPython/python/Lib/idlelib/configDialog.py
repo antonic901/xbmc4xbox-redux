@@ -9,8 +9,10 @@ Note that tab width in IDLE is currently fixed at eight due to Tk issues.
 Refer to comments in EditorWindow autoindent code for details.
 
 """
-from Tkinter import *
-import tkMessageBox, tkColorChooser, tkFont
+from tkinter import *
+import tkinter.messagebox as tkMessageBox
+import tkinter.colorchooser as tkColorChooser
+import tkinter.font as tkFont
 
 from idlelib.configHandler import idleConf
 from idlelib.dynOptionMenuWidget import DynOptionMenu
@@ -213,7 +215,7 @@ class ConfigDialog(Toplevel):
             ("'selected'", 'hilite'), ('\n  var2 = ', 'normal'),
             ("'found'", 'hit'), ('\n  var3 = ', 'normal'),
             ('list', 'builtin'), ('(', 'normal'),
-            ('None', 'builtin'), (')\n', 'normal'),
+            ('None', 'keyword'), (')\n', 'normal'),
             ('  breakpoint("line")', 'break'), ('\n\n', 'normal'),
             (' error ', 'error'), (' ', 'normal'),
             ('cursor |', 'cursor'), ('\n ', 'normal'),
@@ -384,7 +386,6 @@ class ConfigDialog(Toplevel):
         frameSave = LabelFrame(frame, borderwidth=2, relief=GROOVE,
                                text=' Autosave Preferences ')
         frameWinSize = Frame(frame, borderwidth=2, relief=GROOVE)
-        frameEncoding = Frame(frame, borderwidth=2, relief=GROOVE)
         frameHelp = LabelFrame(frame, borderwidth=2, relief=GROOVE,
                                text=' Additional Help Sources ')
         #frameRun
@@ -412,18 +413,6 @@ class ConfigDialog(Toplevel):
         labelWinHeightTitle = Label(frameWinSize, text='Height')
         entryWinHeight = Entry(
                 frameWinSize, textvariable=self.winHeight, width=3)
-        #frameEncoding
-        labelEncodingTitle = Label(
-                frameEncoding, text="Default Source Encoding")
-        radioEncLocale = Radiobutton(
-                frameEncoding, variable=self.encoding,
-                value="locale", text="Locale-defined")
-        radioEncUTF8 = Radiobutton(
-                frameEncoding, variable=self.encoding,
-                value="utf-8", text="UTF-8")
-        radioEncNone = Radiobutton(
-                frameEncoding, variable=self.encoding,
-                value="none", text="None")
         #frameHelp
         frameHelpList = Frame(frameHelp)
         frameHelpListButtons = Frame(frameHelpList)
@@ -449,7 +438,6 @@ class ConfigDialog(Toplevel):
         frameRun.pack(side=TOP, padx=5, pady=5, fill=X)
         frameSave.pack(side=TOP, padx=5, pady=5, fill=X)
         frameWinSize.pack(side=TOP, padx=5, pady=5, fill=X)
-        frameEncoding.pack(side=TOP, padx=5, pady=5, fill=X)
         frameHelp.pack(side=TOP, padx=5, pady=5, expand=TRUE, fill=BOTH)
         #frameRun
         labelRunChoiceTitle.pack(side=LEFT, anchor=W, padx=5, pady=5)
@@ -465,11 +453,6 @@ class ConfigDialog(Toplevel):
         labelWinHeightTitle.pack(side=RIGHT, anchor=E, pady=5)
         entryWinWidth.pack(side=RIGHT, anchor=E, padx=10, pady=5)
         labelWinWidthTitle.pack(side=RIGHT, anchor=E, pady=5)
-        #frameEncoding
-        labelEncodingTitle.pack(side=LEFT, anchor=W, padx=5, pady=5)
-        radioEncNone.pack(side=RIGHT, anchor=E, pady=5)
-        radioEncUTF8.pack(side=RIGHT, anchor=E, pady=5)
-        radioEncLocale.pack(side=RIGHT, anchor=E, pady=5)
         #frameHelp
         frameHelpListButtons.pack(side=RIGHT, padx=5, pady=5, fill=Y)
         frameHelpList.pack(side=TOP, padx=5, pady=5, expand=TRUE, fill=BOTH)
@@ -499,16 +482,6 @@ class ConfigDialog(Toplevel):
         self.startupEdit.trace_variable('w', self.VarChanged_startupEdit)
         self.autoSave.trace_variable('w', self.VarChanged_autoSave)
         self.encoding.trace_variable('w', self.VarChanged_encoding)
-
-    def remove_var_callbacks(self):
-        for var in (
-                self.fontSize, self.fontName, self.fontBold,
-                self.spaceNum, self.colour, self.builtinTheme,
-                self.customTheme, self.themeIsBuiltin, self.highlightTarget,
-                self.keyBinding, self.builtinKeys, self.customKeys,
-                self.keysAreBuiltin, self.winWidth, self.winHeight,
-                self.startupEdit, self.autoSave, self.encoding,):
-            var.trace_vdelete('w', var.trace_vinfo()[0][1])
 
     def VarChanged_font(self, *params):
         '''When one font attribute changes, save them all, as they are
@@ -673,7 +646,7 @@ class ConfigDialog(Toplevel):
             keySetChanges = self.changedItems['keys'][currentKeySetName]
             for event in keySetChanges:
                 currentBindings[event] = keySetChanges[event].split()
-        currentKeySequences = currentBindings.values()
+        currentKeySequences = list(currentBindings.values())
         newKeys = GetKeysDialog(self, 'Get New Keys', bindName,
                 currentKeySequences).result
         if newKeys: #new keys were specified
@@ -745,7 +718,7 @@ class ConfigDialog(Toplevel):
             reselect = 1
             listIndex = self.listBindings.index(ANCHOR)
         keySet = idleConf.GetKeySet(keySetName)
-        bindNames = keySet.keys()
+        bindNames = list(keySet.keys())
         bindNames.sort()
         self.listBindings.delete(0, END)
         for bindName in bindNames:
@@ -767,7 +740,6 @@ class ConfigDialog(Toplevel):
         if not tkMessageBox.askyesno(
                 'Delete Key Set',  delmsg % keySetName, parent=self):
             return
-        self.DeactivateCurrentConfig()
         #remove key set from config
         idleConf.userCfg['keys'].remove_section(keySetName)
         if keySetName in self.changedItems['keys']:
@@ -786,8 +758,7 @@ class ConfigDialog(Toplevel):
         self.keysAreBuiltin.set(idleConf.defaultCfg['main'].Get('Keys', 'default'))
         self.builtinKeys.set(idleConf.defaultCfg['main'].Get('Keys', 'name'))
         #user can't back out of these changes, they must be applied now
-        self.SaveAllChangedConfigs()
-        self.ActivateConfigChanges()
+        self.Apply()
         self.SetKeysType()
 
     def DeleteCustomTheme(self):
@@ -796,7 +767,6 @@ class ConfigDialog(Toplevel):
         if not tkMessageBox.askyesno(
                 'Delete Theme',  delmsg % themeName, parent=self):
             return
-        self.DeactivateCurrentConfig()
         #remove theme from config
         idleConf.userCfg['highlight'].remove_section(themeName)
         if themeName in self.changedItems['highlight']:
@@ -815,8 +785,7 @@ class ConfigDialog(Toplevel):
         self.themeIsBuiltin.set(idleConf.defaultCfg['main'].Get('Theme', 'default'))
         self.builtinTheme.set(idleConf.defaultCfg['main'].Get('Theme', 'name'))
         #user can't back out of these changes, they must be applied now
-        self.SaveAllChangedConfigs()
-        self.ActivateConfigChanges()
+        self.Apply()
         self.SetThemeType()
 
     def GetColour(self):
@@ -1012,8 +981,7 @@ class ConfigDialog(Toplevel):
             pass
         ##font size dropdown
         self.optMenuFontSize.SetMenu(('7', '8', '9', '10', '11', '12', '13',
-                                      '14', '16', '18', '20', '22',
-                                      '25', '29', '34', '40'), fontSize )
+                                      '14', '16', '18', '20', '22'), fontSize )
         ##fontWeight
         self.fontBold.set(fontBold)
         ##font sample
@@ -1052,7 +1020,7 @@ class ConfigDialog(Toplevel):
             self.optMenuThemeBuiltin.SetMenu(itemList, itemList[0])
         self.SetThemeType()
         ##load theme element option menu
-        themeNames = self.themeElements.keys()
+        themeNames = list(self.themeElements.keys())
         themeNames.sort(key=lambda x: self.themeElements[x][1])
         self.optMenuHighlightTarget.SetMenu(themeNames, themeNames[0])
         self.PaintThemeSample()
@@ -1182,7 +1150,7 @@ class ConfigDialog(Toplevel):
     def DeactivateCurrentConfig(self):
         #Before a config is saved, some cleanup of current
         #config must be done - remove the previous keybindings
-        winInstances = self.parent.instance_dict
+        winInstances = self.parent.instance_dict.keys()
         for instance in winInstances:
             instance.RemoveKeybindings()
 
@@ -1197,12 +1165,10 @@ class ConfigDialog(Toplevel):
             instance.reset_help_menu_entries()
 
     def Cancel(self):
-        self.grab_release()
         self.destroy()
 
     def Ok(self):
         self.Apply()
-        self.grab_release()
         self.destroy()
 
     def Apply(self):
@@ -1230,7 +1196,7 @@ class ConfigDialog(Toplevel):
 
         All values are treated as text, and it is up to the user to supply
         reasonable values. The only exception to this are the 'enable*' options,
-        which are boolean, and can be toggled with a True/False button.
+        which are boolean, and can be toggled with an True/False button.
         """
         parent = self.parent
         frame = self.tabPages.pages['Extensions'].frame

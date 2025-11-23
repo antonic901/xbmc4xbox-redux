@@ -14,12 +14,12 @@ static PyTypeObject noddy_NoddyType = {
     0,                         /* tp_print */
     0,                         /* tp_getattr */
     0,                         /* tp_setattr */
-    0,                         /* tp_compare */
+    0,                         /* tp_reserved */
     0,                         /* tp_repr */
     0,                         /* tp_as_number */
     0,                         /* tp_as_sequence */
     0,                         /* tp_as_mapping */
-    0,                         /* tp_hash */
+    0,                         /* tp_hash  */
     0,                         /* tp_call */
     0,                         /* tp_str */
     0,                         /* tp_getattro */
@@ -29,25 +29,28 @@ static PyTypeObject noddy_NoddyType = {
     "Noddy objects",           /* tp_doc */
 };
 
-static PyMethodDef noddy_methods[] = {
-    {NULL}  /* Sentinel */
+static PyModuleDef noddymodule = {
+    PyModuleDef_HEAD_INIT,
+    "noddy",
+    "Example module that creates an extension type.",
+    -1,
+    NULL, NULL, NULL, NULL, NULL
 };
 
-#ifndef PyMODINIT_FUNC	/* declarations for DLL import/export */
-#define PyMODINIT_FUNC void
-#endif
 PyMODINIT_FUNC
-initnoddy(void) 
+PyInit_noddy(void) 
 {
     PyObject* m;
 
     noddy_NoddyType.tp_new = PyType_GenericNew;
     if (PyType_Ready(&noddy_NoddyType) < 0)
-        return;
+        return NULL;
 
-    m = Py_InitModule3("noddy", noddy_methods,
-                       "Example module that creates an extension type.");
+    m = PyModule_Create(&noddymodule);
+    if (m == NULL)
+        return NULL;
 
     Py_INCREF(&noddy_NoddyType);
     PyModule_AddObject(m, "Noddy", (PyObject *)&noddy_NoddyType);
+    return m;
 }

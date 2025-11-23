@@ -1,10 +1,9 @@
 import unittest
 import io
 from idlelib.PyShell import PseudoInputFile, PseudoOutputFile
-from test import test_support as support
 
 
-class Base(object):
+class S(str):
     def __str__(self):
         return '%s:str' % type(self).__name__
     def __unicode__(self):
@@ -17,15 +16,6 @@ class Base(object):
         return '%s:item' % type(self).__name__
     def __getslice__(self, *args):
         return '%s:slice' % type(self).__name__
-
-class S(Base, str):
-    pass
-
-class U(Base, unicode):
-    pass
-
-class BA(Base, bytearray):
-    pass
 
 class MockShell:
     def __init__(self):
@@ -65,11 +55,11 @@ class PseudeOutputFilesTest(unittest.TestCase):
     def test_unsupported(self):
         shell = MockShell()
         f = PseudoOutputFile(shell, 'stdout', 'utf-8')
-        self.assertRaises(IOError, f.fileno)
-        self.assertRaises(IOError, f.tell)
-        self.assertRaises(IOError, f.seek, 0)
-        self.assertRaises(IOError, f.read, 0)
-        self.assertRaises(IOError, f.readline, 0)
+        self.assertRaises(OSError, f.fileno)
+        self.assertRaises(OSError, f.tell)
+        self.assertRaises(OSError, f.seek, 0)
+        self.assertRaises(OSError, f.read, 0)
+        self.assertRaises(OSError, f.readline, 0)
 
     def test_write(self):
         shell = MockShell()
@@ -80,25 +70,15 @@ class PseudeOutputFilesTest(unittest.TestCase):
         f.write('t\xe8st')
         self.assertEqual(shell.written, [('t\xe8st', 'stdout')])
         shell.reset()
-        f.write(u't\xe8st')
-        self.assertEqual(shell.written, [(u't\xe8st', 'stdout')])
-        shell.reset()
 
         f.write(S('t\xe8st'))
         self.assertEqual(shell.written, [('t\xe8st', 'stdout')])
         self.assertEqual(type(shell.written[0][0]), str)
         shell.reset()
-        f.write(BA('t\xe8st'))
-        self.assertEqual(shell.written, [('t\xe8st', 'stdout')])
-        self.assertEqual(type(shell.written[0][0]), str)
-        shell.reset()
-        f.write(U(u't\xe8st'))
-        self.assertEqual(shell.written, [(u't\xe8st', 'stdout')])
-        self.assertEqual(type(shell.written[0][0]), unicode)
-        shell.reset()
 
         self.assertRaises(TypeError, f.write)
         self.assertEqual(shell.written, [])
+        self.assertRaises(TypeError, f.write, b'test')
         self.assertRaises(TypeError, f.write, 123)
         self.assertEqual(shell.written, [])
         self.assertRaises(TypeError, f.write, 'test', 'spam')
@@ -118,28 +98,17 @@ class PseudeOutputFilesTest(unittest.TestCase):
         self.assertEqual(shell.written,
                          [('on\xe8\n', 'stdout'), ('tw\xf2', 'stdout')])
         shell.reset()
-        f.writelines([u'on\xe8\n', u'tw\xf2'])
-        self.assertEqual(shell.written,
-                         [(u'on\xe8\n', 'stdout'), (u'tw\xf2', 'stdout')])
-        shell.reset()
 
         f.writelines([S('t\xe8st')])
         self.assertEqual(shell.written, [('t\xe8st', 'stdout')])
         self.assertEqual(type(shell.written[0][0]), str)
-        shell.reset()
-        f.writelines([BA('t\xe8st')])
-        self.assertEqual(shell.written, [('t\xe8st', 'stdout')])
-        self.assertEqual(type(shell.written[0][0]), str)
-        shell.reset()
-        f.writelines([U(u't\xe8st')])
-        self.assertEqual(shell.written, [(u't\xe8st', 'stdout')])
-        self.assertEqual(type(shell.written[0][0]), unicode)
         shell.reset()
 
         self.assertRaises(TypeError, f.writelines)
         self.assertEqual(shell.written, [])
         self.assertRaises(TypeError, f.writelines, 123)
         self.assertEqual(shell.written, [])
+        self.assertRaises(TypeError, f.writelines, [b'test'])
         self.assertRaises(TypeError, f.writelines, [123])
         self.assertEqual(shell.written, [])
         self.assertRaises(TypeError, f.writelines, [], [])
@@ -176,11 +145,11 @@ class PseudeInputFilesTest(unittest.TestCase):
     def test_unsupported(self):
         shell = MockShell()
         f = PseudoInputFile(shell, 'stdin', 'utf-8')
-        self.assertRaises(IOError, f.fileno)
-        self.assertRaises(IOError, f.tell)
-        self.assertRaises(IOError, f.seek, 0)
-        self.assertRaises(IOError, f.write, 'x')
-        self.assertRaises(IOError, f.writelines, ['x'])
+        self.assertRaises(OSError, f.fileno)
+        self.assertRaises(OSError, f.tell)
+        self.assertRaises(OSError, f.seek, 0)
+        self.assertRaises(OSError, f.write, 'x')
+        self.assertRaises(OSError, f.writelines, ['x'])
 
     def test_read(self):
         shell = MockShell()
@@ -260,8 +229,5 @@ class PseudeInputFilesTest(unittest.TestCase):
         self.assertRaises(TypeError, f.close, 1)
 
 
-def test_main():
-    support.run_unittest(PseudeOutputFilesTest, PseudeInputFilesTest)
-
 if __name__ == '__main__':
-    test_main()
+    unittest.main()

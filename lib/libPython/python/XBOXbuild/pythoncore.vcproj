@@ -3,51 +3,53 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="pythoncore"
-	ProjectGUID="{CF7AC3D1-E2DF-41D2-BEA6-1E2556CDEA26}"
-	RootNamespace="pythoncore">
+	ProjectGUID="{2FDA108C-B9F0-4B2D-B3D2-4BAB5A663D69}"
+	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
 			Name="Win32"/>
 	</Platforms>
 	<Configurations>
 		<Configuration
-			Name="Release XBOX|Win32"
+			Name="Debug|Win32"
 			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)\obj\$(ProjectName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			CharacterSet="0">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm200 "
-				Optimization="1"
+				Optimization="0"
 				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="TRUE"
 				OptimizeForProcessor="2"
 				AdditionalIncludeDirectories="..\Python;..\Modules\zlib;..\Include; ..\PC"
-				PreprocessorDefinitions="_USRDLL;Py_BUILD_CORE;Py_ENABLE_SHARED;WIN32"
+				PreprocessorDefinitions="_USRDLL;Py_BUILD_CORE;Py_ENABLE_SHARED;WIN32;NDEBUG"
 				StringPooling="TRUE"
+				MinimalRebuild="FALSE"
 				ExceptionHandling="FALSE"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="FALSE"
+				EnableFunctionLevelLinking="TRUE"
 				EnableEnhancedInstructionSet="1"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				DebugInformationFormat="0"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="getbuildinfo.o"
-				OutputFile="$(OutDir)\python27.dll"
+				OutputFile="$(OutDir)\python34.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;;&quot;$(SolutionDir)&quot;"
 				IgnoreDefaultLibraryNames="libc;msvcr71;libcmt"
-				GenerateDebugInformation="FALSE"
-				ProgramDatabaseFile="$(OutDir)\python27.pdb"
+				GenerateDebugInformation="TRUE"
+				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
 				SubSystem="2"
 				BaseAddress="0x1e000000"
-				ImportLibrary="$(OutDir)\python27.lib"
+				ImportLibrary="$(OutDir)\python34.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -58,7 +60,7 @@
 			<Tool
 				Name="VCPreLinkEventTool"
 				Description="Generate build information..."
-				CommandLine="&quot;$(OutDir)\make_buildinfo.exe&quot; Release"/>
+				CommandLine="&quot;$(OutDir)\make_buildinfo.exe&quot; Release &quot;%CD%&quot;"/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
@@ -76,43 +78,44 @@
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
-			Name="Debug XBOX|Win32"
+			Name="Release|Win32"
 			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)\obj\$(ProjectName)"
 			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			CharacterSet="0">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm200 "
-				Optimization="0"
+				Optimization="1"
 				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="TRUE"
 				OptimizeForProcessor="2"
 				AdditionalIncludeDirectories="..\Python;..\Modules\zlib;..\Include; ..\PC"
-				PreprocessorDefinitions="_USRDLL;Py_BUILD_CORE;Py_ENABLE_SHARED;WIN32"
+				PreprocessorDefinitions="_USRDLL;Py_BUILD_CORE;Py_ENABLE_SHARED;WIN32;NDEBUG"
 				StringPooling="TRUE"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
 				EnableEnhancedInstructionSet="1"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="0"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="getbuildinfo.o"
-				OutputFile="$(OutDir)\python27.dll"
+				OutputFile="$(OutDir)\python34.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;;&quot;$(SolutionDir)&quot;"
 				IgnoreDefaultLibraryNames="libc;msvcr71;libcmt"
-				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
+				GenerateDebugInformation="FALSE"
+				ProgramDatabaseFile="$(OutDir)\python34.pdb"
 				SubSystem="2"
+				OptimizeReferences="0"
+				EnableCOMDATFolding="0"
 				BaseAddress="0x1e000000"
-				ImportLibrary="$(OutDir)\python27.lib"
+				ImportLibrary="$(OutDir)\python34.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -123,7 +126,7 @@
 			<Tool
 				Name="VCPreLinkEventTool"
 				Description="Generate build information..."
-				CommandLine="&quot;$(OutDir)\make_buildinfo.exe&quot; Release"/>
+				CommandLine="&quot;$(OutDir)\make_buildinfo.exe&quot; Release &quot;%CD%&quot;"/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
@@ -150,6 +153,9 @@
 				RelativePath="..\Include\abstract.h">
 			</File>
 			<File
+				RelativePath="..\Include\accu.h">
+			</File>
+			<File
 				RelativePath="..\Include\asdl.h">
 			</File>
 			<File
@@ -160,9 +166,6 @@
 			</File>
 			<File
 				RelativePath="..\Include\boolobject.h">
-			</File>
-			<File
-				RelativePath="..\Include\bufferobject.h">
 			</File>
 			<File
 				RelativePath="..\Include\bytearrayobject.h">
@@ -183,9 +186,6 @@
 				RelativePath="..\Include\classobject.h">
 			</File>
 			<File
-				RelativePath="..\Include\cobject.h">
-			</File>
-			<File
 				RelativePath="..\Include\code.h">
 			</File>
 			<File
@@ -196,9 +196,6 @@
 			</File>
 			<File
 				RelativePath="..\Include\complexobject.h">
-			</File>
-			<File
-				RelativePath="..\Include\cStringIO.h">
 			</File>
 			<File
 				RelativePath="..\Include\datetime.h">
@@ -213,6 +210,9 @@
 				RelativePath="..\Include\dtoa.h">
 			</File>
 			<File
+				RelativePath="..\Include\dynamic_annotations.h">
+			</File>
+			<File
 				RelativePath="..\Include\enumobject.h">
 			</File>
 			<File
@@ -223,6 +223,9 @@
 			</File>
 			<File
 				RelativePath="..\Include\fileobject.h">
+			</File>
+			<File
+				RelativePath="..\Include\fileutils.h">
 			</File>
 			<File
 				RelativePath="..\Include\floatobject.h">
@@ -244,9 +247,6 @@
 			</File>
 			<File
 				RelativePath="..\Include\import.h">
-			</File>
-			<File
-				RelativePath="..\Include\intobject.h">
 			</File>
 			<File
 				RelativePath="..\Include\intrcheck.h">
@@ -280,6 +280,9 @@
 			</File>
 			<File
 				RelativePath="..\Include\moduleobject.h">
+			</File>
+			<File
+				RelativePath="..\Include\namespaceobject.h">
 			</File>
 			<File
 				RelativePath="..\Include\node.h">
@@ -336,6 +339,12 @@
 				RelativePath="..\Include\pygetopt.h">
 			</File>
 			<File
+				RelativePath="..\Include\pyhash.h">
+			</File>
+			<File
+				RelativePath="..\Include\pymacro.h">
+			</File>
+			<File
 				RelativePath="..\Include\pymactoolbox.h">
 			</File>
 			<File
@@ -369,6 +378,9 @@
 				RelativePath="..\Include\pythread.h">
 			</File>
 			<File
+				RelativePath="..\Include\pytime.h">
+			</File>
+			<File
 				RelativePath="..\Include\rangeobject.h">
 			</File>
 			<File
@@ -376,9 +388,6 @@
 			</File>
 			<File
 				RelativePath="..\Include\sliceobject.h">
-			</File>
-			<File
-				RelativePath="..\Include\stringobject.h">
 			</File>
 			<File
 				RelativePath="..\Include\structmember.h">
@@ -429,13 +438,13 @@
 				RelativePath="..\Modules\_csv.c">
 			</File>
 			<File
+				RelativePath="..\Modules\_datetimemodule.c">
+			</File>
+			<File
 				RelativePath="..\Modules\_functoolsmodule.c">
 			</File>
 			<File
 				RelativePath="..\Modules\_heapqmodule.c">
-			</File>
-			<File
-				RelativePath="..\Modules\_hotshot.c">
 			</File>
 			<File
 				RelativePath="..\Modules\_json.c">
@@ -453,19 +462,46 @@
 				RelativePath="..\Modules\_math.h">
 			</File>
 			<File
+				RelativePath="..\Modules\_opcode.c">
+			</File>
+			<File
+				RelativePath="..\Modules\_operator.c">
+			</File>
+			<File
+				RelativePath="..\Modules\_pickle.c">
+			</File>
+			<File
 				RelativePath="..\Modules\_randommodule.c">
 			</File>
 			<File
 				RelativePath="..\Modules\_sre.c">
 			</File>
 			<File
+				RelativePath="..\Modules\_stat.c">
+			</File>
+			<File
 				RelativePath="..\Modules\_struct.c">
+			</File>
+			<File
+				RelativePath="..\Modules\_threadmodule.c">
+			</File>
+			<File
+				RelativePath="..\Modules\_tracemalloc.c">
 			</File>
 			<File
 				RelativePath="..\Modules\_weakref.c">
 			</File>
 			<File
+				RelativePath="..\Modules\_winapi.c">
+			</File>
+			<File
 				RelativePath="..\Modules\arraymodule.c">
+			</File>
+			<File
+				RelativePath="..\Modules\atexitmodule.c">
+			</File>
+			<File
+				RelativePath="..\Modules\audioop.c">
 			</File>
 			<File
 				RelativePath="..\Modules\binascii.c">
@@ -474,22 +510,19 @@
 				RelativePath="..\Modules\cmathmodule.c">
 			</File>
 			<File
-				RelativePath="..\Modules\cPickle.c">
-			</File>
-			<File
-				RelativePath="..\Modules\cStringIO.c">
-			</File>
-			<File
-				RelativePath="..\Modules\datetimemodule.c">
-			</File>
-			<File
 				RelativePath="..\Modules\errnomodule.c">
 			</File>
 			<File
-				RelativePath="..\Modules\future_builtins.c">
+				RelativePath="..\Modules\faulthandler.c">
 			</File>
 			<File
 				RelativePath="..\Modules\gcmodule.c">
+			</File>
+			<File
+				RelativePath="..\Modules\hashtable.c">
+			</File>
+			<File
+				RelativePath="..\Modules\hashtable.h">
 			</File>
 			<File
 				RelativePath="..\Modules\itertoolsmodule.c">
@@ -501,19 +534,10 @@
 				RelativePath="..\Modules\mathmodule.c">
 			</File>
 			<File
-				RelativePath="..\Modules\md5.c">
-			</File>
-			<File
-				RelativePath="..\Modules\md5.h">
-			</File>
-			<File
 				RelativePath="..\Modules\md5module.c">
 			</File>
 			<File
 				RelativePath="..\Modules\mmapmodule.c">
-			</File>
-			<File
-				RelativePath="..\Modules\operator.c">
 			</File>
 			<File
 				RelativePath="..\Modules\parsermodule.c">
@@ -528,25 +552,28 @@
 				RelativePath="..\Modules\rotatingtree.h">
 			</File>
 			<File
+				RelativePath="..\Modules\sha1module.c">
+			</File>
+			<File
 				RelativePath="..\Modules\sha256module.c">
 			</File>
 			<File
 				RelativePath="..\Modules\sha512module.c">
 			</File>
 			<File
-				RelativePath="..\Modules\shamodule.c">
-			</File>
-			<File
 				RelativePath="..\Modules\signalmodule.c">
 			</File>
 			<File
-				RelativePath="..\Modules\stropmodule.c">
+				RelativePath="..\Modules\sre.h">
+			</File>
+			<File
+				RelativePath="..\Modules\sre_constants.h">
+			</File>
+			<File
+				RelativePath="..\Modules\sre_lib.h">
 			</File>
 			<File
 				RelativePath="..\Modules\symtablemodule.c">
-			</File>
-			<File
-				RelativePath="..\Modules\threadmodule.c">
 			</File>
 			<File
 				RelativePath="..\Modules\timemodule.c">
@@ -560,6 +587,33 @@
 			<File
 				RelativePath="..\Modules\zlibmodule.c">
 			</File>
+			<Filter
+				Name="_io">
+				<File
+					RelativePath="..\Modules\_io\_iomodule.c">
+				</File>
+				<File
+					RelativePath="..\Modules\_io\_iomodule.h">
+				</File>
+				<File
+					RelativePath="..\Modules\_io\bufferedio.c">
+				</File>
+				<File
+					RelativePath="..\Modules\_io\bytesio.c">
+				</File>
+				<File
+					RelativePath="..\Modules\_io\fileio.c">
+				</File>
+				<File
+					RelativePath="..\Modules\_io\iobase.c">
+				</File>
+				<File
+					RelativePath="..\Modules\_io\stringio.c">
+				</File>
+				<File
+					RelativePath="..\Modules\_io\textio.c">
+				</File>
+			</Filter>
 			<Filter
 				Name="zlib">
 				<File
@@ -683,33 +737,6 @@
 					RelativePath="..\Modules\cjkcodecs\multibytecodec.h">
 				</File>
 			</Filter>
-			<Filter
-				Name="_io">
-				<File
-					RelativePath="..\Modules\_io\_iomodule.c">
-				</File>
-				<File
-					RelativePath="..\Modules\_io\_iomodule.h">
-				</File>
-				<File
-					RelativePath="..\Modules\_io\bufferedio.c">
-				</File>
-				<File
-					RelativePath="..\Modules\_io\bytesio.c">
-				</File>
-				<File
-					RelativePath="..\Modules\_io\fileio.c">
-				</File>
-				<File
-					RelativePath="..\Modules\_io\iobase.c">
-				</File>
-				<File
-					RelativePath="..\Modules\_io\stringio.c">
-				</File>
-				<File
-					RelativePath="..\Modules\_io\textio.c">
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Objects">
@@ -717,16 +744,19 @@
 				RelativePath="..\Objects\abstract.c">
 			</File>
 			<File
-				RelativePath="..\Objects\boolobject.c">
+				RelativePath="..\Objects\accu.c">
 			</File>
 			<File
-				RelativePath="..\Objects\bufferobject.c">
+				RelativePath="..\Objects\boolobject.c">
 			</File>
 			<File
 				RelativePath="..\Objects\bytearrayobject.c">
 			</File>
 			<File
 				RelativePath="..\Objects\bytes_methods.c">
+			</File>
+			<File
+				RelativePath="..\Objects\bytesobject.c">
 			</File>
 			<File
 				RelativePath="..\Objects\capsule.c">
@@ -736,9 +766,6 @@
 			</File>
 			<File
 				RelativePath="..\Objects\classobject.c">
-			</File>
-			<File
-				RelativePath="..\Objects\cobject.c">
 			</File>
 			<File
 				RelativePath="..\Objects\codeobject.c">
@@ -783,9 +810,6 @@
 				RelativePath="..\Objects\genobject.c">
 			</File>
 			<File
-				RelativePath="..\Objects\intobject.c">
-			</File>
-			<File
 				RelativePath="..\Objects\iterobject.c">
 			</File>
 			<File
@@ -804,6 +828,9 @@
 				RelativePath="..\Objects\moduleobject.c">
 			</File>
 			<File
+				RelativePath="..\Objects\namespaceobject.c">
+			</File>
+			<File
 				RelativePath="..\Objects\object.c">
 			</File>
 			<File
@@ -816,6 +843,9 @@
 				RelativePath="..\Objects\rangeobject.c">
 			</File>
 			<File
+				RelativePath="..\Objects\stringlib\replace.h">
+			</File>
+			<File
 				RelativePath="..\Objects\setobject.c">
 			</File>
 			<File
@@ -823,9 +853,6 @@
 			</File>
 			<File
 				RelativePath="..\Objects\stringlib\split.h">
-			</File>
-			<File
-				RelativePath="..\Objects\stringobject.c">
 			</File>
 			<File
 				RelativePath="..\Objects\structseq.c">
@@ -909,10 +936,13 @@
 				RelativePath="..\PC\getpathp.c">
 			</File>
 			<File
-				RelativePath="..\PC\import_nt.c">
+				RelativePath="..\PC\msvcrtmodule.c">
 			</File>
 			<File
 				RelativePath="..\PC\pyconfig.h">
+			</File>
+			<File
+				RelativePath="..\PC\winreg.c">
 			</File>
 		</Filter>
 		<Filter
@@ -942,13 +972,16 @@
 				RelativePath="..\Python\dtoa.c">
 			</File>
 			<File
+				RelativePath="..\Python\dynamic_annotations.c">
+			</File>
+			<File
 				RelativePath="..\Python\dynload_win.c">
 			</File>
 			<File
 				RelativePath="..\Python\errors.c">
 			</File>
 			<File
-				RelativePath="..\Python\formatter_string.c">
+				RelativePath="..\Python\fileutils.c">
 			</File>
 			<File
 				RelativePath="..\Python\formatter_unicode.c">
@@ -1014,6 +1047,9 @@
 				RelativePath="..\Python\pyfpe.c">
 			</File>
 			<File
+				RelativePath="..\Python\pyhash.c">
+			</File>
+			<File
 				RelativePath="..\Python\pymath.c">
 			</File>
 			<File
@@ -1030,6 +1066,9 @@
 			</File>
 			<File
 				RelativePath="..\Python\pythonrun.c">
+			</File>
+			<File
+				RelativePath="..\Python\pytime.c">
 			</File>
 			<File
 				RelativePath="..\Python\random.c">

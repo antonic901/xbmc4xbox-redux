@@ -22,6 +22,9 @@
 static const double ln2 = 6.93147180559945286227E-01;
 static const double two_pow_m28 = 3.7252902984619141E-09; /* 2**-28 */
 static const double two_pow_p28 = 268435456.0; /* 2**28 */
+#ifndef Py_NAN
+static const double zero = 0.0;
+#endif
 
 /* acosh(x)
  * Method :
@@ -142,7 +145,7 @@ _Py_atanh(double x)
 #ifdef Py_NAN
         return Py_NAN;
 #else
-        return x/0.0;
+        return x/zero;
 #endif
     }
     if (absx < two_pow_m28) {           /* |x| < 2**-28 */
@@ -237,7 +240,7 @@ _Py_log1p(double x)
         return x;
     }
     else if (-0.5 <= x && x <= 1.) {
-        /* WARNING: it's possible than an overeager compiler
+        /* WARNING: it's possible that an overeager compiler
            will incorrectly optimize the following two lines
            to the equivalent of "return log(1.+x)". If this
            happens, then results from log1p will be inaccurate

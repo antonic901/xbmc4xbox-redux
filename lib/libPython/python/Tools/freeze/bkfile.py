@@ -1,4 +1,4 @@
-from __builtin__ import open as _orig_open
+from builtins import open as _orig_open
 
 class _BkFile:
     def __init__(self, file, mode, bufsize):
@@ -7,11 +7,11 @@ class _BkFile:
         self.__backup = file + '~'
         try:
             os.unlink(self.__backup)
-        except os.error:
+        except OSError:
             pass
         try:
             os.rename(file, self.__backup)
-        except os.error:
+        except OSError:
             self.__backup = None
         self.__file = _orig_open(file, mode, bufsize)
         self.closed = self.__file.closed
@@ -21,11 +21,13 @@ class _BkFile:
         self.mode = self.__file.mode
         self.name = self.__file.name
         self.read = self.__file.read
-        self.readinto = self.__file.readinto
+        try:
+            self.readinto = self.__file.readinto
+        except AttributeError:
+            pass
         self.readline = self.__file.readline
         self.readlines = self.__file.readlines
         self.seek = self.__file.seek
-        self.softspace = self.__file.softspace
         self.tell = self.__file.tell
         self.truncate = self.__file.truncate
         self.write = self.__file.write

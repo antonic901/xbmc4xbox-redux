@@ -4,11 +4,8 @@ import shutil
 import sys
 import unittest
 
-from test.test_support import run_unittest, TESTFN
-
-
-def fsdecode(s):
-    return unicode(s, sys.getfilesystemencoding())
+from test.support import (run_unittest, TESTFN, skip_unless_symlink,
+                          can_symlink, create_empty_file)
 
 
 class GlobTests(unittest.TestCase):
@@ -21,8 +18,7 @@ class GlobTests(unittest.TestCase):
         base, file = os.path.split(filename)
         if not os.path.exists(base):
             os.makedirs(base)
-        f = open(filename, 'w')
-        f.close()
+        create_empty_file(filename)
 
     def setUp(self):
         self.tempdir = TESTFN + "_dir"
@@ -34,7 +30,7 @@ class GlobTests(unittest.TestCase):
         self.mktemp('ZZZ')
         self.mktemp('a', 'bcd', 'EF')
         self.mktemp('a', 'bcd', 'efg', 'ha')
-        if hasattr(os, 'symlink'):
+        if can_symlink():
             os.symlink(self.norm('broken'), self.norm('sym1'))
             os.symlink('broken', self.norm('sym2'))
             os.symlink(os.path.join('a', 'bcd'), self.norm('sym3'))
@@ -49,10 +45,10 @@ class GlobTests(unittest.TestCase):
             pattern = os.path.join(*parts)
         p = os.path.join(self.tempdir, pattern)
         res = glob.glob(p)
-        self.assertItemsEqual(glob.iglob(p), res)
-        ures = [fsdecode(x) for x in res]
-        self.assertItemsEqual(glob.glob(fsdecode(p)), ures)
-        self.assertItemsEqual(glob.iglob(fsdecode(p)), ures)
+        self.assertEqual(list(glob.iglob(p)), res)
+        bres = [os.fsencode(x) for x in res]
+        self.assertEqual(glob.glob(os.fsencode(p)), bres)
+        self.assertEqual(list(glob.iglob(os.fsencode(p))), bres)
         return res
 
     def assertSequencesEqual_noorder(self, l1, l2):
@@ -73,14 +69,10 @@ class GlobTests(unittest.TestCase):
         res = glob.glob(os.path.join(os.curdir, '*'))
         self.assertEqual({type(r) for r in res}, {str})
 
-        # test return types are unicode, but only if os.listdir
-        # returns unicode filenames
-        tmp = os.listdir(fsdecode(os.curdir))
-        if {type(x) for x in tmp} == {unicode}:
-            res = glob.glob(u'*')
-            self.assertEqual({type(r) for r in res}, {unicode})
-            res = glob.glob(os.path.join(fsdecode(os.curdir), u'*'))
-            self.assertEqual({type(r) for r in res}, {unicode})
+        res = glob.glob(b'*')
+        self.assertEqual({type(r) for r in res}, {bytes})
+        res = glob.glob(os.path.join(os.fsencode(os.curdir), b'*'))
+        self.assertEqual({type(r) for r in res}, {bytes})
 
     def test_glob_one_directory(self):
         eq = self.assertSequencesEqual_noorder
@@ -128,23 +120,24 @@ class GlobTests(unittest.TestCase):
                       {self.norm('aaa') + os.sep, self.norm('aab') + os.sep},
                       ])
 
-    def test_glob_unicode_directory_with_trailing_slash(self):
-        # Same as test_glob_directory_with_trailing_slash, but with an
-        # unicode argument.
-        res = glob.glob(fsdecode(self.norm('Z*Z') + os.sep))
+    def test_glob_bytes_directory_with_trailing_slash(self):
+        # Same as test_glob_directory_with_trailing_slash, but with a
+        # bytes argument.
+        res = glob.glob(os.fsencode(self.norm('Z*Z') + os.sep))
         self.assertEqual(res, [])
-        res = glob.glob(fsdecode(self.norm('ZZZ') + os.sep))
+        res = glob.glob(os.fsencode(self.norm('ZZZ') + os.sep))
         self.assertEqual(res, [])
-        res = glob.glob(fsdecode(self.norm('aa*') + os.sep))
+        res = glob.glob(os.fsencode(self.norm('aa*') + os.sep))
         self.assertEqual(len(res), 2)
         # either of these results is reasonable
         self.assertIn(set(res), [
-                      {fsdecode(self.norm('aaa')), fsdecode(self.norm('aab'))},
-                      {fsdecode(self.norm('aaa') + os.sep),
-                       fsdecode(self.norm('aab') + os.sep)},
+                      {os.fsencode(self.norm('aaa')),
+                       os.fsencode(self.norm('aab'))},
+                      {os.fsencode(self.norm('aaa') + os.sep),
+                       os.fsencode(self.norm('aab') + os.sep)},
                       ])
 
-    @unittest.skipUnless(hasattr(os, 'symlink'), "Requires symlink support")
+    @skip_unless_symlink
     def test_glob_symlinks(self):
         eq = self.assertSequencesEqual_noorder
         eq(self.glob('sym3'), [self.norm('sym3')])
@@ -153,10 +146,10 @@ class GlobTests(unittest.TestCase):
         self.assertIn(self.glob('sym3' + os.sep),
                       [[self.norm('sym3')], [self.norm('sym3') + os.sep]])
         eq(self.glob('*', '*F'),
-           [self.norm('aaa', 'zzzF'), self.norm('aab', 'F'),
-            self.norm('sym3', 'EF')])
+           [self.norm('aaa', 'zzzF'),
+            self.norm('aab', 'F'), self.norm('sym3', 'EF')])
 
-    @unittest.skipUnless(hasattr(os, 'symlink'), "Requires symlink support")
+    @skip_unless_symlink
     def test_glob_broken_symlinks(self):
         eq = self.assertSequencesEqual_noorder
         eq(self.glob('sym*'), [self.norm('sym1'), self.norm('sym2'),
@@ -168,10 +161,36 @@ class GlobTests(unittest.TestCase):
     def test_glob_magic_in_drive(self):
         eq = self.assertSequencesEqual_noorder
         eq(glob.glob('*:'), [])
-        eq(glob.glob(u'*:'), [])
+        eq(glob.glob(b'*:'), [])
         eq(glob.glob('?:'), [])
-        eq(glob.glob(u'?:'), [])
+        eq(glob.glob(b'?:'), [])
+        eq(glob.glob('\\\\?\\c:\\'), ['\\\\?\\c:\\'])
+        eq(glob.glob(b'\\\\?\\c:\\'), [b'\\\\?\\c:\\'])
+        eq(glob.glob('\\\\*\\*\\'), [])
+        eq(glob.glob(b'\\\\*\\*\\'), [])
 
+    def check_escape(self, arg, expected):
+        self.assertEqual(glob.escape(arg), expected)
+        self.assertEqual(glob.escape(os.fsencode(arg)), os.fsencode(expected))
+
+    def test_escape(self):
+        check = self.check_escape
+        check('abc', 'abc')
+        check('[', '[[]')
+        check('?', '[?]')
+        check('*', '[*]')
+        check('[[_/*?*/_]]', '[[][[]_/[*][?][*]/_]]')
+        check('/[[_/*?*/_]]/', '/[[][[]_/[*][?][*]/_]]/')
+
+    @unittest.skipUnless(sys.platform == "win32", "Win32 specific test")
+    def test_escape_windows(self):
+        check = self.check_escape
+        check('?:?', '?:[?]')
+        check('*:*', '*:[*]')
+        check(r'\\?\c:\?', r'\\?\c:\[?]')
+        check(r'\\*\*\*', r'\\*\*\[*]')
+        check('//?/c:/?', '//?/c:/[?]')
+        check('//*/*/*', '//*/*/[*]')
 
 def test_main():
     run_unittest(GlobTests)

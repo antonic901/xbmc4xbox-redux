@@ -11,7 +11,7 @@ INVALID_NAME = '!@$)(!@#_1'
 EMPTY = ''
 TESTS = 'inspect_fodder inspect_fodder2 mapping_tests'
 TESTS = TESTS.split()
-TEST_PATH = support.TEST_HOME_DIR
+TEST_PATH = os.path.dirname(__file__)
 MODULES = "linecache abc".split()
 MODULE_PATH = os.path.dirname(FILENAME)
 
@@ -55,14 +55,16 @@ class LineCacheTests(unittest.TestCase):
         # Check whether lines correspond to those from file iteration
         for entry in TESTS:
             filename = os.path.join(TEST_PATH, entry) + '.py'
-            for index, line in enumerate(open(filename)):
-                self.assertEqual(line, getline(filename, index + 1))
+            with open(filename) as file:
+                for index, line in enumerate(file):
+                    self.assertEqual(line, getline(filename, index + 1))
 
         # Check module loading
         for entry in MODULES:
             filename = os.path.join(MODULE_PATH, entry) + '.py'
-            for index, line in enumerate(open(filename)):
-                self.assertEqual(line, getline(filename, index + 1))
+            with open(filename) as file:
+                for index, line in enumerate(file):
+                    self.assertEqual(line, getline(filename, index + 1))
 
         # Check that bogus data isn't returned (issue #1309567)
         empty = linecache.getlines('a/b/c/__init__.py')
@@ -140,8 +142,5 @@ class LineCacheTests(unittest.TestCase):
         self.assertEqual(linecache.getlines(FILENAME), lines)
 
 
-def test_main():
-    support.run_unittest(LineCacheTests)
-
 if __name__ == "__main__":
-    test_main()
+    unittest.main()

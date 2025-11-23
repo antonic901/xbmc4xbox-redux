@@ -32,21 +32,21 @@ set prefix=%pcbuild%
 set suffix=
 set qmode=
 set dashO=
-set regrtestargs=
+set tcltk=tcltk
 
 :CheckOpts
 if "%1"=="-O" (set dashO=-O)     & shift & goto CheckOpts
 if "%1"=="-q" (set qmode=yes)    & shift & goto CheckOpts
 if "%1"=="-d" (set suffix=_d)    & shift & goto CheckOpts
-if "%1"=="-x64" (set prefix=%pcbuild%amd64\) & shift & goto CheckOpts
-if NOT "%1"=="" (set regrtestargs=%regrtestargs% %1) & shift & goto CheckOpts
+if "%1"=="-x64" (set prefix=%prefix%amd64) & (set tcltk=tcltk64) & shift & goto CheckOpts
 
-set exe=%prefix%python%suffix%
-set cmd="%exe%" %dashO% -Wd -3 -E -tt "%pcbuild%..\Lib\test\regrtest.py" %regrtestargs%
+PATH %PATH%;%pcbuild%..\externals\%tcltk%\bin
+set exe="%prefix%\python%suffix%"
+set cmd=%exe% %dashO% -Wd -E -bb "%pcbuild%..\lib\test\regrtest.py" %1 %2 %3 %4 %5 %6 %7 %8 %9
 if defined qmode goto Qmode
 
 echo Deleting .pyc/.pyo files ...
-"%exe%" "%pcbuild%rmpyc.py"
+%exe% "%pcbuild%\rmpyc.py"
 
 echo on
 %cmd%

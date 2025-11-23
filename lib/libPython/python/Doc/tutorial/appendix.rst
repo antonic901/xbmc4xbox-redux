@@ -40,7 +40,7 @@ Executable Python Scripts
 On BSD'ish Unix systems, Python scripts can be made directly executable, like
 shell scripts, by putting the line ::
 
-   #!/usr/bin/env python
+   #!/usr/bin/env python3.4
 
 (assuming that the interpreter is on the user's :envvar:`PATH`) at the beginning
 of the script and giving the file an executable mode.  The ``#!`` must be the
@@ -92,7 +92,7 @@ in the script::
    filename = os.environ.get('PYTHONSTARTUP')
    if filename and os.path.isfile(filename):
        with open(filename) as fobj:
-           startup_file = fobj.read()
+          startup_file = fobj.read()
        exec(startup_file)
 
 
@@ -107,7 +107,7 @@ of your user site-packages directory.  Start Python and run this code::
 
    >>> import site
    >>> site.getusersitepackages()
-   '/home/user/.local/lib/python2.7/site-packages'
+   '/home/user/.local/lib/python3.4/site-packages'
 
 Now you can create a file named :file:`usercustomize.py` in that directory and
 put anything you want in it.  It will affect every invocation of Python, unless

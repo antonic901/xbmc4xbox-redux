@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Python documentation build configuration file
 #
@@ -31,24 +30,27 @@ today = ''
 # Else, today_fmt is used as the format for a strftime call.
 today_fmt = '%B %d, %Y'
 
-# List of files that shouldn't be included in the build.
-exclude_patterns = [
-    'maclib/scrap.rst',
-    'library/xmllib.rst',
-    'library/xml.etree.rst',
-]
+# By default, highlight as Python 3.
+highlight_language = 'python3'
 
 # Require Sphinx 1.2 for build.
 needs_sphinx = '1.2'
 
-# Avoid a warning with Sphinx >= 2.0
-master_doc = 'contents'
+# Ignore any .rst files in the venv/ directory.
+venvdir = os.getenv('VENVDIR', 'venv')
+exclude_patterns = [venvdir+'/*', 'README.rst']
+
 
 # Options for HTML output
 # -----------------------
 
-html_theme = 'default'
+# Use our custom theme.
+html_theme = 'pydoctheme'
+html_theme_path = ['tools']
 html_theme_options = {'collapsiblesidebar': True}
+
+# Short title used e.g. for <title> HTML tags.
+html_short_title = '%s Documentation' % release
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -59,7 +61,7 @@ templates_path = ['tools/templates']
 
 # Custom sidebar templates, filenames relative to this file.
 html_sidebars = {
-    'index': ['indexsidebar.html'],
+    'index': 'indexsidebar.html',
 }
 
 # Additional templates that should be rendered to pages.
@@ -69,7 +71,7 @@ html_additional_pages = {
 }
 
 # Output an OpenSearch description file.
-html_use_opensearch = 'https://docs.python.org/'
+html_use_opensearch = 'https://docs.python.org/' + version
 
 # Additional static files.
 html_static_path = ['tools/static']
@@ -80,35 +82,15 @@ htmlhelp_basename = 'python' + release.replace('.', '')
 # Split the index
 html_split_index = True
 
-html_context = {
-    'outdated': True
-}
-
 
 # Options for LaTeX output
 # ------------------------
 
-latex_engine = 'xelatex'
-
-# Get LaTeX to handle Unicode correctly
-latex_elements = {
-}
-
-# Additional stuff for the LaTeX preamble.
-latex_elements['preamble'] = r'''
-\authoraddress{
-  \sphinxstrong{Python Software Foundation}\\
-  Email: \sphinxemail{docs@python.org}
-}
-\let\Verbatim=\OriginalVerbatim
-\let\endVerbatim=\endOriginalVerbatim
-'''
-
 # The paper size ('letter' or 'a4').
-latex_elements['papersize'] = 'a4'
+latex_paper_size = 'a4'
 
 # The font size ('10pt', '11pt' or '12pt').
-latex_elements['pointsize'] = '10pt'
+latex_font_size = '10pt'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
@@ -141,14 +123,22 @@ latex_documents.extend(('howto/' + fn[:-4], 'howto-' + fn[:-4] + '.tex',
                        for fn in os.listdir('howto')
                        if fn.endswith('.rst') and fn != 'index.rst')
 
+# Additional stuff for the LaTeX preamble.
+latex_preamble = r'''
+\authoraddress{
+  \strong{Python Software Foundation}\\
+  Email: \email{docs@python.org}
+}
+\let\Verbatim=\OriginalVerbatim
+\let\endVerbatim=\endOriginalVerbatim
+'''
+
 # Documents to append as an appendix to all manuals.
 latex_appendices = ['glossary', 'about', 'license', 'copyright']
 
-# Options for Epub output
-# -----------------------
+# Get LaTeX to handle Unicode correctly
+latex_elements = {'inputenc': r'\usepackage[utf8x]{inputenc}', 'utf8extra': ''}
 
-epub_author = 'Python Documentation Authors'
-epub_publisher = 'Python Software Foundation'
 
 # Options for the coverage checker
 # --------------------------------

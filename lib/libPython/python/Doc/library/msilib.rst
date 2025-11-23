@@ -10,8 +10,6 @@
 
 .. index:: single: msi
 
-.. versionadded:: 2.5
-
 The :mod:`msilib` supports the creation of Microsoft Installer (``.msi``) files.
 Because these files often contain an embedded "cabinet" file (``.cab``), it also
 exposes an API to create CAB files. Support for reading ``.cab`` files is
@@ -90,8 +88,7 @@ structures.
    record according to the schema of the table.  For optional fields,
    ``None`` can be passed.
 
-   Field values can be int or long numbers, strings, or instances of the Binary
-   class.
+   Field values can be ints, strings, or instances of the Binary class.
 
 
 .. class:: Binary(filename)
@@ -123,9 +120,9 @@ structures.
 
 .. seealso::
 
-   `FCICreateFile <https://msdn.microsoft.com/library?url=/library/en-us/devnotes/winprog/fcicreate.asp>`_
-   `UuidCreate <https://msdn.microsoft.com/library?url=/library/en-us/rpc/rpc/uuidcreate.asp>`_
-   `UuidToString <https://msdn.microsoft.com/library?url=/library/en-us/rpc/rpc/uuidtostring.asp>`_
+   `FCICreateFile <http://msdn.microsoft.com/library?url=/library/en-us/devnotes/winprog/fcicreate.asp>`_
+   `UuidCreate <http://msdn.microsoft.com/library?url=/library/en-us/rpc/rpc/uuidcreate.asp>`_
+   `UuidToString <http://msdn.microsoft.com/library?url=/library/en-us/rpc/rpc/uuidtostring.asp>`_
 
 .. _database-objects:
 
@@ -154,9 +151,9 @@ Database Objects
 
 .. seealso::
 
-   `MSIDatabaseOpenView <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msidatabaseopenview.asp>`_
-   `MSIDatabaseCommit <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msidatabasecommit.asp>`_
-   `MSIGetSummaryInformation <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msigetsummaryinformation.asp>`_
+   `MSIDatabaseOpenView <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msidatabaseopenview.asp>`_
+   `MSIDatabaseCommit <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msidatabasecommit.asp>`_
+   `MSIGetSummaryInformation <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msigetsummaryinformation.asp>`_
 
 .. _view-objects:
 
@@ -202,11 +199,11 @@ View Objects
 
 .. seealso::
 
-   `MsiViewExecute <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msiviewexecute.asp>`_
-   `MSIViewGetColumnInfo <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msiviewgetcolumninfo.asp>`_
-   `MsiViewFetch <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msiviewfetch.asp>`_
-   `MsiViewModify <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msiviewmodify.asp>`_
-   `MsiViewClose <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msiviewclose.asp>`_
+   `MsiViewExecute <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msiviewexecute.asp>`_
+   `MSIViewGetColumnInfo <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msiviewgetcolumninfo.asp>`_
+   `MsiViewFetch <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msiviewfetch.asp>`_
+   `MsiViewModify <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msiviewmodify.asp>`_
+   `MsiViewClose <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msiviewclose.asp>`_
 
 .. _summary-objects:
 
@@ -246,10 +243,10 @@ Summary Information Objects
 
 .. seealso::
 
-   `MsiSummaryInfoGetProperty <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msisummaryinfogetproperty.asp>`_
-   `MsiSummaryInfoGetPropertyCount <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msisummaryinfogetpropertycount.asp>`_
-   `MsiSummaryInfoSetProperty <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msisummaryinfosetproperty.asp>`_
-   `MsiSummaryInfoPersist <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msisummaryinfopersist.asp>`_
+   `MsiSummaryInfoGetProperty <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msisummaryinfogetproperty.asp>`_
+   `MsiSummaryInfoGetPropertyCount <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msisummaryinfogetpropertycount.asp>`_
+   `MsiSummaryInfoSetProperty <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msisummaryinfosetproperty.asp>`_
+   `MsiSummaryInfoPersist <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msisummaryinfopersist.asp>`_
 
 .. _record-objects:
 
@@ -300,18 +297,18 @@ Record Objects
 
 .. seealso::
 
-   `MsiRecordGetFieldCount <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msirecordgetfieldcount.asp>`_
-   `MsiRecordSetString <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msirecordsetstring.asp>`_
-   `MsiRecordSetStream <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msirecordsetstream.asp>`_
-   `MsiRecordSetInteger <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msirecordsetinteger.asp>`_
-   `MsiRecordClear <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msirecordclear.asp>`_
+   `MsiRecordGetFieldCount <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msirecordgetfieldcount.asp>`_
+   `MsiRecordSetString <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msirecordsetstring.asp>`_
+   `MsiRecordSetStream <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msirecordsetstream.asp>`_
+   `MsiRecordSetInteger <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msirecordsetinteger.asp>`_
+   `MsiRecordClear <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msirecordclear.asp>`_
 
 .. _msi-errors:
 
 Errors
 ------
 
-All wrappers around MSI functions raise :exc:`MSIError`; the string inside the
+All wrappers around MSI functions raise :exc:`MsiError`; the string inside the
 exception will contain more detail.
 
 
@@ -365,7 +362,7 @@ Directory Objects
    the default flags that new components get.
 
 
-   .. method:: start_component([component[, feature[, flags[, keyfile[, uuid]]]]])
+   .. method:: start_component(component=None, feature=None, flags=None, keyfile=None, uuid=None)
 
       Add an entry to the Component table, and make this component the current
       component for this directory. If no component name is given, the directory
@@ -374,7 +371,7 @@ Directory Objects
       is given, the KeyPath is left null in the Component table.
 
 
-   .. method:: add_file(file[, src[, version[, language]]])
+   .. method:: add_file(file, src=None, version=None, language=None)
 
       Add a file to the current component of the directory, starting a new one
       if there is no current component. By default, the file name in the source
@@ -383,7 +380,7 @@ Directory Objects
       and a *language* can be specified for the entry in the File table.
 
 
-   .. method:: glob(pattern[, exclude])
+   .. method:: glob(pattern, exclude=None)
 
       Add a list of files to the current component as specified in the glob
       pattern.  Individual files can be excluded in the *exclude* list.
@@ -396,10 +393,10 @@ Directory Objects
 
 .. seealso::
 
-   `Directory Table <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/directory_table.asp>`_
-   `File Table <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/file_table.asp>`_
-   `Component Table <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/component_table.asp>`_
-   `FeatureComponents Table <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/featurecomponents_table.asp>`_
+   `Directory Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/directory_table.asp>`_
+   `File Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/file_table.asp>`_
+   `Component Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/component_table.asp>`_
+   `FeatureComponents Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/featurecomponents_table.asp>`_
 
 .. _features:
 
@@ -407,7 +404,7 @@ Features
 --------
 
 
-.. class:: Feature(database, id, title, desc, display[, level=1[, parent[, directory[,  attributes=0]]]])
+.. class:: Feature(db, id, title, desc, display, level=1, parent=None, directory=None,  attributes=0)
 
    Add a new record to the ``Feature`` table, using the values *id*, *parent.id*,
    *title*, *desc*, *display*, *level*, *directory*, and *attributes*. The
@@ -424,7 +421,7 @@ Features
 
 .. seealso::
 
-   `Feature Table <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/feature_table.asp>`_
+   `Feature Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/feature_table.asp>`_
 
 .. _msi-gui:
 
@@ -443,7 +440,7 @@ for installing Python packages.
    belongs to, and *name* is the control's name.
 
 
-   .. method:: event(event, argument[,  condition=1[, ordering]])
+   .. method:: event(event, argument, condition=1, ordering=None)
 
       Make an entry into the ``ControlEvent`` table for this control.
 
@@ -464,10 +461,10 @@ for installing Python packages.
    that gets set when a radio button is selected.
 
 
-   .. method:: add(name, x, y, width, height, text [, value])
+   .. method:: add(name, x, y, width, height, text, value=None)
 
       Add a radio button named *name* to the group, at the coordinates *x*, *y*,
-      *width*, *height*, and with the label *text*. If *value* is omitted, it
+      *width*, *height*, and with the label *text*. If *value* is ``None``, it
       defaults to *name*.
 
 
@@ -519,13 +516,13 @@ for installing Python packages.
 
 .. seealso::
 
-   `Dialog Table <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/dialog_table.asp>`_
-   `Control Table <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/control_table.asp>`_
-   `Control Types <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/controls.asp>`_
-   `ControlCondition Table <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/controlcondition_table.asp>`_
-   `ControlEvent Table <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/controlevent_table.asp>`_
-   `EventMapping Table <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/eventmapping_table.asp>`_
-   `RadioButton Table <https://msdn.microsoft.com/library?url=/library/en-us/msi/setup/radiobutton_table.asp>`_
+   `Dialog Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/dialog_table.asp>`_
+   `Control Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/control_table.asp>`_
+   `Control Types <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/controls.asp>`_
+   `ControlCondition Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/controlcondition_table.asp>`_
+   `ControlEvent Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/controlevent_table.asp>`_
+   `EventMapping Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/eventmapping_table.asp>`_
+   `RadioButton Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/radiobutton_table.asp>`_
 
 .. _msi-tables:
 

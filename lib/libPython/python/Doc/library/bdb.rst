@@ -54,9 +54,10 @@ The :mod:`bdb` module also defines two classes:
       Mark the breakpoint as disabled.
 
 
-   .. method:: pprint([out])
+   .. method:: bpformat()
 
-      Print all the information about the breakpoint:
+      Return a string with all the information about the breakpoint, nicely
+      formatted:
 
       * The breakpoint number.
       * If it is temporary or not.
@@ -64,6 +65,13 @@ The :mod:`bdb` module also defines two classes:
       * The condition that causes a break.
       * If it must be ignored the next N times.
       * The breakpoint hit count.
+
+      .. versionadded:: 3.2
+
+   .. method:: bpprint(out=None)
+
+      Print the output of :meth:`bpformat` to the file *out*, or if it is
+      ``None``, to standard output.
 
 
 .. class:: Bdb(skip=None)
@@ -80,7 +88,7 @@ The :mod:`bdb` module also defines two classes:
    frame is considered to originate in a certain module is determined
    by the ``__name__`` in the frame globals.
 
-   .. versionadded:: 2.7
+   .. versionadded:: 3.1
       The *skip* argument.
 
    The following methods of :class:`Bdb` normally don't need to be overridden.
@@ -233,7 +241,7 @@ The :mod:`bdb` module also defines two classes:
    .. method:: set_continue()
 
       Stop only at breakpoints or when finished.  If there are no breakpoints,
-      set the system trace function to ``None``.
+      set the system trace function to None.
 
    .. method:: set_quit()
 
@@ -245,7 +253,7 @@ The :mod:`bdb` module also defines two classes:
    breakpoints.  These methods return a string containing an error message if
    something went wrong, or ``None`` if all is well.
 
-   .. method:: set_break(filename, lineno, temporary=0, cond=None, funcname=None)
+   .. method:: set_break(filename, lineno, temporary=0, cond, funcname)
 
       Set a new breakpoint.  If the *lineno* line doesn't exist for the
       *filename* passed as argument, return an error message.  The *filename*
@@ -270,6 +278,15 @@ The :mod:`bdb` module also defines two classes:
    .. method:: clear_all_breaks()
 
       Delete all existing breakpoints.
+
+   .. method:: get_bpbynumber(arg)
+
+      Return a breakpoint specified by the given number.  If *arg* is a string,
+      it will be converted to a number.  If *arg* is a non-numeric string, if
+      the given breakpoint never existed or has been deleted, a
+      :exc:`ValueError` is raised.
+
+      .. versionadded:: 3.2
 
    .. method:: get_break(filename, lineno)
 
@@ -297,7 +314,7 @@ The :mod:`bdb` module also defines two classes:
       Get a list of records for a frame and all higher (calling) and lower
       frames, and the size of the higher part.
 
-   .. method:: format_stack_entry(frame_lineno, [lprefix=': '])
+   .. method:: format_stack_entry(frame_lineno, lprefix=': ')
 
       Return a string with information about a stack entry, identified by a
       ``(frame, lineno)`` tuple:
@@ -312,12 +329,12 @@ The :mod:`bdb` module also defines two classes:
    The following two methods can be called by clients to use a debugger to debug
    a :term:`statement`, given as a string.
 
-   .. method:: run(cmd, [globals, [locals]])
+   .. method:: run(cmd, globals=None, locals=None)
 
-      Debug a statement executed via the :keyword:`exec` statement.  *globals*
+      Debug a statement executed via the :func:`exec` function.  *globals*
       defaults to :attr:`__main__.__dict__`, *locals* defaults to *globals*.
 
-   .. method:: runeval(expr, [globals, [locals]])
+   .. method:: runeval(expr, globals=None, locals=None)
 
       Debug an expression executed via the :func:`eval` function.  *globals* and
       *locals* have the same meaning as in :meth:`run`.

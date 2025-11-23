@@ -22,7 +22,7 @@ Mechanism For Multimedia Mail Format Information," but is not an Internet
 standard.  However, mailcap files are supported on most Unix systems.
 
 
-.. function:: findmatch(caps, MIMEtype[, key[, filename[, plist]]])
+.. function:: findmatch(caps, MIMEtype, key='view', filename='/dev/null', plist=[])
 
    Return a 2-tuple; the first element is a string containing the command line to
    be executed (which can be passed to :func:`os.system`), and the second element
@@ -70,7 +70,7 @@ standard.  However, mailcap files are supported on most Unix systems.
 An example usage::
 
    >>> import mailcap
-   >>> d = mailcap.getcaps()
+   >>> d=mailcap.getcaps()
    >>> mailcap.findmatch(d, 'video/mpeg', filename='tmp1223')
    ('xmpeg tmp1223', {'view': 'xmpeg %s'})
 

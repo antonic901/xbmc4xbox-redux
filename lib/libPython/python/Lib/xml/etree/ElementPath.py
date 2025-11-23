@@ -105,14 +105,12 @@ def prepare_child(next, token):
 def prepare_star(next, token):
     def select(context, result):
         for elem in result:
-            for e in elem:
-                yield e
+            yield from elem
     return select
 
 def prepare_self(next, token):
     def select(context, result):
-        for elem in result:
-            yield elem
+        yield from result
     return select
 
 def prepare_descendant(next, token):
@@ -176,7 +174,7 @@ def prepare_predicate(next, token):
                 if elem.get(key) == value:
                     yield elem
         return select
-    if signature == "-" and not re.match("\d+$", predicate[0]):
+    if signature == "-" and not re.match("\-?\d+$", predicate[0]):
         # [tag]
         tag = predicate[0]
         def select(context, result):
@@ -184,7 +182,7 @@ def prepare_predicate(next, token):
                 if elem.find(tag) is not None:
                     yield elem
         return select
-    if signature == "-='" and not re.match("\d+$", predicate[0]):
+    if signature == "-='" and not re.match("\-?\d+$", predicate[0]):
         # [tag='value']
         tag = predicate[0]
         value = predicate[-1]
@@ -198,7 +196,10 @@ def prepare_predicate(next, token):
     if signature == "-" or signature == "-()" or signature == "-()-":
         # [index] or [last()] or [last()-index]
         if signature == "-":
+            # [index]
             index = int(predicate[0]) - 1
+            if index < 0:
+                raise SyntaxError("XPath position >= 1 expected")
         else:
             if predicate[0] != "last":
                 raise SyntaxError("unsupported function")
@@ -207,6 +208,8 @@ def prepare_predicate(next, token):
                     index = int(predicate[2]) - 1
                 except ValueError:
                     raise SyntaxError("unsupported expression")
+                if index > -2:
+                    raise SyntaxError("XPath offset from last() must be negative")
             else:
                 index = -1
         def select(context, result):
@@ -246,16 +249,18 @@ class _SelectorContext:
 
 def iterfind(elem, path, namespaces=None):
     # compile selector pattern
+    cache_key = (path, None if namespaces is None
+                            else tuple(sorted(namespaces.items())))
     if path[-1:] == "/":
         path = path + "*" # implicit all (FIXME: keep this?)
     try:
-        selector = _cache[path]
+        selector = _cache[cache_key]
     except KeyError:
         if len(_cache) > 100:
             _cache.clear()
         if path[:1] == "/":
             raise SyntaxError("cannot use absolute path on element")
-        next = iter(xpath_tokenizer(path, namespaces)).next
+        next = iter(xpath_tokenizer(path, namespaces)).__next__
         token = next()
         selector = []
         while 1:
@@ -269,7 +274,7 @@ def iterfind(elem, path, namespaces=None):
                     token = next()
             except StopIteration:
                 break
-        _cache[path] = selector
+        _cache[cache_key] = selector
     # execute selector pattern
     result = [elem]
     context = _SelectorContext(elem)
@@ -282,7 +287,7 @@ def iterfind(elem, path, namespaces=None):
 
 def find(elem, path, namespaces=None):
     try:
-        return iterfind(elem, path, namespaces).next()
+        return next(iterfind(elem, path, namespaces))
     except StopIteration:
         return None
 
@@ -297,7 +302,7 @@ def findall(elem, path, namespaces=None):
 
 def findtext(elem, path, default=None, namespaces=None):
     try:
-        elem = iterfind(elem, path, namespaces).next()
+        elem = next(iterfind(elem, path, namespaces))
         return elem.text or ""
     except StopIteration:
         return default

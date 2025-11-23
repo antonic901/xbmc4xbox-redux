@@ -1,4 +1,4 @@
-"""Cache lines from files.
+"""Cache lines from Python source files.
 
 This is intended to read lines from modules imported -- hence if a filename
 is not found, it will look down the module search path for a file by
@@ -7,6 +7,7 @@ that name.
 
 import sys
 import os
+import tokenize
 
 __all__ = ["getline", "clearcache", "checkcache"]
 
@@ -31,7 +32,7 @@ def clearcache():
 
 
 def getlines(filename, module_globals=None):
-    """Get the lines for a file from the cache.
+    """Get the lines for a Python source file from the cache.
     Update the cache if it doesn't contain an entry for this file already."""
 
     if filename in cache:
@@ -49,7 +50,7 @@ def checkcache(filename=None):
     (This is not checked upon each call!)"""
 
     if filename is None:
-        filenames = cache.keys()
+        filenames = list(cache.keys())
     else:
         if filename in cache:
             filenames = [filename]
@@ -62,7 +63,7 @@ def checkcache(filename=None):
             continue   # no-op for files loaded via a __loader__
         try:
             stat = os.stat(fullname)
-        except os.error:
+        except OSError:
             del cache[filename]
             continue
         if size != stat.st_size or mtime != stat.st_mtime:
@@ -94,7 +95,7 @@ def updatecache(filename, module_globals=None):
             if name and get_source:
                 try:
                     data = get_source(name)
-                except (ImportError, IOError):
+                except (ImportError, OSError):
                     pass
                 else:
                     if data is None:
@@ -113,8 +114,6 @@ def updatecache(filename, module_globals=None):
             return []
 
         for dirname in sys.path:
-            # When using imputil, sys.path may contain things other than
-            # strings; ignore them when it happens.
             try:
                 fullname = os.path.join(dirname, basename)
             except (TypeError, AttributeError):
@@ -123,14 +122,14 @@ def updatecache(filename, module_globals=None):
             try:
                 stat = os.stat(fullname)
                 break
-            except os.error:
+            except OSError:
                 pass
         else:
             return []
     try:
-        with open(fullname, 'rU') as fp:
+        with tokenize.open(fullname) as fp:
             lines = fp.readlines()
-    except IOError:
+    except OSError:
         return []
     if lines and not lines[-1].endswith('\n'):
         lines[-1] += '\n'

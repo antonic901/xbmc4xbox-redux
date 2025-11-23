@@ -35,7 +35,7 @@ operate within the bounds of the private heap.
 
 It is important to understand that the management of the Python heap is
 performed by the interpreter itself and that the user has no control over it,
-even if they regularly manipulate object pointers to memory blocks inside that
+even if she regularly manipulates object pointers to memory blocks inside that
 heap.  The allocation of heap space for Python objects and other internal
 buffers is performed on demand by the Python memory manager through the Python/C
 API functions listed in this document.
@@ -61,7 +61,7 @@ example::
    if (buf == NULL)
        return PyErr_NoMemory();
    ...Do some I/O operation involving buf...
-   res = PyString_FromString(buf);
+   res = PyBytes_FromString(buf);
    free(buf); /* malloc'ed */
    return res;
 
@@ -84,6 +84,48 @@ the C library allocator as shown in the previous example, the allocated memory
 for the I/O buffer escapes completely the Python memory manager.
 
 
+Raw Memory Interface
+====================
+
+The following function sets are wrappers to the system allocator. These
+functions are thread-safe, the :term:`GIL <global interpreter lock>` does not
+need to be held.
+
+The default raw memory block allocator uses the following functions:
+:c:func:`malloc`, :c:func:`realloc` and :c:func:`free`; call ``malloc(1)`` when
+requesting zero bytes.
+
+.. versionadded:: 3.4
+
+.. c:function:: void* PyMem_RawMalloc(size_t n)
+
+   Allocates *n* bytes and returns a pointer of type :c:type:`void\*` to the
+   allocated memory, or *NULL* if the request fails. Requesting zero bytes
+   returns a distinct non-*NULL* pointer if possible, as if
+   ``PyMem_RawMalloc(1)`` had been called instead. The memory will not have
+   been initialized in any way.
+
+
+.. c:function:: void* PyMem_RawRealloc(void *p, size_t n)
+
+   Resizes the memory block pointed to by *p* to *n* bytes. The contents will
+   be unchanged to the minimum of the old and the new sizes. If *p* is *NULL*,
+   the call is equivalent to ``PyMem_RawMalloc(n)``; else if *n* is equal to
+   zero, the memory block is resized but is not freed, and the returned pointer
+   is non-*NULL*. Unless *p* is *NULL*, it must have been returned by a
+   previous call to :c:func:`PyMem_RawMalloc` or :c:func:`PyMem_RawRealloc`. If
+   the request fails, :c:func:`PyMem_RawRealloc` returns *NULL* and *p* remains
+   a valid pointer to the previous memory area.
+
+
+.. c:function:: void PyMem_RawFree(void *p)
+
+   Frees the memory block pointed to by *p*, which must have been returned by a
+   previous call to :c:func:`PyMem_RawMalloc` or :c:func:`PyMem_RawRealloc`.
+   Otherwise, or if ``PyMem_Free(p)`` has been called before, undefined
+   behavior occurs. If *p* is *NULL*, no operation is performed.
+
+
 .. _memoryinterface:
 
 Memory Interface
@@ -91,8 +133,16 @@ Memory Interface
 
 The following function sets, modeled after the ANSI C standard, but specifying
 behavior when requesting zero bytes, are available for allocating and releasing
-memory from the Python heap:
+memory from the Python heap.
 
+The default memory block allocator uses the following functions:
+:c:func:`malloc`, :c:func:`realloc` and :c:func:`free`; call ``malloc(1)`` when
+requesting zero bytes.
+
+.. warning::
+
+   The :term:`GIL <global interpreter lock>` must be held when using these
+   functions.
 
 .. c:function:: void* PyMem_Malloc(size_t n)
 
@@ -155,86 +205,123 @@ versions and is therefore deprecated in extension modules.
 :c:func:`PyMem_NEW`, :c:func:`PyMem_RESIZE`, :c:func:`PyMem_DEL`.
 
 
-Object allocators
-=================
+Customize Memory Allocators
+===========================
 
-The following function sets, modeled after the ANSI C standard, but specifying
-behavior when requesting zero bytes, are available for allocating and releasing
-memory from the Python heap.
+.. versionadded:: 3.4
 
-By default, these functions use :ref:`pymalloc memory allocator <pymalloc>`.
+.. c:type:: PyMemAllocator
 
-.. warning::
+   Structure used to describe a memory block allocator. The structure has
+   four fields:
 
-   The :term:`GIL <global interpreter lock>` must be held when using these
-   functions.
+   +----------------------------------------------------------+---------------------------------------+
+   | Field                                                    | Meaning                               |
+   +==========================================================+=======================================+
+   | ``void *ctx``                                            | user context passed as first argument |
+   +----------------------------------------------------------+---------------------------------------+
+   | ``void* malloc(void *ctx, size_t size)``                 | allocate a memory block               |
+   +----------------------------------------------------------+---------------------------------------+
+   | ``void* realloc(void *ctx, void *ptr, size_t new_size)`` | allocate or resize a memory block     |
+   +----------------------------------------------------------+---------------------------------------+
+   | ``void free(void *ctx, void *ptr)``                      | free a memory block                   |
+   +----------------------------------------------------------+---------------------------------------+
 
-.. c:function:: void* PyObject_Malloc(size_t n)
+.. c:type:: PyMemAllocatorDomain
 
-   Allocates *n* bytes and returns a pointer of type :c:type:`void\*` to the
-   allocated memory, or *NULL* if the request fails.
+   Enum used to identify an allocator domain. Domains:
 
-   Requesting zero bytes returns a distinct non-*NULL* pointer if possible, as
-   if ``PyObject_Malloc(1)`` had been called instead. The memory will not have
-   been initialized in any way.
-
-
-.. c:function:: void* PyObject_Realloc(void *p, size_t n)
-
-   Resizes the memory block pointed to by *p* to *n* bytes. The contents will be
-   unchanged to the minimum of the old and the new sizes.
-
-   If *p* is *NULL*, the call is equivalent to ``PyObject_Malloc(n)``; else if *n*
-   is equal to zero, the memory block is resized but is not freed, and the
-   returned pointer is non-*NULL*.
-
-   Unless *p* is *NULL*, it must have been returned by a previous call to
-   :c:func:`PyObject_Malloc`, :c:func:`PyObject_Realloc` or :c:func:`PyObject_Calloc`.
-
-   If the request fails, :c:func:`PyObject_Realloc` returns *NULL* and *p* remains
-   a valid pointer to the previous memory area.
+   * :c:data:`PYMEM_DOMAIN_RAW`: functions :c:func:`PyMem_RawMalloc`,
+     :c:func:`PyMem_RawRealloc` and :c:func:`PyMem_RawFree`
+   * :c:data:`PYMEM_DOMAIN_MEM`: functions :c:func:`PyMem_Malloc`,
+     :c:func:`PyMem_Realloc` and :c:func:`PyMem_Free`
+   * :c:data:`PYMEM_DOMAIN_OBJ`: functions :c:func:`PyObject_Malloc`,
+     :c:func:`PyObject_Realloc` and :c:func:`PyObject_Free`
 
 
-.. c:function:: void PyObject_Free(void *p)
+.. c:function:: void PyMem_GetAllocator(PyMemAllocatorDomain domain, PyMemAllocator *allocator)
 
-   Frees the memory block pointed to by *p*, which must have been returned by a
-   previous call to :c:func:`PyObject_Malloc`, :c:func:`PyObject_Realloc` or
-   :c:func:`PyObject_Calloc`.  Otherwise, or if ``PyObject_Free(p)`` has been called
-   before, undefined behavior occurs.
-
-   If *p* is *NULL*, no operation is performed.
+   Get the memory block allocator of the specified domain.
 
 
-In addition, the following macro sets are provided:
+.. c:function:: void PyMem_SetAllocator(PyMemAllocatorDomain domain, PyMemAllocator *allocator)
 
-* :c:func:`PyObject_MALLOC`: alias to :c:func:`PyObject_Malloc`
-* :c:func:`PyObject_REALLOC`: alias to :c:func:`PyObject_Realloc`
-* :c:func:`PyObject_FREE`: alias to :c:func:`PyObject_Free`
-* :c:func:`PyObject_Del`: alias to :c:func:`PyObject_Free`
-* :c:func:`PyObject_DEL`: alias to :c:func:`PyObject_FREE` (so finally an alias
-  to :c:func:`PyObject_Free`)
+   Set the memory block allocator of the specified domain.
+
+   The new allocator must return a distinct non-NULL pointer when requesting
+   zero bytes.
+
+   For the :c:data:`PYMEM_DOMAIN_RAW` domain, the allocator must be
+   thread-safe: the :term:`GIL <global interpreter lock>` is not held when the
+   allocator is called.
+
+   If the new allocator is not a hook (does not call the previous allocator),
+   the :c:func:`PyMem_SetupDebugHooks` function must be called to reinstall the
+   debug hooks on top on the new allocator.
 
 
-.. _pymalloc:
+.. c:function:: void PyMem_SetupDebugHooks(void)
 
-The pymalloc allocator
-======================
+   Setup hooks to detect bugs in the following Python memory allocator
+   functions:
 
-Python has a *pymalloc* allocator optimized for small objects (smaller or equal
-to 512 bytes) with a short lifetime. It uses memory mappings called "arenas"
-with a fixed size of 256 KiB. It falls back to :c:func:`malloc` and
-:c:func:`realloc` for allocations larger than 512 bytes.
+   - :c:func:`PyMem_RawMalloc`, :c:func:`PyMem_RawRealloc`,
+     :c:func:`PyMem_RawFree`
+   - :c:func:`PyMem_Malloc`, :c:func:`PyMem_Realloc`, :c:func:`PyMem_Free`
+   - :c:func:`PyObject_Malloc`, :c:func:`PyObject_Realloc`,
+     :c:func:`PyObject_Free`
 
-*pymalloc* is the default allocator of :c:func:`PyObject_Malloc`.
+   Newly allocated memory is filled with the byte ``0xCB``, freed memory is
+   filled with the byte ``0xDB``. Additional checks:
 
-The arena allocator uses the following functions:
+   - detect API violations, ex: :c:func:`PyObject_Free` called on a buffer
+     allocated by :c:func:`PyMem_Malloc`
+   - detect write before the start of the buffer (buffer underflow)
+   - detect write after the end of the buffer (buffer overflow)
 
+   The function does nothing if Python is not compiled is debug mode.
+
+
+Customize PyObject Arena Allocator
+==================================
+
+Python has a *pymalloc* allocator for allocations smaller than 512 bytes. This
+allocator is optimized for small objects with a short lifetime. It uses memory
+mappings called "arenas" with a fixed size of 256 KB. It falls back to
+:c:func:`PyMem_RawMalloc` and :c:func:`PyMem_RawRealloc` for allocations larger
+than 512 bytes.  *pymalloc* is the default allocator used by
+:c:func:`PyObject_Malloc`.
+
+The default arena allocator uses the following functions:
+
+* :c:func:`VirtualAlloc` and :c:func:`VirtualFree` on Windows,
 * :c:func:`mmap` and :c:func:`munmap` if available,
 * :c:func:`malloc` and :c:func:`free` otherwise.
 
-.. versionchanged:: 2.7.7
-   The threshold changed from 256 to 512 bytes. The arena allocator now
-   uses :c:func:`mmap` if available.
+.. versionadded:: 3.4
+
+.. c:type:: PyObjectArenaAllocator
+
+   Structure used to describe an arena allocator. The structure has
+   three fields:
+
+   +--------------------------------------------------+---------------------------------------+
+   | Field                                            | Meaning                               |
+   +==================================================+=======================================+
+   | ``void *ctx``                                    | user context passed as first argument |
+   +--------------------------------------------------+---------------------------------------+
+   | ``void* alloc(void *ctx, size_t size)``          | allocate an arena of size bytes       |
+   +--------------------------------------------------+---------------------------------------+
+   | ``void free(void *ctx, size_t size, void *ptr)`` | free an arena                         |
+   +--------------------------------------------------+---------------------------------------+
+
+.. c:function:: PyObject_GetArenaAllocator(PyObjectArenaAllocator *allocator)
+
+   Get the arena allocator.
+
+.. c:function:: PyObject_SetArenaAllocator(PyObjectArenaAllocator *allocator)
+
+   Set the arena allocator.
 
 
 .. _memoryexamples:
@@ -251,7 +338,7 @@ I/O buffer is allocated from the Python heap by using the first function set::
    if (buf == NULL)
        return PyErr_NoMemory();
    /* ...Do some I/O operation involving buf... */
-   res = PyString_FromString(buf);
+   res = PyBytes_FromString(buf);
    PyMem_Free(buf); /* allocated with PyMem_Malloc */
    return res;
 
@@ -263,7 +350,7 @@ The same code using the type-oriented function set::
    if (buf == NULL)
        return PyErr_NoMemory();
    /* ...Do some I/O operation involving buf... */
-   res = PyString_FromString(buf);
+   res = PyBytes_FromString(buf);
    PyMem_Del(buf); /* allocated with PyMem_New */
    return res;
 

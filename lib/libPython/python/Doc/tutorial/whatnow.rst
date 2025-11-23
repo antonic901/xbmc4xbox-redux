@@ -21,8 +21,8 @@ the set are:
   and many other tasks. Skimming through the Library Reference will give you an
   idea of what's available.
 
-* :ref:`install-index` explains how to install external modules written by other
-  Python users.
+* :ref:`installing-index` explains how to install additional modules written
+  by other Python users.
 
 * :ref:`reference-index`: A detailed explanation of Python's syntax and
   semantics.  It's heavy reading, but is useful as a complete guide to the
@@ -38,30 +38,33 @@ More Python resources:
 
 * https://docs.python.org:  Fast access to Python's  documentation.
 
-* https://pypi.org: The Python Package Index, previously also nicknamed
+* https://pypi.python.org/pypi: The Python Package Index, previously also nicknamed
   the Cheese Shop, is an index of user-created Python modules that are available
   for download.  Once you begin releasing code, you can register it here so that
   others can find it.
 
-* https://code.activestate.com/recipes/langs/python/: The Python Cookbook is a
+* http://code.activestate.com/recipes/langs/python/: The Python Cookbook is a
   sizable collection of code examples, larger modules, and useful scripts.
   Particularly notable contributions are collected in a book also titled Python
   Cookbook (O'Reilly & Associates, ISBN 0-596-00797-3.)
+
+* http://www.pyvideo.org collects links to Python-related videos from
+  conferences and user-group meetings.
+
+* http://scipy.org: The Scientific Python project includes modules for fast
+  array computations and manipulations plus a host of packages for such
+  things as linear algebra, Fourier transforms, non-linear solvers,
+  random number distributions, statistical analysis and the like.
 
 For Python-related questions and problem reports, you can post to the newsgroup
 :newsgroup:`comp.lang.python`, or send them to the mailing list at
 python-list@python.org.  The newsgroup and mailing list are gatewayed, so
 messages posted to one will automatically be forwarded to the other.  There are
-around 120 postings a day (with peaks up to several hundred), asking (and
+hundreds of postings a day, asking (and
 answering) questions, suggesting new features, and announcing new modules.
-Before posting, be sure to check the list of :ref:`Frequently Asked Questions
-<faq-index>` (also called the FAQ).  Mailing list
-archives are available at https://mail.python.org/pipermail/. The FAQ answers
-many of the questions that come up again and again, and may already contain the
-solution for your problem.
+Mailing list archives are available at https://mail.python.org/pipermail/.
 
-.. Postings figure based on average of last six months activity as
-   reported by www.egroups.com; Jan. 2000 - June 2000: 21272 msgs / 182
-   days = 116.9 msgs / day and steadily increasing. (XXX up to date figures?)
-
-
+Before posting, be sure to check the list of
+:ref:`Frequently Asked Questions <faq-index>` (also called the FAQ).  The
+FAQ answers many of the questions that come up again and again, and may
+already contain the solution for your problem.

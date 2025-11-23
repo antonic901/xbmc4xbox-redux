@@ -2,6 +2,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <io.h>
 
 #define CMD_SIZE 500
 
@@ -13,7 +14,7 @@
    invoking subwcrev.exe (if found), and then invoking cl.exe.
    As a side effect, it might generate PCBuild\getbuildinfo2.c
    also. If this isn't a subversion checkout, or subwcrev isn't
-   found, it compiles ..\\Modules\\getbuildinfo.c instead.
+   found, it compiles ..\\..\\Modules\\getbuildinfo.c instead.
 
    Currently, subwcrev.exe is found from the registry entries
    of TortoiseSVN.
@@ -23,9 +24,15 @@
    invoked as a pre-link step for pythoncore, so that overwrites
    any previous getbuildinfo.o.
 
+   However, if a second argument is provided, this will be used
+   as a temporary directory where any getbuildinfo2.c and
+   getbuildinfo.o files are put.  This is useful if multiple
+   configurations are being built in parallel, to avoid them
+   trampling each other's files.
+
 */
 
-int make_buildinfo2()
+int make_buildinfo2(const char *tmppath)
 {
     struct _stat st;
     HKEY hTortoise;
@@ -50,19 +57,31 @@ int make_buildinfo2()
     if (_stat(command+1, &st) < 0)
         /* subwcrev.exe not part of the release */
         return 0;
-    strcat_s(command, CMD_SIZE, "\" .. ..\\Modules\\getbuildinfo.c getbuildinfo2.c");
+    strcat_s(command, CMD_SIZE, "\" ..\\.. ..\\..\\Modules\\getbuildinfo.c \"");
+    strcat_s(command, CMD_SIZE, tmppath); /* quoted tmppath */
+    strcat_s(command, CMD_SIZE, "getbuildinfo2.c\"");
+
     puts(command); fflush(stdout);
     if (system(command) < 0)
         return 0;
     return 1;
 }
 
+const char DELIMS[] = { " \n" };
+
+int get_mercurial_info(char * hgbranch, char * hgtag, char * hgrev, int size)
+{
+    return 0;
+}
+
 int main(int argc, char*argv[])
 {
-    char command[500] = "cl.exe -c -D_WIN32 -DUSE_DL_EXPORT -D_WINDOWS -DWIN32 -D_WINDLL ";
+    char command[CMD_SIZE] = "cl.exe -c -D_WIN32 -DUSE_DL_EXPORT -D_WINDOWS -DWIN32 -D_WINDLL ";
+    char tmppath[CMD_SIZE] = "";
     int do_unlink, result;
-    if (argc != 2) {
-        fprintf(stderr, "make_buildinfo $(ConfigurationName)\n");
+    char *tmpdir = NULL;
+    if (argc <= 2 || argc > 3) {
+        fprintf(stderr, "make_buildinfo $(ConfigurationName) [tmpdir]\n");
         return EXIT_FAILURE;
     }
     if (strcmp(argv[1], "Release") == 0) {
@@ -82,16 +101,60 @@ int main(int argc, char*argv[])
         fprintf(stderr, "unsupported configuration %s\n", argv[1]);
         return EXIT_FAILURE;
     }
+    if (argc > 2) {
+        tmpdir = argv[2];
+        strcat_s(tmppath, _countof(tmppath), tmpdir);
+        /* Hack fix for bad command line:  If the command is issued like this:
+         * $(SolutionDir)make_buildinfo.exe" Debug "$(IntDir)"
+         * we will get a trailing quote because IntDir ends with a backslash that then
+         * escapes the final ".  To simplify the life for developers, catch that problem
+         * here by cutting it off.
+         * The proper command line, btw is:
+         * $(SolutionDir)make_buildinfo.exe" Debug "$(IntDir)\"
+         * Hooray for command line parsing on windows.
+         */
+        if (strlen(tmppath) > 0 && tmppath[strlen(tmppath)-1] == '"')
+            tmppath[strlen(tmppath)-1] = '\0';
+        strcat_s(tmppath, _countof(tmppath), "\\");
+    }
 
-    if ((do_unlink = make_buildinfo2()))
-        strcat_s(command, CMD_SIZE, "getbuildinfo2.c -DSUBWCREV ");
-    else
+    if ((do_unlink = make_buildinfo2(tmppath))) {
+        strcat_s(command, CMD_SIZE, "\"");
+        strcat_s(command, CMD_SIZE, tmppath);
+        strcat_s(command, CMD_SIZE, "getbuildinfo2.c\" -DSUBWCREV ");
+    }
+    else {
+        char hgtag[CMD_SIZE];
+        char hgbranch[CMD_SIZE];
+        char hgrev[CMD_SIZE];
+
+        if (get_mercurial_info(hgbranch, hgtag, hgrev, CMD_SIZE)) {
+            strcat_s(command, CMD_SIZE, "-DHGBRANCH=\\\"");
+            strcat_s(command, CMD_SIZE, hgbranch);
+            strcat_s(command, CMD_SIZE, "\\\"");
+
+            strcat_s(command, CMD_SIZE, " -DHGTAG=\\\"");
+            strcat_s(command, CMD_SIZE, hgtag);
+            strcat_s(command, CMD_SIZE, "\\\"");
+
+            strcat_s(command, CMD_SIZE, " -DHGVERSION=\\\"");
+            strcat_s(command, CMD_SIZE, hgrev);
+            strcat_s(command, CMD_SIZE, "\\\" ");
+        }
         strcat_s(command, CMD_SIZE, "..\\Modules\\getbuildinfo.c");
-    strcat_s(command, CMD_SIZE, " -Fogetbuildinfo.o -I..\\Include -I..\\PC");
+    }
+    strcat_s(command, CMD_SIZE, " -Fo\"");
+    strcat_s(command, CMD_SIZE, tmppath);
+    strcat_s(command, CMD_SIZE, "getbuildinfo.o\" -I..\\Include -I..\\PC");
     puts(command); fflush(stdout);
     result = system(command);
-    if (do_unlink)
-        _unlink("getbuildinfo2.c");
+    if (do_unlink) {
+        command[0] = '\0';
+        strcat_s(command, CMD_SIZE, "\"");
+        strcat_s(command, CMD_SIZE, tmppath);
+        strcat_s(command, CMD_SIZE, "getbuildinfo2.c\"");
+        _unlink(command);
+    }
     if (result < 0)
         return EXIT_FAILURE;
     return 0;

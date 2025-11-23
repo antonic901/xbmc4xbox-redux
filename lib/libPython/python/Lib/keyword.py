@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 """Keywords (from "graminit.c")
 
@@ -14,6 +14,9 @@ __all__ = ["iskeyword", "kwlist"]
 
 kwlist = [
 #--start keywords--
+        'False',
+        'None',
+        'True',
         'and',
         'as',
         'assert',
@@ -25,7 +28,6 @@ kwlist = [
         'elif',
         'else',
         'except',
-        'exec',
         'finally',
         'for',
         'from',
@@ -35,10 +37,10 @@ kwlist = [
         'in',
         'is',
         'lambda',
+        'nonlocal',
         'not',
         'or',
         'pass',
-        'print',
         'raise',
         'return',
         'try',
@@ -58,36 +60,35 @@ def main():
     if len(args) > 1: optfile = args[1]
     else: optfile = "Lib/keyword.py"
 
+    # load the output skeleton from the target, taking care to preserve its
+    # newline convention.
+    with open(optfile, newline='') as fp:
+        format = fp.readlines()
+    nl = format[0][len(format[0].strip()):] if format else '\n'
+
     # scan the source file for keywords
-    fp = open(iptfile)
-    strprog = re.compile('"([^"]+)"')
-    lines = []
-    for line in fp:
-        if '{1, "' in line:
-            match = strprog.search(line)
-            if match:
-                lines.append("        '" + match.group(1) + "',\n")
-    fp.close()
+    with open(iptfile) as fp:
+        strprog = re.compile('"([^"]+)"')
+        lines = []
+        for line in fp:
+            if '{1, "' in line:
+                match = strprog.search(line)
+                if match:
+                    lines.append("        '" + match.group(1) + "'," + nl)
     lines.sort()
 
-    # load the output skeleton from the target
-    fp = open(optfile)
-    format = fp.readlines()
-    fp.close()
-
-    # insert the lines of keywords
+    # insert the lines of keywords into the skeleton
     try:
-        start = format.index("#--start keywords--\n") + 1
-        end = format.index("#--end keywords--\n")
+        start = format.index("#--start keywords--" + nl) + 1
+        end = format.index("#--end keywords--" + nl)
         format[start:end] = lines
     except ValueError:
         sys.stderr.write("target does not contain format markers\n")
         sys.exit(1)
 
     # write the output file
-    fp = open(optfile, 'w')
-    fp.write(''.join(format))
-    fp.close()
+    with open(optfile, 'w', newline='') as fp:
+        fp.writelines(format)
 
 if __name__ == "__main__":
     main()

@@ -3,7 +3,10 @@
 Converted to C by Dmitry Vasiliev (dima at hlabs.spb.ru).
 */
 
+#define PY_SSIZE_T_CLEAN
 #include "Python.h"
+
+_Py_IDENTIFIER(insert);
 
 static Py_ssize_t
 internal_bisect_right(PyObject *list, PyObject *item, Py_ssize_t lo, Py_ssize_t hi)
@@ -55,12 +58,11 @@ bisect_right(PyObject *self, PyObject *args, PyObject *kw)
     index = internal_bisect_right(list, item, lo, hi);
     if (index < 0)
         return NULL;
-    return PyInt_FromSsize_t(index);
+    return PyLong_FromSsize_t(index);
 }
 
 PyDoc_STRVAR(bisect_right_doc,
-"bisect(a, x[, lo[, hi]]) -> index\n\
-bisect_right(a, x[, lo[, hi]]) -> index\n\
+"bisect_right(a, x[, lo[, hi]]) -> index\n\
 \n\
 Return the index where to insert item x in list a, assuming a is sorted.\n\
 \n\
@@ -90,8 +92,7 @@ insort_right(PyObject *self, PyObject *args, PyObject *kw)
         if (PyList_Insert(list, index, item) < 0)
             return NULL;
     } else {
-        result = PyObject_CallMethod(list, "insert", "nO",
-                                     index, item);
+        result = _PyObject_CallMethodId(list, &PyId_insert, "nO", index, item);
         if (result == NULL)
             return NULL;
         Py_DECREF(result);
@@ -101,8 +102,7 @@ insort_right(PyObject *self, PyObject *args, PyObject *kw)
 }
 
 PyDoc_STRVAR(insort_right_doc,
-"insort(a, x[, lo[, hi]])\n\
-insort_right(a, x[, lo[, hi]])\n\
+"insort_right(a, x[, lo[, hi]])\n\
 \n\
 Insert item x in list a, and keep it sorted assuming a is sorted.\n\
 \n\
@@ -161,7 +161,7 @@ bisect_left(PyObject *self, PyObject *args, PyObject *kw)
     index = internal_bisect_left(list, item, lo, hi);
     if (index < 0)
         return NULL;
-    return PyInt_FromSsize_t(index);
+    return PyLong_FromSsize_t(index);
 }
 
 PyDoc_STRVAR(bisect_left_doc,
@@ -195,8 +195,7 @@ insort_left(PyObject *self, PyObject *args, PyObject *kw)
         if (PyList_Insert(list, index, item) < 0)
             return NULL;
     } else {
-        result = PyObject_CallMethod(list, "insert", "nO",
-                                     index, item);
+        result = _PyObject_CallMethodId(list, &PyId_insert, "nO", index, item);
         if (result == NULL)
             return NULL;
         Py_DECREF(result);
@@ -215,15 +214,18 @@ If x is already in a, insert it to the left of the leftmost x.\n\
 Optional args lo (default 0) and hi (default len(a)) bound the\n\
 slice of a to be searched.\n");
 
+PyDoc_STRVAR(bisect_doc, "Alias for bisect_right().\n");
+PyDoc_STRVAR(insort_doc, "Alias for insort_right().\n");
+
 static PyMethodDef bisect_methods[] = {
     {"bisect_right", (PyCFunction)bisect_right,
         METH_VARARGS|METH_KEYWORDS, bisect_right_doc},
     {"bisect", (PyCFunction)bisect_right,
-        METH_VARARGS|METH_KEYWORDS, bisect_right_doc},
+        METH_VARARGS|METH_KEYWORDS, bisect_doc},
     {"insort_right", (PyCFunction)insort_right,
         METH_VARARGS|METH_KEYWORDS, insort_right_doc},
     {"insort", (PyCFunction)insort_right,
-        METH_VARARGS|METH_KEYWORDS, insort_right_doc},
+        METH_VARARGS|METH_KEYWORDS, insort_doc},
     {"bisect_left", (PyCFunction)bisect_left,
         METH_VARARGS|METH_KEYWORDS, bisect_left_doc},
     {"insort_left", (PyCFunction)insort_left,
@@ -239,8 +241,21 @@ having to sort the list after each insertion. For long lists of items with\n\
 expensive comparison operations, this can be an improvement over the more\n\
 common approach.\n");
 
+
+static struct PyModuleDef _bisectmodule = {
+    PyModuleDef_HEAD_INIT,
+    "_bisect",
+    module_doc,
+    -1,
+    bisect_methods,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+};
+
 PyMODINIT_FUNC
-init_bisect(void)
+PyInit__bisect(void)
 {
-    Py_InitModule3("_bisect", bisect_methods, module_doc);
+    return PyModule_Create(&_bisectmodule);
 }

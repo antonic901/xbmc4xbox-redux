@@ -7,7 +7,7 @@ Make sure warnings module is left unaltered (http://bugs.python.org/issue18081).
 '''
 
 import unittest
-from test.test_support import captured_stderr
+from test.support import captured_stderr
 
 import warnings
 # Try to capture default showwarning before Idle modules are imported.
@@ -67,6 +67,15 @@ class ShellWarnTest(unittest.TestCase):
             shell.idle_showwarning(
                     'Test', UserWarning, 'test_warning.py', 99, f, 'Line of code')
             self.assertEqual(shellmsg.splitlines(), f.getvalue().splitlines())
+
+class ImportWarnTest(unittest.TestCase):
+    def test_idlever(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            import idlelib.idlever
+            self.assertEqual(len(w), 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+            self.assertIn("version", str(w[-1].message))
 
 
 if __name__ == '__main__':

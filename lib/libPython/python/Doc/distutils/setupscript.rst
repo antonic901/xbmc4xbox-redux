@@ -201,7 +201,7 @@ The second argument to the :class:`~distutils.core.Extension` constructor is
 a list of source
 files.  Since the Distutils currently only support C, C++, and Objective-C
 extensions, these are normally C/C++/Objective-C source files.  (Be sure to use
-appropriate extensions to distinguish C++ source files: :file:`.cc` and
+appropriate extensions to distinguish C++\ source files: :file:`.cc` and
 :file:`.cpp` seem to be recognized by both Unix and Windows compilers.)
 
 However, you can also include SWIG interface (:file:`.i`) files in the list; the
@@ -336,6 +336,10 @@ Other options
 
 There are still some other options which can be used to handle special cases.
 
+The ``optional`` option is a boolean; if it is true,
+a build failure in the extension will not abort the build process, but
+instead simply not install the failing extension.
+
 The ``extra_objects`` option is a list of object files to be passed to the
 linker. These files must not have extensions, as the default extension for the
 compiler is used.
@@ -442,7 +446,7 @@ command line.  Scripts don't require Distutils to do anything very complicated.
 The only clever feature is that if the first line of the script starts with
 ``#!`` and contains the word "python", the Distutils will adjust the first line
 to refer to the current interpreter location. By default, it is replaced with
-the current interpreter location.  The :option:`!--executable` (or :option:`!-e`)
+the current interpreter location.  The :option:`--executable` (or :option:`-e`)
 option will allow the interpreter path to be explicitly overridden.
 
 The ``scripts`` option simply is a list of files to be handled in this
@@ -452,9 +456,10 @@ way.  From the PyXML setup script::
           scripts=['scripts/xmlproc_parse', 'scripts/xmlproc_val']
           )
 
-.. versionchanged:: 2.7
-    All the scripts will also be added to the ``MANIFEST``
-    file if no template is provided. See :ref:`manifest`.
+.. versionchanged:: 3.1
+   All the scripts will also be added to the ``MANIFEST`` file if no template is
+   provided.  See :ref:`manifest`.
+
 
 .. _distutils-installing-package-data:
 
@@ -498,11 +503,10 @@ The corresponding call to :func:`setup` might be::
           package_data={'mypkg': ['data/*.dat']},
           )
 
-.. versionadded:: 2.4
 
-.. versionchanged:: 2.7
-    All the files that match ``package_data`` will be added to the ``MANIFEST``
-    file if no template is provided. See :ref:`manifest`.
+.. versionchanged:: 3.1
+   All the files that match ``package_data`` will be added to the ``MANIFEST``
+   file if no template is provided.  See :ref:`manifest`.
 
 
 .. _distutils-additional-files:
@@ -520,23 +524,20 @@ following way::
     setup(...,
           data_files=[('bitmaps', ['bm/b1.gif', 'bm/b2.gif']),
                       ('config', ['cfg/data.cfg']),
+                      ('/etc/init.d', ['init-script'])]
          )
 
+Note that you can specify the directory names where the data files will be
+installed, but you cannot rename the data files themselves.
+
 Each (*directory*, *files*) pair in the sequence specifies the installation
-directory and the files to install there.
-
-Each file name in *files* is interpreted relative to the :file:`setup.py`
-script at the top of the package source distribution. Note that you can
-specify the directory where the data files will be installed, but you cannot
-rename the data files themselves.
-
-The *directory* should be a relative path. It is interpreted relative to the
-installation prefix (Python's ``sys.prefix`` for system installations;
-``site.USER_BASE`` for user installations). Distutils allows *directory* to be
-an absolute installation path, but this is discouraged since it is
-incompatible with the wheel packaging format. No directory information from
-*files* is used to determine the final location of the installed file; only
-the name of the file is used.
+directory and the files to install there.  If *directory* is a relative path, it
+is interpreted relative to the installation prefix (Python's ``sys.prefix`` for
+pure-Python packages, ``sys.exec_prefix`` for packages that contain extension
+modules).  Each file name in *files* is interpreted relative to the
+:file:`setup.py` script at the top of the package source distribution.  No
+directory information from *files* is used to determine the final location of
+the installed file; only the name of the file is used.
 
 You can specify the ``data_files`` options as a simple sequence of files
 without specifying a target directory, but this is not recommended, and the
@@ -544,10 +545,9 @@ without specifying a target directory, but this is not recommended, and the
 files directly in the target directory, an empty string should be given as the
 directory.
 
-.. versionchanged:: 2.7
-    All the files that match ``data_files`` will be added to the ``MANIFEST``
-    file if no template is provided. See :ref:`manifest`.
-
+.. versionchanged:: 3.1
+   All the files that match ``data_files`` will be added to the ``MANIFEST``
+   file if no template is provided.  See :ref:`manifest`.
 
 
 .. _meta-data:
@@ -609,11 +609,12 @@ Notes:
 (4)
     These fields should not be used if your package is to be compatible with Python
     versions prior to 2.2.3 or 2.3.  The list is available from the `PyPI website
-    <https://pypi.org>`_.
+    <https://pypi.python.org/pypi>`_.
 
 (5)
-    The ``long_description`` field is used by PyPI when you publish a package,
-    to build its project page.
+    The ``long_description`` field is used by PyPI when you are
+    :ref:`registering <package-register>` a package, to
+    :ref:`build its home page <package-display>`.
 
 (6)
     The ``license`` field is a text indicating the license covering the
@@ -631,8 +632,6 @@ Notes:
 
 'list of strings'
     See below.
-
-None of the string values may be Unicode.
 
 Encoding the version information is an art in itself. Python packages generally
 adhere to the version format *major.minor[.patch][sub]*. The major number is 0
@@ -671,20 +670,6 @@ information is sometimes used to indicate sub-releases.  These are
               'Topic :: Software Development :: Bug Tracking',
               ],
           )
-
-If you wish to include classifiers in your :file:`setup.py` file and also wish
-to remain backwards-compatible with Python releases prior to 2.2.3, then you can
-include the following code fragment in your :file:`setup.py` before the
-:func:`setup` call. ::
-
-    # patch distutils if it can't cope with the "classifiers" or
-    # "download_url" keywords
-    from sys import version
-    if version < '2.2.3':
-        from distutils.dist import DistributionMetadata
-        DistributionMetadata.classifiers = None
-        DistributionMetadata.download_url = None
-
 
 .. _debug-setup-script:
 

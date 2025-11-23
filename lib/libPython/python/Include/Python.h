@@ -12,14 +12,6 @@
 #include "pyconfig.h"
 #include "pymacconfig.h"
 
-/* Cyclic gc is always enabled, starting with release 2.3a1.  Supply the
- * old symbol for the benefit of extension modules written before then
- * that may be conditionalizing on it.  The core doesn't use it anymore.
- */
-#ifndef WITH_CYCLE_GC
-#define WITH_CYCLE_GC 1
-#endif
-
 #include <limits.h>
 
 #ifndef UCHAR_MAX
@@ -47,9 +39,6 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef HAVE_CRYPT_H
-#include <crypt.h>
-#endif
 
 /* For size_t? */
 #ifdef HAVE_STDDEF_H
@@ -63,14 +52,9 @@
 #include <assert.h>
 
 #include "pyport.h"
+#include "pymacro.h"
 
-/* pyconfig.h or pyport.h may or may not define DL_IMPORT */
-#ifndef DL_IMPORT	/* declarations for DLL import/export */
-#define DL_IMPORT(RTYPE) RTYPE
-#endif
-#ifndef DL_EXPORT	/* declarations for DLL import/export */
-#define DL_EXPORT(RTYPE) RTYPE
-#endif
+#include "pyatomic.h"
 
 /* Debug-mode build with pymalloc implies PYMALLOC_DEBUG.
  *  PYMALLOC_DEBUG is in error if pymalloc is not in use.
@@ -82,27 +66,26 @@
 #error "PYMALLOC_DEBUG requires WITH_PYMALLOC"
 #endif
 #include "pymath.h"
+#include "pytime.h"
 #include "pymem.h"
 
 #include "object.h"
 #include "objimpl.h"
+#include "typeslots.h"
+#include "pyhash.h"
 
 #include "pydebug.h"
 
-#include "unicodeobject.h"
-#include "intobject.h"
-#include "boolobject.h"
-#include "longobject.h"
-#include "floatobject.h"
-#ifndef WITHOUT_COMPLEX
-#include "complexobject.h"
-#endif
-#include "rangeobject.h"
-#include "stringobject.h"
-#include "memoryobject.h"
-#include "bufferobject.h"
-#include "bytesobject.h"
 #include "bytearrayobject.h"
+#include "bytesobject.h"
+#include "unicodeobject.h"
+#include "longobject.h"
+#include "longintrepr.h"
+#include "boolobject.h"
+#include "floatobject.h"
+#include "complexobject.h"
+#include "rangeobject.h"
+#include "memoryobject.h"
 #include "tupleobject.h"
 #include "listobject.h"
 #include "dictobject.h"
@@ -113,7 +96,6 @@
 #include "funcobject.h"
 #include "classobject.h"
 #include "fileobject.h"
-#include "cobject.h"
 #include "pycapsule.h"
 #include "traceback.h"
 #include "sliceobject.h"
@@ -123,6 +105,8 @@
 #include "descrobject.h"
 #include "warnings.h"
 #include "weakrefobject.h"
+#include "structseq.h"
+#include "namespaceobject.h"
 
 #include "codecs.h"
 #include "pyerrors.h"
@@ -138,6 +122,7 @@
 #include "import.h"
 
 #include "abstract.h"
+#include "bltinmodule.h"
 
 #include "compile.h"
 #include "eval.h"
@@ -146,40 +131,7 @@
 #include "pystrtod.h"
 #include "pystrcmp.h"
 #include "dtoa.h"
-
-/* _Py_Mangle is defined in compile.c */
-PyAPI_FUNC(PyObject*) _Py_Mangle(PyObject *p, PyObject *name);
-
-/* PyArg_GetInt is deprecated and should not be used, use PyArg_Parse(). */
-#define PyArg_GetInt(v, a)	PyArg_Parse((v), "i", (a))
-
-/* PyArg_NoArgs should not be necessary.
-   Set ml_flags in the PyMethodDef to METH_NOARGS. */
-#define PyArg_NoArgs(v)		PyArg_Parse(v, "")
-
-/* Argument must be a char or an int in [-128, 127] or [0, 255]. */
-#define Py_CHARMASK(c)		((unsigned char)((c) & 0xff))
-
+#include "fileutils.h"
 #include "pyfpe.h"
-
-/* These definitions must match corresponding definitions in graminit.h.
-   There's code in compile.c that checks that they are the same. */
-#define Py_single_input 256
-#define Py_file_input 257
-#define Py_eval_input 258
-
-#ifdef HAVE_PTH
-/* GNU pth user-space thread support */
-#include <pth.h>
-#endif
-
-/* Define macros for inline documentation. */
-#define PyDoc_VAR(name) static char name[]
-#define PyDoc_STRVAR(name,str) PyDoc_VAR(name) = PyDoc_STR(str)
-#ifdef WITH_DOC_STRINGS
-#define PyDoc_STR(str) str
-#else
-#define PyDoc_STR(str) ""
-#endif
 
 #endif /* !Py_PYTHON_H */

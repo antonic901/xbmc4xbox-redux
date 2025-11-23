@@ -13,8 +13,11 @@
 --------------
 
 This module defines a class, :class:`POP3`, which encapsulates a connection to a
-POP3 server and implements the protocol as defined in :rfc:`1725`.  The
-:class:`POP3` class supports both the minimal and optional command sets.
+POP3 server and implements the protocol as defined in :rfc:`1939`. The
+:class:`POP3` class supports both the minimal and optional command sets from
+:rfc:`1939`. The :class:`POP3` class also supports the ``STLS`` command introduced
+in :rfc:`2595` to enable encrypted communication on an already established connection.
+
 Additionally, this module provides a class :class:`POP3_SSL`, which provides
 support for connecting to POP3 servers that use SSL as an underlying protocol
 layer.
@@ -27,7 +30,7 @@ mailserver supports IMAP, you would be better off using the
 The :mod:`poplib` module provides two classes:
 
 
-.. class:: POP3(host[, port[, timeout]])
+.. class:: POP3(host, port=POP3_PORT[, timeout])
 
    This class implements the actual POP3 protocol.  The connection is created when
    the instance is initialized. If *port* is omitted, the standard POP3 port (110)
@@ -35,18 +38,28 @@ The :mod:`poplib` module provides two classes:
    connection attempt (if not specified, the global default timeout setting will
    be used).
 
-   .. versionchanged:: 2.6
-      *timeout* was added.
 
-
-.. class:: POP3_SSL(host[, port[, keyfile[, certfile]]])
+.. class:: POP3_SSL(host, port=POP3_SSL_PORT, keyfile=None, certfile=None, timeout=None, context=None)
 
    This is a subclass of :class:`POP3` that connects to the server over an SSL
    encrypted socket.  If *port* is not specified, 995, the standard POP3-over-SSL
-   port is used.  *keyfile* and *certfile* are also optional - they can contain a
-   PEM formatted private key and certificate chain file for the SSL connection.
+   port is used.  *timeout* works as in the :class:`POP3` constructor.
+   *context* is an optional :class:`ssl.SSLContext` object which allows
+   bundling SSL configuration options, certificates and private keys into a
+   single (potentially long-lived) structure.  Please read :ref:`ssl-security`
+   for best practices.
 
-   .. versionadded:: 2.4
+   *keyfile* and *certfile* are a legacy alternative to *context* - they can
+   point to PEM-formatted private key and certificate chain files,
+   respectively, for the SSL connection.
+
+   .. versionchanged:: 3.2
+      *context* parameter added.
+
+   .. versionchanged:: 3.4
+      The class now supports hostname check with
+      :attr:`ssl.SSLContext.check_hostname` and *Server Name Indication* (see
+      :data:`ssl.HAS_SNI`).
 
 One exception is defined as an attribute of the :mod:`poplib` module:
 
@@ -92,6 +105,14 @@ An :class:`POP3` instance has the following methods:
 .. method:: POP3.getwelcome()
 
    Returns the greeting string sent by the POP3 server.
+
+
+.. method:: POP3.capa()
+
+   Query the server's capabilities as specified in :rfc:`2449`.
+   Returns a dictionary in the form ``{'name': ['param'...]}``.
+
+   .. versionadded:: 3.4
 
 
 .. method:: POP3.user(username)
@@ -167,11 +188,28 @@ An :class:`POP3` instance has the following methods:
    POP3 servers you will use before trusting it.
 
 
-.. method:: POP3.uidl([which])
+.. method:: POP3.uidl(which=None)
 
    Return message digest (unique id) list. If *which* is specified, result contains
    the unique id for that message in the form ``'response mesgnum uid``, otherwise
    result is list ``(response, ['mesgnum uid', ...], octets)``.
+
+.. method:: POP3.stls(context=None)
+
+   Start a TLS session on the active connection as specified in :rfc:`2595`.
+   This is only allowed before user authentication
+
+   *context* parameter is a :class:`ssl.SSLContext` object which allows
+   bundling SSL configuration options, certificates and private keys into
+   a single (potentially long-lived) structure.  Please read :ref:`ssl-security`
+   for best practices.
+
+   This method supports hostname checking via
+   :attr:`ssl.SSLContext.check_hostname` and *Server Name Indication* (see
+   :data:`ssl.HAS_SNI`).
+
+   .. versionadded:: 3.4
+
 
 Instances of :class:`POP3_SSL` have no additional methods. The interface of this
 subclass is identical to its parent.
@@ -193,7 +231,7 @@ retrieves and prints all messages::
    numMessages = len(M.list()[1])
    for i in range(numMessages):
        for j in M.retr(i+1)[1]:
-           print j
+           print(j)
 
 At the end of the module, there is a test section that contains a more extensive
 example of usage.

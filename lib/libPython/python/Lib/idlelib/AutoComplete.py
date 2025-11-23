@@ -1,6 +1,6 @@
 """AutoComplete.py - An IDLE extension for automatically completing names.
 
-This extension can complete either attribute names or file names. It can pop
+This extension can complete either attribute names of file names. It can pop
 a window with all available names, for the user to select from.
 """
 import os
@@ -9,9 +9,6 @@ import string
 
 from idlelib.configHandler import idleConf
 
-# This string includes all chars that may be in a file name (without a path
-# separator)
-FILENAME_CHARS = string.ascii_letters + string.digits + os.curdir + "._~#$:-"
 # This string includes all chars that may be in an identifier
 ID_CHARS = string.ascii_letters + string.digits + "_"
 
@@ -67,7 +64,7 @@ class AutoComplete:
 
     def try_open_completions_event(self, event):
         """Happens when it would be nice to open a completion list, but not
-        really necessary, for example after a dot, so function
+        really necessary, for example after an dot, so function
         calls won't be made.
         """
         lastchar = self.text.get("insert-1c")
@@ -124,19 +121,26 @@ class AutoComplete:
         curline = self.text.get("insert linestart", "insert")
         i = j = len(curline)
         if hp.is_in_string() and (not mode or mode==COMPLETE_FILES):
+            # Find the beginning of the string
+            # fetch_completions will look at the file system to determine whether the
+            # string value constitutes an actual file name
+            # XXX could consider raw strings here and unescape the string value if it's
+            # not raw.
             self._remove_autocomplete_window()
             mode = COMPLETE_FILES
-            while i and curline[i-1] in FILENAME_CHARS:
+            # Find last separator or string start
+            while i and curline[i-1] not in "'\"" + SEPS:
                 i -= 1
             comp_start = curline[i:j]
             j = i
-            while i and curline[i-1] in FILENAME_CHARS + SEPS:
+            # Find string start
+            while i and curline[i-1] not in "'\"":
                 i -= 1
             comp_what = curline[i:j]
         elif hp.is_in_code() and (not mode or mode==COMPLETE_ATTRIBUTES):
             self._remove_autocomplete_window()
             mode = COMPLETE_ATTRIBUTES
-            while i and curline[i-1] in ID_CHARS:
+            while i and (curline[i-1] in ID_CHARS or ord(curline[i-1]) > 127):
                 i -= 1
             comp_start = curline[i:j]
             if i and curline[i-1] == '.':

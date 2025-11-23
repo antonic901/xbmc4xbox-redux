@@ -1,6 +1,5 @@
 .. highlightlang:: c
 
-
 .. _newtypes:
 
 *****************************

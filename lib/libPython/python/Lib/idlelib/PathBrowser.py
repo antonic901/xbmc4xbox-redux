@@ -1,6 +1,6 @@
 import os
 import sys
-import imp
+import importlib.machinery
 
 from idlelib.TreeWidget import TreeItem
 from idlelib.ClassBrowser import ClassBrowser, ModuleBrowserTreeItem
@@ -51,7 +51,7 @@ class DirBrowserTreeItem(TreeItem):
     def GetSubList(self):
         try:
             names = os.listdir(self.dir or os.curdir)
-        except os.error:
+        except OSError:
             return []
         packages = []
         for name in names:
@@ -70,6 +70,7 @@ class DirBrowserTreeItem(TreeItem):
         return sublist
 
     def ispackagedir(self, file):
+        " Return true for directories that are packages."
         if not os.path.isdir(file):
             return False
         init = os.path.join(file, "__init__.py")
@@ -77,9 +78,11 @@ class DirBrowserTreeItem(TreeItem):
 
     def listmodules(self, allnames):
         modules = {}
-        suffixes = imp.get_suffixes()
+        suffixes = importlib.machinery.EXTENSION_SUFFIXES[:]
+        suffixes += importlib.machinery.SOURCE_SUFFIXES
+        suffixes += importlib.machinery.BYTECODE_SUFFIXES
         sorted = []
-        for suff, mode, flag in suffixes:
+        for suff in suffixes:
             i = -len(suff)
             for name in allnames[:]:
                 normed_name = os.path.normcase(name)

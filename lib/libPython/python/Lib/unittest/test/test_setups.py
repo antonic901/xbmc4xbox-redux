@@ -1,6 +1,5 @@
+import io
 import sys
-
-from cStringIO import StringIO
 
 import unittest
 
@@ -13,7 +12,7 @@ class TestSetups(unittest.TestCase):
 
     def getRunner(self):
         return unittest.TextTestRunner(resultclass=resultFactory,
-                                          stream=StringIO())
+                                          stream=io.StringIO())
     def runTests(self, *cases):
         suite = unittest.TestSuite()
         for case in cases:
@@ -495,14 +494,13 @@ class TestSetups(unittest.TestCase):
         Test.__module__ = 'Module'
         sys.modules['Module'] = Module
 
-        _suite = unittest.defaultTestLoader.loadTestsFromTestCase(Test)
-        suite = unittest.TestSuite()
-        suite.addTest(_suite)
-
         messages = ('setUpModule', 'tearDownModule', 'setUpClass', 'tearDownClass', 'test_something')
         for phase, msg in enumerate(messages):
-            with self.assertRaisesRegexp(Exception, msg):
+            _suite = unittest.defaultTestLoader.loadTestsFromTestCase(Test)
+            suite = unittest.TestSuite([_suite])
+            with self.assertRaisesRegex(Exception, msg):
                 suite.debug()
+
 
 if __name__ == '__main__':
     unittest.main()

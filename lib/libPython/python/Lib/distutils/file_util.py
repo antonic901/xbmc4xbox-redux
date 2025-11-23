@@ -3,25 +3,22 @@
 Utility functions for operating on single files.
 """
 
-__revision__ = "$Id$"
-
 import os
 from distutils.errors import DistutilsFileError
 from distutils import log
 
 # for generating verbose output in 'copy_file()'
-_copy_action = {None: 'copying',
-                'hard': 'hard linking',
-                'sym': 'symbolically linking'}
+_copy_action = { None:   'copying',
+                 'hard': 'hard linking',
+                 'sym':  'symbolically linking' }
 
 
 def _copy_file_contents(src, dst, buffer_size=16*1024):
-    """Copy the file 'src' to 'dst'.
-
-    Both must be filenames. Any error opening either file, reading from
-    'src', or writing to 'dst', raises DistutilsFileError.  Data is
-    read/written in chunks of 'buffer_size' bytes (default 16k).  No attempt
-    is made to handle anything apart from regular files.
+    """Copy the file 'src' to 'dst'; both must be filenames.  Any error
+    opening either file, reading from 'src', or writing to 'dst', raises
+    DistutilsFileError.  Data is read/written in chunks of 'buffer_size'
+    bytes (default 16k).  No attempt is made to handle anything apart from
+    regular files.
     """
     # Stolen from shutil module in the standard library, but with
     # custom error-handling added.
@@ -30,38 +27,37 @@ def _copy_file_contents(src, dst, buffer_size=16*1024):
     try:
         try:
             fsrc = open(src, 'rb')
-        except os.error, (errno, errstr):
-            raise DistutilsFileError("could not open '%s': %s" % (src, errstr))
+        except OSError as e:
+            raise DistutilsFileError("could not open '%s': %s" % (src, e.strerror))
 
         if os.path.exists(dst):
             try:
                 os.unlink(dst)
-            except os.error, (errno, errstr):
+            except OSError as e:
                 raise DistutilsFileError(
-                      "could not delete '%s': %s" % (dst, errstr))
+                      "could not delete '%s': %s" % (dst, e.strerror))
 
         try:
             fdst = open(dst, 'wb')
-        except os.error, (errno, errstr):
+        except OSError as e:
             raise DistutilsFileError(
-                  "could not create '%s': %s" % (dst, errstr))
+                  "could not create '%s': %s" % (dst, e.strerror))
 
-        while 1:
+        while True:
             try:
                 buf = fsrc.read(buffer_size)
-            except os.error, (errno, errstr):
+            except OSError as e:
                 raise DistutilsFileError(
-                      "could not read from '%s': %s" % (src, errstr))
+                      "could not read from '%s': %s" % (src, e.strerror))
 
             if not buf:
                 break
 
             try:
                 fdst.write(buf)
-            except os.error, (errno, errstr):
+            except OSError as e:
                 raise DistutilsFileError(
-                      "could not write to '%s': %s" % (dst, errstr))
-
+                      "could not write to '%s': %s" % (dst, e.strerror))
     finally:
         if fdst:
             fdst.close()
@@ -70,16 +66,15 @@ def _copy_file_contents(src, dst, buffer_size=16*1024):
 
 def copy_file(src, dst, preserve_mode=1, preserve_times=1, update=0,
               link=None, verbose=1, dry_run=0):
-    """Copy a file 'src' to 'dst'.
-
-    If 'dst' is a directory, then 'src' is copied there with the same name;
-    otherwise, it must be a filename.  (If the file exists, it will be
-    ruthlessly clobbered.)  If 'preserve_mode' is true (the default),
-    the file's mode (type and permission bits, or whatever is analogous on
-    the current platform) is copied.  If 'preserve_times' is true (the
-    default), the last-modified and last-access times are copied as well.
-    If 'update' is true, 'src' will only be copied if 'dst' does not exist,
-    or if 'dst' does exist but is older than 'src'.
+    """Copy a file 'src' to 'dst'.  If 'dst' is a directory, then 'src' is
+    copied there with the same name; otherwise, it must be a filename.  (If
+    the file exists, it will be ruthlessly clobbered.)  If 'preserve_mode'
+    is true (the default), the file's mode (type and permission bits, or
+    whatever is analogous on the current platform) is copied.  If
+    'preserve_times' is true (the default), the last-modified and
+    last-access times are copied as well.  If 'update' is true, 'src' will
+    only be copied if 'dst' does not exist, or if 'dst' does exist but is
+    older than 'src'.
 
     'link' allows you to make hard links (os.link) or symbolic links
     (os.symlink) instead of copying: set it to "hard" or "sym"; if it is
@@ -118,7 +113,7 @@ def copy_file(src, dst, preserve_mode=1, preserve_times=1, update=0,
     if update and not newer(src, dst):
         if verbose >= 1:
             log.debug("not copying %s (output up-to-date)", src)
-        return dst, 0
+        return (dst, 0)
 
     try:
         action = _copy_action[link]
@@ -136,7 +131,7 @@ def copy_file(src, dst, preserve_mode=1, preserve_times=1, update=0,
 
     # If linking (hard or symbolic), use the appropriate system call
     # (Unix only, of course, but that's the caller's responsibility)
-    if link == 'hard':
+    elif link == 'hard':
         if not (os.path.exists(dst) and os.path.samefile(src, dst)):
             try:
                 os.link(src, dst)
@@ -166,13 +161,15 @@ def copy_file(src, dst, preserve_mode=1, preserve_times=1, update=0,
 
     return (dst, 1)
 
-# XXX I suspect this is Unix-specific -- need porting help!
-def move_file (src, dst, verbose=1, dry_run=0):
-    """Move a file 'src' to 'dst'.
 
-    If 'dst' is a directory, the file will be moved into it with the same
-    name; otherwise, 'src' is just renamed to 'dst'.  Return the new
-    full name of the file.
+# XXX I suspect this is Unix-specific -- need porting help!
+def move_file (src, dst,
+               verbose=1,
+               dry_run=0):
+
+    """Move a file 'src' to 'dst'.  If 'dst' is a directory, the file will
+    be moved into it with the same name; otherwise, 'src' is just renamed
+    to 'dst'.  Return the new full name of the file.
 
     Handles cross-device moves on Unix using 'copy_file()'.  What about
     other systems???
@@ -198,15 +195,16 @@ def move_file (src, dst, verbose=1, dry_run=0):
 
     if not isdir(dirname(dst)):
         raise DistutilsFileError(
-              "can't move '%s': destination '%s' not a valid path" % \
+              "can't move '%s': destination '%s' not a valid path" %
               (src, dst))
 
-    copy_it = 0
+    copy_it = False
     try:
         os.rename(src, dst)
-    except os.error, (num, msg):
+    except OSError as e:
+        (num, msg) = e.args
         if num == errno.EXDEV:
-            copy_it = 1
+            copy_it = True
         else:
             raise DistutilsFileError(
                   "couldn't move '%s' to '%s': %s" % (src, dst, msg))
@@ -215,15 +213,16 @@ def move_file (src, dst, verbose=1, dry_run=0):
         copy_file(src, dst, verbose=verbose)
         try:
             os.unlink(src)
-        except os.error, (num, msg):
+        except OSError as e:
+            (num, msg) = e.args
             try:
                 os.unlink(dst)
-            except os.error:
+            except OSError:
                 pass
             raise DistutilsFileError(
-                  ("couldn't move '%s' to '%s' by copy/delete: " +
-                   "delete '%s' failed: %s") %
-                  (src, dst, src, msg))
+                  "couldn't move '%s' to '%s' by copy/delete: "
+                  "delete '%s' failed: %s"
+                  % (src, dst, src, msg))
     return dst
 
 

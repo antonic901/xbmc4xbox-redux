@@ -10,38 +10,39 @@ Using the Python Interpreter
 Invoking the Interpreter
 ========================
 
-The Python interpreter is usually installed as :file:`/usr/local/bin/python` on
-those machines where it is available; putting :file:`/usr/local/bin` in your
-Unix shell's search path makes it possible to start it by typing the command ::
+The Python interpreter is usually installed as :file:`/usr/local/bin/python3.4`
+on those machines where it is available; putting :file:`/usr/local/bin` in your
+Unix shell's search path makes it possible to start it by typing the command:
 
-   python
+.. code-block:: text
 
-to the shell.  Since the choice of the directory where the interpreter lives is
-an installation option, other places are possible; check with your local Python
-guru or system administrator.  (E.g., :file:`/usr/local/python` is a popular
-alternative location.)
+   python3.4
+
+to the shell. [#]_ Since the choice of the directory where the interpreter lives
+is an installation option, other places are possible; check with your local
+Python guru or system administrator.  (E.g., :file:`/usr/local/python` is a
+popular alternative location.)
 
 On Windows machines, the Python installation is usually placed in
-:file:`C:\\Python27`, though you can change this when you're running the
+:file:`C:\\Python34`, though you can change this when you're running the
 installer.  To add this directory to your path,  you can type the following
 command into the command prompt in a DOS box::
 
-   set path=%path%;C:\python27
+   set path=%path%;C:\python34
 
 Typing an end-of-file character (:kbd:`Control-D` on Unix, :kbd:`Control-Z` on
 Windows) at the primary prompt causes the interpreter to exit with a zero exit
 status.  If that doesn't work, you can exit the interpreter by typing the
 following command: ``quit()``.
 
-The interpreter's line-editing features usually aren't very sophisticated.  On
-Unix, whoever installed the interpreter may have enabled support for the GNU
-readline library, which adds more elaborate interactive editing and history
-features. Perhaps the quickest check to see whether command line editing is
-supported is typing :kbd:`Control-P` to the first Python prompt you get.  If it beeps,
-you have command line editing; see Appendix :ref:`tut-interacting` for an
-introduction to the keys.  If nothing appears to happen, or if ``^P`` is echoed,
-command line editing isn't available; you'll only be able to use backspace to
-remove characters from the current line.
+The interpreter's line-editing features include interactive editing, history
+substitution and code completion on systems that support readline.  Perhaps the
+quickest check to see whether command line editing is supported is typing
+:kbd:`Control-P` to the first Python prompt you get.  If it beeps, you have command
+line editing; see Appendix :ref:`tut-interacting` for an introduction to the
+keys.  If nothing appears to happen, or if ``^P`` is echoed, command line
+editing isn't available; you'll only be able to use backspace to remove
+characters from the current line.
 
 The interpreter operates somewhat like the Unix shell: when called with standard
 input connected to a tty device, it reads and executes commands interactively;
@@ -62,7 +63,7 @@ When a script file is used, it is sometimes useful to be able to run the script
 and enter interactive mode afterwards.  This can be done by passing :option:`-i`
 before the script.
 
-All command-line options are described in :ref:`using-on-general`.
+All command line options are described in :ref:`using-on-general`.
 
 
 .. _tut-argpassing:
@@ -93,21 +94,22 @@ mode*.  In this mode it prompts for the next command with the *primary prompt*,
 usually three greater-than signs (``>>>``); for continuation lines it prompts
 with the *secondary prompt*, by default three dots (``...``). The interpreter
 prints a welcome message stating its version number and a copyright notice
-before printing the first prompt:
+before printing the first prompt::
 
-.. code-block:: shell-session
-
-   python
-   Python 2.7 (#1, Feb 28 2010, 00:02:06)
+   $ python3.4
+   Python 3.4 (default, Mar 16 2014, 09:25:04)
+   [GCC 4.8.2] on linux
    Type "help", "copyright", "credits" or "license" for more information.
    >>>
+
+.. XXX update for new releases
 
 Continuation lines are needed when entering a multi-line construct. As an
 example, take a look at this :keyword:`if` statement::
 
-   >>> the_world_is_flat = 1
+   >>> the_world_is_flat = True
    >>> if the_world_is_flat:
-   ...     print "Be careful not to fall off!"
+   ...     print("Be careful not to fall off!")
    ...
    Be careful not to fall off!
 
@@ -126,23 +128,36 @@ The Interpreter and Its Environment
 Source Code Encoding
 --------------------
 
-By default, Python source files are treated as encoded in ASCII.
-To declare an encoding other than the default one, a special comment line
-should be added as the *first* line of the file.  The syntax is as follows::
+By default, Python source files are treated as encoded in UTF-8.  In that
+encoding, characters of most languages in the world can be used simultaneously
+in string literals, identifiers and comments --- although the standard library
+only uses ASCII characters for identifiers, a convention that any portable code
+should follow.  To display all these characters properly, your editor must
+recognize that the file is UTF-8, and it must use a font that supports all the
+characters in the file.
+
+It is also possible to specify a different encoding for source files.  In order
+to do this, put one more special comment line right after the ``#!`` line to
+define the source file encoding::
 
    # -*- coding: encoding -*-
 
-where *encoding* is one of the valid :mod:`codecs` supported by Python.
+With that declaration, everything in the source file will be treated as having
+the encoding *encoding* instead of UTF-8.  The list of possible encodings can be
+found in the Python Library Reference, in the section on :mod:`codecs`.
 
-For example, to declare that Windows-1252 encoding is to be used, the first
-line of your source code file should be::
+For example, if your editor of choice does not support UTF-8 encoded files and
+insists on using some other encoding, say Windows-1252, you can write::
 
-   # -*- coding: cp1252 -*-
+   # -*- coding: cp-1252 -*-
 
-One exception to the *first line* rule is when the source code starts with a
-:ref:`UNIX "shebang" line <tut-scripts>`.  In this case, the encoding
-declaration should be added as the second line of the file.  For example::
+and still use all characters in the Windows-1252 character set in the source
+files.  The special encoding comment must be in the *first or second* line
+within the file.
 
-   #!/usr/bin/env python
-   # -*- coding: cp1252 -*-
 
+.. rubric:: Footnotes
+
+.. [#] On Unix, the Python 3.x interpreter is by default not installed with the
+   executable named ``python``, so that it does not conflict with a
+   simultaneously installed Python 2.x executable.

@@ -15,5 +15,5 @@ class FixLong(fixer_base.BaseFix):
 
     def transform(self, node, results):
         if is_probably_builtin(node):
-            node.value = u"int"
+            node.value = "int"
             node.changed()

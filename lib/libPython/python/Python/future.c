@@ -4,7 +4,6 @@
 #include "token.h"
 #include "graminit.h"
 #include "code.h"
-#include "compile.h"
 #include "symtable.h"
 
 #define UNDEFINED_FUTURE_FEATURE "future feature %.100s is not defined"
@@ -12,7 +11,7 @@
 "from __future__ imports must occur at the beginning of the file"
 
 static int
-future_check_features(PyFutureFeatures *ff, stmt_ty s, const char *filename)
+future_check_features(PyFutureFeatures *ff, stmt_ty s, PyObject *filename)
 {
     int i;
     asdl_seq *names;
@@ -22,7 +21,7 @@ future_check_features(PyFutureFeatures *ff, stmt_ty s, const char *filename)
     names = s->v.ImportFrom.names;
     for (i = 0; i < asdl_seq_LEN(names); i++) {
         alias_ty name = (alias_ty)asdl_seq_GET(names, i);
-        const char *feature = PyString_AsString(name->name);
+        const char *feature = _PyUnicode_AsString(name->name);
         if (!feature)
             return 0;
         if (strcmp(feature, FUTURE_NESTED_SCOPES) == 0) {
@@ -30,24 +29,26 @@ future_check_features(PyFutureFeatures *ff, stmt_ty s, const char *filename)
         } else if (strcmp(feature, FUTURE_GENERATORS) == 0) {
             continue;
         } else if (strcmp(feature, FUTURE_DIVISION) == 0) {
-            ff->ff_features |= CO_FUTURE_DIVISION;
+            continue;
         } else if (strcmp(feature, FUTURE_ABSOLUTE_IMPORT) == 0) {
-            ff->ff_features |= CO_FUTURE_ABSOLUTE_IMPORT;
+            continue;
         } else if (strcmp(feature, FUTURE_WITH_STATEMENT) == 0) {
-            ff->ff_features |= CO_FUTURE_WITH_STATEMENT;
+            continue;
         } else if (strcmp(feature, FUTURE_PRINT_FUNCTION) == 0) {
-            ff->ff_features |= CO_FUTURE_PRINT_FUNCTION;
+            continue;
         } else if (strcmp(feature, FUTURE_UNICODE_LITERALS) == 0) {
-            ff->ff_features |= CO_FUTURE_UNICODE_LITERALS;
+            continue;
+        } else if (strcmp(feature, FUTURE_BARRY_AS_BDFL) == 0) {
+            ff->ff_features |= CO_FUTURE_BARRY_AS_BDFL;
         } else if (strcmp(feature, "braces") == 0) {
             PyErr_SetString(PyExc_SyntaxError,
                             "not a chance");
-            PyErr_SyntaxLocation(filename, s->lineno);
+            PyErr_SyntaxLocationObject(filename, s->lineno, s->col_offset);
             return 0;
         } else {
             PyErr_Format(PyExc_SyntaxError,
                          UNDEFINED_FUTURE_FEATURE, feature);
-            PyErr_SyntaxLocation(filename, s->lineno);
+            PyErr_SyntaxLocationObject(filename, s->lineno, s->col_offset);
             return 0;
         }
     }
@@ -55,11 +56,15 @@ future_check_features(PyFutureFeatures *ff, stmt_ty s, const char *filename)
 }
 
 static int
-future_parse(PyFutureFeatures *ff, mod_ty mod, const char *filename)
+future_parse(PyFutureFeatures *ff, mod_ty mod, PyObject *filename)
 {
-    int i, found_docstring = 0, done = 0, prev_line = 0;
+    int i, done = 0, prev_line = 0;
+    stmt_ty first;
 
     if (!(mod->kind == Module_kind || mod->kind == Interactive_kind))
+        return 1;
+
+    if (asdl_seq_LEN(mod->v.Module.body) == 0)
         return 1;
 
     /* A subsequent pass will detect future imports that don't
@@ -70,8 +75,13 @@ future_parse(PyFutureFeatures *ff, mod_ty mod, const char *filename)
        but is preceded by a regular import.
     */
 
+    i = 0;
+    first = (stmt_ty)asdl_seq_GET(mod->v.Module.body, i);
+    if (first->kind == Expr_kind && first->v.Expr.value->kind == Str_kind)
+        i++;
 
-    for (i = 0; i < asdl_seq_LEN(mod->v.Module.body); i++) {
+
+    for (; i < asdl_seq_LEN(mod->v.Module.body); i++) {
         stmt_ty s = (stmt_ty)asdl_seq_GET(mod->v.Module.body, i);
 
         if (done && s->lineno > prev_line)
@@ -86,38 +96,32 @@ future_parse(PyFutureFeatures *ff, mod_ty mod, const char *filename)
 
         if (s->kind == ImportFrom_kind) {
             identifier modname = s->v.ImportFrom.module;
-            if (modname && PyString_GET_SIZE(modname) == 10 &&
-                !strcmp(PyString_AS_STRING(modname), "__future__")) {
+            if (modname &&
+                !PyUnicode_CompareWithASCIIString(modname, "__future__")) {
                 if (done) {
                     PyErr_SetString(PyExc_SyntaxError,
                                     ERR_LATE_FUTURE);
-                    PyErr_SyntaxLocation(filename,
-                                         s->lineno);
+                    PyErr_SyntaxLocationObject(filename, s->lineno, s->col_offset);
                     return 0;
                 }
                 if (!future_check_features(ff, s, filename))
                     return 0;
                 ff->ff_lineno = s->lineno;
             }
-            else
+            else {
                 done = 1;
+            }
         }
-        else if (s->kind == Expr_kind && !found_docstring) {
-            expr_ty e = s->v.Expr.value;
-            if (e->kind != Str_kind)
-                done = 1;
-            else
-                found_docstring = 1;
-        }
-        else
+        else {
             done = 1;
+        }
     }
     return 1;
 }
 
 
 PyFutureFeatures *
-PyFuture_FromAST(mod_ty mod, const char *filename)
+PyFuture_FromASTObject(mod_ty mod, PyObject *filename)
 {
     PyFutureFeatures *ff;
 
@@ -133,5 +137,20 @@ PyFuture_FromAST(mod_ty mod, const char *filename)
         PyObject_Free(ff);
         return NULL;
     }
+    return ff;
+}
+
+
+PyFutureFeatures *
+PyFuture_FromAST(mod_ty mod, const char *filename_str)
+{
+    PyFutureFeatures *ff;
+    PyObject *filename;
+
+    filename = PyUnicode_DecodeFSDefault(filename_str);
+    if (filename == NULL)
+        return NULL;
+    ff = PyFuture_FromASTObject(mod, filename);
+    Py_DECREF(filename);
     return ff;
 }

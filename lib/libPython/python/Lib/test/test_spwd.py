@@ -1,8 +1,8 @@
 import os
 import unittest
-from test import test_support
+from test import support
 
-spwd = test_support.import_module('spwd')
+spwd = support.import_module('spwd')
 
 
 @unittest.skipUnless(hasattr(os, 'geteuid') and os.geteuid() == 0,
@@ -19,13 +19,15 @@ class TestSpwdRoot(unittest.TestCase):
         entries = spwd.getspall()
         if not entries:
             self.skipTest('empty shadow password database')
-        random_name = entries[0].sp_nam
+        random_name = entries[0].sp_namp
         entry = spwd.getspnam(random_name)
         self.assertIsInstance(entry, spwd.struct_spwd)
-        self.assertEqual(entry.sp_nam, random_name)
-        self.assertEqual(entry.sp_nam, entry[0])
-        self.assertIsInstance(entry.sp_pwd, str)
-        self.assertEqual(entry.sp_pwd, entry[1])
+        self.assertEqual(entry.sp_namp, random_name)
+        self.assertEqual(entry.sp_namp, entry[0])
+        self.assertEqual(entry.sp_namp, entry.sp_nam)
+        self.assertIsInstance(entry.sp_pwdp, str)
+        self.assertEqual(entry.sp_pwdp, entry[1])
+        self.assertEqual(entry.sp_pwdp, entry.sp_pwd)
         self.assertIsInstance(entry.sp_lstchg, int)
         self.assertEqual(entry.sp_lstchg, entry[2])
         self.assertIsInstance(entry.sp_min, int)
@@ -46,17 +48,13 @@ class TestSpwdRoot(unittest.TestCase):
         self.assertRaises(TypeError, spwd.getspnam)
         self.assertRaises(TypeError, spwd.getspnam, 0)
         self.assertRaises(TypeError, spwd.getspnam, random_name, 0)
-        if test_support.have_unicode:
-            try:
-                unicode_name = unicode(random_name)
-            except UnicodeDecodeError:
-                pass
-            else:
-                self.assertEqual(spwd.getspnam(unicode_name), entry)
+        try:
+            bytes_name = os.fsencode(random_name)
+        except UnicodeEncodeError:
+            pass
+        else:
+            self.assertRaises(TypeError, spwd.getspnam, bytes_name)
 
-
-def test_main():
-    test_support.run_unittest(TestSpwdRoot)
 
 if __name__ == "__main__":
-    test_main()
+    unittest.main()

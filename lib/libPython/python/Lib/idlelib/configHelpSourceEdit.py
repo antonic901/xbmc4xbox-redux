@@ -3,9 +3,9 @@
 import os
 import sys
 
-from Tkinter import *
-import tkMessageBox
-import tkFileDialog
+from tkinter import *
+import tkinter.messagebox as tkMessageBox
+import tkinter.filedialog as tkFileDialog
 
 class GetHelpSourceDialog(Toplevel):
     def __init__(self, parent, title, menuItem='', filePath='', _htest=False):
@@ -155,12 +155,10 @@ class GetHelpSourceDialog(Toplevel):
                     # Mac Safari insists on using the URI form for local files
                     self.result = list(self.result)
                     self.result[1] = "file://" + path
-            self.grab_release()
             self.destroy()
 
     def Cancel(self, event=None):
         self.result = None
-        self.grab_release()
         self.destroy()
 
 if __name__ == '__main__':

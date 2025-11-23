@@ -1,10 +1,12 @@
+import contextlib
 import copy
 import pickle
 from random import shuffle
+import sys
 import unittest
 from collections import OrderedDict
-from collections import MutableMapping
-from test import mapping_tests, test_support
+from collections.abc import MutableMapping
+from test import mapping_tests, support
 
 
 class TestOrderedDict(unittest.TestCase):
@@ -106,12 +108,9 @@ class TestOrderedDict(unittest.TestCase):
         shuffle(pairs)
         od = OrderedDict(pairs)
         self.assertEqual(list(od), [t[0] for t in pairs])
-        self.assertEqual(od.keys()[:], [t[0] for t in pairs])
-        self.assertEqual(od.values()[:], [t[1] for t in pairs])
-        self.assertEqual(od.items()[:], pairs)
-        self.assertEqual(list(od.iterkeys()), [t[0] for t in pairs])
-        self.assertEqual(list(od.itervalues()), [t[1] for t in pairs])
-        self.assertEqual(list(od.iteritems()), pairs)
+        self.assertEqual(list(od.keys()), [t[0] for t in pairs])
+        self.assertEqual(list(od.values()), [t[1] for t in pairs])
+        self.assertEqual(list(od.items()), pairs)
         self.assertEqual(list(reversed(od)),
                          [t[0] for t in reversed(pairs)])
 
@@ -169,25 +168,21 @@ class TestOrderedDict(unittest.TestCase):
         # and have a repr/eval round-trip
         pairs = [('c', 1), ('b', 2), ('a', 3), ('d', 4), ('e', 5), ('f', 6)]
         od = OrderedDict(pairs)
+        def check(dup):
+            msg = "\ncopy: %s\nod: %s" % (dup, od)
+            self.assertIsNot(dup, od, msg)
+            self.assertEqual(dup, od)
+        check(od.copy())
+        check(copy.copy(od))
+        check(copy.deepcopy(od))
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
+            with self.subTest(proto=proto):
+                check(pickle.loads(pickle.dumps(od, proto)))
+        check(eval(repr(od)))
         update_test = OrderedDict()
         update_test.update(od)
-        for i, dup in enumerate([
-                    od.copy(),
-                    copy.copy(od),
-                    copy.deepcopy(od),
-                    pickle.loads(pickle.dumps(od, 0)),
-                    pickle.loads(pickle.dumps(od, 1)),
-                    pickle.loads(pickle.dumps(od, 2)),
-                    pickle.loads(pickle.dumps(od, -1)),
-                    eval(repr(od)),
-                    update_test,
-                    OrderedDict(od),
-                    ]):
-            self.assertTrue(dup is not od)
-            self.assertEqual(dup, od)
-            self.assertEqual(list(dup.items()), list(od.items()))
-            self.assertEqual(len(dup), len(od))
-            self.assertEqual(type(dup), type(od))
+        check(update_test)
+        check(OrderedDict(od))
 
     def test_yaml_linkage(self):
         # Verify that __reduce__ is setup in a way that supports PyYAML's dump() feature.
@@ -202,9 +197,18 @@ class TestOrderedDict(unittest.TestCase):
         # do not save instance dictionary if not needed
         pairs = [('c', 1), ('b', 2), ('a', 3), ('d', 4), ('e', 5), ('f', 6)]
         od = OrderedDict(pairs)
-        self.assertEqual(len(od.__reduce__()), 2)
+        self.assertIsNone(od.__reduce__()[2])
         od.x = 10
-        self.assertEqual(len(od.__reduce__()), 3)
+        self.assertIsNotNone(od.__reduce__()[2])
+
+    def test_pickle_recursive(self):
+        od = OrderedDict()
+        od[1] = od
+        for proto in range(-1, pickle.HIGHEST_PROTOCOL + 1):
+            dup = pickle.loads(pickle.dumps(od, proto))
+            self.assertIsNot(dup, od)
+            self.assertEqual(list(dup.keys()), [1])
+            self.assertIs(dup[1], dup)
 
     def test_repr(self):
         od = OrderedDict([('c', 1), ('b', 2), ('a', 3), ('d', 4), ('e', 5), ('f', 6)])
@@ -219,19 +223,6 @@ class TestOrderedDict(unittest.TestCase):
         od['x'] = od
         self.assertEqual(repr(od),
             "OrderedDict([('a', None), ('b', None), ('c', None), ('x', ...)])")
-
-    def test_repr_recursive_values(self):
-        od = OrderedDict()
-        od[42] = od.viewvalues()
-        r = repr(od)
-        # Cannot perform a stronger test, as the contents of the repr
-        # are implementation-dependent.  All we can say is that we
-        # want a str result, not an exception of any sort.
-        self.assertIsInstance(r, str)
-        od[42] = od.viewitems()
-        r = repr(od)
-        # Again.
-        self.assertIsInstance(r, str)
 
     def test_setdefault(self):
         pairs = [('c', 1), ('b', 2), ('a', 3), ('d', 4), ('e', 5), ('f', 6)]
@@ -261,16 +252,25 @@ class TestOrderedDict(unittest.TestCase):
         od['a'] = 1
         self.assertEqual(list(od.items()), [('b', 2), ('a', 1)])
 
-    def test_views(self):
-        s = 'the quick brown fox jumped over a lazy dog yesterday before dawn'.split()
-        od = OrderedDict.fromkeys(s)
-        self.assertEqual(list(od.viewkeys()),  s)
-        self.assertEqual(list(od.viewvalues()),  [None for k in s])
-        self.assertEqual(list(od.viewitems()),  [(k, None) for k in s])
+    def test_move_to_end(self):
+        od = OrderedDict.fromkeys('abcde')
+        self.assertEqual(list(od), list('abcde'))
+        od.move_to_end('c')
+        self.assertEqual(list(od), list('abdec'))
+        od.move_to_end('c', 0)
+        self.assertEqual(list(od), list('cabde'))
+        od.move_to_end('c', 0)
+        self.assertEqual(list(od), list('cabde'))
+        od.move_to_end('e')
+        self.assertEqual(list(od), list('cabde'))
+        with self.assertRaises(KeyError):
+            od.move_to_end('x')
 
-        # See http://bugs.python.org/issue24286
-        self.assertEqual(od.viewkeys(), dict(od).viewkeys())
-        self.assertEqual(od.viewitems(), dict(od).viewitems())
+    def test_sizeof(self):
+        # Wimpy test: Just verify the reported size is larger than a regular dict
+        d = dict(a=1)
+        od = OrderedDict(**d)
+        self.assertGreater(sys.getsizeof(od), sys.getsizeof(d))
 
     def test_override_update(self):
         # Verify that subclasses can override update() without breaking __init__()
@@ -279,15 +279,6 @@ class TestOrderedDict(unittest.TestCase):
                 raise Exception()
         items = [('a', 1), ('c', 3), ('b', 2)]
         self.assertEqual(list(MyOD(items).items()), items)
-
-    def test_free_after_iterating(self):
-        test_support.check_free_after_iterating(self, iter, OrderedDict)
-        test_support.check_free_after_iterating(self, lambda d: d.iterkeys(), OrderedDict)
-        test_support.check_free_after_iterating(self, lambda d: d.itervalues(), OrderedDict)
-        test_support.check_free_after_iterating(self, lambda d: d.iteritems(), OrderedDict)
-        test_support.check_free_after_iterating(self, lambda d: iter(d.viewkeys()), OrderedDict)
-        test_support.check_free_after_iterating(self, lambda d: iter(d.viewvalues()), OrderedDict)
-        test_support.check_free_after_iterating(self, lambda d: iter(d.viewitems()), OrderedDict)
 
 class GeneralMappingTests(mapping_tests.BasicTestMappingProtocol):
     type2test = OrderedDict
@@ -307,9 +298,5 @@ class SubclassMappingTests(mapping_tests.BasicTestMappingProtocol):
         self.assertRaises(KeyError, d.popitem)
 
 
-def test_main(verbose=None):
-    test_classes = [TestOrderedDict, GeneralMappingTests, SubclassMappingTests]
-    test_support.run_unittest(*test_classes)
-
 if __name__ == "__main__":
-    test_main(verbose=True)
+    unittest.main()

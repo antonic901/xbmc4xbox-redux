@@ -9,7 +9,6 @@
 */
 
 #include "Python.h"
-#include "unicodeobject.h"
 
 #define ALPHA_MASK 0x01
 #define DECIMAL_MASK 0x02
@@ -19,13 +18,23 @@
 #define SPACE_MASK 0x20
 #define TITLE_MASK 0x40
 #define UPPER_MASK 0x80
-#define NODELTA_MASK 0x100
-#define NUMERIC_MASK 0x200
+#define XID_START_MASK 0x100
+#define XID_CONTINUE_MASK 0x200
+#define PRINTABLE_MASK 0x400
+#define NUMERIC_MASK 0x800
+#define CASE_IGNORABLE_MASK 0x1000
+#define CASED_MASK 0x2000
+#define EXTENDED_CASE_MASK 0x4000
 
 typedef struct {
-    const Py_UNICODE upper;
-    const Py_UNICODE lower;
-    const Py_UNICODE title;
+    /* 
+       These are either deltas to the character or offsets in
+       _PyUnicode_ExtendedCase.
+    */
+    const int upper;
+    const int lower;
+    const int title;
+    /* Note if more flag space is needed, decimal and digit could be unified. */
     const unsigned char decimal;
     const unsigned char digit;
     const unsigned short flags;
@@ -34,15 +43,13 @@ typedef struct {
 #include "unicodetype_db.h"
 
 static const _PyUnicode_TypeRecord *
-gettyperecord(Py_UNICODE code)
+gettyperecord(Py_UCS4 code)
 {
     int index;
 
-#ifdef Py_UNICODE_WIDE
     if (code >= 0x110000)
         index = 0;
     else
-#endif
     {
         index = index1[(code>>SHIFT)];
         index = index2[(index<<SHIFT)+(code&((1<<SHIFT)-1))];
@@ -54,80 +61,113 @@ gettyperecord(Py_UNICODE code)
 /* Returns the titlecase Unicode characters corresponding to ch or just
    ch if no titlecase mapping is known. */
 
-Py_UNICODE _PyUnicode_ToTitlecase(register Py_UNICODE ch)
+Py_UCS4 _PyUnicode_ToTitlecase(Py_UCS4 ch)
 {
     const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
-    int delta = ctype->title;
 
-    if (ctype->flags & NODELTA_MASK)
-	return delta;
-
-    if (delta >= 32768)
-	    delta -= 65536;
-
-    return ch + delta;
+    if (ctype->flags & EXTENDED_CASE_MASK)
+        return _PyUnicode_ExtendedCase[ctype->title & 0xFFFF];
+    return ch + ctype->title;
 }
 
 /* Returns 1 for Unicode characters having the category 'Lt', 0
    otherwise. */
 
-int _PyUnicode_IsTitlecase(Py_UNICODE ch)
+int _PyUnicode_IsTitlecase(Py_UCS4 ch)
 {
     const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
 
     return (ctype->flags & TITLE_MASK) != 0;
 }
 
+/* Returns 1 for Unicode characters having the XID_Start property, 0
+   otherwise. */
+
+int _PyUnicode_IsXidStart(Py_UCS4 ch)
+{
+    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+
+    return (ctype->flags & XID_START_MASK) != 0;
+}
+
+/* Returns 1 for Unicode characters having the XID_Continue property,
+   0 otherwise. */
+
+int _PyUnicode_IsXidContinue(Py_UCS4 ch)
+{
+    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+
+    return (ctype->flags & XID_CONTINUE_MASK) != 0;
+}
+
 /* Returns the integer decimal (0-9) for Unicode characters having
    this property, -1 otherwise. */
 
-int _PyUnicode_ToDecimalDigit(Py_UNICODE ch)
+int _PyUnicode_ToDecimalDigit(Py_UCS4 ch)
 {
     const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
 
     return (ctype->flags & DECIMAL_MASK) ? ctype->decimal : -1;
 }
 
-int _PyUnicode_IsDecimalDigit(Py_UNICODE ch)
+int _PyUnicode_IsDecimalDigit(Py_UCS4 ch)
 {
     if (_PyUnicode_ToDecimalDigit(ch) < 0)
-	return 0;
+        return 0;
     return 1;
 }
 
 /* Returns the integer digit (0-9) for Unicode characters having
    this property, -1 otherwise. */
 
-int _PyUnicode_ToDigit(Py_UNICODE ch)
+int _PyUnicode_ToDigit(Py_UCS4 ch)
 {
     const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
 
     return (ctype->flags & DIGIT_MASK) ? ctype->digit : -1;
 }
 
-int _PyUnicode_IsDigit(Py_UNICODE ch)
+int _PyUnicode_IsDigit(Py_UCS4 ch)
 {
     if (_PyUnicode_ToDigit(ch) < 0)
-	return 0;
+        return 0;
     return 1;
 }
 
 /* Returns the numeric value as double for Unicode characters having
    this property, -1.0 otherwise. */
 
-int _PyUnicode_IsNumeric(Py_UNICODE ch)
+int _PyUnicode_IsNumeric(Py_UCS4 ch)
 {
     const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
 
     return (ctype->flags & NUMERIC_MASK) != 0;
 }
 
-#ifndef WANT_WCTYPE_FUNCTIONS
+/* Returns 1 for Unicode characters to be hex-escaped when repr()ed,
+   0 otherwise.
+   All characters except those characters defined in the Unicode character
+   database as following categories are considered printable.
+      * Cc (Other, Control)
+      * Cf (Other, Format)
+      * Cs (Other, Surrogate)
+      * Co (Other, Private Use)
+      * Cn (Other, Not Assigned)
+      * Zl Separator, Line ('\u2028', LINE SEPARATOR)
+      * Zp Separator, Paragraph ('\u2029', PARAGRAPH SEPARATOR)
+      * Zs (Separator, Space) other than ASCII space('\x20').
+*/
+int _PyUnicode_IsPrintable(Py_UCS4 ch)
+{
+    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+
+    return (ctype->flags & PRINTABLE_MASK) != 0;
+}
 
 /* Returns 1 for Unicode characters having the category 'Ll', 0
    otherwise. */
 
-int _PyUnicode_IsLowercase(Py_UNICODE ch)
+int _PyUnicode_IsLowercase(Py_UCS4 ch)
 {
     const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
 
@@ -137,7 +177,7 @@ int _PyUnicode_IsLowercase(Py_UNICODE ch)
 /* Returns 1 for Unicode characters having the category 'Lu', 0
    otherwise. */
 
-int _PyUnicode_IsUppercase(Py_UNICODE ch)
+int _PyUnicode_IsUppercase(Py_UCS4 ch)
 {
     const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
 
@@ -147,69 +187,111 @@ int _PyUnicode_IsUppercase(Py_UNICODE ch)
 /* Returns the uppercase Unicode characters corresponding to ch or just
    ch if no uppercase mapping is known. */
 
-Py_UNICODE _PyUnicode_ToUppercase(Py_UNICODE ch)
+Py_UCS4 _PyUnicode_ToUppercase(Py_UCS4 ch)
 {
     const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
-    int delta = ctype->upper;
-    if (ctype->flags & NODELTA_MASK)
-	return delta;
-    if (delta >= 32768)
-	    delta -= 65536;
-    return ch + delta;
+
+    if (ctype->flags & EXTENDED_CASE_MASK)
+        return _PyUnicode_ExtendedCase[ctype->upper & 0xFFFF];
+    return ch + ctype->upper;
 }
 
 /* Returns the lowercase Unicode characters corresponding to ch or just
    ch if no lowercase mapping is known. */
 
-Py_UNICODE _PyUnicode_ToLowercase(Py_UNICODE ch)
+Py_UCS4 _PyUnicode_ToLowercase(Py_UCS4 ch)
 {
     const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
-    int delta = ctype->lower;
-    if (ctype->flags & NODELTA_MASK)
-	return delta;
-    if (delta >= 32768)
-	    delta -= 65536;
-    return ch + delta;
+
+    if (ctype->flags & EXTENDED_CASE_MASK)
+        return _PyUnicode_ExtendedCase[ctype->lower & 0xFFFF];
+    return ch + ctype->lower;
+}
+
+int _PyUnicode_ToLowerFull(Py_UCS4 ch, Py_UCS4 *res)
+{
+    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+
+    if (ctype->flags & EXTENDED_CASE_MASK) {
+        int index = ctype->lower & 0xFFFF;
+        int n = ctype->lower >> 24;
+        int i;
+        for (i = 0; i < n; i++)
+            res[i] = _PyUnicode_ExtendedCase[index + i];
+        return n;
+    }
+    res[0] = ch + ctype->lower;
+    return 1;
+}
+
+int _PyUnicode_ToTitleFull(Py_UCS4 ch, Py_UCS4 *res)
+{
+    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+
+    if (ctype->flags & EXTENDED_CASE_MASK) {
+        int index = ctype->title & 0xFFFF;
+        int n = ctype->title >> 24;
+        int i;
+        for (i = 0; i < n; i++)
+            res[i] = _PyUnicode_ExtendedCase[index + i];
+        return n;
+    }
+    res[0] = ch + ctype->title;
+    return 1;
+}
+
+int _PyUnicode_ToUpperFull(Py_UCS4 ch, Py_UCS4 *res)
+{
+    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+
+    if (ctype->flags & EXTENDED_CASE_MASK) {
+        int index = ctype->upper & 0xFFFF;
+        int n = ctype->upper >> 24;
+        int i;
+        for (i = 0; i < n; i++)
+            res[i] = _PyUnicode_ExtendedCase[index + i];
+        return n;
+    }
+    res[0] = ch + ctype->upper;
+    return 1;
+}
+
+int _PyUnicode_ToFoldedFull(Py_UCS4 ch, Py_UCS4 *res)
+{
+    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+
+    if (ctype->flags & EXTENDED_CASE_MASK && (ctype->lower >> 20) & 7) {
+        int index = (ctype->lower & 0xFFFF) + (ctype->lower >> 24);
+        int n = (ctype->lower >> 20) & 7;
+        int i;
+        for (i = 0; i < n; i++)
+            res[i] = _PyUnicode_ExtendedCase[index + i];
+        return n;
+    }
+    return _PyUnicode_ToLowerFull(ch, res);
+}
+
+int _PyUnicode_IsCased(Py_UCS4 ch)
+{
+    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+
+    return (ctype->flags & CASED_MASK) != 0;
+}
+
+int _PyUnicode_IsCaseIgnorable(Py_UCS4 ch)
+{
+    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+
+    return (ctype->flags & CASE_IGNORABLE_MASK) != 0;
 }
 
 /* Returns 1 for Unicode characters having the category 'Ll', 'Lu', 'Lt',
    'Lo' or 'Lm',  0 otherwise. */
 
-int _PyUnicode_IsAlpha(Py_UNICODE ch)
+int _PyUnicode_IsAlpha(Py_UCS4 ch)
 {
     const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
 
     return (ctype->flags & ALPHA_MASK) != 0;
 }
 
-#else
-
-/* Export the interfaces using the wchar_t type for portability
-   reasons:  */
-
-int _PyUnicode_IsLowercase(Py_UNICODE ch)
-{
-    return iswlower(ch);
-}
-
-int _PyUnicode_IsUppercase(Py_UNICODE ch)
-{
-    return iswupper(ch);
-}
-
-Py_UNICODE _PyUnicode_ToLowercase(Py_UNICODE ch)
-{
-    return towlower(ch);
-}
-
-Py_UNICODE _PyUnicode_ToUppercase(Py_UNICODE ch)
-{
-    return towupper(ch);
-}
-
-int _PyUnicode_IsAlpha(Py_UNICODE ch)
-{
-    return iswalpha(ch);
-}
-
-#endif

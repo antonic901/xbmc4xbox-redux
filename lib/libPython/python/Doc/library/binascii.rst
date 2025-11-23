@@ -1,4 +1,3 @@
-
 :mod:`binascii` --- Convert between binary and ASCII
 ====================================================
 
@@ -18,6 +17,17 @@ use these functions directly but use wrapper modules like :mod:`uu`,
 :mod:`base64`, or :mod:`binhex` instead. The :mod:`binascii` module contains
 low-level functions written in C for greater speed that are used by the
 higher-level modules.
+
+.. note::
+
+   ``a2b_*`` functions accept Unicode strings containing only ASCII characters.
+   Other functions only accept :term:`bytes-like object`\ s (such as
+   :class:`bytes`, :class:`bytearray` and other objects that support the buffer
+   protocol).
+
+   .. versionchanged:: 3.3
+      ASCII-only unicode strings are now accepted by the ``a2b_*`` functions.
+
 
 The :mod:`binascii` module defines the following functions:
 
@@ -51,14 +61,14 @@ The :mod:`binascii` module defines the following functions:
    MIME-base64 standard.  Otherwise the output conforms to :rfc:`3548`.
 
 
-.. function:: a2b_qp(string[, header])
+.. function:: a2b_qp(data, header=False)
 
    Convert a block of quoted-printable data back to binary and return the binary
    data. More than one line may be passed at a time. If the optional argument
    *header* is present and true, underscores will be decoded as spaces.
 
 
-.. function:: b2a_qp(data[, quotetabs, istext, header])
+.. function:: b2a_qp(data, quotetabs=False, istext=True, header=False)
 
    Convert binary data to a line(s) of ASCII characters in quoted-printable
    encoding.  The return value is the converted line(s). If the optional argument
@@ -86,6 +96,9 @@ The :mod:`binascii` module defines the following functions:
    decompressed data, unless data input data ends in an orphaned repeat indicator,
    in which case the :exc:`Incomplete` exception is raised.
 
+   .. versionchanged:: 3.2
+      Accept only bytestring or bytearray objects as input.
+
 
 .. function:: rlecode_hqx(data)
 
@@ -101,10 +114,8 @@ The :mod:`binascii` module defines the following functions:
 
 .. function:: crc_hqx(data, crc)
 
-   Compute a 16-bit CRC value of *data*, starting with an initial *crc* and
-   returning the result.  This uses the CRC-CCITT polynomial
-   *x*:sup:`16` + *x*:sup:`12` + *x*:sup:`5` + 1, often represented as
-   0x1021.  This CRC is used in the binhex4 format.
+   Compute the binhex4 crc value of *data*, starting with an initial *crc* and
+   returning the result.
 
 
 .. function:: crc32(data[, crc])
@@ -114,11 +125,11 @@ The :mod:`binascii` module defines the following functions:
    use as a checksum algorithm, it is not suitable for use as a general hash
    algorithm.  Use as follows::
 
-      print binascii.crc32("hello world")
+      print(binascii.crc32(b"hello world"))
       # Or, in two pieces:
-      crc = binascii.crc32("hello")
-      crc = binascii.crc32(" world", crc) & 0xffffffff
-      print 'crc32 = 0x%08x' % crc
+      crc = binascii.crc32(b"hello")
+      crc = binascii.crc32(b" world", crc) & 0xffffffff
+      print('crc32 = {:#010x}'.format(crc))
 
 .. note::
    To generate the same numeric value across all Python versions and
@@ -127,23 +138,13 @@ The :mod:`binascii` module defines the following functions:
    return value is the correct 32bit binary representation
    regardless of sign.
 
-.. versionchanged:: 2.6
-   The return value is in the range [-2**31, 2**31-1]
-   regardless of platform.  In the past the value would be signed on
-   some platforms and unsigned on others.  Use & 0xffffffff on the
-   value if you want it to match Python 3 behavior.
-
-.. versionchanged:: 3.0
-   The return value is unsigned and in the range [0, 2**32-1]
-   regardless of platform.
-
 
 .. function:: b2a_hex(data)
               hexlify(data)
 
    Return the hexadecimal representation of the binary *data*.  Every byte of
    *data* is converted into the corresponding 2-digit hex representation.  The
-   resulting string is therefore twice as long as the length of *data*.
+   returned bytes object is therefore twice as long as the length of *data*.
 
 
 .. function:: a2b_hex(hexstr)
@@ -169,7 +170,8 @@ The :mod:`binascii` module defines the following functions:
 .. seealso::
 
    Module :mod:`base64`
-      Support for RFC compliant base64-style encoding in base 16, 32, and 64.
+      Support for RFC compliant base64-style encoding in base 16, 32, 64,
+      and 85.
 
    Module :mod:`binhex`
       Support for the binhex format used on the Macintosh.
@@ -179,4 +181,3 @@ The :mod:`binascii` module defines the following functions:
 
    Module :mod:`quopri`
       Support for quoted-printable encoding used in MIME email messages.
-

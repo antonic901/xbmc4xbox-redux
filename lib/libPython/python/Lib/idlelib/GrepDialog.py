@@ -1,10 +1,9 @@
-from __future__ import print_function
 import os
 import fnmatch
 import re  # for htest
 import sys
-from Tkinter import StringVar, BooleanVar, Checkbutton  # for GrepDialog
-from Tkinter import Tk, Text, Button, SEL, END  # for htest
+from tkinter import StringVar, BooleanVar, Checkbutton  # for GrepDialog
+from tkinter import Tk, Text, Button, SEL, END  # for htest
 from idlelib import SearchEngine
 from idlelib.SearchDialogBase import SearchDialogBase
 # Importing OutputWindow fails due to import loop
@@ -87,7 +86,7 @@ class GrepDialog(SearchDialogBase):
         try:
             for fn in list:
                 try:
-                    with open(fn) as f:
+                    with open(fn, errors='replace') as f:
                         for lineno, line in enumerate(f, 1):
                             if line[-1:] == '\n':
                                 line = line[:-1]
@@ -95,7 +94,7 @@ class GrepDialog(SearchDialogBase):
                                 sys.stdout.write("%s: %s: %s\n" %
                                                  (fn, lineno, line))
                                 hits += 1
-                except IOError as msg:
+                except OSError as msg:
                     print(msg)
             print(("Hits found: %s\n"
                   "(Hint: right-click to open locations.)"
@@ -108,7 +107,7 @@ class GrepDialog(SearchDialogBase):
     def findfiles(self, dir, base, rec):
         try:
             names = os.listdir(dir or os.curdir)
-        except os.error as msg:
+        except OSError as msg:
             print(msg)
             return []
         list = []

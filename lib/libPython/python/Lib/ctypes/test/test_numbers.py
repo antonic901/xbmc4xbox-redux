@@ -12,10 +12,10 @@ def valid_ranges(*types):
     for t in types:
         fmt = t._type_
         size = struct.calcsize(fmt)
-        a = struct.unpack(fmt, ("\x00"*32)[:size])[0]
-        b = struct.unpack(fmt, ("\xFF"*32)[:size])[0]
-        c = struct.unpack(fmt, ("\x7F"+"\x00"*32)[:size])[0]
-        d = struct.unpack(fmt, ("\x80"+"\xFF"*32)[:size])[0]
+        a = struct.unpack(fmt, (b"\x00"*32)[:size])[0]
+        b = struct.unpack(fmt, (b"\xFF"*32)[:size])[0]
+        c = struct.unpack(fmt, (b"\x7F"+b"\x00"*32)[:size])[0]
+        d = struct.unpack(fmt, (b"\x80"+b"\xFF"*32)[:size])[0]
         result.append((min(a, b, c, d), max(a, b, c, d)))
     return result
 
@@ -76,7 +76,7 @@ class NumberTestCase(unittest.TestCase):
             self.assertEqual(t(v).value, truth(v))
 
     def test_typeerror(self):
-        # Only numbers are allowed in the constructor,
+        # Only numbers are allowed in the contructor,
         # otherwise TypeError is raised
         for t in signed_types + unsigned_types + float_types:
             self.assertRaises(TypeError, t, "")
@@ -105,7 +105,7 @@ class NumberTestCase(unittest.TestCase):
 
     def test_floats(self):
         # c_float and c_double can be created from
-        # Python int, long and float
+        # Python int and float
         class FloatLike(object):
             def __float__(self):
                 return 2.0
@@ -113,7 +113,7 @@ class NumberTestCase(unittest.TestCase):
         for t in float_types:
             self.assertEqual(t(2.0).value, 2.0)
             self.assertEqual(t(2).value, 2.0)
-            self.assertEqual(t(2L).value, 2.0)
+            self.assertEqual(t(2).value, 2.0)
             self.assertEqual(t(f).value, 2.0)
 
     def test_integers(self):
@@ -191,13 +191,14 @@ class NumberTestCase(unittest.TestCase):
         from ctypes import c_char
         from array import array
 
-        a = array('c', 'x')
+        a = array('b', [0])
+        a[0] = ord('x')
         v = c_char.from_address(a.buffer_info()[0])
-        self.assertEqual(v.value, a[0])
+        self.assertEqual(v.value, b'x')
         self.assertIs(type(v), c_char)
 
-        a[0] = '?'
-        self.assertEqual(v.value, a[0])
+        a[0] = ord('?')
+        self.assertEqual(v.value, b'?')
 
     # array does not support c_bool / 't'
     @unittest.skip('test disabled')
@@ -251,7 +252,7 @@ def run_test(rep, msg, func, arg=None):
         for i in items:
             func(); func(); func(); func(); func()
         stop = clock()
-    print "%15s: %.2f us" % (msg, ((stop-start)*1e6/5/rep))
+    print("%15s: %.2f us" % (msg, ((stop-start)*1e6/5/rep)))
 
 def check_perf():
     # Construct 5 objects

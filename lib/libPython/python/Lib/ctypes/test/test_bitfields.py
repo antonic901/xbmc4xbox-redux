@@ -38,14 +38,14 @@ class C_Test(unittest.TestCase):
             for name in "ABCDEFGHI":
                 b = BITS()
                 setattr(b, name, i)
-                self.assertEqual((name, i, getattr(b, name)), (name, i, func(byref(b), name)))
+                self.assertEqual(getattr(b, name), func(byref(b), name.encode('ascii')))
 
     def test_shorts(self):
         for i in range(256):
             for name in "MNOPQRS":
                 b = BITS()
                 setattr(b, name, i)
-                self.assertEqual((name, i, getattr(b, name)), (name, i, func(byref(b), name)))
+                self.assertEqual(getattr(b, name), func(byref(b), name.encode('ascii')))
 
 signed_int_types = (c_byte, c_short, c_int, c_long, c_longlong)
 unsigned_int_types = (c_ubyte, c_ushort, c_uint, c_ulong, c_ulonglong)
@@ -190,7 +190,7 @@ class BitFieldTest(unittest.TestCase):
     def get_except(self, func, *args, **kw):
         try:
             func(*args, **kw)
-        except Exception, detail:
+        except Exception as detail:
             return detail.__class__, str(detail)
 
     def test_mixed_1(self):
