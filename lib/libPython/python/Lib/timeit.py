@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 """Tool for measuring execution time of small code snippets.
 
@@ -9,14 +9,16 @@ the Python Cookbook, published by O'Reilly.
 Library usage: see the Timer class.
 
 Command line usage:
-    python timeit.py [-n N] [-r N] [-s S] [-t] [-c] [-h] [--] [statement]
+    python timeit.py [-n N] [-r N] [-s S] [-t] [-c] [-p] [-h] [--] [statement]
 
 Options:
   -n/--number N: how many times to execute 'statement' (default: see below)
   -r/--repeat N: how many times to repeat the timer (default 3)
-  -s/--setup S: statement to be executed once initially (default 'pass')
-  -t/--time: use time.time() (default on Unix)
-  -c/--clock: use time.clock() (default on Windows)
+  -s/--setup S: statement to be executed once initially (default 'pass').
+                Execution time of this setup statement is NOT timed.
+  -p/--process: use time.process_time() (default is time.perf_counter())
+  -t/--time: use time.time() (deprecated)
+  -c/--clock: use time.clock() (deprecated)
   -v/--verbose: print raw timing results; repeat for more digits precision
   -h/--help: print this usage message and exit
   --: separate options from statement, use when statement starts with -
@@ -30,59 +32,44 @@ treated similarly.
 If -n is not given, a suitable number of loops is calculated by trying
 successive powers of 10 until the total time is at least 0.2 seconds.
 
-The difference in default timer function is because on Windows,
-clock() has microsecond granularity but time()'s granularity is 1/60th
-of a second; on Unix, clock() has 1/100th of a second granularity and
-time() is much more precise.  On either platform, the default timer
-functions measure wall clock time, not the CPU time.  This means that
-other processes running on the same computer may interfere with the
-timing.  The best thing to do when accurate timing is necessary is to
-repeat the timing a few times and use the best time.  The -r option is
-good for this; the default of 3 repetitions is probably enough in most
-cases.  On Unix, you can use clock() to measure CPU time.
-
 Note: there is a certain baseline overhead associated with executing a
-pass statement.  The code here doesn't try to hide it, but you should
-be aware of it.  The baseline overhead can be measured by invoking the
-program without arguments.
+pass statement.  It differs between versions.  The code here doesn't try
+to hide it, but you should be aware of it.  The baseline overhead can be
+measured by invoking the program without arguments.
 
-The baseline overhead differs between Python versions!  Also, to
-fairly compare older Python versions to Python 2.3, you may want to
-use python -O for the older versions to avoid timing SET_LINENO
-instructions.
+Classes:
+
+    Timer
+
+Functions:
+
+    timeit(string, string) -> float
+    repeat(string, string) -> list
+    default_timer() -> float
+
 """
 
 import gc
 import sys
 import time
-try:
-    import itertools
-except ImportError:
-    # Must be an older Python version (see timeit() below)
-    itertools = None
+import itertools
 
-__all__ = ["Timer"]
+__all__ = ["Timer", "timeit", "repeat", "default_timer"]
 
 dummy_src_name = "<timeit-src>"
 default_number = 1000000
 default_repeat = 3
-
-if sys.platform == "win32":
-    # On Windows, the best timer is time.clock()
-    default_timer = time.clock
-else:
-    # On most other platforms the best timer is time.time()
-    default_timer = time.time
+default_timer = time.perf_counter
 
 # Don't change the indentation of the template; the reindent() calls
 # in Timer.__init__() depend on setup being indented 4 spaces and stmt
 # being indented 8 spaces.
 template = """
-def inner(_it, _timer%(init)s):
-    %(setup)s
+def inner(_it, _timer{init}):
+    {setup}
     _t0 = _timer()
     for _i in _it:
-        %(stmt)s
+        {stmt}
     _t1 = _timer()
     return _t1 - _t0
 """
@@ -122,34 +109,34 @@ class Timer:
         """Constructor.  See class doc string."""
         self.timer = timer
         ns = {}
-        if isinstance(stmt, basestring):
+        if isinstance(stmt, str):
             # Check that the code can be compiled outside a function
-            if isinstance(setup, basestring):
+            if isinstance(setup, str):
                 compile(setup, dummy_src_name, "exec")
                 compile(setup + '\n' + stmt, dummy_src_name, "exec")
             else:
                 compile(stmt, dummy_src_name, "exec")
             stmt = reindent(stmt, 8)
-            if isinstance(setup, basestring):
+            if isinstance(setup, str):
                 setup = reindent(setup, 4)
-                src = template % {'stmt': stmt, 'setup': setup, 'init': ''}
-            elif hasattr(setup, '__call__'):
-                src = template % {'stmt': stmt, 'setup': '_setup()',
-                                  'init': ', _setup=_setup'}
+                src = template.format(stmt=stmt, setup=setup, init='')
+            elif callable(setup):
+                src = template.format(stmt=stmt, setup='_setup()',
+                                      init=', _setup=_setup')
                 ns['_setup'] = setup
             else:
                 raise ValueError("setup is neither a string nor callable")
             self.src = src # Save for traceback display
             code = compile(src, dummy_src_name, "exec")
-            exec code in globals(), ns
+            exec(code, globals(), ns)
             self.inner = ns["inner"]
-        elif hasattr(stmt, '__call__'):
+        elif callable(stmt):
             self.src = None
-            if isinstance(setup, basestring):
+            if isinstance(setup, str):
                 _setup = setup
                 def setup():
-                    exec _setup in globals(), ns
-            elif not hasattr(setup, '__call__'):
+                    exec(_setup, globals(), ns)
+            elif not callable(setup):
                 raise ValueError("setup is neither a string nor callable")
             self.inner = _template_func(setup, stmt)
         else:
@@ -192,10 +179,7 @@ class Timer:
         to one million.  The main statement, the setup statement and
         the timer function to be used are passed to the constructor.
         """
-        if itertools:
-            it = itertools.repeat(None, number)
-        else:
-            it = [None] * number
+        it = itertools.repeat(None, number)
         gcold = gc.isenabled()
         gc.disable()
         try:
@@ -241,7 +225,7 @@ def repeat(stmt="pass", setup="pass", timer=default_timer,
     """Convenience function to create Timer object and call repeat method."""
     return Timer(stmt, setup, timer).repeat(repeat, number)
 
-def main(args=None, _wrap_timer=None):
+def main(args=None, *, _wrap_timer=None):
     """Main program, used when run as a script.
 
     The optional 'args' argument specifies the command line to be parsed,
@@ -262,12 +246,13 @@ def main(args=None, _wrap_timer=None):
         args = sys.argv[1:]
     import getopt
     try:
-        opts, args = getopt.getopt(args, "n:s:r:tcvh",
+        opts, args = getopt.getopt(args, "n:s:r:tcpvh",
                                    ["number=", "setup=", "repeat=",
-                                    "time", "clock", "verbose", "help"])
-    except getopt.error, err:
-        print err
-        print "use -h/--help for command line help"
+                                    "time", "clock", "process",
+                                    "verbose", "help"])
+    except getopt.error as err:
+        print(err)
+        print("use -h/--help for command line help")
         return 2
     timer = default_timer
     stmt = "\n".join(args) or "pass"
@@ -289,12 +274,14 @@ def main(args=None, _wrap_timer=None):
             timer = time.time
         if o in ("-c", "--clock"):
             timer = time.clock
+        if o in ("-p", "--process"):
+            timer = time.process_time
         if o in ("-v", "--verbose"):
             if verbose:
                 precision += 1
             verbose += 1
         if o in ("-h", "--help"):
-            print __doc__,
+            print(__doc__, end=' ')
             return 0
     setup = "\n".join(setup) or "pass"
     # Include the current directory, so that local imports work (sys.path
@@ -315,7 +302,7 @@ def main(args=None, _wrap_timer=None):
                 t.print_exc()
                 return 1
             if verbose:
-                print "%d loops -> %.*g secs" % (number, precision, x)
+                print("%d loops -> %.*g secs" % (number, precision, x))
             if x >= 0.2:
                 break
     try:
@@ -325,18 +312,18 @@ def main(args=None, _wrap_timer=None):
         return 1
     best = min(r)
     if verbose:
-        print "raw times:", " ".join(["%.*g" % (precision, x) for x in r])
-    print "%d loops," % number,
+        print("raw times:", " ".join(["%.*g" % (precision, x) for x in r]))
+    print("%d loops," % number, end=' ')
     usec = best * 1e6 / number
     if usec < 1000:
-        print "best of %d: %.*g usec per loop" % (repeat, precision, usec)
+        print("best of %d: %.*g usec per loop" % (repeat, precision, usec))
     else:
         msec = usec / 1000
         if msec < 1000:
-            print "best of %d: %.*g msec per loop" % (repeat, precision, msec)
+            print("best of %d: %.*g msec per loop" % (repeat, precision, msec))
         else:
             sec = msec / 1000
-            print "best of %d: %.*g sec per loop" % (repeat, precision, sec)
+            print("best of %d: %.*g sec per loop" % (repeat, precision, sec))
     return None
 
 if __name__ == "__main__":

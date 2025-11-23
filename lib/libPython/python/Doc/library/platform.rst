@@ -3,11 +3,8 @@
 
 .. module:: platform
    :synopsis: Retrieves as much platform identifying data as possible.
-.. moduleauthor:: Marc-Andre Lemburg <mal@egenix.com>
+.. moduleauthor:: Marc-André Lemburg <mal@egenix.com>
 .. sectionauthor:: Bjorn Pettersen <bpettersen@corp.fairisaac.com>
-
-
-.. versionadded:: 2.3
 
 **Source code:** :source:`Lib/platform.py`
 
@@ -106,22 +103,16 @@ Cross Platform
 
    Returns a string identifying the Python implementation SCM branch.
 
-   .. versionadded:: 2.6
-
 
 .. function:: python_implementation()
 
    Returns a string identifying the Python implementation. Possible return values
    are: 'CPython', 'IronPython', 'Jython', 'PyPy'.
 
-   .. versionadded:: 2.6
-
 
 .. function:: python_revision()
 
    Returns a string identifying the Python implementation SCM revision.
-
-   .. versionadded:: 2.6
 
 
 .. function:: python_version()
@@ -167,13 +158,19 @@ Cross Platform
 
 .. function:: uname()
 
-   Fairly portable uname interface. Returns a tuple of strings ``(system, node,
-   release, version, machine, processor)`` identifying the underlying platform.
+   Fairly portable uname interface. Returns a :func:`~collections.namedtuple`
+   containing six attributes: :attr:`system`, :attr:`node`, :attr:`release`,
+   :attr:`version`, :attr:`machine`, and :attr:`processor`.
 
-   Note that unlike the :func:`os.uname` function this also returns possible
-   processor information as additional tuple entry.
+   Note that this adds a sixth attribute (:attr:`processor`) not present
+   in the :func:`os.uname` result.  Also, the attribute names are different
+   for the first two attributes; :func:`os.uname` names them
+   :attr:`sysname` and :attr:`nodename`.
 
    Entries which cannot be determined are set to ``''``.
+
+   .. versionchanged:: 3.3
+      Result changed from a tuple to a namedtuple.
 
 
 Java Platform
@@ -217,11 +214,15 @@ Windows Platform
 Win95/98 specific
 ^^^^^^^^^^^^^^^^^
 
-.. function:: popen(cmd, mode='r', bufsize=None)
+.. function:: popen(cmd, mode='r', bufsize=-1)
 
    Portable :func:`popen` interface.  Find a working popen implementation
    preferring :func:`win32pipe.popen`.  On Windows NT, :func:`win32pipe.popen`
    should work; on Windows 9x it hangs due to bugs in the MS C library.
+
+   .. deprecated:: 3.3
+      This function is obsolete.  Use the :mod:`subprocess` module.  Check
+      especially the :ref:`subprocess-replacements` section.
 
 
 Mac OS Platform
@@ -244,15 +245,7 @@ Unix Platforms
 
 .. function:: dist(distname='', version='', id='', supported_dists=('SuSE','debian','redhat','mandrake',...))
 
-   This is an old version of the functionality now provided by
-   :func:`linux_distribution`. For new code, please use the
-   :func:`linux_distribution`.
-
-   The only difference between the two is that ``dist()`` always
-   returns the short name of the distribution taken from the
-   ``supported_dists`` parameter.
-
-   .. deprecated:: 2.6
+   This is another name for :func:`linux_distribution`.
 
 .. function:: linux_distribution(distname='', version='', id='', supported_dists=('SuSE','debian','redhat','mandrake',...), full_distribution_name=1)
 
@@ -269,12 +262,6 @@ Unix Platforms
    Returns a tuple ``(distname,version,id)`` which defaults to the args given as
    parameters.  ``id`` is the item in parentheses after the version number.  It
    is usually the version codename.
-
-   .. note::
-      This function is deprecated since Python 3.5 and removed in Python 3.8.
-      See alternative like the `distro <https://pypi.org/project/distro>`_ package.
-
-   .. versionadded:: 2.6
 
 .. function:: libc_ver(executable=sys.executable, lib='', version='', chunksize=2048)
 

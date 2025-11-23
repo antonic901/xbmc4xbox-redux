@@ -3,9 +3,8 @@
 Implements the Distutils 'install_lib' command
 (install all Python modules)."""
 
-__revision__ = "$Id$"
-
 import os
+import importlib.util
 import sys
 
 from distutils.core import Command
@@ -13,10 +12,7 @@ from distutils.errors import DistutilsOptionError
 
 
 # Extension for Python source files.
-if hasattr(os, 'extsep'):
-    PYTHON_SOURCE_EXTENSION = os.extsep + "py"
-else:
-    PYTHON_SOURCE_EXTENSION = ".py"
+PYTHON_SOURCE_EXTENSION = ".py"
 
 class install_lib(Command):
 
@@ -75,9 +71,9 @@ class install_lib(Command):
                                   )
 
         if self.compile is None:
-            self.compile = 1
+            self.compile = True
         if self.optimize is None:
-            self.optimize = 0
+            self.optimize = False
 
         if not isinstance(self.optimize, int):
             try:
@@ -85,7 +81,7 @@ class install_lib(Command):
                 if self.optimize not in (0, 1, 2):
                     raise AssertionError
             except (ValueError, AssertionError):
-                raise DistutilsOptionError, "optimize must be 0, 1, or 2"
+                raise DistutilsOptionError("optimize must be 0, 1, or 2")
 
     def run(self):
         # Make sure we have built everything we need first
@@ -169,9 +165,11 @@ class install_lib(Command):
             if ext != PYTHON_SOURCE_EXTENSION:
                 continue
             if self.compile:
-                bytecode_files.append(py_file + "c")
+                bytecode_files.append(importlib.util.cache_from_source(
+                    py_file, debug_override=True))
             if self.optimize > 0:
-                bytecode_files.append(py_file + "o")
+                bytecode_files.append(importlib.util.cache_from_source(
+                    py_file, debug_override=False))
 
         return bytecode_files
 

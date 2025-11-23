@@ -20,12 +20,11 @@ msg.preamble = 'Our family reunion'
 for file in pngfiles:
     # Open the files in binary mode.  Let the MIMEImage class automatically
     # guess the specific image type.
-    fp = open(file, 'rb')
-    img = MIMEImage(fp.read())
-    fp.close()
+    with open(file, 'rb') as fp:
+        img = MIMEImage(fp.read())
     msg.attach(img)
 
 # Send the email via our own SMTP server.
 s = smtplib.SMTP('localhost')
-s.sendmail(me, family, msg.as_string())
+s.send_message(msg)
 s.quit()

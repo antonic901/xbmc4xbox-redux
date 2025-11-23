@@ -1,4 +1,3 @@
-
 :mod:`test` --- Regression tests package for Python
 ===================================================
 
@@ -7,11 +6,11 @@
 .. sectionauthor:: Brett Cannon <brett@python.org>
 
 .. note::
-    The :mod:`test` package is meant for internal use by Python only. It is
-    documented for the benefit of the core developers of Python. Any use of
-    this package outside of Python's standard library is discouraged as code
-    mentioned here can change or be removed without notice between releases of
-    Python.
+   The :mod:`test` package is meant for internal use by Python only. It is
+   documented for the benefit of the core developers of Python. Any use of
+   this package outside of Python's standard library is discouraged as code
+   mentioned here can change or be removed without notice between releases of
+   Python.
 
 
 The :mod:`test` package contains all regression tests for Python as well as the
@@ -81,17 +80,12 @@ A basic boilerplate is often used::
 
    ... more test classes ...
 
-   def test_main():
-       support.run_unittest(MyTestCase1,
-                            MyTestCase2,
-                            ... list other tests ...
-                            )
-
    if __name__ == '__main__':
-       test_main()
+       unittest.main()
 
-This boilerplate code allows the testing suite to be run by :mod:`test.regrtest`
-as well as on its own as a script.
+This code pattern allows the testing suite to be run by :mod:`test.regrtest`,
+on its own as a script that supports the :mod:`unittest` CLI, or via the
+``python -m unittest`` CLI.
 
 The goal for regression testing is to try to break code. This leads to a few
 guidelines to be followed:
@@ -130,21 +124,26 @@ guidelines to be followed:
   as what type of input is used. Minimize code duplication by subclassing a
   basic test class with a class that specifies the input::
 
-     class TestFuncAcceptsSequences(unittest.TestCase):
+     class TestFuncAcceptsSequencesMixin:
 
          func = mySuperWhammyFunction
 
          def test_func(self):
              self.func(self.arg)
 
-     class AcceptLists(TestFuncAcceptsSequences):
+     class AcceptLists(TestFuncAcceptsSequencesMixin, unittest.TestCase):
          arg = [1, 2, 3]
 
-     class AcceptStrings(TestFuncAcceptsSequences):
+     class AcceptStrings(TestFuncAcceptsSequencesMixin, unittest.TestCase):
          arg = 'abc'
 
-     class AcceptTuples(TestFuncAcceptsSequences):
+     class AcceptTuples(TestFuncAcceptsSequencesMixin, unittest.TestCase):
          arg = (1, 2, 3)
+
+  When using this pattern, remember that all classes that inherit from
+  :class:`unittest.TestCase` are run as tests.  The :class:`Mixin` class in the example above
+  does not have any data and so can't be run by itself, thus it does not
+  inherit from :class:`unittest.TestCase`.
 
 
 .. seealso::
@@ -158,55 +157,55 @@ guidelines to be followed:
 Running tests using the command-line interface
 ----------------------------------------------
 
-The :mod:`test.regrtest` module can be run as a script to drive Python's regression
-test suite, thanks to the :option:`-m` option: :program:`python -m test.regrtest`.
-Running the script by itself automatically starts running all regression
-tests in the :mod:`test` package. It does this by finding all modules in the
-package whose name starts with ``test_``, importing them, and executing the
-function :func:`test_main` if present. The names of tests to execute may also
-be passed to the script. Specifying a single regression test (:program:`python
--m test.regrtest test_spam`) will minimize output and only print whether
-the test passed or failed and thus minimize output.
+The :mod:`test` package can be run as a script to drive Python's regression
+test suite, thanks to the :option:`-m` option: :program:`python -m test`. Under
+the hood, it uses :mod:`test.regrtest`; the call :program:`python -m
+test.regrtest` used in previous Python versions still works.  Running the
+script by itself automatically starts running all regression tests in the
+:mod:`test` package. It does this by finding all modules in the package whose
+name starts with ``test_``, importing them, and executing the function
+:func:`test_main` if present or loading the tests via
+unittest.TestLoader.loadTestsFromModule if ``test_main`` does not exist.  The
+names of tests to execute may also be passed to the script. Specifying a single
+regression test (:program:`python -m test test_spam`) will minimize output and
+only print whether the test passed or failed.
 
-Running :mod:`test.regrtest` directly allows what resources are available for
+Running :mod:`test` directly allows what resources are available for
 tests to use to be set. You do this by using the ``-u`` command-line
 option. Specifying ``all`` as the value for the ``-u`` option enables all
-possible resources: :program:`python -m test.regrtest -uall`.
+possible resources: :program:`python -m test -uall`.
 If all but one resource is desired (a more common case), a
 comma-separated list of resources that are not desired may be listed after
-``all``. The command :program:`python -m test.regrtest -uall,-audio,-largefile`
-will run :mod:`test.regrtest` with all resources except the ``audio`` and
+``all``. The command :program:`python -m test -uall,-audio,-largefile`
+will run :mod:`test` with all resources except the ``audio`` and
 ``largefile`` resources. For a list of all resources and more command-line
-options, run :program:`python -m test.regrtest -h`.
+options, run :program:`python -m test -h`.
 
 Some other ways to execute the regression tests depend on what platform the
 tests are being executed on. On Unix, you can run :program:`make test` at the
-top-level directory where Python was built. On Windows, executing
-:program:`rt.bat` from your :file:`PCBuild` directory will run all regression
-tests.
-
-.. versionchanged:: 2.7.14
-   The :mod:`test` package can be run as a script: :program:`python -m test`.
-   This works the same as running the :mod:`test.regrtest` module.
+top-level directory where Python was built. On Windows,
+executing :program:`rt.bat` from your :file:`PCBuild` directory will run all
+regression tests.
 
 
-:mod:`test.support` --- Utility functions for tests
-===================================================
+:mod:`test.support` --- Utilities for the Python test suite
+===========================================================
 
 .. module:: test.support
-   :synopsis: Support for Python regression tests.
+   :synopsis: Support for Python's regression test suite.
+
+
+The :mod:`test.support` module provides support for Python's regression
+test suite.
 
 .. note::
 
-   The :mod:`test.test_support` module has been renamed to :mod:`test.support`
-   in Python 3.x and 2.7.14.  The name ``test.test_support`` has been retained
-   as an alias in 2.7.
+   :mod:`test.support` is not a public module.  It is documented here to help
+   Python developers write tests.  The API of this module is subject to change
+   without backwards compatibility concerns between releases.
 
-The :mod:`test.support` module provides support for Python's regression
-tests.
 
 This module defines the following exceptions:
-
 
 .. exception:: TestFailed
 
@@ -221,24 +220,19 @@ This module defines the following exceptions:
    network connection) is not available. Raised by the :func:`requires`
    function.
 
-The :mod:`test.support` module defines the following constants:
 
+The :mod:`test.support` module defines the following constants:
 
 .. data:: verbose
 
-   :const:`True` when verbose output is enabled. Should be checked when more
+   ``True`` when verbose output is enabled. Should be checked when more
    detailed information is desired about a running test. *verbose* is set by
    :mod:`test.regrtest`.
 
 
-.. data:: have_unicode
-
-   :const:`True` when Unicode support is available.
-
-
 .. data:: is_jython
 
-   :const:`True` if the running interpreter is Jython.
+   ``True`` if the running interpreter is Jython.
 
 
 .. data:: TESTFN
@@ -247,12 +241,7 @@ The :mod:`test.support` module defines the following constants:
    temporary file that is created should be closed and unlinked (removed).
 
 
-.. data:: TEST_HTTP_URL
-
-    Define the URL of a dedicated HTTP server for the network tests.
-
 The :mod:`test.support` module defines the following functions:
-
 
 .. function:: forget(module_name)
 
@@ -262,27 +251,30 @@ The :mod:`test.support` module defines the following functions:
 
 .. function:: is_resource_enabled(resource)
 
-   Return :const:`True` if *resource* is enabled and available. The list of
+   Return ``True`` if *resource* is enabled and available. The list of
    available resources is only set when :mod:`test.regrtest` is executing the
    tests.
 
 
-.. function:: requires(resource[, msg])
+.. function:: requires(resource, msg=None)
 
    Raise :exc:`ResourceDenied` if *resource* is not available. *msg* is the
    argument to :exc:`ResourceDenied` if it is raised. Always returns
-   :const:`True` if called by a function whose ``__name__`` is ``'__main__'``.
+   ``True`` if called by a function whose ``__name__`` is ``'__main__'``.
    Used when tests are executed by :mod:`test.regrtest`.
 
 
-.. function:: findfile(filename)
+.. function:: findfile(filename, subdir=None)
 
    Return the path to the file named *filename*. If no match is found
    *filename* is returned. This does not equal a failure since it could be the
    path to the file.
 
+    Setting *subdir* indicates a relative path to use to find the file
+    rather than looking directly in the path directories.
 
-.. function:: run_unittest(*classes)
+
+.. function:: run_unittest(\*classes)
 
    Execute :class:`unittest.TestCase` subclasses passed to the function. The
    function scans the classes for methods starting with the prefix ``test_``
@@ -299,7 +291,16 @@ The :mod:`test.support` module defines the following functions:
    This will run all tests defined in the named module.
 
 
-.. function:: check_warnings(*filters, quiet=True)
+.. function:: run_doctest(module, verbosity=None)
+
+   Run :func:`doctest.testmod` on the given *module*.  Return
+   ``(failure_count, test_count)``.
+
+   If *verbosity* is ``None``, :func:`doctest.testmod` is run with verbosity
+   set to :data:`verbose`.  Otherwise, it is run with verbosity set to
+   ``None``.
+
+.. function:: check_warnings(\*filters, quiet=True)
 
    A convenience wrapper for :func:`warnings.catch_warnings()` that makes it
    easier to test that a warning was correctly raised.  It is approximately
@@ -309,12 +310,12 @@ The :mod:`test.support` module defines the following functions:
 
    ``check_warnings`` accepts 2-tuples of the form ``("message regexp",
    WarningCategory)`` as positional arguments. If one or more *filters* are
-   provided, or if the optional keyword argument *quiet* is :const:`False`,
+   provided, or if the optional keyword argument *quiet* is ``False``,
    it checks to make sure the warnings are as expected:  each specified filter
    must match at least one of the warnings raised by the enclosed code or the
    test fails, and if any warnings are raised that do not match any of the
    specified filters the test fails.  To disable the first of these checks,
-   set *quiet* to :const:`True`.
+   set *quiet* to ``True``.
 
    If no arguments are specified, it defaults to::
 
@@ -329,7 +330,7 @@ The :mod:`test.support` module defines the following functions:
    representing the most recent warning can also be accessed directly through
    the recorder object (see example below).  If no warning has been raised,
    then any of the attributes that would otherwise be expected on an object
-   representing a warning will return :const:`None`.
+   representing a warning will return ``None``.
 
    The recorder object also has a :meth:`reset` method, which clears the
    warnings list.
@@ -357,42 +358,110 @@ The :mod:`test.support` module defines the following functions:
           w.reset()
           assert len(w.warnings) == 0
 
+
    Here all warnings will be caught, and the test code tests the captured
    warnings directly.
 
-   .. versionadded:: 2.6
-   .. versionchanged:: 2.7
+   .. versionchanged:: 3.2
       New optional arguments *filters* and *quiet*.
 
 
-.. function:: check_py3k_warnings(*filters, quiet=False)
+.. function:: captured_stdin()
+              captured_stdout()
+              captured_stderr()
 
-   Similar to :func:`check_warnings`, but for Python 3 compatibility warnings.
-   If ``sys.py3kwarning == 1``, it checks if the warning is effectively raised.
-   If ``sys.py3kwarning == 0``, it checks that no warning is raised.  It
-   accepts 2-tuples of the form ``("message regexp", WarningCategory)`` as
-   positional arguments.  When the optional keyword argument *quiet* is
-   :const:`True`, it does not fail if a filter catches nothing.  Without
-   arguments, it defaults to::
+   A context managers that temporarily replaces the named stream with
+   :class:`io.StringIO` object.
 
-      check_py3k_warnings(("", DeprecationWarning), quiet=False)
+   Example use with output streams::
 
-   .. versionadded:: 2.7
+      with captured_stdout() as stdout, captured_stderr() as stderr:
+          print("hello")
+          print("error", file=sys.stderr)
+      assert stdout.getvalue() == "hello\n"
+      assert stderr.getvalue() == "error\n"
+
+   Example use with input stream::
+
+      with captured_stdin() as stdin:
+          stdin.write('hello\n')
+          stdin.seek(0)
+          # call test code that consumes from sys.stdin
+          captured = input()
+      self.assertEqual(captured, "hello")
 
 
-.. function:: captured_stdout()
+.. function:: temp_dir(path=None, quiet=False)
 
-   This is a context manager that runs the :keyword:`with` statement body using
-   a :class:`StringIO.StringIO` object as sys.stdout.  That object can be
-   retrieved using the ``as`` clause of the :keyword:`with` statement.
+   A context manager that creates a temporary directory at *path* and
+   yields the directory.
 
-   Example use::
+   If *path* is None, the temporary directory is created using
+   :func:`tempfile.mkdtemp`.  If *quiet* is ``False``, the context manager
+   raises an exception on error.  Otherwise, if *path* is specified and
+   cannot be created, only a warning is issued.
 
-      with captured_stdout() as s:
-          print "hello"
-      assert s.getvalue() == "hello\n"
 
-   .. versionadded:: 2.6
+.. function:: change_cwd(path, quiet=False)
+
+   A context manager that temporarily changes the current working
+   directory to *path* and yields the directory.
+
+   If *quiet* is ``False``, the context manager raises an exception
+   on error.  Otherwise, it issues only a warning and keeps the current
+   working directory the same.
+
+
+.. function:: temp_cwd(name='tempcwd', quiet=False)
+
+   A context manager that temporarily creates a new directory and
+   changes the current working directory (CWD).
+
+   The context manager creates a temporary directory in the current
+   directory with name *name* before temporarily changing the current
+   working directory.  If *name* is None, the temporary directory is
+   created using :func:`tempfile.mkdtemp`.
+
+   If *quiet* is ``False`` and it is not possible to create or change
+   the CWD, an error is raised.  Otherwise, only a warning is raised
+   and the original CWD is used.
+
+
+.. function:: temp_umask(umask)
+
+   A context manager that temporarily sets the process umask.
+
+
+.. function:: can_symlink()
+
+   Return ``True`` if the OS supports symbolic links, ``False``
+   otherwise.
+
+
+.. decorator:: skip_unless_symlink()
+
+   A decorator for running tests that require support for symbolic links.
+
+
+.. decorator:: anticipate_failure(condition)
+
+   A decorator to conditionally mark tests with
+   :func:`unittest.expectedFailure`. Any use of this decorator should
+   have an associated comment identifying the relevant tracker issue.
+
+
+.. decorator:: run_with_locale(catstr, *locales)
+
+   A decorator for running a function in a different locale, correctly
+   resetting it after it has finished.  *catstr* is the locale category as
+   a string (for example ``"LC_ALL"``).  The *locales* passed will be tried
+   sequentially, and the first valid locale will be used.
+
+
+.. function:: make_bad_fd()
+
+   Create an invalid file descriptor by opening and closing a temporary file,
+   and returning its descriptor.
 
 
 .. function:: import_module(name, deprecated=False)
@@ -402,9 +471,9 @@ The :mod:`test.support` module defines the following functions:
    cannot be imported.
 
    Module and package deprecation messages are suppressed during this import
-   if *deprecated* is :const:`True`.
+   if *deprecated* is ``True``.
 
-   .. versionadded:: 2.7
+   .. versionadded:: 3.1
 
 
 .. function:: import_fresh_module(name, fresh=(), blocked=(), deprecated=False)
@@ -417,7 +486,7 @@ The :mod:`test.support` module defines the following functions:
    *fresh* is an iterable of additional module names that are also removed
    from the ``sys.modules`` cache before doing the import.
 
-   *blocked* is an iterable of module names that are replaced with :const:`0`
+   *blocked* is an iterable of module names that are replaced with ``None``
    in the module cache during the import to ensure that attempts to import
    them raise :exc:`ImportError`.
 
@@ -426,26 +495,83 @@ The :mod:`test.support` module defines the following functions:
    ``sys.modules`` when the fresh import is complete.
 
    Module and package deprecation messages are suppressed during this import
-   if *deprecated* is :const:`True`.
+   if *deprecated* is ``True``.
 
-   This function will raise :exc:`unittest.SkipTest` if the named module
-   cannot be imported.
+   This function will raise :exc:`ImportError` if the named module cannot be
+   imported.
 
    Example use::
 
-      # Get copies of the warnings module for testing without
-      # affecting the version being used by the rest of the test suite
-      # One copy uses the C implementation, the other is forced to use
-      # the pure Python fallback implementation
+      # Get copies of the warnings module for testing without affecting the
+      # version being used by the rest of the test suite. One copy uses the
+      # C implementation, the other is forced to use the pure Python fallback
+      # implementation
       py_warnings = import_fresh_module('warnings', blocked=['_warnings'])
       c_warnings = import_fresh_module('warnings', fresh=['_warnings'])
 
-   .. versionadded:: 2.7
+   .. versionadded:: 3.1
+
+
+.. function:: bind_port(sock, host=HOST)
+
+   Bind the socket to a free port and return the port number.  Relies on
+   ephemeral ports in order to ensure we are using an unbound port.  This is
+   important as many tests may be running simultaneously, especially in a
+   buildbot environment.  This method raises an exception if the
+   ``sock.family`` is :const:`~socket.AF_INET` and ``sock.type`` is
+   :const:`~socket.SOCK_STREAM`, and the socket has
+   :const:`~socket.SO_REUSEADDR` or :const:`~socket.SO_REUSEPORT` set on it.
+   Tests should never set these socket options for TCP/IP sockets.
+   The only case for setting these options is testing multicasting via
+   multiple UDP sockets.
+
+   Additionally, if the :const:`~socket.SO_EXCLUSIVEADDRUSE` socket option is
+   available (i.e. on Windows), it will be set on the socket.  This will
+   prevent anyone else from binding to our host/port for the duration of the
+   test.
+
+
+.. function:: find_unused_port(family=socket.AF_INET, socktype=socket.SOCK_STREAM)
+
+   Returns an unused port that should be suitable for binding.  This is
+   achieved by creating a temporary socket with the same family and type as
+   the ``sock`` parameter (default is :const:`~socket.AF_INET`,
+   :const:`~socket.SOCK_STREAM`),
+   and binding it to the specified host address (defaults to ``0.0.0.0``)
+   with the port set to 0, eliciting an unused ephemeral port from the OS.
+   The temporary socket is then closed and deleted, and the ephemeral port is
+   returned.
+
+   Either this method or :func:`bind_port` should be used for any tests
+   where a server socket needs to be bound to a particular port for the
+   duration of the test.
+   Which one to use depends on whether the calling code is creating a python
+   socket, or if an unused port needs to be provided in a constructor
+   or passed to an external program (i.e. the ``-accept`` argument to
+   openssl's s_server mode).  Always prefer :func:`bind_port` over
+   :func:`find_unused_port` where possible.  Using a hard coded port is
+   discouraged since it can makes multiple instances of the test impossible to
+   run simultaneously, which is a problem for buildbots.
+
+
+.. function:: load_package_tests(pkg_dir, loader, standard_tests, pattern)
+
+   Generic implementation of the :mod:`unittest` ``load_tests`` protocol for
+   use in test packages.  *pkg_dir* is the root directory of the package;
+   *loader*, *standard_tests*, and *pattern* are the arguments expected by
+   ``load_tests``.  In simple cases, the test package's ``__init__.py``
+   can be the following::
+
+      import os
+      from test.support import load_package_tests
+
+      def load_tests(*args):
+          return load_package_tests(os.path.dirname(__file__), *args)
 
 
 The :mod:`test.support` module defines the following classes:
 
-.. class:: TransientResource(exc[, **kwargs])
+.. class:: TransientResource(exc, **kwargs)
 
    Instances are a context manager that raises :exc:`ResourceDenied` if the
    specified exception type is raised.  Any keyword arguments are treated as
@@ -453,7 +579,7 @@ The :mod:`test.support` module defines the following classes:
    :keyword:`with` statement.  Only if all pairs match properly against
    attributes on the exception is :exc:`ResourceDenied` raised.
 
-   .. versionadded:: 2.6
+
 .. class:: EnvironmentVarGuard()
 
    Class used to temporarily set or unset environment variables.  Instances can
@@ -462,10 +588,8 @@ The :mod:`test.support` module defines the following classes:
    context manager all changes to environment variables done through this
    instance will be rolled back.
 
-   .. versionadded:: 2.6
-   .. versionchanged:: 2.7
+   .. versionchanged:: 3.1
       Added dictionary interface.
-
 
 .. method:: EnvironmentVarGuard.set(envvar, value)
 
@@ -478,9 +602,22 @@ The :mod:`test.support` module defines the following classes:
    Temporarily unset the environment variable ``envvar``.
 
 
+.. class:: SuppressCrashReport()
+
+   A context manager used to try to prevent crash dialog popups on tests that
+   are expected to crash a subprocess.
+
+   On Windows, it disables Windows Error Reporting dialogs using
+   `SetErrorMode <http://msdn.microsoft.com/en-us/library/windows/desktop/ms680621.aspx>`_.
+
+   On UNIX, :func:`resource.setrlimit` is used to set
+   :attr:`resource.RLIMIT_CORE`'s soft limit to 0 to prevent coredump file
+   creation.
+
+   On both platforms, the old value is restored by :meth:`__exit__`.
+
+
 .. class:: WarningsRecorder()
 
    Class used to record warnings for unit tests. See documentation of
    :func:`check_warnings` above for more details.
-
-   .. versionadded:: 2.6

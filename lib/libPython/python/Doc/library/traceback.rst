@@ -14,128 +14,127 @@ interpreter.
 .. index:: object: traceback
 
 The module uses traceback objects --- this is the object type that is stored in
-the variables :data:`sys.exc_traceback` (deprecated) and
-:data:`sys.last_traceback` and returned as the third item from
+the :data:`sys.last_traceback` variable and returned as the third item from
 :func:`sys.exc_info`.
 
 The module defines the following functions:
 
 
-.. function:: print_tb(tb[, limit[, file]])
+.. function:: print_tb(traceback, limit=None, file=None)
 
-   Print up to *limit* stack trace entries from the traceback object *tb*. If
-   *limit* is omitted or ``None``, all entries are printed. If *file* is omitted
-   or ``None``, the output goes to ``sys.stderr``; otherwise it should be an
-   open file or file-like object to receive the output.
-
-
-.. function:: print_exception(etype, value, tb[, limit[, file]])
-
-   Print exception information and up to *limit* stack trace entries from the
-   traceback *tb* to *file*. This differs from :func:`print_tb` in the following
-   ways: (1) if *tb* is not ``None``, it prints a header ``Traceback (most
-   recent call last):``; (2) it prints the exception *etype* and *value* after
-   the stack trace; (3) if *etype* is :exc:`SyntaxError` and *value* has the
-   appropriate format, it prints the line where the syntax error occurred with a
-   caret indicating the approximate position of the error.
+   Print up to *limit* stack trace entries from *traceback*.  If *limit* is omitted
+   or ``None``, all entries are printed. If *file* is omitted or ``None``, the
+   output goes to ``sys.stderr``; otherwise it should be an open file or file-like
+   object to receive the output.
 
 
-.. function:: print_exc([limit[, file]])
+.. function:: print_exception(type, value, traceback, limit=None, file=None, chain=True)
 
-   This is a shorthand for ``print_exception(sys.exc_type, sys.exc_value,
-   sys.exc_traceback, limit, file)``.  (In fact, it uses :func:`sys.exc_info` to
-   retrieve the same information in a thread-safe way instead of using the
-   deprecated variables.)
+   Print exception information and up to *limit* stack trace entries from
+   *traceback* to *file*. This differs from :func:`print_tb` in the following
+   ways:
+
+   * if *traceback* is not ``None``, it prints a header ``Traceback (most recent
+     call last):``
+   * it prints the exception *type* and *value* after the stack trace
+   * if *type* is :exc:`SyntaxError` and *value* has the appropriate format, it
+     prints the line where the syntax error occurred with a caret indicating the
+     approximate position of the error.
+
+   If *chain* is true (the default), then chained exceptions (the
+   :attr:`__cause__` or :attr:`__context__` attributes of the exception) will be
+   printed as well, like the interpreter itself does when printing an unhandled
+   exception.
 
 
-.. function:: format_exc([limit])
+.. function:: print_exc(limit=None, file=None, chain=True)
 
-   This is like ``print_exc(limit)`` but returns a string instead of printing to
-   a file.
-
-   .. versionadded:: 2.4
+   This is a shorthand for ``print_exception(*sys.exc_info())``.
 
 
-.. function:: print_last([limit[, file]])
+.. function:: print_last(limit=None, file=None, chain=True)
 
    This is a shorthand for ``print_exception(sys.last_type, sys.last_value,
    sys.last_traceback, limit, file)``.  In general it will work only after
    an exception has reached an interactive prompt (see :data:`sys.last_type`).
 
 
-.. function:: print_stack([f[, limit[, file]]])
+.. function:: print_stack(f=None, limit=None, file=None)
 
-   This function prints a stack trace from its invocation point. The optional
-   *f* argument can be used to specify an alternate stack frame to start. The
-   optional *limit* and *file* arguments have the same meaning as for
+   This function prints a stack trace from its invocation point.  The optional *f*
+   argument can be used to specify an alternate stack frame to start.  The optional
+   *limit* and *file* arguments have the same meaning as for
    :func:`print_exception`.
 
 
-.. function:: extract_tb(tb[, limit])
+.. function:: extract_tb(traceback, limit=None)
 
    Return a list of up to *limit* "pre-processed" stack trace entries extracted
-   from the traceback object *tb*.  It is useful for alternate formatting of
-   stack traces.  If *limit* is omitted or ``None``, all entries are extracted.
-   A "pre-processed" stack trace entry is a 4-tuple (*filename*, *line number*,
-   function name*, *text*) representing the information that is usually printed
-   for a stack trace.  The *text* is a string with leading and trailing
-   whitespace stripped; if the source is not available it is ``None``.
+   from the traceback object *traceback*.  It is useful for alternate formatting of
+   stack traces.  If *limit* is omitted or ``None``, all entries are extracted.  A
+   "pre-processed" stack trace entry is a 4-tuple (*filename*, *line number*,
+   *function name*, *text*) representing the information that is usually printed
+   for a stack trace.  The *text* is a string with leading and trailing whitespace
+   stripped; if the source is not available it is ``None``.
 
 
-.. function:: extract_stack([f[, limit]])
+.. function:: extract_stack(f=None, limit=None)
 
    Extract the raw traceback from the current stack frame.  The return value has
    the same format as for :func:`extract_tb`.  The optional *f* and *limit*
    arguments have the same meaning as for :func:`print_stack`.
 
 
-.. function:: format_list(extracted_list)
+.. function:: format_list(list)
 
    Given a list of tuples as returned by :func:`extract_tb` or
-   :func:`extract_stack`, return a list of strings ready for printing.  Each
-   string in the resulting list corresponds to the item with the same index in
-   the argument list.  Each string ends in a newline; the strings may contain
-   internal newlines as well, for those items whose source text line is not
-   ``None``.
+   :func:`extract_stack`, return a list of strings ready for printing.  Each string
+   in the resulting list corresponds to the item with the same index in the
+   argument list.  Each string ends in a newline; the strings may contain internal
+   newlines as well, for those items whose source text line is not ``None``.
 
 
-.. function:: format_exception_only(etype, value)
+.. function:: format_exception_only(type, value)
 
-   Format the exception part of a traceback.  The arguments are the exception
-   type, *etype* and *value* such as given by ``sys.last_type`` and
-   ``sys.last_value``.  The return value is a list of strings, each ending in a
-   newline.  Normally, the list contains a single string; however, for
-   :exc:`SyntaxError` exceptions, it contains several lines that (when printed)
-   display detailed information about where the syntax error occurred.  The
-   message indicating which exception occurred is the always last string in the
-   list.
+   Format the exception part of a traceback.  The arguments are the exception type
+   and value such as given by ``sys.last_type`` and ``sys.last_value``.  The return
+   value is a list of strings, each ending in a newline.  Normally, the list
+   contains a single string; however, for :exc:`SyntaxError` exceptions, it
+   contains several lines that (when printed) display detailed information about
+   where the syntax error occurred.  The message indicating which exception
+   occurred is the always last string in the list.
 
 
-.. function:: format_exception(etype, value, tb[, limit])
+.. function:: format_exception(type, value, tb, limit=None, chain=True)
 
    Format a stack trace and the exception information.  The arguments  have the
    same meaning as the corresponding arguments to :func:`print_exception`.  The
-   return value is a list of strings, each ending in a newline and some
-   containing internal newlines.  When these lines are concatenated and printed,
-   exactly the same text is printed as does :func:`print_exception`.
+   return value is a list of strings, each ending in a newline and some containing
+   internal newlines.  When these lines are concatenated and printed, exactly the
+   same text is printed as does :func:`print_exception`.
 
 
-.. function:: format_tb(tb[, limit])
+.. function:: format_exc(limit=None, chain=True)
+
+   This is like ``print_exc(limit)`` but returns a string instead of printing to a
+   file.
+
+
+.. function:: format_tb(tb, limit=None)
 
    A shorthand for ``format_list(extract_tb(tb, limit))``.
 
 
-.. function:: format_stack([f[, limit]])
+.. function:: format_stack(f=None, limit=None)
 
    A shorthand for ``format_list(extract_stack(f, limit))``.
 
+.. function:: clear_frames(tb)
 
-.. function:: tb_lineno(tb)
+   Clears the local variables of all the stack frames in a traceback *tb*
+   by calling the :meth:`clear` method of each frame object.
 
-   This function returns the current line number set in the traceback object.
-   This function was necessary because in versions of Python prior to 2.3 when
-   the :option:`-O` flag was passed to Python the ``tb.tb_lineno`` was not
-   updated correctly.  This function has no use in versions past 2.3.
+   .. versionadded:: 3.4
 
 
 .. _traceback-example:
@@ -151,22 +150,24 @@ module. ::
    import sys, traceback
 
    def run_user_code(envdir):
-       source = raw_input(">>> ")
+       source = input(">>> ")
        try:
-           exec source in envdir
-       except:
-           print "Exception in user code:"
-           print '-'*60
+           exec(source, envdir)
+       except Exception:
+           print("Exception in user code:")
+           print("-"*60)
            traceback.print_exc(file=sys.stdout)
-           print '-'*60
+           print("-"*60)
 
    envdir = {}
-   while 1:
+   while True:
        run_user_code(envdir)
 
 
 The following example demonstrates the different ways to print and format the
-exception and traceback::
+exception and traceback:
+
+.. testcode::
 
    import sys, traceback
 
@@ -180,28 +181,30 @@ exception and traceback::
        lumberjack()
    except IndexError:
        exc_type, exc_value, exc_traceback = sys.exc_info()
-       print "*** print_tb:"
+       print("*** print_tb:")
        traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
-       print "*** print_exception:"
+       print("*** print_exception:")
        traceback.print_exception(exc_type, exc_value, exc_traceback,
                                  limit=2, file=sys.stdout)
-       print "*** print_exc:"
+       print("*** print_exc:")
        traceback.print_exc()
-       print "*** format_exc, first and last line:"
+       print("*** format_exc, first and last line:")
        formatted_lines = traceback.format_exc().splitlines()
-       print formatted_lines[0]
-       print formatted_lines[-1]
-       print "*** format_exception:"
-       print repr(traceback.format_exception(exc_type, exc_value,
-                                             exc_traceback))
-       print "*** extract_tb:"
-       print repr(traceback.extract_tb(exc_traceback))
-       print "*** format_tb:"
-       print repr(traceback.format_tb(exc_traceback))
-       print "*** tb_lineno:", exc_traceback.tb_lineno
+       print(formatted_lines[0])
+       print(formatted_lines[-1])
+       print("*** format_exception:")
+       print(repr(traceback.format_exception(exc_type, exc_value,
+                                             exc_traceback)))
+       print("*** extract_tb:")
+       print(repr(traceback.extract_tb(exc_traceback)))
+       print("*** format_tb:")
+       print(repr(traceback.format_tb(exc_traceback)))
+       print("*** tb_lineno:", exc_traceback.tb_lineno)
 
+The output for the example would look similar to this:
 
-The output for the example would look similar to this::
+.. testoutput::
+   :options: +NORMALIZE_WHITESPACE
 
    *** print_tb:
      File "<doctest...>", line 10, in <module>
@@ -248,8 +251,8 @@ The following example shows the different ways to print and format the stack::
    ...
    >>> def lumberstack():
    ...     traceback.print_stack()
-   ...     print repr(traceback.extract_stack())
-   ...     print repr(traceback.format_stack())
+   ...     print(repr(traceback.extract_stack()))
+   ...     print(repr(traceback.format_stack()))
    ...
    >>> another_function()
      File "<doctest>", line 10, in <module>
@@ -260,10 +263,10 @@ The following example shows the different ways to print and format the stack::
        traceback.print_stack()
    [('<doctest>', 10, '<module>', 'another_function()'),
     ('<doctest>', 3, 'another_function', 'lumberstack()'),
-    ('<doctest>', 7, 'lumberstack', 'print repr(traceback.extract_stack())')]
+    ('<doctest>', 7, 'lumberstack', 'print(repr(traceback.extract_stack()))')]
    ['  File "<doctest>", line 10, in <module>\n    another_function()\n',
     '  File "<doctest>", line 3, in another_function\n    lumberstack()\n',
-    '  File "<doctest>", line 8, in lumberstack\n    print repr(traceback.format_stack())\n']
+    '  File "<doctest>", line 8, in lumberstack\n    print(repr(traceback.format_stack()))\n']
 
 
 This last example demonstrates the final few formatting functions:

@@ -1,7 +1,7 @@
 """
 An auto-completion window for IDLE, used by the AutoComplete extension
 """
-from Tkinter import *
+from tkinter import *
 from idlelib.MultiCall import MC_SHIFT
 from idlelib.AutoComplete import COMPLETE_FILES, COMPLETE_ATTRIBUTES
 
@@ -355,6 +355,15 @@ class AutoCompleteWindow:
                                        "Meta", "Command", "Option")):
             # A modifier key, so ignore
             return
+
+        elif event.char and event.char >= ' ':
+            # Regular character with a non-length-1 keycode
+            self._change_start(self.start + event.char)
+            self.lasttypedstart = self.start
+            self.listbox.select_clear(0, int(self.listbox.curselection()[0]))
+            self.listbox.select_set(self._binary_search(self.start))
+            self._selection_changed()
+            return "break"
 
         else:
             # Unknown event, close the window and let it through.

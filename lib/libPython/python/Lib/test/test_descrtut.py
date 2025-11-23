@@ -8,7 +8,7 @@
 # of much interest anymore), and a few were fiddled to make the output
 # deterministic.
 
-from test.test_support import sortdict
+from test.support import sortdict
 import pprint
 
 class defaultdict(dict):
@@ -36,28 +36,28 @@ test_1 = """
 
 Here's the new type at work:
 
-    >>> print defaultdict               # show our type
+    >>> print(defaultdict)              # show our type
     <class 'test.test_descrtut.defaultdict'>
-    >>> print type(defaultdict)         # its metatype
-    <type 'type'>
+    >>> print(type(defaultdict))        # its metatype
+    <class 'type'>
     >>> a = defaultdict(default=0.0)    # create an instance
-    >>> print a                         # show the instance
+    >>> print(a)                        # show the instance
     {}
-    >>> print type(a)                   # show its type
+    >>> print(type(a))                  # show its type
     <class 'test.test_descrtut.defaultdict'>
-    >>> print a.__class__               # show its class
+    >>> print(a.__class__)              # show its class
     <class 'test.test_descrtut.defaultdict'>
-    >>> print type(a) is a.__class__    # its type is its class
+    >>> print(type(a) is a.__class__)   # its type is its class
     True
     >>> a[1] = 3.25                     # modify the instance
-    >>> print a                         # show the new value
+    >>> print(a)                        # show the new value
     {1: 3.25}
-    >>> print a[1]                      # show the new item
+    >>> print(a[1])                     # show the new item
     3.25
-    >>> print a[0]                      # a non-existent item
+    >>> print(a[0])                     # a non-existent item
     0.0
     >>> a.merge({1:100, 2:200})         # use a dict method
-    >>> print sortdict(a)               # show the result
+    >>> print(sortdict(a))              # show the result
     {1: 3.25, 2: 200}
     >>>
 
@@ -65,16 +65,14 @@ We can also use the new type in contexts where classic only allows "real"
 dictionaries, such as the locals/globals dictionaries for the exec
 statement or the built-in function eval():
 
-    >>> def sorted(seq):
-    ...     seq.sort(key=str)
-    ...     return seq
-    >>> print sorted(a.keys())
+    >>> print(sorted(a.keys()))
     [1, 2]
-    >>> exec "x = 3; print x" in a
+    >>> a['print'] = print              # need the print function here
+    >>> exec("x = 3; print(x)", a)
     3
-    >>> print sorted(a.keys())
-    [1, 2, '__builtins__', 'x']
-    >>> print a['x']
+    >>> print(sorted(a.keys(), key=lambda x: (str(type(x)), x)))
+    [1, 2, '__builtins__', 'print', 'x']
+    >>> print(a['x'])
     3
     >>>
 
@@ -82,21 +80,21 @@ Now I'll show that defaultdict instances have dynamic instance variables,
 just like classic classes:
 
     >>> a.default = -1
-    >>> print a["noway"]
+    >>> print(a["noway"])
     -1
     >>> a.default = -1000
-    >>> print a["noway"]
+    >>> print(a["noway"])
     -1000
     >>> 'default' in dir(a)
     True
     >>> a.x1 = 100
     >>> a.x2 = 200
-    >>> print a.x1
+    >>> print(a.x1)
     100
     >>> d = dir(a)
     >>> 'default' in d and 'x1' in d and 'x2' in d
     True
-    >>> print sortdict(a.__dict__)
+    >>> print(sortdict(a.__dict__))
     {'default': -1000, 'x1': 100, 'x2': 200}
     >>>
 """
@@ -151,11 +149,11 @@ Introspecting instances of built-in types
 For instance of built-in types, x.__class__ is now the same as type(x):
 
     >>> type([])
-    <type 'list'>
+    <class 'list'>
     >>> [].__class__
-    <type 'list'>
+    <class 'list'>
     >>> list
-    <type 'list'>
+    <class 'list'>
     >>> isinstance([], list)
     True
     >>> isinstance([], dict)
@@ -164,15 +162,7 @@ For instance of built-in types, x.__class__ is now the same as type(x):
     True
     >>>
 
-Under the new proposal, the __methods__ attribute no longer exists:
-
-    >>> [].__methods__
-    Traceback (most recent call last):
-      File "<stdin>", line 1, in ?
-    AttributeError: 'list' object has no attribute '__methods__'
-    >>>
-
-Instead, you can get the same information from the list type:
+You can get the information from the list type:
 
     >>> pprint.pprint(dir(list))    # like list.__dict__.keys(), but sorted
     ['__add__',
@@ -180,14 +170,13 @@ Instead, you can get the same information from the list type:
      '__contains__',
      '__delattr__',
      '__delitem__',
-     '__delslice__',
+     '__dir__',
      '__doc__',
      '__eq__',
      '__format__',
      '__ge__',
      '__getattribute__',
      '__getitem__',
-     '__getslice__',
      '__gt__',
      '__hash__',
      '__iadd__',
@@ -207,11 +196,12 @@ Instead, you can get the same information from the list type:
      '__rmul__',
      '__setattr__',
      '__setitem__',
-     '__setslice__',
      '__sizeof__',
      '__str__',
      '__subclasshook__',
      'append',
+     'clear',
+     'copy',
      'count',
      'extend',
      'index',
@@ -251,7 +241,7 @@ static methods in C++ or Java. Here's an example:
     ...
     ...     @staticmethod
     ...     def foo(x, y):
-    ...         print "staticmethod", x, y
+    ...         print("staticmethod", x, y)
 
     >>> C.foo(1, 2)
     staticmethod 1 2
@@ -265,22 +255,22 @@ implicit first argument that is the *class* for which they are invoked.
     >>> class C:
     ...     @classmethod
     ...     def foo(cls, y):
-    ...         print "classmethod", cls, y
+    ...         print("classmethod", cls, y)
 
     >>> C.foo(1)
-    classmethod test.test_descrtut.C 1
+    classmethod <class 'test.test_descrtut.C'> 1
     >>> c = C()
     >>> c.foo(1)
-    classmethod test.test_descrtut.C 1
+    classmethod <class 'test.test_descrtut.C'> 1
 
     >>> class D(C):
     ...     pass
 
     >>> D.foo(1)
-    classmethod test.test_descrtut.D 1
+    classmethod <class 'test.test_descrtut.D'> 1
     >>> d = D()
     >>> d.foo(1)
-    classmethod test.test_descrtut.D 1
+    classmethod <class 'test.test_descrtut.D'> 1
 
 This prints "classmethod __main__.D 1" both times; in other words, the
 class passed as the first argument of foo() is the class involved in the
@@ -291,16 +281,16 @@ But notice this:
     >>> class E(C):
     ...     @classmethod
     ...     def foo(cls, y): # override C.foo
-    ...         print "E.foo() called"
+    ...         print("E.foo() called")
     ...         C.foo(y)
 
     >>> E.foo(1)
     E.foo() called
-    classmethod test.test_descrtut.C 1
+    classmethod <class 'test.test_descrtut.C'> 1
     >>> e = E()
     >>> e.foo(1)
     E.foo() called
-    classmethod test.test_descrtut.C 1
+    classmethod <class 'test.test_descrtut.C'> 1
 
 In this example, the call to C.foo() from E.foo() will see class C as its
 first argument, not class E. This is to be expected, since the call
@@ -325,7 +315,7 @@ Attributes defined by get/set methods
     ...
     ...     def __set__(self, inst, value):
     ...         if self.__set is None:
-    ...             raise AttributeError, "this attribute is read-only"
+    ...             raise AttributeError("this attribute is read-only")
     ...         return self.__set(inst, value)
 
 Now let's define a class with an attribute x defined by a pair of methods,
@@ -349,10 +339,10 @@ Here's a small demonstration:
 
     >>> a = C()
     >>> a.x = 10
-    >>> print a.x
+    >>> print(a.x)
     10
     >>> a.x = -10
-    >>> print a.x
+    >>> print(a.x)
     0
     >>>
 
@@ -360,7 +350,7 @@ Hmm -- property is builtin now, so let's try it that way too.
 
     >>> del property  # unmask the builtin
     >>> property
-    <type 'property'>
+    <class 'property'>
 
     >>> class C(object):
     ...     def __init__(self):
@@ -375,10 +365,10 @@ Hmm -- property is builtin now, so let's try it that way too.
 
     >>> a = C()
     >>> a.x = 10
-    >>> print a.x
+    >>> print(a.x)
     10
     >>> a.x = -10
-    >>> print a.x
+    >>> print(a.x)
     0
     >>>
 """
@@ -389,28 +379,28 @@ Method resolution order
 
 This example is implicit in the writeup.
 
->>> class A:    # classic class
+>>> class A:    # implicit new-style class
 ...     def save(self):
-...         print "called A.save()"
+...         print("called A.save()")
 >>> class B(A):
 ...     pass
 >>> class C(A):
 ...     def save(self):
-...         print "called C.save()"
+...         print("called C.save()")
 >>> class D(B, C):
 ...     pass
 
 >>> D().save()
-called A.save()
+called C.save()
 
->>> class A(object):  # new class
+>>> class A(object):  # explicit new-style class
 ...     def save(self):
-...         print "called A.save()"
+...         print("called A.save()")
 >>> class B(A):
 ...     pass
 >>> class C(A):
 ...     def save(self):
-...         print "called C.save()"
+...         print("called C.save()")
 >>> class D(B, C):
 ...     pass
 
@@ -439,7 +429,7 @@ test_7 = """
 
 Cooperative methods and "super"
 
->>> print D().m() # "DCBA"
+>>> print(D().m()) # "DCBA"
 DCBA
 """
 
@@ -449,7 +439,7 @@ Backwards incompatibilities
 
 >>> class A:
 ...     def foo(self):
-...         print "called A.foo()"
+...         print("called A.foo()")
 
 >>> class B(A):
 ...     pass
@@ -459,9 +449,7 @@ Backwards incompatibilities
 ...         B.foo(self)
 
 >>> C().foo()
-Traceback (most recent call last):
- ...
-TypeError: unbound method foo() must be called with B instance as first argument (got C instance instead)
+called A.foo()
 
 >>> class C(A):
 ...     def foo(self):
@@ -489,8 +477,8 @@ def test_main(verbose=None):
     # into the doctest examples, and unless the full test.test_descrtut
     # business is used the name can change depending on how the test is
     # invoked.
-    from test import test_support, test_descrtut
-    test_support.run_doctest(test_descrtut, verbose)
+    from test import support, test_descrtut
+    support.run_doctest(test_descrtut, verbose)
 
 # This part isn't needed for regrtest, but for running the test directly.
 if __name__ == "__main__":

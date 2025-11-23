@@ -2,10 +2,8 @@
 A number of functions that enhance IDLE on Mac OSX.
 """
 import sys
-import Tkinter
+import tkinter
 from os import path
-
-
 import warnings
 
 def runningAsOSXApp():
@@ -105,7 +103,7 @@ def addOpenEventSupport(root, flist):
 def hideTkConsole(root):
     try:
         root.tk.call('console', 'hide')
-    except Tkinter.TclError:
+    except tkinter.TclError:
         # Some versions of the Tk framework don't have a console object
         pass
 
@@ -125,7 +123,7 @@ def overrideRootMenu(root, flist):
     #
     # Due to a (mis-)feature of TkAqua the user will also see an empty Help
     # menu.
-    from Tkinter import Menu
+    from tkinter import Menu
     from idlelib import Bindings
     from idlelib import WindowList
 
@@ -170,6 +168,11 @@ def overrideRootMenu(root, flist):
         "Handle Options 'Configure IDLE' event."
         # Synchronize with EditorWindow.EditorWindow.config_dialog.
         from idlelib import configDialog
+
+        # Ensure that the root object has an instance_dict attribute,
+        # mirrors code in EditorWindow (although that sets the attribute
+        # on an EditorWindow instance that is then passed as the first
+        # argument to ConfigDialog)
         root.instance_dict = flist.inversedict
         configDialog.ConfigDialog(root, 'Settings')
 

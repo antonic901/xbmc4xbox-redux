@@ -1,7 +1,7 @@
-from Tkinter import *
+from tkinter import *
 from idlelib.EditorWindow import EditorWindow
 import re
-import tkMessageBox
+import tkinter.messagebox as tkMessageBox
 from idlelib import IOBinding
 
 class OutputWindow(EditorWindow):
@@ -35,17 +35,12 @@ class OutputWindow(EditorWindow):
     # Act as output file
 
     def write(self, s, tags=(), mark="insert"):
-        # Tk assumes that byte strings are Latin-1;
-        # we assume that they are in the locale's encoding
-        if isinstance(s, str):
-            try:
-                s = unicode(s, IOBinding.encoding)
-            except UnicodeError:
-                # some other encoding; let Tcl deal with it
-                pass
+        if isinstance(s, (bytes, bytes)):
+            s = s.decode(IOBinding.encoding, "replace")
         self.text.insert(mark, s, tags)
         self.text.see(mark)
         self.text.update()
+        return len(s)
 
     def writelines(self, lines):
         for line in lines:
@@ -111,7 +106,7 @@ class OutputWindow(EditorWindow):
                     f = open(filename, "r")
                     f.close()
                     break
-                except IOError:
+                except OSError:
                     continue
         else:
             return None

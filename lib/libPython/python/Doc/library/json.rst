@@ -5,13 +5,12 @@
    :synopsis: Encode and decode the JSON format.
 .. moduleauthor:: Bob Ippolito <bob@redivi.com>
 .. sectionauthor:: Bob Ippolito <bob@redivi.com>
-.. versionadded:: 2.6
 
 `JSON (JavaScript Object Notation) <http://json.org>`_, specified by
 :rfc:`7159` (which obsoletes :rfc:`4627`) and by
 `ECMA-404 <http://www.ecma-international.org/publications/standards/Ecma-404.htm>`_,
 is a lightweight data interchange format inspired by
-`JavaScript <https://en.wikipedia.org/wiki/JavaScript>`_ object literal syntax
+`JavaScript <http://en.wikipedia.org/wiki/JavaScript>`_ object literal syntax
 (although it is not a strict subset of JavaScript [#rfc-errata]_ ).
 
 :mod:`json` exposes an API familiar to users of the standard library
@@ -22,15 +21,15 @@ Encoding basic Python object hierarchies::
     >>> import json
     >>> json.dumps(['foo', {'bar': ('baz', None, 1.0, 2)}])
     '["foo", {"bar": ["baz", null, 1.0, 2]}]'
-    >>> print json.dumps("\"foo\bar")
+    >>> print(json.dumps("\"foo\bar"))
     "\"foo\bar"
-    >>> print json.dumps(u'\u1234')
+    >>> print(json.dumps('\u1234'))
     "\u1234"
-    >>> print json.dumps('\\')
+    >>> print(json.dumps('\\'))
     "\\"
-    >>> print json.dumps({"c": 0, "b": 0, "a": 0}, sort_keys=True)
+    >>> print(json.dumps({"c": 0, "b": 0, "a": 0}, sort_keys=True))
     {"a": 0, "b": 0, "c": 0}
-    >>> from StringIO import StringIO
+    >>> from io import StringIO
     >>> io = StringIO()
     >>> json.dump(['streaming API'], io)
     >>> io.getvalue()
@@ -39,14 +38,13 @@ Encoding basic Python object hierarchies::
 Compact encoding::
 
     >>> import json
-    >>> json.dumps([1,2,3,{'4': 5, '6': 7}], separators=(',',':'))
+    >>> json.dumps([1,2,3,{'4': 5, '6': 7}], separators=(',', ':'))
     '[1,2,3,{"4":5,"6":7}]'
 
 Pretty printing::
 
     >>> import json
-    >>> print json.dumps({'4': 5, '6': 7}, sort_keys=True,
-    ...                  indent=4, separators=(',', ': '))
+    >>> print(json.dumps({'4': 5, '6': 7}, sort_keys=True, indent=4))
     {
         "4": 5,
         "6": 7
@@ -56,13 +54,13 @@ Decoding JSON::
 
     >>> import json
     >>> json.loads('["foo", {"bar":["baz", null, 1.0, 2]}]')
-    [u'foo', {u'bar': [u'baz', None, 1.0, 2]}]
+    ['foo', {'bar': ['baz', None, 1.0, 2]}]
     >>> json.loads('"\\"foo\\bar"')
-    u'"foo\x08ar'
-    >>> from StringIO import StringIO
+    '"foo\x08ar'
+    >>> from io import StringIO
     >>> io = StringIO('["streaming API"]')
     >>> json.load(io)
-    [u'streaming API']
+    ['streaming API']
 
 Specializing JSON object decoding::
 
@@ -94,21 +92,21 @@ Extending :class:`JSONEncoder`::
     >>> ComplexEncoder().encode(2 + 1j)
     '[2.0, 1.0]'
     >>> list(ComplexEncoder().iterencode(2 + 1j))
-    ['[', '2.0', ', ', '1.0', ']']
+    ['[2.0', ', 1.0', ']']
 
 
-.. highlight:: none
+.. highlight:: bash
 
-Using :mod:`json.tool` from the shell to validate and pretty-print::
+Using json.tool from the shell to validate and pretty-print::
 
     $ echo '{"json":"obj"}' | python -m json.tool
     {
         "json": "obj"
     }
-    $ echo '{1.2:3.4}' | python -mjson.tool
+    $ echo '{1.2:3.4}' | python -m json.tool
     Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
 
-.. highlight:: python
+.. highlight:: python3
 
 .. note::
 
@@ -123,83 +121,77 @@ Basic Usage
 
 .. function:: dump(obj, fp, skipkeys=False, ensure_ascii=True, \
                    check_circular=True, allow_nan=True, cls=None, \
-                   indent=None, separators=None, encoding="utf-8", \
-                   default=None, sort_keys=False, **kw)
+                   indent=None, separators=None, default=None, \
+                   sort_keys=False, **kw)
 
    Serialize *obj* as a JSON formatted stream to *fp* (a ``.write()``-supporting
    :term:`file-like object`) using this :ref:`conversion table
    <py-to-json-table>`.
 
-   If *skipkeys* is true (default: ``False``), then dict keys that are not
-   of a basic type (:class:`str`, :class:`unicode`, :class:`int`, :class:`long`,
-   :class:`float`, :class:`bool`, ``None``) will be skipped instead of raising a
-   :exc:`TypeError`.
+   If *skipkeys* is ``True`` (default: ``False``), then dict keys that are not
+   of a basic type (:class:`str`, :class:`int`, :class:`float`, :class:`bool`,
+   ``None``) will be skipped instead of raising a :exc:`TypeError`.
 
-   If *ensure_ascii* is true (the default), all non-ASCII characters in the
-   output are escaped with ``\uXXXX`` sequences, and the result is a
-   :class:`str` instance consisting of ASCII characters only.  If
-   *ensure_ascii* is false, some chunks written to *fp* may be
-   :class:`unicode` instances.  This usually happens because the input contains
-   unicode strings or the *encoding* parameter is used.  Unless ``fp.write()``
-   explicitly understands :class:`unicode` (as in :func:`codecs.getwriter`)
-   this is likely to cause an error.
+   The :mod:`json` module always produces :class:`str` objects, not
+   :class:`bytes` objects. Therefore, ``fp.write()`` must support :class:`str`
+   input.
 
-   If *check_circular* is false (default: ``True``), then the circular
+   If *ensure_ascii* is ``True`` (the default), the output is guaranteed to
+   have all incoming non-ASCII characters escaped.  If *ensure_ascii* is
+   ``False``, these characters will be output as-is.
+
+   If *check_circular* is ``False`` (default: ``True``), then the circular
    reference check for container types will be skipped and a circular reference
    will result in an :exc:`OverflowError` (or worse).
 
-   If *allow_nan* is false (default: ``True``), then it will be a
+   If *allow_nan* is ``False`` (default: ``True``), then it will be a
    :exc:`ValueError` to serialize out of range :class:`float` values (``nan``,
-   ``inf``, ``-inf``) in strict compliance of the JSON specification.
-   If *allow_nan* is true, their JavaScript equivalents (``NaN``,
-   ``Infinity``, ``-Infinity``) will be used.
+   ``inf``, ``-inf``) in strict compliance of the JSON specification, instead of
+   using the JavaScript equivalents (``NaN``, ``Infinity``, ``-Infinity``).
 
-   If *indent* is a non-negative integer, then JSON array elements and object
-   members will be pretty-printed with that indent level.  An indent level of 0,
-   or negative, will only insert newlines.  ``None`` (the default) selects the
-   most compact representation.
+   If *indent* is a non-negative integer or string, then JSON array elements and
+   object members will be pretty-printed with that indent level.  An indent level
+   of 0, negative, or ``""`` will only insert newlines.  ``None`` (the default)
+   selects the most compact representation. Using a positive integer indent
+   indents that many spaces per level.  If *indent* is a string (such as ``"\t"``),
+   that string is used to indent each level.
 
-   .. note::
-
-      Since the default item separator is ``', '``,  the output might include
-      trailing whitespace when *indent* is specified.  You can use
-      ``separators=(',', ': ')`` to avoid this.
+   .. versionchanged:: 3.2
+      Allow strings for *indent* in addition to integers.
 
    If specified, *separators* should be an ``(item_separator, key_separator)``
-   tuple.  By default, ``(', ', ': ')`` are used.  To get the most compact JSON
-   representation, you should specify ``(',', ':')`` to eliminate whitespace.
+   tuple.  The default is ``(', ', ': ')`` if *indent* is ``None`` and
+   ``(',', ': ')`` otherwise.  To get the most compact JSON representation,
+   you should specify ``(',', ':')`` to eliminate whitespace.
 
-   *encoding* is the character encoding for str instances, default is UTF-8.
+   .. versionchanged:: 3.4
+      Use ``(',', ': ')`` as default if *indent* is not ``None``.
 
-   If specified, *default* should be a function that gets called for objects that
-   can't otherwise be serialized.  It should return a JSON encodable version of
-   the object or raise a :exc:`TypeError`.  If not specified, :exc:`TypeError`
-   is raised.
+   *default(obj)* is a function that should return a serializable version of
+   *obj* or raise :exc:`TypeError`.  The default simply raises :exc:`TypeError`.
 
-   If *sort_keys* is true (default: ``False``), then the output of
+   If *sort_keys* is ``True`` (default: ``False``), then the output of
    dictionaries will be sorted by key.
 
    To use a custom :class:`JSONEncoder` subclass (e.g. one that overrides the
    :meth:`default` method to serialize additional types), specify it with the
    *cls* kwarg; otherwise :class:`JSONEncoder` is used.
 
-   .. note::
-
-      Unlike :mod:`pickle` and :mod:`marshal`, JSON is not a framed protocol so
-      trying to serialize more objects with repeated calls to :func:`dump` and
-      the same *fp* will result in an invalid JSON file.
 
 .. function:: dumps(obj, skipkeys=False, ensure_ascii=True, \
                     check_circular=True, allow_nan=True, cls=None, \
-                    indent=None, separators=None, encoding="utf-8", \
-                    default=None, sort_keys=False, **kw)
+                    indent=None, separators=None, default=None, \
+                    sort_keys=False, **kw)
 
    Serialize *obj* to a JSON formatted :class:`str` using this :ref:`conversion
-   table <py-to-json-table>`.  If *ensure_ascii* is false, the result may
-   contain non-ASCII characters and the return value may be a :class:`unicode`
-   instance.
+   table <py-to-json-table>`.  The arguments have the same meaning as in
+   :func:`dump`.
 
-   The arguments have the same meaning as in :func:`dump`.
+   .. note::
+
+      Unlike :mod:`pickle` and :mod:`marshal`, JSON is not a framed protocol,
+      so trying to serialize multiple objects with repeated calls to
+      :func:`dump` using the same *fp* will result in an invalid JSON file.
 
    .. note::
 
@@ -210,17 +202,11 @@ Basic Usage
       the original one. That is, ``loads(dumps(x)) != x`` if x has non-string
       keys.
 
-.. function:: load(fp[, encoding[, cls[, object_hook[, parse_float[, parse_int[, parse_constant[, object_pairs_hook[, **kw]]]]]]]])
+.. function:: load(fp, cls=None, object_hook=None, parse_float=None, parse_int=None, parse_constant=None, object_pairs_hook=None, **kw)
 
    Deserialize *fp* (a ``.read()``-supporting :term:`file-like object`
    containing a JSON document) to a Python object using this :ref:`conversion
    table <json-to-py-table>`.
-
-   If the contents of *fp* are encoded with an ASCII based encoding other than
-   UTF-8 (e.g. latin-1), then an appropriate *encoding* name must be specified.
-   Encodings that are not ASCII based (such as UCS-2) are not allowed, and
-   should be wrapped with ``codecs.getreader(encoding)(fp)``, or simply decoded
-   to a :class:`unicode` object and passed to :func:`loads`.
 
    *object_hook* is an optional function that will be called with the result of
    any object literal decoded (a :class:`dict`).  The return value of
@@ -236,7 +222,7 @@ Basic Usage
    :func:`collections.OrderedDict` will remember the order of insertion). If
    *object_hook* is also defined, the *object_pairs_hook* takes priority.
 
-   .. versionchanged:: 2.7
+   .. versionchanged:: 3.1
       Added support for *object_pairs_hook*.
 
    *parse_float*, if specified, will be called with the string of every JSON
@@ -254,32 +240,31 @@ Basic Usage
    This can be used to raise an exception if invalid JSON numbers
    are encountered.
 
-   .. versionchanged:: 2.7
+   .. versionchanged:: 3.1
       *parse_constant* doesn't get called on 'null', 'true', 'false' anymore.
 
    To use a custom :class:`JSONDecoder` subclass, specify it with the ``cls``
    kwarg; otherwise :class:`JSONDecoder` is used.  Additional keyword arguments
    will be passed to the constructor of the class.
 
+   If the data being deserialized is not a valid JSON document, a
+   :exc:`ValueError` will be raised.
 
-.. function:: loads(s[, encoding[, cls[, object_hook[, parse_float[, parse_int[, parse_constant[, object_pairs_hook[, **kw]]]]]]]])
+.. function:: loads(s, encoding=None, cls=None, object_hook=None, parse_float=None, parse_int=None, parse_constant=None, object_pairs_hook=None, **kw)
 
-   Deserialize *s* (a :class:`str` or :class:`unicode` instance containing a JSON
-   document) to a Python object using this :ref:`conversion table
-   <json-to-py-table>`.
+   Deserialize *s* (a :class:`str` instance containing a JSON document) to a
+   Python object using this :ref:`conversion table <json-to-py-table>`.
 
-   If *s* is a :class:`str` instance and is encoded with an ASCII based encoding
-   other than UTF-8 (e.g. latin-1), then an appropriate *encoding* name must be
-   specified.  Encodings that are not ASCII based (such as UCS-2) are not
-   allowed and should be decoded to :class:`unicode` first.
+   The other arguments have the same meaning as in :func:`load`, except
+   *encoding* which is ignored and deprecated.
 
-   The other arguments have the same meaning as in :func:`load`.
-
+   If the data being deserialized is not a valid JSON document, a
+   :exc:`ValueError` will be raised.
 
 Encoders and Decoders
 ---------------------
 
-.. class:: JSONDecoder([encoding[, object_hook[, parse_float[, parse_int[, parse_constant[, strict[, object_pairs_hook]]]]]]])
+.. class:: JSONDecoder(object_hook=None, parse_float=None, parse_int=None, parse_constant=None, strict=True, object_pairs_hook=None)
 
    Simple JSON decoder.
 
@@ -294,9 +279,9 @@ Encoders and Decoders
    +---------------+-------------------+
    | array         | list              |
    +---------------+-------------------+
-   | string        | unicode           |
+   | string        | str               |
    +---------------+-------------------+
-   | number (int)  | int, long         |
+   | number (int)  | int               |
    +---------------+-------------------+
    | number (real) | float             |
    +---------------+-------------------+
@@ -309,13 +294,6 @@ Encoders and Decoders
 
    It also understands ``NaN``, ``Infinity``, and ``-Infinity`` as their
    corresponding ``float`` values, which is outside the JSON spec.
-
-   *encoding* determines the encoding used to interpret any :class:`str` objects
-   decoded by this instance (UTF-8 by default).  It has no effect when decoding
-   :class:`unicode` objects.
-
-   Note that currently only encodings that are a superset of ASCII work, strings
-   of other encodings should be passed in as :class:`unicode`.
 
    *object_hook*, if specified, will be called with the result of every JSON
    object decoded and its return value will be used in place of the given
@@ -330,7 +308,7 @@ Encoders and Decoders
    :func:`collections.OrderedDict` will remember the order of insertion). If
    *object_hook* is also defined, the *object_pairs_hook* takes priority.
 
-   .. versionchanged:: 2.7
+   .. versionchanged:: 3.1
       Added support for *object_pairs_hook*.
 
    *parse_float*, if specified, will be called with the string of every JSON
@@ -344,13 +322,13 @@ Encoders and Decoders
    (e.g. :class:`float`).
 
    *parse_constant*, if specified, will be called with one of the following
-   strings: ``'-Infinity'``, ``'Infinity'``, ``'NaN'``.
-   This can be used to raise an exception if invalid JSON numbers
+   strings: ``'-Infinity'``, ``'Infinity'``, ``'NaN'``, ``'null'``, ``'true'``,
+   ``'false'``.  This can be used to raise an exception if invalid JSON numbers
    are encountered.
 
-   If *strict* is false (``True`` is the default), then control characters
+   If *strict* is ``False`` (``True`` is the default), then control characters
    will be allowed inside strings.  Control characters in this context are
-   those with character codes in the 0--31 range, including ``'\t'`` (tab),
+   those with character codes in the 0-31 range, including ``'\t'`` (tab),
    ``'\n'``, ``'\r'`` and ``'\0'``.
 
    If the data being deserialized is not a valid JSON document, a
@@ -358,20 +336,20 @@ Encoders and Decoders
 
    .. method:: decode(s)
 
-      Return the Python representation of *s* (a :class:`str` or
-      :class:`unicode` instance containing a JSON document).
+      Return the Python representation of *s* (a :class:`str` instance
+      containing a JSON document).
 
    .. method:: raw_decode(s)
 
-      Decode a JSON document from *s* (a :class:`str` or :class:`unicode`
-      beginning with a JSON document) and return a 2-tuple of the Python
-      representation and the index in *s* where the document ended.
+      Decode a JSON document from *s* (a :class:`str` beginning with a
+      JSON document) and return a 2-tuple of the Python representation
+      and the index in *s* where the document ended.
 
       This can be used to decode a JSON document from a string that may have
       extraneous data at the end.
 
 
-.. class:: JSONEncoder([skipkeys[, ensure_ascii[, check_circular[, allow_nan[, sort_keys[, indent[, separators[, encoding[, default]]]]]]]]])
+.. class:: JSONEncoder(skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, sort_keys=False, indent=None, separators=None, default=None)
 
    Extensible JSON encoder for Python data structures.
 
@@ -379,78 +357,76 @@ Encoders and Decoders
 
    .. _py-to-json-table:
 
-   +-------------------+---------------+
-   | Python            | JSON          |
-   +===================+===============+
-   | dict              | object        |
-   +-------------------+---------------+
-   | list, tuple       | array         |
-   +-------------------+---------------+
-   | str, unicode      | string        |
-   +-------------------+---------------+
-   | int, long, float  | number        |
-   +-------------------+---------------+
-   | True              | true          |
-   +-------------------+---------------+
-   | False             | false         |
-   +-------------------+---------------+
-   | None              | null          |
-   +-------------------+---------------+
+   +----------------------------------------+---------------+
+   | Python                                 | JSON          |
+   +========================================+===============+
+   | dict                                   | object        |
+   +----------------------------------------+---------------+
+   | list, tuple                            | array         |
+   +----------------------------------------+---------------+
+   | str                                    | string        |
+   +----------------------------------------+---------------+
+   | int, float, int- & float-derived Enums | number        |
+   +----------------------------------------+---------------+
+   | True                                   | true          |
+   +----------------------------------------+---------------+
+   | False                                  | false         |
+   +----------------------------------------+---------------+
+   | None                                   | null          |
+   +----------------------------------------+---------------+
+
+   .. versionchanged:: 3.4
+      Added support for int- and float-derived Enum classes.
 
    To extend this to recognize other objects, subclass and implement a
    :meth:`default` method with another method that returns a serializable object
    for ``o`` if possible, otherwise it should call the superclass implementation
    (to raise :exc:`TypeError`).
 
-   If *skipkeys* is false (the default), then it is a :exc:`TypeError` to
-   attempt encoding of keys that are not str, int, long, float or ``None``.  If
-   *skipkeys* is true, such items are simply skipped.
+   If *skipkeys* is ``False`` (the default), then it is a :exc:`TypeError` to
+   attempt encoding of keys that are not str, int, float or None.  If
+   *skipkeys* is ``True``, such items are simply skipped.
 
-   If *ensure_ascii* is true (the default), all non-ASCII characters in the
-   output are escaped with ``\uXXXX`` sequences, and the results are
-   :class:`str` instances consisting of ASCII characters only. If
-   *ensure_ascii* is false, a result may be a :class:`unicode`
-   instance. This usually happens if the input contains unicode strings or the
-   *encoding* parameter is used.
+   If *ensure_ascii* is ``True`` (the default), the output is guaranteed to
+   have all incoming non-ASCII characters escaped.  If *ensure_ascii* is
+   ``False``, these characters will be output as-is.
 
-   If *check_circular* is true (the default), then lists, dicts, and custom
+   If *check_circular* is ``True`` (the default), then lists, dicts, and custom
    encoded objects will be checked for circular references during encoding to
    prevent an infinite recursion (which would cause an :exc:`OverflowError`).
    Otherwise, no such check takes place.
 
-   If *allow_nan* is true (the default), then ``NaN``, ``Infinity``, and
+   If *allow_nan* is ``True`` (the default), then ``NaN``, ``Infinity``, and
    ``-Infinity`` will be encoded as such.  This behavior is not JSON
    specification compliant, but is consistent with most JavaScript based
    encoders and decoders.  Otherwise, it will be a :exc:`ValueError` to encode
    such floats.
 
-   If *sort_keys* is true (default: ``False``), then the output of dictionaries
+   If *sort_keys* is ``True`` (default ``False``), then the output of dictionaries
    will be sorted by key; this is useful for regression tests to ensure that
    JSON serializations can be compared on a day-to-day basis.
 
-   If *indent* is a non-negative integer (it is ``None`` by default), then JSON
-   array elements and object members will be pretty-printed with that indent
-   level.  An indent level of 0 will only insert newlines.  ``None`` is the most
-   compact representation.
+   If *indent* is a non-negative integer or string, then JSON array elements and
+   object members will be pretty-printed with that indent level.  An indent level
+   of 0, negative, or ``""`` will only insert newlines.  ``None`` (the default)
+   selects the most compact representation. Using a positive integer indent
+   indents that many spaces per level.  If *indent* is a string (such as ``"\t"``),
+   that string is used to indent each level.
 
-   .. note::
-
-      Since the default item separator is ``', '``,  the output might include
-      trailing whitespace when *indent* is specified.  You can use
-      ``separators=(',', ': ')`` to avoid this.
+   .. versionchanged:: 3.2
+      Allow strings for *indent* in addition to integers.
 
    If specified, *separators* should be an ``(item_separator, key_separator)``
-   tuple.  By default, ``(', ', ': ')`` are used.  To get the most compact JSON
-   representation, you should specify ``(',', ':')`` to eliminate whitespace.
+   tuple.  The default is ``(', ', ': ')`` if *indent* is ``None`` and
+   ``(',', ': ')`` otherwise.  To get the most compact JSON representation,
+   you should specify ``(',', ':')`` to eliminate whitespace.
 
-   If specified, *default* should be a function that gets called for objects that
-   can't otherwise be serialized.  It should return a JSON encodable version of
-   the object or raise a :exc:`TypeError`.  If not specified, :exc:`TypeError`
-   is raised.
+   .. versionchanged:: 3.4
+      Use ``(',', ': ')`` as default if *indent* is not ``None``.
 
-   If *encoding* is not ``None``, then all input strings will be transformed
-   into unicode using that encoding prior to JSON-encoding.  The default is
-   UTF-8.
+   If specified, *default* is a function that gets called for objects that can't
+   otherwise be serialized.  It should return a JSON encodable version of the
+   object or raise a :exc:`TypeError`.
 
 
    .. method:: default(o)
@@ -470,7 +446,7 @@ Encoders and Decoders
             else:
                 return list(iterable)
             # Let the base class default method raise the TypeError
-            return JSONEncoder.default(self, o)
+            return json.JSONEncoder.default(self, o)
 
 
    .. method:: encode(o)
@@ -478,7 +454,7 @@ Encoders and Decoders
       Return a JSON string representation of a Python data structure, *o*.  For
       example::
 
-        >>> JSONEncoder().encode({"foo": ["bar", "baz"]})
+        >>> json.JSONEncoder().encode({"foo": ["bar", "baz"]})
         '{"foo": ["bar", "baz"]}'
 
 
@@ -487,7 +463,7 @@ Encoders and Decoders
       Encode the given object, *o*, and yield each string representation as
       available.  For example::
 
-            for chunk in JSONEncoder().iterencode(bigobject):
+            for chunk in json.JSONEncoder().iterencode(bigobject):
                 mysocket.write(chunk)
 
 
@@ -516,16 +492,15 @@ Character Encodings
 
 The RFC requires that JSON be represented using either UTF-8, UTF-16, or
 UTF-32, with UTF-8 being the recommended default for maximum interoperability.
-Accordingly, this module uses UTF-8 as the default for its *encoding* parameter.
-
-This module's deserializer only directly works with ASCII-compatible encodings;
-UTF-16, UTF-32, and other ASCII-incompatible encodings require the use of
-workarounds described in the documentation for the deserializer's *encoding*
-parameter.
 
 As permitted, though not required, by the RFC, this module's serializer sets
 *ensure_ascii=True* by default, thus escaping the output so that the resulting
 strings only contain ASCII characters.
+
+Other than the *ensure_ascii* parameter, this module is defined strictly in
+terms of conversion between Python objects and
+:class:`Unicode strings <str>`, and thus does not otherwise directly address
+the issue of character encodings.
 
 The RFC prohibits adding a byte order mark (BOM) to the start of a JSON text,
 and this module's serializer does not add a BOM to its output.
@@ -573,7 +548,7 @@ the last name-value pair for a given name::
 
    >>> weird_json = '{"x": 1, "x": 2, "x": 3}'
    >>> json.loads(weird_json)
-   {u'x': 3}
+   {'x': 3}
 
 The *object_pairs_hook* parameter can be used to alter this behavior.
 
@@ -617,7 +592,7 @@ when serializing instances of "exotic" numerical types such as
 .. rubric:: Footnotes
 
 .. [#rfc-errata] As noted in `the errata for RFC 7159
-   <https://www.rfc-editor.org/errata_search.php?rfc=7159>`_,
+   <http://www.rfc-editor.org/errata_search.php?rfc=7159>`_,
    JSON permits literal U+2028 (LINE SEPARATOR) and
    U+2029 (PARAGRAPH SEPARATOR) characters in strings, whereas JavaScript
    (as of ECMAScript Edition 5.1) does not.

@@ -1,9 +1,10 @@
+from test.support import verbose, TestFailed
+import locale
 import sys
-from test.test_support import verbose, have_unicode, TestFailed
-import test.test_support as test_support
+import test.support as support
 import unittest
 
-maxsize = test_support.MAX_Py_ssize_t
+maxsize = support.MAX_Py_ssize_t
 
 # test string formatting operator (I am not sure if this is being tested
 # elsewhere but, surely, some of the given cases are *not* tested because
@@ -13,21 +14,21 @@ maxsize = test_support.MAX_Py_ssize_t
 def testformat(formatstr, args, output=None, limit=None, overflowok=False):
     if verbose:
         if output:
-            print "%s %% %s =? %s ..." %\
-                (repr(formatstr), repr(args), repr(output)),
+            print("{!a} % {!a} =? {!a} ...".format(formatstr, args, output),
+                  end=' ')
         else:
-            print "%s %% %s works? ..." % (repr(formatstr), repr(args)),
+            print("{!a} % {!a} works? ...".format(formatstr, args), end=' ')
     try:
         result = formatstr % args
     except OverflowError:
         if not overflowok:
             raise
         if verbose:
-            print 'overflow (this is fine)'
+            print('overflow (this is fine)')
     else:
         if output and limit is None and result != output:
             if verbose:
-                print 'no'
+                print('no')
             raise AssertionError("%r %% %r == %r != %r" %
                                 (formatstr, args, result, output))
         # when 'limit' is specified, it determines how many characters
@@ -38,258 +39,226 @@ def testformat(formatstr, args, output=None, limit=None, overflowok=False):
         elif output and limit is not None and (
                 len(result)!=len(output) or result[:limit]!=output[:limit]):
             if verbose:
-                print 'no'
-            print "%s %% %s == %s != %s" % \
-                  (repr(formatstr), repr(args), repr(result), repr(output))
+                print('no')
+            print("%s %% %s == %s != %s" % \
+                  (repr(formatstr), repr(args), repr(result), repr(output)))
         else:
             if verbose:
-                print 'yes'
-
-
-def testboth(formatstr, *args, **kwargs):
-    testformat(formatstr, *args, **kwargs)
-    if have_unicode:
-        testformat(unicode(formatstr), *args, **kwargs)
+                print('yes')
 
 
 class FormatTest(unittest.TestCase):
     def test_format(self):
-        testboth("%.1d", (1,), "1")
-        testboth("%.*d", (sys.maxint,1), overflowok=True)  # expect overflow
-        testboth("%.100d", (1,), '00000000000000000000000000000000000000'
+        testformat("%.1d", (1,), "1")
+        testformat("%.*d", (sys.maxsize,1), overflowok=True)  # expect overflow
+        testformat("%.100d", (1,), '00000000000000000000000000000000000000'
                  '000000000000000000000000000000000000000000000000000000'
                  '00000001', overflowok=True)
-        testboth("%#.117x", (1,), '0x00000000000000000000000000000000000'
+        testformat("%#.117x", (1,), '0x00000000000000000000000000000000000'
                  '000000000000000000000000000000000000000000000000000000'
                  '0000000000000000000000000001',
                  overflowok=True)
-        testboth("%#.118x", (1,), '0x00000000000000000000000000000000000'
+        testformat("%#.118x", (1,), '0x00000000000000000000000000000000000'
                  '000000000000000000000000000000000000000000000000000000'
                  '00000000000000000000000000001',
                  overflowok=True)
 
-        testboth("%f", (1.0,), "1.000000")
+        testformat("%f", (1.0,), "1.000000")
         # these are trying to test the limits of the internal magic-number-length
         # formatting buffer, if that number changes then these tests are less
         # effective
-        testboth("%#.*g", (109, -1.e+49/3.))
-        testboth("%#.*g", (110, -1.e+49/3.))
-        testboth("%#.*g", (110, -1.e+100/3.))
-
+        testformat("%#.*g", (109, -1.e+49/3.))
+        testformat("%#.*g", (110, -1.e+49/3.))
+        testformat("%#.*g", (110, -1.e+100/3.))
         # test some ridiculously large precision, expect overflow
-        testboth('%12.*f', (123456, 1.0))
+        testformat('%12.*f', (123456, 1.0))
 
         # check for internal overflow validation on length of precision
         # these tests should no longer cause overflow in Python
         # 2.7/3.1 and later.
-        testboth("%#.*g", (110, -1.e+100/3.))
-        testboth("%#.*G", (110, -1.e+100/3.))
-        testboth("%#.*f", (110, -1.e+100/3.))
-        testboth("%#.*F", (110, -1.e+100/3.))
-
-        # Formatting of long integers. Overflow is not ok
-        testboth("%x", 10L, "a")
-        testboth("%x", 100000000000L, "174876e800")
-        testboth("%o", 10L, "12")
-        testboth("%o", 100000000000L, "1351035564000")
-        testboth("%d", 10L, "10")
-        testboth("%d", 100000000000L, "100000000000")
-
-        big = 123456789012345678901234567890L
-        testboth("%d", big, "123456789012345678901234567890")
-        testboth("%d", -big, "-123456789012345678901234567890")
-        testboth("%5d", -big, "-123456789012345678901234567890")
-        testboth("%31d", -big, "-123456789012345678901234567890")
-        testboth("%32d", -big, " -123456789012345678901234567890")
-        testboth("%-32d", -big, "-123456789012345678901234567890 ")
-        testboth("%032d", -big, "-0123456789012345678901234567890")
-        testboth("%-032d", -big, "-123456789012345678901234567890 ")
-        testboth("%034d", -big, "-000123456789012345678901234567890")
-        testboth("%034d", big, "0000123456789012345678901234567890")
-        testboth("%0+34d", big, "+000123456789012345678901234567890")
-        testboth("%+34d", big, "   +123456789012345678901234567890")
-        testboth("%34d", big, "    123456789012345678901234567890")
-        testboth("%.2d", big, "123456789012345678901234567890")
-        testboth("%.30d", big, "123456789012345678901234567890")
-        testboth("%.31d", big, "0123456789012345678901234567890")
-        testboth("%32.31d", big, " 0123456789012345678901234567890")
-        testboth("%d", float(big), "123456________________________", 6)
-
-        big = 0x1234567890abcdef12345L  # 21 hex digits
-        testboth("%x", big, "1234567890abcdef12345")
-        testboth("%x", -big, "-1234567890abcdef12345")
-        testboth("%5x", -big, "-1234567890abcdef12345")
-        testboth("%22x", -big, "-1234567890abcdef12345")
-        testboth("%23x", -big, " -1234567890abcdef12345")
-        testboth("%-23x", -big, "-1234567890abcdef12345 ")
-        testboth("%023x", -big, "-01234567890abcdef12345")
-        testboth("%-023x", -big, "-1234567890abcdef12345 ")
-        testboth("%025x", -big, "-0001234567890abcdef12345")
-        testboth("%025x", big, "00001234567890abcdef12345")
-        testboth("%0+25x", big, "+0001234567890abcdef12345")
-        testboth("%+25x", big, "   +1234567890abcdef12345")
-        testboth("%25x", big, "    1234567890abcdef12345")
-        testboth("%.2x", big, "1234567890abcdef12345")
-        testboth("%.21x", big, "1234567890abcdef12345")
-        testboth("%.22x", big, "01234567890abcdef12345")
-        testboth("%23.22x", big, " 01234567890abcdef12345")
-        testboth("%-23.22x", big, "01234567890abcdef12345 ")
-        testboth("%X", big, "1234567890ABCDEF12345")
-        testboth("%#X", big, "0X1234567890ABCDEF12345")
-        testboth("%#x", big, "0x1234567890abcdef12345")
-        testboth("%#x", -big, "-0x1234567890abcdef12345")
-        testboth("%#.23x", -big, "-0x001234567890abcdef12345")
-        testboth("%#+.23x", big, "+0x001234567890abcdef12345")
-        testboth("%# .23x", big, " 0x001234567890abcdef12345")
-        testboth("%#+.23X", big, "+0X001234567890ABCDEF12345")
-        testboth("%#-+.23X", big, "+0X001234567890ABCDEF12345")
-        testboth("%#-+26.23X", big, "+0X001234567890ABCDEF12345")
-        testboth("%#-+27.23X", big, "+0X001234567890ABCDEF12345 ")
-        testboth("%#+27.23X", big, " +0X001234567890ABCDEF12345")
+        testformat("%#.*g", (110, -1.e+100/3.))
+        testformat("%#.*G", (110, -1.e+100/3.))
+        testformat("%#.*f", (110, -1.e+100/3.))
+        testformat("%#.*F", (110, -1.e+100/3.))
+        # Formatting of integers. Overflow is not ok
+        testformat("%x", 10, "a")
+        testformat("%x", 100000000000, "174876e800")
+        testformat("%o", 10, "12")
+        testformat("%o", 100000000000, "1351035564000")
+        testformat("%d", 10, "10")
+        testformat("%d", 100000000000, "100000000000")
+        big = 123456789012345678901234567890
+        testformat("%d", big, "123456789012345678901234567890")
+        testformat("%d", -big, "-123456789012345678901234567890")
+        testformat("%5d", -big, "-123456789012345678901234567890")
+        testformat("%31d", -big, "-123456789012345678901234567890")
+        testformat("%32d", -big, " -123456789012345678901234567890")
+        testformat("%-32d", -big, "-123456789012345678901234567890 ")
+        testformat("%032d", -big, "-0123456789012345678901234567890")
+        testformat("%-032d", -big, "-123456789012345678901234567890 ")
+        testformat("%034d", -big, "-000123456789012345678901234567890")
+        testformat("%034d", big, "0000123456789012345678901234567890")
+        testformat("%0+34d", big, "+000123456789012345678901234567890")
+        testformat("%+34d", big, "   +123456789012345678901234567890")
+        testformat("%34d", big, "    123456789012345678901234567890")
+        testformat("%.2d", big, "123456789012345678901234567890")
+        testformat("%.30d", big, "123456789012345678901234567890")
+        testformat("%.31d", big, "0123456789012345678901234567890")
+        testformat("%32.31d", big, " 0123456789012345678901234567890")
+        testformat("%d", float(big), "123456________________________", 6)
+        big = 0x1234567890abcdef12345  # 21 hex digits
+        testformat("%x", big, "1234567890abcdef12345")
+        testformat("%x", -big, "-1234567890abcdef12345")
+        testformat("%5x", -big, "-1234567890abcdef12345")
+        testformat("%22x", -big, "-1234567890abcdef12345")
+        testformat("%23x", -big, " -1234567890abcdef12345")
+        testformat("%-23x", -big, "-1234567890abcdef12345 ")
+        testformat("%023x", -big, "-01234567890abcdef12345")
+        testformat("%-023x", -big, "-1234567890abcdef12345 ")
+        testformat("%025x", -big, "-0001234567890abcdef12345")
+        testformat("%025x", big, "00001234567890abcdef12345")
+        testformat("%0+25x", big, "+0001234567890abcdef12345")
+        testformat("%+25x", big, "   +1234567890abcdef12345")
+        testformat("%25x", big, "    1234567890abcdef12345")
+        testformat("%.2x", big, "1234567890abcdef12345")
+        testformat("%.21x", big, "1234567890abcdef12345")
+        testformat("%.22x", big, "01234567890abcdef12345")
+        testformat("%23.22x", big, " 01234567890abcdef12345")
+        testformat("%-23.22x", big, "01234567890abcdef12345 ")
+        testformat("%X", big, "1234567890ABCDEF12345")
+        testformat("%#X", big, "0X1234567890ABCDEF12345")
+        testformat("%#x", big, "0x1234567890abcdef12345")
+        testformat("%#x", -big, "-0x1234567890abcdef12345")
+        testformat("%#.23x", -big, "-0x001234567890abcdef12345")
+        testformat("%#+.23x", big, "+0x001234567890abcdef12345")
+        testformat("%# .23x", big, " 0x001234567890abcdef12345")
+        testformat("%#+.23X", big, "+0X001234567890ABCDEF12345")
+        testformat("%#-+.23X", big, "+0X001234567890ABCDEF12345")
+        testformat("%#-+26.23X", big, "+0X001234567890ABCDEF12345")
+        testformat("%#-+27.23X", big, "+0X001234567890ABCDEF12345 ")
+        testformat("%#+27.23X", big, " +0X001234567890ABCDEF12345")
         # next one gets two leading zeroes from precision, and another from the
         # 0 flag and the width
-        testboth("%#+027.23X", big, "+0X0001234567890ABCDEF12345")
+        testformat("%#+027.23X", big, "+0X0001234567890ABCDEF12345")
         # same, except no 0 flag
-        testboth("%#+27.23X", big, " +0X001234567890ABCDEF12345")
-        testboth("%x", float(big), "123456_______________", 6)
-
-        big = 012345670123456701234567012345670L  # 32 octal digits
-        testboth("%o", big, "12345670123456701234567012345670")
-        testboth("%o", -big, "-12345670123456701234567012345670")
-        testboth("%5o", -big, "-12345670123456701234567012345670")
-        testboth("%33o", -big, "-12345670123456701234567012345670")
-        testboth("%34o", -big, " -12345670123456701234567012345670")
-        testboth("%-34o", -big, "-12345670123456701234567012345670 ")
-        testboth("%034o", -big, "-012345670123456701234567012345670")
-        testboth("%-034o", -big, "-12345670123456701234567012345670 ")
-        testboth("%036o", -big, "-00012345670123456701234567012345670")
-        testboth("%036o", big, "000012345670123456701234567012345670")
-        testboth("%0+36o", big, "+00012345670123456701234567012345670")
-        testboth("%+36o", big, "   +12345670123456701234567012345670")
-        testboth("%36o", big, "    12345670123456701234567012345670")
-        testboth("%.2o", big, "12345670123456701234567012345670")
-        testboth("%.32o", big, "12345670123456701234567012345670")
-        testboth("%.33o", big, "012345670123456701234567012345670")
-        testboth("%34.33o", big, " 012345670123456701234567012345670")
-        testboth("%-34.33o", big, "012345670123456701234567012345670 ")
-        testboth("%o", big, "12345670123456701234567012345670")
-        testboth("%#o", big, "012345670123456701234567012345670")
-        testboth("%#o", -big, "-012345670123456701234567012345670")
-        testboth("%#.34o", -big, "-0012345670123456701234567012345670")
-        testboth("%#+.34o", big, "+0012345670123456701234567012345670")
-        testboth("%# .34o", big, " 0012345670123456701234567012345670")
-        testboth("%#+.34o", big, "+0012345670123456701234567012345670")
-        testboth("%#-+.34o", big, "+0012345670123456701234567012345670")
-        testboth("%#-+37.34o", big, "+0012345670123456701234567012345670  ")
-        testboth("%#+37.34o", big, "  +0012345670123456701234567012345670")
+        testformat("%#+27.23X", big, " +0X001234567890ABCDEF12345")
+        with self.assertWarns(DeprecationWarning):
+            testformat("%x", float(big), "123456_______________", 6)
+        big = 0o12345670123456701234567012345670  # 32 octal digits
+        testformat("%o", big, "12345670123456701234567012345670")
+        testformat("%o", -big, "-12345670123456701234567012345670")
+        testformat("%5o", -big, "-12345670123456701234567012345670")
+        testformat("%33o", -big, "-12345670123456701234567012345670")
+        testformat("%34o", -big, " -12345670123456701234567012345670")
+        testformat("%-34o", -big, "-12345670123456701234567012345670 ")
+        testformat("%034o", -big, "-012345670123456701234567012345670")
+        testformat("%-034o", -big, "-12345670123456701234567012345670 ")
+        testformat("%036o", -big, "-00012345670123456701234567012345670")
+        testformat("%036o", big, "000012345670123456701234567012345670")
+        testformat("%0+36o", big, "+00012345670123456701234567012345670")
+        testformat("%+36o", big, "   +12345670123456701234567012345670")
+        testformat("%36o", big, "    12345670123456701234567012345670")
+        testformat("%.2o", big, "12345670123456701234567012345670")
+        testformat("%.32o", big, "12345670123456701234567012345670")
+        testformat("%.33o", big, "012345670123456701234567012345670")
+        testformat("%34.33o", big, " 012345670123456701234567012345670")
+        testformat("%-34.33o", big, "012345670123456701234567012345670 ")
+        testformat("%o", big, "12345670123456701234567012345670")
+        testformat("%#o", big, "0o12345670123456701234567012345670")
+        testformat("%#o", -big, "-0o12345670123456701234567012345670")
+        testformat("%#.34o", -big, "-0o0012345670123456701234567012345670")
+        testformat("%#+.34o", big, "+0o0012345670123456701234567012345670")
+        testformat("%# .34o", big, " 0o0012345670123456701234567012345670")
+        testformat("%#+.34o", big, "+0o0012345670123456701234567012345670")
+        testformat("%#-+.34o", big, "+0o0012345670123456701234567012345670")
+        testformat("%#-+37.34o", big, "+0o0012345670123456701234567012345670")
+        testformat("%#+37.34o", big, "+0o0012345670123456701234567012345670")
         # next one gets one leading zero from precision
-        testboth("%.33o", big, "012345670123456701234567012345670")
+        testformat("%.33o", big, "012345670123456701234567012345670")
         # base marker shouldn't change that, since "0" is redundant
-        testboth("%#.33o", big, "012345670123456701234567012345670")
+        testformat("%#.33o", big, "0o012345670123456701234567012345670")
         # but reduce precision, and base marker should add a zero
-        testboth("%#.32o", big, "012345670123456701234567012345670")
+        testformat("%#.32o", big, "0o12345670123456701234567012345670")
         # one leading zero from precision, and another from "0" flag & width
-        testboth("%034.33o", big, "0012345670123456701234567012345670")
+        testformat("%034.33o", big, "0012345670123456701234567012345670")
         # base marker shouldn't change that
-        testboth("%0#34.33o", big, "0012345670123456701234567012345670")
-        testboth("%o", float(big), "123456__________________________", 6)
-
-        # Some small ints, in both Python int and long flavors).
-        testboth("%d", 42, "42")
-        testboth("%d", -42, "-42")
-        testboth("%d", 42L, "42")
-        testboth("%d", -42L, "-42")
-        testboth("%d", 42.0, "42")
-        testboth("%#x", 1, "0x1")
-        testboth("%#x", 1L, "0x1")
-        testboth("%#X", 1, "0X1")
-        testboth("%#X", 1L, "0X1")
-        testboth("%#x", 1.0, "0x1")
-        testboth("%#o", 1, "01")
-        testboth("%#o", 1L, "01")
-        testboth("%#o", 0, "0")
-        testboth("%#o", 0L, "0")
-        testboth("%o", 0, "0")
-        testboth("%o", 0L, "0")
-        testboth("%d", 0, "0")
-        testboth("%d", 0L, "0")
-        testboth("%#x", 0, "0x0")
-        testboth("%#x", 0L, "0x0")
-        testboth("%#X", 0, "0X0")
-        testboth("%#X", 0L, "0X0")
-
-        testboth("%x", 0x42, "42")
-        testboth("%x", -0x42, "-42")
-        testboth("%x", 0x42L, "42")
-        testboth("%x", -0x42L, "-42")
-        testboth("%x", float(0x42), "42")
-
-        testboth("%o", 042, "42")
-        testboth("%o", -042, "-42")
-        testboth("%o", 042L, "42")
-        testboth("%o", -042L, "-42")
-        testboth("%o", float(042), "42")
+        testformat("%0#34.33o", big, "0o012345670123456701234567012345670")
+        with self.assertWarns(DeprecationWarning):
+            testformat("%o", float(big), "123456__________________________", 6)
+        # Some small ints, in both Python int and flavors).
+        testformat("%d", 42, "42")
+        testformat("%d", -42, "-42")
+        testformat("%d", 42, "42")
+        testformat("%d", -42, "-42")
+        testformat("%d", 42.0, "42")
+        testformat("%#x", 1, "0x1")
+        testformat("%#x", 1, "0x1")
+        testformat("%#X", 1, "0X1")
+        testformat("%#X", 1, "0X1")
+        with self.assertWarns(DeprecationWarning):
+            testformat("%#x", 1.0, "0x1")
+        testformat("%#o", 1, "0o1")
+        testformat("%#o", 1, "0o1")
+        testformat("%#o", 0, "0o0")
+        testformat("%#o", 0, "0o0")
+        testformat("%o", 0, "0")
+        testformat("%o", 0, "0")
+        testformat("%d", 0, "0")
+        testformat("%d", 0, "0")
+        testformat("%#x", 0, "0x0")
+        testformat("%#x", 0, "0x0")
+        testformat("%#X", 0, "0X0")
+        testformat("%#X", 0, "0X0")
+        testformat("%x", 0x42, "42")
+        testformat("%x", -0x42, "-42")
+        testformat("%x", 0x42, "42")
+        testformat("%x", -0x42, "-42")
+        with self.assertWarns(DeprecationWarning):
+            testformat("%x", float(0x42), "42")
+        testformat("%o", 0o42, "42")
+        testformat("%o", -0o42, "-42")
+        testformat("%o", 0o42, "42")
+        testformat("%o", -0o42, "-42")
+        with self.assertWarns(DeprecationWarning):
+            testformat("%o", float(0o42), "42")
+        testformat("%r", "\u0378", "'\\u0378'")  # non printable
+        testformat("%a", "\u0378", "'\\u0378'")  # non printable
+        testformat("%r", "\u0374", "'\u0374'")   # printable
+        testformat("%a", "\u0374", "'\\u0374'")  # printable
 
         # alternate float formatting
         testformat('%g', 1.1, '1.1')
         testformat('%#g', 1.1, '1.10000')
 
-        # Regression test for http://bugs.python.org/issue15516.
-        class IntFails(object):
-            def __int__(self):
-                raise TestFailed
-            def __long__(self):
-                return 0
-
-        fst = IntFails()
-        testformat("%x", fst, '0')
-        testformat(u"%x", fst, '0')
-
         # Test exception for unknown format characters
         if verbose:
-            print 'Testing exceptions'
-
+            print('Testing exceptions')
         def test_exc(formatstr, args, exception, excmsg):
             try:
                 testformat(formatstr, args)
-            except exception, exc:
+            except exception as exc:
                 if str(exc) == excmsg:
                     if verbose:
-                        print "yes"
+                        print("yes")
                 else:
-                    if verbose: print 'no'
-                    print 'Unexpected ', exception, ':', repr(str(exc))
+                    if verbose: print('no')
+                    print('Unexpected ', exception, ':', repr(str(exc)))
             except:
-                if verbose: print 'no'
-                print 'Unexpected exception'
+                if verbose: print('no')
+                print('Unexpected exception')
                 raise
             else:
-                raise TestFailed, 'did not get expected exception: %s' % excmsg
-
-        test_exc('abc %a', 1, ValueError,
-                 "unsupported format character 'a' (0x61) at index 5")
-        if have_unicode:
-            test_exc(unicode('abc %\u3000','raw-unicode-escape'), 1, ValueError,
-                     "unsupported format character '?' (0x3000) at index 5")
-
+                raise TestFailed('did not get expected exception: %s' % excmsg)
+        test_exc('abc %b', 1, ValueError,
+                 "unsupported format character 'b' (0x62) at index 5")
+        #test_exc(unicode('abc %\u3000','raw-unicode-escape'), 1, ValueError,
+        #         "unsupported format character '?' (0x3000) at index 5")
         test_exc('%d', '1', TypeError, "%d format: a number is required, not str")
-        test_exc('%g', '1', TypeError, "float argument required, not str")
+        test_exc('%g', '1', TypeError, "a float is required")
         test_exc('no format', '1', TypeError,
                  "not all arguments converted during string formatting")
-        test_exc('no format', u'1', TypeError,
+        test_exc('no format', '1', TypeError,
                  "not all arguments converted during string formatting")
-        test_exc(u'no format', '1', TypeError,
-                 "not all arguments converted during string formatting")
-        test_exc(u'no format', u'1', TypeError,
-                 "not all arguments converted during string formatting")
-
-        class Foobar(long):
-            def __oct__(self):
-                # Returning a non-string should not blow up.
-                return self + 1
-
-        test_exc('%o', Foobar(), TypeError,
-                 "expected string or Unicode object, long found")
 
         if maxsize == 2**31-1:
             # crashes 2.2.1 and earlier:
@@ -298,48 +267,70 @@ class FormatTest(unittest.TestCase):
             except MemoryError:
                 pass
             else:
-                raise TestFailed, '"%*d"%(maxsize, -127) should fail'
+                raise TestFailed('"%*d"%(maxsize, -127) should fail')
 
-    def test_invalid_special_methods(self):
-        tests = []
-        for f in 'sriduoxXfge':
-            tests.append(('%' + f, 1, TypeError))
-            tests.append(('%#' + f, 1, TypeError))
-        for r in ['', '-', 'L', '-L']:
-            for f in 'iduoxX':
-                tests.append(('%' + f, r, ValueError))
-                tests.append(('%#' + f, r, ValueError))
-        tests.append(('%o', 'abc', ValueError))
-        for r in ('abc', '0abc', '0x', '0xL'):
-            for f in 'xX':
-                tests.append(('%' + f, r, ValueError))
-        for r in ('0x', '0xL'):
-            for f in 'xX':
-                tests.append(('%#' + f, r, ValueError))
+    def test_non_ascii(self):
+        testformat("\u20ac=%f", (1.0,), "\u20ac=1.000000")
 
-        class X(long):
-            def __repr__(self):
-                return result
-            def __str__(self):
-                return result
-            def __oct__(self):
-                return result
-            def __hex__(self):
-                return result
-            def __float__(self):
-                return result
-        for fmt, result, exc in tests:
-            try:
-                fmt % X()
-            except exc:
-                pass
-            else:
-                self.fail('%s not raised for %r format of %r' %
-                          (exc.__name__, fmt, result))
+        self.assertEqual(format("abc", "\u2007<5"), "abc\u2007\u2007")
+        self.assertEqual(format(123, "\u2007<5"), "123\u2007\u2007")
+        self.assertEqual(format(12.3, "\u2007<6"), "12.3\u2007\u2007")
+        self.assertEqual(format(0j, "\u2007<4"), "0j\u2007\u2007")
+        self.assertEqual(format(1+2j, "\u2007<8"), "(1+2j)\u2007\u2007")
 
+        self.assertEqual(format("abc", "\u2007>5"), "\u2007\u2007abc")
+        self.assertEqual(format(123, "\u2007>5"), "\u2007\u2007123")
+        self.assertEqual(format(12.3, "\u2007>6"), "\u2007\u200712.3")
+        self.assertEqual(format(1+2j, "\u2007>8"), "\u2007\u2007(1+2j)")
+        self.assertEqual(format(0j, "\u2007>4"), "\u2007\u20070j")
 
-def test_main():
-    test_support.run_unittest(FormatTest)
+        self.assertEqual(format("abc", "\u2007^5"), "\u2007abc\u2007")
+        self.assertEqual(format(123, "\u2007^5"), "\u2007123\u2007")
+        self.assertEqual(format(12.3, "\u2007^6"), "\u200712.3\u2007")
+        self.assertEqual(format(1+2j, "\u2007^8"), "\u2007(1+2j)\u2007")
+        self.assertEqual(format(0j, "\u2007^4"), "\u20070j\u2007")
+
+    def test_locale(self):
+        try:
+            oldloc = locale.setlocale(locale.LC_ALL)
+            locale.setlocale(locale.LC_ALL, '')
+        except locale.Error as err:
+            self.skipTest("Cannot set locale: {}".format(err))
+        try:
+            localeconv = locale.localeconv()
+            sep = localeconv['thousands_sep']
+            point = localeconv['decimal_point']
+
+            text = format(123456789, "n")
+            self.assertIn(sep, text)
+            self.assertEqual(text.replace(sep, ''), '123456789')
+
+            text = format(1234.5, "n")
+            self.assertIn(sep, text)
+            self.assertIn(point, text)
+            self.assertEqual(text.replace(sep, ''), '1234' + point + '5')
+        finally:
+            locale.setlocale(locale.LC_ALL, oldloc)
+
+    @support.cpython_only
+    def test_optimisations(self):
+        text = "abcde" # 5 characters
+
+        self.assertIs("%s" % text, text)
+        self.assertIs("%.5s" % text, text)
+        self.assertIs("%.10s" % text, text)
+        self.assertIs("%1s" % text, text)
+        self.assertIs("%5s" % text, text)
+
+        self.assertIs("{0}".format(text), text)
+        self.assertIs("{0:s}".format(text), text)
+        self.assertIs("{0:.5s}".format(text), text)
+        self.assertIs("{0:.10s}".format(text), text)
+        self.assertIs("{0:1s}".format(text), text)
+        self.assertIs("{0:5s}".format(text), text)
+
+        self.assertIs(text % (), text)
+        self.assertIs(text.format(), text)
 
     def test_precision(self):
         f = 1.2
@@ -347,16 +338,14 @@ def test_main():
         self.assertEqual(format(f, ".3f"), "1.200")
         with self.assertRaises(ValueError) as cm:
             format(f, ".%sf" % (sys.maxsize + 1))
-        self.assertEqual(str(cm.exception), "precision too big")
 
         c = complex(f)
         self.assertEqual(format(c, ".0f"), "1+0j")
         self.assertEqual(format(c, ".3f"), "1.200+0.000j")
         with self.assertRaises(ValueError) as cm:
             format(c, ".%sf" % (sys.maxsize + 1))
-        self.assertEqual(str(cm.exception), "precision too big")
 
-    @test_support.cpython_only
+    @support.cpython_only
     def test_precision_c_limits(self):
         from _testcapi import INT_MAX
 

@@ -2,9 +2,9 @@
 # standard library.
 
 import sys
-import test.test_support
+import test.support
 
-test.test_support.verbose = 0
+test.support.verbose = 0
 
 def runtest(name):
     __import__(name)
@@ -15,7 +15,7 @@ def runtest(name):
 runtest("test.test_minidom")
 runtest("test.test_pyexpat")
 runtest("test.test_sax")
+runtest("test.test_xml_dom_minicompat")
 runtest("test.test_xml_etree")
 runtest("test.test_xml_etree_c")
-runtest("test.test_xmllib")
 runtest("test.test_xmlrpc")

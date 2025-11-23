@@ -7,10 +7,6 @@
 .. sectionauthor:: Georg Brandl <georg@python.org>
 .. (harvested from docstrings in the original file)
 
-.. versionchanged:: 2.6
-   This module was previously only available in the Mac-specific library, it is
-   now available for all platforms.
-
 .. index::
    pair: plist; file
    single: property list
@@ -20,20 +16,24 @@
 --------------
 
 This module provides an interface for reading and writing the "property list"
-XML files used mainly by Mac OS X.
+files used mainly by Mac OS X and supports both binary and XML plist files.
 
-The property list (``.plist``) file format is a simple XML pickle supporting
+The property list (``.plist``) file format is a simple serialization supporting
 basic object types, like dictionaries, lists, numbers and strings.  Usually the
 top level object is a dictionary.
 
-Values can be strings, integers, floats, booleans, tuples, lists, dictionaries
-(but only with string keys), :class:`Data` or :class:`datetime.datetime`
-objects.  String values (including dictionary keys) may be unicode strings --
-they will be written out as UTF-8.
+To write out and to parse a plist file, use the :func:`dump` and
+:func:`load` functions.
 
-The ``<data>`` plist type is supported through the :class:`Data` class.  This is
-a thin wrapper around a Python string.  Use :class:`Data` if your strings
-contain control characters.
+To work with plist data in bytes objects, use :func:`dumps`
+and :func:`loads`.
+
+Values can be strings, integers, floats, booleans, tuples, lists, dictionaries
+(but only with string keys), :class:`Data`, :class:`bytes`, :class:`bytesarray`
+or :class:`datetime.datetime` objects.
+
+.. versionchanged:: 3.4
+   New API, old API deprecated.  Support for binary format plists added.
 
 .. seealso::
 
@@ -43,68 +43,174 @@ contain control characters.
 
 This module defines the following functions:
 
-.. function:: readPlist(pathOrFile)
+.. function:: load(fp, \*, fmt=None, use_builtin_types=True, dict_type=dict)
 
-   Read a plist file. *pathOrFile* may either be a file name or a (readable)
-   file object.  Return the unpacked root object (which usually is a
+   Read a plist file. *fp* should be a readable and binary file object.
+   Return the unpacked root object (which usually is a
    dictionary).
 
-   The XML data is parsed using the Expat parser from :mod:`xml.parsers.expat`
-   -- see its documentation for possible exceptions on ill-formed XML.
-   Unknown elements will simply be ignored by the plist parser.
+   The *fmt* is the format of the file and the following values are valid:
+
+   * :data:`None`: Autodetect the file format
+
+   * :data:`FMT_XML`: XML file format
+
+   * :data:`FMT_BINARY`: Binary plist format
+
+   If *use_builtin_types* is true (the default) binary data will be returned
+   as instances of :class:`bytes`, otherwise it is returned as instances of
+   :class:`Data`.
+
+   The *dict_type* is the type used for dictionaries that are read from the
+   plist file. The exact structure of the plist can be recovered by using
+   :class:`collections.OrderedDict` (although the order of keys shouldn't be
+   important in plist files).
+
+   XML data for the :data:`FMT_XML` format is parsed using the Expat parser
+   from :mod:`xml.parsers.expat` -- see its documentation for possible
+   exceptions on ill-formed XML.  Unknown elements will simply be ignored
+   by the plist parser.
+
+   The parser for the binary format raises :exc:`InvalidFileException`
+   when the file cannot be parsed.
+
+   .. versionadded:: 3.4
+
+
+.. function:: loads(data, \*, fmt=None, use_builtin_types=True, dict_type=dict)
+
+   Load a plist from a bytes object. See :func:`load` for an explanation of
+   the keyword arguments.
+
+   .. versionadded:: 3.4
+
+
+.. function:: dump(value, fp, \*, fmt=FMT_XML, sort_keys=True, skipkeys=False)
+
+   Write *value* to a plist file. *Fp* should be a writable, binary
+   file object.
+
+   The *fmt* argument specifies the format of the plist file and can be
+   one of the following values:
+
+   * :data:`FMT_XML`: XML formatted plist file
+
+   * :data:`FMT_BINARY`: Binary formatted plist file
+
+   When *sort_keys* is true (the default) the keys for dictionaries will be
+   written to the plist in sorted order, otherwise they will be written in
+   the iteration order of the dictionary.
+
+   When *skipkeys* is false (the default) the function raises :exc:`TypeError`
+   when a key of a dictionary is not a string, otherwise such keys are skipped.
+
+   A :exc:`TypeError` will be raised if the object is of an unsupported type or
+   a container that contains objects of unsupported types.
+
+   An :exc:`OverflowError` will be raised for integer values that cannot
+   be represented in (binary) plist files.
+
+   .. versionadded:: 3.4
+
+
+.. function:: dumps(value, \*, fmt=FMT_XML, sort_keys=True, skipkeys=False)
+
+   Return *value* as a plist-formatted bytes object. See
+   the documentation for :func:`dump` for an explanation of the keyword
+   arguments of this function.
+
+   .. versionadded:: 3.4
+
+The following functions are deprecated:
+
+.. function:: readPlist(pathOrFile)
+
+   Read a plist file. *pathOrFile* may be either a file name or a (readable
+   and binary) file object. Returns the unpacked root object (which usually
+   is a dictionary).
+
+   This function calls :func:`load` to do the actual work, see the documentation
+   of :func:`that function <load>` for an explanation of the keyword arguments.
+
+   .. note::
+
+      Dict values in the result have a ``__getattr__`` method that defers
+      to ``__getitem_``. This means that you can use attribute access to
+      access items of these dictionaries.
+
+   .. deprecated:: 3.4 Use :func:`load` instead.
 
 
 .. function:: writePlist(rootObject, pathOrFile)
 
-    Write *rootObject* to a plist file. *pathOrFile* may either be a file name
-    or a (writable) file object.
+   Write *rootObject* to an XML plist file. *pathOrFile* may be either a file name
+   or a (writable and binary) file object
 
-    A :exc:`TypeError` will be raised if the object is of an unsupported type or
-    a container that contains objects of unsupported types.
-
-
-.. function:: readPlistFromString(data)
-
-   Read a plist from a string.  Return the root object.
+   .. deprecated:: 3.4 Use :func:`dump` instead.
 
 
-.. function:: writePlistToString(rootObject)
+.. function:: readPlistFromBytes(data)
 
-   Return *rootObject* as a plist-formatted string.
+   Read a plist data from a bytes object.  Return the root object.
 
+   See :func:`load` for a description of the keyword arguments.
 
+   .. note::
 
-.. function:: readPlistFromResource(path, restype='plst', resid=0)
+      Dict values in the result have a ``__getattr__`` method that defers
+      to ``__getitem_``. This means that you can use attribute access to
+      access items of these dictionaries.
 
-    Read a plist from the resource with type *restype* from the resource fork of
-    *path*.  Availability: Mac OS X.
-
-    .. note::
-
-       In Python 3.x, this function has been removed.
-
-
-.. function:: writePlistToResource(rootObject, path, restype='plst', resid=0)
-
-    Write *rootObject* as a resource with type *restype* to the resource fork of
-    *path*.  Availability: Mac OS X.
-
-    .. note::
-
-       In Python 3.x, this function has been removed.
+   .. deprecated:: 3.4 Use :func:`loads` instead.
 
 
+.. function:: writePlistToBytes(rootObject)
 
-The following class is available:
+   Return *rootObject* as an XML plist-formatted bytes object.
+
+   .. deprecated:: 3.4 Use :func:`dumps` instead.
+
+
+The following classes are available:
+
+.. class:: Dict([dict]):
+
+   Return an extended mapping object with the same value as dictionary
+   *dict*.
+
+   This class is a subclass of :class:`dict` where attribute access can
+   be used to access items. That is, ``aDict.key`` is the same as
+   ``aDict['key']`` for getting, setting and deleting items in the mapping.
+
+   .. deprecated:: 3.0
+
 
 .. class:: Data(data)
 
-   Return a "data" wrapper object around the string *data*.  This is used in
-   functions converting from/to plists to represent the ``<data>`` type
+   Return a "data" wrapper object around the bytes object *data*.  This is used
+   in functions converting from/to plists to represent the ``<data>`` type
    available in plists.
 
    It has one attribute, :attr:`data`, that can be used to retrieve the Python
-   string stored in it.
+   bytes object stored in it.
+
+   .. deprecated:: 3.4 Use a :class:`bytes` object instead.
+
+
+The following constants are available:
+
+.. data:: FMT_XML
+
+   The XML format for plist files.
+
+   .. versionadded:: 3.4
+
+
+.. data:: FMT_BINARY
+
+   The binary format for plist files
+
+   .. versionadded:: 3.4
 
 
 Examples
@@ -113,25 +219,25 @@ Examples
 Generating a plist::
 
     pl = dict(
-        aString="Doodah",
-        aList=["A", "B", 12, 32.1, [1, 2, 3]],
+        aString = "Doodah",
+        aList = ["A", "B", 12, 32.1, [1, 2, 3]],
         aFloat = 0.1,
         anInt = 728,
-        aDict=dict(
-            anotherString="<hello & hi there!>",
-            aUnicodeValue=u'M\xe4ssig, Ma\xdf',
-            aTrueValue=True,
-            aFalseValue=False,
+        aDict = dict(
+            anotherString = "<hello & hi there!>",
+            aThirdString = "M\xe4ssig, Ma\xdf",
+            aTrueValue = True,
+            aFalseValue = False,
         ),
-        someData = Data("<binary gunk>"),
-        someMoreData = Data("<lots of binary gunk>" * 10),
+        someData = b"<binary gunk>",
+        someMoreData = b"<lots of binary gunk>" * 10,
         aDate = datetime.datetime.fromtimestamp(time.mktime(time.gmtime())),
     )
-    # unicode keys are possible, but a little awkward to use:
-    pl[u'\xc5benraa'] = "That was a unicode key."
-    writePlist(pl, fileName)
+    with open(fileName, 'wb') as fp:
+        dump(pl, fp)
 
 Parsing a plist::
 
-    pl = readPlist(pathOrFile)
-    print pl["aKey"]
+    with open(fileName, 'rb') as fp:
+        pl = load(fp)
+    print(pl["aKey"])

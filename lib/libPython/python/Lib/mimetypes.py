@@ -2,9 +2,9 @@
 
 This module defines two useful functions:
 
-guess_type(url, strict=1) -- guess the MIME type and encoding of a URL.
+guess_type(url, strict=True) -- guess the MIME type and encoding of a URL.
 
-guess_extension(type, strict=1) -- guess the extension for a given MIME type.
+guess_extension(type, strict=True) -- guess the extension for a given MIME type.
 
 It also contains the following, for tuning the behavior:
 
@@ -26,9 +26,9 @@ read_mime_types(file) -- parse one file, return a dictionary or None
 import os
 import sys
 import posixpath
-import urllib
+import urllib.parse
 try:
-    import _winreg
+    import winreg as _winreg
 except ImportError:
     _winreg = None
 
@@ -111,7 +111,7 @@ class MimeTypes:
         Optional `strict' argument when False adds a bunch of commonly found,
         but non-standard types.
         """
-        scheme, url = urllib.splittype(url)
+        scheme, url = urllib.parse.splittype(url)
         if scheme == 'data':
             # syntax of data URLs:
             # dataurl   := "data:" [ mediatype ] [ ";base64" ] "," data
@@ -199,7 +199,7 @@ class MimeTypes:
         list of standard types, else to the list of non-standard
         types.
         """
-        with open(filename) as fp:
+        with open(filename, encoding='utf-8') as fp:
             self.readfp(fp, strict)
 
     def readfp(self, fp, strict=True):
@@ -250,7 +250,6 @@ class MimeTypes:
                         yield ctype
                 i += 1
 
-        default_encoding = sys.getdefaultencoding()
         with _winreg.OpenKey(_winreg.HKEY_CLASSES_ROOT, '') as hkcr:
             for subkeyname in enum_types(hkcr):
                 try:
@@ -262,10 +261,6 @@ class MimeTypes:
                         mimetype, datatype = _winreg.QueryValueEx(
                             subkey, 'Content Type')
                         if datatype != _winreg.REG_SZ:
-                            continue
-                        try:
-                            mimetype = mimetype.encode(default_encoding)
-                        except UnicodeEncodeError:
                             continue
                         self.add_type(mimetype, subkeyname, strict)
                 except EnvironmentError:
@@ -367,7 +362,7 @@ def init(files=None):
 def read_mime_types(file):
     try:
         f = open(file)
-    except IOError:
+    except OSError:
         return None
     with f:
         db = MimeTypes()
@@ -398,7 +393,7 @@ def _default_mime_types():
         }
 
     # Before adding new types, make sure they are either registered with IANA,
-    # at http://www.isi.edu/in-notes/iana/assignments/media-types
+    # at http://www.iana.org/assignments/media-types
     # or extensions, i.e. using the x- prefix
 
     # If you add to these, please keep them sorted!
@@ -421,7 +416,6 @@ def _default_mime_types():
         '.cpio'   : 'application/x-cpio',
         '.csh'    : 'application/x-csh',
         '.css'    : 'text/css',
-        '.csv'    : 'text/csv',
         '.dll'    : 'application/octet-stream',
         '.doc'    : 'application/msword',
         '.dot'    : 'application/msword',
@@ -442,16 +436,16 @@ def _default_mime_types():
         '.jpeg'   : 'image/jpeg',
         '.jpg'    : 'image/jpeg',
         '.js'     : 'application/javascript',
-        '.json'   : 'application/json',
         '.ksh'    : 'text/plain',
         '.latex'  : 'application/x-latex',
         '.m1v'    : 'video/mpeg',
+        '.m3u'    : 'application/vnd.apple.mpegurl',
+        '.m3u8'   : 'application/vnd.apple.mpegurl',
         '.man'    : 'application/x-troff-man',
         '.me'     : 'application/x-troff-me',
         '.mht'    : 'message/rfc822',
         '.mhtml'  : 'message/rfc822',
         '.mif'    : 'application/x-mif',
-        '.mjs'    : 'application/javascript',
         '.mov'    : 'video/quicktime',
         '.movie'  : 'video/x-sgi-movie',
         '.mp2'    : 'audio/mpeg',
@@ -519,7 +513,6 @@ def _default_mime_types():
         '.ustar'  : 'application/x-ustar',
         '.vcf'    : 'text/x-vcard',
         '.wav'    : 'audio/x-wav',
-        '.webm'   : 'video/webm',
         '.wiz'    : 'application/msword',
         '.wsdl'   : 'application/xml',
         '.xbm'    : 'image/x-xbitmap',
@@ -570,14 +563,14 @@ More than one type argument may be given.
 """
 
     def usage(code, msg=''):
-        print USAGE
-        if msg: print msg
+        print(USAGE)
+        if msg: print(msg)
         sys.exit(code)
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'hle',
                                    ['help', 'lenient', 'extension'])
-    except getopt.error, msg:
+    except getopt.error as msg:
         usage(1, msg)
 
     strict = 1
@@ -592,9 +585,9 @@ More than one type argument may be given.
     for gtype in args:
         if extension:
             guess = guess_extension(gtype, strict)
-            if not guess: print "I don't know anything about type", gtype
-            else: print guess
+            if not guess: print("I don't know anything about type", gtype)
+            else: print(guess)
         else:
             guess, encoding = guess_type(gtype, strict)
-            if not guess: print "I don't know anything about type", gtype
-            else: print 'type:', guess, 'encoding:', encoding
+            if not guess: print("I don't know anything about type", gtype)
+            else: print('type:', guess, 'encoding:', encoding)

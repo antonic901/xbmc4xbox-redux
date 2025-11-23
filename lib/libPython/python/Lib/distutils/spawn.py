@@ -6,8 +6,6 @@ Also provides the 'find_executable()' to search the path for a given
 executable name.
 """
 
-__revision__ = "$Id$"
-
 import sys
 import os
 
@@ -38,11 +36,9 @@ def spawn(cmd, search_path=1, verbose=0, dry_run=0):
         _spawn_posix(cmd, search_path, dry_run=dry_run)
     elif os.name == 'nt':
         _spawn_nt(cmd, search_path, dry_run=dry_run)
-    elif os.name == 'os2':
-        _spawn_os2(cmd, search_path, dry_run=dry_run)
     else:
-        raise DistutilsPlatformError, \
-              "don't know how to spawn programs on platform '%s'" % os.name
+        raise DistutilsPlatformError(
+              "don't know how to spawn programs on platform '%s'" % os.name)
 
 def _nt_quote_args(args):
     """Quote command-line arguments for DOS/Windows conventions.
@@ -71,42 +67,18 @@ def _spawn_nt(cmd, search_path=1, verbose=0, dry_run=0):
         # spawn for NT requires a full path to the .exe
         try:
             rc = os.spawnv(os.P_WAIT, executable, cmd)
-        except OSError, exc:
+        except OSError as exc:
             # this seems to happen when the command isn't found
             if not DEBUG:
                 cmd = executable
-            raise DistutilsExecError, \
-                  "command %r failed: %s" % (cmd, exc[-1])
+            raise DistutilsExecError(
+                  "command %r failed: %s" % (cmd, exc.args[-1]))
         if rc != 0:
             # and this reflects the command running but failing
             if not DEBUG:
                 cmd = executable
-            raise DistutilsExecError, \
-                  "command %r failed with exit status %d" % (cmd, rc)
-
-def _spawn_os2(cmd, search_path=1, verbose=0, dry_run=0):
-    executable = cmd[0]
-    if search_path:
-        # either we find one or it stays the same
-        executable = find_executable(executable) or executable
-    log.info(' '.join([executable] + cmd[1:]))
-    if not dry_run:
-        # spawnv for OS/2 EMX requires a full path to the .exe
-        try:
-            rc = os.spawnv(os.P_WAIT, executable, cmd)
-        except OSError, exc:
-            # this seems to happen when the command isn't found
-            if not DEBUG:
-                cmd = executable
-            raise DistutilsExecError, \
-                  "command %r failed: %s" % (cmd, exc[-1])
-        if rc != 0:
-            # and this reflects the command running but failing
-            if not DEBUG:
-                cmd = executable
-            log.debug("command %r failed with exit status %d" % (cmd, rc))
-            raise DistutilsExecError, \
-                  "command %r failed with exit status %d" % (cmd, rc)
+            raise DistutilsExecError(
+                  "command %r failed with exit status %d" % (cmd, rc))
 
 if sys.platform == 'darwin':
     from distutils import sysconfig
@@ -141,45 +113,43 @@ def _spawn_posix(cmd, search_path=1, verbose=0, dry_run=0):
                        MACOSX_DEPLOYMENT_TARGET=cur_target)
             exec_fn = search_path and os.execvpe or os.execve
     pid = os.fork()
-
-    if pid == 0:  # in the child
+    if pid == 0: # in the child
         try:
             if env is None:
                 exec_fn(executable, cmd)
             else:
                 exec_fn(executable, cmd, env)
-        except OSError, e:
+        except OSError as e:
             if not DEBUG:
                 cmd = executable
-            sys.stderr.write("unable to execute %r: %s\n" %
-                             (cmd, e.strerror))
+            sys.stderr.write("unable to execute %r: %s\n"
+                             % (cmd, e.strerror))
             os._exit(1)
 
         if not DEBUG:
             cmd = executable
         sys.stderr.write("unable to execute %r for unknown reasons" % cmd)
         os._exit(1)
-    else:   # in the parent
+    else: # in the parent
         # Loop until the child either exits or is terminated by a signal
         # (ie. keep waiting if it's merely stopped)
-        while 1:
+        while True:
             try:
                 pid, status = os.waitpid(pid, 0)
-            except OSError, exc:
+            except OSError as exc:
                 import errno
                 if exc.errno == errno.EINTR:
                     continue
                 if not DEBUG:
                     cmd = executable
-                raise DistutilsExecError, \
-                      "command %r failed: %s" % (cmd, exc[-1])
+                raise DistutilsExecError(
+                      "command %r failed: %s" % (cmd, exc.args[-1]))
             if os.WIFSIGNALED(status):
                 if not DEBUG:
                     cmd = executable
-                raise DistutilsExecError, \
-                      "command %r terminated by signal %d" % \
-                      (cmd, os.WTERMSIG(status))
-
+                raise DistutilsExecError(
+                      "command %r terminated by signal %d"
+                      % (cmd, os.WTERMSIG(status)))
             elif os.WIFEXITED(status):
                 exit_status = os.WEXITSTATUS(status)
                 if exit_status == 0:
@@ -187,19 +157,17 @@ def _spawn_posix(cmd, search_path=1, verbose=0, dry_run=0):
                 else:
                     if not DEBUG:
                         cmd = executable
-                    raise DistutilsExecError, \
-                          "command %r failed with exit status %d" % \
-                          (cmd, exit_status)
-
+                    raise DistutilsExecError(
+                          "command %r failed with exit status %d"
+                          % (cmd, exit_status))
             elif os.WIFSTOPPED(status):
                 continue
-
             else:
                 if not DEBUG:
                     cmd = executable
-                raise DistutilsExecError, \
-                      "unknown error executing %r: termination status %d" % \
-                      (cmd, status)
+                raise DistutilsExecError(
+                      "unknown error executing %r: termination status %d"
+                      % (cmd, status))
 
 def find_executable(executable, path=None):
     """Tries to find 'executable' in the directories listed in 'path'.
@@ -208,12 +176,12 @@ def find_executable(executable, path=None):
     os.environ['PATH'].  Returns the complete filename or None if not found.
     """
     if path is None:
-        path = os.environ.get('PATH', os.defpath)
+        path = os.environ['PATH']
 
     paths = path.split(os.pathsep)
     base, ext = os.path.splitext(executable)
 
-    if (sys.platform == 'win32' or os.name == 'os2') and (ext != '.exe'):
+    if (sys.platform == 'win32') and (ext != '.exe'):
         executable = executable + '.exe'
 
     if not os.path.isfile(executable):

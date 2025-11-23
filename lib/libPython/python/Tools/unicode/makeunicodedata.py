@@ -20,23 +20,49 @@
 # 2002-11-25 mvl  add UNIDATA_VERSION
 # 2004-05-29 perky add east asian width information
 # 2006-03-10 mvl  update to Unicode 4.1; add UCD 3.2 delta
+# 2008-06-11 gb   add PRINTABLE_MASK for Atsuo Ishimoto's ascii() patch
+# 2011-10-21 ezio add support for name aliases and named sequences
+# 2012-01    benjamin add full case mappings
 #
 # written by Fredrik Lundh (fredrik@pythonware.com)
 #
 
+import os
 import sys
+import zipfile
+
+from textwrap import dedent
 
 SCRIPT = sys.argv[0]
-VERSION = "2.6"
+VERSION = "3.2"
 
 # The Unicode Database
-UNIDATA_VERSION = "5.2.0"
+# --------------------
+# When changing UCD version please update
+#   * Doc/library/stdtypes.rst, and
+#   * Doc/library/unicodedata.rst
+#   * Doc/reference/lexical_analysis.rst (two occurrences)
+UNIDATA_VERSION = "6.3.0"
 UNICODE_DATA = "UnicodeData%s.txt"
 COMPOSITION_EXCLUSIONS = "CompositionExclusions%s.txt"
 EASTASIAN_WIDTH = "EastAsianWidth%s.txt"
-UNIHAN = "Unihan%s.txt"
+UNIHAN = "Unihan%s.zip"
+DERIVED_CORE_PROPERTIES = "DerivedCoreProperties%s.txt"
 DERIVEDNORMALIZATION_PROPS = "DerivedNormalizationProps%s.txt"
 LINE_BREAK = "LineBreak%s.txt"
+NAME_ALIASES = "NameAliases%s.txt"
+NAMED_SEQUENCES = "NamedSequences%s.txt"
+SPECIAL_CASING = "SpecialCasing%s.txt"
+CASE_FOLDING = "CaseFolding%s.txt"
+
+# Private Use Areas -- in planes 1, 15, 16
+PUA_1 = range(0xE000, 0xF900)
+PUA_15 = range(0xF0000, 0xFFFFE)
+PUA_16 = range(0x100000, 0x10FFFE)
+
+# we use this ranges of PUA_15 to store name aliases and named sequences
+NAME_ALIASES_START = 0xF0000
+NAMED_SEQUENCES_START = 0xF0200
 
 old_versions = ["3.2.0"]
 
@@ -47,7 +73,7 @@ CATEGORY_NAMES = [ "Cn", "Lu", "Ll", "Lt", "Mn", "Mc", "Me", "Nd",
 
 BIDIRECTIONAL_NAMES = [ "", "L", "LRE", "LRO", "R", "AL", "RLE", "RLO",
     "PDF", "EN", "ES", "ET", "AN", "CS", "NSM", "BN", "B", "S", "WS",
-    "ON" ]
+    "ON", "LRI", "RLI", "FSI", "PDI" ]
 
 EASTASIANWIDTH_NAMES = [ "F", "H", "W", "Na", "A", "N" ]
 
@@ -62,30 +88,36 @@ LINEBREAK_MASK = 0x10
 SPACE_MASK = 0x20
 TITLE_MASK = 0x40
 UPPER_MASK = 0x80
-NODELTA_MASK = 0x100
-NUMERIC_MASK = 0x200
+XID_START_MASK = 0x100
+XID_CONTINUE_MASK = 0x200
+PRINTABLE_MASK = 0x400
+NUMERIC_MASK = 0x800
+CASE_IGNORABLE_MASK = 0x1000
+CASED_MASK = 0x2000
+EXTENDED_CASE_MASK = 0x4000
+
+# these ranges need to match unicodedata.c:is_unified_ideograph
+cjk_ranges = [
+    ('3400', '4DB5'),
+    ('4E00', '9FCC'),
+    ('20000', '2A6D6'),
+    ('2A700', '2B734'),
+    ('2B740', '2B81D')
+]
 
 def maketables(trace=0):
 
-    print "--- Reading", UNICODE_DATA % "", "..."
+    print("--- Reading", UNICODE_DATA % "", "...")
 
     version = ""
-    unicode = UnicodeData(UNICODE_DATA % version,
-                          COMPOSITION_EXCLUSIONS % version,
-                          EASTASIAN_WIDTH % version,
-                          UNIHAN % version,
-                          DERIVEDNORMALIZATION_PROPS % version,
-                          LINE_BREAK % version)
+    unicode = UnicodeData(UNIDATA_VERSION)
 
-    print len(filter(None, unicode.table)), "characters"
+    print(len(list(filter(None, unicode.table))), "characters")
 
     for version in old_versions:
-        print "--- Reading", UNICODE_DATA % ("-"+version), "..."
-        old_unicode = UnicodeData(UNICODE_DATA % ("-"+version),
-                                  COMPOSITION_EXCLUSIONS % ("-"+version),
-                                  EASTASIAN_WIDTH % ("-"+version),
-                                  UNIHAN % ("-"+version))
-        print len(filter(None, old_unicode.table)), "characters"
+        print("--- Reading", UNICODE_DATA % ("-"+version), "...")
+        old_unicode = UnicodeData(version, cjk_check=False)
+        print(len(list(filter(None, old_unicode.table))), "characters")
         merge_old_version(version, unicode, old_unicode)
 
     makeunicodename(unicode, trace)
@@ -104,7 +136,7 @@ def makeunicodedata(unicode, trace):
 
     FILE = "Modules/unicodedata_db.h"
 
-    print "--- Preparing", FILE, "..."
+    print("--- Preparing", FILE, "...")
 
     # 1) database properties
 
@@ -146,7 +178,7 @@ def makeunicodedata(unicode, trace):
             if record[5]:
                 decomp = record[5].split()
                 if len(decomp) > 19:
-                    raise Exception, "character %x has a decomposition too large for nfd_nfkd" % char
+                    raise Exception("character %x has a decomposition too large for nfd_nfkd" % char)
                 # prefix
                 if decomp[0][0] == "<":
                     prefix = decomp.pop(0)
@@ -215,93 +247,92 @@ def makeunicodedata(unicode, trace):
         l = comp_last[l]
         comp_data[f*total_last+l] = char
 
-    print len(table), "unique properties"
-    print len(decomp_prefix), "unique decomposition prefixes"
-    print len(decomp_data), "unique decomposition entries:",
-    print decomp_size, "bytes"
-    print total_first, "first characters in NFC"
-    print total_last, "last characters in NFC"
-    print len(comp_pairs), "NFC pairs"
+    print(len(table), "unique properties")
+    print(len(decomp_prefix), "unique decomposition prefixes")
+    print(len(decomp_data), "unique decomposition entries:", end=' ')
+    print(decomp_size, "bytes")
+    print(total_first, "first characters in NFC")
+    print(total_last, "last characters in NFC")
+    print(len(comp_pairs), "NFC pairs")
 
-    print "--- Writing", FILE, "..."
+    print("--- Writing", FILE, "...")
 
     fp = open(FILE, "w")
-    print >>fp, "/* this file was generated by %s %s */" % (SCRIPT, VERSION)
-    print >>fp
-    print >>fp, '#define UNIDATA_VERSION "%s"' % UNIDATA_VERSION
-    print >>fp, "/* a list of unique database records */"
-    print >>fp, \
-          "const _PyUnicode_DatabaseRecord _PyUnicode_Database_Records[] = {"
+    print("/* this file was generated by %s %s */" % (SCRIPT, VERSION), file=fp)
+    print(file=fp)
+    print('#define UNIDATA_VERSION "%s"' % UNIDATA_VERSION, file=fp)
+    print("/* a list of unique database records */", file=fp)
+    print("const _PyUnicode_DatabaseRecord _PyUnicode_Database_Records[] = {", file=fp)
     for item in table:
-        print >>fp, "    {%d, %d, %d, %d, %d, %d}," % item
-    print >>fp, "};"
-    print >>fp
+        print("    {%d, %d, %d, %d, %d, %d}," % item, file=fp)
+    print("};", file=fp)
+    print(file=fp)
 
-    print >>fp, "/* Reindexing of NFC first characters. */"
-    print >>fp, "#define TOTAL_FIRST",total_first
-    print >>fp, "#define TOTAL_LAST",total_last
-    print >>fp, "struct reindex{int start;short count,index;};"
-    print >>fp, "static struct reindex nfc_first[] = {"
+    print("/* Reindexing of NFC first characters. */", file=fp)
+    print("#define TOTAL_FIRST",total_first, file=fp)
+    print("#define TOTAL_LAST",total_last, file=fp)
+    print("struct reindex{int start;short count,index;};", file=fp)
+    print("static struct reindex nfc_first[] = {", file=fp)
     for start,end in comp_first_ranges:
-        print >>fp,"  { %d, %d, %d}," % (start,end-start,comp_first[start])
-    print >>fp,"  {0,0,0}"
-    print >>fp,"};\n"
-    print >>fp, "static struct reindex nfc_last[] = {"
+        print("  { %d, %d, %d}," % (start,end-start,comp_first[start]), file=fp)
+    print("  {0,0,0}", file=fp)
+    print("};\n", file=fp)
+    print("static struct reindex nfc_last[] = {", file=fp)
     for start,end in comp_last_ranges:
-        print >>fp,"  { %d, %d, %d}," % (start,end-start,comp_last[start])
-    print >>fp,"  {0,0,0}"
-    print >>fp,"};\n"
+        print("  { %d, %d, %d}," % (start,end-start,comp_last[start]), file=fp)
+    print("  {0,0,0}", file=fp)
+    print("};\n", file=fp)
 
     # FIXME: <fl> the following tables could be made static, and
     # the support code moved into unicodedatabase.c
 
-    print >>fp, "/* string literals */"
-    print >>fp, "const char *_PyUnicode_CategoryNames[] = {"
+    print("/* string literals */", file=fp)
+    print("const char *_PyUnicode_CategoryNames[] = {", file=fp)
     for name in CATEGORY_NAMES:
-        print >>fp, "    \"%s\"," % name
-    print >>fp, "    NULL"
-    print >>fp, "};"
+        print("    \"%s\"," % name, file=fp)
+    print("    NULL", file=fp)
+    print("};", file=fp)
 
-    print >>fp, "const char *_PyUnicode_BidirectionalNames[] = {"
+    print("const char *_PyUnicode_BidirectionalNames[] = {", file=fp)
     for name in BIDIRECTIONAL_NAMES:
-        print >>fp, "    \"%s\"," % name
-    print >>fp, "    NULL"
-    print >>fp, "};"
+        print("    \"%s\"," % name, file=fp)
+    print("    NULL", file=fp)
+    print("};", file=fp)
 
-    print >>fp, "const char *_PyUnicode_EastAsianWidthNames[] = {"
+    print("const char *_PyUnicode_EastAsianWidthNames[] = {", file=fp)
     for name in EASTASIANWIDTH_NAMES:
-        print >>fp, "    \"%s\"," % name
-    print >>fp, "    NULL"
-    print >>fp, "};"
+        print("    \"%s\"," % name, file=fp)
+    print("    NULL", file=fp)
+    print("};", file=fp)
 
-    print >>fp, "static const char *decomp_prefix[] = {"
+    print("static const char *decomp_prefix[] = {", file=fp)
     for name in decomp_prefix:
-        print >>fp, "    \"%s\"," % name
-    print >>fp, "    NULL"
-    print >>fp, "};"
+        print("    \"%s\"," % name, file=fp)
+    print("    NULL", file=fp)
+    print("};", file=fp)
 
     # split record index table
     index1, index2, shift = splitbins(index, trace)
 
-    print >>fp, "/* index tables for the database records */"
-    print >>fp, "#define SHIFT", shift
+    print("/* index tables for the database records */", file=fp)
+    print("#define SHIFT", shift, file=fp)
     Array("index1", index1).dump(fp, trace)
     Array("index2", index2).dump(fp, trace)
 
     # split decomposition index table
     index1, index2, shift = splitbins(decomp_index, trace)
 
-    print >>fp, "/* decomposition data */"
+    print("/* decomposition data */", file=fp)
     Array("decomp_data", decomp_data).dump(fp, trace)
 
-    print >>fp, "/* index tables for the decomposition data */"
-    print >>fp, "#define DECOMP_SHIFT", shift
+    print("/* index tables for the decomposition data */", file=fp)
+    print("#define DECOMP_SHIFT", shift, file=fp)
     Array("decomp_index1", index1).dump(fp, trace)
     Array("decomp_index2", index2).dump(fp, trace)
 
     index, index2, shift = splitbins(comp_data, trace)
-    print >>fp, "/* NFC pairs */"
-    print >>fp, "#define COMP_SHIFT", shift
+    print("/* NFC pairs */", file=fp)
+    print("#define COMP_SHIFT", shift, file=fp)
     Array("comp_index", index).dump(fp, trace)
     Array("comp_data", index2).dump(fp, trace)
 
@@ -318,30 +349,30 @@ def makeunicodedata(unicode, trace):
                 index[i] = cache[record] = len(records)
                 records.append(record)
         index1, index2, shift = splitbins(index, trace)
-        print >>fp, "static const change_record change_records_%s[] = {" % cversion
+        print("static const change_record change_records_%s[] = {" % cversion, file=fp)
         for record in records:
-            print >>fp, "\t{ %s }," % ", ".join(map(str,record))
-        print >>fp, "};"
+            print("\t{ %s }," % ", ".join(map(str,record)), file=fp)
+        print("};", file=fp)
         Array("changes_%s_index" % cversion, index1).dump(fp, trace)
         Array("changes_%s_data" % cversion, index2).dump(fp, trace)
-        print >>fp, "static const change_record* get_change_%s(Py_UCS4 n)" % cversion
-        print >>fp, "{"
-        print >>fp, "\tint index;"
-        print >>fp, "\tif (n >= 0x110000) index = 0;"
-        print >>fp, "\telse {"
-        print >>fp, "\t\tindex = changes_%s_index[n>>%d];" % (cversion, shift)
-        print >>fp, "\t\tindex = changes_%s_data[(index<<%d)+(n & %d)];" % \
-              (cversion, shift, ((1<<shift)-1))
-        print >>fp, "\t}"
-        print >>fp, "\treturn change_records_%s+index;" % cversion
-        print >>fp, "}\n"
-        print >>fp, "static Py_UCS4 normalization_%s(Py_UCS4 n)" % cversion
-        print >>fp, "{"
-        print >>fp, "\tswitch(n) {"
+        print("static const change_record* get_change_%s(Py_UCS4 n)" % cversion, file=fp)
+        print("{", file=fp)
+        print("\tint index;", file=fp)
+        print("\tif (n >= 0x110000) index = 0;", file=fp)
+        print("\telse {", file=fp)
+        print("\t\tindex = changes_%s_index[n>>%d];" % (cversion, shift), file=fp)
+        print("\t\tindex = changes_%s_data[(index<<%d)+(n & %d)];" % \
+              (cversion, shift, ((1<<shift)-1)), file=fp)
+        print("\t}", file=fp)
+        print("\treturn change_records_%s+index;" % cversion, file=fp)
+        print("}\n", file=fp)
+        print("static Py_UCS4 normalization_%s(Py_UCS4 n)" % cversion, file=fp)
+        print("{", file=fp)
+        print("\tswitch(n) {", file=fp)
         for k, v in normalization:
-            print >>fp, "\tcase %s: return 0x%s;" % (hex(k), v)
-        print >>fp, "\tdefault: return 0;"
-        print >>fp, "\t}\n}\n"
+            print("\tcase %s: return 0x%s;" % (hex(k), v), file=fp)
+        print("\tdefault: return 0;", file=fp)
+        print("\t}\n}\n", file=fp)
 
     fp.close()
 
@@ -352,7 +383,7 @@ def makeunicodetype(unicode, trace):
 
     FILE = "Objects/unicodetype_db.h"
 
-    print "--- Preparing", FILE, "..."
+    print("--- Preparing", FILE, "...")
 
     # extract unicode types
     dummy = (0, 0, 0, 0, 0, 0)
@@ -362,6 +393,7 @@ def makeunicodetype(unicode, trace):
     numeric = {}
     spaces = []
     linebreaks = []
+    extra_casing = []
 
     for char in unicode.chars:
         record = unicode.table[char]
@@ -374,7 +406,7 @@ def makeunicodetype(unicode, trace):
             delta = True
             if category in ["Lm", "Lt", "Lu", "Ll", "Lo"]:
                 flags |= ALPHA_MASK
-            if category == "Ll":
+            if "Lowercase" in properties:
                 flags |= LOWER_MASK
             if 'Line_Break' in properties or bidirectional == "B":
                 flags |= LINEBREAK_MASK
@@ -384,9 +416,20 @@ def makeunicodetype(unicode, trace):
                 spaces.append(char)
             if category == "Lt":
                 flags |= TITLE_MASK
-            if category == "Lu":
+            if "Uppercase" in properties:
                 flags |= UPPER_MASK
-            # use delta predictor for upper/lower/title if it fits
+            if char == ord(" ") or category[0] not in ("C", "Z"):
+                flags |= PRINTABLE_MASK
+            if "XID_Start" in properties:
+                flags |= XID_START_MASK
+            if "XID_Continue" in properties:
+                flags |= XID_CONTINUE_MASK
+            if "Cased" in properties:
+                flags |= CASED_MASK
+            if "Case_Ignorable" in properties:
+                flags |= CASE_IGNORABLE_MASK
+            sc = unicode.special_casing.get(char)
+            cf = unicode.case_folding.get(char, [char])
             if record[12]:
                 upper = int(record[12], 16)
             else:
@@ -398,23 +441,39 @@ def makeunicodetype(unicode, trace):
             if record[14]:
                 title = int(record[14], 16)
             else:
-                # UCD.html says that a missing title char means that
-                # it defaults to the uppercase character, not to the
-                # character itself. Apparently, in the current UCD (5.x)
-                # this feature is never used
                 title = upper
-            upper_d = upper - char
-            lower_d = lower - char
-            title_d = title - char
-            if -32768 <= upper_d <= 32767 and \
-               -32768 <= lower_d <= 32767 and \
-               -32768 <= title_d <= 32767:
-                # use deltas
-                upper = upper_d & 0xffff
-                lower = lower_d & 0xffff
-                title = title_d & 0xffff
+            if sc is None and cf != [lower]:
+                sc = ([lower], [title], [upper])
+            if sc is None:
+                if upper == lower == title:
+                    upper = lower = title = 0
+                else:
+                    upper = upper - char
+                    lower = lower - char
+                    title = title - char
+                    assert (abs(upper) <= 2147483647 and
+                            abs(lower) <= 2147483647 and
+                            abs(title) <= 2147483647)
             else:
-                flags |= NODELTA_MASK
+                # This happens either when some character maps to more than one
+                # character in uppercase, lowercase, or titlecase or the
+                # casefolded version of the character is different from the
+                # lowercase. The extra characters are stored in a different
+                # array.
+                flags |= EXTENDED_CASE_MASK
+                lower = len(extra_casing) | (len(sc[0]) << 24)
+                extra_casing.extend(sc[0])
+                if cf != sc[0]:
+                    lower |= len(cf) << 20
+                    extra_casing.extend(cf)
+                upper = len(extra_casing) | (len(sc[2]) << 24)
+                extra_casing.extend(sc[2])
+                # Title is probably equal to upper.
+                if sc[1] == sc[2]:
+                    title = upper
+                else:
+                    title = len(extra_casing) | (len(sc[1]) << 24)
+                    extra_casing.extend(sc[1])
             # decimal digit, integer digit
             decimal = 0
             if record[6]:
@@ -437,124 +496,96 @@ def makeunicodetype(unicode, trace):
                 table.append(item)
             index[char] = i
 
-    print len(table), "unique character type entries"
-    print sum(map(len, numeric.values())), "numeric code points"
-    print len(spaces), "whitespace code points"
-    print len(linebreaks), "linebreak code points"
+    print(len(table), "unique character type entries")
+    print(sum(map(len, numeric.values())), "numeric code points")
+    print(len(spaces), "whitespace code points")
+    print(len(linebreaks), "linebreak code points")
+    print(len(extra_casing), "extended case array")
 
-    print "--- Writing", FILE, "..."
+    print("--- Writing", FILE, "...")
 
     fp = open(FILE, "w")
-    print >>fp, "/* this file was generated by %s %s */" % (SCRIPT, VERSION)
-    print >>fp
-    print >>fp, "/* a list of unique character type descriptors */"
-    print >>fp, "const _PyUnicode_TypeRecord _PyUnicode_TypeRecords[] = {"
+    print("/* this file was generated by %s %s */" % (SCRIPT, VERSION), file=fp)
+    print(file=fp)
+    print("/* a list of unique character type descriptors */", file=fp)
+    print("const _PyUnicode_TypeRecord _PyUnicode_TypeRecords[] = {", file=fp)
     for item in table:
-        print >>fp, "    {%d, %d, %d, %d, %d, %d}," % item
-    print >>fp, "};"
-    print >>fp
+        print("    {%d, %d, %d, %d, %d, %d}," % item, file=fp)
+    print("};", file=fp)
+    print(file=fp)
+
+    print("/* extended case mappings */", file=fp)
+    print(file=fp)
+    print("const Py_UCS4 _PyUnicode_ExtendedCase[] = {", file=fp)
+    for c in extra_casing:
+        print("    %d," % c, file=fp)
+    print("};", file=fp)
+    print(file=fp)
 
     # split decomposition index table
     index1, index2, shift = splitbins(index, trace)
 
-    print >>fp, "/* type indexes */"
-    print >>fp, "#define SHIFT", shift
+    print("/* type indexes */", file=fp)
+    print("#define SHIFT", shift, file=fp)
     Array("index1", index1).dump(fp, trace)
     Array("index2", index2).dump(fp, trace)
 
     # Generate code for _PyUnicode_ToNumeric()
     numeric_items = sorted(numeric.items())
-    print >>fp, '/* Returns the numeric value as double for Unicode characters'
-    print >>fp, ' * having this property, -1.0 otherwise.'
-    print >>fp, ' */'
-    print >>fp, 'double _PyUnicode_ToNumeric(Py_UNICODE ch)'
-    print >>fp, '{'
-    print >>fp, '    switch (ch) {'
+    print('/* Returns the numeric value as double for Unicode characters', file=fp)
+    print(' * having this property, -1.0 otherwise.', file=fp)
+    print(' */', file=fp)
+    print('double _PyUnicode_ToNumeric(Py_UCS4 ch)', file=fp)
+    print('{', file=fp)
+    print('    switch (ch) {', file=fp)
     for value, codepoints in numeric_items:
         # Turn text into float literals
         parts = value.split('/')
         parts = [repr(float(part)) for part in parts]
         value = '/'.join(parts)
 
-        haswide = False
-        hasnonewide = False
         codepoints.sort()
         for codepoint in codepoints:
-            if codepoint < 0x10000:
-                hasnonewide = True
-            if codepoint >= 0x10000 and not haswide:
-                print >>fp, '#ifdef Py_UNICODE_WIDE'
-                haswide = True
-            print >>fp, '    case 0x%04X:' % (codepoint,)
-        if haswide and hasnonewide:
-            print >>fp, '#endif'
-        print >>fp, '        return (double) %s;' % (value,)
-        if haswide and not hasnonewide:
-            print >>fp, '#endif'
-    print >>fp,'    }'
-    print >>fp,'    return -1.0;'
-    print >>fp,'}'
-    print >>fp
+            print('    case 0x%04X:' % (codepoint,), file=fp)
+        print('        return (double) %s;' % (value,), file=fp)
+    print('    }', file=fp)
+    print('    return -1.0;', file=fp)
+    print('}', file=fp)
+    print(file=fp)
 
     # Generate code for _PyUnicode_IsWhitespace()
-    print >>fp, "/* Returns 1 for Unicode characters having the bidirectional"
-    print >>fp, " * type 'WS', 'B' or 'S' or the category 'Zs', 0 otherwise."
-    print >>fp, " */"
-    print >>fp, 'int _PyUnicode_IsWhitespace(register const Py_UNICODE ch)'
-    print >>fp, '{'
-    print >>fp, '#ifdef WANT_WCTYPE_FUNCTIONS'
-    print >>fp, '    return iswspace(ch);'
-    print >>fp, '#else'
-    print >>fp, '    switch (ch) {'
+    print("/* Returns 1 for Unicode characters having the bidirectional", file=fp)
+    print(" * type 'WS', 'B' or 'S' or the category 'Zs', 0 otherwise.", file=fp)
+    print(" */", file=fp)
+    print('int _PyUnicode_IsWhitespace(const Py_UCS4 ch)', file=fp)
+    print('{', file=fp)
+    print('    switch (ch) {', file=fp)
 
-    haswide = False
-    hasnonewide = False
     for codepoint in sorted(spaces):
-        if codepoint < 0x10000:
-            hasnonewide = True
-        if codepoint >= 0x10000 and not haswide:
-            print >>fp, '#ifdef Py_UNICODE_WIDE'
-            haswide = True
-        print >>fp, '    case 0x%04X:' % (codepoint,)
-    if haswide and hasnonewide:
-        print >>fp, '#endif'
-    print >>fp, '        return 1;'
-    if haswide and not hasnonewide:
-        print >>fp, '#endif'
+        print('    case 0x%04X:' % (codepoint,), file=fp)
+    print('        return 1;', file=fp)
 
-    print >>fp,'    }'
-    print >>fp,'    return 0;'
-    print >>fp, '#endif'
-    print >>fp,'}'
-    print >>fp
+    print('    }', file=fp)
+    print('    return 0;', file=fp)
+    print('}', file=fp)
+    print(file=fp)
 
     # Generate code for _PyUnicode_IsLinebreak()
-    print >>fp, "/* Returns 1 for Unicode characters having the line break"
-    print >>fp, " * property 'BK', 'CR', 'LF' or 'NL' or having bidirectional"
-    print >>fp, " * type 'B', 0 otherwise."
-    print >>fp, " */"
-    print >>fp, 'int _PyUnicode_IsLinebreak(register const Py_UNICODE ch)'
-    print >>fp, '{'
-    print >>fp, '    switch (ch) {'
-    haswide = False
-    hasnonewide = False
+    print("/* Returns 1 for Unicode characters having the line break", file=fp)
+    print(" * property 'BK', 'CR', 'LF' or 'NL' or having bidirectional", file=fp)
+    print(" * type 'B', 0 otherwise.", file=fp)
+    print(" */", file=fp)
+    print('int _PyUnicode_IsLinebreak(const Py_UCS4 ch)', file=fp)
+    print('{', file=fp)
+    print('    switch (ch) {', file=fp)
     for codepoint in sorted(linebreaks):
-        if codepoint < 0x10000:
-            hasnonewide = True
-        if codepoint >= 0x10000 and not haswide:
-            print >>fp, '#ifdef Py_UNICODE_WIDE'
-            haswide = True
-        print >>fp, '    case 0x%04X:' % (codepoint,)
-    if haswide and hasnonewide:
-        print >>fp, '#endif'
-    print >>fp, '        return 1;'
-    if haswide and not hasnonewide:
-        print >>fp, '#endif'
+        print('    case 0x%04X:' % (codepoint,), file=fp)
+    print('        return 1;', file=fp)
 
-    print >>fp,'    }'
-    print >>fp,'    return 0;'
-    print >>fp,'}'
-    print >>fp
+    print('    }', file=fp)
+    print('    return 0;', file=fp)
+    print('}', file=fp)
+    print(file=fp)
 
     fp.close()
 
@@ -565,7 +596,7 @@ def makeunicodename(unicode, trace):
 
     FILE = "Modules/unicodename_db.h"
 
-    print "--- Preparing", FILE, "..."
+    print("--- Preparing", FILE, "...")
 
     # collect names
     names = [None] * len(unicode.chars)
@@ -577,7 +608,7 @@ def makeunicodename(unicode, trace):
             if name and name[0] != "<":
                 names[char] = name + chr(0)
 
-    print len(filter(lambda n: n is not None, names)), "distinct names"
+    print(len(list(n for n in names if n is not None)), "distinct names")
 
     # collect unique words from names (note that we differ between
     # words inside a sentence, and words ending a sentence.  the
@@ -598,9 +629,9 @@ def makeunicodename(unicode, trace):
                 else:
                     words[w] = [len(words)]
 
-    print n, "words in text;", b, "bytes"
+    print(n, "words in text;", b, "bytes")
 
-    wordlist = words.items()
+    wordlist = list(words.items())
 
     # sort on falling frequency, then by name
     def word_key(a):
@@ -612,19 +643,19 @@ def makeunicodename(unicode, trace):
     escapes = 0
     while escapes * 256 < len(wordlist):
         escapes = escapes + 1
-    print escapes, "escapes"
+    print(escapes, "escapes")
 
     short = 256 - escapes
 
     assert short > 0
 
-    print short, "short indexes in lexicon"
+    print(short, "short indexes in lexicon")
 
     # statistics
     n = 0
     for i in range(short):
         n = n + len(wordlist[i][1])
-    print n, "short indexes in phrasebook"
+    print(n, "short indexes in phrasebook")
 
     # pick the most commonly used words, and sort the rest on falling
     # length (to maximize overlap)
@@ -654,7 +685,7 @@ def makeunicodename(unicode, trace):
         words[w] = len(lexicon_offset)
         lexicon_offset.append(o)
 
-    lexicon = map(ord, lexicon)
+    lexicon = list(map(ord, lexicon))
 
     # generate phrasebook from names and lexicon
     phrasebook = [0]
@@ -693,30 +724,63 @@ def makeunicodename(unicode, trace):
 
     codehash = Hash("code", data, 47)
 
-    print "--- Writing", FILE, "..."
+    print("--- Writing", FILE, "...")
 
     fp = open(FILE, "w")
-    print >>fp, "/* this file was generated by %s %s */" % (SCRIPT, VERSION)
-    print >>fp
-    print >>fp, "#define NAME_MAXLEN", 256
-    print >>fp
-    print >>fp, "/* lexicon */"
+    print("/* this file was generated by %s %s */" % (SCRIPT, VERSION), file=fp)
+    print(file=fp)
+    print("#define NAME_MAXLEN", 256, file=fp)
+    print(file=fp)
+    print("/* lexicon */", file=fp)
     Array("lexicon", lexicon).dump(fp, trace)
     Array("lexicon_offset", lexicon_offset).dump(fp, trace)
 
     # split decomposition index table
     offset1, offset2, shift = splitbins(phrasebook_offset, trace)
 
-    print >>fp, "/* code->name phrasebook */"
-    print >>fp, "#define phrasebook_shift", shift
-    print >>fp, "#define phrasebook_short", short
+    print("/* code->name phrasebook */", file=fp)
+    print("#define phrasebook_shift", shift, file=fp)
+    print("#define phrasebook_short", short, file=fp)
 
     Array("phrasebook", phrasebook).dump(fp, trace)
     Array("phrasebook_offset1", offset1).dump(fp, trace)
     Array("phrasebook_offset2", offset2).dump(fp, trace)
 
-    print >>fp, "/* name->code dictionary */"
+    print("/* name->code dictionary */", file=fp)
     codehash.dump(fp, trace)
+
+    print(file=fp)
+    print('static const unsigned int aliases_start = %#x;' %
+          NAME_ALIASES_START, file=fp)
+    print('static const unsigned int aliases_end = %#x;' %
+          (NAME_ALIASES_START + len(unicode.aliases)), file=fp)
+
+    print('static const unsigned int name_aliases[] = {', file=fp)
+    for name, codepoint in unicode.aliases:
+        print('    0x%04X,' % codepoint, file=fp)
+    print('};', file=fp)
+
+    # In Unicode 6.0.0, the sequences contain at most 4 BMP chars,
+    # so we are using Py_UCS2 seq[4].  This needs to be updated if longer
+    # sequences or sequences with non-BMP chars are added.
+    # unicodedata_lookup should be adapted too.
+    print(dedent("""
+        typedef struct NamedSequence {
+            int seqlen;
+            Py_UCS2 seq[4];
+        } named_sequence;
+        """), file=fp)
+
+    print('static const unsigned int named_sequences_start = %#x;' %
+          NAMED_SEQUENCES_START, file=fp)
+    print('static const unsigned int named_sequences_end = %#x;' %
+          (NAMED_SEQUENCES_START + len(unicode.named_sequences)), file=fp)
+
+    print('static const named_sequence named_sequences[] = {', file=fp)
+    for name, sequence in unicode.named_sequences:
+        seq_str = ', '.join('0x%04X' % cp for cp in sequence)
+        print('    {%d, {%s}},' % (len(sequence), seq_str), file=fp)
+    print('};', file=fp)
 
     fp.close()
 
@@ -724,7 +788,7 @@ def makeunicodename(unicode, trace):
 def merge_old_version(version, new, old):
     # Changes to exclusion file not implemented yet
     if old.exclusions != new.exclusions:
-        raise NotImplementedError, "exclusions differ"
+        raise NotImplementedError("exclusions differ")
 
     # In these change records, 0xFF means "no change"
     bidir_changes = [0xFF]*0x110000
@@ -752,7 +816,11 @@ def merge_old_version(version, new, old):
             for k in range(len(old.table[i])):
                 if old.table[i][k] != new.table[i][k]:
                     value = old.table[i][k]
-                    if k == 2:
+                    if k == 1 and i in PUA_15:
+                        # the name is not set in the old.table, but in the
+                        # new.table we are using it for aliases and named seq
+                        assert value == ''
+                    elif k == 2:
                         #print "CATEGORY",hex(i), old.table[i][k], new.table[i][k]
                         category_changes[i] = CATEGORY_NAMES.index(value)
                     elif k == 4:
@@ -794,16 +862,35 @@ def merge_old_version(version, new, old):
                         # change to simple titlecase mapping; ignore
                         pass
                     elif k == 16:
-                        # change to properties; not yet
+                        # derived property changes; not yet
+                        pass
+                    elif k == 17:
+                        # normalization quickchecks are not performed
+                        # for older versions
                         pass
                     else:
                         class Difference(Exception):pass
-                        raise Difference, (hex(i), k, old.table[i], new.table[i])
-    new.changed.append((version, zip(bidir_changes, category_changes,
+                        raise Difference(hex(i), k, old.table[i], new.table[i])
+    new.changed.append((version, list(zip(bidir_changes, category_changes,
                                      decimal_changes, mirrored_changes,
-                                     numeric_changes),
+                                     numeric_changes)),
                         normalization_changes))
 
+def open_data(template, version):
+    local = template % ('-'+version,)
+    if not os.path.exists(local):
+        import urllib.request
+        if version == '3.2.0':
+            # irregular url structure
+            url = 'http://www.unicode.org/Public/3.2-Update/' + local
+        else:
+            url = ('http://www.unicode.org/Public/%s/ucd/'+template) % (version, '')
+        urllib.request.urlretrieve(url, filename=local)
+    if local.endswith('.txt'):
+        return open(local, encoding='utf-8')
+    else:
+        # Unihan.zip
+        return open(local, 'rb')
 
 # --------------------------------------------------------------------
 # the following support code is taken from the unidb utilities
@@ -816,21 +903,24 @@ class UnicodeData:
     # [ID, name, category, combining, bidi, decomp,  (6)
     #  decimal, digit, numeric, bidi-mirrored, Unicode-1-name, (11)
     #  ISO-comment, uppercase, lowercase, titlecase, ea-width, (16)
-    #  properties] (17)
+    #  derived-props] (17)
 
-    def __init__(self, filename, exclusions, eastasianwidth, unihan,
-                 derivednormalizationprops=None, linebreakprops=None,
-                 expand=1):
+    def __init__(self, version,
+                 linebreakprops=False,
+                 expand=1,
+                 cjk_check=True):
         self.changed = []
-        file = open(filename)
         table = [None] * 0x110000
-        while 1:
-            s = file.readline()
-            if not s:
-                break
-            s = s.strip().split(";")
-            char = int(s[0], 16)
-            table[char] = s
+        with open_data(UNICODE_DATA, version) as file:
+            while 1:
+                s = file.readline()
+                if not s:
+                    break
+                s = s.strip().split(";")
+                char = int(s[0], 16)
+                table[char] = s
+
+        cjk_ranges_found = []
 
         # expand first-last ranges
         if expand:
@@ -842,44 +932,96 @@ class UnicodeData:
                         s[1] = ""
                         field = s
                     elif s[1][-5:] == "Last>":
+                        if s[1].startswith("<CJK Ideograph"):
+                            cjk_ranges_found.append((field[0],
+                                                     s[0]))
                         s[1] = ""
                         field = None
                 elif field:
                     f2 = field[:]
                     f2[0] = "%X" % i
                     table[i] = f2
+            if cjk_check and cjk_ranges != cjk_ranges_found:
+                raise ValueError("CJK ranges deviate: have %r" % cjk_ranges_found)
 
         # public attributes
-        self.filename = filename
+        self.filename = UNICODE_DATA % ''
         self.table = table
-        self.chars = range(0x110000) # unicode 3.2
+        self.chars = list(range(0x110000)) # unicode 3.2
 
-        file = open(exclusions)
+        # check for name aliases and named sequences, see #12753
+        # aliases and named sequences are not in 3.2.0
+        if version != '3.2.0':
+            self.aliases = []
+            # store aliases in the Private Use Area 15, in range U+F0000..U+F00FF,
+            # in order to take advantage of the compression and lookup
+            # algorithms used for the other characters
+            pua_index = NAME_ALIASES_START
+            with open_data(NAME_ALIASES, version) as file:
+                for s in file:
+                    s = s.strip()
+                    if not s or s.startswith('#'):
+                        continue
+                    char, name, abbrev = s.split(';')
+                    char = int(char, 16)
+                    self.aliases.append((name, char))
+                    # also store the name in the PUA 1
+                    self.table[pua_index][1] = name
+                    pua_index += 1
+            assert pua_index - NAME_ALIASES_START == len(self.aliases)
+
+            self.named_sequences = []
+            # store named sequences in the PUA 1, in range U+F0100..,
+            # in order to take advantage of the compression and lookup
+            # algorithms used for the other characters.
+
+            assert pua_index < NAMED_SEQUENCES_START
+            pua_index = NAMED_SEQUENCES_START
+            with open_data(NAMED_SEQUENCES, version) as file:
+                for s in file:
+                    s = s.strip()
+                    if not s or s.startswith('#'):
+                        continue
+                    name, chars = s.split(';')
+                    chars = tuple(int(char, 16) for char in chars.split())
+                    # check that the structure defined in makeunicodename is OK
+                    assert 2 <= len(chars) <= 4, "change the Py_UCS2 array size"
+                    assert all(c <= 0xFFFF for c in chars), ("use Py_UCS4 in "
+                        "the NamedSequence struct and in unicodedata_lookup")
+                    self.named_sequences.append((name, chars))
+                    # also store these in the PUA 1
+                    self.table[pua_index][1] = name
+                    pua_index += 1
+            assert pua_index - NAMED_SEQUENCES_START == len(self.named_sequences)
+
         self.exclusions = {}
-        for s in file:
-            s = s.strip()
-            if not s:
-                continue
-            if s[0] == '#':
-                continue
-            char = int(s.split()[0],16)
-            self.exclusions[char] = 1
+        with open_data(COMPOSITION_EXCLUSIONS, version) as file:
+            for s in file:
+                s = s.strip()
+                if not s:
+                    continue
+                if s[0] == '#':
+                    continue
+                char = int(s.split()[0],16)
+                self.exclusions[char] = 1
 
         widths = [None] * 0x110000
-        for s in open(eastasianwidth):
-            s = s.strip()
-            if not s:
-                continue
-            if s[0] == '#':
-                continue
-            s = s.split()[0].split(';')
-            if '..' in s[0]:
-                first, last = [int(c, 16) for c in s[0].split('..')]
-                chars = range(first, last+1)
-            else:
-                chars = [int(s[0], 16)]
-            for char in chars:
-                widths[char] = s[1]
+        with open_data(EASTASIAN_WIDTH, version) as file:
+            for s in file:
+                s = s.strip()
+                if not s:
+                    continue
+                if s[0] == '#':
+                    continue
+                s = s.split()[0].split(';')
+                if '..' in s[0]:
+                    first, last = [int(c, 16) for c in s[0].split('..')]
+                    chars = list(range(first, last+1))
+                else:
+                    chars = [int(s[0], 16)]
+                for char in chars:
+                    widths[char] = s[1]
+
         for i in range(0, 0x110000):
             if table[i] is not None:
                 table[i].append(widths[i])
@@ -887,8 +1029,29 @@ class UnicodeData:
         for i in range(0, 0x110000):
             if table[i] is not None:
                 table[i].append(set())
-        if linebreakprops:
-            for s in open(linebreakprops):
+
+        with open_data(DERIVED_CORE_PROPERTIES, version) as file:
+            for s in file:
+                s = s.split('#', 1)[0].strip()
+                if not s:
+                    continue
+
+                r, p = s.split(";")
+                r = r.strip()
+                p = p.strip()
+                if ".." in r:
+                    first, last = [int(c, 16) for c in r.split('..')]
+                    chars = list(range(first, last+1))
+                else:
+                    chars = [int(r, 16)]
+                for char in chars:
+                    if table[char]:
+                        # Some properties (e.g. Default_Ignorable_Code_Point)
+                        # apply to unassigned code points; ignore them
+                        table[char][-1].add(p)
+
+        with open_data(LINE_BREAK, version) as file:
+            for s in file:
                 s = s.partition('#')[0]
                 s = [i.strip() for i in s.split(';')]
                 if len(s) < 2 or s[1] not in MANDATORY_LINE_BREAKS:
@@ -900,10 +1063,17 @@ class UnicodeData:
                 for char in range(first, last+1):
                     table[char][-1].add('Line_Break')
 
-        if derivednormalizationprops:
-            quickchecks = [0] * 0x110000 # default is Yes
-            qc_order = 'NFD_QC NFKD_QC NFC_QC NFKC_QC'.split()
-            for s in open(derivednormalizationprops):
+        # We only want the quickcheck properties
+        # Format: NF?_QC; Y(es)/N(o)/M(aybe)
+        # Yes is the default, hence only N and M occur
+        # In 3.2.0, the format was different (NF?_NO)
+        # The parsing will incorrectly determine these as
+        # "yes", however, unicodedata.c will not perform quickchecks
+        # for older versions, and no delta records will be created.
+        quickchecks = [0] * 0x110000
+        qc_order = 'NFD_QC NFKD_QC NFC_QC NFKC_QC'.split()
+        with open_data(DERIVEDNORMALIZATION_PROPS, version) as file:
+            for s in file:
                 if '#' in s:
                     s = s[:s.index('#')]
                 s = [i.strip() for i in s.split(';')]
@@ -919,11 +1089,17 @@ class UnicodeData:
                 for char in range(first, last+1):
                     assert not (quickchecks[char]>>quickcheck_shift)&3
                     quickchecks[char] |= quickcheck
-            for i in range(0, 0x110000):
-                if table[i] is not None:
-                    table[i].append(quickchecks[i])
+        for i in range(0, 0x110000):
+            if table[i] is not None:
+                table[i].append(quickchecks[i])
 
-        for line in open(unihan):
+        with open_data(UNIHAN, version) as file:
+            zip = zipfile.ZipFile(file)
+            if version == '3.2.0':
+                data = zip.open('Unihan-3.2.0.txt').read()
+            else:
+                data = zip.open('Unihan_NumericValues.txt').read()
+        for line in data.decode("utf-8").splitlines():
             if not line.startswith('U+'):
                 continue
             code, tag, value = line.split(None, 3)[:3]
@@ -935,10 +1111,38 @@ class UnicodeData:
             # Patch the numeric field
             if table[i] is not None:
                 table[i][8] = value
+        sc = self.special_casing = {}
+        with open_data(SPECIAL_CASING, version) as file:
+            for s in file:
+                s = s[:-1].split('#', 1)[0]
+                if not s:
+                    continue
+                data = s.split("; ")
+                if data[4]:
+                    # We ignore all conditionals (since they depend on
+                    # languages) except for one, which is hardcoded. See
+                    # handle_capital_sigma in unicodeobject.c.
+                    continue
+                c = int(data[0], 16)
+                lower = [int(char, 16) for char in data[1].split()]
+                title = [int(char, 16) for char in data[2].split()]
+                upper = [int(char, 16) for char in data[3].split()]
+                sc[c] = (lower, title, upper)
+        cf = self.case_folding = {}
+        if version != '3.2.0':
+            with open_data(CASE_FOLDING, version) as file:
+                for s in file:
+                    s = s[:-1].split('#', 1)[0]
+                    if not s:
+                        continue
+                    data = s.split("; ")
+                    if data[1] in "CF":
+                        c = int(data[0], 16)
+                        cf[c] = [int(char, 16) for char in data[2].split()]
 
     def uselatin1(self):
         # restrict character range to ISO Latin 1
-        self.chars = range(256)
+        self.chars = list(range(256))
 
 # hash table tools
 
@@ -950,7 +1154,7 @@ def myhash(s, magic):
     h = 0
     for c in map(ord, s.upper()):
         h = (h * magic) + c
-        ix = h & 0xff000000L
+        ix = h & 0xff000000
         if ix:
             h = (h ^ ((ix>>24) & 0xff)) & 0x00ffffff
     return h
@@ -972,9 +1176,9 @@ class Hash:
                 poly = size + poly
                 break
         else:
-            raise AssertionError, "ran out of polynominals"
+            raise AssertionError("ran out of polynomials")
 
-        print size, "slots in hash table"
+        print(size, "slots in hash table")
 
         table = [None] * size
 
@@ -1006,7 +1210,7 @@ class Hash:
                 if incr > mask:
                     incr = incr ^ poly
 
-        print n, "collisions"
+        print(n, "collisions")
         self.collisions = n
 
         for i in range(len(table)):
@@ -1038,7 +1242,7 @@ class Array:
         # write data to file, as a C array
         size = getsize(self.data)
         if trace:
-            print >>sys.stderr, self.name+":", size*len(self.data), "bytes"
+            print(self.name+":", size*len(self.data), "bytes", file=sys.stderr)
         file.write("static ")
         if size == 1:
             file.write("unsigned char")
@@ -1087,10 +1291,10 @@ def splitbins(t, trace=0):
 
     if trace:
         def dump(t1, t2, shift, bytes):
-            print >>sys.stderr, "%d+%d bins at shift %d; %d bytes" % (
-                len(t1), len(t2), shift, bytes)
-        print >>sys.stderr, "Size of original table:", len(t)*getsize(t), \
-                            "bytes"
+            print("%d+%d bins at shift %d; %d bytes" % (
+                len(t1), len(t2), shift, bytes), file=sys.stderr)
+        print("Size of original table:", len(t)*getsize(t), \
+                            "bytes", file=sys.stderr)
     n = len(t)-1    # last valid index
     maxshift = 0    # the most we can shift n and still have something left
     if n > 0:
@@ -1098,7 +1302,7 @@ def splitbins(t, trace=0):
             n >>= 1
             maxshift += 1
     del n
-    bytes = sys.maxint  # smallest total size so far
+    bytes = sys.maxsize  # smallest total size so far
     t = tuple(t)    # so slices can be dict keys
     for shift in range(maxshift + 1):
         t1 = []
@@ -1122,12 +1326,12 @@ def splitbins(t, trace=0):
             bytes = b
     t1, t2, shift = best
     if trace:
-        print >>sys.stderr, "Best:",
+        print("Best:", end=' ', file=sys.stderr)
         dump(t1, t2, shift, bytes)
     if __debug__:
         # exhaustively verify that the decomposition is correct
         mask = ~((~0) << shift) # i.e., low-bit mask of shift bits
-        for i in xrange(len(t)):
+        for i in range(len(t)):
             assert t[i] == t2[(t1[i >> shift] << shift) + (i & mask)]
     return best
 

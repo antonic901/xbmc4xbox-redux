@@ -1,8 +1,8 @@
 """
 Dialog for building Tkinter accelerator key bindings
 """
-from Tkinter import *
-import tkMessageBox
+from tkinter import *
+import tkinter.messagebox as tkMessageBox
 import string
 import sys
 
@@ -167,7 +167,7 @@ class GetKeysDialog(Toplevel):
         if finalKey:
             finalKey = self.TranslateKey(finalKey, modifiers)
             keyList.append(finalKey)
-        self.keyString.set('<' + string.join(keyList,'-') + '>')
+        self.keyString.set('<' + '-'.join(keyList) + '>')
 
     def GetModifiers(self):
         modList = [variable.get() for variable in self.modifier_vars]
@@ -182,7 +182,7 @@ class GetKeysDialog(Toplevel):
 
     def LoadFinalKeyList(self):
         #these tuples are also available for use in validity checks
-        self.functionKeys=('F1','F2','F3','F4','F5','F6','F7','F8','F9',
+        self.functionKeys=('F1','F2','F2','F4','F5','F6','F7','F8','F9',
                 'F10','F11','F12')
         self.alphanumKeys=tuple(string.ascii_lowercase+string.digits)
         self.punctuationKeys=tuple('~!@#%^&*()_-+={}[]|;:,.<>/?')
@@ -207,7 +207,7 @@ class GetKeysDialog(Toplevel):
                 '/':'slash','?':'question','Page Up':'Prior','Page Down':'Next',
                 'Left Arrow':'Left','Right Arrow':'Right','Up Arrow':'Up',
                 'Down Arrow': 'Down', 'Tab':'Tab'}
-        if key in translateDict.keys():
+        if key in translateDict:
             key = translateDict[key]
         if 'Shift' in modifiers and key in string.ascii_lowercase:
             key = key.upper()
@@ -217,12 +217,10 @@ class GetKeysDialog(Toplevel):
     def OK(self, event=None):
         if self.advanced or self.KeysOK():  # doesn't check advanced string yet
             self.result=self.keyString.get()
-            self.grab_release()
             self.destroy()
 
     def Cancel(self, event=None):
         self.result=''
-        self.grab_release()
         self.destroy()
 
     def KeysOK(self):

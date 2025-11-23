@@ -61,7 +61,7 @@ how Python is developed: in May 2000 the Python developers began using the tools
 made available by SourceForge for storing  source code, tracking bug reports,
 and managing the queue of patch submissions.  To report bugs or submit patches
 for Python 2.0, use the bug tracking and patch manager tools available from
-Python's project page, located at https://sourceforge.net/projects/python/.
+Python's project page, located at http://sourceforge.net/projects/python/.
 
 The most important of the services now hosted at SourceForge is the Python CVS
 tree, the version-controlled repository containing the source code for Python.
@@ -130,7 +130,7 @@ Guidelines":
 Read the rest of PEP 1 for the details of the PEP editorial process, style, and
 format.  PEPs are kept in the Python CVS tree on SourceForge, though they're not
 part of the Python 2.0 distribution, and are also available in HTML form from
-https://www.python.org/dev/peps/.  As of September 2000, there are 25 PEPS, ranging
+https://www.python.org/peps/.  As of September 2000, there are 25 PEPS, ranging
 from PEP 201, "Lockstep Iteration", to PEP 225, "Elementwise/Objectwise
 Operators".
 
@@ -145,8 +145,8 @@ strings.  Unicode uses 16-bit numbers to represent characters instead of the
 8-bit number used by ASCII, meaning that 65,536 distinct characters can be
 supported.
 
-The final interface for Unicode support was arrived at through countless
-often-stormy discussions on the python-dev mailing list, and mostly implemented by
+The final interface for Unicode support was arrived at through countless often-
+stormy discussions on the python-dev mailing list, and mostly implemented by
 Marc-André Lemburg, based on a Unicode string type implementation by Fredrik
 Lundh.  A detailed explanation of the interface was written up as :pep:`100`,
 "Python Unicode Integration". This article will simply cover the most
@@ -189,7 +189,7 @@ support Unicode:
   ignored and ``'replace'`` uses U+FFFD, the official replacement character, in
   case of any problems.
 
-* The :keyword:`exec` statement, and various built-ins such as ``eval()``,
+* The ``exec`` statement, and various built-ins such as ``eval()``,
   ``getattr()``, and ``setattr()`` will also accept Unicode strings as well as
   regular strings.  (It's possible that the process of fixing this missed some
   built-ins; if you find a built-in function that accepts strings but doesn't
@@ -337,7 +337,7 @@ comprehension below is a syntax error, while the second one is correct::
    [ (x,y) for x in seq1 for y in seq2]
 
 The idea of list comprehensions originally comes from the functional programming
-language Haskell (https://www.haskell.org).  Greg Ewing argued most effectively
+language Haskell (http://www.haskell.org).  Greg Ewing argued most effectively
 for adding them to Python and wrote the initial list comprehension patch, which
 was then discussed for a seemingly endless time on the python-dev mailing list
 and kept up-to-date by Skip Montanaro.
@@ -476,7 +476,7 @@ lost, because benchmarking this is tricky and depends crucially on how often the
 program creates and destroys objects.  The detection of cycles can be disabled
 when Python is compiled, if you can't afford even a tiny speed penalty or
 suspect that the cycle collection is buggy, by specifying the
-:option:`!--without-cycle-gc` switch when running the :program:`configure`
+:option:`--without-cycle-gc` switch when running the :program:`configure`
 script.
 
 Several people tackled this problem and contributed to a solution.  An early
@@ -506,7 +506,7 @@ arguments and/or a dictionary of keyword arguments. In Python 1.5 and earlier,
 you'd use the :func:`apply` built-in function: ``apply(f, args, kw)`` calls the
 function :func:`f` with the argument tuple *args* and the keyword arguments in
 the dictionary *kw*.  :func:`apply`  is the same in 2.0, but thanks to a patch
-from Greg Ewing, ``f(*args, **kw)`` is a shorter and clearer way to achieve the
+from Greg Ewing, ``f(*args, **kw)`` as a shorter and clearer way to achieve the
 same effect.  This syntax is symmetrical with the syntax for defining
 functions::
 
@@ -515,11 +515,11 @@ functions::
        # kw is a dictionary of keyword args
        ...
 
-The :keyword:`print` statement can now have its output directed to a file-like
-object by following the :keyword:`print` with  ``>> file``, similar to the
+The ``print`` statement can now have its output directed to a file-like
+object by following the ``print`` with  ``>> file``, similar to the
 redirection operator in Unix shells. Previously you'd either have to use the
 :meth:`write` method of the file-like object, which lacks the convenience and
-simplicity of :keyword:`print`, or you could assign a new value to
+simplicity of ``print``, or you could assign a new value to
 ``sys.stdout`` and then restore the old value.  For sending output to standard
 error, it's much easier to write this::
 
@@ -581,7 +581,7 @@ Consult the README in the Python source distribution for more instructions.
 An attempt has been made to alleviate one of Python's warts, the often-confusing
 :exc:`NameError` exception when code refers to a local variable before the
 variable has been assigned a value.  For example, the following code raises an
-exception on the :keyword:`print` statement in both 1.5.2 and 2.0; in 1.5.2 a
+exception on the ``print`` statement in both 1.5.2 and 2.0; in 1.5.2 a
 :exc:`NameError` exception is raised, while 2.0 raises a new
 :exc:`UnboundLocalError` exception. :exc:`UnboundLocalError` is a subclass of
 :exc:`NameError`, so any existing code that expects :exc:`NameError` to be
@@ -885,8 +885,8 @@ interfaces for processing XML have become common: SAX2 (version 2 of the Simple
 API for XML) provides an event-driven interface with some similarities to
 :mod:`xmllib`, and the DOM (Document Object Model) provides a tree-based
 interface, transforming an XML document into a tree of nodes that can be
-traversed and modified.  Python 2.0 includes a SAX2 interface and a stripped-down
-DOM interface as part of the :mod:`xml` package. Here we will give a brief
+traversed and modified.  Python 2.0 includes a SAX2 interface and a stripped-
+down DOM interface as part of the :mod:`xml` package. Here we will give a brief
 overview of these new interfaces; consult the Python documentation or the source
 code for complete details. The Python XML SIG is also working on improved
 documentation.

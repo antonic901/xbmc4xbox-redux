@@ -1,12 +1,13 @@
-from test import test_support, seq_tests
+from test import support, seq_tests
 
 import gc
+import pickle
 
 class TupleTest(seq_tests.CommonTest):
     type2test = tuple
 
     def test_constructors(self):
-        super(TupleTest, self).test_constructors()
+        super().test_constructors()
         # calling built-in types without argument must return empty
         self.assertEqual(tuple(), ())
         t0_3 = (0, 1, 2, 3)
@@ -18,25 +19,25 @@ class TupleTest(seq_tests.CommonTest):
         self.assertEqual(tuple('spam'), ('s', 'p', 'a', 'm'))
 
     def test_truth(self):
-        super(TupleTest, self).test_truth()
+        super().test_truth()
         self.assertTrue(not ())
         self.assertTrue((42, ))
 
     def test_len(self):
-        super(TupleTest, self).test_len()
+        super().test_len()
         self.assertEqual(len(()), 0)
         self.assertEqual(len((0,)), 1)
         self.assertEqual(len((0, 1, 2)), 3)
 
     def test_iadd(self):
-        super(TupleTest, self).test_iadd()
+        super().test_iadd()
         u = (0, 1)
         u2 = u
         u += (2, 3)
         self.assertTrue(u is not u2)
 
     def test_imul(self):
-        super(TupleTest, self).test_imul()
+        super().test_imul()
         u = (0, 1)
         u2 = u
         u *= 3
@@ -47,7 +48,7 @@ class TupleTest(seq_tests.CommonTest):
         def f():
             for i in range(1000):
                 yield i
-        self.assertEqual(list(tuple(f())), range(1000))
+        self.assertEqual(list(tuple(f())), list(range(1000)))
 
     def test_hash(self):
         # See SF bug 942952:  Weakness in tuple hash
@@ -66,10 +67,10 @@ class TupleTest(seq_tests.CommonTest):
         #      is sorely suspect.
 
         N=50
-        base = range(N)
+        base = list(range(N))
         xp = [(i, j) for i in base for j in base]
         inps = base + [(i, j) for i in base for j in xp] + \
-                     [(i, j) for i in xp for j in base] + xp + zip(base)
+                     [(i, j) for i in xp for j in base] + xp + list(zip(base))
         collisions = len(inps) - len(set(map(hash, inps)))
         self.assertTrue(collisions <= 15)
 
@@ -96,7 +97,7 @@ class TupleTest(seq_tests.CommonTest):
         gc.collect()
         self.assertTrue(gc.is_tracked(t), t)
 
-    @test_support.cpython_only
+    @support.cpython_only
     def test_track_literals(self):
         # Test GC-optimization of tuple literals
         x, y, z = 1.5, "a", []
@@ -137,25 +138,73 @@ class TupleTest(seq_tests.CommonTest):
         self._tracked(tp(tuple([obj]) for obj in [x, y, z]))
         self._tracked(tuple(tp([obj]) for obj in [x, y, z]))
 
-    @test_support.cpython_only
+    @support.cpython_only
     def test_track_dynamic(self):
         # Test GC-optimization of dynamically constructed tuples.
         self.check_track_dynamic(tuple, False)
 
-    @test_support.cpython_only
+    @support.cpython_only
     def test_track_subtypes(self):
         # Tuple subtypes must always be tracked
         class MyTuple(tuple):
             pass
         self.check_track_dynamic(MyTuple, True)
 
-    @test_support.cpython_only
+    @support.cpython_only
     def test_bug7466(self):
         # Trying to untrack an unfinished tuple could crash Python
         self._not_tracked(tuple(gc.collect() for i in range(101)))
 
+    def test_repr_large(self):
+        # Check the repr of large list objects
+        def check(n):
+            l = (0,) * n
+            s = repr(l)
+            self.assertEqual(s,
+                '(' + ', '.join(['0'] * n) + ')')
+        check(10)       # check our checking code
+        check(1000000)
+
+    def test_iterator_pickle(self):
+        # Userlist iterators don't support pickling yet since
+        # they are based on generators.
+        data = self.type2test([4, 5, 6, 7])
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
+            itorg = iter(data)
+            d = pickle.dumps(itorg, proto)
+            it = pickle.loads(d)
+            self.assertEqual(type(itorg), type(it))
+            self.assertEqual(self.type2test(it), self.type2test(data))
+
+            it = pickle.loads(d)
+            next(it)
+            d = pickle.dumps(it, proto)
+            self.assertEqual(self.type2test(it), self.type2test(data)[1:])
+
+    def test_reversed_pickle(self):
+        data = self.type2test([4, 5, 6, 7])
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
+            itorg = reversed(data)
+            d = pickle.dumps(itorg, proto)
+            it = pickle.loads(d)
+            self.assertEqual(type(itorg), type(it))
+            self.assertEqual(self.type2test(it), self.type2test(reversed(data)))
+
+            it = pickle.loads(d)
+            next(it)
+            d = pickle.dumps(it, proto)
+            self.assertEqual(self.type2test(it), self.type2test(reversed(data))[1:])
+
+    def test_no_comdat_folding(self):
+        # Issue 8847: In the PGO build, the MSVC linker's COMDAT folding
+        # optimization causes failures in code that relies on distinct
+        # function addresses.
+        class T(tuple): pass
+        with self.assertRaises(TypeError):
+            [3,] + T((1,2))
+
 def test_main():
-    test_support.run_unittest(TupleTest)
+    support.run_unittest(TupleTest)
 
 if __name__=="__main__":
     test_main()

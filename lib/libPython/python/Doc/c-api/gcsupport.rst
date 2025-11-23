@@ -12,9 +12,6 @@ other objects, or which only store references to atomic types (such as numbers
 or strings), do not need to provide any explicit support for garbage
 collection.
 
-.. An example showing the use of these interfaces can be found in "Supporting the
-.. Cycle Collector (XXX not found: ../ext/example-cycle-support.html)".
-
 To create a container type, the :c:member:`~PyTypeObject.tp_flags` field of the type object must
 include the :const:`Py_TPFLAGS_HAVE_GC` and provide an implementation of the
 :c:member:`~PyTypeObject.tp_traverse` handler.  If instances of the type are mutable, a
@@ -48,19 +45,11 @@ Constructors for container types must conform to two rules:
    Analogous to :c:func:`PyObject_NewVar` but for container objects with the
    :const:`Py_TPFLAGS_HAVE_GC` flag set.
 
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` type for *size*. This might require
-      changes in your code for properly supporting 64-bit systems.
-
 
 .. c:function:: TYPE* PyObject_GC_Resize(TYPE, PyVarObject *op, Py_ssize_t newsize)
 
    Resize an object allocated by :c:func:`PyObject_NewVar`.  Returns the
-   resized object or *NULL* on failure.  *op* must not be tracked by the collector yet.
-
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` type for *newsize*. This might
-      require changes in your code for properly supporting 64-bit systems.
+   resized object or *NULL* on failure.
 
 
 .. c:function:: void PyObject_GC_Track(PyObject *op)
@@ -137,10 +126,9 @@ must name its arguments exactly *visit* and *arg*:
 
 .. c:function:: void Py_VISIT(PyObject *o)
 
-   If *o* is not *NULL*, call the *visit* callback, with arguments *o*
-   and *arg*.  If *visit* returns a non-zero value, then return it.
-   Using this macro, :c:member:`~PyTypeObject.tp_traverse` handlers
-   look like::
+   Call the *visit* callback, with arguments *o* and *arg*. If *visit* returns
+   a non-zero value, then return it.  Using this macro, :c:member:`~PyTypeObject.tp_traverse`
+   handlers look like::
 
       static int
       my_traverse(Noddy *self, visitproc visit, void *arg)
@@ -149,8 +137,6 @@ must name its arguments exactly *visit* and *arg*:
           Py_VISIT(self->bar);
           return 0;
       }
-
-   .. versionadded:: 2.4
 
 The :c:member:`~PyTypeObject.tp_clear` handler must be of the :c:type:`inquiry` type, or *NULL*
 if the object is immutable.

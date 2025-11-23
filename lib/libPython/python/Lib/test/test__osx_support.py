@@ -9,7 +9,7 @@ import stat
 import sys
 import unittest
 
-import test.test_support
+import test.support
 
 import _osx_support
 
@@ -20,7 +20,7 @@ class Test_OSXSupport(unittest.TestCase):
         self.maxDiff = None
         self.prog_name = 'bogus_program_xxxx'
         self.temp_path_dir = os.path.abspath(os.getcwd())
-        self.env = test.test_support.EnvironmentVarGuard()
+        self.env = test.support.EnvironmentVarGuard()
         self.addCleanup(self.env.__exit__)
         for cv in ('CFLAGS', 'LDFLAGS', 'CPPFLAGS',
                             'BASECFLAGS', 'BLDSHARED', 'LDSHARED', 'CC',
@@ -40,9 +40,9 @@ class Test_OSXSupport(unittest.TestCase):
         if self.env['PATH']:
             self.env['PATH'] = self.env['PATH'] + ':'
         self.env['PATH'] = self.env['PATH'] + os.path.abspath(self.temp_path_dir)
-        test.test_support.unlink(self.prog_name)
+        test.support.unlink(self.prog_name)
         self.assertIsNone(_osx_support._find_executable(self.prog_name))
-        self.addCleanup(test.test_support.unlink, self.prog_name)
+        self.addCleanup(test.support.unlink, self.prog_name)
         with open(self.prog_name, 'w') as f:
             f.write("#!/bin/sh\n/bin/echo OK\n")
         os.chmod(self.prog_name, stat.S_IRWXU)
@@ -53,8 +53,8 @@ class Test_OSXSupport(unittest.TestCase):
         if self.env['PATH']:
             self.env['PATH'] = self.env['PATH'] + ':'
         self.env['PATH'] = self.env['PATH'] + os.path.abspath(self.temp_path_dir)
-        test.test_support.unlink(self.prog_name)
-        self.addCleanup(test.test_support.unlink, self.prog_name)
+        test.support.unlink(self.prog_name)
+        self.addCleanup(test.support.unlink, self.prog_name)
         with open(self.prog_name, 'w') as f:
             f.write("#!/bin/sh\n/bin/echo ExpectedOutput\n")
         os.chmod(self.prog_name, stat.S_IRWXU)
@@ -144,8 +144,8 @@ class Test_OSXSupport(unittest.TestCase):
         suffix = (':' + self.env['PATH']) if self.env['PATH'] else ''
         self.env['PATH'] = os.path.abspath(self.temp_path_dir) + suffix
         for c_name, c_output in compilers:
-            test.test_support.unlink(c_name)
-            self.addCleanup(test.test_support.unlink, c_name)
+            test.support.unlink(c_name)
+            self.addCleanup(test.support.unlink, c_name)
             with open(c_name, 'w') as f:
                 f.write("#!/bin/sh\n/bin/echo " + c_output)
             os.chmod(c_name, stat.S_IRWXU)
@@ -199,8 +199,8 @@ class Test_OSXSupport(unittest.TestCase):
         suffix = (':' + self.env['PATH']) if self.env['PATH'] else ''
         self.env['PATH'] = os.path.abspath(self.temp_path_dir) + suffix
         c_name = 'clang'
-        test.test_support.unlink(c_name)
-        self.addCleanup(test.test_support.unlink, c_name)
+        test.support.unlink(c_name)
+        self.addCleanup(test.support.unlink, c_name)
         # exit status 255 means no PPC support in this compiler chain
         with open(c_name, 'w') as f:
             f.write("#!/bin/sh\nexit 255")
@@ -275,7 +275,7 @@ class Test_OSXSupport(unittest.TestCase):
 
 def test_main():
     if sys.platform == 'darwin':
-        test.test_support.run_unittest(Test_OSXSupport)
+        test.support.run_unittest(Test_OSXSupport)
 
 if __name__ == "__main__":
     test_main()

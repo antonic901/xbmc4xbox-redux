@@ -2,10 +2,10 @@
 
 100% coverage
 """
-from test.test_support import requires
+from test.support import requires
 import unittest
 from idlelib.idle_test.mock_idle import Func
-from Tkinter import Tk, Text, TclError
+from tkinter import Tk, Text, TclError
 from idlelib.WidgetRedirector import WidgetRedirector
 
 
@@ -14,15 +14,14 @@ class InitCloseTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         requires('gui')
-        cls.root = Tk()
-        cls.root.withdraw()
-        cls.text = Text(cls.root)
+        cls.tk = Tk()
+        cls.text = Text(cls.tk)
 
     @classmethod
     def tearDownClass(cls):
-        del cls.text
-        cls.root.destroy()
-        del cls.root
+        cls.text.destroy()
+        cls.tk.destroy()
+        del cls.text, cls.tk
 
     def test_init(self):
         redir = WidgetRedirector(self.text)
@@ -44,15 +43,14 @@ class WidgetRedirectorTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         requires('gui')
-        cls.root = Tk()
-        cls.root.withdraw()
-        cls.text = Text(cls.root)
+        cls.tk = Tk()
+        cls.text = Text(cls.tk)
 
     @classmethod
     def tearDownClass(cls):
-        del cls.text
-        cls.root.destroy()
-        del cls.root
+        cls.text.destroy()
+        cls.tk.destroy()
+        del cls.text, cls.tk
 
     def setUp(self):
         self.redir = WidgetRedirector(self.text)
@@ -110,13 +108,13 @@ class WidgetRedirectorTest(unittest.TestCase):
     def test_command_dispatch(self):
         # Test that .__init__ causes redirection of tk calls
         # through redir.dispatch
-        self.root.call(self.text._w, 'insert', 'hello')
+        self.tk.call(self.text._w, 'insert', 'hello')
         self.assertEqual(self.func.args, ('hello',))
         self.assertEqual(self.text.get('1.0', 'end'), '\n')
         # Ensure that called through redir .dispatch and not through
         # self.text.insert by having mock raise TclError.
         self.func.__init__(TclError())
-        self.assertEqual(self.root.call(self.text._w, 'insert', 'boo'), '')
+        self.assertEqual(self.tk.call(self.text._w, 'insert', 'boo'), '')
 
 
 

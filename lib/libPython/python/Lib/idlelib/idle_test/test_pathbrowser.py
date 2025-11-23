@@ -21,8 +21,7 @@ class PathBrowserTest(unittest.TestCase):
         self.assertEqual(p.GetText(), 'sys.path')
         sub = p.GetSubList()
         self.assertEqual(len(sub), len(sys.path))
-        # Following fails in 2.7 because old-style class
-        #self.assertEqual(type(sub[0]), PathBrowser.DirBrowserTreeItem)
+        self.assertEqual(type(sub[0]), PathBrowser.DirBrowserTreeItem)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2, exit=False)

@@ -1,5 +1,5 @@
 import unittest
-from test import test_support
+from test import support
 
 # The test cases here cover several paths through the function calling
 # code.  They depend on the METH_XXX flag that is used to define a C
@@ -9,42 +9,39 @@ from test import test_support
 class CFunctionCalls(unittest.TestCase):
 
     def test_varargs0(self):
-        self.assertRaises(TypeError, {}.has_key)
+        self.assertRaises(TypeError, {}.__contains__)
 
     def test_varargs1(self):
-        with test_support.check_py3k_warnings():
-            {}.has_key(0)
+        {}.__contains__(0)
 
     def test_varargs2(self):
-        self.assertRaises(TypeError, {}.has_key, 0, 1)
+        self.assertRaises(TypeError, {}.__contains__, 0, 1)
 
     def test_varargs0_ext(self):
         try:
-            {}.has_key(*())
+            {}.__contains__(*())
         except TypeError:
             pass
 
     def test_varargs1_ext(self):
-        with test_support.check_py3k_warnings():
-            {}.has_key(*(0,))
+        {}.__contains__(*(0,))
 
     def test_varargs2_ext(self):
         try:
-            with test_support.check_py3k_warnings():
-                {}.has_key(*(1, 2))
+            {}.__contains__(*(1, 2))
         except TypeError:
             pass
         else:
             raise RuntimeError
 
     def test_varargs0_kw(self):
-        self.assertRaises(TypeError, {}.has_key, x=2)
+        self.assertRaises(TypeError, {}.__contains__, x=2)
 
     def test_varargs1_kw(self):
-        self.assertRaises(TypeError, {}.has_key, x=2)
+        self.assertRaises(TypeError, {}.__contains__, x=2)
 
     def test_varargs2_kw(self):
-        self.assertRaises(TypeError, {}.has_key, x=2, y=2)
+        self.assertRaises(TypeError, {}.__contains__, x=2, y=2)
 
     def test_oldargs0_0(self):
         {}.keys()
@@ -127,7 +124,7 @@ class CFunctionCalls(unittest.TestCase):
 
 
 def test_main():
-    test_support.run_unittest(CFunctionCalls)
+    support.run_unittest(CFunctionCalls)
 
 
 if __name__ == "__main__":

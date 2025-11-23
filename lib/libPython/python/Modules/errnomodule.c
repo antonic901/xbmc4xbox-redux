@@ -5,7 +5,35 @@
 
 /* Windows socket errors (WSA*)  */
 #ifdef MS_WINDOWS
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+/* The following constants were added to errno.h in VS2010 but have
+   preferred WSA equivalents. */
+#undef EADDRINUSE
+#undef EADDRNOTAVAIL
+#undef EAFNOSUPPORT
+#undef EALREADY
+#undef ECONNABORTED
+#undef ECONNREFUSED
+#undef ECONNRESET
+#undef EDESTADDRREQ
+#undef EHOSTUNREACH
+#undef EINPROGRESS
+#undef EISCONN
+#undef ELOOP
+#undef EMSGSIZE
+#undef ENETDOWN
+#undef ENETRESET
+#undef ENETUNREACH
+#undef ENOBUFS
+#undef ENOPROTOOPT
+#undef ENOTCONN
+#undef ENOTSOCK
+#undef EOPNOTSUPP
+#undef EPROTONOSUPPORT
+#undef EPROTOTYPE
+#undef ETIMEDOUT
+#undef EWOULDBLOCK
 #endif
 
 /*
@@ -19,10 +47,10 @@ static PyMethodDef errno_methods[] = {
 /* Helper function doing the dictionary inserting */
 
 static void
-_inscode(PyObject *d, PyObject *de, char *name, int code)
+_inscode(PyObject *d, PyObject *de, const char *name, int code)
 {
-    PyObject *u = PyString_FromString(name);
-    PyObject *v = PyInt_FromLong((long) code);
+    PyObject *u = PyUnicode_FromString(name);
+    PyObject *v = PyLong_FromLong((long) code);
 
     /* Don't bother checking for errors; they'll be caught at the end
      * of the module initialization function by the caller of
@@ -52,24 +80,39 @@ Symbols that are not relevant to the underlying system are not defined.\n\
 To map error codes to error messages, use the function os.strerror(),\n\
 e.g. os.strerror(2) could return 'No such file or directory'.");
 
+static struct PyModuleDef errnomodule = {
+    PyModuleDef_HEAD_INIT,
+    "errno",
+    errno__doc__,
+    -1,
+    errno_methods,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+};
+
 PyMODINIT_FUNC
-initerrno(void)
+PyInit_errno(void)
 {
     PyObject *m, *d, *de;
-    m = Py_InitModule3("errno", errno_methods, errno__doc__);
+    m = PyModule_Create(&errnomodule);
     if (m == NULL)
-        return;
+        return NULL;
     d = PyModule_GetDict(m);
     de = PyDict_New();
     if (!d || !de || PyDict_SetItemString(d, "errorcode", de) < 0)
-        return;
+        return NULL;
 
 /* Macro so I don't have to edit each and every line below... */
 #define inscode(d, ds, de, name, code, comment) _inscode(d, de, name, code)
 
     /*
      * The names and comments are borrowed from linux/include/errno.h,
-     * which should be pretty all-inclusive
+     * which should be pretty all-inclusive.  However, the Solaris specific
+     * names and comments are borrowed from sys/errno.h in Solaris.
+     * MacOSX specific names and comments are borrowed from sys/errno.h in
+     * MacOSX.
      */
 
 #ifdef ENODEV
@@ -783,9 +826,110 @@ initerrno(void)
 #ifdef WSAN
     inscode(d, ds, de, "WSAN", WSAN, "Error WSAN");
 #endif
+#ifdef ENOMEDIUM
+    inscode(d, ds, de, "ENOMEDIUM", ENOMEDIUM, "No medium found");
+#endif
+#ifdef EMEDIUMTYPE
+    inscode(d, ds, de, "EMEDIUMTYPE", EMEDIUMTYPE, "Wrong medium type");
+#endif
+#ifdef ECANCELED
+    inscode(d, ds, de, "ECANCELED", ECANCELED, "Operation Canceled");
+#endif
+#ifdef ENOKEY
+    inscode(d, ds, de, "ENOKEY", ENOKEY, "Required key not available");
+#endif
+#ifdef EKEYEXPIRED
+    inscode(d, ds, de, "EKEYEXPIRED", EKEYEXPIRED, "Key has expired");
+#endif
+#ifdef EKEYREVOKED
+    inscode(d, ds, de, "EKEYREVOKED", EKEYREVOKED, "Key has been revoked");
+#endif
+#ifdef EKEYREJECTED
+    inscode(d, ds, de, "EKEYREJECTED", EKEYREJECTED, "Key was rejected by service");
+#endif
+#ifdef EOWNERDEAD
+    inscode(d, ds, de, "EOWNERDEAD", EOWNERDEAD, "Owner died");
+#endif
+#ifdef ENOTRECOVERABLE
+    inscode(d, ds, de, "ENOTRECOVERABLE", ENOTRECOVERABLE, "State not recoverable");
+#endif
+#ifdef ERFKILL
+    inscode(d, ds, de, "ERFKILL", ERFKILL, "Operation not possible due to RF-kill");
+#endif
+
+    /* Solaris-specific errnos */
+#ifdef ECANCELED
+    inscode(d, ds, de, "ECANCELED", ECANCELED, "Operation canceled");
+#endif
 #ifdef ENOTSUP
     inscode(d, ds, de, "ENOTSUP", ENOTSUP, "Operation not supported");
 #endif
+#ifdef EOWNERDEAD
+    inscode(d, ds, de, "EOWNERDEAD", EOWNERDEAD, "Process died with the lock");
+#endif
+#ifdef ENOTRECOVERABLE
+    inscode(d, ds, de, "ENOTRECOVERABLE", ENOTRECOVERABLE, "Lock is not recoverable");
+#endif
+#ifdef ELOCKUNMAPPED
+    inscode(d, ds, de, "ELOCKUNMAPPED", ELOCKUNMAPPED, "Locked lock was unmapped");
+#endif
+#ifdef ENOTACTIVE
+    inscode(d, ds, de, "ENOTACTIVE", ENOTACTIVE, "Facility is not active");
+#endif
+
+    /* MacOSX specific errnos */
+#ifdef EAUTH
+    inscode(d, ds, de, "EAUTH", EAUTH, "Authentication error");
+#endif
+#ifdef EBADARCH
+    inscode(d, ds, de, "EBADARCH", EBADARCH, "Bad CPU type in executable");
+#endif
+#ifdef EBADEXEC
+    inscode(d, ds, de, "EBADEXEC", EBADEXEC, "Bad executable (or shared library)");
+#endif
+#ifdef EBADMACHO
+    inscode(d, ds, de, "EBADMACHO", EBADMACHO, "Malformed Mach-o file");
+#endif
+#ifdef EBADRPC
+    inscode(d, ds, de, "EBADRPC", EBADRPC, "RPC struct is bad");
+#endif
+#ifdef EDEVERR
+    inscode(d, ds, de, "EDEVERR", EDEVERR, "Device error");
+#endif
+#ifdef EFTYPE
+    inscode(d, ds, de, "EFTYPE", EFTYPE, "Inappropriate file type or format");
+#endif
+#ifdef ENEEDAUTH
+    inscode(d, ds, de, "ENEEDAUTH", ENEEDAUTH, "Need authenticator");
+#endif
+#ifdef ENOATTR
+    inscode(d, ds, de, "ENOATTR", ENOATTR, "Attribute not found");
+#endif
+#ifdef ENOPOLICY
+    inscode(d, ds, de, "ENOPOLICY", ENOPOLICY, "Policy not found");
+#endif
+#ifdef EPROCLIM
+    inscode(d, ds, de, "EPROCLIM", EPROCLIM, "Too many processes");
+#endif
+#ifdef EPROCUNAVAIL
+    inscode(d, ds, de, "EPROCUNAVAIL", EPROCUNAVAIL, "Bad procedure for program");
+#endif
+#ifdef EPROGMISMATCH
+    inscode(d, ds, de, "EPROGMISMATCH", EPROGMISMATCH, "Program version wrong");
+#endif
+#ifdef EPROGUNAVAIL
+    inscode(d, ds, de, "EPROGUNAVAIL", EPROGUNAVAIL, "RPC prog. not avail");
+#endif
+#ifdef EPWROFF
+    inscode(d, ds, de, "EPWROFF", EPWROFF, "Device power is off");
+#endif
+#ifdef ERPCMISMATCH
+    inscode(d, ds, de, "ERPCMISMATCH", ERPCMISMATCH, "RPC version wrong");
+#endif
+#ifdef ESHLIBVERS
+    inscode(d, ds, de, "ESHLIBVERS", ESHLIBVERS, "Shared library version mismatch");
+#endif
 
     Py_DECREF(de);
+    return m;
 }

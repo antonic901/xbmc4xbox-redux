@@ -29,8 +29,6 @@ class DumpTests(unittest.TestCase):
                 ,
                 "INSERT INTO \"t1\" VALUES(2,'foo2',30,30);"
                 ,
-                u"INSERT INTO \"t1\" VALUES(3,'f\xc3\xb6',40,10);"
-                ,
                 "CREATE TABLE t2(id integer, t2_i1 integer, " \
                 "t2_i2 integer, primary key (id)," \
                 "foreign key(t2_i1) references t1(t1_i1));"
@@ -49,7 +47,7 @@ class DumpTests(unittest.TestCase):
         expected_sqls = ['BEGIN TRANSACTION;'] + expected_sqls + \
             ['COMMIT;']
         [self.assertEqual(expected_sqls[i], actual_sqls[i])
-            for i in xrange(len(expected_sqls))]
+            for i in range(len(expected_sqls))]
 
     def CheckUnorderableRow(self):
         # iterdump() should be able to cope with unorderable row types (issue #15545)

@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # Format du output in a tree shape
 
 import os, sys, errno
@@ -18,14 +18,14 @@ def main():
         total, d = store(size, comps, total, d)
     try:
         display(total, d)
-    except IOError, e:
+    except IOError as e:
         if e.errno != errno.EPIPE:
             raise
 
 def store(size, comps, total, d):
     if comps == []:
         return size, d
-    if not d.has_key(comps[0]):
+    if comps[0] not in d:
         d[comps[0]] = None, {}
     t1, d1 = d[comps[0]]
     d[comps[0]] = store(size, comps[1:], t1, d1)
@@ -51,9 +51,9 @@ def show(total, d, prefix):
         if tsub is None:
             psub = prefix
         else:
-            print prefix + repr(tsub).rjust(width) + ' ' + key
+            print(prefix + repr(tsub).rjust(width) + ' ' + key)
             psub = prefix + ' '*(width-1) + '|' + ' '*(len(key)+1)
-        if d.has_key(key):
+        if key in d:
             show(tsub, d[key][1], psub)
 
 if __name__ == '__main__':

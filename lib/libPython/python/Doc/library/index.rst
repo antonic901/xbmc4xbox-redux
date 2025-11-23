@@ -30,7 +30,7 @@ optional components.
 In addition to the standard library, there is a growing collection of
 several thousand components (from individual programs and modules to
 packages and entire application development frameworks), available from
-the `Python Package Index <https://pypi.org>`_.
+the `Python Package Index <https://pypi.python.org/pypi>`_.
 
 
 .. toctree::
@@ -43,16 +43,18 @@ the `Python Package Index <https://pypi.org>`_.
    stdtypes.rst
    exceptions.rst
 
-   strings.rst
+   text.rst
+   binary.rst
    datatypes.rst
    numeric.rst
+   functional.rst
    filesys.rst
    persistence.rst
    archiving.rst
    fileformats.rst
    crypto.rst
    allos.rst
-   someos.rst
+   concurrency.rst
    ipc.rst
    netdata.rst
    markup.rst
@@ -66,15 +68,10 @@ the `Python Package Index <https://pypi.org>`_.
    distribution.rst
    python.rst
    custominterp.rst
-   restricted.rst
    modules.rst
    language.rst
-   compiler.rst
    misc.rst
    windows.rst
    unix.rst
-   mac.rst
-   macosa.rst
-   sgi.rst
-   sun.rst
+   superseded.rst
    undoc.rst

@@ -3,8 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="sqlite3"
-	ProjectGUID="{A1A295E5-463C-437F-81CA-1F32367685DA}"
-	RootNamespace="sqlite3"
+	ProjectGUID="{59592725-D8DA-4365-95B6-41FA23935EB8}"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -12,20 +11,26 @@
 	</Platforms>
 	<Configurations>
 		<Configuration
-			Name="Release XBOX|Win32"
+			Name="Debug|Win32"
 			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)\obj\$(ProjectName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="0"
 			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
+				Optimization="0"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="&quot;..\..\sqlite&quot;"
 				PreprocessorDefinitions="SQLITE_API=__declspec(dllexport);_XBOX"
+				MinimalRebuild="FALSE"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="0"
-				WarningLevel="1"/>
+				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="0"
+				WarningLevel="1"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -50,22 +55,22 @@
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
-			Name="Debug XBOX|Win32"
+			Name="Release|Win32"
 			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)\obj\$(ProjectName)"
 			ConfigurationType="4"
 			CharacterSet="0"
 			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="&quot;..\..\sqlite&quot;"
 				PreprocessorDefinitions="SQLITE_API=__declspec(dllexport);_XBOX"
 				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="0"
 				WarningLevel="1"
-				DebugInformationFormat="3"/>
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -94,18 +99,22 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Header Files">
+			Name="Source Files"
+			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+			<File
+				RelativePath="..\..\sqlite\sqlite3.c">
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd"
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
 				RelativePath="..\..\sqlite\sqlite3.h">
 			</File>
 			<File
 				RelativePath="..\..\sqlite\sqlite3ext.h">
-			</File>
-		</Filter>
-		<Filter
-			Name="Source Files">
-			<File
-				RelativePath="..\..\sqlite\sqlite3.c">
 			</File>
 		</Filter>
 	</Files>

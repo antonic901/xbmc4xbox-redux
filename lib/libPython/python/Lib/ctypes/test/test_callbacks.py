@@ -16,7 +16,7 @@ class Callbacks(unittest.TestCase):
         return args[-1]
 
     def check_type(self, typ, arg):
-        PROTO = self.functype.im_func(typ, typ)
+        PROTO = self.functype.__func__(typ, typ)
         result = PROTO(self.callback)(arg)
         if typ == c_float:
             self.assertAlmostEqual(result, arg, places=5)
@@ -24,7 +24,7 @@ class Callbacks(unittest.TestCase):
             self.assertEqual(self.got_args, (arg,))
             self.assertEqual(result, arg)
 
-        PROTO = self.functype.im_func(typ, c_byte, typ)
+        PROTO = self.functype.__func__(typ, c_byte, typ)
         result = PROTO(self.callback)(-3, arg)
         if typ == c_float:
             self.assertAlmostEqual(result, arg, places=5)
@@ -63,16 +63,10 @@ class Callbacks(unittest.TestCase):
         self.check_type(c_ulong, 42)
 
     def test_longlong(self):
-        # test some 64-bit values, positive and negative
-        self.check_type(c_longlong, 5948291757245277467)
-        self.check_type(c_longlong, -5229388909784190580)
         self.check_type(c_longlong, 42)
         self.check_type(c_longlong, -42)
 
     def test_ulonglong(self):
-        # test some 64-bit values, with and without msb set.
-        self.check_type(c_ulonglong, 10955412242170339782)
-        self.check_type(c_ulonglong, 3665885499841167458)
         self.check_type(c_ulonglong, 42)
 
     def test_float(self):
@@ -90,8 +84,8 @@ class Callbacks(unittest.TestCase):
         self.check_type(c_longdouble, -3.14)
 
     def test_char(self):
-        self.check_type(c_char, "x")
-        self.check_type(c_char, "a")
+        self.check_type(c_char, b"x")
+        self.check_type(c_char, b"a")
 
     # disabled: would now (correctly) raise a RuntimeWarning about
     # a memory leak.  A callback function cannot return a non-integral
@@ -119,16 +113,16 @@ class Callbacks(unittest.TestCase):
         # functions, the type must have a non-NULL stgdict->setfunc.
         # POINTER(c_double), for example, is not supported.
 
-        prototype = self.functype.im_func(POINTER(c_double))
+        prototype = self.functype.__func__(POINTER(c_double))
         # The type is checked when the prototype is called
         self.assertRaises(TypeError, prototype, lambda: None)
 
     def test_unsupported_restype_2(self):
-        prototype = self.functype.im_func(object)
+        prototype = self.functype.__func__(object)
         self.assertRaises(TypeError, prototype, lambda: None)
 
     def test_issue_7959(self):
-        proto = self.functype.im_func(None)
+        proto = self.functype.__func__(None)
 
         class X(object):
             def func(self): pass
@@ -250,7 +244,6 @@ class SampleCallbacksTestCase(unittest.TestCase):
     def test_callback_large_struct(self):
         class Check: pass
 
-        # This should mirror the structure in Modules/_ctypes/_ctypes_test.c
         class X(Structure):
             _fields_ = [
                 ('first', c_ulong),
@@ -262,11 +255,6 @@ class SampleCallbacksTestCase(unittest.TestCase):
             check.first = s.first
             check.second = s.second
             check.third = s.third
-            # See issue #29565.
-            # The structure should be passed by value, so
-            # any changes to it should not be reflected in
-            # the value passed
-            s.first = s.second = s.third = 0x0badf00d
 
         check = Check()
         s = X()
@@ -287,11 +275,6 @@ class SampleCallbacksTestCase(unittest.TestCase):
         self.assertEqual(check.first, 0xdeadbeef)
         self.assertEqual(check.second, 0xcafebabe)
         self.assertEqual(check.third, 0x0bad1dea)
-        # See issue #29565.
-        # Ensure that the original struct is unchanged.
-        self.assertEqual(s.first, check.first)
-        self.assertEqual(s.second, check.second)
-        self.assertEqual(s.third, check.third)
 
 ################################################################
 

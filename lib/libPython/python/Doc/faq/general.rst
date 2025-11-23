@@ -22,7 +22,7 @@ It has interfaces to many system calls and libraries, as well as to various
 window systems, and is extensible in C or C++.  It is also usable as an
 extension language for applications that need a programmable interface.
 Finally, Python is portable: it runs on many Unix variants, on the Mac, and on
-PCs under MS-DOS, Windows, Windows NT, and OS/2.
+Windows 2000 and later.
 
 To find out more, start with :ref:`tutorial-index`.  The `Beginner's Guide to
 Python <https://wiki.python.org/moin/BeginnersGuide>`_ links to other
@@ -117,7 +117,7 @@ programming), software engineering (unit testing, logging, profiling, parsing
 Python code), and operating system interfaces (system calls, filesystems, TCP/IP
 sockets).  Look at the table of contents for :ref:`library-index` to get an idea
 of what's available.  A wide variety of third-party extensions are also
-available.  Consult `the Python Package Index <https://pypi.org>`_ to
+available.  Consult `the Python Package Index <https://pypi.python.org/pypi>`_ to
 find packages of interest to you.
 
 
@@ -146,9 +146,10 @@ labeled 2.0aN precede the versions labeled 2.0bN, which precede versions labeled
 2.0cN, and *those* precede 2.0.
 
 You may also find version numbers with a "+" suffix, e.g. "2.2+".  These are
-unreleased versions, built directly from the CPython development repository.  In
-practice, after a final minor release is made, the version is incremented to the
-next minor version, which becomes the "a0" version, e.g. "2.4a0".
+unreleased versions, built directly from the Subversion trunk.  In practice,
+after a final minor release is made, the Subversion trunk is incremented to the
+next minor version, which becomes the "a0" version,
+e.g. "2.4a0".
 
 See also the documentation for :data:`sys.version`, :data:`sys.hexversion`, and
 :data:`sys.version_info`.
@@ -158,8 +159,8 @@ How do I obtain a copy of the Python source?
 --------------------------------------------
 
 The latest Python source distribution is always available from python.org, at
-https://www.python.org/downloads/.  The latest development sources can be obtained
-at https://github.com/python/cpython/.
+https://www.python.org/download/.  The latest development sources can be obtained
+via anonymous Mercurial access at https://hg.python.org/cpython.
 
 The source distribution is a gzipped tar file containing the complete C source,
 Sphinx-formatted documentation, Python library modules, example programs, and
@@ -217,13 +218,13 @@ can be found at https://www.python.org/community/lists/.
 How do I get a beta test version of Python?
 -------------------------------------------
 
-Alpha and beta releases are available from https://www.python.org/downloads/.  All
+Alpha and beta releases are available from https://www.python.org/download/.  All
 releases are announced on the comp.lang.python and comp.lang.python.announce
 newsgroups and on the Python home page at https://www.python.org/; an RSS feed of
 news is available.
 
-You can also access the development version of Python through Git.  See
-`The Python Developer's Guide <https://docs.python.org/devguide/>`_ for details.
+You can also access the development version of Python through Mercurial.  See
+https://docs.python.org/devguide/faq.html for details.
 
 
 How do I submit bug reports and patches for Python?
@@ -252,7 +253,7 @@ outdated.
 
     Guido van Rossum and Jelke de Boer, "Interactively Testing Remote Servers
     Using the Python Programming Language", CWI Quarterly, Volume 4, Issue 4
-    (December 1991), Amsterdam, pp 283--303.
+    (December 1991), Amsterdam, pp 283-303.
 
 
 Are there any books on Python?
@@ -268,8 +269,14 @@ Python references; or perhaps search for "Python" and "language".
 Where in the world is www.python.org located?
 ---------------------------------------------
 
-The Python project's infrastructure is located all over the world and is managed
-by the Python Infrastructure Team. Details `here <http://infra.psf.io>`__.
+The Python project's infrastructure is located all over the world.
+`www.python.org <https://www.python.org>`_ is graciously hosted by `Rackspace
+<http://www.rackspace.com>`_, with CDN caching provided by `Fastly
+<https://www.fastly.com>`_.  `Upfront Systems
+<http://www.upfrontsystems.co.za>`_ hosts `bugs.python.org
+<https://bugs.python.org>`_.  Many other Python services like `the Wiki
+<https://wiki.python.org>`_ are hosted by `Oregon State
+University Open Source Lab <https://osuosl.org>`_.
 
 
 Why is it called Python?
@@ -277,7 +284,7 @@ Why is it called Python?
 
 When he began implementing Python, Guido van Rossum was also reading the
 published scripts from `"Monty Python's Flying Circus"
-<https://en.wikipedia.org/wiki/Monty_Python>`__, a BBC comedy series from the 1970s.  Van Rossum
+<http://en.wikipedia.org/wiki/Monty_Python>`__, a BBC comedy series from the 1970s.  Van Rossum
 thought he needed a name that was short, unique, and slightly mysterious, so he
 decided to call the language Python.
 
@@ -300,16 +307,18 @@ usually around 18 months between major releases.
 
 The developers issue "bugfix" releases of older versions, so the stability of
 existing releases gradually improves.  Bugfix releases, indicated by a third
-component of the version number (e.g. 3.5.3, 3.6.2), are managed for stability;
+component of the version number (e.g. 2.5.3, 2.6.2), are managed for stability;
 only fixes for known problems are included in a bugfix release, and it's
 guaranteed that interfaces will remain the same throughout a series of bugfix
 releases.
 
 The latest stable releases can always be found on the `Python download page
-<https://www.python.org/downloads/>`_.  There are two production-ready versions
-of Python: 2.x and 3.x. The recommended version is 3.x, which is supported by
-most widely used libraries.  Although 2.x is still widely used, `it will not
-be maintained after January 1, 2020 <https://www.python.org/dev/peps/pep-0373/>`_.
+<https://www.python.org/download/>`_.  There are two recommended production-ready
+versions at this point in time, because at the moment there are two branches of
+stable releases: 2.x and 3.x.  Python 3.x may be less useful than 2.x, since
+currently there is more third party software available for Python 2 than for
+Python 3.  Python 2 code will generally not run unchanged in Python 3.
+
 
 How many people are using Python?
 ---------------------------------
@@ -336,7 +345,7 @@ different companies and organizations.
 High-profile Python projects include `the Mailman mailing list manager
 <http://www.list.org>`_ and `the Zope application server
 <http://www.zope.org>`_.  Several Linux distributions, most notably `Red Hat
-<https://www.redhat.com>`_, have written part or all of their installer and
+<http://www.redhat.com>`_, have written part or all of their installer and
 system administration software in Python.  Companies that use Python internally
 include Google, Yahoo, and Lucasfilm Ltd.
 
@@ -409,19 +418,22 @@ remember the methods for a list, they can do something like this::
    >>> L = []
    >>> dir(L) # doctest: +NORMALIZE_WHITESPACE
    ['__add__', '__class__', '__contains__', '__delattr__', '__delitem__',
-   '__delslice__', '__doc__', '__eq__', '__format__', '__ge__',
-   '__getattribute__', '__getitem__', '__getslice__', '__gt__',
-   '__hash__', '__iadd__', '__imul__', '__init__', '__iter__', '__le__',
-   '__len__', '__lt__', '__mul__', '__ne__', '__new__', '__reduce__',
-   '__reduce_ex__', '__repr__', '__reversed__', '__rmul__',
-   '__setattr__', '__setitem__', '__setslice__', '__sizeof__', '__str__',
-   '__subclasshook__', 'append', 'count', 'extend', 'index', 'insert',
-   'pop', 'remove', 'reverse', 'sort']
+   '__dir__', '__doc__', '__eq__', '__format__', '__ge__',
+   '__getattribute__', '__getitem__', '__gt__', '__hash__', '__iadd__',
+   '__imul__', '__init__', '__iter__', '__le__', '__len__', '__lt__',
+   '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__',
+   '__repr__', '__reversed__', '__rmul__', '__setattr__', '__setitem__',
+   '__sizeof__', '__str__', '__subclasshook__', 'append', 'clear',
+   'copy', 'count', 'extend', 'index', 'insert', 'pop', 'remove',
+   'reverse', 'sort']
+   >>> [d for d in dir(L) if '__' not in d]
+   ['append', 'clear', 'copy', 'count', 'extend', 'index', 'insert', 'pop', 'remove', 'reverse', 'sort']
+
    >>> help(L.append)
    Help on built-in function append:
    <BLANKLINE>
    append(...)
-       L.append(object) -- append object to end
+       L.append(object) -> None -- append object to end
    <BLANKLINE>
    >>> L.append(1)
    >>> L
@@ -441,38 +453,3 @@ of Python editing environments.
 If you want to discuss Python's use in education, you may be interested in
 joining `the edu-sig mailing list
 <https://www.python.org/community/sigs/current/edu-sig>`_.
-
-
-Upgrading Python
-================
-
-What is this bsddb185 module my application keeps complaining about?
---------------------------------------------------------------------
-
-.. XXX remove this question?
-
-Starting with Python2.3, the distribution includes the `PyBSDDB package
-<http://pybsddb.sf.net/>` as a replacement for the old bsddb module.  It
-includes functions which provide backward compatibility at the API level, but
-requires a newer version of the underlying `Berkeley DB
-<http://www.sleepycat.com>`_ library.  Files created with the older bsddb module
-can't be opened directly using the new module.
-
-Using your old version of Python and a pair of scripts which are part of Python
-2.3 (db2pickle.py and pickle2db.py, in the Tools/scripts directory) you can
-convert your old database files to the new format.  Using your old Python
-version, run the db2pickle.py script to convert it to a pickle, e.g.::
-
-   python2.2 <pathto>/db2pickley.py database.db database.pck
-
-Rename your database file::
-
-   mv database.db olddatabase.db
-
-Now convert the pickle file to a new format database::
-
-   python <pathto>/pickle2db.py database.db database.pck
-
-The precise commands you use will vary depending on the particulars of your
-installation.  For full details about operation of these two scripts check the
-doc string at the start of each one.

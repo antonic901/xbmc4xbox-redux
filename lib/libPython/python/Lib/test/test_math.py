@@ -1,23 +1,20 @@
 # Python test set -- math module
 # XXXX Should not do tests around zero only
 
-from test.test_support import run_unittest, verbose
+from test.support import run_unittest, verbose, requires_IEEE_754
+from test import support
 import unittest
 import math
 import os
+import platform
 import sys
-import random
 import struct
+import sysconfig
 
 eps = 1E-05
 NAN = float('nan')
 INF = float('inf')
 NINF = float('-inf')
-
-# decorator for skipping tests on non-IEEE 754 platforms
-requires_IEEE_754 = unittest.skipUnless(
-    float.__getformat__("double").startswith("IEEE"),
-    "test requires IEEE 754 doubles")
 
 # detect evidence of double-rounding: fsum is not always correctly
 # rounded on machines that suffer from double rounding.
@@ -59,6 +56,56 @@ def ulps_check(expected, got, ulps=20):
         return None
     return "error = {} ulps; permitted error = {} ulps".format(ulps_error,
                                                                ulps)
+
+# Here's a pure Python version of the math.factorial algorithm, for
+# documentation and comparison purposes.
+#
+# Formula:
+#
+#   factorial(n) = factorial_odd_part(n) << (n - count_set_bits(n))
+#
+# where
+#
+#   factorial_odd_part(n) = product_{i >= 0} product_{0 < j <= n >> i; j odd} j
+#
+# The outer product above is an infinite product, but once i >= n.bit_length,
+# (n >> i) < 1 and the corresponding term of the product is empty.  So only the
+# finitely many terms for 0 <= i < n.bit_length() contribute anything.
+#
+# We iterate downwards from i == n.bit_length() - 1 to i == 0.  The inner
+# product in the formula above starts at 1 for i == n.bit_length(); for each i
+# < n.bit_length() we get the inner product for i from that for i + 1 by
+# multiplying by all j in {n >> i+1 < j <= n >> i; j odd}.  In Python terms,
+# this set is range((n >> i+1) + 1 | 1, (n >> i) + 1 | 1, 2).
+
+def count_set_bits(n):
+    """Number of '1' bits in binary expansion of a nonnnegative integer."""
+    return 1 + count_set_bits(n & n - 1) if n else 0
+
+def partial_product(start, stop):
+    """Product of integers in range(start, stop, 2), computed recursively.
+    start and stop should both be odd, with start <= stop.
+
+    """
+    numfactors = (stop - start) >> 1
+    if not numfactors:
+        return 1
+    elif numfactors == 1:
+        return start
+    else:
+        mid = (start + numfactors) | 1
+        return partial_product(start, mid) * partial_product(mid, stop)
+
+def py_factorial(n):
+    """Factorial of nonnegative integer n, via "Binary Split Factorial Formula"
+    described at http://www.luschny.de/math/factorial/binarysplitfact.html
+
+    """
+    inner = outer = 1
+    for i in reversed(range(n.bit_length())):
+        inner *= partial_product((n >> i + 1) + 1 | 1, (n >> i) + 1 | 1)
+        outer *= inner
+    return outer << (n - count_set_bits(n))
 
 def acc_check(expected, got, rel_err=2e-15, abs_err = 5e-323):
     """Determine whether non-NaN floats a and b are equal to within a
@@ -263,24 +310,21 @@ class MathTests(unittest.TestCase):
 
     def testCeil(self):
         self.assertRaises(TypeError, math.ceil)
-        # These types will be int in py3k.
-        self.assertEqual(float, type(math.ceil(1)))
-        self.assertEqual(float, type(math.ceil(1L)))
-        self.assertEqual(float, type(math.ceil(1.0)))
+        self.assertEqual(int, type(math.ceil(0.5)))
         self.ftest('ceil(0.5)', math.ceil(0.5), 1)
         self.ftest('ceil(1.0)', math.ceil(1.0), 1)
         self.ftest('ceil(1.5)', math.ceil(1.5), 2)
         self.ftest('ceil(-0.5)', math.ceil(-0.5), 0)
         self.ftest('ceil(-1.0)', math.ceil(-1.0), -1)
         self.ftest('ceil(-1.5)', math.ceil(-1.5), -1)
-        self.assertEqual(math.ceil(INF), INF)
-        self.assertEqual(math.ceil(NINF), NINF)
-        self.assertTrue(math.isnan(math.ceil(NAN)))
+        #self.assertEqual(math.ceil(INF), INF)
+        #self.assertEqual(math.ceil(NINF), NINF)
+        #self.assertTrue(math.isnan(math.ceil(NAN)))
 
-        class TestCeil(object):
-            def __float__(self):
-                return 41.3
-        class TestNoCeil(object):
+        class TestCeil:
+            def __ceil__(self):
+                return 42
+        class TestNoCeil:
             pass
         self.ftest('ceil(TestCeil())', math.ceil(TestCeil()), 42)
         self.assertRaises(TypeError, math.ceil, TestNoCeil())
@@ -368,25 +412,23 @@ class MathTests(unittest.TestCase):
         self.ftest('fabs(1)', math.fabs(1), 1)
 
     def testFactorial(self):
-        def fact(n):
-            result = 1
-            for i in range(1, int(n)+1):
-                result *= i
-            return result
-        values = range(10) + [50, 100, 500]
-        random.shuffle(values)
-        for x in values:
-            for cast in (int, long, float):
-                self.assertEqual(math.factorial(cast(x)), fact(x), (x, fact(x), math.factorial(x)))
+        self.assertEqual(math.factorial(0), 1)
+        self.assertEqual(math.factorial(0.0), 1)
+        total = 1
+        for i in range(1, 1000):
+            total *= i
+            self.assertEqual(math.factorial(i), total)
+            self.assertEqual(math.factorial(float(i)), total)
+            self.assertEqual(math.factorial(i), py_factorial(i))
         self.assertRaises(ValueError, math.factorial, -1)
+        self.assertRaises(ValueError, math.factorial, -1.0)
         self.assertRaises(ValueError, math.factorial, math.pi)
+        self.assertRaises(OverflowError, math.factorial, sys.maxsize+1)
+        self.assertRaises(OverflowError, math.factorial, 10e100)
 
     def testFloor(self):
         self.assertRaises(TypeError, math.floor)
-        # These types will be int in py3k.
-        self.assertEqual(float, type(math.floor(1)))
-        self.assertEqual(float, type(math.floor(1L)))
-        self.assertEqual(float, type(math.floor(1.0)))
+        self.assertEqual(int, type(math.floor(0.5)))
         self.ftest('floor(0.5)', math.floor(0.5), 0)
         self.ftest('floor(1.0)', math.floor(1.0), 1)
         self.ftest('floor(1.5)', math.floor(1.5), 1)
@@ -397,14 +439,14 @@ class MathTests(unittest.TestCase):
         # This fails on some platforms - so check it here
         self.ftest('floor(1.23e167)', math.floor(1.23e167), 1.23e167)
         self.ftest('floor(-1.23e167)', math.floor(-1.23e167), -1.23e167)
-        self.assertEqual(math.ceil(INF), INF)
-        self.assertEqual(math.ceil(NINF), NINF)
-        self.assertTrue(math.isnan(math.floor(NAN)))
+        #self.assertEqual(math.ceil(INF), INF)
+        #self.assertEqual(math.ceil(NINF), NINF)
+        #self.assertTrue(math.isnan(math.floor(NAN)))
 
-        class TestFloor(object):
-            def __float__(self):
-                return 42.3
-        class TestNoFloor(object):
+        class TestFloor:
+            def __floor__(self):
+                return 42
+        class TestNoFloor:
             pass
         self.ftest('floor(TestFloor())', math.floor(TestFloor()), 42)
         self.assertRaises(TypeError, math.floor, TestNoFloor())
@@ -416,12 +458,12 @@ class MathTests(unittest.TestCase):
 
     def testFmod(self):
         self.assertRaises(TypeError, math.fmod)
-        self.ftest('fmod(10,1)', math.fmod(10,1), 0)
-        self.ftest('fmod(10,0.5)', math.fmod(10,0.5), 0)
-        self.ftest('fmod(10,1.5)', math.fmod(10,1.5), 1)
-        self.ftest('fmod(-10,1)', math.fmod(-10,1), 0)
-        self.ftest('fmod(-10,0.5)', math.fmod(-10,0.5), 0)
-        self.ftest('fmod(-10,1.5)', math.fmod(-10,1.5), -1)
+        self.ftest('fmod(10, 1)', math.fmod(10, 1), 0.0)
+        self.ftest('fmod(10, 0.5)', math.fmod(10, 0.5), 0.0)
+        self.ftest('fmod(10, 1.5)', math.fmod(10, 1.5), 1.0)
+        self.ftest('fmod(-10, 1)', math.fmod(-10, 1), -0.0)
+        self.ftest('fmod(-10, 0.5)', math.fmod(-10, 0.5), -0.0)
+        self.ftest('fmod(-10, 1.5)', math.fmod(-10, 1.5), -1.0)
         self.assertTrue(math.isnan(math.fmod(NAN, 1.)))
         self.assertTrue(math.isnan(math.fmod(1., NAN)))
         self.assertTrue(math.isnan(math.fmod(NAN, NAN)))
@@ -443,7 +485,7 @@ class MathTests(unittest.TestCase):
             (mant, exp), (emant, eexp) = result, expected
             if abs(mant-emant) > eps or exp != eexp:
                 self.fail('%s returned %r, expected %r'%\
-                          (name, (mant, exp), (emant,eexp)))
+                          (name, result, expected))
 
         testfrexp('frexp(-1)', math.frexp(-1), (-0.5, 1))
         testfrexp('frexp(0)', math.frexp(0), (0, 0))
@@ -533,10 +575,10 @@ class MathTests(unittest.TestCase):
             self.assertEqual(actual, expected)
 
         from random import random, gauss, shuffle
-        for j in xrange(1000):
+        for j in range(1000):
             vals = [7, 1e100, -7, -1e100, -9e-20, 8e-20] * 10
             s = 0
-            for i in xrange(200):
+            for i in range(200):
                 v = gauss(0, random()) ** 7 - s
                 s += v
                 vals.append(v)
@@ -571,7 +613,7 @@ class MathTests(unittest.TestCase):
         self.assertTrue(math.isnan(math.ldexp(NAN, 0)))
 
         # large second argument
-        for n in [10**5, 10L**5, 10**10, 10L**10, 10**20, 10**40]:
+        for n in [10**5, 10**10, 10**20, 10**40]:
             self.assertEqual(math.ldexp(INF, -n), INF)
             self.assertEqual(math.ldexp(NINF, -n), NINF)
             self.assertEqual(math.ldexp(1., -n), 0.)
@@ -596,37 +638,57 @@ class MathTests(unittest.TestCase):
         self.ftest('log(32,2)', math.log(32,2), 5)
         self.ftest('log(10**40, 10)', math.log(10**40, 10), 40)
         self.ftest('log(10**40, 10**20)', math.log(10**40, 10**20), 2)
-        self.assertEqual(math.log(INF), INF)
+        self.ftest('log(10**1000)', math.log(10**1000),
+                   2302.5850929940457)
+        self.assertRaises(ValueError, math.log, -1.5)
+        self.assertRaises(ValueError, math.log, -10**1000)
         self.assertRaises(ValueError, math.log, NINF)
+        self.assertEqual(math.log(INF), INF)
         self.assertTrue(math.isnan(math.log(NAN)))
-        # Log values should match for int and long (issue #18739).
-        for n in range(1, 1000):
-            self.assertEqual(math.log(n), math.log(long(n)))
 
     def testLog1p(self):
         self.assertRaises(TypeError, math.log1p)
-        self.ftest('log1p(1/e -1)', math.log1p(1/math.e-1), -1)
-        self.ftest('log1p(0)', math.log1p(0), 0)
-        self.ftest('log1p(e-1)', math.log1p(math.e-1), 1)
-        self.ftest('log1p(1)', math.log1p(1), math.log(2))
-        self.assertEqual(math.log1p(INF), INF)
-        self.assertRaises(ValueError, math.log1p, NINF)
-        self.assertTrue(math.isnan(math.log1p(NAN)))
         n= 2**90
-        self.assertAlmostEqual(math.log1p(n), 62.383246250395075)
         self.assertAlmostEqual(math.log1p(n), math.log1p(float(n)))
+
+    @requires_IEEE_754
+    def testLog2(self):
+        self.assertRaises(TypeError, math.log2)
+
+        # Check some integer values
+        self.assertEqual(math.log2(1), 0.0)
+        self.assertEqual(math.log2(2), 1.0)
+        self.assertEqual(math.log2(4), 2.0)
+
+        # Large integer values
+        self.assertEqual(math.log2(2**1023), 1023.0)
+        self.assertEqual(math.log2(2**1024), 1024.0)
+        self.assertEqual(math.log2(2**2000), 2000.0)
+
+        self.assertRaises(ValueError, math.log2, -1.5)
+        self.assertRaises(ValueError, math.log2, NINF)
+        self.assertTrue(math.isnan(math.log2(NAN)))
+
+    @requires_IEEE_754
+    # log2() is not accurate enough on Mac OS X Tiger (10.4)
+    @support.requires_mac_ver(10, 5)
+    def testLog2Exact(self):
+        # Check that we get exact equality for log2 of powers of 2.
+        actual = [math.log2(math.ldexp(1.0, n)) for n in range(-1074, 1024)]
+        expected = [float(n) for n in range(-1074, 1024)]
+        self.assertEqual(actual, expected)
 
     def testLog10(self):
         self.assertRaises(TypeError, math.log10)
         self.ftest('log10(0.1)', math.log10(0.1), -1)
         self.ftest('log10(1)', math.log10(1), 0)
         self.ftest('log10(10)', math.log10(10), 1)
-        self.assertEqual(math.log(INF), INF)
+        self.ftest('log10(10**1000)', math.log10(10**1000), 1000.0)
+        self.assertRaises(ValueError, math.log10, -1.5)
+        self.assertRaises(ValueError, math.log10, -10**1000)
         self.assertRaises(ValueError, math.log10, NINF)
+        self.assertEqual(math.log(INF), INF)
         self.assertTrue(math.isnan(math.log10(NAN)))
-        # Log values should match for int and long (issue #18739).
-        for n in range(1, 1000):
-            self.assertEqual(math.log10(n), math.log10(long(n)))
 
     def testModf(self):
         self.assertRaises(TypeError, math.modf)
@@ -635,7 +697,7 @@ class MathTests(unittest.TestCase):
             (v1, v2), (e1, e2) = result, expected
             if abs(v1-e1) > eps or abs(v2-e2):
                 self.fail('%s returned %r, expected %r'%\
-                          (name, (v1,v2), (e1,e2)))
+                          (name, result, expected))
 
         testmodf('modf(1.5)', math.modf(1.5), (0.5, 1.0))
         testmodf('modf(-1.5)', math.modf(-1.5), (-0.5, -1.0))
@@ -853,11 +915,15 @@ class MathTests(unittest.TestCase):
         self.ftest('tanh(inf)', math.tanh(INF), 1)
         self.ftest('tanh(-inf)', math.tanh(NINF), -1)
         self.assertTrue(math.isnan(math.tanh(NAN)))
+
+    @requires_IEEE_754
+    @unittest.skipIf(sysconfig.get_config_var('TANH_PRESERVES_ZERO_SIGN') == 0,
+                     "system tanh() function doesn't copy the sign")
+    def testTanhSign(self):
         # check that tanh(-0.) == -0. on IEEE 754 systems
-        if float.__getformat__("double").startswith("IEEE"):
-            self.assertEqual(math.tanh(-0.), -0.)
-            self.assertEqual(math.copysign(1., math.tanh(-0.)),
-                             math.copysign(1., -0.))
+        self.assertEqual(math.tanh(-0.), -0.)
+        self.assertEqual(math.copysign(1., math.tanh(-0.)),
+                         math.copysign(1., -0.))
 
     def test_trunc(self):
         self.assertEqual(math.trunc(1), 1)
@@ -882,8 +948,16 @@ class MathTests(unittest.TestCase):
 
         self.assertRaises(TypeError, math.trunc)
         self.assertRaises(TypeError, math.trunc, 1, 2)
-        self.assertRaises((AttributeError, TypeError), math.trunc,
-                          TestNoTrunc())
+        self.assertRaises(TypeError, math.trunc, TestNoTrunc())
+
+    def testIsfinite(self):
+        self.assertTrue(math.isfinite(0.0))
+        self.assertTrue(math.isfinite(-0.0))
+        self.assertTrue(math.isfinite(1.0))
+        self.assertTrue(math.isfinite(-1.0))
+        self.assertFalse(math.isfinite(float("nan")))
+        self.assertFalse(math.isfinite(float("inf")))
+        self.assertFalse(math.isfinite(float("-inf")))
 
     def testIsnan(self):
         self.assertTrue(math.isnan(float("nan")))
@@ -951,9 +1025,9 @@ class MathTests(unittest.TestCase):
             func = getattr(math, fn)
             try:
                 result = func(ar)
-            except ValueError:
-                message = ("Unexpected ValueError in " +
-                           "test %s:%s(%r)\n" % (id, fn, ar))
+            except ValueError as exc:
+                message = (("Unexpected ValueError: %s\n        " +
+                           "in test %s:%s(%r)\n") % (exc.args[0], id, fn, ar))
                 self.fail(message)
             except OverflowError:
                 message = ("Unexpected OverflowError in " +
@@ -961,10 +1035,8 @@ class MathTests(unittest.TestCase):
                 self.fail(message)
             self.ftest("%s:%s(%r)" % (id, fn, ar), result, er)
 
-    @unittest.skipUnless(float.__getformat__("double").startswith("IEEE"),
-                         "test requires IEEE 754 doubles")
+    @requires_IEEE_754
     def test_mtestfile(self):
-        ALLOWED_ERROR = 20  # permitted error, in ulps
         fail_fmt = "{}:{}({!r}): expected {!r}, got {!r}"
 
         failures = []

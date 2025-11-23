@@ -1,8 +1,9 @@
-from test.test_support import run_unittest, cpython_only
+from test.support import run_unittest, requires_IEEE_754, cpython_only
 from test.test_math import parse_testfile, test_file
 import unittest
 import cmath, math
 from cmath import phase, polar, rect, pi
+import sysconfig
 
 INF = float('inf')
 NAN = float('nan')
@@ -60,6 +61,39 @@ class CMathTests(unittest.TestCase):
 
     def tearDown(self):
         self.test_values.close()
+
+    def assertFloatIdentical(self, x, y):
+        """Fail unless floats x and y are identical, in the sense that:
+        (1) both x and y are nans, or
+        (2) both x and y are infinities, with the same sign, or
+        (3) both x and y are zeros, with the same sign, or
+        (4) x and y are both finite and nonzero, and x == y
+
+        """
+        msg = 'floats {!r} and {!r} are not identical'
+
+        if math.isnan(x) or math.isnan(y):
+            if math.isnan(x) and math.isnan(y):
+                return
+        elif x == y:
+            if x != 0.0:
+                return
+            # both zero; check that signs match
+            elif math.copysign(1.0, x) == math.copysign(1.0, y):
+                return
+            else:
+                msg += ': zeros have different signs'
+        self.fail(msg.format(x, y))
+
+    def assertComplexIdentical(self, x, y):
+        """Fail unless complex numbers x and y have equal values and signs.
+
+        In particular, if x and y both have real (or imaginary) part
+        zero, but the zeros have different signs, this test will fail.
+
+        """
+        self.assertFloatIdentical(x.real, y.real)
+        self.assertFloatIdentical(x.imag, y.imag)
 
     def rAssertAlmostEqual(self, a, b, rel_err = 2e-15, abs_err = 5e-323,
                            msg=None):
@@ -131,7 +165,7 @@ class CMathTests(unittest.TestCase):
 
         # a variety of non-complex numbers, used to check that
         # non-complex return values from __complex__ give an error
-        non_complexes = ["not complex", 1, 5L, 2., None,
+        non_complexes = ["not complex", 1, 5, 2., None,
                          object(), NotImplemented]
 
         # Now we introduce a variety of classes whose instances might
@@ -168,11 +202,9 @@ class CMathTests(unittest.TestCase):
             pass
         class MyInt(object):
             def __int__(self): return 2
-            def __long__(self): return 2L
             def __index__(self): return 2
         class MyIntOS:
             def __int__(self): return 2
-            def __long__(self): return 2L
             def __index__(self): return 2
 
         # other possible combinations of __float__ and __complex__
@@ -205,7 +237,7 @@ class CMathTests(unittest.TestCase):
             self.assertEqual(f(JustFloatOS()), f(flt_arg))
             # TypeError should be raised for classes not providing
             # either __complex__ or __float__, even if they provide
-            # __int__, __long__ or __index__.  An old-style class
+            # __int__ or __index__.  An old-style class
             # currently raises AttributeError instead of a TypeError;
             # this could be considered a bug.
             self.assertRaises(TypeError, f, NeitherComplexNorFloat())
@@ -221,10 +253,10 @@ class CMathTests(unittest.TestCase):
             self.assertRaises(SomeException, f, MyComplexExceptionOS())
 
     def test_input_type(self):
-        # ints and longs should be acceptable inputs to all cmath
+        # ints should be acceptable inputs to all cmath
         # functions, by virtue of providing a __float__ method
         for f in self.test_functions:
-            for arg in [2, 2L, 2.]:
+            for arg in [2, 2.]:
                 self.assertEqual(f(arg), f(arg.__float__()))
 
         # but strings should give a TypeError
@@ -280,10 +312,8 @@ class CMathTests(unittest.TestCase):
                 self.rAssertAlmostEqual(math.log(v, base), z.real)
                 self.assertEqual(0., z.imag)
 
+    @requires_IEEE_754
     def test_specific_values(self):
-        if not float.__getformat__("double").startswith("IEEE"):
-            self.skipTest('needs IEEE double')
-
         def rect_complex(z):
             """Wrapped version of rect that accepts a complex number instead of
             two float arguments."""
@@ -459,9 +489,11 @@ class CMathTests(unittest.TestCase):
         self.assertEqual(abs(complex(INF, NAN)), INF)
         self.assertTrue(math.isnan(abs(complex(NAN, NAN))))
 
+
+    @requires_IEEE_754
+    def test_abs_overflows(self):
         # result overflows
-        if float.__getformat__("double").startswith("IEEE"):
-            self.assertRaises(OverflowError, abs, complex(1.4e308, 1.4e308))
+        self.assertRaises(OverflowError, abs, complex(1.4e308, 1.4e308))
 
     def assertCEqual(self, a, b):
         eps = 1E-7
@@ -474,6 +506,15 @@ class CMathTests(unittest.TestCase):
         self.assertCEqual(rect(1, -pi), (-1., 0))
         self.assertCEqual(rect(1, pi/2), (0, 1.))
         self.assertCEqual(rect(1, -pi/2), (0, -1.))
+
+    def test_isfinite(self):
+        real_vals = [float('-inf'), -2.3, -0.0,
+                     0.0, 2.3, float('inf'), float('nan')]
+        for x in real_vals:
+            for y in real_vals:
+                z = complex(x, y)
+                self.assertEqual(cmath.isfinite(z),
+                                  math.isfinite(x) and math.isfinite(y))
 
     def test_isnan(self):
         self.assertFalse(cmath.isnan(1))
@@ -496,6 +537,27 @@ class CMathTests(unittest.TestCase):
         self.assertTrue(cmath.isinf(complex(INF, INF)))
         self.assertTrue(cmath.isinf(complex(NAN, INF)))
         self.assertTrue(cmath.isinf(complex(INF, NAN)))
+
+    @requires_IEEE_754
+    @unittest.skipIf(sysconfig.get_config_var('TANH_PRESERVES_ZERO_SIGN') == 0,
+                     "system tanh() function doesn't copy the sign")
+    def testTanhSign(self):
+        for z in complex_zeros:
+            self.assertComplexIdentical(cmath.tanh(z), z)
+
+    # The algorithm used for atan and atanh makes use of the system
+    # log1p function; If that system function doesn't respect the sign
+    # of zero, then atan and atanh will also have difficulties with
+    # the sign of complex zeros.
+    @requires_IEEE_754
+    def testAtanSign(self):
+        for z in complex_zeros:
+            self.assertComplexIdentical(cmath.atan(z), z)
+
+    @requires_IEEE_754
+    def testAtanhSign(self):
+        for z in complex_zeros:
+            self.assertComplexIdentical(cmath.atanh(z), z)
 
 
 def test_main():

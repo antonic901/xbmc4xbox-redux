@@ -10,7 +10,7 @@ static PyObject *
 Shoddy_increment(Shoddy *self, PyObject *unused)
 {
     self->state++;
-    return PyInt_FromLong(self->state);
+    return PyLong_FromLong(self->state);
 }
 
 
@@ -31,7 +31,7 @@ Shoddy_init(Shoddy *self, PyObject *args, PyObject *kwds)
 
 
 static PyTypeObject ShoddyType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
+    PyObject_HEAD_INIT(NULL)
     "shoddy.Shoddy",         /* tp_name */
     sizeof(Shoddy),          /* tp_basicsize */
     0,                       /* tp_itemsize */
@@ -39,7 +39,7 @@ static PyTypeObject ShoddyType = {
     0,                       /* tp_print */
     0,                       /* tp_getattr */
     0,                       /* tp_setattr */
-    0,                       /* tp_compare */
+    0,                       /* tp_reserved */
     0,                       /* tp_repr */
     0,                       /* tp_as_number */
     0,                       /* tp_as_sequence */
@@ -72,19 +72,28 @@ static PyTypeObject ShoddyType = {
     0,                       /* tp_new */
 };
 
+static PyModuleDef shoddymodule = {
+    PyModuleDef_HEAD_INIT,
+    "shoddy",
+    "Shoddy module",
+    -1,
+    NULL, NULL, NULL, NULL, NULL
+};
+
 PyMODINIT_FUNC
-initshoddy(void)
+PyInit_shoddy(void)
 {
     PyObject *m;
 
     ShoddyType.tp_base = &PyList_Type;
     if (PyType_Ready(&ShoddyType) < 0)
-        return;
+        return NULL;
 
-    m = Py_InitModule3("shoddy", NULL, "Shoddy module");
+    m = PyModule_Create(&shoddymodule);
     if (m == NULL)
-        return;
+        return NULL;
 
     Py_INCREF(&ShoddyType);
     PyModule_AddObject(m, "Shoddy", (PyObject *) &ShoddyType);
+    return m;
 }

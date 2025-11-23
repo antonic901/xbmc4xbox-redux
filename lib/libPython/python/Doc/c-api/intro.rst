@@ -208,11 +208,11 @@ error handling for the moment; a better way to code this is shown below)::
    PyObject *t;
 
    t = PyTuple_New(3);
-   PyTuple_SetItem(t, 0, PyInt_FromLong(1L));
-   PyTuple_SetItem(t, 1, PyInt_FromLong(2L));
-   PyTuple_SetItem(t, 2, PyString_FromString("three"));
+   PyTuple_SetItem(t, 0, PyLong_FromLong(1L));
+   PyTuple_SetItem(t, 1, PyLong_FromLong(2L));
+   PyTuple_SetItem(t, 2, PyUnicode_FromString("three"));
 
-Here, :c:func:`PyInt_FromLong` returns a new reference which is immediately
+Here, :c:func:`PyLong_FromLong` returns a new reference which is immediately
 stolen by :c:func:`PyTuple_SetItem`.  When you want to keep using an object
 although the reference to it will be stolen, use :c:func:`Py_INCREF` to grab
 another reference before calling the reference-stealing function.
@@ -246,13 +246,13 @@ sets all items of a list (actually, any mutable sequence) to a given item::
    int
    set_all(PyObject *target, PyObject *item)
    {
-       int i, n;
+       Py_ssize_t i, n;
 
        n = PyObject_Length(target);
        if (n < 0)
            return -1;
        for (i = 0; i < n; i++) {
-           PyObject *index = PyInt_FromLong(i);
+           PyObject *index = PyLong_FromSsize_t(i);
            if (!index)
                return -1;
            if (PyObject_SetItem(target, index, item) < 0) {
@@ -294,8 +294,8 @@ using :c:func:`PySequence_GetItem`. ::
    long
    sum_list(PyObject *list)
    {
-       int i, n;
-       long total = 0;
+       Py_ssize_t i, n;
+       long total = 0, value;
        PyObject *item;
 
        n = PyList_Size(list);
@@ -303,8 +303,12 @@ using :c:func:`PySequence_GetItem`. ::
            return -1; /* Not a list */
        for (i = 0; i < n; i++) {
            item = PyList_GetItem(list, i); /* Can't fail */
-           if (!PyInt_Check(item)) continue; /* Skip non-integers */
-           total += PyInt_AsLong(item);
+           if (!PyLong_Check(item)) continue; /* Skip non-integers */
+           value = PyLong_AsLong(item);
+           if (value == -1 && PyErr_Occurred())
+               /* Integer too big to fit in a C long, bail out */
+               return -1;
+           total += value;
        }
        return total;
    }
@@ -316,8 +320,8 @@ using :c:func:`PySequence_GetItem`. ::
    long
    sum_sequence(PyObject *sequence)
    {
-       int i, n;
-       long total = 0;
+       Py_ssize_t i, n;
+       long total = 0, value;
        PyObject *item;
        n = PySequence_Length(sequence);
        if (n < 0)
@@ -326,9 +330,17 @@ using :c:func:`PySequence_GetItem`. ::
            item = PySequence_GetItem(sequence, i);
            if (item == NULL)
                return -1; /* Not a sequence, or other failure */
-           if (PyInt_Check(item))
-               total += PyInt_AsLong(item);
-           Py_DECREF(item); /* Discard reference ownership */
+           if (PyLong_Check(item)) {
+               value = PyLong_AsLong(item);
+               Py_DECREF(item);
+               if (value == -1 && PyErr_Occurred())
+                   /* Integer too big to fit in a C long, bail out */
+                   return -1;
+               total += value;
+           }
+           else {
+               Py_DECREF(item); /* Discard reference ownership */
+           }
        }
        return total;
    }
@@ -388,20 +400,15 @@ reference to the exception type object when an exception has occurred, and
 function to set the exception state, and :c:func:`PyErr_Clear` clears the
 exception state.
 
-.. index::
-   single: exc_type (in module sys)
-   single: exc_value (in module sys)
-   single: exc_traceback (in module sys)
-
 The full exception state consists of three objects (all of which can  be
 *NULL*): the exception type, the corresponding exception  value, and the
-traceback.  These have the same meanings as the Python   objects
-``sys.exc_type``, ``sys.exc_value``, and ``sys.exc_traceback``; however, they
-are not the same: the Python objects represent the last exception being handled
-by a Python  :keyword:`try` ... :keyword:`except` statement, while the C level
-exception state only exists while an exception is being passed on between C
-functions until it reaches the Python bytecode interpreter's  main loop, which
-takes care of transferring it to ``sys.exc_type`` and friends.
+traceback.  These have the same meanings as the Python result of
+``sys.exc_info()``; however, they are not the same: the Python objects represent
+the last exception being handled by a Python  :keyword:`try` ...
+:keyword:`except` statement, while the C level exception state only exists while
+an exception is being passed on between C functions until it reaches the Python
+bytecode interpreter's  main loop, which takes care of transferring it to
+``sys.exc_info()`` and friends.
 
 .. index:: single: exc_info() (in module sys)
 
@@ -457,11 +464,11 @@ Here is the corresponding C code, in all its glory::
 
            /* Clear the error and use zero: */
            PyErr_Clear();
-           item = PyInt_FromLong(0L);
+           item = PyLong_FromLong(0L);
            if (item == NULL)
                goto error;
        }
-       const_one = PyInt_FromLong(1L);
+       const_one = PyLong_FromLong(1L);
        if (const_one == NULL)
            goto error;
 
@@ -515,16 +522,15 @@ interpreter can only be used after the interpreter has been initialized.
 
 .. index::
    single: Py_Initialize()
-   module: __builtin__
+   module: builtins
    module: __main__
    module: sys
-   module: exceptions
    triple: module; search; path
    single: path (in module sys)
 
 The basic initialization function is :c:func:`Py_Initialize`. This initializes
 the table of loaded modules, and creates the fundamental modules
-:mod:`__builtin__`, :mod:`__main__`, :mod:`sys`, and :mod:`exceptions`.  It also
+:mod:`builtins`, :mod:`__main__`, and :mod:`sys`.  It also
 initializes the module search path (``sys.path``).
 
 .. index:: single: PySys_SetArgvEx()
@@ -615,7 +621,7 @@ extra checks are performed:
 
 * Sanity checks of the input arguments are added to frame creation.
 
-* The storage for long ints is initialized with a known invalid pattern to catch
+* The storage for ints is initialized with a known invalid pattern to catch
   reference to uninitialized digits.
 
 * Low-level tracing and extra exception checking are added to the runtime

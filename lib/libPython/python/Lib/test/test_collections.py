@@ -1,65 +1,165 @@
+"""Unit tests for collections.py."""
+
 import collections
 import copy
 import doctest
 import keyword
 import operator
 import pickle
-import cPickle
 from random import choice, randrange
 import re
 import string
 import sys
-from test import test_support
+from test import support
 import unittest
 
-from collections import namedtuple, Counter, OrderedDict
-from collections import Hashable, Iterable, Iterator
-from collections import Sized, Container, Callable
-from collections import Set, MutableSet
-from collections import Mapping, MutableMapping
-from collections import Sequence, MutableSequence
+from collections import namedtuple, Counter, OrderedDict, _count_elements
+from collections import UserDict
+from collections import ChainMap
+from collections.abc import Hashable, Iterable, Iterator
+from collections.abc import Sized, Container, Callable
+from collections.abc import Set, MutableSet
+from collections.abc import Mapping, MutableMapping, KeysView, ItemsView
+from collections.abc import Sequence, MutableSequence
+from collections.abc import ByteString
 
-# Silence deprecation warning
-sets = test_support.import_module('sets', deprecated=True)
+
+################################################################################
+### ChainMap (helper class for configparser and the string module)
+################################################################################
+
+class TestChainMap(unittest.TestCase):
+
+    def test_basics(self):
+        c = ChainMap()
+        c['a'] = 1
+        c['b'] = 2
+        d = c.new_child()
+        d['b'] = 20
+        d['c'] = 30
+        self.assertEqual(d.maps, [{'b':20, 'c':30}, {'a':1, 'b':2}])  # check internal state
+        self.assertEqual(d.items(), dict(a=1, b=20, c=30).items())    # check items/iter/getitem
+        self.assertEqual(len(d), 3)                                   # check len
+        for key in 'abc':                                             # check contains
+            self.assertIn(key, d)
+        for k, v in dict(a=1, b=20, c=30, z=100).items():             # check get
+            self.assertEqual(d.get(k, 100), v)
+
+        del d['b']                                                    # unmask a value
+        self.assertEqual(d.maps, [{'c':30}, {'a':1, 'b':2}])          # check internal state
+        self.assertEqual(d.items(), dict(a=1, b=2, c=30).items())     # check items/iter/getitem
+        self.assertEqual(len(d), 3)                                   # check len
+        for key in 'abc':                                             # check contains
+            self.assertIn(key, d)
+        for k, v in dict(a=1, b=2, c=30, z=100).items():              # check get
+            self.assertEqual(d.get(k, 100), v)
+        self.assertIn(repr(d), [                                      # check repr
+            type(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
+            type(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
+        ])
+
+        for e in d.copy(), copy.copy(d):                               # check shallow copies
+            self.assertEqual(d, e)
+            self.assertEqual(d.maps, e.maps)
+            self.assertIsNot(d, e)
+            self.assertIsNot(d.maps[0], e.maps[0])
+            for m1, m2 in zip(d.maps[1:], e.maps[1:]):
+                self.assertIs(m1, m2)
+
+        # check deep copies
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
+            e = pickle.loads(pickle.dumps(d, proto))
+            self.assertEqual(d, e)
+            self.assertEqual(d.maps, e.maps)
+            self.assertIsNot(d, e)
+            for m1, m2 in zip(d.maps, e.maps):
+                self.assertIsNot(m1, m2, e)
+        for e in [copy.deepcopy(d),
+                  eval(repr(d))
+                ]:
+            self.assertEqual(d, e)
+            self.assertEqual(d.maps, e.maps)
+            self.assertIsNot(d, e)
+            for m1, m2 in zip(d.maps, e.maps):
+                self.assertIsNot(m1, m2, e)
+
+        f = d.new_child()
+        f['b'] = 5
+        self.assertEqual(f.maps, [{'b': 5}, {'c':30}, {'a':1, 'b':2}])
+        self.assertEqual(f.parents.maps, [{'c':30}, {'a':1, 'b':2}])   # check parents
+        self.assertEqual(f['b'], 5)                                    # find first in chain
+        self.assertEqual(f.parents['b'], 2)                            # look beyond maps[0]
+
+    def test_contructor(self):
+        self.assertEqual(ChainMap().maps, [{}])                        # no-args --> one new dict
+        self.assertEqual(ChainMap({1:2}).maps, [{1:2}])                # 1 arg --> list
+
+    def test_bool(self):
+        self.assertFalse(ChainMap())
+        self.assertFalse(ChainMap({}, {}))
+        self.assertTrue(ChainMap({1:2}, {}))
+        self.assertTrue(ChainMap({}, {1:2}))
+
+    def test_missing(self):
+        class DefaultChainMap(ChainMap):
+            def __missing__(self, key):
+                return 999
+        d = DefaultChainMap(dict(a=1, b=2), dict(b=20, c=30))
+        for k, v in dict(a=1, b=2, c=30, d=999).items():
+            self.assertEqual(d[k], v)                                  # check __getitem__ w/missing
+        for k, v in dict(a=1, b=2, c=30, d=77).items():
+            self.assertEqual(d.get(k, 77), v)                          # check get() w/ missing
+        for k, v in dict(a=True, b=True, c=True, d=False).items():
+            self.assertEqual(k in d, v)                                # check __contains__ w/missing
+        self.assertEqual(d.pop('a', 1001), 1, d)
+        self.assertEqual(d.pop('a', 1002), 1002)                       # check pop() w/missing
+        self.assertEqual(d.popitem(), ('b', 2))                        # check popitem() w/missing
+        with self.assertRaises(KeyError):
+            d.popitem()
+
+    def test_dict_coercion(self):
+        d = ChainMap(dict(a=1, b=2), dict(b=20, c=30))
+        self.assertEqual(dict(d), dict(a=1, b=2, c=30))
+        self.assertEqual(dict(d.items()), dict(a=1, b=2, c=30))
+
+    def test_new_child(self):
+        'Tests for changes for issue #16613.'
+        c = ChainMap()
+        c['a'] = 1
+        c['b'] = 2
+        m = {'b':20, 'c': 30}
+        d = c.new_child(m)
+        self.assertEqual(d.maps, [{'b':20, 'c':30}, {'a':1, 'b':2}])  # check internal state
+        self.assertIs(m, d.maps[0])
+
+        # Use a different map than a dict
+        class lowerdict(dict):
+            def __getitem__(self, key):
+                if isinstance(key, str):
+                    key = key.lower()
+                return dict.__getitem__(self, key)
+            def __contains__(self, key):
+                if isinstance(key, str):
+                    key = key.lower()
+                return dict.__contains__(self, key)
+
+        c = ChainMap()
+        c['a'] = 1
+        c['b'] = 2
+        m = lowerdict(b=20, c=30)
+        d = c.new_child(m)
+        self.assertIs(m, d.maps[0])
+        for key in 'abc':                                             # check contains
+            self.assertIn(key, d)
+        for k, v in dict(a=1, B=20, C=30, z=100).items():             # check get
+            self.assertEqual(d.get(k, 100), v)
+
+
+################################################################################
+### Named Tuples
+################################################################################
 
 TestNT = namedtuple('TestNT', 'x y z')    # type used for pickle tests
-
-py273_named_tuple_pickle = '''\
-ccopy_reg
-_reconstructor
-p0
-(ctest.test_collections
-TestNT
-p1
-c__builtin__
-tuple
-p2
-(I10
-I20
-I30
-tp3
-tp4
-Rp5
-ccollections
-OrderedDict
-p6
-((lp7
-(lp8
-S'x'
-p9
-aI10
-aa(lp10
-S'y'
-p11
-aI20
-aa(lp12
-S'z'
-p13
-aI30
-aatp14
-Rp15
-b.
-'''
 
 class TestNamedTuple(unittest.TestCase):
 
@@ -70,6 +170,7 @@ class TestNamedTuple(unittest.TestCase):
         self.assertEqual(Point.__module__, __name__)
         self.assertEqual(Point.__getitem__, tuple.__getitem__)
         self.assertEqual(Point._fields, ('x', 'y'))
+        self.assertIn('class Point(tuple)', Point._source)
 
         self.assertRaises(ValueError, namedtuple, 'abc%', 'efg ghi')       # type has non-alpha char
         self.assertRaises(ValueError, namedtuple, 'class', 'efg ghi')      # type has keyword
@@ -84,9 +185,9 @@ class TestNamedTuple(unittest.TestCase):
         namedtuple('Point0', 'x1 y2')   # Verify that numbers are allowed in names
         namedtuple('_', 'a b c')        # Test leading underscores in a typename
 
-        nt = namedtuple('nt', u'the quick brown fox')                       # check unicode input
+        nt = namedtuple('nt', 'the quick brown fox')                       # check unicode input
         self.assertNotIn("u'", repr(nt._fields))
-        nt = namedtuple('nt', (u'the', u'quick'))                           # check unicode input
+        nt = namedtuple('nt', ('the', 'quick'))                           # check unicode input
         self.assertNotIn("u'", repr(nt._fields))
 
         self.assertRaises(TypeError, Point._make, [11])                     # catch too few args
@@ -127,7 +228,6 @@ class TestNamedTuple(unittest.TestCase):
         self.assertEqual(p._fields, ('x', 'y'))                             # test _fields attribute
         self.assertEqual(p._replace(x=1), (1, 22))                          # test _replace method
         self.assertEqual(p._asdict(), dict(x=11, y=22))                     # test _asdict method
-        self.assertEqual(vars(p), p._asdict())                              # verify that vars() works
 
         try:
             p._replace(x=1, error=2)
@@ -182,7 +282,8 @@ class TestNamedTuple(unittest.TestCase):
         self.assertEqual(Dot(1)._replace(d=999), (999,))
         self.assertEqual(Dot(1)._fields, ('d',))
 
-        n = 5000
+        # n = 5000
+        n = 254 # SyntaxError: more than 255 arguments:
         names = list(set(''.join([choice(string.ascii_letters)
                                   for j in range(10)]) for i in range(n)))
         n = len(names)
@@ -197,7 +298,7 @@ class TestNamedTuple(unittest.TestCase):
         d_expected = dict(zip(names, range(n)))
         self.assertEqual(d, d_expected)
         b2 = b._replace(**dict([(names[1], 999),(names[-5], 42)]))
-        b2_expected = range(n)
+        b2_expected = list(range(n))
         b2_expected[1] = 999
         b2_expected[-5] = 42
         self.assertEqual(b2, tuple(b2_expected))
@@ -205,13 +306,14 @@ class TestNamedTuple(unittest.TestCase):
 
     def test_pickle(self):
         p = TestNT(x=10, y=20, z=30)
-        for module in pickle, cPickle:
+        for module in (pickle,):
             loads = getattr(module, 'loads')
             dumps = getattr(module, 'dumps')
-            for protocol in -1, 0, 1, 2:
+            for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
                 q = loads(dumps(p, protocol))
                 self.assertEqual(p, q)
                 self.assertEqual(p._fields, q._fields)
+                self.assertNotIn(b'OrderedDict', dumps(p, protocol))
 
     def test_copy(self):
         p = TestNT(x=10, y=20, z=30)
@@ -230,7 +332,7 @@ class TestNamedTuple(unittest.TestCase):
         self.assertEqual(newt, (10,20,30,40,50))
 
         # Broader test of all interesting names in a template
-        with test_support.captured_stdout() as template:
+        with support.captured_stdout() as template:
             T = namedtuple('T', 'x', verbose=True)
         words = set(re.findall('[A-Za-z]+', template.getvalue()))
         words -= set(keyword.kwlist)
@@ -258,10 +360,41 @@ class TestNamedTuple(unittest.TestCase):
         # test __getnewargs__
         self.assertEqual(t.__getnewargs__(), values)
 
-    def test_pickling_bug_18015(self):
-        # http://bugs.python.org/issue18015
-        pt = pickle.loads(py273_named_tuple_pickle)
-        self.assertEqual(pt.x, 10)
+    def test_repr(self):
+        with support.captured_stdout() as template:
+            A = namedtuple('A', 'x', verbose=True)
+        self.assertEqual(repr(A(1)), 'A(x=1)')
+        # repr should show the name of the subclass
+        class B(A):
+            pass
+        self.assertEqual(repr(B(1)), 'B(x=1)')
+
+    def test_source(self):
+        # verify that _source can be run through exec()
+        tmp = namedtuple('NTColor', 'red green blue')
+        globals().pop('NTColor', None)          # remove artifacts from other tests
+        exec(tmp._source, globals())
+        self.assertIn('NTColor', globals())
+        c = NTColor(10, 20, 30)
+        self.assertEqual((c.red, c.green, c.blue), (10, 20, 30))
+        self.assertEqual(NTColor._fields, ('red', 'green', 'blue'))
+        globals().pop('NTColor', None)          # clean-up after this test
+
+
+    def test_namedtuple_subclass_issue_24931(self):
+        class Point(namedtuple('_Point', ['x', 'y'])):
+            pass
+
+        a = Point(3, 4)
+        self.assertEqual(a._asdict(), OrderedDict([('x', 3), ('y', 4)]))
+
+        a.w = 5
+        self.assertEqual(a.__dict__, {'w': 5})
+
+
+################################################################################
+### Abstract Base Classes
+################################################################################
 
 class ABCTestCase(unittest.TestCase):
 
@@ -282,22 +415,12 @@ class ABCTestCase(unittest.TestCase):
     def validate_isinstance(self, abc, name):
         stub = lambda s, *args: 0
 
-        # new-style class
-        C = type('C', (object,), {name: stub})
-        self.assertIsInstance(C(), abc)
-        self.assertTrue(issubclass(C, abc))
-        # old-style class
-        class C: pass
+        C = type('C', (object,), {'__hash__': None})
         setattr(C, name, stub)
         self.assertIsInstance(C(), abc)
         self.assertTrue(issubclass(C, abc))
 
-        # new-style class
         C = type('C', (object,), {'__hash__': None})
-        self.assertNotIsInstance(C(), abc)
-        self.assertFalse(issubclass(C, abc))
-        # old-style class
-        class C: pass
         self.assertNotIsInstance(C(), abc)
         self.assertFalse(issubclass(C, abc))
 
@@ -336,7 +459,7 @@ class TestOneTrickPonyABCs(ABCTestCase):
 
     def test_Hashable(self):
         # Check some non-hashables
-        non_samples = [list(), set(), dict()]
+        non_samples = [bytearray(), list(), set(), dict()]
         for x in non_samples:
             self.assertNotIsInstance(x, Hashable)
             self.assertFalse(issubclass(type(x), Hashable), repr(type(x)))
@@ -345,7 +468,7 @@ class TestOneTrickPonyABCs(ABCTestCase):
                    int(), float(), complex(),
                    str(),
                    tuple(), frozenset(),
-                   int, list, object, type,
+                   int, list, object, type, bytes()
                    ]
         for x in samples:
             self.assertIsInstance(x, Hashable)
@@ -354,8 +477,7 @@ class TestOneTrickPonyABCs(ABCTestCase):
         # Check direct subclassing
         class H(Hashable):
             def __hash__(self):
-                return super(H, self).__hash__()
-            __eq__ = Hashable.__eq__ # Silence Py3k warning
+                return super().__hash__()
         self.assertEqual(hash(H()), 0)
         self.assertFalse(issubclass(int, H))
         self.validate_abstract_methods(Hashable, '__hash__')
@@ -368,7 +490,7 @@ class TestOneTrickPonyABCs(ABCTestCase):
             self.assertNotIsInstance(x, Iterable)
             self.assertFalse(issubclass(type(x), Iterable), repr(type(x)))
         # Check some iterables
-        samples = [str(),
+        samples = [bytes(), str(),
                    tuple(), list(), set(), frozenset(), dict(),
                    dict().keys(), dict().items(), dict().values(),
                    (lambda: (yield))(),
@@ -380,19 +502,18 @@ class TestOneTrickPonyABCs(ABCTestCase):
         # Check direct subclassing
         class I(Iterable):
             def __iter__(self):
-                return super(I, self).__iter__()
+                return super().__iter__()
         self.assertEqual(list(I()), [])
         self.assertFalse(issubclass(str, I))
         self.validate_abstract_methods(Iterable, '__iter__')
         self.validate_isinstance(Iterable, '__iter__')
 
     def test_Iterator(self):
-        non_samples = [None, 42, 3.14, 1j, "".encode('ascii'), "", (), [],
-            {}, set()]
+        non_samples = [None, 42, 3.14, 1j, b"", "", (), [], {}, set()]
         for x in non_samples:
             self.assertNotIsInstance(x, Iterator)
             self.assertFalse(issubclass(type(x), Iterator), repr(type(x)))
-        samples = [iter(str()),
+        samples = [iter(bytes()), iter(str()),
                    iter(tuple()), iter(list()), iter(dict()),
                    iter(set()), iter(frozenset()),
                    iter(dict().keys()), iter(dict().items()),
@@ -403,7 +524,7 @@ class TestOneTrickPonyABCs(ABCTestCase):
         for x in samples:
             self.assertIsInstance(x, Iterator)
             self.assertTrue(issubclass(type(x), Iterator), repr(type(x)))
-        self.validate_abstract_methods(Iterator, 'next', '__iter__')
+        self.validate_abstract_methods(Iterator, '__next__', '__iter__')
 
         # Issue 10565
         class NextOnly:
@@ -411,11 +532,6 @@ class TestOneTrickPonyABCs(ABCTestCase):
                 yield 1
                 raise StopIteration
         self.assertNotIsInstance(NextOnly(), Iterator)
-        class NextOnlyNew(object):
-            def __next__(self):
-                yield 1
-                raise StopIteration
-        self.assertNotIsInstance(NextOnlyNew(), Iterator)
 
     def test_Sized(self):
         non_samples = [None, 42, 3.14, 1j,
@@ -425,7 +541,7 @@ class TestOneTrickPonyABCs(ABCTestCase):
         for x in non_samples:
             self.assertNotIsInstance(x, Sized)
             self.assertFalse(issubclass(type(x), Sized), repr(type(x)))
-        samples = [str(),
+        samples = [bytes(), str(),
                    tuple(), list(), set(), frozenset(), dict(),
                    dict().keys(), dict().items(), dict().values(),
                    ]
@@ -443,7 +559,7 @@ class TestOneTrickPonyABCs(ABCTestCase):
         for x in non_samples:
             self.assertNotIsInstance(x, Container)
             self.assertFalse(issubclass(type(x), Container), repr(type(x)))
-        samples = [str(),
+        samples = [bytes(), str(),
                    tuple(), list(), set(), frozenset(), dict(),
                    dict().keys(), dict().items(),
                    ]
@@ -455,7 +571,7 @@ class TestOneTrickPonyABCs(ABCTestCase):
 
     def test_Callable(self):
         non_samples = [None, 42, 3.14, 1j,
-                       "", "".encode('ascii'), (), [], {}, set(),
+                       "", b"", (), [], {}, set(),
                        (lambda: (yield))(),
                        (x for x in []),
                        ]
@@ -483,7 +599,6 @@ class TestOneTrickPonyABCs(ABCTestCase):
     def test_registration(self):
         for B in Hashable, Iterable, Iterator, Sized, Container, Callable:
             class C:
-                __metaclass__ = type
                 __hash__ = None  # Make sure it isn't hashable by default
             self.assertFalse(issubclass(C, B), B.__name__)
             B.register(C)
@@ -624,20 +739,14 @@ class TestCollectionABCs(ABCTestCase):
 
         cs = MyComparableSet()
         ncs = MyNonComparableSet()
-
-        # Run all the variants to make sure they don't mutually recurse
-        ncs < cs
-        ncs <= cs
-        ncs > cs
-        ncs >= cs
-        cs < ncs
-        cs <= ncs
-        cs > ncs
-        cs >= ncs
+        self.assertFalse(ncs < cs)
+        self.assertTrue(ncs <= cs)
+        self.assertFalse(ncs > cs)
+        self.assertTrue(ncs >= cs)
 
     def assertSameSet(self, s1, s2):
         # coerce both to a real set then check equality
-        self.assertEqual(set(s1), set(s2))
+        self.assertSetEqual(set(s1), set(s2))
 
     def test_Set_interoperability_with_real_sets(self):
         # Issue: 8743
@@ -665,24 +774,17 @@ class TestCollectionABCs(ABCTestCase):
         l1 = list('abccba')
         l2 = list('bcddcb')
         l3 = list('abcdeedcba')
-        p1 = sets.Set('abc')
-        p2 = sets.Set('bcd')
-        p3 = sets.Set('abcde')
 
         target = r1 & r2
         self.assertSameSet(f1 & f2, target)
         self.assertSameSet(f1 & r2, target)
         self.assertSameSet(r2 & f1, target)
-        self.assertSameSet(f1 & p2, target)
-        self.assertSameSet(p2 & f1, target)
         self.assertSameSet(f1 & l2, target)
 
         target = r1 | r2
         self.assertSameSet(f1 | f2, target)
         self.assertSameSet(f1 | r2, target)
         self.assertSameSet(r2 | f1, target)
-        self.assertSameSet(f1 | p2, target)
-        self.assertSameSet(p2 | f1, target)
         self.assertSameSet(f1 | l2, target)
 
         fwd_target = r1 - r2
@@ -693,10 +795,6 @@ class TestCollectionABCs(ABCTestCase):
         self.assertSameSet(f2 - r1, rev_target)
         self.assertSameSet(r1 - f2, fwd_target)
         self.assertSameSet(r2 - f1, rev_target)
-        self.assertSameSet(f1 - p2, fwd_target)
-        self.assertSameSet(f2 - p1, rev_target)
-        self.assertSameSet(p1 - f2, fwd_target)
-        self.assertSameSet(p2 - f1, rev_target)
         self.assertSameSet(f1 - l2, fwd_target)
         self.assertSameSet(f2 - l1, rev_target)
 
@@ -704,9 +802,13 @@ class TestCollectionABCs(ABCTestCase):
         self.assertSameSet(f1 ^ f2, target)
         self.assertSameSet(f1 ^ r2, target)
         self.assertSameSet(r2 ^ f1, target)
-        self.assertSameSet(f1 ^ p2, target)
-        self.assertSameSet(p2 ^ f1, target)
         self.assertSameSet(f1 ^ l2, target)
+
+        # Don't change the following to use assertLess or other
+        # "more specific" unittest assertions.  The current
+        # assertTrue/assertFalse style makes the pattern of test
+        # case combinations clear and allows us to know for sure
+        # the exact operator being invoked.
 
         # proper subset
         self.assertTrue(f1 < f3)
@@ -718,11 +820,11 @@ class TestCollectionABCs(ABCTestCase):
         self.assertTrue(r1 < r3)
         self.assertFalse(r1 < r1)
         self.assertFalse(r1 < r2)
-
-        with test_support.check_py3k_warnings():
-            # python 2 only, cross-type compares will succeed
+        with self.assertRaises(TypeError):
             f1 < l3
+        with self.assertRaises(TypeError):
             f1 < l1
+        with self.assertRaises(TypeError):
             f1 < l2
 
         # any subset
@@ -735,11 +837,11 @@ class TestCollectionABCs(ABCTestCase):
         self.assertTrue(r1 <= r3)
         self.assertTrue(r1 <= r1)
         self.assertFalse(r1 <= r2)
-
-        with test_support.check_py3k_warnings():
-            # python 2 only, cross-type compares will succeed
+        with self.assertRaises(TypeError):
             f1 <= l3
+        with self.assertRaises(TypeError):
             f1 <= l1
+        with self.assertRaises(TypeError):
             f1 <= l2
 
         # proper superset
@@ -752,11 +854,11 @@ class TestCollectionABCs(ABCTestCase):
         self.assertTrue(r3 > r1)
         self.assertFalse(r1 > r1)
         self.assertFalse(r2 > r1)
-
-        with test_support.check_py3k_warnings():
-            # python 2 only, cross-type compares will succeed
+        with self.assertRaises(TypeError):
             f1 > l3
+        with self.assertRaises(TypeError):
             f1 > l1
+        with self.assertRaises(TypeError):
             f1 > l2
 
         # any superset
@@ -769,11 +871,11 @@ class TestCollectionABCs(ABCTestCase):
         self.assertTrue(r3 >= r1)
         self.assertTrue(r1 >= r1)
         self.assertFalse(r2 >= r1)
-
-        with test_support.check_py3k_warnings():
-            # python 2 only, cross-type compares will succeed
+        with self.assertRaises(TypeError):
             f1 >= l3
+        with self.assertRaises(TypeError):
             f1 >=l1
+        with self.assertRaises(TypeError):
             f1 >= l2
 
         # equality
@@ -783,10 +885,9 @@ class TestCollectionABCs(ABCTestCase):
         self.assertFalse(f1 == f3)
         self.assertFalse(r1 == f3)
         self.assertFalse(f1 == r3)
-        # python 2 only, cross-type compares will succeed
-        f1 == l3
-        f1 == l1
-        f1 == l2
+        self.assertFalse(f1 == l3)
+        self.assertFalse(f1 == l1)
+        self.assertFalse(f1 == l2)
 
         # inequality
         self.assertFalse(f1 != f1)
@@ -795,10 +896,9 @@ class TestCollectionABCs(ABCTestCase):
         self.assertTrue(f1 != f3)
         self.assertTrue(r1 != f3)
         self.assertTrue(f1 != r3)
-        # python 2 only, cross-type compares will succeed
-        f1 != l3
-        f1 != l1
-        f1 != l2
+        self.assertTrue(f1 != l3)
+        self.assertTrue(f1 != l1)
+        self.assertTrue(f1 != l2)
 
     def test_Mapping(self):
         for sample in [dict]:
@@ -822,27 +922,124 @@ class TestCollectionABCs(ABCTestCase):
         self.validate_abstract_methods(MutableMapping, '__contains__', '__iter__', '__len__',
             '__getitem__', '__setitem__', '__delitem__')
 
+    def test_MutableMapping_subclass(self):
+        # Test issue 9214
+        mymap = UserDict()
+        mymap['red'] = 5
+        self.assertIsInstance(mymap.keys(), Set)
+        self.assertIsInstance(mymap.keys(), KeysView)
+        self.assertIsInstance(mymap.items(), Set)
+        self.assertIsInstance(mymap.items(), ItemsView)
+
+        mymap = UserDict()
+        mymap['red'] = 5
+        z = mymap.keys() | {'orange'}
+        self.assertIsInstance(z, set)
+        list(z)
+        mymap['blue'] = 7               # Shouldn't affect 'z'
+        self.assertEqual(sorted(z), ['orange', 'red'])
+
+        mymap = UserDict()
+        mymap['red'] = 5
+        z = mymap.items() | {('orange', 3)}
+        self.assertIsInstance(z, set)
+        list(z)
+        mymap['blue'] = 7               # Shouldn't affect 'z'
+        self.assertEqual(sorted(z), [('orange', 3), ('red', 5)])
+
     def test_Sequence(self):
-        for sample in [tuple, list, str]:
+        for sample in [tuple, list, bytes, str]:
             self.assertIsInstance(sample(), Sequence)
             self.assertTrue(issubclass(sample, Sequence))
-        self.assertTrue(issubclass(basestring, Sequence))
         self.assertIsInstance(range(10), Sequence)
-        self.assertTrue(issubclass(xrange, Sequence))
+        self.assertTrue(issubclass(range, Sequence))
+        self.assertIsInstance(memoryview(b""), Sequence)
+        self.assertTrue(issubclass(memoryview, Sequence))
         self.assertTrue(issubclass(str, Sequence))
         self.validate_abstract_methods(Sequence, '__contains__', '__iter__', '__len__',
             '__getitem__')
 
+    def test_ByteString(self):
+        for sample in [bytes, bytearray]:
+            self.assertIsInstance(sample(), ByteString)
+            self.assertTrue(issubclass(sample, ByteString))
+        for sample in [str, list, tuple]:
+            self.assertNotIsInstance(sample(), ByteString)
+            self.assertFalse(issubclass(sample, ByteString))
+        self.assertNotIsInstance(memoryview(b""), ByteString)
+        self.assertFalse(issubclass(memoryview, ByteString))
+
     def test_MutableSequence(self):
-        for sample in [tuple, str]:
+        for sample in [tuple, str, bytes]:
             self.assertNotIsInstance(sample(), MutableSequence)
             self.assertFalse(issubclass(sample, MutableSequence))
-        for sample in [list]:
+        for sample in [list, bytearray]:
             self.assertIsInstance(sample(), MutableSequence)
             self.assertTrue(issubclass(sample, MutableSequence))
-        self.assertFalse(issubclass(basestring, MutableSequence))
+        self.assertFalse(issubclass(str, MutableSequence))
         self.validate_abstract_methods(MutableSequence, '__contains__', '__iter__',
             '__len__', '__getitem__', '__setitem__', '__delitem__', 'insert')
+
+    def test_MutableSequence_mixins(self):
+        # Test the mixins of MutableSequence by creating a miminal concrete
+        # class inherited from it.
+        class MutableSequenceSubclass(MutableSequence):
+            def __init__(self):
+                self.lst = []
+
+            def __setitem__(self, index, value):
+                self.lst[index] = value
+
+            def __getitem__(self, index):
+                return self.lst[index]
+
+            def __len__(self):
+                return len(self.lst)
+
+            def __delitem__(self, index):
+                del self.lst[index]
+
+            def insert(self, index, value):
+                self.lst.insert(index, value)
+
+        mss = MutableSequenceSubclass()
+        mss.append(0)
+        mss.extend((1, 2, 3, 4))
+        self.assertEqual(len(mss), 5)
+        self.assertEqual(mss[3], 3)
+        mss.reverse()
+        self.assertEqual(mss[3], 1)
+        mss.pop()
+        self.assertEqual(len(mss), 4)
+        mss.remove(3)
+        self.assertEqual(len(mss), 3)
+        mss += (10, 20, 30)
+        self.assertEqual(len(mss), 6)
+        self.assertEqual(mss[-1], 30)
+        mss.clear()
+        self.assertEqual(len(mss), 0)
+
+################################################################################
+### Counter
+################################################################################
+
+class CounterSubclassWithSetItem(Counter):
+    # Test a counter subclass that overrides __setitem__
+    def __init__(self, *args, **kwds):
+        self.called = False
+        Counter.__init__(self, *args, **kwds)
+    def __setitem__(self, key, value):
+        self.called = True
+        Counter.__setitem__(self, key, value)
+
+class CounterSubclassWithGet(Counter):
+    # Test a counter subclass that overrides get()
+    def __init__(self, *args, **kwds):
+        self.called = False
+        Counter.__init__(self, *args, **kwds)
+    def get(self, key, default):
+        self.called = True
+        return Counter.get(self, key, default)
 
 class TestCounter(unittest.TestCase):
 
@@ -863,9 +1060,6 @@ class TestCounter(unittest.TestCase):
                          [('a', 3), ('b', 2), ('c', 1)])
         self.assertEqual(c['b'], 2)
         self.assertEqual(c['z'], 0)
-        with test_support.check_py3k_warnings():
-            self.assertEqual(c.has_key('c'), True)
-            self.assertEqual(c.has_key('z'), False)
         self.assertEqual(c.__contains__('c'), True)
         self.assertEqual(c.__contains__('z'), False)
         self.assertEqual(c.get('b', 10), 2)
@@ -935,29 +1129,21 @@ class TestCounter(unittest.TestCase):
         # Check that counters are copyable, deepcopyable, picklable, and
         #have a repr/eval round-trip
         words = Counter('which witch had which witches wrist watch'.split())
+        def check(dup):
+            msg = "\ncopy: %s\nwords: %s" % (dup, words)
+            self.assertIsNot(dup, words, msg)
+            self.assertEqual(dup, words)
+        check(words.copy())
+        check(copy.copy(words))
+        check(copy.deepcopy(words))
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
+            with self.subTest(proto=proto):
+                check(pickle.loads(pickle.dumps(words, proto)))
+        check(eval(repr(words)))
         update_test = Counter()
         update_test.update(words)
-        for i, dup in enumerate([
-                    words.copy(),
-                    copy.copy(words),
-                    copy.deepcopy(words),
-                    pickle.loads(pickle.dumps(words, 0)),
-                    pickle.loads(pickle.dumps(words, 1)),
-                    pickle.loads(pickle.dumps(words, 2)),
-                    pickle.loads(pickle.dumps(words, -1)),
-                    cPickle.loads(cPickle.dumps(words, 0)),
-                    cPickle.loads(cPickle.dumps(words, 1)),
-                    cPickle.loads(cPickle.dumps(words, 2)),
-                    cPickle.loads(cPickle.dumps(words, -1)),
-                    eval(repr(words)),
-                    update_test,
-                    Counter(words),
-                    ]):
-            msg = (i, dup, words)
-            self.assertTrue(dup is not words)
-            self.assertEqual(dup, words)
-            self.assertEqual(len(dup), len(words))
-            self.assertEqual(type(dup), type(words))
+        check(update_test)
+        check(Counter(words))
 
     def test_copy_subclass(self):
         class MyCounter(Counter):
@@ -1021,6 +1207,27 @@ class TestCounter(unittest.TestCase):
                 set_result = setop(set(p.elements()), set(q.elements()))
                 self.assertEqual(counter_result, dict.fromkeys(set_result, 1))
 
+    def test_inplace_operations(self):
+        elements = 'abcd'
+        for i in range(1000):
+            # test random pairs of multisets
+            p = Counter(dict((elem, randrange(-2,4)) for elem in elements))
+            p.update(e=1, f=-1, g=0)
+            q = Counter(dict((elem, randrange(-2,4)) for elem in elements))
+            q.update(h=1, i=-1, j=0)
+            for inplace_op, regular_op in [
+                (Counter.__iadd__, Counter.__add__),
+                (Counter.__isub__, Counter.__sub__),
+                (Counter.__ior__, Counter.__or__),
+                (Counter.__iand__, Counter.__and__),
+            ]:
+                c = p.copy()
+                c_id = id(c)
+                regular_result = regular_op(c, q)
+                inplace_result = inplace_op(c, q)
+                self.assertEqual(inplace_result, regular_result)
+                self.assertEqual(id(inplace_result), c_id)
+
     def test_subtract(self):
         c = Counter(a=-5, b=0, c=5, d=10, e=15,g=40)
         c.subtract(a=1, b=2, c=-3, d=10, e=20, f=30, h=-50)
@@ -1042,13 +1249,50 @@ class TestCounter(unittest.TestCase):
         self.assertRaises(TypeError, Counter().subtract, {}, {})
         self.assertRaises(TypeError, Counter.subtract)
 
+    def test_unary(self):
+        c = Counter(a=-5, b=0, c=5, d=10, e=15,g=40)
+        self.assertEqual(dict(+c), dict(c=5, d=10, e=15, g=40))
+        self.assertEqual(dict(-c), dict(a=5))
+
+    def test_repr_nonsortable(self):
+        c = Counter(a=2, b=None)
+        r = repr(c)
+        self.assertIn("'a': 2", r)
+        self.assertIn("'b': None", r)
+
+    def test_helper_function(self):
+        # two paths, one for real dicts and one for other mappings
+        elems = list('abracadabra')
+
+        d = dict()
+        _count_elements(d, elems)
+        self.assertEqual(d, {'a': 5, 'r': 2, 'b': 2, 'c': 1, 'd': 1})
+
+        m = OrderedDict()
+        _count_elements(m, elems)
+        self.assertEqual(m,
+             OrderedDict([('a', 5), ('b', 2), ('r', 2), ('c', 1), ('d', 1)]))
+
+        # test fidelity to the pure python version
+        c = CounterSubclassWithSetItem('abracadabra')
+        self.assertTrue(c.called)
+        self.assertEqual(dict(c), {'a': 5, 'b': 2, 'c': 1, 'd': 1, 'r':2 })
+        c = CounterSubclassWithGet('abracadabra')
+        self.assertTrue(c.called)
+        self.assertEqual(dict(c), {'a': 5, 'b': 2, 'c': 1, 'd': 1, 'r':2 })
+
+
+################################################################################
+### Run tests
+################################################################################
 
 def test_main(verbose=None):
     NamedTupleDocs = doctest.DocTestSuite(module=collections)
     test_classes = [TestNamedTuple, NamedTupleDocs, TestOneTrickPonyABCs,
-                    TestCollectionABCs, TestCounter]
-    test_support.run_unittest(*test_classes)
-    test_support.run_doctest(collections, verbose)
+                    TestCollectionABCs, TestCounter, TestChainMap]
+    support.run_unittest(*test_classes)
+    support.run_doctest(collections, verbose)
+
 
 if __name__ == "__main__":
     test_main(verbose=True)

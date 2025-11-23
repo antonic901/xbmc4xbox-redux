@@ -28,7 +28,7 @@ class Test(unittest.TestCase):
 
     @need_symbol('oledll')
     def test_oledll(self):
-        self.assertRaises(WindowsError,
+        self.assertRaises(OSError,
                               oledll.oleaut32.CreateTypeLib2,
                               0, None, None)
 

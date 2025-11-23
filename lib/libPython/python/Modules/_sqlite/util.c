@@ -1,6 +1,6 @@
 /* util.c - various utility functions
  *
- * Copyright (C) 2005-2010 Gerhard Häring <gh@ghaering.de>
+ * Copyright (C) 2005-2010 Gerhard HÃ¤ring <gh@ghaering.de>
  *
  * This file is part of pysqlite.
  *
@@ -132,7 +132,7 @@ _pysqlite_long_from_int64(sqlite_int64 value)
     }
 # endif
 #endif
-    return PyInt_FromLong(Py_SAFE_DOWNCAST(value, sqlite_int64, long));
+    return PyLong_FromLong(Py_SAFE_DOWNCAST(value, sqlite_int64, long));
 }
 
 sqlite_int64

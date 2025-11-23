@@ -4,7 +4,7 @@ builtin open function is defined in this module.
 At the top of the I/O hierarchy is the abstract base class IOBase. It
 defines the basic interface to a stream. Note, however, that there is no
 separation between reading and writing to streams; implementations are
-allowed to raise an IOError if they do not support a given operation.
+allowed to raise an OSError if they do not support a given operation.
 
 Extending IOBase is RawIOBase which deals simply with the reading and
 writing of raw bytes to a stream. FileIO subclasses RawIOBase to provide
@@ -58,6 +58,9 @@ from _io import (DEFAULT_BUFFER_SIZE, BlockingIOError, UnsupportedOperation,
 
 OpenWrapper = _io.open # for compatibility with _pyio
 
+# Pretend this exception was created here.
+UnsupportedOperation.__module__ = "io"
+
 # for seek()
 SEEK_SET = 0
 SEEK_CUR = 1
@@ -66,8 +69,7 @@ SEEK_END = 2
 # Declaring ABCs in C is tricky so we do it here.
 # Method descriptions and default implementations are inherited from the C
 # version however.
-class IOBase(_io._IOBase):
-    __metaclass__ = abc.ABCMeta
+class IOBase(_io._IOBase, metaclass=abc.ABCMeta):
     __doc__ = _io._IOBase.__doc__
 
 class RawIOBase(_io._RawIOBase, IOBase):

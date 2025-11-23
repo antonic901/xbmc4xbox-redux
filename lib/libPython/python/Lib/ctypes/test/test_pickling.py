@@ -69,7 +69,7 @@ class PickleTest:
     def test_wchar(self):
         self.dumps(c_char(b"x"))
         # Issue 5049
-        self.dumps(c_wchar(u"x"))
+        self.dumps(c_wchar("x"))
 
 for proto in range(pickle.HIGHEST_PROTOCOL + 1):
     name = 'PickleTest_%s' % proto

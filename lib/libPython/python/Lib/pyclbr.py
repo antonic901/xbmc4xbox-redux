@@ -39,8 +39,10 @@ Instances of this class have the following instance variables:
         lineno -- the line in the file on which the class statement occurred
 """
 
+import io
+import os
 import sys
-import imp
+import importlib.util
 import tokenize
 from token import NAME, DEDENT, OP
 from operator import itemgetter
@@ -135,18 +137,24 @@ def _readmodule(module, path, inpackage=None):
     # Search the path for the module
     f = None
     if inpackage is not None:
-        f, fname, (_s, _m, ty) = imp.find_module(module, path)
+        search_path = path
     else:
-        f, fname, (_s, _m, ty) = imp.find_module(module, path + sys.path)
-    if ty == imp.PKG_DIRECTORY:
-        dict['__path__'] = [fname]
-        path = [fname] + path
-        f, fname, (_s, _m, ty) = imp.find_module('__init__', [fname])
+        search_path = path + sys.path
+    # XXX This will change once issue19944 lands.
+    spec = importlib.util._find_spec_from_path(fullmodule, search_path)
+    fname = spec.loader.get_filename(fullmodule)
     _modules[fullmodule] = dict
-    if ty != imp.PY_SOURCE:
+    if spec.loader.is_package(fullmodule):
+        dict['__path__'] = [os.path.dirname(fname)]
+    try:
+        source = spec.loader.get_source(fullmodule)
+        if source is None:
+            return dict
+    except (AttributeError, ImportError):
         # not Python source, can't do anything with this module
-        f.close()
         return dict
+
+    f = io.StringIO(source)
 
     stack = [] # stack of (class, indent) pairs
 
@@ -163,7 +171,7 @@ def _readmodule(module, path, inpackage=None):
                 # close previous nested classes and defs
                 while stack and stack[-1][1] >= thisindent:
                     del stack[-1]
-                tokentype, meth_name, start = g.next()[0:3]
+                tokentype, meth_name, start = next(g)[0:3]
                 if tokentype != NAME:
                     continue # Syntax error
                 if stack:
@@ -182,11 +190,11 @@ def _readmodule(module, path, inpackage=None):
                 # close previous nested classes and defs
                 while stack and stack[-1][1] >= thisindent:
                     del stack[-1]
-                tokentype, class_name, start = g.next()[0:3]
+                tokentype, class_name, start = next(g)[0:3]
                 if tokentype != NAME:
                     continue # Syntax error
                 # parse what follows the class name
-                tokentype, token, start = g.next()[0:3]
+                tokentype, token, start = next(g)[0:3]
                 inherit = None
                 if token == '(':
                     names = [] # List of superclasses
@@ -194,7 +202,7 @@ def _readmodule(module, path, inpackage=None):
                     level = 1
                     super = [] # Tokens making up current superclass
                     while True:
-                        tokentype, token, start = g.next()[0:3]
+                        tokentype, token, start = next(g)[0:3]
                         if token in (')', ',') and level == 1:
                             n = "".join(super)
                             if n in dict:
@@ -291,7 +299,7 @@ def _getnamelist(g):
             name2 = None
         names.append((name, name2))
         while token != "," and "\n" not in token:
-            token = g.next()[1]
+            token = next(g)[1]
         if token != ",":
             break
     return names
@@ -301,15 +309,15 @@ def _getname(g):
     # name is the dotted name, or None if there was no dotted name,
     # and token is the next input token.
     parts = []
-    tokentype, token = g.next()[0:2]
+    tokentype, token = next(g)[0:2]
     if tokentype != NAME and token != '*':
         return (None, token)
     parts.append(token)
     while True:
-        tokentype, token = g.next()[0:2]
+        tokentype, token = next(g)[0:2]
         if token != '.':
             break
-        tokentype, token = g.next()[0:2]
+        tokentype, token = next(g)[0:2]
         if tokentype != NAME:
             break
         parts.append(token)
@@ -327,18 +335,17 @@ def _main():
     else:
         path = []
     dict = readmodule_ex(mod, path)
-    objs = dict.values()
-    objs.sort(lambda a, b: cmp(getattr(a, 'lineno', 0),
-                               getattr(b, 'lineno', 0)))
+    objs = list(dict.values())
+    objs.sort(key=lambda a: getattr(a, 'lineno', 0))
     for obj in objs:
         if isinstance(obj, Class):
-            print "class", obj.name, obj.super, obj.lineno
-            methods = sorted(obj.methods.iteritems(), key=itemgetter(1))
+            print("class", obj.name, obj.super, obj.lineno)
+            methods = sorted(obj.methods.items(), key=itemgetter(1))
             for name, lineno in methods:
                 if name != "__path__":
-                    print "  def", name, lineno
+                    print("  def", name, lineno)
         elif isinstance(obj, Function):
-            print "def", obj.name, obj.lineno
+            print("def", obj.name, obj.lineno)
 
 if __name__ == "__main__":
     _main()

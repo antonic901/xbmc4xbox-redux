@@ -30,7 +30,7 @@ __declspec(dllimport) char *xbp__tempnam(const char *dir, const char *prefix);
 
 __declspec(dllimport) FILE *xbp_tmpfile(void);
  #define tmpfile() xbp_tmpfile()
- 
+
 __declspec(dllimport) char *xbp_tmpnam(char *string);
  #define tmpnam(a) xbp_tmpnam(a)
 

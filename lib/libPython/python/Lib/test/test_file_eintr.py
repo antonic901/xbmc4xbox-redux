@@ -1,9 +1,6 @@
 # Written to test interrupted system calls interfering with our many buffered
 # IO implementations.  http://bugs.python.org/issue12268
 #
-# This tests the '_io' module.  Similar tests for Python 2.x's older
-# default file I/O implementation exist within test_file2k.py.
-#
 # It was suggested that this code could be merged into test_io and the tests
 # made to work using the same method as the existing signal tests in test_io.
 # I was unable to get single process tests using alarm or setitimer that way
@@ -16,7 +13,7 @@ import select
 import signal
 import subprocess
 import sys
-from test.test_support import run_unittest
+from test.support import run_unittest
 import time
 import unittest
 
@@ -92,7 +89,7 @@ class TestFileIOSignalInterrupt(unittest.TestCase):
         # Start a subprocess to call our read method while handling a signal.
         self._process = subprocess.Popen(
                 [sys.executable, '-u', '-c',
-                 'import io, signal, sys ;'
+                 'import signal, sys ;'
                  'signal.signal(signal.SIGINT, '
                                'lambda s, f: sys.stderr.write("$\\n")) ;'
                  + infile_setup_code + ' ;' +
@@ -185,7 +182,7 @@ class TestFileIOSignalInterrupt(unittest.TestCase):
 class TestBufferedIOSignalInterrupt(TestFileIOSignalInterrupt):
     def _generate_infile_setup_code(self):
         """Returns the infile = ... line of code to make a BufferedReader."""
-        return ('infile = io.open(sys.stdin.fileno(), "rb") ;'
+        return ('infile = open(sys.stdin.fileno(), "rb") ;'
                 'import _io ;assert isinstance(infile, _io.BufferedReader)')
 
     def test_readall(self):
@@ -200,7 +197,7 @@ class TestBufferedIOSignalInterrupt(TestFileIOSignalInterrupt):
 class TestTextIOSignalInterrupt(TestFileIOSignalInterrupt):
     def _generate_infile_setup_code(self):
         """Returns the infile = ... line of code to make a TextIOWrapper."""
-        return ('infile = io.open(sys.stdin.fileno(), "rt", newline=None) ;'
+        return ('infile = open(sys.stdin.fileno(), "rt", newline=None) ;'
                 'import _io ;assert isinstance(infile, _io.TextIOWrapper)')
 
     def test_readline(self):

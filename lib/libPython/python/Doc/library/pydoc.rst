@@ -7,8 +7,6 @@
 .. sectionauthor:: Ka-Ping Yee <ping@lfw.org>
 
 
-.. versionadded:: 2.1
-
 .. index::
    single: documentation; generation
    single: documentation; online
@@ -67,12 +65,16 @@ manner similar to the Unix :program:`man` command.  The synopsis line of a
 module is the first line of its documentation string.
 
 You can also use :program:`pydoc` to start an HTTP server on the local machine
-that will serve documentation to visiting Web browsers. :program:`pydoc -p 1234`
-will start a HTTP server on port 1234, allowing you to browse
-the documentation at ``http://localhost:1234/`` in your preferred Web browser.
-:program:`pydoc -g` will start the server and additionally bring up a
-small :mod:`Tkinter`\ -based graphical interface to help you search for
-documentation pages.
+that will serve documentation to visiting Web browsers.  :program:`pydoc -p 1234`
+will start a HTTP server on port 1234, allowing you to browse the
+documentation at ``http://localhost:1234/`` in your preferred Web browser.
+Specifying ``0`` as the port number will select an arbitrary unused port.
+
+:program:`pydoc -b` will start the server and additionally open a web
+browser to a module index page.  Each served page has a navigation bar at the
+top where you can *Get* help on an individual item, *Search* all modules with a
+keyword in their synopsis line, and go to the *Module index*, *Topics* and
+*Keywords* pages.
 
 When :program:`pydoc` generates documentation, it uses the current environment
 and path to locate modules.  Thus, invoking :program:`pydoc spam`
@@ -80,7 +82,19 @@ documents precisely the version of the module you would get if you started the
 Python interpreter and typed ``import spam``.
 
 Module docs for core modules are assumed to reside in
-https://docs.python.org/library/.  This can be overridden by setting the
-:envvar:`PYTHONDOCS` environment variable to a different URL or to a local
-directory containing the Library Reference Manual pages.
+``https://docs.python.org/X.Y/library/`` where ``X`` and ``Y`` are the
+major and minor version numbers of the Python interpreter.  This can
+be overridden by setting the :envvar:`PYTHONDOCS` environment variable
+to a different URL or to a local directory containing the Library
+Reference Manual pages.
 
+.. versionchanged:: 3.2
+   Added the ``-b`` option.
+
+.. versionchanged:: 3.3
+   The ``-g`` command line option was removed.
+
+.. versionchanged:: 3.4
+   :mod:`pydoc` now uses :func:`inspect.signature` rather than
+   :func:`inspect.getfullargspec` to extract signature information from
+   callables.

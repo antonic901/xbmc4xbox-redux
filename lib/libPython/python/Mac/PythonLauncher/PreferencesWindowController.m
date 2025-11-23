@@ -95,23 +95,23 @@
 // NSComboBoxDataSource protocol
 - (unsigned int)comboBox:(NSComboBox *)aComboBox indexOfItemWithStringValue:(NSString *)aString
 {
-    NSArray *interp_list = [settings interpreters];
+	NSArray *interp_list = [settings interpreters];
     unsigned int rv = [interp_list indexOfObjectIdenticalTo: aString];
-    return rv;
+	return rv;
 }
 
 - (id)comboBox:(NSComboBox *)aComboBox objectValueForItemAtIndex:(int)index
 {
-    NSArray *interp_list = [settings interpreters];
+	NSArray *interp_list = [settings interpreters];
     id rv = [interp_list objectAtIndex: index];
-    return rv;
+	return rv;
 }
 
 - (int)numberOfItemsInComboBox:(NSComboBox *)aComboBox
 {
-    NSArray *interp_list = [settings interpreters];
+	NSArray *interp_list = [settings interpreters];
     int rv = [interp_list count];
-    return rv;
+	return rv;
 }
 
 

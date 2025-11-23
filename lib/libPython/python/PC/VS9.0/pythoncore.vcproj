@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="pythoncore"
 	ProjectGUID="{CF7AC3D1-E2DF-41D2-BEA6-1E2556CDEA26}"
 	RootNamespace="pythoncore"
@@ -59,11 +59,11 @@
 			<Tool
 				Name="VCPreLinkEventTool"
 				Description="Generate build information..."
-				CommandLine="&quot;$(SolutionDir)make_buildinfo.exe&quot; Release"
+				CommandLine="&quot;$(SolutionDir)make_buildinfo.exe&quot; Release &quot;$(IntDir)\&quot;"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="getbuildinfo.o"
+				AdditionalDependencies="&quot;$(IntDir)getbuildinfo.o&quot;"
 				OutputFile="$(OutDir)\$(PyDllName).dll"
 				IgnoreDefaultLibraryNames="libc"
 				ProgramDatabaseFile="$(OutDir)$(PyDllName).pdb"
@@ -134,11 +134,11 @@
 			<Tool
 				Name="VCPreLinkEventTool"
 				Description="Generate build information..."
-				CommandLine="&quot;$(SolutionDir)make_buildinfo.exe&quot; Release"
+				CommandLine="&quot;$(SolutionDir)make_buildinfo.exe&quot; Release &quot;$(IntDir)\&quot;"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="getbuildinfo.o"
+				AdditionalDependencies="&quot;$(IntDir)getbuildinfo.o&quot;"
 				OutputFile="$(OutDir)\$(PyDllName).dll"
 				IgnoreDefaultLibraryNames="libc"
 				ProgramDatabaseFile="$(OutDir)$(PyDllName).pdb"
@@ -212,11 +212,11 @@
 			<Tool
 				Name="VCPreLinkEventTool"
 				Description="Generate build information..."
-				CommandLine="&quot;$(SolutionDir)make_buildinfo.exe&quot; Debug"
+				CommandLine="&quot;$(SolutionDir)make_buildinfo.exe&quot; Debug &quot;$(IntDir)\&quot;"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="getbuildinfo.o"
+				AdditionalDependencies="&quot;$(IntDir)getbuildinfo.o&quot;"
 				OutputFile="$(OutDir)\$(PyDllName)_d.dll"
 				IgnoreDefaultLibraryNames="libc"
 				ProgramDatabaseFile="$(OutDir)$(PyDllName)_d.pdb"
@@ -290,11 +290,11 @@
 			<Tool
 				Name="VCPreLinkEventTool"
 				Description="Generate build information..."
-				CommandLine="&quot;$(SolutionDir)make_buildinfo.exe&quot; Debug"
+				CommandLine="&quot;$(SolutionDir)make_buildinfo.exe&quot; Debug &quot;$(IntDir)\&quot;"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="getbuildinfo.o"
+				AdditionalDependencies="&quot;$(IntDir)getbuildinfo.o&quot;"
 				OutputFile="$(OutDir)\$(PyDllName)_d.dll"
 				IgnoreDefaultLibraryNames="libc"
 				ProgramDatabaseFile="$(OutDir)$(PyDllName)_d.pdb"
@@ -364,11 +364,11 @@
 			<Tool
 				Name="VCPreLinkEventTool"
 				Description="Generate build information..."
-				CommandLine="&quot;$(SolutionDir)make_buildinfo.exe&quot; Release"
+				CommandLine="&quot;$(SolutionDir)make_buildinfo.exe&quot; Release &quot;$(IntDir)\&quot;"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="getbuildinfo.o"
+				AdditionalDependencies="&quot;$(IntDir)getbuildinfo.o&quot;"
 				OutputFile="$(OutDir)\$(PyDllName).dll"
 				IgnoreDefaultLibraryNames="libc"
 				ProgramDatabaseFile="$(OutDir)$(PyDllName).pdb"
@@ -439,11 +439,11 @@
 			<Tool
 				Name="VCPreLinkEventTool"
 				Description="Generate build information..."
-				CommandLine="&quot;$(SolutionDir)make_buildinfo.exe&quot; Release"
+				CommandLine="&quot;$(SolutionDir)make_buildinfo.exe&quot; Release &quot;$(IntDir)\&quot;"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="getbuildinfo.o"
+				AdditionalDependencies="&quot;$(IntDir)getbuildinfo.o&quot;"
 				OutputFile="$(OutDir)\$(PyDllName).dll"
 				IgnoreDefaultLibraryNames="libc"
 				ProgramDatabaseFile="$(OutDir)$(PyDllName).pdb"
@@ -514,11 +514,11 @@
 			<Tool
 				Name="VCPreLinkEventTool"
 				Description="Generate build information..."
-				CommandLine="&quot;$(SolutionDir)make_buildinfo.exe&quot; Release"
+				CommandLine="&quot;$(SolutionDir)make_buildinfo.exe&quot; Release &quot;$(IntDir)\&quot;"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="getbuildinfo.o"
+				AdditionalDependencies="&quot;$(IntDir)getbuildinfo.o&quot;"
 				OutputFile="$(OutDir)\$(PyDllName).dll"
 				IgnoreDefaultLibraryNames="libc"
 				ProgramDatabaseFile="$(OutDir)$(PyDllName).pdb"
@@ -589,11 +589,11 @@
 			<Tool
 				Name="VCPreLinkEventTool"
 				Description="Generate build information..."
-				CommandLine="&quot;$(SolutionDir)make_buildinfo.exe&quot; Release"
+				CommandLine="&quot;$(SolutionDir)make_buildinfo.exe&quot; Release &quot;$(IntDir)\&quot;"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="getbuildinfo.o"
+				AdditionalDependencies="&quot;$(IntDir)getbuildinfo.o&quot;"
 				OutputFile="$(OutDir)\$(PyDllName).dll"
 				IgnoreDefaultLibraryNames="libc"
 				ProgramDatabaseFile="$(OutDir)$(PyDllName).pdb"
@@ -635,6 +635,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Include\accu.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Include\asdl.h"
 				>
 			</File>
@@ -648,10 +652,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\boolobject.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Include\bufferobject.h"
 				>
 			</File>
 			<File
@@ -679,10 +679,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Include\cobject.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Include\code.h"
 				>
 			</File>
@@ -699,10 +695,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Include\cStringIO.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Include\datetime.h"
 				>
 			</File>
@@ -715,7 +707,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Include\dtoa.h"
+				RelativePath="..\..\Include\dynamic_annotations.h"
 				>
 			</File>
 			<File
@@ -732,6 +724,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\fileobject.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Include\fileutils.h"
 				>
 			</File>
 			<File
@@ -760,10 +756,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\import.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Include\intobject.h"
 				>
 			</File>
 			<File
@@ -808,6 +800,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\moduleobject.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Include\namespaceobject.h"
 				>
 			</File>
 			<File
@@ -891,6 +887,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Include\pytime.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Include\pymacro.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Include\pymem.h"
 				>
 			</File>
@@ -908,6 +912,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\pystrtod.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Include\dtoa.h"
 				>
 			</File>
 			<File
@@ -936,10 +944,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\sliceobject.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Include\stringobject.h"
 				>
 			</File>
 			<File
@@ -1015,10 +1019,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Modules\_hotshot.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Modules\_json.c"
 				>
 			</File>
@@ -1039,6 +1039,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Modules\_pickle.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Modules\_randommodule.c"
 				>
 			</File>
@@ -1055,7 +1059,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Modules\_winapi.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Modules\arraymodule.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Modules\atexitmodule.c"
 				>
 			</File>
 			<File
@@ -1071,15 +1083,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Modules\cPickle.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Modules\cStringIO.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Modules\datetimemodule.c"
+				RelativePath="..\..\Modules\_datetimemodule.c"
 				>
 			</File>
 			<File
@@ -1087,15 +1091,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Modules\future_builtins.c"
+				RelativePath="..\..\Modules\faulthandler.c"
 				>
 			</File>
 			<File
 				RelativePath="..\..\Modules\gcmodule.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Modules\imageop.c"
 				>
 			</File>
 			<File
@@ -1111,14 +1111,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Modules\md5.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Modules\md5.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Modules\md5module.c"
 				>
 			</File>
@@ -1127,7 +1119,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Modules\operator.c"
+				RelativePath="..\..\Modules\_operator.c"
 				>
 			</File>
 			<File
@@ -1147,6 +1139,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Modules\sha1module.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Modules\sha256module.c"
 				>
 			</File>
@@ -1155,15 +1151,23 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Modules\shamodule.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Modules\signalmodule.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Modules\stropmodule.c"
+				RelativePath="..\..\Modules\sre.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Modules\sre_constants.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Modules\sre_lib.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Modules\_stat.c"
 				>
 			</File>
 			<File
@@ -1171,7 +1175,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Modules\threadmodule.c"
+				RelativePath="..\..\Modules\_threadmodule.c"
 				>
 			</File>
 			<File
@@ -1190,6 +1194,42 @@
 				RelativePath="..\..\Modules\zlibmodule.c"
 				>
 			</File>
+			<Filter
+				Name="_io"
+				>
+				<File
+					RelativePath="..\..\Modules\_io\fileio.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Modules\_io\bytesio.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Modules\_io\stringio.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Modules\_io\bufferedio.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Modules\_io\iobase.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Modules\_io\textio.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Modules\_io\_iomodule.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Modules\_io\_iomodule.h"
+					>
+				</File>
+			</Filter>
 			<Filter
 				Name="zlib"
 				>
@@ -1215,22 +1255,6 @@
 				</File>
 				<File
 					RelativePath="..\..\Modules\zlib\deflate.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Modules\zlib\gzclose.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Modules\zlib\gzlib.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Modules\zlib\gzread.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Modules\zlib\gzwrite.c"
 					>
 				</File>
 				<File
@@ -1370,42 +1394,6 @@
 					>
 				</File>
 			</Filter>
-			<Filter
-				Name="_io"
-				>
-				<File
-					RelativePath="..\..\Modules\_io\_iomodule.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Modules\_io\_iomodule.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Modules\_io\bufferedio.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Modules\_io\bytesio.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Modules\_io\fileio.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Modules\_io\iobase.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Modules\_io\stringio.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Modules\_io\textio.c"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Objects"
@@ -1415,11 +1403,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Objects\boolobject.c"
+				RelativePath="..\..\Objects\accu.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Objects\bufferobject.c"
+				RelativePath="..\..\Objects\boolobject.c"
 				>
 			</File>
 			<File
@@ -1428,6 +1416,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Objects\bytearrayobject.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Objects\bytesobject.c"
 				>
 			</File>
 			<File
@@ -1440,10 +1432,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Objects\classobject.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Objects\cobject.c"
 				>
 			</File>
 			<File
@@ -1503,10 +1491,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Objects\intobject.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Objects\iterobject.c"
 				>
 			</File>
@@ -1531,6 +1515,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Objects\namespaceobject.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Objects\object.c"
 				>
 			</File>
@@ -1547,6 +1535,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Objects\stringlib\replace.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Objects\setobject.c"
 				>
 			</File>
@@ -1556,10 +1548,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Objects\stringlib\split.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Objects\stringobject.c"
 				>
 			</File>
 			<File
@@ -1655,11 +1643,7 @@
 			Name="PC"
 			>
 			<File
-				RelativePath="..\..\PC\_subprocess.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\PC\_winreg.c"
+				RelativePath="..\..\PC\winreg.c"
 				>
 			</File>
 			<File
@@ -1676,10 +1660,6 @@
 			</File>
 			<File
 				RelativePath="..\..\PC\getpathp.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\PC\import_nt.c"
 				>
 			</File>
 			<File
@@ -1723,7 +1703,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Python\dtoa.c"
+				RelativePath="..\..\Python\dynamic_annotations.c"
 				>
 			</File>
 			<File
@@ -1735,7 +1715,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Python\formatter_string.c"
+				RelativePath="..\..\Python\fileutils.c"
 				>
 			</File>
 			<File
@@ -1827,6 +1807,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Python\pytime.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Python\pystate.c"
 				>
 			</File>
@@ -1839,6 +1823,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Python\dtoa.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Python\Python-ast.c"
 				>
 			</File>
@@ -1846,7 +1834,7 @@
 				RelativePath="..\..\Python\pythonrun.c"
 				>
 			</File>
-			<File
+ 			<File
 				RelativePath="..\..\Python\random.c"
 				>
 			</File>

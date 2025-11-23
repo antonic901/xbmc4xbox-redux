@@ -1,37 +1,65 @@
-from test.test_support import run_unittest
-from _locale import (setlocale, LC_NUMERIC, localeconv, Error)
+from _locale import (setlocale, LC_ALL, LC_CTYPE, LC_NUMERIC, localeconv, Error)
 try:
     from _locale import (RADIXCHAR, THOUSEP, nl_langinfo)
 except ImportError:
     nl_langinfo = None
 
-import unittest
+import codecs
+import locale
 import sys
+import unittest
 from platform import uname
 
-if uname()[0] == "Darwin":
-    maj, min, mic = [int(part) for part in uname()[2].split(".")]
+if uname().system == "Darwin":
+    maj, min, mic = [int(part) for part in uname().release.split(".")]
     if (maj, min, mic) < (8, 0, 0):
         raise unittest.SkipTest("locale support broken for OS X < 10.4")
 
 candidate_locales = ['es_UY', 'fr_FR', 'fi_FI', 'es_CO', 'pt_PT', 'it_IT',
     'et_EE', 'es_PY', 'no_NO', 'nl_NL', 'lv_LV', 'el_GR', 'be_BY', 'fr_BE',
     'ro_RO', 'ru_UA', 'ru_RU', 'es_VE', 'ca_ES', 'se_NO', 'es_EC', 'id_ID',
-    'ka_GE', 'es_CL', 'hu_HU', 'wa_BE', 'lt_LT', 'sl_SI', 'hr_HR', 'es_AR',
+    'ka_GE', 'es_CL', 'wa_BE', 'hu_HU', 'lt_LT', 'sl_SI', 'hr_HR', 'es_AR',
     'es_ES', 'oc_FR', 'gl_ES', 'bg_BG', 'is_IS', 'mk_MK', 'de_AT', 'pt_BR',
     'da_DK', 'nn_NO', 'cs_CZ', 'de_LU', 'es_BO', 'sq_AL', 'sk_SK', 'fr_CH',
     'de_DE', 'sr_YU', 'br_FR', 'nl_BE', 'sv_FI', 'pl_PL', 'fr_CA', 'fo_FO',
     'bs_BA', 'fr_LU', 'kl_GL', 'fa_IR', 'de_BE', 'sv_SE', 'it_CH', 'uk_UA',
-    'eu_ES', 'vi_VN', 'af_ZA', 'nb_NO', 'en_DK', 'tg_TJ', 'ps_AF.UTF-8', 'en_US',
+    'eu_ES', 'vi_VN', 'af_ZA', 'nb_NO', 'en_DK', 'tg_TJ', 'ps_AF', 'en_US',
     'fr_FR.ISO8859-1', 'fr_FR.UTF-8', 'fr_FR.ISO8859-15@euro',
     'ru_RU.KOI8-R', 'ko_KR.eucKR']
 
-# Workaround for MSVC6(debug) crash bug
-if "MSC v.1200" in sys.version:
-    def accept(loc):
-        a = loc.split(".")
-        return not(len(a) == 2 and len(a[-1]) >= 9)
-    candidate_locales = [loc for loc in candidate_locales if accept(loc)]
+def setUpModule():
+    global candidate_locales
+    # Issue #13441: Skip some locales (e.g. cs_CZ and hu_HU) on Solaris to
+    # workaround a mbstowcs() bug. For example, on Solaris, the hu_HU locale uses
+    # the locale encoding ISO-8859-2, the thousauds separator is b'\xA0' and it is
+    # decoded as U+30000020 (an invalid character) by mbstowcs().
+    if sys.platform == 'sunos5':
+        old_locale = locale.setlocale(locale.LC_ALL)
+        try:
+            locales = []
+            for loc in candidate_locales:
+                try:
+                    locale.setlocale(locale.LC_ALL, loc)
+                except Error:
+                    continue
+                encoding = locale.getpreferredencoding(False)
+                try:
+                    localeconv()
+                except Exception as err:
+                    print("WARNING: Skip locale %s (encoding %s): [%s] %s"
+                        % (loc, encoding, type(err), err))
+                else:
+                    locales.append(loc)
+            candidate_locales = locales
+        finally:
+            locale.setlocale(locale.LC_ALL, old_locale)
+
+    # Workaround for MSVC6(debug) crash bug
+    if "MSC v.1200" in sys.version:
+        def accept(loc):
+            a = loc.split(".")
+            return not(len(a) == 2 and len(a[-1]) >= 9)
+        candidate_locales = [loc for loc in candidate_locales if accept(loc)]
 
 # List known locale values to test against when available.
 # Dict formatted as ``<locale> : (<decimal_point>, <thousands_sep>)``.  If a
@@ -42,16 +70,16 @@ known_numerics = {
     # The French thousands separator may be a breaking or non-breaking space
     # depending on the platform, so do not test it
     'fr_FR' : (',', ''),
-    'ps_AF.UTF-8' : ('\xd9\xab', '\xd9\xac'),
+    'ps_AF': ('\u066b', '\u066c'),
 }
 
 class _LocaleTests(unittest.TestCase):
 
     def setUp(self):
-        self.oldlocale = setlocale(LC_NUMERIC)
+        self.oldlocale = setlocale(LC_ALL)
 
     def tearDown(self):
-        setlocale(LC_NUMERIC, self.oldlocale)
+        setlocale(LC_ALL, self.oldlocale)
 
     # Want to know what value was calculated, what it was compared against,
     # what function was used for the calculation, what type of data was used,
@@ -81,6 +109,7 @@ class _LocaleTests(unittest.TestCase):
         for loc in candidate_locales:
             try:
                 setlocale(LC_NUMERIC, loc)
+                setlocale(LC_CTYPE, loc)
             except Error:
                 continue
             for li, lc in ((RADIXCHAR, "decimal_point"),
@@ -96,10 +125,12 @@ class _LocaleTests(unittest.TestCase):
         for loc in candidate_locales:
             try:
                 setlocale(LC_NUMERIC, loc)
+                setlocale(LC_CTYPE, loc)
             except Error:
                 continue
             formatting = localeconv()
-            for lc in ("decimal_point", "thousands_sep"):
+            for lc in ("decimal_point",
+                        "thousands_sep"):
                 if self.numeric_tester('localeconv', formatting[lc], lc, loc):
                     tested = True
         if not tested:
@@ -112,6 +143,7 @@ class _LocaleTests(unittest.TestCase):
         for loc in candidate_locales:
             try:
                 setlocale(LC_NUMERIC, loc)
+                setlocale(LC_CTYPE, loc)
             except Error:
                 continue
             for li, lc in ((RADIXCHAR, "decimal_point"),
@@ -138,6 +170,7 @@ class _LocaleTests(unittest.TestCase):
         for loc in candidate_locales:
             try:
                 setlocale(LC_NUMERIC, loc)
+                setlocale(LC_CTYPE, loc)
             except Error:
                 continue
 
@@ -157,8 +190,5 @@ class _LocaleTests(unittest.TestCase):
             self.skipTest('no suitable locales')
 
 
-def test_main():
-    run_unittest(_LocaleTests)
-
 if __name__ == '__main__':
-    test_main()
+    unittest.main()

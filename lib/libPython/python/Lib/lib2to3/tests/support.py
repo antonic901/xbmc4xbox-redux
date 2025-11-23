@@ -11,13 +11,13 @@ from textwrap import dedent
 
 # Local imports
 from lib2to3 import pytree, refactor
-from lib2to3.pgen2 import driver as pgen2_driver
+from lib2to3.pgen2 import driver
 
 test_dir = os.path.dirname(__file__)
 proj_dir = os.path.normpath(os.path.join(test_dir, ".."))
 grammar_path = os.path.join(test_dir, "..", "Grammar.txt")
-grammar = pgen2_driver.load_grammar(grammar_path)
-driver = pgen2_driver.Driver(grammar, convert=pytree.convert)
+grammar = driver.load_grammar(grammar_path)
+driver = driver.Driver(grammar, convert=pytree.convert)
 
 def parse_string(string):
     return driver.parse_string(reformat(string), debug=True)
@@ -28,7 +28,7 @@ def run_all_tests(test_mod=None, tests=None):
     unittest.TextTestRunner(verbosity=2).run(tests)
 
 def reformat(string):
-    return dedent(string) + u"\n\n"
+    return dedent(string) + "\n\n"
 
 def get_refactorer(fixer_pkg="lib2to3", fixers=None, options=None):
     """

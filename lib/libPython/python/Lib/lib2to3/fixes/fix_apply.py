@@ -34,17 +34,6 @@ class FixApply(fixer_base.BaseFix):
         func = results["func"]
         args = results["args"]
         kwds = results.get("kwds")
-        # I feel like we should be able to express this logic in the
-        # PATTERN above but I don't know how to do it so...
-        if args:
-            if args.type == self.syms.star_expr:
-                return  # Make no change.
-            if (args.type == self.syms.argument and
-                args.children[0].value == '**'):
-                return  # Make no change.
-        if kwds and (kwds.type == self.syms.argument and
-                     kwds.children[0].value == '**'):
-            return  # Make no change.
         prefix = node.prefix
         func = func.clone()
         if (func.type not in (token.NAME, syms.atom) and
@@ -58,12 +47,12 @@ class FixApply(fixer_base.BaseFix):
         if kwds is not None:
             kwds = kwds.clone()
             kwds.prefix = ""
-        l_newargs = [pytree.Leaf(token.STAR, u"*"), args]
+        l_newargs = [pytree.Leaf(token.STAR, "*"), args]
         if kwds is not None:
             l_newargs.extend([Comma(),
-                              pytree.Leaf(token.DOUBLESTAR, u"**"),
+                              pytree.Leaf(token.DOUBLESTAR, "**"),
                               kwds])
-            l_newargs[-2].prefix = u" " # that's the ** token
+            l_newargs[-2].prefix = " " # that's the ** token
         # XXX Sometimes we could be cleverer, e.g. apply(f, (x, y) + t)
         # can be translated into f(x, y, *t) instead of f(*(x, y) + t)
         #new = pytree.Node(syms.power, (func, ArgList(l_newargs)))

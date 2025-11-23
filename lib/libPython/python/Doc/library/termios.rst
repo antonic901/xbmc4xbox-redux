@@ -1,4 +1,3 @@
-
 :mod:`termios` --- POSIX style tty control
 ==========================================
 
@@ -11,14 +10,14 @@
    pair: POSIX; I/O control
    pair: tty; I/O control
 
-This module provides an interface to the POSIX calls for tty I/O control. For a
-complete description of these calls, see :manpage:`termios(2)` Unix manual
-page.  It is only available for those Unix versions that support POSIX
-*termios* style tty I/O control configured during installation.
+This module provides an interface to the POSIX calls for tty I/O control.  For a
+complete description of these calls, see the POSIX or Unix manual pages.  It is
+only available for those Unix versions that support POSIX *termios* style tty
+I/O control (and then only if configured at installation time).
 
 All functions in this module take a file descriptor *fd* as their first
 argument.  This can be an integer file descriptor, such as returned by
-``sys.stdin.fileno()``, or a file object, such as ``sys.stdin`` itself.
+``sys.stdin.fileno()``, or a :term:`file object`, such as ``sys.stdin`` itself.
 
 This module also defines all the constants needed to work with the functions
 provided here; these have the same name as their counterparts in C.  Please
@@ -80,10 +79,10 @@ The module defines the following functions:
       Convenience functions for common terminal control operations.
 
 
+.. _termios-example:
+
 Example
 -------
-
-.. _termios-example:
 
 Here's a function that prompts for a password with echoing turned off.  Note the
 technique using a separate :func:`tcgetattr` call and a :keyword:`try` ...
@@ -98,7 +97,7 @@ exactly no matter what happens::
        new[3] = new[3] & ~termios.ECHO          # lflags
        try:
            termios.tcsetattr(fd, termios.TCSADRAIN, new)
-           passwd = raw_input(prompt)
+           passwd = input(prompt)
        finally:
            termios.tcsetattr(fd, termios.TCSADRAIN, old)
        return passwd

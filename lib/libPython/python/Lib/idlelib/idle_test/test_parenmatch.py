@@ -3,22 +3,10 @@
 # several text methods not defined on idlelib.idle_test.mock_tk.Text.
 
 import unittest
-from test.test_support import requires
-from Tkinter import Tk, Text
+from unittest.mock import Mock
+from test.support import requires
+from tkinter import Tk, Text
 from idlelib.ParenMatch import ParenMatch
-
-class Mock:  # 2.7 does not have unittest.mock
-    def __init__(self, *args, **kwargs):
-        self.called = False
-
-    def __call__(self, *args, **kwargs):
-        self.called = True
-
-    def reset_mock(self, *args, **kwargs):
-        self.called = False
-
-    def after(self, *args, **kwargs):
-        pass
 
 class DummyEditwin:
     def __init__(self, text):

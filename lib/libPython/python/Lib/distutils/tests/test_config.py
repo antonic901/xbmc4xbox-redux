@@ -3,7 +3,6 @@ import sys
 import os
 import unittest
 import tempfile
-import shutil
 
 from distutils.core import PyPIRCCommand
 from distutils.core import Distribution
@@ -11,7 +10,7 @@ from distutils.log import set_threshold
 from distutils.log import WARN
 
 from distutils.tests import support
-from test.test_support import run_unittest
+from test.support import run_unittest
 
 PYPIRC = """\
 [distutils]
@@ -86,8 +85,7 @@ class PyPIRCCommandTestCase(support.TempdirManager,
         cmd = self._cmd(self.dist)
         config = cmd._read_pypirc()
 
-        config = config.items()
-        config.sort()
+        config = list(sorted(config.items()))
         waited = [('password', 'secret'), ('realm', 'pypi'),
                   ('repository', 'https://upload.pypi.org/legacy/'),
                   ('server', 'server1'), ('username', 'me')]
@@ -96,8 +94,7 @@ class PyPIRCCommandTestCase(support.TempdirManager,
         # old format
         self.write_file(self.rc, PYPIRC_OLD)
         config = cmd._read_pypirc()
-        config = config.items()
-        config.sort()
+        config = list(sorted(config.items()))
         waited = [('password', 'secret'), ('realm', 'pypi'),
                   ('repository', 'https://upload.pypi.org/legacy/'),
                   ('server', 'server-login'), ('username', 'tarek')]

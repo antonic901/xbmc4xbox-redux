@@ -1,7 +1,7 @@
 """Unittest for idlelib.HyperParser"""
 import unittest
-from test.test_support import requires
-from Tkinter import Tk, Text
+from test.support import requires
+from tkinter import Tk, Text
 from idlelib.EditorWindow import EditorWindow
 from idlelib.HyperParser import HyperParser
 
@@ -13,8 +13,8 @@ class DummyEditwin:
         self.context_use_ps1 = True
         self.num_context_lines = 50, 500, 1000
 
-    _build_char_in_string_func = EditorWindow._build_char_in_string_func.im_func
-    is_char_in_string = EditorWindow.is_char_in_string.im_func
+    _build_char_in_string_func = EditorWindow._build_char_in_string_func
+    is_char_in_string = EditorWindow.is_char_in_string
 
 
 class HyperParserTest(unittest.TestCase):
@@ -30,13 +30,13 @@ class HyperParserTest(unittest.TestCase):
             "z = ((r'asdf')+('a')))\n"
             '[x for x in\n'
             'for = False\n'
+            'cliché = "this is a string with unicode, what a cliché"'
             )
 
     @classmethod
     def setUpClass(cls):
         requires('gui')
         cls.root = Tk()
-        cls.root.withdraw()
         cls.text = Text(cls.root)
         cls.editwin = DummyEditwin(cls.text)
 
@@ -93,6 +93,8 @@ class HyperParserTest(unittest.TestCase):
         p = get('3.7')
         self.assertTrue(p.is_in_string())
         p = get('4.6')
+        self.assertTrue(p.is_in_string())
+        p = get('12.54')
         self.assertTrue(p.is_in_string())
 
     def test_is_in_code(self):
@@ -181,12 +183,91 @@ class HyperParserTest(unittest.TestCase):
         p = get('10.0')
         self.assertEqual(p.get_expression(), '')
 
+        p = get('10.6')
+        self.assertEqual(p.get_expression(), '')
+
+        p = get('10.11')
+        self.assertEqual(p.get_expression(), '')
+
         p = get('11.3')
         self.assertEqual(p.get_expression(), '')
 
         p = get('11.11')
         self.assertEqual(p.get_expression(), 'False')
 
+        p = get('12.6')
+        self.assertEqual(p.get_expression(), 'cliché')
+
+    def test_eat_identifier(self):
+        def is_valid_id(candidate):
+            result = HyperParser._eat_identifier(candidate, 0, len(candidate))
+            if result == len(candidate):
+                return True
+            elif result == 0:
+                return False
+            else:
+                err_msg = "Unexpected result: {} (expected 0 or {}".format(
+                    result, len(candidate)
+                )
+                raise Exception(err_msg)
+
+        # invalid first character which is valid elsewhere in an identifier
+        self.assertFalse(is_valid_id('2notid'))
+
+        # ASCII-only valid identifiers
+        self.assertTrue(is_valid_id('valid_id'))
+        self.assertTrue(is_valid_id('_valid_id'))
+        self.assertTrue(is_valid_id('valid_id_'))
+        self.assertTrue(is_valid_id('_2valid_id'))
+
+        # keywords which should be "eaten"
+        self.assertTrue(is_valid_id('True'))
+        self.assertTrue(is_valid_id('False'))
+        self.assertTrue(is_valid_id('None'))
+
+        # keywords which should not be "eaten"
+        self.assertFalse(is_valid_id('for'))
+        self.assertFalse(is_valid_id('import'))
+        self.assertFalse(is_valid_id('return'))
+
+        # valid unicode identifiers
+        self.assertTrue(is_valid_id('cliche'))
+        self.assertTrue(is_valid_id('cliché'))
+        self.assertTrue(is_valid_id('a٢'))
+
+        # invalid unicode identifiers
+        self.assertFalse(is_valid_id('2a'))
+        self.assertFalse(is_valid_id('٢a'))
+        self.assertFalse(is_valid_id('a²'))
+
+        # valid identifier after "punctuation"
+        self.assertEqual(HyperParser._eat_identifier('+ var', 0, 5), len('var'))
+        self.assertEqual(HyperParser._eat_identifier('+var', 0, 4), len('var'))
+        self.assertEqual(HyperParser._eat_identifier('.var', 0, 4), len('var'))
+
+        # invalid identifiers
+        self.assertFalse(is_valid_id('+'))
+        self.assertFalse(is_valid_id(' '))
+        self.assertFalse(is_valid_id(':'))
+        self.assertFalse(is_valid_id('?'))
+        self.assertFalse(is_valid_id('^'))
+        self.assertFalse(is_valid_id('\\'))
+        self.assertFalse(is_valid_id('"'))
+        self.assertFalse(is_valid_id('"a string"'))
+
+    def test_eat_identifier_various_lengths(self):
+        eat_id = HyperParser._eat_identifier
+
+        for length in range(1, 21):
+            self.assertEqual(eat_id('a' * length, 0, length), length)
+            self.assertEqual(eat_id('é' * length, 0, length), length)
+            self.assertEqual(eat_id('a' + '2' * (length - 1), 0, length), length)
+            self.assertEqual(eat_id('é' + '2' * (length - 1), 0, length), length)
+            self.assertEqual(eat_id('é' + 'a' * (length - 1), 0, length), length)
+            self.assertEqual(eat_id('é' * (length - 1) + 'a', 0, length), length)
+            self.assertEqual(eat_id('+' * length, 0, length), 0)
+            self.assertEqual(eat_id('2' + 'a' * (length - 1), 0, length), 0)
+            self.assertEqual(eat_id('2' + 'é' * (length - 1), 0, length), 0)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

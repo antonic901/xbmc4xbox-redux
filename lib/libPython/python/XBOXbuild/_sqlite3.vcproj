@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="_sqlite3"
-	ProjectGUID="{13CECB97-4119-4316-9D42-8534019A5A44}"
+	ProjectGUID="{7F6186C5-8D2C-4049-A72E-40A0681FD4A8}"
 	RootNamespace="_sqlite3"
 	Keyword="Win32Proj">
 	<Platforms>
@@ -12,26 +12,36 @@
 	</Platforms>
 	<Configurations>
 		<Configuration
-			Name="Release XBOX|Win32"
+			Name="Debug|Win32"
 			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)\obj\$(ProjectName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
+			UseOfMFC="0"
 			CharacterSet="0"
 			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="0"
 				AdditionalIncludeDirectories="..\..\sqlite;..\Include;..\PC"
 				PreprocessorDefinitions="MODULE_NAME=\&quot;sqlite3\&quot;"
-				RuntimeLibrary="2"/>
+				MinimalRebuild="FALSE"
+				BasicRuntimeChecks="0"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderThrough=""
+				PrecompiledHeaderFile=""
+				WarningLevel="1"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)\$(ProjectName).pyd"
 				IgnoreDefaultLibraryNames="libc;msvcr71;libcmt"
-				ProgramDatabaseFile="$(OutDir)\$(ProjectName).pdb"
-				BaseAddress="0x1e180000"
-				ImportLibrary="$(OutDir)\$(TargetName).lib"/>
+				GenerateDebugInformation="TRUE"
+				BaseAddress="0x1e180000"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -54,30 +64,30 @@
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
-			Name="Debug XBOX|Win32"
+			Name="Release|Win32"
 			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)\obj\$(ProjectName)"
 			ConfigurationType="2"
+			UseOfMFC="0"
 			CharacterSet="0"
 			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
 				AdditionalIncludeDirectories="..\..\sqlite;..\Include;..\PC"
 				PreprocessorDefinitions="MODULE_NAME=\&quot;sqlite3\&quot;"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				DebugInformationFormat="3"/>
+				UsePrecompiledHeader="0"
+				WarningLevel="1"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)\$(ProjectName).pyd"
 				IgnoreDefaultLibraryNames="libc;msvcr71;libcmt"
-				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)\$(ProjectName).pdb"
-				BaseAddress="0x1e180000"
-				ImportLibrary="$(OutDir)\$(TargetName).lib"/>
+				BaseAddress="0x1e180000"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -93,7 +103,8 @@
 			<Tool
 				Name="VCXMLDataGeneratorTool"/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
+				Name="VCWebDeploymentTool"
+				ExcludedFromBuild="TRUE"/>
 			<Tool
 				Name="VCManagedWrapperGeneratorTool"/>
 			<Tool
@@ -104,40 +115,9 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Header Files">
-			<File
-				RelativePath="..\Modules\_sqlite\cache.h">
-			</File>
-			<File
-				RelativePath="..\Modules\_sqlite\connection.h">
-			</File>
-			<File
-				RelativePath="..\Modules\_sqlite\cursor.h">
-			</File>
-			<File
-				RelativePath="..\Modules\_sqlite\microprotocols.h">
-			</File>
-			<File
-				RelativePath="..\Modules\_sqlite\module.h">
-			</File>
-			<File
-				RelativePath="..\Modules\_sqlite\prepare_protocol.h">
-			</File>
-			<File
-				RelativePath="..\Modules\_sqlite\row.h">
-			</File>
-			<File
-				RelativePath="..\Modules\_sqlite\sqlitecompat.h">
-			</File>
-			<File
-				RelativePath="..\Modules\_sqlite\statement.h">
-			</File>
-			<File
-				RelativePath="..\Modules\_sqlite\util.h">
-			</File>
-		</Filter>
-		<Filter
-			Name="Source Files">
+			Name="Source Files"
+			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
 				RelativePath="..\Modules\_sqlite\cache.c">
 			</File>
@@ -164,6 +144,38 @@
 			</File>
 			<File
 				RelativePath="..\Modules\_sqlite\util.c">
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd"
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath="..\Modules\_sqlite\cache.h">
+			</File>
+			<File
+				RelativePath="..\Modules\_sqlite\connection.h">
+			</File>
+			<File
+				RelativePath="..\Modules\_sqlite\cursor.h">
+			</File>
+			<File
+				RelativePath="..\Modules\_sqlite\microprotocols.h">
+			</File>
+			<File
+				RelativePath="..\Modules\_sqlite\module.h">
+			</File>
+			<File
+				RelativePath="..\Modules\_sqlite\prepare_protocol.h">
+			</File>
+			<File
+				RelativePath="..\Modules\_sqlite\row.h">
+			</File>
+			<File
+				RelativePath="..\Modules\_sqlite\statement.h">
+			</File>
+			<File
+				RelativePath="..\Modules\_sqlite\util.h">
 			</File>
 		</Filter>
 	</Files>

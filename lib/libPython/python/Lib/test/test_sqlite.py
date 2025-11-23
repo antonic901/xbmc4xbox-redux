@@ -1,16 +1,24 @@
-from test.test_support import run_unittest, import_module
+import test.support
 
-# Skip test if _sqlite3 module was not built.
-import_module('_sqlite3')
+# Skip test if _sqlite3 module not installed
+test.support.import_module('_sqlite3')
 
-from sqlite3.test import (dbapi, types, userfunctions, py25tests,
+import unittest
+import sqlite3
+from sqlite3.test import (dbapi, types, userfunctions,
                                 factory, transactions, hooks, regression,
                                 dump)
 
-def test_main():
-    run_unittest(dbapi.suite(), types.suite(), userfunctions.suite(),
-                 py25tests.suite(), factory.suite(), transactions.suite(),
-                 hooks.suite(), regression.suite(), dump.suite())
+def load_tests(*args):
+    if test.support.verbose:
+        print("test_sqlite: testing with version",
+              "{!r}, sqlite_version {!r}".format(sqlite3.version,
+                                                 sqlite3.sqlite_version))
+    return unittest.TestSuite([dbapi.suite(), types.suite(),
+                               userfunctions.suite(),
+                               factory.suite(), transactions.suite(),
+                               hooks.suite(), regression.suite(),
+                               dump.suite()])
 
 if __name__ == "__main__":
-    test_main()
+    unittest.main()

@@ -1,9 +1,8 @@
-from test import test_support as support
 import unittest
-import __builtin__ as builtins
+import builtins
 import rlcompleter
 
-class CompleteMe(object):
+class CompleteMe:
     """ Trivial class used in testing rlcompleter.Completer. """
     spam = 1
 
@@ -78,8 +77,13 @@ class TestRlcompleter(unittest.TestCase):
         self.assertEqual(completer.complete('f.b', 0), 'f.bar')
         self.assertEqual(f.calls, 1)
 
-def test_main():
-    support.run_unittest(TestRlcompleter)
+    def test_complete(self):
+        completer = rlcompleter.Completer()
+        self.assertEqual(completer.complete('', 0), '\t')
+        self.assertEqual(completer.complete('a', 0), 'and')
+        self.assertEqual(completer.complete('a', 1), 'as')
+        self.assertEqual(completer.complete('as', 2), 'assert')
+        self.assertEqual(completer.complete('an', 0), 'and')
 
     def test_duplicate_globals(self):
         namespace = {
@@ -104,4 +108,4 @@ def test_main():
 
 
 if __name__ == '__main__':
-    test_main()
+    unittest.main()

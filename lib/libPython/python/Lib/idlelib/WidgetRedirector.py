@@ -1,5 +1,4 @@
-from __future__ import print_function
-from Tkinter import TclError
+from tkinter import TclError
 
 class WidgetRedirector:
     """Support for redirecting arbitrary widget subcommands.
@@ -17,7 +16,7 @@ class WidgetRedirector:
     same as the pathname widget._w.  This command is used to invoke the various
     widget operations, e.g. insert (for a Text widget). We are going to hook
     this command and provide a facility ('register') to intercept the widget
-    operation.  We will also intercept method calls on the Tkinter class
+    operation.  We will also intercept method calls on the tkinter class
     instance that represents the tk widget.
 
     In IDLE, WidgetRedirector is used in Percolator to intercept Text
@@ -68,7 +67,7 @@ class WidgetRedirector:
         '''Return OriginalCommand(operation) after registering function.
 
         Registration adds an operation: function pair to ._operations.
-        It also adds a widget function attribute that masks the Tkinter
+        It also adds an widget function attribute that masks the tkinter
         class instance method.  Method masking operates independently
         from command dispatch.
 
@@ -150,7 +149,7 @@ class OriginalCommand:
 
 
 def _widget_redirector(parent):  # htest #
-    from Tkinter import Tk, Text
+    from tkinter import Tk, Text
     import re
 
     root = Tk()

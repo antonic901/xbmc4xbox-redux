@@ -12,16 +12,18 @@
 #include <windows.h>
 
 // "activation context" magic - see dl_nt.c...
+#if HAVE_SXS
 extern ULONG_PTR _Py_ActivateActCtx();
 void _Py_DeactivateActCtx(ULONG_PTR cookie);
-
-const struct filedescr _PyImport_DynLoadFiletab[] = {
-#ifdef _DEBUG
-    {"_d.pyd", "rb", C_EXTENSION},
-#else
-    {".pyd", "rb", C_EXTENSION},
 #endif
-    {0, 0}
+
+const char *_PyImport_DynLoadFiletab[] = {
+#ifdef _DEBUG
+    "_d.pyd",
+#else
+    ".pyd",
+#endif
+    NULL
 };
 
 
@@ -134,6 +136,15 @@ static char *GetPythonImport (HINSTANCE hModule)
                 !strncmp(import_name,"python",6)) {
                 char *pch;
 
+#ifndef _DEBUG
+                /* In a release version, don't claim that python3.dll is
+                   a Python DLL. */
+                if (strcmp(import_name, "python3.dll") == 0) {
+                    import_data += 20;
+                    continue;
+                }
+#endif
+
                 /* Ensure python prefix is followed only
                    by numbers to the end of the basename */
                 pch = import_name + 6;
@@ -162,73 +173,93 @@ static char *GetPythonImport (HINSTANCE hModule)
     return NULL;
 }
 
-
-dl_funcptr _PyImport_GetDynLoadFunc(const char *fqname, const char *shortname,
-                                    const char *pathname, FILE *fp)
+dl_funcptr _PyImport_GetDynLoadWindows(const char *shortname,
+                                       PyObject *pathname, FILE *fp)
 {
     dl_funcptr p;
     char funcname[258], *import_python;
+#ifdef _XBOX
+    char *wpathname;
+#else
+    wchar_t *wpathname;
+#endif
 
-    PyOS_snprintf(funcname, sizeof(funcname), "init%.200s", shortname);
+#if !defined(_DEBUG) && !defined(_XBOX) 
+    _Py_CheckPython3();
+#endif
+
+#ifdef _XBOX
+    wpathname = PyUnicode_AsUTF8(pathname);
+    if (wpathname == NULL)
+        return NULL;
+#else
+    wpathname = PyUnicode_AsUnicode(pathname);
+    if (wpathname == NULL)
+        return NULL;
+#endif
+
+    PyOS_snprintf(funcname, sizeof(funcname), "PyInit_%.200s", shortname);
 
     {
         HINSTANCE hDLL = NULL;
-        char pathbuf[260];
-        LPTSTR dummy;
         unsigned int old_mode;
+#if HAVE_SXS
         ULONG_PTR cookie = 0;
-        /* We use LoadLibraryEx so Windows looks for dependent DLLs
-            in directory of pathname first.  However, Windows95
-            can sometimes not work correctly unless the absolute
-            path is used.  If GetFullPathName() fails, the LoadLibrary
-            will certainly fail too, so use its error code */
+#endif
 
         /* Don't display a message box when Python can't load a DLL */
         old_mode = SetErrorMode(SEM_FAILCRITICALERRORS);
 
-        if (GetFullPathName(pathname,
-                            sizeof(pathbuf),
-                            pathbuf,
-                            &dummy)) {
-            ULONG_PTR cookie = _Py_ActivateActCtx();
-            /* XXX This call doesn't exist in Windows CE */
-            hDLL = LoadLibraryEx(pathname, NULL,
-                                 LOAD_WITH_ALTERED_SEARCH_PATH);
-            _Py_DeactivateActCtx(cookie);
-        }
+#if HAVE_SXS
+        cookie = _Py_ActivateActCtx();
+#endif
+        /* We use LoadLibraryEx so Windows looks for dependent DLLs
+            in directory of pathname first. */
+        /* XXX This call doesn't exist in Windows CE */
+#ifdef _XBOX
+        hDLL = LoadLibraryExA(wpathname, NULL,
+                              LOAD_WITH_ALTERED_SEARCH_PATH);
+#else
+        hDLL = LoadLibraryExW(wpathname, NULL,
+                              LOAD_WITH_ALTERED_SEARCH_PATH);
+#endif
+#if HAVE_SXS
+        _Py_DeactivateActCtx(cookie);
+#endif
 
         /* restore old error mode settings */
         SetErrorMode(old_mode);
 
         if (hDLL==NULL){
-            char errBuf[256];
+            PyObject *message;
             unsigned int errorCode;
 
             /* Get an error string from Win32 error code */
-            char theInfo[256]; /* Pointer to error text
+            wchar_t theInfo[256]; /* Pointer to error text
                                   from system */
             int theLength; /* Length of error text */
 
             errorCode = GetLastError();
 
-            theLength = FormatMessage(
+            theLength = FormatMessageW(
                 FORMAT_MESSAGE_FROM_SYSTEM |
                 FORMAT_MESSAGE_IGNORE_INSERTS, /* flags */
                 NULL, /* message source */
                 errorCode, /* the message (error) ID */
-                0, /* default language environment */
-                (LPTSTR) theInfo, /* the buffer */
-                sizeof(theInfo), /* the buffer size */
+                MAKELANGID(LANG_NEUTRAL,
+                           SUBLANG_DEFAULT),
+                           /* Default language */
+                theInfo, /* the buffer */
+                sizeof(theInfo) / sizeof(wchar_t), /* size in wchars */
                 NULL); /* no additional format args. */
 
             /* Problem: could not get the error message.
                This should not happen if called correctly. */
             if (theLength == 0) {
-                PyOS_snprintf(errBuf, sizeof(errBuf),
-                      "DLL load failed with error code %d",
-                          errorCode);
+                message = PyUnicode_FromFormat(
+                    "DLL load failed with error code %d",
+                    errorCode);
             } else {
-                size_t len;
                 /* For some reason a \r\n
                    is appended to the text */
                 if (theLength >= 2 &&
@@ -237,34 +268,43 @@ dl_funcptr _PyImport_GetDynLoadFunc(const char *fqname, const char *shortname,
                     theLength -= 2;
                     theInfo[theLength] = '\0';
                 }
-                strcpy(errBuf, "DLL load failed: ");
-                len = strlen(errBuf);
-                strncpy(errBuf+len, theInfo,
-                    sizeof(errBuf)-len);
-                errBuf[sizeof(errBuf)-1] = '\0';
+                message = PyUnicode_FromString(
+                    "DLL load failed: ");
+
+                PyUnicode_AppendAndDel(&message,
+                    PyUnicode_FromWideChar(
+                        theInfo,
+                        theLength));
             }
-            PyErr_SetString(PyExc_ImportError, errBuf);
+            if (message != NULL) {
+                PyObject *shortname_obj = PyUnicode_FromString(shortname);
+                PyErr_SetImportError(message, shortname_obj, pathname);
+                Py_XDECREF(shortname_obj);
+                Py_DECREF(message);
+            }
             return NULL;
         } else {
 // for now we disable version checking
+
+
 #ifndef _XBOX
             char buffer[256];
 
+            PyOS_snprintf(buffer, sizeof(buffer),
 #ifdef _DEBUG
-            PyOS_snprintf(buffer, sizeof(buffer), "python%d%d_d.dll",
+                          "python%d%d_d.dll",
 #else
-            PyOS_snprintf(buffer, sizeof(buffer), "python%d%d.dll",
+                          "python%d%d.dll",
 #endif
                           PY_MAJOR_VERSION,PY_MINOR_VERSION);
             import_python = GetPythonImport(hDLL);
 
             if (import_python &&
                 strcasecmp(buffer,import_python)) {
-                PyOS_snprintf(buffer, sizeof(buffer),
-                              "Module use of %.150s conflicts "
-                              "with this version of Python.",
-                              import_python);
-                PyErr_SetString(PyExc_ImportError,buffer);
+                PyErr_Format(PyExc_ImportError,
+                             "Module use of %.150s conflicts "
+                             "with this version of Python.",
+                             import_python);
                 FreeLibrary(hDLL);
                 return NULL;
             }

@@ -1,6 +1,6 @@
 import os
-from Tkinter import *
-import tkMessageBox
+from tkinter import *
+import tkinter.messagebox as tkMessageBox
 
 
 class FileList:
@@ -33,7 +33,12 @@ class FileList:
             # Don't create window, perform 'action', e.g. open in same window
             return action(filename)
         else:
-            return self.EditorWindow(self, filename, key)
+            edit = self.EditorWindow(self, filename, key)
+            if edit.good_load:
+                return edit
+            else:
+                edit._close()
+                return None
 
     def gotofileline(self, filename, lineno=None):
         edit = self.open(filename)
@@ -44,7 +49,7 @@ class FileList:
         return self.EditorWindow(self, filename)
 
     def close_all_callback(self, *args, **kwds):
-        for edit in self.inversedict.keys():
+        for edit in list(self.inversedict):
             reply = edit.close()
             if reply == "cancel":
                 break
@@ -54,7 +59,7 @@ class FileList:
         try:
             key = self.inversedict[edit]
         except KeyError:
-            print "Don't know this EditorWindow object.  (close)"
+            print("Don't know this EditorWindow object.  (close)")
             return
         if key:
             del self.dict[key]
@@ -67,7 +72,7 @@ class FileList:
         try:
             key = self.inversedict[edit]
         except KeyError:
-            print "Don't know this EditorWindow object.  (rename)"
+            print("Don't know this EditorWindow object.  (rename)")
             return
         filename = edit.io.filename
         if not filename:
@@ -98,7 +103,7 @@ class FileList:
         if not os.path.isabs(filename):
             try:
                 pwd = os.getcwd()
-            except os.error:
+            except OSError:
                 pass
             else:
                 filename = os.path.join(pwd, filename)
@@ -107,10 +112,8 @@ class FileList:
 
 def _test():
     from idlelib.EditorWindow import fixwordbreaks
-    from idlelib.run import fix_scaling
     import sys
     root = Tk()
-    fix_scaling(root)
     fixwordbreaks(root)
     root.withdraw()
     flist = FileList(root)

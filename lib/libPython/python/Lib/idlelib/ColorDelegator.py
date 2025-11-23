@@ -1,7 +1,7 @@
 import time
 import re
 import keyword
-import __builtin__
+import builtins
 from idlelib.Delegator import Delegator
 from idlelib.configHandler import idleConf
 
@@ -13,16 +13,14 @@ def any(name, alternates):
 
 def make_pat():
     kw = r"\b" + any("KEYWORD", keyword.kwlist) + r"\b"
-    builtinlist = [str(name) for name in dir(__builtin__)
-                                        if not name.startswith('_')]
-    # We don't know whether "print" is a function or a keyword,
-    # so we always treat is as a keyword (the most common case).
-    builtinlist.remove('print')
-    # self.file = file("file") :
+    builtinlist = [str(name) for name in dir(builtins)
+                                        if not name.startswith('_') and \
+                                        name not in keyword.kwlist]
+    # self.file = open("file") :
     # 1st 'file' colorized normal, 2nd as builtin, 3rd as string
     builtin = r"([^.'\"\\#]\b|^)" + any("BUILTIN", builtinlist) + r"\b"
     comment = any("COMMENT", [r"#[^\n]*"])
-    stringprefix = r"(\br|u|ur|R|U|UR|Ur|uR|b|B|br|Br|bR|BR)?"
+    stringprefix = r"(\br|u|ur|R|U|UR|Ur|uR|b|B|br|Br|bR|BR|rb|rB|Rb|RB)?"
     sqstring = stringprefix + r"'[^'\\\n]*(\\.[^'\\\n]*)*'?"
     dqstring = stringprefix + r'"[^"\\\n]*(\\.[^"\\\n]*)*"?'
     sq3string = stringprefix + r"'''[^'\\]*((\\.|'(?!''))[^'\\]*)*(''')?"
@@ -76,7 +74,7 @@ class ColorDelegator(Delegator):
             "hit": idleConf.GetHighlight(theme, "hit"),
             }
 
-        if DEBUG: print 'tagdefs',self.tagdefs
+        if DEBUG: print('tagdefs',self.tagdefs)
 
     def insert(self, index, chars, tags=None):
         index = self.index(index)
@@ -95,13 +93,13 @@ class ColorDelegator(Delegator):
     def notify_range(self, index1, index2=None):
         self.tag_add("TODO", index1, index2)
         if self.after_id:
-            if DEBUG: print "colorizing already scheduled"
+            if DEBUG: print("colorizing already scheduled")
             return
         if self.colorizing:
             self.stop_colorizing = True
-            if DEBUG: print "stop colorizing"
+            if DEBUG: print("stop colorizing")
         if self.allow_colorizing:
-            if DEBUG: print "schedule colorizing"
+            if DEBUG: print("schedule colorizing")
             self.after_id = self.after(1, self.recolorize)
 
     close_when_done = None # Window to be closed when done colorizing
@@ -110,7 +108,7 @@ class ColorDelegator(Delegator):
         if self.after_id:
             after_id = self.after_id
             self.after_id = None
-            if DEBUG: print "cancel scheduled recolorizer"
+            if DEBUG: print("cancel scheduled recolorizer")
             self.after_cancel(after_id)
         self.allow_colorizing = False
         self.stop_colorizing = True
@@ -124,42 +122,42 @@ class ColorDelegator(Delegator):
         if self.after_id:
             after_id = self.after_id
             self.after_id = None
-            if DEBUG: print "cancel scheduled recolorizer"
+            if DEBUG: print("cancel scheduled recolorizer")
             self.after_cancel(after_id)
         if self.allow_colorizing and self.colorizing:
-            if DEBUG: print "stop colorizing"
+            if DEBUG: print("stop colorizing")
             self.stop_colorizing = True
         self.allow_colorizing = not self.allow_colorizing
         if self.allow_colorizing and not self.colorizing:
             self.after_id = self.after(1, self.recolorize)
         if DEBUG:
-            print "auto colorizing turned",\
-                  self.allow_colorizing and "on" or "off"
+            print("auto colorizing turned",\
+                  self.allow_colorizing and "on" or "off")
         return "break"
 
     def recolorize(self):
         self.after_id = None
         if not self.delegate:
-            if DEBUG: print "no delegate"
+            if DEBUG: print("no delegate")
             return
         if not self.allow_colorizing:
-            if DEBUG: print "auto colorizing is off"
+            if DEBUG: print("auto colorizing is off")
             return
         if self.colorizing:
-            if DEBUG: print "already colorizing"
+            if DEBUG: print("already colorizing")
             return
         try:
             self.stop_colorizing = False
             self.colorizing = True
-            if DEBUG: print "colorizing..."
-            t0 = time.clock()
+            if DEBUG: print("colorizing...")
+            t0 = time.perf_counter()
             self.recolorize_main()
-            t1 = time.clock()
-            if DEBUG: print "%.3f seconds" % (t1-t0)
+            t1 = time.perf_counter()
+            if DEBUG: print("%.3f seconds" % (t1-t0))
         finally:
             self.colorizing = False
         if self.allow_colorizing and self.tag_nextrange("TODO", "1.0"):
-            if DEBUG: print "reschedule colorizing"
+            if DEBUG: print("reschedule colorizing")
             self.after_id = self.after(1, self.recolorize)
         if self.close_when_done:
             top = self.close_when_done
@@ -194,7 +192,7 @@ class ColorDelegator(Delegator):
                 ##print head, "get", mark, next, "->", repr(line)
                 if not line:
                     return
-                for tag in self.tagdefs.keys():
+                for tag in self.tagdefs:
                     self.tag_remove(tag, mark, next)
                 chars = chars + line
                 m = self.prog.search(chars)
@@ -228,15 +226,15 @@ class ColorDelegator(Delegator):
                     self.tag_add("TODO", next)
                 self.update()
                 if self.stop_colorizing:
-                    if DEBUG: print "colorizing stopped"
+                    if DEBUG: print("colorizing stopped")
                     return
 
     def removecolors(self):
-        for tag in self.tagdefs.keys():
+        for tag in self.tagdefs:
             self.tag_remove(tag, "1.0", "end")
 
 def _color_delegator(parent):  # htest #
-    from Tkinter import Toplevel, Text
+    from tkinter import Toplevel, Text
     from idlelib.Percolator import Percolator
 
     top = Toplevel(parent)

@@ -1,4 +1,3 @@
-
 :mod:`audioop` --- Manipulate raw audio data
 ============================================
 
@@ -7,10 +6,14 @@
 
 
 The :mod:`audioop` module contains some useful operations on sound fragments.
-It operates on sound fragments consisting of signed integer samples 8, 16 or 32
-bits wide, stored in Python strings.  This is the same format as used by the
-:mod:`al` and :mod:`sunaudiodev` modules.  All scalar items are integers, unless
-specified otherwise.
+It operates on sound fragments consisting of signed integer samples 8, 16, 24
+or 32 bits wide, stored in :term:`bytes-like object`\ s.  All scalar items are
+integers, unless specified otherwise.
+
+.. versionchanged:: 3.4
+   Support for 24-bit samples was added.
+   All functions now accept any :term:`bytes-like object`.
+   String input now results in an immediate error.
 
 .. index::
    single: Intel/DVI ADPCM
@@ -37,7 +40,7 @@ The module defines the following variables and functions:
 .. function:: add(fragment1, fragment2, width)
 
    Return a fragment which is the addition of the two samples passed as parameters.
-   *width* is the sample width in bytes, either ``1``, ``2`` or ``4``.  Both
+   *width* is the sample width in bytes, either ``1``, ``2``, ``3`` or ``4``.  Both
    fragments should have the same length.  Samples are truncated in case of overflow.
 
 
@@ -53,8 +56,6 @@ The module defines the following variables and functions:
    Convert sound fragments in a-LAW encoding to linearly encoded sound fragments.
    a-LAW encoding always uses 8 bits samples, so *width* refers only to the sample
    width of the output fragment here.
-
-   .. versionadded:: 2.5
 
 
 .. function:: avg(fragment, width)
@@ -72,6 +73,14 @@ The module defines the following variables and functions:
 
    Return a fragment that is the original fragment with a bias added to each
    sample.  Samples wrap around in case of overflow.
+
+
+.. function:: byteswap(fragment, width)
+
+   "Byteswap" all samples in a fragment and returns the modified fragment.
+   Converts big-endian samples to little-endian and vice versa.
+
+   .. versionadded:: 3.4
 
 
 .. function:: cross(fragment, width)
@@ -130,34 +139,32 @@ The module defines the following variables and functions:
 .. function:: lin2alaw(fragment, width)
 
    Convert samples in the audio fragment to a-LAW encoding and return this as a
-   Python string.  a-LAW is an audio encoding format whereby you get a dynamic
+   bytes object.  a-LAW is an audio encoding format whereby you get a dynamic
    range of about 13 bits using only 8 bit samples.  It is used by the Sun audio
    hardware, among others.
-
-   .. versionadded:: 2.5
 
 
 .. function:: lin2lin(fragment, width, newwidth)
 
-   Convert samples between 1-, 2- and 4-byte formats.
+   Convert samples between 1-, 2-, 3- and 4-byte formats.
 
    .. note::
 
-      In some audio formats, such as .WAV files, 16 and 32 bit samples are
+      In some audio formats, such as .WAV files, 16, 24 and 32 bit samples are
       signed, but 8 bit samples are unsigned.  So when converting to 8 bit wide
       samples for these formats, you need to also add 128 to the result::
 
          new_frames = audioop.lin2lin(frames, old_width, 1)
          new_frames = audioop.bias(new_frames, 1, 128)
 
-      The same, in reverse, has to be applied when converting from 8 to 16 or 32
-      bit width samples.
+      The same, in reverse, has to be applied when converting from 8 to 16, 24
+      or 32 bit width samples.
 
 
 .. function:: lin2ulaw(fragment, width)
 
    Convert samples in the audio fragment to u-LAW encoding and return this as a
-   Python string.  u-LAW is an audio encoding format whereby you get a dynamic
+   bytes object.  u-LAW is an audio encoding format whereby you get a dynamic
    range of about 14 bits using only 8 bit samples.  It is used by the Sun audio
    hardware, among others.
 
@@ -269,6 +276,6 @@ sample and subtract the whole output sample from the input sample::
        #              out_test)
        prefill = '\0'*(pos+ipos)*2
        postfill = '\0'*(len(inputdata)-len(prefill)-len(outputdata))
-       outputdata = prefill + audioop.mul(outputdata, 2, -factor) + postfill
+       outputdata = prefill + audioop.mul(outputdata,2,-factor) + postfill
        return audioop.add(inputdata, outputdata, 2)
 

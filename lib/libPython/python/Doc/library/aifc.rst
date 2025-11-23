@@ -30,8 +30,8 @@ sampling rate or frame rate is the number of times per second the sound is
 sampled.  The number of channels indicate if the audio is mono, stereo, or
 quadro.  Each frame consists of one sample per channel.  The sample size is the
 size in bytes of each sample.  Thus a frame consists of
-*nchannels*\*\ *samplesize* bytes, and a second's worth of audio consists of
-*nchannels*\*\ *samplesize*\*\ *framerate* bytes.
+``nchannels * samplesize`` bytes, and a second's worth of audio consists of
+``nchannels * samplesize * framerate`` bytes.
 
 For example, CD quality audio has a sample size of two bytes (16 bits), uses two
 channels (stereo) and has a frame rate of 44,100 frames/second.  This gives a
@@ -41,16 +41,21 @@ frame size of 4 bytes (2\*2), and a second's worth occupies 2\*2\*44100 bytes
 Module :mod:`aifc` defines the following function:
 
 
-.. function:: open(file[, mode])
+.. function:: open(file, mode=None)
 
    Open an AIFF or AIFF-C file and return an object instance with methods that are
-   described below.  The argument *file* is either a string naming a file or a file
-   object.  *mode* must be ``'r'`` or ``'rb'`` when the file must be opened for
-   reading, or ``'w'``  or ``'wb'`` when the file must be opened for writing.  If
-   omitted, ``file.mode`` is used if it exists, otherwise ``'rb'`` is used.  When
+   described below.  The argument *file* is either a string naming a file or a
+   :term:`file object`.  *mode* must be ``'r'`` or ``'rb'`` when the file must be
+   opened for reading, or ``'w'``  or ``'wb'`` when the file must be opened for writing.
+   If omitted, ``file.mode`` is used if it exists, otherwise ``'rb'`` is used.  When
    used for writing, the file object should be seekable, unless you know ahead of
    time how many samples you are going to write in total and use
    :meth:`writeframesraw` and :meth:`setnframes`.
+   The :func:`.open` function may be used in a :keyword:`with` statement.  When
+   the :keyword:`with` block completes, the :meth:`~aifc.close` method is called.
+
+   .. versionchanged:: 3.4
+      Support for the :keyword:`with` statement was added.
 
 Objects returned by :func:`.open` when a file is opened for reading have the
 following methods:
@@ -78,19 +83,23 @@ following methods:
 
 .. method:: aifc.getcomptype()
 
-   Return a four-character string describing the type of compression used in the
-   audio file.  For AIFF files, the returned value is ``'NONE'``.
+   Return a bytes array of length 4 describing the type of compression
+   used in the audio file.  For AIFF files, the returned value is
+   ``b'NONE'``.
 
 
 .. method:: aifc.getcompname()
 
-   Return a human-readable description of the type of compression used in the audio
-   file.  For AIFF files, the returned value is ``'not compressed'``.
+   Return a bytes array convertible to a human-readable description
+   of the type of compression used in the audio file.  For AIFF files,
+   the returned value is ``b'not compressed'``.
 
 
 .. method:: aifc.getparams()
 
-   Return a tuple consisting of all of the above values in the above order.
+   Returns a :func:`~collections.namedtuple` ``(nchannels, sampwidth,
+   framerate, nframes, comptype, compname)``, equivalent to output of the
+   :meth:`get\*` methods.
 
 
 .. method:: aifc.getmarkers()
@@ -184,11 +193,12 @@ number of frames must be filled in.
       single: A-LAW
       single: G.722
 
-   Specify the compression type.  If not specified, the audio data will not be
-   compressed.  In AIFF files, compression is not possible.  The name parameter
-   should be a human-readable description of the compression type, the type
-   parameter should be a four-character string.  Currently the following
-   compression types are supported: NONE, ULAW, ALAW, G722.
+   Specify the compression type.  If not specified, the audio data will
+   not be compressed.  In AIFF files, compression is not possible.
+   The name parameter should be a human-readable description of the
+   compression type as a bytes array, the type parameter should be a
+   bytes array of length 4.  Currently the following compression types
+   are supported: ``b'NONE'``, ``b'ULAW'``, ``b'ALAW'``, ``b'G722'``.
 
 
 .. method:: aifc.setparams(nchannels, sampwidth, framerate, comptype, compname)
@@ -215,11 +225,17 @@ number of frames must be filled in.
    Write data to the output file.  This method can only be called after the audio
    file parameters have been set.
 
+   .. versionchanged:: 3.4
+      Any :term:`bytes-like object` is now accepted.
+
 
 .. method:: aifc.writeframesraw(data)
 
    Like :meth:`writeframes`, except that the header of the audio file is not
    updated.
+
+   .. versionchanged:: 3.4
+      Any :term:`bytes-like object` is now accepted.
 
 
 .. method:: aifc.close()

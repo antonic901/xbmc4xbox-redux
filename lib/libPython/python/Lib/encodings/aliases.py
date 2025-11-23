@@ -63,6 +63,12 @@ aliases = {
     'csibm1026'          : 'cp1026',
     'ibm1026'            : 'cp1026',
 
+    # cp1125 codec
+    '1125'                : 'cp1125',
+    'ibm1125'             : 'cp1125',
+    'cp866u'              : 'cp1125',
+    'ruscii'              : 'cp1125',
+
     # cp1140 codec
     '1140'               : 'cp1140',
     'ibm1140'            : 'cp1140',
@@ -102,6 +108,11 @@ aliases = {
     # cp1258 codec
     '1258'               : 'cp1258',
     'windows_1258'       : 'cp1258',
+
+    # cp273 codec
+    '273'                : 'cp273',
+    'ibm273'             : 'cp273',
+    'csibm273'           : 'cp273',
 
     # cp424 codec
     '424'                : 'cp424',
@@ -435,6 +446,7 @@ aliases = {
     'maclatin2'          : 'mac_latin2',
 
     # mac_roman codec
+    'macintosh'          : 'mac_roman',
     'macroman'           : 'mac_roman',
 
     # mac_turkish codec
@@ -524,4 +536,9 @@ aliases = {
     'zip'                : 'zlib_codec',
     'zlib'               : 'zlib_codec',
 
+    # temporary mac CJK aliases, will be replaced by proper codecs in 3.1
+    'x_mac_japanese'      : 'shift_jis',
+    'x_mac_korean'        : 'euc_kr',
+    'x_mac_simp_chinese'  : 'gb2312',
+    'x_mac_trad_chinese'  : 'big5',
 }

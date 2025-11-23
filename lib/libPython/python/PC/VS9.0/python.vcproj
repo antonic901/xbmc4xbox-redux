@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="python"
 	ProjectGUID="{B11D750F-CD1F-4A96-85CE-E69A5C5259F9}"
 	TargetFrameworkVersion="131072"

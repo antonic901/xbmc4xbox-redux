@@ -1,8 +1,9 @@
 import imghdr
 import io
-import sys
+import os
 import unittest
-from test.test_support import findfile, TESTFN, unlink, run_unittest
+import warnings
+from test.support import findfile, TESTFN, unlink
 
 TEST_FILES = (
     ('python.png', 'png'),
@@ -39,13 +40,12 @@ class TestImghdr(unittest.TestCase):
         for filename, expected in TEST_FILES:
             filename = findfile(filename, subdir='imghdrdata')
             self.assertEqual(imghdr.what(filename), expected)
-            ufilename = filename.decode(sys.getfilesystemencoding())
-            self.assertEqual(imghdr.what(ufilename), expected)
             with open(filename, 'rb') as stream:
                 self.assertEqual(imghdr.what(stream), expected)
             with open(filename, 'rb') as stream:
                 data = stream.read()
             self.assertEqual(imghdr.what(None, data), expected)
+            self.assertEqual(imghdr.what(None, bytearray(data)), expected)
 
     def test_register_test(self):
         def test_jumbo(h, file):
@@ -72,6 +72,8 @@ class TestImghdr(unittest.TestCase):
             imghdr.what(None)
         with self.assertRaises(TypeError):
             imghdr.what(self.testfile, 1)
+        with self.assertRaises(AttributeError):
+            imghdr.what(os.fsencode(self.testfile))
         with open(self.testfile, 'rb') as f:
             with self.assertRaises(AttributeError):
                 imghdr.what(f.fileno())
@@ -85,8 +87,20 @@ class TestImghdr(unittest.TestCase):
                        b'GIF80'):
             self.assertIsNone(imghdr.what(None, header))
 
+    def test_string_data(self):
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", BytesWarning)
+            for filename, _ in TEST_FILES:
+                filename = findfile(filename, subdir='imghdrdata')
+                with open(filename, 'rb') as stream:
+                    data = stream.read().decode('latin1')
+                with self.assertRaises(TypeError):
+                    imghdr.what(io.StringIO(data))
+                with self.assertRaises(TypeError):
+                    imghdr.what(None, data)
+
     def test_missing_file(self):
-        with self.assertRaises(IOError):
+        with self.assertRaises(FileNotFoundError):
             imghdr.what('missing')
 
     def test_closed_file(self):
@@ -110,11 +124,8 @@ class TestImghdr(unittest.TestCase):
         with open(TESTFN, 'wb') as stream:
             stream.write(self.testdata)
             stream.seek(0)
-            with self.assertRaises(IOError) as cm:
+            with self.assertRaises(OSError) as cm:
                 imghdr.what(stream)
 
-def test_main():
-    run_unittest(TestImghdr)
-
 if __name__ == '__main__':
-    test_main()
+    unittest.main()

@@ -1,7 +1,7 @@
-from test.test_support import (findfile, TESTFN, unlink, captured_stdout,
-                               run_unittest)
+from test.support import findfile, TESTFN, unlink
 import unittest
 from test import audiotests
+from audioop import byteswap
 import os
 import io
 import sys
@@ -23,9 +23,9 @@ class AifcPCM8Test(AifcTest, unittest.TestCase):
     sampwidth = 1
     framerate = 11025
     nframes = 48
-    comptype = 'NONE'
-    compname = 'not compressed'
-    frames = audiotests.fromhex("""\
+    comptype = b'NONE'
+    compname = b'not compressed'
+    frames = bytes.fromhex("""\
       02FF 4B00 3104 8008 CB06 4803 BF01 03FE B8FA B4F3 29EB 1AE6 \
       EDE4 C6E2 0EE0 EFE0 57E2 FBE8 13EF D8F7 97FB F5FC 08FB DFFB \
       11FA 3EFB BCFC 66FF CF04 4309 C10E 5112 EE17 8216 7F14 8012 \
@@ -40,9 +40,9 @@ class AifcPCM16Test(AifcTest, unittest.TestCase):
     sampwidth = 2
     framerate = 11025
     nframes = 48
-    comptype = 'NONE'
-    compname = 'not compressed'
-    frames = audiotests.fromhex("""\
+    comptype = b'NONE'
+    compname = b'not compressed'
+    frames = bytes.fromhex("""\
       022EFFEA 4B5D00F6 311804EA 80E10840 CBE106B1 48A903F5 BFE601B2 036CFE7B \
       B858FA3E B4B1F34F 299AEBCA 1A5DE6DA EDFAE491 C628E275 0E09E0B5 EF2AE029 \
       5758E271 FB35E83F 1376EF86 D82BF727 9790FB76 F5FAFC0F 0867FB9C DF30FB43 \
@@ -59,9 +59,9 @@ class AifcPCM24Test(AifcTest, unittest.TestCase):
     sampwidth = 3
     framerate = 11025
     nframes = 48
-    comptype = 'NONE'
-    compname = 'not compressed'
-    frames = audiotests.fromhex("""\
+    comptype = b'NONE'
+    compname = b'not compressed'
+    frames = bytes.fromhex("""\
       022D65FFEB9D 4B5A0F00FA54 3113C304EE2B 80DCD6084303 \
       CBDEC006B261 48A99803F2F8 BFE82401B07D 036BFBFE7B5D \
       B85756FA3EC9 B4B055F3502B 299830EBCB62 1A5CA7E6D99A \
@@ -84,9 +84,9 @@ class AifcPCM32Test(AifcTest, unittest.TestCase):
     sampwidth = 4
     framerate = 11025
     nframes = 48
-    comptype = 'NONE'
-    compname = 'not compressed'
-    frames = audiotests.fromhex("""\
+    comptype = b'NONE'
+    compname = b'not compressed'
+    frames = bytes.fromhex("""\
       022D65BCFFEB9D92 4B5A0F8000FA549C 3113C34004EE2BC0 80DCD680084303E0 \
       CBDEC0C006B26140 48A9980003F2F8FC BFE8248001B07D92 036BFB60FE7B5D34 \
       B8575600FA3EC920 B4B05500F3502BC0 29983000EBCB6240 1A5CA7A0E6D99A60 \
@@ -109,9 +109,9 @@ class AifcULAWTest(AifcTest, unittest.TestCase):
     sampwidth = 2
     framerate = 11025
     nframes = 48
-    comptype = 'ulaw'
-    compname = ''
-    frames = audiotests.fromhex("""\
+    comptype = b'ulaw'
+    compname = b''
+    frames = bytes.fromhex("""\
       022CFFE8 497C0104 307C04DC 8284083C CB84069C 497C03DC BE8401AC 036CFE74 \
       B684FA24 B684F344 2A7CEC04 19FCE704 EE04E504 C584E204 0E3CE104 EF04DF84 \
       557CE204 FB24E804 12FCEF04 D784F744 9684FB64 F5C4FC24 083CFBA4 DF84FB24 \
@@ -120,7 +120,28 @@ class AifcULAWTest(AifcTest, unittest.TestCase):
       E5040CBC 617C0A3C 08BC0A3C 2C7C0B3C 517C0E3C 8A8410FC B6840EBC 457C0A3C \
       """)
     if sys.byteorder != 'big':
-        frames = audiotests.byteswap2(frames)
+        frames = byteswap(frames, 2)
+
+
+class AifcALAWTest(AifcTest, unittest.TestCase):
+    sndfilename = 'pluck-alaw.aifc'
+    sndfilenframes = 3307
+    nchannels = 2
+    sampwidth = 2
+    framerate = 11025
+    nframes = 48
+    comptype = b'alaw'
+    compname = b''
+    frames = bytes.fromhex("""\
+      0230FFE8 4A0000F8 310004E0 82000840 CB0006A0 4A0003F0 BE0001A8 0370FE78 \
+      BA00FA20 B600F340 2900EB80 1A80E680 ED80E480 C700E280 0E40E080 EF80E080 \
+      5600E280 FB20E880 1380EF80 D900F740 9600FB60 F5C0FC10 0840FBA0 DF00FB20 \
+      1180FA20 3F00FB60 BE00FCB0 6600FF58 CF000420 42000940 C1000EC0 52001280 \
+      EE801780 82001680 7E001480 82001280 4A000EC0 52000DC0 EF800F40 CF000FC0 \
+      E4800CC0 62000A40 08C00A40 2B000B40 52000E40 8A001180 B6000EC0 46000A40 \
+      """)
+    if sys.byteorder != 'big':
+        frames = byteswap(frames, 2)
 
 
 class AifcMiscTest(audiotests.AudioTests, unittest.TestCase):
@@ -129,39 +150,52 @@ class AifcMiscTest(audiotests.AudioTests, unittest.TestCase):
         #This file contains chunk types aifc doesn't recognize.
         self.f = aifc.open(findfile('Sine-1000Hz-300ms.aif'))
 
-    def test_close_opened_files_on_error(self):
-        non_aifc_file = findfile('pluck-pcm8.wav', subdir='audiodata')
+    def test_params_added(self):
+        f = self.f = aifc.open(TESTFN, 'wb')
+        f.aiff()
+        f.setparams((1, 1, 1, 1, b'NONE', b''))
+        f.close()
 
-        class Aifc(aifc.Aifc_read):
-            def __init__(self):
-                pass
+        f = self.f = aifc.open(TESTFN, 'rb')
+        params = f.getparams()
+        self.assertEqual(params.nchannels, f.getnchannels())
+        self.assertEqual(params.sampwidth, f.getsampwidth())
+        self.assertEqual(params.framerate, f.getframerate())
+        self.assertEqual(params.nframes, f.getnframes())
+        self.assertEqual(params.comptype, f.getcomptype())
+        self.assertEqual(params.compname, f.getcompname())
 
-        a = Aifc()
-        with self.assertRaises(aifc.Error):
-            aifc.Aifc_read.__init__(a, non_aifc_file)
-        self.assertTrue(a._file.closed)
+    def test_write_header_comptype_sampwidth(self):
+        for comptype in (b'ULAW', b'ulaw', b'ALAW', b'alaw', b'G722'):
+            fout = aifc.open(io.BytesIO(), 'wb')
+            fout.setnchannels(1)
+            fout.setframerate(1)
+            fout.setcomptype(comptype, b'')
+            fout.close()
+            self.assertEqual(fout.getsampwidth(), 2)
+            fout.initfp(None)
 
     def test_write_markers_values(self):
         fout = aifc.open(io.BytesIO(), 'wb')
         self.assertEqual(fout.getmarkers(), None)
-        fout.setmark(1, 0, 'foo1')
-        fout.setmark(1, 1, 'foo2')
-        self.assertEqual(fout.getmark(1), (1, 1, 'foo2'))
-        self.assertEqual(fout.getmarkers(), [(1, 1, 'foo2')])
+        fout.setmark(1, 0, b'foo1')
+        fout.setmark(1, 1, b'foo2')
+        self.assertEqual(fout.getmark(1), (1, 1, b'foo2'))
+        self.assertEqual(fout.getmarkers(), [(1, 1, b'foo2')])
         fout.initfp(None)
 
     def test_read_markers(self):
         fout = self.fout = aifc.open(TESTFN, 'wb')
         fout.aiff()
-        fout.setparams((1, 1, 1, 1, 'NONE', ''))
-        fout.setmark(1, 0, 'odd')
-        fout.setmark(2, 0, 'even')
-        fout.writeframes('\x00')
+        fout.setparams((1, 1, 1, 1, b'NONE', b''))
+        fout.setmark(1, 0, b'odd')
+        fout.setmark(2, 0, b'even')
+        fout.writeframes(b'\x00')
         fout.close()
         f = self.f = aifc.open(TESTFN, 'rb')
-        self.assertEqual(f.getmarkers(), [(1, 0, 'odd'), (2, 0, 'even')])
-        self.assertEqual(f.getmark(1), (1, 0, 'odd'))
-        self.assertEqual(f.getmark(2), (2, 0, 'even'))
+        self.assertEqual(f.getmarkers(), [(1, 0, b'odd'), (2, 0, b'even')])
+        self.assertEqual(f.getmark(1), (1, 0, b'odd'))
+        self.assertEqual(f.getmark(2), (2, 0, b'even'))
         self.assertRaises(aifc.Error, f.getmark, 3)
 
 
@@ -177,7 +211,7 @@ class AIFCLowLevelTest(unittest.TestCase):
             self.assertEqual(read_written(x, 'float'), x)
         for x in (float('NaN'), float('Inf')):
             self.assertEqual(read_written(x, 'float'), aifc._HUGE_VAL)
-        for x in ('', 'foo', 'a' * 255):
+        for x in (b'', b'foo', b'a' * 255):
             self.assertEqual(read_written(x, 'string'), x)
         for x in (-0x7FFFFFFF, -1, 0, 1, 0x7FFFFFFF):
             self.assertEqual(read_written(x, 'long'), x)
@@ -189,7 +223,7 @@ class AIFCLowLevelTest(unittest.TestCase):
             self.assertEqual(read_written(x, 'ushort'), x)
 
     def test_read_raises(self):
-        f = io.BytesIO('\x00')
+        f = io.BytesIO(b'\x00')
         self.assertRaises(EOFError, aifc._read_ulong, f)
         self.assertRaises(EOFError, aifc._read_long, f)
         self.assertRaises(EOFError, aifc._read_ushort, f)
@@ -198,70 +232,62 @@ class AIFCLowLevelTest(unittest.TestCase):
     def test_write_long_string_raises(self):
         f = io.BytesIO()
         with self.assertRaises(ValueError):
-            aifc._write_string(f, 'too long' * 255)
+            aifc._write_string(f, b'too long' * 255)
 
     def test_wrong_open_mode(self):
         with self.assertRaises(aifc.Error):
             aifc.open(TESTFN, 'wrong_mode')
 
     def test_read_wrong_form(self):
-        b1 = io.BytesIO('WRNG' + struct.pack('>L', 0))
-        b2 = io.BytesIO('FORM' + struct.pack('>L', 4) + 'WRNG')
+        b1 = io.BytesIO(b'WRNG' + struct.pack('>L', 0))
+        b2 = io.BytesIO(b'FORM' + struct.pack('>L', 4) + b'WRNG')
         self.assertRaises(aifc.Error, aifc.open, b1)
         self.assertRaises(aifc.Error, aifc.open, b2)
 
     def test_read_no_comm_chunk(self):
-        b = io.BytesIO('FORM' + struct.pack('>L', 4) + 'AIFF')
+        b = io.BytesIO(b'FORM' + struct.pack('>L', 4) + b'AIFF')
         self.assertRaises(aifc.Error, aifc.open, b)
 
-    def test_read_no_ssnd_chunk(self):
-        b = b'FORM' + struct.pack('>L', 4) + b'AIFC'
-        b += b'COMM' + struct.pack('>LhlhhLL', 38, 0, 0, 0, 0, 0, 0)
-        b += b'NONE' + struct.pack('B', 14) + b'not compressed' + b'\x00'
-        with self.assertRaisesRegexp(aifc.Error, 'COMM chunk and/or SSND chunk'
-                                                 ' missing'):
-            aifc.open(io.BytesIO(b))
-
     def test_read_wrong_compression_type(self):
-        b = 'FORM' + struct.pack('>L', 4) + 'AIFC'
-        b += 'COMM' + struct.pack('>LhlhhLL', 23, 0, 0, 0, 0, 0, 0)
-        b += 'WRNG' + struct.pack('B', 0)
+        b = b'FORM' + struct.pack('>L', 4) + b'AIFC'
+        b += b'COMM' + struct.pack('>LhlhhLL', 23, 0, 0, 0, 0, 0, 0)
+        b += b'WRNG' + struct.pack('B', 0)
         self.assertRaises(aifc.Error, aifc.open, io.BytesIO(b))
 
     def test_read_wrong_marks(self):
-        b = 'FORM' + struct.pack('>L', 4) + 'AIFF'
-        b += 'COMM' + struct.pack('>LhlhhLL', 18, 0, 0, 0, 0, 0, 0)
-        b += 'SSND' + struct.pack('>L', 8) + '\x00' * 8
-        b += 'MARK' + struct.pack('>LhB', 3, 1, 1)
-        with captured_stdout() as s:
+        b = b'FORM' + struct.pack('>L', 4) + b'AIFF'
+        b += b'COMM' + struct.pack('>LhlhhLL', 18, 0, 0, 0, 0, 0, 0)
+        b += b'SSND' + struct.pack('>L', 8) + b'\x00' * 8
+        b += b'MARK' + struct.pack('>LhB', 3, 1, 1)
+        with self.assertWarns(UserWarning) as cm:
             f = aifc.open(io.BytesIO(b))
-        self.assertEqual(s.getvalue(), 'Warning: MARK chunk contains '
-                                       'only 0 markers instead of 1\n')
+        self.assertEqual(str(cm.warning), 'Warning: MARK chunk contains '
+                                          'only 0 markers instead of 1')
         self.assertEqual(f.getmarkers(), None)
 
     def test_read_comm_kludge_compname_even(self):
-        b = 'FORM' + struct.pack('>L', 4) + 'AIFC'
-        b += 'COMM' + struct.pack('>LhlhhLL', 18, 0, 0, 0, 0, 0, 0)
-        b += 'NONE' + struct.pack('B', 4) + 'even' + '\x00'
-        b += 'SSND' + struct.pack('>L', 8) + '\x00' * 8
-        with captured_stdout() as s:
+        b = b'FORM' + struct.pack('>L', 4) + b'AIFC'
+        b += b'COMM' + struct.pack('>LhlhhLL', 18, 0, 0, 0, 0, 0, 0)
+        b += b'NONE' + struct.pack('B', 4) + b'even' + b'\x00'
+        b += b'SSND' + struct.pack('>L', 8) + b'\x00' * 8
+        with self.assertWarns(UserWarning) as cm:
             f = aifc.open(io.BytesIO(b))
-        self.assertEqual(s.getvalue(), 'Warning: bad COMM chunk size\n')
-        self.assertEqual(f.getcompname(), 'even')
+        self.assertEqual(str(cm.warning), 'Warning: bad COMM chunk size')
+        self.assertEqual(f.getcompname(), b'even')
 
     def test_read_comm_kludge_compname_odd(self):
-        b = 'FORM' + struct.pack('>L', 4) + 'AIFC'
-        b += 'COMM' + struct.pack('>LhlhhLL', 18, 0, 0, 0, 0, 0, 0)
-        b += 'NONE' + struct.pack('B', 3) + 'odd'
-        b += 'SSND' + struct.pack('>L', 8) + '\x00' * 8
-        with captured_stdout() as s:
+        b = b'FORM' + struct.pack('>L', 4) + b'AIFC'
+        b += b'COMM' + struct.pack('>LhlhhLL', 18, 0, 0, 0, 0, 0, 0)
+        b += b'NONE' + struct.pack('B', 3) + b'odd'
+        b += b'SSND' + struct.pack('>L', 8) + b'\x00' * 8
+        with self.assertWarns(UserWarning) as cm:
             f = aifc.open(io.BytesIO(b))
-        self.assertEqual(s.getvalue(), 'Warning: bad COMM chunk size\n')
-        self.assertEqual(f.getcompname(), 'odd')
+        self.assertEqual(str(cm.warning), 'Warning: bad COMM chunk size')
+        self.assertEqual(f.getcompname(), b'odd')
 
     def test_write_params_raises(self):
         fout = aifc.open(io.BytesIO(), 'wb')
-        wrong_params = (0, 0, 0, 0, 'WRNG', '')
+        wrong_params = (0, 0, 0, 0, b'WRNG', '')
         self.assertRaises(aifc.Error, fout.setparams, wrong_params)
         self.assertRaises(aifc.Error, fout.getparams)
         self.assertRaises(aifc.Error, fout.setnchannels, 0)
@@ -270,19 +296,19 @@ class AIFCLowLevelTest(unittest.TestCase):
         self.assertRaises(aifc.Error, fout.getsampwidth)
         self.assertRaises(aifc.Error, fout.setframerate, 0)
         self.assertRaises(aifc.Error, fout.getframerate)
-        self.assertRaises(aifc.Error, fout.setcomptype, 'WRNG', '')
+        self.assertRaises(aifc.Error, fout.setcomptype, b'WRNG', '')
         fout.aiff()
         fout.setnchannels(1)
         fout.setsampwidth(1)
         fout.setframerate(1)
         fout.setnframes(1)
-        fout.writeframes('\x00')
+        fout.writeframes(b'\x00')
         self.assertRaises(aifc.Error, fout.setparams, (1, 1, 1, 1, 1, 1))
         self.assertRaises(aifc.Error, fout.setnchannels, 1)
         self.assertRaises(aifc.Error, fout.setsampwidth, 1)
         self.assertRaises(aifc.Error, fout.setframerate, 1)
         self.assertRaises(aifc.Error, fout.setnframes, 1)
-        self.assertRaises(aifc.Error, fout.setcomptype, 'NONE', '')
+        self.assertRaises(aifc.Error, fout.setcomptype, b'NONE', '')
         self.assertRaises(aifc.Error, fout.aiff)
         self.assertRaises(aifc.Error, fout.aifc)
 
@@ -293,22 +319,22 @@ class AIFCLowLevelTest(unittest.TestCase):
         fout.setsampwidth(2)
         fout.setframerate(3)
         fout.setnframes(4)
-        fout.setcomptype('NONE', 'name')
+        fout.setcomptype(b'NONE', b'name')
         self.assertEqual(fout.getnchannels(), 1)
         self.assertEqual(fout.getsampwidth(), 2)
         self.assertEqual(fout.getframerate(), 3)
         self.assertEqual(fout.getnframes(), 0)
         self.assertEqual(fout.tell(), 0)
-        self.assertEqual(fout.getcomptype(), 'NONE')
-        self.assertEqual(fout.getcompname(), 'name')
-        fout.writeframes('\x00' * 4 * fout.getsampwidth() * fout.getnchannels())
+        self.assertEqual(fout.getcomptype(), b'NONE')
+        self.assertEqual(fout.getcompname(), b'name')
+        fout.writeframes(b'\x00' * 4 * fout.getsampwidth() * fout.getnchannels())
         self.assertEqual(fout.getnframes(), 4)
         self.assertEqual(fout.tell(), 4)
 
     def test_write_params_bunch(self):
         fout = aifc.open(io.BytesIO(), 'wb')
         fout.aifc()
-        p = (1, 2, 3, 4, 'NONE', 'name')
+        p = (1, 2, 3, 4, b'NONE', b'name')
         fout.setparams(p)
         self.assertEqual(fout.getparams(), p)
         fout.initfp(None)
@@ -325,17 +351,17 @@ class AIFCLowLevelTest(unittest.TestCase):
         self.assertRaises(aifc.Error, fout.close)
 
     def test_write_header_comptype_raises(self):
-        for comptype in ('ULAW', 'ulaw', 'ALAW', 'alaw', 'G722'):
+        for comptype in (b'ULAW', b'ulaw', b'ALAW', b'alaw', b'G722'):
             fout = aifc.open(io.BytesIO(), 'wb')
             fout.setsampwidth(1)
-            fout.setcomptype(comptype, '')
+            fout.setcomptype(comptype, b'')
             self.assertRaises(aifc.Error, fout.close)
             fout.initfp(None)
 
     def test_write_markers_raises(self):
         fout = aifc.open(io.BytesIO(), 'wb')
-        self.assertRaises(aifc.Error, fout.setmark, 0, 0, '')
-        self.assertRaises(aifc.Error, fout.setmark, 1, -1, '')
+        self.assertRaises(aifc.Error, fout.setmark, 0, 0, b'')
+        self.assertRaises(aifc.Error, fout.setmark, 1, -1, b'')
         self.assertRaises(aifc.Error, fout.setmark, 1, 0, None)
         self.assertRaises(aifc.Error, fout.getmark, 1)
         fout.initfp(None)
@@ -343,23 +369,16 @@ class AIFCLowLevelTest(unittest.TestCase):
     def test_write_aiff_by_extension(self):
         sampwidth = 2
         filename = TESTFN + '.aiff'
-        self.addCleanup(unlink, filename)
-
         fout = self.fout = aifc.open(filename, 'wb')
-        fout.setparams((1, sampwidth, 1, 1, 'ULAW', ''))
-        frames = '\x00' * fout.getnchannels() * sampwidth
+        self.addCleanup(unlink, filename)
+        fout.setparams((1, sampwidth, 1, 1, b'ULAW', b''))
+        frames = b'\x00' * fout.getnchannels() * sampwidth
         fout.writeframes(frames)
         fout.close()
-
         f = self.f = aifc.open(filename, 'rb')
-        self.assertEqual(f.getcomptype(), 'NONE')
+        self.assertEqual(f.getcomptype(), b'NONE')
         f.close()
 
 
-def test_main():
-    run_unittest(AifcPCM8Test, AifcPCM16Test, AifcPCM16Test, AifcPCM24Test,
-                 AifcPCM32Test, AifcULAWTest,
-                 AifcMiscTest, AIFCLowLevelTest)
-
 if __name__ == "__main__":
-    test_main()
+    unittest.main()

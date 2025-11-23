@@ -2,7 +2,7 @@ from pybench import Test
 
 class PythonFunctionCalls(Test):
 
-    version = 2.0
+    version = 2.1
     operations = 5*(1+4+4+2)
     rounds = 60000
 
@@ -24,7 +24,7 @@ class PythonFunctionCalls(Test):
             return d,e,f
 
         # do calls
-        for i in xrange(self.rounds):
+        for i in range(self.rounds):
 
             f()
             f1(i)
@@ -104,7 +104,7 @@ class PythonFunctionCalls(Test):
             return d,e,f
 
         # do calls
-        for i in xrange(self.rounds):
+        for i in range(self.rounds):
             pass
 
 ###
@@ -125,7 +125,7 @@ class ComplexPythonFunctionCalls(Test):
         kwargs = dict(c=3,d=4,e=5)
 
         # do calls
-        for i in xrange(self.rounds):
+        for i in range(self.rounds):
             f(a=i,b=i,c=i)
             f(f=i,e=i,d=i,c=2,b=i,a=3)
             f(1,b=i,**kwargs)
@@ -162,7 +162,7 @@ class ComplexPythonFunctionCalls(Test):
         kwargs = dict(c=3,d=4,e=5)
 
         # do calls
-        for i in xrange(self.rounds):
+        for i in range(self.rounds):
             pass
 
 ###
@@ -178,11 +178,11 @@ class BuiltinFunctionCalls(Test):
         # localize functions
         f0 = globals
         f1 = hash
-        f2 = cmp
-        f3 = range
+        f2 = divmod
+        f3 = max
 
         # do calls
-        for i in xrange(self.rounds):
+        for i in range(self.rounds):
 
             f0()
             f0()
@@ -279,11 +279,11 @@ class BuiltinFunctionCalls(Test):
         # localize functions
         f0 = dir
         f1 = hash
-        f2 = range
-        f3 = range
+        f2 = divmod
+        f3 = max
 
         # do calls
-        for i in xrange(self.rounds):
+        for i in range(self.rounds):
             pass
 
 ###
@@ -319,7 +319,7 @@ class PythonMethodCalls(Test):
 
         o = c()
 
-        for i in xrange(self.rounds):
+        for i in range(self.rounds):
 
             o.f()
             o.f()
@@ -425,7 +425,7 @@ class PythonMethodCalls(Test):
 
         o = c
 
-        for i in xrange(self.rounds):
+        for i in range(self.rounds):
             pass
 
 ###
@@ -446,7 +446,7 @@ class Recursion(Test):
                 return f(x-1)
             return 1
 
-        for i in xrange(self.rounds):
+        for i in range(self.rounds):
             f(10)
             f(10)
             f(10)
@@ -463,7 +463,7 @@ class Recursion(Test):
                 return f(x-1)
             return 1
 
-        for i in xrange(self.rounds):
+        for i in range(self.rounds):
             pass
 
 

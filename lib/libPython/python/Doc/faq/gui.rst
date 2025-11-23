@@ -8,10 +8,18 @@ Graphic User Interface FAQ
 
    .. contents::
 
+.. XXX need review for Python 3.
+
+
+General GUI Questions
+=====================
+
 What platform-independent GUI toolkits exist for Python?
 ========================================================
 
-Depending on what platform(s) you are aiming at, there are several.
+Depending on what platform(s) you are aiming at, there are several.  Some
+of them haven't been ported to Python 3 yet.  At least `Tkinter`_ and `Qt`_
+are known to be Python 3-compatible.
 
 .. XXX check links
 
@@ -19,15 +27,17 @@ Tkinter
 -------
 
 Standard builds of Python include an object-oriented interface to the Tcl/Tk
-widget set, called Tkinter.  This is probably the easiest to install and use.
-For more info about Tk, including pointers to the source, see the Tcl/Tk home
-page at https://www.tcl.tk.  Tcl/Tk is fully portable to the Mac OS X, Windows,
-and Unix platforms.
+widget set, called :ref:`tkinter <Tkinter>`.  This is probably the easiest to
+install (since it comes included with most
+`binary distributions <https://www.python.org/download/>`_ of Python) and use.
+For more info about Tk, including pointers to the source, see the
+`Tcl/Tk home page <http://www.tcl.tk>`_.  Tcl/Tk is fully portable to the
+Mac OS X, Windows, and Unix platforms.
 
 wxWidgets
 ---------
 
-wxWidgets (https://www.wxwidgets.org) is a free, portable GUI class
+wxWidgets (http://www.wxwidgets.org) is a free, portable GUI class
 library written in C++ that provides a native look and feel on a
 number of platforms, with Windows, Mac OS X, GTK, X11, all listed as
 current stable targets.  Language bindings are available for a number
@@ -48,20 +58,24 @@ Qt
 ---
 
 There are bindings available for the Qt toolkit (using either `PyQt
-<https://riverbankcomputing.com/software/pyqt/intro>`_ or `PySide
-<https://wiki.qt.io/PySide>`_) and for KDE (`PyKDE4 <https://techbase.kde.org/Languages/Python/Using_PyKDE_4>`__).
+<http://www.riverbankcomputing.co.uk/software/pyqt/intro>`_ or `PySide
+<http://www.pyside.org/>`_) and for KDE (`PyKDE <https://techbase.kde.org/Development/Languages/Python>`__).
 PyQt is currently more mature than PySide, but you must buy a PyQt license from
-`Riverbank Computing <https://www.riverbankcomputing.com/commercial/license-faq>`_
+`Riverbank Computing <http://www.riverbankcomputing.co.uk/software/pyqt/license>`_
 if you want to write proprietary applications.  PySide is free for all applications.
 
 Qt 4.5 upwards is licensed under the LGPL license; also, commercial licenses
-are available from `The Qt Company <https://www.qt.io/licensing/>`_.
+are available from `The Qt Company <http://www.qt.io/licensing/>`_.
 
 Gtk+
 ----
 
-PyGtk bindings for the `Gtk+ toolkit <http://www.gtk.org>`_ have been
-implemented by James Henstridge; see <http://www.pygtk.org>.
+The `GObject introspection bindings <https://live.gnome.org/PyGObject>`_
+for Python allow you to write GTK+ 3 applications.  There is also a
+`Python GTK+ 3 Tutorial <http://python-gtk-3-tutorial.readthedocs.org/en/latest/>`_.
+
+The older PyGtk bindings for the `Gtk+ 2 toolkit <http://www.gtk.org>`_ have
+been implemented by James Henstridge; see <http://www.pygtk.org>.
 
 FLTK
 ----
@@ -69,6 +83,15 @@ FLTK
 Python bindings for `the FLTK toolkit <http://www.fltk.org>`_, a simple yet
 powerful and mature cross-platform windowing system, are available from `the
 PyFLTK project <http://pyfltk.sourceforge.net>`_.
+
+
+FOX
+----
+
+A wrapper for `the FOX toolkit <http://www.fox-toolkit.org/>`_ called `FXpy
+<http://fxpy.sourceforge.net/>`_ is available.  FOX supports both Unix variants
+and Windows.
+
 
 OpenGL
 ------
@@ -133,6 +156,3 @@ The most common cause is that the widget to which the binding applies doesn't
 have "keyboard focus".  Check out the Tk documentation for the focus command.
 Usually a widget is given the keyboard focus by clicking in it (but not for
 labels; see the takefocus option).
-
-
-

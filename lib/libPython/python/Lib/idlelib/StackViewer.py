@@ -2,7 +2,7 @@ import os
 import sys
 import linecache
 import re
-import Tkinter as tk
+import tkinter as tk
 
 from idlelib.TreeWidget import TreeNode, TreeItem, ScrolledCanvas
 from idlelib.ObjectBrowser import ObjectTreeItem, make_objecttreeitem
@@ -121,9 +121,9 @@ class VariablesTreeItem(ObjectTreeItem):
         return sublist
 
     def keys(self):  # unused, left for possible 3rd party use
-        return self.object.keys()
+        return list(self.object.keys())
 
-def _stack_viewer(parent):  # htest #
+def _stack_viewer(parent):
     root = tk.Tk()
     root.title("Test StackViewer")
     width, height, x, y = list(map(int, re.split('[x+]', parent.geometry())))

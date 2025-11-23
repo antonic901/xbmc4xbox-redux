@@ -34,18 +34,18 @@ class Test(unittest.TestCase):
     def test_p2a_objects(self):
         array = (c_char_p * 5)()
         self.assertEqual(array._objects, None)
-        array[0] = "foo bar"
-        self.assertEqual(array._objects, {'0': "foo bar"})
+        array[0] = b"foo bar"
+        self.assertEqual(array._objects, {'0': b"foo bar"})
 
         p = cast(array, POINTER(c_char_p))
         # array and p share a common _objects attribute
         self.assertIs(p._objects, array._objects)
-        self.assertEqual(array._objects, {'0': "foo bar", id(array): array})
-        p[0] = "spam spam"
-        self.assertEqual(p._objects, {'0': "spam spam", id(array): array})
+        self.assertEqual(array._objects, {'0': b"foo bar", id(array): array})
+        p[0] = b"spam spam"
+        self.assertEqual(p._objects, {'0': b"spam spam", id(array): array})
         self.assertIs(array._objects, p._objects)
-        p[1] = "foo bar"
-        self.assertEqual(p._objects, {'1': 'foo bar', '0': "spam spam", id(array): array})
+        p[1] = b"foo bar"
+        self.assertEqual(p._objects, {'1': b'foo bar', '0': b"spam spam", id(array): array})
         self.assertIs(array._objects, p._objects)
 
     def test_other(self):
@@ -72,9 +72,9 @@ class Test(unittest.TestCase):
 
     def test_char_p(self):
         # This didn't work: bad argument to internal function
-        s = c_char_p("hiho")
+        s = c_char_p(b"hiho")
         self.assertEqual(cast(cast(s, c_void_p), c_char_p).value,
-                             "hiho")
+                             b"hiho")
 
     @need_symbol('c_wchar_p')
     def test_wchar_p(self):

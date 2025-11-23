@@ -1,11 +1,11 @@
 import unittest
 from doctest import DocTestSuite
-from test import test_support as support
+from test import support
 import weakref
 import gc
 
 # Modules under test
-_thread = support.import_module('thread')
+_thread = support.import_module('_thread')
 threading = support.import_module('threading')
 import _threading_local
 
@@ -17,6 +17,7 @@ def target(local, weaklist):
     weak = Weak()
     local.weak = weak
     weaklist.append(weakref.ref(weak))
+
 
 class BaseLocalTest:
 
@@ -72,11 +73,12 @@ class BaseLocalTest:
         class Local(self._local):
             pass
         locals = None
-        passed = [False]
+        passed = False
         e1 = threading.Event()
         e2 = threading.Event()
 
         def f():
+            nonlocal passed
             # 1) Involve Local in a cycle
             cycle = [Local()]
             cycle.append(cycle)
@@ -90,7 +92,7 @@ class BaseLocalTest:
             e2.wait()
 
             # 4) New Locals should be empty
-            passed[0] = all(not hasattr(local, 'foo') for local in locals)
+            passed = all(not hasattr(local, 'foo') for local in locals)
 
         t = threading.Thread(target=f)
         t.start()
@@ -103,22 +105,18 @@ class BaseLocalTest:
         e2.set()
         t.join()
 
-        self.assertTrue(passed[0])
+        self.assertTrue(passed)
 
     def test_arguments(self):
         # Issue 1522237
-        from thread import _local as local
-        from _threading_local import local as py_local
+        class MyLocal(self._local):
+            def __init__(self, *args, **kwargs):
+                pass
 
-        for cls in (local, py_local):
-            class MyLocal(cls):
-                def __init__(self, *args, **kwargs):
-                    pass
-
-            MyLocal(a=1)
-            MyLocal(1)
-            self.assertRaises(TypeError, cls, a=1)
-            self.assertRaises(TypeError, cls, 1)
+        MyLocal(a=1)
+        MyLocal(1)
+        self.assertRaises(TypeError, self._local, a=1)
+        self.assertRaises(TypeError, self._local, 1)
 
     def _test_one_class(self, c):
         self._failed = "No error message set or cleared."
@@ -181,11 +179,6 @@ class BaseLocalTest:
             """To test that subclasses behave properly."""
         self._test_dict_attribute(LocalSubclass)
 
-
-class ThreadLocalTest(unittest.TestCase, BaseLocalTest):
-    _local = _thread._local
-
-    # Fails for the pure Python implementation
     def test_cycle_collection(self):
         class X:
             pass
@@ -196,7 +189,11 @@ class ThreadLocalTest(unittest.TestCase, BaseLocalTest):
         wr = weakref.ref(x)
         del x
         gc.collect()
-        self.assertIsNone(wr())
+        self.assertIs(wr(), None)
+
+
+class ThreadLocalTest(unittest.TestCase, BaseLocalTest):
+    _local = _thread._local
 
 class PyThreadingLocalTest(unittest.TestCase, BaseLocalTest):
     _local = _threading_local.local
@@ -208,20 +205,14 @@ def test_main():
     suite.addTest(unittest.makeSuite(ThreadLocalTest))
     suite.addTest(unittest.makeSuite(PyThreadingLocalTest))
 
-    try:
-        from thread import _local
-    except ImportError:
-        pass
-    else:
-        import _threading_local
-        local_orig = _threading_local.local
-        def setUp(test):
-            _threading_local.local = _local
-        def tearDown(test):
-            _threading_local.local = local_orig
-        suite.addTest(DocTestSuite('_threading_local',
-                                   setUp=setUp, tearDown=tearDown)
-                      )
+    local_orig = _threading_local.local
+    def setUp(test):
+        _threading_local.local = _thread._local
+    def tearDown(test):
+        _threading_local.local = local_orig
+    suite.addTest(DocTestSuite('_threading_local',
+                               setUp=setUp, tearDown=tearDown)
+                  )
 
     support.run_unittest(suite)
 

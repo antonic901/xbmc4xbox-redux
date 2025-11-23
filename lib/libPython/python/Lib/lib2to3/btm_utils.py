@@ -96,8 +96,7 @@ class MinNode(object):
     def leaves(self):
         "Generator that returns the leaves of the tree"
         for child in self.children:
-            for x in child.leaves():
-                yield x
+            yield from child.leaves()
         if not self.children:
             yield self
 
@@ -216,7 +215,7 @@ def reduce_tree(node, parent=None):
                 #reduce to None
                 new_node = None
             elif repeater_node.children[0].value == '+':
-                #reduce to a single occurrence i.e. do nothing
+                #reduce to a single occurence i.e. do nothing
                 pass
             else:
                 #TODO: handle {min, max} repeaters
@@ -277,7 +276,6 @@ def rec_test(sequence, test_func):
     sub-iterables"""
     for x in sequence:
         if isinstance(x, (list, tuple)):
-            for y in rec_test(x, test_func):
-                yield y
+            yield from rec_test(x, test_func)
         else:
             yield test_func(x)

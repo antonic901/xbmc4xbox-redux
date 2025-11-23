@@ -37,13 +37,7 @@ extern double pow(double, double);
 #endif /* __STDC__ */
 #endif /* _MSC_VER */
 
-#ifdef _OSF_SOURCE
-/* OSF1 5.1 doesn't make these available with XOPEN_SOURCE_EXTENDED defined */
-extern int finite(double);
-extern double copysign(double, double);
-#endif
-
-/* High precision definition of pi and e (Euler)
+/* High precision defintion of pi and e (Euler)
  * The values are taken from libc6's math.h.
  */
 #ifndef Py_MATH_PIl
@@ -67,6 +61,7 @@ extern double copysign(double, double);
    nothing. */
 
 /* we take double rounding as evidence of x87 usage */
+#ifndef Py_LIMITED_API
 #ifndef Py_FORCE_DOUBLE
 #  ifdef X87_DOUBLE_ROUNDING
 PyAPI_FUNC(double) _Py_force_double(double);
@@ -75,10 +70,13 @@ PyAPI_FUNC(double) _Py_force_double(double);
 #    define Py_FORCE_DOUBLE(X) (X)
 #  endif
 #endif
+#endif
 
+#ifndef Py_LIMITED_API
 #ifdef HAVE_GCC_ASM_FOR_X87
 PyAPI_FUNC(unsigned short) _Py_get_387controlword(void);
 PyAPI_FUNC(void) _Py_set_387controlword(unsigned short);
+#endif
 #endif
 
 /* Py_IS_NAN(X)

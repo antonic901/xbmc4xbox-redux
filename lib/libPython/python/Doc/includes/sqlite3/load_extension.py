@@ -11,7 +11,7 @@ con.execute("select load_extension('./fts3.so')")
 # alternatively you can load the extension using an API call:
 # con.load_extension("./fts3.so")
 
-# disable extension loading again
+# disable extension laoding again
 con.enable_load_extension(False)
 
 # example from SQLite wiki
@@ -23,4 +23,4 @@ con.executescript("""
     insert into recipe (name, ingredients) values ('pumpkin pie', 'pumpkin sugar flour butter');
     """)
 for row in con.execute("select rowid, name, ingredients from recipe where name match 'pie'"):
-    print row
+    print(row)

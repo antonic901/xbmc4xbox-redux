@@ -2,8 +2,8 @@
 import unittest
 from idlelib import FormatParagraph as fp
 from idlelib.EditorWindow import EditorWindow
-from Tkinter import Tk, Text
-from test.test_support import requires
+from tkinter import Tk, Text
+from test.support import requires
 
 
 class Is_Get_Test(unittest.TestCase):
@@ -159,7 +159,7 @@ class FindTest(unittest.TestCase):
 class ReformatFunctionTest(unittest.TestCase):
     """Test the reformat_paragraph function without the editor window."""
 
-    def test_reformat_paragraph(self):
+    def test_reformat_paragrah(self):
         Equal = self.assertEqual
         reform = fp.reformat_paragraph
         hw = "O hello world"
@@ -238,7 +238,7 @@ class TextWrapper:
 class Editor:
     def __init__(self, root):
         self.text = TextWrapper(root)
-    get_selection_indices = EditorWindow. get_selection_indices.im_func
+    get_selection_indices = EditorWindow. get_selection_indices
 
 class FormatEventTest(unittest.TestCase):
     """Test the formatting of text inside a Text widget.
@@ -276,9 +276,10 @@ class FormatEventTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        del cls.text, cls.formatter
         cls.root.destroy()
         del cls.root
+        del cls.text
+        del cls.formatter
 
     def test_short_line(self):
         self.text.insert('1.0', "Short line\n")

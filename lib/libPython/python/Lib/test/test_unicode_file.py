@@ -5,31 +5,16 @@ import os, glob, time, shutil
 import unicodedata
 
 import unittest
-from test.test_support import run_unittest, change_cwd, TESTFN_UNICODE
-from test.test_support import TESTFN_ENCODING, TESTFN_UNENCODABLE
-try:
-    TESTFN_ENCODED = TESTFN_UNICODE.encode(TESTFN_ENCODING)
-except (UnicodeError, TypeError):
-    # Either the file system encoding is None, or the file name
-    # cannot be encoded in the file system encoding.
-    raise unittest.SkipTest("No Unicode filesystem semantics on this platform.")
+from test.support import (run_unittest, rmtree, change_cwd,
+    TESTFN_ENCODING, TESTFN_UNICODE, TESTFN_UNENCODABLE, create_empty_file)
 
-if TESTFN_ENCODED.decode(TESTFN_ENCODING) != TESTFN_UNICODE:
-    # The file system encoding does not support Latin-1
-    # (which test_support assumes), so try the file system
-    # encoding instead.
-    import sys
+if not os.path.supports_unicode_filenames:
     try:
-        TESTFN_UNICODE = unicode("@test-\xe0\xf2", sys.getfilesystemencoding())
-        TESTFN_ENCODED = TESTFN_UNICODE.encode(TESTFN_ENCODING)
-        if '?' in TESTFN_ENCODED:
-            # MBCS will not report the error properly
-            raise UnicodeError, "mbcs encoding problem"
+        TESTFN_UNICODE.encode(TESTFN_ENCODING)
     except (UnicodeError, TypeError):
-        raise unittest.SkipTest("Cannot find a suiteable filename.")
-
-if TESTFN_ENCODED.decode(TESTFN_ENCODING) != TESTFN_UNICODE:
-    raise unittest.SkipTest("Cannot find a suitable filename.")
+        # Either the file system encoding is None, or the file name
+        # cannot be encoded in the file system encoding.
+        raise unittest.SkipTest("No Unicode filesystem semantics on this platform.")
 
 def remove_if_exists(filename):
     if os.path.exists(filename):
@@ -48,7 +33,7 @@ class TestUnicodeFiles(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.abspath(filename)))
         self.assertTrue(os.path.isfile(os.path.abspath(filename)))
         self.assertTrue(os.access(os.path.abspath(filename), os.R_OK))
-        os.chmod(filename, 0777)
+        os.chmod(filename, 0o777)
         os.utime(filename, None)
         os.utime(filename, (time.time(), time.time()))
         # Copy/rename etc tests using the same filename
@@ -58,14 +43,7 @@ class TestUnicodeFiles(unittest.TestCase):
             os.path.abspath(filename)==os.path.abspath(glob.glob(filename)[0]))
         # basename should appear in listdir.
         path, base = os.path.split(os.path.abspath(filename))
-        if isinstance(base, str):
-            base = base.decode(TESTFN_ENCODING)
         file_list = os.listdir(path)
-        # listdir() with a unicode arg may or may not return Unicode
-        # objects, depending on the platform.
-        if file_list and isinstance(file_list[0], str):
-            file_list = [f.decode(TESTFN_ENCODING) for f in file_list]
-
         # Normalize the unicode strings, as round-tripping the name via the OS
         # may return a different (but equivalent) value.
         base = unicodedata.normalize("NFD", base)
@@ -73,37 +51,25 @@ class TestUnicodeFiles(unittest.TestCase):
 
         self.assertIn(base, file_list)
 
-    # Do as many "equivalancy' tests as we can - ie, check that although we
-    # have different types for the filename, they refer to the same file.
-    def _do_equivalent(self, filename1, filename2):
-        # Note we only check "filename1 against filename2" - we don't bother
-        # checking "filename2 against 1", as we assume we are called again with
-        # the args reversed.
-        self.assertTrue(type(filename1)!=type(filename2),
-                    "No point checking equivalent filenames of the same type")
-        # stat and lstat should return the same results.
-        self.assertEqual(os.stat(filename1),
-                             os.stat(filename2))
-        self.assertEqual(os.lstat(filename1),
-                             os.lstat(filename2))
-        # Copy/rename etc tests using equivalent filename
-        self._do_copyish(filename1, filename2)
-
     # Tests that copy, move, etc one file to another.
     def _do_copyish(self, filename1, filename2):
         # Should be able to rename the file using either name.
         self.assertTrue(os.path.isfile(filename1)) # must exist.
         os.rename(filename1, filename2 + ".new")
-        self.assertTrue(os.path.isfile(filename1+".new"))
+        self.assertFalse(os.path.isfile(filename2))
+        self.assertTrue(os.path.isfile(filename1 + '.new'))
         os.rename(filename1 + ".new", filename2)
+        self.assertFalse(os.path.isfile(filename1 + '.new'))
         self.assertTrue(os.path.isfile(filename2))
 
         shutil.copy(filename1, filename2 + ".new")
         os.unlink(filename1 + ".new") # remove using equiv name.
         # And a couple of moves, one using each name.
         shutil.move(filename1, filename2 + ".new")
-        self.assertTrue(not os.path.exists(filename2))
+        self.assertFalse(os.path.exists(filename2))
+        self.assertTrue(os.path.exists(filename1 + '.new'))
         shutil.move(filename1 + ".new", filename2)
+        self.assertFalse(os.path.exists(filename2 + '.new'))
         self.assertTrue(os.path.exists(filename1))
         # Note - due to the implementation of shutil.move,
         # it tries a rename first.  This only fails on Windows when on
@@ -111,20 +77,18 @@ class TestUnicodeFiles(unittest.TestCase):
         # So we test the shutil.copy2 function, which is the thing most
         # likely to fail.
         shutil.copy2(filename1, filename2 + ".new")
+        self.assertTrue(os.path.isfile(filename1 + '.new'))
         os.unlink(filename1 + ".new")
+        self.assertFalse(os.path.exists(filename2 + '.new'))
 
-    def _do_directory(self, make_name, chdir_name, encoded):
+    def _do_directory(self, make_name, chdir_name):
         if os.path.isdir(make_name):
-            os.rmdir(make_name)
+            rmtree(make_name)
         os.mkdir(make_name)
         try:
             with change_cwd(chdir_name):
-                if not encoded:
-                    cwd_result = os.getcwdu()
-                    name_result = make_name
-                else:
-                    cwd_result = os.getcwd().decode(TESTFN_ENCODING)
-                    name_result = make_name.decode(TESTFN_ENCODING)
+                cwd_result = os.getcwd()
+                name_result = make_name
 
                 cwd_result = unicodedata.normalize("NFD", cwd_result)
                 name_result = unicodedata.normalize("NFD", name_result)
@@ -137,8 +101,7 @@ class TestUnicodeFiles(unittest.TestCase):
     # top-level 'test' functions would be if they could take params
     def _test_single(self, filename):
         remove_if_exists(filename)
-        f = file(filename, "w")
-        f.close()
+        create_empty_file(filename)
         try:
             self._do_single(filename)
         finally:
@@ -152,42 +115,23 @@ class TestUnicodeFiles(unittest.TestCase):
         finally:
             os.unlink(filename)
 
-    def _test_equivalent(self, filename1, filename2):
-        remove_if_exists(filename1)
-        self.assertTrue(not os.path.exists(filename2))
-        f = file(filename1, "w")
-        f.close()
-        try:
-            self._do_equivalent(filename1, filename2)
-        finally:
-            os.unlink(filename1)
-
     # The 'test' functions are unittest entry points, and simply call our
     # _test functions with each of the filename combinations we wish to test
     def test_single_files(self):
-        self._test_single(TESTFN_ENCODED)
         self._test_single(TESTFN_UNICODE)
         if TESTFN_UNENCODABLE is not None:
             self._test_single(TESTFN_UNENCODABLE)
-
-    def test_equivalent_files(self):
-        self._test_equivalent(TESTFN_ENCODED, TESTFN_UNICODE)
-        self._test_equivalent(TESTFN_UNICODE, TESTFN_ENCODED)
 
     def test_directories(self):
         # For all 'equivalent' combinations:
         #  Make dir with encoded, chdir with unicode, checkdir with encoded
         #  (or unicode/encoded/unicode, etc
         ext = ".dir"
-        self._do_directory(TESTFN_ENCODED+ext, TESTFN_ENCODED+ext, True)
-        self._do_directory(TESTFN_ENCODED+ext, TESTFN_UNICODE+ext, True)
-        self._do_directory(TESTFN_UNICODE+ext, TESTFN_ENCODED+ext, False)
-        self._do_directory(TESTFN_UNICODE+ext, TESTFN_UNICODE+ext, False)
+        self._do_directory(TESTFN_UNICODE+ext, TESTFN_UNICODE+ext)
         # Our directory name that can't use a non-unicode name.
         if TESTFN_UNENCODABLE is not None:
             self._do_directory(TESTFN_UNENCODABLE+ext,
-                               TESTFN_UNENCODABLE+ext,
-                               False)
+                               TESTFN_UNENCODABLE+ext)
 
 def test_main():
     run_unittest(__name__)

@@ -1,7 +1,7 @@
 """Unit tests for idlelib.AutoExpand"""
 import unittest
-from test.test_support import requires
-from Tkinter import Text, Tk
+from test.support import requires
+from tkinter import Text, Tk
 #from idlelib.idle_test.mock_tk import Text
 from idlelib.AutoExpand import AutoExpand
 
@@ -15,7 +15,7 @@ class AutoExpandTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        if 'Tkinter' in str(Text):
+        if 'tkinter' in str(Text):
             requires('gui')
             cls.tk = Tk()
             cls.text = Text(cls.tk)
@@ -25,10 +25,10 @@ class AutoExpandTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        del cls.text, cls.auto_expand
         if hasattr(cls, 'tk'):
             cls.tk.destroy()
             del cls.tk
+        del cls.text, cls.auto_expand
 
     def tearDown(self):
         self.text.delete('1.0', 'end')
@@ -78,7 +78,7 @@ class AutoExpandTest(unittest.TestCase):
         equal(previous(), 'a')
 
     def test_after_only(self):
-        # Also add punctuation 'noise' that shoud be ignored.
+        # Also add punctuation 'noise' that should be ignored.
         text = self.text
         previous = self.auto_expand.getprevword
         expand = self.auto_expand.expand_word_event

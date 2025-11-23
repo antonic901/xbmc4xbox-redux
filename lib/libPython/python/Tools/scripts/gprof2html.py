@@ -1,8 +1,12 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 """Transform gprof(1) output into useful HTML."""
 
-import re, os, sys, cgi, webbrowser
+import html
+import os
+import re
+import sys
+import webbrowser
 
 header = """\
 <html>
@@ -19,17 +23,19 @@ trailer = """\
 </html>
 """
 
-def add_escapes(input):
-    for line in input:
-        yield cgi.escape(line)
+def add_escapes(filename):
+    with open(filename) as fp:
+        for line in fp:
+            yield html.escape(line)
+
 
 def main():
     filename = "gprof.out"
     if sys.argv[1:]:
         filename = sys.argv[1]
     outputfilename = filename + ".html"
-    input = add_escapes(file(filename))
-    output = file(outputfilename, "w")
+    input = add_escapes(filename)
+    output = open(outputfilename, "w")
     output.write(header % filename)
     for line in input:
         output.write(line)
