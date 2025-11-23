@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="winsound"
 	ProjectGUID="{28B5D777-DDF2-4B6B-B34F-31D938813856}"
 	RootNamespace="winsound"

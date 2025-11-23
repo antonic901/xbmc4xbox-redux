@@ -1,4 +1,3 @@
-
 :mod:`linecache` --- Random access to text lines
 ================================================
 
@@ -10,15 +9,19 @@
 
 --------------
 
-The :mod:`linecache` module allows one to get any line from any file, while
+The :mod:`linecache` module allows one to get any line from a Python source file, while
 attempting to optimize internally, using a cache, the common case where many
 lines are read from a single file.  This is used by the :mod:`traceback` module
 to retrieve source lines for inclusion in  the formatted traceback.
 
+The :func:`tokenize.open` function is used to open files. This
+function uses :func:`tokenize.detect_encoding` to get the encoding of the
+file; in the absence of an encoding token, the file encoding defaults to UTF-8.
+
 The :mod:`linecache` module defines the following functions:
 
 
-.. function:: getline(filename, lineno[, module_globals])
+.. function:: getline(filename, lineno, module_globals=None)
 
    Get line *lineno* from file named *filename*. This function will never raise an
    exception --- it will return ``''`` on errors (the terminating newline character
@@ -31,9 +34,6 @@ The :mod:`linecache` module defines the following functions:
    ``__loader__`` in *module_globals*, in case the module was imported from a
    zipfile or other non-filesystem import source.
 
-   .. versionadded:: 2.5
-      The *module_globals* parameter was added.
-
 
 .. function:: clearcache()
 
@@ -41,15 +41,15 @@ The :mod:`linecache` module defines the following functions:
    previously read using :func:`getline`.
 
 
-.. function:: checkcache([filename])
+.. function:: checkcache(filename=None)
 
    Check the cache for validity.  Use this function if files in the cache  may have
    changed on disk, and you require the updated version.  If *filename* is omitted,
    it will check all the entries in the cache.
 
+
 Example::
 
    >>> import linecache
-   >>> linecache.getline('/etc/passwd', 4)
-   'sys:x:3:3:sys:/dev:/bin/sh\n'
-
+   >>> linecache.getline(linecache.__file__, 8)
+   'import sys\n'

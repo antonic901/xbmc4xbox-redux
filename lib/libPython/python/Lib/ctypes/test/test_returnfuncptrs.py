@@ -13,10 +13,12 @@ class ReturnFuncPtrTestCase(unittest.TestCase):
         get_strchr = dll.get_strchr
         get_strchr.restype = CFUNCTYPE(c_char_p, c_char_p, c_char)
         strchr = get_strchr()
-        self.assertEqual(strchr("abcdef", "b"), "bcdef")
-        self.assertEqual(strchr("abcdef", "x"), None)
-        self.assertRaises(ArgumentError, strchr, "abcdef", 3)
-        self.assertRaises(TypeError, strchr, "abcdef")
+        self.assertEqual(strchr(b"abcdef", b"b"), b"bcdef")
+        self.assertEqual(strchr(b"abcdef", b"x"), None)
+        self.assertEqual(strchr(b"abcdef", 98), b"bcdef")
+        self.assertEqual(strchr(b"abcdef", 107), None)
+        self.assertRaises(ArgumentError, strchr, b"abcdef", 3.0)
+        self.assertRaises(TypeError, strchr, b"abcdef")
 
     def test_without_prototype(self):
         dll = CDLL(_ctypes_test.__file__)
@@ -27,10 +29,10 @@ class ReturnFuncPtrTestCase(unittest.TestCase):
         # _CFuncPtr instances are now callable with an integer argument
         # which denotes a function address:
         strchr = CFUNCTYPE(c_char_p, c_char_p, c_char)(addr)
-        self.assertTrue(strchr("abcdef", "b"), "bcdef")
-        self.assertEqual(strchr("abcdef", "x"), None)
-        self.assertRaises(ArgumentError, strchr, "abcdef", 3)
-        self.assertRaises(TypeError, strchr, "abcdef")
+        self.assertTrue(strchr(b"abcdef", b"b"), "bcdef")
+        self.assertEqual(strchr(b"abcdef", b"x"), None)
+        self.assertRaises(ArgumentError, strchr, b"abcdef", 3.0)
+        self.assertRaises(TypeError, strchr, b"abcdef")
 
     def test_from_dll(self):
         dll = CDLL(_ctypes_test.__file__)

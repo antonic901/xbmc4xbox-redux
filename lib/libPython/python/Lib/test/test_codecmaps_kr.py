@@ -3,7 +3,7 @@
 #   Codec mapping tests for ROK encodings
 #
 
-from test import test_support
+from test import support
 from test import multibytecodec_support
 import unittest
 
@@ -19,8 +19,8 @@ class TestEUCKRMap(multibytecodec_support.TestBase_Mapping,
     mapfileurl = 'http://www.pythontest.net/unicode/EUC-KR.TXT'
 
     # A4D4 HANGUL FILLER indicates the begin of 8-bytes make-up sequence.
-    pass_enctest = [('\xa4\xd4', u'\u3164')]
-    pass_dectest = [('\xa4\xd4', u'\u3164')]
+    pass_enctest = [(b'\xa4\xd4', '\u3164')]
+    pass_dectest = [(b'\xa4\xd4', '\u3164')]
 
 
 class TestJOHABMap(multibytecodec_support.TestBase_Mapping,
@@ -31,11 +31,8 @@ class TestJOHABMap(multibytecodec_support.TestBase_Mapping,
     # but, in early 90s that is the only era used johab widely,
     # the most softwares implements it as REVERSE SOLIDUS.
     # So, we ignore the standard here.
-    pass_enctest = [('\\', u'\u20a9')]
-    pass_dectest = [('\\', u'\u20a9')]
-
-def test_main():
-    test_support.run_unittest(__name__)
+    pass_enctest = [(b'\\', '\u20a9')]
+    pass_dectest = [(b'\\', '\u20a9')]
 
 if __name__ == "__main__":
-    test_main()
+    unittest.main()

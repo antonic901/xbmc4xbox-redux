@@ -1,9 +1,9 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 """
 "PYSTONE" Benchmark Program
 
-Version:        Python/1.1 (corresponds to C/1.1 plus 2 Pystone fixes)
+Version:        Python/1.2 (corresponds to C/1.1 plus 3 Pystone fixes)
 
 Author:         Reinhold P. Weicker,  CACM Vol 27, No 10, 10/84 pg. 1013.
 
@@ -30,13 +30,20 @@ Version History:
                 percent faster than version 1.0, so benchmark figures
                 of different versions can't be compared directly.
 
+                Version 1.2 changes the division to floor division.
+
+                Under Python 3 version 1.1 would use the normal division
+                operator, resulting in some of the operations mistakenly
+                yielding floats. Version 1.2 instead uses floor division
+                making the benchmark an integer benchmark again.
+
 """
 
 LOOPS = 50000
 
 from time import clock
 
-__version__ = "1.1"
+__version__ = "1.2"
 
 [Ident1, Ident2, Ident3, Ident4, Ident5] = range(1, 6)
 
@@ -59,9 +66,9 @@ FALSE = 0
 
 def main(loops=LOOPS):
     benchtime, stones = pystones(loops)
-    print "Pystone(%s) time for %d passes = %g" % \
-          (__version__, loops, benchtime)
-    print "This machine benchmarks at %g pystones/second" % stones
+    print("Pystone(%s) time for %d passes = %g" % \
+          (__version__, loops, benchtime))
+    print("This machine benchmarks at %g pystones/second" % stones)
 
 
 def pystones(loops=LOOPS):
@@ -72,7 +79,7 @@ BoolGlob = FALSE
 Char1Glob = '\0'
 Char2Glob = '\0'
 Array1Glob = [0]*51
-Array2Glob = map(lambda x: x[:], [Array1Glob]*51)
+Array2Glob = [x[:] for x in [Array1Glob]*51]
 PtrGlb = None
 PtrGlbNext = None
 
@@ -123,7 +130,7 @@ def Proc0(loops=LOOPS):
                 EnumLoc = Proc6(Ident1)
             CharIndex = chr(ord(CharIndex)+1)
         IntLoc3 = IntLoc2 * IntLoc1
-        IntLoc2 = IntLoc3 / IntLoc1
+        IntLoc2 = IntLoc3 // IntLoc1
         IntLoc2 = 7 * (IntLoc3 - IntLoc2) - IntLoc1
         IntLoc1 = Proc2(IntLoc1)
 
@@ -255,8 +262,8 @@ def Func3(EnumParIn):
 if __name__ == '__main__':
     import sys
     def error(msg):
-        print >>sys.stderr, msg,
-        print >>sys.stderr, "usage: %s [number_of_loops]" % sys.argv[0]
+        print(msg, end=' ', file=sys.stderr)
+        print("usage: %s [number_of_loops]" % sys.argv[0], file=sys.stderr)
         sys.exit(100)
     nargs = len(sys.argv) - 1
     if nargs > 1:

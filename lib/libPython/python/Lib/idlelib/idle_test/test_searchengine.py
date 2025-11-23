@@ -7,9 +7,9 @@
 
 import re
 import unittest
-#from test.test_support import requires
-from Tkinter import  BooleanVar, StringVar, TclError  # ,Tk, Text
-import tkMessageBox
+# from test.support import requires
+from tkinter import  BooleanVar, StringVar, TclError  # ,Tk, Text
+import tkinter.messagebox as tkMessageBox
 from idlelib import SearchEngine as se
 from idlelib.idle_test.mock_tk import Var, Mbox
 from idlelib.idle_test.mock_tk import Text as mockText

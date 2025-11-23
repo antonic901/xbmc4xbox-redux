@@ -2,10 +2,10 @@
 ========================================================
 
 .. module:: ensurepip
-   :synopsis: Bootstrapping the ``pip`` installer into an existing Python
+   :synopsis: Bootstrapping the "pip" installer into an existing Python
               installation or virtual environment.
 
-.. versionadded:: 2.7.9
+.. versionadded:: 3.4
 
 The :mod:`ensurepip` package provides support for bootstrapping the ``pip``
 installer into an existing Python installation or virtual environment. This
@@ -17,7 +17,8 @@ interpreter.
 In most cases, end users of Python shouldn't need to invoke this module
 directly (as ``pip`` should be bootstrapped by default), but it may be
 needed if installing ``pip`` was skipped when installing Python (or
-when creating a virtual environment) or after explicitly uninstalling ``pip``.
+when creating a virtual environment) or after explicitly uninstalling
+``pip``.
 
 .. note::
 
@@ -32,9 +33,6 @@ when creating a virtual environment) or after explicitly uninstalling ``pip``.
 
    :pep:`453`: Explicit bootstrapping of pip in Python installations
       The original rationale and specification for this module.
-
-   :pep:`477`: Backport ensurepip (PEP 453) to Python 2.7
-      The rationale and specification for backporting PEP 453 to Python 2.7.
 
 
 Command line interface
@@ -65,19 +63,18 @@ through two additional command line options:
   than globally for the current Python installation (this option is not
   permitted inside an active virtual environment).
 
-By default, the scripts ``pip``, ``pipX``, and ``pipX.Y`` will be installed
-(where X.Y stands for the version of Python used to invoke ``ensurepip``). The
+By default, the scripts ``pipX`` and ``pipX.Y`` will be installed (where
+X.Y stands for the version of Python used to invoke ``ensurepip``). The
 scripts installed can be controlled through two additional command line
 options:
 
-* ``--altinstall``: if an alternate installation is requested, the ``pip`` and
-  ``pipX`` script will *not* be installed.
-
-* ``--no-default-pip``: if a non-default installation is request, the ``pip``
+* ``--altinstall``: if an alternate installation is requested, the ``pipX``
   script will *not* be installed.
 
-.. versionchanged:: 2.7.15
-   The exit status is non-zero if the command fails.
+* ``--default-pip``: if a "default pip" installation is requested, the
+   ``pip`` script will be installed in addition to the two regular scripts.
+
+Providing both of the script selection options will trigger an exception.
 
 
 Module API
@@ -91,13 +88,13 @@ Module API
    installed when bootstrapping an environment.
 
 .. function:: bootstrap(root=None, upgrade=False, user=False, \
-                        altinstall=False, default_pip=True, \
+                        altinstall=False, default_pip=False, \
                         verbosity=0)
 
    Bootstraps ``pip`` into the current or designated environment.
 
    *root* specifies an alternative root directory to install relative to.
-   If *root* is ``None``, then installation uses the default install location
+   If *root* is None, then installation uses the default install location
    for the current environment.
 
    *upgrade* indicates whether or not to upgrade an existing installation
@@ -106,12 +103,13 @@ Module API
    *user* indicates whether to use the user scheme rather than installing
    globally.
 
-   By default, the scripts ``pip``, ``pipX``, and ``pipX.Y`` will be installed
-   (where X.Y stands for the current version of Python).
+   By default, the scripts ``pipX`` and ``pipX.Y`` will be installed (where
+   X.Y stands for the current version of Python).
 
-   If *altinstall* is set, then ``pip`` and ``pipX`` will *not* be installed.
+   If *altinstall* is set, then ``pipX`` will *not* be installed.
 
-   If *default_pip* is set to ``False``, then ``pip`` will *not* be installed.
+   If *default_pip* is set, then ``pip`` will be installed in addition to
+   the two regular scripts.
 
    Setting both *altinstall* and *default_pip* will trigger
    :exc:`ValueError`.

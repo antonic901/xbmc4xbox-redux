@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 # objgraph
 #
@@ -39,7 +39,7 @@ matcher = re.compile('(.*):\t?........ (.) (.*)$')
 # If there is no list for the key yet, it is created.
 #
 def store(dict, key, item):
-    if dict.has_key(key):
+    if key in dict:
         dict[key].append(item)
     else:
         dict[key] = [item]
@@ -80,16 +80,15 @@ def readinput(fp):
             store(file2undef, fn, name)
             store(undef2file, name, fn)
         elif not type in ignore:
-            print fn + ':' + name + ': unknown type ' + type
+            print(fn + ':' + name + ': unknown type ' + type)
 
 # Print all names that were undefined in some module and where they are
 # defined.
 #
 def printcallee():
-    flist = file2undef.keys()
-    flist.sort()
+    flist = sorted(file2undef.keys())
     for filename in flist:
-        print filename + ':'
+        print(filename + ':')
         elist = file2undef[filename]
         elist.sort()
         for ext in elist:
@@ -97,60 +96,56 @@ def printcallee():
                 tabs = '\t'
             else:
                 tabs = '\t\t'
-            if not def2file.has_key(ext):
-                print '\t' + ext + tabs + ' *undefined'
+            if ext not in def2file:
+                print('\t' + ext + tabs + ' *undefined')
             else:
-                print '\t' + ext + tabs + flat(def2file[ext])
+                print('\t' + ext + tabs + flat(def2file[ext]))
 
 # Print for each module the names of the other modules that use it.
 #
 def printcaller():
-    files = file2def.keys()
-    files.sort()
+    files = sorted(file2def.keys())
     for filename in files:
         callers = []
         for label in file2def[filename]:
-            if undef2file.has_key(label):
+            if label in undef2file:
                 callers = callers + undef2file[label]
         if callers:
             callers.sort()
-            print filename + ':'
+            print(filename + ':')
             lastfn = ''
             for fn in callers:
-                if fn <> lastfn:
-                    print '\t' + fn
+                if fn != lastfn:
+                    print('\t' + fn)
                 lastfn = fn
         else:
-            print filename + ': unused'
+            print(filename + ': unused')
 
 # Print undefined names and where they are used.
 #
 def printundef():
     undefs = {}
-    for filename in file2undef.keys():
+    for filename in list(file2undef.keys()):
         for ext in file2undef[filename]:
-            if not def2file.has_key(ext):
+            if ext not in def2file:
                 store(undefs, ext, filename)
-    elist = undefs.keys()
-    elist.sort()
+    elist = sorted(undefs.keys())
     for ext in elist:
-        print ext + ':'
-        flist = undefs[ext]
-        flist.sort()
+        print(ext + ':')
+        flist = sorted(undefs[ext])
         for filename in flist:
-            print '\t' + filename
+            print('\t' + filename)
 
 # Print warning messages about names defined in more than one file.
 #
 def warndups():
     savestdout = sys.stdout
     sys.stdout = sys.stderr
-    names = def2file.keys()
-    names.sort()
+    names = sorted(def2file.keys())
     for name in names:
         if len(def2file[name]) > 1:
-            print 'warning:', name, 'multiply defined:',
-            print flat(def2file[name])
+            print('warning:', name, 'multiply defined:', end=' ')
+            print(flat(def2file[name]))
     sys.stdout = savestdout
 
 # Main program
@@ -160,14 +155,14 @@ def main():
         optlist, args = getopt.getopt(sys.argv[1:], 'cdu')
     except getopt.error:
         sys.stdout = sys.stderr
-        print 'Usage:', os.path.basename(sys.argv[0]),
-        print           '[-cdu] [file] ...'
-        print '-c: print callers per objectfile'
-        print '-d: print callees per objectfile'
-        print '-u: print usage of undefined symbols'
-        print 'If none of -cdu is specified, all are assumed.'
-        print 'Use "nm -o" to generate the input (on IRIX: "nm -Bo"),'
-        print 'e.g.: nm -o /lib/libc.a | objgraph'
+        print('Usage:', os.path.basename(sys.argv[0]), end=' ')
+        print('[-cdu] [file] ...')
+        print('-c: print callers per objectfile')
+        print('-d: print callees per objectfile')
+        print('-u: print usage of undefined symbols')
+        print('If none of -cdu is specified, all are assumed.')
+        print('Use "nm -o" to generate the input (on IRIX: "nm -Bo"),')
+        print('e.g.: nm -o /lib/libc.a | objgraph')
         return 1
     optu = optc = optd = 0
     for opt, void in optlist:
@@ -192,15 +187,15 @@ def main():
     more = (optu + optc + optd > 1)
     if optd:
         if more:
-            print '---------------All callees------------------'
+            print('---------------All callees------------------')
         printcallee()
     if optu:
         if more:
-            print '---------------Undefined callees------------'
+            print('---------------Undefined callees------------')
         printundef()
     if optc:
         if more:
-            print '---------------All Callers------------------'
+            print('---------------All Callers------------------')
         printcaller()
     return 0
 

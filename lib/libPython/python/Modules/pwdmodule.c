@@ -2,7 +2,6 @@
 /* UNIX password file access module */
 
 #include "Python.h"
-#include "structseq.h"
 #include "posixmodule.h"
 
 #include <pwd.h>
@@ -46,10 +45,12 @@ static int initialized;
 static PyTypeObject StructPwdType;
 
 static void
-sets(PyObject *v, int i, char* val)
+sets(PyObject *v, int i, const char* val)
 {
-  if (val)
-      PyStructSequence_SET_ITEM(v, i, PyString_FromString(val));
+  if (val) {
+      PyObject *o = PyUnicode_DecodeFSDefault(val);
+      PyStructSequence_SET_ITEM(v, i, o);
+  }
   else {
       PyStructSequence_SET_ITEM(v, i, Py_None);
       Py_INCREF(Py_None);
@@ -64,22 +65,14 @@ mkpwent(struct passwd *p)
     if (v == NULL)
         return NULL;
 
-#define SETI(i,val) PyStructSequence_SET_ITEM(v, i, PyInt_FromLong((long) val))
+#define SETI(i,val) PyStructSequence_SET_ITEM(v, i, PyLong_FromLong((long) val))
 #define SETS(i,val) sets(v, i, val)
 
     SETS(setIndex++, p->pw_name);
-#ifdef __VMS
-    SETS(setIndex++, "");
-#else
     SETS(setIndex++, p->pw_passwd);
-#endif
-    PyStructSequence_SET_ITEM(v, setIndex++, _PyInt_FromUid(p->pw_uid));
-    PyStructSequence_SET_ITEM(v, setIndex++, _PyInt_FromGid(p->pw_gid));
-#ifdef __VMS
-    SETS(setIndex++, "");
-#else
+    PyStructSequence_SET_ITEM(v, setIndex++, _PyLong_FromUid(p->pw_uid));
+    PyStructSequence_SET_ITEM(v, setIndex++, _PyLong_FromGid(p->pw_gid));
     SETS(setIndex++, p->pw_gecos);
-#endif
     SETS(setIndex++, p->pw_dir);
     SETS(setIndex++, p->pw_shell);
 
@@ -112,12 +105,12 @@ pwd_getpwuid(PyObject *self, PyObject *args)
         return NULL;
     }
     if ((p = getpwuid(uid)) == NULL) {
-        if (uid < 0)
-            PyErr_Format(PyExc_KeyError,
-                         "getpwuid(): uid not found: %ld", (long)uid);
-        else
-            PyErr_Format(PyExc_KeyError,
-                         "getpwuid(): uid not found: %lu", (unsigned long)uid);
+        PyObject *uid_obj = _PyLong_FromUid(uid);
+        if (uid_obj == NULL)
+            return NULL;
+        PyErr_Format(PyExc_KeyError,
+                     "getpwuid(): uid not found: %S", uid_obj);
+        Py_DECREF(uid_obj);
         return NULL;
     }
     return mkpwent(p);
@@ -134,14 +127,23 @@ pwd_getpwnam(PyObject *self, PyObject *args)
 {
     char *name;
     struct passwd *p;
-    if (!PyArg_ParseTuple(args, "s:getpwnam", &name))
+    PyObject *arg, *bytes, *retval = NULL;
+
+    if (!PyArg_ParseTuple(args, "U:getpwnam", &arg))
         return NULL;
+    if ((bytes = PyUnicode_EncodeFSDefault(arg)) == NULL)
+        return NULL;
+    if (PyBytes_AsStringAndSize(bytes, &name, NULL) == -1)
+        goto out;
     if ((p = getpwnam(name)) == NULL) {
         PyErr_Format(PyExc_KeyError,
                      "getpwnam(): name not found: %s", name);
-        return NULL;
+        goto out;
     }
-    return mkpwent(p);
+    retval = mkpwent(p);
+out:
+    Py_DECREF(bytes);
+    return retval;
 }
 
 #ifdef HAVE_GETPWENT
@@ -158,12 +160,8 @@ pwd_getpwall(PyObject *self)
     struct passwd *p;
     if ((d = PyList_New(0)) == NULL)
         return NULL;
-#if defined(PYOS_OS2) && defined(PYCC_GCC)
-    if ((p = getpwuid(0)) != NULL) {
-#else
     setpwent();
     while ((p = getpwent()) != NULL) {
-#endif
         PyObject *v = mkpwent(p);
         if (v == NULL || PyList_Append(d, v) != 0) {
             Py_XDECREF(v);
@@ -188,21 +186,34 @@ static PyMethodDef pwd_methods[] = {
     {NULL,              NULL}           /* sentinel */
 };
 
+static struct PyModuleDef pwdmodule = {
+    PyModuleDef_HEAD_INIT,
+    "pwd",
+    pwd__doc__,
+    -1,
+    pwd_methods,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+};
+
+
 PyMODINIT_FUNC
-initpwd(void)
+PyInit_pwd(void)
 {
     PyObject *m;
-    m = Py_InitModule3("pwd", pwd_methods, pwd__doc__);
+    m = PyModule_Create(&pwdmodule);
     if (m == NULL)
-        return;
+        return NULL;
 
-    if (!initialized)
-        PyStructSequence_InitType(&StructPwdType,
-                                  &struct_pwd_type_desc);
+    if (!initialized) {
+        if (PyStructSequence_InitType2(&StructPwdType,
+                                       &struct_pwd_type_desc) < 0)
+            return NULL;
+        initialized = 1;
+    }
     Py_INCREF((PyObject *) &StructPwdType);
     PyModule_AddObject(m, "struct_passwd", (PyObject *) &StructPwdType);
-    /* And for b/w compatibility (this was defined by mistake): */
-    Py_INCREF((PyObject *) &StructPwdType);
-    PyModule_AddObject(m, "struct_pwent", (PyObject *) &StructPwdType);
-    initialized = 1;
+    return m;
 }

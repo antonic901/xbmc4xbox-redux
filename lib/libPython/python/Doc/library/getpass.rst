@@ -10,27 +10,24 @@
 The :mod:`getpass` module provides two functions:
 
 
-.. function:: getpass([prompt[, stream]])
+.. function:: getpass(prompt='Password: ', stream=None)
 
-   Prompt the user for a password without echoing.  The user is prompted using the
-   string *prompt*, which defaults to ``'Password: '``. On Unix, the prompt is
-   written to the file-like object *stream*.  *stream* defaults to the
-   controlling terminal (/dev/tty) or if that is unavailable to ``sys.stderr``
-   (this argument is ignored on Windows).
+   Prompt the user for a password without echoing.  The user is prompted using
+   the string *prompt*, which defaults to ``'Password: '``.  On Unix, the
+   prompt is written to the file-like object *stream* using the replace error
+   handler if needed.  *stream* defaults to the controlling terminal
+   (:file:`/dev/tty`) or if that is unavailable to ``sys.stderr`` (this
+   argument is ignored on Windows).
 
    If echo free input is unavailable getpass() falls back to printing
    a warning message to *stream* and reading from ``sys.stdin`` and
    issuing a :exc:`GetPassWarning`.
 
-   .. versionchanged:: 2.5
-      The *stream* parameter was added.
-   .. versionchanged:: 2.6
-      On Unix it defaults to using /dev/tty before falling back
-      to ``sys.stdin`` and ``sys.stderr``.
+   Availability: Macintosh, Unix, Windows.
+
    .. note::
       If you call getpass from within IDLE, the input may be done in the
       terminal you launched IDLE from rather than the idle window itself.
-
 
 .. exception:: GetPassWarning
 
@@ -39,7 +36,7 @@ The :mod:`getpass` module provides two functions:
 
 .. function:: getuser()
 
-   Return the "login name" of the user.
+   Return the "login name" of the user. Availability: Unix, Windows.
 
    This function checks the environment variables :envvar:`LOGNAME`,
    :envvar:`USER`, :envvar:`LNAME` and :envvar:`USERNAME`, in order, and returns

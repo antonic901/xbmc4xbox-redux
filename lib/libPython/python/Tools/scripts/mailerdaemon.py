@@ -1,26 +1,31 @@
-#!/usr/bin/env python
-"""mailerdaemon - classes to parse mailer-daemon messages"""
+#!/usr/bin/env python3
+"""Classes to parse mailer-daemon messages."""
 
-import rfc822
 import calendar
+import email.message
 import re
 import os
 import sys
 
-Unparseable = 'mailerdaemon.Unparseable'
 
-class ErrorMessage(rfc822.Message):
-    def __init__(self, fp):
-        rfc822.Message.__init__(self, fp)
+class Unparseable(Exception):
+    pass
+
+
+class ErrorMessage(email.message.Message):
+    def __init__(self):
+        email.message.Message.__init__(self)
         self.sub = ''
 
     def is_warning(self):
-        sub = self.getheader('Subject')
+        sub = self.get('Subject')
         if not sub:
             return 0
         sub = sub.lower()
-        if sub.startswith('waiting mail'): return 1
-        if 'warning' in sub: return 1
+        if sub.startswith('waiting mail'):
+            return 1
+        if 'warning' in sub:
+            return 1
         self.sub = sub
         return 0
 
@@ -146,14 +151,17 @@ def emparse_list(fp, sub):
         errors.append(' '.join((email.strip()+': '+reason).split()))
     return errors
 
-EMPARSERS = [emparse_list, ]
+EMPARSERS = [emparse_list]
 
 def sort_numeric(a, b):
     a = int(a)
     b = int(b)
-    if a < b: return -1
-    elif a > b: return 1
-    else: return 0
+    if a < b:
+        return -1
+    elif a > b:
+        return 1
+    else:
+        return 0
 
 def parsedir(dir, modify):
     os.chdir(dir)
@@ -164,19 +172,19 @@ def parsedir(dir, modify):
     nok = nwarn = nbad = 0
 
     # find all numeric file names and sort them
-    files = filter(lambda fn, pat=pat: pat.match(fn) is not None, os.listdir('.'))
+    files = list(filter(lambda fn, pat=pat: pat.match(fn) is not None, os.listdir('.')))
     files.sort(sort_numeric)
 
     for fn in files:
         # Lets try to parse the file.
         fp = open(fn)
-        m = ErrorMessage(fp)
+        m = email.message_from_file(fp, _class=ErrorMessage)
         sender = m.getaddr('From')
-        print '%s\t%-40s\t'%(fn, sender[1]),
+        print('%s\t%-40s\t'%(fn, sender[1]), end=' ')
 
         if m.is_warning():
             fp.close()
-            print 'warning only'
+            print('warning only')
             nwarn = nwarn + 1
             if modify:
                 os.rename(fn, ','+fn)
@@ -186,11 +194,11 @@ def parsedir(dir, modify):
         try:
             errors = m.get_errors()
         except Unparseable:
-            print '** Not parseable'
+            print('** Not parseable')
             nbad = nbad + 1
             fp.close()
             continue
-        print len(errors), 'errors'
+        print(len(errors), 'errors')
 
         # Remember them
         for e in errors:
@@ -199,7 +207,7 @@ def parsedir(dir, modify):
                 date = '%s %02d' % (calendar.month_abbr[mm], dd)
             except:
                 date = '??????'
-            if not errordict.has_key(e):
+            if e not in errordict:
                 errordict[e] = 1
                 errorfirst[e] = '%s (%s)' % (fn, date)
             else:
@@ -212,16 +220,16 @@ def parsedir(dir, modify):
             os.rename(fn, ','+fn)
 ##          os.unlink(fn)
 
-    print '--------------'
-    print nok, 'files parsed,',nwarn,'files warning-only,',
-    print nbad,'files unparseable'
-    print '--------------'
+    print('--------------')
+    print(nok, 'files parsed,',nwarn,'files warning-only,', end=' ')
+    print(nbad,'files unparseable')
+    print('--------------')
     list = []
     for e in errordict.keys():
         list.append((errordict[e], errorfirst[e], errorlast[e], e))
     list.sort()
     for num, first, last, e in list:
-        print '%d %s - %s\t%s' % (num, first, last, e)
+        print('%d %s - %s\t%s' % (num, first, last, e))
 
 def main():
     modify = 0

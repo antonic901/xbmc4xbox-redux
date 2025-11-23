@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 # pdeps
 #
@@ -30,25 +30,25 @@ import os
 def main():
     args = sys.argv[1:]
     if not args:
-        print 'usage: pdeps file.py file.py ...'
+        print('usage: pdeps file.py file.py ...')
         return 2
     #
     table = {}
     for arg in args:
         process(arg, table)
     #
-    print '--- Uses ---'
+    print('--- Uses ---')
     printresults(table)
     #
-    print '--- Used By ---'
+    print('--- Used By ---')
     inv = inverse(table)
     printresults(inv)
     #
-    print '--- Closure of Uses ---'
+    print('--- Closure of Uses ---')
     reach = closure(table)
     printresults(reach)
     #
-    print '--- Closure of Used By ---'
+    print('--- Closure of Used By ---')
     invreach = inverse(reach)
     printresults(invreach)
     #
@@ -76,10 +76,9 @@ def process(filename, table):
             nextline = fp.readline()
             if not nextline: break
             line = line[:-1] + nextline
-        if m_import.match(line) >= 0:
-            (a, b), (a1, b1) = m_import.regs[:2]
-        elif m_from.match(line) >= 0:
-            (a, b), (a1, b1) = m_from.regs[:2]
+        m_found = m_import.match(line) or m_from.match(line)
+        if m_found:
+            (a, b), (a1, b1) = m_found.regs[:2]
         else: continue
         words = line[a1:b1].split(',')
         # print '#', line, words
@@ -87,12 +86,13 @@ def process(filename, table):
             word = word.strip()
             if word not in list:
                 list.append(word)
+    fp.close()
 
 
 # Compute closure (this is in fact totally general)
 #
 def closure(table):
-    modules = table.keys()
+    modules = list(table.keys())
     #
     # Initialize reach with a copy of table
     #
@@ -123,7 +123,7 @@ def closure(table):
 def inverse(table):
     inv = {}
     for key in table.keys():
-        if not inv.has_key(key):
+        if key not in inv:
             inv[key] = []
         for item in table[key]:
             store(inv, item, key)
@@ -135,7 +135,7 @@ def inverse(table):
 # If there is no list for the key yet, it is created.
 #
 def store(dict, key, item):
-    if dict.has_key(key):
+    if key in dict:
         dict[key].append(item)
     else:
         dict[key] = [item]
@@ -144,19 +144,17 @@ def store(dict, key, item):
 # Tabulate results neatly
 #
 def printresults(table):
-    modules = table.keys()
+    modules = sorted(table.keys())
     maxlen = 0
     for mod in modules: maxlen = max(maxlen, len(mod))
-    modules.sort()
     for mod in modules:
-        list = table[mod]
-        list.sort()
-        print mod.ljust(maxlen), ':',
+        list = sorted(table[mod])
+        print(mod.ljust(maxlen), ':', end=' ')
         if mod in list:
-            print '(*)',
+            print('(*)', end=' ')
         for ref in list:
-            print ref,
-        print
+            print(ref, end=' ')
+        print()
 
 
 # Call main and honor exit status

@@ -1,4 +1,3 @@
-
 :mod:`time` --- Time access and conversions
 ===========================================
 
@@ -25,9 +24,9 @@ An explanation of some terminology and conventions is in order.
 
 .. index:: single: Year 2038
 
-* The functions in this module do not handle dates and times before the epoch or
+* The functions in this module may not handle dates and times before the epoch or
   far in the future.  The cut-off point in the future is determined by the C
-  library; for Unix, it is typically in 2038.
+  library; for 32-bit systems, it is typically in 2038.
 
 .. index::
    single: Year 2000
@@ -35,18 +34,12 @@ An explanation of some terminology and conventions is in order.
 
 .. _time-y2kissues:
 
-* **Year 2000 (Y2K) issues**:  Python depends on the platform's C library, which
+* **Year 2000 (Y2K) issues**: Python depends on the platform's C library, which
   generally doesn't have year 2000 issues, since all dates and times are
-  represented internally as seconds since the epoch.  Functions accepting a
-  :class:`struct_time` (see below) generally require a 4-digit year.  For backward
-  compatibility, 2-digit years are supported if the module variable
-  ``accept2dyear`` is a non-zero integer; this variable is initialized to ``1``
-  unless the environment variable :envvar:`PYTHONY2K` is set to a non-empty
-  string, in which case it is initialized to ``0``.  Thus, you can set
-  :envvar:`PYTHONY2K` to a non-empty string in the environment to require 4-digit
-  years for all year input.  When 2-digit years are accepted, they are converted
-  according to the POSIX or X/Open standard: values 69-99 are mapped to 1969-1999,
-  and values 0--68 are mapped to 2000--2068. Values 100--1899 are always illegal.
+  represented internally as seconds since the epoch.  Function :func:`strptime`
+  can parse 2-digit years when given ``%y`` format code.  When 2-digit years are
+  parsed, they are converted according to the POSIX and ISO C standards: values
+  69--99 are mapped to 1969--1999, and values 0--68 are mapped to 2000--2068.
 
 .. index::
    single: UTC
@@ -78,15 +71,16 @@ An explanation of some terminology and conventions is in order.
 
 * The time value as returned by :func:`gmtime`, :func:`localtime`, and
   :func:`strptime`, and accepted by :func:`asctime`, :func:`mktime` and
-  :func:`strftime`, may be considered as a sequence of 9 integers.  The return
-  values of :func:`gmtime`, :func:`localtime`, and :func:`strptime` also offer
-  attribute names for individual fields.
+  :func:`strftime`, is a sequence of 9 integers.  The return values of
+  :func:`gmtime`, :func:`localtime`, and :func:`strptime` also offer attribute
+  names for individual fields.
 
   See :class:`struct_time` for a description of these objects.
 
-  .. versionchanged:: 2.2
-     The time value sequence was changed from a tuple to a :class:`struct_time`, with
-     the addition of attribute names for the fields.
+  .. versionchanged:: 3.3
+     The :class:`struct_time` type was extended to provide the :attr:`tm_gmtoff`
+     and :attr:`tm_zone` attributes when platform supports corresponding
+     ``struct tm`` members.
 
 * Use the following functions to convert between time representations:
 
@@ -109,14 +103,6 @@ An explanation of some terminology and conventions is in order.
 
 The module defines the following functions and data items:
 
-.. data:: accept2dyear
-
-   Boolean value indicating whether two-digit year values will be accepted.  This
-   is true by default, but will be set to false if the environment variable
-   :envvar:`PYTHONY2K` has been set to a non-empty string.  It may also be modified
-   at run time.
-
-
 .. data:: altzone
 
    The offset of the local DST timezone, in seconds west of UTC, if one is defined.
@@ -127,17 +113,15 @@ The module defines the following functions and data items:
 .. function:: asctime([t])
 
    Convert a tuple or :class:`struct_time` representing a time as returned by
-   :func:`gmtime` or :func:`localtime` to a 24-character string of the following
+   :func:`gmtime` or :func:`localtime` to a string of the following
    form: ``'Sun Jun 20 23:21:05 1993'``.  If *t* is not provided, the current time
    as returned by :func:`localtime` is used. Locale information is not used by
    :func:`asctime`.
 
    .. note::
 
-      Unlike the C function of the same name, there is no trailing newline.
-
-   .. versionchanged:: 2.1
-      Allowed *t* to be omitted.
+      Unlike the C function of the same name, :func:`asctime` does not add a
+      trailing newline.
 
 
 .. function:: clock()
@@ -149,13 +133,103 @@ The module defines the following functions and data items:
 
    On Unix, return the current processor time as a floating point number expressed
    in seconds.  The precision, and in fact the very definition of the meaning of
-   "processor time", depends on that of the C function of the same name, but in any
-   case, this is the function to use for benchmarking Python or timing algorithms.
+   "processor time", depends on that of the C function of the same name.
 
    On Windows, this function returns wall-clock seconds elapsed since the first
    call to this function, as a floating point number, based on the Win32 function
    :c:func:`QueryPerformanceCounter`. The resolution is typically better than one
    microsecond.
+
+   .. deprecated:: 3.3
+      The behaviour of this function depends on the platform: use
+      :func:`perf_counter` or :func:`process_time` instead, depending on your
+      requirements, to have a well defined behaviour.
+
+
+.. function:: clock_getres(clk_id)
+
+   Return the resolution (precision) of the specified clock *clk_id*.
+
+   Availability: Unix.
+
+   .. versionadded:: 3.3
+
+
+.. function:: clock_gettime(clk_id)
+
+   Return the time of the specified clock *clk_id*.
+
+   Availability: Unix.
+
+   .. versionadded:: 3.3
+
+
+.. function:: clock_settime(clk_id, time)
+
+   Set the time of the specified clock *clk_id*.
+
+   Availability: Unix.
+
+   .. versionadded:: 3.3
+
+
+.. data:: CLOCK_HIGHRES
+
+   The Solaris OS has a CLOCK_HIGHRES timer that attempts to use an optimal
+   hardware source, and may give close to nanosecond resolution.  CLOCK_HIGHRES
+   is the nonadjustable, high-resolution clock.
+
+   Availability: Solaris.
+
+   .. versionadded:: 3.3
+
+
+.. data:: CLOCK_MONOTONIC
+
+   Clock that cannot be set and represents monotonic time since some unspecified
+   starting point.
+
+   Availability: Unix.
+
+   .. versionadded:: 3.3
+
+
+.. data:: CLOCK_MONOTONIC_RAW
+
+   Similar to :data:`CLOCK_MONOTONIC`, but provides access to a raw
+   hardware-based time that is not subject to NTP adjustments.
+
+   Availability: Linux 2.6.28 or later.
+
+   .. versionadded:: 3.3
+
+
+.. data:: CLOCK_PROCESS_CPUTIME_ID
+
+   High-resolution per-process timer from the CPU.
+
+   Availability: Unix.
+
+   .. versionadded:: 3.3
+
+
+.. data:: CLOCK_REALTIME
+
+   System-wide real-time clock.  Setting this clock requires appropriate
+   privileges.
+
+   Availability: Unix.
+
+   .. versionadded:: 3.3
+
+
+.. data:: CLOCK_THREAD_CPUTIME_ID
+
+   Thread-specific CPU-time clock.
+
+   Availability: Unix.
+
+   .. versionadded:: 3.3
 
 
 .. function:: ctime([secs])
@@ -165,16 +239,35 @@ The module defines the following functions and data items:
    returned by :func:`.time` is used.  ``ctime(secs)`` is equivalent to
    ``asctime(localtime(secs))``. Locale information is not used by :func:`ctime`.
 
-   .. versionchanged:: 2.1
-      Allowed *secs* to be omitted.
-
-   .. versionchanged:: 2.4
-      If *secs* is :const:`None`, the current time is used.
-
 
 .. data:: daylight
 
    Nonzero if a DST timezone is defined.
+
+
+.. function:: get_clock_info(name)
+
+   Get information on the specified clock as a namespace object.
+   Supported clock names and the corresponding functions to read their value
+   are:
+
+   * ``'clock'``: :func:`time.clock`
+   * ``'monotonic'``: :func:`time.monotonic`
+   * ``'perf_counter'``: :func:`time.perf_counter`
+   * ``'process_time'``: :func:`time.process_time`
+   * ``'time'``: :func:`time.time`
+
+   The result has the following attributes:
+
+   - *adjustable*: ``True`` if the clock can be changed automatically (e.g. by
+     a NTP daemon) or manually by the system administrator, ``False`` otherwise
+   - *implementation*: The name of the underlying C function used to get
+     the clock value
+   - *monotonic*: ``True`` if the clock cannot go backward,
+     ``False`` otherwise
+   - *resolution*: The resolution of the clock in seconds (:class:`float`)
+
+   .. versionadded:: 3.3
 
 
 .. function:: gmtime([secs])
@@ -186,24 +279,12 @@ The module defines the following functions and data items:
    :class:`struct_time` object. See :func:`calendar.timegm` for the inverse of this
    function.
 
-   .. versionchanged:: 2.1
-      Allowed *secs* to be omitted.
-
-   .. versionchanged:: 2.4
-      If *secs* is :const:`None`, the current time is used.
-
 
 .. function:: localtime([secs])
 
    Like :func:`gmtime` but converts to local time.  If *secs* is not provided or
    :const:`None`, the current time as returned by :func:`.time` is used.  The dst
    flag is set to ``1`` when DST applies to the given time.
-
-   .. versionchanged:: 2.1
-      Allowed *secs* to be omitted.
-
-   .. versionchanged:: 2.4
-      If *secs* is :const:`None`, the current time is used.
 
 
 .. function:: mktime(t)
@@ -218,9 +299,50 @@ The module defines the following functions and data items:
    The earliest date for which it can generate a time is platform-dependent.
 
 
+.. function:: monotonic()
+
+   Return the value (in fractional seconds) of a monotonic clock, i.e. a clock
+   that cannot go backwards.  The clock is not affected by system clock updates.
+   The reference point of the returned value is undefined, so that only the
+   difference between the results of consecutive calls is valid.
+
+   On Windows versions older than Vista, :func:`monotonic` detects
+   :c:func:`GetTickCount` integer overflow (32 bits, roll-over after 49.7 days).
+   It increases an internal epoch (reference time) by 2\ :sup:`32` each time
+   that an overflow is detected.  The epoch is stored in the process-local state
+   and so the value of :func:`monotonic` may be different in two Python
+   processes running for more than 49 days. On more recent versions of Windows
+   and on other operating systems, :func:`monotonic` is system-wide.
+
+   Availability: Windows, Mac OS X, Linux, FreeBSD, OpenBSD, Solaris.
+
+   .. versionadded:: 3.3
+
+
+.. function:: perf_counter()
+
+   Return the value (in fractional seconds) of a performance counter, i.e. a
+   clock with the highest available resolution to measure a short duration.  It
+   does include time elapsed during sleep and is system-wide.  The reference
+   point of the returned value is undefined, so that only the difference between
+   the results of consecutive calls is valid.
+
+   .. versionadded:: 3.3
+
+
+.. function:: process_time()
+
+   Return the value (in fractional seconds) of the sum of the system and user
+   CPU time of the current process.  It does not include time elapsed during
+   sleep.  It is process-wide by definition.  The reference point of the
+   returned value is undefined, so that only the difference between the results
+   of consecutive calls is valid.
+
+   .. versionadded:: 3.3
+
 .. function:: sleep(secs)
 
-   Suspend execution of the current thread for the given number of seconds.
+   Suspend execution of the calling thread for the given number of seconds.
    The argument may be a floating point number to indicate a more precise sleep
    time. The actual suspension time may be less than that requested because any
    caught signal will terminate the :func:`sleep` following execution of that
@@ -235,100 +357,97 @@ The module defines the following functions and data items:
    :func:`gmtime` or :func:`localtime` to a string as specified by the *format*
    argument.  If *t* is not provided, the current time as returned by
    :func:`localtime` is used.  *format* must be a string.  :exc:`ValueError` is
-   raised if any field in *t* is outside of the allowed range. :func:`strftime`
-   returns a locale dependent byte string; the result may be converted to unicode
-   by doing ``strftime(<myformat>).decode(locale.getlocale()[1])``.
+   raised if any field in *t* is outside of the allowed range.
 
-   .. versionchanged:: 2.1
-      Allowed *t* to be omitted.
-
-   .. versionchanged:: 2.4
-      :exc:`ValueError` raised if a field in *t* is out of range.
-
-   .. versionchanged:: 2.5
-      0 is now a legal argument for any position in the time tuple; if it is normally
-      illegal the value is forced to a correct one.
+   0 is a legal argument for any position in the time tuple; if it is normally
+   illegal the value is forced to a correct one.
 
    The following directives can be embedded in the *format* string. They are shown
    without the optional field width and precision specification, and are replaced
    by the indicated characters in the :func:`strftime` result:
 
-   +-----------+--------------------------------+-------+
-   | Directive | Meaning                        | Notes |
-   +===========+================================+=======+
-   | ``%a``    | Locale's abbreviated weekday   |       |
-   |           | name.                          |       |
-   +-----------+--------------------------------+-------+
-   | ``%A``    | Locale's full weekday name.    |       |
-   +-----------+--------------------------------+-------+
-   | ``%b``    | Locale's abbreviated month     |       |
-   |           | name.                          |       |
-   +-----------+--------------------------------+-------+
-   | ``%B``    | Locale's full month name.      |       |
-   +-----------+--------------------------------+-------+
-   | ``%c``    | Locale's appropriate date and  |       |
-   |           | time representation.           |       |
-   +-----------+--------------------------------+-------+
-   | ``%d``    | Day of the month as a decimal  |       |
-   |           | number [01,31].                |       |
-   +-----------+--------------------------------+-------+
-   | ``%H``    | Hour (24-hour clock) as a      |       |
-   |           | decimal number [00,23].        |       |
-   +-----------+--------------------------------+-------+
-   | ``%I``    | Hour (12-hour clock) as a      |       |
-   |           | decimal number [01,12].        |       |
-   +-----------+--------------------------------+-------+
-   | ``%j``    | Day of the year as a decimal   |       |
-   |           | number [001,366].              |       |
-   +-----------+--------------------------------+-------+
-   | ``%m``    | Month as a decimal number      |       |
-   |           | [01,12].                       |       |
-   +-----------+--------------------------------+-------+
-   | ``%M``    | Minute as a decimal number     |       |
-   |           | [00,59].                       |       |
-   +-----------+--------------------------------+-------+
-   | ``%p``    | Locale's equivalent of either  | \(1)  |
-   |           | AM or PM.                      |       |
-   +-----------+--------------------------------+-------+
-   | ``%S``    | Second as a decimal number     | \(2)  |
-   |           | [00,61].                       |       |
-   +-----------+--------------------------------+-------+
-   | ``%U``    | Week number of the year        | \(3)  |
-   |           | (Sunday as the first day of    |       |
-   |           | the week) as a decimal number  |       |
-   |           | [00,53].  All days in a new    |       |
-   |           | year preceding the first       |       |
-   |           | Sunday are considered to be in |       |
-   |           | week 0.                        |       |
-   +-----------+--------------------------------+-------+
-   | ``%w``    | Weekday as a decimal number    |       |
-   |           | [0(Sunday),6].                 |       |
-   +-----------+--------------------------------+-------+
-   | ``%W``    | Week number of the year        | \(3)  |
-   |           | (Monday as the first day of    |       |
-   |           | the week) as a decimal number  |       |
-   |           | [00,53].  All days in a new    |       |
-   |           | year preceding the first       |       |
-   |           | Monday are considered to be in |       |
-   |           | week 0.                        |       |
-   +-----------+--------------------------------+-------+
-   | ``%x``    | Locale's appropriate date      |       |
-   |           | representation.                |       |
-   +-----------+--------------------------------+-------+
-   | ``%X``    | Locale's appropriate time      |       |
-   |           | representation.                |       |
-   +-----------+--------------------------------+-------+
-   | ``%y``    | Year without century as a      |       |
-   |           | decimal number [00,99].        |       |
-   +-----------+--------------------------------+-------+
-   | ``%Y``    | Year with century as a decimal |       |
-   |           | number.                        |       |
-   +-----------+--------------------------------+-------+
-   | ``%Z``    | Time zone name (no characters  |       |
-   |           | if no time zone exists).       |       |
-   +-----------+--------------------------------+-------+
-   | ``%%``    | A literal ``'%'`` character.   |       |
-   +-----------+--------------------------------+-------+
+   +-----------+------------------------------------------------+-------+
+   | Directive | Meaning                                        | Notes |
+   +===========+================================================+=======+
+   | ``%a``    | Locale's abbreviated weekday name.             |       |
+   |           |                                                |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%A``    | Locale's full weekday name.                    |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%b``    | Locale's abbreviated month name.               |       |
+   |           |                                                |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%B``    | Locale's full month name.                      |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%c``    | Locale's appropriate date and time             |       |
+   |           | representation.                                |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%d``    | Day of the month as a decimal number [01,31].  |       |
+   |           |                                                |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%H``    | Hour (24-hour clock) as a decimal number       |       |
+   |           | [00,23].                                       |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%I``    | Hour (12-hour clock) as a decimal number       |       |
+   |           | [01,12].                                       |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%j``    | Day of the year as a decimal number [001,366]. |       |
+   |           |                                                |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%m``    | Month as a decimal number [01,12].             |       |
+   |           |                                                |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%M``    | Minute as a decimal number [00,59].            |       |
+   |           |                                                |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%p``    | Locale's equivalent of either AM or PM.        | \(1)  |
+   |           |                                                |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%S``    | Second as a decimal number [00,61].            | \(2)  |
+   |           |                                                |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%U``    | Week number of the year (Sunday as the first   | \(3)  |
+   |           | day of the week) as a decimal number [00,53].  |       |
+   |           | All days in a new year preceding the first     |       |
+   |           | Sunday are considered to be in week 0.         |       |
+   |           |                                                |       |
+   |           |                                                |       |
+   |           |                                                |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%w``    | Weekday as a decimal number [0(Sunday),6].     |       |
+   |           |                                                |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%W``    | Week number of the year (Monday as the first   | \(3)  |
+   |           | day of the week) as a decimal number [00,53].  |       |
+   |           | All days in a new year preceding the first     |       |
+   |           | Monday are considered to be in week 0.         |       |
+   |           |                                                |       |
+   |           |                                                |       |
+   |           |                                                |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%x``    | Locale's appropriate date representation.      |       |
+   |           |                                                |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%X``    | Locale's appropriate time representation.      |       |
+   |           |                                                |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%y``    | Year without century as a decimal number       |       |
+   |           | [00,99].                                       |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%Y``    | Year with century as a decimal number.         |       |
+   |           |                                                |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%z``    | Time zone offset indicating a positive or      |       |
+   |           | negative time difference from UTC/GMT of the   |       |
+   |           | form +HHMM or -HHMM, where H represents decimal|       |
+   |           | hour digits and M represents decimal minute    |       |
+   |           | digits [-23:59, +23:59].                       |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%Z``    | Time zone name (no characters if no time zone  |       |
+   |           | exists).                                       |       |
+   +-----------+------------------------------------------------+-------+
+   | ``%%``    | A literal ``'%'`` character.                   |       |
+   +-----------+------------------------------------------------+-------+
 
    Notes:
 
@@ -337,8 +456,9 @@ The module defines the following functions and data items:
       the output hour field if the ``%I`` directive is used to parse the hour.
 
    (2)
-      The range really is ``0`` to ``61``; this accounts for leap seconds and the
-      (very rare) double leap seconds.
+      The range really is ``0`` to ``61``; value ``60`` is valid in
+      timestamps representing leap seconds and value ``61`` is supported
+      for historical reasons.
 
    (3)
       When used with the :func:`strptime` function, ``%U`` and ``%W`` are only used in
@@ -364,15 +484,17 @@ The module defines the following functions and data items:
 
 .. function:: strptime(string[, format])
 
-   Parse a string representing a time according to a format.  The return  value is
-   a :class:`struct_time` as returned by :func:`gmtime` or :func:`localtime`.
+   Parse a string representing a time according to a format.  The return value
+   is a :class:`struct_time` as returned by :func:`gmtime` or
+   :func:`localtime`.
 
    The *format* parameter uses the same directives as those used by
    :func:`strftime`; it defaults to ``"%a %b %d %H:%M:%S %Y"`` which matches the
-   formatting returned by :func:`ctime`. If *string* cannot be parsed according to
-   *format*, or if it has excess data after parsing, :exc:`ValueError` is raised.
-   The default values used to fill in any missing data when more accurate values
-   cannot be inferred are ``(1900, 1, 1, 0, 0, 0, 0, 1, -1)``.
+   formatting returned by :func:`ctime`. If *string* cannot be parsed according
+   to *format*, or if it has excess data after parsing, :exc:`ValueError` is
+   raised. The default values used to fill in any missing data when more
+   accurate values cannot be inferred are ``(1900, 1, 1, 0, 0, 0, 0, 1, -1)``.
+   Both *string* and *format* must be strings.
 
    For example:
 
@@ -422,22 +544,25 @@ The module defines the following functions and data items:
    +-------+-------------------+---------------------------------+
    | 8     | :attr:`tm_isdst`  | 0, 1 or -1; see below           |
    +-------+-------------------+---------------------------------+
-
-   .. versionadded:: 2.2
+   | N/A   | :attr:`tm_zone`   | abbreviation of timezone name   |
+   +-------+-------------------+---------------------------------+
+   | N/A   | :attr:`tm_gmtoff` | offset east of UTC in seconds   |
+   +-------+-------------------+---------------------------------+
 
    Note that unlike the C structure, the month value is a range of [1, 12], not
-   [0, 11].  A year value will be handled as described under :ref:`Year 2000
-   (Y2K) issues <time-y2kissues>` above.
+   [0, 11].
 
    In calls to :func:`mktime`, :attr:`tm_isdst` may be set to 1 when daylight
-   savings time is in effect, and 0 when it is not.  A value of -1 indicates
-   that this is not known, and will usually result in the correct state being
-   filled in.
+   savings time is in effect, and 0 when it is not.  A value of -1 indicates that
+   this is not known, and will usually result in the correct state being filled in.
 
    When a tuple with an incorrect length is passed to a function expecting a
    :class:`struct_time`, or having elements of the wrong type, a
    :exc:`TypeError` is raised.
 
+  .. versionchanged:: 3.3
+     :attr:`tm_gmtoff` and :attr:`tm_zone` attributes are available on platforms
+     with C library supporting the corresponding fields in ``struct tm``.
 
 .. function:: time()
 
@@ -447,7 +572,6 @@ The module defines the following functions and data items:
    While this function normally returns non-decreasing values, it can return a
    lower value than a previous call if the system clock has been set back between
    the two calls.
-
 
 .. data:: timezone
 
@@ -464,15 +588,8 @@ The module defines the following functions and data items:
 
 .. function:: tzset()
 
-   Reset the time conversion rules used by the library routines. The environment
-   variable :envvar:`TZ` specifies how this is done. It will also set the variables
-   ``tzname`` (from the :envvar:`TZ` environment variable), ``timezone`` (non-DST
-   seconds West of UTC), ``altzone`` (DST seconds west of UTC) and ``daylight``
-   (to 0 if this timezone does not have any daylight saving time rules, or to
-   nonzero if there is a time, past, present or future when daylight saving time
-   applies).
-
-   .. versionadded:: 2.3
+   Resets the time conversion rules used by the library routines. The environment
+   variable :envvar:`TZ` specifies how this is done.
 
    Availability: Unix.
 

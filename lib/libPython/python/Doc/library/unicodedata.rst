@@ -1,11 +1,10 @@
-
 :mod:`unicodedata` --- Unicode Database
 =======================================
 
 .. module:: unicodedata
    :synopsis: Access the Unicode Database.
-.. moduleauthor:: Marc-Andre Lemburg <mal@lemburg.com>
-.. sectionauthor:: Marc-Andre Lemburg <mal@lemburg.com>
+.. moduleauthor:: Marc-André Lemburg <mal@lemburg.com>
+.. sectionauthor:: Marc-André Lemburg <mal@lemburg.com>
 .. sectionauthor:: Martin v. Löwis <martin@v.loewis.de>
 
 
@@ -14,87 +13,89 @@
    single: character
    pair: Unicode; database
 
-This module provides access to the Unicode Character Database which defines
-character properties for all Unicode characters. The data in this database is
-based on the :file:`UnicodeData.txt` file version 5.2.0 which is publicly
-available from ftp://ftp.unicode.org/.
+This module provides access to the Unicode Character Database (UCD) which
+defines character properties for all Unicode characters. The data contained in
+this database is compiled from the `UCD version 6.3.0
+<http://www.unicode.org/Public/6.3.0/ucd>`_.
 
-The module uses the same names and symbols as defined by the UnicodeData File
-Format 5.2.0 (see https://www.unicode.org/reports/tr44/).
-It defines the following functions:
+The module uses the same names and symbols as defined by Unicode
+Standard Annex #44, `"Unicode Character Database"
+<http://www.unicode.org/reports/tr44/tr44-6.html>`_.  It defines the
+following functions:
 
 
 .. function:: lookup(name)
 
    Look up character by name.  If a character with the given name is found, return
-   the corresponding Unicode character.  If not found, :exc:`KeyError` is raised.
+   the corresponding character.  If not found, :exc:`KeyError` is raised.
+
+   .. versionchanged:: 3.3
+      Support for name aliases [#]_ and named sequences [#]_ has been added.
 
 
-.. function:: name(unichr[, default])
+.. function:: name(chr[, default])
 
-   Returns the name assigned to the Unicode character *unichr* as a string. If no
+   Returns the name assigned to the character *chr* as a string. If no
    name is defined, *default* is returned, or, if not given, :exc:`ValueError` is
    raised.
 
 
-.. function:: decimal(unichr[, default])
+.. function:: decimal(chr[, default])
 
-   Returns the decimal value assigned to the Unicode character *unichr* as integer.
+   Returns the decimal value assigned to the character *chr* as integer.
    If no such value is defined, *default* is returned, or, if not given,
    :exc:`ValueError` is raised.
 
 
-.. function:: digit(unichr[, default])
+.. function:: digit(chr[, default])
 
-   Returns the digit value assigned to the Unicode character *unichr* as integer.
+   Returns the digit value assigned to the character *chr* as integer.
    If no such value is defined, *default* is returned, or, if not given,
    :exc:`ValueError` is raised.
 
 
-.. function:: numeric(unichr[, default])
+.. function:: numeric(chr[, default])
 
-   Returns the numeric value assigned to the Unicode character *unichr* as float.
+   Returns the numeric value assigned to the character *chr* as float.
    If no such value is defined, *default* is returned, or, if not given,
    :exc:`ValueError` is raised.
 
 
-.. function:: category(unichr)
+.. function:: category(chr)
 
-   Returns the general category assigned to the Unicode character *unichr* as
+   Returns the general category assigned to the character *chr* as
    string.
 
 
-.. function:: bidirectional(unichr)
+.. function:: bidirectional(chr)
 
-   Returns the bidirectional class assigned to the Unicode character *unichr* as
+   Returns the bidirectional class assigned to the character *chr* as
    string. If no such value is defined, an empty string is returned.
 
 
-.. function:: combining(unichr)
+.. function:: combining(chr)
 
-   Returns the canonical combining class assigned to the Unicode character *unichr*
+   Returns the canonical combining class assigned to the character *chr*
    as integer. Returns ``0`` if no combining class is defined.
 
 
-.. function:: east_asian_width(unichr)
+.. function:: east_asian_width(chr)
 
-   Returns the east asian width assigned to the Unicode character *unichr* as
+   Returns the east asian width assigned to the character *chr* as
    string.
 
-   .. versionadded:: 2.4
 
+.. function:: mirrored(chr)
 
-.. function:: mirrored(unichr)
-
-   Returns the mirrored property assigned to the Unicode character *unichr* as
+   Returns the mirrored property assigned to the character *chr* as
    integer. Returns ``1`` if the character has been identified as a "mirrored"
    character in bidirectional text, ``0`` otherwise.
 
 
-.. function:: decomposition(unichr)
+.. function:: decomposition(chr)
 
-   Returns the character decomposition mapping assigned to the Unicode character
-   *unichr* as string. An empty string is returned in case no such mapping is
+   Returns the character decomposition mapping assigned to the character
+   *chr* as string. An empty string is returned in case no such mapping is
    defined.
 
 
@@ -130,16 +131,12 @@ It defines the following functions:
    a human reader, if one has combining characters and the other
    doesn't, they may not compare equal.
 
-   .. versionadded:: 2.3
 
 In addition, the module exposes the following constant:
-
 
 .. data:: unidata_version
 
    The version of the Unicode database used in this module.
-
-   .. versionadded:: 2.3
 
 
 .. data:: ucd_3_2_0
@@ -148,23 +145,27 @@ In addition, the module exposes the following constant:
    Unicode database version 3.2 instead, for applications that require this
    specific version of the Unicode database (such as IDNA).
 
-   .. versionadded:: 2.5
-
 Examples:
 
    >>> import unicodedata
    >>> unicodedata.lookup('LEFT CURLY BRACKET')
-   u'{'
-   >>> unicodedata.name(u'/')
+   '{'
+   >>> unicodedata.name('/')
    'SOLIDUS'
-   >>> unicodedata.decimal(u'9')
+   >>> unicodedata.decimal('9')
    9
-   >>> unicodedata.decimal(u'a')
+   >>> unicodedata.decimal('a')
    Traceback (most recent call last):
-     File "<stdin>", line 1, in <module>
+     File "<stdin>", line 1, in ?
    ValueError: not a decimal
-   >>> unicodedata.category(u'A')  # 'L'etter, 'u'ppercase
+   >>> unicodedata.category('A')  # 'L'etter, 'u'ppercase
    'Lu'
-   >>> unicodedata.bidirectional(u'\u0660') # 'A'rabic, 'N'umber
+   >>> unicodedata.bidirectional('\u0660') # 'A'rabic, 'N'umber
    'AN'
 
+
+.. rubric:: Footnotes
+
+.. [#] http://www.unicode.org/Public/6.3.0/ucd/NameAliases.txt
+
+.. [#] http://www.unicode.org/Public/6.3.0/ucd/NamedSequences.txt

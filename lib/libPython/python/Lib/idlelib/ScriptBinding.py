@@ -18,17 +18,13 @@ XXX GvR Redesign this interface (yet again) as follows:
 """
 
 import os
-import re
-import string
 import tabnanny
 import tokenize
-import tkMessageBox
+import tkinter.messagebox as tkMessageBox
 from idlelib import PyShell
 
 from idlelib.configHandler import idleConf
 from idlelib import macosxSupport
-
-IDENTCHARS = string.ascii_letters + string.digits + "_"
 
 indent_message = """Error: Inconsistent indentation detected!
 
@@ -39,6 +35,7 @@ indent_message = """Error: Inconsistent indentation detected!
 To fix case 2, change all tabs to spaces by using Edit->Select All followed \
 by Format->Untabify Region and specify the number of columns used by each tab.
 """
+
 
 class ScriptBinding:
 
@@ -67,76 +64,75 @@ class ScriptBinding:
             return 'break'
 
     def tabnanny(self, filename):
-        f = open(filename, 'r')
-        try:
-            tabnanny.process_tokens(tokenize.generate_tokens(f.readline))
-        except tokenize.TokenError as msg:
-            msgtxt, (lineno, start) = msg.args
-            self.editwin.gotoline(lineno)
-            self.errorbox("Tabnanny Tokenizing Error",
-                          "Token Error: %s" % msgtxt)
-            return False
-        except tabnanny.NannyNag as nag:
-            # The error messages from tabnanny are too confusing...
-            self.editwin.gotoline(nag.get_lineno())
-            self.errorbox("Tab/space error", indent_message)
-            return False
+        # XXX: tabnanny should work on binary files as well
+        with tokenize.open(filename) as f:
+            try:
+                tabnanny.process_tokens(tokenize.generate_tokens(f.readline))
+            except tokenize.TokenError as msg:
+                msgtxt, (lineno, start) = msg.args
+                self.editwin.gotoline(lineno)
+                self.errorbox("Tabnanny Tokenizing Error",
+                              "Token Error: %s" % msgtxt)
+                return False
+            except tabnanny.NannyNag as nag:
+                # The error messages from tabnanny are too confusing...
+                self.editwin.gotoline(nag.get_lineno())
+                self.errorbox("Tab/space error", indent_message)
+                return False
         return True
 
     def checksyntax(self, filename):
         self.shell = shell = self.flist.open_shell()
         saved_stream = shell.get_warning_stream()
         shell.set_warning_stream(shell.stderr)
-        with open(filename, 'r') as f:
+        with open(filename, 'rb') as f:
             source = f.read()
-        if '\r' in source:
-            source = re.sub(r"\r\n", "\n", source)
-            source = re.sub(r"\r", "\n", source)
-        if source and source[-1] != '\n':
-            source = source + '\n'
-        text = self.editwin.text
+        if b'\r' in source:
+            source = source.replace(b'\r\n', b'\n')
+            source = source.replace(b'\r', b'\n')
+        if source and source[-1] != ord(b'\n'):
+            source = source + b'\n'
+        editwin = self.editwin
+        text = editwin.text
         text.tag_remove("ERROR", "1.0", "end")
         try:
-            try:
-                # If successful, return the compiled code
-                return compile(source, filename, "exec")
-            except (SyntaxError, OverflowError, ValueError) as err:
-                try:
-                    msg, (errorfilename, lineno, offset, line) = err
-                    if not errorfilename:
-                        err.args = msg, (filename, lineno, offset, line)
-                        err.filename = filename
-                    self.colorize_syntax_error(msg, lineno, offset)
-                except:
-                    msg = "*** " + str(err)
-                self.errorbox("Syntax error",
-                              "There's an error in your program:\n" + msg)
-                return False
+            # If successful, return the compiled code
+            return compile(source, filename, "exec")
+        except (SyntaxError, OverflowError, ValueError) as value:
+            msg = getattr(value, 'msg', '') or value or "<no detail available>"
+            lineno = getattr(value, 'lineno', '') or 1
+            offset = getattr(value, 'offset', '') or 0
+            if offset == 0:
+                lineno += 1  #mark end of offending line
+            pos = "0.0 + %d lines + %d chars" % (lineno-1, offset-1)
+            editwin.colorize_syntax_error(text, pos)
+            self.errorbox("SyntaxError", "%-20s" % msg)
+            return False
         finally:
             shell.set_warning_stream(saved_stream)
 
-    def colorize_syntax_error(self, msg, lineno, offset):
-        text = self.editwin.text
-        pos = "0.0 + %d lines + %d chars" % (lineno-1, offset-1)
-        text.tag_add("ERROR", pos)
-        char = text.get(pos)
-        if char and char in IDENTCHARS:
-            text.tag_add("ERROR", pos + " wordstart", pos)
-        if '\n' == text.get(pos):   # error at line end
-            text.mark_set("insert", pos)
-        else:
-            text.mark_set("insert", pos + "+1c")
-        text.see(pos)
-
     def run_module_event(self, event):
+        if macosxSupport.isCocoaTk():
+            # Tk-Cocoa in MacOSX is broken until at least
+            # Tk 8.5.9, and without this rather
+            # crude workaround IDLE would hang when a user
+            # tries to run a module using the keyboard shortcut
+            # (the menu item works fine).
+            self.editwin.text_frame.after(200,
+                lambda: self.editwin.text_frame.event_generate('<<run-module-event-2>>'))
+            return 'break'
+        else:
+            return self._run_module_event(event)
+
+    def _run_module_event(self, event):
         """Run the module after setting up the environment.
 
         First check the syntax.  If OK, make sure the shell is active and
         then transfer the arguments, set the run environment's working
         directory to the directory of the module being executed and also
         add that directory to its sys.path if not already included.
-
         """
+
         filename = self.getfilename()
         if not filename:
             return 'break'
@@ -147,7 +143,8 @@ class ScriptBinding:
             return 'break'
         interp = self.shell.interp
         if PyShell.use_subprocess:
-            interp.restart_subprocess(with_cwd=False, filename=code.co_filename)
+            interp.restart_subprocess(with_cwd=False, filename=
+                        self.editwin._filename_to_unicode(filename))
         dirname = os.path.dirname(filename)
         # XXX Too often this discards arguments the user just set...
         interp.runcommand("""if 1:
@@ -167,19 +164,6 @@ class ScriptBinding:
         #         Need to change streams in PyShell.ModifiedInterpreter.
         interp.runcode(code)
         return 'break'
-
-    if macosxSupport.isCocoaTk():
-        # Tk-Cocoa in MacOSX is broken until at least
-        # Tk 8.5.9, and without this rather
-        # crude workaround IDLE would hang when a user
-        # tries to run a module using the keyboard shortcut
-        # (the menu item works fine).
-        _run_module_event = run_module_event
-
-        def run_module_event(self, event):
-            self.editwin.text_frame.after(200,
-                lambda: self.editwin.text_frame.event_generate('<<run-module-event-2>>'))
-            return 'break'
 
     def getfilename(self):
         """Get source filename.  If not saved, offer to save (or create) file

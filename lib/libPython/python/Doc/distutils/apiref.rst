@@ -78,7 +78,7 @@ setup script). Indirectly provides the  :class:`distutils.dist.Distribution` and
    |                    | be built                       | :class:`distutils.core.Extension`                           |
    +--------------------+--------------------------------+-------------------------------------------------------------+
    | *classifiers*      | A list of categories for the   | a list of strings; valid classifiers are listed on `PyPI    |
-   |                    | package                        | <https://pypi.org/classifiers>`_.                           |
+   |                    | package                        | <https://pypi.python.org/pypi?:action=list_classifiers>`_.  |
    +--------------------+--------------------------------+-------------------------------------------------------------+
    | *distclass*        | the :class:`Distribution`      | a subclass of                                               |
    |                    | class to use                   | :class:`distutils.core.Distribution`                        |
@@ -120,7 +120,7 @@ setup script). Indirectly provides the  :class:`distutils.dist.Distribution` and
    args from *script* to :func:`setup`), or  the contents of the config files or
    command-line.
 
-   *script_name* is a file that will be run with :func:`execfile` ``sys.argv[0]``
+   *script_name* is a file that will be read and run with :func:`exec`.  ``sys.argv[0]``
    will be replaced with *script* for the duration of the call.  *script_args* is a
    list of strings; if supplied, ``sys.argv[1:]`` will be replaced by *script_args*
    for the duration  of the call.
@@ -166,8 +166,8 @@ the full reference.
 
 .. class:: Extension
 
-   The Extension class describes a single C or C++ extension module in a setup
-   script. It accepts the following keyword arguments in its constructor
+   The Extension class describes a single C or C++extension module in a setup
+   script. It accepts the following keyword arguments in its constructor:
 
    .. tabularcolumns:: |l|L|l|
 
@@ -205,7 +205,7 @@ the full reference.
    |                        | to or ``None`` to define it    |                           |
    |                        | without a particular value     |                           |
    |                        | (equivalent of ``#define FOO`` |                           |
-   |                        | in source or :option:`!-DFOO`  |                           |
+   |                        | in source or :option:`-DFOO`   |                           |
    |                        | on Unix C compiler command     |                           |
    |                        | line)                          |                           |
    +------------------------+--------------------------------+---------------------------+
@@ -270,6 +270,11 @@ the full reference.
    |                        | from the source extensions if  |                           |
    |                        | not provided.                  |                           |
    +------------------------+--------------------------------+---------------------------+
+   | *optional*             | specifies that a build failure | a boolean                 |
+   |                        | in the extension should not    |                           |
+   |                        | abort the build process, but   |                           |
+   |                        | simply skip the extension.     |                           |
+   +------------------------+--------------------------------+---------------------------+
 
 
 .. class:: Distribution
@@ -314,12 +319,12 @@ This module provides the following functions.
 
 .. function:: gen_preprocess_options(macros, include_dirs)
 
-   Generate C pre-processor options (:option:`!-D`, :option:`!-U`, :option:`!-I`) as
+   Generate C pre-processor options (:option:`-D`, :option:`-U`, :option:`-I`) as
    used by at least two types of compilers: the typical Unix compiler and Visual
    C++. *macros* is the usual thing, a list of 1- or 2-tuples, where ``(name,)``
-   means undefine (:option:`!-U`) macro *name*, and ``(name, value)`` means define
-   (:option:`!-D`) macro *name* to *value*.  *include_dirs* is just a list of
-   directory names to be added to the header file search path (:option:`!-I`).
+   means undefine (:option:`-U`) macro *name*, and ``(name, value)`` means define
+   (:option:`-D`) macro *name* to *value*.  *include_dirs* is just a list of
+   directory names to be added to the header file search path (:option:`-I`).
    Returns a list of command-line options suitable for either Unix compilers or
    Visual C++.
 
@@ -354,7 +359,7 @@ This module provides the following functions.
 
 .. function:: show_compilers()
 
-   Print list of available compilers (used by the :option:`!--help-compiler` options
+   Print list of available compilers (used by the :option:`--help-compiler` options
    to :command:`build`, :command:`build_ext`, :command:`build_clib`).
 
 
@@ -784,23 +789,23 @@ This module provides the following functions.
 This module provides the :class:`UnixCCompiler` class, a subclass of
 :class:`CCompiler` that handles the typical Unix-style command-line  C compiler:
 
-* macros defined with :option:`!-Dname[=value]`
+* macros defined with :option:`-Dname[=value]`
 
-* macros undefined with :option:`!-Uname`
+* macros undefined with :option:`-Uname`
 
-* include search directories specified with :option:`!-Idir`
+* include search directories specified with :option:`-Idir`
 
-* libraries specified with :option:`!-llib`
+* libraries specified with :option:`-llib`
 
-* library search directories specified with :option:`!-Ldir`
+* library search directories specified with :option:`-Ldir`
 
-* compile handled by :program:`cc` (or similar) executable with :option:`!-c`
+* compile handled by :program:`cc` (or similar) executable with :option:`-c`
   option: compiles :file:`.c` to :file:`.o`
 
 * link static library handled by :program:`ar` command (possibly with
   :program:`ranlib`)
 
-* link shared library handled by :program:`cc` :option:`!-shared`
+* link shared library handled by :program:`cc` :option:`-shared`
 
 
 :mod:`distutils.msvccompiler` --- Microsoft Compiler
@@ -832,7 +837,7 @@ selection by :class:`MSVCCompiler`.
 .. module:: distutils.bcppcompiler
 
 
-This module provides :class:`BorlandCCompiler`, a subclass of the abstract
+This module provides :class:`BorlandCCompiler`, an subclass of the abstract
 :class:`CCompiler` class for the Borland C++ compiler.
 
 
@@ -846,17 +851,6 @@ This module provides the :class:`CygwinCCompiler` class, a subclass of
 :class:`UnixCCompiler` that handles the Cygwin port of the GNU C compiler to
 Windows.  It also contains the Mingw32CCompiler class which handles the mingw32
 port of GCC (same as cygwin in no-cygwin mode).
-
-
-:mod:`distutils.emxccompiler` --- OS/2 EMX Compiler
-===================================================
-
-.. module:: distutils.emxccompiler
-   :synopsis: OS/2 EMX Compiler support
-
-
-This module provides the EMXCCompiler class, a subclass of
-:class:`UnixCCompiler` that handles the EMX port of the GNU C compiler to OS/2.
 
 
 :mod:`distutils.archive_util` ---  Archiving utilities
@@ -934,7 +928,7 @@ timestamp dependency analysis.
 .. function:: newer_group(sources, target[, missing='error'])
 
    Return true if *target* is out-of-date with respect to any file listed in
-   *sources*.  In other words, if *target* exists and is newer than every file in
+   *sources*  In other words, if *target* exists and is newer than every file in
    *sources*, return false; otherwise return true. *missing* controls what we do
    when a source file is missing; the default (``'error'``) is to blow up with an
    :exc:`OSError` from  inside :func:`os.stat`; if it is ``'ignore'``, we silently
@@ -956,7 +950,7 @@ This module provides functions for operating on directories and trees of
 directories.
 
 
-.. function:: mkpath(name[, mode=0777, verbose=0, dry_run=0])
+.. function:: mkpath(name[, mode=0o777, verbose=0, dry_run=0])
 
    Create a directory and any missing ancestor directories.  If the directory
    already exists (or if *name* is the empty string, which means the current
@@ -967,7 +961,7 @@ directories.
    directories actually created.
 
 
-.. function:: create_tree(base_dir, files[, mode=0777, verbose=0, dry_run=0])
+.. function:: create_tree(base_dir, files[, mode=0o777, verbose=0, dry_run=0])
 
    Create all the empty directories under *base_dir* needed to put *files* there.
    *base_dir* is just the name of a directory which doesn't necessarily exist
@@ -982,8 +976,8 @@ directories.
    Copy an entire directory tree *src* to a new location *dst*.  Both *src* and
    *dst* must be directory names.  If *src* is not a directory, raise
    :exc:`DistutilsFileError`.  If *dst* does  not exist, it is created with
-   :func:`mkpath`.  The end result of the copy is that every file in *src* is
-   copied to *dst*, and directories under *src* are recursively copied to *dst*.
+   :func:`mkpath`.  The end result of the  copy is that every file in *src* is
+   copied to *dst*, and  directories under *src* are recursively copied to *dst*.
    Return the list of files that were copied or might have been copied, using their
    output name. The return value is unaffected by *update* or *dry_run*: it is
    simply the list of all files under *src*, with the names changed to be under
@@ -999,11 +993,10 @@ directories.
 
    Files in *src* that begin with :file:`.nfs` are skipped (more information on
    these files is available in answer D2 of the `NFS FAQ page
-   <http://nfs.sourceforge.net/#section_d>`_.
+   <http://nfs.sourceforge.net/#section_d>`_).
 
-   .. versionchanged:: 2.7.4
+   .. versionchanged:: 3.3.1
       NFS files are ignored.
-
 
 .. function:: remove_tree(directory[, verbose=0, dry_run=0])
 
@@ -1167,7 +1160,6 @@ other utility module.
    underscore. No { } or ( ) style quoting is available.
 
 
-
 .. function:: split_quoted(s)
 
    Split a string up according to Unix shell-like rules for quotes and backslashes.
@@ -1202,9 +1194,9 @@ other utility module.
 .. function:: byte_compile(py_files[, optimize=0, force=0, prefix=None, base_dir=None, verbose=1, dry_run=0, direct=None])
 
    Byte-compile a collection of Python source files to either :file:`.pyc` or
-   :file:`.pyo` files in the same directory.  *py_files* is a list of files to
-   compile; any files that don't end in :file:`.py` are silently skipped.
-   *optimize* must be one of the following:
+   :file:`.pyo` files in a :file:`__pycache__` subdirectory (see :pep:`3147`).
+   *py_files* is a list of files to compile; any files that don't end in
+   :file:`.py` are silently skipped.  *optimize* must be one of the following:
 
    * ``0`` - don't optimize (generate :file:`.pyc`)
    * ``1`` - normal optimization (like ``python -O``)
@@ -1228,6 +1220,11 @@ other utility module.
    use direct compilation or not (see the source for details).  The *direct* flag
    is used by the script generated in indirect mode; unless you know what you're
    doing, leave it set to ``None``.
+
+   .. versionchanged:: 3.2.3
+      Create ``.pyc`` or ``.pyo`` files with an :func:`import magic tag
+      <imp.get_tag>` in their name, in a :file:`__pycache__` subdirectory
+      instead of files without tag in the current directory.
 
 
 .. function:: rfc822_escape(header)
@@ -1310,10 +1307,9 @@ provides the following additional features:
 
 * options set attributes of a passed-in object
 
-* boolean options can have "negative aliases" --- eg. if :option:`!--quiet` is
-  the "negative alias" of :option:`!--verbose`, then :option:`!--quiet` on the
+* boolean options can have "negative aliases" --- eg. if :option:`--quiet` is
+  the "negative alias" of :option:`--verbose`, then :option:`--quiet` on the
   command line sets *verbose* to false.
-
 
 .. function:: fancy_getopt(options, negative_opt, object, args)
 
@@ -1329,7 +1325,6 @@ provides the following additional features:
 .. function:: wrap_text(text, width)
 
    Wraps *text* to less than *width* wide.
-
 
 
 .. class:: FancyGetopt([option_table=None])
@@ -1816,7 +1811,7 @@ Subclasses of :class:`Command` must define the following methods.
 
    Builds a `Windows Installer`_ (.msi) binary package.
 
-   .. _Windows Installer: https://msdn.microsoft.com/en-us/library/cc185688(VS.85).aspx
+   .. _Windows Installer: http://msdn.microsoft.com/en-us/library/cc185688(VS.85).aspx
 
    In most cases, the ``bdist_msi`` installer is a better choice than the
    ``bdist_wininst`` installer, because it provides better support for
@@ -1889,6 +1884,27 @@ Subclasses of :class:`Command` must define the following methods.
 
 .. module:: distutils.command.build_py
    :synopsis: Build the .py/.pyc files of a package
+
+
+.. class:: build_py
+
+.. class:: build_py_2to3
+
+   Alternative implementation of build_py which also runs the
+   2to3 conversion library on each .py file that is going to be
+   installed. To use this in a setup.py file for a distribution
+   that is designed to run with both Python 2.x and 3.x, add::
+
+     try:
+        from distutils.command.build_py import build_py_2to3 as build_py
+     except ImportError:
+        from distutils.command.build_py import build_py
+
+   to your setup.py, and later::
+
+      cmdclass = {'build_py': build_py}
+
+   to the invocation of setup().
 
 
 :mod:`distutils.command.build_scripts` --- Build the scripts of a package

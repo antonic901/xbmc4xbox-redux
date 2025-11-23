@@ -1,6 +1,6 @@
 /* module.h - definitions for the module
  *
- * Copyright (C) 2004-2010 Gerhard Häring <gh@ghaering.de>
+ * Copyright (C) 2004-2010 Gerhard HÃ¤ring <gh@ghaering.de>
  *
  * This file is part of pysqlite.
  *
@@ -38,15 +38,17 @@ extern PyObject* pysqlite_IntegrityError;
 extern PyObject* pysqlite_DataError;
 extern PyObject* pysqlite_NotSupportedError;
 
-extern PyObject* pysqlite_OptimizedUnicode;
+/* the functions time.time() and time.sleep() */
+extern PyObject* time_time;
+extern PyObject* time_sleep;
 
 /* A dictionary, mapping colum types (INTEGER, VARCHAR, etc.) to converter
  * functions, that convert the SQL value to the appropriate Python value.
  * The key is uppercase.
  */
-extern PyObject* _pysqlite_converters;
+extern PyObject* converters;
 
-extern int _pysqlite_enable_callback_tracebacks;
+extern int _enable_callback_tracebacks;
 extern int pysqlite_BaseTypeAdapted;
 
 #define PARSE_DECLTYPES 1

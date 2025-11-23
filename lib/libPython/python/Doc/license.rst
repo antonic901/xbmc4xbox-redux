@@ -11,51 +11,51 @@ History of the software
 =======================
 
 Python was created in the early 1990s by Guido van Rossum at Stichting
-Mathematisch Centrum (CWI, see https://www.cwi.nl/) in the Netherlands as a
+Mathematisch Centrum (CWI, see http://www.cwi.nl/) in the Netherlands as a
 successor of a language called ABC.  Guido remains Python's principal author,
 although it includes many contributions from others.
 
 In 1995, Guido continued his work on Python at the Corporation for National
-Research Initiatives (CNRI, see https://www.cnri.reston.va.us/) in Reston,
+Research Initiatives (CNRI, see http://www.cnri.reston.va.us/) in Reston,
 Virginia where he released several versions of the software.
 
 In May 2000, Guido and the Python core development team moved to BeOpen.com to
 form the BeOpen PythonLabs team.  In October of the same year, the PythonLabs
 team moved to Digital Creations (now Zope Corporation; see
-https://www.zope.org/).  In 2001, the Python Software Foundation (PSF, see
+http://www.zope.com/).  In 2001, the Python Software Foundation (PSF, see
 https://www.python.org/psf/) was formed, a non-profit organization created
 specifically to own Python-related Intellectual Property.  Zope Corporation is a
 sponsoring member of the PSF.
 
-All Python releases are Open Source (see https://opensource.org/ for the Open
+All Python releases are Open Source (see http://opensource.org/ for the Open
 Source Definition). Historically, most, but not all, Python releases have also
 been GPL-compatible; the table below summarizes the various releases.
 
-+----------------+--------------+-----------+------------+-----------------+
-| Release        | Derived from | Year      | Owner      | GPL compatible? |
-+================+==============+===========+============+=================+
-| 0.9.0 thru 1.2 | n/a          | 1991-1995 | CWI        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 1.3 thru 1.5.2 | 1.2          | 1995-1999 | CNRI       | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 1.6            | 1.5.2        | 2000      | CNRI       | no              |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.0            | 1.6          | 2000      | BeOpen.com | no              |
-+----------------+--------------+-----------+------------+-----------------+
-| 1.6.1          | 1.6          | 2001      | CNRI       | no              |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.1            | 2.0+1.6.1    | 2001      | PSF        | no              |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.0.1          | 2.0+1.6.1    | 2001      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.1.1          | 2.1+2.0.1    | 2001      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.1.2          | 2.1.1        | 2002      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.1.3          | 2.1.2        | 2002      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.2 and above  | 2.1.1        | 2001-now  | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
++----------------+--------------+------------+------------+-----------------+
+| Release        | Derived from | Year       | Owner      | GPL compatible? |
++================+==============+============+============+=================+
+| 0.9.0 thru 1.2 | n/a          | 1991-1995  | CWI        | yes             |
++----------------+--------------+------------+------------+-----------------+
+| 1.3 thru 1.5.2 | 1.2          | 1995-1999  | CNRI       | yes             |
++----------------+--------------+------------+------------+-----------------+
+| 1.6            | 1.5.2        | 2000       | CNRI       | no              |
++----------------+--------------+------------+------------+-----------------+
+| 2.0            | 1.6          | 2000       | BeOpen.com | no              |
++----------------+--------------+------------+------------+-----------------+
+| 1.6.1          | 1.6          | 2001       | CNRI       | no              |
++----------------+--------------+------------+------------+-----------------+
+| 2.1            | 2.0+1.6.1    | 2001       | PSF        | no              |
++----------------+--------------+------------+------------+-----------------+
+| 2.0.1          | 2.0+1.6.1    | 2001       | PSF        | yes             |
++----------------+--------------+------------+------------+-----------------+
+| 2.1.1          | 2.1+2.0.1    | 2001       | PSF        | yes             |
++----------------+--------------+------------+------------+-----------------+
+| 2.1.2          | 2.1.1        | 2002       | PSF        | yes             |
++----------------+--------------+------------+------------+-----------------+
+| 2.1.3          | 2.1.2        | 2002       | PSF        | yes             |
++----------------+--------------+------------+------------+-----------------+
+| 2.2 and above  | 2.1.1        | 2001-now   | PSF        | yes             |
++----------------+--------------+------------+------------+-----------------+
 
 .. note::
 
@@ -73,189 +73,181 @@ Terms and conditions for accessing or otherwise using Python
 ============================================================
 
 
-PSF LICENSE AGREEMENT FOR PYTHON |release|
-------------------------------------------
+.. centered:: PSF LICENSE AGREEMENT FOR PYTHON |release|
 
-.. parsed-literal::
+#. This LICENSE AGREEMENT is between the Python Software Foundation ("PSF"), and
+   the Individual or Organization ("Licensee") accessing and otherwise using Python
+   |release| software in source or binary form and its associated documentation.
 
-   1. This LICENSE AGREEMENT is between the Python Software Foundation ("PSF"), and
-      the Individual or Organization ("Licensee") accessing and otherwise using Python
-      |release| software in source or binary form and its associated documentation.
+#. Subject to the terms and conditions of this License Agreement, PSF hereby
+   grants Licensee a nonexclusive, royalty-free, world-wide license to reproduce,
+   analyze, test, perform and/or display publicly, prepare derivative works,
+   distribute, and otherwise use Python |release| alone or in any derivative
+   version, provided, however, that PSF's License Agreement and PSF's notice of
+   copyright, i.e., "Copyright © 2001-2019 Python Software Foundation; All Rights
+   Reserved" are retained in Python |release| alone or in any derivative version
+   prepared by Licensee.
 
-   2. Subject to the terms and conditions of this License Agreement, PSF hereby
-      grants Licensee a nonexclusive, royalty-free, world-wide license to reproduce,
-      analyze, test, perform and/or display publicly, prepare derivative works,
-      distribute, and otherwise use Python |release| alone or in any derivative
-      version, provided, however, that PSF's License Agreement and PSF's notice of
-      copyright, i.e., "Copyright © 2001-2020 Python Software Foundation; All Rights
-      Reserved" are retained in Python |release| alone or in any derivative version
-      prepared by Licensee.
+#. In the event Licensee prepares a derivative work that is based on or
+   incorporates Python |release| or any part thereof, and wants to make the
+   derivative work available to others as provided herein, then Licensee hereby
+   agrees to include in any such work a brief summary of the changes made to Python
+   |release|.
 
-   3. In the event Licensee prepares a derivative work that is based on or
-      incorporates Python |release| or any part thereof, and wants to make the
-      derivative work available to others as provided herein, then Licensee hereby
-      agrees to include in any such work a brief summary of the changes made to Python
-      |release|.
+#. PSF is making Python |release| available to Licensee on an "AS IS" basis.
+   PSF MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED.  BY WAY OF
+   EXAMPLE, BUT NOT LIMITATION, PSF MAKES NO AND DISCLAIMS ANY REPRESENTATION OR
+   WARRANTY OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE
+   USE OF PYTHON |release| WILL NOT INFRINGE ANY THIRD PARTY RIGHTS.
 
-   4. PSF is making Python |release| available to Licensee on an "AS IS" basis.
-      PSF MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED.  BY WAY OF
-      EXAMPLE, BUT NOT LIMITATION, PSF MAKES NO AND DISCLAIMS ANY REPRESENTATION OR
-      WARRANTY OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE
-      USE OF PYTHON |release| WILL NOT INFRINGE ANY THIRD PARTY RIGHTS.
+#. PSF SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF PYTHON |release|
+   FOR ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS AS A RESULT OF
+   MODIFYING, DISTRIBUTING, OR OTHERWISE USING PYTHON |release|, OR ANY DERIVATIVE
+   THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.
 
-   5. PSF SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF PYTHON |release|
-      FOR ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS AS A RESULT OF
-      MODIFYING, DISTRIBUTING, OR OTHERWISE USING PYTHON |release|, OR ANY DERIVATIVE
-      THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.
+#. This License Agreement will automatically terminate upon a material breach of
+   its terms and conditions.
 
-   6. This License Agreement will automatically terminate upon a material breach of
-      its terms and conditions.
+#. Nothing in this License Agreement shall be deemed to create any relationship
+   of agency, partnership, or joint venture between PSF and Licensee.  This License
+   Agreement does not grant permission to use PSF trademarks or trade name in a
+   trademark sense to endorse or promote products or services of Licensee, or any
+   third party.
 
-   7. Nothing in this License Agreement shall be deemed to create any relationship
-      of agency, partnership, or joint venture between PSF and Licensee.  This License
-      Agreement does not grant permission to use PSF trademarks or trade name in a
-      trademark sense to endorse or promote products or services of Licensee, or any
-      third party.
-
-   8. By copying, installing or otherwise using Python |release|, Licensee agrees
-      to be bound by the terms and conditions of this License Agreement.
+#. By copying, installing or otherwise using Python |release|, Licensee agrees
+   to be bound by the terms and conditions of this License Agreement.
 
 
-BEOPEN.COM LICENSE AGREEMENT FOR PYTHON 2.0
--------------------------------------------
-
-BEOPEN PYTHON OPEN SOURCE LICENSE AGREEMENT VERSION 1
-
-.. parsed-literal::
-
-   1. This LICENSE AGREEMENT is between BeOpen.com ("BeOpen"), having an office at
-      160 Saratoga Avenue, Santa Clara, CA 95051, and the Individual or Organization
-      ("Licensee") accessing and otherwise using this software in source or binary
-      form and its associated documentation ("the Software").
-
-   2. Subject to the terms and conditions of this BeOpen Python License Agreement,
-      BeOpen hereby grants Licensee a non-exclusive, royalty-free, world-wide license
-      to reproduce, analyze, test, perform and/or display publicly, prepare derivative
-      works, distribute, and otherwise use the Software alone or in any derivative
-      version, provided, however, that the BeOpen Python License is retained in the
-      Software, alone or in any derivative version prepared by Licensee.
-
-   3. BeOpen is making the Software available to Licensee on an "AS IS" basis.
-      BEOPEN MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED.  BY WAY OF
-      EXAMPLE, BUT NOT LIMITATION, BEOPEN MAKES NO AND DISCLAIMS ANY REPRESENTATION OR
-      WARRANTY OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE
-      USE OF THE SOFTWARE WILL NOT INFRINGE ANY THIRD PARTY RIGHTS.
-
-   4. BEOPEN SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF THE SOFTWARE FOR
-      ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS AS A RESULT OF USING,
-      MODIFYING OR DISTRIBUTING THE SOFTWARE, OR ANY DERIVATIVE THEREOF, EVEN IF
-      ADVISED OF THE POSSIBILITY THEREOF.
-
-   5. This License Agreement will automatically terminate upon a material breach of
-      its terms and conditions.
-
-   6. This License Agreement shall be governed by and interpreted in all respects
-      by the law of the State of California, excluding conflict of law provisions.
-      Nothing in this License Agreement shall be deemed to create any relationship of
-      agency, partnership, or joint venture between BeOpen and Licensee.  This License
-      Agreement does not grant permission to use BeOpen trademarks or trade names in a
-      trademark sense to endorse or promote products or services of Licensee, or any
-      third party.  As an exception, the "BeOpen Python" logos available at
-      http://www.pythonlabs.com/logos.html may be used according to the permissions
-      granted on that web page.
-
-   7. By copying, installing or otherwise using the software, Licensee agrees to be
-      bound by the terms and conditions of this License Agreement.
+.. centered:: BEOPEN.COM LICENSE AGREEMENT FOR PYTHON 2.0
 
 
-CNRI LICENSE AGREEMENT FOR PYTHON 1.6.1
----------------------------------------
+.. centered:: BEOPEN PYTHON OPEN SOURCE LICENSE AGREEMENT VERSION 1
 
-.. parsed-literal::
+#. This LICENSE AGREEMENT is between BeOpen.com ("BeOpen"), having an office at
+   160 Saratoga Avenue, Santa Clara, CA 95051, and the Individual or Organization
+   ("Licensee") accessing and otherwise using this software in source or binary
+   form and its associated documentation ("the Software").
 
-   1. This LICENSE AGREEMENT is between the Corporation for National Research
-      Initiatives, having an office at 1895 Preston White Drive, Reston, VA 20191
-      ("CNRI"), and the Individual or Organization ("Licensee") accessing and
-      otherwise using Python 1.6.1 software in source or binary form and its
-      associated documentation.
+#. Subject to the terms and conditions of this BeOpen Python License Agreement,
+   BeOpen hereby grants Licensee a non-exclusive, royalty-free, world-wide license
+   to reproduce, analyze, test, perform and/or display publicly, prepare derivative
+   works, distribute, and otherwise use the Software alone or in any derivative
+   version, provided, however, that the BeOpen Python License is retained in the
+   Software, alone or in any derivative version prepared by Licensee.
 
-   2. Subject to the terms and conditions of this License Agreement, CNRI hereby
-      grants Licensee a nonexclusive, royalty-free, world-wide license to reproduce,
-      analyze, test, perform and/or display publicly, prepare derivative works,
-      distribute, and otherwise use Python 1.6.1 alone or in any derivative version,
-      provided, however, that CNRI's License Agreement and CNRI's notice of copyright,
-      i.e., "Copyright © 1995-2001 Corporation for National Research Initiatives; All
-      Rights Reserved" are retained in Python 1.6.1 alone or in any derivative version
-      prepared by Licensee.  Alternately, in lieu of CNRI's License Agreement,
-      Licensee may substitute the following text (omitting the quotes): "Python 1.6.1
-      is made available subject to the terms and conditions in CNRI's License
-      Agreement.  This Agreement together with Python 1.6.1 may be located on the
-      Internet using the following unique, persistent identifier (known as a handle):
-      1895.22/1013.  This Agreement may also be obtained from a proxy server on the
-      Internet using the following URL: http://hdl.handle.net/1895.22/1013."
+#. BeOpen is making the Software available to Licensee on an "AS IS" basis.
+   BEOPEN MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED.  BY WAY OF
+   EXAMPLE, BUT NOT LIMITATION, BEOPEN MAKES NO AND DISCLAIMS ANY REPRESENTATION OR
+   WARRANTY OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE
+   USE OF THE SOFTWARE WILL NOT INFRINGE ANY THIRD PARTY RIGHTS.
 
-   3. In the event Licensee prepares a derivative work that is based on or
-      incorporates Python 1.6.1 or any part thereof, and wants to make the derivative
-      work available to others as provided herein, then Licensee hereby agrees to
-      include in any such work a brief summary of the changes made to Python 1.6.1.
+#. BEOPEN SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF THE SOFTWARE FOR
+   ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS AS A RESULT OF USING,
+   MODIFYING OR DISTRIBUTING THE SOFTWARE, OR ANY DERIVATIVE THEREOF, EVEN IF
+   ADVISED OF THE POSSIBILITY THEREOF.
 
-   4. CNRI is making Python 1.6.1 available to Licensee on an "AS IS" basis.  CNRI
-      MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED.  BY WAY OF EXAMPLE,
-      BUT NOT LIMITATION, CNRI MAKES NO AND DISCLAIMS ANY REPRESENTATION OR WARRANTY
-      OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF
-      PYTHON 1.6.1 WILL NOT INFRINGE ANY THIRD PARTY RIGHTS.
+#. This License Agreement will automatically terminate upon a material breach of
+   its terms and conditions.
 
-   5. CNRI SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF PYTHON 1.6.1 FOR
-      ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS AS A RESULT OF
-      MODIFYING, DISTRIBUTING, OR OTHERWISE USING PYTHON 1.6.1, OR ANY DERIVATIVE
-      THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.
+#. This License Agreement shall be governed by and interpreted in all respects
+   by the law of the State of California, excluding conflict of law provisions.
+   Nothing in this License Agreement shall be deemed to create any relationship of
+   agency, partnership, or joint venture between BeOpen and Licensee.  This License
+   Agreement does not grant permission to use BeOpen trademarks or trade names in a
+   trademark sense to endorse or promote products or services of Licensee, or any
+   third party.  As an exception, the "BeOpen Python" logos available at
+   http://www.pythonlabs.com/logos.html may be used according to the permissions
+   granted on that web page.
 
-   6. This License Agreement will automatically terminate upon a material breach of
-      its terms and conditions.
-
-   7. This License Agreement shall be governed by the federal intellectual property
-      law of the United States, including without limitation the federal copyright
-      law, and, to the extent such U.S. federal law does not apply, by the law of the
-      Commonwealth of Virginia, excluding Virginia's conflict of law provisions.
-      Notwithstanding the foregoing, with regard to derivative works based on Python
-      1.6.1 that incorporate non-separable material that was previously distributed
-      under the GNU General Public License (GPL), the law of the Commonwealth of
-      Virginia shall govern this License Agreement only as to issues arising under or
-      with respect to Paragraphs 4, 5, and 7 of this License Agreement.  Nothing in
-      this License Agreement shall be deemed to create any relationship of agency,
-      partnership, or joint venture between CNRI and Licensee.  This License Agreement
-      does not grant permission to use CNRI trademarks or trade name in a trademark
-      sense to endorse or promote products or services of Licensee, or any third
-      party.
-
-   8. By clicking on the "ACCEPT" button where indicated, or by copying, installing
-      or otherwise using Python 1.6.1, Licensee agrees to be bound by the terms and
-      conditions of this License Agreement.
+#. By copying, installing or otherwise using the software, Licensee agrees to be
+   bound by the terms and conditions of this License Agreement.
 
 
-CWI LICENSE AGREEMENT FOR PYTHON 0.9.0 THROUGH 1.2
---------------------------------------------------
+.. centered:: CNRI LICENSE AGREEMENT FOR PYTHON 1.6.1
 
-.. parsed-literal::
+#. This LICENSE AGREEMENT is between the Corporation for National Research
+   Initiatives, having an office at 1895 Preston White Drive, Reston, VA 20191
+   ("CNRI"), and the Individual or Organization ("Licensee") accessing and
+   otherwise using Python 1.6.1 software in source or binary form and its
+   associated documentation.
 
-   Copyright © 1991 - 1995, Stichting Mathematisch Centrum Amsterdam, The
-   Netherlands.  All rights reserved.
+#. Subject to the terms and conditions of this License Agreement, CNRI hereby
+   grants Licensee a nonexclusive, royalty-free, world-wide license to reproduce,
+   analyze, test, perform and/or display publicly, prepare derivative works,
+   distribute, and otherwise use Python 1.6.1 alone or in any derivative version,
+   provided, however, that CNRI's License Agreement and CNRI's notice of copyright,
+   i.e., "Copyright © 1995-2001 Corporation for National Research Initiatives; All
+   Rights Reserved" are retained in Python 1.6.1 alone or in any derivative version
+   prepared by Licensee.  Alternately, in lieu of CNRI's License Agreement,
+   Licensee may substitute the following text (omitting the quotes): "Python 1.6.1
+   is made available subject to the terms and conditions in CNRI's License
+   Agreement.  This Agreement together with Python 1.6.1 may be located on the
+   Internet using the following unique, persistent identifier (known as a handle):
+   1895.22/1013.  This Agreement may also be obtained from a proxy server on the
+   Internet using the following URL: http://hdl.handle.net/1895.22/1013."
 
-   Permission to use, copy, modify, and distribute this software and its
-   documentation for any purpose and without fee is hereby granted, provided that
-   the above copyright notice appear in all copies and that both that copyright
-   notice and this permission notice appear in supporting documentation, and that
-   the name of Stichting Mathematisch Centrum or CWI not be used in advertising or
-   publicity pertaining to distribution of the software without specific, written
-   prior permission.
+#. In the event Licensee prepares a derivative work that is based on or
+   incorporates Python 1.6.1 or any part thereof, and wants to make the derivative
+   work available to others as provided herein, then Licensee hereby agrees to
+   include in any such work a brief summary of the changes made to Python 1.6.1.
 
-   STICHTING MATHEMATISCH CENTRUM DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS
-   SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
-   EVENT SHALL STICHTING MATHEMATISCH CENTRUM BE LIABLE FOR ANY SPECIAL, INDIRECT
-   OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
-   DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
-   ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
-   SOFTWARE.
+#. CNRI is making Python 1.6.1 available to Licensee on an "AS IS" basis.  CNRI
+   MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED.  BY WAY OF EXAMPLE,
+   BUT NOT LIMITATION, CNRI MAKES NO AND DISCLAIMS ANY REPRESENTATION OR WARRANTY
+   OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF
+   PYTHON 1.6.1 WILL NOT INFRINGE ANY THIRD PARTY RIGHTS.
+
+#. CNRI SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF PYTHON 1.6.1 FOR
+   ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS AS A RESULT OF
+   MODIFYING, DISTRIBUTING, OR OTHERWISE USING PYTHON 1.6.1, OR ANY DERIVATIVE
+   THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.
+
+#. This License Agreement will automatically terminate upon a material breach of
+   its terms and conditions.
+
+#. This License Agreement shall be governed by the federal intellectual property
+   law of the United States, including without limitation the federal copyright
+   law, and, to the extent such U.S. federal law does not apply, by the law of the
+   Commonwealth of Virginia, excluding Virginia's conflict of law provisions.
+   Notwithstanding the foregoing, with regard to derivative works based on Python
+   1.6.1 that incorporate non-separable material that was previously distributed
+   under the GNU General Public License (GPL), the law of the Commonwealth of
+   Virginia shall govern this License Agreement only as to issues arising under or
+   with respect to Paragraphs 4, 5, and 7 of this License Agreement.  Nothing in
+   this License Agreement shall be deemed to create any relationship of agency,
+   partnership, or joint venture between CNRI and Licensee.  This License Agreement
+   does not grant permission to use CNRI trademarks or trade name in a trademark
+   sense to endorse or promote products or services of Licensee, or any third
+   party.
+
+#. By clicking on the "ACCEPT" button where indicated, or by copying, installing
+   or otherwise using Python 1.6.1, Licensee agrees to be bound by the terms and
+   conditions of this License Agreement.
+
+
+.. centered:: ACCEPT
+
+
+.. centered:: CWI LICENSE AGREEMENT FOR PYTHON 0.9.0 THROUGH 1.2
+
+Copyright © 1991 - 1995, Stichting Mathematisch Centrum Amsterdam, The
+Netherlands.  All rights reserved.
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted, provided that
+the above copyright notice appear in all copies and that both that copyright
+notice and this permission notice appear in supporting documentation, and that
+the name of Stichting Mathematisch Centrum or CWI not be used in advertising or
+publicity pertaining to distribution of the software without specific, written
+prior permission.
+
+STICHTING MATHEMATISCH CENTRUM DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS
+SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
+EVENT SHALL STICHTING MATHEMATISCH CENTRUM BE LIABLE FOR ANY SPECIAL, INDIRECT
+OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
+ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
+SOFTWARE.
 
 
 Licenses and Acknowledgements for Incorporated Software
@@ -337,16 +329,17 @@ Project, http://www.wide.ad.jp/. ::
       without specific prior written permission.
 
    THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
-   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   GAI_ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
    ARE DISCLAIMED.  IN NO EVENT SHALL THE PROJECT OR CONTRIBUTORS BE LIABLE
-   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   FOR GAI_ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
    OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   HOWEVER CAUSED AND ON GAI_ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN GAI_ANY WAY
    OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
    SUCH DAMAGE.
+
 
 Floating point exception control
 --------------------------------
@@ -390,56 +383,6 @@ The source for the :mod:`fpectl` module includes the following notice::
      ---------------------------------------------------------------------
 
 
-MD5 message digest algorithm
-----------------------------
-
-The source code for the :mod:`md5` module contains the following notice::
-
-     Copyright (C) 1999, 2002 Aladdin Enterprises.  All rights reserved.
-
-     This software is provided 'as-is', without any express or implied
-     warranty.  In no event will the authors be held liable for any damages
-     arising from the use of this software.
-
-     Permission is granted to anyone to use this software for any purpose,
-     including commercial applications, and to alter it and redistribute it
-     freely, subject to the following restrictions:
-
-     1. The origin of this software must not be misrepresented; you must not
-        claim that you wrote the original software. If you use this software
-        in a product, an acknowledgment in the product documentation would be
-        appreciated but is not required.
-     2. Altered source versions must be plainly marked as such, and must not be
-        misrepresented as being the original software.
-     3. This notice may not be removed or altered from any source distribution.
-
-     L. Peter Deutsch
-     ghost@aladdin.com
-
-     Independent implementation of MD5 (RFC 1321).
-
-     This code implements the MD5 Algorithm defined in RFC 1321, whose
-     text is available at
-           http://www.ietf.org/rfc/rfc1321.txt
-     The code is derived from the text of the RFC, including the test suite
-     (section A.5) but excluding the rest of Appendix A.  It does not include
-     any code or documentation that is identified in the RFC as being
-     copyrighted.
-
-     The original and principal author of md5.h is L. Peter Deutsch
-     <ghost@aladdin.com>.  Other authors are noted in the change history
-     that follows (in reverse chronological order):
-
-     2002-04-13 lpd Removed support for non-ANSI compilers; removed
-           references to Ghostscript; clarified derivation from RFC 1321;
-           now handles byte order either statically or dynamically.
-     1999-11-04 lpd Edited comments slightly for automatic TOC extraction.
-     1999-10-18 lpd Fixed typo in header comment (ansi2knr rather than md5);
-           added conditionalization for C++ compilation from Martin
-           Purschke <purschke@bnl.gov>.
-     1999-05-03 lpd Original version.
-
-
 Asynchronous socket services
 ----------------------------
 
@@ -470,7 +413,7 @@ The :mod:`asynchat` and :mod:`asyncore` modules contain the following notice::
 Cookie management
 -----------------
 
-The :mod:`Cookie` module contains the following notice::
+The :mod:`http.cookies` module contains the following notice::
 
    Copyright 2000 by Timothy O'Malley <timo@alum.mit.edu>
 
@@ -561,7 +504,7 @@ The :mod:`uu` module contains the following notice::
 XML Remote Procedure Calls
 --------------------------
 
-The :mod:`xmlrpclib` module contains the following notice::
+The :mod:`xmlrpc.client` module contains the following notice::
 
        The XML-RPC client interface is
 
@@ -645,6 +588,35 @@ The :mod:`select` and contains the following notice for the kqueue interface::
   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
   SUCH DAMAGE.
+
+
+SipHash24
+---------
+
+The file :file:`Python/pyhash.c` contains Marek Majkowski' implementation of
+Dan Bernstein's SipHash24 algorithm. The contains the following note::
+
+  <MIT License>
+  Copyright (c) 2013  Marek Majkowski <marek@popcount.org>
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  </MIT License>
+
+  Original location:
+     https://github.com/majek/csiphash/
+
+  Solution inspired by code from:
+     Samuel Neves (supercop/crypto_auth/siphash24/little)
+     djb (supercop/crypto_auth/siphash24/little2)
+     Jean-Philippe Aumasson (https://131002.net/siphash/siphash24.c)
 
 
 strtod and dtoa
@@ -753,8 +725,8 @@ of the OpenSSL license here::
      *
      */
 
-  Original SSLeay License
-  -----------------------
+ Original SSLeay License
+ -----------------------
 
     /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
      * All rights reserved.
@@ -879,7 +851,7 @@ The :mod:`zlib` extension is built using an included copy of the zlib
 sources if the zlib version found on the system is too old to be
 used for the build::
 
-  Copyright (C) 1995-2010 Jean-loup Gailly and Mark Adler
+  Copyright (C) 1995-2011 Jean-loup Gailly and Mark Adler
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -901,3 +873,78 @@ used for the build::
 
   Jean-loup Gailly        Mark Adler
   jloup@gzip.org          madler@alumni.caltech.edu
+
+
+cfuhash
+-------
+
+The implementation of the hash table used by the :mod:`tracemalloc` is based
+on the cfuhash project::
+
+   Copyright (c) 2005 Don Owens
+   All rights reserved.
+
+   This code is released under the BSD license:
+
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+
+     * Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+
+     * Redistributions in binary form must reproduce the above
+       copyright notice, this list of conditions and the following
+       disclaimer in the documentation and/or other materials provided
+       with the distribution.
+
+     * Neither the name of the author nor the names of its
+       contributors may be used to endorse or promote products derived
+       from this software without specific prior written permission.
+
+   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+   FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+   COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+   OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+libmpdec
+--------
+
+The :mod:`_decimal` Module is built using an included copy of the libmpdec
+library unless the build is configured ``--with-system-libmpdec``::
+
+   Copyright (c) 2008-2016 Stefan Krah. All rights reserved.
+
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS "AS IS" AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+
+

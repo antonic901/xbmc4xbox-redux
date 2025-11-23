@@ -1,6 +1,6 @@
 import unittest
 
-from test import test_support as support
+from test import support
 
 # For scope testing.
 g = "Global variable"
@@ -75,17 +75,14 @@ class DictComprehensionTest(unittest.TestCase):
         self.assertEqual(v, "Local variable")
 
     def test_illegal_assignment(self):
-        with self.assertRaisesRegexp(SyntaxError, "can't assign"):
+        with self.assertRaisesRegex(SyntaxError, "can't assign"):
             compile("{x: y for y, x in ((1, 2), (3, 4))} = 5", "<test>",
                     "exec")
 
-        with self.assertRaisesRegexp(SyntaxError, "can't assign"):
+        with self.assertRaisesRegex(SyntaxError, "can't assign"):
             compile("{x: y for y, x in ((1, 2), (3, 4))} += 5", "<test>",
                     "exec")
 
 
-def test_main():
-    support.run_unittest(__name__)
-
 if __name__ == "__main__":
-    test_main()
+    unittest.main()

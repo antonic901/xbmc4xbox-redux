@@ -38,7 +38,7 @@ def _find_executable(executable, path=None):
     paths = path.split(os.pathsep)
     base, ext = os.path.splitext(executable)
 
-    if (sys.platform == 'win32' or os.name == 'os2') and (ext != '.exe'):
+    if (sys.platform == 'win32') and (ext != '.exe'):
         executable = executable + '.exe'
 
     if not os.path.isfile(executable):
@@ -68,7 +68,7 @@ def _read_output(commandstring):
 
     with contextlib.closing(fp) as fp:
         cmd = "%s 2>/dev/null >'%s'" % (commandstring, fp.name)
-        return fp.read().strip() if not os.system(cmd) else None
+        return fp.read().decode('utf-8').strip() if not os.system(cmd) else None
 
 
 def _find_build_tool(toolname):
@@ -94,7 +94,7 @@ def _get_system_version():
         _SYSTEM_VERSION = ''
         try:
             f = open('/System/Library/CoreServices/SystemVersion.plist')
-        except IOError:
+        except OSError:
             # We're on a plain darwin box, fall back to the default
             # behaviour.
             pass
@@ -151,13 +151,13 @@ def _find_appropriate_compiler(_config_vars):
     #    can only be found inside Xcode.app if the "Command Line Tools"
     #    are not installed.
     #
-    #    Furthermore, the compiler that can be used varies between
+    #    Futhermore, the compiler that can be used varies between
     #    Xcode releases. Up to Xcode 4 it was possible to use 'gcc-4.2'
     #    as the compiler, after that 'clang' should be used because
     #    gcc-4.2 is either not present, or a copy of 'llvm-gcc' that
     #    miscompiles Python.
 
-    # skip checks if the compiler was overridden with a CC env variable
+    # skip checks if the compiler was overriden with a CC env variable
     if 'CC' in os.environ:
         return _config_vars
 
@@ -193,7 +193,7 @@ def _find_appropriate_compiler(_config_vars):
     if cc != oldcc:
         # Found a replacement compiler.
         # Modify config vars using new compiler, if not already explicitly
-        # overridden by an env variable, preserving additional arguments.
+        # overriden by an env variable, preserving additional arguments.
         for cv in _COMPILER_CONFIG_VARS:
             if cv in _config_vars and cv not in os.environ:
                 cv_split = _config_vars[cv].split()
@@ -207,10 +207,10 @@ def _remove_universal_flags(_config_vars):
     """Remove all universal build arguments from config vars"""
 
     for cv in _UNIVERSAL_CONFIG_VARS:
-        # Do not alter a config var explicitly overridden by env var
+        # Do not alter a config var explicitly overriden by env var
         if cv in _config_vars and cv not in os.environ:
             flags = _config_vars[cv]
-            flags = re.sub('-arch\s+\w+\s', ' ', flags)
+            flags = re.sub('-arch\s+\w+\s', ' ', flags, re.ASCII)
             flags = re.sub('-isysroot [^ \t]*', ' ', flags)
             _save_modified_value(_config_vars, cv, flags)
 
@@ -228,7 +228,7 @@ def _remove_unsupported_archs(_config_vars):
     # build extensions on OSX 10.7 and later with the prebuilt
     # 32-bit installer on the python.org website.
 
-    # skip checks if the compiler was overridden with a CC env variable
+    # skip checks if the compiler was overriden with a CC env variable
     if 'CC' in os.environ:
         return _config_vars
 
@@ -244,7 +244,7 @@ def _remove_unsupported_archs(_config_vars):
             # across Xcode and compiler versions, there is no reliable way
             # to be sure why it failed.  Assume here it was due to lack of
             # PPC support and remove the related '-arch' flags from each
-            # config variables not explicitly overridden by an environment
+            # config variables not explicitly overriden by an environment
             # variable.  If the error was for some other reason, we hope the
             # failure will show up again when trying to compile an extension
             # module.
@@ -292,7 +292,7 @@ def _check_for_unavailable_sdk(_config_vars):
         sdk = m.group(1)
         if not os.path.exists(sdk):
             for cv in _UNIVERSAL_CONFIG_VARS:
-                # Do not alter a config var explicitly overridden by env var
+                # Do not alter a config var explicitly overriden by env var
                 if cv in _config_vars and cv not in os.environ:
                     flags = _config_vars[cv]
                     flags = re.sub(r'-isysroot\s+\S+(?:\s|$)', ' ', flags)
@@ -488,13 +488,13 @@ def get_platform_osx(_config_vars, osname, release, machine):
             # On OSX the machine type returned by uname is always the
             # 32-bit variant, even if the executable architecture is
             # the 64-bit variant
-            if sys.maxint >= 2**32:
+            if sys.maxsize >= 2**32:
                 machine = 'x86_64'
 
         elif machine in ('PowerPC', 'Power_Macintosh'):
             # Pick a sane name for the PPC architecture.
             # See 'i386' case
-            if sys.maxint >= 2**32:
+            if sys.maxsize >= 2**32:
                 machine = 'ppc64'
             else:
                 machine = 'ppc'

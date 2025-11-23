@@ -6,11 +6,11 @@
 /* --------------------------------------------------------------------------
 CAUTION
 
-Always use malloc() and free() directly in this file.  A number of these
-functions are advertised as safe to call when the GIL isn't held, and in
-a debug build Python redirects (e.g.) PyMem_NEW (etc) to Python's debugging
-obmalloc functions.  Those aren't thread-safe (they rely on the GIL to avoid
-the expense of doing their own locking).
+Always use PyMem_RawMalloc() and PyMem_RawFree() directly in this file.  A
+number of these functions are advertised as safe to call when the GIL isn't
+held, and in a debug build Python redirects (e.g.) PyMem_NEW (etc) to Python's
+debugging obmalloc functions.  Those aren't thread-safe (they rely on the GIL
+to avoid the expense of doing their own locking).
 -------------------------------------------------------------------------- */
 
 #ifdef HAVE_DLOPEN
@@ -46,7 +46,9 @@ static int autoTLSkey = 0;
 
 static PyInterpreterState *interp_head = NULL;
 
-PyThreadState *_PyThreadState_Current = NULL;
+/* Assuming the current thread holds the GIL, this is the
+   PyThreadState for the current thread. */
+_Py_atomic_address _PyThreadState_Current = {NULL};
 PyThreadFrameGetter _PyThreadState_GetFrame = NULL;
 
 #ifdef WITH_THREAD
@@ -58,7 +60,7 @@ PyInterpreterState *
 PyInterpreterState_New(void)
 {
     PyInterpreterState *interp = (PyInterpreterState *)
-                                 malloc(sizeof(PyInterpreterState));
+                                 PyMem_RawMalloc(sizeof(PyInterpreterState));
 
     if (interp != NULL) {
         HEAD_INIT();
@@ -67,13 +69,17 @@ PyInterpreterState_New(void)
             Py_FatalError("Can't initialize threads for interpreter");
 #endif
         interp->modules = NULL;
-        interp->modules_reloading = NULL;
+        interp->modules_by_index = NULL;
         interp->sysdict = NULL;
         interp->builtins = NULL;
+        interp->builtins_copy = NULL;
         interp->tstate_head = NULL;
         interp->codec_search_path = NULL;
         interp->codec_search_cache = NULL;
         interp->codec_error_registry = NULL;
+        interp->codecs_initialized = 0;
+        interp->fscodec_initialized = 0;
+        interp->importlib = NULL;
 #ifdef HAVE_DLOPEN
 #ifdef RTLD_NOW
         interp->dlopenflags = RTLD_NOW;
@@ -107,9 +113,11 @@ PyInterpreterState_Clear(PyInterpreterState *interp)
     Py_CLEAR(interp->codec_search_cache);
     Py_CLEAR(interp->codec_error_registry);
     Py_CLEAR(interp->modules);
-    Py_CLEAR(interp->modules_reloading);
+    Py_CLEAR(interp->modules_by_index);
     Py_CLEAR(interp->sysdict);
     Py_CLEAR(interp->builtins);
+    Py_CLEAR(interp->builtins_copy);
+    Py_CLEAR(interp->importlib);
 }
 
 
@@ -142,7 +150,13 @@ PyInterpreterState_Delete(PyInterpreterState *interp)
         Py_FatalError("PyInterpreterState_Delete: remaining threads");
     *p = interp->next;
     HEAD_UNLOCK();
-    free(interp);
+    PyMem_RawFree(interp);
+#ifdef WITH_THREAD
+    if (interp_head == NULL && head_mutex != NULL) {
+        PyThread_free_lock(head_mutex);
+        head_mutex = NULL;
+    }
+#endif
 }
 
 
@@ -156,7 +170,7 @@ threadstate_getframe(PyThreadState *self)
 static PyThreadState *
 new_threadstate(PyInterpreterState *interp, int init)
 {
-    PyThreadState *tstate = (PyThreadState *)malloc(sizeof(PyThreadState));
+    PyThreadState *tstate = (PyThreadState *)PyMem_RawMalloc(sizeof(PyThreadState));
 
     if (_PyThreadState_GetFrame == NULL)
         _PyThreadState_GetFrame = threadstate_getframe;
@@ -166,9 +180,10 @@ new_threadstate(PyInterpreterState *interp, int init)
 
         tstate->frame = NULL;
         tstate->recursion_depth = 0;
+        tstate->overflowed = 0;
+        tstate->recursion_critical = 0;
         tstate->tracing = 0;
         tstate->use_tracing = 0;
-        tstate->tick_counter = 0;
         tstate->gilstate_counter = 0;
         tstate->async_exc = NULL;
 #ifdef WITH_THREAD
@@ -194,12 +209,17 @@ new_threadstate(PyInterpreterState *interp, int init)
 
         tstate->trash_delete_nesting = 0;
         tstate->trash_delete_later = NULL;
+        tstate->on_delete = NULL;
+        tstate->on_delete_data = NULL;
 
         if (init)
             _PyThreadState_Init(tstate);
 
         HEAD_LOCK();
+        tstate->prev = NULL;
         tstate->next = interp->tstate_head;
+        if (tstate->next)
+            tstate->next->prev = tstate;
         interp->tstate_head = tstate;
         HEAD_UNLOCK();
     }
@@ -225,6 +245,107 @@ _PyThreadState_Init(PyThreadState *tstate)
 #ifdef WITH_THREAD
     _PyGILState_NoteThreadState(tstate);
 #endif
+}
+
+PyObject*
+PyState_FindModule(struct PyModuleDef* module)
+{
+    Py_ssize_t index = module->m_base.m_index;
+    PyInterpreterState *state = PyThreadState_GET()->interp;
+    PyObject *res;
+    if (index == 0)
+        return NULL;
+    if (state->modules_by_index == NULL)
+        return NULL;
+    if (index >= PyList_GET_SIZE(state->modules_by_index))
+        return NULL;
+    res = PyList_GET_ITEM(state->modules_by_index, index);
+    return res==Py_None ? NULL : res;
+}
+
+int
+_PyState_AddModule(PyObject* module, struct PyModuleDef* def)
+{
+    PyInterpreterState *state = PyThreadState_GET()->interp;
+    if (!def)
+        return -1;
+    if (!state->modules_by_index) {
+        state->modules_by_index = PyList_New(0);
+        if (!state->modules_by_index)
+            return -1;
+    }
+    while(PyList_GET_SIZE(state->modules_by_index) <= def->m_base.m_index)
+        if (PyList_Append(state->modules_by_index, Py_None) < 0)
+            return -1;
+    Py_INCREF(module);
+    return PyList_SetItem(state->modules_by_index,
+                          def->m_base.m_index, module);
+}
+
+int
+PyState_AddModule(PyObject* module, struct PyModuleDef* def)
+{
+    Py_ssize_t index;
+    PyInterpreterState *state = PyThreadState_GET()->interp;
+    if (!def) {
+        Py_FatalError("PyState_AddModule: Module Definition is NULL");
+        return -1;
+    }
+    index = def->m_base.m_index;
+    if (state->modules_by_index) {
+        if(PyList_GET_SIZE(state->modules_by_index) >= index) {
+            if(module == PyList_GET_ITEM(state->modules_by_index, index)) {
+                Py_FatalError("PyState_AddModule: Module already added!");
+                return -1;
+            }
+        }
+    }
+    return _PyState_AddModule(module, def);
+}
+
+int
+PyState_RemoveModule(struct PyModuleDef* def)
+{
+    Py_ssize_t index = def->m_base.m_index;
+    PyInterpreterState *state = PyThreadState_GET()->interp;
+    if (index == 0) {
+        Py_FatalError("PyState_RemoveModule: Module index invalid.");
+        return -1;
+    }
+    if (state->modules_by_index == NULL) {
+        Py_FatalError("PyState_RemoveModule: Interpreters module-list not acessible.");
+        return -1;
+    }
+    if (index > PyList_GET_SIZE(state->modules_by_index)) {
+        Py_FatalError("PyState_RemoveModule: Module index out of bounds.");
+        return -1;
+    }
+    return PyList_SetItem(state->modules_by_index, index, Py_None);
+}
+
+/* used by import.c:PyImport_Cleanup */
+void
+_PyState_ClearModules(void)
+{
+    PyInterpreterState *state = PyThreadState_GET()->interp;
+    if (state->modules_by_index) {
+        Py_ssize_t i;
+        for (i = 0; i < PyList_GET_SIZE(state->modules_by_index); i++) {
+            PyObject *m = PyList_GET_ITEM(state->modules_by_index, i);
+            if (PyModule_Check(m)) {
+                /* cleanup the saved copy of module dicts */
+                PyModuleDef *md = PyModule_GetDef(m);
+                if (md)
+                    Py_CLEAR(md->m_base.m_copy);
+            }
+        }
+        /* Setting modules_by_index to NULL could be dangerous, so we
+           clear the list instead. */
+        if (PyList_SetSlice(state->modules_by_index,
+                            0, PyList_GET_SIZE(state->modules_by_index),
+                            NULL))
+            PyErr_WriteUnraisable(state->modules_by_index);
+    }
 }
 
 void
@@ -259,50 +380,36 @@ static void
 tstate_delete_common(PyThreadState *tstate)
 {
     PyInterpreterState *interp;
-    PyThreadState **p;
-    PyThreadState *prev_p = NULL;
     if (tstate == NULL)
         Py_FatalError("PyThreadState_Delete: NULL tstate");
     interp = tstate->interp;
     if (interp == NULL)
         Py_FatalError("PyThreadState_Delete: NULL interp");
     HEAD_LOCK();
-    for (p = &interp->tstate_head; ; p = &(*p)->next) {
-        if (*p == NULL)
-            Py_FatalError(
-                "PyThreadState_Delete: invalid tstate");
-        if (*p == tstate)
-            break;
-        /* Sanity check.  These states should never happen but if
-         * they do we must abort.  Otherwise we'll end up spinning in
-         * in a tight loop with the lock held.  A similar check is done
-         * in thread.c find_key().  */
-        if (*p == prev_p)
-            Py_FatalError(
-                "PyThreadState_Delete: small circular list(!)"
-                " and tstate not found.");
-        prev_p = *p;
-        if ((*p)->next == interp->tstate_head)
-            Py_FatalError(
-                "PyThreadState_Delete: circular list(!) and"
-                " tstate not found.");
-    }
-    *p = tstate->next;
+    if (tstate->prev)
+        tstate->prev->next = tstate->next;
+    else
+        interp->tstate_head = tstate->next;
+    if (tstate->next)
+        tstate->next->prev = tstate->prev;
     HEAD_UNLOCK();
-    free(tstate);
+    if (tstate->on_delete != NULL) {
+        tstate->on_delete(tstate->on_delete_data);
+    }
+    PyMem_RawFree(tstate);
 }
 
 
 void
 PyThreadState_Delete(PyThreadState *tstate)
 {
-    if (tstate == _PyThreadState_Current)
+    if (tstate == _Py_atomic_load_relaxed(&_PyThreadState_Current))
         Py_FatalError("PyThreadState_Delete: tstate is still current");
-    tstate_delete_common(tstate);
 #ifdef WITH_THREAD
     if (autoInterpreterState && PyThread_get_key_value(autoTLSkey) == tstate)
         PyThread_delete_key_value(autoTLSkey);
 #endif /* WITH_THREAD */
+    tstate_delete_common(tstate);
 }
 
 
@@ -310,11 +417,12 @@ PyThreadState_Delete(PyThreadState *tstate)
 void
 PyThreadState_DeleteCurrent()
 {
-    PyThreadState *tstate = _PyThreadState_Current;
+    PyThreadState *tstate = (PyThreadState*)_Py_atomic_load_relaxed(
+        &_PyThreadState_Current);
     if (tstate == NULL)
         Py_FatalError(
             "PyThreadState_DeleteCurrent: no current tstate");
-    _PyThreadState_Current = NULL;
+    _Py_atomic_store_relaxed(&_PyThreadState_Current, NULL);
     if (autoInterpreterState && PyThread_get_key_value(autoTLSkey) == tstate)
         PyThread_delete_key_value(autoTLSkey);
     tstate_delete_common(tstate);
@@ -323,22 +431,62 @@ PyThreadState_DeleteCurrent()
 #endif /* WITH_THREAD */
 
 
+/*
+ * Delete all thread states except the one passed as argument.
+ * Note that, if there is a current thread state, it *must* be the one
+ * passed as argument.  Also, this won't touch any other interpreters
+ * than the current one, since we don't know which thread state should
+ * be kept in those other interpreteres.
+ */
+void
+_PyThreadState_DeleteExcept(PyThreadState *tstate)
+{
+    PyInterpreterState *interp = tstate->interp;
+    PyThreadState *p, *next, *garbage;
+    HEAD_LOCK();
+    /* Remove all thread states, except tstate, from the linked list of
+       thread states.  This will allow calling PyThreadState_Clear()
+       without holding the lock. */
+    garbage = interp->tstate_head;
+    if (garbage == tstate)
+        garbage = tstate->next;
+    if (tstate->prev)
+        tstate->prev->next = tstate->next;
+    if (tstate->next)
+        tstate->next->prev = tstate->prev;
+    tstate->prev = tstate->next = NULL;
+    interp->tstate_head = tstate;
+    HEAD_UNLOCK();
+    /* Clear and deallocate all stale thread states.  Even if this
+       executes Python code, we should be safe since it executes
+       in the current thread, not one of the stale threads. */
+    for (p = garbage; p; p = next) {
+        next = p->next;
+        PyThreadState_Clear(p);
+        PyMem_RawFree(p);
+    }
+}
+
+
 PyThreadState *
 PyThreadState_Get(void)
 {
-    if (_PyThreadState_Current == NULL)
+    PyThreadState *tstate = (PyThreadState*)_Py_atomic_load_relaxed(
+        &_PyThreadState_Current);
+    if (tstate == NULL)
         Py_FatalError("PyThreadState_Get: no current thread");
 
-    return _PyThreadState_Current;
+    return tstate;
 }
 
 
 PyThreadState *
 PyThreadState_Swap(PyThreadState *newts)
 {
-    PyThreadState *oldts = _PyThreadState_Current;
+    PyThreadState *oldts = (PyThreadState*)_Py_atomic_load_relaxed(
+        &_PyThreadState_Current);
 
-    _PyThreadState_Current = newts;
+    _Py_atomic_store_relaxed(&_PyThreadState_Current, newts);
     /* It should not be possible for more than one thread state
        to be used for a thread.  Check this the best we can in debug
        builds.
@@ -367,16 +515,18 @@ PyThreadState_Swap(PyThreadState *newts)
 PyObject *
 PyThreadState_GetDict(void)
 {
-    if (_PyThreadState_Current == NULL)
+    PyThreadState *tstate = (PyThreadState*)_Py_atomic_load_relaxed(
+        &_PyThreadState_Current);
+    if (tstate == NULL)
         return NULL;
 
-    if (_PyThreadState_Current->dict == NULL) {
+    if (tstate->dict == NULL) {
         PyObject *d;
-        _PyThreadState_Current->dict = d = PyDict_New();
+        tstate->dict = d = PyDict_New();
         if (d == NULL)
             PyErr_Clear();
     }
-    return _PyThreadState_Current->dict;
+    return tstate->dict;
 }
 
 
@@ -415,6 +565,7 @@ PyThreadState_SetAsyncExc(long id, PyObject *exc) {
             p->async_exc = exc;
             HEAD_UNLOCK();
             Py_XDECREF(old_exc);
+            _PyEval_SignalAsyncExc();
             return 1;
         }
     }
@@ -477,7 +628,7 @@ _PyThread_CurrentFrames(void)
             struct _frame *frame = t->frame;
             if (frame == NULL)
                 continue;
-            id = PyInt_FromLong(t->thread_id);
+            id = PyLong_FromLong(t->thread_id);
             if (id == NULL)
                 goto Fail;
             stat = PyDict_SetItem(result, id, (PyObject *)frame);
@@ -511,10 +662,7 @@ PyThreadState_IsCurrent(PyThreadState *tstate)
 {
     /* Must be the tstate for this thread */
     assert(PyGILState_GetThisThreadState()==tstate);
-    /* On Windows at least, simple reads and writes to 32 bit values
-       are atomic.
-    */
-    return tstate == _PyThreadState_Current;
+    return tstate == _Py_atomic_load_relaxed(&_PyThreadState_Current);
 }
 
 /* Internal initialization/finalization functions called by
@@ -525,6 +673,8 @@ _PyGILState_Init(PyInterpreterState *i, PyThreadState *t)
 {
     assert(i && t); /* must init with valid states */
     autoTLSkey = PyThread_create_key();
+    if (autoTLSkey == -1)
+        Py_FatalError("Could not allocate TLS entry");
     autoInterpreterState = i;
     assert(PyThread_get_key_value(autoTLSkey) == NULL);
     assert(t->gilstate_counter == 0);
@@ -537,6 +687,24 @@ _PyGILState_Fini(void)
 {
     PyThread_delete_key(autoTLSkey);
     autoInterpreterState = NULL;
+}
+
+/* Reset the TLS key - called by PyOS_AfterFork().
+ * This should not be necessary, but some - buggy - pthread implementations
+ * don't reset TLS upon fork(), see issue #10517.
+ */
+void
+_PyGILState_Reinit(void)
+{
+    PyThreadState *tstate = PyGILState_GetThisThreadState();
+    PyThread_delete_key(autoTLSkey);
+    if ((autoTLSkey = PyThread_create_key()) == -1)
+        Py_FatalError("Could not allocate TLS entry");
+
+    /* If the thread had an associated auto thread state, reassociate it with
+     * the new key. */
+    if (tstate && PyThread_set_key_value(autoTLSkey, (void *)tstate) < 0)
+        Py_FatalError("Couldn't create autoTLSkey mapping");
 }
 
 /* When a thread state is created for a thread by some mechanism other than
@@ -557,18 +725,18 @@ _PyGILState_NoteThreadState(PyThreadState* tstate)
 
        The only situation where you can legitimately have more than one
        thread state for an OS level thread is when there are multiple
-       interpreters, when:
+       interpreters.
 
-           a) You shouldn't really be using the PyGILState_ APIs anyway,
-          and:
+       You shouldn't really be using the PyGILState_ APIs anyway (see issues
+       #10915 and #15751).
 
-           b) The slightly odd way PyThread_set_key_value works (see
-          comments by its implementation) means that the first thread
-          state created for that given OS level thread will "win",
-          which seems reasonable behaviour.
+       The first thread state created for that given OS level thread will
+       "win", which seems reasonable behaviour.
     */
-    if (PyThread_set_key_value(autoTLSkey, (void *)tstate) < 0)
-        Py_FatalError("Couldn't create autoTLSkey mapping");
+    if (PyThread_get_key_value(autoTLSkey) == NULL) {
+        if (PyThread_set_key_value(autoTLSkey, (void *)tstate) < 0)
+            Py_FatalError("Couldn't create autoTLSkey mapping");
+    }
 
     /* PyGILState_Release must not try to delete this thread state. */
     tstate->gilstate_counter = 1;
@@ -583,13 +751,20 @@ PyGILState_GetThisThreadState(void)
     return (PyThreadState *)PyThread_get_key_value(autoTLSkey);
 }
 
+int
+PyGILState_Check(void)
+{
+    /* can't use PyThreadState_Get() since it will assert that it has the GIL */
+    PyThreadState *tstate = (PyThreadState*)_Py_atomic_load_relaxed(
+        &_PyThreadState_Current);
+    return tstate && (tstate == PyGILState_GetThisThreadState());
+}
+
 PyGILState_STATE
 PyGILState_Ensure(void)
 {
     int current;
     PyThreadState *tcur;
-    int need_init_threads = 0;
-
     /* Note that we do not auto-init Python here - apart from
        potential races with 2 threads auto-initializing, pep-311
        spells out other issues.  Embedders are expected to have
@@ -598,7 +773,10 @@ PyGILState_Ensure(void)
     assert(autoInterpreterState); /* Py_Initialize() hasn't been called! */
     tcur = (PyThreadState *)PyThread_get_key_value(autoTLSkey);
     if (tcur == NULL) {
-        need_init_threads = 1;
+        /* At startup, Python has no concrete GIL. If PyGILState_Ensure() is
+           called from a new thread for the first time, we need the create the
+           GIL. */
+        PyEval_InitThreads();
 
         /* Create a new thread state for this thread */
         tcur = PyThreadState_New(autoInterpreterState);
@@ -609,28 +787,16 @@ PyGILState_Ensure(void)
         tcur->gilstate_counter = 0;
         current = 0; /* new thread state is never current */
     }
-    else {
+    else
         current = PyThreadState_IsCurrent(tcur);
-    }
-
-    if (current == 0) {
+    if (current == 0)
         PyEval_RestoreThread(tcur);
-    }
-
     /* Update our counter in the thread-state - no need for locks:
        - tcur will remain valid as we hold the GIL.
        - the counter is safe as we are the only thread "allowed"
          to modify this value
     */
     ++tcur->gilstate_counter;
-
-    if (need_init_threads) {
-        /* At startup, Python has no concrete GIL. If PyGILState_Ensure() is
-           called from a new thread for the first time, we need the create the
-           GIL. */
-        PyEval_InitThreads();
-    }
-
     return current ? PyGILState_LOCKED : PyGILState_UNLOCKED;
 }
 

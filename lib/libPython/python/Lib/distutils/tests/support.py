@@ -6,25 +6,16 @@ import tempfile
 import unittest
 import sysconfig
 from copy import deepcopy
-import warnings
 
 from distutils import log
 from distutils.log import DEBUG, INFO, WARN, ERROR, FATAL
 from distutils.core import Distribution
 
 
-def capture_warnings(func):
-    def _capture_warnings(*args, **kw):
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            return func(*args, **kw)
-    return _capture_warnings
-
-
 class LoggingSilencer(object):
 
     def setUp(self):
-        super(LoggingSilencer, self).setUp()
+        super().setUp()
         self.threshold = log.set_threshold(log.FATAL)
         # catching warnings
         # when log will be replaced by logging
@@ -36,19 +27,20 @@ class LoggingSilencer(object):
     def tearDown(self):
         log.set_threshold(self.threshold)
         log.Log._log = self._old_log
-        super(LoggingSilencer, self).tearDown()
+        super().tearDown()
 
     def _log(self, level, msg, args):
         if level not in (DEBUG, INFO, WARN, ERROR, FATAL):
             raise ValueError('%s wrong log level' % str(level))
+        if not isinstance(msg, str):
+            raise TypeError("msg should be str, not '%.200s'"
+                            % (type(msg).__name__))
         self.logs.append((level, msg, args))
 
     def get_logs(self, *levels):
         def _format(msg, args):
-            if len(args) == 0:
-                return msg
             return msg % args
-        return [_format(msg, args) for level, msg, args
+        return [msg % args for level, msg, args
                 in self.logs if level in levels]
 
     def clear_logs(self):
@@ -62,7 +54,7 @@ class TempdirManager(object):
     """
 
     def setUp(self):
-        super(TempdirManager, self).setUp()
+        super().setUp()
         self.old_cwd = os.getcwd()
         self.tempdirs = []
 
@@ -70,7 +62,7 @@ class TempdirManager(object):
         # Restore working dir, for Solaris and derivatives, where rmdir()
         # on the current directory fails.
         os.chdir(self.old_cwd)
-        super(TempdirManager, self).tearDown()
+        super().tearDown()
         while self.tempdirs:
             d = self.tempdirs.pop()
             shutil.rmtree(d, os.name in ('nt', 'cygwin'))
@@ -138,7 +130,7 @@ class EnvironGuard(object):
             if os.environ.get(key) != value:
                 os.environ[key] = value
 
-        for key in os.environ.keys():
+        for key in tuple(os.environ.keys()):
             if key not in self.old_environ:
                 del os.environ[key]
 
@@ -165,8 +157,6 @@ def copy_xxmodule_c(directory):
 
 
 def _get_xxmodule_path():
-    # FIXME when run from regrtest, srcdir seems to be '.', which does not help
-    # us find the xxmodule.c file
     srcdir = sysconfig.get_config_var('srcdir')
     candidates = [
         # use installed copy if available
@@ -186,10 +176,9 @@ def _get_xxmodule_path():
 def fixup_build_ext(cmd):
     """Function needed to make build_ext tests pass.
 
-    When Python was build with --enable-shared on Unix, -L. is not good
-    enough to find the libpython<blah>.so.  This is because regrtest runs
-    it under a tempdir, not in the top level where the .so lives.  By the
-    time we've gotten here, Python's already been chdir'd to the tempdir.
+    When Python was built with --enable-shared on Unix, -L. is not enough to
+    find libpython<blah>.so, because regrtest runs in a tempdir, not in the
+    source directory where the .so lives.
 
     When Python was built with in debug mode on Windows, build_ext commands
     need their debug attribute set, and it is not done automatically for

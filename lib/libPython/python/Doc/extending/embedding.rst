@@ -35,9 +35,6 @@ stdio file pointer and a file name (for identification in error messages only)
 to :c:func:`PyRun_SimpleFile`.  You can also call the lower-level operations
 described in the previous chapters to construct and use Python objects.
 
-A simple demo of embedding Python can be found in the directory
-:file:`Demo/embed/` of the source distribution.
-
 
 .. seealso::
 
@@ -64,7 +61,7 @@ perform some operation on a file. ::
      Py_SetProgramName(argv[0]);  /* optional but recommended */
      Py_Initialize();
      PyRun_SimpleString("from time import time,ctime\n"
-                        "print 'Today is',ctime(time())\n");
+                        "print('Today is', ctime(time()))\n");
      Py_Finalize();
      return 0;
    }
@@ -139,21 +136,20 @@ The code to run a function defined in a Python script is:
 
 This code loads a Python script using ``argv[1]``, and calls the function named
 in ``argv[2]``.  Its integer arguments are the other values of the ``argv``
-array.  If you compile and link this program (let's call the finished executable
-:program:`call`), and use it to execute a Python script, such as:
+array.  If you :ref:`compile and link <compiling>` this program (let's call
+the finished executable :program:`call`), and use it to execute a Python
+script, such as:
 
 .. code-block:: python
 
    def multiply(a,b):
-       print "Will compute", a, "times", b
+       print("Will compute", a, "times", b)
        c = 0
        for i in range(0, a):
            c = c + b
        return c
 
-then the result should be:
-
-.. code-block:: shell-session
+then the result should be::
 
    $ call multiply multiply 3 2
    Will compute 3 times 2
@@ -164,13 +160,13 @@ for data conversion between Python and C, and for error reporting.  The
 interesting part with respect to embedding Python starts with ::
 
    Py_Initialize();
-   pName = PyString_FromString(argv[1]);
+   pName = PyUnicode_FromString(argv[1]);
    /* Error checking of pName left out */
    pModule = PyImport_Import(pName);
 
 After initializing the interpreter, the script is loaded using
 :c:func:`PyImport_Import`.  This routine needs a Python string as its argument,
-which is constructed using the :c:func:`PyString_FromString` data conversion
+which is constructed using the :c:func:`PyUnicode_FromString` data conversion
 routine. ::
 
    pFunc = PyObject_GetAttrString(pModule, argv[2]);
@@ -216,7 +212,7 @@ Python extension.  For example::
    {
        if(!PyArg_ParseTuple(args, ":numargs"))
            return NULL;
-       return Py_BuildValue("i", numargs);
+       return PyLong_FromLong(numargs);
    }
 
    static PyMethodDef EmbMethods[] = {
@@ -225,11 +221,22 @@ Python extension.  For example::
        {NULL, NULL, 0, NULL}
    };
 
+   static PyModuleDef EmbModule = {
+       PyModuleDef_HEAD_INIT, "emb", NULL, -1, EmbMethods,
+       NULL, NULL, NULL, NULL
+   };
+
+   static PyObject*
+   PyInit_emb(void)
+   {
+       return PyModule_Create(&EmbModule);
+   }
+
 Insert the above code just above the :c:func:`main` function. Also, insert the
-following two statements directly after :c:func:`Py_Initialize`::
+following two statements before the call to :c:func:`Py_Initialize`::
 
    numargs = argc;
-   Py_InitModule("emb", EmbMethods);
+   PyImport_AppendInittab("emb", &PyInit_emb);
 
 These two lines initialize the ``numargs`` variable, and make the
 :func:`emb.numargs` function accessible to the embedded Python interpreter.
@@ -238,7 +245,7 @@ With these extensions, the Python script can do things like
 .. code-block:: python
 
    import emb
-   print "Number of arguments", emb.numargs()
+   print("Number of arguments", emb.numargs())
 
 In a real application, the methods will expose an API of the application to
 Python.
@@ -258,7 +265,7 @@ write the main program in C++, and use the C++ compiler to compile and link your
 program.  There is no need to recompile Python itself using C++.
 
 
-.. _link-reqs:
+.. _compiling:
 
 Compiling and Linking under Unix-like systems
 =============================================
@@ -271,25 +278,21 @@ it.
 
 To find out the required compiler and linker flags, you can execute the
 :file:`python{X.Y}-config` script which is generated as part of the
-installation process (a :file:`python-config` script may also be
+installation process (a :file:`python3-config` script may also be
 available).  This script has several options, of which the following will
 be directly useful to you:
 
 * ``pythonX.Y-config --cflags`` will give you the recommended flags when
-  compiling:
+  compiling::
 
-  .. code-block:: shell-session
-
-     $ /opt/bin/python2.7-config --cflags
-     -I/opt/include/python2.7 -fno-strict-aliasing -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes
+   $ /opt/bin/python3.4-config --cflags
+   -I/opt/include/python3.4m -I/opt/include/python3.4m -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes
 
 * ``pythonX.Y-config --ldflags`` will give you the recommended flags when
-  linking:
+  linking::
 
-  .. code-block:: shell-session
-
-     $ /opt/bin/python2.7-config --ldflags
-     -L/opt/lib/python2.7/config -lpthread -ldl -lutil -lm -lpython2.7 -Xlinker -export-dynamic
+   $ /opt/bin/python3.4-config --ldflags
+   -L/opt/lib/python3.4/config-3.4m -lpthread -ldl -lutil -lm -lpython3.4m -Xlinker -export-dynamic
 
 .. note::
    To avoid confusion between several Python installations (and especially

@@ -31,7 +31,6 @@ import tempfile
 import time
 import tokenize
 import traceback
-import types
 
 def reset():
     """Return a string that resets the CGI and browser to a known state."""
@@ -102,7 +101,7 @@ def scanvars(reader, frame, locals):
 def html(einfo, context=5):
     """Return a nice HTML document describing a given traceback."""
     etype, evalue, etb = einfo
-    if type(etype) is types.ClassType:
+    if isinstance(etype, type):
         etype = etype.__name__
     pyver = 'Python ' + sys.version.split()[0] + ': ' + sys.executable
     date = time.ctime(time.time())
@@ -125,7 +124,7 @@ function calls leading up to the error, in the order they occurred.</p>'''
         args, varargs, varkw, locals = inspect.getargvalues(frame)
         call = ''
         if func != '?':
-            call = 'in ' + strong(pydoc.html.escape(func)) + \
+            call = 'in ' + strong(func) + \
                 inspect.formatargvalues(args, varargs, varkw, locals,
                     formatvalue=lambda value: '=' + pydoc.html.repr(value))
 
@@ -172,11 +171,10 @@ function calls leading up to the error, in the order they occurred.</p>'''
 
     exception = ['<p>%s: %s' % (strong(pydoc.html.escape(str(etype))),
                                 pydoc.html.escape(str(evalue)))]
-    if isinstance(evalue, BaseException):
-        for name in dir(evalue):
-            if name[:1] == '_': continue
-            value = pydoc.html.repr(getattr(evalue, name))
-            exception.append('\n<br>%s%s&nbsp;=\n%s' % (indent, name, value))
+    for name in dir(evalue):
+        if name[:1] == '_': continue
+        value = pydoc.html.repr(getattr(evalue, name))
+        exception.append('\n<br>%s%s&nbsp;=\n%s' % (indent, name, value))
 
     return head + ''.join(frames) + ''.join(exception) + '''
 
@@ -193,7 +191,7 @@ function calls leading up to the error, in the order they occurred.</p>'''
 def text(einfo, context=5):
     """Return a plain text document describing a given traceback."""
     etype, evalue, etb = einfo
-    if type(etype) is types.ClassType:
+    if isinstance(etype, type):
         etype = etype.__name__
     pyver = 'Python ' + sys.version.split()[0] + ': ' + sys.executable
     date = time.ctime(time.time())
@@ -243,10 +241,9 @@ function calls leading up to the error, in the order they occurred.
         frames.append('\n%s\n' % '\n'.join(rows))
 
     exception = ['%s: %s' % (str(etype), str(evalue))]
-    if isinstance(evalue, BaseException):
-        for name in dir(evalue):
-            value = pydoc.text.repr(getattr(evalue, name))
-            exception.append('\n%s%s = %s' % (" "*4, name, value))
+    for name in dir(evalue):
+        value = pydoc.text.repr(getattr(evalue, name))
+        exception.append('\n%s%s = %s' % (" "*4, name, value))
 
     return head + ''.join(frames) + ''.join(exception) + '''
 
@@ -285,7 +282,7 @@ class Hook:
 
         if self.display:
             if plain:
-                doc = pydoc.html.escape(doc)
+                doc = doc.replace('&', '&amp;').replace('<', '&lt;')
                 self.file.write('<pre>' + doc + '</pre>\n')
             else:
                 self.file.write(doc + '\n')

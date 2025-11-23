@@ -8,6 +8,8 @@ the PythonShell window, and a Format menu which is only present in the Editor
 windows.
 
 """
+from importlib.util import find_spec
+
 from idlelib.configHandler import idleConf
 
 #   Warning: menudefs is altered in macosxSupport.overrideRootMenu()
@@ -67,8 +69,6 @@ menudefs = [
  ('shell', [
    ('_View Last Restart', '<<view-restart>>'),
    ('_Restart Shell', '<<restart-shell>>'),
-   None,
-   ('_Interrupt Execution', '<<interrupt-execution>>'),
    ]),
  ('debug', [
    ('_Go to File/Line', '<<goto-file-line>>'),
@@ -87,5 +87,8 @@ menudefs = [
    ('Python _Docs', '<<python-docs>>'),
    ]),
 ]
+
+if find_spec('turtledemo'):
+    menudefs[-1][1].append(('Turtle Demo', '<<open-turtle-demo>>'))
 
 default_keydefs = idleConf.GetCurrentKeySet()

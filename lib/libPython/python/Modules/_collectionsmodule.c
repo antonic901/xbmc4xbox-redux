@@ -19,16 +19,14 @@
 #define CENTER ((BLOCKLEN - 1) / 2)
 
 /* A `dequeobject` is composed of a doubly-linked list of `block` nodes.
- * This list is not circular (the leftmost block has leftlink==NULL,
- * and the rightmost block has rightlink==NULL).  A deque d's first
- * element is at d.leftblock[leftindex] and its last element is at
- * d.rightblock[rightindex]; note that, unlike as for Python slice
- * indices, these indices are inclusive on both ends.  By being inclusive
- * on both ends, algorithms for left and right operations become
- * symmetrical which simplifies the design.
- *
  * The list of blocks is never empty, so d.leftblock and d.rightblock
- * are never equal to NULL.
+ * are never equal to NULL.  The list is not circular.
+ *
+ * A deque d's first element is at d.leftblock[leftindex]
+ * and its last element is at d.rightblock[rightindex].
+ * Unlike Python slice indices, these indices are inclusive
+ * on both ends.  This makes the algorithms for left and
+ * right operations more symmetrical and simplifies the design.
  *
  * The indices, d.leftindex and d.rightindex are always in the range
  *     0 <= index < BLOCKLEN.
@@ -48,38 +46,61 @@
  */
 
 typedef struct BLOCK {
+    struct BLOCK *leftlink;
     PyObject *data[BLOCKLEN];
     struct BLOCK *rightlink;
-    struct BLOCK *leftlink;
 } block;
+
+/* For debug builds, add error checking to track the endpoints
+ * in the chain of links.  The goal is to make sure that link
+ * assignments only take place at endpoints so that links already
+ * in use do not get overwritten.
+ *
+ * CHECK_END should happen before each assignment to a block's link field.
+ * MARK_END should happen whenever a link field becomes a new endpoint.
+ * This happens when new blocks are added or whenever an existing
+ * block is freed leaving another existing block as the new endpoint.
+ */
+
+#ifndef NDEBUG
+#define MARK_END(link)  link = NULL;
+#define CHECK_END(link) assert(link == NULL);
+#define CHECK_NOT_END(link) assert(link != NULL);
+#else
+#define MARK_END(link)
+#define CHECK_END(link)
+#define CHECK_NOT_END(link)
+#endif
+
+/* A simple freelisting scheme is used to minimize calls to the memory
+   allocator.  It accomodates common use cases where new blocks are being
+   added at about the same rate as old blocks are being freed.
+ */
 
 #define MAXFREEBLOCKS 10
 static Py_ssize_t numfreeblocks = 0;
 static block *freeblocks[MAXFREEBLOCKS];
 
 static block *
-newblock(block *leftlink, block *rightlink, Py_ssize_t len) {
+newblock(Py_ssize_t len) {
     block *b;
-    /* To prevent len from overflowing PY_SSIZE_T_MAX on 32-bit machines, we
-     * refuse to allocate new blocks if the current len is nearing overflow. */
+    /* To prevent len from overflowing PY_SSIZE_T_MAX, we refuse to
+     * allocate new blocks if the current len is nearing overflow. */
     if (len >= PY_SSIZE_T_MAX - 2*BLOCKLEN) {
         PyErr_SetString(PyExc_OverflowError,
                         "cannot add more blocks to the deque");
         return NULL;
     }
     if (numfreeblocks) {
-        numfreeblocks -= 1;
-        b = freeblocks[numfreeblocks];
-    } else {
-        b = PyMem_Malloc(sizeof(block));
-        if (b == NULL) {
-            PyErr_NoMemory();
-            return NULL;
-        }
+        numfreeblocks--;
+        return freeblocks[numfreeblocks];
     }
-    b->leftlink = leftlink;
-    b->rightlink = rightlink;
-    return b;
+    b = PyMem_Malloc(sizeof(block));
+    if (b != NULL) {
+        return b;
+    }
+    PyErr_NoMemory();
+    return NULL;
 }
 
 static void
@@ -94,13 +115,12 @@ freeblock(block *b)
 }
 
 typedef struct {
-    PyObject_HEAD
+    PyObject_VAR_HEAD
     block *leftblock;
     block *rightblock;
     Py_ssize_t leftindex;       /* in range(BLOCKLEN) */
     Py_ssize_t rightindex;      /* in range(BLOCKLEN) */
-    Py_ssize_t len;
-    long state;         /* incremented whenever the indices move */
+    long state;                 /* incremented whenever the indices move */
     Py_ssize_t maxlen;
     PyObject *weakreflist; /* List of weak references */
 } dequeobject;
@@ -115,9 +135,9 @@ typedef struct {
  */
 
 #define TRIM(d, popfunction)                                    \
-    if (d->maxlen != -1 && d->len > d->maxlen) {                \
+    if (d->maxlen != -1 && Py_SIZE(d) > d->maxlen) {       \
         PyObject *rv = popfunction(d, NULL);                \
-        assert(rv != NULL  &&  d->len <= d->maxlen);        \
+        assert(rv != NULL  &&  Py_SIZE(d) <= d->maxlen);    \
         Py_DECREF(rv);                                      \
     }
 
@@ -134,18 +154,20 @@ deque_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     if (deque == NULL)
         return NULL;
 
-    b = newblock(NULL, NULL, 0);
+    b = newblock(0);
     if (b == NULL) {
         Py_DECREF(deque);
         return NULL;
     }
+    MARK_END(b->leftlink);
+    MARK_END(b->rightlink);
 
     assert(BLOCKLEN >= 2);
     deque->leftblock = b;
     deque->rightblock = b;
     deque->leftindex = CENTER + 1;
     deque->rightindex = CENTER;
-    deque->len = 0;
+    Py_SIZE(deque) = 0;
     deque->state = 0;
     deque->weakreflist = NULL;
     deque->maxlen = -1;
@@ -159,17 +181,17 @@ deque_pop(dequeobject *deque, PyObject *unused)
     PyObject *item;
     block *prevblock;
 
-    if (deque->len == 0) {
+    if (Py_SIZE(deque) == 0) {
         PyErr_SetString(PyExc_IndexError, "pop from an empty deque");
         return NULL;
     }
     item = deque->rightblock->data[deque->rightindex];
     deque->rightindex--;
-    deque->len--;
+    Py_SIZE(deque)--;
     deque->state++;
 
     if (deque->rightindex == -1) {
-        if (deque->len == 0) {
+        if (Py_SIZE(deque) == 0) {
             assert(deque->leftblock == deque->rightblock);
             assert(deque->leftindex == deque->rightindex+1);
             /* re-center instead of freeing a block */
@@ -179,7 +201,8 @@ deque_pop(dequeobject *deque, PyObject *unused)
             prevblock = deque->rightblock->leftlink;
             assert(deque->leftblock != deque->rightblock);
             freeblock(deque->rightblock);
-            prevblock->rightlink = NULL;
+            CHECK_NOT_END(prevblock);
+            MARK_END(prevblock->rightlink);
             deque->rightblock = prevblock;
             deque->rightindex = BLOCKLEN - 1;
         }
@@ -195,18 +218,18 @@ deque_popleft(dequeobject *deque, PyObject *unused)
     PyObject *item;
     block *prevblock;
 
-    if (deque->len == 0) {
+    if (Py_SIZE(deque) == 0) {
         PyErr_SetString(PyExc_IndexError, "pop from an empty deque");
         return NULL;
     }
     assert(deque->leftblock != NULL);
     item = deque->leftblock->data[deque->leftindex];
     deque->leftindex++;
-    deque->len--;
+    Py_SIZE(deque)--;
     deque->state++;
 
     if (deque->leftindex == BLOCKLEN) {
-        if (deque->len == 0) {
+        if (Py_SIZE(deque) == 0) {
             assert(deque->leftblock == deque->rightblock);
             assert(deque->leftindex == deque->rightindex+1);
             /* re-center instead of freeing a block */
@@ -216,8 +239,8 @@ deque_popleft(dequeobject *deque, PyObject *unused)
             assert(deque->leftblock != deque->rightblock);
             prevblock = deque->leftblock->rightlink;
             freeblock(deque->leftblock);
-            assert(prevblock != NULL);
-            prevblock->leftlink = NULL;
+            CHECK_NOT_END(prevblock);
+            MARK_END(prevblock->leftlink);
             deque->leftblock = prevblock;
             deque->leftindex = 0;
         }
@@ -232,16 +255,18 @@ deque_append(dequeobject *deque, PyObject *item)
 {
     deque->state++;
     if (deque->rightindex == BLOCKLEN-1) {
-        block *b = newblock(deque->rightblock, NULL, deque->len);
+        block *b = newblock(Py_SIZE(deque));
         if (b == NULL)
             return NULL;
-        assert(deque->rightblock->rightlink == NULL);
+        b->leftlink = deque->rightblock;
+        CHECK_END(deque->rightblock->rightlink);
         deque->rightblock->rightlink = b;
         deque->rightblock = b;
+        MARK_END(b->rightlink);
         deque->rightindex = -1;
     }
     Py_INCREF(item);
-    deque->len++;
+    Py_SIZE(deque)++;
     deque->rightindex++;
     deque->rightblock->data[deque->rightindex] = item;
     TRIM(deque, deque_popleft);
@@ -255,16 +280,18 @@ deque_appendleft(dequeobject *deque, PyObject *item)
 {
     deque->state++;
     if (deque->leftindex == 0) {
-        block *b = newblock(NULL, deque->leftblock, deque->len);
+        block *b = newblock(Py_SIZE(deque));
         if (b == NULL)
             return NULL;
-        assert(deque->leftblock->leftlink == NULL);
+        b->rightlink = deque->leftblock;
+        CHECK_END(deque->leftblock->leftlink);
         deque->leftblock->leftlink = b;
         deque->leftblock = b;
+        MARK_END(b->leftlink);
         deque->leftindex = BLOCKLEN;
     }
     Py_INCREF(item);
-    deque->len++;
+    Py_SIZE(deque)++;
     deque->leftindex--;
     deque->leftblock->data[deque->leftindex] = item;
     TRIM(deque, deque_pop);
@@ -306,6 +333,14 @@ deque_extend(dequeobject *deque, PyObject *iterable)
         return result;
     }
 
+    /* Space saving heuristic.  Start filling from the left */
+    if (Py_SIZE(deque) == 0) {
+        assert(deque->leftblock == deque->rightblock);
+        assert(deque->leftindex == deque->rightindex+1);
+        deque->leftindex = 1;
+        deque->rightindex = 0;
+    }
+
     it = PyObject_GetIter(iterable);
     if (it == NULL)
         return NULL;
@@ -316,19 +351,20 @@ deque_extend(dequeobject *deque, PyObject *iterable)
     while ((item = PyIter_Next(it)) != NULL) {
         deque->state++;
         if (deque->rightindex == BLOCKLEN-1) {
-            block *b = newblock(deque->rightblock, NULL,
-                                deque->len);
+            block *b = newblock(Py_SIZE(deque));
             if (b == NULL) {
                 Py_DECREF(item);
                 Py_DECREF(it);
                 return NULL;
             }
-            assert(deque->rightblock->rightlink == NULL);
+            b->leftlink = deque->rightblock;
+            CHECK_END(deque->rightblock->rightlink);
             deque->rightblock->rightlink = b;
             deque->rightblock = b;
+            MARK_END(b->rightlink);
             deque->rightindex = -1;
         }
-        deque->len++;
+        Py_SIZE(deque)++;
         deque->rightindex++;
         deque->rightblock->data[deque->rightindex] = item;
         TRIM(deque, deque_popleft);
@@ -358,6 +394,14 @@ deque_extendleft(dequeobject *deque, PyObject *iterable)
         return result;
     }
 
+    /* Space saving heuristic.  Start filling from the right */
+    if (Py_SIZE(deque) == 0) {
+        assert(deque->leftblock == deque->rightblock);
+        assert(deque->leftindex == deque->rightindex+1);
+        deque->leftindex = BLOCKLEN - 1;
+        deque->rightindex = BLOCKLEN - 2;
+    }
+
     it = PyObject_GetIter(iterable);
     if (it == NULL)
         return NULL;
@@ -368,19 +412,20 @@ deque_extendleft(dequeobject *deque, PyObject *iterable)
     while ((item = PyIter_Next(it)) != NULL) {
         deque->state++;
         if (deque->leftindex == 0) {
-            block *b = newblock(NULL, deque->leftblock,
-                                deque->len);
+            block *b = newblock(Py_SIZE(deque));
             if (b == NULL) {
                 Py_DECREF(item);
                 Py_DECREF(it);
                 return NULL;
             }
-            assert(deque->leftblock->leftlink == NULL);
+            b->rightlink = deque->leftblock;
+            CHECK_END(deque->leftblock->leftlink);
             deque->leftblock->leftlink = b;
             deque->leftblock = b;
+            MARK_END(b->leftlink);
             deque->leftindex = BLOCKLEN;
         }
-        deque->len++;
+        Py_SIZE(deque)++;
         deque->leftindex--;
         deque->leftblock->data[deque->leftindex] = item;
         TRIM(deque, deque_pop);
@@ -410,7 +455,13 @@ deque_inplace_concat(dequeobject *deque, PyObject *other)
 static int
 _deque_rotate(dequeobject *deque, Py_ssize_t n)
 {
-    Py_ssize_t m, len=deque->len, halflen=len>>1;
+    block *b = NULL;
+    block *leftblock = deque->leftblock;
+    block *rightblock = deque->rightblock;
+    Py_ssize_t leftindex = deque->leftindex;
+    Py_ssize_t rightindex = deque->rightindex;
+    Py_ssize_t len=Py_SIZE(deque), halflen=len>>1;
+    int rv = -1;
 
     if (len <= 1)
         return 0;
@@ -426,76 +477,103 @@ _deque_rotate(dequeobject *deque, Py_ssize_t n)
 
     deque->state++;
     while (n > 0) {
-        if (deque->leftindex == 0) {
-            block *b = newblock(NULL, deque->leftblock, len);
-            if (b == NULL)
-                return -1;
-            assert(deque->leftblock->leftlink == NULL);
-            deque->leftblock->leftlink = b;
-            deque->leftblock = b;
-            deque->leftindex = BLOCKLEN;
+        if (leftindex == 0) {
+            if (b == NULL) {
+                b = newblock(len);
+                if (b == NULL)
+                    goto done;
+            }
+            b->rightlink = leftblock;
+            CHECK_END(leftblock->leftlink);
+            leftblock->leftlink = b;
+            leftblock = b;
+            MARK_END(b->leftlink);
+            leftindex = BLOCKLEN;
+            b = NULL;
         }
-        assert(deque->leftindex > 0);
+        assert(leftindex > 0);
+        {
+            PyObject **src, **dest;
+            Py_ssize_t m = n;
 
-        m = n;
-        if (m > deque->rightindex + 1)
-            m = deque->rightindex + 1;
-        if (m > deque->leftindex)
-            m = deque->leftindex;
-        assert (m > 0 && m <= len);
-        memcpy(&deque->leftblock->data[deque->leftindex - m],
-               &deque->rightblock->data[deque->rightindex + 1 - m],
-               m * sizeof(PyObject *));
-        deque->rightindex -= m;
-        deque->leftindex -= m;
-        n -= m;
-
-        if (deque->rightindex == -1) {
-            block *prevblock = deque->rightblock->leftlink;
-            assert(deque->rightblock != NULL);
-            assert(deque->leftblock != deque->rightblock);
-            freeblock(deque->rightblock);
-            prevblock->rightlink = NULL;
-            deque->rightblock = prevblock;
-            deque->rightindex = BLOCKLEN - 1;
+            if (m > rightindex + 1)
+                m = rightindex + 1;
+            if (m > leftindex)
+                m = leftindex;
+            assert (m > 0 && m <= len);
+            src = &rightblock->data[rightindex];
+            dest = &leftblock->data[leftindex - 1];
+            rightindex -= m;
+            leftindex -= m;
+            n -= m;
+            do {
+                *(dest--) = *(src--);
+            } while (--m);
+        }
+        if (rightindex == -1) {
+            assert(leftblock != rightblock);
+            assert(b == NULL);
+            b = rightblock;
+            CHECK_NOT_END(rightblock->leftlink);
+            rightblock = rightblock->leftlink;
+            MARK_END(rightblock->rightlink);
+            rightindex = BLOCKLEN - 1;
         }
     }
     while (n < 0) {
-        if (deque->rightindex == BLOCKLEN - 1) {
-            block *b = newblock(deque->rightblock, NULL, len);
-            if (b == NULL)
-                return -1;
-            assert(deque->rightblock->rightlink == NULL);
-            deque->rightblock->rightlink = b;
-            deque->rightblock = b;
-            deque->rightindex = -1;
+        if (rightindex == BLOCKLEN - 1) {
+            if (b == NULL) {
+                b = newblock(len);
+                if (b == NULL)
+                    goto done;
+            }
+            b->leftlink = rightblock;
+            CHECK_END(rightblock->rightlink);
+            rightblock->rightlink = b;
+            rightblock = b;
+            MARK_END(b->rightlink);
+            rightindex = -1;
+            b = NULL;
         }
-        assert (deque->rightindex < BLOCKLEN - 1);
+        assert (rightindex < BLOCKLEN - 1);
+        {
+            PyObject **src, **dest;
+            Py_ssize_t m = -n;
 
-        m = -n;
-        if (m > BLOCKLEN - deque->leftindex)
-            m = BLOCKLEN - deque->leftindex;
-        if (m > BLOCKLEN - 1 - deque->rightindex)
-            m = BLOCKLEN - 1 - deque->rightindex;
-        assert (m > 0 && m <= len);
-        memcpy(&deque->rightblock->data[deque->rightindex + 1],
-               &deque->leftblock->data[deque->leftindex],
-               m * sizeof(PyObject *));
-        deque->leftindex += m;
-        deque->rightindex += m;
-        n += m;
-
-        if (deque->leftindex == BLOCKLEN) {
-            block *nextblock = deque->leftblock->rightlink;
-            assert(deque->leftblock != deque->rightblock);
-            freeblock(deque->leftblock);
-            assert(nextblock != NULL);
-            nextblock->leftlink = NULL;
-            deque->leftblock = nextblock;
-            deque->leftindex = 0;
+            if (m > BLOCKLEN - leftindex)
+                m = BLOCKLEN - leftindex;
+            if (m > BLOCKLEN - 1 - rightindex)
+                m = BLOCKLEN - 1 - rightindex;
+            assert (m > 0 && m <= len);
+            src = &leftblock->data[leftindex];
+            dest = &rightblock->data[rightindex + 1];
+            leftindex += m;
+            rightindex += m;
+            n += m;
+            do {
+                *(dest++) = *(src++);
+            } while (--m);
+        }
+        if (leftindex == BLOCKLEN) {
+            assert(leftblock != rightblock);
+            assert(b == NULL);
+            b = leftblock;
+            CHECK_NOT_END(leftblock->rightlink);
+            leftblock = leftblock->rightlink;
+            MARK_END(leftblock->leftlink);
+            leftindex = 0;
         }
     }
-    return 0;
+    rv = 0;
+done:
+    if (b != NULL)
+        freeblock(b);
+    deque->leftblock = leftblock;
+    deque->rightblock = rightblock;
+    deque->leftindex = leftindex;
+    deque->rightindex = rightindex;
+
+    return rv;
 }
 
 static PyObject *
@@ -520,13 +598,15 @@ deque_reverse(dequeobject *deque, PyObject *unused)
     block *rightblock = deque->rightblock;
     Py_ssize_t leftindex = deque->leftindex;
     Py_ssize_t rightindex = deque->rightindex;
-    Py_ssize_t n = (deque->len)/2;
+    Py_ssize_t n = (Py_SIZE(deque))/2;
     Py_ssize_t i;
     PyObject *tmp;
 
     for (i=0 ; i<n ; i++) {
         /* Validate that pointers haven't met in the middle */
         assert(leftblock != rightblock || leftindex < rightindex);
+        CHECK_NOT_END(leftblock);
+        CHECK_NOT_END(rightblock);
 
         /* Swap */
         tmp = leftblock->data[leftindex];
@@ -536,8 +616,6 @@ deque_reverse(dequeobject *deque, PyObject *unused)
         /* Advance left block/index pair */
         leftindex++;
         if (leftindex == BLOCKLEN) {
-            if (leftblock->rightlink == NULL)
-                break;
             leftblock = leftblock->rightlink;
             leftindex = 0;
         }
@@ -545,8 +623,6 @@ deque_reverse(dequeobject *deque, PyObject *unused)
         /* Step backwards with the right block/index pair */
         rightindex--;
         if (rightindex == -1) {
-            if (rightblock->leftlink == NULL)
-                break;
             rightblock = rightblock->leftlink;
             rightindex = BLOCKLEN - 1;
         }
@@ -560,9 +636,9 @@ PyDoc_STRVAR(reverse_doc,
 static PyObject *
 deque_count(dequeobject *deque, PyObject *v)
 {
-    block *leftblock = deque->leftblock;
-    Py_ssize_t leftindex = deque->leftindex;
-    Py_ssize_t n = deque->len;
+    block *b = deque->leftblock;
+    Py_ssize_t index = deque->leftindex;
+    Py_ssize_t n = Py_SIZE(deque);
     Py_ssize_t i;
     Py_ssize_t count = 0;
     PyObject *item;
@@ -570,7 +646,8 @@ deque_count(dequeobject *deque, PyObject *v)
     int cmp;
 
     for (i=0 ; i<n ; i++) {
-        item = leftblock->data[leftindex];
+        CHECK_NOT_END(b);
+        item = b->data[index];
         cmp = PyObject_RichCompareBool(item, v, Py_EQ);
         if (cmp > 0)
             count++;
@@ -584,15 +661,13 @@ deque_count(dequeobject *deque, PyObject *v)
         }
 
         /* Advance left block/index pair */
-        leftindex++;
-        if (leftindex == BLOCKLEN) {
-            if (leftblock->rightlink == NULL)  /* can occur when i==n-1 */
-                break;
-            leftblock = leftblock->rightlink;
-            leftindex = 0;
+        index++;
+        if (index == BLOCKLEN) {
+            b = b->rightlink;
+            index = 0;
         }
     }
-    return PyInt_FromSsize_t(count);
+    return PyLong_FromSsize_t(count);
 }
 
 PyDoc_STRVAR(count_doc,
@@ -601,19 +676,19 @@ PyDoc_STRVAR(count_doc,
 static Py_ssize_t
 deque_len(dequeobject *deque)
 {
-    return deque->len;
+    return Py_SIZE(deque);
 }
 
 static PyObject *
 deque_remove(dequeobject *deque, PyObject *value)
 {
-    Py_ssize_t i, n=deque->len;
+    Py_ssize_t i, n=Py_SIZE(deque);
 
     for (i=0 ; i<n ; i++) {
         PyObject *item = deque->leftblock->data[deque->leftindex];
         int cmp = PyObject_RichCompareBool(item, value, Py_EQ);
 
-        if (deque->len != n) {
+        if (Py_SIZE(deque) != n) {
             PyErr_SetString(PyExc_IndexError,
                 "deque mutated during remove().");
             return NULL;
@@ -639,77 +714,19 @@ deque_remove(dequeobject *deque, PyObject *value)
 PyDoc_STRVAR(remove_doc,
 "D.remove(value) -- remove first occurrence of value.");
 
-static int
+static void
 deque_clear(dequeobject *deque)
 {
-    block *b;
-    block *prevblock;
-    block *leftblock;
-    Py_ssize_t leftindex;
-    Py_ssize_t n;
     PyObject *item;
 
-    if (deque->len == 0)
-        return 0;
-
-    /* During the process of clearing a deque, decrefs can cause the
-       deque to mutate.  To avoid fatal confusion, we have to make the
-       deque empty before clearing the blocks and never refer to
-       anything via deque->ref while clearing.  (This is the same
-       technique used for clearing lists, sets, and dicts.)
-
-       Making the deque empty requires allocating a new empty block.  In
-       the unlikely event that memory is full, we fall back to an
-       alternate method that doesn't require a new block.  Repeating
-       pops in a while-loop is slower, possibly re-entrant (and a clever
-       adversary could cause it to never terminate).
-    */
-
-    b = newblock(NULL, NULL, 0);
-    if (b == NULL) {
-        PyErr_Clear();
-        goto alternate_method;
-    }
-
-    /* Remember the old size, leftblock, and leftindex */
-    leftblock = deque->leftblock;
-    leftindex = deque->leftindex;
-    n = deque->len;
-
-    /* Set the deque to be empty using the newly allocated block */
-    deque->len = 0;
-    deque->leftblock = b;
-    deque->rightblock = b;
-    deque->leftindex = CENTER + 1;
-    deque->rightindex = CENTER;
-    deque->state++;
-
-    /* Now the old size, leftblock, and leftindex are disconnected from
-       the empty deque and we can use them to decref the pointers.
-    */
-    while (n--) {
-        item = leftblock->data[leftindex];
-        Py_DECREF(item);
-        leftindex++;
-        if (leftindex == BLOCKLEN && n) {
-            assert(leftblock->rightlink != NULL);
-            prevblock = leftblock;
-            leftblock = leftblock->rightlink;
-            leftindex = 0;
-            freeblock(prevblock);
-        }
-    }
-    assert(leftblock->rightlink == NULL);
-    freeblock(leftblock);
-    return 0;
-
-  alternate_method:
-    while (deque->len) {
+    while (Py_SIZE(deque)) {
         item = deque_pop(deque, NULL);
         assert (item != NULL);
         Py_DECREF(item);
     }
-    return 0;
+    assert(deque->leftblock == deque->rightblock &&
+           deque->leftindex - 1 == deque->rightindex &&
+           Py_SIZE(deque) == 0);
 }
 
 static PyObject *
@@ -719,7 +736,7 @@ deque_item(dequeobject *deque, Py_ssize_t i)
     PyObject *item;
     Py_ssize_t n, index=i;
 
-    if (i < 0 || i >= deque->len) {
+    if (i < 0 || i >= Py_SIZE(deque)) {
         PyErr_SetString(PyExc_IndexError,
                         "deque index out of range");
         return NULL;
@@ -728,19 +745,19 @@ deque_item(dequeobject *deque, Py_ssize_t i)
     if (i == 0) {
         i = deque->leftindex;
         b = deque->leftblock;
-    } else if (i == deque->len - 1) {
+    } else if (i == Py_SIZE(deque) - 1) {
         i = deque->rightindex;
         b = deque->rightblock;
     } else {
         i += deque->leftindex;
         n = i / BLOCKLEN;
         i %= BLOCKLEN;
-        if (index < (deque->len >> 1)) {
+        if (index < (Py_SIZE(deque) >> 1)) {
             b = deque->leftblock;
             while (n--)
                 b = b->rightlink;
         } else {
-            n = (deque->leftindex + deque->len - 1) / BLOCKLEN - n;
+            n = (deque->leftindex + Py_SIZE(deque) - 1) / BLOCKLEN - n;
             b = deque->rightblock;
             while (n--)
                 b = b->leftlink;
@@ -764,7 +781,7 @@ deque_del_item(dequeobject *deque, Py_ssize_t i)
     PyObject *item;
     int rv;
 
-    assert (i >= 0 && i < deque->len);
+    assert (i >= 0 && i < Py_SIZE(deque));
     if (_deque_rotate(deque, -i))
         return -1;
     item = deque_popleft(deque, NULL);
@@ -779,7 +796,7 @@ deque_ass_item(dequeobject *deque, Py_ssize_t i, PyObject *v)
 {
     PyObject *old_value;
     block *b;
-    Py_ssize_t n, len=deque->len, halflen=(len+1)>>1, index=i;
+    Py_ssize_t n, len=Py_SIZE(deque), halflen=(len+1)>>1, index=i;
 
     if (i < 0 || i >= len) {
         PyErr_SetString(PyExc_IndexError,
@@ -842,16 +859,16 @@ deque_traverse(dequeobject *deque, visitproc visit, void *arg)
     Py_ssize_t index;
     Py_ssize_t indexlo = deque->leftindex;
 
-    for (b = deque->leftblock; b != NULL; b = b->rightlink) {
-        const Py_ssize_t indexhi = b == deque->rightblock ?
-                                 deque->rightindex :
-                     BLOCKLEN - 1;
-
-        for (index = indexlo; index <= indexhi; ++index) {
+    for (b = deque->leftblock; b != deque->rightblock; b = b->rightlink) {
+        for (index = indexlo; index < BLOCKLEN ; index++) {
             item = b->data[index];
             Py_VISIT(item);
         }
         indexlo = 0;
+    }
+    for (index = indexlo; index <= deque->rightindex; index++) {
+        item = b->data[index];
+        Py_VISIT(item);
     }
     return 0;
 }
@@ -859,20 +876,11 @@ deque_traverse(dequeobject *deque, visitproc visit, void *arg)
 static PyObject *
 deque_copy(PyObject *deque)
 {
-    PyObject *result;
     if (((dequeobject *)deque)->maxlen == -1)
-        result = PyObject_CallFunction((PyObject *)(Py_TYPE(deque)), "O", deque, NULL);
+        return PyObject_CallFunction((PyObject *)(Py_TYPE(deque)), "O", deque, NULL);
     else
-        result = PyObject_CallFunction((PyObject *)(Py_TYPE(deque)), "Oi",
+        return PyObject_CallFunction((PyObject *)(Py_TYPE(deque)), "Oi",
             deque, ((dequeobject *)deque)->maxlen, NULL);
-    if (result != NULL && !PyObject_TypeCheck(result, &deque_type)) {
-        PyErr_Format(PyExc_TypeError,
-                     "%.200s() must return a deque, not %.200s",
-                     Py_TYPE(deque)->tp_name, Py_TYPE(result)->tp_name);
-        Py_DECREF(result);
-        return NULL;
-    }
-    return result;
 }
 
 PyDoc_STRVAR(copy_doc, "Return a shallow copy of a deque.");
@@ -881,8 +889,9 @@ static PyObject *
 deque_reduce(dequeobject *deque)
 {
     PyObject *dict, *result, *aslist;
+    _Py_IDENTIFIER(__dict__);
 
-    dict = PyObject_GetAttrString((PyObject *)deque, "__dict__");
+    dict = _PyObject_GetAttrId((PyObject *)deque, &PyId___dict__);
     if (dict == NULL)
         PyErr_Clear();
     aslist = PySequence_List((PyObject *)deque);
@@ -911,14 +920,14 @@ PyDoc_STRVAR(reduce_doc, "Return state information for pickling.");
 static PyObject *
 deque_repr(PyObject *deque)
 {
-    PyObject *aslist, *result, *fmt;
+    PyObject *aslist, *result;
     int i;
 
     i = Py_ReprEnter(deque);
     if (i != 0) {
         if (i < 0)
             return NULL;
-        return PyString_FromString("[...]");
+        return PyUnicode_FromString("[...]");
     }
 
     aslist = PySequence_List(deque);
@@ -927,72 +936,14 @@ deque_repr(PyObject *deque)
         return NULL;
     }
     if (((dequeobject *)deque)->maxlen != -1)
-        fmt = PyString_FromFormat("deque(%%r, maxlen=%zd)",
-                                ((dequeobject *)deque)->maxlen);
+
+        result = PyUnicode_FromFormat("deque(%R, maxlen=%zd)",
+                                      aslist, ((dequeobject *)deque)->maxlen);
     else
-        fmt = PyString_FromString("deque(%r)");
-    if (fmt == NULL) {
-        Py_DECREF(aslist);
-        Py_ReprLeave(deque);
-        return NULL;
-    }
-    result = PyString_Format(fmt, aslist);
-    Py_DECREF(fmt);
+        result = PyUnicode_FromFormat("deque(%R)", aslist);
     Py_DECREF(aslist);
     Py_ReprLeave(deque);
     return result;
-}
-
-static int
-deque_tp_print(PyObject *deque, FILE *fp, int flags)
-{
-    PyObject *it, *item;
-    char *emit = "";            /* No separator emitted on first pass */
-    char *separator = ", ";
-    int i;
-
-    i = Py_ReprEnter(deque);
-    if (i != 0) {
-        if (i < 0)
-            return i;
-        Py_BEGIN_ALLOW_THREADS
-        fputs("[...]", fp);
-        Py_END_ALLOW_THREADS
-        return 0;
-    }
-
-    it = PyObject_GetIter(deque);
-    if (it == NULL)
-        return -1;
-
-    Py_BEGIN_ALLOW_THREADS
-    fputs("deque([", fp);
-    Py_END_ALLOW_THREADS
-    while ((item = PyIter_Next(it)) != NULL) {
-        Py_BEGIN_ALLOW_THREADS
-        fputs(emit, fp);
-        Py_END_ALLOW_THREADS
-        emit = separator;
-        if (PyObject_Print(item, fp, 0) != 0) {
-            Py_DECREF(item);
-            Py_DECREF(it);
-            Py_ReprLeave(deque);
-            return -1;
-        }
-        Py_DECREF(item);
-    }
-    Py_ReprLeave(deque);
-    Py_DECREF(it);
-    if (PyErr_Occurred())
-        return -1;
-
-    Py_BEGIN_ALLOW_THREADS
-    if (((dequeobject *)deque)->maxlen == -1)
-        fputs("])", fp);
-    else
-        fprintf(fp, "], maxlen=%" PY_FORMAT_SIZE_T "d)", ((dequeobject *)deque)->maxlen);
-    Py_END_ALLOW_THREADS
-    return 0;
 }
 
 static PyObject *
@@ -1004,13 +955,12 @@ deque_richcompare(PyObject *v, PyObject *w, int op)
 
     if (!PyObject_TypeCheck(v, &deque_type) ||
         !PyObject_TypeCheck(w, &deque_type)) {
-        Py_INCREF(Py_NotImplemented);
-        return Py_NotImplemented;
+        Py_RETURN_NOTIMPLEMENTED;
     }
 
     /* Shortcuts */
-    vs = ((dequeobject *)v)->len;
-    ws = ((dequeobject *)w)->len;
+    vs = Py_SIZE((dequeobject *)v);
+    ws = Py_SIZE((dequeobject *)w);
     if (op == Py_EQ) {
         if (v == w)
             Py_RETURN_TRUE;
@@ -1085,7 +1035,7 @@ deque_init(dequeobject *deque, PyObject *args, PyObject *kwdargs)
     if (!PyArg_ParseTupleAndKeywords(args, kwdargs, "|OO:deque", kwlist, &iterable, &maxlenobj))
         return -1;
     if (maxlenobj != NULL && maxlenobj != Py_None) {
-        maxlen = PyInt_AsSsize_t(maxlenobj);
+        maxlen = PyLong_AsSsize_t(maxlenobj);
         if (maxlen == -1 && PyErr_Occurred())
             return -1;
         if (maxlen < 0) {
@@ -1094,8 +1044,7 @@ deque_init(dequeobject *deque, PyObject *args, PyObject *kwdargs)
         }
     }
     deque->maxlen = maxlen;
-    if (deque->len > 0)
-        deque_clear(deque);
+    deque_clear(deque);
     if (iterable != NULL) {
         PyObject *rv = deque_extend(deque, iterable);
         if (rv == NULL)
@@ -1111,9 +1060,9 @@ deque_sizeof(dequeobject *deque, void *unused)
     Py_ssize_t res;
     Py_ssize_t blocks;
 
-    res = _PyObject_SIZE(Py_TYPE(deque));
-    blocks = (deque->leftindex + deque->len + BLOCKLEN - 1) / BLOCKLEN;
-    assert(deque->leftindex + deque->len - 1 ==
+    res = sizeof(dequeobject);
+    blocks = (deque->leftindex + Py_SIZE(deque) + BLOCKLEN - 1) / BLOCKLEN;
+    assert(deque->leftindex + Py_SIZE(deque) - 1 ==
            (blocks - 1) * BLOCKLEN + deque->rightindex);
     res += blocks * sizeof(block);
     return PyLong_FromSsize_t(res);
@@ -1127,7 +1076,7 @@ deque_get_maxlen(dequeobject *deque)
 {
     if (deque->maxlen == -1)
         Py_RETURN_NONE;
-    return PyInt_FromSsize_t(deque->maxlen);
+    return PyLong_FromSsize_t(deque->maxlen);
 }
 
 static PyGetSetDef deque_getset[] = {
@@ -1203,32 +1152,32 @@ static PyTypeObject deque_type = {
     0,                                  /* tp_itemsize */
     /* methods */
     (destructor)deque_dealloc,          /* tp_dealloc */
-    deque_tp_print,                     /* tp_print */
+    0,                                  /* tp_print */
     0,                                  /* tp_getattr */
     0,                                  /* tp_setattr */
-    0,                                  /* tp_compare */
+    0,                                  /* tp_reserved */
     deque_repr,                         /* tp_repr */
     0,                                  /* tp_as_number */
     &deque_as_sequence,                 /* tp_as_sequence */
     0,                                  /* tp_as_mapping */
-    (hashfunc)PyObject_HashNotImplemented,      /* tp_hash */
+    PyObject_HashNotImplemented,        /* tp_hash */
     0,                                  /* tp_call */
     0,                                  /* tp_str */
     PyObject_GenericGetAttr,            /* tp_getattro */
     0,                                  /* tp_setattro */
     0,                                  /* tp_as_buffer */
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC |
-        Py_TPFLAGS_HAVE_WEAKREFS,               /* tp_flags */
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
+                                        /* tp_flags */
     deque_doc,                          /* tp_doc */
     (traverseproc)deque_traverse,       /* tp_traverse */
     (inquiry)deque_clear,               /* tp_clear */
     (richcmpfunc)deque_richcompare,     /* tp_richcompare */
-    offsetof(dequeobject, weakreflist),         /* tp_weaklistoffset*/
+    offsetof(dequeobject, weakreflist), /* tp_weaklistoffset*/
     (getiterfunc)deque_iter,            /* tp_iter */
     0,                                  /* tp_iternext */
     deque_methods,                      /* tp_methods */
     0,                                  /* tp_members */
-    deque_getset,       /* tp_getset */
+    deque_getset,                       /* tp_getset */
     0,                                  /* tp_base */
     0,                                  /* tp_dict */
     0,                                  /* tp_descr_get */
@@ -1266,7 +1215,7 @@ deque_iter(dequeobject *deque)
     Py_INCREF(deque);
     it->deque = deque;
     it->state = deque->state;
-    it->counter = deque->len;
+    it->counter = Py_SIZE(deque);
     PyObject_GC_Track(it);
     return (PyObject *)it;
 }
@@ -1281,8 +1230,6 @@ dequeiter_traverse(dequeiterobject *dio, visitproc visit, void *arg)
 static void
 dequeiter_dealloc(dequeiterobject *dio)
 {
-    /* bpo-31095: UnTrack is needed before calling any callbacks */
-    PyObject_GC_UnTrack(dio);
     Py_XDECREF(dio->deque);
     PyObject_GC_Del(dio);
 }
@@ -1307,7 +1254,7 @@ dequeiter_next(dequeiterobject *it)
     it->index++;
     it->counter--;
     if (it->index == BLOCKLEN && it->counter > 0) {
-        assert (it->b->rightlink != NULL);
+        CHECK_NOT_END(it->b->rightlink);
         it->b = it->b->rightlink;
         it->index = 0;
     }
@@ -1316,21 +1263,57 @@ dequeiter_next(dequeiterobject *it)
 }
 
 static PyObject *
+dequeiter_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    Py_ssize_t i, index=0;
+    PyObject *deque;
+    dequeiterobject *it;
+    if (!PyArg_ParseTuple(args, "O!|n", &deque_type, &deque, &index))
+        return NULL;
+    assert(type == &dequeiter_type);
+
+    it = (dequeiterobject*)deque_iter((dequeobject *)deque);
+    if (!it)
+        return NULL;
+    /* consume items from the queue */
+    for(i=0; i<index; i++) {
+        PyObject *item = dequeiter_next(it);
+        if (item) {
+            Py_DECREF(item);
+        } else {
+            if (it->counter) {
+                Py_DECREF(it);
+                return NULL;
+            } else
+                break;
+        }
+    }
+    return (PyObject*)it;
+}
+
+static PyObject *
 dequeiter_len(dequeiterobject *it)
 {
-    return PyInt_FromLong(it->counter);
+    return PyLong_FromSsize_t(it->counter);
 }
 
 PyDoc_STRVAR(length_hint_doc, "Private method returning an estimate of len(list(it)).");
 
+static PyObject *
+dequeiter_reduce(dequeiterobject *it)
+{
+    return Py_BuildValue("O(On)", Py_TYPE(it), it->deque, Py_SIZE(it->deque) - it->counter);
+}
+
 static PyMethodDef dequeiter_methods[] = {
     {"__length_hint__", (PyCFunction)dequeiter_len, METH_NOARGS, length_hint_doc},
+    {"__reduce__", (PyCFunction)dequeiter_reduce, METH_NOARGS, reduce_doc},
     {NULL,              NULL}           /* sentinel */
 };
 
 static PyTypeObject dequeiter_type = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "deque_iterator",                           /* tp_name */
+    "_collections._deque_iterator",              /* tp_name */
     sizeof(dequeiterobject),                    /* tp_basicsize */
     0,                                          /* tp_itemsize */
     /* methods */
@@ -1338,7 +1321,7 @@ static PyTypeObject dequeiter_type = {
     0,                                          /* tp_print */
     0,                                          /* tp_getattr */
     0,                                          /* tp_setattr */
-    0,                                          /* tp_compare */
+    0,                                          /* tp_reserved */
     0,                                          /* tp_repr */
     0,                                          /* tp_as_number */
     0,                                          /* tp_as_sequence */
@@ -1358,6 +1341,16 @@ static PyTypeObject dequeiter_type = {
     PyObject_SelfIter,                          /* tp_iter */
     (iternextfunc)dequeiter_next,               /* tp_iternext */
     dequeiter_methods,                          /* tp_methods */
+    0,                                          /* tp_members */
+    0,                                          /* tp_getset */
+    0,                                          /* tp_base */
+    0,                                          /* tp_dict */
+    0,                                          /* tp_descr_get */
+    0,                                          /* tp_descr_set */
+    0,                                          /* tp_dictoffset */
+    0,                                          /* tp_init */
+    0,                                          /* tp_alloc */
+    dequeiter_new,                              /* tp_new */
     0,
 };
 
@@ -1378,7 +1371,7 @@ deque_reviter(dequeobject *deque)
     Py_INCREF(deque);
     it->deque = deque;
     it->state = deque->state;
-    it->counter = deque->len;
+    it->counter = Py_SIZE(deque);
     PyObject_GC_Track(it);
     return (PyObject *)it;
 }
@@ -1403,7 +1396,7 @@ dequereviter_next(dequeiterobject *it)
     it->index--;
     it->counter--;
     if (it->index == -1 && it->counter > 0) {
-        assert (it->b->leftlink != NULL);
+        CHECK_NOT_END(it->b->leftlink);
         it->b = it->b->leftlink;
         it->index = BLOCKLEN - 1;
     }
@@ -1411,9 +1404,38 @@ dequereviter_next(dequeiterobject *it)
     return item;
 }
 
+static PyObject *
+dequereviter_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    Py_ssize_t i, index=0;
+    PyObject *deque;
+    dequeiterobject *it;
+    if (!PyArg_ParseTuple(args, "O!|n", &deque_type, &deque, &index))
+        return NULL;
+    assert(type == &dequereviter_type);
+
+    it = (dequeiterobject*)deque_reviter((dequeobject *)deque);
+    if (!it)
+        return NULL;
+    /* consume items from the queue */
+    for(i=0; i<index; i++) {
+        PyObject *item = dequereviter_next(it);
+        if (item) {
+            Py_DECREF(item);
+        } else {
+            if (it->counter) {
+                Py_DECREF(it);
+                return NULL;
+            } else
+                break;
+        }
+    }
+    return (PyObject*)it;
+}
+
 static PyTypeObject dequereviter_type = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "deque_reverse_iterator",                   /* tp_name */
+    "_collections._deque_reverse_iterator",      /* tp_name */
     sizeof(dequeiterobject),                    /* tp_basicsize */
     0,                                          /* tp_itemsize */
     /* methods */
@@ -1421,7 +1443,7 @@ static PyTypeObject dequereviter_type = {
     0,                                          /* tp_print */
     0,                                          /* tp_getattr */
     0,                                          /* tp_setattr */
-    0,                                          /* tp_compare */
+    0,                                          /* tp_reserved */
     0,                                          /* tp_repr */
     0,                                          /* tp_as_number */
     0,                                          /* tp_as_sequence */
@@ -1441,6 +1463,16 @@ static PyTypeObject dequereviter_type = {
     PyObject_SelfIter,                          /* tp_iter */
     (iternextfunc)dequereviter_next,            /* tp_iternext */
     dequeiter_methods,                          /* tp_methods */
+    0,                                          /* tp_members */
+    0,                                          /* tp_getset */
+    0,                                          /* tp_base */
+    0,                                          /* tp_dict */
+    0,                                          /* tp_descr_get */
+    0,                                          /* tp_descr_set */
+    0,                                          /* tp_dictoffset */
+    0,                                          /* tp_init */
+    0,                                          /* tp_alloc */
+    dequereviter_new,                           /* tp_new */
     0,
 };
 
@@ -1527,20 +1559,30 @@ defdict_reduce(defdictobject *dd)
     */
     PyObject *args;
     PyObject *items;
+    PyObject *iter;
     PyObject *result;
+    _Py_IDENTIFIER(items);
+
     if (dd->default_factory == NULL || dd->default_factory == Py_None)
         args = PyTuple_New(0);
     else
         args = PyTuple_Pack(1, dd->default_factory);
     if (args == NULL)
         return NULL;
-    items = PyObject_CallMethod((PyObject *)dd, "iteritems", "()");
+    items = _PyObject_CallMethodId((PyObject *)dd, &PyId_items, "()");
     if (items == NULL) {
         Py_DECREF(args);
         return NULL;
     }
+    iter = PyObject_GetIter(items);
+    if (iter == NULL) {
+        Py_DECREF(items);
+        Py_DECREF(args);
+        return NULL;
+    }
     result = PyTuple_Pack(5, Py_TYPE(dd), args,
-                          Py_None, Py_None, items);
+                          Py_None, Py_None, iter);
+    Py_DECREF(iter);
     Py_DECREF(items);
     Py_DECREF(args);
     return result;
@@ -1568,47 +1610,21 @@ static PyMemberDef defdict_members[] = {
 static void
 defdict_dealloc(defdictobject *dd)
 {
-    /* bpo-31095: UnTrack is needed before calling any callbacks */
-    PyObject_GC_UnTrack(dd);
     Py_CLEAR(dd->default_factory);
     PyDict_Type.tp_dealloc((PyObject *)dd);
-}
-
-static int
-defdict_print(defdictobject *dd, FILE *fp, int flags)
-{
-    int sts;
-    Py_BEGIN_ALLOW_THREADS
-    fprintf(fp, "defaultdict(");
-    Py_END_ALLOW_THREADS
-    if (dd->default_factory == NULL) {
-        Py_BEGIN_ALLOW_THREADS
-        fprintf(fp, "None");
-        Py_END_ALLOW_THREADS
-    } else {
-        PyObject_Print(dd->default_factory, fp, 0);
-    }
-    Py_BEGIN_ALLOW_THREADS
-    fprintf(fp, ", ");
-    Py_END_ALLOW_THREADS
-    sts = PyDict_Type.tp_print((PyObject *)dd, fp, 0);
-    Py_BEGIN_ALLOW_THREADS
-    fprintf(fp, ")");
-    Py_END_ALLOW_THREADS
-    return sts;
 }
 
 static PyObject *
 defdict_repr(defdictobject *dd)
 {
-    PyObject *defrepr;
     PyObject *baserepr;
+    PyObject *defrepr;
     PyObject *result;
     baserepr = PyDict_Type.tp_repr((PyObject *)dd);
     if (baserepr == NULL)
         return NULL;
     if (dd->default_factory == NULL)
-        defrepr = PyString_FromString("None");
+        defrepr = PyUnicode_FromString("None");
     else
     {
         int status = Py_ReprEnter(dd->default_factory);
@@ -1617,7 +1633,7 @@ defdict_repr(defdictobject *dd)
                 Py_DECREF(baserepr);
                 return NULL;
             }
-            defrepr = PyString_FromString("...");
+            defrepr = PyUnicode_FromString("...");
         }
         else
             defrepr = PyObject_Repr(dd->default_factory);
@@ -1627,9 +1643,8 @@ defdict_repr(defdictobject *dd)
         Py_DECREF(baserepr);
         return NULL;
     }
-    result = PyString_FromFormat("defaultdict(%s, %s)",
-                                 PyString_AS_STRING(defrepr),
-                                 PyString_AS_STRING(baserepr));
+    result = PyUnicode_FromFormat("defaultdict(%U, %U)",
+                                  defrepr, baserepr);
     Py_DECREF(defrepr);
     Py_DECREF(baserepr);
     return result;
@@ -1701,10 +1716,10 @@ static PyTypeObject defdict_type = {
     0,                                  /* tp_itemsize */
     /* methods */
     (destructor)defdict_dealloc,        /* tp_dealloc */
-    (printfunc)defdict_print,           /* tp_print */
+    0,                                  /* tp_print */
     0,                                  /* tp_getattr */
     0,                                  /* tp_setattr */
-    0,                                  /* tp_compare */
+    0,                                  /* tp_reserved */
     (reprfunc)defdict_repr,             /* tp_repr */
     0,                                  /* tp_as_number */
     0,                                  /* tp_as_sequence */
@@ -1715,8 +1730,8 @@ static PyTypeObject defdict_type = {
     PyObject_GenericGetAttr,            /* tp_getattro */
     0,                                  /* tp_setattro */
     0,                                  /* tp_as_buffer */
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC |
-        Py_TPFLAGS_HAVE_WEAKREFS,               /* tp_flags */
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
+                                    /* tp_flags */
     defdict_doc,                        /* tp_doc */
     defdict_traverse,                   /* tp_traverse */
     (inquiry)defdict_tp_clear,          /* tp_clear */
@@ -1738,6 +1753,107 @@ static PyTypeObject defdict_type = {
     PyObject_GC_Del,                    /* tp_free */
 };
 
+/* helper function for Counter  *********************************************/
+
+PyDoc_STRVAR(_count_elements_doc,
+"_count_elements(mapping, iterable) -> None\n\
+\n\
+Count elements in the iterable, updating the mappping");
+
+static PyObject *
+_count_elements(PyObject *self, PyObject *args)
+{
+    _Py_IDENTIFIER(get);
+    _Py_IDENTIFIER(__setitem__);
+    PyObject *it, *iterable, *mapping, *oldval;
+    PyObject *newval = NULL;
+    PyObject *key = NULL;
+    PyObject *zero = NULL;
+    PyObject *one = NULL;
+    PyObject *bound_get = NULL;
+    PyObject *mapping_get;
+    PyObject *dict_get;
+    PyObject *mapping_setitem;
+    PyObject *dict_setitem;
+
+    if (!PyArg_UnpackTuple(args, "_count_elements", 2, 2, &mapping, &iterable))
+        return NULL;
+
+    it = PyObject_GetIter(iterable);
+    if (it == NULL)
+        return NULL;
+
+    one = PyLong_FromLong(1);
+    if (one == NULL)
+        goto done;
+
+    /* Only take the fast path when get() and __setitem__()
+     * have not been overridden.
+     */
+    mapping_get = _PyType_LookupId(Py_TYPE(mapping), &PyId_get);
+    dict_get = _PyType_LookupId(&PyDict_Type, &PyId_get);
+    mapping_setitem = _PyType_LookupId(Py_TYPE(mapping), &PyId___setitem__);
+    dict_setitem = _PyType_LookupId(&PyDict_Type, &PyId___setitem__);
+
+    if (mapping_get != NULL && mapping_get == dict_get &&
+        mapping_setitem != NULL && mapping_setitem == dict_setitem) {
+        while (1) {
+            key = PyIter_Next(it);
+            if (key == NULL)
+                break;
+            oldval = PyDict_GetItem(mapping, key);
+            if (oldval == NULL) {
+                if (PyDict_SetItem(mapping, key, one) == -1)
+                    break;
+            } else {
+                newval = PyNumber_Add(oldval, one);
+                if (newval == NULL)
+                    break;
+                if (PyDict_SetItem(mapping, key, newval) == -1)
+                    break;
+                Py_CLEAR(newval);
+            }
+            Py_DECREF(key);
+        }
+    } else {
+        bound_get = _PyObject_GetAttrId(mapping, &PyId_get);
+        if (bound_get == NULL)
+            goto done;
+
+        zero = PyLong_FromLong(0);
+        if (zero == NULL)
+            goto done;
+
+        while (1) {
+            key = PyIter_Next(it);
+            if (key == NULL)
+                break;
+            oldval = PyObject_CallFunctionObjArgs(bound_get, key, zero, NULL);
+            if (oldval == NULL)
+                break;
+            newval = PyNumber_Add(oldval, one);
+            Py_DECREF(oldval);
+            if (newval == NULL)
+                break;
+            if (PyObject_SetItem(mapping, key, newval) == -1)
+                break;
+            Py_CLEAR(newval);
+            Py_DECREF(key);
+        }
+    }
+
+done:
+    Py_DECREF(it);
+    Py_XDECREF(key);
+    Py_XDECREF(newval);
+    Py_XDECREF(bound_get);
+    Py_XDECREF(zero);
+    Py_XDECREF(one);
+    if (PyErr_Occurred())
+        return NULL;
+    Py_RETURN_NONE;
+}
+
 /* module level code ********************************************************/
 
 PyDoc_STRVAR(module_doc,
@@ -1746,31 +1862,52 @@ PyDoc_STRVAR(module_doc,
 - defaultdict:  dict subclass with a default value factory\n\
 ");
 
+static struct PyMethodDef module_functions[] = {
+    {"_count_elements", _count_elements,    METH_VARARGS,   _count_elements_doc},
+    {NULL,       NULL}          /* sentinel */
+};
+
+static struct PyModuleDef _collectionsmodule = {
+    PyModuleDef_HEAD_INIT,
+    "_collections",
+    module_doc,
+    -1,
+    module_functions,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+};
+
 PyMODINIT_FUNC
-init_collections(void)
+PyInit__collections(void)
 {
     PyObject *m;
 
-    m = Py_InitModule3("_collections", NULL, module_doc);
+    m = PyModule_Create(&_collectionsmodule);
     if (m == NULL)
-        return;
+        return NULL;
 
     if (PyType_Ready(&deque_type) < 0)
-        return;
+        return NULL;
     Py_INCREF(&deque_type);
     PyModule_AddObject(m, "deque", (PyObject *)&deque_type);
 
     defdict_type.tp_base = &PyDict_Type;
     if (PyType_Ready(&defdict_type) < 0)
-        return;
+        return NULL;
     Py_INCREF(&defdict_type);
     PyModule_AddObject(m, "defaultdict", (PyObject *)&defdict_type);
 
     if (PyType_Ready(&dequeiter_type) < 0)
-        return;
+        return NULL;
+    Py_INCREF(&dequeiter_type);
+    PyModule_AddObject(m, "_deque_iterator", (PyObject *)&dequeiter_type);
 
     if (PyType_Ready(&dequereviter_type) < 0)
-        return;
+        return NULL;
+    Py_INCREF(&dequereviter_type);
+    PyModule_AddObject(m, "_deque_reverse_iterator", (PyObject *)&dequereviter_type);
 
-    return;
+    return m;
 }

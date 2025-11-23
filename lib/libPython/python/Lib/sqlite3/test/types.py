@@ -1,7 +1,7 @@
-#-*- coding: ISO-8859-1 -*-
+#-*- coding: iso-8859-1 -*-
 # pysqlite2/test/types.py: tests for type conversion and detection
 #
-# Copyright (C) 2005-2007 Gerhard Häring <gh@ghaering.de>
+# Copyright (C) 2005 Gerhard Häring <gh@ghaering.de>
 #
 # This file is part of pysqlite.
 #
@@ -24,7 +24,6 @@
 import datetime
 import unittest
 import sqlite3 as sqlite
-from test import test_support
 try:
     import zlib
 except ImportError:
@@ -42,10 +41,10 @@ class SqliteTypeTests(unittest.TestCase):
         self.con.close()
 
     def CheckString(self):
-        self.cur.execute("insert into test(s) values (?)", (u"Österreich",))
+        self.cur.execute("insert into test(s) values (?)", ("Österreich",))
         self.cur.execute("select s from test")
         row = self.cur.fetchone()
-        self.assertEqual(row[0], u"Österreich")
+        self.assertEqual(row[0], "Österreich")
 
     def CheckSmallInt(self):
         self.cur.execute("insert into test(i) values (?)", (42,))
@@ -68,57 +67,31 @@ class SqliteTypeTests(unittest.TestCase):
         self.assertEqual(row[0], val)
 
     def CheckBlob(self):
-        with test_support.check_py3k_warnings():
-            val = buffer("Guglhupf")
+        sample = b"Guglhupf"
+        val = memoryview(sample)
         self.cur.execute("insert into test(b) values (?)", (val,))
         self.cur.execute("select b from test")
         row = self.cur.fetchone()
-        self.assertEqual(row[0], val)
+        self.assertEqual(row[0], sample)
 
     def CheckUnicodeExecute(self):
-        self.cur.execute(u"select 'Österreich'")
+        self.cur.execute("select 'Österreich'")
         row = self.cur.fetchone()
-        self.assertEqual(row[0], u"Österreich")
-
-    def CheckNonUtf8_Default(self):
-        try:
-            self.cur.execute("select ?", (chr(150),))
-            self.fail("should have raised a ProgrammingError")
-        except sqlite.ProgrammingError:
-            pass
-
-    def CheckNonUtf8_TextFactoryString(self):
-        orig_text_factory = self.con.text_factory
-        try:
-            self.con.text_factory = str
-            self.cur.execute("select ?", (chr(150),))
-        finally:
-            self.con.text_factory = orig_text_factory
-
-    def CheckNonUtf8_TextFactoryOptimizedUnicode(self):
-        orig_text_factory = self.con.text_factory
-        try:
-            try:
-                self.con.text_factory = sqlite.OptimizedUnicode
-                self.cur.execute("select ?", (chr(150),))
-                self.fail("should have raised a ProgrammingError")
-            except sqlite.ProgrammingError:
-                pass
-        finally:
-            self.con.text_factory = orig_text_factory
+        self.assertEqual(row[0], "Österreich")
 
 class DeclTypesTests(unittest.TestCase):
     class Foo:
         def __init__(self, _val):
+            if isinstance(_val, bytes):
+                # sqlite3 always calls __init__ with a bytes created from a
+                # UTF-8 string when __conform__ was used to store the object.
+                _val = _val.decode('utf-8')
             self.val = _val
 
-        def __cmp__(self, other):
+        def __eq__(self, other):
             if not isinstance(other, DeclTypesTests.Foo):
-                raise ValueError
-            if self.val == other.val:
-                return 0
-            else:
-                return 1
+                return NotImplemented
+            return self.val == other.val
 
         def __conform__(self, protocol):
             if protocol is sqlite.PrepareProtocol:
@@ -196,7 +169,7 @@ class DeclTypesTests(unittest.TestCase):
 
     def CheckUnicode(self):
         # default
-        val = u"\xd6sterreich"
+        val = "\xd6sterreich"
         self.cur.execute("insert into test(u) values (?)", (val,))
         self.cur.execute("select u from test")
         row = self.cur.fetchone()
@@ -233,12 +206,12 @@ class DeclTypesTests(unittest.TestCase):
 
     def CheckBlob(self):
         # default
-        with test_support.check_py3k_warnings():
-            val = buffer("Guglhupf")
+        sample = b"Guglhupf"
+        val = memoryview(sample)
         self.cur.execute("insert into test(bin) values (?)", (val,))
         self.cur.execute("select bin from test")
         row = self.cur.fetchone()
-        self.assertEqual(row[0], val)
+        self.assertEqual(row[0], sample)
 
     def CheckNumber1(self):
         self.cur.execute("insert into test(n1) values (5)")
@@ -259,9 +232,9 @@ class ColNamesTests(unittest.TestCase):
         self.cur = self.con.cursor()
         self.cur.execute("create table test(x foo)")
 
-        sqlite.converters["FOO"] = lambda x: "[%s]" % x
-        sqlite.converters["BAR"] = lambda x: "<%s>" % x
-        sqlite.converters["EXC"] = lambda x: 5 // 0
+        sqlite.converters["FOO"] = lambda x: "[%s]" % x.decode("ascii")
+        sqlite.converters["BAR"] = lambda x: "<%s>" % x.decode("ascii")
+        sqlite.converters["EXC"] = lambda x: 5/0
         sqlite.converters["B1B1"] = lambda x: "MARKER"
 
     def tearDown(self):
@@ -299,7 +272,7 @@ class ColNamesTests(unittest.TestCase):
         self.assertEqual(self.cur.description[0][0], "x")
 
     def CheckCaseInConverterName(self):
-        self.cur.execute("""select 'other' as "x [b1b1]\"""")
+        self.cur.execute("select 'other' as \"x [b1b1]\"")
         val = self.cur.fetchone()[0]
         self.assertEqual(val, "MARKER")
 
@@ -349,9 +322,8 @@ class BinaryConverterTests(unittest.TestCase):
         self.con.close()
 
     def CheckBinaryInputForConverter(self):
-        testdata = "abcdefg" * 10
-        with test_support.check_py3k_warnings():
-            result = self.con.execute('select ? as "x [bin]"', (buffer(zlib.compress(testdata)),)).fetchone()[0]
+        testdata = b"abcdefg" * 10
+        result = self.con.execute('select ? as "x [bin]"', (memoryview(zlib.compress(testdata)),)).fetchone()[0]
         self.assertEqual(testdata, result)
 
 class DateTimeTests(unittest.TestCase):
@@ -383,7 +355,8 @@ class DateTimeTests(unittest.TestCase):
         if sqlite.sqlite_version_info < (3, 1):
             return
 
-        now = datetime.datetime.utcnow()
+        # SQLite's current_timestamp uses UTC time, while datetime.datetime.now() uses local time.
+        now = datetime.datetime.now()
         self.cur.execute("insert into test(ts) values (current_timestamp)")
         self.cur.execute("select ts from test")
         ts = self.cur.fetchone()[0]

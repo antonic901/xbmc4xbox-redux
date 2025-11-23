@@ -10,11 +10,6 @@
 
 .. TODO: Fill in XXX comments
 
-.. seealso::
-
-   :ref:`installing-index`
-      The up to date module installation documentations
-
 .. The audience for this document includes people who don't know anything
    about Python and aren't about to learn the language just in order to
    install and maintain it for their users, i.e. system administrators.
@@ -65,7 +60,6 @@ to explore your installation, but that's it.  If you're looking for information
 on how to distribute your own Python modules so that others may use them, see
 the :ref:`distutils-index` manual.  :ref:`debug-setup-script` may also be of
 interest.
-
 
 
 .. _inst-trivial-install:
@@ -202,7 +196,7 @@ As implied above, the :command:`build` command is responsible for putting the
 files to install into a *build directory*.  By default, this is :file:`build`
 under the distribution root; if you're excessively concerned with speed, or want
 to keep the source tree pristine, you can change the build directory with the
-:option:`!--build-base` option. For example::
+:option:`--build-base` option. For example::
 
    python setup.py build --build-base=/path/to/pybuild/foo-1.0
 
@@ -295,10 +289,12 @@ statements shown below, and get the output as shown, to find out my
    '/usr'
 
 A few other placeholders are used in this document: :file:`{X.Y}` stands for the
-version of Python, for example ``2.7``; :file:`{distname}` will be replaced by
-the name of the module distribution being installed.  Dots and capitalization
-are important in the paths; for example, a value that uses ``python2.7`` on UNIX
-will typically use ``Python27`` on Windows.
+version of Python, for example ``3.2``; :file:`{abiflags}` will be replaced by
+the value of :data:`sys.abiflags` or the empty string for platforms which don't
+define ABI flags; :file:`{distname}` will be replaced by the name of the module
+distribution being installed.  Dots and capitalization are important in the
+paths; for example, a value that uses ``python3.2`` on UNIX will typically use
+``Python32`` on Windows.
 
 If you don't want to install modules to the standard location, or if you don't
 have permission to write there, then you need to read about alternate
@@ -356,7 +352,7 @@ Type of file    Installation directory
 modules         :file:`{userbase}/lib/python{X.Y}/site-packages`
 scripts         :file:`{userbase}/bin`
 data            :file:`{userbase}`
-C headers       :file:`{userbase}/include/python{X.Y}/{distname}`
+C headers       :file:`{userbase}/include/python{X.Y}{abiflags}/{distname}`
 =============== ===========================================================
 
 And here are the values used on Windows:
@@ -398,7 +394,7 @@ Installing a new module distribution is as simple as ::
 
    python setup.py install --home=<dir>
 
-where you can supply any directory you like for the :option:`!--home` option.  On
+where you can supply any directory you like for the :option:`--home` option.  On
 Unix, lazy typists can just type a tilde (``~``); the :command:`install` command
 will expand this to your home directory::
 
@@ -409,7 +405,7 @@ to :ref:`modify Python's search path <inst-search-path>` or edit
 :mod:`sitecustomize` (see :mod:`site`) to call :func:`site.addsitedir` or edit
 :data:`sys.path`.
 
-The :option:`!--home` option defines the installation base directory.  Files are
+The :option:`--home` option defines the installation base directory.  Files are
 installed to the following directories under the installation base as follows:
 
 =============== ===========================================================
@@ -422,9 +418,6 @@ C headers       :file:`{home}/include/python/{distname}`
 =============== ===========================================================
 
 (Mentally replace slashes with backslashes if you're on Windows.)
-
-.. versionchanged:: 2.4
-   The :option:`!--home` option used to be supported only on Unix.
 
 
 .. _inst-alt-install-prefix-unix:
@@ -457,12 +450,12 @@ be done with ::
 
    /usr/local/bin/python setup.py install --prefix=/mnt/@server/export
 
-In either case, the :option:`!--prefix` option defines the installation base, and
-the :option:`!--exec-prefix` option defines the platform-specific installation
+In either case, the :option:`--prefix` option defines the installation base, and
+the :option:`--exec-prefix` option defines the platform-specific installation
 base, which is used for platform-specific files.  (Currently, this just means
 non-pure module distributions, but could be expanded to C libraries, binary
-executables, etc.)  If :option:`!--exec-prefix` is not supplied, it defaults to
-:option:`!--prefix`.  Files are installed as follows:
+executables, etc.)  If :option:`--exec-prefix` is not supplied, it defaults to
+:option:`--prefix`.  Files are installed as follows:
 
 ================= ==========================================================
 Type of file      Installation directory
@@ -471,16 +464,16 @@ Python modules    :file:`{prefix}/lib/python{X.Y}/site-packages`
 extension modules :file:`{exec-prefix}/lib/python{X.Y}/site-packages`
 scripts           :file:`{prefix}/bin`
 data              :file:`{prefix}`
-C headers         :file:`{prefix}/include/python{X.Y}/{distname}`
+C headers         :file:`{prefix}/include/python{X.Y}{abiflags}/{distname}`
 ================= ==========================================================
 
-There is no requirement that :option:`!--prefix` or :option:`!--exec-prefix`
+There is no requirement that :option:`--prefix` or :option:`--exec-prefix`
 actually point to an alternate Python installation; if the directories listed
 above do not already exist, they are created at installation time.
 
 Incidentally, the real reason the prefix scheme is important is simply that a
-standard Unix installation uses the prefix scheme, but with :option:`!--prefix`
-and :option:`!--exec-prefix` supplied by Python itself as ``sys.prefix`` and
+standard Unix installation uses the prefix scheme, but with :option:`--prefix`
+and :option:`--exec-prefix` supplied by Python itself as ``sys.prefix`` and
 ``sys.exec_prefix``.  Thus, you might think you'll never use the prefix scheme,
 but every time you run ``python setup.py install`` without any other options,
 you're using it.
@@ -493,7 +486,7 @@ responsibility to ensure that the interpreter used to run extensions installed
 in this way is compatible with the interpreter used to build them.  The best way
 to do this is to ensure that the two interpreters are the same version of Python
 (possibly different builds, or possibly copies of the same build).  (Of course,
-if your :option:`!--prefix` and :option:`!--exec-prefix` don't even point to an
+if your :option:`--prefix` and :option:`--exec-prefix` don't even point to an
 alternate Python installation, this is immaterial.)
 
 
@@ -503,7 +496,7 @@ Alternate installation: Windows (the prefix scheme)
 ---------------------------------------------------
 
 Windows has no concept of a user's home directory, and since the standard Python
-installation under Windows is simpler than under Unix, the :option:`!--prefix`
+installation under Windows is simpler than under Unix, the :option:`--prefix`
 option has traditionally been used to install additional packages in separate
 locations on Windows. ::
 
@@ -511,8 +504,8 @@ locations on Windows. ::
 
 to install modules to the :file:`\\Temp\\Python` directory on the current drive.
 
-The installation base is defined by the :option:`!--prefix` option; the
-:option:`!--exec-prefix` option is not supported under Windows, which means that
+The installation base is defined by the :option:`--prefix` option; the
+:option:`--exec-prefix` option is not supported under Windows, which means that
 pure Python modules and extension modules are installed into the same location.
 Files are installed as follows:
 
@@ -564,7 +557,7 @@ difference between Python and extension modules.)
 For example, say you're installing a module distribution to your home directory
 under Unix---but you want scripts to go in :file:`~/scripts` rather than
 :file:`~/bin`. As you might expect, you can override this directory with the
-:option:`!--install-scripts` option; in this case, it makes most sense to supply
+:option:`--install-scripts` option; in this case, it makes most sense to supply
 a relative path, which will be interpreted relative to the installation base
 directory (your home directory, in this case)::
 
@@ -574,7 +567,7 @@ Another Unix example: suppose your Python installation was built and installed
 with a prefix of :file:`/usr/local/python`, so under a standard  installation
 scripts will wind up in :file:`/usr/local/python/bin`.  If you want them in
 :file:`/usr/local/bin` instead, you would supply this absolute directory for the
-:option:`!--install-scripts` option::
+:option:`--install-scripts` option::
 
    python setup.py install --install-scripts=/usr/local/bin
 
@@ -660,6 +653,11 @@ environment, such as ``$PLAT``.  (And of course, on systems that don't have
 environment variables, such as Mac OS 9, the configuration variables supplied by
 the Distutils are the only ones you can use.) See section :ref:`inst-config-files`
 for details.
+
+.. note:: When a :ref:`virtual environment <venv-def>` is activated, any options
+   that change the installation path will be ignored from all distutils configuration
+   files to prevent inadvertently installing projects outside of the virtual
+   environment.
 
 .. XXX need some Windows examples---when would custom installation schemes be
    needed on those platforms?
@@ -867,12 +865,12 @@ config file will apply.  (Or if other commands that derive values from it are
 run, they will use the values in the config file.)
 
 You can find out the complete list of options for any command using the
-:option:`!--help` option, e.g.::
+:option:`--help` option, e.g.::
 
    python setup.py build --help
 
 and you can find out the complete list of global options by using
-:option:`!--help` without a command::
+:option:`--help` without a command::
 
    python setup.py --help
 
@@ -929,10 +927,10 @@ Let's examine each of the fields in turn.
   to be in Objective C.
 
 * *cpparg* is an argument for the C preprocessor,  and is anything starting with
-  :option:`!-I`, :option:`!-D`, :option:`!-U` or :option:`!-C`.
+  :option:`-I`, :option:`-D`, :option:`-U` or :option:`-C`.
 
-* *library* is anything ending in :file:`.a` or beginning with :option:`!-l` or
-  :option:`!-L`.
+* *library* is anything ending in :file:`.a` or beginning with :option:`-l` or
+  :option:`-L`.
 
 If a particular platform requires a special library on your platform, you can
 add it by editing the :file:`Setup` file and running ``python setup.py build``.
@@ -941,20 +939,20 @@ For example, if the module defined by the line ::
    foo foomodule.c
 
 must be linked with the math library :file:`libm.a` on your platform, simply add
-:option:`!-lm` to the line::
+:option:`-lm` to the line::
 
    foo foomodule.c -lm
 
 Arbitrary switches intended for the compiler or the linker can be supplied with
-the :option:`!-Xcompiler` *arg* and :option:`!-Xlinker` *arg* options::
+the :option:`-Xcompiler` *arg* and :option:`-Xlinker` *arg* options::
 
    foo foomodule.c -Xcompiler -o32 -Xlinker -shared -lm
 
-The next option after :option:`!-Xcompiler` and :option:`!-Xlinker` will be
+The next option after :option:`-Xcompiler` and :option:`-Xlinker` will be
 appended to the proper command line, so in the above example the compiler will
-be passed the :option:`!-o32` option, and the linker will be passed
-:option:`!-shared`.  If a compiler option requires an argument, you'll have to
-supply multiple :option:`!-Xcompiler` options; for example, to pass ``-x c++``
+be passed the :option:`-o32` option, and the linker will be passed
+:option:`-shared`.  If a compiler option requires an argument, you'll have to
+supply multiple :option:`-Xcompiler` options; for example, to pass ``-x c++``
 the :file:`Setup` file would have to contain ``-Xcompiler -x -Xcompiler c++``.
 
 Compiler flags can also be supplied through setting the :envvar:`CFLAGS`
@@ -1014,7 +1012,7 @@ section :ref:`inst-config-files`.)
 
 .. seealso::
 
-   `C++Builder Compiler <https://www.embarcadero.com/products>`_
+   `C++Builder Compiler <http://www.embarcadero.com/downloads>`_
       Information about the free C++ compiler from Borland, including links to the
       download pages.
 
@@ -1057,7 +1055,7 @@ These compilers require some special libraries.  This task is more complex than
 for Borland's C++, because there is no program to convert the library.  First
 you have to create a list of symbols which the Python DLL exports. (You can find
 a good program for this task at
-https://sourceforge.net/projects/mingw/files/MinGW/Extension/pexports/).
+http://sourceforge.net/projects/mingw/files/MinGW/Extension/pexports/).
 
 .. I don't understand what the next line means. --amk
 .. (inclusive the references on data structures.)
@@ -1095,7 +1093,7 @@ normal libraries do.
 .. [#] This also means you could replace all existing COFF-libraries with OMF-libraries
    of the same name.
 
-.. [#] Check https://www.sourceware.org/cygwin/ and http://www.mingw.org/ for more
+.. [#] Check http://www.sourceware.org/cygwin/ and http://www.mingw.org/ for more
    information
 
 .. [#] Then you have no POSIX emulation available, but you also don't need

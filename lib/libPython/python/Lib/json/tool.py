@@ -18,21 +18,20 @@ def main():
         infile = sys.stdin
         outfile = sys.stdout
     elif len(sys.argv) == 2:
-        infile = open(sys.argv[1], 'rb')
+        infile = open(sys.argv[1], 'r')
         outfile = sys.stdout
     elif len(sys.argv) == 3:
-        infile = open(sys.argv[1], 'rb')
-        outfile = open(sys.argv[2], 'wb')
+        infile = open(sys.argv[1], 'r')
+        outfile = open(sys.argv[2], 'w')
     else:
         raise SystemExit(sys.argv[0] + " [infile [outfile]]")
     with infile:
         try:
             obj = json.load(infile)
-        except ValueError, e:
+        except ValueError as e:
             raise SystemExit(e)
     with outfile:
-        json.dump(obj, outfile, sort_keys=True,
-                  indent=4, separators=(',', ': '))
+        json.dump(obj, outfile, sort_keys=True, indent=4)
         outfile.write('\n')
 
 

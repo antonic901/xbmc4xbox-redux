@@ -9,6 +9,9 @@ Extending/Embedding FAQ
 .. highlight:: c
 
 
+.. XXX need review for Python 3.
+
+
 Can I create my own functions in C?
 -----------------------------------
 
@@ -36,27 +39,21 @@ Writing C is hard; are there any alternatives?
 There are a number of alternatives to writing your own C extensions, depending
 on what you're trying to do.
 
-.. XXX make sure these all work; mention Cython
-
-If you need more speed, `Psyco <http://psyco.sourceforge.net/>`_ generates x86
-assembly code from Python bytecode.  You can use Psyco to compile the most
-time-critical functions in your code, and gain a significant improvement with
-very little effort, as long as you're running on a machine with an
-x86-compatible processor.
+.. XXX make sure these all work
 
 `Cython <http://cython.org>`_ and its relative `Pyrex
-<https://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/>`_ are compilers
+<http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/>`_ are compilers
 that accept a slightly modified form of Python and generate the corresponding
-C code.  Pyrex makes it possible to write an extension without having to learn
-Python's C API.
+C code.  Cython and Pyrex make it possible to write an extension without having
+to learn Python's C API.
 
 If you need to interface to some C or C++ library for which no Python extension
 currently exists, you can try wrapping the library's data types and functions
 with a tool such as `SWIG <http://www.swig.org>`_.  `SIP
-<https://riverbankcomputing.com/software/sip/intro>`__, `CXX
+<http://www.riverbankcomputing.co.uk/software/sip/intro>`__, `CXX
 <http://cxx.sourceforge.net/>`_ `Boost
 <http://www.boost.org/libs/python/doc/index.html>`_, or `Weave
-<https://github.com/scipy/weave>`_ are also
+<http://docs.scipy.org/doc/scipy-dev/reference/tutorial/weave.html>`_ are also
 alternatives for wrapping C++ libraries.
 
 
@@ -87,29 +84,26 @@ returns its length and :c:func:`PyTuple_GetItem` returns the item at a specified
 index.  Lists have similar functions, :c:func:`PyListSize` and
 :c:func:`PyList_GetItem`.
 
-For strings, :c:func:`PyString_Size` returns its length and
-:c:func:`PyString_AsString` a pointer to its value.  Note that Python strings may
-contain null bytes so C's :c:func:`strlen` should not be used.
+For bytes, :c:func:`PyBytes_Size` returns its length and
+:c:func:`PyBytes_AsStringAndSize` provides a pointer to its value and its
+length.  Note that Python bytes objects may contain null bytes so C's
+:c:func:`strlen` should not be used.
 
 To test the type of an object, first make sure it isn't *NULL*, and then use
-:c:func:`PyString_Check`, :c:func:`PyTuple_Check`, :c:func:`PyList_Check`, etc.
+:c:func:`PyBytes_Check`, :c:func:`PyTuple_Check`, :c:func:`PyList_Check`, etc.
 
 There is also a high-level API to Python objects which is provided by the
 so-called 'abstract' interface -- read ``Include/abstract.h`` for further
 details.  It allows interfacing with any kind of Python sequence using calls
-like :c:func:`PySequence_Length`, :c:func:`PySequence_GetItem`, etc.)  as well as
-many other useful protocols.
+like :c:func:`PySequence_Length`, :c:func:`PySequence_GetItem`, etc. as well
+as many other useful protocols such as numbers (:c:func:`PyNumber_Index` et
+al.) and mappings in the PyMapping APIs.
 
 
 How do I use Py_BuildValue() to create a tuple of arbitrary length?
 -------------------------------------------------------------------
 
-You can't.  Use ``t = PyTuple_New(n)`` instead, and fill it with objects using
-``PyTuple_SetItem(t, i, o)`` -- note that this "eats" a reference count of
-``o``, so you have to :c:func:`Py_INCREF` it.  Lists have similar functions
-``PyList_New(n)`` and ``PyList_SetItem(l, i, o)``.  Note that you *must* set all
-the tuple items to some value before you pass the tuple to Python code --
-``PyTuple_New(n)`` initializes them to NULL, which isn't a valid Python value.
+You can't.  Use :c:func:`PyTuple_Pack` instead.
 
 
 How do I call an object's method from C?
@@ -121,8 +115,8 @@ call, a format string like that used with :c:func:`Py_BuildValue`, and the
 argument values::
 
    PyObject *
-   PyObject_CallMethod(PyObject *object, char *method_name,
-                       char *arg_format, ...);
+   PyObject_CallMethod(PyObject *object, const char *method_name,
+                       const char *arg_format, ...);
 
 This works for any object that has methods -- whether built-in or user-defined.
 You are responsible for eventually :c:func:`Py_DECREF`\ 'ing the return value.
@@ -152,23 +146,30 @@ this object to :data:`sys.stdout` and :data:`sys.stderr`.  Call print_error, or
 just allow the standard traceback mechanism to work. Then, the output will go
 wherever your ``write()`` method sends it.
 
-The easiest way to do this is to use the StringIO class in the standard library.
+The easiest way to do this is to use the :class:`io.StringIO` class::
 
-Sample code and use for catching stdout:
+   >>> import io, sys
+   >>> sys.stdout = io.StringIO()
+   >>> print('foo')
+   >>> print('hello world!')
+   >>> sys.stderr.write(sys.stdout.getvalue())
+   foo
+   hello world!
 
-.. code-block:: pycon
+A custom object to do the same would look like this::
 
-   >>> class StdoutCatcher:
+   >>> import io, sys
+   >>> class StdoutCatcher(io.TextIOBase):
    ...     def __init__(self):
-   ...         self.data = ''
+   ...         self.data = []
    ...     def write(self, stuff):
-   ...         self.data = self.data + stuff
+   ...         self.data.append(stuff)
    ...
    >>> import sys
    >>> sys.stdout = StdoutCatcher()
-   >>> print 'foo'
-   >>> print 'hello world!'
-   >>> sys.stderr.write(sys.stdout.data)
+   >>> print('foo')
+   >>> print('hello world!')
+   >>> sys.stderr.write(''.join(sys.stdout.data))
    foo
    hello world!
 
@@ -221,15 +222,11 @@ How do I debug an extension?
 When using GDB with dynamically loaded extensions, you can't set a breakpoint in
 your extension until your extension is loaded.
 
-In your ``.gdbinit`` file (or interactively), add the command:
-
-.. code-block:: none
+In your ``.gdbinit`` file (or interactively), add the command::
 
    br _PyImport_LoadDynamicModule
 
-Then, when you run GDB:
-
-.. code-block:: shell-session
+Then, when you run GDB::
 
    $ gdb /local/bin/python
    gdb) run myscript.py
@@ -286,7 +283,7 @@ However sometimes you have to run the embedded Python interpreter in the same
 thread as your rest application and you can't allow the
 :c:func:`PyRun_InteractiveLoop` to stop while waiting for user input.  The one
 solution then is to call :c:func:`PyParser_ParseString` and test for ``e.error``
-equal to ``E_EOF``, which means the input is incomplete.  Here's a sample code
+equal to ``E_EOF``, which means the input is incomplete).  Here's a sample code
 fragment, untested, inspired by code from Alex Farber::
 
    #include <Python.h>
@@ -385,7 +382,7 @@ complete example using the GNU readline library (you may want to ignore
            if (ps1  == prompt ||                  /* ">>> " or */
                '\n' == code[i + j - 1])           /* "... " and double '\n' */
            {                                               /* so execute it */
-             dum = PyEval_EvalCode ((PyCodeObject *)src, glb, loc);
+             dum = PyEval_EvalCode (src, glb, loc);
              Py_XDECREF (dum);
              Py_XDECREF (src);
              free (code);
@@ -452,39 +449,3 @@ Yes, you can inherit from built-in classes such as :class:`int`, :class:`list`,
 The Boost Python Library (BPL, http://www.boost.org/libs/python/doc/index.html)
 provides a way of doing this from C++ (i.e. you can inherit from an extension
 class written in C++ using the BPL).
-
-
-When importing module X, why do I get "undefined symbol: PyUnicodeUCS2*"?
--------------------------------------------------------------------------
-
-You are using a version of Python that uses a 4-byte representation for Unicode
-characters, but some C extension module you are importing was compiled using a
-Python that uses a 2-byte representation for Unicode characters (the default).
-
-If instead the name of the undefined symbol starts with ``PyUnicodeUCS4``, the
-problem is the reverse: Python was built using 2-byte Unicode characters, and
-the extension module was compiled using a Python with 4-byte Unicode characters.
-
-This can easily occur when using pre-built extension packages.  RedHat Linux
-7.x, in particular, provided a "python2" binary that is compiled with 4-byte
-Unicode.  This only causes the link failure if the extension uses any of the
-``PyUnicode_*()`` functions.  It is also a problem if an extension uses any of
-the Unicode-related format specifiers for :c:func:`Py_BuildValue` (or similar) or
-parameter specifications for :c:func:`PyArg_ParseTuple`.
-
-You can check the size of the Unicode character a Python interpreter is using by
-checking the value of sys.maxunicode:
-
-.. code-block:: pycon
-
-   >>> import sys
-   >>> if sys.maxunicode > 65535:
-   ...     print 'UCS4 build'
-   ... else:
-   ...     print 'UCS2 build'
-
-The only way to solve this problem is to use extension modules compiled with a
-Python binary built using the same size for Unicode characters.
-
-
-

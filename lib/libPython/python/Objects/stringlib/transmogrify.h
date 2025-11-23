@@ -5,23 +5,25 @@
    shared code in bytes_methods.c to cut down on duplicate code bloat.  */
 
 PyDoc_STRVAR(expandtabs__doc__,
-"B.expandtabs([tabsize]) -> copy of B\n\
+"B.expandtabs(tabsize=8) -> copy of B\n\
 \n\
 Return a copy of B where all tab characters are expanded using spaces.\n\
 If tabsize is not given, a tab size of 8 characters is assumed.");
 
 static PyObject*
-stringlib_expandtabs(PyObject *self, PyObject *args)
+stringlib_expandtabs(PyObject *self, PyObject *args, PyObject *kwds)
 {
     const char *e, *p;
     char *q;
     Py_ssize_t i, j;
     PyObject *u;
+    static char *kwlist[] = {"tabsize", 0};
     int tabsize = 8;
-    
-    if (!PyArg_ParseTuple(args, "|i:expandtabs", &tabsize))
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i:expandtabs",
+                                     kwlist, &tabsize))
         return NULL;
-    
+
     /* First pass: determine size of output string */
     i = j = 0;
     e = STRINGLIB_STR(self) + STRINGLIB_LEN(self);
@@ -46,15 +48,15 @@ stringlib_expandtabs(PyObject *self, PyObject *args)
             }
         }
     }
-    
+
     if (i > PY_SSIZE_T_MAX - j)
         goto overflow;
-    
+
     /* Second pass: create output string and fill it */
     u = STRINGLIB_NEW(NULL, i + j);
     if (!u)
         return NULL;
-    
+
     j = 0;
     q = STRINGLIB_STR(u);
     

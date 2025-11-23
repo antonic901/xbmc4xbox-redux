@@ -1,9 +1,9 @@
 """Test script for the grp module."""
 
 import unittest
-from test import test_support
+from test import support
 
-grp = test_support.import_module('grp')
+grp = support.import_module('grp')
 
 class GroupDatabaseTestCase(unittest.TestCase):
 
@@ -12,11 +12,11 @@ class GroupDatabaseTestCase(unittest.TestCase):
         # attributes promised by the docs
         self.assertEqual(len(value), 4)
         self.assertEqual(value[0], value.gr_name)
-        self.assertIsInstance(value.gr_name, basestring)
+        self.assertIsInstance(value.gr_name, str)
         self.assertEqual(value[1], value.gr_passwd)
-        self.assertIsInstance(value.gr_passwd, basestring)
+        self.assertIsInstance(value.gr_passwd, str)
         self.assertEqual(value[2], value.gr_gid)
-        self.assertIsInstance(value.gr_gid, (long, int))
+        self.assertIsInstance(value.gr_gid, int)
         self.assertEqual(value[3], value.gr_mem)
         self.assertIsInstance(value.gr_mem, list)
 
@@ -60,12 +60,12 @@ class GroupDatabaseTestCase(unittest.TestCase):
             bynames[n] = g
             bygids[g] = n
 
-        allnames = bynames.keys()
+        allnames = list(bynames.keys())
         namei = 0
         fakename = allnames[namei]
         while fakename in bynames:
             chars = list(fakename)
-            for i in xrange(len(chars)):
+            for i in range(len(chars)):
                 if chars[i] == 'z':
                     chars[i] = 'A'
                     break
@@ -93,7 +93,7 @@ class GroupDatabaseTestCase(unittest.TestCase):
         self.assertRaises(KeyError, grp.getgrgid, fakegid)
 
 def test_main():
-    test_support.run_unittest(GroupDatabaseTestCase)
+    support.run_unittest(GroupDatabaseTestCase)
 
 if __name__ == "__main__":
     test_main()

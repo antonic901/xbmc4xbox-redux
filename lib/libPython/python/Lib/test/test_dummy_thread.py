@@ -5,15 +5,15 @@ to be used, test_main() can be called with the module to use as the thread
 implementation as its sole argument.
 
 """
-import dummy_thread as _thread
+import _dummy_thread as _thread
 import time
-import Queue
+import queue
 import random
 import unittest
-from test import test_support
+from test import support
 
-DELAY = 0 # Set > 0 when testing a module other than dummy_thread, such as
-          # the 'thread' module.
+DELAY = 0 # Set > 0 when testing a module other than _dummy_thread, such as
+          # the '_thread' module.
 
 class LockTests(unittest.TestCase):
     """Test lock objects."""
@@ -24,19 +24,19 @@ class LockTests(unittest.TestCase):
 
     def test_initlock(self):
         #Make sure locks start locked
-        self.assertFalse(self.lock.locked(),
+        self.assertTrue(not self.lock.locked(),
                         "Lock object is not initialized unlocked.")
 
     def test_release(self):
         # Test self.lock.release()
         self.lock.acquire()
         self.lock.release()
-        self.assertFalse(self.lock.locked(),
+        self.assertTrue(not self.lock.locked(),
                         "Lock object did not release properly.")
 
     def test_improper_release(self):
-        #Make sure release of an unlocked thread raises _thread.error
-        self.assertRaises(_thread.error, self.lock.release)
+        #Make sure release of an unlocked thread raises RuntimeError
+        self.assertRaises(RuntimeError, self.lock.release)
 
     def test_cond_acquire_success(self):
         #Make sure the conditional acquiring of the lock works.
@@ -46,7 +46,7 @@ class LockTests(unittest.TestCase):
     def test_cond_acquire_fail(self):
         #Test acquiring locked lock returns False
         self.lock.acquire(0)
-        self.assertFalse(self.lock.acquire(0),
+        self.assertTrue(not self.lock.acquire(0),
                         "Conditional acquiring of a locked lock incorrectly "
                          "succeeded.")
 
@@ -58,9 +58,9 @@ class LockTests(unittest.TestCase):
 
     def test_uncond_acquire_return_val(self):
         #Make sure that an unconditional locking returns True.
-        self.assertIs(self.lock.acquire(1), True,
+        self.assertTrue(self.lock.acquire(1) is True,
                         "Unconditional locking did not return True.")
-        self.assertIs(self.lock.acquire(), True)
+        self.assertTrue(self.lock.acquire() is True)
 
     def test_uncond_acquire_blocking(self):
         #Make sure that unconditional acquiring of a locked lock blocks.
@@ -72,15 +72,15 @@ class LockTests(unittest.TestCase):
         self.lock.acquire()
         start_time = int(time.time())
         _thread.start_new_thread(delay_unlock,(self.lock, DELAY))
-        if test_support.verbose:
-            print
-            print "*** Waiting for thread to release the lock "\
-            "(approx. %s sec.) ***" % DELAY
+        if support.verbose:
+            print()
+            print("*** Waiting for thread to release the lock "\
+            "(approx. %s sec.) ***" % DELAY)
         self.lock.acquire()
         end_time = int(time.time())
-        if test_support.verbose:
-            print "done"
-        self.assertGreaterEqual(end_time - start_time, DELAY,
+        if support.verbose:
+            print("done")
+        self.assertTrue((end_time - start_time) >= DELAY,
                         "Blocking by unconditional acquiring failed.")
 
 class MiscTests(unittest.TestCase):
@@ -94,7 +94,7 @@ class MiscTests(unittest.TestCase):
         #Test sanity of _thread.get_ident()
         self.assertIsInstance(_thread.get_ident(), int,
                               "_thread.get_ident() returned a non-integer")
-        self.assertNotEqual(_thread.get_ident(), 0,
+        self.assertTrue(_thread.get_ident() != 0,
                         "_thread.get_ident() returned 0")
 
     def test_LockType(self):
@@ -125,7 +125,7 @@ class ThreadTests(unittest.TestCase):
             """Use to test _thread.start_new_thread() passes args properly."""
             queue.put((arg1, arg2))
 
-        testing_queue = Queue.Queue(1)
+        testing_queue = queue.Queue(1)
         _thread.start_new_thread(arg_tester, (testing_queue, True, True))
         result = testing_queue.get()
         self.assertTrue(result[0] and result[1],
@@ -149,12 +149,12 @@ class ThreadTests(unittest.TestCase):
             queue.put(_thread.get_ident())
 
         thread_count = 5
-        testing_queue = Queue.Queue(thread_count)
-        if test_support.verbose:
-            print
-            print "*** Testing multiple thread creation "\
-            "(will take approx. %s to %s sec.) ***" % (DELAY, thread_count)
-        for count in xrange(thread_count):
+        testing_queue = queue.Queue(thread_count)
+        if support.verbose:
+            print()
+            print("*** Testing multiple thread creation "\
+            "(will take approx. %s to %s sec.) ***" % (DELAY, thread_count))
+        for count in range(thread_count):
             if DELAY:
                 local_delay = round(random.random(), 1)
             else:
@@ -162,9 +162,9 @@ class ThreadTests(unittest.TestCase):
             _thread.start_new_thread(queue_mark,
                                      (testing_queue, local_delay))
         time.sleep(DELAY)
-        if test_support.verbose:
-            print 'done'
-        self.assertEqual(testing_queue.qsize(), thread_count,
+        if support.verbose:
+            print('done')
+        self.assertTrue(testing_queue.qsize() == thread_count,
                         "Not all %s threads executed properly after %s sec." %
                         (thread_count, DELAY))
 
@@ -173,10 +173,10 @@ def test_main(imported_module=None):
     if imported_module:
         _thread = imported_module
         DELAY = 2
-    if test_support.verbose:
-        print
-        print "*** Using %s as _thread module ***" % _thread
-    test_support.run_unittest(LockTests, MiscTests, ThreadTests)
+    if support.verbose:
+        print()
+        print("*** Using %s as _thread module ***" % _thread)
+    support.run_unittest(LockTests, MiscTests, ThreadTests)
 
 if __name__ == '__main__':
     test_main()

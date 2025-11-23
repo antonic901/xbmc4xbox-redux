@@ -10,6 +10,7 @@
  * On OSX 10.4 (and earlier) this falls back to using exec because the
  * posix_spawnv functions aren't available there.
  */
+
 #pragma weak_import posix_spawnattr_init
 #pragma weak_import posix_spawnattr_setbinpref_np
 #pragma weak_import posix_spawnattr_setflags
@@ -26,6 +27,8 @@
 #include <err.h>
 #include <dlfcn.h>
 #include <stdlib.h>
+#include <Python.h>
+#include <mach-o/dyld.h>
 
 
 extern char** environ;
@@ -148,6 +151,53 @@ setup_spawnattr(posix_spawnattr_t* spawnattr)
 int
 main(int argc, char **argv) {
     char* exec_path = get_python_path();
+    static char path[PATH_MAX * 2];
+    static char real_path[PATH_MAX * 2];
+    int status;
+    uint32_t size = PATH_MAX * 2;
+
+    /* Set the original executable path in the environment. */
+    status = _NSGetExecutablePath(path, &size);
+    if (status == 0) {
+        /*
+         * Note: don't call 'realpath', that will
+         * erase symlink information, and that
+         * breaks "pyvenv --symlink"
+         *
+         * It is nice to have the directory name
+         * as a cleaned up absolute path though,
+         * therefore call realpath on dirname(path)
+         */
+        char* slash = strrchr(path, '/');
+        if (slash) {
+            char  replaced;
+            replaced = slash[1];
+            slash[1] = 0;
+            if (realpath(path, real_path) == NULL) {
+                err(1, "realpath: %s", path);
+            }
+            slash[1] = replaced;
+            if (strlcat(real_path, slash, sizeof(real_path)) > sizeof(real_path)) {
+                errno = EINVAL;
+                err(1, "realpath: %s", path);
+            }
+
+        } else {
+            if (realpath(".", real_path) == NULL) {
+                err(1, "realpath: %s", path);
+            }
+            if (strlcat(real_path, "/", sizeof(real_path)) > sizeof(real_path)) {
+                errno = EINVAL;
+                err(1, "realpath: %s", path);
+            }
+            if (strlcat(real_path, path, sizeof(real_path)) > sizeof(real_path)) {
+                errno = EINVAL;
+                err(1, "realpath: %s", path);
+            }
+        }
+
+        setenv("__PYVENV_LAUNCHER__", real_path, 1);
+    }
 
     /*
      * Let argv[0] refer to the new interpreter. This is needed to
@@ -158,13 +208,11 @@ main(int argc, char **argv) {
     argv[0] = exec_path;
 
 #ifdef HAVE_SPAWN_H
-
     /* We're weak-linking to posix-spawnv to ensure that
      * an executable build on 10.5 can work on 10.4.
      */
     if (posix_spawn != NULL) {
         posix_spawnattr_t spawnattr = NULL;
-
 
         setup_spawnattr(&spawnattr);
         posix_spawn(NULL, exec_path, NULL,

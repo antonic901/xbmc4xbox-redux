@@ -18,13 +18,12 @@ configuration problem notification and resolution.
 """
 # TODOs added Oct 2014, tjr
 
-from __future__ import print_function
 import os
 import sys
 
-from ConfigParser import ConfigParser
-from Tkinter import TkVersion
-from tkFont import Font, nametofont
+from configparser import ConfigParser
+from tkinter import TkVersion
+from tkinter.font import Font, nametofont
 
 class InvalidConfigType(Exception): pass
 class InvalidConfigSet(Exception): pass
@@ -40,7 +39,7 @@ class IdleConfParser(ConfigParser):
         cfgFile - string, fully specified configuration file name
         """
         self.file = cfgFile
-        ConfigParser.__init__(self, defaults=cfgDefaults)
+        ConfigParser.__init__(self, defaults=cfgDefaults, strict=False)
 
     def Get(self, section, option, type=None, default=None, raw=False):
         """
@@ -133,7 +132,7 @@ class IdleUserConfParser(IdleConfParser):
             fname = self.file
             try:
                 cfgFile = open(fname, 'w')
-            except IOError:
+            except OSError:
                 os.unlink(fname)
                 cfgFile = open(fname, 'w')
             with cfgFile:
@@ -195,7 +194,7 @@ class IdleConf:
                         userDir + ',\n but the path does not exist.')
                 try:
                     print(warn, file=sys.stderr)
-                except IOError:
+                except OSError:
                     pass
                 userDir = '~'
         if userDir == "~": # still no path to home!
@@ -205,7 +204,7 @@ class IdleConf:
         if not os.path.exists(userDir):
             try:
                 os.mkdir(userDir)
-            except (OSError, IOError):
+            except OSError:
                 warn = ('\n Warning: unable to create user config directory\n' +
                         userDir + '\n Check path and permissions.\n Exiting!\n')
                 print(warn, file=sys.stderr)
@@ -238,7 +237,7 @@ class IdleConf:
                        self.userCfg[configType].Get(section, option, raw=raw)))
             try:
                 print(warning, file=sys.stderr)
-            except IOError:
+            except OSError:
                 pass
         try:
             if self.defaultCfg[configType].has_option(section,option):
@@ -255,7 +254,7 @@ class IdleConf:
                        (option, section, default))
             try:
                 print(warning, file=sys.stderr)
-            except IOError:
+            except OSError:
                 pass
         return default
 
@@ -366,7 +365,7 @@ class IdleConf:
                            (element, themeName, theme[element]))
                 try:
                     print(warning, file=sys.stderr)
-                except IOError:
+                except OSError:
                     pass
             theme[element] = cfgParser.Get(
                     themeName, element, default=theme[element])
@@ -652,7 +651,7 @@ class IdleConf:
                                (event, keySetName, keyBindings[event]))
                     try:
                         print(warning, file=sys.stderr)
-                    except IOError:
+                    except OSError:
                         pass
         return keyBindings
 
@@ -685,7 +684,7 @@ class IdleConf:
                 helpPath=value[1].strip()
             if menuItem and helpPath: #neither are empty strings
                 helpSources.append( (menuItem,helpPath,option) )
-        helpSources.sort(key=lambda x: int(x[2]))
+        helpSources.sort(key=lambda x: x[2])
         return helpSources
 
     def GetAllExtraHelpSourcesList(self):
@@ -721,7 +720,7 @@ class IdleConf:
                 actualFont = Font.actual(f)
                 family = actualFont['family']
                 size = actualFont['size']
-                if size <= 0:
+                if size < 0:
                     size = 10  # if font in pixels, ignore actual size
                 bold = actualFont['weight']=='bold'
         return (family, size, 'bold' if bold else 'normal')
@@ -741,32 +740,21 @@ class IdleConf:
 idleConf = IdleConf()
 
 # TODO Revise test output, write expanded unittest
-#
+### module test
 if __name__ == '__main__':
-    from zlib import crc32
-    line, crc = 0, 0
-
-    def sprint(obj):
-        global line, crc
-        txt = str(obj)
-        line += 1
-        crc = crc32(txt.encode(encoding='utf-8'), crc)
-        print(txt)
-        #print('***', line, crc, '***')  # uncomment for diagnosis
-
     def dumpCfg(cfg):
-        print('\n', cfg, '\n')  # has variable '0xnnnnnnnn' addresses
-        for key in sorted(cfg.keys()):
+        print('\n', cfg, '\n')
+        for key in cfg:
             sections = cfg[key].sections()
-            sprint(key)
-            sprint(sections)
+            print(key)
+            print(sections)
             for section in sections:
                 options = cfg[key].options(section)
-                sprint(section)
-                sprint(options)
+                print(section)
+                print(options)
                 for option in options:
-                    sprint(option + ' = ' + cfg[key].Get(section, option))
-
+                    print(option, '=', cfg[key].Get(section, option))
     dumpCfg(idleConf.defaultCfg)
     dumpCfg(idleConf.userCfg)
-    print('\nlines = ', line, ', crc = ', crc, sep='')
+    print(idleConf.userCfg['main'].Get('Theme', 'name'))
+    #print idleConf.userCfg['highlight'].GetDefHighlight('Foo','normal')

@@ -1,61 +1,54 @@
 """Test largefile support on system where this makes sense.
 """
 
-from __future__ import print_function
-
 import os
 import stat
 import sys
 import unittest
-from test.test_support import run_unittest, TESTFN, verbose, requires, \
-                              unlink
+from test.support import TESTFN, requires, unlink
 import io  # C implementation of io
 import _pyio as pyio # Python implementation of io
 
-try:
-    import signal
-    # The default handler for SIGXFSZ is to abort the process.
-    # By ignoring it, system calls exceeding the file size resource
-    # limit will raise IOError instead of crashing the interpreter.
-    oldhandler = signal.signal(signal.SIGXFSZ, signal.SIG_IGN)
-except (ImportError, AttributeError):
-    pass
-
-# create >2GB file (2GB = 2147483648 bytes)
+# size of file to create (>2GB; 2GB == 2147483648 bytes)
 size = 2500000000
 
-
-class LargeFileTest(unittest.TestCase):
-    """Test that each file function works as expected for a large
-    (i.e. > 2GB, do  we have to check > 4GB) files.
-
-    NOTE: the order of execution of the test methods is important! test_seek
-    must run first to create the test file. File cleanup must also be handled
-    outside the test instances because of this.
-
+class LargeFileTest:
+    """Test that each file function works as expected for large
+    (i.e. > 2GB) files.
     """
 
-    def test_seek(self):
-        if verbose:
-            print('create large file via seek (may be sparse file) ...')
-        with self.open(TESTFN, 'wb') as f:
-            f.write(b'z')
+    def setUp(self):
+        if os.path.exists(TESTFN):
+            mode = 'r+b'
+        else:
+            mode = 'w+b'
+
+        with self.open(TESTFN, mode) as f:
+            current_size = os.fstat(f.fileno())[stat.ST_SIZE]
+            if current_size == size+1:
+                return
+
+            if current_size == 0:
+                f.write(b'z')
+
             f.seek(0)
             f.seek(size)
             f.write(b'a')
             f.flush()
-            if verbose:
-                print('check file size with os.fstat')
             self.assertEqual(os.fstat(f.fileno())[stat.ST_SIZE], size+1)
 
+    @classmethod
+    def tearDownClass(cls):
+        with cls.open(TESTFN, 'wb'):
+            pass
+        if not os.stat(TESTFN)[stat.ST_SIZE] == 0:
+            raise cls.failureException('File was not truncated by opening '
+                                       'with mode "wb"')
+
     def test_osstat(self):
-        if verbose:
-            print('check file size with os.stat')
         self.assertEqual(os.stat(TESTFN)[stat.ST_SIZE], size+1)
 
     def test_seek_read(self):
-        if verbose:
-            print('play around with seek() and read() with the built largefile')
         with self.open(TESTFN, 'rb') as f:
             self.assertEqual(f.tell(), 0)
             self.assertEqual(f.read(1), b'z')
@@ -87,8 +80,6 @@ class LargeFileTest(unittest.TestCase):
             self.assertEqual(f.tell(), 1)
 
     def test_lseek(self):
-        if verbose:
-            print('play around with os.lseek() with the built largefile')
         with self.open(TESTFN, 'rb') as f:
             self.assertEqual(os.lseek(f.fileno(), 0, 0), 0)
             self.assertEqual(os.lseek(f.fileno(), 42, 0), 42)
@@ -102,13 +93,10 @@ class LargeFileTest(unittest.TestCase):
             self.assertEqual(f.read(1), b'a')
 
     def test_truncate(self):
-        if verbose:
-            print('try truncate')
         with self.open(TESTFN, 'r+b') as f:
-            # this is already decided before start running the test suite
-            # but we do it anyway for extra protection
             if not hasattr(f, 'truncate'):
-                raise unittest.SkipTest("open().truncate() not available on this system")
+                raise unittest.SkipTest("open().truncate() not available "
+                                        "on this system")
             f.seek(0, 2)
             # else we've lost track of the true size
             self.assertEqual(f.tell(), size+1)
@@ -124,31 +112,35 @@ class LargeFileTest(unittest.TestCase):
             newsize -= 1
             f.seek(42)
             f.truncate(newsize)
-            if self.new_io:
-                self.assertEqual(f.tell(), 42)
+            self.assertEqual(f.tell(), 42)
             f.seek(0, 2)
             self.assertEqual(f.tell(), newsize)
             # XXX truncate(larger than true size) is ill-defined
             # across platform; cut it waaaaay back
             f.seek(0)
             f.truncate(1)
-            if self.new_io:
-                self.assertEqual(f.tell(), 0)       # else pointer moved
+            self.assertEqual(f.tell(), 0)       # else pointer moved
             f.seek(0)
             self.assertEqual(len(f.read()), 1)  # else wasn't truncated
 
     def test_seekable(self):
         # Issue #5016; seekable() can return False when the current position
         # is negative when truncated to an int.
-        if not self.new_io:
-            self.skipTest("builtin file doesn't have seekable()")
         for pos in (2**31-1, 2**31, 2**31+1):
             with self.open(TESTFN, 'rb') as f:
                 f.seek(pos)
                 self.assertTrue(f.seekable())
 
+def setUpModule():
+    try:
+        import signal
+        # The default handler for SIGXFSZ is to abort the process.
+        # By ignoring it, system calls exceeding the file size resource
+        # limit will raise OSError instead of crashing the interpreter.
+        signal.signal(signal.SIGXFSZ, signal.SIG_IGN)
+    except (ImportError, AttributeError):
+        pass
 
-def test_main():
     # On Windows and Mac OSX this test comsumes large resources; It
     # takes a long time to build the >2GB file and takes >2GB of disk
     # space therefore the resource must be enabled to run this test.
@@ -164,37 +156,25 @@ def test_main():
         try:
             # 2**31 == 2147483648
             f.seek(2147483649)
-            # Seeking is not enough of a test: you must write and
-            # flush, too!
+            # Seeking is not enough of a test: you must write and flush, too!
             f.write(b'x')
             f.flush()
-        except (IOError, OverflowError):
+        except (OSError, OverflowError):
+            raise unittest.SkipTest("filesystem does not have "
+                                    "largefile support")
+        finally:
             f.close()
             unlink(TESTFN)
-            raise unittest.SkipTest("filesystem does not have largefile support")
-        else:
-            f.close()
-    suite = unittest.TestSuite()
-    for _open, prefix in [(io.open, 'C'), (pyio.open, 'Py'),
-                          (open, 'Builtin')]:
-        class TestCase(LargeFileTest):
-            pass
-        TestCase.open = staticmethod(_open)
-        TestCase.new_io = _open is not open
-        TestCase.__name__ = prefix + LargeFileTest.__name__
-        suite.addTest(TestCase('test_seek'))
-        suite.addTest(TestCase('test_osstat'))
-        suite.addTest(TestCase('test_seek_read'))
-        suite.addTest(TestCase('test_lseek'))
-        with _open(TESTFN, 'wb') as f:
-            if hasattr(f, 'truncate'):
-                suite.addTest(TestCase('test_truncate'))
-        suite.addTest(TestCase('test_seekable'))
-        unlink(TESTFN)
-    try:
-        run_unittest(suite)
-    finally:
-        unlink(TESTFN)
+
+
+class CLargeFileTest(LargeFileTest, unittest.TestCase):
+    open = staticmethod(io.open)
+
+class PyLargeFileTest(LargeFileTest, unittest.TestCase):
+    open = staticmethod(pyio.open)
+
+def tearDownModule():
+    unlink(TESTFN)
 
 if __name__ == '__main__':
-    test_main()
+    unittest.main()

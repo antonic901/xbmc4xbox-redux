@@ -6,12 +6,10 @@ Otherwise, tests are mostly independent.
 *** Currently only test grep_it.
 """
 import unittest
-from test.test_support import captured_stdout, findfile
+from test.support import captured_stdout
 from idlelib.idle_test.mock_tk import Var
 from idlelib.GrepDialog import GrepDialog
 import re
-
-__file__ = findfile('idlelib/idle_test') + '/test_grep.py'
 
 class Dummy_searchengine:
     '''GrepDialog.__init__ calls parent SearchDiabolBase which attaches the
@@ -26,8 +24,8 @@ searchengine = Dummy_searchengine()
 class Dummy_grep:
     # Methods tested
     #default_command = GrepDialog.default_command
-    grep_it = GrepDialog.grep_it.im_func
-    findfiles = GrepDialog.findfiles.im_func
+    grep_it = GrepDialog.grep_it
+    findfiles = GrepDialog.findfiles
     # Other stuff needed
     recvar = Var(False)
     engine = searchengine

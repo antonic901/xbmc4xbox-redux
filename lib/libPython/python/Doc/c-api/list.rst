@@ -15,8 +15,8 @@ List Objects
 
 .. c:var:: PyTypeObject PyList_Type
 
-   This instance of :c:type:`PyTypeObject` represents the Python list type.  This
-   is the same object as ``list`` in the Python layer.
+   This instance of :c:type:`PyTypeObject` represents the Python list type.
+   This is the same object as :class:`list` in the Python layer.
 
 
 .. c:function:: int PyList_Check(PyObject *p)
@@ -24,16 +24,11 @@ List Objects
    Return true if *p* is a list object or an instance of a subtype of the list
    type.
 
-   .. versionchanged:: 2.2
-      Allowed subtypes to be accepted.
-
 
 .. c:function:: int PyList_CheckExact(PyObject *p)
 
    Return true if *p* is a list object, but not an instance of a subtype of
    the list type.
-
-   .. versionadded:: 2.2
 
 
 .. c:function:: PyObject* PyList_New(Py_ssize_t len)
@@ -47,10 +42,6 @@ List Objects
       :c:func:`PySequence_SetItem`  or expose the object to Python code before
       setting all items to a real object with :c:func:`PyList_SetItem`.
 
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` for *size*. This might require
-      changes in your code for properly supporting 64-bit systems.
-
 
 .. c:function:: Py_ssize_t PyList_Size(PyObject *list)
 
@@ -59,55 +50,34 @@ List Objects
    Return the length of the list object in *list*; this is equivalent to
    ``len(list)`` on a list object.
 
-   .. versionchanged:: 2.5
-      This function returned an :c:type:`int`. This might require changes in
-      your code for properly supporting 64-bit systems.
-
 
 .. c:function:: Py_ssize_t PyList_GET_SIZE(PyObject *list)
 
    Macro form of :c:func:`PyList_Size` without error checking.
 
-   .. versionchanged:: 2.5
-      This macro returned an :c:type:`int`. This might require changes in your
-      code for properly supporting 64-bit systems.
-
 
 .. c:function:: PyObject* PyList_GetItem(PyObject *list, Py_ssize_t index)
 
    Return the object at position *index* in the list pointed to by *list*.  The
-   position must be non-negative; indexing from the end of the list is not
-   supported.  If *index* is out of bounds (<0 or >=len(list)),
-   return *NULL* and set an :exc:`IndexError` exception.
-
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` for *index*. This might require
-      changes in your code for properly supporting 64-bit systems.
+   position must be positive, indexing from the end of the list is not
+   supported.  If *index* is out of bounds, return *NULL* and set an
+   :exc:`IndexError` exception.
 
 
 .. c:function:: PyObject* PyList_GET_ITEM(PyObject *list, Py_ssize_t i)
 
    Macro form of :c:func:`PyList_GetItem` without error checking.
 
-   .. versionchanged:: 2.5
-      This macro used an :c:type:`int` for *i*. This might require changes in
-      your code for properly supporting 64-bit systems.
-
 
 .. c:function:: int PyList_SetItem(PyObject *list, Py_ssize_t index, PyObject *item)
 
-   Set the item at index *index* in list to *item*.  Return ``0`` on success.
-   If *index* is out of bounds, return ``-1`` and set an :exc:`IndexError`
-   exception.
+   Set the item at index *index* in list to *item*.  Return ``0`` on success
+   or ``-1`` on failure.
 
    .. note::
 
       This function "steals" a reference to *item* and discards a reference to
       an item already in the list at the affected position.
-
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` for *index*. This might require
-      changes in your code for properly supporting 64-bit systems.
 
 
 .. c:function:: void PyList_SET_ITEM(PyObject *list, Py_ssize_t i, PyObject *o)
@@ -119,12 +89,8 @@ List Objects
 
       This macro "steals" a reference to *item*, and, unlike
       :c:func:`PyList_SetItem`, does *not* discard a reference to any item that
-      it being replaced; any reference in *list* at position *i* will be
+      is being replaced; any reference in *list* at position *i* will be
       leaked.
-
-   .. versionchanged:: 2.5
-      This macro used an :c:type:`int` for *i*. This might require
-      changes in your code for properly supporting 64-bit systems.
 
 
 .. c:function:: int PyList_Insert(PyObject *list, Py_ssize_t index, PyObject *item)
@@ -132,10 +98,6 @@ List Objects
    Insert the item *item* into list *list* in front of index *index*.  Return
    ``0`` if successful; return ``-1`` and set an exception if unsuccessful.
    Analogous to ``list.insert(index, item)``.
-
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` for *index*. This might require
-      changes in your code for properly supporting 64-bit systems.
 
 
 .. c:function:: int PyList_Append(PyObject *list, PyObject *item)
@@ -149,11 +111,8 @@ List Objects
 
    Return a list of the objects in *list* containing the objects *between* *low*
    and *high*.  Return *NULL* and set an exception if unsuccessful.  Analogous
-   to ``list[low:high]``.  Indexing from the end of the list is not supported.
-
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` for *low* and *high*. This might
-      require changes in your code for properly supporting 64-bit systems.
+   to ``list[low:high]``.  Negative indices, as when slicing from Python, are not
+   supported.
 
 
 .. c:function:: int PyList_SetSlice(PyObject *list, Py_ssize_t low, Py_ssize_t high, PyObject *itemlist)
@@ -161,12 +120,8 @@ List Objects
    Set the slice of *list* between *low* and *high* to the contents of
    *itemlist*.  Analogous to ``list[low:high] = itemlist``. The *itemlist* may
    be *NULL*, indicating the assignment of an empty list (slice deletion).
-   Return ``0`` on success, ``-1`` on failure.  Indexing from the end of the
-   list is not supported.
-
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` for *low* and *high*. This might
-      require changes in your code for properly supporting 64-bit systems.
+   Return ``0`` on success, ``-1`` on failure.  Negative indices, as when
+   slicing from Python, are not supported.
 
 
 .. c:function:: int PyList_Sort(PyObject *list)
@@ -187,3 +142,10 @@ List Objects
 
    Return a new tuple object containing the contents of *list*; equivalent to
    ``tuple(list)``.
+
+
+.. c:function:: int PyList_ClearFreeList()
+
+   Clear the free list. Return the total number of freed items.
+
+   .. versionadded:: 3.3

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="_multiprocessing"
 	ProjectGUID="{9E48B300-37D1-11DD-8C41-005056C00008}"
 	RootNamespace="_multiprocessing"
@@ -522,10 +522,6 @@
 				RelativePath="..\..\Modules\_multiprocessing\multiprocessing.h"
 				>
 			</File>
-			<File
-				RelativePath="..\..\Modules\_multiprocessing\connection.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Source Files"
@@ -535,19 +531,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Modules\_multiprocessing\pipe_connection.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Modules\_multiprocessing\semaphore.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Modules\_multiprocessing\socket_connection.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Modules\_multiprocessing\win32_functions.c"
 				>
 			</File>
 		</Filter>

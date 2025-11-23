@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-import sys
 import codecs
+import io
 import logging
 import os
 import re
 import shutil
-import StringIO
 import sys
 import tempfile
 import unittest
@@ -18,15 +17,6 @@ PY2_TEST_MODULE = os.path.join(TEST_DATA_DIR, "py2_test_grammar.py")
 
 
 class TestMain(unittest.TestCase):
-
-    if not hasattr(unittest.TestCase, 'assertNotRegex'):
-        # This method was only introduced in 3.2.
-        def assertNotRegex(self, text, regexp, msg=None):
-            import re
-            if not hasattr(regexp, 'search'):
-                regexp = re.compile(regexp)
-            if regexp.search(text):
-                self.fail("regexp %s MATCHED text %r" % (regexp.pattern, text))
 
     def setUp(self):
         self.temp_dir = None  # tearDown() will rmtree this directory if set.
@@ -52,13 +42,13 @@ class TestMain(unittest.TestCase):
             sys.stderr = save_stderr
 
     def test_unencodable_diff(self):
-        input_stream = StringIO.StringIO(u"print 'nothing'\nprint u'über'\n")
-        out = StringIO.StringIO()
+        input_stream = io.StringIO("print 'nothing'\nprint u'über'\n")
+        out = io.BytesIO()
         out_enc = codecs.getwriter("ascii")(out)
-        err = StringIO.StringIO()
+        err = io.StringIO()
         ret = self.run_2to3_capture(["-"], input_stream, out_enc, err)
         self.assertEqual(ret, 0)
-        output = out.getvalue()
+        output = out.getvalue().decode("ascii")
         self.assertIn("-print 'nothing'", output)
         self.assertIn("WARNING: couldn't encode <stdin>'s diff for "
                       "your terminal", err.getvalue())
@@ -85,14 +75,14 @@ class TestMain(unittest.TestCase):
     def test_filename_changing_on_output_single_dir(self):
         """2to3 a single directory with a new output dir and suffix."""
         self.setup_test_source_trees()
-        out = StringIO.StringIO()
-        err = StringIO.StringIO()
+        out = io.StringIO()
+        err = io.StringIO()
         suffix = "TEST"
         ret = self.run_2to3_capture(
                 ["-n", "--add-suffix", suffix, "--write-unchanged-files",
                  "--no-diffs", "--output-dir",
                  self.py3_dest_dir, self.py2_src_dir],
-                StringIO.StringIO(""), out, err)
+                io.StringIO(""), out, err)
         self.assertEqual(ret, 0)
         stderr = err.getvalue()
         self.assertIn(" implies -w.", stderr)
@@ -106,7 +96,7 @@ class TestMain(unittest.TestCase):
                     os.path.join(self.py2_src_dir, name),
                     os.path.join(self.py3_dest_dir, name+suffix)), stderr)
         sep = re.escape(os.sep)
-        self.assertRegexpMatches(
+        self.assertRegex(
                 stderr, r"No changes to .*/__init__\.py".replace("/", sep))
         self.assertNotRegex(
                 stderr, r"No changes to .*/trivial\.py".replace("/", sep))
@@ -114,13 +104,13 @@ class TestMain(unittest.TestCase):
     def test_filename_changing_on_output_two_files(self):
         """2to3 two files in one directory with a new output dir."""
         self.setup_test_source_trees()
-        err = StringIO.StringIO()
+        err = io.StringIO()
         py2_files = [self.trivial_py2_file, self.init_py2_file]
         expected_files = set(os.path.basename(name) for name in py2_files)
         ret = self.run_2to3_capture(
                 ["-n", "-w", "--write-unchanged-files",
                  "--no-diffs", "--output-dir", self.py3_dest_dir] + py2_files,
-                StringIO.StringIO(""), StringIO.StringIO(), err)
+                io.StringIO(""), io.StringIO(), err)
         self.assertEqual(ret, 0)
         stderr = err.getvalue()
         self.assertIn(
@@ -131,11 +121,11 @@ class TestMain(unittest.TestCase):
     def test_filename_changing_on_output_single_file(self):
         """2to3 a single file with a new output dir."""
         self.setup_test_source_trees()
-        err = StringIO.StringIO()
+        err = io.StringIO()
         ret = self.run_2to3_capture(
                 ["-n", "-w", "--no-diffs", "--output-dir", self.py3_dest_dir,
                  self.trivial_py2_file],
-                StringIO.StringIO(""), StringIO.StringIO(), err)
+                io.StringIO(""), io.StringIO(), err)
         self.assertEqual(ret, 0)
         stderr = err.getvalue()
         self.assertIn(

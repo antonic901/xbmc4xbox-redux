@@ -27,18 +27,10 @@ Example::
    readline.__name__         readline.parse_and_bind(
    >>> readline.
 
-The :mod:`rlcompleter` module is designed for use with Python's interactive
-mode.  A user can add the following lines to his or her initialization file
-(identified by the :envvar:`PYTHONSTARTUP` environment variable) to get
-automatic :kbd:`Tab` completion::
-
-   try:
-       import readline
-   except ImportError:
-       print "Module readline not available."
-   else:
-       import rlcompleter
-       readline.parse_and_bind("tab: complete")
+The :mod:`rlcompleter` module is designed for use with Python's
+:ref:`interactive mode <tut-interactive>`.  Unless Python is run with the
+:option:`-S` option, the module is automatically imported and configured
+(see :ref:`rlcompleter-config`).
 
 On platforms without :mod:`readline`, the :class:`Completer` class defined by
 this module can still be used for custom purposes.
@@ -57,7 +49,7 @@ Completer objects have the following method:
    Return the *state*\ th completion for *text*.
 
    If called for *text* that doesn't include a period character (``'.'``), it will
-   complete from names currently defined in :mod:`__main__`, :mod:`__builtin__` and
+   complete from names currently defined in :mod:`__main__`, :mod:`builtins` and
    keywords (as defined by the :mod:`keyword` module).
 
    If called for a dotted name, it will try to evaluate anything without obvious

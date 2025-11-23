@@ -1,6 +1,7 @@
-from test.test_support import TESTFN, run_unittest
+from test.support import TESTFN
 import unittest
 from test import audiotests
+from audioop import byteswap
 import sys
 import wave
 
@@ -8,9 +9,6 @@ import wave
 class WaveTest(audiotests.AudioWriteTests,
                audiotests.AudioTestsWithSourceFile):
     module = wave
-    test_unseekable_write = None
-    test_unseekable_overflowed_write = None
-    test_unseekable_incompleted_write = None
 
 
 class WavePCM8Test(WaveTest, unittest.TestCase):
@@ -22,7 +20,7 @@ class WavePCM8Test(WaveTest, unittest.TestCase):
     nframes = 48
     comptype = 'NONE'
     compname = 'not compressed'
-    frames = audiotests.fromhex("""\
+    frames = bytes.fromhex("""\
       827F CB80 B184 0088 4B86 C883 3F81 837E 387A 3473 A96B 9A66 \
       6D64 4662 8E60 6F60 D762 7B68 936F 5877 177B 757C 887B 5F7B \
       917A BE7B 3C7C E67F 4F84 C389 418E D192 6E97 0296 FF94 0092 \
@@ -39,7 +37,7 @@ class WavePCM16Test(WaveTest, unittest.TestCase):
     nframes = 48
     comptype = 'NONE'
     compname = 'not compressed'
-    frames = audiotests.fromhex("""\
+    frames = bytes.fromhex("""\
       022EFFEA 4B5C00F9 311404EF 80DC0843 CBDF06B2 48AA03F3 BFE701B2 036BFE7C \
       B857FA3E B4B2F34F 2999EBCA 1A5FE6D7 EDFCE491 C626E279 0E05E0B8 EF27E02D \
       5754E275 FB31E843 1373EF89 D827F72C 978BFB7A F5F7FC11 0866FB9C DF30FB42 \
@@ -48,13 +46,7 @@ class WavePCM16Test(WaveTest, unittest.TestCase):
       E4B50CEB 63440A5A 08CA0A1F 2BBA0B0B 51460E47 8BCB113C B6F50EEA 44150A59 \
       """)
     if sys.byteorder != 'big':
-        frames = audiotests.byteswap2(frames)
-
-    if sys.byteorder == 'big':
-        @unittest.expectedFailure
-        def test_unseekable_incompleted_write(self):
-            super().test_unseekable_incompleted_write()
-
+        frames = byteswap(frames, 2)
 
 
 class WavePCM24Test(WaveTest, unittest.TestCase):
@@ -66,7 +58,7 @@ class WavePCM24Test(WaveTest, unittest.TestCase):
     nframes = 48
     comptype = 'NONE'
     compname = 'not compressed'
-    frames = audiotests.fromhex("""\
+    frames = bytes.fromhex("""\
       022D65FFEB9D 4B5A0F00FA54 3113C304EE2B 80DCD6084303 \
       CBDEC006B261 48A99803F2F8 BFE82401B07D 036BFBFE7B5D \
       B85756FA3EC9 B4B055F3502B 299830EBCB62 1A5CA7E6D99A \
@@ -81,7 +73,7 @@ class WavePCM24Test(WaveTest, unittest.TestCase):
       51486F0E44E1 8BCC64113B05 B6F4EC0EEB36 4413170A5B48 \
       """)
     if sys.byteorder != 'big':
-        frames = audiotests.byteswap3(frames)
+        frames = byteswap(frames, 3)
 
 
 class WavePCM32Test(WaveTest, unittest.TestCase):
@@ -93,7 +85,7 @@ class WavePCM32Test(WaveTest, unittest.TestCase):
     nframes = 48
     comptype = 'NONE'
     compname = 'not compressed'
-    frames = audiotests.fromhex("""\
+    frames = bytes.fromhex("""\
       022D65BCFFEB9D92 4B5A0F8000FA549C 3113C34004EE2BC0 80DCD680084303E0 \
       CBDEC0C006B26140 48A9980003F2F8FC BFE8248001B07D92 036BFB60FE7B5D34 \
       B8575600FA3EC920 B4B05500F3502BC0 29983000EBCB6240 1A5CA7A0E6D99A60 \
@@ -108,16 +100,8 @@ class WavePCM32Test(WaveTest, unittest.TestCase):
       51486F800E44E190 8BCC6480113B0580 B6F4EC000EEB3630 441317800A5B48A0 \
       """)
     if sys.byteorder != 'big':
-        frames = audiotests.byteswap4(frames)
+        frames = byteswap(frames, 4)
 
-    if sys.byteorder == 'big':
-        @unittest.expectedFailure
-        def test_unseekable_incompleted_write(self):
-            super().test_unseekable_incompleted_write()
-
-
-def test_main():
-    run_unittest(WavePCM8Test, WavePCM16Test, WavePCM24Test, WavePCM32Test)
 
 if __name__ == '__main__':
-    test_main()
+    unittest.main()

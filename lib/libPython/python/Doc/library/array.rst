@@ -1,4 +1,3 @@
-
 :mod:`array` --- Efficient arrays of numeric values
 ===================================================
 
@@ -15,45 +14,58 @@ them is constrained.  The type is specified at object creation time by using a
 :dfn:`type code`, which is a single character.  The following type codes are
 defined:
 
-+-----------+----------------+-------------------+-----------------------+
-| Type code | C Type         | Python Type       | Minimum size in bytes |
-+===========+================+===================+=======================+
-| ``'c'``   | char           | character         | 1                     |
-+-----------+----------------+-------------------+-----------------------+
-| ``'b'``   | signed char    | int               | 1                     |
-+-----------+----------------+-------------------+-----------------------+
-| ``'B'``   | unsigned char  | int               | 1                     |
-+-----------+----------------+-------------------+-----------------------+
-| ``'u'``   | Py_UNICODE     | Unicode character | 2 (see note)          |
-+-----------+----------------+-------------------+-----------------------+
-| ``'h'``   | signed short   | int               | 2                     |
-+-----------+----------------+-------------------+-----------------------+
-| ``'H'``   | unsigned short | int               | 2                     |
-+-----------+----------------+-------------------+-----------------------+
-| ``'i'``   | signed int     | int               | 2                     |
-+-----------+----------------+-------------------+-----------------------+
-| ``'I'``   | unsigned int   | long              | 2                     |
-+-----------+----------------+-------------------+-----------------------+
-| ``'l'``   | signed long    | int               | 4                     |
-+-----------+----------------+-------------------+-----------------------+
-| ``'L'``   | unsigned long  | long              | 4                     |
-+-----------+----------------+-------------------+-----------------------+
-| ``'f'``   | float          | float             | 4                     |
-+-----------+----------------+-------------------+-----------------------+
-| ``'d'``   | double         | float             | 8                     |
-+-----------+----------------+-------------------+-----------------------+
++-----------+--------------------+-------------------+-----------------------+-------+
+| Type code | C Type             | Python Type       | Minimum size in bytes | Notes |
++===========+====================+===================+=======================+=======+
+| ``'b'``   | signed char        | int               | 1                     |       |
++-----------+--------------------+-------------------+-----------------------+-------+
+| ``'B'``   | unsigned char      | int               | 1                     |       |
++-----------+--------------------+-------------------+-----------------------+-------+
+| ``'u'``   | Py_UNICODE         | Unicode character | 2                     | \(1)  |
++-----------+--------------------+-------------------+-----------------------+-------+
+| ``'h'``   | signed short       | int               | 2                     |       |
++-----------+--------------------+-------------------+-----------------------+-------+
+| ``'H'``   | unsigned short     | int               | 2                     |       |
++-----------+--------------------+-------------------+-----------------------+-------+
+| ``'i'``   | signed int         | int               | 2                     |       |
++-----------+--------------------+-------------------+-----------------------+-------+
+| ``'I'``   | unsigned int       | int               | 2                     |       |
++-----------+--------------------+-------------------+-----------------------+-------+
+| ``'l'``   | signed long        | int               | 4                     |       |
++-----------+--------------------+-------------------+-----------------------+-------+
+| ``'L'``   | unsigned long      | int               | 4                     |       |
++-----------+--------------------+-------------------+-----------------------+-------+
+| ``'q'``   | signed long long   | int               | 8                     | \(2)  |
++-----------+--------------------+-------------------+-----------------------+-------+
+| ``'Q'``   | unsigned long long | int               | 8                     | \(2)  |
++-----------+--------------------+-------------------+-----------------------+-------+
+| ``'f'``   | float              | float             | 4                     |       |
++-----------+--------------------+-------------------+-----------------------+-------+
+| ``'d'``   | double             | float             | 8                     |       |
++-----------+--------------------+-------------------+-----------------------+-------+
 
-.. note::
+Notes:
 
-   The ``'u'`` typecode corresponds to Python's unicode character.  On narrow
-   Unicode builds this is 2-bytes, on wide builds this is 4-bytes.
+(1)
+   The ``'u'`` type code corresponds to Python's obsolete unicode character
+   (:c:type:`Py_UNICODE` which is :c:type:`wchar_t`). Depending on the
+   platform, it can be 16 bits or 32 bits.
+
+   ``'u'`` will be removed together with the rest of the :c:type:`Py_UNICODE`
+   API.
+
+   .. deprecated-removed:: 3.3 4.0
+
+(2)
+   The ``'q'`` and ``'Q'`` type codes are available only if
+   the platform C compiler used to build Python supports C :c:type:`long long`,
+   or, on Windows, :c:type:`__int64`.
+
+   .. versionadded:: 3.3
 
 The actual representation of values is determined by the machine architecture
 (strictly speaking, by the C implementation).  The actual size can be accessed
-through the :attr:`itemsize` attribute.  The values stored  for ``'L'`` and
-``'I'`` items will be represented as Python long integers when retrieved,
-because Python's plain integer type cannot represent the full range of C's
-unsigned (long) integers.
+through the :attr:`itemsize` attribute.
 
 The module defines the following type:
 
@@ -61,27 +73,25 @@ The module defines the following type:
 .. class:: array(typecode[, initializer])
 
    A new array whose items are restricted by *typecode*, and initialized
-   from the optional *initializer* value, which must be a list, string, or iterable
-   over elements of the appropriate type.
-
-   .. versionchanged:: 2.4
-      Formerly, only lists or strings were accepted.
+   from the optional *initializer* value, which must be a list, a
+   :term:`bytes-like object`, or iterable over elements of the
+   appropriate type.
 
    If given a list or string, the initializer is passed to the new array's
-   :meth:`fromlist`, :meth:`fromstring`, or :meth:`fromunicode` method (see below)
+   :meth:`fromlist`, :meth:`frombytes`, or :meth:`fromunicode` method (see below)
    to add initial items to the array.  Otherwise, the iterable initializer is
    passed to the :meth:`extend` method.
 
 
-.. data:: ArrayType
+.. data:: typecodes
 
-   Obsolete alias for :class:`~array.array`.
+   A string with all available type codes.
 
 Array objects support the ordinary sequence operations of indexing, slicing,
 concatenation, and multiplication.  When using slice assignment, the assigned
 value must be an array object with the same type code; in all other cases,
 :exc:`TypeError` is raised. Array objects also implement the buffer interface,
-and may be used wherever buffer objects are supported.
+and may be used wherever :term:`bytes-like object`\ s are supported.
 
 The following data items and methods are also supported:
 
@@ -139,17 +149,23 @@ The following data items and methods are also supported:
    be raised.  If *iterable* is not an array, it must be iterable and its elements
    must be the right type to be appended to the array.
 
-   .. versionchanged:: 2.4
-      Formerly, the argument could only be another array.
+
+.. method:: array.frombytes(s)
+
+   Appends items from the string, interpreting the string as an array of machine
+   values (as if it had been read from a file using the :meth:`fromfile` method).
+
+   .. versionadded:: 3.2
+      :meth:`fromstring` is renamed to :meth:`frombytes` for clarity.
 
 
 .. method:: array.fromfile(f, n)
 
-   Read *n* items (as machine values) from the file object *f* and append them to
-   the end of the array.  If less than *n* items are available, :exc:`EOFError` is
-   raised, but the items that were available are still inserted into the array.
-   *f* must be a real built-in file object; something else with a :meth:`read`
-   method won't do.
+   Read *n* items (as machine values) from the :term:`file object` *f* and append
+   them to the end of the array.  If less than *n* items are available,
+   :exc:`EOFError` is raised, but the items that were available are still
+   inserted into the array. *f* must be a real built-in file object; something
+   else with a :meth:`read` method won't do.
 
 
 .. method:: array.fromlist(list)
@@ -158,17 +174,16 @@ The following data items and methods are also supported:
    a.append(x)`` except that if there is a type error, the array is unchanged.
 
 
-.. method:: array.fromstring(s)
+.. method:: array.fromstring()
 
-   Appends items from the string, interpreting the string as an array of machine
-   values (as if it had been read from a file using the :meth:`fromfile` method).
+   Deprecated alias for :meth:`frombytes`.
 
 
 .. method:: array.fromunicode(s)
 
    Extends this array with data from the given unicode string.  The array must
    be a type ``'u'`` array; otherwise a :exc:`ValueError` is raised.  Use
-   ``array.fromstring(unicodestring.encode(enc))`` to append Unicode data to an
+   ``array.frombytes(unicodestring.encode(enc))`` to append Unicode data to an
    array of some other type.
 
 
@@ -191,18 +206,6 @@ The following data items and methods are also supported:
    returned.
 
 
-.. method:: array.read(f, n)
-
-   .. deprecated:: 1.5.1
-      Use the :meth:`fromfile` method.
-
-   Read *n* items (as machine values) from the file object *f* and append them to
-   the end of the array.  If less than *n* items are available, :exc:`EOFError` is
-   raised, but the items that were available are still inserted into the array.
-   *f* must be a real built-in file object; something else with a :meth:`read`
-   method won't do.
-
-
 .. method:: array.remove(x)
 
    Remove the first occurrence of *x* from the array.
@@ -213,9 +216,19 @@ The following data items and methods are also supported:
    Reverse the order of the items in the array.
 
 
+.. method:: array.tobytes()
+
+   Convert the array to an array of machine values and return the bytes
+   representation (the same sequence of bytes that would be written to a file by
+   the :meth:`tofile` method.)
+
+   .. versionadded:: 3.2
+      :meth:`tostring` is renamed to :meth:`tobytes` for clarity.
+
+
 .. method:: array.tofile(f)
 
-   Write all items (as machine values) to the file object *f*.
+   Write all items (as machine values) to the :term:`file object` *f*.
 
 
 .. method:: array.tolist()
@@ -225,36 +238,26 @@ The following data items and methods are also supported:
 
 .. method:: array.tostring()
 
-   Convert the array to an array of machine values and return the string
-   representation (the same sequence of bytes that would be written to a file by
-   the :meth:`tofile` method.)
+   Deprecated alias for :meth:`tobytes`.
 
 
 .. method:: array.tounicode()
 
    Convert the array to a unicode string.  The array must be a type ``'u'`` array;
-   otherwise a :exc:`ValueError` is raised. Use ``array.tostring().decode(enc)`` to
+   otherwise a :exc:`ValueError` is raised. Use ``array.tobytes().decode(enc)`` to
    obtain a unicode string from an array of some other type.
 
 
-.. method:: array.write(f)
-
-   .. deprecated:: 1.5.1
-      Use the :meth:`tofile` method.
-
-   Write all items (as machine values) to the file object *f*.
-
 When an array object is printed or converted to a string, it is represented as
 ``array(typecode, initializer)``.  The *initializer* is omitted if the array is
-empty, otherwise it is a string if the *typecode* is ``'c'``, otherwise it is a
+empty, otherwise it is a string if the *typecode* is ``'u'``, otherwise it is a
 list of numbers.  The string is guaranteed to be able to be converted back to an
 array with the same type and value using :func:`eval`, so long as the
-:class:`~array.array` class has been imported using ``from array import array``.
+:func:`array` function has been imported using ``from array import array``.
 Examples::
 
    array('l')
-   array('c', 'hello world')
-   array('u', u'hello \u2641')
+   array('u', 'hello \u2641')
    array('l', [1, 2, 3, 4, 5])
    array('d', [1.0, 2.0, 3.14])
 
@@ -268,7 +271,7 @@ Examples::
       Packing and unpacking of External Data Representation (XDR) data as used in some
       remote procedure call systems.
 
-   `The Numerical Python Documentation <https://docs.scipy.org/doc/>`_
+   `The Numerical Python Documentation <http://docs.scipy.org/doc/>`_
       The Numeric Python extension (NumPy) defines another array type; see
       http://www.numpy.org/ for further information about Numerical Python.
 

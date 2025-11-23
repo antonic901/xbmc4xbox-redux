@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 # Perform massive identifier substitution on C source files.
 # This actually tokenizes the files (to some extent) so it can
@@ -62,7 +62,7 @@ def usage():
 def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'crs:')
-    except getopt.error, msg:
+    except getopt.error as msg:
         err('Options error: ' + str(msg) + '\n')
         usage()
         sys.exit(2)
@@ -88,16 +88,16 @@ def main():
     sys.exit(bad)
 
 # Change this regular expression to select a different set of files
-Wanted = r'^[a-zA-Z0-9_]+\.[ch]$'
+Wanted = '^[a-zA-Z0-9_]+\.[ch]$'
 def wanted(name):
-    return re.match(Wanted, name)
+    return re.match(Wanted, name) >= 0
 
 def recursedown(dirname):
     dbg('recursedown(%r)\n' % (dirname,))
     bad = 0
     try:
         names = os.listdir(dirname)
-    except os.error, msg:
+    except OSError as msg:
         err(dirname + ': cannot list directory: ' + str(msg) + '\n')
         return 1
     names.sort()
@@ -124,7 +124,7 @@ def fix(filename):
         # File replacement mode
         try:
             f = open(filename, 'r')
-        except IOError, msg:
+        except IOError as msg:
             err(filename + ': cannot open: ' + str(msg) + '\n')
             return 1
         head, tail = os.path.split(filename)
@@ -148,7 +148,7 @@ def fix(filename):
             if g is None:
                 try:
                     g = open(tempname, 'w')
-                except IOError, msg:
+                except IOError as msg:
                     f.close()
                     err(tempname+': cannot create: '+
                         str(msg)+'\n')
@@ -168,25 +168,24 @@ def fix(filename):
     if filename == '-': return 0 # Done in filter mode
     f.close()
     if not g: return 0 # No changes
-    g.close()
 
     # Finishing touch -- move files
 
     # First copy the file's mode to the temp file
     try:
         statbuf = os.stat(filename)
-        os.chmod(tempname, statbuf[ST_MODE] & 07777)
-    except os.error, msg:
+        os.chmod(tempname, statbuf[ST_MODE] & 0o7777)
+    except OSError as msg:
         err(tempname + ': warning: chmod failed (' + str(msg) + ')\n')
     # Then make a backup of the original file as filename~
     try:
         os.rename(filename, filename + '~')
-    except os.error, msg:
+    except OSError as msg:
         err(filename + ': warning: backup failed (' + str(msg) + ')\n')
     # Now move the temp file to the original file
     try:
         os.rename(tempname, filename)
-    except os.error, msg:
+    except OSError as msg:
         err(filename + ': rename failed (' + str(msg) + ')\n')
         return 1
     # Return success
@@ -194,21 +193,21 @@ def fix(filename):
 
 # Tokenizing ANSI C (partly)
 
-Identifier = '(struct )?[a-zA-Z_][a-zA-Z0-9_]+'
-String = r'"([^\n\\"]|\\.)*"'
-Char = r"'([^\n\\']|\\.)*'"
-CommentStart = r'/\*'
-CommentEnd = r'\*/'
+Identifier = '\(struct \)?[a-zA-Z_][a-zA-Z0-9_]+'
+String = '"\([^\n\\"]\|\\\\.\)*"'
+Char = '\'\([^\n\\\']\|\\\\.\)*\''
+CommentStart = '/\*'
+CommentEnd = '\*/'
 
 Hexnumber = '0[xX][0-9a-fA-F]*[uUlL]*'
 Octnumber = '0[0-7]*[uUlL]*'
 Decnumber = '[1-9][0-9]*[uUlL]*'
-Intnumber = Hexnumber + '|' + Octnumber + '|' + Decnumber
+Intnumber = Hexnumber + '\|' + Octnumber + '\|' + Decnumber
 Exponent = '[eE][-+]?[0-9]+'
-Pointfloat = r'([0-9]+\.[0-9]*|\.[0-9]+)(' + Exponent + r')?'
+Pointfloat = '\([0-9]+\.[0-9]*\|\.[0-9]+\)\(' + Exponent + '\)?'
 Expfloat = '[0-9]+' + Exponent
-Floatnumber = Pointfloat + '|' + Expfloat
-Number = Floatnumber + '|' + Intnumber
+Floatnumber = Pointfloat + '\|' + Expfloat
+Number = Floatnumber + '\|' + Intnumber
 
 # Anything else is an operator -- don't list this explicitly because of '/*'
 
@@ -229,10 +228,9 @@ def fixline(line):
 ##  print '-->', repr(line)
     i = 0
     while i < len(line):
-        match = Program.search(line, i)
-        if match is None: break
-        i = match.start()
-        found = match.group(0)
+        i = Program.search(line, i)
+        if i < 0: break
+        found = Program.group(0)
 ##      if Program is InsideCommentProgram: print '...',
 ##      else: print '   ',
 ##      print found
@@ -246,10 +244,10 @@ def fixline(line):
             subst = Dict[found]
             if Program is InsideCommentProgram:
                 if not Docomments:
-                    print 'Found in comment:', found
+                    print('Found in comment:', found)
                     i = i + n
                     continue
-                if found in NotInComment:
+                if NotInComment.has_key(found):
 ##                  print 'Ignored in comment:',
 ##                  print found, '-->', subst
 ##                  print 'Line:', line,
@@ -278,7 +276,7 @@ NotInComment = {}
 def addsubst(substfile):
     try:
         fp = open(substfile, 'r')
-    except IOError, msg:
+    except IOError as msg:
         err(substfile + ': cannot read substfile: ' + str(msg) + '\n')
         sys.exit(1)
     lineno = 0

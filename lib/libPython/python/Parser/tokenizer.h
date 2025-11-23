@@ -12,6 +12,12 @@ extern "C" {
 
 #define MAXINDENT 100   /* Max indentation level */
 
+enum decoding_state {
+    STATE_INIT,
+    STATE_RAW,
+    STATE_NORMAL        /* have a codec associated with input */
+};
+
 /* Tokenizer state */
 struct tok_state {
     /* Input state; buf <= cur <= inp <= end */
@@ -29,40 +35,46 @@ struct tok_state {
     int indstack[MAXINDENT];            /* Stack of indents */
     int atbol;          /* Nonzero if at begin of new line */
     int pendin;         /* Pending indents (if > 0) or dedents (if < 0) */
-    char *prompt, *nextprompt;          /* For interactive prompting */
+    const char *prompt, *nextprompt;          /* For interactive prompting */
     int lineno;         /* Current line number */
     int level;          /* () [] {} Parentheses nesting level */
             /* Used to allow free continuations inside them */
     /* Stuff for checking on different tab sizes */
-    const char *filename;       /* For error messages */
+#ifndef PGEN
+    /* pgen doesn't have access to Python codecs, it cannot decode the input
+       filename. The bytes filename might be kept, but it is only used by
+       indenterror() and it is not really needed: pgen only compiles one file
+       (Grammar/Grammar). */
+    PyObject *filename;
+#endif
     int altwarning;     /* Issue warning if alternate tabs don't match */
     int alterror;       /* Issue error if alternate tabs don't match */
     int alttabsize;     /* Alternate tab spacing */
     int altindstack[MAXINDENT];         /* Stack of alternate indents */
     /* Stuff for PEP 0263 */
-    int decoding_state;         /* -1:decoding, 0:init, 1:raw */
+    enum decoding_state decoding_state;
     int decoding_erred;         /* whether erred in decoding  */
     int read_coding_spec;       /* whether 'coding:...' has been read  */
-    char *encoding;
+    char *encoding;         /* Source encoding. */
     int cont_line;          /* whether we are in a continuation line. */
     const char* line_start;     /* pointer to start of current line */
 #ifndef PGEN
-    PyObject *decoding_readline; /* codecs.open(...).readline */
+    PyObject *decoding_readline; /* open(...).readline */
     PyObject *decoding_buffer;
 #endif
-    const char* enc;
+    const char* enc;        /* Encoding for the current str. */
     const char* str;
     const char* input; /* Tokenizer's newline translated copy of the string. */
 };
 
 extern struct tok_state *PyTokenizer_FromString(const char *, int);
-extern struct tok_state *PyTokenizer_FromFile(FILE *, char *, char *);
+extern struct tok_state *PyTokenizer_FromUTF8(const char *, int);
+extern struct tok_state *PyTokenizer_FromFile(FILE *, const char*,
+                                              const char *, const char *);
 extern void PyTokenizer_Free(struct tok_state *);
 extern int PyTokenizer_Get(struct tok_state *, char **, char **);
-#if defined(PGEN) || defined(Py_USING_UNICODE)
 extern char * PyTokenizer_RestoreEncoding(struct tok_state* tok,
                                           int len, int *offset);
-#endif
 
 #ifdef __cplusplus
 }
