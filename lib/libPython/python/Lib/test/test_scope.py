@@ -1,6 +1,7 @@
 import unittest
-from test.test_support import check_syntax_error, check_py3k_warnings, \
-                              check_warnings, run_unittest
+import weakref
+
+from test.support import check_syntax_error, cpython_only, run_unittest
 
 
 class ScopeTests(unittest.TestCase):
@@ -164,6 +165,17 @@ class ScopeTests(unittest.TestCase):
         self.assertEqual(t.method_and_var(), "method")
         self.assertEqual(t.actual_global(), "global")
 
+    def testCellIsKwonlyArg(self):
+        # Issue 1409: Initialisation of a cell value,
+        # when it comes from a keyword-only parameter
+        def foo(*, a=17):
+            def bar():
+                return a + 5
+            return bar() + 3
+
+        self.assertEqual(foo(a=42), 50)
+        self.assertEqual(foo(), 25)
+
     def testRecursion(self):
 
         def f(x):
@@ -175,79 +187,44 @@ class ScopeTests(unittest.TestCase):
             if x >= 0:
                 return fact(x)
             else:
-                raise ValueError, "x must be >= 0"
+                raise ValueError("x must be >= 0")
 
         self.assertEqual(f(6), 720)
 
 
     def testUnoptimizedNamespaces(self):
 
-        check_syntax_error(self, """\
-def unoptimized_clash1(strip):
-    def f(s):
-        from string import *
-        return strip(s) # ambiguity: free or local
-    return f
-""")
+        check_syntax_error(self, """if 1:
+            def unoptimized_clash1(strip):
+                def f(s):
+                    from sys import *
+                    return getrefcount(s) # ambiguity: free or local
+                return f
+            """)
 
-        check_syntax_error(self, """\
-def unoptimized_clash2():
-    from string import *
-    def f(s):
-        return strip(s) # ambiguity: global or local
-    return f
-""")
+        check_syntax_error(self, """if 1:
+            def unoptimized_clash2():
+                from sys import *
+                def f(s):
+                    return getrefcount(s) # ambiguity: global or local
+                return f
+            """)
 
-        check_syntax_error(self, """\
-def unoptimized_clash2():
-    from string import *
-    def g():
-        def f(s):
-            return strip(s) # ambiguity: global or local
-        return f
-""")
+        check_syntax_error(self, """if 1:
+            def unoptimized_clash2():
+                from sys import *
+                def g():
+                    def f(s):
+                        return getrefcount(s) # ambiguity: global or local
+                    return f
+            """)
 
-        # XXX could allow this for exec with const argument, but what's the point
-        check_syntax_error(self, """\
-def error(y):
-    exec "a = 1"
-    def f(x):
-        return x + y
-    return f
-""")
-
-        check_syntax_error(self, """\
-def f(x):
-    def g():
-        return x
-    del x # can't del name
-""")
-
-        check_syntax_error(self, """\
-def f():
-    def g():
-        from string import *
-        return strip # global or local?
-""")
-
-        # and verify a few cases that should work
-
-        exec """
-def noproblem1():
-    from string import *
-    f = lambda x:x
-
-def noproblem2():
-    from string import *
-    def f(x):
-        return x + 1
-
-def noproblem3():
-    from string import *
-    def f(x):
-        global y
-        y = x
-"""
+        check_syntax_error(self, """if 1:
+            def f():
+                def g():
+                    from sys import *
+                    return getrefcount # global or local?
+            """)
 
     def testLambdas(self):
 
@@ -276,7 +253,7 @@ def noproblem3():
     def testUnboundLocal(self):
 
         def errorInOuter():
-            print y
+            print(y)
             def inner():
                 return y
             y = 1
@@ -290,18 +267,40 @@ def noproblem3():
         self.assertRaises(UnboundLocalError, errorInOuter)
         self.assertRaises(NameError, errorInInner)
 
+    def testUnboundLocal_AfterDel(self):
+        # #4617: It is now legal to delete a cell variable.
+        # The following functions must obviously compile,
+        # and give the correct error when accessing the deleted name.
+        def errorInOuter():
+            y = 1
+            del y
+            print(y)
+            def inner():
+                return y
+
+        def errorInInner():
+            def inner():
+                return y
+            y = 1
+            del y
+            inner()
+
+        self.assertRaises(UnboundLocalError, errorInOuter)
+        self.assertRaises(NameError, errorInInner)
+
+    def testUnboundLocal_AugAssign(self):
         # test for bug #1501934: incorrect LOAD/STORE_GLOBAL generation
-        exec """
-global_x = 1
-def f():
-    global_x += 1
-try:
-    f()
-except UnboundLocalError:
-    pass
-else:
-    fail('scope of global_x not correctly determined')
-""" in {'fail': self.fail}
+        exec("""if 1:
+            global_x = 1
+            def f():
+                global_x += 1
+            try:
+                f()
+            except UnboundLocalError:
+                pass
+            else:
+                fail('scope of global_x not correctly determined')
+            """, {'fail': self.fail})
 
     def testComplexDefinitions(self):
 
@@ -319,99 +318,89 @@ else:
 
         self.assertEqual(makeReturner2(a=11)()['a'], 11)
 
-        with check_py3k_warnings(("tuple parameter unpacking has been removed",
-                                  SyntaxWarning)):
-            exec """\
-def makeAddPair((a, b)):
-    def addPair((c, d)):
-        return (a + c, b + d)
-    return addPair
-""" in locals()
-        self.assertEqual(makeAddPair((1, 2))((100, 200)), (101,202))
-
     def testScopeOfGlobalStmt(self):
-# Examples posted by Samuele Pedroni to python-dev on 3/1/2001
+        # Examples posted by Samuele Pedroni to python-dev on 3/1/2001
 
-        exec """\
-# I
-x = 7
-def f():
-    x = 1
-    def g():
-        global x
-        def i():
-            def h():
-                return x
-            return h()
-        return i()
-    return g()
-self.assertEqual(f(), 7)
-self.assertEqual(x, 7)
+        exec("""if 1:
+            # I
+            x = 7
+            def f():
+                x = 1
+                def g():
+                    global x
+                    def i():
+                        def h():
+                            return x
+                        return h()
+                    return i()
+                return g()
+            self.assertEqual(f(), 7)
+            self.assertEqual(x, 7)
 
-# II
-x = 7
-def f():
-    x = 1
-    def g():
-        x = 2
-        def i():
-            def h():
-                return x
-            return h()
-        return i()
-    return g()
-self.assertEqual(f(), 2)
-self.assertEqual(x, 7)
+            # II
+            x = 7
+            def f():
+                x = 1
+                def g():
+                    x = 2
+                    def i():
+                        def h():
+                            return x
+                        return h()
+                    return i()
+                return g()
+            self.assertEqual(f(), 2)
+            self.assertEqual(x, 7)
 
-# III
-x = 7
-def f():
-    x = 1
-    def g():
-        global x
-        x = 2
-        def i():
-            def h():
-                return x
-            return h()
-        return i()
-    return g()
-self.assertEqual(f(), 2)
-self.assertEqual(x, 2)
+            # III
+            x = 7
+            def f():
+                x = 1
+                def g():
+                    global x
+                    x = 2
+                    def i():
+                        def h():
+                            return x
+                        return h()
+                    return i()
+                return g()
+            self.assertEqual(f(), 2)
+            self.assertEqual(x, 2)
 
-# IV
-x = 7
-def f():
-    x = 3
-    def g():
-        global x
-        x = 2
-        def i():
-            def h():
-                return x
-            return h()
-        return i()
-    return g()
-self.assertEqual(f(), 2)
-self.assertEqual(x, 2)
+            # IV
+            x = 7
+            def f():
+                x = 3
+                def g():
+                    global x
+                    x = 2
+                    def i():
+                        def h():
+                            return x
+                        return h()
+                    return i()
+                return g()
+            self.assertEqual(f(), 2)
+            self.assertEqual(x, 2)
 
-# XXX what about global statements in class blocks?
-# do they affect methods?
+            # XXX what about global statements in class blocks?
+            # do they affect methods?
 
-x = 12
-class Global:
-    global x
-    x = 13
-    def set(self, val):
-        x = val
-    def get(self):
-        return x
+            x = 12
+            class Global:
+                global x
+                x = 13
+                def set(self, val):
+                    x = val
+                def get(self):
+                    return x
 
-g = Global()
-self.assertEqual(g.get(), 13)
-g.set(15)
-self.assertEqual(g.get(), 13)
-"""
+            g = Global()
+            self.assertEqual(g.get(), 13)
+            g.set(15)
+            self.assertEqual(g.get(), 13)
+            """)
 
     def testLeaks(self):
 
@@ -437,28 +426,28 @@ self.assertEqual(g.get(), 13)
 
     def testClassAndGlobal(self):
 
-        exec """\
-def test(x):
-    class Foo:
-        global x
-        def __call__(self, y):
-            return x + y
-    return Foo()
+        exec("""if 1:
+            def test(x):
+                class Foo:
+                    global x
+                    def __call__(self, y):
+                        return x + y
+                return Foo()
 
-x = 0
-self.assertEqual(test(6)(2), 8)
-x = -1
-self.assertEqual(test(3)(2), 5)
+            x = 0
+            self.assertEqual(test(6)(2), 8)
+            x = -1
+            self.assertEqual(test(3)(2), 5)
 
-looked_up_by_load_name = False
-class X:
-    # Implicit globals inside classes are be looked up by LOAD_NAME, not
-    # LOAD_GLOBAL.
-    locals()['looked_up_by_load_name'] = True
-    passed = looked_up_by_load_name
+            looked_up_by_load_name = False
+            class X:
+                # Implicit globals inside classes are be looked up by LOAD_NAME, not
+                # LOAD_GLOBAL.
+                locals()['looked_up_by_load_name'] = True
+                passed = looked_up_by_load_name
 
-self.assertTrue(X.passed)
-"""
+            self.assertTrue(X.passed)
+            """)
 
     def testLocalsFunction(self):
 
@@ -509,23 +498,22 @@ self.assertTrue(X.passed)
         self.assertNotIn("x", varnames)
         self.assertIn("y", varnames)
 
+    @cpython_only
     def testLocalsClass_WithTrace(self):
         # Issue23728: after the trace function returns, the locals()
         # dictionary is used to update all variables, this used to
         # include free variables. But in class statements, free
         # variables are not inserted...
         import sys
+        self.addCleanup(sys.settrace, sys.gettrace())
         sys.settrace(lambda a,b,c:None)
-        try:
-            x = 12
+        x = 12
 
-            class C:
-                def f(self):
-                    return x
+        class C:
+            def f(self):
+                return x
 
-            self.assertEqual(x, 12) # Used to raise UnboundLocalError
-        finally:
-            sys.settrace(None)
+        self.assertEqual(x, 12) # Used to raise UnboundLocalError
 
     def testBoundAndFree(self):
         # var is bound and free in class
@@ -540,6 +528,7 @@ self.assertTrue(X.passed)
         inst = f(3)()
         self.assertEqual(inst.a, inst.m())
 
+    @cpython_only
     def testInteractionWithTraceFunc(self):
 
         import sys
@@ -556,6 +545,7 @@ self.assertTrue(X.passed)
         class TestClass:
             pass
 
+        self.addCleanup(sys.settrace, sys.gettrace())
         sys.settrace(tracer)
         adaptgetter("foo", TestClass, (1, ""))
         sys.settrace(None)
@@ -568,10 +558,10 @@ self.assertTrue(X.passed)
             return lambda: x + 1
 
         g = f(3)
-        self.assertRaises(TypeError, eval, g.func_code)
+        self.assertRaises(TypeError, eval, g.__code__)
 
         try:
-            exec g.func_code in {}
+            exec(g.__code__, {})
         except TypeError:
             pass
         else:
@@ -580,18 +570,18 @@ self.assertTrue(X.passed)
     def testListCompLocalVars(self):
 
         try:
-            print bad
+            print(bad)
         except NameError:
             pass
         else:
-            print "bad should not be defined"
+            print("bad should not be defined")
 
         def x():
             [bad for s in 'a b' for bad in s.split()]
 
         x()
         try:
-            print bad
+            print(bad)
         except NameError:
             pass
 
@@ -612,40 +602,111 @@ self.assertTrue(X.passed)
             def __del__(self):
                 nestedcell_get()
 
-        def f():
-            global nestedcell_get
-            def nestedcell_get():
-                return c
+    def testNonLocalFunction(self):
 
-            c = (Special(),)
-            c = 2
+        def f(x):
+            def inc():
+                nonlocal x
+                x += 1
+                return x
+            def dec():
+                nonlocal x
+                x -= 1
+                return x
+            return inc, dec
 
-        f() # used to crash the interpreter...
+        inc, dec = f(0)
+        self.assertEqual(inc(), 1)
+        self.assertEqual(inc(), 2)
+        self.assertEqual(dec(), 1)
+        self.assertEqual(dec(), 0)
+
+    def testNonLocalMethod(self):
+        def f(x):
+            class c:
+                def inc(self):
+                    nonlocal x
+                    x += 1
+                    return x
+                def dec(self):
+                    nonlocal x
+                    x -= 1
+                    return x
+            return c()
+        c = f(0)
+        self.assertEqual(c.inc(), 1)
+        self.assertEqual(c.inc(), 2)
+        self.assertEqual(c.dec(), 1)
+        self.assertEqual(c.dec(), 0)
 
     def testGlobalInParallelNestedFunctions(self):
         # A symbol table bug leaked the global statement from one
         # function to other nested functions in the same block.
         # This test verifies that a global statement in the first
         # function does not affect the second function.
-        CODE = """def f():
-    y = 1
-    def g():
-        global y
-        return y
-    def h():
-        return y + 1
-    return g, h
-
-y = 9
-g, h = f()
-result9 = g()
-result2 = h()
-"""
         local_ns = {}
         global_ns = {}
-        exec CODE in local_ns, global_ns
+        exec("""if 1:
+            def f():
+                y = 1
+                def g():
+                    global y
+                    return y
+                def h():
+                    return y + 1
+                return g, h
+            y = 9
+            g, h = f()
+            result9 = g()
+            result2 = h()
+            """, local_ns, global_ns)
         self.assertEqual(2, global_ns["result2"])
         self.assertEqual(9, global_ns["result9"])
+
+    def testNonLocalClass(self):
+
+        def f(x):
+            class c:
+                nonlocal x
+                x += 1
+                def get(self):
+                    return x
+            return c()
+
+        c = f(0)
+        self.assertEqual(c.get(), 1)
+        self.assertNotIn("x", c.__class__.__dict__)
+
+
+    def testNonLocalGenerator(self):
+
+        def f(x):
+            def g(y):
+                nonlocal x
+                for i in range(y):
+                    x += 1
+                    yield x
+            return g
+
+        g = f(0)
+        self.assertEqual(list(g(5)), [1, 2, 3, 4, 5])
+
+    def testNestedNonLocal(self):
+
+        def f(x):
+            def g():
+                nonlocal x
+                x -= 2
+                def h():
+                    nonlocal x
+                    x += 4
+                    return x
+                return h
+            return g
+
+        g = f(1)
+        h = g()
+        self.assertEqual(h(), 3)
 
     def testTopIsNotSignificant(self):
         # See #9997.
@@ -654,11 +715,50 @@ result2 = h()
         def b():
             global a
 
+    def testClassNamespaceOverridesClosure(self):
+        # See #17853.
+        x = 42
+        class X:
+            locals()["x"] = 43
+            y = x
+        self.assertEqual(X.y, 43)
+        class X:
+            locals()["x"] = 43
+            del x
+        self.assertFalse(hasattr(X, "x"))
+        self.assertEqual(x, 42)
+
+    @cpython_only
+    def testCellLeak(self):
+        # Issue 17927.
+        #
+        # The issue was that if self was part of a cycle involving the
+        # frame of a method call, *and* the method contained a nested
+        # function referencing self, thereby forcing 'self' into a
+        # cell, setting self to None would not be enough to break the
+        # frame -- the frame had another reference to the instance,
+        # which could not be cleared by the code running in the frame
+        # (though it will be cleared when the frame is collected).
+        # Without the lambda, setting self to None is enough to break
+        # the cycle.
+        class Tester:
+            def dig(self):
+                if 0:
+                    lambda: self
+                try:
+                    1/0
+                except Exception as exc:
+                    self.exc = exc
+                self = None  # Break the cycle
+        tester = Tester()
+        tester.dig()
+        ref = weakref.ref(tester)
+        del tester
+        self.assertIsNone(ref())
+
 
 def test_main():
-    with check_warnings(("import \* only allowed at module level",
-                         SyntaxWarning)):
-        run_unittest(ScopeTests)
+    run_unittest(ScopeTests)
 
 if __name__ == '__main__':
     test_main()

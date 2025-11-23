@@ -1,32 +1,28 @@
 import netrc, os, unittest, sys, textwrap
-from test import test_support
+from test import support
 
-temp_filename = test_support.TESTFN
+temp_filename = support.TESTFN
 
 class NetrcTestCase(unittest.TestCase):
 
-    def make_nrc(self, test_data, cleanup=True):
+    def make_nrc(self, test_data):
         test_data = textwrap.dedent(test_data)
         mode = 'w'
         if sys.platform != 'cygwin':
             mode += 't'
         with open(temp_filename, mode) as fp:
             fp.write(test_data)
-        if cleanup:
-            self.addCleanup(os.unlink, temp_filename)
+        self.addCleanup(os.unlink, temp_filename)
         return netrc.netrc(temp_filename)
 
     def test_default(self):
         nrc = self.make_nrc("""\
             machine host1.domain.com login log1 password pass1 account acct1
             default login log2 password pass2
-            """, cleanup=False)
+            """)
         self.assertEqual(nrc.hosts['host1.domain.com'],
                          ('log1', 'acct1', 'pass1'))
         self.assertEqual(nrc.hosts['default'], ('log2', None, 'pass2'))
-
-        nrc2 = self.make_nrc(nrc.__repr__(), cleanup=True)
-        self.assertEqual(nrc.hosts, nrc2.hosts)
 
     def test_macros(self):
         nrc = self.make_nrc("""\
@@ -109,18 +105,18 @@ class NetrcTestCase(unittest.TestCase):
     def test_security(self):
         # This test is incomplete since we are normally not run as root and
         # therefore can't test the file ownership being wrong.
-        d = test_support.TESTFN
+        d = support.TESTFN
         os.mkdir(d)
-        self.addCleanup(test_support.rmtree, d)
+        self.addCleanup(support.rmtree, d)
         fn = os.path.join(d, '.netrc')
         with open(fn, 'wt') as f:
             f.write("""\
                 machine foo.domain.com login bar password pass
                 default login foo password pass
                 """)
-        with test_support.EnvironmentVarGuard() as environ:
+        with support.EnvironmentVarGuard() as environ:
             environ.set('HOME', d)
-            os.chmod(fn, 0600)
+            os.chmod(fn, 0o600)
             nrc = netrc.netrc()
             self.assertEqual(nrc.hosts['foo.domain.com'],
                              ('bar', None, 'pass'))
@@ -128,7 +124,7 @@ class NetrcTestCase(unittest.TestCase):
             self.assertRaises(netrc.NetrcParseError, netrc.netrc)
 
 def test_main():
-    test_support.run_unittest(NetrcTestCase)
+    support.run_unittest(NetrcTestCase)
 
 if __name__ == "__main__":
     test_main()

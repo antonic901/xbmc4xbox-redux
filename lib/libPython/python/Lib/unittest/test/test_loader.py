@@ -10,7 +10,7 @@ class Test_TestLoader(unittest.TestCase):
     ### Tests for TestLoader.loadTestsFromTestCase
     ################################################################
 
-    # "Return a suite of all test cases contained in the TestCase-derived
+    # "Return a suite of all tests cases contained in the TestCase-derived
     # class testCaseClass"
     def test_loadTestsFromTestCase(self):
         class Foo(unittest.TestCase):
@@ -23,7 +23,7 @@ class Test_TestLoader(unittest.TestCase):
         loader = unittest.TestLoader()
         self.assertEqual(loader.loadTestsFromTestCase(Foo), tests)
 
-    # "Return a suite of all test cases contained in the TestCase-derived
+    # "Return a suite of all tests cases contained in the TestCase-derived
     # class testCaseClass"
     #
     # Make sure it does the right thing even if no tests were found
@@ -36,7 +36,7 @@ class Test_TestLoader(unittest.TestCase):
         loader = unittest.TestLoader()
         self.assertEqual(loader.loadTestsFromTestCase(Foo), empty_suite)
 
-    # "Return a suite of all test cases contained in the TestCase-derived
+    # "Return a suite of all tests cases contained in the TestCase-derived
     # class testCaseClass"
     #
     # What happens if loadTestsFromTestCase() is given an object
@@ -57,7 +57,7 @@ class Test_TestLoader(unittest.TestCase):
         else:
             self.fail('Should raise TypeError')
 
-    # "Return a suite of all test cases contained in the TestCase-derived
+    # "Return a suite of all tests cases contained in the TestCase-derived
     # class testCaseClass"
     #
     # Make sure loadTestsFromTestCase() picks up the default test method
@@ -186,7 +186,7 @@ class Test_TestLoader(unittest.TestCase):
         self.assertEqual(suite.countTestCases(), 1)
         test = list(suite)[0]
 
-        self.assertRaisesRegexp(TypeError, "some failure", test.m)
+        self.assertRaisesRegex(TypeError, "some failure", test.m)
 
     ################################################################
     ### /Tests for TestLoader.loadTestsFromModule()
@@ -205,7 +205,7 @@ class Test_TestLoader(unittest.TestCase):
 
         try:
             loader.loadTestsFromName('')
-        except ValueError, e:
+        except ValueError as e:
             self.assertEqual(str(e), "Empty module name")
         else:
             self.fail("TestLoader.loadTestsFromName failed to raise ValueError")
@@ -238,8 +238,8 @@ class Test_TestLoader(unittest.TestCase):
 
         try:
             loader.loadTestsFromName('sdasfasfasdf')
-        except ImportError, e:
-            self.assertEqual(str(e), "No module named sdasfasfasdf")
+        except ImportError as e:
+            self.assertEqual(str(e), "No module named 'sdasfasfasdf'")
         else:
             self.fail("TestLoader.loadTestsFromName failed to raise ImportError")
 
@@ -254,7 +254,7 @@ class Test_TestLoader(unittest.TestCase):
 
         try:
             loader.loadTestsFromName('unittest.sdasfasfasdf')
-        except AttributeError, e:
+        except AttributeError as e:
             self.assertEqual(str(e), "'module' object has no attribute 'sdasfasfasdf'")
         else:
             self.fail("TestLoader.loadTestsFromName failed to raise AttributeError")
@@ -271,7 +271,7 @@ class Test_TestLoader(unittest.TestCase):
 
         try:
             loader.loadTestsFromName('sdasfasfasdf', unittest)
-        except AttributeError, e:
+        except AttributeError as e:
             self.assertEqual(str(e), "'module' object has no attribute 'sdasfasfasdf'")
         else:
             self.fail("TestLoader.loadTestsFromName failed to raise AttributeError")
@@ -292,7 +292,7 @@ class Test_TestLoader(unittest.TestCase):
 
         try:
             loader.loadTestsFromName('', unittest)
-        except AttributeError:
+        except AttributeError as e:
             pass
         else:
             self.fail("Failed to raise AttributeError")
@@ -425,7 +425,7 @@ class Test_TestLoader(unittest.TestCase):
         loader = unittest.TestLoader()
         try:
             loader.loadTestsFromName('testcase_1.testfoo', m)
-        except AttributeError, e:
+        except AttributeError as e:
             self.assertEqual(str(e), "type object 'MyTestCase' has no attribute 'testfoo'")
         else:
             self.fail("Failed to raise AttributeError")
@@ -512,7 +512,7 @@ class Test_TestLoader(unittest.TestCase):
 
         loader = unittest.TestLoader()
         try:
-            loader.loadTestsFromName('return_wrong', m)
+            suite = loader.loadTestsFromName('return_wrong', m)
         except TypeError:
             pass
         else:
@@ -583,7 +583,7 @@ class Test_TestLoader(unittest.TestCase):
 
         try:
             loader.loadTestsFromNames([''])
-        except ValueError, e:
+        except ValueError as e:
             self.assertEqual(str(e), "Empty module name")
         else:
             self.fail("TestLoader.loadTestsFromNames failed to raise ValueError")
@@ -618,8 +618,8 @@ class Test_TestLoader(unittest.TestCase):
 
         try:
             loader.loadTestsFromNames(['sdasfasfasdf'])
-        except ImportError, e:
-            self.assertEqual(str(e), "No module named sdasfasfasdf")
+        except ImportError as e:
+            self.assertEqual(str(e), "No module named 'sdasfasfasdf'")
         else:
             self.fail("TestLoader.loadTestsFromNames failed to raise ImportError")
 
@@ -634,7 +634,7 @@ class Test_TestLoader(unittest.TestCase):
 
         try:
             loader.loadTestsFromNames(['unittest.sdasfasfasdf', 'unittest'])
-        except AttributeError, e:
+        except AttributeError as e:
             self.assertEqual(str(e), "'module' object has no attribute 'sdasfasfasdf'")
         else:
             self.fail("TestLoader.loadTestsFromNames failed to raise AttributeError")
@@ -653,7 +653,7 @@ class Test_TestLoader(unittest.TestCase):
 
         try:
             loader.loadTestsFromNames(['sdasfasfasdf'], unittest)
-        except AttributeError, e:
+        except AttributeError as e:
             self.assertEqual(str(e), "'module' object has no attribute 'sdasfasfasdf'")
         else:
             self.fail("TestLoader.loadTestsFromName failed to raise AttributeError")
@@ -672,7 +672,7 @@ class Test_TestLoader(unittest.TestCase):
 
         try:
             loader.loadTestsFromNames(['TestCase', 'sdasfasfasdf'], unittest)
-        except AttributeError, e:
+        except AttributeError as e:
             self.assertEqual(str(e), "'module' object has no attribute 'sdasfasfasdf'")
         else:
             self.fail("TestLoader.loadTestsFromName failed to raise AttributeError")
@@ -806,6 +806,22 @@ class Test_TestLoader(unittest.TestCase):
         ref_suite = unittest.TestSuite([MyTestCase('test')])
         self.assertEqual(list(suite), [ref_suite])
 
+    # #14971: Make sure the dotted name resolution works even if the actual
+    # function doesn't have the same name as is used to find it.
+    def test_loadTestsFromName__function_with_different_name_than_method(self):
+        # lambdas have the name '<lambda>'.
+        m = types.ModuleType('m')
+        class MyTestCase(unittest.TestCase):
+            test = lambda: 1
+        m.testcase_1 = MyTestCase
+
+        loader = unittest.TestLoader()
+        suite = loader.loadTestsFromNames(['testcase_1.test'], m)
+        self.assertIsInstance(suite, loader.suiteClass)
+
+        ref_suite = unittest.TestSuite([MyTestCase('test')])
+        self.assertEqual(list(suite), [ref_suite])
+
     # "The specifier name is a ``dotted name'' that may resolve ... to ... a
     # test method within a test case class"
     #
@@ -821,7 +837,7 @@ class Test_TestLoader(unittest.TestCase):
         loader = unittest.TestLoader()
         try:
             loader.loadTestsFromNames(['testcase_1.testfoo'], m)
-        except AttributeError, e:
+        except AttributeError as e:
             self.assertEqual(str(e), "type object 'MyTestCase' has no attribute 'testfoo'")
         else:
             self.fail("Failed to raise AttributeError")
@@ -895,7 +911,7 @@ class Test_TestLoader(unittest.TestCase):
 
         loader = unittest.TestLoader()
         try:
-            loader.loadTestsFromNames(['return_wrong'], m)
+            suite = loader.loadTestsFromNames(['return_wrong'], m)
         except TypeError:
             pass
         else:
@@ -1093,7 +1109,7 @@ class Test_TestLoader(unittest.TestCase):
     # "The default value is 'test'"
     def test_testMethodPrefix__default_value(self):
         loader = unittest.TestLoader()
-        self.assertTrue(loader.testMethodPrefix == 'test')
+        self.assertEqual(loader.testMethodPrefix, 'test')
 
     ################################################################
     ### /Tests for TestLoader.testMethodPrefix
@@ -1105,7 +1121,7 @@ class Test_TestLoader(unittest.TestCase):
     # getTestCaseNames() and all the loadTestsFromX() methods"
     def test_sortTestMethodsUsing__loadTestsFromTestCase(self):
         def reversed_cmp(x, y):
-            return -cmp(x, y)
+            return -((x > y) - (x < y))
 
         class Foo(unittest.TestCase):
             def test_1(self): pass
@@ -1121,7 +1137,7 @@ class Test_TestLoader(unittest.TestCase):
     # getTestCaseNames() and all the loadTestsFromX() methods"
     def test_sortTestMethodsUsing__loadTestsFromModule(self):
         def reversed_cmp(x, y):
-            return -cmp(x, y)
+            return -((x > y) - (x < y))
 
         m = types.ModuleType('m')
         class Foo(unittest.TestCase):
@@ -1139,7 +1155,7 @@ class Test_TestLoader(unittest.TestCase):
     # getTestCaseNames() and all the loadTestsFromX() methods"
     def test_sortTestMethodsUsing__loadTestsFromName(self):
         def reversed_cmp(x, y):
-            return -cmp(x, y)
+            return -((x > y) - (x < y))
 
         m = types.ModuleType('m')
         class Foo(unittest.TestCase):
@@ -1157,7 +1173,7 @@ class Test_TestLoader(unittest.TestCase):
     # getTestCaseNames() and all the loadTestsFromX() methods"
     def test_sortTestMethodsUsing__loadTestsFromNames(self):
         def reversed_cmp(x, y):
-            return -cmp(x, y)
+            return -((x > y) - (x < y))
 
         m = types.ModuleType('m')
         class Foo(unittest.TestCase):
@@ -1177,7 +1193,7 @@ class Test_TestLoader(unittest.TestCase):
     # Does it actually affect getTestCaseNames()?
     def test_sortTestMethodsUsing__getTestCaseNames(self):
         def reversed_cmp(x, y):
-            return -cmp(x, y)
+            return -((x > y) - (x < y))
 
         class Foo(unittest.TestCase):
             def test_1(self): pass
@@ -1190,9 +1206,19 @@ class Test_TestLoader(unittest.TestCase):
         self.assertEqual(loader.getTestCaseNames(Foo), test_names)
 
     # "The default value is the built-in cmp() function"
+    # Since cmp is now defunct, we simply verify that the results
+    # occur in the same order as they would with the default sort.
     def test_sortTestMethodsUsing__default_value(self):
         loader = unittest.TestLoader()
-        self.assertTrue(loader.sortTestMethodsUsing is cmp)
+
+        class Foo(unittest.TestCase):
+            def test_2(self): pass
+            def test_3(self): pass
+            def test_1(self): pass
+
+        test_names = ['test_2', 'test_3', 'test_1']
+        self.assertEqual(loader.getTestCaseNames(Foo), sorted(test_names))
+
 
     # "it can be set to None to disable the sort."
     #
@@ -1281,21 +1307,6 @@ class Test_TestLoader(unittest.TestCase):
         loader = unittest.TestLoader()
         self.assertIs(loader.suiteClass, unittest.TestSuite)
 
-    # Make sure the dotted name resolution works even if the actual
-    # function doesn't have the same name as is used to find it.
-    def test_loadTestsFromName__function_with_different_name_than_method(self):
-        # lambdas have the name '<lambda>'.
-        m = types.ModuleType('m')
-        class MyTestCase(unittest.TestCase):
-            test = lambda: 1
-        m.testcase_1 = MyTestCase
 
-        loader = unittest.TestLoader()
-        suite = loader.loadTestsFromNames(['testcase_1.test'], m)
-        self.assertIsInstance(suite, loader.suiteClass)
-
-        ref_suite = unittest.TestSuite([MyTestCase('test')])
-        self.assertEqual(list(suite), [ref_suite])
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

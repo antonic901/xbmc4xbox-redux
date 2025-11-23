@@ -15,8 +15,7 @@
 # - optimize tree redraw after expand of subnode
 
 import os
-from Tkinter import *
-import imp
+from tkinter import *
 
 from idlelib import ZoomHeight
 from idlelib.configHandler import idleConf
@@ -31,7 +30,7 @@ except NameError:
 if os.path.isdir(_icondir):
     ICONDIR = _icondir
 elif not os.path.isdir(ICONDIR):
-    raise RuntimeError, "can't find icon directory (%r)" % (ICONDIR,)
+    raise RuntimeError("can't find icon directory (%r)" % (ICONDIR,))
 
 def listicons(icondir=ICONDIR):
     """Utility to display the available icons."""
@@ -383,7 +382,7 @@ class FileTreeItem(TreeItem):
         try:
             os.rename(self.path, newpath)
             self.path = newpath
-        except os.error:
+        except OSError:
             pass
 
     def GetIconName(self):
@@ -396,7 +395,7 @@ class FileTreeItem(TreeItem):
     def GetSubList(self):
         try:
             names = os.listdir(self.path)
-        except os.error:
+        except OSError:
             return []
         names.sort(key = os.path.normcase)
         sublist = []

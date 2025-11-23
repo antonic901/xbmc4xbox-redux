@@ -1,38 +1,16 @@
-from test.test_support import findfile, TESTFN, unlink
+from test.support import findfile, TESTFN, unlink
 import unittest
 import array
 import io
 import pickle
 import sys
-import base64
 
-class UnseekableIO(file):
+class UnseekableIO(io.FileIO):
     def tell(self):
         raise io.UnsupportedOperation
 
     def seek(self, *args, **kwargs):
         raise io.UnsupportedOperation
-
-def fromhex(s):
-    return base64.b16decode(s.replace(' ', ''))
-
-def byteswap2(data):
-    a = array.array('h')
-    a.fromstring(data)
-    a.byteswap()
-    return a.tostring()
-
-def byteswap3(data):
-    ba = bytearray(data)
-    ba[::3] = data[2::3]
-    ba[2::3] = data[::3]
-    return bytes(ba)
-
-def byteswap4(data):
-    a = array.array('i')
-    a.fromstring(data)
-    a.byteswap()
-    return a.tostring()
 
 
 class AudioTests:
@@ -60,6 +38,12 @@ class AudioTests:
         params = f.getparams()
         self.assertEqual(params,
                 (nchannels, sampwidth, framerate, nframes, comptype, compname))
+        self.assertEqual(params.nchannels, nchannels)
+        self.assertEqual(params.sampwidth, sampwidth)
+        self.assertEqual(params.framerate, framerate)
+        self.assertEqual(params.nframes, nframes)
+        self.assertEqual(params.comptype, comptype)
+        self.assertEqual(params.compname, compname)
 
         for proto in range(pickle.HIGHEST_PROTOCOL + 1):
             dump = pickle.dumps(params, proto)
@@ -77,15 +61,12 @@ class AudioWriteTests(AudioTests):
         return f
 
     def check_file(self, testfile, nframes, frames):
-        f = self.module.open(testfile, 'rb')
-        try:
+        with self.module.open(testfile, 'rb') as f:
             self.assertEqual(f.getnchannels(), self.nchannels)
             self.assertEqual(f.getsampwidth(), self.sampwidth)
             self.assertEqual(f.getframerate(), self.framerate)
             self.assertEqual(f.getnframes(), nframes)
             self.assertEqual(f.readframes(nframes), frames)
-        finally:
-            f.close()
 
     def test_write_params(self):
         f = self.create_file(TESTFN)
@@ -95,10 +76,81 @@ class AudioWriteTests(AudioTests):
                           self.nframes, self.comptype, self.compname)
         f.close()
 
+    def test_write_context_manager_calls_close(self):
+        # Close checks for a minimum header and will raise an error
+        # if it is not set, so this proves that close is called.
+        with self.assertRaises(self.module.Error):
+            with self.module.open(TESTFN, 'wb'):
+                pass
+        with self.assertRaises(self.module.Error):
+            with open(TESTFN, 'wb') as testfile:
+                with self.module.open(testfile):
+                    pass
+
+    def test_context_manager_with_open_file(self):
+        with open(TESTFN, 'wb') as testfile:
+            with self.module.open(testfile) as f:
+                f.setnchannels(self.nchannels)
+                f.setsampwidth(self.sampwidth)
+                f.setframerate(self.framerate)
+                f.setcomptype(self.comptype, self.compname)
+            self.assertEqual(testfile.closed, self.close_fd)
+        with open(TESTFN, 'rb') as testfile:
+            with self.module.open(testfile) as f:
+                self.assertFalse(f.getfp().closed)
+                params = f.getparams()
+                self.assertEqual(params.nchannels, self.nchannels)
+                self.assertEqual(params.sampwidth, self.sampwidth)
+                self.assertEqual(params.framerate, self.framerate)
+            if not self.close_fd:
+                self.assertIsNone(f.getfp())
+            self.assertEqual(testfile.closed, self.close_fd)
+
+    def test_context_manager_with_filename(self):
+        # If the file doesn't get closed, this test won't fail, but it will
+        # produce a resource leak warning.
+        with self.module.open(TESTFN, 'wb') as f:
+            f.setnchannels(self.nchannels)
+            f.setsampwidth(self.sampwidth)
+            f.setframerate(self.framerate)
+            f.setcomptype(self.comptype, self.compname)
+        with self.module.open(TESTFN) as f:
+            self.assertFalse(f.getfp().closed)
+            params = f.getparams()
+            self.assertEqual(params.nchannels, self.nchannels)
+            self.assertEqual(params.sampwidth, self.sampwidth)
+            self.assertEqual(params.framerate, self.framerate)
+        if not self.close_fd:
+            self.assertIsNone(f.getfp())
+
     def test_write(self):
         f = self.create_file(TESTFN)
         f.setnframes(self.nframes)
         f.writeframes(self.frames)
+        f.close()
+
+        self.check_file(TESTFN, self.nframes, self.frames)
+
+    def test_write_bytearray(self):
+        f = self.create_file(TESTFN)
+        f.setnframes(self.nframes)
+        f.writeframes(bytearray(self.frames))
+        f.close()
+
+        self.check_file(TESTFN, self.nframes, self.frames)
+
+    def test_write_array(self):
+        f = self.create_file(TESTFN)
+        f.setnframes(self.nframes)
+        f.writeframes(array.array('h', self.frames))
+        f.close()
+
+        self.check_file(TESTFN, self.nframes, self.frames)
+
+    def test_write_memoryview(self):
+        f = self.create_file(TESTFN)
+        f.setnframes(self.nframes)
+        f.writeframes(memoryview(self.frames))
         f.close()
 
         self.check_file(TESTFN, self.nframes, self.frames)
@@ -142,21 +194,18 @@ class AudioWriteTests(AudioTests):
             self.check_file(testfile, self.nframes, self.frames)
 
     def test_unseekable_read(self):
-        f = self.create_file(TESTFN)
-        f.setnframes(self.nframes)
-        f.writeframes(self.frames)
-        f.close()
+        with self.create_file(TESTFN) as f:
+            f.setnframes(self.nframes)
+            f.writeframes(self.frames)
 
         with UnseekableIO(TESTFN, 'rb') as testfile:
             self.check_file(testfile, self.nframes, self.frames)
 
     def test_unseekable_write(self):
         with UnseekableIO(TESTFN, 'wb') as testfile:
-            f = self.create_file(testfile)
-            f.setnframes(self.nframes)
-            f.writeframes(self.frames)
-            f.close()
-            self.fout = None
+            with self.create_file(testfile) as f:
+                f.setnframes(self.nframes)
+                f.writeframes(self.frames)
 
         self.check_file(TESTFN, self.nframes, self.frames)
 
@@ -167,11 +216,11 @@ class AudioWriteTests(AudioTests):
             f.setnframes(self.nframes + 1)
             try:
                 f.writeframes(self.frames)
-            except IOError:
+            except OSError:
                 pass
             try:
                 f.close()
-            except IOError:
+            except OSError:
                 pass
 
         with open(TESTFN, 'rb') as testfile:
@@ -185,11 +234,11 @@ class AudioWriteTests(AudioTests):
             f.setnframes(self.nframes - 1)
             try:
                 f.writeframes(self.frames)
-            except IOError:
+            except OSError:
                 pass
             try:
                 f.close()
-            except IOError:
+            except OSError:
                 pass
 
         with open(TESTFN, 'rb') as testfile:
@@ -273,12 +322,9 @@ class AudioTestsWithSourceFile(AudioTests):
 
         with open(TESTFN, 'rb') as testfile:
             self.assertEqual(testfile.read(13), b'ababagalamaga')
-            f = self.module.open(testfile, 'rb')
-            try:
+            with self.module.open(testfile, 'rb') as f:
                 self.assertEqual(f.getnchannels(), self.nchannels)
                 self.assertEqual(f.getsampwidth(), self.sampwidth)
                 self.assertEqual(f.getframerate(), self.framerate)
                 self.assertEqual(f.getnframes(), self.sndfilenframes)
                 self.assertEqual(f.readframes(self.nframes), self.frames)
-            finally:
-                f.close()

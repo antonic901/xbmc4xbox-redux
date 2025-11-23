@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 """Freeze a Python script into a binary.
 
@@ -125,7 +125,7 @@ def main():
     # default the exclude list for each platform
     if win: exclude = exclude + [
         'dos', 'dospath', 'mac', 'macpath', 'macfs', 'MACFS', 'posix',
-        'os2', 'ce', 'riscos', 'riscosenviron', 'riscospath',
+        'ce',
         ]
 
     fail_import = exclude[:]
@@ -145,7 +145,7 @@ def main():
         if sys.argv[pos] == '-i':
             try:
                 options = open(sys.argv[pos+1]).read().split()
-            except IOError, why:
+            except IOError as why:
                 usage("File name '%s' specified with the -i option "
                       "can not be read - %s" % (sys.argv[pos+1], why) )
             # Replace the '-i' and the filename with the read params.
@@ -156,13 +156,13 @@ def main():
     # Now parse the command line with the extras inserted.
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'r:a:dEe:hmo:p:P:qs:wX:x:l:')
-    except getopt.error, msg:
+    except getopt.error as msg:
         usage('getopt error: ' + str(msg))
 
-    # process option arguments
+    # proces option arguments
     for o, a in opts:
         if o == '-h':
-            print __doc__
+            print(__doc__)
             return
         if o == '-d':
             debug = debug + 1
@@ -194,14 +194,14 @@ def main():
         if o == '-l':
             addn_link.append(a)
         if o == '-a':
-            apply(modulefinder.AddPackagePath, tuple(a.split("=", 2)))
+            modulefinder.AddPackagePath(*a.split("=", 2))
         if o == '-r':
             f,r = a.split("=", 2)
             replace_paths.append( (f,r) )
 
     # modules that are imported by the Python runtime
     implicits = []
-    for module in ('site', 'warnings',):
+    for module in ('site', 'warnings', 'encodings.utf_8', 'encodings.latin_1'):
         if module not in exclude:
             implicits.append(module)
 
@@ -219,10 +219,11 @@ def main():
 
     # locations derived from options
     version = sys.version[:3]
+    flagged_version = version + sys.abiflags
     if win:
         extensions_c = 'frozen_extensions.c'
     if ishome:
-        print "(Using Python source directory)"
+        print("(Using Python source directory)")
         binlib = exec_prefix
         incldir = os.path.join(prefix, 'Include')
         config_h_dir = exec_prefix
@@ -233,10 +234,11 @@ def main():
             frozendllmain_c = os.path.join(exec_prefix, 'Pc\\frozen_dllmain.c')
     else:
         binlib = os.path.join(exec_prefix,
-                              'lib', 'python%s' % version, 'config')
-        incldir = os.path.join(prefix, 'include', 'python%s' % version)
+                              'lib', 'python%s' % version,
+                              'config-%s' % flagged_version)
+        incldir = os.path.join(prefix, 'include', 'python%s' % flagged_version)
         config_h_dir = os.path.join(exec_prefix, 'include',
-                                    'python%s' % version)
+                                    'python%s' % flagged_version)
         config_c_in = os.path.join(binlib, 'config.c.in')
         frozenmain_c = os.path.join(binlib, 'frozenmain.c')
         makefile_in = os.path.join(binlib, 'Makefile')
@@ -310,8 +312,8 @@ def main():
     if odir and not os.path.isdir(odir):
         try:
             os.mkdir(odir)
-            print "Created output directory", odir
-        except os.error, msg:
+            print("Created output directory", odir)
+        except OSError as msg:
             usage('%s: mkdir failed (%s)' % (odir, str(msg)))
     base = ''
     if odir:
@@ -333,7 +335,7 @@ def main():
         try:
             custom_entry_point, python_entry_is_main = \
                 winmakemakefile.get_custom_entry_point(subsystem)
-        except ValueError, why:
+        except ValueError as why:
             usage(why)
 
 
@@ -363,6 +365,10 @@ def main():
         else:
             mf.load_file(mod)
 
+    # Alias "importlib._bootstrap" to "_frozen_importlib" so that the
+    # import machinery can bootstrap.
+    mf.modules["_frozen_importlib"] = mf.modules["importlib._bootstrap"]
+
     # Add the main script as either __main__, or the actual module name.
     if python_entry_is_main:
         mf.run_script(scriptfile)
@@ -371,7 +377,7 @@ def main():
 
     if debug > 0:
         mf.report()
-        print
+        print()
     dict = mf.modules
 
     if error_if_any_missing:
@@ -386,8 +392,7 @@ def main():
     # look for unfrozen modules (builtin and of unknown origin)
     builtins = []
     unknown = []
-    mods = dict.keys()
-    mods.sort()
+    mods = sorted(dict.keys())
     for mod in mods:
         if dict[mod].__code__:
             continue
@@ -456,12 +461,12 @@ def main():
 
     cflags = ['$(OPT)']
     cppflags = defines + includes
-    libs = [os.path.join(binlib, 'libpython$(VERSION).a')]
+    libs = [os.path.join(binlib, '$(LDLIBRARY)')]
 
     somevars = {}
     if os.path.exists(makefile_in):
         makevars = parsesetup.getmakevars(makefile_in)
-        for key in makevars.keys():
+        for key in makevars:
             somevars[key] = makevars[key]
 
     somevars['CFLAGS'] = ' '.join(cflags) # override
@@ -479,18 +484,18 @@ def main():
     # Done!
 
     if odir:
-        print 'Now run "make" in', odir,
-        print 'to build the target:', base_target
+        print('Now run "make" in', odir, end=' ')
+        print('to build the target:', base_target)
     else:
-        print 'Now run "make" to build the target:', base_target
+        print('Now run "make" to build the target:', base_target)
 
 
 # Print usage message and exit
 
 def usage(msg):
     sys.stdout = sys.stderr
-    print "Error:", msg
-    print "Use ``%s -h'' for help" % sys.argv[0]
+    print("Error:", msg)
+    print("Use ``%s -h'' for help" % sys.argv[0])
     sys.exit(2)
 
 

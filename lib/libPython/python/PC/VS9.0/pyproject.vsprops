@@ -12,7 +12,7 @@
 		InlineFunctionExpansion="1"
 		EnableIntrinsicFunctions="true"
 		AdditionalIncludeDirectories="..\..\Include; ..\..\PC"
-		PreprocessorDefinitions="_WIN32;WIN32"
+		PreprocessorDefinitions="_WIN32"
 		StringPooling="true"
 		ExceptionHandling="0"
 		RuntimeLibrary="0"
@@ -38,7 +38,7 @@
 	/>
 	<UserMacro
 		Name="PyDllName"
-		Value="python27"
+		Value="python34"
 	/>
 	<UserMacro
 		Name="PythonExe"
@@ -46,43 +46,23 @@
 	/>
 	<UserMacro
 		Name="externalsDir"
-		Value="..\..\externals"
-	/>
-	<UserMacro
-		Name="bsddb47Dir"
-		Value="$(externalsDir)\bsddb-4.7.25.0\build_windows"
-	/>
-	<UserMacro
-		Name="bsddb47DepLibs"
-		Value="ws2_32.lib"
-	/>
-	<UserMacro
-		Name="bsddbDir"
-		Value="$(bsddb47Dir)"
-	/>
-	<UserMacro
-		Name="bsddbDepLibs"
-		Value="$(bsddb47DepLibs)"
-	/>
-	<UserMacro
-		Name="bsddb44Dir"
-		Value="$(externalsDir)\db-4.4.20\build_win32"
-	/>
-	<UserMacro
-		Name="bsddb44DepLibs"
-		Value=""
+		Value="..\..\.."
 	/>
 	<UserMacro
 		Name="sqlite3Dir"
-		Value="$(externalsDir)\sqlite-3.14.2.0"
+		Value="$(externalsDir)\sqlite-3.8.3.1"
 	/>
 	<UserMacro
 		Name="bz2Dir"
 		Value="$(externalsDir)\bzip2-1.0.6"
 	/>
 	<UserMacro
+		Name="lzmaDir"
+		Value="$(externalsDir)\xz-5.0.5"
+	/>
+	<UserMacro
 		Name="opensslDir"
-		Value="$(externalsDir)\openssl-1.0.2o"
+		Value="$(externalsDir)\openssl-1.0.1g"
 	/>
 	<UserMacro
 		Name="tcltkDir"

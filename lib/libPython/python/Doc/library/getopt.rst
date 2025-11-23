@@ -2,8 +2,8 @@
 =========================================================
 
 .. module:: getopt
-   :synopsis: Portable parser for command line options; support both short and long option
-              names.
+   :synopsis: Portable parser for command line options; support both short and
+              long option names.
 
 **Source code:** :source:`Lib/getopt.py`
 
@@ -27,11 +27,11 @@ This module provides two functions and an
 exception:
 
 
-.. function:: getopt(args, options[, long_options])
+.. function:: getopt(args, shortopts, longopts=[])
 
    Parses command line options and parameter list.  *args* is the argument list to
    be parsed, without the leading reference to the running program. Typically, this
-   means ``sys.argv[1:]``. *options* is the string of option letters that the
+   means ``sys.argv[1:]``. *shortopts* is the string of option letters that the
    script wants to recognize, with options that require an argument followed by a
    colon (``':'``; i.e., the same format that Unix :c:func:`getopt` uses).
 
@@ -41,16 +41,16 @@ exception:
       arguments are considered also non-options. This is similar to the way
       non-GNU Unix systems work.
 
-   *long_options*, if specified, must be a list of strings with the names of the
-   long options which should be supported.  The leading ``'--'``
-   characters should not be included in the option name.  Long options which
-   require an argument should be followed by an equal sign (``'='``).  Optional
-   arguments are not supported.  To accept only long options, *options* should
-   be an empty string.  Long options on the command line can be recognized so
-   long as they provide a prefix of the option name that matches exactly one of
-   the accepted options.  For example, if *long_options* is ``['foo', 'frob']``,
-   the option ``--fo`` will match as ``--foo``, but ``--f``
-   will not match uniquely, so :exc:`GetoptError` will be raised.
+   *longopts*, if specified, must be a list of strings with the names of the
+   long options which should be supported.  The leading ``'--'`` characters
+   should not be included in the option name.  Long options which require an
+   argument should be followed by an equal sign (``'='``).  Optional arguments
+   are not supported.  To accept only long options, *shortopts* should be an
+   empty string.  Long options on the command line can be recognized so long as
+   they provide a prefix of the option name that matches exactly one of the
+   accepted options.  For example, if *longopts* is ``['foo', 'frob']``, the
+   option ``--fo`` will match as ``--foo``, but ``--f`` will
+   not match uniquely, so :exc:`GetoptError` will be raised.
 
    The return value consists of two elements: the first is a list of ``(option,
    value)`` pairs; the second is the list of program arguments left after the
@@ -63,7 +63,7 @@ exception:
    allowing multiple occurrences.  Long and short options may be mixed.
 
 
-.. function:: gnu_getopt(args, options[, long_options])
+.. function:: gnu_getopt(args, shortopts, longopts=[])
 
    This function works like :func:`getopt`, except that GNU style scanning mode is
    used by default. This means that option and non-option arguments may be
@@ -73,8 +73,6 @@ exception:
    If the first character of the option string is ``'+'``, or if the environment
    variable :envvar:`POSIXLY_CORRECT` is set, then option processing stops as
    soon as a non-option argument is encountered.
-
-   .. versionadded:: 2.3
 
 
 .. exception:: GetoptError
@@ -87,10 +85,7 @@ exception:
    related option; if there is no specific option to which the exception relates,
    :attr:`opt` is an empty string.
 
-   .. versionchanged:: 1.6
-      Introduced :exc:`GetoptError` as a synonym for :exc:`error`.
-
-
+.. XXX deprecated?
 .. exception:: error
 
    Alias for :exc:`GetoptError`; for backward compatibility.
@@ -129,7 +124,7 @@ In a script, typical usage is something like this::
            opts, args = getopt.getopt(sys.argv[1:], "ho:v", ["help", "output="])
        except getopt.GetoptError as err:
            # print help information and exit:
-           print str(err)  # will print something like "option -a not recognized"
+           print(err) # will print something like "option -a not recognized"
            usage()
            sys.exit(2)
        output = None

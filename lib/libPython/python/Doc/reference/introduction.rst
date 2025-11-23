@@ -22,11 +22,12 @@ language, maybe you could volunteer your time --- or invent a cloning machine
 
 It is dangerous to add too many implementation details to a language reference
 document --- the implementation may change, and other implementations of the
-same language may work differently.  On the other hand, there is currently only
-one Python implementation in widespread use (although alternate implementations
-exist), and its particular quirks are sometimes worth being mentioned,
-especially where the implementation imposes additional limitations.  Therefore,
-you'll find short "implementation notes" sprinkled throughout the text.
+same language may work differently.  On the other hand, CPython is the one
+Python implementation in widespread use (although alternate implementations
+continue to gain support), and its particular quirks are sometimes worth being
+mentioned, especially where the implementation imposes additional limitations.
+Therefore, you'll find short "implementation notes" sprinkled throughout the
+text.
 
 Every Python implementation comes with a number of built-in and standard
 modules.  These are documented in :ref:`library-index`.  A few built-in modules
@@ -59,7 +60,7 @@ Python for .NET
    This implementation actually uses the CPython implementation, but is a managed
    .NET application and makes .NET libraries available.  It was created by Brian
    Lloyd.  For more information, see the `Python for .NET home page
-   <https://pythonnet.github.io/>`_.
+   <http://pythonnet.sourceforge.net>`_.
 
 IronPython
    An alternate Python for .NET.  Unlike Python.NET, this is a complete Python
@@ -87,11 +88,7 @@ implementation you're using.
 Notation
 ========
 
-.. index::
-   single: BNF
-   single: grammar
-   single: syntax
-   single: notation
+.. index:: BNF, grammar, syntax, notation
 
 The descriptions of lexical analysis and syntax use a modified BNF grammar
 notation.  This uses the following style of definition:
@@ -117,9 +114,7 @@ meaningful to separate tokens. Rules are normally contained on a single line;
 rules with many alternatives may be formatted alternatively with each line after
 the first beginning with a vertical bar.
 
-.. index::
-   single: lexical definitions
-   single: ASCII@ASCII
+.. index:: lexical definitions, ASCII
 
 In lexical definitions (as the example above), two more conventions are used:
 Two literal characters separated by three dots mean a choice of any single

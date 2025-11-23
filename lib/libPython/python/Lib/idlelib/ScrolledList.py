@@ -1,4 +1,4 @@
-from Tkinter import *
+from tkinter import *
 from idlelib import macosxSupport
 
 class ScrolledList:
@@ -131,8 +131,8 @@ def _scrolled_list(parent):
     root.geometry("+%d+%d"%(x, y + 150))
     class MyScrolledList(ScrolledList):
         def fill_menu(self): self.menu.add_command(label="right click")
-        def on_select(self, index): print "select", self.get(index)
-        def on_double(self, index): print "double", self.get(index)
+        def on_select(self, index): print("select", self.get(index))
+        def on_double(self, index): print("double", self.get(index))
 
     scrolled_list = MyScrolledList(root)
     for i in range(30):

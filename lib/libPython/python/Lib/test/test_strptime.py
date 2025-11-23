@@ -6,7 +6,7 @@ import locale
 import re
 import os
 import sys
-from test import test_support as support
+from test import support
 from datetime import date as datetime_date
 
 import _strptime
@@ -190,7 +190,7 @@ class TimeRETests(unittest.TestCase):
 
     def test_whitespace_substitution(self):
         # When pattern contains whitespace, make sure it is taken into account
-        # so as to not allow subpatterns to end up next to each other and
+        # so as to not allow to subpatterns to end up next to each other and
         # "steal" characters from each other.
         pattern = self.time_re.pattern('%j %H')
         self.assertFalse(re.match(pattern, "180"))
@@ -213,11 +213,21 @@ class StrptimeTests(unittest.TestCase):
                 _strptime._strptime_time("2005", bad_format)
             except ValueError:
                 continue
-            except Exception, err:
+            except Exception as err:
                 self.fail("'%s' raised %s, not ValueError" %
                             (bad_format, err.__class__.__name__))
             else:
                 self.fail("'%s' did not raise ValueError" % bad_format)
+
+    def test_strptime_exception_context(self):
+        # check that this doesn't chain exceptions needlessly (see #17572)
+        with self.assertRaises(ValueError) as e:
+            _strptime._strptime_time('', '%D')
+        self.assertIs(e.exception.__suppress_context__, True)
+        # additional check for IndexError branch (issue #19545)
+        with self.assertRaises(ValueError) as e:
+            _strptime._strptime_time('19', '%Y %')
+        self.assertIs(e.exception.__suppress_context__, True)
 
     def test_unconverteddata(self):
         # Check ValueError is raised when there is unconverted data
@@ -428,7 +438,7 @@ class CalculationTests(unittest.TestCase):
         self.assertTrue(result.tm_year == self.time_tuple.tm_year and
                          result.tm_mon == self.time_tuple.tm_mon and
                          result.tm_mday == self.time_tuple.tm_mday,
-                        "Calculation of Gregorian date failed; "
+                        "Calculation of Gregorian date failed;"
                          "%s-%s-%s != %s-%s-%s" %
                          (result.tm_year, result.tm_mon, result.tm_mday,
                           self.time_tuple.tm_year, self.time_tuple.tm_mon,
@@ -440,7 +450,7 @@ class CalculationTests(unittest.TestCase):
         result = _strptime._strptime_time(time.strftime(format_string, self.time_tuple),
                                     format_string)
         self.assertTrue(result.tm_wday == self.time_tuple.tm_wday,
-                        "Calculation of day of the week failed; "
+                        "Calculation of day of the week failed;"
                          "%s != %s" % (result.tm_wday, self.time_tuple.tm_wday))
 
     def test_week_of_year_and_day_of_week_calculation(self):
@@ -478,22 +488,22 @@ class CalculationTests(unittest.TestCase):
                                         "of the year")
         test_helper((1917, 12, 31), "Dec 31 on Monday with year starting and "
                                         "ending on Monday")
-        test_helper((2007, 01, 07), "First Sunday of 2007")
-        test_helper((2007, 01, 14), "Second Sunday of 2007")
+        test_helper((2007, 1, 7), "First Sunday of 2007")
+        test_helper((2007, 1, 14), "Second Sunday of 2007")
         test_helper((2006, 12, 31), "Last Sunday of 2006")
         test_helper((2006, 12, 24), "Second to last Sunday of 2006")
 
     def test_week_0(self):
         def check(value, format, *expected):
             self.assertEqual(_strptime._strptime_time(value, format)[:-1], expected)
-        check('2015 0 0', '%Y %U %w', 2014, 12, 28, 0, 0, 0, 6, 362)
+        check('2015 0 0', '%Y %U %w', 2014, 12, 28, 0, 0, 0, 6, -3)
         check('2015 0 0', '%Y %W %w', 2015, 1, 4, 0, 0, 0, 6, 4)
-        check('2015 0 1', '%Y %U %w', 2014, 12, 29, 0, 0, 0, 0, 363)
-        check('2015 0 1', '%Y %W %w', 2014, 12, 29, 0, 0, 0, 0, 363)
-        check('2015 0 2', '%Y %U %w', 2014, 12, 30, 0, 0, 0, 1, 364)
-        check('2015 0 2', '%Y %W %w', 2014, 12, 30, 0, 0, 0, 1, 364)
-        check('2015 0 3', '%Y %U %w', 2014, 12, 31, 0, 0, 0, 2, 365)
-        check('2015 0 3', '%Y %W %w', 2014, 12, 31, 0, 0, 0, 2, 365)
+        check('2015 0 1', '%Y %U %w', 2014, 12, 29, 0, 0, 0, 0, -2)
+        check('2015 0 1', '%Y %W %w', 2014, 12, 29, 0, 0, 0, 0, -2)
+        check('2015 0 2', '%Y %U %w', 2014, 12, 30, 0, 0, 0, 1, -1)
+        check('2015 0 2', '%Y %W %w', 2014, 12, 30, 0, 0, 0, 1, -1)
+        check('2015 0 3', '%Y %U %w', 2014, 12, 31, 0, 0, 0, 2, 0)
+        check('2015 0 3', '%Y %W %w', 2014, 12, 31, 0, 0, 0, 2, 0)
         check('2015 0 4', '%Y %U %w', 2015, 1, 1, 0, 0, 0, 3, 1)
         check('2015 0 4', '%Y %W %w', 2015, 1, 1, 0, 0, 0, 3, 1)
         check('2015 0 5', '%Y %U %w', 2015, 1, 2, 0, 0, 0, 4, 2)
@@ -501,20 +511,6 @@ class CalculationTests(unittest.TestCase):
         check('2015 0 6', '%Y %U %w', 2015, 1, 3, 0, 0, 0, 5, 3)
         check('2015 0 6', '%Y %W %w', 2015, 1, 3, 0, 0, 0, 5, 3)
 
-        check('2009 0 0', '%Y %U %w', 2008, 12, 28, 0, 0, 0, 6, 363)
-        check('2009 0 0', '%Y %W %w', 2009, 1, 4, 0, 0, 0, 6, 4)
-        check('2009 0 1', '%Y %U %w', 2008, 12, 29, 0, 0, 0, 0, 364)
-        check('2009 0 1', '%Y %W %w', 2008, 12, 29, 0, 0, 0, 0, 364)
-        check('2009 0 2', '%Y %U %w', 2008, 12, 30, 0, 0, 0, 1, 365)
-        check('2009 0 2', '%Y %W %w', 2008, 12, 30, 0, 0, 0, 1, 365)
-        check('2009 0 3', '%Y %U %w', 2008, 12, 31, 0, 0, 0, 2, 366)
-        check('2009 0 3', '%Y %W %w', 2008, 12, 31, 0, 0, 0, 2, 366)
-        check('2009 0 4', '%Y %U %w', 2009, 1, 1, 0, 0, 0, 3, 1)
-        check('2009 0 4', '%Y %W %w', 2009, 1, 1, 0, 0, 0, 3, 1)
-        check('2009 0 5', '%Y %U %w', 2009, 1, 2, 0, 0, 0, 4, 2)
-        check('2009 0 5', '%Y %W %w', 2009, 1, 2, 0, 0, 0, 4, 2)
-        check('2009 0 6', '%Y %U %w', 2009, 1, 3, 0, 0, 0, 5, 3)
-        check('2009 0 6', '%Y %W %w', 2009, 1, 3, 0, 0, 0, 5, 3)
 
 class CacheTests(unittest.TestCase):
     """Test that caching works properly."""
@@ -580,7 +576,7 @@ class CacheTests(unittest.TestCase):
         finally:
             locale.setlocale(locale.LC_TIME, locale_info)
 
-    @support.run_with_tz('STD-1DST,M4.1.0,M10.1.0')
+    @support.run_with_tz('STD-1DST')
     def test_TimeRE_recreation_timezone(self):
         # The TimeRE instance should be recreated upon changing the timezone.
         oldtzname = time.tzname

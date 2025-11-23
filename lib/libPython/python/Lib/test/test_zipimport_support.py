@@ -2,7 +2,7 @@
 # for working with modules located inside zipfiles
 # The tests are centralised in this fashion to make it easy to drop them
 # if a platform doesn't support zipimport
-import test.test_support
+import test.support
 import os
 import os.path
 import sys
@@ -13,11 +13,11 @@ import doctest
 import inspect
 import linecache
 import pdb
-import warnings
-from test.script_helper import (spawn_python, kill_python, run_python,
+import unittest
+from test.script_helper import (spawn_python, kill_python, assert_python_ok,
                                 temp_dir, make_script, make_zip_script)
 
-verbose = test.test_support.verbose
+verbose = test.support.verbose
 
 # Library modules covered by this test set
 #  pdb (Issue 4201)
@@ -31,47 +31,50 @@ verbose = test.test_support.verbose
 # Retrieve some helpers from other test cases
 from test import (test_doctest, sample_doctest, sample_doctest_no_doctests,
                   sample_doctest_no_docstrings)
-from test.test_importhooks import ImportHooksBaseTestCase
 
 
 def _run_object_doctest(obj, module):
-    # Direct doctest output (normally just errors) to real stdout; doctest
-    # output shouldn't be compared by regrtest.
-    save_stdout = sys.stdout
-    sys.stdout = test.test_support.get_original_stdout()
+    finder = doctest.DocTestFinder(verbose=verbose, recurse=False)
+    runner = doctest.DocTestRunner(verbose=verbose)
+    # Use the object's fully qualified name if it has one
+    # Otherwise, use the module's name
     try:
-        finder = doctest.DocTestFinder(verbose=verbose, recurse=False)
-        runner = doctest.DocTestRunner(verbose=verbose)
-        # Use the object's fully qualified name if it has one
-        # Otherwise, use the module's name
-        try:
-            name = "%s.%s" % (obj.__module__, obj.__name__)
-        except AttributeError:
-            name = module.__name__
-        for example in finder.find(obj, name, module):
-            runner.run(example)
-        f, t = runner.failures, runner.tries
-        if f:
-            raise test.test_support.TestFailed("%d of %d doctests failed" % (f, t))
-    finally:
-        sys.stdout = save_stdout
+        name = "%s.%s" % (obj.__module__, obj.__name__)
+    except AttributeError:
+        name = module.__name__
+    for example in finder.find(obj, name, module):
+        runner.run(example)
+    f, t = runner.failures, runner.tries
+    if f:
+        raise test.support.TestFailed("%d of %d doctests failed" % (f, t))
     if verbose:
-        print 'doctest (%s) ... %d tests with zero failures' % (module.__name__, t)
+        print ('doctest (%s) ... %d tests with zero failures' % (module.__name__, t))
     return f, t
 
 
 
-class ZipSupportTests(ImportHooksBaseTestCase):
-    # We use the ImportHooksBaseTestCase to restore
+class ZipSupportTests(unittest.TestCase):
+    # This used to use the ImportHooksBaseTestCase to restore
     # the state of the import related information
-    # in the sys module after each test
+    # in the sys module after each test. However, that restores
+    # *too much* information and breaks for the invocation
+    # of test_doctest. So we do our own thing and leave
+    # sys.modules alone.
     # We also clear the linecache and zipimport cache
     # just to avoid any bogus errors due to name reuse in the tests
     def setUp(self):
         linecache.clearcache()
         zipimport._zip_directory_cache.clear()
-        ImportHooksBaseTestCase.setUp(self)
+        self.path = sys.path[:]
+        self.meta_path = sys.meta_path[:]
+        self.path_hooks = sys.path_hooks[:]
+        sys.path_importer_cache.clear()
 
+    def tearDown(self):
+        sys.path[:] = self.path
+        sys.meta_path[:] = self.meta_path
+        sys.path_hooks[:] = self.path_hooks
+        sys.path_importer_cache.clear()
 
     def test_inspect_getsource_issue4223(self):
         test_src = "def foo(): pass\n"
@@ -84,7 +87,10 @@ class ZipSupportTests(ImportHooksBaseTestCase):
             os.remove(init_name)
             sys.path.insert(0, zip_name)
             import zip_pkg
-            self.assertEqual(inspect.getsource(zip_pkg.foo), test_src)
+            try:
+                self.assertEqual(inspect.getsource(zip_pkg.foo), test_src)
+            finally:
+                del sys.modules["zip_pkg"]
 
     def test_doctest_issue4197(self):
         # To avoid having to keep two copies of the doctest module's
@@ -123,73 +129,61 @@ class ZipSupportTests(ImportHooksBaseTestCase):
             z.close()
             if verbose:
                 zip_file = zipfile.ZipFile(zip_name, 'r')
-                print 'Contents of %r:' % zip_name
+                print ('Contents of %r:' % zip_name)
                 zip_file.printdir()
                 zip_file.close()
             os.remove(script_name)
             sys.path.insert(0, zip_name)
             import test_zipped_doctest
-            # Some of the doc tests depend on the colocated text files
-            # which aren't available to the zipped version (the doctest
-            # module currently requires real filenames for non-embedded
-            # tests). So we're forced to be selective about which tests
-            # to run.
-            # doctest could really use some APIs which take a text
-            # string or a file object instead of a filename...
-            known_good_tests = [
-                test_zipped_doctest.SampleClass,
-                test_zipped_doctest.SampleClass.NestedClass,
-                test_zipped_doctest.SampleClass.NestedClass.__init__,
-                test_zipped_doctest.SampleClass.__init__,
-                test_zipped_doctest.SampleClass.a_classmethod,
-                test_zipped_doctest.SampleClass.a_property,
-                test_zipped_doctest.SampleClass.a_staticmethod,
-                test_zipped_doctest.SampleClass.double,
-                test_zipped_doctest.SampleClass.get,
-                test_zipped_doctest.SampleNewStyleClass,
-                test_zipped_doctest.SampleNewStyleClass.__init__,
-                test_zipped_doctest.SampleNewStyleClass.double,
-                test_zipped_doctest.SampleNewStyleClass.get,
-                test_zipped_doctest.old_test1,
-                test_zipped_doctest.old_test2,
-                test_zipped_doctest.old_test3,
-                test_zipped_doctest.old_test4,
-                test_zipped_doctest.sample_func,
-                test_zipped_doctest.test_DocTest,
-                test_zipped_doctest.test_DocTestParser,
-                test_zipped_doctest.test_DocTestRunner.basics,
-                test_zipped_doctest.test_DocTestRunner.exceptions,
-                test_zipped_doctest.test_DocTestRunner.option_directives,
-                test_zipped_doctest.test_DocTestRunner.optionflags,
-                test_zipped_doctest.test_DocTestRunner.verbose_flag,
-                test_zipped_doctest.test_Example,
-                test_zipped_doctest.test_debug,
-                test_zipped_doctest.test_pdb_set_trace,
-                test_zipped_doctest.test_pdb_set_trace_nested,
-                test_zipped_doctest.test_testsource,
-                test_zipped_doctest.test_trailing_space_in_test,
-                test_zipped_doctest.test_DocTestSuite,
-                test_zipped_doctest.test_DocTestFinder,
-            ]
-            # These remaining tests are the ones which need access
-            # to the data files, so we don't run them
-            fail_due_to_missing_data_files = [
-                test_zipped_doctest.test_DocFileSuite,
-                test_zipped_doctest.test_testfile,
-                test_zipped_doctest.test_unittest_reportflags,
-            ]
-            # Needed for test_DocTestParser and test_debug
-            deprecations = []
-            if __debug__:
-                # Ignore all warnings about the use of class Tester in this module.
-                deprecations.append(("class Tester is deprecated", DeprecationWarning))
-            if sys.py3kwarning:
-                deprecations += [
-                    ("backquote not supported", SyntaxWarning),
-                    ("execfile.. not supported", DeprecationWarning)]
-            with test.test_support.check_warnings(*deprecations):
+            try:
+                # Some of the doc tests depend on the colocated text files
+                # which aren't available to the zipped version (the doctest
+                # module currently requires real filenames for non-embedded
+                # tests). So we're forced to be selective about which tests
+                # to run.
+                # doctest could really use some APIs which take a text
+                # string or a file object instead of a filename...
+                known_good_tests = [
+                    test_zipped_doctest.SampleClass,
+                    test_zipped_doctest.SampleClass.NestedClass,
+                    test_zipped_doctest.SampleClass.NestedClass.__init__,
+                    test_zipped_doctest.SampleClass.__init__,
+                    test_zipped_doctest.SampleClass.a_classmethod,
+                    test_zipped_doctest.SampleClass.a_property,
+                    test_zipped_doctest.SampleClass.a_staticmethod,
+                    test_zipped_doctest.SampleClass.double,
+                    test_zipped_doctest.SampleClass.get,
+                    test_zipped_doctest.SampleNewStyleClass,
+                    test_zipped_doctest.SampleNewStyleClass.__init__,
+                    test_zipped_doctest.SampleNewStyleClass.double,
+                    test_zipped_doctest.SampleNewStyleClass.get,
+                    test_zipped_doctest.sample_func,
+                    test_zipped_doctest.test_DocTest,
+                    test_zipped_doctest.test_DocTestParser,
+                    test_zipped_doctest.test_DocTestRunner.basics,
+                    test_zipped_doctest.test_DocTestRunner.exceptions,
+                    test_zipped_doctest.test_DocTestRunner.option_directives,
+                    test_zipped_doctest.test_DocTestRunner.optionflags,
+                    test_zipped_doctest.test_DocTestRunner.verbose_flag,
+                    test_zipped_doctest.test_Example,
+                    test_zipped_doctest.test_debug,
+                    test_zipped_doctest.test_testsource,
+                    test_zipped_doctest.test_trailing_space_in_test,
+                    test_zipped_doctest.test_DocTestSuite,
+                    test_zipped_doctest.test_DocTestFinder,
+                ]
+                # These tests are the ones which need access
+                # to the data files, so we don't run them
+                fail_due_to_missing_data_files = [
+                    test_zipped_doctest.test_DocFileSuite,
+                    test_zipped_doctest.test_testfile,
+                    test_zipped_doctest.test_unittest_reportflags,
+                ]
+
                 for obj in known_good_tests:
                     _run_object_doctest(obj, test_zipped_doctest)
+            finally:
+                del sys.modules["test_zipped_doctest"]
 
     def test_doctest_main_issue4197(self):
         test_src = textwrap.dedent("""\
@@ -203,22 +197,22 @@ class ZipSupportTests(ImportHooksBaseTestCase):
         pattern = 'File "%s", line 2, in %s'
         with temp_dir() as d:
             script_name = make_script(d, 'script', test_src)
-            exit_code, data = run_python(script_name)
+            rc, out, err = assert_python_ok(script_name)
             expected = pattern % (script_name, "__main__.Test")
             if verbose:
-                print "Expected line", expected
-                print "Got stdout:"
-                print data
-            self.assertIn(expected, data)
+                print ("Expected line", expected)
+                print ("Got stdout:")
+                print (ascii(out))
+            self.assertIn(expected.encode('utf-8'), out)
             zip_name, run_name = make_zip_script(d, "test_zip",
                                                 script_name, '__main__.py')
-            exit_code, data = run_python(zip_name)
+            rc, out, err = assert_python_ok(zip_name)
             expected = pattern % (run_name, "__main__.Test")
             if verbose:
-                print "Expected line", expected
-                print "Got stdout:"
-                print data
-            self.assertIn(expected, data)
+                print ("Expected line", expected)
+                print ("Got stdout:")
+                print (ascii(out))
+            self.assertIn(expected.encode('utf-8'), out)
 
     def test_pdb_issue4201(self):
         test_src = textwrap.dedent("""\
@@ -226,25 +220,27 @@ class ZipSupportTests(ImportHooksBaseTestCase):
                         pass
 
                     import pdb
-                    pdb.runcall(f)
+                    pdb.Pdb(nosigint=True).runcall(f)
                     """)
         with temp_dir() as d:
             script_name = make_script(d, 'script', test_src)
             p = spawn_python(script_name)
-            p.stdin.write('l\n')
+            p.stdin.write(b'l\n')
             data = kill_python(p)
-            self.assertIn(script_name, data)
+            # bdb/pdb applies normcase to its filename before displaying
+            self.assertIn(os.path.normcase(script_name.encode('utf-8')), data)
             zip_name, run_name = make_zip_script(d, "test_zip",
                                                 script_name, '__main__.py')
             p = spawn_python(zip_name)
-            p.stdin.write('l\n')
+            p.stdin.write(b'l\n')
             data = kill_python(p)
-            self.assertIn(run_name, data)
+            # bdb/pdb applies normcase to its filename before displaying
+            self.assertIn(os.path.normcase(run_name.encode('utf-8')), data)
 
 
 def test_main():
-    test.test_support.run_unittest(ZipSupportTests)
-    test.test_support.reap_children()
+    test.support.run_unittest(ZipSupportTests)
+    test.support.reap_children()
 
 if __name__ == '__main__':
     test_main()

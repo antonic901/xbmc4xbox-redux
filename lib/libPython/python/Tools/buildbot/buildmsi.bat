@@ -2,10 +2,10 @@
 
 cmd /c Tools\buildbot\external.bat
 @rem build release versions of things
-call "%VS90COMNTOOLS%vsvars32.bat"
+call "%VS100COMNTOOLS%vsvars32.bat"
 
 @rem build Python
-vcbuild /useenv PCbuild\pcbuild.sln "Release|Win32"
+msbuild /p:useenv=true PCbuild\pcbuild.sln /p:Configuration=Release /p:Platform=Win32
 
 @rem build the documentation
 bash.exe -c 'cd Doc;make PYTHON=python2.5 update htmlhelp'
@@ -18,3 +18,4 @@ cd ..\Tools\msi
 del *.msi
 nmake /f msisupport.mak
 %HOST_PYTHON% msi.py
+

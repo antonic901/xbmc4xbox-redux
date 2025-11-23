@@ -1,5 +1,5 @@
 /* Helper library for MSI creation with Python.
- * Copyright (C) 2005 Martin v. Löwis
+ * Copyright (C) 2005 Martin v. LÃ¶wis
  * Licensed to PSF under a contributor agreement.
  */
 
@@ -18,7 +18,7 @@ static PyObject*
 uuidcreate(PyObject* obj, PyObject*args)
 {
     UUID result;
-    char *cresult;
+    wchar_t *cresult;
     PyObject *oresult;
 
     /* May return ok, local only, and no address.
@@ -30,13 +30,13 @@ uuidcreate(PyObject* obj, PyObject*args)
         return NULL;
     }
 
-    if (UuidToString(&result, &cresult) == RPC_S_OUT_OF_MEMORY) {
+    if (UuidToStringW(&result, &cresult) == RPC_S_OUT_OF_MEMORY) {
         PyErr_SetString(PyExc_MemoryError, "out of memory in uuidgen");
         return NULL;
     }
 
-    oresult = PyString_FromString(cresult);
-    RpcStringFree(&cresult);
+    oresult = PyUnicode_FromWideChar(cresult, wcslen(cresult));
+    RpcStringFreeW(&cresult);
     return oresult;
 
 }
@@ -55,7 +55,7 @@ static FNFCIFREE(cb_free)
 
 static FNFCIOPEN(cb_open)
 {
-    int result = _open(pszFile, oflag, pmode);
+    int result = _open(pszFile, oflag | O_NOINHERIT, pmode);
     if (result == -1)
         *err = errno;
     return result;
@@ -63,7 +63,7 @@ static FNFCIOPEN(cb_open)
 
 static FNFCIREAD(cb_read)
 {
-    UINT result = (UINT)_read(hf, memory, cb);
+    UINT result = (UINT)_read((int)hf, memory, cb);
     if (result != cb)
         *err = errno;
     return result;
@@ -71,7 +71,7 @@ static FNFCIREAD(cb_read)
 
 static FNFCIWRITE(cb_write)
 {
-    UINT result = (UINT)_write(hf, memory, cb);
+    UINT result = (UINT)_write((int)hf, memory, cb);
     if (result != cb)
         *err = errno;
     return result;
@@ -79,7 +79,7 @@ static FNFCIWRITE(cb_write)
 
 static FNFCICLOSE(cb_close)
 {
-    int result = _close(hf);
+    int result = _close((int)hf);
     if (result != 0)
         *err = errno;
     return result;
@@ -87,7 +87,7 @@ static FNFCICLOSE(cb_close)
 
 static FNFCISEEK(cb_seek)
 {
-    long result = (long)_lseek(hf, dist, seektype);
+    long result = (long)_lseek((int)hf, dist, seektype);
     if (result == -1)
         *err = errno;
     return result;
@@ -122,7 +122,9 @@ static FNFCIGETTEMPFILE(cb_gettempfile)
 static FNFCISTATUS(cb_status)
 {
     if (pv) {
-        PyObject *result = PyObject_CallMethod(pv, "status", "iii", typeStatus, cb1, cb2);
+        _Py_IDENTIFIER(status);
+
+        PyObject *result = _PyObject_CallMethodId(pv, &PyId_status, "iii", typeStatus, cb1, cb2);
         if (result == NULL)
             return -1;
         Py_DECREF(result);
@@ -133,17 +135,19 @@ static FNFCISTATUS(cb_status)
 static FNFCIGETNEXTCABINET(cb_getnextcabinet)
 {
     if (pv) {
-        PyObject *result = PyObject_CallMethod(pv, "getnextcabinet", "i", pccab->iCab);
+        _Py_IDENTIFIER(getnextcabinet);
+
+        PyObject *result = _PyObject_CallMethodId(pv, &PyId_getnextcabinet, "i", pccab->iCab);
         if (result == NULL)
             return -1;
-        if (!PyString_Check(result)) {
+        if (!PyBytes_Check(result)) {
             PyErr_Format(PyExc_TypeError,
                 "Incorrect return type %s from getnextcabinet",
                 result->ob_type->tp_name);
             Py_DECREF(result);
             return FALSE;
         }
-        strncpy(pccab->szCab, PyString_AsString(result), sizeof(pccab->szCab));
+        strncpy(pccab->szCab, PyBytes_AsString(result), sizeof(pccab->szCab));
         return TRUE;
     }
     return FALSE;
@@ -175,7 +179,7 @@ static FNFCIGETOPENINFO(cb_getopeninfo)
 
     CloseHandle(handle);
 
-    return _open(pszName, _O_RDONLY | _O_BINARY);
+    return _open(pszName, _O_RDONLY | _O_BINARY | O_NOINHERIT);
 }
 
 static PyObject* fcicreate(PyObject* obj, PyObject* args)
@@ -239,8 +243,13 @@ static PyObject* fcicreate(PyObject* obj, PyObject* args)
     for (i=0; i < PyList_GET_SIZE(files); i++) {
         PyObject *item = PyList_GET_ITEM(files, i);
         char *filename, *cabname;
-        if (!PyArg_ParseTuple(item, "ss", &filename, &cabname))
-            goto err;
+
+        if (!PyArg_ParseTuple(item, "ss", &filename, &cabname)) {
+            PyErr_SetString(PyExc_TypeError, "FCICreate expects a list of tuples containing two strings");
+            FCIDestroy(hfci);
+            return NULL;
+        }
+
         if (!FCIAddFile(hfci, filename, cabname, FALSE,
             cb_getnextcabinet, cb_status, cb_getopeninfo,
             tcompTYPE_MSZIP))
@@ -256,7 +265,11 @@ static PyObject* fcicreate(PyObject* obj, PyObject* args)
     Py_INCREF(Py_None);
     return Py_None;
 err:
-    PyErr_Format(PyExc_ValueError, "FCI error %d", erf.erfOper); /* XXX better error type */
+    if(erf.fError)
+        PyErr_Format(PyExc_ValueError, "FCI error %d", erf.erfOper); /* XXX better error type */
+    else
+        PyErr_SetString(PyExc_ValueError, "FCI general error");
+
     FCIDestroy(hfci);
     return NULL;
 }
@@ -271,7 +284,6 @@ msiobj_dealloc(msiobj* msidb)
 {
     MsiCloseHandle(msidb->h);
     msidb->h = 0;
-    PyObject_Del(msidb);
 }
 
 static PyObject*
@@ -321,10 +333,6 @@ msierror(int status)
     code = MsiRecordGetInteger(err, 1); /* XXX code */
     if (MsiFormatRecord(0, err, res, &size) == ERROR_MORE_DATA) {
         res = malloc(size+1);
-        if (res == NULL) {
-            MsiCloseHandle(err);
-            return PyErr_NoMemory();
-        }
         MsiFormatRecord(0, err, res, &size);
         res[size]='\0';
     }
@@ -340,7 +348,7 @@ msierror(int status)
 static PyObject*
 record_getfieldcount(msiobj* record, PyObject* args)
 {
-    return PyInt_FromLong(MsiRecordGetFieldCount(record->h));
+    return PyLong_FromLong(MsiRecordGetFieldCount(record->h));
 }
 
 static PyObject*
@@ -356,7 +364,7 @@ record_getinteger(msiobj* record, PyObject* args)
         PyErr_SetString(MSIError, "could not convert record field to integer");
         return NULL;
     }
-    return PyInt_FromLong((long) status);
+    return PyLong_FromLong((long) status);
 }
 
 static PyObject*
@@ -364,23 +372,23 @@ record_getstring(msiobj* record, PyObject* args)
 {
     unsigned int field;
     unsigned int status;
-    char buf[2000];
-    char *res = buf;
+    WCHAR buf[2000];
+    WCHAR *res = buf;
     DWORD size = sizeof(buf);
     PyObject* string;
 
     if (!PyArg_ParseTuple(args, "I:GetString", &field))
         return NULL;
-    status = MsiRecordGetString(record->h, field, res, &size);
+    status = MsiRecordGetStringW(record->h, field, res, &size);
     if (status == ERROR_MORE_DATA) {
-        res = (char*) malloc(size + 1);
+        res = (WCHAR*) malloc((size + 1)*sizeof(WCHAR));
         if (res == NULL)
             return PyErr_NoMemory();
-        status = MsiRecordGetString(record->h, field, res, &size);
+        status = MsiRecordGetStringW(record->h, field, res, &size);
     }
     if (status != ERROR_SUCCESS)
         return msierror((int) status);
-    string = PyString_FromString(res);
+    string = PyUnicode_FromWideChar(res, size);
     if (buf != res)
         free(res);
     return string;
@@ -402,12 +410,12 @@ record_setstring(msiobj* record, PyObject *args)
 {
     int status;
     int field;
-    char *data;
+    wchar_t *data;
 
-    if (!PyArg_ParseTuple(args, "is:SetString", &field, &data))
+    if (!PyArg_ParseTuple(args, "iu:SetString", &field, &data))
         return NULL;
 
-    if ((status = MsiRecordSetString(record->h, field, data)) != ERROR_SUCCESS)
+    if ((status = MsiRecordSetStringW(record->h, field, data)) != ERROR_SUCCESS)
         return msierror(status);
 
     Py_INCREF(Py_None);
@@ -419,12 +427,12 @@ record_setstream(msiobj* record, PyObject *args)
 {
     int status;
     int field;
-    char *data;
+    wchar_t *data;
 
-    if (!PyArg_ParseTuple(args, "is:SetStream", &field, &data))
+    if (!PyArg_ParseTuple(args, "iu:SetStream", &field, &data))
         return NULL;
 
-    if ((status = MsiRecordSetStream(record->h, field, data)) != ERROR_SUCCESS)
+    if ((status = MsiRecordSetStreamW(record->h, field, data)) != ERROR_SUCCESS)
         return msierror(status);
 
     Py_INCREF(Py_None);
@@ -478,7 +486,7 @@ static PyTypeObject record_Type = {
         0,                      /*tp_print*/
         0,                      /*tp_getattr*/
         0,                      /*tp_setattr*/
-        0,                      /*tp_compare*/
+        0,                      /*tp_reserved*/
         0,                      /*tp_repr*/
         0,                      /*tp_as_number*/
         0,                      /*tp_as_sequence*/
@@ -539,7 +547,7 @@ summary_getproperty(msiobj* si, PyObject *args)
     FILETIME fval;
     char sbuf[1000];
     char *sval = sbuf;
-    DWORD ssize = sizeof(sbuf);
+    DWORD ssize = sizeof(sval);
 
     if (!PyArg_ParseTuple(args, "i:GetProperty", &field))
         return NULL;
@@ -547,39 +555,25 @@ summary_getproperty(msiobj* si, PyObject *args)
     status = MsiSummaryInfoGetProperty(si->h, field, &type, &ival,
         &fval, sval, &ssize);
     if (status == ERROR_MORE_DATA) {
-        ssize++;
         sval = malloc(ssize);
-        if (sval == NULL) {
-            return PyErr_NoMemory();
-        }
         status = MsiSummaryInfoGetProperty(si->h, field, &type, &ival,
             &fval, sval, &ssize);
     }
 
     switch(type) {
-        case VT_I2:
-        case VT_I4:
-            result = PyLong_FromLong(ival);
-            break;
+        case VT_I2: case VT_I4:
+            return PyLong_FromLong(ival);
         case VT_FILETIME:
             PyErr_SetString(PyExc_NotImplementedError, "FILETIME result");
-            result = NULL;
-            break;
+            return NULL;
         case VT_LPSTR:
             result = PyBytes_FromStringAndSize(sval, ssize);
-            break;
-        case VT_EMPTY:
-            Py_INCREF(Py_None);
-            result = Py_None;
-            break;
-        default:
-            PyErr_Format(PyExc_NotImplementedError, "result of type %d", type);
-            result = NULL;
-            break;
+            if (sval != sbuf)
+                free(sval);
+            return result;
     }
-    if (sval != sbuf)
-        free(sval);
-    return result;
+    PyErr_Format(PyExc_NotImplementedError, "result of type %d", type);
+    return NULL;
 }
 
 static PyObject*
@@ -592,7 +586,7 @@ summary_getpropertycount(msiobj* si, PyObject *args)
     if (status != ERROR_SUCCESS)
         return msierror(status);
 
-    return PyInt_FromLong(result);
+    return PyLong_FromLong(result);
 }
 
 static PyObject*
@@ -605,12 +599,16 @@ summary_setproperty(msiobj* si, PyObject *args)
     if (!PyArg_ParseTuple(args, "iO:SetProperty", &field, &data))
         return NULL;
 
-    if (PyString_Check(data)) {
-        status = MsiSummaryInfoSetProperty(si->h, field, VT_LPSTR,
-            0, NULL, PyString_AsString(data));
-    } else if (PyInt_Check(data)) {
+    if (PyUnicode_Check(data)) {
+        status = MsiSummaryInfoSetPropertyW(si->h, field, VT_LPSTR,
+            0, NULL, PyUnicode_AsUnicode(data));
+    } else if (PyLong_CheckExact(data)) {
+        long value = PyLong_AsLong(data);
+        if (value == -1 && PyErr_Occurred()) {
+            return NULL;
+        }
         status = MsiSummaryInfoSetProperty(si->h, field, VT_I4,
-            PyInt_AsLong(data), NULL, NULL);
+            value, NULL, NULL);
     } else {
         PyErr_SetString(PyExc_TypeError, "unsupported type");
         return NULL;
@@ -658,7 +656,7 @@ static PyTypeObject summary_Type = {
         0,                      /*tp_print*/
         0,                      /*tp_getattr*/
         0,                      /*tp_setattr*/
-        0,                      /*tp_compare*/
+        0,                      /*tp_reserved*/
         0,                      /*tp_repr*/
         0,                      /*tp_as_number*/
         0,                      /*tp_as_sequence*/
@@ -806,7 +804,7 @@ static PyTypeObject msiview_Type = {
         0,                      /*tp_print*/
         0,                      /*tp_getattr*/
         0,                      /*tp_setattr*/
-        0,                      /*tp_compare*/
+        0,                      /*tp_reserved*/
         0,                      /*tp_repr*/
         0,                      /*tp_as_number*/
         0,                      /*tp_as_sequence*/
@@ -894,7 +892,7 @@ msidb_getsummaryinformation(msiobj *db, PyObject *args)
         return msierror(status);
 
     oresult = PyObject_NEW(struct msiobj, &summary_Type);
-    if (!oresult) {
+    if (!result) {
         MsiCloseHandle(result);
         return NULL;
     }
@@ -923,7 +921,7 @@ static PyTypeObject msidb_Type = {
         0,                      /*tp_print*/
         0,                      /*tp_getattr*/
         0,                      /*tp_setattr*/
-        0,                      /*tp_compare*/
+        0,                      /*tp_reserved*/
         0,                      /*tp_repr*/
         0,                      /*tp_as_number*/
         0,                      /*tp_as_sequence*/
@@ -957,17 +955,6 @@ static PyTypeObject msidb_Type = {
         0,                      /*tp_is_gc*/
 };
 
-#define Py_NOT_PERSIST(x, flag)                        \
-    (x != (int)(flag) &&                      \
-    x != ((int)(flag) | MSIDBOPEN_PATCHFILE))
-
-#define Py_INVALID_PERSIST(x)                \
-    (Py_NOT_PERSIST(x, MSIDBOPEN_READONLY) &&  \
-    Py_NOT_PERSIST(x, MSIDBOPEN_TRANSACT) &&   \
-    Py_NOT_PERSIST(x, MSIDBOPEN_DIRECT) &&     \
-    Py_NOT_PERSIST(x, MSIDBOPEN_CREATE) &&     \
-    Py_NOT_PERSIST(x, MSIDBOPEN_CREATEDIRECT))
-
 static PyObject* msiopendb(PyObject *obj, PyObject *args)
 {
     int status;
@@ -975,14 +962,11 @@ static PyObject* msiopendb(PyObject *obj, PyObject *args)
     int persist;
     MSIHANDLE h;
     msiobj *result;
+
     if (!PyArg_ParseTuple(args, "si:MSIOpenDatabase", &path, &persist))
         return NULL;
-    /* We need to validate that persist is a valid MSIDBOPEN_* value. Otherwise,
-       MsiOpenDatabase may treat the value as a pointer, leading to unexpected
-       behavior. */
-    if (Py_INVALID_PERSIST(persist))
-        return msierror(ERROR_INVALID_PARAMETER);
-    status = MsiOpenDatabase(path, (LPCSTR)persist, &h);
+
+        status = MsiOpenDatabase(path, (LPCSTR)persist, &h);
     if (status != ERROR_SUCCESS)
         return msierror(status);
 
@@ -1026,14 +1010,27 @@ static PyMethodDef msi_methods[] = {
 
 static char msi_doc[] = "Documentation";
 
+
+static struct PyModuleDef _msimodule = {
+        PyModuleDef_HEAD_INIT,
+        "_msi",
+        msi_doc,
+        -1,
+        msi_methods,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+};
+
 PyMODINIT_FUNC
-init_msi(void)
+PyInit__msi(void)
 {
     PyObject *m;
 
-    m = Py_InitModule3("_msi", msi_methods, msi_doc);
+    m = PyModule_Create(&_msimodule);
     if (m == NULL)
-        return;
+        return NULL;
 
     PyModule_AddIntConstant(m, "MSIDBOPEN_CREATEDIRECT", (int)MSIDBOPEN_CREATEDIRECT);
     PyModule_AddIntConstant(m, "MSIDBOPEN_CREATE", (int)MSIDBOPEN_CREATE);
@@ -1042,43 +1039,44 @@ init_msi(void)
     PyModule_AddIntConstant(m, "MSIDBOPEN_TRANSACT", (int)MSIDBOPEN_TRANSACT);
     PyModule_AddIntConstant(m, "MSIDBOPEN_PATCHFILE", (int)MSIDBOPEN_PATCHFILE);
 
-    PyModule_AddIntConstant(m, "MSICOLINFO_NAMES", MSICOLINFO_NAMES);
-    PyModule_AddIntConstant(m, "MSICOLINFO_TYPES", MSICOLINFO_TYPES);
+    PyModule_AddIntMacro(m, MSICOLINFO_NAMES);
+    PyModule_AddIntMacro(m, MSICOLINFO_TYPES);
 
-    PyModule_AddIntConstant(m, "MSIMODIFY_SEEK", MSIMODIFY_SEEK);
-    PyModule_AddIntConstant(m, "MSIMODIFY_REFRESH", MSIMODIFY_REFRESH);
-    PyModule_AddIntConstant(m, "MSIMODIFY_INSERT", MSIMODIFY_INSERT);
-    PyModule_AddIntConstant(m, "MSIMODIFY_UPDATE", MSIMODIFY_UPDATE);
-    PyModule_AddIntConstant(m, "MSIMODIFY_ASSIGN", MSIMODIFY_ASSIGN);
-    PyModule_AddIntConstant(m, "MSIMODIFY_REPLACE", MSIMODIFY_REPLACE);
-    PyModule_AddIntConstant(m, "MSIMODIFY_MERGE", MSIMODIFY_MERGE);
-    PyModule_AddIntConstant(m, "MSIMODIFY_DELETE", MSIMODIFY_DELETE);
-    PyModule_AddIntConstant(m, "MSIMODIFY_INSERT_TEMPORARY", MSIMODIFY_INSERT_TEMPORARY);
-    PyModule_AddIntConstant(m, "MSIMODIFY_VALIDATE", MSIMODIFY_VALIDATE);
-    PyModule_AddIntConstant(m, "MSIMODIFY_VALIDATE_NEW", MSIMODIFY_VALIDATE_NEW);
-    PyModule_AddIntConstant(m, "MSIMODIFY_VALIDATE_FIELD", MSIMODIFY_VALIDATE_FIELD);
-    PyModule_AddIntConstant(m, "MSIMODIFY_VALIDATE_DELETE", MSIMODIFY_VALIDATE_DELETE);
+    PyModule_AddIntMacro(m, MSIMODIFY_SEEK);
+    PyModule_AddIntMacro(m, MSIMODIFY_REFRESH);
+    PyModule_AddIntMacro(m, MSIMODIFY_INSERT);
+    PyModule_AddIntMacro(m, MSIMODIFY_UPDATE);
+    PyModule_AddIntMacro(m, MSIMODIFY_ASSIGN);
+    PyModule_AddIntMacro(m, MSIMODIFY_REPLACE);
+    PyModule_AddIntMacro(m, MSIMODIFY_MERGE);
+    PyModule_AddIntMacro(m, MSIMODIFY_DELETE);
+    PyModule_AddIntMacro(m, MSIMODIFY_INSERT_TEMPORARY);
+    PyModule_AddIntMacro(m, MSIMODIFY_VALIDATE);
+    PyModule_AddIntMacro(m, MSIMODIFY_VALIDATE_NEW);
+    PyModule_AddIntMacro(m, MSIMODIFY_VALIDATE_FIELD);
+    PyModule_AddIntMacro(m, MSIMODIFY_VALIDATE_DELETE);
 
-    PyModule_AddIntConstant(m, "PID_CODEPAGE", PID_CODEPAGE);
-    PyModule_AddIntConstant(m, "PID_TITLE", PID_TITLE);
-    PyModule_AddIntConstant(m, "PID_SUBJECT", PID_SUBJECT);
-    PyModule_AddIntConstant(m, "PID_AUTHOR", PID_AUTHOR);
-    PyModule_AddIntConstant(m, "PID_KEYWORDS", PID_KEYWORDS);
-    PyModule_AddIntConstant(m, "PID_COMMENTS", PID_COMMENTS);
-    PyModule_AddIntConstant(m, "PID_TEMPLATE", PID_TEMPLATE);
-    PyModule_AddIntConstant(m, "PID_LASTAUTHOR", PID_LASTAUTHOR);
-    PyModule_AddIntConstant(m, "PID_REVNUMBER", PID_REVNUMBER);
-    PyModule_AddIntConstant(m, "PID_LASTPRINTED", PID_LASTPRINTED);
-    PyModule_AddIntConstant(m, "PID_CREATE_DTM", PID_CREATE_DTM);
-    PyModule_AddIntConstant(m, "PID_LASTSAVE_DTM", PID_LASTSAVE_DTM);
-    PyModule_AddIntConstant(m, "PID_PAGECOUNT", PID_PAGECOUNT);
-    PyModule_AddIntConstant(m, "PID_WORDCOUNT", PID_WORDCOUNT);
-    PyModule_AddIntConstant(m, "PID_CHARCOUNT", PID_CHARCOUNT);
-    PyModule_AddIntConstant(m, "PID_APPNAME", PID_APPNAME);
-    PyModule_AddIntConstant(m, "PID_SECURITY", PID_SECURITY);
+    PyModule_AddIntMacro(m, PID_CODEPAGE);
+    PyModule_AddIntMacro(m, PID_TITLE);
+    PyModule_AddIntMacro(m, PID_SUBJECT);
+    PyModule_AddIntMacro(m, PID_AUTHOR);
+    PyModule_AddIntMacro(m, PID_KEYWORDS);
+    PyModule_AddIntMacro(m, PID_COMMENTS);
+    PyModule_AddIntMacro(m, PID_TEMPLATE);
+    PyModule_AddIntMacro(m, PID_LASTAUTHOR);
+    PyModule_AddIntMacro(m, PID_REVNUMBER);
+    PyModule_AddIntMacro(m, PID_LASTPRINTED);
+    PyModule_AddIntMacro(m, PID_CREATE_DTM);
+    PyModule_AddIntMacro(m, PID_LASTSAVE_DTM);
+    PyModule_AddIntMacro(m, PID_PAGECOUNT);
+    PyModule_AddIntMacro(m, PID_WORDCOUNT);
+    PyModule_AddIntMacro(m, PID_CHARCOUNT);
+    PyModule_AddIntMacro(m, PID_APPNAME);
+    PyModule_AddIntMacro(m, PID_SECURITY);
 
     MSIError = PyErr_NewException ("_msi.MSIError", NULL, NULL);
     if (!MSIError)
-        return;
+        return NULL;
     PyModule_AddObject(m, "MSIError", MSIError);
+    return m;
 }

@@ -22,6 +22,43 @@ case_insensitive_match(const char *s, const char *t)
    the successfully parsed portion of the string.  On failure, return -1.0 and
    set *endptr to point to the start of the string. */
 
+#ifndef PY_NO_SHORT_FLOAT_REPR
+
+double
+_Py_parse_inf_or_nan(const char *p, char **endptr)
+{
+    double retval;
+    const char *s;
+    int negate = 0;
+
+    s = p;
+    if (*s == '-') {
+        negate = 1;
+        s++;
+    }
+    else if (*s == '+') {
+        s++;
+    }
+    if (case_insensitive_match(s, "inf")) {
+        s += 3;
+        if (case_insensitive_match(s, "inity"))
+            s += 5;
+        retval = _Py_dg_infinity(negate);
+    }
+    else if (case_insensitive_match(s, "nan")) {
+        s += 3;
+        retval = _Py_dg_stdnan(negate);
+    }
+    else {
+        s = p;
+        retval = -1.0;
+    }
+    *endptr = (char *)s;
+    return retval;
+}
+
+#else
+
 double
 _Py_parse_inf_or_nan(const char *p, char **endptr)
 {
@@ -57,8 +94,10 @@ _Py_parse_inf_or_nan(const char *p, char **endptr)
     return retval;
 }
 
+#endif
+
 /**
- * PyOS_ascii_strtod:
+ * _PyOS_ascii_strtod:
  * @nptr:    the string to convert to a numeric value.
  * @endptr:  if non-%NULL, it returns the character after
  *           the last character used in the conversion.
@@ -88,7 +127,7 @@ _Py_parse_inf_or_nan(const char *p, char **endptr)
 
 #ifndef PY_NO_SHORT_FLOAT_REPR
 
-double
+static double
 _PyOS_ascii_strtod(const char *nptr, char **endptr)
 {
     double result;
@@ -121,11 +160,11 @@ _PyOS_ascii_strtod(const char *nptr, char **endptr)
    correctly rounded results.
 */
 
-double
+static double
 _PyOS_ascii_strtod(const char *nptr, char **endptr)
 {
     char *fail_pos;
-    double val = -1.0;
+    double val;
     struct lconv *locale_data;
     const char *decimal_point;
     size_t decimal_point_len;
@@ -270,48 +309,10 @@ _PyOS_ascii_strtod(const char *nptr, char **endptr)
 
 #endif
 
-/* PyOS_ascii_strtod is DEPRECATED in Python 2.7 and 3.1 */
-
-double
-PyOS_ascii_strtod(const char *nptr, char **endptr)
-{
-    char *fail_pos;
-    const char *p;
-    double x;
-
-    if (PyErr_WarnEx(PyExc_DeprecationWarning,
-                     "PyOS_ascii_strtod and PyOS_ascii_atof are "
-                     "deprecated.  Use PyOS_string_to_double "
-                     "instead.", 1) < 0)
-        return -1.0;
-
-    /* _PyOS_ascii_strtod already does everything that we want,
-       except that it doesn't parse leading whitespace */
-    p = nptr;
-    while (Py_ISSPACE(*p))
-        p++;
-    x = _PyOS_ascii_strtod(p, &fail_pos);
-    if (fail_pos == p)
-        fail_pos = (char *)nptr;
-    if (endptr)
-        *endptr = (char *)fail_pos;
-    return x;
-}
-
-/* PyOS_ascii_strtod is DEPRECATED in Python 2.7 and 3.1 */
-
-double
-PyOS_ascii_atof(const char *nptr)
-{
-    return PyOS_ascii_strtod(nptr, NULL);
-}
-
-/* PyOS_string_to_double is the recommended replacement for the deprecated
-   PyOS_ascii_strtod and PyOS_ascii_atof functions.  It converts a
-   null-terminated byte string s (interpreted as a string of ASCII characters)
-   to a float.  The string should not have leading or trailing whitespace (in
-   contrast, PyOS_ascii_strtod allows leading whitespace but not trailing
-   whitespace).  The conversion is independent of the current locale.
+/* PyOS_string_to_double converts a null-terminated byte string s (interpreted
+   as a string of ASCII characters) to a float.  The string should not have
+   leading or trailing whitespace.  The conversion is independent of the
+   current locale.
 
    If endptr is NULL, try to convert the whole string.  Raise ValueError and
    return -1.0 if the string is not a valid representation of a floating-point
@@ -368,6 +369,8 @@ PyOS_string_to_double(const char *s,
         *endptr = fail_pos;
     return result;
 }
+
+#ifdef PY_NO_SHORT_FLOAT_REPR
 
 /* Given a string that may have a decimal point in the current
    locale, change it back to a dot.  Since the string cannot get
@@ -618,12 +621,13 @@ ensure_decimal_point(char* buffer, size_t buf_size, int precision)
 #define FLOAT_FORMATBUFLEN 120
 
 /**
- * PyOS_ascii_formatd:
+ * _PyOS_ascii_formatd:
  * @buffer: A buffer to place the resulting string in
  * @buf_size: The length of the buffer.
  * @format: The printf()-style format to use for the
  *          code to use for converting.
  * @d: The #gdouble to convert
+ * @precision: The precision to use when formatting.
  *
  * Converts a #gdouble to a string, using the '.' as
  * decimal point. To format the number you pass in
@@ -636,7 +640,7 @@ ensure_decimal_point(char* buffer, size_t buf_size, int precision)
  * Return value: The pointer to the buffer with the converted string.
  * On failure returns NULL but does not set any Python exception.
  **/
-char *
+static char *
 _PyOS_ascii_formatd(char       *buffer,
                    size_t      buf_size,
                    const char *format,
@@ -715,22 +719,6 @@ _PyOS_ascii_formatd(char       *buffer,
 
     return buffer;
 }
-
-char *
-PyOS_ascii_formatd(char       *buffer,
-                   size_t      buf_size,
-                   const char *format,
-                   double      d)
-{
-    if (PyErr_WarnEx(PyExc_DeprecationWarning,
-                     "PyOS_ascii_formatd is deprecated, "
-                     "use PyOS_double_to_string instead", 1) < 0)
-        return NULL;
-
-    return _PyOS_ascii_formatd(buffer, buf_size, format, d, -1);
-}
-
-#ifdef PY_NO_SHORT_FLOAT_REPR
 
 /* The fallback code to use if _Py_dg_dtoa is not available. */
 
@@ -935,7 +923,7 @@ static char *uc_float_strings[] = {
 
 static char *
 format_float_short(double d, char format_code,
-                   int mode, Py_ssize_t precision,
+                   int mode, int precision,
                    int always_add_sign, int add_dot_0_if_integer,
                    int use_alt_formatting, char **float_strings, int *type)
 {
@@ -1004,6 +992,8 @@ format_float_short(double d, char format_code,
         else {
             /* shouldn't get here: Gay's code should always return
                something starting with a digit, an 'I',  or 'N' */
+            strncpy(p, "ERR", 3);
+            /* p += 3; */
             assert(0);
         }
         goto exit;
@@ -1069,7 +1059,7 @@ format_float_short(double d, char format_code,
     /* if using an exponent, reset decimal point position to 1 and adjust
        exponent accordingly.*/
     if (use_exp) {
-        exp = decpt - 1;
+        exp = (int)decpt - 1;
         decpt = 1;
     }
     /* ensure vdigits_start < decpt <= vdigits_end, or vdigits_start <

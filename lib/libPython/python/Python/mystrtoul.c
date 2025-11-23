@@ -83,35 +83,35 @@ static int digitlimit[] = {
 **              This is a general purpose routine for converting
 **              an ascii string to an integer in an arbitrary base.
 **              Leading white space is ignored.  If 'base' is zero
-**              it looks for a leading 0, 0b, 0B, 0o, 0O, 0x or 0X
-**              to tell which base.  If these are absent it defaults
-**              to 10. Base must be 0 or between 2 and 36 (inclusive).
+**              it looks for a leading 0b, 0o or 0x to tell which
+**              base.  If these are absent it defaults to 10.
+**              Base must be 0 or between 2 and 36 (inclusive).
 **              If 'ptr' is non-NULL it will contain a pointer to
 **              the end of the scan.
 **              Errors due to bad pointers will probably result in
 **              exceptions - we don't check for them.
 */
 unsigned long
-PyOS_strtoul(register char *str, char **ptr, int base)
+PyOS_strtoul(const char *str, char **ptr, int base)
 {
-    register unsigned long result = 0; /* return value of the function */
-    register int c;             /* current input character */
-    register int ovlimit;       /* required digits to overflow */
+    unsigned long result = 0; /* return value of the function */
+    int c;             /* current input character */
+    int ovlimit;       /* required digits to overflow */
 
     /* skip leading white space */
-    while (*str && isspace(Py_CHARMASK(*str)))
+    while (*str && Py_ISSPACE(Py_CHARMASK(*str)))
         ++str;
 
-    /* check for leading 0 or 0x for auto-base or base 16 */
+    /* check for leading 0b, 0o or 0x for auto-base or base 16 */
     switch (base) {
-    case 0:             /* look for leading 0, 0b, 0o or 0x */
+    case 0:             /* look for leading 0b, 0o or 0x */
         if (*str == '0') {
             ++str;
             if (*str == 'x' || *str == 'X') {
                 /* there must be at least one digit after 0x */
                 if (_PyLong_DigitValue[Py_CHARMASK(str[1])] >= 16) {
                     if (ptr)
-                        *ptr = str;
+                        *ptr = (char *)str;
                     return 0;
                 }
                 ++str;
@@ -120,7 +120,7 @@ PyOS_strtoul(register char *str, char **ptr, int base)
                 /* there must be at least one digit after 0o */
                 if (_PyLong_DigitValue[Py_CHARMASK(str[1])] >= 8) {
                     if (ptr)
-                        *ptr = str;
+                        *ptr = (char *)str;
                     return 0;
                 }
                 ++str;
@@ -129,57 +129,63 @@ PyOS_strtoul(register char *str, char **ptr, int base)
                 /* there must be at least one digit after 0b */
                 if (_PyLong_DigitValue[Py_CHARMASK(str[1])] >= 2) {
                     if (ptr)
-                        *ptr = str;
+                        *ptr = (char *)str;
                     return 0;
                 }
                 ++str;
                 base = 2;
             } else {
-                base = 8;
+                /* skip all zeroes... */
+                while (*str == '0')
+                    ++str;
+                while (Py_ISSPACE(Py_CHARMASK(*str)))
+                    ++str;
+                if (ptr)
+                    *ptr = (char *)str;
+                return 0;
             }
         }
         else
             base = 10;
         break;
 
-    case 2:     /* skip leading 0b or 0B */
-        if (*str == '0') {
-            ++str;
-            if (*str == 'b' || *str == 'B') {
-                /* there must be at least one digit after 0b */
-                if (_PyLong_DigitValue[Py_CHARMASK(str[1])] >= 2) {
-                    if (ptr)
-                        *ptr = str;
-                    return 0;
-                }
-                ++str;
-            }
-        }
-        break;
-
-    case 8:     /* skip leading 0o or 0O */
-        if (*str == '0') {
-            ++str;
-            if (*str == 'o' || *str == 'O') {
-                /* there must be at least one digit after 0o */
-                if (_PyLong_DigitValue[Py_CHARMASK(str[1])] >= 8) {
-                    if (ptr)
-                        *ptr = str;
-                    return 0;
-                }
-                ++str;
-            }
-        }
-        break;
-
-    case 16:            /* skip leading 0x or 0X */
+    /* even with explicit base, skip leading 0? prefix */
+    case 16:
         if (*str == '0') {
             ++str;
             if (*str == 'x' || *str == 'X') {
                 /* there must be at least one digit after 0x */
                 if (_PyLong_DigitValue[Py_CHARMASK(str[1])] >= 16) {
                     if (ptr)
-                        *ptr = str;
+                        *ptr = (char *)str;
+                    return 0;
+                }
+                ++str;
+            }
+        }
+        break;
+    case 8:
+        if (*str == '0') {
+            ++str;
+            if (*str == 'o' || *str == 'O') {
+                /* there must be at least one digit after 0o */
+                if (_PyLong_DigitValue[Py_CHARMASK(str[1])] >= 8) {
+                    if (ptr)
+                        *ptr = (char *)str;
+                    return 0;
+                }
+                ++str;
+            }
+        }
+        break;
+    case 2:
+        if(*str == '0') {
+            ++str;
+            if (*str == 'b' || *str == 'B') {
+                /* there must be at least one digit after 0b */
+                if (_PyLong_DigitValue[Py_CHARMASK(str[1])] >= 2) {
+                    if (ptr)
+                        *ptr = (char *)str;
                     return 0;
                 }
                 ++str;
@@ -191,7 +197,7 @@ PyOS_strtoul(register char *str, char **ptr, int base)
     /* catch silly bases */
     if (base < 2 || base > 36) {
         if (ptr)
-            *ptr = str;
+            *ptr = (char *)str;
         return 0;
     }
 
@@ -207,7 +213,7 @@ PyOS_strtoul(register char *str, char **ptr, int base)
         if (ovlimit > 0) /* no overflow check required */
             result = result * base + c;
         else { /* requires overflow check */
-            register unsigned long temp_result;
+            unsigned long temp_result;
 
             if (ovlimit < 0) /* guaranteed overflow */
                 goto overflowed;
@@ -233,7 +239,7 @@ PyOS_strtoul(register char *str, char **ptr, int base)
 
     /* set pointer to point to the last character scanned */
     if (ptr)
-        *ptr = str;
+        *ptr = (char *)str;
 
     return result;
 
@@ -242,7 +248,7 @@ overflowed:
         /* spool through remaining digit characters */
         while (_PyLong_DigitValue[Py_CHARMASK(*str)] < base)
             ++str;
-        *ptr = str;
+        *ptr = (char *)str;
     }
     errno = ERANGE;
     return (unsigned long)-1;
@@ -254,13 +260,13 @@ overflowed:
 #define PY_ABS_LONG_MIN         (0-(unsigned long)LONG_MIN)
 
 long
-PyOS_strtol(char *str, char **ptr, int base)
+PyOS_strtol(const char *str, char **ptr, int base)
 {
     long result;
     unsigned long uresult;
     char sign;
 
-    while (*str && isspace(Py_CHARMASK(*str)))
+    while (*str && Py_ISSPACE(Py_CHARMASK(*str)))
         str++;
 
     sign = *str;

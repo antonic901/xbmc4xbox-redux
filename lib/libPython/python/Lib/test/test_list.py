@@ -1,5 +1,6 @@
 import sys
-from test import test_support, list_tests
+from test import support, list_tests
+import pickle
 
 class ListTest(list_tests.CommonTest):
     type2test = list
@@ -30,7 +31,7 @@ class ListTest(list_tests.CommonTest):
             # thread for the details:
 
             #     http://sources.redhat.com/ml/newlib/2002/msg00369.html
-            self.assertRaises(MemoryError, list, xrange(sys.maxint // 2))
+            self.assertRaises(MemoryError, list, range(sys.maxsize // 2))
 
         # This code used to segfault in Py2.4a3
         x = []
@@ -38,7 +39,7 @@ class ListTest(list_tests.CommonTest):
         self.assertEqual(x, [])
 
     def test_truth(self):
-        super(ListTest, self).test_truth()
+        super().test_truth()
         self.assertTrue(not [])
         self.assertTrue([42])
 
@@ -46,7 +47,7 @@ class ListTest(list_tests.CommonTest):
         self.assertTrue([] is not [])
 
     def test_len(self):
-        super(ListTest, self).test_len()
+        super().test_len()
         self.assertEqual(len([]), 0)
         self.assertEqual(len([0]), 1)
         self.assertEqual(len([0, 1, 2]), 3)
@@ -59,19 +60,67 @@ class ListTest(list_tests.CommonTest):
         self.assertRaises((MemoryError, OverflowError), mul, lst, n)
         self.assertRaises((MemoryError, OverflowError), imul, lst, n)
 
+    def test_repr_large(self):
+        # Check the repr of large list objects
+        def check(n):
+            l = [0] * n
+            s = repr(l)
+            self.assertEqual(s,
+                '[' + ', '.join(['0'] * n) + ']')
+        check(10)       # check our checking code
+        check(1000000)
+
+    def test_iterator_pickle(self):
+        # Userlist iterators don't support pickling yet since
+        # they are based on generators.
+        data = self.type2test([4, 5, 6, 7])
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
+            it = itorg = iter(data)
+            d = pickle.dumps(it, proto)
+            it = pickle.loads(d)
+            self.assertEqual(type(itorg), type(it))
+            self.assertEqual(self.type2test(it), self.type2test(data))
+
+            it = pickle.loads(d)
+            next(it)
+            d = pickle.dumps(it, proto)
+            self.assertEqual(self.type2test(it), self.type2test(data)[1:])
+
+    def test_reversed_pickle(self):
+        data = self.type2test([4, 5, 6, 7])
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
+            it = itorg = reversed(data)
+            d = pickle.dumps(it, proto)
+            it = pickle.loads(d)
+            self.assertEqual(type(itorg), type(it))
+            self.assertEqual(self.type2test(it), self.type2test(reversed(data)))
+
+            it = pickle.loads(d)
+            next(it)
+            d = pickle.dumps(it, proto)
+            self.assertEqual(self.type2test(it), self.type2test(reversed(data))[1:])
+
+    def test_no_comdat_folding(self):
+        # Issue 8847: In the PGO build, the MSVC linker's COMDAT folding
+        # optimization causes failures in code that relies on distinct
+        # function addresses.
+        class L(list): pass
+        with self.assertRaises(TypeError):
+            (3,) + L([1,2])
+
 def test_main(verbose=None):
-    test_support.run_unittest(ListTest)
+    support.run_unittest(ListTest)
 
     # verify reference counting
     import sys
     if verbose and hasattr(sys, "gettotalrefcount"):
         import gc
         counts = [None] * 5
-        for i in xrange(len(counts)):
-            test_support.run_unittest(ListTest)
+        for i in range(len(counts)):
+            support.run_unittest(ListTest)
             gc.collect()
             counts[i] = sys.gettotalrefcount()
-        print counts
+        print(counts)
 
 
 if __name__ == "__main__":

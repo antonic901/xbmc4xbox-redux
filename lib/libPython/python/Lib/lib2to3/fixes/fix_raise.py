@@ -55,11 +55,11 @@ class FixRaise(fixer_base.BaseFix):
                 # exc.children[1:-1] is the unparenthesized tuple
                 # exc.children[1].children[0] is the first element of the tuple
                 exc = exc.children[1].children[0].clone()
-            exc.prefix = u" "
+            exc.prefix = " "
 
         if "val" not in results:
             # One-argument raise
-            new = pytree.Node(syms.raise_stmt, [Name(u"raise"), exc])
+            new = pytree.Node(syms.raise_stmt, [Name("raise"), exc])
             new.prefix = node.prefix
             return new
 
@@ -67,24 +67,24 @@ class FixRaise(fixer_base.BaseFix):
         if is_tuple(val):
             args = [c.clone() for c in val.children[1:-1]]
         else:
-            val.prefix = u""
+            val.prefix = ""
             args = [val]
 
         if "tb" in results:
             tb = results["tb"].clone()
-            tb.prefix = u""
+            tb.prefix = ""
 
             e = exc
             # If there's a traceback and None is passed as the value, then don't
             # add a call, since the user probably just wants to add a
             # traceback. See issue #9661.
-            if val.type != token.NAME or val.value != u"None":
+            if val.type != token.NAME or val.value != "None":
                 e = Call(exc, args)
-            with_tb = Attr(e, Name(u'with_traceback')) + [ArgList([tb])]
-            new = pytree.Node(syms.simple_stmt, [Name(u"raise")] + with_tb)
+            with_tb = Attr(e, Name('with_traceback')) + [ArgList([tb])]
+            new = pytree.Node(syms.simple_stmt, [Name("raise")] + with_tb)
             new.prefix = node.prefix
             return new
         else:
             return pytree.Node(syms.raise_stmt,
-                               [Name(u"raise"), Call(exc, args)],
+                               [Name("raise"), Call(exc, args)],
                                prefix=node.prefix)

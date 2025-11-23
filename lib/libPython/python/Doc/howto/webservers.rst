@@ -103,10 +103,10 @@ simple CGI program::
     import cgitb
     cgitb.enable()
 
-    print "Content-Type: text/plain;charset=utf-8"
-    print
+    print("Content-Type: text/plain;charset=utf-8")
+    print()
 
-    print "Hello World!"
+    print("Hello World!")
 
 Depending on your web server configuration, you may need to save this code with
 a ``.py`` or ``.cgi`` extension.  Additionally, this file may also need to be
@@ -267,7 +267,7 @@ Setting up FastCGI
 Each web server requires a specific module.
 
 * Apache has both `mod_fastcgi <http://www.fastcgi.com/drupal/>`_ and `mod_fcgid
-  <https://httpd.apache.org/mod_fcgid/>`_.  ``mod_fastcgi`` is the original one, but it
+  <http://httpd.apache.org/mod_fcgid/>`_.  ``mod_fastcgi`` is the original one, but it
   has some licensing issues, which is why it is sometimes considered non-free.
   ``mod_fcgid`` is a smaller, compatible alternative.  One of these modules needs
   to be loaded by Apache.
@@ -277,7 +277,7 @@ Each web server requires a specific module.
   `SCGI module <http://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_ModSCGI>`_.
 
 * `nginx <http://nginx.org/>`_ also supports `FastCGI
-  <https://www.nginx.com/resources/wiki/start/topics/examples/simplepythonfcgi/>`_.
+  <http://wiki.nginx.org/NginxSimplePythonFCGI>`_.
 
 Once you have installed and configured the module, you can test it with the
 following WSGI-application::
@@ -285,8 +285,8 @@ following WSGI-application::
     #!/usr/bin/env python
     # -*- coding: UTF-8 -*-
 
-    from cgi import escape
     import sys, os
+    from html import escape
     from flup.server.fcgi import WSGIServer
 
     def app(environ, start_response):
@@ -295,19 +295,20 @@ following WSGI-application::
         yield '<h1>FastCGI Environment</h1>'
         yield '<table>'
         for k, v in sorted(environ.items()):
-            yield '<tr><th>%s</th><td>%s</td></tr>' % (escape(k), escape(v))
+             yield '<tr><th>{0}</th><td>{1}</td></tr>'.format(
+                 escape(k), escape(v))
         yield '</table>'
 
     WSGIServer(app).run()
 
 This is a simple WSGI application, but you need to install `flup
-<https://pypi.org/project/flup/1.0>`_ first, as flup handles the low level
+<https://pypi.python.org/pypi/flup/1.0>`_ first, as flup handles the low level
 FastCGI access.
 
 .. seealso::
 
-   There is some documentation on `setting up Django with WSGI
-   <https://docs.djangoproject.com/en/dev/howto/deployment/wsgi/>`_, most of
+   There is some documentation on `setting up Django with FastCGI
+   <https://docs.djangoproject.com/en/dev/howto/deployment/fastcgi/>`_, most of
    which can be reused for other WSGI-compliant frameworks and libraries.
    Only the ``manage.py`` part has to be changed, the example used here can be
    used instead.  Django does more or less the exact same thing.
@@ -357,15 +358,15 @@ testing.
 
 A really great WSGI feature is middleware.  Middleware is a layer around your
 program which can add various functionality to it.  There is quite a bit of
-`middleware <https://wsgi.readthedocs.org/en/latest/libraries.html>`_ already
+`middleware <http://www.wsgi.org/en/latest/libraries.html>`_ already
 available.  For example, instead of writing your own session management (HTTP
 is a stateless protocol, so to associate multiple HTTP requests with a single
 user your application must create and manage such state via a session), you can
 just download middleware which does that, plug it in, and get on with coding
 the unique parts of your application.  The same thing with compression -- there
 is existing middleware which handles compressing your HTML using gzip to save
-on your server's bandwidth.  Authentication is another problem that is easily
-solved using existing middleware.
+on your server's bandwidth.  Authentication is another a problem easily solved
+using existing middleware.
 
 Although WSGI may seem complex, the initial phase of learning can be very
 rewarding because WSGI and the associated middleware already have solutions to
@@ -378,7 +379,7 @@ WSGI Servers
 The code that is used to connect to various low level gateways like CGI or
 mod_python is called a *WSGI server*.  One of these servers is ``flup``, which
 supports FastCGI and SCGI, as well as `AJP
-<https://en.wikipedia.org/wiki/Apache_JServ_Protocol>`_.  Some of these servers
+<http://en.wikipedia.org/wiki/Apache_JServ_Protocol>`_.  Some of these servers
 are written in Python, as ``flup`` is, but there also exist others which are
 written in C and can be used as drop-in replacements.
 
@@ -389,8 +390,8 @@ compared with other web technologies.
 .. seealso::
 
    A good overview of WSGI-related code can be found in the `WSGI homepage
-   <https://wsgi.readthedocs.org/>`_, which contains an extensive list of `WSGI servers
-   <https://wsgi.readthedocs.org/en/latest/servers.html>`_ which can be used by *any* application
+   <http://www.wsgi.org/en/latest/index.html>`_, which contains an extensive list of `WSGI servers
+   <http://www.wsgi.org/en/latest/servers.html>`_ which can be used by *any* application
    supporting WSGI.
 
    You might be interested in some WSGI-supporting modules already contained in
@@ -407,7 +408,7 @@ an application that's been around for a while, which was written in
 Python without using WSGI.
 
 One of the most widely used wiki software packages is `MoinMoin
-<https://moinmo.in/>`_.  It was created in 2000, so it predates WSGI by about
+<http://moinmo.in/>`_.  It was created in 2000, so it predates WSGI by about
 three years.  Older versions needed separate code to run on CGI, mod_python,
 FastCGI and standalone.
 
@@ -459,7 +460,7 @@ maintainable web sites.
 .. seealso::
 
    The English Wikipedia has an article about the `Model-View-Controller pattern
-   <https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller>`_.  It includes a long
+   <http://en.wikipedia.org/wiki/Model-view-controller>`_.  It includes a long
    list of web frameworks for various programming languages.
 
 
@@ -490,16 +491,11 @@ templates exist.  Templates are, in the simplest case, just HTML files with
 placeholders.  The HTML is sent to the user's browser after filling in the
 placeholders.
 
-Python already includes two ways to build simple templates::
+Python already includes a way to build simple templates::
 
-    >>> template = "<html><body><h1>Hello %s!</h1></body></html>"
-    >>> print template % "Reader"
-    <html><body><h1>Hello Reader!</h1></body></html>
-
-    >>> from string import Template
-    >>> template = Template("<html><body><h1>Hello ${name}</h1></body></html>")
-    >>> print template.substitute(dict(name='Dinsdale'))
-    <html><body><h1>Hello Dinsdale!</h1></body></html>
+    # a simple template
+    template = "<html><body><h1>Hello {who}!</h1></body></html>"
+    print(template.format(who="Reader"))
 
 To generate complex HTML based on non-trivial model data, conditional
 and looping constructs like Python's *for* and *if* are generally needed.
@@ -547,10 +543,10 @@ module, and which uses only one file.  It has no other dependencies.  For
 smaller sites SQLite is just enough.
 
 Relational databases are *queried* using a language called `SQL
-<https://en.wikipedia.org/wiki/SQL>`_.  Python programmers in general do not
+<http://en.wikipedia.org/wiki/SQL>`_.  Python programmers in general do not
 like SQL too much, as they prefer to work with objects.  It is possible to save
 Python objects into a database using a technology called `ORM
-<https://en.wikipedia.org/wiki/Object-relational_mapping>`_ (Object Relational
+<http://en.wikipedia.org/wiki/Object-relational_mapping>`_ (Object Relational
 Mapping).  ORM translates all object-oriented access into SQL code under the
 hood, so the developer does not need to think about it.  Most `frameworks`_ use
 ORMs, and it works quite well.
@@ -583,13 +579,13 @@ alternate storage mechanism.
      helps with choosing a method for saving data
 
    * `SQLAlchemy <http://www.sqlalchemy.org/>`_, the most powerful OR-Mapper
-     for Python, and `Elixir <https://pypi.org/project/Elixir>`_, which makes
+     for Python, and `Elixir <http://elixir.ematia.de/>`_, which makes
      SQLAlchemy easier to use
 
    * `SQLObject <http://www.sqlobject.org/>`_, another popular OR-Mapper
 
    * `ZODB <https://launchpad.net/zodb>`_ and `Durus
-     <https://www.mems-exchange.org/software/>`_, two object oriented
+     <http://www.mems-exchange.org/software/durus/>`_, two object oriented
      databases
 
 
@@ -675,10 +671,10 @@ experience.  TurboGears gives the user flexibility in choosing components. For
 example the ORM and template engine can be changed to use packages different
 from those used by default.
 
-The documentation can be found in the `TurboGears documentation
-<https://turbogears.readthedocs.org/>`_, where links to screencasts can be found.
+The documentation can be found in the `TurboGears wiki
+<http://docs.turbogears.org/>`_, where links to screencasts can be found.
 TurboGears has also an active user community which can respond to most related
-questions.  There is also a `TurboGears book <http://turbogears.org/1.0/docs/TGBooks.html>`_
+questions.  There is also a `TurboGears book <http://turbogearsbook.com/>`_
 published, which is a good starting point.
 
 The newest version of TurboGears, version 2.0, moves even further in direction

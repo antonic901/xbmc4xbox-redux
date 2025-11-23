@@ -51,19 +51,18 @@ class Percolator:
             f.setdelegate(filter.delegate)
             filter.setdelegate(None)
 
-
 def _percolator(parent):
-    import Tkinter as tk
+    import tkinter as tk
     import re
     class Tracer(Delegator):
         def __init__(self, name):
             self.name = name
             Delegator.__init__(self, None)
         def insert(self, *args):
-            print self.name, ": insert", args
+            print(self.name, ": insert", args)
             self.delegate.insert(*args)
         def delete(self, *args):
-            print self.name, ": delete", args
+            print(self.name, ": delete", args)
             self.delegate.delete(*args)
     root = tk.Tk()
     root.title("Test Percolator")
@@ -97,6 +96,8 @@ def _percolator(parent):
     var2 = tk.IntVar()
     cb2 = tk.Checkbutton(root, text="Tracer2", command=toggle2, variable=var2)
     cb2.pack()
+
+    root.mainloop()
 
 if __name__ == "__main__":
     from idlelib.idle_test.htest import run

@@ -1,11 +1,11 @@
 import sys
 import linecache
 import time
-import socket
 import traceback
-import thread
+import _thread as thread
 import threading
-import Queue
+import queue
+import tkinter
 
 from idlelib import CallTips
 from idlelib import AutoComplete
@@ -53,6 +53,13 @@ def capture_warnings(capture):
             _warnings_showwarning = None
 
 capture_warnings(True)
+tcl = tkinter.Tcl()
+
+def handle_tk_events(tcl=tcl):
+    """Process any tk events that are ready to be dispatched if tkinter
+    has been imported, a tcl interpreter has been created and tk has been
+    loaded."""
+    tcl.eval("update")
 
 # Thread shared globals: Establish a queue between a subthread (which handles
 # the socket) and the main thread (which runs user code), plus global
@@ -89,7 +96,8 @@ def main(del_exitfunc=False):
         assert(len(sys.argv) > 1)
         port = int(sys.argv[-1])
     except:
-        print>>sys.stderr, "IDLE Subprocess: no IP port passed in sys.argv."
+        print("IDLE Subprocess: no IP port passed in sys.argv.",
+              file=sys.__stderr__)
         return
 
     capture_warnings(True)
@@ -97,7 +105,7 @@ def main(del_exitfunc=False):
     sockthread = threading.Thread(target=manage_socket,
                                   name='SockThread',
                                   args=((LOCALHOST, port),))
-    sockthread.setDaemon(True)
+    sockthread.daemon = True
     sockthread.start()
     while 1:
         try:
@@ -109,7 +117,8 @@ def main(del_exitfunc=False):
                     continue
             try:
                 seq, request = rpc.request_queue.get(block=True, timeout=0.05)
-            except Queue.Empty:
+            except queue.Empty:
+                handle_tk_events()
                 continue
             method, args, kwargs = request
             ret = method(*args, **kwargs)
@@ -139,23 +148,23 @@ def manage_socket(address):
         try:
             server = MyRPCServer(address, MyHandler)
             break
-        except socket.error as err:
-            print>>sys.__stderr__,"IDLE Subprocess: socket error: "\
-                                        + err.args[1] + ", retrying...."
+        except OSError as err:
+            print("IDLE Subprocess: OSError: " + err.args[1] +
+                  ", retrying....", file=sys.__stderr__)
+            socket_error = err
     else:
-        print>>sys.__stderr__, "IDLE Subprocess: Connection to "\
-                               "IDLE GUI failed, exiting."
-        show_socket_error(err, address)
+        print("IDLE Subprocess: Connection to "
+              "IDLE GUI failed, exiting.", file=sys.__stderr__)
+        show_socket_error(socket_error, address)
         global exit_now
         exit_now = True
         return
     server.handle_request() # A single request only
 
 def show_socket_error(err, address):
-    import Tkinter
-    import tkMessageBox
-    root = Tkinter.Tk()
-    fix_scaling(root)
+    import tkinter
+    import tkinter.messagebox as tkMessageBox
+    root = tkinter.Tk()
     root.withdraw()
     if err.args[0] == 61: # connection refused
         msg = "IDLE's subprocess can't connect to %s:%d.  This may be due "\
@@ -175,15 +184,34 @@ def print_exception():
     efile = sys.stderr
     typ, val, tb = excinfo = sys.exc_info()
     sys.last_type, sys.last_value, sys.last_traceback = excinfo
-    tbe = traceback.extract_tb(tb)
-    print>>efile, '\nTraceback (most recent call last):'
-    exclude = ("run.py", "rpc.py", "threading.py", "Queue.py",
-               "RemoteDebugger.py", "bdb.py")
-    cleanup_traceback(tbe, exclude)
-    traceback.print_list(tbe, file=efile)
-    lines = traceback.format_exception_only(typ, val)
-    for line in lines:
-        print>>efile, line,
+    seen = set()
+
+    def print_exc(typ, exc, tb):
+        seen.add(exc)
+        context = exc.__context__
+        cause = exc.__cause__
+        if cause is not None and cause not in seen:
+            print_exc(type(cause), cause, cause.__traceback__)
+            print("\nThe above exception was the direct cause "
+                  "of the following exception:\n", file=efile)
+        elif (context is not None and
+              not exc.__suppress_context__ and
+              context not in seen):
+            print_exc(type(context), context, context.__traceback__)
+            print("\nDuring handling of the above exception, "
+                  "another exception occurred:\n", file=efile)
+        if tb:
+            tbe = traceback.extract_tb(tb)
+            print('Traceback (most recent call last):', file=efile)
+            exclude = ("run.py", "rpc.py", "threading.py", "queue.py",
+                       "RemoteDebugger.py", "bdb.py")
+            cleanup_traceback(tbe, exclude)
+            traceback.print_list(tbe, file=efile)
+        lines = traceback.format_exception_only(typ, exc)
+        for line in lines:
+            print(line, end='', file=efile)
+
+    print_exc(typ, val, tb)
 
 def cleanup_traceback(tb, exclude):
     "Remove excluded traces from beginning/end of tb; get cached lines"
@@ -205,54 +233,33 @@ def cleanup_traceback(tb, exclude):
     if len(tb) == 0:
         # exception was in IDLE internals, don't prune!
         tb[:] = orig_tb[:]
-        print>>sys.stderr, "** IDLE Internal Exception: "
+        print("** IDLE Internal Exception: ", file=sys.stderr)
     rpchandler = rpc.objecttable['exec'].rpchandler
     for i in range(len(tb)):
         fn, ln, nm, line = tb[i]
         if nm == '?':
             nm = "-toplevel-"
-        if fn.startswith("<pyshell#") and IOBinding.encoding != 'utf-8':
-            ln -= 1  # correction for coding cookie
         if not line and fn.startswith("<pyshell#"):
             line = rpchandler.remotecall('linecache', 'getline',
                                               (fn, ln), {})
         tb[i] = fn, ln, nm, line
 
 def flush_stdout():
-    try:
-        if sys.stdout.softspace:
-            sys.stdout.softspace = 0
-            sys.stdout.write("\n")
-    except (AttributeError, EOFError):
-        pass
+    """XXX How to do this now?"""
 
 def exit():
-    """Exit subprocess, possibly after first deleting sys.exitfunc
+    """Exit subprocess, possibly after first clearing exit functions.
 
     If config-main.cfg/.def 'General' 'delete-exitfunc' is True, then any
-    sys.exitfunc will be removed before exiting.  (VPython support)
+    functions registered with atexit will be removed before exiting.
+    (VPython support)
 
     """
     if no_exitfunc:
-        try:
-            del sys.exitfunc
-        except AttributeError:
-            pass
+        import atexit
+        atexit._clear()
     capture_warnings(False)
     sys.exit(0)
-
-
-def fix_scaling(root):
-    """Scale fonts on HiDPI displays."""
-    import tkFont
-    scaling = float(root.tk.call('tk', 'scaling'))
-    if scaling > 1.4:
-        for name in tkFont.names(root):
-            font = tkFont.Font(root=root, name=name, exists=True)
-            size = int(font['size'])
-            if size < 0:
-                font['size'] = int(round(-0.75*size))
-
 
 class MyRPCServer(rpc.RPCServer):
 
@@ -273,14 +280,14 @@ class MyRPCServer(rpc.RPCServer):
             thread.interrupt_main()
         except:
             erf = sys.__stderr__
-            print>>erf, '\n' + '-'*40
-            print>>erf, 'Unhandled server exception!'
-            print>>erf, 'Thread: %s' % threading.currentThread().getName()
-            print>>erf, 'Client Address: ', client_address
-            print>>erf, 'Request: ', repr(request)
+            print('\n' + '-'*40, file=erf)
+            print('Unhandled server exception!', file=erf)
+            print('Thread: %s' % threading.current_thread().name, file=erf)
+            print('Client Address: ', client_address, file=erf)
+            print('Request: ', repr(request), file=erf)
             traceback.print_exc(file=erf)
-            print>>erf, '\n*** Unrecoverable, server exiting!'
-            print>>erf, '-'*40
+            print('\n*** Unrecoverable, server exiting!', file=erf)
+            print('-'*40, file=erf)
             quitting = True
             thread.interrupt_main()
 
@@ -297,6 +304,11 @@ class MyHandler(rpc.RPCHandler):
                 IOBinding.encoding)
         sys.stderr = PyShell.PseudoOutputFile(self.console, "stderr",
                 IOBinding.encoding)
+
+        sys.displayhook = rpc.displayhook
+        # page help() text to shell.
+        import pydoc # import must be done here to capture i/o binding
+        pydoc.pager = pydoc.plainpager
 
         # Keep a reference to stdin so that it won't try to exit IDLE if
         # sys.stdin gets changed from within IDLE's shell. See issue17838.
@@ -336,7 +348,7 @@ class Executive(object):
             self.usr_exc_info = None
             interruptable = True
             try:
-                exec code in self.locals
+                exec(code, self.locals)
             finally:
                 interruptable = False
         except SystemExit:
@@ -347,6 +359,7 @@ class Executive(object):
             self.usr_exc_info = sys.exc_info()
             if quitting:
                 exit()
+            # even print a user code SystemExit exception, continue
             print_exception()
             jit = self.rpchandler.console.getvar("<<toggle-jit-stack-viewer>>")
             if jit:

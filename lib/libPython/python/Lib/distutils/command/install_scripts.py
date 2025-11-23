@@ -5,14 +5,13 @@ Python scripts."""
 
 # contributed by Bastian Kleineidam
 
-__revision__ = "$Id$"
-
 import os
 from distutils.core import Command
 from distutils import log
 from stat import ST_MODE
 
-class install_scripts (Command):
+
+class install_scripts(Command):
 
     description = "install scripts (Python or otherwise)"
 
@@ -25,14 +24,13 @@ class install_scripts (Command):
 
     boolean_options = ['force', 'skip-build']
 
-
-    def initialize_options (self):
+    def initialize_options(self):
         self.install_dir = None
         self.force = 0
         self.build_dir = None
         self.skip_build = None
 
-    def finalize_options (self):
+    def finalize_options(self):
         self.set_undefined_options('build', ('build_scripts', 'build_dir'))
         self.set_undefined_options('install',
                                    ('install_scripts', 'install_dir'),
@@ -40,7 +38,7 @@ class install_scripts (Command):
                                    ('skip_build', 'skip_build'),
                                   )
 
-    def run (self):
+    def run(self):
         if not self.skip_build:
             self.run_command('build_scripts')
         self.outfiles = self.copy_tree(self.build_dir, self.install_dir)
@@ -51,14 +49,12 @@ class install_scripts (Command):
                 if self.dry_run:
                     log.info("changing mode of %s", file)
                 else:
-                    mode = ((os.stat(file)[ST_MODE]) | 0555) & 07777
+                    mode = ((os.stat(file)[ST_MODE]) | 0o555) & 0o7777
                     log.info("changing mode of %s to %o", file, mode)
                     os.chmod(file, mode)
 
-    def get_inputs (self):
+    def get_inputs(self):
         return self.distribution.scripts or []
 
     def get_outputs(self):
         return self.outfiles or []
-
-# class install_scripts

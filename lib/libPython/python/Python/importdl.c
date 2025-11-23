@@ -12,67 +12,116 @@
 
 #include "importdl.h"
 
-extern dl_funcptr _PyImport_GetDynLoadFunc(const char *name,
-                                           const char *shortname,
+#ifdef MS_WINDOWS
+extern dl_funcptr _PyImport_GetDynLoadWindows(const char *shortname,
+                                              PyObject *pathname, FILE *fp);
+#else
+extern dl_funcptr _PyImport_GetDynLoadFunc(const char *shortname,
                                            const char *pathname, FILE *fp);
-
-
+#endif
 
 PyObject *
-_PyImport_LoadDynamicModule(char *name, char *pathname, FILE *fp)
+_PyImport_LoadDynamicModule(PyObject *name, PyObject *path, FILE *fp)
 {
-    PyObject *m;
-    char *lastdot, *shortname, *packagecontext, *oldcontext;
-    dl_funcptr p;
+    PyObject *m = NULL;
+#ifndef MS_WINDOWS
+    PyObject *pathbytes;
+#endif
+    PyObject *nameascii;
+    char *namestr, *lastdot, *shortname, *packagecontext, *oldcontext;
+    dl_funcptr p0;
+    PyObject* (*p)(void);
+    struct PyModuleDef *def;
 
-    if ((m = _PyImport_FindExtension(name, pathname)) != NULL) {
+    m = _PyImport_FindExtensionObject(name, path);
+    if (m != NULL) {
         Py_INCREF(m);
         return m;
     }
-    lastdot = strrchr(name, '.');
+
+    /* name must be encodable to ASCII because dynamic module must have a
+       function called "PyInit_NAME", they are written in C, and the C language
+       doesn't accept non-ASCII identifiers. */
+    nameascii = PyUnicode_AsEncodedString(name, "ascii", NULL);
+    if (nameascii == NULL)
+        return NULL;
+
+    namestr = PyBytes_AS_STRING(nameascii);
+    if (namestr == NULL)
+        goto error;
+
+    lastdot = strrchr(namestr, '.');
     if (lastdot == NULL) {
         packagecontext = NULL;
-        shortname = name;
+        shortname = namestr;
     }
     else {
-        packagecontext = name;
+        packagecontext = namestr;
         shortname = lastdot+1;
     }
 
-    p = _PyImport_GetDynLoadFunc(name, shortname, pathname, fp);
+#ifdef MS_WINDOWS
+    p0 = _PyImport_GetDynLoadWindows(shortname, path, fp);
+#else
+    pathbytes = PyUnicode_EncodeFSDefault(path);
+    if (pathbytes == NULL)
+        goto error;
+    p0 = _PyImport_GetDynLoadFunc(shortname,
+                                  PyBytes_AS_STRING(pathbytes), fp);
+    Py_DECREF(pathbytes);
+#endif
+    p = (PyObject*(*)(void))p0;
     if (PyErr_Occurred())
-        return NULL;
+        goto error;
     if (p == NULL) {
-        PyErr_Format(PyExc_ImportError,
-           "dynamic module does not define init function (init%.200s)",
-                     shortname);
-        return NULL;
+        PyObject *msg = PyUnicode_FromFormat("dynamic module does not define "
+                                             "init function (PyInit_%s)",
+                                             shortname);
+        if (msg == NULL)
+            goto error;
+        PyErr_SetImportError(msg, name, path);
+        Py_DECREF(msg);
+        goto error;
     }
     oldcontext = _Py_PackageContext;
     _Py_PackageContext = packagecontext;
-    (*p)();
+    m = (*p)();
     _Py_PackageContext = oldcontext;
-    if (PyErr_Occurred())
-        return NULL;
+    if (m == NULL)
+        goto error;
 
-    m = PyDict_GetItemString(PyImport_GetModuleDict(), name);
-    if (m == NULL) {
-        PyErr_SetString(PyExc_SystemError,
-                        "dynamic module not initialized properly");
-        return NULL;
+    if (PyErr_Occurred()) {
+        PyErr_Format(PyExc_SystemError,
+                     "initialization of %s raised unreported exception",
+                     shortname);
+        goto error;
     }
-    /* Remember the filename as the __file__ attribute */
-    if (PyModule_AddStringConstant(m, "__file__", pathname) < 0)
-        PyErr_Clear(); /* Not important enough to report */
 
-    if (_PyImport_FixupExtension(name, pathname) == NULL)
-        return NULL;
-    if (Py_VerboseFlag)
-        PySys_WriteStderr(
-            "import %s # dynamically loaded from %s\n",
-            name, pathname);
-    Py_INCREF(m);
+    /* Remember pointer to module init function. */
+    def = PyModule_GetDef(m);
+    if (def == NULL) {
+        PyErr_Format(PyExc_SystemError,
+                     "initialization of %s did not return an extension "
+                     "module", shortname);
+        goto error;
+    }
+    def->m_base.m_init = p;
+
+    /* Remember the filename as the __file__ attribute */
+    if (PyModule_AddObject(m, "__file__", path) < 0)
+        PyErr_Clear(); /* Not important enough to report */
+    else
+        Py_INCREF(path);
+
+    if (_PyImport_FixupExtensionObject(m, name, path) < 0)
+        goto error;
+    Py_DECREF(nameascii);
     return m;
+
+error:
+    Py_DECREF(nameascii);
+    Py_XDECREF(m);
+    return NULL;
 }
 
 #endif /* HAVE_DYNAMIC_LOADING */

@@ -1,6 +1,6 @@
 import sqlite3
 
-class Point(object):
+class Point:
     def __init__(self, x, y):
         self.x, self.y = x, y
 
@@ -8,10 +8,10 @@ class Point(object):
         return "(%f;%f)" % (self.x, self.y)
 
 def adapt_point(point):
-    return "%f;%f" % (point.x, point.y)
+    return ("%f;%f" % (point.x, point.y)).encode('ascii')
 
 def convert_point(s):
-    x, y = map(float, s.split(";"))
+    x, y = list(map(float, s.split(b";")))
     return Point(x, y)
 
 # Register the adapter
@@ -30,7 +30,7 @@ cur.execute("create table test(p point)")
 
 cur.execute("insert into test(p) values (?)", (p,))
 cur.execute("select p from test")
-print "with declared types:", cur.fetchone()[0]
+print("with declared types:", cur.fetchone()[0])
 cur.close()
 con.close()
 
@@ -42,6 +42,6 @@ cur.execute("create table test(p)")
 
 cur.execute("insert into test(p) values (?)", (p,))
 cur.execute('select p as "p [point]" from test')
-print "with column names:", cur.fetchone()[0]
+print("with column names:", cur.fetchone()[0])
 cur.close()
 con.close()

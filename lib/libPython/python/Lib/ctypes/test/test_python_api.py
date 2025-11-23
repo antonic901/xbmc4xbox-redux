@@ -1,6 +1,6 @@
 from ctypes import *
 import unittest, sys
-from ctypes.test import requires
+from test import support
 
 ################################################################
 # This section should be moved into ctypes\__init__.py, when it's ready.
@@ -17,45 +17,44 @@ else:
 
 class PythonAPITestCase(unittest.TestCase):
 
-    def test_PyString_FromStringAndSize(self):
-        PyString_FromStringAndSize = pythonapi.PyString_FromStringAndSize
+    def test_PyBytes_FromStringAndSize(self):
+        PyBytes_FromStringAndSize = pythonapi.PyBytes_FromStringAndSize
 
-        PyString_FromStringAndSize.restype = py_object
-        PyString_FromStringAndSize.argtypes = c_char_p, c_py_ssize_t
+        PyBytes_FromStringAndSize.restype = py_object
+        PyBytes_FromStringAndSize.argtypes = c_char_p, c_py_ssize_t
 
-        self.assertEqual(PyString_FromStringAndSize("abcdefghi", 3), "abc")
+        self.assertEqual(PyBytes_FromStringAndSize(b"abcdefghi", 3), b"abc")
 
+    @support.refcount_test
     def test_PyString_FromString(self):
-        pythonapi.PyString_FromString.restype = py_object
-        pythonapi.PyString_FromString.argtypes = (c_char_p,)
+        pythonapi.PyBytes_FromString.restype = py_object
+        pythonapi.PyBytes_FromString.argtypes = (c_char_p,)
 
-        s = "abc"
+        s = b"abc"
         refcnt = grc(s)
-        pyob = pythonapi.PyString_FromString(s)
+        pyob = pythonapi.PyBytes_FromString(s)
         self.assertEqual(grc(s), refcnt)
         self.assertEqual(s, pyob)
         del pyob
         self.assertEqual(grc(s), refcnt)
 
-    # This test is unreliable, because it is possible that code in
-    # unittest changes the refcount of the '42' integer.  So, it
-    # is disabled by default.
-    def test_PyInt_Long(self):
-        requires("refcount")
+    @support.refcount_test
+    def test_PyLong_Long(self):
         ref42 = grc(42)
-        pythonapi.PyInt_FromLong.restype = py_object
-        self.assertEqual(pythonapi.PyInt_FromLong(42), 42)
+        pythonapi.PyLong_FromLong.restype = py_object
+        self.assertEqual(pythonapi.PyLong_FromLong(42), 42)
 
         self.assertEqual(grc(42), ref42)
 
-        pythonapi.PyInt_AsLong.argtypes = (py_object,)
-        pythonapi.PyInt_AsLong.restype = c_long
+        pythonapi.PyLong_AsLong.argtypes = (py_object,)
+        pythonapi.PyLong_AsLong.restype = c_long
 
-        res = pythonapi.PyInt_AsLong(42)
+        res = pythonapi.PyLong_AsLong(42)
         self.assertEqual(grc(res), ref42 + 1)
         del res
         self.assertEqual(grc(42), ref42)
 
+    @support.refcount_test
     def test_PyObj_FromPtr(self):
         s = "abc def ghi jkl"
         ref = grc(s)
@@ -72,11 +71,11 @@ class PythonAPITestCase(unittest.TestCase):
         PyOS_snprintf.argtypes = POINTER(c_char), c_size_t, c_char_p
 
         buf = c_buffer(256)
-        PyOS_snprintf(buf, sizeof(buf), "Hello from %s", "ctypes")
-        self.assertEqual(buf.value, "Hello from ctypes")
+        PyOS_snprintf(buf, sizeof(buf), b"Hello from %s", b"ctypes")
+        self.assertEqual(buf.value, b"Hello from ctypes")
 
-        PyOS_snprintf(buf, sizeof(buf), "Hello from %s", "ctypes", 1, 2, 3)
-        self.assertEqual(buf.value, "Hello from ctypes")
+        PyOS_snprintf(buf, sizeof(buf), b"Hello from %s (%d, %d, %d)", b"ctypes", 1, 2, 3)
+        self.assertEqual(buf.value, b"Hello from ctypes (1, 2, 3)")
 
         # not enough arguments
         self.assertRaises(TypeError, PyOS_snprintf, buf)

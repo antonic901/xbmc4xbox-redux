@@ -117,8 +117,7 @@ ffi_status ffi_prep_cif(/*@out@*/ /*@partial@*/ ffi_cif *cif,
   /* Make space for the return structure pointer */
   if (cif->rtype->type == FFI_TYPE_STRUCT
 #ifdef _WIN32
-      && !can_return_struct_as_int(cif->rtype->size)  /* MSVC returns small structs in registers */
-      && !can_return_struct_as_sint64(cif->rtype->size)
+      && (cif->rtype->size > 8)  /* MSVC returns small structs in registers */
 #endif
 #ifdef SPARC
       && (cif->abi != FFI_V9 || cif->rtype->size > 32)
@@ -144,12 +143,10 @@ ffi_status ffi_prep_cif(/*@out@*/ /*@partial@*/ ffi_cif *cif,
 	   && ((*ptr)->size > 16 || cif->abi != FFI_V9))
 	  || ((*ptr)->type == FFI_TYPE_LONGDOUBLE
 	      && cif->abi != FFI_V9))
-	  bytes += sizeof(void*);
+	bytes += sizeof(void*);
       else
 #elif defined (_WIN64)
-      if ((*ptr)->type == FFI_TYPE_STRUCT && 
-          !can_return_struct_as_int((*ptr)->size) &&
-          !can_return_struct_as_sint64((*ptr)->size))
+      if ((*ptr)->type == FFI_TYPE_STRUCT && ((*ptr)->size > 8))
 	    bytes += sizeof(void*);
       else
 #endif

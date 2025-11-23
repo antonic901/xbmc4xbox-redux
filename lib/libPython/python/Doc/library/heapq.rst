@@ -8,8 +8,6 @@
 .. sectionauthor:: François Pinard
 .. sectionauthor:: Raymond Hettinger
 
-.. versionadded:: 2.3
-
 **Source code:** :source:`Lib/heapq.py`
 
 --------------
@@ -52,13 +50,13 @@ The following functions are provided:
    invariant.  If the heap is empty, :exc:`IndexError` is raised.  To access the
    smallest item without popping it, use ``heap[0]``.
 
+
 .. function:: heappushpop(heap, item)
 
    Push *item* on the heap, then pop and return the smallest item from the
    *heap*.  The combined action runs more efficiently than :func:`heappush`
    followed by a separate call to :func:`heappop`.
 
-   .. versionadded:: 2.6
 
 .. function:: heapify(x)
 
@@ -94,10 +92,8 @@ The module also offers three general purpose functions based on heaps.
    not pull the data into memory all at once, and assumes that each of the input
    streams is already sorted (smallest to largest).
 
-   .. versionadded:: 2.6
 
-
-.. function:: nlargest(n, iterable[, key])
+.. function:: nlargest(n, iterable, key=None)
 
    Return a list with the *n* largest elements from the dataset defined by
    *iterable*.  *key*, if provided, specifies a function of one argument that is
@@ -105,23 +101,14 @@ The module also offers three general purpose functions based on heaps.
    ``key=str.lower`` Equivalent to:  ``sorted(iterable, key=key,
    reverse=True)[:n]``
 
-   .. versionadded:: 2.4
 
-   .. versionchanged:: 2.5
-      Added the optional *key* argument.
-
-
-.. function:: nsmallest(n, iterable[, key])
+.. function:: nsmallest(n, iterable, key=None)
 
    Return a list with the *n* smallest elements from the dataset defined by
    *iterable*.  *key*, if provided, specifies a function of one argument that is
    used to extract a comparison key from each element in the iterable:
    ``key=str.lower`` Equivalent to:  ``sorted(iterable, key=key)[:n]``
 
-   .. versionadded:: 2.4
-
-   .. versionchanged:: 2.5
-      Added the optional *key* argument.
 
 The latter two functions perform best for smaller values of *n*.  For larger
 values, it is more efficient to use the :func:`sorted` function.  Also, when
@@ -133,7 +120,7 @@ the iterable into an actual heap.
 Basic Examples
 --------------
 
-A `heapsort <https://en.wikipedia.org/wiki/Heapsort>`_ can be implemented by
+A `heapsort <http://en.wikipedia.org/wiki/Heapsort>`_ can be implemented by
 pushing all values onto a heap and then popping off the smallest values one at a
 time::
 
@@ -164,15 +151,14 @@ Heap elements can be tuples.  This is useful for assigning comparison values
 Priority Queue Implementation Notes
 -----------------------------------
 
-A `priority queue <https://en.wikipedia.org/wiki/Priority_queue>`_ is common use
+A `priority queue <http://en.wikipedia.org/wiki/Priority_queue>`_ is common use
 for a heap, and it presents several implementation challenges:
 
 * Sort stability:  how do you get two tasks with equal priorities to be returned
   in the order they were originally added?
 
-* In the future with Python 3, tuple comparison breaks for (priority, task)
-  pairs if the priorities are equal and the tasks do not have a default
-  comparison order.
+* Tuple comparison breaks for (priority, task) pairs if the priorities are equal
+  and the tasks do not have a default comparison order.
 
 * If the priority of a task changes, how do you move it to a new position in
   the heap?
@@ -192,7 +178,7 @@ with a dictionary pointing to an entry in the queue.
 
 Removing the entry or changing its priority is more difficult because it would
 break the heap structure invariants.  So, a possible solution is to mark the
-existing entry as removed and add a new entry with the revised priority::
+entry as removed and add a new entry with the revised priority::
 
     pq = []                         # list of entries arranged in a heap
     entry_finder = {}               # mapping of tasks to entries
@@ -244,7 +230,7 @@ for a tournament.  The numbers below are *k*, not ``a[k]``::
 
    15 16   17 18   19 20   21 22   23 24   25 26   27 28   29 30
 
-In the tree above, each cell *k* is topping ``2*k+1`` and ``2*k+2``. In a usual
+In the tree above, each cell *k* is topping ``2*k+1`` and ``2*k+2``. In an usual
 binary tournament we see in sports, each cell is the winner over the two cells
 it tops, and we can trace the winner down the tree to see all opponents s/he
 had.  However, in many computer applications of such tournaments, we do not need

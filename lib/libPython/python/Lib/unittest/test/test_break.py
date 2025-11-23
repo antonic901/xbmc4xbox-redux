@@ -1,11 +1,9 @@
 import gc
+import io
 import os
 import sys
 import signal
 import weakref
-
-from cStringIO import StringIO
-
 
 import unittest
 
@@ -155,7 +153,7 @@ class TestBreak(unittest.TestCase):
     def testRunner(self):
         # Creating a TextTestRunner with the appropriate argument should
         # register the TextTestResult it creates
-        runner = unittest.TextTestRunner(stream=StringIO())
+        runner = unittest.TextTestRunner(stream=io.StringIO())
 
         result = runner.run(unittest.TestSuite())
         self.assertIn(result, unittest.signals._results)
@@ -222,7 +220,8 @@ class TestBreak(unittest.TestCase):
 
         self.assertEqual(FakeRunner.initArgs, [((), {'buffer': None,
                                                      'verbosity': verbosity,
-                                                     'failfast': failfast})])
+                                                     'failfast': failfast,
+                                                     'warnings': None})])
         self.assertEqual(FakeRunner.runArgs, [test])
         self.assertEqual(p.result, result)
 
@@ -235,7 +234,8 @@ class TestBreak(unittest.TestCase):
 
         self.assertEqual(FakeRunner.initArgs, [((), {'buffer': None,
                                                      'verbosity': verbosity,
-                                                     'failfast': failfast})])
+                                                     'failfast': failfast,
+                                                     'warnings': None})])
         self.assertEqual(FakeRunner.runArgs, [test])
         self.assertEqual(p.result, result)
 
@@ -282,3 +282,7 @@ class TestBreakSignalIgnored(TestBreak):
     "if threads have been used")
 class TestBreakSignalDefault(TestBreak):
     int_handler = signal.SIG_DFL
+
+
+if __name__ == "__main__":
+    unittest.main()

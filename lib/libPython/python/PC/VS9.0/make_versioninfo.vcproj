@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="make_versioninfo"
 	ProjectGUID="{F0E0541E-F17D-430B-97C4-93ADF0DD284E}"
 	RootNamespace="make_versioninfo"

@@ -1,4 +1,3 @@
-
 :mod:`resource` --- Resource usage information
 ==============================================
 
@@ -15,13 +14,15 @@ resources utilized by a program.
 Symbolic constants are used to specify particular system resources and to
 request usage information about either the current process or its children.
 
-A single exception is defined for errors:
+An :exc:`OSError` is raised on syscall failure.
 
 
 .. exception:: error
 
-   The functions described below may raise this error if the underlying system call
-   failures unexpectedly.
+   A deprecated alias of :exc:`OSError`.
+
+   .. versionchanged:: 3.3
+      Following :pep:`3151`, this class was made an alias of :exc:`OSError`.
 
 
 Resource Limits
@@ -73,6 +74,27 @@ this module for those platforms.
    ``setrlimit`` may also raise :exc:`error` if the underlying system call
    fails.
 
+.. function:: prlimit(pid, resource[, limits])
+
+   Combines :func:`setrlimit` and :func:`getrlimit` in one function and
+   supports to get and set the resources limits of an arbitrary process. If
+   *pid* is 0, then the call applies to the current process. *resource* and
+   *limits* have the same meaning as in :func:`setrlimit`, except that
+   *limits* is optional.
+
+   When *limits* is not given the function returns the *resource* limit of the
+   process *pid*. When *limits* is given the *resource* limit of the process is
+   set and the former resource limit is returned.
+
+   Raises :exc:`ProcessLookupError` when *pid* can't be found and
+   :exc:`PermissionError` when the user doesn't have ``CAP_SYS_RESOURCE`` for
+   the process.
+
+   Availability: Linux 2.6.36 or later with glibc 2.13 or later
+
+   .. versionadded:: 3.4
+
+
 These symbols define resources whose consumption can be controlled using the
 :func:`setrlimit` and :func:`getrlimit` functions described below. The values of
 these symbols are exactly the constants used by C programs.
@@ -101,7 +123,8 @@ platform.
 
 .. data:: RLIMIT_FSIZE
 
-   The maximum size of a file which the process may create.
+   The maximum size of a file which the process may create.  This only affects the
+   stack of the main thread in a multi-threaded process.
 
 
 .. data:: RLIMIT_DATA
@@ -111,8 +134,7 @@ platform.
 
 .. data:: RLIMIT_STACK
 
-   The maximum size (in bytes) of the call stack for the current process.  This only
-   affects the stack of the main thread in a multi-threaded process.
+   The maximum size (in bytes) of the call stack for the current process.
 
 
 .. data:: RLIMIT_RSS
@@ -149,6 +171,80 @@ platform.
 
    The maximum area (in bytes) of address space which may be taken by the process.
 
+
+.. data:: RLIMIT_MSGQUEUE
+
+   The number of bytes that can be allocated for POSIX message queues.
+
+   Availability: Linux 2.6.8 or later.
+
+   .. versionadded:: 3.4
+
+
+.. data:: RLIMIT_NICE
+
+   The ceiling for the process's nice level (calculated as 20 - rlim_cur).
+
+   Availability: Linux 2.6.12 or later.
+
+   .. versionadded:: 3.4
+
+
+.. data:: RLIMIT_RTPRIO
+
+   The ceiling of the real-time priority.
+
+   Availability: Linux 2.6.12 or later.
+
+   .. versionadded:: 3.4
+
+
+.. data:: RLIMIT_RTTIME
+
+   The time limit (in microseconds) on CPU time that a process can spend
+   under real-time scheduling without making a blocking syscall.
+
+   Availability: Linux 2.6.25 or later.
+
+   .. versionadded:: 3.4
+
+
+.. data:: RLIMIT_SIGPENDING
+
+   The number of signals which the process may queue.
+
+   Availability: Linux 2.6.8 or later.
+
+   .. versionadded:: 3.4
+
+.. data:: RLIMIT_SBSIZE
+
+   The maximum size (in bytes) of socket buffer usage for this user.
+   This limits the amount of network memory, and hence the amount of mbufs,
+   that this user may hold at any time.
+
+   Availability: FreeBSD 9 or later.
+
+   .. versionadded:: 3.4
+
+.. data:: RLIMIT_SWAP
+
+   The maximum size (in bytes) of the swap space that may be reserved or
+   used by all of this user id's processes.
+   This limit is enforced only if bit 1 of the vm.overcommit sysctl is set.
+   Please see :manpage:`tuning(7)` for a complete description of this sysctl.
+
+   Availability: FreeBSD 9 or later.
+
+   .. versionadded:: 3.4
+
+.. data:: RLIMIT_NPTS
+
+   The maximum number of pseudo-terminals created by this user id.
+
+   Availability: FreeBSD 9 or later.
+
+   .. versionadded:: 3.4
 
 Resource Usage
 --------------
@@ -216,9 +312,6 @@ These functions are used to retrieve resource usage information:
    This function will raise a :exc:`ValueError` if an invalid *who* parameter is
    specified. It may also raise :exc:`error` exception in unusual circumstances.
 
-   .. versionchanged:: 2.3
-      Added access to values as attributes of the returned object.
-
 
 .. function:: getpagesize()
 
@@ -231,14 +324,14 @@ function to specify which processes information should be provided for.
 
 .. data:: RUSAGE_SELF
 
-   :const:`RUSAGE_SELF` should be used to request information pertaining only to
-   the process itself.
+   Pass to :func:`getrusage` to request resources consumed by the calling
+   process, which is the sum of resources used by all threads in the process.
 
 
 .. data:: RUSAGE_CHILDREN
 
-   Pass to :func:`getrusage` to request resource information for child processes of
-   the calling process.
+   Pass to :func:`getrusage` to request resources consumed by child processes
+   of the calling process which have been terminated and waited for.
 
 
 .. data:: RUSAGE_BOTH
@@ -246,3 +339,10 @@ function to specify which processes information should be provided for.
    Pass to :func:`getrusage` to request resources consumed by both the current
    process and child processes.  May not be available on all systems.
 
+
+.. data:: RUSAGE_THREAD
+
+   Pass to :func:`getrusage` to request resources consumed by the current
+   thread.  May not be available on all systems.
+
+   .. versionadded:: 3.2

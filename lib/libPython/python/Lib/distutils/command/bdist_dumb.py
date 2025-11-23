@@ -4,21 +4,17 @@ Implements the Distutils 'bdist_dumb' command (create a "dumb" built
 distribution -- i.e., just an archive to be unpacked under $prefix or
 $exec_prefix)."""
 
-__revision__ = "$Id$"
-
 import os
-
-from sysconfig import get_python_version
-
-from distutils.util import get_platform
 from distutils.core import Command
+from distutils.util import get_platform
 from distutils.dir_util import remove_tree, ensure_relative
-from distutils.errors import DistutilsPlatformError
+from distutils.errors import *
+from distutils.sysconfig import get_python_version
 from distutils import log
 
-class bdist_dumb (Command):
+class bdist_dumb(Command):
 
-    description = 'create a "dumb" built distribution'
+    description = "create a \"dumb\" built distribution"
 
     user_options = [('bdist-dir=', 'd',
                      "temporary directory for creating the distribution"),
@@ -35,7 +31,7 @@ class bdist_dumb (Command):
                     ('skip-build', None,
                      "skip rebuilding everything (for testing/debugging)"),
                     ('relative', None,
-                     "build the archive using relative paths "
+                     "build the archive using relative paths"
                      "(default: false)"),
                     ('owner=', 'u',
                      "Owner name used when creating a tar file"
@@ -48,11 +44,9 @@ class bdist_dumb (Command):
     boolean_options = ['keep-temp', 'skip-build', 'relative']
 
     default_format = { 'posix': 'gztar',
-                       'nt': 'zip',
-                       'os2': 'zip' }
+                       'nt': 'zip' }
 
-
-    def initialize_options (self):
+    def initialize_options(self):
         self.bdist_dir = None
         self.plat_name = None
         self.format = None
@@ -72,9 +66,9 @@ class bdist_dumb (Command):
             try:
                 self.format = self.default_format[os.name]
             except KeyError:
-                raise DistutilsPlatformError, \
-                      ("don't know how to create dumb built distributions " +
-                       "on platform %s") % os.name
+                raise DistutilsPlatformError(
+                       "don't know how to create dumb built distributions "
+                       "on platform %s" % os.name)
 
         self.set_undefined_options('bdist',
                                    ('dist_dir', 'dist_dir'),
@@ -98,19 +92,14 @@ class bdist_dumb (Command):
         archive_basename = "%s.%s" % (self.distribution.get_fullname(),
                                       self.plat_name)
 
-        # OS/2 objects to any ":" characters in a filename (such as when
-        # a timestamp is used in a version) so change them to hyphens.
-        if os.name == "os2":
-            archive_basename = archive_basename.replace(":", "-")
-
         pseudoinstall_root = os.path.join(self.dist_dir, archive_basename)
         if not self.relative:
             archive_root = self.bdist_dir
         else:
             if (self.distribution.has_ext_modules() and
                 (install.install_base != install.install_platbase)):
-                raise DistutilsPlatformError, \
-                      ("can't make a dumb built distribution where "
+                raise DistutilsPlatformError(
+                       "can't make a dumb built distribution where "
                        "base and platbase are different (%s, %s)"
                        % (repr(install.install_base),
                           repr(install.install_platbase)))

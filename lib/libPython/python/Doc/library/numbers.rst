@@ -4,8 +4,6 @@
 .. module:: numbers
    :synopsis: Numeric abstract base classes (Complex, Real, Integral, etc.).
 
-.. versionadded:: 2.6
-
 
 The :mod:`numbers` module (:pep:`3141`) defines a hierarchy of numeric
 :term:`abstract base classes <abstract base class>` which progressively define
@@ -112,6 +110,8 @@ those. You can add ``MyFoo`` between :class:`Complex` and
     MyFoo.register(Real)
 
 
+.. _implementing-the-arithmetic-operations:
+
 Implementing the arithmetic operations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -183,7 +183,7 @@ forward and reverse instances of any given operator. For example,
 
     def _operator_fallbacks(monomorphic_operator, fallback_operator):
         def forward(a, b):
-            if isinstance(b, (int, long, Fraction)):
+            if isinstance(b, (int, Fraction)):
                 return monomorphic_operator(a, b)
             elif isinstance(b, float):
                 return fallback_operator(float(a), b)

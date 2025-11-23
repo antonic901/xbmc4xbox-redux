@@ -27,31 +27,31 @@ Test first class
 
     >>> g = (i*i for i in range(4))
     >>> type(g)
-    <type 'generator'>
+    <class 'generator'>
     >>> list(g)
     [0, 1, 4, 9]
 
 Test direct calls to next()
 
     >>> g = (i*i for i in range(3))
-    >>> g.next()
+    >>> next(g)
     0
-    >>> g.next()
+    >>> next(g)
     1
-    >>> g.next()
+    >>> next(g)
     4
-    >>> g.next()
+    >>> next(g)
     Traceback (most recent call last):
       File "<pyshell#21>", line 1, in -toplevel-
-        g.next()
+        next(g)
     StopIteration
 
 Does it stay stopped?
 
-    >>> g.next()
+    >>> next(g)
     Traceback (most recent call last):
       File "<pyshell#21>", line 1, in -toplevel-
-        g.next()
+        next(g)
     StopIteration
     >>> list(g)
     []
@@ -59,16 +59,16 @@ Does it stay stopped?
 Test running gen when defining function is out of scope
 
     >>> def f(n):
-    ...     return (i*i for i in xrange(n))
+    ...     return (i*i for i in range(n))
     >>> list(f(10))
     [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
 
     >>> def f(n):
-    ...     return ((i,j) for i in xrange(3) for j in xrange(n))
+    ...     return ((i,j) for i in range(3) for j in range(n))
     >>> list(f(4))
     [(0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2), (1, 3), (2, 0), (2, 1), (2, 2), (2, 3)]
     >>> def f(n):
-    ...     return ((i,j) for i in xrange(3) for j in xrange(4) if j in xrange(n))
+    ...     return ((i,j) for i in range(3) for j in range(4) if j in range(n))
     >>> list(f(4))
     [(0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2), (1, 3), (2, 0), (2, 1), (2, 2), (2, 3)]
     >>> list(f(2))
@@ -77,21 +77,21 @@ Test running gen when defining function is out of scope
 Verify that parenthesis are required in a statement
 
     >>> def f(n):
-    ...     return i*i for i in xrange(n)
+    ...     return i*i for i in range(n)
     Traceback (most recent call last):
        ...
     SyntaxError: invalid syntax
 
 Verify that parenthesis are required when used as a keyword argument value
 
-    >>> dict(a = i for i in xrange(10))
+    >>> dict(a = i for i in range(10))
     Traceback (most recent call last):
        ...
     SyntaxError: invalid syntax
 
 Verify that parenthesis are required when used as a keyword argument value
 
-    >>> dict(a = (i for i in xrange(10))) #doctest: +ELLIPSIS
+    >>> dict(a = (i for i in range(10))) #doctest: +ELLIPSIS
     {'a': <generator object <genexpr> at ...>}
 
 Verify early binding for the outermost for-expression
@@ -128,7 +128,7 @@ Verify late binding for the innermost for-expression
 
 Verify re-use of tuples (a side benefit of using genexps over listcomps)
 
-    >>> tupleids = map(id, ((i,i) for i in xrange(10)))
+    >>> tupleids = list(map(id, ((i,i) for i in range(10))))
     >>> int(max(tupleids) - min(tupleids))
     0
 
@@ -137,13 +137,11 @@ Verify that syntax error's are raised for genexps used as lvalues
     >>> (y for y in (1,2)) = 10
     Traceback (most recent call last):
        ...
-      File "<doctest test.test_genexps.__test__.doctests[40]>", line 1
     SyntaxError: can't assign to generator expression
 
     >>> (y for y in (1,2)) += 10
     Traceback (most recent call last):
        ...
-      File "<doctest test.test_genexps.__test__.doctests[41]>", line 1
     SyntaxError: can't assign to generator expression
 
 
@@ -151,7 +149,7 @@ Verify that syntax error's are raised for genexps used as lvalues
 
 Make a generator that acts like range()
 
-    >>> yrange = lambda n:  (i for i in xrange(n))
+    >>> yrange = lambda n:  (i for i in range(n))
     >>> list(yrange(10))
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
@@ -159,12 +157,12 @@ Generators always return to the most recent caller:
 
     >>> def creator():
     ...     r = yrange(5)
-    ...     print "creator", r.next()
+    ...     print("creator", next(r))
     ...     return r
     >>> def caller():
     ...     r = creator()
     ...     for i in r:
-    ...             print "caller", i
+    ...             print("caller", i)
     >>> caller()
     creator 0
     caller 1
@@ -183,49 +181,49 @@ Generators can call other generators:
 
 Verify that a gen exp cannot be resumed while it is actively running:
 
-    >>> g = (me.next() for i in xrange(10))
+    >>> g = (next(me) for i in range(10))
     >>> me = g
-    >>> me.next()
+    >>> next(me)
     Traceback (most recent call last):
       File "<pyshell#30>", line 1, in -toplevel-
-        me.next()
+        next(me)
       File "<pyshell#28>", line 1, in <generator expression>
-        g = (me.next() for i in xrange(10))
+        g = (next(me) for i in range(10))
     ValueError: generator already executing
 
 Verify exception propagation
 
     >>> g = (10 // i for i in (5, 0, 2))
-    >>> g.next()
+    >>> next(g)
     2
-    >>> g.next()
+    >>> next(g)
     Traceback (most recent call last):
       File "<pyshell#37>", line 1, in -toplevel-
-        g.next()
+        next(g)
       File "<pyshell#35>", line 1, in <generator expression>
         g = (10 // i for i in (5, 0, 2))
     ZeroDivisionError: integer division or modulo by zero
-    >>> g.next()
+    >>> next(g)
     Traceback (most recent call last):
       File "<pyshell#38>", line 1, in -toplevel-
-        g.next()
+        next(g)
     StopIteration
 
 Make sure that None is a valid return value
 
-    >>> list(None for i in xrange(10))
+    >>> list(None for i in range(10))
     [None, None, None, None, None, None, None, None, None, None]
 
 Check that generator attributes are present
 
     >>> g = (i*i for i in range(3))
-    >>> expected = set(['gi_frame', 'gi_running', 'next'])
+    >>> expected = set(['gi_frame', 'gi_running'])
     >>> set(attr for attr in dir(g) if not attr.startswith('__')) >= expected
     True
 
-    >>> from test.test_support import HAVE_DOCSTRINGS
-    >>> print(g.next.__doc__ if HAVE_DOCSTRINGS else 'x.next() -> the next value, or raise StopIteration')
-    x.next() -> the next value, or raise StopIteration
+    >>> from test.support import HAVE_DOCSTRINGS
+    >>> print(g.__next__.__doc__ if HAVE_DOCSTRINGS else 'Implement next(self).')
+    Implement next(self).
     >>> import types
     >>> isinstance(g, types.GeneratorType)
     True
@@ -241,7 +239,7 @@ Verify that the running flag is set properly
     >>> me = g
     >>> me.gi_running
     0
-    >>> me.next()
+    >>> next(me)
     1
     >>> me.gi_running
     0
@@ -260,24 +258,28 @@ Verify that genexps are weakly referencable
 
 """
 
+import sys
 
-__test__ = {'doctests' : doctests}
+# Trace function can throw off the tuple reuse test.
+if hasattr(sys, 'gettrace') and sys.gettrace():
+    __test__ = {}
+else:
+    __test__ = {'doctests' : doctests}
 
 def test_main(verbose=None):
-    import sys
-    from test import test_support
+    from test import support
     from test import test_genexps
-    test_support.run_doctest(test_genexps, verbose)
+    support.run_doctest(test_genexps, verbose)
 
     # verify reference counting
     if verbose and hasattr(sys, "gettotalrefcount"):
         import gc
         counts = [None] * 5
-        for i in xrange(len(counts)):
-            test_support.run_doctest(test_genexps, verbose)
+        for i in range(len(counts)):
+            support.run_doctest(test_genexps, verbose)
             gc.collect()
             counts[i] = sys.gettotalrefcount()
-        print counts
+        print(counts)
 
 if __name__ == "__main__":
     test_main(verbose=True)

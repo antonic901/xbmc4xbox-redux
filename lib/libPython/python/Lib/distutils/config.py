@@ -4,7 +4,7 @@ Provides the PyPIRCCommand class, the base class for the command classes
 that uses .pypirc in the distutils.command package.
 """
 import os
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 
 from distutils.cmd import Command
 
@@ -42,11 +42,8 @@ class PyPIRCCommand(Command):
     def _store_pypirc(self, username, password):
         """Creates a default .pypirc file."""
         rc = self._get_rc_file()
-        f = os.fdopen(os.open(rc, os.O_CREAT | os.O_WRONLY, 0600), 'w')
-        try:
+        with os.fdopen(os.open(rc, os.O_CREAT | os.O_WRONLY, 0o600), 'w') as f:
             f.write(DEFAULT_PYPIRC % (username, password))
-        finally:
-            f.close()
 
     def _read_pypirc(self):
         """Reads the .pypirc file."""
@@ -54,6 +51,8 @@ class PyPIRCCommand(Command):
         if os.path.exists(rc):
             self.announce('Using PyPI login from %s' % rc)
             repository = self.repository or self.DEFAULT_REPOSITORY
+            realm = self.realm or self.DEFAULT_REALM
+
             config = ConfigParser()
             config.read(rc)
             sections = config.sections()
@@ -84,6 +83,15 @@ class PyPIRCCommand(Command):
                             current[key] = config.get(server, key)
                         else:
                             current[key] = default
+
+                    # work around people having "repository" for the "pypi"
+                    # section of their config set to the HTTP (rather than
+                    # HTTPS) URL
+                    if (server == 'pypi' and
+                        repository in (self.DEFAULT_REPOSITORY, 'pypi')):
+                        current['repository'] = self.DEFAULT_REPOSITORY
+                        return current
+
                     if (current['server'] == repository or
                         current['repository'] == repository):
                         return current
@@ -101,6 +109,13 @@ class PyPIRCCommand(Command):
                         'realm': self.DEFAULT_REALM}
 
         return {}
+
+    def _read_pypi_response(self, response):
+        """Read and decode a PyPI HTTP response."""
+        import cgi
+        content_type = response.getheader('content-type', 'text/plain')
+        encoding = cgi.parse_header(content_type)[1].get('charset', 'ascii')
+        return response.read().decode(encoding)
 
     def initialize_options(self):
         """Initialize options."""

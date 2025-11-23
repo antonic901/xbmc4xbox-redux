@@ -88,7 +88,7 @@ Complex Numbers as Python Objects
 .. c:var:: PyTypeObject PyComplex_Type
 
    This instance of :c:type:`PyTypeObject` represents the Python complex number
-   type. It is the same object as ``complex`` and ``types.ComplexType``.
+   type. It is the same object as :class:`complex` in the Python layer.
 
 
 .. c:function:: int PyComplex_Check(PyObject *p)
@@ -96,16 +96,11 @@ Complex Numbers as Python Objects
    Return true if its argument is a :c:type:`PyComplexObject` or a subtype of
    :c:type:`PyComplexObject`.
 
-   .. versionchanged:: 2.2
-      Allowed subtypes to be accepted.
-
 
 .. c:function:: int PyComplex_CheckExact(PyObject *p)
 
    Return true if its argument is a :c:type:`PyComplexObject`, but not a subtype of
    :c:type:`PyComplexObject`.
-
-   .. versionadded:: 2.2
 
 
 .. c:function:: PyObject* PyComplex_FromCComplex(Py_complex v)
@@ -131,9 +126,7 @@ Complex Numbers as Python Objects
 .. c:function:: Py_complex PyComplex_AsCComplex(PyObject *op)
 
    Return the :c:type:`Py_complex` value of the complex number *op*.
-   Upon failure, this method returns ``-1.0`` as a real value.
 
-   .. versionchanged:: 2.6
-      If *op* is not a Python complex number object but has a :meth:`__complex__`
-      method, this method will first be called to convert *op* to a Python complex
-      number object.
+   If *op* is not a Python complex number object but has a :meth:`__complex__`
+   method, this method will first be called to convert *op* to a Python complex
+   number object. Upon failure, this method returns ``-1.0`` as a real value.

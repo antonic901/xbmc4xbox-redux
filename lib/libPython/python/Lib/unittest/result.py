@@ -1,10 +1,8 @@
 """Test result object"""
 
-import os
+import io
 import sys
 import traceback
-
-from StringIO import StringIO
 
 from . import util
 from functools import wraps
@@ -65,8 +63,8 @@ class TestResult(object):
     def _setupStdout(self):
         if self.buffer:
             if self._stderr_buffer is None:
-                self._stderr_buffer = StringIO()
-                self._stdout_buffer = StringIO()
+                self._stderr_buffer = io.StringIO()
+                self._stdout_buffer = io.StringIO()
             sys.stdout = self._stdout_buffer
             sys.stderr = self._stderr_buffer
 
@@ -123,6 +121,23 @@ class TestResult(object):
         self.failures.append((test, self._exc_info_to_string(err, test)))
         self._mirrorOutput = True
 
+    def addSubTest(self, test, subtest, err):
+        """Called at the end of a subtest.
+        'err' is None if the subtest ended successfully, otherwise it's a
+        tuple of values as returned by sys.exc_info().
+        """
+        # By default, we don't do anything with successful subtests, but
+        # more sophisticated test results might want to record them.
+        if err is not None:
+            if getattr(self, 'failfast', False):
+                self.stop()
+            if issubclass(err[0], test.failureException):
+                errors = self.failures
+            else:
+                errors = self.errors
+            errors.append((subtest, self._exc_info_to_string(err, test)))
+            self._mirrorOutput = True
+
     def addSuccess(self, test):
         "Called when a test has completed successfully"
         pass
@@ -132,7 +147,7 @@ class TestResult(object):
         self.skipped.append((test, reason))
 
     def addExpectedFailure(self, test, err):
-        """Called when an expected failure/error occurred."""
+        """Called when an expected failure/error occured."""
         self.expectedFailures.append(
             (test, self._exc_info_to_string(err, test)))
 
@@ -142,11 +157,16 @@ class TestResult(object):
         self.unexpectedSuccesses.append(test)
 
     def wasSuccessful(self):
-        "Tells whether or not this result was a success"
-        return len(self.failures) == len(self.errors) == 0
+        """Tells whether or not this result was a success."""
+        # The hasattr check is for test_result's OldResult test.  That
+        # way this method works on objects that lack the attribute.
+        # (where would such result intances come from? old stored pickles?)
+        return ((len(self.failures) == len(self.errors) == 0) and
+                (not hasattr(self, 'unexpectedSuccesses') or
+                 len(self.unexpectedSuccesses) == 0))
 
     def stop(self):
-        "Indicates that the tests should be aborted"
+        """Indicates that the tests should be aborted."""
         self.shouldStop = True
 
     def _exc_info_to_string(self, err, test):

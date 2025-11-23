@@ -12,14 +12,18 @@
    pair: UNIX; I/O control
 
 This module performs file control and I/O control on file descriptors. It is an
-interface to the :c:func:`fcntl` and :c:func:`ioctl` Unix routines.  For a
-complete description of these calls, see :manpage:`fcntl(2)` and
-:manpage:`ioctl(2)` Unix manual pages.
+interface to the :c:func:`fcntl` and :c:func:`ioctl` Unix routines.
 
 All functions in this module take a file descriptor *fd* as their first
 argument.  This can be an integer file descriptor, such as returned by
-``sys.stdin.fileno()``, or a file object, such as ``sys.stdin`` itself, which
-provides a :meth:`~io.IOBase.fileno` which returns a genuine file descriptor.
+``sys.stdin.fileno()``, or an :class:`io.IOBase` object, such as ``sys.stdin``
+itself, which provides a :meth:`~io.IOBase.fileno` that returns a genuine file
+descriptor.
+
+.. versionchanged:: 3.3
+   Operations in this module used to raise an :exc:`IOError` where they now
+   raise an :exc:`OSError`.
+
 
 The module defines the following functions:
 
@@ -28,7 +32,7 @@ The module defines the following functions:
 
    Perform the operation *op* on file descriptor *fd* (file objects providing
    a :meth:`~io.IOBase.fileno` method are accepted as well).  The values used
-   for for *op* are operating system dependent, and are available as constants
+   for *op* are operating system dependent, and are available as constants
    in the :mod:`fcntl` module, using the same names as used in the relevant C
    header files.  The argument *arg* is optional, and defaults to the integer
    value ``0``.  When present, it can either be an integer value, or a string.
@@ -43,14 +47,13 @@ The module defines the following functions:
    larger than 1024 bytes, this is most likely to result in a segmentation
    violation or a more subtle data corruption.
 
-   If the :c:func:`fcntl` fails, an :exc:`IOError` is raised.
+   If the :c:func:`fcntl` fails, an :exc:`OSError` is raised.
 
 
 .. function:: ioctl(fd, op[, arg[, mutate_flag]])
 
-   This function is identical to the :func:`~fcntl.fcntl` function, except that the
-   operations are typically defined in the library module :mod:`termios` and the
-   argument handling is even more complicated.
+   This function is identical to the :func:`~fcntl.fcntl` function, except
+   that the argument handling is even more complicated.
 
    The op parameter is limited to values that can fit in 32-bits.
    Additional constants of interest for use as the *op* argument can be
@@ -72,17 +75,13 @@ The module defines the following functions:
    so long as the buffer you pass is as least as long as what the operating system
    wants to put there, things should work.
 
-   If *mutate_flag* is true, then the buffer is (in effect) passed to the
-   underlying :func:`ioctl` system call, the latter's return code is passed back to
-   the calling Python, and the buffer's new contents reflect the action of the
-   :func:`ioctl`.  This is a slight simplification, because if the supplied buffer
-   is less than 1024 bytes long it is first copied into a static buffer 1024 bytes
-   long which is then passed to :func:`ioctl` and copied back into the supplied
-   buffer.
-
-   If *mutate_flag* is not supplied, then from Python 2.5 it defaults to true,
-   which is a change from versions 2.3 and 2.4. Supply the argument explicitly if
-   version portability is a priority.
+   If *mutate_flag* is true (the default), then the buffer is (in effect) passed
+   to the underlying :func:`ioctl` system call, the latter's return code is
+   passed back to the calling Python, and the buffer's new contents reflect the
+   action of the :func:`ioctl`.  This is a slight simplification, because if the
+   supplied buffer is less than 1024 bytes long it is first copied into a static
+   buffer 1024 bytes long which is then passed to :func:`ioctl` and copied back
+   into the supplied buffer.
 
    If the :c:func:`ioctl` fails, an :exc:`IOError` exception is raised.
 
@@ -123,7 +122,7 @@ The module defines the following functions:
    When *operation* is :const:`LOCK_SH` or :const:`LOCK_EX`, it can also be
    bitwise ORed with :const:`LOCK_NB` to avoid blocking on lock acquisition.
    If :const:`LOCK_NB` is used and the lock cannot be acquired, an
-   :exc:`IOError` will be raised and the exception will have an *errno*
+   :exc:`OSError` will be raised and the exception will have an *errno*
    attribute set to :const:`EACCES` or :const:`EAGAIN` (depending on the
    operating system; for portability, check for both values).  On at least some
    systems, :const:`LOCK_EX` can only be used if the file descriptor refers to a

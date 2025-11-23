@@ -20,7 +20,7 @@ class FixerTestCase(support.TestCase):
             fix_list = [self.fixer]
         self.refactor = support.get_refactorer(fixer_pkg, fix_list, options)
         self.fixer_log = []
-        self.filename = u"<string>"
+        self.filename = "<string>"
 
         for fixer in chain(self.refactor.pre_order,
                            self.refactor.post_order):
@@ -30,7 +30,7 @@ class FixerTestCase(support.TestCase):
         before = support.reformat(before)
         after = support.reformat(after)
         tree = self.refactor.refactor_string(before, self.filename)
-        self.assertEqual(after, unicode(tree))
+        self.assertEqual(after, str(tree))
         return tree
 
     def check(self, before, after, ignore_warnings=False):
@@ -260,10 +260,6 @@ class Test_apply(FixerTestCase):
         s = """apply(f, *args)"""
         self.unchanged(s)
 
-    def test_unchanged_6b(self):
-        s = """apply(f, **kwds)"""
-        self.unchanged(s)
-
     def test_unchanged_7(self):
         s = """apply(func=f, args=args, kwds=kwds)"""
         self.unchanged(s)
@@ -285,6 +281,65 @@ class Test_apply(FixerTestCase):
         a = """apply(  f  ,args,kwds   )"""
         b = """f(*args, **kwds)"""
         self.check(a, b)
+
+class Test_reload(FixerTestCase):
+    fixer = "reload"
+
+    def test(self):
+        b = """reload(a)"""
+        a = """import imp\nimp.reload(a)"""
+        self.check(b, a)
+
+    def test_comment(self):
+        b = """reload( a ) # comment"""
+        a = """import imp\nimp.reload( a ) # comment"""
+        self.check(b, a)
+
+        # PEP 8 comments
+        b = """reload( a )  # comment"""
+        a = """import imp\nimp.reload( a )  # comment"""
+        self.check(b, a)
+
+    def test_space(self):
+        b = """reload( a )"""
+        a = """import imp\nimp.reload( a )"""
+        self.check(b, a)
+
+        b = """reload( a)"""
+        a = """import imp\nimp.reload( a)"""
+        self.check(b, a)
+
+        b = """reload(a )"""
+        a = """import imp\nimp.reload(a )"""
+        self.check(b, a)
+
+    def test_unchanged(self):
+        s = """reload(a=1)"""
+        self.unchanged(s)
+
+        s = """reload(f, g)"""
+        self.unchanged(s)
+
+        s = """reload(f, *h)"""
+        self.unchanged(s)
+
+        s = """reload(f, *h, **i)"""
+        self.unchanged(s)
+
+        s = """reload(f, **i)"""
+        self.unchanged(s)
+
+        s = """reload(*h, **i)"""
+        self.unchanged(s)
+
+        s = """reload(*h)"""
+        self.unchanged(s)
+
+        s = """reload(**i)"""
+        self.unchanged(s)
+
+        s = """reload()"""
+        self.unchanged(s)
 
 class Test_intern(FixerTestCase):
     fixer = "intern"
@@ -1143,36 +1198,36 @@ class Test_execfile(FixerTestCase):
 
     def test_conversion(self):
         b = """execfile("fn")"""
-        a = """exec(compile(open("fn", "rb").read(), "fn", 'exec'))"""
+        a = """exec(compile(open("fn").read(), "fn", 'exec'))"""
         self.check(b, a)
 
         b = """execfile("fn", glob)"""
-        a = """exec(compile(open("fn", "rb").read(), "fn", 'exec'), glob)"""
+        a = """exec(compile(open("fn").read(), "fn", 'exec'), glob)"""
         self.check(b, a)
 
         b = """execfile("fn", glob, loc)"""
-        a = """exec(compile(open("fn", "rb").read(), "fn", 'exec'), glob, loc)"""
+        a = """exec(compile(open("fn").read(), "fn", 'exec'), glob, loc)"""
         self.check(b, a)
 
         b = """execfile("fn", globals=glob)"""
-        a = """exec(compile(open("fn", "rb").read(), "fn", 'exec'), globals=glob)"""
+        a = """exec(compile(open("fn").read(), "fn", 'exec'), globals=glob)"""
         self.check(b, a)
 
         b = """execfile("fn", locals=loc)"""
-        a = """exec(compile(open("fn", "rb").read(), "fn", 'exec'), locals=loc)"""
+        a = """exec(compile(open("fn").read(), "fn", 'exec'), locals=loc)"""
         self.check(b, a)
 
         b = """execfile("fn", globals=glob, locals=loc)"""
-        a = """exec(compile(open("fn", "rb").read(), "fn", 'exec'), globals=glob, locals=loc)"""
+        a = """exec(compile(open("fn").read(), "fn", 'exec'), globals=glob, locals=loc)"""
         self.check(b, a)
 
     def test_spacing(self):
         b = """execfile( "fn" )"""
-        a = """exec(compile(open( "fn", "rb" ).read(), "fn", 'exec'))"""
+        a = """exec(compile(open( "fn" ).read(), "fn", 'exec'))"""
         self.check(b, a)
 
         b = """execfile("fn",  globals = glob)"""
-        a = """exec(compile(open("fn", "rb").read(), "fn", 'exec'),  globals = glob)"""
+        a = """exec(compile(open("fn").read(), "fn", 'exec'),  globals = glob)"""
         self.check(b, a)
 
 
@@ -2748,7 +2803,7 @@ class Test_renames(FixerTestCase):
               }
 
     def test_import_from(self):
-        for mod, (old, new) in self.modules.items():
+        for mod, (old, new) in list(self.modules.items()):
             b = "from %s import %s" % (mod, old)
             a = "from %s import %s" % (mod, new)
             self.check(b, a)
@@ -2757,13 +2812,13 @@ class Test_renames(FixerTestCase):
             self.unchanged(s)
 
     def test_import_from_as(self):
-        for mod, (old, new) in self.modules.items():
+        for mod, (old, new) in list(self.modules.items()):
             b = "from %s import %s as foo_bar" % (mod, old)
             a = "from %s import %s as foo_bar" % (mod, new)
             self.check(b, a)
 
     def test_import_module_usage(self):
-        for mod, (old, new) in self.modules.items():
+        for mod, (old, new) in list(self.modules.items()):
             b = """
                 import %s
                 foo(%s, %s.%s)
@@ -2776,7 +2831,7 @@ class Test_renames(FixerTestCase):
 
     def XXX_test_from_import_usage(self):
         # not implemented yet
-        for mod, (old, new) in self.modules.items():
+        for mod, (old, new) in list(self.modules.items()):
             b = """
                 from %s import %s
                 foo(%s, %s)
@@ -2829,42 +2884,134 @@ class Test_unicode(FixerTestCase):
         self.check(b, a)
 
     def test_native_literal_escape_u(self):
-        b = """'\\\\\\u20ac\\U0001d121\\\\u20ac'"""
-        a = """'\\\\\\\\u20ac\\\\U0001d121\\\\u20ac'"""
+        b = r"""'\\\u20ac\U0001d121\\u20ac'"""
+        a = r"""'\\\\u20ac\\U0001d121\\u20ac'"""
         self.check(b, a)
 
-        b = """r'\\\\\\u20ac\\U0001d121\\\\u20ac'"""
-        a = """r'\\\\\\u20ac\\U0001d121\\\\u20ac'"""
+        b = r"""r'\\\u20ac\U0001d121\\u20ac'"""
+        a = r"""r'\\\u20ac\U0001d121\\u20ac'"""
         self.check(b, a)
 
     def test_bytes_literal_escape_u(self):
-        b = """b'\\\\\\u20ac\\U0001d121\\\\u20ac'"""
-        a = """b'\\\\\\u20ac\\U0001d121\\\\u20ac'"""
+        b = r"""b'\\\u20ac\U0001d121\\u20ac'"""
+        a = r"""b'\\\u20ac\U0001d121\\u20ac'"""
         self.check(b, a)
 
-        b = """br'\\\\\\u20ac\\U0001d121\\\\u20ac'"""
-        a = """br'\\\\\\u20ac\\U0001d121\\\\u20ac'"""
+        b = r"""br'\\\u20ac\U0001d121\\u20ac'"""
+        a = r"""br'\\\u20ac\U0001d121\\u20ac'"""
         self.check(b, a)
 
     def test_unicode_literal_escape_u(self):
-        b = """u'\\\\\\u20ac\\U0001d121\\\\u20ac'"""
-        a = """'\\\\\\u20ac\\U0001d121\\\\u20ac'"""
+        b = r"""u'\\\u20ac\U0001d121\\u20ac'"""
+        a = r"""'\\\u20ac\U0001d121\\u20ac'"""
         self.check(b, a)
 
-        b = """ur'\\\\\\u20ac\\U0001d121\\\\u20ac'"""
-        a = """r'\\\\\\u20ac\\U0001d121\\\\u20ac'"""
+        b = r"""ur'\\\u20ac\U0001d121\\u20ac'"""
+        a = r"""r'\\\u20ac\U0001d121\\u20ac'"""
         self.check(b, a)
 
     def test_native_unicode_literal_escape_u(self):
         f = 'from __future__ import unicode_literals\n'
-        b = f + """'\\\\\\u20ac\\U0001d121\\\\u20ac'"""
-        a = f + """'\\\\\\u20ac\\U0001d121\\\\u20ac'"""
+        b = f + r"""'\\\u20ac\U0001d121\\u20ac'"""
+        a = f + r"""'\\\u20ac\U0001d121\\u20ac'"""
         self.check(b, a)
 
-        b = f + """r'\\\\\\u20ac\\U0001d121\\\\u20ac'"""
-        a = f + """r'\\\\\\u20ac\\U0001d121\\\\u20ac'"""
+        b = f + r"""r'\\\u20ac\U0001d121\\u20ac'"""
+        a = f + r"""r'\\\u20ac\U0001d121\\u20ac'"""
         self.check(b, a)
 
+class Test_callable(FixerTestCase):
+    fixer = "callable"
+
+    def test_prefix_preservation(self):
+        b = """callable(    x)"""
+        a = """import collections\nisinstance(    x, collections.Callable)"""
+        self.check(b, a)
+
+        b = """if     callable(x): pass"""
+        a = """import collections
+if     isinstance(x, collections.Callable): pass"""
+        self.check(b, a)
+
+    def test_callable_call(self):
+        b = """callable(x)"""
+        a = """import collections\nisinstance(x, collections.Callable)"""
+        self.check(b, a)
+
+    def test_global_import(self):
+        b = """
+def spam(foo):
+    callable(foo)"""[1:]
+        a = """
+import collections
+def spam(foo):
+    isinstance(foo, collections.Callable)"""[1:]
+        self.check(b, a)
+
+        b = """
+import collections
+def spam(foo):
+    callable(foo)"""[1:]
+        # same output if it was already imported
+        self.check(b, a)
+
+        b = """
+from collections import *
+def spam(foo):
+    callable(foo)"""[1:]
+        a = """
+from collections import *
+import collections
+def spam(foo):
+    isinstance(foo, collections.Callable)"""[1:]
+        self.check(b, a)
+
+        b = """
+do_stuff()
+do_some_other_stuff()
+assert callable(do_stuff)"""[1:]
+        a = """
+import collections
+do_stuff()
+do_some_other_stuff()
+assert isinstance(do_stuff, collections.Callable)"""[1:]
+        self.check(b, a)
+
+        b = """
+if isinstance(do_stuff, Callable):
+    assert callable(do_stuff)
+    do_stuff(do_stuff)
+    if not callable(do_stuff):
+        exit(1)
+    else:
+        assert callable(do_stuff)
+else:
+    assert not callable(do_stuff)"""[1:]
+        a = """
+import collections
+if isinstance(do_stuff, Callable):
+    assert isinstance(do_stuff, collections.Callable)
+    do_stuff(do_stuff)
+    if not isinstance(do_stuff, collections.Callable):
+        exit(1)
+    else:
+        assert isinstance(do_stuff, collections.Callable)
+else:
+    assert not isinstance(do_stuff, collections.Callable)"""[1:]
+        self.check(b, a)
+
+    def test_callable_should_not_change(self):
+        a = """callable(*x)"""
+        self.unchanged(a)
+
+        a = """callable(x, y)"""
+        self.unchanged(a)
+
+        a = """callable(x, kw=y)"""
+        self.unchanged(a)
+
+        a = """callable()"""
+        self.unchanged(a)
 
 class Test_filter(FixerTestCase):
     fixer = "filter"
@@ -3173,10 +3320,6 @@ class Test_types(FixerTestCase):
 
         b = """types.NoneType"""
         a = """type(None)"""
-        self.check(b, a)
-
-        b = "types.StringTypes"
-        a = "(str,)"
         self.check(b, a)
 
 class Test_idioms(FixerTestCase):

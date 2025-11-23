@@ -4,7 +4,6 @@ csv.py - read/write/investigate CSV files
 """
 
 import re
-from functools import reduce
 from _csv import Error, __version__, writer, reader, register_dialect, \
                  unregister_dialect, get_dialect, list_dialects, \
                  field_size_limit, \
@@ -12,10 +11,7 @@ from _csv import Error, __version__, writer, reader, register_dialect, \
                  __doc__
 from _csv import Dialect as _Dialect
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from io import StringIO
 
 __all__ = [ "QUOTE_MINIMAL", "QUOTE_ALL", "QUOTE_NONNUMERIC", "QUOTE_NONE",
             "Error", "Dialect", "__doc__", "excel", "excel_tab",
@@ -24,7 +20,7 @@ __all__ = [ "QUOTE_MINIMAL", "QUOTE_ALL", "QUOTE_NONNUMERIC", "QUOTE_NONE",
             "unregister_dialect", "__version__", "DictReader", "DictWriter" ]
 
 class Dialect:
-    """Describe an Excel dialect.
+    """Describe a CSV dialect.
 
     This must be subclassed (see csv.excel).  Valid attributes are:
     delimiter, quotechar, escapechar, doublequote, skipinitialspace,
@@ -50,7 +46,7 @@ class Dialect:
     def _validate(self):
         try:
             _Dialect(self)
-        except TypeError, e:
+        except TypeError as e:
             # We do this for compatibility with py2.3
             raise Error(str(e))
 
@@ -68,6 +64,16 @@ class excel_tab(excel):
     """Describe the usual properties of Excel-generated TAB-delimited files."""
     delimiter = '\t'
 register_dialect("excel-tab", excel_tab)
+
+class unix_dialect(Dialect):
+    """Describe the usual properties of Unix-generated CSV files."""
+    delimiter = ','
+    quotechar = '"'
+    doublequote = True
+    skipinitialspace = False
+    lineterminator = '\n'
+    quoting = QUOTE_ALL
+register_dialect("unix", unix_dialect)
 
 
 class DictReader:
@@ -87,32 +93,28 @@ class DictReader:
     def fieldnames(self):
         if self._fieldnames is None:
             try:
-                self._fieldnames = self.reader.next()
+                self._fieldnames = next(self.reader)
             except StopIteration:
                 pass
         self.line_num = self.reader.line_num
         return self._fieldnames
 
-    # Issue 20004: Because DictReader is a classic class, this setter is
-    # ignored.  At this point in 2.7's lifecycle, it is too late to change the
-    # base class for fear of breaking working code.  If you want to change
-    # fieldnames without overwriting the getter, set _fieldnames directly.
     @fieldnames.setter
     def fieldnames(self, value):
         self._fieldnames = value
 
-    def next(self):
+    def __next__(self):
         if self.line_num == 0:
             # Used only for its side effect.
             self.fieldnames
-        row = self.reader.next()
+        row = next(self.reader)
         self.line_num = self.reader.line_num
 
         # unlike the basic reader, we prefer not to return blanks,
         # because we will typically wind up with a dict full of None
         # values
         while row == []:
-            row = self.reader.next()
+            row = next(self.reader)
         d = dict(zip(self.fieldnames, row))
         lf = len(self.fieldnames)
         lr = len(row)
@@ -130,9 +132,8 @@ class DictWriter:
         self.fieldnames = fieldnames    # list of keys for the dict
         self.restval = restval          # for writing short dicts
         if extrasaction.lower() not in ("raise", "ignore"):
-            raise ValueError, \
-                  ("extrasaction (%s) must be 'raise' or 'ignore'" %
-                   extrasaction)
+            raise ValueError("extrasaction (%s) must be 'raise' or 'ignore'"
+                             % extrasaction)
         self.extrasaction = extrasaction
         self.writer = writer(f, dialect, *args, **kwds)
 
@@ -185,7 +186,7 @@ class Sniffer:
                                                                 delimiters)
 
         if not delimiter:
-            raise Error, "Could not determine delimiter"
+            raise Error("Could not determine delimiter")
 
         class dialect(Dialect):
             _name = "sniffed"
@@ -217,7 +218,7 @@ class Sniffer:
         matches = []
         for restr in ('(?P<delim>[^\w\n"\'])(?P<space> ?)(?P<quote>["\']).*?(?P=quote)(?P=delim)', # ,".*?",
                       '(?:^|\n)(?P<quote>["\']).*?(?P=quote)(?P<delim>[^\w\n"\'])(?P<space> ?)',   #  ".*?",
-                      '(?P<delim>[^\w\n"\'])(?P<space> ?)(?P<quote>["\']).*?(?P=quote)(?:$|\n)',   # ,".*?"
+                      '(?P<delim>>[^\w\n"\'])(?P<space> ?)(?P<quote>["\']).*?(?P=quote)(?:$|\n)',  # ,".*?"
                       '(?:^|\n)(?P<quote>["\']).*?(?P=quote)(?:$|\n)'):                            #  ".*?" (no delim, no space)
             regexp = re.compile(restr, re.DOTALL | re.MULTILINE)
             matches = regexp.findall(data)
@@ -249,12 +250,10 @@ class Sniffer:
             if m[n]:
                 spaces += 1
 
-        quotechar = reduce(lambda a, b, quotes = quotes:
-                           (quotes[a] > quotes[b]) and a or b, quotes.keys())
+        quotechar = max(quotes, key=quotes.get)
 
         if delims:
-            delim = reduce(lambda a, b, delims = delims:
-                           (delims[a] > delims[b]) and a or b, delims.keys())
+            delim = max(delims, key=delims.get)
             skipinitialspace = delims[delim] == spaces
             if delim == '\n': # most likely a file with a single column
                 delim = ''
@@ -298,7 +297,7 @@ class Sniffer:
         additional chunks as necessary.
         """
 
-        data = filter(None, data.split('\n'))
+        data = list(filter(None, data.split('\n')))
 
         ascii = [chr(c) for c in range(127)] # 7-bit ASCII
 
@@ -321,19 +320,17 @@ class Sniffer:
                     charFrequency[char] = metaFrequency
 
             for char in charFrequency.keys():
-                items = charFrequency[char].items()
+                items = list(charFrequency[char].items())
                 if len(items) == 1 and items[0][0] == 0:
                     continue
                 # get the mode of the frequencies
                 if len(items) > 1:
-                    modes[char] = reduce(lambda a, b: a[1] > b[1] and a or b,
-                                         items)
+                    modes[char] = max(items, key=lambda x: x[1])
                     # adjust the mode - subtract the sum of all
                     # other frequencies
                     items.remove(modes[char])
                     modes[char] = (modes[char][0], modes[char][1]
-                                   - reduce(lambda a, b: (0, a[1] + b[1]),
-                                            items)[1])
+                                   - sum(item[1] for item in items))
                 else:
                     modes[char] = items[0]
 
@@ -353,7 +350,7 @@ class Sniffer:
                 consistency -= 0.01
 
             if len(delims) == 1:
-                delim = delims.keys()[0]
+                delim = list(delims.keys())[0]
                 skipinitialspace = (data[0].count(delim) ==
                                     data[0].count("%c " % delim))
                 return (delim, skipinitialspace)
@@ -396,7 +393,7 @@ class Sniffer:
 
         rdr = reader(StringIO(sample), self.sniff(sample))
 
-        header = rdr.next() # assume first row is header
+        header = next(rdr) # assume first row is header
 
         columns = len(header)
         columnTypes = {}
@@ -412,9 +409,9 @@ class Sniffer:
             if len(row) != columns:
                 continue # skip rows that have irregular number of columns
 
-            for col in columnTypes.keys():
+            for col in list(columnTypes.keys()):
 
-                for thisType in [int, long, float, complex]:
+                for thisType in [int, float, complex]:
                     try:
                         thisType(row[col])
                         break
@@ -423,10 +420,6 @@ class Sniffer:
                 else:
                     # fallback to length of string
                     thisType = len(row[col])
-
-                # treat longs as ints
-                if thisType == long:
-                    thisType = int
 
                 if thisType != columnTypes[col]:
                     if columnTypes[col] is None: # add new column type

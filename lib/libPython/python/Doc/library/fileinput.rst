@@ -27,8 +27,11 @@ as the first argument to :func:`.input`.  A single file name is also allowed.
 
 All files are opened in text mode by default, but you can override this by
 specifying the *mode* parameter in the call to :func:`.input` or
-:class:`FileInput()`.  If an I/O error occurs during opening or reading a file,
-:exc:`IOError` is raised.
+:class:`FileInput`.  If an I/O error occurs during opening or reading a file,
+:exc:`OSError` is raised.
+
+.. versionchanged:: 3.3
+   :exc:`IOError` used to be raised; it is now an alias of :exc:`OSError`.
 
 If ``sys.stdin`` is used more than once, the second and further use will return
 no lines, except perhaps for interactive use, or if it has been explicitly reset
@@ -50,18 +53,24 @@ provided by this module.
 The following function is the primary interface of this module:
 
 
-.. function:: input([files[, inplace[, backup[, bufsize[, mode[, openhook]]]]]])
+.. function:: input(files=None, inplace=False, backup='', bufsize=0, mode='r', openhook=None)
 
    Create an instance of the :class:`FileInput` class.  The instance will be used
    as global state for the functions of this module, and is also returned to use
    during iteration.  The parameters to this function will be passed along to the
    constructor of the :class:`FileInput` class.
 
-   .. versionchanged:: 2.5
-      Added the *mode* and *openhook* parameters.
+   The :class:`FileInput` instance can be used as a context manager in the
+   :keyword:`with` statement.  In this example, *input* is closed after the
+   :keyword:`with` statement is exited, even if an exception occurs::
 
-   .. versionchanged:: 2.7.12
-      The *bufsize* parameter is no longer used.
+      with fileinput.input(files=('spam.txt', 'eggs.txt')) as f:
+          for line in f:
+              process(line)
+
+   .. versionchanged:: 3.2
+      Can be used as a context manager.
+
 
 The following functions use the global state created by :func:`fileinput.input`;
 if there is no active state, :exc:`RuntimeError` is raised.
@@ -77,8 +86,6 @@ if there is no active state, :exc:`RuntimeError` is raised.
 
    Return the integer "file descriptor" for the current file. When no file is
    opened (before the first line and between files), returns ``-1``.
-
-   .. versionadded:: 2.5
 
 
 .. function:: lineno()
@@ -125,16 +132,16 @@ The class which implements the sequence behavior provided by the module is
 available for subclassing as well:
 
 
-.. class:: FileInput([files[, inplace[, backup[,bufsize[, mode[, openhook]]]]]])
+.. class:: FileInput(files=None, inplace=False, backup='', bufsize=0, mode='r', openhook=None)
 
    Class :class:`FileInput` is the implementation; its methods :meth:`filename`,
    :meth:`fileno`, :meth:`lineno`, :meth:`filelineno`, :meth:`isfirstline`,
    :meth:`isstdin`, :meth:`nextfile` and :meth:`close` correspond to the
    functions of the same name in the module. In addition it has a
-   :meth:`~file.readline` method which returns the next input line,
+   :meth:`~io.TextIOBase.readline` method which returns the next input line,
    and a :meth:`__getitem__` method which implements the sequence behavior.
    The sequence must be accessed in strictly sequential order; random access
-   and :meth:`~file.readline` cannot be mixed.
+   and :meth:`~io.TextIOBase.readline` cannot be mixed.
 
    With *mode* you can specify which file mode will be passed to :func:`open`. It
    must be one of ``'r'``, ``'rU'``, ``'U'`` and ``'rb'``.
@@ -143,26 +150,30 @@ available for subclassing as well:
    *filename* and *mode*, and returns an accordingly opened file-like object. You
    cannot use *inplace* and *openhook* together.
 
-   .. versionchanged:: 2.5
-      Added the *mode* and *openhook* parameters.
+   A :class:`FileInput` instance can be used as a context manager in the
+   :keyword:`with` statement.  In this example, *input* is closed after the
+   :keyword:`with` statement is exited, even if an exception occurs::
 
-   .. versionchanged:: 2.7.12
-      The *bufsize* parameter is no longer used.
+      with FileInput(files=('spam.txt', 'eggs.txt')) as input:
+          process(input)
 
-**Optional in-place filtering:** if the keyword argument ``inplace=1`` is passed
-to :func:`fileinput.input` or to the :class:`FileInput` constructor, the file is
-moved to a backup file and standard output is directed to the input file (if a
-file of the same name as the backup file already exists, it will be replaced
-silently).  This makes it possible to write a filter that rewrites its input
-file in place.  If the *backup* parameter is given (typically as
+   .. versionchanged:: 3.2
+      Can be used as a context manager.
+
+   .. deprecated:: 3.4
+        The ``'rU'`` and ``'U'`` modes.
+
+
+**Optional in-place filtering:** if the keyword argument ``inplace=True`` is
+passed to :func:`fileinput.input` or to the :class:`FileInput` constructor, the
+file is moved to a backup file and standard output is directed to the input file
+(if a file of the same name as the backup file already exists, it will be
+replaced silently).  This makes it possible to write a filter that rewrites its
+input file in place.  If the *backup* parameter is given (typically as
 ``backup='.<some extension>'``), it specifies the extension for the backup file,
 and the backup file remains around; by default, the extension is ``'.bak'`` and
 it is deleted when the output file is closed.  In-place filtering is disabled
 when standard input is read.
-
-.. note::
-
-   The current implementation does not work for MS-DOS 8+3 filesystems.
 
 
 The two following opening hooks are provided by this module:
@@ -176,21 +187,11 @@ The two following opening hooks are provided by this module:
 
    Usage example:  ``fi = fileinput.FileInput(openhook=fileinput.hook_compressed)``
 
-   .. versionadded:: 2.5
-
 
 .. function:: hook_encoded(encoding)
 
-   Returns a hook which opens each file with :func:`io.open`, using the given
+   Returns a hook which opens each file with :func:`codecs.open`, using the given
    *encoding* to read the file.
 
    Usage example: ``fi =
    fileinput.FileInput(openhook=fileinput.hook_encoded("iso-8859-1"))``
-
-   .. note::
-
-      With this hook, :class:`FileInput` might return Unicode strings depending on the
-      specified *encoding*.
-
-   .. versionadded:: 2.5
-

@@ -43,8 +43,8 @@ copy operations:
 * Recursive objects (compound objects that, directly or indirectly, contain a
   reference to themselves) may cause a recursive loop.
 
-* Because deep copy copies everything it may copy too much, such as data
-  which is intended to be shared between copies.
+* Because deep copy copies *everything* it may copy too much, e.g.,
+  administrative data structures that should be shared even between copies.
 
 The :func:`deepcopy` function avoids these problems by:
 
@@ -63,15 +63,12 @@ Shallow copies of dictionaries can be made using :meth:`dict.copy`, and
 of lists by assigning a slice of the entire list, for example,
 ``copied_list = original_list[:]``.
 
-.. versionchanged:: 2.5
-   Added copying functions.
-
 .. index:: module: pickle
 
 Classes can use the same interfaces to control copying that they use to control
 pickling.  See the description of module :mod:`pickle` for information on these
-methods.  The :mod:`copy` module does not use the :mod:`copy_reg` registration
-module.
+methods.  In fact, the :mod:`copy` module uses the registered
+pickle functions from the :mod:`copyreg` module.
 
 .. index::
    single: __copy__() (copy protocol)

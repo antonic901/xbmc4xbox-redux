@@ -16,8 +16,8 @@ class FixNe(fixer_base.BaseFix):
 
     def match(self, node):
         # Override
-        return node.value == u"<>"
+        return node.value == "<>"
 
     def transform(self, node, results):
-        new = pytree.Leaf(token.NOTEQUAL, u"!=", prefix=node.prefix)
+        new = pytree.Leaf(token.NOTEQUAL, "!=", prefix=node.prefix)
         return new

@@ -9,83 +9,136 @@
 #include <process.h>
 #endif
 
-typedef struct NRMUTEX {
-    LONG   owned ;
-    DWORD  thread_id ;
-    HANDLE hevent ;
-} NRMUTEX, *PNRMUTEX ;
+/* options */
+#ifndef _PY_USE_CV_LOCKS
+#define _PY_USE_CV_LOCKS 1     /* use locks based on cond vars */
+#endif
 
+/* Now, define a non-recursive mutex using either condition variables
+ * and critical sections (fast) or using operating system mutexes
+ * (slow)
+ */
 
-BOOL
-InitializeNonRecursiveMutex(PNRMUTEX mutex)
+#if _PY_USE_CV_LOCKS
+
+#include "condvar.h"
+
+typedef struct _NRMUTEX
 {
-    mutex->owned = -1 ;  /* No threads have entered NonRecursiveMutex */
-    mutex->thread_id = 0 ;
-    mutex->hevent = CreateEvent(NULL, FALSE, FALSE, NULL) ;
-    return mutex->hevent != NULL ;      /* TRUE if the mutex is created */
+    PyMUTEX_T cs;
+    PyCOND_T cv;
+    int locked;
+} NRMUTEX;
+typedef NRMUTEX *PNRMUTEX;
+
+PNRMUTEX
+AllocNonRecursiveMutex()
+{
+    PNRMUTEX m = (PNRMUTEX)PyMem_RawMalloc(sizeof(NRMUTEX));
+    if (!m)
+        return NULL;
+    if (PyCOND_INIT(&m->cv))
+        goto fail;
+    if (PyMUTEX_INIT(&m->cs)) {
+        PyCOND_FINI(&m->cv);
+        goto fail;
+    }
+    m->locked = 0;
+    return m;
+fail:
+    PyMem_RawFree(m);
+    return NULL;
 }
 
 VOID
-DeleteNonRecursiveMutex(PNRMUTEX mutex)
+FreeNonRecursiveMutex(PNRMUTEX mutex)
 {
-    /* No in-use check */
-    CloseHandle(mutex->hevent) ;
-    mutex->hevent = NULL ; /* Just in case */
+    if (mutex) {
+        PyCOND_FINI(&mutex->cv);
+        PyMUTEX_FINI(&mutex->cs);
+        PyMem_RawFree(mutex);
+    }
 }
 
 DWORD
-EnterNonRecursiveMutex(PNRMUTEX mutex, BOOL wait)
+EnterNonRecursiveMutex(PNRMUTEX mutex, DWORD milliseconds)
 {
-    /* Assume that the thread waits successfully */
-    DWORD ret ;
-
-    /* InterlockedIncrement(&mutex->owned) == 0 means that no thread currently owns the mutex */
-    if (!wait)
-    {
-        if (InterlockedCompareExchange(&mutex->owned, 0, -1) != -1)
-            return WAIT_TIMEOUT ;
-        ret = WAIT_OBJECT_0 ;
+    DWORD result = WAIT_OBJECT_0;
+    if (PyMUTEX_LOCK(&mutex->cs))
+        return WAIT_FAILED;
+    if (milliseconds == INFINITE) {
+        while (mutex->locked) {
+            if (PyCOND_WAIT(&mutex->cv, &mutex->cs)) {
+                result = WAIT_FAILED;
+                break;
+            }
+        }
+    } else if (milliseconds != 0) {
+        /* wait at least until the target */
+        DWORD now, target = GetTickCount() + milliseconds;
+        while (mutex->locked) {
+            if (PyCOND_TIMEDWAIT(&mutex->cv, &mutex->cs, (PY_LONG_LONG)milliseconds*1000) < 0) {
+                result = WAIT_FAILED;
+                break;
+            }
+            now = GetTickCount();
+            if (target <= now)
+                break;
+            milliseconds = target-now;
+        }
     }
-    else
-        ret = InterlockedIncrement(&mutex->owned) ?
-            /* Some thread owns the mutex, let's wait... */
-            WaitForSingleObject(mutex->hevent, INFINITE) : WAIT_OBJECT_0 ;
-
-    mutex->thread_id = GetCurrentThreadId() ; /* We own it */
-    return ret ;
+    if (!mutex->locked) {
+        mutex->locked = 1;
+        result = WAIT_OBJECT_0;
+    } else if (result == WAIT_OBJECT_0)
+        result = WAIT_TIMEOUT;
+    /* else, it is WAIT_FAILED */
+    PyMUTEX_UNLOCK(&mutex->cs); /* must ignore result here */
+    return result;
 }
 
 BOOL
 LeaveNonRecursiveMutex(PNRMUTEX mutex)
 {
-    /* We don't own the mutex */
-    mutex->thread_id = 0 ;
-    return
-        InterlockedDecrement(&mutex->owned) < 0 ||
-        SetEvent(mutex->hevent) ; /* Other threads are waiting, wake one on them up */
+    BOOL result;
+    if (PyMUTEX_LOCK(&mutex->cs))
+        return FALSE;
+    mutex->locked = 0;
+    result = PyCOND_SIGNAL(&mutex->cv);
+    result &= PyMUTEX_UNLOCK(&mutex->cs);
+    return result;
 }
+
+#else /* if ! _PY_USE_CV_LOCKS */
+
+/* NR-locks based on a kernel mutex */
+#define PNRMUTEX HANDLE
 
 PNRMUTEX
-AllocNonRecursiveMutex(void)
+AllocNonRecursiveMutex()
 {
-    PNRMUTEX mutex = (PNRMUTEX)malloc(sizeof(NRMUTEX)) ;
-    if (mutex && !InitializeNonRecursiveMutex(mutex))
-    {
-        free(mutex) ;
-        mutex = NULL ;
-    }
-    return mutex ;
+    return CreateSemaphore(NULL, 1, 1, NULL);
 }
 
-void
+VOID
 FreeNonRecursiveMutex(PNRMUTEX mutex)
 {
-    if (mutex)
-    {
-        DeleteNonRecursiveMutex(mutex) ;
-        free(mutex) ;
-    }
+    /* No in-use check */
+    CloseHandle(mutex);
 }
+
+DWORD
+EnterNonRecursiveMutex(PNRMUTEX mutex, DWORD milliseconds)
+{
+    return WaitForSingleObjectEx(mutex, milliseconds, FALSE);
+}
+
+BOOL
+LeaveNonRecursiveMutex(PNRMUTEX mutex)
+{
+    return ReleaseSemaphore(mutex, 1, NULL);
+}
+#endif /* _PY_USE_CV_LOCKS */
 
 long PyThread_get_thread_ident(void);
 
@@ -178,7 +231,7 @@ PyThread_start_new_thread(void (*func)(void *), void *arg)
 }
 
 /*
- * Return the thread Id instead of a handle. The Id is said to uniquely identify the
+ * Return the thread Id instead of an handle. The Id is said to uniquely identify the
  * thread in the system
  */
 long
@@ -238,18 +291,46 @@ PyThread_free_lock(PyThread_type_lock aLock)
  * and 0 if the lock was not acquired. This means a 0 is returned
  * if the lock has already been acquired by this thread!
  */
+PyLockStatus
+PyThread_acquire_lock_timed(PyThread_type_lock aLock,
+                            PY_TIMEOUT_T microseconds, int intr_flag)
+{
+    /* Fow now, intr_flag does nothing on Windows, and lock acquires are
+     * uninterruptible.  */
+    PyLockStatus success;
+    PY_TIMEOUT_T milliseconds;
+
+    if (microseconds >= 0) {
+        milliseconds = microseconds / 1000;
+        if (microseconds % 1000 > 0)
+            ++milliseconds;
+        if ((DWORD) milliseconds != milliseconds)
+            Py_FatalError("Timeout too large for a DWORD, "
+                           "please check PY_TIMEOUT_MAX");
+    }
+    else
+        milliseconds = INFINITE;
+
+    dprintf(("%ld: PyThread_acquire_lock_timed(%p, %lld) called\n",
+             PyThread_get_thread_ident(), aLock, microseconds));
+
+    if (aLock && EnterNonRecursiveMutex((PNRMUTEX)aLock,
+                                        (DWORD)milliseconds) == WAIT_OBJECT_0) {
+        success = PY_LOCK_ACQUIRED;
+    }
+    else {
+        success = PY_LOCK_FAILURE;
+    }
+
+    dprintf(("%ld: PyThread_acquire_lock(%p, %lld) -> %d\n",
+             PyThread_get_thread_ident(), aLock, microseconds, success));
+
+    return success;
+}
 int
 PyThread_acquire_lock(PyThread_type_lock aLock, int waitflag)
 {
-    int success ;
-
-    dprintf(("%ld: PyThread_acquire_lock(%p, %d) called\n", PyThread_get_thread_ident(),aLock, waitflag));
-
-    success = aLock && EnterNonRecursiveMutex((PNRMUTEX) aLock, (waitflag ? INFINITE : 0)) == WAIT_OBJECT_0 ;
-
-    dprintf(("%ld: PyThread_acquire_lock(%p, %d) -> %d\n", PyThread_get_thread_ident(),aLock, waitflag, success));
-
-    return success;
+    return PyThread_acquire_lock_timed(aLock, waitflag ? -1 : 0, 0);
 }
 
 void
@@ -296,7 +377,10 @@ _pythread_nt_set_stacksize(size_t size)
 int
 PyThread_create_key(void)
 {
-    return (int) TlsAlloc();
+    DWORD result= TlsAlloc();
+    if (result == TLS_OUT_OF_INDEXES)
+        return -1;
+    return (int)result;
 }
 
 void
@@ -305,20 +389,11 @@ PyThread_delete_key(int key)
     TlsFree(key);
 }
 
-/* We must be careful to emulate the strange semantics implemented in thread.c,
- * where the value is only set if it hasn't been set before.
- */
 int
 PyThread_set_key_value(int key, void *value)
 {
     BOOL ok;
-    void *oldvalue;
 
-    assert(value != NULL);
-    oldvalue = TlsGetValue(key);
-    if (oldvalue != NULL)
-        /* ignore value if already set */
-        return 0;
     ok = TlsSetValue(key, value);
     if (!ok)
         return -1;

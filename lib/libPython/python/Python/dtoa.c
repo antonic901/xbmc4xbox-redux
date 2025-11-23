@@ -282,6 +282,16 @@ typedef union { double d; ULong L[2]; } U;
 #define Big0 (Frac_mask1 | Exp_msk1*(DBL_MAX_EXP+Bias-1))
 #define Big1 0xffffffff
 
+/* Standard NaN used by _Py_dg_stdnan. */
+
+#define NAN_WORD0 0x7ff80000
+#define NAN_WORD1 0
+
+/* Bits of the representation of positive infinity. */
+
+#define POSINF_WORD0 0x7ff00000
+#define POSINF_WORD1 0
+
 /* struct BCinfo is used to pass information from _Py_dg_strtod to bigcomp */
 
 typedef struct BCinfo BCinfo;
@@ -1503,6 +1513,36 @@ bigcomp(U *rv, const char *s0, BCinfo *bc)
     return 0;
 }
 
+/* Return a 'standard' NaN value.
+
+   There are exactly two quiet NaNs that don't arise by 'quieting' signaling
+   NaNs (see IEEE 754-2008, section 6.2.1).  If sign == 0, return the one whose
+   sign bit is cleared.  Otherwise, return the one whose sign bit is set.
+*/
+
+double
+_Py_dg_stdnan(int sign)
+{
+    U rv;
+    word0(&rv) = NAN_WORD0;
+    word1(&rv) = NAN_WORD1;
+    if (sign)
+        word0(&rv) |= Sign_bit;
+    return dval(&rv);
+}
+
+/* Return positive or negative infinity, according to the given sign (0 for
+ * positive infinity, 1 for negative infinity). */
+
+double
+_Py_dg_infinity(int sign)
+{
+    U rv;
+    word0(&rv) = POSINF_WORD0;
+    word1(&rv) = POSINF_WORD1;
+    return sign ? -dval(&rv) : dval(&rv);
+}
+
 double
 _Py_dg_strtod(const char *s00, char **se)
 {
@@ -1514,9 +1554,8 @@ _Py_dg_strtod(const char *s00, char **se)
     ULong y, z, abs_exp;
     Long L;
     BCinfo bc;
-    Bigint *bb = NULL, *bd = NULL, *bd0 = NULL, *bs = NULL, *delta = NULL;
+    Bigint *bb, *bb1, *bd, *bd0, *bs, *delta;
     size_t ndigits, fraclen;
-    double result;
 
     dval(&rv) = 0.;
 
@@ -1708,6 +1747,7 @@ _Py_dg_strtod(const char *s00, char **se)
     if (k > 9) {
         dval(&rv) = tens[k - 9] * dval(&rv) + z;
     }
+    bd0 = 0;
     if (nd <= DBL_DIG
         && Flt_Rounds == 1
         ) {
@@ -1877,11 +1917,14 @@ _Py_dg_strtod(const char *s00, char **se)
 
         bd = Balloc(bd0->k);
         if (bd == NULL) {
+            Bfree(bd0);
             goto failed_malloc;
         }
         Bcopy(bd, bd0);
         bb = sd2b(&rv, bc.scale, &bbe);   /* srv = bb * 2^bbe */
         if (bb == NULL) {
+            Bfree(bd);
+            Bfree(bd0);
             goto failed_malloc;
         }
         /* Record whether lsb of bb is odd, in case we need this
@@ -1891,6 +1934,9 @@ _Py_dg_strtod(const char *s00, char **se)
         /* tdv = bd * 10**e;  srv = bb * 2**bbe */
         bs = i2b(1);
         if (bs == NULL) {
+            Bfree(bb);
+            Bfree(bd);
+            Bfree(bd0);
             goto failed_malloc;
         }
 
@@ -1939,39 +1985,56 @@ _Py_dg_strtod(const char *s00, char **se)
 
         /* Scale bb, bd, bs by the appropriate powers of 2 and 5. */
         if (bb5 > 0) {
-            Bigint *bb1;
             bs = pow5mult(bs, bb5);
             if (bs == NULL) {
+                Bfree(bb);
+                Bfree(bd);
+                Bfree(bd0);
                 goto failed_malloc;
             }
             bb1 = mult(bs, bb);
             Bfree(bb);
             bb = bb1;
             if (bb == NULL) {
+                Bfree(bs);
+                Bfree(bd);
+                Bfree(bd0);
                 goto failed_malloc;
             }
         }
         if (bb2 > 0) {
             bb = lshift(bb, bb2);
             if (bb == NULL) {
+                Bfree(bs);
+                Bfree(bd);
+                Bfree(bd0);
                 goto failed_malloc;
             }
         }
         if (bd5 > 0) {
             bd = pow5mult(bd, bd5);
             if (bd == NULL) {
+                Bfree(bb);
+                Bfree(bs);
+                Bfree(bd0);
                 goto failed_malloc;
             }
         }
         if (bd2 > 0) {
             bd = lshift(bd, bd2);
             if (bd == NULL) {
+                Bfree(bb);
+                Bfree(bs);
+                Bfree(bd0);
                 goto failed_malloc;
             }
         }
         if (bs2 > 0) {
             bs = lshift(bs, bs2);
             if (bs == NULL) {
+                Bfree(bb);
+                Bfree(bd);
+                Bfree(bd0);
                 goto failed_malloc;
             }
         }
@@ -1982,6 +2045,10 @@ _Py_dg_strtod(const char *s00, char **se)
 
         delta = diff(bb, bd);
         if (delta == NULL) {
+            Bfree(bb);
+            Bfree(bs);
+            Bfree(bd);
+            Bfree(bd0);
             goto failed_malloc;
         }
         dsign = delta->sign;
@@ -2035,6 +2102,10 @@ _Py_dg_strtod(const char *s00, char **se)
             }
             delta = lshift(delta,Log2P);
             if (delta == NULL) {
+                Bfree(bb);
+                Bfree(bs);
+                Bfree(bd);
+                Bfree(bd0);
                 goto failed_malloc;
             }
             if (cmp(delta, bs) > 0)
@@ -2055,7 +2126,7 @@ _Py_dg_strtod(const char *s00, char **se)
                         + Exp_msk1
                         ;
                     word1(&rv) = 0;
-                    dsign = 0;
+                    /* dsign = 0; */
                     break;
                 }
             }
@@ -2092,7 +2163,7 @@ _Py_dg_strtod(const char *s00, char **se)
                     goto undfl;
                 }
             }
-            dsign = 1 - dsign;
+            /* dsign = 1 - dsign; */
             break;
         }
         if ((aadj = ratio(delta, bs)) <= 2.) {
@@ -2136,6 +2207,11 @@ _Py_dg_strtod(const char *s00, char **se)
             if ((word0(&rv) & Exp_mask) >=
                 Exp_msk1*(DBL_MAX_EXP+Bias-P)) {
                 if (word0(&rv0) == Big0 && word1(&rv0) == Big1) {
+                    Bfree(bb);
+                    Bfree(bd);
+                    Bfree(bs);
+                    Bfree(bd0);
+                    Bfree(delta);
                     goto ovfl;
                 }
                 word0(&rv) = Big0;
@@ -2177,11 +2253,16 @@ _Py_dg_strtod(const char *s00, char **se)
                 }
         }
       cont:
-        Bfree(bb); bb = NULL;
-        Bfree(bd); bd = NULL;
-        Bfree(bs); bs = NULL;
-        Bfree(delta); delta = NULL;
+        Bfree(bb);
+        Bfree(bd);
+        Bfree(bs);
+        Bfree(delta);
     }
+    Bfree(bb);
+    Bfree(bd);
+    Bfree(bs);
+    Bfree(bd0);
+    Bfree(delta);
     if (bc.nd > nd) {
         error = bigcomp(&rv, s0, &bc);
         if (error)
@@ -2195,37 +2276,24 @@ _Py_dg_strtod(const char *s00, char **se)
     }
 
   ret:
-    result = sign ? -dval(&rv) : dval(&rv);
-    goto done;
+    return sign ? -dval(&rv) : dval(&rv);
 
   parse_error:
-    result = 0.0;
-    goto done;
+    return 0.0;
 
   failed_malloc:
     errno = ENOMEM;
-    result = -1.0;
-    goto done;
+    return -1.0;
 
   undfl:
-    result = sign ? -0.0 : 0.0;
-    goto done;
+    return sign ? -0.0 : 0.0;
 
   ovfl:
     errno = ERANGE;
     /* Can't trust HUGE_VAL */
     word0(&rv) = Exp_mask;
     word1(&rv) = 0;
-    result = sign ? -dval(&rv) : dval(&rv);
-    goto done;
-
-  done:
-    Bfree(bb);
-    Bfree(bd);
-    Bfree(bs);
-    Bfree(bd0);
-    Bfree(delta);
-    return result;
+    return sign ? -dval(&rv) : dval(&rv);
 
 }
 

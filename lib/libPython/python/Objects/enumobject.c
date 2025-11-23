@@ -16,7 +16,7 @@ enum_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     enumobject *en;
     PyObject *seq = NULL;
     PyObject *start = NULL;
-    static char *kwlist[] = {"sequence", "start", 0};
+    static char *kwlist[] = {"iterable", "start", 0};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|O:enumerate", kwlist,
                                      &seq, &start))
@@ -31,8 +31,8 @@ enum_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             Py_DECREF(en);
             return NULL;
         }
-        assert(_PyAnyInt_Check(start));
-        en->en_index = PyInt_AsSsize_t(start);
+        assert(PyLong_Check(start));
+        en->en_index = PyLong_AsSsize_t(start);
         if (en->en_index == -1 && PyErr_Occurred()) {
             PyErr_Clear();
             en->en_index = PY_SSIZE_T_MAX;
@@ -86,26 +86,20 @@ enum_next_long(enumobject *en, PyObject* next_item)
     PyObject *stepped_up;
 
     if (en->en_longindex == NULL) {
-        en->en_longindex = PyInt_FromSsize_t(PY_SSIZE_T_MAX);
-        if (en->en_longindex == NULL) {
-            Py_DECREF(next_item);
+        en->en_longindex = PyLong_FromSsize_t(PY_SSIZE_T_MAX);
+        if (en->en_longindex == NULL)
             return NULL;
-        }
     }
     if (one == NULL) {
-        one = PyInt_FromLong(1);
-        if (one == NULL) {
-            Py_DECREF(next_item);
+        one = PyLong_FromLong(1);
+        if (one == NULL)
             return NULL;
-        }
     }
     next_index = en->en_longindex;
     assert(next_index != NULL);
     stepped_up = PyNumber_Add(next_index, one);
-    if (stepped_up == NULL) {
-        Py_DECREF(next_item);
+    if (stepped_up == NULL)
         return NULL;
-    }
     en->en_longindex = stepped_up;
 
     if (result->ob_refcnt == 1) {
@@ -140,7 +134,7 @@ enum_next(enumobject *en)
     if (en->en_index == PY_SSIZE_T_MAX)
         return enum_next_long(en, next_item);
 
-    next_index = PyInt_FromSsize_t(en->en_index);
+    next_index = PyLong_FromSsize_t(en->en_index);
     if (next_index == NULL) {
         Py_DECREF(next_item);
         return NULL;
@@ -164,6 +158,22 @@ enum_next(enumobject *en)
     return result;
 }
 
+static PyObject *
+enum_reduce(enumobject *en)
+{
+    if (en->en_longindex != NULL)
+        return Py_BuildValue("O(OO)", Py_TYPE(en), en->en_sit, en->en_longindex);
+    else
+        return Py_BuildValue("O(On)", Py_TYPE(en), en->en_sit, en->en_index);
+}
+
+PyDoc_STRVAR(reduce_doc, "Return state information for pickling.");
+
+static PyMethodDef enum_methods[] = {
+    {"__reduce__", (PyCFunction)enum_reduce, METH_NOARGS, reduce_doc},
+    {NULL,              NULL}           /* sentinel */
+};
+
 PyDoc_STRVAR(enum_doc,
 "enumerate(iterable[, start]) -> iterator for index, value of iterable\n"
 "\n"
@@ -183,7 +193,7 @@ PyTypeObject PyEnum_Type = {
     0,                              /* tp_print */
     0,                              /* tp_getattr */
     0,                              /* tp_setattr */
-    0,                              /* tp_compare */
+    0,                              /* tp_reserved */
     0,                              /* tp_repr */
     0,                              /* tp_as_number */
     0,                              /* tp_as_sequence */
@@ -203,7 +213,7 @@ PyTypeObject PyEnum_Type = {
     0,                              /* tp_weaklistoffset */
     PyObject_SelfIter,                  /* tp_iter */
     (iternextfunc)enum_next,        /* tp_iternext */
-    0,                              /* tp_methods */
+    enum_methods,                   /* tp_methods */
     0,                              /* tp_members */
     0,                              /* tp_getset */
     0,                              /* tp_base */
@@ -230,8 +240,8 @@ reversed_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     Py_ssize_t n;
     PyObject *seq, *reversed_meth;
-    static PyObject *reversed_cache = NULL;
     reversedobject *ro;
+    _Py_IDENTIFIER(__reversed__);
 
     if (type == &PyReversed_Type && !_PyArg_NoKeywords("reversed()", kwds))
         return NULL;
@@ -239,26 +249,14 @@ reversed_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     if (!PyArg_UnpackTuple(args, "reversed", 1, 1, &seq) )
         return NULL;
 
-    if (PyInstance_Check(seq)) {
-        reversed_meth = PyObject_GetAttrString(seq, "__reversed__");
-        if (reversed_meth == NULL) {
-            if (PyErr_ExceptionMatches(PyExc_AttributeError))
-                PyErr_Clear();
-            else
-                return NULL;
-        }
-    }
-    else {
-        reversed_meth = _PyObject_LookupSpecial(seq, "__reversed__",
-                                                &reversed_cache);
-        if (reversed_meth == NULL && PyErr_Occurred())
-            return NULL;
-    }
+    reversed_meth = _PyObject_LookupSpecial(seq, &PyId___reversed__);
     if (reversed_meth != NULL) {
         PyObject *res = PyObject_CallFunctionObjArgs(reversed_meth, NULL);
         Py_DECREF(reversed_meth);
         return res;
     }
+    else if (PyErr_Occurred())
+        return NULL;
 
     if (!PySequence_Check(seq)) {
         PyErr_SetString(PyExc_TypeError,
@@ -327,18 +325,50 @@ reversed_len(reversedobject *ro)
     Py_ssize_t position, seqsize;
 
     if (ro->seq == NULL)
-        return PyInt_FromLong(0);
+        return PyLong_FromLong(0);
     seqsize = PySequence_Size(ro->seq);
     if (seqsize == -1)
         return NULL;
     position = ro->index + 1;
-    return PyInt_FromSsize_t((seqsize < position)  ?  0  :  position);
+    return PyLong_FromSsize_t((seqsize < position)  ?  0  :  position);
 }
 
 PyDoc_STRVAR(length_hint_doc, "Private method returning an estimate of len(list(it)).");
 
+static PyObject *
+reversed_reduce(reversedobject *ro)
+{
+    if (ro->seq)
+        return Py_BuildValue("O(O)n", Py_TYPE(ro), ro->seq, ro->index);
+    else
+        return Py_BuildValue("O(())", Py_TYPE(ro));
+}
+
+static PyObject *
+reversed_setstate(reversedobject *ro, PyObject *state)
+{
+    Py_ssize_t index = PyLong_AsSsize_t(state);
+    if (index == -1 && PyErr_Occurred())
+        return NULL;
+    if (ro->seq != 0) {
+        Py_ssize_t n = PySequence_Size(ro->seq);
+        if (n < 0)
+            return NULL;
+        if (index < -1)
+            index = -1;
+        else if (index > n-1)
+            index = n-1;
+        ro->index = index;
+    }
+    Py_RETURN_NONE;
+}
+
+PyDoc_STRVAR(setstate_doc, "Set state information for unpickling.");
+
 static PyMethodDef reversediter_methods[] = {
     {"__length_hint__", (PyCFunction)reversed_len, METH_NOARGS, length_hint_doc},
+    {"__reduce__", (PyCFunction)reversed_reduce, METH_NOARGS, reduce_doc},
+    {"__setstate__", (PyCFunction)reversed_setstate, METH_O, setstate_doc},
     {NULL,              NULL}           /* sentinel */
 };
 
@@ -352,7 +382,7 @@ PyTypeObject PyReversed_Type = {
     0,                              /* tp_print */
     0,                              /* tp_getattr */
     0,                              /* tp_setattr */
-    0,                              /* tp_compare */
+    0,                              /* tp_reserved */
     0,                              /* tp_repr */
     0,                              /* tp_as_number */
     0,                                  /* tp_as_sequence */

@@ -50,8 +50,8 @@ extern PyObject *_PyIncrementalNewlineDecoder_decode(
    `*consumed`.
    If not found, returns -1 and sets `*consumed` to the number of characters
    which can be safely put aside until another search.
-   
-   NOTE: for performance reasons, `end` must point to a NUL character ('\0'). 
+
+   NOTE: for performance reasons, `end` must point to a NUL character ('\0').
    Otherwise, the function will scan further and return garbage.
 
    There are three modes, in order of priority:
@@ -60,7 +60,7 @@ extern PyObject *_PyIncrementalNewlineDecoder_decode(
    * Otherwise, the line ending is specified by readnl, a str object */
 extern Py_ssize_t _PyIO_find_line_ending(
     int translated, int universal, PyObject *readnl,
-    Py_UNICODE *start, Py_UNICODE *end, Py_ssize_t *consumed);
+    int kind, char *start, char *end, Py_ssize_t *consumed);
 
 /* Return 1 if an EnvironmentError with errno == EINTR is set (and then
    clears the error indicator), 0 otherwise.
@@ -69,20 +69,6 @@ extern Py_ssize_t _PyIO_find_line_ending(
 extern int _PyIO_trap_eintr(void);
 
 #define DEFAULT_BUFFER_SIZE (8 * 1024)  /* bytes */
-
-typedef struct {
-    /* This is the equivalent of PyException_HEAD in 3.x */
-    PyObject_HEAD
-    PyObject *dict;
-    PyObject *args;
-    PyObject *message;
-
-    PyObject *myerrno;
-    PyObject *strerror;
-    PyObject *filename; /* Not used, but part of the IOError object */
-    Py_ssize_t written;
-} PyBlockingIOErrorObject;
-extern PyObject *PyExc_BlockingIOError;
 
 /*
  * Offset type for positioning.
@@ -96,7 +82,7 @@ extern PyObject *PyExc_BlockingIOError;
    long with "%lld" even when both long and long long have the same
    precision. */
 
-#if defined(MS_WIN64) || defined(MS_WINDOWS)
+#ifdef MS_WINDOWS
 
 /* Windows uses long long for offsets */
 typedef PY_LONG_LONG Py_off_t;
@@ -142,9 +128,22 @@ extern Py_off_t PyNumber_AsOff_t(PyObject *item, PyObject *err);
 
 /* Implementation details */
 
-extern PyObject *_PyIO_os_module;
-extern PyObject *_PyIO_locale_module;
-extern PyObject *_PyIO_unsupported_operation;
+/* IO module structure */
+
+extern PyModuleDef _PyIO_Module;
+
+typedef struct {
+    int initialized;
+    PyObject *locale_module;
+
+    PyObject *unsupported_operation;
+} _PyIO_State;
+
+#define IO_MOD_STATE(mod) ((_PyIO_State *)PyModule_GetState(mod))
+#define IO_STATE() _PyIO_get_module_state()
+
+extern _PyIO_State *_PyIO_get_module_state(void);
+extern PyObject *_PyIO_get_locale_module(_PyIO_State *);
 
 extern PyObject *_PyIO_str_close;
 extern PyObject *_PyIO_str_closed;
@@ -159,6 +158,7 @@ extern PyObject *_PyIO_str_nl;
 extern PyObject *_PyIO_str_read;
 extern PyObject *_PyIO_str_read1;
 extern PyObject *_PyIO_str_readable;
+extern PyObject *_PyIO_str_readall;
 extern PyObject *_PyIO_str_readinto;
 extern PyObject *_PyIO_str_readline;
 extern PyObject *_PyIO_str_reset;
@@ -173,3 +173,5 @@ extern PyObject *_PyIO_str_write;
 extern PyObject *_PyIO_empty_str;
 extern PyObject *_PyIO_empty_bytes;
 extern PyObject *_PyIO_zero;
+
+extern PyTypeObject _PyBytesIOBuffer_Type;

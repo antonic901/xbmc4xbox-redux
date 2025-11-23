@@ -1,8 +1,8 @@
 import unittest
-from test.test_support import requires
+from test.support import requires
 
-import Tkinter as tk
-from Tkinter import Text as tkText
+import tkinter as tk
+from tkinter import Text as tkText
 from idlelib.idle_test.mock_tk import Text as mkText
 from idlelib.IdleHistory import History
 from idlelib.configHandler import idleConf
@@ -68,7 +68,6 @@ class FetchTest(unittest.TestCase):
     def setUpClass(cls):
         requires('gui')
         cls.root = tk.Tk()
-        cls.root.withdraw()
 
     def setUp(self):
         self.text = text = TextWrapper(self.root)
@@ -83,7 +82,7 @@ class FetchTest(unittest.TestCase):
         cls.root.destroy()
         del cls.root
 
-    def fetch_test(self, reverse, line, prefix, index, bell=False):
+    def fetch_test(self, reverse, line, prefix, index, *, bell=False):
         # Perform one fetch as invoked by Alt-N or Alt-P
         # Test the result. The line test is the most important.
         # The last two are diagnostic of fetch internals.

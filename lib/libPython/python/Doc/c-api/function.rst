@@ -38,6 +38,16 @@ There are a few functions specific to Python functions.
    object, the argument defaults and closure are set to *NULL*.
 
 
+.. c:function:: PyObject* PyFunction_NewWithQualName(PyObject *code, PyObject *globals, PyObject *qualname)
+
+   As :c:func:`PyFunction_New`, but also allows to set the function object's
+   ``__qualname__`` attribute.  *qualname* should be a unicode object or NULL;
+   if NULL, the ``__qualname__`` attribute is set to the same value as its
+   ``__name__`` attribute.
+
+   .. versionadded:: 3.3
+
+
 .. c:function:: PyObject* PyFunction_GetCode(PyObject *op)
 
    Return the code object associated with the function object *op*.
@@ -79,5 +89,19 @@ There are a few functions specific to Python functions.
 
    Set the closure associated with the function object *op*. *closure* must be
    *Py_None* or a tuple of cell objects.
+
+   Raises :exc:`SystemError` and returns ``-1`` on failure.
+
+
+.. c:function:: PyObject *PyFunction_GetAnnotations(PyObject *op)
+
+   Return the annotations of the function object *op*. This can be a
+   mutable dictionary or *NULL*.
+
+
+.. c:function:: int PyFunction_SetAnnotations(PyObject *op, PyObject *annotations)
+
+   Set the annotations for the function object *op*. *annotations*
+   must be a dictionary or *Py_None*.
 
    Raises :exc:`SystemError` and returns ``-1`` on failure.

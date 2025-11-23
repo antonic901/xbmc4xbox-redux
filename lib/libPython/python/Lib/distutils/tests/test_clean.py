@@ -6,7 +6,7 @@ import getpass
 
 from distutils.command.clean import clean
 from distutils.tests import support
-from test.test_support import run_unittest
+from test.support import run_unittest
 
 class cleanTestCase(support.TempdirManager,
                     support.LoggingSilencer,

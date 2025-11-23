@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="_ctypes_test"
 	ProjectGUID="{9EC7190A-249F-4180-A900-548FDCF3055F}"
 	RootNamespace="_ctypes_test"

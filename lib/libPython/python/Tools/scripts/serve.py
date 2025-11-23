@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 '''
 Small wsgiref based web server. Takes a path to serve from and an
 optional port number (defaults to 8000), then tries to serve files.
@@ -19,17 +19,17 @@ def app(environ, respond):
 
     if os.path.exists(fn):
         respond('200 OK', [('Content-Type', type)])
-        return util.FileWrapper(open(fn))
+        return util.FileWrapper(open(fn, "rb"))
     else:
         respond('404 Not Found', [('Content-Type', 'text/plain')])
-        return ['not found']
+        return [b'not found']
 
 if __name__ == '__main__':
     path = sys.argv[1]
     port = int(sys.argv[2]) if len(sys.argv) > 2 else 8000
     httpd = simple_server.make_server('', port, app)
-    print "Serving %s on port %s, control-C to stop" % (path, port)
+    print("Serving {} on port {}, control-C to stop".format(path, port))
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
-        print "\b\bShutting down."
+        print("\b\bShutting down.")

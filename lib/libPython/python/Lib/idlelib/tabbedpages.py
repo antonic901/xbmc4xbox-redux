@@ -7,7 +7,7 @@ TabbedPageSet -- A Tkinter implementation of a tabbed-page widget.
 TabSet -- A widget containing tabs (buttons) in one or more rows.
 
 """
-from Tkinter import *
+from tkinter import *
 
 class InvalidNameError(Exception): pass
 class AlreadyExistsError(Exception): pass
@@ -78,7 +78,7 @@ class TabSet(Frame):
     def remove_tab(self, tab_name):
         """Remove the tab named <tab_name>"""
         if not tab_name in self._tab_names:
-            raise KeyError("No such Tab: '%s" % page_name)
+            raise KeyError("No such Tab: '%s" % tab_name)
 
         self._tab_names.remove(tab_name)
         self._arrange_tabs()
@@ -88,7 +88,7 @@ class TabSet(Frame):
         if tab_name == self._selected_tab:
             return
         if tab_name is not None and tab_name not in self._tabs:
-            raise KeyError("No such Tab: '%s" % page_name)
+            raise KeyError("No such Tab: '%s" % tab_name)
 
         # deselect the current selected tab
         if self._selected_tab is not None:
@@ -143,8 +143,8 @@ class TabSet(Frame):
 
         """
         # remove all tabs and rows
-        for tab_name in self._tabs.keys():
-            self._tabs.pop(tab_name).destroy()
+        while self._tabs:
+            self._tabs.popitem()[1].destroy()
         self._reset_tab_rows()
 
         if not self._tab_names:
@@ -159,7 +159,7 @@ class TabSet(Frame):
         # not expanding the tabs with more than one row is very ugly
         expand_tabs = self.expand_tabs or n_rows > 1
         i = 0 # index in self._tab_names
-        for row_index in xrange(n_rows):
+        for row_index in range(n_rows):
             # calculate required number of tabs in this row
             n_tabs = (len(self._tab_names) - i - 1) // (n_rows - row_index) + 1
             tab_names = self._tab_names[i:i + n_tabs]

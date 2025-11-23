@@ -2,7 +2,7 @@ try:
     import idlelib.PyShell
 except ImportError:
     # IDLE is not installed, but maybe PyShell is on sys.path:
-    import PyShell
+    from . import PyShell
     import os
     idledir = os.path.dirname(os.path.abspath(PyShell.__file__))
     if idledir != os.getcwd():

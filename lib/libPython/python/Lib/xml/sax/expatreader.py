@@ -105,23 +105,13 @@ class ExpatParser(xmlreader.IncrementalParser, xmlreader.Locator):
         source = saxutils.prepare_input_source(source)
 
         self._source = source
-        try:
-            self.reset()
-            self._cont_handler.setDocumentLocator(ExpatLocator(self))
-            xmlreader.IncrementalParser.parse(self, source)
-        except:
-            # bpo-30264: Close the source on error to not leak resources:
-            # xml.sax.parse() doesn't give access to the underlying parser
-            # to the caller
-            self._close_source()
-            raise
+        self.reset()
+        self._cont_handler.setDocumentLocator(ExpatLocator(self))
+        xmlreader.IncrementalParser.parse(self, source)
 
     def prepareParser(self, source):
         if source.getSystemId() is not None:
-            base = source.getSystemId()
-            if isinstance(base, unicode):
-                base = base.encode('utf-8')
-            self._parser.SetBase(base)
+            self._parser.SetBase(source.getSystemId())
 
     # Redefined setContentHandler to allow changing handlers during parsing
 
@@ -218,21 +208,10 @@ class ExpatParser(xmlreader.IncrementalParser, xmlreader.Locator):
             # document. When feeding chunks, they are not normally final -
             # except when invoked from close.
             self._parser.Parse(data, isFinal)
-        except expat.error, e:
+        except expat.error as e:
             exc = SAXParseException(expat.ErrorString(e.code), e, self)
             # FIXME: when to invoke error()?
             self._err_handler.fatalError(exc)
-
-    def _close_source(self):
-        source = self._source
-        try:
-            file = source.getCharacterStream()
-            if file is not None:
-                file.close()
-        finally:
-            file = source.getByteStream()
-            if file is not None:
-                file.close()
 
     def close(self):
         if (self._entity_stack or self._parser is None or
@@ -253,7 +232,9 @@ class ExpatParser(xmlreader.IncrementalParser, xmlreader.Locator):
                 parser.ErrorColumnNumber = self._parser.ErrorColumnNumber
                 parser.ErrorLineNumber = self._parser.ErrorLineNumber
                 self._parser = parser
-            self._close_source()
+            bs = self._source.getByteStream()
+            if bs is not None:
+                bs.close()
 
     def _reset_cont_handler(self):
         self._parser.ProcessingInstructionHandler = \

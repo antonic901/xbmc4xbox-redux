@@ -6,14 +6,17 @@ from wsgiref import util
 from wsgiref.validate import validator
 from wsgiref.simple_server import WSGIServer, WSGIRequestHandler
 from wsgiref.simple_server import make_server
-from StringIO import StringIO
-from SocketServer import BaseServer
+from io import StringIO, BytesIO, BufferedReader
+from socketserver import BaseServer
+from platform import python_implementation
 
 import os
 import re
 import sys
+import unittest
 
 from test import support
+
 
 class MockServer(WSGIServer):
     """Non-socket HTTP server"""
@@ -44,20 +47,33 @@ def hello_app(environ,start_response):
         ('Content-Type','text/plain'),
         ('Date','Mon, 05 Jun 2006 18:49:54 GMT')
     ])
-    return ["Hello, world!"]
+    return [b"Hello, world!"]
 
-def run_amock(app=hello_app, data="GET / HTTP/1.0\n\n"):
+
+def header_app(environ, start_response):
+    start_response("200 OK", [
+        ('Content-Type', 'text/plain'),
+        ('Date', 'Mon, 05 Jun 2006 18:49:54 GMT')
+    ])
+    return [';'.join([
+        environ['HTTP_X_TEST_HEADER'], environ['QUERY_STRING'],
+        environ['PATH_INFO']
+    ]).encode('iso-8859-1')]
+
+
+def run_amock(app=hello_app, data=b"GET / HTTP/1.0\n\n"):
     server = make_server("", 80, app, MockServer, MockHandler)
-    inp, out, err, olderr = StringIO(data), StringIO(), StringIO(), sys.stderr
-    sys.stderr = err
+    inp = BufferedReader(BytesIO(data))
+    out = BytesIO()
+    olderr = sys.stderr
+    err = sys.stderr = StringIO()
 
     try:
-        server.finish_request((inp,out), ("127.0.0.1",8888))
+        server.finish_request((inp, out), ("127.0.0.1",8888))
     finally:
         sys.stderr = olderr
 
     return out.getvalue(), err.getvalue()
-
 
 def compare_generic_iter(make_it,match):
     """Utility to compare a generic 2.1/2.2+ iterator with an iterable
@@ -87,36 +103,51 @@ def compare_generic_iter(make_it,match):
         it = make_it()
         if not iter(it) is it: raise AssertionError
         for item in match:
-            if not it.next()==item: raise AssertionError
+            if not next(it) == item: raise AssertionError
         try:
-            it.next()
+            next(it)
         except StopIteration:
             pass
         else:
-            raise AssertionError("Too many items from .next()",it)
+            raise AssertionError("Too many items from .__next__()", it)
 
 
 class IntegrationTests(TestCase):
 
     def check_hello(self, out, has_length=True):
+        pyver = (python_implementation() + "/" +
+                sys.version.split()[0])
         self.assertEqual(out,
-            "HTTP/1.0 200 OK\r\n"
-            "Server: WSGIServer/0.1 Python/"+sys.version.split()[0]+"\r\n"
+            ("HTTP/1.0 200 OK\r\n"
+            "Server: WSGIServer/0.2 " + pyver +"\r\n"
             "Content-Type: text/plain\r\n"
             "Date: Mon, 05 Jun 2006 18:49:54 GMT\r\n" +
             (has_length and  "Content-Length: 13\r\n" or "") +
             "\r\n"
-            "Hello, world!"
+            "Hello, world!").encode("iso-8859-1")
         )
 
     def test_plain_hello(self):
         out, err = run_amock()
         self.check_hello(out)
 
+    def test_environ(self):
+        request = (
+            b"GET /p%61th/?query=test HTTP/1.0\n"
+            b"X-Test-Header: Python test \n"
+            b"X-Test-Header: Python test 2\n"
+            b"Content-Length: 0\n\n"
+        )
+        out, err = run_amock(header_app, request)
+        self.assertEqual(
+            out.splitlines()[-1],
+            b"Python test,Python test 2;query=test;/path/"
+        )
+
     def test_request_length(self):
-        out, err = run_amock(data="GET " + ("x" * 65537) + " HTTP/1.0\n\n")
+        out, err = run_amock(data=b"GET " + (b"x" * 65537) + b" HTTP/1.0\n\n")
         self.assertEqual(out.splitlines()[0],
-                         "HTTP/1.0 414 Request-URI Too Long")
+                         b"HTTP/1.0 414 Request-URI Too Long")
 
     def test_validated_hello(self):
         out, err = run_amock(validator(hello_app))
@@ -129,13 +160,47 @@ class IntegrationTests(TestCase):
             return ["Hello, world!"]
         out, err = run_amock(validator(bad_app))
         self.assertTrue(out.endswith(
-            "A server error occurred.  Please contact the administrator."
+            b"A server error occurred.  Please contact the administrator."
         ))
         self.assertEqual(
             err.splitlines()[-2],
             "AssertionError: Headers (('Content-Type', 'text/plain')) must"
-            " be of type list: <type 'tuple'>"
+            " be of type list: <class 'tuple'>"
         )
+
+    def test_wsgi_input(self):
+        def bad_app(e,s):
+            e["wsgi.input"].read()
+            s("200 OK", [("Content-Type", "text/plain; charset=utf-8")])
+            return [b"data"]
+        out, err = run_amock(validator(bad_app))
+        self.assertTrue(out.endswith(
+            b"A server error occurred.  Please contact the administrator."
+        ))
+        self.assertEqual(
+            err.splitlines()[-2], "AssertionError"
+        )
+
+    def test_bytes_validation(self):
+        def app(e, s):
+            s("200 OK", [
+                ("Content-Type", "text/plain; charset=utf-8"),
+                ("Date", "Wed, 24 Dec 2008 13:29:32 GMT"),
+                ])
+            return [b"data"]
+        out, err = run_amock(validator(app))
+        self.assertTrue(err.endswith('"GET / HTTP/1.0" 200 4\n'))
+        ver = sys.version.split()[0].encode('ascii')
+        py  = python_implementation().encode('ascii')
+        pyver = py + b"/" + ver
+        self.assertEqual(
+                b"HTTP/1.0 200 OK\r\n"
+                b"Server: WSGIServer/0.2 "+ pyver + b"\r\n"
+                b"Content-Type: text/plain; charset=utf-8\r\n"
+                b"Date: Wed, 24 Dec 2008 13:29:32 GMT\r\n"
+                b"\r\n"
+                b"data",
+                out)
 
 
 class UtilityTests(TestCase):
@@ -154,6 +219,8 @@ class UtilityTests(TestCase):
         util.setup_testing_defaults(env)
         if isinstance(value, StringIO):
             self.assertIsInstance(env[key], StringIO)
+        elif isinstance(value,BytesIO):
+            self.assertIsInstance(env[key],BytesIO)
         else:
             self.assertEqual(env[key], value)
 
@@ -225,7 +292,7 @@ class UtilityTests(TestCase):
             ('wsgi.run_once', 0),
             ('wsgi.multithread', 0),
             ('wsgi.multiprocess', 0),
-            ('wsgi.input', StringIO("")),
+            ('wsgi.input', BytesIO()),
             ('wsgi.errors', StringIO()),
             ('wsgi.url_scheme','http'),
         ]:
@@ -313,7 +380,7 @@ class HeaderTests(TestCase):
         del h['foo']   # should not raise an error
 
         h['Foo'] = 'bar'
-        for m in h.has_key, h.__contains__, h.get, h.get_all, h.__getitem__:
+        for m in h.__contains__, h.get, h.get_all, h.__getitem__:
             self.assertTrue(m('foo'))
             self.assertTrue(m('Foo'))
             self.assertTrue(m('FOO'))
@@ -353,7 +420,6 @@ class HeaderTests(TestCase):
             '\r\n'
         )
 
-
 class ErrorHandler(BaseCGIHandler):
     """Simple handler subclass for testing BaseHandler"""
 
@@ -365,7 +431,7 @@ class ErrorHandler(BaseCGIHandler):
     def __init__(self,**kw):
         setup_testing_defaults(kw)
         BaseCGIHandler.__init__(
-            self, StringIO(''), StringIO(), StringIO(), kw,
+            self, BytesIO(), BytesIO(), StringIO(), kw,
             multithread=True, multiprocess=True
         )
 
@@ -377,62 +443,32 @@ class TestHandler(ErrorHandler):
 
 
 class HandlerTests(TestCase):
-    # testEnviron() can produce long error message
-    maxDiff = 80 * 50
+
+    def checkEnvironAttrs(self, handler):
+        env = handler.environ
+        for attr in [
+            'version','multithread','multiprocess','run_once','file_wrapper'
+        ]:
+            if attr=='file_wrapper' and handler.wsgi_file_wrapper is None:
+                continue
+            self.assertEqual(getattr(handler,'wsgi_'+attr),env['wsgi.'+attr])
+
+    def checkOSEnviron(self,handler):
+        empty = {}; setup_testing_defaults(empty)
+        env = handler.environ
+        from os import environ
+        for k,v in environ.items():
+            if k not in empty:
+                self.assertEqual(env[k],v)
+        for k,v in empty.items():
+            self.assertIn(k, env)
 
     def testEnviron(self):
-        os_environ = {
-            # very basic environment
-            'HOME': '/my/home',
-            'PATH': '/my/path',
-            'LANG': 'fr_FR.UTF-8',
-
-            # set some WSGI variables
-            'SCRIPT_NAME': 'test_script_name',
-            'SERVER_NAME': 'test_server_name',
-        }
-
-        with support.swap_attr(TestHandler, 'os_environ', os_environ):
-            # override X and HOME variables
-            handler = TestHandler(X="Y", HOME="/override/home")
-            handler.setup_environ()
-
-        # Check that wsgi_xxx attributes are copied to wsgi.xxx variables
-        # of handler.environ
-        for attr in ('version', 'multithread', 'multiprocess', 'run_once',
-                     'file_wrapper'):
-            self.assertEqual(getattr(handler, 'wsgi_' + attr),
-                             handler.environ['wsgi.' + attr])
-
-        # Test handler.environ as a dict
-        expected = {}
-        setup_testing_defaults(expected)
-        # Handler inherits os_environ variables which are not overriden
-        # by SimpleHandler.add_cgi_vars() (SimpleHandler.base_env)
-        for key, value in os_environ.items():
-            if key not in expected:
-                expected[key] = value
-        expected.update({
-            # X doesn't exist in os_environ
-            "X": "Y",
-            # HOME is overriden by TestHandler
-            'HOME': "/override/home",
-
-            # overriden by setup_testing_defaults()
-            "SCRIPT_NAME": "",
-            "SERVER_NAME": "127.0.0.1",
-
-            # set by BaseHandler.setup_environ()
-            'wsgi.input': handler.get_stdin(),
-            'wsgi.errors': handler.get_stderr(),
-            'wsgi.version': (1, 0),
-            'wsgi.run_once': False,
-            'wsgi.url_scheme': 'http',
-            'wsgi.multithread': True,
-            'wsgi.multiprocess': True,
-            'wsgi.file_wrapper': util.FileWrapper,
-        })
-        self.assertDictEqual(handler.environ, expected)
+        h = TestHandler(X="Y")
+        h.setup_environ()
+        self.checkEnvironAttrs(h)
+        self.checkOSEnviron(h)
+        self.assertEqual(h.environ["X"],"Y")
 
     def testCGIEnviron(self):
         h = BaseCGIHandler(None,None,None,{})
@@ -459,11 +495,15 @@ class HandlerTests(TestCase):
 
         def trivial_app1(e,s):
             s('200 OK',[])
-            return [e['wsgi.url_scheme']]
+            return [e['wsgi.url_scheme'].encode('iso-8859-1')]
 
         def trivial_app2(e,s):
-            s('200 OK',[])(e['wsgi.url_scheme'])
+            s('200 OK',[])(e['wsgi.url_scheme'].encode('iso-8859-1'))
             return []
+
+        def trivial_app3(e,s):
+            s('200 OK',[])
+            return ['\u0442\u0435\u0441\u0442'.encode("utf-8")]
 
         def trivial_app4(e,s):
             # Simulate a response to a HEAD request
@@ -473,18 +513,25 @@ class HandlerTests(TestCase):
         h = TestHandler()
         h.run(trivial_app1)
         self.assertEqual(h.stdout.getvalue(),
-            "Status: 200 OK\r\n"
+            ("Status: 200 OK\r\n"
             "Content-Length: 4\r\n"
             "\r\n"
-            "http")
+            "http").encode("iso-8859-1"))
 
         h = TestHandler()
         h.run(trivial_app2)
         self.assertEqual(h.stdout.getvalue(),
-            "Status: 200 OK\r\n"
+            ("Status: 200 OK\r\n"
             "\r\n"
-            "http")
+            "http").encode("iso-8859-1"))
 
+        h = TestHandler()
+        h.run(trivial_app3)
+        self.assertEqual(h.stdout.getvalue(),
+            b'Status: 200 OK\r\n'
+            b'Content-Length: 8\r\n'
+            b'\r\n'
+            b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
 
         h = TestHandler()
         h.run(trivial_app4)
@@ -505,23 +552,24 @@ class HandlerTests(TestCase):
         h = ErrorHandler()
         h.run(non_error_app)
         self.assertEqual(h.stdout.getvalue(),
-            "Status: 200 OK\r\n"
+            ("Status: 200 OK\r\n"
             "Content-Length: 0\r\n"
-            "\r\n")
+            "\r\n").encode("iso-8859-1"))
         self.assertEqual(h.stderr.getvalue(),"")
 
         h = ErrorHandler()
         h.run(error_app)
         self.assertEqual(h.stdout.getvalue(),
-            "Status: %s\r\n"
+            ("Status: %s\r\n"
             "Content-Type: text/plain\r\n"
             "Content-Length: %d\r\n"
-            "\r\n%s" % (h.error_status,len(h.error_body),h.error_body))
+            "\r\n" % (h.error_status,len(h.error_body))).encode('iso-8859-1')
+            + h.error_body)
 
-        self.assertNotEqual(h.stderr.getvalue().find("AssertionError"), -1)
+        self.assertIn("AssertionError", h.stderr.getvalue())
 
     def testErrorAfterOutput(self):
-        MSG = "Some output has been sent"
+        MSG = b"Some output has been sent"
         def error_app(e,s):
             s("200 OK",[])(MSG)
             raise AssertionError("This should be caught by handler")
@@ -529,9 +577,9 @@ class HandlerTests(TestCase):
         h = ErrorHandler()
         h.run(error_app)
         self.assertEqual(h.stdout.getvalue(),
-            "Status: 200 OK\r\n"
-            "\r\n"+MSG)
-        self.assertNotEqual(h.stderr.getvalue().find("AssertionError"), -1)
+            ("Status: 200 OK\r\n"
+            "\r\n".encode("iso-8859-1")+MSG))
+        self.assertIn("AssertionError", h.stderr.getvalue())
 
     def testHeaderFormats(self):
 
@@ -546,7 +594,7 @@ class HandlerTests(TestCase):
         )
         shortpat = (
             "Status: 200 OK\r\n" "Content-Length: 0\r\n" "\r\n"
-        )
+        ).encode("iso-8859-1")
 
         for ssw in "FooBar/1.0", None:
             sw = ssw and "Server: %s\r\n" % ssw or ""
@@ -567,12 +615,30 @@ class HandlerTests(TestCase):
                     h.server_software = ssw
                     h.run(non_error_app)
                     if proto=="HTTP/0.9":
-                        self.assertEqual(h.stdout.getvalue(),"")
+                        self.assertEqual(h.stdout.getvalue(),b"")
                     else:
                         self.assertTrue(
-                            re.match(stdpat%(version,sw), h.stdout.getvalue()),
-                            (stdpat%(version,sw), h.stdout.getvalue())
+                            re.match((stdpat%(version,sw)).encode("iso-8859-1"),
+                                h.stdout.getvalue()),
+                            ((stdpat%(version,sw)).encode("iso-8859-1"),
+                                h.stdout.getvalue())
                         )
+
+    def testBytesData(self):
+        def app(e, s):
+            s("200 OK", [
+                ("Content-Type", "text/plain; charset=utf-8"),
+                ])
+            return [b"data"]
+
+        h = TestHandler()
+        h.run(app)
+        self.assertEqual(b"Status: 200 OK\r\n"
+            b"Content-Type: text/plain; charset=utf-8\r\n"
+            b"Content-Length: 4\r\n"
+            b"\r\n"
+            b"data",
+            h.stdout.getvalue())
 
     def testCloseOnError(self):
         side_effects = {'close_called': False}
@@ -584,7 +650,6 @@ class HandlerTests(TestCase):
                     while True:
                         yield b'blah'
                         raise AssertionError("This should be caught by handler")
-
                 def close(self):
                     side_effects['close_called'] = True
             return CrashyIterable()

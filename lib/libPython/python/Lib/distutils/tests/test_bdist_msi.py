@@ -1,7 +1,7 @@
 """Tests for distutils.command.bdist_msi."""
 import sys
 import unittest
-from test.test_support import run_unittest
+from test.support import run_unittest
 from distutils.tests import support
 
 

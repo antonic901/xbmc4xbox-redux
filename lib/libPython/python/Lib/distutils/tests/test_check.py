@@ -1,33 +1,19 @@
-# -*- encoding: utf8 -*-
 """Tests for distutils.command.check."""
-import os
 import textwrap
 import unittest
-from test.test_support import run_unittest
+from test.support import run_unittest
 
 from distutils.command.check import check, HAS_DOCUTILS
 from distutils.tests import support
 from distutils.errors import DistutilsSetupError
 
-try:
-    import pygments
-except ImportError:
-    pygments = None
-
-
-HERE = os.path.dirname(__file__)
-
-
 class CheckTestCase(support.LoggingSilencer,
                     support.TempdirManager,
                     unittest.TestCase):
 
-    def _run(self, metadata=None, cwd=None, **options):
+    def _run(self, metadata=None, **options):
         if metadata is None:
             metadata = {}
-        if cwd is not None:
-            old_dir = os.getcwd()
-            os.chdir(cwd)
         pkg_info, dist = self.create_dist(**metadata)
         cmd = check(dist)
         cmd.initialize_options()
@@ -35,8 +21,6 @@ class CheckTestCase(support.LoggingSilencer,
             setattr(cmd, name, value)
         cmd.ensure_finalized()
         cmd.run()
-        if cwd is not None:
-            os.chdir(old_dir)
         return cmd
 
     def test_check_metadata(self):
@@ -63,12 +47,12 @@ class CheckTestCase(support.LoggingSilencer,
         cmd = self._run(metadata, strict=1)
         self.assertEqual(cmd._warnings, 0)
 
-        # now a test with Unicode entries
-        metadata = {'url': u'xxx', 'author': u'\u00c9ric',
-                    'author_email': u'xxx', u'name': 'xxx',
-                    'version': u'xxx',
-                    'description': u'Something about esszet \u00df',
-                    'long_description': u'More things about esszet \u00df'}
+        # now a test with non-ASCII characters
+        metadata = {'url': 'xxx', 'author': '\u00c9ric',
+                    'author_email': 'xxx', 'name': 'xxx',
+                    'version': 'xxx',
+                    'description': 'Something about esszet \u00df',
+                    'long_description': 'More things about esszet \u00df'}
         cmd = self._run(metadata)
         self.assertEqual(cmd._warnings, 0)
 
@@ -105,13 +89,8 @@ class CheckTestCase(support.LoggingSilencer,
                           **{'strict': 1, 'restructuredtext': 1})
 
         # and non-broken rest, including a non-ASCII character to test #12114
-        metadata['long_description'] = u'title\n=====\n\ntest \u00df'
+        metadata['long_description'] = 'title\n=====\n\ntest \u00df'
         cmd = self._run(metadata, strict=1, restructuredtext=1)
-        self.assertEqual(cmd._warnings, 0)
-
-        # check that includes work to test #31292
-        metadata['long_description'] = 'title\n=====\n\n.. include:: includetest.rst'
-        cmd = self._run(metadata, cwd=HERE, strict=1, restructuredtext=1)
         self.assertEqual(cmd._warnings, 0)
 
     @unittest.skipUnless(HAS_DOCUTILS, "won't test without docutils")
@@ -140,15 +119,9 @@ class CheckTestCase(support.LoggingSilencer,
             pkg_info, dist = self.create_dist(long_description=rest_with_code)
             cmd = check(dist)
             cmd.check_restructuredtext()
+            self.assertEqual(cmd._warnings, 0)
             msgs = cmd._check_rst_data(rest_with_code)
-            if pygments is not None:
-                self.assertEqual(len(msgs), 0)
-            else:
-                self.assertEqual(len(msgs), 1)
-                self.assertEqual(
-                    str(msgs[0][1]),
-                    'Cannot analyze code. Pygments package not found.'
-                )
+            self.assertEqual(len(msgs), 0)
 
     def test_check_all(self):
 

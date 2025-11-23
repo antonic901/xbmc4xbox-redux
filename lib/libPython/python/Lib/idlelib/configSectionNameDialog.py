@@ -4,8 +4,9 @@ Used to get new highlight theme and keybinding set names.
 The 'return value' for the dialog, used two placed in configDialog.py,
 is the .result attribute set in the Ok and Cancel methods.
 """
-from Tkinter import *
-import tkMessageBox
+from tkinter import *
+import tkinter.messagebox as tkMessageBox
+
 class GetCfgSectionNameDialog(Toplevel):
     def __init__(self, parent, title, message, used_names, _htest=False):
         """
@@ -38,6 +39,7 @@ class GetCfgSectionNameDialog(Toplevel):
                 ) )  #centre dialog over parent (or below htest box)
         self.deiconify()  #geometry set, unhide
         self.wait_window()
+
     def create_widgets(self):
         self.name = StringVar(self.parent)
         self.fontSize = StringVar(self.parent)
@@ -49,6 +51,7 @@ class GetCfgSectionNameDialog(Toplevel):
         entryName.focus_set()
         self.messageInfo.pack(padx=5, pady=5) #, expand=TRUE, fill=BOTH)
         entryName.pack(padx=5, pady=5)
+
         frameButtons = Frame(self, pady=2)
         frameButtons.pack(side=BOTTOM)
         self.buttonOk = Button(frameButtons, text='Ok',
@@ -76,15 +79,15 @@ class GetCfgSectionNameDialog(Toplevel):
                     message='This name is already in use.', parent=self)
             name = ''
         return name
+
     def Ok(self, event=None):
         name = self.name_ok()
         if name:
             self.result = name
-            self.grab_release()
             self.destroy()
+
     def Cancel(self, event=None):
         self.result = ''
-        self.grab_release()
         self.destroy()
 
 if __name__ == '__main__':

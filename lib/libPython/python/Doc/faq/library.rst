@@ -19,7 +19,7 @@ standard library module.  (Eventually you'll learn what's in the standard
 library and will be able to skip this step.)
 
 For third-party packages, search the `Python Package Index
-<https://pypi.org>`_ or try `Google <https://www.google.com>`_ or
+<https://pypi.python.org/pypi>`_ or try `Google <https://www.google.com>`_ or
 another Web search engine.  Searching for "Python" plus a keyword or two for
 your topic of interest will usually find something helpful.
 
@@ -40,7 +40,7 @@ There are (at least) three kinds of modules in Python:
    type::
 
       import sys
-      print sys.builtin_module_names
+      print(sys.builtin_module_names)
 
 
 How do I make a Python script executable on Unix?
@@ -93,7 +93,7 @@ Is there a curses/termcap package for Python?
 
 .. XXX curses *is* built by default, isn't it?
 
-For Unix variants the standard Python source distribution comes with a curses
+For Unix variants: The standard Python source distribution comes with a curses
 module in the :source:`Modules` subdirectory, though it's not compiled by default.
 (Note that this is not available in the Windows distribution -- there is no
 curses module for Windows.)
@@ -189,8 +189,11 @@ How do I get a single keypress at a time?
 -----------------------------------------
 
 For Unix variants there are several solutions.  It's straightforward to do this
-using curses, but curses is a fairly large module to learn.  Here's a solution
-without curses::
+using curses, but curses is a fairly large module to learn.
+
+.. XXX this doesn't work out of the box, some IO expert needs to check why
+
+   Here's a solution without curses::
 
    import termios, fcntl, sys, os
    fd = sys.stdin.fileno()
@@ -204,23 +207,28 @@ without curses::
    fcntl.fcntl(fd, fcntl.F_SETFL, oldflags | os.O_NONBLOCK)
 
    try:
-       while 1:
+       while True:
            try:
                c = sys.stdin.read(1)
-               print "Got character", repr(c)
-           except IOError: pass
+               print("Got character", repr(c))
+           except OSError:
+               pass
    finally:
        termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
        fcntl.fcntl(fd, fcntl.F_SETFL, oldflags)
 
-You need the :mod:`termios` and the :mod:`fcntl` module for any of this to work,
-and I've only tried it on Linux, though it should work elsewhere.  In this code,
-characters are read and printed one at a time.
+   You need the :mod:`termios` and the :mod:`fcntl` module for any of this to
+   work, and I've only tried it on Linux, though it should work elsewhere.  In
+   this code, characters are read and printed one at a time.
 
-:func:`termios.tcsetattr` turns off stdin's echoing and disables canonical mode.
-:func:`fcntl.fnctl` is used to obtain stdin's file descriptor flags and modify
-them for non-blocking mode.  Since reading stdin when it is empty results in an
-:exc:`IOError`, this error is caught and ignored.
+   :func:`termios.tcsetattr` turns off stdin's echoing and disables canonical
+   mode.  :func:`fcntl.fnctl` is used to obtain stdin's file descriptor flags
+   and modify them for non-blocking mode.  Since reading stdin when it is empty
+   results in an :exc:`OSError`, this error is caught and ignored.
+
+   .. versionchanged:: 3.3
+      *sys.stdin.read* used to raise :exc:`IOError`. Starting from Python 3.3
+      :exc:`IOError` is alias for :exc:`OSError`.
 
 
 Threads
@@ -229,11 +237,9 @@ Threads
 How do I program using threads?
 -------------------------------
 
-.. XXX it's _thread in py3k
-
-Be sure to use the :mod:`threading` module and not the :mod:`thread` module.
+Be sure to use the :mod:`threading` module and not the :mod:`_thread` module.
 The :mod:`threading` module builds convenient abstractions on top of the
-low-level primitives provided by the :mod:`thread` module.
+low-level primitives provided by the :mod:`_thread` module.
 
 Aahz has a set of slides from his threading tutorial that are helpful; see
 http://www.pythoncraft.com/OSCON2001/.
@@ -251,13 +257,13 @@ all the threads to finish::
    import threading, time
 
    def thread_task(name, n):
-       for i in range(n): print name, i
+       for i in range(n): print(name, i)
 
    for i in range(10):
        T = threading.Thread(target=thread_task, args=(str(i), i))
        T.start()
 
-   time.sleep(10) # <----------------------------!
+   time.sleep(10)  # <---------------------------!
 
 But now (on many platforms) the threads don't run in parallel, but appear to run
 sequentially, one at a time!  The reason is that the OS thread scheduler doesn't
@@ -266,8 +272,8 @@ start a new thread until the previous thread is blocked.
 A simple fix is to add a tiny sleep to the start of the run function::
 
    def thread_task(name, n):
-       time.sleep(0.001) # <---------------------!
-       for i in range(n): print name, i
+       time.sleep(0.001)  # <--------------------!
+       for i in range(n): print(name, i)
 
    for i in range(10):
        T = threading.Thread(target=thread_task, args=(str(i), i))
@@ -277,7 +283,7 @@ A simple fix is to add a tiny sleep to the start of the run function::
 
 Instead of trying to guess a good delay value for :func:`time.sleep`,
 it's better to use some kind of semaphore mechanism.  One idea is to use the
-:mod:`Queue` module to create a queue object, let each thread append a token to
+:mod:`queue` module to create a queue object, let each thread append a token to
 the queue when it finishes, and let the main thread read as many tokens from the
 queue as there are threads.
 
@@ -285,36 +291,40 @@ queue as there are threads.
 How do I parcel out work among a bunch of worker threads?
 ---------------------------------------------------------
 
-Use the :mod:`Queue` module to create a queue containing a list of jobs.  The
-:class:`~Queue.Queue` class maintains a list of objects and has a ``.put(obj)``
-method that adds items to the queue and a ``.get()`` method to return them.
-The class will take care of the locking necessary to ensure that each job is
-handed out exactly once.
+The easiest way is to use the new :mod:`concurrent.futures` module,
+especially the :mod:`~concurrent.futures.ThreadPoolExecutor` class.
+
+Or, if you want fine control over the dispatching algorithm, you can write
+your own logic manually.  Use the :mod:`queue` module to create a queue
+containing a list of jobs.  The :class:`~queue.Queue` class maintains a
+list of objects and has a ``.put(obj)`` method that adds items to the queue and
+a ``.get()`` method to return them.  The class will take care of the locking
+necessary to ensure that each job is handed out exactly once.
 
 Here's a trivial example::
 
-   import threading, Queue, time
+   import threading, queue, time
 
    # The worker thread gets jobs off the queue.  When the queue is empty, it
    # assumes there will be no more work and exits.
    # (Realistically workers will run until terminated.)
    def worker():
-       print 'Running worker'
+       print('Running worker')
        time.sleep(0.1)
        while True:
            try:
                arg = q.get(block=False)
-           except Queue.Empty:
-               print 'Worker', threading.currentThread(),
-               print 'queue empty'
+           except queue.Empty:
+               print('Worker', threading.currentThread(), end=' ')
+               print('queue empty')
                break
            else:
-               print 'Worker', threading.currentThread(),
-               print 'running with argument', arg
+               print('Worker', threading.currentThread(), end=' ')
+               print('running with argument', arg)
                time.sleep(0.5)
 
    # Create queue
-   q = Queue.Queue()
+   q = queue.Queue()
 
    # Start a pool of 5 workers
    for i in range(5):
@@ -326,7 +336,7 @@ Here's a trivial example::
        q.put(i)
 
    # Give threads time to run
-   print 'Main thread sleeping'
+   print('Main thread sleeping')
    time.sleep(5)
 
 When run, this will produce the following output:
@@ -339,25 +349,25 @@ When run, this will produce the following output:
    Running worker
    Running worker
    Main thread sleeping
-   Worker <Thread(worker 1, started)> running with argument 0
-   Worker <Thread(worker 2, started)> running with argument 1
-   Worker <Thread(worker 3, started)> running with argument 2
-   Worker <Thread(worker 4, started)> running with argument 3
-   Worker <Thread(worker 5, started)> running with argument 4
-   Worker <Thread(worker 1, started)> running with argument 5
+   Worker <Thread(worker 1, started 130283832797456)> running with argument 0
+   Worker <Thread(worker 2, started 130283824404752)> running with argument 1
+   Worker <Thread(worker 3, started 130283816012048)> running with argument 2
+   Worker <Thread(worker 4, started 130283807619344)> running with argument 3
+   Worker <Thread(worker 5, started 130283799226640)> running with argument 4
+   Worker <Thread(worker 1, started 130283832797456)> running with argument 5
    ...
 
-Consult the module's documentation for more details; the :class:`~Queue.Queue`
+Consult the module's documentation for more details; the :class:`~queue.Queue`
 class provides a featureful interface.
 
 
 What kinds of global value mutation are thread-safe?
 ----------------------------------------------------
 
-A :term:`global interpreter lock` (GIL) is used internally to ensure that only
-one thread runs in the Python VM at a time.  In general, Python offers to switch
+A :term:`global interpreter lock` (GIL) is used internally to ensure that only one
+thread runs in the Python VM at a time.  In general, Python offers to switch
 among threads only between bytecode instructions; how frequently it switches can
-be set via :func:`sys.setcheckinterval`.  Each bytecode instruction and
+be set via :func:`sys.setswitchinterval`.  Each bytecode instruction and
 therefore all the C implementation code reached from each instruction is
 therefore atomic from the point of view of a Python program.
 
@@ -397,7 +407,6 @@ lists.  When in doubt, use a mutex!
 Can't we get rid of the Global Interpreter Lock?
 ------------------------------------------------
 
-.. XXX mention multiprocessing
 .. XXX link to dbeazley's talk about GIL?
 
 The :term:`global interpreter lock` (GIL) is often seen as a hindrance to Python's
@@ -407,22 +416,25 @@ Python program effectively only uses one CPU, due to the insistence that
 
 Back in the days of Python 1.5, Greg Stein actually implemented a comprehensive
 patch set (the "free threading" patches) that removed the GIL and replaced it
-with fine-grained locking.  Unfortunately, even on Windows (where locks are very
-efficient) this ran ordinary Python code about twice as slow as the interpreter
-using the GIL.  On Linux the performance loss was even worse because pthread
-locks aren't as efficient.
-
-Since then, the idea of getting rid of the GIL has occasionally come up but
-nobody has found a way to deal with the expected slowdown, and users who don't
-use threads would not be happy if their code ran at half the speed.  Greg's
-free threading patch set has not been kept up-to-date for later Python versions.
+with fine-grained locking.  Adam Olsen recently did a similar experiment
+in his `python-safethread <http://code.google.com/p/python-safethread/>`_
+project.  Unfortunately, both experiments exhibited a sharp drop in single-thread
+performance (at least 30% slower), due to the amount of fine-grained locking
+necessary to compensate for the removal of the GIL.
 
 This doesn't mean that you can't make good use of Python on multi-CPU machines!
 You just have to be creative with dividing the work up between multiple
-*processes* rather than multiple *threads*.  Judicious use of C extensions will
-also help; if you use a C extension to perform a time-consuming task, the
-extension can release the GIL while the thread of execution is in the C code and
-allow other threads to get some work done.
+*processes* rather than multiple *threads*.  The
+:class:`~concurrent.futures.ProcessPoolExecutor` class in the new
+:mod:`concurrent.futures` module provides an easy way of doing so; the
+:mod:`multiprocessing` module provides a lower-level API in case you want
+more control over dispatching of tasks.
+
+Judicious use of C extensions will also help; if you use a C extension to
+perform a time-consuming task, the extension can release the GIL while the
+thread of execution is in the C code and allow other threads to get some work
+done.  Some standard library modules such as :mod:`zlib` and :mod:`hashlib`
+already do this.
 
 It has been suggested that the GIL should be a per-interpreter-state lock rather
 than truly global; interpreters then wouldn't be able to share objects.
@@ -449,7 +461,7 @@ How do I delete a file? (And other file questions...)
 -----------------------------------------------------
 
 Use ``os.remove(filename)`` or ``os.unlink(filename)``; for documentation, see
-the :mod:`os` module.  The two functions are identical; :func:`unlink` is simply
+the :mod:`os` module.  The two functions are identical; :func:`~os.unlink` is simply
 the name of the Unix system call for this function.
 
 To remove a directory, use :func:`os.rmdir`; use :func:`os.mkdir` to create one.
@@ -460,7 +472,7 @@ contents, use :func:`shutil.rmtree`.
 
 To rename a file, use ``os.rename(old_path, new_path)``.
 
-To truncate a file, open it using ``f = open(filename, "r+")``, and use
+To truncate a file, open it using ``f = open(filename, "rb+")``, and use
 ``f.truncate(offset)``; offset defaults to the current seek position.  There's
 also ``os.ftruncate(fd, offset)`` for files opened with :func:`os.open`, where
 *fd* is the file descriptor (a small integer).
@@ -489,9 +501,9 @@ in big-endian format from a file::
 
    import struct
 
-   f = open(filename, "rb")  # Open in binary mode for portability
-   s = f.read(8)
-   x, y, z = struct.unpack(">hhl", s)
+   with open(filename, "rb") as f:
+      s = f.read(8)
+      x, y, z = struct.unpack(">hhl", s)
 
 The '>' in the format string forces big-endian data; the letter 'h' reads one
 "short integer" (2 bytes), and 'l' reads one "long integer" (4 bytes) from the
@@ -499,6 +511,14 @@ string.
 
 For data that is more regular (e.g. a homogeneous list of ints or floats),
 you can also use the :mod:`array` module.
+
+.. note::
+
+   To read and write binary data, it is mandatory to open the file in
+   binary mode (here, passing ``"rb"`` to :func:`open`).  If you use
+   ``"r"`` instead (the default), the file will be open in text mode
+   and ``f.read()`` will return :class:`str` objects rather than
+   :class:`bytes` objects.
 
 
 I can't seem to use os.read() on a pipe created with os.popen(); why?
@@ -511,81 +531,83 @@ Thus, to read *n* bytes from a pipe *p* created with :func:`os.popen`, you need 
 use ``p.read(n)``.
 
 
-How do I run a subprocess with pipes connected to both input and output?
-------------------------------------------------------------------------
+.. XXX update to use subprocess. See the :ref:`subprocess-replacements` section.
 
-.. XXX update to use subprocess
+   How do I run a subprocess with pipes connected to both input and output?
+   ------------------------------------------------------------------------
 
-Use the :mod:`popen2` module.  For example::
+   Use the :mod:`popen2` module.  For example::
 
-   import popen2
-   fromchild, tochild = popen2.popen2("command")
-   tochild.write("input\n")
-   tochild.flush()
-   output = fromchild.readline()
+      import popen2
+      fromchild, tochild = popen2.popen2("command")
+      tochild.write("input\n")
+      tochild.flush()
+      output = fromchild.readline()
 
-Warning: in general it is unwise to do this because you can easily cause a
-deadlock where your process is blocked waiting for output from the child while
-the child is blocked waiting for input from you.  This can be caused by the
-parent expecting the child to output more text than it does or by data being
-stuck in stdio buffers due to lack of flushing.  The Python parent
-can of course explicitly flush the data it sends to the child before it reads
-any output, but if the child is a naive C program it may have been written to
-never explicitly flush its output, even if it is interactive, since flushing is
-normally automatic.
+   Warning: in general it is unwise to do this because you can easily cause a
+   deadlock where your process is blocked waiting for output from the child
+   while the child is blocked waiting for input from you.  This can be caused
+   by the parent expecting the child to output more text than it does or
+   by data being stuck in stdio buffers due to lack of flushing.
+   The Python parent can of course explicitly flush the data it sends to the
+   child before it reads any output, but if the child is a naive C program it
+   may have been written to never explicitly flush its output, even if it is
+   interactive, since flushing is normally automatic.
 
-Note that a deadlock is also possible if you use :func:`popen3` to read stdout
-and stderr. If one of the two is too large for the internal buffer (increasing
-the buffer size does not help) and you ``read()`` the other one first, there is
-a deadlock, too.
+   Note that a deadlock is also possible if you use :func:`popen3` to read
+   stdout and stderr. If one of the two is too large for the internal buffer
+   (increasing the buffer size does not help) and you ``read()`` the other one
+   first, there is a deadlock, too.
 
-Note on a bug in popen2: unless your program calls ``wait()`` or ``waitpid()``,
-finished child processes are never removed, and eventually calls to popen2 will
-fail because of a limit on the number of child processes.  Calling
-:func:`os.waitpid` with the :data:`os.WNOHANG` option can prevent this; a good
-place to insert such a call would be before calling ``popen2`` again.
+   Note on a bug in popen2: unless your program calls ``wait()`` or
+   ``waitpid()``, finished child processes are never removed, and eventually
+   calls to popen2 will fail because of a limit on the number of child
+   processes.  Calling :func:`os.waitpid` with the :data:`os.WNOHANG` option can
+   prevent this; a good place to insert such a call would be before calling
+   ``popen2`` again.
 
-In many cases, all you really need is to run some data through a command and get
-the result back.  Unless the amount of data is very large, the easiest way to do
-this is to write it to a temporary file and run the command with that temporary
-file as input.  The standard module :mod:`tempfile` exports a
-:func:`~tempfile.mktemp` function to generate unique temporary file names. ::
+   In many cases, all you really need is to run some data through a command and
+   get the result back.  Unless the amount of data is very large, the easiest
+   way to do this is to write it to a temporary file and run the command with
+   that temporary file as input.  The standard module :mod:`tempfile` exports a
+   :func:`~tempfile.mktemp` function to generate unique temporary file names. ::
 
-   import tempfile
-   import os
+      import tempfile
+      import os
 
-   class Popen3:
-       """
-       This is a deadlock-safe version of popen that returns
-       an object with errorlevel, out (a string) and err (a string).
-       (capturestderr may not work under windows.)
-       Example: print Popen3('grep spam','\n\nhere spam\n\n').out
-       """
-       def __init__(self,command,input=None,capturestderr=None):
-           outfile=tempfile.mktemp()
-           command="( %s ) > %s" % (command,outfile)
-           if input:
-               infile=tempfile.mktemp()
-               open(infile,"w").write(input)
-               command=command+" <"+infile
-           if capturestderr:
-               errfile=tempfile.mktemp()
-               command=command+" 2>"+errfile
-           self.errorlevel=os.system(command) >> 8
-           self.out=open(outfile,"r").read()
-           os.remove(outfile)
-           if input:
-               os.remove(infile)
-           if capturestderr:
-               self.err=open(errfile,"r").read()
-               os.remove(errfile)
+      class Popen3:
+          """
+          This is a deadlock-safe version of popen that returns
+          an object with errorlevel, out (a string) and err (a string).
+          (capturestderr may not work under windows.)
+          Example: print(Popen3('grep spam','\n\nhere spam\n\n').out)
+          """
+          def __init__(self,command,input=None,capturestderr=None):
+              outfile=tempfile.mktemp()
+              command="( %s ) > %s" % (command,outfile)
+              if input:
+                  infile=tempfile.mktemp()
+                  open(infile,"w").write(input)
+                  command=command+" <"+infile
+              if capturestderr:
+                  errfile=tempfile.mktemp()
+                  command=command+" 2>"+errfile
+              self.errorlevel=os.system(command) >> 8
+              self.out=open(outfile,"r").read()
+              os.remove(outfile)
+              if input:
+                  os.remove(infile)
+              if capturestderr:
+                  self.err=open(errfile,"r").read()
+                  os.remove(errfile)
 
-Note that many interactive programs (e.g. vi) don't work well with pipes
-substituted for standard input and output.  You will have to use pseudo ttys
-("ptys") instead of pipes. Or you can use a Python interface to Don Libes'
-"expect" library.  A Python extension that interfaces to expect is called "expy"
-and available from http://expectpy.sourceforge.net.  A pure Python solution that
-works like expect is `pexpect <https://pypi.org/project/pexpect/>`_.
+   Note that many interactive programs (e.g. vi) don't work well with pipes
+   substituted for standard input and output.  You will have to use pseudo ttys
+   ("ptys") instead of pipes. Or you can use a Python interface to Don Libes'
+   "expect" library.  A Python extension that interfaces to expect is called
+   "expy" and available from http://expectpy.sourceforge.net.  A pure Python
+   solution that works like expect is `pexpect
+   <https://pypi.python.org/pypi/pexpect/>`_.
 
 
 How do I access the serial (RS232) port?
@@ -597,34 +619,35 @@ For Win32, POSIX (Linux, BSD, etc.), Jython:
 
 For Unix, see a Usenet post by Mitch Chapman:
 
-   https://groups.google.com/groups?selm=34A04430.CF9@ohioee.com
+   http://groups.google.com/groups?selm=34A04430.CF9@ohioee.com
 
 
 Why doesn't closing sys.stdout (stdin, stderr) really close it?
 ---------------------------------------------------------------
 
-Python file objects are a high-level layer of abstraction on top of C streams,
-which in turn are a medium-level layer of abstraction on top of (among other
-things) low-level C file descriptors.
+Python :term:`file objects <file object>` are a high-level layer of
+abstraction on low-level C file descriptors.
 
-For most file objects you create in Python via the built-in ``file``
-constructor, ``f.close()`` marks the Python file object as being closed from
-Python's point of view, and also arranges to close the underlying C stream.
-This also happens automatically in ``f``'s destructor, when ``f`` becomes
-garbage.
+For most file objects you create in Python via the built-in :func:`open`
+function, ``f.close()`` marks the Python file object as being closed from
+Python's point of view, and also arranges to close the underlying C file
+descriptor.  This also happens automatically in ``f``'s destructor, when
+``f`` becomes garbage.
 
 But stdin, stdout and stderr are treated specially by Python, because of the
 special status also given to them by C.  Running ``sys.stdout.close()`` marks
 the Python-level file object as being closed, but does *not* close the
-associated C stream.
+associated C file descriptor.
 
-To close the underlying C stream for one of these three, you should first be
-sure that's what you really want to do (e.g., you may confuse extension modules
-trying to do I/O).  If it is, use os.close::
+To close the underlying C file descriptor for one of these three, you should
+first be sure that's what you really want to do (e.g., you may confuse
+extension modules trying to do I/O).  If it is, use :func:`os.close`::
 
-    os.close(0)   # close C's stdin stream
-    os.close(1)   # close C's stdout stream
-    os.close(2)   # close C's stderr stream
+   os.close(stdin.fileno())
+   os.close(stdout.fileno())
+   os.close(stderr.fileno())
+
+Or you can use the numeric constants 0, 1 and 2, respectively.
 
 
 Network/Internet Programming
@@ -652,37 +675,30 @@ How can I mimic CGI form submission (METHOD=POST)?
 I would like to retrieve web pages that are the result of POSTing a form. Is
 there existing code that would let me do this easily?
 
-Yes. Here's a simple example that uses httplib::
+Yes. Here's a simple example that uses urllib.request::
 
    #!/usr/local/bin/python
 
-   import httplib, sys, time
+   import urllib.request
 
-   # build the query string
+   ### build the query string
    qs = "First=Josephine&MI=Q&Last=Public"
 
-   # connect and send the server a path
-   httpobj = httplib.HTTP('www.some-server.out-there', 80)
-   httpobj.putrequest('POST', '/cgi-bin/some-cgi-script')
-   # now generate the rest of the HTTP headers...
-   httpobj.putheader('Accept', '*/*')
-   httpobj.putheader('Connection', 'Keep-Alive')
-   httpobj.putheader('Content-type', 'application/x-www-form-urlencoded')
-   httpobj.putheader('Content-length', '%d' % len(qs))
-   httpobj.endheaders()
-   httpobj.send(qs)
-   # find out what the server said in response...
-   reply, msg, hdrs = httpobj.getreply()
-   if reply != 200:
-       sys.stdout.write(httpobj.getfile().read())
+   ### connect and send the server a path
+   req = urllib.request.urlopen('http://www.some-server.out-there'
+                                '/cgi-bin/some-cgi-script', data=qs)
+   with req:
+       msg, hdrs = req.read(), req.info()
 
 Note that in general for percent-encoded POST operations, query strings must be
-quoted using :func:`urllib.urlencode`.  For example, to send
+quoted using :func:`urllib.parse.urlencode`.  For example, to send
 ``name=Guy Steele, Jr.``::
 
-   >>> import urllib
-   >>> urllib.urlencode({'name': 'Guy Steele, Jr.'})
+   >>> import urllib.parse
+   >>> urllib.parse.urlencode({'name': 'Guy Steele, Jr.'})
    'name=Guy+Steele%2C+Jr.'
+
+.. seealso:: :ref:`urllib-howto` for extensive examples.
 
 
 What module should I use to help with generating HTML?
@@ -704,9 +720,9 @@ work on any host that supports an SMTP listener. ::
 
    import sys, smtplib
 
-   fromaddr = raw_input("From: ")
-   toaddrs  = raw_input("To: ").split(',')
-   print "Enter message, end with ^D:"
+   fromaddr = input("From: ")
+   toaddrs  = input("To: ").split(',')
+   print("Enter message, end with ^D:")
    msg = ''
    while True:
        line = sys.stdin.readline()
@@ -724,24 +740,24 @@ varies between systems; sometimes it is ``/usr/lib/sendmail``, sometimes
 ``/usr/sbin/sendmail``.  The sendmail manual page will help you out.  Here's
 some sample code::
 
-   import os
-
    SENDMAIL = "/usr/sbin/sendmail"  # sendmail location
+   import os
    p = os.popen("%s -t -i" % SENDMAIL, "w")
    p.write("To: receiver@example.com\n")
    p.write("Subject: test\n")
-   p.write("\n") # blank line separating headers from body
+   p.write("\n")  # blank line separating headers from body
    p.write("Some text\n")
    p.write("some more text\n")
    sts = p.close()
    if sts != 0:
-       print "Sendmail exit status", sts
+       print("Sendmail exit status", sts)
 
 
 How do I avoid blocking in the connect() method of a socket?
 ------------------------------------------------------------
 
-The select module is commonly used to help with asynchronous I/O on sockets.
+The :mod:`select` module is commonly used to help with asynchronous I/O on
+sockets.
 
 To prevent the TCP connect from blocking, you can set the socket to non-blocking
 mode.  Then when you do the ``connect()``, you will either connect immediately
@@ -752,8 +768,14 @@ have to check what's returned on your system.
 
 You can use the ``connect_ex()`` method to avoid creating an exception.  It will
 just return the errno value.  To poll, you can call ``connect_ex()`` again later
--- 0 or ``errno.EISCONN`` indicate that you're connected -- or you can pass this
+-- ``0`` or ``errno.EISCONN`` indicate that you're connected -- or you can pass this
 socket to select to check if it's writable.
+
+.. note::
+   The :mod:`asyncore` module presents a framework-like approach to the problem
+   of writing non-blocking networking code.
+   The third-party `Twisted <https://twistedmatrix.com/trac/>`_ library is
+   a popular and feature-rich alternative.
 
 
 Databases
@@ -764,11 +786,10 @@ Are there any interfaces to database packages in Python?
 
 Yes.
 
-.. XXX remove bsddb in py3k, fix other module names
-
-Python 2.3 includes the :mod:`bsddb` package which provides an interface to the
-BerkeleyDB library.  Interfaces to disk-based hashes such as :mod:`DBM <dbm>`
-and :mod:`GDBM <gdbm>` are also included with standard Python.
+Interfaces to disk-based hashes such as :mod:`DBM <dbm.ndbm>` and :mod:`GDBM
+<dbm.gnu>` are also included with standard Python.  There is also the
+:mod:`sqlite3` module, which provides a lightweight disk-based relational
+database.
 
 Support for most relational databases is available.  See the
 `DatabaseProgramming wiki page
@@ -781,61 +802,7 @@ How do you implement persistent objects in Python?
 The :mod:`pickle` library module solves this in a very general way (though you
 still can't store things like open files, sockets or windows), and the
 :mod:`shelve` library module uses pickle and (g)dbm to create persistent
-mappings containing arbitrary Python objects.  For better performance, you can
-use the :mod:`cPickle` module.
-
-A more awkward way of doing things is to use pickle's little sister, marshal.
-The :mod:`marshal` module provides very fast ways to store noncircular basic
-Python types to files and strings, and back again.  Although marshal does not do
-fancy things like store instances or handle shared references properly, it does
-run extremely fast.  For example, loading a half megabyte of data may take less
-than a third of a second.  This often beats doing something more complex and
-general such as using gdbm with pickle/shelve.
-
-
-Why is cPickle so slow?
------------------------
-
-.. XXX update this, default protocol is 2/3
-
-By default :mod:`pickle` uses a relatively old and slow format for backward
-compatibility.  You can however specify other protocol versions that are
-faster::
-
-    largeString = 'z' * (100 * 1024)
-    myPickle = cPickle.dumps(largeString, protocol=1)
-
-
-If my program crashes with a bsddb (or anydbm) database open, it gets corrupted. How come?
-------------------------------------------------------------------------------------------
-
-Databases opened for write access with the bsddb module (and often by the anydbm
-module, since it will preferentially use bsddb) must explicitly be closed using
-the ``.close()`` method of the database.  The underlying library caches database
-contents which need to be converted to on-disk form and written.
-
-If you have initialized a new bsddb database but not written anything to it
-before the program crashes, you will often wind up with a zero-length file and
-encounter an exception the next time the file is opened.
-
-
-I tried to open Berkeley DB file, but bsddb produces bsddb.error: (22, 'Invalid argument'). Help! How can I restore my data?
-----------------------------------------------------------------------------------------------------------------------------
-
-Don't panic! Your data is probably intact. The most frequent cause for the error
-is that you tried to open an earlier Berkeley DB file with a later version of
-the Berkeley DB library.
-
-Many Linux systems now have all three versions of Berkeley DB available.  If you
-are migrating from version 1 to a newer version use db_dump185 to dump a plain
-text version of the database.  If you are migrating from version 2 to version 3
-use db2_dump to create a plain text version of the database.  In either case,
-use db_load to create a new native database for the latest version installed on
-your computer.  If you have version 3 of Berkeley DB installed, you should be
-able to use db2_load to create a native version 2 database.
-
-You should move away from Berkeley DB version 1 files because the hash file code
-contains known bugs that can corrupt your data.
+mappings containing arbitrary Python objects.
 
 
 Mathematics and Numerics

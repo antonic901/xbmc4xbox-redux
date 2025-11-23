@@ -1,6 +1,6 @@
 '''Define SearchDialogBase used by Search, Replace, and Grep dialogs.'''
 
-from Tkinter import (Toplevel, Frame, Entry, Label, Button,
+from tkinter import (Toplevel, Frame, Entry, Label, Button,
                      Checkbutton, Radiobutton)
 
 class SearchDialogBase:
@@ -52,7 +52,6 @@ class SearchDialogBase:
         else:
             self.top.deiconify()
             self.top.tkraise()
-        self.top.transient(text.winfo_toplevel())
         if searchphrase:
             self.ent.delete(0,"end")
             self.ent.insert("end",searchphrase)
@@ -65,7 +64,6 @@ class SearchDialogBase:
         "Put dialog away for later use."
         if self.top:
             self.top.grab_release()
-            self.top.transient('')
             self.top.withdraw()
 
     def create_widgets(self):

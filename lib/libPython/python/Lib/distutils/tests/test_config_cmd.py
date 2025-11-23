@@ -2,7 +2,7 @@
 import unittest
 import os
 import sys
-from test.test_support import run_unittest
+from test.support import run_unittest
 
 from distutils.command.config import dump_file, config
 from distutils.tests import support

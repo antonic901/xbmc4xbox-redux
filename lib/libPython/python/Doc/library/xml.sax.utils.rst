@@ -1,4 +1,3 @@
-
 :mod:`xml.sax.saxutils` --- SAX Utilities
 =========================================
 
@@ -8,14 +7,12 @@
 .. sectionauthor:: Martin v. Löwis <martin@v.loewis.de>
 
 
-.. versionadded:: 2.0
-
 The module :mod:`xml.sax.saxutils` contains a number of classes and functions
 that are commonly useful when creating SAX applications, either in direct use,
 or as base classes.
 
 
-.. function:: escape(data[, entities])
+.. function:: escape(data, entities={})
 
    Escape ``'&'``, ``'<'``, and ``'>'`` in a string of data.
 
@@ -25,7 +22,7 @@ or as base classes.
    ``'>'`` are always escaped, even if *entities* is provided.
 
 
-.. function:: unescape(data[, entities])
+.. function:: unescape(data, entities={})
 
    Unescape ``'&amp;'``, ``'&lt;'``, and ``'&gt;'`` in a string of data.
 
@@ -34,10 +31,8 @@ or as base classes.
    replaced with its corresponding value.  ``'&amp'``, ``'&lt;'``, and ``'&gt;'``
    are always unescaped, even if *entities* is provided.
 
-   .. versionadded:: 2.3
 
-
-.. function:: quoteattr(data[, entities])
+.. function:: quoteattr(data, entities={})
 
    Similar to :func:`escape`, but also prepares *data* to be used as an
    attribute value.  The return value is a quoted version of *data* with any
@@ -48,16 +43,14 @@ or as base classes.
    will be wrapped in double-quotes.  The resulting string can be used directly
    as an attribute value::
 
-      >>> print "<element attr=%s>" % quoteattr("ab ' cd \" ef")
+      >>> print("<element attr=%s>" % quoteattr("ab ' cd \" ef"))
       <element attr="ab ' cd &quot; ef">
 
    This function is useful when generating attribute values for HTML or any SGML
    using the reference concrete syntax.
 
-   .. versionadded:: 2.2
 
-
-.. class:: XMLGenerator([out[, encoding]])
+.. class:: XMLGenerator(out=None, encoding='iso-8859-1', short_empty_elements=False)
 
    This class implements the :class:`~xml.sax.handler.ContentHandler` interface
    by writing SAX
@@ -65,6 +58,12 @@ or as base classes.
    as the content handler will reproduce the original document being parsed. *out*
    should be a file-like object which will default to *sys.stdout*. *encoding* is
    the encoding of the output stream which defaults to ``'iso-8859-1'``.
+   *short_empty_elements* controls the formatting of elements that contain no
+   content:  if *False* (the default) they are emitted as a pair of start/end
+   tags, if set to *True* they are emitted as a single self-closed tag.
+
+   .. versionadded:: 3.2
+      The *short_empty_elements* parameter.
 
 
 .. class:: XMLFilterBase(base)
@@ -77,7 +76,7 @@ or as base classes.
    requests as they pass through.
 
 
-.. function:: prepare_input_source(source[, base])
+.. function:: prepare_input_source(source, base='')
 
    This function takes an input source and an optional base URL and returns a
    fully resolved :class:`~xml.sax.xmlreader.InputSource` object ready for

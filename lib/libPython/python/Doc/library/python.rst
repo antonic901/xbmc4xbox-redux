@@ -1,4 +1,3 @@
-
 .. _python:
 
 ***********************
@@ -14,8 +13,7 @@ overview:
 
    sys.rst
    sysconfig.rst
-   __builtin__.rst
-   future_builtins.rst
+   builtins.rst
    __main__.rst
    warnings.rst
    contextlib.rst
@@ -26,5 +24,4 @@ overview:
    gc.rst
    inspect.rst
    site.rst
-   user.rst
    fpectl.rst

@@ -15,11 +15,7 @@
 
 MAGIC = 20031017
 
-try:
-    from _sre import MAXREPEAT
-except ImportError:
-    import _sre
-    MAXREPEAT = _sre.MAXREPEAT = 65535
+from _sre import MAXREPEAT
 
 # SRE standard exception (access as sre.error)
 # should this really be here?
@@ -209,9 +205,10 @@ SRE_FLAG_IGNORECASE = 2 # case insensitive
 SRE_FLAG_LOCALE = 4 # honour system locale
 SRE_FLAG_MULTILINE = 8 # treat target as multiline string
 SRE_FLAG_DOTALL = 16 # treat target as a single string
-SRE_FLAG_UNICODE = 32 # use unicode locale
+SRE_FLAG_UNICODE = 32 # use unicode "locale"
 SRE_FLAG_VERBOSE = 64 # ignore whitespace and comments
 SRE_FLAG_DEBUG = 128 # debugging
+SRE_FLAG_ASCII = 256 # use ascii "locale"
 
 # flags for INFO primitive
 SRE_INFO_PREFIX = 1 # has prefix
@@ -220,8 +217,7 @@ SRE_INFO_CHARSET = 4 # pattern starts with character from given set
 
 if __name__ == "__main__":
     def dump(f, d, prefix):
-        items = d.items()
-        items.sort(key=lambda a: a[1])
+        items = sorted(d.items(), key=lambda a: a[1])
         for k, v in items:
             f.write("#define %s_%s %s\n" % (prefix, k.upper(), v))
     f = open("sre_constants.h", "w")
@@ -254,10 +250,12 @@ if __name__ == "__main__":
     f.write("#define SRE_FLAG_DOTALL %d\n" % SRE_FLAG_DOTALL)
     f.write("#define SRE_FLAG_UNICODE %d\n" % SRE_FLAG_UNICODE)
     f.write("#define SRE_FLAG_VERBOSE %d\n" % SRE_FLAG_VERBOSE)
+    f.write("#define SRE_FLAG_DEBUG %d\n" % SRE_FLAG_DEBUG)
+    f.write("#define SRE_FLAG_ASCII %d\n" % SRE_FLAG_ASCII)
 
     f.write("#define SRE_INFO_PREFIX %d\n" % SRE_INFO_PREFIX)
     f.write("#define SRE_INFO_LITERAL %d\n" % SRE_INFO_LITERAL)
     f.write("#define SRE_INFO_CHARSET %d\n" % SRE_INFO_CHARSET)
 
     f.close()
-    print "done"
+    print("done")

@@ -6,9 +6,6 @@
 .. moduleauthor:: Gerhard Häring <ghaering@users.sourceforge.net>
 .. sectionauthor:: Gerhard Häring <ghaering@users.sourceforge.net>
 
-
-.. versionadded:: 2.2
-
 **Source code:** :source:`Lib/hmac.py`
 
 --------------
@@ -16,27 +13,41 @@
 This module implements the HMAC algorithm as described by :rfc:`2104`.
 
 
-.. function:: new(key[, msg[, digestmod]])
+.. function:: new(key, msg=None, digestmod=None)
 
-   Return a new hmac object.  If *msg* is present, the method call ``update(msg)``
-   is made. *digestmod* is the digest constructor or module for the HMAC object to
-   use. It defaults to  the :data:`hashlib.md5` constructor.
+   Return a new hmac object.  *key* is a bytes or bytearray object giving the
+   secret key.  If *msg* is present, the method call ``update(msg)`` is made.
+   *digestmod* is the digest name, digest constructor or module for the HMAC
+   object to use. It supports any name suitable to :func:`hashlib.new` and
+   defaults to the :data:`hashlib.md5` constructor.
+
+   .. versionchanged:: 3.4
+      Parameter *key* can be a bytes or bytearray object.
+      Parameter *msg* can be of any type supported by :mod:`hashlib`.
+      Parameter *digestmod* can be the name of a hash algorithm.
+
+   .. deprecated:: 3.4
+      MD5 as implicit default digest for *digestmod* is deprecated.
 
 
 An HMAC object has the following methods:
 
 .. method:: HMAC.update(msg)
 
-   Update the hmac object with the string *msg*.  Repeated calls are equivalent to
-   a single call with the concatenation of all the arguments: ``m.update(a);
-   m.update(b)`` is equivalent to ``m.update(a + b)``.
+   Update the hmac object with *msg*.  Repeated calls are equivalent to a
+   single call with the concatenation of all the arguments:
+   ``m.update(a); m.update(b)`` is equivalent to ``m.update(a + b)``.
+
+   .. versionchanged:: 3.4
+      Parameter *msg* can be of any type supported by :mod:`hashlib`.
 
 
 .. method:: HMAC.digest()
 
-   Return the digest of the strings passed to the :meth:`update` method so far.
-   This string will be the same length as the *digest_size* of the digest given to
-   the constructor.  It may contain non-ASCII characters, including NUL bytes.
+   Return the digest of the bytes passed to the :meth:`update` method so far.
+   This bytes object will be the same length as the *digest_size* of the digest
+   given to the constructor.  It may contain non-ASCII bytes, including NUL
+   bytes.
 
    .. warning::
 
@@ -48,9 +59,9 @@ An HMAC object has the following methods:
 
 .. method:: HMAC.hexdigest()
 
-   Like :meth:`digest` except the digest is returned as a string twice the length
-   containing only hexadecimal digits.  This may be used to exchange the value
-   safely in email or other non-binary environments.
+   Like :meth:`digest` except the digest is returned as a string twice the
+   length containing only hexadecimal digits.  This may be used to exchange the
+   value safely in email or other non-binary environments.
 
    .. warning::
 
@@ -66,6 +77,25 @@ An HMAC object has the following methods:
    compute the digests of strings that share a common initial substring.
 
 
+A hash object has the following attributes:
+
+.. attribute:: HMAC.digest_size
+
+   The size of the resulting HMAC digest in bytes.
+
+.. attribute:: HMAC.block_size
+
+   The internal block size of the hash algorithm in bytes.
+
+   .. versionadded:: 3.4
+
+.. attribute:: HMAC.name
+
+   The canonical name of this HMAC, always lowercase, e.g. ``hmac-md5``.
+
+   .. versionadded:: 3.4
+
+
 This module also provides the following helper function:
 
 .. function:: compare_digest(a, b)
@@ -73,20 +103,20 @@ This module also provides the following helper function:
    Return ``a == b``.  This function uses an approach designed to prevent
    timing analysis by avoiding content-based short circuiting behaviour,
    making it appropriate for cryptography.  *a* and *b* must both be of the
-   same type: either :class:`unicode` or a :term:`bytes-like object`.
+   same type: either :class:`str` (ASCII only, as e.g. returned by
+   :meth:`HMAC.hexdigest`), or a :term:`bytes-like object`.
 
    .. note::
 
       If *a* and *b* are of different lengths, or if an error occurs,
       a timing attack could theoretically reveal information about the
-      types and lengths of *a* and *b*—but not their values.
+      types and lengths of *a* and *b*--but not their values.
 
 
-   .. versionadded:: 2.7.7
+   .. versionadded:: 3.3
 
 
 .. seealso::
 
    Module :mod:`hashlib`
       The Python module providing secure hash functions.
-

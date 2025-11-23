@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """ Command line interface to difflib.py providing diffs in four formats:
 
 * ndiff:    lists every line and highlights interline changes.
@@ -9,6 +9,12 @@
 """
 
 import sys, os, time, difflib, optparse
+from datetime import datetime, timezone
+
+def file_mtime(path):
+    t = datetime.fromtimestamp(os.stat(path).st_mtime,
+                               timezone.utc)
+    return t.astimezone().isoformat()
 
 def main():
 
@@ -30,12 +36,12 @@ def main():
     n = options.lines
     fromfile, tofile = args
 
-    fromdate = time.ctime(os.stat(fromfile).st_mtime)
-    todate = time.ctime(os.stat(tofile).st_mtime)
-    with open(fromfile, 'U') as f:
-        fromlines = f.readlines()
-    with open(tofile, 'U') as f:
-        tolines = f.readlines()
+    fromdate = file_mtime(fromfile)
+    todate = file_mtime(tofile)
+    with open(fromfile) as ff:
+        fromlines = ff.readlines()
+    with open(tofile) as tf:
+        tolines = tf.readlines()
 
     if options.u:
         diff = difflib.unified_diff(fromlines, tolines, fromfile, tofile, fromdate, todate, n=n)

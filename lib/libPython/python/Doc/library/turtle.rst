@@ -1,9 +1,9 @@
-========================================
-:mod:`turtle` --- Turtle graphics for Tk
-========================================
+=================================
+:mod:`turtle` --- Turtle graphics
+=================================
 
 .. module:: turtle
-   :synopsis: Turtle graphics for Tk
+   :synopsis: An educational framework for simple graphics applications
 .. sectionauthor:: Gregor Lingl <gregor.lingl@aon.at>
 
 .. testsetup:: default
@@ -23,6 +23,16 @@ command ``turtle.forward(15)``, and it moves (on-screen!) 15 pixels in the
 direction it is facing, drawing a line as it moves.  Give it the command
 ``turtle.right(25)``, and it rotates in-place 25 degrees clockwise.
 
+.. sidebar:: Turtle star
+
+   Turtle can draw intricate shapes using programs that repeat simple
+   moves.
+
+   .. image:: turtle-star.*
+      :align: center
+
+   .. literalinclude:: ../includes/turtle-star.py
+
 By combining together these and similar commands, intricate shapes and pictures
 can easily be drawn.
 
@@ -35,13 +45,13 @@ programmer to use all the commands, classes and methods interactively when using
 the module from within IDLE run with the ``-n`` switch.
 
 The turtle module provides turtle graphics primitives, in both object-oriented
-and procedure-oriented ways.  Because it uses :mod:`Tkinter` for the underlying
+and procedure-oriented ways.  Because it uses :mod:`tkinter` for the underlying
 graphics, it needs a version of Python installed with Tk support.
 
 The object-oriented interface uses essentially two+two classes:
 
 1. The :class:`TurtleScreen` class defines graphics windows as a playground for
-   the drawing turtles.  Its constructor needs a :class:`Tkinter.Canvas` or a
+   the drawing turtles.  Its constructor needs a :class:`tkinter.Canvas` or a
    :class:`ScrolledCanvas` as argument.  It should be used when :mod:`turtle` is
    used as part of some application.
 
@@ -58,7 +68,7 @@ The object-oriented interface uses essentially two+two classes:
    or TurtleScreen as argument, so the RawTurtle objects know where to draw.
 
    Derived from RawTurtle is the subclass :class:`Turtle` (alias: :class:`Pen`),
-   which draws on "the" :class:`Screen` - instance which is automatically
+   which draws on "the" :class:`Screen` instance which is automatically
    created, if not already present.
 
    All methods of RawTurtle/Turtle also exist as functions, i.e. part of the
@@ -71,7 +81,7 @@ function derived from a Screen method is called.  An (unnamed) turtle object is
 automatically created whenever any of the functions derived from a Turtle method
 is called.
 
-To use multiple turtles an a screen one has to use the object-oriented interface.
+To use multiple turtles on a screen one has to use the object-oriented interface.
 
 .. note::
    In the following documentation the argument list for functions is given.
@@ -79,7 +89,7 @@ To use multiple turtles an a screen one has to use the object-oriented interface
    omitted here.
 
 
-Overview over available Turtle and Screen methods
+Overview of available Turtle and Screen methods
 =================================================
 
 Turtle methods
@@ -130,7 +140,7 @@ Pen control
       | :func:`fillcolor`
 
    Filling
-      | :func:`fill`
+      | :func:`filling`
       | :func:`begin_fill`
       | :func:`end_fill`
 
@@ -149,15 +159,17 @@ Turtle state
       | :func:`shape`
       | :func:`resizemode`
       | :func:`shapesize` | :func:`turtlesize`
+      | :func:`shearfactor`
       | :func:`settiltangle`
       | :func:`tiltangle`
       | :func:`tilt`
+      | :func:`shapetransform`
+      | :func:`get_shapepoly`
 
 Using events
    | :func:`onclick`
    | :func:`onrelease`
    | :func:`ondrag`
-   | :func:`mainloop` | :func:`done`
 
 Special Turtle methods
    | :func:`begin_poly`
@@ -168,9 +180,6 @@ Special Turtle methods
    | :func:`getscreen`
    | :func:`setundobuffer`
    | :func:`undobufferentries`
-   | :func:`tracer`
-   | :func:`window_width`
-   | :func:`window_height`
 
 
 Methods of TurtleScreen/Screen
@@ -191,9 +200,11 @@ Animation control
 
 Using screen events
    | :func:`listen`
-   | :func:`onkey`
+   | :func:`onkey` | :func:`onkeyrelease`
+   | :func:`onkeypress`
    | :func:`onclick` | :func:`onscreenclick`
    | :func:`ontimer`
+   | :func:`mainloop` | :func:`done`
 
 Settings and special methods
    | :func:`mode`
@@ -204,6 +215,10 @@ Settings and special methods
    | :func:`turtles`
    | :func:`window_height`
    | :func:`window_width`
+
+Input methods
+   | :func:`textinput`
+   | :func:`numinput`
 
 Methods specific to Screen
    | :func:`bye`
@@ -529,7 +544,7 @@ Turtle motion
 
    :param n: an integer (or ``None``)
 
-   Delete all or first/last *n* of turtle's stamps.  If *n* is ``None``, delete
+   Delete all or first/last *n* of turtle's stamps.  If *n* is None, delete
    all stamps, if *n* > 0 delete first *n* stamps, else if *n* < 0 delete
    last *n* stamps.
 
@@ -640,8 +655,8 @@ Tell Turtle's state
       >>> turtle.forward(100)
       >>> turtle.pos()
       (64.28,76.60)
-      >>> print turtle.xcor()
-      64.2787609687
+      >>> print(round(turtle.xcor(), 5))
+      64.27876
 
 
 .. function:: ycor()
@@ -653,10 +668,10 @@ Tell Turtle's state
       >>> turtle.home()
       >>> turtle.left(60)
       >>> turtle.forward(100)
-      >>> print turtle.pos()
+      >>> print(turtle.pos())
       (50.00,86.60)
-      >>> print turtle.ycor()
-      86.6025403784
+      >>> print(round(turtle.ycor(), 5))
+      86.60254
 
 
 .. function:: heading()
@@ -808,20 +823,16 @@ Drawing state
       >>> sorted(turtle.pen().items())
       [('fillcolor', 'black'), ('outline', 1), ('pencolor', 'red'),
        ('pendown', True), ('pensize', 10), ('resizemode', 'noresize'),
-       ('shown', True), ('speed', 9), ('stretchfactor', (1, 1)), ('tilt', 0)]
+       ('shearfactor', 0.0), ('shown', True), ('speed', 9),
+       ('stretchfactor', (1.0, 1.0)), ('tilt', 0.0)]
       >>> penstate=turtle.pen()
       >>> turtle.color("yellow", "")
       >>> turtle.penup()
-      >>> sorted(turtle.pen().items())
-      [('fillcolor', ''), ('outline', 1), ('pencolor', 'yellow'),
-       ('pendown', False), ('pensize', 10), ('resizemode', 'noresize'),
-       ('shown', True), ('speed', 9), ('stretchfactor', (1, 1)), ('tilt', 0)]
+      >>> sorted(turtle.pen().items())[:3]
+      [('fillcolor', ''), ('outline', 1), ('pencolor', 'yellow')]
       >>> turtle.pen(penstate, fillcolor="green")
-      >>> sorted(turtle.pen().items())
-      [('fillcolor', 'green'), ('outline', 1), ('pencolor', 'red'),
-       ('pendown', True), ('pensize', 10), ('resizemode', 'noresize'),
-       ('shown', True), ('speed', 9), ('stretchfactor', (1, 1)), ('tilt', 0)]
-
+      >>> sorted(turtle.pen().items())[:3]
+      [('fillcolor', 'green'), ('outline', 1), ('pencolor', 'red')]
 
 .. function:: isdown()
 
@@ -882,10 +893,10 @@ Color control
        (0.2, 0.8, 0.5490196078431373)
        >>> colormode(255)
        >>> turtle.pencolor()
-       (51, 204, 140)
+       (51.0, 204.0, 140.0)
        >>> turtle.pencolor('#32c18f')
        >>> turtle.pencolor()
-       (50, 193, 143)
+       (50.0, 193.0, 143.0)
 
 
 .. function:: fillcolor(*args)
@@ -922,13 +933,13 @@ Color control
        'violet'
        >>> col = turtle.pencolor()
        >>> col
-       (50, 193, 143)
+       (50.0, 193.0, 143.0)
        >>> turtle.fillcolor(col)
        >>> turtle.fillcolor()
-       (50, 193, 143)
+       (50.0, 193.0, 143.0)
        >>> turtle.fillcolor('#ffffff')
        >>> turtle.fillcolor()
-       (255, 255, 255)
+       (255.0, 255.0, 255.0)
 
 
 .. function:: color(*args)
@@ -961,7 +972,7 @@ Color control
        ('red', 'green')
        >>> color("#285078", "#a0c8f0")
        >>> color()
-       ((40, 80, 120), (160, 200, 240))
+       ((40.0, 80.0, 120.0), (160.0, 200.0, 240.0))
 
 
 See also: Screen method :func:`colormode`.
@@ -975,33 +986,28 @@ Filling
 
    >>> turtle.home()
 
-.. function:: fill(flag)
+.. function:: filling()
 
-   :param flag: True/False (or 1/0 respectively)
-
-   Call ``fill(True)`` before drawing the shape you want to fill, and
-   ``fill(False)`` when done.  When used without argument: return fillstate
-   (``True`` if filling, ``False`` else).
+   Return fillstate (``True`` if filling, ``False`` else).
 
    .. doctest::
 
-      >>> turtle.fill(True)
-      >>> for _ in range(3):
-      ...    turtle.forward(100)
-      ...    turtle.left(120)
-      ...
-      >>> turtle.fill(False)
+       >>> turtle.begin_fill()
+       >>> if turtle.filling():
+       ...    turtle.pensize(5)
+       ... else:
+       ...    turtle.pensize(3)
+
 
 
 .. function:: begin_fill()
 
-   Call just before drawing a shape to be filled.  Equivalent to ``fill(True)``.
+   To be called just before drawing a shape to be filled.
 
 
 .. function:: end_fill()
 
-   Fill the shape drawn after the last call to :func:`begin_fill`.  Equivalent
-   to ``fill(False)``.
+   Fill the shape drawn after the last call to :func:`begin_fill`.
 
    .. doctest::
 
@@ -1160,7 +1166,7 @@ Appearance
    .. doctest::
 
       >>> turtle.shapesize()
-      (1, 1, 1)
+      (1.0, 1.0, 1)
       >>> turtle.resizemode("user")
       >>> turtle.shapesize(5, 5, 12)
       >>> turtle.shapesize()
@@ -1168,6 +1174,26 @@ Appearance
       >>> turtle.shapesize(outline=8)
       >>> turtle.shapesize()
       (5, 5, 8)
+
+
+.. function:: shearfactor(shear=None)
+
+   :param shear: number (optional)
+
+   Set or return the current shearfactor. Shear the turtleshape according to
+   the given shearfactor shear, which is the tangent of the shear angle.
+   Do *not* change the turtle's heading (direction of movement).
+   If shear is not given: return the current shearfactor, i. e. the
+   tangent of the shear angle, by which lines parallel to the
+   heading of the turtle are sheared.
+
+   .. doctest::
+
+       >>> turtle.shape("circle")
+       >>> turtle.shapesize(5,2)
+       >>> turtle.shearfactor(0.5)
+       >>> turtle.shearfactor()
+       0.5
 
 
 .. function:: tilt(angle)
@@ -1206,11 +1232,20 @@ Appearance
       >>> turtle.settiltangle(-45)
       >>> turtle.fd(50)
 
+   .. deprecated:: 3.1
 
-.. function:: tiltangle()
 
-   Return the current tilt-angle, i.e. the angle between the orientation of the
-   turtleshape and the heading of the turtle (its direction of movement).
+.. function:: tiltangle(angle=None)
+
+   :param angle: a number (optional)
+
+   Set or return the current tilt-angle. If angle is given, rotate the
+   turtleshape to point in the direction specified by angle,
+   regardless of its current tilt-angle. Do *not* change the turtle's
+   heading (direction of movement).
+   If angle is not given: return the current tilt-angle, i. e. the angle
+   between the orientation of the turtleshape and the heading of the
+   turtle (its direction of movement).
 
    .. doctest::
 
@@ -1222,6 +1257,47 @@ Appearance
       45.0
 
 
+.. function:: shapetransform(t11=None, t12=None, t21=None, t22=None)
+
+   :param t11: a number (optional)
+   :param t12: a number (optional)
+   :param t21: a number (optional)
+   :param t12: a number (optional)
+
+   Set or return the current transformation matrix of the turtle shape.
+
+   If none of the matrix elements are given, return the transformation
+   matrix as a tuple of 4 elements.
+   Otherwise set the given elements and transform the turtleshape
+   according to the matrix consisting of first row t11, t12 and
+   second row t21, 22. The determinant t11 * t22 - t12 * t21 must not be
+   zero, otherwise an error is raised.
+   Modify stretchfactor, shearfactor and tiltangle according to the
+   given matrix.
+
+   .. doctest::
+
+      >>> turtle = Turtle()
+      >>> turtle.shape("square")
+      >>> turtle.shapesize(4,2)
+      >>> turtle.shearfactor(-0.5)
+      >>> turtle.shapetransform()
+      (4.0, -1.0, -0.0, 2.0)
+
+
+.. function:: get_shapepoly()
+
+   Return the current shape polygon as tuple of coordinate pairs. This
+   can be used to define a new shape or components of a compound shape.
+
+   .. doctest::
+
+      >>> turtle.shape("square")
+      >>> turtle.shapetransform(4, -1, 0, 2)
+      >>> turtle.get_shapepoly()
+      ((50, -20), (30, 20), (-50, 20), (-30, -20))
+
+
 Using events
 ------------
 
@@ -1229,7 +1305,7 @@ Using events
 
    :param fun: a function with two arguments which will be called with the
                coordinates of the clicked point on the canvas
-   :param btn: number of the mouse-button, defaults to 1 (left mouse button)
+   :param num: number of the mouse-button, defaults to 1 (left mouse button)
    :param add: ``True`` or ``False`` -- if ``True``, a new binding will be
                added, otherwise it will replace a former binding
 
@@ -1250,7 +1326,7 @@ Using events
 
    :param fun: a function with two arguments which will be called with the
                coordinates of the clicked point on the canvas
-   :param btn: number of the mouse-button, defaults to 1 (left mouse button)
+   :param num: number of the mouse-button, defaults to 1 (left mouse button)
    :param add: ``True`` or ``False`` -- if ``True``, a new binding will be
                added, otherwise it will replace a former binding
 
@@ -1274,7 +1350,7 @@ Using events
 
    :param fun: a function with two arguments which will be called with the
                coordinates of the clicked point on the canvas
-   :param btn: number of the mouse-button, defaults to 1 (left mouse button)
+   :param num: number of the mouse-button, defaults to 1 (left mouse button)
    :param add: ``True`` or ``False`` -- if ``True``, a new binding will be
                added, otherwise it will replace a former binding
 
@@ -1290,15 +1366,6 @@ Using events
 
    Subsequently, clicking and dragging the Turtle will move it across
    the screen thereby producing handdrawings (if pen is down).
-
-
-.. function:: mainloop()
-              done()
-
-   Starts event loop - calling Tkinter's mainloop function. Must be the last
-   statement in a turtle graphics program.
-
-      >>> turtle.mainloop()
 
 
 Special Turtle methods
@@ -1396,25 +1463,11 @@ Special Turtle methods
       ...     undo()
 
 
-.. function:: tracer(flag=None, delay=None)
-
-   A replica of the corresponding TurtleScreen method.
-
-   .. deprecated:: 2.6
-
-
-.. function:: window_width()
-              window_height()
-
-   Both are replicas of the corresponding TurtleScreen methods.
-
-   .. deprecated:: 2.6
-
 
 .. _compoundshapes:
 
-Excursus about the use of compound shapes
------------------------------------------
+Compound shapes
+---------------
 
 To use compound turtle shapes, which consist of several polygons of different
 color, you must use the helper class :class:`Shape` explicitly as described
@@ -1478,7 +1531,7 @@ Window control
       'orange'
       >>> screen.bgcolor("#800080")
       >>> screen.bgcolor()
-      (128, 0, 128)
+      (128.0, 0.0, 128.0)
 
 
 .. function:: bgpic(picname=None)
@@ -1506,7 +1559,7 @@ Window control
 
    .. note::
       This TurtleScreen method is available as a global function only under the
-      name ``clearscreen``.  The global function ``clear`` is another one
+      name ``clearscreen``.  The global function ``clear`` is a different one
       derived from the Turtle method ``clear``.
 
 
@@ -1601,10 +1654,12 @@ Animation control
    :param n: nonnegative integer
    :param delay: nonnegative integer
 
-   Turn turtle animation on/off and set delay for update drawings.  If *n* is
-   given, only each n-th regular screen update is really performed.  (Can be
-   used to accelerate the drawing of complex graphics.)  Second argument sets
-   delay value (see :func:`delay`).
+   Turn turtle animation on/off and set delay for update drawings.  If
+   *n* is given, only each n-th regular screen update is really
+   performed.  (Can be used to accelerate the drawing of complex
+   graphics.)  When called without arguments, returns the currently
+   stored value of n. Second argument sets delay value (see
+   :func:`delay`).
 
    .. doctest::
 
@@ -1633,6 +1688,7 @@ Using screen events
 
 
 .. function:: onkey(fun, key)
+              onkeyrelease(fun, key)
 
    :param fun: a function with no arguments or ``None``
    :param key: a string: key (e.g. "a") or key-symbol (e.g. "space")
@@ -1651,12 +1707,31 @@ Using screen events
       >>> screen.listen()
 
 
+.. function:: onkeypress(fun, key=None)
+
+   :param fun: a function with no arguments or ``None``
+   :param key: a string: key (e.g. "a") or key-symbol (e.g. "space")
+
+   Bind *fun* to key-press event of key if key is given,
+   or to any key-press-event if no key is given.
+   Remark: in order to be able to register key-events, TurtleScreen
+   must have focus. (See method :func:`listen`.)
+
+   .. doctest::
+
+      >>> def f():
+      ...     fd(50)
+      ...
+      >>> screen.onkey(f, "Up")
+      >>> screen.listen()
+
+
 .. function:: onclick(fun, btn=1, add=None)
               onscreenclick(fun, btn=1, add=None)
 
    :param fun: a function with two arguments which will be called with the
                coordinates of the clicked point on the canvas
-   :param btn: number of the mouse-button, defaults to 1 (left mouse button)
+   :param num: number of the mouse-button, defaults to 1 (left mouse button)
    :param add: ``True`` or ``False`` -- if ``True``, a new binding will be
                added, otherwise it will replace a former binding
 
@@ -1695,6 +1770,53 @@ Using screen events
       ...         screen.ontimer(f, 250)
       >>> f()   ### makes the turtle march around
       >>> running = False
+
+
+.. function:: mainloop()
+              done()
+
+   Starts event loop - calling Tkinter's mainloop function.
+   Must be the last statement in a turtle graphics program.
+   Must *not* be used if a script is run from within IDLE in -n mode
+   (No subprocess) - for interactive use of turtle graphics. ::
+
+      >>> screen.mainloop()
+
+
+Input methods
+-------------
+
+.. function:: textinput(title, prompt)
+
+   :param title: string
+   :param prompt: string
+
+   Pop up a dialog window for input of a string. Parameter title is
+   the title of the dialog window, propmt is a text mostly describing
+   what information to input.
+   Return the string input. If the dialog is canceled, return None. ::
+
+      >>> screen.textinput("NIM", "Name of first player:")
+
+
+.. function:: numinput(title, prompt, default=None, minval=None, maxval=None)
+
+   :param title: string
+   :param prompt: string
+   :param default: number (optional)
+   :param minval: number (optional)
+   :param maxval: number (optional)
+
+   Pop up a dialog window for input of a number. title is the title of the
+   dialog window, prompt is a text mostly describing what numerical information
+   to input. default: default value, minval: minimum value for input,
+   maxval: maximum value for input
+   The number input must be in the range minval .. maxval if these are
+   given. If not, a hint is issued and the dialog remains open for
+   correction.
+   Return the number input. If the dialog is canceled,  return None. ::
+
+      >>> screen.numinput("Poker", "Your stakes:", 1000, minval=10, maxval=10000)
 
 
 Settings and special methods
@@ -1757,7 +1879,7 @@ Settings and special methods
 
       >>> cv = screen.getcanvas()
       >>> cv
-      <turtle.ScrolledCanvas instance at 0x...>
+      <turtle.ScrolledCanvas object at ...>
 
 
 .. function:: getshapes()
@@ -1857,10 +1979,10 @@ Methods specific to Screen, not inherited from TurtleScreen
    :param height: if an integer, the height in pixels, if a float, a fraction of
                   the screen; default is 75% of screen
    :param startx: if positive, starting position in pixels from the left
-                  edge of the screen, if negative from the right edge, if ``None``,
+                  edge of the screen, if negative from the right edge, if None,
                   center window horizontally
    :param starty: if positive, starting position in pixels from the top
-                  edge of the screen, if negative from the bottom edge, if ``None``,
+                  edge of the screen, if negative from the bottom edge, if None,
                   center window vertically
 
    .. doctest::
@@ -1883,14 +2005,14 @@ Methods specific to Screen, not inherited from TurtleScreen
       >>> screen.title("Welcome to the turtle zoo!")
 
 
-The public classes of the module :mod:`turtle`
-==============================================
+Public classes
+==============
 
 
 .. class:: RawTurtle(canvas)
            RawPen(canvas)
 
-   :param canvas: a :class:`Tkinter.Canvas`, a :class:`ScrolledCanvas` or a
+   :param canvas: a :class:`tkinter.Canvas`, a :class:`ScrolledCanvas` or a
                   :class:`TurtleScreen`
 
    Create a turtle.  The turtle has all methods described above as "methods of
@@ -1905,7 +2027,7 @@ The public classes of the module :mod:`turtle`
 
 .. class:: TurtleScreen(cv)
 
-   :param cv: a :class:`Tkinter.Canvas`
+   :param cv: a :class:`tkinter.Canvas`
 
    Provides screen oriented methods like :func:`setbg` etc. that are described
    above.
@@ -2147,31 +2269,37 @@ There can be a :file:`turtle.cfg` file in the directory where :mod:`turtle` is
 stored and an additional one in the current working directory.  The latter will
 override the settings of the first one.
 
-The :file:`Demo/turtle` directory contains a :file:`turtle.cfg` file.  You can
+The :file:`Lib/turtledemo` directory contains a :file:`turtle.cfg` file.  You can
 study it as an example and see its effects when running the demos (preferably
 not from within the demo-viewer).
 
 
-Demo scripts
-============
+:mod:`turtledemo` --- Demo scripts
+==================================
 
-There is a set of demo scripts in the turtledemo directory located in the
-:file:`Demo/turtle` directory in the source distribution.
+.. module:: turtledemo
+   :synopsis: A viewer for example turtle scripts
 
-It contains:
+The :mod:`turtledemo` package includes a set of demo scripts.  These
+scripts can be run and viewed using the supplied demo viewer as follows::
 
-- a set of 15 demo scripts demonstrating different features of the new module
-  :mod:`turtle`
-- a demo viewer :file:`turtleDemo.py` which can be used to view the sourcecode
-  of the scripts and run them at the same time. 14 of the examples can be
-  accessed via the Examples menu; all of them can also be run standalone.
-- The example :file:`turtledemo_two_canvases.py` demonstrates the simultaneous
-  use of two canvases with the turtle module.  Therefore it only can be run
-  standalone.
-- There is a :file:`turtle.cfg` file in this directory, which also serves as an
-  example for how to write and use such files.
+   python -m turtledemo
 
-The demoscripts are:
+Alternatively, you can run the demo scripts individually.  For example, ::
+
+   python -m turtledemo.bytedesign
+
+The :mod:`turtledemo` package directory contains:
+
+- A demo viewer :file:`__main__.py` which can be used to view the sourcecode
+  of the scripts and run them at the same time.
+- Multiple scripts demonstrating different features of the :mod:`turtle`
+  module.  Examples can be accessed via the Examples menu.  They can also
+  be run standalone.
+- A :file:`turtle.cfg` file which serves as an example of how to write
+  and use such files.
+
+The demo scripts are:
 
 .. tabularcolumns:: |l|L|L|
 
@@ -2179,7 +2307,7 @@ The demoscripts are:
 | Name           | Description                  | Features              |
 +================+==============================+=======================+
 | bytedesign     | complex classical            | :func:`tracer`, delay,|
-|                | turtlegraphics pattern       | :func:`update`        |
+|                | turtle graphics pattern      | :func:`update`        |
 +----------------+------------------------------+-----------------------+
 | chaos          | graphs Verhulst dynamics,    | world coordinates     |
 |                | shows that computer's        |                       |
@@ -2192,6 +2320,8 @@ The demoscripts are:
 +----------------+------------------------------+-----------------------+
 | colormixer     | experiment with r, g, b      | :func:`ondrag`        |
 +----------------+------------------------------+-----------------------+
+| forest         | 3 breadth-first trees        | randomization         |
++----------------+------------------------------+-----------------------+
 | fractalcurves  | Hilbert & Koch curves        | recursion             |
 +----------------+------------------------------+-----------------------+
 | lindenmayer    | ethnomathematics             | L-System              |
@@ -2200,6 +2330,10 @@ The demoscripts are:
 | minimal_hanoi  | Towers of Hanoi              | Rectangular Turtles   |
 |                |                              | as Hanoi discs        |
 |                |                              | (shape, shapesize)    |
++----------------+------------------------------+-----------------------+
+| nim            | play the classical nim game  | turtles as nimsticks, |
+|                | with three heaps of sticks   | event driven (mouse,  |
+|                | against the computer.        | keyboard)             |
 +----------------+------------------------------+-----------------------+
 | paint          | super minimalistic           | :func:`onclick`       |
 |                | drawing program              |                       |
@@ -2213,16 +2347,71 @@ The demoscripts are:
 | planet_and_moon| simulation of                | compound shapes,      |
 |                | gravitational system         | :class:`Vec2D`        |
 +----------------+------------------------------+-----------------------+
+| round_dance    | dancing turtles rotating     | compound shapes, clone|
+|                | pairwise in opposite         | shapesize, tilt,      |
+|                | direction                    | get_shapepoly, update |
++----------------+------------------------------+-----------------------+
 | tree           | a (graphical) breadth        | :func:`clone`         |
 |                | first tree (using generators)|                       |
++----------------+------------------------------+-----------------------+
+| two_canvases   | simple design                | turtles on two        |
+|                |                              | canvases              |
 +----------------+------------------------------+-----------------------+
 | wikipedia      | a pattern from the wikipedia | :func:`clone`,        |
 |                | article on turtle graphics   | :func:`undo`          |
 +----------------+------------------------------+-----------------------+
-| yinyang        | another elementary example   | :func:`circle`        |
+| yingyang       | another elementary example   | :func:`circle`        |
 +----------------+------------------------------+-----------------------+
 
 Have fun!
+
+
+Changes since Python 2.6
+========================
+
+- The methods :meth:`Turtle.tracer`, :meth:`Turtle.window_width` and
+  :meth:`Turtle.window_height` have been eliminated.
+  Methods with these names and functionality are now available only
+  as methods of :class:`Screen`. The functions derived from these remain
+  available. (In fact already in Python 2.6 these methods were merely
+  duplications of the corresponding
+  :class:`TurtleScreen`/:class:`Screen`-methods.)
+
+- The method :meth:`Turtle.fill` has been eliminated.
+  The behaviour of :meth:`begin_fill` and :meth:`end_fill`
+  have changed slightly: now  every filling-process must be completed with an
+  ``end_fill()`` call.
+
+- A method :meth:`Turtle.filling` has been added. It returns a boolean
+  value: ``True`` if a filling process is under way, ``False`` otherwise.
+  This behaviour corresponds to a ``fill()`` call without arguments in
+  Python 2.6.
+
+Changes since Python 3.0
+========================
+
+- The methods :meth:`Turtle.shearfactor`, :meth:`Turtle.shapetransform` and
+  :meth:`Turtle.get_shapepoly` have been added. Thus the full range of
+  regular linear transforms is now available for transforming turtle shapes.
+  :meth:`Turtle.tiltangle` has been enhanced in functionality: it now can
+  be used to get or set the tiltangle. :meth:`Turtle.settiltangle` has been
+  deprecated.
+
+- The method :meth:`Screen.onkeypress` has been added as a complement to
+  :meth:`Screen.onkey` which in fact binds actions to the keyrelease event.
+  Accordingly the latter has got an alias: :meth:`Screen.onkeyrelease`.
+
+- The method  :meth:`Screen.mainloop` has been added. So when working only
+  with Screen and Turtle objects one must not additionally import
+  :func:`mainloop` anymore.
+
+- Two input methods has been added :meth:`Screen.textinput` and
+  :meth:`Screen.numinput`. These popup input dialogs and return
+  strings and numbers respectively.
+
+- Two example scripts :file:`tdemo_nim.py` and :file:`tdemo_round_dance.py`
+  have been added to the :file:`Lib/turtledemo` directory.
+
 
 .. doctest::
    :hide:

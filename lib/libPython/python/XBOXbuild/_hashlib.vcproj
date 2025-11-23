@@ -3,8 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="_hashlib"
-	ProjectGUID="{447F05A8-F581-4CAC-A466-5AC7936E207E}"
-	RootNamespace="_hashlib"
+	ProjectGUID="{2164A683-AD58-490F-9E31-1EAA33F7B40C}"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -12,57 +11,43 @@
 	</Platforms>
 	<Configurations>
 		<Configuration
-			Name="Release XBOX|Win32"
+			Name="Debug|Win32"
 			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)\obj\$(ProjectName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="0"
 			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="1"
+				Optimization="0"
 				AdditionalIncludeDirectories="..\..\openssl\inc32;..\Include;..\PC"
 				PreprocessorDefinitions="Py_BUILD_CORE_MODULE"
-				RuntimeLibrary="2"/>
+				MinimalRebuild="FALSE"
+				BasicRuntimeChecks="0"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="0"
+				WarningLevel="1"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib ..\..\openssl\out32\libeay32.lib ..\..\openssl\out32\ssleay32.lib"
 				OutputFile="$(OutDir)\$(ProjectName).pyd"
+				LinkIncremental="0"
+				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)\$(ProjectName).pdb"
-				ImportLibrary="$(OutDir)\$(TargetName).lib"/>
+				SubSystem="0"
+				ImportLibrary="$(OutDir)\$(TargetName).lib"
+				TargetMachine="0"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="IF NOT EXIST &quot;%ProgramFiles%\Microsoft Visual Studio .NET 2003\Vc7\bin\vcvars32.bat&quot; GOTO Vc7_Check2
-CALL &quot;%ProgramFiles%\Microsoft Visual Studio .NET 2003\Vc7\bin\vcvars32.bat&quot;
-GOTO VC_DONE
-
-:Vc7_Check2
-IF NOT EXIST &quot;%ProgramFiles(x86)%\Microsoft Visual Studio .NET 2003\Vc7\bin\vcvars32.bat&quot; GOTO Vc9_Check
-CALL &quot;%ProgramFiles(x86)%\Microsoft Visual Studio .NET 2003\Vc7\bin\vcvars32.bat&quot;
-GOTO VC_DONE
-
-:Vc9_Check
-IF NOT EXIST &quot;%ProgramFiles%\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat&quot; GOTO Vc9_Check2
-CALL &quot;%ProgramFiles%\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat&quot;
-GOTO VC_DONE
-
-:Vc9_Check2
-IF NOT EXIST &quot;%ProgramFiles(x86)%\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat&quot; GOTO NO_VC
-CALL &quot;%ProgramFiles(x86)%\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat&quot;
-GOTO VC_DONE
-
-:VC_DONE
-set PATH=%PATH%;C:\Program Files\nasm\
-cd &quot;$(SolutionDir)&quot;
-c:\python27\python.exe build_ssl.py Release $(PlatformName) -a
-exit 0
-"/>
+				Name="VCPreBuildEventTool"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -79,60 +64,42 @@ exit 0
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
-			Name="Debug XBOX|Win32"
+			Name="Release|Win32"
 			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)\obj\$(ProjectName)"
 			ConfigurationType="2"
 			CharacterSet="0"
 			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
+				Optimization="1"
 				AdditionalIncludeDirectories="..\..\openssl\inc32;..\Include;..\PC"
 				PreprocessorDefinitions="Py_BUILD_CORE_MODULE"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				DebugInformationFormat="3"/>
+				UsePrecompiledHeader="0"
+				WarningLevel="1"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib ..\..\openssl\out32\libeay32.lib ..\..\openssl\out32\ssleay32.lib"
 				OutputFile="$(OutDir)\$(ProjectName).pyd"
-				GenerateDebugInformation="TRUE"
+				LinkIncremental="0"
+				GenerateDebugInformation="FALSE"
 				ProgramDatabaseFile="$(OutDir)\$(ProjectName).pdb"
-				ImportLibrary="$(OutDir)\$(TargetName).lib"/>
+				SubSystem="0"
+				OptimizeReferences="0"
+				EnableCOMDATFolding="0"
+				ImportLibrary="$(OutDir)\$(TargetName).lib"
+				TargetMachine="0"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="IF NOT EXIST &quot;%ProgramFiles%\Microsoft Visual Studio .NET 2003\Vc7\bin\vcvars32.bat&quot; GOTO Vc7_Check2
-CALL &quot;%ProgramFiles%\Microsoft Visual Studio .NET 2003\Vc7\bin\vcvars32.bat&quot;
-GOTO VC_DONE
-
-:Vc7_Check2
-IF NOT EXIST &quot;%ProgramFiles(x86)%\Microsoft Visual Studio .NET 2003\Vc7\bin\vcvars32.bat&quot; GOTO Vc9_Check
-CALL &quot;%ProgramFiles(x86)%\Microsoft Visual Studio .NET 2003\Vc7\bin\vcvars32.bat&quot;
-GOTO VC_DONE
-
-:Vc9_Check
-IF NOT EXIST &quot;%ProgramFiles%\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat&quot; GOTO Vc9_Check2
-CALL &quot;%ProgramFiles%\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat&quot;
-GOTO VC_DONE
-
-:Vc9_Check2
-IF NOT EXIST &quot;%ProgramFiles(x86)%\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat&quot; GOTO NO_VC
-CALL &quot;%ProgramFiles(x86)%\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat&quot;
-GOTO VC_DONE
-
-:VC_DONE
-set PATH=%PATH%;C:\Program Files\nasm\
-cd &quot;$(SolutionDir)&quot;
-c:\python27\python.exe build_ssl.py Release $(PlatformName) -a
-exit 0
-"/>
+				Name="VCPreBuildEventTool"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -153,7 +120,9 @@ exit 0
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files">
+			Name="Source Files"
+			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
 				RelativePath="..\Modules\_hashopenssl.c">
 			</File>

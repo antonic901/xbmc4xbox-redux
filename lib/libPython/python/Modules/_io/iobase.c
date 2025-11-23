@@ -35,13 +35,12 @@ PyDoc_STRVAR(iobase_doc,
     "Even though IOBase does not declare read, readinto, or write because\n"
     "their signatures will vary, implementations and clients should\n"
     "consider those methods part of the interface. Also, implementations\n"
-    "may raise an IOError when operations they do not support are called.\n"
+    "may raise UnsupportedOperation when operations they do not support are\n"
+    "called.\n"
     "\n"
     "The basic type used for binary data read from or written to a file is\n"
-    "the bytes type. Method arguments may also be bytearray or memoryview\n"
-    "of arrays of bytes. In some cases, such as readinto, a writable\n"
-    "object such as bytearray is required. Text I/O classes work with\n"
-    "unicode data.\n"
+    "bytes. bytearrays are accepted too, and in some cases (such as\n"
+    "readinto) needed. Text I/O classes work with str data.\n"
     "\n"
     "Note that calling any method (except additional calls to close(),\n"
     "which are ignored) on a closed stream should raise a ValueError.\n"
@@ -60,18 +59,23 @@ PyDoc_STRVAR(iobase_doc,
    of the IOBase object rather than the virtual `closed` attribute as returned
    by whatever subclass. */
 
+_Py_IDENTIFIER(__IOBase_closed);
 #define IS_CLOSED(self) \
-    PyObject_HasAttrString(self, "__IOBase_closed")
+    _PyObject_HasAttrId(self, &PyId___IOBase_closed)
+
+_Py_IDENTIFIER(read);
 
 /* Internal methods */
 static PyObject *
 iobase_unsupported(const char *message)
 {
-    PyErr_SetString(_PyIO_unsupported_operation, message);
+    _PyIO_State *state = IO_STATE();
+    if (state != NULL)
+        PyErr_SetString(state->unsupported_operation, message);
     return NULL;
 }
 
-/* Positioning */
+/* Positionning */
 
 PyDoc_STRVAR(iobase_seek_doc,
     "Change stream position.\n"
@@ -98,7 +102,9 @@ PyDoc_STRVAR(iobase_tell_doc,
 static PyObject *
 iobase_tell(PyObject *self, PyObject *args)
 {
-    return PyObject_CallMethod(self, "seek", "ii", 0, 1);
+    _Py_IDENTIFIER(seek);
+
+    return _PyObject_CallMethodId(self, &PyId_seek, "ii", 0, 1);
 }
 
 PyDoc_STRVAR(iobase_truncate_doc,
@@ -177,50 +183,45 @@ _PyIOBase_check_closed(PyObject *self, PyObject *args)
 static PyObject *
 iobase_close(PyObject *self, PyObject *args)
 {
-    PyObject *res, *exc, *val, *tb;
-    int rc;
+    PyObject *res;
 
     if (IS_CLOSED(self))
         Py_RETURN_NONE;
 
     res = PyObject_CallMethodObjArgs(self, _PyIO_str_flush, NULL);
 
-    PyErr_Fetch(&exc, &val, &tb);
-    rc = PyObject_SetAttrString(self, "__IOBase_closed", Py_True);
-    _PyErr_ReplaceException(exc, val, tb);
-    if (rc < 0) {
-        Py_CLEAR(res);
-    }
-
-    if (res == NULL) {
+    if (_PyObject_SetAttrId(self, &PyId___IOBase_closed, Py_True) < 0) {
+        Py_XDECREF(res);
         return NULL;
     }
+
+    if (res == NULL)
+        return NULL;
+
     Py_DECREF(res);
     Py_RETURN_NONE;
 }
 
 /* Finalization and garbage collection support */
 
-int
-_PyIOBase_finalize(PyObject *self)
+static void
+iobase_finalize(PyObject *self)
 {
     PyObject *res;
-    PyObject *tp, *v, *tb;
-    int closed = 1;
-    int is_zombie;
+    PyObject *error_type, *error_value, *error_traceback;
+    int closed;
+    _Py_IDENTIFIER(_finalizing);
 
-    /* If _PyIOBase_finalize() is called from a destructor, we need to
-       resurrect the object as calling close() can invoke arbitrary code. */
-    is_zombie = (Py_REFCNT(self) == 0);
-    if (is_zombie) {
-        ++Py_REFCNT(self);
-    }
-    PyErr_Fetch(&tp, &v, &tb);
+    /* Save the current exception, if any. */
+    PyErr_Fetch(&error_type, &error_value, &error_traceback);
+
     /* If `closed` doesn't exist or can't be evaluated as bool, then the
        object is probably in an unusable state, so ignore. */
     res = PyObject_GetAttr(self, _PyIO_str_closed);
-    if (res == NULL)
+    if (res == NULL) {
         PyErr_Clear();
+        closed = -1;
+    }
     else {
         closed = PyObject_IsTrue(res);
         Py_DECREF(res);
@@ -228,6 +229,10 @@ _PyIOBase_finalize(PyObject *self)
             PyErr_Clear();
     }
     if (closed == 0) {
+        /* Signal close() that it was called as part of the object
+           finalization process. */
+        if (_PyObject_SetAttrId(self, &PyId__finalizing, Py_True))
+            PyErr_Clear();
         res = PyObject_CallMethodObjArgs((PyObject *) self, _PyIO_str_close,
                                           NULL);
         /* Silencing I/O errors is bad, but printing spurious tracebacks is
@@ -238,31 +243,25 @@ _PyIOBase_finalize(PyObject *self)
         else
             Py_DECREF(res);
     }
-    PyErr_Restore(tp, v, tb);
-    if (is_zombie) {
-        if (--Py_REFCNT(self) != 0) {
-            /* The object lives again. The following code is taken from
-               slot_tp_del in typeobject.c. */
-            Py_ssize_t refcnt = Py_REFCNT(self);
-            _Py_NewReference(self);
-            Py_REFCNT(self) = refcnt;
-            /* If Py_REF_DEBUG, _Py_NewReference bumped _Py_RefTotal, so
-             * we need to undo that. */
-            _Py_DEC_REFTOTAL;
-            /* If Py_TRACE_REFS, _Py_NewReference re-added self to the object
-             * chain, so no more to do there.
-             * If COUNT_ALLOCS, the original decref bumped tp_frees, and
-             * _Py_NewReference bumped tp_allocs:  both of those need to be
-             * undone.
-             */
-#ifdef COUNT_ALLOCS
-            --Py_TYPE(self)->tp_frees;
-            --Py_TYPE(self)->tp_allocs;
-#endif
-            return -1;
-        }
+
+    /* Restore the saved exception. */
+    PyErr_Restore(error_type, error_value, error_traceback);
+}
+
+int
+_PyIOBase_finalize(PyObject *self)
+{
+    int is_zombie;
+
+    /* If _PyIOBase_finalize() is called from a destructor, we need to
+       resurrect the object as calling close() can invoke arbitrary code. */
+    is_zombie = (Py_REFCNT(self) == 0);
+    if (is_zombie)
+        return PyObject_CallFinalizerFromDealloc(self);
+    else {
+        PyObject_CallFinalizer(self);
+        return 0;
     }
-    return 0;
 }
 
 static int
@@ -275,8 +274,6 @@ iobase_traverse(iobase *self, visitproc visit, void *arg)
 static int
 iobase_clear(iobase *self)
 {
-    if (_PyIOBase_finalize((PyObject *) self) < 0)
-        return -1;
     Py_CLEAR(self->dict);
     return 0;
 }
@@ -310,7 +307,7 @@ iobase_dealloc(iobase *self)
 PyDoc_STRVAR(iobase_seekable_doc,
     "Return whether object supports random access.\n"
     "\n"
-    "If False, seek(), tell() and truncate() will raise IOError.\n"
+    "If False, seek(), tell() and truncate() will raise UnsupportedOperation.\n"
     "This method may need to do a test seek().");
 
 static PyObject *
@@ -327,7 +324,7 @@ _PyIOBase_check_seekable(PyObject *self, PyObject *args)
         return NULL;
     if (res != Py_True) {
         Py_CLEAR(res);
-        PyErr_SetString(PyExc_IOError, "File or stream is not seekable.");
+        iobase_unsupported("File or stream is not seekable.");
         return NULL;
     }
     if (args == Py_True) {
@@ -339,7 +336,7 @@ _PyIOBase_check_seekable(PyObject *self, PyObject *args)
 PyDoc_STRVAR(iobase_readable_doc,
     "Return whether object was opened for reading.\n"
     "\n"
-    "If False, read() will raise IOError.");
+    "If False, read() will raise UnsupportedOperation.");
 
 static PyObject *
 iobase_readable(PyObject *self, PyObject *args)
@@ -356,7 +353,7 @@ _PyIOBase_check_readable(PyObject *self, PyObject *args)
         return NULL;
     if (res != Py_True) {
         Py_CLEAR(res);
-        PyErr_SetString(PyExc_IOError, "File or stream is not readable.");
+        iobase_unsupported("File or stream is not readable.");
         return NULL;
     }
     if (args == Py_True) {
@@ -368,7 +365,7 @@ _PyIOBase_check_readable(PyObject *self, PyObject *args)
 PyDoc_STRVAR(iobase_writable_doc,
     "Return whether object was opened for writing.\n"
     "\n"
-    "If False, read() will raise IOError.");
+    "If False, write() will raise UnsupportedOperation.");
 
 static PyObject *
 iobase_writable(PyObject *self, PyObject *args)
@@ -385,7 +382,7 @@ _PyIOBase_check_writable(PyObject *self, PyObject *args)
         return NULL;
     if (res != Py_True) {
         Py_CLEAR(res);
-        PyErr_SetString(PyExc_IOError, "File or stream is not writable.");
+        iobase_unsupported("File or stream is not writable.");
         return NULL;
     }
     if (args == Py_True) {
@@ -460,12 +457,13 @@ iobase_readline(PyObject *self, PyObject *args)
     int has_peek = 0;
     PyObject *buffer, *result;
     Py_ssize_t old_size = -1;
+    _Py_IDENTIFIER(peek);
 
     if (!PyArg_ParseTuple(args, "|O&:readline", &_PyIO_ConvertSsize_t, &limit)) {
         return NULL;
     }
 
-    if (PyObject_HasAttrString(self, "peek"))
+    if (_PyObject_HasAttrId(self, &PyId_peek))
         has_peek = 1;
 
     buffer = PyByteArray_FromStringAndSize(NULL, 0);
@@ -477,7 +475,7 @@ iobase_readline(PyObject *self, PyObject *args)
         PyObject *b;
 
         if (has_peek) {
-            PyObject *readahead = PyObject_CallMethod(self, "peek", "i", 1);
+            PyObject *readahead = _PyObject_CallMethodId(self, &PyId_peek, "i", 1);
             if (readahead == NULL) {
                 /* NOTE: PyErr_SetFromErrno() calls PyErr_CheckSignals()
                    when EINTR occurs so we needn't do it ourselves. */
@@ -517,7 +515,7 @@ iobase_readline(PyObject *self, PyObject *args)
             Py_DECREF(readahead);
         }
 
-        b = PyObject_CallMethod(self, "read", "n", nreadahead);
+        b = _PyObject_CallMethodId(self, &PyId_read, "n", nreadahead);
         if (b == NULL) {
             /* NOTE: PyErr_SetFromErrno() calls PyErr_CheckSignals()
                when EINTR occurs so we needn't do it ourselves. */
@@ -579,8 +577,7 @@ iobase_iternext(PyObject *self)
     if (line == NULL)
         return NULL;
 
-    if (PyObject_Size(line) <= 0) {
-        /* Error or empty */
+    if (PyObject_Size(line) == 0) {
         Py_DECREF(line);
         return NULL;
     }
@@ -599,7 +596,7 @@ static PyObject *
 iobase_readlines(PyObject *self, PyObject *args)
 {
     Py_ssize_t hint = -1, length = 0;
-    PyObject *result, *it = NULL;
+    PyObject *result;
 
     if (!PyArg_ParseTuple(args, "|O&:readlines", &_PyIO_ConvertSsize_t, &hint)) {
         return NULL;
@@ -613,25 +610,23 @@ iobase_readlines(PyObject *self, PyObject *args)
         /* XXX special-casing this made sense in the Python version in order
            to remove the bytecode interpretation overhead, but it could
            probably be removed here. */
-        PyObject *ret = PyObject_CallMethod(result, "extend", "O", self);
+        _Py_IDENTIFIER(extend);
+        PyObject *ret = _PyObject_CallMethodId(result, &PyId_extend, "O", self);
+
         if (ret == NULL) {
-            goto error;
+            Py_DECREF(result);
+            return NULL;
         }
         Py_DECREF(ret);
         return result;
     }
 
-    it = PyObject_GetIter(self);
-    if (it == NULL) {
-        goto error;
-    }
-
     while (1) {
-        Py_ssize_t line_length;
-        PyObject *line = PyIter_Next(it);
+        PyObject *line = PyIter_Next(self);
         if (line == NULL) {
             if (PyErr_Occurred()) {
-                goto error;
+                Py_DECREF(result);
+                return NULL;
             }
             else
                 break; /* StopIteration raised */
@@ -639,25 +634,16 @@ iobase_readlines(PyObject *self, PyObject *args)
 
         if (PyList_Append(result, line) < 0) {
             Py_DECREF(line);
-            goto error;
+            Py_DECREF(result);
+            return NULL;
         }
-        line_length = PyObject_Size(line);
+        length += PyObject_Size(line);
         Py_DECREF(line);
-        if (line_length < 0) {
-            goto error;
-        }
-        if (line_length > hint - length)
+
+        if (length > hint)
             break;
-        length += line_length;
     }
-
-    Py_DECREF(it);
     return result;
-
- error:
-    Py_XDECREF(it);
-    Py_DECREF(result);
-    return NULL;
 }
 
 static PyObject *
@@ -732,6 +718,7 @@ static PyMethodDef iobase_methods[] = {
 };
 
 static PyGetSetDef iobase_getset[] = {
+    {"__dict__", PyObject_GenericGetDict, NULL, NULL},
     {"closed", (getter)iobase_closed_get, NULL, NULL},
     {NULL}
 };
@@ -758,7 +745,7 @@ PyTypeObject PyIOBase_Type = {
     0,                          /*tp_setattro*/
     0,                          /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE
-        | Py_TPFLAGS_HAVE_GC,   /*tp_flags*/
+        | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_FINALIZE,   /*tp_flags*/
     iobase_doc,                 /* tp_doc */
     (traverseproc)iobase_traverse, /* tp_traverse */
     (inquiry)iobase_clear,      /* tp_clear */
@@ -777,6 +764,16 @@ PyTypeObject PyIOBase_Type = {
     0,                          /* tp_init */
     0,                          /* tp_alloc */
     PyType_GenericNew,          /* tp_new */
+    0,                          /* tp_free */
+    0,                          /* tp_is_gc */
+    0,                          /* tp_bases */
+    0,                          /* tp_mro */
+    0,                          /* tp_cache */
+    0,                          /* tp_subclasses */
+    0,                          /* tp_weaklist */
+    0,                          /* tp_del */
+    0,                          /* tp_version_tag */
+    (destructor)iobase_finalize, /* tp_finalize */
 };
 
 
@@ -808,8 +805,11 @@ rawiobase_read(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    if (n < 0)
-        return PyObject_CallMethod(self, "readall", NULL);
+    if (n < 0) {
+        _Py_IDENTIFIER(readall);
+
+        return _PyObject_CallMethodId(self, &PyId_readall, NULL);
+    }
 
     /* TODO: allocate a bytes object directly instead and manually construct
        a writable memoryview pointing to it. */
@@ -850,8 +850,8 @@ rawiobase_readall(PyObject *self, PyObject *args)
         return NULL;
 
     while (1) {
-        PyObject *data = PyObject_CallMethod(self, "read",
-                                             "i", DEFAULT_BUFFER_SIZE);
+        PyObject *data = _PyObject_CallMethodId(self, &PyId_read,
+                                                "i", DEFAULT_BUFFER_SIZE);
         if (!data) {
             /* NOTE: PyErr_SetFromErrno() calls PyErr_CheckSignals()
                when EINTR occurs so we needn't do it ourselves. */
@@ -918,7 +918,7 @@ PyTypeObject PyRawIOBase_Type = {
     0,                          /*tp_getattro*/
     0,                          /*tp_setattro*/
     0,                          /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,  /*tp_flags*/
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_FINALIZE,  /*tp_flags*/
     rawiobase_doc,              /* tp_doc */
     0,                          /* tp_traverse */
     0,                          /* tp_clear */
@@ -937,4 +937,14 @@ PyTypeObject PyRawIOBase_Type = {
     0,                          /* tp_init */
     0,                          /* tp_alloc */
     0,                          /* tp_new */
+    0,                          /* tp_free */
+    0,                          /* tp_is_gc */
+    0,                          /* tp_bases */
+    0,                          /* tp_mro */
+    0,                          /* tp_cache */
+    0,                          /* tp_subclasses */
+    0,                          /* tp_weaklist */
+    0,                          /* tp_del */
+    0,                          /* tp_version_tag */
+    0,                          /* tp_finalize */
 };

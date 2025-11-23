@@ -4,7 +4,7 @@ Test the API of the symtable module.
 import symtable
 import unittest
 
-from test import test_support
+from test import support
 
 
 TEST_CODE = """
@@ -27,8 +27,7 @@ def spam(a, b, *var, **kw):
     return internal
 
 def foo():
-    exec 'm'
-    from sys import *
+    pass
 
 def namespace_test(): pass
 def namespace_test(): pass
@@ -43,9 +42,7 @@ def find_block(block, name):
 
 class SymtableTest(unittest.TestCase):
 
-    with test_support.check_warnings(
-            ("import \* only allowed at module level", SyntaxWarning)):
-        top = symtable.symtable(TEST_CODE, "?", "exec")
+    top = symtable.symtable(TEST_CODE, "?", "exec")
     # These correspond to scopes in TEST_CODE
     Mine = find_block(top, "Mine")
     a_method = find_block(Mine, "a_method")
@@ -63,13 +60,8 @@ class SymtableTest(unittest.TestCase):
     def test_optimized(self):
         self.assertFalse(self.top.is_optimized())
         self.assertFalse(self.top.has_exec())
-        self.assertFalse(self.top.has_import_star())
 
         self.assertTrue(self.spam.is_optimized())
-
-        self.assertFalse(self.foo.is_optimized())
-        self.assertTrue(self.foo.has_exec())
-        self.assertTrue(self.foo.has_import_star())
 
     def test_nested(self):
         self.assertFalse(self.top.is_nested())
@@ -178,7 +170,7 @@ class SymtableTest(unittest.TestCase):
 
 
 def test_main():
-    test_support.run_unittest(SymtableTest)
+    support.run_unittest(SymtableTest)
 
 if __name__ == '__main__':
     test_main()

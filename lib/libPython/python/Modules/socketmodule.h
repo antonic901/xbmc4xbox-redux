@@ -8,7 +8,7 @@
 #   include <sys/socket.h>
 # endif
 # include <netinet/in.h>
-# if !(defined(__BEOS__) || defined(__CYGWIN__) || (defined(PYOS_OS2) && defined(PYCC_VACPP)))
+# if !defined(__CYGWIN__)
 #  include <netinet/tcp.h>
 # endif
 
@@ -59,14 +59,36 @@ typedef int socklen_t;
 #include <bluetooth.h>
 #endif
 
+#ifdef HAVE_NET_IF_H
+# include <net/if.h>
+#endif
+
 #ifdef HAVE_NETPACKET_PACKET_H
 # include <sys/ioctl.h>
-# include <net/if.h>
 # include <netpacket/packet.h>
 #endif
 
 #ifdef HAVE_LINUX_TIPC_H
 # include <linux/tipc.h>
+#endif
+
+#ifdef HAVE_LINUX_CAN_H
+#include <linux/can.h>
+#endif
+
+#ifdef HAVE_LINUX_CAN_RAW_H
+#include <linux/can/raw.h>
+#endif
+
+#ifdef HAVE_LINUX_CAN_BCM_H
+#include <linux/can/bcm.h>
+#endif
+
+#ifdef HAVE_SYS_SYS_DOMAIN_H
+#include <sys/sys_domain.h>
+#endif
+#ifdef HAVE_SYS_KERN_CONTROL_H
+#include <sys/kern_control.h>
 #endif
 
 #ifndef Py__SOCKET_H
@@ -78,7 +100,7 @@ extern "C" {
 /* Python module and C API name */
 #define PySocket_MODULE_NAME    "_socket"
 #define PySocket_CAPI_NAME      "CAPI"
-#define PySocket_CAPSULE_NAME  (PySocket_MODULE_NAME "." PySocket_CAPI_NAME)
+#define PySocket_CAPSULE_NAME   PySocket_MODULE_NAME "." PySocket_CAPI_NAME
 
 /* Abstract the socket file descriptor type */
 #ifdef MS_WINDOWS
@@ -93,9 +115,18 @@ typedef int SOCKET_T;
 #       define SIZEOF_SOCKET_T SIZEOF_INT
 #endif
 
+#if SIZEOF_SOCKET_T <= SIZEOF_LONG
+#define PyLong_FromSocket_t(fd) PyLong_FromLong((SOCKET_T)(fd))
+#define PyLong_AsSocket_t(fd) (SOCKET_T)PyLong_AsLong(fd)
+#else
+#define PyLong_FromSocket_t(fd) PyLong_FromLongLong((SOCKET_T)(fd))
+#define PyLong_AsSocket_t(fd) (SOCKET_T)PyLong_AsLongLong(fd)
+#endif
+
 /* Socket address */
 typedef union sock_addr {
     struct sockaddr_in in;
+    struct sockaddr sa;
 #ifdef AF_UNIX
     struct sockaddr_un un;
 #endif
@@ -115,6 +146,12 @@ typedef union sock_addr {
 #ifdef HAVE_NETPACKET_PACKET_H
     struct sockaddr_ll ll;
 #endif
+#ifdef HAVE_LINUX_CAN_H
+    struct sockaddr_can can;
+#endif
+#ifdef HAVE_SYS_KERN_CONTROL_H
+    struct sockaddr_ctl ctl;
+#endif
 } sock_addr_t;
 
 /* The object holding a socket.  It holds some extra information,
@@ -132,7 +169,6 @@ typedef struct {
                                         sets a Python exception */
     double sock_timeout;                 /* Operation timeout in seconds;
                                         0.0 means non-blocking */
-    PyObject *weakreflist;
 } PySocketSockObject;
 
 /* --- C API ----------------------------------------------------*/
@@ -189,61 +225,10 @@ typedef struct {
 typedef struct {
     PyTypeObject *Sock_Type;
     PyObject *error;
+    PyObject *timeout_error;
 } PySocketModule_APIObject;
 
-/* XXX The net effect of the following appears to be to define a function
-   XXX named PySocketModule_APIObject in _ssl.c.  It's unclear why it isn't
-   XXX defined there directly.
-
-   >>> It's defined here because other modules might also want to use
-   >>> the C API.
-
-*/
-#ifndef PySocket_BUILDING_SOCKET
-
-/* --- C API ----------------------------------------------------*/
-
-/* Interfacestructure to C API for other modules.
-   Call PySocketModule_ImportModuleAndAPI() to initialize this
-   structure. After that usage is simple:
-
-   if (!PyArg_ParseTuple(args, "O!|zz:ssl",
-                         &PySocketModule.Sock_Type, (PyObject*)&Sock,
-                         &key_file, &cert_file))
-     return NULL;
-   ...
-*/
-
-static
-PySocketModule_APIObject PySocketModule;
-
-/* You *must* call this before using any of the functions in
-   PySocketModule and check its outcome; otherwise all accesses will
-   result in a segfault. Returns 0 on success. */
-
-#ifndef DPRINTF
-# define DPRINTF if (0) printf
-#endif
-
-static
-int PySocketModule_ImportModuleAndAPI(void)
-{
-    void *api;
-
-  DPRINTF(" Loading capsule %s\n", PySocket_CAPSULE_NAME);
-  api = PyCapsule_Import(PySocket_CAPSULE_NAME, 1);
-    if (api == NULL)
-        goto onError;
-    memcpy(&PySocketModule, api, sizeof(PySocketModule));
-    DPRINTF(" API object loaded and initialized.\n");
-    return 0;
-
- onError:
-    DPRINTF(" not found.\n");
-    return -1;
-}
-
-#endif /* !PySocket_BUILDING_SOCKET */
+#define PySocketModule_ImportModuleAndAPI() PyCapsule_Import(PySocket_CAPSULE_NAME, 1)
 
 #ifdef __cplusplus
 }

@@ -3,13 +3,13 @@
 After ToolTip.py, which uses ideas gleaned from PySol
 Used by the CallTips IDLE extension.
 """
-from Tkinter import Toplevel, Label, LEFT, SOLID, TclError
+from tkinter import Toplevel, Label, LEFT, SOLID, TclError
 
 HIDE_VIRTUAL_EVENT_NAME = "<<calltipwindow-hide>>"
 HIDE_SEQUENCES = ("<Key-Escape>", "<FocusOut>")
 CHECKHIDE_VIRTUAL_EVENT_NAME = "<<calltipwindow-checkhide>>"
 CHECKHIDE_SEQUENCES = ("<KeyRelease>", "<ButtonRelease>")
-CHECKHIDE_TIME = 100 # milliseconds
+CHECKHIDE_TIME = 100 # miliseconds
 
 MARK_RIGHT = "calltipwindowregion_right"
 
@@ -72,7 +72,6 @@ class CallTip:
                            background="#ffffe0", relief=SOLID, borderwidth=1,
                            font = self.widget['font'])
         self.label.pack()
-        tw.update_idletasks()
         tw.lift()  # work around bug in Tk 8.5.18+ (issue #24570)
 
         self.checkhideid = self.widget.bind(CHECKHIDE_VIRTUAL_EVENT_NAME,
@@ -135,7 +134,7 @@ class CallTip:
 
 
 def _calltip_window(parent):  # htest #
-    from Tkinter import Toplevel, Text, LEFT, BOTH
+    from tkinter import Toplevel, Text, LEFT, BOTH
 
     top = Toplevel(parent)
     top.title("Test calltips")

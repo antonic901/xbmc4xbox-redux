@@ -8,11 +8,7 @@
 
 #include <mach-o/dyld.h>
 
-const struct filedescr _PyImport_DynLoadFiletab[] = {
-    {".so", "rb", C_EXTENSION},
-    {"module.so", "rb", C_EXTENSION},
-    {0, 0}
-};
+const char *_PyImport_DynLoadFiletab[] = {".so", NULL};
 
 /*
 ** Python modules are Mach-O MH_BUNDLE files. The best way to load these
@@ -31,8 +27,8 @@ const struct filedescr _PyImport_DynLoadFiletab[] = {
 #define LINKOPTIONS NSLINKMODULE_OPTION_BINDNOW| \
     NSLINKMODULE_OPTION_RETURN_ON_ERROR|NSLINKMODULE_OPTION_PRIVATE
 #endif
-dl_funcptr _PyImport_GetDynLoadFunc(const char *fqname, const char *shortname,
-                                        const char *pathname, FILE *fp)
+dl_funcptr _PyImport_GetDynLoadFunc(const char *shortname,
+                                    const char *pathname, FILE *fp)
 {
     dl_funcptr p = NULL;
     char funcname[258];
@@ -43,7 +39,7 @@ dl_funcptr _PyImport_GetDynLoadFunc(const char *fqname, const char *shortname,
     const char *errString;
     char errBuf[512];
 
-    PyOS_snprintf(funcname, sizeof(funcname), "_init%.200s", shortname);
+    PyOS_snprintf(funcname, sizeof(funcname), "_PyInit_%.200s", shortname);
 
 #ifdef USE_DYLD_GLOBAL_NAMESPACE
     if (NSIsSymbolNameDefined(funcname)) {

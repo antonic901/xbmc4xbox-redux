@@ -54,11 +54,9 @@ rectangular coordinates to polar coordinates and back.
    ``x.imag`` is zero::
 
       >>> phase(complex(-1.0, 0.0))
-      3.1415926535897931
+      3.141592653589793
       >>> phase(complex(-1.0, -0.0))
-      -3.1415926535897931
-
-   .. versionadded:: 2.6
+      -3.141592653589793
 
 
 .. note::
@@ -75,15 +73,11 @@ rectangular coordinates to polar coordinates and back.
    phase of *x*.  ``polar(x)`` is equivalent to ``(abs(x),
    phase(x))``.
 
-   .. versionadded:: 2.6
-
 
 .. function:: rect(r, phi)
 
    Return the complex number *x* with polar coordinates *r* and *phi*.
    Equivalent to ``r * (math.cos(phi) + math.sin(phi)*1j)``.
-
-   .. versionadded:: 2.6
 
 
 Power and logarithmic functions
@@ -99,9 +93,6 @@ Power and logarithmic functions
    Returns the logarithm of *x* to the given *base*. If the *base* is not
    specified, returns the natural logarithm of *x*. There is one branch cut, from 0
    along the negative real axis to -∞, continuous from above.
-
-   .. versionchanged:: 2.4
-      *base* argument added.
 
 
 .. function:: log10(x)
@@ -137,9 +128,6 @@ Trigonometric functions
    other extends from ``-1j`` along the imaginary axis to ``-∞j``, continuous
    from the left.
 
-   .. versionchanged:: 2.6
-      direction of continuity of upper cut reversed
-
 
 .. function:: cos(x)
 
@@ -172,9 +160,6 @@ Hyperbolic functions
    continuous from the right.  The other extends from ``-1j`` along
    the imaginary axis to ``-∞j``, continuous from the left.
 
-   .. versionchanged:: 2.6
-      branch cuts moved to match those recommended by the C99 standard
-
 
 .. function:: atanh(x)
 
@@ -182,9 +167,6 @@ Hyperbolic functions
    extends from ``1`` along the real axis to ``∞``, continuous from below. The
    other extends from ``-1`` along the real axis to ``-∞``, continuous from
    above.
-
-   .. versionchanged:: 2.6
-      direction of continuity of right cut reversed
 
 
 .. function:: cosh(x)
@@ -205,19 +187,24 @@ Hyperbolic functions
 Classification functions
 ------------------------
 
+.. function:: isfinite(x)
+
+   Return ``True`` if both the real and imaginary parts of *x* are finite, and
+   ``False`` otherwise.
+
+   .. versionadded:: 3.2
+
+
 .. function:: isinf(x)
 
-   Return ``True`` if the real or the imaginary part of x is positive
-   or negative infinity.
-
-   .. versionadded:: 2.6
+   Return ``True`` if either the real or the imaginary part of *x* is an
+   infinity, and ``False`` otherwise.
 
 
 .. function:: isnan(x)
 
-   Return ``True`` if the real or imaginary part of x is not a number (NaN).
-
-   .. versionadded:: 2.6
+   Return ``True`` if either the real or the imaginary part of *x* is a NaN,
+   and ``False`` otherwise.
 
 
 Constants
@@ -255,6 +242,6 @@ cuts for numerical purposes, a good reference should be the following:
 
    Kahan, W:  Branch cuts for complex elementary functions; or, Much ado about
    nothing's sign bit.  In Iserles, A., and Powell, M. (eds.), The state of the art
-   in numerical analysis. Clarendon Press (1987) pp165--211.
+   in numerical analysis. Clarendon Press (1987) pp165-211.
 
 

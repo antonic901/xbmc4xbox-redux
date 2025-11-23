@@ -36,9 +36,7 @@ continuing through the base classes of ``type(a)`` excluding metaclasses. If the
 looked-up value is an object defining one of the descriptor methods, then Python
 may override the default behavior and invoke the descriptor method instead.
 Where this occurs in the precedence chain depends on which descriptor methods
-were defined.  Note that descriptors are only invoked for new style objects or
-classes (a class is new style if it inherits from :class:`object` or
-:class:`type`).
+were defined.
 
 Descriptors are a powerful, general purpose protocol.  They are the mechanism
 behind properties, methods, static methods, class methods, and :func:`super()`.
@@ -89,8 +87,6 @@ of ``obj``.  If ``d`` defines the method :meth:`__get__`, then ``d.__get__(obj)`
 is invoked according to the precedence rules listed below.
 
 The details of invocation depend on whether ``obj`` is an object or a class.
-Either way, descriptors only work for new style objects and classes.  A class is
-new style if it is a subclass of :class:`object`.
 
 For objects, the machinery is in :meth:`object.__getattribute__` which
 transforms ``b.x`` into ``type(b).__dict__['x'].__get__(b, type(b))``.  The
@@ -108,14 +104,13 @@ like::
         "Emulate type_getattro() in Objects/typeobject.c"
         v = object.__getattribute__(self, key)
         if hasattr(v, '__get__'):
-            return v.__get__(None, self)
+           return v.__get__(None, self)
         return v
 
 The important points to remember are:
 
 * descriptors are invoked by the :meth:`__getattribute__` method
 * overriding :meth:`__getattribute__` prevents automatic descriptor calls
-* :meth:`__getattribute__` is only available with new style classes and objects
 * :meth:`object.__getattribute__` and :meth:`type.__getattribute__` make
   different calls to :meth:`__get__`.
 * data descriptors always override instance dictionaries.
@@ -128,10 +123,9 @@ and then returns ``A.__dict__['m'].__get__(obj, B)``.  If not a descriptor,
 ``m`` is returned unchanged.  If not in the dictionary, ``m`` reverts to a
 search using :meth:`object.__getattribute__`.
 
-Note, in Python 2.2, ``super(B, obj).m()`` would only invoke :meth:`__get__` if
-``m`` was a data descriptor.  In Python 2.3, non-data descriptors also get
-invoked unless an old-style class is involved.  The implementation details are
-in :c:func:`super_getattro()` in :source:`Objects/typeobject.c`.
+The implementation details are in :c:func:`super_getattro()` in
+:source:`Objects/typeobject.c`.  and a pure Python equivalent can be found in
+`Guido's Tutorial`_.
 
 .. _`Guido's Tutorial`: https://www.python.org/download/releases/2.2.3/descrintro/#cooperation
 
@@ -161,17 +155,17 @@ descriptor is useful for monitoring just a few chosen attributes::
             self.name = name
 
         def __get__(self, obj, objtype):
-            print 'Retrieving', self.name
+            print('Retrieving', self.name)
             return self.val
 
         def __set__(self, obj, val):
-            print 'Updating', self.name
+            print('Updating', self.name)
             self.val = val
 
     >>> class MyClass(object):
-    ...     x = RevealAccess(10, 'var "x"')
-    ...     y = 5
-    ...
+        x = RevealAccess(10, 'var "x"')
+        y = 5
+
     >>> m = MyClass()
     >>> m.x
     Retrieving var "x"
@@ -258,10 +252,10 @@ to wrap access to the value attribute in a property data descriptor::
 
     class Cell(object):
         . . .
-        def getvalue(self):
-            "Recalculate the cell before returning value"
+        def getvalue(self, obj):
+            "Recalculate cell before returning value"
             self.recalc()
-            return self._value
+            return obj._value
         value = property(getvalue)
 
 
@@ -293,22 +287,22 @@ this::
 Running the interpreter shows how the function descriptor works in practice::
 
     >>> class D(object):
-    ...     def f(self, x):
-    ...         return x
-    ...
+         def f(self, x):
+              return x
+
     >>> d = D()
-    >>> D.__dict__['f']  # Stored internally as a function
+    >>> D.__dict__['f'] # Stored internally as a function
     <function f at 0x00C45070>
-    >>> D.f              # Get from a class becomes an unbound method
+    >>> D.f             # Get from a class becomes an unbound method
     <unbound method D.f>
-    >>> d.f              # Get from an instance becomes a bound method
+    >>> d.f             # Get from an instance becomes a bound method
     <bound method D.f of <__main__.D object at 0x00B18C90>>
 
 The output suggests that bound and unbound methods are two different types.
 While they could have been implemented that way, the actual C implementation of
 :c:type:`PyMethod_Type` in :source:`Objects/classobject.c` is a single object
 with two different representations depending on whether the :attr:`im_self`
-field is set or is *NULL* (the C equivalent of ``None``).
+field is set or is *NULL* (the C equivalent of *None*).
 
 Likewise, the effects of calling a method object depend on the :attr:`im_self`
 field. If set (meaning bound), the original function (stored in the
@@ -364,39 +358,39 @@ Since staticmethods return the underlying function with no changes, the example
 calls are unexciting::
 
     >>> class E(object):
-    ...     def f(x):
-    ...         print x
-    ...     f = staticmethod(f)
-    ...
-    >>> print E.f(3)
+         def f(x):
+              print(x)
+         f = staticmethod(f)
+
+    >>> print(E.f(3))
     3
-    >>> print E().f(3)
+    >>> print(E().f(3))
     3
 
 Using the non-data descriptor protocol, a pure Python version of
 :func:`staticmethod` would look like this::
 
     class StaticMethod(object):
-        "Emulate PyStaticMethod_Type() in Objects/funcobject.c"
+     "Emulate PyStaticMethod_Type() in Objects/funcobject.c"
 
-        def __init__(self, f):
-            self.f = f
+     def __init__(self, f):
+          self.f = f
 
-        def __get__(self, obj, objtype=None):
-            return self.f
+     def __get__(self, obj, objtype=None):
+          return self.f
 
 Unlike static methods, class methods prepend the class reference to the
 argument list before calling the function.  This format is the same
 for whether the caller is an object or a class::
 
     >>> class E(object):
-    ...     def f(klass, x):
-    ...          return klass.__name__, x
-    ...     f = classmethod(f)
-    ...
-    >>> print E.f(3)
+         def f(klass, x):
+              return klass.__name__, x
+         f = classmethod(f)
+
+    >>> print(E.f(3))
     ('E', 3)
-    >>> print E().f(3)
+    >>> print(E().f(3))
     ('E', 3)
 
 
@@ -425,15 +419,15 @@ Using the non-data descriptor protocol, a pure Python version of
 :func:`classmethod` would look like this::
 
     class ClassMethod(object):
-        "Emulate PyClassMethod_Type() in Objects/funcobject.c"
+         "Emulate PyClassMethod_Type() in Objects/funcobject.c"
 
-        def __init__(self, f):
-            self.f = f
+         def __init__(self, f):
+              self.f = f
 
-        def __get__(self, obj, klass=None):
-            if klass is None:
-                klass = type(obj)
-            def newfunc(*args):
-                return self.f(klass, *args)
-            return newfunc
+         def __get__(self, obj, klass=None):
+              if klass is None:
+                   klass = type(obj)
+              def newfunc(*args):
+                   return self.f(klass, *args)
+              return newfunc
 

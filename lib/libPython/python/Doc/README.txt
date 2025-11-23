@@ -3,7 +3,7 @@ Python Documentation README
 
 This directory contains the reStructuredText (reST) sources to the Python
 documentation.  You don't need to build them yourself, prebuilt versions are
-available at <https://docs.python.org/dev/download.html>.
+available at <https://docs.python.org/3.4/download.html>.
 
 Documentation on authoring Python documentation, including information about
 both style and markup, is available in the "Documenting Python" chapter of the
@@ -15,7 +15,7 @@ Building the docs
 
 You need to have Sphinx <http://sphinx-doc.org/> installed; it is the toolset
 used to build the docs.  It is not included in this tree, but maintained
-separately and available from PyPI <https://pypi.org/project/Sphinx>.
+separately and available from PyPI <https://pypi.python.org/pypi/Sphinx>.
 
 
 Using make
@@ -103,13 +103,6 @@ Then, from the ``Doc`` directory, run ::
 
 where ``<builder>`` is one of html, text, latex, or htmlhelp (for explanations
 see the make targets above).
-
-Deprecation header
-==================
-
-Following the sunsetting of Python 2.7, a red banner displays at the
-top of each page redirecting to the corresponding page on
-``https://docs.python.org/3/``.
 
 
 Contributing

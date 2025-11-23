@@ -3,16 +3,17 @@ Very minimal unittests for parts of the readline module.
 """
 import os
 import unittest
-from test.test_support import run_unittest, import_module
+from test.support import run_unittest, import_module
 from test.script_helper import assert_python_ok
 
 # Skip tests if there is no readline module
 readline = import_module('readline')
 
 class TestHistoryManipulation (unittest.TestCase):
-    """These tests were added to check that the libedit emulation on OSX and
-    the "real" readline have the same interface for history manipulation.
-    That's why the tests cover only a small subset of the interface.
+    """
+    These tests were added to check that the libedit emulation on OSX and the
+    "real" readline have the same interface for history manipulation. That's
+    why the tests cover only a small subset of the interface.
     """
 
     @unittest.skipUnless(hasattr(readline, "clear_history"),
@@ -44,7 +45,7 @@ class TestHistoryManipulation (unittest.TestCase):
 
 class TestReadline(unittest.TestCase):
 
-    @unittest.skipIf(readline._READLINE_VERSION < 0x0601
+    @unittest.skipIf(readline._READLINE_VERSION < 0x0600
                      and "libedit" not in readline.__doc__,
                      "not supported in this library version")
     def test_init(self):

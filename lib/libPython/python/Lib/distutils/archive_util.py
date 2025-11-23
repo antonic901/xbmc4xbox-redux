@@ -3,11 +3,15 @@
 Utility functions for creating archive files (tarballs, zip files,
 that sort of thing)."""
 
-__revision__ = "$Id$"
-
 import os
 from warnings import warn
 import sys
+
+try:
+    import zipfile
+except ImportError:
+    zipfile = None
+
 
 from distutils.errors import DistutilsExecError
 from distutils.spawn import spawn
@@ -70,9 +74,9 @@ def make_tarball(base_name, base_dir, compress="gzip", verbose=0, dry_run=0,
 
     # flags for compression program, each element of list will be an argument
     if compress is not None and compress not in compress_ext.keys():
-        raise ValueError, \
-              ("bad value for 'compress': must be None, 'gzip', 'bzip2' "
-               "or 'compress'")
+        raise ValueError(
+              "bad value for 'compress': must be None, 'gzip', 'bzip2' "
+              "or 'compress'")
 
     archive_name = base_name + '.tar'
     if compress != 'compress':
@@ -127,11 +131,6 @@ def make_zipfile(base_name, base_dir, verbose=0, dry_run=0):
     available, raises DistutilsExecError.  Returns the name of the output zip
     file.
     """
-    try:
-        import zipfile
-    except ImportError:
-        zipfile = None
-
     zip_filename = base_name + ".zip"
     mkpath(os.path.dirname(zip_filename), dry_run=dry_run)
 
@@ -149,28 +148,23 @@ def make_zipfile(base_name, base_dir, verbose=0, dry_run=0):
         except DistutilsExecError:
             # XXX really should distinguish between "couldn't find
             # external 'zip' command" and "zip failed".
-            raise DistutilsExecError, \
-                  ("unable to create zip file '%s': "
+            raise DistutilsExecError(("unable to create zip file '%s': "
                    "could neither import the 'zipfile' module nor "
-                   "find a standalone zip utility") % zip_filename
+                   "find a standalone zip utility") % zip_filename)
 
     else:
         log.info("creating '%s' and adding '%s' to it",
                  zip_filename, base_dir)
 
         if not dry_run:
-            zip = zipfile.ZipFile(zip_filename, "w",
-                                  compression=zipfile.ZIP_DEFLATED)
+            try:
+                zip = zipfile.ZipFile(zip_filename, "w",
+                                      compression=zipfile.ZIP_DEFLATED)
+            except RuntimeError:
+                zip = zipfile.ZipFile(zip_filename, "w",
+                                      compression=zipfile.ZIP_STORED)
 
-            if base_dir != os.curdir:
-                path = os.path.normpath(os.path.join(base_dir, ''))
-                zip.write(path, path)
-                log.info("adding '%s'", path)
             for dirpath, dirnames, filenames in os.walk(base_dir):
-                for name in dirnames:
-                    path = os.path.normpath(os.path.join(dirpath, name, ''))
-                    zip.write(path, path)
-                    log.info("adding '%s'", path)
                 for name in filenames:
                     path = os.path.normpath(os.path.join(dirpath, name))
                     if os.path.isfile(path):
@@ -231,7 +225,7 @@ def make_archive(base_name, format, root_dir=None, base_dir=None, verbose=0,
     try:
         format_info = ARCHIVE_FORMATS[format]
     except KeyError:
-        raise ValueError, "unknown archive format '%s'" % format
+        raise ValueError("unknown archive format '%s'" % format)
 
     func = format_info[0]
     for arg, val in format_info[1]:

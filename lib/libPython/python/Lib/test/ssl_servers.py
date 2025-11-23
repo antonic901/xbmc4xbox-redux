@@ -2,13 +2,13 @@ import os
 import sys
 import ssl
 import pprint
-import urllib
-import urlparse
+import socket
+import urllib.parse
 # Rename HTTPServer to _HTTPServer so as to avoid confusion with HTTPSServer.
-from BaseHTTPServer import HTTPServer as _HTTPServer, BaseHTTPRequestHandler
-from SimpleHTTPServer import SimpleHTTPRequestHandler
+from http.server import (HTTPServer as _HTTPServer,
+    SimpleHTTPRequestHandler, BaseHTTPRequestHandler)
 
-from test import test_support as support
+from test import support
 threading = support.import_module("threading")
 
 here = os.path.dirname(__file__)
@@ -42,11 +42,6 @@ class HTTPSServer(_HTTPServer):
             raise
         return sslconn, addr
 
-    def handle_error(self, request, client_address):
-        "Suppose noisy error output by default."
-        if support.verbose:
-            _HTTPServer.handle_error(self, request, client_address)
-
 class RootedHTTPRequestHandler(SimpleHTTPRequestHandler):
     # need to override translate_path to get a known root,
     # instead of using os.curdir, since the test could be
@@ -66,8 +61,8 @@ class RootedHTTPRequestHandler(SimpleHTTPRequestHandler):
 
         """
         # abandon query parameters
-        path = urlparse.urlparse(path)[2]
-        path = os.path.normpath(urllib.unquote(path))
+        path = urllib.parse.urlparse(path)[2]
+        path = os.path.normpath(urllib.parse.unquote(path))
         words = path.split('/')
         words = filter(None, words)
         path = self.root
@@ -152,10 +147,10 @@ class HTTPSServerThread(threading.Thread):
         self.server.shutdown()
 
 
-def make_https_server(case, context=None, certfile=CERTFILE,
+def make_https_server(case, *, context=None, certfile=CERTFILE,
                       host=HOST, handler_class=None):
     if context is None:
-        context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     # We assume the certfile contains both private key and certificate
     context.load_cert_chain(certfile)
     server = HTTPSServerThread(context, host, handler_class)
@@ -187,8 +182,6 @@ if __name__ == "__main__":
     parser.add_argument('--curve-name', dest='curve_name', type=str,
                         action='store',
                         help='curve name for EC-based Diffie-Hellman')
-    parser.add_argument('--ciphers', dest='ciphers', type=str,
-                        help='allowed cipher list')
     parser.add_argument('--dh', dest='dh_file', type=str, action='store',
                         help='PEM file containing DH parameters')
     args = parser.parse_args()
@@ -199,14 +192,12 @@ if __name__ == "__main__":
     else:
         handler_class = RootedHTTPRequestHandler
         handler_class.root = os.getcwd()
-    context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
     context.load_cert_chain(CERTFILE)
     if args.curve_name:
         context.set_ecdh_curve(args.curve_name)
     if args.dh_file:
         context.load_dh_params(args.dh_file)
-    if args.ciphers:
-        context.set_ciphers(args.ciphers)
 
     server = HTTPSServer(("", args.port), handler_class, context)
     if args.verbose:

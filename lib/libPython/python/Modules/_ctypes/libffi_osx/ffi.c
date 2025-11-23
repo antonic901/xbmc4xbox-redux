@@ -38,12 +38,13 @@ initialize_aggregate(
 /*@out@*/	ffi_type*	arg)
 {
 /*@-usedef@*/
+	ffi_type**	ptr;
 
 	if (arg == NULL || arg->elements == NULL ||
 		arg->size != 0 || arg->alignment != 0)
 		return FFI_BAD_TYPEDEF;
 
-	ffi_type**	ptr = &(arg->elements[0]);
+    ptr = &(arg->elements[0]);
 
 	while ((*ptr) != NULL)
 	{
@@ -101,7 +102,7 @@ initialize_aggregate(
 /* Perform machine independent ffi_cif preparation, then call
    machine dependent routine. */
 
-#if defined(X86_DARWIN) && !defined __x86_64__
+#if defined(X86_DARWIN)
 
 static inline bool
 struct_on_stack(
@@ -124,7 +125,7 @@ struct_on_stack(
 	}
 }
 
-#endif	// defined(X86_DARWIN) && !defined __x86_64__
+#endif	// defined(X86_DARWIN)
 
 // Arguments' ffi_type->alignment must be nonzero.
 ffi_status
@@ -135,15 +136,15 @@ ffi_prep_cif(
 /*@dependent@*/ /*@out@*/ /*@partial@*/ ffi_type*	rtype, 
 /*@dependent@*/			ffi_type**		atypes)
 {
+	unsigned int	bytes	= 0;
+	unsigned int	i;
+	ffi_type**		ptr;
+
 	if (cif == NULL)
 		return FFI_BAD_TYPEDEF;
 
 	if (abi <= FFI_FIRST_ABI || abi > FFI_DEFAULT_ABI)
 		return FFI_BAD_ABI;
-
-	unsigned int	bytes	= 0;
-	unsigned int	i;
-	ffi_type**		ptr;
 
 	cif->abi = abi;
 	cif->arg_types = atypes;

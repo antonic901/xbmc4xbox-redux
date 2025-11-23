@@ -1,4 +1,3 @@
-
 :mod:`fpectl` --- Floating point exception control
 ==================================================
 
@@ -88,7 +87,7 @@ The following example demonstrates how to start up and test operation of the
    >>> import math
    >>> math.exp(1000)
    Traceback (most recent call last):
-     File "<stdin>", line 1, in <module>
+     File "<stdin>", line 1, in ?
    FloatingPointError: in math_1
 
 
@@ -113,8 +112,8 @@ The :mod:`fpectl` module is not thread-safe.
 .. seealso::
 
    Some files in the source distribution may be interesting in learning more about
-   how this module operates. The include file :source:`Include/pyfpe.h` discusses the
-   implementation of this module at some length. :source:`Modules/fpetestmodule.c`
+   how this module operates. The include file :file:`Include/pyfpe.h` discusses the
+   implementation of this module at some length. :file:`Modules/fpetestmodule.c`
    gives several examples of use. Many additional examples can be found in
-   :source:`Objects/floatobject.c`.
+   :file:`Objects/floatobject.c`.
 

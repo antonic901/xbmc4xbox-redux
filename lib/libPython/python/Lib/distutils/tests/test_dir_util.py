@@ -2,15 +2,17 @@
 import unittest
 import os
 import stat
-import shutil
 import sys
+from unittest.mock import patch
 
+from distutils import dir_util, errors
 from distutils.dir_util import (mkpath, remove_tree, create_tree, copy_tree,
                                 ensure_relative)
 
 from distutils import log
 from distutils.tests import support
-from test.test_support import run_unittest
+from test.support import run_unittest
+
 
 class DirUtilTestCase(support.TempdirManager, unittest.TestCase):
 
@@ -52,7 +54,7 @@ class DirUtilTestCase(support.TempdirManager, unittest.TestCase):
         self.assertEqual(self._logs, wanted)
 
     @unittest.skipIf(sys.platform.startswith('win'),
-                        "This test is only appropriate for POSIX-like systems.")
+        "This test is only appropriate for POSIX-like systems.")
     def test_mkpath_with_custom_mode(self):
         # Get and set the current umask value for testing mode bits.
         umask = os.umask(0o002)
@@ -76,7 +78,6 @@ class DirUtilTestCase(support.TempdirManager, unittest.TestCase):
 
         remove_tree(self.root_target, verbose=0)
 
-
     def test_copy_tree_verbosity(self):
 
         mkpath(self.target, verbose=0)
@@ -88,11 +89,8 @@ class DirUtilTestCase(support.TempdirManager, unittest.TestCase):
 
         mkpath(self.target, verbose=0)
         a_file = os.path.join(self.target, 'ok.txt')
-        f = open(a_file, 'w')
-        try:
+        with open(a_file, 'w') as f:
             f.write('some content')
-        finally:
-            f.close()
 
         wanted = ['copying %s -> %s' % (a_file, self.target2)]
         copy_tree(self.target, self.target2, verbose=1)
@@ -107,11 +105,8 @@ class DirUtilTestCase(support.TempdirManager, unittest.TestCase):
         a_file = os.path.join(self.target, 'ok.txt')
         nfs_file = os.path.join(self.target, '.nfs123abc')
         for f in a_file, nfs_file:
-            fh = open(f, 'w')
-            try:
+            with open(f, 'w') as fh:
                 fh.write('some content')
-            finally:
-                fh.close()
 
         copy_tree(self.target, self.target2)
         self.assertEqual(os.listdir(self.target2), ['ok.txt'])
@@ -126,6 +121,16 @@ class DirUtilTestCase(support.TempdirManager, unittest.TestCase):
         else:   # \\
             self.assertEqual(ensure_relative('c:\\home\\foo'), 'c:home\\foo')
             self.assertEqual(ensure_relative('home\\foo'), 'home\\foo')
+
+    def test_copy_tree_exception_in_listdir(self):
+        """
+        An exception in listdir should raise a DistutilsFileError
+        """
+        with patch("os.listdir", side_effect=OSError()), \
+             self.assertRaises(errors.DistutilsFileError):
+            src = self.tempdirs[-1]
+            dir_util.copy_tree(src, None)
+
 
 def test_suite():
     return unittest.makeSuite(DirUtilTestCase)

@@ -23,18 +23,25 @@ extern "C" {
 PyAPI_FUNC(PyObject *) _Py_VaBuildValue_SizeT(const char *, va_list);
 #endif
 
+/* Due to a glitch in 3.2, the _SizeT versions weren't exported from the DLL. */
+#if !defined(PY_SSIZE_T_CLEAN) || !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03030000
 PyAPI_FUNC(int) PyArg_Parse(PyObject *, const char *, ...);
-PyAPI_FUNC(int) PyArg_ParseTuple(PyObject *, const char *, ...) Py_FORMAT_PARSETUPLE(PyArg_ParseTuple, 2, 3);
+PyAPI_FUNC(int) PyArg_ParseTuple(PyObject *, const char *, ...);
 PyAPI_FUNC(int) PyArg_ParseTupleAndKeywords(PyObject *, PyObject *,
                                                   const char *, char **, ...);
+PyAPI_FUNC(int) PyArg_ValidateKeywordArguments(PyObject *);
 PyAPI_FUNC(int) PyArg_UnpackTuple(PyObject *, const char *, Py_ssize_t, Py_ssize_t, ...);
 PyAPI_FUNC(PyObject *) Py_BuildValue(const char *, ...);
 PyAPI_FUNC(PyObject *) _Py_BuildValue_SizeT(const char *, ...);
+#endif
+#ifndef Py_LIMITED_API
 PyAPI_FUNC(int) _PyArg_NoKeywords(const char *funcname, PyObject *kw);
+PyAPI_FUNC(int) _PyArg_NoPositional(const char *funcname, PyObject *args);
 
 PyAPI_FUNC(int) PyArg_VaParse(PyObject *, const char *, va_list);
 PyAPI_FUNC(int) PyArg_VaParseTupleAndKeywords(PyObject *, PyObject *,
                                                   const char *, char **, va_list);
+#endif
 PyAPI_FUNC(PyObject *) Py_VaBuildValue(const char *, va_list);
 
 PyAPI_FUNC(int) PyModule_AddObject(PyObject *, const char *, PyObject *);
@@ -42,6 +49,8 @@ PyAPI_FUNC(int) PyModule_AddIntConstant(PyObject *, const char *, long);
 PyAPI_FUNC(int) PyModule_AddStringConstant(PyObject *, const char *, const char *);
 #define PyModule_AddIntMacro(m, c) PyModule_AddIntConstant(m, #c, c)
 #define PyModule_AddStringMacro(m, c) PyModule_AddStringConstant(m, #c, c)
+
+#define Py_CLEANUP_SUPPORTED 0x20000
 
 #define PYTHON_API_VERSION 1013
 #define PYTHON_API_STRING "1013"
@@ -89,44 +98,33 @@ PyAPI_FUNC(int) PyModule_AddStringConstant(PyObject *, const char *, const char 
    9-Jan-1995	GvR	Initial version (incompatible with older API)
 */
 
-#ifdef MS_WINDOWS
-/* Special defines for Windows versions used to live here.  Things
-   have changed, and the "Version" is now in a global string variable.
-   Reason for this is that this for easier branding of a "custom DLL"
-   without actually needing a recompile.  */
-#endif /* MS_WINDOWS */
-
-#if SIZEOF_SIZE_T != SIZEOF_INT
-/* On a 64-bit system, rename the Py_InitModule4 so that 2.4
-   modules cannot get loaded into a 2.5 interpreter */
-#define Py_InitModule4 Py_InitModule4_64
-#endif
+/* The PYTHON_ABI_VERSION is introduced in PEP 384. For the lifetime of
+   Python 3, it will stay at the value of 3; changes to the limited API
+   must be performed in a strictly backwards-compatible manner. */
+#define PYTHON_ABI_VERSION 3
+#define PYTHON_ABI_STRING "3"
 
 #ifdef Py_TRACE_REFS
- /* When we are tracing reference counts, rename Py_InitModule4 so
+ /* When we are tracing reference counts, rename PyModule_Create2 so
     modules compiled with incompatible settings will generate a
     link-time error. */
- #if SIZEOF_SIZE_T != SIZEOF_INT
- #undef Py_InitModule4
- #define Py_InitModule4 Py_InitModule4TraceRefs_64
- #else
- #define Py_InitModule4 Py_InitModule4TraceRefs
- #endif
+ #define PyModule_Create2 PyModule_Create2TraceRefs
 #endif
 
-PyAPI_FUNC(PyObject *) Py_InitModule4(const char *name, PyMethodDef *methods,
-                                      const char *doc, PyObject *self,
-                                      int apiver);
+PyAPI_FUNC(PyObject *) PyModule_Create2(struct PyModuleDef*,
+                                     int apiver);
 
-#define Py_InitModule(name, methods) \
-	Py_InitModule4(name, methods, (char *)NULL, (PyObject *)NULL, \
-		       PYTHON_API_VERSION)
+#ifdef Py_LIMITED_API
+#define PyModule_Create(module) \
+	PyModule_Create2(module, PYTHON_ABI_VERSION)
+#else
+#define PyModule_Create(module) \
+	PyModule_Create2(module, PYTHON_API_VERSION)
+#endif
 
-#define Py_InitModule3(name, methods, doc) \
-	Py_InitModule4(name, methods, doc, (PyObject *)NULL, \
-		       PYTHON_API_VERSION)
-
+#ifndef Py_LIMITED_API
 PyAPI_DATA(char *) _Py_PackageContext;
+#endif
 
 #ifdef __cplusplus
 }

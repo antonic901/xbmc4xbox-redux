@@ -7,12 +7,6 @@
 .. sectionauthor:: Martin v. Löwis <martin@v.loewis.de>
 .. sectionauthor:: Georg Brandl <georg@python.org>
 
-.. versionadded:: 2.5
-   The low-level ``_ast`` module containing only the node classes.
-
-.. versionadded:: 2.6
-   The high-level ``ast`` module containing all helpers.
-
 **Source code:** :source:`Lib/ast.py`
 
 --------------
@@ -96,32 +90,21 @@ Node classes
       node = ast.UnaryOp(ast.USub(), ast.Num(5, lineno=0, col_offset=0),
                          lineno=0, col_offset=0)
 
-   .. versionadded:: 2.6
-      The constructor as explained above was added.  In Python 2.5 nodes had
-      to be created by calling the class constructor without arguments and
-      setting the attributes afterwards.
-
 
 .. _abstract-grammar:
 
 Abstract Grammar
 ----------------
 
-The module defines a string constant ``__version__`` which is the decimal
-Subversion revision number of the file shown below.
-
 The abstract grammar is currently defined as follows:
 
 .. literalinclude:: ../../Parser/Python.asdl
-   :language: none
 
 
 :mod:`ast` Helpers
 ------------------
 
-.. versionadded:: 2.6
-
-Apart from the node classes, :mod:`ast` module defines these utility functions
+Apart from the node classes, the :mod:`ast` module defines these utility functions
 and classes for traversing abstract syntax trees:
 
 .. function:: parse(source, filename='<unknown>', mode='exec')
@@ -129,28 +112,21 @@ and classes for traversing abstract syntax trees:
    Parse the source into an AST node.  Equivalent to ``compile(source,
    filename, mode, ast.PyCF_ONLY_AST)``.
 
-   .. warning::
-      It is possible to crash the Python interpreter with a
-      sufficiently large/complex string due to stack depth limitations
-      in Python's AST compiler.
-
 
 .. function:: literal_eval(node_or_string)
 
-   Safely evaluate an expression node or a Unicode or *Latin-1* encoded string
-   containing a Python literal or container display.  The string or node
-   provided may only consist of the following Python literal structures:
-   strings, numbers, tuples, lists, dicts, booleans, and ``None``.
+   Safely evaluate an expression node or a string containing a Python literal or
+   container display.  The string or node provided may only consist of the
+   following Python literal structures: strings, bytes, numbers, tuples, lists,
+   dicts, sets, booleans, and ``None``.
 
    This can be used for safely evaluating strings containing Python values from
    untrusted sources without the need to parse the values oneself.  It is not
    capable of evaluating arbitrarily complex expressions, for example involving
    operators or indexing.
 
-   .. warning::
-      It is possible to crash the Python interpreter with a
-      sufficiently large/complex string due to stack depth limitations
-      in Python's AST compiler.
+   .. versionchanged:: 3.2
+      Now allows bytes and set literals.
 
 
 .. function:: get_docstring(node, clean=True)
@@ -273,3 +249,8 @@ and classes for traversing abstract syntax trees:
    wanted *annotate_fields* must be set to ``False``.  Attributes such as line
    numbers and column offsets are not dumped by default.  If this is wanted,
    *include_attributes* can be set to ``True``.
+
+.. seealso::
+
+    `Green Tree Snakes <https://greentreesnakes.readthedocs.org/>`_, an external documentation resource, has good
+    details on working with Python ASTs.

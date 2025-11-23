@@ -17,12 +17,9 @@ Sequence Protocol
 
    .. index:: builtin: len
 
-   Returns the number of objects in sequence *o* on success, and ``-1`` on
-   failure.  This is equivalent to the Python expression ``len(o)``.
-
-   .. versionchanged:: 2.5
-      These functions returned an :c:type:`int` type. This might require
-      changes in your code for properly supporting 64-bit systems.
+   Returns the number of objects in sequence *o* on success, and ``-1`` on failure.
+   For objects that do not provide sequence protocol, this is equivalent to the
+   Python expression ``len(o)``.
 
 
 .. c:function:: PyObject* PySequence_Concat(PyObject *o1, PyObject *o2)
@@ -35,10 +32,6 @@ Sequence Protocol
 
    Return the result of repeating sequence object *o* *count* times, or *NULL* on
    failure.  This is the equivalent of the Python expression ``o * count``.
-
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` type for *count*. This might require
-      changes in your code for properly supporting 64-bit systems.
 
 
 .. c:function:: PyObject* PySequence_InPlaceConcat(PyObject *o1, PyObject *o2)
@@ -54,19 +47,11 @@ Sequence Protocol
    failure.  The operation is done *in-place* when *o* supports it.  This is the
    equivalent of the Python expression ``o *= count``.
 
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` type for *count*. This might require
-      changes in your code for properly supporting 64-bit systems.
-
 
 .. c:function:: PyObject* PySequence_GetItem(PyObject *o, Py_ssize_t i)
 
    Return the *i*\ th element of *o*, or *NULL* on failure. This is the equivalent of
    the Python expression ``o[i]``.
-
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` type for *i*. This might require
-      changes in your code for properly supporting 64-bit systems.
 
 
 .. c:function:: PyObject* PySequence_GetSlice(PyObject *o, Py_ssize_t i1, Py_ssize_t i2)
@@ -74,24 +59,12 @@ Sequence Protocol
    Return the slice of sequence object *o* between *i1* and *i2*, or *NULL* on
    failure. This is the equivalent of the Python expression ``o[i1:i2]``.
 
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` type for *i1* and *i2*. This might
-      require changes in your code for properly supporting 64-bit systems.
-
 
 .. c:function:: int PySequence_SetItem(PyObject *o, Py_ssize_t i, PyObject *v)
 
-   Assign object *v* to the *i*\ th element of *o*.  Raise an exception
-   and return ``-1`` on failure; return ``0`` on success.  This
+   Assign object *v* to the *i*\ th element of *o*.  Returns ``-1`` on failure.  This
    is the equivalent of the Python statement ``o[i] = v``.  This function *does
    not* steal a reference to *v*.
-
-   If *v* is *NULL*, the element is deleted, however this feature is
-   deprecated in favour of using :c:func:`PySequence_DelItem`.
-
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` type for *i*. This might require
-      changes in your code for properly supporting 64-bit systems.
 
 
 .. c:function:: int PySequence_DelItem(PyObject *o, Py_ssize_t i)
@@ -99,23 +72,11 @@ Sequence Protocol
    Delete the *i*\ th element of object *o*.  Returns ``-1`` on failure.  This is the
    equivalent of the Python statement ``del o[i]``.
 
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` type for *i*. This might require
-      changes in your code for properly supporting 64-bit systems.
-
 
 .. c:function:: int PySequence_SetSlice(PyObject *o, Py_ssize_t i1, Py_ssize_t i2, PyObject *v)
 
    Assign the sequence object *v* to the slice in sequence object *o* from *i1* to
-   *i2*.  Raise an exception and return ``-1`` on failure; return ``0`` on success.
-   This is the equivalent of the Python statement ``o[i1:i2] = v``.
-
-   If *v* is *NULL*, the slice is deleted, however this feature is
-   deprecated in favour of using :c:func:`PySequence_DelSlice`.
-
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` type for *i1* and *i2*. This might
-      require changes in your code for properly supporting 64-bit systems.
+   *i2*.  This is the equivalent of the Python statement ``o[i1:i2] = v``.
 
 
 .. c:function:: int PySequence_DelSlice(PyObject *o, Py_ssize_t i1, Py_ssize_t i2)
@@ -123,20 +84,12 @@ Sequence Protocol
    Delete the slice in sequence object *o* from *i1* to *i2*.  Returns ``-1`` on
    failure.  This is the equivalent of the Python statement ``del o[i1:i2]``.
 
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` type for *i1* and *i2*. This might
-      require changes in your code for properly supporting 64-bit systems.
-
 
 .. c:function:: Py_ssize_t PySequence_Count(PyObject *o, PyObject *value)
 
    Return the number of occurrences of *value* in *o*, that is, return the number
    of keys for which ``o[key] == value``.  On failure, return ``-1``.  This is
    equivalent to the Python expression ``o.count(value)``.
-
-   .. versionchanged:: 2.5
-      This function returned an :c:type:`int` type. This might require changes
-      in your code for properly supporting 64-bit systems.
 
 
 .. c:function:: int PySequence_Contains(PyObject *o, PyObject *value)
@@ -151,15 +104,12 @@ Sequence Protocol
    Return the first index *i* for which ``o[i] == value``.  On error, return
    ``-1``.    This is equivalent to the Python expression ``o.index(value)``.
 
-   .. versionchanged:: 2.5
-      This function returned an :c:type:`int` type. This might require changes
-      in your code for properly supporting 64-bit systems.
-
 
 .. c:function:: PyObject* PySequence_List(PyObject *o)
 
-   Return a list object with the same contents as the arbitrary sequence *o*.  The
-   returned list is guaranteed to be new.
+   Return a list object with the same contents as the sequence or iterable *o*,
+   or *NULL* on failure.  The returned list is guaranteed to be new.  This is
+   equivalent to the Python expression ``list(o)``.
 
 
 .. c:function:: PyObject* PySequence_Tuple(PyObject *o)
@@ -185,10 +135,6 @@ Sequence Protocol
    Return the *i*\ th element of *o*, assuming that *o* was returned by
    :c:func:`PySequence_Fast`, *o* is not *NULL*, and that *i* is within bounds.
 
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` type for *i*. This might require
-      changes in your code for properly supporting 64-bit systems.
-
 
 .. c:function:: PyObject** PySequence_Fast_ITEMS(PyObject *o)
 
@@ -199,8 +145,6 @@ Sequence Protocol
    So, only use the underlying array pointer in contexts where the sequence
    cannot change.
 
-   .. versionadded:: 2.4
-
 
 .. c:function:: PyObject* PySequence_ITEM(PyObject *o, Py_ssize_t i)
 
@@ -208,12 +152,6 @@ Sequence Protocol
    :c:func:`PySequence_GetItem` but without checking that
    :c:func:`PySequence_Check` on *o* is true and without adjustment for negative
    indices.
-
-   .. versionadded:: 2.3
-
-   .. versionchanged:: 2.5
-      This function used an :c:type:`int` type for *i*. This might require
-      changes in your code for properly supporting 64-bit systems.
 
 
 .. c:function:: Py_ssize_t PySequence_Fast_GET_SIZE(PyObject *o)

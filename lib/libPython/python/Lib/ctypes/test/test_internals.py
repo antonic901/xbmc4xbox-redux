@@ -5,17 +5,14 @@ from sys import getrefcount as grc
 
 # XXX This test must be reviewed for correctness!!!
 
-"""
-ctypes' types are container types.
-
-They have an internal memory block, which only consists of some bytes,
-but it has to keep references to other objects as well. This is not
-really needed for trivial C types like int or char, but it is important
-for aggregate types like strings or pointers in particular.
-
-What about pointers?
-
-"""
+# ctypes' types are container types.
+#
+# They have an internal memory block, which only consists of some bytes,
+# but it has to keep references to other objects as well. This is not
+# really needed for trivial C types like int or char, but it is important
+# for aggregate types like strings or pointers in particular.
+#
+# What about pointers?
 
 class ObjectsTestCase(unittest.TestCase):
     def assertSame(self, a, b):
@@ -29,7 +26,7 @@ class ObjectsTestCase(unittest.TestCase):
         self.assertEqual(ci._objects, None)
 
     def test_c_char_p(self):
-        s = "Hello, World"
+        s = b"Hello, World"
         refcnt = grc(s)
         cs = c_char_p(s)
         self.assertEqual(refcnt + 1, grc(s))
@@ -70,8 +67,8 @@ class ObjectsTestCase(unittest.TestCase):
         class Y(Structure):
             _fields_ = [("x", X), ("y", X)]
 
-        s1 = "Hello, World"
-        s2 = "Hallo, Welt"
+        s1 = b"Hello, World"
+        s2 = b"Hallo, Welt"
 
         x = X()
         x.a = s1

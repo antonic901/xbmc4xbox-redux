@@ -13,4 +13,4 @@ try:
     with con:
         con.execute("insert into person(firstname) values (?)", ("Joe",))
 except sqlite3.IntegrityError:
-    print "couldn't add Joe twice"
+    print("couldn't add Joe twice")

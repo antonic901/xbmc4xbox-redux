@@ -5,7 +5,7 @@ Attributes and methods will be added as needed for tests.
 
 from idlelib.idle_test.mock_tk import Text
 
-class Func(object):
+class Func:
     '''Mock function captures args and returns result set by test.
 
     Attributes:
@@ -32,7 +32,7 @@ class Func(object):
             return self.result
 
 
-class Editor(object):
+class Editor:
     '''Minimally imitate EditorWindow.EditorWindow class.
     '''
     def __init__(self, flist=None, filename=None, key=None, root=None):
@@ -45,7 +45,7 @@ class Editor(object):
         return first, last
 
 
-class UndoDelegator(object):
+class UndoDelegator:
     '''Minimally imitate UndoDelegator,UndoDelegator class.
     '''
     # A real undo block is only needed for user interaction.

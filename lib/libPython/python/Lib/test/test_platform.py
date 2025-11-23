@@ -1,8 +1,11 @@
-import sys
+from unittest import mock
 import os
-import unittest
 import platform
 import subprocess
+import sys
+import tempfile
+import unittest
+import warnings
 
 from test import support
 
@@ -10,20 +13,26 @@ class PlatformTest(unittest.TestCase):
     def test_architecture(self):
         res = platform.architecture()
 
-    if hasattr(os, "symlink"):
-        def test_architecture_via_symlink(self): # issue3762
-            def get(python):
-                cmd = [python, '-c',
-                    'import platform; print platform.architecture()']
-                p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-                return p.communicate()
-            real = os.path.realpath(sys.executable)
-            link = os.path.abspath(support.TESTFN)
-            os.symlink(real, link)
-            try:
-                self.assertEqual(get(real), get(link))
-            finally:
-                os.remove(link)
+    @support.skip_unless_symlink
+    def test_architecture_via_symlink(self): # issue3762
+        # On Windows, the EXE needs to know where pythonXY.dll is at so we have
+        # to add the directory to the path.
+        if sys.platform == "win32":
+            os.environ["Path"] = "{};{}".format(
+                os.path.dirname(sys.executable), os.environ["Path"])
+
+        def get(python):
+            cmd = [python, '-c',
+                'import platform; print(platform.architecture())']
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+            return p.communicate()
+        real = os.path.realpath(sys.executable)
+        link = os.path.abspath(support.TESTFN)
+        os.symlink(real, link)
+        try:
+            self.assertEqual(get(real), get(link))
+        finally:
+            os.remove(link)
 
     def test_platform(self):
         for aliased in (False, True):
@@ -50,12 +59,12 @@ class PlatformTest(unittest.TestCase):
 
     def setUp(self):
         self.save_version = sys.version
-        self.save_subversion = sys.subversion
+        self.save_mercurial = sys._mercurial
         self.save_platform = sys.platform
 
     def tearDown(self):
         sys.version = self.save_version
-        sys.subversion = self.save_subversion
+        sys._mercurial = self.save_mercurial
         sys.platform = self.save_platform
 
     def test_sys_version(self):
@@ -67,25 +76,9 @@ class PlatformTest(unittest.TestCase):
              ('IronPython', '1.0.60816', '', '', '', '', '.NET 2.0.50727.42')),
             ('IronPython 1.0 (1.0.61005.1977) on .NET 2.0.50727.42',
              ('IronPython', '1.0.0', '', '', '', '', '.NET 2.0.50727.42')),
-            ('2.4.3 (truncation, date, t) \n[GCC]',
-             ('CPython', '2.4.3', '', '', 'truncation', 'date t', 'GCC')),
-            ('2.4.3 (truncation, date, ) \n[GCC]',
-             ('CPython', '2.4.3', '', '', 'truncation', 'date', 'GCC')),
-            ('2.4.3 (truncation, date,) \n[GCC]',
-             ('CPython', '2.4.3', '', '', 'truncation', 'date', 'GCC')),
-            ('2.4.3 (truncation, date) \n[GCC]',
-             ('CPython', '2.4.3', '', '', 'truncation', 'date', 'GCC')),
-            ('2.4.3 (truncation, d) \n[GCC]',
-             ('CPython', '2.4.3', '', '', 'truncation', 'd', 'GCC')),
-            ('2.4.3 (truncation, ) \n[GCC]',
-             ('CPython', '2.4.3', '', '', 'truncation', '', 'GCC')),
-            ('2.4.3 (truncation,) \n[GCC]',
-             ('CPython', '2.4.3', '', '', 'truncation', '', 'GCC')),
-            ('2.4.3 (truncation) \n[GCC]',
-             ('CPython', '2.4.3', '', '', 'truncation', '', 'GCC')),
             ):
             # branch and revision are not "parsed", but fetched
-            # from sys.subversion.  Ignore them
+            # from sys._mercurial.  Ignore them
             (name, version, branch, revision, buildno, builddate, compiler) \
                    = platform._sys_version(input)
             self.assertEqual(
@@ -129,13 +122,13 @@ class PlatformTest(unittest.TestCase):
                  "")
             }
         for (version_tag, subversion, sys_platform), info in \
-                sys_versions.iteritems():
+                sys_versions.items():
             sys.version = version_tag
             if subversion is None:
-                if hasattr(sys, "subversion"):
-                    del sys.subversion
+                if hasattr(sys, "_mercurial"):
+                    del sys._mercurial
             else:
-                sys.subversion = subversion
+                sys._mercurial = subversion
             if sys_platform is not None:
                 sys.platform = sys_platform
             self.assertEqual(platform.python_implementation(), info[0])
@@ -155,6 +148,12 @@ class PlatformTest(unittest.TestCase):
     def test_uname(self):
         res = platform.uname()
         self.assertTrue(any(res))
+        self.assertEqual(res[0], res.system)
+        self.assertEqual(res[1], res.node)
+        self.assertEqual(res[2], res.release)
+        self.assertEqual(res[3], res.version)
+        self.assertEqual(res[4], res.machine)
+        self.assertEqual(res[5], res.processor)
 
     @unittest.skipUnless(sys.platform.startswith('win'), "windows only test")
     def test_uname_win32_ARCHITEW6432(self):
@@ -188,14 +187,7 @@ class PlatformTest(unittest.TestCase):
     def test_mac_ver(self):
         res = platform.mac_ver()
 
-        try:
-            import gestalt
-        except ImportError:
-            have_toolbox_glue = False
-        else:
-            have_toolbox_glue = True
-
-        if have_toolbox_glue and platform.uname()[0] == 'Darwin':
+        if platform.uname().system == 'Darwin':
             # We're on a MacOSX system, check that
             # the right version information is returned
             fd = os.popen('sw_vers', 'r')
@@ -247,6 +239,7 @@ class PlatformTest(unittest.TestCase):
         res = platform.dist()
 
     def test_libc_ver(self):
+        import os
         if os.path.isdir(sys.executable) and \
            os.path.exists(sys.executable+'.exe'):
             # Cygwin horror
@@ -254,13 +247,6 @@ class PlatformTest(unittest.TestCase):
         else:
             executable = sys.executable
         res = platform.libc_ver(executable)
-
-        self.addCleanup(support.unlink, support.TESTFN)
-        with open(support.TESTFN, 'wb') as f:
-            f.write(b'x'*(16384-10))
-            f.write(b'GLIBC_1.23.4\0GLIBC_1.9\0GLIBC_1.21\0')
-        self.assertEqual(platform.libc_ver(support.TESTFN),
-                         ('glibc', '1.23.4'))
 
     def test_parse_release_file(self):
 
@@ -279,6 +265,51 @@ class PlatformTest(unittest.TestCase):
             ):
             self.assertEqual(platform._parse_release_file(input), output)
 
+    def test_popen(self):
+        mswindows = (sys.platform == "win32")
+
+        if mswindows:
+            command = '"{}" -c "print(\'Hello\')"'.format(sys.executable)
+        else:
+            command = "'{}' -c 'print(\"Hello\")'".format(sys.executable)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            with platform.popen(command) as stdout:
+                hello = stdout.read().strip()
+                stdout.close()
+                self.assertEqual(hello, "Hello")
+
+        data = 'plop'
+        if mswindows:
+            command = '"{}" -c "import sys; data=sys.stdin.read(); exit(len(data))"'
+        else:
+            command = "'{}' -c 'import sys; data=sys.stdin.read(); exit(len(data))'"
+        command = command.format(sys.executable)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            with platform.popen(command, 'w') as stdin:
+                stdout = stdin.write(data)
+                ret = stdin.close()
+                self.assertIsNotNone(ret)
+                if os.name == 'nt':
+                    returncode = ret
+                else:
+                    returncode = ret >> 8
+                self.assertEqual(returncode, len(data))
+
+    def test_linux_distribution_encoding(self):
+        # Issue #17429
+        with tempfile.TemporaryDirectory() as tempdir:
+            filename = os.path.join(tempdir, 'fedora-release')
+            with open(filename, 'w', encoding='utf-8') as f:
+                f.write('Fedora release 19 (Schr\xf6dinger\u2019s Cat)\n')
+
+            with mock.patch('platform._UNIXCONFDIR', tempdir):
+                distname, version, distid = platform.linux_distribution()
+
+            self.assertEqual(distname, 'Fedora')
+            self.assertEqual(version, '19')
+            self.assertEqual(distid, 'Schr\xf6dinger\u2019s Cat')
 
 def test_main():
     support.run_unittest(
