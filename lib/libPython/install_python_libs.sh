@@ -1,5 +1,5 @@
 #!/bin/sh
-DEST="../../../system/python"
+DEST="../../system/python"
 OUT="$DEST/python27.zlib"
 
 cp -v "python/XBOXbuild/Release XBOX/python27.dll" "$DEST/"
@@ -22,3 +22,6 @@ zip "../../$OUT" \
     multiprocessing/\* \
     \*/tests/\* \
     \*/test/\*
+
+zip "../../$OUT" \
+  distutils/version.py
