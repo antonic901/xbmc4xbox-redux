@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "system.h"
 #include "DVDFactoryDemuxer.h"
 
@@ -26,11 +26,28 @@
 
 #include "DVDDemuxFFmpeg.h"
 #include "DVDDemuxShoutcast.h"
+#include "DVDDemuxCDDA.h"
+#include "utils/log.h"
 
 using namespace std;
 
 CDVDDemux* CDVDFactoryDemuxer::CreateDemuxer(CDVDInputStream* pInputStream)
 {
+  // Try to open CDDA demuxer
+  if (pInputStream->IsStreamType(DVDSTREAM_TYPE_FILE) && pInputStream->GetContent().compare("application/octet-stream") == 0)
+  {
+    std::string filename = pInputStream->GetFileName();
+    if (filename.substr(0, 7) == "cdda://")
+    {
+      CLog::Log(LOGDEBUG, "DVDFactoryDemuxer: Stream is probably CD audio. Creating CDDA demuxer.");
+      auto_ptr<CDVDDemuxCDDA> demuxer(new CDVDDemuxCDDA());
+      if (demuxer->Open(pInputStream))
+      {
+        return demuxer.release();
+      }
+    }
+  }
+
   if (pInputStream->IsStreamType(DVDSTREAM_TYPE_HTTP))
   {
     CDVDInputStreamHttp* pHttpStream = (CDVDInputStreamHttp*)pInputStream;

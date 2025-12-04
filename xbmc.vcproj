@@ -251,7 +251,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="XboxDeploymentTool"
-				RemotePath="xe:\xbmc\default.xbe"/>
+				RemotePath="xe:\BUILD\default.xbe"/>
 			<Tool
 				Name="XboxImageTool"
 				FileName="$(TargetDir)default.xbe"
@@ -5485,6 +5485,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemux.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxCDDA.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxCDDA.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxFFmpeg.cpp">
