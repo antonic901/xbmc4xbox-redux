@@ -77,7 +77,7 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
 #ifdef HAS_FILESYSTEM
   else if (url.IsProtocol("iso9660")) return new CISOFile();
   else if (url.IsProtocol("soundtrack")) return new CSndtrkFile();
-  else if (url.IsProtocol("cdda")) return new CCDDAFile();
+  else if (url.IsProtocol("cdda")) return new CFileCDDA();
   else if (url.IsProtocol("mem")) return new CMemUnitFile();
 #endif
   if (url.IsProtocol("resource")) return new CResourceFile();
@@ -88,7 +88,7 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
     ||  url.IsProtocol("ftpx")
     ||  url.IsProtocol("ftps")
     ||  url.IsProtocol("rss")
-    ||  url.IsProtocol("http") 
+    ||  url.IsProtocol("http")
     ||  url.IsProtocol("https")) return new CCurlFile();
     else if (url.IsProtocol("dav") || url.IsProtocol("davs")) return new CDAVFile();
     else if (url.IsProtocol("shout")) return new CShoutcastFile();
