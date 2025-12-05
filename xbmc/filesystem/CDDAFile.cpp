@@ -129,7 +129,7 @@ ssize_t CFileCDDA::Read(void* lpBuf, size_t uiBufSize)
   int iSectorCount = std::min((int)uiBufSize / CDIO_CD_FRAMESIZE_RAW, m_iSectorCount);
 
   if (iSectorCount <= 0)
-    return -1;
+    return 0;
 
   // Are there enough sectors left to read
   if (m_lsnCurrent + iSectorCount > m_lsnEnd)
