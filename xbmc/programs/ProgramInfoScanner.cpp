@@ -15,6 +15,7 @@
 #include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
+#include "filesystem/MultiPathDirectory.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "programs/ProgramInfoTag.h"
@@ -113,118 +114,130 @@ namespace PROGRAM
       CTextureCache::Get().BackgroundCacheImage(it->second);
   }
 
-  std::string GetNFO(const CFileItem *item)
+  std::string GetNFO(const std::string& strFilePath)
   {
-    std::string strNFO;
+    std::string strNFO = URIUtils::ReplaceExtension(strFilePath, ".nfo");
+    if (CFile::Exists(strNFO))
+      return strNFO;
 
-    std::string strPath = item->m_bIsFolder ? item->GetPath() : URIUtils::GetDirectory(item->GetPath());
-    if (!item->m_bIsFolder)
-    {
-      strNFO = URIUtils::ReplaceExtension(item->GetPath(), ".nfo");
-      if (CFile::Exists(strNFO))
-        return strNFO;
+    std::string strPath = URIUtils::GetDirectory(strFilePath);
+    strNFO = URIUtils::AddFileToFolder(strPath, "program.nfo");
+    if (CFile::Exists(strNFO))
+      return strNFO;
 
-      strNFO = URIUtils::AddFileToFolder(strPath, "program.nfo");
-      if (CFile::Exists(strNFO))
-        return strNFO;
-
-      strNFO = URIUtils::AddFileToFolder(strPath, "_resources", "default.xml");
-      if (CFile::Exists(strNFO))
-        return strNFO;
-    }
+    strNFO = URIUtils::AddFileToFolder(strPath, "_resources", "default.xml");
+    if (CFile::Exists(strNFO))
+      return strNFO;
 
     return "";
   }
 
-  bool CProgramInfoScanner::DoScraping(const std::string& strDirectory, const ScraperPtr& scraper, bool recursive /* = false */)
+  bool CProgramInfoScanner::DoScraping(const std::string& strDirectory, const ScraperPtr& scraper, int idPath /* = -1 */)
   {
+    bool recursive = idPath > 0;
+
     if (m_handle)
       m_handle->SetText(g_localizeStrings.Get(20415));
 
-    int idPath = -1;
-    if (recursive)
-      idPath = m_database.GetPathId(URIUtils::GetParentPath(strDirectory));
-    else
-      idPath = m_database.AddPath(strDirectory);
-
     if (idPath < 0)
-      return false;
+    {
+      idPath = m_database.AddPath(strDirectory);
+      if (idPath < 0)
+        return false;
+    }
 
     CFileItemList items;
-    if(!CDirectory::GetDirectory(strDirectory, items, g_advancedSettings.m_programExtensions, DIR_FLAG_DEFAULTS))
+    if (URIUtils::IsMultiPath(strDirectory))
+    {
+      std::vector<std::string> paths;
+      if (!CMultiPathDirectory::GetPaths(strDirectory, paths))
+        return false;
+
+      for (unsigned int i = 0; i < paths.size(); i++)
+      {
+        CFileItemList items2;
+        if(!CDirectory::GetDirectory(paths[i], items, g_advancedSettings.m_programExtensions, DIR_FLAG_DEFAULTS))
+        {
+          CLog::Log(LOGWARNING, "%s - Could not fetch items of directory: %s", paths[i].c_str());
+        }
+        else
+          items.Append(items2);
+      }
+    }
+    else if(!CDirectory::GetDirectory(strDirectory, items, g_advancedSettings.m_programExtensions, DIR_FLAG_DEFAULTS))
       return false;
 
     for (int i = 0; i < items.Size(); ++i)
     {
       CFileItemPtr item = items[i];
-      if (item->m_bIsFolder && recursive)
-        continue;
-
       if (item->m_bIsFolder && !recursive)
-      {
-        DoScraping(item->GetPath(), scraper, true);
-        if (m_handle)
-          m_handle->SetPercentage(i * 100.f / items.Size());
-        continue;
-      }
+        DoScraping(item->GetPath(), scraper, idPath);
+      else if (!item->m_bIsFolder && recursive)
+        ScrapeProgram(idPath, item->GetPath(), scraper);
 
-      std::string strTemp = URIUtils::GetFileName(item->GetPath());
-      URIUtils::RemoveExtension(strTemp);
-      if (!StringUtils::EqualsNoCase(strTemp, "default"))
-        continue;
-
-      strTemp = strDirectory;
-      URIUtils::RemoveSlashAtEnd(strTemp);
-      strTemp = URIUtils::GetFileName(strTemp);
-
-      if (m_handle)
-        m_handle->SetTitle(strTemp);
-
-      if (m_database.AddProgram(item->GetPath(), idPath) < 0)
-        return false;
-
-      CProgramInfoTag tag;
-      tag.SetFileNameAndPath(item->GetPath());
-
-      if (scraper->ID() == "metadata.local")
-      {
-        CXBMCTinyXML doc;
-        std::string strNFO = GetNFO(item.get());
-        if (!strNFO.empty() && doc.LoadFile(strNFO) && doc.RootElement())
-          tag.Load(doc.RootElement());
-      }
-      else
-      {
-        scraper->GetProgramDetails(item->GetPath(), tag);
-      }
-
-      // set default values if not present
-      if (tag.m_strFileNameAndPath.empty())
-        tag.SetFileNameAndPath(item->GetPath());
-      if (tag.m_type.empty())
-        tag.SetType("game");
-      if (tag.m_strSystem.empty())
-        tag.SetSystem("xbox");
-      if (tag.m_strTitle.empty())
-        tag.SetTitle(strTemp);
-
-      if (item->IsXBE())
-      {
-        unsigned int xbeID = CUtil::GetXbeID(item->GetPath());
-        std::stringstream ss;
-        ss << std::hex << std::uppercase << xbeID;
-        tag.SetUniqueID(ss.str());
-      }
-      else
-      {
-        // TODO: How to get MD5 or similar hash for ROM files?
-      }
-
-      CFileItemPtr pItem(new CFileItem(tag));
-      GetArtwork(pItem.get());
-      m_database.SetDetailsForItem(pItem.get());
+      if (!recursive)
+        m_handle->SetPercentage(i * 100.f / items.Size());
     }
 
     return true;
+  }
+
+  void CProgramInfoScanner::ScrapeProgram(int idPath, const std::string& strPath, const ScraperPtr& scraper)
+  {
+    std::string strTemp(strPath);
+    URIUtils::RemoveExtension(strTemp);
+    if (!StringUtils::EndsWithNoCase(strTemp, "default"))
+      return;
+
+    std::string strTitle = URIUtils::GetParentPath(strPath);
+    URIUtils::RemoveSlashAtEnd(strTitle);
+    strTitle = URIUtils::GetFileName(strTitle);
+
+    if (m_handle)
+      m_handle->SetTitle(strTitle);
+
+    if (m_database.AddProgram(strPath, idPath) < 0)
+      return;
+
+    CProgramInfoTag tag;
+    tag.SetFileNameAndPath(strPath);
+
+    if (scraper->ID() == "metadata.local")
+    {
+      CXBMCTinyXML doc;
+      std::string strNFO = GetNFO(strPath);
+      if (!strNFO.empty() && doc.LoadFile(strNFO) && doc.RootElement())
+        tag.Load(doc.RootElement());
+    }
+    else
+    {
+      scraper->GetProgramDetails(strPath, tag);
+    }
+
+    // set default values if not present
+    if (tag.m_strFileNameAndPath.empty())
+      tag.SetFileNameAndPath(strPath);
+    if (tag.m_type.empty())
+      tag.SetType("game");
+    if (tag.m_strSystem.empty())
+      tag.SetSystem("xbox");
+    if (tag.m_strTitle.empty())
+      tag.SetTitle(strTitle);
+
+    if (URIUtils::HasExtension(strPath, ".xbe"))
+    {
+      unsigned int xbeID = CUtil::GetXbeID(strPath);
+      std::stringstream ss;
+      ss << std::hex << std::uppercase << xbeID;
+      tag.SetUniqueID(ss.str());
+    }
+    else
+    {
+      // TODO: How to get MD5 or similar hash for ROM files?
+    }
+
+    CFileItemPtr pItem(new CFileItem(tag));
+    GetArtwork(pItem.get());
+    m_database.SetDetailsForItem(pItem.get());
   }
 }

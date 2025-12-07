@@ -31,6 +31,7 @@ namespace PROGRAM
     CProgramDatabase m_database;
 
   private:
-    bool DoScraping(const std::string& strDirectory, const ADDON::ScraperPtr& scraper, bool recursive = false);
+    bool DoScraping(const std::string& strDirectory, const ADDON::ScraperPtr& scraper, int idPath = - 1);
+    void ScrapeProgram(int idPath, const std::string& strPath, const ADDON::ScraperPtr& scraper);
   };
 }
