@@ -92,7 +92,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   {
     buttons.Add(CONTEXT_BUTTON_DELETE, 117);
   }
-  else if (item->m_bIsFolder && item->IsHD())
+  else if (item->IsMultiPath() || (item->m_bIsFolder && item->IsHD()))
   {
     CGUIDialogContextMenu::GetContextButtons("programs", item, buttons);
   }

@@ -131,6 +131,9 @@ CScraperConfig::CScraperConfig()
 
 bool CScraperConfig::IsVisible(const CFileItem& item) const
 {
+  if (item.IsMultiPath())
+    return true;
+
   return item.m_bIsFolder && URIUtils::IsDOSPath(item.GetPath());
 }
 
@@ -165,15 +168,17 @@ CContentScan::CContentScan()
 
 bool CContentScan::IsVisible(const CFileItem& item) const
 {
-  if (!item.m_bIsFolder || !item.IsHD())
-    return false;
+  if (item.IsMultiPath() || (item.m_bIsFolder && item.IsHD()))
+  {
+    CProgramDatabase database;
+    if (!database.Open())
+      return false;
 
-  CProgramDatabase database;
-  if (!database.Open())
-    return false;
+    ADDON::ScraperPtr scraper = database.GetScraperForPath(item.GetPath());
+    return scraper != NULL;
+  }
 
-  ADDON::ScraperPtr scraper = database.GetScraperForPath(item.GetPath());
-  return scraper != NULL;
+  return false;
 }
 
 bool CContentScan::Execute(const boost::shared_ptr<CFileItem>& item) const
