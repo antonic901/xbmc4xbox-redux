@@ -85,6 +85,7 @@
 #include "settings/SkinSettings.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/SeekHandler.h"
+#include "utils/Updater.h"
 
 #include "input/KeyboardLayoutManager.h"
 
@@ -1311,6 +1312,7 @@ HRESULT CApplication::Initialize()
   }
 
   m_slowTimer.StartZero();
+  m_updaterTimer.StartZero();
 
 #ifdef __APPLE__
   g_xbmcHelper.CaptureAllInput();
@@ -5227,6 +5229,14 @@ void CApplication::Process()
     ProcessSlow();
   }
 
+  if (m_updaterTimer.GetElapsedSeconds() > 1800)
+  {
+    if (!g_infoManager.EvaluateBool("Skin.HasSetting(updateavailable)"))
+    {
+      CJobManager::GetInstance().AddJob(new CUpdaterJob(), NULL);
+    }
+    m_updaterTimer.Reset();
+  }
 }
 
 // We get called every 500ms
