@@ -1180,6 +1180,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\Trainer.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\Updater.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Updater.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\URIUtils.cpp">
 				</File>
 				<File
