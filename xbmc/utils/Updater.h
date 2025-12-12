@@ -12,6 +12,12 @@
 
 #include <string>
 
+enum AUTO_UPDATER
+{
+  AUTO_UPDATER_NOTIFY = 1,
+  AUTO_UPDATER_NEVER
+};
+
 class CUpdaterJob : public CJob
 {
 public:

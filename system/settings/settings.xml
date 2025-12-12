@@ -1137,6 +1137,25 @@
     </category>
   </section>
   <section id="system" label="13000" help="36349">
+    <category id="updater" label="36605" help="">
+      <group id="1">
+        <setting id="updater.autoupdate" type="integer" label="36605" help="">
+          <level>0</level>
+          <default>1</default>
+          <constraints>
+            <options>
+              <option label="36607">1</option> <!-- AUTO_UPDATER_NOTIFY -->
+              <option label="36608">2</option> <!-- AUTO_UPDATES_NEVER -->
+            </options>
+          </constraints>
+          <control type="list" format="string" />
+        </setting>
+        <setting id="updater.check" type="action" label="24034" help="">
+          <level>0</level>
+          <control type="button" format="action" />
+        </setting>
+      </group>
+    </category>
     <category id="display" label="14220" help="36603">
       <group id="1" label="16000">
         <setting id="videoscreen.resolution" type="integer" label="169" help="36352">

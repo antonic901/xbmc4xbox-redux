@@ -1313,7 +1313,8 @@ HRESULT CApplication::Initialize()
 
   m_slowTimer.StartZero();
   m_updaterTimer.StartZero();
-  CJobManager::GetInstance().AddJob(new CUpdaterJob(true), NULL);
+  if (CSettings::GetInstance().GetInt("updater.autoupdate") == AUTO_UPDATER_NOTIFY)
+    CJobManager::GetInstance().AddJob(new CUpdaterJob(true), NULL);
 
 #ifdef __APPLE__
   g_xbmcHelper.CaptureAllInput();
@@ -5232,7 +5233,8 @@ void CApplication::Process()
 
   if (m_updaterTimer.GetElapsedSeconds() > 1800)
   {
-    if (!g_infoManager.EvaluateBool("Skin.HasSetting(updateavailable)"))
+    if (CSettings::GetInstance().GetInt("updater.autoupdate") == AUTO_UPDATER_NOTIFY && 
+        !g_infoManager.EvaluateBool("Skin.HasSetting(updateavailable)"))
     {
       CJobManager::GetInstance().AddJob(new CUpdaterJob(true), NULL);
     }
@@ -6179,6 +6181,8 @@ void CApplication::OnSettingAction(const CSetting *setting)
     g_windowManager.ActivateWindow(WINDOW_PICTURES);
   else if (settingId == "myprograms.trainerscan")
     CTrainer::ScanTrainers();
+  else if (settingId == "updater.check")
+    CJobManager::GetInstance().AddJob(new CUpdaterJob(false, true), NULL, CJob::PRIORITY_HIGH);
 }
 
 bool CApplication::OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode)
