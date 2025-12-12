@@ -10,13 +10,23 @@
 
 #include "utils/Job.h"
 
+#include <string>
 
 class CUpdaterJob : public CJob
 {
+public:
+  CUpdaterJob(bool notify = false, bool bPromptInstall = false);
+
   // implementation of CJob
   virtual bool DoWork();
   virtual const char *GetType() const { return "AutoUpdater"; }
   virtual bool operator==(const CJob* job) const;
 
   virtual bool ShouldCancel(unsigned int progress, unsigned int total) const { return false; }
+
+private:
+  virtual void DoInstall();
+
+  bool m_notify;
+  bool m_install;
 };

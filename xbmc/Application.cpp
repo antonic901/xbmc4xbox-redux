@@ -1313,6 +1313,7 @@ HRESULT CApplication::Initialize()
 
   m_slowTimer.StartZero();
   m_updaterTimer.StartZero();
+  CJobManager::GetInstance().AddJob(new CUpdaterJob(true), NULL);
 
 #ifdef __APPLE__
   g_xbmcHelper.CaptureAllInput();
@@ -5233,7 +5234,7 @@ void CApplication::Process()
   {
     if (!g_infoManager.EvaluateBool("Skin.HasSetting(updateavailable)"))
     {
-      CJobManager::GetInstance().AddJob(new CUpdaterJob(), NULL);
+      CJobManager::GetInstance().AddJob(new CUpdaterJob(true), NULL);
     }
     m_updaterTimer.Reset();
   }
