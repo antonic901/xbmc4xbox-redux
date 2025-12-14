@@ -101,6 +101,12 @@
 						<onclick>ActivateWindow(SystemSettings)</onclick>
 						<icon>icons/settings/system.png</icon>
 					</item>
+					<item>
+						<label>$LOCALIZE[24068]</label>
+						<onclick>ActivateWindow(SystemSettings,updater.check)</onclick>
+						<icon>icons/settings/update.png</icon>
+						<visible>Skin.HasSetting(updateavailable)</visible>
+					</item>
 				</content>
 			</control>
 		</control>
