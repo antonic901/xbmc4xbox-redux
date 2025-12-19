@@ -15,9 +15,7 @@ rem CONFIG START
 
 SET XBE_PATCH=tools\xbepatch\xbepatch.exe
 
-SET COMPRESS_FILE=XBMC4XBOX.zip
 SET COMPRESS=C:\Program Files\7-zip\7z.exe
-SET COMPRESS_OPTS=a %COMPRESS_FILE%
 
 SET Silent=0
 SET SkipCompression=0
@@ -234,6 +232,9 @@ GOTO:EOF
   xcopy addons %~1\addons /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy system %~1\system /E /Q /I /Y /EXCLUDE:exclude.txt
   xcopy media   %~1\media   /E /Q /I /Y /EXCLUDE:exclude.txt
+  IF EXIST updater.xbe (
+	xcopy updater.xbe %~1 /Y /Q
+  )
   
   del exclude.txt
   GOTO:EOF
@@ -244,8 +245,10 @@ GOTO:EOF
   ECHO Compressing build to XBMC4XBOX.zip file...
   ECHO ------------------------------------------------------------
   IF EXIST "%COMPRESS%" (
-    DEL %COMPRESS_FILE%
-    "%COMPRESS%" %COMPRESS_OPTS% "%~1"
+    DEL XBMC4Xbox.zip
+	DEL XBMC4Xbox.tar
+    "%COMPRESS%" a XBMC4Xbox.zip "%~1"
+	"%COMPRESS%" a XBMC4Xbox.tar "%~1"
   ) ELSE ( 
     ECHO 7-Zip not installed!  Skipping compression...
   )
