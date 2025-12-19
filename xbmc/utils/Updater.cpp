@@ -29,18 +29,22 @@ bool CUpdaterJob::DoWork()
 {
   if (!g_infoManager.EvaluateBool("Skin.HasSetting(updateavailable)"))
   {
-    std::string temp(VERSION_STRING);
-    size_t iPos = temp.find("-");
-    std::string revision = temp.substr(iPos + 1);
+    std::string revision(VERSION_STRING);
+    size_t iPos = revision.find("-");
+    revision = revision.substr(iPos + 1);
 
     if (revision.empty() || revision == "dev")
       return true;
 
     CLog::Log(LOGINFO, "Checking for new updates...");
 
+    std::string strURL = "https://github.com/antonic901/xbmc4xbox-redux/releases/download/nightly/version.txt";
+    if (StringUtils::EndsWithNoCase(VERSION_STRING, "py3"))
+      strURL = "https://github.com/antonic901/xbmc4xbox-redux/releases/download/nightly-python3/version.txt";
+
     XFILE::CCurlFile httpUtil;
     std::string bodyResponse;
-    if (!httpUtil.Get("https://github.com/antonic901/xbmc4xbox-redux/releases/download/nightly/version.txt", bodyResponse))
+    if (!httpUtil.Get(strURL, bodyResponse))
     {
       CLog::Log(LOGWARNING, "Failed to fetch version file");
       return false;
