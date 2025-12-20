@@ -86,6 +86,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "utils/SeekHandler.h"
 #include "guiinfo/GUIInfoLabels.h"
+#include "utils/Updater.h"
 
 #include "input/KeyboardLayoutManager.h"
 
