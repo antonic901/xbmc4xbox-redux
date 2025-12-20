@@ -32,7 +32,6 @@
 			</control>
 		</control>
 		<control type="group" id="1">
-			<depth>DepthOSD+</depth>
 			<visible>Player.Caching</visible>
 			<animation delay="300" effect="fade" time="200">Visible</animation>
 			<animation effect="fade" delay="200" time="150">Hidden</animation>

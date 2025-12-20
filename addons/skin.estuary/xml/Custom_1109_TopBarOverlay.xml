@@ -2,13 +2,11 @@
 <window type="dialog" id="1109">
 	<visible>Window.IsActive(fullscreenvideo) | Window.IsActive(visualisation)</visible>
 	<visible>Window.IsActive(seekbar)</visible>
-	<depth>DepthOSD</depth>
 	<include>Animation_TopSlide</include>
 	<zorder>0</zorder>
 	<controls>
 		<control type="group">
 			<animation effect="slide" end="0,-90" time="300" tween="sine" easing="inout" condition="$EXP[infodialog_active]">conditional</animation>
-			<depth>DepthBars</depth>
 			<control type="image">
 				<left>0</left>
 				<top>0</top>

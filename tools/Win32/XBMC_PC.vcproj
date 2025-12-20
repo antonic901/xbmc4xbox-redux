@@ -660,12 +660,6 @@
 					RelativePath="..\..\xbmc\cores\paplayer\AudioDecoder.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\cores\paplayer\CDDAcodec.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\cores\paplayer\CDDAcodec.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\cores\paplayer\CodecFactory.cpp">
 				</File>
 				<File

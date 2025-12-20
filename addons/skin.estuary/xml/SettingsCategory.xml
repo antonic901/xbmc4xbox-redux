@@ -5,7 +5,6 @@
 	<controls>
 		<include>DefaultBackground</include>
 		<control type="multiimage">
-			<depth>DepthBackground</depth>
 			<include>FullScreenDimensions</include>
 			<aspectratio>scale</aspectratio>
 			<animation effect="zoom" center="auto" end="102,102" time="0" condition="Integer.IsGreater(System.StereoscopicMode,0)">conditional</animation>
@@ -81,7 +80,6 @@
 			<shadowcolor>black</shadowcolor>
 		</control>
 		<control type="group">
-			<depth>DepthContentPanel</depth>
 			<include>OpenClose_Left</include>
 			<include content="ContentPanel">
 				<param name="width" value="530" />

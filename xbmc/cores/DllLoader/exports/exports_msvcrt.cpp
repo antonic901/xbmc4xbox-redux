@@ -96,6 +96,7 @@ extern "C" void* tanh();
 extern "C" void* time();
 extern "C" void* toupper();
 extern "C" void* _memccpy();
+extern "C" void* _msize();
 extern "C" void* dll_fstat();
 extern "C" void* dll_mkdir();
 extern "C" void* dll_pclose();
@@ -165,6 +166,7 @@ extern "C" void* dll_telli64();
 extern "C" void* dll_tell();
 extern "C" void* dll_setmode();
 extern "C" void* dll_beginthreadex();
+extern "C" void* dll_endthreadex();
 extern "C" void* dll_fileno();
 extern "C" void* dll_getcwd();
 extern "C" void* _isatty();
@@ -222,6 +224,7 @@ extern "C" void* _CIcos();
 extern "C" void* _CIsin();
 extern "C" void* _CIlog();
 extern "C" void* _CIexp();
+extern "C" void* _CIatan2();
 extern "C" void* dllfree71();
 extern "C" void* isalpha();
 extern "C" void* _setjmp3();
@@ -350,6 +353,7 @@ Export export_msvcrt[] =
   { "_fstat",                     -1, dll_fstat,                     NULL },
   { "_memccpy",                   -1, _memccpy,                      NULL },
   { "_mkdir",                     -1, dll_mkdir,                     NULL },
+  { "_msize",                     -1, _msize,                        NULL },
   { "_pclose",                    -1, dll_pclose,                    NULL },
   { "_popen",                     -1, dll_popen,                     NULL },
   { "_sleep",                     -1, dll_sleep,                     NULL },
@@ -412,6 +416,7 @@ Export export_msvcrt[] =
   { "_tell",                      -1, dll_tell,                      NULL },
   { "_setmode",                   -1, dll_setmode,                   NULL },
   { "_beginthreadex",             -1, dll_beginthreadex,             NULL },
+  { "_endthreadex",               -1, dll_endthreadex,               NULL },
   { "_fdopen",                    -1, dll_fdopen,                    NULL },
   { "_fileno",                    -1, dll_fileno,                    NULL },
   { "_getcwd",                    -1, dll_getcwd,                    NULL },
@@ -450,6 +455,7 @@ Export export_msvcrt[] =
   { "_CIcos",                     -1, _CIcos,                        NULL },
   { "_CIlog",                     -1, _CIlog,                        NULL },
   { "_CIsin",                     -1, _CIsin,                        NULL },
+  { "_CIatan2",                   -1, _CIatan2,                      NULL },
   { "??_V@YAXPAX@Z",              -1, dllfree,                       track_free},
   { "isalpha",                    -1, isalpha,                       NULL },
   { "_CxxThrowException",         -1, _CxxThrowException,            NULL },
@@ -525,6 +531,7 @@ Export export_pncrt[] =
   { "_initterm",                  -1, dll_initterm,                  NULL },
   { "_adjust_fdiv",               -1, &_adjust_fdiv,                 NULL },
   { "_beginthreadex",             -1, dll_beginthreadex,             NULL },
+  { "_endthreadex",               -1, dll_endthreadex,               NULL },
   { "_iob",                       -1, &_iob,                         NULL },
   { "fprintf",                    -1, dll_fprintf,                   NULL },
   { "floor",                      -1, floor,                         NULL },

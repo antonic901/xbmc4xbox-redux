@@ -1146,6 +1146,7 @@ const infomap insignia[] =       {{ "isfetched",        INSIGNIA_IS_FETCHED },
 /// @}
 const infomap system_labels[] =  {{ "hasnetwork",       SYSTEM_ETHERNET_LINK_ACTIVE },
                                   { "hasmediadvd",      SYSTEM_MEDIA_DVD },
+                                  { "hasmediaaudiocd",  SYSTEM_MEDIA_AUDIO_CD },
                                   { "dvdready",         SYSTEM_DVDREADY },
                                   { "trayopen",         SYSTEM_TRAYOPEN },
                                   { "haslocks",         SYSTEM_HASLOCKS },
@@ -7272,6 +7273,16 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
       bReturn = MEDIA_DETECT::CDetectDVDMedia::IsDiscInDrive();
     else
       bReturn = false;
+  }
+  else if (condition == SYSTEM_MEDIA_AUDIO_CD)
+  {
+#ifdef HAS_DVD_DRIVE
+    if (MEDIA_DETECT::CDetectDVDMedia::IsDiscInDrive())
+    {
+      MEDIA_DETECT::CCdInfo *pCdInfo = MEDIA_DETECT::CDetectDVDMedia::GetCdInfo();
+      bReturn = pCdInfo && (pCdInfo->IsAudio(1) || pCdInfo->IsCDExtra(1) || pCdInfo->IsMixedMode(1));
+    }
+#endif
   }
 #ifdef HAS_DVD_DRIVE
   else if (condition == SYSTEM_DVDREADY)

@@ -40,7 +40,7 @@
 #ifdef SVN_REV
 #define VERSION_STRING "4.0-"SVN_REV
 #else
-#define VERSION_STRING "4.0-dev"
+#define VERSION_STRING "4.0-dev-py2"
 #endif
 
 namespace MUSIC_INFO

@@ -92,7 +92,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   {
     buttons.Add(CONTEXT_BUTTON_DELETE, 117);
   }
-  else if (item->m_bIsFolder && item->IsHD())
+  else if (item->IsMultiPath() || (item->m_bIsFolder && item->IsHD()))
   {
     CGUIDialogContextMenu::GetContextButtons("programs", item, buttons);
   }
@@ -173,7 +173,8 @@ bool CGUIWindowPrograms::Update(const std::string &strDirectory, bool updateFilt
   if (!CGUIMediaWindow::Update(strDirectory, updateFilterPath))
     return false;
 
-  m_thumbLoader.Load(*m_vecItems);
+  if (URIUtils::IsProtocol(m_vecItems->GetPath(), "gamesaves"))
+    m_thumbLoader.Load(*m_vecItems);
 
   return true;
 }
@@ -221,7 +222,7 @@ bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItem
     items.Add(pItem);
 
     CFileItemPtr pItem2(new CFileItem("gamesaves://", true));
-    pItem2->SetIconImage("DefaultGames.png");
+    pItem2->SetIconImage("DefaultGameAddons.png");
     pItem2->SetLabel(g_localizeStrings.Get(38779));
     pItem2->SetLabelPreformated(true);
     pItem2->SetProperty("overview", g_localizeStrings.Get(38779));

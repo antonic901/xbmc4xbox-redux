@@ -74,7 +74,7 @@ def load_show_info_from_cache(show_id):
     try:
         with open(os.path.join(CACHE_DIR, file_name), u'rb') as fo:
             load_kwargs = {}
-            load_kwargs[u'encoding'] = u'bytes'
+            # load_kwargs[u'encoding'] = u'bytes'
             cache = pickle.load(fo, **load_kwargs)
         return cache[u'show_info']
     except (IOError, pickle.PickleError), exc:

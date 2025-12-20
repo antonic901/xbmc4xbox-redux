@@ -9,7 +9,7 @@ REM Remove existing revision file if it exists
 IF EXIST %REV_FILE% del %REV_FILE%
 
 REM Set SVN_REV
-SET SVN_REV=Beta_1
+SET SVN_REV=dev
 
 REM Get the current date and time
 FOR /F "tokens=2 delims==" %%I IN ('wmic os get localdatetime /value') DO SET DATETIME=%%I
@@ -17,7 +17,7 @@ SET SVN_DATE=%DATETIME:~0,4%-%DATETIME:~4,2%-%DATETIME:~6,2% %DATETIME:~8,2%:%DA
 
 REM Create the svn_rev.h file with the defined revision and date
 (
-    ECHO #define SVN_REV "%SVN_REV%"
+    ECHO #define SVN_REV "%SVN_REV%-py2"
     ECHO #define SVN_DATE "%SVN_DATE%"
 ) > %REV_FILE%
 

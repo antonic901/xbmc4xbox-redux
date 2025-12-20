@@ -356,6 +356,7 @@ protected:
   CStopWatch m_slowTimer;
   CStopWatch m_screenSaverTimer;
   CStopWatch m_shutdownTimer;
+  CStopWatch m_updaterTimer;
 
   CFileItemPtr m_itemCurrentFile;
   CFileItemList* m_currentStack;

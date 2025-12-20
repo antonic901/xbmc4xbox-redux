@@ -15,6 +15,12 @@ jobs:
           ref: master
           submodules: recursive
 
+      - name: Generate version.txt
+        shell: pwsh
+        run: |
+          $rev = git rev-parse --short HEAD
+          Set-Content -Path version.txt -Value $rev
+
       - name: Download prerequisites
         shell: pwsh
         run: |
@@ -22,13 +28,26 @@ jobs:
           Invoke-WebRequest -Uri "https://www.dropbox.com/scl/fi/5ymtc9cqnjjpx7gw8i6zz/BuildDependencies.zip?rlkey=o2rygnv6lrv18zm01v8q5azq3&st=k51dwl2y&dl=1" -OutFile $destination -UseBasicParsing
           Expand-Archive -Path $destination -DestinationPath "tools" -Force
 
+      - name: Download XBMC updater
+        shell: pwsh
+        run: |
+          $repo = "xbmc4xbox/xbmc-updater"
+          $assetName = "updater.xbe"
+          $release = Invoke-RestMethod "https://api.github.com/repos/$repo/releases/latest"
+          $asset = $release.assets | Where-Object { $_.name -eq $assetName }
+          if (-not $asset) {
+              Write-Error "updater.xbe not found in latest release"
+              exit 1
+          }
+          Invoke-WebRequest $asset.browser_download_url -OutFile $assetName
+
       - name: Generate svn_rev.h
         shell: powershell
         run: |
           $template = Get-Content ".\xbmc\xbox\svn_rev.tmpl"
           $rev = git rev-parse --short origin/master
           $date = Get-Date -Format "yyyy-MM-dd HH:mm"
-          $output = $template -replace '\$WCREV\$', "nightly-$rev" -replace '\$WCDATE\$', $date
+          $output = $template -replace '\$WCREV\$', "$rev-py2" -replace '\$WCDATE\$', $date
           $output | Set-Content ".\xbmc\xbox\svn_rev.h"
 
       - name: Generate XBMC Python bindings
@@ -44,7 +63,10 @@ jobs:
         with:
           tag_name: nightly
           name: Nightly build
-          files: XBMC4XBOX.zip
+          files: |
+            XBMC4XBOX.zip
+            XBMC4Xbox.tar
+            version.txt
           body: "Automated nightly build."
           draft: false
           prerelease: true

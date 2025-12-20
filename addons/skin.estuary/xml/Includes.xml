@@ -17,17 +17,6 @@
 	<include file="View_502_FanArt.xml" />
 	<include file="Variables.xml" />
 	<include file="Constants_1920.xml" />
-	<constant name="DepthDialog">0.50</constant>
-	<constant name="DepthDialog+">0.52</constant>
-	<constant name="DepthDialog-">0.48</constant>
-	<constant name="DepthMax">0.54</constant>
-	<constant name="DepthOSD">0.40</constant>
-	<constant name="DepthOSD+">0.44</constant>
-	<constant name="DepthContentPopout">0.10</constant>
-	<constant name="DepthContentPanel">0.05</constant>
-	<constant name="DepthBars">0.12</constant>
-	<constant name="DepthBackground">-0.80</constant>
-	<constant name="DepthSideBlade">0.10</constant>
 	<constant name="bg_alpha">79</constant>
 	<constant name="dialogbuttons_itemgap">-20</constant>
 	<constant name="list_y_offset">0</constant>
@@ -727,7 +716,6 @@
 		<definition>
 			<control type="group">
 				<animation effect="slide" end="0,-112" time="300" tween="sine" easing="inout" condition="$EXP[infodialog_active]">conditional</animation>
-				<depth>DepthBars</depth>
 				<animation effect="fade" start="0" end="100" time="300" condition="[Window.Previous(fullscreenvideo) | Window.Previous(startup)] + !Window.IsVisible(1109)">WindowOpen</animation>
 				<control type="image">
 					<left>0</left>
@@ -937,22 +925,20 @@
 	</include>
 	<include name="ColoredBackgroundImages">
 		<control type="image">
-			<depth>DepthBackground</depth>
 			<include>FullScreenDimensions</include>
 			<aspectratio>scale</aspectratio>
 			<texture colordiffuse="primary_background">special://skin/extras/backgrounds/primary.jpg</texture>
 		</control>
 		<control type="image">
-			<depth>DepthBackground</depth>
 			<include>FullScreenDimensions</include>
 			<aspectratio>scale</aspectratio>
-			<texture colordiffuse="secondary_background" fallback="special://skin/extras/backgrounds/pattern1.jpg">$INFO[Skin.String(background_overlay),special://skin/extras/backgrounds/pattern,.jpg]</texture>
+			<texture colordiffuse="secondary_background" fallback="special://skin/extras/backgrounds/pattern1.png">$INFO[Skin.String(background_overlay),special://skin/extras/backgrounds/pattern,.png]</texture>
+			<visible>!String.IsEmpty(Skin.String(background_overlay)) + !String.IsEqual(Skin.String(background_overlay),0)</visible>
 		</control>
 	</include>
 	<include name="DefaultBackground">
 		<definition>
 			<control type="videowindow">
-				<depth>DepthBackground</depth>
 				<include>FullScreenDimensions</include>
 				<visible>Player.HasVideo</visible>
 				<visible>!Slideshow.IsActive</visible>
@@ -972,7 +958,6 @@
 				</control>
 				<control type="group" id="31111">
 					<visible>![Player.HasVideo | [Player.HasAudio + Visualisation.Enabled + !String.IsEmpty(Visualisation.Name)]] | !String.IsEmpty(Window(Videos).Property(PlayingBackgroundMedia))</visible>
-					<depth>DepthBackground</depth>
 					<animation effect="fade" start="0" end="100" time="400">WindowOpen</animation>
 					<animation effect="fade" start="100" end="0" time="300">WindowClose</animation>
 					<animation effect="fade" time="400">VisibleChange</animation>
@@ -1005,7 +990,6 @@
 		<definition>
 			<control type="group">
 				<animation effect="slide" end="0,112" time="300" tween="sine" easing="inout" condition="$EXP[infodialog_active]">conditional</animation>
-				<depth>DepthBars</depth>
 				<animation effect="fade" start="100" end="0" time="300" condition="Window.Next(visualisation) | Window.Next(screencalibration)">WindowClose</animation>
 				<animation effect="fade" start="0" end="100" time="300" condition="Window.Previous(fullscreenvideo) | Window.Previous(startup) | Window.Previous(visualisation)">WindowOpen</animation>
 				<bottom>0</bottom>
@@ -1184,5 +1168,77 @@
 				<height>$PARAM[height]</height>
 			</control>
 		</definition>
+	</include>
+	<include name="SettingsPanel">
+		<itemlayout height="260" width="400">
+			<control type="image">
+				<left>-5</left>
+				<width>410</width>
+				<height>270</height>
+				<texture>dialogs/dialog-bg-nobo.png</texture>
+				<bordertexture border="21" infill="false">overlays/shadow.png</bordertexture>
+				<bordersize>20</bordersize>
+			</control>
+			<control type="image">
+				<centerleft>50%</centerleft>
+				<top>30</top>
+				<width>240</width>
+				<height>160</height>
+				<texture>$INFO[ListItem.Icon]</texture>
+				<align>center</align>
+				<aspectratio>scale</aspectratio>
+			</control>
+			<control type="label">
+				<left>25</left>
+				<top>190</top>
+				<width>350</width>
+				<height>400</height>
+				<label>$INFO[ListItem.Label]</label>
+				<align>center</align>
+			</control>
+		</itemlayout>
+		<focusedlayout height="230" width="400">
+			<control type="group">
+				<animation type="Focus" reversible="false">
+					<effect type="zoom" center="200,140" start="100" end="110" time="250" tween="sine" />
+				</animation>
+				<animation type="UnFocus" reversible="false">
+					<effect type="zoom" center="200,140" start="110" end="100" time="250" tween="sine" />
+				</animation>
+				<control type="image">
+					<left>-5</left>
+					<width>410</width>
+					<height>270</height>
+					<texture>dialogs/dialog-bg-nobo.png</texture>
+					<bordertexture border="21" infill="false">overlays/shadow.png</bordertexture>
+					<bordersize>20</bordersize>
+				</control>
+				<control type="image">
+					<left>-5</left>
+					<width>410</width>
+					<height>270</height>
+					<texture colordiffuse="button_focus">colors/grey.png</texture>
+					<bordersize>20</bordersize>
+					<include>Animation_FocusTextureFade</include>
+				</control>
+				<control type="image">
+					<centerleft>50%</centerleft>
+					<top>30</top>
+					<width>240</width>
+					<height>160</height>
+					<texture>$INFO[ListItem.Icon]</texture>
+					<align>center</align>
+					<aspectratio>scale</aspectratio>
+				</control>
+				<control type="label">
+					<left>25</left>
+					<top>190</top>
+					<width>350</width>
+					<height>400</height>
+					<label>$INFO[ListItem.Label]</label>
+					<align>center</align>
+				</control>
+			</control>
+		</focusedlayout>
 	</include>
 </includes>

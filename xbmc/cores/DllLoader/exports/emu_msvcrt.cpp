@@ -1299,6 +1299,11 @@ extern "C"
     return dllCreateThread(lpThreadAttributes, dwStackSize, lpStartAddress, lpParameter, dwCreationFlags, lpThreadId);
   }
 
+  void dll_endthreadex(DWORD dwRetval)
+  {
+    ExitThread(dwRetval);
+  }
+
   //SLOW CODE SHOULD BE REVISED
   int dll_stat(const char *path, struct _stat *buffer)
   {

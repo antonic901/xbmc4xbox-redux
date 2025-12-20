@@ -121,7 +121,6 @@
 			<centertop>50%</centertop>
 			<height>670</height>
 			<left>101</left>
-			<depth>DepthContentPopout</depth>
 			<visible>Control.IsVisible(51)</visible>
 			<include>OpenClose_Left</include>
 			<include>Visible_Left</include>

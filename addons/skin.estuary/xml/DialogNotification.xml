@@ -3,7 +3,6 @@
 	<zorder>3</zorder>
 	<controls>
 		<control type="group">
-			<depth>DepthMax</depth>
 			<top>85</top>
 			<right>0</right>
 			<width>640</width>

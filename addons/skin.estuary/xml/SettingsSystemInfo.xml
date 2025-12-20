@@ -4,7 +4,6 @@
 	<controls>
 		<include>DefaultBackground</include>
 		<control type="multiimage">
-			<depth>DepthBackground</depth>
 			<include>FullScreenDimensions</include>
 			<aspectratio>scale</aspectratio>
 			<fadetime>600</fadetime>
@@ -200,7 +199,6 @@
 		<control type="group">
 			<left>0</left>
 			<top>0</top>
-			<depth>DepthContentPanel</depth>
 			<include>OpenClose_Left</include>
 			<include content="ContentPanel">
 				<param name="width" value="480" />

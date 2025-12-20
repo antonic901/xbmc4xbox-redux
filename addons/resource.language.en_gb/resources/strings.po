@@ -2676,6 +2676,16 @@ msgctxt "#621"
 msgid "Encoder"
 msgstr ""
 
+#: system/settings/settings.xml
+msgctxt "#622"
+msgid "Quality"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#623"
+msgid "Bitrate"
+msgstr ""
+
 msgctxt "#624"
 msgid "Include track number"
 msgstr ""
@@ -13830,7 +13840,9 @@ msgctxt "#38789"
 msgid "MPlayer"
 msgstr ""
 
-#empty string with id 38790
+msgctxt "#38790"
+msgid "Do you want to install?"
+msgstr ""
 
 msgctxt "#38791"
 msgid "Apply flicker filter setting to games"

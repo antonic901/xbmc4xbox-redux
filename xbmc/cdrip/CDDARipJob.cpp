@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2012-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -32,6 +31,7 @@
 #include "filesystem/SpecialProtocol.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
+#include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/StringUtils.h"
 #include "xbox/IoSupport.h"
@@ -39,13 +39,13 @@
 using namespace MUSIC_INFO;
 using namespace XFILE;
 
-CCDDARipJob::CCDDARipJob(const CStdString& input,
-                         const CStdString& output,
-                         const CMusicInfoTag& tag, 
+CCDDARipJob::CCDDARipJob(const std::string& input,
+                         const std::string& output,
+                         const CMusicInfoTag& tag,
                          int encoder,
                          bool eject,
                          unsigned int rate,
-                         unsigned int channels, unsigned int bps) : 
+                         unsigned int channels, unsigned int bps) :
   m_rate(rate), m_channels(channels), m_bps(bps), m_tag(tag),
   m_input(input), m_output(CUtil::MakeLegalPath(output)), m_eject(eject),
   m_encoder(encoder)
@@ -65,8 +65,8 @@ bool CCDDARipJob::DoWork()
   CFileItem file(m_output, false);
   if (file.IsRemote())
     m_output = SetupTempFile();
-  
-  if (m_output.IsEmpty())
+
+  if (m_output.empty())
   {
     CLog::Log(LOGERROR, "CCDDARipper: Error opening file");
     return false;
@@ -82,15 +82,14 @@ bool CCDDARipJob::DoWork()
   }
 
   // setup the progress dialog
-  CGUIDialogExtendedProgressBar* pDlgProgress = 
+  CGUIDialogExtendedProgressBar* pDlgProgress =
       (CGUIDialogExtendedProgressBar*)g_windowManager.GetWindow(WINDOW_DIALOG_EXT_PROGRESS);
   CGUIDialogProgressBarHandle* handle = pDlgProgress->GetHandle(g_localizeStrings.Get(605));
-  CStdString strLine0;
+
   int iTrack = atoi(m_input.substr(13, m_input.size() - 13 - 5).c_str());
-  strLine0.Format("%02i. %s - %s", iTrack,
-                  StringUtils::Join(m_tag.GetArtist(),
-                              g_advancedSettings.m_musicItemSeparator).c_str(),
-                  m_tag.GetTitle().c_str());
+  std::string strLine0 = StringUtils::Format("%02i. %s - %s", iTrack,
+                                            m_tag.GetArtistString().c_str(),
+                                            m_tag.GetTitle().c_str());
   handle->SetText(strLine0);
 
   // start ripping
@@ -118,7 +117,7 @@ bool CCDDARipJob::DoWork()
     // copy the ripped track to the share
     if (!CFile::Copy(m_output, file.GetPath()))
     {
-      CLog::Log(LOGERROR, "CDDARipper: Error copying file from %s to %s", 
+      CLog::Log(LOGERROR, "CDDARipper: Error copying file from %s to %s",
                 m_output.c_str(), file.GetPath().c_str());
       CFile::Delete(m_output);
       return false;
@@ -178,7 +177,7 @@ int CCDDARipJob::RipChunk(CFile& reader, CEncoder* encoder, int& percent)
 
 CEncoder* CCDDARipJob::SetupEncoder(CFile& reader)
 {
-  CEncoder* encoder;
+  CEncoder* encoder = NULL;
   switch (m_encoder)
   {
   case CDDARIP_ENCODER_VORBIS:
@@ -195,13 +194,11 @@ CEncoder* CCDDARipJob::SetupEncoder(CFile& reader)
     encoder = new CEncoderWav();
     break;
   }
-
   if (!encoder)
     return NULL;
 
   // we have to set the tags before we init the Encoder
-  CStdString strTrack;
-  strTrack.Format("%i", strtol(m_input.substr(13, m_input.size() - 13 - 5).c_str(),NULL,10));
+  std::string strTrack = StringUtils::Format("%li", strtol(m_input.substr(13, m_input.size() - 13 - 5).c_str(),NULL,10));
 
   encoder->SetComment("Ripped with XBMC");
   encoder->SetArtist(StringUtils::Join(m_tag.GetArtist(),
@@ -223,21 +220,22 @@ CEncoder* CCDDARipJob::SetupEncoder(CFile& reader)
   return encoder;
 }
 
-CStdString CCDDARipJob::SetupTempFile()
+std::string CCDDARipJob::SetupTempFile()
 {
   char tmp[MAX_PATH];
-#ifndef _LINUX
+#ifndef TARGET_POSIX
 #ifdef _XBOX
-  return tempnam(CSpecialProtocol::TranslatePath("special://temp/"), "");
+  return tempnam(CSpecialProtocol::TranslatePath("special://temp/").c_str(), "");
 #else
-  GetTempFileName(CSpecialProtocol::TranslatePath("special://temp/"), "riptrack", 0, tmp);
+  GetTempFileName(CSpecialProtocol::TranslatePath("special://temp/").c_str(), "riptrack", 0, tmp);
 #endif
 #else
   int fd;
   strncpy(tmp, CSpecialProtocol::TranslatePath("special://temp/riptrackXXXXXX").c_str(), MAX_PATH);
   if ((fd = mkstemp(tmp)) == -1)
-   tmp[0] = '\0'; 
-  close(fd);
+   tmp[0] = '\0';
+  if (fd != -1)
+    close(fd);
 #endif
   return tmp;
 }
@@ -247,8 +245,11 @@ bool CCDDARipJob::operator==(const CJob* job) const
   if (strcmp(job->GetType(),GetType()) == 0)
   {
     const CCDDARipJob* rjob = dynamic_cast<const CCDDARipJob*>(job);
-    return m_input  == rjob->m_input &&
-           m_output == rjob->m_output;
+    if (rjob)
+    {
+      return m_input  == rjob->m_input &&
+             m_output == rjob->m_output;
+    }
   }
   return false;
 }

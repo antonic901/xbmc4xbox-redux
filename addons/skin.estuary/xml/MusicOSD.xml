@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <window>
 	<defaultcontrol always="true">602</defaultcontrol>
-	<depth>DepthOSD</depth>
 	<controls>
 		<control type="button">
 			<description>background close area</description>

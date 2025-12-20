@@ -63,7 +63,6 @@
 					<viewtype label="31100">icon</viewtype>
 					<itemlayout width="370">
 						<control type="image">
-							<depth>DepthContentPopout</depth>
 							<left>0</left>
 							<top>90</top>
 							<width>370</width>
@@ -92,7 +91,6 @@
 					</itemlayout>
 					<focusedlayout width="370">
 						<control type="image">
-							<depth>DepthContentPopout</depth>
 							<left>0</left>
 							<top>90</top>
 							<width>370</width>

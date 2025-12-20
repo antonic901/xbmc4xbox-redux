@@ -4,7 +4,6 @@
 	<visible>!Window.IsActive(sliderdialog)</visible>
 	<visible>Window.IsActive(visualisation) | Window.IsActive(fullscreenvideo)</visible>
 	<include>Animation_BottomSlide</include>
-	<depth>DepthOSD</depth>
 	<zorder>0</zorder>
 	<controls>
 		<control type="group">

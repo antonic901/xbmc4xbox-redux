@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <window>
 	<include>Animation_DialogPopupOpenClose</include>
-	<depth>DepthDialog+</depth>
 	<controls>
 		<control type="group">
 			<height>390</height>
@@ -51,4 +50,3 @@
 		</control>
 	</controls>
 </window>
-

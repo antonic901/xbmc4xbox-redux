@@ -208,7 +208,7 @@ fileio_init(PyObject *oself, PyObject *args, PyObject *kwds)
     PyObject *nameobj, *stringobj = NULL;
     char *mode = "r";
     char *s;
-#ifdef MS_WINDOWS
+#if defined(MS_WINDOWS) && !defined(_XBOX)
     Py_UNICODE *widename = NULL;
 #endif
     int ret = 0;
@@ -249,7 +249,7 @@ fileio_init(PyObject *oself, PyObject *args, PyObject *kwds)
         PyErr_Clear();
     }
 
-#ifdef MS_WINDOWS
+#if defined(MS_WINDOWS) && !defined(_XBOX)
     if (PyUnicode_Check(nameobj)) {
         widename = PyUnicode_AS_UNICODE(nameobj);
         if (wcslen(widename) != (size_t)PyUnicode_GET_SIZE(nameobj)) {
@@ -368,7 +368,7 @@ fileio_init(PyObject *oself, PyObject *args, PyObject *kwds)
 
         Py_BEGIN_ALLOW_THREADS
         errno = 0;
-#ifdef MS_WINDOWS
+#if defined(MS_WINDOWS) && !defined(_XBOX)
         if (widename != NULL)
             self->fd = _wopen(widename, flags, 0666);
         else
@@ -377,7 +377,7 @@ fileio_init(PyObject *oself, PyObject *args, PyObject *kwds)
         Py_END_ALLOW_THREADS
         fd_is_own = 1;
         if (self->fd < 0) {
-#ifdef MS_WINDOWS
+#if defined(MS_WINDOWS) && !defined(_XBOX)
             if (widename != NULL)
                 PyErr_SetFromErrnoWithUnicodeFilename(PyExc_IOError, widename);
             else

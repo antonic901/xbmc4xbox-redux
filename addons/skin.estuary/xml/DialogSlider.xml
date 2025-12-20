@@ -2,7 +2,6 @@
 <window>
 	<defaultcontrol>11</defaultcontrol>
 	<include>Animation_DialogPopupOpenClose</include>
-	<depth>DepthOSD+</depth>
 	<controls>
 		<control type="group">
 			<top>100</top>

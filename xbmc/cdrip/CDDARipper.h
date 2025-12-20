@@ -1,9 +1,8 @@
-#ifndef _CCDDARIPPER_H
-#define _CCDDARIPPER_H
+#pragma once
 
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *      Copyright (C) 2005-2015 Team Kodi
+ *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,11 +15,12 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
+ *  along with Kodi; see the file COPYING.  If not, see
  *  <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <string>
 #include "Encoder.h"
 #include "utils/JobManager.h"
 
@@ -34,11 +34,11 @@ namespace MUSIC_INFO
 /*! \brief Rip an entire CD or a single track
 
  The CCDDARipper class is used to rip an entire CD or just a single track.
- Tracks are stored in a folder constructed from two user settings: audiocds.recordingpath and 
- audiocds.trackpathformat. The former is the absolute file system path for the root folder 
- where ripped music is stored, and the latter specifies the format for the album subfolder and 
+ Tracks are stored in a folder constructed from two user settings: audiocds.recordingpath and
+ audiocds.trackpathformat. The former is the absolute file system path for the root folder
+ where ripped music is stored, and the latter specifies the format for the album subfolder and
  for the track file name.
- Format used to encode ripped tracks is defined by the audiocds.encoder user setting, and 
+ Format used to encode ripped tracks is defined by the audiocds.encoder user setting, and
  there are several choices: wav, ogg vorbis and mp3.
  */
 class CCDDARipper : public CJobQueue
@@ -69,7 +69,7 @@ private:
   CCDDARipper(const CCDDARipper&);
   virtual ~CCDDARipper();
   CCDDARipper const& operator=(CCDDARipper const&);
-  
+
   /*! \brief Return track file name extension for the given encoder type
    \param[in] iEncoder encoder type (see CDDARIP_ENCODER_... constants)
    \return file extension string (i.e. ".wav", ".mp3", ...)
@@ -82,19 +82,18 @@ private:
    \param[out] legalType created directory type (see LEGAL_... constants)
    \return true if success, false if failure
    */
-  bool CreateAlbumDir(const MUSIC_INFO::CMusicInfoTag& infoTag, CStdString& strDirectory, int& legalType);
+  bool CreateAlbumDir(const MUSIC_INFO::CMusicInfoTag& infoTag, std::string& strDirectory, int& legalType);
 
   /*! \brief Return formatted album subfolder for rip path
    \param infoTag music info tags for the CD, used to format album name
    \return album subfolder path name
    */
-  CStdString GetAlbumDirName(const MUSIC_INFO::CMusicInfoTag& infoTag);
+  std::string GetAlbumDirName(const MUSIC_INFO::CMusicInfoTag& infoTag);
 
   /*! \brief Return file name for the track
    \param item CFileItem representing a track
    \return track file name
    */
-  CStdString GetTrackName(CFileItem *item);
+  std::string GetTrackName(CFileItem *item);
 };
 
-#endif // _CCDDARIPPERMP3_H

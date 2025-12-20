@@ -2,7 +2,6 @@
 <window>
 	<defaultcontrol always="true">3</defaultcontrol>
 	<include>Animation_DialogPopupOpenClose</include>
-	<depth>DepthOSD</depth>
 	<controls>
 		<control type="group">
 			<centertop>50%</centertop>

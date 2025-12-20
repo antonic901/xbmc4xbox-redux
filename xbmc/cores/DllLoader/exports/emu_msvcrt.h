@@ -109,6 +109,7 @@ extern "C"
   HANDLE dll_beginthreadex(LPSECURITY_ATTRIBUTES lpThreadAttributes, DWORD dwStackSize,
                            LPTHREAD_START_ROUTINE lpStartAddress, LPVOID lpParameter, DWORD dwCreationFlags,
                            LPDWORD lpThreadId);
+  void dll_endthreadex(DWORD dwRetval);
   int dll_stati64(const char *path, struct _stati64 *buffer);
   int dll_stat64(const char *path, struct __stat64 *buffer);
   int dll_stat(const char *path, struct _stat *buffer);

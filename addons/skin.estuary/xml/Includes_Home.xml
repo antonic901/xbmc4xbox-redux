@@ -54,7 +54,6 @@
 				</itemlayout>
 				<focusedlayout width="310" height="486">
 					<control type="group">
-						<depth>DepthContentPopout</depth>
 						<left>68</left>
 						<top>10</top>
 						<animation type="Focus">
@@ -76,6 +75,7 @@
 		<param name="visible">true</param>
 		<param name="visible_1">true</param>
 		<param name="visible_2">true</param>
+		<param name="visible_3">false</param>
 		<param name="button2_label">$LOCALIZE[31116]</param>
 		<param name="button2_onclick">true</param>
 		<definition>
@@ -125,6 +125,18 @@
 							<texturenofocus border="40">buttons/dialogbutton-nofo.png</texturenofocus>
 							<visible>$PARAM[visible_2]</visible>
 						</control>
+						<control type="button" id="$PARAM[button_id]569">
+							<width>auto</width>
+							<height>110</height>
+							<label>$PARAM[button3_label]</label>
+							<textoffsetx>40</textoffsetx>
+							<onclick>$PARAM[button3_onclick]</onclick>
+							<onclick>SetFocus(9000)</onclick>
+							<align>center</align>
+							<texturefocus border="23" colordiffuse="button_focus">buttons/dialogbutton-fo.png</texturefocus>
+							<texturenofocus border="40">buttons/dialogbutton-nofo.png</texturenofocus>
+							<visible>$PARAM[visible_3]</visible>
+						</control>
 					</control>
 				</control>
 			</control>
@@ -171,7 +183,6 @@
 				</itemlayout>
 				<focusedlayout width="310" height="500">
 					<control type="group">
-						<depth>DepthContentPopout</depth>
 						<left>70</left>
 						<top>5</top>
 						<animation type="Focus">
@@ -231,7 +242,6 @@
 				</itemlayout>
 				<focusedlayout width="310" height="500">
 					<control type="group">
-						<depth>DepthContentPopout</depth>
 						<left>70</left>
 						<animation type="Focus">
 							<effect type="zoom" start="100" end="112" time="200" tween="sine" easing="inout" center="240,120" />
@@ -310,7 +320,6 @@
 				</itemlayout>
 				<focusedlayout width="310" height="340">
 					<control type="group">
-						<depth>DepthContentPopout</depth>
 						<left>70</left>
 						<animation type="Focus">
 							<effect type="zoom" start="100" end="115" time="200" tween="sine" easing="inout" center="228,70" />
@@ -428,7 +437,6 @@
 				<focusedlayout width="$PARAM[width]" height="400">
 					<control type="group">
 						<left>70</left>
-						<depth>DepthContentPopout</depth>
 						<animation type="Focus">
 							<effect type="zoom" start="100" end="110" time="200" tween="sine" easing="inout" center="180,140" />
 						</animation>

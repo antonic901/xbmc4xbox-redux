@@ -769,6 +769,7 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("source.videos");
   settingSet.insert("source.music");
   settingSet.insert("source.pictures");
+  settingSet.insert("updater.check");
   m_settingsManager->RegisterCallback(&g_application, settingSet);
 
   settingSet.clear();

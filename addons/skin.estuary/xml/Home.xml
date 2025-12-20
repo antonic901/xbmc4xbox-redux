@@ -19,7 +19,6 @@
 		</control>
 		<include>DefaultBackground</include>
 		<control type="multiimage">
-			<depth>DepthBackground</depth>
 			<include>FullScreenDimensions</include>
 			<aspectratio>scale</aspectratio>
 			<fadetime>600</fadetime>
@@ -175,7 +174,6 @@
 						</itemlayout>
 						<focusedlayout width="330" height="396">
 							<control type="group">
-								<depth>DepthContentPopout</depth>
 								<top>130</top>
 								<animation effect="zoom" start="100" end="110" time="200" tween="sine" easing="inout" center="170,320">Focus</animation>
 								<animation effect="zoom" start="110" end="100" time="200" tween="sine" easing="inout" center="170,320">UnFocus</animation>
@@ -338,11 +336,13 @@
 						<param name="visible" value="true"/>
 						<param name="button2_label" value="$LOCALIZE[13391]"/>
 						<param name="button2_onclick" value="EjectTray()"/>
+						<param name="button3_label" value="$LOCALIZE[600]"/>
+						<param name="button3_onclick" value="RipCD"/>
+						<param name="visible_3" value="System.HasMediaAudioCD"/>
 					</include>
 				</control>
 			</control>
 			<control type="group">
-				<depth>DepthContentPanel</depth>
 				<include>OpenClose_Left</include>
 				<include content="ContentPanel">
 					<param name="width" value="522" />
@@ -565,7 +565,6 @@
 				<param name="breadcrumbs_label" value="" />
 			</include>
 			<control type="group">
-				<depth>DepthBars</depth>
 				<animation effect="slide" end="0,-90" time="300" tween="sine" easing="inout" condition="$EXP[infodialog_active]">conditional</animation>
 				<animation effect="fade" start="0" end="100" time="300">WindowOpen</animation>
 				<animation effect="fade" start="100" end="0" time="200">WindowClose</animation>

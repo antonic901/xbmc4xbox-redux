@@ -1180,6 +1180,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\Trainer.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\Updater.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Updater.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\URIUtils.cpp">
 				</File>
 				<File
@@ -2406,12 +2412,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			<Filter
 				Name="cdrip"
 				Filter="">
-				<File
-					RelativePath=".\xbmc\cdrip\CDDAReader.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\cdrip\CDDAReader.h">
-				</File>
 				<File
 					RelativePath=".\xbmc\cdrip\CDDARipJob.cpp">
 				</File>
@@ -5487,6 +5487,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemux.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxCDDA.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxCDDA.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\cores\dvdplayer\DVDDemuxers\DVDDemuxFFmpeg.cpp">
 					</File>
 					<File
@@ -5733,12 +5739,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\cores\paplayer\CachingCodec.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\paplayer\CDDAcodec.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\paplayer\CDDAcodec.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\cores\paplayer\CodecFactory.cpp">

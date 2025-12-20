@@ -185,7 +185,7 @@ void CAdvancedSettings::Initialize()
   m_busyDialogDelay = 2000;
   m_logLevel     = LOG_LEVEL_NORMAL;
   m_logLevelHint = LOG_LEVEL_NORMAL;
-  m_cddbAddress = "freedb.freedb.org";
+  m_cddbAddress = "gnudb.gnudb.org";
   m_usePCDVDROM = false;
   m_fullScreenOnMovieStart = true;
   m_noDVDROM = false;

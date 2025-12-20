@@ -59,7 +59,6 @@
 				</itemlayout>
 				<focusedlayout height="280" width="440" condition="Container.Content() | Container.Content(tags) | Container.Content(playlists) | [Container.Content(studios) + System.HasAddon(resource.images.studios.white)]">
 					<control type="group">
-						<depth>DepthContentPopout</depth>
 						<animation type="Focus">
 							<effect type="zoom" start="100" end="112" time="200" tween="sine" easing="inout" center="auto" />
 						</animation>
@@ -132,7 +131,6 @@
 				</itemlayout>
 				<focusedlayout height="181" width="348" condition="Container.Content(genres) | Container.Content(years) | Container.Content(roles) | Container.Content(countries) | [Container.Content(studios) + !System.HasAddon(resource.images.studios.white)]">
 					<control type="group">
-						<depth>DepthContentPopout</depth>
 						<top>120</top>
 						<animation type="Focus">
 							<effect type="zoom" start="100" end="112" time="200" tween="sine" easing="inout" center="auto" />

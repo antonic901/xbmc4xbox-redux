@@ -131,26 +131,24 @@ bool CHDDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 
 bool CHDDirectory::Create(const CURL& url)
 {
-  CStdString strPath1 = url.Get();
-  g_charsetConverter.utf8ToStringCharset(strPath1);
-  URIUtils::AddSlashAtEnd(strPath1);
+  std::string strPath = url.Get();
+  g_charsetConverter.utf8ToStringCharset(strPath);
+  URIUtils::AddSlashAtEnd(strPath);
 
   // okey this is really evil, since the create will succeed
   // the caller will have no idea that a different directory was created
   if (CSettings::GetInstance().GetBool("services.ftpautofatx"))
   {
-    CStdString strPath2(strPath1);
+    CStdString strPath1(strPath);
     CUtil::GetFatXQualifiedPath(strPath1);
-    if(strPath2 != strPath1)
-      CLog::Log(LOGNOTICE,"fatxq: %s -> %s",strPath2.c_str(), strPath1.c_str());
+    if(strPath1 != strPath)
+    {
+      strPath = strPath1;
+      CLog::Log(LOGNOTICE,"%s - FATX: %s -> %s", strPath.c_str(), strPath1.c_str());
+    }
   }
 
-  if(::CreateDirectory(strPath1.c_str(), NULL))
-    return true;
-  else if(GetLastError() == ERROR_ALREADY_EXISTS)
-    return true;
-
-  return false;
+  return Create(strPath);
 }
 
 bool CHDDirectory::Remove(const CURL& url)
@@ -219,6 +217,29 @@ bool CHDDirectory::RemoveRecursive(const CURL& url)
   } while (FindNextFile(hSearch, &findData));
 
   FindClose(hSearch);
+
+  return true;
+}
+
+bool CHDDirectory::Create(std::string path) const
+{
+  if (!CreateDirectoryA(path.c_str(), NULL))
+  {
+    if (GetLastError() == ERROR_ALREADY_EXISTS)
+      return true;
+
+    if (GetLastError() != ERROR_PATH_NOT_FOUND)
+      return false;
+
+    size_t sep = path.rfind('\\');
+    if (sep == std::string::npos)
+      return false;
+
+    if (Create(path.substr(0, sep)))
+      return Create(path);
+
+    return false;
+  }
 
   return true;
 }

@@ -14,6 +14,12 @@ jobs:
         with:
           ref: feature_python_3
 
+      - name: Generate version.txt
+        shell: pwsh
+        run: |
+          $rev = git rev-parse --short HEAD
+          Set-Content -Path version.txt -Value $rev
+
       - name: Download prerequisites
         shell: powershell
         run: |
@@ -21,13 +27,26 @@ jobs:
           Invoke-WebRequest -Uri "https://www.dropbox.com/scl/fi/5ymtc9cqnjjpx7gw8i6zz/BuildDependencies.zip?rlkey=o2rygnv6lrv18zm01v8q5azq3&st=k51dwl2y&dl=1" -OutFile $destination -UseBasicParsing
           Expand-Archive -Path $destination -DestinationPath "tools" -Force
 
+      - name: Download XBMC updater
+        shell: pwsh
+        run: |
+          $repo = "xbmc4xbox/xbmc-updater"
+          $assetName = "updater.xbe"
+          $release = Invoke-RestMethod "https://api.github.com/repos/$repo/releases/latest"
+          $asset = $release.assets | Where-Object { $_.name -eq $assetName }
+          if (-not $asset) {
+              Write-Error "updater.xbe not found in latest release"
+              exit 1
+          }
+          Invoke-WebRequest $asset.browser_download_url -OutFile $assetName
+
       - name: Generate svn_rev.h
         shell: powershell
         run: |
           $template = Get-Content ".\xbmc\xbox\svn_rev.tmpl"
           $rev = git rev-parse --short origin/feature_python_3
           $date = Get-Date -Format "yyyy-MM-dd HH:mm"
-          $output = $template -replace '\$WCREV\$', "nightly-$rev" -replace '\$WCDATE\$', $date
+          $output = $template -replace '\$WCREV\$', "$rev-py3" -replace '\$WCDATE\$', $date
           $output | Set-Content ".\xbmc\xbox\svn_rev.h"
 
       - name: Generate XBMC Python bindings
@@ -43,7 +62,10 @@ jobs:
         with:
           tag_name: nightly-python3
           name: Custom build of XBMC with Python 3
-          files: XBMC4XBOX.zip
+          files: |
+            XBMC4XBOX.zip
+            XBMC4Xbox.tar
+            version.txt
           body: "Automated nightly build with Python 3."
           draft: false
           prerelease: true
