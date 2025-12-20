@@ -33,7 +33,7 @@ bool CUpdaterJob::DoWork()
     size_t iPos = revision.find("-");
     revision = revision.substr(iPos + 1);
 
-    if (revision.empty() || revision == "dev")
+    if (revision.empty() || StringUtils::StartsWithNoCase(revision, "dev"))
       return true;
 
     CLog::Log(LOGINFO, "Checking for new updates...");
@@ -86,7 +86,12 @@ void CUpdaterJob::DoInstall()
     CUSTOM_LAUNCH_DATA data;
     memset(&data, 0, sizeof(CUSTOM_LAUNCH_DATA));
 
-    strcpy(data.reserved, StringUtils::Format("version=%s", VERSION_STRING).c_str());
+    std::vector<std::string> split = StringUtils::Split(VERSION_STRING, "-");
+    std::string strVersion = split[0];
+    std::string strRevision = split[1];
+    std::string strUpdateChannel = split[2] == "py2" ? "nightly" : "nightly-python3";
+
+    strcpy(data.reserved, StringUtils::Format("version=%s&revision=%s&channel=%s", strVersion.c_str(), strRevision.c_str(), strUpdateChannel.c_str()).c_str());
     data.executionType = 0;
 
     KODI::MESSAGING::CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, "Skin.ToggleSetting(updateavailable)");
