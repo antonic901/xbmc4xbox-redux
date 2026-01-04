@@ -249,7 +249,7 @@ static int ExportLibrary2(const std::vector<std::string>& params)
 
 /*! \brief Update a library.
  *  \param params The parameters.
- *  \details params[0] = "video" or "music".
+ *  \details params[0] = "video", "music", or "programs".
  *           params[1] = "true" to suppress dialogs (optional).
  */
 static int UpdateLibrary(const std::vector<std::string>& params)
@@ -270,6 +270,13 @@ static int UpdateLibrary(const std::vector<std::string>& params)
       g_application.StopVideoScan();
     else
       g_application.StartVideoScan(params.size() > 1 ? params[1] : "", userInitiated);
+  }
+  else if (StringUtils::EqualsNoCase(params[0], "programs"))
+  {
+    if (g_application.IsProgramScanning())
+      g_application.StopProgramScan();
+    else
+      g_application.StartProgramScan(params.size() > 1 ? params[1] : "", userInitiated);
   }
 
   return 0;

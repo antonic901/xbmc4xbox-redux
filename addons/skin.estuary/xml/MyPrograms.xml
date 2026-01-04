@@ -66,7 +66,16 @@
 						<description>Actions</description>
 						<include>MediaMenuLabelCommon</include>
 						<label>$LOCALIZE[31020]</label>
-						<visible>Control.IsVisible(621)</visible>
+						<visible>Control.IsVisible(619) | Control.IsVisible(621)</visible>
+					</control>
+					<control type="togglebutton" id="619">
+						<description>Update library</description>
+						<include>MediaMenuItemsCommon</include>
+						<label>$LOCALIZE[653]</label>
+						<onclick>UpdateLibrary(programs)</onclick>
+						<visible>!Container.Content(addons)+ String.IsEmpty(Container.PluginName)</visible>
+						<altlabel>$LOCALIZE[13353]</altlabel>
+						<usealttexture>library.isscanningprograms</usealttexture>
 					</control>
 					<control type="button" id="624">
 						<include>MediaMenuItemsCommon</include>

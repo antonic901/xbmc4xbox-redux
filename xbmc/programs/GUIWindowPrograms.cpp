@@ -16,6 +16,7 @@
 #include "FileItem.h"
 #include "filesystem/Directory.h"
 #include "programs/ProgramLibraryQueue.h"
+#include "Application.h"
 #include "programs/launchers/ProgramLauncher.h"
 #include "programs/launchers/XBELauncher.h"
 #include "settings/AdvancedSettings.h"
@@ -24,6 +25,8 @@
 #include "utils/StringUtils.h"
 #include "utils/Trainer.h"
 #include "utils/URIUtils.h"
+
+#define CONTROL_UPDATE_LIBRARY    20
 
 CGUIWindowPrograms::CGUIWindowPrograms(void)
     : CGUIMediaWindow(WINDOW_PROGRAMS, "MyPrograms.xml")
@@ -53,6 +56,21 @@ bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
     {
       m_database.Open();
       return CGUIMediaWindow::OnMessage(message);
+    }
+    break;
+
+  case GUI_MSG_CLICKED:
+    {
+      int iControl = message.GetSenderId();
+      if (iControl == CONTROL_UPDATE_LIBRARY)
+      {
+        if (!g_application.IsProgramScanning())
+          g_application.StartProgramScan("");
+        else
+          g_application.StopProgramScan();
+        UpdateButtons();
+        return true;
+      }
     }
     break;
   }
@@ -102,6 +120,15 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
     if (item->IsXBE())
       buttons.Add(CONTEXT_BUTTON_GAMESAVES, 38779);
   }
+
+  // noncontextual buttons
+  GetNonContextButtons(buttons);
+}
+
+void CGUIWindowPrograms::GetNonContextButtons(CContextButtons &buttons)
+{
+  if (g_application.IsProgramScanning())
+    buttons.Add(CONTEXT_BUTTON_SCAN, 14056); // Stop Scanning
 }
 
 bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
@@ -123,6 +150,15 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 
   switch (button)
   {
+  case CONTEXT_BUTTON_SCAN:
+    {
+      if (g_application.IsProgramScanning())
+      {
+        g_application.StopProgramScan();
+        return true;
+      }
+      break;
+    }
   case CONTEXT_BUTTON_DELETE:
     {
       if (CGUIDialogYesNo::ShowAndGetInput(646, StringUtils::Format(g_localizeStrings.Get(433).c_str(), item->GetLabel().c_str())))
@@ -248,4 +284,16 @@ std::string CGUIWindowPrograms::GetStartFolder(const std::string &dir)
     return "addons://sources/executable/";
 
   return CGUIMediaWindow::GetStartFolder(dir);
+}
+
+void CGUIWindowPrograms::UpdateButtons()
+{
+  CONTROL_ENABLE_ON_CONDITION(CONTROL_UPDATE_LIBRARY, !m_vecItems->IsAddonsPath() && !m_vecItems->IsPlugin() && !m_vecItems->IsScript());
+
+  if (g_application.IsProgramScanning())
+    SET_CONTROL_LABEL(CONTROL_UPDATE_LIBRARY, 14056); // Stop Scan
+  else
+    SET_CONTROL_LABEL(CONTROL_UPDATE_LIBRARY, 653); // Update Library
+
+  CGUIMediaWindow::UpdateButtons();
 }

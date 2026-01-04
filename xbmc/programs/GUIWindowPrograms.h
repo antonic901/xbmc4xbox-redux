@@ -29,7 +29,9 @@ protected:
   virtual std::string GetStartFolder(const std::string &dir);
 
   virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
+  void GetNonContextButtons(CContextButtons &buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
+  virtual void UpdateButtons();
 
   CProgramDatabase m_database;
 

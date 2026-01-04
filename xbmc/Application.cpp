@@ -36,6 +36,7 @@
 #include "video/Bookmark.h"
 #include "video/VideoLibraryQueue.h"
 #include "music/MusicLibraryQueue.h"
+#include "programs/ProgramLibraryQueue.h"
 #include "programs/launchers/ProgramLauncher.h"
 #include "network/NetworkServices.h"
 #include "utils/LangCodeExpander.h"
@@ -5746,6 +5747,16 @@ void CApplication::StopMusicScan()
   CMusicLibraryQueue::GetInstance().StopLibraryScanning();
 }
 
+bool CApplication::IsProgramScanning() const
+{
+  return CProgramLibraryQueue::GetInstance().IsScanningLibrary();
+}
+
+void CApplication::StopProgramScan()
+{
+  CProgramLibraryQueue::GetInstance().StopLibraryScanning();
+}
+
 void CApplication::StartVideoCleanup(bool userInitiated /* = true */)
 {
   if (userInitiated && CVideoLibraryQueue::GetInstance().IsRunning())
@@ -5811,6 +5822,14 @@ void CApplication::StartMusicArtistScan(const std::string& strDirectory,
     return;
 
   CMusicLibraryQueue::GetInstance().StartArtistScan(strDirectory, refresh);
+}
+
+void CApplication::StartProgramScan(const std::string &strDirectory, bool userInitiated /* = true */)
+{
+  if (IsProgramScanning())
+    return;
+
+  CProgramLibraryQueue::GetInstance().ScanLibrary(strDirectory, userInitiated);
 }
 
 void CApplication::CheckPlayingProgress()

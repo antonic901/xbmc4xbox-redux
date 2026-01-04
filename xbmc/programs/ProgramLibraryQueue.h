@@ -46,6 +46,16 @@ public:
   void CleanLibrary(const std::string& directory, bool showProgress = true);
 
   /*!
+   \brief Checks if the library is currently being scanned or cleaned.
+   */
+  bool IsScanningLibrary() const;
+
+  /*!
+   \brief Stop and dequeue all scanning jobs.
+   */
+  void StopLibraryScanning();
+
+  /*!
    \brief Adds the given job to the queue.
 
    \param[in] job Program library job to be queued.

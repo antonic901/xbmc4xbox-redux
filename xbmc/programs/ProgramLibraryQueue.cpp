@@ -57,6 +57,41 @@ void CProgramLibraryQueue::CleanLibrary(const std::string& directory, bool showP
   AddJob(new CProgramLibraryCleaningJob(directory, showProgress));
 }
 
+bool CProgramLibraryQueue::IsScanningLibrary() const
+{
+  // check if the library is being cleaned synchronously
+  if (m_cleaning)
+    return true;
+
+  // check if the library is being scanned asynchronously
+  ProgramLibraryJobMap::const_iterator scanningJobs = m_jobs.find("ProgramLibraryScanningJob");
+  if (scanningJobs != m_jobs.end() && !scanningJobs->second.empty())
+    return true;
+
+  // check if the library is being cleaned asynchronously
+  ProgramLibraryJobMap::const_iterator cleaningJobs = m_jobs.find("ProgramLibraryCleaningJob");
+  if (cleaningJobs != m_jobs.end() && !cleaningJobs->second.empty())
+    return true;
+
+  return false;
+}
+
+void CProgramLibraryQueue::StopLibraryScanning()
+{
+  CSingleLock lock(m_critical);
+  ProgramLibraryJobMap::const_iterator scanningJobs = m_jobs.find("ProgramLibraryScanningJob");
+  if (scanningJobs == m_jobs.end())
+    return;
+
+  // get a copy of the scanning jobs because CancelJob() will modify m_jobs
+  ProgramLibraryJobs tmpScanningJobs(scanningJobs->second.begin(), scanningJobs->second.end());
+
+  // cancel all scanning jobs
+  for (ProgramLibraryJobs::const_iterator it = tmpScanningJobs.begin(); it != tmpScanningJobs.end(); ++it)
+    CancelJob(*it);
+  Refresh();
+}
+
 void CProgramLibraryQueue::AddJob(CProgramLibraryJob *job)
 {
   if (job == NULL)
