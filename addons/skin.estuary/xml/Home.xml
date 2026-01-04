@@ -430,8 +430,7 @@
 					<content>
 						<item>
 							<label>$LOCALIZE[15016]</label>
-							<onclick condition="Library.HasContent(games)">ActivateWindow(Programs,programdb://games/recentlyplayed/,return)</onclick>
-							<onclick condition="!Library.HasContent(games)">ActivateWindow(Programs,root,return)</onclick>
+							<onclick>ActivateWindow(Programs,root,return)</onclick>
 							<property name="menu_id">$NUMBER[3000]</property>
 							<thumb>icons/sidemenu/games.png</thumb>
 							<property name="id">games</property>
