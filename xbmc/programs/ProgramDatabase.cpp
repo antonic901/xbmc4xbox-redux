@@ -365,9 +365,9 @@ bool CProgramDatabase::HasContent(const std::string& strContent)
   try
   {
     if (NULL == m_pDB.get())
-      return -1;
+      return false;
     if (NULL == m_pDS.get())
-      return -1;
+      return false;
 
     strSQL = "SELECT count(1) FROM program";
     if (!strContent.empty())
