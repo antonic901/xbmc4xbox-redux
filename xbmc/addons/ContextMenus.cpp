@@ -57,7 +57,7 @@ bool CCheckForUpdates::Execute(const CFileItemPtr& item) const
   AddonPtr addon;
   if (item->HasAddonInfo() && CServiceBroker::GetAddonMgr().GetAddon(item->GetAddonInfo()->ID(), addon, ADDON_REPOSITORY))
   {
-    CRepositoryUpdater::GetInstance().CheckForUpdates(boost::static_pointer_cast<CRepository>(addon), true);
+    CServiceBroker::GetRepositoryUpdater().CheckForUpdates(boost::static_pointer_cast<CRepository>(addon), true);
     return true;
   }
   return false;

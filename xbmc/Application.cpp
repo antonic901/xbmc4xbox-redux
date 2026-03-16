@@ -1345,7 +1345,7 @@ HRESULT CApplication::Initialize()
   RegisterActionListener(&CSeekHandler::Get());
   RegisterActionListener(&CPlayerController::GetInstance());
 
-  CRepositoryUpdater::GetInstance().Start();
+  CServiceBroker::GetRepositoryUpdater().Start();
 
   CLog::Log(LOGNOTICE, "initialize done");
 

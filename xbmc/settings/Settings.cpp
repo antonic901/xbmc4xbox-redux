@@ -21,6 +21,7 @@
 #include "system.h"
 
 #include "Settings.h"
+#include "ServiceBroker.h"
 #include "Application.h"
 #include "Autorun.h"
 #include "LangInfo.h"
@@ -279,7 +280,7 @@ void CSettings::Uninitialize()
   m_settingsManager->UnregisterCallback(&CNetworkServices::Get());
   m_settingsManager->UnregisterCallback(&g_passwordManager);
   m_settingsManager->UnregisterCallback(&CRssManager::Get());
-  m_settingsManager->UnregisterCallback(&ADDON::CRepositoryUpdater::GetInstance());
+  m_settingsManager->UnregisterCallback(&CServiceBroker::GetRepositoryUpdater());
 #if defined(TARGET_LINUX) || defined(_XBOX)
   m_settingsManager->UnregisterCallback(&g_timezone);
 #endif // defined(TARGET_LINUX)
@@ -857,7 +858,7 @@ void CSettings::InitializeISettingCallbacks()
 
   settingSet.clear();
   settingSet.insert("general.addonupdates");
-  m_settingsManager->RegisterCallback(&ADDON::CRepositoryUpdater::GetInstance(), settingSet);
+  m_settingsManager->RegisterCallback(&CServiceBroker::GetRepositoryUpdater(), settingSet);
 
   settingSet.clear();
   settingSet.insert("addons.showrunning");

@@ -21,10 +21,12 @@
 #include "ServiceManager.h"
 #include "ContextMenuManager.h"
 #include "PlayListPlayer.h"
+#include "addons/RepositoryUpdater.h"
 #include "utils/log.h"
-#include "interfaces/AnnouncementManager.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "interfaces/python/XBPython.h"
+
+#include <boost/move/make_unique.hpp>
 
 CServiceManager::CServiceManager()
 {
@@ -36,9 +38,6 @@ CServiceManager::~CServiceManager()
 
 bool CServiceManager::Init1()
 {
-  m_announcementManager.reset(new ANNOUNCEMENT::CAnnouncementManager());
-  m_announcementManager->Start();
-
   m_XBPython.reset(new XBPython());
   CScriptInvocationManager::GetInstance().RegisterLanguageInvocationHandler(m_XBPython.get(), ".py");
 
@@ -56,6 +55,8 @@ bool CServiceManager::Init2()
     return false;
   }
 
+  m_repositoryUpdater = boost::movelib::make_unique<ADDON::CRepositoryUpdater>();
+
   m_contextMenuManager.reset(new CContextMenuManager(*m_addonMgr.get()));
 
   return true;
@@ -71,10 +72,10 @@ bool CServiceManager::Init3()
 void CServiceManager::Deinit()
 {
   m_contextMenuManager.reset();
+  m_repositoryUpdater.reset();
   m_addonMgr.reset();
   CScriptInvocationManager::GetInstance().UnregisterLanguageInvocationHandler(m_XBPython.get());
   m_XBPython.reset();
-  m_announcementManager.reset();
 }
 
 ADDON::CAddonMgr &CServiceManager::GetAddonMgr()
@@ -82,9 +83,9 @@ ADDON::CAddonMgr &CServiceManager::GetAddonMgr()
   return *m_addonMgr.get();
 }
 
-ANNOUNCEMENT::CAnnouncementManager& CServiceManager::GetAnnouncementManager()
+ADDON::CRepositoryUpdater& CServiceManager::GetRepositoryUpdater()
 {
-  return *m_announcementManager;
+  return *m_repositoryUpdater;
 }
 
 XBPython& CServiceManager::GetXBPython()

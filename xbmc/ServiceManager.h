@@ -22,18 +22,15 @@
 
 #include <boost/move/unique_ptr.hpp>
 
-namespace ADDON {
-class CAddonMgr;
-}
-
-namespace ANNOUNCEMENT
+namespace ADDON
 {
-class CAnnouncementManager;
+class CAddonMgr;
+class CRepositoryUpdater;
 }
 
 namespace PLAYLIST
 {
-  class CPlayListPlayer;
+class CPlayListPlayer;
 }
 
 class CContextMenuManager;
@@ -51,7 +48,7 @@ public:
   bool Init3();
   void Deinit();
   ADDON::CAddonMgr& GetAddonMgr();
-  ANNOUNCEMENT::CAnnouncementManager& GetAnnouncementManager();
+  ADDON::CRepositoryUpdater& GetRepositoryUpdater();
   XBPython& GetXBPython();
   CContextMenuManager& GetContextMenuManager();
 
@@ -64,7 +61,7 @@ protected:
   };
 
   boost::movelib::unique_ptr<ADDON::CAddonMgr> m_addonMgr;
-  boost::movelib::unique_ptr<ANNOUNCEMENT::CAnnouncementManager> m_announcementManager;
+  boost::movelib::unique_ptr<ADDON::CRepositoryUpdater> m_repositoryUpdater;
   boost::movelib::unique_ptr<XBPython> m_XBPython;
   boost::movelib::unique_ptr<CContextMenuManager, delete_contextMenuManager> m_contextMenuManager;
   boost::movelib::unique_ptr<PLAYLIST::CPlayListPlayer> m_playlistPlayer;
