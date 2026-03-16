@@ -23,22 +23,20 @@
 #include <algorithm>
 
 #include "FileItem.h"
+#include "ServiceBroker.h"
 #include "filesystem/Directory.h"
 #include "URL.h"
 #include "utils/log.h"
 #include "utils/XBMCTinyXML.h"
+
+using namespace KODI;
+using namespace KEYBOARD;
 
 #define KEYBOARD_LAYOUTS_PATH   "special://xbmc/system/keyboardlayouts"
 
 CKeyboardLayoutManager::~CKeyboardLayoutManager()
 {
   Unload();
-}
-
-CKeyboardLayoutManager& CKeyboardLayoutManager::GetInstance()
-{
-  static CKeyboardLayoutManager s_instance;
-  return s_instance;
 }
 
 bool CKeyboardLayoutManager::Load(const std::string& path /* = "" */)
@@ -129,7 +127,7 @@ bool CKeyboardLayoutManager::GetLayout(const std::string& name, CKeyboardLayout&
 
 void CKeyboardLayoutManager::SettingOptionsKeyboardLayoutsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void* data)
 {
-  for (KeyboardLayouts::const_iterator it = CKeyboardLayoutManager::GetInstance().m_layouts.begin(); it != CKeyboardLayoutManager::GetInstance().m_layouts.end(); ++it)
+  for (KeyboardLayouts::const_iterator it = CServiceBroker::GetKeyboardLayoutManager()->m_layouts.begin(); it != CServiceBroker::GetKeyboardLayoutManager()->m_layouts.end(); ++it)
   {
     std::string name = it->second.GetName();
     list.push_back(make_pair(name, name));

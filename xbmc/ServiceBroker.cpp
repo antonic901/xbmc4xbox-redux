@@ -19,9 +19,12 @@
  */
 
 #include "ServiceBroker.h"
+
 #include "Application.h"
 
 #include "windowing/WinSystem.h"
+
+using namespace KODI;
 
 ADDON::CAddonMgr &CServiceBroker::GetAddonMgr()
 {
@@ -92,4 +95,20 @@ void CServiceBroker::UnregisterAppMessenger()
 boost::shared_ptr<KODI::MESSAGING::CApplicationMessenger> CServiceBroker::GetAppMessenger()
 {
   return g_serviceBroker.m_appMessenger;
+}
+
+void CServiceBroker::RegisterKeyboardLayoutManager(
+    const boost::shared_ptr<KEYBOARD::CKeyboardLayoutManager>& keyboardLayoutManager)
+{
+  g_serviceBroker.m_keyboardLayoutManager = keyboardLayoutManager;
+}
+
+void CServiceBroker::UnregisterKeyboardLayoutManager()
+{
+  g_serviceBroker.m_keyboardLayoutManager.reset();
+}
+
+boost::shared_ptr<KEYBOARD::CKeyboardLayoutManager> CServiceBroker::GetKeyboardLayoutManager()
+{
+  return g_serviceBroker.m_keyboardLayoutManager;
 }

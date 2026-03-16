@@ -29,6 +29,9 @@
 #include "utils/XBMCTinyXML.h"
 #include "InputCodingTableFactory.h"
 
+using namespace KODI;
+using namespace KEYBOARD;
+
 CKeyboardLayout::CKeyboardLayout()
 {
   m_codingtable.reset();

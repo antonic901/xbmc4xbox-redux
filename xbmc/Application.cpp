@@ -245,6 +245,7 @@ using namespace MUSIC_INFO;
 using namespace EVENTSERVER;
 #endif
 using namespace ANNOUNCEMENT;
+using namespace KODI;
 using namespace KODI::MESSAGING;
 
 using namespace KODI::MESSAGING::HELPERS;
@@ -705,6 +706,9 @@ HRESULT CApplication::Create(HWND hWnd)
   const boost::shared_ptr<CApplicationMessenger> appMessenger = boost::make_shared<CApplicationMessenger>();
   CServiceBroker::RegisterAppMessenger(appMessenger);
 
+  const boost::shared_ptr<KEYBOARD::CKeyboardLayoutManager> keyboardLayoutManager = boost::make_shared<KEYBOARD::CKeyboardLayoutManager>();
+  CServiceBroker::RegisterKeyboardLayoutManager(keyboardLayoutManager);
+
   m_ServiceManager.reset(new CServiceManager());
   if (!m_ServiceManager->Init1())
   {
@@ -1024,7 +1028,7 @@ HRESULT CApplication::Create(HWND hWnd)
     g_advancedSettings.SetExtraLogsFromAddon(addon.get());
 
   // load the keyboard layouts
-  if (!CKeyboardLayoutManager::GetInstance().Load())
+  if (!keyboardLayoutManager->Load())
   {
     CLog::Log(LOGFATAL, "CApplication::Create: Unable to load keyboard layouts");
     FatalErrorHandler(true, true, true);
@@ -3552,6 +3556,10 @@ HRESULT CApplication::Cleanup()
       m_ServiceManager->Deinit();
       m_ServiceManager.reset();
     }
+
+    CServiceBroker::UnregisterKeyboardLayoutManager();
+
+    CServiceBroker::UnregisterAppMessenger();
 
     return S_OK;
   }
