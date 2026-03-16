@@ -855,14 +855,14 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     // Enable FullRecaching for "true" internet files/streams (ie. mms)
     if (bFileOnInternet)
     {      
-      CSingleLock lock(g_graphicsContext);
+      CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
       CSingleLock lock2(s_dlgCacheSection);
       m_dlgCache = new CGUIDialogCache(0);
       m_bUseFullRecaching = true;
     }
     else
     {
-      CSingleLock lock(g_graphicsContext);
+      CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
       CSingleLock lock2(s_dlgCacheSection);
       m_dlgCache = new CGUIDialogCache(3000);
     }
@@ -1260,7 +1260,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     if( m_dlgCache && bIsVideo)
     {
       // grab the graphicscontext lock, as we're closing a dialog
-      CSingleLock lock(g_graphicsContext);
+      CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
       // also grab the cache dialog's lock, to ensure that printf() can't do anything untoward
       CSingleLock lock2(s_dlgCacheSection);
       m_dlgCache->Close(true); 
@@ -1293,7 +1293,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
   if( m_dlgCache )
   {
     // lock graphics context, as we're closing a dialog
-    CSingleLock lock(g_graphicsContext);
+    CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
     // Also lock the cache dialog so that mplayer is not using the the object
     CSingleLock lock2(s_dlgCacheSection);
@@ -2107,7 +2107,7 @@ void CMPlayer::WaitOnCommand()
   if( IsCurrentThread() ) return;
 
   //If we hold graphiccontext, this may stall mplayer process
-  CSingleTryLock tryLock(g_graphicsContext);
+  CSingleTryLock tryLock(CServiceBroker::GetWinSystem()->GetGfxContext());
   if(tryLock.IsOwner()) return;
 
   if( m_bPaused )

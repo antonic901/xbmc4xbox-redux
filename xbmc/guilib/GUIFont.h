@@ -27,7 +27,7 @@
  *
  */
 
-#include "GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include <assert.h>
 #include <math.h>
 #include <string>
@@ -79,8 +79,8 @@ public:
     if (speed == defaultSpeed)
     {
       // HACK: workaround for PAL vs NTSC speeds on xbox
-      if (g_graphicsContext.GetVideoResolution() == RES_PAL_4x3 ||
-          g_graphicsContext.GetVideoResolution() == RES_PAL_16x9)
+      if (CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution() == RES_PAL_4x3 ||
+          CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution() == RES_PAL_16x9)
         speed = 50;
     }
 #endif

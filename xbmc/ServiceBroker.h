@@ -20,10 +20,13 @@
 
 #pragma once
 
-namespace ADDON {
+#include "utils/GlobalsHandling.h"
+
+namespace ADDON
+{
 class CAddonMgr;
 class CBinaryAddonCache;
-}
+} // namespace ADDON
 
 namespace ANNOUNCEMENT
 {
@@ -36,6 +39,7 @@ namespace PLAYLIST
 }
 
 class CContextMenuManager;
+class CWinSystemBase;
 class XBPython;
 
 class CServiceBroker
@@ -46,4 +50,14 @@ public:
   static XBPython &GetXBPython();
   static CContextMenuManager& GetContextMenuManager();
   static PLAYLIST::CPlayListPlayer& GetPlaylistPlayer();
+
+  static void RegisterWinSystem(CWinSystemBase* winsystem);
+  static void UnregisterWinSystem();
+  static CWinSystemBase* GetWinSystem();
+
+private:
+  CWinSystemBase* m_pWinSystem;
 };
+
+XBMC_GLOBAL_REF(CServiceBroker, g_serviceBroker);
+#define g_serviceBroker XBMC_GLOBAL_USE(CServiceBroker)

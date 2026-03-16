@@ -139,7 +139,7 @@ void CGUIDialogCache::Process()
 
       try
       {
-        CSingleLock lock(g_graphicsContext);
+        CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
         m_pDlg->Progress();
         if( bSentCancel )
         {

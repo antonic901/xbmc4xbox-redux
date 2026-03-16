@@ -21,7 +21,7 @@
 #include "include.h"
 #include "Texture.h"
 #include "GUITextureD3D.h"
-#include "GraphicContext.h"
+#include "windowing/GraphicContext.h"
 
 #ifndef HAS_SDL
 
@@ -33,7 +33,7 @@ CGUITextureD3D::CGUITextureD3D(float posX, float posY, float width, float height
 void CGUITextureD3D::Begin(color_t color)
 {
   CBaseTexture* texture = m_texture.m_textures[m_currentFrame];
-  LPDIRECT3DDEVICE8 p3DDevice = g_graphicsContext.Get3DDevice();
+  LPDIRECT3DDEVICE8 p3DDevice = CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice();
 
   // Set state to render the image
 #ifdef HAS_XBOX_D3D
@@ -96,9 +96,9 @@ void CGUITextureD3D::Begin(color_t color)
 
 void CGUITextureD3D::End()
 {
-  LPDIRECT3DDEVICE8 p3DDevice = g_graphicsContext.Get3DDevice();
+  LPDIRECT3DDEVICE8 p3DDevice = CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice();
 #ifdef HAS_XBOX_D3D
-  if (g_graphicsContext.RectIsAngled(m_vertex.x1, m_vertex.y1, m_vertex.x2, m_vertex.y2))
+  if (CServiceBroker::GetWinSystem()->GetGfxContext().RectIsAngled(m_vertex.x1, m_vertex.y1, m_vertex.x2, m_vertex.y2))
   {
     p3DDevice->SetRenderState( D3DRS_MULTISAMPLEANTIALIAS, FALSE );
     p3DDevice->SetRenderState( D3DRS_EDGEANTIALIAS, TRUE );
@@ -119,9 +119,9 @@ void CGUITextureD3D::End()
     p3DDevice->SetPalette( 1, NULL);
 #endif
   // unset the texture and palette or the texture caching crashes because the runtime still has a reference
-  g_graphicsContext.Get3DDevice()->SetTexture( 0, NULL );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTexture( 0, NULL );
   if (m_diffuse.size())
-    g_graphicsContext.Get3DDevice()->SetTexture( 1, NULL );
+    CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTexture( 1, NULL );
 }
 
 void CGUITextureD3D::Draw(float *x, float *y, float *z, const CRect &texture, const CRect &diffuse, int orientation)
@@ -197,7 +197,7 @@ void CGUITextureD3D::Draw(float *x, float *y, float *z, const CRect &texture, co
   }
   verts[3].color = m_col;
 
-  g_graphicsContext.Get3DDevice()->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, verts, sizeof(CUSTOMVERTEX));
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, verts, sizeof(CUSTOMVERTEX));
 }
 
 void CGUITextureD3D::DrawQuad(const CRect &rect, color_t color, CBaseTexture *texture, const CRect *texCoords)
@@ -209,7 +209,7 @@ void CGUITextureD3D::DrawQuad(const CRect &rect, color_t color, CBaseTexture *te
       FLOAT tu2, tv2;
   };
 
-  LPDIRECT3DDEVICE8 p3DDevice = g_graphicsContext.Get3DDevice();
+  LPDIRECT3DDEVICE8 p3DDevice = CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice();
 
   if (texture)
   {

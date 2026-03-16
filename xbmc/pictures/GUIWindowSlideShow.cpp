@@ -118,9 +118,9 @@ void CBackgroundPicLoader::Process()
             int iSize = texture->GetWidth() * texture->GetHeight() - MAX_PICTURE_SIZE;
             if ((iSize + (int)texture->GetWidth() > 0) || (iSize + (int)texture->GetHeight() > 0))
               bFullSize = true;
-            if (!bFullSize && texture->GetWidth() == g_graphicsContext.GetMaxTextureSize())
+            if (!bFullSize && texture->GetWidth() == CServiceBroker::GetWinSystem()->GetGfxContext().GetMaxTextureSize())
               bFullSize = true;
-            if (!bFullSize && texture->GetHeight() == g_graphicsContext.GetMaxTextureSize())
+            if (!bFullSize && texture->GetHeight() == CServiceBroker::GetWinSystem()->GetGfxContext().GetMaxTextureSize())
               bFullSize = true;
           }
         }
@@ -235,7 +235,7 @@ void CGUIWindowSlideShow::Reset()
   m_iLastFailedNextSlide = -1;
   m_slides.clear();
   AnnouncePlaylistClear();
-  m_Resolution = g_graphicsContext.GetVideoResolution();
+  m_Resolution = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
 }
 
 void CGUIWindowSlideShow::OnDeinitWindow(int nextWindowID)
@@ -243,7 +243,7 @@ void CGUIWindowSlideShow::OnDeinitWindow(int nextWindowID)
   if (m_Resolution != CDisplaySettings::Get().GetCurrentResolution())
   {
     //FIXME: Use GUI resolution for now
-    g_graphicsContext.SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
+    CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
   }
 
   if (nextWindowID != WINDOW_PICTURES)
@@ -252,7 +252,7 @@ void CGUIWindowSlideShow::OnDeinitWindow(int nextWindowID)
 #ifdef _XBOX
   // set screen filters to video filters so that we
   // get sharper images
-  g_graphicsContext.SetScreenFilters(false);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetScreenFilters(false);
 #endif
 
   if (nextWindowID != WINDOW_FULLSCREEN_VIDEO)
@@ -386,7 +386,7 @@ void CGUIWindowSlideShow::SetDirection(int direction)
 
 void CGUIWindowSlideShow::Process(unsigned int currentTime, CDirtyRegionList &regions)
 {
-  const RESOLUTION_INFO res = g_graphicsContext.GetResInfo();
+  const RESOLUTION_INFO res = CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo();
 
   // reset the screensaver if we're in a slideshow
   // (unless we are the screensaver!)
@@ -397,7 +397,7 @@ void CGUIWindowSlideShow::Process(unsigned int currentTime, CDirtyRegionList &re
 
   // if we haven't processed yet, we should mark the whole screen
   if (!HasProcessed())
-    regions.push_back(CRect(0.0f, 0.0f, (float)g_graphicsContext.GetWidth(), (float)g_graphicsContext.GetHeight()));
+    regions.push_back(CRect(0.0f, 0.0f, (float)CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth(), (float)CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight()));
 
   if (m_iCurrentSlide < 0 || m_iCurrentSlide >= static_cast<int>(m_slides.size()))
     m_iCurrentSlide = 0;
@@ -482,7 +482,7 @@ void CGUIWindowSlideShow::Process(unsigned int currentTime, CDirtyRegionList &re
 
   if (m_bErrorMessage)
   { // hack, just mark it all
-    regions.push_back(CRect(0.0f, 0.0f, (float)g_graphicsContext.GetWidth(), (float)g_graphicsContext.GetHeight()));
+    regions.push_back(CRect(0.0f, 0.0f, (float)CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth(), (float)CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight()));
     return;
   }
 
@@ -638,7 +638,7 @@ void CGUIWindowSlideShow::Process(unsigned int currentTime, CDirtyRegionList &re
 
   RenderPause();
   CGUIWindow::Process(currentTime, regions);
-  m_renderRegion.SetRect(0, 0, (float)g_graphicsContext.GetWidth(), (float)g_graphicsContext.GetHeight());
+  m_renderRegion.SetRect(0, 0, (float)CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth(), (float)CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight());
 }
 
 void CGUIWindowSlideShow::Render()
@@ -646,15 +646,15 @@ void CGUIWindowSlideShow::Render()
   if (m_slides.empty())
     return;
 
-  g_graphicsContext.Clear(0xff000000);
+  CServiceBroker::GetWinSystem()->GetGfxContext().Clear(0xff000000);
 
   if (m_slides.at(m_iCurrentSlide)->IsVideo())
   {
 #ifndef _XBOX
-    g_graphicsContext.SetViewWindow(0, 0, m_coordsRes.iWidth, m_coordsRes.iHeight);
-    g_graphicsContext.SetRenderingResolution(g_graphicsContext.GetVideoResolution(), false);
+    CServiceBroker::GetWinSystem()->GetGfxContext().SetViewWindow(0, 0, m_coordsRes.iWidth, m_coordsRes.iHeight);
+    CServiceBroker::GetWinSystem()->GetGfxContext().SetRenderingResolution(CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution(), false);
     g_application.m_pPlayer->Render(true, 255);
-    g_graphicsContext.SetRenderingResolution(m_coordsRes, m_needsScaling);
+    CServiceBroker::GetWinSystem()->GetGfxContext().SetRenderingResolution(m_coordsRes, m_needsScaling);
 #else
     CLog::Log(LOGDEBUG, "%s - video inside slideshow not supported", __FUNCTION__);
 #endif
@@ -842,7 +842,7 @@ void CGUIWindowSlideShow::RenderErrorMessage()
   }
 
   CGUIFont *pFont = ((CGUILabelControl *)control)->GetLabelInfo().font;
-  CGUITextLayout::DrawText(pFont, 0.5f*g_graphicsContext.GetWidth(), 0.5f*g_graphicsContext.GetHeight(), 0xffffffff, 0, g_localizeStrings.Get(747), XBFONT_CENTER_X | XBFONT_CENTER_Y);
+  CGUITextLayout::DrawText(pFont, 0.5f*CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth(), 0.5f*CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight(), 0xffffffff, 0, g_localizeStrings.Get(747), XBFONT_CENTER_X | XBFONT_CENTER_Y);
 }
 
 bool CGUIWindowSlideShow::OnMessage(CGUIMessage& message)
@@ -854,9 +854,9 @@ bool CGUIWindowSlideShow::OnMessage(CGUIMessage& message)
       m_Resolution = (RESOLUTION) CSettings::GetInstance().GetInt("pictures.displayresolution");
 
       if (m_Resolution != CDisplaySettings::Get().GetCurrentResolution() && m_Resolution != RES_INVALID && m_Resolution!=RES_AUTORES)
-        g_graphicsContext.SetVideoResolution(m_Resolution);
+        CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(m_Resolution);
       else
-        m_Resolution = g_graphicsContext.GetVideoResolution();
+        m_Resolution = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
 
       CGUIDialog::OnMessage(message);
 #ifdef _XBOX
@@ -867,7 +867,7 @@ bool CGUIWindowSlideShow::OnMessage(CGUIMessage& message)
 
       // set screen filters to video filters so that we
       // get sharper images
-      g_graphicsContext.SetScreenFilters(true);
+      CServiceBroker::GetWinSystem()->GetGfxContext().SetScreenFilters(true);
 #endif
 
       // turn off slideshow if we only have 1 image
@@ -1220,13 +1220,13 @@ void CGUIWindowSlideShow::GetCheckedSize(float width, float height, int &maxWidt
   }
   maxWidth = (int)width;
   maxHeight = (int)height;
-  if (maxWidth > g_graphicsContext.GetMaxTextureSize())
-    maxWidth = g_graphicsContext.GetMaxTextureSize();
-  if (maxHeight > g_graphicsContext.GetMaxTextureSize())
-    maxHeight = g_graphicsContext.GetMaxTextureSize();
+  if (maxWidth > CServiceBroker::GetWinSystem()->GetGfxContext().GetMaxTextureSize())
+    maxWidth = CServiceBroker::GetWinSystem()->GetGfxContext().GetMaxTextureSize();
+  if (maxHeight > CServiceBroker::GetWinSystem()->GetGfxContext().GetMaxTextureSize())
+    maxHeight = CServiceBroker::GetWinSystem()->GetGfxContext().GetMaxTextureSize();
 #else
-  maxWidth = g_graphicsContext.GetMaxTextureSize();
-  maxHeight = g_graphicsContext.GetMaxTextureSize();
+  maxWidth = CServiceBroker::GetWinSystem()->GetGfxContext().GetMaxTextureSize();
+  maxHeight = CServiceBroker::GetWinSystem()->GetGfxContext().GetMaxTextureSize();
 #endif
 }
 

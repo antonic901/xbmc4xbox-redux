@@ -3,7 +3,7 @@
 #include "include.h"
 #include "TextureBundle.h"
 #include "Texture.h"
-#include "GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #ifdef HAS_XBOX_D3D
 #include <XGraphics.h>
 #include "utils/CharsetConverter.h"
@@ -118,14 +118,14 @@ bool CTextureBundle::OpenBundle()
     CStdString themeXPR = CSettings::GetInstance().GetString("lookandfeel.skintheme");
     if (!themeXPR.IsEmpty() && themeXPR.CompareNoCase("SKINDEFAULT"))
     {
-      strPath = URIUtils::AddFileToFolder(g_graphicsContext.GetMediaDir(), "media");
+      strPath = URIUtils::AddFileToFolder(CServiceBroker::GetWinSystem()->GetGfxContext().GetMediaDir(), "media");
       strPath = URIUtils::AddFileToFolder(strPath, themeXPR);
     }
     else
       return false;
   }
   else
-    strPath = URIUtils::AddFileToFolder(g_graphicsContext.GetMediaDir(), "media/Textures.xpr");
+    strPath = URIUtils::AddFileToFolder(CServiceBroker::GetWinSystem()->GetGfxContext().GetMediaDir(), "media/Textures.xpr");
 
   if (GetFileAttributes(strPath.c_str()) == -1)
     return false;

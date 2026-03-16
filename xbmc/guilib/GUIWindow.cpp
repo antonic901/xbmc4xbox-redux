@@ -193,7 +193,7 @@ bool CGUIWindow::Load(TiXmlElement *pRootElement)
 
   // set the scaling resolution so that any control creation or initialisation can
   // be done with respect to the correct aspect ratio
-  g_graphicsContext.SetScalingResolution(m_coordsRes, m_needsScaling);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetScalingResolution(m_coordsRes, m_needsScaling);
 
   // now load in the skin file
   SetDefaults();
@@ -348,10 +348,10 @@ void CGUIWindow::CenterWindow()
 
 void CGUIWindow::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
-  g_graphicsContext.SetRenderingResolution(m_coordsRes, m_needsScaling);
-  g_graphicsContext.AddGUITransform();
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetRenderingResolution(m_coordsRes, m_needsScaling);
+  CServiceBroker::GetWinSystem()->GetGfxContext().AddGUITransform();
   CGUIControlGroup::DoProcess(currentTime, dirtyregions);
-  g_graphicsContext.RemoveTransform();
+  CServiceBroker::GetWinSystem()->GetGfxContext().RemoveTransform();
 
   // check if currently focused control can have it
   // and fallback to default control if not
@@ -368,11 +368,11 @@ void CGUIWindow::DoRender()
   // to occur.
   if (!m_bAllocated) return;
 
-  g_graphicsContext.SetRenderingResolution(m_coordsRes, m_needsScaling);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetRenderingResolution(m_coordsRes, m_needsScaling);
 
-  g_graphicsContext.AddGUITransform();
+  CServiceBroker::GetWinSystem()->GetGfxContext().AddGUITransform();
   CGUIControlGroup::DoRender();
-  g_graphicsContext.RemoveTransform();
+  CServiceBroker::GetWinSystem()->GetGfxContext().RemoveTransform();
 }
 
 void CGUIWindow::AfterRender()
@@ -388,7 +388,7 @@ void CGUIWindow::AfterRender()
 
 void CGUIWindow::Close_Internal(bool forceClose /*= false*/, int nextWindowID /*= 0*/, bool enableSound /*= true*/)
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
   if (!m_active)
     return;
@@ -416,13 +416,13 @@ void CGUIWindow::Close_Internal(bool forceClose /*= false*/, int nextWindowID /*
 void CGUIWindow::Close(bool forceClose /*= false*/, int nextWindowID /*= 0*/, bool enableSound /*= true*/, bool bWait /* = true */)
 {
 #ifdef HAS_XBOX_D3D
-  if (!g_application.IsCurrentThread() && !g_graphicsContext.IsFullScreenVideo())
+  if (!g_application.IsCurrentThread() && !CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
 #else
   if (!g_application.IsCurrentThread())
 #endif
   {
     // make sure graphics lock is not held
-    CSingleExit leaveIt(g_graphicsContext);
+    CSingleExit leaveIt(CServiceBroker::GetWinSystem()->GetGfxContext());
     int param2 = (forceClose ? 0x01 : 0) | (enableSound ? 0x02 : 0);
     if (bWait)
       CApplicationMessenger::Get().SendMsg(TMSG_GUI_WINDOW_CLOSE, nextWindowID, param2, static_cast<void*>(this));
@@ -730,7 +730,7 @@ bool CGUIWindow::NeedLoad() const
 
 void CGUIWindow::AllocResources(bool forceLoad /*= FALSE */)
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
 #ifdef _DEBUG
   int64_t start;
@@ -1010,13 +1010,13 @@ void CGUIWindow::SetDefaults()
 
 CRect CGUIWindow::GetScaledBounds() const
 {
-  CSingleLock lock(g_graphicsContext);
-  g_graphicsContext.SetScalingResolution(m_coordsRes, m_needsScaling);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetScalingResolution(m_coordsRes, m_needsScaling);
   CPoint pos(GetPosition());
   CRect rect(pos.x, pos.y, pos.x + m_width, pos.y + m_height);
   float z = 0;
-  g_graphicsContext.ScaleFinalCoords(rect.x1, rect.y1, z);
-  g_graphicsContext.ScaleFinalCoords(rect.x2, rect.y2, z);
+  CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalCoords(rect.x1, rect.y1, z);
+  CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalCoords(rect.x2, rect.y2, z);
   return rect;
 }
 
@@ -1083,7 +1083,7 @@ void CGUIWindow::ClearBackground()
   m_clearBackground.Update();
   color_t color = m_clearBackground;
   if (color)
-    g_graphicsContext.Clear(color);
+    CServiceBroker::GetWinSystem()->GetGfxContext().Clear(color);
 }
 
 void CGUIWindow::SetID(int id)

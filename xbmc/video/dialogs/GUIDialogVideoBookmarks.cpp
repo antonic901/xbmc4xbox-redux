@@ -168,7 +168,7 @@ void CGUIDialogVideoBookmarks::Update()
   videoDatabase.Close();
 
   // lock our display, as this window is rendered from the player thread
-  g_graphicsContext.Lock();
+  CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
   m_viewControl.SetCurrentView(DEFAULT_VIEW_ICONS);
 
   // empty the list ready for population
@@ -191,7 +191,7 @@ void CGUIDialogVideoBookmarks::Update()
     m_vecItems->Add(item);
   }
   m_viewControl.SetItems(*m_vecItems);
-  g_graphicsContext.Unlock();
+  CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
 }
 
 void CGUIDialogVideoBookmarks::Clear()
@@ -246,9 +246,9 @@ void CGUIDialogVideoBookmarks::AddBookmark(CVideoInfoTag* tag)
     height = BOOKMARK_THUMB_WIDTH;
     width = (int)(BOOKMARK_THUMB_WIDTH * aspectRatio);
   }
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   LPDIRECT3DTEXTURE8 texture = NULL;
-  if (D3D_OK == D3DXCreateTexture(g_graphicsContext.Get3DDevice(), width, height, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED, &texture))
+  if (D3D_OK == D3DXCreateTexture(CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice(), width, height, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED, &texture))
   {
     LPDIRECT3DSURFACE8 surface = NULL;
     texture->GetSurfaceLevel(0, &surface);

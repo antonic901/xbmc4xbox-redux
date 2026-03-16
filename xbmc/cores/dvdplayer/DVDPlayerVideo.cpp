@@ -19,7 +19,7 @@
  */
  
 #include "system.h"
-#include "guilib/GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "utils/log.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"

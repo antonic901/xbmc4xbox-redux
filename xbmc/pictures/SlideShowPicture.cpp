@@ -20,7 +20,7 @@
 
 #include "SlideShowPicture.h"
 #include "system.h"
-#include "guilib/GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "guilib/Texture.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
@@ -130,7 +130,7 @@ void CSlideShowPic::SetTexture_Internal(int iSlideNumber, CBaseTexture* pTexture
   float fadeTime = 0.2f;
   if (m_displayEffect != EFFECT_NO_TIMEOUT)
     fadeTime = std::min(0.2f*CSettings::GetInstance().GetInt("slideshow.staytime"), 3.0f);
-  m_transistionStart.length = (int)(g_graphicsContext.GetFPS() * fadeTime); // transition time in frames
+  m_transistionStart.length = (int)(CServiceBroker::GetWinSystem()->GetGfxContext().GetFPS() * fadeTime); // transition time in frames
   m_transistionEnd.type = transEffect;
   m_transistionEnd.length = m_transistionStart.length;
   m_transistionTemp.type = TRANSISTION_NONE;
@@ -155,10 +155,10 @@ void CSlideShowPic::SetTexture_Internal(int iSlideNumber, CBaseTexture* pTexture
   m_fPosX = m_fPosY = 0.0f;
   m_fPosZ = 1.0f;
   m_fVelocityX = m_fVelocityY = m_fVelocityZ = 0.0f;
-  int iFrames = std::max((int)(g_graphicsContext.GetFPS() * CSettings::GetInstance().GetInt("slideshow.staytime")), 1);
+  int iFrames = std::max((int)(CServiceBroker::GetWinSystem()->GetGfxContext().GetFPS() * CSettings::GetInstance().GetInt("slideshow.staytime")), 1);
   if (m_displayEffect == EFFECT_PANORAMA)
   {
-    RESOLUTION_INFO res = g_graphicsContext.GetResInfo();
+    RESOLUTION_INFO res = CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo();
     float fScreenWidth  = (float)res.Overscan.right  - res.Overscan.left;
     float fScreenHeight = (float)res.Overscan.bottom - res.Overscan.top;
 
@@ -419,7 +419,7 @@ void CSlideShowPic::Process(unsigned int currentTime, CDirtyRegionList &dirtyreg
   if (m_iCounter > m_transistionEnd.start + m_transistionEnd.length)
     m_bIsFinished = true;
 
-  RESOLUTION_INFO info = g_graphicsContext.GetResInfo();
+  RESOLUTION_INFO info = CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo();
 
   // calculate where we should render (and how large it should be)
   // calculate aspect ratio correction factor
@@ -700,7 +700,7 @@ void CSlideShowPic::Rotate(float fRotateAngle, bool immediate /* = false */)
   m_transistionTemp.length = IMMEDIATE_TRANSISTION_TIME;
   m_fTransistionAngle = (float)fRotateAngle / (float)m_transistionTemp.length;
   // reset the timer
-  m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(g_graphicsContext.GetFPS() * CSettings::GetInstance().GetInt("slideshow.staytime"));
+  m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(CServiceBroker::GetWinSystem()->GetGfxContext().GetFPS() * CSettings::GetInstance().GetInt("slideshow.staytime"));
 }
 
 void CSlideShowPic::Zoom(float fZoom, bool immediate /* = false */)
@@ -717,7 +717,7 @@ void CSlideShowPic::Zoom(float fZoom, bool immediate /* = false */)
   m_transistionTemp.length = IMMEDIATE_TRANSISTION_TIME;
   m_fTransistionZoom = (fZoom - m_fZoomAmount) / (float)m_transistionTemp.length;
   // reset the timer
-  m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(g_graphicsContext.GetFPS() * CSettings::GetInstance().GetInt("slideshow.staytime"));
+  m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(CServiceBroker::GetWinSystem()->GetGfxContext().GetFPS() * CSettings::GetInstance().GetInt("slideshow.staytime"));
   // turn off the render effects until we're back down to normal zoom
   m_bNoEffect = true;
 }
@@ -727,7 +727,7 @@ void CSlideShowPic::Move(float fDeltaX, float fDeltaY)
   m_fZoomLeft += fDeltaX;
   m_fZoomTop += fDeltaY;
   // reset the timer
- // m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(g_graphicsContext.GetFPS() * CSettings::GetInstance().GetInt("slideshow.staytime"));
+ // m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(CServiceBroker::GetWinSystem()->GetGfxContext().GetFPS() * CSettings::GetInstance().GetInt("slideshow.staytime"));
 }
 
 void CSlideShowPic::Render()
@@ -786,48 +786,48 @@ void CSlideShowPic::Render(float *x, float *y, CBaseTexture* pTexture, color_t c
   if (pTexture)
   {
 #ifdef HAS_XBOX_D3D
-    g_graphicsContext.Get3DDevice()->SetTexture( 0, pTexture->GetTextureObject() );
+    CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTexture( 0, pTexture->GetTextureObject() );
 #else
     pTexture->LoadToGPU();
     pTexture->BindToUnit(0);
 #endif
   }
 
-  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
-  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_MODULATE );
-  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
-  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
-  g_graphicsContext.Get3DDevice()->SetTextureStageState( 1, D3DTSS_COLOROP, D3DTOP_DISABLE );
-  g_graphicsContext.Get3DDevice()->SetTextureStageState( 1, D3DTSS_ALPHAOP, D3DTOP_DISABLE );
-  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP );
-  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP );
-  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR /*g_settings.m_minFilter*/ );
-  g_graphicsContext.Get3DDevice()->SetTextureStageState( 0, D3DTSS_MINFILTER, D3DTEXF_LINEAR /*g_settings.m_maxFilter*/ );
-  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_ZENABLE, FALSE );
-  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_FOGENABLE, FALSE );
-  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_FOGTABLEMODE, D3DFOG_NONE );
-  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_FILLMODE, fillmode );
-  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
-  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
-  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_MODULATE );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTextureStageState( 1, D3DTSS_COLOROP, D3DTOP_DISABLE );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTextureStageState( 1, D3DTSS_ALPHAOP, D3DTOP_DISABLE );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTextureStageState( 0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTextureStageState( 0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTextureStageState( 0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR /*g_settings.m_minFilter*/ );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTextureStageState( 0, D3DTSS_MINFILTER, D3DTEXF_LINEAR /*g_settings.m_maxFilter*/ );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetRenderState( D3DRS_ZENABLE, FALSE );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetRenderState( D3DRS_FOGENABLE, FALSE );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetRenderState( D3DRS_FOGTABLEMODE, D3DFOG_NONE );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetRenderState( D3DRS_FILLMODE, fillmode );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 #ifdef HAS_XBOX_D3D
-  g_graphicsContext.Get3DDevice()->SetRenderState( D3DRS_YUVENABLE, FALSE);
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetRenderState( D3DRS_YUVENABLE, FALSE);
 #else
-  g_graphicsContext.Get3DDevice()->SetRenderState(D3DRS_LIGHTING, FALSE);
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetRenderState(D3DRS_LIGHTING, FALSE);
 #endif
-  g_graphicsContext.Get3DDevice()->SetVertexShader( FVF_VERTEX );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetVertexShader( FVF_VERTEX );
   // Render the image
   if (pTexture)
   {
 #ifdef HAS_XBOX_D3D
-    g_graphicsContext.Get3DDevice()->DrawPrimitiveUP( D3DPT_QUADLIST, 1, vertex, sizeof(VERTEX) );
+    CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->DrawPrimitiveUP( D3DPT_QUADLIST, 1, vertex, sizeof(VERTEX) );
 #else
-    g_graphicsContext.Get3DDevice()->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, vertex, sizeof(VERTEX) );
+    CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, vertex, sizeof(VERTEX) );
 #endif
-    g_graphicsContext.Get3DDevice()->SetTexture(0, NULL);
+    CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTexture(0, NULL);
   } else
-    g_graphicsContext.Get3DDevice()->DrawPrimitiveUP( D3DPT_LINESTRIP, 4, vertex, sizeof(VERTEX) );
+    CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->DrawPrimitiveUP( D3DPT_LINESTRIP, 4, vertex, sizeof(VERTEX) );
 }

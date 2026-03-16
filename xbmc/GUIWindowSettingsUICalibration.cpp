@@ -55,7 +55,7 @@ bool CGUIWindowSettingsUICalibration::OnAction(const CAction &action)
   }
   else if (action.wID == ACTION_CALIBRATE_RESET)
   {
-    g_graphicsContext.ResetOverscan(CDisplaySettings::Get().GetCurrentResolution(), CDisplaySettings::Get().GetCurrentResolutionInfo().GUIOverscan);
+    CServiceBroker::GetWinSystem()->GetGfxContext().ResetOverscan(CDisplaySettings::Get().GetCurrentResolution(), CDisplaySettings::Get().GetCurrentResolutionInfo().GUIOverscan);
     ResetControls();
     return true;
   }

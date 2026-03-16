@@ -23,7 +23,7 @@
 #include <string>
 
 #include "ViewState.h"
-#include "guilib/GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "settings/lib/ISubSettings.h"
 #include "settings/lib/Setting.h"
 #include "threads/CriticalSection.h"

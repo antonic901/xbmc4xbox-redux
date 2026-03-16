@@ -499,11 +499,11 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
       CUtil::SetBrightnessContrastGammaPercent(CMediaSettings::Get().GetCurrentVideoSettings().m_Brightness, CMediaSettings::Get().GetCurrentVideoSettings().m_Contrast, CMediaSettings::Get().GetCurrentVideoSettings().m_Gamma, false);
 
       // switch resolution
-      CSingleLock lock (g_graphicsContext);
-      g_graphicsContext.SetFullScreenVideo(true);
+      CSingleLock lock (CServiceBroker::GetWinSystem()->GetGfxContext());
+      CServiceBroker::GetWinSystem()->GetGfxContext().SetFullScreenVideo(true);
 #ifdef HAS_VIDEO_PLAYBACK
       RESOLUTION res = g_renderManager.GetResolution();
-      g_graphicsContext.SetVideoResolution(res, false, false);
+      CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(res, false, false);
 #endif
       lock.Leave();
 
@@ -546,10 +546,10 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
 
       CSettings::GetInstance().Save();
 
-      CSingleLock lock (g_graphicsContext);
+      CSingleLock lock (CServiceBroker::GetWinSystem()->GetGfxContext());
       CUtil::RestoreBrightnessContrastGamma();
-      g_graphicsContext.SetFullScreenVideo(false);
-      g_graphicsContext.SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
+      CServiceBroker::GetWinSystem()->GetGfxContext().SetFullScreenVideo(false);
+      CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
       lock.Leave();
 
 #ifdef HAS_VIDEO_PLAYBACK
@@ -583,7 +583,7 @@ void CGUIWindowFullScreen::Process(unsigned int currentTime, CDirtyRegionList &d
   //       which is probably the job of the renderer as it can more easily track resizing etc.
   MarkDirtyRegion();
   CGUIWindow::Process(currentTime, dirtyregion);
-  m_renderRegion.SetRect(0, 0, (float)g_graphicsContext.GetWidth(), (float)g_graphicsContext.GetHeight());
+  m_renderRegion.SetRect(0, 0, (float)CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth(), (float)CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight());
 }
 
 // Override of Render() - RenderFullScreen() is where the action takes place
@@ -604,7 +604,7 @@ void CGUIWindowFullScreen::Render()
 
 bool CGUIWindowFullScreen::NeedRenderFullScreen()
 {
-  CSingleLock lock (g_graphicsContext);
+  CSingleLock lock (CServiceBroker::GetWinSystem()->GetGfxContext());
   if (g_application.m_pPlayer->HasPlayer())
   {
     if (g_application.m_pPlayer->IsPaused() ) return true;
@@ -708,7 +708,7 @@ void CGUIWindowFullScreen::RenderFullScreen()
       OnMessage(msg);
     }
     // show resolution information
-    int iResolution = g_graphicsContext.GetVideoResolution();
+    int iResolution = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
     {
       CStdString strStatus;
       strStatus.Format("%ix%i %s", CDisplaySettings::Get().GetResolutionInfo(iResolution).iWidth, CDisplaySettings::Get().GetResolutionInfo(iResolution).iHeight, CDisplaySettings::Get().GetResolutionInfo(iResolution).strMode.c_str());
@@ -811,8 +811,8 @@ void CGUIWindowFullScreen::RenderTTFSubtitles()
       subtitleText.Replace("</b", "[/B]");
       subtitleText.Replace("</u", "");
 
-      RESOLUTION res = g_graphicsContext.GetVideoResolution();
-      g_graphicsContext.SetRenderingResolution(g_graphicsContext.GetResInfo(), false);
+      RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
+      CServiceBroker::GetWinSystem()->GetGfxContext().SetRenderingResolution(CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo(), false);
 
       float maxWidth = (float) CDisplaySettings::Get().GetResolutionInfo(res).Overscan.right - CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left;
       m_subsLayout->Update(subtitleText, maxWidth * 0.9f, false, true); // true to force LTR reading order (most Hebrew subs are this format)

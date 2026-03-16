@@ -98,7 +98,7 @@ CXBoxRenderer::~CXBoxRenderer()
 //********************************************************************************************************
 void CXBoxRenderer::DeleteOSDTextures(int index)
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   if (m_pOSDYTexture[index])
   {
     m_pOSDYTexture[index]->Release();
@@ -264,7 +264,7 @@ void CXBoxRenderer::DrawAlpha(int x0, int y0, int w, int h, unsigned char *src, 
   }
 
   // scale to fit screen
-  const CRect rv = g_graphicsContext.GetViewWindow();
+  const CRect rv = CServiceBroker::GetWinSystem()->GetGfxContext().GetViewWindow();
 
   // Vobsubs are defined to be 720 wide.
   // NOTE: This will not work nicely if we are allowing mplayer to render text based subs
@@ -305,7 +305,7 @@ void CXBoxRenderer::DrawAlpha(int x0, int y0, int w, int h, unsigned char *src, 
   //if new height is heigher than current osd-texture height, recreate the textures with new height.
   if (h > m_iOSDTextureHeight[iOSDBuffer])
   {
-    CSingleLock lock(g_graphicsContext);
+    CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
     DeleteOSDTextures(iOSDBuffer);
     m_iOSDTextureHeight[iOSDBuffer] = h;
@@ -374,7 +374,7 @@ void CXBoxRenderer::RenderOSD()
 
   ResetEvent(m_eventOSDDone[iRenderBuffer]);
 
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
   //copy alle static vars to local vars because they might change during this function by mplayer callbacks
   float osdWidth = m_OSDWidth;
@@ -418,9 +418,9 @@ void CXBoxRenderer::RenderOSD()
   //m_pD3DDevice->SetTextureStageState( 1, D3DTSS_MINFILTER, D3DTEXF_LINEAR /*g_settings.m_minFilter*/ );
 
   // clip the output if we are not in FSV so that zoomed subs don't go all over the GUI
-  if ( !(g_graphicsContext.IsFullScreenVideo() || g_graphicsContext.IsCalibrating() ))
+  if ( !(CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo() || CServiceBroker::GetWinSystem()->GetGfxContext().IsCalibrating() ))
   {
-    g_graphicsContext.ClipToViewWindow();
+    CServiceBroker::GetWinSystem()->GetGfxContext().ClipToViewWindow();
   }
 
   // Render the image
@@ -456,11 +456,11 @@ void CXBoxRenderer::RenderOSD()
 //Get resolution based on current mode.
 RESOLUTION CXBoxRenderer::GetResolution()
 {
-  if (g_graphicsContext.IsFullScreenVideo() || g_graphicsContext.IsCalibrating())
+  if (CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo() || CServiceBroker::GetWinSystem()->GetGfxContext().IsCalibrating())
   {
     return m_iResolution;
   }
-  return g_graphicsContext.GetVideoResolution();
+  return CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
 }
 
 float CXBoxRenderer::GetAspectRatio()
@@ -523,7 +523,7 @@ void CXBoxRenderer::ManageTextures()
 {
   int neededbuffers = 0;
   //use 1 buffer in fullscreen mode and 2 buffers in windowed mode
-  if (g_graphicsContext.IsFullScreenVideo())
+  if (CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
   {
     if (m_NumOSDBuffers != 1)
     {
@@ -573,7 +573,7 @@ void CXBoxRenderer::ManageTextures()
 
 void CXBoxRenderer::ManageDisplay()
 {
-  const CRect rv = g_graphicsContext.GetViewWindow();
+  const CRect rv = CServiceBroker::GetWinSystem()->GetGfxContext().GetViewWindow();
   float fScreenWidth = rv.Width();
   float fScreenHeight = rv.Height();
   float fOffsetX1 = rv.x1;
@@ -807,7 +807,7 @@ int CXBoxRenderer::GetImage(YV12Image *image, int source, bool readonly)
 #ifdef MP_DIRECTRENDERING 
     if( source < 0 )
     { /* no free source existed, so create one */
-      CSingleLock lock(g_graphicsContext);
+      CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
       if( CreateYV12Texture(m_NumYV12Buffers) )
       {
         source = m_NumYV12Buffers;
@@ -862,7 +862,7 @@ void CXBoxRenderer::Reset()
 void CXBoxRenderer::Update(bool bPauseDrawing)
 {
   if (!m_bConfigured) return;
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   ManageDisplay();
   ManageTextures();
 }
@@ -873,7 +873,7 @@ void CXBoxRenderer::RenderUpdate(bool clear, DWORD flags, DWORD alpha)
 
   if (!m_YUVTexture[m_iYV12RenderBuffer][FIELD_FULL][0]) return ;
 
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   ManageDisplay();
   ManageTextures();
   if (clear)
@@ -979,7 +979,7 @@ unsigned int CXBoxRenderer::DrawSlice(unsigned char *src[], int stride[], int w,
 
 unsigned int CXBoxRenderer::PreInit()
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   m_bConfigured = false;
   m_iResolution = RES_PAL_4x3;
 
@@ -1037,7 +1037,7 @@ unsigned int CXBoxRenderer::PreInit()
 void CXBoxRenderer::UnInit()
 {
   CLog::Log(LOGDEBUG, "%s - Cleaning up resources", __FUNCTION__);
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
   // YV12 textures, subtitle and osd stuff
   for (int i = 0; i < NUM_BUFFERS; ++i)
@@ -1062,7 +1062,7 @@ void CXBoxRenderer::Render(DWORD flags)
   /* general stuff */
   RenderOSD();
 
-  if (g_graphicsContext.IsFullScreenVideo())
+  if (CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
   {
     if (g_application.NeedRenderFullScreen())
     { // render our subtitles and osd
@@ -1193,7 +1193,7 @@ void CXBoxRenderer::AutoCrop(bool bCrop)
 
   if (bCrop)
   {
-    CSingleLock lock(g_graphicsContext);
+    CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
     // apply auto-crop filter - only luminance needed, and we run vertically down 'n'
     // runs down the image.
     int min_detect = 8;                                // reasonable amount (what mplayer uses)
@@ -1276,12 +1276,12 @@ void CXBoxRenderer::AutoCrop(bool bCrop)
 
 void CXBoxRenderer::RenderLowMem(DWORD flags)
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   int index = m_iYV12RenderBuffer;
   // set scissors if we are not in fullscreen video
-  if ( !(g_graphicsContext.IsFullScreenVideo() || g_graphicsContext.IsCalibrating() ))
+  if ( !(CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo() || CServiceBroker::GetWinSystem()->GetGfxContext().IsCalibrating() ))
   {
-    g_graphicsContext.ClipToViewWindow();
+    CServiceBroker::GetWinSystem()->GetGfxContext().ClipToViewWindow();
   }
 
   if( WaitForSingleObject(m_eventTexturesDone[index], 500) == WAIT_TIMEOUT )
@@ -1346,7 +1346,7 @@ void CXBoxRenderer::RenderLowMem(DWORD flags)
 
 void CXBoxRenderer::CreateThumbnail(LPDIRECT3DSURFACE8 surface, unsigned int width, unsigned int height)
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   LPDIRECT3DSURFACE8 oldRT;
   RECT saveSize = rd;
   rd.left = rd.top = 0;
@@ -1366,7 +1366,7 @@ void CXBoxRenderer::CreateThumbnail(LPDIRECT3DSURFACE8 surface, unsigned int wid
 //********************************************************************************************************
 void CXBoxRenderer::DeleteYV12Texture(int index)
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   
   YV12Image &im = m_image[index];
   YUVFIELDS &fields = m_YUVTexture[index];
@@ -1412,7 +1412,7 @@ void CXBoxRenderer::ClearYV12Texture(int index)
 
 bool CXBoxRenderer::CreateYV12Texture(int index)
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   DeleteYV12Texture(index);
 
   /* since we also want the field textures, pitch must be texture aligned */

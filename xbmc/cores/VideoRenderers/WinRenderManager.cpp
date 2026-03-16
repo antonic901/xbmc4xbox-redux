@@ -41,9 +41,9 @@ CWinRenderManager::CWinRenderManager()
 
 CWinRenderManager::~CWinRenderManager()
 {
-  DWORD locks = ExitCriticalSection(g_graphicsContext);
+  DWORD locks = ExitCriticalSection(CServiceBroker::GetWinSystem()->GetGfxContext());
   CExclusiveLock lock(m_sharedSection);
-  RestoreCriticalSection(g_graphicsContext, locks);
+  RestoreCriticalSection(CServiceBroker::GetWinSystem()->GetGfxContext(), locks);
 
   delete m_pRenderer;
   m_pRenderer = NULL;
@@ -51,12 +51,12 @@ CWinRenderManager::~CWinRenderManager()
 
 bool CWinRenderManager::Configure(unsigned int width, unsigned int height, unsigned int d_width, unsigned int d_height, float fps, unsigned flags)
 {
-  DWORD locks = ExitCriticalSection(g_graphicsContext);
+  DWORD locks = ExitCriticalSection(CServiceBroker::GetWinSystem()->GetGfxContext());
   CExclusiveLock lock(m_sharedSection);      
 
   if(!m_pRenderer) 
   {
-    RestoreCriticalSection(g_graphicsContext, locks);
+    RestoreCriticalSection(CServiceBroker::GetWinSystem()->GetGfxContext(), locks);
     return false;
   }
  
@@ -73,7 +73,7 @@ bool CWinRenderManager::Configure(unsigned int width, unsigned int height, unsig
     m_bIsStarted = true;
   }
   
-  RestoreCriticalSection(g_graphicsContext, locks);
+  RestoreCriticalSection(CServiceBroker::GetWinSystem()->GetGfxContext(), locks);
   return result;
 }
 
@@ -86,9 +86,9 @@ bool CWinRenderManager::IsConfigured()
 
 void CWinRenderManager::Update(bool bPauseDrawing)
 {
-  DWORD locks = ExitCriticalSection(g_graphicsContext);
+  DWORD locks = ExitCriticalSection(CServiceBroker::GetWinSystem()->GetGfxContext());
   CExclusiveLock lock(m_sharedSection);
-  RestoreCriticalSection(g_graphicsContext, locks);
+  RestoreCriticalSection(CServiceBroker::GetWinSystem()->GetGfxContext(), locks);
 
   m_bPauseDrawing = bPauseDrawing;
   if (m_pRenderer)
@@ -97,9 +97,9 @@ void CWinRenderManager::Update(bool bPauseDrawing)
 
 void CWinRenderManager::RenderUpdate(bool clear, DWORD flags, DWORD alpha)
 {
-  DWORD locks = ExitCriticalSection(g_graphicsContext);
+  DWORD locks = ExitCriticalSection(CServiceBroker::GetWinSystem()->GetGfxContext());
   CSharedLock lock(m_sharedSection); 
-  RestoreCriticalSection(g_graphicsContext, locks);
+  RestoreCriticalSection(CServiceBroker::GetWinSystem()->GetGfxContext(), locks);
 
   if (m_pRenderer)
     m_pRenderer->RenderUpdate(clear, flags, alpha);
@@ -107,9 +107,9 @@ void CWinRenderManager::RenderUpdate(bool clear, DWORD flags, DWORD alpha)
 
 unsigned int CWinRenderManager::PreInit()
 {
-  DWORD locks = ExitCriticalSection(g_graphicsContext);
+  DWORD locks = ExitCriticalSection(CServiceBroker::GetWinSystem()->GetGfxContext());
   CExclusiveLock lock(m_sharedSection);
-  RestoreCriticalSection(g_graphicsContext, locks);
+  RestoreCriticalSection(CServiceBroker::GetWinSystem()->GetGfxContext(), locks);
 
   m_bIsStarted = false;
   m_bPauseDrawing = false;
@@ -117,16 +117,16 @@ unsigned int CWinRenderManager::PreInit()
   if (!m_pRenderer)
   { // no renderer
       CLog::Log(LOGDEBUG, __FUNCTION__" - Selected Win RGB-Renderer ");
-      m_pRenderer = new CPixelShaderRenderer(g_graphicsContext.Get3DDevice());
+      m_pRenderer = new CPixelShaderRenderer(CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice());
   }
   return m_pRenderer->PreInit();
 }
 
 void CWinRenderManager::UnInit()
 {
-  DWORD locks = ExitCriticalSection(g_graphicsContext);
+  DWORD locks = ExitCriticalSection(CServiceBroker::GetWinSystem()->GetGfxContext());
   CExclusiveLock lock(m_sharedSection);
-  RestoreCriticalSection(g_graphicsContext, locks);
+  RestoreCriticalSection(CServiceBroker::GetWinSystem()->GetGfxContext(), locks);
 
   m_bIsStarted = false;
   if (m_pRenderer)
@@ -146,9 +146,9 @@ void CWinRenderManager::SetupScreenshot()
 
 void CWinRenderManager::CreateThumbnail(LPDIRECT3DSURFACE8 surface, unsigned int width, unsigned int height)
 {
-  DWORD locks = ExitCriticalSection(g_graphicsContext);
+  DWORD locks = ExitCriticalSection(CServiceBroker::GetWinSystem()->GetGfxContext());
   CExclusiveLock lock(m_sharedSection);
-  RestoreCriticalSection(g_graphicsContext, locks);
+  RestoreCriticalSection(CServiceBroker::GetWinSystem()->GetGfxContext(), locks);
 
   if (m_pRenderer)
     m_pRenderer->CreateThumbnail(surface, width, height);

@@ -152,7 +152,7 @@ void CGUIBaseContainer::ProcessItem(float posX, float posY, CGUIListItemPtr& ite
   if (!m_focusedLayout || !m_layout) return;
 
   // set the origin
-  g_graphicsContext.SetOrigin(posX, posY);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetOrigin(posX, posY);
 
   if (m_bInvalidated)
     item->SetInvalid();
@@ -196,7 +196,7 @@ void CGUIBaseContainer::ProcessItem(float posX, float posY, CGUIListItemPtr& ite
       item->GetLayout()->Process(item.get(), m_parentID, currentTime, dirtyregions);
   }
 
-  g_graphicsContext.RestoreOrigin();
+  CServiceBroker::GetWinSystem()->GetGfxContext().RestoreOrigin();
 }
 
 void CGUIBaseContainer::Render()
@@ -208,7 +208,7 @@ void CGUIBaseContainer::Render()
   int cacheBefore, cacheAfter;
   GetCacheOffsets(cacheBefore, cacheAfter);
 
-  if (g_graphicsContext.SetClipRegion(m_posX, m_posY, m_width, m_height))
+  if (CServiceBroker::GetWinSystem()->GetGfxContext().SetClipRegion(m_posX, m_posY, m_width, m_height))
   {
     CPoint origin = CPoint(m_posX, m_posY) + m_renderOffset;
     float pos = (m_orientation == VERTICAL) ? origin.y : origin.x;
@@ -261,7 +261,7 @@ void CGUIBaseContainer::Render()
         RenderItem(focusedPos, origin.y, focusedItem.get(), true);
     }
 
-    g_graphicsContext.RestoreClipRegion();
+    CServiceBroker::GetWinSystem()->GetGfxContext().RestoreClipRegion();
   }
 
   CGUIControl::Render();
@@ -273,7 +273,7 @@ void CGUIBaseContainer::RenderItem(float posX, float posY, CGUIListItem *item, b
   if (!m_focusedLayout || !m_layout) return;
 
   // set the origin
-  g_graphicsContext.SetOrigin(posX, posY);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetOrigin(posX, posY);
 
   if (focused)
   {
@@ -287,7 +287,7 @@ void CGUIBaseContainer::RenderItem(float posX, float posY, CGUIListItem *item, b
     else if (item->GetLayout())
       item->GetLayout()->Render(item, m_parentID);
   }
-  g_graphicsContext.RestoreOrigin();
+  CServiceBroker::GetWinSystem()->GetGfxContext().RestoreOrigin();
 }
 
 bool CGUIBaseContainer::OnAction(const CAction &action)

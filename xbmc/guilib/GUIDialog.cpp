@@ -181,7 +181,7 @@ void CGUIDialog::Open_Internal(bool bProcessRenderLoop, const std::string &param
 {
   // Lock graphic context here as it is sometimes called from non rendering threads
   // maybe we should have a critical section per window instead??
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
   if (!g_windowManager.Initialized() ||
       (m_active && !m_closing && !IsAnimating(ANIM_TYPE_WINDOW_CLOSE)))
@@ -217,13 +217,13 @@ void CGUIDialog::Open_Internal(bool bProcessRenderLoop, const std::string &param
 void CGUIDialog::Open(const std::string &param /* = "" */)
 {
 #ifdef HAS_XBOX_D3D
-  if (!g_application.IsCurrentThread() && !g_graphicsContext.IsFullScreenVideo())
+  if (!g_application.IsCurrentThread() && !CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
 #else
   if (!g_application.IsCurrentThread())
 #endif
   {
     // make sure graphics lock is not held
-    CSingleExit leaveIt(g_graphicsContext);
+    CSingleExit leaveIt(CServiceBroker::GetWinSystem()->GetGfxContext());
     CApplicationMessenger::Get().SendMsg(TMSG_GUI_DIALOG_OPEN, -1, -1, static_cast<void*>(this), param);
   }
   else

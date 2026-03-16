@@ -51,13 +51,13 @@ void CGUIWindowScreensaver::Render()
       try
       {
         //some screensavers seem to be depending on xbmc clearing the screen
-        //       g_graphicsContext.Get3DDevice()->Clear( 0L, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, 0x00010001, 1.0f, 0L );
+        //       CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->Clear( 0L, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, 0x00010001, 1.0f, 0L );
         if (m_addon->ID() == "screensaver.cpblobs" || m_addon->ID() == "screensaver.pmblobs" || m_addon->ID() == "screensaver.drempels")
-          g_graphicsContext.ApplyStateBlock();
+          CServiceBroker::GetWinSystem()->GetGfxContext().ApplyStateBlock();
         else
-          g_graphicsContext.CaptureStateBlock();
+          CServiceBroker::GetWinSystem()->GetGfxContext().CaptureStateBlock();
         m_addon->Render();
-        g_graphicsContext.ApplyStateBlock();
+        CServiceBroker::GetWinSystem()->GetGfxContext().ApplyStateBlock();
       }
       catch (...)
       {
@@ -100,7 +100,7 @@ bool CGUIWindowScreensaver::OnMessage(CGUIMessage& message)
       if (m_addon)
       {
         m_addon->Stop();
-        g_graphicsContext.ApplyStateBlock();
+        CServiceBroker::GetWinSystem()->GetGfxContext().ApplyStateBlock();
         m_addon->Destroy();
         m_addon.reset();
       }
@@ -108,8 +108,8 @@ bool CGUIWindowScreensaver::OnMessage(CGUIMessage& message)
       m_bInitialized = false;
 
       // remove z-buffer
-//      RESOLUTION res = g_graphicsContext.GetVideoResolution();
- //     g_graphicsContext.SetVideoResolution(res, FALSE);
+//      RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
+ //     CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(res, FALSE);
 
     }
     break;
@@ -135,14 +135,14 @@ bool CGUIWindowScreensaver::OnMessage(CGUIMessage& message)
         return false;
 
       if (m_addon->ID() == "screensaver.cpblobs" || m_addon->ID() == "screensaver.pmblobs" || m_addon->ID() == "screensaver.drempels")
-        g_graphicsContext.ApplyStateBlock();
+        CServiceBroker::GetWinSystem()->GetGfxContext().ApplyStateBlock();
       else
-        g_graphicsContext.CaptureStateBlock();
+        CServiceBroker::GetWinSystem()->GetGfxContext().CaptureStateBlock();
       m_addon->CreateScreenSaver();
 #endif
       // setup a z-buffer
-//      RESOLUTION res = g_graphicsContext.GetVideoResolution();
-//      g_graphicsContext.SetVideoResolution(res, TRUE);
+//      RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
+//      CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(res, TRUE);
 
       return true;
     }

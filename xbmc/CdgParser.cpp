@@ -412,7 +412,7 @@ bool CCdgRenderer::InitGraphics()
 {
   CSingleLock lock (m_CritSection);
   if (!m_pd3dDevice)
-    m_pd3dDevice = g_graphicsContext.Get3DDevice();
+    m_pd3dDevice = CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice();
   if (!m_pd3dDevice) return false;
 
   // set the colours
@@ -454,7 +454,7 @@ void CCdgRenderer::DrawTexture()
 
   m_pd3dDevice->Begin(D3DPT_QUADLIST);
 
-  RESOLUTION res = g_graphicsContext.GetVideoResolution();
+  RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
   m_pd3dDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, (float)BORDERWIDTH, (float) BORDERHEIGHT);
   m_pd3dDevice->SetVertexData4f( D3DVSDE_VERTEX, (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left, (float) CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top, 0, 0 );
 

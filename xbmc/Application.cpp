@@ -70,6 +70,7 @@
 #endif
 #include "utils/SystemInfo.h"
 #include "utils/TimeUtils.h"
+#include "windowing/xbox/WinSystemXbox.h"
 #include "GUILargeTextureManager.h"
 #include "TextureCache.h"
 #include "playlists/SmartPlayList.h"
@@ -424,7 +425,7 @@ void CApplication::InitBasicD3D()
 
   // Check if we have the required modes available
   g_videoConfig.GetModes(m_pD3D);
-  if (!g_graphicsContext.IsValidResolution(CDisplaySettings::Get().GetCurrentResolution()))
+  if (!CServiceBroker::GetWinSystem()->GetGfxContext().IsValidResolution(CDisplaySettings::Get().GetCurrentResolution()))
   {
     // Oh uh - doesn't look good for starting in their wanted screenmode
     CLog::Log(LOGERROR, "The screen resolution requested is not valid, resetting to a valid mode");
@@ -434,8 +435,8 @@ void CApplication::InitBasicD3D()
   }
 
   // Transfer the resolution information to our graphics context
-  g_graphicsContext.SetD3DParameters(&m_d3dpp);
-  g_graphicsContext.SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetD3DParameters(&m_d3dpp);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
 
   // Create the device
 #ifdef HAS_XBOX_D3D
@@ -515,7 +516,7 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
       CIoSupport::RemapDriveLetter('G',"Harddisk0\\Partition7");
   }
 #endif
-  bool Pal = g_graphicsContext.GetVideoResolution() == RES_PAL_4x3;
+  bool Pal = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution() == RES_PAL_4x3;
 
   if (HaveGamepad)
     FEH_TextOut(pFont, (Pal ? 16 : 12) | 0x18000, L"Press any button to reboot");
@@ -740,10 +741,14 @@ HRESULT CApplication::Create(HWND hWnd)
   CApplicationMessenger::Get().RegisterReceiver(&g_playlistPlayer);
   CApplicationMessenger::Get().RegisterReceiver(&g_infoManager);
 
+  // create our windowing - TODO: lot of DX related stuff could go there
+  m_pWinSystem = CWinSystemXbox::CreateWinSystem();
+  CServiceBroker::RegisterWinSystem(m_pWinSystem.get());
+
   for (int i = RES_HDTV_1080i; i <= RES_PAL60_16x9; i++)
   {
-    g_graphicsContext.ResetScreenParameters((RESOLUTION)i);
-    g_graphicsContext.ResetOverscan((RESOLUTION)i, CDisplaySettings::Get().GetResolutionInfo(i).Overscan);
+    CServiceBroker::GetWinSystem()->GetGfxContext().ResetScreenParameters((RESOLUTION)i);
+    CServiceBroker::GetWinSystem()->GetGfxContext().ResetOverscan((RESOLUTION)i, CDisplaySettings::Get().GetResolutionInfo(i).Overscan);
   }
 
   g_hWnd = hWnd;
@@ -835,8 +840,8 @@ HRESULT CApplication::Create(HWND hWnd)
   //init the present parameters with values that are supported
   RESOLUTION initialResolution = g_videoConfig.GetInitialMode(m_pD3D, &m_d3dpp);
   // Transfer the resolution information to our graphics context
-  g_graphicsContext.SetD3DParameters(&m_d3dpp);
-  g_graphicsContext.SetVideoResolution(initialResolution, TRUE);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetD3DParameters(&m_d3dpp);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(initialResolution, TRUE);
 
   // Initialize core peripheral port support. Note: If these parameters
   // are 0 and NULL, respectively, then the default number and types of
@@ -1121,7 +1126,7 @@ HRESULT CApplication::Create(HWND hWnd)
   // Retrieve the matching resolution based on GUI settings
   CDisplaySettings::Get().SetCurrentResolution(CDisplaySettings::Get().GetDisplayResolution());
   CLog::Log(LOGNOTICE, "Checking resolution %i", CDisplaySettings::Get().GetCurrentResolution());
-  if (!g_graphicsContext.IsValidResolution(CDisplaySettings::Get().GetCurrentResolution()))
+  if (!CServiceBroker::GetWinSystem()->GetGfxContext().IsValidResolution(CDisplaySettings::Get().GetCurrentResolution()))
   {
     #ifdef _XBOX
         RESOLUTION newRes = g_videoConfig.GetBestMode();
@@ -1140,8 +1145,8 @@ HRESULT CApplication::Create(HWND hWnd)
 #define D3DCREATE_MULTITHREADED 0
 #endif
 
-  g_graphicsContext.SetD3DParameters(&m_d3dpp);
-  g_graphicsContext.SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetD3DParameters(&m_d3dpp);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
   
   if ( FAILED( hr = m_pD3D->CreateDevice(0, D3DDEVTYPE_HAL, NULL,
                                          D3DCREATE_MULTITHREADED | D3DCREATE_HARDWARE_VERTEXPROCESSING,
@@ -1175,19 +1180,19 @@ HRESULT CApplication::Create(HWND hWnd)
     }
   }
 
-  g_graphicsContext.SetD3DDevice(m_pd3dDevice);
-  g_graphicsContext.CaptureStateBlock();
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetD3DDevice(m_pd3dDevice);
+  CServiceBroker::GetWinSystem()->GetGfxContext().CaptureStateBlock();
   // set filters
-  g_graphicsContext.Get3DDevice()->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR /*g_settings.m_minFilter*/ );
-  g_graphicsContext.Get3DDevice()->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR /*g_settings.m_maxFilter*/ );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR /*g_settings.m_minFilter*/ );
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR /*g_settings.m_maxFilter*/ );
   CUtil::InitGamma();
   
   // set GUI res and force the clear of the screen
-  g_graphicsContext.SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE, true);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE, true);
 
   CSplash::GetInstance().Show();
 
-  int iResolution = g_graphicsContext.GetVideoResolution();
+  int iResolution = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
   CLog::Log(LOGINFO, "GUI format %ix%i %s",
             CDisplaySettings::Get().GetResolutionInfo(iResolution).iWidth,
             CDisplaySettings::Get().GetResolutionInfo(iResolution).iHeight,
@@ -1664,7 +1669,7 @@ bool CApplication::LoadSkin(const std::string& skinID)
 #endif
   }
   // close the music and video overlays (they're re-opened automatically later)
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
   // save the current window details and focused control
   int currentWindow = g_windowManager.GetActiveWindow();
@@ -1693,7 +1698,7 @@ bool CApplication::LoadSkin(const std::string& skinID)
   g_SkinInfo = skin;
 
   CLog::Log(LOGINFO, "  load fonts for skin...");
-  g_graphicsContext.SetMediaDir(skin->Path());
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetMediaDir(skin->Path());
   g_directoryCache.ClearSubPaths(skin->Path());
 
   g_colorManager.Load(CSettings::GetInstance().GetString("lookandfeel.skincolors"));
@@ -1924,7 +1929,7 @@ void CApplication::RenderNoPresent()
   // that stuff should go into renderfullscreen instead as that is called from the renderin thread
 #ifdef HAS_XBOX_HARDWARE  // Win32 renders from the main thread, not from the player thread
   // dont show GUI when playing full screen video
-  if (g_graphicsContext.IsFullScreenVideo() && m_pPlayer->IsPlaying() && !m_pPlayer->IsPaused())
+  if (CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo() && m_pPlayer->IsPlaying() && !m_pPlayer->IsPaused())
   {
     Sleep(50);
     ResetScreenSaver();
@@ -1935,7 +1940,7 @@ void CApplication::RenderNoPresent()
   if(!m_pd3dDevice)
     return;
 
-  g_graphicsContext.Lock();
+  CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
 
   m_pd3dDevice->BeginScene();
 
@@ -1946,7 +1951,7 @@ void CApplication::RenderNoPresent()
   g_windowManager.Render();
 
   // if we're recording an audio stream then show blinking REC
-  if (!g_graphicsContext.IsFullScreenVideo())
+  if (!CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
   {
     if (m_pPlayer && m_pPlayer->IsRecording() )
     {
@@ -1974,7 +1979,7 @@ void CApplication::RenderNoPresent()
     }
 
     // reset image scaling and effect states
-    g_graphicsContext.SetRenderingResolution(g_graphicsContext.GetResInfo(), false);
+    CServiceBroker::GetWinSystem()->GetGfxContext().SetRenderingResolution(CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo(), false);
 
     // If we have the remote codes enabled, then show them
     if (g_advancedSettings.m_displayRemoteCodes)
@@ -1991,11 +1996,11 @@ void CApplication::RenderNoPresent()
       if (iShowRemoteCode > 0)
       {
         std::string wszText = StringUtils::Format("Remote Code: %i", iRemoteCode);
-        float x = 0.08f * g_graphicsContext.GetWidth();
-        float y = 0.12f * g_graphicsContext.GetHeight();
+        float x = 0.08f * CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth();
+        float y = 0.12f * CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight();
 #ifndef _DEBUG
         if (LOG_LEVEL_DEBUG_FREEMEM > g_advancedSettings.m_logLevel)
-          y = 0.08f * g_graphicsContext.GetHeight();
+          y = 0.08f * CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight();
 #endif
         CGUITextLayout::DrawText(g_fontManager.GetFont("font13"), x, y, 0xffffffff, 0xff000000, wszText, 0);
         iShowRemoteCode--;
@@ -2010,7 +2015,7 @@ void CApplication::RenderNoPresent()
 #ifdef HAS_XBOX_D3D
   m_pd3dDevice->Present( NULL, NULL, NULL, NULL );
 #endif
-  g_graphicsContext.Unlock();
+  CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
 
   // execute post rendering actions (finalize window closing)
   g_windowManager.AfterRender();
@@ -2024,7 +2029,7 @@ void CApplication::RenderNoPresent()
 #ifndef HAS_XBOX_D3D
 void CApplication::Render()
 {
-  g_graphicsContext.Lock();
+  CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
   { // frame rate limiter (really bad, but it does the trick :p)
     const static unsigned int singleFrameTime = 10;
     static unsigned int lastFrameTime = 0;
@@ -2037,7 +2042,7 @@ void CApplication::Render()
   // Present the backbuffer contents to the display
   if (m_pd3dDevice) m_pd3dDevice->Present( NULL, NULL, NULL, NULL );
   CTimeUtils::UpdateFrameTime();
-  g_graphicsContext.Unlock();
+  CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
 }
 #endif
 
@@ -2060,8 +2065,8 @@ void CApplication::RenderMemoryStatus()
 #endif
   {
     // reset the window scaling and fade status
-    RESOLUTION res = g_graphicsContext.GetVideoResolution();
-    g_graphicsContext.SetRenderingResolution(g_graphicsContext.GetResInfo(), false);
+    RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
+    CServiceBroker::GetWinSystem()->GetGfxContext().SetRenderingResolution(CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo(), false);
 
     CStdString info;
     MEMORYSTATUS stat;
@@ -2089,8 +2094,8 @@ void CApplication::RenderMemoryStatus()
           info.AppendFormat("Focused: %i (%s)", control->GetID(), CGUIControlFactory::TranslateControlType(control->GetControlType()).c_str());
       }
     }
-    float x = 0.04f * g_graphicsContext.GetWidth() + CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left;
-    float y = 0.04f * g_graphicsContext.GetHeight() + CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top;
+    float x = 0.04f * CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth() + CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left;
+    float y = 0.04f * CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight() + CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top;
 
     m_debugLayout->Update(info);
     m_debugLayout->RenderOutline(x, y, 0xffffffff, 0xff000000, 0, 0);
@@ -2738,14 +2743,14 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
     break;
 
   case TMSG_SETVIDEORESOLUTION:
-    g_graphicsContext.SetVideoResolution(static_cast<RESOLUTION>(pMsg->param1), pMsg->strParam == "true" ? TRUE : FALSE, pMsg->param2 == 1);
+    CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(static_cast<RESOLUTION>(pMsg->param1), pMsg->strParam == "true" ? TRUE : FALSE, pMsg->param2 == 1);
     break;
 
   case TMSG_TOGGLEFULLSCREEN:
 #ifndef _XBOX
-    g_graphicsContext.Lock();
-    g_graphicsContext.ToggleFullScreenRoot();
-    g_graphicsContext.Unlock();
+    CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
+    CServiceBroker::GetWinSystem()->GetGfxContext().ToggleFullScreenRoot();
+    CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
 #endif
     break;
 
@@ -2798,7 +2803,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
     g_application.ResetScreenSaver();
     g_application.ResetScreenSaverWindow();
 
-    g_graphicsContext.Lock();
+    CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
 
     if (g_windowManager.GetActiveWindow() != WINDOW_SLIDESHOW)
       g_windowManager.ActivateWindow(WINDOW_SLIDESHOW);
@@ -2829,7 +2834,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
       pSlideShow->Add(&item);
       pSlideShow->Select(pMsg->strParam);
     }
-    g_graphicsContext.Unlock();
+    CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
   }
   break;
 
@@ -2842,7 +2847,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
     if (m_pPlayer->IsPlayingVideo())
       g_application.StopPlaying();
 
-    g_graphicsContext.Lock();
+    CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
     pSlideShow->Reset();
 
     CFileItemList items;
@@ -2872,7 +2877,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
         g_windowManager.ActivateWindow(WINDOW_SLIDESHOW);
     }
 
-    g_graphicsContext.Unlock();
+    CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
   }
   break;
 
@@ -2926,7 +2931,7 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
 
     if (processGUI)
     {
-      g_graphicsContext.Lock();
+      CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
       // check if there are notifications to display
       CGUIDialogKaiToast *toast = (CGUIDialogKaiToast *)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
       if (toast && toast->DoWork())
@@ -2936,7 +2941,7 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
           toast->Open();
         }
       }
-      g_graphicsContext.Unlock();
+      CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
     }
 
     UpdateLCD();
@@ -3495,8 +3500,8 @@ HRESULT CApplication::Cleanup()
     CLog::Log(LOGNOTICE, "unload sections");
     CSectionLoader::UnloadAll();
     // reset our d3d params before we destroy
-    g_graphicsContext.SetD3DDevice(NULL);
-    g_graphicsContext.SetD3DParameters(NULL);
+    CServiceBroker::GetWinSystem()->GetGfxContext().SetD3DDevice(NULL);
+    CServiceBroker::GetWinSystem()->GetGfxContext().SetD3DParameters(NULL);
 
 #ifdef _DEBUG
     //  Shutdown as much as possible of the
@@ -4041,7 +4046,7 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
 
     // don't hold graphicscontext here since player
     // may wait on another thread, that requires gfx
-    CSingleExit ex(g_graphicsContext);
+    CSingleExit ex(CServiceBroker::GetWinSystem()->GetGfxContext());
 
     iResult = m_pPlayer->OpenFile(item, options);
   }
@@ -4286,7 +4291,7 @@ void CApplication::OnPlayBackSeekChapter(int iChapter)
 
 bool CApplication::IsPlayingFullScreenVideo() const
 {
-  return m_pPlayer->IsPlayingVideo() && g_graphicsContext.IsFullScreenVideo();
+  return m_pPlayer->IsPlayingVideo() && CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo();
 }
 
 bool CApplication::IsFullScreen()
@@ -4430,7 +4435,7 @@ bool CApplication::NeedRenderFullScreen()
 
 void CApplication::RenderFullScreen()
 {
-  if (g_graphicsContext.IsFullScreenVideo())
+  if (CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
   {
     CGUIWindowFullScreen *pFSWin = (CGUIWindowFullScreen *)g_windowManager.GetWindow(WINDOW_FULLSCREEN_VIDEO);
     if (!pFSWin)
@@ -4678,7 +4683,7 @@ bool CApplication::MustBlockHDSpinDown(bool bCheckThisForNormalSpinDown)
   if (m_pPlayer->IsPlayingVideo())
   {
     //block immediate spindown when playing a video non-fullscreen (videocontrol is playing)
-    if ((!bCheckThisForNormalSpinDown) && (!g_graphicsContext.IsFullScreenVideo()))
+    if ((!bCheckThisForNormalSpinDown) && (!CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo()))
     {
       return true;
     }

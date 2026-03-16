@@ -115,9 +115,6 @@
 				RelativePath=".\DirectXGraphics.cpp">
 			</File>
 			<File
-				RelativePath=".\GraphicContext.cpp">
-			</File>
-			<File
 				RelativePath=".\GUIAction.cpp">
 			</File>
 			<File
@@ -337,9 +334,6 @@
 			</File>
 			<File
 				RelativePath=".\Geometry.h">
-			</File>
-			<File
-				RelativePath=".\GraphicContext.h">
 			</File>
 			<File
 				RelativePath=".\gui3d.h">

@@ -37,8 +37,11 @@
 #include "gui3d.h"
 #include "utils/StdString.h"
 
-#include "utils/GlobalsHandling.h"
 #include "settings/lib/ISettingCallback.h"
+
+// required by clients
+#include "ServiceBroker.h"
+#include "WinSystem.h"
 
 /*!
  \ingroup graphics
@@ -322,12 +325,5 @@ private:
 
   int m_maxTextureSize;
 };
-
-/*!
- \ingroup graphics
- \brief
- */
-
-XBMC_GLOBAL(CGraphicContext,g_graphicsContext);
 
 #endif

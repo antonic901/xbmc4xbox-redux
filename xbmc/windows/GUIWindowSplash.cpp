@@ -44,15 +44,15 @@ void CGUIWindowSplash::OnInitWindow()
 
   CLog::Log(LOGINFO, "load splash image: %s", CSpecialProtocol::TranslatePath(splashImage).c_str());
 
-  m_image = boost::movelib::unique_ptr<CGUIImage>(new CGUIImage(0, 0, 0, 0, g_graphicsContext.GetWidth(), g_graphicsContext.GetHeight(), CTextureInfo(splashImage)));
+  m_image = boost::movelib::unique_ptr<CGUIImage>(new CGUIImage(0, 0, 0, 0, CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth(), CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight(), CTextureInfo(splashImage)));
   m_image->SetAspectRatio(CAspectRatio::AR_SCALE);
 }
 
 void CGUIWindowSplash::Render()
 {
-  g_graphicsContext.SetRenderingResolution(g_graphicsContext.GetResInfo(), true);
-  m_image->SetWidth(g_graphicsContext.GetWidth());
-  m_image->SetHeight(g_graphicsContext.GetHeight());
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetRenderingResolution(CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo(), true);
+  m_image->SetWidth(CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth());
+  m_image->SetHeight(CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight());
   m_image->AllocResources();
   m_image->Render();
   m_image->FreeResources();

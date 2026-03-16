@@ -22,7 +22,7 @@
 #include "GUIFont.h"
 #include "GUIFontTTF.h"
 #include "GUIFontManager.h"
-#include "GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "filesystem/SpecialProtocol.h"
 #include "utils/MathUtils.h"
 
@@ -226,7 +226,7 @@ void CGUIFontTTF::Clear()
 bool CGUIFontTTF::Load(const CStdString& strFilename, float height, float aspect, float lineSpacing, bool border)
 {
   // create our character texture + font shader
-  m_pD3DDevice = g_graphicsContext.Get3DDevice();
+  m_pD3DDevice = CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice();
 
   // we now know that this object is unique - only the GUIFont objects are non-unique, so no need
   // for reference tracking these fonts
@@ -784,21 +784,21 @@ void CGUIFontTTF::RenderCharacter(float posX, float posY, const Character *ch, D
 
   // posX and posY are relative to our origin, and the textcell is offset
   // from our (posX, posY).  Plus, these are unscaled quantities compared to the underlying GUI resolution
-  CRect vertex((posX + ch->offsetX) * g_graphicsContext.GetGUIScaleX(),
-               (posY + ch->offsetY) * g_graphicsContext.GetGUIScaleY(),
-               (posX + ch->offsetX + width) * g_graphicsContext.GetGUIScaleX(),
-               (posY + ch->offsetY + height) * g_graphicsContext.GetGUIScaleY());
+  CRect vertex((posX + ch->offsetX) * CServiceBroker::GetWinSystem()->GetGfxContext().GetGUIScaleX(),
+               (posY + ch->offsetY) * CServiceBroker::GetWinSystem()->GetGfxContext().GetGUIScaleY(),
+               (posX + ch->offsetX + width) * CServiceBroker::GetWinSystem()->GetGfxContext().GetGUIScaleX(),
+               (posY + ch->offsetY + height) * CServiceBroker::GetWinSystem()->GetGfxContext().GetGUIScaleY());
   vertex += CPoint(m_originX, m_originY);
   CRect texture(ch->left, ch->top, ch->right, ch->bottom);
-  g_graphicsContext.ClipRect(vertex, texture);
+  CServiceBroker::GetWinSystem()->GetGfxContext().ClipRect(vertex, texture);
 
   // transform our positions - note, no scaling due to GUI calibration/resolution occurs
   float x[4];
 
-  x[0] = g_graphicsContext.ScaleFinalXCoord(vertex.x1, vertex.y1);
-  x[1] = g_graphicsContext.ScaleFinalXCoord(vertex.x2, vertex.y1);
-  x[2] = g_graphicsContext.ScaleFinalXCoord(vertex.x2, vertex.y2);
-  x[3] = g_graphicsContext.ScaleFinalXCoord(vertex.x1, vertex.y2);
+  x[0] = CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalXCoord(vertex.x1, vertex.y1);
+  x[1] = CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalXCoord(vertex.x2, vertex.y1);
+  x[2] = CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalXCoord(vertex.x2, vertex.y2);
+  x[3] = CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalXCoord(vertex.x1, vertex.y2);
 
   if (roundX)
   {
@@ -821,17 +821,17 @@ void CGUIFontTTF::RenderCharacter(float posX, float posY, const Character *ch, D
     x[3] = rx3;
   }
 
-  float y1 = ROUND_TO_PIXEL(g_graphicsContext.ScaleFinalYCoord(vertex.x1, vertex.y1));
-  float z1 = ROUND_TO_PIXEL(g_graphicsContext.ScaleFinalZCoord(vertex.x1, vertex.y1));
+  float y1 = ROUND_TO_PIXEL(CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalYCoord(vertex.x1, vertex.y1));
+  float z1 = ROUND_TO_PIXEL(CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalZCoord(vertex.x1, vertex.y1));
 
-  float y2 = ROUND_TO_PIXEL(g_graphicsContext.ScaleFinalYCoord(vertex.x2, vertex.y1));
-  float z2 = ROUND_TO_PIXEL(g_graphicsContext.ScaleFinalZCoord(vertex.x2, vertex.y1));
+  float y2 = ROUND_TO_PIXEL(CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalYCoord(vertex.x2, vertex.y1));
+  float z2 = ROUND_TO_PIXEL(CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalZCoord(vertex.x2, vertex.y1));
 
-  float y3 = ROUND_TO_PIXEL(g_graphicsContext.ScaleFinalYCoord(vertex.x2, vertex.y2));
-  float z3 = ROUND_TO_PIXEL(g_graphicsContext.ScaleFinalZCoord(vertex.x2, vertex.y2));
+  float y3 = ROUND_TO_PIXEL(CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalYCoord(vertex.x2, vertex.y2));
+  float z3 = ROUND_TO_PIXEL(CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalZCoord(vertex.x2, vertex.y2));
 
-  float y4 = ROUND_TO_PIXEL(g_graphicsContext.ScaleFinalYCoord(vertex.x1, vertex.y2));
-  float z4 = ROUND_TO_PIXEL(g_graphicsContext.ScaleFinalZCoord(vertex.x1, vertex.y2));
+  float y4 = ROUND_TO_PIXEL(CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalYCoord(vertex.x1, vertex.y2));
+  float z4 = ROUND_TO_PIXEL(CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalZCoord(vertex.x1, vertex.y2));
 
   m_numCharactersRendered++;
 

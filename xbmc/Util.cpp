@@ -672,7 +672,7 @@ bool CUtil::CacheXBEIcon(const std::string& strFilePath, const std::string& strI
 
         // this part of code before was in CPicture::CreateThumbnailFromSwizzledTexture
         LPDIRECT3DTEXTURE8 linTexture = NULL;
-        if (D3D_OK == D3DXCreateTexture(g_graphicsContext.Get3DDevice(), iWidth, iHeight, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED, &linTexture))
+        if (D3D_OK == D3DXCreateTexture(CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice(), iWidth, iHeight, 1, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED, &linTexture))
         {
           LPDIRECT3DSURFACE8 source;
           LPDIRECT3DSURFACE8 dest;
@@ -1545,13 +1545,13 @@ CStdString CUtil::GetNextPathname(const CStdString &path_template, int max)
 
 void CUtil::InitGamma()
 {
-  g_graphicsContext.Get3DDevice()->GetGammaRamp(&oldramp);
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->GetGammaRamp(&oldramp);
 }
 void CUtil::RestoreBrightnessContrastGamma()
 {
-  g_graphicsContext.Lock();
-  g_graphicsContext.Get3DDevice()->SetGammaRamp(GAMMA_RAMP_FLAG, &oldramp);
-  g_graphicsContext.Unlock();
+  CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetGammaRamp(GAMMA_RAMP_FLAG, &oldramp);
+  CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
 }
 
 void CUtil::SetBrightnessContrastGammaPercent(float brightness, float contrast, float gamma, bool immediate)
@@ -1582,9 +1582,9 @@ void CUtil::SetBrightnessContrastGamma(float Brightness, float Contrast, float G
   }
 
   // set ramp next v sync
-  g_graphicsContext.Lock();
-  g_graphicsContext.Get3DDevice()->SetGammaRamp(bImmediate ? GAMMA_RAMP_FLAG : 0, &ramp);
-  g_graphicsContext.Unlock();
+  CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
+  CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetGammaRamp(bImmediate ? GAMMA_RAMP_FLAG : 0, &ramp);
+  CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
 }
 
 void CUtil::FlashScreen(bool bImmediate, bool bOn)
@@ -1594,21 +1594,21 @@ void CUtil::FlashScreen(bool bImmediate, bool bOn)
   if (bInFlash == bOn)
     return ;
   bInFlash = bOn;
-  g_graphicsContext.Lock();
+  CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
   if (bOn)
   {
-    g_graphicsContext.Get3DDevice()->GetGammaRamp(&flashramp);
+    CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->GetGammaRamp(&flashramp);
     SetBrightnessContrastGamma(0.5f, 1.2f, 2.0f, bImmediate);
   }
   else
-    g_graphicsContext.Get3DDevice()->SetGammaRamp(bImmediate ? GAMMA_RAMP_FLAG : 0, &flashramp);
-  g_graphicsContext.Unlock();
+    CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetGammaRamp(bImmediate ? GAMMA_RAMP_FLAG : 0, &flashramp);
+  CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
 }
 
 void CUtil::TakeScreenshot(const CStdString& strFileName, bool flashScreen)
 {
     LPDIRECT3DSURFACE8 lpSurface = NULL;
-    g_graphicsContext.Lock();
+    CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
     CStdString strFileNameTranslated = CSpecialProtocol::TranslatePath(strFileName);
     if (g_application.m_pPlayer->IsPlayingVideo())
     {
@@ -1619,20 +1619,20 @@ void CUtil::TakeScreenshot(const CStdString& strFileName, bool flashScreen)
     if (0)
     { // reset calibration to defaults
       OVERSCAN oscan;
-      memcpy(&oscan, &CDisplaySettings::Get().GetResolutionInfo(g_graphicsContext.GetVideoResolution()).Overscan, sizeof(OVERSCAN));
-      g_graphicsContext.ResetOverscan(g_graphicsContext.GetVideoResolution(), CDisplaySettings::Get().GetResolutionInfo(g_graphicsContext.GetVideoResolution()).Overscan);
+      memcpy(&oscan, &CDisplaySettings::Get().GetResolutionInfo(CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution()).Overscan, sizeof(OVERSCAN));
+      CServiceBroker::GetWinSystem()->GetGfxContext().ResetOverscan(CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution(), CDisplaySettings::Get().GetResolutionInfo(CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution()).Overscan);
       g_application.Render();
-      memcpy(&CDisplaySettings::Get().GetResolutionInfo(g_graphicsContext.GetVideoResolution()).Overscan, &oscan, sizeof(OVERSCAN));
+      memcpy(&CDisplaySettings::Get().GetResolutionInfo(CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution()).Overscan, &oscan, sizeof(OVERSCAN));
     }
     // now take screenshot
 #ifdef HAS_XBOX_D3D
-    g_graphicsContext.Get3DDevice()->BlockUntilVerticalBlank();
+    CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->BlockUntilVerticalBlank();
 #endif
 #ifdef HAS_XBOX_D3D
-    if (SUCCEEDED(g_graphicsContext.Get3DDevice()->GetBackBuffer( -1, D3DBACKBUFFER_TYPE_MONO, &lpSurface)))
+    if (SUCCEEDED(CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->GetBackBuffer( -1, D3DBACKBUFFER_TYPE_MONO, &lpSurface)))
 #else
     g_application.RenderNoPresent();
-    if (SUCCEEDED(g_graphicsContext.Get3DDevice()->GetBackBuffer( 0, D3DBACKBUFFER_TYPE_MONO, &lpSurface)))
+    if (SUCCEEDED(CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->GetBackBuffer( 0, D3DBACKBUFFER_TYPE_MONO, &lpSurface)))
 #endif
     {
       if (FAILED(XGWriteSurfaceToFile(lpSurface, strFileNameTranslated.c_str())))
@@ -1650,16 +1650,16 @@ void CUtil::TakeScreenshot(const CStdString& strFileName, bool flashScreen)
       }
       lpSurface->Release();
     }
-    g_graphicsContext.Unlock();
+    CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
     if (flashScreen)
     {
 #ifdef HAS_XBOX_D3D
-      g_graphicsContext.Get3DDevice()->BlockUntilVerticalBlank();
+      CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->BlockUntilVerticalBlank();
 #endif
       FlashScreen(true, true);
       Sleep(10);
 #ifdef HAS_XBOX_D3D
-      g_graphicsContext.Get3DDevice()->BlockUntilVerticalBlank();
+      CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->BlockUntilVerticalBlank();
 #endif
       FlashScreen(true, false);
     }
@@ -3011,7 +3011,7 @@ CStdString CUtil::GetDefaultFolderThumb(const CStdString &folderThumb)
 
 void CUtil::GetSkinThemes(std::vector<std::string>& vecTheme)
 {
-  CStdString strPath = URIUtils::AddFileToFolder(g_graphicsContext.GetMediaDir(), "media");
+  CStdString strPath = URIUtils::AddFileToFolder(CServiceBroker::GetWinSystem()->GetGfxContext().GetMediaDir(), "media");
   CFileItemList items;
   CDirectory::GetDirectory(strPath, items, "", DIR_FLAG_DEFAULTS);
   // Search for Themes in the Current skin!

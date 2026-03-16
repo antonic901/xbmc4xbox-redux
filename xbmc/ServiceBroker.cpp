@@ -21,6 +21,8 @@
 #include "ServiceBroker.h"
 #include "Application.h"
 
+#include "windowing/WinSystem.h"
+
 ADDON::CAddonMgr &CServiceBroker::GetAddonMgr()
 {
   return g_application.m_ServiceManager->GetAddonMgr();
@@ -44,4 +46,19 @@ CContextMenuManager& CServiceBroker::GetContextMenuManager()
 PLAYLIST::CPlayListPlayer &CServiceBroker::GetPlaylistPlayer()
 {
   return g_application.m_ServiceManager->GetPlaylistPlayer();
+}
+
+CWinSystemBase* CServiceBroker::GetWinSystem()
+{
+  return g_serviceBroker.m_pWinSystem;
+}
+
+void CServiceBroker::RegisterWinSystem(CWinSystemBase* winsystem)
+{
+  g_serviceBroker.m_pWinSystem = winsystem;
+}
+
+void CServiceBroker::UnregisterWinSystem()
+{
+  g_serviceBroker.m_pWinSystem = nullptr;
 }

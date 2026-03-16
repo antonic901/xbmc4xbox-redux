@@ -22,7 +22,7 @@
 
 #include <vector>
 #include "utils/StdString.h"
-#include "guilib/GraphicContext.h" // for VIEW_TYPE
+#include "windowing/GraphicContext.h" // for VIEW_TYPE
 
 class CGUIControl;
 class CFileItemList;

@@ -31,7 +31,7 @@
 #include "utils/URIUtils.h"
 #include "cores/dvdplayer/Codecs/DllSwScale.h"
 #include "guilib/Texture.h"
-#include "guilib/GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "TextureManager.h"
 #include "XBTF.h"
 

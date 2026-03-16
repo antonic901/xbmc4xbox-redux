@@ -18,7 +18,7 @@
  *
  */
 #include "ScreenSaver.h"
-#include "guilib/GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "settings/Settings.h"
 #include "utils/AlarmClock.h"
@@ -54,8 +54,8 @@ bool CScreenSaver::CreateScreenSaver()
   }
  // pass it the screen width,height
  // and the name of the screensaver
-  int iWidth = g_graphicsContext.GetWidth();
-  int iHeight = g_graphicsContext.GetHeight();
+  int iWidth = CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth();
+  int iHeight = CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight();
 
   m_pInfo = new SCR_PROPS;
 #ifdef HAS_DX
@@ -67,7 +67,7 @@ bool CScreenSaver::CreateScreenSaver()
   m_pInfo->y          = 0;
   m_pInfo->width      = iWidth;
   m_pInfo->height     = iHeight;
-  m_pInfo->pixelRatio = g_graphicsContext.GetResInfo().fPixelRatio;
+  m_pInfo->pixelRatio = CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo().fPixelRatio;
   m_pInfo->name       = strdup(Name().c_str());
   m_pInfo->presets    = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
   m_pInfo->profile    = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());

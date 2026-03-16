@@ -33,7 +33,7 @@
 #include "cores/VideoRenderers/XBoxRenderer.h"
 #endif
 #include "filesystem/File.h"
-#include "guilib/GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "guilib/GUIAudioManager.h"
 #include "guilib/GUIFontManager.h"
 #include "input/KeyboardLayoutManager.h"
