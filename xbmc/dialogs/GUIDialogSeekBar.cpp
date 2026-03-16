@@ -21,6 +21,7 @@
 #include "GUIDialogSeekBar.h"
 #include "Application.h"
 #include "GUIInfoManager.h"
+#include "guilib/GUIComponent.h"
 #include "utils/SeekHandler.h"
 
 #define POPUP_SEEK_PROGRESS     401
@@ -66,15 +67,15 @@ void CGUIDialogSeekBar::FrameMove()
   }
 
   // update controls
-  if (!CSeekHandler::Get().InProgress() && g_infoManager.GetTotalPlayTime())
+  if (!CSeekHandler::Get().InProgress() && CServiceBroker::GetGUI()->GetInfoManager().GetTotalPlayTime())
   { // position the bar at our current time
-    CONTROL_SELECT_ITEM(POPUP_SEEK_PROGRESS, (unsigned int)(static_cast<float>(g_infoManager.GetPlayTime()) / g_infoManager.GetTotalPlayTime() * 0.1f));
-    SET_CONTROL_LABEL(POPUP_SEEK_LABEL, g_infoManager.GetCurrentPlayTime());
+    CONTROL_SELECT_ITEM(POPUP_SEEK_PROGRESS, (unsigned int)(static_cast<float>(CServiceBroker::GetGUI()->GetInfoManager().GetPlayTime()) / CServiceBroker::GetGUI()->GetInfoManager().GetTotalPlayTime() * 0.1f));
+    SET_CONTROL_LABEL(POPUP_SEEK_LABEL, CServiceBroker::GetGUI()->GetInfoManager().GetCurrentPlayTime());
   }
   else
   {
-    CONTROL_SELECT_ITEM(POPUP_SEEK_PROGRESS, (unsigned int)g_infoManager.GetSeekPercent());
-    SET_CONTROL_LABEL(POPUP_SEEK_LABEL, g_infoManager.GetCurrentSeekTime());
+    CONTROL_SELECT_ITEM(POPUP_SEEK_PROGRESS, (unsigned int)CServiceBroker::GetGUI()->GetInfoManager().GetSeekPercent());
+    SET_CONTROL_LABEL(POPUP_SEEK_LABEL, CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSeekTime());
   }
 
   CGUIDialog::FrameMove();

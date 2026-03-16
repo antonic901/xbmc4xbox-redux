@@ -742,7 +742,6 @@ HRESULT CApplication::Create(HWND hWnd)
   // after that we can send messages to the corresponding modules
   CApplicationMessenger::Get().RegisterReceiver(this);
   CApplicationMessenger::Get().RegisterReceiver(&g_playlistPlayer);
-  CApplicationMessenger::Get().RegisterReceiver(&g_infoManager);
 
   // create our windowing - TODO: lot of DX related stuff could go there
   m_pWinSystem = CWinSystemXbox::CreateWinSystem();
@@ -1369,7 +1368,7 @@ void CApplication::PrintXBEToLCD(const char* xbePath)
     strXBEName = strXBEName.Left(g_advancedSettings.m_lcdColumns);
   if (g_lcd)
   {
-    g_infoManager.SetLaunchingXBEName(strXBEName);
+    CServiceBroker::GetGUI()->GetInfoManager().SetLaunchingXBEName(strXBEName);
     g_lcd->Render(ILCD::LCD_MODE_XBE_LAUNCH);
   }
 #endif
@@ -1708,7 +1707,7 @@ bool CApplication::LoadSkin(const std::string& skinID)
   CServiceBroker::GetWinSystem()->GetGfxContext().SetMediaDir(skin->Path());
   g_directoryCache.ClearSubPaths(skin->Path());
 
-  g_colorManager.Load(CSettings::GetInstance().GetString("lookandfeel.skincolors"));
+  CServiceBroker::GetGUI()->GetColorManager().Load(CSettings::GetInstance().GetString("lookandfeel.skincolors"));
 
   g_fontManager.LoadFonts(CSettings::GetInstance().GetString("lookandfeel.font"));
 
@@ -1736,7 +1735,7 @@ bool CApplication::LoadSkin(const std::string& skinID)
   CLog::Log(LOGINFO, "  initialize new skin...");
   CServiceBroker::GetGUI()->GetWindowManager().AddMsgTarget(this);
   CServiceBroker::GetGUI()->GetWindowManager().AddMsgTarget(&g_playlistPlayer);
-  CServiceBroker::GetGUI()->GetWindowManager().AddMsgTarget(&g_infoManager);
+  CServiceBroker::GetGUI()->GetWindowManager().AddMsgTarget(&CServiceBroker::GetGUI()->GetInfoManager());
   CServiceBroker::GetGUI()->GetWindowManager().AddMsgTarget(&g_fontManager);
   CServiceBroker::GetGUI()->GetWindowManager().SetCallback(*this);
   CServiceBroker::GetGUI()->GetWindowManager().Initialize();
@@ -1804,13 +1803,13 @@ void CApplication::UnloadSkin(bool forReload /* = false */)
   // remove the skin-dependent window
   CServiceBroker::GetGUI()->GetWindowManager().Delete(WINDOW_DIALOG_FULLSCREEN_INFO);
 
-  g_TextureManager.Cleanup();
+  CServiceBroker::GetGUI()->GetTextureManager().Cleanup();
 
   g_fontManager.Clear();
 
-  g_colorManager.Clear();
+  CServiceBroker::GetGUI()->GetColorManager().Clear();
 
-  g_infoManager.Clear();
+  CServiceBroker::GetGUI()->GetInfoManager().Clear();
 
   g_SkinInfo.reset();
 }
@@ -1940,7 +1939,7 @@ void CApplication::RenderNoPresent()
   {
     Sleep(50);
     ResetScreenSaver();
-    g_infoManager.ResetCache();
+    CServiceBroker::GetGUI()->GetInfoManager().ResetCache();
     return;
   }
 #endif
@@ -1982,7 +1981,7 @@ void CApplication::RenderNoPresent()
     DWORD dwMegFree = (DWORD)(stat.dwAvailPhys / (1024 * 1024));
     if (dwMegFree <= 10)
     {
-      g_TextureManager.Flush();
+      CServiceBroker::GetGUI()->GetTextureManager().Flush();
     }
 
     // reset image scaling and effect states
@@ -2030,7 +2029,7 @@ void CApplication::RenderNoPresent()
   // reset our info cache - we do this at the end of Render so that it is
   // fresh for the next process(), or after a windowclose animation (where process()
   // isn't called)
-  g_infoManager.ResetCache();
+  CServiceBroker::GetGUI()->GetInfoManager().ResetCache();
 }
 
 #ifndef HAS_XBOX_D3D
@@ -2055,7 +2054,7 @@ void CApplication::Render()
 
 void CApplication::RenderMemoryStatus()
 {
-  g_infoManager.UpdateFPS();
+  CServiceBroker::GetGUI()->GetInfoManager().UpdateFPS();
 
   if (!m_debugLayout)
   {
@@ -2078,7 +2077,7 @@ void CApplication::RenderMemoryStatus()
     CStdString info;
     MEMORYSTATUS stat;
     GlobalMemoryStatus(&stat);
-    info.Format("FreeMem %d/%d KB, FPS %2.1f, CPU %2.0f%%", stat.dwAvailPhys/1024, stat.dwTotalPhys/1024, g_infoManager.GetFPS(), (1.0f - m_idleThread.GetRelativeUsage())*100);
+    info.Format("FreeMem %d/%d KB, FPS %2.1f, CPU %2.0f%%", stat.dwAvailPhys/1024, stat.dwTotalPhys/1024, CServiceBroker::GetGUI()->GetInfoManager().GetFPS(), (1.0f - m_idleThread.GetRelativeUsage())*100);
     
     if(g_SkinInfo->IsDebugging())
     {
@@ -2284,14 +2283,14 @@ bool CApplication::OnAction(CAction &action)
   // show info : Shows the current video or song information
   if (action.GetID() == ACTION_SHOW_INFO)
   {
-    g_infoManager.ToggleShowInfo();
+    CServiceBroker::GetGUI()->GetInfoManager().ToggleShowInfo();
     return true;
   }
 
   // codec info : Shows the current song, video or picture codec information
   if (action.GetID() == ACTION_SHOW_CODEC)
   {
-    g_infoManager.ToggleShowCodec();
+    CServiceBroker::GetGUI()->GetInfoManager().ToggleShowCodec();
     return true;
   }
 
@@ -2305,7 +2304,7 @@ bool CApplication::OnAction(CAction &action)
     {
       m_itemCurrentFile->GetMusicInfoTag()->SetUserrating(userrating);
       // Mirror changes to GUI item
-      g_infoManager.SetCurrentItem(*m_itemCurrentFile);
+      CServiceBroker::GetGUI()->GetInfoManager().SetCurrentItem(*m_itemCurrentFile);
 
       // Asynchronously update song userrating in music library
       MUSIC_UTILS::UpdateSongRatingJob(m_itemCurrentFile, userrating);
@@ -2334,7 +2333,7 @@ bool CApplication::OnAction(CAction &action)
     if (needsUpdate)
     {
       // Mirror changes to current GUI item
-      g_infoManager.SetCurrentItem(*m_itemCurrentFile);
+      CServiceBroker::GetGUI()->GetInfoManager().SetCurrentItem(*m_itemCurrentFile);
 
       // Asynchronously update song userrating in music library
       MUSIC_UTILS::UpdateSongRatingJob(m_itemCurrentFile, m_itemCurrentFile->GetMusicInfoTag()->GetUserrating());
@@ -2363,7 +2362,7 @@ bool CApplication::OnAction(CAction &action)
     if (needsUpdate)
     {
       // Mirror changes to GUI item
-      g_infoManager.SetCurrentItem(*m_itemCurrentFile);
+      CServiceBroker::GetGUI()->GetInfoManager().SetCurrentItem(*m_itemCurrentFile);
 
       CVideoDatabase db;
       if (db.Open())
@@ -3248,7 +3247,7 @@ void  CApplication::CheckForTitleChange()
   {
     if (m_pPlayer->IsPlayingVideo())
     {
-      const CVideoInfoTag* tagVal = g_infoManager.GetCurrentMovieTag();
+      const CVideoInfoTag* tagVal = CServiceBroker::GetGUI()->GetInfoManager().GetCurrentMovieTag();
       if (m_pXbmcHttp && tagVal && !(tagVal->m_strTitle.empty()))
       {
         CStdString msg=m_pXbmcHttp->GetOpenTag()+"MovieTitle:"+tagVal->m_strTitle.c_str()+m_pXbmcHttp->GetCloseTag();
@@ -3261,7 +3260,7 @@ void  CApplication::CheckForTitleChange()
     }
     else if (m_pPlayer->IsPlayingAudio())
     {
-      const CMusicInfoTag* tagVal=g_infoManager.GetCurrentSongTag();
+      const CMusicInfoTag* tagVal=CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag();
       if (m_pXbmcHttp && tagVal)
       {
         CStdString msg="";
@@ -3526,7 +3525,7 @@ HRESULT CApplication::Cleanup()
 #ifdef HAS_EVENT_SERVER
     CEventServer::RemoveInstance();
 #endif
-    g_infoManager.Clear();
+    CServiceBroker::GetGUI()->GetInfoManager().Clear();
     DllLoaderContainer::Clear();
     g_playlistPlayer.Clear();
     CSettings::GetInstance().Uninitialize();
@@ -4278,7 +4277,7 @@ void CApplication::OnPlayBackSeek(int iTime, int seekOffset)
   }
 
   CLog::Log(LOGDEBUG, "%s - Playback skip", __FUNCTION__);
-//  g_infoManager.SetDisplayAfterSeek(2500, seekOffset/1000);
+//  CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek(2500, seekOffset/1000);
 }
 
 void CApplication::OnPlayBackSeekChapter(int iChapter)
@@ -4606,7 +4605,7 @@ void CApplication::ActivateScreenSaver(bool forceType /*= false */)
   if (m_screenSaver->ID() == "screensaver.xbmc.builtin.slideshow")
   {
     // reset our codec info - don't want that on screen
-    g_infoManager.SetShowCodec(false);
+    CServiceBroker::GetGUI()->GetInfoManager().SetShowCodec(false);
     CStdString type = m_screenSaver->GetSetting("type");
     CStdString path = m_screenSaver->GetSetting("path");
     if (type == "2" && path.IsEmpty())
@@ -4790,7 +4789,7 @@ void CApplication::CheckNetworkHDSpinDown(bool playbackStarted)
       int iMinSpinUp = 10;
       if (iMinSpinUp > CSettings::GetInstance().GetInt("harddisk.remoteplayspindowndelay")*0.5f)
         iMinSpinUp = (int)(CSettings::GetInstance().GetInt("harddisk.remoteplayspindowndelay")*0.5f);
-      if (g_infoManager.GetPlayTimeRemaining() == iMinSpinUp)
+      if (CServiceBroker::GetGUI()->GetInfoManager().GetPlayTimeRemaining() == iMinSpinUp)
       { // spin back up
 #ifdef HAS_XBOX_HARDWARE
         XKHDD::SpindownHarddisk(false);
@@ -4872,7 +4871,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
         if (m_itemCurrentFile->IsSamePath(item.get()))
         {
           m_itemCurrentFile->UpdateInfo(*item);
-          g_infoManager.SetCurrentItem(*m_itemCurrentFile);
+          CServiceBroker::GetGUI()->GetInfoManager().SetCurrentItem(*m_itemCurrentFile);
         }
       }
     }
@@ -4892,7 +4891,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
         g_playlistPlayer.SetCurrentSong(m_nextPlaylistItem);
         *m_itemCurrentFile = *item;
       }
-      g_infoManager.SetCurrentItem(*m_itemCurrentFile);
+      CServiceBroker::GetGUI()->GetInfoManager().SetCurrentItem(*m_itemCurrentFile);
       g_partyModeManager.OnSongChange(true);
 
       CheckNetworkHDSpinDown(true);
@@ -4991,7 +4990,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
 
       // reset the current playing file
       m_itemCurrentFile->Reset();
-      g_infoManager.ResetCurrentItem();
+      CServiceBroker::GetGUI()->GetInfoManager().ResetCurrentItem();
       m_currentStack->Clear();
 
       if (message.GetMessage() == GUI_MSG_PLAYBACK_ENDED)
@@ -5170,7 +5169,7 @@ void CApplication::Process()
   if (m_updaterTimer.GetElapsedSeconds() > 1800)
   {
     if (CSettings::GetInstance().GetInt("updater.autoupdate") == AUTO_UPDATER_NOTIFY && 
-        !g_infoManager.EvaluateBool("Skin.HasSetting(updateavailable)"))
+        !CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool("Skin.HasSetting(updateavailable)"))
     {
       CJobManager::GetInstance().AddJob(new CUpdaterJob(true), NULL);
     }
@@ -5242,10 +5241,10 @@ void CApplication::ProcessSlow()
   }
 
   if (!m_pPlayer->IsPlayingVideo())
-    g_largeTextureManager.CleanupUnusedImages();
+    CServiceBroker::GetGUI()->GetLargeTextureManager().CleanupUnusedImages();
 
   if (!m_pPlayer->IsPlayingVideo())
-    g_TextureManager.FreeUnusedTextures(5000);
+    CServiceBroker::GetGUI()->GetTextureManager().FreeUnusedTextures(5000);
 
   // checks whats in the DVD drive and tries to autostart the content (xbox games, dvd, cdda, avi files...)
   if (!m_pPlayer->IsPlayingVideo())
@@ -5635,7 +5634,7 @@ bool CApplication::SwitchToFullScreen(bool force /* = false */)
     else
       CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(windowID);
 
-    g_TextureManager.Flush();
+    CServiceBroker::GetGUI()->GetTextureManager().Flush();
 
     return true;
   }
@@ -5672,7 +5671,7 @@ void CApplication::UpdateCurrentPlayArt()
   CMusicThumbLoader loader;
   loader.LoadItem(m_itemCurrentFile.get());
   // Mirror changes to GUI item
-  g_infoManager.SetCurrentItem(*m_itemCurrentFile);
+  CServiceBroker::GetGUI()->GetInfoManager().SetCurrentItem(*m_itemCurrentFile);
 }
 
 bool CApplication::IsVideoScanning() const
@@ -5777,7 +5776,7 @@ void CApplication::CheckPlayingProgress()
         iSpeed >>= 1;
         iPower++;
       }
-      if (g_infoManager.GetPlayTime() / 1000 < iPower)
+      if (CServiceBroker::GetGUI()->GetInfoManager().GetPlayTime() / 1000 < iPower)
       {
         m_pPlayer->SetPlaySpeed(1, g_application.m_muted);
         g_application.SeekTime(0);

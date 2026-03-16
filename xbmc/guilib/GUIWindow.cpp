@@ -234,7 +234,7 @@ bool CGUIWindow::Load(TiXmlElement *pRootElement)
         m_visibleCondition.reset();
       }
 #endif
-      m_visibleCondition = g_infoManager.Register(condition, GetID());
+      m_visibleCondition = CServiceBroker::GetGUI()->GetInfoManager().Register(condition, GetID());
     }
     else if (strValue == "animation" && pChild->FirstChild())
     {
@@ -261,7 +261,7 @@ bool CGUIWindow::Load(TiXmlElement *pRootElement)
         originElement->QueryFloatAttribute("x", &origin.x);
         originElement->QueryFloatAttribute("y", &origin.y);
         if (originElement->FirstChild())
-          origin.condition = g_infoManager.Register(originElement->FirstChild()->Value(), GetID());
+          origin.condition = CServiceBroker::GetGUI()->GetInfoManager().Register(originElement->FirstChild()->Value(), GetID());
         m_origins.push_back(origin);
         originElement = originElement->NextSiblingElement("origin");
       }
@@ -726,7 +726,7 @@ bool CGUIWindow::OnMessage(CGUIMessage& message)
 
 bool CGUIWindow::NeedLoad() const
 {
-  return !m_windowLoaded || g_infoManager.ConditionsChangedValues(m_xmlIncludeConditions);
+  return !m_windowLoaded || CServiceBroker::GetGUI()->GetInfoManager().ConditionsChangedValues(m_xmlIncludeConditions);
 }
 
 void CGUIWindow::AllocResources(bool forceLoad /*= FALSE */)
@@ -761,14 +761,14 @@ void CGUIWindow::AllocResources(bool forceLoad /*= FALSE */)
 
   // and now allocate resources
 #ifdef HAS_XBOX_D3D
-  g_TextureManager.StartPreLoad();
+  CServiceBroker::GetGUI()->GetTextureManager().StartPreLoad();
   CGUIControlGroup::PreAllocResources();
-  g_TextureManager.EndPreLoad();
+  CServiceBroker::GetGUI()->GetTextureManager().EndPreLoad();
 #endif
   CGUIControlGroup::AllocResources();
 
 #ifdef HAS_XBOX_D3D
-  g_TextureManager.FlushPreLoad();
+  CServiceBroker::GetGUI()->GetTextureManager().FlushPreLoad();
 #endif
 #ifdef _DEBUG
   int64_t end, freq;
@@ -789,7 +789,7 @@ void CGUIWindow::FreeResources(bool forceUnload /*= FALSE */)
 {
   m_bAllocated = false;
   CGUIControlGroup::FreeResources();
-  //g_TextureManager.Dump();
+  //CServiceBroker::GetGUI()->GetTextureManager().Dump();
   // unload the skin
   if (m_loadType == LOAD_EVERY_TIME || forceUnload) ClearAll();
   if (forceUnload)
@@ -847,7 +847,7 @@ bool CGUIWindow::Initialize()
 void CGUIWindow::SetInitialVisibility()
 {
   // reset our info manager caches
-  g_infoManager.ResetCache();
+  CServiceBroker::GetGUI()->GetInfoManager().ResetCache();
   CGUIControlGroup::SetInitialVisibility();
 }
 

@@ -28,6 +28,7 @@
 #include <vector>
 #include <utility>
 
+#include "GUIComponent.h"
 #include "TextureBundle.h"
 #include "threads/CriticalSection.h"
 
@@ -146,9 +147,3 @@ protected:
   std::vector<std::string> m_texturePaths;
   CCriticalSection m_section;
 };
-
-/*!
- \ingroup textures
- \brief
- */
-extern CGUITextureManager g_TextureManager;

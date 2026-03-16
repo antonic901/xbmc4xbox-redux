@@ -132,7 +132,7 @@ bool CLibraryDirectory::GetDirectory(const CURL& url, CFileItemList &items)
       CFileItemPtr item(new CFileItem(URIUtils::AddFileToFolder(basePath, folder), true));
 
       item->SetLabel(label);
-      if (!icon.empty() && g_TextureManager.HasTexture(icon))
+      if (!icon.empty() && CServiceBroker::GetGUI()->GetTextureManager().HasTexture(icon))
         item->SetIconImage(icon);
       item->m_iprogramCount = order;
       items.Add(item);
@@ -156,7 +156,7 @@ TiXmlElement *CLibraryDirectory::LoadXML(const std::string &xmlFile)
 
   // check the condition
   std::string condition = XMLUtils::GetAttribute(xml, "visible");
-  if (condition.empty() || g_infoManager.EvaluateBool(condition))
+  if (condition.empty() || CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool(condition))
     return xml;
 
   return NULL;

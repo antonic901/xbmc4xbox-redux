@@ -20,6 +20,7 @@
 
 #include "GUITextLayout.h"
 #include "GUIFont.h"
+#include "GUIComponent.h"
 #include "GUIControl.h"
 #include "GUIColorManager.h"
 #include "utils/CharsetConverter.h"
@@ -427,7 +428,7 @@ void CGUITextLayout::ParseText(const std::wstring &text, uint32_t defaultStyle, 
       {
         std::string t;
         g_charsetConverter.wToUTF8(text.substr(pos + 5, finish - pos - 5), t);
-        color_t color = g_colorManager.GetColor(t);
+        color_t color = CServiceBroker::GetGUI()->GetColorManager().GetColor(t);
         vecColors::const_iterator it = std::find(colors.begin(), colors.end(), color);
         if (it == colors.end())
         { // create new color

@@ -116,10 +116,6 @@ using namespace INFO;
 using namespace EPG;
 #endif
 
-#ifdef _XBOX
-CGUIInfoManager g_infoManager;
-#endif
-
 CGUIInfoManager::CGUIInfoManager(void) :
     Observable()
 {
@@ -146,6 +142,11 @@ CGUIInfoManager::~CGUIInfoManager(void)
 {
   delete m_currentFile;
   delete m_currentSlide;
+}
+
+void CGUIInfoManager::Initialize()
+{
+  KODI::MESSAGING::CApplicationMessenger::Get().RegisterReceiver(this);
 }
 
 bool CGUIInfoManager::OnMessage(CGUIMessage &message)

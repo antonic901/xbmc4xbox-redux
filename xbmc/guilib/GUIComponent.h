@@ -12,10 +12,10 @@
 #include <string>
 
 class CGUIWindowManager;
-// class CGUITextureManager;
-// class CGUILargeTextureManager;
-// class CGUIInfoManager;
-// class CGUIColorManager;
+class CGUITextureManager;
+class CGUILargeTextureManager;
+class CGUIInfoManager;
+class CGUIColorManager;
 class CGUIAudioManager;
 
 class CGUIComponent
@@ -27,10 +27,10 @@ public:
   void Deinit();
 
   CGUIWindowManager& GetWindowManager();
-  // CGUITextureManager& GetTextureManager();
-  // CGUILargeTextureManager& GetLargeTextureManager();
-  // CGUIInfoManager &GetInfoManager();
-  // CGUIColorManager &GetColorManager();
+  CGUITextureManager& GetTextureManager();
+  CGUILargeTextureManager& GetLargeTextureManager();
+  CGUIInfoManager &GetInfoManager();
+  CGUIColorManager &GetColorManager();
   CGUIAudioManager &GetAudioManager();
 
   bool ConfirmDelete(const std::string& path);
@@ -38,9 +38,9 @@ public:
 protected:
   // members are pointers in order to avoid includes
   boost::movelib::unique_ptr<CGUIWindowManager> m_pWindowManager;
-  // boost::movelib::unique_ptr<CGUITextureManager> m_pTextureManager;
-  // boost::movelib::unique_ptr<CGUILargeTextureManager> m_pLargeTextureManager;
-  // boost::movelib::unique_ptr<CGUIInfoManager> m_guiInfoManager;
-  // boost::movelib::unique_ptr<CGUIColorManager> m_guiColorManager;
+  boost::movelib::unique_ptr<CGUITextureManager> m_pTextureManager;
+  boost::movelib::unique_ptr<CGUILargeTextureManager> m_pLargeTextureManager;
+  boost::movelib::unique_ptr<CGUIInfoManager> m_guiInfoManager;
+  boost::movelib::unique_ptr<CGUIColorManager> m_guiColorManager;
   boost::movelib::unique_ptr<CGUIAudioManager> m_guiAudioManager;
 };

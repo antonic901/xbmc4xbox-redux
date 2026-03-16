@@ -19,6 +19,7 @@
  */
 
 #include "MusicDatabaseDirectory.h"
+#include "ServiceBroker.h"
 #include "utils/URIUtils.h"
 #include "MusicDatabaseDirectory/QueryParams.h"
 #include "music/MusicDatabase.h"
@@ -59,7 +60,7 @@ bool CMusicDatabaseDirectory::GetDirectory(const CURL& url, CFileItemList &items
     if (item->m_bIsFolder && !item->HasIcon() && !item->HasArt("thumb"))
     {
       std::string strImage = GetIcon(item->GetPath());
-      if (!strImage.empty() && g_TextureManager.HasTexture(strImage))
+      if (!strImage.empty() && CServiceBroker::GetGUI()->GetTextureManager().HasTexture(strImage))
         item->SetIconImage(strImage);
     }
   }

@@ -204,8 +204,8 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
   case ACTION_SHOW_OSD_TIME:
     m_bShowCurrentTime = !m_bShowCurrentTime;
     if(!m_bShowCurrentTime)
-      g_infoManager.SetDisplayAfterSeek(0); //Force display off
-    g_infoManager.SetShowTime(m_bShowCurrentTime);
+      CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek(0); //Force display off
+    CServiceBroker::GetGUI()->GetInfoManager().SetShowTime(m_bShowCurrentTime);
     return true;
     break;
 
@@ -481,10 +481,10 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
         return true;
       }
       m_bLastRender = false;
-      g_infoManager.SetShowInfo(false);
-      g_infoManager.SetShowCodec(false);
+      CServiceBroker::GetGUI()->GetInfoManager().SetShowInfo(false);
+      CServiceBroker::GetGUI()->GetInfoManager().SetShowCodec(false);
       m_bShowCurrentTime = false;
-      g_infoManager.SetDisplayAfterSeek(0); // Make sure display after seek is off.
+      CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek(0); // Make sure display after seek is off.
 
       //  Disable nav sounds if spindown is active as they are loaded
       //  from HDD all the time.
@@ -615,12 +615,12 @@ bool CGUIWindowFullScreen::NeedRenderFullScreen()
   if (g_application.m_pPlayer->GetPlaySpeed() != 1) return true;
   if (m_timeCodeShow) return true;
   if (m_showCodec) return true;
-  if (g_infoManager.GetBool(PLAYER_SHOWINFO)) return true;
+  if (CServiceBroker::GetGUI()->GetInfoManager().GetBool(PLAYER_SHOWINFO)) return true;
   if (IsAnimating(ANIM_TYPE_HIDDEN)) return true; // for the above info conditions
   if (m_bShowViewModeInfo) return true;
   if (m_bShowCurrentTime) return true;
-  if (g_infoManager.GetDisplayAfterSeek()) return true;
-  if (g_infoManager.GetBool(PLAYER_SEEKBAR, GetID())) return true;
+  if (CServiceBroker::GetGUI()->GetInfoManager().GetDisplayAfterSeek()) return true;
+  if (CServiceBroker::GetGUI()->GetInfoManager().GetBool(PLAYER_SEEKBAR, GetID())) return true;
   if (CUtil::IsUsingTTFSubtitles() && g_application.m_pPlayer->GetSubtitleVisible() && m_subsLayout)
     return true;
   if (m_bLastRender)
@@ -634,16 +634,16 @@ bool CGUIWindowFullScreen::NeedRenderFullScreen()
 void CGUIWindowFullScreen::RenderFullScreen()
 {
   if (g_application.m_pPlayer->GetPlaySpeed() != 1)
-    g_infoManager.SetDisplayAfterSeek();
+    CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
   if (m_bShowCurrentTime)
-    g_infoManager.SetDisplayAfterSeek();
+    CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
 
   m_bLastRender = true;
   if (!g_application.m_pPlayer->HasPlayer()) return ;
 
   if( g_application.m_pPlayer->IsCaching() )
   {
-    g_infoManager.SetDisplayAfterSeek(0); //Make sure these stuff aren't visible now
+    CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek(0); //Make sure these stuff aren't visible now
   }
 
   //------------------------
@@ -671,7 +671,7 @@ void CGUIWindowFullScreen::RenderFullScreen()
       CStdString strGeneralFPS;
       float fCpuUsage = CUtil::CurrentCpuUsage();
 
-      strGeneralFPS.Format("%s\nW( fps:%02.2f cpu:%02.2f )", strGeneral.c_str(), g_infoManager.GetFPS(), fCpuUsage);
+      strGeneralFPS.Format("%s\nW( fps:%02.2f cpu:%02.2f )", strGeneral.c_str(), CServiceBroker::GetGUI()->GetInfoManager().GetFPS(), fCpuUsage);
       CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), LABEL_ROW3);
       msg.SetLabel(strGeneralFPS);
       OnMessage(msg);
@@ -749,7 +749,7 @@ void CGUIWindowFullScreen::RenderFullScreen()
       }
     }
 
-    strDispTime += "/" + g_infoManager.GetDuration(TIME_FORMAT_HH_MM_SS) + " [" + g_infoManager.GetCurrentPlayTime(TIME_FORMAT_HH_MM_SS) + "]"; // duration [ time ]
+    strDispTime += "/" + CServiceBroker::GetGUI()->GetInfoManager().GetDuration(TIME_FORMAT_HH_MM_SS) + " [" + CServiceBroker::GetGUI()->GetInfoManager().GetCurrentPlayTime(TIME_FORMAT_HH_MM_SS) + "]"; // duration [ time ]
     msg.SetLabel(strDispTime);
     OnMessage(msg);
   }
@@ -878,7 +878,7 @@ void CGUIWindowFullScreen::SeekChapter(int iChapter)
   g_application.m_pPlayer->SeekChapter(iChapter);
 
   // Make sure gui items are visible.
-  g_infoManager.SetDisplayAfterSeek();
+  CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
 }
 
 void CGUIWindowFullScreen::ShowSlider(int action, int label, float value, float min, float delta, float max, bool modal)

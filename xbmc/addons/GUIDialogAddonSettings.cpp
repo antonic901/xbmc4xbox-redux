@@ -771,7 +771,7 @@ void CGUIDialogAddonSettings::CreateControls()
           for (unsigned int i = 0; i < 24; i++)
           {
             CDateTime time(2000, 1, 1, i, 0, 0);
-            valuesVec.push_back(g_infoManager.LocalizeTime(time, TIME_FORMAT_HH_MM_XX));
+            valuesVec.push_back(CServiceBroker::GetGUI()->GetInfoManager().LocalizeTime(time, TIME_FORMAT_HH_MM_XX));
           }
         }
         else
@@ -1077,7 +1077,7 @@ bool CGUIDialogAddonSettings::GetCondition(const std::string &condition, const i
 
   if (!bControlDependend)//if condition doesn't depend on another control - try if its an infobool expression
   {
-    bCondition = g_infoManager.EvaluateBool(condition);
+    bCondition = CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool(condition);
   }
 
   return bCondition;

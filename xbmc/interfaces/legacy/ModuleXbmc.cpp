@@ -310,13 +310,13 @@ namespace XBMCAddon
         return ret;
       }
 
-      int ret = g_infoManager.TranslateString(cLine);
+      int ret = CServiceBroker::GetGUI()->GetInfoManager().TranslateString(cLine);
       //doesn't seem to be a single InfoTag?
       //try full blown GuiInfoLabel then
       if (ret == 0)
         return CGUIInfoLabel::GetLabel(cLine);
       else
-        return g_infoManager.GetLabel(ret);
+        return CServiceBroker::GetGUI()->GetInfoManager().GetLabel(ret);
     }
 
     String getInfoImage(const char * infotag)
@@ -328,8 +328,8 @@ namespace XBMCAddon
           return ret;
         }
 
-      int ret = g_infoManager.TranslateString(infotag);
-      return g_infoManager.GetImage(ret, WINDOW_INVALID);
+      int ret = CServiceBroker::GetGUI()->GetInfoManager().TranslateString(infotag);
+      return CServiceBroker::GetGUI()->GetInfoManager().GetImage(ret, WINDOW_INVALID);
     }
 
     void playSFX(const char* filename, bool useCached)
@@ -369,7 +369,7 @@ namespace XBMCAddon
 
         int id = CServiceBroker::GetGUI()->GetWindowManager().GetTopMostModalDialogID();
         if (id == WINDOW_INVALID) id = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
-        ret = g_infoManager.EvaluateBool(condition,id);
+        ret = CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool(condition,id);
       }
 
       return ret;
@@ -490,7 +490,7 @@ namespace XBMCAddon
     bool skinHasImage(const char* image)
     {
       XBMC_TRACE;
-      return g_TextureManager.HasTexture(image);
+      return CServiceBroker::GetGUI()->GetTextureManager().HasTexture(image);
     }
 
 

@@ -325,10 +325,10 @@ bool CVisualisation::UpdateTrack()
   if (Initialized())
   {
     // get the current album art filename
-    m_AlbumThumb = CSpecialProtocol::TranslatePath(g_infoManager.GetImage(MUSICPLAYER_COVER, WINDOW_INVALID));
+    m_AlbumThumb = CSpecialProtocol::TranslatePath(CServiceBroker::GetGUI()->GetInfoManager().GetImage(MUSICPLAYER_COVER, WINDOW_INVALID));
 
     // get the current track tag
-    const CMusicInfoTag* tag = g_infoManager.GetCurrentSongTag();
+    const CMusicInfoTag* tag = CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag();
 
     if (m_AlbumThumb == "DefaultAlbumCover.png")
       m_AlbumThumb = "";

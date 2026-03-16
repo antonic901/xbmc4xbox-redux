@@ -31,8 +31,6 @@
 
 #include <cassert>
 
-CGUILargeTextureManager g_largeTextureManager;
-
 CImageLoader::CImageLoader(const std::string &path, const bool useCache):
   m_path(path)
 {
@@ -50,7 +48,7 @@ bool CImageLoader::DoWork()
   bool needsChecking = false;
   std::string loadPath;
 
-  std::string texturePath = g_TextureManager.GetTexturePath(m_path);
+  std::string texturePath = CServiceBroker::GetGUI()->GetTextureManager().GetTexturePath(m_path);
   if (texturePath.empty())
     return false;
 

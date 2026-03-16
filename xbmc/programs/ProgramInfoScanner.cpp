@@ -64,7 +64,7 @@ namespace PROGRAM
       CLog::Log(LOGERROR, "%s: Exception while scanning.", __FUNCTION__);
     }
 
-    g_infoManager.ResetLibraryBools();
+    CServiceBroker::GetGUI()->GetInfoManager().ResetLibraryBools();
     m_database.Close();
     m_bRunning = false;
 

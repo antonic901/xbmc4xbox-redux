@@ -28,6 +28,7 @@
 #include "Application.h"
 #include "ShoutcastFile.h"
 #include "URL.h"
+#include "guilib/GUIComponent.h"
 #include "utils/TimeUtils.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -77,7 +78,7 @@ bool CShoutcastFile::Open(const CURL& url)
     if (m_tag.GetGenre().empty())
       m_tag.SetGenre(m_file.GetHttpHeader().GetValue("ice-genre")); // icecast
     m_tag.SetLoaded(true);
-    g_infoManager.SetCurrentSongTag(m_tag);
+    CServiceBroker::GetGUI()->GetInfoManager().SetCurrentSongTag(m_tag);
   }
   m_metaint = atoi(m_file.GetHttpHeader().GetValue("icy-metaint").c_str());
   if (!m_metaint)
@@ -104,7 +105,7 @@ ssize_t CShoutcastFile::Read(void* lpBuf, size_t uiBufSize)
   if (XbmcThreads::SystemClockMillis() - m_lastTime > 500)
   {
     m_lastTime = XbmcThreads::SystemClockMillis();
-    g_infoManager.SetCurrentSongTag(m_tag);
+    CServiceBroker::GetGUI()->GetInfoManager().SetCurrentSongTag(m_tag);
   }
 
   ssize_t toRead;

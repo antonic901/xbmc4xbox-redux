@@ -275,7 +275,7 @@ void CGUIWindowSlideShow::OnDeinitWindow(int nextWindowID)
     m_Image[0].Close();
     m_Image[1].Close();
   }
-  g_infoManager.ResetCurrentSlide();
+  CServiceBroker::GetGUI()->GetInfoManager().ResetCurrentSlide();
   m_bSlideShow = false;
 
   CGUIDialog::OnDeinitWindow(nextWindowID);
@@ -635,7 +635,7 @@ void CGUIWindowSlideShow::Process(unsigned int currentTime, CDirtyRegionList &re
   }
 
   if (m_Image[m_iCurrentPic].IsLoaded())
-    g_infoManager.SetCurrentSlide(*m_slides.at(m_iCurrentSlide));
+    CServiceBroker::GetGUI()->GetInfoManager().SetCurrentSlide(*m_slides.at(m_iCurrentSlide));
 
   RenderPause();
   CGUIWindow::Process(currentTime, regions);
@@ -862,7 +862,7 @@ bool CGUIWindowSlideShow::OnMessage(CGUIMessage& message)
       CGUIDialog::OnMessage(message);
 #ifdef _XBOX
       // clear as much memory as possible
-      g_TextureManager.Flush();
+      CServiceBroker::GetGUI()->GetTextureManager().Flush();
       if (message.GetParam1() != WINDOW_PICTURES)
         m_ImageLib.Load();
 

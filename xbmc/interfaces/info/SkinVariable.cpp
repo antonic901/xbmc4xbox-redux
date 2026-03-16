@@ -19,7 +19,9 @@
  */
 
 #include "SkinVariable.h"
+#include "ServiceBroker.h"
 #include "GUIInfoManager.h"
+#include "guilib/GUIComponent.h"
 #include "utils/XBMCTinyXML.h"
 
 using namespace INFO;
@@ -38,7 +40,7 @@ const CSkinVariableString* CSkinVariable::CreateFromXML(const TiXmlElement& node
       CSkinVariableString::ConditionLabelPair pair;
       const char *condition = valuenode->Attribute("condition");
       if (condition)
-        pair.m_condition = g_infoManager.Register(condition, context);
+        pair.m_condition = CServiceBroker::GetGUI()->GetInfoManager().Register(condition, context);
 
       std::string label = valuenode->FirstChild() ? valuenode->FirstChild()->ValueStr() : "";
       pair.m_label = CGUIInfoLabel(label);
