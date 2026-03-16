@@ -44,12 +44,6 @@ CRepositoryUpdater::CRepositoryUpdater() :
   m_doneEvent(true)
 {}
 
-CRepositoryUpdater &CRepositoryUpdater::GetInstance()
-{
-  static CRepositoryUpdater instance;
-  return instance;
-}
-
 void CRepositoryUpdater::Start()
 {
   ScheduleUpdate();

@@ -62,6 +62,11 @@ PLAYLIST::CPlayListPlayer &CServiceBroker::GetPlaylistPlayer()
   return g_application.m_ServiceManager->GetPlaylistPlayer();
 }
 
+ADDON::CRepositoryUpdater& CServiceBroker::GetRepositoryUpdater()
+{
+  return g_application.m_ServiceManager->GetRepositoryUpdater();
+}
+
 CGUIComponent* CServiceBroker::GetGUI()
 {
   return g_serviceBroker.m_pGUI;

@@ -33,8 +33,7 @@ namespace ADDON
 class CRepositoryUpdater : private ITimerCallback, private IJobCallback, public ISettingCallback
 {
 public:
-  static CRepositoryUpdater& GetInstance();
-
+  explicit CRepositoryUpdater();
   virtual ~CRepositoryUpdater() {}
 
   void Start();
@@ -74,7 +73,6 @@ public:
   CEventStream<RepositoryUpdated>& Events() { return m_events; }
 
 private:
-  CRepositoryUpdater();
   CRepositoryUpdater(const CRepositoryUpdater&);
   CRepositoryUpdater& operator=(const CRepositoryUpdater&);
 

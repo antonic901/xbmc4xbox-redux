@@ -26,6 +26,7 @@ namespace ADDON
 {
 class CAddonMgr;
 class CBinaryAddonCache;
+class CRepositoryUpdater;
 } // namespace ADDON
 
 namespace ANNOUNCEMENT
@@ -72,6 +73,7 @@ public:
   static XBPython &GetXBPython();
   static CContextMenuManager& GetContextMenuManager();
   static PLAYLIST::CPlayListPlayer& GetPlaylistPlayer();
+  static ADDON::CRepositoryUpdater& GetRepositoryUpdater();
 
   static CGUIComponent* GetGUI();
   static void RegisterGUI(CGUIComponent* gui);

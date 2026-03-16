@@ -357,7 +357,7 @@ void OnEnabled(const std::string& id)
   }
 
   if (CServiceBroker::GetAddonMgr().GetAddon(id, addon, ADDON_REPOSITORY))
-    CRepositoryUpdater::GetInstance().ScheduleUpdate(); //notify updater there is a new addon
+    CServiceBroker::GetRepositoryUpdater().ScheduleUpdate(); //notify updater there is a new addon
 }
 
 void OnDisabled(const std::string& id)
@@ -409,7 +409,7 @@ void OnPostInstall(const AddonPtr& addon, bool update, bool modal)
   }
 
   if (CServiceBroker::GetAddonMgr().GetAddon(addon->ID(), localAddon, ADDON_REPOSITORY))
-    CRepositoryUpdater::GetInstance().ScheduleUpdate(); //notify updater there is a new addon or version
+    CServiceBroker::GetRepositoryUpdater().ScheduleUpdate(); //notify updater there is a new addon or version
 
   addon->OnPostInstall(update, modal);
 }
