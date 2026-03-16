@@ -20,6 +20,7 @@
 
 #include "GUIDialogBusy.h"
 #include "guilib/GUIProgressControl.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "threads/Thread.h"
 
@@ -79,7 +80,7 @@ bool CGUIDialogBusy::WaitOnEvent(CEvent &event, unsigned int displaytime /* = 10
   if (!event.WaitMSec(displaytime))
   {
     // throw up the progress
-    CGUIDialogBusy* dialog = (CGUIDialogBusy*)g_windowManager.GetWindow(WINDOW_DIALOG_BUSY);
+    CGUIDialogBusy* dialog = (CGUIDialogBusy*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_BUSY);
     if (dialog)
     {
       dialog->Open();
@@ -125,7 +126,7 @@ void CGUIDialogBusy::Open_Internal(const std::string &param /* = "" */)
 
 void CGUIDialogBusy::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
-  bool visible = g_windowManager.GetTopMostModalDialogID() == WINDOW_DIALOG_BUSY;
+  bool visible = CServiceBroker::GetGUI()->GetWindowManager().GetTopMostModalDialogID() == WINDOW_DIALOG_BUSY;
   if(!visible && m_bLastVisible)
     dirtyregions.push_back(m_renderRegion);
   m_bLastVisible = visible;

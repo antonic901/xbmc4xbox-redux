@@ -23,6 +23,7 @@
 #include "addons/AddonSystemSettings.h"
 #include "ServiceBroker.h"
 #include "addons/RepositoryUpdater.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "messaging/helpers/DialogHelper.h"
 #include "settings/Settings.h"
@@ -66,14 +67,14 @@ void CAddonSystemSettings::OnSettingAction(const CSetting* setting)
     std::vector<std::string> params;
     params.push_back("addons://dependencies/");
     params.push_back("return");
-    g_windowManager.ActivateWindow(WINDOW_ADDON_BROWSER, params);
+    CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_ADDON_BROWSER, params);
   }
   else if (setting->GetId() == "addons.showrunning")
   {
     std::vector<std::string> params;
     params.push_back("addons://running/");
     params.push_back("return");
-    g_windowManager.ActivateWindow(WINDOW_ADDON_BROWSER, params);
+    CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_ADDON_BROWSER, params);
   }
 }
 

@@ -23,6 +23,7 @@
 #include <utility>
 
 #include "dialogs/GUIDialogProgress.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "music/jobs/MusicLibraryCleaningJob.h"
@@ -58,7 +59,7 @@ void CMusicLibraryQueue::ExportLibrary(const CLibExportSettings& settings, bool 
   CGUIDialogProgress* progress = NULL;
   if (showDialog)
   {
-    progress = static_cast<CGUIDialogProgress*>(g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS));
+    progress = static_cast<CGUIDialogProgress*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRESS));
     if (progress)
     {
       progress->SetHeading( 20196 ); //"Export music library"
@@ -151,7 +152,7 @@ void CMusicLibraryQueue::CleanLibrary(bool showDialog /* = false */)
   CGUIDialogProgress* progress = NULL;
   if (showDialog)
   {
-    progress = static_cast<CGUIDialogProgress*>(g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS));
+    progress = static_cast<CGUIDialogProgress*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRESS));
     if (progress)
     {
       progress->SetHeading( 700 );
@@ -177,7 +178,7 @@ void CMusicLibraryQueue::CleanLibraryModal()
     return;
 
   CGUIDialogProgress* progress = nullptr;
-  progress = static_cast<CGUIDialogProgress*>(g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS));
+  progress = static_cast<CGUIDialogProgress*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRESS));
   if (progress)
   {
     progress->SetHeading( 700 );
@@ -260,7 +261,7 @@ void CMusicLibraryQueue::Refresh()
 {
   CUtil::DeleteMusicDatabaseDirectoryCache();
   CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE);
-  g_windowManager.SendThreadMessage(msg);
+  CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
 }
 
 void CMusicLibraryQueue::OnJobComplete(unsigned int jobID, bool success, CJob *job)

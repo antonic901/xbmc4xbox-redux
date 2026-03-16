@@ -21,6 +21,7 @@
 #include "threads/SystemClock.h"
 #include "GUIDialogCache.h"
 #include "messaging/ApplicationMessenger.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "guilib/LocalizeStrings.h"
@@ -38,7 +39,7 @@ CGUIDialogCache::CGUIDialogCache(DWORD dwDelay, const std::string& strHeader, co
 {
   bSentCancel = false;
 
-  m_pDlg = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
+  m_pDlg = (CGUIDialogProgress*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRESS);
 
   if (!m_pDlg)
     return;
@@ -155,7 +156,7 @@ void CGUIDialogCache::Process()
 #endif
         }
         else if( !m_pDlg->IsDialogRunning() && m_endtime.IsTimePast()
-              && !g_windowManager.IsWindowActive(WINDOW_DIALOG_YES_NO) )
+              && !CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_YES_NO) )
           OpenDialog();
       }
       catch(...)

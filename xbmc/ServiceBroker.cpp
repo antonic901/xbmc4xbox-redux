@@ -48,6 +48,21 @@ PLAYLIST::CPlayListPlayer &CServiceBroker::GetPlaylistPlayer()
   return g_application.m_ServiceManager->GetPlaylistPlayer();
 }
 
+CGUIComponent* CServiceBroker::GetGUI()
+{
+  return g_serviceBroker.m_pGUI;
+}
+
+void CServiceBroker::RegisterGUI(CGUIComponent* gui)
+{
+  g_serviceBroker.m_pGUI = gui;
+}
+
+void CServiceBroker::UnregisterGUI()
+{
+  g_serviceBroker.m_pGUI = nullptr;
+}
+
 CWinSystemBase* CServiceBroker::GetWinSystem()
 {
   return g_serviceBroker.m_pWinSystem;

@@ -20,6 +20,7 @@
  */
 
 #include "ContextMenuItem.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "VideoLibraryQueue.h"
 

@@ -251,6 +251,9 @@
 				RelativePath=".\GUIColorManager.cpp">
 			</File>
 			<File
+				RelativePath=".\GUIComponent.cpp">
+			</File>
+			<File
 				RelativePath=".\GUIControl.cpp">
 			</File>
 			<File
@@ -467,6 +470,9 @@
 			</File>
 			<File
 				RelativePath=".\GUIColorManager.h">
+			</File>
+			<File
+				RelativePath=".\GUIComponent.h">
 			</File>
 			<File
 				RelativePath=".\GUIControl.h">

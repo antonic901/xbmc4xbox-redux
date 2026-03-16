@@ -28,6 +28,7 @@
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
 #include "guilib/GUIKeyboardFactory.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "GUIPassword.h"
@@ -62,7 +63,7 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
   if (firstLogin && iProfile > CProfilesManager::Get().GetNumberOfProfiles())
     return false;
 
-  CGUIDialogProfileSettings *dialog = (CGUIDialogProfileSettings *)g_windowManager.GetWindow(WINDOW_DIALOG_PROFILE_SETTINGS);
+  CGUIDialogProfileSettings *dialog = (CGUIDialogProfileSettings *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROFILE_SETTINGS);
   if (dialog == NULL)
     return false;
 

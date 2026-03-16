@@ -25,6 +25,7 @@
 #include "Util.h"
 #include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "guilib/LocalizeStrings.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
@@ -82,7 +83,7 @@ bool CFileOperationJob::DoWork()
   if (m_displayProgress && GetProgressDialog() == NULL)
   {
     CGUIDialogExtendedProgressBar* dialog =
-      (CGUIDialogExtendedProgressBar*)g_windowManager.GetWindow(WINDOW_DIALOG_EXT_PROGRESS);
+      (CGUIDialogExtendedProgressBar*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_EXT_PROGRESS);
     SetProgressBar(dialog->GetHandle(GetActionString(m_action)));
   }
 

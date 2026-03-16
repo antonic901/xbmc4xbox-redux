@@ -23,6 +23,7 @@
 #include "GUIDialogFileBrowser.h"
 #include "filesystem/Directory.h"
 #include "filesystem/FavouritesDirectory.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/GUIKeyboardFactory.h"
 #include "guilib/Key.h"
@@ -110,7 +111,7 @@ void CGUIDialogFavourites::OnClick(int item)
 
   CGUIMessage message(GUI_MSG_EXECUTE, 0, GetID());
   message.SetStringParam(execute);
-  g_windowManager.SendMessage(message);
+  CServiceBroker::GetGUI()->GetWindowManager().SendMessage(message);
 }
 
 void CGUIDialogFavourites::OnPopupMenu(int item)

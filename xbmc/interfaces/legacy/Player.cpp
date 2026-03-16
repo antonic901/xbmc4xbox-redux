@@ -16,6 +16,7 @@
 #include "PlayList.h"
 #include "PlayListPlayer.h"
 #include "cores/IPlayer.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "messaging/ApplicationMessenger.h"
 #include "settings/MediaSettings.h"
@@ -406,7 +407,7 @@ namespace XBMCAddon
         throw PlayerException("Kodi is not playing any file");
 
       CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_ITEM, 0, item->item);
-      g_windowManager.SendMessage(msg);
+      CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
     }
 
     double Player::getTotalTime()

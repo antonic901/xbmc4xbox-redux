@@ -19,6 +19,7 @@
  */
 
 #include "GUIVisualisationControl.h"
+#include "GUIComponent.h"
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "Application.h"
@@ -123,7 +124,7 @@ void CGUIVisualisationControl::FreeResources(bool immediately)
     return;
 
   CGUIMessage msg(GUI_MSG_VISUALISATION_UNLOADING, m_controlID, 0);
-  g_windowManager.SendMessage(msg);
+  CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
   CLog::Log(LOGDEBUG, "FreeVisualisation() started");
   CGUIRenderingControl::FreeResources(immediately);
   m_addon.reset();

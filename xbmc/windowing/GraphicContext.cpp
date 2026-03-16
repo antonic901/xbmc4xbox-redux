@@ -23,7 +23,7 @@
 #include "XBVideoConfig.h"
 #include "Application.h"
 #include "messaging/ApplicationMessenger.h"
-#include "GUIAudioManager.h"
+#include "guilib/GUIAudioManager.h"
 #include "settings/DisplaySettings.h"
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
@@ -36,7 +36,8 @@
 #include "addons/Skin.h"
 #include "TextureManager.h"
 #include "utils/MathUtils.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIWindowManager.h"
 
 using namespace std;
 using namespace KODI::MESSAGING;
@@ -526,7 +527,7 @@ void CGraphicContext::SetVideoResolutionInternal(RESOLUTION res, BOOL NeedZ, boo
   {
     CLog::Log(LOGDEBUG, "We set resolution %i", m_Resolution);
     if (m_Resolution != RES_INVALID)
-      g_windowManager.SendMessage(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_WINDOW_RESIZE);
+      CServiceBroker::GetGUI()->GetWindowManager().SendMessage(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_WINDOW_RESIZE);
   }
 
   Unlock();

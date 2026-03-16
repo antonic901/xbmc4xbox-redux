@@ -97,8 +97,8 @@ bool CSaveFileStateJob::DoWork()
         if (updateListing)
         {
           CUtil::DeleteVideoDatabaseDirectoryCache();
-          CGUIMessage message(GUI_MSG_NOTIFY_ALL, g_windowManager.GetActiveWindow(), 0, GUI_MSG_UPDATE, 0);
-          g_windowManager.SendThreadMessage(message);
+          CGUIMessage message(GUI_MSG_NOTIFY_ALL, CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow(), 0, GUI_MSG_UPDATE, 0);
+          CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(message);
         }
       }
     }
@@ -111,7 +111,7 @@ bool CSaveFileStateJob::DoWork()
       {
 #if 0
         // Can't write to the musicdatabase while scanning for music info
-        CGUIDialogMusicScan *dialog = (CGUIDialogMusicScan *)g_windowManager.GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
+        CGUIDialogMusicScan *dialog = (CGUIDialogMusicScan *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_MUSIC_SCAN);
         if (dialog && !dialog->IsDialogRunning())
 #endif
         {

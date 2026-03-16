@@ -22,6 +22,7 @@
 #include "Application.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "guilib/GUIKeyboardFactory.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "guilib/Key.h"
@@ -260,7 +261,7 @@ namespace MUSIC_UTILS
   std::string ShowSelectArtTypeDialog(CFileItemList& artitems)
   {
     // Prompt for choice
-    CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
+    CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_SELECT));
     if (!dialog)
       return "";
 
@@ -292,7 +293,7 @@ namespace MUSIC_UTILS
 
   int ShowSelectRatingDialog(int iSelected)
   {
-    CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
+    CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_SELECT));
     if (dialog)
     {
       dialog->SetHeading( 38023 );

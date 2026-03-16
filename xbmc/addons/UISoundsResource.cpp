@@ -18,6 +18,8 @@
 *
 */
 #include "UISoundsResource.h"
+#include "ServiceBroker.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIAudioManager.h"
 #include "settings/Settings.h"
 #include "utils/StringUtils.h"
@@ -41,7 +43,7 @@ bool CUISoundsResource::IsInUse() const
 void CUISoundsResource::OnPostInstall(bool update, bool modal)
 {
   if (IsInUse())
-    g_audioManager.Load();
+    CServiceBroker::GetGUI()->GetAudioManager().Load();
 }
 
 }

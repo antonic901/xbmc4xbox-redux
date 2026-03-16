@@ -19,6 +19,7 @@
  */
 
 #include "ContextMenus.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "music/dialogs/GUIDialogMusicInfo.h"
 #include "tags/MusicInfoTag.h"

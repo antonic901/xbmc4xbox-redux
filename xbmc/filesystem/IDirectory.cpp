@@ -22,6 +22,7 @@
 #include "IDirectory.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
 #include "guilib/GUIKeyboardFactory.h"

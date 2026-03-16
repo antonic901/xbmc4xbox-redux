@@ -20,6 +20,7 @@
 
 #include "include.h"
 #include "GUIVideoControl.h"
+#include "GUIComponent.h"
 #include "GUIWindowManager.h"
 #include "Application.h"
 #ifdef HAS_VIDEO_PLAYBACK

@@ -30,6 +30,7 @@
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogOK.h"
 #include "guilib/GUIMessage.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "guilib/Key.h"
@@ -155,7 +156,7 @@ bool CGUIWindowLoginScreen::OnBack(int actionID)
 
 void CGUIWindowLoginScreen::FrameMove()
 {
-  if (GetFocusedControlID() == CONTROL_BIG_LIST && g_windowManager.GetTopMostModalDialogID() == WINDOW_INVALID)
+  if (GetFocusedControlID() == CONTROL_BIG_LIST && CServiceBroker::GetGUI()->GetWindowManager().GetTopMostModalDialogID() == WINDOW_INVALID)
     if (m_viewControl.HasControl(CONTROL_BIG_LIST))
       m_iSelectedItem = m_viewControl.GetSelectedItem();
   std::string strLabel = StringUtils::Format(g_localizeStrings.Get(20114).c_str(), m_iSelectedItem+1, CProfilesManager::Get().GetNumberOfProfiles());
@@ -276,7 +277,7 @@ void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
   }
   else
   {
-    CGUIWindow* pWindow = g_windowManager.GetWindow(WINDOW_HOME);
+    CGUIWindow* pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_HOME);
     if (pWindow)
       pWindow->ResetControlStates();
   }
@@ -317,7 +318,7 @@ void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
   // the startup window is considered part of the initialization as it most likely switches to the final window
   bool uiInitializationFinished = firstWindow != WINDOW_STARTUP_ANIM;
 
-  g_windowManager.ChangeActiveWindow(firstWindow);
+  CServiceBroker::GetGUI()->GetWindowManager().ChangeActiveWindow(firstWindow);
 
   g_application.UpdateLibraries();
 
@@ -325,6 +326,6 @@ void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
   if (uiInitializationFinished)
   {
     CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UI_READY);
-    g_windowManager.SendThreadMessage(msg);
+    CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
   }
 }

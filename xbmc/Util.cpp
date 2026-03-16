@@ -83,7 +83,8 @@
 #include "DirectXGraphics.h"
 #endif
 #include "music/tags/MusicInfoTag.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogYesNo.h"
@@ -2470,7 +2471,7 @@ bool CUtil::AutoDetection()
         //YES NO PopUP: ask for connecting to the detected client via Filemanger!
         if (CSettings::GetInstance().GetBool("autodetect.popupinfo") && CGUIDialogYesNo::ShowAndGetInput(38703, 0, 38708, 0))
         {
-          g_windowManager.ActivateWindow(WINDOW_FILES, strFTPPath); //Open in MyFiles
+          CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_FILES, strFTPPath); //Open in MyFiles
         }
         bReturn = true;
       }
@@ -2607,7 +2608,7 @@ bool CUtil::AutoDetectionPing(CStdString strFTPUserName, CStdString strFTPPass, 
         {
           // a client is removed from our list, update our shares
           CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_UPDATE_SOURCES);
-          g_windowManager.SendThreadMessage(msg);
+          CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
         }
       }
     }
@@ -2720,7 +2721,7 @@ bool CUtil::AutoDetectionPing(CStdString strFTPUserName, CStdString strFTPPass, 
 
                     // client is removed from our list, update our shares
                     CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_UPDATE_SOURCES);
-                    g_windowManager.SendThreadMessage(msg);
+                    CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
                   }
                 }
               }
@@ -2742,7 +2743,7 @@ bool CUtil::AutoDetectionPing(CStdString strFTPUserName, CStdString strFTPPass, 
           {
             // a client is add or removed from our list, update our shares
             CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_UPDATE_SOURCES);
-            g_windowManager.SendThreadMessage(msg);
+            CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
           }
         }
       }

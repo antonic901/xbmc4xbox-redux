@@ -10,6 +10,7 @@
 
 #include "WindowInterceptor.h"
 #include "guilib/GUIWindow.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 
 namespace XBMCAddon
@@ -63,7 +64,7 @@ namespace XBMCAddon
 
     void WindowDialog::OnDeinitWindow(int nextWindowID)
     {
-      g_windowManager.RemoveDialog(iWindowId);
+      CServiceBroker::GetGUI()->GetWindowManager().RemoveDialog(iWindowId);
       Window::OnDeinitWindow(nextWindowID);
     }
 

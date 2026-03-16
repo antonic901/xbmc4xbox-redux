@@ -18,6 +18,7 @@
 #include "addons/PluginSource.h"
 #include "dialogs/GUIDialogBusy.h"
 #include "dialogs/GUIDialogProgress.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "messaging/ApplicationMessenger.h"
@@ -507,8 +508,8 @@ bool CPluginDirectory::WaitOnScriptResult(const std::string &scriptPath, int scr
       CScriptObserver scriptObs(scriptId, m_fetchComplete);
 
       CGUIDialogProgress* progress = nullptr;
-      if (g_windowManager.GetTopMostModalDialogID() == WINDOW_DIALOG_PROGRESS)
-        progress = dynamic_cast<CGUIDialogProgress*>(g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS));
+      if (CServiceBroker::GetGUI()->GetWindowManager().GetTopMostModalDialogID() == WINDOW_DIALOG_PROGRESS)
+        progress = dynamic_cast<CGUIDialogProgress*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRESS));
 
       if (progress != nullptr)
       {

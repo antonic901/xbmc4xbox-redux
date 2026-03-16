@@ -1,7 +1,8 @@
 #include "xbox/PlatformDefs.h"
 #include "rar.hpp"
 #include "UnrarX.hpp"
-#include "GUIWindowManager.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIWindowManager.h"
 
 #include "smallfn.cpp"
 

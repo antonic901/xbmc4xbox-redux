@@ -36,6 +36,7 @@
 #include "windowing/GraphicContext.h"
 #include "guilib/GUIAudioManager.h"
 #include "guilib/GUIFontManager.h"
+#include "guilib/GUIComponent.h"
 #include "input/KeyboardLayoutManager.h"
 #if defined(TARGET_POSIX)
 #include "linux/LinuxTimezone.h"
@@ -265,7 +266,7 @@ void CSettings::Uninitialize()
   m_settingsManager->UnregisterCallback(&CDisplaySettings::Get());
   m_settingsManager->UnregisterCallback(&CSeekHandler::Get());
   m_settingsManager->UnregisterCallback(&g_application);
-  m_settingsManager->UnregisterCallback(&g_audioManager);
+  m_settingsManager->UnregisterCallback(&CServiceBroker::GetGUI()->GetAudioManager());
   m_settingsManager->UnregisterCallback(&g_charsetConverter);
 #ifdef _XBOX
   m_settingsManager->UnregisterCallback(CFanController::Instance());
@@ -772,7 +773,7 @@ void CSettings::InitializeISettingCallbacks()
 
   settingSet.clear();
   settingSet.insert("lookandfeel.soundskin");
-  m_settingsManager->RegisterCallback(&g_audioManager, settingSet);
+  m_settingsManager->RegisterCallback(&CServiceBroker::GetGUI()->GetAudioManager(), settingSet);
 
   settingSet.clear();
   settingSet.insert("subtitles.charset");

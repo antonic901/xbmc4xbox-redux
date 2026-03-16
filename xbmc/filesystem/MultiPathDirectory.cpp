@@ -23,6 +23,7 @@
 #include "Directory.h"
 #include "Util.h"
 #include "URL.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "FileItem.h"
@@ -63,7 +64,7 @@ bool CMultiPathDirectory::GetDirectory(const CURL& url, CFileItemList &items)
     // show the progress dialog if we have passed our time limit
     if (progressTime.IsTimePast() && !dlgProgress)
     {
-      dlgProgress = (CGUIDialogProgress *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
+      dlgProgress = (CGUIDialogProgress *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRESS);
       if (dlgProgress)
       {
         dlgProgress->SetHeading(15310);

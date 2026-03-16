@@ -40,6 +40,7 @@ namespace PLAYLIST
 
 class CContextMenuManager;
 class CWinSystemBase;
+class CGUIComponent;
 class XBPython;
 
 class CServiceBroker
@@ -51,11 +52,16 @@ public:
   static CContextMenuManager& GetContextMenuManager();
   static PLAYLIST::CPlayListPlayer& GetPlaylistPlayer();
 
+  static CGUIComponent* GetGUI();
+  static void RegisterGUI(CGUIComponent* gui);
+  static void UnregisterGUI();
+
   static void RegisterWinSystem(CWinSystemBase* winsystem);
   static void UnregisterWinSystem();
   static CWinSystemBase* GetWinSystem();
 
 private:
+  CGUIComponent* m_pGUI;
   CWinSystemBase* m_pWinSystem;
 };
 

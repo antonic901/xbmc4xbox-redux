@@ -21,6 +21,7 @@
 #include "ProgramLibraryCleaningJob.h"
 
 #include "dialogs/GUIDialogExtendedProgressBar.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "programs/ProgramDatabase.h"
@@ -51,7 +52,7 @@ bool CProgramLibraryCleaningJob::Work(CProgramDatabase &db)
   CGUIDialogProgressBarHandle* handle = NULL;
   if (m_showProgress)
   {
-    CGUIDialogExtendedProgressBar* dialog = static_cast<CGUIDialogExtendedProgressBar*>(g_windowManager.GetWindow(WINDOW_DIALOG_EXT_PROGRESS));
+    CGUIDialogExtendedProgressBar* dialog = static_cast<CGUIDialogExtendedProgressBar*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_EXT_PROGRESS));
     if (dialog)
       handle = dialog->GetHandle(g_localizeStrings.Get(314));
   }

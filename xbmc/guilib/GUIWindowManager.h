@@ -38,7 +38,6 @@
 #include "IMsgTargetCallback.h"
 #include "IWindowManagerCallback.h"
 #include "messaging/IMessageTarget.h"
-#include "utils/GlobalsHandling.h"
 
 class CGUIDialog;
 class CGUIMediaWindow;
@@ -268,11 +267,5 @@ private:
   mutable CGUIWindowManagerIdCache m_idCache;
 };
 
-/*!
- \ingroup winman
- \brief
- */
-XBMC_GLOBAL_REF(CGUIWindowManager,g_windowManager);
-#define g_windowManager XBMC_GLOBAL_USE(CGUIWindowManager)
 #endif
 

@@ -11,6 +11,7 @@
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #include "dialogs/GUIDialogYesNo.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "FileItem.h"
@@ -69,7 +70,7 @@ bool CGUIWindowPrograms::OnClick(int iItem, const std::string &player)
 
   if (item->GetPath() == "insignia://")
   {
-    g_windowManager.ActivateWindow(WINDOW_INSIGNIA);
+    CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_INSIGNIA);
     return true;
   }
 

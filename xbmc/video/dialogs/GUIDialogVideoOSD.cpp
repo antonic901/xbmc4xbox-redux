@@ -20,7 +20,8 @@
 
 #include "GUIDialogVideoOSD.h"
 #include "Application.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIWindowManager.h"
 #include "GUIUserMessages.h"
 
 CGUIDialogVideoOSD::CGUIDialogVideoOSD(void)
@@ -38,9 +39,9 @@ void CGUIDialogVideoOSD::FrameMove()
   if (m_autoClosing)
   {
     // check for movement of mouse or a submenu open
-    if (g_windowManager.IsWindowActive(WINDOW_DIALOG_AUDIO_OSD_SETTINGS)
-                           || g_windowManager.IsWindowActive(WINDOW_DIALOG_VIDEO_OSD_SETTINGS)
-                           || g_windowManager.IsWindowActive(WINDOW_DIALOG_VIDEO_BOOKMARKS))
+    if (CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_AUDIO_OSD_SETTINGS)
+                           || CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_VIDEO_OSD_SETTINGS)
+                           || CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_VIDEO_BOOKMARKS))
       // extend show time by original value
       SetAutoClose(m_showDuration);
   }

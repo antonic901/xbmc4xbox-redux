@@ -20,6 +20,7 @@
 
 #include "GUIDialogPictureInfo.h"
 #include "GUIInfoManager.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "FileItem.h"
 #include "guilib/Key.h"
@@ -63,9 +64,9 @@ bool CGUIDialogPictureInfo::OnAction(const CAction& action)
     case ACTION_PREV_PICTURE:
     case ACTION_PLAYER_PLAY:
     case ACTION_PAUSE:
-      if (g_windowManager.GetActiveWindow() == WINDOW_SLIDESHOW)
+      if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_SLIDESHOW)
       {
-        CGUIWindow* pWindow = g_windowManager.GetWindow(WINDOW_SLIDESHOW);
+        CGUIWindow* pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_SLIDESHOW);
         return pWindow->OnAction(action);
       }
       break;

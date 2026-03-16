@@ -236,7 +236,7 @@ do { \
  if(g_application.IsCurrentThread()) \
    OnMessage(msg); \
  else \
-   g_windowManager.SendThreadMessage(msg, GetID()); \
+   CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg, GetID()); \
 }
 
 /*!
