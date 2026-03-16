@@ -13,6 +13,7 @@
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "filesystem/CurlFile.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/LocalizeStrings.h"
 #include "messaging/ApplicationMessenger.h"
 #include "utils/log.h"
@@ -32,7 +33,7 @@ bool CUpdaterJob::DoWork()
   std::string strRevision = split[1];
   std::string strUpdateChannel = split[2] == "py2" ? "nightly" : "nightly-python3";
 
-  if (!g_infoManager.EvaluateBool("Skin.HasSetting(updateavailable)"))
+  if (!CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool("Skin.HasSetting(updateavailable)"))
   {
     if (strRevision.empty() || StringUtils::StartsWithNoCase(strRevision, "dev"))
       return true;

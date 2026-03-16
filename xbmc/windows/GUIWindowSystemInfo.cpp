@@ -21,6 +21,7 @@
 #include "system.h"
 #include "GUIWindowSystemInfo.h"
 #include "GUIInfoManager.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/Key.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/SystemInfo.h"
@@ -57,8 +58,8 @@ bool CGUIWindowSystemInfo::OnMessage(CGUIMessage& message)
     case GUI_MSG_WINDOW_INIT:
     {
       CGUIWindow::OnMessage(message);
-      SET_CONTROL_LABEL(52, "XBMC4Xbox " + g_infoManager.GetLabel(SYSTEM_BUILD_VERSION));
-      SET_CONTROL_LABEL(53, g_infoManager.GetLabel(SYSTEM_BUILD_DATE));
+      SET_CONTROL_LABEL(52, "XBMC4Xbox " + CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_BUILD_VERSION));
+      SET_CONTROL_LABEL(53, CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_BUILD_DATE));
       return true;
     }
     break;
@@ -129,19 +130,19 @@ void CGUIWindowSystemInfo::FrameMove()
   {
     SET_CONTROL_LABEL(40, g_localizeStrings.Get(20155));
     // for backward compatibility just show Free space info else would be to long...
-    SET_CONTROL_LABEL(2, g_infoManager.GetLabel(SYSTEM_FREE_SPACE_C));
+    SET_CONTROL_LABEL(2, CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FREE_SPACE_C));
 #ifdef HAS_SYSINFO
-    SET_CONTROL_LABEL(3, g_infoManager.GetLabel(SYSTEM_DVD_TRAY_STATE));
+    SET_CONTROL_LABEL(3, CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_DVD_TRAY_STATE));
 #endif
-    SET_CONTROL_LABEL(4, g_infoManager.GetLabel(SYSTEM_FREE_SPACE_E));
-    SET_CONTROL_LABEL(5, g_infoManager.GetLabel(SYSTEM_FREE_SPACE_F));
-    SET_CONTROL_LABEL(6, g_infoManager.GetLabel(SYSTEM_FREE_SPACE_G));
-    SET_CONTROL_LABEL(7, g_infoManager.GetLabel(SYSTEM_FREE_SPACE_X));
-    SET_CONTROL_LABEL(8, g_infoManager.GetLabel(SYSTEM_FREE_SPACE_Y));
-    SET_CONTROL_LABEL(9, g_infoManager.GetLabel(SYSTEM_FREE_SPACE_Z));
+    SET_CONTROL_LABEL(4, CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FREE_SPACE_E));
+    SET_CONTROL_LABEL(5, CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FREE_SPACE_F));
+    SET_CONTROL_LABEL(6, CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FREE_SPACE_G));
+    SET_CONTROL_LABEL(7, CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FREE_SPACE_X));
+    SET_CONTROL_LABEL(8, CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FREE_SPACE_Y));
+    SET_CONTROL_LABEL(9, CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FREE_SPACE_Z));
     SetControlLabel(10, "%s: %s", 20161, SYSTEM_TOTAL_SPACE);
     SetControlLabel(11, "%s: %s", 20161, SYSTEM_USED_SPACE_PERCENT);
-    SET_CONTROL_LABEL(12,g_infoManager.GetLabel(SYSTEM_FREE_SPACE_PERCENT));
+    SET_CONTROL_LABEL(12,CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FREE_SPACE_PERCENT));
   }
 
   else if (m_section == CONTROL_BT_NETWORK)
@@ -174,7 +175,7 @@ void CGUIWindowSystemInfo::FrameMove()
     SetControlLabel(i++, "%s %s", 38739, SYSTEM_XBOX_SERIAL);
     SetControlLabel(i++, "%s %s", 13284, SYSTEM_CPUFREQUENCY);
     SetControlLabel(i++, "%s %s", 38737, SYSTEM_XBOX_BIOS);
-    SET_CONTROL_LABEL(i++, g_infoManager.GetLabel(SYSTEM_XBOX_MODCHIP));
+    SET_CONTROL_LABEL(i++, CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_XBOX_MODCHIP));
     SetControlLabel(i++, "%s %s", 38740, SYSTEM_XBOX_PRODUCE_INFO);
     SetControlLabel(i++, "%s 1: %s", 38736, SYSTEM_CONTROLLER_PORT_1);
     SetControlLabel(i++, "%s 2: %s", 38736, SYSTEM_CONTROLLER_PORT_2);
@@ -196,6 +197,6 @@ void CGUIWindowSystemInfo::ResetLabels()
 void CGUIWindowSystemInfo::SetControlLabel(int id, const char *format, int label, int info)
 {
   std::string tmpStr = StringUtils::Format(format, g_localizeStrings.Get(label).c_str(),
-      g_infoManager.GetLabel(info).c_str());
+      CServiceBroker::GetGUI()->GetInfoManager().GetLabel(info).c_str());
   SET_CONTROL_LABEL(id, tmpStr);
 }

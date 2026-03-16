@@ -1812,7 +1812,7 @@ void CDVDPlayer::HandleMessages()
 
         if(!msg.GetTrickPlay())
         {
-          g_infoManager.SetDisplayAfterSeek(100000);
+          CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek(100000);
           if(msg.GetFlush())
             SetCaching(CACHESTATE_FLUSH);
         }
@@ -1847,7 +1847,7 @@ void CDVDPlayer::HandleMessages()
 
         // set flag to indicate we have finished a seeking request
         if(!msg.GetTrickPlay())
-          g_infoManager.SetDisplayAfterSeek();
+          CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
 
         // dvd's will issue a HOP_CHANNEL that we need to skip
         if(m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD))
@@ -1856,7 +1856,7 @@ void CDVDPlayer::HandleMessages()
       else if (pMsg->IsType(CDVDMsg::PLAYER_SEEK_CHAPTER) && m_messenger.GetPacketCount(CDVDMsg::PLAYER_SEEK)         == 0
                                                           && m_messenger.GetPacketCount(CDVDMsg::PLAYER_SEEK_CHAPTER) == 0)
       {
-        g_infoManager.SetDisplayAfterSeek(100000);
+        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek(100000);
         SetCaching(CACHESTATE_FLUSH);
 
         CDVDMsgPlayerSeekChapter &msg(*((CDVDMsgPlayerSeekChapter*)pMsg));
@@ -1869,7 +1869,7 @@ void CDVDPlayer::HandleMessages()
           m_callback.OnPlayBackSeekChapter(msg.GetChapter());
         }
 
-        g_infoManager.SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
       }
       else if (pMsg->IsType(CDVDMsg::DEMUXER_RESET))
       {
@@ -1942,7 +1942,7 @@ void CDVDPlayer::HandleMessages()
       }
       else if (pMsg->IsType(CDVDMsg::PLAYER_SET_STATE))
       {
-        g_infoManager.SetDisplayAfterSeek(100000);
+        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek(100000);
         SetCaching(CACHESTATE_FLUSH);
 
         CDVDMsgPlayerSetState* pMsgPlayerSetState = (CDVDMsgPlayerSetState*)pMsg;
@@ -1957,7 +1957,7 @@ void CDVDPlayer::HandleMessages()
           }
         }
 
-        g_infoManager.SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
       }
       else if (pMsg->IsType(CDVDMsg::PLAYER_SET_RECORD))
       {
@@ -2014,7 +2014,7 @@ void CDVDPlayer::HandleMessages()
         CDVDInputStream::IChannel* input = dynamic_cast<CDVDInputStream::IChannel*>(m_pInputStream);
         if(input)
         {
-          g_infoManager.SetDisplayAfterSeek(100000);
+          CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek(100000);
 
           bool result;
           if (pMsg->IsType(CDVDMsg::PLAYER_CHANNEL_SELECT))
@@ -2030,7 +2030,7 @@ void CDVDPlayer::HandleMessages()
             SAFE_DELETE(m_pDemuxer);
           }
 
-          g_infoManager.SetDisplayAfterSeek();
+          CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
         }
       }
       else if (pMsg->IsType(CDVDMsg::GENERAL_GUI_ACTION))
@@ -3085,7 +3085,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
         THREAD_ACTION(action);
         CLog::Log(LOGDEBUG, " - pushed prev");
         pMenus->OnPrevious();
-        g_infoManager.SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
         return true;
       }
       break;
@@ -3094,7 +3094,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
         THREAD_ACTION(action);
         CLog::Log(LOGDEBUG, " - pushed next");
         pMenus->OnNext();
-        g_infoManager.SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
         return true;
       }
       break;
@@ -3121,14 +3121,14 @@ bool CDVDPlayer::OnAction(const CAction &action)
         THREAD_ACTION(action);
         CLog::Log(LOGDEBUG, " - pushed next in menu, stream will decide");
         pMenus->OnNext();
-        g_infoManager.SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
         return true;
       case ACTION_PREV_ITEM:
       case ACTION_PAGE_DOWN:
         THREAD_ACTION(action);
         CLog::Log(LOGDEBUG, " - pushed prev in menu, stream will decide");
         pMenus->OnPrevious();
-        g_infoManager.SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
         return true;
       case ACTION_PREVIOUS_MENU:
       case ACTION_NAV_BACK:
@@ -3211,14 +3211,14 @@ bool CDVDPlayer::OnAction(const CAction &action)
       case ACTION_NEXT_ITEM:
       case ACTION_PAGE_UP:
         m_messenger.Put(new CDVDMsg(CDVDMsg::PLAYER_CHANNEL_NEXT));
-        g_infoManager.SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
         return true;
       break;
 
       case ACTION_PREV_ITEM:
       case ACTION_PAGE_DOWN:
         m_messenger.Put(new CDVDMsg(CDVDMsg::PLAYER_CHANNEL_PREV));
-        g_infoManager.SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
         return true;
       break;
 
@@ -3227,7 +3227,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
         // Offset from key codes back to button number
         int channel = action.GetAmount();
         m_messenger.Put(new CDVDMsgInt(CDVDMsg::PLAYER_CHANNEL_SELECT, channel));
-        g_infoManager.SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
         return true;
       }
       break;
@@ -3241,7 +3241,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
       if(GetChapterCount() > 0)
       {
         m_messenger.Put(new CDVDMsgPlayerSeekChapter(GetChapter()+1));
-        g_infoManager.SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
         return true;
       }
       else
@@ -3251,7 +3251,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
       if(GetChapterCount() > 0)
       {
         m_messenger.Put(new CDVDMsgPlayerSeekChapter(GetChapter()-1));
-        g_infoManager.SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
         return true;
       }
       else

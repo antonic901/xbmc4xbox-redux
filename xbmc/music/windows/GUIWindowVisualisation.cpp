@@ -49,7 +49,7 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
 {
 #ifndef _XBOX
   if (CSettings::GetInstance().GetBool(CSettings::SETTING_PVRPLAYBACK_CONFIRMCHANNELSWITCH) &&
-      g_infoManager.IsPlayerChannelPreviewActive() &&
+      CServiceBroker::GetGUI()->GetInfoManager().IsPlayerChannelPreviewActive() &&
       (action.GetID() == ACTION_SELECT_ITEM || CButtonTranslator::GetInstance().GetGlobalAction(action.GetButtonCode()).GetID() == ACTION_SELECT_ITEM))
   {
     // If confirm channel switch is active, channel preview is currently shown
@@ -74,7 +74,7 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
   case ACTION_SHOW_INFO:
     {
       m_initTimer.Stop();
-      CSettings::GetInstance().SetBool("mymusic.songthumbinvis", g_infoManager.ToggleShowInfo());
+      CSettings::GetInstance().SetBool("mymusic.songthumbinvis", CServiceBroker::GetGUI()->GetInfoManager().ToggleShowInfo());
       return true;
     }
     break;
@@ -112,7 +112,7 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
     {
       // actual action is taken care of in CApplication::OnAction()
       m_initTimer.StartZero();
-      g_infoManager.SetShowInfo(true);
+      CServiceBroker::GetGUI()->GetInfoManager().SetShowInfo(true);
     }
     break;
     //! @todo These should be mapped to it's own function - at the moment it's overriding
@@ -181,10 +181,10 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
       }
 
       // hide or show the preset button(s)
-      g_infoManager.SetShowInfo(true);  // always show the info initially.
+      CServiceBroker::GetGUI()->GetInfoManager().SetShowInfo(true);  // always show the info initially.
       CGUIWindow::OnMessage(message);
-      if (g_infoManager.GetCurrentSongTag())
-        m_tag = *g_infoManager.GetCurrentSongTag();
+      if (CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag())
+        m_tag = *CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag();
 
       if (CSettings::GetInstance().GetBool("mymusic.songthumbinvis"))
       { // always on
@@ -204,20 +204,20 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
 void CGUIWindowVisualisation::FrameMove()
 {
   // check for a tag change
-  const CMusicInfoTag* tag = g_infoManager.GetCurrentSongTag();
+  const CMusicInfoTag* tag = CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag();
   if (tag && *tag != m_tag)
   { // need to fade in then out again
     m_tag = *tag;
     // fade in
     m_initTimer.StartZero();
-    g_infoManager.SetShowInfo(true);
+    CServiceBroker::GetGUI()->GetInfoManager().SetShowInfo(true);
   }
   if (m_initTimer.IsRunning() && m_initTimer.GetElapsedSeconds() > (float)g_advancedSettings.m_songInfoDuration)
   {
     m_initTimer.Stop();
     if (!CSettings::GetInstance().GetBool("mymusic.songthumbinvis"))
     { // reached end of fade in, fade out again
-      g_infoManager.SetShowInfo(false);
+      CServiceBroker::GetGUI()->GetInfoManager().SetShowInfo(false);
     }
   }
   // show or hide the locked texture

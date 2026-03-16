@@ -19,7 +19,9 @@
  */
 
 #include "Profile.h"
+#include "ServiceBroker.h"
 #include "GUIInfoManager.h"
+#include "guilib/GUIComponent.h"
 #include "utils/XMLUtils.h"
 
 CProfile::CLock::CLock(LockType type, const CStdString &password)
@@ -62,8 +64,8 @@ CProfile::~CProfile(void)
 
 void CProfile::setDate()
 {
-  CStdString strDate = g_infoManager.GetDate(true);
-  CStdString strTime = g_infoManager.GetTime();
+  CStdString strDate = CServiceBroker::GetGUI()->GetInfoManager().GetDate(true);
+  CStdString strTime = CServiceBroker::GetGUI()->GetInfoManager().GetTime();
   if (strDate.IsEmpty() || strTime.IsEmpty())
     setDate("-");
   else

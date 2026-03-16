@@ -536,7 +536,7 @@ bool CGUIControlFactory::GetColor(const TiXmlNode *control, const char *strTag, 
   const TiXmlElement* node = control->FirstChildElement(strTag);
   if (node && node->FirstChild())
   {
-    value = g_colorManager.GetColor(node->FirstChild()->Value());
+    value = CServiceBroker::GetGUI()->GetColorManager().GetColor(node->FirstChild()->Value());
     return true;
   }
   return false;
@@ -857,7 +857,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
 
   std::string infoString;
   if (XMLUtils::GetString(pControlNode, "info", infoString))
-    singleInfo = g_infoManager.TranslateString(infoString);
+    singleInfo = CServiceBroker::GetGUI()->GetInfoManager().TranslateString(infoString);
 
   GetTexture(pControlNode, "texturefocus", textureFocus);
   GetTexture(pControlNode, "texturenofocus", textureNoFocus);

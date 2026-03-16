@@ -31,6 +31,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "utils/URIUtils.h"
+#include "guilib/GUIComponent.h"
 
 using namespace std;
 using namespace XFILE;
@@ -992,7 +993,7 @@ void CXbmcWeb::SetCurrentMediaItem(CFileItem& newItem)
   //	If we have tag information, ...
   if (tag->Loaded())
   {
-    g_infoManager.SetCurrentSongTag(*tag);
+    CServiceBroker::GetGUI()->GetInfoManager().SetCurrentSongTag(*tag);
   }
   /*
   //	display only, if we have a title

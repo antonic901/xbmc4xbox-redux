@@ -23,6 +23,7 @@
 #include "threads/SystemClock.h"
 #include "system.h"
 #include "SystemInfo.h"
+#include "ServiceBroker.h"
 #include <conio.h>
 #include "LangInfo.h"
 #include "cores/DllLoader/DllLoader.h"
@@ -31,6 +32,7 @@
 #include "filesystem/CurlFile.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/TimeUtils.h"
 #include "utils/Temperature.h"
@@ -1756,7 +1758,7 @@ CStdString CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
 CStdString CSysInfo::GetUserAgent()
 {
   CStdString result;
-  result = "XBMC/" + g_infoManager.GetLabel(SYSTEM_BUILD_VERSION) + " (";
+  result = "XBMC/" + CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_BUILD_VERSION) + " (";
 #if defined(_WIN32PC)
   result += "Windows; ";
   result += GetKernelVersion();

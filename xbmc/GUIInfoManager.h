@@ -112,6 +112,8 @@ public:
   CGUIInfoManager(void);
   virtual ~CGUIInfoManager(void);
 
+  void Initialize();
+
   void Clear();
   virtual bool OnMessage(CGUIMessage &message);
 
@@ -373,10 +375,4 @@ protected:
 private:
   static std::string FormatRatingAndVotes(float rating, int votes);
 };
-
-/*!
- \ingroup strings
- \brief
- */
-extern CGUIInfoManager g_infoManager;
 

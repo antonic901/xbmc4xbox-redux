@@ -19,6 +19,7 @@
  */
 
 #include "SourcesDirectory.h"
+#include "ServiceBroker.h"
 #include "utils/URIUtils.h"
 #include "URL.h"
 #include "Util.h"
@@ -91,7 +92,7 @@ bool CSourcesDirectory::GetDirectory(const VECSOURCES &sources, CFileItemList &i
       strIcon = "DefaultDVDFull.png";
     else if (pItem->IsCDDA())
       strIcon = "DefaultCDDA.png";
-    else if (pItem->IsRemovable() && g_TextureManager.HasTexture("DefaultRemovableDisk.png"))
+    else if (pItem->IsRemovable() && CServiceBroker::GetGUI()->GetTextureManager().HasTexture("DefaultRemovableDisk.png"))
       strIcon = "DefaultRemovableDisk.png";
     else
       strIcon = "DefaultHardDisk.png";

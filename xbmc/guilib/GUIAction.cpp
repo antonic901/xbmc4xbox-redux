@@ -43,7 +43,7 @@ bool CGUIAction::ExecuteActions(int controlID, int parentID, const CGUIListItemP
   std::vector<std::string> actions;
   for (ciActions it = m_actions.begin() ; it != m_actions.end() ; ++it)
   {
-    if (it->condition.empty() || g_infoManager.EvaluateBool(it->condition, 0, item))
+    if (it->condition.empty() || CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool(it->condition, 0, item))
     {
       if (!StringUtils::IsInteger(it->action))
         actions.push_back(it->action);
@@ -70,7 +70,7 @@ int CGUIAction::GetNavigation() const
   {
     if (StringUtils::IsInteger(it->action))
     {
-      if (it->condition.empty() || g_infoManager.EvaluateBool(it->condition))
+      if (it->condition.empty() || CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool(it->condition))
         return atoi(it->action.c_str());
     }
   }
@@ -98,7 +98,7 @@ bool CGUIAction::HasActionsMeetingCondition() const
 {
   for (ciActions it = m_actions.begin() ; it != m_actions.end() ; ++it)
   {
-    if (it->condition.empty() || g_infoManager.EvaluateBool(it->condition))
+    if (it->condition.empty() || CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool(it->condition))
       return true;
   }
   return false;

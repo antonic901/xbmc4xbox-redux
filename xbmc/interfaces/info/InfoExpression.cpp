@@ -19,8 +19,10 @@
  */
 
 #include "InfoExpression.h"
+#include "ServiceBroker.h"
 #include <stack>
 #include "utils/log.h"
+#include "GUIComponent.h"
 #include "GUIInfoManager.h"
 #include <list>
 #include <memory>
@@ -30,12 +32,12 @@ using namespace INFO;
 InfoSingle::InfoSingle(const std::string &expression, int context)
 : InfoBool(expression, context)
 {
-  m_condition = g_infoManager.TranslateSingleString(expression, m_listItemDependent);
+  m_condition = CServiceBroker::GetGUI()->GetInfoManager().TranslateSingleString(expression, m_listItemDependent);
 }
 
 void InfoSingle::Update(const CGUIListItem *item)
 {
-  m_value = g_infoManager.GetBool(m_condition, m_context, item);
+  m_value = CServiceBroker::GetGUI()->GetInfoManager().GetBool(m_condition, m_context, item);
 }
 
 InfoExpression::InfoExpression(const std::string &expression, int context)
@@ -44,7 +46,7 @@ InfoExpression::InfoExpression(const std::string &expression, int context)
   if (!Parse(expression))
   {
     CLog::Log(LOGERROR, "Error parsing boolean expression %s", expression.c_str());
-    m_expression_tree = boost::make_shared<InfoLeaf>(g_infoManager.Register("false", 0), false);
+    m_expression_tree = boost::make_shared<InfoLeaf>(CServiceBroker::GetGUI()->GetInfoManager().Register("false", 0), false);
   }
 }
 
@@ -242,7 +244,7 @@ bool InfoExpression::Parse(const std::string &expression)
       }
       if (!operand.empty())
       {
-        InfoPtr info = g_infoManager.Register(operand, m_context);
+        InfoPtr info = CServiceBroker::GetGUI()->GetInfoManager().Register(operand, m_context);
         if (!info)
         {
           CLog::Log(LOGERROR, "Bad operand '%s'", operand.c_str());
@@ -293,7 +295,7 @@ bool InfoExpression::Parse(const std::string &expression)
   }
   if (!operand.empty())
   {
-    InfoPtr info = g_infoManager.Register(operand, m_context);
+    InfoPtr info = CServiceBroker::GetGUI()->GetInfoManager().Register(operand, m_context);
     if (!info)
     {
       CLog::Log(LOGERROR, "Bad operand '%s'", operand.c_str());

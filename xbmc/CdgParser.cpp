@@ -291,7 +291,7 @@ void CCdgReader::Process()
   {
     CSingleLock lock (m_CritSection);
     double fDiff;
-    const CMusicInfoTag* tag = g_infoManager.GetCurrentSongTag();
+    const CMusicInfoTag* tag = CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag();
     if (!tag || tag->GetURL().substr(0,strExt.size()) != strExt)
     {
       Sleep(15);

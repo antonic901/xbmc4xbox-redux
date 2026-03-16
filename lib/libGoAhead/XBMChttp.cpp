@@ -479,7 +479,7 @@ void CXbmcHttp::SetCurrentMediaItem(CFileItem& newItem)
   //  If we have tag information, ...
   if (newItem.HasMusicInfoTag() && newItem.GetMusicInfoTag()->Loaded())
   {
-    g_infoManager.SetCurrentSongTag(*newItem.GetMusicInfoTag());
+    CServiceBroker::GetGUI()->GetInfoManager().SetCurrentSongTag(*newItem.GetMusicInfoTag());
   }
 }
 
@@ -1437,7 +1437,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
       tmp.Format("%i",g_playlistPlayer.GetCurrentSong());
       output+=closeTag+openTag+"VideoNo:"+tmp;  // current item # in playlist
       output+=closeTag+openTag+"Type"+tag+":Video" ;
-      const CVideoInfoTag* tagVal=g_infoManager.GetCurrentMovieTag();
+      const CVideoInfoTag* tagVal=CServiceBroker::GetGUI()->GetInfoManager().GetCurrentMovieTag();
       if (tagVal)
       {
         if (!tagVal->m_strShowTitle.empty())
@@ -1498,7 +1498,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
          return SetResponse(openTag+"Changed:False");
         //if still here, continue collecting info
       }
-      thumb=g_infoManager.GetImage(VIDEOPLAYER_COVER, (DWORD)-1);
+      thumb=CServiceBroker::GetGUI()->GetInfoManager().GetImage(VIDEOPLAYER_COVER, (DWORD)-1);
 
       copyThumb(thumb,thumbFn);
       output+=closeTag+openTag+"Thumb"+tag+":"+thumb;
@@ -1508,7 +1508,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
       tmp.Format("%i",g_playlistPlayer.GetCurrentSong());
       output+=closeTag+openTag+"SongNo:"+tmp;  // current item # in playlist
       output+=closeTag+openTag+"Type"+tag+":Audio";
-      const CMusicInfoTag* tagVal=g_infoManager.GetCurrentSongTag();
+      const CMusicInfoTag* tagVal=CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag();
       if (tagVal && !tagVal->GetTitle().empty())
         output+=closeTag+openTag+"Title"+tag+":"+tagVal->GetTitle().c_str();
       if (tagVal && tagVal->GetTrackNumber())
@@ -1536,27 +1536,27 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
         output+=closeTag+openTag+"Year"+tag+":"+tagVal->GetYearString().c_str();
       if (tagVal && !tagVal->GetURL().empty())
         output+=closeTag+openTag+"URL"+tag+":"+tagVal->GetURL().c_str();
-      if (tagVal && !g_infoManager.GetMusicLabel(MUSICPLAYER_LYRICS).empty())
-        output+=closeTag+openTag+"Lyrics"+tag+":"+g_infoManager.GetMusicLabel(MUSICPLAYER_LYRICS).c_str();
+      if (tagVal && !CServiceBroker::GetGUI()->GetInfoManager().GetMusicLabel(MUSICPLAYER_LYRICS).empty())
+        output+=closeTag+openTag+"Lyrics"+tag+":"+CServiceBroker::GetGUI()->GetInfoManager().GetMusicLabel(MUSICPLAYER_LYRICS).c_str();
 
       // TODO: Should this be a tagitem member?? (wouldn't have vbr updates though)
-      CStdString bitRate(g_infoManager.GetMusicLabel(MUSICPLAYER_BITRATE)); 
+      CStdString bitRate(CServiceBroker::GetGUI()->GetInfoManager().GetMusicLabel(MUSICPLAYER_BITRATE)); 
       // TODO: This should be a static tag item
-      CStdString sampleRate(g_infoManager.GetMusicLabel(MUSICPLAYER_SAMPLERATE));
+      CStdString sampleRate(CServiceBroker::GetGUI()->GetInfoManager().GetMusicLabel(MUSICPLAYER_SAMPLERATE));
       if (!bitRate.IsEmpty())
         output+=closeTag+openTag+"Bitrate"+tag+":"+bitRate;  
       if (!sampleRate.IsEmpty())
         output+=closeTag+openTag+"Samplerate"+tag+":"+sampleRate;  
-      thumb=g_infoManager.GetImage(MUSICPLAYER_COVER, (DWORD)-1);
+      thumb=CServiceBroker::GetGUI()->GetInfoManager().GetImage(MUSICPLAYER_COVER, (DWORD)-1);
       copyThumb(thumb,thumbFn);
       output+=closeTag+openTag+"Thumb"+tag+":"+thumb;
     }
-    output+=closeTag+openTag+"Time:"+g_infoManager.GetCurrentPlayTime().c_str();
+    output+=closeTag+openTag+"Time:"+CServiceBroker::GetGUI()->GetInfoManager().GetCurrentPlayTime().c_str();
     output+=closeTag+openTag+"Duration:";
     if (g_application.m_pPlayer->IsPlayingVideo())
-      output += g_infoManager.GetDuration();
+      output += CServiceBroker::GetGUI()->GetInfoManager().GetDuration();
     else
-      output += g_infoManager.GetDuration();
+      output += CServiceBroker::GetGUI()->GetInfoManager().GetDuration();
     tmp.Format("%i",(int)g_application.GetPercentage());
     output+=closeTag+openTag+"Percentage:"+tmp;
     // file size
@@ -1582,7 +1582,7 @@ int CXbmcHttp::xbmcGetMusicLabel(int numParas, CStdString paras[])
   else
   {
     int item=(int)atoi(paras[0].c_str());
-    return SetResponse(openTag+g_infoManager.GetMusicLabel(item).c_str());
+    return SetResponse(openTag+CServiceBroker::GetGUI()->GetInfoManager().GetMusicLabel(item).c_str());
   }
 }
 
@@ -1593,7 +1593,7 @@ int CXbmcHttp::xbmcGetVideoLabel(int numParas, CStdString paras[])
   else
   {
     int item=(int)atoi(paras[0].c_str());
-    return SetResponse(openTag+g_infoManager.GetVideoLabel(item).c_str());
+    return SetResponse(openTag+CServiceBroker::GetGUI()->GetInfoManager().GetVideoLabel(item).c_str());
   }
 }
 
@@ -1621,7 +1621,7 @@ int CXbmcHttp::xbmcSeekPercentage(int numParas, CStdString paras[], bool relativ
       if (relative)
       {
         double newPos = g_application.GetTime() + percent * 0.01 * g_application.GetTotalTime();
-        if ((newPos>=0) && (newPos/1000<=g_infoManager.GetTotalPlayTime()))
+        if ((newPos>=0) && (newPos/1000<=CServiceBroker::GetGUI()->GetInfoManager().GetTotalPlayTime()))
         {
           g_application.SeekTime(newPos);
           return SetResponse(openTag+"OK");
@@ -2797,7 +2797,7 @@ int CXbmcHttp::xbmcGetSystemInfo(int numParas, CStdString paras[])
     int i;
     for (i=0; i<numParas; i++)
     {
-      CStdString strTemp = (CStdString) g_infoManager.GetLabel(atoi(paras[i]));
+      CStdString strTemp = (CStdString) CServiceBroker::GetGUI()->GetInfoManager().GetLabel(atoi(paras[i]));
       if (strTemp.IsEmpty())
         strTemp = "Error:No information retrieved for " + paras[i];
       strInfo += openTag + strTemp;
@@ -2816,7 +2816,7 @@ int CXbmcHttp::xbmcGetSystemInfoByName(int numParas, CStdString paras[])
     int i;
     for (i=0; i<numParas; i++)
     {
-      CStdString strTemp = (CStdString) g_infoManager.GetLabel(g_infoManager.TranslateString(paras[i]));
+      CStdString strTemp = (CStdString) CServiceBroker::GetGUI()->GetInfoManager().GetLabel(CServiceBroker::GetGUI()->GetInfoManager().TranslateString(paras[i]));
       if (strTemp.IsEmpty())
         strTemp = "Error:No information retrieved for " + paras[i];
       strInfo += openTag + strTemp;

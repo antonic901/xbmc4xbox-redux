@@ -1052,7 +1052,7 @@ void CGUIWindowMusicBase::OnInitWindow()
   // and accomodate any changes to the way some tags are processed
   if (m_musicdatabase.GetMusicNeedsTagScan() != 0)
   {
-    if (g_infoManager.GetLibraryBool(LIBRARY_HAS_MUSIC) && !g_application.IsMusicScanning())
+    if (CServiceBroker::GetGUI()->GetInfoManager().GetLibraryBool(LIBRARY_HAS_MUSIC) && !g_application.IsMusicScanning())
     {
       // rescan of music library required
       if (CGUIDialogYesNo::ShowAndGetInput(799, 38060))
@@ -1135,7 +1135,7 @@ void CGUIWindowMusicBase::OnRemoveSource(int iItem)
     database.Open();
     database.RemoveSongsFromPath(m_vecItems->Get(iItem)->GetPath(), songs, false);
     database.CleanupOrphanedItems();
-    g_infoManager.ResetLibraryBools();
+    CServiceBroker::GetGUI()->GetInfoManager().ResetLibraryBools();
     m_vecItems->RemoveDiscCache(GetID());
   }
 }

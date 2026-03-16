@@ -157,7 +157,7 @@ namespace VIDEO
         }
       }
 
-      g_infoManager.ResetLibraryBools();
+      CServiceBroker::GetGUI()->GetInfoManager().ResetLibraryBools();
       m_database.Close();
 
       tick = XbmcThreads::SystemClockMillis() - tick;

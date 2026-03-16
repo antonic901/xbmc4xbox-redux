@@ -215,12 +215,12 @@ CUPnPRenderer::UpdateState()
         avt->SetStateVariable("NumberOfTracks", "1");
         avt->SetStateVariable("CurrentTrack", "1");
 
-        buffer = g_infoManager.GetCurrentPlayTime(TIME_FORMAT_HH_MM_SS);
+        buffer = CServiceBroker::GetGUI()->GetInfoManager().GetCurrentPlayTime(TIME_FORMAT_HH_MM_SS);
         avt->SetStateVariable("RelativeTimePosition", buffer.c_str());
-        buffer = StringUtils::SecondsToTimeString((long)g_infoManager.GetTotalPlayTime(), TIME_FORMAT_HH_MM_SS);
+        buffer = StringUtils::SecondsToTimeString((long)CServiceBroker::GetGUI()->GetInfoManager().GetTotalPlayTime(), TIME_FORMAT_HH_MM_SS);
         avt->SetStateVariable("AbsoluteTimePosition", buffer.c_str());
 
-        buffer = g_infoManager.GetDuration(TIME_FORMAT_HH_MM_SS);
+        buffer = CServiceBroker::GetGUI()->GetInfoManager().GetDuration(TIME_FORMAT_HH_MM_SS);
         if (buffer.length() > 0) {
           avt->SetStateVariable("CurrentTrackDuration", buffer.c_str());
           avt->SetStateVariable("CurrentMediaDuration", buffer.c_str());
@@ -264,7 +264,7 @@ CUPnPRenderer::GetMetadata(NPT_String& meta)
     PLT_MediaObject* object = BuildObject(item, file_path, false);
     if (object) {
         // fetch the path to the thumbnail
-        CStdString thumb = g_infoManager.GetImage(MUSICPLAYER_COVER, -1); //TODO: Only audio for now
+        CStdString thumb = CServiceBroker::GetGUI()->GetInfoManager().GetImage(MUSICPLAYER_COVER, -1); //TODO: Only audio for now
             
         NPT_String ip = g_application.getNetwork().m_networkinfo.ip;
 

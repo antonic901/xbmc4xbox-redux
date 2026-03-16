@@ -61,9 +61,4 @@ protected:
   typedef std::map<std::string, color_t>::const_iterator icColor;
 };
 
-/*!
- \ingroup textures
- \brief
- */
-extern CGUIColorManager g_colorManager;
 #endif

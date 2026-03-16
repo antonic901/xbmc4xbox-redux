@@ -174,7 +174,7 @@ void CMusicInfoScanner::Process()
 
       if (commit)
       {
-        g_infoManager.ResetLibraryBools();
+        CServiceBroker::GetGUI()->GetInfoManager().ResetLibraryBools();
 
         if (m_needsCleanup)
         {

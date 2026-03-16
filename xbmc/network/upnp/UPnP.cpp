@@ -51,8 +51,6 @@ using namespace std;
 using namespace UPNP;
 using namespace KODI::MESSAGING;
 
-extern CGUIInfoManager g_infoManager;
-
 NPT_SET_LOCAL_LOGGER("xbmc.upnp")
 
 #define UPNP_DEFAULT_MAX_RETURNED_ITEMS 200
@@ -422,7 +420,7 @@ CUPnPServer*
 CUPnP::CreateServer(int port /* = 0 */)
 {
     CUPnPServer* device =
-        new CUPnPServer(g_infoManager.GetLabel(SYSTEM_FRIENDLY_NAME).c_str(),
+        new CUPnPServer(CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FRIENDLY_NAME).c_str(),
                         CUPnPSettings::Get().GetServerUUID().length()?CUPnPSettings::Get().GetServerUUID().c_str():NULL,
                         port);
 
@@ -521,7 +519,7 @@ CUPnPRenderer*
 CUPnP::CreateRenderer(int port /* = 0 */)
 {
     CUPnPRenderer* device =
-        new CUPnPRenderer(g_infoManager.GetLabel(SYSTEM_FRIENDLY_NAME).c_str(),
+        new CUPnPRenderer(CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FRIENDLY_NAME).c_str(),
                           false,
                           (CUPnPSettings::Get().GetRendererUUID().length() ? CUPnPSettings::Get().GetRendererUUID().c_str() : NULL),
                           port);

@@ -9,13 +9,13 @@
 #include "GUIComponent.h"
 
 #include "GUIAudioManager.h"
-// #include "GUIColorManager.h"
-// #include "GUIInfoManager.h"
-// #include "GUILargeTextureManager.h"
+#include "GUIColorManager.h"
+#include "GUIInfoManager.h"
+#include "GUILargeTextureManager.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "ServiceBroker.h"
-// #include "TextureManager.h"
+#include "TextureManager.h"
 #include "URL.h"
 #include "dialogs/GUIDialogYesNo.h"
 
@@ -23,10 +23,10 @@
 
 CGUIComponent::CGUIComponent()
   : m_pWindowManager(boost::movelib::make_unique<CGUIWindowManager>()),
-    // m_pTextureManager(std::make_unique<CGUITextureManager>()),
-    // m_pLargeTextureManager(std::make_unique<CGUILargeTextureManager>()),
-    // m_guiInfoManager(std::make_unique<CGUIInfoManager>()),
-    // m_guiColorManager(std::make_unique<CGUIColorManager>()),
+    m_pTextureManager(boost::movelib::make_unique<CGUITextureManager>()),
+    m_pLargeTextureManager(boost::movelib::make_unique<CGUILargeTextureManager>()),
+    m_guiInfoManager(boost::movelib::make_unique<CGUIInfoManager>()),
+    m_guiColorManager(boost::movelib::make_unique<CGUIColorManager>()),
     m_guiAudioManager(boost::movelib::make_unique<CGUIAudioManager>())
 {
 }
@@ -39,7 +39,7 @@ CGUIComponent::~CGUIComponent()
 void CGUIComponent::Init()
 {
   m_pWindowManager->Initialize();
-  // m_guiInfoManager->Initialize();
+  m_guiInfoManager->Initialize();
 
   CServiceBroker::RegisterGUI(this);
 }
@@ -56,25 +56,25 @@ CGUIWindowManager& CGUIComponent::GetWindowManager()
   return *m_pWindowManager;
 }
 
-// CGUITextureManager& CGUIComponent::GetTextureManager()
-// {
-//   return *m_pTextureManager;
-// }
+CGUITextureManager& CGUIComponent::GetTextureManager()
+{
+  return *m_pTextureManager;
+}
 
-// CGUILargeTextureManager& CGUIComponent::GetLargeTextureManager()
-// {
-//   return *m_pLargeTextureManager;
-// }
+CGUILargeTextureManager& CGUIComponent::GetLargeTextureManager()
+{
+  return *m_pLargeTextureManager;
+}
 
-// CGUIInfoManager &CGUIComponent::GetInfoManager()
-// {
-//   return *m_guiInfoManager;
-// }
+CGUIInfoManager &CGUIComponent::GetInfoManager()
+{
+  return *m_guiInfoManager;
+}
 
-// CGUIColorManager &CGUIComponent::GetColorManager()
-// {
-//   return *m_guiColorManager;
-// }
+CGUIColorManager &CGUIComponent::GetColorManager()
+{
+  return *m_guiColorManager;
+}
 
 CGUIAudioManager &CGUIComponent::GetAudioManager()
 {

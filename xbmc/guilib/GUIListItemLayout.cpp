@@ -174,7 +174,7 @@ void CGUIListItemLayout::LoadLayout(TiXmlElement *layout, int context, bool focu
   layout->QueryFloatAttribute("height", &m_height);
   const char *condition = layout->Attribute("condition");
   if (condition)
-    m_condition = g_infoManager.Register(condition, context);
+    m_condition = CServiceBroker::GetGUI()->GetInfoManager().Register(condition, context);
   m_isPlaying.Parse("listitem.isplaying", context);
   TiXmlElement *child = layout->FirstChildElement("control");
   m_group.SetWidth(m_width);
