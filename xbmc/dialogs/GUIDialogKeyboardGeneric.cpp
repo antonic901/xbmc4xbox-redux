@@ -39,7 +39,9 @@
 #include "messaging/ApplicationMessenger.h"
 #include "utils/CharsetConverter.h"
 
-using namespace KODI::MESSAGING;
+using namespace KODI;
+using namespace KEYBOARD;
+using namespace MESSAGING;
 
 #define BUTTON_ID_OFFSET      100
 #define BUTTONS_PER_ROW        20
@@ -129,7 +131,7 @@ void CGUIDialogKeyboardGeneric::OnInitWindow()
   // fill in the keyboard layouts
   m_currentLayout = 0;
   m_layouts.clear();
-  const KeyboardLayouts& keyboardLayouts = CKeyboardLayoutManager::GetInstance().GetLayouts();
+  const KeyboardLayouts& keyboardLayouts = CServiceBroker::GetKeyboardLayoutManager()->GetLayouts();
   std::vector<CVariant> layoutNames = CSettings::GetInstance().GetList("locale.keyboardlayouts");
 
   for (std::vector<CVariant>::const_iterator layoutName = layoutNames.begin(); layoutName != layoutNames.end(); ++layoutName)

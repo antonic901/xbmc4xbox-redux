@@ -51,6 +51,14 @@ class CWinSystemBase;
 class CGUIComponent;
 class XBPython;
 
+namespace KODI
+{
+namespace KEYBOARD
+{
+class CKeyboardLayoutManager;
+} // namespace KEYBOARD
+} // namespace KODI
+
 class CServiceBroker
 {
 public:
@@ -73,10 +81,16 @@ public:
   static void UnregisterAppMessenger();
   static boost::shared_ptr<KODI::MESSAGING::CApplicationMessenger> GetAppMessenger();
 
+  static void RegisterKeyboardLayoutManager(
+      const boost::shared_ptr<KODI::KEYBOARD::CKeyboardLayoutManager>& keyboardLayoutManager);
+  static void UnregisterKeyboardLayoutManager();
+  static boost::shared_ptr<KODI::KEYBOARD::CKeyboardLayoutManager> GetKeyboardLayoutManager();
+
 private:
   CGUIComponent* m_pGUI;
   CWinSystemBase* m_pWinSystem;
   boost::shared_ptr<KODI::MESSAGING::CApplicationMessenger> m_appMessenger;
+  boost::shared_ptr<KODI::KEYBOARD::CKeyboardLayoutManager> m_keyboardLayoutManager;
 };
 
 XBMC_GLOBAL_REF(CServiceBroker, g_serviceBroker);
