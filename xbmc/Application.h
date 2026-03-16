@@ -40,6 +40,11 @@ namespace ADDON
   typedef boost::shared_ptr<IAddon> AddonPtr;
 }
 
+namespace ANNOUNCEMENT
+{
+  class CAnnouncementManager;
+}
+
 #include "utils/Idle.h"
 #include "utils/DelayController.h"
 #include "cores/IPlayer.h"
@@ -350,6 +355,7 @@ protected:
 
   D3DGAMMARAMP m_OldRamp;
 
+  boost::shared_ptr<ANNOUNCEMENT::CAnnouncementManager> m_pAnnouncementManager;
   boost::movelib::unique_ptr<CGUIComponent> m_pGUI;
   boost::movelib::unique_ptr<CWinSystemBase> m_pWinSystem;
 

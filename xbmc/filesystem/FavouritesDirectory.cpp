@@ -21,6 +21,7 @@
 #include "FavouritesDirectory.h"
 #include "File.h"
 #include "Directory.h"
+#include "ServiceBroker.h"
 #include "Util.h"
 #include "interfaces/AnnouncementManager.h"
 #include "profiles/ProfilesManager.h"
@@ -146,7 +147,7 @@ bool CFavouritesDirectory::Save(const CFileItemList &items)
 
   bool bRet = doc.SaveFile(favourites);
   if (bRet)
-    ANNOUNCEMENT::CAnnouncementManager::GetInstance().Announce(ANNOUNCEMENT::GUI, "xbmc", "OnFavouritesUpdated");
+    CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::GUI, "xbmc", "OnFavouritesUpdated");
 
   return bRet;
 }
