@@ -298,7 +298,7 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
   {
 #ifndef _XBOX // this is probably USB storage eject before unplug
   case CONTEXT_BUTTON_EJECT_DRIVE:
-    return g_mediaManager.Eject(item->GetPath());
+    return CServiceBroker::GetMediaManager().Eject(item->GetPath());
 #endif
 
 #ifdef HAS_DVD_DRIVE
@@ -415,7 +415,7 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
 
       std::string strThumb;
       VECSOURCES shares;
-      g_mediaManager.GetLocalDrives(shares);
+      CServiceBroker::GetMediaManager().GetLocalDrives(shares);
       if (!CGUIDialogFileBrowser::ShowAndGetImage(items, shares, g_localizeStrings.Get(1030), strThumb))
         return false;
 

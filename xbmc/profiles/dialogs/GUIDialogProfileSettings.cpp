@@ -240,7 +240,7 @@ void CGUIDialogProfileSettings::OnSettingAction(const CSetting *setting)
   if (settingId == SETTING_PROFILE_IMAGE)
   {
     VECSOURCES shares;
-    g_mediaManager.GetLocalDrives(shares);
+    CServiceBroker::GetMediaManager().GetLocalDrives(shares);
 
     CFileItemList items;
     if (!m_thumb.empty())

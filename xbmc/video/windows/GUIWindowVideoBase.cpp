@@ -854,10 +854,10 @@ void CGUIWindowVideoBase::GetContextButtons(int itemNumber, CContextButtons &but
         {
           CFileItem item2;
           item2.SetPath(item->GetVideoInfoTag()->m_strFileNameAndPath);
-          CPlayerCoreFactory::Get().GetPlayers(item2, vecCores);
+          CServiceBroker::GetPlayerCoreFactory().GetPlayers(item2, vecCores);
         }
         else
-          CPlayerCoreFactory::Get().GetPlayers(*item, vecCores);
+          CServiceBroker::GetPlayerCoreFactory().GetPlayers(*item, vecCores);
         if (vecCores.size() > 1)
           buttons.Add(CONTEXT_BUTTON_PLAY_WITH, 15213);
 #else
@@ -865,10 +865,10 @@ void CGUIWindowVideoBase::GetContextButtons(int itemNumber, CContextButtons &but
         if (item->IsVideoDb())
         {
           CFileItem item2(item->GetVideoInfoTag()->m_strFileNameAndPath, false);
-          CPlayerCoreFactory::Get().GetPlayers(item2, players);
+          CServiceBroker::GetPlayerCoreFactory().GetPlayers(item2, players);
         }
         else
-          CPlayerCoreFactory::Get().GetPlayers(*item, players);
+          CServiceBroker::GetPlayerCoreFactory().GetPlayers(*item, players);
         if (players.size() > 1)
           buttons.Add(CONTEXT_BUTTON_PLAY_WITH, 15213);
 #endif
@@ -1002,22 +1002,22 @@ bool CGUIWindowVideoBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       if (item->IsVideoDb())
       {
         CFileItem item2(*item->GetVideoInfoTag());
-        CPlayerCoreFactory::Get().GetPlayers(item2, vecCores);
+        CServiceBroker::GetPlayerCoreFactory().GetPlayers(item2, vecCores);
       }
       else
-        CPlayerCoreFactory::Get().GetPlayers(*item, vecCores);
-      g_application.m_eForcedNextPlayer = CPlayerCoreFactory::Get().SelectPlayerDialog(vecCores);
+        CServiceBroker::GetPlayerCoreFactory().GetPlayers(*item, vecCores);
+      g_application.m_eForcedNextPlayer = CServiceBroker::GetPlayerCoreFactory().SelectPlayerDialog(vecCores);
       if (g_application.m_eForcedNextPlayer != EPC_NONE)
 #else
       std::vector<std::string> players;
       if (item->IsVideoDb())
       {
         CFileItem item2(*item->GetVideoInfoTag());
-        CPlayerCoreFactory::Get().GetPlayers(item2, players);
+        CServiceBroker::GetPlayerCoreFactory().GetPlayers(item2, players);
       }
       else
-        CPlayerCoreFactory::Get().GetPlayers(*item, players);
-      std:: string player = CPlayerCoreFactory::Get().SelectPlayerDialog(players);
+        CServiceBroker::GetPlayerCoreFactory().GetPlayers(*item, players);
+      std:: string player = CServiceBroker::GetPlayerCoreFactory().SelectPlayerDialog(players);
       if (!player.empty())
 #endif
       {

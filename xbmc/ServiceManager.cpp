@@ -19,12 +19,17 @@
  */
 
 #include "ServiceManager.h"
+
 #include "ContextMenuManager.h"
+#include "DatabaseManager.h"
 #include "PlayListPlayer.h"
 #include "addons/RepositoryUpdater.h"
-#include "utils/log.h"
+#include "cores/playercorefactory/PlayerCoreFactory.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "interfaces/python/XBPython.h"
+#include "storage/MediaManager.h"
+#include "utils/log.h"
+#include "utils/Weather.h"
 
 #include <boost/move/make_unique.hpp>
 
@@ -48,6 +53,9 @@ bool CServiceManager::Init1()
 
 bool CServiceManager::Init2()
 {
+  // Initialize the addon database (must be before the addon manager is init'd)
+  m_databaseManager = boost::movelib::make_unique<CDatabaseManager>();
+
   m_addonMgr.reset(new ADDON::CAddonMgr());
   if (!m_addonMgr->Init())
   {
@@ -59,6 +67,10 @@ bool CServiceManager::Init2()
 
   m_contextMenuManager.reset(new CContextMenuManager(*m_addonMgr.get()));
 
+  m_weatherManager = boost::movelib::make_unique<CWeather>();
+
+  m_mediaManager = boost::movelib::make_unique<CMediaManager>();
+
   return true;
 }
 
@@ -66,16 +78,23 @@ bool CServiceManager::Init3()
 {
   m_contextMenuManager->Init();
 
+  m_playerCoreFactory = boost::movelib::make_unique<CPlayerCoreFactory>();
+
   return true;
 }
 
 void CServiceManager::Deinit()
 {
+  m_weatherManager.reset();
+  m_playerCoreFactory.reset();
   m_contextMenuManager.reset();
   m_repositoryUpdater.reset();
   m_addonMgr.reset();
+  m_databaseManager.reset();
   CScriptInvocationManager::GetInstance().UnregisterLanguageInvocationHandler(m_XBPython.get());
   m_XBPython.reset();
+
+  m_mediaManager.reset();
 }
 
 ADDON::CAddonMgr &CServiceManager::GetAddonMgr()
@@ -101,6 +120,26 @@ CContextMenuManager& CServiceManager::GetContextMenuManager()
 PLAYLIST::CPlayListPlayer& CServiceManager::GetPlaylistPlayer()
 {
   return *m_playlistPlayer;
+}
+
+CWeather& CServiceManager::GetWeatherManager()
+{
+  return *m_weatherManager;
+}
+
+CPlayerCoreFactory& CServiceManager::GetPlayerCoreFactory()
+{
+  return *m_playerCoreFactory;
+}
+
+CDatabaseManager& CServiceManager::GetDatabaseManager()
+{
+  return *m_databaseManager;
+}
+
+CMediaManager& CServiceManager::GetMediaManager()
+{
+  return *m_mediaManager;
 }
 
 void CServiceManager::delete_contextMenuManager::operator()(CContextMenuManager *p) const

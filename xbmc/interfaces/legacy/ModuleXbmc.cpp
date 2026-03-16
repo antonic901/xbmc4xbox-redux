@@ -250,7 +250,7 @@ namespace XBMCAddon
 #ifdef _XBOX
       return CIoSupport::GetTrayState();
 #else
-      return g_mediaManager.GetDriveStatus();
+      return CServiceBroker::GetMediaManager().GetDriveStatus();
 #endif
     }
 

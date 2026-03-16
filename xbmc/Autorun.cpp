@@ -137,8 +137,8 @@ void CAutorun::RunMedia(bool bypassSettings, bool restart)
   int nSize = g_playlistPlayer.GetPlaylist( PLAYLIST_MUSIC ).size();
   int nAddedToPlaylist = 0;
 #ifndef _XBOX
-  auto_ptr<IDirectory> pDir ( CFactoryDirectory::Create( g_mediaManager.TranslateDevicePath("") ));
-  bool bPlaying = RunDisc(pDir.get(), g_mediaManager.TranslateDevicePath(""), nAddedToPlaylist, true, bypassSettings, restart);
+  auto_ptr<IDirectory> pDir ( CFactoryDirectory::Create( CServiceBroker::GetMediaManager().TranslateDevicePath("") ));
+  bool bPlaying = RunDisc(pDir.get(), CServiceBroker::GetMediaManager().TranslateDevicePath(""), nAddedToPlaylist, true, bypassSettings, restart);
 #else
   CCdInfo* pInfo = CDetectDVDMedia::GetCdInfo();
 

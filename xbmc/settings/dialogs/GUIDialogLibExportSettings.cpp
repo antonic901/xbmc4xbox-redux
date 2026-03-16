@@ -131,10 +131,10 @@ void CGUIDialogLibExportSettings::OnSettingAction(const CSetting *setting)
   if (settingId == "musiclibrary.exportfolder")
   {
     VECSOURCES shares;
-    g_mediaManager.GetLocalDrives(shares);
-    g_mediaManager.GetNetworkLocations(shares);
+    CServiceBroker::GetMediaManager().GetLocalDrives(shares);
+    CServiceBroker::GetMediaManager().GetNetworkLocations(shares);
 #ifndef _XBOX
-    g_mediaManager.GetRemovableDrives(shares);
+    CServiceBroker::GetMediaManager().GetRemovableDrives(shares);
 #endif
     std::string strDirectory = m_settings.m_strPath;
     if (!strDirectory.empty())

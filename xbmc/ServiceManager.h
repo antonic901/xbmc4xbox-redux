@@ -34,8 +34,13 @@ class CPlayListPlayer;
 }
 
 class CContextMenuManager;
-class CWinSystemBase;
 class XBPython;
+class CWinSystemBase;
+class CWeather;
+
+class CPlayerCoreFactory;
+class CDatabaseManager;
+class CMediaManager;
 
 class CServiceManager
 {
@@ -54,6 +59,14 @@ public:
 
   PLAYLIST::CPlayListPlayer& GetPlaylistPlayer();
 
+  CWeather& GetWeatherManager();
+
+  CPlayerCoreFactory& GetPlayerCoreFactory();
+
+  CDatabaseManager& GetDatabaseManager();
+
+  CMediaManager& GetMediaManager();
+
 protected:
   struct delete_contextMenuManager
   {
@@ -65,4 +78,8 @@ protected:
   boost::movelib::unique_ptr<XBPython> m_XBPython;
   boost::movelib::unique_ptr<CContextMenuManager, delete_contextMenuManager> m_contextMenuManager;
   boost::movelib::unique_ptr<PLAYLIST::CPlayListPlayer> m_playlistPlayer;
+  boost::movelib::unique_ptr<CWeather> m_weatherManager;
+  boost::movelib::unique_ptr<CPlayerCoreFactory> m_playerCoreFactory;
+  boost::movelib::unique_ptr<CDatabaseManager> m_databaseManager;
+  boost::movelib::unique_ptr<CMediaManager> m_mediaManager;
 };

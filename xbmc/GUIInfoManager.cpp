@@ -6062,19 +6062,19 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
 #endif
     break;
   case WEATHER_CONDITIONS:
-    strLabel = g_weatherManager.GetInfo(WEATHER_LABEL_CURRENT_COND);
+    strLabel = CServiceBroker::GetWeatherManager().GetInfo(WEATHER_LABEL_CURRENT_COND);
     StringUtils::Trim(strLabel);
     break;
   case WEATHER_TEMPERATURE:
     strLabel = StringUtils::Format("%s%s",
-                                   g_weatherManager.GetInfo(WEATHER_LABEL_CURRENT_TEMP).c_str(),
+                                   CServiceBroker::GetWeatherManager().GetInfo(WEATHER_LABEL_CURRENT_TEMP).c_str(),
                                    g_langInfo.GetTemperatureUnitString().c_str());
     break;
   case WEATHER_LOCATION:
-    strLabel = g_weatherManager.GetInfo(WEATHER_LABEL_LOCATION);
+    strLabel = CServiceBroker::GetWeatherManager().GetInfo(WEATHER_LABEL_LOCATION);
     break;
   case WEATHER_FANART_CODE:
-    strLabel = URIUtils::GetFileName(g_weatherManager.GetInfo(WEATHER_IMAGE_CURRENT_ICON));
+    strLabel = URIUtils::GetFileName(CServiceBroker::GetWeatherManager().GetInfo(WEATHER_IMAGE_CURRENT_ICON));
     URIUtils::RemoveExtension(strLabel);
     break;
   case WEATHER_PLUGIN:
@@ -7355,7 +7355,7 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
   else if (condition == SYSTEM_HAS_MODAL_DIALOG)
     bReturn = CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog();
   else if (condition == WEATHER_IS_FETCHED)
-    bReturn = g_weatherManager.IsFetched();
+    bReturn = CServiceBroker::GetWeatherManager().IsFetched();
   else if (condition == INSIGNIA_IS_FETCHED)
     bReturn = g_insigniaManager.IsFetched();
   else if (condition >= PVR_CONDITIONS_START && condition <= PVR_CONDITIONS_END)
@@ -8575,7 +8575,7 @@ std::string CGUIInfoManager::GetImage(int info, int contextWindow, std::string *
     return GetMultiInfoLabel(m_multiInfo[info - MULTI_INFO_START], contextWindow, fallback);
   }
   else if (info == WEATHER_CONDITIONS)
-    return g_weatherManager.GetInfo(WEATHER_IMAGE_CURRENT_ICON);
+    return CServiceBroker::GetWeatherManager().GetInfo(WEATHER_IMAGE_CURRENT_ICON);
   else if (info == SYSTEM_PROFILETHUMB)
   {
     std::string thumb = CProfilesManager::Get().GetCurrentProfile().getThumb();

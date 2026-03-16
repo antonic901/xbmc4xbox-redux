@@ -583,7 +583,7 @@ void CGUIWindowMusicBase::GetContextButtons(int itemNumber, CContextButtons &but
 #else
           std::vector<std::string> players;
 #endif
-          CPlayerCoreFactory::Get().GetPlayers(*item, players);
+          CServiceBroker::GetPlayerCoreFactory().GetPlayers(*item, players);
           if (players.size() >= 1)
             buttons.Add(CONTEXT_BUTTON_PLAY_WITH, 15213); // Play With...
         }
@@ -682,13 +682,13 @@ bool CGUIWindowMusicBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     {
 #ifdef _XBOX
       VECPLAYERCORES vecCores;  // base class?
-      CPlayerCoreFactory::Get().GetPlayers(*item, vecCores);
-      g_application.m_eForcedNextPlayer = CPlayerCoreFactory::Get().SelectPlayerDialog(vecCores);
+      CServiceBroker::GetPlayerCoreFactory().GetPlayers(*item, vecCores);
+      g_application.m_eForcedNextPlayer = CServiceBroker::GetPlayerCoreFactory().SelectPlayerDialog(vecCores);
       if( g_application.m_eForcedNextPlayer != EPC_NONE )
 #else
       std::vector<std::string> players;
-      CPlayerCoreFactory::Get().GetPlayers(*item, players);
-      std::string player = CPlayerCoreFactory::Get().SelectPlayerDialog(players);
+      CServiceBroker::GetPlayerCoreFactory().GetPlayers(*item, players);
+      std::string player = CServiceBroker::GetPlayerCoreFactory().SelectPlayerDialog(players);
       if (!player.empty())
 #endif
         OnClick(itemNumber, ""/*player*/);

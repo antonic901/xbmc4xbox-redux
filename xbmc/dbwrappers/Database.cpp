@@ -19,6 +19,7 @@
  */
 
 #include "Database.h"
+#include "ServiceBroker.h"
 #include "settings/AdvancedSettings.h"
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/File.h"
@@ -363,7 +364,7 @@ bool CDatabase::Open(const DatabaseSettings &settings)
   }
 
   // check our database manager to see if this database can be opened
-  if (!CDatabaseManager::GetInstance().CanOpen(GetBaseDBName()))
+  if (!CServiceBroker::GetDatabaseManager().CanOpen(GetBaseDBName()))
     return false;
 
   DatabaseSettings dbSettings = settings;

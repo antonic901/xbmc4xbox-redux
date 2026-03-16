@@ -48,5 +48,3 @@ protected:
   std::vector<CNetworkLocation> m_locations;
 };
 
-extern class CMediaManager g_mediaManager;
-

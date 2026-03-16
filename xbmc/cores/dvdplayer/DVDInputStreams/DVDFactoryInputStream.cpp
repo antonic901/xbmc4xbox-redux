@@ -41,7 +41,7 @@ CDVDInputStream* CDVDFactoryInputStream::CreateInputStream(IDVDPlayer* pPlayer, 
 #ifdef _XBOX
   if (file.compare("\\Device\\Cdrom0") == 0)
 #else
-  if(file.compare(g_mediaManager.TranslateDevicePath("")) == 0)
+  if(file.compare(CServiceBroker::GetMediaManager().TranslateDevicePath("")) == 0)
 #endif
     return new CDVDInputStreamNavigator(pPlayer, fileitem);
   if (fileitem.IsDVDFile(false, true))
