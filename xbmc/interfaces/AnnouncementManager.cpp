@@ -44,11 +44,6 @@ CAnnouncementManager::~CAnnouncementManager()
   Deinitialize();
 }
 
-CAnnouncementManager& CAnnouncementManager::GetInstance()
-{
-  return CServiceBroker::GetAnnouncementManager();
-}
-
 void CAnnouncementManager::Start()
 {
   Create();

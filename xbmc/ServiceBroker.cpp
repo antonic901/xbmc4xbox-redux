@@ -26,14 +26,25 @@
 
 using namespace KODI;
 
+// announcement
+boost::shared_ptr<ANNOUNCEMENT::CAnnouncementManager> CServiceBroker::GetAnnouncementManager()
+{
+  return g_serviceBroker.m_pAnnouncementManager;
+}
+void CServiceBroker::RegisterAnnouncementManager(
+    boost::shared_ptr<ANNOUNCEMENT::CAnnouncementManager> port)
+{
+  g_serviceBroker.m_pAnnouncementManager = boost::move(port);
+}
+
+void CServiceBroker::UnregisterAnnouncementManager()
+{
+  g_serviceBroker.m_pAnnouncementManager.reset();
+}
+
 ADDON::CAddonMgr &CServiceBroker::GetAddonMgr()
 {
   return g_application.m_ServiceManager->GetAddonMgr();
-}
-
-ANNOUNCEMENT::CAnnouncementManager &CServiceBroker::GetAnnouncementManager()
-{
-  return g_application.m_ServiceManager->GetAnnouncementManager();
 }
 
 XBPython& CServiceBroker::GetXBPython()

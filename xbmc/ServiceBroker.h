@@ -62,8 +62,12 @@ class CKeyboardLayoutManager;
 class CServiceBroker
 {
 public:
+  static boost::shared_ptr<ANNOUNCEMENT::CAnnouncementManager> GetAnnouncementManager();
+  static void RegisterAnnouncementManager(
+      boost::shared_ptr<ANNOUNCEMENT::CAnnouncementManager> announcementManager);
+  static void UnregisterAnnouncementManager();
+
   static ADDON::CAddonMgr &GetAddonMgr();
-  static ANNOUNCEMENT::CAnnouncementManager &GetAnnouncementManager();
   static XBPython &GetXBPython();
   static CContextMenuManager& GetContextMenuManager();
   static PLAYLIST::CPlayListPlayer& GetPlaylistPlayer();
@@ -87,6 +91,7 @@ public:
   static boost::shared_ptr<KODI::KEYBOARD::CKeyboardLayoutManager> GetKeyboardLayoutManager();
 
 private:
+  boost::shared_ptr<ANNOUNCEMENT::CAnnouncementManager> m_pAnnouncementManager;
   CGUIComponent* m_pGUI;
   CWinSystemBase* m_pWinSystem;
   boost::shared_ptr<KODI::MESSAGING::CApplicationMessenger> m_appMessenger;

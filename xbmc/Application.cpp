@@ -703,6 +703,11 @@ extern "C" void __stdcall update_emu_environ();
 
 HRESULT CApplication::Create(HWND hWnd)
 {
+  // Announcement service
+  m_pAnnouncementManager = boost::make_shared<ANNOUNCEMENT::CAnnouncementManager>();
+  m_pAnnouncementManager->Start();
+  CServiceBroker::RegisterAnnouncementManager(m_pAnnouncementManager);
+
   const boost::shared_ptr<CApplicationMessenger> appMessenger = boost::make_shared<CApplicationMessenger>();
   CServiceBroker::RegisterAppMessenger(appMessenger);
 
@@ -5426,7 +5431,7 @@ void CApplication::SetVolume(long iValue, bool isPercentage /* = true */)
   /* TODO: add once DRC is available
   data["drc"] = (int)(((float)(m_dynamicRangeCompressionLevel - VOLUME_DRC_MINIMUM)) / (VOLUME_DRC_MAXIMUM - VOLUME_DRC_MINIMUM) * 100.0f + 0.5f);*/
   data["muted"] = m_muted;
-  CAnnouncementManager::GetInstance().Announce(Application, "xbmc", "OnVolumeChanged", data);
+  CServiceBroker::GetAnnouncementManager()->Announce(Application, "xbmc", "OnVolumeChanged", data);
 }
 
 void CApplication::SetHardwareVolume(long hardwareVolume)
