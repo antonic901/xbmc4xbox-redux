@@ -59,12 +59,12 @@ void CGUIKeyboardFactory::keyTypedCB(CGUIKeyboard *ref, const std::string &typed
       case FILTERING_SEARCH:
         message.SetParam1(GUI_MSG_SEARCH_UPDATE);
         message.SetStringParam(typedString);
-        CApplicationMessenger::Get().SendGUIMessage(message, CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow());
+        CServiceBroker::GetAppMessenger()->SendGUIMessage(message, CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow());
         break;
       case FILTERING_CURRENT:
         message.SetParam1(GUI_MSG_FILTER_ITEMS);
         message.SetStringParam(typedString);
-        CApplicationMessenger::Get().SendGUIMessage(message);
+        CServiceBroker::GetAppMessenger()->SendGUIMessage(message);
         break;
       case FILTERING_NONE:
         break;

@@ -400,7 +400,7 @@ void CSkinInfo::OnPreInstall()
 {
   bool skinLoaded = g_SkinInfo != NULL;
   if (IsInUse() && skinLoaded)
-    CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, "UnloadSkin");
+    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, "UnloadSkin");
 }
 
 void CSkinInfo::OnPostInstall(bool update, bool modal)
@@ -418,7 +418,7 @@ void CSkinInfo::OnPostInstall(bool update, bool modal)
       toast->Close(true);
     }
     if (CSettings::GetInstance().GetString("lookandfeel.skin") == ID())
-      CApplicationMessenger::Get().PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, "ReloadSkin");
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, "ReloadSkin");
     else
       CSettings::GetInstance().SetString("lookandfeel.skin", ID());
   }

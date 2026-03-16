@@ -55,7 +55,7 @@ static int LoadProfile(const std::vector<std::string>& params)
       && (CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE
         || g_passwordManager.IsProfileLockUnlocked(index,bCanceled,prompt)))
   {
-    CApplicationMessenger::Get().PostMsg(TMSG_LOADPROFILE, index);
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_LOADPROFILE, index);
   }
 
   return 0;

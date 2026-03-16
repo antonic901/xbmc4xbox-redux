@@ -291,9 +291,9 @@ NPT_Result
 CUPnPRenderer::OnNext(PLT_ActionReference& action)
 {
     if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_SLIDESHOW) {
-        CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTION, WINDOW_SLIDESHOW, -1, static_cast<void*>(new CAction(ACTION_NEXT_PICTURE)));
+        CServiceBroker::GetAppMessenger()->SendMsg(TMSG_GUI_ACTION, WINDOW_SLIDESHOW, -1, static_cast<void*>(new CAction(ACTION_NEXT_PICTURE)));
     } else {
-        CApplicationMessenger::Get().SendMsg(TMSG_PLAYLISTPLAYER_NEXT);
+        CServiceBroker::GetAppMessenger()->SendMsg(TMSG_PLAYLISTPLAYER_NEXT);
     }
     return NPT_SUCCESS;
 }
@@ -305,7 +305,7 @@ NPT_Result
 CUPnPRenderer::OnPause(PLT_ActionReference& action)
 {
     if (!g_application.m_pPlayer->IsPaused())
-        CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_PAUSE);
+        CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_PAUSE);
     return NPT_SUCCESS;
 }
 
@@ -316,7 +316,7 @@ NPT_Result
 CUPnPRenderer::OnPlay(PLT_ActionReference& action)
 {
     if (g_application.m_pPlayer->IsPaused()) {
-        CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_PAUSE);
+        CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_PAUSE);
     } else if (!g_application.m_pPlayer->IsPlaying()) {
         NPT_String uri, meta;
         PLT_Service* service;
@@ -337,7 +337,7 @@ CUPnPRenderer::OnPlay(PLT_ActionReference& action)
 NPT_Result
 CUPnPRenderer::OnPrevious(PLT_ActionReference& action)
 {
-    CApplicationMessenger::Get().SendMsg(TMSG_PLAYLISTPLAYER_PREV);
+    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_PLAYLISTPLAYER_PREV);
     return NPT_SUCCESS;
 }
 
@@ -347,7 +347,7 @@ CUPnPRenderer::OnPrevious(PLT_ActionReference& action)
 NPT_Result
 CUPnPRenderer::OnStop(PLT_ActionReference& action)
 {
-    CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_STOP);
+    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_STOP);
     return NPT_SUCCESS;
 }
 
@@ -438,21 +438,21 @@ CUPnPRenderer::PlayMedia(const char* uri, const char* meta, PLT_Action* action)
             bImageFile = true;
         }
         if (bImageFile)
-          CApplicationMessenger::Get().PostMsg(TMSG_PICTURE_SHOW, -1, -1, NULL, item.GetPath());
+          CServiceBroker::GetAppMessenger()->PostMsg(TMSG_PICTURE_SHOW, -1, -1, NULL, item.GetPath());
         else {
           CFileItemList *l = new CFileItemList; //don't delete,
           l->Add(boost::make_shared<CFileItem>(item));
-          CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
+          CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
         }
     } else {
         bImageFile = NPT_String(PLT_MediaObject::GetUPnPClass(uri)).StartsWith("object.item.imageItem", true);
 
         if (bImageFile)
-          CApplicationMessenger::Get().PostMsg(TMSG_PICTURE_SHOW, -1, -1, NULL, (const char*)uri);
+          CServiceBroker::GetAppMessenger()->PostMsg(TMSG_PICTURE_SHOW, -1, -1, NULL, (const char*)uri);
         else {
           CFileItemList *l = new CFileItemList; //don't delete,
           l->Add(boost::make_shared<CFileItem>((const char*)uri, false));
-          CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
+          CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
         }
     }
 

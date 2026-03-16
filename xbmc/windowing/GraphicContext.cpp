@@ -417,7 +417,7 @@ void CGraphicContext::SetVideoResolution(RESOLUTION res, BOOL NeedZ, bool forceC
   }
   else
   {
-    CApplicationMessenger::Get().SendMsg(TMSG_SETVIDEORESOLUTION, res, forceClear ? 1 : 0, NULL, NeedZ ? "true" : "false");
+    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_SETVIDEORESOLUTION, res, forceClear ? 1 : 0, NULL, NeedZ ? "true" : "false");
   }
 }
 

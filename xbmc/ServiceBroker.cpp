@@ -77,3 +77,19 @@ void CServiceBroker::UnregisterWinSystem()
 {
   g_serviceBroker.m_pWinSystem = nullptr;
 }
+
+void CServiceBroker::RegisterAppMessenger(
+    const boost::shared_ptr<KODI::MESSAGING::CApplicationMessenger>& appMessenger)
+{
+  g_serviceBroker.m_appMessenger = appMessenger;
+}
+
+void CServiceBroker::UnregisterAppMessenger()
+{
+  g_serviceBroker.m_appMessenger.reset();
+}
+
+boost::shared_ptr<KODI::MESSAGING::CApplicationMessenger> CServiceBroker::GetAppMessenger()
+{
+  return g_serviceBroker.m_appMessenger;
+}

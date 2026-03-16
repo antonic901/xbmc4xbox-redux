@@ -91,7 +91,7 @@ bool CXBoxRenderManager::Configure(unsigned int width, unsigned int height, unsi
     if( flags & CONF_FLAGS_FULLSCREEN )
     {
       lock.Leave();
-      CApplicationMessenger::Get().PostMsg(TMSG_SWITCHTOFULLSCREEN);
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SWITCHTOFULLSCREEN);
       lock.Enter();
     }
     m_pRenderer->Update(false);

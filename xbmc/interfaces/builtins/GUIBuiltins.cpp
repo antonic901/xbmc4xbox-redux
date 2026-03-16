@@ -54,7 +54,7 @@ static int Action(const std::vector<std::string>& params)
   if (CButtonTranslator::TranslateActionString(params[0].c_str(), actionID))
   {
     int windowID = params.size() == 2 ? CButtonTranslator::TranslateWindow(params[1]) : WINDOW_INVALID;
-    CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTION, windowID, -1, static_cast<void*>(new CAction(actionID)));
+    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_GUI_ACTION, windowID, -1, static_cast<void*>(new CAction(actionID)));
   }
 
   return 0;
@@ -335,7 +335,7 @@ static int Screenshot(const std::vector<std::string>& params)
  */
 static int SetLanguage(const std::vector<std::string>& params)
 {
-  CApplicationMessenger::Get().PostMsg(TMSG_SETLANGUAGE, -1, -1, nullptr, params[0]);
+  CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SETLANGUAGE, -1, -1, nullptr, params[0]);
 
   return 0;
 }
@@ -388,7 +388,7 @@ static int SetStereoMode(const std::vector<std::string>& params)
 {
   CAction action = CStereoscopicsManager::GetInstance().ConvertActionCommandToAction("SetStereoMode", params[0]);
   if (action.GetID() != ACTION_NONE)
-    CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1, static_cast<void*>(new CAction(action)));
+    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1, static_cast<void*>(new CAction(action)));
   else
   {
     CLog::Log(LOGERROR,"Builtin 'SetStereoMode' called with unknown parameter: %s", params[0].c_str());

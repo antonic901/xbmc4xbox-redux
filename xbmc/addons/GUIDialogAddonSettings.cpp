@@ -258,7 +258,7 @@ bool CGUIDialogAddonSettings::ShowVirtualKeyboard(int iControl)
           StringUtils::Replace(action, "$ID", m_addon->ID());
           if (option)
             bCloseDialog = (strcmpi(option, "close") == 0);
-          CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, action);
+          CServiceBroker::GetAppMessenger()->SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, action);
         }
         break;
       }
