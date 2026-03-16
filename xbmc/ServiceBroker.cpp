@@ -92,6 +92,21 @@ void CServiceBroker::UnregisterWinSystem()
   g_serviceBroker.m_pWinSystem = nullptr;
 }
 
+void CServiceBroker::RegisterJobManager(const boost::shared_ptr<CJobManager>& jobManager)
+{
+  g_serviceBroker.m_jobManager = jobManager;
+}
+
+void CServiceBroker::UnregisterJobManager()
+{
+  g_serviceBroker.m_jobManager.reset();
+}
+
+boost::shared_ptr<CJobManager> CServiceBroker::GetJobManager()
+{
+  return g_serviceBroker.m_jobManager;
+}
+
 void CServiceBroker::RegisterAppMessenger(
     const boost::shared_ptr<KODI::MESSAGING::CApplicationMessenger>& appMessenger)
 {

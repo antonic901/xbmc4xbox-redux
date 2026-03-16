@@ -777,7 +777,7 @@ void CAddonMgr::OnEventSubmit(const std::string& id, const CDateTime& time)
 void CAddonMgr::UpdateLastUsed(const std::string& id)
 {
   CDateTime time = CDateTime::GetCurrentDateTime();
-  CJobManager::GetInstance().Submit(boost::bind(&CAddonMgr::OnEventSubmit, this, id, time));
+  CServiceBroker::GetJobManager()->Submit(boost::bind(&CAddonMgr::OnEventSubmit, this, id, time));
 }
 
 static void ResolveDependencies(const std::string& addonId, std::vector<std::string>& needed, std::vector<std::string>& missing)

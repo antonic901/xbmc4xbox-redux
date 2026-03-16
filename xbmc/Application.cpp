@@ -703,6 +703,9 @@ extern "C" void __stdcall update_emu_environ();
 
 HRESULT CApplication::Create(HWND hWnd)
 {
+  // Register JobManager service
+  CServiceBroker::RegisterJobManager(boost::make_shared<CJobManager>());
+
   // Announcement service
   m_pAnnouncementManager = boost::make_shared<ANNOUNCEMENT::CAnnouncementManager>();
   m_pAnnouncementManager->Start();
@@ -1328,7 +1331,7 @@ HRESULT CApplication::Initialize()
   m_slowTimer.StartZero();
   m_updaterTimer.StartZero();
   if (CSettings::GetInstance().GetInt("updater.autoupdate") == AUTO_UPDATER_NOTIFY)
-    CJobManager::GetInstance().AddJob(new CUpdaterJob(true), NULL);
+    CServiceBroker::GetJobManager()->AddJob(new CUpdaterJob(true), NULL);
 
 #ifdef __APPLE__
   g_xbmcHelper.CaptureAllInput();
@@ -4063,7 +4066,7 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
      */
     if (item.IsVideo())
     {
-      CJobManager::GetInstance().PauseJobs();
+      CServiceBroker::GetJobManager()->PauseJobs();
     }
 
     // don't hold graphicscontext here since player
@@ -4344,7 +4347,7 @@ void CApplication::SaveFileState(bool bForeground /* = false */)
         *m_stackFileItemToUpdate,
         m_progressTrackingVideoResumeBookmark,
         m_progressTrackingPlayCountUpdate);
-    CJobManager::GetInstance().AddJob(job, NULL, CJob::PRIORITY_NORMAL);
+    CServiceBroker::GetJobManager()->AddJob(job, NULL, CJob::PRIORITY_NORMAL);
   }
 }
 
@@ -5187,7 +5190,7 @@ void CApplication::Process()
     if (CSettings::GetInstance().GetInt("updater.autoupdate") == AUTO_UPDATER_NOTIFY && 
         !CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool("Skin.HasSetting(updateavailable)"))
     {
-      CJobManager::GetInstance().AddJob(new CUpdaterJob(true), NULL);
+      CServiceBroker::GetJobManager()->AddJob(new CUpdaterJob(true), NULL);
     }
     m_updaterTimer.Reset();
   }
@@ -5208,11 +5211,11 @@ void CApplication::ProcessSlow()
   int currentWindow = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
   if (CurrentFileItem().IsVideo() || CurrentFileItem().IsPicture() || currentWindow == WINDOW_FULLSCREEN_VIDEO || currentWindow == WINDOW_SLIDESHOW)
   {
-    CJobManager::GetInstance().PauseJobs();
+    CServiceBroker::GetJobManager()->PauseJobs();
   }
   else
   {
-    CJobManager::GetInstance().UnPauseJobs();
+    CServiceBroker::GetJobManager()->UnPauseJobs();
   }
 
   // Store our file state for use on close()
@@ -6133,7 +6136,7 @@ void CApplication::OnSettingAction(const CSetting *setting)
   else if (settingId == "myprograms.trainerscan")
     CTrainer::ScanTrainers();
   else if (settingId == "updater.check")
-    CJobManager::GetInstance().AddJob(new CUpdaterJob(false, true), NULL, CJob::PRIORITY_HIGH);
+    CServiceBroker::GetJobManager()->AddJob(new CUpdaterJob(false, true), NULL, CJob::PRIORITY_HIGH);
 }
 
 bool CApplication::OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode)

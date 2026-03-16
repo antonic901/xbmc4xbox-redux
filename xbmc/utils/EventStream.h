@@ -83,7 +83,7 @@ public:
     std::vector<boost::shared_ptr<detail::ISubscription<Event> > >& subscriptions = this->m_subscriptions;
     boost::function<void()> task = boost::bind(&CEventSource::HandleEvent, this, subscriptions, event);
     lock.Leave();
-    CJobManager::GetInstance().Submit(boost::move(task));
+    CServiceBroker::GetJobManager()->Submit(boost::move(task));
   }
 
 private:

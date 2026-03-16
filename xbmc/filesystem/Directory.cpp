@@ -81,13 +81,13 @@ public:
   CGetDirectory(boost::shared_ptr<IDirectory>& imp, const CURL& dir, const CURL& listDir)
     : m_result(new CResult(dir, listDir))
   {
-    m_id = CJobManager::GetInstance().AddJob(new CGetJob(imp, m_result)
+    m_id = CServiceBroker::GetJobManager()->AddJob(new CGetJob(imp, m_result)
                                            , NULL
                                            , CJob::PRIORITY_HIGH);
   }
  ~CGetDirectory()
   {
-    CJobManager::GetInstance().CancelJob(m_id);
+    CServiceBroker::GetJobManager()->CancelJob(m_id);
   }
 
   CEvent& GetEvent()

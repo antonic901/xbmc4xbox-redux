@@ -188,7 +188,7 @@ namespace MUSIC_UTILS
   {
     // Asynchronously update that type of art in the database
     CSetArtJob *job = new CSetArtJob(pItem, strType, strArt);
-    CJobManager::GetInstance().AddJob(job, NULL);
+    CServiceBroker::GetJobManager()->AddJob(job, NULL);
   }
 
   bool FillArtTypesList(CFileItem& musicitem, CFileItemList& artlist)
@@ -321,6 +321,6 @@ namespace MUSIC_UTILS
       job = new CSetSongRatingJob(tag->GetDatabaseId(), userrating);
     else
       job = new CSetSongRatingJob(pItem->GetPath(), userrating);
-    CJobManager::GetInstance().AddJob(job, NULL);
+    CServiceBroker::GetJobManager()->AddJob(job, NULL);
   }
 }

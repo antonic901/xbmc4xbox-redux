@@ -19,6 +19,7 @@
  */
 
 #include "JobManager.h"
+#include "ServiceBroker.h"
 #include <algorithm>
 #include <functional>
 #include <stdexcept>
@@ -78,7 +79,7 @@ void CJobWorker::Process()
 
 void CJobQueue::CJobPointer::CancelJob()
 {
-  CJobManager::GetInstance().CancelJob(m_id);
+  CServiceBroker::GetJobManager()->CancelJob(m_id);
   m_id = 0;
 }
 
@@ -147,7 +148,7 @@ void CJobQueue::QueueNextJob()
   if (m_jobQueue.size() && m_processing.size() < m_jobsAtOnce)
   {
     CJobPointer &job = m_jobQueue.back();
-    job.m_id = CJobManager::GetInstance().AddJob(job.m_job, this, m_priority);
+    job.m_id = CServiceBroker::GetJobManager()->AddJob(job.m_job, this, m_priority);
     m_processing.push_back(job);
     m_jobQueue.pop_back();
   }
@@ -171,12 +172,6 @@ bool CJobQueue::QueueEmpty() const
 {
   CSingleLock lock(m_section);
   return m_jobQueue.empty();
-}
-
-CJobManager &CJobManager::GetInstance()
-{
-  static CJobManager sJobManager;
-  return sJobManager;
 }
 
 CJobManager::CJobManager()
