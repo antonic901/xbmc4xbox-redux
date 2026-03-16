@@ -1253,6 +1253,8 @@ HRESULT CApplication::Initialize()
   CServiceBroker::GetGUI()->GetWindowManager().CreateWindows();
   /* window id's 3000 - 3100 are reserved for python */
 
+  CServiceBroker::RegisterTextureCache(boost::make_shared<CTextureCache>());
+
   std::string defaultSkin = ((const CSettingString*)CSettings::GetInstance().GetSetting("lookandfeel.skin"))->GetDefault();
   if (!LoadSkin(CSettings::GetInstance().GetString("lookandfeel.skin")))
   {
@@ -1751,7 +1753,7 @@ bool CApplication::LoadSkin(const std::string& skinID)
   CServiceBroker::GetGUI()->GetWindowManager().AddMsgTarget(&g_fontManager);
   CServiceBroker::GetGUI()->GetWindowManager().SetCallback(*this);
   CServiceBroker::GetGUI()->GetWindowManager().Initialize();
-  CTextureCache::Get().Initialize();
+  CServiceBroker::GetTextureCache()->Initialize();
   CServiceBroker::GetGUI()->GetAudioManager().Enable(true);
   CServiceBroker::GetGUI()->GetAudioManager().Load();
 
@@ -1804,7 +1806,7 @@ void CApplication::UnloadSkin(bool forReload /* = false */)
   CServiceBroker::GetGUI()->GetAudioManager().Enable(false);
 
   CServiceBroker::GetGUI()->GetWindowManager().DeInitialize();
-  CTextureCache::Get().Deinitialize();
+  CServiceBroker::GetTextureCache()->Deinitialize();
 
   //These windows are not handled by the windowmanager (why not?) so we should unload them manually
   CGUIMessage msg(GUI_MSG_WINDOW_DEINIT, 0, 0);

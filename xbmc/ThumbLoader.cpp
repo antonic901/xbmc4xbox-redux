@@ -21,6 +21,7 @@
 #include "ThumbLoader.h"
 #include "filesystem/File.h"
 #include "FileItem.h"
+#include "ServiceBroker.h"
 #include "settings/Settings.h"
 #include "TextureCache.h"
 #include "Shortcut.h"
@@ -117,7 +118,7 @@ bool CProgramThumbLoader::FillThumb(CFileItem &item)
 
   if (!thumb.empty())
   {
-    CTextureCache::Get().BackgroundCacheImage(thumb);
+    CServiceBroker::GetTextureCache()->BackgroundCacheImage(thumb);
     item.SetArt("thumb", thumb);
   }
   return true;

@@ -32,12 +32,6 @@
 
 using namespace XFILE;
 
-CTextureCache &CTextureCache::Get()
-{
-  static CTextureCache s_cache;
-  return s_cache;
-}
-
 CTextureCache::CTextureCache() : CJobQueue(false, 1, CJob::PRIORITY_LOW_PAUSABLE)
 {
 }

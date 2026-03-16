@@ -55,6 +55,7 @@ class CPlayerCoreFactory;
 class CDatabaseManager;
 class CGUIComponent;
 class CMediaManager;
+class CTextureCache;
 class CJobManager;
 
 namespace KODI
@@ -91,6 +92,10 @@ public:
   static void UnregisterWinSystem();
   static CWinSystemBase* GetWinSystem();
 
+  static void RegisterTextureCache(const boost::shared_ptr<CTextureCache>& cache);
+  static void UnregisterTextureCache();
+  static boost::shared_ptr<CTextureCache> GetTextureCache();
+
   static void RegisterJobManager(const boost::shared_ptr<CJobManager>& jobManager);
   static void UnregisterJobManager();
   static boost::shared_ptr<CJobManager> GetJobManager();
@@ -109,6 +114,7 @@ private:
   boost::shared_ptr<ANNOUNCEMENT::CAnnouncementManager> m_pAnnouncementManager;
   CGUIComponent* m_pGUI;
   CWinSystemBase* m_pWinSystem;
+  boost::shared_ptr<CTextureCache> m_textureCache;
   boost::shared_ptr<CJobManager> m_jobManager;
   boost::shared_ptr<KODI::MESSAGING::CApplicationMessenger> m_appMessenger;
   boost::shared_ptr<KODI::KEYBOARD::CKeyboardLayoutManager> m_keyboardLayoutManager;

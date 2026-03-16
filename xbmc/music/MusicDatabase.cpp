@@ -6972,7 +6972,7 @@ void CMusicDatabase::ExportToXML(const CLibExportSettings& settings,  CGUIDialog
               std::string thumb = GetArtForItem(album.idAlbum, MediaTypeAlbum, "thumb");
               std::string imagePath = URIUtils::AddFileToFolder(strPath, "folder.jpg");
               if (!thumb.empty() && (settings.m_overwrite || !CFile::Exists(imagePath)))
-                CTextureCache::Get().Export(thumb, imagePath);
+                CServiceBroker::GetTextureCache()->Export(thumb, imagePath);
             }
             xmlDoc.Clear();
             TiXmlDeclaration decl("1.0", "UTF-8", "yes");
@@ -7088,9 +7088,9 @@ void CMusicDatabase::ExportToXML(const CLibExportSettings& settings,  CGUIDialog
                 std::string savedThumb = URIUtils::AddFileToFolder(strPath, "folder.jpg");
                 std::string savedFanart = URIUtils::AddFileToFolder(strPath, "fanart.jpg");
                 if (artwork.find("thumb") != artwork.end() && (settings.m_overwrite || !CFile::Exists(savedThumb)))
-                  CTextureCache::Get().Export(artwork["thumb"], savedThumb);
+                  CServiceBroker::GetTextureCache()->Export(artwork["thumb"], savedThumb);
                 if (artwork.find("fanart") != artwork.end() && (settings.m_overwrite || !CFile::Exists(savedFanart)))
-                  CTextureCache::Get().Export(artwork["fanart"], savedFanart);
+                  CServiceBroker::GetTextureCache()->Export(artwork["fanart"], savedFanart);
               }
             }
           }
