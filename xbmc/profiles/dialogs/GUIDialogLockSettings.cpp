@@ -26,6 +26,7 @@
 #include "dialogs/GUIDialogGamepad.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "guilib/GUIKeyboardFactory.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "settings/lib/Setting.h"
@@ -76,7 +77,7 @@ bool CGUIDialogLockSettings::ShowAndGetLock(LockType &lockMode, std::string &pas
 
 bool CGUIDialogLockSettings::ShowAndGetLock(CProfile::CLock &locks, int buttonLabel /* = 20091 */, bool conditional /* = false */, bool details /* = true */)
 {
-  CGUIDialogLockSettings *dialog = static_cast<CGUIDialogLockSettings*>(g_windowManager.GetWindow(WINDOW_DIALOG_LOCK_SETTINGS));
+  CGUIDialogLockSettings *dialog = static_cast<CGUIDialogLockSettings*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_LOCK_SETTINGS));
   if (dialog == NULL)
     return false;
 
@@ -96,7 +97,7 @@ bool CGUIDialogLockSettings::ShowAndGetLock(CProfile::CLock &locks, int buttonLa
 
 bool CGUIDialogLockSettings::ShowAndGetUserAndPassword(std::string &user, std::string &password, const std::string &url, bool *saveUserDetails)
 {
-  CGUIDialogLockSettings *dialog = static_cast<CGUIDialogLockSettings*>(g_windowManager.GetWindow(WINDOW_DIALOG_LOCK_SETTINGS));
+  CGUIDialogLockSettings *dialog = static_cast<CGUIDialogLockSettings*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_LOCK_SETTINGS));
   if (dialog == NULL)
     return false;
 

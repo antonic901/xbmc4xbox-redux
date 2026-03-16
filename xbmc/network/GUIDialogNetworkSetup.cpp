@@ -24,6 +24,7 @@
 
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "guilib/GUIEditControl.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "settings/windows/GUIControlSettings.h"
@@ -130,7 +131,7 @@ void CGUIDialogNetworkSetup::OnSettingAction(const CSetting *setting)
 // \return True if the network address is valid, false otherwise.
 bool CGUIDialogNetworkSetup::ShowAndGetNetworkAddress(std::string &path)
 {
-  CGUIDialogNetworkSetup *dialog = (CGUIDialogNetworkSetup *)g_windowManager.GetWindow(WINDOW_DIALOG_NETWORK_SETUP);
+  CGUIDialogNetworkSetup *dialog = (CGUIDialogNetworkSetup *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_NETWORK_SETUP);
   if (!dialog) return false;
   dialog->Initialize();
   dialog->SetPath(path);

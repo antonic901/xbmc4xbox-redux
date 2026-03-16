@@ -24,6 +24,7 @@
 
 #include "settings/lib/ISettingCallback.h"
 #include "threads/CriticalSection.h"
+#include "utils/StdString.h"
 
 // forward definitions
 class CAction;
@@ -83,5 +84,3 @@ private:
 
   CCriticalSection    m_cs;
 };
-
-extern CGUIAudioManager g_audioManager;

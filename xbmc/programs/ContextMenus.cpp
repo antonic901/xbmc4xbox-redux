@@ -17,6 +17,7 @@
 #include "dialogs/GUIDialogSelect.h"
 #include "filesystem/AddonsDirectory.h"
 #include "filesystem/File.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "programs/ProgramDatabase.h"
@@ -47,7 +48,7 @@ bool CProgramInfoBase::IsVisible(const CFileItem& item) const
 
 bool CProgramInfoBase::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
-  CGUIDialogProgramInfo *dialog = static_cast<CGUIDialogProgramInfo*>(g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_INFO));
+  CGUIDialogProgramInfo *dialog = static_cast<CGUIDialogProgramInfo*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRAM_INFO));
   dialog->SetProgram(item.get());
   dialog->Open();
   return true;
@@ -90,7 +91,7 @@ bool CScriptLaunch::Execute(const boost::shared_ptr<CFileItem>& item) const
   ADDON::VECADDONS addons;
   if (XFILE::CAddonsDirectory::GetScriptsAndPlugins("executable", addons) && addons.size())
   {
-    CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
+    CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_SELECT));
     if (dialog)
     {
       dialog->SetHeading(247);

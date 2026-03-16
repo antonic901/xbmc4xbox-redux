@@ -22,6 +22,7 @@
 #include "guilib/GUIProgressControl.h"
 #include "Application.h"
 #include "guiinfo/GUIInfoLabels.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "threads/SingleLock.h"

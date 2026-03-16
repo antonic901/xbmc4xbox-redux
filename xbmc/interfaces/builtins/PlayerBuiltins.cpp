@@ -23,6 +23,7 @@
 #include "Application.h"
 #include "FileItem.h"
 #include "filesystem/Directory.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "PartyModeManager.h"
@@ -289,7 +290,7 @@ static int PlayerControl(const std::vector<std::string>& params)
 
     // send message
     CGUIMessage msg(GUI_MSG_PLAYLISTPLAYER_RANDOM, 0, 0, iPlaylist, g_playlistPlayer.IsShuffled(iPlaylist));
-    g_windowManager.SendThreadMessage(msg);
+    CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
   }
   else if (StringUtils::StartsWithNoCase(params[0], "repeat"))
   {
@@ -335,7 +336,7 @@ static int PlayerControl(const std::vector<std::string>& params)
 
     // send messages so now playing window can get updated
     CGUIMessage msg(GUI_MSG_PLAYLISTPLAYER_REPEAT, 0, 0, iPlaylist, (int)state);
-    g_windowManager.SendThreadMessage(msg);
+    CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
   }
 #ifndef _XBOX
   else if (StringUtils::StartsWithNoCase(params[0], "resumelivetv"))
@@ -390,10 +391,10 @@ static int PlayMedia(const std::vector<std::string>& params)
     item.m_bIsFolder = true;
 
   // restore to previous window if needed
-  if( g_windowManager.GetActiveWindow() == WINDOW_SLIDESHOW ||
-      g_windowManager.GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO ||
-      g_windowManager.GetActiveWindow() == WINDOW_VISUALISATION )
-    g_windowManager.PreviousWindow();
+  if( CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_SLIDESHOW ||
+      CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO ||
+      CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_VISUALISATION )
+    CServiceBroker::GetGUI()->GetWindowManager().PreviousWindow();
 
   // reset screensaver
   g_application.ResetScreenSaver();

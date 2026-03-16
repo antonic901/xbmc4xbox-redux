@@ -1,4 +1,5 @@
 #include "FileUtils.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "guilib/GUIKeyboardFactory.h"
@@ -33,7 +34,7 @@ bool CFileUtils::DeleteItem(const CFileItemPtr &item, bool force)
   if (!item)
     return false;
 
-  CGUIDialogYesNo* pDialog = (CGUIDialogYesNo*)g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO);
+  CGUIDialogYesNo* pDialog = (CGUIDialogYesNo*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_YES_NO);
   if (!force && pDialog)
   {
     pDialog->SetHeading(122);

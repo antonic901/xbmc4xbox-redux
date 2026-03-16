@@ -33,7 +33,8 @@
 #include "video/dialogs/GUIDialogVideoOSD.h"
 #include "GUIFontManager.h"
 #include "GUITextLayout.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIWindowManager.h"
 #include "video/dialogs/GUIDialogFullScreenInfo.h"
 #include "video/dialogs/GUIDialogAudioSubtitleSettings.h"
 #include "dialogs/GUIDialogNumeric.h"
@@ -165,7 +166,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
     {
       // switch back to the menu
       OutputDebugString("Switching to GUI\n");
-      g_windowManager.PreviousWindow();
+      CServiceBroker::GetGUI()->GetWindowManager().PreviousWindow();
       OutputDebugString("Now in GUI\n");
       return true;
     }
@@ -226,7 +227,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
   
   case ACTION_SHOW_INFO:
     {
-      CGUIDialogFullScreenInfo* pDialog = (CGUIDialogFullScreenInfo*)g_windowManager.GetWindow(WINDOW_DIALOG_FULLSCREEN_INFO);
+      CGUIDialogFullScreenInfo* pDialog = (CGUIDialogFullScreenInfo*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_FULLSCREEN_INFO);
       if (pDialog)
       {
         pDialog->Open();
@@ -476,7 +477,7 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
       // stopped playing videos
       if (message.GetParam1() == WINDOW_INVALID && !g_application.m_pPlayer->IsPlayingVideo())
       { // why are we here if nothing is playing???
-        g_windowManager.PreviousWindow();
+        CServiceBroker::GetGUI()->GetWindowManager().PreviousWindow();
         return true;
       }
       m_bLastRender = false;
@@ -492,7 +493,7 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
         (CSettings::GetInstance().GetInt("harddisk.remoteplayspindown") || CSettings::GetInstance().GetInt("harddisk.spindowntime"))
       )
       {
-        g_audioManager.Enable(false);
+        CServiceBroker::GetGUI()->GetAudioManager().Enable(false);
       }
 
       // setup the brightness, contrast and resolution
@@ -540,7 +541,7 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
   case GUI_MSG_WINDOW_DEINIT:
     {
       // close all active modal dialogs
-      g_windowManager.CloseInternalModalDialogs(true);
+      CServiceBroker::GetGUI()->GetWindowManager().CloseInternalModalDialogs(true);
 
       CGUIWindow::OnMessage(message);
 
@@ -921,7 +922,7 @@ void CGUIWindowFullScreen::OnSliderChange(void *data, CGUISliderControl *slider)
 
 void CGUIWindowFullScreen::ToggleOSD()
 {
-  CGUIDialogVideoOSD *pOSD = (CGUIDialogVideoOSD *)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_OSD);
+  CGUIDialogVideoOSD *pOSD = (CGUIDialogVideoOSD *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_VIDEO_OSD);
   if (pOSD)
   {
     if (pOSD->IsDialogRunning())

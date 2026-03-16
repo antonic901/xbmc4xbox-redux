@@ -37,6 +37,7 @@
 #include "utils/MathUtils.h"
 #include "utils/XBMCTinyXML.h"
 #endif
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "guilib/Key.h"
@@ -122,7 +123,7 @@ bool CWeatherJob::DoWork()
 
     // and send a message that we're done
     CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_WEATHER_FETCHED);
-    g_windowManager.SendThreadMessage(msg);
+    CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
   }
   else
   if ((scriptId = CScriptInvocationManager::GetInstance().ExecuteAsync(argv[0], addon, argv)) >= 0)
@@ -138,7 +139,7 @@ bool CWeatherJob::DoWork()
 
     // and send a message that we're done
     CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_WEATHER_FETCHED);
-    g_windowManager.SendThreadMessage(msg);
+    CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
   }
   else
     CLog::Log(LOGERROR, "WEATHER: Weather download failed!");
@@ -319,7 +320,7 @@ bool CWeatherJob::FetchInternalWeather(const std::string& strLocationID, const s
     return false;
   }
 
-  CGUIWindow* window = g_windowManager.GetWindow(WINDOW_WEATHER);
+  CGUIWindow* window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_WEATHER);
   window->SetProperty("Current.Location", strLocation);
   window->SetProperty("Locations", maxLocations);
 
@@ -677,7 +678,7 @@ void CWeatherJob::SetFromProperties()
   if (m_localizedTokens.empty())
     LoadLocalizedToken();
 
-  CGUIWindow* window = g_windowManager.GetWindow(WINDOW_WEATHER);
+  CGUIWindow* window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_WEATHER);
   if (window)
   {
     CDateTime time = CDateTime::GetCurrentDateTime();
@@ -768,7 +769,7 @@ std::string CWeather::TranslateInfo(int info) const
  */
 std::string CWeather::GetLocation(int iLocation)
 {
-  CGUIWindow* window = g_windowManager.GetWindow(WINDOW_WEATHER);
+  CGUIWindow* window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_WEATHER);
   if (window)
   {
     std::string setting = StringUtils::Format("Location%i", iLocation);
@@ -834,7 +835,7 @@ void CWeather::OnSettingChanged(const CSetting *setting)
   if (settingId == "weather.addon")
   {
     // clear "WeatherProviderLogo" property that some weather addons set
-    CGUIWindow* window = g_windowManager.GetWindow(WINDOW_WEATHER);
+    CGUIWindow* window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_WEATHER);
     window->SetProperty("WeatherProviderLogo", "");
     Refresh();
   }

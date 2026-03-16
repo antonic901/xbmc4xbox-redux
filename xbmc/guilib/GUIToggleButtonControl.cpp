@@ -19,6 +19,7 @@
  */
 
 #include "GUIToggleButtonControl.h"
+#include "GUIComponent.h"
 #include "GUIWindowManager.h"
 #include "GUIDialog.h"
 #include "GUIInfoManager.h"

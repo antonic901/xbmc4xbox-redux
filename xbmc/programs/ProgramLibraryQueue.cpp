@@ -20,6 +20,7 @@
 
 #include "ProgramLibraryQueue.h"
 
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "threads/SingleLock.h"
@@ -83,7 +84,7 @@ void CProgramLibraryQueue::Refresh()
 {
   CUtil::DeleteProgramDatabaseDirectoryCache();
   CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE);
-  g_windowManager.SendThreadMessage(msg);
+  CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
 }
 
 void CProgramLibraryQueue::OnJobComplete(unsigned int jobID, bool success, CJob *job)

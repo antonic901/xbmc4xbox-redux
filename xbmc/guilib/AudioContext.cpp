@@ -20,6 +20,8 @@
 
 #include "include.h"
 #include "AudioContext.h"
+#include "ServiceBroker.h"
+#include "GUIComponent.h"
 #include "GUIAudioManager.h"
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
@@ -61,7 +63,7 @@ void CAudioContext::SetActiveDevice(int iDevice)
   if (iDevice==DEFAULT_DEVICE)
   {
     /* we just tell callbacks to init, it will setup audio */
-    g_audioManager.Initialize(iDevice);
+    CServiceBroker::GetGUI()->GetAudioManager().Initialize(iDevice);
     return;
   }
 
@@ -99,7 +101,7 @@ void CAudioContext::SetActiveDevice(int iDevice)
     }
   }
 #endif
-  g_audioManager.Initialize(m_iDevice);
+  CServiceBroker::GetGUI()->GetAudioManager().Initialize(m_iDevice);
 }
 
 // \brief Return the active device type (NONE, DEFAULT_DEVICE, DIRECTSOUND_DEVICE, AC97_DEVICE)
@@ -111,7 +113,7 @@ int CAudioContext::GetActiveDevice()
 // \brief Remove the current sound device, eg. to setup new speaker config
 void CAudioContext::RemoveActiveDevice()
 {
-  g_audioManager.DeInitialize(m_iDevice);
+  CServiceBroker::GetGUI()->GetAudioManager().DeInitialize(m_iDevice);
   m_iDevice=NONE;
 
 #ifdef HAS_AUDIO

@@ -10,6 +10,7 @@
 
 #include "dialogs/GUIDialogSelect.h"
 #include "filesystem/File.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "programs/ProgramDatabase.h"
 #include "programs/dialogs/GUIDialogProgramSettings.h"
@@ -114,7 +115,7 @@ bool CROMLauncher::Launch()
     emulator = emulators[0];
     if (emulators.Size() > 1)
     { // let the user to choose if there is more then one
-      CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
+      CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_SELECT));
       dialog->Reset();
       dialog->SetHeading(22080);
       dialog->SetItems(emulators);

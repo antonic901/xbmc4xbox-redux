@@ -22,6 +22,7 @@
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogOK.h"
 #include "messaging/ApplicationMessenger.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "utils/log.h"
 #include "utils/Variant.h"
@@ -65,7 +66,7 @@ void CVideoInfoDownloader::ShowErrorDialog(const ADDON::CScraperError &sce)
 {
   if (!sce.Title().empty())
   {
-    CGUIDialogOK *pdlg = (CGUIDialogOK *)g_windowManager.GetWindow(WINDOW_DIALOG_OK);
+    CGUIDialogOK *pdlg = (CGUIDialogOK *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_OK);
     pdlg->SetHeading(sce.Title());
     pdlg->SetLine(0, sce.Message());
     pdlg->Open();

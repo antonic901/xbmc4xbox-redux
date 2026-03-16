@@ -26,7 +26,8 @@
 #include "AudioContext.h"
 #include "GUIInfoManager.h"
 #include "music/tags/MusicInfoTag.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIWindowManager.h"
 #include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
@@ -549,8 +550,8 @@ bool CCdgParser::Start(CStdString strSongPath)
 
   /* make sure we have fullscreen viz */
   /* hmm won't this switch to fullscreen after each track?? */
-  if (g_windowManager.GetActiveWindow() != WINDOW_VISUALISATION)
-    g_windowManager.ActivateWindow(WINDOW_VISUALISATION);
+  if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() != WINDOW_VISUALISATION)
+    CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_VISUALISATION);
 
   // Karaoke patch (114097) ...
   if ( CSettings::GetInstance().GetBool("karaoke.voiceenabled") )

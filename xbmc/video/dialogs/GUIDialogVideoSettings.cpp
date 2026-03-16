@@ -27,6 +27,7 @@
 #include "cores/playercorefactory/PlayerCoreFactory.h"
 #endif
 #include "dialogs/GUIDialogYesNo.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/MediaSettings.h"
@@ -166,7 +167,7 @@ void CGUIDialogVideoSettings::OnSettingAction(const CSetting *setting)
     if (CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE  &&
         g_passwordManager.CheckSettingLevelLock(CSettings::GetInstance().GetSetting("videoscreen.guicalibration")->GetLevel()))
       return;
-    g_windowManager.ForceActivateWindow(WINDOW_SCREEN_CALIBRATION);
+    CServiceBroker::GetGUI()->GetWindowManager().ForceActivateWindow(WINDOW_SCREEN_CALIBRATION);
   }
   // TODO
   else if (settingId == SETTING_VIDEO_MAKE_DEFAULT)

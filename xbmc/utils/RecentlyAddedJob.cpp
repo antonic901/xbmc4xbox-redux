@@ -24,6 +24,7 @@
 #include "FileItem.h"
 #include "RecentlyAddedJob.h"
 #include "guilib/GUIWindow.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/Key.h"
 #include "music/MusicDatabase.h"
@@ -45,7 +46,7 @@ CRecentlyAddedJob::CRecentlyAddedJob(int flag)
 
 bool CRecentlyAddedJob::UpdateProgram()
 {
-  CGUIWindow* window = g_windowManager.GetWindow(WINDOW_HOME);
+  CGUIWindow* window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_HOME);
 
   if (window == nullptr)
     return false;
@@ -77,7 +78,7 @@ bool CRecentlyAddedJob::UpdateProgram()
 
 bool CRecentlyAddedJob::UpdateVideo()
 {
-  CGUIWindow* home = g_windowManager.GetWindow(WINDOW_HOME);
+  CGUIWindow* home = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_HOME);
 
   if ( home == nullptr )
     return false;
@@ -225,7 +226,7 @@ bool CRecentlyAddedJob::UpdateVideo()
 
 bool CRecentlyAddedJob::UpdateMusic()
 {
-  CGUIWindow* home = g_windowManager.GetWindow(WINDOW_HOME);
+  CGUIWindow* home = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_HOME);
 
   if ( home == nullptr )
     return false;
@@ -350,7 +351,7 @@ bool CRecentlyAddedJob::UpdateMusic()
 
 bool CRecentlyAddedJob::UpdateTotal()
 {
-  CGUIWindow* home = g_windowManager.GetWindow(WINDOW_HOME);
+  CGUIWindow* home = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_HOME);
 
   if ( home == nullptr )
     return false;

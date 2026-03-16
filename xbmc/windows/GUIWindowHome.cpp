@@ -26,6 +26,7 @@
 #include "utils/log.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/Variant.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "Application.h"
 #include "utils/StringUtils.h"
@@ -104,7 +105,7 @@ void CGUIWindowHome::Announce(AnnouncementFlag flag, const char *sender, const c
   }
 
   CGUIMessage reload(GUI_MSG_NOTIFY_ALL, GetID(), 0, GUI_MSG_REFRESH_THUMBS, ra_flag);
-  g_windowManager.SendThreadMessage(reload, GetID());
+  CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(reload, GetID());
 }
 
 void CGUIWindowHome::AddRecentlyAddedJobs(int flag)

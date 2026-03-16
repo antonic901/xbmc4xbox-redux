@@ -22,6 +22,7 @@
 #include "InputCodingTableBasePY.h"
 #include "utils/CharsetConverter.h"
 #include "guilib/GUIMessage.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 
 std::map<std::string, std::wstring> fillCodemap()
@@ -466,6 +467,6 @@ bool CInputCodingTableBasePY::GetWordListPage(const std::string& strCode, bool i
   }
   CGUIMessage msg(GUI_MSG_CODINGTABLE_LOOKUP_COMPLETED, 0, 0, 0);
   msg.SetStringParam(strCode);
-  g_windowManager.SendThreadMessage(msg, g_windowManager.GetActiveWindowID());
+  CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg, CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowID());
   return true;
 }

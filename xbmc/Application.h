@@ -31,6 +31,8 @@
 
 class CFileItem;
 class CFileItemList;
+class CGUIComponent;
+
 namespace ADDON
 {
   class CSkinInfo;
@@ -348,6 +350,7 @@ protected:
 
   D3DGAMMARAMP m_OldRamp;
 
+  boost::movelib::unique_ptr<CGUIComponent> m_pGUI;
   boost::movelib::unique_ptr<CWinSystemBase> m_pWinSystem;
 
   // timer information

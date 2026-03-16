@@ -37,6 +37,7 @@
 #include "guilib/GUIImage.h"
 #include "guilib/Key.h"
 #include "filesystem/Directory.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "messaging/ApplicationMessenger.h"
 #include "guilib/GUIKeyboardFactory.h"
@@ -210,7 +211,7 @@ bool CGUIDialogAddonSettings::ShowAndGetInput(const AddonPtr &addon, bool saveTo
   {
     // Create the dialog
     CGUIDialogAddonSettings* pDialog = NULL;
-    pDialog = (CGUIDialogAddonSettings*) g_windowManager.GetWindow(WINDOW_DIALOG_ADDON_SETTINGS);
+    pDialog = (CGUIDialogAddonSettings*) CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_ADDON_SETTINGS);
     if (!pDialog)
       return false;
 
@@ -308,7 +309,7 @@ bool CGUIDialogAddonSettings::ShowVirtualKeyboard(int iControl)
         }
         else if (type == "select")
         {
-          CGUIDialogSelect *pDlg = (CGUIDialogSelect*)g_windowManager.GetWindow(WINDOW_DIALOG_SELECT);
+          CGUIDialogSelect *pDlg = (CGUIDialogSelect*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_SELECT);
           if (pDlg)
           {
             pDlg->SetHeading(label);

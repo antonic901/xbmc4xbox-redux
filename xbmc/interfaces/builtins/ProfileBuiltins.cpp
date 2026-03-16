@@ -25,6 +25,7 @@
 #include "messaging/ApplicationMessenger.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "guilib/LocalizeStrings.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "GUIPassword.h"
 #include "GUIUserMessages.h"
@@ -68,7 +69,7 @@ static int LogOff(const std::vector<std::string>& params)
   // there was a commit from cptspiff here which was reverted
   // for keeping the behaviour from Eden in Frodo - see
   // git rev 9ee5f0047b
-  if (g_windowManager.GetActiveWindow() == WINDOW_LOGIN_SCREEN)
+  if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_LOGIN_SCREEN)
     return -1;
 
   g_application.StopPlaying();
@@ -88,7 +89,7 @@ static int LogOff(const std::vector<std::string>& params)
   g_passwordManager.bMasterUser = false;
 
   g_application.ResetScreenSaverWindow();
-  g_windowManager.ActivateWindow(WINDOW_LOGIN_SCREEN, std::vector<string>(), false);
+  CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_LOGIN_SCREEN, std::vector<string>(), false);
 
   if (!CNetworkServices::Get().StartEventServer()) // event server could be needed in some situations
     CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33102), g_localizeStrings.Get(33100));
@@ -116,7 +117,7 @@ static int MasterMode(const std::vector<std::string>& params)
 
   CUtil::DeleteVideoDatabaseDirectoryCache();
   CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE);
-  g_windowManager.SendMessage(msg);
+  CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
 
   return 0;
 }

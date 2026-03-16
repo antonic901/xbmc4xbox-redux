@@ -20,6 +20,7 @@
 
 #include "WeatherBuiltins.h"
 
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 
 /*! \brief Switch to a given weather location.
@@ -30,7 +31,7 @@ static int SetLocation(const std::vector<std::string>& params)
 {
   int loc = atoi(params[0].c_str());
   CGUIMessage msg(GUI_MSG_ITEM_SELECT, 0, 0, loc);
-  g_windowManager.SendMessage(msg, WINDOW_WEATHER);
+  CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg, WINDOW_WEATHER);
 
   return 0;
 }
@@ -45,7 +46,7 @@ static int SetLocation(const std::vector<std::string>& params)
 static int SwitchLocation(const std::vector<std::string>& params)
 {
   CGUIMessage msg(GUI_MSG_MOVE_OFFSET, 0, 0, Direction);
-  g_windowManager.SendMessage(msg, WINDOW_WEATHER);
+  CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg, WINDOW_WEATHER);
 
   return 0;
 }

@@ -24,6 +24,7 @@
 #include "music/dialogs/GUIDialogMusicOSD.h"
 #include "GUIUserMessages.h"
 #include "GUIInfoManager.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "input/ButtonTranslator.h"
 #include "guilib/Key.h"
@@ -79,13 +80,13 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
     break;
 
   case ACTION_SHOW_OSD:
-    g_windowManager.ActivateWindow(WINDOW_DIALOG_MUSIC_OSD);
+    CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_DIALOG_MUSIC_OSD);
     return true;
 
   case ACTION_SHOW_GUI:
     // save the settings
     CSettings::GetInstance().Save();
-    g_windowManager.PreviousWindow();
+    CServiceBroker::GetGUI()->GetWindowManager().PreviousWindow();
     return true;
     break;
 
@@ -166,7 +167,7 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
         CSettings::GetInstance().Save();
 
       // close all active modal dialogs
-      g_windowManager.CloseInternalModalDialogs(true);
+      CServiceBroker::GetGUI()->GetWindowManager().CloseInternalModalDialogs(true);
     }
     break;
   case GUI_MSG_WINDOW_INIT:
@@ -175,7 +176,7 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
       // stopped playing music
       if (message.GetParam1() == WINDOW_INVALID && !g_application.m_pPlayer->IsPlayingAudio())
       { // why are we here if nothing is playing???
-        g_windowManager.PreviousWindow();
+        CServiceBroker::GetGUI()->GetWindowManager().PreviousWindow();
         return true;
       }
 

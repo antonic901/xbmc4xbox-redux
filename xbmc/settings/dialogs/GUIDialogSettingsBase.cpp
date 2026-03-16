@@ -33,6 +33,7 @@
 #include "guilib/GUISettingsSliderControl.h"
 #include "guilib/GUISpinControlEx.h"
 #include "guilib/GUIToggleButtonControl.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/Key.h"
 #include "guilib/LocalizeStrings.h"
@@ -138,7 +139,7 @@ bool CGUIDialogSettingsBase::OnMessage(CGUIMessage &message)
       {
         m_delayedTimer.Stop();
         CGUIMessage message(GUI_MSG_UPDATE_ITEM, GetID(), m_delayedSetting->GetID(), 1); // param1 = 1 for "reset the control if it's invalid"
-        g_windowManager.SendThreadMessage(message, GetID());
+        CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(message, GetID());
       }
       // update the value of the previous setting (in case it was invalid)
       else if (m_iSetting >= CONTROL_SETTINGS_START_CONTROL && m_iSetting < (int)(CONTROL_SETTINGS_START_CONTROL + m_settingControls.size()))
@@ -147,7 +148,7 @@ bool CGUIDialogSettingsBase::OnMessage(CGUIMessage &message)
         if (control != NULL && control->GetSetting() != NULL && !control->IsValid())
         {
           CGUIMessage message(GUI_MSG_UPDATE_ITEM, GetID(), m_iSetting, 1); // param1 = 1 for "reset the control if it's invalid"
-          g_windowManager.SendThreadMessage(message, GetID());
+          CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(message, GetID());
         }
       }
 
@@ -820,7 +821,7 @@ void CGUIDialogSettingsBase::UpdateSettingControl(BaseSettingControlPtr pSetting
   // we send a thread message so that it's processed the following frame (some settings won't
   // like being changed during Render())
   CGUIMessage message(GUI_MSG_UPDATE_ITEM, GetID(), pSettingControl->GetID());
-  g_windowManager.SendThreadMessage(message, GetID());
+  CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(message, GetID());
 }
 
 void CGUIDialogSettingsBase::SetControlLabel(int controlId, const CVariant &label)

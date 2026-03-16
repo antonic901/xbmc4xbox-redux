@@ -19,6 +19,7 @@
  */
 
 #include "GUIEditControl.h"
+#include "GUIComponent.h"
 #include "GUIWindowManager.h"
 #include "utils/CharsetConverter.h"
 #include "utils/Variant.h"

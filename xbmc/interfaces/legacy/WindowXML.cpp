@@ -13,6 +13,7 @@
 #include "addons/Addon.h"
 #include "addons/Skin.h"
 #include "filesystem/File.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/TextureManager.h"
 #include "utils/StringUtils.h"
@@ -497,7 +498,7 @@ namespace XBMCAddon
     void WindowXMLDialog::OnDeinitWindow(int nextWindowID)
     {
       XBMC_TRACE;
-      g_windowManager.RemoveDialog(interceptor->GetID());
+      CServiceBroker::GetGUI()->GetWindowManager().RemoveDialog(interceptor->GetID());
       WindowXML::OnDeinitWindow(nextWindowID);
     }
 

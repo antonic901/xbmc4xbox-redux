@@ -28,6 +28,7 @@
 #include "dialogs/GUIDialogProgress.h"
 #include "programs/ProgramDatabase.h"
 #include "guilib/LocalizeStrings.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "settings/Settings.h"
 #include "utils/StringUtils.h"
@@ -694,7 +695,7 @@ void CTrainer::SetOptions(unsigned char* options)
 
 bool CTrainer::ScanTrainers()
 {
-  CGUIDialogProgress* progress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
+  CGUIDialogProgress* progress = (CGUIDialogProgress*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRESS);
   if (!progress)
     return false;
 

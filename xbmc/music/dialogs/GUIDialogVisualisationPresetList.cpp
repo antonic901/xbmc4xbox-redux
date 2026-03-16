@@ -20,6 +20,7 @@
 
 #include "GUIDialogVisualisationPresetList.h"
 #include "addons/Visualisation.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "FileItem.h"
@@ -80,7 +81,7 @@ void CGUIDialogVisualisationPresetList::SetVisualisation(CVisualisation* vis)
 void CGUIDialogVisualisationPresetList::OnInitWindow()
 {
   CGUIMessage msg(GUI_MSG_GET_VISUALISATION, 0, 0);
-  g_windowManager.SendMessage(msg);
+  CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
   if (msg.GetPointer())
     SetVisualisation(static_cast<CVisualisation*>(msg.GetPointer()));
   CGUIDialogSelect::OnInitWindow();

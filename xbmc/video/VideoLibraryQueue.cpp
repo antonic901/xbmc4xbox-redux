@@ -22,6 +22,7 @@
 
 #include <utility>
 
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "threads/SingleLock.h"
@@ -218,7 +219,7 @@ void CVideoLibraryQueue::Refresh()
 {
   CUtil::DeleteVideoDatabaseDirectoryCache();
   CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE);
-  g_windowManager.SendThreadMessage(msg);
+  CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
 }
 
 void CVideoLibraryQueue::OnJobComplete(unsigned int jobID, bool success, CJob *job)

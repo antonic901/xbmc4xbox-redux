@@ -11,6 +11,7 @@
 #include "dialogs/GUIDialogSelect.h"
 #include "FileItem.h"
 #include "filesystem/Directory.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "programs/ProgramDatabase.h"
@@ -338,7 +339,7 @@ void CGUIDialogProgramSettings::OnSettingAction(const CSetting *setting)
   const std::string &settingId = setting->GetId();
   if (settingId == SETTING_TRAINER_HACKS)
   {
-    CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect *>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
+    CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect *>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_SELECT));
     if (dialog)
     {
       dialog->Reset();
@@ -428,7 +429,7 @@ void CGUIDialogProgramSettings::InitializeSettings()
 
 void CGUIDialogProgramSettings::ShowForTitle(const CFileItemPtr pItem)
 {
-  CGUIDialogProgramSettings *dialog = static_cast<CGUIDialogProgramSettings *>(g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SETTINGS));
+  CGUIDialogProgramSettings *dialog = static_cast<CGUIDialogProgramSettings *>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRAM_SETTINGS));
   if (dialog == nullptr)
     return;
 

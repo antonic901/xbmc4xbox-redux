@@ -30,6 +30,7 @@
 #include "utils/URIUtils.h"
 #include "GUIPassword.h"
 #include "windows/GUIWindowLoginScreen.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "filesystem/Directory.h"
 #include "FileItem.h"
@@ -58,7 +59,7 @@ CGUIWindowSettingsProfile::~CGUIWindowSettingsProfile(void)
 int CGUIWindowSettingsProfile::GetSelectedItem()
 {
   CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), CONTROL_PROFILES);
-  g_windowManager.SendMessage(msg);
+  CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
 
   return msg.GetParam1();
 }
@@ -79,8 +80,8 @@ void CGUIWindowSettingsProfile::OnPopupMenu(int iItem)
   {
     unsigned iCtrlID = GetFocusedControlID();
     g_application.StopPlaying();
-    CGUIMessage msg2(GUI_MSG_ITEM_SELECTED, g_windowManager.GetActiveWindow(), iCtrlID);
-    g_windowManager.SendMessage(msg2);
+    CGUIMessage msg2(GUI_MSG_ITEM_SELECTED, CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow(), iCtrlID);
+    CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg2);
     g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
     CProfilesManager::Get().LoadMasterProfileForLogin();
     CGUIWindowLoginScreen::LoadProfile(iItem);
@@ -124,7 +125,7 @@ bool CGUIWindowSettingsProfile::OnMessage(CGUIMessage& message)
         )
         {
           CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), CONTROL_PROFILES);
-          g_windowManager.SendMessage(msg);
+          CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
           int iItem = msg.GetParam1();
           if (iAction == ACTION_CONTEXT_MENU || iAction == ACTION_MOUSE_RIGHT_CLICK)
           {
@@ -141,7 +142,7 @@ bool CGUIWindowSettingsProfile::OnMessage(CGUIMessage& message)
             {
               LoadList();
               CGUIMessage msg(GUI_MSG_ITEM_SELECT, GetID(), 2,iItem);
-              g_windowManager.SendMessage(msg);
+              CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
 
               return true;
             }
@@ -155,7 +156,7 @@ bool CGUIWindowSettingsProfile::OnMessage(CGUIMessage& message)
             {
               LoadList();
               CGUIMessage msg(GUI_MSG_ITEM_SELECT, GetID(), 2,iItem);
-              g_windowManager.SendMessage(msg);
+              CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
               return true;
             }
 
@@ -220,7 +221,7 @@ void CGUIWindowSettingsProfile::LoadList()
 void CGUIWindowSettingsProfile::ClearListItems()
 {
   CGUIMessage msg(GUI_MSG_LABEL_RESET, GetID(), CONTROL_PROFILES);
-  g_windowManager.SendMessage(msg);
+  CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
 
   m_listItems->Clear();
 }
@@ -233,7 +234,7 @@ void CGUIWindowSettingsProfile::OnInitWindow()
 
 bool CGUIWindowSettingsProfile::GetAutoLoginProfileChoice(int &iProfile)
 {
-  CGUIDialogSelect *dialog = (CGUIDialogSelect*)g_windowManager.GetWindow(WINDOW_DIALOG_SELECT);
+  CGUIDialogSelect *dialog = (CGUIDialogSelect*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_SELECT);
   if (!dialog) return false;
 
   // add items

@@ -24,6 +24,7 @@
 #include "utils/MathUtils.h"
 #include "utils/StringUtils.h"
 #include "guiinfo/GUIInfoLabels.h"
+#include "GUIComponent.h"
 #include "GUIWindowManager.h"
 
 static const SliderAction actions[] = {
@@ -308,7 +309,7 @@ void CGUISliderControl::SendClick()
     std::string action = StringUtils::Format(m_action->formatString, percent);
     CGUIMessage message(GUI_MSG_EXECUTE, m_controlID, m_parentID);
     message.SetStringParam(action);
-    g_windowManager.SendMessage(message);
+    CServiceBroker::GetGUI()->GetWindowManager().SendMessage(message);
   }
 }
 

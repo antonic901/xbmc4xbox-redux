@@ -34,6 +34,7 @@
 
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogProgress.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 
 #include <set>
@@ -78,7 +79,7 @@ public:
     if (shown)
     {
       // close progress dialog
-      CGUIDialogProgress* dlg = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
+      CGUIDialogProgress* dlg = (CGUIDialogProgress*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRESS);
       if (dlg)
         dlg->Close();
     }
@@ -92,7 +93,7 @@ public:
     if (shown || showTime.IsTimePast())
     {
       // grab the busy and show it
-      CGUIDialogProgress* dlg = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
+      CGUIDialogProgress* dlg = (CGUIDialogProgress*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRESS);
       if (dlg)
       {
         if (!shown)
@@ -166,7 +167,7 @@ bool CRarManager::CacheRarredFile(CStdString& strPathInCache, const CStdString& 
   int iRes = 0;
   if (iSize > EXTRACTION_WARN_SIZE)
   {
-    CGUIDialogYesNo* pDialog = (CGUIDialogYesNo*)g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO);
+    CGUIDialogYesNo* pDialog = (CGUIDialogYesNo*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_YES_NO);
     if (pDialog)
     {
       pDialog->SetHeading(120);

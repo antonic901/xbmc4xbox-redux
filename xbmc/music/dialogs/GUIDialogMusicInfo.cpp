@@ -27,6 +27,7 @@
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
 #include "filesystem/MusicDatabaseDirectory.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "GUIPassword.h"
@@ -73,7 +74,7 @@ public:
   // Fetch full album/artist information including art types list
   bool DoWork()
   {
-    CGUIDialogMusicInfo *dialog = static_cast<CGUIDialogMusicInfo*>(g_windowManager.
+    CGUIDialogMusicInfo *dialog = static_cast<CGUIDialogMusicInfo*>(CServiceBroker::GetGUI()->GetWindowManager().
 	  GetWindow(WINDOW_DIALOG_MUSIC_INFO));
     if (!dialog)
       return false;
@@ -215,7 +216,7 @@ public:
   // Refresh album/artist information including art types list
   bool DoWork()
   {
-    CGUIDialogMusicInfo *dialog = static_cast<CGUIDialogMusicInfo*>(g_windowManager.
+    CGUIDialogMusicInfo *dialog = static_cast<CGUIDialogMusicInfo*>(CServiceBroker::GetGUI()->GetWindowManager().
 	  GetWindow(WINDOW_DIALOG_MUSIC_INFO));
     if (!dialog)
       return false;
@@ -361,7 +362,7 @@ bool CGUIDialogMusicInfo::OnMessage(CGUIMessage& message)
         // The music lib window item is updated to but changes to the rating when it is the sort
         // do not show on screen until refresh() that fetches the list from scratch, sorts etc.
         CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_ITEM, 0, m_item);
-        g_windowManager.SendMessage(msg);
+        CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
       }
 
       CGUIMessage msg(GUI_MSG_LABEL_RESET, GetID(), CONTROL_LIST);
@@ -409,7 +410,7 @@ bool CGUIDialogMusicInfo::OnMessage(CGUIMessage& message)
         if (m_bArtistInfo && (ACTION_SELECT_ITEM == iAction || ACTION_MOUSE_LEFT_CLICK == iAction))
         {
           CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), iControl);
-          g_windowManager.SendMessage(msg);
+          CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
           int iItem = msg.GetParam1();
           if (iItem < 0 || iItem >= static_cast<int>(m_albumSongs->Size()))
             break;
@@ -590,7 +591,7 @@ void CGUIDialogMusicInfo::RefreshInfo()
     return;
   }
 
-  CGUIDialogProgress* dlgProgress = static_cast<CGUIDialogProgress*>(g_windowManager.
+  CGUIDialogProgress* dlgProgress = static_cast<CGUIDialogProgress*>(CServiceBroker::GetGUI()->GetWindowManager().
     GetWindow(WINDOW_DIALOG_PROGRESS));
   if (!dlgProgress)
     return;
@@ -971,7 +972,7 @@ void CGUIDialogMusicInfo::OnGetArt()
     // not update artist, album or fallback art for the currently playing song as it
     // is a different item with different ID and media type
     CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_ITEM, 0, m_item);
-    g_windowManager.SendMessage(msg);
+    CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
   }
 
   // Re-open the art type selection dialog as we come back from
@@ -1027,7 +1028,7 @@ void CGUIDialogMusicInfo::ShowFor(CFileItem* pItem)
       else
         pItem->GetMusicInfoTag()->SetDatabaseId(params.GetAlbumId(), MediaTypeAlbum);
     }
-    CGUIDialogMusicInfo *pDlgMusicInfo = static_cast<CGUIDialogMusicInfo*>(g_windowManager.
+    CGUIDialogMusicInfo *pDlgMusicInfo = static_cast<CGUIDialogMusicInfo*>(CServiceBroker::GetGUI()->GetWindowManager().
 	  GetWindow(WINDOW_DIALOG_MUSIC_INFO));
     if (pDlgMusicInfo)
     {
@@ -1037,7 +1038,7 @@ void CGUIDialogMusicInfo::ShowFor(CFileItem* pItem)
         if (pItem->GetMusicInfoTag()->GetType() == MediaTypeAlbum &&
           pDlgMusicInfo->HasUpdatedUserrating())
         {
-          CGUIWindowMusicBase *window = static_cast<CGUIWindowMusicBase*>(g_windowManager.GetWindow(WINDOW_MUSIC_NAV));
+          CGUIWindowMusicBase *window = static_cast<CGUIWindowMusicBase*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_MUSIC_NAV));
           if (window)
             window->RefreshContent("albums");
         }

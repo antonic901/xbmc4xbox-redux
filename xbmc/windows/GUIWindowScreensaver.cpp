@@ -24,7 +24,8 @@
 #include "Application.h"
 #include "GUIPassword.h"
 #include "settings/Settings.h"
-#include "GUIWindowManager.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "threads/SingleLock.h"
 

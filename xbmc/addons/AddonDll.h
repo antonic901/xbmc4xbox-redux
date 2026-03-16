@@ -27,6 +27,7 @@
 #include "AddonManager.h"
 #include "AddonStatusHandler.h"
 #include "addons/binary/interfaces/AddonInterfaces.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
 #include "utils/URIUtils.h"
@@ -214,7 +215,7 @@ bool CAddonDll<TheDll, TheStruct, TheProps>::LoadDll()
     delete m_pDll;
     m_pDll = NULL;
 
-    CGUIDialogOK* pDialog = (CGUIDialogOK*)g_windowManager.GetWindow(WINDOW_DIALOG_OK);
+    CGUIDialogOK* pDialog = (CGUIDialogOK*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_OK);
     if (pDialog)
     {
       std::string heading = StringUtils::Format("%s: %s", TranslateType(Type(), true).c_str(), Name().c_str());
@@ -277,7 +278,7 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::Create()
     { // Addon failed initialization
       CLog::Log(LOGERROR, "ADDON: Dll %s - Client returned bad status (%i) from Create and is not usable", Name().c_str(), status);
 
-      CGUIDialogOK* pDialog = (CGUIDialogOK*)g_windowManager.GetWindow(WINDOW_DIALOG_OK);
+      CGUIDialogOK* pDialog = (CGUIDialogOK*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_OK);
       if (pDialog)
       {
         std::string heading = StringUtils::Format("%s: %s", TranslateType(Type(), true).c_str(), Name().c_str());

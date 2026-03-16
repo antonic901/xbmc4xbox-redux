@@ -18,6 +18,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "GUIInfoManager.h"
 #include "guilib/GUIAudioManager.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
@@ -339,7 +340,7 @@ namespace XBMCAddon
 
       if (XFILE::CFile::Exists(filename))
       {
-        g_audioManager.PlayPythonSound(filename);
+        CServiceBroker::GetGUI()->GetAudioManager().PlayPythonSound(filename);
       }
     }
 
@@ -347,13 +348,13 @@ namespace XBMCAddon
     {
       XBMC_TRACE;
       DelayedCallGuard dg;
-      g_audioManager.Stop();
+      CServiceBroker::GetGUI()->GetAudioManager().Stop();
     }
 
     void enableNavSounds(bool yesNo)
     {
       XBMC_TRACE;
-      g_audioManager.Enable(yesNo);
+      CServiceBroker::GetGUI()->GetAudioManager().Enable(yesNo);
     }
 
     bool getCondVisibility(const char *condition)
@@ -366,8 +367,8 @@ namespace XBMCAddon
       {
         XBMCAddonUtils::GuiLock lock(nullptr, false);
 
-        int id = g_windowManager.GetTopMostModalDialogID();
-        if (id == WINDOW_INVALID) id = g_windowManager.GetActiveWindow();
+        int id = CServiceBroker::GetGUI()->GetWindowManager().GetTopMostModalDialogID();
+        if (id == WINDOW_INVALID) id = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
         ret = g_infoManager.EvaluateBool(condition,id);
       }
 

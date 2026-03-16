@@ -32,7 +32,8 @@
 #include "Util.h"
 #include "input/ButtonTranslator.h"
 #include "threads/SingleLock.h"
-#include "GUIAudioManager.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIAudioManager.h"
 #include "utils/log.h"
 
 #include <map>
@@ -332,7 +333,7 @@ bool CEventServer::ExecuteNextAction()
           int actionID;
           CButtonTranslator::TranslateActionString(actionEvent.actionName.c_str(), actionID);
           CAction action(actionID, 1.0f, 0.0f, actionEvent.actionName);
-          g_audioManager.PlayActionSound(action);
+          CServiceBroker::GetGUI()->GetAudioManager().PlayActionSound(action);
           g_application.OnAction(action);
         }
         break;

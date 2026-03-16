@@ -19,7 +19,10 @@
  */
 
 #include "GUIWindowStartup.h"
+#include "ServiceBroker.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/Key.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 
 CGUIWindowStartup::CGUIWindowStartup(void)
@@ -37,5 +40,5 @@ void CGUIWindowStartup::OnDeinitWindow(int nextWindowID)
 
   // let everyone know that the user interface is now ready for usage
   CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UI_READY);
-  g_windowManager.SendThreadMessage(msg);
+  CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
 }

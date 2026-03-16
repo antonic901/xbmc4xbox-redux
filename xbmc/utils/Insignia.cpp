@@ -25,6 +25,7 @@
 #include "guilib/GUIBaseContainer.h"
 #include "guilib/GUIStaticItem.h"
 #include "guilib/GUIListItem.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "listproviders/StaticProvider.h"
@@ -139,7 +140,7 @@ bool CInsigniaJob::DoWork()
 
   // send a message that we're done
   CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_INSIGNIA_FETCHED);
-  g_windowManager.SendThreadMessage(msg);
+  CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
 
   return true;
 }
@@ -151,7 +152,7 @@ const CInsigniaInfo &CInsigniaJob::GetInfo() const
 
 void CInsigniaJob::SetWindowProperties()
 {
-  CGUIWindowInsignia* window = (CGUIWindowInsignia*)g_windowManager.GetWindow(WINDOW_INSIGNIA);
+  CGUIWindowInsignia* window = (CGUIWindowInsignia*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_INSIGNIA);
   if (window)
   {
     CGUIBaseContainer* gamesContainer = window->GetGamesContainer();
