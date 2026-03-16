@@ -797,7 +797,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
                   g_playlistPlayer.SetCurrentPlaylist(iPlayList);
 
                   // play first item in playlist
-                  CApplicationMessenger::Get().PostMsg(TMSG_PLAYLISTPLAYER_PLAY);
+                  CServiceBroker::GetAppMessenger()->PostMsg(TMSG_PLAYLISTPLAYER_PLAY);
 
                   // set current file item
                   SetCurrentMediaItem(*playlist[0]);
@@ -807,17 +807,17 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
               {
                 // just play the file
                 SetCurrentMediaItem(*itm);
-                CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_STOP);
+                CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_STOP);
                 CFileItemList *l = new CFileItemList; //don't delete,
                 l->Add(boost::make_shared<CFileItem>(itm->GetPath(), false));
-                CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
+                CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
               }
             }
             else
             {
               if (GetNavigatorState() == WEB_NAV_PICTURES)
               {
-                CApplicationMessenger::Get().PostMsg(TMSG_PICTURE_SHOW, -1, -1, NULL, itm->GetPath());
+                CServiceBroker::GetAppMessenger()->PostMsg(TMSG_PICTURE_SHOW, -1, -1, NULL, itm->GetPath());
               }
             }
           }
@@ -837,12 +837,12 @@ int CXbmcWeb::xbmcPlayerPlay( int eid, webs_t wp, char_t *parameter)
   {
     CFileItemList *l = new CFileItemList; //don't delete,
     l->Add(boost::make_shared<CFileItem>(currentMediaItem->GetPath(), false));
-    CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
   }
   else
   {
     // we haven't played an item through the webinterface yet. Try playing the current playlist
-    CApplicationMessenger::Get().PostMsg(TMSG_PLAYLISTPLAYER_PLAY);
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_PLAYLISTPLAYER_PLAY);
   }
   return 0;
 }
@@ -858,7 +858,7 @@ int CXbmcWeb::xbmcPlayerNext(int eid, webs_t wp, char_t *parameter)
   // activate needed playlist
   g_playlistPlayer.SetCurrentPlaylist(currentPlayList);
 
-  CApplicationMessenger::Get().SendMsg(TMSG_PLAYLISTPLAYER_NEXT);
+  CServiceBroker::GetAppMessenger()->SendMsg(TMSG_PLAYLISTPLAYER_NEXT);
   return 0;
 }
 
@@ -873,7 +873,7 @@ int CXbmcWeb::xbmcPlayerPrevious(int eid, webs_t wp, char_t *parameter)
   // activate playlist
   g_playlistPlayer.SetCurrentPlaylist(currentPlayList);
 
-  CApplicationMessenger::Get().SendMsg(TMSG_PLAYLISTPLAYER_PREV);
+  CServiceBroker::GetAppMessenger()->SendMsg(TMSG_PLAYLISTPLAYER_PREV);
   return 0;
 }
 
@@ -888,11 +888,11 @@ int CXbmcWeb::xbmcSubtitles( int eid, webs_t wp, char_t *parameter)
 int CXbmcWeb::xbmcProcessCommand( int eid, webs_t wp, char_t *command, char_t *parameter)
 {
   if (!strcmp(command, "play"))								return xbmcPlayerPlay(eid, wp, parameter);
-  else if (!strcmp(command, "stop"))					CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_STOP);
-  else if (!strcmp(command, "pause"))					CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_PAUSE);
-  else if (!strcmp(command, "shutdown"))			CApplicationMessenger::Get().PostMsg(TMSG_SHUTDOWN);
-  else if (!strcmp(command, "restart"))				CApplicationMessenger::Get().PostMsg(TMSG_RESTART);
-  else if (!strcmp(command, "exit"))					CApplicationMessenger::Get().PostMsg(TMSG_QUIT);
+  else if (!strcmp(command, "stop"))					CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_STOP);
+  else if (!strcmp(command, "pause"))					CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_PAUSE);
+  else if (!strcmp(command, "shutdown"))			CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SHUTDOWN);
+  else if (!strcmp(command, "restart"))				CServiceBroker::GetAppMessenger()->PostMsg(TMSG_RESTART);
+  else if (!strcmp(command, "exit"))					CServiceBroker::GetAppMessenger()->PostMsg(TMSG_QUIT);
   else if (!strcmp(command, "show_time"))			return 0;
   else if (!strcmp(command, "remote"))				return xbmcRemoteControl(eid, wp, parameter);			// remote control functions
   else if (!strcmp(command, "navigate"))			return xbmcNavigate(eid, wp, parameter);	// Navigate to a particular interface

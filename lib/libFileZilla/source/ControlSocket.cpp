@@ -22,6 +22,7 @@
 #include "messaging/ApplicationMessenger.h"
 #include "stdafx.h"
 #include "ControlSocket.h"
+#include "ServiceBroker.h"
 #include "transfersocket.h"
 #include "ServerThread.h"
 #include "Options.h"
@@ -2212,7 +2213,7 @@ void CControlSocket::ParseCommand()
         else
         {
           // send using a threadmessage...
-          CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, fullcommand);
+          CServiceBroker::GetAppMessenger()->SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, fullcommand);
           Send(_T("200 Executed built in function."));
         }
 		    return;

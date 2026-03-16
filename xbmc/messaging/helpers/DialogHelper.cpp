@@ -19,9 +19,10 @@
 */
 
 #include "DialogHelper.h"
+
+#include "ServiceBroker.h"
 #include "messaging/ApplicationMessenger.h"
 
-#include <boost/move/move.hpp>
 #include <cassert>
 
 namespace KODI
@@ -45,7 +46,7 @@ DialogResponse ShowYesNoCustomDialog(CVariant heading, CVariant text, CVariant n
   options.customLabel = boost::move(customLabel);
   options.autoclose = autoCloseTimeout;
 
-  switch (CApplicationMessenger::Get().SendMsg(TMSG_GUI_DIALOG_YESNO, -1, -1, static_cast<void*>(&options)))
+  switch (CServiceBroker::GetAppMessenger()->SendMsg(TMSG_GUI_DIALOG_YESNO, -1, -1, static_cast<void*>(&options)))
   {
   case -1:
     return CANCELLED;
@@ -77,7 +78,7 @@ DialogResponse ShowYesNoDialogLines(CVariant heading, CVariant line0, CVariant l
   options.customLabel = "";
   options.autoclose = autoCloseTimeout;
 
-  switch (CApplicationMessenger::Get().SendMsg(TMSG_GUI_DIALOG_YESNO, -1, -1, static_cast<void*>(&options)))
+  switch (CServiceBroker::GetAppMessenger()->SendMsg(TMSG_GUI_DIALOG_YESNO, -1, -1, static_cast<void*>(&options)))
   {
   case -1:
     return CANCELLED;

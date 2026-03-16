@@ -54,7 +54,7 @@ bool CUpdaterJob::DoWork()
 
     bool updateAvailable = !strLastRevision.empty() && strLastRevision != strRevision;
     if (updateAvailable)
-      KODI::MESSAGING::CApplicationMessenger::Get().PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, "Skin.SetBool(updateavailable)");
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, "Skin.SetBool(updateavailable)");
 
     m_notify &= updateAvailable;
     m_install &= updateAvailable;
@@ -87,7 +87,7 @@ void CUpdaterJob::DoInstall(const std::string& strCurrentVersion, const std::str
     strcpy(data.reserved, StringUtils::Format("version=%s&revision=%s&channel=%s", strCurrentVersion.c_str(), strCurrentRevision.c_str(), strUpdateChannel.c_str()).c_str());
     data.executionType = 0;
 
-    KODI::MESSAGING::CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, "Skin.ToggleSetting(updateavailable)");
+    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, "Skin.ToggleSetting(updateavailable)");
     CUtil::RunXBE("Q:\\updater.xbe", NULL, VIDEO_NULL, COUNTRY_NULL, &data);
   }
 }

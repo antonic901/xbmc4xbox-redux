@@ -117,13 +117,13 @@
   There's two ways to send this message, a short and concise way and a more
   flexible way allowing more customization.
   Option 1:
-  CApplicationMessenger::Get().SendMsg(TMSG_GUI_DIALOG_YESNO, 123, 456);
+  CServiceBroker::GetAppMessenger()->SendMsg(TMSG_GUI_DIALOG_YESNO, 123, 456);
   123: This is the string id for the heading
   456: This is the string id for the text
   Option 2:
   \a HELPERS::DialogYesNoMessage options.
   Fill in options
-  CApplicationMessenger::Get().SendMsg(TMSG_GUI_DIALOG_YESNO, -1, -1, static_cast<void*>(&options));
+  CServiceBroker::GetAppMessenger()->SendMsg(TMSG_GUI_DIALOG_YESNO, -1, -1, static_cast<void*>(&options));
   \returns -1 for cancelled, 0 for No and 1 for Yes
   \sa HELPERS::DialogYesNoMessage
 */
@@ -167,11 +167,8 @@ class IMessageTarget;
 class CApplicationMessenger
 {
 public:
-  /*!
-   \brief The only way through which the global instance of the CApplicationMessenger should be accessed.
-   \return the global instance.
-   */
-  static CApplicationMessenger& Get();
+  CApplicationMessenger();
+  ~CApplicationMessenger();
 
   void Cleanup();
   // if a message has to be send to the gui, use MSG_TYPE_WINDOW instead
@@ -206,10 +203,8 @@ public:
 
 private:
   // private construction, and no assignements; use the provided singleton methods
-  CApplicationMessenger();
   CApplicationMessenger(const CApplicationMessenger&);
   CApplicationMessenger const& operator=(CApplicationMessenger const&);
-  ~CApplicationMessenger();
 
   int SendMsg(ThreadMessage& msg, bool wait);
   void ProcessMessage(ThreadMessage *pMsg);

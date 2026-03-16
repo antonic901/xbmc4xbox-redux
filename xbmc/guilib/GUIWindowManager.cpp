@@ -144,7 +144,7 @@ void CGUIWindowManager::Initialize()
 
   LoadNotOnDemandWindows();
 
-  CApplicationMessenger::Get().RegisterReceiver(this);
+  CServiceBroker::GetAppMessenger()->RegisterReceiver(this);
 }
 
 void CGUIWindowManager::CreateWindows()
@@ -636,7 +636,7 @@ void CGUIWindowManager::ActivateWindow(int iWindowID, const std::vector<std::str
   {
     // make sure graphics lock is not held
     CSingleExit leaveIt(CServiceBroker::GetWinSystem()->GetGfxContext());
-    CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTIVATE_WINDOW, iWindowID, swappingWindows ? 1 : 0, nullptr, "", params);
+    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_GUI_ACTIVATE_WINDOW, iWindowID, swappingWindows ? 1 : 0, nullptr, "", params);
   }
   else
   {

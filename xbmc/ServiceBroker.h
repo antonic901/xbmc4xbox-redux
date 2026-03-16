@@ -30,13 +30,21 @@ class CBinaryAddonCache;
 
 namespace ANNOUNCEMENT
 {
-  class CAnnouncementManager;
+class CAnnouncementManager;
 }
 
 namespace PLAYLIST
 {
-  class CPlayListPlayer;
+class CPlayListPlayer;
 }
+
+namespace KODI
+{
+namespace MESSAGING
+{
+class CApplicationMessenger;
+}
+} // namespace KODI
 
 class CContextMenuManager;
 class CWinSystemBase;
@@ -60,9 +68,15 @@ public:
   static void UnregisterWinSystem();
   static CWinSystemBase* GetWinSystem();
 
+  static void RegisterAppMessenger(
+      const boost::shared_ptr<KODI::MESSAGING::CApplicationMessenger>& appMessenger);
+  static void UnregisterAppMessenger();
+  static boost::shared_ptr<KODI::MESSAGING::CApplicationMessenger> GetAppMessenger();
+
 private:
   CGUIComponent* m_pGUI;
   CWinSystemBase* m_pWinSystem;
+  boost::shared_ptr<KODI::MESSAGING::CApplicationMessenger> m_appMessenger;
 };
 
 XBMC_GLOBAL_REF(CServiceBroker, g_serviceBroker);

@@ -146,7 +146,7 @@ CGUIInfoManager::~CGUIInfoManager(void)
 
 void CGUIInfoManager::Initialize()
 {
-  KODI::MESSAGING::CApplicationMessenger::Get().RegisterReceiver(this);
+  CServiceBroker::GetAppMessenger()->RegisterReceiver(this);
 }
 
 bool CGUIInfoManager::OnMessage(CGUIMessage &message)

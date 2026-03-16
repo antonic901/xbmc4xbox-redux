@@ -1434,7 +1434,7 @@ void CMPlayer::Process()
         {
           //We need to restart now as interlacing mode has changed
           bWaitingRestart = true;
-          CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_RESTART);
+          CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MEDIA_RESTART);
         }
       }
 
@@ -1890,7 +1890,7 @@ void CMPlayer::SetAudioStream(int iStream)
   CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream = mplayer_getAudioStreamInfo(iStream, NULL);
   options.SetAudioStream(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream);
   //we need to restart after here for change to take effect
-  CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_RESTART);
+  CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MEDIA_RESTART);
 }
 
 bool CMPlayer::CanSeek()
@@ -1919,7 +1919,7 @@ void CMPlayer::SeekTime(__int64 iTime)
     catch(...)
     {
       CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
-      CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_STOP);
+      CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_STOP);
     }
   }
   WaitOnCommand();
@@ -1943,7 +1943,7 @@ __int64 CMPlayer::GetTime()
     catch(...)
     {
       CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
-      CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_STOP);
+      CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_STOP);
     }
   }
 
@@ -1966,7 +1966,7 @@ int64_t CMPlayer::GetTotalTime()
     catch(...)
     {
       CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
-      CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_STOP);
+      CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_STOP);
     }
   }
 

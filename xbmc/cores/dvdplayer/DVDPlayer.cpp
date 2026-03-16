@@ -3561,7 +3561,7 @@ void CDVDPlayer::UpdateApplication(double timeout)
     if(pStream->UpdateItem(item))
     {
       g_application.CurrentFileItem() = item;
-      CApplicationMessenger::Get().PostMsg(TMSG_UPDATE_CURRENT_ITEM, 0, -1, static_cast<void*>(new CFileItem(item)));
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_UPDATE_CURRENT_ITEM, 0, -1, static_cast<void*>(new CFileItem(item)));
     }
   }
   m_UpdateApplication = CDVDClock::GetAbsoluteClock();

@@ -268,7 +268,7 @@ void CNetworkServices::OnSettingChanged(const CSetting *setting)
     if (HELPERS::ShowYesNoDialogText(14038, 14039) == YES)
     {
       CSettings::GetInstance().Save();
-      CApplicationMessenger::Get().PostMsg(TMSG_RESTARTAPP);
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_RESTARTAPP);
     }
   }
 }
@@ -387,7 +387,7 @@ bool CNetworkServices::StartWebserver()
     m_webserver->SetPassword(CSettings::GetInstance().GetString("services.webserverpassword").c_str());
   }
   if (m_webserver && m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
-    CApplicationMessenger::Get().HttpApi("broadcastlevel; StartUp;1");
+    CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; StartUp;1");
   return true;
 #endif // HAS_WEB_SERVER
   return false;

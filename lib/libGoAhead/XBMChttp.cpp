@@ -369,12 +369,12 @@ int CXbmcHttp::SetResponse(const CStdString &response)
   if (response.length()>=closeTag.length())
   {
     if ((response.Right(closeTag.length())!=closeTag) && closeFinalTag) 
-      return CApplicationMessenger::Get().SetResponse(response+closeTag);
+      return CServiceBroker::GetAppMessenger()->SetResponse(response+closeTag);
   }
   else 
     if (closeFinalTag)
-      return CApplicationMessenger::Get().SetResponse(response+closeTag);
-  return CApplicationMessenger::Get().SetResponse(response);
+      return CServiceBroker::GetAppMessenger()->SetResponse(response+closeTag);
+  return CServiceBroker::GetAppMessenger()->SetResponse(response);
 }
 
 int CXbmcHttp::displayDir(int numParas, CStdString paras[]) 
@@ -549,7 +549,7 @@ bool CXbmcHttp::LoadPlayList(CStdString strPath, int iPlaylist, bool clearList, 
     // just 1 song? then play it (no need to have a playlist of 1 song)
     CFileItemList *l = new CFileItemList; //don't delete,
     l->Add(boost::make_shared<CFileItem>(playlistItem->GetPath(), false));
-    CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
     return true;
   }
 
@@ -563,7 +563,7 @@ bool CXbmcHttp::LoadPlayList(CStdString strPath, int iPlaylist, bool clearList, 
     {
       g_playlistPlayer.SetCurrentPlaylist(iPlaylist);
       g_playlistPlayer.Reset();
-      CApplicationMessenger::Get().PostMsg(TMSG_PLAYLISTPLAYER_PLAY);
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_PLAYLISTPLAYER_PLAY);
       return true;
     } 
     else
@@ -1898,7 +1898,7 @@ int CXbmcHttp::xbmcPlayerPlayFile(int numParas, CStdString paras[])
   {
     CFileItemList *l = new CFileItemList; //don't delete,
     l->Add(boost::make_shared<CFileItem>(paras[0], false));
-    CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
     if(g_application.m_pPlayer->IsPlaying())
       return SetResponse(openTag+"OK");
   }
@@ -2178,7 +2178,7 @@ int CXbmcHttp::xbmcAction(int numParas, CStdString paras[], int theAction)
         pSlideShow->OnAction(CAction(ACTION_PAUSE));
     }
     else
-      CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_PAUSE);
+      CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_PAUSE);
     return SetResponse(openTag+"OK");
     break;
   case 2:
@@ -2189,7 +2189,7 @@ int CXbmcHttp::xbmcAction(int numParas, CStdString paras[], int theAction)
     }
     else
       //g_application.StopPlaying();
-      CApplicationMessenger::Get().SendMsg(TMSG_MEDIA_STOP);
+      CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_STOP);
     return SetResponse(openTag+"OK");
     break;
   case 3:
@@ -2560,7 +2560,7 @@ int CXbmcHttp::xbmcShowPicture(int numParas, CStdString paras[])
   {
     if (!playableFile(paras[0]))
       return SetResponse(openTag+"Error:Unable to open file");
-    CApplicationMessenger::Get().PostMsg(TMSG_PICTURE_SHOW, -1, -1, NULL, paras[0]);
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_PICTURE_SHOW, -1, -1, NULL, paras[0]);
     return SetResponse(openTag+"OK");
   }
 }
@@ -2585,7 +2585,7 @@ int CXbmcHttp::xbmcExecBuiltIn(int numParas, CStdString paras[])
     return SetResponse(openTag+"Error:Missing parameter");
   else
   {
-    CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, paras[0]);
+    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, paras[0]);
     return SetResponse(openTag+"OK");
   }
 }
@@ -3330,15 +3330,15 @@ CStdString CXbmcHttpShim::xbmcProcessCommand( int eid, webs_t wp, char_t *comman
   if (legalCmd)
   {
     if (paras!="")
-      CApplicationMessenger::Get().HttpApi(cmd+"; "+paras, true);
+      CServiceBroker::GetAppMessenger()->HttpApi(cmd+"; "+paras, true);
     else
-      CApplicationMessenger::Get().HttpApi(cmd, true);
+      CServiceBroker::GetAppMessenger()->HttpApi(cmd, true);
     //wait for response - max 20s
     Sleep(0);
-    response=CApplicationMessenger::Get().GetResponse();
+    response=CServiceBroker::GetAppMessenger()->GetResponse();
     while (response=="[No response yet]" && cnt++<200) 
     {
-      response=CApplicationMessenger::Get().GetResponse();
+      response=CServiceBroker::GetAppMessenger()->GetResponse();
       CLog::Log(LOGDEBUG, "XBMCHTTPShim: waiting %d", cnt);
       Sleep(100);
     }

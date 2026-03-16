@@ -116,7 +116,7 @@ void CAlarmClock::Stop(const CStdString& strName, bool bSilent /* false */)
   }
   else
   {
-    CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, iter->second.m_strCommand);
+    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, iter->second.m_strCommand);
     if (iter->second.m_loop)
     {
       iter->second.watch.Reset();

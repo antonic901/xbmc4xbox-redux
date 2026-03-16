@@ -147,7 +147,7 @@ void CGUIDialogProgramInfo::PlayTrailer()
     // Close the dialog.
     Close(true);
 
-    CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, 0, 0, static_cast<void*>(new CFileItem(item)));
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MEDIA_PLAY, 0, 0, static_cast<void*>(new CFileItem(item)));
   }
 }
 

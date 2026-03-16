@@ -121,25 +121,25 @@ LRESULT CXBMC_PC::MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
           }
 					break;
         case ID_RESOLUTION_PAL4X3:
-          CApplicationMessenger::Get().ExecBuiltIn("Resolution(PAL)");
+          CServiceBroker::GetAppMessenger()->ExecBuiltIn("Resolution(PAL)");
           break;
         case ID_RESOLUTION_PAL16X9:
-          CApplicationMessenger::Get().ExecBuiltIn("Resolution(PAL16x9)");
+          CServiceBroker::GetAppMessenger()->ExecBuiltIn("Resolution(PAL16x9)");
           break;
         case ID_RESOLUTION_NTSC4X3:
-          CApplicationMessenger::Get().ExecBuiltIn("Resolution(NTSC)");
+          CServiceBroker::GetAppMessenger()->ExecBuiltIn("Resolution(NTSC)");
           break;
         case ID_RESOLUTION_NTSC16X9:
-          CApplicationMessenger::Get().ExecBuiltIn("Resolution(NTSC16x9)");
+          CServiceBroker::GetAppMessenger()->ExecBuiltIn("Resolution(NTSC16x9)");
           break;
         case ID_RESOLUTION_720P:
-          CApplicationMessenger::Get().ExecBuiltIn("Resolution(720p)");
+          CServiceBroker::GetAppMessenger()->ExecBuiltIn("Resolution(720p)");
           break;
         case ID_RESOLUTION_1080I:
-          CApplicationMessenger::Get().ExecBuiltIn("Resolution(1080i)");
+          CServiceBroker::GetAppMessenger()->ExecBuiltIn("Resolution(1080i)");
           break;
         case ID_SKIN_RELOAD:
-          CApplicationMessenger::Get().ExecBuiltIn("ReloadSkin");
+          CServiceBroker::GetAppMessenger()->ExecBuiltIn("ReloadSkin");
           break;
         case ID_SKIN_ACTIVATEWINDOW:
           OnActivateWindow();
@@ -179,7 +179,7 @@ void CXBMC_PC::OnActivateWindow()
     {
       CStdString command;
       command.Format("ActivateWindow(%s)", window.c_str());
-      CApplicationMessenger::Get().ExecBuiltIn(command);
+      CServiceBroker::GetAppMessenger()->ExecBuiltIn(command);
     }
   }
   m_inDialog = false;
@@ -197,7 +197,7 @@ void CXBMC_PC::OnExecuteBuiltin()
     // now activate the window
     if (!command.IsEmpty())
     {
-      CApplicationMessenger::Get().ExecBuiltIn(command);
+      CServiceBroker::GetAppMessenger()->ExecBuiltIn(command);
     }
   }
   m_inDialog = false;

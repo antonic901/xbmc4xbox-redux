@@ -164,7 +164,7 @@ bool CGUIPassword::CheckStartUpLock()
   }
   else
   {
-    CApplicationMessenger::Get().PostMsg(TMSG_SHUTDOWN); // Turn off the box
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SHUTDOWN); // Turn off the box
     return false;
   }
 }
@@ -291,7 +291,7 @@ void CGUIPassword::UpdateMasterLockRetryCount(bool bResetCount)
         {
           // Shutdown enabled, tell the user we're shutting off
           CGUIDialogOK::ShowAndGetInput(12345, 12346, 12347, 0);
-          CApplicationMessenger::Get().PostMsg(TMSG_SHUTDOWN);
+          CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SHUTDOWN);
           return ;
         }
         // Tell the user they ran out of retry attempts

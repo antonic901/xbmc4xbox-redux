@@ -489,7 +489,7 @@ namespace XBMCAddon
       DelayedCallGuard dcguard(languageHook);
       popActiveWindowId();
 
-      CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTIVATE_WINDOW, iWindowId, 0);
+      CServiceBroker::GetAppMessenger()->SendMsg(TMSG_GUI_ACTIVATE_WINDOW, iWindowId, 0);
     }
 
     void Window::setFocus(Control* pControl)
@@ -564,7 +564,7 @@ namespace XBMCAddon
 
       CGUIMessage msg(GUI_MSG_REMOVE_CONTROL, 0, 0);
       msg.SetPointer(pControl->pGUIControl);
-      CApplicationMessenger::Get().SendGUIMessage(msg, iWindowId, wait);
+      CServiceBroker::GetAppMessenger()->SendGUIMessage(msg, iWindowId, wait);
 
       // initialize control to zero
       pControl->pGUIControl = NULL;
@@ -657,7 +657,7 @@ namespace XBMCAddon
 
       {
         DelayedCallGuard dcguard(languageHook);
-        CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTIVATE_WINDOW, iOldWindowId, 0);
+        CServiceBroker::GetAppMessenger()->SendMsg(TMSG_GUI_ACTIVATE_WINDOW, iOldWindowId, 0);
       }
 
       iOldWindowId = 0;
@@ -746,7 +746,7 @@ namespace XBMCAddon
       // This calls the CGUIWindow parent class to do the final add
       CGUIMessage msg(GUI_MSG_ADD_CONTROL, 0, 0);
       msg.SetPointer(pControl->pGUIControl);
-      CApplicationMessenger::Get().SendGUIMessage(msg, iWindowId, wait);
+      CServiceBroker::GetAppMessenger()->SendGUIMessage(msg, iWindowId, wait);
     }
 
     void Window::addControls(std::vector<Control*> pControls)

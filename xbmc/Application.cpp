@@ -577,7 +577,7 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
           dwState = m_network->UpdateState();
 
           if (HaveGamepad && AnyButtonDown())
-            CApplicationMessenger::Get().PostMsg(TMSG_RESTART);
+            CServiceBroker::GetAppMessenger()->PostMsg(TMSG_RESTART);
 
           Sleep(50);
         }
@@ -607,7 +607,7 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
             Sleep(50);
 
             if (HaveGamepad && AnyButtonDown())
-              CApplicationMessenger::Get().PostMsg(TMSG_RESTART);
+              CServiceBroker::GetAppMessenger()->PostMsg(TMSG_RESTART);
           }
         }
       }
@@ -702,6 +702,9 @@ extern "C" void __stdcall update_emu_environ();
 
 HRESULT CApplication::Create(HWND hWnd)
 {
+  const boost::shared_ptr<CApplicationMessenger> appMessenger = boost::make_shared<CApplicationMessenger>();
+  CServiceBroker::RegisterAppMessenger(appMessenger);
+
   m_ServiceManager.reset(new CServiceManager());
   if (!m_ServiceManager->Init1())
   {
@@ -740,8 +743,8 @@ HRESULT CApplication::Create(HWND hWnd)
 
   // here we register all global classes for the CApplicationMessenger, 
   // after that we can send messages to the corresponding modules
-  CApplicationMessenger::Get().RegisterReceiver(this);
-  CApplicationMessenger::Get().RegisterReceiver(&g_playlistPlayer);
+  CServiceBroker::GetAppMessenger()->RegisterReceiver(this);
+  CServiceBroker::GetAppMessenger()->RegisterReceiver(&g_playlistPlayer);
 
   // create our windowing - TODO: lot of DX related stuff could go there
   m_pWinSystem = CWinSystemXbox::CreateWinSystem();
@@ -1111,7 +1114,7 @@ HRESULT CApplication::Create(HWND hWnd)
         {
           // We do a hard reset to come back to default resolution and avoid infinite reboots
           CLog::Log(LOGINFO, "No infinite reboot loop...");
-          CApplicationMessenger::Get().PostMsg(TMSG_RESET);
+          CServiceBroker::GetAppMessenger()->PostMsg(TMSG_RESET);
         }
       }
     }
@@ -2205,7 +2208,7 @@ bool CApplication::OnAction(CAction &action)
   {
     CStdString tmp;
     tmp.Format("%i",action.GetID());
-    CApplicationMessenger::Get().HttpApi("broadcastlevel; OnAction:"+tmp+";2");
+    CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; OnAction:"+tmp+";2");
   }
 
   // special case for switching between GUI & fullscreen mode.
@@ -2266,7 +2269,7 @@ bool CApplication::OnAction(CAction &action)
     {
       if (XbmcThreads::SystemClockMillis() >= MarkTime + 3000)
       {
-        CApplicationMessenger::Get().PostMsg(TMSG_SHUTDOWN);
+        CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SHUTDOWN);
         return true;
       }
     }
@@ -2593,23 +2596,23 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
     switch (CSettings::GetInstance().GetInt("powermanagement.shutdownstate"))
     {
     case POWERSTATE_SHUTDOWN:
-      CApplicationMessenger::Get().PostMsg(TMSG_SHUTDOWN);
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SHUTDOWN);
       break;
 
     case POWERSTATE_SUSPEND:
-      CApplicationMessenger::Get().PostMsg(TMSG_SUSPEND);
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SUSPEND);
       break;
 
     case POWERSTATE_HIBERNATE:
-      CApplicationMessenger::Get().PostMsg(TMSG_HIBERNATE);
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_HIBERNATE);
       break;
 
     case POWERSTATE_QUIT:
-      CApplicationMessenger::Get().PostMsg(TMSG_QUIT);
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_QUIT);
       break;
 
     case POWERSTATE_MINIMIZE:
-      CApplicationMessenger::Get().PostMsg(TMSG_MINIMIZE);
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MINIMIZE);
       break;
 
     case TMSG_RENDERER_FLUSH:
@@ -3253,7 +3256,7 @@ void  CApplication::CheckForTitleChange()
         CStdString msg=m_pXbmcHttp->GetOpenTag()+"MovieTitle:"+tagVal->m_strTitle.c_str()+m_pXbmcHttp->GetCloseTag();
         if (m_prevMedia!=msg && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
         {
-          CApplicationMessenger::Get().HttpApi("broadcastlevel; MediaChanged:"+msg+";1");
+          CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; MediaChanged:"+msg+";1");
           m_prevMedia=msg;
         }
       }
@@ -3270,7 +3273,7 @@ void  CApplication::CheckForTitleChange()
           msg+=m_pXbmcHttp->GetOpenTag()+"AudioArtist:"+StringUtils::Join(tagVal->GetArtist(), g_advancedSettings.m_musicItemSeparator).c_str()+m_pXbmcHttp->GetCloseTag();
         if (m_prevMedia!=msg)
         {
-          CApplicationMessenger::Get().HttpApi("broadcastlevel; MediaChanged:"+msg+";1");
+          CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; MediaChanged:"+msg+";1");
           m_prevMedia=msg;
         }
       }
@@ -3568,7 +3571,7 @@ void CApplication::Stop(bool bLCDStop)
     if (m_pXbmcHttp)
     {
       if(CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
-        CApplicationMessenger::Get().HttpApi("broadcastlevel; ShutDown;1");
+        CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; ShutDown;1");
 
       m_pXbmcHttp->shuttingDown=true;
       //Sleep(100);
@@ -3607,7 +3610,7 @@ void CApplication::Stop(bool bLCDStop)
     m_pPlayer->ClosePlayer();
 
     //g_lcd->StopThread();
-    CApplicationMessenger::Get().Cleanup();
+    CServiceBroker::GetAppMessenger()->Cleanup();
 
     CLog::Log(LOGNOTICE, "clean cached files!");
     g_RarManager.ClearCache(true);
@@ -4155,7 +4158,7 @@ void CApplication::OnPlayBackEnded()
   g_pythonParser.OnPlayBackEnded();
   // Let's tell the outside world as well
   if (m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
-    CApplicationMessenger::Get().HttpApi("broadcastlevel; OnPlayBackEnded;1");
+    CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; OnPlayBackEnded;1");
 
   CLog::Log(LOGDEBUG, "%s - Playback has finished", __FUNCTION__);
 
@@ -4177,7 +4180,7 @@ void CApplication::OnPlayBackStarted()
 
   // Let's tell the outside world as well
   if (m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
-    CApplicationMessenger::Get().HttpApi("broadcastlevel; OnPlayBackStarted;1");
+    CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; OnPlayBackStarted;1");
 
   CLog::Log(LOGDEBUG, "%s - Playback has started", __FUNCTION__);
 
@@ -4197,7 +4200,7 @@ void CApplication::OnQueueNextItem()
 
   // Let's tell the outside world as well
   if (m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
-  CApplicationMessenger::Get().HttpApi("broadcastlevel; OnQueueNextItem;1");
+  CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; OnQueueNextItem;1");
 
   CLog::Log(LOGDEBUG, "Player has asked for the next item");
 
@@ -4219,7 +4222,7 @@ void CApplication::OnPlayBackStopped()
 
   // Let's tell the outside world as well
   if (m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
-    CApplicationMessenger::Get().HttpApi("broadcastlevel; OnPlayBackStopped;1");
+    CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; OnPlayBackStopped;1");
 
   CLog::Log(LOGDEBUG, "%s - Playback was stopped", __FUNCTION__);
 
@@ -4233,7 +4236,7 @@ void CApplication::OnPlayBackPaused()
 
   // Let's tell the outside world as well
   if (m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
-    CApplicationMessenger::Get().HttpApi("broadcastlevel; OnPlayBackPaused;1");
+    CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; OnPlayBackPaused;1");
 
   CLog::Log(LOGDEBUG, "%s - Playback was paused", __FUNCTION__);
 }
@@ -4244,7 +4247,7 @@ void CApplication::OnPlayBackResumed()
 
   // Let's tell the outside world as well
   if (m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
-    CApplicationMessenger::Get().HttpApi("broadcastlevel; OnPlayBackResumed;1");
+    CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; OnPlayBackResumed;1");
 
   CLog::Log(LOGDEBUG, "%s - Playback was resumed", __FUNCTION__);
 }
@@ -4258,7 +4261,7 @@ void CApplication::OnPlayBackSpeedChanged(int iSpeed)
   {
     CStdString tmp;
     tmp.Format("broadcastlevel; OnPlayBackSpeedChanged:%i;1",iSpeed);
-    CApplicationMessenger::Get().HttpApi(tmp);
+    CServiceBroker::GetAppMessenger()->HttpApi(tmp);
   }
 
   CLog::Log(LOGDEBUG, "%s - Playback speed changed", __FUNCTION__);
@@ -4273,7 +4276,7 @@ void CApplication::OnPlayBackSeek(int iTime, int seekOffset)
   {
     CStdString tmp;
     tmp.Format("broadcastlevel; OnPlayBackSeek:%i;1",iTime);
-    CApplicationMessenger::Get().HttpApi(tmp);
+    CServiceBroker::GetAppMessenger()->HttpApi(tmp);
   }
 
   CLog::Log(LOGDEBUG, "%s - Playback skip", __FUNCTION__);
@@ -4289,7 +4292,7 @@ void CApplication::OnPlayBackSeekChapter(int iChapter)
   {
     CStdString tmp;
     tmp.Format("broadcastlevel; OnPlayBackSkeekChapter:%i;1",iChapter);
-    CApplicationMessenger::Get().HttpApi(tmp);
+    CServiceBroker::GetAppMessenger()->HttpApi(tmp);
   }
 
   CLog::Log(LOGDEBUG, "%s - Playback skip", __FUNCTION__);
@@ -4614,7 +4617,7 @@ void CApplication::ActivateScreenSaver(bool forceType /*= false */)
       path = "special://profile/thumbnails/Video/Fanart";
     if (type == "1")
       path = "special://profile/thumbnails/Music/Fanart";
-    CApplicationMessenger::Get().PostMsg(TMSG_SLIDESHOW_SCREENSAVER, type != "2" ? 1 : 0, -1, NULL, path);
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SLIDESHOW_SCREENSAVER, type != "2" ? 1 : 0, -1, NULL, path);
     return;
   }
   else if (m_screenSaver->ID() == "screensaver.xbmc.builtin.dim")
@@ -4677,7 +4680,7 @@ void CApplication::CheckShutdown()
 
   if ( m_shutdownTimer.GetElapsedSeconds() > CSettings::GetInstance().GetInt("powermanagement.shutdowntime") * 60 )
   {
-    CApplicationMessenger::Get().PostMsg(TMSG_SHUTDOWN); // Turn off the box
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SHUTDOWN); // Turn off the box
   }
 #endif
 }
@@ -5113,7 +5116,7 @@ void CApplication::Process()
 
   // process messages which have to be send to the gui
   // (this can only be done after CServiceBroker::GetGUI()->GetWindowManager().Render())
-  CApplicationMessenger::Get().ProcessWindowMessages();
+  CServiceBroker::GetAppMessenger()->ProcessWindowMessages();
 
   if (m_loggingIn)
   {
@@ -5132,7 +5135,7 @@ void CApplication::Process()
   CScriptInvocationManager::GetInstance().Process();
 
   // process messages, even if a movie is playing
-  CApplicationMessenger::Get().ProcessMessages();
+  CServiceBroker::GetAppMessenger()->ProcessMessages();
 
   // check for memory unit changes
 #ifdef HAS_XBOX_HARDWARE
@@ -5539,7 +5542,7 @@ void CApplication::SeekTime( double dTime )
             item->m_lStartOffset = static_cast<long>((dTime - startOfNewFile) * 75.0);
             // don't just call "PlayFile" here, as we are quite likely called from the
             // player thread, so we won't be able to delete ourselves.
-            CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, 1, 0, static_cast<void*>(item));
+            CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MEDIA_PLAY, 1, 0, static_cast<void*>(item));
           }
           return;
         }
@@ -5976,7 +5979,7 @@ void CApplication::OnSettingChanged(const CSetting *setting)
     std::string builtin("ReloadSkin");
     if (settingId == "lookandfeel.skin" && !m_skinReverting)
       builtin += "(confirm)";
-    CApplicationMessenger::Get().PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, builtin);
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, builtin);
   }
   else if (settingId == "lookandfeel.skinzoom")
   {
