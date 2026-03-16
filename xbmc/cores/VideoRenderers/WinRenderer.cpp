@@ -80,7 +80,7 @@ CWinRenderer::~CWinRenderer()
 //********************************************************************************************************
 void CWinRenderer::DeleteOSDTextures(int index)
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
   if (m_pOSDYTexture[index])
     SAFE_RELEASE(m_pOSDYTexture[index]);
@@ -243,7 +243,7 @@ void CWinRenderer::DrawAlpha(int x0, int y0, int w, int h, unsigned char *src, u
   }
 
   // scale to fit screen
-  const CRect rv = g_graphicsContext.GetViewWindow();
+  const CRect rv = CServiceBroker::GetWinSystem()->GetGfxContext().GetViewWindow();
 
   // Vobsubs are defined to be 720 wide.
   // NOTE: This will not work nicely if we are allowing mplayer to render text based subs
@@ -284,7 +284,7 @@ void CWinRenderer::DrawAlpha(int x0, int y0, int w, int h, unsigned char *src, u
   //if new height is heigher than current osd-texture height, recreate the textures with new height.
   if (h > m_iOSDTextureHeight[iOSDBuffer])
   {
-    CSingleLock lock(g_graphicsContext);
+    CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
     DeleteOSDTextures(iOSDBuffer);
     m_iOSDTextureHeight[iOSDBuffer] = h;
@@ -337,7 +337,7 @@ void CWinRenderer::RenderOSD()
   if (!m_OSDWidth || !m_OSDHeight)
     return ;
 
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
   //copy alle static vars to local vars because they might change during this function by mplayer callbacks
   float osdWidth = m_OSDWidth;
@@ -352,8 +352,8 @@ void CWinRenderer::RenderOSD()
   Setup_Y8A8Render();
 
   // clip the output if we are not in FSV so that zoomed subs don't go all over the GUI
-  if ( !(g_graphicsContext.IsFullScreenVideo() || g_graphicsContext.IsCalibrating() ))
-    g_graphicsContext.ClipToViewWindow();
+  if ( !(CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo() || CServiceBroker::GetWinSystem()->GetGfxContext().IsCalibrating() ))
+    CServiceBroker::GetWinSystem()->GetGfxContext().ClipToViewWindow();
 
   struct CUSTOMVERTEX {
       FLOAT x, y, z;
@@ -396,11 +396,11 @@ void CWinRenderer::RenderOSD()
 //Get resolution based on current mode.
 RESOLUTION CWinRenderer::GetResolution()
 {
-  if (g_graphicsContext.IsFullScreenVideo() || g_graphicsContext.IsCalibrating())
+  if (CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo() || CServiceBroker::GetWinSystem()->GetGfxContext().IsCalibrating())
   {
     return m_iResolution;
   }
-  return g_graphicsContext.GetVideoResolution();
+  return CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
 }
 
 float CWinRenderer::GetAspectRatio()
@@ -481,7 +481,7 @@ void CWinRenderer::ManageTextures()
 
 void CWinRenderer::ManageDisplay()
 {
-  const CRect rv = g_graphicsContext.GetViewWindow();
+  const CRect rv = CServiceBroker::GetWinSystem()->GetGfxContext().GetViewWindow();
   float fScreenWidth = rv.Width();
   float fScreenHeight = rv.Height();
   float fOffsetX1 = rv.x1;
@@ -708,7 +708,7 @@ void CWinRenderer::Update(bool bPauseDrawing)
 {
   if (!m_bConfigured) return;
   
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   ManageDisplay();
   ManageTextures();
 }
@@ -717,7 +717,7 @@ void CWinRenderer::RenderUpdate(bool clear, DWORD flags, DWORD alpha)
 {
   if (!m_YUVTexture[m_iYV12RenderBuffer][0]) return ;
   
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
   ManageDisplay();
   ManageTextures();
@@ -828,7 +828,7 @@ unsigned int CWinRenderer::DrawSlice(unsigned char *src[], int stride[], int w, 
 
 unsigned int CWinRenderer::PreInit()
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   m_bConfigured = false;
   UnInit();
   m_iResolution = RES_PAL_4x3;
@@ -890,7 +890,7 @@ unsigned int CWinRenderer::PreInit()
 
 void CWinRenderer::UnInit()
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
   // YV12 textures, subtitle and osd stuff
   for (int i = 0; i < NUM_BUFFERS; ++i)
@@ -1028,7 +1028,7 @@ void CWinRenderer::AutoCrop(bool bCrop)
 
   if (bCrop)
   {
-    CSingleLock lock(g_graphicsContext);
+    CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
     // apply auto-crop filter - only luminance needed, and we run vertically down 'n'
     // runs down the image.
@@ -1111,13 +1111,13 @@ void CWinRenderer::AutoCrop(bool bCrop)
 
 void CWinRenderer::RenderLowMem(DWORD flags)
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
   int index = m_iYV12RenderBuffer;
   // set scissors if we are not in fullscreen video
-  if ( !(g_graphicsContext.IsFullScreenVideo() || g_graphicsContext.IsCalibrating() ))
+  if ( !(CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo() || CServiceBroker::GetWinSystem()->GetGfxContext().IsCalibrating() ))
   {
-    g_graphicsContext.ClipToViewWindow();
+    CServiceBroker::GetWinSystem()->GetGfxContext().ClipToViewWindow();
   }
 
   for (int i = 0; i < 3; ++i)
@@ -1200,7 +1200,7 @@ void CWinRenderer::RenderLowMem(DWORD flags)
 
 void CWinRenderer::CreateThumbnail(LPDIRECT3DSURFACE8 surface, unsigned int width, unsigned int height)
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
   LPDIRECT3DSURFACE8 oldRT;
   RECT saveSize = rd;
@@ -1221,7 +1221,7 @@ void CWinRenderer::CreateThumbnail(LPDIRECT3DSURFACE8 surface, unsigned int widt
 //********************************************************************************************************
 void CWinRenderer::DeleteYV12Texture(int index)
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   YUVPLANES &planes = m_YUVTexture[index];
 
   if (planes[0] || planes[1] || planes[2])
@@ -1259,7 +1259,7 @@ void CWinRenderer::ClearYV12Texture(int index)
 bool CWinRenderer::CreateYV12Texture(int index)
 {
 
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   DeleteYV12Texture(index);
   if (
     D3D_OK != m_pD3DDevice->CreateTexture(m_iSourceWidth, m_iSourceHeight, 1, 0, D3DFMT_L8, D3DPOOL_MANAGED, &m_YUVTexture[index][0]) ||

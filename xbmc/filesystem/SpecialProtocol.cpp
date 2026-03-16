@@ -21,7 +21,7 @@
 #include "SpecialProtocol.h"
 #include "URL.h"
 #include "Util.h"
-#include "guilib/GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
@@ -137,7 +137,7 @@ CStdString CSpecialProtocol::TranslatePath(const CURL &url)
   else if (RootDir.Equals("videoplaylists"))
     translatedPath = URIUtils::AddFileToFolder(CUtil::VideoPlaylistsLocation(), FileName);
   else if (RootDir.Equals("skin"))
-    translatedPath = URIUtils::AddFileToFolder(g_graphicsContext.GetMediaDir(), FileName);
+    translatedPath = URIUtils::AddFileToFolder(CServiceBroker::GetWinSystem()->GetGfxContext().GetMediaDir(), FileName);
   else if (RootDir.Equals("logpath"))
     translatedPath = URIUtils::AddFileToFolder(g_advancedSettings.m_logFolder, FileName);
 

@@ -19,7 +19,7 @@
  */
 
 #include "DisplaySettings.h"
-#include "guilib/GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "guilib/gui3d.h"
 #include "guilib/LocalizeStrings.h"
 #include "messaging/ApplicationMessenger.h"
@@ -197,7 +197,7 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
       if (save)
         m_ignoreSettingChanging.insert(make_pair("videoscreen.resolution", true));
       SetCurrentResolution(newRes, save);
-      g_graphicsContext.SetVideoResolution(newRes);
+      CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(newRes);
 
       // check if this setting is temporarily blocked from showing the dialog
       if (m_ignoreSettingChanging.find(make_pair(settingId, false)) == m_ignoreSettingChanging.end())
@@ -219,7 +219,7 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
       m_ignoreSettingChanging.erase(make_pair(settingId, true));
   }
   else if (settingId == "videoscreen.flickerfilter" || settingId == "videoscreen.soften")
-    g_graphicsContext.SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
+    CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
   else if (StringUtils::StartsWith(settingId, "videooutput."))
   {
     if (settingId == "videooutput.aspect")
@@ -416,7 +416,7 @@ void CDisplaySettings::SettingOptionsResolutionsFiller(const CSetting *setting, 
   list.push_back(make_pair(g_localizeStrings.Get(16316), RES_AUTORES));
 
   std::vector<RESOLUTION> resolutions;
-  g_graphicsContext.GetAllowedResolutions(resolutions, false);
+  CServiceBroker::GetWinSystem()->GetGfxContext().GetAllowedResolutions(resolutions, false);
   for (std::vector<RESOLUTION>::const_iterator it = resolutions.begin(); it != resolutions.end(); ++it)
   {
     RESOLUTION resolution = *it;

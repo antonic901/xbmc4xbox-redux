@@ -23,7 +23,7 @@
 #include <vector>
 
 // #include "guilib/Resolution.h" -> try to move RESOLUTION and RESOLUTION_INFO to Resolution.h
-#include "guilib/GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "settings/lib/ISettingCallback.h"
 #include "settings/lib/ISubSettings.h"
 #include "threads/CriticalSection.h"

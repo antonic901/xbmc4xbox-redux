@@ -52,7 +52,7 @@ void CRGBRendererV2::FlipPage(int source)
 
 void CRGBRendererV2::Delete444PTexture()
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   SAFE_RELEASE(m_444PTextureFull)
   SAFE_RELEASE(m_444PTextureField)
   CLog::Log(LOGDEBUG, "Deleted 444P video textures");
@@ -60,7 +60,7 @@ void CRGBRendererV2::Delete444PTexture()
 
 void CRGBRendererV2::Clear444PTexture(bool full, bool field)
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   if(m_444PTextureFull && full)
   {
     D3DLOCKED_RECT lr;
@@ -85,7 +85,7 @@ void CRGBRendererV2::Clear444PTexture(bool full, bool field)
 
 bool CRGBRendererV2::Create444PTexture(bool full, bool field)
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   if (!m_444PTextureFull && full)
   {
     if(D3D_OK != m_pD3DDevice->CreateTexture(m_iSourceWidth, m_iSourceHeight, 1, 0, D3DFMT_LIN_A8R8G8B8, 0, &m_444PTextureFull))
@@ -106,7 +106,7 @@ bool CRGBRendererV2::Create444PTexture(bool full, bool field)
 void CRGBRendererV2::ManageTextures()
 {
   //use 1 buffer in fullscreen mode and 0 buffers in windowed mode
-  if (!g_graphicsContext.IsFullScreenVideo())
+  if (!CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
   {
     if (m_444PTextureFull || m_444PTextureField)
       Delete444PTexture();
@@ -114,7 +114,7 @@ void CRGBRendererV2::ManageTextures()
 
   CXBoxRenderer::ManageTextures();
 
-  if (g_graphicsContext.IsFullScreenVideo())
+  if (CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
   {
     if (!m_444PTextureFull)
     {
@@ -139,8 +139,8 @@ bool CRGBRendererV2::Configure(unsigned int width, unsigned int height, unsigned
 
 void CRGBRendererV2::Render(DWORD flags)
 {
-  CSingleLock lock(g_graphicsContext);
-  if ( !g_graphicsContext.IsFullScreenVideo() )
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
+  if ( !CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo() )
   {
     RenderLowMem(flags);
   }
@@ -352,7 +352,7 @@ unsigned int CRGBRendererV2::PreInit()
   // Create the pixel shader
   if (!m_hInterleavingShader)
   {
-    CSingleLock lock(g_graphicsContext);
+    CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
     // shader to interleave separate Y U and V planes into a single YUV output
     const char* interleave =
       "xps.1.1\n"
@@ -423,7 +423,7 @@ unsigned int CRGBRendererV2::PreInit()
 
 void CRGBRendererV2::UnInit()
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
   Delete444PTexture();
   DeleteLookupTextures();

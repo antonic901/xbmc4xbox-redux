@@ -37,6 +37,7 @@ namespace PLAYLIST
 }
 
 class CContextMenuManager;
+class CWinSystemBase;
 class XBPython;
 
 class CServiceManager

@@ -23,7 +23,7 @@
 #include "addons/AddonManager.h"
 #include "FileItem.h"
 #include "filesystem/File.h"
-#include "guilib/GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "guilib/Key.h"
 #include "view/ViewState.h"
 #include "utils/URIUtils.h"

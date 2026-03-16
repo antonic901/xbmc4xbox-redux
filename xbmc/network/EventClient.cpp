@@ -29,7 +29,7 @@
 #include "filesystem/File.h"
 #include "utils/log.h"
 #include "dialogs/GUIDialogKaiToast.h"
-#include "guilib/GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "guilib/Key.h"
 #include "utils/StringUtils.h"
 

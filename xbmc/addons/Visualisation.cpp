@@ -22,7 +22,7 @@
 #include "GUIInfoManager.h"
 #include "guiinfo/GUIInfoLabels.h"
 #include "Application.h"
-#include "guilib/GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "guilib/Key.h"
 #include "music/tags/MusicInfoTag.h"
 #include "settings/AdvancedSettings.h"
@@ -65,7 +65,7 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
 {
   m_pInfo = new VIS_PROPS;
 #ifdef HAS_XBOX_D3D
-  m_pInfo->device     = g_graphicsContext.Get3DDevice();
+  m_pInfo->device     = CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice();
 #else
   m_pInfo->device     = NULL;
 #endif
@@ -73,7 +73,7 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   m_pInfo->y = y;
   m_pInfo->width = w;
   m_pInfo->height = h;
-  m_pInfo->pixelRatio = g_graphicsContext.GetResInfo().fPixelRatio;
+  m_pInfo->pixelRatio = CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo().fPixelRatio;
 
   m_pInfo->name = strdup(Name().c_str());
   m_pInfo->presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());

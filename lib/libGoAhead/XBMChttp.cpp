@@ -1756,8 +1756,8 @@ int CXbmcHttp::xbmcGetPlaySpeed()
 int CXbmcHttp::xbmcGetGUIDescription()
 {
   CStdString strWidth, strHeight;
-  strWidth.Format("%i", g_graphicsContext.GetWidth());
-  strHeight.Format("%i", g_graphicsContext.GetHeight());
+  strWidth.Format("%i", CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth());
+  strHeight.Format("%i", CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight());
   return SetResponse(openTag+"Width:" + strWidth + closeTag+openTag+"Height:" + strHeight  );
 }
 

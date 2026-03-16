@@ -21,7 +21,7 @@
  */
 
 #ifndef _XBOX
-#include "GraphicContext.h"
+#include "windowing/GraphicContext.h"
 
 LPVOID XPhysicalAlloc(SIZE_T s, DWORD ulPhysicalAddress, DWORD ulAlignment, DWORD flProtect);
 void XPhysicalFree(LPVOID lpAddress);

@@ -19,7 +19,7 @@
  */
 
 #include "UdpClient.h"
-#include "guilib/GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "utils/log.h"
 
 #include "threads/SingleLock.h"
@@ -173,9 +173,9 @@ void CUdpClient::Process()
         // or at least wait until after vertical refresh before firing off events
         // to protect access to graphics resources.
 
-        g_graphicsContext.Lock();
+        CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
         OnMessage(remoteAddress, message, (LPBYTE)messageBuffer, messageLength);
-        g_graphicsContext.Unlock();
+        CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
       }
       else
       {

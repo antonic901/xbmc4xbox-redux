@@ -348,6 +348,8 @@ protected:
 
   D3DGAMMARAMP m_OldRamp;
 
+  boost::movelib::unique_ptr<CWinSystemBase> m_pWinSystem;
+
   // timer information
   CStopWatch m_idleTimer;
   CStopWatch m_restartPlayerTimer;

@@ -26,7 +26,7 @@
 
 #include "threads/CriticalSection.h"
 #include "threads/SystemClock.h"
-#include "guilib/GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "cores/IPlayer.h"
 #include "cores/playercorefactory/PlayerCoreFactory.h"
 

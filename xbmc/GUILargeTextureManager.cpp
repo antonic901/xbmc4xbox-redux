@@ -25,7 +25,7 @@
 #include "threads/SingleLock.h"
 #include "utils/TimeUtils.h"
 #include "utils/JobManager.h"
-#include "guilib/GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "utils/log.h"
 #include "TextureCache.h"
 
@@ -63,7 +63,7 @@ bool CImageLoader::DoWork()
   {
     // direct route - load the image
     unsigned int start = XbmcThreads::SystemClockMillis();
-    m_texture = CBaseTexture::LoadFromFile(loadPath, g_graphicsContext.GetWidth(), g_graphicsContext.GetHeight(), CSettings::GetInstance().GetBool("pictures.useexifrotation"));
+    m_texture = CBaseTexture::LoadFromFile(loadPath, CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth(), CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight(), CSettings::GetInstance().GetBool("pictures.useexifrotation"));
 
     if (XbmcThreads::SystemClockMillis() - start > 100)
       CLog::Log(LOGDEBUG, "%s - took %u ms to load %s", __FUNCTION__, XbmcThreads::SystemClockMillis() - start, loadPath.c_str());

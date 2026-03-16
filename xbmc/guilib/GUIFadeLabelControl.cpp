@@ -128,7 +128,7 @@ void CGUIFadeLabelControl::Process(unsigned int currentTime, CDirtyRegionList &d
     TransformMatrix matrix;
     m_fadeAnim.Animate(currentTime, true);
     m_fadeAnim.RenderAnimation(matrix);
-    m_fadeMatrix = g_graphicsContext.AddTransform(matrix);
+    m_fadeMatrix = CServiceBroker::GetWinSystem()->GetGfxContext().AddTransform(matrix);
 
     if (m_fadeAnim.GetState() == ANIM_STATE_APPLIED)
       m_fadeAnim.ResetAnimation();
@@ -151,7 +151,7 @@ void CGUIFadeLabelControl::Process(unsigned int currentTime, CDirtyRegionList &d
       m_textLayout.UpdateScrollinfo(m_scrollInfo);
     }
 
-    g_graphicsContext.RemoveTransform();
+    CServiceBroker::GetWinSystem()->GetGfxContext().RemoveTransform();
   }
 
   CGUIControl::Process(currentTime, dirtyregions);
@@ -189,7 +189,7 @@ void CGUIFadeLabelControl::Render()
   }
 
   // render the scrolling text
-  g_graphicsContext.SetTransform(m_fadeMatrix);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetTransform(m_fadeMatrix);
   if (!m_scroll || (!m_scrollOut && m_shortText))
   {
     float posX = m_posX + m_label.offsetX;
@@ -201,7 +201,7 @@ void CGUIFadeLabelControl::Render()
   }
   else
     m_textLayout.RenderScrolling(m_posX, posY, 0, m_label.textColor, m_label.shadowColor, (m_label.align & ~3), m_width, m_scrollInfo);
-  g_graphicsContext.RemoveTransform();
+  CServiceBroker::GetWinSystem()->GetGfxContext().RemoveTransform();
   CGUIControl::Render();
 }
 

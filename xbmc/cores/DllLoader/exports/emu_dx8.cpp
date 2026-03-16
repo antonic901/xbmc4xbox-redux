@@ -20,7 +20,7 @@
 
 #include "system.h"
 #include "emu_dx8.h"
-#include "GraphicContext.h"
+#include "windowing/GraphicContext.h"
 #include "filesystem/SpecialProtocol.h"
 
 extern "C"
@@ -31,30 +31,30 @@ extern "C"
   }
   void d3dSetTextureStageState( int x, DWORD dwY, DWORD dwZ)
   {
-    g_graphicsContext.Get3DDevice()->SetTextureStageState(x, (D3DTEXTURESTAGESTATETYPE)dwY, dwZ);
+    CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTextureStageState(x, (D3DTEXTURESTAGESTATETYPE)dwY, dwZ);
   }
 
   void d3dSetRenderState(DWORD dwY, DWORD dwZ)
   {
-    g_graphicsContext.Get3DDevice()->SetRenderState((D3DRENDERSTATETYPE)dwY, dwZ);
+    CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetRenderState((D3DRENDERSTATETYPE)dwY, dwZ);
   }
   void d3dGetRenderState(DWORD dwY, DWORD* dwZ)
   {
-    g_graphicsContext.Get3DDevice()->GetRenderState((D3DRENDERSTATETYPE)dwY, dwZ);
+    CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->GetRenderState((D3DRENDERSTATETYPE)dwY, dwZ);
   }
   void d3dSetTransform( DWORD dwY, D3DMATRIX* dwZ )
   {
-    g_graphicsContext.Get3DDevice()->SetTransform( (D3DTRANSFORMSTATETYPE)dwY, dwZ );
+    CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->SetTransform( (D3DTRANSFORMSTATETYPE)dwY, dwZ );
   }
 
   bool d3dCreateTexture(unsigned int width, unsigned int height, LPDIRECT3DTEXTURE8 *pTexture)
   {
-    return (D3D_OK == g_graphicsContext.Get3DDevice()->CreateTexture(width, height, 1, 0, D3DFMT_LIN_A8R8G8B8 , D3DPOOL_MANAGED, pTexture));
+    return (D3D_OK == CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->CreateTexture(width, height, 1, 0, D3DFMT_LIN_A8R8G8B8 , D3DPOOL_MANAGED, pTexture));
   }
 
   void d3dDrawIndexedPrimitive(D3DPRIMITIVETYPE primType, unsigned int minIndex, unsigned int numVertices, unsigned int startIndex, unsigned int primCount)
   {
-    g_graphicsContext.Get3DDevice()->DrawIndexedPrimitive(primType, minIndex, numVertices, startIndex, primCount);
+    CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->DrawIndexedPrimitive(primType, minIndex, numVertices, startIndex, primCount);
   }
 
 #ifdef _XBOX

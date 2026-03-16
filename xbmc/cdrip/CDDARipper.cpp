@@ -172,9 +172,9 @@ bool CCDDARipper::CreateAlbumDir(const MUSIC_INFO::CMusicInfoTag& infoTag, std::
   {
     // no rip path has been set, show error
     CLog::Log(LOGERROR, "Error: CDDARipPath has not been set");
-    g_graphicsContext.Lock();
+    CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
     CGUIDialogOK::ShowAndGetInput(257, 608);
-    g_graphicsContext.Unlock();
+    CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
     return false;
   }
 

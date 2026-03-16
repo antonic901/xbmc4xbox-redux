@@ -26,13 +26,13 @@ namespace XBMCAddonUtils
       m_languageHook->DelayedCallOpen();
 
     if (!m_offScreen)
-      g_graphicsContext.Lock();
+      CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
   }
 
   GuiLock::~GuiLock()
   {
     if (!m_offScreen)
-      g_graphicsContext.Unlock();
+      CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
 
     if (m_languageHook)
       m_languageHook->DelayedCallClose();

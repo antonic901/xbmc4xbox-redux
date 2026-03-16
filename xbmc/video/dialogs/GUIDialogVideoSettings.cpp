@@ -136,14 +136,14 @@ void CGUIDialogVideoSettings::OnSettingChanged(const CSetting *setting)
   else if (settingId == SETTING_VIDEO_FLICKER)
   {
     CSettings::GetInstance().SetInt("videoplayer.flicker", static_cast<const CSettingInt*>(setting)->GetValue());
-    RESOLUTION res = g_graphicsContext.GetVideoResolution();
-    g_graphicsContext.SetVideoResolution(res);
+    RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
+    CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(res);
   }
   else if (settingId == SETTING_VIDEO_SOFTEN)
   {
     CSettings::GetInstance().SetBool("videoplayer.soften", static_cast<const CSettingBool*>(setting)->GetValue());
-    RESOLUTION res = g_graphicsContext.GetVideoResolution();
-    g_graphicsContext.SetVideoResolution(res);
+    RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
+    CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(res);
   }
   else if (settingId == SETTING_VIDEO_NON_INTERLEAVED ||  settingId == SETTING_VIDEO_NO_CACHE)
     g_application.Restart(true);

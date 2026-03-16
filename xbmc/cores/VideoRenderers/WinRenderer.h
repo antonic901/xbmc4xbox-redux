@@ -20,7 +20,7 @@
  *
  */
 
-#include "GraphicContext.h"
+#include "windowing/GraphicContext.h"
 
 //#define MP_DIRECTRENDERING
 

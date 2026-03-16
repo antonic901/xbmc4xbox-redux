@@ -141,14 +141,14 @@ void CGUIMultiImage::Process(unsigned int currentTime, CDirtyRegionList &dirtyre
   else
     m_image.SetFileName("");
 
-  if (g_graphicsContext.SetClipRegion(m_posX, m_posY, m_width, m_height))
+  if (CServiceBroker::GetWinSystem()->GetGfxContext().SetClipRegion(m_posX, m_posY, m_width, m_height))
   {
     if (m_image.SetColorDiffuse(m_diffuseColor))
       MarkDirtyRegion();
 
     m_image.DoProcess(currentTime, dirtyregions);
 
-    g_graphicsContext.RestoreClipRegion();
+    CServiceBroker::GetWinSystem()->GetGfxContext().RestoreClipRegion();
   }
 
   CGUIControl::Process(currentTime, dirtyregions);

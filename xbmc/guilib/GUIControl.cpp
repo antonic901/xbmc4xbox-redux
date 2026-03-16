@@ -131,9 +131,9 @@ void CGUIControl::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyreg
 
   if (IsVisible())
   {
-    m_cachedTransform = g_graphicsContext.AddTransform(m_transform);
+    m_cachedTransform = CServiceBroker::GetWinSystem()->GetGfxContext().AddTransform(m_transform);
     if (m_hasCamera)
-      g_graphicsContext.SetCameraPosition(m_camera);
+      CServiceBroker::GetWinSystem()->GetGfxContext().SetCameraPosition(m_camera);
 
     Process(currentTime, dirtyregions);
     m_bInvalidated = false;
@@ -145,8 +145,8 @@ void CGUIControl::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyreg
     }
 
     if (m_hasCamera)
-      g_graphicsContext.RestoreCameraPosition();
-    g_graphicsContext.RemoveTransform();
+      CServiceBroker::GetWinSystem()->GetGfxContext().RestoreCameraPosition();
+    CServiceBroker::GetWinSystem()->GetGfxContext().RemoveTransform();
   }
 
   changed |= m_controlIsDirty;
@@ -162,7 +162,7 @@ void CGUIControl::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyreg
 void CGUIControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   // update our render region
-  m_renderRegion = g_graphicsContext.generateAABB(CalcRenderRegion());
+  m_renderRegion = CServiceBroker::GetWinSystem()->GetGfxContext().generateAABB(CalcRenderRegion());
   m_hasProcessed = true;
 }
 
@@ -178,34 +178,34 @@ void CGUIControl::DoRender()
 #ifdef _XBOX
                   && false;
 #else
-                  && g_graphicsContext.GetStereoMode() != RENDER_STEREO_MODE_MONO
-                  && g_graphicsContext.GetStereoMode() != RENDER_STEREO_MODE_OFF;
+                  && CServiceBroker::GetWinSystem()->GetGfxContext().GetStereoMode() != RENDER_STEREO_MODE_MONO
+                  && CServiceBroker::GetWinSystem()->GetGfxContext().GetStereoMode() != RENDER_STEREO_MODE_OFF;
 #endif
 
-    g_graphicsContext.SetTransform(m_cachedTransform);
+    CServiceBroker::GetWinSystem()->GetGfxContext().SetTransform(m_cachedTransform);
     if (m_hasCamera)
-      g_graphicsContext.SetCameraPosition(m_camera);
+      CServiceBroker::GetWinSystem()->GetGfxContext().SetCameraPosition(m_camera);
 #ifndef _XBOX
     if (hasStereo)
-      g_graphicsContext.SetStereoFactor(m_stereo);
+      CServiceBroker::GetWinSystem()->GetGfxContext().SetStereoFactor(m_stereo);
 #endif
 
 
     if (m_hitColor != 0xffffffff)
     {
-      color_t color = g_graphicsContext.MergeAlpha(m_hitColor);
-      CGUITexture::DrawQuad(g_graphicsContext.generateAABB(m_hitRect), color);
+      color_t color = CServiceBroker::GetWinSystem()->GetGfxContext().MergeAlpha(m_hitColor);
+      CGUITexture::DrawQuad(CServiceBroker::GetWinSystem()->GetGfxContext().generateAABB(m_hitRect), color);
     }
 
     Render();
 
 #ifndef _XBOX
     if (hasStereo)
-      g_graphicsContext.RestoreStereoFactor();
+      CServiceBroker::GetWinSystem()->GetGfxContext().RestoreStereoFactor();
 #endif
     if (m_hasCamera)
-      g_graphicsContext.RestoreCameraPosition();
-    g_graphicsContext.RemoveTransform();
+      CServiceBroker::GetWinSystem()->GetGfxContext().RestoreCameraPosition();
+    CServiceBroker::GetWinSystem()->GetGfxContext().RemoveTransform();
   }
 }
 

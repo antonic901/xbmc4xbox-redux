@@ -42,7 +42,7 @@ CComboRenderer::CComboRenderer(LPDIRECT3DDEVICE8 pDevice)
 
 void CComboRenderer::DeleteYUY2Texture(int index)
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   if (m_RGBSurface[index])
     SAFE_RELEASE(m_RGBSurface[index]);
 
@@ -64,7 +64,7 @@ void CComboRenderer::ClearYUY2Texture(int index)
 
 bool CComboRenderer::CreateYUY2Texture(int index)
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   DeleteYUY2Texture(index);
   // Create our textures...
 
@@ -86,7 +86,7 @@ bool CComboRenderer::CreateYUY2Texture(int index)
 void CComboRenderer::ManageTextures()
 {
   //use 1 buffer in fullscreen mode and 0 buffers in windowed mode
-  if (g_graphicsContext.IsFullScreenVideo())
+  if (CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
   {
     m_iYUY2Buffers = 2;
 
@@ -114,14 +114,14 @@ void CComboRenderer::ManageTextures()
 
 void CComboRenderer::ManageDisplay()
 {
-  const CRect rv = g_graphicsContext.GetViewWindow();
+  const CRect rv = CServiceBroker::GetWinSystem()->GetGfxContext().GetViewWindow();
   float fScreenWidth = rv.Width();
   float fScreenHeight = rv.Height();
   float fOffsetX1 = rv.x1;
   float fOffsetY1 = rv.y1;
   float fPixelRatio = CDisplaySettings::Get().GetPixelRatio();
-  float fMaxScreenWidth = (float)CDisplaySettings::Get().GetResolutionInfo(g_graphicsContext.GetVideoResolution()).iWidth;
-  float fMaxScreenHeight = (float)CDisplaySettings::Get().GetResolutionInfo(g_graphicsContext.GetVideoResolution()).iHeight;
+  float fMaxScreenWidth = (float)CDisplaySettings::Get().GetResolutionInfo(CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution()).iWidth;
+  float fMaxScreenHeight = (float)CDisplaySettings::Get().GetResolutionInfo(CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution()).iHeight;
   if (fOffsetX1 < 0) fOffsetX1 = 0;
   if (fOffsetY1 < 0) fOffsetY1 = 0;
   if (fScreenWidth + fOffsetX1 > fMaxScreenWidth) fScreenWidth = fMaxScreenWidth - fOffsetX1;
@@ -182,9 +182,9 @@ bool CComboRenderer::Configure(unsigned int width, unsigned int height, unsigned
 void CComboRenderer::Update(bool bPauseDrawing)
 {
   if(!m_bConfigured) return;
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
-  if(g_graphicsContext.IsFullScreenVideo() || g_graphicsContext.IsCalibrating())
+  if(CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo() || CServiceBroker::GetWinSystem()->GetGfxContext().IsCalibrating())
     m_pD3DDevice->EnableOverlay(!bPauseDrawing);
   else
     m_pD3DDevice->EnableOverlay(FALSE);
@@ -365,7 +365,7 @@ unsigned int CComboRenderer::PreInit()
 
 void CComboRenderer::UnInit()
 {
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
   m_pD3DDevice->EnableOverlay(FALSE);
   DeleteYUY2Texture(0);
@@ -411,9 +411,9 @@ void CComboRenderer::CheckScreenSaver()
 
 void CComboRenderer::SetupScreenshot()
 {
-  if (!g_graphicsContext.IsFullScreenVideo())
+  if (!CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
     return;
-  CSingleLock lock(g_graphicsContext);
+  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
   // first, grab the current overlay texture and convert it to RGB
   LPDIRECT3DTEXTURE8 pRGB = NULL;
   if (D3D_OK != m_pD3DDevice->CreateTexture(m_iSourceWidth, m_iSourceHeight, 1, 0, D3DFMT_LIN_A8R8G8B8, 0, &pRGB))
@@ -449,9 +449,9 @@ void CComboRenderer::SetupScreenshot()
   m_pD3DDevice->SetTextureStageState( 0, D3DTSS_MINFILTER, D3DTEXF_LINEAR );
 
   // set scissors if we are not in fullscreen video
-  if ( !(g_graphicsContext.IsFullScreenVideo() || g_graphicsContext.IsCalibrating() ))
+  if ( !(CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo() || CServiceBroker::GetWinSystem()->GetGfxContext().IsCalibrating() ))
   {
-    g_graphicsContext.ClipToViewWindow();
+    CServiceBroker::GetWinSystem()->GetGfxContext().ClipToViewWindow();
   }
 
   m_pD3DDevice->SetRenderState( D3DRS_ZENABLE, FALSE );

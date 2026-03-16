@@ -4739,6 +4739,32 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="windowing"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\windowing\GraphicContext.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\windowing\GraphicContext.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\windowing\WinSystem.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\windowing\WinSystem.h">
+				</File>
+				<Filter
+					Name="xbox"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\windowing\xbox\WinSystemXbox.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\windowing\xbox\WinSystemXbox.h">
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

@@ -465,8 +465,8 @@ bool CXBMC_PC::GetCursorPos(POINT &point)
   {
     client.x -= rect.left;
     client.y -= rect.top;
-    point.x = (client.x * g_graphicsContext.GetWidth()) / (rect.right - rect.left);
-    point.y = (client.y * g_graphicsContext.GetHeight()) / (rect.bottom - rect.top);
+    point.x = (client.x * CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth()) / (rect.right - rect.left);
+    point.y = (client.y * CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight()) / (rect.bottom - rect.top);
     SetCursor(NULL);
     return true;
   }
@@ -477,9 +477,9 @@ void CXBMC_PC::OnResizeToAspectRatio()
 {
   RECT border = { 0, 0, 0, 0 };
   AdjustWindowRect(&border, m_dwWindowStyle, TRUE);
-  RESOLUTION res = g_graphicsContext.GetVideoResolution();
-  float pixelRatio = g_graphicsContext.GetPixelRatio(res);
-  float frameRatio = (pixelRatio * g_graphicsContext.GetWidth()) / g_graphicsContext.GetHeight();
+  RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
+  float pixelRatio = CServiceBroker::GetWinSystem()->GetGfxContext().GetPixelRatio(res);
+  float frameRatio = (pixelRatio * CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth()) / CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight();
   // resize so that it fits within the window the user has
   RECT rect;
   
@@ -499,10 +499,10 @@ void CXBMC_PC::OnResizeToAspectRatio()
 
 void CXBMC_PC::OnResizeToPixel()
 {
-  RESOLUTION res = g_graphicsContext.GetVideoResolution();
+  RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
   RECT window;
   GetWindowRect(m_hWnd, &window);
-  RECT client = { 0, 0, g_graphicsContext.GetWidth(), g_graphicsContext.GetHeight() };
+  RECT client = { 0, 0, CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth(), CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight() };
 
   if (m_fullscreen)
   {
