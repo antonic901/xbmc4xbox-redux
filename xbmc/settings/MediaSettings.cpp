@@ -258,7 +258,7 @@ void CMediaSettings::OnSettingAction(const CSetting *setting)
     {
       CStdString path(CProfilesManager::Get().GetDatabaseFolder());
       VECSOURCES shares;
-      g_mediaManager.GetLocalDrives(shares);
+      CServiceBroker::GetMediaManager().GetLocalDrives(shares);
       if (CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(661), path, true))
       {
         CMusicDatabase musicdatabase;
@@ -282,7 +282,7 @@ void CMediaSettings::OnSettingAction(const CSetting *setting)
   {
     CStdString path(CProfilesManager::Get().GetDatabaseFolder());
     VECSOURCES shares;
-    g_mediaManager.GetLocalDrives(shares);
+    CServiceBroker::GetMediaManager().GetLocalDrives(shares);
     if (CGUIDialogFileBrowser::ShowAndGetFile(shares, "karaoke.csv", g_localizeStrings.Get(651) , path))
     {
       CMusicDatabase musicdatabase;
@@ -309,7 +309,7 @@ void CMediaSettings::OnSettingAction(const CSetting *setting)
   {
     CStdString path;
     VECSOURCES shares;
-    g_mediaManager.GetLocalDrives(shares);
+    CServiceBroker::GetMediaManager().GetLocalDrives(shares);
     if (CGUIDialogFileBrowser::ShowAndGetFile(shares, "musicdb.xml", g_localizeStrings.Get(651) , path))
     {
       CMusicDatabase musicdatabase;
@@ -329,7 +329,7 @@ void CMediaSettings::OnSettingAction(const CSetting *setting)
   {
     CStdString path;
     VECSOURCES shares;
-    g_mediaManager.GetLocalDrives(shares);
+    CServiceBroker::GetMediaManager().GetLocalDrives(shares);
     if (CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(651) , path))
     {
       CVideoDatabase videodatabase;

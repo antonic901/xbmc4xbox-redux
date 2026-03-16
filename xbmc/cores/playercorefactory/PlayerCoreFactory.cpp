@@ -60,12 +60,6 @@ CPlayerCoreFactory::~CPlayerCoreFactory()
     delete *it;
 }
 
-CPlayerCoreFactory& CPlayerCoreFactory::Get()
-{
-  static CPlayerCoreFactory sPlayerCoreFactory;
-  return sPlayerCoreFactory;
-}
-
 void CPlayerCoreFactory::OnSettingsLoaded()
 {
   LoadConfiguration("special://xbmc/system/" PLAYERCOREFACTORY_XML, true);

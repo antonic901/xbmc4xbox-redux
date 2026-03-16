@@ -1021,9 +1021,6 @@ HRESULT CApplication::Create(HWND hWnd)
 
   update_emu_environ();//apply the GUI settings
 
-  // initialize the addon database (must be before the addon manager is init'd)
-  CDatabaseManager::GetInstance().Initialize(true);
-
   if (!m_ServiceManager->Init2())
   {
     FatalErrorHandler(true, true, true);
@@ -1247,7 +1244,7 @@ HRESULT CApplication::Initialize()
     m_network->WaitForSetup();
 
   // initialize (and update as needed) our databases
-  CDatabaseManager::GetInstance().Initialize();
+  CServiceBroker::GetDatabaseManager().Initialize();
 
   StartServices();
 
@@ -3931,7 +3928,7 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
     if( m_eForcedNextPlayer != EPC_NONE )
       eNewCore = m_eForcedNextPlayer;
     else if( m_pPlayer->GetCurrentPlayer() == EPC_NONE )
-      eNewCore = CPlayerCoreFactory::Get().GetDefaultPlayer(item);
+      eNewCore = CServiceBroker::GetPlayerCoreFactory().GetDefaultPlayer(item);
     else
       eNewCore = m_pPlayer->GetCurrentPlayer();
   }
@@ -3986,7 +3983,7 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
     if (m_eForcedNextPlayer != EPC_NONE)
       eNewCore = m_eForcedNextPlayer;
     else
-      eNewCore = CPlayerCoreFactory::Get().GetDefaultPlayer(item);
+      eNewCore = CServiceBroker::GetPlayerCoreFactory().GetDefaultPlayer(item);
   }
 
   // this really aught to be inside !bRestart, but since PlayStack
@@ -4396,7 +4393,7 @@ void CApplication::UpdateFileState()
         }
 
         // Update bookmark for save
-        m_progressTrackingVideoResumeBookmark.player = CPlayerCoreFactory::Get().GetPlayerName(m_pPlayer->GetCurrentPlayer());
+        m_progressTrackingVideoResumeBookmark.player = CServiceBroker::GetPlayerCoreFactory().GetPlayerName(m_pPlayer->GetCurrentPlayer());
         m_progressTrackingVideoResumeBookmark.playerState = m_pPlayer->GetPlayerState();
         m_progressTrackingVideoResumeBookmark.thumbNailImage.empty();
 

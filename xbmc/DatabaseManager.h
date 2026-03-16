@@ -38,11 +38,8 @@ class DatabaseSettings;
 class CDatabaseManager
 {
 public:
-  /*!
-   \brief The only way through which the global instance of the CDatabaseManager should be accessed.
-   \return the global instance.
-   */
-  static CDatabaseManager &GetInstance();
+  CDatabaseManager();
+  virtual ~CDatabaseManager();
 
   /*! \brief Initalize the database manager
    Checks that all databases are up to date, otherwise updates them.
@@ -67,10 +64,8 @@ public:
 
 private:
   // private construction, and no assignements; use the provided singleton methods
-  CDatabaseManager();
   CDatabaseManager(const CDatabaseManager&);
   CDatabaseManager const& operator=(CDatabaseManager const&);
-  virtual ~CDatabaseManager();
 
   enum DB_STATUS { DB_CLOSED, DB_UPDATING, DB_READY, DB_FAILED };
   void UpdateStatus(const std::string &name, DB_STATUS status);

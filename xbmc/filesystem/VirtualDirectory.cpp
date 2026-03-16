@@ -185,7 +185,7 @@ void CVirtualDirectory::GetSources(VECSOURCES &shares) const
     g_memoryUnitManager.GetMemoryUnitSources(shares);
     CUtil::AutoDetectionGetSource(shares);
 #else
-    g_mediaManager.GetRemovableDrives(shares);
+    CServiceBroker::GetMediaManager().GetRemovableDrives(shares);
 #endif
   }
 
@@ -200,7 +200,7 @@ void CVirtualDirectory::GetSources(VECSOURCES &shares) const
       share.strStatus = MEDIA_DETECT::CDetectDVDMedia::GetDVDLabel();
       share.strPath = MEDIA_DETECT::CDetectDVDMedia::GetDVDPath();
 #else
-      if(g_mediaManager.IsAudio(share.strPath))
+      if(CServiceBroker::GetMediaManager().IsAudio(share.strPath))
       {
         share.strStatus = "Audio-CD";
         share.strPath = "cdda://local/";
@@ -208,11 +208,11 @@ void CVirtualDirectory::GetSources(VECSOURCES &shares) const
       }
       else
       {
-        share.strStatus = g_mediaManager.GetDiskLabel(share.strPath);
-        share.strDiskUniqueId = g_mediaManager.GetDiskUniqueId(share.strPath);
+        share.strStatus = CServiceBroker::GetMediaManager().GetDiskLabel(share.strPath);
+        share.strDiskUniqueId = CServiceBroker::GetMediaManager().GetDiskUniqueId(share.strPath);
         if (!share.strPath.length()) // unmounted CD
         {
-          if (g_mediaManager.GetDiscPath() == "iso9660://")
+          if (CServiceBroker::GetMediaManager().GetDiscPath() == "iso9660://")
             share.strPath = "iso9660://";
           else
             // share is unmounted and not iso9660, discard it

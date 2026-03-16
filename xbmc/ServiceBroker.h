@@ -50,7 +50,11 @@ class CApplicationMessenger;
 class CContextMenuManager;
 class XBPython;
 class CWinSystemBase;
+class CWeather;
+class CPlayerCoreFactory;
+class CDatabaseManager;
 class CGUIComponent;
+class CMediaManager;
 class CJobManager;
 
 namespace KODI
@@ -74,6 +78,10 @@ public:
   static CContextMenuManager& GetContextMenuManager();
   static PLAYLIST::CPlayListPlayer& GetPlaylistPlayer();
   static ADDON::CRepositoryUpdater& GetRepositoryUpdater();
+  static CWeather& GetWeatherManager();
+  static CPlayerCoreFactory& GetPlayerCoreFactory();
+  static CDatabaseManager& GetDatabaseManager();
+  static CMediaManager& GetMediaManager();
 
   static CGUIComponent* GetGUI();
   static void RegisterGUI(CGUIComponent* gui);

@@ -367,14 +367,14 @@ bool CGUIDialogAddonSettings::ShowVirtualKeyboard(int iControl)
           VECSOURCES localShares;
           if (!shares)
           {
-            g_mediaManager.GetLocalDrives(localShares);
+            CServiceBroker::GetMediaManager().GetLocalDrives(localShares);
             if (!source || strcmpi(source, "local") != 0)
-              g_mediaManager.GetNetworkLocations(localShares);
+              CServiceBroker::GetMediaManager().GetNetworkLocations(localShares);
           }
           else // always append local drives
           {
             localShares = *shares;
-            g_mediaManager.GetLocalDrives(localShares);
+            CServiceBroker::GetMediaManager().GetLocalDrives(localShares);
           }
 
           if (type == "folder")

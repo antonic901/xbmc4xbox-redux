@@ -28,12 +28,6 @@
 #include "video/VideoDatabase.h"
 #include "settings/AdvancedSettings.h"
 
-CDatabaseManager &CDatabaseManager::GetInstance()
-{
-  static CDatabaseManager s_manager;
-  return s_manager;
-}
-
 CDatabaseManager::CDatabaseManager(): m_bIsUpgrading(false)
 {
 }

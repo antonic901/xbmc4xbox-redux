@@ -255,7 +255,7 @@ bool CProfilesManager::LoadProfile(size_t index)
 
   CreateProfileFolders();
 
-  CDatabaseManager::GetInstance().Initialize();
+  CServiceBroker::GetDatabaseManager().Initialize();
   CButtonTranslator::GetInstance().Load(true);
 
   CServiceBroker::GetGUI()->GetInfoManager().ResetCache();

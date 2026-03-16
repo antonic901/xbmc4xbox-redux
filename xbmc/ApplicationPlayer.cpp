@@ -91,7 +91,7 @@ void CApplicationPlayer::CreatePlayer(PLAYERCOREID newCore, IPlayerCallback& cal
   if (!m_pPlayer)
   {
     m_eCurrentPlayer = newCore;
-    m_pPlayer.reset(CPlayerCoreFactory::Get().CreatePlayer(newCore, callback));
+    m_pPlayer.reset(CServiceBroker::GetPlayerCoreFactory().CreatePlayer(newCore, callback));
   }
 }
 

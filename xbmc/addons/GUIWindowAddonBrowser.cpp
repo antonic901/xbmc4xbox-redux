@@ -202,8 +202,8 @@ bool CGUIWindowAddonBrowser::OnClick(int iItem, const std::string &player)
     {
       // pop up filebrowser to grab an installed folder
       VECSOURCES shares = *CMediaSourceSettings::Get().GetSources("files");
-      g_mediaManager.GetLocalDrives(shares);
-      g_mediaManager.GetNetworkLocations(shares);
+      CServiceBroker::GetMediaManager().GetLocalDrives(shares);
+      CServiceBroker::GetMediaManager().GetNetworkLocations(shares);
       std::string path;
       if (CGUIDialogFileBrowser::ShowAndGetFile(shares, "*.zip", g_localizeStrings.Get(24041), path))
       {

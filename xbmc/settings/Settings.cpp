@@ -284,7 +284,7 @@ void CSettings::Uninitialize()
 #if defined(TARGET_LINUX) || defined(_XBOX)
   m_settingsManager->UnregisterCallback(&g_timezone);
 #endif // defined(TARGET_LINUX)
-  m_settingsManager->UnregisterCallback(&g_weatherManager);
+  m_settingsManager->UnregisterCallback(&CServiceBroker::GetWeatherManager());
 
   // cleanup the settings manager
   m_settingsManager->Clear();
@@ -300,7 +300,7 @@ void CSettings::Uninitialize()
   // unregister ISettingsHandler implementations
   m_settingsManager->UnregisterSettingsHandler(&g_advancedSettings);
   m_settingsManager->UnregisterSettingsHandler(&CMediaSourceSettings::Get());
-  m_settingsManager->UnregisterSettingsHandler(&CPlayerCoreFactory::Get());
+  m_settingsManager->UnregisterSettingsHandler(&CServiceBroker::GetPlayerCoreFactory());
   m_settingsManager->UnregisterSettingsHandler(&CRssManager::Get());
 #ifdef HAS_UPNP
   m_settingsManager->UnregisterSettingsHandler(&CUPnPSettings::Get());
@@ -654,7 +654,7 @@ void CSettings::InitializeISettingsHandlers()
   // The order of these matters! Handlers are processed in the order they were registered.
   m_settingsManager->RegisterSettingsHandler(&g_advancedSettings);
   m_settingsManager->RegisterSettingsHandler(&CMediaSourceSettings::Get());
-  m_settingsManager->RegisterSettingsHandler(&CPlayerCoreFactory::Get());
+  m_settingsManager->RegisterSettingsHandler(&CServiceBroker::GetPlayerCoreFactory());
   m_settingsManager->RegisterSettingsHandler(&CProfilesManager::Get());
 #ifdef HAS_UPNP
   m_settingsManager->RegisterSettingsHandler(&CUPnPSettings::Get());
@@ -854,7 +854,7 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.clear();
   settingSet.insert("weather.addon");
   settingSet.insert("weather.addonsettings");
-  m_settingsManager->RegisterCallback(&g_weatherManager, settingSet);
+  m_settingsManager->RegisterCallback(&CServiceBroker::GetWeatherManager(), settingSet);
 
   settingSet.clear();
   settingSet.insert("general.addonupdates");

@@ -29,8 +29,6 @@ using namespace std;
 
 const char MEDIA_SOURCES_XML[] = { "Q:\\system\\mediasources.xml" };
 
-class CMediaManager g_mediaManager;
-
 CMediaManager::CMediaManager()
 {
 }

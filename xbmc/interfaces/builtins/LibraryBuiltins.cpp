@@ -82,10 +82,10 @@ static int ExportLibrary(const std::vector<std::string>& params)
     iHeading = 20196;
   std::string path;
   VECSOURCES shares;
-  g_mediaManager.GetLocalDrives(shares);
-  g_mediaManager.GetNetworkLocations(shares);
+  CServiceBroker::GetMediaManager().GetLocalDrives(shares);
+  CServiceBroker::GetMediaManager().GetNetworkLocations(shares);
 #ifndef _XBOX
-  g_mediaManager.GetRemovableDrives(shares);
+  CServiceBroker::GetMediaManager().GetRemovableDrives(shares);
 #endif
   bool singleFile;
   bool thumbs=false;

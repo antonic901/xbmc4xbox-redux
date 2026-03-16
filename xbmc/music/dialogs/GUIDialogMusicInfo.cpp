@@ -925,7 +925,7 @@ void CGUIDialogMusicInfo::OnGetArt()
   std::string result;
   VECSOURCES sources(*CMediaSourceSettings::Get().GetSources("music"));
   CGUIDialogMusicInfo::AddItemPathToFileBrowserSources(sources, *m_item);
-  g_mediaManager.GetLocalDrives(sources);
+  CServiceBroker::GetMediaManager().GetLocalDrives(sources);
   if (CGUIDialogFileBrowser::ShowAndGetImage(items, sources, g_localizeStrings.Get(13511), result) &&
     result != "thumb://Current")
   {

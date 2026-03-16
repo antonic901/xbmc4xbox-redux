@@ -97,6 +97,26 @@ void CServiceBroker::UnregisterWinSystem()
   g_serviceBroker.m_pWinSystem = nullptr;
 }
 
+CWeather& CServiceBroker::GetWeatherManager()
+{
+  return g_application.m_ServiceManager->GetWeatherManager();
+}
+
+CPlayerCoreFactory& CServiceBroker::GetPlayerCoreFactory()
+{
+  return g_application.m_ServiceManager->GetPlayerCoreFactory();
+}
+
+CDatabaseManager& CServiceBroker::GetDatabaseManager()
+{
+  return g_application.m_ServiceManager->GetDatabaseManager();
+}
+
+CMediaManager& CServiceBroker::GetMediaManager()
+{
+  return g_application.m_ServiceManager->GetMediaManager();
+}
+
 void CServiceBroker::RegisterJobManager(const boost::shared_ptr<CJobManager>& jobManager)
 {
   g_serviceBroker.m_jobManager = jobManager;

@@ -20,6 +20,7 @@
 
 #include "URL.h"
 #include "PlayerSelectionRule.h"
+#include "ServiceBroker.h"
 #include "utils/log.h"
 #include "utils/RegExp.h"
 #include "utils/XBMCTinyXML.h"
@@ -119,7 +120,7 @@ PLAYERCOREID CPlayerSelectionRule::GetPlayerCore()
 {
   if (!m_playerCoreId)
   {
-    m_playerCoreId = CPlayerCoreFactory::Get().GetPlayerCore(m_playerName);
+    m_playerCoreId = CServiceBroker::GetPlayerCoreFactory().GetPlayerCore(m_playerName);
   }
   return m_playerCoreId;
 }

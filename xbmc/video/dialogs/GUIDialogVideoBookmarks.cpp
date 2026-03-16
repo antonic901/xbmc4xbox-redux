@@ -232,7 +232,7 @@ void CGUIDialogVideoBookmarks::AddBookmark(CVideoInfoTag* tag)
   else
     bookmark.playerState.clear();
 
-  bookmark.player = CPlayerCoreFactory::Get().GetPlayerName(g_application.GetCurrentPlayer());
+  bookmark.player = CServiceBroker::GetPlayerCoreFactory().GetPlayerName(g_application.GetCurrentPlayer());
 
   // create the thumbnail image
 #ifdef HAS_VIDEO_PLAYBACK

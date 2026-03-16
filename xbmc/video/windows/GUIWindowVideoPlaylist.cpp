@@ -412,10 +412,10 @@ void CGUIWindowVideoPlaylist::GetContextButtons(int itemNumber, CContextButtons 
       if (item->IsVideoDb())
       {
         CFileItem item2(item->GetVideoInfoTag()->m_strFileNameAndPath, false);
-        CPlayerCoreFactory::Get().GetPlayers(item2, vecCores);
+        CServiceBroker::GetPlayerCoreFactory().GetPlayers(item2, vecCores);
       }
       else
-        CPlayerCoreFactory::Get().GetPlayers(*item, vecCores);
+        CServiceBroker::GetPlayerCoreFactory().GetPlayers(*item, vecCores);
       if (vecCores.size() > 1)
         buttons.Add(CONTEXT_BUTTON_PLAY_WITH, 15213); // Play With...
 
@@ -457,11 +457,11 @@ bool CGUIWindowVideoPlaylist::OnContextButton(int itemNumber, CONTEXT_BUTTON but
       if (item->IsVideoDb())
       {
         CFileItem item2(*item->GetVideoInfoTag());
-        CPlayerCoreFactory::Get().GetPlayers(item2, vecCores);
+        CServiceBroker::GetPlayerCoreFactory().GetPlayers(item2, vecCores);
       }
       else
-        CPlayerCoreFactory::Get().GetPlayers(*item, vecCores);
-      g_application.m_eForcedNextPlayer = CPlayerCoreFactory::Get().SelectPlayerDialog(vecCores);
+        CServiceBroker::GetPlayerCoreFactory().GetPlayers(*item, vecCores);
+      g_application.m_eForcedNextPlayer = CServiceBroker::GetPlayerCoreFactory().SelectPlayerDialog(vecCores);
       if (g_application.m_eForcedNextPlayer != EPC_NONE)
         OnClick(itemNumber);
       return true;

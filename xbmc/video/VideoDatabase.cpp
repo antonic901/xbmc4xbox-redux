@@ -8366,7 +8366,7 @@ void CVideoDatabase::CleanDatabase(CGUIDialogProgressBarHandle* handle, const st
     std::string filesToTestForDelete;
     VECSOURCES videoSources(*CMediaSourceSettings::Get().GetSources("video"));
 #ifndef _XBOX
-    g_mediaManager.GetRemovableDrives(videoSources);
+    CServiceBroker::GetMediaManager().GetRemovableDrives(videoSources);
 #endif
 
     int total = m_pDS->num_rows();
@@ -8674,7 +8674,7 @@ std::vector<int> CVideoDatabase::CleanMediaType(const std::string &mediaType, co
 
   VECSOURCES videoSources(*CMediaSourceSettings::Get().GetSources("video"));
 #ifndef _XBOX
-  g_mediaManager.GetRemovableDrives(videoSources);
+  CServiceBroker::GetMediaManager().GetRemovableDrives(videoSources);
 #endif
 
   // map of parent path ID to boolean pair (if not exists and user choice)

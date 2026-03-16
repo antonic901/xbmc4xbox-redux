@@ -48,7 +48,8 @@ const PLAYERCOREID PCID_PAPLAYER = 3;
 class CPlayerCoreFactory : public ISettingsHandler
 {
 public:
-  static CPlayerCoreFactory& Get();
+  CPlayerCoreFactory();
+  virtual ~CPlayerCoreFactory();
 
   virtual void OnSettingsLoaded();
 
@@ -68,10 +69,8 @@ public:
   PLAYERCOREID SelectPlayerDialog(float posX, float posY) const;
 
 protected:
-  CPlayerCoreFactory();
   CPlayerCoreFactory(const CPlayerCoreFactory&);
   CPlayerCoreFactory const& operator=(CPlayerCoreFactory const&);
-  virtual ~CPlayerCoreFactory();
 
 private:
   bool LoadConfiguration(const std::string &file, bool clear);

@@ -1036,7 +1036,7 @@ void CGUIWindowFileManager::OnPopupMenu(int list, int item, bool bContextDriven 
 
   // determine available players
   VECPLAYERCORES players;
-  CPlayerCoreFactory::Get().GetPlayers(*pItem, players);
+  CServiceBroker::GetPlayerCoreFactory().GetPlayers(*pItem, players);
 
   // add the needed buttons
   CContextButtons choices;
@@ -1081,8 +1081,8 @@ void CGUIWindowFileManager::OnPopupMenu(int list, int item, bool bContextDriven 
   if (btnid == CONTROL_BTNPLAYWITH)
   {
     VECPLAYERCORES players;
-    CPlayerCoreFactory::Get().GetPlayers(*pItem, players);
-    g_application.m_eForcedNextPlayer = CPlayerCoreFactory::Get().SelectPlayerDialog(players);
+    CServiceBroker::GetPlayerCoreFactory().GetPlayers(*pItem, players);
+    g_application.m_eForcedNextPlayer = CServiceBroker::GetPlayerCoreFactory().SelectPlayerDialog(players);
     if (g_application.m_eForcedNextPlayer != EPC_NONE)
       OnStart(pItem.get(), ""/*player*/);
   }

@@ -494,7 +494,7 @@ bool CDVDPlayer::OpenInputStream()
 #ifdef _XBOX
     m_item.SetPath("\\Device\\Cdrom0");
 #else
-    m_item.SetPath(g_mediaManager.TranslateDevicePath(""));
+    m_item.SetPath(CServiceBroker::GetMediaManager().TranslateDevicePath(""));
 #endif
   }
 

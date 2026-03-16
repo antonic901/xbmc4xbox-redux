@@ -705,8 +705,8 @@ bool CGUIControlButtonSetting::GetPath(CSettingPath *pathSetting)
       shares.insert(shares.end(), sources->begin(), sources->end());
   }
 
-  g_mediaManager.GetNetworkLocations(shares);
-  g_mediaManager.GetLocalDrives(shares);
+  CServiceBroker::GetMediaManager().GetNetworkLocations(shares);
+  CServiceBroker::GetMediaManager().GetLocalDrives(shares);
 
   if (!CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(static_cast<const CSettingControlButton*>(pathSetting->GetControl())->GetHeading()), path, pathSetting->Writable()))
     return false;
