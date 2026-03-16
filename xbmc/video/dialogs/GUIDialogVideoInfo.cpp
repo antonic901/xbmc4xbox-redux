@@ -341,7 +341,7 @@ void CGUIDialogVideoInfo::SetMovie(const CFileItem *item)
         if (!thumb.empty())
         {
           item->SetArt("thumb", thumb);
-          CTextureCache::Get().BackgroundCacheImage(thumb);
+          CServiceBroker::GetTextureCache()->BackgroundCacheImage(thumb);
         }
       }
       item->SetIconImage("DefaultActor.png");
@@ -737,7 +737,7 @@ void CGUIDialogVideoInfo::OnGetArt()
       item->SetLabel(g_localizeStrings.Get(13513));
 
       //! @todo Do we need to clear the cached image?
-      //    CTextureCache::Get().ClearCachedImage(thumb);
+      //    CServiceBroker::GetTextureCache()->ClearCachedImage(thumb);
       items.Add(item);
     }
 
@@ -835,7 +835,7 @@ void CGUIDialogVideoInfo::OnGetFanart()
     item->SetLabel(g_localizeStrings.Get(20441));
 
     //! @todo Do we need to clear the cached image?
-//    CTextureCache::Get().ClearCachedImage(thumb);
+//    CServiceBroker::GetTextureCache()->ClearCachedImage(thumb);
     items.Add(item);
   }
 
@@ -849,7 +849,7 @@ void CGUIDialogVideoInfo::OnGetFanart()
     itemLocal->SetLabel(g_localizeStrings.Get(20438));
 
     //! @todo Do we need to clear the cached image?
-    CTextureCache::Get().ClearCachedImage(strLocal);
+    CServiceBroker::GetTextureCache()->ClearCachedImage(strLocal);
     items.Add(itemLocal);
   }
   else
@@ -1791,7 +1791,7 @@ bool CGUIDialogVideoInfo::ManageVideoItemArtwork(const CFileItemPtr &item, const
       items.Add(item);
 
       //! @todo Do we need to clear the cached image?
-      //    CTextureCache::Get().ClearCachedImage(thumbs[i]);
+      //    CServiceBroker::GetTextureCache()->ClearCachedImage(thumbs[i]);
     }
 
     if (type == "actor")

@@ -117,6 +117,21 @@ CMediaManager& CServiceBroker::GetMediaManager()
   return g_application.m_ServiceManager->GetMediaManager();
 }
 
+void CServiceBroker::RegisterTextureCache(const boost::shared_ptr<CTextureCache>& cache)
+{
+  g_serviceBroker.m_textureCache = cache;
+}
+
+void CServiceBroker::UnregisterTextureCache()
+{
+  g_serviceBroker.m_textureCache.reset();
+}
+
+boost::shared_ptr<CTextureCache> CServiceBroker::GetTextureCache()
+{
+  return g_serviceBroker.m_textureCache;
+}
+
 void CServiceBroker::RegisterJobManager(const boost::shared_ptr<CJobManager>& jobManager)
 {
   g_serviceBroker.m_jobManager = jobManager;

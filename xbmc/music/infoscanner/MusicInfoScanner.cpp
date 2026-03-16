@@ -1612,7 +1612,7 @@ void CMusicInfoScanner::GetAlbumArtwork(long id, const CAlbum &album)
       std::string thumb = CScraperUrl::GetThumbURL(album.thumbURL.GetFirstThumb());
       if (!thumb.empty())
       {
-        CTextureCache::Get().BackgroundCacheImage(thumb);
+        CServiceBroker::GetTextureCache()->BackgroundCacheImage(thumb);
         m_musicDatabase.SetArtForItem(id, MediaTypeAlbum, "thumb", thumb);
       }
     }
@@ -1982,7 +1982,7 @@ bool CMusicInfoScanner::SetArtistArtwork(CArtist& artist, const std::vector<std:
     // Add art to artist and library
     if (!strArt.empty())
     {
-      CTextureCache::Get().BackgroundCacheImage(strArt);
+      CServiceBroker::GetTextureCache()->BackgroundCacheImage(strArt);
       artist.art.insert(make_pair(type, strArt));
       m_musicDatabase.SetArtForItem(artist.idArtist, MediaTypeArtist, type, strArt);
       addedCount++;
@@ -2079,7 +2079,7 @@ bool CMusicInfoScanner::SetAlbumArtwork(CAlbum& album, std::vector<std::string>&
     // Add art to album and library
     if (!strArt.empty())
     {
-      CTextureCache::Get().BackgroundCacheImage(strArt);
+      CServiceBroker::GetTextureCache()->BackgroundCacheImage(strArt);
       album.art.insert(make_pair(type, strArt));
       m_musicDatabase.SetArtForItem(album.idAlbum, MediaTypeAlbum, type, strArt);
       addedCount++;
@@ -2163,7 +2163,7 @@ void CMusicInfoScanner::SetDiscSetArtwork(CAlbum& album, const std::vector<std::
         // Add disc set art as album art "<type><disc number>" and to library
         if (!strArt.empty())
         {
-          CTextureCache::Get().BackgroundCacheImage(strArt);
+          CServiceBroker::GetTextureCache()->BackgroundCacheImage(strArt);
           strArtType = StringUtils::Format("%s%i", type.c_str(), discnum);
           album.art.insert(make_pair(strArtType, strArt));
           m_musicDatabase.SetArtForItem(album.idAlbum, MediaTypeAlbum, strArtType, strArt);

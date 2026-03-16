@@ -112,7 +112,7 @@ namespace PROGRAM
     }
 
     for (CGUIListItem::ArtMap::const_iterator it = item->GetArt().begin(); it != item->GetArt().end(); ++it)
-      CTextureCache::Get().BackgroundCacheImage(it->second);
+      CServiceBroker::GetTextureCache()->BackgroundCacheImage(it->second);
   }
 
   std::string GetNFO(const std::string& strFilePath)

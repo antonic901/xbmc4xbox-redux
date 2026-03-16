@@ -911,10 +911,10 @@ void CGUIDialogMusicInfo::OnGetArt()
     // Skip images from remote sources (current thumb could be remote)
     if (url.IsProtocol("http") || url.IsProtocol("https"))
       continue;
-    CTextureCache::Get().ClearCachedImage(thumb);
+    CServiceBroker::GetTextureCache()->ClearCachedImage(thumb);
     // Remove any thumbnail of local image too (created when browsing files)
     std::string thumbthumb(CTextureUtils::GetWrappedThumbURL(thumb));
-    CTextureCache::Get().ClearCachedImage(thumbthumb);
+    CServiceBroker::GetTextureCache()->ClearCachedImage(thumbthumb);
   }
 
   // Show list of possible art for user selection
