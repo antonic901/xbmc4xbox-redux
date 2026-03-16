@@ -418,7 +418,7 @@ void CGUIDialogAddonInfo::OnUninstall()
   if (!CGUIDialogYesNo::ShowAndGetInput(24037, 750))
     return;
 
-  CJobManager::GetInstance().AddJob(new CAddonUnInstallJob(m_localAddon),
+  CServiceBroker::GetJobManager()->AddJob(new CAddonUnInstallJob(m_localAddon),
                                     &CAddonInstaller::GetInstance());
   Close();
 }

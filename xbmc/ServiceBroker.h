@@ -47,9 +47,10 @@ class CApplicationMessenger;
 } // namespace KODI
 
 class CContextMenuManager;
+class XBPython;
 class CWinSystemBase;
 class CGUIComponent;
-class XBPython;
+class CJobManager;
 
 namespace KODI
 {
@@ -80,6 +81,10 @@ public:
   static void UnregisterWinSystem();
   static CWinSystemBase* GetWinSystem();
 
+  static void RegisterJobManager(const boost::shared_ptr<CJobManager>& jobManager);
+  static void UnregisterJobManager();
+  static boost::shared_ptr<CJobManager> GetJobManager();
+
   static void RegisterAppMessenger(
       const boost::shared_ptr<KODI::MESSAGING::CApplicationMessenger>& appMessenger);
   static void UnregisterAppMessenger();
@@ -94,6 +99,7 @@ private:
   boost::shared_ptr<ANNOUNCEMENT::CAnnouncementManager> m_pAnnouncementManager;
   CGUIComponent* m_pGUI;
   CWinSystemBase* m_pWinSystem;
+  boost::shared_ptr<CJobManager> m_jobManager;
   boost::shared_ptr<KODI::MESSAGING::CApplicationMessenger> m_appMessenger;
   boost::shared_ptr<KODI::KEYBOARD::CKeyboardLayoutManager> m_keyboardLayoutManager;
 };

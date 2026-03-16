@@ -202,7 +202,7 @@ void CGUILargeTextureManager::ReleaseImage(const std::string &path, bool immedia
     if (image->GetPath() == path && image->DecrRef(true))
     {
       // cancel this job
-      CJobManager::GetInstance().CancelJob(id);
+      CServiceBroker::GetJobManager()->CancelJob(id);
       m_queued.erase(it);
       return;
     }
@@ -228,7 +228,7 @@ void CGUILargeTextureManager::QueueImage(const std::string &path, bool useCache)
 
   // queue the item
   CLargeTexture *image = new CLargeTexture(path);
-  unsigned int jobID = CJobManager::GetInstance().AddJob(new CImageLoader(path, useCache), this, CJob::PRIORITY_NORMAL);
+  unsigned int jobID = CServiceBroker::GetJobManager()->AddJob(new CImageLoader(path, useCache), this, CJob::PRIORITY_NORMAL);
   m_queued.push_back(std::make_pair(jobID, image));
 }
 
