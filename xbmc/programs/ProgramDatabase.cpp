@@ -15,6 +15,7 @@
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"
 #include "utils/Trainer.h"
 #include "utils/URIUtils.h"
@@ -115,7 +116,7 @@ std::string CProgramDatabase::GetValueString(const CProgramInfoTag &details, int
       break;
     case PROGRAMDB_TYPE_STRINGARRAY:
       conditions.push_back(PrepareSQL("c%02d='%s'", i, StringUtils::Join(*((std::vector<std::string>*)(((char*)&details)+offsets[i].offset)),
-                                                                          g_advancedSettings.m_programItemSeparator).c_str()));
+                                                                          CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programItemSeparator).c_str()));
       break;
     case PROGRAMDB_TYPE_DATE:
       conditions.push_back(PrepareSQL("c%02d='%s'", i, ((CDateTime*)(((char*)&details)+offsets[i].offset))->GetAsDBDate().c_str()));
@@ -153,7 +154,7 @@ void CProgramDatabase::GetDetailsFromDB(const dbiplus::sql_record* const record,
     {
       std::string value = record->at(i+idxOffset).get_asString();
       if (!value.empty())
-        *(std::vector<std::string>*)(((char*)&details)+offsets[i].offset) = StringUtils::Split(value, g_advancedSettings.m_programItemSeparator);
+        *(std::vector<std::string>*)(((char*)&details)+offsets[i].offset) = StringUtils::Split(value, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programItemSeparator);
       break;
     }
     case PROGRAMDB_TYPE_DATE:

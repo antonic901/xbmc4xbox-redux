@@ -34,6 +34,7 @@
 #include "messaging/ApplicationMessenger.h"
 #include "messaging/helpers/DialogHelper.h"
 #include "profiles/ProfilesManager.h"
+#include "settings/SettingsComponent.h"
 #include "settings/lib/Setting.h"
 #include "storage/MediaManager.h"
 #include "threads/SingleLock.h"
@@ -256,7 +257,7 @@ void CMediaSettings::OnSettingAction(const CSetting *setting)
     int retVal = CGUIDialogContextMenu::ShowAndGetChoice(choices);
     if ( retVal > 0 )
     {
-      CStdString path(CProfilesManager::Get().GetDatabaseFolder());
+      CStdString path(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetDatabaseFolder());
       VECSOURCES shares;
       CServiceBroker::GetMediaManager().GetLocalDrives(shares);
       if (CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(661), path, true))
@@ -280,7 +281,7 @@ void CMediaSettings::OnSettingAction(const CSetting *setting)
   }
   else if (settingId == "karaoke.importcsv")
   {
-    CStdString path(CProfilesManager::Get().GetDatabaseFolder());
+    CStdString path(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetDatabaseFolder());
     VECSOURCES shares;
     CServiceBroker::GetMediaManager().GetLocalDrives(shares);
     if (CGUIDialogFileBrowser::ShowAndGetFile(shares, "karaoke.csv", g_localizeStrings.Get(651) , path))

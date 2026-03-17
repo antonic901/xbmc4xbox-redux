@@ -56,13 +56,6 @@ public:
   CSettings();
   virtual ~CSettings();
 
-  /*!
-   \brief Returns a "global" settings wrapper which can be used from anywhere.
-
-   \return "global" settings wrapper
-   */
-  static CSettings& GetInstance();
-
   CSettingsManager* GetSettingsManager() const { return m_settingsManager; }
 
   /*!
@@ -93,6 +86,7 @@ public:
    \return True if the setting values were successfully loaded, false otherwise
    */
   bool Load(const TiXmlElement *root, bool hide = false);
+  bool IsLoaded();
   /*!
    \brief Tells the settings system that all setting values
    have been loaded.

@@ -33,6 +33,7 @@
 #include "messaging/ApplicationMessenger.h"
 #include "messaging/helpers/DialogHelper.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/lib/Setting.h"
 #include "threads/Timer.h"
 #include "utils/log.h"
@@ -322,7 +323,7 @@ void CSkinInfo::ResolveIncludes(TiXmlElement *node, std::map<INFO::InfoPtr, bool
 
 int CSkinInfo::GetStartWindow() const
 {
-  int windowID = CSettings::GetInstance().GetInt("lookandfeel.startupwindow");
+  int windowID = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lookandfeel.startupwindow");
   assert(m_startupWindows.size());
   for (std::vector<CStartupWindow>::const_iterator it = m_startupWindows.begin(); it != m_startupWindows.end(); ++it)
   {
@@ -388,7 +389,7 @@ int CSkinInfo::GetFirstWindow() const
 bool CSkinInfo::IsInUse() const
 {
   // Could extend this to prompt for reverting to the standard skin perhaps
-  return CSettings::GetInstance().GetString("lookandfeel.skin") == ID();
+  return CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skin") == ID();
 }
 
 const INFO::CSkinVariableString* CSkinInfo::CreateSkinVariable(const std::string& name, int context)
@@ -417,10 +418,10 @@ void CSkinInfo::OnPostInstall(bool update, bool modal)
       toast->ResetTimer();
       toast->Close(true);
     }
-    if (CSettings::GetInstance().GetString("lookandfeel.skin") == ID())
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skin") == ID())
       CServiceBroker::GetAppMessenger()->PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, "ReloadSkin");
     else
-      CSettings::GetInstance().SetString("lookandfeel.skin", ID());
+      CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("lookandfeel.skin", ID());
   }
 }
 

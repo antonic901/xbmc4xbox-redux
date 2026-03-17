@@ -20,8 +20,10 @@
 
 #include "system.h"
 #include "XBAudioConfig.h"
+#include "ServiceBroker.h"
 #include "guilib/LocalizeStrings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "xbox/Undocumented.h"
@@ -46,14 +48,14 @@ XBAudioConfig::~XBAudioConfig()
 
 void XBAudioConfig::OnSettingsLoaded()
 {
-  if (CSettings::GetInstance().GetInt("audiooutput.mode") == AUDIO_DIGITAL && !HasDigitalOutput())
-    CSettings::GetInstance().SetInt("audiooutput.mode", AUDIO_ANALOG);
-  CSettings::GetInstance().SetBool("audiooutput.ac3passthrough", GetAC3Enabled());
-  CSettings::GetInstance().SetBool("audiooutput.dtspassthrough", GetDTSEnabled());
-  CLog::Log(LOGINFO, "Using %s output", CSettings::GetInstance().GetInt("audiooutput.mode") == AUDIO_ANALOG ? "analog" : "digital");
-  CLog::Log(LOGINFO, "AC3 pass through is %s", CSettings::GetInstance().GetBool("audiooutput.ac3passthrough") ? "enabled" : "disabled");
-  CLog::Log(LOGINFO, "DTS pass through is %s", CSettings::GetInstance().GetBool("audiooutput.dtspassthrough") ? "enabled" : "disabled");
-  CLog::Log(LOGINFO, "AAC pass through is %s", CSettings::GetInstance().GetBool("audiooutput.aacpassthrough") ? "enabled" : "disabled");
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_DIGITAL && !HasDigitalOutput())
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("audiooutput.mode", AUDIO_ANALOG);
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("audiooutput.ac3passthrough", GetAC3Enabled());
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("audiooutput.dtspassthrough", GetDTSEnabled());
+  CLog::Log(LOGINFO, "Using %s output", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_ANALOG ? "analog" : "digital");
+  CLog::Log(LOGINFO, "AC3 pass through is %s", CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("audiooutput.ac3passthrough") ? "enabled" : "disabled");
+  CLog::Log(LOGINFO, "DTS pass through is %s", CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("audiooutput.dtspassthrough") ? "enabled" : "disabled");
+  CLog::Log(LOGINFO, "AAC pass through is %s", CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("audiooutput.aacpassthrough") ? "enabled" : "disabled");
 }
 
 bool XBAudioConfig::HasDigitalOutput()

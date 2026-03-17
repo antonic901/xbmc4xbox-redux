@@ -22,8 +22,10 @@
 #include "URL.h"
 #include "CurlFile.h"
 #include "FileItem.h"
+#include "ServiceBroker.h"
 #include "utils/RegExp.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
@@ -190,7 +192,7 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
             pItem->m_dwSize = (int64_t)Size;
           }
           else
-          if (g_advancedSettings.m_bHTTPDirectoryStatFilesize) // As a fallback get the size by stat-ing the file (slow)
+          if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bHTTPDirectoryStatFilesize) // As a fallback get the size by stat-ing the file (slow)
           {
             CCurlFile file;
             file.Open(url);

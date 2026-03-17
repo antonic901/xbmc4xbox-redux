@@ -20,11 +20,13 @@
 
 #include <ConIo.h>
 #include "FanController.h"
+#include "ServiceBroker.h"
 #include "guilib/LocalizeStrings.h"
 #include "xbox/Undocumented.h"
 #include "xbox/XKExports.h"
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"
 #include "utils/log.h"
 
@@ -83,7 +85,7 @@ void CFanController::OnExit()
 
 void CFanController::Process()
 {
-  if (!CSettings::GetInstance().GetBool("system.autotemperature")) return ;
+  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("system.autotemperature")) return ;
   int interval = 500;
   tooHotLoopCount = 0;
   tooColdLoopCount = 0;
@@ -164,8 +166,8 @@ void CFanController::OnSettingChanged(const CSetting *setting)
   {
     if (((CSettingBool*)setting)->GetValue())
     {
-      CSettings::GetInstance().SetBool("system.fanspeedcontrol", false);
-      CFanController::Instance()->Start(CSettings::GetInstance().GetInt("system.targettemperature"), CSettings::GetInstance().GetInt("system.minfanspeed") );
+      CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("system.fanspeedcontrol", false);
+      CFanController::Instance()->Start(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("system.targettemperature"), CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("system.minfanspeed") );
     }
     else
       CFanController::Instance()->Stop();
@@ -173,16 +175,16 @@ void CFanController::OnSettingChanged(const CSetting *setting)
   else if (settingId == "system.fanspeed")
   {
     int iSpeed = ((CSettingInt*)setting)->GetValue();
-    CSettings::GetInstance().SetInt("system.fanspeed", iSpeed);
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("system.fanspeed", iSpeed);
     CFanController::Instance()->SetFanSpeed(iSpeed);
   }
   else if (settingId == "system.fanspeedcontrol")
   {
     if (((CSettingBool*)setting)->GetValue())
     {
-      CSettings::GetInstance().SetBool("system.autotemperature", false);
+      CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("system.autotemperature", false);
       CFanController::Instance()->Stop();
-      CFanController::Instance()->SetFanSpeed(CSettings::GetInstance().GetInt("system.fanspeed"));
+      CFanController::Instance()->SetFanSpeed(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("system.fanspeed"));
     }
     else
       CFanController::Instance()->RestoreStartupSpeed();

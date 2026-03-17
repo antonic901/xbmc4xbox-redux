@@ -21,6 +21,7 @@
 #include "windowing/GraphicContext.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/AlarmClock.h"
 
 // What sound does a python screensaver make?
@@ -38,7 +39,7 @@ CScreenSaver::CScreenSaver(const char *addonID)
 
 bool CScreenSaver::IsInUse() const
 {
-  return CSettings::GetInstance().GetString("screensaver.mode") == ID();
+  return CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("screensaver.mode") == ID();
 }
 
 bool CScreenSaver::CreateScreenSaver()

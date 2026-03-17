@@ -207,6 +207,12 @@ public:
    * \brief Thread-safe random number generation
    */
   static int GetRandomNumber();
+
+  /** \brief Copy files from the application bundle over to the user data directory in Application Support/Kodi.
+  */
+  static void CopyUserDataIfNeeded(const std::string& strPath,
+                                   const std::string& file,
+                                   const std::string& destname = "");
 };
 
 

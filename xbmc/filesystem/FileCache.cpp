@@ -20,6 +20,7 @@
 
 #include "threads/SystemClock.h"
 #include "FileCache.h"
+#include "ServiceBroker.h"
 #include "threads/Thread.h"
 #include "File.h"
 #include "URL.h"
@@ -28,6 +29,7 @@
 #include "threads/SingleLock.h"
 #include "utils/log.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 
 #if !defined(TARGET_WINDOWS) && !defined(_XBOX)
 #include "linux/ConvUtils.h" //GetLastError()
@@ -179,7 +181,7 @@ bool CFileCache::Open(const CURL& url)
 
   if (!m_pCache)
   {
-    if (g_advancedSettings.m_cacheMemSize == 0)
+    if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cacheMemSize == 0)
     {
       // Use cache on disk
       m_pCache = new CSimpleFileCache();
@@ -188,14 +190,14 @@ bool CFileCache::Open(const CURL& url)
     else
     {
       size_t cacheSize;
-      if (m_fileSize > 0 && m_fileSize < g_advancedSettings.m_cacheMemSize && !(m_flags & READ_AUDIO_VIDEO))
+      if (m_fileSize > 0 && m_fileSize < CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cacheMemSize && !(m_flags & READ_AUDIO_VIDEO))
       {
         // NOTE: We don't need to take into account READ_MULTI_STREAM here as it's only used for audio/video
         cacheSize = m_fileSize;
       }
       else
       {
-        cacheSize = g_advancedSettings.m_cacheMemSize;
+        cacheSize = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cacheMemSize;
       }
 
       size_t back = cacheSize / 4;
@@ -296,13 +298,13 @@ void CFileCache::Process()
 
     while (m_writeRate)
     {
-      if (m_writePos - m_readPos < m_writeRate * g_advancedSettings.m_cacheReadFactor)
+      if (m_writePos - m_readPos < m_writeRate * CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cacheReadFactor)
       {
         limiter.Reset(m_writePos);
         break;
       }
 
-      if (limiter.Rate(m_writePos) < m_writeRate * g_advancedSettings.m_cacheReadFactor)
+      if (limiter.Rate(m_writePos) < m_writeRate * CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cacheReadFactor)
         break;
 
       if (m_seekEvent.WaitMSec(100))

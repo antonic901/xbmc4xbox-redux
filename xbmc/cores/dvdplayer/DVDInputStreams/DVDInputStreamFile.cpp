@@ -19,9 +19,11 @@
  */
  
 #include "DVDInputStreamFile.h"
+#include "ServiceBroker.h"
 #include "filesystem/File.h"
 #include "filesystem/IFile.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
 
@@ -68,10 +70,10 @@ bool CDVDInputStreamFile::Open()
    */
   if (!URIUtils::IsOnDVD(m_item.GetPath())/* && !URIUtils::IsBluray(m_item.GetPath())*/) // Never cache these
   {
-    if ((g_advancedSettings.m_cacheBufferMode == CACHE_BUFFER_MODE_INTERNET && URIUtils::IsInternetStream(m_item.GetPath(), true))
-     || (g_advancedSettings.m_cacheBufferMode == CACHE_BUFFER_MODE_TRUE_INTERNET && URIUtils::IsInternetStream(m_item.GetPath(), false))
-     || (g_advancedSettings.m_cacheBufferMode == CACHE_BUFFER_MODE_REMOTE && URIUtils::IsRemote(m_item.GetPath()))
-     || (g_advancedSettings.m_cacheBufferMode == CACHE_BUFFER_MODE_ALL))
+    if ((CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cacheBufferMode == CACHE_BUFFER_MODE_INTERNET && URIUtils::IsInternetStream(m_item.GetPath(), true))
+     || (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cacheBufferMode == CACHE_BUFFER_MODE_TRUE_INTERNET && URIUtils::IsInternetStream(m_item.GetPath(), false))
+     || (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cacheBufferMode == CACHE_BUFFER_MODE_REMOTE && URIUtils::IsRemote(m_item.GetPath()))
+     || (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cacheBufferMode == CACHE_BUFFER_MODE_ALL))
     {
       flags |= READ_CACHED;
     }

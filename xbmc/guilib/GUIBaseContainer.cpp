@@ -31,6 +31,7 @@
 #include "utils/XBMCTinyXML.h"
 #include "listproviders/IListProvider.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "guiinfo/GUIInfoLabels.h"
 
 #define HOLD_TIME_START 100
@@ -575,7 +576,7 @@ void CGUIBaseContainer::OnJumpLetter(char letter, bool skip /*=false*/)
   {
     CGUIListItemPtr item = m_items[i];
     std::string label = item->GetLabel();
-    if (CSettings::GetInstance().GetBool("filelists.ignorethewhensorting"))
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting"))
       label = SortUtils::RemoveArticles(label);
     if (0 == strnicmp(label.c_str(), m_match.c_str(), m_match.size()))
     {

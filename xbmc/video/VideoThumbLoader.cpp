@@ -33,6 +33,7 @@
 #include "music/MusicDatabase.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/VideoSettings.h"
 #include "TextureCache.h"
 #include "URL.h"
@@ -390,8 +391,8 @@ bool CVideoThumbLoader::LoadItemLookup(CFileItem* pItem)
             m_videoDatabase->SetArtForItem(info->m_iDbId, info->m_type, "thumb", thumbURL);
         }
       }
-      else if (CSettings::GetInstance().GetBool("myvideos.extractthumb") &&
-               CSettings::GetInstance().GetBool("myvideos.extractflags"))
+      else if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.extractthumb") &&
+               CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.extractflags"))
       {
         CFileItem item(*pItem);
         std::string path(item.GetPath());
@@ -407,7 +408,7 @@ bool CVideoThumbLoader::LoadItemLookup(CFileItem* pItem)
     }
 
     // flag extraction
-    if (CSettings::GetInstance().GetBool("myvideos.extractflags") &&
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.extractflags") &&
        (!pItem->HasVideoInfoTag()                     ||
         !pItem->GetVideoInfoTag()->HasStreamDetails() ) )
     {
@@ -528,7 +529,7 @@ std::string CVideoThumbLoader::GetLocalArt(const CFileItem &item, const std::str
      thumbloader thread accesses the streamed filesystem at the same time as the
      App thread and the latter has to wait for it.
    */
-  if (item.m_bIsFolder && (item.IsInternetStream(true) || g_advancedSettings.m_cacheBufferMode == CACHE_BUFFER_MODE_ALL))
+  if (item.m_bIsFolder && (item.IsInternetStream(true) || CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cacheBufferMode == CACHE_BUFFER_MODE_ALL))
   {
     CFileItemList items; // Dummy list
     CDirectory::GetDirectory(item.GetPath(), items, "", DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO);

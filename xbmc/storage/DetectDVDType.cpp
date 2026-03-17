@@ -28,6 +28,7 @@
 #include "xbox/Undocumented.h"
 #endif
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "GUIUserMessages.h"
 #include "utils/URIUtils.h"
 #include "guilib/GUIComponent.h"
@@ -71,12 +72,12 @@ void CDetectDVDMedia::OnStartup()
 
 void CDetectDVDMedia::Process()
 {
-  if (g_advancedSettings.m_usePCDVDROM)
+  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_usePCDVDROM)
   {
     m_DriveState = DRIVE_CLOSED_MEDIA_PRESENT;
   }
 
-  while (( !m_bStop ) && (!g_advancedSettings.m_usePCDVDROM))
+  while (( !m_bStop ) && (!CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_usePCDVDROM))
   {
     Sleep(500);
     UpdateDvdrom();
@@ -250,7 +251,7 @@ void CDetectDVDMedia::DetectMediaType()
 
   if (m_pCdInfo->IsISOUDF(1))
   {
-    if (!g_advancedSettings.m_detectAsUdf)
+    if (!CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_detectAsUdf)
     {
       strNewUrl = "iso9660://";
       m_isoReader.Scan();
@@ -299,7 +300,7 @@ void CDetectDVDMedia::SetNewDVDShareUrl( const CStdString& strNewUrl, bool bCDDA
   m_diskPath = strNewUrl;
 
   // update label to xbe label if applicable
-  if ((g_advancedSettings.m_usePCDVDROM || IsDiscInDrive()) && !bCDDA && CFile::Exists("D:\\default.xbe"))
+  if ((CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_usePCDVDROM || IsDiscInDrive()) && !bCDDA && CFile::Exists("D:\\default.xbe"))
     CUtil::GetXBEDescription("D:\\default.xbe", m_diskLabel);
 }
 
@@ -387,7 +388,7 @@ bool CDetectDVDMedia::IsDiscInDrive()
     bResult = false;
   }
 
-  if (g_advancedSettings.m_usePCDVDROM)
+  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_usePCDVDROM)
   {
     // allow the application to poll once every five seconds
     if ((clock() - m_LastPoll) > 5000)

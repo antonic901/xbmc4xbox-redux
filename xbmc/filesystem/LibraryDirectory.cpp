@@ -33,6 +33,7 @@
 #include "URL.h"
 #include "GUIInfoManager.h"
 #include "utils/log.h"
+#include "settings/SettingsComponent.h"
 
 using namespace XFILE;
 
@@ -169,7 +170,7 @@ bool CLibraryDirectory::Exists(const CURL& url)
 
 std::string CLibraryDirectory::GetNode(const CURL& url)
 {
-  std::string libDir = URIUtils::AddFileToFolder(CProfilesManager::Get().GetLibraryFolder(), url.GetHostName() + "/");
+  std::string libDir = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetLibraryFolder(), url.GetHostName() + "/");
   if (!CDirectory::Exists(libDir))
     libDir = URIUtils::AddFileToFolder("special://xbmc/system/library/", url.GetHostName() + "/");
 

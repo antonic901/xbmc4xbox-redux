@@ -31,6 +31,7 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "video/VideoInfoTag.h"
 #include "music/tags/MusicInfoTag.h"
 #include "URL.h"
@@ -60,7 +61,7 @@ bool CFavouritesDirectory::Exists(const CURL& url)
   if (url.IsProtocol("favourites"))
   {
     return XFILE::CFile::Exists("special://xbmc/system/favourites.xml")
-        || XFILE::CFile::Exists(URIUtils::AddFileToFolder(CProfilesManager::Get().GetProfileUserDataFolder(), "favourites.xml"));
+        || XFILE::CFile::Exists(URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetProfileUserDataFolder(), "favourites.xml"));
   }
   return XFILE::CDirectory::Exists(url);
 }
@@ -75,7 +76,7 @@ bool CFavouritesDirectory::Load(CFileItemList &items)
     CFavouritesDirectory::LoadFavourites(favourites, items);
   else
     CLog::Log(LOGDEBUG, "CFavourites::Load - no system favourites found, skipping");
-  favourites = URIUtils::AddFileToFolder(CProfilesManager::Get().GetProfileUserDataFolder(), "favourites.xml");
+  favourites = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetProfileUserDataFolder(), "favourites.xml");
   if(XFILE::CFile::Exists(favourites))
     CFavouritesDirectory::LoadFavourites(favourites, items);
   else
@@ -143,7 +144,7 @@ bool CFavouritesDirectory::Save(const CFileItemList &items)
     rootNode->InsertEndChild(favNode);
   }
 
-  favourites = URIUtils::AddFileToFolder(CProfilesManager::Get().GetProfileUserDataFolder(), "favourites.xml");
+  favourites = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetProfileUserDataFolder(), "favourites.xml");
 
   bool bRet = doc.SaveFile(favourites);
   if (bRet)
@@ -197,7 +198,7 @@ std::string CFavouritesDirectory::GetExecutePath(const CFileItem &item, int cont
 std::string CFavouritesDirectory::GetExecutePath(const CFileItem &item, const std::string &contextWindow)
 {
   std::string execute;
-  if (item.m_bIsFolder && (g_advancedSettings.m_playlistAsFolders ||
+  if (item.m_bIsFolder && (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_playlistAsFolders ||
                             !(item.IsSmartPlayList() || item.IsPlayList())))
   {
     if (!contextWindow.empty())

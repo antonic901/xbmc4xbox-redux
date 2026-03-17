@@ -28,6 +28,7 @@
 #include "network/DNSNameCache.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"
+#include "settings/SettingsComponent.h"
 #include "URL.h"
 #include "StringUtils.h"
 
@@ -132,11 +133,11 @@ void URIUtils::RemoveExtension(std::string& strFileName)
     strExtension += "|";
 
     CStdString strFileMask;
-    strFileMask = g_advancedSettings.m_pictureExtensions;
-    strFileMask += "|" + g_advancedSettings.m_musicExtensions;
-    strFileMask += "|" + g_advancedSettings.m_videoExtensions;
-    strFileMask += "|" + g_advancedSettings.m_subtitlesExtensions;
-    strFileMask += "|" + g_advancedSettings.m_programExtensions;
+    strFileMask = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions;
+    strFileMask += "|" + CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions;
+    strFileMask += "|" + CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions;
+    strFileMask += "|" + CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_subtitlesExtensions;
+    strFileMask += "|" + CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programExtensions;
 #if defined(TARGET_DARWIN)
     strFileMask += "|.py|.xml|.milk|.xpr|.xbt|.cdg|.app|.applescript|.workflow";
 #else
@@ -482,8 +483,14 @@ CURL URIUtils::SubstitutePath(const CURL& url, bool reverse /* = false */)
 
 CStdString URIUtils::SubstitutePath(const CStdString& strPath, bool reverse /* = false */)
 {
-  for (CAdvancedSettings::StringMapping::iterator i = g_advancedSettings.m_pathSubstitutions.begin();
-      i != g_advancedSettings.m_pathSubstitutions.end(); i++)
+  if (!CServiceBroker::GetSettingsComponent())
+  {
+    // path substitution not needed / not working during Kodi bootstrap.
+    return strPath;
+  }
+
+  for (CAdvancedSettings::StringMapping::iterator i = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pathSubstitutions.begin();
+      i != CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pathSubstitutions.end(); i++)
   {
     CStdString fromPath;
     CStdString toPath;

@@ -22,6 +22,7 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIAudioManager.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 
@@ -37,7 +38,7 @@ bool CUISoundsResource::IsAllowed(const std::string& file) const
 
 bool CUISoundsResource::IsInUse() const
 {
-  return CSettings::GetInstance().GetString("lookandfeel.soundskin") == ID();
+  return CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.soundskin") == ID();
 }
 
 void CUISoundsResource::OnPostInstall(bool update, bool modal)

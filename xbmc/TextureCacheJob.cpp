@@ -24,6 +24,7 @@
 #include "guilib/Texture.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "filesystem/File.h"
 #include "pictures/Picture.h"
@@ -120,7 +121,7 @@ bool CTextureCacheJob::CacheTexture(CBaseTexture **out_texture)
 #ifdef _XBOX
       { // load cached image
         delete texture;
-        *out_texture = CBaseTexture::LoadFromFile(CTextureCache::GetCachedPath(m_details.file), width, height, CSettings::GetInstance().GetBool("pictures.useexifrotation"));
+        *out_texture = CBaseTexture::LoadFromFile(CTextureCache::GetCachedPath(m_details.file), width, height, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("pictures.useexifrotation"));
       }
 #else
         *out_texture = texture;
@@ -156,7 +157,7 @@ std::string CTextureCacheJob::DecodeImageURL(const std::string &url, unsigned in
       additional_info = "flipped";
 
     if (thumbURL.GetOption("size") == "thumb")
-      width = height = g_advancedSettings.m_imageRes;
+      width = height = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_imageRes;
     else
     {
       if (thumbURL.HasOption("width") && StringUtils::IsInteger(thumbURL.GetOption("width")))
@@ -184,7 +185,7 @@ CBaseTexture *CTextureCacheJob::LoadImage(const std::string &image, unsigned int
       && !StringUtils::StartsWithNoCase(file.GetMimeType(), "image/") && !StringUtils::EqualsNoCase(file.GetMimeType(), "application/octet-stream")) // ignore non-pictures
     return NULL;
 
-  CBaseTexture *texture = CBaseTexture::LoadFromFile(image, width, height, CSettings::GetInstance().GetBool("pictures.useexifrotation"));
+  CBaseTexture *texture = CBaseTexture::LoadFromFile(image, width, height, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("pictures.useexifrotation"));
   if (!texture)
     return NULL;
 

@@ -28,6 +28,7 @@
 #include "messaging/ApplicationMessenger.h"
 #include "network/NetworkServices.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 
 #include "defs_from_settings.h"
@@ -396,12 +397,12 @@ bool CNetwork::SetupNetwork()
   {
     CLog::Log(LOGDEBUG, "%s - Setting up network...", __FUNCTION__);
     
-    Initialize(CSettings::GetInstance().GetInt("network.assignment"),
-      CSettings::GetInstance().GetString("network.ipaddress").c_str(),
-      CSettings::GetInstance().GetString("network.subnet").c_str(),
-      CSettings::GetInstance().GetString("network.gateway").c_str(),
-      CSettings::GetInstance().GetString("network.dns").c_str(),
-      CSettings::GetInstance().GetString("network.dns2").c_str());
+    Initialize(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("network.assignment"),
+      CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.ipaddress").c_str(),
+      CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.subnet").c_str(),
+      CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.gateway").c_str(),
+      CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.dns").c_str(),
+      CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.dns2").c_str());
       
     return true;
   }

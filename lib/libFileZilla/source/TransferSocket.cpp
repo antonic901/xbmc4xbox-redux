@@ -22,10 +22,12 @@
 #include "stdafx.h"
 #include "TransferSocket.h"
 #include "ControlSocket.h"
+#include "ServiceBroker.h"
 #include "options.h"
 #if defined(_XBOX)
 #include "util.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #endif
 #include "ServerThread.h"
 #ifndef NOLAYERS
@@ -498,7 +500,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 			ASSERT(m_Filename!="");
 #if defined(_XBOX)
       // this to handle fat-x limitations
-      if (CSettings::GetInstance().GetBool("services.ftpautofatx"))
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.ftpautofatx"))
       {
         /*CUtil::ShortenFileName(m_Filename); // change! addme to new ports
         CStdString strFilename = URIUtils::GetFileName(m_Filename);

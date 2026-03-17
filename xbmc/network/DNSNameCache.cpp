@@ -20,7 +20,9 @@
 
 #include "utils/log.h"
 #include "network/DNSNameCache.h"
+#include "ServiceBroker.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 
 CDNSNameCache g_DNSCache;
 
@@ -124,7 +126,7 @@ bool CDNSNameCache::Lookup(const CStdString& strHostName, CStdString& strIpAdres
     return true;
   }
 #else
-  CStdString suffix = CSettings::GetInstance().GetString("network.dnssuffix");
+  CStdString suffix = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.dnssuffix");
   CStdString fqdn;
   if( suffix.length() > 0 && strHostName.Find(".") < 0)
     fqdn = strHostName + "." + suffix;

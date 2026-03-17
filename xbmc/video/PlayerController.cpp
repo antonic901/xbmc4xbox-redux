@@ -23,6 +23,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "cores/IPlayer.h"
 #include "guilib/Key.h"
 #include "guilib/LocalizeStrings.h"
@@ -132,68 +133,68 @@ bool CPlayerController::OnAction(const CAction &action)
       case ACTION_SUBTITLE_DELAY_MIN:
       {
         CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay -= 0.1f;
-        if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay < -g_advancedSettings.m_videoSubsDelayRange)
-          CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay = -g_advancedSettings.m_videoSubsDelayRange;
+        if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay < -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange)
+          CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay = -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange;
         g_application.m_pPlayer->SetSubTitleDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
 
         ShowSlider(action.GetID(), 22006, CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay,
-                                          -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
-                                           g_advancedSettings.m_videoSubsDelayRange);
+                                          -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange, 0.1f,
+                                           CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange);
         return true;
       }
 
       case ACTION_SUBTITLE_DELAY_PLUS:
       {
         CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay += 0.1f;
-        if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay > g_advancedSettings.m_videoSubsDelayRange)
-          CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay = g_advancedSettings.m_videoSubsDelayRange;
+        if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay > CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange)
+          CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange;
         g_application.m_pPlayer->SetSubTitleDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
 
         ShowSlider(action.GetID(), 22006, CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay,
-                                          -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
-                                           g_advancedSettings.m_videoSubsDelayRange);
+                                          -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange, 0.1f,
+                                           CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange);
         return true;
       }
 
       case ACTION_SUBTITLE_DELAY:
       {
         ShowSlider(action.GetID(), 22006, CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay,
-                                          -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
-                                           g_advancedSettings.m_videoSubsDelayRange, true);
+                                          -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange, 0.1f,
+                                           CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange, true);
         return true;
       }
 
       case ACTION_AUDIO_DELAY:
       {
         ShowSlider(action.GetID(), 297, CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay,
-                                        -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
-                                         g_advancedSettings.m_videoAudioDelayRange, true);
+                                        -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange, 0.025f,
+                                         CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange, true);
         return true;
       }
 
       case ACTION_AUDIO_DELAY_MIN:
       {
         CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay -= 0.025f;
-        if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay < -g_advancedSettings.m_videoAudioDelayRange)
-          CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay = -g_advancedSettings.m_videoAudioDelayRange;
+        if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay < -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange)
+          CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay = -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange;
         g_application.m_pPlayer->SetAVDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay);
 
         ShowSlider(action.GetID(), 297, CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay,
-                                        -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
-                                         g_advancedSettings.m_videoAudioDelayRange);
+                                        -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange, 0.025f,
+                                         CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange);
         return true;
       }
 
       case ACTION_AUDIO_DELAY_PLUS:
       {
         CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay += 0.025f;
-        if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay > g_advancedSettings.m_videoAudioDelayRange)
-          CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay = g_advancedSettings.m_videoAudioDelayRange;
+        if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay > CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange)
+          CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange;
         g_application.m_pPlayer->SetAVDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay);
 
         ShowSlider(action.GetID(), 297, CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay,
-                                        -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
-                                         g_advancedSettings.m_videoAudioDelayRange);
+                                        -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange, 0.025f,
+                                         CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange);
         return true;
       }
 

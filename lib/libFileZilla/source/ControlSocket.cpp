@@ -38,6 +38,7 @@
 #include "interfaces/builtins/Builtins.h"
 #include "Utils/log.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/MemoryUnitManager.h"
 #endif
@@ -1083,7 +1084,7 @@ void CControlSocket::ParseCommand()
 							// don't show x, y, z in the listing as users shouldn't really be
 							// stuffing around with these drives (power users can always go
 							// to these folders by specifying the path directly)
-							if (drive >= 'x' && !g_advancedSettings.m_FTPShowCache)
+							if (drive >= 'x' && !CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_FTPShowCache)
 								continue;
 
 							if (1 /*g_settings.m_bFTPSingleCharDrives*/)
@@ -1592,7 +1593,7 @@ void CControlSocket::ParseCommand()
 				CStdString result;
 				int error = m_pOwner->m_pPermissions->GetFileName(m_status.user, args, m_CurrentDir, FOP_CREATENEW, result);
 #if defined(_XBOX)
-				if (CSettings::GetInstance().GetBool("services.ftpautofatx"))
+				if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.ftpautofatx"))
 					CUtil::GetFatXQualifiedPath(result);
 #endif
 				if (error)
@@ -1616,7 +1617,7 @@ void CControlSocket::ParseCommand()
 				CStdString result, logical;
 				int error = m_pOwner->m_pPermissions->GetDirName(m_status.user, args, m_CurrentDir, DOP_CREATE, result, logical);
 #if defined(_XBOX)
-				if (CSettings::GetInstance().GetBool("services.ftpautofatx"))
+				if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.ftpautofatx"))
 					CUtil::GetFatXQualifiedPath(result);
 #endif       
 				if (error)

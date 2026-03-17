@@ -24,6 +24,7 @@
 #include "guilib/Texture.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "threads/SingleLock.h"
 
 #define M_PI       3.14159265358979323846
@@ -129,7 +130,7 @@ void CSlideShowPic::SetTexture_Internal(int iSlideNumber, CBaseTexture* pTexture
   // the +1's make sure it actually occurs
   float fadeTime = 0.2f;
   if (m_displayEffect != EFFECT_NO_TIMEOUT)
-    fadeTime = std::min(0.2f*CSettings::GetInstance().GetInt("slideshow.staytime"), 3.0f);
+    fadeTime = std::min(0.2f*CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("slideshow.staytime"), 3.0f);
   m_transistionStart.length = (int)(CServiceBroker::GetWinSystem()->GetGfxContext().GetFPS() * fadeTime); // transition time in frames
   m_transistionEnd.type = transEffect;
   m_transistionEnd.length = m_transistionStart.length;
@@ -155,7 +156,7 @@ void CSlideShowPic::SetTexture_Internal(int iSlideNumber, CBaseTexture* pTexture
   m_fPosX = m_fPosY = 0.0f;
   m_fPosZ = 1.0f;
   m_fVelocityX = m_fVelocityY = m_fVelocityZ = 0.0f;
-  int iFrames = std::max((int)(CServiceBroker::GetWinSystem()->GetGfxContext().GetFPS() * CSettings::GetInstance().GetInt("slideshow.staytime")), 1);
+  int iFrames = std::max((int)(CServiceBroker::GetWinSystem()->GetGfxContext().GetFPS() * CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("slideshow.staytime")), 1);
   if (m_displayEffect == EFFECT_PANORAMA)
   {
     RESOLUTION_INFO res = CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo();
@@ -192,15 +193,15 @@ void CSlideShowPic::SetTexture_Internal(int iSlideNumber, CBaseTexture* pTexture
       // Calculate start and end positions
       // choose a random direction
       float angle = (rand() % 1000) / 1000.0f * 2 * (float)M_PI;
-      m_fPosX = cos(angle) * g_advancedSettings.m_slideshowPanAmount * m_iTotalFrames * 0.00005f;
-      m_fPosY = sin(angle) * g_advancedSettings.m_slideshowPanAmount * m_iTotalFrames * 0.00005f;
+      m_fPosX = cos(angle) * CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_slideshowPanAmount * m_iTotalFrames * 0.00005f;
+      m_fPosY = sin(angle) * CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_slideshowPanAmount * m_iTotalFrames * 0.00005f;
       m_fVelocityX = -m_fPosX * 2.0f / m_iTotalFrames;
       m_fVelocityY = -m_fPosY * 2.0f / m_iTotalFrames;
     }
     else if (m_displayEffect == EFFECT_ZOOM)
     {
       m_fPosZ = 1.0f;
-      m_fVelocityZ = 0.0001f * g_advancedSettings.m_slideshowZoomAmount;
+      m_fVelocityZ = 0.0001f * CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_slideshowZoomAmount;
     }
   }
 
@@ -344,7 +345,7 @@ void CSlideShowPic::Process(unsigned int currentTime, CDirtyRegionList &dirtyreg
     {
       m_fPosX += m_fVelocityX;
       m_fPosY += m_fVelocityY;
-      float fMoveAmount = g_advancedSettings.m_slideshowPanAmount * m_iTotalFrames * 0.0001f;
+      float fMoveAmount = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_slideshowPanAmount * m_iTotalFrames * 0.0001f;
       if (m_fPosX > fMoveAmount)
       {
         m_fPosX = fMoveAmount;
@@ -369,9 +370,9 @@ void CSlideShowPic::Process(unsigned int currentTime, CDirtyRegionList &dirtyreg
     else if (m_displayEffect == EFFECT_ZOOM)
     {
       m_fPosZ += m_fVelocityZ;
-/*      if (m_fPosZ > 1.0f + 0.01f*CSettings::GetInstance().GetInt("Slideshow.ZoomAmount"))
+/*      if (m_fPosZ > 1.0f + 0.01f*CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("Slideshow.ZoomAmount"))
       {
-        m_fPosZ = 1.0f + 0.01f * CSettings::GetInstance().GetInt("Slideshow.ZoomAmount");
+        m_fPosZ = 1.0f + 0.01f * CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("Slideshow.ZoomAmount");
         m_fVelocityZ = -m_fVelocityZ;
       }
       if (m_fPosZ < 1.0f)
@@ -454,7 +455,7 @@ void CSlideShowPic::Process(unsigned int currentTime, CDirtyRegionList &dirtyreg
   float fScaleInv = fScreenWidth / m_fHeight;
 
   bool bFillScreen = false;
-  float fComp = 1.0f + 0.01f * g_advancedSettings.m_slideshowBlackBarCompensation;
+  float fComp = 1.0f + 0.01f * CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_slideshowBlackBarCompensation;
   float fScreenRatio = fScreenWidth / fScreenHeight * fPixelRatio;
   // work out if we should be compensating the zoom to minimize blackbars
   // we should compute this based on the % of black bars on screen perhaps??
@@ -479,7 +480,7 @@ void CSlideShowPic::Process(unsigned int currentTime, CDirtyRegionList &dirtyreg
       fScale *= m_fHeight / fScreenHeight * fScreenWidth / m_fWidth;
   }
   if (m_displayEffect == EFFECT_FLOAT)
-    fScale *= (1.0f + g_advancedSettings.m_slideshowPanAmount * m_iTotalFrames * 0.0001f);
+    fScale *= (1.0f + CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_slideshowPanAmount * m_iTotalFrames * 0.0001f);
   if (m_displayEffect == EFFECT_ZOOM)
     fScale *= m_fPosZ;
   // zoom image
@@ -700,7 +701,7 @@ void CSlideShowPic::Rotate(float fRotateAngle, bool immediate /* = false */)
   m_transistionTemp.length = IMMEDIATE_TRANSISTION_TIME;
   m_fTransistionAngle = (float)fRotateAngle / (float)m_transistionTemp.length;
   // reset the timer
-  m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(CServiceBroker::GetWinSystem()->GetGfxContext().GetFPS() * CSettings::GetInstance().GetInt("slideshow.staytime"));
+  m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(CServiceBroker::GetWinSystem()->GetGfxContext().GetFPS() * CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("slideshow.staytime"));
 }
 
 void CSlideShowPic::Zoom(float fZoom, bool immediate /* = false */)
@@ -717,7 +718,7 @@ void CSlideShowPic::Zoom(float fZoom, bool immediate /* = false */)
   m_transistionTemp.length = IMMEDIATE_TRANSISTION_TIME;
   m_fTransistionZoom = (fZoom - m_fZoomAmount) / (float)m_transistionTemp.length;
   // reset the timer
-  m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(CServiceBroker::GetWinSystem()->GetGfxContext().GetFPS() * CSettings::GetInstance().GetInt("slideshow.staytime"));
+  m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(CServiceBroker::GetWinSystem()->GetGfxContext().GetFPS() * CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("slideshow.staytime"));
   // turn off the render effects until we're back down to normal zoom
   m_bNoEffect = true;
 }
@@ -727,7 +728,7 @@ void CSlideShowPic::Move(float fDeltaX, float fDeltaY)
   m_fZoomLeft += fDeltaX;
   m_fZoomTop += fDeltaY;
   // reset the timer
- // m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(CServiceBroker::GetWinSystem()->GetGfxContext().GetFPS() * CSettings::GetInstance().GetInt("slideshow.staytime"));
+ // m_transistionEnd.start = m_iCounter + m_transistionStart.length + (int)(CServiceBroker::GetWinSystem()->GetGfxContext().GetFPS() * CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("slideshow.staytime"));
 }
 
 void CSlideShowPic::Render()

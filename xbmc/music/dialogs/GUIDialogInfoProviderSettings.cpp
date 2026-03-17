@@ -45,6 +45,7 @@
 #include "settings/lib/SettingsManager.h"
 #include "settings/SettingUtils.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/windows/GUIControlSettings.h"
 #include "storage/MediaManager.h"
 #include "Util.h"
@@ -74,7 +75,7 @@ bool CGUIDialogInfoProviderSettings::Show()
   dialog->m_showSingleScraper = false;
 
   // Get current default info provider settings from service broker
-  dialog->m_fetchInfo = CSettings::GetInstance().GetBool("musiclibrary.downloadinfo");
+  dialog->m_fetchInfo = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musiclibrary.downloadinfo");
 
   ADDON::AddonPtr defaultScraper;
   // Get default album scraper (when enabled - can default scraper be disabled??)
@@ -91,7 +92,7 @@ bool CGUIDialogInfoProviderSettings::Show()
     dialog->SetArtistScraper(scraper);
   }
 
-  dialog->m_strArtistInfoPath = CSettings::GetInstance().GetString("musiclibrary.artistsfolder");
+  dialog->m_strArtistInfoPath = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musiclibrary.artistsfolder");
 
   dialog->Open();
 
@@ -131,7 +132,7 @@ int CGUIDialogInfoProviderSettings::Show(ADDON::ScraperPtr& scraper)
       scraper = dialog->GetArtistScraper();
       // Save artist information folder (here not in the caller) when applying setting as default for all artists
       if (applyToItems == INFOPROVIDER_DEFAULT)
-        CSettings::GetInstance().SetString("musiclibrary.artistsfolder", dialog->m_strArtistInfoPath);
+        CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("musiclibrary.artistsfolder", dialog->m_strArtistInfoPath);
     }
     if (scraper)
       scraper->SetPathSettings(dialog->m_singleScraperType, "");
@@ -266,15 +267,15 @@ void CGUIDialogInfoProviderSettings::Save()
   // Save default settings for fetching additional information and art
   CLog::Log(LOGINFO, "%s called", __FUNCTION__);
   // Save Fetch addiitional info during update
-  CSettings::GetInstance().SetBool("musiclibrary.downloadinfo", m_fetchInfo);
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("musiclibrary.downloadinfo", m_fetchInfo);
   // Save default scrapers and addon setting values
-  CSettings::GetInstance().SetString("musiclibrary.albumsscraper", m_albumscraper->ID());
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("musiclibrary.albumsscraper", m_albumscraper->ID());
   m_albumscraper->SaveSettings();
-  CSettings::GetInstance().SetString("musiclibrary.artistsscraper", m_artistscraper->ID());
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("musiclibrary.artistsscraper", m_artistscraper->ID());
   m_artistscraper->SaveSettings();
   // Save artist information folder
-  CSettings::GetInstance().SetString("musiclibrary.artistsfolder", m_strArtistInfoPath);
-  CSettings::GetInstance().Save();
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("musiclibrary.artistsfolder", m_strArtistInfoPath);
+  CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 }
 
 void CGUIDialogInfoProviderSettings::SetupView()

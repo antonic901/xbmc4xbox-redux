@@ -19,6 +19,7 @@
  */
 
 #include "DatabaseManager.h"
+#include "ServiceBroker.h"
 #include "utils/log.h"
 #include "addons/AddonDatabase.h"
 #include "view/ViewDatabase.h"
@@ -27,6 +28,7 @@
 #include "music/MusicDatabase.h"
 #include "video/VideoDatabase.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 
 CDatabaseManager::CDatabaseManager(): m_bIsUpgrading(false)
 {
@@ -49,8 +51,8 @@ void CDatabaseManager::Initialize(bool addonsOnly)
   { CViewDatabase db; UpdateDatabase(db); }
   { CTextureDatabase db; UpdateDatabase(db); }
   { CProgramDatabase db; UpdateDatabase(db); }
-  { CMusicDatabase db; UpdateDatabase(db, &g_advancedSettings.m_databaseMusic); }
-  { CVideoDatabase db; UpdateDatabase(db, &g_advancedSettings.m_databaseVideo); }
+  { CMusicDatabase db; UpdateDatabase(db, &CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_databaseMusic); }
+  { CVideoDatabase db; UpdateDatabase(db, &CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_databaseVideo); }
   CLog::Log(LOGDEBUG, "%s, updating databases... DONE", __FUNCTION__);
   m_bIsUpgrading = false;
 }

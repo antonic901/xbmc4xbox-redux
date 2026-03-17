@@ -25,6 +25,7 @@
 #include "AudioContext.h"
 #include "GUISound.h"
 #include "input/ButtonTranslator.h"
+#include "settings/SettingsComponent.h"
 #include "settings/lib/Setting.h"
 #include "threads/SingleLock.h"
 #include "utils/URIUtils.h"
@@ -39,11 +40,14 @@ using namespace XFILE;
 CGUIAudioManager::CGUIAudioManager()
 {
   m_actionSound=NULL;
+  std::set<std::string> settingSet;
+  settingSet.insert("lookandfeel.soundskin");
+  CServiceBroker::GetSettingsComponent()->GetSettings()->RegisterCallback(this, settingSet);
 }
 
 CGUIAudioManager::~CGUIAudioManager()
 {
-
+  CServiceBroker::GetSettingsComponent()->GetSettings()->UnregisterCallback(this);
 }
 
 void CGUIAudioManager::OnSettingChanged(const CSetting *setting)
@@ -283,7 +287,7 @@ void CGUIAudioManager::PlayPythonSound(const CStdString& strFileName)
 
 std::string GetSoundSkinPath()
 {
-  CSettingString* setting = static_cast<CSettingString*>(CSettings::GetInstance().GetSetting("lookandfeel.soundskin"));
+  CSettingString* setting = static_cast<CSettingString*>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.soundskin"));
   std::string value = setting->GetValue();
   if (value.empty())
     return "";
@@ -408,7 +412,7 @@ bool CGUIAudioManager::LoadWindowSound(TiXmlNode* pWindowNode, const CStdString&
 void CGUIAudioManager::Enable(bool bEnable)
 {
   // Enable/Disable has no effect if nav sounds are turned off
-  if (CSettings::GetInstance().GetString("lookandfeel.soundskin")=="OFF")
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.soundskin")=="OFF")
     bEnable = false;
 
   if (bEnable)

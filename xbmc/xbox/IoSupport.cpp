@@ -24,7 +24,9 @@
 
 #include "system.h"
 #include "IoSupport.h"
+#include "ServiceBroker.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #ifdef HAS_UNDOCUMENTED
 #ifdef _XBOX
@@ -259,7 +261,7 @@ DWORD CIoSupport::GetTrayState()
 {
 #ifdef _XBOX
   DWORD dwTrayState, dwTrayCount;
-  if (g_advancedSettings.m_usePCDVDROM)
+  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_usePCDVDROM)
   {
     dwTrayState = TRAY_CLOSED_MEDIA_PRESENT;
   }

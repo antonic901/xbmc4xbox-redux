@@ -138,6 +138,10 @@ public:
    being executed.
    */
   void SetLoaded() { m_loaded = true; }
+  /*!
+   \brief Returns whether the settings system has been loaded or not.
+  */
+  bool IsLoaded() const { return m_loaded; }
 
   void AddSection(CSettingSection *section);
 

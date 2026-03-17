@@ -23,9 +23,11 @@
 #include "stdafx.h"
 #include "misc\md5.h"
 #include "Permissions.h"
+#include "ServiceBroker.h"
 #include "misc\MarkupSTL.h"
 #include "options.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "Util.h"
 
 #ifdef _DEBUG
@@ -509,7 +511,7 @@ int CPermissions::GetDirName(LPCTSTR user, CStdString dirname, CStdString curren
       if(pos<0) pos = dirname.size();
       CStdString tmp = dirname.Left(pos);
 
-      if (CSettings::GetInstance().GetBool("services.ftpautofatx"))
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.ftpautofatx"))
 			{
         if(tmp.length() > 42)
           tmp = tmp.Left(42);

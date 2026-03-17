@@ -21,6 +21,7 @@
 #include "system.h"
 #include "utils/log.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "DVDPlayerAudio.h"
 #include "DVDPlayer.h"
 #include "DVDCodecs/Audio/DVDAudioCodec.h"
@@ -114,8 +115,8 @@ CDVDPlayerAudio::CDVDPlayerAudio(CDVDClock* pClock, CDVDMessageQueue& parent)
   m_freq = CurrentHostFrequency();
 
   m_decode.msg = NULL;
-  m_messageQueue.SetMaxDataSize(CSettings::GetInstance().GetInt("dvdplayercache.audio") * 1024);
-  m_messageQueue.SetMaxTimeSize(CSettings::GetInstance().GetInt("dvdplayercache.audiotime"));
+  m_messageQueue.SetMaxDataSize(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("dvdplayercache.audio") * 1024);
+  m_messageQueue.SetMaxTimeSize(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("dvdplayercache.audiotime"));
   g_dvdPerformanceCounter.EnableAudioQueue(&m_messageQueue);
 }
 
@@ -130,7 +131,7 @@ CDVDPlayerAudio::~CDVDPlayerAudio()
 
 bool CDVDPlayerAudio::OpenStream( CDVDStreamInfo &hints )
 {
-  bool passthrough = (CSettings::GetInstance().GetInt("audiooutput.mode") == AUDIO_DIGITAL);
+  bool passthrough = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_DIGITAL);
 
   CLog::Log(LOGNOTICE, "Finding audio codec for: %i", hints.codec);
   CDVDAudioCodec* codec = CDVDFactoryCodec::CreateAudioCodec(hints, passthrough);

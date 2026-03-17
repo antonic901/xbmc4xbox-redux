@@ -15,6 +15,7 @@
 #include "programs/ProgramDatabase.h"
 #include "programs/dialogs/GUIDialogProgramSettings.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "Shortcut.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
@@ -58,7 +59,7 @@ bool CROMLauncher::IsSupported()
   if (URIUtils::HasExtension(m_strExecutable, ".xbe"))
     return false;
 
-  return URIUtils::HasExtension(m_strExecutable, g_advancedSettings.m_programExtensions);
+  return URIUtils::HasExtension(m_strExecutable, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programExtensions);
 }
 
 CFileItemPtr CROMLauncher::GetDefaultEmulator()

@@ -31,6 +31,7 @@
 #include "xbox/Network.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/FileOperationJob.h"
 #include "utils/JSONVariantParser.h"
 #include "utils/log.h"
@@ -124,9 +125,9 @@ static int SetVolume(const std::vector<std::string>& params)
  */
 static int ToggleDebug(const std::vector<std::string>& params)
 {
-  bool debug = CSettings::GetInstance().GetBool("debug.showloginfo");
-  CSettings::GetInstance().SetBool("debug.showloginfo", !debug);
-  g_advancedSettings.SetDebugMode(!debug);
+  bool debug = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("debug.showloginfo");
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("debug.showloginfo", !debug);
+  CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->SetDebugMode(!debug);
 
   return 0;
 }

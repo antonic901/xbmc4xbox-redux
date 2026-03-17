@@ -19,6 +19,7 @@
  */
 
 #include "MusicInfoLoader.h"
+#include "ServiceBroker.h"
 #include "MusicDatabase.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "filesystem/MusicDatabaseDirectory/DirectoryNode.h"
@@ -27,6 +28,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "filesystem/File.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "FileItem.h"
 #include "utils/log.h"
 #include "utils/Archive.h"
@@ -214,7 +216,7 @@ bool CMusicInfoLoader::LoadItemLookup(CFileItem* pItem)
             pItem->SetArt("thumb", song.strThumb);
         }
       }
-      else if (CSettings::GetInstance().GetBool("musicfiles.usetags") || pItem->IsCDDA())
+      else if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicfiles.usetags") || pItem->IsCDDA())
       { // Nothing found, load tag from file,
         // always try to load cddb info
         // get correct tag parser

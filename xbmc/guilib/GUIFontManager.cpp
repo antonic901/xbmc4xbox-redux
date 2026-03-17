@@ -31,6 +31,7 @@
 #include "filesystem/File.h"
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
@@ -481,12 +482,12 @@ void GUIFontManager::SettingOptionsSubtitleHeightsFiller(const CSetting *setting
   }
   else
   {
-    if (CSettings::GetInstance().GetString("subtitles.font").size())
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.font").size())
     {
       //find font sizes...
       CFileItemList items;
       CStdString strPath = "special://xbmc/system/players/mplayer/font/";
-      strPath += CSettings::GetInstance().GetString("subtitles.font");
+      strPath += CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.font");
       strPath += "/";
       XFILE::CDirectory::GetDirectory(strPath, items, "", XFILE::DIR_FLAG_DEFAULTS);
       int iCurrentSize = 0;

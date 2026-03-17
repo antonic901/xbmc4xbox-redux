@@ -48,6 +48,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "FileItem.h"
 #include "utils/StreamDetails.h"
 #include "utils/StreamUtils.h"
@@ -408,7 +409,7 @@ bool CDVDPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
     Create();
 
     // wait for the ready event
-    CGUIDialogBusy::WaitOnEvent(m_ready, g_advancedSettings.m_videoBusyDialogDelay_ms, false, true);
+    CGUIDialogBusy::WaitOnEvent(m_ready, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoBusyDialogDelay_ms, false, true);
 
     // Playback might have been stopped due to some error
     if (m_bStop || m_bAbortRequest)
@@ -2197,12 +2198,12 @@ void CDVDPlayer::Seek(bool bPlus, bool bLargeStep, bool bChapterOverride)
   }
 
   int64_t seek;
-  if (g_advancedSettings.m_videoUseTimeSeeking && GetTotalTime() > 2000*g_advancedSettings.m_videoTimeSeekForwardBig)
+  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoUseTimeSeeking && GetTotalTime() > 2000*CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoTimeSeekForwardBig)
   {
     if (bLargeStep)
-      seek = bPlus ? g_advancedSettings.m_videoTimeSeekForwardBig : g_advancedSettings.m_videoTimeSeekBackwardBig;
+      seek = bPlus ? CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoTimeSeekForwardBig : CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoTimeSeekBackwardBig;
     else
-      seek = bPlus ? g_advancedSettings.m_videoTimeSeekForward : g_advancedSettings.m_videoTimeSeekBackward;
+      seek = bPlus ? CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoTimeSeekForward : CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoTimeSeekBackward;
     seek *= 1000;
     seek += GetTime();
   }
@@ -2210,9 +2211,9 @@ void CDVDPlayer::Seek(bool bPlus, bool bLargeStep, bool bChapterOverride)
   {
     float percent;
     if (bLargeStep)
-      percent = bPlus ? g_advancedSettings.m_videoPercentSeekForwardBig : g_advancedSettings.m_videoPercentSeekBackwardBig;
+      percent = bPlus ? CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoPercentSeekForwardBig : CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoPercentSeekBackwardBig;
     else
-      percent = bPlus ? g_advancedSettings.m_videoPercentSeekForward : g_advancedSettings.m_videoPercentSeekBackward;
+      percent = bPlus ? CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoPercentSeekForward : CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoPercentSeekBackward;
     seek = (int64_t)(GetTotalTimeInMsec()*(GetPercentage()+percent)/100);
   }
 

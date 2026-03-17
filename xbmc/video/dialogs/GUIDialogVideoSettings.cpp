@@ -32,6 +32,7 @@
 #include "profiles/ProfilesManager.h"
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/lib/Setting.h"
 #include "settings/lib/SettingsManager.h"
 #include "utils/log.h"
@@ -136,13 +137,13 @@ void CGUIDialogVideoSettings::OnSettingChanged(const CSetting *setting)
   }
   else if (settingId == SETTING_VIDEO_FLICKER)
   {
-    CSettings::GetInstance().SetInt("videoplayer.flicker", static_cast<const CSettingInt*>(setting)->GetValue());
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("videoplayer.flicker", static_cast<const CSettingInt*>(setting)->GetValue());
     RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
     CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(res);
   }
   else if (settingId == SETTING_VIDEO_SOFTEN)
   {
-    CSettings::GetInstance().SetBool("videoplayer.soften", static_cast<const CSettingBool*>(setting)->GetValue());
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("videoplayer.soften", static_cast<const CSettingBool*>(setting)->GetValue());
     RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
     CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(res);
   }
@@ -164,8 +165,8 @@ void CGUIDialogVideoSettings::OnSettingAction(const CSetting *setting)
   if (settingId == SETTING_VIDEO_CALIBRATION)
   {
     // launch calibration window
-    if (CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE  &&
-        g_passwordManager.CheckSettingLevelLock(CSettings::GetInstance().GetSetting("videoscreen.guicalibration")->GetLevel()))
+    if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE  &&
+        g_passwordManager.CheckSettingLevelLock(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("videoscreen.guicalibration")->GetLevel()))
       return;
     CServiceBroker::GetGUI()->GetWindowManager().ForceActivateWindow(WINDOW_SCREEN_CALIBRATION);
   }
@@ -181,7 +182,7 @@ void CGUIDialogVideoSettings::OnSettingAction(const CSetting *setting)
 
 void CGUIDialogVideoSettings::Save()
 {
-  if (CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
+  if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
       !g_passwordManager.CheckSettingLevelLock(::SettingLevelExpert))
     return;
 
@@ -197,7 +198,7 @@ void CGUIDialogVideoSettings::Save()
     CMediaSettings::Get().GetDefaultVideoSettings() = CMediaSettings::Get().GetCurrentVideoSettings();
     CMediaSettings::Get().GetDefaultVideoSettings().m_SubtitleStream = -1;
     CMediaSettings::Get().GetDefaultVideoSettings().m_AudioStream = -1;
-    CSettings::GetInstance().Save();
+    CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
   }
 }
 
@@ -284,8 +285,8 @@ void CGUIDialogVideoSettings::InitializeSettings()
     AddPercentageSlider(groupVideoPlayback, SETTING_VIDEO_CONTRAST, 465, 0, static_cast<int>(videoSettings.m_Contrast), 14047, 1, 465, usePopup);
   /*if (g_renderManager.Supports(RENDERFEATURE_GAMMA))*/
     AddPercentageSlider(groupVideoPlayback, SETTING_VIDEO_GAMMA, 466, 0, static_cast<int>(videoSettings.m_Gamma), 14047, 1, 466, usePopup);
-  AddSpinner(groupSaveAsDefault, SETTING_VIDEO_FLICKER, 13100, 0, CSettings::GetInstance().GetInt("videoplayer.flicker"), 0, 1, 5, -1, 351);
-  AddToggle(groupSaveAsDefault, SETTING_VIDEO_SOFTEN, 215, 0, CSettings::GetInstance().GetBool("videoplayer.soften"));
+  AddSpinner(groupSaveAsDefault, SETTING_VIDEO_FLICKER, 13100, 0, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoplayer.flicker"), 0, 1, 5, -1, 351);
+  AddToggle(groupSaveAsDefault, SETTING_VIDEO_SOFTEN, 215, 0, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videoplayer.soften"));
   if (g_application.GetCurrentPlayer() == EPC_MPLAYER)
   {
     AddSlider(groupVideoPlayback, SETTING_VIDEO_FILM_GRAIN, 14058, 0, videoSettings.m_FilmGrain, "%f", 0.0f, 1.0f, 10.0f);

@@ -21,7 +21,7 @@
 #include "ServiceBroker.h"
 
 #include "Application.h"
-
+#include "settings/SettingsComponent.h"
 #include "windowing/WinSystem.h"
 
 using namespace KODI;
@@ -60,6 +60,21 @@ CContextMenuManager& CServiceBroker::GetContextMenuManager()
 PLAYLIST::CPlayListPlayer &CServiceBroker::GetPlaylistPlayer()
 {
   return g_application.m_ServiceManager->GetPlaylistPlayer();
+}
+
+void CServiceBroker::RegisterSettingsComponent(const boost::shared_ptr<CSettingsComponent>& settings)
+{
+  g_serviceBroker.m_pSettingsComponent = settings;
+}
+
+void CServiceBroker::UnregisterSettingsComponent()
+{
+  g_serviceBroker.m_pSettingsComponent.reset();
+}
+
+boost::shared_ptr<CSettingsComponent> CServiceBroker::GetSettingsComponent()
+{
+  return g_serviceBroker.m_pSettingsComponent;
 }
 
 ADDON::CRepositoryUpdater& CServiceBroker::GetRepositoryUpdater()

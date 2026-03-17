@@ -16,6 +16,7 @@
 #include "StringUtils.h"
 #include "URL.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 
 using namespace XFILE;
 using namespace std;
@@ -128,7 +129,7 @@ bool CFileUtils::RemoteAccessAllowed(const CStdString &strPath)
     return true;
   else
   {
-    std::string strPlaylistsPath = CSettings::GetInstance().GetString("system.playlistspath");
+    std::string strPlaylistsPath = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("system.playlistspath");
     URIUtils::RemoveSlashAtEnd(strPlaylistsPath);
     if (StringUtils::StartsWithNoCase(realPath, strPlaylistsPath)) 
       return true;

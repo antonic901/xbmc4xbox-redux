@@ -4,6 +4,7 @@
 #include "libXenium/XeniumLCD.h"
 #include "x3lcd/x3lcd.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 
 ILCD* g_lcd = NULL;
 CLCDFactory::CLCDFactory(void)
@@ -14,7 +15,7 @@ CLCDFactory::~CLCDFactory(void)
 
 ILCD* CLCDFactory::Create()
 {
-  switch (CSettings::GetInstance().GetInt("lcd.modchip"))
+  switch (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.modchip"))
   {
   case MODCHIP_XENIUM:
     return new CXeniumLCD();

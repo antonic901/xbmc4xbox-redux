@@ -19,9 +19,11 @@
  */
 
 #include "VideoInfoTag.h"
+#include "ServiceBroker.h"
 #include "utils/XMLUtils.h"
 #include "guilib/LocalizeStrings.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
@@ -987,23 +989,23 @@ void CVideoInfoTag::ParseNative(const TiXmlElement* movie, bool prioritise)
   }
 
   std::vector<std::string> genres(m_genre);
-  if (XMLUtils::GetStringArray(movie, "genre", genres, prioritise, g_advancedSettings.m_videoItemSeparator))
+  if (XMLUtils::GetStringArray(movie, "genre", genres, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator))
     SetGenre(genres);
 
   std::vector<std::string> country(m_country);
-  if (XMLUtils::GetStringArray(movie, "country", country, prioritise, g_advancedSettings.m_videoItemSeparator))
+  if (XMLUtils::GetStringArray(movie, "country", country, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator))
     SetCountry(country);
 
   std::vector<std::string> credits(m_writingCredits);
-  if (XMLUtils::GetStringArray(movie, "credits", credits, prioritise, g_advancedSettings.m_videoItemSeparator))
+  if (XMLUtils::GetStringArray(movie, "credits", credits, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator))
     SetWritingCredits(credits);
 
   std::vector<std::string> director(m_director);
-  if (XMLUtils::GetStringArray(movie, "director", director, prioritise, g_advancedSettings.m_videoItemSeparator))
+  if (XMLUtils::GetStringArray(movie, "director", director, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator))
     SetDirector(director);
 
   std::vector<std::string> showLink(m_showLink);
-  if (XMLUtils::GetStringArray(movie, "showlink", showLink, prioritise, g_advancedSettings.m_videoItemSeparator))
+  if (XMLUtils::GetStringArray(movie, "showlink", showLink, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator))
     SetShowLink(showLink);
 
   const TiXmlElement* namedSeason = movie->FirstChildElement("namedseason");
@@ -1070,11 +1072,11 @@ void CVideoInfoTag::ParseNative(const TiXmlElement* movie, bool prioritise)
   }
 
   std::vector<std::string> tags(m_tags);
-  if (XMLUtils::GetStringArray(movie, "tag", tags, prioritise, g_advancedSettings.m_videoItemSeparator))
+  if (XMLUtils::GetStringArray(movie, "tag", tags, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator))
     SetTags(tags);
 
   std::vector<std::string> studio(m_studio);
-  if (XMLUtils::GetStringArray(movie, "studio", studio, prioritise, g_advancedSettings.m_videoItemSeparator))
+  if (XMLUtils::GetStringArray(movie, "studio", studio, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator))
     SetStudio(studio);
 
   // artists
@@ -1095,7 +1097,7 @@ void CVideoInfoTag::ParseNative(const TiXmlElement* movie, bool prioritise)
       const char* clear=node->Attribute("clear");
       if (clear && stricmp(clear,"true")==0)
         artist.clear();
-      std::vector<std::string> newArtists = StringUtils::Split(pValue, g_advancedSettings.m_videoItemSeparator);
+      std::vector<std::string> newArtists = StringUtils::Split(pValue, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
       artist.insert(artist.end(), newArtists.begin(), newArtists.end());
     }
     node = node->NextSiblingElement("artist");

@@ -21,10 +21,12 @@
 #include "system.h"
 #include "utils/log.h"
 #include "DVDInputStreamNavigator.h"
+#include "ServiceBroker.h"
 #include "utils/LangCodeExpander.h"
 #include "DVDDemuxSPU.h"
 #include "DVDStateSerializer.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "LangInfo.h"
 
 #include "guilib/Geometry.h"
@@ -99,7 +101,7 @@ bool CDVDInputStreamNavigator::Open()
   }
   free(strDVDFile);
 
-  int region = CSettings::GetInstance().GetInt("dvds.playerregion");
+  int region = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("dvds.playerregion");
   int mask = 0;
   if(region > 0)
     mask = 1 << (region-1);
@@ -174,7 +176,7 @@ bool CDVDInputStreamNavigator::Open()
   }
 
   // jump directly to title menu
-  if(CSettings::GetInstance().GetBool("dvds.automenu"))
+  if(CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("dvds.automenu"))
   {
     int len, event;
     uint8_t buf[2048];

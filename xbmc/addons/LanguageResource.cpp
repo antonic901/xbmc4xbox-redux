@@ -25,6 +25,7 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
 #include "messaging/helpers/DialogHelper.h"
@@ -131,7 +132,7 @@ CLanguageResource::CLanguageResource(
 
 bool CLanguageResource::IsInUse() const
 {
-  return StringUtils::EqualsNoCase(CSettings::GetInstance().GetString("locale.language"), ID());
+  return StringUtils::EqualsNoCase(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("locale.language"), ID());
 }
 
 void CLanguageResource::OnPostInstall(bool update, bool modal)
@@ -146,7 +147,7 @@ void CLanguageResource::OnPostInstall(bool update, bool modal)
     if (IsInUse())
       g_langInfo.SetLanguage(ID());
     else
-      CSettings::GetInstance().SetString("locale.language", ID());
+      CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("locale.language", ID());
   }
 }
 

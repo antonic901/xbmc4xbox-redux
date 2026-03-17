@@ -19,7 +19,9 @@
  */
 
 #include "Id3Tag.h"
+#include "ServiceBroker.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
@@ -144,9 +146,9 @@ bool CID3Tag::Parse()
     tag.SetMusicBrainzTrackID(strTrackId);
   }
 
-  tag.SetMusicBrainzArtistID(StringUtils::Split(GetUserText("MusicBrainz Artist Id"), g_advancedSettings.m_musicItemSeparator));
+  tag.SetMusicBrainzArtistID(StringUtils::Split(GetUserText("MusicBrainz Artist Id"), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   tag.SetMusicBrainzAlbumID(GetUserText("MusicBrainz Album Id"));
-  tag.SetMusicBrainzAlbumArtistID(StringUtils::Split(GetUserText("MusicBrainz Album Artist Id"), g_advancedSettings.m_musicItemSeparator));
+  tag.SetMusicBrainzAlbumArtistID(StringUtils::Split(GetUserText("MusicBrainz Album Artist Id"), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
 
   // extract Cover Art and save as album thumb
   bool bFound = false;
@@ -198,11 +200,11 @@ bool CID3Tag::Write(const CStdString& strFile)
   }
 
   SetTitle(m_musicInfoTag.GetTitle());
-  SetArtist(StringUtils::Join(m_musicInfoTag.GetArtist(), g_advancedSettings.m_musicItemSeparator));
+  SetArtist(StringUtils::Join(m_musicInfoTag.GetArtist(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   SetAlbum(m_musicInfoTag.GetAlbum());
-  SetAlbumArtist(StringUtils::Join(m_musicInfoTag.GetAlbumArtist(), g_advancedSettings.m_musicItemSeparator));
+  SetAlbumArtist(StringUtils::Join(m_musicInfoTag.GetAlbumArtist(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   SetTrack(m_musicInfoTag.GetTrackNumber());
-  SetGenre(StringUtils::Join(m_musicInfoTag.GetGenre(), g_advancedSettings.m_musicItemSeparator));
+  SetGenre(StringUtils::Join(m_musicInfoTag.GetGenre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   SetYear(m_musicInfoTag.GetYearString());
   SetEncodedBy("XBMC");
 
@@ -280,7 +282,7 @@ CStdString CID3Tag::GetGenre() const
       if (!strGenre.IsEmpty())
       {
         if (!genre.IsEmpty())
-          genre += g_advancedSettings.m_musicItemSeparator;
+          genre += CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator;
         genre += ParseMP3Genre(strGenre);
       }
     }
@@ -545,7 +547,7 @@ CStdString CID3Tag::ParseMP3Genre(const CStdString& str) const
   {
     CStdString strTemp = *it;
     if (!strGenre.IsEmpty())
-      strGenre += g_advancedSettings.m_musicItemSeparator;
+      strGenre += CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator;
     strGenre += strTemp;
   }
   return strGenre;

@@ -34,6 +34,7 @@
 #include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/lib/Setting.h"
 #include "settings/lib/SettingsManager.h"
 #include "utils/LangCodeExpander.h"
@@ -91,7 +92,7 @@ void CGUIDialogAudioSubtitleSettings::FrameMove()
     m_settingsManager->SetNumber(SETTING_AUDIO_DELAY, videoSettings.m_AudioDelay);
     m_settingsManager->SetInt(SETTING_AUDIO_STREAM, g_application.m_pPlayer->GetAudioStream());
     m_settingsManager->SetBool(SETTING_AUDIO_OUTPUT_TO_ALL_SPEAKERS, videoSettings.m_OutputToAllSpeakers);
-    m_settingsManager->SetInt(SETTING_AUDIO_DIGITAL_ANALOG, CSettings::GetInstance().GetInt("audiooutput.mode"));
+    m_settingsManager->SetInt(SETTING_AUDIO_DIGITAL_ANALOG, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode"));
 
     m_settingsManager->SetBool(SETTING_SUBTITLE_ENABLE, videoSettings.m_SubtitleOn);
     m_settingsManager->SetNumber(SETTING_SUBTITLE_DELAY, videoSettings.m_SubtitleDelay);
@@ -158,7 +159,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(const CSetting *setting)
         // update the screen setting...
         videoSettings.m_AudioStream = -1 - m_audioStream;
         // call monkeyh1's code here...
-        bool bAudioOnAllSpeakers = (CSettings::GetInstance().GetInt("audiooutput.mode") == AUDIO_DIGITAL) && CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers;
+        bool bAudioOnAllSpeakers = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_DIGITAL) && CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers;
 #if defined(HAS_VIDEO_PLAYBACK) && defined(HAS_XBOX_HARDWARE)
         xbox_audio_switch_channel(m_audioStream, bAudioOnAllSpeakers);
 #endif
@@ -180,7 +181,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(const CSetting *setting)
   else if (settingId == SETTING_AUDIO_DIGITAL_ANALOG)
   {
     m_outputmode = static_cast<const CSettingBool*>(setting)->GetValue();
-    CSettings::GetInstance().SetInt("audiooutput.mode", m_outputmode);
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("audiooutput.mode", m_outputmode);
     g_application.Restart();
   }
   else if (settingId == SETTING_SUBTITLE_ENABLE)
@@ -220,12 +221,12 @@ void CGUIDialogAudioSubtitleSettings::OnSettingAction(const CSetting *setting)
     if (g_application.GetCurrentPlayer() == EPC_DVDPLAYER)
       strMask = ".srt|.rar|.zip|.ifo|.smi|.sub|.idx|.ass|.ssa|.txt";
     VECSOURCES shares(*CMediaSourceSettings::Get().GetSources("video"));
-    if (CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked() != -1 && !CSettings::GetInstance().GetString("subtitles.custompath").empty())
+    if (CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked() != -1 && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.custompath").empty())
     {
       CMediaSource share;
       std::vector<std::string> paths;
       paths.push_back(URIUtils::GetDirectory(strPath));
-      paths.push_back(CSettings::GetInstance().GetString("subtitles.custompath"));
+      paths.push_back(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.custompath"));
       share.FromNameAndPaths("video",g_localizeStrings.Get(21367),paths);
       shares.push_back(share);
       strPath = share.strPath;
@@ -367,7 +368,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingAction(const CSetting *setting)
 void CGUIDialogAudioSubtitleSettings::Save()
 {
   if (!g_passwordManager.CheckSettingLevelLock(SettingLevelExpert) &&
-      CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE)
+      CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE)
     return;
 
   // prompt user if they are sure
@@ -385,7 +386,7 @@ void CGUIDialogAudioSubtitleSettings::Save()
   CMediaSettings::Get().GetDefaultVideoSettings() = CMediaSettings::Get().GetCurrentVideoSettings();
   CMediaSettings::Get().GetDefaultVideoSettings().m_SubtitleStream = -1;
   CMediaSettings::Get().GetDefaultVideoSettings().m_AudioStream = -1;
-  CSettings::GetInstance().Save();
+  CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 }
 
 void CGUIDialogAudioSubtitleSettings::SetupView()
@@ -454,7 +455,7 @@ void CGUIDialogAudioSubtitleSettings::InitializeSettings()
   // audio delay setting
   /*if (SupportsAudioFeature(IPC_AUD_OFFSET))*/
   {
-    CSettingNumber *settingAudioDelay = AddSlider(groupAudio, SETTING_AUDIO_DELAY, 297, 0, videoSettings.m_AudioDelay, 0, -g_advancedSettings.m_videoAudioDelayRange, 0.025f, g_advancedSettings.m_videoAudioDelayRange, -1, usePopup);
+    CSettingNumber *settingAudioDelay = AddSlider(groupAudio, SETTING_AUDIO_DELAY, 297, 0, videoSettings.m_AudioDelay, 0, -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange, 0.025f, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange, -1, usePopup);
     static_cast<CSettingControlSlider*>(settingAudioDelay->GetControl())->SetFormatter(SettingFormatterDelay);
   }
 
@@ -473,7 +474,7 @@ void CGUIDialogAudioSubtitleSettings::InitializeSettings()
   // audio digital/analog setting
   if(g_audioConfig.HasDigitalOutput())
   {
-    m_outputmode = CSettings::GetInstance().GetInt("audiooutput.mode");
+    m_outputmode = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode");
     AddSpinner(groupAudio, SETTING_AUDIO_DIGITAL_ANALOG, 38629, 0, m_outputmode, XBAudioConfig::SettingAudioOutputFiller);
   }
 
@@ -485,7 +486,7 @@ void CGUIDialogAudioSubtitleSettings::InitializeSettings()
   // subtitle delay setting
   /*if (SupportsSubtitleFeature(IPC_SUBS_OFFSET))*/
   {
-    CSettingNumber *settingSubtitleDelay = AddSlider(groupSubtitles, SETTING_SUBTITLE_DELAY, 22006, 0, videoSettings.m_SubtitleDelay, 0, -g_advancedSettings.m_videoSubsDelayRange, 0.1f, g_advancedSettings.m_videoSubsDelayRange, -1, usePopup);
+    CSettingNumber *settingSubtitleDelay = AddSlider(groupSubtitles, SETTING_SUBTITLE_DELAY, 22006, 0, videoSettings.m_SubtitleDelay, 0, -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange, 0.1f, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange, -1, usePopup);
     static_cast<CSettingControlSlider*>(settingSubtitleDelay->GetControl())->SetFormatter(SettingFormatterDelay);
   }
 

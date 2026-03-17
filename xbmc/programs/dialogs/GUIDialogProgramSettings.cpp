@@ -18,6 +18,7 @@
 #include "programs/launchers/ProgramLauncher.h"
 #include "programs/launchers/ROMLauncher.h"
 #include "profiles/ProfilesManager.h"
+#include "settings/SettingsComponent.h"
 #include "settings/lib/Setting.h"
 #include "settings/windows/GUIControlSettings.h"
 #include "Util.h"
@@ -373,7 +374,7 @@ void CGUIDialogProgramSettings::OnSettingAction(const CSetting *setting)
 
 void CGUIDialogProgramSettings::Save()
 {
-  if (CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
+  if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
       !g_passwordManager.CheckSettingLevelLock(::SettingLevelExpert))
     return;
 

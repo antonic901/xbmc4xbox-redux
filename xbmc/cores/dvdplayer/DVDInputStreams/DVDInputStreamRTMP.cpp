@@ -20,7 +20,9 @@
 
 #include "FileItem.h"
 
+#include "ServiceBroker.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "DVDInputStreamRTMP.h"
 #include "threads/SingleLock.h"
 #include "utils/log.h"
@@ -66,7 +68,7 @@ CDVDInputStreamRTMP::CDVDInputStreamRTMP(CFileItem &fileitem)
     RTMP_LogLevel level;
 
     m_libRTMP.LogSetCallback(CDVDInputStreamRTMP_Log);
-    switch (g_advancedSettings.m_logLevel)
+    switch (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel)
     {
       case LOG_LEVEL_DEBUG_FREEMEM:
       case LOG_LEVEL_DEBUG: level = RTMP_LOGDEBUG; break;
@@ -74,7 +76,7 @@ CDVDInputStreamRTMP::CDVDInputStreamRTMP(CFileItem &fileitem)
       default: level = RTMP_LOGCRIT; break;
     }
 
-    if (g_advancedSettings.m_extraLogLevels & LOGRTMP)
+    if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_extraLogLevels & LOGRTMP)
       level = RTMP_LOGDEBUG2;
 
     m_libRTMP.LogSetLevel(level);

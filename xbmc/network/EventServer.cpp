@@ -87,7 +87,7 @@ void CEventServer::StartServer()
     return;
 
   // set default port
-  m_iPort = CSettings::GetInstance().GetInt("services.esport");
+  m_iPort = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.esport");
   if (m_iPort > 65535 || m_iPort < 1)
   {
     CLog::Log(LOGERROR, "ES: Invalid port specified %d, defaulting to 9777", m_iPort);
@@ -95,7 +95,7 @@ void CEventServer::StartServer()
   }
 
   // max clients
-  m_iMaxClients = CSettings::GetInstance().GetInt("services.esmaxclients");
+  m_iMaxClients = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.esmaxclients");
   if (m_iMaxClients < 0)
   {
     CLog::Log(LOGERROR, "ES: Invalid maximum number of clients specified %d", m_iMaxClients);
@@ -151,7 +151,7 @@ void CEventServer::Process()
   int packetSize = 0;
 
 #ifndef _XBOX
-  if (!CSettings::GetInstance().GetBool("services.esallinterfaces"))
+  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.esallinterfaces"))
     any_addr.SetAddress ("127.0.0.1");  // only listen on localhost
 #endif
 
@@ -175,7 +175,7 @@ void CEventServer::Process()
   }
 
   // bind to IP and start listening on port
-  int port_range = CSettings::GetInstance().GetInt("services.esportrange");
+  int port_range = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.esportrange");
   if (port_range < 1 || port_range > 100)
   {
     CLog::Log(LOGERROR, "ES: Invalid port range specified %d, defaulting to 10", port_range);

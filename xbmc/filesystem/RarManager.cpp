@@ -26,6 +26,7 @@
 #include "Directory.h"
 #include "SpecialProtocol.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "FileItem.h"
 #include "utils/log.h"
 #include "filesystem/File.h"
@@ -186,7 +187,7 @@ bool CRarManager::CacheRarredFile(CStdString& strPathInCache, const CStdString& 
     if (CheckFreeSpace(strDir) < iSize)
     {
       CFileItemList items;
-      CDirectory::GetDirectory(g_advancedSettings.m_cachePath,items,"",DIR_FLAG_DEFAULTS);
+      CDirectory::GetDirectory(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cachePath,items,"",DIR_FLAG_DEFAULTS);
       items.Sort(SortBySize, SortOrderDescending);
       while (items.Size() && CheckFreeSpace(strDir) < iSize)
       {

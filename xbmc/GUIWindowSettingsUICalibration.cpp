@@ -22,6 +22,7 @@
 #include "GUIMoverControl.h"
 #include "Application.h"
 #include "settings/DisplaySettings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/GUIWindowSettingsScreenCalibration.h"
 
 #define CONTROL_TOPLEFT 8
@@ -40,7 +41,7 @@ bool CGUIWindowSettingsUICalibration::OnAction(const CAction &action)
 {
   if (action.wID == ACTION_PREVIOUS_MENU)
   {
-    CSettings::GetInstance().Save();
+    CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
     m_gWindowManager.PreviousWindow();
     return true;
   }

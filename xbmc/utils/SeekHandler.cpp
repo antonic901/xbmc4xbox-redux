@@ -31,6 +31,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "utils/MathUtils.h"
 #include "utils/StringUtils.h"
@@ -63,8 +64,8 @@ void CSeekHandler::Configure()
   Reset();
 
   m_seekDelays.clear();
-  m_seekDelays.insert(std::make_pair(SEEK_TYPE_VIDEO, CSettings::GetInstance().GetInt("videoplayer.seekdelay")));
-  m_seekDelays.insert(std::make_pair(SEEK_TYPE_MUSIC, CSettings::GetInstance().GetInt("musicplayer.seekdelay")));
+  m_seekDelays.insert(std::make_pair(SEEK_TYPE_VIDEO, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoplayer.seekdelay")));
+  m_seekDelays.insert(std::make_pair(SEEK_TYPE_MUSIC, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("musicplayer.seekdelay")));
 
   m_forwardSeekSteps.clear();
   m_backwardSeekSteps.clear();
@@ -78,7 +79,7 @@ void CSeekHandler::Configure()
     std::vector<int> forwardSeekSteps;
     std::vector<int> backwardSeekSteps;
 
-    std::vector<CVariant> seekSteps = CSettings::GetInstance().GetList(it->second);
+    std::vector<CVariant> seekSteps = CServiceBroker::GetSettingsComponent()->GetSettings()->GetList(it->second);
     for (std::vector<CVariant>::iterator itt = seekSteps.begin(); itt != seekSteps.end(); ++itt)
     {
       int stepSeconds = static_cast<int>((*itt).asInteger());
@@ -230,7 +231,7 @@ void CSeekHandler::FrameMove()
 void CSeekHandler::SettingOptionsSeekStepsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
 {
   std::string label;
-  for (std::vector<int>::iterator it = g_advancedSettings.m_seekSteps.begin(); it != g_advancedSettings.m_seekSteps.end(); ++it) {
+  for (std::vector<int>::iterator it = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_seekSteps.begin(); it != CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_seekSteps.end(); ++it) {
     int seconds = *it;
     if (seconds > 60)
       label = StringUtils::Format(g_localizeStrings.Get(14044).c_str(), seconds / 60);

@@ -80,6 +80,7 @@
 #include "playlists/PlayList.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
@@ -750,7 +751,6 @@ HRESULT CApplication::Create(HWND hWnd)
     }
     m_128MBHack = true;
   }
-  g_advancedSettings.m_guiKeepInMemory = m_128MBHack;
 #endif
 
   // here we register all global classes for the CApplicationMessenger, 
@@ -761,9 +761,6 @@ HRESULT CApplication::Create(HWND hWnd)
   // create our windowing - TODO: lot of DX related stuff could go there
   m_pWinSystem = CWinSystemXbox::CreateWinSystem();
   CServiceBroker::RegisterWinSystem(m_pWinSystem.get());
-
-  m_pGUI = boost::movelib::make_unique<CGUIComponent>();
-  m_pGUI->Init();
 
   for (int i = RES_HDTV_1080i; i <= RES_PAL60_16x9; i++)
   {
@@ -789,60 +786,82 @@ HRESULT CApplication::Create(HWND hWnd)
   strcat(szDevicePath, &strExecutablePath.c_str()[2]);
   CIoSupport::RemapDriveLetter('Q', szDevicePath);
 
-  // Do all the special:// & driveletter mapping
-  InitDirectoriesXbox();
+  CIoSupport::RemapDriveLetter('C', "Harddisk0\\Partition2");
+  CIoSupport::RemapDriveLetter('E', "Harddisk0\\Partition1");
 
-  if (!CLog::Init(CSpecialProtocol::TranslatePath(g_advancedSettings.m_logFolder).c_str()))
+  CIoSupport::Dismount("Cdrom0");
+  CIoSupport::RemapDriveLetter('D', "Cdrom0");
+
+  // Attempt to read the LBA48 v3 patch partition table, if kernel supports the command and it exists.
+  CIoSupport::ReadPartitionTable();
+  if (CIoSupport::HasPartitionTable())
   {
-    fprintf(stderr,"Could not init logging classes. Permission errors on ~/.xbmc (%s)\n",
-      CSpecialProtocol::TranslatePath(g_advancedSettings.m_logFolder).c_str());
+    // Mount up to Partition15 if they are available.
+    for (int i=EXTEND_PARTITION_BEGIN; i <= (EXTEND_PARTITION_BEGIN+EXTEND_PARTITIONS_LIMIT-1); i++)
+    {
+      char szDevice[32];
+      if (CIoSupport::PartitionExists(i))
+      {
+        char cDriveLetter = 'A' + i - 1;
+        
+        char extendDriveLetter = CIoSupport::GetExtendedPartitionDriveLetter(cDriveLetter-EXTEND_DRIVE_BEGIN);
+        CLog::Log(LOGNOTICE, "  map extended drive %c:", extendDriveLetter);
+		
+        sprintf(szDevice, "Harddisk0\\Partition%u", i);
+
+        CIoSupport::RemapDriveLetter(extendDriveLetter, szDevice);
+      }
+    }
+  }
+  else
+  {
+    if (CIoSupport::DriveExists('F'))
+      CIoSupport::RemapDriveLetter('F', "Harddisk0\\Partition6");
+    if (CIoSupport::DriveExists('G'))
+      CIoSupport::RemapDriveLetter('G', "Harddisk0\\Partition7");
+  }
+
+  CIoSupport::RemapDriveLetter('X',"Harddisk0\\Partition3");
+  CIoSupport::RemapDriveLetter('Y',"Harddisk0\\Partition4");
+#ifdef HAS_XBOX_HARDWARE
+  CIoSupport::RemapDriveLetter('Z',"Harddisk0\\Partition5");
+#endif
+
+  CLog::Log(LOGINFO, "Drives are mapped");
+
+  const boost::shared_ptr<CSettingsComponent> settingsComponent = boost::make_shared<CSettingsComponent>();
+  settingsComponent->Initialize();
+  CServiceBroker::RegisterSettingsComponent(settingsComponent);
+
+  // copy required files
+  CUtil::CopyUserDataIfNeeded("special://masterprofile/", "RssFeeds.xml");
+  CUtil::CopyUserDataIfNeeded("special://masterprofile/", "LCD.xml");
+
+#ifdef HAS_XBOX_HARDWARE  
+  CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_guiKeepInMemory |= m_128MBHack;
+#endif
+
+  m_pGUI = boost::movelib::make_unique<CGUIComponent>();
+  m_pGUI->Init();
+
+  if (!CLog::Init(CSpecialProtocol::TranslatePath("special://logpath")))
+  {
+    fprintf(stderr,"Could not init logging classes. Permission errors on special://logpath\n");
     return false;
   }
 
   init_emu_environ();
-
-  CProfilesManager::Get().Load();
 
   /* install win32 exception translator, win32 exceptions
    * can now be caught using c++ try catch */
   win32_exception::install_handler();
 
   CLog::Log(LOGNOTICE, "-----------------------------------------------------------------------");
-  CLog::Log(LOGNOTICE, "Starting XBMC4Xbox %s (SVN:%s, compiler %i). Built on %s ", VERSION_STRING, SVN_REV, _MSC_VER, __DATE__);
+  CLog::Log(LOGNOTICE, "Starting XBMC %s (GIT: %s, compiler %i). Built on %s ", VERSION_STRING, SVN_REV, _MSC_VER, __DATE__);
   CSpecialProtocol::LogPaths();
 
-  char szXBEFileName[1024];
-  CIoSupport::GetXbePath(szXBEFileName);
-  CLog::Log(LOGNOTICE, "The executable running is: %s", szXBEFileName);
-  CLog::Log(LOGNOTICE, "Log File is located: %sxbmc.log", g_advancedSettings.m_logFolder.c_str());
+  CLog::Log(LOGNOTICE, "The executable running is: %s\\default.xbe", strExecutablePath.c_str());
   CLog::Log(LOGNOTICE, "-----------------------------------------------------------------------");
-
-  // if we are running from DVD our UserData location will be TDATA
-  if (URIUtils::IsDVD(strExecutablePath))
-  {
-    // TODO: Should we copy over any UserData folder from the DVD?
-    if (!CFile::Exists("special://masterprofile/guisettings.xml")) // first run - cache userdata folder
-    {
-      CFileItemList items;
-      CUtil::GetRecursiveListing("special://xbmc/userdata",items,"", DIR_FLAG_NO_FILE_DIRS);
-      for (int i=0;i<items.Size();++i)
-          CFile::Copy(items[i]->GetPath(),"special://masterprofile/"+URIUtils::GetFileName(items[i]->GetPath()));
-    }
-    g_advancedSettings.m_logFolder = "special://masterprofile/";
-  }
-  else
-  {
-    CStdString strMnt = CSpecialProtocol::TranslatePath(CProfilesManager::Get().GetUserDataFolder());
-    if (strMnt.Left(2).Equals("Q:"))
-    {
-      CUtil::GetHomePath(strMnt);
-      strMnt += CSpecialProtocol::TranslatePath(CProfilesManager::Get().GetUserDataFolder()).substr(2);
-    }
-
-    CIoSupport::GetPartition(strMnt.c_str()[0], szDevicePath);
-    strcat(szDevicePath, &strMnt.c_str()[2]);
-    CIoSupport::RemapDriveLetter('T', szDevicePath);
-  }
 
   if (m_128MBHack)
     CLog::Log(LOGNOTICE, "128MB hack enabled");
@@ -931,18 +950,18 @@ HRESULT CApplication::Create(HWND hWnd)
     if (m_DefaultGamepad.bPressedAnalogButtons[XINPUT_GAMEPAD_A])
     {
       CUtil::DeleteGUISettings();
-      CUtil::WipeDir(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(),"database\\"));
-      CUtil::WipeDir(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(),"thumbnails\\"));
-      CUtil::WipeDir(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(),"playlists\\"));
-      CUtil::WipeDir(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(),"cache\\"));
-      CUtil::WipeDir(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(),"profiles\\"));
-      CUtil::WipeDir(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(),"visualisations\\"));
-      CFile::Delete(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(),"avpacksettings.xml"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(),"database\\"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(),"thumbnails\\"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(),"playlists\\"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(),"cache\\"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(),"profiles\\"));
+      CUtil::WipeDir(URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(),"visualisations\\"));
+      CFile::Delete(URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(),"avpacksettings.xml"));
       // delete all profiles
-      for (size_t i = 0; i < CProfilesManager::Get().GetNumberOfProfiles(); ++i)
-        CProfilesManager::Get().DeleteProfile(i);
+      for (size_t i = 0; i < CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles(); ++i)
+        CServiceBroker::GetSettingsComponent()->GetProfileManager()->DeleteProfile(i);
 
-      CProfilesManager::Get().Save();
+      CServiceBroker::GetSettingsComponent()->GetProfileManager()->Save();
 
       char szXBEFileName[1024];
 
@@ -953,71 +972,17 @@ HRESULT CApplication::Create(HWND hWnd)
   }
 #endif
 
-  CIoSupport::RemapDriveLetter('C', "Harddisk0\\Partition2");
-  CIoSupport::RemapDriveLetter('E', "Harddisk0\\Partition1");
-
-  CIoSupport::Dismount("Cdrom0");
-  CIoSupport::RemapDriveLetter('D', "Cdrom0");
-
-  // Attempt to read the LBA48 v3 patch partition table, if kernel supports the command and it exists.
-  CIoSupport::ReadPartitionTable();
-  if (CIoSupport::HasPartitionTable())
-  {
-    // Mount up to Partition15 if they are available.
-    for (int i=EXTEND_PARTITION_BEGIN; i <= (EXTEND_PARTITION_BEGIN+EXTEND_PARTITIONS_LIMIT-1); i++)
-    {
-      char szDevice[32];
-      if (CIoSupport::PartitionExists(i))
-      {
-        char cDriveLetter = 'A' + i - 1;
-        
-        char extendDriveLetter = CIoSupport::GetExtendedPartitionDriveLetter(cDriveLetter-EXTEND_DRIVE_BEGIN);
-        CLog::Log(LOGNOTICE, "  map extended drive %c:", extendDriveLetter);
-		
-        sprintf(szDevice, "Harddisk0\\Partition%u", i);
-
-        CIoSupport::RemapDriveLetter(extendDriveLetter, szDevice);
-      }
-    }
-  }
-  else
-  {
-    if (CIoSupport::DriveExists('F'))
-      CIoSupport::RemapDriveLetter('F', "Harddisk0\\Partition6");
-    if (CIoSupport::DriveExists('G'))
-      CIoSupport::RemapDriveLetter('G', "Harddisk0\\Partition7");
-  }
-
-  CIoSupport::RemapDriveLetter('X',"Harddisk0\\Partition3");
-  CIoSupport::RemapDriveLetter('Y',"Harddisk0\\Partition4");
-#ifdef HAS_XBOX_HARDWARE
-  CIoSupport::RemapDriveLetter('Z',"Harddisk0\\Partition5");
-#endif
-
-  CLog::Log(LOGINFO, "Drives are mapped");
-
-  CreateUserDirs();
-
-  // Initialize default Settings - don't move
-  CLog::Log(LOGNOTICE, "load settings...");
-  if (!CSettings::GetInstance().Initialize())
+  CLog::Log(LOGINFO, "loading settings");
+  if (!settingsComponent->Load())
     return false;
 
-  // load the actual values
-  if (!CSettings::GetInstance().Load())
-  {
-    CLog::Log(LOGERROR, "Unable to load settings");
-    FatalErrorHandler(true, true, true);
-  }
-  CSettings::GetInstance().SetLoaded();
-
   CLog::Log(LOGINFO, "creating subdirectories");
-  CLog::Log(LOGINFO, "userdata folder: %s", CURL::GetRedacted(CProfilesManager::Get().GetProfileUserDataFolder()).c_str());
-  CLog::Log(LOGINFO, "recording folder: %s", CURL::GetRedacted(CSettings::GetInstance().GetString("audiocds.recordingpath")).c_str());
-  CLog::Log(LOGINFO, "screenshots folder: %s", CURL::GetRedacted(CSettings::GetInstance().GetString("debug.screenshotpath")).c_str());
-  CDirectory::Create(CProfilesManager::Get().GetUserDataFolder());
-  CDirectory::Create(CProfilesManager::Get().GetProfileUserDataFolder());
-  CProfilesManager::Get().CreateProfileFolders();
+  CLog::Log(LOGINFO, "userdata folder: %s", CURL::GetRedacted(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetProfileUserDataFolder()).c_str());
+  CLog::Log(LOGINFO, "recording folder: %s", CURL::GetRedacted(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("audiocds.recordingpath")).c_str());
+  CLog::Log(LOGINFO, "screenshots folder: %s", CURL::GetRedacted(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("debug.screenshotpath")).c_str());
+  CDirectory::Create(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder());
+  CDirectory::Create(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetProfileUserDataFolder());
+  CServiceBroker::GetSettingsComponent()->GetProfileManager()->CreateProfileFolders();
 
   update_emu_environ();//apply the GUI settings
 
@@ -1030,7 +995,7 @@ HRESULT CApplication::Create(HWND hWnd)
   AddonPtr addon;
   CServiceBroker::GetAddonMgr().GetAddon("xbmc.debug", addon);
   if (addon)
-    g_advancedSettings.SetExtraLogsFromAddon(addon.get());
+    CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->SetExtraLogsFromAddon(addon.get());
 
   // load the keyboard layouts
   if (!keyboardLayoutManager->Load())
@@ -1069,7 +1034,7 @@ HRESULT CApplication::Create(HWND hWnd)
     bNeedReboot = true;
 
 // now check if we are switching video modes. if, are we in the wrong mode according to eeprom?
-  if (CSettings::GetInstance().GetBool("myprograms.gameautoregion"))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myprograms.gameautoregion"))
   {
     bool fDoPatchTest = false;
 
@@ -1255,10 +1220,10 @@ HRESULT CApplication::Initialize()
 
   CServiceBroker::RegisterTextureCache(boost::make_shared<CTextureCache>());
 
-  std::string defaultSkin = ((const CSettingString*)CSettings::GetInstance().GetSetting("lookandfeel.skin"))->GetDefault();
-  if (!LoadSkin(CSettings::GetInstance().GetString("lookandfeel.skin")))
+  std::string defaultSkin = ((const CSettingString*)CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.skin"))->GetDefault();
+  if (!LoadSkin(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skin")))
   {
-    CLog::Log(LOGERROR, "Failed to load skin '%s'", CSettings::GetInstance().GetString("lookandfeel.skin").c_str());
+    CLog::Log(LOGERROR, "Failed to load skin '%s'", CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skin").c_str());
     if (!LoadSkin(defaultSkin))
     {
       CLog::Log(LOGFATAL, "Default skin '%s' could not be loaded! Terminating..", defaultSkin.c_str());
@@ -1269,20 +1234,20 @@ HRESULT CApplication::Initialize()
   // initialize splash window after splash screen disappears
   // because we need a real window in the background which gets
   // rendered while we load the main window or enter the master lock key
-  if (g_advancedSettings.m_splashImage)
+  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_splashImage)
     CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_SPLASH);
 
   m_ctrDpad.SetDelays(100, 500); //g_settings.m_iMoveDelayController, g_settings.m_iRepeatDelayController);
 
-  if (CSettings::GetInstance().GetBool("masterlock.startuplock") && 
-      CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
-     !CProfilesManager::Get().GetMasterProfile().getLockCode().IsEmpty())
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("masterlock.startuplock") && 
+      CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
+     !CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockCode().IsEmpty())
   {
      g_passwordManager.CheckStartUpLock();
   }
 
   // check if we should use the login screen
-  if (CProfilesManager::Get().UsingLoginScreen())
+  if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->UsingLoginScreen())
   {
     // the login screen still needs to perform additional initialization
     uiInitializationFinished = false;
@@ -1321,7 +1286,7 @@ HRESULT CApplication::Initialize()
     Mute();
   SetVolume(m_volumeLevel, false);
 
-  if (!CProfilesManager::Get().UsingLoginScreen())
+  if (!CServiceBroker::GetSettingsComponent()->GetProfileManager()->UsingLoginScreen())
   {
     UpdateLibraries();
     SetLoggingIn(true);
@@ -1329,7 +1294,7 @@ HRESULT CApplication::Initialize()
 
   m_slowTimer.StartZero();
   m_updaterTimer.StartZero();
-  if (CSettings::GetInstance().GetInt("updater.autoupdate") == AUTO_UPDATER_NOTIFY)
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("updater.autoupdate") == AUTO_UPDATER_NOTIFY)
     CServiceBroker::GetJobManager()->AddJob(new CUpdaterJob(true), NULL);
 
 #ifdef __APPLE__
@@ -1378,8 +1343,8 @@ void CApplication::PrintXBEToLCD(const char* xbePath)
     CUtil::RemoveIllegalChars(strXBEName);
   }
   // crop to LCD screen size
-  if ((int)strXBEName.size() > g_advancedSettings.m_lcdColumns)
-    strXBEName = strXBEName.Left(g_advancedSettings.m_lcdColumns);
+  if ((int)strXBEName.size() > CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_lcdColumns)
+    strXBEName = strXBEName.Left(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_lcdColumns);
   if (g_lcd)
   {
     CServiceBroker::GetGUI()->GetInfoManager().SetLaunchingXBEName(strXBEName);
@@ -1401,7 +1366,7 @@ void CApplication::StopIdleThread()
 void CApplication::RefreshEventServer()
 {
 #ifdef HAS_EVENT_SERVER
-  if (CSettings::GetInstance().GetBool("services.esenabled"))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.esenabled"))
   {
     CEventServer::GetInstance()->RefreshSettings();
   }
@@ -1411,41 +1376,41 @@ void CApplication::RefreshEventServer()
 void CApplication::StartLEDControl(bool switchoff)
 {
 #ifdef HAS_XBOX_HARDWARE
-  if (switchoff && CSettings::GetInstance().GetInt("system.ledcolour") != LED_COLOUR_NO_CHANGE)
+  if (switchoff && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("system.ledcolour") != LED_COLOUR_NO_CHANGE)
   {
-    if ( m_pPlayer->IsPlayingVideo() && (CSettings::GetInstance().GetInt("system.leddisableonplayback") == LED_PLAYBACK_VIDEO))
+    if ( m_pPlayer->IsPlayingVideo() && (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("system.leddisableonplayback") == LED_PLAYBACK_VIDEO))
       ILED::CLEDControl(LED_COLOUR_OFF);
-    if ( m_pPlayer->IsPlayingAudio() && (CSettings::GetInstance().GetInt("system.leddisableonplayback") == LED_PLAYBACK_MUSIC))
+    if ( m_pPlayer->IsPlayingAudio() && (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("system.leddisableonplayback") == LED_PLAYBACK_MUSIC))
       ILED::CLEDControl(LED_COLOUR_OFF);
-    if ( ((m_pPlayer->IsPlayingVideo() || m_pPlayer->IsPlayingAudio())) && (CSettings::GetInstance().GetInt("system.leddisableonplayback") == LED_PLAYBACK_VIDEO_MUSIC))
+    if ( ((m_pPlayer->IsPlayingVideo() || m_pPlayer->IsPlayingAudio())) && (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("system.leddisableonplayback") == LED_PLAYBACK_VIDEO_MUSIC))
       ILED::CLEDControl(LED_COLOUR_OFF);
   }
   else if (!switchoff)
-    ILED::CLEDControl(CSettings::GetInstance().GetInt("system.ledcolour"));
+    ILED::CLEDControl(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("system.ledcolour"));
 #endif
 }
 
 void CApplication::DimLCDOnPlayback(bool dim)
 {
 #ifdef HAS_LCD
-  if(g_lcd && dim && (CSettings::GetInstance().GetInt("lcd.disableonplayback") != LED_PLAYBACK_OFF) && (CSettings::GetInstance().GetInt("lcd.type") != LCD_TYPE_NONE))
+  if(g_lcd && dim && (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.disableonplayback") != LED_PLAYBACK_OFF) && (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.type") != LCD_TYPE_NONE))
   {
-    if ( (m_pPlayer->IsPlayingVideo()) && CSettings::GetInstance().GetInt("lcd.disableonplayback") == LED_PLAYBACK_VIDEO)
+    if ( (m_pPlayer->IsPlayingVideo()) && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.disableonplayback") == LED_PLAYBACK_VIDEO)
       g_lcd->SetBackLight(0);
-    if ( (m_pPlayer->IsPlayingAudio()) && CSettings::GetInstance().GetInt("lcd.disableonplayback") == LED_PLAYBACK_MUSIC)
+    if ( (m_pPlayer->IsPlayingAudio()) && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.disableonplayback") == LED_PLAYBACK_MUSIC)
       g_lcd->SetBackLight(0);
-    if ( ((m_pPlayer->IsPlayingVideo() || m_pPlayer->IsPlayingAudio())) && CSettings::GetInstance().GetInt("lcd.disableonplayback") == LED_PLAYBACK_VIDEO_MUSIC)
+    if ( ((m_pPlayer->IsPlayingVideo() || m_pPlayer->IsPlayingAudio())) && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.disableonplayback") == LED_PLAYBACK_VIDEO_MUSIC)
       g_lcd->SetBackLight(0);
   }
   else if(!dim)
-    g_lcd->SetBackLight(CSettings::GetInstance().GetInt("lcd.backlight"));
+    g_lcd->SetBackLight(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.backlight"));
 #endif
 }
 
 void CApplication::StartServices()
 {
 #ifdef HAS_XBOX_HARDWARE
-  if (g_advancedSettings.m_bPowerSave)
+  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bPowerSave)
   {
     CLog::Log(LOGNOTICE, "Using idle thread with HLT (power saving)");
     StartIdleThread();
@@ -1471,22 +1436,22 @@ void CApplication::StartServices()
 #endif
 
 #ifdef HAS_XBOX_HARDWARE
-  if (CSettings::GetInstance().GetBool("system.autotemperature"))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("system.autotemperature"))
   {
     CLog::Log(LOGNOTICE, "start fancontroller");
-    CFanController::Instance()->Start(CSettings::GetInstance().GetInt("system.targettemperature"), CSettings::GetInstance().GetInt("system.minfanspeed"));
+    CFanController::Instance()->Start(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("system.targettemperature"), CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("system.minfanspeed"));
   }
-  else if (CSettings::GetInstance().GetBool("system.fanspeedcontrol"))
+  else if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("system.fanspeedcontrol"))
   {
     CLog::Log(LOGNOTICE, "setting fanspeed");
-    CFanController::Instance()->SetFanSpeed(CSettings::GetInstance().GetInt("system.fanspeed"));
+    CFanController::Instance()->SetFanSpeed(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("system.fanspeed"));
   }
-  int setting_level = CSettings::GetInstance().GetInt("harddisk.aamlevel");
+  int setting_level = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("harddisk.aamlevel");
   if (setting_level == AAM_QUIET)
     XKHDD::SetAAMLevel(0x80);
   else if (setting_level == AAM_FAST)
     XKHDD::SetAAMLevel(0xFE);
-  setting_level = CSettings::GetInstance().GetInt("harddisk.apmlevel");
+  setting_level = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("harddisk.apmlevel");
   switch(setting_level)
   {
   case APM_LOPOWER:
@@ -1546,7 +1511,7 @@ void CApplication::StopServices()
   CLog::Log(LOGNOTICE, "stop fancontroller");
   CFanController::Instance()->Stop();
   CFanController::RemoveInstance();
-  if (g_advancedSettings.m_bPowerSave)
+  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bPowerSave)
     StopIdleThread();
 #endif  
 }
@@ -1558,7 +1523,7 @@ void CApplication::ReloadSkin(bool confirm/*=false*/)
   CGUIMessage msg(GUI_MSG_LOAD_SKIN, -1, CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow());
   CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
 
-  string newSkin = CSettings::GetInstance().GetString("lookandfeel.skin");
+  string newSkin = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skin");
   if (LoadSkin(newSkin))
   {
     /* The Reset() or SetString() below will cause recursion, so the m_skinReverting boolean is set so as to not prompt the
@@ -1570,20 +1535,20 @@ void CApplication::ReloadSkin(bool confirm/*=false*/)
       {
         m_skinReverting = true;
         if (oldSkin.empty())
-          CSettings::GetInstance().GetSetting("lookandfeel.skin")->Reset();
+          CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.skin")->Reset();
         else
-          CSettings::GetInstance().SetString("lookandfeel.skin", oldSkin);
+          CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("lookandfeel.skin", oldSkin);
       }
     }
   }
   else
   {
     // skin failed to load - we revert to the default only if we didn't fail loading the default
-    string defaultSkin = ((CSettingString*)CSettings::GetInstance().GetSetting("lookandfeel.skin"))->GetDefault();
+    string defaultSkin = ((CSettingString*)CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.skin"))->GetDefault();
     if (newSkin != defaultSkin)
     {
       m_skinReverting = true;
-      CSettings::GetInstance().GetSetting("lookandfeel.skin")->Reset();
+      CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.skin")->Reset();
       CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Error, g_localizeStrings.Get(24102), g_localizeStrings.Get(24103));
     }
   }
@@ -1721,15 +1686,15 @@ bool CApplication::LoadSkin(const std::string& skinID)
   CServiceBroker::GetWinSystem()->GetGfxContext().SetMediaDir(skin->Path());
   g_directoryCache.ClearSubPaths(skin->Path());
 
-  CServiceBroker::GetGUI()->GetColorManager().Load(CSettings::GetInstance().GetString("lookandfeel.skincolors"));
+  CServiceBroker::GetGUI()->GetColorManager().Load(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skincolors"));
 
-  g_fontManager.LoadFonts(CSettings::GetInstance().GetString("lookandfeel.font"));
+  g_fontManager.LoadFonts(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.font"));
 
   // load in the skin strings
   std::string langPath = URIUtils::AddFileToFolder(skin->Path(), "language");
   URIUtils::AddSlashAtEnd(langPath);
 
-  g_localizeStrings.LoadSkinStrings(langPath, CSettings::GetInstance().GetString("locale.language"));
+  g_localizeStrings.LoadSkinStrings(langPath, CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("locale.language"));
 
   g_SkinInfo->LoadIncludes();
 
@@ -2002,7 +1967,7 @@ void CApplication::RenderNoPresent()
     CServiceBroker::GetWinSystem()->GetGfxContext().SetRenderingResolution(CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo(), false);
 
     // If we have the remote codes enabled, then show them
-    if (g_advancedSettings.m_displayRemoteCodes)
+    if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_displayRemoteCodes)
     {
 #ifdef HAS_IR_REMOTE
       XBIR_REMOTE* pRemote = &m_DefaultIR_Remote;
@@ -2019,7 +1984,7 @@ void CApplication::RenderNoPresent()
         float x = 0.08f * CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth();
         float y = 0.12f * CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight();
 #ifndef _DEBUG
-        if (LOG_LEVEL_DEBUG_FREEMEM > g_advancedSettings.m_logLevel)
+        if (LOG_LEVEL_DEBUG_FREEMEM > CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel)
           y = 0.08f * CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight();
 #endif
         CGUITextLayout::DrawText(g_fontManager.GetFont("font13"), x, y, 0xffffffff, 0xff000000, wszText, 0);
@@ -2081,7 +2046,7 @@ void CApplication::RenderMemoryStatus()
     return;
 
 #if !defined(_DEBUG) && !defined(PROFILE)
-  if (LOG_LEVEL_DEBUG_FREEMEM <= g_advancedSettings.m_logLevel)
+  if (LOG_LEVEL_DEBUG_FREEMEM <= CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel)
 #endif
   {
     // reset the window scaling and fade status
@@ -2215,7 +2180,7 @@ bool CApplication::OnKey(CKey& key)
 bool CApplication::OnAction(CAction &action)
 {
   // Let's tell the outside world about this action, ignoring mouse moves
-  if (m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=2 && action.GetID() != ACTION_MOUSE_MOVE)
+  if (m_pXbmcHttp && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel")>=2 && action.GetID() != ACTION_MOUSE_MOVE)
   {
     CStdString tmp;
     tmp.Format("%i",action.GetID());
@@ -2513,10 +2478,10 @@ bool CApplication::OnAction(CAction &action)
  
   if (action.GetID() == ACTION_TOGGLE_DIGITAL_ANALOG)
   { 
-    if(CSettings::GetInstance().GetInt("audiooutput.mode")==AUDIO_DIGITAL)
-      CSettings::GetInstance().SetInt("audiooutput.mode", AUDIO_ANALOG);
+    if(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode")==AUDIO_DIGITAL)
+      CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("audiooutput.mode", AUDIO_ANALOG);
     else
-      CSettings::GetInstance().SetInt("audiooutput.mode", AUDIO_DIGITAL);
+      CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("audiooutput.mode", AUDIO_DIGITAL);
     g_application.Restart();
     if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_SETTINGS_SYSTEM)
     {
@@ -2604,7 +2569,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
   }
 #else
   {
-    switch (CSettings::GetInstance().GetInt("powermanagement.shutdownstate"))
+    switch (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("powermanagement.shutdownstate"))
     {
     case POWERSTATE_SHUTDOWN:
       CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SHUTDOWN);
@@ -2836,7 +2801,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
       else
         pathToUrl = URIUtils::CreateArchivePath("rar", CURL(pMsg->strParam), "");
 
-      CUtil::GetRecursiveListing(pathToUrl.Get(), items, g_advancedSettings.m_pictureExtensions, XFILE::DIR_FLAG_NO_FILE_DIRS);
+      CUtil::GetRecursiveListing(pathToUrl.Get(), items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions, XFILE::DIR_FLAG_NO_FILE_DIRS);
       if (items.Size() > 0)
       {
         pSlideShow->Reset();
@@ -2872,7 +2837,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
 
     CFileItemList items;
     std::string strPath = pMsg->strParam;
-    std::string extensions = g_advancedSettings.m_pictureExtensions;
+    std::string extensions = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions;
     if (pMsg->param1)
       extensions += "|.tbn";
     CUtil::GetRecursiveListing(strPath, items, extensions);
@@ -2890,7 +2855,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
     {
       if (items.Size() == 0)
       {
-        CSettings::GetInstance().SetString("screensaver.mode", "screensaver.xbmc.builtin.dim");
+        CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("screensaver.mode", "screensaver.xbmc.builtin.dim");
         g_application.ActivateScreenSaver();
       }
       else
@@ -2915,7 +2880,7 @@ void CApplication::UpdateLCD()
 #ifdef HAS_LCD
   static unsigned int lTickCount = 0;
 
-  if (!g_lcd || CSettings::GetInstance().GetInt("lcd.type") == LCD_TYPE_NONE)
+  if (!g_lcd || CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.type") == LCD_TYPE_NONE)
     return ;
   unsigned int lTimeOut = 1000;
   if (m_pPlayer->GetPlaySpeed() != 1)
@@ -3257,7 +3222,7 @@ bool CApplication::ProcessRemote(float frameTime)
 
 void  CApplication::CheckForTitleChange()
 { 
-  if (CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel")>=1)
   {
     if (m_pPlayer->IsPlayingVideo())
     {
@@ -3265,7 +3230,7 @@ void  CApplication::CheckForTitleChange()
       if (m_pXbmcHttp && tagVal && !(tagVal->m_strTitle.empty()))
       {
         CStdString msg=m_pXbmcHttp->GetOpenTag()+"MovieTitle:"+tagVal->m_strTitle.c_str()+m_pXbmcHttp->GetCloseTag();
-        if (m_prevMedia!=msg && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
+        if (m_prevMedia!=msg && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel")>=1)
         {
           CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; MediaChanged:"+msg+";1");
           m_prevMedia=msg;
@@ -3281,7 +3246,7 @@ void  CApplication::CheckForTitleChange()
         if (!tagVal->GetTitle().empty())
           msg=m_pXbmcHttp->GetOpenTag()+"AudioTitle:"+tagVal->GetTitle().c_str()+m_pXbmcHttp->GetCloseTag();
         if (!tagVal->GetArtist().empty())
-          msg+=m_pXbmcHttp->GetOpenTag()+"AudioArtist:"+StringUtils::Join(tagVal->GetArtist(), g_advancedSettings.m_musicItemSeparator).c_str()+m_pXbmcHttp->GetCloseTag();
+          msg+=m_pXbmcHttp->GetOpenTag()+"AudioArtist:"+StringUtils::Join(tagVal->GetArtist(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator).c_str()+m_pXbmcHttp->GetCloseTag();
         if (m_prevMedia!=msg)
         {
           CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; MediaChanged:"+msg+";1");
@@ -3542,8 +3507,7 @@ HRESULT CApplication::Cleanup()
     CServiceBroker::GetGUI()->GetInfoManager().Clear();
     DllLoaderContainer::Clear();
     g_playlistPlayer.Clear();
-    CSettings::GetInstance().Uninitialize();
-    g_advancedSettings.Clear();
+    CServiceBroker::GetSettingsComponent()->GetSettings()->Uninitialize();
 
 #ifdef HAS_DVD_DRIVE
     CLibcdio::ReleaseInstance();
@@ -3585,7 +3549,7 @@ void CApplication::Stop(bool bLCDStop)
 
     if (m_pXbmcHttp)
     {
-      if(CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
+      if(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel")>=1)
         CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; ShutDown;1");
 
       m_pXbmcHttp->shuttingDown=true;
@@ -3596,10 +3560,10 @@ void CApplication::Stop(bool bLCDStop)
     g_sysinfo.SetTotalUptime(g_sysinfo.GetTotalUptime() + (int)(CTimeUtils::GetFrameTime() / 60000));
 
     // Update the settings information (volume, uptime etc. need saving)
-    if (CFile::Exists(CProfilesManager::Get().GetSettingsFile()))
+    if (CFile::Exists(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetSettingsFile()))
     {
       CLog::Log(LOGNOTICE, "Saving settings");
-      CSettings::GetInstance().Save();
+      CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
     }
     else
       CLog::Log(LOGNOTICE, "Not saving settings (settings.xml is not present)");
@@ -3994,20 +3958,20 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
   if (playlist == PLAYLIST_VIDEO && g_playlistPlayer.GetPlaylist(playlist).size() > 1)
   { // playing from a playlist by the looks
     // don't switch to fullscreen if we are not playing the first item...
-    options.fullscreen = !g_playlistPlayer.HasPlayedFirstFile() && g_advancedSettings.m_fullScreenOnMovieStart && !CMediaSettings::Get().DoesVideoStartWindowed();
+    options.fullscreen = !g_playlistPlayer.HasPlayedFirstFile() && CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::Get().DoesVideoStartWindowed();
   }
   else if(m_itemCurrentFile->IsStack() && m_currentStack->Size() > 0)
   {
     // TODO - this will fail if user seeks back to first file in stack
     if(m_currentStackPosition == 0 || m_itemCurrentFile->m_lStartOffset == STARTOFFSET_RESUME)
-      options.fullscreen = g_advancedSettings.m_fullScreenOnMovieStart && !CMediaSettings::Get().DoesVideoStartWindowed();
+      options.fullscreen = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::Get().DoesVideoStartWindowed();
     else
       options.fullscreen = false;
     // reset this so we don't think we are resuming on seek
     m_itemCurrentFile->m_lStartOffset = 0;
   }
   else
-    options.fullscreen = g_advancedSettings.m_fullScreenOnMovieStart && !CMediaSettings::Get().DoesVideoStartWindowed();
+    options.fullscreen = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::Get().DoesVideoStartWindowed();
 
   // reset VideoStartWindowed as it's a temp setting
   CMediaSettings::Get().SetVideoStartWindowed(false);
@@ -4172,7 +4136,7 @@ void CApplication::OnPlayBackEnded()
   // (does nothing if python is not loaded)
   g_pythonParser.OnPlayBackEnded();
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
+  if (m_pXbmcHttp && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel")>=1)
     CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; OnPlayBackEnded;1");
 
   CLog::Log(LOGDEBUG, "%s - Playback has finished", __FUNCTION__);
@@ -4194,7 +4158,7 @@ void CApplication::OnPlayBackStarted()
   g_pythonParser.OnPlayBackStarted();
 
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
+  if (m_pXbmcHttp && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel")>=1)
     CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; OnPlayBackStarted;1");
 
   CLog::Log(LOGDEBUG, "%s - Playback has started", __FUNCTION__);
@@ -4214,7 +4178,7 @@ void CApplication::OnQueueNextItem()
   g_pythonParser.OnQueueNextItem(); // currently unimplemented
 
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
+  if (m_pXbmcHttp && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel")>=1)
   CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; OnQueueNextItem;1");
 
   CLog::Log(LOGDEBUG, "Player has asked for the next item");
@@ -4236,7 +4200,7 @@ void CApplication::OnPlayBackStopped()
   g_pythonParser.OnPlayBackStopped();
 
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
+  if (m_pXbmcHttp && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel")>=1)
     CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; OnPlayBackStopped;1");
 
   CLog::Log(LOGDEBUG, "%s - Playback was stopped", __FUNCTION__);
@@ -4250,7 +4214,7 @@ void CApplication::OnPlayBackPaused()
   g_pythonParser.OnPlayBackPaused();
 
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
+  if (m_pXbmcHttp && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel")>=1)
     CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; OnPlayBackPaused;1");
 
   CLog::Log(LOGDEBUG, "%s - Playback was paused", __FUNCTION__);
@@ -4261,7 +4225,7 @@ void CApplication::OnPlayBackResumed()
   g_pythonParser.OnPlayBackResumed();
 
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
+  if (m_pXbmcHttp && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel")>=1)
     CServiceBroker::GetAppMessenger()->HttpApi("broadcastlevel; OnPlayBackResumed;1");
 
   CLog::Log(LOGDEBUG, "%s - Playback was resumed", __FUNCTION__);
@@ -4272,7 +4236,7 @@ void CApplication::OnPlayBackSpeedChanged(int iSpeed)
   g_pythonParser.OnPlayBackSpeedChanged(iSpeed);
 
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
+  if (m_pXbmcHttp && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel")>=1)
   {
     CStdString tmp;
     tmp.Format("broadcastlevel; OnPlayBackSpeedChanged:%i;1",iSpeed);
@@ -4287,7 +4251,7 @@ void CApplication::OnPlayBackSeek(int iTime, int seekOffset)
   g_pythonParser.OnPlayBackSeek(iTime, seekOffset);
 
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
+  if (m_pXbmcHttp && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel")>=1)
   {
     CStdString tmp;
     tmp.Format("broadcastlevel; OnPlayBackSeek:%i;1",iTime);
@@ -4303,7 +4267,7 @@ void CApplication::OnPlayBackSeekChapter(int iChapter)
   g_pythonParser.OnPlayBackSeekChapter(iChapter);
 
   // Let's tell the outside world as well
-  if (m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
+  if (m_pXbmcHttp && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel")>=1)
   {
     CStdString tmp;
     tmp.Format("broadcastlevel; OnPlayBackSkeekChapter:%i;1",iChapter);
@@ -4327,7 +4291,7 @@ bool CApplication::IsFullScreen()
 
 void CApplication::SaveFileState(bool bForeground /* = false */)
 {
-  if (!CProfilesManager::Get().GetCurrentProfile().canWriteDatabases())
+  if (!CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteDatabases())
     return;
 
   if (bForeground)
@@ -4371,10 +4335,10 @@ void CApplication::UpdateFileState()
         m_progressTrackingPlayCountUpdate = false;
       }
 
-      if ((m_progressTrackingItem->IsAudio() && g_advancedSettings.m_audioPlayCountMinimumPercent > 0 &&
-          GetPercentage() >= g_advancedSettings.m_audioPlayCountMinimumPercent) ||
-          (m_progressTrackingItem->IsVideo() && g_advancedSettings.m_videoPlayCountMinimumPercent > 0 &&
-          GetPercentage() >= g_advancedSettings.m_videoPlayCountMinimumPercent))
+      if ((m_progressTrackingItem->IsAudio() && CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_audioPlayCountMinimumPercent > 0 &&
+          GetPercentage() >= CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_audioPlayCountMinimumPercent) ||
+          (m_progressTrackingItem->IsVideo() && CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoPlayCountMinimumPercent > 0 &&
+          GetPercentage() >= CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoPlayCountMinimumPercent))
       {
         m_progressTrackingPlayCountUpdate = true;
       }
@@ -4399,14 +4363,14 @@ void CApplication::UpdateFileState()
         m_progressTrackingVideoResumeBookmark.playerState = m_pPlayer->GetPlayerState();
         m_progressTrackingVideoResumeBookmark.thumbNailImage.empty();
 
-        if (g_advancedSettings.m_videoIgnorePercentAtEnd > 0 &&
-            GetTotalTime() - GetTime() < 0.01f * g_advancedSettings.m_videoIgnorePercentAtEnd * GetTotalTime())
+        if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoIgnorePercentAtEnd > 0 &&
+            GetTotalTime() - GetTime() < 0.01f * CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoIgnorePercentAtEnd * GetTotalTime())
         {
           // Delete the bookmark
           m_progressTrackingVideoResumeBookmark.timeInSeconds = -1.0f;
         }
         else
-        if (GetTime() > g_advancedSettings.m_videoIgnoreSecondsAtStart)
+        if (GetTime() > CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoIgnoreSecondsAtStart)
         {
           // Update the bookmark
           m_progressTrackingVideoResumeBookmark.timeInSeconds = GetTime();
@@ -4490,9 +4454,9 @@ bool CApplication::ResetScreenSaverWindow()
   if (m_bScreenSave && m_screenSaver)
   {
     if (m_iScreenSaveLock == 0)
-      if (CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
-          (CProfilesManager::Get().UsingLoginScreen() || CSettings::GetInstance().GetBool("masterlock.startuplock")) &&
-          CProfilesManager::Get().GetCurrentProfile().getLockMode() != LOCK_MODE_EVERYONE &&
+      if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
+          (CServiceBroker::GetSettingsComponent()->GetProfileManager()->UsingLoginScreen() || CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("masterlock.startuplock")) &&
+          CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().getLockMode() != LOCK_MODE_EVERYONE &&
           m_screenSaver->ID() != "screensaver.xbmc.builtin.dim" && m_screenSaver->ID() != "screensaver.xbmc.builtin.black" && m_screenSaver->ID() != "visualization")
       {
         m_iScreenSaveLock = 2;
@@ -4570,7 +4534,7 @@ void CApplication::CheckScreenSaver()
 
   // are we playing some music in fullscreen vis?
   if (m_pPlayer->IsPlayingAudio() && CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_VISUALISATION
-      && !CSettings::GetInstance().GetString("musicplayer.visualisation").empty())
+      && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicplayer.visualisation").empty())
     resetTimer = true;
 
   if (resetTimer)
@@ -4582,7 +4546,7 @@ void CApplication::CheckScreenSaver()
   if (m_bScreenSave) // already running the screensaver
     return;
 
-  if ( m_screenSaverTimer.GetElapsedSeconds() > CSettings::GetInstance().GetInt("screensaver.time") * 60 )
+  if ( m_screenSaverTimer.GetElapsedSeconds() > CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("screensaver.time") * 60 )
     ActivateScreenSaver();
 }
 
@@ -4598,7 +4562,7 @@ void CApplication::ActivateScreenSaver(bool forceType /*= false */)
 
   // Get Screensaver Mode
   m_screenSaver.reset();
-  if (!CServiceBroker::GetAddonMgr().GetAddon(CSettings::GetInstance().GetString("screensaver.mode"), m_screenSaver))
+  if (!CServiceBroker::GetAddonMgr().GetAddon(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("screensaver.mode"), m_screenSaver))
     m_screenSaver.reset(new CScreenSaver(""));
 
   // disable screensaver lock from the login screen
@@ -4606,13 +4570,13 @@ void CApplication::ActivateScreenSaver(bool forceType /*= false */)
   if (!forceType)
   {
     // set to Dim in the case of a dialog on screen or playing video
-    if (CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog() || (m_pPlayer->IsPlayingVideo() && CSettings::GetInstance().GetBool("screensaver.usedimonpause")))
+    if (CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog() || (m_pPlayer->IsPlayingVideo() && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("screensaver.usedimonpause")))
     {
       if (!CServiceBroker::GetAddonMgr().GetAddon("screensaver.xbmc.builtin.dim", m_screenSaver))
         m_screenSaver.reset(new CScreenSaver(""));
     }
     // Check if we are Playing Audio and Vis instead Screensaver!
-    else if (m_pPlayer->IsPlayingAudio() && CSettings::GetInstance().GetBool("screensaver.usemusicvisinstead") && !CSettings::GetInstance().GetString("musicplayer.visualisation").empty())
+    else if (m_pPlayer->IsPlayingAudio() && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("screensaver.usemusicvisinstead") && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicplayer.visualisation").empty())
     { // activate the visualisation
       m_screenSaver.reset(new CScreenSaver("visualization"));
       CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_VISUALISATION);
@@ -4693,7 +4657,7 @@ void CApplication::CheckShutdown()
     return;
   }
 
-  if ( m_shutdownTimer.GetElapsedSeconds() > CSettings::GetInstance().GetInt("powermanagement.shutdowntime") * 60 )
+  if ( m_shutdownTimer.GetElapsedSeconds() > CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("powermanagement.shutdowntime") * 60 )
   {
     CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SHUTDOWN); // Turn off the box
   }
@@ -4729,7 +4693,7 @@ bool CApplication::MustBlockHDSpinDown(bool bCheckThisForNormalSpinDown)
 
 void CApplication::CheckNetworkHDSpinDown(bool playbackStarted)
 {
-  int iSpinDown = CSettings::GetInstance().GetInt("harddisk.remoteplayspindown");
+  int iSpinDown = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("harddisk.remoteplayspindown");
   if (iSpinDown == SPIN_DOWN_NONE)
     return ;
   if (CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog())
@@ -4761,7 +4725,7 @@ void CApplication::CheckNetworkHDSpinDown(bool playbackStarted)
       ) &&
       (
         (iDuration <= 0) ||
-        (iDuration > CSettings::GetInstance().GetInt("harddisk.remoteplayspindownminduration")*60)
+        (iDuration > CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("harddisk.remoteplayspindownminduration")*60)
       )
     )
     {
@@ -4789,7 +4753,7 @@ void CApplication::CheckNetworkHDSpinDown(bool playbackStarted)
   {
     // check the elapsed time
     DWORD dwTimeSpan = timeGetTime() - m_dwSpinDownTime;
-    if ( (m_dwSpinDownTime != 0) && (dwTimeSpan >= ((DWORD)CSettings::GetInstance().GetInt("harddisk.remoteplayspindowndelay")*1000UL)) )
+    if ( (m_dwSpinDownTime != 0) && (dwTimeSpan >= ((DWORD)CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("harddisk.remoteplayspindowndelay")*1000UL)) )
     {
       // time has elapsed, spin it down
 #ifdef HAS_XBOX_HARDWARE
@@ -4805,8 +4769,8 @@ void CApplication::CheckNetworkHDSpinDown(bool playbackStarted)
       // and we're within 10 seconds (or 0.5*spindown time) of the end.  This should
       // make returning to the GUI a bit snappier + speed up stacked item changes.
       int iMinSpinUp = 10;
-      if (iMinSpinUp > CSettings::GetInstance().GetInt("harddisk.remoteplayspindowndelay")*0.5f)
-        iMinSpinUp = (int)(CSettings::GetInstance().GetInt("harddisk.remoteplayspindowndelay")*0.5f);
+      if (iMinSpinUp > CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("harddisk.remoteplayspindowndelay")*0.5f)
+        iMinSpinUp = (int)(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("harddisk.remoteplayspindowndelay")*0.5f);
       if (CServiceBroker::GetGUI()->GetInfoManager().GetPlayTimeRemaining() == iMinSpinUp)
       { // spin back up
 #ifdef HAS_XBOX_HARDWARE
@@ -4819,7 +4783,7 @@ void CApplication::CheckNetworkHDSpinDown(bool playbackStarted)
 
 void CApplication::CheckHDSpindown()
 {
-  if (!CSettings::GetInstance().GetInt("harddisk.spindowntime"))
+  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("harddisk.spindowntime"))
     return ;
   if (CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog())
     return ;
@@ -4843,7 +4807,7 @@ void CApplication::CheckHDSpindown()
   {
     // yes, then check the elapsed time
     DWORD dwTimeSpan = timeGetTime() - m_dwSpinDownTime;
-    if ( (m_dwSpinDownTime != 0) && (dwTimeSpan >= ((DWORD)CSettings::GetInstance().GetInt("harddisk.spindowntime")*60UL*1000UL)) )
+    if ( (m_dwSpinDownTime != 0) && (dwTimeSpan >= ((DWORD)CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("harddisk.spindowntime")*60UL*1000UL)) )
     {
       // time has elapsed, spin it down
 #ifdef HAS_XBOX_HARDWARE
@@ -4920,7 +4884,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
       {
         // Start our cdg parser as appropriate
 #ifdef HAS_KARAOKE
-        if (m_pCdgParser && CSettings::GetInstance().GetBool("karaoke.enabled") && !m_itemCurrentFile->IsInternetStream())
+        if (m_pCdgParser && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("karaoke.enabled") && !m_itemCurrentFile->IsInternetStream())
         {
           if (m_pCdgParser->IsRunning())
             m_pCdgParser->Stop();
@@ -4996,7 +4960,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
       
       // In case playback ended due to user eg. skipping over the end, clear
       // our resume bookmark here
-      if (message.GetMessage() == GUI_MSG_PLAYBACK_ENDED && m_progressTrackingPlayCountUpdate && g_advancedSettings.m_videoIgnorePercentAtEnd > 0)
+      if (message.GetMessage() == GUI_MSG_PLAYBACK_ENDED && m_progressTrackingPlayCountUpdate && CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoIgnorePercentAtEnd > 0)
       {
         // Delete the bookmark
         m_progressTrackingVideoResumeBookmark.timeInSeconds = -1.0f;
@@ -5042,7 +5006,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
 
       if (!m_pPlayer->IsPlayingAudio() && g_playlistPlayer.GetCurrentPlaylist() == PLAYLIST_NONE && CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_VISUALISATION)
       {
-        CSettings::GetInstance().Save();  // save vis settings
+        CServiceBroker::GetSettingsComponent()->GetSettings()->Save();  // save vis settings
         ResetScreenSaverWindow();
         CServiceBroker::GetGUI()->GetWindowManager().PreviousWindow();
       }
@@ -5051,7 +5015,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
       if (!m_pPlayer->IsPlayingAudio() && (m_itemCurrentFile->IsCDDA() || m_itemCurrentFile->IsOnDVD()) && !CDetectDVDMedia::IsDiscInDrive() && CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_VISUALISATION)
       {
         // yes, disable vis
-        CSettings::GetInstance().Save();    // save vis settings
+        CServiceBroker::GetSettingsComponent()->GetSettings()->Save();    // save vis settings
         ResetScreenSaverWindow();
         CServiceBroker::GetGUI()->GetWindowManager().PreviousWindow();
       }
@@ -5186,7 +5150,7 @@ void CApplication::Process()
 
   if (m_updaterTimer.GetElapsedSeconds() > 1800)
   {
-    if (CSettings::GetInstance().GetInt("updater.autoupdate") == AUTO_UPDATER_NOTIFY && 
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("updater.autoupdate") == AUTO_UPDATER_NOTIFY && 
         !CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool("Skin.HasSetting(updateavailable)"))
     {
       CServiceBroker::GetJobManager()->AddJob(new CUpdaterJob(true), NULL);
@@ -5221,11 +5185,11 @@ void CApplication::ProcessSlow()
   UpdateFileState();
 
   // Check if we need to activate the screensaver (if enabled).
-  if (CSettings::GetInstance().GetString("screensaver.mode") != "None")
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("screensaver.mode") != "None")
     CheckScreenSaver();
 
   // check if we need to shutdown (if enabled)
-  if (CSettings::GetInstance().GetInt("powermanagement.shutdowntime"))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("powermanagement.shutdowntime"))
     CheckShutdown();
 
   // check if we should restart the player
@@ -5251,9 +5215,9 @@ void CApplication::ProcessSlow()
   // LED - LCD SwitchOn On Paused! m_bIsPaused=TRUE -> LED/LCD is ON!
   if(m_pPlayer->IsPaused() != m_bIsPaused)
   {
-    if(CSettings::GetInstance().GetBool("system.ledenableonpaused"))
+    if(CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("system.ledenableonpaused"))
       StartLEDControl(m_bIsPaused);
-    if(CSettings::GetInstance().GetBool("lcd.enableonpaused"))
+    if(CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("lcd.enableonpaused"))
       DimLCDOnPlayback(m_bIsPaused);
     m_bIsPaused = m_pPlayer->IsPaused();
   }
@@ -5478,13 +5442,13 @@ int CApplication::GetVolume(bool percentage /* = true */) const
 int CApplication::GetSubtitleDelay() const
 {
   // converts subtitle delay to a percentage
-  return int(((float)(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay + g_advancedSettings.m_videoSubsDelayRange)) / (2 * g_advancedSettings.m_videoSubsDelayRange)*100.0f + 0.5f);
+  return int(((float)(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay + CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange)) / (2 * CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange)*100.0f + 0.5f);
 }
 
 int CApplication::GetAudioDelay() const
 {
   // converts subtitle delay to a percentage
-  return int(((float)(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay + g_advancedSettings.m_videoAudioDelayRange)) / (2 * g_advancedSettings.m_videoAudioDelayRange)*100.0f + 0.5f);
+  return int(((float)(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay + CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange)) / (2 * CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange)*100.0f + 0.5f);
 }
 
 // Returns the total time in seconds of the current media.  Fractional
@@ -5667,16 +5631,16 @@ PLAYERCOREID CApplication::GetCurrentPlayer()
 
 void CApplication::UpdateLibraries()
 {
-  if (CSettings::GetInstance().GetBool("videolibrary.updateonstartup"))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videolibrary.updateonstartup"))
   {
     CLog::Log(LOGNOTICE, "Starting video library startup scan");
-    StartVideoScan("", !CSettings::GetInstance().GetBool("videolibrary.backgroundupdate"));
+    StartVideoScan("", !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videolibrary.backgroundupdate"));
   }
 
-  if (CSettings::GetInstance().GetBool("musiclibrary.backgroundupdate"))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musiclibrary.backgroundupdate"))
   {
     CLog::Log(LOGNOTICE, "Starting music library startup scan");
-    StartMusicScan("", !CSettings::GetInstance().GetBool("musiclibrary.backgroundupdate"));
+    StartMusicScan("", !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musiclibrary.backgroundupdate"));
   }
 }
 
@@ -5753,10 +5717,10 @@ void CApplication::StartMusicScan(const std::string &strDirectory, bool userInit
   // Setup default flags
   if (!flags)
   { // Online scraping of additional info during scanning
-    if (CSettings::GetInstance().GetBool("musiclibrary.downloadinfo"))
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musiclibrary.downloadinfo"))
       flags |= CMusicInfoScanner::SCAN_ONLINE;
   }
-  if (!userInitiated || CSettings::GetInstance().GetBool("musiclibrary.backgroundupdate"))
+  if (!userInitiated || CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musiclibrary.backgroundupdate"))
     flags |= CMusicInfoScanner::SCAN_BACKGROUND;
 
   CMusicLibraryQueue::GetInstance().ScanLibrary(strDirectory, flags, !(flags & CMusicInfoScanner::SCAN_BACKGROUND));
@@ -5844,11 +5808,11 @@ void CApplication::CheckForDebugButtonCombo()
   ReadInput();
   if (m_DefaultGamepad.bAnalogButtons[XINPUT_GAMEPAD_X] && m_DefaultGamepad.bAnalogButtons[XINPUT_GAMEPAD_Y])
   {
-    g_advancedSettings.m_logLevel = LOG_LEVEL_DEBUG_FREEMEM;
+    CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel = LOG_LEVEL_DEBUG_FREEMEM;
     CLog::Log(LOGINFO, "Key combination detected for full debug logging (X+Y)");
   }
 #ifdef _DEBUG
-  g_advancedSettings.m_logLevel = LOG_LEVEL_DEBUG_FREEMEM;
+  CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel = LOG_LEVEL_DEBUG_FREEMEM;
 #endif
 #endif
 }
@@ -5878,43 +5842,13 @@ bool CApplication::IsCurrentThread() const
   return CThread::IsCurrentThread(m_threadID);
 }
 
-void CApplication::InitDirectoriesXbox()
-{
-  // map our special drives to the correct drive letter
-  CSpecialProtocol::SetXBMCBinPath("Q:\\");
-  CSpecialProtocol::SetXBMCPath("Q:\\"); // Use Q as ie. F doesn't exist yet!!!
-  CSpecialProtocol::SetHomePath("Q:\\home");
-  // First profile is always the Master Profile
-  CSpecialProtocol::SetMasterProfilePath("Q:\\home\\userdata");
-  CSpecialProtocol::SetTempPath("Z:\\");
-  CSpecialProtocol::SetXBMCBinAddonPath("Q:\\addons");
-
-  g_advancedSettings.m_logFolder = "special://home/";
-}
-
-void CApplication::CreateUserDirs() const
-{
-  CDirectory::Create("special://home/");
-  CDirectory::Create("special://home/addons");
-  CDirectory::Create("special://home/addons/packages");
-  CDirectory::Create("special://home/addons/temp");
-  CDirectory::Create("special://masterprofile/");
-#ifdef _XBOX
-  CUtil::WipeDir("special://temp/");
-#else
-  CDirectory::Create("special://temp/");
-#endif
-  CDirectory::Create("special://temp/temp"); // temp directory for python and dllGetTempPathA
-  CDirectory::Create("special://temp/archive_cache"); // temp directory for cached VFS paths
-}
-
 bool CApplication::SetLanguage(const std::string &strLanguage)
 {
   // nothing to be done if the language hasn't changed
-  if (strLanguage == CSettings::GetInstance().GetString("locale.language"))
+  if (strLanguage == CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("locale.language"))
     return true;
 
-  return CSettings::GetInstance().SetString("locale.language", strLanguage);
+  return CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("locale.language", strLanguage);
 }
 
 bool CApplication::LoadLanguage(bool reload)
@@ -5924,8 +5858,8 @@ bool CApplication::LoadLanguage(bool reload)
     return false;
 
   // set the proper audio and subtitle languages
-  g_langInfo.SetAudioLanguage(CSettings::GetInstance().GetString("locale.audiolanguage"));
-  g_langInfo.SetSubtitleLanguage(CSettings::GetInstance().GetString("locale.subtitlelanguage"));
+  g_langInfo.SetAudioLanguage(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("locale.audiolanguage"));
+  g_langInfo.SetSubtitleLanguage(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("locale.subtitlelanguage"));
 
   return true;
 }
@@ -5953,21 +5887,21 @@ void CApplication::OnSettingChanged(const CSetting *setting)
     // the it to the default value
     if (settingId == "lookandfeel.skin")
     {
-      CSetting* skinRelatedSetting = CSettings::GetInstance().GetSetting("lookandfeel.skincolors");
+      CSetting* skinRelatedSetting = CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.skincolors");
       if (!skinRelatedSetting->IsDefault())
       {
         m_ignoreSkinSettingChanges = true;
         skinRelatedSetting->Reset();
       }
 
-      skinRelatedSetting = CSettings::GetInstance().GetSetting("lookandfeel.skintheme");
+      skinRelatedSetting = CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.skintheme");
       if (!skinRelatedSetting->IsDefault())
       {
         m_ignoreSkinSettingChanges = true;
         skinRelatedSetting->Reset();
       }
 
-      skinRelatedSetting = CSettings::GetInstance().GetSetting("lookandfeel.font");
+      skinRelatedSetting = CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.font");
       if (!skinRelatedSetting->IsDefault())
       {
         m_ignoreSkinSettingChanges = true;
@@ -5976,7 +5910,7 @@ void CApplication::OnSettingChanged(const CSetting *setting)
     }
     else if (settingId == "lookandfeel.skintheme")
     {
-      CSettingString* skinColorsSetting = static_cast<CSettingString*>(CSettings::GetInstance().GetSetting("lookandfeel.skincolors"));
+      CSettingString* skinColorsSetting = static_cast<CSettingString*>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.skincolors"));
       m_ignoreSkinSettingChanges = true;
 
       // we also need to adjust the skin color setting
@@ -6111,7 +6045,7 @@ void CApplication::OnSettingAction(const CSetting *setting)
   else if (settingId == "screensaver.settings")
   {
     AddonPtr addon;
-    if (CServiceBroker::GetAddonMgr().GetAddon(CSettings::GetInstance().GetString("screensaver.mode"), addon, ADDON_SCREENSAVER))
+    if (CServiceBroker::GetAddonMgr().GetAddon(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("screensaver.mode"), addon, ADDON_SCREENSAVER))
       CGUIDialogAddonSettings::ShowAndGetInput(addon);
   }
   else if (settingId == "videoscreen.guicalibration")
@@ -6156,9 +6090,9 @@ bool CApplication::OnSettingUpdate(CSetting* &setting, const char *oldSettingId,
   //       ret = channels->SetValue(channels->GetValue() + 1);
 
   //     // let's just reset the audiodevice settings as well
-  //     std::string audiodevice = CSettings::GetInstance().GetString("audiooutput.audiodevice");
+  //     std::string audiodevice = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("audiooutput.audiodevice");
   //     CAEFactory::VerifyOutputDevice(audiodevice, false);
-  //     ret |= CSettings::GetInstance().SetString("audiooutput.audiodevice", audiodevice.c_str());
+  //     ret |= CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("audiooutput.audiodevice", audiodevice.c_str());
 
   //     return ret;
   //   }

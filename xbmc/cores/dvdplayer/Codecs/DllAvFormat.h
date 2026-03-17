@@ -17,6 +17,7 @@ extern "C" {
 }
 
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 
 typedef int64_t offset_t;
 
@@ -133,7 +134,7 @@ public:
 class DllAvFormat : public DllDynamic, DllAvFormatInterface
 {
 public:
-  DllAvFormat() : DllDynamic( CSettings::GetInstance().GetFFmpegDllFolder() + "avformat-54.dll") {}
+  DllAvFormat() : DllDynamic( CServiceBroker::GetSettingsComponent()->GetSettings()->GetFFmpegDllFolder() + "avformat-54.dll") {}
 
   LOAD_SYMBOLS()
 

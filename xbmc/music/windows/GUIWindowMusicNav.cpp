@@ -49,6 +49,7 @@
 #include "Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/LegacyPathTranslation.h"
 #include "utils/log.h"
@@ -103,7 +104,7 @@ bool CGUIWindowMusicNav::OnMessage(CGUIMessage& message)
 
       // is this the first time the window is opened?
       if (m_vecItems->GetPath() == "?" && message.GetStringParam().empty())
-        message.SetStringParam(CSettings::GetInstance().GetString("mymusic.defaultlibview"));
+        message.SetStringParam(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("mymusic.defaultlibview"));
 
       if (!CGUIWindowMusicBase::OnMessage(message))
         return false;
@@ -314,10 +315,10 @@ bool CGUIWindowMusicNav::ManageInfoProvider(const CFileItemPtr item)
           scraper->SaveSettings();
           // Set default scraper
           if (content == CONTENT_ARTISTS)
-            CSettings::GetInstance().SetString("musiclibrary.artistsscraper", scraper->ID());
+            CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("musiclibrary.artistsscraper", scraper->ID());
           else
-            CSettings::GetInstance().SetString("musiclibrary.albumsscraper", scraper->ID());
-          CSettings::GetInstance().Save();
+            CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("musiclibrary.albumsscraper", scraper->ID());
+          CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
           // Clear all item specifc settings
           if (content == CONTENT_ARTISTS)
             result = m_musicdatabase.SetScraperAll("musicdb://artists/", ADDON::ScraperPtr());
@@ -586,7 +587,7 @@ void CGUIWindowMusicNav::GetContextButtons(int itemNumber, CContextButtons &butt
         !item->IsPath("add") && !item->IsParentFolder() &&
         !item->IsPlugin() &&
         !StringUtils::StartsWithNoCase(item->GetPath(), "addons://") &&
-        (CProfilesManager::Get().GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser))
+        (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser))
       {
         buttons.Add(CONTEXT_BUTTON_SCAN, 13352);
       }
@@ -617,9 +618,9 @@ void CGUIWindowMusicNav::GetContextButtons(int itemNumber, CContextButtons &butt
               nodetype == NODE_TYPE_OVERVIEW ||
               nodetype == NODE_TYPE_TOP100))
           {
-            if (!item->IsPath(CSettings::GetInstance().GetString("mymusic.defaultlibview")))
+            if (!item->IsPath(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("mymusic.defaultlibview")))
               buttons.Add(CONTEXT_BUTTON_SET_DEFAULT, 13335); // set default
-            if (!CSettings::GetInstance().GetString("mymusic.defaultlibview").empty())
+            if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("mymusic.defaultlibview").empty())
               buttons.Add(CONTEXT_BUTTON_CLEAR_DEFAULT, 13403); // clear default
           }
 
@@ -649,7 +650,7 @@ void CGUIWindowMusicNav::GetContextButtons(int itemNumber, CContextButtons &butt
         }
         if (item->HasVideoInfoTag() && !item->m_bIsFolder)
         {
-          if ((CProfilesManager::Get().GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser) && !item->IsPlugin())
+          if ((CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser) && !item->IsPlugin())
           {
             buttons.Add(CONTEXT_BUTTON_RENAME, 16105);
             buttons.Add(CONTEXT_BUTTON_DELETE, 646);
@@ -659,7 +660,7 @@ void CGUIWindowMusicNav::GetContextButtons(int itemNumber, CContextButtons &butt
           && (item->IsPlayList() || item->IsSmartPlayList()))
           buttons.Add(CONTEXT_BUTTON_DELETE, 117);
 
-        if (!item->IsReadOnly() && CSettings::GetInstance().GetBool("filelists.allowfiledeletion"))
+        if (!item->IsReadOnly() && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.allowfiledeletion"))
         {
           buttons.Add(CONTEXT_BUTTON_DELETE, 117);
           buttons.Add(CONTEXT_BUTTON_RENAME, 118);
@@ -732,13 +733,13 @@ bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     return true;
 
   case CONTEXT_BUTTON_SET_DEFAULT:
-    CSettings::GetInstance().SetString("mymusic.defaultlibview", GetQuickpathName(item->GetPath()));
-    CSettings::GetInstance().Save();
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("mymusic.defaultlibview", GetQuickpathName(item->GetPath()));
+    CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
     return true;
 
   case CONTEXT_BUTTON_CLEAR_DEFAULT:
-    CSettings::GetInstance().SetString("mymusic.defaultlibview", "");
-    CSettings::GetInstance().Save();
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("mymusic.defaultlibview", "");
+    CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
     return true;
 
   case CONTEXT_BUTTON_GO_TO_ARTIST:

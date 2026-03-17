@@ -28,8 +28,9 @@
 #include "LangInfo.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/lib/Setting.h"
+#include "settings/lib/SettingsManager.h"
 #include "settings/Settings.h"
-#include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"
 #include "utils/SystemInfo.h"
 #include "utils/URIUtils.h"
@@ -55,11 +56,11 @@ void CAdvancedSettings::OnSettingsLoaded()
   Load();
 
   // default players?
-  CLog::Log(LOGNOTICE, "Default Video Player: %s", CSettings::GetInstance().GetDefaultVideoPlayerName().c_str());
-  CLog::Log(LOGNOTICE, "Default Audio Player: %s", CSettings::GetInstance().GetDefaultAudioPlayerName().c_str());
+  CLog::Log(LOGNOTICE, "Default Video Player: %s", CServiceBroker::GetSettingsComponent()->GetSettings()->GetDefaultVideoPlayerName().c_str());
+  CLog::Log(LOGNOTICE, "Default Audio Player: %s", CServiceBroker::GetSettingsComponent()->GetSettings()->GetDefaultAudioPlayerName().c_str());
 
   // setup any logging...
-  if (CSettings::GetInstance().GetBool("debug.showloginfo"))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("debug.showloginfo"))
   {
     m_logLevel = std::max(m_logLevelHint, LOG_LEVEL_DEBUG_FREEMEM);
     CLog::Log(LOGNOTICE, "Enabled debug logging due to GUI setting (%d)", m_logLevel);
@@ -100,6 +101,28 @@ void CAdvancedSettings::OnSettingAction(const CSetting *setting)
     CGUIDialogAddonSettings::ShowAndGetInput(addon, true);
     SetExtraLogsFromAddon(addon.get());
   }
+}
+
+void CAdvancedSettings::Initialize(CSettingsManager& settingsMgr)
+{
+  Initialize();
+
+  settingsMgr.RegisterSettingsHandler(this);
+  std::set<std::string> settingSet;
+  settingSet.insert("debug.showloginfo");
+  settingSet.insert("debug.extralogging");
+  settingSet.insert("debug.setextraloglevel");
+  settingsMgr.RegisterCallback(this, settingSet);
+}
+
+void CAdvancedSettings::Uninitialize(CSettingsManager& settingsMgr)
+{
+  settingsMgr.UnregisterCallback(this);
+  settingsMgr.UnregisterSettingsHandler(this);
+
+  Clear();
+
+  m_initialized = false;
 }
 
 void CAdvancedSettings::Initialize()
@@ -319,8 +342,6 @@ void CAdvancedSettings::Initialize()
   m_logLevelHint = m_logLevel = LOG_LEVEL_NORMAL;
   m_extraLogLevels = 0;
 
-  m_logFolder = "special://home/";              // log file location
-
   m_userAgent = g_sysinfo.GetUserAgent();
 
   m_initialized = true;
@@ -337,7 +358,7 @@ bool CAdvancedSettings::Load()
   ParseSettingsFile("special://xbmc/system/advancedsettings.xml");
   for (unsigned int i = 0; i < m_settingsFiles.size(); i++)
     ParseSettingsFile(m_settingsFiles[i]);
-  ParseSettingsFile(CProfilesManager::Get().GetUserDataItem("advancedsettings.xml"));
+  ParseSettingsFile(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("advancedsettings.xml"));
   return true;
 }
 
@@ -597,15 +618,15 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
     const char* hide = pElement->Attribute("hide");
     if (hide == NULL || strnicmp("false", hide, 4) != 0)
     {
-      CSetting *setting = CSettings::GetInstance().GetSetting("debug.showloginfo");
+      CSetting *setting = CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("debug.showloginfo");
       if (setting != NULL)
         setting->SetVisible(false);
-      setting = CSettings::GetInstance().GetSetting("debug.setextraloglevel");
+      setting = CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("debug.setextraloglevel");
       if (setting != NULL)
         setting->SetVisible(false);
     }
-    g_advancedSettings.m_logLevel = std::max(g_advancedSettings.m_logLevel, g_advancedSettings.m_logLevelHint);
-    CLog::SetLogLevel(g_advancedSettings.m_logLevel);
+    CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel = std::max(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevelHint);
+    CLog::SetLogLevel(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel);
   }
 
   pElement = pRootElement->FirstChildElement("python");
@@ -825,7 +846,7 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
   }
 
   // load in the settings overrides
-  CSettings::GetInstance().Load(pRootElement, true);  // true to hide the settings we read in
+  CServiceBroker::GetSettingsComponent()->GetSettings()->Load(pRootElement, true);  // true to hide the settings we read in
 
   TiXmlElement* pDatabase = pRootElement->FirstChildElement("videodatabase");
   if (pDatabase)
@@ -870,7 +891,6 @@ void CAdvancedSettings::Clear()
   m_discStubExtensions.clear();
   m_subtitlesExtensions.clear();
 
-  m_logFolder.clear();
   m_userAgent.clear();
 
   m_loaded = false;

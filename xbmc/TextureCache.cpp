@@ -19,12 +19,14 @@
  */
 
 #include "TextureCache.h"
+#include "ServiceBroker.h"
 #include "TextureCacheJob.h"
 #include "filesystem/File.h"
 #include "profiles/ProfilesManager.h"
 #include "threads/SingleLock.h"
 #include "utils/Crc32.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
@@ -62,7 +64,7 @@ bool CTextureCache::IsCachedImage(const std::string &url) const
       URIUtils::PathHasParent(url, "special://temp", true) ||
       URIUtils::PathHasParent(url, "resource://", true) ||
       URIUtils::PathHasParent(url, "androidapp://", true)   ||
-      URIUtils::PathHasParent(url, CProfilesManager::Get().GetThumbnailsFolder(), true))
+      URIUtils::PathHasParent(url, CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetThumbnailsFolder(), true))
     return true;
   return false;
 }
@@ -254,7 +256,7 @@ std::string CTextureCache::GetCacheFile(const std::string &url)
 
 std::string CTextureCache::GetCachedPath(const std::string &file)
 {
-  return URIUtils::AddFileToFolder(CProfilesManager::Get().GetThumbnailsFolder(), file);
+  return URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetThumbnailsFolder(), file);
 }
 
 void CTextureCache::OnCachingComplete(bool success, CTextureCacheJob *job)

@@ -28,6 +28,7 @@
 #include "PlayListPlayer.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "guilib/TextureManager.h"
 #include "Util.h"
 #include "input/ButtonTranslator.h"
@@ -173,7 +174,7 @@ namespace XBMCAddon
     String getSkinDir()
     {
       XBMC_TRACE;
-      return CSettings::GetInstance().GetString("lookandfeel.skin");
+      return CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skin");
     }
 
     String getLanguage(int format /* = CLangCodeExpander::ENGLISH_NAME */, bool region /*= false*/)
@@ -474,11 +475,11 @@ namespace XBMCAddon
       XBMC_TRACE;
       String result;
       if (strcmpi(mediaType, "video") == 0)
-        result = g_advancedSettings.m_videoExtensions;
+        result = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions;
       else if (strcmpi(mediaType, "music") == 0)
-        result = g_advancedSettings.GetMusicExtensions();
+        result = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetMusicExtensions();
       else if (strcmpi(mediaType, "picture") == 0)
-        result = g_advancedSettings.m_pictureExtensions;
+        result = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions;
 
       //! @todo implement
       //    else

@@ -8,7 +8,9 @@
 
 #include "ProgramInfoTag.h"
 
+#include "ServiceBroker.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/Archive.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
@@ -234,31 +236,31 @@ void CProgramInfoTag::ParseNative(const TiXmlElement* program, bool prioritise)
   std::string value;
 
   std::vector<std::string> developers(m_developer);
-  if (XMLUtils::GetStringArray(program, "developer", developers, prioritise, g_advancedSettings.m_programItemSeparator))
+  if (XMLUtils::GetStringArray(program, "developer", developers, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programItemSeparator))
     SetDeveloper(developers);
 
   std::vector<std::string> publishers(m_publisher);
-  if (XMLUtils::GetStringArray(program, "publisher", publishers, prioritise, g_advancedSettings.m_programItemSeparator))
+  if (XMLUtils::GetStringArray(program, "publisher", publishers, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programItemSeparator))
     SetPublisher(publishers);
 
   std::vector<std::string> genres(m_genre);
-  if (XMLUtils::GetStringArray(program, "genre", genres, prioritise, g_advancedSettings.m_programItemSeparator))
+  if (XMLUtils::GetStringArray(program, "genre", genres, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programItemSeparator))
     SetGenre(genres);
 
   std::vector<std::string> generalFeatures(m_generalFeature);
-  if (XMLUtils::GetStringArray(program, "generalfeature", generalFeatures, prioritise, g_advancedSettings.m_programItemSeparator))
+  if (XMLUtils::GetStringArray(program, "generalfeature", generalFeatures, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programItemSeparator))
     SetGeneralFeature(generalFeatures);
 
   std::vector<std::string> onlineFeatures(m_onlineFeature);
-  if (XMLUtils::GetStringArray(program, "onlinefeature", onlineFeatures, prioritise, g_advancedSettings.m_programItemSeparator))
+  if (XMLUtils::GetStringArray(program, "onlinefeature", onlineFeatures, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programItemSeparator))
     SetOnlineFeature(onlineFeatures);
 
   std::vector<std::string> platforms(m_platform);
-  if (XMLUtils::GetStringArray(program, "platform", platforms, prioritise, g_advancedSettings.m_programItemSeparator))
+  if (XMLUtils::GetStringArray(program, "platform", platforms, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programItemSeparator))
     SetPlatform(platforms);
 
   std::vector<std::string> tags(m_tags);
-  if (XMLUtils::GetStringArray(program, "tag", tags, prioritise, g_advancedSettings.m_programItemSeparator))
+  if (XMLUtils::GetStringArray(program, "tag", tags, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programItemSeparator))
     SetTags(tags);
 
   if (XMLUtils::GetString(program, "type", value))

@@ -37,6 +37,7 @@
 #include "guilib/Key.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/Variant.h"
+#include "settings/SettingsComponent.h"
 
 using namespace XFILE;
 
@@ -66,7 +67,7 @@ int CGUIWindowSettingsProfile::GetSelectedItem()
 
 void CGUIWindowSettingsProfile::OnPopupMenu(int iItem)
 {
-  if (iItem == (int)CProfilesManager::Get().GetNumberOfProfiles())
+  if (iItem == (int)CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles())
     return;
 
   // popup the context menu
@@ -83,14 +84,14 @@ void CGUIWindowSettingsProfile::OnPopupMenu(int iItem)
     CGUIMessage msg2(GUI_MSG_ITEM_SELECTED, CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow(), iCtrlID);
     CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg2);
     g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
-    CProfilesManager::Get().LoadMasterProfileForLogin();
+    CServiceBroker::GetSettingsComponent()->GetProfileManager()->LoadMasterProfileForLogin();
     CGUIWindowLoginScreen::LoadProfile(iItem);
     return;
   }
 
   if (choice == 2)
   {
-    if (CProfilesManager::Get().DeleteProfile(iItem))
+    if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->DeleteProfile(iItem))
       iItem--;
   }
 
@@ -130,13 +131,13 @@ bool CGUIWindowSettingsProfile::OnMessage(CGUIMessage& message)
           if (iAction == ACTION_CONTEXT_MENU || iAction == ACTION_MOUSE_RIGHT_CLICK)
           {
             //contextmenu
-            if (iItem <= (int)CProfilesManager::Get().GetNumberOfProfiles() - 1)
+            if (iItem <= (int)CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles() - 1)
             {
               OnPopupMenu(iItem);
             }
             return true;
           }
-          else if (iItem < (int)CProfilesManager::Get().GetNumberOfProfiles())
+          else if (iItem < (int)CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles())
           {
             if (CGUIDialogProfileSettings::ShowForProfile(iItem))
             {
@@ -149,10 +150,10 @@ bool CGUIWindowSettingsProfile::OnMessage(CGUIMessage& message)
 
             return false;
           }
-          else if (iItem > (int)CProfilesManager::Get().GetNumberOfProfiles() - 1)
+          else if (iItem > (int)CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles() - 1)
           {
-            CDirectory::Create(URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(),"profiles"));
-            if (CGUIDialogProfileSettings::ShowForProfile(CProfilesManager::Get().GetNumberOfProfiles()))
+            CDirectory::Create(URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(),"profiles"));
+            if (CGUIDialogProfileSettings::ShowForProfile(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles()))
             {
               LoadList();
               CGUIMessage msg(GUI_MSG_ITEM_SELECT, GetID(), 2,iItem);
@@ -166,18 +167,18 @@ bool CGUIWindowSettingsProfile::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_LOGINSCREEN)
       {
-        CProfilesManager::Get().ToggleLoginScreen();
-        CProfilesManager::Get().Save();
+        CServiceBroker::GetSettingsComponent()->GetProfileManager()->ToggleLoginScreen();
+        CServiceBroker::GetSettingsComponent()->GetProfileManager()->Save();
         return true;
       }
       else if (iControl == CONTROL_AUTOLOGIN)
       {
-        int currentId = CProfilesManager::Get().GetAutoLoginProfileId();
+        int currentId = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetAutoLoginProfileId();
         int profileId;
         if (GetAutoLoginProfileChoice(profileId) && (currentId != profileId))
         {
-          CProfilesManager::Get().SetAutoLoginProfileId(profileId);
-          CProfilesManager::Get().Save();
+          CServiceBroker::GetSettingsComponent()->GetProfileManager()->SetAutoLoginProfileId(profileId);
+          CServiceBroker::GetSettingsComponent()->GetProfileManager()->Save();
         }
         return true;
       }
@@ -192,9 +193,9 @@ void CGUIWindowSettingsProfile::LoadList()
 {
   ClearListItems();
 
-  for (unsigned int i = 0; i < CProfilesManager::Get().GetNumberOfProfiles(); i++)
+  for (unsigned int i = 0; i < CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles(); i++)
   {
-    const CProfile *profile = CProfilesManager::Get().GetProfile(i);
+    const CProfile *profile = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetProfile(i);
     CFileItemPtr item(new CFileItem(profile->getName()));
     item->SetLabel2(profile->getDate());
     item->SetArt("thumb", profile->getThumb());
@@ -208,7 +209,7 @@ void CGUIWindowSettingsProfile::LoadList()
   CGUIMessage msg(GUI_MSG_LABEL_BIND, GetID(), CONTROL_PROFILES, 0, 0, m_listItems);
   OnMessage(msg);
 
-  if (CProfilesManager::Get().UsingLoginScreen())
+  if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->UsingLoginScreen())
   {
     CONTROL_SELECT(CONTROL_LOGINSCREEN);
   }
@@ -239,16 +240,16 @@ bool CGUIWindowSettingsProfile::GetAutoLoginProfileChoice(int &iProfile)
 
   // add items
   // "Last used profile" option comes first, so up indices by 1
-  int autoLoginProfileId = CProfilesManager::Get().GetAutoLoginProfileId() + 1;
+  int autoLoginProfileId = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetAutoLoginProfileId() + 1;
   CFileItemList items;
   CFileItemPtr item(new CFileItem());
   item->SetLabel(g_localizeStrings.Get(37014)); // Last used profile
   item->SetIconImage("DefaultUser.png");
   items.Add(item);
 
-  for (unsigned int i = 0; i < CProfilesManager::Get().GetNumberOfProfiles(); i++)
+  for (unsigned int i = 0; i < CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles(); i++)
   {
-    const CProfile *profile = CProfilesManager::Get().GetProfile(i);
+    const CProfile *profile = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetProfile(i);
     std::string locked = g_localizeStrings.Get(profile->getLockMode() > 0 ? 20166 : 20165);
     CFileItemPtr item(new CFileItem(profile->getName()));
     item->SetLabel2(locked); // lock setting

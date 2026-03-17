@@ -25,6 +25,7 @@
 #include "FileItem.h"
 #include "DirectoryCache.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "utils/Job.h"
 #include "utils/JobManager.h"
@@ -266,7 +267,7 @@ bool CDirectory::GetDirectory(const CURL& url, boost::shared_ptr<IDirectory> pDi
     }
     // filter hidden files
     //! @todo we shouldn't be checking the gui setting here, callers should use getHidden instead
-    if (!CSettings::GetInstance().GetBool("filelists.showhidden") && !(hints.flags & DIR_FLAG_GET_HIDDEN))
+    if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.showhidden") && !(hints.flags & DIR_FLAG_GET_HIDDEN))
     {
       for (int i = 0; i < items.Size(); ++i)
       {

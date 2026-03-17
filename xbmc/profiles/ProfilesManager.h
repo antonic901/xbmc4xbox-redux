@@ -25,12 +25,17 @@
 #include "settings/lib/ISettingsHandler.h"
 #include "threads/CriticalSection.h"
 
+class CSettings;
 class TiXmlNode;
 
 class CProfilesManager : public ISettingsHandler
 {
 public:
-  static CProfilesManager& Get();
+  CProfilesManager();
+  virtual ~CProfilesManager();
+
+  void Initialize(const boost::shared_ptr<CSettings>& settings);
+  void Uninitialize();
 
   virtual bool OnSettingsLoading();
   virtual void OnSettingsLoaded();
@@ -181,16 +186,17 @@ public:
   std::string GetUserDataItem(const std::string& strFile) const;
 
 protected:
-  CProfilesManager();
   CProfilesManager(const CProfilesManager&);
   CProfilesManager const& operator=(CProfilesManager const&);
-  virtual ~CProfilesManager();
 
 private:
   /*! \brief Set the current profile id and update the special://profile path
     \param profileId profile index
     */
   void SetCurrentProfileId(size_t profileId);
+
+  // Construction parameters
+  boost::shared_ptr<CSettings> m_settings;
 
   std::vector<CProfile> m_profiles;
   bool m_usingLoginScreen;

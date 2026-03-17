@@ -36,6 +36,7 @@
 #include "XboxBuiltins.h"
 
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "Util.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
@@ -121,7 +122,7 @@ bool CBuiltins::IsSystemPowerdownCommand(const std::string& execString)
   else if (execute == "shutdown")
   {
 #ifndef _XBOX
-    switch (CSettings::GetInstance().GetInt("powermanagement.shutdownstate"))
+    switch (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("powermanagement.shutdownstate"))
     {
       case POWERSTATE_SHUTDOWN:
       case POWERSTATE_SUSPEND:

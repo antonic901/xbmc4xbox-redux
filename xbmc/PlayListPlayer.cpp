@@ -24,6 +24,7 @@
 #include "Application.h"
 #include "PartyModeManager.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "GUIUserMessages.h"
@@ -268,8 +269,8 @@ bool CPlayListPlayer::Play(int iSong, std::string player, bool bAutoPlay /* = fa
     if (!m_iFailedSongs)
       m_failedSongsStart = playAttempt;
     m_iFailedSongs++;
-    if ((m_iFailedSongs >= g_advancedSettings.m_playlistRetries && g_advancedSettings.m_playlistRetries >= 0)
-        || ((XbmcThreads::SystemClockMillis() - m_failedSongsStart  >= (unsigned int)g_advancedSettings.m_playlistTimeout * 1000) && g_advancedSettings.m_playlistTimeout))
+    if ((m_iFailedSongs >= CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_playlistRetries && CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_playlistRetries >= 0)
+        || ((XbmcThreads::SystemClockMillis() - m_failedSongsStart  >= (unsigned int)CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_playlistTimeout * 1000) && CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_playlistTimeout))
     {
       CLog::Log(LOGDEBUG,"Playlist Player: one or more items failed to play... aborting playback");
 

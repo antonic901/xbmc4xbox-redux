@@ -28,6 +28,7 @@
 #include "utils/SystemInfo.h"
 #endif
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 
 #include "threads/SystemClock.h"
 #include "interfaces/AnnouncementManager.h"
@@ -108,7 +109,7 @@ void XBPython::Announce(ANNOUNCEMENT::AnnouncementFlag flag, const char *sender,
      OnDPMSActivated();
   }
 
-  std::string jsonData = CJSONVariantWriter::Write(data, g_advancedSettings.m_jsonOutputCompact);
+  std::string jsonData = CJSONVariantWriter::Write(data, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_jsonOutputCompact);
   if (!jsonData.empty())
     OnNotification(sender, std::string(ANNOUNCEMENT::AnnouncementFlagToString(flag)) + "." + std::string(message), jsonData);
 }

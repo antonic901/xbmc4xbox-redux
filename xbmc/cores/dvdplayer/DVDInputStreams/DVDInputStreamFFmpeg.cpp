@@ -20,9 +20,11 @@
  
 #include "DVDInputStreamFFmpeg.h"
 
+#include "ServiceBroker.h"
 #include "filesystem/CurlFile.h"
 #include "playlists/PlayListM3U.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
@@ -57,7 +59,7 @@ bool CDVDInputStreamFFmpeg::Open()
   if (m_item.IsInternetStream() && (m_item.IsType(".m3u8") || m_item.GetMimeType() == "application/vnd.apple.mpegurl"))
   {
     // get the available bandwidth and  determine the most appropriate stream
-    int bandwidth = CSettings::GetInstance().GetInt("network.bandwidth");
+    int bandwidth = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("network.bandwidth");
     if(bandwidth <= 0)
       bandwidth = INT_MAX;
     const CURL playlist_url = m_item.GetURL();

@@ -54,6 +54,7 @@ class CWeather;
 class CPlayerCoreFactory;
 class CDatabaseManager;
 class CGUIComponent;
+class CSettingsComponent;
 class CMediaManager;
 class CTextureCache;
 class CJobManager;
@@ -88,6 +89,10 @@ public:
   static void RegisterGUI(CGUIComponent* gui);
   static void UnregisterGUI();
 
+  static void RegisterSettingsComponent(const boost::shared_ptr<CSettingsComponent>& settings);
+  static void UnregisterSettingsComponent();
+  static boost::shared_ptr<CSettingsComponent> GetSettingsComponent();
+
   static void RegisterWinSystem(CWinSystemBase* winsystem);
   static void UnregisterWinSystem();
   static CWinSystemBase* GetWinSystem();
@@ -114,6 +119,7 @@ private:
   boost::shared_ptr<ANNOUNCEMENT::CAnnouncementManager> m_pAnnouncementManager;
   CGUIComponent* m_pGUI;
   CWinSystemBase* m_pWinSystem;
+  boost::shared_ptr<CSettingsComponent> m_pSettingsComponent;
   boost::shared_ptr<CTextureCache> m_textureCache;
   boost::shared_ptr<CJobManager> m_jobManager;
   boost::shared_ptr<KODI::MESSAGING::CApplicationMessenger> m_appMessenger;

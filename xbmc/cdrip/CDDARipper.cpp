@@ -36,6 +36,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingPath.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/windows/GUIControlSettings.h"
 #include "FileItem.h"
 #include "storage/DetectDVDType.h"
@@ -85,7 +86,7 @@ bool CCDDARipper::RipTrack(CFileItem* pItem)
 
   AddJob(new CCDDARipJob(pItem->GetPath(),strFile,
                          *pItem->GetMusicInfoTag(),
-                         CSettings::GetInstance().GetInt("audiocds.encoder")));
+                         CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.encoder")));
 
   return true;
 }
@@ -137,11 +138,11 @@ bool CCDDARipper::RipCD()
     if (item->GetPath().find(".cdda") == std::string::npos)
       continue;
 
-    bool eject = CSettings::GetInstance().GetBool("audiocds.ejectonrip") &&
+    bool eject = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("audiocds.ejectonrip") &&
                  i == vecItems.Size()-1;
     AddJob(new CCDDARipJob(item->GetPath(),strFile,
                            *item->GetMusicInfoTag(),
-                           CSettings::GetInstance().GetInt("audiocds.encoder"), eject));
+                           CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.encoder"), eject));
   }
 
   return true;
@@ -157,7 +158,7 @@ const char* CCDDARipper::GetExtension(int iEncoder)
 
 bool CCDDARipper::CreateAlbumDir(const MUSIC_INFO::CMusicInfoTag& infoTag, std::string& strDirectory, int& legalType)
 {
-  CSettingPath *recordingpathSetting = (CSettingPath*)CSettings::GetInstance().GetSetting("audiocds.recordingpath");
+  CSettingPath *recordingpathSetting = (CSettingPath*)CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("audiocds.recordingpath");
   if (recordingpathSetting != NULL)
   {
     strDirectory = recordingpathSetting->GetValue();
@@ -218,7 +219,7 @@ std::string CCDDARipper::GetAlbumDirName(const MUSIC_INFO::CMusicInfoTag& infoTa
   // use audiocds.trackpathformat setting to format
   // directory name where CD tracks will be stored,
   // use only format part ending at the last '/'
-  strAlbumDir = CSettings::GetInstance().GetString("audiocds.trackpathformat");
+  strAlbumDir = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("audiocds.trackpathformat");
   size_t pos = strAlbumDir.find_last_of("/\\");
   if (pos == std::string::npos)
     return ""; // no directory
@@ -252,7 +253,7 @@ std::string CCDDARipper::GetAlbumDirName(const MUSIC_INFO::CMusicInfoTag& infoTa
   // replace %G with genre
   if (strAlbumDir.find("%G") != std::string::npos)
   {
-    std::string strGenre = StringUtils::Join(infoTag.GetGenre(), g_advancedSettings.m_musicItemSeparator);
+    std::string strGenre = StringUtils::Join(infoTag.GetGenre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
     if (strGenre.empty())
       strGenre = "Unknown Genre";
     else
@@ -285,7 +286,7 @@ std::string CCDDARipper::GetTrackName(CFileItem *item)
 
   // get track file name format from audiocds.trackpathformat setting,
   // use only format part starting from the last '/'
-  std::string strFormat = CSettings::GetInstance().GetString("audiocds.trackpathformat");
+  std::string strFormat = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("audiocds.trackpathformat");
   size_t pos = strFormat.find_last_of("/\\");
   if (pos != std::string::npos)
     strFormat.erase(0, pos+1);
@@ -298,7 +299,7 @@ std::string CCDDARipper::GetTrackName(CFileItem *item)
   if (track.empty())
     track = StringUtils::Format("%s%02i", "Track-", trackNumber);
 
-  track += GetExtension(CSettings::GetInstance().GetInt("audiocds.encoder"));
+  track += GetExtension(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.encoder"));
 
   return track;
 }

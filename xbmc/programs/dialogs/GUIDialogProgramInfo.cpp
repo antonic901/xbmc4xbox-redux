@@ -19,6 +19,7 @@
 #include "programs/dialogs/GUIDialogProgramSettings.h"
 #include "programs/launchers/ProgramLauncher.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/URIUtils.h"
 
 using namespace XFILE;
@@ -94,7 +95,7 @@ void CGUIDialogProgramInfo::SetProgram(const CFileItem *item)
 
   CFileItemList items;
   std::string strScreenshots = URIUtils::AddFileToFolder(URIUtils::GetParentPath(item->GetPath()), "_resources", "screenshots");
-  CDirectory::GetDirectory(strScreenshots, items, g_advancedSettings.m_pictureExtensions, DIR_FLAG_DEFAULTS);
+  CDirectory::GetDirectory(strScreenshots, items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions, DIR_FLAG_DEFAULTS);
   for (int i = 0; i < items.Size(); i++)
   {
     std::string strLabel = URIUtils::GetFileName(items[i]->GetPath());

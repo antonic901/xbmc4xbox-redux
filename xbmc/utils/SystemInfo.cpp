@@ -32,6 +32,7 @@
 #include "filesystem/CurlFile.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/TimeUtils.h"
@@ -68,7 +69,7 @@ bool CSysInfoJob::DoWork()
     m_info.macAddress        = GetMACAddress();
 
     // The X2 series of modchips cause an error on XBE launching if GetModChipInfo()
-    if(!g_advancedSettings.m_DisableModChipDetection)
+    if(!CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_DisableModChipDetection)
       m_info.xboxModChip     = CSysInfo::GetModChipInfo();
     m_info.xboxBios          = g_sysinfo.GetBIOSInfo();
     m_info.mplayerversion    = CSysInfo::GetMPlayerVersion();
@@ -82,7 +83,7 @@ bool CSysInfoJob::DoWork()
     CSysInfo::GetRefurbInfo(m_info.hddbootdate, m_info.hddcyclecount);
 
     g_sysinfo.GetHDDInfo(m_info.HDDModel, m_info.HDDSerial, m_info.HDDFirmware, m_info.HDDpw, m_info.HDDLockState);
-    if (!g_advancedSettings.m_noDVDROM)
+    if (!CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_noDVDROM)
       g_sysinfo.GetDVDInfo(m_info.DVDModel, m_info.DVDFirmware);
   }
   
@@ -292,7 +293,7 @@ std::string CSysInfo::TranslateInfo(int info) const
   case SYSTEM_XBOX_BIOS:
     return m_info.xboxBios;
   case SYSTEM_XBOX_MODCHIP:
-    if (g_advancedSettings.m_DisableModChipDetection)
+    if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_DisableModChipDetection)
         return "Modchip lookup is disabled";
     return m_info.xboxModChip;
   // HDD request
@@ -1757,17 +1758,7 @@ CStdString CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
 
 CStdString CSysInfo::GetUserAgent()
 {
-  CStdString result;
-  result = "XBMC/" + CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_BUILD_VERSION) + " (";
-#if defined(_WIN32PC)
-  result += "Windows; ";
-  result += GetKernelVersion();
-#else
-  result += "Xbox";
-#endif
-  result += "; http://www.xbmc.org)";
-
-  return result;
+  return "XBMC/OGXbox";
 }
 
 CJob *CSysInfo::GetJob() const

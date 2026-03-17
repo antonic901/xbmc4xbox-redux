@@ -24,6 +24,7 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "view/ViewState.h"
 
 #define METHOD_BYFOLDERS  0
@@ -45,7 +46,7 @@ int CAutoSwitch::GetView(const CFileItemList &vecItems)
   int iSortMethod = -1;
   int iPercent = 0;
   int iCurrentWindow = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
-  bool bHideParentFolderItems = !CSettings::GetInstance().GetBool("filelists.showparentdiritems");
+  bool bHideParentFolderItems = !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.showparentdiritems");
 
   switch (iCurrentWindow)
   {

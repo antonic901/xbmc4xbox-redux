@@ -24,6 +24,7 @@
 #include "GUIWindowManager.h"
 #include "TextureManager.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "guilib/Key.h"
 #include "GUIControlFactory.h"
 #include "GUIControlGroup.h"
@@ -582,7 +583,7 @@ bool CGUIWindow::OnMessage(CGUIMessage& message)
       CLog::Log(LOGDEBUG, "------ Window Deinit (%s) ------", GetProperty("xmlfile").c_str());
       OnDeinitWindow(message.GetParam1());
       // now free the window
-      if (m_dynamicResourceAlloc) FreeResources(!g_advancedSettings.m_guiKeepInMemory);
+      if (m_dynamicResourceAlloc) FreeResources(!CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_guiKeepInMemory);
       return true;
     }
     break;

@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "VideoLibraryMarkWatchedJob.h"
+#include "ServiceBroker.h"
 #include "FileItem.h"
 #include "Util.h"
 #include "filesystem/Directory.h"
@@ -30,6 +31,7 @@
 #include "profiles/ProfilesManager.h"
 #include "utils/URIUtils.h"
 #include "video/VideoDatabase.h"
+#include "settings/SettingsComponent.h"
 
 CVideoLibraryMarkWatchedJob::CVideoLibraryMarkWatchedJob(const CFileItemPtr &item, bool mark)
   : m_item(item),
@@ -53,7 +55,7 @@ bool CVideoLibraryMarkWatchedJob::operator==(const CJob* job) const
 
 bool CVideoLibraryMarkWatchedJob::Work(CVideoDatabase &db)
 {
-  if (!CProfilesManager::Get().GetCurrentProfile().canWriteDatabases())
+  if (!CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteDatabases())
     return false;
 
   CFileItemList items;

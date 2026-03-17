@@ -26,13 +26,14 @@
 #include "settings/lib/ISettingCallback.h"
 #include "settings/lib/ISettingsHandler.h"
 #include "utils/StdString.h"
-#include "utils/GlobalsHandling.h"
 
 #define CACHE_BUFFER_MODE_INTERNET      0
 #define CACHE_BUFFER_MODE_ALL           1
 #define CACHE_BUFFER_MODE_TRUE_INTERNET 2
 #define CACHE_BUFFER_MODE_NONE          3
 #define CACHE_BUFFER_MODE_REMOTE        4
+
+class CSettingsManager;
 
 class TiXmlElement;
 namespace ADDON
@@ -93,8 +94,6 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
   public:
     CAdvancedSettings();
 
-    static CAdvancedSettings* getInstance();
-
     virtual void OnSettingsLoaded();
     virtual void OnSettingsUnloaded();
 
@@ -102,11 +101,11 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
 
     virtual void OnSettingAction(const CSetting *setting);
 
-    void Initialize();
-    bool Initialized() { return m_initialized; };
+    void Initialize(CSettingsManager& settingsMgr);
+    void Uninitialize(CSettingsManager& settingsMgr);
+    bool Initialized() const { return m_initialized; };
     void AddSettingsFile(const CStdString &filename);
     bool Load();
-    void Clear();
 
     static void GetCustomTVRegexps(TiXmlElement *pRootElement, SETTINGS_TVSHOWLIST& settings);
     static void GetCustomRegexps(TiXmlElement *pRootElement, std::vector<std::string>& settings);
@@ -319,9 +318,9 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     CStdString m_discStubExtensions;
     CStdString m_subtitlesExtensions;
 
-    CStdString m_logFolder;
-
     CStdString m_userAgent;
-};
 
-XBMC_GLOBAL(CAdvancedSettings,g_advancedSettings);
+  private:
+    void Initialize();
+    void Clear();
+};

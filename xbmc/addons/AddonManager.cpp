@@ -43,6 +43,7 @@
 #include "Service.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "Skin.h"
 #include "system.h"
 #include "threads/SingleLock.h"
@@ -382,7 +383,7 @@ bool CAddonMgr::Init()
   }
 
   status = m_cpluff->register_logger(m_cp_context, cp_logger,
-      this, clog_to_cp(g_advancedSettings.m_logLevel));
+      this, clog_to_cp(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel));
   if (status != CP_OK)
   {
     CLog::Log(LOGERROR, "ADDONS: Fatal Error, cp_register_logger() returned status: %i", status);

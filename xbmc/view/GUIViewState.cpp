@@ -41,6 +41,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "FileItem.h"
 #include "filesystem/AddonsDirectory.h"
 #include "guilib/TextureManager.h"
@@ -335,18 +336,18 @@ SortDescription CGUIViewState::SetNextSortMethod(int direction /* = 1 */)
 
 bool CGUIViewState::HideExtensions()
 {
-  return !CSettings::GetInstance().GetBool("filelists.showextensions");
+  return !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.showextensions");
 }
 
 bool CGUIViewState::HideParentDirItems()
 {
-  return !CSettings::GetInstance().GetBool("filelists.showparentdiritems");
+  return !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.showparentdiritems");
 }
 
 bool CGUIViewState::DisableAddSourceButtons()
 {
-  if (CProfilesManager::Get().GetCurrentProfile().canWriteSources() || g_passwordManager.bMasterUser)
-    return !CSettings::GetInstance().GetBool("filelists.showaddsourcebuttons");
+  if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteSources() || g_passwordManager.bMasterUser)
+    return !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.showaddsourcebuttons");
 
   return true;
 }
@@ -400,7 +401,7 @@ VECSOURCES& CGUIViewState::GetSources()
 
 void CGUIViewState::AddAddonsSource(const std::string &content, const std::string &label, const std::string &thumb)
 {
-  if (!g_advancedSettings.m_bVirtualShares)
+  if (!CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bVirtualShares)
     return;
 
   CFileItemList items;
@@ -453,7 +454,7 @@ void CGUIViewState::LoadViewState(const std::string &path, int windowID)
     return;
 
   CViewState state;
-  if (db.GetViewState(path, windowID, state, CSettings::GetInstance().GetString("lookandfeel.skin")) ||
+  if (db.GetViewState(path, windowID, state, CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skin")) ||
       db.GetViewState(path, windowID, state, ""))
   {
     SetViewAsControl(state.m_viewMode);
@@ -472,11 +473,11 @@ void CGUIViewState::SaveViewToDb(const std::string &path, int windowID, CViewSta
   if (viewState != NULL)
     *viewState = state;
 
-  db.SetViewState(path, windowID, state, CSettings::GetInstance().GetString("lookandfeel.skin"));
+  db.SetViewState(path, windowID, state, CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skin"));
   db.Close();
 
   if (viewState != NULL)
-    CSettings::GetInstance().Save();
+    CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 }
 
 void CGUIViewState::AddPlaylistOrder(const CFileItemList &items, LABEL_MASKS label_masks)

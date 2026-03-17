@@ -31,6 +31,7 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
@@ -442,7 +443,7 @@ cleanup:
       }
       ourmemaddr=(PVOID *)(((unsigned int) ourmemaddr) + sizeof(igk_main_toy));
 
-      if (CSettings::GetInstance().GetInt("lcd.mode") > 0 && CSettings::GetInstance().GetInt("lcd.type") == MODCHIP_SMARTXX)
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.mode") > 0 && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.type") == MODCHIP_SMARTXX)
       {
         memcpy(ourmemaddr, lcd_toy_xx, sizeof(lcd_toy_xx));
         _asm
@@ -703,7 +704,7 @@ bool CTrainer::ScanTrainers()
   if (!database.Open())
     return false;
 
-  std::string strTrainersPath = CSettings::GetInstance().GetString("myprograms.trainerpath");
+  std::string strTrainersPath = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("myprograms.trainerpath");
   if (strTrainersPath.empty())
     return false;
 

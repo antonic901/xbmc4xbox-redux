@@ -48,6 +48,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "pictures/PictureInfoTag.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
@@ -275,11 +276,11 @@ CStdString CXbmcHttp::procMask(CStdString mask)
 {
   mask=mask.ToLower();
   if(mask=="[music]")
-    return g_advancedSettings.m_musicExtensions;
+    return CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions;
   if(mask=="[video]")
-    return g_advancedSettings.m_videoExtensions;
+    return CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions;
   if(mask=="[pictures]")
-    return g_advancedSettings.m_pictureExtensions;
+    return CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions;
   if(mask=="[files]")
     return "";
   return mask;
@@ -467,7 +468,7 @@ void CXbmcHttp::SetCurrentMediaItem(CFileItem& newItem)
     newItem.GetMusicInfoTag()->SetSong(song);
     musicdatabase.Close();
   }
-  if (!bFound && CSettings::GetInstance().GetBool("musicfiles.usetags"))
+  if (!bFound && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicfiles.usetags"))
   {
     //  ...no, try to load the tag of the file.
     auto_ptr<IMusicInfoTagLoader> pLoader(CMusicInfoTagLoaderFactory::CreateLoader(newItem));
@@ -677,19 +678,19 @@ int CXbmcHttp::xbmcGetMediaLocation(int numParas, CStdString paras[])
   case MUSIC:
     {
       pShares = CMediaSourceSettings::Get().GetSources("music");
-      strMask = g_advancedSettings.m_musicExtensions;
+      strMask = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions;
     }
     break;
   case VIDEO:
     {
       pShares = CMediaSourceSettings::Get().GetSources("video");;
-      strMask = g_advancedSettings.m_videoExtensions;
+      strMask = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions;
     }
     break;
   case PICTURES:
     {
       pShares = CMediaSourceSettings::Get().GetSources("pictures");
-      strMask = g_advancedSettings.m_pictureExtensions;
+      strMask = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions;
     }
     break;
   case FILES:
@@ -1203,7 +1204,7 @@ int CXbmcHttp::xbmcGetTagFromFilename(int numParas, CStdString paras[])
     tag->SetLoaded(true);
   }
   else
-    if (CSettings::GetInstance().GetBool("musicfiles.usetags"))
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicfiles.usetags"))
     {
       // get correct tag parser
       auto_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(*pItem));
@@ -1226,14 +1227,14 @@ int CXbmcHttp::xbmcGetTagFromFilename(int numParas, CStdString paras[])
   {
     CStdString output, tmp;
 
-    output = openTag+"Artist:" + StringUtils::Join(tag->GetArtist(), g_advancedSettings.m_musicItemSeparator).c_str();
+    output = openTag+"Artist:" + StringUtils::Join(tag->GetArtist(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator).c_str();
     output += closeTag+openTag+"Album:" + tag->GetAlbum().c_str();
     output += closeTag+openTag+"Title:" + tag->GetTitle().c_str();
     tmp.Format("%i", tag->GetTrackNumber());
     output += closeTag+openTag+"Track number:" + tmp;
     tmp.Format("%i", tag->GetDuration());
     output += closeTag+openTag+"Duration:" + tmp;
-    output += closeTag+openTag+"Genre:" + StringUtils::Join(tag->GetGenre(), g_advancedSettings.m_musicItemSeparator).c_str();
+    output += closeTag+openTag+"Genre:" + StringUtils::Join(tag->GetGenre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator).c_str();
     SYSTEMTIME stTime;
     tag->GetReleaseDate(stTime);
     tmp.Format("%i", stTime.wYear);
@@ -1316,10 +1317,10 @@ int CXbmcHttp::xbmcGetMovieDetails(int numParas, CStdString paras[])
         m_database.GetMovieInfo(paras[0].c_str(),aMovieRec);
         CStdString tmp = StringUtils::Format("%i", aMovieRec.GetYear());
         output = closeTag+openTag+"Year:" + tmp;
-        output += closeTag+openTag+"Director:" + StringUtils::Join(aMovieRec.m_director, g_advancedSettings.m_videoItemSeparator).c_str();
+        output += closeTag+openTag+"Director:" + StringUtils::Join(aMovieRec.m_director, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator).c_str();
         output += closeTag+openTag+"Title:" + aMovieRec.m_strTitle.c_str();
         output += closeTag+openTag+"Plot:" + aMovieRec.m_strPlot.c_str();
-        output += closeTag+openTag+"Genre:" + StringUtils::Join(aMovieRec.m_genre, g_advancedSettings.m_videoItemSeparator).c_str();
+        output += closeTag+openTag+"Genre:" + StringUtils::Join(aMovieRec.m_genre, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator).c_str();
         CStdString strRating = StringUtils::Format("%3.3f", aMovieRec.GetRating().rating);
         if (strRating=="") strRating="0.0";
         output += closeTag+openTag+"Rating:" + strRating;
@@ -1454,13 +1455,13 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
           return SetResponse(openTag+"Changed:False");
         //if still here, continue collecting info
         if (!tagVal->m_genre.empty())
-          output+=closeTag+openTag+"Genre"+tag+":"+StringUtils::Join(tagVal->m_genre, g_advancedSettings.m_videoItemSeparator).c_str();
+          output+=closeTag+openTag+"Genre"+tag+":"+StringUtils::Join(tagVal->m_genre, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator).c_str();
         if (!tagVal->m_studio.empty())
-          output+=closeTag+openTag+"Studio"+tag+":"+StringUtils::Join(tagVal->m_studio, g_advancedSettings.m_videoItemSeparator).c_str();
+          output+=closeTag+openTag+"Studio"+tag+":"+StringUtils::Join(tagVal->m_studio, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator).c_str();
         if (tagVal && tagVal->m_director.size() > 0)
-          output+=closeTag+openTag+"Director"+tag+":"+StringUtils::Join(tagVal->m_director, g_advancedSettings.m_videoItemSeparator).c_str();
+          output+=closeTag+openTag+"Director"+tag+":"+StringUtils::Join(tagVal->m_director, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator).c_str();
         if (tagVal->m_writingCredits.size() > 0)
-          output+=closeTag+openTag+"Writer"+tag+":"+StringUtils::Join(tagVal->m_writingCredits, g_advancedSettings.m_videoItemSeparator).c_str();
+          output+=closeTag+openTag+"Writer"+tag+":"+StringUtils::Join(tagVal->m_writingCredits, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator).c_str();
         if (!tagVal->m_strTagLine.empty())
           output+=closeTag+openTag+"Tagline"+tag+":"+tagVal->m_strTagLine.c_str();
         if (!tagVal->m_strPlotOutline.empty())
@@ -1518,7 +1519,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
         output+=closeTag+openTag+"Track"+tag+":"+tmp;
       }
       if (tagVal && !tagVal->GetArtist().empty())
-        output+=closeTag+openTag+"Artist"+tag+":"+StringUtils::Join(tagVal->GetArtist(), g_advancedSettings.m_musicItemSeparator).c_str();
+        output+=closeTag+openTag+"Artist"+tag+":"+StringUtils::Join(tagVal->GetArtist(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator).c_str();
       if (tagVal && !tagVal->GetAlbum().empty())
         output+=closeTag+openTag+"Album"+tag+":"+tagVal->GetAlbum().c_str();
       //now have enough info to check for a change
@@ -1531,7 +1532,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
       return SetResponse(openTag+"Changed:False");
       //if still here, continue collecting info
       if (tagVal && !tagVal->GetGenre().empty())
-        output+=closeTag+openTag+"Genre"+tag+":"+StringUtils::Join(tagVal->GetGenre(), g_advancedSettings.m_musicItemSeparator).c_str();
+        output+=closeTag+openTag+"Genre"+tag+":"+StringUtils::Join(tagVal->GetGenre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator).c_str();
       if (tagVal && tagVal->GetYear())
         output+=closeTag+openTag+"Year"+tag+":"+tagVal->GetYearString().c_str();
       if (tagVal && !tagVal->GetURL().empty())
@@ -2330,7 +2331,7 @@ int CXbmcHttp::xbmcLookupAlbum(int numParas, CStdString paras[])
             albums += closeTag+openTag + info.GetTitle2().c_str() + "<@@>" + info.GetAlbumURL().m_url[0].m_url.c_str();
             if (rel)
             {
-              relevance = CUtil::AlbumRelevance(info.GetAlbum().strAlbum, album, StringUtils::Join(info.GetAlbum().GetAlbumArtist(), g_advancedSettings.m_musicItemSeparator), artist);
+              relevance = CUtil::AlbumRelevance(info.GetAlbum().strAlbum, album, StringUtils::Join(info.GetAlbum().GetAlbumArtist(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator), artist);
               tmp.Format("%f",relevance);
               albums += "<@@@>"+tmp;
             }
@@ -2603,21 +2604,21 @@ int CXbmcHttp::xbmcGUISetting(int numParas, CStdString paras[])
       switch (atoi(paras[0])) 
       {
         case 0:  //  int
-          tmp.Format("%i", CSettings::GetInstance().GetInt(paras[1]));
+          tmp.Format("%i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(paras[1]));
           return SetResponse(openTag + tmp );
           break;
         case 1: // bool
-          if (CSettings::GetInstance().GetBool(paras[1])==0)
+          if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(paras[1])==0)
             return SetResponse(openTag+"False");
           else
             return SetResponse(openTag+"True");
           break;
         case 2: // float
-          tmp.Format("%f", CSettings::GetInstance().GetNumber(paras[1]));
+          tmp.Format("%f", CServiceBroker::GetSettingsComponent()->GetSettings()->GetNumber(paras[1]));
           return SetResponse(openTag + tmp);
           break;
         case 3: // string
-          tmp.Format("%s", CSettings::GetInstance().GetString(paras[1]));
+          tmp.Format("%s", CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(paras[1]));
           return SetResponse(openTag + tmp);
           break;
         default:
@@ -2629,19 +2630,19 @@ int CXbmcHttp::xbmcGUISetting(int numParas, CStdString paras[])
       switch (atoi(paras[0])) 
       {
         case 0:  //  int
-          CSettings::GetInstance().SetInt(paras[1], atoi(paras[2]));
+          CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt(paras[1], atoi(paras[2]));
           return SetResponse(openTag+"OK");
           break;
         case 1: // bool
-          CSettings::GetInstance().SetBool(paras[1], (paras[2].ToLower()=="true"));
+          CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool(paras[1], (paras[2].ToLower()=="true"));
           return SetResponse(openTag+"OK");
           break;
         case 2: // float
-          CSettings::GetInstance().SetNumber(paras[1], (double)atof(paras[2]));
+          CServiceBroker::GetSettingsComponent()->GetSettings()->SetNumber(paras[1], (double)atof(paras[2]));
           return SetResponse(openTag+"OK");
           break;
         case 3: // string
-          CSettings::GetInstance().SetString(paras[1], paras[2]);
+          CServiceBroker::GetSettingsComponent()->GetSettings()->SetString(paras[1], paras[2]);
           return SetResponse(openTag+"OK");
           break;
         default:
@@ -2671,17 +2672,17 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
         tmp.Format("%i", watchMode);
       }
       else if (paras[i]=="mymusicstartwindow")
-        tmp.Format("%i",CSettings::GetInstance().GetInt("mymusic.startwindow"));
+        tmp.Format("%i",CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("mymusic.startwindow"));
       else if (paras[i]=="videostartwindow")
-        tmp.Format("%i",CSettings::GetInstance().GetInt("myvideos.startwindow"));
+        tmp.Format("%i",CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("myvideos.startwindow"));
       else if (paras[i]=="myvideostack")
-        tmp.Format("%i",CSettings::GetInstance().GetBool("myvideos.stackvideos") ? 1 : 0);
+        tmp.Format("%i",CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.stackvideos") ? 1 : 0);
       else if (paras[i]=="additionalsubtitledirectorychecked")
         tmp.Format("%i",CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked());
       else if (paras[i]=="httpapibroadcastport")
-        tmp.Format("%i",CSettings::GetInstance().GetInt("services.httpapibroadcastport"));
+        tmp.Format("%i",CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastport"));
       else if (paras[i]=="httpapibroadcastlevel")
-        tmp.Format("%i",CSettings::GetInstance().GetInt("services.httpapibroadcastlevel"));
+        tmp.Format("%i",CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel"));
       else if (paras[i]=="volumelevel")
         tmp.Format("%i",g_application.GetVolume(false));
       else if (paras[i]=="dynamicrangecompressionlevel")
@@ -2691,7 +2692,7 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
       else if (paras[i]=="mute")
         tmp = (g_application.IsMuted()==0) ? "False" : "True";
       else if (paras[i]=="myvideonavflatten")
-        tmp = (CSettings::GetInstance().GetBool("myvideos.flatten")==0) ? "False" : "True";
+        tmp = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.flatten")==0) ? "False" : "True";
       else if (paras[i]=="myvideoplaylistshuffle")
         tmp = (CMediaSettings::Get().IsVideoPlaylistShuffled()==0) ? "False" : "True";
       else if (paras[i]=="myvideoplaylistrepeat")
@@ -2705,13 +2706,13 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
       else if (paras[i]=="pixelratio")
         tmp.Format("%f", CDisplaySettings::Get().GetPixelRatio());
       else if (paras[i]=="pictureextensions")
-        tmp = g_advancedSettings.m_pictureExtensions;
+        tmp = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions;
       else if (paras[i]=="musicextensions")
-        tmp = g_advancedSettings.m_musicExtensions;
+        tmp = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions;
       else if (paras[i]=="videoextensions")
-        tmp = g_advancedSettings.m_videoExtensions;
+        tmp = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions;
       else if (paras[i]=="logfolder")
-        tmp = g_advancedSettings.m_logFolder;
+        tmp = CSpecialProtocol::TranslatePath("special://logpath");
       else
         tmp = "Error:Unknown setting " + paras[i];
       strInfo += openTag + tmp;
@@ -2760,11 +2761,11 @@ int CXbmcHttp::xbmcConfig(int numParas, CStdString paras[])
   {
     //getoption has been deprecated so the following is just to prevent (my) legacy client code breaking (to be removed later)
     if (paras[1]=="pictureextensions")
-      response=openTag+g_advancedSettings.m_pictureExtensions.c_str();
+      response=openTag+CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions.c_str();
     else if (paras[1]=="videoextensions")
-      response=openTag+g_advancedSettings.m_videoExtensions.c_str();
+      response=openTag+CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions.c_str();
     else if (paras[1]=="musicextensions")
-      response=openTag+g_advancedSettings.m_musicExtensions.c_str();
+      response=openTag+CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions.c_str();
     else
       response=openTag+"Error:Function is deprecated";
     //ret=XbmcWebsHttpAPIConfigGetOption(response, argc, argv);
@@ -2866,13 +2867,13 @@ int CXbmcHttp::xbmcSpinDownHardDisk(int numParas, CStdString paras[])
 
 bool CXbmcHttp::xbmcBroadcast(CStdString message, int level)
 {
-  if  (CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=level)
+  if  (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel")>=level)
   {
     if (!pUdpBroadcast)
       pUdpBroadcast = new CUdpBroadcast();
     CStdString msg;
     msg.Format(openBroadcast+message+";%i"+closeBroadcast, level);
-    return pUdpBroadcast->broadcast(msg, CSettings::GetInstance().GetInt("services.httpapibroadcastport"));
+    return pUdpBroadcast->broadcast(msg, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastport"));
   }
   else
     return true;
@@ -2888,7 +2889,7 @@ int CXbmcHttp::xbmcBroadcast(int numParas, CStdString paras[])
     if (numParas>1)
       succ=pUdpBroadcast->broadcast(paras[0], atoi(paras[1]));
     else
-      succ=pUdpBroadcast->broadcast(paras[0], CSettings::GetInstance().GetInt("services.httpapibroadcastport"));
+      succ=pUdpBroadcast->broadcast(paras[0], CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastport"));
     if (succ)
       return SetResponse(openTag+"OK");
     else
@@ -2902,9 +2903,9 @@ int CXbmcHttp::xbmcSetBroadcast(int numParas, CStdString paras[])
 {
   if (numParas>0)
   {
-    CSettings::GetInstance().SetInt("services.httpapibroadcastlevel", atoi(paras[0]));
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("services.httpapibroadcastlevel", atoi(paras[0]));
     if (numParas>1)
-      CSettings::GetInstance().SetInt("services.httpapibroadcastport", atoi(paras[1]));
+      CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("services.httpapibroadcastport", atoi(paras[1]));
     return SetResponse(openTag+"OK");
   }
   else
@@ -2914,7 +2915,7 @@ int CXbmcHttp::xbmcSetBroadcast(int numParas, CStdString paras[])
 int CXbmcHttp::xbmcGetBroadcast()
 {
   CStdString tmp;
-  tmp.Format("%i;%i", CSettings::GetInstance().GetInt("services.httpapibroadcastlevel"),CSettings::GetInstance().GetInt("services.httpapibroadcastport"));
+  tmp.Format("%i;%i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel"),CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastport"));
   return SetResponse(openTag+tmp);
 }
 
@@ -2990,7 +2991,7 @@ int CXbmcHttp::xbmcRecordStatus(int numParas, CStdString paras[])
 int CXbmcHttp::xbmcGetLogLevel()
 {
   CStdString level;
-  level.Format("%i", g_advancedSettings.m_logLevel);
+  level.Format("%i", CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel);
   return SetResponse(openTag+level);
 }
 
@@ -3000,7 +3001,7 @@ int CXbmcHttp::xbmcSetLogLevel(int numParas, CStdString paras[])
     return SetResponse(openTag+"Error:Must have one parameter");
   else
   {
-    g_advancedSettings.m_logLevel=atoi(paras[0]);
+    CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel=atoi(paras[0]);
     return SetResponse(openTag+"OK");
   }
 }

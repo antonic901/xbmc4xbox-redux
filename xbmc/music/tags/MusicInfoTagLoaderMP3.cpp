@@ -19,9 +19,11 @@
  */
 
 #include "music/tags/MusicInfoTagLoaderMP3.h"
+#include "ServiceBroker.h"
 #include "music/tags/APEv2Tag.h"
 #include "music/tags/Id3Tag.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "filesystem/File.h"
 #include "utils/log.h"
 
@@ -693,7 +695,7 @@ bool CMusicInfoTagLoaderMP3::GetReplayGain(CReplayGain &info) const
 
 bool CMusicInfoTagLoaderMP3::PrioritiseAPETags() const
 {
-  return g_advancedSettings.m_prioritiseAPEv2tags;
+  return CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_prioritiseAPEv2tags;
 }
 
 // \brief Check to see if the specified buffer contains an ID3v2 tag header

@@ -16,6 +16,7 @@
 #include "commons/Exception.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/MediaSettings.h"
 #include "FileItem.h"
 #include "utils/URIUtils.h"
@@ -319,7 +320,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
     m_vecOptions.push_back("on:format=" + m_strHexRawAudioFormat); //0x2000
   }
 
-  if (LOG_LEVEL_NORMAL == g_advancedSettings.m_logLevel)
+  if (LOG_LEVEL_NORMAL == CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel)
     m_vecOptions.push_back("-quiet");
   else
     m_vecOptions.push_back("-v");
@@ -504,9 +505,9 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
       vecPPOptions.push_back("ci");
     }
 
-    if ( CSettings::GetInstance().GetBool("postprocessing.enable") )
+    if ( CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("postprocessing.enable") )
     {
-      if (CSettings::GetInstance().GetBool("postprocessing.auto"))
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("postprocessing.auto"))
       {
         // enable auto quality &postprocessing
         m_vecOptions.push_back("-autoq");
@@ -520,31 +521,31 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
         // manual postprocessing
         CStdString strOpt;
 
-        if ( CSettings::GetInstance().GetBool("postprocessing.dering") )
+        if ( CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("postprocessing.dering") )
         { // add dering filter
           vecPPOptions.push_back("dr:a");
         }
-        if (CSettings::GetInstance().GetBool("postprocessing.verticaldeblocking"))
+        if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("postprocessing.verticaldeblocking"))
         {
           // add vertical deblocking filter
-          if (CSettings::GetInstance().GetInt("postprocessing.verticaldeblocklevel") > 0) 
-            strOpt.Format("vb:%i", CSettings::GetInstance().GetInt("postprocessing.verticaldeblocklevel"));
+          if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("postprocessing.verticaldeblocklevel") > 0) 
+            strOpt.Format("vb:%i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("postprocessing.verticaldeblocklevel"));
           else 
             strOpt = "vb:a";
 
           vecPPOptions.push_back(strOpt);
         }
-        if (CSettings::GetInstance().GetBool("postprocessing.horizontaldeblocking"))
+        if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("postprocessing.horizontaldeblocking"))
         {
           // add horizontal deblocking filter
-          if (CSettings::GetInstance().GetInt("postprocessing.horizontaldeblocklevel") > 0) 
-            strOpt.Format("hb:%i", CSettings::GetInstance().GetInt("postprocessing.horizontaldeblocklevel"));
+          if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("postprocessing.horizontaldeblocklevel") > 0) 
+            strOpt.Format("hb:%i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("postprocessing.horizontaldeblocklevel"));
           else 
             strOpt = "hb:a";
 
           vecPPOptions.push_back(strOpt);
         }
-        if (CSettings::GetInstance().GetBool("postprocessing.autobrightnesscontrastlevels"))
+        if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("postprocessing.autobrightnesscontrastlevels"))
         {
           // add auto brightness/contrast levels
           vecPPOptions.push_back("al");
@@ -925,7 +926,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
 
       /* also we don't want to flip the subtitle since that will be handled by our rendering instead */
     }
-    else if (CSettings::GetInstance().GetBool("subtitles.flipbidicharset"))
+    else if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("subtitles.flipbidicharset"))
     {
       options.SetFlipBiDiCharset(strCharset);
     }
@@ -948,12 +949,12 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
 
       // if we're using digital out
       // then try using direct passtrough
-      if (CSettings::GetInstance().GetInt("audiooutput.mode") == AUDIO_DIGITAL)
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_DIGITAL)
       {
         options.SetAC3PassTru(bSupportsAC3Out);
         options.SetDTSPassTru(bSupportsDTSOut);
 
-        if ((CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers && bIsVideo) || (CSettings::GetInstance().GetBool("musicplayer.outputtoallspeakers")) && (!bIsVideo))
+        if ((CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers && bIsVideo) || (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.outputtoallspeakers")) && (!bIsVideo))
           options.SetLimitedHWAC3(true); //Will limit hwac3 to not kick in on 2.0 channel streams
       }
     }
@@ -1048,7 +1049,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
 
     //Enable smoothing of audio clock to create smoother playback.
     //This is now done in mplayer.conf
-    //if( CSettings::GetInstance().GetBool("filters.useautosync") )
+    //if( CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filters.useautosync") )
     //  options.SetAutoSync(30);
 
     if( CMediaSettings::Get().GetCurrentVideoSettings().m_InterlaceMethod == VS_INTERLACEMETHOD_DEINTERLACE )
@@ -1146,7 +1147,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
       }
 
       // do we need 2 do frame rate conversions ?
-      if (CSettings::GetInstance().GetInt("videoplayer.framerateconversions") == FRAME_RATE_CONVERT && file.IsVideo() )
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoplayer.framerateconversions") == FRAME_RATE_CONVERT && file.IsVideo() )
       {
         if (g_videoConfig.HasPAL())
         {
@@ -1249,7 +1250,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
 
     if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream < -1)
     { // check + fix up the stereo/left/right setting
-      bool bAudioOnAllSpeakers = (CSettings::GetInstance().GetInt("audiooutput.mode") == AUDIO_DIGITAL) && ((CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers && HasVideo()) || (CSettings::GetInstance().GetBool("musicplayer.outputtoallspeakers") && !HasVideo()));
+      bool bAudioOnAllSpeakers = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_DIGITAL) && ((CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers && HasVideo()) || (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.outputtoallspeakers") && !HasVideo()));
       xbox_audio_switch_channel(-1 - CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream, bAudioOnAllSpeakers);
     }
     bIsVideo = HasVideo();
@@ -1562,15 +1563,15 @@ void CMPlayer::Seek(bool bPlus, bool bLargeStep, bool bChapterOverride)
 
   __int64 iTime = GetTotalTime();
 
-  if ((iTime == 0) || (g_advancedSettings.m_videoUseTimeSeeking && iTime > 2*g_advancedSettings.m_videoTimeSeekForwardBig))
+  if ((iTime == 0) || (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoUseTimeSeeking && iTime > 2*CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoTimeSeekForwardBig))
   {
     if (bLargeStep)
     {
-      iSeek = bPlus ? g_advancedSettings.m_videoTimeSeekForwardBig : g_advancedSettings.m_videoTimeSeekBackwardBig;
+      iSeek = bPlus ? CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoTimeSeekForwardBig : CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoTimeSeekBackwardBig;
     }
     else
     {
-      iSeek = bPlus ? g_advancedSettings.m_videoTimeSeekForward : g_advancedSettings.m_videoTimeSeekBackward;
+      iSeek = bPlus ? CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoTimeSeekForward : CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoTimeSeekBackward;
     }
 
     if (m_Edl.HasCut())
@@ -1582,9 +1583,9 @@ void CMPlayer::Seek(bool bPlus, bool bLargeStep, bool bChapterOverride)
   {
     int percent;
     if (bLargeStep)
-      percent = bPlus ? g_advancedSettings.m_videoPercentSeekForwardBig : g_advancedSettings.m_videoPercentSeekBackwardBig;
+      percent = bPlus ? CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoPercentSeekForwardBig : CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoPercentSeekBackwardBig;
     else
-      percent = bPlus ? g_advancedSettings.m_videoPercentSeekForward : g_advancedSettings.m_videoPercentSeekBackward;
+      percent = bPlus ? CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoPercentSeekForward : CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoPercentSeekBackward;
 
     //If current time isn't bound by the total time, 
     //we have to seek using absolute percentage instead
@@ -1991,28 +1992,28 @@ int CMPlayer::GetCacheSize(bool bFileOnHD, bool bFileOnISO, bool bFileOnUDF, boo
 
   if (bFileOnHD)
   {
-    if ( bIsDVD ) return CSettings::GetInstance().GetInt("cache.harddisk");
-    if ( bIsVideo) return CSettings::GetInstance().GetInt("cache.harddisk");
-    if ( bIsAudio) return CSettings::GetInstance().GetInt("cache.harddisk");
+    if ( bIsDVD ) return CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("cache.harddisk");
+    if ( bIsVideo) return CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("cache.harddisk");
+    if ( bIsAudio) return CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("cache.harddisk");
   }
   if (bFileOnISO || bFileOnUDF)
   {
-    if ( bIsDVD ) return CSettings::GetInstance().GetInt("cachedvd.dvdrom");
-    if ( bIsVideo) return CSettings::GetInstance().GetInt("cachevideo.dvdrom");
-    if ( bIsAudio) return CSettings::GetInstance().GetInt("cacheaudio.dvdrom");
+    if ( bIsDVD ) return CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("cachedvd.dvdrom");
+    if ( bIsVideo) return CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("cachevideo.dvdrom");
+    if ( bIsAudio) return CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("cacheaudio.dvdrom");
   }
   if (bFileOnLAN)
   {
-    if ( bIsDVD ) return CSettings::GetInstance().GetInt("cachedvd.lan");
-    if ( bIsVideo) return CSettings::GetInstance().GetInt("cachevideo.lan");
-    if ( bIsAudio) return CSettings::GetInstance().GetInt("cacheaudio.lan");
+    if ( bIsDVD ) return CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("cachedvd.lan");
+    if ( bIsVideo) return CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("cachevideo.lan");
+    if ( bIsAudio) return CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("cacheaudio.lan");
   }
 
   // assume bFileOnInternet
-  if ( bIsVideo) return CSettings::GetInstance().GetInt("cachevideo.internet");
-  if ( bIsAudio) return CSettings::GetInstance().GetInt("cacheaudio.internet");
+  if ( bIsVideo) return CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("cachevideo.internet");
+  if ( bIsAudio) return CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("cacheaudio.internet");
   //File is on internet however we don't know what type.
-  return CSettings::GetInstance().GetInt("cacheunknown.internet");
+  return CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("cacheunknown.internet");
   //Apperently fixes DreamBox playback.
   //return 4096;
 }

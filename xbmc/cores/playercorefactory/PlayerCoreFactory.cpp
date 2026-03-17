@@ -37,6 +37,7 @@
 #include "FileItem.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "PlayerCoreConfig.h"
 #include "PlayerSelectionRule.h"
 #include "LocalizeStrings.h"
@@ -63,7 +64,7 @@ CPlayerCoreFactory::~CPlayerCoreFactory()
 void CPlayerCoreFactory::OnSettingsLoaded()
 {
   LoadConfiguration("special://xbmc/system/" PLAYERCOREFACTORY_XML, true);
-  LoadConfiguration(CProfilesManager::Get().GetUserDataItem(PLAYERCOREFACTORY_XML), false);
+  LoadConfiguration(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem(PLAYERCOREFACTORY_XML), false);
 }
 
 /* generic function to make a vector unique, removes later duplicates */
@@ -99,8 +100,8 @@ PLAYERCOREID CPlayerCoreFactory::GetPlayerCore(const CStdString& strCoreName) co
   {
     // Dereference "*default*player" aliases
     CStdString strRealCoreName;
-    if (strCoreName.Equals("audiodefaultplayer", false)) strRealCoreName = CSettings::GetInstance().GetDefaultAudioPlayerName();
-    else if (strCoreName.Equals("videodefaultplayer", false)) strRealCoreName = CSettings::GetInstance().GetDefaultVideoPlayerName();
+    if (strCoreName.Equals("audiodefaultplayer", false)) strRealCoreName = CServiceBroker::GetSettingsComponent()->GetSettings()->GetDefaultAudioPlayerName();
+    else if (strCoreName.Equals("videodefaultplayer", false)) strRealCoreName = CServiceBroker::GetSettingsComponent()->GetSettings()->GetDefaultVideoPlayerName();
     else strRealCoreName = strCoreName;
 
     for(PLAYERCOREID i = 0; i < m_vecCoreConfigs.size(); i++)
@@ -176,7 +177,7 @@ void CPlayerCoreFactory::GetPlayers( const CFileItem& item, VECPLAYERCORES &vecC
 
     if (bAdd)
     {
-      if( CSettings::GetInstance().GetInt("audiooutput.mode") == AUDIO_ANALOG )
+      if( CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_ANALOG )
       {
         CLog::Log(LOGDEBUG, "CPlayerCoreFactory::GetPlayers: adding PAPlayer (%d)", EPC_PAPLAYER);
         vecCores.push_back(EPC_PAPLAYER);

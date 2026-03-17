@@ -21,8 +21,10 @@
 */
 
 #include "include.h"
+#include "ServiceBroker.h"
 #include "libexif/libexif.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/AdvancedSettings.h"
 #include "filesystem/File.h"
 #include "JpegIO.h"
@@ -106,7 +108,7 @@ bool CJpegIO::Read(unsigned char* buffer, unsigned int bufSize, unsigned int min
       m_orientation = GetExifOrientation(m_cinfo.marker_list->data, m_cinfo.marker_list->data_length);
 
     // fail on images with orientation (fall back to cximage)
-    if (CSettings::GetInstance().GetBool("pictures.useexifrotation") && m_orientation > 1 )
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("pictures.useexifrotation") && m_orientation > 1 )
     {
       CLog::Log(LOGDEBUG, "JpegIO::Read - Exif orientation > 1 so falling back to CXImage");
       return false;
@@ -124,13 +126,13 @@ bool CJpegIO::Read(unsigned char* buffer, unsigned int bufSize, unsigned int min
     the gpu can hold, use the previous one.*/
     if (minx == 0 || miny == 0)
     {
-      miny = g_advancedSettings.m_imageRes;
-      if (g_advancedSettings.m_fanartRes > g_advancedSettings.m_imageRes)
+      miny = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_imageRes;
+      if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fanartRes > CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_imageRes)
       { // a separate fanart resolution is specified - check if the image is exactly equal to this res
-        if (m_cinfo.image_width == (unsigned int)g_advancedSettings.m_fanartRes * 16/9 &&
-            m_cinfo.image_height == (unsigned int)g_advancedSettings.m_fanartRes)
+        if (m_cinfo.image_width == (unsigned int)CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fanartRes * 16/9 &&
+            m_cinfo.image_height == (unsigned int)CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fanartRes)
         { // special case for fanart res
-          miny = g_advancedSettings.m_fanartRes;
+          miny = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fanartRes;
         }
       }
       minx = miny * 16/9;

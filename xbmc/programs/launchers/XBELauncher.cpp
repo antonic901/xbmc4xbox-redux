@@ -13,6 +13,7 @@
 #include "programs/dialogs/GUIDialogProgramSettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "Util.h"
 #include "utils/FilterFlickerPatch.h"
 #include "utils/log.h"
@@ -147,7 +148,7 @@ bool CXBELauncher::Launch()
   std::string strExecutable = m_strExecutable;
 
   // apply flicker filter
-  if (!URIUtils::IsOnDVD(m_strExecutable) && CSettings::GetInstance().GetBool("myprograms.autoffpatch"))
+  if (!URIUtils::IsOnDVD(m_strExecutable) && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myprograms.autoffpatch"))
   {
     std::string strPatchedExecutable;
     if (ApplyFFPatch(m_strExecutable, strPatchedExecutable))
@@ -156,11 +157,11 @@ bool CXBELauncher::Launch()
 
   // apply video mode switching
   int iRegion = m_settings->iForceRegion;
-  if (!iRegion && CSettings::GetInstance().GetBool("myprograms.gameautoregion"))
+  if (!iRegion && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myprograms.gameautoregion"))
     iRegion = CGUIDialogProgramSettings::GetXBERegion(m_strExecutable);
 
   // look for default executable
-  if (!URIUtils::IsOnDVD(m_strExecutable) && !m_settings->strExecutable.empty() && !CSettings::GetInstance().GetBool("myprograms.autoffpatch"))
+  if (!URIUtils::IsOnDVD(m_strExecutable) && !m_settings->strExecutable.empty() && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myprograms.autoffpatch"))
   {
     std::string strParentPath = URIUtils::GetParentPath(m_strExecutable);
     strExecutable = URIUtils::AddFileToFolder(strParentPath, m_settings->strExecutable);

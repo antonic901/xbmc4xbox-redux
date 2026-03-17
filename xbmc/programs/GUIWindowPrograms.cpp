@@ -20,6 +20,7 @@
 #include "programs/launchers/ProgramLauncher.h"
 #include "programs/launchers/XBELauncher.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "Util.h"
 #include "utils/FileUtils.h"
 #include "utils/StringUtils.h"
@@ -97,7 +98,7 @@ void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &butt
   {
     CGUIDialogContextMenu::GetContextButtons("programs", item, buttons);
   }
-  else if (URIUtils::HasExtension(item->GetPath(), g_advancedSettings.m_programExtensions))
+  else if (URIUtils::HasExtension(item->GetPath(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programExtensions))
   {
     buttons.Add(CONTEXT_BUTTON_DELETE, 117);
     if (item->IsXBE())

@@ -51,6 +51,7 @@
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/SkinSettings.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/CharsetConverter.h"
@@ -6078,7 +6079,7 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
     URIUtils::RemoveExtension(strLabel);
     break;
   case WEATHER_PLUGIN:
-    strLabel = CSettings::GetInstance().GetString("weather.addon");
+    strLabel = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("weather.addon");
     break;
   case INSIGNIA_GAMES_SUPPORTED:
     strLabel = g_insigniaManager.GetInfo(INSIGNIA_LABEL_GAMES_SUPPORTED);
@@ -6178,7 +6179,7 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
           CEpgInfoTagPtr tag(m_currentFile->GetPVRChannelInfoTag()->GetEPGNow());
           return tag ?
                    tag->Title() :
-                   CSettings::GetInstance().GetBool(CSettings::SETTING_EPG_HIDENOINFOAVAILABLE) ?
+                   CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_EPG_HIDENOINFOAVAILABLE) ?
                             "" : g_localizeStrings.Get(19055); // no information available
         }
         if (m_currentFile->HasPVRRecordingInfoTag() && !m_currentFile->GetPVRRecordingInfoTag()->m_strTitle.empty())
@@ -6748,7 +6749,7 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
     return g_localizeStrings.Get(CServiceBroker::GetGUI()->GetWindowManager().GetFocusedWindow());
     break;
   case SYSTEM_STARTUP_WINDOW:
-    strLabel = StringUtils::Format("%i", CSettings::GetInstance().GetInt("lookandfeel.startupwindow"));
+    strLabel = StringUtils::Format("%i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lookandfeel.startupwindow"));
     break;
   case SYSTEM_CURRENT_CONTROL:
   case SYSTEM_CURRENT_CONTROL_ID:
@@ -6785,15 +6786,15 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
     }
     break;
   case SYSTEM_PROFILENAME:
-    strLabel = CProfilesManager::Get().GetCurrentProfile().getName();
+    strLabel = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().getName();
     break;
   case SYSTEM_PROFILECOUNT:
-    strLabel = StringUtils::Format("%" PRIuS, CProfilesManager::Get().GetNumberOfProfiles());
+    strLabel = StringUtils::Format("%" PRIuS, CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles());
     break;
   case SYSTEM_PROFILEAUTOLOGIN:
     {
-      int profileId = CProfilesManager::Get().GetAutoLoginProfileId();
-      if ((profileId < 0) || (!CProfilesManager::Get().GetProfileName(profileId, strLabel)))
+      int profileId = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetAutoLoginProfileId();
+      if ((profileId < 0) || (!CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetProfileName(profileId, strLabel)))
         strLabel = g_localizeStrings.Get(37014); // Last used profile
     }
     break;
@@ -6811,12 +6812,12 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
     }
     break;
   case SYSTEM_FRIENDLY_NAME:
-    strLabel = CSettings::GetInstance().GetString("services.devicename");
+    strLabel = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("services.devicename");
     break;
   case SYSTEM_STEREOSCOPIC_MODE:
 #ifndef _XBOX
     {
-      int stereoMode = CSettings::GetInstance().GetInt("videoscreen.stereoscopicmode");
+      int stereoMode = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoscreen.stereoscopicmode");
       strLabel = StringUtils::Format("%i", stereoMode);
     }
 #endif
@@ -6848,10 +6849,10 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
     break;
 #endif
   case SKIN_THEME:
-    strLabel = CSettings::GetInstance().GetString("lookandfeel.skintheme");
+    strLabel = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skintheme");
     break;
   case SKIN_COLOUR_THEME:
-    strLabel = CSettings::GetInstance().GetString("lookandfeel.skincolors");
+    strLabel = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skincolors");
     break;
   case SKIN_ASPECT_RATIO:
     if (g_SkinInfo)
@@ -6940,7 +6941,7 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
   case VISUALISATION_NAME:
     {
       AddonPtr addon;
-      strLabel = CSettings::GetInstance().GetString("musicplayer.visualisation");
+      strLabel = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicplayer.visualisation");
       if (CServiceBroker::GetAddonMgr().GetAddon(strLabel,addon) && addon)
         strLabel = addon->Name();
     }
@@ -7316,7 +7317,7 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
     return GetMultiInfoBool(m_multiInfo[condition - MULTI_INFO_START], contextWindow, item);
   }
   else if (condition == SYSTEM_HASLOCKS)
-    bReturn = CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE;
+    bReturn = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE;
   else if (condition == SYSTEM_HAS_PVR)
     bReturn = true;
   else if (condition == SYSTEM_HAS_PVR_ADDON)
@@ -7337,7 +7338,7 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
     bReturn = false;
 #endif
   else if (condition == SYSTEM_ISMASTER)
-    bReturn = CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && g_passwordManager.bMasterUser;
+    bReturn = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && g_passwordManager.bMasterUser;
   else if (condition == SYSTEM_ISFULLSCREEN)
     bReturn = true/*g_Windowing.IsFullScreen()*/;
   else if (condition == SYSTEM_ISSTANDALONE)
@@ -7345,13 +7346,13 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
   else if (condition == SYSTEM_ISINHIBIT)
     bReturn = false/*g_application.IsIdleShutdownInhibited()*/;
   else if (condition == SYSTEM_HAS_SHUTDOWN)
-    bReturn = (CSettings::GetInstance().GetInt("powermanagement.shutdowntime") > 0);
+    bReturn = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("powermanagement.shutdowntime") > 0);
   else if (condition == SYSTEM_LOGGEDON)
     bReturn = !(CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_LOGIN_SCREEN);
   else if (condition == SYSTEM_SHOW_EXIT_BUTTON)
-    bReturn = true/*g_advancedSettings.m_showExitButton*/;
+    bReturn = true/*CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_showExitButton*/;
   else if (condition == SYSTEM_HAS_LOGINSCREEN)
-    bReturn = CProfilesManager::Get().UsingLoginScreen();
+    bReturn = CServiceBroker::GetSettingsComponent()->GetProfileManager()->UsingLoginScreen();
   else if (condition == SYSTEM_HAS_MODAL_DIALOG)
     bReturn = CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog();
   else if (condition == WEATHER_IS_FETCHED)
@@ -7617,7 +7618,7 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
       }
       break;
     case VIDEOPLAYER_USING_OVERLAYS:
-      bReturn = (CSettings::GetInstance().GetInt("videoplayer.rendermethod") == RENDER_OVERLAYS);
+      bReturn = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoplayer.rendermethod") == RENDER_OVERLAYS);
     break;
     case VIDEOPLAYER_ISFULLSCREEN:
       bReturn = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO;
@@ -7661,7 +7662,7 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
       }
     break;
     case VISUALISATION_ENABLED:
-      bReturn = !CSettings::GetInstance().GetString("musicplayer.visualisation").empty();
+      bReturn = !CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicplayer.visualisation").empty();
     break;
     case VIDEOPLAYER_HAS_EPG:
 #ifndef _XBOX
@@ -7798,7 +7799,7 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
         break;
       case SKIN_HAS_THEME:
         {
-          std::string theme = CSettings::GetInstance().GetString("lookandfeel.skintheme");
+          std::string theme = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skintheme");
           URIUtils::RemoveExtension(theme);
           bReturn = StringUtils::EqualsNoCase(theme, m_stringParameters[info.GetData1()]);
         }
@@ -8009,7 +8010,7 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
         bReturn = g_alarmClock.HasAlarm(m_stringParameters[info.GetData1()]);
         break;
       case SYSTEM_GET_BOOL:
-        bReturn = CSettings::GetInstance().GetBool(m_stringParameters[info.GetData1()]);
+        bReturn = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(m_stringParameters[info.GetData1()]);
         break;
       case SYSTEM_HAS_CORE_ID:
 #ifndef _XBOX
@@ -8578,7 +8579,7 @@ std::string CGUIInfoManager::GetImage(int info, int contextWindow, std::string *
     return CServiceBroker::GetWeatherManager().GetInfo(WEATHER_IMAGE_CURRENT_ICON);
   else if (info == SYSTEM_PROFILETHUMB)
   {
-    std::string thumb = CProfilesManager::Get().GetCurrentProfile().getThumb();
+    std::string thumb = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().getThumb();
     if (thumb.empty())
       thumb = "DefaultUser.png";
     return thumb;
@@ -8986,7 +8987,7 @@ std::string CGUIInfoManager::GetRadioRDSLabel(int item)
       CEpgInfoTagPtr epgNow(m_currentFile->GetPVRChannelInfoTag()->GetEPGNow());
       return epgNow ?
                 epgNow->Title() :
-                CSettings::GetInstance().GetBool("epg.hidenoinfoavailable") ? "" : g_localizeStrings.Get(19055); // no information available
+                CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("epg.hidenoinfoavailable") ? "" : g_localizeStrings.Get(19055); // no information available
       break;
     }
 
@@ -8998,7 +8999,7 @@ std::string CGUIInfoManager::GetRadioRDSLabel(int item)
       CEpgInfoTagPtr epgNext(m_currentFile->GetPVRChannelInfoTag()->GetEPGNext());
       return epgNext ?
                 epgNext->Title() :
-                CSettings::GetInstance().GetBool("epg.hidenoinfoavailable") ? "" : g_localizeStrings.Get(19055); // no information available
+                CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("epg.hidenoinfoavailable") ? "" : g_localizeStrings.Get(19055); // no information available
       break;
     }
 
@@ -9129,7 +9130,7 @@ std::string CGUIInfoManager::GetMusicTagLabel(int info, const CFileItem *item)
     if (tag.GetYear()) { return tag.GetYearString(); }
     break;
   case MUSICPLAYER_GENRE:
-    if (tag.GetGenre().size()) { return StringUtils::Join(tag.GetGenre(), g_advancedSettings.m_musicItemSeparator); }
+    if (tag.GetGenre().size()) { return StringUtils::Join(tag.GetGenre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator); }
     break;
   case MUSICPLAYER_LYRICS:
     if (tag.GetLyrics().size()) { return tag.GetLyrics(); }
@@ -9251,11 +9252,11 @@ std::string CGUIInfoManager::GetVideoLabel(int item)
       epgTag = tag->GetEPGNow();
       return epgTag ?
           epgTag->Title() :
-          CSettings::GetInstance().GetBool(CSettings::SETTING_EPG_HIDENOINFOAVAILABLE) ?
+          CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_EPG_HIDENOINFOAVAILABLE) ?
                             "" : g_localizeStrings.Get(19055); // no information available
     case VIDEOPLAYER_GENRE:
       epgTag = tag->GetEPGNow();
-      return epgTag ? StringUtils::Join(epgTag->Genre(), g_advancedSettings.m_videoItemSeparator) : "";
+      return epgTag ? StringUtils::Join(epgTag->Genre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator) : "";
     case VIDEOPLAYER_PLOT:
       epgTag = tag->GetEPGNow();
       return epgTag ? epgTag->Plot() : "";
@@ -9312,11 +9313,11 @@ std::string CGUIInfoManager::GetVideoLabel(int item)
       epgTag = tag->GetEPGNext();
       return epgTag ?
           epgTag->Title() :
-          CSettings::GetInstance().GetBool(CSettings::SETTING_EPG_HIDENOINFOAVAILABLE) ?
+          CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_EPG_HIDENOINFOAVAILABLE) ?
                             "" : g_localizeStrings.Get(19055); // no information available
     case VIDEOPLAYER_NEXT_GENRE:
       epgTag = tag->GetEPGNext();
-      return epgTag ? StringUtils::Join(epgTag->Genre(), g_advancedSettings.m_videoItemSeparator) : "";
+      return epgTag ? StringUtils::Join(epgTag->Genre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator) : "";
     case VIDEOPLAYER_NEXT_PLOT:
       epgTag = tag->GetEPGNext();
       return epgTag ? epgTag->Plot() : "";
@@ -9378,7 +9379,7 @@ std::string CGUIInfoManager::GetVideoLabel(int item)
         return tag->m_strTitle;
 
       case VIDEOPLAYER_GENRE:
-        return StringUtils::Join(tag->m_genre, g_advancedSettings.m_videoItemSeparator);
+        return StringUtils::Join(tag->m_genre, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
 
       case VIDEOPLAYER_PLOT:
         return tag->m_strPlot;
@@ -9467,10 +9468,10 @@ std::string CGUIInfoManager::GetVideoLabel(int item)
       return m_currentFile->GetVideoInfoTag()->m_strOriginalTitle;
       break;
     case VIDEOPLAYER_GENRE:
-      return StringUtils::Join(m_currentFile->GetVideoInfoTag()->m_genre, g_advancedSettings.m_videoItemSeparator);
+      return StringUtils::Join(m_currentFile->GetVideoInfoTag()->m_genre, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
       break;
     case VIDEOPLAYER_DIRECTOR:
-      return StringUtils::Join(m_currentFile->GetVideoInfoTag()->m_director, g_advancedSettings.m_videoItemSeparator);
+      return StringUtils::Join(m_currentFile->GetVideoInfoTag()->m_director, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
       break;
     case VIDEOPLAYER_IMDBNUMBER:
       return m_currentFile->GetVideoInfoTag()->GetUniqueID();
@@ -9558,9 +9559,9 @@ std::string CGUIInfoManager::GetVideoLabel(int item)
       return m_currentFile->GetVideoInfoTag()->m_strShowTitle;
 
     case VIDEOPLAYER_STUDIO:
-      return StringUtils::Join(m_currentFile->GetVideoInfoTag()->m_studio, g_advancedSettings.m_videoItemSeparator);
+      return StringUtils::Join(m_currentFile->GetVideoInfoTag()->m_studio, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     case VIDEOPLAYER_COUNTRY:
-      return StringUtils::Join(m_currentFile->GetVideoInfoTag()->m_country, g_advancedSettings.m_videoItemSeparator);
+      return StringUtils::Join(m_currentFile->GetVideoInfoTag()->m_country, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     case VIDEOPLAYER_MPAA:
       return m_currentFile->GetVideoInfoTag()->m_strMPAARating;
     case VIDEOPLAYER_TOP250:
@@ -9576,11 +9577,11 @@ std::string CGUIInfoManager::GetVideoLabel(int item)
     case VIDEOPLAYER_CAST_AND_ROLE:
       return m_currentFile->GetVideoInfoTag()->GetCast(true);
     case VIDEOPLAYER_ARTIST:
-      return StringUtils::Join(m_currentFile->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator);
+      return StringUtils::Join(m_currentFile->GetVideoInfoTag()->m_artist, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     case VIDEOPLAYER_ALBUM:
       return m_currentFile->GetVideoInfoTag()->m_strAlbum;
     case VIDEOPLAYER_WRITER:
-      return StringUtils::Join(m_currentFile->GetVideoInfoTag()->m_writingCredits, g_advancedSettings.m_videoItemSeparator);
+      return StringUtils::Join(m_currentFile->GetVideoInfoTag()->m_writingCredits, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     case VIDEOPLAYER_TAGLINE:
       return m_currentFile->GetVideoInfoTag()->m_strTagLine;
     case VIDEOPLAYER_LASTPLAYED:
@@ -9881,7 +9882,7 @@ CTemperature CGUIInfoManager::GetGPUTemperature()
 #elif defined(HAS_XBOX_HARDWARE)
   return CFanController::Instance()->GetGPUTemp();
 #else
-  std::string  cmd   = g_advancedSettings.m_gpuTempCmd;
+  std::string  cmd   = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_gpuTempCmd;
   int         ret   = 0;
   FILE        *p    = NULL;
 
@@ -10170,7 +10171,7 @@ std::string CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, std::
       CEpgInfoTagPtr epgTag(item->GetPVRChannelInfoTag()->GetEPGNow());
       return epgTag ?
           epgTag->Title() :
-          CSettings::GetInstance().GetBool(CSettings::SETTING_EPG_HIDENOINFOAVAILABLE) ?
+          CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_EPG_HIDENOINFOAVAILABLE) ?
                             "" : g_localizeStrings.Get(19055); // no information available
     }
     if (item->HasPVRRecordingInfoTag())
@@ -10272,7 +10273,7 @@ std::string CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, std::
     }
   case LISTITEM_ARTIST:
     if (item->HasVideoInfoTag())
-      return StringUtils::Join(item->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator);
+      return StringUtils::Join(item->GetVideoInfoTag()->m_artist, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     if (item->HasMusicInfoTag())
       return item->GetMusicInfoTag()->GetArtistString();
     break;
@@ -10306,7 +10307,7 @@ std::string CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, std::
     }
 #endif
     if (item->HasVideoInfoTag())
-      return StringUtils::Join(item->GetVideoInfoTag()->m_director, g_advancedSettings.m_videoItemSeparator);
+      return StringUtils::Join(item->GetVideoInfoTag()->m_director, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     break;
   case LISTITEM_ALBUM:
     if (item->HasVideoInfoTag())
@@ -10375,47 +10376,47 @@ std::string CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, std::
   case LISTITEM_GENRE:
 #ifndef _XBOX
     if (item->HasPVRRecordingInfoTag())
-      return StringUtils::Join(item->GetPVRRecordingInfoTag()->m_genre, g_advancedSettings.m_videoItemSeparator);
+      return StringUtils::Join(item->GetPVRRecordingInfoTag()->m_genre, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     if (item->HasPVRChannelInfoTag())
     {
       CEpgInfoTagPtr epgTag(item->GetPVRChannelInfoTag()->GetEPGNow());
-      return epgTag ? StringUtils::Join(epgTag->Genre(), g_advancedSettings.m_videoItemSeparator) : "";
+      return epgTag ? StringUtils::Join(epgTag->Genre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator) : "";
     }
     if (item->HasEPGInfoTag())
-      return StringUtils::Join(item->GetEPGInfoTag()->Genre(), g_advancedSettings.m_videoItemSeparator);
+      return StringUtils::Join(item->GetEPGInfoTag()->Genre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     if (item->HasPVRTimerInfoTag())
     {
       const CEpgInfoTagPtr epgTag(item->GetPVRTimerInfoTag()->GetEpgInfoTag());
       if (epgTag)
-        return StringUtils::Join(epgTag->Genre(), g_advancedSettings.m_videoItemSeparator);
+        return StringUtils::Join(epgTag->Genre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     }
 #endif
     if (item->HasProgramInfoTag())
-      return StringUtils::Join(item->GetProgramInfoTag()->m_genre, g_advancedSettings.m_programItemSeparator);
+      return StringUtils::Join(item->GetProgramInfoTag()->m_genre, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programItemSeparator);
     if (item->HasVideoInfoTag())
-      return StringUtils::Join(item->GetVideoInfoTag()->m_genre, g_advancedSettings.m_videoItemSeparator);
+      return StringUtils::Join(item->GetVideoInfoTag()->m_genre, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     if (item->HasMusicInfoTag())
-      return StringUtils::Join(item->GetMusicInfoTag()->GetGenre(), g_advancedSettings.m_musicItemSeparator);
+      return StringUtils::Join(item->GetMusicInfoTag()->GetGenre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
     break;
   case LISTITEM_DEVELOPER:
     if (item->HasProgramInfoTag())
-      return StringUtils::Join(item->GetProgramInfoTag()->m_developer, g_advancedSettings.m_programItemSeparator);
+      return StringUtils::Join(item->GetProgramInfoTag()->m_developer, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programItemSeparator);
     break;
   case LISTITEM_PUBLISHER:
     if (item->HasProgramInfoTag())
-      return StringUtils::Join(item->GetProgramInfoTag()->m_publisher, g_advancedSettings.m_programItemSeparator);
+      return StringUtils::Join(item->GetProgramInfoTag()->m_publisher, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programItemSeparator);
     break;
   case LISTITEM_GENERALFEATURE:
     if (item->HasProgramInfoTag())
-      return StringUtils::Join(item->GetProgramInfoTag()->m_generalFeature, g_advancedSettings.m_programItemSeparator);
+      return StringUtils::Join(item->GetProgramInfoTag()->m_generalFeature, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programItemSeparator);
     break;
   case LISTITEM_ONLINEFEATURE:
     if (item->HasProgramInfoTag())
-      return StringUtils::Join(item->GetProgramInfoTag()->m_onlineFeature, g_advancedSettings.m_programItemSeparator);
+      return StringUtils::Join(item->GetProgramInfoTag()->m_onlineFeature, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programItemSeparator);
     break;
   case LISTITEM_PLATFORM:
     if (item->HasProgramInfoTag())
-      return StringUtils::Join(item->GetProgramInfoTag()->m_platform, g_advancedSettings.m_programItemSeparator);
+      return StringUtils::Join(item->GetProgramInfoTag()->m_platform, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programItemSeparator);
     break;
   case LISTITEM_FILENAME:
   case LISTITEM_FILE_EXTENSION:
@@ -10585,7 +10586,7 @@ std::string CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, std::
     if (item->HasVideoInfoTag())
     {
       if (item->GetVideoInfoTag()->m_type != MediaTypeTvShow && item->GetVideoInfoTag()->m_type != MediaTypeVideoCollection)
-        if (item->GetVideoInfoTag()->m_playCount == 0 && !CSettings::GetInstance().GetBool("videolibrary.showunwatchedplots"))
+        if (item->GetVideoInfoTag()->m_playCount == 0 && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videolibrary.showunwatchedplots"))
           return g_localizeStrings.Get(20370);
 
       return item->GetVideoInfoTag()->m_strPlot;
@@ -10774,11 +10775,11 @@ std::string CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, std::
     break;
   case LISTITEM_STUDIO:
     if (item->HasVideoInfoTag())
-      return StringUtils::Join(item->GetVideoInfoTag()->m_studio, g_advancedSettings.m_videoItemSeparator);
+      return StringUtils::Join(item->GetVideoInfoTag()->m_studio, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     break;
   case LISTITEM_COUNTRY:
     if (item->HasVideoInfoTag())
-      return StringUtils::Join(item->GetVideoInfoTag()->m_country, g_advancedSettings.m_videoItemSeparator);
+      return StringUtils::Join(item->GetVideoInfoTag()->m_country, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     break;
   case LISTITEM_MPAA:
     if (item->HasProgramInfoTag())
@@ -10800,7 +10801,7 @@ std::string CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, std::
     break;
   case LISTITEM_WRITER:
     if (item->HasVideoInfoTag())
-      return StringUtils::Join(item->GetVideoInfoTag()->m_writingCredits, g_advancedSettings.m_videoItemSeparator);
+      return StringUtils::Join(item->GetVideoInfoTag()->m_writingCredits, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
 #ifndef _XBOX
     if (item->HasEPGInfoTag())
       return item->GetEPGInfoTag()->Writer();
@@ -10840,7 +10841,7 @@ std::string CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, std::
     break;
   case LISTITEM_TAG:
     if (item->HasVideoInfoTag())
-      return StringUtils::Join(item->GetVideoInfoTag()->m_tags, g_advancedSettings.m_videoItemSeparator);
+      return StringUtils::Join(item->GetVideoInfoTag()->m_tags, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     break;
   case LISTITEM_SET:
     if (item->HasVideoInfoTag())
@@ -11105,7 +11106,7 @@ std::string CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, std::
     {
       CEpgInfoTagPtr tag(item->GetPVRChannelInfoTag()->GetEPGNext());
       if (tag)
-        return StringUtils::Join(tag->Genre(), g_advancedSettings.m_videoItemSeparator);
+        return StringUtils::Join(tag->Genre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     }
 #endif
     return "";

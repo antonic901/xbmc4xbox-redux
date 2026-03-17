@@ -24,6 +24,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "filesystem/Directory.h"
 #include "guilib/LocalizeStrings.h"
 #include "guilib/Key.h"
@@ -72,9 +73,9 @@ std::string CGUIViewStateWindowPictures::GetLockType()
 
 std::string CGUIViewStateWindowPictures::GetExtensions()
 {
-  std::string extensions = g_advancedSettings.m_pictureExtensions;
-  if (CSettings::GetInstance().GetBool("pictures.showvideos"))
-    extensions += "|" + g_advancedSettings.m_videoExtensions;
+  std::string extensions = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions;
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("pictures.showvideos"))
+    extensions += "|" + CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions;
 
   return extensions;
 }

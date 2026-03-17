@@ -36,6 +36,7 @@
 #include "FileItem.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "guilib/LocalizeStrings.h"
 #include "PasswordManager.h"
 #include "URL.h"
@@ -264,7 +265,7 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
     share1.strName = "SAP Streams";
     extraShares.push_back(share1);
 
-    if (CSettings::GetInstance().GetString("audiocds.recordingpath") != "")
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("audiocds.recordingpath") != "")
     {
       share1.strPath = "special://recordings/";
       share1.strName = g_localizeStrings.Get(21883);
@@ -335,7 +336,7 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
 #endif
 
     share1.m_ignore = true;
-    if (CSettings::GetInstance().GetString("debug.screenshotpath") != "")
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("debug.screenshotpath") != "")
     {
       share1.strPath = "special://screenshots/";
       share1.strName = g_localizeStrings.Get(20008);

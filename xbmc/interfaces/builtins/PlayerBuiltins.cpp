@@ -31,6 +31,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "storage/MediaManager.h"
 #include "system.h"
 #include "utils/log.h"
@@ -279,11 +280,11 @@ static int PlayerControl(const std::vector<std::string>& params)
     {
       case PLAYLIST_MUSIC:
         CMediaSettings::Get().SetMusicPlaylistShuffled(g_playlistPlayer.IsShuffled(iPlaylist));
-        CSettings::GetInstance().Save();
+        CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
         break;
       case PLAYLIST_VIDEO:
         CMediaSettings::Get().SetVideoPlaylistShuffled(g_playlistPlayer.IsShuffled(iPlaylist));
-        CSettings::GetInstance().Save();
+        CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
       default:
         break;
     }
@@ -327,11 +328,11 @@ static int PlayerControl(const std::vector<std::string>& params)
     {
       case PLAYLIST_MUSIC:
         CMediaSettings::Get().SetMusicPlaylistRepeat(state == PLAYLIST::REPEAT_ALL);
-        CSettings::GetInstance().Save();
+        CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
         break;
       case PLAYLIST_VIDEO:
         CMediaSettings::Get().SetVideoPlaylistRepeat(state == PLAYLIST::REPEAT_ALL);
-        CSettings::GetInstance().Save();
+        CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
     }
 
     // send messages so now playing window can get updated
@@ -437,7 +438,7 @@ static int PlayMedia(const std::vector<std::string>& params)
   if (item.m_bIsFolder)
   {
     CFileItemList items;
-    std::string extensions = g_advancedSettings.m_videoExtensions + "|" + g_advancedSettings.GetMusicExtensions();
+    std::string extensions = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions + "|" + CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetMusicExtensions();
     XFILE::CDirectory::GetDirectory(item.GetPath(), items, extensions, XFILE::DIR_FLAG_DEFAULTS);
 
     bool containsMusic = false, containsVideo = false;

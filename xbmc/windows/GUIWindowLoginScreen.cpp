@@ -45,6 +45,7 @@
 #include "profiles/ProfilesManager.h"
 #include "profiles/dialogs/GUIDialogProfileSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "utils/Weather.h"
@@ -159,14 +160,14 @@ void CGUIWindowLoginScreen::FrameMove()
   if (GetFocusedControlID() == CONTROL_BIG_LIST && CServiceBroker::GetGUI()->GetWindowManager().GetTopMostModalDialogID() == WINDOW_INVALID)
     if (m_viewControl.HasControl(CONTROL_BIG_LIST))
       m_iSelectedItem = m_viewControl.GetSelectedItem();
-  std::string strLabel = StringUtils::Format(g_localizeStrings.Get(20114).c_str(), m_iSelectedItem+1, CProfilesManager::Get().GetNumberOfProfiles());
+  std::string strLabel = StringUtils::Format(g_localizeStrings.Get(20114).c_str(), m_iSelectedItem+1, CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles());
   SET_CONTROL_LABEL(CONTROL_LABEL_SELECTED_PROFILE,strLabel);
   CGUIWindow::FrameMove();
 }
 
 void CGUIWindowLoginScreen::OnInitWindow()
 {
-  m_iSelectedItem = (int)CProfilesManager::Get().GetLastUsedProfileIndex();
+  m_iSelectedItem = (int)CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetLastUsedProfileIndex();
   // Update list/thumb control
   m_viewControl.SetCurrentView(DEFAULT_VIEW_LIST);
   Update();
@@ -194,9 +195,9 @@ void CGUIWindowLoginScreen::OnWindowUnload()
 void CGUIWindowLoginScreen::Update()
 {
   m_vecItems->Clear();
-  for (unsigned int i=0;i<CProfilesManager::Get().GetNumberOfProfiles(); ++i)
+  for (unsigned int i=0;i<CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles(); ++i)
   {
-    const CProfile *profile = CProfilesManager::Get().GetProfile(i);
+    const CProfile *profile = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetProfile(i);
     CFileItemPtr item(new CFileItem(profile->getName()));
     std::string strLabel;
     if (profile->getDate().empty())
@@ -232,8 +233,8 @@ bool CGUIWindowLoginScreen::OnPopupMenu(int iItem)
   int choice = CGUIDialogContextMenu::ShowAndGetChoice(choices);
   if (choice == 2)
   {
-    if (g_passwordManager.CheckLock(CProfilesManager::Get().GetMasterProfile().getLockMode(),CProfilesManager::Get().GetMasterProfile().getLockCode(),20075))
-      g_passwordManager.iMasterLockRetriesLeft = CSettings::GetInstance().GetInt("masterlock.maxretries");
+    if (g_passwordManager.CheckLock(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode(),CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockCode(),20075))
+      g_passwordManager.iMasterLockRetriesLeft = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("masterlock.maxretries");
     else // be inconvenient
       CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SHUTDOWN);
 
@@ -245,7 +246,7 @@ bool CGUIWindowLoginScreen::OnPopupMenu(int iItem)
     CGUIDialogProfileSettings::ShowForProfile(m_viewControl.GetSelectedItem());
 
   //NOTE: this can potentially (de)select the wrong item if the filelisting has changed because of an action above.
-  if (iItem < (int)CProfilesManager::Get().GetNumberOfProfiles())
+  if (iItem < (int)CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles())
     m_vecItems->Get(iItem)->Select(bSelect);
 
   return false;
@@ -266,14 +267,14 @@ void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
   // stop service addons and give it some time before we start it again
   CServiceBroker::GetAddonMgr().StopServices(true);
 
-  if (profile != 0 || !CProfilesManager::Get().IsMasterProfile())
+  if (profile != 0 || !CServiceBroker::GetSettingsComponent()->GetProfileManager()->IsMasterProfile())
   {
     g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
 #ifdef HAS_XBOX_HARDWARE
     CLog::Log(LOGNOTICE, "stop fancontroller");
     CFanController::Instance()->Stop();
 #endif
-    CProfilesManager::Get().LoadProfile(profile);
+    CServiceBroker::GetSettingsComponent()->GetProfileManager()->LoadProfile(profile);
   }
   else
   {
@@ -283,10 +284,10 @@ void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
   }
   g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_UP,1);
 
-  CProfilesManager::Get().UpdateCurrentProfileDate();
-  CProfilesManager::Get().Save();
+  CServiceBroker::GetSettingsComponent()->GetProfileManager()->UpdateCurrentProfileDate();
+  CServiceBroker::GetSettingsComponent()->GetProfileManager()->Save();
 
-  if (CProfilesManager::Get().GetLastUsedProfileIndex() != profile)
+  if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetLastUsedProfileIndex() != profile)
   {
     g_playlistPlayer.ClearPlaylist(PLAYLIST_VIDEO);
     g_playlistPlayer.ClearPlaylist(PLAYLIST_MUSIC);
@@ -301,7 +302,7 @@ void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
 
   if (!g_application.LoadLanguage(true))
   {
-    CLog::Log(LOGFATAL, "CGUIWindowLoginScreen: unable to load language for profile \"%s\"", CProfilesManager::Get().GetCurrentProfile().getName().c_str());
+    CLog::Log(LOGFATAL, "CGUIWindowLoginScreen: unable to load language for profile \"%s\"", CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().getName().c_str());
     return;
   }
 
