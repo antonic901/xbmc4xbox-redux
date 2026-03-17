@@ -515,7 +515,7 @@ void CDVDPlayerVideo::Process()
 
             //Deinterlace if codec said format was interlaced or if we have selected we want to deinterlace
             //this video
-            EINTERLACEMETHOD mInt = CMediaSettings::Get().GetCurrentVideoSettings().m_InterlaceMethod;
+            EINTERLACEMETHOD mInt = CMediaSettings::GetInstance().GetCurrentVideoSettings().m_InterlaceMethod;
             if( mInt == VS_INTERLACEMETHOD_DEINTERLACE )
             {
               if (!sPostProcessType.empty())
@@ -523,7 +523,7 @@ void CDVDPlayerVideo::Process()
               sPostProcessType += CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoPPFFmpegDeint;
             }
 
-            if (CMediaSettings::Get().GetCurrentVideoSettings().m_PostProcess)
+            if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_PostProcess)
             {
               if (!sPostProcessType.empty())
                 sPostProcessType += ",";

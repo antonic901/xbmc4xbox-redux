@@ -430,18 +430,18 @@ void CApplication::InitBasicD3D()
 
   // Check if we have the required modes available
   g_videoConfig.GetModes(m_pD3D);
-  if (!CServiceBroker::GetWinSystem()->GetGfxContext().IsValidResolution(CDisplaySettings::Get().GetCurrentResolution()))
+  if (!CServiceBroker::GetWinSystem()->GetGfxContext().IsValidResolution(CDisplaySettings::GetInstance().GetCurrentResolution()))
   {
     // Oh uh - doesn't look good for starting in their wanted screenmode
     CLog::Log(LOGERROR, "The screen resolution requested is not valid, resetting to a valid mode");
-    CDisplaySettings::Get().SetCurrentResolution(g_videoConfig.GetSafeMode(), true);
-    CLog::Log(LOGERROR, "Resetting to mode %s", CDisplaySettings::Get().GetCurrentResolutionInfo().strMode.c_str());
+    CDisplaySettings::GetInstance().SetCurrentResolution(g_videoConfig.GetSafeMode(), true);
+    CLog::Log(LOGERROR, "Resetting to mode %s", CDisplaySettings::GetInstance().GetCurrentResolutionInfo().strMode.c_str());
     CLog::Log(LOGERROR, "Done reset");
   }
 
   // Transfer the resolution information to our graphics context
   CServiceBroker::GetWinSystem()->GetGfxContext().SetD3DParameters(&m_d3dpp);
-  CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::GetInstance().GetCurrentResolution(), TRUE);
 
   // Create the device
 #ifdef HAS_XBOX_D3D
@@ -627,8 +627,8 @@ void CApplication::FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetw
 #ifdef HAS_FTP_SERVER
     // Start FTP with default settings
     FEH_TextOut(pFont, iLine++, L"Starting FTP server...");
-    CNetworkServices::Get().StartFtpEmergencyRecoveryMode();
-    FEH_TextOut(pFont, iLine++, L"FTP server running on port %d, login: xbox/xbox", CNetworkServices::Get().GetFtpServerPort());
+    CNetworkServices::GetInstance().StartFtpEmergencyRecoveryMode();
+    FEH_TextOut(pFont, iLine++, L"FTP server running on port %d, login: xbox/xbox", CNetworkServices::GetInstance().GetFtpServerPort());
 #endif
     ++iLine;
   }
@@ -765,7 +765,7 @@ HRESULT CApplication::Create(HWND hWnd)
   for (int i = RES_HDTV_1080i; i <= RES_PAL60_16x9; i++)
   {
     CServiceBroker::GetWinSystem()->GetGfxContext().ResetScreenParameters((RESOLUTION)i);
-    CServiceBroker::GetWinSystem()->GetGfxContext().ResetOverscan((RESOLUTION)i, CDisplaySettings::Get().GetResolutionInfo(i).Overscan);
+    CServiceBroker::GetWinSystem()->GetGfxContext().ResetOverscan((RESOLUTION)i, CDisplaySettings::GetInstance().GetResolutionInfo(i).Overscan);
   }
 
   g_hWnd = hWnd;
@@ -1106,9 +1106,9 @@ HRESULT CApplication::Create(HWND hWnd)
     FatalErrorHandler(true, false, true);
 
   // Retrieve the matching resolution based on GUI settings
-  CDisplaySettings::Get().SetCurrentResolution(CDisplaySettings::Get().GetDisplayResolution());
-  CLog::Log(LOGNOTICE, "Checking resolution %i", CDisplaySettings::Get().GetCurrentResolution());
-  if (!CServiceBroker::GetWinSystem()->GetGfxContext().IsValidResolution(CDisplaySettings::Get().GetCurrentResolution()))
+  CDisplaySettings::GetInstance().SetCurrentResolution(CDisplaySettings::GetInstance().GetDisplayResolution());
+  CLog::Log(LOGNOTICE, "Checking resolution %i", CDisplaySettings::GetInstance().GetCurrentResolution());
+  if (!CServiceBroker::GetWinSystem()->GetGfxContext().IsValidResolution(CDisplaySettings::GetInstance().GetCurrentResolution()))
   {
     #ifdef _XBOX
         RESOLUTION newRes = g_videoConfig.GetBestMode();
@@ -1116,7 +1116,7 @@ HRESULT CApplication::Create(HWND hWnd)
         RESOLUTION newRes = g_videoConfig.GetSafeMode();
     #endif
     CLog::Log(LOGNOTICE, "Setting safe mode %i", newRes);
-    CDisplaySettings::Get().SetCurrentResolution(newRes, true);
+    CDisplaySettings::GetInstance().SetCurrentResolution(newRes, true);
   }
 
   // Transfer the new resolution information to our graphics context
@@ -1128,7 +1128,7 @@ HRESULT CApplication::Create(HWND hWnd)
 #endif
 
   CServiceBroker::GetWinSystem()->GetGfxContext().SetD3DParameters(&m_d3dpp);
-  CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::GetInstance().GetCurrentResolution(), TRUE);
   
   if ( FAILED( hr = m_pD3D->CreateDevice(0, D3DDEVTYPE_HAL, NULL,
                                          D3DCREATE_MULTITHREADED | D3DCREATE_HARDWARE_VERTEXPROCESSING,
@@ -1170,16 +1170,16 @@ HRESULT CApplication::Create(HWND hWnd)
   CUtil::InitGamma();
   
   // set GUI res and force the clear of the screen
-  CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE, true);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::GetInstance().GetCurrentResolution(), TRUE, true);
 
   // Splash requires gui component!!
   CSplash::GetInstance().Show();
 
   int iResolution = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
   CLog::Log(LOGINFO, "GUI format %ix%i %s",
-            CDisplaySettings::Get().GetResolutionInfo(iResolution).iWidth,
-            CDisplaySettings::Get().GetResolutionInfo(iResolution).iHeight,
-            CDisplaySettings::Get().GetResolutionInfo(iResolution).strMode.c_str());
+            CDisplaySettings::GetInstance().GetResolutionInfo(iResolution).iWidth,
+            CDisplaySettings::GetInstance().GetResolutionInfo(iResolution).iHeight,
+            CDisplaySettings::GetInstance().GetResolutionInfo(iResolution).strMode.c_str());
 
   // show recovery console on fatal error instead of freezing
   CLog::Log(LOGINFO, "install unhandled exception filter");
@@ -1303,10 +1303,10 @@ HRESULT CApplication::Initialize()
   CServiceBroker::GetAddonMgr().StartServices(true);
 
   // configure seek handler
-  CSeekHandler::Get().Configure();
+  CSeekHandler::GetInstance().Configure();
 
   // register action listeners
-  RegisterActionListener(&CSeekHandler::Get());
+  RegisterActionListener(&CSeekHandler::GetInstance());
   RegisterActionListener(&CPlayerController::GetInstance());
 
   CServiceBroker::GetRepositoryUpdater().Start();
@@ -1670,7 +1670,7 @@ bool CApplication::LoadSkin(const std::string& skinID)
   skin->Start();
 
   // migrate any skin-specific settings that are still stored in guisettings.xml
-  CSkinSettings::Get().MigrateSettings(skin);
+  CSkinSettings::GetInstance().MigrateSettings(skin);
 
   // check if the skin has been properly loaded and if it has a Home.xml
   if (!skin->HasSkinFile("Home.xml"))
@@ -2079,8 +2079,8 @@ void CApplication::RenderMemoryStatus()
           info.AppendFormat("Focused: %i (%s)", control->GetID(), CGUIControlFactory::TranslateControlType(control->GetControlType()).c_str());
       }
     }
-    float x = 0.04f * CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth() + CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left;
-    float y = 0.04f * CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight() + CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top;
+    float x = 0.04f * CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth() + CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.left;
+    float y = 0.04f * CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight() + CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.top;
 
     m_debugLayout->Update(info);
     m_debugLayout->RenderOutline(x, y, 0xffffffff, 0xff000000, 0, 0);
@@ -2941,7 +2941,7 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
     ProcessEventServer(frameTime);
     if (processGUI)
     {
-      CSeekHandler::Get().FrameMove();
+      CSeekHandler::GetInstance().FrameMove();
     }
   }
   if (processGUI)
@@ -3601,7 +3601,7 @@ void CApplication::Stop(bool bLCDStop)
     CServiceBroker::GetAddonMgr().StopServices(false);
 
     // unregister action listeners
-    UnregisterActionListener(&CSeekHandler::Get());
+    UnregisterActionListener(&CSeekHandler::GetInstance());
     UnregisterActionListener(&CPlayerController::GetInstance());
 
     // stop all remaining scripts; must be done after skin has been unloaded,
@@ -3749,7 +3749,7 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
     CVideoDatabase dbs;
     if (dbs.Open())
     {
-      dbs.GetVideoSettings(item.GetPath(), CMediaSettings::Get().GetCurrentVideoSettings());
+      dbs.GetVideoSettings(item.GetPath(), CMediaSettings::GetInstance().GetCurrentVideoSettings());
       haveTimes = dbs.GetStackTimes(item.GetPath(), times);
       dbs.Close();
     }
@@ -3835,7 +3835,7 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
 
     OutputDebugString("new file set audiostream:0\n");
     // Switch to default options
-    CMediaSettings::Get().GetCurrentVideoSettings() = CMediaSettings::Get().GetDefaultVideoSettings();
+    CMediaSettings::GetInstance().GetCurrentVideoSettings() = CMediaSettings::GetInstance().GetDefaultVideoSettings();
     // see if we have saved options in the database
 
     m_pPlayer->SetPlaySpeed(1, g_application.m_muted);
@@ -3907,7 +3907,7 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
       // open the d/b and retrieve the bookmarks for the current movie
       CVideoDatabase dbs;
       dbs.Open();
-      dbs.GetVideoSettings(item.GetPath(), CMediaSettings::Get().GetCurrentVideoSettings());
+      dbs.GetVideoSettings(item.GetPath(), CMediaSettings::GetInstance().GetCurrentVideoSettings());
 
       if( item.m_lStartOffset == STARTOFFSET_RESUME )
       {
@@ -3958,23 +3958,23 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
   if (playlist == PLAYLIST_VIDEO && g_playlistPlayer.GetPlaylist(playlist).size() > 1)
   { // playing from a playlist by the looks
     // don't switch to fullscreen if we are not playing the first item...
-    options.fullscreen = !g_playlistPlayer.HasPlayedFirstFile() && CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::Get().DoesVideoStartWindowed();
+    options.fullscreen = !g_playlistPlayer.HasPlayedFirstFile() && CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::GetInstance().DoesVideoStartWindowed();
   }
   else if(m_itemCurrentFile->IsStack() && m_currentStack->Size() > 0)
   {
     // TODO - this will fail if user seeks back to first file in stack
     if(m_currentStackPosition == 0 || m_itemCurrentFile->m_lStartOffset == STARTOFFSET_RESUME)
-      options.fullscreen = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::Get().DoesVideoStartWindowed();
+      options.fullscreen = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::GetInstance().DoesVideoStartWindowed();
     else
       options.fullscreen = false;
     // reset this so we don't think we are resuming on seek
     m_itemCurrentFile->m_lStartOffset = 0;
   }
   else
-    options.fullscreen = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::Get().DoesVideoStartWindowed();
+    options.fullscreen = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::GetInstance().DoesVideoStartWindowed();
 
   // reset VideoStartWindowed as it's a temp setting
-  CMediaSettings::Get().SetVideoStartWindowed(false);
+  CMediaSettings::GetInstance().SetVideoStartWindowed(false);
   // reset any forced player
   m_eForcedNextPlayer = EPC_NONE;
 
@@ -4638,7 +4638,7 @@ void CApplication::CheckShutdown()
     resetTimer = true;
 
 #ifdef HAS_FTP_SERVER
-  if (CNetworkServices::Get().IsFtpServerRunning() && CNetworkServices::Get().FtpHasActiveConnections()) // is FTP active ?
+  if (CNetworkServices::GetInstance().IsFtpServerRunning() && CNetworkServices::GetInstance().FtpHasActiveConnections()) // is FTP active ?
     resetTimer = true;
 #endif
 
@@ -5208,8 +5208,8 @@ void CApplication::ProcessSlow()
 
 #ifdef HAS_TIME_SERVER
   // check for any needed sntp update
-  if(CNetworkServices::Get().IsTimeServerRunning() && CNetworkServices::Get().IsTimeServerUpdateNeeded())
-    CNetworkServices::Get().UpdateTimeServer();
+  if(CNetworkServices::GetInstance().IsTimeServerRunning() && CNetworkServices::GetInstance().IsTimeServerUpdateNeeded())
+    CNetworkServices::GetInstance().UpdateTimeServer();
 #endif
 
   // LED - LCD SwitchOn On Paused! m_bIsPaused=TRUE -> LED/LCD is ON!
@@ -5442,13 +5442,13 @@ int CApplication::GetVolume(bool percentage /* = true */) const
 int CApplication::GetSubtitleDelay() const
 {
   // converts subtitle delay to a percentage
-  return int(((float)(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay + CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange)) / (2 * CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange)*100.0f + 0.5f);
+  return int(((float)(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay + CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange)) / (2 * CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange)*100.0f + 0.5f);
 }
 
 int CApplication::GetAudioDelay() const
 {
   // converts subtitle delay to a percentage
-  return int(((float)(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay + CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange)) / (2 * CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange)*100.0f + 0.5f);
+  return int(((float)(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay + CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange)) / (2 * CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange)*100.0f + 0.5f);
 }
 
 // Returns the total time in seconds of the current media.  Fractional
@@ -5822,11 +5822,11 @@ void CApplication::SaveCurrentFileSettings()
   if (m_itemCurrentFile->IsVideo())
   {
     // save video settings
-    if (CMediaSettings::Get().GetCurrentVideoSettings() != CMediaSettings::Get().GetDefaultVideoSettings())
+    if (CMediaSettings::GetInstance().GetCurrentVideoSettings() != CMediaSettings::GetInstance().GetDefaultVideoSettings())
     {
       CVideoDatabase dbs;
       dbs.Open();
-      dbs.SetVideoSettings(m_itemCurrentFile->GetPath(), CMediaSettings::Get().GetCurrentVideoSettings());
+      dbs.SetVideoSettings(m_itemCurrentFile->GetPath(), CMediaSettings::GetInstance().GetCurrentVideoSettings());
       dbs.Close();
     }
   }

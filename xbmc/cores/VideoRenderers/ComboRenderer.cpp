@@ -120,9 +120,9 @@ void CComboRenderer::ManageDisplay()
   float fScreenHeight = rv.Height();
   float fOffsetX1 = rv.x1;
   float fOffsetY1 = rv.y1;
-  float fPixelRatio = CDisplaySettings::Get().GetPixelRatio();
-  float fMaxScreenWidth = (float)CDisplaySettings::Get().GetResolutionInfo(CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution()).iWidth;
-  float fMaxScreenHeight = (float)CDisplaySettings::Get().GetResolutionInfo(CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution()).iHeight;
+  float fPixelRatio = CDisplaySettings::GetInstance().GetPixelRatio();
+  float fMaxScreenWidth = (float)CDisplaySettings::GetInstance().GetResolutionInfo(CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution()).iWidth;
+  float fMaxScreenHeight = (float)CDisplaySettings::GetInstance().GetResolutionInfo(CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution()).iHeight;
   if (fOffsetX1 < 0) fOffsetX1 = 0;
   if (fOffsetY1 < 0) fOffsetY1 = 0;
   if (fScreenWidth + fOffsetX1 > fMaxScreenWidth) fScreenWidth = fMaxScreenWidth - fOffsetX1;
@@ -137,12 +137,12 @@ void CComboRenderer::ManageDisplay()
   }
 
   // source rect
-  rs.left = CMediaSettings::Get().GetCurrentVideoSettings().m_CropLeft;
-  rs.top = CMediaSettings::Get().GetCurrentVideoSettings().m_CropTop;
-  rs.right = m_iSourceWidth - CMediaSettings::Get().GetCurrentVideoSettings().m_CropRight;
-  rs.bottom = m_iSourceHeight - CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom;
+  rs.left = CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropLeft;
+  rs.top = CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropTop;
+  rs.right = m_iSourceWidth - CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropRight;
+  rs.bottom = m_iSourceHeight - CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropBottom;
 
-  CalcNormalDisplayRect(fOffsetX1, fOffsetY1, fScreenWidth, fScreenHeight, GetAspectRatio() * fPixelRatio, CDisplaySettings::Get().GetZoomAmount());
+  CalcNormalDisplayRect(fOffsetX1, fOffsetY1, fScreenWidth, fScreenHeight, GetAspectRatio() * fPixelRatio, CDisplaySettings::GetInstance().GetZoomAmount());
 
   // check whether we need to alter our source rect
   if (rd.left < fOffsetX1 || rd.right > fOffsetX1 + fScreenWidth)

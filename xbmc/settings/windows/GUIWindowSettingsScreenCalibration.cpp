@@ -78,7 +78,7 @@ bool CGUIWindowSettingsScreenCalibration::OnAction(const CAction &action)
     {
       CGUIDialogYesNo* pDialog = (CGUIDialogYesNo*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_YES_NO);
       pDialog->SetHeading(20325);
-      std::string strText = StringUtils::Format(g_localizeStrings.Get(20326).c_str(), CDisplaySettings::Get().GetResolutionInfo(m_Res[m_iCurRes]).strMode.c_str());
+      std::string strText = StringUtils::Format(g_localizeStrings.Get(20326).c_str(), CDisplaySettings::GetInstance().GetResolutionInfo(m_Res[m_iCurRes]).strMode.c_str());
       pDialog->SetLine(0, boost::move(strText));
       pDialog->SetLine(1, 20327);
       pDialog->SetChoice(0, 222);
@@ -124,11 +124,11 @@ bool CGUIWindowSettingsScreenCalibration::OnMessage(CGUIMessage& message)
   {
   case GUI_MSG_WINDOW_DEINIT:
     {
-      CDisplaySettings::Get().UpdateCalibrations();
+      CDisplaySettings::GetInstance().UpdateCalibrations();
       CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
       CServiceBroker::GetWinSystem()->GetGfxContext().SetCalibrating(false);
       // reset our screen resolution to what it was initially
-      CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
+      CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::GetInstance().GetCurrentResolution(), TRUE);
       // Inform the player so we can update the resolution
 #ifdef HAS_VIDEO_PLAYBACK
       g_renderManager.Update(false);
@@ -245,7 +245,7 @@ void CGUIWindowSettingsScreenCalibration::ResetControls()
   // and set their limits
   // also, set them to invisible if they don't have focus
   CGUIMoverControl *pControl = dynamic_cast<CGUIMoverControl*>(GetControl(CONTROL_TOP_LEFT));
-  RESOLUTION_INFO info = CDisplaySettings::Get().GetResolutionInfo(m_Res[m_iCurRes]);
+  RESOLUTION_INFO info = CDisplaySettings::GetInstance().GetResolutionInfo(m_Res[m_iCurRes]);
   if (pControl)
   {
     pControl->SetLimits( -info.iWidth / 4,
@@ -297,7 +297,7 @@ void CGUIWindowSettingsScreenCalibration::ResetControls()
 void CGUIWindowSettingsScreenCalibration::UpdateFromControl(int iControl)
 {
   std::string strStatus;
-  RESOLUTION_INFO info = CDisplaySettings::Get().GetResolutionInfo(m_Res[m_iCurRes]);
+  RESOLUTION_INFO info = CDisplaySettings::GetInstance().GetResolutionInfo(m_Res[m_iCurRes]);
 
   if (iControl == CONTROL_PIXEL_RATIO)
   {

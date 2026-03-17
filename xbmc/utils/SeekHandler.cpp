@@ -53,7 +53,7 @@ CSeekHandler::~CSeekHandler()
   m_backwardSeekSteps.clear();
 }
 
-CSeekHandler& CSeekHandler::Get()
+CSeekHandler& CSeekHandler::GetInstance()
 {
   static CSeekHandler instance;
   return instance;

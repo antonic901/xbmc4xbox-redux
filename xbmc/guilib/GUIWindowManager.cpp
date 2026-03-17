@@ -1334,7 +1334,7 @@ int CGUIWindowManager::GetActiveWindowID()
       iWin = WINDOW_FULLSCREEN_LIVETV;
 #endif
     // special casing for numeric seek
-    else if (CSeekHandler::Get().HasTimeCode())
+    else if (CSeekHandler::GetInstance().HasTimeCode())
       iWin = WINDOW_VIDEO_TIME_SEEK;
   }
   if (iWin == WINDOW_VISUALISATION)
@@ -1346,7 +1346,7 @@ int CGUIWindowManager::GetActiveWindowID()
     else
 #endif
     // special casing for numeric seek
-    if (CSeekHandler::Get().HasTimeCode())
+    if (CSeekHandler::GetInstance().HasTimeCode())
       iWin = WINDOW_VIDEO_TIME_SEEK;
   }
   // Return the window id

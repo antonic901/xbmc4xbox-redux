@@ -78,7 +78,7 @@ void CGUIDialogVideoSettings::OnSettingChanged(const CSetting *setting)
 
   CGUIDialogSettingsManualBase::OnSettingChanged(setting);
 
-  CVideoSettings &videoSettings = CMediaSettings::Get().GetCurrentVideoSettings();
+  CVideoSettings &videoSettings = CMediaSettings::GetInstance().GetCurrentVideoSettings();
 
   const std::string &settingId = setting->GetId();
   if (settingId == SETTING_VIDEO_INTERLACEMETHOD)
@@ -175,7 +175,7 @@ void CGUIDialogVideoSettings::OnSettingAction(const CSetting *setting)
     Save();
   else if (settingId == SETTING_VIDEO_FORCE_INDEX)
   {
-    CMediaSettings::Get().GetCurrentVideoSettings().m_bForceIndex = true;
+    CMediaSettings::GetInstance().GetCurrentVideoSettings().m_bForceIndex = true;
     g_application.Restart(true);
   }
 }
@@ -195,9 +195,9 @@ void CGUIDialogVideoSettings::Save()
     db.EraseVideoSettings();
     db.Close();
 
-    CMediaSettings::Get().GetDefaultVideoSettings() = CMediaSettings::Get().GetCurrentVideoSettings();
-    CMediaSettings::Get().GetDefaultVideoSettings().m_SubtitleStream = -1;
-    CMediaSettings::Get().GetDefaultVideoSettings().m_AudioStream = -1;
+    CMediaSettings::GetInstance().GetDefaultVideoSettings() = CMediaSettings::GetInstance().GetCurrentVideoSettings();
+    CMediaSettings::GetInstance().GetDefaultVideoSettings().m_SubtitleStream = -1;
+    CMediaSettings::GetInstance().GetDefaultVideoSettings().m_AudioStream = -1;
     CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
   }
 }
@@ -245,7 +245,7 @@ void CGUIDialogVideoSettings::InitializeSettings()
 
   bool usePopup = g_SkinInfo->HasSkinFile("DialogSlider.xml");
 
-  CVideoSettings &videoSettings = CMediaSettings::Get().GetCurrentVideoSettings();
+  CVideoSettings &videoSettings = CMediaSettings::GetInstance().GetCurrentVideoSettings();
   
   StaticIntegerSettingOptions entries;
 

@@ -202,7 +202,7 @@ bool CGUIWindowAddonBrowser::OnClick(int iItem, const std::string &player)
     else
     {
       // pop up filebrowser to grab an installed folder
-      VECSOURCES shares = *CMediaSourceSettings::Get().GetSources("files");
+      VECSOURCES shares = *CMediaSourceSettings::GetInstance().GetSources("files");
       CServiceBroker::GetMediaManager().GetLocalDrives(shares);
       CServiceBroker::GetMediaManager().GetNetworkLocations(shares);
       std::string path;

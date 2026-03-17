@@ -72,8 +72,8 @@ static int UnloadSkin(const std::vector<std::string>& params)
  */
 static int ToggleSetting(const std::vector<std::string>& params)
 {
-  int setting = CSkinSettings::Get().TranslateBool(params[0]);
-  CSkinSettings::Get().SetBool(setting, !CSkinSettings::Get().GetBool(setting));
+  int setting = CSkinSettings::GetInstance().TranslateBool(params[0]);
+  CSkinSettings::GetInstance().SetBool(setting, !CSkinSettings::GetInstance().GetBool(setting));
   CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 
   return 0;
@@ -86,7 +86,7 @@ static int ToggleSetting(const std::vector<std::string>& params)
  */
 static int SetAddon(const std::vector<std::string>& params)
 {
-  int string = CSkinSettings::Get().TranslateString(params[0]);
+  int string = CSkinSettings::GetInstance().TranslateString(params[0]);
   std::vector<ADDON::TYPE> types;
   for (unsigned int i = 1 ; i < params.size() ; i++)
   {
@@ -97,7 +97,7 @@ static int SetAddon(const std::vector<std::string>& params)
   std::string result;
   if (!types.empty() && CGUIWindowAddonBrowser::SelectAddonID(types, result, true) == 1)
   {
-    CSkinSettings::Get().SetString(string, result);
+    CSkinSettings::GetInstance().SetString(string, result);
     CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
   }
 
@@ -136,11 +136,11 @@ static int SelectBool(const std::vector<std::string>& params)
     for (unsigned int i = 0 ; i < settings.size() ; i++)
     {
       std::string item = settings[i].second;
-      int setting = CSkinSettings::Get().TranslateBool(item);
+      int setting = CSkinSettings::GetInstance().TranslateBool(item);
       if (i == iItem)
-        CSkinSettings::Get().SetBool(setting, true);
+        CSkinSettings::GetInstance().SetBool(setting, true);
       else
-        CSkinSettings::Get().SetBool(setting, false);
+        CSkinSettings::GetInstance().SetBool(setting, false);
     }
     CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
   }
@@ -157,14 +157,14 @@ static int SetBool(const std::vector<std::string>& params)
 {
   if (params.size() > 1)
   {
-    int string = CSkinSettings::Get().TranslateBool(params[0]);
-    CSkinSettings::Get().SetBool(string, StringUtils::EqualsNoCase(params[1], "true"));
+    int string = CSkinSettings::GetInstance().TranslateBool(params[0]);
+    CSkinSettings::GetInstance().SetBool(string, StringUtils::EqualsNoCase(params[1], "true"));
     CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
     return 0;
   }
   // default is to set it to true
-  int setting = CSkinSettings::Get().TranslateBool(params[0]);
-  CSkinSettings::Get().SetBool(setting, true);
+  int setting = CSkinSettings::GetInstance().TranslateBool(params[0]);
+  CSkinSettings::GetInstance().SetBool(setting, true);
   CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 
   return 0;
@@ -176,10 +176,10 @@ static int SetBool(const std::vector<std::string>& params)
  */
 static int SetNumeric(const std::vector<std::string>& params)
 {
-  int string = CSkinSettings::Get().TranslateString(params[0]);
-  std::string value = CSkinSettings::Get().GetString(string);
+  int string = CSkinSettings::GetInstance().TranslateString(params[0]);
+  std::string value = CSkinSettings::GetInstance().GetString(string);
   if (CGUIDialogNumeric::ShowAndGetNumber(value, g_localizeStrings.Get(611)))
-    CSkinSettings::Get().SetString(string, value);
+    CSkinSettings::GetInstance().SetString(string, value);
 
   return 0;
 }
@@ -191,8 +191,8 @@ static int SetNumeric(const std::vector<std::string>& params)
  */
 static int SetPath(const std::vector<std::string>& params)
 {
-  int string = CSkinSettings::Get().TranslateString(params[0]);
-  std::string value = CSkinSettings::Get().GetString(string);
+  int string = CSkinSettings::GetInstance().TranslateString(params[0]);
+  std::string value = CSkinSettings::GetInstance().GetString(string);
   VECSOURCES localShares;
   CServiceBroker::GetMediaManager().GetLocalDrives(localShares);
   CServiceBroker::GetMediaManager().GetNetworkLocations(localShares);
@@ -211,7 +211,7 @@ static int SetPath(const std::vector<std::string>& params)
   }
 
   if (CGUIDialogFileBrowser::ShowAndGetDirectory(localShares, g_localizeStrings.Get(657), value))
-    CSkinSettings::Get().SetString(string, value);
+    CSkinSettings::GetInstance().SetString(string, value);
 
   CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 
@@ -227,8 +227,8 @@ static int SetPath(const std::vector<std::string>& params)
  */
 static int SetFile(const std::vector<std::string>& params)
 {
-  int string = CSkinSettings::Get().TranslateString(params[0]);
-  std::string value = CSkinSettings::Get().GetString(string);
+  int string = CSkinSettings::GetInstance().TranslateString(params[0]);
+  std::string value = CSkinSettings::GetInstance().GetString(string);
   VECSOURCES localShares;
   CServiceBroker::GetMediaManager().GetLocalDrives(localShares);
 
@@ -255,9 +255,9 @@ static int SetFile(const std::vector<std::string>& params)
     if (CGUIDialogFileBrowser::ShowAndGetFile(url.Get(), strMask, TranslateType(type, true), replace, true, true, true))
     {
       if (StringUtils::StartsWithNoCase(replace, "addons://"))
-        CSkinSettings::Get().SetString(string, URIUtils::GetFileName(replace));
+        CSkinSettings::GetInstance().SetString(string, URIUtils::GetFileName(replace));
       else
-        CSkinSettings::Get().SetString(string, replace);
+        CSkinSettings::GetInstance().SetString(string, replace);
     }
   }
   else
@@ -276,7 +276,7 @@ static int SetFile(const std::vector<std::string>& params)
       }
     }
     if (CGUIDialogFileBrowser::ShowAndGetFile(localShares, strMask, g_localizeStrings.Get(1033), value))
-      CSkinSettings::Get().SetString(string, value);
+      CSkinSettings::GetInstance().SetString(string, value);
   }
 
   return 0;
@@ -289,8 +289,8 @@ static int SetFile(const std::vector<std::string>& params)
  */
 static int SetImage(const std::vector<std::string>& params)
 {
-  int string = CSkinSettings::Get().TranslateString(params[0]);
-  std::string value = CSkinSettings::Get().GetString(string);
+  int string = CSkinSettings::GetInstance().TranslateString(params[0]);
+  std::string value = CSkinSettings::GetInstance().GetString(string);
   VECSOURCES localShares;
   CServiceBroker::GetMediaManager().GetLocalDrives(localShares);
   if (params.size() > 1)
@@ -307,7 +307,7 @@ static int SetImage(const std::vector<std::string>& params)
     }
   }
   if (CGUIDialogFileBrowser::ShowAndGetImage(localShares, g_localizeStrings.Get(1030), value))
-    CSkinSettings::Get().SetString(string, value);
+    CSkinSettings::GetInstance().SetString(string, value);
 
   return 0;
 }
@@ -323,17 +323,17 @@ static int SetString(const std::vector<std::string>& params)
   int string = 0;
   if (params.size() > 1)
   {
-    string = CSkinSettings::Get().TranslateString(params[0]);
-    CSkinSettings::Get().SetString(string, params[1]);
+    string = CSkinSettings::GetInstance().TranslateString(params[0]);
+    CSkinSettings::GetInstance().SetString(string, params[1]);
     CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
     return 0;
   }
   else
-    string = CSkinSettings::Get().TranslateString(params[0]);
+    string = CSkinSettings::GetInstance().TranslateString(params[0]);
 
-  std::string value = CSkinSettings::Get().GetString(string);
+  std::string value = CSkinSettings::GetInstance().GetString(string);
   if (CGUIKeyboardFactory::ShowAndGetInput(value, g_localizeStrings.Get(1029), true))
-    CSkinSettings::Get().SetString(string, value);
+    CSkinSettings::GetInstance().SetString(string, value);
 
   return 0;
 }
@@ -396,7 +396,7 @@ static int SetTheme(const std::vector<std::string>& params)
  */
 static int SkinReset(const std::vector<std::string>& params)
 {
-  CSkinSettings::Get().Reset(params[0]);
+  CSkinSettings::GetInstance().Reset(params[0]);
   CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 
   return 0;
@@ -407,7 +407,7 @@ static int SkinReset(const std::vector<std::string>& params)
  */
 static int SkinResetAll(const std::vector<std::string>& params)
 {
-  CSkinSettings::Get().Reset();
+  CSkinSettings::GetInstance().Reset();
   CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 
   return 0;

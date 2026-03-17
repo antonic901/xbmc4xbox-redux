@@ -700,7 +700,7 @@ bool CGUIControlButtonSetting::GetPath(CSettingPath *pathSetting)
   for (std::vector<std::string>::const_iterator it = sources.begin(); it != sources.end(); ++it)
   {
     const std::string &source = *it;
-    VECSOURCES *sources = CMediaSourceSettings::Get().GetSources(source);
+    VECSOURCES *sources = CMediaSourceSettings::GetInstance().GetSources(source);
     if (sources != NULL)
       shares.insert(shares.end(), sources->begin(), sources->end());
   }

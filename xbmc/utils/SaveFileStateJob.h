@@ -68,9 +68,9 @@ bool CSaveFileStateJob::DoWork()
           }
         }
 
-        if (CMediaSettings::Get().GetCurrentVideoSettings() != CMediaSettings::Get().GetDefaultVideoSettings())
+        if (CMediaSettings::GetInstance().GetCurrentVideoSettings() != CMediaSettings::GetInstance().GetDefaultVideoSettings())
         {
-          videodatabase.SetVideoSettings(progressTrackingFile, CMediaSettings::Get().GetCurrentVideoSettings());
+          videodatabase.SetVideoSettings(progressTrackingFile, CMediaSettings::GetInstance().GetCurrentVideoSettings());
         }
 
         if (m_item.HasVideoInfoTag() && m_item.GetVideoInfoTag()->HasStreamDetails())

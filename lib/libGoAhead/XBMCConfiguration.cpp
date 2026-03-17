@@ -29,7 +29,7 @@ int CXbmcConfiguration::Load()
 {
 	if (!xbmcCfgLoaded)
 	{
-    if (!xbmcCfg.LoadFile(CMediaSourceSettings::Get().GetSourcesFile())) return -1;
+    if (!xbmcCfg.LoadFile(CMediaSourceSettings::GetInstance().GetSourcesFile())) return -1;
 		xbmcCfgLoaded = true;
 	}
 	return 0;
@@ -51,7 +51,7 @@ int CXbmcConfiguration::BookmarkSize( int eid, webs_t wp, CStdString& response, 
 		return -1;
 	}
 
-  VECSOURCES *pShares = CMediaSourceSettings::Get().GetSources(type);
+  VECSOURCES *pShares = CMediaSourceSettings::GetInstance().GetSources(type);
   if (pShares)
   {
     char buffer[10];
@@ -136,7 +136,7 @@ int CXbmcConfiguration::GetBookmark( int eid, webs_t wp, CStdString& response, i
     return -1;
   }
 
-  VECSOURCES* pShares = CMediaSourceSettings::Get().GetSources(type);
+  VECSOURCES* pShares = CMediaSourceSettings::GetInstance().GetSources(type);
   if (!pShares)
   {
     if (eid!=-1) websError(wp, 500, T("Bookmark type does not exist\n"));
@@ -293,7 +293,7 @@ int CXbmcConfiguration::AddBookmark( int eid, webs_t wp, CStdString& response, i
 
   share.strPath = strPath;
   share.vecPaths.push_back(strPath.c_str());
-  CMediaSourceSettings::Get().AddShare(type,share);
+  CMediaSourceSettings::GetInstance().AddShare(type,share);
 
   return 0;
 /*
@@ -372,7 +372,7 @@ int CXbmcConfiguration::SaveBookmark( int eid, webs_t wp, CStdString& response, 
           else response="Error:Insufficient args, use: function(command, type, name, path, postion)";
 		return -1;
 	}
-  VECSOURCES* pShares = CMediaSourceSettings::Get().GetSources(type);
+  VECSOURCES* pShares = CMediaSourceSettings::GetInstance().GetSources(type);
   int nr = 0;
 	try { nr = atoi(position); }
 	catch (...)
@@ -385,9 +385,9 @@ int CXbmcConfiguration::SaveBookmark( int eid, webs_t wp, CStdString& response, 
   if (nr > 0 && nr <= (int)pShares->size()) // update share
   {
     const CMediaSource& share = (*pShares)[nr-1];
-    CMediaSourceSettings::Get().UpdateSource(type, share.strName, "path", path);
-    CMediaSourceSettings::Get().UpdateSource(type, share.strName, "name", name);
-    CMediaSourceSettings::Get().Save();
+    CMediaSourceSettings::GetInstance().UpdateSource(type, share.strName, "path", path);
+    CMediaSourceSettings::GetInstance().UpdateSource(type, share.strName, "name", name);
+    CMediaSourceSettings::GetInstance().Save();
     return 0;
   }
   
@@ -464,9 +464,9 @@ int CXbmcConfiguration::RemoveBookmark( int eid, webs_t wp, CStdString& response
   	  return -1;
 	}
 
-  VECSOURCES* pShares = CMediaSourceSettings::Get().GetSources(type);
+  VECSOURCES* pShares = CMediaSourceSettings::GetInstance().GetSources(type);
   const CMediaSource& share = (*pShares)[nr-1];
-  if (CMediaSourceSettings::Get().DeleteSource(type,share.strName,share.strPath))
+  if (CMediaSourceSettings::GetInstance().DeleteSource(type,share.strName,share.strPath))
     return 0;
 
   if (eid!=-1) websError(wp, 500, T("Position not found\n"));

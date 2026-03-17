@@ -102,8 +102,8 @@ bool CGUIPassword::IsItemUnlocked(CFileItem* pItem, const CStdString &strType)
         pItem->m_iHasLock = 1;
         g_passwordManager.LockSource(strType,strLabel,false);
         sprintf(buffer,"%i",pItem->m_iBadPwdCount);
-        CMediaSourceSettings::Get().UpdateSource(strType, strLabel, "badpwdcount", buffer);
-        CMediaSourceSettings::Get().Save();
+        CMediaSourceSettings::GetInstance().UpdateSource(strType, strLabel, "badpwdcount", buffer);
+        CMediaSourceSettings::GetInstance().Save();
         break;
       }
     case 1:
@@ -112,8 +112,8 @@ bool CGUIPassword::IsItemUnlocked(CFileItem* pItem, const CStdString &strType)
         if (0 != CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("masterlock.maxretries"))
           pItem->m_iBadPwdCount++;
         sprintf(buffer,"%i",pItem->m_iBadPwdCount);
-        CMediaSourceSettings::Get().UpdateSource(strType, strLabel, "badpwdcount", buffer);
-        CMediaSourceSettings::Get().Save();
+        CMediaSourceSettings::GetInstance().UpdateSource(strType, strLabel, "badpwdcount", buffer);
+        CMediaSourceSettings::GetInstance().Save();
         break;
       }
     default:
@@ -341,7 +341,7 @@ bool CGUIPassword::CheckSettingLevelLock(const SettingLevel& level, bool enforce
 
     //check if we are already in settings and in an level that needs unlocking
   int windowID = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
-  if ((int)lockLevel-1 <= (short)CViewStateSettings::Get().GetSettingLevel() && 
+  if ((int)lockLevel-1 <= (short)CViewStateSettings::GetInstance().GetSettingLevel() && 
      (windowID == WINDOW_SETTINGS_MENU || 
          (windowID >= WINDOW_SCREEN_CALIBRATION &&
           windowID <= WINDOW_SETTINGS_MYPVR)))
@@ -357,7 +357,7 @@ bool CGUIPassword::CheckSettingLevelLock(const SettingLevel& level, bool enforce
     {
       //Current Setting level is higher than our permission... so lower the viewing level
       SettingLevel newLevel = (SettingLevel)(short)(lockLevel-2);
-      CViewStateSettings::Get().SetSettingLevel(newLevel);
+      CViewStateSettings::GetInstance().SetSettingLevel(newLevel);
     }
   }
   return true;
@@ -404,7 +404,7 @@ bool CGUIPassword::CheckMenuLock(int iWindowID)
   switch (iSwitch)
   {
     case WINDOW_SETTINGS_MENU:  // Settings
-      return CheckSettingLevelLock(CViewStateSettings::Get().GetSettingLevel());
+      return CheckSettingLevelLock(CViewStateSettings::GetInstance().GetSettingLevel());
       break;
     case WINDOW_FILES:          // Files
       bCheckPW = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().filesLocked();
@@ -436,7 +436,7 @@ bool CGUIPassword::CheckMenuLock(int iWindowID)
 
 bool CGUIPassword::LockSource(const CStdString& strType, const CStdString& strName, bool bState)
 {
-  VECSOURCES* pShares = CMediaSourceSettings::Get().GetSources(strType);
+  VECSOURCES* pShares = CMediaSourceSettings::GetInstance().GetSources(strType);
   bool bResult = false;
   for (IVECSOURCES it=pShares->begin();it != pShares->end();++it)
   {
@@ -462,7 +462,7 @@ void CGUIPassword::LockSources(bool lock)
   const char* strType[5] = {"programs","music","video","pictures","files"};
   for (int i=0;i<5;++i)
   {
-    VECSOURCES *shares = CMediaSourceSettings::Get().GetSources(strType[i]);
+    VECSOURCES *shares = CMediaSourceSettings::GetInstance().GetSources(strType[i]);
     for (IVECSOURCES it=shares->begin();it != shares->end();++it)
       if (it->m_iLockMode != LOCK_MODE_EVERYONE)
         it->m_iHasLock = lock ? 2 : 1;
@@ -477,16 +477,16 @@ void CGUIPassword::RemoveSourceLocks()
   const char* strType[5] = {"programs","music","video","pictures","files"};
   for (int i=0;i<5;++i)
   {
-    VECSOURCES *shares = CMediaSourceSettings::Get().GetSources(strType[i]);
+    VECSOURCES *shares = CMediaSourceSettings::GetInstance().GetSources(strType[i]);
     for (IVECSOURCES it=shares->begin();it != shares->end();++it)
       if (it->m_iLockMode != LOCK_MODE_EVERYONE) // remove old info
       {
         it->m_iHasLock = 0;
         it->m_iLockMode = LOCK_MODE_EVERYONE;
-        CMediaSourceSettings::Get().UpdateSource(strType[i], it->strName, "lockmode", "0"); // removes locks from xml
+        CMediaSourceSettings::GetInstance().UpdateSource(strType[i], it->strName, "lockmode", "0"); // removes locks from xml
       }
   }
-  CMediaSourceSettings::Get().Save();
+  CMediaSourceSettings::GetInstance().Save();
   CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0, GUI_MSG_UPDATE_SOURCES);
   CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
 }

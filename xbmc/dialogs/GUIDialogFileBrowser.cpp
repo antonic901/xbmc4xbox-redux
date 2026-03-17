@@ -920,7 +920,7 @@ void CGUIDialogFileBrowser::OnAddMediaSource()
 {
   if (CGUIDialogMediaSource::ShowAndAddMediaSource(m_addSourceType))
   {
-    SetSources(*CMediaSourceSettings::Get().GetSources(m_addSourceType));
+    SetSources(*CMediaSourceSettings::GetInstance().GetSources(m_addSourceType));
     Update("");
   }
 }
@@ -929,7 +929,7 @@ void CGUIDialogFileBrowser::OnEditMediaSource(CFileItem* pItem)
 {
   if (CGUIDialogMediaSource::ShowAndEditMediaSource(m_addSourceType,pItem->GetLabel()))
   {
-    SetSources(*CMediaSourceSettings::Get().GetSources(m_addSourceType));
+    SetSources(*CMediaSourceSettings::GetInstance().GetSources(m_addSourceType));
     Update("");
   }
 }
@@ -1002,8 +1002,8 @@ bool CGUIDialogFileBrowser::OnPopupMenu(int iItem)
     }
     else
     {
-      CMediaSourceSettings::Get().DeleteSource(m_addSourceType,(*m_vecItems)[iItem]->GetLabel(),(*m_vecItems)[iItem]->GetPath());
-      SetSources(*CMediaSourceSettings::Get().GetSources(m_addSourceType));
+      CMediaSourceSettings::GetInstance().DeleteSource(m_addSourceType,(*m_vecItems)[iItem]->GetLabel(),(*m_vecItems)[iItem]->GetPath());
+      SetSources(*CMediaSourceSettings::GetInstance().GetSources(m_addSourceType));
       Update("");
     }
   }

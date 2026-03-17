@@ -67,7 +67,7 @@ void CGUIDialogSeekBar::FrameMove()
   }
 
   // update controls
-  if (!CSeekHandler::Get().InProgress() && CServiceBroker::GetGUI()->GetInfoManager().GetTotalPlayTime())
+  if (!CSeekHandler::GetInstance().InProgress() && CServiceBroker::GetGUI()->GetInfoManager().GetTotalPlayTime())
   { // position the bar at our current time
     CONTROL_SELECT_ITEM(POPUP_SEEK_PROGRESS, (unsigned int)(static_cast<float>(CServiceBroker::GetGUI()->GetInfoManager().GetPlayTime()) / CServiceBroker::GetGUI()->GetInfoManager().GetTotalPlayTime() * 0.1f));
     SET_CONTROL_LABEL(POPUP_SEEK_LABEL, CServiceBroker::GetGUI()->GetInfoManager().GetCurrentPlayTime());
