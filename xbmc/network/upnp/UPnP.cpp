@@ -422,7 +422,7 @@ CUPnP::CreateServer(int port /* = 0 */)
 {
     CUPnPServer* device =
         new CUPnPServer(CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FRIENDLY_NAME).c_str(),
-                        CUPnPSettings::Get().GetServerUUID().length()?CUPnPSettings::Get().GetServerUUID().c_str():NULL,
+                        CUPnPSettings::GetInstance().GetServerUUID().length()?CUPnPSettings::GetInstance().GetServerUUID().c_str():NULL,
                         port);
 
     // trying to set optional upnp values for XP UPnP UI Icons to detect us
@@ -452,10 +452,10 @@ CUPnP::StartServer()
 
     // load upnpserver.xml
     CStdString filename = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(), "upnpserver.xml");
-    CUPnPSettings::Get().Load(filename);
+    CUPnPSettings::GetInstance().Load(filename);
 
     // create the server with a XBox compatible friendlyname and UUID from upnpserver.xml if found
-    m_ServerHolder->m_Device = CreateServer(CUPnPSettings::Get().GetServerPort());
+    m_ServerHolder->m_Device = CreateServer(CUPnPSettings::GetInstance().GetServerPort());
 
 #ifdef _XBOX
     // since the xbox doesn't support multicast
@@ -473,7 +473,7 @@ CUPnP::StartServer()
     if (NPT_FAILED(res)) {
         // if the upnp device port was not 0, it could have failed because
         // of port being in used, so restart with a random port
-        if (CUPnPSettings::Get().GetServerPort() > 0) m_ServerHolder->m_Device = CreateServer(0);
+        if (CUPnPSettings::GetInstance().GetServerPort() > 0) m_ServerHolder->m_Device = CreateServer(0);
 
         // tell controller to ignore ourselves from list of upnp servers
         if (!m_CtrlPointHolder->m_CtrlPoint.IsNull()) {
@@ -485,20 +485,20 @@ CUPnP::StartServer()
 
     // save port but don't overwrite saved settings if port was random
     if (NPT_SUCCEEDED(res)) {
-        if (CUPnPSettings::Get().GetServerPort() == 0) {
-            CUPnPSettings::Get().SetServerPort(m_ServerHolder->m_Device->GetPort());
+        if (CUPnPSettings::GetInstance().GetServerPort() == 0) {
+            CUPnPSettings::GetInstance().SetServerPort(m_ServerHolder->m_Device->GetPort());
         }
         CUPnPServer::m_MaxReturnedItems = UPNP_DEFAULT_MAX_RETURNED_ITEMS;
-        if (CUPnPSettings::Get().GetMaximumReturnedItems() > 0) {
+        if (CUPnPSettings::GetInstance().GetMaximumReturnedItems() > 0) {
             // must be > UPNP_DEFAULT_MIN_RETURNED_ITEMS
-            CUPnPServer::m_MaxReturnedItems = max(UPNP_DEFAULT_MIN_RETURNED_ITEMS, CUPnPSettings::Get().GetMaximumReturnedItems());
+            CUPnPServer::m_MaxReturnedItems = max(UPNP_DEFAULT_MIN_RETURNED_ITEMS, CUPnPSettings::GetInstance().GetMaximumReturnedItems());
         }
-        CUPnPSettings::Get().SetMaximumReturnedItems(CUPnPServer::m_MaxReturnedItems);
+        CUPnPSettings::GetInstance().SetMaximumReturnedItems(CUPnPServer::m_MaxReturnedItems);
     }
 
     // save UUID
-    CUPnPSettings::Get().SetServerUUID(m_ServerHolder->m_Device->GetUUID().GetChars());
-    return CUPnPSettings::Get().Save(filename);
+    CUPnPSettings::GetInstance().SetServerUUID(m_ServerHolder->m_Device->GetUUID().GetChars());
+    return CUPnPSettings::GetInstance().Save(filename);
 }
 
 /*----------------------------------------------------------------------
@@ -522,7 +522,7 @@ CUPnP::CreateRenderer(int port /* = 0 */)
     CUPnPRenderer* device =
         new CUPnPRenderer(CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FRIENDLY_NAME).c_str(),
                           false,
-                          (CUPnPSettings::Get().GetRendererUUID().length() ? CUPnPSettings::Get().GetRendererUUID().c_str() : NULL),
+                          (CUPnPSettings::GetInstance().GetRendererUUID().length() ? CUPnPSettings::GetInstance().GetRendererUUID().c_str() : NULL),
                           port);
 
     device->m_PresentationURL =
@@ -547,9 +547,9 @@ bool CUPnP::StartRenderer()
     if (!m_RendererHolder->m_Device.IsNull()) return false;
 
     CStdString filename = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(), "upnpserver.xml");
-    CUPnPSettings::Get().Load(filename);
+    CUPnPSettings::GetInstance().Load(filename);
 
-    m_RendererHolder->m_Device = CreateRenderer(CUPnPSettings::Get().GetRendererPort());
+    m_RendererHolder->m_Device = CreateRenderer(CUPnPSettings::GetInstance().GetRendererPort());
 
     // tell controller to ignore ourselves from list of upnp servers
     if (!m_CtrlPointHolder->m_CtrlPoint.IsNull()) {
@@ -563,7 +563,7 @@ bool CUPnP::StartRenderer()
     NPT_Result res = m_UPnP->AddDevice(m_RendererHolder->m_Device);
 
     // failed most likely because port is in use, try again with random port now
-    if (NPT_FAILED(res) && CUPnPSettings::Get().GetRendererPort() != 0) {
+    if (NPT_FAILED(res) && CUPnPSettings::GetInstance().GetRendererPort() != 0) {
         m_RendererHolder->m_Device = CreateRenderer(0);
 
         // tell controller to ignore ourselves from list of upnp servers
@@ -574,13 +574,13 @@ bool CUPnP::StartRenderer()
         res = m_UPnP->AddDevice(m_RendererHolder->m_Device);
     }
 
-    if (NPT_SUCCEEDED(res) && CUPnPSettings::Get().GetRendererPort() == 0) {
-        CUPnPSettings::Get().SetRendererPort(m_RendererHolder->m_Device->GetPort());
+    if (NPT_SUCCEEDED(res) && CUPnPSettings::GetInstance().GetRendererPort() == 0) {
+        CUPnPSettings::GetInstance().SetRendererPort(m_RendererHolder->m_Device->GetPort());
     }
 
     // save UUID
-    CUPnPSettings::Get().SetRendererUUID(m_RendererHolder->m_Device->GetUUID().GetChars());
-    return CUPnPSettings::Get().Save(filename);
+    CUPnPSettings::GetInstance().SetRendererUUID(m_RendererHolder->m_Device->GetUUID().GetChars());
+    return CUPnPSettings::GetInstance().Save(filename);
 }
 
 /*----------------------------------------------------------------------

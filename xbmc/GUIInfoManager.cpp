@@ -5714,12 +5714,12 @@ int CGUIInfoManager::TranslateSingleString(const std::string &strCondition, bool
         if (prop.name == "string")
         {
           if (prop.num_params() == 2)
-            return AddMultiInfo(GUIInfo(SKIN_STRING, CSkinSettings::Get().TranslateString(prop.param(0)), ConditionalStringParameter(prop.param(1))));
+            return AddMultiInfo(GUIInfo(SKIN_STRING, CSkinSettings::GetInstance().TranslateString(prop.param(0)), ConditionalStringParameter(prop.param(1))));
           else
-            return AddMultiInfo(GUIInfo(SKIN_STRING, CSkinSettings::Get().TranslateString(prop.param(0))));
+            return AddMultiInfo(GUIInfo(SKIN_STRING, CSkinSettings::GetInstance().TranslateString(prop.param(0))));
         }
         if (prop.name == "hassetting")
-          return AddMultiInfo(GUIInfo(SKIN_BOOL, CSkinSettings::Get().TranslateBool(prop.param(0))));
+          return AddMultiInfo(GUIInfo(SKIN_BOOL, CSkinSettings::GetInstance().TranslateBool(prop.param(0))));
         else if (prop.name == "hastheme")
           return AddMultiInfo(GUIInfo(SKIN_HAS_THEME, ConditionalStringParameter(prop.param(0))));
       }
@@ -6105,10 +6105,10 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
     strLabel = StringUtils::Format("%2.1f dB", (float)(g_application.GetVolume(false) + g_application.GetDynamicRangeCompressionLevel()) * 0.01f);
     break;
   case PLAYER_SUBTITLE_DELAY:
-    strLabel = StringUtils::Format("%2.3f s", CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
+    strLabel = StringUtils::Format("%2.3f s", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay);
     break;
   case PLAYER_AUDIO_DELAY:
-    strLabel = StringUtils::Format("%2.3f s", CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay);
+    strLabel = StringUtils::Format("%2.3f s", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay);
     break;
   case PLAYER_CHAPTER:
     if(g_application.m_pPlayer->IsPlaying())
@@ -6587,9 +6587,9 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
   case SYSTEM_SCREEN_RESOLUTION:
     {
       strLabel = StringUtils::Format("%ix%i %s %02.2f fps.",
-        CDisplaySettings::Get().GetCurrentResolutionInfo().iWidth,
-        CDisplaySettings::Get().GetCurrentResolutionInfo().iHeight,
-        CDisplaySettings::Get().GetCurrentResolutionInfo().strMode.c_str(),
+        CDisplaySettings::GetInstance().GetCurrentResolutionInfo().iWidth,
+        CDisplaySettings::GetInstance().GetCurrentResolutionInfo().iHeight,
+        CDisplaySettings::GetInstance().GetCurrentResolutionInfo().strMode.c_str(),
         GetFPS());
     }
     return strLabel;
@@ -7578,7 +7578,7 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
       }
     break;
     case PLAYER_SEEKING:
-      bReturn = CSeekHandler::Get().InProgress();
+      bReturn = CSeekHandler::GetInstance().InProgress();
     break;
     case PLAYER_SHOWTIME:
       bReturn = m_playerShowTime;
@@ -7786,15 +7786,15 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
     {
       case SKIN_BOOL:
         {
-          bReturn = CSkinSettings::Get().GetBool(info.GetData1());
+          bReturn = CSkinSettings::GetInstance().GetBool(info.GetData1());
         }
         break;
       case SKIN_STRING:
         {
           if (info.GetData2())
-            bReturn = StringUtils::EqualsNoCase(CSkinSettings::Get().GetString(info.GetData1()), m_stringParameters[info.GetData2()]);
+            bReturn = StringUtils::EqualsNoCase(CSkinSettings::GetInstance().GetString(info.GetData1()), m_stringParameters[info.GetData2()]);
           else
-            bReturn = !CSkinSettings::Get().GetString(info.GetData1()).empty();
+            bReturn = !CSkinSettings::GetInstance().GetString(info.GetData1()).empty();
         }
         break;
       case SKIN_HAS_THEME:
@@ -8023,7 +8023,7 @@ bool CGUIInfoManager::GetMultiInfoBool(const GUIInfo &info, int contextWindow, c
           {
             CGUIWindow *window = GetWindowWithCondition(contextWindow, WINDOW_CONDITION_IS_MEDIA_WINDOW);
             if (window)
-              bReturn = CMediaSettings::Get().GetWatchedMode(((CGUIMediaWindow *)window)->CurrentDirectory().GetContent()) == WatchedModeUnwatched;
+              bReturn = CMediaSettings::GetInstance().GetWatchedMode(((CGUIMediaWindow *)window)->CurrentDirectory().GetContent()) == WatchedModeUnwatched;
           }
         }
         break;
@@ -8296,11 +8296,11 @@ std::string CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextW
 {
   if (info.m_info == SKIN_STRING)
   {
-    return CSkinSettings::Get().GetString(info.GetData1());
+    return CSkinSettings::GetInstance().GetString(info.GetData1());
   }
   else if (info.m_info == SKIN_BOOL)
   {
-    bool bInfo = CSkinSettings::Get().GetBool(info.GetData1());
+    bool bInfo = CSkinSettings::GetInstance().GetBool(info.GetData1());
     if (bInfo)
       return g_localizeStrings.Get(20122);
   }
@@ -8396,7 +8396,7 @@ std::string CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextW
   }
   else if (info.m_info == PLAYER_SEEKSTEPSIZE)
   {
-    int seekSize = CSeekHandler::Get().GetSeekSize();
+    int seekSize = CSeekHandler::GetInstance().GetSeekSize();
     std::string strSeekSize = StringUtils::SecondsToTimeString(abs(seekSize), (TIME_FORMAT)info.GetData1());
     if (seekSize < 0)
       return "-" + strSeekSize;
@@ -8405,9 +8405,9 @@ std::string CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextW
   }
   else if (info.m_info == PLAYER_SEEKNUMERIC)
   {
-    if (!CSeekHandler::Get().HasTimeCode())
+    if (!CSeekHandler::GetInstance().HasTimeCode())
       return "";
-    int seekTimeCode = CSeekHandler::Get().GetTimeCodeSeconds();
+    int seekTimeCode = CSeekHandler::GetInstance().GetTimeCodeSeconds();
     TIME_FORMAT format = (TIME_FORMAT)info.GetData1();
     if (format == TIME_FORMAT_GUESS && seekTimeCode >= 3600)
       format = TIME_FORMAT_HH_MM_SS;
@@ -9642,7 +9642,7 @@ std::string CGUIInfoManager::GetCurrentSeekTime(TIME_FORMAT format) const
 {
   if (format == TIME_FORMAT_GUESS && GetTotalPlayTime() >= 3600)
     format = TIME_FORMAT_HH_MM_SS;
-  return StringUtils::SecondsToTimeString(g_application.GetTime() + CSeekHandler::Get().GetSeekSize(), format);
+  return StringUtils::SecondsToTimeString(g_application.GetTime() + CSeekHandler::GetInstance().GetSeekSize(), format);
 }
 
 int CGUIInfoManager::GetTotalPlayTime() const
@@ -9664,7 +9664,7 @@ float CGUIInfoManager::GetSeekPercent() const
 
   float percentPlayTime = static_cast<float>(GetPlayTime()) / GetTotalPlayTime() * 0.1f;
   float percentPerSecond = 100.0f / static_cast<float>(GetTotalPlayTime());
-  float percent = percentPlayTime + percentPerSecond * CSeekHandler::Get().GetSeekSize();
+  float percent = percentPlayTime + percentPerSecond * CSeekHandler::GetInstance().GetSeekSize();
 
   if (percent > 100.0f)
     percent = 100.0f;

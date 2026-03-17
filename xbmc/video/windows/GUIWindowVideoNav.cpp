@@ -123,7 +123,7 @@ bool CGUIWindowVideoNav::OnMessage(CGUIMessage& message)
 
       SetProperty("flattened", CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.flatten"));
       if (message.GetNumStringParams() && StringUtils::EqualsNoCase(message.GetStringParam(0), "Files") &&
-          CMediaSourceSettings::Get().GetSources("video")->empty())
+          CMediaSourceSettings::GetInstance().GetSources("video")->empty())
       {
         message.SetStringParam("");
       }
@@ -168,7 +168,7 @@ bool CGUIWindowVideoNav::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_BTNSHOWMODE)
       {
-        CMediaSettings::Get().CycleWatchedMode(m_vecItems->GetContent());
+        CMediaSettings::GetInstance().CycleWatchedMode(m_vecItems->GetContent());
         CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
         OnFilterItems(GetProperty("filter").asString());
         UpdateButtons();
@@ -176,10 +176,10 @@ bool CGUIWindowVideoNav::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_BTNSHOWALL)
       {
-        if (CMediaSettings::Get().GetWatchedMode(m_vecItems->GetContent()) == WatchedModeAll)
-          CMediaSettings::Get().SetWatchedMode(m_vecItems->GetContent(), WatchedModeUnwatched);
+        if (CMediaSettings::GetInstance().GetWatchedMode(m_vecItems->GetContent()) == WatchedModeAll)
+          CMediaSettings::GetInstance().SetWatchedMode(m_vecItems->GetContent(), WatchedModeUnwatched);
         else
-          CMediaSettings::Get().SetWatchedMode(m_vecItems->GetContent(), WatchedModeAll);
+          CMediaSettings::GetInstance().SetWatchedMode(m_vecItems->GetContent(), WatchedModeAll);
         CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
         OnFilterItems(GetProperty("filter").asString());
         UpdateButtons();
@@ -348,7 +348,7 @@ bool CGUIWindowVideoNav::GetDirectory(const std::string &strDirectory, CFileItem
                         (itemsSize == 2 && iFlatten == 1 &&                                                // flatten if one season + specials
                          (items[firstIndex]->GetVideoInfoTag()->m_iSeason == 0 || items[firstIndex + 1]->GetVideoInfoTag()->m_iSeason == 0));
 
-        if (iFlatten > 0 && !bFlatten && (WatchedMode)CMediaSettings::Get().GetWatchedMode("tvshows") == WatchedModeUnwatched)
+        if (iFlatten > 0 && !bFlatten && (WatchedMode)CMediaSettings::GetInstance().GetWatchedMode("tvshows") == WatchedModeUnwatched)
         {
           int count = 0;
           for(int i = 0; i < items.Size(); i++)
@@ -488,7 +488,7 @@ bool CGUIWindowVideoNav::GetDirectory(const std::string &strDirectory, CFileItem
     else if (!items.IsVirtualDirectoryRoot())
     { // load info from the database
       std::string label;
-      if (items.GetLabel().empty() && m_rootDir.IsSource(items.GetPath(), CMediaSourceSettings::Get().GetSources("video"), &label))
+      if (items.GetLabel().empty() && m_rootDir.IsSource(items.GetPath(), CMediaSourceSettings::GetInstance().GetSources("video"), &label))
         items.SetLabel(label);
       if (!items.IsSourcesPath() && !items.IsLibraryFolder())
         LoadVideoInfo(items);
@@ -657,7 +657,7 @@ void CGUIWindowVideoNav::UpdateButtons()
 
   SET_CONTROL_LABEL(CONTROL_FILTER, strLabel);
 
-  int watchMode = CMediaSettings::Get().GetWatchedMode(m_vecItems->GetContent());
+  int watchMode = CMediaSettings::GetInstance().GetWatchedMode(m_vecItems->GetContent());
   SET_CONTROL_LABEL(CONTROL_BTNSHOWMODE, g_localizeStrings.Get(16100 + watchMode));
 
   SET_CONTROL_SELECTED(GetID(), CONTROL_BTNSHOWALL, watchMode != WatchedModeAll);
@@ -1240,7 +1240,7 @@ bool CGUIWindowVideoNav::ApplyWatchedFilter(CFileItemList &items)
      (items.IsSmartPlayList() || items.IsLibraryFolder()))
     node = NODE_TYPE_TITLE_TVSHOWS; // so that the check below works
 
-  int watchMode = CMediaSettings::Get().GetWatchedMode(m_vecItems->GetContent());
+  int watchMode = CMediaSettings::GetInstance().GetWatchedMode(m_vecItems->GetContent());
 
   for (int i = 0; i < items.Size(); i++)
   {

@@ -352,7 +352,7 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
       if (share->strName == defaultSource)
         ClearDefault(type);
     }
-    CMediaSourceSettings::Get().DeleteSource(type, share->strName, share->strPath);
+    CMediaSourceSettings::GetInstance().DeleteSource(type, share->strName, share->strPath);
     return true;
   }
   case CONTEXT_BUTTON_SET_DEFAULT:
@@ -431,8 +431,8 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
 
       if (!share->m_ignore)
       {
-        CMediaSourceSettings::Get().UpdateSource(type,share->strName,"thumbnail",strThumb);
-        CMediaSourceSettings::Get().Save();
+        CMediaSourceSettings::GetInstance().UpdateSource(type,share->strName,"thumbnail",strThumb);
+        CMediaSourceSettings::GetInstance().Save();
       }
       else if (!strThumb.empty())
       { // this is some sort of an auto-share, so store in the texture database
@@ -457,11 +457,11 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
         return false;
       // password entry and re-entry succeeded, write out the lock data
       share->m_iHasLock = 2;
-      CMediaSourceSettings::Get().UpdateSource(type, share->strName, "lockcode", strNewPassword);
+      CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "lockcode", strNewPassword);
       strNewPassword = StringUtils::Format("%i", share->m_iLockMode);
-      CMediaSourceSettings::Get().UpdateSource(type, share->strName, "lockmode", strNewPassword);
-      CMediaSourceSettings::Get().UpdateSource(type, share->strName, "badpwdcount", "0");
-      CMediaSourceSettings::Get().Save();
+      CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "lockmode", strNewPassword);
+      CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "badpwdcount", "0");
+      CMediaSourceSettings::GetInstance().Save();
 
       CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_UPDATE_SOURCES);
       CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
@@ -473,8 +473,8 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
       if (!g_passwordManager.IsMasterLockUnlocked(true))
         return false;
 
-      CMediaSourceSettings::Get().UpdateSource(type, share->strName, "badpwdcount", "0");
-      CMediaSourceSettings::Get().Save();
+      CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "badpwdcount", "0");
+      CMediaSourceSettings::GetInstance().Save();
       CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_UPDATE_SOURCES);
       CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
       return true;
@@ -488,10 +488,10 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
         return false;
 
       share->m_iHasLock = 0;
-      CMediaSourceSettings::Get().UpdateSource(type, share->strName, "lockmode", "0");
-      CMediaSourceSettings::Get().UpdateSource(type, share->strName, "lockcode", "0");
-      CMediaSourceSettings::Get().UpdateSource(type, share->strName, "badpwdcount", "0");
-      CMediaSourceSettings::Get().Save();
+      CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "lockmode", "0");
+      CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "lockcode", "0");
+      CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "badpwdcount", "0");
+      CMediaSourceSettings::GetInstance().Save();
       CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_UPDATE_SOURCES);
       CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
       return true;
@@ -521,10 +521,10 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
       else
         return false;
       // password ReSet and re-entry succeeded, write out the lock data
-      CMediaSourceSettings::Get().UpdateSource(type, share->strName, "lockcode", strNewPW);
-      CMediaSourceSettings::Get().UpdateSource(type, share->strName, "lockmode", strNewLockMode);
-      CMediaSourceSettings::Get().UpdateSource(type, share->strName, "badpwdcount", "0");
-      CMediaSourceSettings::Get().Save();
+      CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "lockcode", strNewPW);
+      CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "lockmode", strNewLockMode);
+      CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "badpwdcount", "0");
+      CMediaSourceSettings::GetInstance().Save();
       CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_UPDATE_SOURCES);
       CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
       return true;
@@ -537,7 +537,7 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
 
 CMediaSource *CGUIDialogContextMenu::GetShare(const std::string &type, const CFileItem *item)
 {
-  VECSOURCES *shares = CMediaSourceSettings::Get().GetSources(type);
+  VECSOURCES *shares = CMediaSourceSettings::GetInstance().GetSources(type);
   if (!shares || !item) return NULL;
   for (unsigned int i = 0; i < shares->size(); i++)
   {
@@ -597,8 +597,8 @@ void CGUIDialogContextMenu::OnDeinitWindow(int nextWindowID)
 
 std::string CGUIDialogContextMenu::GetDefaultShareNameByType(const std::string &strType)
 {
-  VECSOURCES *pShares = CMediaSourceSettings::Get().GetSources(strType);
-  std::string strDefault = CMediaSourceSettings::Get().GetDefaultSource(strType);
+  VECSOURCES *pShares = CMediaSourceSettings::GetInstance().GetSources(strType);
+  std::string strDefault = CMediaSourceSettings::GetInstance().GetDefaultSource(strType);
 
   if (!pShares) return "";
 
@@ -612,8 +612,8 @@ std::string CGUIDialogContextMenu::GetDefaultShareNameByType(const std::string &
 
 void CGUIDialogContextMenu::SetDefault(const std::string &strType, const std::string &strDefault)
 {
-  CMediaSourceSettings::Get().SetDefaultSource(strType, strDefault);
-  CMediaSourceSettings::Get().Save();
+  CMediaSourceSettings::GetInstance().SetDefaultSource(strType, strDefault);
+  CMediaSourceSettings::GetInstance().Save();
 }
 
 void CGUIDialogContextMenu::ClearDefault(const std::string &strType)

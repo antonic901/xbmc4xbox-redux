@@ -96,15 +96,15 @@ bool CGUIRSSControl::UpdateColors()
 void CGUIRSSControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   bool dirty = false;
-  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("lookandfeel.enablerssfeeds") && CRssManager::Get().IsActive())
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("lookandfeel.enablerssfeeds") && CRssManager::GetInstance().IsActive())
   {
     CSingleLock lock(m_criticalSection);
     // Create RSS background/worker thread if needed
     if (m_pReader == NULL)
     {
 
-      RssUrls::const_iterator iter = CRssManager::Get().GetUrls().find(m_urlset);
-      if (iter != CRssManager::Get().GetUrls().end())
+      RssUrls::const_iterator iter = CRssManager::GetInstance().GetUrls().find(m_urlset);
+      if (iter != CRssManager::GetInstance().GetUrls().end())
       {
         m_rtl = iter->second.rtl;
         m_vecUrls = iter->second.url;
@@ -114,7 +114,7 @@ void CGUIRSSControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyre
 
       dirty = true;
 
-      if (CRssManager::Get().GetReader(GetID(), GetParentID(), this, m_pReader))
+      if (CRssManager::GetInstance().GetReader(GetID(), GetParentID(), this, m_pReader))
       {
         m_scrollInfo.pixelPos = m_pReader->m_savedScrollPixelPos;
       }
@@ -157,7 +157,7 @@ void CGUIRSSControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyre
 void CGUIRSSControl::Render()
 {
   // only render the control if they are enabled
-  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("lookandfeel.enablerssfeeds") && CRssManager::Get().IsActive())
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("lookandfeel.enablerssfeeds") && CRssManager::GetInstance().IsActive())
   {
 
     if (m_label.font)

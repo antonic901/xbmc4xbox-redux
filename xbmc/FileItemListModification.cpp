@@ -37,7 +37,7 @@ CFileItemListModification::~CFileItemListModification()
   m_modifiers.clear();
 }
 
-CFileItemListModification& CFileItemListModification::Get()
+CFileItemListModification& CFileItemListModification::GetInstance()
 {
   static CFileItemListModification instance;
   return instance;

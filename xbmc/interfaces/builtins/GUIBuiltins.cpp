@@ -285,7 +285,7 @@ static int Notification(const std::vector<std::string>& params)
  */
 static int RefreshRSS(const std::vector<std::string>& params)
 {
-  CRssManager::Get().Reload();
+  CRssManager::GetInstance().Reload();
 
   return 0;
 }
@@ -358,7 +358,7 @@ static int SetResolution(const std::vector<std::string>& params)
   else if (paramlow == "1080i") res = RES_HDTV_1080i;
   if (CServiceBroker::GetWinSystem()->GetGfxContext().IsValidResolution(res))
   {
-    CDisplaySettings::Get().SetCurrentResolution(res, true);
+    CDisplaySettings::GetInstance().SetCurrentResolution(res, true);
     g_application.ReloadSkin();
   }
 

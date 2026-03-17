@@ -59,7 +59,7 @@ CDisplaySettings::CDisplaySettings()
 CDisplaySettings::~CDisplaySettings()
 { }
 
-CDisplaySettings& CDisplaySettings::Get()
+CDisplaySettings& CDisplaySettings::GetInstance()
 {
   static CDisplaySettings sDisplaySettings;
   return sDisplaySettings;
@@ -220,7 +220,7 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
       m_ignoreSettingChanging.erase(make_pair(settingId, true));
   }
   else if (settingId == "videoscreen.flickerfilter" || settingId == "videoscreen.soften")
-    CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
+    CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::GetInstance().GetCurrentResolution(), TRUE);
   else if (StringUtils::StartsWith(settingId, "videooutput."))
   {
     if (settingId == "videooutput.aspect")
@@ -421,7 +421,7 @@ void CDisplaySettings::SettingOptionsResolutionsFiller(const CSetting *setting, 
   for (std::vector<RESOLUTION>::const_iterator it = resolutions.begin(); it != resolutions.end(); ++it)
   {
     RESOLUTION resolution = *it;
-    RESOLUTION_INFO res2 = CDisplaySettings::Get().GetResolutionInfo(resolution);
+    RESOLUTION_INFO res2 = CDisplaySettings::GetInstance().GetResolutionInfo(resolution);
     list.push_back(make_pair(res2.strMode, resolution));
   }
 }

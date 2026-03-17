@@ -312,7 +312,7 @@ void CCDDARipper::OnJobComplete(unsigned int jobID, bool success, CJob* job)
     {
       std::string dir = URIUtils::GetDirectory(((CCDDARipJob*)job)->GetOutput());
       bool unimportant;
-      int source = CUtil::GetMatchingSource(dir, *CMediaSourceSettings::Get().CMediaSourceSettings::GetSources("music"), unimportant);
+      int source = CUtil::GetMatchingSource(dir, *CMediaSourceSettings::GetInstance().CMediaSourceSettings::GetSources("music"), unimportant);
 
       CMusicDatabase database;
       database.Open();

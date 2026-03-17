@@ -46,7 +46,7 @@ CMediaSourceSettings::CMediaSourceSettings()
 CMediaSourceSettings::~CMediaSourceSettings()
 { }
 
-CMediaSourceSettings& CMediaSourceSettings::Get()
+CMediaSourceSettings& CMediaSourceSettings::GetInstance()
 {
   static CMediaSourceSettings sMediaSourceSettings;
   return sMediaSourceSettings;

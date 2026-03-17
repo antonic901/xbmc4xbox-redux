@@ -237,9 +237,9 @@ void CWinRenderer::DrawAlpha(int x0, int y0, int w, int h, unsigned char *src, u
   {
     // clip to buffer
     if (w > m_iOSDTextureWidth) w = m_iOSDTextureWidth;
-    if (h > CDisplaySettings::Get().GetResolutionInfo(res).Overscan.bottom - CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top)
+    if (h > CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.bottom - CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.top)
     {
-      h = CDisplaySettings::Get().GetResolutionInfo(res).Overscan.bottom - CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top;
+      h = CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.bottom - CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.top;
     }
   }
 
@@ -260,7 +260,7 @@ void CWinRenderer::DrawAlpha(int x0, int y0, int w, int h, unsigned char *src, u
 
     float pixelaspect = m_fSourceFrameRatio * m_iSourceHeight / m_iSourceWidth;
     xscale = rv.Width() / 720.0f;
-    yscale = xscale * CDisplaySettings::Get().GetResolutionInfo(res).fPixelRatio / pixelaspect;
+    yscale = xscale * CDisplaySettings::GetInstance().GetResolutionInfo(res).fPixelRatio / pixelaspect;
   }
   else
   { // text subs/osd assume square pixels, but will render to full size of view window
@@ -274,7 +274,7 @@ void CWinRenderer::DrawAlpha(int x0, int y0, int w, int h, unsigned char *src, u
   // horizontal centering, and align to bottom of subtitles line
   osdRect.left = rv.x1 + (rv.Width() - (float)w * xscale) / 2.0f;
   osdRect.right = osdRect.left + (float)w * xscale;
-  float relbottom = ((float)(CDisplaySettings::Get().GetResolutionInfo(res).iSubtitles - CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top)) / (CDisplaySettings::Get().GetResolutionInfo(res).Overscan.bottom - CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top);
+  float relbottom = ((float)(CDisplaySettings::GetInstance().GetResolutionInfo(res).iSubtitles - CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.top)) / (CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.bottom - CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.top);
   osdRect.bottom = rv.y1 + rv.Height() * relbottom;
   osdRect.top = osdRect.bottom - (float)h * yscale;
 
@@ -406,8 +406,8 @@ RESOLUTION CWinRenderer::GetResolution()
 
 float CWinRenderer::GetAspectRatio()
 {
-  float fWidth = (float)m_iSourceWidth - CMediaSettings::Get().GetCurrentVideoSettings().m_CropLeft - CMediaSettings::Get().GetCurrentVideoSettings().m_CropRight;
-  float fHeight = (float)m_iSourceHeight - CMediaSettings::Get().GetCurrentVideoSettings().m_CropTop - CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom;
+  float fWidth = (float)m_iSourceWidth - CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropLeft - CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropRight;
+  float fHeight = (float)m_iSourceHeight - CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropTop - CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropBottom;
   return m_fSourceFrameRatio * fWidth / fHeight * m_iSourceHeight / m_iSourceWidth;
 }
 
@@ -424,7 +424,7 @@ void CWinRenderer::CalcNormalDisplayRect(float fOffsetX1, float fOffsetY1, float
   // calculate the correct output frame ratio (using the users pixel ratio setting
   // and the output pixel ratio setting)
 
-  float fOutputFrameRatio = fInputFrameRatio / CDisplaySettings::Get().GetResolutionInfo(GetResolution()).fPixelRatio;
+  float fOutputFrameRatio = fInputFrameRatio / CDisplaySettings::GetInstance().GetResolutionInfo(GetResolution()).fPixelRatio;
 
   // maximize the movie width
   float fNewWidth = fScreenWidth;
@@ -489,12 +489,12 @@ void CWinRenderer::ManageDisplay()
   float fOffsetY1 = rv.y1;
 
   // source rect
-  rs.left = CMediaSettings::Get().GetCurrentVideoSettings().m_CropLeft;
-  rs.top = CMediaSettings::Get().GetCurrentVideoSettings().m_CropTop;
-  rs.right = m_iSourceWidth - CMediaSettings::Get().GetCurrentVideoSettings().m_CropRight;
-  rs.bottom = m_iSourceHeight - CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom;
+  rs.left = CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropLeft;
+  rs.top = CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropTop;
+  rs.right = m_iSourceWidth - CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropRight;
+  rs.bottom = m_iSourceHeight - CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropBottom;
 
-  CalcNormalDisplayRect(fOffsetX1, fOffsetY1, fScreenWidth, fScreenHeight, GetAspectRatio() * CDisplaySettings::Get().GetPixelRatio(), CDisplaySettings::Get().GetZoomAmount());
+  CalcNormalDisplayRect(fOffsetX1, fOffsetY1, fScreenWidth, fScreenHeight, GetAspectRatio() * CDisplaySettings::GetInstance().GetPixelRatio(), CDisplaySettings::GetInstance().GetZoomAmount());
 }
 
 void CWinRenderer::ChooseBestResolution(float fps)
@@ -544,7 +544,7 @@ void CWinRenderer::ChooseBestResolution(float fps)
       if (DisplayRes == RES_PAL_16x9) DisplayRes = RES_PAL60_16x9;
       if (DisplayRes == RES_PAL_4x3) DisplayRes = RES_PAL60_4x3;
     }
-    CLog::Log(LOGNOTICE, "Display resolution USER : %s (%d)", CDisplaySettings::Get().GetResolutionInfo(DisplayRes).strMode.c_str(), DisplayRes);
+    CLog::Log(LOGNOTICE, "Display resolution USER : %s (%d)", CDisplaySettings::GetInstance().GetResolutionInfo(DisplayRes).strMode.c_str(), DisplayRes);
     m_iResolution = DisplayRes;
     return;
   }
@@ -636,7 +636,7 @@ void CWinRenderer::ChooseBestResolution(float fps)
     }
   }
 
-  CLog::Log(LOGNOTICE, "Display resolution AUTO : %s (%d)", CDisplaySettings::Get().GetResolutionInfo(m_iResolution).strMode.c_str(), m_iResolution);
+  CLog::Log(LOGNOTICE, "Display resolution AUTO : %s (%d)", CDisplaySettings::GetInstance().GetResolutionInfo(m_iResolution).strMode.c_str(), m_iResolution);
 }
 
 bool CWinRenderer::Configure(unsigned int width, unsigned int height, unsigned int d_width, unsigned int d_height, float fps, unsigned flags)
@@ -648,7 +648,7 @@ bool CWinRenderer::Configure(unsigned int width, unsigned int height, unsigned i
   // calculate the input frame aspect ratio
   CalculateFrameAspectRatio(d_width, d_height);
   ChooseBestResolution(m_fps);
-  SetViewMode(CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode);
+  SetViewMode(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode);
 
   ManageDisplay();
 
@@ -918,98 +918,98 @@ void CWinRenderer::Render(DWORD flags)
 void CWinRenderer::SetViewMode(int iViewMode)
 {
   if (iViewMode < ViewModeNormal || iViewMode > ViewModeCustom) iViewMode = ViewModeNormal;
-  CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode = iViewMode;
+  CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode = iViewMode;
 
-  if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeNormal)
+  if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode == ViewModeNormal)
   { // normal mode...
-    CDisplaySettings::Get().SetPixelRatio(1.0);
-    CDisplaySettings::Get().SetZoomAmount(1.0);
+    CDisplaySettings::GetInstance().SetPixelRatio(1.0);
+    CDisplaySettings::GetInstance().SetZoomAmount(1.0);
     return ;
   }
-  if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeCustom)
+  if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode == ViewModeCustom)
   {
-    CDisplaySettings::Get().SetZoomAmount(CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount);
-    CDisplaySettings::Get().SetPixelRatio(CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio);
+    CDisplaySettings::GetInstance().SetZoomAmount(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomZoomAmount);
+    CDisplaySettings::GetInstance().SetPixelRatio(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomPixelRatio);
     return ;
   }
 
   // get our calibrated full screen resolution
-  float fOffsetX1 = (float)CDisplaySettings::Get().GetResolutionInfo(m_iResolution).Overscan.left;
-  float fOffsetY1 = (float)CDisplaySettings::Get().GetResolutionInfo(m_iResolution).Overscan.top;
-  float fScreenWidth = (float)(CDisplaySettings::Get().GetResolutionInfo(m_iResolution).Overscan.right - CDisplaySettings::Get().GetResolutionInfo(m_iResolution).Overscan.left);
-  float fScreenHeight = (float)(CDisplaySettings::Get().GetResolutionInfo(m_iResolution).Overscan.bottom - CDisplaySettings::Get().GetResolutionInfo(m_iResolution).Overscan.top);
+  float fOffsetX1 = (float)CDisplaySettings::GetInstance().GetResolutionInfo(m_iResolution).Overscan.left;
+  float fOffsetY1 = (float)CDisplaySettings::GetInstance().GetResolutionInfo(m_iResolution).Overscan.top;
+  float fScreenWidth = (float)(CDisplaySettings::GetInstance().GetResolutionInfo(m_iResolution).Overscan.right - CDisplaySettings::GetInstance().GetResolutionInfo(m_iResolution).Overscan.left);
+  float fScreenHeight = (float)(CDisplaySettings::GetInstance().GetResolutionInfo(m_iResolution).Overscan.bottom - CDisplaySettings::GetInstance().GetResolutionInfo(m_iResolution).Overscan.top);
   // and the source frame ratio
   float fSourceFrameRatio = GetAspectRatio();
 
-  if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeZoom)
+  if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode == ViewModeZoom)
   { // zoom image so no black bars
-    CDisplaySettings::Get().SetPixelRatio(1.0);
+    CDisplaySettings::GetInstance().SetPixelRatio(1.0);
     // calculate the desired output ratio
-    float fOutputFrameRatio = fSourceFrameRatio * CDisplaySettings::Get().GetPixelRatio() / CDisplaySettings::Get().GetResolutionInfo(m_iResolution).fPixelRatio;
+    float fOutputFrameRatio = fSourceFrameRatio * CDisplaySettings::GetInstance().GetPixelRatio() / CDisplaySettings::GetInstance().GetResolutionInfo(m_iResolution).fPixelRatio;
     // now calculate the correct zoom amount.  First zoom to full height.
     float fNewHeight = fScreenHeight;
     float fNewWidth = fNewHeight * fOutputFrameRatio;
-    CDisplaySettings::Get().SetZoomAmount(fNewWidth / fScreenWidth);
+    CDisplaySettings::GetInstance().SetZoomAmount(fNewWidth / fScreenWidth);
     if (fNewWidth < fScreenWidth)
     { // zoom to full width
       fNewWidth = fScreenWidth;
       fNewHeight = fNewWidth / fOutputFrameRatio;
-      CDisplaySettings::Get().SetZoomAmount(fNewHeight / fScreenHeight);
+      CDisplaySettings::GetInstance().SetZoomAmount(fNewHeight / fScreenHeight);
     }
   }
-  else if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeStretch4x3)
+  else if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode == ViewModeStretch4x3)
   { // stretch image to 4:3 ratio
-    CDisplaySettings::Get().SetZoomAmount(1.0);
+    CDisplaySettings::GetInstance().SetZoomAmount(1.0);
     if (m_iResolution == RES_PAL_4x3 || m_iResolution == RES_PAL60_4x3 || m_iResolution == RES_NTSC_4x3 || m_iResolution == RES_HDTV_480p_4x3)
     { // stretch to the limits of the 4:3 screen.
       // incorrect behaviour, but it's what the users want, so...
-      CDisplaySettings::Get().SetPixelRatio((fScreenWidth / fScreenHeight) * CDisplaySettings::Get().GetResolutionInfo(m_iResolution).fPixelRatio / fSourceFrameRatio);
+      CDisplaySettings::GetInstance().SetPixelRatio((fScreenWidth / fScreenHeight) * CDisplaySettings::GetInstance().GetResolutionInfo(m_iResolution).fPixelRatio / fSourceFrameRatio);
     }
     else
     {
       // now we need to set g_settings.m_fPixelRatio so that
       // fOutputFrameRatio = 4:3.
-      CDisplaySettings::Get().SetPixelRatio((4.0f / 3.0f) / fSourceFrameRatio);
+      CDisplaySettings::GetInstance().SetPixelRatio((4.0f / 3.0f) / fSourceFrameRatio);
     }
   }
-  else if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeStretch14x9)
+  else if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode == ViewModeStretch14x9)
   { // stretch image to 14:9 ratio
     // now we need to set g_settings.m_fPixelRatio so that
     // fOutputFrameRatio = 14:9.
-    CDisplaySettings::Get().SetPixelRatio((14.0f / 9.0f) / fSourceFrameRatio);
+    CDisplaySettings::GetInstance().SetPixelRatio((14.0f / 9.0f) / fSourceFrameRatio);
     // calculate the desired output ratio
-    float fOutputFrameRatio = fSourceFrameRatio * CDisplaySettings::Get().GetPixelRatio() / CDisplaySettings::Get().GetResolutionInfo(m_iResolution).fPixelRatio;
+    float fOutputFrameRatio = fSourceFrameRatio * CDisplaySettings::GetInstance().GetPixelRatio() / CDisplaySettings::GetInstance().GetResolutionInfo(m_iResolution).fPixelRatio;
     // now calculate the correct zoom amount.  First zoom to full height.
     float fNewHeight = fScreenHeight;
     float fNewWidth = fNewHeight * fOutputFrameRatio;
-    CDisplaySettings::Get().SetZoomAmount(fNewWidth / fScreenWidth);
+    CDisplaySettings::GetInstance().SetZoomAmount(fNewWidth / fScreenWidth);
     if (fNewWidth < fScreenWidth)
     { // zoom to full width
       fNewWidth = fScreenWidth;
       fNewHeight = fNewWidth / fOutputFrameRatio;
-      CDisplaySettings::Get().SetZoomAmount(fNewHeight / fScreenHeight);
+      CDisplaySettings::GetInstance().SetZoomAmount(fNewHeight / fScreenHeight);
     }
   }
-  else if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeStretch16x9)
+  else if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode == ViewModeStretch16x9)
   { // stretch image to 16:9 ratio
-    CDisplaySettings::Get().SetZoomAmount(1.0);
+    CDisplaySettings::GetInstance().SetZoomAmount(1.0);
     if (m_iResolution == RES_PAL_4x3 || m_iResolution == RES_PAL60_4x3 || m_iResolution == RES_NTSC_4x3 || m_iResolution == RES_HDTV_480p_4x3)
     { // now we need to set g_settings.m_fPixelRatio so that
       // fOutputFrameRatio = 16:9.
-      CDisplaySettings::Get().SetPixelRatio((16.0f / 9.0f) / fSourceFrameRatio);
+      CDisplaySettings::GetInstance().SetPixelRatio((16.0f / 9.0f) / fSourceFrameRatio);
     }
     else
     { // stretch to the limits of the 16:9 screen.
       // incorrect behaviour, but it's what the users want, so...
-      CDisplaySettings::Get().SetPixelRatio((fScreenWidth / fScreenHeight) * CDisplaySettings::Get().GetResolutionInfo(m_iResolution).fPixelRatio / fSourceFrameRatio);
+      CDisplaySettings::GetInstance().SetPixelRatio((fScreenWidth / fScreenHeight) * CDisplaySettings::GetInstance().GetResolutionInfo(m_iResolution).fPixelRatio / fSourceFrameRatio);
     }
   }
-  else // if (CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode == ViewModeOriginal)
+  else // if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode == ViewModeOriginal)
   { // zoom image so that the height is the original size
-    CDisplaySettings::Get().SetPixelRatio(1.0);
+    CDisplaySettings::GetInstance().SetPixelRatio(1.0);
     // get the size of the media file
     // calculate the desired output ratio
-    float fOutputFrameRatio = fSourceFrameRatio * CDisplaySettings::Get().GetPixelRatio() / CDisplaySettings::Get().GetResolutionInfo(m_iResolution).fPixelRatio;
+    float fOutputFrameRatio = fSourceFrameRatio * CDisplaySettings::GetInstance().GetPixelRatio() / CDisplaySettings::GetInstance().GetResolutionInfo(m_iResolution).fPixelRatio;
     // now calculate the correct zoom amount.  First zoom to full width.
     float fNewWidth = fScreenWidth;
     float fNewHeight = fNewWidth / fOutputFrameRatio;
@@ -1019,7 +1019,7 @@ void CWinRenderer::SetViewMode(int iViewMode)
       fNewWidth = fNewHeight * fOutputFrameRatio;
     }
     // now work out the zoom amount so that no zoom is done
-    CDisplaySettings::Get().SetZoomAmount((m_iSourceHeight - CMediaSettings::Get().GetCurrentVideoSettings().m_CropTop - CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom) / fNewHeight);
+    CDisplaySettings::GetInstance().SetZoomAmount((m_iSourceHeight - CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropTop - CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropBottom) / fNewHeight);
   }
 }
 
@@ -1040,7 +1040,7 @@ void CWinRenderer::AutoCrop(bool bCrop)
     int total;
     // Crop top
     BYTE *s = (BYTE *)lr.pBits;
-    CMediaSettings::Get().GetCurrentVideoSettings().m_CropTop = m_iSourceHeight/2;
+    CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropTop = m_iSourceHeight/2;
     for (unsigned int y = 0; y < m_iSourceHeight/2; y++)
     {
       total = 0;
@@ -1049,13 +1049,13 @@ void CWinRenderer::AutoCrop(bool bCrop)
       s += lr.Pitch;
       if (total > detect)
       {
-        CMediaSettings::Get().GetCurrentVideoSettings().m_CropTop = y;
+        CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropTop = y;
         break;
       }
     }
     // Crop bottom
     s = (BYTE *)lr.pBits + (m_iSourceHeight-1)*lr.Pitch;
-    CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom = m_iSourceHeight/2;
+    CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropBottom = m_iSourceHeight/2;
     for (unsigned int y = (int)m_iSourceHeight; y > m_iSourceHeight/2; y--)
     {
       total = 0;
@@ -1064,13 +1064,13 @@ void CWinRenderer::AutoCrop(bool bCrop)
       s -= lr.Pitch;
       if (total > detect)
       {
-        CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom = m_iSourceHeight - y;
+        CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropBottom = m_iSourceHeight - y;
         break;
       }
     }
     // Crop left
     s = (BYTE *)lr.pBits;
-    CMediaSettings::Get().GetCurrentVideoSettings().m_CropLeft = m_iSourceWidth/2;
+    CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropLeft = m_iSourceWidth/2;
     for (unsigned int x = 0; x < m_iSourceWidth/2; x++)
     {
       total = 0;
@@ -1079,13 +1079,13 @@ void CWinRenderer::AutoCrop(bool bCrop)
       s++;
       if (total > detect)
       {
-        CMediaSettings::Get().GetCurrentVideoSettings().m_CropLeft = x;
+        CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropLeft = x;
         break;
       }
     }
     // Crop right
     s = (BYTE *)lr.pBits + (m_iSourceWidth-1);
-    CMediaSettings::Get().GetCurrentVideoSettings().m_CropRight= m_iSourceWidth/2;
+    CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropRight= m_iSourceWidth/2;
     for (unsigned int x = (int)m_iSourceWidth-1; x > m_iSourceWidth/2; x--)
     {
       total = 0;
@@ -1094,7 +1094,7 @@ void CWinRenderer::AutoCrop(bool bCrop)
       s--;
       if (total > detect)
       {
-        CMediaSettings::Get().GetCurrentVideoSettings().m_CropRight = m_iSourceWidth - x;
+        CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropRight = m_iSourceWidth - x;
         break;
       }
     }
@@ -1102,12 +1102,12 @@ void CWinRenderer::AutoCrop(bool bCrop)
   }
   else
   { // reset to defaults
-    CMediaSettings::Get().GetCurrentVideoSettings().m_CropLeft = 0;
-    CMediaSettings::Get().GetCurrentVideoSettings().m_CropRight = 0;
-    CMediaSettings::Get().GetCurrentVideoSettings().m_CropTop = 0;
-    CMediaSettings::Get().GetCurrentVideoSettings().m_CropBottom = 0;
+    CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropLeft = 0;
+    CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropRight = 0;
+    CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropTop = 0;
+    CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CropBottom = 0;
   }
-  SetViewMode(CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode);
+  SetViewMode(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode);
 }
 
 void CWinRenderer::RenderLowMem(DWORD flags)

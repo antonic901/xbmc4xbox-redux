@@ -924,7 +924,7 @@ void CGUIDialogMusicInfo::OnGetArt()
   // never used by Kodi again, but there is no obvious way to clear these
   // thumbs from the cache automatically.
   std::string result;
-  VECSOURCES sources(*CMediaSourceSettings::Get().GetSources("music"));
+  VECSOURCES sources(*CMediaSourceSettings::GetInstance().GetSources("music"));
   CGUIDialogMusicInfo::AddItemPathToFileBrowserSources(sources, *m_item);
   CServiceBroker::GetMediaManager().GetLocalDrives(sources);
   if (CGUIDialogFileBrowser::ShowAndGetImage(items, sources, g_localizeStrings.Get(13511), result) &&

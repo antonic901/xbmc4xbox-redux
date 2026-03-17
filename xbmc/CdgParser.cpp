@@ -458,16 +458,16 @@ void CCdgRenderer::DrawTexture()
 
   RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
   m_pd3dDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, (float)BORDERWIDTH, (float) BORDERHEIGHT);
-  m_pd3dDevice->SetVertexData4f( D3DVSDE_VERTEX, (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left, (float) CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top, 0, 0 );
+  m_pd3dDevice->SetVertexData4f( D3DVSDE_VERTEX, (float)CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.left, (float) CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.top, 0, 0 );
 
   m_pd3dDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, (float)(WIDTH - BORDERWIDTH), (float) BORDERHEIGHT);
-  m_pd3dDevice->SetVertexData4f( D3DVSDE_VERTEX, (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.right, (float) CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top, 0, 0 );
+  m_pd3dDevice->SetVertexData4f( D3DVSDE_VERTEX, (float)CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.right, (float) CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.top, 0, 0 );
 
   m_pd3dDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, (float)(WIDTH - BORDERWIDTH), (float)(HEIGHT - BORDERHEIGHT));
-  m_pd3dDevice->SetVertexData4f( D3DVSDE_VERTEX, (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.right, (float) CDisplaySettings::Get().GetResolutionInfo(res).Overscan.bottom, 0, 0);
+  m_pd3dDevice->SetVertexData4f( D3DVSDE_VERTEX, (float)CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.right, (float) CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.bottom, 0, 0);
 
   m_pd3dDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, (float)BORDERWIDTH, (float)(HEIGHT - BORDERHEIGHT));
-  m_pd3dDevice->SetVertexData4f( D3DVSDE_VERTEX, (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left, (float) CDisplaySettings::Get().GetResolutionInfo(res).Overscan.bottom, 0, 0 );
+  m_pd3dDevice->SetVertexData4f( D3DVSDE_VERTEX, (float)CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.left, (float) CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.bottom, 0, 0 );
 
   m_pd3dDevice->End();
 }

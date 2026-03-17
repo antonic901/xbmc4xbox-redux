@@ -65,7 +65,7 @@ CVariant CXBELauncher::GetTitleID(const std::string& strExecutable, bool bAsHex 
 
 bool CXBELauncher::ApplyFFPatch(const std::string& strExecutable, std::string& strPatchedExecutable)
 {
-  RESOLUTION res = CDisplaySettings::Get().GetCurrentResolution();
+  RESOLUTION res = CDisplaySettings::GetInstance().GetCurrentResolution();
   if (res == RES_HDTV_480p_4x3 ||
       res == RES_HDTV_480p_16x9 ||
       res == RES_HDTV_720p)

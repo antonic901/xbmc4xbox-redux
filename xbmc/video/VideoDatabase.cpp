@@ -5652,7 +5652,7 @@ bool CVideoDatabase::GetNavCommon(const std::string& strBaseDir, CFileItemList& 
         if (it == mapItems.end())
         {
           // check path
-          if (g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv(2).get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+          if (g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv(2).get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
           {
             if (idContent == VIDEODB_CONTENT_MOVIES || idContent == VIDEODB_CONTENT_MUSICVIDEOS)
               mapItems.insert(std::pair<int, std::pair<std::string,int> >(id, std::pair<std::string, int>(str,m_pDS->fv(3).get_asInt()))); //fv(3) is file.playCount
@@ -5834,7 +5834,7 @@ bool CVideoDatabase::GetMusicVideoAlbumsNav(const std::string& strBaseDir, CFile
         if (it == mapAlbums.end())
         {
           // check path
-          if (g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+          if (g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
             mapAlbums.insert(make_pair(lidMVideo, make_pair(strAlbum,m_pDS->fv(2).get_asString())));
         }
         m_pDS->next();
@@ -6090,7 +6090,7 @@ bool CVideoDatabase::GetPeopleNav(const std::string& strBaseDir, CFileItemList& 
         if (it == mapActors.end())
         {
           // check path
-          if (g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+          if (g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
             mapActors.insert(std::pair<int, CActor>(idActor, actor));
         }
         else if (idContent != VIDEODB_CONTENT_TVSHOWS)
@@ -6249,7 +6249,7 @@ bool CVideoDatabase::GetYearsNav(const std::string& strBaseDir, CFileItemList& i
         if (it == mapYears.end())
         {
           // check path
-          if (g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+          if (g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
           {
             std::string year = StringUtils::Format("%d", lYear);
             if (idContent == VIDEODB_CONTENT_MOVIES || idContent == VIDEODB_CONTENT_MUSICVIDEOS)
@@ -6418,7 +6418,7 @@ bool CVideoDatabase::GetSeasonsByWhere(const std::string& strBaseDir, const Filt
 
       if (mapSeasons.find(std::make_pair(showId, iSeason)) == mapSeasons.end() &&
          (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE || g_passwordManager.bMasterUser ||
-          g_passwordManager.IsDatabasePathUnlocked(path, *CMediaSourceSettings::Get().GetSources("video"))))
+          g_passwordManager.IsDatabasePathUnlocked(path, *CMediaSourceSettings::GetInstance().GetSources("video"))))
       {
         mapSeasons.insert(std::make_pair(showId, iSeason));
 
@@ -6715,7 +6715,7 @@ bool CVideoDatabase::GetMoviesByWhere(const std::string& strBaseDir, const Filte
       CVideoInfoTag movie = GetDetailsForMovie(record, getDetails);
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE ||
           g_passwordManager.bMasterUser                                   ||
-          g_passwordManager.IsDatabasePathUnlocked(movie.m_strPath, *CMediaSourceSettings::Get().GetSources("video")))
+          g_passwordManager.IsDatabasePathUnlocked(movie.m_strPath, *CMediaSourceSettings::GetInstance().GetSources("video")))
       {
         CFileItemPtr pItem(new CFileItem(movie));
 
@@ -6824,7 +6824,7 @@ bool CVideoDatabase::GetTvShowsByWhere(const std::string& strBaseDir, const Filt
       CVideoInfoTag movie = GetDetailsForTvShow(record, getDetails, pItem.get());
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE ||
            g_passwordManager.bMasterUser                                     ||
-           g_passwordManager.IsDatabasePathUnlocked(movie.m_strPath, *CMediaSourceSettings::Get().GetSources("video")))
+           g_passwordManager.IsDatabasePathUnlocked(movie.m_strPath, *CMediaSourceSettings::GetInstance().GetSources("video")))
       {
         pItem->SetFromVideoInfoTag(movie);
 
@@ -6952,7 +6952,7 @@ bool CVideoDatabase::GetEpisodesByWhere(const std::string& strBaseDir, const Fil
       CVideoInfoTag movie = GetDetailsForEpisode(record, getDetails);
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE ||
           g_passwordManager.bMasterUser                                     ||
-          g_passwordManager.IsDatabasePathUnlocked(movie.m_strPath, *CMediaSourceSettings::Get().GetSources("video")))
+          g_passwordManager.IsDatabasePathUnlocked(movie.m_strPath, *CMediaSourceSettings::GetInstance().GetSources("video")))
       {
         CFileItemPtr pItem(new CFileItem(movie));
         formatter.FormatLabel(pItem.get());
@@ -7382,7 +7382,7 @@ void CVideoDatabase::GetMovieGenresByName(const std::string& strSearch, CFileIte
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
         if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),
-                                                      *CMediaSourceSettings::Get().GetSources("video")))
+                                                      *CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -7422,7 +7422,7 @@ void CVideoDatabase::GetMovieCountriesByName(const std::string& strSearch, CFile
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
         if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),
-                                                      *CMediaSourceSettings::Get().GetSources("video")))
+                                                      *CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -7461,7 +7461,7 @@ void CVideoDatabase::GetTvShowGenresByName(const std::string& strSearch, CFileIt
     while (!m_pDS->eof())
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -7500,7 +7500,7 @@ void CVideoDatabase::GetMovieActorsByName(const std::string& strSearch, CFileIte
     while (!m_pDS->eof())
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -7539,7 +7539,7 @@ void CVideoDatabase::GetTvShowsActorsByName(const std::string& strSearch, CFileI
     while (!m_pDS->eof())
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -7581,7 +7581,7 @@ void CVideoDatabase::GetMusicVideoArtistsByName(const std::string& strSearch, CF
     while (!m_pDS->eof())
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -7620,7 +7620,7 @@ void CVideoDatabase::GetMusicVideoGenresByName(const std::string& strSearch, CFi
     while (!m_pDS->eof())
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -7674,7 +7674,7 @@ void CVideoDatabase::GetMusicVideoAlbumsByName(const std::string& strSearch, CFi
       }
 
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv(2).get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv(2).get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -7713,7 +7713,7 @@ void CVideoDatabase::GetMusicVideosByAlbum(const std::string& strSearch, CFileIt
     while (!m_pDS->eof())
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -7792,7 +7792,7 @@ bool CVideoDatabase::GetMusicVideosByWhere(const std::string &baseDir, const Fil
 
       CVideoInfoTag musicvideo = GetDetailsForMusicVideo(record, getDetails);
       if (!checkLocks || CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE || g_passwordManager.bMasterUser ||
-          g_passwordManager.IsDatabasePathUnlocked(musicvideo.m_strPath, *CMediaSourceSettings::Get().GetSources("video")))
+          g_passwordManager.IsDatabasePathUnlocked(musicvideo.m_strPath, *CMediaSourceSettings::GetInstance().GetSources("video")))
       {
         CFileItemPtr item(new CFileItem(musicvideo));
 
@@ -7917,7 +7917,7 @@ int CVideoDatabase::GetMatchingMusicVideo(const std::string& strArtist, const st
       return -1;
 
     if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-      if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+      if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
       {
         m_pDS->close();
         return -1;
@@ -7952,7 +7952,7 @@ void CVideoDatabase::GetMoviesByName(const std::string& strSearch, CFileItemList
     while (!m_pDS->eof())
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -7997,7 +7997,7 @@ void CVideoDatabase::GetTvShowsByName(const std::string& strSearch, CFileItemLis
     while (!m_pDS->eof())
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -8038,7 +8038,7 @@ void CVideoDatabase::GetEpisodesByName(const std::string& strSearch, CFileItemLi
     while (!m_pDS->eof())
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -8081,7 +8081,7 @@ void CVideoDatabase::GetMusicVideosByName(const std::string& strSearch, CFileIte
     while (!m_pDS->eof())
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -8128,7 +8128,7 @@ void CVideoDatabase::GetEpisodesByPlot(const std::string& strSearch, CFileItemLi
     while (!m_pDS->eof())
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -8168,7 +8168,7 @@ void CVideoDatabase::GetMoviesByPlot(const std::string& strSearch, CFileItemList
     while (!m_pDS->eof())
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv(2).get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv(2).get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -8210,7 +8210,7 @@ void CVideoDatabase::GetMovieDirectorsByName(const std::string& strSearch, CFile
     while (!m_pDS->eof())
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -8251,7 +8251,7 @@ void CVideoDatabase::GetTvShowsDirectorsByName(const std::string& strSearch, CFi
     while (!m_pDS->eof())
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -8292,7 +8292,7 @@ void CVideoDatabase::GetMusicVideoDirectorsByName(const std::string& strSearch, 
     while (!m_pDS->eof())
     {
       if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser)
-        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::Get().GetSources("video")))
+        if (!g_passwordManager.IsDatabasePathUnlocked(std::string(m_pDS->fv("path.strPath").get_asString()),*CMediaSourceSettings::GetInstance().GetSources("video")))
         {
           m_pDS->next();
           continue;
@@ -8365,7 +8365,7 @@ void CVideoDatabase::CleanDatabase(CGUIDialogProgressBarHandle* handle, const st
     }
 
     std::string filesToTestForDelete;
-    VECSOURCES videoSources(*CMediaSourceSettings::Get().GetSources("video"));
+    VECSOURCES videoSources(*CMediaSourceSettings::GetInstance().GetSources("video"));
 #ifndef _XBOX
     CServiceBroker::GetMediaManager().GetRemovableDrives(videoSources);
 #endif
@@ -8673,7 +8673,7 @@ std::vector<int> CVideoDatabase::CleanMediaType(const std::string &mediaType, co
                     parentPathIdField.c_str(),
                     table.c_str(), cleanableFileIDs.c_str());
 
-  VECSOURCES videoSources(*CMediaSourceSettings::Get().GetSources("video"));
+  VECSOURCES videoSources(*CMediaSourceSettings::GetInstance().GetSources("video"));
 #ifndef _XBOX
   CServiceBroker::GetMediaManager().GetRemovableDrives(videoSources);
 #endif

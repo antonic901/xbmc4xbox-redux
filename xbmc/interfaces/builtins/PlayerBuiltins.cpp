@@ -279,11 +279,11 @@ static int PlayerControl(const std::vector<std::string>& params)
     switch (iPlaylist)
     {
       case PLAYLIST_MUSIC:
-        CMediaSettings::Get().SetMusicPlaylistShuffled(g_playlistPlayer.IsShuffled(iPlaylist));
+        CMediaSettings::GetInstance().SetMusicPlaylistShuffled(g_playlistPlayer.IsShuffled(iPlaylist));
         CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
         break;
       case PLAYLIST_VIDEO:
-        CMediaSettings::Get().SetVideoPlaylistShuffled(g_playlistPlayer.IsShuffled(iPlaylist));
+        CMediaSettings::GetInstance().SetVideoPlaylistShuffled(g_playlistPlayer.IsShuffled(iPlaylist));
         CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
       default:
         break;
@@ -327,11 +327,11 @@ static int PlayerControl(const std::vector<std::string>& params)
     switch (iPlaylist)
     {
       case PLAYLIST_MUSIC:
-        CMediaSettings::Get().SetMusicPlaylistRepeat(state == PLAYLIST::REPEAT_ALL);
+        CMediaSettings::GetInstance().SetMusicPlaylistRepeat(state == PLAYLIST::REPEAT_ALL);
         CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
         break;
       case PLAYLIST_VIDEO:
-        CMediaSettings::Get().SetVideoPlaylistRepeat(state == PLAYLIST::REPEAT_ALL);
+        CMediaSettings::GetInstance().SetVideoPlaylistRepeat(state == PLAYLIST::REPEAT_ALL);
         CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
     }
 
@@ -409,7 +409,7 @@ static int PlayMedia(const std::vector<std::string>& params)
     if (StringUtils::EqualsNoCase(params[i], "isdir"))
       item.m_bIsFolder = true;
     else if (params[i] == "1") // set fullscreen or windowed
-      CMediaSettings::Get().SetVideoStartWindowed(true);
+      CMediaSettings::GetInstance().SetVideoStartWindowed(true);
     else if (StringUtils::EqualsNoCase(params[i], "resume"))
     {
       // force the item to resume (if applicable) (see CApplication::PlayMedia)
@@ -508,7 +508,7 @@ static int PlayWith(const std::vector<std::string>& params)
 static int Seek(const std::vector<std::string>& params)
 {
   if (g_application.m_pPlayer->IsPlaying())
-    CSeekHandler::Get().SeekSeconds(atoi(params[0].c_str()));
+    CSeekHandler::GetInstance().SeekSeconds(atoi(params[0].c_str()));
 
   return 0;
 }

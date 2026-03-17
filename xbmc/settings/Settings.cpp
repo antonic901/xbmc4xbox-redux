@@ -262,9 +262,9 @@ void CSettings::Uninitialize()
   m_settingsManager->UnregisterSettingOptionsFiller("voicemasks");
 
   // unregister ISettingCallback implementations
-  m_settingsManager->UnregisterCallback(&CMediaSettings::Get());
-  m_settingsManager->UnregisterCallback(&CDisplaySettings::Get());
-  m_settingsManager->UnregisterCallback(&CSeekHandler::Get());
+  m_settingsManager->UnregisterCallback(&CMediaSettings::GetInstance());
+  m_settingsManager->UnregisterCallback(&CDisplaySettings::GetInstance());
+  m_settingsManager->UnregisterCallback(&CSeekHandler::GetInstance());
   m_settingsManager->UnregisterCallback(&g_application);
   m_settingsManager->UnregisterCallback(&CServiceBroker::GetGUI()->GetAudioManager());
   m_settingsManager->UnregisterCallback(&g_charsetConverter);
@@ -275,9 +275,9 @@ void CSettings::Uninitialize()
 #if defined(TARGET_WINDOWS) || defined(HAS_SDL_JOYSTICK)
   m_settingsManager->UnregisterCallback(&g_Joystick);
 #endif
-  m_settingsManager->UnregisterCallback(&CNetworkServices::Get());
+  m_settingsManager->UnregisterCallback(&CNetworkServices::GetInstance());
   m_settingsManager->UnregisterCallback(&g_passwordManager);
-  m_settingsManager->UnregisterCallback(&CRssManager::Get());
+  m_settingsManager->UnregisterCallback(&CRssManager::GetInstance());
   m_settingsManager->UnregisterCallback(&CServiceBroker::GetRepositoryUpdater());
 #if defined(TARGET_LINUX) || defined(_XBOX)
   m_settingsManager->UnregisterCallback(&g_timezone);
@@ -289,18 +289,18 @@ void CSettings::Uninitialize()
 
   // unregister ISubSettings implementations
   m_settingsManager->UnregisterSubSettings(&g_application);
-  m_settingsManager->UnregisterSubSettings(&CDisplaySettings::Get());
-  m_settingsManager->UnregisterSubSettings(&CMediaSettings::Get());
-  m_settingsManager->UnregisterSubSettings(&CSkinSettings::Get());
+  m_settingsManager->UnregisterSubSettings(&CDisplaySettings::GetInstance());
+  m_settingsManager->UnregisterSubSettings(&CMediaSettings::GetInstance());
+  m_settingsManager->UnregisterSubSettings(&CSkinSettings::GetInstance());
   m_settingsManager->UnregisterSubSettings(&g_sysinfo);
-  m_settingsManager->UnregisterSubSettings(&CViewStateSettings::Get());
+  m_settingsManager->UnregisterSubSettings(&CViewStateSettings::GetInstance());
 
   // unregister ISettingsHandler implementations
-  m_settingsManager->UnregisterSettingsHandler(&CMediaSourceSettings::Get());
+  m_settingsManager->UnregisterSettingsHandler(&CMediaSourceSettings::GetInstance());
   m_settingsManager->UnregisterSettingsHandler(&CServiceBroker::GetPlayerCoreFactory());
-  m_settingsManager->UnregisterSettingsHandler(&CRssManager::Get());
+  m_settingsManager->UnregisterSettingsHandler(&CRssManager::GetInstance());
 #ifdef HAS_UPNP
-  m_settingsManager->UnregisterSettingsHandler(&CUPnPSettings::Get());
+  m_settingsManager->UnregisterSettingsHandler(&CUPnPSettings::GetInstance());
 #endif
   m_settingsManager->UnregisterSettingsHandler(&g_application);
 #ifdef _XBOX
@@ -648,12 +648,12 @@ void CSettings::InitializeISettingsHandlers()
 {
   // register ISettingsHandler implementations
   // The order of these matters! Handlers are processed in the order they were registered.
-  m_settingsManager->RegisterSettingsHandler(&CMediaSourceSettings::Get());
+  m_settingsManager->RegisterSettingsHandler(&CMediaSourceSettings::GetInstance());
   m_settingsManager->RegisterSettingsHandler(&CServiceBroker::GetPlayerCoreFactory());
 #ifdef HAS_UPNP
-  m_settingsManager->RegisterSettingsHandler(&CUPnPSettings::Get());
+  m_settingsManager->RegisterSettingsHandler(&CUPnPSettings::GetInstance());
 #endif
-  m_settingsManager->RegisterSettingsHandler(&CRssManager::Get());
+  m_settingsManager->RegisterSettingsHandler(&CRssManager::GetInstance());
   m_settingsManager->RegisterSettingsHandler(&g_langInfo);
   m_settingsManager->RegisterSettingsHandler(&g_application);
 #if defined(TARGET_LINUX) && !defined(TARGET_ANDROID) && !defined(__UCLIBC__)
@@ -664,18 +664,18 @@ void CSettings::InitializeISettingsHandlers()
   m_settingsManager->RegisterSettingsHandler(&g_videoConfig);
   m_settingsManager->RegisterSettingsHandler(&g_timezone);
 #endif
-  m_settingsManager->RegisterSettingsHandler(&CMediaSettings::Get());
+  m_settingsManager->RegisterSettingsHandler(&CMediaSettings::GetInstance());
 }
 
 void CSettings::InitializeISubSettings()
 {
   // register ISubSettings implementations
   m_settingsManager->RegisterSubSettings(&g_application);
-  m_settingsManager->RegisterSubSettings(&CDisplaySettings::Get());
-  m_settingsManager->RegisterSubSettings(&CMediaSettings::Get());
-  m_settingsManager->RegisterSubSettings(&CSkinSettings::Get());
+  m_settingsManager->RegisterSubSettings(&CDisplaySettings::GetInstance());
+  m_settingsManager->RegisterSubSettings(&CMediaSettings::GetInstance());
+  m_settingsManager->RegisterSubSettings(&CSkinSettings::GetInstance());
   m_settingsManager->RegisterSubSettings(&g_sysinfo);
-  m_settingsManager->RegisterSubSettings(&CViewStateSettings::Get());
+  m_settingsManager->RegisterSubSettings(&CViewStateSettings::GetInstance());
 }
 
 void CSettings::InitializeISettingCallbacks()
@@ -695,7 +695,7 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("videolibrary.cleanup");
   settingSet.insert("videolibrary.import");
   settingSet.insert("videolibrary.export");
-  m_settingsManager->RegisterCallback(&CMediaSettings::Get(), settingSet);
+  m_settingsManager->RegisterCallback(&CMediaSettings::GetInstance(), settingSet);
 
   settingSet.clear();
   settingSet.insert("videoscreen.resolution");
@@ -705,14 +705,14 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("videooutput.hd480p");
   settingSet.insert("videooutput.hd720p");
   settingSet.insert("videooutput.hd1080i");
-  m_settingsManager->RegisterCallback(&CDisplaySettings::Get(), settingSet);
+  m_settingsManager->RegisterCallback(&CDisplaySettings::GetInstance(), settingSet);
 
   settingSet.clear();
   settingSet.insert("videoplayer.seekdelay");
   settingSet.insert("videoplayer.seeksteps");
   settingSet.insert("musicplayer.seekdelay");
   settingSet.insert("musicplayer.seeksteps");
-  m_settingsManager->RegisterCallback(&CSeekHandler::Get(), settingSet);
+  m_settingsManager->RegisterCallback(&CSeekHandler::GetInstance(), settingSet);
 
   settingSet.clear();
   settingSet.insert("audiooutput.channels");
@@ -821,7 +821,7 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("services.timeserveraddress");
   settingSet.insert("smb.winsserver");
   settingSet.insert("smb.workgroup");
-  m_settingsManager->RegisterCallback(&CNetworkServices::Get(), settingSet);
+  m_settingsManager->RegisterCallback(&CNetworkServices::GetInstance(), settingSet);
 
   settingSet.clear();
   settingSet.insert("masterlock.lockcode");
@@ -829,7 +829,7 @@ void CSettings::InitializeISettingCallbacks()
 
   settingSet.clear();
   settingSet.insert("lookandfeel.rssedit");
-  m_settingsManager->RegisterCallback(&CRssManager::Get(), settingSet);
+  m_settingsManager->RegisterCallback(&CRssManager::GetInstance(), settingSet);
 
   settingSet.clear();
   settingSet.insert("locale.timezone");
@@ -1003,17 +1003,17 @@ bool CSettings::SaveAvpackSettings(TiXmlNode *io_pRoot) const
   // TiXmlElement videoSettingsNode("defaultvideosettings");
   // pNode = io_pRoot->InsertEndChild(videoSettingsNode);
   // if (!pNode) return false;
-  // XMLUtils::SetInt(pNode, "interlacemethod", CMediaSettings::Get().GetDefaultVideoSettings().m_InterlaceMethod);
-  // XMLUtils::SetFloat(pNode, "filmgrain", CMediaSettings::Get().GetCurrentVideoSettings().m_FilmGrain);
-  // XMLUtils::SetInt(pNode, "viewmode", CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode);
-  // XMLUtils::SetFloat(pNode, "zoomamount", CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount);
-  // XMLUtils::SetFloat(pNode, "pixelratio", CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio);
-  // XMLUtils::SetFloat(pNode, "volumeamplification", CMediaSettings::Get().GetCurrentVideoSettings().m_VolumeAmplification);
-  // XMLUtils::SetBoolean(pNode, "outputtoallspeakers", CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers);
-  // XMLUtils::SetBoolean(pNode, "showsubtitles", CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn);
-  // XMLUtils::SetFloat(pNode, "brightness", CMediaSettings::Get().GetCurrentVideoSettings().m_Brightness);
-  // XMLUtils::SetFloat(pNode, "contrast", CMediaSettings::Get().GetCurrentVideoSettings().m_Contrast);
-  // XMLUtils::SetFloat(pNode, "gamma", CMediaSettings::Get().GetCurrentVideoSettings().m_Gamma);
+  // XMLUtils::SetInt(pNode, "interlacemethod", CMediaSettings::GetInstance().GetDefaultVideoSettings().m_InterlaceMethod);
+  // XMLUtils::SetFloat(pNode, "filmgrain", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_FilmGrain);
+  // XMLUtils::SetInt(pNode, "viewmode", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode);
+  // XMLUtils::SetFloat(pNode, "zoomamount", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomZoomAmount);
+  // XMLUtils::SetFloat(pNode, "pixelratio", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomPixelRatio);
+  // XMLUtils::SetFloat(pNode, "volumeamplification", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_VolumeAmplification);
+  // XMLUtils::SetBoolean(pNode, "outputtoallspeakers", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_OutputToAllSpeakers);
+  // XMLUtils::SetBoolean(pNode, "showsubtitles", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleOn);
+  // XMLUtils::SetFloat(pNode, "brightness", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_Brightness);
+  // XMLUtils::SetFloat(pNode, "contrast", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_Contrast);
+  // XMLUtils::SetFloat(pNode, "gamma", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_Gamma);
 
   // TiXmlElement audiooutputNode("audiooutput");
   // pNode = io_pRoot->InsertEndChild(audiooutputNode);

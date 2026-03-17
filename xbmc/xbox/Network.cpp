@@ -601,13 +601,13 @@ void CNetwork::NetworkMessage(EMESSAGE message, DWORD dwParam)
   {
     case SERVICES_UP:
       CLog::Log(LOGDEBUG, "%s - Starting network services",__FUNCTION__);
-      CNetworkServices::Get().Start();
+      CNetworkServices::GetInstance().Start();
       break;
     case SERVICES_DOWN:
       CLog::Log(LOGDEBUG, "%s - Stopping network services",__FUNCTION__);
-      CNetworkServices::Get().Stop(false); // tell network services to stop, but don't wait for them yet
+      CNetworkServices::GetInstance().Stop(false); // tell network services to stop, but don't wait for them yet
       CLog::Log(LOGDEBUG, "%s - Waiting for network services to stop",__FUNCTION__);
-      CNetworkServices::Get().Stop(true); // wait for network services to stop
+      CNetworkServices::GetInstance().Stop(true); // wait for network services to stop
       break;
   }
 }

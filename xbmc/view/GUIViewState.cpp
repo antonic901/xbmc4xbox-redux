@@ -420,7 +420,7 @@ void CGUIViewState::AddAddonsSource(const std::string &content, const std::strin
 
 void CGUIViewState::AddLiveTVSources()
 {
-  VECSOURCES *sources = CMediaSourceSettings::Get().GetSources("video");
+  VECSOURCES *sources = CMediaSourceSettings::GetInstance().GetSources("video");
   for (IVECSOURCES it = sources->begin(); it != sources->end(); it++)
   {
     if (URIUtils::IsLiveTV((*it).strPath))

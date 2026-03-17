@@ -42,7 +42,7 @@ CSkinSettings::CSkinSettings()
 CSkinSettings::~CSkinSettings()
 { }
 
-CSkinSettings& CSkinSettings::Get()
+CSkinSettings& CSkinSettings::GetInstance()
 {
   static CSkinSettings sSkinSettings;
   return sSkinSettings;

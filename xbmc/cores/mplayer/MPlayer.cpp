@@ -568,13 +568,13 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
     }
   }
 
-  if (CMediaSettings::Get().GetCurrentVideoSettings().m_FilmGrain > 0.0f)
+  if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_FilmGrain > 0.0f)
   {
     CStdString strOpt;
     if (strTmp.size() > 0)
       strTmp += ",";
 
-    strOpt.Format("noise=%dta:%dta", (int) CMediaSettings::Get().GetCurrentVideoSettings().m_FilmGrain, (int) CMediaSettings::Get().GetCurrentVideoSettings().m_FilmGrain);
+    strOpt.Format("noise=%dta:%dta", (int) CMediaSettings::GetInstance().GetCurrentVideoSettings().m_FilmGrain, (int) CMediaSettings::GetInstance().GetCurrentVideoSettings().m_FilmGrain);
     strTmp += strOpt;
   }
 
@@ -635,11 +635,11 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
   //m_vecOptions.push_back("-forcedsubsonly");
 
   // Turn sub delay on
-  if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay != 0.0f)
+  if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay != 0.0f)
   {
     m_vecOptions.push_back("-subdelay");
     CStdString strOpt;
-    strOpt.Format("%2.2f", CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
+    strOpt.Format("%2.2f", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay);
     m_vecOptions.push_back(strOpt.c_str());
   }
 
@@ -879,7 +879,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     CLog::Log(LOGINFO, "mplayer play:%s cachesize:%i", strFile.c_str(), iCacheSize);
 
     // cache (remote) subtitles to HD
-    if (!bFileOnInternet && bIsVideo && !bIsDVD && CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn && !initoptions.identify)
+    if (!bFileOnInternet && bIsVideo && !bIsDVD && CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleOn && !initoptions.identify)
     {
       m_dlgCache->SetMessage("Caching subtitles...");
       CUtil::CacheSubtitles(strFile, _SubtitleExtension, m_dlgCache);
@@ -892,12 +892,12 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
       }
 
       CUtil::PrepareSubtitleFonts();
-      CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleCached = true;
+      CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleCached = true;
     }
     else
     {
       CUtil::ClearSubtitles();
-      CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleCached = false;
+      CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleCached = false;
     }
     
     m_iPTS = 0;
@@ -912,10 +912,10 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     //Options options;
     if (file.IsVideo())
     {
-      options.SetNonInterleaved(CMediaSettings::Get().GetCurrentVideoSettings().m_NonInterleaved);
-      options.SetForceIndex(CMediaSettings::Get().GetCurrentVideoSettings().m_bForceIndex);
+      options.SetNonInterleaved(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_NonInterleaved);
+      options.SetForceIndex(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_bForceIndex);
     }
-    options.SetNoCache(CMediaSettings::Get().GetCurrentVideoSettings().m_NoCache);
+    options.SetNoCache(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_NoCache);
 
     CStdString strCharset=g_langInfo.GetSubtitleCharSet();
     if( CUtil::IsUsingTTFSubtitles() )
@@ -954,7 +954,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
         options.SetAC3PassTru(bSupportsAC3Out);
         options.SetDTSPassTru(bSupportsDTSOut);
 
-        if ((CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers && bIsVideo) || (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.outputtoallspeakers")) && (!bIsVideo))
+        if ((CMediaSettings::GetInstance().GetCurrentVideoSettings().m_OutputToAllSpeakers && bIsVideo) || (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.outputtoallspeakers")) && (!bIsVideo))
           options.SetLimitedHWAC3(true); //Will limit hwac3 to not kick in on 2.0 channel streams
       }
     }
@@ -963,7 +963,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     // TODO DRC Remove this code once we've stabilised the DRC.
 /*    if (bIsVideo)
     {
-      options.SetVolumeAmplification(CMediaSettings::Get().GetCurrentVideoSettings().m_VolumeAmplification);
+      options.SetVolumeAmplification(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_VolumeAmplification);
     }*/
 
     //Make sure we set the dvd-device parameter if we are playing dvdimages or dvdfolders
@@ -1030,11 +1030,11 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
 #endif
     //Make sure we remeber what subtitle stream and audiostream we where playing so that stacked items gets the same.
     //These will be reset in Application.Playfile if the restart parameter isn't set.
-    if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream >= 0)
-      options.SetAudioStream(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream);
+    if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioStream >= 0)
+      options.SetAudioStream(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioStream);
 
-    if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleStream >= 0)
-      options.SetSubtitleStream(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleStream);
+    if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleStream >= 0)
+      options.SetSubtitleStream(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleStream);
 
 
     //force mplayer to play ac3 and dts files with correct codec
@@ -1052,7 +1052,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     //if( CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filters.useautosync") )
     //  options.SetAutoSync(30);
 
-    if( CMediaSettings::Get().GetCurrentVideoSettings().m_InterlaceMethod == VS_INTERLACEMETHOD_DEINTERLACE )
+    if( CMediaSettings::GetInstance().GetCurrentVideoSettings().m_InterlaceMethod == VS_INTERLACEMETHOD_DEINTERLACE )
       options.SetDeinterlace(true);
     else
       options.SetDeinterlace(false);
@@ -1245,13 +1245,13 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     }
 
     // set up defaults
-    SetSubtitleVisible(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn);
-    SetAVDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay);
+    SetSubtitleVisible(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleOn);
+    SetAVDelay(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay);
 
-    if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream < -1)
+    if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioStream < -1)
     { // check + fix up the stereo/left/right setting
-      bool bAudioOnAllSpeakers = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_DIGITAL) && ((CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers && HasVideo()) || (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.outputtoallspeakers") && !HasVideo()));
-      xbox_audio_switch_channel(-1 - CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream, bAudioOnAllSpeakers);
+      bool bAudioOnAllSpeakers = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_DIGITAL) && ((CMediaSettings::GetInstance().GetCurrentVideoSettings().m_OutputToAllSpeakers && HasVideo()) || (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.outputtoallspeakers") && !HasVideo()));
+      xbox_audio_switch_channel(-1 - CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioStream, bAudioOnAllSpeakers);
     }
     bIsVideo = HasVideo();
     bIsAudio = HasAudio();
@@ -1428,8 +1428,8 @@ void CMPlayer::Process()
         m_bSubsVisibleTTF=true;
       }
       
-      if( (options.GetDeinterlace() && CMediaSettings::Get().GetCurrentVideoSettings().m_InterlaceMethod != VS_INTERLACEMETHOD_DEINTERLACE) 
-        || (!options.GetDeinterlace() && CMediaSettings::Get().GetCurrentVideoSettings().m_InterlaceMethod == VS_INTERLACEMETHOD_DEINTERLACE) )
+      if( (options.GetDeinterlace() && CMediaSettings::GetInstance().GetCurrentVideoSettings().m_InterlaceMethod != VS_INTERLACEMETHOD_DEINTERLACE) 
+        || (!options.GetDeinterlace() && CMediaSettings::GetInstance().GetCurrentVideoSettings().m_InterlaceMethod == VS_INTERLACEMETHOD_DEINTERLACE) )
       {
         if( !bWaitingRestart )
         {
@@ -1817,7 +1817,7 @@ void CMPlayer::SetSubtitle(int iStream)
 {
   mplayer_setSubtitle(iStream);
   options.SetSubtitleStream(iStream);
-  CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleStream = iStream;
+  CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleStream = iStream;
 
   WaitOnCommand();
   if( CUtil::IsUsingTTFSubtitles() )
@@ -1832,7 +1832,7 @@ bool CMPlayer::GetSubtitleVisible()
 }
 void CMPlayer::SetSubtitleVisible(bool bVisible)
 {
-  CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn = bVisible;
+  CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleOn = bVisible;
   if (CUtil::IsUsingTTFSubtitles() && mplayer_isTextSubLoaded())
   {
     m_bSubsVisibleTTF = bVisible;
@@ -1888,8 +1888,8 @@ void CMPlayer::SetAudioStream(int iStream)
 {
   //Make sure we get the correct aid for the stream
   //Really bad way cause we need to restart and there is no good way currently to restart mplayer without onloading it first
-  CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream = mplayer_getAudioStreamInfo(iStream, NULL);
-  options.SetAudioStream(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream);
+  CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioStream = mplayer_getAudioStreamInfo(iStream, NULL);
+  options.SetAudioStream(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioStream);
   //we need to restart after here for change to take effect
   CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MEDIA_RESTART);
 }
@@ -1988,7 +1988,7 @@ void CMPlayer::ToFFRW(int iSpeed)
 
 int CMPlayer::GetCacheSize(bool bFileOnHD, bool bFileOnISO, bool bFileOnUDF, bool bFileOnInternet, bool bFileOnLAN, bool bIsVideo, bool bIsAudio, bool bIsDVD)
 {
-  if (CMediaSettings::Get().GetCurrentVideoSettings().m_NoCache) return 0;
+  if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_NoCache) return 0;
 
   if (bFileOnHD)
   {

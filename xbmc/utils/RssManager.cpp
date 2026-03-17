@@ -54,7 +54,7 @@ CRssManager::~CRssManager()
   Stop();
 }
 
-CRssManager& CRssManager::Get()
+CRssManager& CRssManager::GetInstance()
 {
   static CRssManager sRssManager;
   return sRssManager;

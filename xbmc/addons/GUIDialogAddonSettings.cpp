@@ -363,7 +363,7 @@ bool CGUIDialogAddonSettings::ShowVirtualKeyboard(int iControl)
           // setup the shares
           VECSOURCES *shares = NULL;
           if (source && strcmpi(source, "") != 0)
-            shares = CMediaSourceSettings::Get().GetSources(source);
+            shares = CMediaSourceSettings::GetInstance().GetSources(source);
 
           VECSOURCES localShares;
           if (!shares)

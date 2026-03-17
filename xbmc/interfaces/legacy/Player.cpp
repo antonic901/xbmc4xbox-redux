@@ -84,7 +84,7 @@ namespace XBMCAddon
       if (!item.empty())
       {
         // set fullscreen or windowed
-        CMediaSettings::Get().SetVideoStartWindowed(windowed);
+        CMediaSettings::GetInstance().SetVideoStartWindowed(windowed);
 
         // force a playercore before playing
         g_application.m_eForcedNextPlayer = playerCore;
@@ -113,7 +113,7 @@ namespace XBMCAddon
       XBMC_TRACE;
       DelayedCallGuard dc(languageHook);
       // set fullscreen or windowed
-      CMediaSettings::Get().SetVideoStartWindowed(windowed);
+      CMediaSettings::GetInstance().SetVideoStartWindowed(windowed);
 
       // force a playercore before playing
       g_application.m_eForcedNextPlayer = playerCore;
@@ -131,7 +131,7 @@ namespace XBMCAddon
       if (playlist != NULL)
       {
         // set fullscreen or windowed
-        CMediaSettings::Get().SetVideoStartWindowed(windowed);
+        CMediaSettings::GetInstance().SetVideoStartWindowed(windowed);
 
         // force a playercore before playing
         g_application.m_eForcedNextPlayer = playerCore;
@@ -447,8 +447,8 @@ namespace XBMCAddon
         {
           g_application.m_pPlayer->SetSubtitle(nStream);
           g_application.m_pPlayer->SetSubtitleVisible(true);
-          CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay = 0.0f;
-          g_application.m_pPlayer->SetSubTitleDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
+          CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay = 0.0f;
+          g_application.m_pPlayer->SetSubTitleDelay(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay);
         }
       }
     }

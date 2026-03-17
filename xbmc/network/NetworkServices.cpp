@@ -96,7 +96,7 @@ CNetworkServices::~CNetworkServices()
 #endif
 }
 
-CNetworkServices& CNetworkServices::Get()
+CNetworkServices& CNetworkServices::GetInstance()
 {
   static CNetworkServices sNetworkServices;
   return sNetworkServices;
@@ -821,13 +821,13 @@ bool CNetworkServices::StartRss()
   if (IsRssRunning())
     return true;
 
-  CRssManager::Get().Start();
+  CRssManager::GetInstance().Start();
   return true;
 }
 
 bool CNetworkServices::IsRssRunning()
 {
-  return CRssManager::Get().IsActive();
+  return CRssManager::GetInstance().IsActive();
 }
 
 bool CNetworkServices::StopRss()
@@ -835,7 +835,7 @@ bool CNetworkServices::StopRss()
   if (!IsRssRunning())
     return true;
 
-  CRssManager::Get().Stop();
+  CRssManager::GetInstance().Stop();
   return true;
 }
 

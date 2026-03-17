@@ -143,7 +143,7 @@ bool CGUIWindowMusicPlayList::OnMessage(CGUIMessage& message)
         if (!g_partyModeManager.IsEnabled())
         {
           g_playlistPlayer.SetShuffle(PLAYLIST_MUSIC, !(g_playlistPlayer.IsShuffled(PLAYLIST_MUSIC)));
-          CMediaSettings::Get().SetMusicPlaylistShuffled(g_playlistPlayer.IsShuffled(PLAYLIST_MUSIC));
+          CMediaSettings::GetInstance().SetMusicPlaylistShuffled(g_playlistPlayer.IsShuffled(PLAYLIST_MUSIC));
           CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
           UpdateButtons();
           Refresh();
@@ -193,7 +193,7 @@ bool CGUIWindowMusicPlayList::OnMessage(CGUIMessage& message)
           g_playlistPlayer.SetRepeat(PLAYLIST_MUSIC, PLAYLIST::REPEAT_NONE);
 
         // save settings
-        CMediaSettings::Get().SetMusicPlaylistRepeat(g_playlistPlayer.GetRepeat(PLAYLIST_MUSIC) == PLAYLIST::REPEAT_ALL);
+        CMediaSettings::GetInstance().SetMusicPlaylistRepeat(g_playlistPlayer.GetRepeat(PLAYLIST_MUSIC) == PLAYLIST::REPEAT_ALL);
         CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 
         UpdateButtons();

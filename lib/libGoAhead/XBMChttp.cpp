@@ -677,25 +677,25 @@ int CXbmcHttp::xbmcGetMediaLocation(int numParas, CStdString paras[])
   {
   case MUSIC:
     {
-      pShares = CMediaSourceSettings::Get().GetSources("music");
+      pShares = CMediaSourceSettings::GetInstance().GetSources("music");
       strMask = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions;
     }
     break;
   case VIDEO:
     {
-      pShares = CMediaSourceSettings::Get().GetSources("video");;
+      pShares = CMediaSourceSettings::GetInstance().GetSources("video");;
       strMask = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions;
     }
     break;
   case PICTURES:
     {
-      pShares = CMediaSourceSettings::Get().GetSources("pictures");
+      pShares = CMediaSourceSettings::GetInstance().GetSources("pictures");
       strMask = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions;
     }
     break;
   case FILES:
     {
-      pShares = CMediaSourceSettings::Get().GetSources("files");
+      pShares = CMediaSourceSettings::GetInstance().GetSources("files");
       strMask = "";
     }
     break;
@@ -917,31 +917,31 @@ int CXbmcHttp::xbmcGetSources(int numParas, CStdString paras[])
     case MUSIC:
       {
         strType = "music";
-        pShares = CMediaSourceSettings::Get().GetSources("music");
+        pShares = CMediaSourceSettings::GetInstance().GetSources("music");
       }
       break;
     case VIDEO:
       {
         strType = "video";
-        pShares = CMediaSourceSettings::Get().GetSources("video");
+        pShares = CMediaSourceSettings::GetInstance().GetSources("video");
       }
       break;
     case PICTURES:
       {
         strType = "pictures";
-        pShares = CMediaSourceSettings::Get().GetSources("pictures");
+        pShares = CMediaSourceSettings::GetInstance().GetSources("pictures");
       }
       break;
     case FILES:
       {
         strType = "files";
-        pShares = CMediaSourceSettings::Get().GetSources("files");
+        pShares = CMediaSourceSettings::GetInstance().GetSources("files");
       }
       break;
     case PROGRAMS:
       {
         strType = "programs";
-        pShares = CMediaSourceSettings::Get().GetSources("programs");
+        pShares = CMediaSourceSettings::GetInstance().GetSources("programs");
       }
       break;
     }
@@ -2668,7 +2668,7 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
       if (paras[i]=="myvideowatchmode")
       {
         CGUIWindow *window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_VIDEO_NAV);
-        int watchMode = (window) ? CMediaSettings::Get().GetWatchedMode(((CGUIMediaWindow *)window)->CurrentDirectory().GetContent()) : WatchedModeAll;
+        int watchMode = (window) ? CMediaSettings::GetInstance().GetWatchedMode(((CGUIMediaWindow *)window)->CurrentDirectory().GetContent()) : WatchedModeAll;
         tmp.Format("%i", watchMode);
       }
       else if (paras[i]=="mymusicstartwindow")
@@ -2678,7 +2678,7 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
       else if (paras[i]=="myvideostack")
         tmp.Format("%i",CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.stackvideos") ? 1 : 0);
       else if (paras[i]=="additionalsubtitledirectorychecked")
-        tmp.Format("%i",CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked());
+        tmp.Format("%i",CMediaSettings::GetInstance().GetAdditionalSubtitleDirectoryChecked());
       else if (paras[i]=="httpapibroadcastport")
         tmp.Format("%i",CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastport"));
       else if (paras[i]=="httpapibroadcastlevel")
@@ -2694,17 +2694,17 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
       else if (paras[i]=="myvideonavflatten")
         tmp = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.flatten")==0) ? "False" : "True";
       else if (paras[i]=="myvideoplaylistshuffle")
-        tmp = (CMediaSettings::Get().IsVideoPlaylistShuffled()==0) ? "False" : "True";
+        tmp = (CMediaSettings::GetInstance().IsVideoPlaylistShuffled()==0) ? "False" : "True";
       else if (paras[i]=="myvideoplaylistrepeat")
-        tmp = (CMediaSettings::Get().DoesVideoPlaylistRepeat()==0) ? "False" : "True";
+        tmp = (CMediaSettings::GetInstance().DoesVideoPlaylistRepeat()==0) ? "False" : "True";
       else if (paras[i]=="mymusicplaylistshuffle")
-        tmp = (CMediaSettings::Get().IsMusicPlaylistShuffled()==0) ? "False" : "True";
+        tmp = (CMediaSettings::GetInstance().IsMusicPlaylistShuffled()==0) ? "False" : "True";
       else if (paras[i]=="mymusicplaylistrepeat")
-        tmp = (CMediaSettings::Get().DoesMusicPlaylistRepeat()==0) ? "False" : "True";
+        tmp = (CMediaSettings::GetInstance().DoesMusicPlaylistRepeat()==0) ? "False" : "True";
       else if (paras[i]=="zoomamount")
-        tmp.Format("%f", CDisplaySettings::Get().GetZoomAmount());
+        tmp.Format("%f", CDisplaySettings::GetInstance().GetZoomAmount());
       else if (paras[i]=="pixelratio")
-        tmp.Format("%f", CDisplaySettings::Get().GetPixelRatio());
+        tmp.Format("%f", CDisplaySettings::GetInstance().GetPixelRatio());
       else if (paras[i]=="pictureextensions")
         tmp = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions;
       else if (paras[i]=="musicextensions")
@@ -2929,8 +2929,8 @@ int CXbmcHttp::xbmcGetSkinSetting(int numParas, CStdString paras[])
   {
     if (atoi(paras[0]) == 0)
     {
-      int string = CSkinSettings::Get().TranslateBool(paras[1]);
-      bool value = CSkinSettings::Get().GetBool(string);
+      int string = CSkinSettings::GetInstance().TranslateBool(paras[1]);
+      bool value = CSkinSettings::GetInstance().GetBool(string);
       if (value==false)
         return SetResponse(openTag+"False");
       else
@@ -2938,8 +2938,8 @@ int CXbmcHttp::xbmcGetSkinSetting(int numParas, CStdString paras[])
     }
     else
     {
-      int string = CSkinSettings::Get().TranslateString(paras[1]);
-      CStdString value = CSkinSettings::Get().GetString(string);
+      int string = CSkinSettings::GetInstance().TranslateString(paras[1]);
+      CStdString value = CSkinSettings::GetInstance().GetString(string);
       return SetResponse(openTag+value);
     }
   }
@@ -3010,14 +3010,14 @@ int CXbmcHttp::xbmcWebServerStatus(int numParas, CStdString paras[])
 {
   if (numParas==0)
   {
-    if (CNetworkServices::Get().IsWebserverRunning())
+    if (CNetworkServices::GetInstance().IsWebserverRunning())
       return SetResponse(openTag+"On");
     else
       return SetResponse(openTag+"Off");
   }
   else if (paras[0].ToLower().Equals("on"))
   {
-    if (CNetworkServices::Get().IsWebserverRunning())
+    if (CNetworkServices::GetInstance().IsWebserverRunning())
       return SetResponse(openTag+"Already on");
     else
     {
@@ -3027,7 +3027,7 @@ int CXbmcHttp::xbmcWebServerStatus(int numParas, CStdString paras[])
   }
   else
     if (paras[0].ToLower().Equals("off"))
-      if (!CNetworkServices::Get().IsWebserverRunning())
+      if (!CNetworkServices::GetInstance().IsWebserverRunning())
         return SetResponse(openTag+"Already off");
       else
       {

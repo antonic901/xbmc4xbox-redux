@@ -303,8 +303,8 @@ void CGraphicContext::ResetScissors()
   D3DRECT scissor;
   scissor.x1 = 0;
   scissor.y1 = 0;
-  scissor.x2 = CDisplaySettings::Get().GetCurrentResolutionInfo().iWidth;
-  scissor.y2 = CDisplaySettings::Get().GetCurrentResolutionInfo().iHeight;
+  scissor.x2 = CDisplaySettings::GetInstance().GetCurrentResolutionInfo().iWidth;
+  scissor.y2 = CDisplaySettings::GetInstance().GetCurrentResolutionInfo().iHeight;
   m_pd3dDevice->SetScissors(0, FALSE, &scissor);
 }
 
@@ -345,10 +345,10 @@ void CGraphicContext::ClipToViewWindow()
 
 void CGraphicContext::SetFullScreenViewWindow(RESOLUTION &res)
 {
-  m_videoRect.x1 = (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left;
-  m_videoRect.y1 = (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top;
-  m_videoRect.x2 = (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.right;
-  m_videoRect.y2 = (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.bottom;
+  m_videoRect.x1 = (float)CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.left;
+  m_videoRect.y1 = (float)CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.top;
+  m_videoRect.x2 = (float)CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.right;
+  m_videoRect.y2 = (float)CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan.bottom;
 }
 
 void CGraphicContext::SetFullScreenVideo(bool bOnOff)
@@ -468,9 +468,9 @@ void CGraphicContext::SetVideoResolutionInternal(RESOLUTION res, BOOL NeedZ, boo
   if (m_Resolution != res)
   {
     NeedReset = true;
-    m_pd3dParams->BackBufferWidth = CDisplaySettings::Get().GetResolutionInfo(res).iWidth;
-    m_pd3dParams->BackBufferHeight = CDisplaySettings::Get().GetResolutionInfo(res).iHeight;
-    m_pd3dParams->Flags = CDisplaySettings::Get().GetResolutionInfo(res).dwFlags;
+    m_pd3dParams->BackBufferWidth = CDisplaySettings::GetInstance().GetResolutionInfo(res).iWidth;
+    m_pd3dParams->BackBufferHeight = CDisplaySettings::GetInstance().GetResolutionInfo(res).iHeight;
+    m_pd3dParams->Flags = CDisplaySettings::GetInstance().GetResolutionInfo(res).dwFlags;
     m_pd3dParams->Flags |= D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 
     if (res == RES_HDTV_1080i || res == RES_HDTV_720p || m_bFullScreenVideo)
@@ -514,7 +514,7 @@ void CGraphicContext::SetVideoResolutionInternal(RESOLUTION res, BOOL NeedZ, boo
     m_iScreenHeight = m_pd3dParams->BackBufferHeight;
     m_bWidescreen = (m_pd3dParams->Flags & D3DPRESENTFLAG_WIDESCREEN) != 0;
   }
-  if ((CDisplaySettings::Get().GetResolutionInfo(m_Resolution).iWidth != CDisplaySettings::Get().GetResolutionInfo(res).iWidth) || (CDisplaySettings::Get().GetResolutionInfo(m_Resolution).iHeight != CDisplaySettings::Get().GetResolutionInfo(res).iHeight))
+  if ((CDisplaySettings::GetInstance().GetResolutionInfo(m_Resolution).iWidth != CDisplaySettings::GetInstance().GetResolutionInfo(res).iWidth) || (CDisplaySettings::GetInstance().GetResolutionInfo(m_Resolution).iHeight != CDisplaySettings::GetInstance().GetResolutionInfo(res).iHeight))
   {
     // Nothing to do here
   }
@@ -589,90 +589,90 @@ void CGraphicContext::ResetOverscan(RESOLUTION res, OVERSCAN &overscan)
 
 void CGraphicContext::ResetScreenParameters(RESOLUTION res)
 {
-  ResetOverscan(res, CDisplaySettings::Get().GetResolutionInfo(res).Overscan);
-  CDisplaySettings::Get().GetResolutionInfo(res).fPixelRatio = GetPixelRatio(res);
+  ResetOverscan(res, CDisplaySettings::GetInstance().GetResolutionInfo(res).Overscan);
+  CDisplaySettings::GetInstance().GetResolutionInfo(res).fPixelRatio = GetPixelRatio(res);
   // 1080i
   switch (res)
   {
   case RES_HDTV_1080i:
-    CDisplaySettings::Get().GetResolutionInfo(res).iSubtitles = (int)(0.965 * 1080);
-    CDisplaySettings::Get().GetResolutionInfo(res).iWidth = 1920;
-    CDisplaySettings::Get().GetResolutionInfo(res).iHeight = 1080;
-    CDisplaySettings::Get().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_INTERLACED | D3DPRESENTFLAG_WIDESCREEN;
-    CDisplaySettings::Get().GetResolutionInfo(res).fPixelRatio = 1.0f;
-    CDisplaySettings::Get().GetResolutionInfo(res).strMode = "1080i 16:9";
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iSubtitles = (int)(0.965 * 1080);
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iWidth = 1920;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iHeight = 1080;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_INTERLACED | D3DPRESENTFLAG_WIDESCREEN;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).fPixelRatio = 1.0f;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).strMode = "1080i 16:9";
     break;
   case RES_HDTV_720p:
-    CDisplaySettings::Get().GetResolutionInfo(res).iSubtitles = (int)(0.965 * 720);
-    CDisplaySettings::Get().GetResolutionInfo(res).iWidth = 1280;
-    CDisplaySettings::Get().GetResolutionInfo(res).iHeight = 720;
-    CDisplaySettings::Get().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_PROGRESSIVE | D3DPRESENTFLAG_WIDESCREEN;
-    CDisplaySettings::Get().GetResolutionInfo(res).fPixelRatio = 1.0f;
-    CDisplaySettings::Get().GetResolutionInfo(res).strMode = "720p 16:9";
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iSubtitles = (int)(0.965 * 720);
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iWidth = 1280;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iHeight = 720;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_PROGRESSIVE | D3DPRESENTFLAG_WIDESCREEN;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).fPixelRatio = 1.0f;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).strMode = "720p 16:9";
     break;
   case RES_HDTV_480p_4x3:
-    CDisplaySettings::Get().GetResolutionInfo(res).iSubtitles = (int)(0.9 * 480);
-    CDisplaySettings::Get().GetResolutionInfo(res).iWidth = 720;
-    CDisplaySettings::Get().GetResolutionInfo(res).iHeight = 480;
-    CDisplaySettings::Get().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
-    CDisplaySettings::Get().GetResolutionInfo(res).fPixelRatio = 4320.0f / 4739.0f;
-    CDisplaySettings::Get().GetResolutionInfo(res).strMode = "480p 4:3";
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iSubtitles = (int)(0.9 * 480);
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iWidth = 720;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iHeight = 480;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).fPixelRatio = 4320.0f / 4739.0f;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).strMode = "480p 4:3";
     break;
   case RES_HDTV_480p_16x9:
-    CDisplaySettings::Get().GetResolutionInfo(res).iSubtitles = (int)(0.965 * 480);
-    CDisplaySettings::Get().GetResolutionInfo(res).iWidth = 720;
-    CDisplaySettings::Get().GetResolutionInfo(res).iHeight = 480;
-    CDisplaySettings::Get().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_PROGRESSIVE | D3DPRESENTFLAG_WIDESCREEN;
-    CDisplaySettings::Get().GetResolutionInfo(res).fPixelRatio = 4320.0f / 4739.0f*4.0f / 3.0f;
-    CDisplaySettings::Get().GetResolutionInfo(res).strMode = "480p 16:9";
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iSubtitles = (int)(0.965 * 480);
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iWidth = 720;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iHeight = 480;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_PROGRESSIVE | D3DPRESENTFLAG_WIDESCREEN;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).fPixelRatio = 4320.0f / 4739.0f*4.0f / 3.0f;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).strMode = "480p 16:9";
     break;
   case RES_NTSC_4x3:
-    CDisplaySettings::Get().GetResolutionInfo(res).iSubtitles = (int)(0.9 * 480);
-    CDisplaySettings::Get().GetResolutionInfo(res).iWidth = 720;
-    CDisplaySettings::Get().GetResolutionInfo(res).iHeight = 480;
-    CDisplaySettings::Get().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_INTERLACED;
-    CDisplaySettings::Get().GetResolutionInfo(res).fPixelRatio = 4320.0f / 4739.0f;
-    CDisplaySettings::Get().GetResolutionInfo(res).strMode = "NTSC 4:3";
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iSubtitles = (int)(0.9 * 480);
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iWidth = 720;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iHeight = 480;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_INTERLACED;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).fPixelRatio = 4320.0f / 4739.0f;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).strMode = "NTSC 4:3";
     break;
   case RES_NTSC_16x9:
-    CDisplaySettings::Get().GetResolutionInfo(res).iSubtitles = (int)(0.965 * 480);
-    CDisplaySettings::Get().GetResolutionInfo(res).iWidth = 720;
-    CDisplaySettings::Get().GetResolutionInfo(res).iHeight = 480;
-    CDisplaySettings::Get().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_INTERLACED | D3DPRESENTFLAG_WIDESCREEN;
-    CDisplaySettings::Get().GetResolutionInfo(res).fPixelRatio = 4320.0f / 4739.0f*4.0f / 3.0f;
-    CDisplaySettings::Get().GetResolutionInfo(res).strMode = "NTSC 16:9";
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iSubtitles = (int)(0.965 * 480);
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iWidth = 720;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iHeight = 480;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_INTERLACED | D3DPRESENTFLAG_WIDESCREEN;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).fPixelRatio = 4320.0f / 4739.0f*4.0f / 3.0f;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).strMode = "NTSC 16:9";
     break;
   case RES_PAL_4x3:
-    CDisplaySettings::Get().GetResolutionInfo(res).iSubtitles = (int)(0.9 * 576);
-    CDisplaySettings::Get().GetResolutionInfo(res).iWidth = 720;
-    CDisplaySettings::Get().GetResolutionInfo(res).iHeight = 576;
-    CDisplaySettings::Get().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_INTERLACED;
-    CDisplaySettings::Get().GetResolutionInfo(res).fPixelRatio = 128.0f / 117.0f;
-    CDisplaySettings::Get().GetResolutionInfo(res).strMode = "PAL 4:3";
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iSubtitles = (int)(0.9 * 576);
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iWidth = 720;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iHeight = 576;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_INTERLACED;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).fPixelRatio = 128.0f / 117.0f;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).strMode = "PAL 4:3";
     break;
   case RES_PAL_16x9:
-    CDisplaySettings::Get().GetResolutionInfo(res).iSubtitles = (int)(0.965 * 576);
-    CDisplaySettings::Get().GetResolutionInfo(res).iWidth = 720;
-    CDisplaySettings::Get().GetResolutionInfo(res).iHeight = 576;
-    CDisplaySettings::Get().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_INTERLACED | D3DPRESENTFLAG_WIDESCREEN;
-    CDisplaySettings::Get().GetResolutionInfo(res).fPixelRatio = 128.0f / 117.0f*4.0f / 3.0f;
-    CDisplaySettings::Get().GetResolutionInfo(res).strMode = "PAL 16:9";
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iSubtitles = (int)(0.965 * 576);
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iWidth = 720;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iHeight = 576;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_INTERLACED | D3DPRESENTFLAG_WIDESCREEN;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).fPixelRatio = 128.0f / 117.0f*4.0f / 3.0f;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).strMode = "PAL 16:9";
     break;
   case RES_PAL60_4x3:
-    CDisplaySettings::Get().GetResolutionInfo(res).iSubtitles = (int)(0.9 * 480);
-    CDisplaySettings::Get().GetResolutionInfo(res).iWidth = 720;
-    CDisplaySettings::Get().GetResolutionInfo(res).iHeight = 480;
-    CDisplaySettings::Get().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_INTERLACED;
-    CDisplaySettings::Get().GetResolutionInfo(res).fPixelRatio = 4320.0f / 4739.0f;
-    CDisplaySettings::Get().GetResolutionInfo(res).strMode = "PAL60 4:3";
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iSubtitles = (int)(0.9 * 480);
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iWidth = 720;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iHeight = 480;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_INTERLACED;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).fPixelRatio = 4320.0f / 4739.0f;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).strMode = "PAL60 4:3";
     break;
   case RES_PAL60_16x9:
-    CDisplaySettings::Get().GetResolutionInfo(res).iSubtitles = (int)(0.965 * 480);
-    CDisplaySettings::Get().GetResolutionInfo(res).iWidth = 720;
-    CDisplaySettings::Get().GetResolutionInfo(res).iHeight = 480;
-    CDisplaySettings::Get().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_INTERLACED | D3DPRESENTFLAG_WIDESCREEN;
-    CDisplaySettings::Get().GetResolutionInfo(res).fPixelRatio = 4320.0f / 4739.0f*4.0f / 3.0f;
-    CDisplaySettings::Get().GetResolutionInfo(res).strMode = "PAL60 16:9";
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iSubtitles = (int)(0.965 * 480);
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iWidth = 720;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).iHeight = 480;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).dwFlags = D3DPRESENTFLAG_INTERLACED | D3DPRESENTFLAG_WIDESCREEN;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).fPixelRatio = 4320.0f / 4739.0f*4.0f / 3.0f;
+    CDisplaySettings::GetInstance().GetResolutionInfo(res).strMode = "PAL60 16:9";
     break;
   default:
     break;
@@ -681,7 +681,7 @@ void CGraphicContext::ResetScreenParameters(RESOLUTION res)
 
 float CGraphicContext::GetPixelRatio(RESOLUTION iRes) const
 {
-  return CDisplaySettings::Get().GetResolutionInfo(iRes).fPixelRatio;
+  return CDisplaySettings::GetInstance().GetResolutionInfo(iRes).fPixelRatio;
 }
 
 void CGraphicContext::Clear(color_t color)
@@ -718,12 +718,12 @@ void CGraphicContext::ApplyStateBlock()
 
 const RESOLUTION_INFO &CGraphicContext::GetResInfo() const
 {
-  return CDisplaySettings::Get().GetResolutionInfo(m_Resolution);
+  return CDisplaySettings::GetInstance().GetResolutionInfo(m_Resolution);
 }
 
 void CGraphicContext::SetResInfo(RESOLUTION res, const RESOLUTION_INFO& info)
 {
-  RESOLUTION_INFO& curr = CDisplaySettings::Get().GetResolutionInfo(res);
+  RESOLUTION_INFO& curr = CDisplaySettings::GetInstance().GetResolutionInfo(res);
   curr.Overscan   = info.Overscan;
   curr.iSubtitles = info.iSubtitles;
   curr.fPixelRatio = info.fPixelRatio;
@@ -755,7 +755,7 @@ void CGraphicContext::GetGUIScaling(const RESOLUTION_INFO &res, float &scaleX, f
 
     // adjust for aspect ratio as zoom is given in the vertical direction and we don't
     // do aspect ratio corrections in the gui code
-    fZoom = fZoom / CDisplaySettings::Get().GetResolutionInfo(m_Resolution).fPixelRatio;
+    fZoom = fZoom / CDisplaySettings::GetInstance().GetResolutionInfo(m_Resolution).fPixelRatio;
     fToPosY -= fToHeight * fZoom * 0.5f;
     fToHeight *= fZoom + 1.0f;
 

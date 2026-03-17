@@ -572,7 +572,7 @@ void CGUIWindowFileManager::OnClick(int iList, int iItem)
   {
     if (CGUIDialogMediaSource::ShowAndAddMediaSource("files"))
     {
-      m_rootDir.SetSources(*CMediaSourceSettings::Get().GetSources("files"));
+      m_rootDir.SetSources(*CMediaSourceSettings::GetInstance().GetSources("files"));
       Update(0,m_Directory[0]->GetPath());
       Update(1,m_Directory[1]->GetPath());
     }
@@ -1018,7 +1018,7 @@ void CGUIWindowFileManager::OnPopupMenu(int list, int item, bool bContextDriven 
     // and do the popup menu
     if (CGUIDialogContextMenu::SourcesMenu("files", pItem, posX, posY))
     {
-      m_rootDir.SetSources(*CMediaSourceSettings::Get().GetSources("files"));
+      m_rootDir.SetSources(*CMediaSourceSettings::GetInstance().GetSources("files"));
       if (m_Directory[1 - list]->IsVirtualDirectoryRoot())
         Refresh();
       else
@@ -1174,7 +1174,7 @@ int64_t CGUIWindowFileManager::CalculateFolderSize(const std::string &strDirecto
   int64_t totalSize = 0;
   CFileItemList items;
   CVirtualDirectory rootDir;
-  rootDir.SetSources(*CMediaSourceSettings::Get().GetSources("files"));
+  rootDir.SetSources(*CMediaSourceSettings::GetInstance().GetSources("files"));
   rootDir.GetDirectory(pathToUrl, items, false);
   for (int i=0; i < items.Size(); i++)
   {
@@ -1252,7 +1252,7 @@ void CGUIWindowFileManager::SetInitialPath(const std::string &path)
 {
   // check for a passed destination path
   std::string strDestination = path;
-  m_rootDir.SetSources(*CMediaSourceSettings::Get().GetSources("files"));
+  m_rootDir.SetSources(*CMediaSourceSettings::GetInstance().GetSources("files"));
   if (!strDestination.empty())
   {
     CLog::Log(LOGINFO, "Attempting to quickpath to: %s", strDestination.c_str());
@@ -1260,7 +1260,7 @@ void CGUIWindowFileManager::SetInitialPath(const std::string &path)
   // otherwise, is this the first time accessing this window?
   else if (m_Directory[0]->GetPath() == "?")
   {
-    m_Directory[0]->SetPath(strDestination = CMediaSourceSettings::Get().GetDefaultSource("files"));
+    m_Directory[0]->SetPath(strDestination = CMediaSourceSettings::GetInstance().GetDefaultSource("files"));
     CLog::Log(LOGINFO, "Attempting to default to: %s", strDestination.c_str());
   }
   // try to open the destination path

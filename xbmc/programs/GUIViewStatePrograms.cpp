@@ -54,7 +54,7 @@ CGUIViewStateWindowPrograms::CGUIViewStateWindowPrograms(const CFileItemList& it
     AddSortMethod(SortBySize, 553, LABEL_MASKS("%K", "%I", "%K", "%I"));  // Filename, Size | Foldername, Size
     AddSortMethod(SortByFile, 561, LABEL_MASKS("%L", "%I", "%L", ""));  // Filename, Size | FolderName, empty
 
-    const CViewState *viewState = CViewStateSettings::Get().Get("programs");
+    const CViewState *viewState = CViewStateSettings::GetInstance().Get("programs");
     SetSortMethod(viewState->m_sortDescription);
     SetViewAsControl(viewState->m_viewMode);
     SetSortOrder(viewState->m_sortDescription.sortOrder);
@@ -65,7 +65,7 @@ CGUIViewStateWindowPrograms::CGUIViewStateWindowPrograms(const CFileItemList& it
 
 void CGUIViewStateWindowPrograms::SaveViewState()
 {
-  SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAMS, CViewStateSettings::Get().Get("programs"));
+  SaveViewToDb(m_items.GetPath(), WINDOW_PROGRAMS, CViewStateSettings::GetInstance().Get("programs"));
 }
 
 std::string CGUIViewStateWindowPrograms::GetLockType()
@@ -82,7 +82,7 @@ VECSOURCES& CGUIViewStateWindowPrograms::GetSources()
 {
   AddAddonsSource("executable", g_localizeStrings.Get(1043), "DefaultAddonProgram.png");
 
-  VECSOURCES *programSources = CMediaSourceSettings::Get().GetSources("programs");
+  VECSOURCES *programSources = CMediaSourceSettings::GetInstance().GetSources("programs");
   AddOrReplace(*programSources, CGUIViewState::GetSources());
   return *programSources;
 }
