@@ -45,6 +45,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "guilib/Key.h"
 #include "guilib/LocalizeStrings.h"
 #include "ContextMenuManager.h"
@@ -246,14 +247,14 @@ void CGUIDialogVideoInfo::OnInitWindow()
   m_hasUpdatedUserrating = false;
   m_bViewReview = true;
 
-  CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_REFRESH, (CProfilesManager::Get().GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser) && !StringUtils::StartsWithNoCase(m_movieItem->GetVideoInfoTag()->GetUniqueID(), "xx"));
-  CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_GET_THUMB, (CProfilesManager::Get().GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser) && !StringUtils::StartsWithNoCase(m_movieItem->GetVideoInfoTag()->GetUniqueID().c_str() + 2, "plugin"));
+  CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_REFRESH, (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser) && !StringUtils::StartsWithNoCase(m_movieItem->GetVideoInfoTag()->GetUniqueID(), "xx"));
+  CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_GET_THUMB, (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser) && !StringUtils::StartsWithNoCase(m_movieItem->GetVideoInfoTag()->GetUniqueID().c_str() + 2, "plugin"));
   // Disable video user rating button for plugins as they don't have tables to save this
   CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_USERRATING, !m_movieItem->IsPlugin());
 
   VIDEODB_CONTENT_TYPE type = static_cast<VIDEODB_CONTENT_TYPE>(m_movieItem->GetVideoContentType());
   if (type == VIDEODB_CONTENT_TVSHOWS || type == VIDEODB_CONTENT_MOVIES)
-    CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_GET_FANART, (CProfilesManager::Get().GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser) && !StringUtils::StartsWithNoCase(m_movieItem->GetVideoInfoTag()->GetUniqueID().c_str() + 2, "plugin"));
+    CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_GET_FANART, (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser) && !StringUtils::StartsWithNoCase(m_movieItem->GetVideoInfoTag()->GetUniqueID().c_str() + 2, "plugin"));
   else
     CONTROL_DISABLE(CONTROL_BTN_GET_FANART);
 
@@ -335,7 +336,7 @@ void CGUIDialogVideoInfo::SetMovie(const CFileItem *item)
       CFileItemPtr item(new CFileItem(it->strName));
       if (!it->thumb.empty())
         item->SetArt("thumb", it->thumb);
-      else if (CSettings::GetInstance().GetBool("videolibrary.actorthumbs"))
+      else if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videolibrary.actorthumbs"))
       { // backward compatibility
         std::string thumb = CScraperUrl::GetThumbURL(it->thumbUrl.GetFirstThumb());
         if (!thumb.empty())
@@ -386,7 +387,7 @@ void CGUIDialogVideoInfo::Update()
   // setup plot text area
   std::string strTmp = m_movieItem->GetVideoInfoTag()->m_strPlot;
   if (m_movieItem->GetVideoInfoTag()->m_type != MediaTypeTvShow)
-    if (m_movieItem->GetVideoInfoTag()->m_playCount == 0 && !CSettings::GetInstance().GetBool("videolibrary.showunwatchedplots"))
+    if (m_movieItem->GetVideoInfoTag()->m_playCount == 0 && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videolibrary.showunwatchedplots"))
       strTmp = g_localizeStrings.Get(20370);
 
   StringUtils::Trim(strTmp);
@@ -547,7 +548,7 @@ void CGUIDialogVideoInfo::DoSearch(std::string& strSearch, CFileItemList& items)
   db.GetMusicVideosByArtist(strSearch, movies);
   for (int i = 0; i < movies.Size(); ++i)
   {
-    std::string label = StringUtils::Join(movies[i]->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator) + " - " + movies[i]->GetVideoInfoTag()->m_strTitle;
+    std::string label = StringUtils::Join(movies[i]->GetVideoInfoTag()->m_artist, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator) + " - " + movies[i]->GetVideoInfoTag()->m_strTitle;
     if (movies[i]->GetVideoInfoTag()->HasYear())
       label += StringUtils::Format(" (%i)", movies[i]->GetVideoInfoTag()->GetYear());
     movies[i]->SetLabel(label);
@@ -1326,9 +1327,9 @@ bool CGUIDialogVideoInfo::DeleteVideoItem(const CFileItemPtr &item, bool unavail
     return false;
 
   // check if the user is allowed to delete the actual file as well
-  if (CSettings::GetInstance().GetBool("filelists.allowfiledeletion") &&
-      (CProfilesManager::Get().GetCurrentProfile().getLockMode() == LOCK_MODE_EVERYONE ||
-       !CProfilesManager::Get().GetCurrentProfile().filesLocked() ||
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.allowfiledeletion") &&
+      (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().getLockMode() == LOCK_MODE_EVERYONE ||
+       !CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().filesLocked() ||
        g_passwordManager.IsMasterLockUnlocked(true)))
   {
     std::string strDeletePath = item->GetVideoInfoTag()->GetPath();
@@ -1426,7 +1427,7 @@ bool CGUIDialogVideoInfo::GetMoviesForSet(const CFileItem *setItem, CFileItemLis
   if (dialog == nullptr)
     return false;
 
-  listItems.Sort(SortByLabel, SortOrderAscending, CSettings::GetInstance().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+  listItems.Sort(SortByLabel, SortOrderAscending, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
 
   dialog->Reset();
   dialog->SetMultiSelection(true);
@@ -1471,7 +1472,7 @@ bool CGUIDialogVideoInfo::GetSetForMovie(const CFileItem *movieItem, CFileItemPt
   std::string baseDir = "videodb://movies/sets/";
   if (!CDirectory::GetDirectory(baseDir, listItems, "", DIR_FLAG_DEFAULTS))
     return false;
-  listItems.Sort(SortByLabel, SortOrderAscending, CSettings::GetInstance().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+  listItems.Sort(SortByLabel, SortOrderAscending, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
 
   int currentSetId = 0;
   std::string currentSetLabel;
@@ -1607,7 +1608,7 @@ bool CGUIDialogVideoInfo::GetItemsForTag(const std::string &strHeading, const st
   if (dialog == nullptr)
     return false;
 
-  listItems.Sort(SortByLabel, SortOrderAscending, CSettings::GetInstance().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+  listItems.Sort(SortByLabel, SortOrderAscending, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
 
   dialog->Reset();
   dialog->SetMultiSelection(true);
@@ -1979,7 +1980,7 @@ bool CGUIDialogVideoInfo::LinkMovieToTvShow(const CFileItemPtr &item, bool bRemo
   int iSelectedLabel = 0;
   if (list.Size() > 1 || (!bRemove && !list.IsEmpty()))
   {
-    list.Sort(SortByLabel, SortOrderAscending, CSettings::GetInstance().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+    list.Sort(SortByLabel, SortOrderAscending, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
     CGUIDialogSelect* pDialog = static_cast<CGUIDialogSelect*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_SELECT));
     pDialog->Reset();
     pDialog->SetItems(list);

@@ -19,8 +19,10 @@
  */
 
 #include "Artist.h"
+#include "ServiceBroker.h"
 #include "utils/XMLUtils.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 
 #include <algorithm>
 
@@ -79,11 +81,11 @@ bool CArtist::Load(const TiXmlElement *artist, bool append, bool prioritise)
   XMLUtils::GetString(artist,                "name", strArtist);
   XMLUtils::GetString(artist, "musicBrainzArtistID", strMusicBrainzArtistID);
   XMLUtils::GetString(artist,            "sortname", strSortName);
-  XMLUtils::GetStringArray(artist,       "genre", genre, prioritise, g_advancedSettings.m_musicItemSeparator);
-  XMLUtils::GetStringArray(artist,       "style", styles, prioritise, g_advancedSettings.m_musicItemSeparator);
-  XMLUtils::GetStringArray(artist,        "mood", moods, prioritise, g_advancedSettings.m_musicItemSeparator);
-  XMLUtils::GetStringArray(artist, "yearsactive", yearsActive, prioritise, g_advancedSettings.m_musicItemSeparator);
-  XMLUtils::GetStringArray(artist, "instruments", instruments, prioritise, g_advancedSettings.m_musicItemSeparator);
+  XMLUtils::GetStringArray(artist,       "genre", genre, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
+  XMLUtils::GetStringArray(artist,       "style", styles, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
+  XMLUtils::GetStringArray(artist,        "mood", moods, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
+  XMLUtils::GetStringArray(artist, "yearsactive", yearsActive, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
+  XMLUtils::GetStringArray(artist, "instruments", instruments, prioritise, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
 
   XMLUtils::GetString(artist,      "born", strBorn);
   XMLUtils::GetString(artist,    "formed", strFormed);

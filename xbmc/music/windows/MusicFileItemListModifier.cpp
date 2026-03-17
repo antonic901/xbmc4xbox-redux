@@ -19,10 +19,12 @@
 */
 
 #include "MusicFileItemListModifier.h"
+#include "ServiceBroker.h"
 #include "filesystem/MusicDatabaseDirectory/DirectoryNode.h"
 #include "FileItem.h"
 #include "music/MusicDbUrl.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "guilib/LocalizeStrings.h"
 #include "settings/AdvancedSettings.h"
 
@@ -58,7 +60,7 @@ void CMusicFileItemListModifier::AddQueuingFolder(CFileItemList& items)
     return;
 
   // always show "all" items by default
-  if (!CSettings::GetInstance().GetBool("musiclibrary.showallitems"))
+  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musiclibrary.showallitems"))
     return;
 
   // no need for "all" item when only one item
@@ -94,10 +96,10 @@ void CMusicFileItemListModifier::AddQueuingFolder(CFileItemList& items)
   if (pItem)
   {
     pItem->m_bIsFolder = true;
-    pItem->SetSpecialSort(g_advancedSettings.m_bMusicLibraryAllItemsOnBottom ? SortSpecialOnBottom : SortSpecialOnTop);
+    pItem->SetSpecialSort(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bMusicLibraryAllItemsOnBottom ? SortSpecialOnBottom : SortSpecialOnTop);
     pItem->SetCanQueue(false);
     pItem->SetLabelPreformated(true);
-    if (g_advancedSettings.m_bMusicLibraryAllItemsOnBottom)
+    if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bMusicLibraryAllItemsOnBottom)
       items.Add(pItem);
     else
       items.AddFront(pItem, (items.Size() > 0 && items[0]->IsParentFolder()) ? 1 : 0);

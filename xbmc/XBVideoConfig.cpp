@@ -21,6 +21,7 @@
 #include "system.h"
 #include "XBVideoConfig.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "xbox/Undocumented.h"
@@ -47,14 +48,14 @@ XBVideoConfig::~XBVideoConfig()
 void XBVideoConfig::OnSettingsLoaded()
 {
   if (HasLetterbox())
-    CSettings::GetInstance().SetInt("videooutput.aspect", VIDEO_LETTERBOX);
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("videooutput.aspect", VIDEO_LETTERBOX);
   else if (HasWidescreen())
-    CSettings::GetInstance().SetInt("videooutput.aspect", VIDEO_WIDESCREEN);
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("videooutput.aspect", VIDEO_WIDESCREEN);
   else
-    CSettings::GetInstance().SetInt("videooutput.aspect", VIDEO_NORMAL);
-  CSettings::GetInstance().SetBool("videooutput.hd480p", Has480p());
-  CSettings::GetInstance().SetBool("videooutput.hd720p", Has720p());
-  CSettings::GetInstance().SetBool("videooutput.hd1080i", Has1080i());
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("videooutput.aspect", VIDEO_NORMAL);
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("videooutput.hd480p", Has480p());
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("videooutput.hd720p", Has720p());
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("videooutput.hd1080i", Has1080i());
 }
 
 bool XBVideoConfig::HasPAL() const

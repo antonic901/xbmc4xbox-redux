@@ -30,6 +30,7 @@
 #include "guilib/Key.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 
 using namespace MUSIC_INFO;
 
@@ -48,7 +49,7 @@ CGUIWindowVisualisation::CGUIWindowVisualisation(void)
 bool CGUIWindowVisualisation::OnAction(const CAction &action)
 {
 #ifndef _XBOX
-  if (CSettings::GetInstance().GetBool(CSettings::SETTING_PVRPLAYBACK_CONFIRMCHANNELSWITCH) &&
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_PVRPLAYBACK_CONFIRMCHANNELSWITCH) &&
       CServiceBroker::GetGUI()->GetInfoManager().IsPlayerChannelPreviewActive() &&
       (action.GetID() == ACTION_SELECT_ITEM || CButtonTranslator::GetInstance().GetGlobalAction(action.GetButtonCode()).GetID() == ACTION_SELECT_ITEM))
   {
@@ -74,7 +75,7 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
   case ACTION_SHOW_INFO:
     {
       m_initTimer.Stop();
-      CSettings::GetInstance().SetBool("mymusic.songthumbinvis", CServiceBroker::GetGUI()->GetInfoManager().ToggleShowInfo());
+      CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("mymusic.songthumbinvis", CServiceBroker::GetGUI()->GetInfoManager().ToggleShowInfo());
       return true;
     }
     break;
@@ -85,7 +86,7 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
 
   case ACTION_SHOW_GUI:
     // save the settings
-    CSettings::GetInstance().Save();
+    CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
     CServiceBroker::GetGUI()->GetWindowManager().PreviousWindow();
     return true;
     break;
@@ -164,7 +165,7 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
   case GUI_MSG_WINDOW_DEINIT:
     {
       if (IsActive()) // save any changed settings from the OSD
-        CSettings::GetInstance().Save();
+        CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 
       // close all active modal dialogs
       CServiceBroker::GetGUI()->GetWindowManager().CloseInternalModalDialogs(true);
@@ -186,7 +187,7 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
       if (CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag())
         m_tag = *CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag();
 
-      if (CSettings::GetInstance().GetBool("mymusic.songthumbinvis"))
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("mymusic.songthumbinvis"))
       { // always on
         m_initTimer.Stop();
       }
@@ -212,10 +213,10 @@ void CGUIWindowVisualisation::FrameMove()
     m_initTimer.StartZero();
     CServiceBroker::GetGUI()->GetInfoManager().SetShowInfo(true);
   }
-  if (m_initTimer.IsRunning() && m_initTimer.GetElapsedSeconds() > (float)g_advancedSettings.m_songInfoDuration)
+  if (m_initTimer.IsRunning() && m_initTimer.GetElapsedSeconds() > (float)CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_songInfoDuration)
   {
     m_initTimer.Stop();
-    if (!CSettings::GetInstance().GetBool("mymusic.songthumbinvis"))
+    if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("mymusic.songthumbinvis"))
     { // reached end of fade in, fade out again
       CServiceBroker::GetGUI()->GetInfoManager().SetShowInfo(false);
     }

@@ -27,6 +27,7 @@
 #include "File.h"
 #include "FileItem.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/Crc32.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/LegacyPathTranslation.h"
@@ -238,7 +239,7 @@ std::string CVideoDatabaseDirectory::GetIcon(const std::string &strDirectory)
   case NODE_TYPE_TITLE_MOVIES:
     if (URIUtils::PathEquals(path, "videodb://movies/titles/"))
     {
-      if (CSettings::GetInstance().GetBool("myvideos.flatten"))
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.flatten"))
         return "DefaultMovies.png";
       return "DefaultMovieTitle.png";
     }
@@ -246,7 +247,7 @@ std::string CVideoDatabaseDirectory::GetIcon(const std::string &strDirectory)
   case NODE_TYPE_TITLE_TVSHOWS:
     if (URIUtils::PathEquals(path, "videodb://tvshows/titles/"))
     {
-      if (CSettings::GetInstance().GetBool("myvideos.flatten"))
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.flatten"))
         return "DefaultTVShows.png";
       return "DefaultTVShowTitle.png";
     }
@@ -254,7 +255,7 @@ std::string CVideoDatabaseDirectory::GetIcon(const std::string &strDirectory)
   case NODE_TYPE_TITLE_MUSICVIDEOS:
     if (URIUtils::PathEquals(path, "videodb://musicvideos/titles/"))
     {
-      if (CSettings::GetInstance().GetBool("myvideos.flatten"))
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.flatten"))
         return "DefaultMusicVideos.png";
       return "DefaultMusicVideoTitle.png";
     }

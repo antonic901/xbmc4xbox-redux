@@ -25,6 +25,7 @@
 #include "programs/dialogs/GUIDialogProgramInfo.h"
 #include "programs/dialogs/GUIDialogProgramSettings.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/XMLUtils.h"
@@ -64,7 +65,7 @@ bool CProgramSettings::IsVisible(const CFileItem& item) const
   if (item.m_bIsFolder)
     return false;
 
-  return URIUtils::HasExtension(item.GetPath(), g_advancedSettings.m_programExtensions);
+  return URIUtils::HasExtension(item.GetPath(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programExtensions);
 }
 
 bool CProgramSettings::Execute(const boost::shared_ptr<CFileItem>& item) const
@@ -83,7 +84,7 @@ bool CScriptLaunch::IsVisible(const CFileItem& item) const
   if (item.m_bIsFolder)
     return URIUtils::IsDOSPath(item.GetPath());
 
-  return URIUtils::HasExtension(item.GetPath(), g_advancedSettings.m_programExtensions);
+  return URIUtils::HasExtension(item.GetPath(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programExtensions);
 }
 
 bool CScriptLaunch::Execute(const boost::shared_ptr<CFileItem>& item) const

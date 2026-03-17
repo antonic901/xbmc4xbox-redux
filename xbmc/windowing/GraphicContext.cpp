@@ -27,6 +27,7 @@
 #include "settings/DisplaySettings.h"
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #ifdef HAS_XBOX_D3D
  #include "xgraphics.h"
  #define D3D_CLEAR_STENCIL D3DCLEAR_STENCIL
@@ -546,8 +547,8 @@ void CGraphicContext::SetScreenFilters(bool useFullScreenFilters)
     // These are only valid here and nowhere else
     // set soften on/off
 #ifdef HAS_XBOX_D3D
-    m_pd3dDevice->SetSoftDisplayFilter(useFullScreenFilters ? CSettings::GetInstance().GetBool("videoplayer.soften") : CSettings::GetInstance().GetBool("videoscreen.soften"));
-    m_pd3dDevice->SetFlickerFilter(useFullScreenFilters ? CSettings::GetInstance().GetInt("videoplayer.flicker") : CSettings::GetInstance().GetInt("videoscreen.flickerfilter"));
+    m_pd3dDevice->SetSoftDisplayFilter(useFullScreenFilters ? CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videoplayer.soften") : CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videoscreen.soften"));
+    m_pd3dDevice->SetFlickerFilter(useFullScreenFilters ? CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoplayer.flicker") : CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoscreen.flickerfilter"));
 #endif
   }
   Unlock();
@@ -742,7 +743,7 @@ void CGraphicContext::GetGUIScaling(const RESOLUTION_INFO &res, float &scaleX, f
     float fToHeight   = (float)info.Overscan.bottom - fToPosY;
 
     if(!g_guiSkinzoom) // lookup gui setting if we didn't have it already
-      g_guiSkinzoom = (CSettingInt*)CSettings::GetInstance().GetSetting("lookandfeel.skinzoom");
+      g_guiSkinzoom = (CSettingInt*)CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.skinzoom");
 
     float fZoom = 1.0f;
     if(g_guiSkinzoom)

@@ -32,6 +32,7 @@
 #include "DVDClock.h" // for DVD_TIME_BASE
 #include "commons/Exception.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "filesystem/File.h"
 #include "filesystem/CurlFile.h"
 #include "filesystem/Directory.h"
@@ -99,9 +100,9 @@ void ff_avutil_log(void* ptr, int level, const char* format, va_list va)
   AVClass* avc= ptr ? *(AVClass**)ptr : NULL;
 
   if(level >= AV_LOG_DEBUG && 
-     (g_advancedSettings.m_extraLogLevels & LOGFFMPEG) == 0)
+     (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_extraLogLevels & LOGFFMPEG) == 0)
     return;
-  else if(g_advancedSettings.m_logLevel <= LOG_LEVEL_NORMAL)
+  else if(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel <= LOG_LEVEL_NORMAL)
     return;
 
   int type;
@@ -358,7 +359,7 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput)
         // the advancedsetting is for allowing the user to force outputting the
         // 44.1 kHz DTS wav file as PCM, so that an A/V receiver can decode
         // it (this is temporary until we handle 44.1 kHz passthrough properly)
-        if (trySPDIFonly || (iformat && strcmp(iformat->name, "wav") == 0 && !g_advancedSettings.m_dvdplayerIgnoreDTSinWAV))
+        if (trySPDIFonly || (iformat && strcmp(iformat->name, "wav") == 0 && !CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_dvdplayerIgnoreDTSinWAV))
         {
           // check for spdif and dts
           // This is used with wav files and audio CDs that may contain
@@ -607,7 +608,7 @@ AVDictionary *CDVDDemuxFFmpeg::GetFFMpegOptionsFromInput()
     }
     if (!hasUserAgent)
       // set default xbmc user-agent.
-      m_dllAvUtil.av_dict_set(&options, "user-agent", g_advancedSettings.m_userAgent.c_str(), 0);
+      m_dllAvUtil.av_dict_set(&options, "user-agent", CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_userAgent.c_str(), 0);
 
     if (!headers.empty())
       m_dllAvUtil.av_dict_set(&options, "headers", headers.c_str(), 0);
@@ -1294,7 +1295,7 @@ void CDVDDemuxFFmpeg::AddStream(int iId, CDemuxStream* stream)
     delete res.first->second;
     res.first->second = stream;
   }
-  if(g_advancedSettings.m_logLevel > LOG_LEVEL_NORMAL)
+  if(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel > LOG_LEVEL_NORMAL)
     CLog::Log(LOGDEBUG, "CDVDDemuxFFmpeg::AddStream(%d, ...) -> %d", iId, stream->iId);
 }
 

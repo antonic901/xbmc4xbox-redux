@@ -3,6 +3,7 @@
 #include "conio.h"
 #include "Application.h" // for g_application.IsInScreenSaver()
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/log.h"
 
@@ -18,7 +19,7 @@ CX3LCD::CX3LCD()
   m_iColumns = 20;        // display rows each line
   m_iBackLight=32;
 
-  if (CSettings::GetInstance().GetInt("lcd.type") == LCD_TYPE_LCD_KS0073)
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.type") == LCD_TYPE_LCD_KS0073)
   {
     // Special case: it's the KS0073
     m_iRow1adr = 0x00;
@@ -45,7 +46,7 @@ CX3LCD::~CX3LCD()
 void CX3LCD::Initialize()
 {
 	StopThread();
-	if (CSettings::GetInstance().GetInt("lcd.type") == LCD_TYPE_NONE) 
+	if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.type") == LCD_TYPE_NONE) 
 	{
     CLog::Log(LOGINFO, "lcd not used");
     return;
@@ -62,7 +63,7 @@ void CX3LCD::SetContrast(int iContrast) { }
 //*************************************************************************************************************
 void CX3LCD::Stop()
 {
-	if (CSettings::GetInstance().GetInt("lcd.type") == LCD_TYPE_NONE) 
+	if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.type") == LCD_TYPE_NONE) 
 		return;
 	StopThread();
 }
@@ -70,7 +71,7 @@ void CX3LCD::Stop()
 //*************************************************************************************************************
 void CX3LCD::SetLine(int iLine, const CStdString& strLine)
 {
-	if (CSettings::GetInstance().GetInt("lcd.type") == LCD_TYPE_NONE) 
+	if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.type") == LCD_TYPE_NONE) 
 		return;
 	if (iLine < 0 || iLine >= (int)m_iRows) 
 		return;
@@ -373,13 +374,13 @@ void CX3LCD::Process()
 {
 	int iOldLight=-1;  
 
-	m_iColumns = g_advancedSettings.m_lcdColumns;
-	m_iRows    = g_advancedSettings.m_lcdRows;
-	m_iRow1adr = g_advancedSettings.m_lcdAddress1;
-	m_iRow2adr = g_advancedSettings.m_lcdAddress2;
-	m_iRow3adr = g_advancedSettings.m_lcdAddress3;
-	m_iRow4adr = g_advancedSettings.m_lcdAddress4;
-	m_iBackLight= CSettings::GetInstance().GetInt("lcd.backlight");
+	m_iColumns = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_lcdColumns;
+	m_iRows    = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_lcdRows;
+	m_iRow1adr = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_lcdAddress1;
+	m_iRow2adr = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_lcdAddress2;
+	m_iRow3adr = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_lcdAddress3;
+	m_iRow4adr = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_lcdAddress4;
+	m_iBackLight= CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.backlight");
 	if (m_iRows >= MAX_ROWS) 
 		m_iRows = MAX_ROWS - 1;
 

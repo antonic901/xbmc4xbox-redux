@@ -60,6 +60,7 @@ public:
   static void SetUserHomePath(const CStdString &path);
   static void SetMasterProfilePath(const CStdString &path);
   static void SetTempPath(const CStdString &path);
+  static void SetLogPath(const std::string &dir);
 
   static bool ComparePath(const CStdString &path1, const CStdString &path2);
   static void LogPaths();

@@ -33,6 +33,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/StringUtils.h"
 #include "xbox/IoSupport.h"
@@ -203,13 +204,13 @@ CEncoder* CCDDARipJob::SetupEncoder(CFile& reader)
 
   encoder->SetComment("Ripped with XBMC");
   encoder->SetArtist(StringUtils::Join(m_tag.GetArtist(),
-                                      g_advancedSettings.m_musicItemSeparator));
+                                      CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   encoder->SetTitle(m_tag.GetTitle());
   encoder->SetAlbum(m_tag.GetAlbum());
   encoder->SetAlbumArtist(StringUtils::Join(m_tag.GetAlbumArtist(),
-                                      g_advancedSettings.m_musicItemSeparator));
+                                      CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   encoder->SetGenre(StringUtils::Join(m_tag.GetGenre(),
-                                      g_advancedSettings.m_musicItemSeparator));
+                                      CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   encoder->SetTrack(strTrack);
   encoder->SetTrackLength(static_cast<int>(reader.GetLength()));
   encoder->SetYear(m_tag.GetYearString());

@@ -19,7 +19,9 @@
  */
 
 #include "VorbisTag.h"
+#include "ServiceBroker.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"
 
 using namespace MUSIC_INFO;
@@ -99,7 +101,7 @@ int CVorbisTag::ParseTagEntry(CStdString& strTagEntry)
 
   if ( strTagType == "MUSICBRAINZ_ARTISTID" )
   {
-    tag.SetMusicBrainzArtistID(StringUtils::Split(strTagValue, g_advancedSettings.m_musicItemSeparator));
+    tag.SetMusicBrainzArtistID(StringUtils::Split(strTagValue, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   }
 
   if ( strTagType == "MUSICBRAINZ_ALBUMID" )
@@ -109,7 +111,7 @@ int CVorbisTag::ParseTagEntry(CStdString& strTagEntry)
 
   if ( strTagType == "MUSICBRAINZ_ALBUMARTISTID" )
   {
-    tag.SetMusicBrainzAlbumArtistID(StringUtils::Split(strTagValue, g_advancedSettings.m_musicItemSeparator));
+    tag.SetMusicBrainzAlbumArtistID(StringUtils::Split(strTagValue, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   }
 
   if ( strTagType == "COMMENT" || strTagType == "DESCRIPTION" )

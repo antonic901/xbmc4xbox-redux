@@ -34,6 +34,7 @@
 #include "guilib/Key.h"
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/VideoSettings.h"
 #include "settings/lib/Setting.h"
 #include "utils/JobManager.h"
@@ -175,7 +176,7 @@ void CGUIDialogSubtitles::OnInitWindow()
 {
   // Pause the video if the user has requested it
   m_pausedOnRun = false;
-  if (CSettings::GetInstance().GetBool("subtitles.pauseonsearch") && !g_application.m_pPlayer->IsPaused())
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("subtitles.pauseonsearch") && !g_application.m_pPlayer->IsPaused())
   {
     g_application.m_pPlayer->Pause();
     m_pausedOnRun = true;
@@ -249,10 +250,10 @@ void CGUIDialogSubtitles::FillServices()
   if (item.GetVideoContentType() == VIDEODB_CONTENT_TVSHOWS ||
       item.GetVideoContentType() == VIDEODB_CONTENT_EPISODES)
     // Set default service for tv shows
-    defaultService = CSettings::GetInstance().GetString("subtitles.tv");
+    defaultService = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.tv");
   else
     // Set default service for filemode and movies
-    defaultService = CSettings::GetInstance().GetString("subtitles.movie");
+    defaultService = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.movie");
 
   std::string service = addons.front()->ID();
   for (VECADDONS::const_iterator addonIt = addons.begin(); addonIt != addons.end(); ++addonIt)
@@ -330,7 +331,7 @@ void CGUIDialogSubtitles::Search(const std::string &search/*=""*/)
   else
     url.SetOption("action", "search");
 
-  const CSetting *setting = CSettings::GetInstance().GetSetting("subtitles.languages");
+  const CSetting *setting = CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("subtitles.languages");
   if (setting)
     url.SetOption("languages", setting->ToString());
 
@@ -338,7 +339,7 @@ void CGUIDialogSubtitles::Search(const std::string &search/*=""*/)
   if (g_application.CurrentFileItem().IsStack())
     url.SetOption("stack", "1");
 
-  std::string preferredLanguage = CSettings::GetInstance().GetString("locale.subtitlelanguage");
+  std::string preferredLanguage = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("locale.subtitlelanguage");
 
   if(StringUtils::EqualsNoCase(preferredLanguage, "original"))
   {
@@ -380,7 +381,7 @@ void CGUIDialogSubtitles::OnSearchComplete(const CFileItemList *items)
   m_updateSubsList = true;
 
   if (!items->IsEmpty() && g_application.m_pPlayer->GetSubtitleCount() == 0 &&
-    m_LastAutoDownloaded != g_application.CurrentFile() && CSettings::GetInstance().GetBool("subtitles.downloadfirst"))
+    m_LastAutoDownloaded != g_application.CurrentFile() && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("subtitles.downloadfirst"))
   {
     CFileItemPtr item = items->Get(0);
     CLog::Log(LOGDEBUG, "%s - Automatically download first subtitle: %s", __FUNCTION__, item->GetLabel2().c_str());
@@ -446,7 +447,7 @@ void CGUIDialogSubtitles::OnDownloadComplete(const CFileItemList *items, const s
     return;
   }
 
-  SUBTITLE_STORAGEMODE storageMode = (SUBTITLE_STORAGEMODE) CSettings::GetInstance().GetInt("subtitles.storagemode");
+  SUBTITLE_STORAGEMODE storageMode = (SUBTITLE_STORAGEMODE) CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.storagemode");
 
   // Get (unstacked) path
   std::string strCurrentFile = g_application.CurrentUnstackedItem().GetPath();

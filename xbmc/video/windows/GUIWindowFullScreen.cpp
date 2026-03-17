@@ -43,6 +43,7 @@
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
 #include "LocalizeStrings.h"
@@ -270,58 +271,58 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
 
   case ACTION_SUBTITLE_DELAY_MIN:
     CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay -= 0.1f;
-    if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay < -g_advancedSettings.m_videoSubsDelayRange)
-      CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay = -g_advancedSettings.m_videoSubsDelayRange;
+    if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay < -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange)
+      CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay = -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange;
     g_application.m_pPlayer->SetSubTitleDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
 
     ShowSlider(action.GetID(), 22006, CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay,
-                                      -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
-                                       g_advancedSettings.m_videoSubsDelayRange);
+                                      -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange, 0.1f,
+                                       CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange);
     return true;
     break;
   case ACTION_SUBTITLE_DELAY_PLUS:
     CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay += 0.1f;
-    if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay > g_advancedSettings.m_videoSubsDelayRange)
-      CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay = g_advancedSettings.m_videoSubsDelayRange;
+    if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay > CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange)
+      CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange;
     g_application.m_pPlayer->SetSubTitleDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
 
     ShowSlider(action.GetID(), 22006, CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay,
-                                      -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
-                                       g_advancedSettings.m_videoSubsDelayRange);
+                                      -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange, 0.1f,
+                                       CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange);
     return true;
     break;
   case ACTION_SUBTITLE_DELAY:
     ShowSlider(action.GetID(), 22006, CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay,
-                                      -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
-                                       g_advancedSettings.m_videoSubsDelayRange, true);
+                                      -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange, 0.1f,
+                                       CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoSubsDelayRange, true);
     return true;
     break;
   case ACTION_AUDIO_DELAY:
     ShowSlider(action.GetID(), 297, CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay,
-                                    -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
-                                     g_advancedSettings.m_videoAudioDelayRange, true);
+                                    -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange, 0.025f,
+                                     CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange, true);
     return true;
     break;
   case ACTION_AUDIO_DELAY_MIN:
     CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay -= 0.025f;
-    if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay < -g_advancedSettings.m_videoAudioDelayRange)
-      CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay = -g_advancedSettings.m_videoAudioDelayRange;
+    if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay < -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange)
+      CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay = -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange;
     g_application.m_pPlayer->SetAVDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay);
 
     ShowSlider(action.GetID(), 297, CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay,
-                                    -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
-                                     g_advancedSettings.m_videoAudioDelayRange);
+                                    -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange, 0.025f,
+                                     CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange);
     return true;
     break;
   case ACTION_AUDIO_DELAY_PLUS:
     CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay += 0.025f;
-    if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay > g_advancedSettings.m_videoAudioDelayRange)
-      CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay = g_advancedSettings.m_videoAudioDelayRange;
+    if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay > CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange)
+      CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange;
     g_application.m_pPlayer->SetAVDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay);
 
     ShowSlider(action.GetID(), 297, CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay,
-                                    -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
-                                     g_advancedSettings.m_videoAudioDelayRange);
+                                    -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange, 0.025f,
+                                     CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoAudioDelayRange);
     return true;
     break;
   case ACTION_AUDIO_NEXT_LANGUAGE:
@@ -490,7 +491,7 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
       //  from HDD all the time.
       if (
         !g_application.CurrentFileItem().IsHD() &&
-        (CSettings::GetInstance().GetInt("harddisk.remoteplayspindown") || CSettings::GetInstance().GetInt("harddisk.spindowntime"))
+        (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("harddisk.remoteplayspindown") || CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("harddisk.spindowntime"))
       )
       {
         CServiceBroker::GetGUI()->GetAudioManager().Enable(false);
@@ -522,12 +523,12 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
         CSingleLock lock (m_fontLock);
 
         CStdString fontPath = "special://xbmc/media/Fonts/";
-        fontPath += CSettings::GetInstance().GetString("subtitles.font");
+        fontPath += CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.font");
 
         // We scale based on PAL4x3 - this at least ensures all sizing is constant across resolutions.
         RESOLUTION_INFO pal(720, 576, 0);
-        CGUIFont *subFont = g_fontManager.LoadTTF("__subtitle__", fontPath, color[CSettings::GetInstance().GetInt("subtitles.color")], 0, CSettings::GetInstance().GetInt("subtitles.height"), CSettings::GetInstance().GetInt("subtitles.style"), false, 1.0f, 1.0f, &pal, true);
-        CGUIFont *borderFont = g_fontManager.LoadTTF("__subtitleborder__", fontPath, 0xFF000000, 0, CSettings::GetInstance().GetInt("subtitles.height"), CSettings::GetInstance().GetInt("subtitles.style"), true, 1.0f, 1.0f, &pal, true);
+        CGUIFont *subFont = g_fontManager.LoadTTF("__subtitle__", fontPath, color[CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.color")], 0, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.height"), CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.style"), false, 1.0f, 1.0f, &pal, true);
+        CGUIFont *borderFont = g_fontManager.LoadTTF("__subtitleborder__", fontPath, 0xFF000000, 0, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.height"), CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.style"), true, 1.0f, 1.0f, &pal, true);
         if (!subFont || !borderFont)
           CLog::Log(LOGERROR, "CGUIWindowFullScreen::OnMessage(WINDOW_INIT) - Unable to load subtitle font");
         else
@@ -545,7 +546,7 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
 
       CGUIWindow::OnMessage(message);
 
-      CSettings::GetInstance().Save();
+      CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 
       CSingleLock lock (CServiceBroker::GetWinSystem()->GetGfxContext());
       CUtil::RestoreBrightnessContrastGamma();
@@ -713,13 +714,13 @@ void CGUIWindowFullScreen::RenderFullScreen()
     {
       CStdString strStatus;
       strStatus.Format("%ix%i %s", CDisplaySettings::Get().GetResolutionInfo(iResolution).iWidth, CDisplaySettings::Get().GetResolutionInfo(iResolution).iHeight, CDisplaySettings::Get().GetResolutionInfo(iResolution).strMode.c_str());
-      if (CSettings::GetInstance().GetBool("videoplayer.soften"))
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videoplayer.soften"))
         strStatus += "  |  Soften";
       else
         strStatus += "  |  No Soften";
 
       CStdString strFilter;
-      strFilter.Format("  |  Flicker Filter: %i", CSettings::GetInstance().GetInt("videoplayer.flicker"));
+      strFilter.Format("  |  Flicker Filter: %i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoplayer.flicker"));
       strStatus += strFilter;
       CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), LABEL_ROW3);
       msg.SetLabel(strStatus);

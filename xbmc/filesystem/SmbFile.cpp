@@ -32,6 +32,7 @@
 #include "libsmb/xbLibSmb.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "threads/SingleLock.h"
 #include "Util.h"
 #include "utils/StringUtils.h"
@@ -99,11 +100,11 @@ void CSMB::Init()
     set_log_callback(xb_smbc_log);
 #endif
     // set workgroup for samba, after smbc_init it can be freed();
-    xb_setSambaWorkgroup((char*)CSettings::GetInstance().GetString("smb.workgroup").c_str());
+    xb_setSambaWorkgroup((char*)CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("smb.workgroup").c_str());
 
     // setup our context
     m_context = smbc_new_context();
-    m_context->debug = (g_advancedSettings.m_extraLogLevels & LOGSAMBA?10:0);
+    m_context->debug = (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_extraLogLevels & LOGSAMBA?10:0);
     smbc_init(xb_smbc_auth, 0);
     m_context->callbacks.auth_fn = xb_smbc_auth;
     orig_cache = m_context->callbacks.get_cached_srv_fn;
@@ -112,7 +113,7 @@ void CSMB::Init()
     m_context->options.browse_max_lmb_count = 0;
 
     /* set connection timeout. since samba always tries two ports, divide this by two the correct value */
-    m_context->timeout = g_advancedSettings.m_sambaclienttimeout * 1000;
+    m_context->timeout = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_sambaclienttimeout * 1000;
 
     // initialize samba and do some hacking into the settings
     if (smbc_init_context(m_context))
@@ -121,16 +122,16 @@ void CSMB::Init()
       smbc_set_context(m_context);
 
       // if a wins-server is set, we have to change name resolve order to
-      if ( CSettings::GetInstance().GetString("smb.winsserver").length() > 0 && !StringUtils::EqualsNoCase(CSettings::GetInstance().GetString("smb.winsserver"), "0.0.0.0") )
+      if ( CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("smb.winsserver").length() > 0 && !StringUtils::EqualsNoCase(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("smb.winsserver"), "0.0.0.0") )
       {
-        lp_do_parameter( -1, "wins server", CSettings::GetInstance().GetString("smb.winsserver").c_str());
+        lp_do_parameter( -1, "wins server", CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("smb.winsserver").c_str());
         lp_do_parameter( -1, "name resolve order", "bcast wins host");
       }
       else
         lp_do_parameter( -1, "name resolve order", "bcast host");
 
-      if (g_advancedSettings.m_sambadoscodepage.length() > 0)
-        lp_do_parameter( -1, "dos charset", g_advancedSettings.m_sambadoscodepage.c_str());
+      if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_sambadoscodepage.length() > 0)
+        lp_do_parameter( -1, "dos charset", CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_sambadoscodepage.c_str());
       else
         lp_do_parameter( -1, "dos charset", "CP850");
     }

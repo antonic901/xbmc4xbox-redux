@@ -22,6 +22,7 @@
 #include "CodecFactory.h"
 #include "Application.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "FileItem.h"
 #include "threads/SingleLock.h"
 #include "utils/log.h"
@@ -76,13 +77,13 @@ bool CAudioDecoder::Create(const CFileItem &file, __int64 seekOffset, unsigned i
   m_eof = false;
 
   // get correct cache size
-  unsigned int filecache = CSettings::GetInstance().GetInt("cacheaudio.internet");
+  unsigned int filecache = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("cacheaudio.internet");
   if ( file.IsHD() )
-    filecache = CSettings::GetInstance().GetInt("cache.harddisk");
+    filecache = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("cache.harddisk");
   else if ( file.IsOnDVD() )
-    filecache = CSettings::GetInstance().GetInt("cacheaudio.dvdrom");
+    filecache = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("cacheaudio.dvdrom");
   else if ( file.IsOnLAN() )
-    filecache = CSettings::GetInstance().GetInt("cacheaudio.lan");
+    filecache = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("cacheaudio.lan");
 
   // create our codec
   m_codec=CodecFactory::CreateCodecDemux(file.GetPath(), file.GetMimeType(), filecache * 1024);

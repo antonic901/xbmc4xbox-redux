@@ -32,6 +32,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "FileItem.h"
 #include "utils/Crc32.h"
 #include "guilib/LocalizeStrings.h"
@@ -42,7 +43,7 @@
 
 using namespace std;
 
-#define BOOKMARK_THUMB_WIDTH g_advancedSettings.GetThumbSize()
+#define BOOKMARK_THUMB_WIDTH CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetThumbSize()
 
 #define CONTROL_ADD_BOOKMARK           2
 #define CONTROL_CLEAR_BOOKMARKS        3
@@ -262,7 +263,7 @@ void CGUIDialogVideoBookmarks::AddBookmark(CVideoInfoTag* tag)
     Crc32 crc;
     crc.ComputeFromLowerCase(g_application.CurrentFile());
     bookmark.thumbNailImage = StringUtils::Format("%08x_%i.jpg", (unsigned __int32) crc, m_vecItems->Size() + 1);
-    bookmark.thumbNailImage = URIUtils::AddFileToFolder(CProfilesManager::Get().GetBookmarksThumbFolder(), bookmark.thumbNailImage);
+    bookmark.thumbNailImage = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetBookmarksThumbFolder(), bookmark.thumbNailImage);
     if (!CPicture::CreateThumbnailFromSurface((BYTE *)lockedRect.pBits, width, height, lockedRect.Pitch, bookmark.thumbNailImage))
       bookmark.thumbNailImage.clear();
     surface->UnlockRect();

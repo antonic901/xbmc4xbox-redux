@@ -28,6 +28,7 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "threads/SingleLock.h"
 #include "utils/JobManager.h"
 #include "utils/log.h"
@@ -60,7 +61,7 @@ void CRepositoryUpdater::OnJobComplete(unsigned int jobID, bool success, CJob* j
 
     VECADDONS updates = CServiceBroker::GetAddonMgr().GetAvailableUpdates();
 
-    if (CSettings::GetInstance().GetInt("general.addonupdates") == AUTO_UPDATES_NOTIFY)
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("general.addonupdates") == AUTO_UPDATES_NOTIFY)
     {
       if (!updates.empty())
       {
@@ -75,7 +76,7 @@ void CRepositoryUpdater::OnJobComplete(unsigned int jobID, bool success, CJob* j
       }
     }
 
-    if (CSettings::GetInstance().GetInt("general.addonupdates") == AUTO_UPDATES_ON)
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("general.addonupdates") == AUTO_UPDATES_ON)
     {
       CAddonInstaller::GetInstance().InstallUpdates();
     }
@@ -193,7 +194,7 @@ void CRepositoryUpdater::ScheduleUpdate()
   CSingleLock lock(m_criticalSection);
   m_timer.Stop(true);
 
-  if (CSettings::GetInstance().GetInt("general.addonupdates") == AUTO_UPDATES_NEVER)
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("general.addonupdates") == AUTO_UPDATES_NEVER)
     return;
 
   if (!CServiceBroker::GetAddonMgr().HasAddons(ADDON_REPOSITORY))

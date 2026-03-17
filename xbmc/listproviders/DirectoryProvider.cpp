@@ -35,6 +35,7 @@
 #include "music/MusicThumbLoader.h"
 #include "pictures/PictureThumbLoader.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "threads/SingleLock.h"
 #include "utils/JobManager.h"
 #include "utils/log.h"
@@ -342,7 +343,7 @@ bool CDirectoryProvider::OnClick(const CGUIListItemPtr &item)
   CFileItem fileItem(*boost::static_pointer_cast<CFileItem>(item));
 
   if (fileItem.HasVideoInfoTag()
-      && CSettings::GetInstance().GetInt("myvideos.selectaction") == SELECT_ACTION_INFO
+      && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("myvideos.selectaction") == SELECT_ACTION_INFO
       && OnInfo(item))
     return true;
 
@@ -452,7 +453,7 @@ bool CDirectoryProvider::UpdateSort()
   m_currentSort.sortOrder = sortOrder;
   m_currentSort.sortAttributes = SortAttributeIgnoreFolders;
 
-  if (CSettings::GetInstance().GetBool("filelists.ignorethewhensorting"))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting"))
     m_currentSort.sortAttributes = static_cast<SortAttribute>(m_currentSort.sortAttributes | SortAttributeIgnoreArticle);
 
   return true;

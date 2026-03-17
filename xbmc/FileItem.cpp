@@ -21,6 +21,7 @@
 #include <cstdlib>
 
 #include "FileItem.h"
+#include "ServiceBroker.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
@@ -51,6 +52,7 @@
 #include "profiles/ProfilesManager.h" // for Save Games
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/RegExp.h"
 #include "utils/log.h"
 #include "utils/Variant.h"
@@ -666,7 +668,7 @@ bool CFileItem::IsVideo() const
      return true;
   }
 
-  return URIUtils::HasExtension(m_strPath, g_advancedSettings.m_videoExtensions);
+  return URIUtils::HasExtension(m_strPath, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions);
 }
 
 bool CFileItem::IsEPG() const
@@ -712,7 +714,7 @@ bool CFileItem::IsDiscStub() const
     return dbItem.IsDiscStub();
   }
 
-  return URIUtils::HasExtension(m_strPath, g_advancedSettings.m_discStubExtensions);
+  return URIUtils::HasExtension(m_strPath, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_discStubExtensions);
 }
 
 bool CFileItem::IsAudio() const
@@ -745,7 +747,7 @@ bool CFileItem::IsAudio() const
      return true;
   }
 
-  return URIUtils::HasExtension(m_strPath, g_advancedSettings.GetMusicExtensions());
+  return URIUtils::HasExtension(m_strPath, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetMusicExtensions());
 }
 
 bool CFileItem::IsPicture() const
@@ -775,7 +777,7 @@ bool CFileItem::IsLyrics() const
 
 bool CFileItem::IsSubtitle() const
 {
-  return URIUtils::HasExtension(m_strPath, g_advancedSettings.m_subtitlesExtensions);
+  return URIUtils::HasExtension(m_strPath, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_subtitlesExtensions);
 }
 
 bool CFileItem::IsCUESheet() const
@@ -802,7 +804,7 @@ bool CFileItem::IsFileFolder(EFileFolderType types) const
   if(types & always_type)
   {
     if(IsSmartPlayList()
-    || (IsPlayList() && g_advancedSettings.m_playlistAsFolders)
+    || (IsPlayList() && CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_playlistAsFolders)
     || IsAPK()
     || IsZIP()
     || IsRAR()
@@ -817,7 +819,7 @@ bool CFileItem::IsFileFolder(EFileFolderType types) const
 
   if(types & EFILEFOLDER_TYPE_ONBROWSE)
   {
-    if((IsPlayList() && !g_advancedSettings.m_playlistAsFolders)
+    if((IsPlayList() && !CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_playlistAsFolders)
     || IsDiscImage())
       return true;
   }
@@ -2270,7 +2272,7 @@ void CFileItemList::FilterCueItems()
                 }
                 else
                 { // try replacing the extension with one of our allowed ones.
-                  std::vector<std::string> extensions = StringUtils::Split(g_advancedSettings.GetMusicExtensions(), "|");
+                  std::vector<std::string> extensions = StringUtils::Split(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetMusicExtensions(), "|");
                   for (std::vector<std::string>::const_iterator i = extensions.begin(); i != extensions.end(); ++i)
                   {
                     strMediaFile = URIUtils::ReplaceExtension(pItem->GetPath(), *i);
@@ -2351,7 +2353,7 @@ void CFileItemList::StackFolders()
   // Precompile our REs
   VECCREGEXP folderRegExps;
   CRegExp folderRegExp(true, CRegExp::autoUtf8);
-  const std::vector<std::string>& strFolderRegExps = g_advancedSettings.m_folderStackRegExps;
+  const std::vector<std::string>& strFolderRegExps = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_folderStackRegExps;
 
   std::vector<std::string>::const_iterator strExpression = strFolderRegExps.begin();
   while (strExpression != strFolderRegExps.end())
@@ -2401,7 +2403,7 @@ void CFileItemList::StackFolders()
           {
             CFileItemList items;
             CDirectory::GetDirectory(item->GetPath(), items,
-                                     g_advancedSettings.m_videoExtensions,
+                                     CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions,
                                      DIR_FLAG_DEFAULTS);
             // optimized to only traverse listing once by checking for filecount
             // and recording last file item for later use
@@ -2450,7 +2452,7 @@ void CFileItemList::StackFiles()
   // Precompile our REs
   VECCREGEXP stackRegExps;
   CRegExp tmpRegExp(true, CRegExp::autoUtf8);
-  const std::vector<std::string>& strStackRegExps = g_advancedSettings.m_videoStackRegExps;
+  const std::vector<std::string>& strStackRegExps = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoStackRegExps;
   std::vector<std::string>::const_iterator strRegExp = strStackRegExps.begin();
   while (strRegExp != strStackRegExps.end())
   {
@@ -2612,7 +2614,7 @@ void CFileItemList::StackFiles()
         // item->m_bIsFolder = true;  // don't treat stacked files as folders
         // the label may be in a different char set from the filename (eg over smb
         // the label is converted from utf8, but the filename is not)
-        if (!CSettings::GetInstance().GetBool("filelists.showextensions"))
+        if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.showextensions"))
           URIUtils::RemoveExtension(stackName);
 
         item1->SetLabel(stackName);
@@ -2731,7 +2733,7 @@ std::string CFileItem::GetUserMusicThumb(bool alwaysCheckRemote /* = false */, b
    || m_bIsShareOrDrive
    || IsInternetStream()
    || URIUtils::IsUPnP(m_strPath)
-   || (URIUtils::IsFTP(m_strPath) && !g_advancedSettings.m_bFTPThumbs)
+   || (URIUtils::IsFTP(m_strPath) && !CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bFTPThumbs)
    || IsPlugin()
    || IsAddonsPath()
    || IsLibraryFolder()
@@ -2752,9 +2754,9 @@ std::string CFileItem::GetUserMusicThumb(bool alwaysCheckRemote /* = false */, b
   }
 
   // if a folder, check for folder.jpg
-  if (m_bIsFolder && !IsFileFolder() && (!IsRemote() || alwaysCheckRemote || CSettings::GetInstance().GetBool("musicfiles.findremotethumbs")))
+  if (m_bIsFolder && !IsFileFolder() && (!IsRemote() || alwaysCheckRemote || CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicfiles.findremotethumbs")))
   {
-    std::vector<std::string> thumbs = StringUtils::Split(g_advancedSettings.m_musicThumbs, "|");
+    std::vector<std::string> thumbs = StringUtils::Split(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicThumbs, "|");
     for (std::vector<std::string>::const_iterator i = thumbs.begin(); i != thumbs.end(); ++i)
     {
       std::string folderThumb(GetFolderThumb(*i));
@@ -2823,7 +2825,7 @@ bool CFileItem::SkipLocalArt() const
        || m_bIsShareOrDrive
        || IsInternetStream()
        || URIUtils::IsUPnP(m_strPath)
-       || (URIUtils::IsFTP(m_strPath) && !g_advancedSettings.m_bFTPThumbs)
+       || (URIUtils::IsFTP(m_strPath) && !CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bFTPThumbs)
        || IsPlugin()
        || IsAddonsPath()
        || IsLibraryFolder()
@@ -3008,7 +3010,7 @@ std::string CFileItem::GetLocalFanart() const
    || IsPlugin()
    || IsAddonsPath()
    || IsDVD()
-   || (URIUtils::IsFTP(strFile) && !g_advancedSettings.m_bFTPThumbs)
+   || (URIUtils::IsFTP(strFile) && !CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bFTPThumbs)
    || m_strPath.empty())
     return "";
 
@@ -3018,15 +3020,15 @@ std::string CFileItem::GetLocalFanart() const
     return "";
 
   CFileItemList items;
-  CDirectory::GetDirectory(strDir, items, g_advancedSettings.m_pictureExtensions, DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO);
+  CDirectory::GetDirectory(strDir, items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions, DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO);
   if (IsOpticalMediaFile())
   { // grab from the optical media parent folder as well
     CFileItemList moreItems;
-    CDirectory::GetDirectory(GetLocalMetadataPath(), moreItems, g_advancedSettings.m_pictureExtensions, DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO);
+    CDirectory::GetDirectory(GetLocalMetadataPath(), moreItems, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions, DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO);
     items.Append(moreItems);
   }
 
-  std::vector<std::string> fanarts = StringUtils::Split(g_advancedSettings.m_fanartImages, "|");
+  std::vector<std::string> fanarts = StringUtils::Split(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fanartImages, "|");
 
   strFile = URIUtils::ReplaceExtension(strFile, "-fanart");
   fanarts.insert(m_bIsFolder ? fanarts.end() : fanarts.begin(), URIUtils::GetFileName(strFile));
@@ -3074,7 +3076,7 @@ std::string CFileItem::GetGameSaveThumb() const
 
   Crc32 crc;
   crc.ComputeFromLowerCase(m_strPath);
-  std::string thumb = URIUtils::AddFileToFolder(CProfilesManager::Get().GetGameSaveThumbFolder(), StringUtils::Format("%08x.tbn", (unsigned __int32)crc));
+  std::string thumb = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetGameSaveThumbFolder(), StringUtils::Format("%08x.tbn", (unsigned __int32)crc));
   if (!CFile::Exists(thumb))
   {
     std::string strSavegamePath = "E:\\UDATA\\" + Path.back();
@@ -3157,9 +3159,9 @@ bool CFileItem::LoadMusicTag()
   {
     std::string fileName = URIUtils::GetFileName(m_strPath);
     URIUtils::RemoveExtension(fileName);
-    for (unsigned int i = 0; i < g_advancedSettings.m_musicTagsFromFileFilters.size(); i++)
+    for (unsigned int i = 0; i < CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicTagsFromFileFilters.size(); i++)
     {
-      CLabelFormatter formatter(g_advancedSettings.m_musicTagsFromFileFilters[i], "");
+      CLabelFormatter formatter(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicTagsFromFileFilters[i], "");
       if (formatter.FillMusicTag(fileName, GetMusicInfoTag()))
       {
         GetMusicInfoTag()->SetLoaded(true);
@@ -3297,7 +3299,7 @@ std::string CFileItem::FindTrailer() const
 
   std::string strDir = URIUtils::GetDirectory(strFile);
   CFileItemList items;
-  CDirectory::GetDirectory(strDir, items, g_advancedSettings.m_videoExtensions, DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO | DIR_FLAG_NO_FILE_DIRS);
+  CDirectory::GetDirectory(strDir, items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions, DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO | DIR_FLAG_NO_FILE_DIRS);
   URIUtils::RemoveExtension(strFile);
   strFile += "-trailer";
   std::string strFile3 = URIUtils::AddFileToFolder(strDir, "movie-trailer");
@@ -3305,7 +3307,7 @@ std::string CFileItem::FindTrailer() const
   // Precompile our REs
   VECCREGEXP matchRegExps;
   CRegExp tmpRegExp(true, CRegExp::autoUtf8);
-  const std::vector<std::string>& strMatchRegExps = g_advancedSettings.m_trailerMatchRegExps;
+  const std::vector<std::string>& strMatchRegExps = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_trailerMatchRegExps;
 
   std::vector<std::string>::const_iterator strRegExp = strMatchRegExps.begin();
   while (strRegExp != strMatchRegExps.end())

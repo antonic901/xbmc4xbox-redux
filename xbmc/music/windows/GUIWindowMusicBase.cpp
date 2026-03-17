@@ -58,6 +58,7 @@
 #include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
@@ -572,7 +573,7 @@ void CGUIWindowMusicBase::GetContextButtons(int itemNumber, CContextButtons &but
 
         // allow a folder to be ad-hoc queued and played by the default player
         if (item->m_bIsFolder || (item->IsPlayList() &&
-           !g_advancedSettings.m_playlistAsFolders))
+           !CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_playlistAsFolders))
         {
           buttons.Add(CONTEXT_BUTTON_PLAY_ITEM, 208); // Play
         }
@@ -602,7 +603,7 @@ void CGUIWindowMusicBase::GetContextButtons(int itemNumber, CContextButtons &but
           !item->IsPlugin() && !item->IsMusicDb()         &&
           !item->IsLibraryFolder() &&
           !StringUtils::StartsWithNoCase(item->GetPath(), "addons://")              &&
-          (CProfilesManager::Get().GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser))
+          (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser))
       {
         buttons.Add(CONTEXT_BUTTON_SCAN, 13352);
       }
@@ -620,7 +621,7 @@ void CGUIWindowMusicBase::GetContextButtons(int itemNumber, CContextButtons &but
 
     // enable CDDB lookup if the current dir is CDDA
     if (MEDIA_DETECT::CDetectDVDMedia::IsDiscInDrive() && m_vecItems->IsCDDA() &&
-       (CProfilesManager::Get().GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser))
+       (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser))
     {
       buttons.Add(CONTEXT_BUTTON_CDDB, 16002);
     }
@@ -879,7 +880,7 @@ bool CGUIWindowMusicBase::OnPlayMedia(int iItem, const std::string &player)
   { // single music file - if we get here then we have autoplaynextitem turned off or queuebydefault
     // turned on, but we still want to use the playlist player in order to handle more queued items
     // following etc.
-    if ( (CSettings::GetInstance().GetBool("musicplayer.queuebydefault") && CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() != WINDOW_MUSIC_PLAYLIST_EDITOR) )
+    if ( (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.queuebydefault") && CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() != WINDOW_MUSIC_PLAYLIST_EDITOR) )
     {
       //! @todo Should the playlist be cleared if nothing is already playing?
       OnQueueItem(iItem);
@@ -900,7 +901,7 @@ bool CGUIWindowMusicBase::OnPlayMedia(int iItem, const std::string &player)
 void CGUIWindowMusicBase::OnRetrieveMusicInfo(CFileItemList& items)
 {
   if (items.GetFolderCount()==items.Size() || items.IsMusicDb() ||
-     (!CSettings::GetInstance().GetBool("musicfiles.usetags") && !items.IsCDDA()))
+     (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicfiles.usetags") && !items.IsCDDA()))
   {
     return;
   }
@@ -994,7 +995,7 @@ bool CGUIWindowMusicBase::GetDirectory(const std::string &strDirectory, CFileIte
     // add in the "New Playlist" item if we're in the playlists folder
     if ((items.GetPath() == "special://musicplaylists/") && !items.Contains("newplaylist://"))
     {
-      CFileItemPtr newPlaylist(new CFileItem(CProfilesManager::Get().GetUserDataItem("PartyMode.xsp"),false));
+      CFileItemPtr newPlaylist(new CFileItem(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("PartyMode.xsp"),false));
       newPlaylist->SetLabel(g_localizeStrings.Get(16035));
       newPlaylist->SetLabelPreformated(true);
       newPlaylist->m_bIsFolder = true;
@@ -1060,7 +1061,7 @@ void CGUIWindowMusicBase::OnInitWindow()
         int flags = CMusicInfoScanner::SCAN_RESCAN;
         // When set to fetch information on update enquire about scraping that as well
         // It may take some time, so the user may want to do it later by "Query Info For All"
-        if (CSettings::GetInstance().GetBool("musiclibrary.downloadinfo"))
+        if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musiclibrary.downloadinfo"))
           if (CGUIDialogYesNo::ShowAndGetInput(799, 38061))
             flags |= CMusicInfoScanner::SCAN_ONLINE;
         g_application.StartMusicScan("", true, flags);
@@ -1118,7 +1119,7 @@ void CGUIWindowMusicBase::DoScan(const std::string &strPath, bool bRescan /*= fa
   int flags = 0;
   if (bRescan)
     flags = CMusicInfoScanner::SCAN_RESCAN;
-  if (CSettings::GetInstance().GetBool("musiclibrary.downloadinfo"))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musiclibrary.downloadinfo"))
     flags |= CMusicInfoScanner::SCAN_ONLINE;
   g_application.StartMusicScan(strPath, true, flags);
   SET_CONTROL_FOCUS(iControl, 0);

@@ -33,6 +33,7 @@
 #include "MediaSource.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/SkinSettings.h"
 #include "storage/MediaManager.h"
 #include "utils/StringUtils.h"
@@ -73,7 +74,7 @@ static int ToggleSetting(const std::vector<std::string>& params)
 {
   int setting = CSkinSettings::Get().TranslateBool(params[0]);
   CSkinSettings::Get().SetBool(setting, !CSkinSettings::Get().GetBool(setting));
-  CSettings::GetInstance().Save();
+  CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 
   return 0;
 }
@@ -97,7 +98,7 @@ static int SetAddon(const std::vector<std::string>& params)
   if (!types.empty() && CGUIWindowAddonBrowser::SelectAddonID(types, result, true) == 1)
   {
     CSkinSettings::Get().SetString(string, result);
-    CSettings::GetInstance().Save();
+    CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
   }
 
   return 0;
@@ -141,7 +142,7 @@ static int SelectBool(const std::vector<std::string>& params)
       else
         CSkinSettings::Get().SetBool(setting, false);
     }
-    CSettings::GetInstance().Save();
+    CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
   }
 
   return 0;
@@ -158,13 +159,13 @@ static int SetBool(const std::vector<std::string>& params)
   {
     int string = CSkinSettings::Get().TranslateBool(params[0]);
     CSkinSettings::Get().SetBool(string, StringUtils::EqualsNoCase(params[1], "true"));
-    CSettings::GetInstance().Save();
+    CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
     return 0;
   }
   // default is to set it to true
   int setting = CSkinSettings::Get().TranslateBool(params[0]);
   CSkinSettings::Get().SetBool(setting, true);
-  CSettings::GetInstance().Save();
+  CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 
   return 0;
 }
@@ -212,7 +213,7 @@ static int SetPath(const std::vector<std::string>& params)
   if (CGUIDialogFileBrowser::ShowAndGetDirectory(localShares, g_localizeStrings.Get(657), value))
     CSkinSettings::Get().SetString(string, value);
 
-  CSettings::GetInstance().Save();
+  CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 
   return 0;
 }
@@ -324,7 +325,7 @@ static int SetString(const std::vector<std::string>& params)
   {
     string = CSkinSettings::Get().TranslateString(params[0]);
     CSkinSettings::Get().SetString(string, params[1]);
-    CSettings::GetInstance().Save();
+    CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
     return 0;
   }
   else
@@ -350,11 +351,11 @@ static int SetTheme(const std::vector<std::string>& params)
   int iTheme = -1;
 
   // find current theme
-  if (!StringUtils::EqualsNoCase(CSettings::GetInstance().GetString("lookandfeel.skintheme"), "SKINDEFAULT"))
+  if (!StringUtils::EqualsNoCase(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skintheme"), "SKINDEFAULT"))
   {
     for (size_t i=0;i<vecTheme.size();++i)
     {
-      std::string strTmpTheme(CSettings::GetInstance().GetString("lookandfeel.skintheme"));
+      std::string strTmpTheme(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skintheme"));
       URIUtils::RemoveExtension(strTmpTheme);
       if (StringUtils::EqualsNoCase(vecTheme[i], strTmpTheme))
       {
@@ -378,12 +379,12 @@ static int SetTheme(const std::vector<std::string>& params)
   if (iTheme != -1 && iTheme < (int)vecTheme.size())
     strSkinTheme = vecTheme[iTheme];
 
-  CSettings::GetInstance().SetString("lookandfeel.skintheme", strSkinTheme);
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("lookandfeel.skintheme", strSkinTheme);
   // also set the default color theme
   std::string colorTheme(URIUtils::ReplaceExtension(strSkinTheme, ".xml"));
   if (StringUtils::EqualsNoCase(colorTheme, "Textures.xml"))
     colorTheme = "defaults.xml";
-  CSettings::GetInstance().SetString("lookandfeel.skincolors", colorTheme);
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("lookandfeel.skincolors", colorTheme);
   g_application.ReloadSkin();
 
   return 0;
@@ -396,7 +397,7 @@ static int SetTheme(const std::vector<std::string>& params)
 static int SkinReset(const std::vector<std::string>& params)
 {
   CSkinSettings::Get().Reset(params[0]);
-  CSettings::GetInstance().Save();
+  CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 
   return 0;
 }
@@ -407,7 +408,7 @@ static int SkinReset(const std::vector<std::string>& params)
 static int SkinResetAll(const std::vector<std::string>& params)
 {
   CSkinSettings::Get().Reset();
-  CSettings::GetInstance().Save();
+  CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 
   return 0;
 }

@@ -21,6 +21,7 @@
 #include "MediaSourceSettings.h"
 #include "URL.h"
 #include "Util.h"
+#include "ServiceBroker.h"
 #include "filesystem/File.h"
 #include "profiles/ProfilesManager.h"
 #include "utils/log.h"
@@ -28,6 +29,7 @@
 #include "utils/URIUtils.h"
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
+#include "settings/SettingsComponent.h"
 
 #define SOURCES_FILE  "sources.xml"
 #define XML_SOURCES   "sources"
@@ -53,10 +55,10 @@ CMediaSourceSettings& CMediaSourceSettings::Get()
 std::string CMediaSourceSettings::GetSourcesFile()
 {
   std::string file;
-  if (CProfilesManager::Get().GetCurrentProfile().hasSources())
-    file = CProfilesManager::Get().GetProfileUserDataFolder();
+  if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().hasSources())
+    file = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetProfileUserDataFolder();
   else
-    file = CProfilesManager::Get().GetUserDataFolder();
+    file = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder();
 
   return URIUtils::AddFileToFolder(file, SOURCES_FILE);
 }

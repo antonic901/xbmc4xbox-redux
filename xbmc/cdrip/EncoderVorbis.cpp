@@ -20,7 +20,9 @@
 
 #include "utils/log.h"
 #include "EncoderVorbis.h"
+#include "ServiceBroker.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 
 CEncoderVorbis::CEncoderVorbis()
 {
@@ -36,9 +38,9 @@ bool CEncoderVorbis::Init(const char* strFile, int iInChannels, int iInRate, int
   if (!CEncoder::Init(strFile, iInChannels, iInRate, iInBits)) return false;
 
   float fQuality = 0.5f;
-  if (CSettings::GetInstance().GetInt("audiocds.quality") == CDDARIP_QUALITY_MEDIUM) fQuality = 0.4f;
-  if (CSettings::GetInstance().GetInt("audiocds.quality") == CDDARIP_QUALITY_STANDARD) fQuality = 0.5f;
-  if (CSettings::GetInstance().GetInt("audiocds.quality") == CDDARIP_QUALITY_EXTREME) fQuality = 0.7f;
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.quality") == CDDARIP_QUALITY_MEDIUM) fQuality = 0.4f;
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.quality") == CDDARIP_QUALITY_STANDARD) fQuality = 0.5f;
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.quality") == CDDARIP_QUALITY_EXTREME) fQuality = 0.7f;
 
   if (!m_VorbisEncDll.Load() || !m_OggDll.Load() || !m_VorbisDll.Load())
   {
@@ -48,10 +50,10 @@ bool CEncoderVorbis::Init(const char* strFile, int iInChannels, int iInRate, int
   }
 
   m_VorbisDll.vorbis_info_init(&m_sVorbisInfo);
-  if (CSettings::GetInstance().GetInt("audiocds.quality") == CDDARIP_QUALITY_CBR)
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.quality") == CDDARIP_QUALITY_CBR)
   {
     // not realy cbr, but abr in this case
-    int iBitRate = CSettings::GetInstance().GetInt("audiocds.bitrate") * 1000;
+    int iBitRate = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.bitrate") * 1000;
     m_VorbisEncDll.vorbis_encode_init(&m_sVorbisInfo, m_iInChannels, m_iInSampleRate, -1, iBitRate, -1);
   }
   else

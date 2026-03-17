@@ -30,6 +30,7 @@
 #include "utils/URIUtils.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "GUIDialogMediaSource.h"
 #include "profiles/ProfilesManager.h"
 #include "profiles/dialogs/GUIDialogLockSettings.h"
@@ -243,7 +244,7 @@ void CGUIDialogContextMenu::GetContextButtons(const std::string &type, const CFi
   // Next, Add buttons to the ContextMenu that should ONLY be visible for sources and not autosourced items
   CMediaSource *share = GetShare(type, item.get());
 
-  if (CProfilesManager::Get().GetCurrentProfile().canWriteSources() || g_passwordManager.bMasterUser)
+  if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteSources() || g_passwordManager.bMasterUser)
   {
     if (share)
     {
@@ -265,9 +266,9 @@ void CGUIDialogContextMenu::GetContextButtons(const std::string &type, const CFi
     if (!GetDefaultShareNameByType(type).empty())
       buttons.Add(CONTEXT_BUTTON_CLEAR_DEFAULT, 13403); // Clear Default
   }
-  if (share && LOCK_MODE_EVERYONE != CProfilesManager::Get().GetMasterProfile().getLockMode())
+  if (share && LOCK_MODE_EVERYONE != CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode())
   {
-    if (share->m_iHasLock == 0 && (CProfilesManager::Get().GetCurrentProfile().canWriteSources() || g_passwordManager.bMasterUser))
+    if (share->m_iHasLock == 0 && (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteSources() || g_passwordManager.bMasterUser))
       buttons.Add(CONTEXT_BUTTON_ADD_LOCK, 12332);
     else if (share->m_iHasLock == 1)
       buttons.Add(CONTEXT_BUTTON_REMOVE_LOCK, 12335);
@@ -276,8 +277,8 @@ void CGUIDialogContextMenu::GetContextButtons(const std::string &type, const CFi
       buttons.Add(CONTEXT_BUTTON_REMOVE_LOCK, 12335);
 
       bool maxRetryExceeded = false;
-      if (CSettings::GetInstance().GetInt("masterlock.maxretries") != 0)
-        maxRetryExceeded = (share->m_iBadPwdCount >= CSettings::GetInstance().GetInt("masterlock.maxretries"));
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("masterlock.maxretries") != 0)
+        maxRetryExceeded = (share->m_iBadPwdCount >= CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("masterlock.maxretries"));
 
       if (maxRetryExceeded)
         buttons.Add(CONTEXT_BUTTON_RESET_LOCK, 12334);
@@ -316,7 +317,7 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
   switch (button)
   {
   case CONTEXT_BUTTON_EDIT_SOURCE:
-    if (CProfilesManager::Get().IsMasterProfile())
+    if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->IsMasterProfile())
     {
       if (!g_passwordManager.IsMasterLockUnlocked(true))
         return false;
@@ -328,16 +329,16 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
 
   case CONTEXT_BUTTON_REMOVE_SOURCE:
   {
-    if (CProfilesManager::Get().IsMasterProfile())
+    if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->IsMasterProfile())
     {
       if (!g_passwordManager.IsMasterLockUnlocked(true))
         return false;
     }
     else
     {
-      if (!CProfilesManager::Get().GetCurrentProfile().canWriteSources() && !g_passwordManager.IsMasterLockUnlocked(false))
+      if (!CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteSources() && !g_passwordManager.IsMasterLockUnlocked(false))
         return false;
-      if (CProfilesManager::Get().GetCurrentProfile().canWriteSources() && !g_passwordManager.IsProfileLockUnlocked())
+      if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteSources() && !g_passwordManager.IsProfileLockUnlocked())
         return false;
     }
     // prompt user if they want to really delete the source
@@ -355,7 +356,7 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
     return true;
   }
   case CONTEXT_BUTTON_SET_DEFAULT:
-    if (CProfilesManager::Get().GetCurrentProfile().canWriteSources() && !g_passwordManager.IsProfileLockUnlocked())
+    if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteSources() && !g_passwordManager.IsProfileLockUnlocked())
       return false;
     else if (!g_passwordManager.IsMasterLockUnlocked(true))
       return false;
@@ -365,7 +366,7 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
     return true;
 
   case CONTEXT_BUTTON_CLEAR_DEFAULT:
-    if (CProfilesManager::Get().GetCurrentProfile().canWriteSources() && !g_passwordManager.IsProfileLockUnlocked())
+    if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteSources() && !g_passwordManager.IsProfileLockUnlocked())
       return false;
     else if (!g_passwordManager.IsMasterLockUnlocked(true))
       return false;
@@ -375,7 +376,7 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
 
   case CONTEXT_BUTTON_SET_THUMB:
     {
-      if (CProfilesManager::Get().GetCurrentProfile().canWriteSources() && !g_passwordManager.IsProfileLockUnlocked())
+      if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteSources() && !g_passwordManager.IsProfileLockUnlocked())
         return false;
       else if (!g_passwordManager.IsMasterLockUnlocked(true))
         return false;
@@ -498,8 +499,8 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
   case CONTEXT_BUTTON_REACTIVATE_LOCK:
     {
       bool maxRetryExceeded = false;
-      if (CSettings::GetInstance().GetInt("masterlock.maxretries") != 0)
-        maxRetryExceeded = (share->m_iBadPwdCount >= CSettings::GetInstance().GetInt("masterlock.maxretries"));
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("masterlock.maxretries") != 0)
+        maxRetryExceeded = (share->m_iBadPwdCount >= CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("masterlock.maxretries"));
       if (!maxRetryExceeded)
       {
         // don't prompt user for mastercode when reactivating a lock

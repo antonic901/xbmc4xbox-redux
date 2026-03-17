@@ -28,6 +28,7 @@
 #include "filesystem/SpecialProtocol.h"
 #include "utils/JpegIO.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "windowing/GraphicContext.h"
 #include "filesystem/File.h"
 
@@ -145,7 +146,7 @@ bool CBaseTexture::LoadFromFileInternal(const CStdString& texturePath, unsigned 
     correctly for use by xbmc. These DDS files are pre-padded to POT to simplify/speedup
     handling.
   */
-  if (g_advancedSettings.m_useDDSFanart)
+  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_useDDSFanart)
   {
     //If a .dds version of the image exists we load it instead.
     CStdString ddsPath = URIUtils::ReplaceExtension(texturePath, ".dds");

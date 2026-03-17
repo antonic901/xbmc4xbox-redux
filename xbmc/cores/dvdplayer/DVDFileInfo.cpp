@@ -21,6 +21,7 @@
 #include "threads/SystemClock.h"
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "pictures/Picture.h"
 #include "video/VideoInfoTag.h"
 #include "filesystem/StackDirectory.h"
@@ -199,9 +200,9 @@ bool CDVDFileInfo::ExtractThumb(const CStdString &strPath, CTextureDetails &deta
         if (iDecoderState & VC_PICTURE && !(picture.iFlags & DVP_FLAG_DROPPED))
         {
           {
-            unsigned int nWidth = g_advancedSettings.GetThumbSize();
+            unsigned int nWidth = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetThumbSize();
             double aspect = (double)picture.iWidth / (double)picture.iHeight;
-            unsigned int nHeight = (unsigned int)((double)g_advancedSettings.GetThumbSize() / aspect);
+            unsigned int nHeight = (unsigned int)((double)CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetThumbSize() / aspect);
 
             DllSwScale dllSwScale;
             dllSwScale.Load();

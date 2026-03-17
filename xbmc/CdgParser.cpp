@@ -29,6 +29,7 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
 #include "utils/StringUtils.h"
@@ -202,7 +203,7 @@ bool CCdgReader::Start(float fStartTime)
   CSingleLock lock (m_CritSection);
   if (!m_pLoader) return false;
   m_fStartingTime = fStartTime;
-  SetAVDelay(g_advancedSettings.m_karaokeSyncDelay);
+  SetAVDelay(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_karaokeSyncDelay);
   m_uiNumReadSubCodes = 0;
   m_Cdg.ClearDisplay();
   m_FileState = FILE_LOADED;
@@ -418,7 +419,7 @@ bool CCdgRenderer::InitGraphics()
 
   // set the colours
   m_bgAlpha = 0;
-  if (CSettings::GetInstance().GetString("musicplayer.visualisation") == "None")
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicplayer.visualisation") == "None")
     m_bgAlpha = 0xff000000;
   m_fgAlpha = 0xff000000;
 
@@ -554,7 +555,7 @@ bool CCdgParser::Start(CStdString strSongPath)
     CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_VISUALISATION);
 
   // Karaoke patch (114097) ...
-  if ( CSettings::GetInstance().GetBool("karaoke.voiceenabled") )
+  if ( CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("karaoke.voiceenabled") )
   {
     CDG_VOICE_MANAGER_CONFIG VoiceConfig;
     VoiceConfig.dwVoicePacketTime = 20;       // 20ms (can't be lower than this)
@@ -607,7 +608,7 @@ float CCdgParser::GetAVDelay()
   CSingleLock lock (m_CritSection);
   if (m_pReader)
     return m_pReader->GetAVDelay();
-  return g_advancedSettings.m_karaokeSyncDelay;
+  return CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_karaokeSyncDelay;
 }
 
 void CCdgParser::Render()

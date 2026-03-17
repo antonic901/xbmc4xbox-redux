@@ -17,7 +17,9 @@ extern "C" {
 #include "Codecs/ffmpeg/libpostproc/postprocess.h"
 }
 
+#include "ServiceBroker.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 
 class DllPostProcInterface
 {
@@ -61,7 +63,7 @@ public:
 class DllPostProc : public DllDynamic, DllPostProcInterface
 {
 public:
-  DllPostProc() : DllDynamic( CSettings::GetInstance().GetFFmpegDllFolder() + "postproc-52.dll") {}
+  DllPostProc() : DllDynamic( CServiceBroker::GetSettingsComponent()->GetSettings()->GetFFmpegDllFolder() + "postproc-52.dll") {}
   DEFINE_METHOD11(void, pp_postprocess, (uint8_t* p1[3], int p2[3], uint8_t * p3[3], int p4[3],
                       int p5, int p6, QP_STORE_T *p7,  int p8,
                       pp_mode *p9, pp_context *p10, int p11))

@@ -47,6 +47,7 @@ OFF/Green/Red/Orange/Cycle
 #include "xbox/XKUtils.h"
 #include "LCD.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 
 #include <conio.h>
@@ -210,7 +211,7 @@ void ILEDSmartxxRGB::OnExit()
   // SmartXX OPX port for RGB-Red is the same port for display brightness control
   // Restoring brightness value from the settings 
   if ( g_sysinfo.SmartXXModCHIP().Equals("SmartXX OPX") )
-    g_lcd->SetBackLight(CSettings::GetInstance().GetInt("lcd.backlight"));
+    g_lcd->SetBackLight(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.backlight"));
 
 	CLog::Log(LOGDEBUG,"Stopping SmartXX RGB LED thread");
 }

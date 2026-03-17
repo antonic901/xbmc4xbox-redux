@@ -21,8 +21,10 @@
 #include <cstdlib>
 
 #include "LabelFormatter.h"
+#include "ServiceBroker.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "RegExp.h"
 #include "Util.h"
 #include "video/VideoInfoTag.h"
@@ -116,7 +118,7 @@ CLabelFormatter::CLabelFormatter(const std::string &mask, const std::string &mas
   AssembleMask(0, mask);
   AssembleMask(1, mask2);
   // save a bool for faster lookups
-  m_hideFileExtensions = !CSettings::GetInstance().GetBool("filelists.showextensions");
+  m_hideFileExtensions = !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.showextensions");
 }
 
 std::string CLabelFormatter::GetContent(unsigned int label, const CFileItem *item) const
@@ -178,7 +180,7 @@ std::string CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFile
     if (music && music->GetArtistString().size())
       value = music->GetArtistString();
     if (movie && movie->m_artist.size())
-      value = StringUtils::Join(movie->m_artist, g_advancedSettings.m_videoItemSeparator);
+      value = StringUtils::Join(movie->m_artist, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     break;
   case 'T':
     if (music && music->GetTitle().size())
@@ -198,9 +200,9 @@ std::string CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFile
     break;
   case 'G':
     if (music && music->GetGenre().size())
-      value = StringUtils::Join(music->GetGenre(), g_advancedSettings.m_musicItemSeparator);
+      value = StringUtils::Join(music->GetGenre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
     if (movie && movie->m_genre.size())
-      value = StringUtils::Join(movie->m_genre, g_advancedSettings.m_videoItemSeparator);
+      value = StringUtils::Join(movie->m_genre, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     break;
   case 'Y':
     if (music)
@@ -301,7 +303,7 @@ std::string CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFile
   case 'U':
     if (movie && !movie->m_studio.empty())
     {// Studios
-      value = StringUtils::Join(movie ->m_studio, g_advancedSettings.m_videoItemSeparator);
+      value = StringUtils::Join(movie ->m_studio, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     }
     break;
   case 'V': // Playcount

@@ -27,6 +27,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "guilib/Key.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "view/ViewStateSettings.h"
 #include "URL.h"
 
@@ -47,7 +48,7 @@ CGUIViewStateWindowPrograms::CGUIViewStateWindowPrograms(const CFileItemList& it
   else
   {
     AddSortMethod(SortByLabel, 551, LABEL_MASKS("%K", "%I", "%L", ""),  // Titel, Size | Foldername, empty
-      CSettings::GetInstance().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+      CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
     AddSortMethod(SortByDate, 552, LABEL_MASKS("%K", "%J", "%L", "%J"));  // Titel, Date | Foldername, Date
     AddSortMethod(SortByProgramCount, 565, LABEL_MASKS("%K", "%C", "%L", ""));  // Titel, Count | Foldername, empty
     AddSortMethod(SortBySize, 553, LABEL_MASKS("%K", "%I", "%K", "%I"));  // Filename, Size | Foldername, Size

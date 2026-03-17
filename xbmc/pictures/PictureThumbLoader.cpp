@@ -31,6 +31,7 @@
 #include "utils/URIUtils.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "video/VideoThumbLoader.h"
 #include "URL.h"
 
@@ -92,7 +93,7 @@ bool CPictureThumbLoader::LoadItemCached(CFileItem* pItem)
       {
         thumb = thumbURL;
       }
-      else if (CSettings::GetInstance().GetBool("myvideos.extractthumb") && CSettings::GetInstance().GetBool("myvideos.extractflags"))
+      else if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.extractthumb") && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.extractflags"))
       {
         CFileItem item(*pItem);
         CThumbExtractor* extract = new CThumbExtractor(item, pItem->GetPath(), true, thumbURL);
@@ -183,7 +184,7 @@ void CPictureThumbLoader::ProcessFoldersAndArchives(CFileItem *pItem)
 
       CFileItemList items;
 
-      CDirectory::GetDirectory(pathToUrl, items, g_advancedSettings.m_pictureExtensions, DIR_FLAG_NO_FILE_DIRS);
+      CDirectory::GetDirectory(pathToUrl, items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions, DIR_FLAG_NO_FILE_DIRS);
 
       // create the folder thumb by choosing 4 random thumbs within the folder and putting
       // them into one thumb.
@@ -202,7 +203,7 @@ void CPictureThumbLoader::ProcessFoldersAndArchives(CFileItem *pItem)
       {
         if (pItem->IsCBZ() || pItem->IsCBR())
         {
-          CDirectory::GetDirectory(pathToUrl, items, g_advancedSettings.m_pictureExtensions, DIR_FLAG_NO_FILE_DIRS);
+          CDirectory::GetDirectory(pathToUrl, items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions, DIR_FLAG_NO_FILE_DIRS);
           for (int i=0;i<items.Size();++i)
           {
             CFileItemPtr item = items[i];
@@ -242,8 +243,8 @@ void CPictureThumbLoader::ProcessFoldersAndArchives(CFileItem *pItem)
         {
           CTextureDetails details;
           details.file = relativeCacheFile;
-          details.width = g_advancedSettings.m_imageRes;
-          details.height = g_advancedSettings.m_imageRes;
+          details.width = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_imageRes;
+          details.height = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_imageRes;
           CServiceBroker::GetTextureCache()->AddCachedTexture(thumb, details);
           db.SetTextureForPath(pItem->GetPath(), "thumb", thumb);
           pItem->SetArt("thumb", CTextureCache::GetCachedPath(relativeCacheFile));

@@ -21,8 +21,10 @@
 #include "system.h"
 #include "XBTimeZone.h"
 #include "LangInfo.h"
+#include "ServiceBroker.h"
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #ifdef HAS_XBOX_HARDWARE
@@ -966,8 +968,8 @@ void XBTimeZone::SetDST(BOOL bEnable)
 
 void XBTimeZone::OnSettingsLoaded()
 {
-  CSettings::GetInstance().SetInt("locale.timezone", GetTimeZoneIndex());
-  CSettings::GetInstance().SetBool("locale.usedst", GetDST());
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("locale.timezone", GetTimeZoneIndex());
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("locale.usedst", GetDST());
 }
 
 void XBTimeZone::OnSettingChanged(const CSetting *setting)

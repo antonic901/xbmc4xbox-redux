@@ -22,11 +22,13 @@
  */
 
 #include "include.h"
+#include "ServiceBroker.h"
 #include "threads/Thread.h"
 #include "threads/CriticalSection.h"
 #include "Socket.h"
 #include "EventPacket.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 
 #include <map>
 #include <queue>
@@ -153,8 +155,8 @@ namespace EVENTCLIENT
 
     void RefreshSettings()
     {
-      m_iRepeatDelay = CSettings::GetInstance().GetInt("services.esinitialdelay");
-      m_iRepeatSpeed = CSettings::GetInstance().GetInt("services.escontinuousdelay");
+      m_iRepeatDelay = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.esinitialdelay");
+      m_iRepeatSpeed = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.escontinuousdelay");
     }
 
     SOCKETS::CAddress& Address()

@@ -25,6 +25,7 @@
 #include "guilib/GUIFontManager.h"
 #include "filesystem/File.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 
 using namespace XFILE;
 
@@ -40,7 +41,7 @@ CSplash& CSplash::GetInstance()
 
 void CSplash::Show(const std::string& message /* = "" */)
 {
-  if (!g_advancedSettings.m_splashImage && !(m_image || !message.empty()))
+  if (!CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_splashImage && !(m_image || !message.empty()))
     return;
 
   if (!m_image)

@@ -30,6 +30,7 @@
 #include "Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/MediaSettings.h"
 
 #include "defs_from_settings.h"
@@ -150,7 +151,7 @@ unsigned int CXBoxRenderManager::PreInit()
   if (!m_pRenderer)
   { 
     // no renderer
-    m_rendermethod = CSettings::GetInstance().GetInt("videoplayer.rendermethod");
+    m_rendermethod = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoplayer.rendermethod");
     if (m_rendermethod == RENDER_OVERLAYS)
     {
       CLog::Log(LOGDEBUG, __FUNCTION__" - Selected Overlay-Renderer");
@@ -166,7 +167,7 @@ unsigned int CXBoxRenderManager::PreInit()
       CLog::Log(LOGDEBUG, __FUNCTION__" - Selected RGB-Renderer V2");
       m_pRenderer = new CRGBRendererV2(CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice());
     }
-    else // if (CSettings::GetInstance().GetInt("videoplayer.rendermethod") == RENDER_LQ_RGB_SHADER)
+    else // if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoplayer.rendermethod") == RENDER_LQ_RGB_SHADER)
     {
       CLog::Log(LOGDEBUG, __FUNCTION__" - Selected LQShader-Renderer");
       m_pRenderer = new CPixelShaderRenderer(CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice());

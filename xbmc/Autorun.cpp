@@ -29,6 +29,7 @@
 #include "filesystem/File.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "playlists/PlayList.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
@@ -76,11 +77,11 @@ void CAutorun::ExecuteAutorun( bool bypassSettings, bool ignoreplaying, bool res
 
   if ( pInfo->IsAudio( 1 ) )
   {
-    if( !bypassSettings && !CSettings::GetInstance().GetBool("autorun.cdda") )
+    if( !bypassSettings && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.cdda") )
       return;
 
     if (!g_passwordManager.IsMasterLockUnlocked(false))
-      if (CProfilesManager::Get().GetCurrentProfile().musicLocked())
+      if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().musicLocked())
         return ;
 
     RunCdda();
@@ -119,11 +120,11 @@ void CAutorun::RunMedia(bool bypassSettings, bool restart)
 #ifdef _XBOX
   if ( CFile::Exists("D:\\default.xbe") )
   {
-    if (!CSettings::GetInstance().GetBool("autorun.xbox") && !bypassSettings)
+    if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.xbox") && !bypassSettings)
       return;
 
     if (!g_passwordManager.IsMasterLockUnlocked(false))
-      if (CProfilesManager::Get().GetCurrentProfile().programsLocked())
+      if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().programsLocked())
         return;
 
     ExecuteXBE("D:\\default.xbe");
@@ -131,7 +132,7 @@ void CAutorun::RunMedia(bool bypassSettings, bool restart)
   }
 #endif
 
-  if ( !CSettings::GetInstance().GetBool("autorun.dvd") && !CSettings::GetInstance().GetBool("autorun.vcd") && !CSettings::GetInstance().GetBool("autorun.video") && !CSettings::GetInstance().GetBool("autorun.music") && !CSettings::GetInstance().GetBool("autorun.pictures") )
+  if ( !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.dvd") && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.vcd") && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.video") && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.music") && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.pictures") )
     return ;
 
   int nSize = g_playlistPlayer.GetPlaylist( PLAYLIST_MUSIC ).size();
@@ -190,9 +191,9 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
   bool bAllowMusic = true;
   if (!g_passwordManager.IsMasterLockUnlocked(false))
   {
-    bAllowVideo = !CProfilesManager::Get().GetCurrentProfile().videoLocked();
-    bAllowPictures = !CProfilesManager::Get().GetCurrentProfile().picturesLocked();
-    bAllowMusic = !CProfilesManager::Get().GetCurrentProfile().musicLocked();
+    bAllowVideo = !CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().videoLocked();
+    bAllowPictures = !CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().picturesLocked();
+    bAllowMusic = !CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().musicLocked();
   }
 
   // is this a root folder we have to check the content to determine a disc type
@@ -209,7 +210,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
       {
         // Check if the current foldername indicates a DVD structure (name is "VIDEO_TS")
         if (pItem->GetPath().find("VIDEO_TS") != std::string::npos && bAllowVideo
-        && (bypassSettings || CSettings::GetInstance().GetBool("autorun.dvd")))
+        && (bypassSettings || CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.dvd")))
         {
           CUtil::PlayDVD("dvd", restart);
           bPlaying = true;
@@ -225,7 +226,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
 
         // If a file format was extracted we are sure this is a VCD. Autoplay if settings indicate we should.
         if (!strExt.IsEmpty() && bAllowVideo
-              && (bypassSettings || CSettings::GetInstance().GetBool("autorun.vcd")))
+              && (bypassSettings || CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.vcd")))
         {
           CFileItemList items;
           CDirectory::GetDirectory(pItem->GetPath(), items, strExt, DIR_FLAG_DEFAULTS);
@@ -241,7 +242,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
           }
         }
         else if (pItem->GetPath().find("PICTURES") != std::string::npos && bAllowPictures
-              && (bypassSettings || CSettings::GetInstance().GetBool("autorun.pictures")))
+              && (bypassSettings || CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.pictures")))
         {
           bPlaying = true;
           CStdString strExec;
@@ -254,12 +255,12 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
   }
 
   // check video first
-  if (!nAddedToPlaylist && !bPlaying && (bypassSettings || CSettings::GetInstance().GetBool("autorun.video")))
+  if (!nAddedToPlaylist && !bPlaying && (bypassSettings || CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.video")))
   {
     // stack video files
     CFileItemList tempItems;
     tempItems.Append(vecItems);
-    if (CSettings::GetInstance().GetBool("myvideos.stackvideos"))
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.stackvideos"))
       tempItems.Stack();
     CFileItemList itemlist;
 
@@ -299,7 +300,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
     }
   }
   // then music
-  if (!bPlaying && (bypassSettings || CSettings::GetInstance().GetBool("autorun.music")) && bAllowMusic)
+  if (!bPlaying && (bypassSettings || CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.music")) && bAllowMusic)
   {
     for (int i = 0; i < vecItems.Size(); i++)
     {
@@ -312,7 +313,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
     }
   }
   // and finally pictures
-  if (!nAddedToPlaylist && !bPlaying && (bypassSettings || CSettings::GetInstance().GetBool("autorun.pictures")) && bAllowPictures)
+  if (!nAddedToPlaylist && !bPlaying && (bypassSettings || CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.pictures")) && bAllowPictures)
   {
     for (int i = 0; i < vecItems.Size(); i++)
     {

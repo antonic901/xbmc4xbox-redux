@@ -36,6 +36,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "settings/DisplaySettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "FileItem.h"
 #include "guilib/Texture.h"
 #include "guilib/LocalizeStrings.h"
@@ -106,7 +107,7 @@ void CBackgroundPicLoader::Process()
       if (m_pCallback)
       {
         unsigned int start = XbmcThreads::SystemClockMillis();
-        CBaseTexture* texture = CTexture::LoadFromFile(m_strFileName, m_maxWidth, m_maxHeight, CSettings::GetInstance().GetBool("pictures.useexifrotation"));
+        CBaseTexture* texture = CTexture::LoadFromFile(m_strFileName, m_maxWidth, m_maxHeight, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("pictures.useexifrotation"));
         totalTime += XbmcThreads::SystemClockMillis() - start;
         count++;
         // tell our parent
@@ -852,7 +853,7 @@ bool CGUIWindowSlideShow::OnMessage(CGUIMessage& message)
   {
   case GUI_MSG_WINDOW_INIT:
     {
-      m_Resolution = (RESOLUTION) CSettings::GetInstance().GetInt("pictures.displayresolution");
+      m_Resolution = (RESOLUTION) CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("pictures.displayresolution");
 
       if (m_Resolution != CDisplaySettings::Get().GetCurrentResolution() && m_Resolution != RES_INVALID && m_Resolution!=RES_AUTORES)
         CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(m_Resolution);
@@ -1048,7 +1049,7 @@ bool CGUIWindowSlideShow::PlayVideo()
 CSlideShowPic::DISPLAY_EFFECT CGUIWindowSlideShow::GetDisplayEffect(int iSlideNumber) const
 {
   if (m_bSlideShow && !m_bPause && !m_slides.at(iSlideNumber)->IsVideo())
-    return CSettings::GetInstance().GetBool("slideshow.displayeffects") ? CSlideShowPic::EFFECT_RANDOM : CSlideShowPic::EFFECT_NONE;
+    return CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("slideshow.displayeffects") ? CSlideShowPic::EFFECT_RANDOM : CSlideShowPic::EFFECT_NONE;
   else
     return CSlideShowPic::EFFECT_NO_TIMEOUT;
 }
@@ -1155,7 +1156,7 @@ void CGUIWindowSlideShow::RunSlideShow(const std::string &strPath,
     bRandom = bNotRandom = false;
 
   // NotRandom overrides the window setting
-  if ((!bNotRandom && CSettings::GetInstance().GetBool("slideshow.shuffle")) || bRandom)
+  if ((!bNotRandom && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("slideshow.shuffle")) || bRandom)
     Shuffle();
 
   if (!beginSlidePath.empty())

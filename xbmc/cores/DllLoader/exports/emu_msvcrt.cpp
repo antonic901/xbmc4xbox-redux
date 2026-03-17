@@ -31,6 +31,7 @@
 #include <fcntl.h>
 #include <time.h>
 #include <signal.h>
+#include "ServiceBroker.h"
 #include "Util.h"
 #include "filesystem/IDirectory.h"
 #include "filesystem/DirectoryFactory.h"
@@ -38,6 +39,7 @@
 #include "URL.h"
 #include "filesystem/File.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "FileItem.h"
 #include "utils/URIUtils.h"
 
@@ -129,21 +131,21 @@ extern "C" void __stdcall init_emu_environ()
 extern "C" void __stdcall update_emu_environ()
 {
   // Use a proxy, if the GUI was configured as such
-  if (CSettings::GetInstance().GetBool("network.usehttpproxy")
-      && !CSettings::GetInstance().GetString("network.httpproxyserver").empty()
-      && !CSettings::GetInstance().GetString("network.httpproxyport").empty()
-      && CSettings::GetInstance().GetInt("network.httpproxytype") == 0)
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("network.usehttpproxy")
+      && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.httpproxyserver").empty()
+      && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.httpproxyport").empty()
+      && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("network.httpproxytype") == 0)
   {
     CStdString strProxy;
-    if (!CSettings::GetInstance().GetString("network.httpproxyusername").empty() &&
-        !CSettings::GetInstance().GetString("network.httpproxypassword").empty())
+    if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.httpproxyusername").empty() &&
+        !CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.httpproxypassword").empty())
     {
-      strProxy.Format("%s:%s@", CSettings::GetInstance().GetString("network.httpproxyusername").c_str(),
-                                CSettings::GetInstance().GetString("network.httpproxypassword").c_str());
+      strProxy.Format("%s:%s@", CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.httpproxyusername").c_str(),
+                                CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.httpproxypassword").c_str());
     }
 
-    strProxy += CSettings::GetInstance().GetString("network.httpproxyserver");
-    strProxy += ":" + CSettings::GetInstance().GetString("network.httpproxyport");
+    strProxy += CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.httpproxyserver");
+    strProxy += ":" + CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.httpproxyport");
 
     dll_putenv(("HTTP_PROXY=http://" +strProxy).c_str());
     dll_putenv(("HTTPS_PROXY=http://" +strProxy).c_str());

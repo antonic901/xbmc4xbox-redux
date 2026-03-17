@@ -34,6 +34,7 @@
 #include "guilib/TextureManager.h"
 #include "File.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "SpecialProtocol.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
@@ -483,7 +484,7 @@ static void RootDirectory(CFileItemList& items)
     item->SetIconImage("DefaultNetwork.png");
     items.Add(item);
   }
-  if (CSettings::GetInstance().GetInt("general.addonupdates") == ADDON::AUTO_UPDATES_ON
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("general.addonupdates") == ADDON::AUTO_UPDATES_ON
       && HasRecentlyUpdatedAddons())
   {
     CFileItemPtr item(new CFileItem("addons://recently_updated/", true));

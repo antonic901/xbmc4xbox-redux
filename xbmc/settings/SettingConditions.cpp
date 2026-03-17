@@ -32,6 +32,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/SettingAddon.h"
+#include "settings/SettingsComponent.h"
 #if defined(HAS_LIBAMCODEC)
 #include "utils/AMLUtils.h"
 #endif // defined(HAS_LIBAMCODEC)
@@ -90,52 +91,52 @@ bool IsUsingTTFSubtitles(const std::string &condition, const std::string &value,
 
 bool ProfileCanWriteDatabase(const std::string &condition, const std::string &value, const CSetting *setting, void *data)
 {
-  return CProfilesManager::Get().GetCurrentProfile().canWriteDatabases();
+  return CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteDatabases();
 }
 
 bool ProfileCanWriteSources(const std::string &condition, const std::string &value, const CSetting *setting, void *data)
 {
-  return CProfilesManager::Get().GetCurrentProfile().canWriteSources();
+  return CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteSources();
 }
 
 bool ProfileHasAddons(const std::string &condition, const std::string &value, const CSetting *setting, void *data)
 {
-  return CProfilesManager::Get().GetCurrentProfile().hasAddons();
+  return CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().hasAddons();
 }
 
 bool ProfileHasDatabase(const std::string &condition, const std::string &value, const CSetting *setting, void *data)
 {
-  return CProfilesManager::Get().GetCurrentProfile().hasDatabases();
+  return CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().hasDatabases();
 }
 
 bool ProfileHasSources(const std::string &condition, const std::string &value, const CSetting *setting, void *data)
 {
-  return CProfilesManager::Get().GetCurrentProfile().hasSources();
+  return CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().hasSources();
 }
 
 bool ProfileHasAddonManagerLocked(const std::string &condition, const std::string &value, const CSetting *setting, void *data)
 {
-  return CProfilesManager::Get().GetCurrentProfile().addonmanagerLocked();
+  return CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().addonmanagerLocked();
 }
 
 bool ProfileHasFilesLocked(const std::string &condition, const std::string &value, const CSetting *setting, void *data)
 {
-  return CProfilesManager::Get().GetCurrentProfile().filesLocked();
+  return CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().filesLocked();
 }
 
 bool ProfileHasMusicLocked(const std::string &condition, const std::string &value, const CSetting *setting, void *data)
 {
-  return CProfilesManager::Get().GetCurrentProfile().musicLocked();
+  return CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().musicLocked();
 }
 
 bool ProfileHasPicturesLocked(const std::string &condition, const std::string &value, const CSetting *setting, void *data)
 {
-  return CProfilesManager::Get().GetCurrentProfile().picturesLocked();
+  return CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().picturesLocked();
 }
 
 bool ProfileHasProgramsLocked(const std::string &condition, const std::string &value, const CSetting *setting, void *data)
 {
-  return CProfilesManager::Get().GetCurrentProfile().programsLocked();
+  return CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().programsLocked();
 }
 
 bool ProfileHasSettingsLocked(const std::string &condition, const std::string &value, const CSetting *setting, void *data)
@@ -149,12 +150,12 @@ bool ProfileHasSettingsLocked(const std::string &condition, const std::string &v
     slValue = LOCK_LEVEL::ADVANCED;
   else if (StringUtils::EqualsNoCase(value, "expert"))
     slValue = LOCK_LEVEL::EXPERT;
-  return slValue <= CProfilesManager::Get().GetCurrentProfile().settingsLockLevel();
+  return slValue <= CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().settingsLockLevel();
 }
 
 bool ProfileHasVideosLocked(const std::string &condition, const std::string &value, const CSetting *setting, void *data)
 {
-  return CProfilesManager::Get().GetCurrentProfile().videoLocked();
+  return CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().videoLocked();
 }
 
 bool ProfileLockMode(const std::string &condition, const std::string &value, const CSetting *setting, void *data)
@@ -164,7 +165,7 @@ bool ProfileLockMode(const std::string &condition, const std::string &value, con
   if (tmp != NULL && *tmp != '\0')
     return false;
 
-  return CProfilesManager::Get().GetCurrentProfile().getLockMode() == lock;
+  return CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().getLockMode() == lock;
 }
 
 bool GreaterThan(const std::string &condition, const std::string &value, const CSetting *setting, void *data)

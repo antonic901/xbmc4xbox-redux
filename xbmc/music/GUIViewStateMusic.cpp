@@ -23,6 +23,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "FileItem.h"
 #include "guilib/Key.h"
 #include "guilib/LocalizeStrings.h"
@@ -45,8 +46,8 @@ int CGUIViewStateWindowMusic::GetPlaylist()
 
 bool CGUIViewStateWindowMusic::AutoPlayNextItem()
 {
-  return CSettings::GetInstance().GetBool("musicplayer.autoplaynextitem") &&
-         !CSettings::GetInstance().GetBool("musicplayer.queuebydefault");
+  return CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.autoplaynextitem") &&
+         !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.queuebydefault");
 }
 
 std::string CGUIViewStateWindowMusic::GetLockType()
@@ -56,7 +57,7 @@ std::string CGUIViewStateWindowMusic::GetLockType()
 
 std::string CGUIViewStateWindowMusic::GetExtensions()
 {
-  return g_advancedSettings.GetMusicExtensions();
+  return CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetMusicExtensions();
 }
 
 VECSOURCES& CGUIViewStateWindowMusic::GetSources()
@@ -67,7 +68,7 @@ VECSOURCES& CGUIViewStateWindowMusic::GetSources()
 CGUIViewStateMusicSearch::CGUIViewStateMusicSearch(const CFileItemList& items) : CGUIViewStateWindowMusic(items)
 {
   SortAttribute sortAttribute = SortAttributeNone;
-  if (CSettings::GetInstance().GetBool("filelists.ignorethewhensorting"))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting"))
     sortAttribute = SortAttributeIgnoreArticle;
 
   AddSortMethod(SortByTitle, sortAttribute, 556, LABEL_MASKS("%T - %A", "%D", "%L", "%A"));  // Title - Artist, Duration | Label, Artist
@@ -90,17 +91,17 @@ CGUIViewStateMusicDatabase::CGUIViewStateMusicDatabase(const CFileItemList& item
   CMusicDatabaseDirectory dir;
   NODE_TYPE NodeType=dir.GetDirectoryChildType(items.GetPath());
 
-  std::string strTrack=CSettings::GetInstance().GetString("musicfiles.librarytrackformat");
+  std::string strTrack=CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicfiles.librarytrackformat");
   if (strTrack.empty())
-    strTrack = CSettings::GetInstance().GetString("musicfiles.trackformat");
-  std::string strAlbum = g_advancedSettings.m_strMusicLibraryAlbumFormat;
+    strTrack = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicfiles.trackformat");
+  std::string strAlbum = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_strMusicLibraryAlbumFormat;
   if (strAlbum.empty())
     strAlbum = "%B"; // album
   CLog::Log(LOGDEBUG,"Custom album format = [%s]", strAlbum.c_str());
   SortAttribute sortAttribute = SortAttributeNone;
-  if (CSettings::GetInstance().GetBool("filelists.ignorethewhensorting"))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting"))
     sortAttribute = SortAttributeIgnoreArticle;
-  if (g_advancedSettings.m_musicUseArtistSortName)
+  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicUseArtistSortName)
     sortAttribute = static_cast<SortAttribute>(sortAttribute | SortAttributeUseArtistSortName);
 
   switch (NodeType)
@@ -332,15 +333,15 @@ void CGUIViewStateMusicDatabase::SaveViewState()
 CGUIViewStateMusicSmartPlaylist::CGUIViewStateMusicSmartPlaylist(const CFileItemList& items) : CGUIViewStateWindowMusic(items)
 {
   SortAttribute sortAttribute = SortAttributeNone;
-  if (CSettings::GetInstance().GetBool("filelists.ignorethewhensorting"))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting"))
     sortAttribute = SortAttributeIgnoreArticle;
-  if (g_advancedSettings.m_musicUseArtistSortName)
+  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicUseArtistSortName)
     sortAttribute = static_cast<SortAttribute>(sortAttribute | SortAttributeUseArtistSortName);
   const CViewState *viewState = CViewStateSettings::Get().Get("musicnavsongs");
 
   if (items.GetContent() == "songs" || items.GetContent() == "mixed")
   {
-    std::string strTrack=CSettings::GetInstance().GetString("musicfiles.trackformat");
+    std::string strTrack=CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicfiles.trackformat");
     AddSortMethod(SortByTrackNumber, 554, LABEL_MASKS(strTrack, "%D"));  // Userdefined, Duration| empty, empty
     AddSortMethod(SortByTitle, sortAttribute, 556, LABEL_MASKS("%T - %A", "%D"));  // Title, Artist, Duration| empty, empty
     AddSortMethod(SortByAlbum, sortAttribute, 558, LABEL_MASKS("%B - %T - %A", "%D"));  // Album, Titel, Artist, Duration| empty, empty
@@ -366,7 +367,7 @@ CGUIViewStateMusicSmartPlaylist::CGUIViewStateMusicSmartPlaylist(const CFileItem
   }
   else if (items.GetContent() == "albums")
   {
-    std::string strAlbum = g_advancedSettings.m_strMusicLibraryAlbumFormat;
+    std::string strAlbum = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_strMusicLibraryAlbumFormat;
     if (strAlbum.empty())
       strAlbum = "%B"; // album
     // album
@@ -414,13 +415,13 @@ void CGUIViewStateMusicSmartPlaylist::SaveViewState()
 CGUIViewStateMusicPlaylist::CGUIViewStateMusicPlaylist(const CFileItemList& items) : CGUIViewStateWindowMusic(items)
 {
   SortAttribute sortAttribute = SortAttributeNone;
-  if (CSettings::GetInstance().GetBool("filelists.ignorethewhensorting"))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting"))
     sortAttribute = SortAttributeIgnoreArticle;
 
-  if (g_advancedSettings.m_musicUseArtistSortName)
+  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicUseArtistSortName)
     sortAttribute = static_cast<SortAttribute>(sortAttribute | SortAttributeUseArtistSortName);
 
-  std::string strTrack=CSettings::GetInstance().GetString("musicfiles.trackformat");
+  std::string strTrack=CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicfiles.trackformat");
   AddSortMethod(SortByPlaylistOrder, 559, LABEL_MASKS(strTrack, "%D"));
   AddSortMethod(SortByTrackNumber, 554, LABEL_MASKS(strTrack, "%D"));  // Userdefined, Duration| empty, empty
   AddSortMethod(SortByTitle, sortAttribute, 556, LABEL_MASKS("%T - %A", "%D"));  // Title, Artist, Duration| empty, empty
@@ -448,9 +449,9 @@ void CGUIViewStateMusicPlaylist::SaveViewState()
 CGUIViewStateWindowMusicNav::CGUIViewStateWindowMusicNav(const CFileItemList& items) : CGUIViewStateWindowMusic(items)
 {
   SortAttribute sortAttribute = SortAttributeNone;
-  if (CSettings::GetInstance().GetBool("filelists.ignorethewhensorting"))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting"))
     sortAttribute = SortAttributeIgnoreArticle;
-  if (g_advancedSettings.m_musicUseArtistSortName)
+  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicUseArtistSortName)
     sortAttribute = static_cast<SortAttribute>(sortAttribute | SortAttributeUseArtistSortName);
 
   if (items.IsVirtualDirectoryRoot())
@@ -464,10 +465,10 @@ CGUIViewStateWindowMusicNav::CGUIViewStateWindowMusicNav(const CFileItemList& it
   }
   else
   {
-    if (items.IsVideoDb() && items.Size() > (CSettings::GetInstance().GetBool("filelists.showparentdiritems")?1:0))
+    if (items.IsVideoDb() && items.Size() > (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.showparentdiritems")?1:0))
     {
       XFILE::VIDEODATABASEDIRECTORY::CQueryParams params;
-      XFILE::CVideoDatabaseDirectory::GetQueryParams(items[CSettings::GetInstance().GetBool("filelists.showparentdiritems")?1:0]->GetPath(),params);
+      XFILE::CVideoDatabaseDirectory::GetQueryParams(items[CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.showparentdiritems")?1:0]->GetPath(),params);
       if (params.GetMVideoId() != -1)
       {
         AddSortMethod(SortByLabel, sortAttribute, 551, LABEL_MASKS("%T", "%Y"));  // Filename, Duration | Foldername, empty
@@ -476,7 +477,7 @@ CGUIViewStateWindowMusicNav::CGUIViewStateWindowMusicNav(const CFileItemList& it
         AddSortMethod(SortByArtistThenYear, sortAttribute, 578, LABEL_MASKS("%A - %T", "%Y"));
         AddSortMethod(SortByAlbum, sortAttribute, 558, LABEL_MASKS("%B - %T", "%Y"));
 
-        std::string strTrack=CSettings::GetInstance().GetString("musicfiles.trackformat");
+        std::string strTrack=CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicfiles.trackformat");
         AddSortMethod(SortByTrackNumber, 554, LABEL_MASKS(strTrack, "%D"));  // Userdefined, Duration| empty, empty
       }
       else
@@ -490,11 +491,11 @@ CGUIViewStateWindowMusicNav::CGUIViewStateWindowMusicNav(const CFileItemList& it
       //In navigation of music files tag data is scanned whenever present and can be used as sort criteria
       //hence sort methods available are similar to song node (not the same as only tag data)
       //Unfortunately anything here appears at all levels of file navigation even if no song files there.
-      std::string strTrack = CSettings::GetInstance().GetString("musicfiles.librarytrackformat");
+      std::string strTrack = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicfiles.librarytrackformat");
       if (strTrack.empty())
-          strTrack = CSettings::GetInstance().GetString("musicfiles.trackformat");
+          strTrack = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicfiles.trackformat");
       AddSortMethod(SortByLabel, 551, LABEL_MASKS(strTrack, "%D", "%L", ""),  // Userdefined, Duration | FolderName, empty
-        CSettings::GetInstance().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+        CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
       AddSortMethod(SortBySize, 553, LABEL_MASKS("%F", "%I", "%L", "%I"));  // Filename, Size | Foldername, Size
       AddSortMethod(SortByDate, 552, LABEL_MASKS("%F", "%J", "%L", "%J"));  // Filename, Date | Foldername, Date
       AddSortMethod(SortByFile, 561, LABEL_MASKS("%F", "%I", "%L", ""));  // Filename, Size | Label, empty
@@ -524,7 +525,7 @@ void CGUIViewStateWindowMusicNav::SaveViewState()
 
 void CGUIViewStateWindowMusicNav::AddOnlineShares()
 {
-  if (!g_advancedSettings.m_bVirtualShares)
+  if (!CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bVirtualShares)
     return;
 
   VECSOURCES *musicSources = CMediaSourceSettings::Get().GetSources("music");
@@ -560,9 +561,9 @@ VECSOURCES& CGUIViewStateWindowMusicNav::GetSources()
 
 CGUIViewStateWindowMusicPlaylist::CGUIViewStateWindowMusicPlaylist(const CFileItemList& items) : CGUIViewStateWindowMusic(items)
 {
-  std::string strTrack=CSettings::GetInstance().GetString("musicfiles.nowplayingtrackformat");
+  std::string strTrack=CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicfiles.nowplayingtrackformat");
   if (strTrack.empty())
-    strTrack = CSettings::GetInstance().GetString("musicfiles.trackformat");
+    strTrack = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicfiles.trackformat");
 
   AddSortMethod(SortByNone, 551, LABEL_MASKS(strTrack, "%D", "%L", ""));  // Userdefined, Duration | FolderName, empty
   SetSortMethod(SortByNone);

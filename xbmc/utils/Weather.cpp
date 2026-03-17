@@ -48,6 +48,7 @@
 #include "xbox/Network.h"
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "StringUtils.h"
 #include "URIUtils.h"
 #include "utils/POUtils.h"
@@ -89,7 +90,7 @@ bool CWeatherJob::DoWork()
     return false;
 
   AddonPtr addon;
-  if (!CServiceBroker::GetAddonMgr().GetAddon(CSettings::GetInstance().GetString("weather.addon"), addon, ADDON_SCRIPT_WEATHER))
+  if (!CServiceBroker::GetAddonMgr().GetAddon(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("weather.addon"), addon, ADDON_SCRIPT_WEATHER))
     return false;
 
   // initialize our sys.argv variables
@@ -583,7 +584,7 @@ void CWeatherJob::LoadLocalizedToken()
 {
   // We load the english strings in to get our tokens
   std::string language = LANGUAGE_DEFAULT;
-  CSettingString* languageSetting = static_cast<CSettingString*>(CSettings::GetInstance().GetSetting("locale.language"));
+  CSettingString* languageSetting = static_cast<CSettingString*>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("locale.language"));
   if (languageSetting != NULL)
     language = languageSetting->GetDefault();
 
@@ -802,8 +803,8 @@ const day_forecast &CWeather::GetForecast(int day) const
  */
 void CWeather::SetArea(int iLocation)
 {
-  CSettings::GetInstance().SetInt("weather.currentlocation", iLocation);
-  CSettings::GetInstance().Save();
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("weather.currentlocation", iLocation);
+  CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 }
 
 /*!
@@ -812,7 +813,7 @@ void CWeather::SetArea(int iLocation)
  */
 int CWeather::GetArea() const
 {
-  return CSettings::GetInstance().GetInt("weather.currentlocation");
+  return CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("weather.currentlocation");
 }
 
 CJob *CWeather::GetJob() const
@@ -850,7 +851,7 @@ void CWeather::OnSettingAction(const CSetting *setting)
   if (settingId == "weather.addonsettings")
   {
     AddonPtr addon;
-    if (CServiceBroker::GetAddonMgr().GetAddon(CSettings::GetInstance().GetString("weather.addon"), addon, ADDON_SCRIPT_WEATHER) && addon != NULL)
+    if (CServiceBroker::GetAddonMgr().GetAddon(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("weather.addon"), addon, ADDON_SCRIPT_WEATHER) && addon != NULL)
     { //! @todo maybe have ShowAndGetInput return a bool if settings changed, then only reset weather if true.
       CGUIDialogAddonSettings::ShowAndGetInput(addon);
       Refresh();

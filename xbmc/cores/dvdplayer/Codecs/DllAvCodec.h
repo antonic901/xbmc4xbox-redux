@@ -27,6 +27,7 @@ extern "C" {
 
 #include "threads/SingleLock.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 
 class DllAvCodecInterface
 {
@@ -144,7 +145,7 @@ public:
 class DllAvCodec : public DllDynamic, DllAvCodecInterface
 {
 public:
-  DllAvCodec() : DllDynamic( CSettings::GetInstance().GetFFmpegDllFolder() + "avcodec-54.dll") {}
+  DllAvCodec() : DllDynamic( CServiceBroker::GetSettingsComponent()->GetSettings()->GetFFmpegDllFolder() + "avcodec-54.dll") {}
 
   DEFINE_FUNC_ALIGNED1(void, __cdecl, avcodec_flush_buffers, AVCodecContext*)
   DEFINE_FUNC_ALIGNED3(int, __cdecl, avcodec_open2_dont_call, AVCodecContext*, AVCodec *, AVDictionary **)

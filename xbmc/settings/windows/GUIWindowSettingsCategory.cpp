@@ -26,6 +26,7 @@
 #include "guilib/Key.h"
 #include "settings/DisplaySettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/lib/SettingSection.h"
 #include "settings/windows/GUIControlSettings.h"
 #include "utils/log.h"
@@ -56,11 +57,11 @@ static const SettingGroup s_settingGroupMap[] = { { SETTINGS_SYSTEM,      "syste
 
 CGUIWindowSettingsCategory::CGUIWindowSettingsCategory()
     : CGUIDialogSettingsManagerBase(WINDOW_SETTINGS_SYSTEM, "SettingsCategory.xml"),
-      m_settings(CSettings::GetInstance()),
+      m_settings(CServiceBroker::GetSettingsComponent()->GetSettings()),
       m_iSection(0),
       m_returningFromSkinLoad(false)
 {
-  m_settingsManager = m_settings.GetSettingsManager();
+  m_settingsManager = m_settings->GetSettingsManager();
 
   // set the correct ID range...
   m_idRange.clear();
@@ -133,7 +134,7 @@ bool CGUIWindowSettingsCategory::OnAction(const CAction &action)
         return false;
 
       CViewStateSettings::Get().CycleSettingLevel();
-      CSettings::GetInstance().Save();
+      CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
 
       // try to keep the current position
       std::string oldCategory;
@@ -191,7 +192,7 @@ CSettingSection* CGUIWindowSettingsCategory::GetSection()
   for (size_t index = 0; index < SettingGroupSize; index++)
   {
     if (s_settingGroupMap[index].id == m_iSection)
-      return m_settings.GetSection(s_settingGroupMap[index].name);
+      return m_settings->GetSection(s_settingGroupMap[index].name);
   }
 
   return NULL;
@@ -199,7 +200,7 @@ CSettingSection* CGUIWindowSettingsCategory::GetSection()
 
 void CGUIWindowSettingsCategory::Save()
 {
-  m_settings.Save();
+  m_settings->Save();
 }
 
 void CGUIWindowSettingsCategory::FocusElement(const std::string& elementId)

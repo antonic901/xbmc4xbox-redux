@@ -5,7 +5,9 @@
 #include "system.h"
 #include <stdio.h>
 #include "XBInputEx.h"
+#include "ServiceBroker.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 
 //#define REMOTE_DEBUG 1
@@ -188,9 +190,9 @@ VOID XBInput_GetInput( XBIR_REMOTE* pIR_Remote)
           bool bSendMessage = true;
           // If this is the first event or if at least 2 non first events have passed (assume repeat)
           if (g_eventsSinceFirstEvent[i] > 0 && !bIsRepeating)
-          { // check for repeats (g_advancedSettings.m_remoteRepeat is in milliseconds, so to translate
+          { // check for repeats (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_remoteRepeat is in milliseconds, so to translate
             // into packets it's about delay/60, as each packet comes approximately every 60ms.
-            if ((int)g_eventsSinceFirstEvent[i] < g_advancedSettings.m_remoteRepeat/60)
+            if ((int)g_eventsSinceFirstEvent[i] < CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_remoteRepeat/60)
               bSendMessage = false;
             else
               bIsRepeating = true;

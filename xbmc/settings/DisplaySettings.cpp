@@ -27,6 +27,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "threads/SingleLock.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
@@ -273,7 +274,7 @@ bool CDisplaySettings::OnSettingUpdate(CSetting* &setting, const char *oldSettin
 void CDisplaySettings::SetCurrentResolution(RESOLUTION resolution, bool save /* = false */)
 {
   if (save)
-    CSettings::GetInstance().SetInt("videoscreen.resolution", (int)resolution);
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("videoscreen.resolution", (int)resolution);
 
   if (resolution == RES_AUTORES)
     m_currentResolution = g_videoConfig.GetBestMode();
@@ -281,12 +282,12 @@ void CDisplaySettings::SetCurrentResolution(RESOLUTION resolution, bool save /* 
     m_currentResolution = resolution;
 
   // SetChanged() is added in PVR pull request
-  CSettings::GetInstance().Save()/*g_guiSettings.SetChanged()*/;
+  CServiceBroker::GetSettingsComponent()->GetSettings()->Save()/*g_guiSettings.SetChanged()*/;
 }
 
 RESOLUTION CDisplaySettings::GetDisplayResolution() const
 {
-  return (RESOLUTION)CSettings::GetInstance().GetInt("videoscreen.resolution");
+  return (RESOLUTION)CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoscreen.resolution");
 }
 
 const RESOLUTION_INFO& CDisplaySettings::GetResolutionInfo(size_t index) const

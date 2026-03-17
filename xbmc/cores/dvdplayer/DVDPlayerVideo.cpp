@@ -23,6 +23,7 @@
 #include "utils/log.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/lib/Setting.h"
 #include "DVDPlayer.h"
 #include "DVDPlayerVideo.h"
@@ -83,8 +84,8 @@ CDVDPlayerVideo::CDVDPlayerVideo( CDVDClock* pClock
   m_iDroppedRequest = 0;
   m_fForcedAspectRatio = 0;
   m_iNrOfPicturesNotToSkip = 0;
-  m_messageQueue.SetMaxDataSize(CSettings::GetInstance().GetInt("dvdplayercache.video") * 1024);
-  m_messageQueue.SetMaxTimeSize(CSettings::GetInstance().GetInt("dvdplayercache.videotime"));
+  m_messageQueue.SetMaxDataSize(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("dvdplayercache.video") * 1024);
+  m_messageQueue.SetMaxTimeSize(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("dvdplayercache.videotime"));
   g_dvdPerformanceCounter.EnableVideoQueue(&m_messageQueue);
 
   m_iCurrentPts = DVD_NOPTS_VALUE;
@@ -519,7 +520,7 @@ void CDVDPlayerVideo::Process()
             {
               if (!sPostProcessType.empty())
                 sPostProcessType += ",";
-              sPostProcessType += g_advancedSettings.m_videoPPFFmpegDeint;
+              sPostProcessType += CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoPPFFmpegDeint;
             }
 
             if (CMediaSettings::Get().GetCurrentVideoSettings().m_PostProcess)
@@ -527,7 +528,7 @@ void CDVDPlayerVideo::Process()
               if (!sPostProcessType.empty())
                 sPostProcessType += ",";
               // This is what mplayer uses for its "high-quality filter combination"
-              sPostProcessType += g_advancedSettings.m_videoPPFFmpegPostProc;
+              sPostProcessType += CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoPPFFmpegPostProc;
             }
 
             if (!sPostProcessType.empty())

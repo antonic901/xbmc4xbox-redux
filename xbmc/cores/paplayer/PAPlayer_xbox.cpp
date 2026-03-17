@@ -27,6 +27,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "Application.h"
 #include "FileItem.h"
 
@@ -100,7 +101,7 @@ bool PAPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
 {
   if (m_currentlyCrossFading) CloseFileInternal(false); //user seems to be in a hurry
 
-  m_crossFading = CSettings::GetInstance().GetInt("musicplayer.crossfade");
+  m_crossFading = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("musicplayer.crossfade");
   //no crossfading for cdda, cd-reading goes mad and no crossfading for last.fm doesn't like two connections
   if (file.IsCDDA()) m_crossFading = 0;
   if (m_crossFading && IsPlaying())
@@ -177,14 +178,14 @@ bool PAPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
 
 void PAPlayer::UpdateCrossFadingTime(const CFileItem& file)
 {
-  if (m_crossFading = CSettings::GetInstance().GetInt("musicplayer.crossfade"))
+  if (m_crossFading = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("musicplayer.crossfade"))
   {
     if (
       m_crossFading &&
       (
         file.IsCDDA() ||
         (
-        !CSettings::GetInstance().GetBool("musicplayer.crossfadealbumtracks") && m_currentFile->HasMusicInfoTag() && file.HasMusicInfoTag() &&
+        !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.crossfadealbumtracks") && m_currentFile->HasMusicInfoTag() && file.HasMusicInfoTag() &&
           (m_currentFile->GetMusicInfoTag()->GetAlbum() != "") &&
           (m_currentFile->GetMusicInfoTag()->GetAlbum() == file.GetMusicInfoTag()->GetAlbum()) &&
           (m_currentFile->GetMusicInfoTag()->GetDiscNumber() == file.GetMusicInfoTag()->GetDiscNumber()) &&
@@ -323,7 +324,7 @@ void PAPlayer::SetupDirectSound(int channels)
     return;
   // Set the default mixbins headroom to appropriate level as set in the settings file (to allow the maximum volume)
   for (DWORD i = 0; i < 8;i++)
-    pDSound->SetMixBinHeadroom(i, DWORD(g_advancedSettings.m_audioHeadRoom / 6));
+    pDSound->SetMixBinHeadroom(i, DWORD(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_audioHeadRoom / 6));
 }
 
 bool PAPlayer::CreateStream(int num, int channels, int samplerate, int bitspersample, CStdString codecname)
@@ -336,8 +337,8 @@ bool PAPlayer::CreateStream(int num, int channels, int samplerate, int bitspersa
   for (int i = 1; i < PACKET_COUNT ; i++)
     m_packet[num][i].packet = m_packet[num][i - 1].packet + PACKET_SIZE;
 
-  if (channels <= 2 && g_advancedSettings.m_musicResample) 
-    m_SampleRateOutput = g_advancedSettings.m_musicResample; 
+  if (channels <= 2 && CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicResample) 
+    m_SampleRateOutput = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicResample; 
   else 
     m_SampleRateOutput = samplerate;
 
@@ -371,7 +372,7 @@ bool PAPlayer::CreateStream(int num, int channels, int samplerate, int bitspersa
   DSMIXBINVOLUMEPAIR dsmbvp8[8];
   int iMixBinCount;
 
-  if ((channels == 2) && (CSettings::GetInstance().GetBool("musicplayer.outputtoallspeakers")))
+  if ((channels == 2) && (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.outputtoallspeakers")))
     g_audioContext.GetMixBin(dsmbvp8, &iMixBinCount, &dwCMask, DSMIXBINTYPE_STEREOALL, channels);
   else if( codecname.Equals("wav") || codecname.Equals("wma") || codecname.Equals("flac") )
     g_audioContext.GetMixBin(dsmbvp8, &iMixBinCount, &dwCMask, 0, channels);
@@ -840,12 +841,12 @@ bool PAPlayer::CanSeek()
 void PAPlayer::Seek(bool bPlus, bool bLargeStep, bool bChapterOverride)
 {
   __int64 seek;
-  if (g_advancedSettings.m_musicUseTimeSeeking && GetTotalTime() > 2*g_advancedSettings.m_musicTimeSeekForwardBig)
+  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicUseTimeSeeking && GetTotalTime() > 2*CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicTimeSeekForwardBig)
   {
     if (bLargeStep)
-      seek = bPlus ? g_advancedSettings.m_musicTimeSeekForwardBig : g_advancedSettings.m_musicTimeSeekBackwardBig;
+      seek = bPlus ? CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicTimeSeekForwardBig : CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicTimeSeekBackwardBig;
     else
-      seek = bPlus ? g_advancedSettings.m_musicTimeSeekForward : g_advancedSettings.m_musicTimeSeekBackward;
+      seek = bPlus ? CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicTimeSeekForward : CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicTimeSeekBackward;
     seek *= 1000;
     seek += GetTime();
   }
@@ -853,9 +854,9 @@ void PAPlayer::Seek(bool bPlus, bool bLargeStep, bool bChapterOverride)
   {
     float percent;
     if (bLargeStep)
-      percent = bPlus ? (float)g_advancedSettings.m_musicPercentSeekForwardBig : (float)g_advancedSettings.m_musicPercentSeekBackwardBig;
+      percent = bPlus ? (float)CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicPercentSeekForwardBig : (float)CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicPercentSeekBackwardBig;
     else
-      percent = bPlus ? (float)g_advancedSettings.m_musicPercentSeekForward : (float)g_advancedSettings.m_musicPercentSeekBackward;
+      percent = bPlus ? (float)CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicPercentSeekForward : (float)CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicPercentSeekBackward;
     seek = (__int64)(GetTotalTime64()*(GetPercentage()+percent)/100);
   }
 

@@ -21,6 +21,7 @@
 #include "LCD.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
@@ -31,7 +32,7 @@ using namespace std;
 void ILCD::StringToLCDCharSet(CStdString& strText)
 {
   //0 = HD44780, 1=KS0073
-  unsigned int iLCDContr = CSettings::GetInstance().GetInt("lcd.type") == LCD_TYPE_LCD_KS0073 ? 1 : 0;
+  unsigned int iLCDContr = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.type") == LCD_TYPE_LCD_KS0073 ? 1 : 0;
   //the timeline is using blocks
   //a block is used at address 0xA0, smallBlocks at address 0xAC-0xAF
 
@@ -169,7 +170,7 @@ CStdString ILCD::GetProgressBar(double tCurrent, double tTotal)
   unsigned char cLCDsmallBlocks = 0xb0; //this char (0xAC-0xAF) will be translated in LCD.cpp to the smallBlock
   unsigned char cLCDbigBlock = 0xab;  //this char will be translated in LCD.cpp to the right bigBlock
   int iBigBlock = 5;      // a big block is a combination of 5 small blocks
-  int m_iColumns = g_advancedSettings.m_lcdColumns - 2;
+  int m_iColumns = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_lcdColumns - 2;
 
   if (m_iColumns > 0)
   {
@@ -390,7 +391,7 @@ CStdString ILCD::GetBigDigit( UINT _nCharset, int _nDigit, UINT _nLine, UINT _nM
 void ILCD::Initialize()
 {
   CStdString lcdPath;
-  lcdPath = CProfilesManager::Get().GetUserDataItem("LCD.xml");
+  lcdPath = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("LCD.xml");
   LoadSkin(lcdPath);
   m_eCurrentCharset = CUSTOM_CHARSET_DEFAULT;
 

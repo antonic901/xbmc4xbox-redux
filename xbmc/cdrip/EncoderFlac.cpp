@@ -20,8 +20,10 @@
 
 #include "utils/log.h"
 #include "EncoderFlac.h"
+#include "ServiceBroker.h"
 #include "filesystem/File.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 
 CEncoderFlac::CEncoderFlac() : m_encoder(0), m_samplesBuf(new FLAC__int32[SAMPLES_BUF_SIZE])
 {
@@ -62,7 +64,7 @@ bool CEncoderFlac::Init(const char* strFile, int iInChannels, int iInRate, int i
   ok &= m_dll.FLAC__stream_encoder_set_bits_per_sample(m_encoder, 16);
   ok &= m_dll.FLAC__stream_encoder_set_sample_rate(m_encoder, 44100);
   ok &= m_dll.FLAC__stream_encoder_set_total_samples_estimate(m_encoder, m_iTrackLength / 4);
-  ok &= m_dll.FLAC__stream_encoder_set_compression_level(m_encoder, CSettings::GetInstance().GetInt("audiocds.compressionlevel"));
+  ok &= m_dll.FLAC__stream_encoder_set_compression_level(m_encoder, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.compressionlevel"));
 
   // now add some metadata
   FLAC__StreamMetadata_VorbisComment_Entry entry;

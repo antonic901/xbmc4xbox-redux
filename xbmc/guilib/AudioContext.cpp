@@ -25,6 +25,7 @@
 #include "GUIAudioManager.h"
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "XBAudioConfig.h"
 #include "utils/log.h"
 
@@ -132,9 +133,9 @@ void CAudioContext::SetupSpeakerConfig(int iChannels, bool& bAudioOnAllSpeakers,
 
 #ifdef HAS_AUDIO
   DWORD spconfig = DSSPEAKER_USE_DEFAULT;
-  if (CSettings::GetInstance().GetInt("audiooutput.mode") == AUDIO_DIGITAL)
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_DIGITAL)
   {
-    if (((CSettings::GetInstance().GetBool("musicplayer.outputtoallspeakers")) && (bIsMusic)) || (CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers && !bIsMusic))
+    if (((CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.outputtoallspeakers")) && (bIsMusic)) || (CMediaSettings::Get().GetCurrentVideoSettings().m_OutputToAllSpeakers && !bIsMusic))
     {
       if( g_audioConfig.GetAC3Enabled() )
       {

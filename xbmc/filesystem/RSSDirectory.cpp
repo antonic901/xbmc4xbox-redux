@@ -25,8 +25,10 @@
 
 #include "CurlFile.h"
 #include "FileItem.h"
+#include "ServiceBroker.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "threads/SingleLock.h"
 #include "URL.h"
 #include "utils/HTMLUtil.h"
@@ -90,9 +92,9 @@ bool CRSSDirectory::ContainsFiles(const CURL& url)
 static bool IsPathToMedia(const std::string& strPath )
 {
   return URIUtils::HasExtension(strPath,
-                              g_advancedSettings.m_videoExtensions + '|' +
-                              g_advancedSettings.GetMusicExtensions() + '|' +
-                              g_advancedSettings.m_pictureExtensions);
+                              CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions + '|' +
+                              CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetMusicExtensions() + '|' +
+                              CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions);
 }
 
 static bool IsPathToThumbnail(const std::string& strPath )
@@ -100,7 +102,7 @@ static bool IsPathToThumbnail(const std::string& strPath )
   // Currently just check if this is an image, maybe we will add some
   // other checks later
   return URIUtils::HasExtension(strPath,
-                                    g_advancedSettings.m_pictureExtensions);
+                                    CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions);
 }
 
 static time_t ParseDate(const std::string & strDate)
@@ -202,7 +204,7 @@ static void ParseItemMRSS(CFileItem* item, SResources& resources, TiXmlElement* 
     else if(scheme == "urn:boxee:source")
       item->SetProperty("boxee:provider_source", text);
     else
-      vtag->m_genre = StringUtils::Split(text, g_advancedSettings.m_videoItemSeparator);
+      vtag->m_genre = StringUtils::Split(text, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
   }
   else if(name == "rating")
   {
@@ -228,7 +230,7 @@ static void ParseItemMRSS(CFileItem* item, SResources& resources, TiXmlElement* 
     }
   }
   else if(name == "copyright")
-    vtag->m_studio = StringUtils::Split(text, g_advancedSettings.m_videoItemSeparator);
+    vtag->m_studio = StringUtils::Split(text, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
   else if(name == "keywords")
     item->SetProperty("keywords", text);
 
@@ -468,7 +470,7 @@ static void ParseItem(CFileItem* item, TiXmlElement* root, const std::string& pa
   else if(FindMime(resources, "image/"))
     mime = "image/";
 
-  int maxrate = CSettings::GetInstance().GetInt("network.bandwidth");
+  int maxrate = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("network.bandwidth");
   if(maxrate == 0)
     maxrate = INT_MAX;
 

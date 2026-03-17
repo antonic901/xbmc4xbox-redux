@@ -44,6 +44,7 @@
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
+#include "settings/SettingsComponent.h"
 #include "GUIInfoManager.h"
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogSelect.h"
@@ -400,9 +401,9 @@ bool CGUIDialogAddonSettings::ShowVirtualKeyboard(int iControl)
             {
               strMask = setting->Attribute("mask");
               // convert mask qualifiers
-              StringUtils::Replace(strMask, "$AUDIO", g_advancedSettings.GetMusicExtensions());
-              StringUtils::Replace(strMask, "$VIDEO", g_advancedSettings.m_videoExtensions);
-              StringUtils::Replace(strMask, "$IMAGE", g_advancedSettings.m_pictureExtensions);
+              StringUtils::Replace(strMask, "$AUDIO", CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetMusicExtensions());
+              StringUtils::Replace(strMask, "$VIDEO", CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions);
+              StringUtils::Replace(strMask, "$IMAGE", CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions);
 #if defined(_WIN32_WINNT)
               StringUtils::Replace(strMask, "$EXECUTABLE", ".exe|.bat|.cmd|.py");
 #else
@@ -412,9 +413,9 @@ bool CGUIDialogAddonSettings::ShowVirtualKeyboard(int iControl)
             else
             {
               if (type == "video")
-                strMask = g_advancedSettings.m_videoExtensions;
+                strMask = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions;
               else if (type == "audio")
-                strMask = g_advancedSettings.GetMusicExtensions();
+                strMask = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetMusicExtensions();
               else if (type == "executable")
 #if defined(_WIN32_WINNT)
                 strMask = ".exe|.bat|.cmd|.py";

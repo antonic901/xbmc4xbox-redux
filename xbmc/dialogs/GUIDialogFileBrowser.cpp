@@ -43,6 +43,7 @@
 #include "filesystem/MultiPathDirectory.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/MediaSourceSettings.h"
+#include "settings/SettingsComponent.h"
 #include "guilib/Key.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
@@ -429,8 +430,8 @@ void CGUIDialogFileBrowser::Update(const std::string &strDirectory)
   OnSort();
 
   if (m_Directory->GetPath().empty() && m_addNetworkShareEnabled &&
-     (CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE ||
-      CProfilesManager::Get().IsMasterProfile() || g_passwordManager.bMasterUser))
+     (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE ||
+      CServiceBroker::GetSettingsComponent()->GetProfileManager()->IsMasterProfile() || g_passwordManager.bMasterUser))
   { // we are in the virtual directory - add the "Add Network Location" item
     CFileItemPtr pItem(new CFileItem(g_localizeStrings.Get(1032)));
     pItem->SetPath("net://");
@@ -656,12 +657,12 @@ bool CGUIDialogFileBrowser::ShowAndGetImage(const CFileItemList &items, const VE
 
 bool CGUIDialogFileBrowser::ShowAndGetImage(const VECSOURCES &shares, const std::string &heading, std::string &path)
 {
-  return ShowAndGetFile(shares, g_advancedSettings.m_pictureExtensions, heading, path, true); // true for use thumbs
+  return ShowAndGetFile(shares, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions, heading, path, true); // true for use thumbs
 }
 
 bool CGUIDialogFileBrowser::ShowAndGetImageList(const VECSOURCES &shares, const std::string &heading, std::vector<std::string> &path)
 {
-  return ShowAndGetFileList(shares, g_advancedSettings.m_pictureExtensions, heading, path, true); // true for use thumbs
+  return ShowAndGetFileList(shares, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions, heading, path, true); // true for use thumbs
 }
 
 bool CGUIDialogFileBrowser::ShowAndGetDirectory(const VECSOURCES &shares, const std::string &heading, std::string &path, bool bWriteOnly)

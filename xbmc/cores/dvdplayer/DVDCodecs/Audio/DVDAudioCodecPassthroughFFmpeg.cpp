@@ -23,6 +23,7 @@
 #include "DVDStreamInfo.h"
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 
 #include "defs_from_settings.h"
@@ -290,11 +291,11 @@ bool CDVDAudioCodecPassthroughFFmpeg::SupportsFormat(CDVDStreamInfo &hints)
 bool CDVDAudioCodecPassthroughFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options)
 {
   // TODO - move this stuff somewhere else
-  if (CSettings::GetInstance().GetInt("audiooutput.mode") == AUDIO_DIGITAL)
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_DIGITAL)
   {
-    m_bSupportsAC3Out = CSettings::GetInstance().GetBool("audiooutput.ac3passthrough");
-    m_bSupportsDTSOut = CSettings::GetInstance().GetBool("audiooutput.dtspassthrough");
-    m_bSupportsAACOut = CSettings::GetInstance().GetBool("audiooutput.aacpassthrough");
+    m_bSupportsAC3Out = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("audiooutput.ac3passthrough");
+    m_bSupportsDTSOut = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("audiooutput.dtspassthrough");
+    m_bSupportsAACOut = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("audiooutput.aacpassthrough");
   }
   else
     return false;

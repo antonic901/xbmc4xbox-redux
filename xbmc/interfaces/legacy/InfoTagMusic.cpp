@@ -8,7 +8,9 @@
 
 #include "InfoTagMusic.h"
 
+#include "ServiceBroker.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"
 
 namespace XBMCAddon
@@ -68,7 +70,7 @@ namespace XBMCAddon
 
     String InfoTagMusic::getGenre()
     {
-      return StringUtils::Join(infoTag->GetGenre(), g_advancedSettings.m_musicItemSeparator);
+      return StringUtils::Join(infoTag->GetGenre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
     }
 
     int InfoTagMusic::getDuration()

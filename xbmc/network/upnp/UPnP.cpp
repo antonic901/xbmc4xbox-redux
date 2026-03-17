@@ -36,6 +36,7 @@
 #include "URL.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "FileItem.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
@@ -428,7 +429,7 @@ CUPnP::CreateServer(int port /* = 0 */)
     // but it doesn't work anyways as it requires multicast for XP to detect us
     device->m_PresentationURL =
         NPT_HttpUrl(m_IP,
-                    CSettings::GetInstance().GetInt("services.webserverport"),
+                    CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.webserverport"),
                     "/").ToString();
 
     device->m_ModelName        = "XBMC Media Center";
@@ -450,7 +451,7 @@ CUPnP::StartServer()
     if (!m_ServerHolder->m_Device.IsNull()) return false;
 
     // load upnpserver.xml
-    CStdString filename = URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(), "upnpserver.xml");
+    CStdString filename = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(), "upnpserver.xml");
     CUPnPSettings::Get().Load(filename);
 
     // create the server with a XBox compatible friendlyname and UUID from upnpserver.xml if found
@@ -526,7 +527,7 @@ CUPnP::CreateRenderer(int port /* = 0 */)
 
     device->m_PresentationURL =
         NPT_HttpUrl(m_IP,
-                    CSettings::GetInstance().GetInt("services.webserverport"),
+                    CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.webserverport"),
                     "/").ToString();
     device->m_ModelName = "XBMC";
     device->m_ModelNumber = "2.0";
@@ -545,7 +546,7 @@ bool CUPnP::StartRenderer()
 {
     if (!m_RendererHolder->m_Device.IsNull()) return false;
 
-    CStdString filename = URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(), "upnpserver.xml");
+    CStdString filename = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(), "upnpserver.xml");
     CUPnPSettings::Get().Load(filename);
 
     m_RendererHolder->m_Device = CreateRenderer(CUPnPSettings::Get().GetRendererPort());

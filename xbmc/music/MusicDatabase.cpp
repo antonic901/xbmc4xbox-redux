@@ -52,6 +52,7 @@
 #include "profiles/ProfilesManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "Song.h"
 #include "storage/MediaManager.h"
 #include "system.h"
@@ -117,7 +118,7 @@ CMusicDatabase::~CMusicDatabase(void)
 
 bool CMusicDatabase::Open()
 {
-  return CDatabase::Open(g_advancedSettings.m_databaseMusic);
+  return CDatabase::Open(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_databaseMusic);
 }
 
 void CMusicDatabase::CreateTables()
@@ -562,9 +563,9 @@ bool CMusicDatabase::UpdateAlbum(CAlbum& album)
               album.strReleaseGroupMBID,
               album.GetAlbumArtistString(), album.GetAlbumArtistSort(),
               album.GetGenreString(),
-              StringUtils::Join(album.moods, g_advancedSettings.m_musicItemSeparator).c_str(),
-              StringUtils::Join(album.styles, g_advancedSettings.m_musicItemSeparator).c_str(),
-              StringUtils::Join(album.themes, g_advancedSettings.m_musicItemSeparator).c_str(),
+              StringUtils::Join(album.moods, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator).c_str(),
+              StringUtils::Join(album.styles, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator).c_str(),
+              StringUtils::Join(album.themes, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator).c_str(),
               album.strReview,
               album.thumbURL.m_xml.c_str(),
               album.strLabel, album.strType,
@@ -702,7 +703,7 @@ int CMusicDatabase::AddSong(const int idAlbum,
                     idAlbum,
                     idPath,
                     artistDisp.c_str(),
-                    StringUtils::Join(genres, g_advancedSettings.m_musicItemSeparator).c_str(),
+                    StringUtils::Join(genres, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator).c_str(),
                     strTitle.c_str(),
                     iTrack, iDuration, iYear,
                     strFileName.c_str());
@@ -853,7 +854,7 @@ int CMusicDatabase::UpdateSong(int idSong,
       " strTitle = '%s', iTrack = %i, iDuration = %i, iYear = %i, strFileName = '%s'",
       idPath,
       artistDisp.c_str(),
-      StringUtils::Join(genres, g_advancedSettings.m_musicItemSeparator).c_str(),
+      StringUtils::Join(genres, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator).c_str(),
       strTitle.c_str(),
       iTrack, iDuration, iYear,
       strFileName.c_str());
@@ -1201,13 +1202,13 @@ bool CMusicDatabase::UpdateArtist(const CArtist& artist)
                artist.strArtist, artist.strSortName,
                artist.strMusicBrainzArtistID, artist.bScrapedMBID,
                artist.strBorn, artist.strFormed,
-               StringUtils::Join(artist.genre, g_advancedSettings.m_musicItemSeparator),
-               StringUtils::Join(artist.moods, g_advancedSettings.m_musicItemSeparator),
-               StringUtils::Join(artist.styles, g_advancedSettings.m_musicItemSeparator),
-               StringUtils::Join(artist.instruments, g_advancedSettings.m_musicItemSeparator),
+               StringUtils::Join(artist.genre, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator),
+               StringUtils::Join(artist.moods, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator),
+               StringUtils::Join(artist.styles, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator),
+               StringUtils::Join(artist.instruments, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator),
                artist.strBiography, artist.strDied,
                artist.strDisbanded,
-               StringUtils::Join(artist.yearsActive, g_advancedSettings.m_musicItemSeparator).c_str(),
+               StringUtils::Join(artist.yearsActive, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator).c_str(),
                artist.thumbURL.m_xml.c_str(),
                artist.fanart.m_xml.c_str());
 
@@ -1698,7 +1699,7 @@ void CMusicDatabase::AddSongContributors(int idSong, const VECMUSICROLES& contri
   int countComposer = 0;
   if (!strSort.empty())
   {
-    composerSort = StringUtils::Split(strSort, g_advancedSettings.m_musicItemSeparator);
+    composerSort = StringUtils::Split(strSort, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
   }
 
   for (VECMUSICROLES::const_iterator it = contributors.begin(); it != contributors.end(); ++it)
@@ -2162,7 +2163,7 @@ CSong CMusicDatabase::GetSongFromDataset(const dbiplus::sql_record* const record
   song.strArtistDesc = record->at(offset + song_strArtists).get_asString();
   song.strArtistSort = record->at(offset + song_strArtistSort).get_asString();
   // Get the full genre string
-  song.genre = StringUtils::Split(record->at(offset + song_strGenres).get_asString(), g_advancedSettings.m_musicItemSeparator);
+  song.genre = StringUtils::Split(record->at(offset + song_strGenres).get_asString(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
   // and the rest...
   song.strAlbum = record->at(offset + song_strAlbum).get_asString();
   song.idAlbum = record->at(offset + song_idAlbum).get_asInt();
@@ -2291,7 +2292,7 @@ CAlbum CMusicDatabase::GetAlbumFromDataset(const dbiplus::sql_record* const reco
   album.strReleaseGroupMBID = record->at(offset + album_strReleaseGroupMBID).get_asString();
   album.strArtistDesc = record->at(offset + album_strArtists).get_asString();
   album.strArtistSort = record->at(offset + album_strArtistSort).get_asString();
-  album.genre = StringUtils::Split(record->at(offset + album_strGenres).get_asString(), g_advancedSettings.m_musicItemSeparator);
+  album.genre = StringUtils::Split(record->at(offset + album_strGenres).get_asString(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
   album.iYear = record->at(offset + album_iYear).get_asInt();
   if (imageURL)
     album.thumbURL.ParseString(record->at(offset + album_strThumbURL).get_asString());
@@ -2300,9 +2301,9 @@ CAlbum CMusicDatabase::GetAlbumFromDataset(const dbiplus::sql_record* const reco
   album.iVotes = record->at(offset + album_iVotes).get_asInt();
   album.iYear = record->at(offset + album_iYear).get_asInt();
   album.strReview = record->at(offset + album_strReview).get_asString();
-  album.styles = StringUtils::Split(record->at(offset + album_strStyles).get_asString(), g_advancedSettings.m_musicItemSeparator);
-  album.moods = StringUtils::Split(record->at(offset + album_strMoods).get_asString(), g_advancedSettings.m_musicItemSeparator);
-  album.themes = StringUtils::Split(record->at(offset + album_strThemes).get_asString(), g_advancedSettings.m_musicItemSeparator);
+  album.styles = StringUtils::Split(record->at(offset + album_strStyles).get_asString(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
+  album.moods = StringUtils::Split(record->at(offset + album_strMoods).get_asString(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
+  album.themes = StringUtils::Split(record->at(offset + album_strThemes).get_asString(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
   album.strLabel = record->at(offset + album_strLabel).get_asString();
   album.strType = record->at(offset + album_strType).get_asString();
   album.bCompilation = record->at(offset + album_bCompilation).get_asInt() == 1;
@@ -2353,16 +2354,16 @@ CArtist CMusicDatabase::GetArtistFromDataset(const dbiplus::sql_record* const re
     artist.strArtist = record->at(offset + artist_strArtist).get_asString();
   artist.strSortName = record->at(offset + artist_strSortName).get_asString();
   artist.strMusicBrainzArtistID = record->at(offset + artist_strMusicBrainzArtistID).get_asString();
-  artist.genre = StringUtils::Split(record->at(offset + artist_strGenres).get_asString(), g_advancedSettings.m_musicItemSeparator);
+  artist.genre = StringUtils::Split(record->at(offset + artist_strGenres).get_asString(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
   artist.strBiography = record->at(offset + artist_strBiography).get_asString();
-  artist.styles = StringUtils::Split(record->at(offset + artist_strStyles).get_asString(), g_advancedSettings.m_musicItemSeparator);
-  artist.moods = StringUtils::Split(record->at(offset + artist_strMoods).get_asString(), g_advancedSettings.m_musicItemSeparator);
+  artist.styles = StringUtils::Split(record->at(offset + artist_strStyles).get_asString(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
+  artist.moods = StringUtils::Split(record->at(offset + artist_strMoods).get_asString(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
   artist.strBorn = record->at(offset + artist_strBorn).get_asString();
   artist.strFormed = record->at(offset + artist_strFormed).get_asString();
   artist.strDied = record->at(offset + artist_strDied).get_asString();
   artist.strDisbanded = record->at(offset + artist_strDisbanded).get_asString();
-  artist.yearsActive = StringUtils::Split(record->at(offset + artist_strYearsActive).get_asString(), g_advancedSettings.m_musicItemSeparator);
-  artist.instruments = StringUtils::Split(record->at(offset + artist_strInstruments).get_asString(), g_advancedSettings.m_musicItemSeparator);
+  artist.yearsActive = StringUtils::Split(record->at(offset + artist_strYearsActive).get_asString(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
+  artist.instruments = StringUtils::Split(record->at(offset + artist_strInstruments).get_asString(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
   artist.bScrapedMBID = record->at(offset + artist_bScrapedMBID).get_asInt() == 1;
   artist.strLastScraped = record->at(offset + artist_lastScraped).get_asString();
   artist.SetDateAdded(record->at(offset + artist_dtDateAdded).get_asString());
@@ -2726,7 +2727,7 @@ bool CMusicDatabase::GetRecentlyPlayedAlbumSongs(const std::string& strBaseDir, 
       "JOIN songview ON songview.idAlbum = playedalbums.idAlbum "
       "JOIN songartistview ON songview.idSong = songartistview.idSong "
       "ORDER BY playedalbums.lastplayed DESC,songartistview.idsong, songartistview.idRole, songartistview.iOrder",
-      g_advancedSettings.m_iMusicLibraryRecentlyAddedItems);
+      CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_iMusicLibraryRecentlyAddedItems);
     CLog::Log(LOGDEBUG,"GetRecentlyPlayedAlbumSongs() query: %s", strSQL.c_str());
     if (!m_pDS->query(strSQL)) return false;
 
@@ -2803,7 +2804,7 @@ bool CMusicDatabase::GetRecentlyAddedAlbums(VECALBUMS& albums, unsigned int limi
       "JOIN albumview ON albumview.idAlbum = recentalbums.idAlbum "
       "JOIN albumartistview ON albumview.idAlbum = albumartistview.idAlbum "
       "ORDER BY albumview.idAlbum desc, albumartistview.iOrder ",
-       limit ? limit : g_advancedSettings.m_iMusicLibraryRecentlyAddedItems);
+       limit ? limit : CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_iMusicLibraryRecentlyAddedItems);
 
     CLog::Log(LOGDEBUG, "%s query: %s", __FUNCTION__, strSQL.c_str());
     if (!m_pDS->query(strSQL)) return false;
@@ -2861,7 +2862,7 @@ bool CMusicDatabase::GetRecentlyAddedAlbumSongs(const std::string& strBaseDir, C
         "JOIN songview ON songview.idAlbum = recentalbums.idAlbum "
         "JOIN songartistview ON songview.idSong = songartistview.idSong "
         "ORDER BY songview.idAlbum DESC, songview.idSong, songartistview.idRole, songartistview.iOrder ",
-        limit ? limit : g_advancedSettings.m_iMusicLibraryRecentlyAddedItems);
+        limit ? limit : CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_iMusicLibraryRecentlyAddedItems);
     CLog::Log(LOGDEBUG,"GetRecentlyAddedAlbumSongs() query: %s", strSQL.c_str());
     if (!m_pDS->query(strSQL)) return false;
 
@@ -3532,7 +3533,7 @@ error:
 bool CMusicDatabase::LookupCDDBInfo(bool bRequery/*=false*/)
 {
 #ifdef HAS_DVD_DRIVE
-  if (!CSettings::GetInstance().GetBool("audiocds.usecddb"))
+  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("audiocds.usecddb"))
     return false;
 
   // check network connectivity
@@ -3553,12 +3554,12 @@ bool CMusicDatabase::LookupCDDBInfo(bool bRequery/*=false*/)
   if (bRequery)
   {
     std::string strFile = StringUtils::Format("%x.cddb", pCdInfo->GetCddbDiscId());
-    CFile::Delete(URIUtils::AddFileToFolder(CProfilesManager::Get().GetCDDBFolder(), strFile));
+    CFile::Delete(URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCDDBFolder(), strFile));
   }
 
   // Prepare cddb
   Xcddb cddb;
-  cddb.setCacheDir(CProfilesManager::Get().GetCDDBFolder());
+  cddb.setCacheDir(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCDDBFolder());
 
   // Do we have to look for cddb information
   if (pCdInfo->HasCDDBInfo() && !cddb.isCDCached(pCdInfo))
@@ -3644,7 +3645,7 @@ void CMusicDatabase::DeleteCDDBInfo()
 {
 #ifdef HAS_DVD_DRIVE
   CFileItemList items;
-  if (!CDirectory::GetDirectory(CProfilesManager::Get().GetCDDBFolder(), items, ".cddb", DIR_FLAG_NO_FILE_DIRS))
+  if (!CDirectory::GetDirectory(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCDDBFolder(), items, ".cddb", DIR_FLAG_NO_FILE_DIRS))
   {
     CGUIDialogOK::ShowAndGetInput(313, 426);
     return ;
@@ -3666,7 +3667,7 @@ void CMusicDatabase::DeleteCDDBInfo()
       strFile.erase(strFile.size() - 5, 5);
       ULONG lDiscId = strtoul(strFile.c_str(), NULL, 16);
       Xcddb cddb;
-      cddb.setCacheDir(CProfilesManager::Get().GetCDDBFolder());
+      cddb.setCacheDir(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCDDBFolder());
 
       if (!cddb.queryCache(lDiscId))
         continue;
@@ -3703,7 +3704,7 @@ void CMusicDatabase::DeleteCDDBInfo()
       if (i.second == strSelectedAlbum)
       {
         std::string strFile = StringUtils::Format("%x.cddb", (unsigned int) i.first);
-        CFile::Delete(URIUtils::AddFileToFolder(CProfilesManager::Get().GetCDDBFolder(), strFile));
+        CFile::Delete(URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCDDBFolder(), strFile));
         break;
       }
     }
@@ -5752,7 +5753,7 @@ bool CMusicDatabase::GetOldArtistPath(int idArtist, std::string &basePath)
 bool CMusicDatabase::GetArtistPath(const CArtist& artist, std::string &path)
 {
    // Get path for artist in the artists folder
-  path = CSettings::GetInstance().GetString("musiclibrary.artistsfolder");
+  path = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musiclibrary.artistsfolder");
   if (path.empty())
     return false; // No Artists folder not set;
   // Get unique artist folder name
@@ -6005,7 +6006,7 @@ int CMusicDatabase::GetAlbumByName(const std::string& strAlbum, const std::strin
 
 int CMusicDatabase::GetAlbumByName(const std::string& strAlbum, const std::vector<std::string>& artist)
 {
-  return GetAlbumByName(strAlbum, StringUtils::Join(artist, g_advancedSettings.m_musicItemSeparator));
+  return GetAlbumByName(strAlbum, StringUtils::Join(artist, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
 }
 
 int CMusicDatabase::GetAlbumByMatch(const CAlbum &album)
@@ -6063,7 +6064,7 @@ bool CMusicDatabase::UpdateArtistSortNames(int idArtist /*=-1*/)
   // Propagate artist sort names into concatenated artist sort name string for songs and albums
   std::string strSQL;
   // MySQL syntax for GROUP_CONCAT is different from that in SQLite
-  bool bisMySQL = StringUtils::EqualsNoCase(g_advancedSettings.m_databaseMusic.type, "mysql");
+  bool bisMySQL = StringUtils::EqualsNoCase(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_databaseMusic.type, "mysql");
 
   BeginMultipleExecute();
   if (bisMySQL)
@@ -6779,7 +6780,7 @@ bool CMusicDatabase::GetItems(const std::string &strBaseDir, const std::string &
   else if (StringUtils::EqualsNoCase(itemType, "roles"))
     return GetRolesNav(strBaseDir, items, filter);
   else if (StringUtils::EqualsNoCase(itemType, "artists"))
-    return GetArtistsNav(strBaseDir, items, !CSettings::GetInstance().GetBool("musiclibrary.showcompilationartists"), -1, -1, -1, filter, sortDescription);
+    return GetArtistsNav(strBaseDir, items, !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musiclibrary.showcompilationartists"), -1, -1, -1, filter, sortDescription);
   else if (StringUtils::EqualsNoCase(itemType, "albums"))
     return GetAlbumsByWhere(strBaseDir, filter, items, sortDescription);
   else if (StringUtils::EqualsNoCase(itemType, "songs"))
@@ -6833,7 +6834,7 @@ void CMusicDatabase::ExportToXML(const CLibExportSettings& settings,  CGUIDialog
   {
     // Separate files with artists to library folder and albums to music folders.
     // Without an artist information folder can not export artist NFO files or images
-    strFolder = CSettings::GetInstance().GetString("musiclibrary.artistsfolder");
+    strFolder = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musiclibrary.artistsfolder");
     if (!settings.IsItemExported(ELIBEXPORT_ALBUMS) && strFolder.empty())
       return;
   }
@@ -7249,37 +7250,37 @@ void CMusicDatabase::ImportFromXML(const std::string &xmlFile)
 
 void CMusicDatabase::SetPropertiesFromArtist(CFileItem& item, const CArtist& artist)
 {
-  item.SetProperty("artist_instrument", StringUtils::Join(artist.instruments, g_advancedSettings.m_musicItemSeparator));
+  item.SetProperty("artist_instrument", StringUtils::Join(artist.instruments, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   item.SetProperty("artist_instrument_array", artist.instruments);
-  item.SetProperty("artist_style", StringUtils::Join(artist.styles, g_advancedSettings.m_musicItemSeparator));
+  item.SetProperty("artist_style", StringUtils::Join(artist.styles, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   item.SetProperty("artist_style_array", artist.styles);
-  item.SetProperty("artist_mood", StringUtils::Join(artist.moods, g_advancedSettings.m_musicItemSeparator));
+  item.SetProperty("artist_mood", StringUtils::Join(artist.moods, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   item.SetProperty("artist_mood_array", artist.moods);
   item.SetProperty("artist_born", artist.strBorn);
   item.SetProperty("artist_formed", artist.strFormed);
   item.SetProperty("artist_description", artist.strBiography);
-  item.SetProperty("artist_genre", StringUtils::Join(artist.genre, g_advancedSettings.m_musicItemSeparator));
+  item.SetProperty("artist_genre", StringUtils::Join(artist.genre, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   item.SetProperty("artist_genre_array", artist.genre);
   item.SetProperty("artist_died", artist.strDied);
   item.SetProperty("artist_disbanded", artist.strDisbanded);
-  item.SetProperty("artist_yearsactive", StringUtils::Join(artist.yearsActive, g_advancedSettings.m_musicItemSeparator));
+  item.SetProperty("artist_yearsactive", StringUtils::Join(artist.yearsActive, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   item.SetProperty("artist_yearsactive_array", artist.yearsActive);
 }
 
 void CMusicDatabase::SetPropertiesFromAlbum(CFileItem& item, const CAlbum& album)
 {
   item.SetProperty("album_description", album.strReview);
-  item.SetProperty("album_theme", StringUtils::Join(album.themes, g_advancedSettings.m_musicItemSeparator));
+  item.SetProperty("album_theme", StringUtils::Join(album.themes, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   item.SetProperty("album_theme_array", album.themes);
-  item.SetProperty("album_mood", StringUtils::Join(album.moods, g_advancedSettings.m_musicItemSeparator));
+  item.SetProperty("album_mood", StringUtils::Join(album.moods, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   item.SetProperty("album_mood_array", album.moods);
-  item.SetProperty("album_style", StringUtils::Join(album.styles, g_advancedSettings.m_musicItemSeparator));
+  item.SetProperty("album_style", StringUtils::Join(album.styles, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   item.SetProperty("album_style_array", album.styles);
   item.SetProperty("album_type", album.strType);
   item.SetProperty("album_label", album.strLabel);
   item.SetProperty("album_artist", album.GetAlbumArtistString());
   item.SetProperty("album_artist_array", album.GetAlbumArtist());
-  item.SetProperty("album_genre", StringUtils::Join(album.genre, g_advancedSettings.m_musicItemSeparator));
+  item.SetProperty("album_genre", StringUtils::Join(album.genre, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   item.SetProperty("album_genre_array", album.genre);
   item.SetProperty("album_title", album.strAlbum);
   if (album.fRating > 0)
@@ -7559,7 +7560,7 @@ bool CMusicDatabase::GetFilter(CDbUrl &musicUrl, Filter &filter, SortDescription
       if (xsp.GetOrder() != SortByNone)
         sorting.sortBy = xsp.GetOrder();
       sorting.sortOrder = xsp.GetOrderAscending() ? SortOrderAscending : SortOrderDescending;
-      if (CSettings::GetInstance().GetBool("filelists.ignorethewhensorting"))
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting"))
         sorting.sortAttributes = SortAttributeIgnoreArticle;
     }
   }
@@ -7932,10 +7933,10 @@ void CMusicDatabase::UpdateFileDateAdded(int songId, const std::string& strFileN
     if (NULL == m_pDS.get()) return;
 
     // 1 prefering to use the files mtime(if it's valid) and only using the file's ctime if the mtime isn't valid
-    if (g_advancedSettings.m_iMusicLibraryDateAdded == 1)
+    if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_iMusicLibraryDateAdded == 1)
       dateAdded = CFileUtils::GetModificationDate(strFileNameAndPath, false);
     //2 using the newer datetime of the file's mtime and ctime
-    else if (g_advancedSettings.m_iMusicLibraryDateAdded == 2)
+    else if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_iMusicLibraryDateAdded == 2)
       dateAdded = CFileUtils::GetModificationDate(strFileNameAndPath, true);
     //0 using the current datetime if non of the above matches or one returns an invalid datetime
     if (!dateAdded.IsValid())

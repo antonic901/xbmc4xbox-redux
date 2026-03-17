@@ -34,6 +34,7 @@
 #include "profiles/ProfilesManager.h"
 #include "Util.h"
 #include "utils/StringUtils.h"
+#include "settings/SettingsComponent.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "utils/FanController.h"
 #endif
@@ -48,11 +49,11 @@ using namespace KODI::MESSAGING;
  */
 static int LoadProfile(const std::vector<std::string>& params)
 {
-  int index = CProfilesManager::Get().GetProfileIndex(params[0]);
+  int index = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetProfileIndex(params[0]);
   bool prompt = (params.size() == 2 && StringUtils::EqualsNoCase(params[1], "prompt"));
   bool bCanceled;
   if (index >= 0
-      && (CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE
+      && (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE
         || g_passwordManager.IsProfileLockUnlocked(index,bCanceled,prompt)))
   {
     CServiceBroker::GetAppMessenger()->PostMsg(TMSG_LOADPROFILE, index);
@@ -85,7 +86,7 @@ static int LogOff(const std::vector<std::string>& params)
 #ifdef HAS_XBOX_HARDWARE
   CFanController::Instance()->Stop();
 #endif
-  CProfilesManager::Get().LoadMasterProfileForLogin();
+  CServiceBroker::GetSettingsComponent()->GetProfileManager()->LoadMasterProfileForLogin();
   g_passwordManager.bMasterUser = false;
 
   g_application.ResetScreenSaverWindow();

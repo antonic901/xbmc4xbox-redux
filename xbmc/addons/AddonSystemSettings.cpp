@@ -27,6 +27,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "messaging/helpers/DialogHelper.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 
 
@@ -83,10 +84,10 @@ void CAddonSystemSettings::OnSettingChanged(const CSetting* setting)
   using namespace KODI::MESSAGING::HELPERS;
 
   if (setting->GetId() == "addons.unknownsources"
-    && CSettings::GetInstance().GetBool("addons.unknownsources")
+    && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("addons.unknownsources")
     && ShowYesNoDialogText(19098, 36618) != YES)
   {
-    CSettings::GetInstance().SetBool("addons.unknownsources", false);
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("addons.unknownsources", false);
   }
 }
 
@@ -95,7 +96,7 @@ bool CAddonSystemSettings::GetActive(const TYPE& type, AddonPtr& addon)
   std::map<ADDON::TYPE, std::string>::const_iterator it = m_activeSettings.find(type);
   if (it != m_activeSettings.end())
   {
-    std::string settingValue = CSettings::GetInstance().GetString(it->second);
+    std::string settingValue = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(it->second);
     return CServiceBroker::GetAddonMgr().GetAddon(settingValue, addon, type);
   }
   return false;
@@ -106,7 +107,7 @@ bool CAddonSystemSettings::SetActive(const TYPE& type, const std::string& addonI
   std::map<ADDON::TYPE, std::string>::const_iterator it = m_activeSettings.find(type);
   if (it != m_activeSettings.end())
   {
-    CSettings::GetInstance().SetString(it->second, addonID);
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetString(it->second, addonID);
     return true;
   }
   return false;
@@ -124,7 +125,7 @@ bool CAddonSystemSettings::UnsetActive(const AddonPtr& addon)
   if (it == m_activeSettings.end())
     return true;
 
-  CSettingString *setting = static_cast<CSettingString*>(CSettings::GetInstance().GetSetting(it->second));
+  CSettingString *setting = static_cast<CSettingString*>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting(it->second));
   if (setting->GetValue() != addon->ID())
     return true;
 
@@ -154,7 +155,7 @@ std::vector<std::string> CAddonSystemSettings::MigrateAddons(boost::function<voi
   if (getIncompatible().empty())
     return std::vector<std::string>();
 
-  if (CSettings::GetInstance().GetInt("general.addonupdates") == AUTO_UPDATES_ON)
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("general.addonupdates") == AUTO_UPDATES_ON)
   {
     onMigrate();
 

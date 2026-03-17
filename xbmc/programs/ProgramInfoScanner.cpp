@@ -21,6 +21,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "programs/ProgramInfoTag.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
@@ -97,7 +98,7 @@ namespace PROGRAM
     strArtworkPath = URIUtils::AddFileToFolder(strArtworkPath, "_resources", "artwork");
 
     CFileItemList items;
-    CDirectory::GetDirectory(strArtworkPath, items, g_advancedSettings.m_pictureExtensions, DIR_FLAG_DEFAULTS);
+    CDirectory::GetDirectory(strArtworkPath, items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions, DIR_FLAG_DEFAULTS);
     for (int i = 0; i < items.Size(); ++i)
     {
       CFileItemPtr pItem = items[i];
@@ -148,7 +149,7 @@ namespace PROGRAM
     }
 
     CFileItemList items;
-    if(!CDirectory::GetDirectory(strDirectory, items, g_advancedSettings.m_programExtensions, DIR_FLAG_DEFAULTS))
+    if(!CDirectory::GetDirectory(strDirectory, items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_programExtensions, DIR_FLAG_DEFAULTS))
       return false;
 
     for (int i = 0; i < items.Size(); ++i)

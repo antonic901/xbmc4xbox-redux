@@ -28,6 +28,7 @@
 #include "Application.h"
 #include "settings/DisplaySettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogYesNo.h"
@@ -124,7 +125,7 @@ bool CGUIWindowSettingsScreenCalibration::OnMessage(CGUIMessage& message)
   case GUI_MSG_WINDOW_DEINIT:
     {
       CDisplaySettings::Get().UpdateCalibrations();
-      CSettings::GetInstance().Save();
+      CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
       CServiceBroker::GetWinSystem()->GetGfxContext().SetCalibrating(false);
       // reset our screen resolution to what it was initially
       CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);

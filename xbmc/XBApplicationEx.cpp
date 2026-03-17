@@ -14,6 +14,7 @@
 #include "XBApplicationEx.h"
 #include "XBVideoConfig.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 
 //-----------------------------------------------------------------------------
@@ -183,10 +184,10 @@ INT CXBApplicationEx::Run()
 
 inline float DeadZone(float &f)
 {
-  if (f > g_advancedSettings.m_controllerDeadzone)
-    return (f - g_advancedSettings.m_controllerDeadzone)/(1.0f - g_advancedSettings.m_controllerDeadzone);
-  else if (f < -g_advancedSettings.m_controllerDeadzone)
-    return (f + g_advancedSettings.m_controllerDeadzone)/(1.0f - g_advancedSettings.m_controllerDeadzone);
+  if (f > CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_controllerDeadzone)
+    return (f - CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_controllerDeadzone)/(1.0f - CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_controllerDeadzone);
+  else if (f < -CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_controllerDeadzone)
+    return (f + CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_controllerDeadzone)/(1.0f - CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_controllerDeadzone);
   else
     return 0.0f;
 }

@@ -21,6 +21,7 @@
 #include "Database.h"
 #include "ServiceBroker.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/File.h"
 #include "profiles/ProfilesManager.h"
@@ -397,7 +398,7 @@ void CDatabase::InitSettings(DatabaseSettings &dbSettings)
   {
     dbSettings.type = "sqlite3";
     if (dbSettings.host.empty())
-      dbSettings.host = CSpecialProtocol::TranslatePath(CProfilesManager::Get().GetDatabaseFolder());
+      dbSettings.host = CSpecialProtocol::TranslatePath(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetDatabaseFolder());
   }
 
   // use separate, versioned database

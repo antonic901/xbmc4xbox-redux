@@ -19,6 +19,7 @@
  */
 
 #include "CharsetConverter.h"
+#include "ServiceBroker.h"
 #include "utils/StringUtils.h"
 #ifndef _LINUX
 #include "libfribidi/fribidi.h"
@@ -29,6 +30,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "threads/SingleLock.h"
 #include "log.h"
 
@@ -256,7 +258,7 @@ std::string CConverterType::ResolveSpecialCharset(enum SpecialCharset charset)
     return g_langInfo.GetSubtitleCharSet();
   case KaraokeCharset:
     {
-      CSetting* karaokeSetting = CSettings::GetInstance().GetSetting("karaoke.charset");
+      CSetting* karaokeSetting = CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("karaoke.charset");
       if (karaokeSetting == NULL || ((CSettingString*)karaokeSetting)->GetValue() == "DEFAULT")
         return g_langInfo.GetGuiCharSet();
 

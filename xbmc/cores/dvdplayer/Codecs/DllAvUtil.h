@@ -48,7 +48,9 @@ extern "C" {
 
 }
 
+#include "ServiceBroker.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 
 // callback used for logging
 void ff_avutil_log(void* ptr, int level, const char* format, va_list va);
@@ -118,7 +120,7 @@ public:
 class DllAvUtilBase : public DllDynamic, DllAvUtilInterface
 {
 public:
-  DllAvUtilBase() : DllDynamic( CSettings::GetInstance().GetFFmpegDllFolder() + "avutil-52.dll") {}
+  DllAvUtilBase() : DllDynamic( CServiceBroker::GetSettingsComponent()->GetSettings()->GetFFmpegDllFolder() + "avutil-52.dll") {}
 
   LOAD_SYMBOLS()
 

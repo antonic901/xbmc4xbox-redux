@@ -55,6 +55,7 @@
 #include <cstdlib>
 
 #include "CueDocument.h"
+#include "ServiceBroker.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
@@ -63,6 +64,7 @@
 #include "filesystem/Directory.h"
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 
 #include <set>
 
@@ -247,9 +249,9 @@ bool CCueDocument::GetSong(int aTrackNumber, CSong& aSong)
   else
     aSong.strArtistDesc = track.strArtist;
   //Pass album artist to MusicInfoTag object by setting album artist vector.
-  aSong.SetAlbumArtist(StringUtils::Split(m_strArtist, g_advancedSettings.m_musicItemSeparator));
+  aSong.SetAlbumArtist(StringUtils::Split(m_strArtist, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   aSong.strAlbum = m_strAlbum;
-  aSong.genre = StringUtils::Split(m_strGenre, g_advancedSettings.m_musicItemSeparator);
+  aSong.genre = StringUtils::Split(m_strGenre, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
   aSong.iYear = m_iYear;
   aSong.iTrack = track.iTrackNumber;
   if (m_iDiscNumber > 0)

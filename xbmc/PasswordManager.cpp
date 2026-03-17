@@ -26,6 +26,7 @@
 #include "threads/SingleLock.h"
 #include "utils/log.h"
 #include "filesystem/File.h"
+#include "settings/SettingsComponent.h"
 
 using namespace std;
 
@@ -126,7 +127,7 @@ void CPasswordManager::Clear()
 void CPasswordManager::Load()
 {
   Clear();
-  CStdString passwordsFile = CProfilesManager::Get().GetUserDataItem("passwords.xml");
+  CStdString passwordsFile = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("passwords.xml");
   if (XFILE::CFile::Exists(passwordsFile))
   {
     CXBMCTinyXML doc;
@@ -175,7 +176,7 @@ void CPasswordManager::Save() const
     XMLUtils::SetPath(path, "to", i->second);
   }
 
-  doc.SaveFile(CProfilesManager::Get().GetUserDataItem("passwords.xml"));
+  doc.SaveFile(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("passwords.xml"));
 }
 
 CStdString CPasswordManager::GetLookupPath(const CURL &url) const

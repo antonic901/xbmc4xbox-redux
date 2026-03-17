@@ -14,6 +14,7 @@
 #include "profiles/ProfilesManager.h"
 #include "utils/URIUtils.h"
 #include "guiinfo/GUIInfoLabels.h"
+#include "settings/SettingsComponent.h"
 
 #include <boost/make_shared.hpp>
 
@@ -147,7 +148,7 @@ CUPnPRenderer::ProcessHttpRequest(NPT_HttpRequest&              request,
 
             // ensure that the request's path is a valid thumb path
             if (URIUtils::IsRemote(filepath.GetChars()) ||
-                !filepath.StartsWith(CProfilesManager::Get().GetUserDataFolder().c_str())) {
+                !filepath.StartsWith(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder().c_str())) {
                 response.SetStatus(404, "Not Found");
                 return NPT_SUCCESS;
             }

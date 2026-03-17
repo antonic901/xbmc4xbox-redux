@@ -38,6 +38,8 @@
 #include "guilib/LocalizeStrings.h"
 #include "input/ButtonTranslator.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
+#include "settings/lib/SettingsManager.h"
 #if !defined(TARGET_WINDOWS) && defined(HAS_DVD_DRIVE)
 #include "storage/DetectDVDType.h"
 #endif
@@ -75,10 +77,19 @@ CProfilesManager::CProfilesManager()
 CProfilesManager::~CProfilesManager()
 { }
 
-CProfilesManager& CProfilesManager::Get()
+void CProfilesManager::Initialize(const boost::shared_ptr<CSettings>& settings)
 {
-  static CProfilesManager sProfilesManager;
-  return sProfilesManager;
+  m_settings = settings;
+
+  if (m_settings->IsLoaded())
+    OnSettingsLoaded();
+
+  m_settings->GetSettingsManager()->RegisterSettingsHandler(this);
+}
+
+void CProfilesManager::Uninitialize()
+{
+  m_settings->GetSettingsManager()->UnregisterSettingsHandler(this);
 }
 
 bool CProfilesManager::OnSettingsLoading()
@@ -89,11 +100,11 @@ bool CProfilesManager::OnSettingsLoading()
 void CProfilesManager::OnSettingsLoaded()
 {
   // check them all
-  string strDir = CSettings::GetInstance().GetString("system.playlistspath");
+  string strDir = m_settings->GetString("system.playlistspath");
   if (strDir == "set default" || strDir.empty())
   {
     strDir = "special://profile/playlists/";
-    CSettings::GetInstance().SetString("system.playlistspath", strDir.c_str());
+    m_settings->SetString("system.playlistspath", strDir.c_str());
   }
 
   CDirectory::Create(strDir);
@@ -241,17 +252,17 @@ bool CProfilesManager::LoadProfile(size_t index)
     return true;
 
   // unload any old settings
-  CSettings::GetInstance().Unload();
+  CServiceBroker::GetSettingsComponent()->GetSettings()->Unload();
 
   SetCurrentProfileId(index);
 
   // load the new settings
-  if (!CSettings::GetInstance().Load())
+  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->Load())
   {
     CLog::Log(LOGFATAL, "CProfilesManager: unable to load settings for profile \"%s\"", m_profiles.at(index).getName().c_str());
     return false;
   }
-  CSettings::GetInstance().SetLoaded();
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetLoaded();
 
   CreateProfileFolders();
 
@@ -266,8 +277,8 @@ bool CProfilesManager::LoadProfile(size_t index)
     CXBMCTinyXML doc;
     if (doc.LoadFile(URIUtils::AddFileToFolder(GetUserDataFolder(), "guisettings.xml")))
     {
-      CSettings::GetInstance().LoadSetting(doc.RootElement(), "masterlock.maxretries");
-      CSettings::GetInstance().LoadSetting(doc.RootElement(), "masterlock.startuplock");
+      CServiceBroker::GetSettingsComponent()->GetSettings()->LoadSetting(doc.RootElement(), "masterlock.maxretries");
+      CServiceBroker::GetSettingsComponent()->GetSettings()->LoadSetting(doc.RootElement(), "masterlock.startuplock");
     }
   }
 
@@ -323,7 +334,7 @@ bool CProfilesManager::DeleteProfile(size_t index)
   if (index == m_currentProfile)
   {
     LoadProfile(0);
-    CSettings::GetInstance().Save();
+    m_settings->Save();
   }
 
   CFileItemPtr item = CFileItemPtr(new CFileItem(URIUtils::AddFileToFolder(GetUserDataFolder(), strDirectory)));

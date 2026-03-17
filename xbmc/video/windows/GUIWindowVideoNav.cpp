@@ -43,6 +43,7 @@
 #include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "guilib/Key.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
@@ -120,7 +121,7 @@ bool CGUIWindowVideoNav::OnMessage(CGUIMessage& message)
       /* We don't want to show Autosourced items (ie removable pendrives, memorycards) in Library mode */
       m_rootDir.AllowNonLocalSources(false);
 
-      SetProperty("flattened", CSettings::GetInstance().GetBool("myvideos.flatten"));
+      SetProperty("flattened", CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.flatten"));
       if (message.GetNumStringParams() && StringUtils::EqualsNoCase(message.GetStringParam(0), "Files") &&
           CMediaSourceSettings::Get().GetSources("video")->empty())
       {
@@ -168,7 +169,7 @@ bool CGUIWindowVideoNav::OnMessage(CGUIMessage& message)
       else if (iControl == CONTROL_BTNSHOWMODE)
       {
         CMediaSettings::Get().CycleWatchedMode(m_vecItems->GetContent());
-        CSettings::GetInstance().Save();
+        CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
         OnFilterItems(GetProperty("filter").asString());
         UpdateButtons();
         return true;
@@ -179,7 +180,7 @@ bool CGUIWindowVideoNav::OnMessage(CGUIMessage& message)
           CMediaSettings::Get().SetWatchedMode(m_vecItems->GetContent(), WatchedModeUnwatched);
         else
           CMediaSettings::Get().SetWatchedMode(m_vecItems->GetContent(), WatchedModeAll);
-        CSettings::GetInstance().Save();
+        CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
         OnFilterItems(GetProperty("filter").asString());
         UpdateButtons();
         return true;
@@ -210,7 +211,7 @@ SelectFirstUnwatchedItem CGUIWindowVideoNav::GetSettingSelectFirstUnwatchedItem(
 
     if (nodeType == NODE_TYPE_SEASONS || nodeType == NODE_TYPE_EPISODES)
     {
-      int iValue = CSettings::GetInstance().GetInt("videolibrary.tvshowsselectfirstunwatcheditem");
+      int iValue = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videolibrary.tvshowsselectfirstunwatcheditem");
       if (iValue >= SelectFirstUnwatchedItem::NEVER && iValue <= SelectFirstUnwatchedItem::ALWAYS)
         return (SelectFirstUnwatchedItem)iValue;
     }
@@ -221,7 +222,7 @@ SelectFirstUnwatchedItem CGUIWindowVideoNav::GetSettingSelectFirstUnwatchedItem(
 
 IncludeAllSeasonsAndSpecials CGUIWindowVideoNav::GetSettingIncludeAllSeasonsAndSpecials()
 {
-  int iValue = CSettings::GetInstance().GetInt("videolibrary.tvshowsincludeallseasonsandspecials");
+  int iValue = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videolibrary.tvshowsincludeallseasonsandspecials");
   if (iValue >= NEITHER && iValue <= SPECIALS)
     return (IncludeAllSeasonsAndSpecials)iValue;
 
@@ -332,7 +333,7 @@ bool CGUIWindowVideoNav::GetDirectory(const std::string &strDirectory, CFileItem
       dir.GetQueryParams(items.GetPath(),params);
       VIDEODATABASEDIRECTORY::NODE_TYPE node = dir.GetDirectoryChildType(items.GetPath());
 
-      int iFlatten = CSettings::GetInstance().GetInt("videolibrary.flattentvshows");
+      int iFlatten = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videolibrary.flattentvshows");
       int itemsSize = items.GetObjectCount();
       int firstIndex = items.Size() - itemsSize;
 
@@ -538,8 +539,8 @@ void CGUIWindowVideoNav::LoadVideoInfo(CFileItemList &items, CVideoDatabase &dat
     Similarly, we assign the "clean" library labels to the item only if the "Replace filenames with library titles"
     setting is enabled.
     */
-  const bool stackItems    = items.GetProperty("isstacked").asBoolean() || (StackingAvailable(items) && CSettings::GetInstance().GetBool("myvideos.stackvideos"));
-  const bool replaceLabels = allowReplaceLabels && CSettings::GetInstance().GetBool("myvideos.replacelabels");
+  const bool stackItems    = items.GetProperty("isstacked").asBoolean() || (StackingAvailable(items) && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.stackvideos"));
+  const bool replaceLabels = allowReplaceLabels && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.replacelabels");
 
   CFileItemList dbItems;
   /* NOTE: In the future when GetItemsForPath returns all items regardless of whether they're "in the library"
@@ -858,7 +859,7 @@ void CGUIWindowVideoNav::GetContextButtons(int itemNumber, CContextButtons &butt
     // get the usual shares
     CGUIDialogContextMenu::GetContextButtons("video", item, buttons);
     if (!item->IsDVD() && item->GetPath() != "add" && !item->IsParentFolder() &&
-        (CProfilesManager::Get().GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser))
+        (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser))
     {
       CVideoDatabase database;
       database.Open();
@@ -886,7 +887,7 @@ void CGUIWindowVideoNav::GetContextButtons(int itemNumber, CContextButtons &butt
     {
       CMusicDatabase database;
       database.Open();
-      if (database.GetArtistByName(StringUtils::Join(item->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator)) > -1)
+      if (database.GetArtistByName(StringUtils::Join(item->GetVideoInfoTag()->m_artist, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator)) > -1)
         buttons.Add(CONTEXT_BUTTON_GO_TO_ARTIST, 20396);
     }
     if (item->HasVideoInfoTag() && !item->GetVideoInfoTag()->m_strAlbum.empty())
@@ -902,7 +903,7 @@ void CGUIWindowVideoNav::GetContextButtons(int itemNumber, CContextButtons &butt
     {
       CMusicDatabase database;
       database.Open();
-      if (database.GetSongByArtistAndAlbumAndTitle(StringUtils::Join(item->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator),
+      if (database.GetSongByArtistAndAlbumAndTitle(StringUtils::Join(item->GetVideoInfoTag()->m_artist, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator),
                                                    item->GetVideoInfoTag()->m_strAlbum,
                                                    item->GetVideoInfoTag()->m_strTitle) > -1)
       {
@@ -916,7 +917,7 @@ void CGUIWindowVideoNav::GetContextButtons(int itemNumber, CContextButtons &butt
       GetScraperForItem(item.get(), info, settings);
 
       // can we update the database?
-      if (CProfilesManager::Get().GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser)
+      if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser)
       {
         if (!g_application.IsVideoScanning() && item->IsVideoDb() && item->HasVideoInfoTag() &&
            (item->GetVideoInfoTag()->m_type == MediaTypeMovie ||          // movies
@@ -945,7 +946,7 @@ void CGUIWindowVideoNav::GetContextButtons(int itemNumber, CContextButtons &butt
 
       if (!m_vecItems->IsVideoDb() && !m_vecItems->IsVirtualDirectoryRoot())
       { // non-video db items, file operations are allowed
-        if ((CSettings::GetInstance().GetBool("filelists.allowfiledeletion") &&
+        if ((CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.allowfiledeletion") &&
             CUtil::SupportsWriteFileOperations(item->GetPath())) ||
             (inPlaylists && URIUtils::GetFileName(item->GetPath()) != "PartyMode-Video.xsp"
                          && (item->IsPlayList() || item->IsSmartPlayList())))
@@ -1028,7 +1029,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CMusicDatabase database;
       database.Open();
       strPath = StringUtils::Format("musicdb://artists/%i/",
-                                    database.GetArtistByName(StringUtils::Join(m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator)));
+                                    database.GetArtistByName(StringUtils::Join(m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_artist, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator)));
       CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_MUSIC_NAV,strPath);
       return true;
     }
@@ -1047,7 +1048,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CMusicDatabase database;
       database.Open();
       CSong song;
-      if (database.GetSong(database.GetSongByArtistAndAlbumAndTitle(StringUtils::Join(m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator),m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_strAlbum,
+      if (database.GetSong(database.GetSongByArtistAndAlbumAndTitle(StringUtils::Join(m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_artist, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator),m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_strAlbum,
                                                                         m_vecItems->Get(itemNumber)->GetVideoInfoTag()->m_strTitle),
                                                                         song))
       {
@@ -1077,7 +1078,7 @@ bool CGUIWindowVideoNav::OnClick(int iItem, const std::string &player)
   if (!item->m_bIsFolder && item->IsVideoDb() && !item->Exists())
   {
     CLog::Log(LOGDEBUG, "%s called on '%s' but file doesn't exist", __FUNCTION__, item->GetPath().c_str());
-    if (CProfilesManager::Get().GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser)
+    if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser)
     {
       if (!CGUIDialogVideoInfo::DeleteVideoItemFromDatabase(item, true))
         return true;

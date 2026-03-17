@@ -33,6 +33,7 @@
 #include "GUIDialogOK.h"
 #include "GUIDialogKeyboardGeneric.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/RegExp.h"
 #include "utils/Variant.h"
 #include "utils/StringUtils.h"
@@ -132,7 +133,7 @@ void CGUIDialogKeyboardGeneric::OnInitWindow()
   m_currentLayout = 0;
   m_layouts.clear();
   const KeyboardLayouts& keyboardLayouts = CServiceBroker::GetKeyboardLayoutManager()->GetLayouts();
-  std::vector<CVariant> layoutNames = CSettings::GetInstance().GetList("locale.keyboardlayouts");
+  std::vector<CVariant> layoutNames = CServiceBroker::GetSettingsComponent()->GetSettings()->GetList("locale.keyboardlayouts");
 
   for (std::vector<CVariant>::const_iterator layoutName = layoutNames.begin(); layoutName != layoutNames.end(); ++layoutName)
   {

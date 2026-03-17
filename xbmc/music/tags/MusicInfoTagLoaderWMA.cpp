@@ -19,10 +19,12 @@
  */
 
 #include "music/tags/MusicInfoTagLoaderWMA.h"
+#include "ServiceBroker.h"
 #include "Util.h"
 #include "music/tags/MusicInfoTag.h"
 #include "filesystem/File.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "AutoPtrHandle.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
@@ -427,7 +429,7 @@ void CMusicInfoTagLoaderWMA::SetTagValueString(const CStdString& strFrameName, c
       tag.SetGenre(strValue);
     else
     {
-      std::vector<std::string> genres = StringUtils::Split(strValue, g_advancedSettings.m_musicItemSeparator);
+      std::vector<std::string> genres = StringUtils::Split(strValue, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
       for (unsigned int index = 0; index < genres.size(); index++)
         tag.AppendGenre(genres.at(index));
     }

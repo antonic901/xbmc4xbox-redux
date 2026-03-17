@@ -336,7 +336,7 @@ bool CButtonTranslator::Load(bool AlwaysLoad)
       success |= LoadKeymap(files[i]->GetPath());
   }
   //load from user's keymaps/ directory
-  const CStdString userKeymapDirPath = CProfilesManager::Get().GetUserDataItem("keymaps/");
+  const CStdString userKeymapDirPath = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("keymaps/");
   if( XFILE::CDirectory::Exists(userKeymapDirPath) )
   {
     CFileItemList files;
@@ -348,7 +348,7 @@ bool CButtonTranslator::Load(bool AlwaysLoad)
   }
 
   //try to load userdata/Keymap.xml for backward compatibility
-  const CStdString oldKeymapPath = CProfilesManager::Get().GetUserDataItem("Keymap.xml");
+  const CStdString oldKeymapPath = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("Keymap.xml");
   if( CFile::Exists(oldKeymapPath) )
   {
     CLog::Log(LOGINFO, "CButtonTranslator::Load - old Keymap.xml in userdata found (%s). Please consider moving it to the \"keymaps/\" folder", oldKeymapPath.c_str());
@@ -668,7 +668,7 @@ void CButtonTranslator::MapWindowActions(TiXmlNode *pWindow, int windowID)
   }
   if ((pDevice = pWindow->FirstChild("remote")) != NULL)
   { // map remote actions
-    bool bUseMCE = CSettings::GetInstance().GetBool("system.mceremote");
+    bool bUseMCE = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("system.mceremote");
     TiXmlElement *pRemote;
     CStdString remoteName;
     while (pDevice)

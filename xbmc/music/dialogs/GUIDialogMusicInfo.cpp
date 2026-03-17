@@ -46,6 +46,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "storage/MediaManager.h"
 #include "TextureCache.h"
 #include "utils/ProgressJob.h"
@@ -116,7 +117,7 @@ public:
           artistItemPath = oldartistpath;
         else
           // Fall back further to browse the Artist Info Folder itself
-          artistItemPath = CSettings::GetInstance().GetString("musiclibrary.artistsfolder");
+          artistItemPath = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musiclibrary.artistsfolder");
       }
       m_item->SetPath(artistItemPath);
 
@@ -541,7 +542,7 @@ void CGUIDialogMusicInfo::Update()
 
   // Disable the Choose Art button if the user isn't allowed it
   CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_GET_THUMB,
-    CProfilesManager::Get().GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser);
+    CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser);
 }
 
 void CGUIDialogMusicInfo::SetLabel(int iControl, const std::string& strLabel)
@@ -580,8 +581,8 @@ void CGUIDialogMusicInfo::FetchComplete()
 void CGUIDialogMusicInfo::RefreshInfo()
 {
   // Double check we have permission (button should be hidden when not)
-  const CProfilesManager &profileManager = CProfilesManager::Get();
-  if (!profileManager.GetCurrentProfile().canWriteDatabases() && !g_passwordManager.bMasterUser)
+  const boost::shared_ptr<CProfilesManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  if (!profileManager->GetCurrentProfile().canWriteDatabases() && !g_passwordManager.bMasterUser)
     return;
 
   // Check if scanning
@@ -697,7 +698,7 @@ void CGUIDialogMusicInfo::AddItemPathToFileBrowserSources(VECSOURCES &sources, c
     // For artist add Artist Info Folder path to browser sources
     if (item.GetMusicInfoTag()->GetType() == MediaTypeArtist)
     {
-      artistFolder = CSettings::GetInstance().GetString("musiclibrary.artistsfolder");
+      artistFolder = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musiclibrary.artistsfolder");
       if (!artistFolder.empty() && artistFolder.compare(itemDir) == 0)
         itemDir.clear();  // skip *item when artist not have a unique path
     }
@@ -856,7 +857,7 @@ void CGUIDialogMusicInfo::OnGetArt()
         // e.g. <arttype>.jpg
         CFileItemList items;
         CDirectory::GetDirectory(path, items,
-            g_advancedSettings.m_pictureExtensions,
+            CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions,
             DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO);
 
         for (int j = 0; j < items.Size(); j++)

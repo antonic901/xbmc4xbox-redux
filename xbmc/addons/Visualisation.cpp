@@ -27,6 +27,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
 #ifdef TARGET_POSIX
@@ -207,7 +208,7 @@ bool CVisualisation::OnAction(VIS_ACTION action, void *param)
         const CMusicInfoTag* tag = (const CMusicInfoTag*)param;
         std::string artist(tag->GetArtistString());
         std::string albumArtist(tag->GetAlbumArtistString());
-        std::string genre(StringUtils::Join(tag->GetGenre(), g_advancedSettings.m_musicItemSeparator));
+        std::string genre(StringUtils::Join(tag->GetGenre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
 
         VisTrack track;
         track.title       = tag->GetTitle().c_str();
@@ -472,5 +473,5 @@ std::string CVisualisation::GetPresetName()
 
 bool CVisualisation::IsInUse() const
 {
-  return CSettings::GetInstance().GetString("musicplayer.visualisation") == ID();
+  return CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicplayer.visualisation") == ID();
 }

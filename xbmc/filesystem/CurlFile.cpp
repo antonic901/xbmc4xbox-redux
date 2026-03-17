@@ -22,8 +22,10 @@
 #include "utils/URIUtils.h"
 #include "Util.h"
 #include "URL.h"
+#include "ServiceBroker.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "File.h"
 #include "threads/SystemClock.h"
 #include "utils/Base64.h"
@@ -76,7 +78,7 @@ extern "C" int debug_callback(CURL_HANDLE *handle, curl_infotype info, char *out
   if (info == CURLINFO_DATA_IN || info == CURLINFO_DATA_OUT)
     return 0;
 
-  if ((g_advancedSettings.m_extraLogLevels & LOGCURL) == 0)
+  if ((CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_extraLogLevels & LOGCURL) == 0)
     return 0;
 
   std::string strLine;
@@ -482,7 +484,7 @@ void CCurlFile::SetCommonOptions(CReadState* state)
 
   g_curlInterface.easy_setopt(h, CURLOPT_DEBUGFUNCTION, debug_callback);
 
-  if( g_advancedSettings.m_logLevel >= LOG_LEVEL_DEBUG )
+  if( CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel >= LOG_LEVEL_DEBUG )
     g_curlInterface.easy_setopt(h, CURLOPT_VERBOSE, TRUE);
   else
     g_curlInterface.easy_setopt(h, CURLOPT_VERBOSE, FALSE);
@@ -608,12 +610,12 @@ void CCurlFile::SetCommonOptions(CReadState* state)
   if (m_userAgent.length() > 0)
     g_curlInterface.easy_setopt(h, CURLOPT_USERAGENT, m_userAgent.c_str());
   else /* set some default agent as shoutcast doesn't return proper stuff otherwise */
-    g_curlInterface.easy_setopt(h, CURLOPT_USERAGENT, g_advancedSettings.m_userAgent.c_str());
+    g_curlInterface.easy_setopt(h, CURLOPT_USERAGENT, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_userAgent.c_str());
 
   if (m_useOldHttpVersion)
     g_curlInterface.easy_setopt(h, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
 
-  if (g_advancedSettings.m_curlDisableIPV6)
+  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_curlDisableIPV6)
     g_curlInterface.easy_setopt(h, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 
   if (!m_proxyhost.empty())
@@ -633,7 +635,7 @@ void CCurlFile::SetCommonOptions(CReadState* state)
     g_curlInterface.easy_setopt(h, CURLOPT_CUSTOMREQUEST, m_customrequest.c_str());
 
   if (m_connecttimeout == 0)
-    m_connecttimeout = g_advancedSettings.m_curlconnecttimeout;
+    m_connecttimeout = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_curlconnecttimeout;
 
   // set our timeouts, we abort connection after m_timeout, and reads after no data for m_timeout seconds
   g_curlInterface.easy_setopt(h, CURLOPT_CONNECTTIMEOUT, m_connecttimeout);
@@ -642,7 +644,7 @@ void CCurlFile::SetCommonOptions(CReadState* state)
   g_curlInterface.easy_setopt(h, CURLOPT_LOW_SPEED_LIMIT, 1);
 
   if (m_lowspeedtime == 0)
-    m_lowspeedtime = g_advancedSettings.m_curllowspeedtime;
+    m_lowspeedtime = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_curllowspeedtime;
 
   // Set the lowspeed time very low as it seems Curl takes much longer to detect a lowspeed condition
   g_curlInterface.easy_setopt(h, CURLOPT_LOW_SPEED_TIME, m_lowspeedtime);
@@ -769,17 +771,17 @@ void CCurlFile::ParseAndCorrectUrl(CURL &url2)
   else if( url2.IsProtocol("http")
        ||  url2.IsProtocol("https"))
   {
-    const CSettings &s = CSettings::GetInstance();
+    boost::shared_ptr<CSettings> s = CServiceBroker::GetSettingsComponent()->GetSettings();
     if (m_proxyhost.empty()
-        && s.GetBool("network.usehttpproxy")
-        && !s.GetString("network.httpproxyserver").empty()
-        && s.GetInt("network.httpproxyport") > 0)
+        && s->GetBool("network.usehttpproxy")
+        && !s->GetString("network.httpproxyserver").empty()
+        && s->GetInt("network.httpproxyport") > 0)
     {
-      m_proxytype = (ProxyType)s.GetInt("network.httpproxytype");
-      m_proxyhost = s.GetString("network.httpproxyserver");
-      m_proxyport = s.GetInt("network.httpproxyport");
-      m_proxyuser = s.GetString("network.httpproxyusername");
-      m_proxypassword = s.GetString("network.httpproxypassword");
+      m_proxytype = (ProxyType)s->GetInt("network.httpproxytype");
+      m_proxyhost = s->GetString("network.httpproxyserver");
+      m_proxyport = s->GetInt("network.httpproxyport");
+      m_proxyuser = s->GetString("network.httpproxyusername");
+      m_proxypassword = s->GetString("network.httpproxypassword");
       CLog::Log(LOGDEBUG, "Using proxy %s, type %d", m_proxyhost.c_str(),
                 proxyType2CUrlProxyType[m_proxytype]);
     }
@@ -1399,7 +1401,7 @@ int CCurlFile::Stat(const CURL& url, struct __stat64* buffer)
 
   SetCommonOptions(m_state);
   SetRequestHeaders(m_state);
-  g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_TIMEOUT, g_advancedSettings.m_curlconnecttimeout);
+  g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_TIMEOUT, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_curlconnecttimeout);
   g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_NOBODY, 1);
   g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_FILETIME , 1);
 
@@ -1430,7 +1432,7 @@ int CCurlFile::Stat(const CURL& url, struct __stat64* buffer)
     /* somehow curl doesn't reset CURLOPT_NOBODY properly so reset everything */
     SetCommonOptions(m_state);
     SetRequestHeaders(m_state);
-    g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_TIMEOUT, g_advancedSettings.m_curlconnecttimeout);
+    g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_TIMEOUT, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_curlconnecttimeout);
     g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_FILETIME, 1);
 #if LIBCURL_VERSION_NUM >= 0x072000 // 0.7.32
     g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_XFERINFOFUNCTION, transfer_abort_callback);
@@ -1647,7 +1649,7 @@ int8_t CCurlFile::CReadState::FillBuffer(unsigned int want)
         m_bLastError = true; // Flag error for the next run
 
         // Retry immediately or leave it up to the caller?
-        if ((m_bRetry && retry < g_advancedSettings.m_curlretries) || (bRetryNow && retry == 0))
+        if ((m_bRetry && retry < CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_curlretries) || (bRetryNow && retry == 0))
         {
           retry++;
 

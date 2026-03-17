@@ -36,6 +36,7 @@
 #include "playlists/SmartPlayList.h"
 #include "profiles/ProfilesManager.h"
 #include "threads/SystemClock.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "utils/Random.h"
 #include "utils/StringUtils.h"
@@ -72,9 +73,9 @@ bool CPartyModeManager::Enable(PartyModeContext context /*= PARTYMODECONTEXT_MUS
   if (!strXspPath.empty()) //if a path to a smartplaylist is supplied use it
     partyModePath = strXspPath;
   else if (m_bIsVideo)
-    partyModePath = CProfilesManager::Get().GetUserDataItem("PartyMode-Video.xsp");
+    partyModePath = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("PartyMode-Video.xsp");
   else
-    partyModePath = CProfilesManager::Get().GetUserDataItem("PartyMode.xsp");
+    partyModePath = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("PartyMode.xsp");
 
   playlistLoaded=playlist.Load(partyModePath);
 

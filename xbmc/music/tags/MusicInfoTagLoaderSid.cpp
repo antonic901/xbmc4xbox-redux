@@ -19,6 +19,7 @@
  */
 
 #include "MusicInfoTagLoaderSid.h"
+#include "ServiceBroker.h"
 #include "utils/RegExp.h"
 #include "utils/log.h"
 #include "Util.h"
@@ -26,6 +27,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "filesystem/SpecialProtocol.h"
 
 #include <cstring>
@@ -91,7 +93,7 @@ bool CMusicInfoTagLoaderSid::Load(const CStdString& strFileName, CMusicInfoTag& 
     return( false );
   }
 
-  ifstream f(CSpecialProtocol::TranslatePath(URIUtils::AddFileToFolder(CProfilesManager::Get().GetDatabaseFolder(), "stil.txt")).c_str()); // changeme?
+  ifstream f(CSpecialProtocol::TranslatePath(URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetDatabaseFolder(), "stil.txt")).c_str()); // changeme?
   if( !f.good() ) {
     CLog::Log(LOGINFO,"MusicInfoTagLoaderSid::Load(..) unable to locate stil.txt");
     tag.SetLoaded(false);
@@ -173,7 +175,7 @@ bool CMusicInfoTagLoaderSid::Load(const CStdString& strFileName, CMusicInfoTag& 
     }
   }
 
-  ifstream f2(CSpecialProtocol::TranslatePath(URIUtils::AddFileToFolder(CProfilesManager::Get().GetDatabaseFolder(),"sidlist.csv")).c_str()); // changeme?
+  ifstream f2(CSpecialProtocol::TranslatePath(URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetDatabaseFolder(),"sidlist.csv")).c_str()); // changeme?
   if( !f2.good() ) {
     CLog::Log(LOGINFO,"MusicInfoTagLoaderSid::Load(..) unable to locate sidlist.csv");
     tag.SetLoaded(false);

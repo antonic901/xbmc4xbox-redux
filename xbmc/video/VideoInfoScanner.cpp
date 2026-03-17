@@ -41,6 +41,7 @@
 #include "NfoFile.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "TextureCache.h"
 #include "threads/SystemClock.h"
 #include "URL.h"
@@ -80,7 +81,7 @@ namespace VIDEO
 
     try
     {
-      if (m_showDialog && !CSettings::GetInstance().GetBool("videolibrary.backgroundupdate"))
+      if (m_showDialog && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videolibrary.backgroundupdate"))
       {
         CGUIDialogExtendedProgressBar* dialog =
           (CGUIDialogExtendedProgressBar*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_EXT_PROGRESS);
@@ -207,7 +208,7 @@ namespace VIDEO
       }
     }
     m_database.Close();
-    m_bClean = g_advancedSettings.m_bVideoLibraryCleanOnUpdate;
+    m_bClean = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bVideoLibraryCleanOnUpdate;
 
     m_bRunning = true;
     Process();
@@ -254,8 +255,8 @@ namespace VIDEO
     CONTENT_TYPE content = info ? info->Content() : CONTENT_NONE;
 
     // exclude folders that match our exclude regexps
-    const std::vector<std::string> &regexps = content == CONTENT_TVSHOWS ? g_advancedSettings.m_tvshowExcludeFromScanRegExps
-                                                         : g_advancedSettings.m_moviesExcludeFromScanRegExps;
+    const std::vector<std::string> &regexps = content == CONTENT_TVSHOWS ? CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_tvshowExcludeFromScanRegExps
+                                                         : CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_moviesExcludeFromScanRegExps;
 
     if (IsExcluded(strDirectory, regexps))
       return true;
@@ -274,7 +275,7 @@ namespace VIDEO
       }
 
       std::string fastHash;
-      if (g_advancedSettings.m_bVideoLibraryUseFastHash)
+      if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bVideoLibraryUseFastHash)
         fastHash = GetFastHash(strDirectory, regexps);
 
       if (m_database.GetPathHash(strDirectory, dbHash) && !fastHash.empty() && fastHash == dbHash)
@@ -283,7 +284,7 @@ namespace VIDEO
       }
       else
       { // need to fetch the folder
-        CDirectory::GetDirectory(strDirectory, items, g_advancedSettings.m_videoExtensions,
+        CDirectory::GetDirectory(strDirectory, items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions,
                                  DIR_FLAG_DEFAULTS);
         items.Stack();
 
@@ -322,7 +323,7 @@ namespace VIDEO
 
       if (foundDirectly && !settings.parent_name_root)
       {
-        CDirectory::GetDirectory(strDirectory, items, g_advancedSettings.m_videoExtensions,
+        CDirectory::GetDirectory(strDirectory, items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions,
                                  DIR_FLAG_DEFAULTS);
         items.SetPath(strDirectory);
         GetPathHash(items, hash);
@@ -419,8 +420,8 @@ namespace VIDEO
         continue;
 
       // Discard all exclude files defined by regExExclude
-      if (IsExcluded(pItem->GetPath(), (content == CONTENT_TVSHOWS) ? g_advancedSettings.m_tvshowExcludeFromScanRegExps
-                                                                    : g_advancedSettings.m_moviesExcludeFromScanRegExps))
+      if (IsExcluded(pItem->GetPath(), (content == CONTENT_TVSHOWS) ? CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_tvshowExcludeFromScanRegExps
+                                                                    : CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_moviesExcludeFromScanRegExps))
         continue;
 
       if (info2->Content() == CONTENT_MOVIES || info2->Content() == CONTENT_MUSICVIDEOS)
@@ -757,7 +758,7 @@ namespace VIDEO
   bool CVideoInfoScanner::EnumerateSeriesFolder(CFileItem* item, EPISODELIST& episodeList)
   {
     CFileItemList items;
-    const std::vector<std::string> &regexps = g_advancedSettings.m_tvshowExcludeFromScanRegExps;
+    const std::vector<std::string> &regexps = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_tvshowExcludeFromScanRegExps;
 
     bool bSkip = false;
 
@@ -773,7 +774,7 @@ namespace VIDEO
         m_pathsToScan.erase(it);
 
       std::string hash, dbHash;
-      if (g_advancedSettings.m_bVideoLibraryUseFastHash)
+      if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bVideoLibraryUseFastHash)
         hash = GetRecursiveFastHash(item->GetPath(), regexps);
 
       if (m_database.GetPathHash(item->GetPath(), dbHash) && !hash.empty() && dbHash == hash)
@@ -789,7 +790,7 @@ namespace VIDEO
         if (!hash.empty())
           flags |= DIR_FLAG_NO_FILE_INFO;
 
-        CUtil::GetRecursiveListing(item->GetPath(), items, g_advancedSettings.m_videoExtensions, flags);
+        CUtil::GetRecursiveListing(item->GetPath(), items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions, flags);
 
         // fast hash failed - compute slow one
         if (hash.empty())
@@ -995,7 +996,7 @@ namespace VIDEO
 
   bool CVideoInfoScanner::EnumerateEpisodeItem(const CFileItem *item, EPISODELIST& episodeList)
   {
-    SETTINGS_TVSHOWLIST expression = g_advancedSettings.m_tvshowEnumRegExps;
+    SETTINGS_TVSHOWLIST expression = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_tvshowEnumRegExps;
 
     std::string strLabel;
 
@@ -1084,7 +1085,7 @@ namespace VIDEO
 
       CRegExp reg2(true, CRegExp::autoUtf8);
       // check the remainder of the string for any further episodes.
-      if (!byDate && reg2.RegComp(g_advancedSettings.m_tvshowMultiPartEnumRegExp))
+      if (!byDate && reg2.RegComp(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_tvshowMultiPartEnumRegExp))
       {
         int offset = 0;
 
@@ -1098,7 +1099,7 @@ namespace VIDEO
 
             CLog::Log(LOGDEBUG, "VideoInfoScanner: Adding new season %u, multipart episode %u [%s]",
                       episode.iSeason, episode.iEpisode,
-                      g_advancedSettings.m_tvshowMultiPartEnumRegExp.c_str());
+                      CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_tvshowMultiPartEnumRegExp.c_str());
 
             episodeList.push_back(episode);
             remainder = reg.GetMatch(3);
@@ -1109,7 +1110,7 @@ namespace VIDEO
           {
             episode.iEpisode = atoi(reg2.GetMatch(1).c_str());
             CLog::Log(LOGDEBUG, "VideoInfoScanner: Adding multipart episode %u [%s]",
-                      episode.iEpisode, g_advancedSettings.m_tvshowMultiPartEnumRegExp.c_str());
+                      episode.iEpisode, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_tvshowMultiPartEnumRegExp.c_str());
             episodeList.push_back(episode);
             offset += regexp2pos + reg2.GetFindLen();
           }
@@ -1292,10 +1293,10 @@ namespace VIDEO
       movieDetails.m_type = MediaTypeMusicVideo;
     }
 
-    if (g_advancedSettings.m_bVideoLibraryImportWatchedState || libraryImport)
+    if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bVideoLibraryImportWatchedState || libraryImport)
       m_database.SetPlayCount(*pItem, movieDetails.m_playCount, movieDetails.m_lastPlayed);
 
-    if ((g_advancedSettings.m_bVideoLibraryImportResumePoint || libraryImport) &&
+    if ((CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bVideoLibraryImportResumePoint || libraryImport) &&
         movieDetails.m_resumePoint.IsSet())
       m_database.AddBookMarkToFile(pItem->GetPath(), movieDetails.m_resumePoint, CBookmark::RESUME);
 
@@ -1411,7 +1412,7 @@ namespace VIDEO
 
     // parent folder to apply the thumb to and to search for local actor thumbs
     std::string parentDir = URIUtils::GetBasePath(pItem->GetPath());
-    if (CSettings::GetInstance().GetBool("videolibrary.actorthumbs"))
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videolibrary.actorthumbs"))
       FetchActorThumbs(movieDetails.m_cast, actorArtPath.empty() ? parentDir : actorArtPath);
     if (bApplyToDir)
       ApplyThumbToFolder(parentDir, art["thumb"]);
@@ -1819,7 +1820,7 @@ namespace VIDEO
 
   bool CVideoInfoScanner::CanFastHash(const CFileItemList &items, const std::vector<std::string> &excludes) const
   {
-    if (!g_advancedSettings.m_bVideoLibraryUseFastHash)
+    if (!CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bVideoLibraryUseFastHash)
       return false;
 
     for (int i = 0; i < items.Size(); ++i)
@@ -2072,7 +2073,7 @@ namespace VIDEO
 
   bool CVideoInfoScanner::DownloadFailed(CGUIDialogProgress* pDialog)
   {
-    if (g_advancedSettings.m_bVideoScannerIgnoreErrors)
+    if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bVideoScannerIgnoreErrors)
       return true;
 
     if (pDialog)

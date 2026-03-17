@@ -40,6 +40,7 @@
 #include "playlists/PlayList.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
@@ -140,8 +141,8 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_SHUFFLE)
       {
-        CSettings::GetInstance().ToggleBool("slideshow.shuffle");
-        CSettings::GetInstance().Save();
+        CServiceBroker::GetSettingsComponent()->GetSettings()->ToggleBool("slideshow.shuffle");
+        CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
       }
       else if (m_viewControl.HasControl(iControl))  // list/thumb control
       {
@@ -152,7 +153,7 @@ bool CGUIWindowPictures::OnMessage(CGUIMessage& message)
         if (iAction == ACTION_DELETE_ITEM)
         {
           // is delete allowed?
-          if (CSettings::GetInstance().GetBool("filelists.allowfiledeletion"))
+          if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.allowfiledeletion"))
             OnDeleteItem(iItem);
           else
             return false;
@@ -179,7 +180,7 @@ void CGUIWindowPictures::UpdateButtons()
   CGUIMediaWindow::UpdateButtons();
 
   // Update the shuffle button
-  SET_CONTROL_SELECTED(GetID(), CONTROL_SHUFFLE, CSettings::GetInstance().GetBool("slideshow.shuffle"));
+  SET_CONTROL_SELECTED(GetID(), CONTROL_SHUFFLE, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("slideshow.shuffle"));
 
   // check we can slideshow or recursive slideshow
   int nFolders = m_vecItems->GetFolderCount();
@@ -213,7 +214,7 @@ void CGUIWindowPictures::OnPrepareFileItems(CFileItemList& items)
     if (StringUtils::EqualsNoCase(items[i]->GetLabel(), "folder.jpg"))
       items.Remove(i);
 
-  if (items.GetFolderCount()==items.Size() || !CSettings::GetInstance().GetBool("pictures.usetags"))
+  if (items.GetFolderCount()==items.Size() || !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("pictures.usetags"))
     return;
 
   // Start the music info loader thread
@@ -266,7 +267,7 @@ bool CGUIWindowPictures::Update(const std::string &strDirectory, bool updateFilt
     return false;
 
   m_vecItems->SetArt("thumb", "");
-  if (CSettings::GetInstance().GetBool("pictures.generatethumbs"))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("pictures.generatethumbs"))
     m_thumbLoader.Load(*m_vecItems);
 
   CPictureThumbLoader thumbLoader;
@@ -346,7 +347,7 @@ bool CGUIWindowPictures::ShowPicture(int iItem, bool startSlideShow)
     CFileItemPtr pItem = m_vecItems->Get(i);
     if (!pItem->m_bIsFolder && !(URIUtils::IsRAR(pItem->GetPath()) ||
           URIUtils::IsZIP(pItem->GetPath())) && (pItem->IsPicture() || (
-                                CSettings::GetInstance().GetBool("pictures.showvideos") &&
+                                CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("pictures.showvideos") &&
                                 pItem->IsVideo())))
     {
       pSlideShow->Add(pItem.get());
@@ -411,7 +412,7 @@ void CGUIWindowPictures::OnSlideShowRecursive(const std::string &strPicture)
 
     SortDescription sorting = m_guiState->GetSortMethod();
     pSlideShow->RunSlideShow(strPicture, true,
-                             CSettings::GetInstance().GetBool("slideshow.shuffle"),false,
+                             CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("slideshow.shuffle"),false,
                              "", true,
                              sorting.sortBy, sorting.sortOrder, sorting.sortAttributes,
                              strExtensions);
@@ -486,7 +487,7 @@ void CGUIWindowPictures::GetContextButtons(int itemNumber, CContextButtons &butt
 
         if (!m_thumbLoader.IsLoading())
           buttons.Add(CONTEXT_BUTTON_REFRESH_THUMBS, 13315);         // Create Thumbnails
-        if (CSettings::GetInstance().GetBool("filelists.allowfiledeletion") && !item->IsReadOnly())
+        if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.allowfiledeletion") && !item->IsReadOnly())
         {
           buttons.Add(CONTEXT_BUTTON_DELETE, 117);
           buttons.Add(CONTEXT_BUTTON_RENAME, 118);

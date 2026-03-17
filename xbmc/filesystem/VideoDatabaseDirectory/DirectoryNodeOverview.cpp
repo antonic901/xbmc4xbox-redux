@@ -23,8 +23,10 @@
 #include <utility>
 
 #include "FileItem.h"
+#include "ServiceBroker.h"
 #include "guilib/LocalizeStrings.h"
 #include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "video/VideoDatabase.h"
 
 using namespace XFILE::VIDEODATABASEDIRECTORY;
@@ -72,21 +74,21 @@ bool CDirectoryNodeOverview::GetContent(CFileItemList& items) const
   std::vector<std::pair<const char*, int> > vec;
   if (hasMovies)
   {
-    if (CSettings::GetInstance().GetBool("myvideos.flatten"))
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.flatten"))
       vec.push_back(std::make_pair("movies/titles", 342));
     else
       vec.push_back(std::make_pair("movies", 342));   // Movies
   }
   if (hasTvShows)
   {
-    if (CSettings::GetInstance().GetBool("myvideos.flatten"))
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.flatten"))
       vec.push_back(std::make_pair("tvshows/titles", 20343));
     else
       vec.push_back(std::make_pair("tvshows", 20343)); // TV Shows
   }
   if (hasMusicVideos)
   {
-    if (CSettings::GetInstance().GetBool("myvideos.flatten"))
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.flatten"))
       vec.push_back(std::make_pair("musicvideos/titles", 20389));
     else
       vec.push_back(std::make_pair("musicvideos", 20389)); // Music Videos

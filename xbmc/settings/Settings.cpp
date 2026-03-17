@@ -60,13 +60,13 @@
 #include "utils/AMLUtils.h"
 #endif // defined(HAS_LIBAMCODEC)
 #include "profiles/ProfilesManager.h"
-#include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/SettingConditions.h"
 #include "settings/SettingUtils.h"
 #include "settings/SkinSettings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/lib/SettingsManager.h"
 #include "threads/SingleLock.h"
 #include "utils/CharsetConverter.h"
@@ -108,12 +108,6 @@ CSettings::~CSettings()
   delete m_settingsManager;
 }
 
-CSettings& CSettings::GetInstance()
-{
-  static CSettings sSettings;
-  return sSettings;
-}
-
 bool CSettings::Initialize()
 {
   CSingleLock lock(m_critical);
@@ -147,7 +141,7 @@ bool CSettings::Initialize()
 
 bool CSettings::Load()
 {
-  return Load(CProfilesManager::Get().GetSettingsFile());
+  return Load(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetSettingsFile());
 }
 
 bool CSettings::Load(const std::string &file)
@@ -194,6 +188,11 @@ bool CSettings::Load(const TiXmlElement *root, bool hide /* = false */)
   return success;
 }
 
+bool CSettings::IsLoaded()
+{
+  return m_settingsManager->IsLoaded();
+}
+
 void CSettings::SetLoaded()
 {
   m_settingsManager->SetLoaded();
@@ -201,7 +200,7 @@ void CSettings::SetLoaded()
 
 bool CSettings::Save()
 {
-  return Save(CProfilesManager::Get().GetSettingsFile());
+  return Save(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetSettingsFile());
 }
 
 bool CSettings::Save(const std::string &file)
@@ -263,7 +262,6 @@ void CSettings::Uninitialize()
   m_settingsManager->UnregisterSettingOptionsFiller("voicemasks");
 
   // unregister ISettingCallback implementations
-  m_settingsManager->UnregisterCallback(&g_advancedSettings);
   m_settingsManager->UnregisterCallback(&CMediaSettings::Get());
   m_settingsManager->UnregisterCallback(&CDisplaySettings::Get());
   m_settingsManager->UnregisterCallback(&CSeekHandler::Get());
@@ -298,14 +296,12 @@ void CSettings::Uninitialize()
   m_settingsManager->UnregisterSubSettings(&CViewStateSettings::Get());
 
   // unregister ISettingsHandler implementations
-  m_settingsManager->UnregisterSettingsHandler(&g_advancedSettings);
   m_settingsManager->UnregisterSettingsHandler(&CMediaSourceSettings::Get());
   m_settingsManager->UnregisterSettingsHandler(&CServiceBroker::GetPlayerCoreFactory());
   m_settingsManager->UnregisterSettingsHandler(&CRssManager::Get());
 #ifdef HAS_UPNP
   m_settingsManager->UnregisterSettingsHandler(&CUPnPSettings::Get());
 #endif
-  m_settingsManager->UnregisterSettingsHandler(&CProfilesManager::Get());
   m_settingsManager->UnregisterSettingsHandler(&g_application);
 #ifdef _XBOX
   m_settingsManager->UnregisterSettingsHandler(&g_audioConfig);
@@ -652,10 +648,8 @@ void CSettings::InitializeISettingsHandlers()
 {
   // register ISettingsHandler implementations
   // The order of these matters! Handlers are processed in the order they were registered.
-  m_settingsManager->RegisterSettingsHandler(&g_advancedSettings);
   m_settingsManager->RegisterSettingsHandler(&CMediaSourceSettings::Get());
   m_settingsManager->RegisterSettingsHandler(&CServiceBroker::GetPlayerCoreFactory());
-  m_settingsManager->RegisterSettingsHandler(&CProfilesManager::Get());
 #ifdef HAS_UPNP
   m_settingsManager->RegisterSettingsHandler(&CUPnPSettings::Get());
 #endif
@@ -688,11 +682,6 @@ void CSettings::InitializeISettingCallbacks()
 {
   // register any ISettingCallback implementations
   std::set<std::string> settingSet;
-  settingSet.insert("debug.showloginfo");
-  settingSet.insert("debug.setextraloglevel");
-  m_settingsManager->RegisterCallback(&g_advancedSettings, settingSet);
-
-  settingSet.clear();
   settingSet.insert("karaoke.export");
   settingSet.insert("karaoke.importcsv");
   settingSet.insert("musiclibrary.cleanup");
@@ -772,10 +761,6 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("source.pictures");
   settingSet.insert("updater.check");
   m_settingsManager->RegisterCallback(&g_application, settingSet);
-
-  settingSet.clear();
-  settingSet.insert("lookandfeel.soundskin");
-  m_settingsManager->RegisterCallback(&CServiceBroker::GetGUI()->GetAudioManager(), settingSet);
 
   settingSet.clear();
   settingSet.insert("subtitles.charset");
@@ -869,7 +854,7 @@ void CSettings::InitializeISettingCallbacks()
 
 bool CSettings::Reset()
 {
-  std::string settingsFile = CProfilesManager::Get().GetSettingsFile();
+  std::string settingsFile = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetSettingsFile();
   // try to delete the settings file
   if (XFILE::CFile::Exists(settingsFile, false) && !XFILE::CFile::Delete(settingsFile))
     CLog::Log(LOGWARNING, "Unable to delete old settings file at %s", settingsFile.c_str());
@@ -1066,7 +1051,7 @@ bool CSettings::SaveAvpackSettings(TiXmlNode *io_pRoot) const
 std::string CSettings::GetFFmpegDllFolder() const
 {
   std::string folder = "Q:\\system\\players\\dvdplayer\\";
-  if (CSettings::GetInstance().GetBool("videoplayer.allcodecs"))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videoplayer.allcodecs"))
     folder += "full\\";
   return folder;
 }
@@ -1085,17 +1070,17 @@ std::string CSettings::GetPlayerName(const int& player) const
 
 std::string CSettings::GetDefaultVideoPlayerName() const
 {
-  return GetPlayerName(CSettings::GetInstance().GetInt("videoplayer.defaultplayer"));
+  return GetPlayerName(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoplayer.defaultplayer"));
 }
 
 std::string CSettings::GetDefaultAudioPlayerName() const
 {
-  return GetPlayerName(CSettings::GetInstance().GetInt("musicplayer.defaultplayer"));
+  return GetPlayerName(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("musicplayer.defaultplayer"));
 }
 
 std::string CSettings::GetAvpackSettingsFile() const
 {
-  if (CProfilesManager::Get().GetCurrentProfileIndex() == 0)
+  if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfileIndex() == 0)
     return "T:\\avpacksettings.xml";
   else
     return "P:\\avpacksettings.xml";
