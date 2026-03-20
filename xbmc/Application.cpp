@@ -1270,7 +1270,7 @@ HRESULT CApplication::Initialize()
     // the startup window is considered part of the initialization as it most likely switches to the final window
     uiInitializationFinished = firstWindow != WINDOW_STARTUP_ANIM;
 
-    if (!m_ServiceManager->Init3())
+    if (!m_ServiceManager->Init3(CServiceBroker::GetSettingsComponent()->GetProfileManager()))
     {
       CLog::Log(LOGERROR, "Application - Init3 failed");
     }

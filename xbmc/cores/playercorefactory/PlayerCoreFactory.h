@@ -23,12 +23,16 @@
 #include "cores/IPlayer.h"
 #include "settings/lib/ISettingsHandler.h"
 
+#include <boost/shared_ptr.hpp>
+
 /*----------------------------------------------------------------------
 |   forward references
 +---------------------------------------------------------------------*/
 class TiXmlElement;
 class CPlayerCoreConfig;
 class CPlayerSelectionRule;
+class CProfilesManager;
+class CSettings;
 
 enum EPLAYERCORES
 {
@@ -48,7 +52,9 @@ const PLAYERCOREID PCID_PAPLAYER = 3;
 class CPlayerCoreFactory : public ISettingsHandler
 {
 public:
-  CPlayerCoreFactory();
+  CPlayerCoreFactory(const CProfilesManager &profileManager);
+  CPlayerCoreFactory(const CPlayerCoreFactory&);
+  CPlayerCoreFactory const& operator=(CPlayerCoreFactory const&);
   virtual ~CPlayerCoreFactory();
 
   virtual void OnSettingsLoaded();
@@ -68,11 +74,11 @@ public:
   PLAYERCOREID SelectPlayerDialog(VECPLAYERCORES &vecCores, float posX = 0, float posY = 0) const;
   PLAYERCOREID SelectPlayerDialog(float posX, float posY) const;
 
-protected:
-  CPlayerCoreFactory(const CPlayerCoreFactory&);
-  CPlayerCoreFactory const& operator=(CPlayerCoreFactory const&);
-
 private:
+  // Construction parameters
+  boost::shared_ptr<CSettings> m_settings;
+  const CProfilesManager &m_profileManager;
+
   bool LoadConfiguration(const std::string &file, bool clear);
 
   std::vector<CPlayerCoreConfig *> m_vecCoreConfigs;

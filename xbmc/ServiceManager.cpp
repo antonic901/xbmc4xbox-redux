@@ -74,11 +74,11 @@ bool CServiceManager::Init2()
   return true;
 }
 
-bool CServiceManager::Init3()
+bool CServiceManager::Init3(const boost::shared_ptr<CProfilesManager>& profileManager)
 {
   m_contextMenuManager->Init();
 
-  m_playerCoreFactory = boost::movelib::make_unique<CPlayerCoreFactory>();
+  m_playerCoreFactory = boost::movelib::make_unique<CPlayerCoreFactory>(*profileManager);
 
   return true;
 }

@@ -29,7 +29,6 @@
 #include "addons/AddonSystemSettings.h"
 #include "addons/RepositoryUpdater.h"
 #include "addons/Skin.h"
-#include "cores/playercorefactory/PlayerCoreFactory.h"
 #ifdef HAS_XBOX_D3D
 #include "cores/VideoRenderers/XBoxRenderer.h"
 #endif
@@ -297,7 +296,6 @@ void CSettings::Uninitialize()
 
   // unregister ISettingsHandler implementations
   m_settingsManager->UnregisterSettingsHandler(&CMediaSourceSettings::GetInstance());
-  m_settingsManager->UnregisterSettingsHandler(&CServiceBroker::GetPlayerCoreFactory());
   m_settingsManager->UnregisterSettingsHandler(&CRssManager::GetInstance());
 #ifdef HAS_UPNP
   m_settingsManager->UnregisterSettingsHandler(&CUPnPSettings::GetInstance());
@@ -649,7 +647,6 @@ void CSettings::InitializeISettingsHandlers()
   // register ISettingsHandler implementations
   // The order of these matters! Handlers are processed in the order they were registered.
   m_settingsManager->RegisterSettingsHandler(&CMediaSourceSettings::GetInstance());
-  m_settingsManager->RegisterSettingsHandler(&CServiceBroker::GetPlayerCoreFactory());
 #ifdef HAS_UPNP
   m_settingsManager->RegisterSettingsHandler(&CUPnPSettings::GetInstance());
 #endif
