@@ -50,7 +50,6 @@ public:
   virtual void OnUp();
   virtual void OnLeft();
   virtual void OnRight();
-  virtual bool OnMouseOver(const CPoint &point);
   virtual bool CanFocus() const;
   virtual bool OnMessage(CGUIMessage& message);
   virtual void SetFocus(bool bOnOff);
@@ -104,7 +103,6 @@ public:
   virtual void DumpTextureUse();
 #endif
 protected:
-  virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   bool OnClick(int actionID);
 
   virtual void ProcessItem(float posX, float posY, CGUIListItemPtr& item, bool focused, unsigned int currentTime, CDirtyRegionList &dirtyregions);

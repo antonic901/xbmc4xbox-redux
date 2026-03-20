@@ -84,7 +84,6 @@ public:
 
 protected:
   friend class CGUISpinControlEx;
-  virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   void OnFocus();
   void OnUnFocus();
   virtual void ProcessText(unsigned int currentTime);

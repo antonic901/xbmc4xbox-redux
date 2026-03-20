@@ -37,8 +37,6 @@
 #include "gui3d.h"
 #include "utils/StdString.h"
 
-#include "common/Mouse.h"
-
 #include "utils/GlobalsHandling.h"
 #include "settings/lib/ISettingCallback.h"
 

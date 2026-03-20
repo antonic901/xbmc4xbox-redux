@@ -1195,15 +1195,6 @@
         </setting>
       </group>
     </category>
-    <category id="input" label="14125" help="36374">
-      <group id="2" label="14094">
-        <setting id="input.enablemouse" type="boolean" label="21369" help="36377">
-          <level>0</level>
-          <control type="toggle" />
-          <default>true</default>
-        </setting>
-      </group>
-    </category>
     <category id="network" label="798" help="36379">
       <group id="1" label="16000">
         <setting id="network.usehttpproxy" type="boolean" label="708" help="36380">

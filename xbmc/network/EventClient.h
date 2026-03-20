@@ -138,13 +138,10 @@ namespace EVENTCLIENT
     void Initialize()
     {
       m_bGreeted = false;
-      m_iMouseX = 0;
-      m_iMouseY = 0;
       m_iCurrentSeqLen = 0;
       m_lastPing = 0;
       m_lastSeq = 0;
       m_iRemotePort = 0;
-      m_bMouseMoved = false;
       m_bSequenceError = false;
       RefreshSettings();
     }
@@ -191,9 +188,6 @@ namespace EVENTCLIENT
     // return event states
     unsigned short GetButtonCode(std::string& strMapName, bool& isAxis, float& amount);
 
-    // update mouse position
-    bool GetMousePos(float& x, float& y);
-
   protected:
     bool ProcessPacket(EVENTPACKET::CEventPacket *packet);
 
@@ -201,7 +195,6 @@ namespace EVENTCLIENT
     virtual bool OnPacketHELO(EVENTPACKET::CEventPacket *packet);
     virtual bool OnPacketBYE(EVENTPACKET::CEventPacket *packet);
     virtual bool OnPacketBUTTON(EVENTPACKET::CEventPacket *packet);
-    virtual bool OnPacketMOUSE(EVENTPACKET::CEventPacket *packet);
     virtual bool OnPacketNOTIFICATION(EVENTPACKET::CEventPacket *packet);
     virtual bool OnPacketLOG(EVENTPACKET::CEventPacket *packet);
     virtual bool OnPacketACTION(EVENTPACKET::CEventPacket *packet);
@@ -243,9 +236,6 @@ namespace EVENTCLIENT
     bool              m_bGreeted;
     unsigned int      m_iRepeatDelay;
     unsigned int      m_iRepeatSpeed;
-    unsigned int      m_iMouseX;
-    unsigned int      m_iMouseY;
-    bool              m_bMouseMoved;
     bool              m_bSequenceError;
 
     SOCKETS::CAddress m_remoteAddr;

@@ -302,9 +302,6 @@ void CXBApplicationEx::ReadInput()
   }
 #endif
 
-  // Read the input from the mouse
-  g_Mouse.Update();
-
   // Read the input from the keyboard
   g_Keyboard.Update();
 

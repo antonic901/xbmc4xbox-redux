@@ -130,26 +130,6 @@ void CGUIResizeControl::OnRight()
   Resize(m_fSpeed, 0);
 }
 
-EVENT_RESULT CGUIResizeControl::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
-{
-  if (event.m_id == ACTION_MOUSE_DRAG)
-  {
-    if (event.m_state == 1)
-    { // grab exclusive access
-      CGUIMessage msg(GUI_MSG_EXCLUSIVE_MOUSE, GetID(), GetParentID());
-      SendWindowMessage(msg);
-    }
-    else if (event.m_state == 3)
-    { // release exclusive access
-      CGUIMessage msg(GUI_MSG_EXCLUSIVE_MOUSE, 0, GetParentID());
-      SendWindowMessage(msg);
-    }
-    Resize(event.m_offsetX, event.m_offsetY);
-    return EVENT_RESULT_HANDLED;
-  }
-  return EVENT_RESULT_UNHANDLED;
-}
-
 void CGUIResizeControl::UpdateSpeed(int nDirection)
 {
   if (CTimeUtils::GetFrameTime() - m_lastMoveTime > MOVE_TIME_OUT)

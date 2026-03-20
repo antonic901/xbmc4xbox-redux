@@ -320,16 +320,6 @@ CRect CGUIButtonControl::CalcRenderRegion() const
   return buttonRect;
 }
 
-EVENT_RESULT CGUIButtonControl::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
-{
-  if (event.m_id == ACTION_MOUSE_LEFT_CLICK)
-  {
-    OnAction(CAction(ACTION_SELECT_ITEM));
-    return EVENT_RESULT_HANDLED;
-  }
-  return EVENT_RESULT_UNHANDLED;
-}
-
 std::string CGUIButtonControl::GetDescription() const
 {
   std::string strLabel(m_info.GetLabel(m_parentID));

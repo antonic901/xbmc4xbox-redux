@@ -25,7 +25,6 @@
  *
  */
 
-#define DEBUG_MOUSE
 #define DEBUG_KEYBOARD
 
 #include "system.h"

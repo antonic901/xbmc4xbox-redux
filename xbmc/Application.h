@@ -394,7 +394,6 @@ protected:
   void InitBasicD3D();
 
   PlayBackRet PlayStack(const CFileItem& item, bool bRestart);
-  bool ProcessMouse();
   bool ProcessHTTPApiButtons();
   bool ProcessKeyboard();
   bool ProcessRemote(float frameTime);

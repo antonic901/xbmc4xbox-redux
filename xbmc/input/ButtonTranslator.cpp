@@ -203,16 +203,6 @@ static const ActionMapping actions[] =
         {"settingsreset"      , ACTION_SETTINGS_RESET},
         {"settingslevelchange", ACTION_SETTINGS_LEVEL_CHANGE},
         
-        // Mouse actions
-        {"leftclick"         , ACTION_MOUSE_LEFT_CLICK},
-        {"rightclick"        , ACTION_MOUSE_RIGHT_CLICK},
-        {"middleclick"       , ACTION_MOUSE_MIDDLE_CLICK},
-        {"doubleclick"       , ACTION_MOUSE_DOUBLE_CLICK},
-        {"wheelup"           , ACTION_MOUSE_WHEEL_UP},
-        {"wheeldown"         , ACTION_MOUSE_WHEEL_DOWN},
-        {"mousedrag"         , ACTION_MOUSE_DRAG},
-        {"mousemove"         , ACTION_MOUSE_MOVE},
-        
         // Do nothing / error action
         { "error"            , ACTION_ERROR},
         { "noop"             , ACTION_NOOP}
@@ -308,18 +298,6 @@ static const ActionMapping windows[] =
         {"extendedprogressdialog"   , WINDOW_DIALOG_EXT_PROGRESS},
         {"mediafilter"              , WINDOW_DIALOG_MEDIA_FILTER},
         {"addon"                    , WINDOW_ADDON_START}};
-
-static const ActionMapping mousecommands[] =
-{
-  { "leftclick",   ACTION_MOUSE_LEFT_CLICK },
-  { "rightclick",  ACTION_MOUSE_RIGHT_CLICK },
-  { "middleclick", ACTION_MOUSE_MIDDLE_CLICK },
-  { "doubleclick", ACTION_MOUSE_DOUBLE_CLICK },
-  { "wheelup",     ACTION_MOUSE_WHEEL_UP },
-  { "wheeldown",   ACTION_MOUSE_WHEEL_DOWN },
-  { "mousedrag",   ACTION_MOUSE_DRAG },
-  { "mousemove",   ACTION_MOUSE_MOVE }
-};
 
 static const WindowMapping fallbackWindows[] =
 {
@@ -740,17 +718,6 @@ void CButtonTranslator::MapWindowActions(TiXmlNode *pWindow, int windowID)
       pButton = pButton->NextSiblingElement();
     }
   }
-  if ((pDevice = pWindow->FirstChild("mouse")) != NULL)
-  { // map mouse actions
-    TiXmlElement *pButton = pDevice->FirstChildElement();
-    while (pButton)
-    {
-      int buttonCode = TranslateMouseCommand(pButton->Value());
-      if (pButton->FirstChild())
-        MapAction(buttonCode, pButton->FirstChild()->Value(), map);
-      pButton = pButton->NextSiblingElement();
-    }
-  }
 #if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
   if ((pDevice = pWindow->FirstChild("joystick")) != NULL)
   {
@@ -1049,20 +1016,6 @@ int CButtonTranslator::TranslateKeyboardButton(TiXmlElement *pButton)
   {
     return TranslateKeyboardString(szButton);
   }
-  return 0;
-}
-
-int CButtonTranslator::TranslateMouseCommand(const char *szButton)
-{
-  CStdString strMouseCommand = szButton;
-  strMouseCommand.ToLower();
-
-  for (unsigned int i = 0; i < sizeof(mousecommands)/sizeof(mousecommands[0]); i++)
-    if (strMouseCommand.Equals(mousecommands[i].name))
-      return mousecommands[i].action | KEY_MOUSE;
-
-  CLog::Log(LOGERROR, "%s: Can't find mouse command %s", __FUNCTION__, szButton);
-
   return 0;
 }
 

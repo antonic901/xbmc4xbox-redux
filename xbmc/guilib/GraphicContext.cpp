@@ -513,8 +513,8 @@ void CGraphicContext::SetVideoResolutionInternal(RESOLUTION res, BOOL NeedZ, boo
     m_bWidescreen = (m_pd3dParams->Flags & D3DPRESENTFLAG_WIDESCREEN) != 0;
   }
   if ((CDisplaySettings::Get().GetResolutionInfo(m_Resolution).iWidth != CDisplaySettings::Get().GetResolutionInfo(res).iWidth) || (CDisplaySettings::Get().GetResolutionInfo(m_Resolution).iHeight != CDisplaySettings::Get().GetResolutionInfo(res).iHeight))
-  { // set the mouse resolution
-    g_Mouse.SetResolution(CDisplaySettings::Get().GetResolutionInfo(res).iWidth, CDisplaySettings::Get().GetResolutionInfo(res).iHeight, 1, 1);
+  {
+    // Nothing to do here
   }
 
   SetFullScreenViewWindow(res);

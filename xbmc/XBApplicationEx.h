@@ -14,7 +14,6 @@
 #include "XBInputEx.h"
 #endif
 #include "IWindowManagerCallback.h"
-#include "common/Mouse.h"
 #include "common/Keyboard.h"
 #include "gui3d.h"
 //-----------------------------------------------------------------------------

@@ -2089,9 +2089,6 @@
 					RelativePath="..\..\xbmc\pictures\GUIWindowPictures.cpp">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\windows\GUIWindowPointer.cpp">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\windows\GUIWindowScreensaver.cpp">
 				</File>
 				<File
@@ -3020,9 +3017,6 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\pictures\GUIWindowPictures.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\windows\GUIWindowPointer.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\windows\GUIWindowScreensaver.h">

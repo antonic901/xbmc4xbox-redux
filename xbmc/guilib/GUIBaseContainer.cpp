@@ -683,38 +683,6 @@ CGUIListItemLayout *CGUIBaseContainer::GetFocusedLayout() const
   return NULL;
 }
 
-bool CGUIBaseContainer::OnMouseOver(const CPoint &point)
-{
-  // select the item under the pointer
-  SelectItemFromPoint(point - CPoint(m_posX, m_posY));
-  return CGUIControl::OnMouseOver(point);
-}
-
-EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
-{
-  if (event.m_id == ACTION_MOUSE_LEFT_CLICK ||
-      event.m_id == ACTION_MOUSE_DOUBLE_CLICK ||
-      event.m_id == ACTION_MOUSE_RIGHT_CLICK)
-  {
-    if (SelectItemFromPoint(point - CPoint(m_posX, m_posY)))
-    {
-      OnClick(event.m_id);
-      return EVENT_RESULT_HANDLED;
-    }
-  }
-  else if (event.m_id == ACTION_MOUSE_WHEEL_UP)
-  {
-    Scroll(-1);
-    return EVENT_RESULT_HANDLED;
-  }
-  else if (event.m_id == ACTION_MOUSE_WHEEL_DOWN)
-  {
-    Scroll(1);
-    return EVENT_RESULT_HANDLED;
-  }
-  return EVENT_RESULT_UNHANDLED;
-}
-
 bool CGUIBaseContainer::OnClick(int actionID)
 {
   int subItem = 0;

@@ -90,12 +90,6 @@ namespace EVENTPACKET
     PTB_AXISSINGLE = 0x100
   };
 
-  enum MouseFlags
-  {
-    PTM_ABSOLUTE = 0x01
-    /* PTM_RELATIVE = 0x02 */
-  };
-
   enum ActionType
   {
     AT_EXEC_BUILTIN = 0x01,
@@ -145,15 +139,6 @@ namespace EVENTPACKET
     /*                           the keymap. JS only supports button code   */
     /*                           and not button name currently (!0x01).     */
     /* %s - button name (required if flags & 0x01)                          */
-    /************************************************************************/
-
-    PT_MOUSE         = 0x04,
-    /************************************************************************/
-    /* Payload format                                                       */
-    /* %c - flags                                                           */
-    /*    - 0x01 absolute position                                          */
-    /* %i - mousex (0-65535 => maps to screen width)                        */
-    /* %i - mousey (0-65535 => maps to screen height)                       */
     /************************************************************************/
 
     PT_PING          = 0x05,

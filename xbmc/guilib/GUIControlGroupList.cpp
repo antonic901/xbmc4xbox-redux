@@ -360,42 +360,6 @@ void CGUIControlGroupList::ScrollTo(float offset)
     SetInvalid();
 }
 
-EVENT_RESULT CGUIControlGroupList::SendMouseEvent(const CPoint &point, const CMouseEvent &event)
-{
-  // transform our position into child coordinates
-  CPoint childPoint(point);
-  m_transform.InverseTransformPosition(childPoint.x, childPoint.y);
-  if (CGUIControl::CanFocus())
-  {
-    float pos = 0;
-    float alignOffset = GetAlignOffset();
-    for (ciControls i = m_children.begin(); i != m_children.end(); ++i)
-    {
-      CGUIControl *child = *i;
-      if (child->IsVisible())
-      {
-        if (IsControlOnScreen(pos, child))
-        { // we're on screen
-          float offsetX = m_orientation == VERTICAL ? m_posX : m_posX + alignOffset + pos - m_scroller.GetValue();
-          float offsetY = m_orientation == VERTICAL ? m_posY + alignOffset + pos - m_scroller.GetValue() : m_posY;
-          EVENT_RESULT ret = child->SendMouseEvent(childPoint - CPoint(offsetX, offsetY), event);
-          if (ret)
-          { // we've handled the action, and/or have focused an item
-            return ret;
-          }
-        }
-        pos += Size(child) + m_itemGap;
-      }
-    }
-    // none of our children want the event, but we may want it.
-    EVENT_RESULT ret;
-    if (HitTest(childPoint) && (ret = OnMouseEvent(childPoint, event)))
-      return ret;
-  }
-  m_focusedControl = 0;
-  return EVENT_RESULT_UNHANDLED;
-}
-
 void CGUIControlGroupList::UnfocusFromPoint(const CPoint &point)
 {
   float pos = 0;
@@ -537,34 +501,6 @@ float CGUIControlGroupList::GetAlignOffset() const
       return (Size() - m_totalSize)*0.5f;
   }
   return 0.0f;
-}
-
-EVENT_RESULT CGUIControlGroupList::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
-{
-  if (event.m_id == ACTION_MOUSE_WHEEL_UP || event.m_id == ACTION_MOUSE_WHEEL_DOWN)
-  {
-    // find the current control and move to the next or previous
-    float offset = 0;
-    for (ciControls it = m_children.begin(); it != m_children.end(); ++it)
-    {
-      CGUIControl *control = *it;
-      if (!control->IsVisible()) continue;
-      float nextOffset = offset + Size(control) + m_itemGap;
-      if (event.m_id == ACTION_MOUSE_WHEEL_DOWN && nextOffset > m_scroller.GetValue() && m_scroller.GetValue() < m_totalSize - Size()) // past our current offset
-      {
-        ScrollTo(nextOffset);
-        return EVENT_RESULT_HANDLED;
-      }
-      else if (event.m_id == ACTION_MOUSE_WHEEL_UP && nextOffset >= m_scroller.GetValue() && m_scroller.GetValue() > 0) // at least at our current offset
-      {
-        ScrollTo(offset);
-        return EVENT_RESULT_HANDLED;
-      }
-      offset = nextOffset;
-    }
-  }
-
-  return EVENT_RESULT_UNHANDLED;
 }
 
 float CGUIControlGroupList::GetTotalSize() const

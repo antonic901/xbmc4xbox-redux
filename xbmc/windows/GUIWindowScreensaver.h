@@ -41,9 +41,6 @@ public:
   virtual bool OnAction(const CAction &action);
   virtual void Render();
 
-protected:
-  virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
-
 private:
   bool m_bInitialized;
   CCriticalSection m_critSection;

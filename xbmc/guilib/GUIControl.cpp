@@ -562,34 +562,6 @@ bool CGUIControl::HitTest(const CPoint &point) const
   return m_hitRect.PtInRect(point);
 }
 
-EVENT_RESULT CGUIControl::SendMouseEvent(const CPoint &point, const CMouseEvent &event)
-{
-  CPoint childPoint(point);
-  m_transform.InverseTransformPosition(childPoint.x, childPoint.y);
-  if (!CanFocusFromPoint(childPoint))
-    return EVENT_RESULT_UNHANDLED;
-
-  bool handled = OnMouseOver(childPoint);
-  EVENT_RESULT ret = OnMouseEvent(childPoint, event);
-  if (ret)
-    return ret;
-  return (handled && (event.m_id == ACTION_MOUSE_MOVE)) ? EVENT_RESULT_HANDLED : EVENT_RESULT_UNHANDLED;
-}
-
-// override this function to implement custom mouse behaviour
-bool CGUIControl::OnMouseOver(const CPoint &point)
-{
-  if (g_Mouse.GetState() != MOUSE_STATE_DRAG)
-    g_Mouse.SetState(MOUSE_STATE_FOCUS);
-  if (!CanFocus()) return false;
-  if (!HasFocus())
-  {
-    CGUIMessage msg(GUI_MSG_SETFOCUS, GetParentID(), GetID());
-    OnMessage(msg);
-  }
-  return true;
-}
-
 void CGUIControl::UpdateVisibility(const CGUIListItem *item)
 {
   if (m_visibleCondition)

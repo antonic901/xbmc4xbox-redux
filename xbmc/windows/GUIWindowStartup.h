@@ -28,7 +28,6 @@ class CGUIWindowStartup :
 public:
   CGUIWindowStartup(void);
   virtual ~CGUIWindowStartup(void);
-  virtual bool OnAction(const CAction &action);
 
   // specialization of CGUIWindow
   virtual void OnDeinitWindow(int nextWindowID);

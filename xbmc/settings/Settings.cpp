@@ -36,7 +36,6 @@
 #include "guilib/GraphicContext.h"
 #include "guilib/GUIAudioManager.h"
 #include "guilib/GUIFontManager.h"
-#include "guilib/common/Mouse.h"
 #include "input/KeyboardLayoutManager.h"
 #if defined(TARGET_POSIX)
 #include "linux/LinuxTimezone.h"
@@ -275,7 +274,6 @@ void CSettings::Uninitialize()
 #if defined(TARGET_WINDOWS) || defined(HAS_SDL_JOYSTICK)
   m_settingsManager->UnregisterCallback(&g_Joystick);
 #endif
-  m_settingsManager->UnregisterCallback(&g_Mouse);
   m_settingsManager->UnregisterCallback(&CNetworkServices::Get());
   m_settingsManager->UnregisterCallback(&g_passwordManager);
   m_settingsManager->UnregisterCallback(&CRssManager::Get());
@@ -810,10 +808,6 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("input.enablejoystick");
   m_settingsManager->RegisterCallback(&g_Joystick, settingSet);
 #endif
-
-  settingSet.clear();
-  settingSet.insert("input.enablemouse");
-  m_settingsManager->RegisterCallback(&g_Mouse, settingSet);
 
   settingSet.clear();
   settingSet.insert("services.webserver");

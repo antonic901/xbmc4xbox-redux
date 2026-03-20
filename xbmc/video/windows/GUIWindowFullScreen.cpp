@@ -577,38 +577,6 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
   return CGUIWindow::OnMessage(message);
 }
 
-EVENT_RESULT CGUIWindowFullScreen::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
-{
-  if (event.m_id == ACTION_MOUSE_RIGHT_CLICK)
-  { // no control found to absorb this click - go back to GUI
-    OnAction(CAction(ACTION_SHOW_GUI));
-    return EVENT_RESULT_HANDLED;
-  }
-  if (event.m_id == ACTION_MOUSE_LEFT_CLICK)
-  { // no control found to absorb this click - pause video
-    return g_application.OnAction(CAction(ACTION_PAUSE)) ? EVENT_RESULT_HANDLED : EVENT_RESULT_UNHANDLED;
-  }
-  if (event.m_id == ACTION_MOUSE_WHEEL_UP)
-  {
-    return g_application.OnAction(CAction(ACTION_ANALOG_SEEK_FORWARD, 0.5f)) ? EVENT_RESULT_HANDLED : EVENT_RESULT_UNHANDLED;
-  }
-  if (event.m_id == ACTION_MOUSE_WHEEL_DOWN)
-  {
-    return g_application.OnAction(CAction(ACTION_ANALOG_SEEK_BACK, 0.5f)) ? EVENT_RESULT_HANDLED : EVENT_RESULT_UNHANDLED;
-  }
-  if (event.m_id || event.m_offsetX || event.m_offsetY)
-  { // some other mouse action has occurred - bring up the OSD
-    CGUIDialogVideoOSD *pOSD = (CGUIDialogVideoOSD *)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_OSD);
-    if (pOSD)
-    {
-      pOSD->SetAutoClose(3000);
-      pOSD->Open();
-    }
-    return EVENT_RESULT_HANDLED;
-  }
-  return EVENT_RESULT_UNHANDLED;
-}
-
 void CGUIWindowFullScreen::Process(unsigned int currentTime, CDirtyRegionList &dirtyregion)
 {
   // TODO: This isn't quite optimal - ideally we'd only be dirtying up the actual video render rect

@@ -240,10 +240,6 @@ bool CEventClient::ProcessPacket(CEventPacket *packet)
     valid = OnPacketBUTTON(packet);
     break;
 
-  case PT_MOUSE:
-    valid = OnPacketMOUSE(packet);
-    break;
-
   case PT_NOTIFICATION:
     valid = OnPacketNOTIFICATION(packet);
     break;
@@ -514,38 +510,6 @@ bool CEventClient::OnPacketBUTTON(CEventPacket *packet)
   return true;
 }
 
-bool CEventClient::OnPacketMOUSE(CEventPacket *packet)
-{
-  unsigned char *payload = (unsigned char *)packet->Payload();
-  int psize = (int)packet->PayloadSize();
-  unsigned char flags;
-  unsigned short mx, my;
-
-  // parse flags
-  if (!ParseByte(payload, psize, flags))
-    return false;
-
-  // parse x position
-  if (!ParseUInt16(payload, psize, mx))
-    return false;
-
-  // parse x position
-  if (!ParseUInt16(payload, psize, my))
-    return false;
-
-  {
-    CSingleLock lock(m_critSection);
-    if ( flags & PTM_ABSOLUTE )
-    {
-      m_iMouseX = mx;
-      m_iMouseY = my;
-      m_bMouseMoved = true;
-    }
-  }
-
-  return true;
-}
-
 bool CEventClient::OnPacketNOTIFICATION(CEventPacket *packet)
 {
   unsigned char *payload = (unsigned char *)packet->Payload();
@@ -778,23 +742,6 @@ unsigned short CEventClient::GetButtonCode(string& joystickName, bool& isAxis, f
   m_buttonQueue.erase(m_buttonQueue.begin(), it);
   m_buttonQueue.insert(m_buttonQueue.end(), repeat.begin(), repeat.end());
   return bcode;
-}
-
-bool CEventClient::GetMousePos(float& x, float& y)
-{
-  CSingleLock lock(m_critSection);
-  if (m_bMouseMoved)
-  {
-    x = (float)((m_iMouseX / 65535.0f) *
-                (g_graphicsContext.GetViewWindow().x2
-                 -g_graphicsContext.GetViewWindow().x1));
-    y = (float)((m_iMouseY / 65535.0f) *
-                (g_graphicsContext.GetViewWindow().y2
-                 -g_graphicsContext.GetViewWindow().y1));
-    m_bMouseMoved = false;
-    return true;
-  }
-  return false;
 }
 
 bool CEventClient::CheckButtonRepeat(unsigned int &next)

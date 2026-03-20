@@ -101,12 +101,6 @@ void CGUISettingsSliderControl::OnUnFocus()
   m_active = false;
 }
 
-EVENT_RESULT CGUISettingsSliderControl::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
-{
-  SetActive();
-  return CGUISliderControl::OnMouseEvent(point, event);
-}
-
 void CGUISettingsSliderControl::SetActive()
 {
   m_active = true;

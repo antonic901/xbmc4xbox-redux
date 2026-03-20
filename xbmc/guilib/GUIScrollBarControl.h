@@ -63,7 +63,6 @@ public:
   virtual std::string GetDescription() const;
   virtual bool IsVisible() const;
 protected:
-  virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   virtual bool UpdateColors();
   bool UpdateBarSize();
   bool Move(int iNumSteps);

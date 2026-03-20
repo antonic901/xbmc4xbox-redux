@@ -683,22 +683,10 @@
 				RelativePath=".\common\Keyboard.h">
 			</File>
 			<File
-				RelativePath=".\common\Mouse.cpp">
-			</File>
-			<File
-				RelativePath=".\common\Mouse.h">
-			</File>
-			<File
 				RelativePath=".\common\XBoxKeyboard.cpp">
 			</File>
 			<File
 				RelativePath=".\common\XBoxKeyboard.h">
-			</File>
-			<File
-				RelativePath=".\common\XBoxMouse.cpp">
-			</File>
-			<File
-				RelativePath=".\common\XBoxMouse.h">
 			</File>
 		</Filter>
 		<Filter

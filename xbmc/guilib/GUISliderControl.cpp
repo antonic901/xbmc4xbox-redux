@@ -593,52 +593,6 @@ void CGUISliderControl::SetFromPosition(const CPoint &point, bool guessSelector 
   SendClick();
 }
 
-EVENT_RESULT CGUISliderControl::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
-{
-  m_dragging = false;
-  if (event.m_id == ACTION_MOUSE_DRAG)
-  {
-    m_dragging = true;
-    bool guessSelector = false;
-    if (event.m_state == 1)
-    { // grab exclusive access
-      CGUIMessage msg(GUI_MSG_EXCLUSIVE_MOUSE, GetID(), GetParentID());
-      SendWindowMessage(msg);
-      guessSelector = true;
-    }
-    else if (event.m_state == 3)
-    { // release exclusive access
-      m_dragging = false;
-      CGUIMessage msg(GUI_MSG_EXCLUSIVE_MOUSE, 0, GetParentID());
-      SendWindowMessage(msg);
-    }
-    SetFromPosition(point, guessSelector);
-    return EVENT_RESULT_HANDLED;
-  }
-  else if (event.m_id == ACTION_MOUSE_LEFT_CLICK && m_guiBackground.HitTest(point))
-  {
-    SetFromPosition(point, true);
-    return EVENT_RESULT_HANDLED;
-  }
-  else if (event.m_id == ACTION_MOUSE_WHEEL_UP)
-  {
-    if (m_guiBackground.HitTest(point))
-    {
-      Move(10);
-      return EVENT_RESULT_HANDLED;
-    }
-  }
-  else if (event.m_id == ACTION_MOUSE_WHEEL_DOWN)
-  {
-    if (m_guiBackground.HitTest(point))
-    {
-      Move(-10);
-      return EVENT_RESULT_HANDLED;
-    }
-  }
-  return EVENT_RESULT_UNHANDLED;
-}
-
 void CGUISliderControl::SetInfo(int iInfo)
 {
   m_iInfoCode = iInfo;

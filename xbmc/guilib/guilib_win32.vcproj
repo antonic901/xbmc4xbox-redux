@@ -598,34 +598,10 @@
 			Name="common"
 			Filter="">
 			<File
-				RelativePath=".\common\DirectInput.cpp">
-			</File>
-			<File
-				RelativePath=".\common\DirectInput.h">
-			</File>
-			<File
-				RelativePath=".\common\DirectInputKeyboard.cpp">
-			</File>
-			<File
-				RelativePath=".\common\DirectInputKeyboard.h">
-			</File>
-			<File
-				RelativePath=".\common\DirectInputMouse.cpp">
-			</File>
-			<File
-				RelativePath=".\common\DirectInputMouse.h">
-			</File>
-			<File
 				RelativePath=".\common\Keyboard.cpp">
 			</File>
 			<File
 				RelativePath=".\common\Keyboard.h">
-			</File>
-			<File
-				RelativePath=".\common\Mouse.cpp">
-			</File>
-			<File
-				RelativePath=".\common\Mouse.h">
 			</File>
 		</Filter>
 		<File

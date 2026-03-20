@@ -47,7 +47,6 @@ public:
   virtual void Render();
   virtual bool OnAction(const CAction &action);
   void OnUnFocus();
-  EVENT_RESULT OnMouseEvent(const CPoint& point, const CMouseEvent& event);
   void SetActive();
   bool IsActive() const { return m_active; };
   virtual void PreAllocResources();

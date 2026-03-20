@@ -727,18 +727,6 @@
         </setting>
       </group>
     </category>
-    <category id="input">
-      <group id="2">
-        <setting id="input.enablemouse">
-          <default>false</default>
-        </setting>
-        <setting id="system.mceremote" type="boolean" label="38747" help="">
-          <level>1</level>
-          <default>false</default>
-          <control type="toggle" />
-        </setting>
-      </group>
-    </category>
     <category id="powermanagement">
       <group id="2">
         <setting id="harddisk.spindowntime" type="integer" label="229" help="">

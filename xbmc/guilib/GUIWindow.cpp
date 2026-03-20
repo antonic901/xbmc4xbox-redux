@@ -436,7 +436,7 @@ void CGUIWindow::Close(bool forceClose /*= false*/, int nextWindowID /*= 0*/, bo
 bool CGUIWindow::OnAction(const CAction &action)
 {
   if (action.IsMouse() || action.IsGesture())
-    return EVENT_RESULT_UNHANDLED != OnMouseAction(action);
+    return EVENT_RESULT_UNHANDLED;
 
   CGUIControl *focusedControl = GetFocusedControl();
   if (focusedControl)
@@ -503,39 +503,6 @@ CPoint CGUIWindow::GetPosition() const
     }
   }
   return CGUIControlGroup::GetPosition();
-}
-
-// OnMouseAction - called by OnAction()
-EVENT_RESULT CGUIWindow::OnMouseAction(const CAction &action)
-{
-  g_graphicsContext.SetScalingResolution(m_coordsRes, m_needsScaling);
-  CPoint mousePoint(action.GetAmount(0), action.GetAmount(1));
-  g_graphicsContext.InvertFinalCoords(mousePoint.x, mousePoint.y);
-
-  // create the mouse event
-  CMouseEvent event(action.GetID(), action.GetHoldTime(), action.GetAmount(2), action.GetAmount(3));
-  if (m_exclusiveMouseControl)
-  {
-    CGUIControl *child = GetControl(m_exclusiveMouseControl);
-    if (child)
-    {
-      CPoint renderPos = child->GetRenderPosition() - CPoint(child->GetXPosition(), child->GetYPosition());
-      return child->OnMouseEvent(mousePoint - renderPos, event);
-    }
-  }
-
-  UnfocusFromPoint(mousePoint);
-
-  return SendMouseEvent(mousePoint, event);
-}
-
-EVENT_RESULT CGUIWindow::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
-{
-  if (event.m_id == ACTION_MOUSE_RIGHT_CLICK)
-  { // no control found to absorb this click - go to previous menu
-    return OnAction(CAction(ACTION_PREVIOUS_MENU)) ? EVENT_RESULT_HANDLED : EVENT_RESULT_UNHANDLED;
-  }
-  return EVENT_RESULT_UNHANDLED;
 }
 
 /// \brief Called on window open.

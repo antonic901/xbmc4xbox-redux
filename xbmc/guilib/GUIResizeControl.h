@@ -68,7 +68,6 @@ public:
   virtual bool CanFocus() const { return true; };
 
 protected:
-  virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   virtual bool UpdateColors();
   bool SetAlpha(unsigned char alpha);
   void UpdateSpeed(int nDirection);

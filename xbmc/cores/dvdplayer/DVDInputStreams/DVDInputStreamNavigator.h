@@ -86,8 +86,6 @@ public:
   void OnBack();
   void OnNext();
   void OnPrevious();
-  bool OnMouseMove(const CPoint &point);
-  bool OnMouseClick(const CPoint &point);
 
   int GetCurrentButton();
   int GetTotalButtons();

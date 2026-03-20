@@ -102,14 +102,6 @@ bool CGUIWindowSettingsScreenCalibration::OnAction(const CAction &action)
     break;
   }
 
-  // if we see a mouse move event without dx and dy (amount2 and amount3) these
-  // are the focus actions which are generated on touch events and those should
-  // be eaten/ignored here. Else we will switch to the screencalibration controls
-  // which are at that x/y value on each touch/tap/swipe which makes the whole window
-  // unusable for touch screens
-  if (action.GetID() == ACTION_MOUSE_MOVE && action.GetAmount(2) == 0 && action.GetAmount(3) == 0)
-    return true;
-
   return CGUIWindow::OnAction(action); // base class to handle basic movement etc.
 }
 

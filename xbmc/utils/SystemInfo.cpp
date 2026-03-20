@@ -1319,7 +1319,6 @@ CStdString CSysInfo::GetUnits(int iFrontPort)
   // Get the Connected Units on the Front USB Ports!
   DWORD dwDeviceGamePad = XGetDevices(XDEVICE_TYPE_GAMEPAD);
   DWORD dwDeviceKeyboard = XGetDevices(XDEVICE_TYPE_DEBUG_KEYBOARD);
-  DWORD dwDeviceMouse = XGetDevices(XDEVICE_TYPE_DEBUG_MOUSE);
   DWORD dwDeviceHeadPhone = XGetDevices(XDEVICE_TYPE_VOICE_HEADPHONE);
   DWORD dwDeviceMicroPhone = XGetDevices(XDEVICE_TYPE_VOICE_MICROPHONE);
   DWORD dwDeviceMemory = XGetDevices(XDEVICE_TYPE_MEMORY_UNIT);
@@ -1341,7 +1340,7 @@ CStdString CSysInfo::GetUnits(int iFrontPort)
   // Values 14 -> on Port 2&3&4
   // Values 15 -> on Port 1&2&3&4
 
-  bool bPad=false, bMem=false, bKeyb=false, bMouse=false, bHeadSet=false, bMic=false, bIR=false;
+  bool bPad=false, bMem=false, bKeyb=false, bHeadSet=false, bMic=false, bIR=false;
   if (iFrontPort == 1)
   {
     bPad = dwDeviceGamePad > 0 && dwDeviceGamePad == 1 || dwDeviceGamePad == 3 || dwDeviceGamePad == 5 || dwDeviceGamePad == 7 || dwDeviceGamePad == 9 || dwDeviceGamePad == 11 || dwDeviceGamePad == 13 || dwDeviceGamePad == 15;
@@ -1365,7 +1364,6 @@ CStdString CSysInfo::GetUnits(int iFrontPort)
     iFrontPort = 8;
   }
   bKeyb = dwDeviceKeyboard > 0 && dwDeviceKeyboard == iFrontPort;
-  bMouse = dwDeviceMouse > 0 && dwDeviceMouse == iFrontPort;
   bHeadSet = dwDeviceHeadPhone > 0 && dwDeviceHeadPhone == iFrontPort;
   bMic = dwDeviceMicroPhone > 0 && dwDeviceMicroPhone == iFrontPort;
   bIR = dwDeviceIRRemote > 0 && dwDeviceIRRemote == iFrontPort;
@@ -1373,10 +1371,8 @@ CStdString CSysInfo::GetUnits(int iFrontPort)
   CStdString strReturn;
   if (iFrontPort==4) iFrontPort = 3;
   if (iFrontPort==8) iFrontPort = 4;
-  strReturn.Format("%s%s%s%s%s%s%s%s%s%s%s%s%s", 
+  strReturn.Format("%s%s%s%s%s%s%s%s%s%s%s", 
     bPad ? g_localizeStrings.Get(38730):"", bPad && bKeyb ? ", ":"", bPad && bMem ? ", ":"", bPad && (bHeadSet || bMic) ? ", ":"",
-    bKeyb ? g_localizeStrings.Get(38731):"", bKeyb && bMouse ? ", ":"",
-    bMouse ? g_localizeStrings.Get(38732):"",bMouse && (bHeadSet || bMic) ? ", ":"",
     bHeadSet || bMic ? g_localizeStrings.Get(38733):"", (bHeadSet || bMic) && bMem ? ", ":"",
     bMem ? g_localizeStrings.Get(38734):"", bMem && bIR ? ", ":"",
     bIR ? g_localizeStrings.Get(38735):""

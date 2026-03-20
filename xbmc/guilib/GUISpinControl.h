@@ -56,7 +56,6 @@ public:
   virtual void OnLeft();
   virtual void OnRight();
   virtual bool HitTest(const CPoint &point) const;
-  virtual bool OnMouseOver(const CPoint &point);
   virtual bool OnMessage(CGUIMessage& message);
   virtual void PreAllocResources();
   virtual void AllocResources();
@@ -94,7 +93,6 @@ public:
   virtual bool IsVisible() const;
 
 protected:
-  virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   virtual bool UpdateColors();
   /*! \brief Render the spinner text
    \param posX position of the left edge of the text

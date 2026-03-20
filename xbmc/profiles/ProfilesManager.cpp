@@ -257,8 +257,6 @@ bool CProfilesManager::LoadProfile(size_t index)
   CDatabaseManager::GetInstance().Initialize();
   CButtonTranslator::GetInstance().Load(true);
 
-  g_Mouse.SetEnabled(CSettings::GetInstance().GetBool("input.enablemouse"));
-
   g_infoManager.ResetCache();
   g_infoManager.ResetLibraryBools();
 

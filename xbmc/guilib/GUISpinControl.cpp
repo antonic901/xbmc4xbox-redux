@@ -954,49 +954,6 @@ bool CGUISpinControl::HitTest(const CPoint &point) const
   return CGUIControl::HitTest(point);
 }
 
-bool CGUISpinControl::OnMouseOver(const CPoint &point)
-{
-  int select = m_iSelect;
-  if (m_imgspinDownFocus.HitTest(point))
-    m_iSelect = SPIN_BUTTON_DOWN;
-  else
-    m_iSelect = SPIN_BUTTON_UP;
-
-  if (select != m_iSelect)
-    MarkDirtyRegion();
-
-  return CGUIControl::OnMouseOver(point);
-}
-
-EVENT_RESULT CGUISpinControl::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
-{
-  if (event.m_id == ACTION_MOUSE_LEFT_CLICK)
-  {
-    if (m_imgspinUpFocus.HitTest(point))
-      MoveUp();
-    else if (m_imgspinDownFocus.HitTest(point))
-      MoveDown();
-    return EVENT_RESULT_HANDLED;
-  }
-  else if (event.m_id == ACTION_MOUSE_WHEEL_UP)
-  {
-    if (m_imgspinUpFocus.HitTest(point) || m_imgspinDownFocus.HitTest(point))
-    {
-      MoveUp();
-      return EVENT_RESULT_HANDLED;
-    }
-  }
-  else if (event.m_id == ACTION_MOUSE_WHEEL_DOWN)
-  {
-    if (m_imgspinUpFocus.HitTest(point) || m_imgspinDownFocus.HitTest(point))
-    {
-      MoveDown();
-      return EVENT_RESULT_HANDLED;
-    }
-  }
-  return EVENT_RESULT_UNHANDLED;
-}
-
 std::string CGUISpinControl::GetDescription() const
 {
   return StringUtils::Format("%i/%i", 1 + GetValue(), GetMaximum());

@@ -215,8 +215,6 @@ public:
 
   virtual void OnDeinitWindow(int nextWindowID);
 protected:
-  virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
-
   /*!
    \brief Load the window XML from the given path
    \param strPath the path to the window XML
@@ -248,7 +246,6 @@ protected:
   virtual void OnWindowLoaded();
   virtual void OnInitWindow();
   void Close_Internal(bool forceClose = false, int nextWindowID = 0, bool enableSound = true);
-  EVENT_RESULT OnMouseAction(const CAction &action);
   virtual bool Animate(unsigned int currentTime);
   virtual bool CheckAnimation(ANIMATION_TYPE animType);
 

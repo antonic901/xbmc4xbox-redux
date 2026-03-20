@@ -101,8 +101,6 @@ private:
   static int TranslateKeyboardString(const char *szButton);
   static int TranslateKeyboardButton(TiXmlElement *pButton);
 
-  static int TranslateMouseCommand(const char *szButton);
-
   void MapWindowActions(TiXmlNode *pWindow, int wWindowID);
   void MapAction(int buttonCode, const char *szAction, buttonMap &map);
 

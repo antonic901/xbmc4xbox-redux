@@ -687,11 +687,6 @@ int CGUIWindowSlideShow::GetNextSlide()
   return m_iCurrentSlide;
 }
 
-EVENT_RESULT CGUIWindowSlideShow::OnMouseEvent(const CPoint &point, const CMouseEvent &event)
-{
-  return EVENT_RESULT_UNHANDLED;
-}
-
 bool CGUIWindowSlideShow::OnAction(const CAction &action)
 {
   if (m_bScreensaver)

@@ -58,16 +58,7 @@ public:
  \brief Results of OnMouseEvent()
  Any value not equal to EVENT_RESULT_UNHANDLED indicates that the event was handled.
  */
-enum EVENT_RESULT { EVENT_RESULT_UNHANDLED                      = 0x00,
-                    EVENT_RESULT_HANDLED                        = 0x01,
-                    EVENT_RESULT_PAN_HORIZONTAL                 = 0x02,
-                    EVENT_RESULT_PAN_VERTICAL                   = 0x04,
-                    EVENT_RESULT_PAN_VERTICAL_WITHOUT_INERTIA   = 0x08,
-                    EVENT_RESULT_PAN_HORIZONTAL_WITHOUT_INERTIA = 0x10,
-                    EVENT_RESULT_ROTATE                         = 0x20,
-                    EVENT_RESULT_ZOOM                           = 0x40,
-                    EVENT_RESULT_SWIPE                          = 0x80
-};
+enum EVENT_RESULT { EVENT_RESULT_UNHANDLED                      = 0x00 };
 
 /*!
  \ingroup controls
@@ -112,30 +103,6 @@ public:
   virtual void OnPrevControl();
   virtual void OnFocus() {};
   virtual void OnUnFocus() {};
-
-  /*! \brief React to a mouse event
-
-   Mouse events are sent from the window to all controls, and each control can react based on the event
-   and location of the event.
-
-   \param point the location in transformed skin coordinates from the upper left corner of the parent control.
-   \param event the mouse event to perform
-   \return EVENT_RESULT corresponding to whether the control handles this event
-   \sa HitTest, CanFocusFromPoint, CMouseEvent, EVENT_RESULT
-   */
-  virtual EVENT_RESULT SendMouseEvent(const CPoint &point, const CMouseEvent &event);
-
-  /*! \brief Perform a mouse action
-
-   Mouse actions are sent from the window to all controls, and each control can react based on the event
-   and location of the actions.
-
-   \param point the location in transformed skin coordinates from the upper left corner of the parent control.
-   \param event the mouse event to perform
-   \return EVENT_RESULT corresponding to whether the control handles this event
-   \sa SendMouseEvent, HitTest, CanFocusFromPoint, CMouseEvent
-   */
-  virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event) { return EVENT_RESULT_UNHANDLED; };
 
   /*! \brief Unfocus the control if the given point on screen is not within it's boundary
    \param point the location in transformed skin coordinates from the upper left corner of the parent control.
@@ -300,13 +267,6 @@ protected:
    \return The top left coordinates of the control
    */
   virtual CPoint GetPosition() const { return CPoint(GetXPosition(), GetYPosition()); };
-
-  /*! \brief Called when the mouse is over the control.
-   Default implementation selects the control.
-   \param point location of the mouse in transformed skin coordinates
-   \return true if handled, false otherwise.
-   */
-  virtual bool OnMouseOver(const CPoint &point);
 
   /*! \brief Test whether we can focus a control from a point on screen
    \param point the location in vanilla skin coordinates from the upper left corner of the parent control.

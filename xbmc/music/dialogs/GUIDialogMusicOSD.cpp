@@ -87,8 +87,7 @@ void CGUIDialogMusicOSD::FrameMove()
   if (m_autoClosing)
   {
     // check for movement of mouse or a submenu open
-    if (g_Mouse.IsActive() ||
-        g_windowManager.IsWindowActive(WINDOW_DIALOG_VIS_SETTINGS) ||
+    if (g_windowManager.IsWindowActive(WINDOW_DIALOG_VIS_SETTINGS) ||
         g_windowManager.IsWindowActive(WINDOW_DIALOG_VIS_PRESET_LIST))
       // extend show time by original value
       SetAutoClose(m_showDuration);

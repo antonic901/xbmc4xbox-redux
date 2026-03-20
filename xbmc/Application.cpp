@@ -864,8 +864,7 @@ HRESULT CApplication::Create(HWND hWnd)
   }
 #endif
 
-  // Create the Mouse and Keyboard devices
-  g_Mouse.Initialize(&hWnd);
+  // Create the Keyboard devices
   g_Keyboard.Initialize(hWnd);
 
 #ifdef HAS_XBOX_HARDWARE
@@ -1207,8 +1206,6 @@ HRESULT CApplication::Create(HWND hWnd)
 #ifdef HAS_XBOX_D3D
   D3DDevice::SetWaitCallback(WaitCallback);
 #endif
-
-  g_Mouse.SetEnabled(CSettings::GetInstance().GetBool("input.enablemouse"));
 
   CUtil::InitRandomSeed();
 
@@ -2082,10 +2079,6 @@ void CApplication::RenderMemoryStatus()
       if (!info.IsEmpty())
         info += "\n";
       CGUIWindow *window = g_windowManager.GetWindow(g_windowManager.GetFocusedWindow());
-      CGUIWindow *pointer = g_windowManager.GetWindow(105);
-      CPoint point;
-      if (pointer)
-        point = CPoint(pointer->GetXPosition(), pointer->GetYPosition());
       if (window)
       {
         CStdString windowName = CButtonTranslator::TranslateWindow(window->GetID());
@@ -2094,13 +2087,7 @@ void CApplication::RenderMemoryStatus()
         else
           windowName = window->GetProperty("xmlfile").asString();
         info += "Window: " + windowName + "  ";
-        // transform the mouse coordinates to this window's coordinates
-        g_graphicsContext.SetScalingResolution(window->GetCoordsRes(), true);
-        point.x *= g_graphicsContext.GetGUIScaleX();
-        point.y *= g_graphicsContext.GetGUIScaleY();
-        g_graphicsContext.SetRenderingResolution(g_graphicsContext.GetResInfo(), false);
       }
-      info.AppendFormat("Mouse: (%d,%d)  ", (int)point.x, (int)point.y);
       if (window)
       {
         CGUIControl *control = window->GetFocusedControl();
@@ -2123,9 +2110,6 @@ void CApplication::RenderMemoryStatus()
 
 bool CApplication::OnKey(CKey& key)
 {
-  // Turn the mouse off, as we've just got a keypress from controller or remote
-  g_Mouse.SetInactive();
-  
   // get the current active window
   int iWin = g_windowManager.GetActiveWindowID();
 
@@ -2228,9 +2212,6 @@ bool CApplication::OnAction(CAction &action)
       return true;
     }
   }
-
-  if (action.IsMouse())
-    g_Mouse.SetActive(true);
 
   // in normal case
   // just pass the action to the current window and let it handle it
@@ -2969,7 +2950,6 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
     // read raw input from controller, remote control, mouse and keyboard
     ReadInput();
     // process input actions
-    ProcessMouse();
     ProcessHTTPApiButtons();
     ProcessKeyboard();
     ProcessRemote(frameTime);
@@ -3256,48 +3236,6 @@ bool CApplication::ProcessRemote(float frameTime)
   return false;
 }
 
-bool CApplication::ProcessMouse()
-{
-  if (!g_Mouse.IsActive())
-    return false;
-
-  // Reset the screensaver and idle timers
-  m_idleTimer.StartZero();
-  ResetScreenSaver();
-  if (ResetScreenSaverWindow())
-    return true;
-
-  // Get the mouse command ID
-  uint32_t mousecommand = g_Mouse.GetAction();
-
-  // Retrieve the corresponding action
-  int iWin = g_windowManager.GetActiveWindowID();
-  CKey key(mousecommand | KEY_MOUSE, (unsigned int) 0);
-  CAction mouseaction = CButtonTranslator::GetInstance().GetAction(iWin, key);
-
-  // If we couldn't find an action return false to indicate we have not
-  // handled this mouse action
-  if (!mouseaction.GetID())
-  {
-    CLog::Log(LOGDEBUG, "%s: unknown mouse command %d", __FUNCTION__, mousecommand);
-    return false;
-  }
-
-  // Process the appcommand
-  CAction newmouseaction = CAction(mouseaction.GetID(), 
-                                  g_Mouse.GetHold(MOUSE_LEFT_BUTTON), 
-                                  (float)g_Mouse.GetX(), 
-                                  (float)g_Mouse.GetY(), 
-                                  (float)g_Mouse.GetDX(), 
-                                  (float)g_Mouse.GetDY());
-
-  // Log mouse actions except for move and noop
-  if (newmouseaction.GetID() != ACTION_MOUSE_MOVE && newmouseaction.GetID() != ACTION_NOOP)
-    CLog::Log(LOGDEBUG, "%s: trying mouse action %s", __FUNCTION__, mouseaction.GetName().c_str());
-
-  return OnAction(newmouseaction);
-}
-
 void  CApplication::CheckForTitleChange()
 { 
   if (CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
@@ -3442,12 +3380,6 @@ bool CApplication::ProcessEventServer(float frameTime)
         ProcessJoystickEvent((*iter).first, (*iterAxis).first, true, (*iterAxis).second);
     }
   }
-
-  {
-    CPoint pos;
-    if (es->GetMousePos(pos.x, pos.y) && g_Mouse.IsEnabled())
-      return OnAction(CAction(ACTION_MOUSE_MOVE, pos.x, pos.y));
-  }
 #endif
   return false;
 }
@@ -3465,7 +3397,6 @@ bool CApplication::ProcessJoystickEvent(const std::string& joystickName, int wKe
 #ifdef HAS_SDL_JOYSTICK
    g_Joystick.Reset();
 #endif
-   g_Mouse.SetInactive();
 
    int iWin = g_windowManager.GetActiveWindowID();
    int actionID;
@@ -4494,7 +4425,6 @@ bool CApplication::NeedRenderFullScreen()
   if (g_windowManager.GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO)
   {
     if (g_windowManager.HasDialogOnScreen()) return true;
-    if (g_Mouse.IsActive()) return true;
 
     CGUIWindowFullScreen *pFSWin = (CGUIWindowFullScreen *)g_windowManager.GetWindow(WINDOW_FULLSCREEN_VIDEO);
     if (!pFSWin)

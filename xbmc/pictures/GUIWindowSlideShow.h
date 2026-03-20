@@ -67,7 +67,6 @@ public:
   virtual ~CGUIWindowSlideShow() {};
 
   bool OnMessage(CGUIMessage& message);
-  EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   bool OnAction(const CAction &action);
   void Render();
   void Process(unsigned int currentTime, CDirtyRegionList &regions);
