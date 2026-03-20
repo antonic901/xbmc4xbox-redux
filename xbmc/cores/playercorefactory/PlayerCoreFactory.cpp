@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "system.h"
 #include "PlayerCoreFactory.h"
 #include "../dvdplayer/DVDPlayer.h"
@@ -38,6 +38,7 @@
 #include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
+#include "settings/lib/SettingsManager.h"
 #include "PlayerCoreConfig.h"
 #include "PlayerSelectionRule.h"
 #include "LocalizeStrings.h"
@@ -50,11 +51,20 @@
 
 using namespace AUTOPTR;
 
-CPlayerCoreFactory::CPlayerCoreFactory()
-{ }
+CPlayerCoreFactory::CPlayerCoreFactory(const CProfilesManager& profileManager)
+  : m_settings(CServiceBroker::GetSettingsComponent()->GetSettings()),
+    m_profileManager(profileManager)
+{
+  if (m_settings->IsLoaded())
+    OnSettingsLoaded();
+
+  m_settings->GetSettingsManager()->RegisterSettingsHandler(this);
+}
 
 CPlayerCoreFactory::~CPlayerCoreFactory()
 {
+  m_settings->GetSettingsManager()->UnregisterSettingsHandler(this);
+
   for(std::vector<CPlayerCoreConfig *>::iterator it = m_vecCoreConfigs.begin(); it != m_vecCoreConfigs.end(); it++)
     delete *it;
   for(std::vector<CPlayerSelectionRule *>::iterator it = m_vecCoreSelectionRules.begin(); it != m_vecCoreSelectionRules.end(); it++)
@@ -64,7 +74,7 @@ CPlayerCoreFactory::~CPlayerCoreFactory()
 void CPlayerCoreFactory::OnSettingsLoaded()
 {
   LoadConfiguration("special://xbmc/system/" PLAYERCOREFACTORY_XML, true);
-  LoadConfiguration(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem(PLAYERCOREFACTORY_XML), false);
+  LoadConfiguration(m_profileManager.GetUserDataItem(PLAYERCOREFACTORY_XML), false);
 }
 
 /* generic function to make a vector unique, removes later duplicates */
@@ -79,10 +89,10 @@ template<typename T> void unique (T &con)
     end = remove (++cur, end, i);
   }
   con.erase (end, con.end());
-} 
+}
 
 IPlayer* CPlayerCoreFactory::CreatePlayer(const CStdString& strCore, IPlayerCallback& callback) const
-{ 
+{
   return CreatePlayer(GetPlayerCore(strCore), callback );
 }
 
@@ -100,8 +110,8 @@ PLAYERCOREID CPlayerCoreFactory::GetPlayerCore(const CStdString& strCoreName) co
   {
     // Dereference "*default*player" aliases
     CStdString strRealCoreName;
-    if (strCoreName.Equals("audiodefaultplayer", false)) strRealCoreName = CServiceBroker::GetSettingsComponent()->GetSettings()->GetDefaultAudioPlayerName();
-    else if (strCoreName.Equals("videodefaultplayer", false)) strRealCoreName = CServiceBroker::GetSettingsComponent()->GetSettings()->GetDefaultVideoPlayerName();
+    if (strCoreName.Equals("audiodefaultplayer", false)) strRealCoreName = m_settings->GetDefaultAudioPlayerName();
+    else if (strCoreName.Equals("videodefaultplayer", false)) strRealCoreName = m_settings->GetDefaultVideoPlayerName();
     else strRealCoreName = strCoreName;
 
     for(PLAYERCOREID i = 0; i < m_vecCoreConfigs.size(); i++)
@@ -110,7 +120,7 @@ PLAYERCOREID CPlayerCoreFactory::GetPlayerCore(const CStdString& strCoreName) co
         return i+1;
     }
     CLog::Log(LOGWARNING, "CPlayerCoreFactory::GetPlayerCore(%s): no such core: %s", strCoreName.c_str(), strRealCoreName.c_str());
-  }  
+  }
   return EPC_NONE;
 }
 
@@ -171,19 +181,19 @@ void CPlayerCoreFactory::GetPlayers( const CFileItem& item, VECPLAYERCORES &vecC
       WMACodec codec;
       if (!codec.Init(item.GetPath(),2048))
         bAdd = false;
-      codec.DeInit();        
+      codec.DeInit();
     }
 #endif
 
     if (bAdd)
     {
-      if( CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_ANALOG )
+      if( m_settings->GetInt("audiooutput.mode") == AUDIO_ANALOG )
       {
         CLog::Log(LOGDEBUG, "CPlayerCoreFactory::GetPlayers: adding PAPlayer (%d)", EPC_PAPLAYER);
         vecCores.push_back(EPC_PAPLAYER);
       }
       else if( ( url.IsFileType("ac3") && g_audioConfig.GetAC3Enabled() )
-        ||  ( url.IsFileType("dts") && g_audioConfig.GetDTSEnabled() ) ) 
+        ||  ( url.IsFileType("dts") && g_audioConfig.GetDTSEnabled() ) )
       {
 //        CLog::Log(LOGDEBUG, "CPlayerCoreFactory::GetPlayers: adding DVDPlayer (%d)", EPC_DVDPLAYER);
 //        vecCores.push_back(EPC_DVDPLAYER);
@@ -200,7 +210,7 @@ void CPlayerCoreFactory::GetPlayers( const CFileItem& item, VECPLAYERCORES &vecC
 
   // Set video default player. Check whether it's video first (overrule audio check)
   // Also push these players in case it is NOT audio either
-  if (item.IsVideo() || !item.IsAudio()) 
+  if (item.IsVideo() || !item.IsAudio())
   {
     PLAYERCOREID eVideoDefault = GetPlayerCore("videodefaultplayer");
     if (eVideoDefault != EPC_NONE)
@@ -239,7 +249,7 @@ PLAYERCOREID CPlayerCoreFactory::GetDefaultPlayer( const CFileItem& item ) const
 
   //If we have any players return the first one
   if( vecCores.size() > 0 ) return vecCores.at(0);
-  
+
   return EPC_NONE;
 }
 
@@ -247,7 +257,7 @@ PLAYERCOREID CPlayerCoreFactory::SelectPlayerDialog(VECPLAYERCORES &vecCores, fl
 {
   CContextButtons choices;
   if (vecCores.size())
-  {    
+  {
     //Add default player
     CStdString strCaption = CPlayerCoreFactory::GetPlayerName(vecCores[0]);
     strCaption += " (";
@@ -326,7 +336,7 @@ bool CPlayerCoreFactory::LoadConfiguration(const std::string &file, bool clear)
     CLog::Log(LOGERROR, "Error loading configuration, no <playercorefactory> node");
     return false;
   }
-  
+
   TiXmlElement *pPlayers = pConfig->FirstChildElement("players");
   if (pPlayers)
   {

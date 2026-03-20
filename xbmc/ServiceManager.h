@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include <system.h> // xtl.h
+#include <boost/shared_ptr.hpp>
 #include <boost/move/unique_ptr.hpp>
 
 namespace ADDON
@@ -40,6 +42,7 @@ class CWeather;
 
 class CPlayerCoreFactory;
 class CDatabaseManager;
+class CProfilesManager;
 class CMediaManager;
 
 class CServiceManager
@@ -50,7 +53,7 @@ public:
 
   bool Init1();
   bool Init2();
-  bool Init3();
+  bool Init3(const boost::shared_ptr<CProfilesManager>& profileManager);
   void Deinit();
   ADDON::CAddonMgr& GetAddonMgr();
   ADDON::CRepositoryUpdater& GetRepositoryUpdater();
