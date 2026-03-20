@@ -727,6 +727,15 @@
         </setting>
       </group>
     </category>
+    <category id="input" label="14125" help="36374">
+      <group id="2" label="14094">
+        <setting id="system.mceremote" type="boolean" label="38747" help="">
+          <level>1</level>
+          <default>false</default>
+          <control type="toggle" />
+        </setting>
+      </group>
+    </category>
     <category id="powermanagement">
       <group id="2">
         <setting id="harddisk.spindowntime" type="integer" label="229" help="">

@@ -9247,12 +9247,7 @@ msgctxt "#21367"
 msgid "Movie & alternate subtitle directory"
 msgstr ""
 
-#empty string with id 21368
-
-#: system/settings/settings.xml
-msgctxt "#21369"
-msgid "Enable mouse support"
-msgstr ""
+#empty strings from id id 21368 to 21369
 
 msgctxt "#21370"
 msgid "Play GUI sounds during media playback"
@@ -12357,11 +12352,7 @@ msgctxt "#36374"
 msgid "This category contains the settings for how input devices are handled."
 msgstr ""
 
-#. Description of setting with label #21369 "Enable mouse and Touch Screen support"
-#: system/settings/settings.xml
-msgctxt "#36377"
-msgid "Use a mouse or touch screen device to control the interface. Note: Disabling will cause you to lose control over this application when no keyboard or remote is present."
-msgstr ""
+#empty string with id 36377
 
 #. Description of settings category with label #798 Internet access
 #: system/settings/settings.xml
