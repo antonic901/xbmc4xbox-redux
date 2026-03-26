@@ -76,6 +76,8 @@ CGUIControl::CGUIControl(int parentID, int controlID, float posX, float posY, fl
   m_controlDirtyState = DIRTY_STATE_CONTROL;
   m_stereo = 0.0f;
   m_controlStats = nullptr;
+  m_hitColor = 0xffffffff;
+  m_isCulled = true;
 }
 
 CGUIControl::~CGUIControl(void) {}

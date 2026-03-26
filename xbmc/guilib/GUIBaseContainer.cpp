@@ -75,6 +75,8 @@ CGUIBaseContainer::CGUIBaseContainer(const CGUIBaseContainer& other)
     m_orientation(other.m_orientation),
     m_itemsPerPage(other.m_itemsPerPage),
     m_pageControl(other.m_pageControl),
+    m_layout(NULL),
+    m_focusedLayout(NULL),
     m_layoutCondition(other.m_layoutCondition),
     m_focusedLayoutCondition(other.m_focusedLayoutCondition),
     m_scroller(other.m_scroller),
