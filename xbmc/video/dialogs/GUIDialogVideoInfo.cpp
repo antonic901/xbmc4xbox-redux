@@ -612,7 +612,7 @@ void CGUIDialogVideoInfo::Play(bool resume)
     // close our dialog
     Close(true);
     if (resume)
-      movie.m_lStartOffset = STARTOFFSET_RESUME;
+      movie.SetStartOffset(STARTOFFSET_RESUME);
     else if (!CGUIWindowVideoBase::ShowResumeMenu(movie))
     {
       // The Resume dialog was closed without any choice
@@ -974,7 +974,7 @@ std::string CGUIDialogVideoInfo::GetThumbnail() const
   return m_movieItem->GetArt("thumb");
 }
 
-void CGUIDialogVideoInfo::AddItemPathToFileBrowserSources(VECSOURCES &sources, const CFileItem &item)
+void CGUIDialogVideoInfo::AddItemPathToFileBrowserSources(std::vector<CMediaSource> &sources, const CFileItem &item)
 {
   if (!item.HasVideoInfoTag())
     return;

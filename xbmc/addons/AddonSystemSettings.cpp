@@ -28,6 +28,7 @@
 #include "messaging/helpers/DialogHelper.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
+#include "settings/lib/Setting.h"
 #include "utils/log.h"
 
 

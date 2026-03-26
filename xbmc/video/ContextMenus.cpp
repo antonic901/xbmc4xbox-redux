@@ -127,7 +127,7 @@ bool CResume::Execute(const CFileItemPtr& item) const
 #endif
 
   CFileItem cpy(*item);
-  cpy.m_lStartOffset = STARTOFFSET_RESUME;
+  cpy.SetStartOffset(STARTOFFSET_RESUME);
   SetPathAndPlay(boost::move(cpy));
   return true;
 };

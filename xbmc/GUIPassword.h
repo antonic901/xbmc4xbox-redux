@@ -23,6 +23,7 @@
 #include <map>
 #include <vector>
 
+#include "LockType.h"
 #include "settings/lib/ISettingCallback.h"
 #include "utils/StdString.h"
 #include "settings/lib/Setting.h"
@@ -31,17 +32,6 @@ class CFileItem;
 class CMediaSource;
 
 typedef std::vector<CMediaSource> VECSOURCES;
-
-typedef enum
-{
-  LOCK_MODE_UNKNOWN            = -1,
-  LOCK_MODE_EVERYONE           =  0,
-  LOCK_MODE_NUMERIC            =  1,
-  LOCK_MODE_GAMEPAD            =  2,
-  LOCK_MODE_QWERTY             =  3,
-  LOCK_MODE_SAMBA              =  4,
-  LOCK_MODE_EEPROM_PARENTAL    =  5
-} LockType;
 
 namespace LOCK_LEVEL {
   /**
@@ -52,7 +42,7 @@ namespace LOCK_LEVEL {
     NONE,     //settings are unlocked => user can access all settings levels
     ALL,      //all settings are locked => user always has to enter password, when entering the settings screen
     STANDARD, //settings level standard and up are locked => user can still access the beginner levels
-    ADVANCED, 
+    ADVANCED,
     EXPERT
   };
 }
@@ -70,7 +60,7 @@ public:
   bool IsProfileLockUnlocked(int iProfile, bool& bCanceled, bool prompt = true);
   bool IsMasterLockUnlocked(bool bPromptUser);
   bool IsMasterLockUnlocked(bool bPromptUser, bool& bCanceled);
-  
+
   void UpdateMasterLockRetryCount(bool bResetCount);
   bool GetSMBShareUserPassword();
   void SetSMBShare(const CStdString &strShare);

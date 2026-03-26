@@ -22,6 +22,7 @@
 
 #include "LabelFormatter.h"
 #include "ServiceBroker.h"
+#include "addons/IAddon.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"

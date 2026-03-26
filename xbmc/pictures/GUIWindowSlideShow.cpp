@@ -53,6 +53,8 @@
 #include "linux/XTimeUtils.h"
 #endif
 
+#include <boost/make_shared.hpp>
+
 using namespace XFILE;
 using namespace KODI::MESSAGING;
 

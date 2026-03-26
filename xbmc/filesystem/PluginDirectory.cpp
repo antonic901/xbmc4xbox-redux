@@ -203,7 +203,7 @@ bool CPluginDirectory::GetPluginResult(const std::string& strPath, CFileItem &re
     resultItem.SetContentLookup(newDir.m_fileResult->ContentLookup());
     resultItem.UpdateInfo(*newDir.m_fileResult);
     if (newDir.m_fileResult->HasVideoInfoTag() && newDir.m_fileResult->GetVideoInfoTag()->GetResumePoint().IsSet())
-      resultItem.m_lStartOffset = STARTOFFSET_RESUME; // resume point set in the resume item, so force resume
+      resultItem.SetStartOffset(STARTOFFSET_RESUME); // resume point set in the resume item, so force resume
   }
 
   return success;

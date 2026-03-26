@@ -194,15 +194,15 @@ bool PAPlayer::QueueNextFile(const CFileItem &file, bool checkCrossFading)
     Pause();
 
   if (file.GetPath() == m_currentFile->GetPath() &&
-      file.m_lStartOffset > 0 && 
-      file.m_lStartOffset == m_currentFile->m_lEndOffset)
+      file.GetStartOffset() > 0 &&
+      file.GetStartOffset() == m_currentFile->GetEndOffset())
   { // continuing on a .cue sheet item - return true to say we'll handle the transistion
     *m_nextFile = file;
     return true;
   }
   // check if we can handle this file at all
   int decoder = 1 - m_currentDecoder;
-  __int64 seekOffset = (file.m_lStartOffset * 1000) / 75;
+  __int64 seekOffset = (file.GetStartOffset() * 1000) / 75;
   if (!m_decoder[decoder].Create(file, seekOffset, m_crossFading))
   {
     m_bQueueFailed = true;
@@ -300,7 +300,7 @@ void PAPlayer::FreeStream(int stream)
 
 void PAPlayer::SetupDirectSound(int channels)
 {
-  bool bAudioOnAllSpeakers(false);  
+  bool bAudioOnAllSpeakers(false);
   g_audioContext.SetupSpeakerConfig(channels, bAudioOnAllSpeakers,true);
   g_audioContext.SetActiveDevice(CAudioContext::DIRECTSOUND_DEVICE);
   LPDIRECTSOUND pDSound=g_audioContext.GetDirectSoundDevice();
@@ -557,7 +557,7 @@ bool PAPlayer::ProcessPAP()
     if (m_bStop) return false;
 
     // Check for .cue sheet item end
-    if (m_currentFile->m_lEndOffset && GetTime() >= GetTotalTime64())
+    if (m_currentFile->GetEndOffset() && GetTime() >= GetTotalTime64())
     {
       CLog::Log(LOGINFO, "PAPlayer: Passed end of track in a .cue sheet item");
       m_decoder[m_currentDecoder].SetStatus(STATUS_ENDED);
@@ -571,7 +571,7 @@ bool PAPlayer::ProcessPAP()
     {
       DWORD status;
       m_pStream[m_currentStream]->GetStatus(&status);
-      if (!(status & DSBSTATUS_PLAYING)) 
+      if (!(status & DSBSTATUS_PLAYING))
         m_pStream[m_currentStream]->Play(0, 0, DSBPLAY_LOOPING);
     }
 
@@ -611,7 +611,7 @@ bool PAPlayer::ProcessPAP()
           m_pStream[m_currentStream]->Play(0, 0, DSBPLAY_LOOPING);
 #endif
           m_callback.OnPlayBackStarted();
-          m_timeOffset = m_nextFile->m_lStartOffset * 1000 / 75;
+          m_timeOffset = m_nextFile->GetStartOffset() * 1000 / 75;
           m_bytesSentOut = 0;
           *m_currentFile = *m_nextFile;
           m_nextFile->Reset();
@@ -624,8 +624,8 @@ bool PAPlayer::ProcessPAP()
     if (m_decoder[m_currentDecoder].GetStatus() == STATUS_ENDED)
     { // time to swap tracks
       if (m_nextFile->GetPath() != m_currentFile->GetPath() ||
-          !m_nextFile->m_lStartOffset ||
-          m_nextFile->m_lStartOffset != m_currentFile->m_lEndOffset)
+          !m_nextFile->GetStartOffset() ||
+          m_nextFile->GetStartOffset() != m_currentFile->GetEndOffset())
       { // don't have a .cue sheet item
         int nextstatus = m_decoder[1 - m_currentDecoder].GetStatus();
         if (nextstatus == STATUS_QUEUED || nextstatus == STATUS_QUEUING || nextstatus == STATUS_PLAYING)
@@ -673,7 +673,7 @@ bool PAPlayer::ProcessPAP()
             m_decoder[m_currentDecoder].Destroy();
             m_decoder[1 - m_currentDecoder].Start();
             m_callback.OnPlayBackStarted();
-            m_timeOffset = m_nextFile->m_lStartOffset * 1000 / 75;
+            m_timeOffset = m_nextFile->GetStartOffset() * 1000 / 75;
             m_bytesSentOut = 0;
             *m_currentFile = *m_nextFile;
             m_nextFile->Reset();
@@ -718,7 +718,7 @@ bool PAPlayer::ProcessPAP()
         // set the next track playing (.cue sheet)
         m_decoder[m_currentDecoder].SetStatus(STATUS_PLAYING);
         m_callback.OnPlayBackStarted();
-        m_timeOffset = m_nextFile->m_lStartOffset * 1000 / 75;
+        m_timeOffset = m_nextFile->GetStartOffset() * 1000 / 75;
         m_bytesSentOut = 0;
         *m_currentFile = *m_nextFile;
         m_nextFile->Reset();
@@ -792,16 +792,16 @@ void PAPlayer::ResetTime()
 __int64 PAPlayer::GetTime()
 {
   __int64  timeplus = m_BytesPerSecond ? (__int64)(((float) m_bytesSentOut / (float)m_BytesPerSecond ) * 1000.0) : 0;
-  return m_timeOffset + timeplus - m_currentFile->m_lStartOffset * 1000 / 75;
+  return m_timeOffset + timeplus - m_currentFile->GetStartOffset() * 1000 / 75;
 }
 
 __int64 PAPlayer::GetTotalTime64()
 {
   __int64 total = m_decoder[m_currentDecoder].TotalTime();
-  if (m_currentFile->m_lEndOffset)
-    total = m_currentFile->m_lEndOffset * 1000 / 75;
-  if (m_currentFile->m_lStartOffset)
-    total -= m_currentFile->m_lStartOffset * 1000 / 75;
+  if (m_currentFile->GetEndOffset())
+    total = m_currentFile->GetEndOffset() * 1000 / 75;
+  if (m_currentFile->GetStartOffset())
+    total -= m_currentFile->GetStartOffset() * 1000 / 75;
   return total;
 }
 
@@ -851,7 +851,7 @@ int PAPlayer::GetAudioBitrate()
 {
   ICodec* codec = m_decoder[m_currentDecoder].GetCodec();
   if (codec)
-  	return (int)((codec->m_Bitrate / 1000) + 0.5); // in kbits/s, rounded to the nearest int
+      return (int)((codec->m_Bitrate / 1000) + 0.5); // in kbits/s, rounded to the nearest int
   return 0;
 }
 
@@ -888,8 +888,8 @@ void PAPlayer::Seek(bool bPlus, bool bLargeStep, bool bChapterOverride)
 void PAPlayer::SeekTime(__int64 iTime /*=0*/)
 {
   if (!CanSeek()) return;
-  if (m_currentFile->m_lStartOffset)
-    iTime += m_currentFile->m_lStartOffset * 1000 / 75;
+  if (m_currentFile->GetStartOffset())
+    iTime += m_currentFile->GetStartOffset() * 1000 / 75;
   m_SeekTime = iTime;
   CLog::Log(LOGDEBUG, "PAPlayer::Seeking to time %f", 0.001f * m_SeekTime);
 }
@@ -957,7 +957,7 @@ bool PAPlayer::HandleFFwdRewd()
   }
   // we're definitely fastforwarding or rewinding
   int snippet = m_BytesPerSecond / 2;
-  if ( m_bytesSentOut >= snippet ) 
+  if ( m_bytesSentOut >= snippet )
   {
     // Calculate offset to seek if we do FF/RW
     __int64 time = GetTime();
@@ -967,21 +967,21 @@ bool PAPlayer::HandleFFwdRewd()
     // Is our offset inside the track range?
     if (time >= 0 && time <= m_decoder[m_currentDecoder].TotalTime())
     { // just set next position to read
-      m_IsFFwdRewding = true;  
-      time += m_currentFile->m_lStartOffset * 1000 / 75;
+      m_IsFFwdRewding = true;
+      time += m_currentFile->GetStartOffset() * 1000 / 75;
       m_timeOffset = m_decoder[m_currentDecoder].Seek(time);
       m_bytesSentOut = 0;
       FlushStreams();
-      SetVolume(g_application.GetVolume(false) - VOLUME_FFWD_MUTE); // override xbmc mute 
+      SetVolume(g_application.GetVolume(false) - VOLUME_FFWD_MUTE); // override xbmc mute
     }
     else if (time < 0)
     { // ...disable seeking and start the track again
-      time = m_currentFile->m_lStartOffset * 1000 / 75;
+      time = m_currentFile->GetStartOffset() * 1000 / 75;
       m_timeOffset = m_decoder[m_currentDecoder].Seek(time);
       m_bytesSentOut = 0;
       FlushStreams();
       m_iSpeed = 1;
-      SetVolume(g_application.GetVolume(false)); // override xbmc mute 
+      SetVolume(g_application.GetVolume(false)); // override xbmc mute
     } // is our next position greater then the end sector...
     else //if (time > m_codec->m_TotalTime)
     {
@@ -1188,7 +1188,7 @@ bool PAPlayer::HandlesType(const CStdString &type)
 
   if (codec && codec->CanInit())
   {
-    delete codec;   
+    delete codec;
     return true;
   }
   if (codec)

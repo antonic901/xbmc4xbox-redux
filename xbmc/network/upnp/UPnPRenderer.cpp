@@ -431,14 +431,14 @@ CUPnPRenderer::PlayMedia(const char* uri, const char* meta, PLT_Action* action)
         item.m_dateTime.SetFromDateString((const char*)object->m_Date);
         item.m_strTitle = (const char*)object->m_Title;
         item.SetLabel((const char*)object->m_Title);
-        item.SetLabelPreformated(true);
+        item.SetLabelPreformatted(true);
         item.SetArt("thumb", (const char*)object->m_ExtraInfo.album_art_uri);
         if       (object->m_ObjectClass.type.StartsWith("object.item.audioItem")) {
             if(NPT_SUCCEEDED(PopulateTagFromObject(*item.GetMusicInfoTag(), *object, res)))
-                item.SetLabelPreformated(false);
+                item.SetLabelPreformatted(false);
         } else if(object->m_ObjectClass.type.StartsWith("object.item.videoItem")) {
             if(NPT_SUCCEEDED(PopulateTagFromObject(*item.GetVideoInfoTag(), *object, res)))
-                item.SetLabelPreformated(false);
+                item.SetLabelPreformatted(false);
         } else if(object->m_ObjectClass.type.StartsWith("object.item.imageItem")) {
             bImageFile = true;
         }

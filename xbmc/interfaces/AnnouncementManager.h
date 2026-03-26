@@ -27,6 +27,9 @@
 #include "threads/Event.h"
 #include "utils/Variant.h"
 
+#include <list>
+#include <vector>
+
 class CVariant;
 
 namespace ANNOUNCEMENT

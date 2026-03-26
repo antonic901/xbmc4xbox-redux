@@ -339,23 +339,6 @@ static int PlayerControl(const std::vector<std::string>& params)
     CGUIMessage msg(GUI_MSG_PLAYLISTPLAYER_REPEAT, 0, 0, iPlaylist, (int)state);
     CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
   }
-#ifndef _XBOX
-  else if (StringUtils::StartsWithNoCase(params[0], "resumelivetv"))
-  {
-    CFileItem& fileItem(g_application.CurrentFileItem());
-    PVR::CPVRChannelPtr channel = fileItem.HasPVRRecordingInfoTag() ? fileItem.GetPVRRecordingInfoTag()->Channel() : PVR::CPVRChannelPtr();
-
-    if (channel)
-    {
-      CFileItem playItem(channel);
-      if (!g_application.PlayMedia(playItem, "", channel->IsRadio() ? PLAYLIST_MUSIC : PLAYLIST_VIDEO))
-      {
-        CLog::Log(LOGERROR, "ResumeLiveTv could not play channel: %s", channel->ChannelName().c_str());
-        return false;
-      }
-    }
-  }
-#endif
 
   return 0;
 }
@@ -413,7 +396,7 @@ static int PlayMedia(const std::vector<std::string>& params)
     else if (StringUtils::EqualsNoCase(params[i], "resume"))
     {
       // force the item to resume (if applicable) (see CApplication::PlayMedia)
-      item.m_lStartOffset = STARTOFFSET_RESUME;
+      item.SetStartOffset(STARTOFFSET_RESUME);
       askToResume = false;
     }
     else if (StringUtils::EqualsNoCase(params[i], "noresume"))

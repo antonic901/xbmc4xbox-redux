@@ -5667,7 +5667,7 @@ bool CVideoDatabase::GetNavCommon(const std::string& strBaseDir, CFileItemList& 
 
       for (std::map<int, std::pair<std::string,int> >::const_iterator it = mapItems.begin(); it != mapItems.end(); ++it)
       {
-        const std::pair<const int, std::pair<std::string,int> > &i = *it; 
+        const std::pair<const int, std::pair<std::string,int> > &i = *it;
         CFileItemPtr pItem(new CFileItem(i.second.first));
         pItem->GetVideoInfoTag()->m_iDbId = i.first;
         pItem->GetVideoInfoTag()->m_type = type;
@@ -5682,7 +5682,7 @@ bool CVideoDatabase::GetNavCommon(const std::string& strBaseDir, CFileItemList& 
           pItem->GetVideoInfoTag()->m_playCount = i.second.second;
         if (!items.Contains(pItem->GetPath()))
         {
-          pItem->SetLabelPreformated(true);
+          pItem->SetLabelPreformatted(true);
           items.Add(pItem);
         }
       }
@@ -5701,7 +5701,7 @@ bool CVideoDatabase::GetNavCommon(const std::string& strBaseDir, CFileItemList& 
         pItem->SetPath(itemUrl.ToString());
 
         pItem->m_bIsFolder = true;
-        pItem->SetLabelPreformated(true);
+        pItem->SetLabelPreformatted(true);
         if (idContent == VIDEODB_CONTENT_MOVIES || idContent == VIDEODB_CONTENT_MUSICVIDEOS)
         { // fv(3) is the number of videos watched, fv(2) is the total number.  We set the playcount
           // only if the number of videos watched is equal to the total number (i.e. every video watched)
@@ -5855,7 +5855,7 @@ bool CVideoDatabase::GetMusicVideoAlbumsNav(const std::string& strBaseDir, CFile
           pItem->SetPath(itemUrl.ToString());
 
           pItem->m_bIsFolder=true;
-          pItem->SetLabelPreformated(true);
+          pItem->SetLabelPreformatted(true);
           if (!items.Contains(pItem->GetPath()))
           {
             pItem->GetVideoInfoTag()->m_artist.push_back(i.second.second);
@@ -5878,7 +5878,7 @@ bool CVideoDatabase::GetMusicVideoAlbumsNav(const std::string& strBaseDir, CFile
           pItem->SetPath(itemUrl.ToString());
 
           pItem->m_bIsFolder=true;
-          pItem->SetLabelPreformated(true);
+          pItem->SetLabelPreformatted(true);
           if (!items.Contains(pItem->GetPath()))
           {
             pItem->GetVideoInfoTag()->m_artist.push_back(m_pDS->fv(2).get_asString());

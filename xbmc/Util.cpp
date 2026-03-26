@@ -1499,7 +1499,7 @@ void CUtil::PlayDVD(const CStdString& strProtocol, bool restart)
     item.SetLabel(CDetectDVDMedia::GetDVDLabel());
     item.GetVideoInfoTag()->m_strFileNameAndPath = "removable://"; // need to put volume label for resume point in videoInfoTag
     item.GetVideoInfoTag()->m_strFileNameAndPath += CDetectDVDMedia::GetDVDLabel();
-    if (!restart) item.m_lStartOffset = STARTOFFSET_RESUME;
+    if (!restart) item.SetStartOffset(STARTOFFSET_RESUME);
     g_application.PlayFile(item, "", restart);
   }
 }

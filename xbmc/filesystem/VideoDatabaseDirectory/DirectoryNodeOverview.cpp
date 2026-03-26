@@ -109,7 +109,7 @@ bool CDirectoryNodeOverview::GetContent(CFileItemList& items) const
   {
     CFileItemPtr pItem(new CFileItem(path + vec[i].first + "/", true));
     pItem->SetLabel(g_localizeStrings.Get(vec[i].second));
-    pItem->SetLabelPreformated(true);
+    pItem->SetLabelPreformatted(true);
     pItem->SetCanQueue(false);
     items.Add(pItem);
   }

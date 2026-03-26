@@ -22,6 +22,7 @@
 #include "DVDInputStreams/DVDFactoryInputStream.h"
 #include "DVDInputStreams/DVDInputStream.h"
 #include "utils/CharsetConverter.h"
+#include "utils/StdString.h"
 
 using namespace std;
 
@@ -62,9 +63,9 @@ bool CDVDSubtitleStream::Open(const string& strFile)
       while( (size_read = pInputStream->Read(buffer, sizeof(buffer)-2) ) > 0 )
       {
         buffer[size_read] = buffer[size_read + 1] = '\0';
-        CStdStringW temp; 
-        g_charsetConverter.utf16LEtoW(std::u16string((char16_t*)buffer),temp); 
-        wstringstream << temp; 
+        CStdStringW temp;
+        g_charsetConverter.utf16LEtoW(std::u16string((char16_t*)buffer),temp);
+        wstringstream << temp;
       }
       delete pInputStream;
 

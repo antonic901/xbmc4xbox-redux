@@ -371,7 +371,7 @@ bool CRarManager::GetFilesInRar(CFileItemList& vecpItems, const CStdString& strR
         pFileItem->m_bIsFolder = true;
         pFileItem->m_idepth = pIterator->item.Method;
         pFileItem->m_iDriveType = pIterator->item.HostOS;
-        //pFileItem->m_lEndOffset = long(pIterator->item.iOffset);
+        //pFileItem->SetEndOffset(static_cast<int64_t>(pIterator->item.iOffset));
       }
     }
     else
@@ -386,7 +386,7 @@ bool CRarManager::GetFilesInRar(CFileItemList& vecpItems, const CStdString& strR
         pFileItem->m_dwSize = pIterator->item.UnpSize;
         pFileItem->m_idepth = pIterator->item.Method;
         pFileItem->m_iDriveType = pIterator->item.HostOS;
-        //pFileItem->m_lEndOffset = long(pIterator->item.iOffset);
+        //pFileItem->SetEndOffset(static_cast<int64_t>(pIterator->item.iOffset));
       }
     }
     if (pFileItem)
@@ -435,7 +435,7 @@ bool CRarManager::IsFileInRar(bool& bResult, const CStdString& strRarPath, const
 
   if (!GetFilesInRar(ItemList,strRarPath,false))
     return false;
-  
+
   int it;
   for (it=0;it<ItemList.Size();++it)
   {
@@ -476,7 +476,7 @@ void CRarManager::ClearCachedFile(const CStdString& strRarPath, const CStdString
   {
     return; // no such subpath
   }
-  
+
   for (vector<CFileInfo>::iterator it = j->second.second.begin(); it != j->second.second.end(); ++it)
   {
     if (it->m_strPathInRar == strPathInRar)

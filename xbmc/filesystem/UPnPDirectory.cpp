@@ -391,7 +391,7 @@ CUPnPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
             classes[(*entry)->m_ObjectClass.type]++;
 
             CFileItemPtr pItem(new CFileItem((const char*)(*entry)->m_Title));
-            pItem->SetLabelPreformated(true);
+            pItem->SetLabelPreformatted(true);
             pItem->m_strTitle = (const char*)(*entry)->m_Title;
             pItem->m_bIsFolder = (*entry)->IsContainer();
 
@@ -405,14 +405,14 @@ CUPnPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 
                 // look for metadata
                 if( ObjectClass.StartsWith("object.container.album.videoalbum") ) {
-                    pItem->SetLabelPreformated(false);
+                    pItem->SetLabelPreformatted(false);
                     UPNP::PopulateTagFromObject(*pItem->GetVideoInfoTag(), *(*entry), NULL);
 
                 } else if( ObjectClass.StartsWith("object.container.album.photoalbum")) {
                   //CPictureInfoTag* tag = pItem->GetPictureInfoTag();
 
                 } else if( ObjectClass.StartsWith("object.container.album") ) {
-                    pItem->SetLabelPreformated(false);
+                    pItem->SetLabelPreformatted(false);
                     UPNP::PopulateTagFromObject(*pItem->GetMusicInfoTag(), *(*entry), NULL);
                 }
 
@@ -436,11 +436,11 @@ CUPnPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 
                     // look for metadata
                     if( ObjectClass.StartsWith("object.item.videoitem") ) {
-                        pItem->SetLabelPreformated(false);
+                        pItem->SetLabelPreformatted(false);
                         UPNP::PopulateTagFromObject(*pItem->GetVideoInfoTag(), *(*entry), &resource);
 
                     } else if( ObjectClass.StartsWith("object.item.audioitem") ) {
-                        pItem->SetLabelPreformated(false);
+                        pItem->SetLabelPreformatted(false);
                         UPNP::PopulateTagFromObject(*pItem->GetMusicInfoTag(), *(*entry), &resource);
 
                     } else if( ObjectClass.StartsWith("object.item.imageitem") ) {

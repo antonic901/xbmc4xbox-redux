@@ -143,21 +143,6 @@ void CAnnouncementManager::DoAnnounce(AnnouncementFlag flag, const char *sender,
   std::string type;
   int id = 0;
 
-#ifndef _XBOX
-  if(item->HasPVRChannelInfoTag())
-  {
-    const PVR::CPVRChannelPtr channel(item->GetPVRChannelInfoTag());
-    id = channel->ChannelID();
-    type = "channel";
-
-    object["item"]["title"] = channel->ChannelName();
-    object["item"]["channeltype"] = channel->IsRadio() ? "radio" : "tv";
-
-    if (data.isMember("player") && data["player"].isMember("playerid"))
-      object["player"]["playerid"] = channel->IsRadio() ? PLAYLIST_MUSIC : PLAYLIST_VIDEO;
-  }
-  else
-#endif
   if (item->HasVideoInfoTag())
   {
     id = item->GetVideoInfoTag()->m_iDbId;
@@ -231,7 +216,7 @@ void CAnnouncementManager::DoAnnounce(AnnouncementFlag flag, const char *sender,
       if (musicdatabase.Open())
       {
         CSong song;
-        if (musicdatabase.GetSongByFileName(item->GetPath(), song, item->m_lStartOffset))
+        if (musicdatabase.GetSongByFileName(item->GetPath(), song, item->GetStartOffset()))
         {
           item->GetMusicInfoTag()->SetSong(song);
           id = item->GetMusicInfoTag()->GetDatabaseId();
