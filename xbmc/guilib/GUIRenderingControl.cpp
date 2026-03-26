@@ -1,26 +1,19 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIRenderingControl.h"
-#include "threads/SingleLock.h"
+
 #include "guilib/IRenderingCallback.h"
+
+#include <mutex>
+#ifdef TARGET_WINDOWS
+#include "rendering/dx/DeviceResources.h"
+#endif
 
 #define LABEL_ROW1 10
 #define LABEL_ROW2 11
@@ -57,8 +50,8 @@ bool CGUIRenderingControl::InitCallback(IRenderingCallback *callback)
   if (y + h > CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight()) h = CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight() - y;
 
   void *device = NULL;
-#ifdef HAS_XBOX_D3D
-  device = CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice();
+#if TARGET_WINDOWS
+  device = DX::DeviceResources::Get()->GetD3DDevice();
 #endif
   if (callback->Create((int)(x+0.5f), (int)(y+0.5f), (int)(w+0.5f), (int)(h+0.5f), device))
     m_callback = callback;

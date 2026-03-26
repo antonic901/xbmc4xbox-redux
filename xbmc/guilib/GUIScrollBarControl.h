@@ -1,35 +1,20 @@
-/*!
-\file 
-\brief
-*/
-
-#ifndef GUILIB_GUISCROLLBAR_H
-#define GUILIB_GUISCROLLBAR_H
+/*
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
 
 #pragma once
 
-/*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
- *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
- */
+/*!
+\file
+\brief
+*/
 
-#include "GUITexture.h"
 #include "GUIControl.h"
+#include "GUITexture.h"
 
 /*!
  \ingroup controls
@@ -45,13 +30,12 @@ public:
                        const CTextureInfo& barTexture, const CTextureInfo& barTextureFocus,
                        const CTextureInfo& nibTexture, const CTextureInfo& nibTextureFocus,
                        ORIENTATION orientation, bool showOnePage);
-  virtual ~GUIScrollBarControl(void);
-  virtual GUIScrollBarControl *Clone() const { return new GUIScrollBarControl(*this); };
+  virtual ~GUIScrollBarControl() {}
+  virtual GUIScrollBarControl* Clone() const { return new GUIScrollBarControl(*this); }
 
   virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
   virtual bool OnAction(const CAction &action);
-  virtual void PreAllocResources();
   virtual void AllocResources();
   virtual void FreeResources(bool immediately = false);
   virtual void DynamicResourceAlloc(bool bOnOff);
@@ -63,16 +47,16 @@ public:
   virtual std::string GetDescription() const;
   virtual bool IsVisible() const;
 protected:
-  virtual bool UpdateColors();
+  virtual bool UpdateColors(const CGUIListItem* item);
   bool UpdateBarSize();
   bool Move(int iNumSteps);
   virtual void SetFromPosition(const CPoint &point);
 
-  CGUITexture m_guiBackground;
-  CGUITexture m_guiBarNoFocus;
-  CGUITexture m_guiBarFocus;
-  CGUITexture m_guiNibNoFocus;
-  CGUITexture m_guiNibFocus;
+  boost::movelib::unique_ptr<CGUITexture> m_guiBackground;
+  boost::movelib::unique_ptr<CGUITexture> m_guiBarNoFocus;
+  boost::movelib::unique_ptr<CGUITexture> m_guiBarFocus;
+  boost::movelib::unique_ptr<CGUITexture> m_guiNibNoFocus;
+  boost::movelib::unique_ptr<CGUITexture> m_guiNibFocus;
 
   int m_numItems;
   int m_pageSize;
@@ -80,5 +64,8 @@ protected:
 
   bool m_showOnePage;
   ORIENTATION m_orientation;
+
+private:
+  GUIScrollBarControl(const GUIScrollBarControl& control);
 };
-#endif
+

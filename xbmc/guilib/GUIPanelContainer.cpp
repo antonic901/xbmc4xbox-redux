@@ -1,26 +1,19 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIPanelContainer.h"
-#include "guiinfo/GUIInfoLabels.h"
-#include "guilib/Key.h"
+
+#include "FileItem.h"
+#include "GUIListItemLayout.h"
+#include "GUIMessage.h"
+#include "guilib/guiinfo/GUIInfoLabels.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "utils/StringUtils.h"
 
 #include <cassert>
@@ -33,9 +26,7 @@ CGUIPanelContainer::CGUIPanelContainer(int parentID, int controlID, float posX, 
   m_itemsPerRow = 1;
 }
 
-CGUIPanelContainer::~CGUIPanelContainer(void)
-{
-}
+CGUIPanelContainer::~CGUIPanelContainer(void) {}
 
 void CGUIPanelContainer::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
@@ -44,7 +35,8 @@ void CGUIPanelContainer::Process(unsigned int currentTime, CDirtyRegionList &dir
   if (m_bInvalidated)
     UpdateLayout();
 
-  if (!m_layout || !m_focusedLayout) return;
+  if (!m_layout || !m_focusedLayout)
+    return;
 
   UpdateScrollOffset(currentTime);
 
@@ -71,7 +63,8 @@ void CGUIPanelContainer::Process(unsigned int currentTime, CDirtyRegionList &dir
       break;
     if (current >= 0)
     {
-      CGUIListItemPtr item = m_items[current];
+      boost::shared_ptr<CGUIListItem> item = m_items[current];
+      item->SetCurrentItem(current + 1);
       bool focused = (current == GetOffset() * m_itemsPerRow + GetCursor()) && m_bHasFocus;
 
       if (m_orientation == VERTICAL)
@@ -100,7 +93,8 @@ void CGUIPanelContainer::Process(unsigned int currentTime, CDirtyRegionList &dir
 
 void CGUIPanelContainer::Render()
 {
-  if (!m_layout || !m_focusedLayout) return;
+  if (!m_layout || !m_focusedLayout)
+    return;
 
   int offset = (int)(m_scroller.GetValue() / m_layout->Size(m_orientation));
 
@@ -117,7 +111,7 @@ void CGUIPanelContainer::Render()
 
     float focusedPos = 0;
     int focusedCol = 0;
-    CGUIListItemPtr focusedItem;
+    boost::shared_ptr<CGUIListItem> focusedItem;
     int current = (offset - cacheBefore) * m_itemsPerRow;
     int col = 0;
     while (pos < end && m_items.size())
@@ -126,7 +120,7 @@ void CGUIPanelContainer::Render()
         break;
       if (current >= 0)
       {
-        CGUIListItemPtr item = m_items[current];
+        boost::shared_ptr<CGUIListItem> item = m_items[current];
         bool focused = (current == GetOffset() * m_itemsPerRow + GetCursor()) && m_bHasFocus;
         // render our item
         if (focused)
@@ -406,9 +400,18 @@ void CGUIPanelContainer::ValidateOffset()
 
 void CGUIPanelContainer::SetCursor(int cursor)
 {
-  // +1 to ensure we're OK if we have a half item
-  if (cursor > (m_itemsPerPage + 1)*m_itemsPerRow - 1) cursor = (m_itemsPerPage + 1)*m_itemsPerRow - 1;
-  if (cursor < 0) cursor = 0;
+  // exceeds the number of items the panel can hold
+  if (cursor > m_itemsPerPage * m_itemsPerRow - 1)
+    cursor = m_itemsPerPage * m_itemsPerRow - 1;
+
+  // exceeds the number of items being displayed
+  const int itemsOn = m_items.size() - 1 - GetOffset() * m_itemsPerRow;
+  if (cursor > itemsOn)
+    cursor = itemsOn;
+
+  if (cursor < 0)
+    cursor = 0;
+
   if (!m_wasReset)
     SetContainerMoving(cursor - GetCursor());
   CGUIBaseContainer::SetCursor(cursor);
@@ -528,9 +531,9 @@ std::string CGUIPanelContainer::GetLabel(int info) const
   switch (info)
   {
   case CONTAINER_ROW:
-    return StringUtils::Format("%i", row);
+    return std::to_string(row);
   case CONTAINER_COLUMN:
-    return StringUtils::Format("%i", col);
+    return std::to_string(col);
   default:
     return CGUIBaseContainer::GetLabel(info);
   }
@@ -572,3 +575,8 @@ bool CGUIPanelContainer::HasNextPage() const
   return (GetOffset() != (int)GetRows() - m_itemsPerPage && (int)GetRows() > m_itemsPerPage);
 }
 
+void CGUIPanelContainer::ScrollToOffset(int offset)
+{
+  CGUIBaseContainer::ScrollToOffset(offset);
+  SetCursor(GetCursor());
+}

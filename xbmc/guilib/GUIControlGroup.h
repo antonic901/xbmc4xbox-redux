@@ -1,46 +1,34 @@
+/*
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
+
+#pragma once
+
 /*!
 \file GUIControlGroup.h
 \brief
 */
 
-#pragma once
-
-/*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
- *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
- */
+#include "GUIControlLookup.h"
 
 #include <vector>
-
-#include "GUIControl.h"
 
 /*!
  \ingroup controls
  \brief group of controls, useful for remembering last control + animating/hiding together
  */
-class CGUIControlGroup : public CGUIControl
+class CGUIControlGroup : public CGUIControlLookup
 {
 public:
   CGUIControlGroup();
   CGUIControlGroup(int parentID, int controlID, float posX, float posY, float width, float height);
-  CGUIControlGroup(const CGUIControlGroup &from);
+  explicit CGUIControlGroup(const CGUIControlGroup& from);
   virtual ~CGUIControlGroup(void);
-  virtual CGUIControlGroup *Clone() const { return new CGUIControlGroup(*this); };
+  virtual CGUIControlGroup* Clone() const { return new CGUIControlGroup(*this); }
 
   virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
@@ -64,57 +52,72 @@ public:
   virtual void ResetAnimation(ANIMATION_TYPE anim);
   virtual void ResetAnimations();
 
-  virtual bool HasID(int id) const;
-  virtual bool HasVisibleID(int id) const;
-
   int GetFocusedControlID() const;
   CGUIControl *GetFocusedControl() const;
-  const CGUIControl *GetControl(int id) const;
-  CGUIControl *GetControl(int id);
   virtual CGUIControl *GetFirstFocusableControl(int id);
-  void GetContainers(std::vector<CGUIControl *> &containers) const;
 
   virtual void AddControl(CGUIControl *control, int position = -1);
   bool InsertControl(CGUIControl *control, const CGUIControl *insertPoint);
   virtual bool RemoveControl(const CGUIControl *control);
   virtual void ClearAll();
-  void SetDefaultControl(int id, bool always) { m_defaultControl = id; m_defaultAlways = always; };
-  void SetRenderFocusedLast(bool renderLast) { m_renderFocusedLast = renderLast; };
+  void SetDefaultControl(int id, bool always)
+  {
+    m_defaultControl = id;
+    m_defaultAlways = always;
+  }
+  void SetRenderFocusedLast(bool renderLast) { m_renderFocusedLast = renderLast; }
 
   virtual void SaveStates(std::vector<CControlState> &states);
 
-  virtual bool IsGroup() const { return true; };
+  virtual bool IsGroup() const { return true; }
 
 #ifdef _DEBUG
   virtual void DumpTextureUse();
 #endif
 protected:
-  /*!
-   \brief Check whether a given control is valid
-   Runs through controls and returns whether this control is valid.  Only functional
-   for controls with non-zero id.
-   \param control to check
-   \return true if the control is valid, false otherwise.
-   */
-  bool IsValidControl(const CGUIControl *control) const;
-
   // sub controls
   std::vector<CGUIControl *> m_children;
+
   typedef std::vector<CGUIControl *>::iterator iControls;
   typedef std::vector<CGUIControl *>::const_iterator ciControls;
   typedef std::vector<CGUIControl *>::reverse_iterator rControls;
   typedef std::vector<CGUIControl *>::const_reverse_iterator crControls;
 
-  // fast lookup by id
-  typedef std::multimap<int, CGUIControl *> LookupMap;
-  void AddLookup(CGUIControl *control);
-  void RemoveLookup(CGUIControl *control);
-  const LookupMap &GetLookup() const { return m_lookup; };
-  LookupMap m_lookup;
-
   int  m_defaultControl;
   bool m_defaultAlways;
   int m_focusedControl;
   bool m_renderFocusedLast;
+private:
+  typedef std::vector< std::vector<CGUIControl *> * > COLLECTORTYPE;
+
+  struct IDCollectorList
+  {
+    ~IDCollectorList()
+    {
+      for (auto item : m_items)
+        delete item;
+    }
+
+    std::vector<CGUIControl *> *Get() {
+      if (++m_stackDepth > m_items.size())
+        m_items.push_back(new std::vector<CGUIControl *>());
+      return m_items[m_stackDepth - 1];
+    }
+
+    void Release() { --m_stackDepth; }
+
+    COLLECTORTYPE m_items;
+    size_t m_stackDepth = 0;
+  }m_idCollector;
+
+  struct IDCollector
+  {
+    explicit IDCollector(IDCollectorList& list) : m_list(list), m_collector(list.Get()) {}
+
+    ~IDCollector() { m_list.Release(); }
+
+    IDCollectorList &m_list;
+    std::vector<CGUIControl *> *m_collector;
+  };
 };
 

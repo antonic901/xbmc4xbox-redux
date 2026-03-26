@@ -1,31 +1,22 @@
+/*
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
+
+#pragma once
+
 /*!
 \file GUIListContainer.h
 \brief
 */
 
-#pragma once
-
-/*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
- *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
- */
-
 #include "GUIBaseContainer.h"
+
+class CLabelInfo;
+class CTextureInfo;
 
 /*!
  \ingroup controls
@@ -35,14 +26,15 @@ class CGUIListContainer : public CGUIBaseContainer
 {
 public:
   CGUIListContainer(int parentID, int controlID, float posX, float posY, float width, float height, ORIENTATION orientation, const CScroller& scroller, int preloadItems);
-//#ifdef GUILIB_PYTHON_COMPATIBILITY
+  explicit CGUIListContainer(const CGUIListContainer& other);
+  //#ifdef GUILIB_PYTHON_COMPATIBILITY
   CGUIListContainer(int parentID, int controlID, float posX, float posY, float width, float height,
                          const CLabelInfo& labelInfo, const CLabelInfo& labelInfo2,
                          const CTextureInfo& textureButton, const CTextureInfo& textureButtonFocus,
                          float textureHeight, float itemWidth, float itemHeight, float spaceBetweenItems);
-//#endif
+  //#endif
   virtual ~CGUIListContainer(void);
-  virtual CGUIListContainer *Clone() const { return new CGUIListContainer(*this); };
+  virtual CGUIListContainer* Clone() const { return new CGUIListContainer(*this); }
 
   virtual bool OnAction(const CAction &action);
   virtual bool OnMessage(CGUIMessage& message);
@@ -52,7 +44,7 @@ public:
 
 protected:
   virtual void Scroll(int amount);
-  void SetCursor(int cursor);
+  virtual void SetCursor(int cursor);
   virtual bool MoveDown(bool wrapAround);
   virtual bool MoveUp(bool wrapAround);
   virtual void ValidateOffset();

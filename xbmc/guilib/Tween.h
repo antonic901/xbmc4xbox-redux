@@ -1,24 +1,12 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2015 Team Kodi
- *      http://kodi.tv
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Kodi; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
 
 ///////////////////////////////////////////////////////////////////////
 // Tween.h
@@ -46,7 +34,7 @@
 #include <math.h>
 
 #ifndef M_PI
-#define M_PI 3.14159265358979323846f
+#define M_PI 3.14159265358979323846
 #endif
 
 enum TweenerType
@@ -60,8 +48,8 @@ enum TweenerType
 class Tweener
 {
 public:
-  Tweener(TweenerType tweenerType = EASE_OUT) { m_tweenerType = tweenerType; }
-  virtual ~Tweener() {};
+  explicit Tweener(TweenerType tweenerType = EASE_OUT) { m_tweenerType = tweenerType; }
+  virtual ~Tweener() {}
 
   void SetEasing(TweenerType type) { m_tweenerType = type; }
   virtual float Tween(float time, float start, float change, float duration)=0;
@@ -85,7 +73,7 @@ public:
 class QuadTweener : public Tweener
 {
 public:
-  QuadTweener(float a = 1.0f) { _a=a; }
+  explicit QuadTweener(float a = 1.0f) { _a=a; }
   virtual float Tween(float time, float start, float change, float duration)
   {
     switch (m_tweenerType)
@@ -178,7 +166,7 @@ public:
 class BackTweener : public Tweener
 {
 public:
-  BackTweener(float s=1.70158) { _s=s; }
+  explicit BackTweener(float s=1.70158) { _s=s; }
 
   virtual float Tween(float time, float start, float change, float duration)
   {
@@ -224,18 +212,18 @@ public:
     switch (m_tweenerType)
       {
       case EASE_IN:
-        return change * (1 - cos(time * M_PI / 2.0f)) + start;
+        return change * (1 - cos(time * static_cast<float>(M_PI) / 2.0f)) + start;
         break;
 
       case EASE_OUT:
-        return change * sin(time * M_PI / 2.0f) + start;
+        return change * sin(time * static_cast<float>(M_PI) / 2.0f) + start;
         break;
 
       case EASE_INOUT:
-        return change/2 * (1 - cos(M_PI * time)) + start;
+        return change / 2 * (1 - cos(static_cast<float>(M_PI) * time)) + start;
         break;
       }
-    return (change/2) * (1 - cos(M_PI * time)) + start;
+      return (change / 2) * (1 - cos(static_cast<float>(M_PI) * time)) + start;
   }
 };
 
@@ -269,15 +257,22 @@ protected:
   static float easeOut(float time, float start, float change, float duration)
   {
     time /= duration;
-    if (time < (1/2.75)) {
+    if (time < (1 / 2.75f))
+    {
       return  change * (7.5625f * time * time) + start;
-    } else if (time < (2/2.75)) {
+    }
+    else if (time < (2 / 2.75f))
+    {
       time -= (1.5f/2.75f);
       return change * (7.5625f * time * time + .75f) + start;
-    } else if (time < (2.5/2.75)) {
+    }
+    else if (time < (2.5f / 2.75f))
+    {
       time -= (2.25f/2.75f);
       return change * (7.5625f * time * time + .9375f) + start;
-    } else {
+    }
+    else
+    {
       time -= (2.625f/2.75f);
       return change * (7.5625f * time * time + .984375f) + start;
     }
@@ -332,10 +327,12 @@ protected:
     }
     else
     {
-      s = p / (2 * M_PI) * asin (change / a);
+      s = p / (2 * static_cast<float>(M_PI)) * asin(change / a);
     }
     time--;
-    return -(a * pow(2.0f, 10*time) * sin((time * duration - s) * (2 * M_PI) / p )) + start;
+    return -(a * pow(2.0f, 10 * time) *
+             sin((time * duration - s) * (2 * static_cast<float>(M_PI)) / p)) +
+           start;
   }
 
   float easeOut(float time, float start, float change, float duration) const
@@ -358,9 +355,11 @@ protected:
     }
     else
     {
-      s = p / (2 * M_PI) * asin (change / a);
+      s = p / (2 * static_cast<float>(M_PI)) * asin(change / a);
     }
-    return (a * pow(2.0f, -10*time) * sin((time * duration - s) * (2 * M_PI) / p )) + change + start;
+    return (a * pow(2.0f, -10 * time) *
+            sin((time * duration - s) * (2 * static_cast<float>(M_PI)) / p)) +
+           change + start;
   }
 
   float easeInOut(float time, float start, float change, float duration) const
@@ -383,16 +382,20 @@ protected:
     }
     else
     {
-      s = p / (2 * M_PI) * asin (change / a);
+      s = p / (2 * static_cast<float>(M_PI)) * asin(change / a);
     }
 
     if (time < 1)
     {
       time--;
-      return -.5f * (a * pow(2.0f, 10 * (time)) * sin((time * duration - s) * (2 * M_PI) / p )) + start;
+      return -.5f * (a * pow(2.0f, 10 * (time)) *
+                     sin((time * duration - s) * (2 * static_cast<float>(M_PI)) / p)) +
+             start;
     }
     time--;
-    return a * pow(2.0f, -10 * (time)) * sin((time * duration-s) * (2 * M_PI) / p ) * .5f + change + start;
+    return a * pow(2.0f, -10 * (time)) *
+               sin((time * duration - s) * (2 * static_cast<float>(M_PI)) / p) * .5f +
+           change + start;
   }
 };
 

@@ -1,57 +1,28 @@
+/*
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
+
+#pragma once
+
 /*!
 \file GUIWindow.h
 \brief
 */
 
-#ifndef GUILIB_GUIWINDOW_H
-#define GUILIB_GUIWINDOW_H
-
-#pragma once
-
-/*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
- *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
- */
-
+#include "GUIAction.h"
 #include "GUIControlGroup.h"
-#include <boost/move/unique_ptr.hpp>
-#include "boost/shared_ptr.hpp"
+#include <memory>
 #include "threads/CriticalSection.h"
 
 class CFileItem; typedef boost::shared_ptr<CFileItem> CFileItemPtr;
 
-#include "GUICallback.h"  // for GUIEvent
-
 #include <limits.h>
 #include <map>
 #include <vector>
-
-#define ON_CLICK_MESSAGE(i,c,m) \
-{ \
- GUIEventHandler<c, CGUIMessage&> clickHandler(this, &m); \
- m_mapClickEvents[i] = clickHandler; \
-} \
-
-#define ON_SELECTED_MESSAGE(i,c,m) \
-{ \
- GUIEventHandler<c, CGUIMessage&> selectedHandler(this, &m); \
- m_mapSelectedEvents[i] = selectedHandler; \
-} \
 
 enum RenderOrder {
   RENDER_ORDER_WINDOW = 0,
@@ -116,7 +87,7 @@ public:
    Any window that requires updating on a frame by frame basis (such as to maintain
    timers and the like) should override this function.
    */
-  virtual void FrameMove() {};
+  virtual void FrameMove() {}
 
   void Close(bool forceClose = false, int nextWindowID = 0, bool enableSound = true, bool bWait = true);
 
@@ -127,8 +98,10 @@ public:
   // and does not need to be passed further down the line (to our global action handlers)
   virtual bool OnAction(const CAction &action);
 
+  using CGUIControlGroup::OnBack;
   virtual bool OnBack(int actionID);
-  virtual bool OnInfo(int actionID) { return false; };
+  using CGUIControlGroup::OnInfo;
+  virtual bool OnInfo(int actionID) { return false; }
 
   /*! \brief Clear the background (if necessary) prior to rendering the window
    */
@@ -140,33 +113,35 @@ public:
   bool ControlGroupHasFocus(int groupID, int controlID);
   virtual void SetID(int id);
   virtual bool HasID(int controlID) const;
-  const std::vector<int>& GetIDRange() const { return m_idRange; };
-  int GetPreviousWindow() { return m_previousWindow; };
+  const std::vector<int>& GetIDRange() const { return m_idRange; }
+  int GetPreviousWindow() { return m_previousWindow; }
   CRect GetScaledBounds() const;
   virtual void ClearAll();
+  using CGUIControlGroup::AllocResources;
   virtual void AllocResources(bool forceLoad = false);
   virtual void FreeResources(bool forceUnLoad = false);
   virtual void DynamicResourceAlloc(bool bOnOff);
-  virtual bool IsDialog() const { return false; };
-  virtual bool IsDialogRunning() const { return false; };
-  virtual bool IsModalDialog() const { return false; };
-  virtual bool IsMediaWindow() const { return false; };
-  virtual bool HasListItems() const { return false; };
-  virtual bool IsSoundEnabled() const { return true; };
-  virtual CFileItemPtr GetCurrentListItem(int offset = 0) { return CFileItemPtr(); };
-  virtual int GetViewContainerID() const { return 0; };
-  virtual int GetViewCount() const { return 0; };
-  virtual bool CanBeActivated() const { return true; };
+  virtual bool IsDialog() const { return false; }
+  virtual bool IsDialogRunning() const { return false; }
+  virtual bool IsModalDialog() const { return false; }
+  virtual bool IsMediaWindow() const { return false; }
+  virtual bool HasListItems() const { return false; }
+  virtual bool IsSoundEnabled() const { return true; }
+  virtual CFileItemPtr GetCurrentListItem(int offset = 0) { return CFileItemPtr(); }
+  virtual int GetViewContainerID() const { return 0; }
+  virtual int GetViewCount() const { return 0; }
+  virtual bool CanBeActivated() const { return true; }
   virtual bool IsActive() const;
-  void SetCoordsRes(const RESOLUTION_INFO &res) { m_coordsRes = res; };
-  const RESOLUTION_INFO &GetCoordsRes() const { return m_coordsRes; };
-  void SetLoadType(LOAD_TYPE loadType) { m_loadType = loadType; };
-  LOAD_TYPE GetLoadType() { return m_loadType; } const
-  int GetRenderOrder() { return m_renderOrder; };
+  void SetCoordsRes(const RESOLUTION_INFO& res) { m_coordsRes = res; }
+  const RESOLUTION_INFO& GetCoordsRes() const { return m_coordsRes; }
+  void SetLoadType(LOAD_TYPE loadType) { m_loadType = loadType; }
+  LOAD_TYPE GetLoadType() { return m_loadType; }
+  int GetRenderOrder() { return m_renderOrder; }
   virtual void SetInitialVisibility();
   virtual bool IsVisible() const { return true; }; // windows are always considered visible as they implement their own
                                                    // versions of UpdateVisibility, and are deemed visible if they're in
                                                    // the window manager's active list.
+  virtual bool HasVisibleControls() { return true; }; //Assume that window always has visible controls
 
   virtual bool IsAnimating(ANIMATION_TYPE animType);
 
@@ -174,21 +149,22 @@ public:
    \brief Return if the window is a custom window
    \return true if the window is an custom window otherwise false
    */
-  bool IsCustom() const { return m_custom; };
+  bool IsCustom() const { return m_custom; }
 
   /*!
    \brief Mark this window as custom window
    \param custom true if this window is a custom window, false if not
    */
-  void SetCustom(bool custom) { m_custom = custom; };
+  void SetCustom(bool custom) { m_custom = custom; }
 
   void DisableAnimations();
 
   virtual void ResetControlStates();
+  virtual void UpdateControlStats() {}; // Do not count window itself
 
   void       SetRunActionsManually();
-  void       RunLoadActions();
-  void       RunUnloadActions();
+  void       RunLoadActions() const;
+  void       RunUnloadActions() const;
 
   /*! \brief Set a property
    Sets the value of a property referenced by a key.
@@ -198,7 +174,7 @@ public:
    */
   void SetProperty(const std::string &key, const CVariant &value);
 
-  /*! \brief Retreive a property
+  /*! \brief Retrieve a property
    \param key name of the property to retrieve
    \return value of the property, empty if it doesn't exist
    */
@@ -209,9 +185,10 @@ public:
    */
   void ClearProperties();
 
-  void DumpTextureUse();
-
-  bool HasSaveLastControl() const { return !m_defaultAlways; };
+#ifdef _DEBUG
+  virtual void DumpTextureUse();
+#endif
+  bool HasSaveLastControl() const { return !m_defaultAlways; }
 
   virtual void OnDeinitWindow(int nextWindowID);
 protected:
@@ -231,10 +208,10 @@ protected:
 
   /*!
    \brief Prepare the XML for load
-   \param pRootElement the original XML element
+   \param rootElement the original XML element
    \return the prepared XML (resolved includes, constants and expression)
    */
-  virtual boost::movelib::unique_ptr<TiXmlElement> Prepare(TiXmlElement *pRootElement);
+  virtual boost::movelib::unique_ptr<TiXmlElement> Prepare(const boost::movelib::unique_ptr<TiXmlElement>& rootElement);
 
   /*!
    \brief Check if window needs a (re)load. The window need to be (re)loaded when window is not loaded or include conditions values were changed
@@ -249,8 +226,6 @@ protected:
   virtual bool Animate(unsigned int currentTime);
   virtual bool CheckAnimation(ANIMATION_TYPE animType);
 
-  CAnimation *GetAnimation(ANIMATION_TYPE animType, bool checkConditions = true);
-
   // control state saving on window close
   virtual void SaveControlStates();
   virtual void RestoreControlStates();
@@ -258,14 +233,6 @@ protected:
   // methods for updating controls and sending messages
   void OnEditChanged(int id, std::string &text);
   bool SendMessage(int message, int id, int param1 = 0, int param2 = 0);
-
-  typedef GUIEvent<CGUIMessage&> CLICK_EVENT;
-  typedef std::map<int, CLICK_EVENT> MAPCONTROLCLICKEVENTS;
-  MAPCONTROLCLICKEVENTS m_mapClickEvents;
-
-  typedef GUIEvent<CGUIMessage&> SELECTED_EVENT;
-  typedef std::map<int, SELECTED_EVENT> MAPCONTROLSELECTEDEVENTS;
-  MAPCONTROLSELECTEDEVENTS m_mapSelectedEvents;
 
   void LoadControl(TiXmlElement* pControl, CGUIControlGroup *pGroup, const CRect &rect);
 
@@ -277,7 +244,7 @@ protected:
   bool m_dynamicResourceAlloc;
   bool m_closing;
   bool m_active;        // true if window is active or dialog is running
-  CGUIInfoColor m_clearBackground; // colour to clear the window
+  KODI::GUILIB::GUIINFO::CGUIInfoColor m_clearBackground; // colour to clear the window
 
   int m_renderOrder;      // for render order of dialogs
 
@@ -303,7 +270,10 @@ protected:
   CGUIAction m_loadActions;
   CGUIAction m_unloadActions;
 
-  TiXmlElement* m_windowXMLRootElement;
+  /*! \brief window root xml definition after resolving any skin includes.
+    Stored to avoid parsing the XML every time the window is loaded.
+   */
+  boost::movelib::unique_ptr<TiXmlElement> m_windowXMLRootElement;
 
   bool m_manualRunActions;
 
@@ -318,4 +288,3 @@ private:
   std::map<INFO::InfoPtr, bool> m_xmlIncludeConditions; ///< \brief used to store conditions used to resolve includes for this window
 };
 
-#endif

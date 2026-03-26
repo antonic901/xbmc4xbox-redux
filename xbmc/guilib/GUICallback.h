@@ -22,7 +22,7 @@
  */
 
 #include "assert.h"
-#include "memory.h"
+#include "memory"
 
 #ifndef __GNUC__
 #pragma warning( disable : 4786 )

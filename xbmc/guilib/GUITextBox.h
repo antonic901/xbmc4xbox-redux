@@ -1,36 +1,22 @@
+/*
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
+
+#pragma once
+
 /*!
 \file GUITextBox.h
 \brief
 */
 
-#ifndef GUILIB_GUITEXTBOX_H
-#define GUILIB_GUITEXTBOX_H
-
-#pragma once
-
-/*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
- *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
- */
-
-#include "GUITextLayout.h"
 #include "GUIControl.h"
 #include "GUILabel.h"
+#include "GUITextLayout.h"
+#include "guilib/guiinfo/GUIInfoLabel.h"
 
 /*!
  \ingroup controls
@@ -43,10 +29,11 @@ class CGUITextBox : public CGUIControl, public CGUITextLayout
 {
 public:
   CGUITextBox(int parentID, int controlID, float posX, float posY, float width, float height,
-              const CLabelInfo &labelInfo, int scrollTime = 200);
+              const CLabelInfo &labelInfo, int scrollTime = 200,
+              const CLabelInfo* labelInfoMono = nullptr);
   CGUITextBox(const CGUITextBox &from);
   virtual ~CGUITextBox(void);
-  virtual CGUITextBox *Clone() const { return new CGUITextBox(*this); };
+  virtual CGUITextBox* Clone() const { return new CGUITextBox(*this); }
 
   virtual void DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
@@ -58,20 +45,20 @@ public:
   void SetPageControl(int pageControl);
 
   virtual bool CanFocus() const;
-  void SetInfo(const CGUIInfoLabel &info);
+  void SetInfo(const KODI::GUILIB::GUIINFO::CGUIInfoLabel &info);
   void SetAutoScrolling(const TiXmlNode *node);
   void SetAutoScrolling(int delay, int time, int repeatTime, const std::string &condition = "");
   void ResetAutoScrolling();
 
   virtual bool GetCondition(int condition, int data) const;
   virtual std::string GetLabel(int info) const;
-  std::string GetDescription() const;
+  virtual std::string GetDescription() const;
 
   void Scroll(unsigned int offset);
 
 protected:
   virtual void UpdateVisibility(const CGUIListItem *item = NULL);
-  virtual bool UpdateColors();
+  virtual bool UpdateColors(const CGUIListItem* item);
   virtual void UpdateInfo(const CGUIListItem *item = NULL);
   void UpdatePageControl();
   void ScrollToOffset(int offset, bool autoScroll = false);
@@ -105,6 +92,6 @@ protected:
 
   int m_pageControl;
 
-  CGUIInfoLabel m_info;
+  KODI::GUILIB::GUIINFO::CGUIInfoLabel m_info;
 };
-#endif
+

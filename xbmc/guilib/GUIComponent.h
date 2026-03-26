@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <boost/move/unique_ptr.hpp>
+#include <memory>
 #include <string>
 
 class CGUIWindowManager;

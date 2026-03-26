@@ -18,21 +18,22 @@
  *
  */
 
-#include "include.h"
 #include "GUIAudioManager.h"
-#include "ServiceBroker.h"
-#include "Key.h"
-#include "AudioContext.h"
 #include "GUISound.h"
-#include "input/ButtonTranslator.h"
-#include "settings/SettingsComponent.h"
-#include "settings/lib/Setting.h"
+#include "input/keyboard/Key.h"
+#include "input/WindowTranslator.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
+#include "input/actions/ActionTranslator.h"
+#include "filesystem/Directory.h"
 #include "threads/SingleLock.h"
 #include "utils/URIUtils.h"
 #include "utils/XBMCTinyXML.h"
-#include "filesystem/Directory.h"
-#include "addons/AddonManager.h"
-#include "addons/Skin.h"
+#include "utils/log.h"
+#include "platform/xbox/AudioContext.h"
+#include "ServiceBroker.h"
+
+#include <mutex>
 
 using namespace std;
 using namespace XFILE;
@@ -40,43 +41,11 @@ using namespace XFILE;
 CGUIAudioManager::CGUIAudioManager()
 {
   m_actionSound=NULL;
-  std::set<std::string> settingSet;
-  settingSet.insert("lookandfeel.soundskin");
-  CServiceBroker::GetSettingsComponent()->GetSettings()->RegisterCallback(this, settingSet);
 }
 
 CGUIAudioManager::~CGUIAudioManager()
 {
-  CServiceBroker::GetSettingsComponent()->GetSettings()->UnregisterCallback(this);
-}
 
-void CGUIAudioManager::OnSettingChanged(const CSetting *setting)
-{
-  if (setting == NULL)
-    return;
-
-  const std::string &settingId = setting->GetId();
-  if (settingId == "lookandfeel.soundskin")
-  {
-    Enable(true);
-    Load();
-  }
-}
-
-bool CGUIAudioManager::OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode)
-{
-  if (setting == NULL)
-    return false;
-
-  if (setting->GetId() == "lookandfeel.soundskin")
-  {
-    //Migrate the old settings
-    if (((CSettingString*)setting)->GetValue() == "SKINDEFAULT")
-      ((CSettingString*)setting)->Reset();
-    else if (((CSettingString*)setting)->GetValue() == "OFF")
-      ((CSettingString*)setting)->SetValue("");
-  }
-  return true;
 }
 
 void CGUIAudioManager::Initialize(int iDevice)
@@ -216,7 +185,7 @@ void CGUIAudioManager::PlayWindowSound(int id, WINDOW_SOUND event)
     return;
 
   CWindowSounds sounds=it->second;
-  CStdString strFile;
+  std::string strFile;
   switch (event)
   {
   case SOUND_INIT:
@@ -227,7 +196,7 @@ void CGUIAudioManager::PlayWindowSound(int id, WINDOW_SOUND event)
     break;
   }
 
-  if (strFile.IsEmpty())
+  if (strFile.empty())
     return;
 
   //  One sound buffer for each window
@@ -253,7 +222,7 @@ void CGUIAudioManager::PlayWindowSound(int id, WINDOW_SOUND event)
 }
 
 // \brief Play a sound given by filename
-void CGUIAudioManager::PlayPythonSound(const CStdString& strFileName)
+void CGUIAudioManager::PlayPythonSound(const std::string& strFileName)
 {
   // it's not possible to play gui sounds when passthrough is active
   if (g_audioContext.IsPassthroughActive())
@@ -281,25 +250,30 @@ void CGUIAudioManager::PlayPythonSound(const CStdString& strFileName)
     return;
   }
 
-  m_pythonSounds.insert(pair<CStdString, CGUISound*>(strFileName, sound));
+  m_pythonSounds.insert(std::pair<std::string, CGUISound*>(strFileName, sound));
   sound->Play();
 }
 
 std::string GetSoundSkinPath()
 {
-  CSettingString* setting = static_cast<CSettingString*>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.soundskin"));
-  std::string value = setting->GetValue();
+#if 0
+  auto setting = static_cast<CSettingString*>(CSettings::GetInstance().GetSetting(CSettings::SETTING_LOOKANDFEEL_SOUNDSKIN));
+#endif
+  std::string value = "resource.uisounds.kodi";
   if (value.empty())
     return "";
 
+#if 0
   ADDON::AddonPtr addon;
   if (!CServiceBroker::GetAddonMgr().GetAddon(value, addon, ADDON::ADDON_RESOURCE_UISOUNDS))
   {
-    CLog::Log(LOGNOTICE, "Unknown sounds addon '%s'. Setting default sounds.", value.c_str());
+    CLog::Log(LOGNOTICE, "Unknown sounds addon '{}'. Setting default sounds.", value.c_str());
     setting->Reset();
   }
-  return URIUtils::AddFileToFolder("resource://", setting->GetValue());
+#endif
+  return URIUtils::AddFileToFolder("resource://", value);
 }
+
 
 // \brief Load the config file (sounds.xml) for nav sounds
 bool CGUIAudioManager::Load()
@@ -312,25 +286,25 @@ bool CGUIAudioManager::Load()
     return true;
 
   Enable(true);
-  CStdString strSoundsXml = URIUtils::AddFileToFolder(m_strMediaDir, "sounds.xml");
+  std::string strSoundsXml = URIUtils::AddFileToFolder(m_strMediaDir, "sounds.xml");
 
   //  Load our xml file
   CXBMCTinyXML xmlDoc;
 
-  CLog::Log(LOGINFO, "Loading %s", strSoundsXml.c_str());
+  CLog::Log(LOGINFO, "Loading {}", strSoundsXml.c_str());
 
   //  Load the config file
   if (!xmlDoc.LoadFile(strSoundsXml))
   {
-    CLog::Log(LOGNOTICE, "%s, Line %d\n%s", strSoundsXml.c_str(), xmlDoc.ErrorRow(), xmlDoc.ErrorDesc());
+    CLog::Log(LOGNOTICE, "{}, Line {}\n{}", strSoundsXml.c_str(), xmlDoc.ErrorRow(), xmlDoc.ErrorDesc());
     return false;
   }
 
   TiXmlElement* pRoot = xmlDoc.RootElement();
-  CStdString strValue = pRoot->Value();
+  std::string strValue = pRoot->Value();
   if ( strValue != "sounds")
   {
-    CLog::Log(LOGNOTICE, "%s Doesn't contain <sounds>", strSoundsXml.c_str());
+    CLog::Log(LOGNOTICE, "{} Doesn't contain <sounds>", strSoundsXml.c_str());
     return false;
   }
 
@@ -346,16 +320,18 @@ bool CGUIAudioManager::Load()
       int id = 0;    // action identity
       if (pIdNode && pIdNode->FirstChild())
       {
+#if 0
         CButtonTranslator::TranslateActionString(pIdNode->FirstChild()->Value(), id);
+#endif
       }
 
       TiXmlNode* pFileNode = pAction->FirstChild("file");
-      CStdString strFile;
+      std::string strFile;
       if (pFileNode && pFileNode->FirstChild())
-        strFile+=pFileNode->FirstChild()->Value();
+        strFile += pFileNode->FirstChild()->Value();
 
-      if (id > 0 && !strFile.IsEmpty())
-        m_actionSoundMap.insert(pair<int, CStdString>(id, strFile));
+      if (id > 0 && !strFile.empty())
+        m_actionSoundMap.insert(std::pair<int, std::string>(id, strFile));
 
       pAction = pAction->NextSibling();
     }
@@ -375,7 +351,7 @@ bool CGUIAudioManager::Load()
       if (pIdNode)
       {
         if (pIdNode->FirstChild())
-          id = CButtonTranslator::TranslateWindow(pIdNode->FirstChild()->Value());
+          id = CWindowTranslator::TranslateWindow(pIdNode->FirstChild()->Value());
       }
 
       CWindowSounds sounds;
@@ -383,7 +359,7 @@ bool CGUIAudioManager::Load()
       LoadWindowSound(pWindow, "deactivate", sounds.strDeInitFile);
 
       if (id > 0)
-        m_windowSoundMap.insert(pair<int, CWindowSounds>(id, sounds));
+        m_windowSoundMap.insert(std::pair<int, CWindowSounds>(id, sounds));
 
       pWindow = pWindow->NextSibling();
     }
@@ -393,7 +369,7 @@ bool CGUIAudioManager::Load()
 }
 
 // \brief Load a window node of the config file (sounds.xml)
-bool CGUIAudioManager::LoadWindowSound(TiXmlNode* pWindowNode, const CStdString& strIdentifier, CStdString& strFile)
+bool CGUIAudioManager::LoadWindowSound(TiXmlNode* pWindowNode, const std::string& strIdentifier, std::string& strFile)
 {
   if (!pWindowNode)
     return false;
@@ -411,9 +387,11 @@ bool CGUIAudioManager::LoadWindowSound(TiXmlNode* pWindowNode, const CStdString&
 // \brief Enable/Disable nav sounds
 void CGUIAudioManager::Enable(bool bEnable)
 {
+#if 0
   // Enable/Disable has no effect if nav sounds are turned off
-  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.soundskin")=="OFF")
+  if (CSettings::GetInstance().GetString("lookandfeel.soundskin")=="OFF")
     bEnable = false;
+#endif
 
   if (bEnable)
     Initialize(CAudioContext::DEFAULT_DEVICE);
@@ -430,7 +408,7 @@ void CGUIAudioManager::SetVolume(int iLevel)
     m_actionSound->SetVolume(iLevel);
 
   windowSoundsMap::iterator it=m_windowSounds.begin();
-  while (it!=m_windowSounds.end())
+  while (it != m_windowSounds.end())
   {
     if (it->second)
       it->second->SetVolume(iLevel);
@@ -439,7 +417,7 @@ void CGUIAudioManager::SetVolume(int iLevel)
   }
 
   pythonSoundsMap::iterator it1=m_pythonSounds.begin();
-  while (it1!=m_pythonSounds.end())
+  while (it1 != m_pythonSounds.end())
   {
     if (it1->second)
       it1->second->SetVolume(iLevel);

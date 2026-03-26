@@ -21,10 +21,11 @@
  */
 
 #include <map>
+#include <string>
 
-#include "settings/lib/ISettingCallback.h"
+#include "GUIComponent.h"
+#include "ServiceBroker.h"
 #include "threads/CriticalSection.h"
-#include "utils/StdString.h"
 
 // forward definitions
 class CAction;
@@ -33,21 +34,18 @@ class CGUISound;
 
 enum WINDOW_SOUND { SOUND_INIT = 0, SOUND_DEINIT };
 
-class CGUIAudioManager : public ISettingCallback
+class CGUIAudioManager
 {
   class CWindowSounds
   {
   public:
-    CStdString strInitFile;
-    CStdString strDeInitFile;
+    std::string strInitFile;
+    std::string strDeInitFile;
   };
 
 public:
   CGUIAudioManager();
-          ~CGUIAudioManager();
-
-  virtual void OnSettingChanged(const CSetting *setting);
-  virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
+  ~CGUIAudioManager();
 
   void Initialize(int iDevice);
   void DeInitialize(int iDevice);
@@ -56,7 +54,7 @@ public:
 
   void PlayActionSound(const CAction& action);
   void PlayWindowSound(int id, WINDOW_SOUND event);
-  void PlayPythonSound(const CStdString& strFileName);
+  void PlayPythonSound(const std::string& strFileName);
 
   void FreeUnused();
 
@@ -64,12 +62,12 @@ public:
   void SetVolume(int iLevel);
   void Stop();
 private:
-  bool LoadWindowSound(TiXmlNode* pWindowNode, const CStdString& strIdentifier, CStdString& strFile);
+  bool LoadWindowSound(TiXmlNode* pWindowNode, const std::string& strIdentifier, std::string& strFile);
 
-  typedef std::map<int, CStdString> actionSoundMap;
+  typedef std::map<int, std::string> actionSoundMap;
   typedef std::map<int, CWindowSounds> windowSoundMap;
 
-  typedef std::map<CStdString, CGUISound*> pythonSoundsMap;
+  typedef std::map<std::string, CGUISound*> pythonSoundsMap;
   typedef std::map<int, CGUISound*> windowSoundsMap;
 
   actionSoundMap      m_actionSoundMap;
@@ -79,7 +77,7 @@ private:
   windowSoundsMap     m_windowSounds;
   pythonSoundsMap     m_pythonSounds;
 
-  CStdString          m_strMediaDir;
+  std::string          m_strMediaDir;
   bool                m_bEnabled;
 
   CCriticalSection    m_cs;

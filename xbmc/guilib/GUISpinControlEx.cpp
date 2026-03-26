@@ -1,24 +1,13 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUISpinControlEx.h"
+
 #include "utils/StringUtils.h"
 
 CGUISpinControlEx::CGUISpinControlEx(int parentID, int controlID, float posX, float posY, float width, float height, float spinWidth, float spinHeight, const CLabelInfo& spinInfo, const CTextureInfo &textureFocus, const CTextureInfo &textureNoFocus, const CTextureInfo& textureUp, const CTextureInfo& textureDown, const CTextureInfo& textureUpFocus, const CTextureInfo& textureDownFocus, const CTextureInfo& textureUpDisabled, const CTextureInfo& textureDownDisabled, const CLabelInfo& labelInfo, int iType)
@@ -29,15 +18,7 @@ CGUISpinControlEx::CGUISpinControlEx(int parentID, int controlID, float posX, fl
   m_spinPosX = 0;
 }
 
-CGUISpinControlEx::~CGUISpinControlEx(void)
-{
-}
-
-void CGUISpinControlEx::PreAllocResources()
-{
-  CGUISpinControl::PreAllocResources();
-  m_buttonControl.PreAllocResources();
-}
+CGUISpinControlEx::~CGUISpinControlEx(void) {}
 
 void CGUISpinControlEx::AllocResources()
 {
@@ -86,7 +67,6 @@ void CGUISpinControlEx::Process(unsigned int currentTime, CDirtyRegionList &dirt
 
 void CGUISpinControlEx::Render()
 {
-  m_buttonControl.Render();
   CGUISpinControl::Render();
 }
 
@@ -108,11 +88,11 @@ void CGUISpinControlEx::SetHeight(float height)
   CGUISpinControl::SetInvalid();
 }
 
-bool CGUISpinControlEx::UpdateColors()
+bool CGUISpinControlEx::UpdateColors(const CGUIListItem* item)
 {
-  bool changed = CGUISpinControl::UpdateColors();
+  bool changed = CGUISpinControl::UpdateColors(nullptr);
   changed |= m_buttonControl.SetColorDiffuse(m_diffuseColor);
-  changed |= m_buttonControl.UpdateColors();
+  changed |= m_buttonControl.UpdateColors(nullptr);
 
   return changed;
 }
@@ -130,7 +110,7 @@ const std::string CGUISpinControlEx::GetCurrentLabel() const
 
 std::string CGUISpinControlEx::GetDescription() const
 {
-  return StringUtils::Format("%s (%s)", m_buttonControl.GetDescription().c_str(), GetLabel().c_str());
+  return StringUtils::Format("{} ({})", m_buttonControl.GetDescription(), GetLabel());
 }
 
 void CGUISpinControlEx::SetItemInvalid(bool invalid)
@@ -155,9 +135,27 @@ void CGUISpinControlEx::SetSpinPosition(float spinPosX)
 
 void CGUISpinControlEx::RenderText(float posX, float posY, float width, float height)
 {
-  const float spaceWidth = 10;
-  // check our limits from the button control
-  float x = std::max(m_buttonControl.m_label.GetRenderRect().x2 + spaceWidth, posX);
+  const float freeSpaceWidth{m_buttonControl.GetWidth() - GetSpinWidth() * 2};
+
+  // Limit right label text width to max 50% of free space
+  // (will be slightly shifted due to offsetX padding)
+  const float rightTextMaxWidth{freeSpaceWidth * 0.5f};
+
+  float rightTextWidth{width};
+  if (rightTextWidth > rightTextMaxWidth)
+  {
+    rightTextWidth = rightTextMaxWidth - m_label.GetLabelInfo().offsetX;
+  }
+
   m_label.SetScrolling(HasFocus());
-  CGUISpinControl::RenderText(x, m_buttonControl.GetYPosition(), width + posX - x, m_buttonControl.GetHeight());
+  // Replace posX by using our button position
+  posX = m_buttonControl.GetXPosition() + freeSpaceWidth - rightTextWidth -
+         m_label.GetLabelInfo().offsetX;
+
+  // Limit the max width for the left label to avoid text overlapping
+  m_buttonControl.SetMaxWidth(posX + m_label.GetLabelInfo().offsetX);
+  m_buttonControl.Render();
+
+  CGUISpinControl::RenderText(posX, m_buttonControl.GetYPosition(), rightTextWidth,
+                              m_buttonControl.GetHeight());
 }

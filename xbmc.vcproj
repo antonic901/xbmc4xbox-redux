@@ -868,6 +868,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\CharsetDetection.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\ColorUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ColorUtils.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\Crc32.cpp">
 				</File>
 				<File
@@ -3334,28 +3340,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</Filter>
 			</Filter>
 			<Filter
-				Name="listproviders"
-				Filter="">
-				<File
-					RelativePath=".\xbmc\listproviders\DirectoryProvider.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\listproviders\DirectoryProvider.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\listproviders\IListProvider.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\listproviders\IListProvider.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\listproviders\StaticProvider.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\listproviders\StaticProvider.h">
-				</File>
-			</Filter>
-			<Filter
 				Name="addons"
 				Filter="">
 				<File
@@ -4910,9 +4894,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\dialogs\GUIDialogYesNo.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\guiinfo\GUIInfoLabels.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\GUIInfoManager.h">

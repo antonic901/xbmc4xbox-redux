@@ -1,26 +1,18 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIWrappingListContainer.h"
+
 #include "FileItem.h"
-#include "guilib/Key.h"
+#include "GUIListItemLayout.h"
+#include "GUIMessage.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 
 CGUIWrappingListContainer::CGUIWrappingListContainer(int parentID, int controlID, float posX, float posY, float width, float height, ORIENTATION orientation, const CScroller& scroller, int preloadItems, int fixedPosition)
     : CGUIBaseContainer(parentID, controlID, posX, posY, width, height, orientation, scroller, preloadItems)
@@ -31,9 +23,7 @@ CGUIWrappingListContainer::CGUIWrappingListContainer(int parentID, int controlID
   m_extraItems = 0;
 }
 
-CGUIWrappingListContainer::~CGUIWrappingListContainer(void)
-{
-}
+CGUIWrappingListContainer::~CGUIWrappingListContainer(void) {}
 
 void CGUIWrappingListContainer::UpdatePageControl(int offset)
 {
@@ -59,7 +49,7 @@ bool CGUIWrappingListContainer::OnAction(const CAction &action)
     {
       m_analogScrollCount += action.GetAmount() * action.GetAmount();
       bool handled = false;
-      while (m_analogScrollCount > 0.4)
+      while (m_analogScrollCount > 0.4f)
       {
         handled = true;
         m_analogScrollCount -= 0.4f;
@@ -72,7 +62,7 @@ bool CGUIWrappingListContainer::OnAction(const CAction &action)
     {
       m_analogScrollCount += action.GetAmount() * action.GetAmount();
       bool handled = false;
-      while (m_analogScrollCount > 0.4)
+      while (m_analogScrollCount > 0.4f)
       {
         handled = true;
         m_analogScrollCount -= 0.4f;
@@ -125,7 +115,7 @@ bool CGUIWrappingListContainer::GetOffsetRange(int &minOffset, int &maxOffset) c
 
 void CGUIWrappingListContainer::ValidateOffset()
 {
-  // our minimal amount of items - we need to take into acount extra items to display wrapped items when scrolling
+  // our minimal amount of items - we need to take into account extra items to display wrapped items when scrolling
   unsigned int minItems = (unsigned int)m_itemsPerPage + ScrollCorrectionRange() + GetCacheCount() / 2;
   if (minItems <= m_items.size())
     return;
@@ -135,13 +125,13 @@ void CGUIWrappingListContainer::ValidateOffset()
   ResetExtraItems();
   if (m_items.size())
   {
-    unsigned int numItems = m_items.size();
+    size_t numItems = m_items.size();
     while (m_items.size() < minItems)
     {
       // add additional copies of items, as we require extras at render time
       for (unsigned int i = 0; i < numItems; i++)
       {
-        m_items.push_back(CGUIListItemPtr(m_items[i]->Clone()));
+        m_items.push_back(boost::shared_ptr<CGUIListItem>(m_items[i]->Clone()));
         m_extraItems++;
       }
     }

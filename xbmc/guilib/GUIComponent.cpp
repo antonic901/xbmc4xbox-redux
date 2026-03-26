@@ -12,14 +12,13 @@
 #include "GUIColorManager.h"
 #include "GUIInfoManager.h"
 #include "GUILargeTextureManager.h"
-#include "guilib/GUIComponent.h"
-#include "guilib/GUIWindowManager.h"
+#include "GUIWindowManager.h"
 #include "ServiceBroker.h"
 #include "TextureManager.h"
 #include "URL.h"
 #include "dialogs/GUIDialogYesNo.h"
 
-#include <boost/move/make_unique.hpp>
+#include <memory>
 
 CGUIComponent::CGUIComponent()
   : m_pWindowManager(boost::movelib::make_unique<CGUIWindowManager>()),
@@ -83,13 +82,13 @@ CGUIAudioManager &CGUIComponent::GetAudioManager()
 
 bool CGUIComponent::ConfirmDelete(const std::string& path)
 {
-  CGUIDialogYesNo* pDialog = dynamic_cast<CGUIDialogYesNo*>(GetWindowManager().GetWindow(WINDOW_DIALOG_YES_NO));
+  CGUIDialogYesNo* pDialog = GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
   if (pDialog)
   {
-    pDialog->SetHeading(122);
-    pDialog->SetLine(0, 125);
-    pDialog->SetLine(1, CURL(path).GetWithoutUserDetails());
-    pDialog->SetLine(2, "");
+    pDialog->SetHeading(CVariant{122});
+    pDialog->SetLine(0, CVariant{125});
+    pDialog->SetLine(1, CVariant{CURL(path).GetWithoutUserDetails()});
+    pDialog->SetLine(2, CVariant{""});
     pDialog->Open();
     if (pDialog->IsConfirmed())
       return true;
