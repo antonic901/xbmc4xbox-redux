@@ -175,6 +175,15 @@ void CGUIMoverControl::UpdateSpeed(int nDirection)
   }
 }
 
+#ifdef HAS_XBOX_D3D
+void CGUIMoverControl::PreAllocResources()
+{
+  CGUIControl::PreAllocResources();
+  m_imgFocus->PreAllocResources();
+  m_imgNoFocus->PreAllocResources();
+}
+#endif
+
 void CGUIMoverControl::AllocResources()
 {
   CGUIControl::AllocResources();

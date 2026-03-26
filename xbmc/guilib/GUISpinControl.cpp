@@ -361,6 +361,19 @@ bool CGUISpinControl::OnMessage(CGUIMessage& message)
   return false;
 }
 
+#ifdef HAS_XBOX_D3D
+void CGUISpinControl::PreAllocResources()
+{
+  CGUIControl::PreAllocResources();
+  m_imgspinUp->PreAllocResources();
+  m_imgspinUpFocus->PreAllocResources();
+  m_imgspinDown->PreAllocResources();
+  m_imgspinDownFocus->PreAllocResources();
+  m_imgspinUpDisabled->PreAllocResources();
+  m_imgspinDownDisabled->PreAllocResources();
+}
+#endif
+
 void CGUISpinControl::AllocResources()
 {
   CGUIControl::AllocResources();

@@ -50,6 +50,9 @@ public:
   virtual void OnUnFocus();
   void SetActive();
   virtual bool IsActive() const { return m_active; }
+#ifdef HAS_XBOX_D3D
+  virtual void PreAllocResources();
+#endif
   virtual void AllocResources();
   virtual void FreeResources(bool immediately = false);
   virtual void DynamicResourceAlloc(bool bOnOff);

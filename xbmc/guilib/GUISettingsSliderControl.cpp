@@ -143,6 +143,14 @@ void CGUISettingsSliderControl::DynamicResourceAlloc(bool bOnOff)
   m_buttonControl.DynamicResourceAlloc(bOnOff);
 }
 
+#ifdef HAS_XBOX_D3D
+void CGUISettingsSliderControl::PreAllocResources()
+{
+  CGUISliderControl::PreAllocResources();
+  m_buttonControl.PreAllocResources();
+}
+#endif
+
 void CGUISettingsSliderControl::AllocResources()
 {
   CGUISliderControl::AllocResources();

@@ -288,6 +288,17 @@ void CGUITexture::Render(float left,
   Draw(x, y, z, texture, diffuse, orientation);
 }
 
+#ifdef HAS_XBOX_D3D
+void CGUITexture::PreAllocResources()
+{
+  FreeResources();
+  if (!m_info.useLarge)
+    CServiceBroker::GetGUI()->GetTextureManager().PreLoad(m_info.filename);
+  if (!m_info.diffuse.empty())
+    CServiceBroker::GetGUI()->GetTextureManager().PreLoad(m_info.diffuse);
+}
+#endif
+
 bool CGUITexture::AllocResources()
 {
   if (m_info.filename.empty())

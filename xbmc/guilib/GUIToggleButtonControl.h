@@ -29,6 +29,9 @@ public:
   virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
   virtual bool OnAction(const CAction &action);
+#ifdef HAS_XBOX_D3D
+  virtual void PreAllocResources();
+#endif
   virtual void AllocResources();
   virtual void FreeResources(bool immediately = false);
   virtual void DynamicResourceAlloc(bool bOnOff);

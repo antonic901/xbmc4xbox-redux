@@ -237,6 +237,14 @@ bool CGUIImage::OnMessage(CGUIMessage& message)
   return CGUIControl::OnMessage(message);
 }
 
+#ifdef HAS_XBOX_D3D
+void CGUIImage::PreAllocResources()
+{
+  FreeResources();
+  m_texture->PreAllocResources();
+}
+#endif
+
 void CGUIImage::AllocResources()
 {
   if (m_texture->GetFileName().empty())

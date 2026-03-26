@@ -80,6 +80,14 @@ bool CGUIToggleButtonControl::OnAction(const CAction &action)
   return CGUIButtonControl::OnAction(action);
 }
 
+#ifdef HAS_XBOX_D3D
+void CGUIToggleButtonControl::PreAllocResources()
+{
+  CGUIButtonControl::PreAllocResources();
+  m_selectButton.PreAllocResources();
+}
+#endif
+
 void CGUIToggleButtonControl::AllocResources()
 {
   CGUIButtonControl::AllocResources();

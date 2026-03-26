@@ -16,6 +16,7 @@
 #include "GUIInfoManager.h"
 #include "GUIWindowManager.h"
 #include "ServiceBroker.h"
+#include "TextureManager.h"
 #include "addons/Skin.h"
 #include "input/ButtonTranslator.h"
 #include "input/actions/Action.h"
@@ -723,8 +724,16 @@ void CGUIWindow::AllocResources(bool forceLoad /*= false */)
 #endif
 
   // and now allocate resources
+#ifdef HAS_XBOX_D3D
+  CServiceBroker::GetGUI()->GetTextureManager().StartPreLoad();
+  CGUIControlGroup::PreAllocResources();
+  CServiceBroker::GetGUI()->GetTextureManager().EndPreLoad();
+#endif
   CGUIControlGroup::AllocResources();
 
+#ifdef HAS_XBOX_D3D
+  CServiceBroker::GetGUI()->GetTextureManager().FlushPreLoad();
+#endif
 #ifdef _DEBUG
   int64_t end = CurrentHostCounter();
   int64_t freq = CurrentHostFrequency();

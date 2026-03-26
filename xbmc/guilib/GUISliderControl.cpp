@@ -596,6 +596,21 @@ void CGUISliderControl::DynamicResourceAlloc(bool bOnOff)
   m_guiSelectorUpperDisabled->DynamicResourceAlloc(bOnOff);
 }
 
+#ifdef HAS_XBOX_D3D
+void CGUISliderControl::PreAllocResources()
+{
+  CGUIControl::PreAllocResources();
+  m_guiBackground->PreAllocResources();
+  m_guiBackgroundDisabled->PreAllocResources();
+  m_guiSelectorLower->PreAllocResources();
+  m_guiSelectorUpper->PreAllocResources();
+  m_guiSelectorLowerFocus->PreAllocResources();
+  m_guiSelectorUpperFocus->PreAllocResources();
+  m_guiSelectorLowerDisabled->PreAllocResources();
+  m_guiSelectorUpperDisabled->PreAllocResources();
+}
+#endif
+
 void CGUISliderControl::AllocResources()
 {
   CGUIControl::AllocResources();
