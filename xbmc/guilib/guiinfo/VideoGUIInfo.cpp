@@ -777,7 +777,10 @@ bool CVideoGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contextW
     // LISTITEM_*
     ///////////////////////////////////////////////////////////////////////////////////////////////
     case LISTITEM_IS_RESUMABLE:
-      value = tag->m_resumePoint.timeInSeconds > 0;
+      if (tag)
+        value = tag->m_resumePoint.timeInSeconds > 0;
+      else
+        value = false;
       return true;
 #ifndef _XBOX
     case LISTITEM_IS_STEREOSCOPIC:

@@ -57,7 +57,7 @@ void CGUIControlLookup::AddLookup(CGUIControl *control)
   if (lookupControl)
   { // first add all the subitems of this group (if they exist)
     const LookupMap &map(lookupControl->GetLookup());
-    for (LookupMap::const_iterator i = m_lookup.begin(); i != m_lookup.end(); ++i)
+    for (LookupMap::const_iterator i = map.begin(); i != map.end(); ++i)
       m_lookup.insert(m_lookup.upper_bound(i->first), std::make_pair(i->first, i->second));
   }
   if (control->GetID())
