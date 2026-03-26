@@ -26,7 +26,9 @@
 #endif
 #include "filesystem/ZipManager.h"
 #include "messaging/ApplicationMessenger.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "interfaces/AnnouncementManager.h"
 #include "xbox/Network.h"
 #include "settings/AdvancedSettings.h"

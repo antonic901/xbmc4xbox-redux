@@ -22,7 +22,11 @@
 #include "interfaces/builtins/Builtins.h"
 #include "ButtonTranslator.h"
 #include "profiles/ProfilesManager.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
+#include "input/keyboard/Key.h"
+#include "input/keyboard/KeyIDs.h"
 #include "filesystem/File.h"
 #include "filesystem/Directory.h"
 #include "FileItem.h"
@@ -47,7 +51,7 @@ typedef struct
 } WindowMapping;
 
 // remember the fixed length names (hence max 31 char)!
-static const ActionMapping actions[] = 
+static const ActionMapping actions[] =
 {
         {"left"              , ACTION_MOVE_LEFT },
         {"right"             , ACTION_MOVE_RIGHT},
@@ -202,7 +206,7 @@ static const ActionMapping actions[] =
         {"decreasepar"       , ACTION_DECREASE_PAR},
         {"settingsreset"      , ACTION_SETTINGS_RESET},
         {"settingslevelchange", ACTION_SETTINGS_LEVEL_CHANGE},
-        
+
         // Do nothing / error action
         { "error"            , ACTION_ERROR},
         { "noop"             , ACTION_NOOP}
@@ -227,7 +231,6 @@ static const ActionMapping windows[] =
         {"playersettings"           , WINDOW_SETTINGS_PLAYER},
         {"mediasettings"            , WINDOW_SETTINGS_MEDIA},
         {"interfacesettings"        , WINDOW_SETTINGS_INTERFACE},
-        {"videofiles"               , WINDOW_VIDEO_FILES}, // backward compat
         {"videolibrary"             , WINDOW_VIDEO_NAV},
         {"videoplaylist"            , WINDOW_VIDEO_PLAYLIST},
         {"loginscreen"              , WINDOW_LOGIN_SCREEN},
@@ -272,7 +275,6 @@ static const ActionMapping windows[] =
         {"addoninformation"         , WINDOW_DIALOG_ADDON_INFO},
         {"subtitlesearch"           , WINDOW_DIALOG_SUBTITLES},
         {"musicplaylist"            , WINDOW_MUSIC_PLAYLIST},
-        {"musicfiles"               , WINDOW_MUSIC_FILES}, // backward compat
         {"musiclibrary"             , WINDOW_MUSIC_NAV}, // backward compat
         {"musicplaylisteditor"      , WINDOW_MUSIC_PLAYLIST_EDITOR},
         {"infoprovidersettings"     , WINDOW_DIALOG_INFOPROVIDER_SETTINGS},
@@ -286,7 +288,6 @@ static const ActionMapping windows[] =
         {"fullscreenvideo"          , WINDOW_FULLSCREEN_VIDEO},
         {"visualisation"            , WINDOW_VISUALISATION},
         {"slideshow"                , WINDOW_SLIDESHOW},
-        {"filestackingdialog"       , WINDOW_DIALOG_FILESTACKING}, // Deprecated
         {"weather"                  , WINDOW_WEATHER},
         {"insignia"                 , WINDOW_INSIGNIA},
         {"screensaver"              , WINDOW_SCREENSAVER},
@@ -301,9 +302,7 @@ static const ActionMapping windows[] =
 
 static const WindowMapping fallbackWindows[] =
 {
-  { WINDOW_FULLSCREEN_LIVETV,          WINDOW_FULLSCREEN_VIDEO },
-  { WINDOW_DIALOG_FULLSCREEN_INFO,     WINDOW_FULLSCREEN_VIDEO },
-  { WINDOW_FULLSCREEN_RADIO,           WINDOW_VISUALISATION    }
+  { WINDOW_DIALOG_FULLSCREEN_INFO,     WINDOW_FULLSCREEN_VIDEO }
 };
 
 CButtonTranslator& CButtonTranslator::GetInstance()
@@ -740,7 +739,7 @@ bool CButtonTranslator::TranslateActionString(const char *szAction, int &action)
   CStdString strAction = szAction;
   strAction.ToLower();
   if (CBuiltins::GetInstance().HasCommand(strAction)) action = ACTION_BUILT_IN_FUNCTION;
-  
+
   for (unsigned int index=0;index < sizeof(actions)/sizeof(actions[0]);++index)
   {
     if (strAction.Equals(actions[index].name))

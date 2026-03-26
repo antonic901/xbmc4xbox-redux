@@ -21,7 +21,9 @@
 #include "GUIWindowStartup.h"
 #include "ServiceBroker.h"
 #include "guilib/GUIComponent.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 

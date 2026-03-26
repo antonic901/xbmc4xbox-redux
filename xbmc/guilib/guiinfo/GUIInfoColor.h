@@ -30,11 +30,11 @@ namespace GUIINFO
 class CGUIInfoColor
 {
 public:
-  CGUIInfoColor(UTILS::COLOR::Color color = 0) : m_color(color) {}
+  CGUIInfoColor(UTILS::COLOR::Color color = 0) : m_color(color), m_info(0) {}
 
   operator UTILS::COLOR::Color() const { return m_color; }
 
-  bool Update(const CGUIListItem* item = nullptr);
+  bool Update(const CGUIListItem* item = NULL);
   void Parse(const std::string &label, int context);
 
   /*!
@@ -44,7 +44,7 @@ public:
   bool HasInfo() const { return m_info != 0; }
 
 private:
-  int m_info = 0;
+  int m_info;
   UTILS::COLOR::Color m_color;
 };
 

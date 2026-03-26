@@ -28,6 +28,7 @@
  */
 
 #include "utils/ColorUtils.h"
+#include "windowing/GraphicContext.h"
 
 #include <assert.h>
 #include <math.h>

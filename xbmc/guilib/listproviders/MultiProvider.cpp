@@ -8,9 +8,9 @@
 
 #include "MultiProvider.h"
 
+#include "threads/SingleLock.h"
 #include "utils/XBMCTinyXML.h"
 
-#include <mutex>
 
 CMultiProvider::CMultiProvider(const TiXmlNode *first, int parentID)
  : IListProvider(parentID)
@@ -19,47 +19,47 @@ CMultiProvider::CMultiProvider(const TiXmlNode *first, int parentID)
   {
     IListProviderPtr sub(IListProvider::CreateSingle(content, parentID));
     if (sub)
-      m_providers.push_back(std::move(sub));
+      m_providers.push_back(boost::move(sub));
   }
 }
 
 CMultiProvider::CMultiProvider(const CMultiProvider& other) : IListProvider(other.m_parentID)
 {
-  for (const auto& provider : other.m_providers)
+  for (std::vector<IListProviderPtr>::const_iterator it = other.m_providers.begin(); it != other.m_providers.end(); ++it)
   {
-    boost::movelib::unique_ptr<IListProvider> newProvider = provider->Clone();
-    if (newProvider)
-      m_providers.emplace_back(std::move(newProvider));
+   boost::movelib::unique_ptr<IListProvider> newProvider = (*it)->Clone();
+   if (newProvider)
+     m_providers.push_back(boost::move(newProvider));
   }
 }
 
 boost::movelib::unique_ptr<IListProvider> CMultiProvider::Clone()
 {
-  return boost::movelib::make_unique<CMultiProvider>(*this);
+  return boost::movelib::unique_ptr<IListProvider>(new CMultiProvider(*this));
 }
 
 bool CMultiProvider::Update(bool forceRefresh)
 {
   bool result = false;
-  for (auto& provider : m_providers)
-    result |= provider->Update(forceRefresh);
+  for (std::vector<IListProviderPtr>::iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
+    result |= (*provider)->Update(forceRefresh);
   return result;
 }
 
-void CMultiProvider::Fetch(std::vector<boost::shared_ptr<CGUIListItem>>& items)
+void CMultiProvider::Fetch(std::vector<boost::shared_ptr<CGUIListItem> >& items)
 {
   CSingleLock lock(m_section);
-  std::vector<boost::shared_ptr<CGUIListItem>> subItems;
+  std::vector<boost::shared_ptr<CGUIListItem> > subItems;
   items.clear();
   m_itemMap.clear();
-  for (auto const& provider : m_providers)
+  for (std::vector<IListProviderPtr>::const_iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
   {
-    provider->Fetch(subItems);
-    for (auto& item : subItems)
+    (*provider)->Fetch(subItems);
+    for (std::vector<boost::shared_ptr<CGUIListItem> >::iterator item = subItems.begin(); item != subItems.end(); ++item)
     {
-      auto key = GetItemKey(item);
-      m_itemMap[key] = provider.get();
-      items.push_back(item);
+      CMultiProvider::item_key_type key = GetItemKey(*item);
+      m_itemMap[key] = (*provider).get();
+      items.push_back(*item);
     }
     subItems.clear();
   }
@@ -68,8 +68,8 @@ void CMultiProvider::Fetch(std::vector<boost::shared_ptr<CGUIListItem>>& items)
 bool CMultiProvider::IsUpdating() const
 {
   bool result = false;
-  for (auto const& provider : m_providers)
-    result |= provider->IsUpdating();
+  for (std::vector<IListProviderPtr>::const_iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
+    result |= (*provider)->IsUpdating();
   return result;
 }
 
@@ -80,15 +80,15 @@ void CMultiProvider::Reset()
     m_itemMap.clear();
   }
 
-  for (auto const& provider : m_providers)
-    provider->Reset();
+  for (std::vector<IListProviderPtr>::const_iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
+    (*provider)->Reset();
 }
 
 bool CMultiProvider::OnClick(const boost::shared_ptr<CGUIListItem>& item)
 {
   CSingleLock lock(m_section);
-  auto key = GetItemKey(item);
-  auto it = m_itemMap.find(key);
+  CMultiProvider::item_key_type key = GetItemKey(item);
+  std::map<CMultiProvider::item_key_type, IListProvider *>::iterator it = m_itemMap.find(key);
   if (it != m_itemMap.end())
     return it->second->OnClick(item);
   else
@@ -98,8 +98,8 @@ bool CMultiProvider::OnClick(const boost::shared_ptr<CGUIListItem>& item)
 bool CMultiProvider::OnInfo(const boost::shared_ptr<CGUIListItem>& item)
 {
   CSingleLock lock(m_section);
-  auto key = GetItemKey(item);
-  auto it = m_itemMap.find(key);
+  CMultiProvider::item_key_type key = GetItemKey(item);
+  std::map<CMultiProvider::item_key_type, IListProvider *>::iterator it = m_itemMap.find(key);
   if (it != m_itemMap.end())
     return it->second->OnInfo(item);
   else
@@ -109,8 +109,8 @@ bool CMultiProvider::OnInfo(const boost::shared_ptr<CGUIListItem>& item)
 bool CMultiProvider::OnContextMenu(const boost::shared_ptr<CGUIListItem>& item)
 {
   CSingleLock lock(m_section);
-  auto key = GetItemKey(item);
-  auto it = m_itemMap.find(key);
+  CMultiProvider::item_key_type key = GetItemKey(item);
+  std::map<CMultiProvider::item_key_type, IListProvider *>::iterator it = m_itemMap.find(key);
   if (it != m_itemMap.end())
     return it->second->OnContextMenu(item);
   else

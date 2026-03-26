@@ -38,7 +38,7 @@ NPT_String CUPnPServer::BuildSafeResourceUri(const char* host,
       filename = URIUtils::GetFileName(file_path);
 
     md5state.append(file_path);
-    md5state.getDigest(md5);
+    md5 = md5state.getDigest();
     md5 += "/" + filename;
     { NPT_AutoLock lock(m_FileMutex);
       NPT_CHECK(m_FileMap.Put(md5.c_str(), file_path));
@@ -338,7 +338,7 @@ CUPnPServer::OnBrowseDirectChildren(PLT_ActionReference&          action,
             item->SetLabel("Video Library");
             item->SetLabelPreformated(true);
             items.Add(item);
-          
+
         } else {
             CDirectory::GetDirectory((const char*)parent_id, items, "", DIR_FLAG_DEFAULTS);
         }
@@ -356,8 +356,8 @@ CUPnPServer::OnBrowseDirectChildren(PLT_ActionReference&          action,
     // passed
     NPT_String action_name = action->GetActionDesc().GetName();
     return BuildResponse(
-        action, 
-        items, 
+        action,
+        items,
         filter,
         starting_index,
         requested_count,
@@ -460,7 +460,7 @@ CUPnPServer::OnSearchContainer(PLT_ActionReference&          action,
                                const NPT_List<NPT_String>&   sort_criteria,
                                const PLT_HttpRequestContext& context)
 {
-    CLog::Log(LOGDEBUG, "Received Search request for object '%s' with search '%s'", 
+    CLog::Log(LOGDEBUG, "Received Search request for object '%s' with search '%s'",
         (const char*)object_id,
         (const char*)search_criteria);
 

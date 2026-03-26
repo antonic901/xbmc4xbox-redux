@@ -15,7 +15,7 @@
 
 #include "interfaces/info/Info.h"
 
-#include <functional>
+#include <boost/function.hpp>
 #include <string>
 #include <vector>
 
@@ -31,7 +31,7 @@ namespace GUIINFO
 class CGUIInfoLabel
 {
 public:
-  CGUIInfoLabel() {}
+  CGUIInfoLabel() : m_dirty(false) {}
   CGUIInfoLabel(const std::string& label,
                 const std::string& fallback = "",
                 int context = INFO::DEFAULT_CONTEXT);
@@ -66,7 +66,7 @@ public:
    */
   const std::string& GetItemLabel(const CGUIListItem* item,
                                   bool preferImage = false,
-                                  std::string* fallback = nullptr) const;
+                                  std::string* fallback = NULL) const;
 
   bool IsConstant() const;
   bool IsEmpty() const;
@@ -90,7 +90,7 @@ public:
    \param label text to replace
    \return text with any localized strings filled in.
    */
-  static std::string ReplaceAddonStrings(std::string &&label);
+  static std::string ReplaceAddonStrings(std::string &label);
 
   /*!
    * \brief Replaces instances of $FEATURE[feature name, controller ID] with
@@ -100,9 +100,9 @@ public:
    *
    * \return text with any controller strings filled in
    */
-  static std::string ReplaceControllerStrings(std::string&& label);
+  static std::string ReplaceControllerStrings(std::string& label);
 
-  typedef std::function<std::string(const std::string&)> StringReplacerFunc;
+  typedef boost::function<std::string(const std::string&)> StringReplacerFunc;
 
   /*!
    \brief Replaces instances of $strKeyword[value] with the appropriate resolved string
@@ -155,7 +155,7 @@ private:
 
   /*! \brief Rebuild a label value, based on the provided already resolved info portions (a localized string, multiple infolabels, etc)
    \param label[in, out] label value where to store the processed result
-   \param infoPortion the list of info portions 
+   \param infoPortion the list of info portions
    */
   void RebuildLabel(std::string& label, const std::vector<CInfoPortion>& infoPortion) const;
 
@@ -164,7 +164,7 @@ private:
    \param preferImages caller is specifically wanting an image rather than a label.
    \param fallback if non-NULL, is set to an alternate value to use should the actual value be not appropriate. This is used by infoproviders to
    to re-write the fallback label
-   \param infoPortion the list of info portions 
+   \param infoPortion the list of info portions
    \return true if an update is needed, false otherwise
    */
   bool LabelNeedsUpdate(int context,
@@ -176,7 +176,7 @@ private:
    \param preferImages caller is specifically wanting an image rather than a label.
    \param fallback if non-NULL, is set to an alternate value to use should the actual value be not appropriate. This is used by infoproviders to
    to re-write the fallback label
-   \param infoPortion the list of info portions 
+   \param infoPortion the list of info portions
    \return true if an update is needed, false otherwise
    */
   bool ItemLabelNeedsUpdate(const CGUIListItem* item,
@@ -184,7 +184,7 @@ private:
                             std::string* fallback,
                             const std::vector<CInfoPortion>& infoPortion) const;
 
-  mutable bool        m_dirty = false;
+  mutable bool        m_dirty;
   mutable std::string m_label;
   mutable std::string m_fallback;
   std::vector<CInfoPortion> m_infoLabel;

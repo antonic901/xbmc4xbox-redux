@@ -9,7 +9,6 @@
 #pragma once
 
 #include "guilib/guiinfo/GUIInfoProvider.h"
-#include "utils/GpuInfo.h"
 #include "utils/Temperature.h"
 
 #include <memory>
@@ -30,10 +29,10 @@ public:
   virtual ~CSystemGUIInfo() {}
 
   // KODI::GUILIB::GUIINFO::IGUIInfoProvider implementation
-  bool InitCurrentItem(CFileItem *item) override;
-  bool GetLabel(std::string& value, const CFileItem *item, int contextWindow, const CGUIInfo &info, std::string *fallback) const override;
-  bool GetInt(int& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const override;
-  bool GetBool(bool& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const override;
+  virtual bool InitCurrentItem(CFileItem *item);
+  virtual bool GetLabel(std::string& value, const CFileItem *item, int contextWindow, const CGUIInfo &info, std::string *fallback) const;
+  virtual bool GetInt(int& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const;
+  virtual bool GetBool(bool& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const;
 
   float GetFPS() const { return m_fps; }
   void UpdateFPS();
@@ -41,17 +40,15 @@ public:
 private:
   std::string GetSystemHeatInfo(int info) const;
 
-  boost::movelib::unique_ptr<CGPUInfo> m_gpuInfo;
-
   static const int SYSTEM_HEAT_UPDATE_INTERVAL = 60000;
 
   mutable unsigned int m_lastSysHeatInfoTime;
   mutable CTemperature m_gpuTemp;
   mutable CTemperature m_cpuTemp;
-  int m_fanSpeed = 0;
-  float m_fps = 0.0;
-  unsigned int m_frameCounter = 0;
-  unsigned int m_lastFPSTime = 0;
+  mutable int m_fanSpeed;
+  float m_fps;
+  unsigned int m_frameCounter;
+  unsigned int m_lastFPSTime;
 };
 
 } // namespace GUIINFO

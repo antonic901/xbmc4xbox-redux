@@ -305,6 +305,13 @@ public:
    */
   double GetCurrentResumeTime() const;
 
+  /*!
+   * \brief Set the offset where start the playback.
+   * \param offset Set the offset value as ms,
+                   or the special value STARTOFFSET_RESUME.
+   */
+  void SetStartOffset(const int offset) { m_lStartOffset = offset; }
+
   inline bool HasPictureInfoTag() const
   {
     return m_pictureInfoTag != NULL;
@@ -353,6 +360,13 @@ public:
    \sa GetLocalArt, FindLocalArt
    */
   bool SkipLocalArt() const;
+
+  /*! \brief Get the thumb for the item, but hide it to prevent spoilers if
+             the user has set 'Show information for unwatched items' appropriately.
+   \param item the item to get the thumb image for.
+   \return fanart or spoiler overlay if item is an unwatched episode, thumb art otherwise.
+   */
+  std::string GetThumbHideIfUnwatched(const CFileItem* item) const;
 
   // Gets the .tbn file associated with this item
   std::string GetTBNFile() const;

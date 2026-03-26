@@ -44,7 +44,9 @@
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
@@ -602,7 +604,7 @@ void CGUIWindowVideoNav::LoadVideoInfo(CFileItemList &items, CVideoDatabase &dat
 
       // set the watched overlay
       if (pItem->IsVideo())
-        pItem->SetOverlayImage(CGUIListItem::ICON_OVERLAY_UNWATCHED, pItem->HasVideoInfoTag() && pItem->GetVideoInfoTag()->m_playCount > 0);
+        pItem->SetOverlayImage(pItem->GetVideoInfoTag()->m_playCount > 0 ? CGUIListItem::ICON_OVERLAY_WATCHED : CGUIListItem::ICON_OVERLAY_UNWATCHED);
     }
   }
 }

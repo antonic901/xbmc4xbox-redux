@@ -12,15 +12,11 @@
 #include "utils/EventStream.h"
 #include "utils/TimeFormat.h"
 
-#include <atomic>
 #include <ctime>
-#include <memory>
+#include <boost/bind.hpp>
+#include <boost/move/unique_ptr.hpp>
 #include <utility>
 #include <vector>
-
-class CApplicationPlayer;
-class CApplicationVolumeHandling;
-class CDataCacheCore;
 
 namespace KODI
 {
@@ -36,23 +32,25 @@ struct PlayerShowInfoChangedEvent
   explicit PlayerShowInfoChangedEvent(bool showInfo) : m_showInfo(showInfo) {}
   virtual ~PlayerShowInfoChangedEvent() {}
 
-  bool m_showInfo{false};
+  bool m_showInfo;
 };
 
 class CPlayerGUIInfo : public CGUIInfoProvider
 {
 public:
   CPlayerGUIInfo();
-  ~CPlayerGUIInfo() override;
+  virtual ~CPlayerGUIInfo();
 
   CEventStream<PlayerShowInfoChangedEvent>& Events() { return m_events; }
 
   // KODI::GUILIB::GUIINFO::IGUIInfoProvider implementation
-  bool InitCurrentItem(CFileItem *item) override;
-  bool GetLabel(std::string& value, const CFileItem *item, int contextWindow, const CGUIInfo &info, std::string *fallback) const override;
-  bool GetInt(int& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const override;
-  bool GetBool(bool& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const override;
+  virtual bool InitCurrentItem(CFileItem *item);
+  virtual bool GetLabel(std::string& value, const CFileItem *item, int contextWindow, const CGUIInfo &info, std::string *fallback) const;
+  virtual bool GetInt(int& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const;
+  virtual bool GetBool(bool& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const;
 
+  bool GetDisplayAfterSeek();
+  void SetDisplayAfterSeek(unsigned int timeOut = 2500, int seekOffset = 0);
   void SetShowTime(bool showtime) { m_playerShowTime = showtime; }
   void SetShowInfo(bool showinfo);
   bool GetShowInfo() const { return m_playerShowInfo; }
@@ -70,22 +68,13 @@ private:
   std::string GetCurrentSeekTime(TIME_FORMAT format) const;
   std::string GetSeekTime(TIME_FORMAT format) const;
 
-  std::string GetContentRanges(int iInfo) const;
-  std::vector<std::pair<float, float>> GetEditList(const CDataCacheCore& data,
-                                                   std::time_t duration) const;
-  std::vector<std::pair<float, float>> GetCuts(const CDataCacheCore& data,
-                                               std::time_t duration) const;
-  std::vector<std::pair<float, float>> GetSceneMarkers(const CDataCacheCore& data,
-                                                       std::time_t duration) const;
-  std::vector<std::pair<float, float>> GetChapters(const CDataCacheCore& data,
-                                                   std::time_t duration) const;
-
   boost::movelib::unique_ptr<CFileItem> m_currentItem;
-  std::atomic_bool m_playerShowTime{false};
-  std::atomic_bool m_playerShowInfo{false};
-  const boost::shared_ptr<CApplicationPlayer> m_appPlayer;
-  const boost::shared_ptr<CApplicationVolumeHandling> m_appVolume;
+  bool m_playerShowTime;
+  bool m_playerShowInfo;
   CEventSource<PlayerShowInfoChangedEvent> m_events;
+
+  unsigned int m_AfterSeekTimeout;
+  int m_seekOffset;
 };
 
 } // namespace GUIINFO

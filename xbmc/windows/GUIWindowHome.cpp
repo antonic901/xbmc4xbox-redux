@@ -19,7 +19,9 @@
  */
 
 #include "GUIWindowHome.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "utils/JobManager.h"
 #include "utils/RecentlyAddedJob.h"
 #include "interfaces/AnnouncementManager.h"
@@ -56,7 +58,7 @@ bool CGUIWindowHome::OnAction(const CAction &action)
       action.GetHoldTime() < min_hold_time &&
       g_application.m_pPlayer->IsPlaying())
   {
-    g_application.SwitchToFullScreen();
+    CServiceBroker::GetGUI()->GetWindowManager().SwitchToFullScreen();
     return true;
   }
   return CGUIWindow::OnAction(action);

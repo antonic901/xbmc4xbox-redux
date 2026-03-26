@@ -20,7 +20,8 @@
  *
  */
 
-#include "guilib/Key.h"
+#include "input/keyboard/Key.h"
+#include "guilib/WindowIDs.h"
 #include "threads/Thread.h"
 #include "messaging/ThreadMessage.h"
 
@@ -128,7 +129,16 @@
   \sa HELPERS::DialogYesNoMessage
 */
 #define TMSG_GUI_DIALOG_YESNO             TMSG_MASK_WINDOWMANAGER + 8
+#define TMSG_GUI_DIALOG_OK                TMSG_MASK_WINDOWMANAGER + 9
 
+/*!
+  \def TMSG_GUI_PREVIOUS_WINDOW
+  \brief Message sent through CApplicationMessenger to go back to the previous window
+
+  This is an alternative to TMSG_GUI_ACTIVATE_WINDOW, but it keeps
+  all configured parameters, like startup directory.
+*/
+#define TMSG_GUI_PREVIOUS_WINDOW          TMSG_MASK_WINDOWMANAGER + 10
 
 #define TMSG_SLIDESHOW_SCREENSAVER  TMSG_MASK_XBOX + 1
 #define TMSG_HTTPAPI                TMSG_MASK_XBOX + 2

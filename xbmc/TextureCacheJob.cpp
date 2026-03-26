@@ -75,7 +75,7 @@ bool CTextureCacheJob::DoWork()
   return CacheTexture();
 }
 
-bool CTextureCacheJob::CacheTexture(CBaseTexture **out_texture)
+bool CTextureCacheJob::CacheTexture(boost::movelib::unique_ptr<CTexture>* out_texture)
 {
   // unwrap the URL as required
   std::string additional_info;
@@ -103,7 +103,7 @@ bool CTextureCacheJob::CacheTexture(CBaseTexture **out_texture)
     return true;
   }
 #endif
-  CBaseTexture *texture = LoadImage(image, width, height, additional_info);
+  boost::movelib::unique_ptr<CTexture> texture = LoadImage(image, width, height, additional_info);
   if (texture)
   {
     if (texture->HasAlpha())
@@ -113,25 +113,22 @@ bool CTextureCacheJob::CacheTexture(CBaseTexture **out_texture)
 
     CLog::Log(LOGDEBUG, "%s image '%s' to '%s':", m_oldHash.empty() ? "Caching" : "Recaching", CURL::GetRedacted(image).c_str(), m_details.file.c_str());
 
-    if (CPicture::CacheTexture(texture, width, height, CTextureCache::GetCachedPath(m_details.file)))
+    if (CPicture::CacheTexture(texture.get(), width, height, CTextureCache::GetCachedPath(m_details.file)))
     {
       m_details.width = width;
       m_details.height = height;
       if (out_texture) // caller wants the texture
 #ifdef _XBOX
       { // load cached image
-        delete texture;
-        *out_texture = CBaseTexture::LoadFromFile(CTextureCache::GetCachedPath(m_details.file), width, height, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("pictures.useexifrotation"));
+        texture.reset();
+        *out_texture = CTexture::LoadFromFile(CTextureCache::GetCachedPath(m_details.file), width, height, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("pictures.useexifrotation"));
       }
 #else
-        *out_texture = texture;
+        *out_texture = boost::move(texture);
 #endif
-      else
-        delete texture;
       return true;
     }
   }
-  delete texture;
   return false;
 }
 
@@ -169,13 +166,13 @@ std::string CTextureCacheJob::DecodeImageURL(const std::string &url, unsigned in
   return image;
 }
 
-CBaseTexture *CTextureCacheJob::LoadImage(const std::string &image, unsigned int width, unsigned int height, const std::string &additional_info)
+boost::movelib::unique_ptr<CTexture> CTextureCacheJob::LoadImage(const std::string &image, unsigned int width, unsigned int height, const std::string &additional_info)
 {
   if (additional_info == "music")
   { // special case for embedded music images
     MUSIC_INFO::EmbeddedArt art;
     if (CMusicThumbLoader::GetEmbeddedThumb(image, art))
-      return CBaseTexture::LoadFromFileInMemory(&art.data[0], art.size, art.mime, width, height);
+      return CTexture::LoadFromFileInMemory(&art.data[0], art.size, art.mime, width, height);
   }
 
   // Validate file URL to see if it is an image
@@ -185,7 +182,7 @@ CBaseTexture *CTextureCacheJob::LoadImage(const std::string &image, unsigned int
       && !StringUtils::StartsWithNoCase(file.GetMimeType(), "image/") && !StringUtils::EqualsNoCase(file.GetMimeType(), "application/octet-stream")) // ignore non-pictures
     return NULL;
 
-  CBaseTexture *texture = CBaseTexture::LoadFromFile(image, width, height, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("pictures.useexifrotation"));
+  boost::movelib::unique_ptr<CTexture> texture = CTexture::LoadFromFile(image, width, height, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("pictures.useexifrotation"));
   if (!texture)
     return NULL;
 
@@ -195,7 +192,7 @@ CBaseTexture *CTextureCacheJob::LoadImage(const std::string &image, unsigned int
   if (additional_info == "flipped")
     texture->SetOrientation(texture->GetOrientation() ^ 1);
 
-  return texture;
+  return boost::move(texture);
 }
 
 bool CTextureCacheJob::UpdateableURL(const std::string &url) const

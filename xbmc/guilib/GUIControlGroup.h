@@ -92,10 +92,11 @@ private:
 
   struct IDCollectorList
   {
+    IDCollectorList() : m_stackDepth(0) {}
     ~IDCollectorList()
     {
-      for (auto item : m_items)
-        delete item;
+      for (COLLECTORTYPE::iterator it = m_items.begin(); it != m_items.end(); ++it)
+        delete *it;
     }
 
     std::vector<CGUIControl *> *Get() {
@@ -107,7 +108,7 @@ private:
     void Release() { --m_stackDepth; }
 
     COLLECTORTYPE m_items;
-    size_t m_stackDepth = 0;
+    size_t m_stackDepth;
   }m_idCollector;
 
   struct IDCollector

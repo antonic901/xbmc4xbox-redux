@@ -13,8 +13,10 @@
 \brief
 */
 
+#include "xbox/PlatformDefs.h" // int64_t
+
 #include <map>
-#include <memory>
+#include <boost/move/unique_ptr.hpp>
 #include <string>
 
 //  Forward

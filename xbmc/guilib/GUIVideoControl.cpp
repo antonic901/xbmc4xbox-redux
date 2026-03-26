@@ -8,12 +8,15 @@
 
 #include "GUIVideoControl.h"
 
+#include "Application.h"
 #include "GUIComponent.h"
 #include "GUIWindowManager.h"
 #include "ServiceBroker.h"
-#include "application/ApplicationComponents.h"
-#include "application/ApplicationPlayer.h"
-#include "application/ApplicationPowerHandling.h"
+#ifdef HAS_VIDEO_PLAYBACK
+#include "cores/VideoRenderers/RenderManager.h"
+#else
+#include "cores/DummyVideoPlayer.h"
+#endif
 #include "input/actions/ActionIDs.h"
 #include "utils/ColorUtils.h"
 
@@ -30,58 +33,38 @@ CGUIVideoControl::~CGUIVideoControl(void) {}
 void CGUIVideoControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   //! @todo Proper processing which marks when its actually changed. Just mark always for now.
-  const auto& components = CServiceBroker::GetAppComponents();
-  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-  if (appPlayer->IsRenderingGuiLayer())
-    MarkDirtyRegion();
+  MarkDirtyRegion();
 
   CGUIControl::Process(currentTime, dirtyregions);
 }
 
 void CGUIVideoControl::Render()
 {
-  auto& components = CServiceBroker::GetAppComponents();
-  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-  if (appPlayer->IsRenderingVideo())
+#ifdef HAS_VIDEO_PLAYBACK
+  // don't render if we aren't playing video, or if the renderer isn't started
+  // (otherwise the lock we have from CApplication::Render() may clash with the startup
+  // locks in the RenderManager.)
+  if (g_application.m_pPlayer->IsPlayingVideo() && g_renderManager.IsStarted())
   {
-    if (!appPlayer->IsPausedPlayback())
-    {
-      auto& appComponents = CServiceBroker::GetAppComponents();
-      const auto appPower = appComponents.GetComponent<CApplicationPowerHandling>();
-      appPower->ResetScreenSaver();
-    }
+#else
+  if (g_application.m_pPlayer->IsPlayingVideo())
+  {
+#endif
+    if (!g_application.m_pPlayer->IsPaused())
+      g_application.ResetScreenSaver();
 
     CServiceBroker::GetWinSystem()->GetGfxContext().SetViewWindow(m_posX, m_posY, m_posX + m_width, m_posY + m_height);
-    TransformMatrix mat;
-    CServiceBroker::GetWinSystem()->GetGfxContext().SetTransform(mat, 1.0, 1.0);
+    CServiceBroker::GetWinSystem()->GetGfxContext().SetViewPort(m_posX, m_posY, m_width, m_height);
 
-    UTILS::COLOR::Color alpha =
-        CServiceBroker::GetWinSystem()->GetGfxContext().MergeAlpha(0xFF000000) >> 24;
-    if (appPlayer->IsRenderingVideoLayer())
-    {
-      CRect old = CServiceBroker::GetWinSystem()->GetGfxContext().GetScissors();
-      CRect region = GetRenderRegion();
-      region.Intersect(old);
-      CServiceBroker::GetWinSystem()->GetGfxContext().SetScissors(region);
-      CServiceBroker::GetWinSystem()->GetGfxContext().Clear(0);
-      CServiceBroker::GetWinSystem()->GetGfxContext().SetScissors(old);
-    }
-    else
-      appPlayer->Render(false, alpha);
-
-    CServiceBroker::GetWinSystem()->GetGfxContext().RemoveTransform();
+#ifdef HAS_VIDEO_PLAYBACK
+    color_t alpha = CServiceBroker::GetWinSystem()->GetGfxContext().MergeAlpha(0xFF000000) >> 24;
+    g_renderManager.RenderUpdate(false, 0, alpha);
+#else
+    ((CDummyVideoPlayer *)g_application.m_pPlayer)->Render();
+#endif
+    CServiceBroker::GetWinSystem()->GetGfxContext().RestoreViewPort();
   }
   CGUIControl::Render();
-}
-
-void CGUIVideoControl::RenderEx()
-{
-  auto& components = CServiceBroker::GetAppComponents();
-  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-  if (appPlayer->IsRenderingVideo())
-    appPlayer->Render(false, 255, false);
-
-  CGUIControl::RenderEx();
 }
 
 bool CGUIVideoControl::CanFocus() const

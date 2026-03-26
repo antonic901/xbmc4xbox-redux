@@ -21,7 +21,9 @@
 #include "GUIDialogYesNo.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "messaging/helpers/DialogHelper.h"
 
 CGUIDialogYesNo::CGUIDialogYesNo(int overrideId /* = -1 */)

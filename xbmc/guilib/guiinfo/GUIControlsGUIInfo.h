@@ -25,13 +25,14 @@ class CGUIInfo;
 class CGUIControlsGUIInfo : public CGUIInfoProvider
 {
 public:
+  CGUIControlsGUIInfo() : m_nextWindowID(WINDOW_INVALID), m_prevWindowID(WINDOW_INVALID) {}
   virtual ~CGUIControlsGUIInfo() {}
 
   // KODI::GUILIB::GUIINFO::IGUIInfoProvider implementation
-  bool InitCurrentItem(CFileItem *item) override;
-  bool GetLabel(std::string& value, const CFileItem *item, int contextWindow, const CGUIInfo &info, std::string *fallback) const override;
-  bool GetInt(int& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const override;
-  bool GetBool(bool& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const override;
+  virtual bool InitCurrentItem(CFileItem *item);
+  virtual bool GetLabel(std::string& value, const CFileItem *item, int contextWindow, const CGUIInfo &info, std::string *fallback) const;
+  virtual bool GetInt(int& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const;
+  virtual bool GetBool(bool& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const;
 
   void SetNextWindow(int windowID) { m_nextWindowID = windowID; }
   void SetPreviousWindow(int windowID) { m_prevWindowID = windowID; }
@@ -45,8 +46,8 @@ public:
   void ResetContainerMovingCache();
 
 private:
-  int m_nextWindowID = WINDOW_INVALID;
-  int m_prevWindowID = WINDOW_INVALID;
+  int m_nextWindowID;
+  int m_prevWindowID;
 
   std::map<int, int> m_containerMoves;  // direction of list moving
 };

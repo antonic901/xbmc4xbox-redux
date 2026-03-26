@@ -28,7 +28,9 @@
 #include "guilib/LocalizeStrings.h"
 #include "GUIDialogMusicInfo.h"
 #include "GUIUserMessages.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "music/Album.h"
 #include "music/MusicDatabase.h"
 #include "music/MusicUtils.h"
@@ -379,7 +381,7 @@ void CGUIDialogSongInfo::OnGetArt()
     // Add item for current artwork, could a fallback from album/artist
     CFileItemPtr item(new CFileItem("thumb://Current", false));
     item->SetArt("thumb", m_song->GetArt(type));
-    item->SetIconImage("DefaultPicture.png");
+    item->SetArt("icon", "DefaultPicture.png");
     item->SetLabel(g_localizeStrings.Get(13512));  //! @todo: label fallback art so user knows?
     items.Add(item);
   }
@@ -390,7 +392,7 @@ void CGUIDialogSongInfo::OnGetArt()
     {
       CFileItemPtr item(new CFileItem("thumb://Thumb", false));
       item->SetArt("thumb", m_song->GetArt("thumb"));
-      item->SetIconImage("DefaultAlbumCover.png");
+      item->SetArt("icon", "DefaultAlbumCover.png");
       item->SetLabel(g_localizeStrings.Get(21371));
       items.Add(item);
     }

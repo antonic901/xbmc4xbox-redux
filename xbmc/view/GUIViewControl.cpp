@@ -70,7 +70,7 @@ void CGUIViewControl::SetCurrentView(int viewMode)
   CGUIControl *previousView = NULL;
   if (m_currentView >= 0 && m_currentView < (int)m_visibleViews.size())
     previousView = m_visibleViews[m_currentView];
-  
+
   UpdateViewVisibility();
 
   // viewMode is of the form TYPE << 16 | ID
@@ -334,7 +334,7 @@ void CGUIViewControl::UpdateViewVisibility()
     CGUIControl *view = m_allViews[i];
     if (view->HasVisibleCondition())
     {
-      view->UpdateVisibility();
+      view->UpdateVisibility(NULL);
       if (view->IsVisibleFromSkin())
         m_visibleViews.push_back(view);
     }

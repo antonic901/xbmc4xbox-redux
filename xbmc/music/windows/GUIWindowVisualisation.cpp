@@ -27,7 +27,8 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "input/ButtonTranslator.h"
-#include "guilib/Key.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
@@ -75,7 +76,7 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
   case ACTION_SHOW_INFO:
     {
       m_initTimer.Stop();
-      CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("mymusic.songthumbinvis", CServiceBroker::GetGUI()->GetInfoManager().ToggleShowInfo());
+      CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("mymusic.songthumbinvis", CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().ToggleShowInfo());
       return true;
     }
     break;
@@ -113,7 +114,7 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
     {
       // actual action is taken care of in CApplication::OnAction()
       m_initTimer.StartZero();
-      CServiceBroker::GetGUI()->GetInfoManager().SetShowInfo(true);
+      CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetShowInfo(true);
     }
     break;
     //! @todo These should be mapped to it's own function - at the moment it's overriding
@@ -182,7 +183,7 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
       }
 
       // hide or show the preset button(s)
-      CServiceBroker::GetGUI()->GetInfoManager().SetShowInfo(true);  // always show the info initially.
+      CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetShowInfo(true);  // always show the info initially.
       CGUIWindow::OnMessage(message);
       if (CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag())
         m_tag = *CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag();
@@ -211,14 +212,14 @@ void CGUIWindowVisualisation::FrameMove()
     m_tag = *tag;
     // fade in
     m_initTimer.StartZero();
-    CServiceBroker::GetGUI()->GetInfoManager().SetShowInfo(true);
+    CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetShowInfo(true);
   }
   if (m_initTimer.IsRunning() && m_initTimer.GetElapsedSeconds() > (float)CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_songInfoDuration)
   {
     m_initTimer.Stop();
     if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("mymusic.songthumbinvis"))
     { // reached end of fade in, fade out again
-      CServiceBroker::GetGUI()->GetInfoManager().SetShowInfo(false);
+      CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetShowInfo(false);
     }
   }
   // show or hide the locked texture

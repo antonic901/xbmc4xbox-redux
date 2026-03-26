@@ -18,7 +18,7 @@
 #include "URL.h"
 #include "dialogs/GUIDialogYesNo.h"
 
-#include <memory>
+#include <boost/move/make_unique.hpp>
 
 CGUIComponent::CGUIComponent()
   : m_pWindowManager(boost::movelib::make_unique<CGUIWindowManager>()),
@@ -85,10 +85,10 @@ bool CGUIComponent::ConfirmDelete(const std::string& path)
   CGUIDialogYesNo* pDialog = GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
   if (pDialog)
   {
-    pDialog->SetHeading(CVariant{122});
-    pDialog->SetLine(0, CVariant{125});
-    pDialog->SetLine(1, CVariant{CURL(path).GetWithoutUserDetails()});
-    pDialog->SetLine(2, CVariant{""});
+    pDialog->SetHeading(122);
+    pDialog->SetLine(0, 125);
+    pDialog->SetLine(1, CURL(path).GetWithoutUserDetails());
+    pDialog->SetLine(2, "");
     pDialog->Open();
     if (pDialog->IsConfirmed())
       return true;

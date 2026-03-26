@@ -36,7 +36,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "URL.h"
 #ifdef _XBOX
-#include "Key.h"
+#include "input/keyboard/Key.h"
 
 #define STRINGIZE_(x) #x
 #define STRINGIZE(x) STRINGIZE_(x)

@@ -204,9 +204,10 @@ bool CGUIControlsGUIInfo::GetLabel(std::string& value, const CFileItem *item, in
       {
         int count = 0;
         const CFileItemList& items = window->CurrentDirectory();
-        for (const auto& item : items)
+        for (int i = 0; i < items.Size(); ++i)
         {
           // Iterate through container and count watched, unwatched and total duration.
+          CFileItemPtr item = items.Get(i);
           if (info.m_info == CONTAINER_TOTALWATCHED && item->HasVideoInfoTag() && item->GetVideoInfoTag()->GetPlayCount() > 0)
             count += 1;
           else if (info.m_info == CONTAINER_TOTALUNWATCHED && item->HasVideoInfoTag() && item->GetVideoInfoTag()->GetPlayCount() == 0)
@@ -317,7 +318,7 @@ bool CGUIControlsGUIInfo::GetLabel(std::string& value, const CFileItem *item, in
       return true;
     case SYSTEM_STARTUP_WINDOW:
       value = std::to_string(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(
-          CSettings::SETTING_LOOKANDFEEL_STARTUPWINDOW));
+          "lookandfeel.startupwindow"));
       return true;
     case SYSTEM_CURRENT_CONTROL:
     case SYSTEM_CURRENT_CONTROL_ID:
@@ -426,8 +427,9 @@ bool CGUIControlsGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int co
       if (window)
       {
         const CFileItemList& items = window->CurrentDirectory();
-        for (const auto& item : items)
+        for (int i =0 ; i < items.Size(); ++i)
         {
+          CFileItemPtr item=items.Get(i);
           if ((!item->m_bIsFolder && info.m_info == CONTAINER_HASFILES) ||
               (item->m_bIsFolder && !item->IsParentFolder() && info.m_info == CONTAINER_HASFOLDERS))
           {
@@ -580,7 +582,7 @@ bool CGUIControlsGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int co
         const CGUIControl *control = window->GetControl(info.GetData1());
         if (control && control->IsContainer())
         {
-          const CFileItemPtr item = std::static_pointer_cast<CFileItem>(static_cast<const IGUIContainer*>(control)->GetListItem(0));
+          const CFileItemPtr item = boost::static_pointer_cast<CFileItem>(static_cast<const IGUIContainer*>(control)->GetListItem(0));
           if (item && item->m_iprogramCount == info.GetData2())  // programcount used to store item id
           {
             value = true;

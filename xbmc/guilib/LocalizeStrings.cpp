@@ -18,9 +18,6 @@
 #include "utils/URIUtils.h"
 #include "utils/log.h"
 
-#include <mutex>
-#include <shared_mutex>
-
 /*! \brief Tries to load ids and strings from a strings.po file to the `strings` map.
  * It should only be called from the LoadStr2Mem function to have a fallback.
  \param pathname The directory name, where we look for the strings file.
@@ -187,13 +184,13 @@ bool CLocalizeStrings::Load(const std::string& strPathName, const std::string& s
 
   CExclusiveLock lock(m_stringsMutex);
   Clear();
-  m_strings = std::move(strings);
+  m_strings = boost::move(strings);
   return true;
 }
 
 const std::string& CLocalizeStrings::Get(uint32_t dwCode) const
 {
-  std::shared_lock<CSharedSection> lock(m_stringsMutex);
+  CSharedLock lock(m_stringsMutex);
   ciStrings i = m_strings.find(dwCode);
   if (i == m_strings.end())
   {
@@ -228,21 +225,21 @@ bool CLocalizeStrings::LoadAddonStrings(const std::string& path, const std::stri
     return false;
 
   CExclusiveLock lock(m_addonStringsMutex);
-  auto it = m_addonStrings.find(addonId);
+  std::map<std::string, std::map<uint32_t, LocStr> >::iterator it = m_addonStrings.find(addonId);
   if (it != m_addonStrings.end())
     m_addonStrings.erase(it);
 
-  return m_addonStrings.emplace(std::string(addonId), std::move(strings)).second;
+  return m_addonStrings.insert(std::make_pair(std::string(addonId), boost::move(strings))).second;
 }
 
 std::string CLocalizeStrings::GetAddonString(const std::string& addonId, uint32_t code)
 {
-  std::shared_lock<CSharedSection> lock(m_addonStringsMutex);
-  auto i = m_addonStrings.find(addonId);
+  CSharedLock lock(m_addonStringsMutex);
+  std::map<std::string, std::map<uint32_t, LocStr> >::iterator i = m_addonStrings.find(addonId);
   if (i == m_addonStrings.end())
     return StringUtils::Empty;
 
-  auto j = i->second.find(code);
+  std::map<uint32_t, LocStr>::iterator j = i->second.find(code);
   if (j == i->second.end())
     return StringUtils::Empty;
 

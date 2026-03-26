@@ -19,6 +19,8 @@ REM Create the svn_rev.h file with the defined revision and date
 (
     ECHO #define SVN_REV "%SVN_REV%-py2"
     ECHO #define SVN_DATE "%SVN_DATE%"
+    ECHO #define SVN_APP_VERSION_SHORT "4.1"
+    ECHO #define SVN_APP_VERSION_CODE "4.1.0"
 ) > %REV_FILE%
 
 REM Clean up variables

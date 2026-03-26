@@ -28,6 +28,7 @@ CGUIFadeLabelControl::CGUIFadeLabelControl(int parentID, int controlID, float po
   m_shortText = true;
   m_scroll = true;
   m_randomized = randomized;
+  m_allLabelsShown = true;
 }
 
 CGUIFadeLabelControl::CGUIFadeLabelControl(const CGUIFadeLabelControl &from)
@@ -61,7 +62,7 @@ void CGUIFadeLabelControl::SetInfo(const std::vector<GUIINFO::CGUIInfoLabel> &in
 
 void CGUIFadeLabelControl::AddLabel(const std::string &label)
 {
-  m_infoLabels.emplace_back(label, "", GetParentID());
+  m_infoLabels.push_back(GUIINFO::CGUIInfoLabel(label, "", GetParentID()));
   m_allLabelsShown = false;
 }
 

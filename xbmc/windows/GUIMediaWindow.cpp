@@ -56,7 +56,9 @@
 #include "guilib/LocalizeStrings.h"
 #include "interfaces/builtins/Builtins.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "xbox/Network.h"
 #include "playlists/PlayList.h"
 #include "profiles/ProfilesManager.h"
@@ -160,17 +162,6 @@ bool CGUIMediaWindow::Load(TiXmlElement *pRootElement)
       int controlID = atol(i->c_str());
       CGUIControl *control = GetControl(controlID);
       if (control && control->IsContainer())
-        m_viewControl.AddView(control);
-    }
-  }
-  else
-  { // backward compatibility
-    std::vector<CGUIControl *> controls;
-    GetContainers(controls);
-    for (ciControls it = controls.begin(); it != controls.end(); it++)
-    {
-      CGUIControl *control = *it;
-      if (control->GetID() >= CONTROL_VIEW_START && control->GetID() <= CONTROL_VIEW_END)
         m_viewControl.AddView(control);
     }
   }
@@ -846,7 +837,7 @@ bool CGUIMediaWindow::Update(const std::string &strDirectory, bool updateFilterP
     std::string strLabel = g_localizeStrings.Get(showLabel);
     CFileItemPtr pItem(new CFileItem(strLabel));
     pItem->SetPath("add");
-    pItem->SetIconImage("DefaultAddSource.png");
+    pItem->SetArt("icon", "DefaultAddSource.png");
     pItem->SetLabel(strLabel);
     pItem->SetLabelPreformated(true);
     pItem->m_bIsFolder = true;

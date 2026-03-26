@@ -15,73 +15,77 @@
 #include "guilib/GUIWindowManager.h"
 #include "guilib/guiinfo/GUIInfo.h"
 #include "guilib/guiinfo/GUIInfoLabels.h"
+#include "pictures/GUIWindowSlideShow.h"
 #include "pictures/PictureInfoTag.h"
-#include "pictures/SlideShowDelegator.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
 
 #include <map>
-#include <memory>
+#include <boost/move/make_unique.hpp>
 
 using namespace KODI::GUILIB::GUIINFO;
 
-static const std::map<int, int> listitem2slideshow_map =
+std::map<int, int> create_listitem2slideshow_map()
 {
-  { LISTITEM_PICTURE_RESOLUTION       , SLIDESHOW_RESOLUTION },
-  { LISTITEM_PICTURE_LONGDATE         , SLIDESHOW_EXIF_LONG_DATE },
-  { LISTITEM_PICTURE_LONGDATETIME     , SLIDESHOW_EXIF_LONG_DATE_TIME },
-  { LISTITEM_PICTURE_DATE             , SLIDESHOW_EXIF_DATE },
-  { LISTITEM_PICTURE_DATETIME         , SLIDESHOW_EXIF_DATE_TIME },
-  { LISTITEM_PICTURE_COMMENT          , SLIDESHOW_COMMENT },
-  { LISTITEM_PICTURE_CAPTION          , SLIDESHOW_IPTC_CAPTION },
-  { LISTITEM_PICTURE_DESC             , SLIDESHOW_EXIF_DESCRIPTION },
-  { LISTITEM_PICTURE_KEYWORDS         , SLIDESHOW_IPTC_KEYWORDS },
-  { LISTITEM_PICTURE_CAM_MAKE         , SLIDESHOW_EXIF_CAMERA_MAKE },
-  { LISTITEM_PICTURE_CAM_MODEL        , SLIDESHOW_EXIF_CAMERA_MODEL },
-  { LISTITEM_PICTURE_APERTURE         , SLIDESHOW_EXIF_APERTURE },
-  { LISTITEM_PICTURE_FOCAL_LEN        , SLIDESHOW_EXIF_FOCAL_LENGTH },
-  { LISTITEM_PICTURE_FOCUS_DIST       , SLIDESHOW_EXIF_FOCUS_DIST },
-  { LISTITEM_PICTURE_EXP_MODE         , SLIDESHOW_EXIF_EXPOSURE_MODE },
-  { LISTITEM_PICTURE_EXP_TIME         , SLIDESHOW_EXIF_EXPOSURE_TIME },
-  { LISTITEM_PICTURE_ISO              , SLIDESHOW_EXIF_ISO_EQUIV },
-  { LISTITEM_PICTURE_AUTHOR           , SLIDESHOW_IPTC_AUTHOR },
-  { LISTITEM_PICTURE_BYLINE           , SLIDESHOW_IPTC_BYLINE },
-  { LISTITEM_PICTURE_BYLINE_TITLE     , SLIDESHOW_IPTC_BYLINE_TITLE },
-  { LISTITEM_PICTURE_CATEGORY         , SLIDESHOW_IPTC_CATEGORY },
-  { LISTITEM_PICTURE_CCD_WIDTH        , SLIDESHOW_EXIF_CCD_WIDTH },
-  { LISTITEM_PICTURE_CITY             , SLIDESHOW_IPTC_CITY },
-  { LISTITEM_PICTURE_URGENCY          , SLIDESHOW_IPTC_URGENCY },
-  { LISTITEM_PICTURE_COPYRIGHT_NOTICE , SLIDESHOW_IPTC_COPYRIGHT_NOTICE },
-  { LISTITEM_PICTURE_COUNTRY          , SLIDESHOW_IPTC_COUNTRY },
-  { LISTITEM_PICTURE_COUNTRY_CODE     , SLIDESHOW_IPTC_COUNTRY_CODE },
-  { LISTITEM_PICTURE_CREDIT           , SLIDESHOW_IPTC_CREDIT },
-  { LISTITEM_PICTURE_IPTCDATE         , SLIDESHOW_IPTC_DATE },
-  { LISTITEM_PICTURE_DIGITAL_ZOOM     , SLIDESHOW_EXIF_DIGITAL_ZOOM, },
-  { LISTITEM_PICTURE_EXPOSURE         , SLIDESHOW_EXIF_EXPOSURE },
-  { LISTITEM_PICTURE_EXPOSURE_BIAS    , SLIDESHOW_EXIF_EXPOSURE_BIAS },
-  { LISTITEM_PICTURE_FLASH_USED       , SLIDESHOW_EXIF_FLASH_USED },
-  { LISTITEM_PICTURE_HEADLINE         , SLIDESHOW_IPTC_HEADLINE },
-  { LISTITEM_PICTURE_COLOUR           , SLIDESHOW_COLOUR },
-  { LISTITEM_PICTURE_LIGHT_SOURCE     , SLIDESHOW_EXIF_LIGHT_SOURCE },
-  { LISTITEM_PICTURE_METERING_MODE    , SLIDESHOW_EXIF_METERING_MODE },
-  { LISTITEM_PICTURE_OBJECT_NAME      , SLIDESHOW_IPTC_OBJECT_NAME },
-  { LISTITEM_PICTURE_ORIENTATION      , SLIDESHOW_EXIF_ORIENTATION },
-  { LISTITEM_PICTURE_PROCESS          , SLIDESHOW_PROCESS },
-  { LISTITEM_PICTURE_REF_SERVICE      , SLIDESHOW_IPTC_REF_SERVICE },
-  { LISTITEM_PICTURE_SOURCE           , SLIDESHOW_IPTC_SOURCE },
-  { LISTITEM_PICTURE_SPEC_INSTR       , SLIDESHOW_IPTC_SPEC_INSTR },
-  { LISTITEM_PICTURE_STATE            , SLIDESHOW_IPTC_STATE },
-  { LISTITEM_PICTURE_SUP_CATEGORIES   , SLIDESHOW_IPTC_SUP_CATEGORIES },
-  { LISTITEM_PICTURE_TX_REFERENCE     , SLIDESHOW_IPTC_TX_REFERENCE },
-  { LISTITEM_PICTURE_WHITE_BALANCE    , SLIDESHOW_EXIF_WHITE_BALANCE },
-  { LISTITEM_PICTURE_IMAGETYPE        , SLIDESHOW_IPTC_IMAGETYPE },
-  { LISTITEM_PICTURE_SUBLOCATION      , SLIDESHOW_IPTC_SUBLOCATION },
-  { LISTITEM_PICTURE_TIMECREATED      , SLIDESHOW_IPTC_TIMECREATED },
-  { LISTITEM_PICTURE_GPS_LAT          , SLIDESHOW_EXIF_GPS_LATITUDE },
-  { LISTITEM_PICTURE_GPS_LON          , SLIDESHOW_EXIF_GPS_LONGITUDE },
-  { LISTITEM_PICTURE_GPS_ALT          , SLIDESHOW_EXIF_GPS_ALTITUDE }
-};
+  std::map<int, int> m;
+  m.insert(std::make_pair(LISTITEM_PICTURE_RESOLUTION, SLIDESHOW_RESOLUTION));
+  m.insert(std::make_pair(LISTITEM_PICTURE_LONGDATE, SLIDESHOW_EXIF_LONG_DATE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_LONGDATETIME, SLIDESHOW_EXIF_LONG_DATE_TIME));
+  m.insert(std::make_pair(LISTITEM_PICTURE_DATE, SLIDESHOW_EXIF_DATE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_DATETIME, SLIDESHOW_EXIF_DATE_TIME));
+  m.insert(std::make_pair(LISTITEM_PICTURE_COMMENT, SLIDESHOW_COMMENT));
+  m.insert(std::make_pair(LISTITEM_PICTURE_CAPTION, SLIDESHOW_IPTC_CAPTION));
+  m.insert(std::make_pair(LISTITEM_PICTURE_DESC, SLIDESHOW_EXIF_DESCRIPTION));
+  m.insert(std::make_pair(LISTITEM_PICTURE_KEYWORDS, SLIDESHOW_IPTC_KEYWORDS));
+  m.insert(std::make_pair(LISTITEM_PICTURE_CAM_MAKE, SLIDESHOW_EXIF_CAMERA_MAKE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_CAM_MODEL, SLIDESHOW_EXIF_CAMERA_MODEL));
+  m.insert(std::make_pair(LISTITEM_PICTURE_APERTURE, SLIDESHOW_EXIF_APERTURE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_FOCAL_LEN, SLIDESHOW_EXIF_FOCAL_LENGTH));
+  m.insert(std::make_pair(LISTITEM_PICTURE_FOCUS_DIST, SLIDESHOW_EXIF_FOCUS_DIST));
+  m.insert(std::make_pair(LISTITEM_PICTURE_EXP_MODE, SLIDESHOW_EXIF_EXPOSURE_MODE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_EXP_TIME, SLIDESHOW_EXIF_EXPOSURE_TIME));
+  m.insert(std::make_pair(LISTITEM_PICTURE_ISO, SLIDESHOW_EXIF_ISO_EQUIV));
+  m.insert(std::make_pair(LISTITEM_PICTURE_AUTHOR, SLIDESHOW_IPTC_AUTHOR));
+  m.insert(std::make_pair(LISTITEM_PICTURE_BYLINE, SLIDESHOW_IPTC_BYLINE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_BYLINE_TITLE, SLIDESHOW_IPTC_BYLINE_TITLE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_CATEGORY, SLIDESHOW_IPTC_CATEGORY));
+  m.insert(std::make_pair(LISTITEM_PICTURE_CCD_WIDTH, SLIDESHOW_EXIF_CCD_WIDTH));
+  m.insert(std::make_pair(LISTITEM_PICTURE_CITY, SLIDESHOW_IPTC_CITY));
+  m.insert(std::make_pair(LISTITEM_PICTURE_URGENCY, SLIDESHOW_IPTC_URGENCY));
+  m.insert(std::make_pair(LISTITEM_PICTURE_COPYRIGHT_NOTICE, SLIDESHOW_IPTC_COPYRIGHT_NOTICE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_COUNTRY, SLIDESHOW_IPTC_COUNTRY));
+  m.insert(std::make_pair(LISTITEM_PICTURE_COUNTRY_CODE, SLIDESHOW_IPTC_COUNTRY_CODE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_CREDIT, SLIDESHOW_IPTC_CREDIT));
+  m.insert(std::make_pair(LISTITEM_PICTURE_IPTCDATE, SLIDESHOW_IPTC_DATE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_DIGITAL_ZOOM, SLIDESHOW_EXIF_DIGITAL_ZOOM));
+  m.insert(std::make_pair(LISTITEM_PICTURE_EXPOSURE, SLIDESHOW_EXIF_EXPOSURE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_EXPOSURE_BIAS, SLIDESHOW_EXIF_EXPOSURE_BIAS));
+  m.insert(std::make_pair(LISTITEM_PICTURE_FLASH_USED, SLIDESHOW_EXIF_FLASH_USED));
+  m.insert(std::make_pair(LISTITEM_PICTURE_HEADLINE, SLIDESHOW_IPTC_HEADLINE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_COLOUR, SLIDESHOW_COLOUR));
+  m.insert(std::make_pair(LISTITEM_PICTURE_LIGHT_SOURCE, SLIDESHOW_EXIF_LIGHT_SOURCE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_METERING_MODE, SLIDESHOW_EXIF_METERING_MODE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_OBJECT_NAME, SLIDESHOW_IPTC_OBJECT_NAME));
+  m.insert(std::make_pair(LISTITEM_PICTURE_ORIENTATION, SLIDESHOW_EXIF_ORIENTATION));
+  m.insert(std::make_pair(LISTITEM_PICTURE_PROCESS, SLIDESHOW_PROCESS));
+  m.insert(std::make_pair(LISTITEM_PICTURE_REF_SERVICE, SLIDESHOW_IPTC_REF_SERVICE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_SOURCE, SLIDESHOW_IPTC_SOURCE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_SPEC_INSTR, SLIDESHOW_IPTC_SPEC_INSTR));
+  m.insert(std::make_pair(LISTITEM_PICTURE_STATE, SLIDESHOW_IPTC_STATE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_SUP_CATEGORIES, SLIDESHOW_IPTC_SUP_CATEGORIES));
+  m.insert(std::make_pair(LISTITEM_PICTURE_TX_REFERENCE, SLIDESHOW_IPTC_TX_REFERENCE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_WHITE_BALANCE, SLIDESHOW_EXIF_WHITE_BALANCE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_IMAGETYPE, SLIDESHOW_IPTC_IMAGETYPE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_SUBLOCATION, SLIDESHOW_IPTC_SUBLOCATION));
+  m.insert(std::make_pair(LISTITEM_PICTURE_TIMECREATED, SLIDESHOW_IPTC_TIMECREATED));
+  m.insert(std::make_pair(LISTITEM_PICTURE_GPS_LAT, SLIDESHOW_EXIF_GPS_LATITUDE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_GPS_LON, SLIDESHOW_EXIF_GPS_LONGITUDE));
+  m.insert(std::make_pair(LISTITEM_PICTURE_GPS_ALT, SLIDESHOW_EXIF_GPS_ALTITUDE));
+  return m;
+}
+
+static const std::map<int, int> listitem2slideshow_map = create_listitem2slideshow_map();
 
 CPicturesGUIInfo::CPicturesGUIInfo() {}
 
@@ -125,7 +129,7 @@ bool CPicturesGUIInfo::GetLabel(std::string& value, const CFileItem *item, int c
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // LISTITEM_*
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    const auto& it = listitem2slideshow_map.find(info.m_info);
+    const std::map<int, int>::const_iterator &it = listitem2slideshow_map.find(info.m_info);
     if (it != listitem2slideshow_map.end())
     {
       if (item->HasPictureInfoTag())
@@ -180,10 +184,10 @@ bool CPicturesGUIInfo::GetLabel(std::string& value, const CFileItem *item, int c
       }
       case SLIDESHOW_INDEX:
       {
-        CSlideShowDelegator& slideshow = CServiceBroker::GetSlideShowDelegator();
-        if (slideshow.NumSlides() > 0)
+        CGUIWindowSlideShow *slideshow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIWindowSlideShow>(WINDOW_SLIDESHOW);
+        if (slideshow && slideshow->NumSlides())
         {
-          value = StringUtils::Format("{}/{}", slideshow.CurrentSlide(), slideshow.NumSlides());
+          value = StringUtils::Format("%d/%d", slideshow->CurrentSlide(), slideshow->NumSlides());
           return true;
         }
         break;
@@ -232,26 +236,26 @@ bool CPicturesGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int conte
     ///////////////////////////////////////////////////////////////////////////////////////////////
     case SLIDESHOW_ISPAUSED:
     {
-      CSlideShowDelegator& slideShow = CServiceBroker::GetSlideShowDelegator();
-      value = slideShow.IsPaused();
+      CGUIWindowSlideShow *slideShow = (CGUIWindowSlideShow *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_SLIDESHOW);
+      value = (slideShow && slideShow->IsPaused());
       return true;
     }
     case SLIDESHOW_ISRANDOM:
     {
-      CSlideShowDelegator& slideShow = CServiceBroker::GetSlideShowDelegator();
-      value = slideShow.IsShuffled();
+      CGUIWindowSlideShow *slideShow = (CGUIWindowSlideShow *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_SLIDESHOW);
+      value = (slideShow && slideShow->IsShuffled());
       return true;
     }
     case SLIDESHOW_ISACTIVE:
     {
-      CSlideShowDelegator& slideShow = CServiceBroker::GetSlideShowDelegator();
-      value = slideShow.InSlideShow();
+      CGUIWindowSlideShow *slideShow = (CGUIWindowSlideShow *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_SLIDESHOW);
+      value = (slideShow && slideShow->InSlideShow());
       return true;
     }
     case SLIDESHOW_ISVIDEO:
     {
-      CSlideShowDelegator& slideShow = CServiceBroker::GetSlideShowDelegator();
-      value = slideShow.GetCurrentSlide() && slideShow.GetCurrentSlide()->IsVideo();
+      CGUIWindowSlideShow *slideShow = (CGUIWindowSlideShow *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_SLIDESHOW);
+      value = (slideShow && slideShow->GetCurrentSlide() && slideShow->GetCurrentSlide()->IsVideo());
       return true;
     }
   }

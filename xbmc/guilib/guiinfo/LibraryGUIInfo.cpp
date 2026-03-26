@@ -12,11 +12,12 @@
 #include "ServiceBroker.h"
 #include "URL.h"
 #include "filesystem/Directory.h"
+#include "filesystem/File.h"
 #include "guilib/guiinfo/GUIInfo.h"
 #include "guilib/guiinfo/GUIInfoLabels.h"
 #include "music/MusicDatabase.h"
 #include "music/MusicLibraryQueue.h"
-#include "profiles/ProfileManager.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/SettingsComponent.h"
 #include "utils/FileUtils.h"
 #include "utils/StringUtils.h"
@@ -127,7 +128,7 @@ bool CLibraryGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contex
         CVideoDatabase db;
         if (db.Open())
         {
-          m_libraryHasMovies = db.HasContent(VideoDbContentType::MOVIES) ? 1 : 0;
+          m_libraryHasMovies = db.HasContent(VIDEODB_CONTENT_MOVIES) ? 1 : 0;
           db.Close();
         }
       }
@@ -155,7 +156,7 @@ bool CLibraryGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contex
         CVideoDatabase db;
         if (db.Open())
         {
-          m_libraryHasTVShows = db.HasContent(VideoDbContentType::TVSHOWS) ? 1 : 0;
+          m_libraryHasTVShows = db.HasContent(VIDEODB_CONTENT_TVSHOWS) ? 1 : 0;
           db.Close();
         }
       }
@@ -169,7 +170,7 @@ bool CLibraryGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contex
         CVideoDatabase db;
         if (db.Open())
         {
-          m_libraryHasMusicVideos = db.HasContent(VideoDbContentType::MUSICVIDEOS) ? 1 : 0;
+          m_libraryHasMusicVideos = db.HasContent(VIDEODB_CONTENT_MUSICVIDEOS) ? 1 : 0;
           db.Close();
         }
       }
@@ -204,20 +205,6 @@ bool CLibraryGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contex
       value = m_libraryHasCompilations > 0;
       return true;
     }
-    case LIBRARY_HAS_BOXSETS:
-    {
-      if (m_libraryHasBoxsets < 0)
-      {
-        CMusicDatabase db;
-        if (db.Open())
-        {
-          m_libraryHasBoxsets = (db.GetBoxsetsCount() > 0) ? 1 : 0;
-          db.Close();
-        }
-      }
-      value = m_libraryHasBoxsets > 0;
-      return true;
-    }
     case LIBRARY_HAS_VIDEO:
     {
       return (GetBool(value, gitem, contextWindow, CGUIInfo(LIBRARY_HAS_MOVIES)) ||
@@ -229,11 +216,11 @@ bool CLibraryGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contex
       std::string strRole = info.GetData3();
       // Find value for role if already stored
       int artistcount = -1;
-      for (const auto &role : m_libraryRoleCounts)
+      for (std::vector<std::pair<std::string, int> >::const_iterator role = m_libraryRoleCounts.begin(); role != m_libraryRoleCounts.end(); ++role)
       {
-        if (StringUtils::EqualsNoCase(strRole, role.first))
+        if (StringUtils::EqualsNoCase(strRole, role->first))
         {
-          artistcount = role.second;
+          artistcount = role->second;
           break;
         }
       }
@@ -245,7 +232,7 @@ bool CLibraryGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contex
         {
           artistcount = db.GetArtistCountForRole(strRole);
           db.Close();
-          m_libraryRoleCounts.emplace_back(strRole, artistcount);
+          m_libraryRoleCounts.push_back(std::make_pair(strRole, artistcount));
         }
       }
       value = artistcount > 0;
@@ -254,7 +241,7 @@ bool CLibraryGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contex
     case LIBRARY_HAS_NODE:
     {
       const CURL url(info.GetData3());
-      const boost::shared_ptr<CProfileManager> profileManager =
+      const boost::shared_ptr<CProfilesManager> profileManager =
             CServiceBroker::GetSettingsComponent()->GetProfileManager();
       CFileItemList items;
 
@@ -265,7 +252,7 @@ bool CLibraryGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contex
 
       std::string nodePath = URIUtils::AddFileToFolder(libDir, url.GetHostName() + "/");
       nodePath = URIUtils::AddFileToFolder(nodePath, url.GetFileName());
-      value = CFileUtils::Exists(nodePath);
+      value = XFILE::CFile::Exists(nodePath);
       return true;
     }
     case LIBRARY_IS_SCANNING:

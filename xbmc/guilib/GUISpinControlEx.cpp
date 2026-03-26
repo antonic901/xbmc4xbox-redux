@@ -135,13 +135,13 @@ void CGUISpinControlEx::SetSpinPosition(float spinPosX)
 
 void CGUISpinControlEx::RenderText(float posX, float posY, float width, float height)
 {
-  const float freeSpaceWidth{m_buttonControl.GetWidth() - GetSpinWidth() * 2};
+  const float freeSpaceWidth = m_buttonControl.GetWidth() - GetSpinWidth() * 2;
 
   // Limit right label text width to max 50% of free space
   // (will be slightly shifted due to offsetX padding)
-  const float rightTextMaxWidth{freeSpaceWidth * 0.5f};
+  const float rightTextMaxWidth = freeSpaceWidth * 0.5f;
 
-  float rightTextWidth{width};
+  float rightTextWidth = width;
   if (rightTextWidth > rightTextMaxWidth)
   {
     rightTextWidth = rightTextMaxWidth - m_label.GetLabelInfo().offsetX;

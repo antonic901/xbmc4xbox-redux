@@ -23,6 +23,7 @@
 #include "GUIWindow.h"
 #include "threads/CriticalSection.h"
 #include "dialogs/GUIDialogSlider.h"
+#include "guilib/guiinfo/GUIInfoBool.h"
 
 enum SubtitleAlign
 {
@@ -85,7 +86,7 @@ private:
 
   bool m_bShowViewModeInfo;
   unsigned int m_dwShowViewModeTimeout;
-  CGUIInfoBool m_showCodec;
+  KODI::GUILIB::GUIINFO::CGUIInfoBool m_showCodec;
 
   bool m_bShowCurrentTime;
   bool m_bLastRender;
@@ -94,7 +95,7 @@ private:
   unsigned int m_timeCodeTimeout;
   int m_timeCodeStamp[6];
   int m_timeCodePosition;
-  
+
   int m_sliderAction; ///< \brief set to the action id for a slider being displayed \sa ShowSlider
 
   CCriticalSection m_fontLock;

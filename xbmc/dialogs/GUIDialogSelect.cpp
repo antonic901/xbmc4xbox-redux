@@ -20,7 +20,10 @@
 
 #include "GUIDialogSelect.h"
 #include "FileItem.h"
-#include "guilib/Key.h"
+#include "guilib/GUIMessage.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/StringUtils.h"
 

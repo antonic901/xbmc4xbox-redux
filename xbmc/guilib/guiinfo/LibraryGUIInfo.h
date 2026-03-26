@@ -30,10 +30,10 @@ public:
   virtual ~CLibraryGUIInfo() {}
 
   // KODI::GUILIB::GUIINFO::IGUIInfoProvider implementation
-  bool InitCurrentItem(CFileItem *item) override;
-  bool GetLabel(std::string& value, const CFileItem *item, int contextWindow, const CGUIInfo &info, std::string *fallback) const override;
-  bool GetInt(int& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const override;
-  bool GetBool(bool& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const override;
+  virtual bool InitCurrentItem(CFileItem *item);
+  virtual bool GetLabel(std::string& value, const CFileItem *item, int contextWindow, const CGUIInfo &info, std::string *fallback) const;
+  virtual bool GetInt(int& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const;
+  virtual bool GetBool(bool& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const;
 
   bool GetLibraryBool(int condition) const;
   void SetLibraryBool(int condition, bool value);
@@ -51,7 +51,7 @@ private:
 
   //Count of artists in music library contributing to song by role e.g. composers, conductors etc.
   //For checking visibility of custom nodes for a role.
-  mutable std::vector<std::pair<std::string, int>> m_libraryRoleCounts;
+  mutable std::vector<std::pair<std::string, int> > m_libraryRoleCounts;
 };
 
 } // namespace GUIINFO

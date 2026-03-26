@@ -29,7 +29,6 @@ public:
 
   virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
-  virtual void RenderEx();
   virtual bool CanFocus() const;
   virtual bool CanFocusFromPoint(const CPoint &point) const;
 };

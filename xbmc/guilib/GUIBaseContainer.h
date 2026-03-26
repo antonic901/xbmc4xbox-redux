@@ -18,7 +18,7 @@
 #include "utils/Stopwatch.h"
 
 #include <list>
-#include <memory>
+#include <boost/move/unique_ptr.hpp>
 #include <utility>
 #include <vector>
 
@@ -142,8 +142,8 @@ protected:
   ORIENTATION m_orientation;
   int m_itemsPerPage;
 
-  std::vector<boost::shared_ptr<CGUIListItem>> m_items;
-  typedef std::vector<boost::shared_ptr<CGUIListItem>>::iterator iItems;
+  std::vector<boost::shared_ptr<CGUIListItem> > m_items;
+  typedef std::vector<boost::shared_ptr<CGUIListItem> >::iterator iItems;
   boost::shared_ptr<CGUIListItem> m_lastItem;
 
   int m_pageControl;
@@ -151,10 +151,10 @@ protected:
   std::list<CGUIListItemLayout> m_layouts;
   std::list<CGUIListItemLayout> m_focusedLayouts;
 
-  CGUIListItemLayout* m_layout{nullptr};
-  CGUIListItemLayout* m_focusedLayout{nullptr};
-  bool m_layoutCondition = false;
-  bool m_focusedLayoutCondition = false;
+  CGUIListItemLayout* m_layout;
+  CGUIListItemLayout* m_focusedLayout;
+  bool m_layoutCondition;
+  bool m_focusedLayoutCondition;
 
   virtual void ScrollToOffset(int offset);
   void SetContainerMoving(int direction);
@@ -231,11 +231,11 @@ private:
   float m_scrollItemsPerFrame;
   static const int letter_match_timeout = 1000;
 
-  bool m_gestureActive = false;
+  bool m_gestureActive;
 
   // early inertial scroll cancellation
-  bool m_waitForScrollEnd = false;
-  float m_lastScrollValue = 0.0f;
+  bool m_waitForScrollEnd;
+  float m_lastScrollValue;
 };
 
 

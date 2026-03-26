@@ -27,7 +27,9 @@
 #include "settings/SettingsComponent.h"
 #include "filesystem/Directory.h"
 #include "guilib/LocalizeStrings.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "view/ViewStateSettings.h"
 
 using namespace XFILE;

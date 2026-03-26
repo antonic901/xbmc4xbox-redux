@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "system.h"
 #include "utils/log.h"
 #include "threads/SingleLock.h"
@@ -40,6 +40,8 @@
 #include "GUIInfoManager.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "GUIUserMessages.h"
 #include "Application.h"
 #include "messaging/ApplicationMessenger.h"
@@ -852,10 +854,10 @@ void CDVDPlayer::Process()
       starttime = m_Edl.RestoreCutTime(playerStartTime);
     }
     else
-    {  
+    {
       starttime = m_Edl.RestoreCutTime((int64_t)m_PlayerOptions.starttime * 1000); // s to ms
     }
-    CLog::Log(LOGDEBUG, "%s - Start position set to last stopped position: %d", __FUNCTION__, starttime);          
+    CLog::Log(LOGDEBUG, "%s - Start position set to last stopped position: %d", __FUNCTION__, starttime);
   }
   else if(m_Edl.InCut(0, &cut)
       && (cut.action == CEdl::CUT || cut.action == CEdl::COMM_BREAK))
@@ -1319,7 +1321,7 @@ void CDVDPlayer::HandlePlaySpeed()
       {
         caching = CACHESTATE_DONE;
       }
-    }     
+    }
   }
 
   if(caching == CACHESTATE_PLAY)
@@ -1332,7 +1334,7 @@ void CDVDPlayer::HandlePlaySpeed()
 
   if(m_caching != caching)
     SetCaching(caching);
-  
+
   if(GetPlaySpeed() != DVD_PLAYSPEED_NORMAL && GetPlaySpeed() != DVD_PLAYSPEED_PAUSE)
   {
     if (IsInMenu())
@@ -1813,7 +1815,7 @@ void CDVDPlayer::HandleMessages()
 
         if(!msg.GetTrickPlay())
         {
-          CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek(100000);
+          CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek(100000);
           if(msg.GetFlush())
             SetCaching(CACHESTATE_FLUSH);
         }
@@ -1848,7 +1850,7 @@ void CDVDPlayer::HandleMessages()
 
         // set flag to indicate we have finished a seeking request
         if(!msg.GetTrickPlay())
-          CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
+          CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek();
 
         // dvd's will issue a HOP_CHANNEL that we need to skip
         if(m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD))
@@ -1857,7 +1859,7 @@ void CDVDPlayer::HandleMessages()
       else if (pMsg->IsType(CDVDMsg::PLAYER_SEEK_CHAPTER) && m_messenger.GetPacketCount(CDVDMsg::PLAYER_SEEK)         == 0
                                                           && m_messenger.GetPacketCount(CDVDMsg::PLAYER_SEEK_CHAPTER) == 0)
       {
-        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek(100000);
+        CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek(100000);
         SetCaching(CACHESTATE_FLUSH);
 
         CDVDMsgPlayerSeekChapter &msg(*((CDVDMsgPlayerSeekChapter*)pMsg));
@@ -1870,7 +1872,7 @@ void CDVDPlayer::HandleMessages()
           m_callback.OnPlayBackSeekChapter(msg.GetChapter());
         }
 
-        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek();
       }
       else if (pMsg->IsType(CDVDMsg::DEMUXER_RESET))
       {
@@ -1943,7 +1945,7 @@ void CDVDPlayer::HandleMessages()
       }
       else if (pMsg->IsType(CDVDMsg::PLAYER_SET_STATE))
       {
-        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek(100000);
+        CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek(100000);
         SetCaching(CACHESTATE_FLUSH);
 
         CDVDMsgPlayerSetState* pMsgPlayerSetState = (CDVDMsgPlayerSetState*)pMsg;
@@ -1958,7 +1960,7 @@ void CDVDPlayer::HandleMessages()
           }
         }
 
-        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek();
       }
       else if (pMsg->IsType(CDVDMsg::PLAYER_SET_RECORD))
       {
@@ -2015,7 +2017,7 @@ void CDVDPlayer::HandleMessages()
         CDVDInputStream::IChannel* input = dynamic_cast<CDVDInputStream::IChannel*>(m_pInputStream);
         if(input)
         {
-          CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek(100000);
+          CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek(100000);
 
           bool result;
           if (pMsg->IsType(CDVDMsg::PLAYER_CHANNEL_SELECT))
@@ -2031,7 +2033,7 @@ void CDVDPlayer::HandleMessages()
             SAFE_DELETE(m_pDemuxer);
           }
 
-          CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
+          CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek();
         }
       }
       else if (pMsg->IsType(CDVDMsg::GENERAL_GUI_ACTION))
@@ -2266,7 +2268,7 @@ void CDVDPlayer::Seek(bool bPlus, bool bLargeStep, bool bChapterOverride)
   }
 
   int64_t time = GetTime();
-  if(g_application.CurrentFileItem().IsStack() 
+  if(g_application.CurrentFileItem().IsStack()
   && (seek > GetTotalTimeInMsec() || seek < 0))
   {
     g_application.SeekTime((seek - time) * 0.001 + g_application.GetTime());
@@ -3086,7 +3088,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
         THREAD_ACTION(action);
         CLog::Log(LOGDEBUG, " - pushed prev");
         pMenus->OnPrevious();
-        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek();
         return true;
       }
       break;
@@ -3095,7 +3097,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
         THREAD_ACTION(action);
         CLog::Log(LOGDEBUG, " - pushed next");
         pMenus->OnNext();
-        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek();
         return true;
       }
       break;
@@ -3122,14 +3124,14 @@ bool CDVDPlayer::OnAction(const CAction &action)
         THREAD_ACTION(action);
         CLog::Log(LOGDEBUG, " - pushed next in menu, stream will decide");
         pMenus->OnNext();
-        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek();
         return true;
       case ACTION_PREV_ITEM:
       case ACTION_PAGE_DOWN:
         THREAD_ACTION(action);
         CLog::Log(LOGDEBUG, " - pushed prev in menu, stream will decide");
         pMenus->OnPrevious();
-        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek();
         return true;
       case ACTION_PREVIOUS_MENU:
       case ACTION_NAV_BACK:
@@ -3212,14 +3214,14 @@ bool CDVDPlayer::OnAction(const CAction &action)
       case ACTION_NEXT_ITEM:
       case ACTION_PAGE_UP:
         m_messenger.Put(new CDVDMsg(CDVDMsg::PLAYER_CHANNEL_NEXT));
-        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek();
         return true;
       break;
 
       case ACTION_PREV_ITEM:
       case ACTION_PAGE_DOWN:
         m_messenger.Put(new CDVDMsg(CDVDMsg::PLAYER_CHANNEL_PREV));
-        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek();
         return true;
       break;
 
@@ -3228,7 +3230,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
         // Offset from key codes back to button number
         int channel = action.GetAmount();
         m_messenger.Put(new CDVDMsgInt(CDVDMsg::PLAYER_CHANNEL_SELECT, channel));
-        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek();
         return true;
       }
       break;
@@ -3242,7 +3244,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
       if(GetChapterCount() > 0)
       {
         m_messenger.Put(new CDVDMsgPlayerSeekChapter(GetChapter()+1));
-        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek();
         return true;
       }
       else
@@ -3252,7 +3254,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
       if(GetChapterCount() > 0)
       {
         m_messenger.Put(new CDVDMsgPlayerSeekChapter(GetChapter()-1));
-        CServiceBroker::GetGUI()->GetInfoManager().SetDisplayAfterSeek();
+        CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek();
         return true;
       }
       else
@@ -3293,13 +3295,13 @@ bool CDVDPlayer::GetCurrentSubtitle(CStdString& strSubtitle)
     return false;
 
   m_dvdPlayerSubtitle.GetCurrentSubtitle(strSubtitle, pts - m_dvdPlayerVideo.GetSubtitleDelay());
-  
+
   // In case we stalled, don't output any subs
   if ((m_dvdPlayerVideo.IsStalled() && HasVideo()) || (m_dvdPlayerAudio.IsStalled() && HasAudio()))
     strSubtitle = m_lastSub;
   else
     m_lastSub = strSubtitle;
-    
+
   return !strSubtitle.IsEmpty();
 }
 
@@ -3646,7 +3648,7 @@ bool CDVDPlayer::GetStreamDetails(CStreamDetails &details)
     bool result = CDVDFileInfo::DemuxerToStreamDetails(m_pInputStream, m_pDemuxer, details);
     if (result && details.GetStreamCount(CStreamDetail::VIDEO) > 0) // this is more correct (dvds in particular)
     {
-      /* 
+      /*
        * We can only obtain the aspect & duration from dvdplayer when the Process() thread is running
        * and UpdatePlayState() has been called at least once. In this case dvdplayer duration/AR will
        * return 0 and we'll have to fallback to the (less accurate) info from the demuxer.

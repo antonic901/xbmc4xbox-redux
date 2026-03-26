@@ -19,6 +19,7 @@
  */
 
 #include "GUIDialogKaiToast.h"
+#include "guilib/GUIMessage.h"
 #include "threads/SingleLock.h"
 #include "utils/TimeUtils.h"
 

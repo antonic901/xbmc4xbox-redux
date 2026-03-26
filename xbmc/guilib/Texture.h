@@ -27,8 +27,10 @@
 #ifndef GUILIB_TEXTURE_H
 #define GUILIB_TEXTURE_H
 
-#include "utils/StdString.h"
+#include "system.h" // <xtl.h>, SAFE_RELEASE
 #include "XBTF.h"
+
+#include <boost/move/unique_ptr.hpp>
 
 #pragma once
 
@@ -38,16 +40,16 @@ struct ImageInfo;
 \ingroup textures
 \brief Base texture class, subclasses of which depend on the render spec (DX, GL etc.)
 This class is not real backport from Kodi/XBMC. This class is abstraction of current way how textures are loaded by XBMC4Xbox
-and it's DirectX dependant. This class export same methods just like the one from Kodi. For example CBaseTexture::LoadFromFile
+and it's DirectX dependant. This class export same methods just like the one from Kodi. For example CTexture::LoadFromFile
 before was known as CPicture::Load.
 */
-class CBaseTexture
+class CTexture
 {
 
 public:
-  CBaseTexture(unsigned int width = 0, unsigned int height = 0, unsigned int format = XB_FMT_A8R8G8B8,
+  CTexture(unsigned int width = 0, unsigned int height = 0, unsigned int format = XB_FMT_A8R8G8B8,
                IDirect3DTexture8* texture = NULL, IDirect3DPalette8* palette = NULL, bool packed = false);
-  virtual ~CBaseTexture();
+  virtual ~CTexture();
 
   /*! \brief Load a texture from a file
    Loads a texture from a file, restricting in size if needed based on maxHeight and maxWidth.
@@ -56,9 +58,9 @@ public:
    \param idealWidth the ideal width of the texture (defaults to 0, no ideal width).
    \param idealHeight the ideal height of the texture (defaults to 0, no ideal height).
    \param autoRotate whether the textures should be autorotated based on EXIF information (defaults to false).
-   \return a CBaseTexture pointer to the created texture - NULL if the texture failed to load.
+   \return a CTexture pointer to the created texture - NULL if the texture failed to load.
    */
-  static CBaseTexture *LoadFromFile(const CStdString& texturePath, unsigned int idealWidth = 0, unsigned int idealHeight = 0,
+  static boost::movelib::unique_ptr<CTexture> LoadFromFile(const std::string& texturePath, unsigned int idealWidth = 0, unsigned int idealHeight = 0,
                                     bool autoRotate = false);
 
   /*! \brief Load a texture from a file in memory
@@ -69,10 +71,10 @@ public:
    \param mimeType the mime type of the file in buffer.
    \param idealWidth the ideal width of the texture (defaults to 0, no ideal width).
    \param idealHeight the ideal height of the texture (defaults to 0, no ideal height).
-   \return a CBaseTexture pointer to the created texture - NULL if the texture failed to load.
+   \return a CTexture pointer to the created texture - NULL if the texture failed to load.
    */
-  static CBaseTexture *LoadFromFileInMemory(unsigned char* buffer, size_t bufferSize, const std::string& mimeType,
-                                            unsigned int idealWidth = 0, unsigned int idealHeight = 0);                                  
+  static boost::movelib::unique_ptr<CTexture> LoadFromFileInMemory(unsigned char* buffer, size_t bufferSize, const std::string& mimeType,
+                                            unsigned int idealWidth = 0, unsigned int idealHeight = 0);
 
   bool LoadPaletted(unsigned int width, unsigned int height, unsigned int pitch, unsigned int format, const unsigned char *pixels, IDirect3DPalette8 *palette);
 
@@ -106,12 +108,12 @@ public:
 
 private:
   // no copy constructor
-  CBaseTexture(const CBaseTexture &copy);
+  CTexture(const CTexture &copy);
 
 protected:
   bool LoadFromFileInMem(unsigned char* buffer, size_t size, const std::string& mimeType,
                          unsigned int maxWidth, unsigned int maxHeight);
-  bool LoadFromFileInternal(const CStdString& texturePath, unsigned int maxWidth, unsigned int maxHeight, bool autoRotate);
+  bool LoadFromFileInternal(const std::string& texturePath, unsigned int maxWidth, unsigned int maxHeight, bool autoRotate);
   void LoadFromImage(ImageInfo &image, bool autoRotate = false);
   // helpers for computation of texture parameters for compressed textures
   unsigned int GetRows(unsigned int height) const;
@@ -140,7 +142,5 @@ protected:
   // true if texture is loaded from .XPR
   bool m_packed;
 };
-
-#define CTexture CBaseTexture
 
 #endif

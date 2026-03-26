@@ -48,11 +48,11 @@ CGUIInfoProviders::~CGUIInfoProviders()
 
 void CGUIInfoProviders::RegisterProvider(IGUIInfoProvider *provider, bool bAppend /* = true */)
 {
-  auto it = std::find(m_providers.begin(), m_providers.end(), provider);
+  std::vector<IGUIInfoProvider *>::iterator it = std::find(m_providers.begin(), m_providers.end(), provider);
   if (it == m_providers.end())
   {
     if (bAppend)
-      m_providers.emplace_back(provider);
+      m_providers.push_back(provider);
     else
       m_providers.insert(m_providers.begin(), provider);
   }
@@ -60,7 +60,7 @@ void CGUIInfoProviders::RegisterProvider(IGUIInfoProvider *provider, bool bAppen
 
 void CGUIInfoProviders::UnregisterProvider(IGUIInfoProvider *provider)
 {
-  auto it = std::find(m_providers.begin(), m_providers.end(), provider);
+  std::vector<IGUIInfoProvider *>::iterator it = std::find(m_providers.begin(), m_providers.end(), provider);
   if (it != m_providers.end())
     m_providers.erase(it);
 }
@@ -69,23 +69,23 @@ bool CGUIInfoProviders::InitCurrentItem(CFileItem *item)
 {
   bool bReturn = false;
 
-  for (const auto& provider : m_providers)
+  for (std::vector<IGUIInfoProvider *>::const_iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
   {
-    bReturn = provider->InitCurrentItem(item);
+    bReturn = (*provider)->InitCurrentItem(item);
   }
   return bReturn;
 }
 
 bool CGUIInfoProviders::GetLabel(std::string& value, const CFileItem *item, int contextWindow, const CGUIInfo &info, std::string *fallback) const
 {
-  for (const auto& provider : m_providers)
+  for (std::vector<IGUIInfoProvider *>::const_iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
   {
-    if (provider->GetLabel(value, item, contextWindow, info, fallback))
+    if ((*provider)->GetLabel(value, item, contextWindow, info, fallback))
       return true;
   }
-  for (const auto& provider : m_providers)
+  for (std::vector<IGUIInfoProvider *>::const_iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
   {
-    if (provider->GetFallbackLabel(value, item, contextWindow, info, fallback))
+    if ((*provider)->GetFallbackLabel(value, item, contextWindow, info, fallback))
       return true;
   }
   return false;
@@ -93,9 +93,9 @@ bool CGUIInfoProviders::GetLabel(std::string& value, const CFileItem *item, int 
 
 bool CGUIInfoProviders::GetInt(int& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const
 {
-  for (const auto& provider : m_providers)
+  for (std::vector<IGUIInfoProvider *>::const_iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
   {
-    if (provider->GetInt(value, item, contextWindow, info))
+    if ((*provider)->GetInt(value, item, contextWindow, info))
       return true;
   }
   return false;
@@ -103,18 +103,10 @@ bool CGUIInfoProviders::GetInt(int& value, const CGUIListItem *item, int context
 
 bool CGUIInfoProviders::GetBool(bool& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const
 {
-  for (const auto& provider : m_providers)
+  for (std::vector<IGUIInfoProvider *>::const_iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
   {
-    if (provider->GetBool(value, item, contextWindow, info))
+    if ((*provider)->GetBool(value, item, contextWindow, info))
       return true;
   }
   return false;
-}
-
-void CGUIInfoProviders::UpdateAVInfo(const AudioStreamInfo& audioInfo, const VideoStreamInfo& videoInfo, const SubtitleStreamInfo& subtitleInfo)
-{
-  for (const auto& provider : m_providers)
-  {
-    provider->UpdateAVInfo(audioInfo, videoInfo, subtitleInfo);
-  }
 }

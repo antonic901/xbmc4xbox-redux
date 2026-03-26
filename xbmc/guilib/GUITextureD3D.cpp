@@ -1,38 +1,43 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2026
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "include.h"
-#include "Texture.h"
 #include "GUITextureD3D.h"
+
+#include "ServiceBroker.h"
+#include "Texture.h"
 #include "windowing/GraphicContext.h"
 
-#ifndef HAS_SDL
+CGUITexture* CGUITextureD3D::CreateTexture(
+    float posX, float posY, float width, float height, const CTextureInfo& texture)
+{
+  return new CGUITextureD3D(posX, posY, width, height, texture);
+}
 
-CGUITextureD3D::CGUITextureD3D(float posX, float posY, float width, float height, const CTextureInfo &texture)
-: CGUITextureBase(posX, posY, width, height, texture)
+CGUITextureD3D::CGUITextureD3D(
+    float posX, float posY, float width, float height, const CTextureInfo& texture)
+  : CGUITexture(posX, posY, width, height, texture)
 {
 }
 
-void CGUITextureD3D::Begin(color_t color)
+CGUITextureD3D::CGUITextureD3D(const CGUITextureD3D& texture)
+  : CGUITexture(texture.m_posX, texture.m_posY, texture.m_width, texture.m_height, texture.m_info)
 {
-  CBaseTexture* texture = m_texture.m_textures[m_currentFrame];
+}
+
+CGUITextureD3D* CGUITextureD3D::Clone() const
+{
+  return new CGUITextureD3D(*this);
+}
+
+void CGUITextureD3D::Begin(UTILS::COLOR::Color color)
+{
+  boost::shared_ptr<CTexture> texture = m_texture.m_textures[m_currentFrame];
   LPDIRECT3DDEVICE8 p3DDevice = CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice();
 
   // Set state to render the image
@@ -200,7 +205,10 @@ void CGUITextureD3D::Draw(float *x, float *y, float *z, const CRect &texture, co
   CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, verts, sizeof(CUSTOMVERTEX));
 }
 
-void CGUITextureD3D::DrawQuad(const CRect &rect, color_t color, CBaseTexture *texture, const CRect *texCoords)
+void CGUITextureD3D::DrawQuad(const CRect& rect,
+                              UTILS::COLOR::Color color,
+                              CTexture* texture,
+                              const CRect* texCoords)
 {
   struct CUSTOMVERTEX {
       FLOAT x, y, z;
@@ -257,5 +265,3 @@ void CGUITextureD3D::DrawQuad(const CRect &rect, color_t color, CBaseTexture *te
   if (texture)
     p3DDevice->SetTexture( 0, NULL );
 }
-
-#endif

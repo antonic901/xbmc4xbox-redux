@@ -222,6 +222,27 @@ namespace MathUtils
     MathUtils::abs(0);
   }
 
+  inline double round(double x)
+  {
+    // https://github.com/FFmpeg/FFmpeg/blob/924cc51ffece8027fd3896e66cac77f8ed22270a/libavutil/libm.h#L453
+    return (x > 0) ? floor(x + 0.5) : ceil(x - 0.5);
+  }
+
+  /*!
+   * \brief Round a floating point number to nearest multiple
+   * \param value The value to round
+   * \param multiple The multiple
+   * \return The rounded value
+   */
+  inline float RoundF(const float value, const float multiple)
+  {
+    if (multiple == 0)
+      return value;
+
+    return static_cast<float>(round(static_cast<double>(value) / static_cast<double>(multiple)) *
+                          static_cast<double>(multiple));
+  }
+
 #if 0
   /*! \brief test routine for round_int and truncate_int
    Must return true on all platforms.

@@ -65,7 +65,7 @@ CAutorun::~CAutorun()
 
 void CAutorun::ExecuteAutorun( bool bypassSettings, bool ignoreplaying, bool restart )
 {
-  if ((!ignoreplaying && (g_application.m_pPlayer->IsPlayingAudio() || g_application.m_pPlayer->IsPlayingVideo() || CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog())) || CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_LOGIN_SCREEN)
+  if ((!ignoreplaying && (g_application.m_pPlayer->IsPlayingAudio() || g_application.m_pPlayer->IsPlayingVideo() || CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog(true))) || CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_LOGIN_SCREEN)
     return ;
 
   CCdInfo* pInfo = CDetectDVDMedia::GetCdInfo();
@@ -289,7 +289,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
         if (!bypassSettings)
           return false;
 
-        if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() != WINDOW_VIDEO_FILES)
+        if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() != WINDOW_VIDEO_NAV)
           if (!g_passwordManager.IsMasterLockUnlocked(true))
             return false;
       }

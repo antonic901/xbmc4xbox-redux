@@ -15,7 +15,7 @@
 
 #include "GUIAction.h"
 #include "GUIControlGroup.h"
-#include <memory>
+#include "boost/shared_ptr.hpp"
 #include "threads/CriticalSection.h"
 
 class CFileItem; typedef boost::shared_ptr<CFileItem> CFileItemPtr;
@@ -276,8 +276,6 @@ protected:
   boost::movelib::unique_ptr<TiXmlElement> m_windowXMLRootElement;
 
   bool m_manualRunActions;
-
-  int m_exclusiveMouseControl; ///< \brief id of child control that wishes to receive all mouse events \sa GUI_MSG_EXCLUSIVE_MOUSE
 
   int m_menuControlID;
   int m_menuLastFocusedControlID;

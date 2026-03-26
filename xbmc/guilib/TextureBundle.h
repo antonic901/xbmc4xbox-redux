@@ -29,7 +29,7 @@
 #include <map>
 
 class CAutoTexBuffer;
-class CBaseTexture;
+class CTexture;
 
 class CTextureBundle
 {
@@ -65,8 +65,8 @@ public:
   bool PreloadFile(const CStdString& Filename);
   static std::string Normalize(const std::string &name);
 
-  bool LoadTexture(const std::string& Filename, CBaseTexture** ppTexture, int &width, int &height);
+  bool LoadTexture(const std::string& Filename, CTexture** ppTexture, int &width, int &height);
 
-  int LoadAnim(const std::string& Filename, CBaseTexture*** ppTextures, int &width, int &height, int& nLoops, int** ppDelays);
+  int LoadAnim(const std::string& Filename, CTexture*** ppTextures, int &width, int &height, int& nLoops, int** ppDelays);
 };
 

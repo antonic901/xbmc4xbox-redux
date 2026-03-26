@@ -270,7 +270,7 @@ bool CProfilesManager::LoadProfile(size_t index)
   CButtonTranslator::GetInstance().Load(true);
 
   CServiceBroker::GetGUI()->GetInfoManager().ResetCache();
-  CServiceBroker::GetGUI()->GetInfoManager().ResetLibraryBools();
+  CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetLibraryInfoProvider().ResetLibraryBools();
 
   if (m_currentProfile != 0)
   {

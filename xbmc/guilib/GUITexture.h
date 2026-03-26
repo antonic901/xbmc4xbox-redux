@@ -55,28 +55,17 @@ public:
   explicit CTextureInfo(const std::string &file);
   bool       useLarge;
   CRect      border;          // scaled  - unneeded if we get rid of scale on load
-  bool m_infill{
-      true}; // if false, the main body of a texture is not drawn. useful for borders with no inner filling
+  bool m_infill; // if false, the main body of a texture is not drawn. useful for borders with no inner filling
   int        orientation;     // orientation of the texture (0 - 7 == EXIForientation - 1)
   std::string diffuse;         // diffuse overlay texture
   KODI::GUILIB::GUIINFO::CGUIInfoColor diffuseColor; // diffuse color
   std::string filename;        // main texture file
 };
 
-class CGUITexture;
-
-using CreateGUITextureFunc = std::function<CGUITexture*(
-    float posX, float posY, float width, float height, const CTextureInfo& texture)>;
-using DrawQuadFunc = std::function<void(
-    const CRect& coords, UTILS::COLOR::Color color, CTexture* texture, const CRect* texCoords)>;
-
 class CGUITexture
 {
 public:
   virtual ~CGUITexture() {}
-
-  static void Register(const CreateGUITextureFunc& createFunction,
-                       const DrawQuadFunc& drawQuadFunction);
 
   static CGUITexture* CreateTexture(
       float posX, float posY, float width, float height, const CTextureInfo& texture);
@@ -199,8 +188,4 @@ protected:
 
   CTextureArray m_diffuse;
   CTextureArray m_texture;
-
-private:
-  static CreateGUITextureFunc m_createGUITextureFunc;
-  static DrawQuadFunc m_drawQuadFunc;
 };

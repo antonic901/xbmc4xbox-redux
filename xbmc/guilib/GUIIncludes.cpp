@@ -224,7 +224,7 @@ void CGUIIncludes::LoadIncludes(const TiXmlElement *node)
       if (haveParamTags && !definitionTag)
         CLog::Log(LOGWARNING, "Skin has invalid include definition: {}", tagName);
       else
-        m_includes.insert({ tagName, { *includeBody, std::move(defaultParams) } });
+        m_includes.insert(make_pair(tagName, std::pair<TiXmlElement, Params>(*includeBody, boost::move(defaultParams))));
     }
     else if (child->Attribute("file"))
     {
@@ -246,40 +246,26 @@ void CGUIIncludes::LoadIncludes(const TiXmlElement *node)
 
 void CGUIIncludes::FlattenExpressions()
 {
-  for (auto& expression : m_expressions)
+  for (std::map<std::string, std::string>::iterator it = m_expressions.begin(); it != m_expressions.end(); ++it)
   {
     std::vector<std::string> resolved = std::vector<std::string>();
-    resolved.push_back(expression.first);
-    FlattenExpression(expression.second, resolved);
+    resolved.push_back(it->first);
+    FlattenExpression(it->second, resolved);
   }
 }
 
 void CGUIIncludes::FlattenExpression(std::string &expression, const std::vector<std::string> &resolved)
 {
   std::string original(expression);
-  GUIINFO::CGUIInfoLabel::ReplaceSpecialKeywordReferences(expression, "EXP", [&](const std::string &expressionName) -> std::string {
-    if (std::find(resolved.begin(), resolved.end(), expressionName) != resolved.end())
-    {
-      CLog::Log(LOGERROR, "Skin has a circular expression \"{}\": {}", resolved.back(), original);
-      return std::string();
-    }
-    auto it = m_expressions.find(expressionName);
-    if (it == m_expressions.end())
-      return std::string();
-
-    std::vector<std::string> rescopy = resolved;
-    rescopy.push_back(expressionName);
-    FlattenExpression(it->second, rescopy);
-
-    return it->second;
-  });
+  ExpressionFlattener flattener(this, original, resolved);
+  GUIINFO::CGUIInfoLabel::ReplaceSpecialKeywordReferences(expression, "EXP", boost::ref(flattener));
 }
 
 void CGUIIncludes::FlattenSkinVariableConditions()
 {
-  for (auto& variable : m_skinvariables)
+  for (std::map<std::string, TiXmlElement>::iterator it = m_skinvariables.begin(); it != m_skinvariables.end(); ++it)
   {
-    TiXmlElement* valueNode = variable.second.FirstChildElement("value");
+    TiXmlElement* valueNode = it->second.FirstChildElement("value");
     while (valueNode)
     {
       const char *condition = valueNode->Attribute("condition");
@@ -293,9 +279,9 @@ void CGUIIncludes::FlattenSkinVariableConditions()
 
 bool CGUIIncludes::HasLoaded(const std::string &file) const
 {
-  for (const auto& loadedFile : m_files)
+  for (std::vector<std::string>::const_iterator it = m_files.begin(); it != m_files.end(); ++it)
   {
-    if (loadedFile == file)
+    if (*it == file)
       return true;
   }
   return false;
@@ -326,7 +312,7 @@ void CGUIIncludes::SetDefaults(TiXmlElement *node)
     return;
 
   std::string type = XMLUtils::GetAttribute(node, "type");
-  const auto it = m_defaults.find(type);
+  const std::map<std::string, TiXmlElement>::iterator it = m_defaults.find(type);
   if (it != m_defaults.end())
   {
     // we don't insert <left> et. al. if <posx> or <posy> is specified
@@ -462,7 +448,7 @@ void CGUIIncludes::ResolveIncludes(TiXmlElement *node, std::map<INFO::InfoPtr, b
     }
 
     // check, whether the include exists and therefore should be replaced by its definition
-    auto it = m_includes.find(tagName);
+    std::map<std::string, std::pair<TiXmlElement, Params> >::const_iterator it = m_includes.find(tagName);
     if (it != m_includes.end())
     {
       const TiXmlElement *includeDefinition = &it->second.first;
@@ -569,7 +555,7 @@ bool CGUIIncludes::GetParameters(const TiXmlElement *include, const char *valueA
             paramValue = child->ValueStr();                           // and then tag value
         }
 
-        params.insert({ paramName, paramValue });                     // no overwrites
+        params.insert(std::make_pair( paramName, paramValue ));                     // no overwrites
       }
       param = param->NextSiblingElement("param");
     }
@@ -641,11 +627,11 @@ class ParamReplacer
 {
   const std::map<std::string, std::string>& m_params;
   // keep some stats so that we know exactly what's been resolved
-  int m_numTotalParams = 0;
-  int m_numUndefinedParams = 0;
+  int m_numTotalParams;
+  int m_numUndefinedParams;
 
 public:
-  explicit ParamReplacer(const std::map<std::string, std::string>& params) : m_params(params) {}
+  explicit ParamReplacer(const std::map<std::string, std::string>& params) : m_params(params), m_numTotalParams(0), m_numUndefinedParams(0) {}
   int GetNumTotalParams() const { return m_numTotalParams; }
   int GetNumDefinedParams() const { return m_numTotalParams - m_numUndefinedParams; }
   int GetNumUndefinedParams() const { return m_numUndefinedParams; }
@@ -664,7 +650,7 @@ public:
 CGUIIncludes::ResolveParamsResult CGUIIncludes::ResolveParameters(const std::string& strInput, std::string& strOutput, const Params& params)
 {
   ParamReplacer paramReplacer(params);
-  if (GUIINFO::CGUIInfoLabel::ReplaceSpecialKeywordReferences(strInput, "PARAM", std::ref(paramReplacer), strOutput))
+  if (GUIINFO::CGUIInfoLabel::ReplaceSpecialKeywordReferences(strInput, "PARAM", boost::ref(paramReplacer), strOutput))
     // detect special input values of the form "$PARAM[undefinedParam]" (with no extra characters around)
     return paramReplacer.GetNumUndefinedParams() == 1 && paramReplacer.GetNumTotalParams() == 1 && strOutput.empty() ? SINGLE_UNDEFINED_PARAM_RESOLVED : PARAMS_RESOLVED;
   return NO_PARAMS_FOUND;
@@ -673,11 +659,11 @@ CGUIIncludes::ResolveParamsResult CGUIIncludes::ResolveParameters(const std::str
 std::string CGUIIncludes::ResolveConstant(const std::string &constant) const
 {
   std::vector<std::string> values = StringUtils::Split(constant, ",");
-  for (auto& i : values)
+  for (std::vector<std::string>::iterator i = values.begin(); i != values.end(); ++i)
   {
-    std::map<std::string, std::string>::const_iterator it = m_constants.find(i);
+    std::map<std::string, std::string>::const_iterator it = m_constants.find(*i);
     if (it != m_constants.end())
-      i = it->second;
+      *i = it->second;
   }
   return StringUtils::Join(values, ",");
 }
@@ -685,12 +671,8 @@ std::string CGUIIncludes::ResolveConstant(const std::string &constant) const
 std::string CGUIIncludes::ResolveExpressions(const std::string &expression) const
 {
   std::string work(expression);
-  GUIINFO::CGUIInfoLabel::ReplaceSpecialKeywordReferences(work, "EXP", [&](const std::string &str) -> std::string {
-    std::map<std::string, std::string>::const_iterator it = m_expressions.find(str);
-    if (it != m_expressions.end())
-      return it->second;
-    return "";
-  });
+  ExpressionReplacer replacer(m_expressions);
+  GUIINFO::CGUIInfoLabel::ReplaceSpecialKeywordReferences(work, "EXP", boost::ref(replacer));
 
   return work;
 }

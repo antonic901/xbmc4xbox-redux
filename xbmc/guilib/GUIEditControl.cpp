@@ -20,7 +20,6 @@
 #include "input/actions/ActionIDs.h"
 #include "input/keyboard/KeyIDs.h"
 #include "input/keyboard/XBMC_vkeys.h"
-#include "input/keyboard/XBMC_keyboard.h"
 #include "utils/CharsetConverter.h"
 #include "utils/ColorUtils.h"
 #include "utils/Digest.h"
@@ -40,7 +39,7 @@ extern HWND g_hWnd;
 
 namespace
 {
-constexpr std::string_view smsLetters[] = {" !@#$%^&*()[]{}<>/\\|0",
+static const char* smsLetters[10] = {" !@#$%^&*()[]{}<>/\\|0",
                                            ".,;:\'\"-+_=?`~1",
                                            "abc2ABC",
                                            "def3DEF",
@@ -51,10 +50,10 @@ constexpr std::string_view smsLetters[] = {" !@#$%^&*()[]{}<>/\\|0",
                                            "tuv8TUV",
                                            "wxyz9WXYZ"};
 
-constexpr float smsDelay = 1000;
+static const float smsDelay = 1000;
 
 // Additional space between left label text and left label text in pixels
-constexpr float TEXT_SPACE = 20.0f;
+static const float TEXT_SPACE = 20.0f;
 } // unnamed namespace
 
 CGUIEditControl::CGUIEditControl(int parentID, int controlID, float posX, float posY,
@@ -69,7 +68,7 @@ CGUIEditControl::CGUIEditControl(int parentID, int controlID, float posX, float 
   if (m_height == 0 && m_label.GetLabelInfo().font)
   {
     m_height = m_label.GetLabelInfo().font->GetTextHeight(1);
-    CLog::LogF(LOGWARNING,
+    CLog::Log(LOGWARNING,
                "No height has been set for GUI edit control ID {}, fallback to font height",
                controlID);
   }
@@ -167,7 +166,6 @@ bool CGUIEditControl::OnAction(const CAction &action)
     else if (action.GetID() == ACTION_PASTE)
     {
       ClearMD5();
-      OnPasteClipboard();
       return true;
     }
     else if (action.GetID() >= KEY_VKEY && action.GetID() < KEY_UNICODE && m_edit.empty())
@@ -228,18 +226,6 @@ bool CGUIEditControl::OnAction(const CAction &action)
       { // escape - fallthrough to default action
         return CGUIButtonControl::OnAction(action);
       }
-    }
-    else if (action.GetID() == ACTION_KEYBOARD_COMPOSING_KEY)
-    {
-      ComposingCursorAppendChar(action.GetUnicode());
-    }
-    else if (action.GetID() == ACTION_KEYBOARD_COMPOSING_KEY_CANCELLED)
-    {
-      CancelKeyComposition(action.GetUnicode());
-    }
-    else if (action.GetID() == ACTION_KEYBOARD_COMPOSING_KEY_FINISHED)
-    {
-      ResetCursor();
     }
     else if (action.GetID() == KEY_UNICODE)
     {
@@ -342,7 +328,7 @@ void CGUIEditControl::OnClick()
     {
       CDateTime dateTime;
       dateTime.SetFromDBTime(utf8);
-      KODI::TIME::SystemTime time;
+      SYSTEMTIME time;
       dateTime.GetAsSystemTime(time);
       if (CGUIDialogNumeric::ShowAndGetTime(time, !m_inputHeading.empty() ? m_inputHeading : g_localizeStrings.Get(21420)))
       {
@@ -358,7 +344,7 @@ void CGUIEditControl::OnClick()
       dateTime.SetFromDBDate(utf8);
       if (dateTime < CDateTime(2000,1, 1, 0, 0, 0))
         dateTime = CDateTime(2000, 1, 1, 0, 0, 0);
-      KODI::TIME::SystemTime date;
+      SYSTEMTIME date;
       dateTime.GetAsSystemTime(date);
       if (CGUIDialogNumeric::ShowAndGetDate(date, !m_inputHeading.empty() ? m_inputHeading : g_localizeStrings.Get(21420)))
       {
@@ -383,7 +369,6 @@ void CGUIEditControl::OnClick()
     case INPUT_TYPE_PASSWORD_MD5:
       utf8 = ""; //! @todo Ideally we'd send this to the keyboard and tell the keyboard we have this type of input
       // fallthrough
-      [[fallthrough]];
     case INPUT_TYPE_TEXT:
     default:
       textChanged = CGUIKeyboardFactory::ShowAndGetInput(utf8, m_inputHeading, true, m_inputType == INPUT_TYPE_PASSWORD || m_inputType == INPUT_TYPE_PASSWORD_MD5);
@@ -625,18 +610,10 @@ bool CGUIEditControl::SetStyledText(const std::wstring &text)
   }
 
   // show the cursor
-  unsigned int posChar = m_cursorPos;
-  for (const uint32_t& cursorChar : m_cursorChars)
-  {
-    uint32_t ch = cursorChar | style;
-    if (m_cursorBlinkEnabled)
-    {
-      if ((++m_cursorBlink % 64) > 32)
-        ch |= (3 << 16);
-    }
-    styled.insert(styled.begin() + posChar, ch);
-    posChar++;
-  }
+  unsigned int ch = L'|';
+  if ((++m_cursorBlink % 64) > 32)
+    ch |= (3 << 16);
+  styled.insert(styled.begin() + m_cursorPos, ch);
   return m_label2.SetStyledText(styled, colors);
 }
 
@@ -722,34 +699,11 @@ void CGUIEditControl::OnSMSCharacter(unsigned int key)
     m_smsKeyIndex = 0;
   }
 
-  m_smsKeyIndex = m_smsKeyIndex % smsLetters[key].size();
+  m_smsKeyIndex = m_smsKeyIndex % strlen(smsLetters[key]);
 
   m_text2.insert(m_text2.begin() + m_cursorPos++, smsLetters[key][m_smsKeyIndex]);
   UpdateText();
   m_smsTimer.StartZero();
-}
-
-void CGUIEditControl::OnPasteClipboard()
-{
-  std::wstring unicode_text;
-  std::string utf8_text;
-
-  // Get text from the clipboard
-  utf8_text = CServiceBroker::GetWinSystem()->GetClipboardText();
-  g_charsetConverter.utf8ToW(utf8_text, unicode_text, false);
-
-  // Insert the pasted text at the current cursor position.
-  if (unicode_text.length() > 0)
-  {
-    std::wstring left_end = m_text2.substr(0, m_cursorPos);
-    std::wstring right_end = m_text2.substr(m_cursorPos);
-
-    m_text2 = left_end;
-    m_text2.append(unicode_text);
-    m_text2.append(right_end);
-    m_cursorPos += unicode_text.length();
-    UpdateText();
-  }
 }
 
 void CGUIEditControl::SetInputValidation(StringValidation::Validator inputValidator, void *data /* = NULL */)
@@ -804,63 +758,4 @@ std::string CGUIEditControl::GetDescriptionByIndex(int index) const
     return GetLabel2();
 
   return "";
-}
-
-void CGUIEditControl::ComposingCursorAppendChar(std::uint32_t deadUnicodeKey)
-{
-  std::uint32_t ch;
-  if (m_inputType == INPUT_TYPE_PASSWORD || m_inputType == INPUT_TYPE_PASSWORD_MD5 ||
-      m_inputType == INPUT_TYPE_PASSWORD_NUMBER_VERIFY_NEW)
-  {
-    ch = '*';
-  }
-  else
-  {
-    ch = deadUnicodeKey;
-  }
-
-  if (IsComposingKey())
-  {
-    m_cursorChars.emplace_back(ch);
-    m_cursorCharsBuffer.emplace_back(deadUnicodeKey);
-  }
-  else
-  {
-    m_cursorChars = {ch};
-    m_cursorCharsBuffer.emplace_back(deadUnicodeKey);
-  }
-  m_cursorBlinkEnabled = false;
-}
-
-void CGUIEditControl::CancelKeyComposition(std::uint32_t deadUnicodeKey)
-{
-  // sequence cancelled and reverted...
-  if (deadUnicodeKey == XBMCK_BACKSPACE)
-  {
-    ResetCursor();
-  }
-  // sequence cancelled and replay...
-  else
-  {
-    ClearMD5();
-    m_edit.clear();
-    for (const uint32_t& cursorChar : m_cursorCharsBuffer)
-    {
-      m_text2.insert(m_text2.begin() + m_cursorPos++, cursorChar);
-    }
-    UpdateText();
-    ResetCursor();
-  }
-}
-
-void CGUIEditControl::ResetCursor()
-{
-  m_cursorChars = {'|'};
-  m_cursorCharsBuffer.clear();
-  m_cursorBlinkEnabled = true;
-}
-
-bool CGUIEditControl::IsComposingKey() const
-{
-  return !m_cursorBlinkEnabled;
 }

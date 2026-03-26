@@ -38,13 +38,13 @@ CGUIStaticItem::CGUIStaticItem(const TiXmlElement *item, int parentID) : CFileIt
   SetArt("thumb", thumb.GetLabel(parentID, true));
   SetArt("icon", icon.GetLabel(parentID, true));
   if (!label.IsConstant())
-    m_info.emplace_back(label, "label");
+    m_info.push_back(std::make_pair(label, "label"));
   if (!label2.IsConstant())
-    m_info.emplace_back(label2, "label2");
+    m_info.push_back(std::make_pair(label2, "label2"));
   if (!thumb.IsConstant())
-    m_info.emplace_back(thumb, "thumb");
+    m_info.push_back(std::make_pair(thumb, "thumb"));
   if (!icon.IsConstant())
-    m_info.emplace_back(icon, "icon");
+    m_info.push_back(std::make_pair(icon, "icon"));
   m_iprogramCount = id ? atoi(id) : 0;
   // add any properties
   const TiXmlElement *property = item->FirstChildElement("property");
@@ -56,7 +56,7 @@ CGUIStaticItem::CGUIStaticItem(const TiXmlElement *item, int parentID) : CFileIt
     {
       SetProperty(name, prop.GetLabel(parentID, true).c_str());
       if (!prop.IsConstant())
-        m_info.emplace_back(prop, name);
+        m_info.push_back(std::make_pair(prop, name));
     }
     property = property->NextSiblingElement("property");
   }
@@ -79,10 +79,10 @@ CGUIStaticItem::CGUIStaticItem(const CGUIStaticItem& other)
 
 void CGUIStaticItem::UpdateProperties(int contextWindow)
 {
-  for (const auto& i : m_info)
+  for (InfoVector::const_iterator i = m_info.begin(); i != m_info.end(); ++i)
   {
-    const GUIINFO::CGUIInfoLabel& info = i.first;
-    const std::string& name = i.second;
+    const GUIINFO::CGUIInfoLabel& info = i->first;
+    const std::string& name = i->second;
     bool preferTexture = StringUtils::CompareNoCase("label", name, 5) != 0;
     const std::string& value(info.GetLabel(contextWindow, preferTexture));
     if (StringUtils::EqualsNoCase(name, "label"))

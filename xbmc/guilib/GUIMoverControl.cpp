@@ -16,6 +16,9 @@
 using namespace KODI;
 using namespace UTILS;
 
+// time to reset accelerated cursors (digital movement)
+#define MOVE_TIME_OUT 500L
+
 CGUIMoverControl::CGUIMoverControl(int parentID,
                                    int controlID,
                                    float posX,
@@ -23,15 +26,17 @@ CGUIMoverControl::CGUIMoverControl(int parentID,
                                    float width,
                                    float height,
                                    const CTextureInfo& textureFocus,
-                                   const CTextureInfo& textureNoFocus,
-                                   UTILS::MOVING_SPEED::MapEventConfig& movingSpeedCfg)
+                                   const CTextureInfo& textureNoFocus)
   : CGUIControl(parentID, controlID, posX, posY, width, height),
     m_imgFocus(CGUITexture::CreateTexture(posX, posY, width, height, textureFocus)),
     m_imgNoFocus(CGUITexture::CreateTexture(posX, posY, width, height, textureNoFocus))
 {
   m_frameCounter = 0;
-  m_movingSpeed.AddEventMapConfig(movingSpeedCfg);
+  m_lastMoveTime = 0;
+  m_fSpeed = 1.0;
   m_fAnalogSpeed = 2.0f; //! @todo implement correct analog speed
+  m_fAcceleration = 0.2f; //! @todo implement correct computation of acceleration
+  m_fMaxSpeed = 10.0;  //! @todo implement correct computation of maxspeed
   ControlType = GUICONTROL_MOVER;
   SetLimits(0, 0, 720, 576); // defaults
   SetLocation(0, 0, false);  // defaults
@@ -42,7 +47,6 @@ CGUIMoverControl::CGUIMoverControl(const CGUIMoverControl& control)
     m_imgFocus(control.m_imgFocus->Clone()),
     m_imgNoFocus(control.m_imgNoFocus->Clone()),
     m_frameCounter(control.m_frameCounter),
-    m_movingSpeed(control.m_movingSpeed),
     m_fAnalogSpeed(control.m_fAnalogSpeed),
     m_iX1(control.m_iX1),
     m_iX2(control.m_iX2),
@@ -126,25 +130,49 @@ bool CGUIMoverControl::OnAction(const CAction &action)
 void CGUIMoverControl::OnUp()
 {
   // if (m_dwAllowedDirections == ALLOWED_DIRECTIONS_LEFTRIGHT) return;
-  Move(0, -static_cast<int>(m_movingSpeed.GetUpdatedDistance(MOVING_SPEED::EventType::UP)));
+  UpdateSpeed(DIRECTION_UP);
+  Move(0, -static_cast<int>(m_fSpeed));
 }
 
 void CGUIMoverControl::OnDown()
 {
   // if (m_dwAllowedDirections == ALLOWED_DIRECTIONS_LEFTRIGHT) return;
-  Move(0, static_cast<int>(m_movingSpeed.GetUpdatedDistance(MOVING_SPEED::EventType::DOWN)));
+  UpdateSpeed(DIRECTION_DOWN);
+  Move(0, static_cast<int>(m_fSpeed));
 }
 
 void CGUIMoverControl::OnLeft()
 {
   // if (m_dwAllowedDirections == ALLOWED_DIRECTIONS_UPDOWN) return;
-  Move(-static_cast<int>(m_movingSpeed.GetUpdatedDistance(MOVING_SPEED::EventType::LEFT)), 0);
+  UpdateSpeed(DIRECTION_LEFT);
+  Move(-static_cast<int>(m_fSpeed), 0);
 }
 
 void CGUIMoverControl::OnRight()
 {
   // if (m_dwAllowedDirections == ALLOWED_DIRECTIONS_UPDOWN) return;
-  Move(static_cast<int>(m_movingSpeed.GetUpdatedDistance(MOVING_SPEED::EventType::RIGHT)), 0);
+  UpdateSpeed(DIRECTION_RIGHT);
+  Move(static_cast<int>(m_fSpeed), 0);
+}
+
+void CGUIMoverControl::UpdateSpeed(int nDirection)
+{
+  if (CTimeUtils::GetFrameTime() - m_lastMoveTime > MOVE_TIME_OUT)
+  {
+    m_fSpeed = 1;
+    m_nDirection = DIRECTION_NONE;
+  }
+  m_lastMoveTime = CTimeUtils::GetFrameTime();
+  if (nDirection == m_nDirection)
+  { // accelerate
+    m_fSpeed += m_fAcceleration;
+    if (m_fSpeed > m_fMaxSpeed) m_fSpeed = m_fMaxSpeed;
+  }
+  else
+  { // reset direction and speed
+    m_fSpeed = 1;
+    m_nDirection = nDirection;
+  }
 }
 
 void CGUIMoverControl::AllocResources()

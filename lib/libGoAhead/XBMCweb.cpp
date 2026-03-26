@@ -6,7 +6,7 @@
 /******************************** Description *********************************/
 
 /*
-*	This module provides the links between the web server and XBMC
+*    This module provides the links between the web server and XBMC
 */
 
 /********************************* Includes ***********************************/
@@ -53,62 +53,62 @@ using namespace KODI::MESSAGING;
 /***************************** Definitions ***************************/
 /* Define common commands */
 
-#define XBMC_NONE			T("none")
-#define XBMC_ID				T("id")
-#define XBMC_TYPE			T("type")
+#define XBMC_NONE            T("none")
+#define XBMC_ID                T("id")
+#define XBMC_TYPE            T("type")
 
-#define XBMC_REMOTE_MENU		T("menu")
-#define XBMC_REMOTE_BACK		T("back")
-#define XBMC_REMOTE_SELECT	T("select")
-#define XBMC_REMOTE_DISPLAY	T("display")
-#define XBMC_REMOTE_TITLE		T("title")
-#define XBMC_REMOTE_INFO		T("info")
-#define XBMC_REMOTE_UP			T("up")
-#define XBMC_REMOTE_DOWN		T("down")
-#define XBMC_REMOTE_LEFT		T("left")
-#define XBMC_REMOTE_RIGHT		T("right")
-#define XBMC_REMOTE_PLAY		T("play")
-#define XBMC_REMOTE_FORWARD	T("forward")
-#define XBMC_REMOTE_REVERSE	T("reverse")
-#define XBMC_REMOTE_PAUSE		T("pause")
-#define XBMC_REMOTE_STOP		T("stop")
-#define XBMC_REMOTE_SKIP_PLUS	T("skip+")
-#define XBMC_REMOTE_SKIP_MINUS	T("skip-")
-#define XBMC_REMOTE_1		T("1")
-#define XBMC_REMOTE_2		T("2")
-#define XBMC_REMOTE_3		T("3")
-#define XBMC_REMOTE_4		T("4")
-#define XBMC_REMOTE_5		T("5")
-#define XBMC_REMOTE_6		T("6")
-#define XBMC_REMOTE_7		T("7")
-#define XBMC_REMOTE_8		T("8")
-#define XBMC_REMOTE_9		T("9")
-#define XBMC_REMOTE_0		T("0")
+#define XBMC_REMOTE_MENU        T("menu")
+#define XBMC_REMOTE_BACK        T("back")
+#define XBMC_REMOTE_SELECT    T("select")
+#define XBMC_REMOTE_DISPLAY    T("display")
+#define XBMC_REMOTE_TITLE        T("title")
+#define XBMC_REMOTE_INFO        T("info")
+#define XBMC_REMOTE_UP            T("up")
+#define XBMC_REMOTE_DOWN        T("down")
+#define XBMC_REMOTE_LEFT        T("left")
+#define XBMC_REMOTE_RIGHT        T("right")
+#define XBMC_REMOTE_PLAY        T("play")
+#define XBMC_REMOTE_FORWARD    T("forward")
+#define XBMC_REMOTE_REVERSE    T("reverse")
+#define XBMC_REMOTE_PAUSE        T("pause")
+#define XBMC_REMOTE_STOP        T("stop")
+#define XBMC_REMOTE_SKIP_PLUS    T("skip+")
+#define XBMC_REMOTE_SKIP_MINUS    T("skip-")
+#define XBMC_REMOTE_1        T("1")
+#define XBMC_REMOTE_2        T("2")
+#define XBMC_REMOTE_3        T("3")
+#define XBMC_REMOTE_4        T("4")
+#define XBMC_REMOTE_5        T("5")
+#define XBMC_REMOTE_6        T("6")
+#define XBMC_REMOTE_7        T("7")
+#define XBMC_REMOTE_8        T("8")
+#define XBMC_REMOTE_9        T("9")
+#define XBMC_REMOTE_0        T("0")
 
-#define WEB_VIDEOS		T("videos")
-#define WEB_MUSIC			T("music")
-#define WEB_PICTURES	T("pictures")
-#define WEB_PROGRAMS	T("programs")
-#define WEB_FILES			T("files")
-#define WEB_MUSICPLAYLIST	T("musicplaylist")
-#define WEB_VIDEOPLAYLIST	T("videoplaylist")
+#define WEB_VIDEOS        T("videos")
+#define WEB_MUSIC            T("music")
+#define WEB_PICTURES    T("pictures")
+#define WEB_PROGRAMS    T("programs")
+#define WEB_FILES            T("files")
+#define WEB_MUSICPLAYLIST    T("musicplaylist")
+#define WEB_VIDEOPLAYLIST    T("videoplaylist")
 
-#define XBMC_CAT_NAME			T("name")
-#define XBMC_CAT_SELECT		T("select")
-#define XBMC_CAT_QUE			T("que")
-#define XBMC_CAT_UNQUE		T("unque")
-#define XBMC_CAT_TYPE			T("type")
-#define XBMC_CAT_PREVIOUS	T("previous")
-#define XBMC_CAT_ITEMS		T("items")
-#define XBMC_CAT_FIRST		T("first")
-#define XBMC_CAT_NEXT			T("next")
+#define XBMC_CAT_NAME            T("name")
+#define XBMC_CAT_SELECT        T("select")
+#define XBMC_CAT_QUE            T("que")
+#define XBMC_CAT_UNQUE        T("unque")
+#define XBMC_CAT_TYPE            T("type")
+#define XBMC_CAT_PREVIOUS    T("previous")
+#define XBMC_CAT_ITEMS        T("items")
+#define XBMC_CAT_FIRST        T("first")
+#define XBMC_CAT_NEXT            T("next")
 
-#define XBMC_CMD_URL					T("/xbmcCmds/xbmcForm")
-#define XBMC_CMD_DIRECTORY		T("directory")
-#define XBMC_CMD_VIDEO				T("video")
-#define XBMC_CMD_MUSIC				T("music")
-#define XBMC_CMD_PICTURE			T("picture")
-#define XBMC_CMD_APPLICATION	T("application")
+#define XBMC_CMD_URL                    T("/xbmcCmds/xbmcForm")
+#define XBMC_CMD_DIRECTORY        T("directory")
+#define XBMC_CMD_VIDEO                T("video")
+#define XBMC_CMD_MUSIC                T("music")
+#define XBMC_CMD_PICTURE            T("picture")
+#define XBMC_CMD_APPLICATION    T("application")
 
 CXbmcWeb::CXbmcWeb()
 {
@@ -212,7 +212,7 @@ int CXbmcWeb::xbmcRemoteControl( int eid, webs_t wp, char_t *parameter)
   /***********************************
   *  Remote control command structure
   *  This structure is formatted as follows:
-  *		command string, XBMC IR command
+  *        command string, XBMC IR command
   */
   xbmcRemoteControlHandlerType xbmcRemoteControls[ ] = {
       {XBMC_REMOTE_MENU,       XINPUT_IR_REMOTE_MENU},
@@ -270,9 +270,9 @@ int CXbmcWeb::xbmcNavigate( int eid, webs_t wp, char_t *parameter)
   /***********************************
   *  Navagation command structure
   *  This structure is formatted as follows:
-  *		command string, XBMC application state
+  *        command string, XBMC application state
   */
-  xbmcNavigationHandlerType	xbmcNavigator[ ] = {
+  xbmcNavigationHandlerType    xbmcNavigator[ ] = {
     {WEB_VIDEOS,        WEB_NAV_VIDEOS},
     {WEB_MUSIC,         WEB_NAV_MUSIC},
     {WEB_PICTURES,      WEB_NAV_PICTURES},
@@ -370,7 +370,7 @@ int CXbmcWeb::xbmcNavigatorState( int eid, webs_t wp, char_t *parameter)
 {
   int cnt = 0;
   int cmd = 0;
-  xbmcNavigationHandlerType	xbmcNavigator[ ] = {
+  xbmcNavigationHandlerType    xbmcNavigator[ ] = {
     {WEB_VIDEOS,        WEB_NAV_VIDEOS},
     {WEB_MUSIC,         WEB_NAV_MUSIC},
     {WEB_PICTURES,      WEB_NAV_PICTURES},
@@ -413,7 +413,7 @@ int catalogNumber( char_t *parameter)
 int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
 {
   int selectionNumber = 0;
-  int	iItemCount = 0;  // for test purposes
+  int    iItemCount = 0;  // for test purposes
   int cnt = 0;
   char buffer[XML_MAX_INNERTEXT_SIZE] = "";
 
@@ -888,24 +888,24 @@ int CXbmcWeb::xbmcSubtitles( int eid, webs_t wp, char_t *parameter)
 /* Parse an XBMC command */
 int CXbmcWeb::xbmcProcessCommand( int eid, webs_t wp, char_t *command, char_t *parameter)
 {
-  if (!strcmp(command, "play"))								return xbmcPlayerPlay(eid, wp, parameter);
-  else if (!strcmp(command, "stop"))					CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_STOP);
-  else if (!strcmp(command, "pause"))					CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_PAUSE);
-  else if (!strcmp(command, "shutdown"))			CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SHUTDOWN);
-  else if (!strcmp(command, "restart"))				CServiceBroker::GetAppMessenger()->PostMsg(TMSG_RESTART);
-  else if (!strcmp(command, "exit"))					CServiceBroker::GetAppMessenger()->PostMsg(TMSG_QUIT);
-  else if (!strcmp(command, "show_time"))			return 0;
-  else if (!strcmp(command, "remote"))				return xbmcRemoteControl(eid, wp, parameter);			// remote control functions
-  else if (!strcmp(command, "navigate"))			return xbmcNavigate(eid, wp, parameter);	// Navigate to a particular interface
+  if (!strcmp(command, "play"))                                return xbmcPlayerPlay(eid, wp, parameter);
+  else if (!strcmp(command, "stop"))                    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_STOP);
+  else if (!strcmp(command, "pause"))                    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_PAUSE);
+  else if (!strcmp(command, "shutdown"))            CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SHUTDOWN);
+  else if (!strcmp(command, "restart"))                CServiceBroker::GetAppMessenger()->PostMsg(TMSG_RESTART);
+  else if (!strcmp(command, "exit"))                    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_QUIT);
+  else if (!strcmp(command, "show_time"))            return 0;
+  else if (!strcmp(command, "remote"))                return xbmcRemoteControl(eid, wp, parameter);            // remote control functions
+  else if (!strcmp(command, "navigate"))            return xbmcNavigate(eid, wp, parameter);    // Navigate to a particular interface
   else if (!strcmp(command, "navigatorstate"))return xbmcNavigatorState(eid, wp, parameter);
-  else if (!strcmp(command, "catalog"))				return xbmcCatalog(eid, wp, parameter);	// interface to teh media catalog
+  else if (!strcmp(command, "catalog"))                return xbmcCatalog(eid, wp, parameter);    // interface to teh media catalog
 
-  else if (!strcmp(command, "ff"))						return 0;
-  else if (!strcmp(command, "rw"))						return 0;
-  else if (!strcmp(command, "next"))					return xbmcPlayerNext(eid, wp, parameter);
-  else if (!strcmp(command, "previous"))			return xbmcPlayerPrevious(eid, wp, parameter);
+  else if (!strcmp(command, "ff"))                        return 0;
+  else if (!strcmp(command, "rw"))                        return 0;
+  else if (!strcmp(command, "next"))                    return xbmcPlayerNext(eid, wp, parameter);
+  else if (!strcmp(command, "previous"))            return xbmcPlayerPrevious(eid, wp, parameter);
 
-  else if (!strcmp(command, "previous"))			return xbmcPlayerPrevious(eid, wp, parameter);
+  else if (!strcmp(command, "previous"))            return xbmcPlayerPrevious(eid, wp, parameter);
   return 0;
 }
 
@@ -914,7 +914,7 @@ int CXbmcWeb::xbmcProcessCommand( int eid, webs_t wp, char_t *command, char_t *p
 */
 int CXbmcWeb::xbmcCommand( int eid, webs_t wp, int argc, char_t **argv)
 {
-  char_t	*command, *parameter;
+  char_t    *command, *parameter;
 
   int parameters = ejArgs(argc, argv, T("%s %s"), &command, &parameter);
   if (parameters < 1) {
@@ -929,13 +929,13 @@ int CXbmcWeb::xbmcCommand( int eid, webs_t wp, int argc, char_t **argv)
 /* XBMC form for posted data (in-memory CGI). This will be called when the
 * form in /xbmc/xbmcForm is invoked. Set browser to "localhost/xbmc/xbmcForm?command=test&parameter=videos" to test.
 * Parameters:
-*		command:	The command that will be invoked
-*		parameter:	The parameter for this command
-*		next_page:	The next page to display, use to invoke another page following this call
+*        command:    The command that will be invoked
+*        parameter:    The parameter for this command
+*        next_page:    The next page to display, use to invoke another page following this call
 */
 void CXbmcWeb::xbmcForm(webs_t wp, char_t *path, char_t *query)
 {
-  char_t	*command, *parameter, *next_page;
+  char_t    *command, *parameter, *next_page;
 
   command = websGetVar(wp, (char*)WEB_COMMAND, (char*)XBMC_NONE);
   parameter = websGetVar(wp, (char*)WEB_PARAMETER, (char*)XBMC_NONE);
@@ -963,15 +963,15 @@ void CXbmcWeb::SetCurrentMediaItem(CFileItem& newItem)
 {
   *currentMediaItem = newItem;
 
-  //	No audio file, we are finished here
+  //    No audio file, we are finished here
   if (!newItem.IsAudio() )
     return;
 
-  //	Get a reference to the item's tag
+  //    Get a reference to the item's tag
   CMusicInfoTag* tag = newItem.GetMusicInfoTag();
 
-  //	we have a audio file.
-  //	Look if we have this file in database...
+  //    we have a audio file.
+  //    Look if we have this file in database...
   bool bFound=false;
   CMusicDatabase musicdatabase;
   if (musicdatabase.Open())
@@ -984,20 +984,20 @@ void CXbmcWeb::SetCurrentMediaItem(CFileItem& newItem)
 
   if (!bFound && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicfiles.usetags"))
   {
-    //	...no, try to load the tag of the file.
+    //    ...no, try to load the tag of the file.
     auto_ptr<IMusicInfoTagLoader> pLoader(CMusicInfoTagLoaderFactory::CreateLoader(newItem));
-    //	Do we have a tag loader for this file type?
+    //    Do we have a tag loader for this file type?
     if (pLoader.get() != NULL)
       pLoader->Load(newItem.GetPath(),*tag);
   }
 
-  //	If we have tag information, ...
+  //    If we have tag information, ...
   if (tag->Loaded())
   {
-    CServiceBroker::GetGUI()->GetInfoManager().SetCurrentSongTag(*tag);
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_UPDATE_CURRENT_ITEM, -1, -1, static_cast<void*>(new CFileItem(newItem)));
   }
   /*
-  //	display only, if we have a title
+  //    display only, if we have a title
   if (tag.GetTitle().size())
   {
   //if (tag.GetArtist().size())
@@ -1007,8 +1007,8 @@ void CXbmcWeb::SetCurrentMediaItem(CFileItem& newItem)
   int iTrack = tag.GetTrackNumber();
   if (iTrack >= 1)
   {
-  //	Tracknumber
-  CStdString strText=g_localizeStrings.Get(554);	//	"Track"
+  //    Tracknumber
+  CStdString strText=g_localizeStrings.Get(554);    //    "Track"
   if (strText.GetAt(strText.size()-1) != ' ')
   strText+=" ";
   CStdString strTrack;
@@ -1021,8 +1021,8 @@ void CXbmcWeb::SetCurrentMediaItem(CFileItem& newItem)
   int iYear=systemtime.wYear;
   if (iYear >=1900)
   {
-  //	Year
-  CStdString strText=g_localizeStrings.Get(562);	//	"Year:"
+  //    Year
+  CStdString strText=g_localizeStrings.Get(562);    //    "Year:"
   if (strText.GetAt(strText.size()-1) != ' ')
   strText+=" ";
   CStdString strYear;
@@ -1031,7 +1031,7 @@ void CXbmcWeb::SetCurrentMediaItem(CFileItem& newItem)
 
   if (tag.GetDuration() > 0)
   {
-  //	Duration
+  //    Duration
   CStdString strDuration, strTime;
 
   CStdString strText=g_localizeStrings.Get(180);
@@ -1043,24 +1043,24 @@ void CXbmcWeb::SetCurrentMediaItem(CFileItem& newItem)
   strDuration=strText+strTime;
   }
   }
-  }	//	if (tag.Loaded())
+  }    //    if (tag.Loaded())
   else
   {
-  //	If we have a cdda track without cddb information,...
+  //    If we have a cdda track without cddb information,...
   if (url.GetProtocol()=="cdda" )
   {
-  //	we have the tracknumber...
+  //    we have the tracknumber...
   int iTrack=tag.GetTrackNumber();
   if (iTrack >=1)
   {
-  CStdString strText=g_localizeStrings.Get(554);	//	"Track"
+  CStdString strText=g_localizeStrings.Get(554);    //    "Track"
   if (strText.GetAt(strText.size()-1) != ' ')
   strText+=" ";
   CStdString strTrack;
   strTrack.Format(strText+"%i", iTrack);
   }
 
-  //	...and its duration for display.
+  //    ...and its duration for display.
   if (tag.GetDuration() > 0)
   {
   CStdString strDuration, strTime;

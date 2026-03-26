@@ -34,6 +34,8 @@
 #include "utils/JSONVariantParser.h"
 #include "utils/log.h"
 
+#include <boost/move/make_unique.hpp>
+
 #define INSIGNIA_API "https://insignia-notify-job-app.fly.dev/api/"
 
 CInsigniaJob::CInsigniaJob()
@@ -173,7 +175,7 @@ void CInsigniaJob::SetWindowProperties()
     for (std::vector<game_info>::const_iterator it = m_info.m_games.begin(); it != m_info.m_games.end(); ++it)
     {
       CFileItemPtr item(new CFileItem(it->name));
-      item->SetIconImage(it->thumbnail);
+      item->SetArt("icon", it->thumbnail);
       item->SetProperty("code", it->code);
       item->SetProperty("name", it->name);
       item->SetProperty("serial", it->serial);
@@ -191,7 +193,8 @@ void CInsigniaJob::SetWindowProperties()
       items.push_back(staticItem);
     }
 
-    gamesContainer->SetListProvider(new CStaticListProvider(items));
+    boost::movelib::unique_ptr<CStaticListProvider> provider = boost::movelib::make_unique<CStaticListProvider>(items);
+    gamesContainer->SetListProvider(boost::move(provider));
   }
 }
 

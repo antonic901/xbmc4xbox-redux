@@ -48,7 +48,7 @@ std::string GetPlaylistLabel(int item, PLAYLIST::Id playlistId /* = TYPE_NONE */
     }
     case PLAYLIST_POSITION:
     {
-      int currentSong = player.GetCurrentItemIdx();
+      int currentSong = player.GetCurrentSong();
       if (currentSong > -1)
         return std::to_string(currentSong + 1);
       break;
@@ -62,10 +62,10 @@ std::string GetPlaylistLabel(int item, PLAYLIST::Id playlistId /* = TYPE_NONE */
     }
     case PLAYLIST_REPEAT:
     {
-      PLAYLIST::RepeatState state = player.GetRepeat(playlistId);
-      if (state == PLAYLIST::RepeatState::ONE)
+      PLAYLIST::REPEAT_STATE state = player.GetRepeat(playlistId);
+      if (state == PLAYLIST::ONE)
         return g_localizeStrings.Get(592); // 592: One
-      else if (state == PLAYLIST::RepeatState::ALL)
+      else if (state == PLAYLIST::ALL)
         return g_localizeStrings.Get(593); // 593: All
       else
         return g_localizeStrings.Get(594); // 594: Off

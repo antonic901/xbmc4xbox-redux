@@ -452,6 +452,72 @@
 #define SYSTEM_ADDON_VERSION        718
 #define SYSTEM_DPMS_ACTIVE          719
 
+#ifdef HAS_XBOX_HARDWARE
+#define LCD_PLAY_ICON               160
+#define LCD_PROGRESS_BAR            161
+#define LCD_CPU_TEMPERATURE         162
+#define LCD_GPU_TEMPERATURE         163
+#define LCD_HDD_TEMPERATURE         164
+#define LCD_FAN_SPEED               165
+#define LCD_DATE                    166
+#define LCD_FREE_SPACE_C            167
+#define LCD_FREE_SPACE_E            169
+#define LCD_FREE_SPACE_F            170
+#define LCD_FREE_SPACE_G            171
+#define LCD_TIME_21                 172 // Small bigfont
+#define LCD_TIME_22                 173
+#define LCD_TIME_W21                174 // Medum bigfont
+#define LCD_TIME_W22                175
+#define LCD_TIME_41                 176 // Big bigfont
+#define LCD_TIME_42                 177
+#define LCD_TIME_43                 178
+#define LCD_TIME_44                 179
+
+#define SYSTEM_DVD_MODEL            650
+#define SYSTEM_DVD_FIRMWARE         651
+#define SYSTEM_HDD_CYCLECOUNT       653
+#define SYSTEM_HDD_BOOTDATE         652
+#define SYSTEM_XBOX_VERSION         657
+#define SYSTEM_AV_PACK_INFO         658
+#define SYSTEM_XBOX_SERIAL          661
+#define SYSTEM_CONTROLLER_PORT_1    662
+#define SYSTEM_CONTROLLER_PORT_2    663
+#define SYSTEM_CONTROLLER_PORT_3    664
+#define SYSTEM_CONTROLLER_PORT_4    665
+#define SYSTEM_MPLAYER_VERSION      666
+#define SYSTEM_XBE_REGION           668
+#define SYSTEM_DVD_ZONE             669
+#define SYSTEM_XBOX_PRODUCE_INFO    670
+#define SYSTEM_XBOX_BIOS            671
+#define SYSTEM_XBOX_MODCHIP         672
+#define SYSTEM_USED_SPACE_X         673
+#define SYSTEM_FREE_SPACE_X         674
+#define SYSTEM_USED_SPACE_Y         675
+#define SYSTEM_FREE_SPACE_Y         676
+#define SYSTEM_USED_SPACE_Z         677
+#define SYSTEM_FREE_SPACE_Z         678
+#define SYSTEM_USED_SPACE_C         684
+#define SYSTEM_TOTAL_SPACE_C        685
+#define SYSTEM_USED_SPACE_PERCENT_C 686
+#define SYSTEM_FREE_SPACE_PERCENT_C 687
+#define SYSTEM_USED_SPACE_E         688
+#define SYSTEM_TOTAL_SPACE_E        689
+#define SYSTEM_USED_SPACE_PERCENT_E 690
+#define SYSTEM_FREE_SPACE_PERCENT_E 691
+#define SYSTEM_USED_SPACE_F         692
+#define SYSTEM_TOTAL_SPACE_F        693
+#define SYSTEM_USED_SPACE_PERCENT_F 694
+#define SYSTEM_FREE_SPACE_PERCENT_F 695
+#define SYSTEM_USED_SPACE_G         696
+#define SYSTEM_TOTAL_SPACE_G        697
+#define SYSTEM_USED_SPACE_PERCENT_G 698
+#define SYSTEM_FREE_SPACE_PERCENT_G 699
+#define SYSTEM_DVD_TRAY_STATE       700
+#define SYSTEM_TOTAL_SPACE_X        701
+#define SYSTEM_TOTAL_SPACE_Y        702
+#define SYSTEM_TOTAL_SPACE_Z        703
+#endif
+
 #define LIBRARY_HAS_MUSIC           720
 #define LIBRARY_HAS_VIDEO           721
 #define LIBRARY_HAS_MOVIES          722

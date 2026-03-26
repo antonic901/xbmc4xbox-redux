@@ -17,7 +17,7 @@
 #include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
-#include "weather/WeatherManager.h"
+#include "utils/Weather.h"
 
 using namespace KODI::GUILIB::GUIINFO;
 
@@ -53,7 +53,7 @@ bool CWeatherGUIInfo::GetLabel(std::string& value, const CFileItem *item, int co
       URIUtils::RemoveExtension(value);
       return true;
     case WEATHER_PLUGIN:
-      value = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_WEATHER_ADDON);
+      value = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("weather.addon");
       return true;
   }
 

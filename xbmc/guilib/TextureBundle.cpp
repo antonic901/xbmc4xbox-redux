@@ -420,7 +420,7 @@ bool CTextureBundle::LoadFile(const CStdString& Filename, CAutoTexBuffer& Unpack
   return success;
 }
 
-bool CTextureBundle::LoadTexture(const std::string& Filename, CBaseTexture** ppTexture, int &width, int &height)
+bool CTextureBundle::LoadTexture(const std::string& Filename, CTexture** ppTexture, int &width, int &height)
 {
   DWORD ResDataOffset;
   *ppTexture = NULL;
@@ -501,7 +501,7 @@ PackedLoadError:
   if (pPal) delete pPal;
   return false;
 }
-int CTextureBundle::LoadAnim(const std::string& Filename, CBaseTexture*** ppTextures,
+int CTextureBundle::LoadAnim(const std::string& Filename, CTexture*** ppTextures,
                               int &width, int &height, int& nLoops, int** ppDelays)
 {
   DWORD ResDataOffset;
@@ -558,7 +558,7 @@ int CTextureBundle::LoadAnim(const std::string& Filename, CBaseTexture*** ppText
   ResDataOffset = ((DWORD)(Next - UnpackedBuf) + 127) & ~127;
   ResData = UnpackedBuf + ResDataOffset;
 
-  *ppTextures = new CBaseTexture*[nTextures];
+  *ppTextures = new CTexture*[nTextures];
   for (int i = 0; i < nTextures; ++i)
   {
     if ((ppTex[i]->Common & D3DCOMMON_TYPE_MASK) != D3DCOMMON_TYPE_TEXTURE)

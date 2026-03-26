@@ -9,8 +9,8 @@
 #include "GUIRenderingControl.h"
 
 #include "guilib/IRenderingCallback.h"
+#include "threads/SingleLock.h"
 
-#include <mutex>
 #ifdef TARGET_WINDOWS
 #include "rendering/dx/DeviceResources.h"
 #endif

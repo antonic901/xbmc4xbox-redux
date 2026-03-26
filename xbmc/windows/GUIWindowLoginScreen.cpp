@@ -33,7 +33,9 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "interfaces/builtins/Builtins.h"
 #ifdef HAS_JSONRPC
 #include "interfaces/json-rpc/JSONRPC.h"
@@ -157,7 +159,7 @@ bool CGUIWindowLoginScreen::OnBack(int actionID)
 
 void CGUIWindowLoginScreen::FrameMove()
 {
-  if (GetFocusedControlID() == CONTROL_BIG_LIST && CServiceBroker::GetGUI()->GetWindowManager().GetTopMostModalDialogID() == WINDOW_INVALID)
+  if (GetFocusedControlID() == CONTROL_BIG_LIST && !CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog(true))
     if (m_viewControl.HasControl(CONTROL_BIG_LIST))
       m_iSelectedItem = m_viewControl.GetSelectedItem();
   std::string strLabel = StringUtils::Format(g_localizeStrings.Get(20114).c_str(), m_iSelectedItem+1, CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles());

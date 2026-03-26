@@ -33,7 +33,9 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "GUIUserMessages.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "guilib/LocalizeStrings.h"
 
 #define CONTROL_LABELFILES        12

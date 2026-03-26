@@ -36,6 +36,7 @@
 #include "FileItem.h"
 #include "utils/Crc32.h"
 #include "guilib/LocalizeStrings.h"
+#include "input/actions/ActionIDs.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "threads/SingleLock.h"

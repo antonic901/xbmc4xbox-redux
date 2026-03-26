@@ -20,7 +20,6 @@
 
 #include "GUIFont.h"
 #include "GUIFontTTF.h"
-#include "windowing/GraphicContext.h"
 
 #include "threads/SingleLock.h"
 #include "utils/TimeUtils.h"
@@ -101,11 +100,11 @@ void CGUIFont::DrawText( float x, float y, const vecColors &colors, UTILS::COLOR
   maxPixelWidth = ROUND(maxPixelWidth / CServiceBroker::GetWinSystem()->GetGfxContext().GetGUIScaleX());
   vecColors renderColors;
   for (unsigned int i = 0; i < colors.size(); i++)
-    renderColors.push_back(CServiceBroker::GetWinSystem()->GetGfxContext().MergeAlpha(colors[i] ? colors[i] : m_textColor));
+    renderColors.push_back(CServiceBroker::GetWinSystem()->GetGfxContext().MergeColor(colors[i] ? colors[i] : m_textColor));
   if (!shadowColor) shadowColor = m_shadowColor;
   if (shadowColor)
   {
-    shadowColor = CServiceBroker::GetWinSystem()->GetGfxContext().MergeAlpha(shadowColor);
+    shadowColor = CServiceBroker::GetWinSystem()->GetGfxContext().MergeColor(shadowColor);
     vecColors shadowColors;
     for (unsigned int i = 0; i < renderColors.size(); i++)
       shadowColors.push_back((renderColors[i] & 0xff000000) != 0 ? shadowColor : 0);
@@ -193,12 +192,12 @@ void CGUIFont::DrawScrollingText(float x, float y, const vecColors &colors, UTIL
 
   vecColors renderColors;
   for (unsigned int i = 0; i < colors.size(); i++)
-    renderColors.push_back(CServiceBroker::GetWinSystem()->GetGfxContext().MergeAlpha(colors[i] ? colors[i] : m_textColor));
+    renderColors.push_back(CServiceBroker::GetWinSystem()->GetGfxContext().MergeColor(colors[i] ? colors[i] : m_textColor));
 
   bool scroll =  !scrollInfo.m_waitTime && scrollInfo.m_pixelSpeed;
   if (shadowColor)
   {
-    shadowColor = CServiceBroker::GetWinSystem()->GetGfxContext().MergeAlpha(shadowColor);
+    shadowColor = CServiceBroker::GetWinSystem()->GetGfxContext().MergeColor(shadowColor);
     vecColors shadowColors;
     for (unsigned int i = 0; i < renderColors.size(); i++)
       shadowColors.push_back((renderColors[i] & 0xff000000) != 0 ? shadowColor : 0);

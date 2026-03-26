@@ -77,7 +77,7 @@ bool CGUIColorManager::LoadXML(CXBMCTinyXML &xmlDoc)
       UTILS::COLOR::Color value = 0xffffffff;
       sscanf(color->FirstChild()->Value(), "%x", (unsigned int*) &value);
       std::string name = color->Attribute("name");
-      const auto it = m_colors.find(name);
+      std::map<std::string, color_t>::iterator it = m_colors.find(name);
       if (it != m_colors.end())
         (*it).second = value;
       else
@@ -94,7 +94,7 @@ UTILS::COLOR::Color CGUIColorManager::GetColor(const std::string& color) const
   // look in our color map
   std::string trimmed(color);
   StringUtils::TrimLeft(trimmed, "= ");
-  const auto it = m_colors.find(trimmed);
+  std::map<std::string, color_t>::const_iterator it = m_colors.find(trimmed);
   if (it != m_colors.end())
     return (*it).second;
 
@@ -106,7 +106,7 @@ UTILS::COLOR::Color CGUIColorManager::GetColor(const std::string& color) const
 
 bool CGUIColorManager::LoadColorsListFromXML(
     const std::string& filePath,
-    std::vector<std::pair<std::string, UTILS::COLOR::ColorInfo>>& colors,
+    std::vector<std::pair<std::string, UTILS::COLOR::ColorInfo> >& colors,
     bool sortColors)
 {
   CLog::Log(LOGDEBUG, "Loading colors from file {}", filePath);
@@ -130,8 +130,8 @@ bool CGUIColorManager::LoadColorsListFromXML(
   {
     if (xmlColor->FirstChild() && xmlColor->Attribute("name"))
     {
-      colors.emplace_back(xmlColor->Attribute("name"),
-                          UTILS::COLOR::MakeColorInfo(xmlColor->FirstChild()->Value()));
+      colors.push_back(std::make_pair(xmlColor->Attribute("name"),
+                          UTILS::COLOR::MakeColorInfo(xmlColor->FirstChild()->Value())));
     }
     xmlColor = xmlColor->NextSiblingElement("color");
   }

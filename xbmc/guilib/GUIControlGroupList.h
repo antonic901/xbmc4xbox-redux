@@ -17,8 +17,9 @@
 
 struct SGUIControlAndOffset
 {
-  CGUIControl* control{nullptr};
-  float offset{0.f};
+  SGUIControlAndOffset::SGUIControlAndOffset(CGUIControl* c = NULL, float o = 0.f) : control(c), offset(o) {}
+  CGUIControl* control;
+  float offset;
 };
 
 /*!

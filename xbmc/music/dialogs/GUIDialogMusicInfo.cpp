@@ -32,7 +32,9 @@
 #include "guilib/LocalizeStrings.h"
 #include "GUIPassword.h"
 #include "GUIUserMessages.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "messaging/helpers/DialogHelper.h"
 #include "dialogs/GUIDialogOK.h"
 #include "music/dialogs/GUIDialogSongInfo.h"
@@ -761,7 +763,7 @@ void CGUIDialogMusicInfo::OnGetArt()
     // For album it could be a fallback from artist
     CFileItemPtr item(new CFileItem("thumb://Current", false));
     item->SetArt("thumb", m_item->GetArt(type));
-    item->SetIconImage("DefaultPicture.png");
+    item->SetArt("icon", "DefaultPicture.png");
     item->SetLabel(g_localizeStrings.Get(13512));
     items.Add(item);
   }
@@ -774,9 +776,9 @@ void CGUIDialogMusicInfo::OnGetArt()
       CFileItemPtr item(new CFileItem("thumb://Thumb", false));
       item->SetArt("thumb", m_item->GetArt("thumb"));
       if (m_bArtistInfo)
-        item->SetIconImage("DefaultArtistCover.png");
+        item->SetArt("icon", "DefaultArtistCover.png");
       else
-        item->SetIconImage("DefaultAlbumCover.png");
+        item->SetArt("icon", "DefaultAlbumCover.png");
       item->SetLabel(g_localizeStrings.Get(21371));
       items.Add(item);
     }
@@ -797,7 +799,7 @@ void CGUIDialogMusicInfo::OnGetArt()
       std::string thumb = m_artist.fanart.GetPreviewURL(i);
       std::string wrappedthumb = CTextureUtils::GetWrappedThumbURL(thumb);
       item->SetArt("thumb", wrappedthumb);
-      item->SetIconImage("DefaultPicture.png");
+      item->SetArt("icon", "DefaultPicture.png");
       item->SetLabel(g_localizeStrings.Get(20441));
 
       items.Add(item);
@@ -819,7 +821,7 @@ void CGUIDialogMusicInfo::OnGetArt()
       strItemPath = StringUtils::Format("thumb://Remote%i", i);
       CFileItemPtr item(new CFileItem(strItemPath, false));
       item->SetArt("thumb", remotethumbs[i]);
-      item->SetIconImage("DefaultPicture.png");
+      item->SetArt("icon", "DefaultPicture.png");
       item->SetLabel(g_localizeStrings.Get(13513));
 
       items.Add(item);
@@ -887,9 +889,9 @@ void CGUIDialogMusicInfo::OnGetArt()
     // allow the user to delete it by selecting "no art".
     CFileItemPtr item(new CFileItem("thumb://None", false));
     if (m_bArtistInfo)
-      item->SetIconImage("DefaultArtist.png");
+      item->SetArt("icon", "DefaultArtist.png");
     else
-      item->SetIconImage("DefaultAlbumCover.png");
+      item->SetArt("icon", "DefaultAlbumCover.png");
     item->SetLabel(g_localizeStrings.Get(13515));
     items.Add(item);
   }

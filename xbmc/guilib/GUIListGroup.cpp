@@ -11,27 +11,6 @@
 #include "GUIListLabel.h"
 #include "utils/log.h"
 
-#include <set>
-
-namespace
-{
-// Supported control types. Keep sorted.
-const std::set<CGUIControl::GUICONTROLTYPES> supportedTypes = {
-    // clang-format off
-    CGUIControl::GUICONTROL_BORDEREDIMAGE,
-    CGUIControl::GUICONTROL_GAME,
-    CGUIControl::GUICONTROL_GAMECONTROLLER,
-    CGUIControl::GUICONTROL_GAMECONTROLLERLIST,
-    CGUIControl::GUICONTROL_IMAGE,
-    CGUIControl::GUICONTROL_LISTGROUP,
-    CGUIControl::GUICONTROL_LISTLABEL,
-    CGUIControl::GUICONTROL_MULTI_IMAGE,
-    CGUIControl::GUICONTROL_PROGRESS,
-    CGUIControl::GUICONTROL_TEXTBOX,
-    // clang-format on
-};
-} // namespace
-
 CGUIListGroup::CGUIListGroup(int parentID, int controlID, float posX, float posY, float width, float height)
 : CGUIControlGroup(parentID, controlID, posX, posY, width, height)
 {
@@ -55,7 +34,13 @@ void CGUIListGroup::AddControl(CGUIControl *control, int position /*= -1*/)
 {
   if (control)
   {
-    if (supportedTypes.find(control->GetControlType()) == supportedTypes.end())
+    if (!(control->GetControlType() == CGUIControl::GUICONTROL_BORDEREDIMAGE ||
+          control->GetControlType() == CGUIControl::GUICONTROL_IMAGE ||
+          control->GetControlType() == CGUIControl::GUICONTROL_LISTGROUP ||
+          control->GetControlType() == CGUIControl::GUICONTROL_LISTLABEL ||
+          control->GetControlType() == CGUIControl::GUICONTROL_MULTI_IMAGE ||
+          control->GetControlType() == CGUIControl::GUICONTROL_PROGRESS ||
+          control->GetControlType() == CGUIControl::GUICONTROL_TEXTBOX))
       CLog::Log(LOGWARNING, "Trying to add unsupported control type {}", control->GetControlType());
   }
   CGUIControlGroup::AddControl(control, position);

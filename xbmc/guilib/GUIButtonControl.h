@@ -95,7 +95,7 @@ protected:
 
   float m_minWidth;
   float m_maxWidth;
-  float m_labelMaxWidth{0};
+  float m_labelMaxWidth;
 
   KODI::GUILIB::GUIINFO::CGUIInfoLabel  m_info;
   KODI::GUILIB::GUIINFO::CGUIInfoLabel  m_info2;

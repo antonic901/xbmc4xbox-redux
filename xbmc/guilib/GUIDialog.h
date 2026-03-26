@@ -19,7 +19,7 @@
 #ifdef TARGET_WINDOWS_STORE
 #pragma pack(push, 8)
 #endif
-enum class DialogModalityType
+enum DialogModalityType
 {
   MODELESS,
   MODAL
@@ -36,7 +36,7 @@ class CGUIDialog :
       public CGUIWindow
 {
 public:
-  CGUIDialog(int id, const std::string &xmlFile, DialogModalityType modalityType = DialogModalityType::MODAL);
+  CGUIDialog(int id, const std::string &xmlFile, DialogModalityType modalityType = MODAL);
   virtual ~CGUIDialog(void);
 
   virtual bool OnAction(const CAction &action);
@@ -51,7 +51,7 @@ public:
 
   virtual bool IsDialogRunning() const { return m_active; }
   virtual bool IsDialog() const { return true; }
-  virtual bool IsModalDialog() const { return m_modalityType == DialogModalityType::MODAL; }
+  virtual bool IsModalDialog() const { return m_modalityType == MODAL; }
   virtual DialogModalityType GetModalityType() const { return m_modalityType; }
 
   void SetAutoClose(unsigned int timeoutMs);

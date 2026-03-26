@@ -8,7 +8,8 @@
 
 #pragma once
 
-#include <memory>
+#include "system.h" // xtl.h
+#include <boost/shared_ptr.hpp>
 #include <string>
 #include <vector>
 
@@ -74,7 +75,7 @@ public:
     std::string m_action;
   };
 
-  CGUIAction() {}
+  CGUIAction();
   explicit CGUIAction(int controlID);
   /**
    * Execute actions without specifying any target control or parent control. Action will use the default focused control.
@@ -85,7 +86,7 @@ public:
    */
   bool ExecuteActions(int controlID,
                       int parentID,
-                      const boost::shared_ptr<CGUIListItem>& item = nullptr) const;
+                      const boost::shared_ptr<CGUIListItem>& item = boost::shared_ptr<CGUIListItem>()) const;
   /**
    * Check if there are any conditional actions
   */
@@ -123,7 +124,13 @@ public:
    */
   void Reset();
 
+  // GetFirstAction is only needed in deprecated HTTP api
+  inline std::string GetFirstAction() const
+  {
+    return m_actions.size() > 0 ? m_actions[0].GetAction() : "";
+  };
+
 private:
   std::vector<CExecutableAction> m_actions;
-  bool m_sendThreadMessages = false;
+  bool m_sendThreadMessages;
 };

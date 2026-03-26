@@ -17,7 +17,7 @@ class CGUIListItem;
 class CFileItem;
 class CLabelInfo;
 
-class CGUIListItemLayout final
+class CGUIListItemLayout
 {
 public:
   CGUIListItemLayout();
@@ -54,15 +54,14 @@ protected:
 
   CGUIListGroup m_group;
 
-  float m_width{0};
-  float m_height{0};
-  bool m_focused{false};
-  bool m_invalidated{true};
+  float m_width;
+  float m_height;
+  bool m_focused;
+  bool m_invalidated;
 
   INFO::InfoPtr m_condition;
   KODI::GUILIB::GUIINFO::CGUIInfoBool m_isPlaying;
-  std::chrono::milliseconds m_infoUpdateMillis =
-      XbmcThreads::EndTime<decltype(m_infoUpdateMillis)>::Max();
-  XbmcThreads::EndTime<> m_infoUpdateTimeout;
+  unsigned int m_infoUpdateMillis;
+  XbmcThreads::EndTime m_infoUpdateTimeout;
 };
 

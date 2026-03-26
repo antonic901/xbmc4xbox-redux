@@ -18,11 +18,14 @@
  *
  */
 
+#include "include.h"
 #include "GUISound.h"
 
+#include "Application.h"
+#include "AudioContext.h"
 #include "filesystem/File.h"
 #include "settings/AdvancedSettings.h"
-#include "platform/xbox/AudioContext.h"
+#include "settings/SettingsComponent.h"
 
 typedef struct
 {
@@ -39,9 +42,7 @@ typedef struct
 
 CGUISound::CGUISound()
 {
-#if 0
   m_soundBuffer=NULL;
-#endif
 }
 
 CGUISound::~CGUISound()
@@ -52,7 +53,6 @@ CGUISound::~CGUISound()
 // \brief Loads a wav file by filename
 bool CGUISound::Load(const std::string& strFile)
 {
-#if 0
   LPBYTE pbData=NULL;
   WAVEFORMATEX wfx;
   int size=0;
@@ -67,34 +67,28 @@ bool CGUISound::Load(const std::string& strFile)
   delete[] pbData;
 
   return bReady;
-#endif
-  return false;
 }
 
 // \brief Starts playback of the sound
 void CGUISound::Play()
 {
-#if 0
   if (m_soundBuffer)
 #ifdef HAS_XBOX_AUDIO
     m_soundBuffer->Play(0, 0, DSBPLAY_FROMSTART);
 #else
     m_soundBuffer->Play(0, 0, 0);
 #endif
-#endif
 }
 
 // \brief returns true if the sound is playing
 bool CGUISound::IsPlaying()
 {
-#if 0
   if (m_soundBuffer)
   {
     DWORD dwStatus;
     m_soundBuffer->GetStatus(&dwStatus);
     return (dwStatus & DSBSTATUS_PLAYING);
   }
-#endif
 
   return false;
 }
@@ -102,7 +96,6 @@ bool CGUISound::IsPlaying()
 // \brief Stops playback if the sound
 void CGUISound::Stop()
 {
-#if 0
   if (m_soundBuffer)
   {
 #ifdef HAS_XBOX_AUDIO
@@ -113,19 +106,15 @@ void CGUISound::Stop()
 
     while(IsPlaying()) {}
   }
-#endif
 }
 
 // \brief Sets the volume of the sound
 void CGUISound::SetVolume(int level)
 {
-#if 0
   if (m_soundBuffer)
     m_soundBuffer->SetVolume(level);
-#endif
 }
 
-#if 0
 bool CGUISound::CreateBuffer(LPWAVEFORMATEX wfx, int iLength)
 {
 #ifdef HAS_XBOX_AUDIO
@@ -196,19 +185,15 @@ bool CGUISound::FillBuffer(LPBYTE pbData, int iLength)
 
   return false;
 }
-#endif
 
 void CGUISound::FreeBuffer()
 {
   if (IsPlaying())
     Stop();
 
-#if 0
   SAFE_RELEASE(m_soundBuffer);
-#endif
 }
 
-#if 0
 bool CGUISound::LoadWav(const std::string& strFile, WAVEFORMATEX* wfx, LPBYTE* ppWavData, int* pDataSize)
 {
   XFILE::CFile file;
@@ -271,4 +256,4 @@ bool CGUISound::LoadWav(const std::string& strFile, WAVEFORMATEX* wfx, LPBYTE* p
   file.Close();
   return (*ppWavData!=NULL);
 }
-#endif
+

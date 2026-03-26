@@ -37,7 +37,9 @@
 #include "storage/MediaManager.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "GUIDialogYesNo.h"
 #include "addons/AddonManager.h"
 #include "FileItem.h"
@@ -410,7 +412,7 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
       }
       // and add a "no thumb" entry as well
       CFileItemPtr nothumb(new CFileItem("thumb://None", false));
-      nothumb->SetIconImage(item->GetIconImage());
+      nothumb->SetArt("icon", item->GetArt("icon"));
       nothumb->SetLabel(g_localizeStrings.Get(20018));
       items.Add(nothumb);
 
@@ -681,7 +683,7 @@ int CGUIDialogContextMenu::ShowAndGetChoice(const CContextButtons &choices)
 
 void CGUIDialogContextMenu::PositionAtCurrentFocus()
 {
-  CGUIWindow *window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(CServiceBroker::GetGUI()->GetWindowManager().GetFocusedWindow());
+  CGUIWindow *window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog());
   if (window)
   {
     const CGUIControl *focusedControl = window->GetFocusedControl();

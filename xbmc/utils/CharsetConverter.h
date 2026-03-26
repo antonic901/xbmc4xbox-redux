@@ -74,6 +74,7 @@ public:
    * @param forceLTRReadingOrder        force LTR reading order
    * @param failOnBadChar       if set to true function will fail on invalid character,
    *                            otherwise invalid character will be skipped
+   * @param visualToLogicalMap    is output mapping of positions in the visual string to the logical string
    * @return true on successful conversion, false on any error
    */
   static bool utf8ToUtf32Visual(const std::string& utf8StringSrc, std::u32string& utf32StringDst, bool bVisualBiDiFlip = false, bool forceLTRReadingOrder = false, bool failOnBadChar = false);
@@ -113,7 +114,11 @@ public:
    * @param forceLTRReadingOrder        force LTR reading order
    * @return true on success, false otherwise
    */
-  static bool utf32logicalToVisualBiDi(const std::u32string& logicalStringSrc, std::u32string& visualStringDst, bool forceLTRReadingOrder = false, bool failOnBadString = false);
+  static bool utf32logicalToVisualBiDi(const std::u32string& logicalStringSrc,
+                                       std::u32string& visualStringDst,
+                                       bool forceLTRReadingOrder = false,
+                                       bool failOnBadString = false,
+                                       int* visualToLogicalMap = NULL);
   /**
    * Strictly convert wchar_t string (wstring) to UTF-32 string.
    * No RTL visual-logical transformation is performed.

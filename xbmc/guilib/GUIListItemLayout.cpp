@@ -18,14 +18,26 @@
 using namespace KODI::GUILIB;
 
 CGUIListItemLayout::CGUIListItemLayout()
-: m_group(0, 0, 0, 0, 0, 0)
+: m_group(0, 0, 0, 0, 0, 0), m_width(0), m_height(0), m_focused(false), m_invalidated(true), m_infoUpdateMillis(XbmcThreads::EndTime::InfiniteValue)
 {
   m_group.SetPushUpdates(true);
 }
 
 CGUIListItemLayout::CGUIListItemLayout(const CGUIListItemLayout& from)
-  : CGUIListItemLayout(from, nullptr)
+  : m_group(from.m_group),
+    m_width(from.m_width),
+    m_height(from.m_height),
+    m_focused(from.m_focused),
+    m_condition(from.m_condition),
+    m_isPlaying(from.m_isPlaying),
+    m_infoUpdateMillis(from.m_infoUpdateMillis)
 {
+  m_group.SetParentControl(NULL);
+  m_infoUpdateTimeout.Set(m_infoUpdateMillis);
+
+  // m_group was just created, cloned controls with resources must be allocated
+  // before use
+  m_group.AllocResources();
 }
 
 CGUIListItemLayout::CGUIListItemLayout(const CGUIListItemLayout& from, CGUIControl* control)
@@ -181,7 +193,7 @@ void CGUIListItemLayout::LoadLayout(TiXmlElement *layout, int context, bool focu
   unsigned int infoupdatemillis = 0;
   layout->QueryUnsignedAttribute("infoupdate", &infoupdatemillis);
   if (infoupdatemillis > 0)
-    m_infoUpdateMillis = std::chrono::milliseconds(infoupdatemillis);
+    m_infoUpdateMillis = infoupdatemillis;
 
   m_infoUpdateTimeout.Set(m_infoUpdateMillis);
   m_isPlaying.Parse("listitem.isplaying", context);

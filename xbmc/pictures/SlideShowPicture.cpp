@@ -60,11 +60,7 @@ CSlideShowPic::~CSlideShowPic()
 void CSlideShowPic::Close()
 {
   CSingleLock lock(m_textureAccess);
-  if (m_pImage)
-  {
-    delete m_pImage;
-    m_pImage = NULL;
-  }
+  m_pImage.reset();
   m_bIsLoaded = false;
   m_bIsFinished = false;
   m_bDrawNextImage = false;
@@ -77,7 +73,7 @@ void CSlideShowPic::Reset(DISPLAY_EFFECT dispEffect, TRANSISTION_EFFECT transEff
 {
   CSingleLock lock(m_textureAccess);
   if (m_pImage)
-    SetTexture_Internal(m_iSlideNumber, m_pImage, dispEffect, transEffect);
+    SetTexture_Internal(m_iSlideNumber, boost::move(m_pImage), dispEffect, transEffect);
   else
     Close();
 }
@@ -91,14 +87,14 @@ bool CSlideShowPic::DisplayEffectNeedChange(DISPLAY_EFFECT newDispEffect) const
   return true;
 }
 
-void CSlideShowPic::SetTexture(int iSlideNumber, CBaseTexture* pTexture, DISPLAY_EFFECT dispEffect, TRANSISTION_EFFECT transEffect)
+void CSlideShowPic::SetTexture(int iSlideNumber, boost::movelib::unique_ptr<CTexture> pTexture, DISPLAY_EFFECT dispEffect, TRANSISTION_EFFECT transEffect)
 {
   CSingleLock lock(m_textureAccess);
   Close();
-  SetTexture_Internal(iSlideNumber, pTexture, dispEffect, transEffect);
+  SetTexture_Internal(iSlideNumber, boost::move(pTexture), dispEffect, transEffect);
 }
 
-void CSlideShowPic::SetTexture_Internal(int iSlideNumber, CBaseTexture* pTexture, DISPLAY_EFFECT dispEffect, TRANSISTION_EFFECT transEffect)
+void CSlideShowPic::SetTexture_Internal(int iSlideNumber, boost::movelib::unique_ptr<CTexture> pTexture, DISPLAY_EFFECT dispEffect, TRANSISTION_EFFECT transEffect)
 {
   CSingleLock lock(m_textureAccess);
   m_bPause = false;
@@ -107,9 +103,9 @@ void CSlideShowPic::SetTexture_Internal(int iSlideNumber, CBaseTexture* pTexture
   m_iSlideNumber = iSlideNumber;
 
   m_bIsDirty = true;
-  m_pImage = pTexture;
-  m_fWidth = (float)pTexture->GetWidth();
-  m_fHeight = (float)pTexture->GetHeight();
+  m_pImage = boost::move(pTexture);
+  m_fWidth = static_cast<float>(m_pImage->GetWidth());
+  m_fHeight = static_cast<float>(m_pImage->GetHeight());
   // reset our counter
   m_iCounter = 0;
   // initialize our transistion effect
@@ -138,15 +134,15 @@ void CSlideShowPic::SetTexture_Internal(int iSlideNumber, CBaseTexture* pTexture
   m_fTransistionAngle = 0;
   m_fTransistionZoom = 0;
   m_fAngle = 0.0f;
-  if (pTexture->GetOrientation() == 7)
+  if (m_pImage->GetOrientation() == 7)
   { // rotate to 270 degrees
     m_fAngle = 270.0f;
   }
-  if (pTexture->GetOrientation() == 2)
+  if (m_pImage->GetOrientation() == 2)
   { // rotate to 180 degrees
       m_fAngle = 180.0f;
   }
-  if (pTexture->GetOrientation() == 5)
+  if (m_pImage->GetOrientation() == 5)
   { // rotate to 90 degrees
     m_fAngle = 90.0f;
   }
@@ -238,21 +234,12 @@ int CSlideShowPic::GetOriginalHeight()
     return m_iOriginalHeight;
 }
 
-void CSlideShowPic::UpdateTexture(CBaseTexture* pTexture)
+void CSlideShowPic::UpdateTexture(boost::movelib::unique_ptr<CTexture> pTexture)
 {
   CSingleLock lock(m_textureAccess);
-  if (m_pImage)
-  {
-#ifdef HAS_XBOX_D3D
-    while (m_pImage->GetTextureObject()->IsBusy())
-      Sleep(1);
-#endif
-    delete m_pImage;
-    m_pImage = NULL;
-  }
-  m_pImage = pTexture;
-  m_fWidth = (float)pTexture->GetWidth();
-  m_fHeight = (float)pTexture->GetHeight();
+  m_pImage = boost::move(pTexture);
+  m_fWidth = static_cast<float>(m_pImage->GetWidth());
+  m_fHeight = static_cast<float>(m_pImage->GetHeight());
   m_bIsDirty = true;
 }
 
@@ -273,8 +260,8 @@ void CSlideShowPic::UpdateVertices(float cur_x[4], float cur_y[4], const float n
   || memcmp(cur_y, new_y, count)
   || m_bIsDirty)
   {
-    dirtyregions.push_back(GetRectangle(cur_x, cur_y));
-    dirtyregions.push_back(GetRectangle(new_x, new_y));
+    dirtyregions.push_back(CDirtyRegion(GetRectangle(cur_x, cur_y)));
+    dirtyregions.push_back(CDirtyRegion(GetRectangle(new_x, new_y)));
     memcpy(cur_x, new_x, count);
     memcpy(cur_y, new_y, count);
   }
@@ -735,17 +722,17 @@ void CSlideShowPic::Render()
 {
   CSingleLock lock(m_textureAccess);
 
-  Render(m_ax, m_ay, m_pImage, (m_alpha << 24) | 0xFFFFFF);
+  Render(m_ax, m_ay, m_pImage.get(), (m_alpha << 24) | 0xFFFFFF);
 
   // now render the image in the top right corner if we're zooming
   if (m_fZoomAmount == 1.0f || m_bIsComic) return ;
 
   Render(m_bx, m_by, NULL, PICTURE_VIEW_BOX_BACKGROUND);
-  Render(m_sx, m_sy, m_pImage, 0xFFFFFFFF);
+  Render(m_sx, m_sy, m_pImage.get(), 0xFFFFFFFF);
   Render(m_ox, m_oy, NULL, PICTURE_VIEW_BOX_COLOR, D3DFILL_WIREFRAME);
 }
 
-void CSlideShowPic::Render(float *x, float *y, CBaseTexture* pTexture, color_t color, _D3DFILLMODE fillmode)
+void CSlideShowPic::Render(float *x, float *y, CTexture* pTexture, color_t color, _D3DFILLMODE fillmode)
 {
   struct VERTEX
   {

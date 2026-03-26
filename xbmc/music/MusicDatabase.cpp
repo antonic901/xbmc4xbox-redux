@@ -4212,7 +4212,7 @@ bool CMusicDatabase::GetArtistsByWhere(const std::string& strBaseDir, const Filt
         pItem->SetPath(itemUrl.ToString());
 
         pItem->GetMusicInfoTag()->SetDatabaseId(artist.idArtist, MediaTypeArtist);
-        pItem->SetIconImage("DefaultArtist.png");
+        pItem->SetArt("icon", "DefaultArtist.png");
 
         SetPropertiesFromArtist(*pItem, artist);
         items.Add(pItem);
@@ -4373,7 +4373,7 @@ bool CMusicDatabase::GetAlbumsByWhere(const std::string &baseDir, const Filter &
         itemUrl.AppendPath(path);
 
         CFileItemPtr pItem(new CFileItem(itemUrl.ToString(), GetAlbumFromDataset(record)));
-        pItem->SetIconImage("DefaultAlbumCover.png");
+        pItem->SetArt("icon", "DefaultAlbumCover.png");
         items.Add(pItem);
       }
       catch (...)
@@ -6551,8 +6551,13 @@ bool CMusicDatabase::CommitTransaction()
 {
   if (CDatabase::CommitTransaction())
   { // number of items in the db has likely changed, so reset the infomanager cache
-    CServiceBroker::GetGUI()->GetInfoManager().SetLibraryBool(LIBRARY_HAS_MUSIC, GetSongsCount() > 0);
-    return true;
+    CGUIComponent* gui = CServiceBroker::GetGUI();
+    if (gui)
+    {
+      gui->GetInfoManager().GetInfoProviders().GetLibraryInfoProvider().SetLibraryBool(
+          LIBRARY_HAS_MUSIC, GetSongsCount() > 0);
+      return true;
+    }
   }
   return false;
 }
@@ -7237,7 +7242,7 @@ void CMusicDatabase::ImportFromXML(const std::string &xmlFile)
     }
     CommitTransaction();
 
-    CServiceBroker::GetGUI()->GetInfoManager().ResetLibraryBools();
+    CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetLibraryInfoProvider().ResetLibraryBools();
   }
   catch (...)
   {

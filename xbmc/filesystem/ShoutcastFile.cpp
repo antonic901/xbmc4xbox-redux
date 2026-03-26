@@ -25,11 +25,16 @@
 
 #include "threads/SystemClock.h"
 #include "system.h"
+#include "ServiceBroker.h"
 #include "Application.h"
 #include "ShoutcastFile.h"
 #include "URL.h"
+#include "messaging/ApplicationMessenger.h"
 #include "guilib/GUIComponent.h"
 #include "utils/TimeUtils.h"
+#include "FileCache.h"
+#include <climits>
+#include "FileItem.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -40,16 +45,19 @@
 using namespace XFILE;
 using namespace MUSIC_INFO;
 
-CShoutcastFile::CShoutcastFile()
+CShoutcastFile::CShoutcastFile() :
+  IFile(), CThread("Shoutcast file")
 {
-  m_lastTime = XbmcThreads::SystemClockMillis();
   m_discarded = 0;
   m_currint = 0;
   m_buffer = NULL;
+  m_cacheReader = NULL;
+  m_tagPos = 0;
 }
 
 CShoutcastFile::~CShoutcastFile()
 {
+  StopThread();
   Close();
 }
 
@@ -78,12 +86,14 @@ bool CShoutcastFile::Open(const CURL& url)
     if (m_tag.GetGenre().empty())
       m_tag.SetGenre(m_file.GetHttpHeader().GetValue("ice-genre")); // icecast
     m_tag.SetLoaded(true);
-    CServiceBroker::GetGUI()->GetInfoManager().SetCurrentSongTag(m_tag);
   }
   m_metaint = atoi(m_file.GetHttpHeader().GetValue("icy-metaint").c_str());
   if (!m_metaint)
     m_metaint = -1;
   m_buffer = new char[16*255];
+  m_tagPos = 1;
+  m_tagChange.Set();
+  Create();
 
   return result;
 }
@@ -98,14 +108,16 @@ ssize_t CShoutcastFile::Read(void* lpBuf, size_t uiBufSize)
     unsigned char header;
     m_file.Read(&header,1);
     ReadTruncated(m_buffer, header*16);
-    ExtractTagInfo(m_buffer);
+    if (ExtractTagInfo(m_buffer)
+        // this is here to workaround issues caused by application posting callbacks to itself (3cf882d9)
+        // the callback will set an empty tag in the info manager item, while we think we have ours set
+        || (m_file.GetPosition() < 10*m_metaint && !m_tagPos))
+    {
+      m_tagPos = m_file.GetPosition();
+      m_tagChange.Set();
+    }
     m_discarded += header*16+1;
     m_currint = 0;
-  }
-  if (XbmcThreads::SystemClockMillis() - m_lastTime > 500)
-  {
-    m_lastTime = XbmcThreads::SystemClockMillis();
-    CServiceBroker::GetGUI()->GetInfoManager().SetCurrentSongTag(m_tag);
   }
 
   ssize_t toRead;
@@ -126,16 +138,19 @@ int64_t CShoutcastFile::Seek(int64_t iFilePosition, int iWhence)
 
 void CShoutcastFile::Close()
 {
+  StopThread();
   delete[] m_buffer;
   m_buffer = NULL;
   m_file.Close();
 }
 
-void CShoutcastFile::ExtractTagInfo(const char* buf)
+bool CShoutcastFile::ExtractTagInfo(const char* buf)
 {
   char temp[1024];
   if (sscanf(buf,"StreamTitle='%[^']",temp) > 0)
     m_tag.SetTitle(temp);
+
+  return true;
 }
 
 void CShoutcastFile::ReadTruncated(char* buf2, int size)
@@ -146,5 +161,30 @@ void CShoutcastFile::ReadTruncated(char* buf2, int size)
     int read = m_file.Read(buf,size);
     size -= read;
     buf += read;
+  }
+}
+
+int CShoutcastFile::IoControl(EIoControl control, void* payload)
+{
+  if (control == IOCTRL_SET_CACHE)
+    m_cacheReader = (CFileCache*)payload;
+
+  return IFile::IoControl(control, payload);
+}
+
+void CShoutcastFile::Process()
+{
+  if (!m_cacheReader)
+    return;
+
+  while (!m_bStop)
+  {
+    if (m_tagChange.WaitMSec(500))
+    {
+      while (!m_bStop && m_cacheReader->GetPosition() < m_tagPos)
+        CThread::Sleep(20);
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_UPDATE_CURRENT_ITEM, 1,-1, static_cast<void*>(new CFileItem(m_tag)));
+      m_tagPos = 0;
+    }
   }
 }

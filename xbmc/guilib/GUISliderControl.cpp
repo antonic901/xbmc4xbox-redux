@@ -86,12 +86,9 @@ CGUISliderControl::CGUISliderControl(const CGUISliderControl& control)
     m_iType(control.m_iType),
     m_rangeSelection(control.m_rangeSelection),
     m_currentSelector(control.m_currentSelector),
-    m_percentValues(control.m_percentValues),
-    m_intValues(control.m_intValues),
     m_iStart(control.m_iStart),
     m_iInterval(control.m_iInterval),
     m_iEnd(control.m_iEnd),
-    m_floatValues(control.m_floatValues),
     m_fStart(control.m_fStart),
     m_fInterval(control.m_fInterval),
     m_fEnd(control.m_fEnd),
@@ -101,6 +98,12 @@ CGUISliderControl::CGUISliderControl(const CGUISliderControl& control)
     m_dragging(control.m_dragging),
     m_orientation(control.m_orientation)
 {
+  m_intValues[0] = control.m_intValues[0];
+  m_intValues[1] = control.m_intValues[1];
+  m_floatValues[0] = control.m_floatValues[0];
+  m_floatValues[1] = control.m_floatValues[1];
+  m_percentValues[0] = control.m_percentValues[0];
+  m_percentValues[1] = control.m_percentValues[1];
 }
 
 void CGUISliderControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
@@ -739,11 +742,11 @@ float CGUISliderControl::GetProportion(RangeSelector selector /* = RangeSelector
 
 void CGUISliderControl::SetAction(const std::string &action)
 {
-  for (const SliderAction& a : actions)
+  for (size_t i = 0; i < sizeof(actions)/sizeof(SliderAction); i++)
   {
-    if (StringUtils::EqualsNoCase(action, a.action))
+    if (StringUtils::EqualsNoCase(action, actions[i].action))
     {
-      m_action = &a;
+      m_action = &actions[i];
       return;
     }
   }

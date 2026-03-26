@@ -23,7 +23,7 @@
 #include <utility>
 #include <vector>
 
-#include "guilib/Key.h"
+#include "input/actions/Action.h"
 #include "interfaces/IActionListener.h"
 #include "settings/lib/ISettingCallback.h"
 #include "threads/CriticalSection.h"

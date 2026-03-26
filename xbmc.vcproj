@@ -446,6 +446,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\stdafx.cpp">
 			</File>
 			<File
+				RelativePath=".\xbmc\SystemGlobals.cpp">
+			</File>
+			<File
 				RelativePath=".\xbmc\xbmc.cpp">
 			</File>
 			<File
@@ -881,6 +884,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\DelayController.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Digest.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Digest.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\DynamicDll.cpp">
@@ -3320,6 +3329,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					Name="info"
 					Filter="">
 					<File
+						RelativePath=".\xbmc\interfaces\info\Info.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\interfaces\info\InfoBool.cpp">
 					</File>
 					<File
@@ -3818,6 +3830,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\messaging\helpers\DialogHelper.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\messaging\helpers\DialogOKHelper.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\messaging\helpers\DialogOKHelper.h">
 					</File>
 				</Filter>
 			</Filter>
@@ -4577,6 +4595,32 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\input\KeyboardLayoutManager.h">
 				</File>
+				<Filter
+					Name="actions"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\input\actions\Action.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\input\actions\Action.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\input\actions\ActionIDs.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="keyboard"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\input\keyboard\Key.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\input\keyboard\Key.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\input\keyboard\KeyIDs.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="programs"

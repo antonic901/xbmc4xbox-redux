@@ -28,7 +28,7 @@
 #include "threads/Event.h"
 
 class CURL;
-class CBaseTexture;
+class CTexture;
 
 /*!
  \ingroup textures
@@ -87,7 +87,7 @@ public:
    \return cached url of this image
    \sa CTextureCacheJob::CacheTexture
    */
-  std::string CacheImage(const std::string &image, CBaseTexture **texture = NULL, CTextureDetails *details = NULL);
+  std::string CacheImage(const std::string &image, boost::movelib::unique_ptr<CTexture>* = NULL, CTextureDetails *details = NULL);
 
   /*! \brief Cache an image to image cache if not already cached, returning the image details.
    \param image url of the image to cache.

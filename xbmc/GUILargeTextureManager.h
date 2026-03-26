@@ -1,31 +1,23 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <utility>
-#include <vector>
+#pragma once
 
 #include "guilib/TextureManager.h"
 #include "threads/CriticalSection.h"
 #include "utils/Job.h"
+
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+class CTexture;
 
 /*!
  \ingroup textures,jobs
@@ -48,7 +40,7 @@ public:
 
   bool          m_use_cache; ///< Whether or not to use any caching with this image
   std::string    m_path; ///< path of image to load
-  CBaseTexture *m_texture; ///< Texture object to load the image into \sa CBaseTexture.
+  boost::movelib::unique_ptr<CTexture> m_texture; ///< Texture object to load the image into \sa CTexture.
 };
 
 /*!
@@ -119,16 +111,16 @@ private:
   class CLargeTexture
   {
   public:
-    CLargeTexture(const std::string &path);
+    explicit CLargeTexture(const std::string &path);
     virtual ~CLargeTexture();
 
     void AddRef();
     bool DecrRef(bool deleteImmediately);
     bool DeleteIfRequired(bool deleteImmediately = false);
-    void SetTexture(CBaseTexture* texture);
+    void SetTexture(boost::movelib::unique_ptr<CTexture> texture);
 
-    const std::string &GetPath() const { return m_path; };
-    const CTextureArray &GetTexture() const { return m_texture; };
+    const std::string& GetPath() const { return m_path; }
+    const CTextureArray& GetTexture() const { return m_texture; }
 
   private:
     static const unsigned int TIME_TO_DELETE = 2000;
@@ -148,5 +140,4 @@ private:
 
   CCriticalSection m_listSection;
 };
-
 

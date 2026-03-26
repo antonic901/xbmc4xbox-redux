@@ -37,6 +37,8 @@ CGUIProgressControl::CGUIProgressControl(int parentID,
   ControlType = GUICONTROL_PROGRESS;
   m_bReveal = reveal;
   m_bChanged = false;
+  m_iInfoCode2 = 0;
+  m_fPercent2 = 0.0f;
 }
 
 CGUIProgressControl::CGUIProgressControl(const CGUIProgressControl& control)

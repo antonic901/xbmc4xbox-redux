@@ -15,13 +15,12 @@
 #include "TextureManager.h"
 #include "WindowIDs.h"
 #include "filesystem/Directory.h"
-#include "utils/FileExtensionProvider.h"
+#include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/JobManager.h"
 #include "utils/Random.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
-
-#include <mutex>
 
 using namespace KODI::GUILIB;
 using namespace XFILE;
@@ -320,7 +319,7 @@ bool CGUIMultiImage::CMultiImageJob::DoWork()
 
     URIUtils::AddSlashAtEnd(realPath);
     CFileItemList items;
-    CDirectory::GetDirectory(realPath, items, CServiceBroker::GetFileExtensionProvider().GetPictureExtensions()+ "|.tbn|.dds", DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_NO_FILE_INFO);
+    CDirectory::GetDirectory(realPath, items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions + "|.tbn|.dds", DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_NO_FILE_INFO);
     for (int i=0; i < items.Size(); i++)
     {
       CFileItem* pItem = items[i].get();

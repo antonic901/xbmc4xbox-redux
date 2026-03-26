@@ -13,7 +13,7 @@
 #include "Tuple.h"
 #include "guilib/GUIControl.h"
 #include "guilib/GUIFont.h"
-#include "guilib/Key.h"
+#include "input/actions/ActionIDs.h"
 #include "swighelper.h"
 
 #include <vector>
@@ -2857,7 +2857,10 @@ namespace XBMCAddon
       ControlSlider(long x, long y, long width, long height,
                     const char* textureback = NULL,
                     const char* texture = NULL,
-                    const char* texturefocus = NULL, int orientation = 1);
+                    const char* texturefocus = NULL,
+                    int orientation = 1,
+                    const char* texturebackdisabled = NULL,
+                    const char* texturedisabled = NULL);
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
@@ -3015,8 +3018,10 @@ namespace XBMCAddon
 
 #ifndef SWIG
       std::string strTextureBack;
+      std::string strTextureBackDisabled;
       std::string strTexture;
       std::string strTextureFoc;
+      std::string strTextureDisabled;
       int iOrientation;
 
       SWIGHIDDENVIRTUAL CGUIControl* Create();

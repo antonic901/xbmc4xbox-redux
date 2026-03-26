@@ -33,7 +33,7 @@ CGUIButtonControl::CGUIButtonControl(int parentID,
             height,
             labelInfo,
             wrapMultiline ? CGUILabel::OVER_FLOW_WRAP : CGUILabel::OVER_FLOW_TRUNCATE),
-    m_label2(posX, posY, width, height, labelInfo)
+    m_label2(posX, posY, width, height, labelInfo), m_labelMaxWidth(0)
 {
   m_bSelected = false;
   m_alpha = 255;
@@ -179,7 +179,7 @@ void CGUIButtonControl::ProcessText(unsigned int currentTime)
   // auto-width - adjust hitrect
   if (m_minWidth && m_width != renderWidth)
   {
-    CRect rect{m_posX, m_posY, m_posX + renderWidth, m_posY + m_height};
+    CRect rect(m_posX, m_posY, m_posX + renderWidth, m_posY + m_height);
     SetHitRect(rect, m_hitColor);
   }
 

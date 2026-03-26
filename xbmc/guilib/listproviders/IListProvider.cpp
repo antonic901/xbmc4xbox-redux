@@ -20,21 +20,21 @@ boost::movelib::unique_ptr<IListProvider> IListProvider::Create(const TiXmlNode*
   {
     const TiXmlNode *next = root->NextSibling("content");
     if (next)
-      return boost::movelib::make_unique<CMultiProvider>(root, parentID);
+      return boost::movelib::unique_ptr<IListProvider>(new CMultiProvider(root, parentID));
 
     return CreateSingle(root, parentID);
   }
-  return boost::movelib::unique_ptr<IListProvider>{};
+  return boost::movelib::unique_ptr<IListProvider>();
 }
 
 boost::movelib::unique_ptr<IListProvider> IListProvider::CreateSingle(const TiXmlNode* content, int parentID)
 {
   const TiXmlElement *item = content->FirstChildElement("item");
   if (item)
-    return boost::movelib::make_unique<CStaticListProvider>(content->ToElement(), parentID);
+    return boost::movelib::unique_ptr<IListProvider>(new CStaticListProvider(content->ToElement(), parentID));
 
   if (!content->NoChildren())
-    return boost::movelib::make_unique<CDirectoryProvider>(content->ToElement(), parentID);
+    return boost::movelib::unique_ptr<IListProvider>(new CDirectoryProvider(content->ToElement(), parentID));
 
-  return boost::movelib::unique_ptr<IListProvider>{};
+  return boost::movelib::unique_ptr<IListProvider>();
 }

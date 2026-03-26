@@ -46,7 +46,7 @@ public:
     \return true if success, otherwise false
   */
   bool LoadColorsListFromXML(const std::string& filePath,
-                             std::vector<std::pair<std::string, UTILS::COLOR::ColorInfo>>& colors,
+                             std::vector<std::pair<std::string, UTILS::COLOR::ColorInfo> >& colors,
                              bool sortColors);
 
 protected:

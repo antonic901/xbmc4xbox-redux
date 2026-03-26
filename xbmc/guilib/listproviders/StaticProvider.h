@@ -19,18 +19,18 @@ public:
   CStaticListProvider(const TiXmlElement *element, int parentID);
   explicit CStaticListProvider(const std::vector<CGUIStaticItemPtr> &items); // for python
   explicit CStaticListProvider(const CStaticListProvider& other);
-  ~CStaticListProvider() override;
+  virtual ~CStaticListProvider();
 
   // Implementation of IListProvider
-  boost::movelib::unique_ptr<IListProvider> Clone() override;
-  bool Update(bool forceRefresh) override;
-  void Fetch(std::vector<boost::shared_ptr<CGUIListItem>>& items) override;
-  bool OnClick(const boost::shared_ptr<CGUIListItem>& item) override;
-  bool OnInfo(const boost::shared_ptr<CGUIListItem>& item) override { return false; }
-  bool OnContextMenu(const boost::shared_ptr<CGUIListItem>& item) override { return false; }
-  void SetDefaultItem(int item, bool always) override;
-  int GetDefaultItem() const override;
-  bool AlwaysFocusDefaultItem() const override;
+  virtual boost::movelib::unique_ptr<IListProvider> Clone();
+  virtual bool Update(bool forceRefresh);
+  virtual void Fetch(std::vector<boost::shared_ptr<CGUIListItem> >& items);
+  virtual bool OnClick(const boost::shared_ptr<CGUIListItem>& item);
+  virtual bool OnInfo(const boost::shared_ptr<CGUIListItem>& item) { return false; }
+  virtual bool OnContextMenu(const boost::shared_ptr<CGUIListItem>& item) { return false; }
+  virtual void SetDefaultItem(int item, bool always);
+  virtual int GetDefaultItem() const;
+  virtual bool AlwaysFocusDefaultItem() const;
 private:
   int m_defaultItem;
   bool m_defaultAlways;

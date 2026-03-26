@@ -46,18 +46,18 @@ bool CGUIInfoLabel::LabelNeedsUpdate(int context,
                                      std::string* fallback,
                                      const std::vector<CInfoPortion>& infoPortion) const
 {
-  bool needsUpdate{false};
+  bool needsUpdate = false;
   CGUIInfoManager& infoMgr = CServiceBroker::GetGUI()->GetInfoManager();
-  for (const auto& portion : infoPortion)
+  for (std::vector<CInfoPortion>::const_iterator portion = infoPortion.begin(); portion != infoPortion.end(); ++portion)
   {
-    if (portion.m_info)
+    if (portion->m_info)
     {
       std::string infoLabel;
       if (preferImages)
-        infoLabel = infoMgr.GetImage(portion.m_info, context, fallback);
+        infoLabel = infoMgr.GetImage(portion->m_info, context, fallback);
       if (infoLabel.empty())
-        infoLabel = infoMgr.GetLabel(portion.m_info, context, fallback);
-      needsUpdate |= portion.NeedsUpdate(infoLabel);
+        infoLabel = infoMgr.GetLabel(portion->m_info, context, fallback);
+      needsUpdate |= portion->NeedsUpdate(infoLabel);
     }
   }
   return needsUpdate;
@@ -91,19 +91,19 @@ bool CGUIInfoLabel::ItemLabelNeedsUpdate(const CGUIListItem* item,
                                          std::string* fallback,
                                          const std::vector<CInfoPortion>& infoPortion) const
 {
-  bool needsUpdate{false};
+  bool needsUpdate = false;
   CGUIInfoManager& infoMgr = CServiceBroker::GetGUI()->GetInfoManager();
-  for (const auto& portion : infoPortion)
+  for (std::vector<CInfoPortion>::const_iterator portion = infoPortion.begin(); portion != infoPortion.end(); ++portion)
   {
-    if (portion.m_info)
+    if (portion->m_info)
     {
       std::string infoLabel;
       if (preferImages)
-        infoLabel = infoMgr.GetItemImage(item, 0, portion.m_info, fallback);
+        infoLabel = infoMgr.GetItemImage(item, 0, portion->m_info, fallback);
       else
         infoLabel =
-            infoMgr.GetItemLabel(static_cast<const CFileItem*>(item), 0, portion.m_info, fallback);
-      needsUpdate |= portion.NeedsUpdate(infoLabel);
+            infoMgr.GetItemLabel(static_cast<const CFileItem*>(item), 0, portion->m_info, fallback);
+      needsUpdate |= portion->NeedsUpdate(infoLabel);
     }
   }
   return needsUpdate;
@@ -134,9 +134,9 @@ void CGUIInfoLabel::RebuildLabel(std::string& label,
                                  const std::vector<CInfoPortion>& infoPortion) const
 {
   label.clear();
-  for (const auto& portion : infoPortion)
+  for (std::vector<CInfoPortion>::const_iterator portion = infoPortion.begin(); portion != infoPortion.end(); ++portion)
   {
-    label += portion.Get();
+    label += portion->Get();
   }
 }
 
@@ -208,7 +208,7 @@ bool CGUIInfoLabel::ReplaceSpecialKeywordReferences(std::string &work, const std
   std::string output;
   if (ReplaceSpecialKeywordReferences(work, strKeyword, func, output))
   {
-    work = std::move(output);
+    work = boost::move(output);
     return true;
   }
   return false;
@@ -249,16 +249,16 @@ std::string CGUIInfoLabel::ReplaceLocalize(const std::string &label)
   return work;
 }
 
-std::string CGUIInfoLabel::ReplaceAddonStrings(std::string &&label)
+std::string CGUIInfoLabel::ReplaceAddonStrings(std::string &label)
 {
   ReplaceSpecialKeywordReferences(label, "ADDON", AddonReplacer);
-  return std::move(label);
+  return boost::move(label);
 }
 
-std::string CGUIInfoLabel::ReplaceControllerStrings(std::string&& label)
+std::string CGUIInfoLabel::ReplaceControllerStrings(std::string& label)
 {
   ReplaceSpecialKeywordReferences(label, "FEATURE", ControllerFeatureReplacer);
-  return std::move(label);
+  return boost::move(label);
 }
 
 enum EINFOFORMAT { NONE = 0, FORMATINFO, FORMATESCINFO, FORMATVAR, FORMATESCVAR };
@@ -283,9 +283,9 @@ void CGUIInfoLabel::Parse(const std::string& label,
   // Step 1: Replace all $LOCALIZE[number] with the real string
   std::string work = ReplaceLocalize(label);
   // Step 2: Replace all $ADDON[id number] with the real string
-  work = ReplaceAddonStrings(std::move(work));
+  work = ReplaceAddonStrings(boost::move(work));
   // Step 3: Replace all game controller strings with the real string
-  work = ReplaceControllerStrings(std::move(work));
+  work = ReplaceControllerStrings(boost::move(work));
   // Step 4: Find all $INFO[info,prefix,postfix] blocks
   EINFOFORMAT format;
   do
@@ -294,8 +294,9 @@ void CGUIInfoLabel::Parse(const std::string& label,
     size_t pos1 = work.size();
     size_t pos2;
     size_t len = 0;
-    for (const infoformat& infoformat : infoformatmap)
+    for (size_t i = 0; i < sizeof(infoformatmap) / sizeof(infoformat); ++i)
     {
+      const infoformat& infoformat = infoformatmap[i];
       pos2 = work.find(infoformat.str);
       if (pos2 != std::string::npos && pos2 < pos1)
       {
@@ -308,7 +309,7 @@ void CGUIInfoLabel::Parse(const std::string& label,
     if (format != NONE)
     {
       if (pos1 > 0)
-        infoPortion.emplace_back(0, work.substr(0, pos1), "");
+        infoPortion.push_back(CInfoPortion(0, work.substr(0, pos1), ""));
 
       pos2 = StringUtils::FindEndBracket(work, '[', ']', pos1 + len);
       if (pos2 != std::string::npos)
@@ -335,8 +336,8 @@ void CGUIInfoLabel::Parse(const std::string& label,
             prefix = params[1];
           if (params.size() > 2)
             postfix = params[2];
-          infoPortion.emplace_back(info, prefix, postfix,
-                                   format == FORMATESCINFO || format == FORMATESCVAR);
+          infoPortion.push_back(CInfoPortion(info, prefix, postfix,
+                                   format == FORMATESCINFO || format == FORMATESCVAR));
         }
         // and delete it from our work string
         work.erase(0, pos2 + 1);
@@ -351,7 +352,7 @@ void CGUIInfoLabel::Parse(const std::string& label,
   while (format != NONE);
 
   if (!work.empty())
-    infoPortion.emplace_back(0, work, "");
+    infoPortion.push_back(CInfoPortion(0, work, ""));
 }
 
 CGUIInfoLabel::CInfoPortion::CInfoPortion(int info, const std::string &prefix, const std::string &postfix, bool escaped /*= false */):

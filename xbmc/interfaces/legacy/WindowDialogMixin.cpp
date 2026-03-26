@@ -11,6 +11,8 @@
 #include "WindowInterceptor.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "messaging/ApplicationMessenger.h"
 
 using namespace KODI::MESSAGING;

@@ -46,7 +46,9 @@
 #include "AddonDatabase.h"
 #include "storage/MediaManager.h"
 #include "LangInfo.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "ContextMenuManager.h"
 
 #include <utility>
@@ -501,7 +503,7 @@ int CGUIWindowAddonBrowser::SelectAddonID(const std::vector<ADDON::TYPE> &types,
     CFileItemPtr item(new CFileItem("", false));
     item->SetLabel(g_localizeStrings.Get(231));
     item->SetLabel2(g_localizeStrings.Get(24040));
-    item->SetIconImage("DefaultAddonNone.png");
+    item->SetArt("icon", "DefaultAddonNone.png");
     item->SetSpecialSort(SortSpecialOnTop);
     items.Add(item);
   }

@@ -26,7 +26,9 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/GUIKeyboardFactory.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "filesystem/File.h"
 #include "FileItem.h"
 #include "guilib/LocalizeStrings.h"
@@ -222,7 +224,7 @@ void CGUIDialogFavourites::OnSetThumb(int item)
 
   // None
   CFileItemPtr none(new CFileItem("thumb://None", false));
-  none->SetIconImage(pItem->GetIconImage());
+  none->SetArt("icon", pItem->GetArt("icon"));
   none->SetLabel(g_localizeStrings.Get(20018));
   items.Add(none);
 

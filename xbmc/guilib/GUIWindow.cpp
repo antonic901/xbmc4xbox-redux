@@ -8,6 +8,7 @@
 
 #include "GUIWindow.h"
 
+#include "Application.h" // IsCurrentThread
 #include "GUIAudioManager.h"
 #include "GUIComponent.h"
 #include "GUIControlFactory.h"
@@ -16,7 +17,7 @@
 #include "GUIWindowManager.h"
 #include "ServiceBroker.h"
 #include "addons/Skin.h"
-#include "input/WindowTranslator.h"
+#include "input/ButtonTranslator.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
 #include "messaging/ApplicationMessenger.h"
@@ -30,7 +31,7 @@
 #include "utils/XMLUtils.h"
 #include "utils/log.h"
 
-#include <mutex>
+#include <boost/move/make_unique.hpp>
 
 using namespace KODI;
 
@@ -54,7 +55,6 @@ CGUIWindow::CGUIWindow(int id, const std::string &xmlFile)
   m_previousWindow = WINDOW_INVALID;
   m_animationsEnabled = true;
   m_manualRunActions = false;
-  m_exclusiveMouseControl = 0;
   m_clearBackground = 0xff000000; // opaque black -> always clear
   m_menuControlID = 0;
   m_menuLastFocusedControlID = 0;
@@ -71,7 +71,7 @@ bool CGUIWindow::Load(const std::string& strFileName, bool bContainsPath)
     return true;      // no point loading if it's already there
 
 #ifdef _DEBUG
-  const auto start = std::chrono::steady_clock::now();
+  int64_t start = CurrentHostCounter();
 #endif
 
   const char* strLoadType;
@@ -111,9 +111,9 @@ bool CGUIWindow::Load(const std::string& strFileName, bool bContainsPath)
     OnWindowLoaded();
 
 #ifdef _DEBUG
-    const auto end = std::chrono::steady_clock::now();
-    const std::chrono::duration<double, std::milli> duration = end - start;
-    CLog::Log(LOGDEBUG, "Skin file {} loaded in {:.2f} ms", strPath, duration.count());
+    int64_t end = CurrentHostCounter();
+    int64_t freq = CurrentHostFrequency();
+    CLog::Log(LOGDEBUG, "Skin file %s loaded in %.2f ms", strPath.c_str(), 1000.f * (end - start) / freq);
 #endif
   }
 
@@ -156,16 +156,16 @@ bool CGUIWindow::LoadXML(const std::string &strPath, const std::string &strLower
 boost::movelib::unique_ptr<TiXmlElement> CGUIWindow::Prepare(const boost::movelib::unique_ptr<TiXmlElement>& rootElement)
 {
   if (!rootElement)
-    return nullptr;
+    return NULL;
 
   // copy the root element as we will manipulate it
-  auto preparedRoot = boost::movelib::make_unique<TiXmlElement>(*rootElement);
+  boost::movelib::unique_ptr<TiXmlElement> preparedRoot = boost::movelib::make_unique<TiXmlElement>(*rootElement);
 
   // Resolve any includes, constants, expressions that may be present
   // and save include's conditions to the given map
   g_SkinInfo->ResolveIncludes(preparedRoot.get(), &m_xmlIncludeConditions);
 
-  return preparedRoot;
+  return boost::move(preparedRoot);
 }
 
 bool CGUIWindow::Load(TiXmlElement *pRootElement)
@@ -192,7 +192,7 @@ bool CGUIWindow::Load(TiXmlElement *pRootElement)
     std::string strValue = pChild->Value();
     if (strValue == "previouswindow" && pChild->FirstChild())
     {
-      m_previousWindow = CWindowTranslator::TranslateWindow(pChild->FirstChild()->Value());
+      m_previousWindow = CButtonTranslator::TranslateWindow(pChild->FirstChild()->Value());
     }
     else if (strValue == "defaultcontrol" && pChild->FirstChild())
     {
@@ -396,7 +396,11 @@ void CGUIWindow::Close_Internal(bool forceClose /*= false*/, int nextWindowID /*
 
 void CGUIWindow::Close(bool forceClose /*= false*/, int nextWindowID /*= 0*/, bool enableSound /*= true*/, bool bWait /* = true */)
 {
-  if (!CServiceBroker::GetAppMessenger()->IsProcessThread())
+#ifdef HAS_XBOX_D3D
+  if (!g_application.IsCurrentThread() && !CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
+#else
+  if (!g_application.IsCurrentThread())
+#endif
   {
     // make sure graphics lock is not held
     CSingleExit leaveIt(CServiceBroker::GetWinSystem()->GetGfxContext());
@@ -592,10 +596,10 @@ bool CGUIWindow::OnMessage(CGUIMessage& message)
         // this can happen when one control overlap the other one in the same
         // coordinates with similar sizes and the mouse pointer is over them
         // in this case only the control in the highest layer will have the focus
-        for (CGUIControl* control : m_children)
+        for (iControls it = m_children.begin(); it != m_children.end(); ++it)
         {
-          if (control->GetID() != m_focusedControl)
-            control->SetFocus(false);
+          if ((*it)->GetID() != m_focusedControl)
+            (*it)->SetFocus(false);
         }
         return true;
       }
@@ -636,20 +640,6 @@ bool CGUIWindow::OnMessage(CGUIMessage& message)
       return true;
     }
     break;
-  case GUI_MSG_EXCLUSIVE_MOUSE:
-    {
-      m_exclusiveMouseControl = message.GetSenderId();
-      return true;
-    }
-    break;
-  case GUI_MSG_GESTURE_NOTIFY:
-    {
-      CAction action(ACTION_GESTURE_NOTIFY, 0, static_cast<float>(message.GetParam1()), static_cast<float>(message.GetParam2()), 0, 0);
-      EVENT_RESULT result = OnMouseAction(action);
-      auto res = new int(result);
-      message.SetPointer(static_cast<void*>(res));
-      return result != EVENT_RESULT_UNHANDLED;
-    }
   case GUI_MSG_ADD_CONTROL:
     {
       if (message.GetPointer())
@@ -708,7 +698,7 @@ void CGUIWindow::AllocResources(bool forceLoad /*= false */)
   CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
 
 #ifdef _DEBUG
-  const auto start = std::chrono::steady_clock::now();
+  int64_t start = CurrentHostCounter();
 #endif
   // use forceLoad to determine if window needs (re)loading
   forceLoad |= NeedLoad() || (m_loadType == LOAD_EVERY_TIME);
@@ -729,24 +719,22 @@ void CGUIWindow::AllocResources(bool forceLoad /*= false */)
   }
 
 #ifdef _DEBUG
-  const auto skinLoadEnd = std::chrono::steady_clock::now();
+  int64_t slend = CurrentHostCounter();
 #endif
 
   // and now allocate resources
   CGUIControlGroup::AllocResources();
 
 #ifdef _DEBUG
-  const auto end = std::chrono::steady_clock::now();
-  const std::chrono::duration<double, std::milli> skinLoadDuration = skinLoadEnd - start;
-  const std::chrono::duration<double, std::milli> duration = end - start;
+  int64_t end = CurrentHostCounter();
+  int64_t freq = CurrentHostFrequency();
 
   if (forceLoad)
-    CLog::Log(LOGDEBUG, "Alloc resources: {:.2f} ms ({:.2f} ms skin load)", duration.count(),
-              skinLoadDuration.count());
+    CLog::Log(LOGDEBUG, "Alloc resources: %.2f ms (%.2f ms skin load)", 1000.f * (end - start) / freq, 1000.f * (slend - start) / freq);
   else
   {
-    CLog::Log(LOGDEBUG, "Window {} was already loaded", GetProperty("xmlfile").asString());
-    CLog::Log(LOGDEBUG, "Alloc resources: {:.2f} ms", duration.count());
+    CLog::Log(LOGDEBUG, "Window %s was already loaded", GetProperty("xmlfile").asString().c_str());
+    CLog::Log(LOGDEBUG, "Alloc resources: %.2f ms", 1000.f * (end - start) / freq);
   }
 #endif
   m_bAllocated = true;
@@ -787,7 +775,7 @@ bool CGUIWindow::Initialize()
     return false;
   if (!NeedLoad())
     return true;
-  if (CServiceBroker::GetAppMessenger()->IsProcessThread())
+  if (g_application.IsCurrentThread())
     AllocResources(false);
   else
   {
@@ -888,9 +876,9 @@ void CGUIWindow::SaveControlStates()
 
 void CGUIWindow::RestoreControlStates()
 {
-  for (const auto& it : m_controlStates)
+  for (std::vector<CControlState>::iterator it = m_controlStates.begin(); it != m_controlStates.end(); ++it)
   {
-    CGUIMessage message(GUI_MSG_ITEM_SELECT, GetID(), it.m_id, it.m_data);
+    CGUIMessage message(GUI_MSG_ITEM_SELECT, GetID(), it->m_id, it->m_data);
     OnMessage(message);
   }
   int focusControl = (!m_defaultAlways && m_lastControlID) ? m_lastControlID : m_defaultControl;
@@ -1051,9 +1039,9 @@ void CGUIWindow::SetID(int id)
 
 bool CGUIWindow::HasID(int controlID) const
 {
-  for (const auto& it : m_idRange)
+  for (std::vector<int>::const_iterator it = m_idRange.begin(); it != m_idRange.end() ; ++it)
   {
-    if (controlID == it)
+    if (controlID == *it)
       return true;
   }
   return false;

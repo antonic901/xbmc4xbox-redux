@@ -1,52 +1,40 @@
-/*!
-\file GUITextureD3D.h
-\brief
-*/
-
-#ifndef GUILIB_GUITEXTURED3D_H
-#define GUILIB_GUITEXTURED3D_H
+/*
+ *  Copyright (C) 2005-2026
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
 
 #pragma once
 
-/*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
- *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
- */
-
 #include "GUITexture.h"
+#include "utils/ColorUtils.h"
 
-#ifndef HAS_SDL
-
-#define CGUITexture CGUITextureD3D
-
-class CGUITextureD3D : public CGUITextureBase
+class CGUITextureD3D : public CGUITexture
 {
 public:
+  static CGUITexture* CreateTexture(
+      float posX, float posY, float width, float height, const CTextureInfo& texture);
+
+  static void DrawQuad(const CRect& coords,
+                       UTILS::COLOR::Color color,
+                       CTexture* texture = NULL,
+                       const CRect* texCoords = NULL);
+
   CGUITextureD3D(float posX, float posY, float width, float height, const CTextureInfo& texture);
-  static void DrawQuad(const CRect &coords, color_t color, CBaseTexture *texture = NULL, const CRect *texCoords = NULL);
+  virtual ~CGUITextureD3D() {}
+
+  virtual CGUITextureD3D* Clone() const;
+
 protected:
-  void Begin(color_t color);
-  void Draw(float *x, float *y, float *z, const CRect &texture, const CRect &diffuse, int orientation);
-  void End();
+  virtual void Begin(UTILS::COLOR::Color color);
+  virtual void Draw(float *x, float *y, float *z, const CRect &texture, const CRect &diffuse, int orientation);
+  virtual void End();
+
 private:
-  color_t m_col;
+  CGUITextureD3D(const CGUITextureD3D& texture);
+
+  UTILS::COLOR::Color m_col;
 };
 
-#endif
-
-#endif

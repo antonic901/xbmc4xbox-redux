@@ -13,8 +13,11 @@
 #include "pictures/PictureInfoTag.h"
 #include "profiles/ProfilesManager.h"
 #include "utils/URIUtils.h"
-#include "guiinfo/GUIInfoLabels.h"
+#include "guilib/guiinfo/GUIInfoLabels.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "settings/SettingsComponent.h"
+#include "utils/MathUtils.h"
 
 #include <boost/make_shared.hpp>
 
@@ -216,12 +219,13 @@ CUPnPRenderer::UpdateState()
         avt->SetStateVariable("NumberOfTracks", "1");
         avt->SetStateVariable("CurrentTrack", "1");
 
-        buffer = CServiceBroker::GetGUI()->GetInfoManager().GetCurrentPlayTime(TIME_FORMAT_HH_MM_SS);
+        buffer =
+            StringUtils::SecondsToTimeString(MathUtils::round_int(g_application.GetTime()), TIME_FORMAT_HH_MM_SS);
         avt->SetStateVariable("RelativeTimePosition", buffer.c_str());
-        buffer = StringUtils::SecondsToTimeString((long)CServiceBroker::GetGUI()->GetInfoManager().GetTotalPlayTime(), TIME_FORMAT_HH_MM_SS);
         avt->SetStateVariable("AbsoluteTimePosition", buffer.c_str());
 
-        buffer = CServiceBroker::GetGUI()->GetInfoManager().GetDuration(TIME_FORMAT_HH_MM_SS);
+        buffer = StringUtils::SecondsToTimeString(MathUtils::round_int(g_application.GetTotalTime()),
+                                                  TIME_FORMAT_HH_MM_SS);
         if (buffer.length() > 0) {
           avt->SetStateVariable("CurrentTrackDuration", buffer.c_str());
           avt->SetStateVariable("CurrentMediaDuration", buffer.c_str());
@@ -266,7 +270,7 @@ CUPnPRenderer::GetMetadata(NPT_String& meta)
     if (object) {
         // fetch the path to the thumbnail
         CStdString thumb = CServiceBroker::GetGUI()->GetInfoManager().GetImage(MUSICPLAYER_COVER, -1); //TODO: Only audio for now
-            
+
         NPT_String ip = g_application.getNetwork().m_networkinfo.ip;
 
         // build url, use the internal device http server to serv the image
@@ -325,7 +329,7 @@ CUPnPRenderer::OnPlay(PLT_ActionReference& action)
         NPT_CHECK_SEVERE(FindServiceByType("urn:schemas-upnp-org:service:AVTransport:1", service));
         NPT_CHECK_SEVERE(service->GetStateVariableValue("AVTransportURI", uri));
         NPT_CHECK_SEVERE(service->GetStateVariableValue("AVTransportURIMetaData", meta));
-        
+
         // if not set, use the current file being played
         PlayMedia(uri, meta);
     }
@@ -407,7 +411,7 @@ CUPnPRenderer::PlayMedia(const char* uri, const char* meta, PLT_Action* action)
 
         PLT_MediaItemResource* res = object->m_Resources.GetFirstItem();
         for(NPT_Cardinal i = 0; i < object->m_Resources.GetItemCount(); i++) {
-          if(object->m_Resources[i].m_Uri == uri) { 
+          if(object->m_Resources[i].m_Uri == uri) {
             res = &object->m_Resources[i];
             break;
           }
@@ -429,7 +433,7 @@ CUPnPRenderer::PlayMedia(const char* uri, const char* meta, PLT_Action* action)
         item.SetLabel((const char*)object->m_Title);
         item.SetLabelPreformated(true);
         item.SetArt("thumb", (const char*)object->m_ExtraInfo.album_art_uri);
-        if       (object->m_ObjectClass.type.StartsWith("object.item.audioItem")) {            
+        if       (object->m_ObjectClass.type.StartsWith("object.item.audioItem")) {
             if(NPT_SUCCEEDED(PopulateTagFromObject(*item.GetMusicInfoTag(), *object, res)))
                 item.SetLabelPreformated(false);
         } else if(object->m_ObjectClass.type.StartsWith("object.item.videoItem")) {

@@ -14,6 +14,8 @@
 #include "cores/VideoRenderers/RenderManager.h"
 #include "cores/DllLoader/exports/emu_registry.h"
 #include "commons/Exception.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
@@ -350,7 +352,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
       m_vecOptions.push_back("-utf8");
       CLog::Log(LOGINFO, "Forcing utf8 charset for subtitle. Setting -utf8");
     }
-    else 
+    else
     {
       /* try to autodetect any multicharacter charset */
       /* then fallback to user specified charset */
@@ -495,7 +497,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
     m_vecOptions.push_back("-noflip-hebrew-commas");
   }
 
-  
+
   { //Setup any video filter we want, ie postprocessing, noise...
     strTmp.Empty();
     vector<CStdString> vecPPOptions;
@@ -514,7 +516,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
         m_vecOptions.push_back("100");
 
         //Just add an empty string so we know we need to add the pp filter
-        vecPPOptions.push_back("default"); 
+        vecPPOptions.push_back("default");
       }
       else
       {
@@ -528,9 +530,9 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
         if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("postprocessing.verticaldeblocking"))
         {
           // add vertical deblocking filter
-          if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("postprocessing.verticaldeblocklevel") > 0) 
+          if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("postprocessing.verticaldeblocklevel") > 0)
             strOpt.Format("vb:%i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("postprocessing.verticaldeblocklevel"));
-          else 
+          else
             strOpt = "vb:a";
 
           vecPPOptions.push_back(strOpt);
@@ -538,9 +540,9 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
         if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("postprocessing.horizontaldeblocking"))
         {
           // add horizontal deblocking filter
-          if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("postprocessing.horizontaldeblocklevel") > 0) 
+          if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("postprocessing.horizontaldeblocklevel") > 0)
             strOpt.Format("hb:%i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("postprocessing.horizontaldeblocklevel"));
-          else 
+          else
             strOpt = "hb:a";
 
           vecPPOptions.push_back(strOpt);
@@ -713,7 +715,7 @@ CMPlayer::~CMPlayer()
   }
 
   Unload();
-  
+
   //save_registry(); //save registry to disk
   free_registry(); //free memory take by registry structures
 }
@@ -819,7 +821,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
   bool bFileOnLAN(false);
   bool bFileIsDVDImage(false);
   bool bFileIsDVDIfoFile(false);
-  
+
   starttime = 0;
   CStdString strFile = file.GetPath();
 
@@ -834,7 +836,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
   else if ( file.IsISO9660() ) bFileOnISO = true;
   else if ( file.IsOnDVD() ) bFileOnUDF = true;
   else if ( file.IsOnLAN() ) bFileOnLAN = true;
-  else if ( file.IsInternetStream() ) bFileOnInternet = true;  
+  else if ( file.IsInternetStream() ) bFileOnInternet = true;
 
   bool bIsVideo = file.IsVideo();
   bool bIsAudio = file.IsAudio();
@@ -855,7 +857,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
   {
     // Enable FullRecaching for "true" internet files/streams (ie. mms)
     if (bFileOnInternet)
-    {      
+    {
       CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
       CSingleLock lock2(s_dlgCacheSection);
       m_dlgCache = new CGUIDialogCache(0);
@@ -873,7 +875,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
 
 //    if (bFileOnLAN || bFileOnHD)
     // Prefill 5% if it's not an internetstream
-    if (!bFileOnInternet)  
+    if (!bFileOnInternet)
       options.SetPrefil(5.0);
 
     CLog::Log(LOGINFO, "mplayer play:%s cachesize:%i", strFile.c_str(), iCacheSize);
@@ -883,7 +885,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     {
       m_dlgCache->SetMessage("Caching subtitles...");
       CUtil::CacheSubtitles(strFile, _SubtitleExtension, m_dlgCache);
-      
+
       if( m_dlgCache )
       {
         //If caching was canceled, bail here
@@ -899,7 +901,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
       CUtil::ClearSubtitles();
       CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleCached = false;
     }
-    
+
     m_iPTS = 0;
     m_bPaused = false;
 
@@ -1077,7 +1079,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     mplayer_init(argc, argv);
     mplayer_setcache_size(iCacheSize);
     mplayer_setcache_backbuffer(MPLAYERBACKBUFFER);
-    mplayer_SlaveCommand("osd 0");    
+    mplayer_SlaveCommand("osd 0");
 
     if (bFileIsDVDImage || bFileIsDVDIfoFile)
     {
@@ -1095,7 +1097,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     }
 
     // Set the correct starting position
-    if (initoptions.starttime) 
+    if (initoptions.starttime)
     {
       starttime = (__int64)(initoptions.starttime);
     }
@@ -1237,7 +1239,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
           throw iRet;
         }
         // Set the correct starting position
-        if (initoptions.starttime) 
+        if (initoptions.starttime)
         {
           starttime = (__int64)(initoptions.starttime);
         }
@@ -1264,7 +1266,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
       CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
       // also grab the cache dialog's lock, to ensure that printf() can't do anything untoward
       CSingleLock lock2(s_dlgCacheSection);
-      m_dlgCache->Close(true); 
+      m_dlgCache->Close(true);
       m_dlgCache = NULL;
     }
 
@@ -1300,7 +1302,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     CSingleLock lock2(s_dlgCacheSection);
     //Only call Close, the object will be deleted when it's thread ends.
     //this makes sure the object is not deleted while in use
-    m_dlgCache->Close(false); 
+    m_dlgCache->Close(false);
     m_dlgCache = NULL;
   }
 
@@ -1314,7 +1316,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
 bool CMPlayer::CloseFile()
 {
   CLog::Log(LOGDEBUG, "CMPlayer::CloseFile()");
-  
+
   if( m_bIsPlaying )
   {
     StopThread();
@@ -1396,7 +1398,7 @@ void CMPlayer::Process()
           FirstLoop = false;
           // Resume from starttime, if specified
           if (starttime) SeekTime( starttime*1000 );
-        }  
+        }
       }
       else // we're paused
       {
@@ -1427,8 +1429,8 @@ void CMPlayer::Process()
         mplayer_showSubtitle(false);
         m_bSubsVisibleTTF=true;
       }
-      
-      if( (options.GetDeinterlace() && CMediaSettings::GetInstance().GetCurrentVideoSettings().m_InterlaceMethod != VS_INTERLACEMETHOD_DEINTERLACE) 
+
+      if( (options.GetDeinterlace() && CMediaSettings::GetInstance().GetCurrentVideoSettings().m_InterlaceMethod != VS_INTERLACEMETHOD_DEINTERLACE)
         || (!options.GetDeinterlace() && CMediaSettings::GetInstance().GetCurrentVideoSettings().m_InterlaceMethod == VS_INTERLACEMETHOD_DEINTERLACE) )
       {
         if( !bWaitingRestart )
@@ -1475,7 +1477,7 @@ void CMPlayer::Process()
     xbox_audio_wait_completion();
   }
   _SubtitleExtension.Empty();
-  
+
   //Set m_bIsPlaying to false here to make sure closefile doesn't try to close the file again
   m_bIsPlaying = false;
   CloseFile();
@@ -1587,7 +1589,7 @@ void CMPlayer::Seek(bool bPlus, bool bLargeStep, bool bChapterOverride)
     else
       percent = bPlus ? CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoPercentSeekForward : CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoPercentSeekBackward;
 
-    //If current time isn't bound by the total time, 
+    //If current time isn't bound by the total time,
     //we have to seek using absolute percentage instead
     if( GetTime() > iTime )
     {
@@ -1598,7 +1600,7 @@ void CMPlayer::Seek(bool bPlus, bool bLargeStep, bool bChapterOverride)
     {
       // time based seeking
       float timeInSecs = percent * 0.01f * iTime / 1000;
-      
+
       //Seek a minimum of 1 second
       if( timeInSecs < 1 && timeInSecs > 0 )
         timeInSecs = 1;
@@ -1611,7 +1613,7 @@ void CMPlayer::Seek(bool bPlus, bool bLargeStep, bool bChapterOverride)
         SeekTime(GetTime() + iSeek*1000);
       else
         SeekRelativeTime(iSeek);
-    }    
+    }
   }
 }
 
@@ -1747,9 +1749,9 @@ void CMPlayer::SeekPercentage(float percent)
 float CMPlayer::GetPercentage()
 {
   if (m_Edl.HasCut())
-    return ( (float)(100 / ((double)(GetTotalTime())/(double)GetTime())) ); 
+    return ( (float)(100 / ((double)(GetTotalTime())/(double)GetTime())) );
 
-  return (float)mplayer_getPercentage(); 
+  return (float)mplayer_getPercentage();
 }
 
 
@@ -1908,10 +1910,10 @@ void CMPlayer::SeekTime(__int64 iTime)
   {
     SeekRelativeTime(seek_delta);
   }
-  else  
+  else
   if (m_bIsPlaying)
   {
-    try 
+    try
     {
       iTime=m_Edl.RestoreCutTime(iTime);
       mplayer_setTimeMs(iTime);
@@ -1933,7 +1935,7 @@ __int64 CMPlayer::GetTime()
   __int64 time = 0;
   if (m_bIsPlaying)
   {
-    try 
+    try
     {
       if (HasVideo()) //As mplayer has the audio counter 10 times to big. Should be fixed
         time = 1000*mplayer_getCurrentTime();
@@ -1959,7 +1961,7 @@ int64_t CMPlayer::GetTotalTime()
   int64_t time = 0;
   if (m_bIsPlaying)
   {
-    try 
+    try
     {
       time = (int64_t)mplayer_getTime();
     }
@@ -2071,16 +2073,16 @@ bool CMPlayer::GetCurrentSubtitle(CStdString& strSubtitle)
       {
         strSubtitle += "\n";
       }
-      
+
       strSubtitle += sub->text[i];
     }
-    
+
     return true;
   }
-    
+
   return false;
 
-  
+
 }
 
 bool CMPlayer::OnAction(const CAction &action)
@@ -2118,7 +2120,7 @@ void CMPlayer::WaitOnCommand()
   }
   else
   {
-    //Wait till process has finished twice, 
+    //Wait till process has finished twice,
     //otherwise we can't be sure the seek has finished
     m_evProcessDone.WaitMSec(1000);
     m_evProcessDone.WaitMSec(1000);

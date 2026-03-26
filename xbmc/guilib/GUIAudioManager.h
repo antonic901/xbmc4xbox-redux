@@ -26,6 +26,7 @@
 #include "GUIComponent.h"
 #include "ServiceBroker.h"
 #include "threads/CriticalSection.h"
+#include "settings/lib/ISettingCallback.h"
 
 // forward definitions
 class CAction;
@@ -34,7 +35,7 @@ class CGUISound;
 
 enum WINDOW_SOUND { SOUND_INIT = 0, SOUND_DEINIT };
 
-class CGUIAudioManager
+class CGUIAudioManager : public ISettingCallback
 {
   class CWindowSounds
   {
@@ -46,6 +47,9 @@ class CGUIAudioManager
 public:
   CGUIAudioManager();
   ~CGUIAudioManager();
+
+  virtual void OnSettingChanged(const CSetting *setting);
+  virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
 
   void Initialize(int iDevice);
   void DeInitialize(int iDevice);

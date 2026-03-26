@@ -509,7 +509,7 @@ bool CPluginDirectory::WaitOnScriptResult(const std::string &scriptPath, int scr
       CScriptObserver scriptObs(scriptId, m_fetchComplete);
 
       CGUIDialogProgress* progress = nullptr;
-      if (CServiceBroker::GetGUI()->GetWindowManager().GetTopMostModalDialogID() == WINDOW_DIALOG_PROGRESS)
+      if (CServiceBroker::GetGUI()->GetWindowManager().IsModalDialogTopmost(WINDOW_DIALOG_PROGRESS))
         progress = dynamic_cast<CGUIDialogProgress*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRESS));
 
       if (progress != nullptr)

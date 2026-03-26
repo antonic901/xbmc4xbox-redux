@@ -266,6 +266,9 @@
 				RelativePath=".\GUIControlGroupList.cpp">
 			</File>
 			<File
+				RelativePath=".\GUIControlLookup.cpp">
+			</File>
+			<File
 				RelativePath=".\GUIDialog.cpp">
 			</File>
 			<File
@@ -399,9 +402,6 @@
 			</File>
 			<File
 				RelativePath=".\IWindowManagerCallback.cpp">
-			</File>
-			<File
-				RelativePath=".\Key.cpp">
 			</File>
 			<File
 				RelativePath=".\LocalizeStrings.cpp">
@@ -627,6 +627,9 @@
 				RelativePath=".\GUIControlGroupList.h">
 			</File>
 			<File
+				RelativePath=".\GUIControlLookup.h">
+			</File>
+			<File
 				RelativePath=".\GUIDialog.h">
 			</File>
 			<File
@@ -783,9 +786,6 @@
 				RelativePath=".\IWindowManagerCallback.h">
 			</File>
 			<File
-				RelativePath=".\Key.h">
-			</File>
-			<File
 				RelativePath=".\LocalizeStrings.h">
 			</File>
 			<File
@@ -808,6 +808,9 @@
 			</File>
 			<File
 				RelativePath=".\VisibleEffect.h">
+			</File>
+			<File
+				RelativePath=".\WindowIDs.h">
 			</File>
 		</Filter>
 		<Filter
