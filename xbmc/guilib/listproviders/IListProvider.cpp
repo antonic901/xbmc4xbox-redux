@@ -9,7 +9,6 @@
 #include "IListProvider.h"
 
 #include "DirectoryProvider.h"
-#include "MultiProvider.h"
 #include "StaticProvider.h"
 #include "utils/XBMCTinyXML.h"
 
@@ -20,7 +19,8 @@ boost::movelib::unique_ptr<IListProvider> IListProvider::Create(const TiXmlNode*
   {
     const TiXmlNode *next = root->NextSibling("content");
     if (next)
-      return boost::movelib::unique_ptr<IListProvider>(new CMultiProvider(root, parentID));
+      return boost::movelib::unique_ptr<IListProvider>();
+      //return boost::movelib::unique_ptr<IListProvider>(new CMultiProvider(root, parentID));
 
     return CreateSingle(root, parentID);
   }

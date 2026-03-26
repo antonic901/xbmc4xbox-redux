@@ -549,12 +549,6 @@
 					RelativePath=".\listproviders\IListProvider.h">
 				</File>
 				<File
-					RelativePath=".\listproviders\MultiProvider.cpp">
-				</File>
-				<File
-					RelativePath=".\listproviders\MultiProvider.h">
-				</File>
-				<File
 					RelativePath=".\listproviders\StaticProvider.cpp">
 				</File>
 				<File
