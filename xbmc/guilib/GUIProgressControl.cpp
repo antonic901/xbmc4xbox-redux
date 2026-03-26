@@ -173,6 +173,18 @@ void CGUIProgressControl::DynamicResourceAlloc(bool bOnOff)
   m_guiOverlay->DynamicResourceAlloc(bOnOff);
 }
 
+#ifdef HAS_XBOX_D3D
+void CGUIProgressControl::PreAllocResources()
+{
+  CGUIControl::PreAllocResources();
+  m_guiBackground->PreAllocResources();
+  m_guiMid->PreAllocResources();
+  m_guiRight->PreAllocResources();
+  m_guiLeft->PreAllocResources();
+  m_guiOverlay->PreAllocResources();
+}
+#endif
+
 void CGUIProgressControl::AllocResources()
 {
   CGUIControl::AllocResources();

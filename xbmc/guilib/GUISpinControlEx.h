@@ -34,6 +34,9 @@ public:
   virtual void SetWidth(float width);
   virtual float GetHeight() const { return m_buttonControl.GetHeight(); }
   virtual void SetHeight(float height);
+#ifdef HAS_XBOX_D3D
+  virtual void PreAllocResources();
+#endif
   virtual void AllocResources();
   virtual void FreeResources(bool immediately = false);
   virtual void DynamicResourceAlloc(bool bOnOff);

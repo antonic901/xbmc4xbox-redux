@@ -252,6 +252,15 @@ bool CGUIButtonControl::OnMessage(CGUIMessage& message)
   return CGUIControl::OnMessage(message);
 }
 
+#ifdef HAS_XBOX_D3D
+void CGUIButtonControl::PreAllocResources()
+{
+  CGUIControl::PreAllocResources();
+  m_imgFocus->PreAllocResources();
+  m_imgNoFocus->PreAllocResources();
+}
+#endif
+
 void CGUIButtonControl::AllocResources()
 {
   CGUIControl::AllocResources();

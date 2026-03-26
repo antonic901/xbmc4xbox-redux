@@ -67,6 +67,14 @@ CRect CGUIBorderedImage::CalcRenderRegion() const
   return CGUIImage::CalcRenderRegion().Union(m_borderImage->GetRenderRect());
 }
 
+#ifdef HAS_XBOX_D3D
+void CGUIBorderedImage::PreAllocResources()
+{
+  m_borderImage->PreAllocResources();
+  CGUIImage::PreAllocResources();
+}
+#endif
+
 void CGUIBorderedImage::AllocResources()
 {
   m_borderImage->AllocResources();

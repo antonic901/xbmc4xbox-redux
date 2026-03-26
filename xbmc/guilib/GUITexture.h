@@ -80,6 +80,9 @@ public:
   void Render();
 
   void DynamicResourceAlloc(bool bOnOff);
+#ifdef HAS_XBOX_D3D
+  void PreAllocResources();
+#endif
   bool AllocResources();
   void FreeResources(bool immediately = false);
   void SetInvalid();

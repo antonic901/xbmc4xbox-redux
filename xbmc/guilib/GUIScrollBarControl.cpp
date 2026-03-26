@@ -212,6 +212,18 @@ void GUIScrollBarControl::DynamicResourceAlloc(bool bOnOff)
   m_guiNibFocus->DynamicResourceAlloc(bOnOff);
 }
 
+#ifdef HAS_XBOX_D3D
+void GUIScrollBarControl::PreAllocResources()
+{
+  CGUIControl::PreAllocResources();
+  m_guiBackground->PreAllocResources();
+  m_guiBarNoFocus->PreAllocResources();
+  m_guiBarFocus->PreAllocResources();
+  m_guiNibNoFocus->PreAllocResources();
+  m_guiNibFocus->PreAllocResources();
+}
+#endif
+
 void GUIScrollBarControl::AllocResources()
 {
   CGUIControl::AllocResources();

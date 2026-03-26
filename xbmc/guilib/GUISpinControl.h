@@ -42,6 +42,9 @@ public:
   virtual void OnRight();
   virtual bool HitTest(const CPoint &point) const;
   virtual bool OnMessage(CGUIMessage& message);
+#ifdef HAS_XBOX_D3D
+  virtual void PreAllocResources();
+#endif
   virtual void AllocResources();
   virtual void FreeResources(bool immediately = false);
   virtual void DynamicResourceAlloc(bool bOnOff);

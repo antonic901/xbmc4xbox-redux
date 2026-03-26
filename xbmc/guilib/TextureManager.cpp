@@ -354,13 +354,13 @@ bool CGUITextureManager::HasTexture(const std::string &textureName, std::string 
       return true;
     }
     else
+#endif
     if (m_TexBundle[i].HasFile(bundledName))
     {
       if (bundle) *bundle = i;
       return true;
     }
   }
-#endif
 
   std::string fullPath = GetTexturePath(textureName);
   if (path)

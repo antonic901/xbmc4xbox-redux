@@ -130,6 +130,19 @@ bool CGUIRadioButtonControl::OnMessage(CGUIMessage& message)
   return CGUIButtonControl::OnMessage(message);
 }
 
+#ifdef HAS_XBOX_D3D
+void CGUIRadioButtonControl::PreAllocResources()
+{
+  CGUIButtonControl::PreAllocResources();
+  m_imgRadioOnFocus->PreAllocResources();
+  m_imgRadioOnNoFocus->PreAllocResources();
+  m_imgRadioOffFocus->PreAllocResources();
+  m_imgRadioOffNoFocus->PreAllocResources();
+  m_imgRadioOnDisabled->PreAllocResources();
+  m_imgRadioOffDisabled->PreAllocResources();
+}
+#endif
+
 void CGUIRadioButtonControl::AllocResources()
 {
   CGUIButtonControl::AllocResources();

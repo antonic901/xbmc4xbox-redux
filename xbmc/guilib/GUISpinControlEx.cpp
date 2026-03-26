@@ -20,6 +20,14 @@ CGUISpinControlEx::CGUISpinControlEx(int parentID, int controlID, float posX, fl
 
 CGUISpinControlEx::~CGUISpinControlEx(void) {}
 
+#ifdef HAS_XBOX_D3D
+void CGUISpinControlEx::PreAllocResources()
+{
+  CGUISpinControl::PreAllocResources();
+  m_buttonControl.PreAllocResources();
+}
+#endif
+
 void CGUISpinControlEx::AllocResources()
 {
   // Correct alignment - we always align the spincontrol on the right

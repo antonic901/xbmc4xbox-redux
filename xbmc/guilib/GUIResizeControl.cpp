@@ -160,6 +160,15 @@ void CGUIResizeControl::UpdateSpeed(int nDirection)
   }
 }
 
+#ifdef HAS_XBOX_D3D
+void CGUIResizeControl::PreAllocResources()
+{
+  CGUIControl::PreAllocResources();
+  m_imgFocus->PreAllocResources();
+  m_imgNoFocus->PreAllocResources();
+}
+#endif
+
 void CGUIResizeControl::AllocResources()
 {
   CGUIControl::AllocResources();
