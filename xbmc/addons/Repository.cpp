@@ -64,7 +64,7 @@ CRepository::ResolveResult CRepository::ResolvePathAndHash(const AddonPtr& addon
   ADDON::CRepository::DirList::const_iterator dirIt = std::find_if(m_dirs.begin(), m_dirs.end(), boost::bind(dirHasParent, _1, boost::cref(path)));
   if (dirIt == m_dirs.end())
   {
-    CLog::Log(LOGERROR, "Requested path {} not found in known repository directories", path);
+    CLog::Log(LOGERROR, "Requested path %s not found in known repository directories", path.c_str());
     ResolveResult resolveResult = {};
     return resolveResult;
   }
@@ -82,7 +82,7 @@ CRepository::ResolveResult CRepository::ResolvePathAndHash(const AddonPtr& addon
   CCurlFile file;
   if (!file.Open(url))
   {
-    CLog::Log(LOGERROR, "Could not fetch addon location and hash from {}", path);
+    CLog::Log(LOGERROR, "Could not fetch addon location and hash from %s", path.c_str());
     ResolveResult resolveResult = {};
     return resolveResult;
   }
@@ -98,7 +98,7 @@ CRepository::ResolveResult CRepository::ResolvePathAndHash(const AddonPtr& addon
     // Expected hash, but none found -> fall back to old method
     if (!FetchChecksum(path + ".md5", hash))
     {
-      CLog::Log(LOGERROR, "Failed to find hash for {} from HTTP header and in separate file", path);
+      CLog::Log(LOGERROR, "Failed to find hash for %s from HTTP header and in separate file", path.c_str());
       ResolveResult resolveResult = {};
       return resolveResult;
     }
@@ -109,7 +109,7 @@ CRepository::ResolveResult CRepository::ResolvePathAndHash(const AddonPtr& addon
     location = path;
   }
 
-  CLog::Log(LOGDEBUG, "Resolved addon path {} to {} hash {}", path, location, hash);
+  CLog::Log(LOGDEBUG, "Resolved addon path %s to %s hash %s", path.c_str(), location.c_str(), hash.c_str());
 
   ResolveResult resolveResult = {location, hash};
   return resolveResult;
@@ -166,7 +166,7 @@ CRepository::CRepository(AddonProps props, DirList dirs)
     const ADDON::CRepository::DirInfo &dir = *it;
     if (CURL(dir.datadir).IsProtocol("http"))
     {
-      CLog::Log(LOGWARNING, "Repository {} uses plain HTTP for add-on downloads - this is insecure and will make your Kodi installation vulnerable to attacks if enabled!", Name());
+      CLog::Log(LOGWARNING, "Repository %s uses plain HTTP for add-on downloads - this is insecure and will make your Kodi installation vulnerable to attacks if enabled!", Name().c_str());
     }
   }
 }

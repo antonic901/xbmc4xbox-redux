@@ -1809,7 +1809,7 @@ std::string CCurlFile::GetInfoString(int infoType)
   CURLcode result = g_curlInterface.easy_getinfo(m_state->m_easyHandle, static_cast<XCURL::CURLINFO> (infoType), &info);
   if (result != CURLE_OK)
   {
-    CLog::Log(LOGERROR, "Info string request for type {} failed with result code {}", infoType, result);
+    CLog::Log(LOGERROR, "Info string request for type %i failed with result code %d", infoType, result);
     return "";
   }
   return (info ? info : "");

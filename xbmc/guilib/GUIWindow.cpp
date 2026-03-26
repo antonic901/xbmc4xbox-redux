@@ -89,7 +89,7 @@ bool CGUIWindow::Load(const std::string& strFileName, bool bContainsPath)
     strLoadType = "LOAD_EVERY_TIME";
     break;
   }
-  CLog::Log(LOGINFO, "Loading skin file: {}, load type: {}", strFileName, strLoadType);
+  CLog::Log(LOGINFO, "Loading skin file: %s, load type: %s", strFileName.c_str(), strLoadType);
 
   // Find appropriate skin folder + resolution to load from
   std::string strPath;
@@ -131,7 +131,7 @@ bool CGUIWindow::LoadXML(const std::string &strPath, const std::string &strLower
     StringUtils::ToLower(strPathLower);
     if (!xmlDoc.LoadFile(strPath) && !xmlDoc.LoadFile(strPathLower) && !xmlDoc.LoadFile(strLowerPath))
     {
-      CLog::Log(LOGERROR, "Unable to load window XML: {}. Line {}\n{}", strPath, xmlDoc.ErrorRow(),
+      CLog::Log(LOGERROR, "Unable to load window XML: %s. Line %i\n%s", strPath.c_str(), xmlDoc.ErrorRow(),
                 xmlDoc.ErrorDesc());
       SetID(WINDOW_INVALID);
       return false;
@@ -140,8 +140,8 @@ bool CGUIWindow::LoadXML(const std::string &strPath, const std::string &strLower
     // xml need a <window> root element
     if (!StringUtils::EqualsNoCase(xmlDoc.RootElement()->Value(), "window"))
     {
-      CLog::Log(LOGERROR, "XML file {} does not contain a <window> root element",
-                GetProperty("xmlfile").asString());
+      CLog::Log(LOGERROR, "XML file %s does not contain a <window> root element",
+                GetProperty("xmlfile").asString().c_str());
       return false;
     }
 
@@ -149,7 +149,7 @@ bool CGUIWindow::LoadXML(const std::string &strPath, const std::string &strLower
     m_windowXMLRootElement.reset(static_cast<TiXmlElement*>(xmlDoc.RootElement()->Clone()));
   }
   else
-    CLog::Log(LOGDEBUG, "Using already stored xml root node for {}", strPath);
+    CLog::Log(LOGDEBUG, "Using already stored xml root node for %s", strPath.c_str());
 
   return Load(Prepare(m_windowXMLRootElement).get());
 }
@@ -557,7 +557,7 @@ bool CGUIWindow::OnMessage(CGUIMessage& message)
 
   case GUI_MSG_WINDOW_INIT:
     {
-      CLog::Log(LOGDEBUG, "------ Window Init ({}) ------", GetProperty("xmlfile").asString());
+      CLog::Log(LOGDEBUG, "------ Window Init (%s) ------", GetProperty("xmlfile").asString().c_str());
       if (m_dynamicResourceAlloc || !m_bAllocated) AllocResources(false);
       OnInitWindow();
       return true;
@@ -566,7 +566,7 @@ bool CGUIWindow::OnMessage(CGUIMessage& message)
 
   case GUI_MSG_WINDOW_DEINIT:
     {
-      CLog::Log(LOGDEBUG, "------ Window Deinit ({}) ------", GetProperty("xmlfile").asString());
+      CLog::Log(LOGDEBUG, "------ Window Deinit (%s) ------", GetProperty("xmlfile").asString().c_str());
       OnDeinitWindow(message.GetParam1());
       // now free the window
       if (m_dynamicResourceAlloc) FreeResources();
@@ -583,7 +583,7 @@ bool CGUIWindow::OnMessage(CGUIMessage& message)
         //tell focused control that it has lost the focus
         CGUIMessage msgLostFocus(GUI_MSG_LOSTFOCUS, GetID(), control->GetID(), control->GetID());
         control->OnMessage(msgLostFocus);
-        CLog::Log(LOGDEBUG, "Unfocus WindowID: {}, ControlID: {}", GetID(), control->GetID());
+        CLog::Log(LOGDEBUG, "Unfocus WindowID: %i, ControlID: %i", GetID(), control->GetID());
       }
       return true;
     }
@@ -619,7 +619,6 @@ bool CGUIWindow::OnMessage(CGUIMessage& message)
     }
   case GUI_MSG_SETFOCUS:
     {
-      //      CLog::Log(LOGDEBUG,"set focus to control:{} window:{} ({})", message.GetControlId(),message.GetSenderId(), GetID());
       if ( message.GetControlId() )
       {
         // first unfocus the current control
@@ -913,7 +912,7 @@ bool CGUIWindow::OnMove(int fromControl, int moveAction)
   if (!control) control = GetControl(fromControl);
   if (!control)
   { // no current control??
-    CLog::Log(LOGERROR, "Unable to find control {} in window {}", fromControl, GetID());
+    CLog::Log(LOGERROR, "Unable to find control %i in window %i", fromControl, GetID());
     return false;
   }
   std::vector<int> moveHistory;
@@ -989,7 +988,7 @@ bool CGUIWindow::SendMessage(int message, int id, int param1 /* = 0*/, int param
 #ifdef _DEBUG
 void CGUIWindow::DumpTextureUse()
 {
-  CLog::Log(LOGDEBUG, "{} for window {}", __FUNCTION__, GetID());
+  CLog::Log(LOGDEBUG, "%s for window %i", __FUNCTION__, GetID());
   CGUIControlGroup::DumpTextureUse();
 }
 #endif

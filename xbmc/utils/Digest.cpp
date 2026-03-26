@@ -71,7 +71,7 @@ CDigest::Type CDigest::TypeFromString(std::string const& type)
 CDigest::CDigest(Type type) : m_finalized(false)
 {
   if (type != Type::MD5)
-    CLog::Log(LOGWARNING, "Digest of type {} is not supported. Falling back to MD5", TypeToString(type));
+    CLog::Log(LOGWARNING, "Digest of type %s is not supported. Falling back to MD5", TypeToString(type).c_str());
 
   MD5Init(&m_context);
 }

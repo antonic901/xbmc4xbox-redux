@@ -40,7 +40,7 @@ bool CMusicGUIInfo::InitCurrentItem(CFileItem *item)
   const CApplicationPlayer* appPlayer = g_application.m_pPlayer;
   if (item && (item->IsAudio() || (item->IsInternetStream() && appPlayer->IsPlayingAudio())))
   {
-    CLog::Log(LOGDEBUG, "CMusicGUIInfo::InitCurrentItem({})", item->GetPath());
+    CLog::Log(LOGDEBUG, "CMusicGUIInfo::InitCurrentItem(%s)", item->GetPath().c_str());
 
     item->LoadMusicTag();
 
@@ -52,8 +52,8 @@ bool CMusicGUIInfo::InitCurrentItem(CFileItem *item)
     {
       if (!g_application.m_strPlayListFile.empty())
       {
-        CLog::Log(LOGDEBUG, "Streaming media detected... using {} to find a thumb",
-                  g_application.m_strPlayListFile);
+        CLog::Log(LOGDEBUG, "Streaming media detected... using %s to find a thumb",
+                  g_application.m_strPlayListFile.c_str());
         CFileItem streamingItem(g_application.m_strPlayListFile,false);
 
         CMusicThumbLoader loader;
@@ -130,7 +130,7 @@ bool CMusicGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
       case LISTITEM_TRACKNUMBER:
         if (tag->Loaded() && tag->GetTrackNumber() > 0)
         {
-          value = StringUtils::Format("{:02}", tag->GetTrackNumber());
+          value = StringUtils::Format("%i", tag->GetTrackNumber());
           return true;
         }
         break;

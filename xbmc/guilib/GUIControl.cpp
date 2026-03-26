@@ -546,7 +546,6 @@ void CGUIControl::SetVisible(bool bVisible, bool setVisState)
   { // reset any visible animations that are in process
     if (IsAnimating(ANIM_TYPE_VISIBLE))
     {
-      //        CLog::Log(LOGDEBUG, "Resetting visible animation on control {} (we are {})", m_controlID, m_visible ? "visible" : "hidden");
       CAnimation *visibleAnim = GetAnimation(ANIM_TYPE_VISIBLE);
       if (visibleAnim) visibleAnim->ResetAnimation();
     }
@@ -566,12 +565,10 @@ void CGUIControl::UpdateVisibility(const CGUIListItem *item)
     m_visibleFromSkinCondition = m_visibleCondition->Get(INFO::DEFAULT_CONTEXT, item);
     if (!bWasVisible && m_visibleFromSkinCondition)
     { // automatic change of visibility - queue the in effect
-      //    CLog::Log(LOGDEBUG, "Visibility changed to visible for control id {}", m_controlID);
       QueueAnimation(ANIM_TYPE_VISIBLE);
     }
     else if (bWasVisible && !m_visibleFromSkinCondition)
     { // automatic change of visibility - do the out effect
-      //    CLog::Log(LOGDEBUG, "Visibility changed to hidden for control id {}", m_controlID);
       QueueAnimation(ANIM_TYPE_HIDDEN);
     }
   }
@@ -610,7 +607,6 @@ void CGUIControl::SetInitialVisibility()
   {
     m_visibleFromSkinCondition = m_visibleCondition->Get(INFO::DEFAULT_CONTEXT);
     m_visible = m_visibleFromSkinCondition ? VISIBLE : HIDDEN;
-    //  CLog::Log(LOGDEBUG, "Set initial visibility for control {}: {}", m_controlID, m_visible == VISIBLE ? "visible" : "hidden");
   }
   else if (m_visible == DELAYED)
     m_visible = VISIBLE;
@@ -824,7 +820,7 @@ bool CGUIControl::Animate(unsigned int currentTime)
     // debug stuff
     //if (anim.GetProcess() != ANIM_PROCESS_NONE && IsVisible())
     //{
-    //  CLog::Log(LOGDEBUG, "Animating control {}", m_controlID);
+    //  CLog::Log(LOGDEBUG, "Animating control %i", m_controlID);
     //}
   }
 

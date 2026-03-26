@@ -80,7 +80,7 @@ static bool LoadPO(const std::string &filename, std::map<uint32_t, LocStr>& stri
     }
   }
 
-  CLog::Log(LOGDEBUG, "LocalizeStrings: loaded {} strings from file {}", counter, filename);
+  CLog::Log(LOGDEBUG, "LocalizeStrings: loaded %i strings from file %s", counter, filename.c_str());
   return true;
 }
 
