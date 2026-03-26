@@ -3622,7 +3622,7 @@ bool CApplication::PlayMedia(const CFileItem& item, const std::string &player, i
   //If item is a plugin, expand out now and run ourselves again
   if (item.IsPlugin())
   {
-    bool resume = item.m_lStartOffset == STARTOFFSET_RESUME;
+    bool resume = item.GetStartOffset() == STARTOFFSET_RESUME;
     CFileItem item_new(item);
     if (XFILE::CPluginDirectory::GetPluginResult(item.GetPath(), item_new, resume))
       return PlayMedia(item_new, player, iPlaylist);
@@ -3690,7 +3690,7 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
 
     // first assume values passed to the stack
     int selectedFile = item.m_lStartPartNumber;
-    int startoffset = item.m_lStartOffset;
+    int startoffset = item.GetStartOffset();
 
     // check if we instructed the stack to resume from default
     if (startoffset == STARTOFFSET_RESUME) // selected file is not specified, pick the 'last' resume point
@@ -3722,7 +3722,7 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
     }
 
     // set startoffset in movieitem, track stack item for updating purposes, and finally play disc part
-    movieList[selectedFile - 1]->m_lStartOffset = startoffset > 0 ? STARTOFFSET_RESUME : 0;
+    movieList[selectedFile - 1]->SetStartOffset(startoffset > 0 ? STARTOFFSET_RESUME : 0);
     movieList[selectedFile - 1]->SetProperty("stackFileItemToUpdate", true);
     *m_stackFileItemToUpdate = item;
     return PlayFile(*(movieList[selectedFile - 1]), "");
@@ -3753,7 +3753,7 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
     for (int i = 0; i < m_currentStack->Size(); i++)
     {
       if (haveTimes)
-        (*m_currentStack)[i]->m_lEndOffset = times[i];
+        (*m_currentStack)[i]->SetEndOffset(times[i]);
       else
       {
         int duration;
@@ -3763,21 +3763,21 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
           return PLAYBACK_FAIL;
         }
         totalTime += duration / 1000;
-        (*m_currentStack)[i]->m_lEndOffset = totalTime;
+        (*m_currentStack)[i]->SetEndOffset(totalTime);
         times.push_back(totalTime);
       }
     }
 
-    double seconds = item.m_lStartOffset / 75.0;
+    double seconds = item.GetStartOffset() / 75.0;
 
-    if (!haveTimes || item.m_lStartOffset == STARTOFFSET_RESUME )
+    if (!haveTimes || item.GetStartOffset() == STARTOFFSET_RESUME )
     {  // have our times now, so update the dB
       if (dbs.Open())
       {
         if( !haveTimes )
           dbs.SetStackTimes(item.GetPath(), times);
 
-        if( item.m_lStartOffset == STARTOFFSET_RESUME )
+        if( item.GetStartOffset() == STARTOFFSET_RESUME )
         {
           // can only resume seek here, not dvdstate
           CBookmark bookmark;
@@ -3799,11 +3799,11 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
       // work out where to seek to
       for (int i = 0; i < m_currentStack->Size(); i++)
       {
-        if (seconds < (*m_currentStack)[i]->m_lEndOffset)
+        if (seconds < (*m_currentStack)[i]->GetEndOffset())
         {
           CFileItem item(*(*m_currentStack)[i]);
-          long start = (i > 0) ? (*m_currentStack)[i-1]->m_lEndOffset : 0;
-          item.m_lStartOffset = (long)(seconds - start) * 75;
+          long start = (i > 0) ? (*m_currentStack)[i-1]->GetEndOffset() : 0;
+          item.SetStartOffset(static_cast<int64_t>((seconds - start) * 75));
           m_currentStackPosition = i;
           return PlayFile(item, "", true);
         }
@@ -3847,7 +3847,7 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
 
   if (item.IsPlugin())
   { // we modify the item so that it becomes a real URL
-    bool resume = item.m_lStartOffset == STARTOFFSET_RESUME;
+    bool resume = item.GetStartOffset() == STARTOFFSET_RESUME;
     CFileItem item_new(item);
     if (XFILE::CPluginDirectory::GetPluginResult(item.GetPath(), item_new, resume))
       return PlayFile(boost::move(item_new), player, false);
@@ -3879,9 +3879,9 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
   if( bRestart )
   {
     // have to be set here due to playstack using this for starting the file
-    options.starttime = item.m_lStartOffset / 75.0;
-    if (m_itemCurrentFile->IsStack() && m_currentStack->Size() > 0 && m_itemCurrentFile->m_lStartOffset != 0)
-      m_itemCurrentFile->m_lStartOffset = STARTOFFSET_RESUME; // to force fullscreen switching
+    options.starttime = item.GetStartOffset() / 75.0;
+    if (m_itemCurrentFile->IsStack() && m_currentStack->Size() > 0 && m_itemCurrentFile->GetStartOffset() != 0)
+      m_itemCurrentFile->SetStartOffset(STARTOFFSET_RESUME); // to force fullscreen switching
 
     if( m_eForcedNextPlayer != EPC_NONE )
       eNewCore = m_eForcedNextPlayer;
@@ -3892,7 +3892,7 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
   }
   else
   {
-    options.starttime = item.m_lStartOffset / 75.0;
+    options.starttime = item.GetStartOffset() / 75.0;
 
     if (item.IsVideo())
     {
@@ -3901,7 +3901,7 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
       dbs.Open();
       dbs.GetVideoSettings(item.GetPath(), CMediaSettings::GetInstance().GetCurrentVideoSettings());
 
-      if( item.m_lStartOffset == STARTOFFSET_RESUME )
+      if( item.GetStartOffset() == STARTOFFSET_RESUME )
       {
         options.starttime = 0.0f;
         CBookmark bookmark;
@@ -3955,12 +3955,12 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
   else if(m_itemCurrentFile->IsStack() && m_currentStack->Size() > 0)
   {
     // TODO - this will fail if user seeks back to first file in stack
-    if(m_currentStackPosition == 0 || m_itemCurrentFile->m_lStartOffset == STARTOFFSET_RESUME)
+    if(m_currentStackPosition == 0 || m_itemCurrentFile->GetStartOffset() == STARTOFFSET_RESUME)
       options.fullscreen = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::GetInstance().DoesVideoStartWindowed();
     else
       options.fullscreen = false;
     // reset this so we don't think we are resuming on seek
-    m_itemCurrentFile->m_lStartOffset = 0;
+    m_itemCurrentFile->SetStartOffset(0);
   }
   else
     options.fullscreen = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::GetInstance().DoesVideoStartWindowed();
@@ -5298,7 +5298,7 @@ void CApplication::Restart(bool bSamePosition)
   CStdString state = m_pPlayer->GetPlayerState();
 
   // set the requested starttime
-  m_itemCurrentFile->m_lStartOffset = (long)(time * 75.0);
+  m_itemCurrentFile->SetStartOffset(static_cast<int64_t>(time * 75.0));
 
   // reopen the file
   if ( PlayFile(*m_itemCurrentFile, "", true) == PLAYBACK_OK )
@@ -5453,7 +5453,7 @@ double CApplication::GetTotalTime() const
   if (m_pPlayer->IsPlaying())
   {
     if (m_itemCurrentFile->IsStack() && m_currentStack->Size() > 0)
-      rc = (*m_currentStack)[m_currentStack->Size() - 1]->m_lEndOffset;
+      rc = (*m_currentStack)[m_currentStack->Size() - 1]->GetEndOffset();
     else
       rc = static_cast<double>(m_pPlayer->GetTotalTime() * 0.001f);
   }
@@ -5472,7 +5472,7 @@ double CApplication::GetTime() const
   {
     if (m_itemCurrentFile->IsStack() && m_currentStack->Size() > 0)
     {
-      long startOfCurrentFile = (m_currentStackPosition > 0) ? (*m_currentStack)[m_currentStackPosition-1]->m_lEndOffset : 0;
+      long startOfCurrentFile = (m_currentStackPosition > 0) ? (*m_currentStack)[m_currentStackPosition-1]->GetEndOffset() : 0;
       rc = (double)startOfCurrentFile + m_pPlayer->GetTime() * 0.001;
     }
     else
@@ -5500,16 +5500,16 @@ void CApplication::SeekTime( double dTime )
       // time is higher than our total time.
       for (int i = 0; i < m_currentStack->Size(); i++)
       {
-        if ((*m_currentStack)[i]->m_lEndOffset > dTime)
+        if ((*m_currentStack)[i]->GetEndOffset() > dTime)
         {
-          long startOfNewFile = (i > 0) ? (*m_currentStack)[i-1]->m_lEndOffset : 0;
+          long startOfNewFile = (i > 0) ? (*m_currentStack)[i-1]->GetEndOffset() : 0;
           if (m_currentStackPosition == i)
             m_pPlayer->SeekTime((__int64)((dTime - startOfNewFile) * 1000.0));
           else
           { // seeking to a new file
             m_currentStackPosition = i;
             CFileItem *item = new CFileItem(*(*m_currentStack)[i]);
-            item->m_lStartOffset = static_cast<long>((dTime - startOfNewFile) * 75.0);
+            item->SetStartOffset(static_cast<int64_t>((dTime - startOfNewFile) * 75.0));
             // don't just call "PlayFile" here, as we are quite likely called from the
             // player thread, so we won't be able to delete ourselves.
             CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MEDIA_PLAY, 1, 0, static_cast<void*>(item));

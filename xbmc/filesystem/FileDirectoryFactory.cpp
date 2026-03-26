@@ -118,10 +118,10 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
     CDirectory::GetDirectory(zipURL, items, strMask, DIR_FLAG_DEFAULTS);
     if (items.Size() == 0) // no files
       pItem->m_bIsFolder = true;
-    else if (items.Size() == 1 && items[0]->m_idepth == 0) 
+    else if (items.Size() == 1 && items[0]->m_idepth == 0)
     {
       // one STORED file - collapse it down
-      *pItem = *items[0]; 
+      *pItem = *items[0];
     }
     else
     { // compressed or more than one file -> create a zip dir
@@ -185,7 +185,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
     if (playlist.OpenAndReadName(url))
     {
       pItem->SetLabel(playlist.GetName());
-      pItem->SetLabelPreformated(true);
+      pItem->SetLabelPreformatted(true);
     }
     IFileDirectory* pDir=new CSmartPlaylistDirectory;
     return pDir; // treat as directory
@@ -194,7 +194,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
   { // Playlist file
     // currently we only return the directory if it contains
     // more than one file.  Reason is that .pls and .m3u may be used
-    // for links to http streams etc. 
+    // for links to http streams etc.
     IFileDirectory *pDir = new CPlaylistFileDirectory();
     CFileItemList items;
     if (pDir->GetDirectory(url, items))

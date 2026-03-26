@@ -504,7 +504,7 @@ void CGUIWindowMusicBase::AddItemToPlayList(const CFileItemPtr &pItem, CFileItem
     else if (!pItem->IsNFO() && (pItem->IsAudio() || pItem->IsVideo()))
     {
       CFileItemPtr itemCheck = queuedItems.Get(pItem->GetPath());
-      if (!itemCheck || itemCheck->m_lStartOffset != pItem->m_lStartOffset)
+      if (!itemCheck || itemCheck->GetStartOffset() != pItem->GetStartOffset())
       { // add item
         CFileItemPtr item(new CFileItem(*pItem));
         m_musicdatabase.SetPropertiesForFileItem(*item);
@@ -999,14 +999,14 @@ bool CGUIWindowMusicBase::GetDirectory(const std::string &strDirectory, CFileIte
     {
       CFileItemPtr newPlaylist(new CFileItem(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("PartyMode.xsp"),false));
       newPlaylist->SetLabel(g_localizeStrings.Get(16035));
-      newPlaylist->SetLabelPreformated(true);
+      newPlaylist->SetLabelPreformatted(true);
       newPlaylist->m_bIsFolder = true;
       items.Add(newPlaylist);
 
       newPlaylist.reset(new CFileItem("newplaylist://", false));
       newPlaylist->SetLabel(g_localizeStrings.Get(525));
       newPlaylist->SetArt("icon", "DefaultPlaylist.png");
-      newPlaylist->SetLabelPreformated(true);
+      newPlaylist->SetLabelPreformatted(true);
       newPlaylist->SetSpecialSort(SortSpecialOnBottom);
       newPlaylist->SetCanQueue(false);
       items.Add(newPlaylist);
@@ -1014,7 +1014,7 @@ bool CGUIWindowMusicBase::GetDirectory(const std::string &strDirectory, CFileIte
       newPlaylist.reset(new CFileItem("newsmartplaylist://music", false));
       newPlaylist->SetLabel(g_localizeStrings.Get(21437));
       newPlaylist->SetArt("icon", "DefaultPlaylist.png");
-      newPlaylist->SetLabelPreformated(true);
+      newPlaylist->SetLabelPreformatted(true);
       newPlaylist->SetSpecialSort(SortSpecialOnBottom);
       newPlaylist->SetCanQueue(false);
       items.Add(newPlaylist);

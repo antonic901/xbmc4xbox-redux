@@ -2213,9 +2213,9 @@ void CMusicDatabase::GetFileItemFromDataset(const dbiplus::sql_record* const rec
   item->GetMusicInfoTag()->SetReleaseDate(stTime);
   item->GetMusicInfoTag()->SetTitle(record->at(song_strTitle).get_asString());
   item->SetLabel(record->at(song_strTitle).get_asString());
-  item->m_lStartOffset = record->at(song_iStartOffset).get_asInt();
-  item->SetProperty("item_start", item->m_lStartOffset);
-  item->m_lEndOffset = record->at(song_iEndOffset).get_asInt();
+  item->SetStartOffset(record->at(song_iStartOffset).get_asInt64());
+  item->SetProperty("item_start", item->GetStartOffset());
+  item->SetEndOffset(record->at(song_iEndOffset).get_asInt64());
   item->GetMusicInfoTag()->SetMusicBrainzTrackID(record->at(song_strMusicBrainzTrackID).get_asString());
   item->GetMusicInfoTag()->SetRating(record->at(song_rating).get_asFloat());
   item->GetMusicInfoTag()->SetUserrating(record->at(song_userrating).get_asInt());

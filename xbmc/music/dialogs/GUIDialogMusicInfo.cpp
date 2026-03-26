@@ -78,7 +78,7 @@ public:
   bool DoWork()
   {
     CGUIDialogMusicInfo *dialog = static_cast<CGUIDialogMusicInfo*>(CServiceBroker::GetGUI()->GetWindowManager().
-	  GetWindow(WINDOW_DIALOG_MUSIC_INFO));
+      GetWindow(WINDOW_DIALOG_MUSIC_INFO));
     if (!dialog)
       return false;
     if (dialog->IsCancelled())
@@ -220,7 +220,7 @@ public:
   bool DoWork()
   {
     CGUIDialogMusicInfo *dialog = static_cast<CGUIDialogMusicInfo*>(CServiceBroker::GetGUI()->GetWindowManager().
-	  GetWindow(WINDOW_DIALOG_MUSIC_INFO));
+      GetWindow(WINDOW_DIALOG_MUSIC_INFO));
     if (!dialog)
       return false;
     if (dialog->IsCancelled())
@@ -686,7 +686,7 @@ std::string CGUIDialogMusicInfo::GetContent()
     return "albums";
 }
 
-void CGUIDialogMusicInfo::AddItemPathToFileBrowserSources(VECSOURCES &sources, const CFileItem &item)
+void CGUIDialogMusicInfo::AddItemPathToFileBrowserSources(std::vector<CMediaSource> &sources, const CFileItem &item)
 {
   std::string itemDir;
   std::string artistFolder;
@@ -1032,7 +1032,7 @@ void CGUIDialogMusicInfo::ShowFor(CFileItem* pItem)
         pItem->GetMusicInfoTag()->SetDatabaseId(params.GetAlbumId(), MediaTypeAlbum);
     }
     CGUIDialogMusicInfo *pDlgMusicInfo = static_cast<CGUIDialogMusicInfo*>(CServiceBroker::GetGUI()->GetWindowManager().
-	  GetWindow(WINDOW_DIALOG_MUSIC_INFO));
+      GetWindow(WINDOW_DIALOG_MUSIC_INFO));
     if (pDlgMusicInfo)
     {
       if (pDlgMusicInfo->SetItem(pItem))

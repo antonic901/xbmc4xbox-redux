@@ -29,6 +29,7 @@
 #include "utils/XBMCTinyXML.h"
 #include "utils/log.h"
 
+#include <boost/make_shared.hpp>
 #include <boost/move/make_unique.hpp>
 
 using namespace KODI;

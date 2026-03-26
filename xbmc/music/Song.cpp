@@ -206,8 +206,8 @@ CSong::CSong(CFileItem& item)
   strFileName = tag.GetURL().empty() ? item.GetPath() : tag.GetURL();
   dateAdded = tag.GetDateAdded();
   strThumb = item.GetUserMusicThumb(true);
-  iStartOffset = item.m_lStartOffset;
-  iEndOffset = item.m_lEndOffset;
+  iStartOffset = item.GetStartOffset();
+  iEndOffset = item.GetEndOffset();
   idSong = -1;
   iTimesPlayed = 0;
   idAlbum = -1;

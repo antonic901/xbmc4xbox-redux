@@ -191,8 +191,8 @@ namespace XBMCAddon
       StringUtils::ToLower(lowerKey);
       if (lowerKey == "startoffset")
       { // special case for start offset - don't actually store in a property,
-        // we store it in item.m_lStartOffset instead
-        item->m_lStartOffset = (int)(atof(value.c_str()) * 75.0); // we store the offset in frames, or 1/75th of a second
+        // we store it in item.GetStartOffset() instead
+        item->SetStartOffset(static_cast<int64_t>((atof(value.c_str()) * 75.0))); // we store the offset in frames, or 1/75th of a second
       }
       else if (lowerKey == "mimetype")
       { // special case for mime type - don't actually stored in a property,
@@ -237,8 +237,8 @@ namespace XBMCAddon
       std::string value;
       if (lowerKey == "startoffset")
       { // special case for start offset - don't actually store in a property,
-        // we store it in item.m_lStartOffset instead
-        value = StringUtils::Format("%f", item->m_lStartOffset / 75.0);
+        // we store it in item.GetStartOffset() instead
+        value = StringUtils::Format("%f", item->GetStartOffset() / 75.0);
       }
       else if (lowerKey == "totaltime")
         value = StringUtils::Format("%f", GetVideoInfoTag()->GetResumePoint().totalTimeInSeconds);
@@ -725,7 +725,7 @@ namespace XBMCAddon
       for (std::vector<Properties>::const_iterator dictionary = actors.begin(); dictionary != actors.end(); ++dictionary)
       {
         SActorInfo info;
-        for (ADDON::InfoMap::const_iterator it = (*dictionary).begin(); it != (*dictionary).end(); ++it)
+        for (std::map<std::string, std::string>::const_iterator it = (*dictionary).begin(); it != (*dictionary).end(); ++it)
         {
           const String& key = it->first;
           const String& value = it->second;
