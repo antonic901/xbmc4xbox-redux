@@ -1,31 +1,29 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIImage.h"
+
+#include "GUIMessage.h"
 #include "utils/log.h"
 
 #include <cassert>
 
-CGUIImage::CGUIImage(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& texture)
-    : CGUIControl(parentID, controlID, posX, posY, width, height)
-    , m_texture(posX, posY, width, height, texture)
+using namespace KODI::GUILIB;
+
+CGUIImage::CGUIImage(int parentID,
+                     int controlID,
+                     float posX,
+                     float posY,
+                     float width,
+                     float height,
+                     const CTextureInfo& texture)
+  : CGUIControl(parentID, controlID, posX, posY, width, height),
+    m_texture(CGUITexture::CreateTexture(posX, posY, width, height, texture))
 {
   m_crossFadeTime = 0;
   m_currentFadeTime = 0;
@@ -34,14 +32,14 @@ CGUIImage::CGUIImage(int parentID, int controlID, float posX, float posY, float 
   m_bDynamicResourceAlloc=false;
 }
 
-CGUIImage::CGUIImage(const CGUIImage &left)
+CGUIImage::CGUIImage(const CGUIImage& left)
   : CGUIControl(left),
-  m_image(left.m_image),
-  m_info(left.m_info),
-  m_texture(left.m_texture),
-  m_fadingTextures(),
-  m_currentTexture(),
-  m_currentFallback()
+    m_image(left.m_image),
+    m_info(left.m_info),
+    m_texture(left.m_texture->Clone()),
+    m_fadingTextures(),
+    m_currentTexture(),
+    m_currentFallback()
 {
   m_crossFadeTime = left.m_crossFadeTime;
   // defaults
@@ -51,10 +49,7 @@ CGUIImage::CGUIImage(const CGUIImage &left)
   m_bDynamicResourceAlloc=false;
 }
 
-CGUIImage::~CGUIImage(void)
-{
-
-}
+CGUIImage::~CGUIImage(void) {}
 
 void CGUIImage::UpdateVisibility(const CGUIListItem *item)
 {
@@ -65,8 +60,20 @@ void CGUIImage::UpdateVisibility(const CGUIListItem *item)
   AllocateOnDemand();
 }
 
+void CGUIImage::UpdateDiffuseColor(const CGUIListItem* item)
+{
+  if (m_texture->SetDiffuseColor(m_diffuseColor, item))
+  {
+    MarkDirtyRegion();
+  }
+}
+
 void CGUIImage::UpdateInfo(const CGUIListItem *item)
 {
+  // The texture may also depend on info conditions. Update the diffuse color in that case.
+  if (m_texture->GetDiffuseColor().HasInfo())
+    UpdateDiffuseColor(item);
+
   if (m_info.IsConstant())
     return; // nothing to do
 
@@ -85,31 +92,31 @@ void CGUIImage::AllocateOnDemand()
   // if we're hidden, we can free our resources and return
   if (!IsVisible() && m_visible != DELAYED)
   {
-    if (m_bDynamicResourceAlloc && m_texture.IsAllocated())
+    if (m_bDynamicResourceAlloc && m_texture->IsAllocated())
       FreeResourcesButNotAnims();
     return;
   }
 
   // either visible or delayed - we need the resources allocated in either case
-  if (!m_texture.IsAllocated())
+  if (!m_texture->IsAllocated())
     AllocResources();
 }
 
 void CGUIImage::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   // check whether our image failed to allocate, and if so drop back to the fallback image
-  if (m_texture.FailedToAlloc() && m_texture.GetFileName() != m_info.GetFallback())
+  if (m_texture->FailedToAlloc() && m_texture->GetFileName() != m_info.GetFallback())
   {
-    if (!m_currentFallback.empty() && m_texture.GetFileName() != m_currentFallback)
-      m_texture.SetFileName(m_currentFallback);
+    if (!m_currentFallback.empty() && m_texture->GetFileName() != m_currentFallback)
+      m_texture->SetFileName(m_currentFallback);
     else
-      m_texture.SetFileName(m_info.GetFallback());
+      m_texture->SetFileName(m_info.GetFallback());
   }
 
   if (m_crossFadeTime)
   {
     // make sure our texture has started allocating
-    if (m_texture.AllocResources())
+    if (m_texture->AllocResources())
       MarkDirtyRegion();
 
     // compute the frame time
@@ -130,7 +137,7 @@ void CGUIImage::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions
           ++i;
       }
 
-      if (m_texture.ReadyToRender() || m_texture.GetFileName().empty())
+      if (m_texture->ReadyToRender() || m_texture->GetFileName().empty())
       { // fade out the last one as well
         if (!ProcessFading(m_fadingTextures[m_fadingTextures.size() - 1], frameTime, currentTime))
           m_fadingTextures.erase(m_fadingTextures.end() - 1);
@@ -151,20 +158,20 @@ void CGUIImage::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions
       }
     }
 
-    if (m_texture.ReadyToRender() || m_texture.GetFileName().empty())
+    if (m_texture->ReadyToRender() || m_texture->GetFileName().empty())
     { // fade the new one in
       m_currentFadeTime += frameTime;
       if (m_currentFadeTime > m_crossFadeTime || frameTime == 0) // for if we allocate straight away on creation
         m_currentFadeTime = m_crossFadeTime;
     }
-    if (m_texture.SetAlpha(GetFadeLevel(m_currentFadeTime)))
+    if (m_texture->SetAlpha(GetFadeLevel(m_currentFadeTime)))
       MarkDirtyRegion();
   }
 
-  if (m_texture.SetDiffuseColor(m_diffuseColor))
-    MarkDirtyRegion();
+  if (!m_texture->GetDiffuseColor().HasInfo())
+    UpdateDiffuseColor(nullptr);
 
-  if (m_texture.Process(currentTime))
+  if (m_texture->Process(currentTime))
     MarkDirtyRegion();
 
   CGUIControl::Process(currentTime, dirtyregions);
@@ -174,10 +181,10 @@ void CGUIImage::Render()
 {
   if (!IsVisible()) return;
 
-  for (std::vector<CFadingTexture *>::iterator itr = m_fadingTextures.begin(); itr != m_fadingTextures.end(); ++itr)
-    (*itr)->m_texture->Render();
+  for (auto& itr : m_fadingTextures)
+    itr->m_texture->Render();
 
-  m_texture.Render();
+  m_texture->Render();
 
   CGUIControl::Render();
 }
@@ -230,32 +237,24 @@ bool CGUIImage::OnMessage(CGUIMessage& message)
   return CGUIControl::OnMessage(message);
 }
 
-#ifdef HAS_XBOX_D3D
-void CGUIImage::PreAllocResources()
-{
-  FreeResources();
-  m_texture.PreAllocResources();
-}
-#endif
-
 void CGUIImage::AllocResources()
 {
-  if (m_texture.GetFileName().empty())
+  if (m_texture->GetFileName().empty())
     return;
 
   CGUIControl::AllocResources();
-  m_texture.AllocResources();
+  m_texture->AllocResources();
 }
 
 void CGUIImage::FreeTextures(bool immediately /* = false */)
 {
-  m_texture.FreeResources(immediately);
+  m_texture->FreeResources(immediately);
   for (unsigned int i = 0; i < m_fadingTextures.size(); i++)
     delete m_fadingTextures[i];
   m_fadingTextures.clear();
   m_currentTexture.clear();
   if (!m_info.IsConstant()) // constant textures never change
-    m_texture.SetFileName("");
+    m_texture->SetFileName("");
 }
 
 void CGUIImage::FreeResources(bool immediately)
@@ -266,7 +265,7 @@ void CGUIImage::FreeResources(bool immediately)
 
 void CGUIImage::SetInvalid()
 {
-  m_texture.SetInvalid();
+  m_texture->SetInvalid();
   CGUIControl::SetInvalid();
 }
 
@@ -282,7 +281,7 @@ void CGUIImage::FreeResourcesButNotAnims()
 void CGUIImage::DynamicResourceAlloc(bool bOnOff)
 {
   m_bDynamicResourceAlloc = bOnOff;
-  m_texture.DynamicResourceAlloc(bOnOff);
+  m_texture->DynamicResourceAlloc(bOnOff);
   CGUIControl::DynamicResourceAlloc(bOnOff);
 }
 
@@ -293,38 +292,38 @@ bool CGUIImage::CanFocus() const
 
 float CGUIImage::GetTextureWidth() const
 {
-  return m_texture.GetTextureWidth();
+  return m_texture->GetTextureWidth();
 }
 
 float CGUIImage::GetTextureHeight() const
 {
-  return m_texture.GetTextureHeight();
+  return m_texture->GetTextureHeight();
 }
 
 CRect CGUIImage::CalcRenderRegion() const
 {
-  CRect region = m_texture.GetRenderRect();
+  CRect region = m_texture->GetRenderRect();
 
-  for (std::vector<CFadingTexture *>::const_iterator itr = m_fadingTextures.begin(); itr != m_fadingTextures.end(); ++itr)
-    region.Union( (*itr)->m_texture->GetRenderRect() );
+  for (const auto& itr : m_fadingTextures)
+    region.Union(itr->m_texture->GetRenderRect());
 
   return CGUIControl::CalcRenderRegion().Intersect(region);
 }
 
 const std::string &CGUIImage::GetFileName() const
 {
-  return m_texture.GetFileName();
+  return m_texture->GetFileName();
 }
 
 void CGUIImage::SetAspectRatio(const CAspectRatio &aspect)
 {
-  m_texture.SetAspectRatio(aspect);
+  m_texture->SetAspectRatio(aspect);
 }
 
 void CGUIImage::SetCrossFade(unsigned int time)
 {
   m_crossFadeTime = time;
-  if (!m_crossFadeTime && m_texture.IsLazyLoaded() && !m_info.GetFallback().empty())
+  if (!m_crossFadeTime && m_texture->IsLazyLoaded() && !m_info.GetFallback().empty())
     m_crossFadeTime = 1;
 }
 
@@ -334,7 +333,7 @@ void CGUIImage::SetFileName(const std::string& strFileName, bool setConstant, co
     m_info.SetLabel(strFileName, "", GetParentID());
 
   // Set whether or not to use cache
-  m_texture.SetUseCache(useCache);
+  m_texture->SetUseCache(useCache);
 
   if (m_crossFadeTime)
   {
@@ -342,9 +341,9 @@ void CGUIImage::SetFileName(const std::string& strFileName, bool setConstant, co
     if (m_currentTexture == strFileName)
       return; // nothing to do - we already have this image
 
-    if (m_texture.ReadyToRender() || m_texture.GetFileName().empty())
+    if (m_texture->ReadyToRender() || m_texture->GetFileName().empty())
     { // save the current image
-      m_fadingTextures.push_back(new CFadingTexture(m_texture, m_currentFadeTime));
+      m_fadingTextures.push_back(new CFadingTexture(m_texture.get(), m_currentFadeTime));
       MarkDirtyRegion();
     }
     m_currentFadeTime = 0;
@@ -353,7 +352,7 @@ void CGUIImage::SetFileName(const std::string& strFileName, bool setConstant, co
   { // texture is changing - attempt to load it, and save the name in m_currentTexture.
     // we'll check whether it loaded or not in Render()
     m_currentTexture = strFileName;
-    if (m_texture.SetFileName(m_currentTexture))
+    if (m_texture->SetFileName(m_currentTexture))
       MarkDirtyRegion();
   }
 }
@@ -361,41 +360,40 @@ void CGUIImage::SetFileName(const std::string& strFileName, bool setConstant, co
 #ifdef _DEBUG
 void CGUIImage::DumpTextureUse()
 {
-  if (m_texture.IsAllocated())
+  if (m_texture->IsAllocated())
   {
     if (GetID())
-      CLog::Log(LOGDEBUG, "Image control %u using texture %s",
-                GetID(), m_texture.GetFileName().c_str());
+      CLog::Log(LOGDEBUG, "Image control {} using texture {}", GetID(), m_texture->GetFileName());
     else
-      CLog::Log(LOGDEBUG, "Using texture %s", m_texture.GetFileName().c_str());
+      CLog::Log(LOGDEBUG, "Using texture {}", m_texture->GetFileName());
   }
 }
 #endif
 
 void CGUIImage::SetWidth(float width)
 {
-  m_texture.SetWidth(width);
-  CGUIControl::SetWidth(m_texture.GetWidth());
+  m_texture->SetWidth(width);
+  CGUIControl::SetWidth(m_texture->GetWidth());
 }
 
 void CGUIImage::SetHeight(float height)
 {
-  m_texture.SetHeight(height);
-  CGUIControl::SetHeight(m_texture.GetHeight());
+  m_texture->SetHeight(height);
+  CGUIControl::SetHeight(m_texture->GetHeight());
 }
 
 void CGUIImage::SetPosition(float posX, float posY)
 {
-  m_texture.SetPosition(posX, posY);
+  m_texture->SetPosition(posX, posY);
   CGUIControl::SetPosition(posX, posY);
 }
 
-void CGUIImage::SetInfo(const CGUIInfoLabel &info)
+void CGUIImage::SetInfo(const GUIINFO::CGUIInfoLabel &info)
 {
   m_info = info;
   // a constant image never needs updating
   if (m_info.IsConstant())
-    m_texture.SetFileName(m_info.GetLabel(0));
+    m_texture->SetFileName(m_info.GetLabel(0));
 }
 
 unsigned char CGUIImage::GetFadeLevel(unsigned int time) const

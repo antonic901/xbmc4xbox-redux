@@ -1,35 +1,20 @@
+/*
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
+
+#pragma once
+
 /*!
 \file GUIProgressControl.h
 \brief
 */
 
-#ifndef GUILIB_GUIPROGRESSCONTROL_H
-#define GUILIB_GUIPROGRESSCONTROL_H
-
-#pragma once
-
-/*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
- *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
- */
-
-#include "GUITexture.h"
 #include "GUIControl.h"
+#include "GUITexture.h"
 
 /*!
  \ingroup controls
@@ -44,13 +29,12 @@ public:
                       const CTextureInfo& leftTexture, const CTextureInfo& midTexture,
                       const CTextureInfo& rightTexture, const CTextureInfo& overlayTexture,
                       bool reveal=false);
-  virtual ~CGUIProgressControl(void);
-  virtual CGUIProgressControl *Clone() const { return new CGUIProgressControl(*this); };
+  virtual ~CGUIProgressControl() {}
+  virtual CGUIProgressControl* Clone() const { return new CGUIProgressControl(*this); }
 
   virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
   virtual bool CanFocus() const;
-  virtual void PreAllocResources();
   virtual void AllocResources();
   virtual void FreeResources(bool immediately = false);
   virtual void DynamicResourceAlloc(bool bOnOff);
@@ -58,25 +42,30 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
   virtual void SetPosition(float posX, float posY);
   void SetPercentage(float fPercent);
-  void SetInfo(int iInfo);
-  int GetInfo() const {return m_iInfoCode;};
+  void SetInfo(int iInfo, int iInfo2 = 0);
+  int GetInfo() const { return m_iInfoCode; }
 
   float GetPercentage() const;
-  std::string GetDescription() const;
+  virtual std::string GetDescription() const;
   virtual void UpdateInfo(const CGUIListItem *item = NULL);
   bool UpdateLayout(void);
 protected:
-  virtual bool UpdateColors();
-  CGUITexture m_guiBackground;
-  CGUITexture m_guiLeft;
-  CGUITexture m_guiMid;
-  CGUITexture m_guiRight;
-  CGUITexture m_guiOverlay;
+  virtual bool UpdateColors(const CGUIListItem* item);
+  boost::movelib::unique_ptr<CGUITexture> m_guiBackground;
+  boost::movelib::unique_ptr<CGUITexture> m_guiLeft;
+  boost::movelib::unique_ptr<CGUITexture> m_guiMid;
+  boost::movelib::unique_ptr<CGUITexture> m_guiRight;
+  boost::movelib::unique_ptr<CGUITexture> m_guiOverlay;
   CRect m_guiMidClipRect;
 
   int m_iInfoCode;
+  int m_iInfoCode2 = 0;
   float m_fPercent;
+  float m_fPercent2 = 0.0f;
   bool m_bReveal;
   bool m_bChanged;
+
+private:
+  CGUIProgressControl(const CGUIProgressControl& control);
 };
-#endif
+

@@ -1,31 +1,23 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "include.h"
 #include "GUIVideoControl.h"
+
 #include "GUIComponent.h"
 #include "GUIWindowManager.h"
-#include "Application.h"
-#ifdef HAS_VIDEO_PLAYBACK
-#include "cores/VideoRenderers/RenderManager.h"
-#endif
+#include "ServiceBroker.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
+#include "application/ApplicationPowerHandling.h"
+#include "input/actions/ActionIDs.h"
+#include "utils/ColorUtils.h"
+
+using namespace KODI;
 
 CGUIVideoControl::CGUIVideoControl(int parentID, int controlID, float posX, float posY, float width, float height)
     : CGUIControl(parentID, controlID, posX, posY, width, height)
@@ -33,42 +25,63 @@ CGUIVideoControl::CGUIVideoControl(int parentID, int controlID, float posX, floa
   ControlType = GUICONTROL_VIDEO;
 }
 
-CGUIVideoControl::~CGUIVideoControl(void)
-{}
+CGUIVideoControl::~CGUIVideoControl(void) {}
 
 void CGUIVideoControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
-  // TODO Proper processing which marks when its actually changed. Just mark always for now.
-  MarkDirtyRegion();
+  //! @todo Proper processing which marks when its actually changed. Just mark always for now.
+  const auto& components = CServiceBroker::GetAppComponents();
+  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
+  if (appPlayer->IsRenderingGuiLayer())
+    MarkDirtyRegion();
 
   CGUIControl::Process(currentTime, dirtyregions);
 }
 
 void CGUIVideoControl::Render()
 {
-#ifdef HAS_VIDEO_PLAYBACK
-  // don't render if we aren't playing video, or if the renderer isn't started
-  // (otherwise the lock we have from CApplication::Render() may clash with the startup
-  // locks in the RenderManager.)
-  if (g_application.m_pPlayer->IsPlayingVideo() && g_renderManager.IsStarted())
+  auto& components = CServiceBroker::GetAppComponents();
+  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
+  if (appPlayer->IsRenderingVideo())
   {
-#else
-  if (g_application.m_pPlayer->IsPlayingVideo())
-  {
-#endif
-    if (!g_application.m_pPlayer->IsPaused())
-      g_application.ResetScreenSaver();
+    if (!appPlayer->IsPausedPlayback())
+    {
+      auto& appComponents = CServiceBroker::GetAppComponents();
+      const auto appPower = appComponents.GetComponent<CApplicationPowerHandling>();
+      appPower->ResetScreenSaver();
+    }
 
     CServiceBroker::GetWinSystem()->GetGfxContext().SetViewWindow(m_posX, m_posY, m_posX + m_width, m_posY + m_height);
-    CServiceBroker::GetWinSystem()->GetGfxContext().SetViewPort(m_posX, m_posY, m_width, m_height);
+    TransformMatrix mat;
+    CServiceBroker::GetWinSystem()->GetGfxContext().SetTransform(mat, 1.0, 1.0);
 
-#ifdef HAS_VIDEO_PLAYBACK
-    color_t alpha = CServiceBroker::GetWinSystem()->GetGfxContext().MergeAlpha(0xFF000000) >> 24;
-    g_renderManager.RenderUpdate(false, 0, alpha);
-#endif
-    CServiceBroker::GetWinSystem()->GetGfxContext().RestoreViewPort();
+    UTILS::COLOR::Color alpha =
+        CServiceBroker::GetWinSystem()->GetGfxContext().MergeAlpha(0xFF000000) >> 24;
+    if (appPlayer->IsRenderingVideoLayer())
+    {
+      CRect old = CServiceBroker::GetWinSystem()->GetGfxContext().GetScissors();
+      CRect region = GetRenderRegion();
+      region.Intersect(old);
+      CServiceBroker::GetWinSystem()->GetGfxContext().SetScissors(region);
+      CServiceBroker::GetWinSystem()->GetGfxContext().Clear(0);
+      CServiceBroker::GetWinSystem()->GetGfxContext().SetScissors(old);
+    }
+    else
+      appPlayer->Render(false, alpha);
+
+    CServiceBroker::GetWinSystem()->GetGfxContext().RemoveTransform();
   }
   CGUIControl::Render();
+}
+
+void CGUIVideoControl::RenderEx()
+{
+  auto& components = CServiceBroker::GetAppComponents();
+  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
+  if (appPlayer->IsRenderingVideo())
+    appPlayer->Render(false, 255, false);
+
+  CGUIControl::RenderEx();
 }
 
 bool CGUIVideoControl::CanFocus() const

@@ -1,21 +1,9 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #pragma once
@@ -25,13 +13,13 @@
  \brief
  */
 
-#include <utility>
-#include <vector>
-
-#include "GUIAction.h"
-#include "GUIInfoTypes.h"
 #include "FileItem.h"
 #include "GUIAction.h"
+#include "guilib/guiinfo/GUIInfoLabel.h"
+#include "interfaces/info/InfoBool.h"
+
+#include <utility>
+#include <vector>
 
 class TiXmlElement;
 
@@ -62,9 +50,10 @@ public:
    \param contextWindow window context to use for any info labels
    */
   CGUIStaticItem(const TiXmlElement *element, int contextWindow);
-  CGUIStaticItem(const CFileItem &item); // for python
-  virtual ~CGUIStaticItem() {};
-  virtual CGUIListItem *Clone() const { return new CGUIStaticItem(*this); };
+  explicit CGUIStaticItem(const CFileItem &item); // for python
+  explicit CGUIStaticItem(const CGUIStaticItem& other);
+  virtual ~CGUIStaticItem() {}
+  virtual CGUIListItem* Clone() const { return new CGUIStaticItem(*this); }
 
   /*! \brief update any infolabels in the items properties
    Runs through all the items properties, updating any that should be
@@ -89,9 +78,10 @@ public:
    */
   void SetVisibleCondition(const std::string &condition, int context);
 
-  const CGUIAction &GetClickActions() const { return m_clickActions; };
+  const CGUIAction& GetClickActions() const { return m_clickActions; }
+
 private:
-  typedef std::vector< std::pair<CGUIInfoLabel, std::string> > InfoVector;
+  typedef std::vector< std::pair<KODI::GUILIB::GUIINFO::CGUIInfoLabel, std::string> > InfoVector;
   InfoVector m_info;
   INFO::InfoPtr m_visCondition;
   bool m_visState;

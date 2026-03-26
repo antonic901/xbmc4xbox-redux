@@ -1,46 +1,95 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
+#pragma once
+
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
-#include "system.h" // <xtl.h>
-#include "boost/shared_ptr.hpp"
 
 class CGUIControl;
-class CGUIListItem; typedef boost::shared_ptr<CGUIListItem> CGUIListItemPtr;
+class CGUIListItem;
 
 /**
- * Class containing vector of condition->(action/navigation route) pairs and handling its execution.
+ * Class containing vector of condition->(action/navigation route) and handling its execution.
  */
 class CGUIAction
 {
 public:
-  CGUIAction();
-  CGUIAction(int controlID);
-
   /**
-   * Execute actions (no navigation paths), if action is paired with condition - evaluate condition first
+   * Class which defines an executable action
    */
-  bool ExecuteActions(int controlID, int parentID, const CGUIListItemPtr &item = CGUIListItemPtr()) const;
+  class CExecutableAction
+  {
+  public:
+    /**
+    * Executable action constructor (without conditional execution)
+    * @param action - The action to be executed
+    */
+    explicit CExecutableAction(const std::string& action);
+    /**
+    * Executable action constructor (providing the condition and the action)
+    * @param condition - The condition that dictates the action execution
+    * @param action - The actual action
+    */
+    CExecutableAction(const std::string& condition, const std::string& action);
+
+    /**
+    * Get the condition of this executable action (may be empty)
+    * @return condition - The condition that dictates the action execution (or an empty string)
+    */
+    std::string GetCondition() const;
+
+    /**
+    * Checks if the executable action has any condition
+    * @return true if the executable action has any condition, else false
+    */
+    bool HasCondition() const;
+
+    /**
+    * Get the action string of this executable action
+    * @return action - The action string
+    */
+    std::string GetAction() const;
+
+    /**
+    * Sets/Replaces the action string of this executable action
+    * @param action - The action string
+    */
+    void SetAction(const std::string& action);
+
+  private:
+    /**
+    * Executable action default constructor
+    */
+    CExecutableAction();
+    /* The condition that dictates the action execution */
+    std::string m_condition;
+    /* The actual action */
+    std::string m_action;
+  };
+
+  CGUIAction() {}
+  explicit CGUIAction(int controlID);
+  /**
+   * Execute actions without specifying any target control or parent control. Action will use the default focused control.
+   */
+  bool ExecuteActions() const;
+  /**
+   * Execute actions (no navigation paths); if action is paired with condition - evaluate condition first
+   */
+  bool ExecuteActions(int controlID,
+                      int parentID,
+                      const boost::shared_ptr<CGUIListItem>& item = nullptr) const;
+  /**
+   * Check if there are any conditional actions
+  */
+  bool HasConditionalActions() const;
   /**
    * Check if there is any action that meet its condition
    */
@@ -48,7 +97,11 @@ public:
   /**
    * Check if there is any action
    */
-  bool HasAnyActions() const { return m_actions.size() > 0; };
+  bool HasAnyActions() const;
+  /**
+   * Get the total number of actions
+  */
+  size_t GetActionCount() const;
   /**
    * Get navigation route that meet its conditions first
    */
@@ -57,20 +110,20 @@ public:
    * Set navigation route
    */
   void SetNavigation(int id);
+  /**
+   * Configure CGUIAction to send threaded messages
+   */
+  void EnableSendThreadMessageMode();
+  /**
+   * Add an executable action to the CGUIAction container
+   */
+  void Append(const CExecutableAction& action);
+  /**
+   * Prune any executable actions stored in the CGUIAction
+   */
+  void Reset();
 
-  // GetFirstAction is only needed in deprecated http api
-  std::string GetFirstAction() const { return m_actions.size() > 0 ? m_actions[0].action : ""; };
 private:
-  struct cond_action_pair
-  {
-    std::string condition;
-    std::string action;
-  };
-
-  std::vector<cond_action_pair> m_actions;
-  bool m_sendThreadMessages;
-
-  typedef std::vector<cond_action_pair>::const_iterator ciActions;
-  typedef std::vector<cond_action_pair>::iterator iActions;
-  friend class CGUIControlFactory; // no need for setters / adders
+  std::vector<CExecutableAction> m_actions;
+  bool m_sendThreadMessages = false;
 };

@@ -27,7 +27,8 @@
  *
  */
 
-#include "windowing/GraphicContext.h"
+#include "utils/ColorUtils.h"
+
 #include <assert.h>
 #include <math.h>
 #include <string>
@@ -35,9 +36,8 @@
 #include <vector>
 
 typedef uint32_t character_t;
-typedef uint32_t color_t;
 typedef std::vector<character_t> vecText;
-typedef std::vector<color_t> vecColors;
+typedef std::vector<UTILS::COLOR::Color> vecColors;
 
 class CGUIFontTTF;
 
@@ -55,6 +55,7 @@ class CGUIFontTTF;
 #define XBFONT_CENTER_Y   0x00000004 ///< Align Y center
 #define XBFONT_TRUNCATED  0x00000008 ///< Truncated text
 #define XBFONT_JUSTIFIED  0x00000010 ///< Justify text
+#define XBFONT_TRUNCATED_LEFT 0x00000020 ///< Truncated text from left (text start with ellipses)
 /// @}
 
 // flags for font style. lower 16 bits are the unicode code
@@ -71,48 +72,43 @@ class CGUIFontTTF;
 class CScrollInfo
 {
 public:
-  CScrollInfo(unsigned int wait = 50, float pos = 0, int speed = defaultSpeed, const std::string &scrollSuffix = " | ");
+  CScrollInfo(unsigned int wait = 50,
+              float pos = 0,
+              int speed = defaultSpeed,
+              const std::string& scrollSuffix = " | ");
 
-  void SetSpeed(int speed)
-  {
-#ifdef _XBOX
-    if (speed == defaultSpeed)
-    {
-      // HACK: workaround for PAL vs NTSC speeds on xbox
-      if (CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution() == RES_PAL_4x3 ||
-          CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution() == RES_PAL_16x9)
-        speed = 50;
-    }
-#endif
-    pixelSpeed = speed * 0.001f;
-  }
+  void SetSpeed(int speed) { m_pixelSpeed = speed * 0.001f; }
   void Reset()
   {
-    waitTime = initialWait;
+    m_waitTime = m_initialWait;
     // pixelPos is where we start the current letter, so is measured
     // to the left of the text rendering's left edge.  Thus, a negative
     // value will mean the text starts to the right
-    pixelPos = -initialPos;
+    m_pixelPos = -m_initialPos;
     // privates:
     m_averageFrameTime = 1000.f / fabs((float)defaultSpeed);
     m_lastFrameTime = 0;
     m_textWidth = 0;
     m_totalWidth = 0;
     m_widthValid = false;
+    m_loopCount = 0;
   }
   float GetPixelsPerFrame();
 
-  float pixelPos;
-  float pixelSpeed;
-  unsigned int waitTime;
-  unsigned int initialWait;
-  float initialPos;
-  vecText suffix;
+  float m_pixelPos;
+  float m_pixelSpeed;
+  unsigned int m_waitTime;
+  unsigned int m_initialWait;
+  float m_initialPos;
+  vecText m_suffix;
   mutable float m_textWidth;
   mutable float m_totalWidth;
   mutable bool m_widthValid;
 
+  unsigned int m_loopCount;
+
   static const int defaultSpeed = 60;
+
 private:
   float m_averageFrameTime;
   uint32_t m_lastFrameTime;
@@ -125,13 +121,13 @@ private:
 class CGUIFont
 {
 public:
-  CGUIFont(const std::string& strFontName, uint32_t style, color_t textColor,
-	   color_t shadowColor, float lineSpacing, float origHeight, CGUIFontTTF *font);
+  CGUIFont(const std::string& strFontName, uint32_t style, UTILS::COLOR::Color textColor,
+     UTILS::COLOR::Color shadowColor, float lineSpacing, float origHeight, CGUIFontTTF *font);
   virtual ~CGUIFont();
 
   std::string& GetFontName();
 
-  void DrawText( float x, float y, color_t color, color_t shadowColor,
+  void DrawText( float x, float y, UTILS::COLOR::Color color, UTILS::COLOR::Color shadowColor,
                  const vecText &text, uint32_t alignment, float maxPixelWidth)
   {
     vecColors colors;
@@ -139,10 +135,10 @@ public:
     DrawText(x, y, colors, shadowColor, text, alignment, maxPixelWidth);
   };
 
-  void DrawText( float x, float y, const vecColors &colors, color_t shadowColor,
+  void DrawText( float x, float y, const vecColors &colors, UTILS::COLOR::Color shadowColor,
                  const vecText &text, uint32_t alignment, float maxPixelWidth);
 
-  void DrawScrollingText( float x, float y, const vecColors &colors, color_t shadowColor,
+  void DrawScrollingText( float x, float y, const vecColors &colors, UTILS::COLOR::Color shadowColor,
                  const vecText &text, uint32_t alignment, float maxPixelWidth, const CScrollInfo &scrollInfo);
 
   bool UpdateScrollInfo(const vecText &text, CScrollInfo &scrollInfo);
@@ -173,8 +169,8 @@ public:
 protected:
   std::string m_strFontName;
   uint32_t m_style;
-  color_t m_shadowColor;
-  color_t m_textColor;
+  UTILS::COLOR::Color m_shadowColor;
+  UTILS::COLOR::Color m_textColor;
   float m_lineSpacing;
   float m_origHeight;
   CGUIFontTTF *m_font; // the font object has the size information

@@ -1,28 +1,17 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
+#pragma once
 
-#include <string>
+#include "utils/ColorUtils.h"
+
 #include <stdint.h>
+#include <string>
 #include <vector>
 
 #ifdef __GNUC__
@@ -45,9 +34,7 @@ class CScrollInfo;
 // 6.  A new vector<CGUIString> is constructed
 
 typedef uint32_t character_t;
-typedef uint32_t color_t;
 typedef std::vector<character_t> vecText;
-typedef std::vector<color_t> vecColors;
 
 class CGUIString
 {
@@ -58,6 +45,10 @@ public:
 
   std::string GetAsString() const;
 
+  // The text is UTF-16 and the data stored in a character_t hold multiple informations by bits:
+  // <16 bits: are unicode code bits
+  // 16-24 bits: are color bits
+  // 24-32 bits: are style bits (see FONT_STYLE_* flags)
   vecText m_text;
   bool m_carriageReturn; // true if we have a carriage return here
 };
@@ -70,9 +61,28 @@ public:
   bool UpdateScrollinfo(CScrollInfo &scrollInfo);
 
   // main function to render strings
-  void Render(float x, float y, float angle, color_t color, color_t shadowColor, uint32_t alignment, float maxWidth, bool solid = false);
-  void RenderScrolling(float x, float y, float angle, color_t color, color_t shadowColor, uint32_t alignment, float maxWidth, const CScrollInfo &scrollInfo);
-  void RenderOutline(float x, float y, color_t color, color_t outlineColor, uint32_t alignment, float maxWidth);
+  void Render(float x,
+              float y,
+              float angle,
+              UTILS::COLOR::Color color,
+              UTILS::COLOR::Color shadowColor,
+              uint32_t alignment,
+              float maxWidth,
+              bool solid = false);
+  void RenderScrolling(float x,
+                       float y,
+                       float angle,
+                       UTILS::COLOR::Color color,
+                       UTILS::COLOR::Color shadowColor,
+                       uint32_t alignment,
+                       float maxWidth,
+                       const CScrollInfo& scrollInfo);
+  void RenderOutline(float x,
+                     float y,
+                     UTILS::COLOR::Color color,
+                     UTILS::COLOR::Color outlineColor,
+                     uint32_t alignment,
+                     float maxWidth);
 
   /*! \brief Returns the precalculated width and height of the text to be rendered (in constant time).
    \param width [out] width of text
@@ -85,20 +95,31 @@ public:
    \return width of text
    \sa GetTextExtent, CalcTextExtent
    */
-  float GetTextWidth() const { return m_textWidth; };
+  float GetTextWidth() const { return m_textWidth; }
 
   float GetTextWidth(const std::wstring &text) const;
+
+  float GetTextWidth(const vecText& text) const;
+
+  /*! \brief Returns the precalculated height of the text to be rendered (in constant time).
+   \return height of text
+  */
+  float GetTextHeight() const { return m_textHeight; }
+
   bool Update(const std::string &text, float maxWidth = 0, bool forceUpdate = false, bool forceLTRReadingOrder = false);
   bool UpdateW(const std::wstring &text, float maxWidth = 0, bool forceUpdate = false, bool forceLTRReadingOrder = false);
 
-  /*! \brief Update text from a pre-styled vecText/vecColors combination
+  /*! \brief Update text from a pre-styled vecText/std::vector<UTILS::COLOR::Color> combination
    Allows styled text to be passed directly to the text layout.
    \param text the styled text to set.
    \param colors the colors used on the text.
    \param maxWidth the maximum width for wrapping text, defaults to 0 (no max width).
    \param forceLTRReadingOrder whether to force left to right reading order, defaults to false.
    */
-  void UpdateStyled(const vecText &text, const vecColors &colors, float maxWidth = 0, bool forceLTRReadingOrder = false);
+  void UpdateStyled(const vecText& text,
+                    const std::vector<UTILS::COLOR::Color>& colors,
+                    float maxWidth = 0,
+                    bool forceLTRReadingOrder = false);
 
   unsigned int GetTextLength() const;
   void GetFirstText(vecText &text) const;
@@ -108,14 +129,22 @@ public:
   void SetMaxHeight(float fHeight);
 
 
-  static void DrawText(CGUIFont *font, float x, float y, color_t color, color_t shadowColor, const std::string &text, uint32_t align);
+  static void DrawText(CGUIFont* font,
+                       float x,
+                       float y,
+                       UTILS::COLOR::Color color,
+                       UTILS::COLOR::Color shadowColor,
+                       const std::string& text,
+                       uint32_t align);
   static void Filter(std::string &text);
 
 protected:
   void LineBreakText(const vecText &text, std::vector<CGUIString> &lines);
   void WrapText(const vecText &text, float maxWidth);
   static void BidiTransform(std::vector<CGUIString> &lines, bool forceLTRReadingOrder);
-  static std::wstring BidiFlip(const std::wstring &text, bool forceLTRReadingOrder);
+  static std::wstring BidiFlip(const std::wstring& text,
+                               bool forceLTRReadingOrder,
+                               int* visualToLogicalMap = nullptr);
   void CalcTextExtent();
   void UpdateCommon(const std::wstring &text, float maxWidth, bool forceLTRReadingOrder);
 
@@ -124,19 +153,27 @@ protected:
    */
   std::string GetText() const;
 
+  //! \brief Set the monospaced font to use
+  void SetMonoFont(CGUIFont* font) { m_monoFont = font; }
+
+  //! \brief Set whether or not to use the monospace font
+  void UseMonoFont(bool use) { m_font = use && m_monoFont ? m_monoFont : m_varFont; }
+
   // our text to render
-  vecColors m_colors;
+  std::vector<UTILS::COLOR::Color> m_colors;
   std::vector<CGUIString> m_lines;
   typedef std::vector<CGUIString>::iterator iLine;
 
   // the layout and font details
   CGUIFont *m_font;        // has style, colour info
   CGUIFont *m_borderFont;  // only used for outlined text
+  CGUIFont* m_monoFont = nullptr; //!< Mono-space font to use
+  CGUIFont* m_varFont;    //!< Varible-space font to use
 
   bool  m_wrap;            // wrapping (true if justify is enabled!)
   float m_maxHeight;
   // the default color (may differ from the font objects defaults)
-  color_t m_textColor;
+  UTILS::COLOR::Color m_textColor;
 
   std::string m_lastUtf8Text;
   std::wstring m_lastText;
@@ -151,10 +188,14 @@ private:
   inline bool CanWrapAtLetter(character_t letter) const XBMC_FORCE_INLINE
   {
     character_t ch = letter & 0xffff;
-    return ch == L' ' || (ch >=0x4e00 && ch <= 0x9fff);
+    return ch == L' ';
   };
   static void AppendToUTF32(const std::string &utf8, character_t colStyle, vecText &utf32);
   static void AppendToUTF32(const std::wstring &utf16, character_t colStyle, vecText &utf32);
-  static void ParseText(const std::wstring &text, uint32_t defaultStyle, color_t defaultColor, vecColors &colors, vecText &parsedText);
+  static void ParseText(const std::wstring& text,
+                        uint32_t defaultStyle,
+                        UTILS::COLOR::Color defaultColor,
+                        std::vector<UTILS::COLOR::Color>& colors,
+                        vecText& parsedText);
 };
 

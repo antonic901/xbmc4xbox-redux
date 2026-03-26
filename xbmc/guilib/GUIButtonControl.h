@@ -1,36 +1,24 @@
+/*
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
+
+#pragma once
+
 /*!
 \file GUIButtonControl.h
 \brief
 */
 
-#ifndef GUILIB_GUIBUTTONCONTROL_H
-#define GUILIB_GUIBUTTONCONTROL_H
-
-#pragma once
-
-/*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
- *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
- */
-
-#include "GUITexture.h"
-#include "GUILabel.h"
+#include "GUIAction.h"
 #include "GUIControl.h"
+#include "GUILabel.h"
+#include "GUITexture.h"
+#include "guilib/guiinfo/GUIInfoLabel.h"
+#include "utils/ColorUtils.h"
 
 /*!
  \ingroup controls
@@ -44,14 +32,15 @@ public:
                     const CTextureInfo& textureFocus, const CTextureInfo& textureNoFocus,
                     const CLabelInfo &label, bool wrapMultiline = false);
 
-  virtual ~CGUIButtonControl(void);
-  virtual CGUIButtonControl *Clone() const { return new CGUIButtonControl(*this); };
+  CGUIButtonControl(const CGUIButtonControl& control);
+
+  virtual ~CGUIButtonControl() {}
+  virtual CGUIButtonControl* Clone() const { return new CGUIButtonControl(*this); }
 
   virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
   virtual bool OnAction(const CAction &action) ;
   virtual bool OnMessage(CGUIMessage& message);
-  virtual void PreAllocResources();
   virtual void AllocResources();
   virtual void FreeResources(bool immediately = false);
   virtual void DynamicResourceAlloc(bool bOnOff);
@@ -59,12 +48,12 @@ public:
   virtual void SetPosition(float posX, float posY);
   virtual void SetLabel(const std::string & aLabel);
   virtual void SetLabel2(const std::string & aLabel2);
-  void SetClickActions(const CGUIAction& clickActions) { m_clickActions = clickActions; };
-  const CGUIAction &GetClickActions() const { return m_clickActions; };
-  void SetFocusActions(const CGUIAction& focusActions) { m_focusActions = focusActions; };
-  void SetUnFocusActions(const CGUIAction& unfocusActions) { m_unfocusActions = unfocusActions; };
-  const CLabelInfo& GetLabelInfo() const { return m_label.GetLabelInfo(); };
-  virtual std::string GetLabel() const { return GetDescription(); };
+  void SetClickActions(const CGUIAction& clickActions) { m_clickActions = clickActions; }
+  const CGUIAction& GetClickActions() const { return m_clickActions; }
+  void SetFocusActions(const CGUIAction& focusActions) { m_focusActions = focusActions; }
+  void SetUnFocusActions(const CGUIAction& unfocusActions) { m_unfocusActions = unfocusActions; }
+  const CLabelInfo& GetLabelInfo() const { return m_label.GetLabelInfo(); }
+  virtual std::string GetLabel() const { return GetDescription(); }
   virtual std::string GetLabel2() const;
   void SetSelected(bool bSelected);
   virtual std::string GetDescription() const;
@@ -72,34 +61,44 @@ public:
   virtual void SetMinWidth(float minWidth);
   void SetAlpha(unsigned char alpha);
 
-  void PythonSetLabel(const std::string &strFont, const std::string &strText, color_t textColor, color_t shadowColor, color_t focusedColor);
-  void PythonSetDisabledColor(color_t disabledColor);
+  void PythonSetLabel(const std::string& strFont,
+                      const std::string& strText,
+                      UTILS::COLOR::Color textColor,
+                      UTILS::COLOR::Color shadowColor,
+                      UTILS::COLOR::Color focusedColor);
+  void PythonSetDisabledColor(UTILS::COLOR::Color disabledColor);
 
   virtual void OnClick();
-  bool HasClickActions() const { return m_clickActions.HasActionsMeetingCondition(); };
+  bool HasClickActions() const { return m_clickActions.HasActionsMeetingCondition(); }
 
-  virtual bool UpdateColors();
+  virtual bool UpdateColors(const CGUIListItem* item);
 
   virtual CRect CalcRenderRegion() const;
 
 protected:
   friend class CGUISpinControlEx;
-  void OnFocus();
-  void OnUnFocus();
+  virtual void OnFocus();
+  virtual void OnUnFocus();
   virtual void ProcessText(unsigned int currentTime);
   virtual void RenderText();
   virtual CGUILabel::COLOR GetTextColor() const;
 
-  CGUITexture m_imgFocus;
-  CGUITexture m_imgNoFocus;
+  /*!
+   * \brief Set the maximum width for the left label
+   */
+  void SetMaxWidth(float labelMaxWidth) { m_labelMaxWidth = labelMaxWidth; }
+
+  boost::movelib::unique_ptr<CGUITexture> m_imgFocus;
+  boost::movelib::unique_ptr<CGUITexture> m_imgNoFocus;
   unsigned int  m_focusCounter;
   unsigned char m_alpha;
 
   float m_minWidth;
   float m_maxWidth;
+  float m_labelMaxWidth{0};
 
-  CGUIInfoLabel  m_info;
-  CGUIInfoLabel  m_info2;
+  KODI::GUILIB::GUIINFO::CGUIInfoLabel  m_info;
+  KODI::GUILIB::GUIINFO::CGUIInfoLabel  m_info2;
   CGUILabel      m_label;
   CGUILabel      m_label2;
 
@@ -109,4 +108,4 @@ protected:
 
   bool m_bSelected;
 };
-#endif
+

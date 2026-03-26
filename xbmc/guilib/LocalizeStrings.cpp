@@ -1,82 +1,25 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "system.h"
 #include "LocalizeStrings.h"
+
 #include "addons/LanguageResource.h"
-#include "utils/CharsetConverter.h"
-#include "utils/log.h"
-#include "filesystem/SpecialProtocol.h"
-#include "utils/URIUtils.h"
-#include "utils/POUtils.h"
 #include "filesystem/Directory.h"
+#include "filesystem/SpecialProtocol.h"
 #include "threads/SharedSection.h"
-#include "threads/SingleLock.h"
+#include "utils/CharsetConverter.h"
+#include "utils/POUtils.h"
 #include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
+#include "utils/log.h"
 
-CLocalizeStrings g_localizeStrings;
-CLocalizeStrings g_localizeStringsTemp;
-
-/*! \brief Tries to load ids and strings from a strings.xml file to the `strings` map..
- * It should only be called from the LoadStr2Mem function to try a PO file first.
- \param pathname The directory name, where we look for the strings file.
- \param strings [out] The resulting strings map.
- \param encoding Encoding of the strings.
- \param offset An offset value to place strings from the id value.
- \return false if no strings.xml file was loaded.
- */
-static bool LoadXML(const std::string &filename, std::map<uint32_t, LocStr>& strings,
-    std::string &encoding, uint32_t offset = 0)
-{
-  CXBMCTinyXML xmlDoc;
-  if (!xmlDoc.LoadFile(filename))
-  {
-    CLog::Log(LOGDEBUG, "unable to load %s: %s at line %d", filename.c_str(), xmlDoc.ErrorDesc(), xmlDoc.ErrorRow());
-    return false;
-  }
-
-  TiXmlElement* pRootElement = xmlDoc.RootElement();
-  if (!pRootElement || pRootElement->NoChildren() ||
-      pRootElement->ValueStr()!="strings")
-  {
-    CLog::Log(LOGERROR, "%s Doesn't contain <strings>", filename.c_str());
-    return false;
-  }
-
-  const std::size_t originalSize = strings.size();
-  const TiXmlElement *pChild = pRootElement->FirstChildElement("string");
-  while (pChild)
-  {
-    // Load old style language file with id as attribute
-    const char* attrId=pChild->Attribute("id");
-    if (attrId && !pChild->NoChildren())
-    {
-      uint32_t id = atoi(attrId) + offset;
-      if (strings.find(id) == strings.end())
-        strings[id].strTranslated = pChild->FirstChild()->Value();
-    }
-    pChild = pChild->NextSiblingElement("string");
-  }
-  CLog::Log(LOGDEBUG, "LocalizeStrings: loaded %lu strings from file %s", strings.size() - originalSize, filename.c_str());
-  return true;
-}
+#include <mutex>
+#include <shared_mutex>
 
 /*! \brief Tries to load ids and strings from a strings.po file to the `strings` map.
  * It should only be called from the LoadStr2Mem function to have a fallback.
@@ -110,9 +53,11 @@ static bool LoadPO(const std::string &filename, std::map<uint32_t, LocStr>& stri
                           PODoc.GetMsgid() == strings[id + offset].strOriginal))
           continue;
         else if (bStrInMem)
-          CLog::Log(LOGDEBUG,
-              "POParser: id:%i was recently re-used in the English string file, which is not yet "
-                  "changed in the translated file. Using the English string instead", id);
+          CLog::Log(
+              LOGDEBUG,
+              "POParser: id:{} was recently re-used in the English string file, which is not yet "
+              "changed in the translated file. Using the English string instead",
+              id);
         strings[id + offset].strTranslated = PODoc.GetMsgid();
         counter++;
       }
@@ -138,18 +83,17 @@ static bool LoadPO(const std::string &filename, std::map<uint32_t, LocStr>& stri
     }
   }
 
-  CLog::Log(LOGDEBUG, "LocalizeStrings: loaded %i strings from file %s", counter, filename.c_str());
+  CLog::Log(LOGDEBUG, "LocalizeStrings: loaded {} strings from file {}", counter, filename);
   return true;
 }
 
 /*! \brief Loads language ids and strings to memory map `strings`.
- * It tries to load a strings.po file first. If doesn't exist, it loads a strings.xml file instead.
  \param pathname The directory name, where we look for the strings file.
  \param language We load the strings for this language. Fallback language is always English.
  \param strings [out] The resulting strings map.
  \param encoding Encoding of the strings. For PO files we only use utf-8.
  \param offset An offset value to place strings from the id value.
- \return false if no strings.po or strings.xml file was loaded.
+ \return false if no strings.po file was loaded.
  */
 static bool LoadStr2Mem(const std::string &pathname_in, const std::string &language,
     std::map<uint32_t, LocStr>& strings,  std::string &encoding, uint32_t offset = 0 )
@@ -171,10 +115,8 @@ static bool LoadStr2Mem(const std::string &pathname_in, const std::string &langu
   }
 
   bool useSourceLang = StringUtils::EqualsNoCase(language, LANGUAGE_DEFAULT) || StringUtils::EqualsNoCase(language, LANGUAGE_OLD_DEFAULT);
-  if (LoadPO(URIUtils::AddFileToFolder(pathname, "strings.po"), strings, encoding, offset, useSourceLang))
-    return true;
 
-  return LoadXML(URIUtils::AddFileToFolder(pathname, "strings.xml"), strings, encoding, offset);
+  return LoadPO(URIUtils::AddFileToFolder(pathname, "strings.po"), strings, encoding, offset, useSourceLang);
 }
 
 static bool LoadWithFallback(const std::string& path, const std::string& language, std::map<uint32_t, LocStr>& strings)
@@ -193,15 +135,9 @@ static bool LoadWithFallback(const std::string& path, const std::string& languag
   return true;
 }
 
-CLocalizeStrings::CLocalizeStrings(void)
-{
+CLocalizeStrings::CLocalizeStrings(void) {}
 
-}
-
-CLocalizeStrings::~CLocalizeStrings(void)
-{
-
-}
+CLocalizeStrings::~CLocalizeStrings(void) {}
 
 void CLocalizeStrings::ClearSkinStrings()
 {
@@ -251,13 +187,13 @@ bool CLocalizeStrings::Load(const std::string& strPathName, const std::string& s
 
   CExclusiveLock lock(m_stringsMutex);
   Clear();
-  m_strings = boost::move(strings);
+  m_strings = std::move(strings);
   return true;
 }
 
 const std::string& CLocalizeStrings::Get(uint32_t dwCode) const
 {
-  CSharedLock lock(m_stringsMutex);
+  std::shared_lock<CSharedSection> lock(m_stringsMutex);
   ciStrings i = m_strings.find(dwCode);
   if (i == m_strings.end())
   {
@@ -292,21 +228,21 @@ bool CLocalizeStrings::LoadAddonStrings(const std::string& path, const std::stri
     return false;
 
   CExclusiveLock lock(m_addonStringsMutex);
-  std::map<std::string, std::map<uint32_t, LocStr> >::iterator it = m_addonStrings.find(addonId);
+  auto it = m_addonStrings.find(addonId);
   if (it != m_addonStrings.end())
     m_addonStrings.erase(it);
 
-  return m_addonStrings.insert(std::make_pair(std::string(addonId), boost::move(strings))).second;
+  return m_addonStrings.emplace(std::string(addonId), std::move(strings)).second;
 }
 
 std::string CLocalizeStrings::GetAddonString(const std::string& addonId, uint32_t code)
 {
-  CSharedLock lock(m_addonStringsMutex);
-  std::map<std::string, std::map<uint32_t, LocStr> >::iterator i = m_addonStrings.find(addonId);
+  std::shared_lock<CSharedSection> lock(m_addonStringsMutex);
+  auto i = m_addonStrings.find(addonId);
   if (i == m_addonStrings.end())
     return StringUtils::Empty;
 
-  std::map<uint32_t, LocStr>::iterator j = i->second.find(code);
+  auto j = i->second.find(code);
   if (j == i->second.end())
     return StringUtils::Empty;
 

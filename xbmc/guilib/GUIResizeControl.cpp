@@ -1,58 +1,63 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIResizeControl.h"
-#include "guilib/Key.h"
-#include "utils/TimeUtils.h"
 
-// time to reset accelerated cursors (digital movement)
-#define MOVE_TIME_OUT 500L
+#include "GUIMessage.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 
-CGUIResizeControl::CGUIResizeControl(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& textureFocus, const CTextureInfo& textureNoFocus)
-    : CGUIControl(parentID, controlID, posX, posY, width, height)
-    , m_imgFocus(posX, posY, width, height, textureFocus)
-    , m_imgNoFocus(posX, posY, width, height, textureNoFocus)
+using namespace KODI;
+using namespace UTILS;
+
+CGUIResizeControl::CGUIResizeControl(int parentID,
+                                     int controlID,
+                                     float posX,
+                                     float posY,
+                                     float width,
+                                     float height,
+                                     const CTextureInfo& textureFocus,
+                                     const CTextureInfo& textureNoFocus,
+                                     UTILS::MOVING_SPEED::MapEventConfig& movingSpeedCfg)
+  : CGUIControl(parentID, controlID, posX, posY, width, height),
+    m_imgFocus(CGUITexture::CreateTexture(posX, posY, width, height, textureFocus)),
+    m_imgNoFocus(CGUITexture::CreateTexture(posX, posY, width, height, textureNoFocus))
 {
   m_frameCounter = 0;
-  m_lastMoveTime = 0;
-  m_fSpeed = 1.0;
+  m_movingSpeed.AddEventMapConfig(movingSpeedCfg);
   m_fAnalogSpeed = 2.0f; //! @todo implement correct analog speed
-  m_fAcceleration = 0.2f; //! @todo implement correct computation of acceleration
-  m_fMaxSpeed = 10.0;  //! @todo implement correct computation of maxspeed
   ControlType = GUICONTROL_RESIZE;
   SetLimits(0, 0, 720, 576); // defaults
-  m_nDirection = DIRECTION_NONE;
 }
 
-CGUIResizeControl::~CGUIResizeControl(void)
-{}
+CGUIResizeControl::CGUIResizeControl(const CGUIResizeControl& control)
+  : CGUIControl(control),
+    m_imgFocus(control.m_imgFocus->Clone()),
+    m_imgNoFocus(control.m_imgNoFocus->Clone()),
+    m_frameCounter(control.m_frameCounter),
+    m_movingSpeed(control.m_movingSpeed),
+    m_fAnalogSpeed(control.m_fAnalogSpeed),
+    m_x1(control.m_x1),
+    m_x2(control.m_x2),
+    m_y1(control.m_y1),
+    m_y2(control.m_y2)
+{
+}
 
 void CGUIResizeControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   if (m_bInvalidated)
   {
-    m_imgFocus.SetWidth(m_width);
-    m_imgFocus.SetHeight(m_height);
+    m_imgFocus->SetWidth(m_width);
+    m_imgFocus->SetHeight(m_height);
 
-    m_imgNoFocus.SetWidth(m_width);
-    m_imgNoFocus.SetHeight(m_height);
+    m_imgNoFocus->SetWidth(m_width);
+    m_imgNoFocus->SetHeight(m_height);
   }
   if (HasFocus())
   {
@@ -66,26 +71,26 @@ void CGUIResizeControl::Process(unsigned int currentTime, CDirtyRegionList &dirt
     alphaChannel += 192;
     if (SetAlpha( (unsigned char)alphaChannel ))
       MarkDirtyRegion();
-    m_imgFocus.SetVisible(true);
-    m_imgNoFocus.SetVisible(false);
+    m_imgFocus->SetVisible(true);
+    m_imgNoFocus->SetVisible(false);
     m_frameCounter++;
   }
   else
   {
     if (SetAlpha(0xff))
       MarkDirtyRegion();
-    m_imgFocus.SetVisible(false);
-    m_imgNoFocus.SetVisible(true);
+    m_imgFocus->SetVisible(false);
+    m_imgNoFocus->SetVisible(true);
   }
-  m_imgFocus.Process(currentTime);
-  m_imgNoFocus.Process(currentTime);
+  m_imgFocus->Process(currentTime);
+  m_imgNoFocus->Process(currentTime);
   CGUIControl::Process(currentTime, dirtyregions);
 }
 
 void CGUIResizeControl::Render()
 {
-  m_imgFocus.Render();
-  m_imgNoFocus.Render();
+  m_imgFocus->Render();
+  m_imgNoFocus->Render();
   CGUIControl::Render();
 }
 
@@ -108,84 +113,53 @@ bool CGUIResizeControl::OnAction(const CAction &action)
 
 void CGUIResizeControl::OnUp()
 {
-  UpdateSpeed(DIRECTION_UP);
-  Resize(0, -m_fSpeed);
+  Resize(0, -m_movingSpeed.GetUpdatedDistance(MOVING_SPEED::EventType::UP));
 }
 
 void CGUIResizeControl::OnDown()
 {
-  UpdateSpeed(DIRECTION_DOWN);
-  Resize(0, m_fSpeed);
+  Resize(0, m_movingSpeed.GetUpdatedDistance(MOVING_SPEED::EventType::DOWN));
 }
 
 void CGUIResizeControl::OnLeft()
 {
-  UpdateSpeed(DIRECTION_LEFT);
-  Resize(-m_fSpeed, 0);
+  Resize(-m_movingSpeed.GetUpdatedDistance(MOVING_SPEED::EventType::LEFT), 0);
 }
 
 void CGUIResizeControl::OnRight()
 {
-  UpdateSpeed(DIRECTION_RIGHT);
-  Resize(m_fSpeed, 0);
-}
-
-void CGUIResizeControl::UpdateSpeed(int nDirection)
-{
-  if (CTimeUtils::GetFrameTime() - m_lastMoveTime > MOVE_TIME_OUT)
-  {
-    m_fSpeed = 1;
-    m_nDirection = DIRECTION_NONE;
-  }
-  m_lastMoveTime = CTimeUtils::GetFrameTime();
-  if (nDirection == m_nDirection)
-  { // accelerate
-    m_fSpeed += m_fAcceleration;
-    if (m_fSpeed > m_fMaxSpeed) m_fSpeed = m_fMaxSpeed;
-  }
-  else
-  { // reset direction and speed
-    m_fSpeed = 1;
-    m_nDirection = nDirection;
-  }
-}
-
-void CGUIResizeControl::PreAllocResources()
-{
-  CGUIControl::PreAllocResources();
-  m_imgFocus.PreAllocResources();
-  m_imgNoFocus.PreAllocResources();
+  Resize(m_movingSpeed.GetUpdatedDistance(MOVING_SPEED::EventType::RIGHT), 0);
 }
 
 void CGUIResizeControl::AllocResources()
 {
   CGUIControl::AllocResources();
   m_frameCounter = 0;
-  m_imgFocus.AllocResources();
-  m_imgNoFocus.AllocResources();
-  m_width = m_imgFocus.GetWidth();
-  m_height = m_imgFocus.GetHeight();
+  m_imgFocus->AllocResources();
+  m_imgNoFocus->AllocResources();
+  m_width = m_imgFocus->GetWidth();
+  m_height = m_imgFocus->GetHeight();
 }
 
 void CGUIResizeControl::FreeResources(bool immediately)
 {
   CGUIControl::FreeResources(immediately);
-  m_imgFocus.FreeResources(immediately);
-  m_imgNoFocus.FreeResources(immediately);
+  m_imgFocus->FreeResources(immediately);
+  m_imgNoFocus->FreeResources(immediately);
 }
 
 void CGUIResizeControl::DynamicResourceAlloc(bool bOnOff)
 {
   CGUIControl::DynamicResourceAlloc(bOnOff);
-  m_imgFocus.DynamicResourceAlloc(bOnOff);
-  m_imgNoFocus.DynamicResourceAlloc(bOnOff);
+  m_imgFocus->DynamicResourceAlloc(bOnOff);
+  m_imgNoFocus->DynamicResourceAlloc(bOnOff);
 }
 
 void CGUIResizeControl::SetInvalid()
 {
   CGUIControl::SetInvalid();
-  m_imgFocus.SetInvalid();
-  m_imgNoFocus.SetInvalid();
+  m_imgFocus->SetInvalid();
+  m_imgNoFocus->SetInvalid();
 }
 
 void CGUIResizeControl::Resize(float x, float y)
@@ -205,21 +179,22 @@ void CGUIResizeControl::Resize(float x, float y)
 void CGUIResizeControl::SetPosition(float posX, float posY)
 {
   CGUIControl::SetPosition(posX, posY);
-  m_imgFocus.SetPosition(posX, posY);
-  m_imgNoFocus.SetPosition(posX, posY);
+  m_imgFocus->SetPosition(posX, posY);
+  m_imgNoFocus->SetPosition(posX, posY);
 }
 
 bool CGUIResizeControl::SetAlpha(unsigned char alpha)
 {
-  return m_imgFocus.SetAlpha(alpha) | 
-         m_imgNoFocus.SetAlpha(alpha);
+  bool changed = m_imgFocus->SetAlpha(alpha);
+  changed |= m_imgNoFocus->SetAlpha(alpha);
+  return changed;
 }
 
-bool CGUIResizeControl::UpdateColors()
+bool CGUIResizeControl::UpdateColors(const CGUIListItem* item)
 {
-  bool changed = CGUIControl::UpdateColors();
-  changed |= m_imgFocus.SetDiffuseColor(m_diffuseColor);
-  changed |= m_imgNoFocus.SetDiffuseColor(m_diffuseColor);
+  bool changed = CGUIControl::UpdateColors(nullptr);
+  changed |= m_imgFocus->SetDiffuseColor(m_diffuseColor);
+  changed |= m_imgNoFocus->SetDiffuseColor(m_diffuseColor);
 
   return changed;
 }

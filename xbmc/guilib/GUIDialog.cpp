@@ -1,37 +1,25 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIDialog.h"
+
 #include "GUIComponent.h"
-#include "GUIWindowManager.h"
 #include "GUIControlFactory.h"
 #include "GUILabelControl.h"
+#include "GUIWindowManager.h"
+#include "ServiceBroker.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
+#include "messaging/ApplicationMessenger.h"
 #include "threads/SingleLock.h"
 #include "utils/TimeUtils.h"
-#include "Application.h"
-#include "messaging/ApplicationMessenger.h"
-#include "guilib/Key.h"
 
-using namespace KODI::MESSAGING;
-
-CGUIDialog::CGUIDialog(int id, const std::string &xmlFile, DialogModalityType modalityType /* = MODAL */)
+CGUIDialog::CGUIDialog(int id, const std::string &xmlFile, DialogModalityType modalityType /* = DialogModalityType::MODAL */)
     : CGUIWindow(id, xmlFile)
 {
   m_modalityType = modalityType;
@@ -44,21 +32,11 @@ CGUIDialog::CGUIDialog(int id, const std::string &xmlFile, DialogModalityType mo
   m_bAutoClosed = false;
 }
 
-CGUIDialog::~CGUIDialog(void)
-{}
+CGUIDialog::~CGUIDialog(void) {}
 
 bool CGUIDialog::Load(TiXmlElement* pRootElement)
 {
-  bool retVal = CGUIWindow::Load(pRootElement);
-
-  if (retVal && IsCustom())
-  {
-    // custom dialog's modality type is modeless if visible condition is specified.
-    if (m_visibleCondition)
-      m_modalityType = MODELESS;
-  }
-
-  return retVal;
+  return CGUIWindow::Load(pRootElement);
 }
 
 void CGUIDialog::OnWindowLoaded()
@@ -137,7 +115,7 @@ void CGUIDialog::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregi
 
   // if we were running but now we're not, mark us dirty
   if (!m_active && m_wasRunning)
-    dirtyregions.push_back(m_renderRegion);
+    dirtyregions.emplace_back(m_renderRegion);
 
   if (m_active)
     CGUIWindow::DoProcess(currentTime, dirtyregions);
@@ -149,7 +127,7 @@ void CGUIDialog::UpdateVisibility()
 {
   if (m_visibleCondition)
   {
-    if (m_visibleCondition->Get())
+    if (m_visibleCondition->Get(INFO::DEFAULT_CONTEXT))
       Open();
     else
       Close();
@@ -173,17 +151,8 @@ void CGUIDialog::UpdateVisibility()
   }
 }
 
-void CGUIDialog::Open_Internal(const std::string &param /* = "" */)
-{
-  CGUIDialog::Open_Internal(m_modalityType != MODELESS, param);
-}
-
 void CGUIDialog::Open_Internal(bool bProcessRenderLoop, const std::string &param /* = "" */)
 {
-  // Lock graphic context here as it is sometimes called from non rendering threads
-  // maybe we should have a critical section per window instead??
-  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
-
   if (!CServiceBroker::GetGUI()->GetWindowManager().Initialized() ||
       (m_active && !m_closing && !IsAnimating(ANIM_TYPE_WINDOW_CLOSE)))
     return;
@@ -206,29 +175,31 @@ void CGUIDialog::Open_Internal(bool bProcessRenderLoop, const std::string &param
     if (!m_windowLoaded)
       Close(true);
 
-    lock.Leave();
-
-    while (m_active && !g_application.m_bStop)
+    while (m_active)
     {
-      CServiceBroker::GetGUI()->GetWindowManager().ProcessRenderLoop();
+      if (!CServiceBroker::GetGUI()->GetWindowManager().ProcessRenderLoop(false))
+        break;
     }
   }
 }
 
 void CGUIDialog::Open(const std::string &param /* = "" */)
 {
-#ifdef HAS_XBOX_D3D
-  if (!g_application.IsCurrentThread() && !CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
-#else
-  if (!g_application.IsCurrentThread())
-#endif
+  CGUIDialog::Open(m_modalityType != DialogModalityType::MODELESS, param);
+}
+
+
+void CGUIDialog::Open(bool bProcessRenderLoop, const std::string& param /* = "" */)
+{
+  if (!CServiceBroker::GetAppMessenger()->IsProcessThread())
   {
     // make sure graphics lock is not held
     CSingleExit leaveIt(CServiceBroker::GetWinSystem()->GetGfxContext());
-    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_GUI_DIALOG_OPEN, -1, -1, static_cast<void*>(this), param);
+    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_GUI_DIALOG_OPEN, -1, bProcessRenderLoop,
+                                               static_cast<void*>(this), param);
   }
   else
-    Open_Internal(param);
+    Open_Internal(bProcessRenderLoop, param);
 }
 
 void CGUIDialog::Render()

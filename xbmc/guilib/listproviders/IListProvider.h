@@ -1,32 +1,18 @@
 /*
- *      Copyright (C) 2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2013-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #pragma once
 
-#include "system.h" // <xtl.h>
+#include <memory>
 #include <vector>
-#include <boost/shared_ptr.hpp>
 
 class TiXmlNode;
 class CGUIListItem;
-typedef boost::shared_ptr<CGUIListItem> CGUIListItemPtr;
 
 /*!
  \ingroup listproviders
@@ -35,15 +21,27 @@ typedef boost::shared_ptr<CGUIListItem> CGUIListItemPtr;
 class IListProvider
 {
 public:
-  IListProvider(int parentID) : m_parentID(parentID) {}
+  explicit IListProvider(int parentID) : m_parentID(parentID) {}
+  explicit IListProvider(const IListProvider& other) {}
   virtual ~IListProvider() {}
 
   /*! \brief Factory to create list providers.
-   \param node a TiXmlNode to create.
+   \param parent a parent TiXmlNode for the container.
    \param parentID id of parent window for context.
-   \return the list provider, NULL if none.
+   \return the list provider, empty pointer if none.
    */
-  static IListProvider *Create(const TiXmlNode *node, int parentID);
+  static boost::movelib::unique_ptr<IListProvider> Create(const TiXmlNode* parent, int parentID);
+
+  /*! \brief Factory to create list providers.  Cannot create a multi-provider.
+   \param content the TiXmlNode for the content to create.
+   \param parentID id of parent window for context.
+   \return the list provider, empty pointer if none.
+   */
+  static boost::movelib::unique_ptr<IListProvider> CreateSingle(const TiXmlNode* content, int parentID);
+
+  /*! \brief Create an instance of the derived class. Allows for polymorphic copies.
+   */
+  virtual boost::movelib::unique_ptr<IListProvider> Clone() = 0;
 
   /*! \brief Update the list content
    \return true if the content has changed, false otherwise.
@@ -53,7 +51,7 @@ public:
   /*! \brief Fetch the current list of items.
    \param items [out] the list to be filled.
    */
-  virtual void Fetch(std::vector<CGUIListItemPtr> &items) const=0;
+  virtual void Fetch(std::vector<boost::shared_ptr<CGUIListItem>>& items) = 0;
 
   /*! \brief Check whether the list provider is updating content.
    \return true if in the processing of updating, false otherwise.
@@ -63,32 +61,43 @@ public:
   /*! \brief Reset the current list of items.
    Derived classes may choose to ignore this.
    */
-  virtual void Reset() {};
+  virtual void Reset() {}
+
+  /*! \brief Free all GUI resources allocated by the items.
+   \param immediately true to free resources immediately, free resources async later otherwise.
+   */
+  virtual void FreeResources(bool immediately) {}
 
   /*! \brief Click event on an item.
    \param item the item that was clicked.
    \return true if the click was handled, false otherwise.
    */
-  virtual bool OnClick(const CGUIListItemPtr &item)=0;
+  virtual bool OnClick(const boost::shared_ptr<CGUIListItem>& item) = 0;
+
+  /*! \brief Play event on an item.
+   \param item the item to play.
+   \return true if the event was handled, false otherwise.
+   */
+  virtual bool OnPlay(const boost::shared_ptr<CGUIListItem>& item) { return false; }
 
   /*! \brief Open the info dialog for an item provided by this IListProvider.
    \param item the item that was clicked.
    \return true if the dialog was shown, false otherwise.
    */
-  virtual bool OnInfo(const CGUIListItemPtr &item)=0;
+  virtual bool OnInfo(const boost::shared_ptr<CGUIListItem>& item) = 0;
 
   /*! \brief Open the context menu for an item provided by this IListProvider.
    \param item the item that was clicked.
    \return true if the click was handled, false otherwise.
    */
-  virtual bool OnContextMenu(const CGUIListItemPtr &item)=0;
+  virtual bool OnContextMenu(const boost::shared_ptr<CGUIListItem>& item) = 0;
 
   /*! \brief Set the default item to focus. For backwards compatibility.
    \param item the item to focus.
    \param always whether this item should always be used on first focus.
    \sa GetDefaultItem, AlwaysFocusDefaultItem
    */
-  virtual void SetDefaultItem(int item, bool always) {};
+  virtual void SetDefaultItem(int item, bool always) {}
 
   /*! \brief The default item to focus.
    \return the item to focus by default. -1 for none.

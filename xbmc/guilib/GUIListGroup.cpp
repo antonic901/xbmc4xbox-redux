@@ -1,26 +1,36 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIListGroup.h"
+
 #include "GUIListLabel.h"
 #include "utils/log.h"
+
+#include <set>
+
+namespace
+{
+// Supported control types. Keep sorted.
+const std::set<CGUIControl::GUICONTROLTYPES> supportedTypes = {
+    // clang-format off
+    CGUIControl::GUICONTROL_BORDEREDIMAGE,
+    CGUIControl::GUICONTROL_GAME,
+    CGUIControl::GUICONTROL_GAMECONTROLLER,
+    CGUIControl::GUICONTROL_GAMECONTROLLERLIST,
+    CGUIControl::GUICONTROL_IMAGE,
+    CGUIControl::GUICONTROL_LISTGROUP,
+    CGUIControl::GUICONTROL_LISTLABEL,
+    CGUIControl::GUICONTROL_MULTI_IMAGE,
+    CGUIControl::GUICONTROL_PROGRESS,
+    CGUIControl::GUICONTROL_TEXTBOX,
+    // clang-format on
+};
+} // namespace
 
 CGUIListGroup::CGUIListGroup(int parentID, int controlID, float posX, float posY, float width, float height)
 : CGUIControlGroup(parentID, controlID, posX, posY, width, height)
@@ -45,14 +55,8 @@ void CGUIListGroup::AddControl(CGUIControl *control, int position /*= -1*/)
 {
   if (control)
   {
-    if (!(control->GetControlType() == CGUIControl::GUICONTROL_LISTLABEL ||
-          control->GetControlType() == CGUIControl::GUICONTROL_LISTGROUP ||
-          control->GetControlType() == CGUIControl::GUICONTROL_IMAGE ||
-          control->GetControlType() == CGUIControl::GUICONTROL_BORDEREDIMAGE ||
-          control->GetControlType() == CGUIControl::GUICONTROL_MULTI_IMAGE ||
-          control->GetControlType() == CGUIControl::GUICONTROL_TEXTBOX ||
-          control->GetControlType() == CGUIControl::GUICONTROL_PROGRESS))
-      CLog::Log(LOGWARNING, "Trying to add unsupported control type %d", control->GetControlType());
+    if (supportedTypes.find(control->GetControlType()) == supportedTypes.end())
+      CLog::Log(LOGWARNING, "Trying to add unsupported control type {}", control->GetControlType());
   }
   CGUIControlGroup::AddControl(control, position);
 }
@@ -106,7 +110,7 @@ void CGUIListGroup::UpdateInfo(const CGUIListItem *item)
       for (unsigned int j = i + 1; j < m_children.size(); j++)
       {
         if (m_children[j]->GetControlType() == CGUIControl::GUICONTROL_LISTLABEL && m_children[j]->IsVisible())
-          CGUIListLabel::CheckAndCorrectOverlap(*(CGUIListLabel *)m_children[i], *(CGUIListLabel *)m_children[j]);
+          CGUIListLabel::CheckAndCorrectOverlap(*static_cast<CGUIListLabel*>(m_children[i]), *static_cast<CGUIListLabel*>(m_children[j]));
       }
     }
   }
@@ -185,7 +189,7 @@ unsigned int CGUIListGroup::GetFocusedItem() const
     if ((*it)->GetControlType() == CGUIControl::GUICONTROL_LISTGROUP && ((CGUIListGroup *)(*it))->GetFocusedItem())
       return ((CGUIListGroup *)(*it))->GetFocusedItem();
   }
-  return 0;
+  return m_bHasFocus ? 1 : 0;
 }
 
 bool CGUIListGroup::MoveLeft()
@@ -216,7 +220,6 @@ void CGUIListGroup::SetState(bool selected, bool focused)
     {
       CGUIListLabel *label = (CGUIListLabel *)(*it);
       label->SetSelected(selected);
-      label->SetScrolling(focused);
     }
     else if ((*it)->GetControlType() == CGUIControl::GUICONTROL_LISTGROUP)
       ((CGUIListGroup *)(*it))->SetState(selected, focused);
@@ -231,6 +234,6 @@ void CGUIListGroup::SelectItemFromPoint(const CPoint &point)
   {
     CGUIControl *child = *it;
     if (child->GetControlType() == CGUIControl::GUICONTROL_LISTGROUP)
-      ((CGUIListGroup *)child)->SelectItemFromPoint(point);
+      static_cast<CGUIListGroup*>(child)->SelectItemFromPoint(point);
   }
 }

@@ -1,36 +1,29 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIMultiImage.h"
-#include "TextureManager.h"
-#include "filesystem/Directory.h"
-#include "utils/URIUtils.h"
-#include "utils/JobManager.h"
+
 #include "FileItem.h"
-#include "settings/AdvancedSettings.h"
-#include "settings/SettingsComponent.h"
-#include "guilib/Key.h"
+#include "GUIMessage.h"
+#include "ServiceBroker.h"
 #include "TextureCache.h"
+#include "TextureManager.h"
+#include "WindowIDs.h"
+#include "filesystem/Directory.h"
+#include "utils/FileExtensionProvider.h"
+#include "utils/JobManager.h"
 #include "utils/Random.h"
 #include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
 
+#include <mutex>
+
+using namespace KODI::GUILIB;
 using namespace XFILE;
 
 CGUIMultiImage::CGUIMultiImage(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& texture, unsigned int timePerImage, unsigned int fadeTime, bool randomized, bool loop, unsigned int timeToPauseAtEnd)
@@ -139,7 +132,7 @@ void CGUIMultiImage::Process(unsigned int currentTime, CDirtyRegionList &dirtyre
       }
     }
   }
-  else
+  else if (m_directoryStatus != LOADING)
     m_image.SetFileName("");
 
   if (CServiceBroker::GetWinSystem()->GetGfxContext().SetClipRegion(m_posX, m_posY, m_width, m_height))
@@ -172,6 +165,11 @@ bool CGUIMultiImage::OnMessage(CGUIMessage &message)
   {
     if (!m_texturePath.IsConstant())
       FreeResources();
+    return true;
+  }
+  if (message.GetMessage() == GUI_MSG_RESET_MULTI_IMAGE)
+  {
+    ResetMultiImage();
     return true;
   }
   return CGUIControl::OnMessage(message);
@@ -234,7 +232,8 @@ void CGUIMultiImage::LoadDirectory()
   if (item.IsPicture() || CServiceBroker::GetTextureCache()->HasCachedImage(m_currentPath))
     m_files.push_back(m_currentPath);
   else // bundled folder?
-    CServiceBroker::GetGUI()->GetTextureManager().GetBundledTexturesFromPath(m_currentPath, m_files);
+    m_files =
+        CServiceBroker::GetGUI()->GetTextureManager().GetBundledTexturesFromPath(m_currentPath);
   if (!m_files.empty())
   { // found - nothing more to do
     OnDirectoryLoaded();
@@ -243,7 +242,8 @@ void CGUIMultiImage::LoadDirectory()
   // slow(er) checks necessary - do them in the background
   CSingleLock lock(m_section);
   m_directoryStatus = LOADING;
-  m_jobID = CServiceBroker::GetJobManager()->AddJob(new CMultiImageJob(m_currentPath), this, CJob::PRIORITY_NORMAL);
+  m_jobID = CServiceBroker::GetJobManager()->AddJob(new CMultiImageJob(m_currentPath), this,
+                                                    CJob::PRIORITY_NORMAL);
 }
 
 void CGUIMultiImage::OnDirectoryLoaded()
@@ -256,9 +256,7 @@ void CGUIMultiImage::OnDirectoryLoaded()
 
   // flag as loaded - no point in constantly reloading them
   m_directoryStatus = READY;
-  m_imageTimer.StartZero();
-  m_currentImage = 0;
-  m_image.SetFileName(m_files.empty() ? "" : m_files[0]);
+  ResetMultiImage();
 }
 
 void CGUIMultiImage::CancelLoading()
@@ -267,6 +265,13 @@ void CGUIMultiImage::CancelLoading()
   if (m_directoryStatus == LOADING)
     CServiceBroker::GetJobManager()->CancelJob(m_jobID);
   m_directoryStatus = UNLOADED;
+}
+
+void CGUIMultiImage::ResetMultiImage()
+{
+  m_imageTimer.StartZero();
+  m_currentImage = 0;
+  m_image.SetFileName(m_files.empty() ? "" : m_files[0]);
 }
 
 void CGUIMultiImage::OnJobComplete(unsigned int jobID, bool success, CJob *job)
@@ -279,7 +284,7 @@ void CGUIMultiImage::OnJobComplete(unsigned int jobID, bool success, CJob *job)
   }
 }
 
-void CGUIMultiImage::SetInfo(const CGUIInfoLabel &info)
+void CGUIMultiImage::SetInfo(const GUIINFO::CGUIInfoLabel &info)
 {
   m_texturePath = info;
   if (m_texturePath.IsConstant())
@@ -315,7 +320,7 @@ bool CGUIMultiImage::CMultiImageJob::DoWork()
 
     URIUtils::AddSlashAtEnd(realPath);
     CFileItemList items;
-    CDirectory::GetDirectory(realPath, items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions + "|.tbn|.dds", DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_NO_FILE_INFO);
+    CDirectory::GetDirectory(realPath, items, CServiceBroker::GetFileExtensionProvider().GetPictureExtensions()+ "|.tbn|.dds", DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_NO_FILE_INFO);
     for (int i=0; i < items.Size(); i++)
     {
       CFileItem* pItem = items[i].get();

@@ -293,9 +293,6 @@
 				RelativePath=".\GUIIncludes.cpp">
 			</File>
 			<File
-				RelativePath=".\GUIInfoTypes.cpp">
-			</File>
-			<File
 				RelativePath=".\GUIKeyboardFactory.cpp">
 			</File>
 			<File
@@ -421,6 +418,149 @@
 			<File
 				RelativePath=".\VisibleEffect.cpp">
 			</File>
+			<Filter
+				Name="guiinfo"
+				Filter="">
+				<File
+					RelativePath=".\guiinfo\AddonsGUIInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\AddonsGUIInfo.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\GUIControlsGUIInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\GUIControlsGUIInfo.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\GUIInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\GUIInfo.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\GUIInfoBool.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\GUIInfoBool.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\GUIInfoColor.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\GUIInfoColor.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\GUIInfoHelper.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\GUIInfoHelper.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\GUIInfoLabel.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\GUIInfoLabel.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\GUIInfoLabels.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\GUIInfoProvider.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\GUIInfoProviders.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\GUIInfoProviders.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\IGUIInfoProvider.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\LibraryGUIInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\LibraryGUIInfo.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\MusicGUIInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\MusicGUIInfo.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\PicturesGUIInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\PicturesGUIInfo.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\PlayerGUIInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\PlayerGUIInfo.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\SkinGUIInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\SkinGUIInfo.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\SystemGUIInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\SystemGUIInfo.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\VideoGUIInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\VideoGUIInfo.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\VisualisationGUIInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\VisualisationGUIInfo.h">
+				</File>
+				<File
+					RelativePath=".\guiinfo\WeatherGUIInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\guiinfo\WeatherGUIInfo.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="listproviders"
+				Filter="">
+				<File
+					RelativePath=".\listproviders\DirectoryProvider.cpp">
+				</File>
+				<File
+					RelativePath=".\listproviders\DirectoryProvider.h">
+				</File>
+				<File
+					RelativePath=".\listproviders\IListProvider.cpp">
+				</File>
+				<File
+					RelativePath=".\listproviders\IListProvider.h">
+				</File>
+				<File
+					RelativePath=".\listproviders\MultiProvider.cpp">
+				</File>
+				<File
+					RelativePath=".\listproviders\MultiProvider.h">
+				</File>
+				<File
+					RelativePath=".\listproviders\StaticProvider.cpp">
+				</File>
+				<File
+					RelativePath=".\listproviders\StaticProvider.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -512,9 +652,6 @@
 			</File>
 			<File
 				RelativePath=".\GUIIncludes.h">
-			</File>
-			<File
-				RelativePath=".\GUIInfoTypes.h">
 			</File>
 			<File
 				RelativePath=".\GUIItem.h">

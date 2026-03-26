@@ -1,26 +1,20 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUILabelControl.h"
+
+#include "GUIFont.h"
+#include "GUIMessage.h"
 #include "utils/CharsetConverter.h"
+#include "utils/ColorUtils.h"
 #include "utils/StringUtils.h"
+
+using namespace KODI::GUILIB;
 
 CGUILabelControl::CGUILabelControl(int parentID, int controlID, float posX, float posY, float width, float height, const CLabelInfo& labelInfo, bool wrapMultiLine, bool bHasPath)
     : CGUIControl(parentID, controlID, posX, posY, width, height)
@@ -34,11 +28,10 @@ CGUILabelControl::CGUILabelControl(int parentID, int controlID, float posX, floa
   m_startHighlight = m_endHighlight = 0;
   m_startSelection = m_endSelection = 0;
   m_minWidth = 0;
+  m_label.SetScrollLoopCount(2);
 }
 
-CGUILabelControl::~CGUILabelControl(void)
-{
-}
+CGUILabelControl::~CGUILabelControl(void) {}
 
 void CGUILabelControl::ShowCursor(bool bShow)
 {
@@ -59,14 +52,14 @@ void CGUILabelControl::SetCursorPos(int iPos)
   m_iCursorPos = iPos;
 }
 
-void CGUILabelControl::SetInfo(const CGUIInfoLabel &infoLabel)
+void CGUILabelControl::SetInfo(const GUIINFO::CGUIInfoLabel &infoLabel)
 {
   m_infoLabel = infoLabel;
 }
 
-bool CGUILabelControl::UpdateColors()
+bool CGUILabelControl::UpdateColors(const CGUIListItem* item)
 {
-  bool changed = CGUIControl::UpdateColors();
+  bool changed = CGUIControl::UpdateColors(nullptr);
   changed |= m_label.UpdateColors();
 
   return changed;
@@ -82,17 +75,21 @@ void CGUILabelControl::UpdateInfo(const CGUIListItem *item)
     std::wstring utf16;
     g_charsetConverter.utf8ToW(label, utf16);
     vecText text; text.reserve(utf16.size()+1);
-    vecColors colors;
+    std::vector<UTILS::COLOR::Color> colors;
     colors.push_back(m_label.GetLabelInfo().textColor);
     colors.push_back(m_label.GetLabelInfo().disabledColor);
-    color_t select = m_label.GetLabelInfo().selectedColor;
+    UTILS::COLOR::Color select = m_label.GetLabelInfo().selectedColor;
     if (!select)
       select = 0xFFFF0000;
     colors.push_back(select);
     colors.push_back(0xFF000000);
+
+    CGUIFont* font = m_label.GetLabelInfo().font;
+    uint32_t style = (font ? font->GetStyle() : (FONT_STYLE_NORMAL & FONT_STYLE_MASK)) << 24;
+
     for (unsigned int i = 0; i < utf16.size(); i++)
     {
-      unsigned int ch = utf16[i];
+      uint32_t ch = utf16[i] | style;
       if ((m_startSelection < m_endSelection) && (m_startSelection <= i && i < m_endSelection))
         ch |= (2 << 16);
       else if ((m_startHighlight < m_endHighlight) && (i < m_startHighlight || i >= m_endHighlight))
@@ -101,7 +98,7 @@ void CGUILabelControl::UpdateInfo(const CGUIListItem *item)
     }
     if (m_bShowCursor && m_iCursorPos >= 0 && (unsigned int)m_iCursorPos <= utf16.size())
     {
-      unsigned int ch = L'|';
+      uint32_t ch = L'|' | style;
       if ((++m_dwCounter % 50) <= 25)
         ch |= (3 << 16);
       text.insert(text.begin() + m_iCursorPos, ch);
@@ -145,6 +142,7 @@ void CGUILabelControl::Render()
   m_label.Render();
   CGUIControl::Render();
 }
+
 
 bool CGUILabelControl::CanFocus() const
 {
@@ -201,13 +199,21 @@ void CGUILabelControl::SetWidth(float width)
 
 bool CGUILabelControl::OnMessage(CGUIMessage& message)
 {
-  if ( message.GetControlId() == GetID() )
+  if (message.GetControlId() == GetID())
   {
     if (message.GetMessage() == GUI_MSG_LABEL_SET)
     {
       SetLabel(message.GetLabel());
       return true;
     }
+  }
+  if (message.GetMessage() == GUI_MSG_REFRESH_TIMER && IsVisible())
+  {
+    UpdateInfo();
+  }
+  else if (message.GetMessage() == GUI_MSG_WINDOW_RESIZE && IsVisible())
+  {
+    m_label.SetInvalid();
   }
 
   return CGUIControl::OnMessage(message);

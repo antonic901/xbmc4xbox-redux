@@ -515,6 +515,10 @@ private:
   std::string  m_text;
 };
 
+namespace KODI
+{
+namespace MOUSE
+{
 /*!
   \ingroup actionkeys, mouse
   \brief Simple class for mouse events
@@ -535,6 +539,8 @@ public:
   float  m_offsetX;
   float  m_offsetY;
 };
+}
+}
 
 /*!
   \ingroup actionkeys

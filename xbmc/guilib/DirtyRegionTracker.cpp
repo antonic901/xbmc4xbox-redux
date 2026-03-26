@@ -1,30 +1,22 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "DirtyRegionTracker.h"
+
+#include "DirtyRegionSolvers.h"
 #include "ServiceBroker.h"
+#include "guilib/DirtyRegion.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
 #include "utils/log.h"
+
+#include <algorithm>
 #include <stdio.h>
-#include "DirtyRegionSolvers.h"
 
 CDirtyRegionTracker::CDirtyRegionTracker(int buffering)
 {
@@ -87,12 +79,8 @@ CDirtyRegionList CDirtyRegionTracker::GetDirtyRegions()
 void CDirtyRegionTracker::CleanMarkedRegions()
 {
   int buffering = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_guiVisualizeDirtyRegions ? 20 : m_buffering;
-  int i = m_markedRegions.size() - 1;
-  while (i >= 0)
-	{
-    if (m_markedRegions[i].UpdateAge() >= buffering)
-      m_markedRegions.erase(m_markedRegions.begin() + i);
-
-    i--;
-  }
+  m_markedRegions.erase(
+      std::remove_if(m_markedRegions.begin(), m_markedRegions.end(),
+                     [buffering](CDirtyRegion& r) { return r.UpdateAge() >= buffering; }),
+      m_markedRegions.end());
 }

@@ -1,34 +1,23 @@
+/*
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
+
+#pragma once
+
 /*!
 \file GUILabel.h
 \brief
 */
 
-#pragma once
-
-/*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
- *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
- */
-
-#include "GUITextLayout.h"
-#include "GUIInfoTypes.h"
 #include "GUIFont.h"
-#include "Geometry.h"
+#include "GUITextLayout.h"
+#include "guiinfo/GUIInfoColor.h"
+#include "utils/ColorUtils.h"
+#include "utils/Geometry.h"
 
 class CLabelInfo
 {
@@ -57,12 +46,12 @@ public:
     return changed;
   };
 
-  CGUIInfoColor textColor;
-  CGUIInfoColor shadowColor;
-  CGUIInfoColor selectedColor;
-  CGUIInfoColor disabledColor;
-  CGUIInfoColor focusedColor;
-  CGUIInfoColor invalidColor;
+  KODI::GUILIB::GUIINFO::CGUIInfoColor textColor;
+  KODI::GUILIB::GUIINFO::CGUIInfoColor shadowColor;
+  KODI::GUILIB::GUIINFO::CGUIInfoColor selectedColor;
+  KODI::GUILIB::GUIINFO::CGUIInfoColor disabledColor;
+  KODI::GUILIB::GUIINFO::CGUIInfoColor focusedColor;
+  KODI::GUILIB::GUIINFO::CGUIInfoColor invalidColor;
   uint32_t align;
   float offsetX;
   float offsetY;
@@ -90,13 +79,19 @@ public:
 
   /*! \brief allowed overflow handling techniques for labels, as defined by the skin
    */
-  enum OVER_FLOW { OVER_FLOW_TRUNCATE = 0,
-                   OVER_FLOW_SCROLL,
-                   OVER_FLOW_WRAP,
-                   OVER_FLOW_CLIP };
+  enum OVER_FLOW
+  {
+    OVER_FLOW_TRUNCATE = 0, // Truncated text from right (text end with ellipses)
+    OVER_FLOW_SCROLL,
+    OVER_FLOW_WRAP,
+    OVER_FLOW_CLIP,
+    OVER_FLOW_TRUNCATE_LEFT // Truncated text from left (text start with ellipses)
+  };
 
   CGUILabel(float posX, float posY, float width, float height, const CLabelInfo& labelInfo, OVER_FLOW overflow = OVER_FLOW_TRUNCATE);
-  virtual ~CGUILabel(void);
+  CGUILabel(const CGUILabel& label);
+
+  virtual ~CGUILabel() {}
 
   /*! \brief Process the label
    \return bool stating if process caused control to change
@@ -135,7 +130,7 @@ public:
    \param colors colors referenced in the styled text.
    \sa SetText, SetTextW
    */
-  bool SetStyledText(const vecText &text, const vecColors &colors);
+  bool SetStyledText(const vecText& text, const std::vector<UTILS::COLOR::Color>& colors);
 
   /*! \brief Set the color to use for the label
    Sets the color to be used for this label.  Takes effect at the next render
@@ -148,12 +143,16 @@ public:
    \param rect CRect containing the extents of the current text
    \sa GetRenderRect, UpdateRenderRect
    */
-  void SetRenderRect(const CRect &rect) { m_renderRect = rect; };
+  void SetRenderRect(const CRect& rect) { m_renderRect = rect; }
 
   /*! \brief Set whether or not this label control should scroll
    \param scrolling true if this label should scroll.
    */
   bool SetScrolling(bool scrolling);
+
+  /*! \brief Set max. text scroll count
+  */
+  void SetScrollLoopCount(unsigned int loopCount) { m_maxScrollLoops = loopCount; }
 
   /*! \brief Set how this label should handle overflowing text.
    \param overflow the overflow type
@@ -173,13 +172,13 @@ public:
    \return CRect containing the extents of the current text
    \sa SetRenderRect, UpdateRenderRect
    */
-  const CRect &GetRenderRect() const { return m_renderRect; };
+  const CRect& GetRenderRect() const { return m_renderRect; }
 
   /*! \brief Returns the precalculated full width of the current text, regardless of layout
    \return full width of the current text
    \sa CalcTextWidth
    */
-  float GetTextWidth() const { return m_textLayout.GetTextWidth(); };
+  float GetTextWidth() const { return m_textLayout.GetTextWidth(); }
 
   /*! \brief Returns the maximal width that this label can render into
    \return Maximal width that this label can render into. Note that this may differ from the
@@ -193,10 +192,10 @@ public:
    \return width of the given text
    \sa GetTextWidth
    */
-  float CalcTextWidth(const std::wstring &text) const { return m_textLayout.GetTextWidth(text); };
+  float CalcTextWidth(const std::wstring& text) const { return m_textLayout.GetTextWidth(text); }
 
-  const CLabelInfo& GetLabelInfo() const { return m_label; };
-  CLabelInfo &GetLabelInfo() { return m_label; };
+  const CLabelInfo& GetLabelInfo() const { return m_label; }
+  CLabelInfo& GetLabelInfo() { return m_label; }
 
   /*! \brief Check a left aligned and right aligned label for overlap and cut the labels off so that no overlap occurs
 
@@ -221,7 +220,7 @@ public:
   static bool CheckAndCorrectOverlap(CGUILabel &label1, CGUILabel &label2);
 
 protected:
-  color_t GetColor() const;
+  UTILS::COLOR::Color GetColor() const;
 
   /*! \brief Computes the final layout of the text
    Uses the maximal position and width of the text, as well as the text length
@@ -235,10 +234,11 @@ private:
   CGUITextLayout m_textLayout;
 
   bool           m_scrolling;
-  OVER_FLOW      m_overflowType;
+  OVER_FLOW m_overflowType;
   CScrollInfo    m_scrollInfo;
   CRect          m_renderRect;   ///< actual sizing of text
   CRect          m_maxRect;      ///< maximum sizing of text
-  bool           m_invalid;      ///< if true, the label needs recomputing
-  COLOR          m_color;        ///< color to render text \sa SetColor, GetColor
+  bool m_invalid = true; ///< if true, the label needs recomputing
+  COLOR m_color = COLOR_TEXT; ///< color to render text \sa SetColor, GetColor
+  unsigned int   m_maxScrollLoops = ~0U;
 };

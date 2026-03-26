@@ -1,33 +1,20 @@
+/*
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
+
 #pragma once
 
-/*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
- *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
- */
+#include "interfaces/info/InfoBool.h"
 
 #include <map>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "interfaces/info/InfoBool.h"
-#include "utils/log.h"
 
 // forward definitions
 class TiXmlElement;
@@ -85,6 +72,7 @@ private:
   /*!
    \brief Load all include components (defaults, constants, variables, expressions and includes)
    from the given \code{file}.
+
    \param file the file to load
    \return true if the file was loaded otherwise false
   */
@@ -105,6 +93,7 @@ private:
 
   /*!
    \brief Expand any expressions nested in this expression.
+
    \param expression the expression to flatten
    \param resolved list of already evaluated expression names, to avoid expanding circular references
   */
@@ -121,6 +110,7 @@ private:
   void ResolveExpressions(TiXmlElement *node);
 
   typedef std::map<std::string, std::string> Params;
+  static void InsertNested(TiXmlElement* controls, TiXmlElement* include, TiXmlElement* node);
   static bool GetParameters(const TiXmlElement *include, const char *valueAttribute, Params& params);
   static void ResolveParametersForNode(TiXmlElement *node, const Params& params);
   static ResolveParamsResult ResolveParameters(const std::string& strInput, std::string& strOutput, const Params& params);
@@ -129,7 +119,7 @@ private:
   std::string ResolveExpressions(const std::string &expression) const;
 
   std::vector<std::string> m_files;
-  std::map<std::string, std::pair<TiXmlElement, Params> > m_includes;
+  std::map<std::string, std::pair<TiXmlElement, Params>> m_includes;
   std::map<std::string, TiXmlElement> m_defaults;
   std::map<std::string, TiXmlElement> m_skinvariables;
   std::map<std::string, std::string> m_constants;
@@ -140,58 +130,4 @@ private:
 
   std::set<std::string> m_expressionAttributes;
   std::set<std::string> m_expressionNodes;
-
-  // because C++98 doesn't support lambda functions we need this class to pass
-  // our replacer function to CGUIInfoLabel::ReplaceSpecialKeywordReferences
-  class ExpressionReplacer
-  {
-  public:
-    ExpressionReplacer(const std::map<std::string, std::string>& expressions)
-      : m_expressions(expressions) {}
-
-    std::string operator()(const std::string &str) const
-    {
-      std::map<std::string, std::string>::const_iterator it = m_expressions.find(str);
-      if (it != m_expressions.end())
-        return it->second;
-      return "";
-    }
-
-  private:
-    const std::map<std::string, std::string>& m_expressions;
-  };
-
-  class ExpressionFlattener
-  {
-  public:
-    ExpressionFlattener(CGUIIncludes* includes,
-                        const std::string& original,
-                        const std::vector<std::string>& resolved)
-      : m_includes(includes), m_original(original), m_resolved(resolved)
-    {}
-
-    std::string operator()(const std::string& expressionName) const
-    {
-      if (std::find(m_resolved.begin(), m_resolved.end(), expressionName) != m_resolved.end())
-      {
-        CLog::Log(LOGERROR, "Skin has a circular expression \"%s\": %s", m_resolved.back().c_str(), m_original.c_str());
-        return std::string();
-      }
-
-      std::map<std::string, std::string>::iterator it = m_includes->m_expressions.find(expressionName);
-      if (it == m_includes->m_expressions.end())
-        return std::string();
-
-      std::vector<std::string> rescopy = m_resolved;
-      rescopy.push_back(expressionName);
-      m_includes->FlattenExpression(it->second, rescopy);
-
-      return it->second;
-    }
-
-  private:
-    CGUIIncludes* m_includes;
-    std::string m_original;
-    std::vector<std::string> m_resolved;
-  };
 };
