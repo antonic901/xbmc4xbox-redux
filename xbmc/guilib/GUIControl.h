@@ -14,6 +14,7 @@
 */
 
 #include "DirtyRegion.h"
+#include "GUIAction.h"
 #include "VisibleEffect.h" // needed for the CAnimation members
 #include "guiinfo/GUIInfoBool.h"
 #include "guiinfo/GUIInfoColor.h" // needed for CGUIInfoColor to handle infolabel'ed colors
@@ -26,7 +27,6 @@ class CGUIListItem; // forward
 class CAction;
 
 class CGUIMessage;
-class CGUIAction;
 
 namespace KODI
 {
@@ -76,7 +76,6 @@ class CGUIControl
 public:
   CGUIControl();
   CGUIControl(int parentID, int controlID, float posX, float posY, float width, float height);
-  CGUIControl(const CGUIControl &);
   virtual ~CGUIControl(void);
   virtual CGUIControl *Clone() const=0;
 

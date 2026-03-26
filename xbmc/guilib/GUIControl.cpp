@@ -78,8 +78,6 @@ CGUIControl::CGUIControl(int parentID, int controlID, float posX, float posY, fl
   m_controlStats = nullptr;
 }
 
-CGUIControl::CGUIControl(const CGUIControl &) {}
-
 CGUIControl::~CGUIControl(void) {}
 
 void CGUIControl::AllocResources()
