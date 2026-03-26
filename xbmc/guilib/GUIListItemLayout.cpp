@@ -28,6 +28,7 @@ CGUIListItemLayout::CGUIListItemLayout(const CGUIListItemLayout& from)
     m_width(from.m_width),
     m_height(from.m_height),
     m_focused(from.m_focused),
+    m_invalidated(true),
     m_condition(from.m_condition),
     m_isPlaying(from.m_isPlaying),
     m_infoUpdateMillis(from.m_infoUpdateMillis)
@@ -45,6 +46,7 @@ CGUIListItemLayout::CGUIListItemLayout(const CGUIListItemLayout& from, CGUIContr
     m_width(from.m_width),
     m_height(from.m_height),
     m_focused(from.m_focused),
+    m_invalidated(true),
     m_condition(from.m_condition),
     m_isPlaying(from.m_isPlaying),
     m_infoUpdateMillis(from.m_infoUpdateMillis)
