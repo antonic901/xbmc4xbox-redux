@@ -8668,8 +8668,10 @@ int CGUIInfoManager::TranslateSingleString(const std::string &strCondition, bool
     {
       if (prop.name == "valueof")
       {
-        int value = -1;
-        std::from_chars(prop.param(0).data(), prop.param(0).data() + prop.param(0).size(), value);
+        char* endPtr = NULL;
+        int value = static_cast<int>(std::strtol(prop.param(0).c_str(), &endPtr, 10));
+        if (endPtr == prop.param(0) || *endPtr != '\0')
+          value = -1;
         return AddMultiInfo(CGUIInfo(INTEGER_VALUEOF, value));
       }
 
@@ -8683,9 +8685,9 @@ int CGUIInfoManager::TranslateSingleString(const std::string &strCondition, bool
           data[1] = -1;
           for (size_t i = 0; i < 2; i++)
           {
-            std::from_chars_result result = std::from_chars(
-                prop.param(i).data(), prop.param(i).data() + prop.param(i).size(), data[i]);
-            if (result.ec == std::errc::invalid_argument)
+            char* endPtr = NULL;
+            long value = std::strtol(prop.param(i).c_str(), &endPtr, 10);
+            if (endPtr == prop.param(i) || *endPtr != '\0')
             {
               // could not translate provided value to int, translate the info string
               data[i] = TranslateSingleString(prop.param(i), listItemDependent);
@@ -8693,7 +8695,7 @@ int CGUIInfoManager::TranslateSingleString(const std::string &strCondition, bool
             else
             {
               // conversion succeeded, integer value provided - translate it to an Integer.ValueOf() info.
-              data[i] = AddMultiInfo(CGUIInfo(INTEGER_VALUEOF, data[i]));
+              data[i] = AddMultiInfo(CGUIInfo(INTEGER_VALUEOF, static_cast<int>(value)));
             }
           }
           return AddMultiInfo(CGUIInfo(integer_bool.val, data[0], data[1]));
@@ -9501,7 +9503,12 @@ int CGUIInfoManager::getIntValue(int infoNum, const CGUIListItem *item, int cont
     if (value.find_first_of(':') != value.npos)
       intValue = StringUtils::TimeStringToSeconds(value);
     else
-      std::from_chars(value.data(), value.data() + value.size(), intValue);
+    {
+      char* endPtr = NULL;
+      int intValue = static_cast<int>(std::strtol(value.c_str(), &endPtr, 10));
+      if (endPtr == value || *endPtr != '\0')
+        intValue = 0;
+    }
   }
   return intValue;
 };
