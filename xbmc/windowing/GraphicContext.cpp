@@ -840,7 +840,7 @@ void CGraphicContext::RestoreCameraPosition()
   UpdateCameraPosition(m_cameras.top());
 }
 
-CRect CGraphicContext::generateAABB(const CRect &rect) const
+CRect CGraphicContext::GenerateAABB(const CRect &rect) const
 {
 // ------------------------
 // |(x1, y1)      (x2, y2)|
@@ -914,6 +914,11 @@ bool CGraphicContext::RectIsAngled(float x1, float y1, float x2, float y2) const
   if (m_finalTransform.matrix.TransformZCoord(x2, y2, 0)) return true;
   if (m_finalTransform.matrix.TransformZCoord(x1, y2, 0)) return true;
   return false;
+}
+
+UTILS::COLOR::Color CGraphicContext::MergeColor(UTILS::COLOR::Color color) const
+{
+  return m_finalTransform.matrix.TransformColor(color);
 }
 
 int CGraphicContext::GetFPS() const

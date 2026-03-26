@@ -199,22 +199,6 @@ namespace XBMCAddon
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_xbmcgui_listitem
-      /// @brief \python_func{ setIconImage(iconImage) }
-      ///-----------------------------------------------------------------------
-      /// @python_v16 Deprecated. Use **setArt()**.
-      /// @python_v19 setIconImage results in nop and will be removed in future
-      /// versions. Use **setArt()**.
-      ///
-      /// @todo Remove in future kodi versions
-      ///
-      setIconImage(...);
-#else
-      void setIconImage(const String& iconImage);
-#endif
-
-#ifdef DOXYGEN_SHOULD_USE_THIS
-      ///
-      /// \ingroup python_xbmcgui_listitem
       /// @brief \python_func{ setThumbnailImage(thumbFilename) }
       ///-----------------------------------------------------------------------
       /// @python_v16 Deprecated. Use **setArt()**.

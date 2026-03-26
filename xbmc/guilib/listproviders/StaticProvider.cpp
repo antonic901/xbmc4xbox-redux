@@ -54,17 +54,17 @@ CStaticListProvider::CStaticListProvider(const CStaticListProvider& other)
     m_defaultAlways(other.m_defaultAlways),
     m_updateTime(other.m_updateTime)
 {
-  for (const auto& item : other.m_items)
+  for (std::vector<CGUIStaticItemPtr>::const_iterator it = other.m_items.begin(); it != other.m_items.end(); ++it)
   {
-    boost::shared_ptr<CGUIListItem> control(item->Clone());
+    boost::shared_ptr<CGUIListItem> control((*it)->Clone());
     if (!control)
       continue;
 
-    boost::shared_ptr<CGUIStaticItem> newItem = std::dynamic_pointer_cast<CGUIStaticItem>(control);
+    boost::shared_ptr<CGUIStaticItem> newItem = boost::dynamic_pointer_cast<CGUIStaticItem>(control);
     if (!newItem)
       continue;
 
-    m_items.emplace_back(std::move(newItem));
+    m_items.push_back(boost::move(newItem));
   }
 }
 
@@ -72,7 +72,7 @@ CStaticListProvider::~CStaticListProvider() {}
 
 boost::movelib::unique_ptr<IListProvider> CStaticListProvider::Clone()
 {
-  return boost::movelib::make_unique<CStaticListProvider>(*this);
+  return boost::movelib::unique_ptr<IListProvider>(new CStaticListProvider(*this));
 }
 
 bool CStaticListProvider::Update(bool forceRefresh)
@@ -83,21 +83,21 @@ bool CStaticListProvider::Update(bool forceRefresh)
   else if (CTimeUtils::GetFrameTime() - m_updateTime > 1000)
   {
     m_updateTime = CTimeUtils::GetFrameTime();
-    for (auto& i : m_items)
-      i->UpdateProperties(m_parentID);
+    for (std::vector<CGUIStaticItemPtr>::iterator i = m_items.begin(); i != m_items.end(); ++i)
+      (*i)->UpdateProperties(m_parentID);
   }
-  for (auto& i : m_items)
-    changed |= i->UpdateVisibility(m_parentID);
+  for (std::vector<CGUIStaticItemPtr>::iterator i = m_items.begin(); i != m_items.end(); ++i)
+    changed |= (*i)->UpdateVisibility(m_parentID);
   return changed; //! @todo Also returned changed if properties are changed (if so, need to update scroll to letter).
 }
 
-void CStaticListProvider::Fetch(std::vector<boost::shared_ptr<CGUIListItem>>& items)
+void CStaticListProvider::Fetch(std::vector<boost::shared_ptr<CGUIListItem> >& items)
 {
   items.clear();
-  for (const auto& i : m_items)
+  for (std::vector<CGUIStaticItemPtr>::const_iterator i = m_items.begin(); i != m_items.end(); ++i)
   {
-    if (i->IsVisible())
-      items.push_back(i);
+    if ((*i)->IsVisible())
+      items.push_back(*i);
   }
 }
 
@@ -112,11 +112,11 @@ int CStaticListProvider::GetDefaultItem() const
   if (m_defaultItem >= 0)
   {
     unsigned int offset = 0;
-    for (const auto& i : m_items)
+    for (std::vector<CGUIStaticItemPtr>::const_iterator i = m_items.begin(); i != m_items.end(); ++i)
     {
-      if (i->IsVisible())
+      if ((*i)->IsVisible())
       {
-        if (i->m_iprogramCount == m_defaultItem)
+        if ((*i)->m_iprogramCount == m_defaultItem)
           return offset;
         offset++;
       }

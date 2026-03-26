@@ -103,11 +103,11 @@ DLNA_ORG_FLAGS_VAL = '01500000000000000000000000000000'
 /*----------------------------------------------------------------------
 |   static initializer
 +---------------------------------------------------------------------*/
-NPT_WinsockSystem::NPT_WinsockSystem() 
+NPT_WinsockSystem::NPT_WinsockSystem()
 {
 }
 
-NPT_WinsockSystem::~NPT_WinsockSystem() 
+NPT_WinsockSystem::~NPT_WinsockSystem()
 {
 }
 
@@ -128,7 +128,7 @@ NPT_NetworkInterface::GetNetworkInterfaces(NPT_List<NPT_NetworkInterface*>& inte
     NPT_IpAddress netmask;
     netmask.ResolveName(g_application.getNetwork().m_networkinfo.subnet);
 
-    NPT_IpAddress broadcast_address;        
+    NPT_IpAddress broadcast_address;
     broadcast_address.ResolveName("255.255.255.255");
 
     NPT_Flags flags = NPT_NETWORK_INTERFACE_FLAG_BROADCAST | NPT_NETWORK_INTERFACE_FLAG_MULTICAST;
@@ -151,10 +151,10 @@ NPT_NetworkInterface::GetNetworkInterfaces(NPT_List<NPT_NetworkInterface*>& inte
         broadcast_address,
         NPT_IpAddress::Any,
         netmask);
-    iface->AddAddress(iface_address);  
+    iface->AddAddress(iface_address);
 
     // add the interface to the list
-    interfaces.Add(iface);  
+    interfaces.Add(iface);
 
     return NPT_SUCCESS;
 }
@@ -163,7 +163,7 @@ NPT_NetworkInterface::GetNetworkInterfaces(NPT_List<NPT_NetworkInterface*>& inte
 /*----------------------------------------------------------------------
 |   NPT_GetEnvironment
 +---------------------------------------------------------------------*/
-NPT_Result 
+NPT_Result
 NPT_GetEnvironment(const char* name, NPT_String& value)
 {
     return NPT_FAILURE;
@@ -188,7 +188,7 @@ CUPnP* CUPnP::upnp = NULL;
 // change to false for XBMC_PC if you want real UPnP functionality
 // otherwise keep to true for xbox as it doesn't support multicast
 // don't change unless you know what you're doing!
-bool CUPnP::broadcast = true; 
+bool CUPnP::broadcast = true;
 
 /*----------------------------------------------------------------------
 |   CDeviceHostReferenceHolder class
@@ -421,7 +421,7 @@ CUPnPServer*
 CUPnP::CreateServer(int port /* = 0 */)
 {
     CUPnPServer* device =
-        new CUPnPServer(CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FRIENDLY_NAME).c_str(),
+        new CUPnPServer(CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FRIENDLY_NAME, INFO::DEFAULT_CONTEXT).c_str(),
                         CUPnPSettings::GetInstance().GetServerUUID().length()?CUPnPSettings::GetInstance().GetServerUUID().c_str():NULL,
                         port);
 
@@ -520,7 +520,7 @@ CUPnPRenderer*
 CUPnP::CreateRenderer(int port /* = 0 */)
 {
     CUPnPRenderer* device =
-        new CUPnPRenderer(CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FRIENDLY_NAME).c_str(),
+        new CUPnPRenderer(CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FRIENDLY_NAME, INFO::DEFAULT_CONTEXT).c_str(),
                           false,
                           (CUPnPSettings::GetInstance().GetRendererUUID().length() ? CUPnPSettings::GetInstance().GetRendererUUID().c_str() : NULL),
                           port);

@@ -19,6 +19,7 @@
 #include "utils/log.h"
 #include "xbox/custom_launch_params.h"
 
+#define VERSION_STRING SVN_APP_VERSION_SHORT"-"SVN_REV
 
 CUpdaterJob::CUpdaterJob(bool notify /* = false */, bool install /* = false */)
   : CJob(),
@@ -33,7 +34,7 @@ bool CUpdaterJob::DoWork()
   std::string strRevision = split[1];
   std::string strUpdateChannel = split[2] == "py2" ? "nightly" : "nightly-python3";
 
-  if (!CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool("Skin.HasSetting(updateavailable)"))
+  if (!CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool("Skin.HasSetting(updateavailable)", INFO::DEFAULT_CONTEXT))
   {
     if (strRevision.empty() || StringUtils::StartsWithNoCase(strRevision, "dev"))
       return true;

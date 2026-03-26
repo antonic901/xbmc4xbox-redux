@@ -1,12 +1,14 @@
 #pragma once
 
 #include "network/UdpClient.h"
-#include "Key.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
+#include "input/keyboard/Key.h"
 #include "boost/shared_ptr.hpp"
 
 /******************************** Description *********************************/
 
-/* 
+/*
  *  Header file that provides an API over HTTP between the web server and XBMC
  *
  *            heavily based on XBMCweb.h
@@ -26,7 +28,7 @@ public:
   ~CXbmcHttpShim();
 
   void xbmcForm(webs_t wp, char_t *path, char_t *query);
-  int	xbmcCommand( int eid, webs_t wp, int argc, char_t **argv);
+  int    xbmcCommand( int eid, webs_t wp, int argc, char_t **argv);
   CStdString xbmcProcessCommand( int eid, webs_t wp, char_t *command, char_t *parameter);
   CStdString xbmcExternalCall(char *command);
   bool checkForFunctionTypeParas(CStdString &cmd, CStdString &paras);
@@ -54,15 +56,15 @@ public:
   int xbmcCommand(const CStdString &parameter);
   int xbmcAddToPlayList(int numParas, CStdString paras[]);
   int xbmcAddToPlayListFromDB(int numParas, CStdString paras[]);
-  int xbmcPlayerPlayFile(int numParas, CStdString paras[]); 
-  int xbmcClearPlayList(int numParas, CStdString paras[]); 
-  int xbmcGetCurrentlyPlaying(int numParas, CStdString paras[]); 
-  int xbmcGetXBEID(int numParas, CStdString paras[]); 
-  int xbmcGetXBETitle(int numParas, CStdString paras[]); 
+  int xbmcPlayerPlayFile(int numParas, CStdString paras[]);
+  int xbmcClearPlayList(int numParas, CStdString paras[]);
+  int xbmcGetCurrentlyPlaying(int numParas, CStdString paras[]);
+  int xbmcGetXBEID(int numParas, CStdString paras[]);
+  int xbmcGetXBETitle(int numParas, CStdString paras[]);
   int xbmcGetSources(int numParas, CStdString paras[]);
   int xbmcGetMediaLocation(int numParas, CStdString paras[]);
   int xbmcGetDirectory(int numParas, CStdString paras[]);
-  int xbmcGetTagFromFilename(int numParas, CStdString paras[]); 
+  int xbmcGetTagFromFilename(int numParas, CStdString paras[]);
   int xbmcGetCurrentPlayList();
   int xbmcSetCurrentPlayList(int numParas, CStdString paras[]);
   int xbmcGetPlayListContents(int numParas, CStdString paras[]);

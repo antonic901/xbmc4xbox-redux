@@ -301,11 +301,11 @@ bool CGUISpinControl::OnMessage(CGUIMessage& message)
     case GUI_MSG_SET_LABELS:
       if (message.GetPointer())
       {
-        auto labels =
-            static_cast<const std::vector<std::pair<std::string, int>>*>(message.GetPointer());
+        const std::vector< std::pair<std::string, int> > *labels =
+            static_cast<const std::vector<std::pair<std::string, int> >*>(message.GetPointer());
         Clear();
-        for (const auto& i : *labels)
-          AddLabel(i.first, i.second);
+        for (std::vector< std::pair<std::string, int> >::const_iterator i = labels->begin(); i != labels->end(); ++i)
+          AddLabel(i->first, i->second);
         SetValue( message.GetParam1());
       }
       break;

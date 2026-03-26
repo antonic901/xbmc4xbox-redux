@@ -315,9 +315,9 @@ namespace XBMCAddon
       //doesn't seem to be a single InfoTag?
       //try full blown GuiInfoLabel then
       if (ret == 0)
-        return CGUIInfoLabel::GetLabel(cLine);
+        return KODI::GUILIB::GUIINFO::CGUIInfoLabel::GetLabel(cLine, INFO::DEFAULT_CONTEXT);
       else
-        return CServiceBroker::GetGUI()->GetInfoManager().GetLabel(ret);
+        return CServiceBroker::GetGUI()->GetInfoManager().GetLabel(ret, INFO::DEFAULT_CONTEXT);
     }
 
     String getInfoImage(const char * infotag)
@@ -368,7 +368,7 @@ namespace XBMCAddon
       {
         XBMCAddonUtils::GuiLock lock(nullptr, false);
 
-        int id = CServiceBroker::GetGUI()->GetWindowManager().GetTopMostModalDialogID();
+        int id = CServiceBroker::GetGUI()->GetWindowManager().GetTopmostModalDialog();
         if (id == WINDOW_INVALID) id = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
         ret = CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool(condition,id);
       }

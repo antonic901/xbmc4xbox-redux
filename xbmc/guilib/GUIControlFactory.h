@@ -15,7 +15,6 @@
 
 #include "GUIControl.h"
 #include "utils/ColorUtils.h"
-#include "utils/MovingSpeed.h"
 
 #include <string>
 #include <vector>
@@ -128,9 +127,6 @@ public:
 
 private:
   static std::string GetType(const TiXmlElement* pControlNode);
-  static bool GetMovingSpeedConfig(const TiXmlNode* pRootNode,
-                                   const char* strTag,
-                                   UTILS::MOVING_SPEED::MapEventConfig& movingSpeedCfg);
   static bool GetConditionalVisibility(const TiXmlNode* control,
                                        std::string& condition,
                                        std::string& allowHiddenFocus);

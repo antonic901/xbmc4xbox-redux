@@ -216,7 +216,7 @@ bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItem
   {
     CFileItemPtr pItem(new CFileItem());
     pItem->SetPath("insignia://");
-    pItem->SetIconImage("insignia/logo.png");
+    pItem->SetArt("icon", "insignia/logo.png");
     pItem->SetLabel(g_localizeStrings.Get(38901));
     pItem->SetLabelPreformated(true);
     pItem->SetProperty("overview", g_localizeStrings.Get(38902));
@@ -224,7 +224,7 @@ bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItem
     items.Add(pItem);
 
     CFileItemPtr pItem2(new CFileItem("gamesaves://", true));
-    pItem2->SetIconImage("DefaultGameAddons.png");
+    pItem2->SetArt("icon", "DefaultGameAddons.png");
     pItem2->SetLabel(g_localizeStrings.Get(38779));
     pItem2->SetLabelPreformated(true);
     pItem2->SetProperty("overview", g_localizeStrings.Get(38779));
@@ -232,7 +232,7 @@ bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItem
     items.Add(pItem2);
 
     CFileItemPtr pItem3(new CFileItem("programdb://games/recentlyplayed/", true));
-    pItem3->SetIconImage("DefaultRecentlyAddedMovies.png");
+    pItem3->SetArt("icon", "DefaultRecentlyAddedMovies.png");
     pItem3->SetLabel(g_localizeStrings.Get(38973));
     pItem3->SetLabelPreformated(true);
     pItem3->SetSpecialSort(SortSpecialOnTop);

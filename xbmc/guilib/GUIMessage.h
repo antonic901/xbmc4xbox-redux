@@ -88,11 +88,6 @@
 #define GUI_MSG_RENDERER_RESET     36
 
 /*!
- \brief A control wishes to have (or release) exclusive access to mouse actions
- */
-#define GUI_MSG_EXCLUSIVE_MOUSE     37
-
-/*!
  \brief A request for supported gestures is made
  */
 #define GUI_MSG_GESTURE_NOTIFY     38
@@ -354,9 +349,11 @@
     SendWindowMessage(_msg); \
   } while (0)
 
+#include "system.h" // <xtl.h>, int64_t
+
 #include <string>
 #include <vector>
-#include <memory>
+#include <boost/shared_ptr.hpp>
 
 // forwards
 class CGUIListItem;
@@ -366,7 +363,7 @@ class CFileItemList;
  \ingroup winmsg
  \brief
  */
-class CGUIMessage final
+class CGUIMessage
 {
 public:
   CGUIMessage(int dwMsg, int senderID, int controlID, int64_t param1 = 0, int64_t param2 = 0);

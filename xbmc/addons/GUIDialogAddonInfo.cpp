@@ -36,7 +36,9 @@
 #include "GUIUserMessages.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "pictures/GUIWindowSlideShow.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
@@ -232,13 +234,13 @@ int CGUIDialogAddonInfo::AskForVersion(std::vector<std::pair<AddonVersion, std::
     if (versionInfo.second == LOCAL_CACHE)
     {
       item.SetLabel2(g_localizeStrings.Get(24095));
-      item.SetIconImage("DefaultAddonRepository.png");
+      item.SetArt("icon", "DefaultAddonRepository.png");
       dialog->Add(item);
     }
     else if (CServiceBroker::GetAddonMgr().GetAddon(versionInfo.second, repo, ADDON_REPOSITORY))
     {
       item.SetLabel2(repo->Name());
-      item.SetIconImage(repo->Icon());
+      item.SetArt("icon", repo->Icon());
       dialog->Add(item);
     }
   }

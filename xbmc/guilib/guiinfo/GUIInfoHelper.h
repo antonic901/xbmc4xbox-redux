@@ -10,7 +10,8 @@
 
 #include "playlists/PlayListTypes.h"
 
-#include <memory>
+#include "system.h" // <xtl.h>
+#include <boost/shared_ptr.hpp>
 #include <string>
 
 class CFileItem;

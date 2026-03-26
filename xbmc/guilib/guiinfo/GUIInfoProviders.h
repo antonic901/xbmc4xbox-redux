@@ -97,14 +97,6 @@ public:
   bool GetBool(bool& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const;
 
   /*!
-   * @brief Set new audio/video/subtitle stream info data at all registered providers.
-   * @param audioInfo New audio stream info.
-   * @param videoInfo New video stream info.
-   * @param subtitleInfo New subtitle stream info.
-   */
-  void UpdateAVInfo(const AudioStreamInfo& audioInfo, const VideoStreamInfo& videoInfo, const SubtitleStreamInfo& subtitleInfo);
-
-  /*!
    * @brief Get the player guiinfo provider.
    * @return The player guiinfo provider.
    */

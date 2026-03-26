@@ -30,7 +30,10 @@
 #include "utils/log.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "windowing/GraphicContext.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
+#include "input/keyboard/KeyIDs.h"
 #include "utils/StringUtils.h"
 
 #include <map>
@@ -138,7 +141,7 @@ bool CEventClient::AddPacket(CEventPacket *packet)
       m_bSequenceError = true;
       delete m_seqPackets[ packet->Sequence() ];
     }
- 
+
     m_seqPackets[ packet->Sequence() ] = packet;
     if (m_seqPackets.size() == packet->Size())
     {

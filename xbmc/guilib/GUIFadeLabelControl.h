@@ -73,6 +73,6 @@ protected:
   unsigned int m_scrollSpeed;
   bool m_resetOnLabelChange;
   bool m_randomized;
-  bool m_allLabelsShown = true;
+  bool m_allLabelsShown;
 };
 

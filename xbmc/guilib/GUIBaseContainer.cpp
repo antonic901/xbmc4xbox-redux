@@ -29,7 +29,7 @@
 #include "utils/XBMCTinyXML.h"
 #include "utils/log.h"
 
-#include <memory>
+#include <boost/move/make_unique.hpp>
 
 using namespace KODI;
 
@@ -52,6 +52,8 @@ CGUIBaseContainer::CGUIBaseContainer(int parentID, int controlID, float posX, fl
   m_wasReset = false;
   m_layout = NULL;
   m_focusedLayout = NULL;
+  m_layoutCondition = false;
+  m_focusedLayoutCondition = false;
   m_cacheItems = preloadItems;
   m_scrollItemsPerFrame = 0.0f;
   m_type = VIEW_TYPE_NONE;
@@ -59,6 +61,9 @@ CGUIBaseContainer::CGUIBaseContainer(int parentID, int controlID, float posX, fl
   m_autoScrollDelayTime = 0;
   m_autoScrollIsReversed = false;
   m_lastRenderTime = 0;
+  m_gestureActive = false;
+  m_waitForScrollEnd = false;
+  m_lastScrollValue = 0.0f;
 }
 
 CGUIBaseContainer::CGUIBaseContainer(const CGUIBaseContainer& other)
@@ -72,7 +77,6 @@ CGUIBaseContainer::CGUIBaseContainer(const CGUIBaseContainer& other)
     m_layoutCondition(other.m_layoutCondition),
     m_focusedLayoutCondition(other.m_focusedLayoutCondition),
     m_scroller(other.m_scroller),
-    m_listProvider(other.m_listProvider ? other.m_listProvider->Clone() : nullptr),
     m_wasReset(other.m_wasReset),
     m_letterOffsets(other.m_letterOffsets),
     m_autoScrollCondition(other.m_autoScrollCondition),
@@ -98,22 +102,23 @@ CGUIBaseContainer::CGUIBaseContainer(const CGUIBaseContainer& other)
 {
   // Initialize CGUIControl
   m_bInvalidated = true;
+  m_listProvider = other.m_listProvider ? other.m_listProvider->Clone() : NULL;
 
-  for (const auto& item : other.m_items)
-    m_items.emplace_back(boost::make_shared<CGUIListItem>(*item));
+  for (std::vector<boost::shared_ptr<CGUIListItem> >::const_iterator it = other.m_items.begin(); it != other.m_items.end(); ++it)
+    m_items.push_back(boost::make_shared<CGUIListItem>(**it));
 
-  for (const auto& layout : other.m_layouts)
-    m_layouts.emplace_back(layout, this);
+  for (std::list<CGUIListItemLayout>::const_iterator it = other.m_layouts.begin(); it != other.m_layouts.end(); ++it)
+    m_layouts.push_back(CGUIListItemLayout(*it, this));
 
-  for (const auto& focusedLayout : other.m_focusedLayouts)
-    m_focusedLayouts.emplace_back(focusedLayout, this);
+  for (std::list<CGUIListItemLayout>::const_iterator it = other.m_focusedLayouts.begin(); it != other.m_focusedLayouts.end(); ++it)
+    m_focusedLayouts.push_back(CGUIListItemLayout(*it, this));
 }
 
 CGUIBaseContainer::~CGUIBaseContainer(void)
 {
   // release the container from items
-  for (const auto& item : m_items)
-    item->FreeMemory();
+  for (iItems it = m_items.begin(); it != m_items.end(); ++it)
+    (*it)->FreeMemory();
 }
 
 void CGUIBaseContainer::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions)
@@ -246,8 +251,8 @@ void CGUIBaseContainer::ProcessItem(float posX,
       item->GetFocusedLayout()->SetFocusedItem(0);  // focus is not set
     if (!item->GetLayout())
     {
-      auto layout = boost::movelib::make_unique<CGUIListItemLayout>(*m_layout, this);
-      item->SetLayout(std::move(layout));
+      boost::movelib::unique_ptr<CGUIListItemLayout> layout = boost::movelib::make_unique<CGUIListItemLayout>(*m_layout, this);
+      item->SetLayout(boost::move(layout));
     }
     if (item->GetFocusedLayout() && item->GetFocusedLayout()->IsAnimating(ANIM_TYPE_UNFOCUS))
       item->GetFocusedLayout()->Process(item.get(), m_parentID, currentTime, dirtyregions);
@@ -354,7 +359,7 @@ bool CGUIBaseContainer::OnAction(const CAction &action)
   if (action.GetID() == KEY_UNICODE)
   {
     std::string letter;
-    g_charsetConverter.wToUTF8({action.GetUnicode()}, letter);
+    g_charsetConverter.wToUTF8(std::wstring(1, action.GetUnicode()), letter);
     OnJumpLetter(letter);
     return true;
   }
@@ -656,7 +661,7 @@ void CGUIBaseContainer::OnJumpLetter(const std::string& letter, bool skip /*=fal
   {
     boost::shared_ptr<CGUIListItem> item = m_items[i];
     std::string label = item->GetLabel();
-    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_FILELISTS_IGNORETHEWHENSORTING))
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting"))
       label = SortUtils::RemoveArticles(label);
     if (0 == StringUtils::CompareNoCase(label, m_match, m_match.size()))
     {
@@ -847,7 +852,7 @@ void CGUIBaseContainer::SetFocus(bool bOnOff)
 void CGUIBaseContainer::SaveStates(std::vector<CControlState> &states)
 {
   if (!m_listProvider || !m_listProvider->AlwaysFocusDefaultItem())
-    states.emplace_back(GetID(), GetSelectedItem());
+    states.push_back(CControlState(GetID(), GetSelectedItem()));
 }
 
 void CGUIBaseContainer::SetPageControl(int id)
@@ -1043,7 +1048,7 @@ void CGUIBaseContainer::UpdateScrollByLetter()
     if (currentMatch != nextLetter)
     {
       currentMatch = nextLetter;
-      m_letterOffsets.emplace_back(static_cast<int>(i), currentMatch);
+      m_letterOffsets.push_back(std::make_pair(static_cast<int>(i), currentMatch));
     }
   }
 }
@@ -1170,7 +1175,7 @@ void CGUIBaseContainer::LoadLayout(TiXmlElement *layout)
   TiXmlElement *itemElement = layout->FirstChildElement("itemlayout");
   while (itemElement)
   { // we have a new item layout
-    m_layouts.emplace_back();
+    m_layouts.push_back(CGUIListItemLayout());
     m_layouts.back().LoadLayout(itemElement, GetParentID(), false, m_width, m_height);
     itemElement = itemElement->NextSiblingElement("itemlayout");
     m_layouts.back().SetParentControl(this);
@@ -1178,7 +1183,7 @@ void CGUIBaseContainer::LoadLayout(TiXmlElement *layout)
   itemElement = layout->FirstChildElement("focusedlayout");
   while (itemElement)
   { // we have a new item layout
-    m_focusedLayouts.emplace_back();
+    m_focusedLayouts.push_back(CGUIListItemLayout());
     m_focusedLayouts.back().LoadLayout(itemElement, GetParentID(), true, m_width, m_height);
     itemElement = itemElement->NextSiblingElement("focusedlayout");
     m_focusedLayouts.back().SetParentControl(this);
@@ -1194,7 +1199,7 @@ void CGUIBaseContainer::LoadListProvider(TiXmlElement *content, int defaultItem,
 
 void CGUIBaseContainer::SetListProvider(boost::movelib::unique_ptr<IListProvider> provider)
 {
-  m_listProvider = std::move(provider);
+  m_listProvider = boost::move(provider);
   UpdateListProvider(true);
 }
 
@@ -1256,7 +1261,7 @@ bool CGUIBaseContainer::GetCondition(int condition, int data) const
   case CONTAINER_HAS_PREVIOUS:
     return (HasPreviousPage());
   case CONTAINER_HAS_PARENT_ITEM:
-    return (m_items.size() && m_items[0]->IsFileItem() && (std::static_pointer_cast<CFileItem>(m_items[0]))->IsParentFolder());
+    return (m_items.size() && m_items[0]->IsFileItem() && (boost::static_pointer_cast<CFileItem>(m_items[0]))->IsParentFolder());
   case CONTAINER_SUBITEM:
     {
       CGUIListItemLayout *layout = GetFocusedLayout();
@@ -1274,11 +1279,11 @@ bool CGUIBaseContainer::GetCondition(int condition, int data) const
 void CGUIBaseContainer::GetCurrentLayouts()
 {
   m_layout = NULL;
-  for (auto &layout : m_layouts)
+  for (std::list<CGUIListItemLayout>::iterator it = m_layouts.begin(); it != m_layouts.end(); ++it)
   {
-    if (layout.CheckCondition())
+    if (it->CheckCondition())
     {
-      m_layout = &layout;
+      m_layout = &(*it);
       break;
     }
   }
@@ -1286,11 +1291,11 @@ void CGUIBaseContainer::GetCurrentLayouts()
     m_layout = &m_layouts.front(); // failsafe
 
   m_focusedLayout = NULL;
-  for (auto &layout : m_focusedLayouts)
+  for (std::list<CGUIListItemLayout>::iterator it = m_focusedLayouts.begin(); it != m_focusedLayouts.end(); ++it)
   {
-    if (layout.CheckCondition())
+    if (it->CheckCondition())
     {
-      m_focusedLayout = &layout;
+      m_focusedLayout = &(*it);
       break;
     }
   }
@@ -1324,7 +1329,7 @@ std::string CGUIBaseContainer::GetLabel(int info) const
     break;
   case CONTAINER_CURRENT_ITEM:
     {
-      if (m_items.size() && m_items[0]->IsFileItem() && (std::static_pointer_cast<CFileItem>(m_items[0]))->IsParentFolder())
+      if (m_items.size() && m_items[0]->IsFileItem() && (boost::static_pointer_cast<CFileItem>(m_items[0]))->IsParentFolder())
         label = std::to_string(GetSelectedItem());
       else
         label = std::to_string(GetSelectedItem() + 1);
@@ -1334,7 +1339,7 @@ std::string CGUIBaseContainer::GetLabel(int info) const
   case CONTAINER_NUM_ITEMS:
     {
       unsigned int numItems = GetNumItems();
-      if (info == CONTAINER_NUM_ITEMS && numItems && m_items[0]->IsFileItem() && (std::static_pointer_cast<CFileItem>(m_items[0]))->IsParentFolder())
+      if (info == CONTAINER_NUM_ITEMS && numItems && m_items[0]->IsFileItem() && (boost::static_pointer_cast<CFileItem>(m_items[0]))->IsParentFolder())
         label = std::to_string(numItems - 1);
       else
         label = std::to_string(numItems);
@@ -1343,9 +1348,9 @@ std::string CGUIBaseContainer::GetLabel(int info) const
   case CONTAINER_NUM_NONFOLDER_ITEMS:
     {
       int numItems = 0;
-      for (const auto& item : m_items)
+      for (std::vector<boost::shared_ptr<CGUIListItem> >::const_iterator it = m_items.begin(); it != m_items.end(); ++it)
       {
-        if (!item->m_bIsFolder)
+        if (!(*it)->m_bIsFolder)
           numItems++;
       }
       label = std::to_string(numItems);

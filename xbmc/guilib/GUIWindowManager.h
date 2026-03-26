@@ -16,7 +16,6 @@
 #include "messaging/IMessageTarget.h"
 
 #include <list>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -26,7 +25,7 @@ class CGUIMediaWindow;
 #ifdef TARGET_WINDOWS_STORE
 #pragma pack(push, 8)
 #endif
-enum class DialogModalityType;
+enum DialogModalityType;
 #ifdef TARGET_WINDOWS_STORE
 #pragma pack(pop)
 #endif
@@ -140,6 +139,14 @@ public:
    */
   void DestroyWindow(int id);
 
+#ifdef HAS_XBOX_D3D
+  /*! \brief Used for rendering all visible dialogs while we
+   are in CGUIWindowFullscreen and videoplayback is not paused.
+   For more info see CApplication::Render().
+   */
+  void RenderDialogs();
+#endif
+
   /*! \brief Return the window of type \code{T} with the given id or
    * null if no window exists with the given id.
    *
@@ -147,8 +154,7 @@ public:
    * \param id the window id
    * \return the window with for the given type \code{T} or null
    */
-  template<typename T,
-           typename std::enable_if<std::is_base_of<CGUIWindow, T>::value>::type* = nullptr>
+  template<typename T>
   T* GetWindow(int id) const
   {
     return dynamic_cast<T*>(GetWindow(id));
@@ -264,7 +270,7 @@ private:
 
   bool HandleAction(const CAction &action) const;
 
-  std::unordered_map<int, CGUIWindow*> m_mapWindows;
+  std::map<int, CGUIWindow*> m_mapWindows;
   std::vector<CGUIWindow*> m_vecCustomWindows;
   std::vector<CGUIWindow*> m_activeDialogs;
   std::vector<CGUIWindow*> m_deleteWindows;
@@ -278,8 +284,6 @@ private:
 
   int  m_iNested;
   bool m_initialized;
-  mutable bool m_touchGestureActive{false};
-  mutable bool m_inhibitTouchGestureEvents{false};
 
   CDirtyRegionList m_dirtyregions;
   CDirtyRegionTracker m_tracker;

@@ -20,7 +20,9 @@
 
 #include "system.h"
 #include "GUIWindowSettings.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 
 CGUIWindowSettings::CGUIWindowSettings(void)
     : CGUIWindow(WINDOW_SETTINGS_MENU, "Settings.xml")

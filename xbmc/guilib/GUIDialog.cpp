@@ -8,6 +8,7 @@
 
 #include "GUIDialog.h"
 
+#include "Application.h" // IsCurrentThread
 #include "GUIComponent.h"
 #include "GUIControlFactory.h"
 #include "GUILabelControl.h"
@@ -115,7 +116,7 @@ void CGUIDialog::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregi
 
   // if we were running but now we're not, mark us dirty
   if (!m_active && m_wasRunning)
-    dirtyregions.emplace_back(m_renderRegion);
+    dirtyregions.push_back(CDirtyRegion(m_renderRegion));
 
   if (m_active)
     CGUIWindow::DoProcess(currentTime, dirtyregions);
@@ -185,13 +186,17 @@ void CGUIDialog::Open_Internal(bool bProcessRenderLoop, const std::string &param
 
 void CGUIDialog::Open(const std::string &param /* = "" */)
 {
-  CGUIDialog::Open(m_modalityType != DialogModalityType::MODELESS, param);
+  CGUIDialog::Open(m_modalityType != MODELESS, param);
 }
 
 
 void CGUIDialog::Open(bool bProcessRenderLoop, const std::string& param /* = "" */)
 {
-  if (!CServiceBroker::GetAppMessenger()->IsProcessThread())
+#ifdef HAS_XBOX_D3D
+  if (!g_application.IsCurrentThread() && !CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
+#else
+  if (!g_application.IsCurrentThread())
+#endif
   {
     // make sure graphics lock is not held
     CSingleExit leaveIt(CServiceBroker::GetWinSystem()->GetGfxContext());

@@ -15,7 +15,12 @@
 
 #include "GUIControl.h"
 #include "GUITexture.h"
-#include "utils/MovingSpeed.h"
+
+#define DIRECTION_NONE 0
+#define DIRECTION_UP 1
+#define DIRECTION_DOWN 2
+#define DIRECTION_LEFT 3
+#define DIRECTION_RIGHT 4
 
 /*!
  \ingroup controls
@@ -31,8 +36,7 @@ public:
                     float width,
                     float height,
                     const CTextureInfo& textureFocus,
-                    const CTextureInfo& textureNoFocus,
-                    UTILS::MOVING_SPEED::MapEventConfig& movingSpeedCfg);
+                    const CTextureInfo& textureNoFocus);
 
   virtual ~CGUIResizeControl() {}
   virtual CGUIResizeControl* Clone() const { return new CGUIResizeControl(*this); }
@@ -55,12 +59,17 @@ public:
 protected:
   virtual bool UpdateColors(const CGUIListItem* item);
   bool SetAlpha(unsigned char alpha);
+  void UpdateSpeed(int nDirection);
   void Resize(float x, float y);
   boost::movelib::unique_ptr<CGUITexture> m_imgFocus;
   boost::movelib::unique_ptr<CGUITexture> m_imgNoFocus;
   unsigned int m_frameCounter;
-  UTILS::MOVING_SPEED::CMovingSpeed m_movingSpeed;
+  unsigned int m_lastMoveTime;
+  int m_nDirection;
+  float m_fSpeed;
   float m_fAnalogSpeed;
+  float m_fMaxSpeed;
+  float m_fAcceleration;
   float m_x1, m_x2, m_y1, m_y2;
 
 private:

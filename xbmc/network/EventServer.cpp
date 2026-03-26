@@ -30,6 +30,8 @@
 #include "threads/CriticalSection.h"
 #include "Application.h"
 #include "Util.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "input/ButtonTranslator.h"
 #include "threads/SingleLock.h"
 #include "guilib/GUIComponent.h"

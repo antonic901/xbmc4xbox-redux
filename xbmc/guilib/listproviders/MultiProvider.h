@@ -27,14 +27,14 @@ public:
   explicit CMultiProvider(const CMultiProvider& other);
 
   // Implementation of IListProvider
-  boost::movelib::unique_ptr<IListProvider> Clone() override;
-  bool Update(bool forceRefresh) override;
-  void Fetch(std::vector<boost::shared_ptr<CGUIListItem>>& items) override;
-  bool IsUpdating() const override;
-  void Reset() override;
-  bool OnClick(const boost::shared_ptr<CGUIListItem>& item) override;
-  bool OnInfo(const boost::shared_ptr<CGUIListItem>& item) override;
-  bool OnContextMenu(const boost::shared_ptr<CGUIListItem>& item) override;
+  virtual boost::movelib::unique_ptr<IListProvider> Clone();
+  virtual bool Update(bool forceRefresh);
+  virtual void Fetch(std::vector<boost::shared_ptr<CGUIListItem> >& items);
+  virtual bool IsUpdating() const;
+  virtual void Reset();
+  virtual bool OnClick(const boost::shared_ptr<CGUIListItem>& item);
+  virtual bool OnInfo(const boost::shared_ptr<CGUIListItem>& item);
+  virtual bool OnContextMenu(const boost::shared_ptr<CGUIListItem>& item);
 
 protected:
   typedef size_t item_key_type;

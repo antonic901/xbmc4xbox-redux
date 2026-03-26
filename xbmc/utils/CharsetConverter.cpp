@@ -64,13 +64,13 @@
   #define UTF16_CHARSET "UTF-16" ENDIAN_SUFFIX
   #define UTF32_CHARSET "UTF-32" ENDIAN_SUFFIX
   #define UTF8_SOURCE "UTF-8"
-  #define WCHAR_CHARSET UTF16_CHARSET 
+  #define WCHAR_CHARSET UTF16_CHARSET
 #elif defined(TARGET_ANDROID)
   #define WCHAR_IS_UCS_4 1
   #define UTF16_CHARSET "UTF-16" ENDIAN_SUFFIX
   #define UTF32_CHARSET "UTF-32" ENDIAN_SUFFIX
   #define UTF8_SOURCE "UTF-8"
-  #define WCHAR_CHARSET UTF32_CHARSET 
+  #define WCHAR_CHARSET UTF32_CHARSET
 #else
   #define UTF16_CHARSET "UTF-16" ENDIAN_SUFFIX
   #define UTF32_CHARSET "UTF-32" ENDIAN_SUFFIX
@@ -93,7 +93,7 @@ enum SpecialCharset
 {
   NotSpecialCharset = 0,
   SystemCharset,
-  UserCharset /* locale.charset */, 
+  UserCharset /* locale.charset */,
   SubtitleCharset /* subtitles.charset */,
   KaraokeCharset /* karaoke.charset */
 };
@@ -201,7 +201,7 @@ iconv_t CConverterType::GetConverter(CSingleLock& converterLock)
       m_targetCharset = ResolveSpecialCharset(m_targetSpecialCharset);
 
     m_iconv = iconv_open(m_targetCharset.c_str(), m_sourceCharset.c_str());
-    
+
     if (m_iconv == NO_ICONV)
       CLog::Log(LOGERROR, "%s: iconv_open() for \"%s\" -> \"%s\" failed, errno = %d (%s)",
                 __FUNCTION__, m_sourceCharset.c_str(), m_targetCharset.c_str(), errno, strerror(errno));
@@ -294,13 +294,17 @@ enum StdConversionType /* Keep it in sync with CCharsetConverter::CInnerConverte
 };
 
 
-/* We don't want to pollute header file with many additional includes and definitions, so put 
+/* We don't want to pollute header file with many additional includes and definitions, so put
    here all staff that require usage of types defined in this file or in additional headers */
 class CCharsetConverter::CInnerConverter
 {
 public:
-  static bool logicalToVisualBiDi(const std::u32string& stringSrc, std::u32string& stringDst, FriBidiCharType base = FRIBIDI_TYPE_LTR, const bool failOnBadString = false);
-  
+  static bool logicalToVisualBiDi(const std::u32string& stringSrc,
+                                  std::u32string& stringDst,
+                                  FriBidiCharType base = FRIBIDI_TYPE_LTR,
+                                  const bool failOnBadString = false,
+                                  int* visualToLogicalMap = NULL);
+
   template<class INPUT,class OUTPUT>
   static bool stdConvert(StdConversionType convertType, const INPUT& strSource, OUTPUT& strDest, bool failOnInvalidChar = false);
   template<class INPUT,class OUTPUT>
@@ -498,7 +502,12 @@ bool CCharsetConverter::CInnerConverter::convert(iconv_t type, int multiplier, c
   return true;
 }
 
-bool CCharsetConverter::CInnerConverter::logicalToVisualBiDi(const std::u32string& stringSrc, std::u32string& stringDst, FriBidiCharType base /*= FRIBIDI_TYPE_LTR*/, const bool failOnBadString /*= false*/)
+bool CCharsetConverter::CInnerConverter::logicalToVisualBiDi(
+    const std::u32string& stringSrc,
+    std::u32string& stringDst,
+    FriBidiCharType base /*= FRIBIDI_TYPE_LTR*/,
+    const bool failOnBadString /*= false*/,
+    int* visualToLogicalMap /*= nullptr*/)
 {
   stringDst.clear();
 
@@ -518,7 +527,7 @@ bool CCharsetConverter::CInnerConverter::logicalToVisualBiDi(const std::u32strin
       lineEnd = srcLen;
     else
       lineEnd++; // include '\n'
-    
+
     const size_t lineLen = lineEnd - lineStart;
 
     FriBidiChar* visual = (FriBidiChar*) malloc((lineLen + 1) * sizeof(FriBidiChar));
@@ -531,7 +540,8 @@ bool CCharsetConverter::CInnerConverter::logicalToVisualBiDi(const std::u32strin
 
     bool bidiFailed = false;
     FriBidiCharType baseCopy = base; // preserve same value for all lines, required because fribidi_log2vis will modify parameter value
-    if (fribidi_log2vis((const FriBidiChar*)(stringSrc.c_str() + lineStart), lineLen, &baseCopy, visual, NULL, NULL, NULL))
+    if (fribidi_log2vis(reinterpret_cast<const FriBidiChar*>(stringSrc.c_str() + lineStart),
+                        lineLen, &baseCopy, visual, NULL, visualToLogicalMap, NULL))
     {
       // Removes bidirectional marks
       const int newLen = fribidi_remove_bidi_marks(visual, lineLen, NULL, NULL, NULL);
@@ -723,9 +733,15 @@ bool CCharsetConverter::utf32ToW(const std::u32string& utf32StringSrc, std::wstr
 #endif // !WCHAR_IS_UCS_4
 }
 
-bool CCharsetConverter::utf32logicalToVisualBiDi(const std::u32string& logicalStringSrc, std::u32string& visualStringDst, bool forceLTRReadingOrder /*= false*/, bool failOnBadString /*= false*/)
+bool CCharsetConverter::utf32logicalToVisualBiDi(const std::u32string& logicalStringSrc,
+                                                 std::u32string& visualStringDst,
+                                                 bool forceLTRReadingOrder /*= false*/,
+                                                 bool failOnBadString /*= false*/,
+                                                 int* visualToLogicalMap /*= nullptr*/)
 {
-  return CInnerConverter::logicalToVisualBiDi(logicalStringSrc, visualStringDst, forceLTRReadingOrder ? FRIBIDI_TYPE_LTR : FRIBIDI_TYPE_PDF, failOnBadString);
+  return CInnerConverter::logicalToVisualBiDi(
+      logicalStringSrc, visualStringDst, forceLTRReadingOrder ? FRIBIDI_TYPE_LTR : FRIBIDI_TYPE_PDF,
+      failOnBadString, visualToLogicalMap);
 }
 
 bool CCharsetConverter::wToUtf32(const std::wstring& wStringSrc, std::u32string& utf32StringDst, bool failOnBadChar /*= true*/)
@@ -739,7 +755,7 @@ bool CCharsetConverter::wToUtf32(const std::wstring& wStringSrc, std::u32string&
 
 // The bVisualBiDiFlip forces a flip of characters for hebrew/arabic languages, only set to false if the flipping
 // of the string is already made or the string is not displayed in the GUI
-bool CCharsetConverter::utf8ToW(const std::string& utf8StringSrc, std::wstring& wStringDst, bool bVisualBiDiFlip /*= true*/, 
+bool CCharsetConverter::utf8ToW(const std::string& utf8StringSrc, std::wstring& wStringDst, bool bVisualBiDiFlip /*= true*/,
                                 bool forceLTRReadingOrder /*= false*/, bool failOnBadChar /*= false*/)
 {
   // Try to flip hebrew/arabic characters, if any
@@ -755,7 +771,7 @@ bool CCharsetConverter::utf8ToW(const std::string& utf8StringSrc, std::wstring& 
 
     return CInnerConverter::stdConvert(Utf32ToW, utf32flipped, wStringDst, failOnBadChar) && bidiResult;
   }
-  
+
   return CInnerConverter::stdConvert(Utf8toW, utf8StringSrc, wStringDst, failOnBadChar);
 }
 
@@ -794,7 +810,7 @@ bool CCharsetConverter::ToUtf8(const std::string& strSourceCharset, const std::s
     utf8StringDst = stringSrc;
     return true;
   }
-  
+
   return CInnerConverter::customConvert(strSourceCharset, "UTF-8", stringSrc, utf8StringDst, failOnBadChar);
 }
 

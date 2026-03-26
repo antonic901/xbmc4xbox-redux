@@ -20,7 +20,9 @@
 
 #include "GUIDialogVolumeBar.h"
 #include "Application.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 
 #define VOLUME_BAR_DISPLAY_TIME 1000L
 

@@ -45,7 +45,9 @@
 #include "music/tags/MusicInfoTag.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogProgress.h"
@@ -909,7 +911,7 @@ void CGUIWindowMusicBase::OnRetrieveMusicInfo(CFileItemList& items)
   m_musicInfoLoader.SetProgressCallback(m_dlgProgress);
   m_musicInfoLoader.Load(items);
 
-  bool bShowProgress=!CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog();
+  bool bShowProgress = !CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog(true);
   bool bProgressVisible=false;
 
   unsigned int tick=XbmcThreads::SystemClockMillis();
@@ -1003,7 +1005,7 @@ bool CGUIWindowMusicBase::GetDirectory(const std::string &strDirectory, CFileIte
 
       newPlaylist.reset(new CFileItem("newplaylist://", false));
       newPlaylist->SetLabel(g_localizeStrings.Get(525));
-      newPlaylist->SetIconImage("DefaultPlaylist.png");
+      newPlaylist->SetArt("icon", "DefaultPlaylist.png");
       newPlaylist->SetLabelPreformated(true);
       newPlaylist->SetSpecialSort(SortSpecialOnBottom);
       newPlaylist->SetCanQueue(false);
@@ -1011,7 +1013,7 @@ bool CGUIWindowMusicBase::GetDirectory(const std::string &strDirectory, CFileIte
 
       newPlaylist.reset(new CFileItem("newsmartplaylist://music", false));
       newPlaylist->SetLabel(g_localizeStrings.Get(21437));
-      newPlaylist->SetIconImage("DefaultPlaylist.png");
+      newPlaylist->SetArt("icon", "DefaultPlaylist.png");
       newPlaylist->SetLabelPreformated(true);
       newPlaylist->SetSpecialSort(SortSpecialOnBottom);
       newPlaylist->SetCanQueue(false);
@@ -1053,7 +1055,12 @@ void CGUIWindowMusicBase::OnInitWindow()
   // and accomodate any changes to the way some tags are processed
   if (m_musicdatabase.GetMusicNeedsTagScan() != 0)
   {
-    if (CServiceBroker::GetGUI()->GetInfoManager().GetLibraryBool(LIBRARY_HAS_MUSIC) && !g_application.IsMusicScanning())
+    if (CServiceBroker::GetGUI()
+            ->GetInfoManager()
+            .GetInfoProviders()
+            .GetLibraryInfoProvider()
+            .GetLibraryBool(LIBRARY_HAS_MUSIC) &&
+        !g_application.IsMusicScanning())
     {
       // rescan of music library required
       if (CGUIDialogYesNo::ShowAndGetInput(799, 38060))
@@ -1136,7 +1143,7 @@ void CGUIWindowMusicBase::OnRemoveSource(int iItem)
     database.Open();
     database.RemoveSongsFromPath(m_vecItems->Get(iItem)->GetPath(), songs, false);
     database.CleanupOrphanedItems();
-    CServiceBroker::GetGUI()->GetInfoManager().ResetLibraryBools();
+    CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetLibraryInfoProvider().ResetLibraryBools();
     m_vecItems->RemoveDiscCache(GetID());
   }
 }

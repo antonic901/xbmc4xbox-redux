@@ -125,8 +125,8 @@ void CGUIListItem::ClearArt()
 
 void CGUIListItem::AppendArt(const ArtMap &art, const std::string &prefix)
 {
-  for (const auto& i : art)
-    SetArt(prefix.empty() ? i.first : prefix + '.' + i.first, i.second);
+  for (ArtMap::const_iterator i = art.begin(); i != art.end(); ++i)
+    SetArt(prefix.empty() ? i->first : prefix + '.' + i->first, i->second);
 }
 
 std::string CGUIListItem::GetArt(const std::string &type) const
@@ -226,22 +226,22 @@ void CGUIListItem::Archive(CArchive &ar)
     ar << m_bSelected;
     ar << m_overlayIcon;
     ar << (int)m_mapProperties.size();
-    for (const auto& it : m_mapProperties)
+    for (PropertyMap::const_iterator it = m_mapProperties.begin(); it != m_mapProperties.end(); ++it)
     {
-      ar << it.first;
-      ar << it.second;
+      ar << it->first;
+      ar << it->second;
     }
     ar << (int)m_art.size();
-    for (const auto& i : m_art)
+    for (ArtMap::const_iterator i = m_art.begin(); i != m_art.end(); ++i)
     {
-      ar << i.first;
-      ar << i.second;
+      ar << i->first;
+      ar << i->second;
     }
     ar << (int)m_artFallbacks.size();
-    for (const auto& i : m_artFallbacks)
+    for (ArtMap::const_iterator i = m_artFallbacks.begin(); i != m_artFallbacks.end(); ++i)
     {
-      ar << i.first;
-      ar << i.second;
+      ar << i->first;
+      ar << i->second;
     }
   }
   else
@@ -293,12 +293,12 @@ void CGUIListItem::Serialize(CVariant &value)
   value["sortLabel"] = m_sortLabel;
   value["selected"] = m_bSelected;
 
-  for (const auto& it : m_mapProperties)
+  for (PropertyMap::const_iterator it = m_mapProperties.begin(); it != m_mapProperties.end(); ++it)
   {
-    value["properties"][it.first] = it.second;
+    value["properties"][it->first] = it->second;
   }
-  for (const auto& it : m_art)
-    value["art"][it.first] = it.second;
+  for (ArtMap::const_iterator it = m_art.begin(); it != m_art.end(); ++it)
+    value["art"][it->first] = it->second;
 }
 
 void CGUIListItem::FreeIcons()
@@ -324,7 +324,7 @@ void CGUIListItem::FreeMemory(bool immediately)
 
 void CGUIListItem::SetLayout(boost::movelib::unique_ptr<CGUIListItemLayout> layout)
 {
-  m_layout = std::move(layout);
+  m_layout = boost::move(layout);
 }
 
 CGUIListItemLayout *CGUIListItem::GetLayout()
@@ -334,7 +334,7 @@ CGUIListItemLayout *CGUIListItem::GetLayout()
 
 void CGUIListItem::SetFocusedLayout(boost::movelib::unique_ptr<CGUIListItemLayout> layout)
 {
-  m_focusedLayout = std::move(layout);
+  m_focusedLayout = boost::move(layout);
 }
 
 CGUIListItemLayout *CGUIListItem::GetFocusedLayout()
@@ -425,8 +425,8 @@ void CGUIListItem::IncrementProperty(const std::string &strKey, double dVal)
 
 void CGUIListItem::AppendProperties(const CGUIListItem &item)
 {
-  for (const auto& i : item.m_mapProperties)
-    SetProperty(i.first, i.second);
+  for (PropertyMap::const_iterator i = item.m_mapProperties.begin(); i != item.m_mapProperties.end(); ++i)
+    SetProperty(i->first, i->second);
 }
 
 void CGUIListItem::SetCurrentItem(unsigned int position)

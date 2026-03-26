@@ -23,10 +23,11 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
+#include <boost/move/unique_ptr.hpp>
 
 #include "utils/Job.h"
 
-class CBaseTexture;
+class CTexture;
 
 /*!
  \ingroup textures
@@ -76,7 +77,7 @@ public:
    \param url location of the image
    \return a hash string for this image
    */
-  bool CacheTexture(CBaseTexture **texture = NULL);
+  bool CacheTexture(boost::movelib::unique_ptr<CTexture>* = NULL);
 
   std::string m_url;
   std::string m_oldHash;
@@ -116,9 +117,9 @@ private:
    \param width the desired maximum width.
    \param height the desired maximum height.
    \param additional_info extra info for loading, such as whether to flip horizontally.
-   \return a pointer to a CBaseTexture object, NULL if failed.
+   \return a pointer to a CTexture object, NULL if failed.
    */
-  static CBaseTexture *LoadImage(const std::string &image, unsigned int width, unsigned int height, const std::string &additional_info);
+  static boost::movelib::unique_ptr<CTexture> LoadImage(const std::string &image, unsigned int width, unsigned int height, const std::string &additional_info);
 
   std::string    m_cachePath;
 };

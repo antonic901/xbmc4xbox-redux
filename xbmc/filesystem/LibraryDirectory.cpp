@@ -134,7 +134,7 @@ bool CLibraryDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 
       item->SetLabel(label);
       if (!icon.empty() && CServiceBroker::GetGUI()->GetTextureManager().HasTexture(icon))
-        item->SetIconImage(icon);
+        item->SetArt("icon", icon);
       item->m_iprogramCount = order;
       items.Add(item);
     }
@@ -157,7 +157,7 @@ TiXmlElement *CLibraryDirectory::LoadXML(const std::string &xmlFile)
 
   // check the condition
   std::string condition = XMLUtils::GetAttribute(xml, "visible");
-  if (condition.empty() || CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool(condition))
+  if (condition.empty() || CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool(condition, INFO::DEFAULT_CONTEXT))
     return xml;
 
   return NULL;

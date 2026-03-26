@@ -144,7 +144,7 @@ protected:
   static void BidiTransform(std::vector<CGUIString> &lines, bool forceLTRReadingOrder);
   static std::wstring BidiFlip(const std::wstring& text,
                                bool forceLTRReadingOrder,
-                               int* visualToLogicalMap = nullptr);
+                               int* visualToLogicalMap = NULL);
   void CalcTextExtent();
   void UpdateCommon(const std::wstring &text, float maxWidth, bool forceLTRReadingOrder);
 
@@ -167,7 +167,7 @@ protected:
   // the layout and font details
   CGUIFont *m_font;        // has style, colour info
   CGUIFont *m_borderFont;  // only used for outlined text
-  CGUIFont* m_monoFont = nullptr; //!< Mono-space font to use
+  CGUIFont* m_monoFont; //!< Mono-space font to use
   CGUIFont* m_varFont;    //!< Varible-space font to use
 
   bool  m_wrap;            // wrapping (true if justify is enabled!)

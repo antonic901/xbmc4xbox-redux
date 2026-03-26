@@ -31,7 +31,7 @@
  */
 static int ControlMove(const std::vector<std::string>& params)
 {
-  CGUIMessage message(GUI_MSG_MOVE_OFFSET, CServiceBroker::GetGUI()->GetWindowManager().GetFocusedWindow(),
+  CGUIMessage message(GUI_MSG_MOVE_OFFSET, CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog(),
                       atoi(params[0].c_str()), atoi(params[1].c_str()));
   CServiceBroker::GetGUI()->GetWindowManager().SendMessage(message);
 
@@ -54,7 +54,7 @@ static int SendClick(const std::vector<std::string>& params)
   }
   else
   { // single param - assume you meant the focused window
-    CGUIMessage message(GUI_MSG_CLICKED, atoi(params[0].c_str()), CServiceBroker::GetGUI()->GetWindowManager().GetFocusedWindow());
+    CGUIMessage message(GUI_MSG_CLICKED, atoi(params[0].c_str()), CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog());
     CServiceBroker::GetGUI()->GetWindowManager().SendMessage(message);
   }
 
@@ -94,7 +94,7 @@ static int SetFocus(const std::vector<std::string>& params)
 {
   int controlID = atol(params[0].c_str());
   int subItem = (params.size() > 1) ? atol(params[1].c_str())+1 : 0;
-  CGUIMessage msg(GUI_MSG_SETFOCUS, CServiceBroker::GetGUI()->GetWindowManager().GetFocusedWindow(), controlID, subItem);
+  CGUIMessage msg(GUI_MSG_SETFOCUS, CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog(), controlID, subItem);
   CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
 
   return 0;
@@ -110,7 +110,7 @@ static int SetFocus(const std::vector<std::string>& params)
 static int ShiftPage(const std::vector<std::string>& params)
 {
   int id = atoi(params[0].c_str());
-  CGUIMessage message(Message, CServiceBroker::GetGUI()->GetWindowManager().GetFocusedWindow(), id);
+  CGUIMessage message(Message, CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog(), id);
   CServiceBroker::GetGUI()->GetWindowManager().SendMessage(message);
 
   return 0;

@@ -27,7 +27,7 @@
 #include "Util.h"
 #include "URL.h"
 #include "PlayListPlayer.h"
-#include "filesystem/HDDirectory.h" 
+#include "filesystem/HDDirectory.h"
 #include "filesystem/CDDADirectory.h"
 #include "filesystem/SpecialProtocol.h"
 #include "video/VideoDatabase.h"
@@ -63,6 +63,7 @@
 #include "utils/SystemInfo.h"
 #include "music/MusicThumbLoader.h"
 #include "video/VideoThumbLoader.h"
+#include "utils/MathUtils.h"
 
 #ifdef _WIN32PC
 extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
@@ -147,13 +148,13 @@ CStdString CXbmcHttp::encodeFileToBase64(const CStdString &inFilename, int lines
 
   CFile file;
   bool bOutput=false;
-  if (file.Open(inFilename.c_str())) 
+  if (file.Open(inFilename.c_str()))
   {
-    while( file.GetPosition() != file.GetLength() ) 
+    while( file.GetPosition() != file.GetLength() )
     {
       memset(in, 0, sizeof(in));
       len = file.Read(in, 3);
-      if( len ) 
+      if( len )
       {
         strBase64 += cb64[ in[0] >> 2 ];
         strBase64 += cb64[ ((in[0] & 0x03) << 4) | ((in[1] & 0xf0) >> 4) ];
@@ -204,10 +205,10 @@ bool CXbmcHttp::decodeBase64ToFile( const CStdString &inString, const CStdString
       outfile = fopen_utf8(CSpecialProtocol::TranslatePath(outfilename).c_str(), "wb" );
     while( ptr < inString.length() )
     {
-      for( len = 0, i = 0; i < 4 && ptr < inString.length(); i++ ) 
+      for( len = 0, i = 0; i < 4 && ptr < inString.length(); i++ )
       {
         v = 0;
-        while( ptr < inString.length() && v == 0 ) 
+        while( ptr < inString.length() && v == 0 )
         {
           v = (unsigned char) inString[ptr];
           ptr++;
@@ -217,13 +218,13 @@ bool CXbmcHttp::decodeBase64ToFile( const CStdString &inString, const CStdString
         }
         if( ptr < inString.length() ) {
           len++;
-          if( v ) 
+          if( v )
             in[ i ] = (unsigned char) (v - 1);
         }
-        else 
+        else
           in[i] = 0;
       }
-      if( len ) 
+      if( len )
       {
         putc((unsigned char ) ((in[0] << 2 | in[1] >> 4) & 255), outfile );
         putc((unsigned char ) ((in[1] << 4 | in[2] >> 2) & 255), outfile );
@@ -255,7 +256,7 @@ __int64 CXbmcHttp::fileSize(const CStdString &filename)
 
 void CXbmcHttp::resetTags()
 {
-  openTag="<li>"; 
+  openTag="<li>";
   closeTag="\n";
   userHeader="";
   userFooter="";
@@ -361,7 +362,7 @@ int CXbmcHttp::splitParameter(const CStdString &parameter, CStdString& command, 
 
 bool CXbmcHttp::playableFile(const CStdString &filename)
 {
-  CFileItem item(filename, false);  
+  CFileItem item(filename, false);
   return item.IsInternetStream() || CFile::Exists(filename);
 }
 
@@ -369,16 +370,16 @@ int CXbmcHttp::SetResponse(const CStdString &response)
 {
   if (response.length()>=closeTag.length())
   {
-    if ((response.Right(closeTag.length())!=closeTag) && closeFinalTag) 
+    if ((response.Right(closeTag.length())!=closeTag) && closeFinalTag)
       return CServiceBroker::GetAppMessenger()->SetResponse(response+closeTag);
   }
-  else 
+  else
     if (closeFinalTag)
       return CServiceBroker::GetAppMessenger()->SetResponse(response+closeTag);
   return CServiceBroker::GetAppMessenger()->SetResponse(response);
 }
 
-int CXbmcHttp::displayDir(int numParas, CStdString paras[]) 
+int CXbmcHttp::displayDir(int numParas, CStdString paras[])
 {
   //mask = ".mp3|.wma" or one of "[music]", "[video]", "[pictures]", "[files]"-> matching files
   //mask = "*" or "/" -> just folders
@@ -480,12 +481,12 @@ void CXbmcHttp::SetCurrentMediaItem(CFileItem& newItem)
   //  If we have tag information, ...
   if (newItem.HasMusicInfoTag() && newItem.GetMusicInfoTag()->Loaded())
   {
-    CServiceBroker::GetGUI()->GetInfoManager().SetCurrentSongTag(*newItem.GetMusicInfoTag());
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_UPDATE_CURRENT_ITEM, -1, -1, static_cast<void*>(new CFileItem(newItem)));
   }
 }
 
 int CXbmcHttp::FindPathInPlayList(int playList, CStdString path)
-{   
+{
   CPlayList& thePlayList = g_playlistPlayer.GetPlaylist(playList);
   for (int i = 0; i < thePlayList.size(); i++)
   {
@@ -566,7 +567,7 @@ bool CXbmcHttp::LoadPlayList(CStdString strPath, int iPlaylist, bool clearList, 
       g_playlistPlayer.Reset();
       CServiceBroker::GetAppMessenger()->PostMsg(TMSG_PLAYLISTPLAYER_PLAY);
       return true;
-    } 
+    }
     else
       return false;
   else
@@ -707,7 +708,7 @@ int CXbmcHttp::xbmcGetMediaLocation(int numParas, CStdString paras[])
   // TODO: Why are we insisting the passed path has anything to do with
   //       the shares in question??
   //       Surely we should just grab the directory regardless??
-  // 
+  //
   // kraqh3d's response:
   // When I added this function, it was meant to behave more like Xbmc internally.
   // This code emulates the CVirtualDirectory class which does not allow arbitrary
@@ -773,7 +774,7 @@ int CXbmcHttp::xbmcGetMediaLocation(int numParas, CStdString paras[])
     CStdString tmp;
     tmp.Format("%i",items.Size());
     return SetResponse(openTag+tmp);
-  }    
+  }
   items.Sort(SortByLabel, SortOrderAscending);
   CStdString strLine;
   if (lineStart>items.Size() || lineStart<0)
@@ -948,7 +949,7 @@ int CXbmcHttp::xbmcGetSources(int numParas, CStdString paras[])
 
     if (!pShares)
       return SetResponse(openTag+"Error");
-    
+
     VECSOURCES VECSOURCES = *pShares;
     for (int j = 0; j < (int)VECSOURCES.size(); ++j)
     {
@@ -1072,7 +1073,7 @@ int CXbmcHttp::xbmcAddToPlayListFromDB(int numParas, CStdString paras[])
     return SetResponse(openTag+"Error: Missing Parameter");
 
   CStdString type  = paras[0];
-  
+
   // Perform open query if empty where clause
   if (paras[1] == "")
     paras[1] = "1 = 1";
@@ -1090,7 +1091,7 @@ int CXbmcHttp::xbmcAddToPlayListFromDB(int numParas, CStdString paras[])
     musicdatabase.GetSongsByWhere("musicdb://songs/", where, filelist);
     musicdatabase.Close();
   }
-  else if (type.Equals("movies") || 
+  else if (type.Equals("movies") ||
            type.Equals("episodes") ||
            type.Equals("musicvideos"))
   {
@@ -1166,7 +1167,7 @@ int CXbmcHttp::xbmcAddToPlayList(int numParas, CStdString paras[])
   }
 }
 
-int CXbmcHttp::xbmcGetTagFromFilename(int numParas, CStdString paras[]) 
+int CXbmcHttp::xbmcGetTagFromFilename(int numParas, CStdString paras[])
 {
   CStdString strFileName;
   if (numParas==0) {
@@ -1209,7 +1210,7 @@ int CXbmcHttp::xbmcGetTagFromFilename(int numParas, CStdString paras[])
       // get correct tag parser
       auto_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(*pItem));
       if (NULL != pLoader.get())
-      {            
+      {
         // get id3tag
         if ( !pLoader->Load(pItem->GetPath(),*tag))
           tag->SetLoaded(false);
@@ -1273,7 +1274,7 @@ int CXbmcHttp::xbmcSwapPlayListItems(int numParas, CStdString paras[])
     return SetResponse(openTag+"Error: Not enough parameters");
   iPlayList=g_playlistPlayer.GetCurrentPlaylist();
   if (numParas > 2)
-    iPlayList = atoi(paras[2]); 
+    iPlayList = atoi(paras[2]);
   CPlayList& playlist = g_playlistPlayer.GetPlaylist(iPlayList);
 
   int item1;
@@ -1401,7 +1402,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
     output+=closeTag+openTag+"Thumb:"+thumb;
     if (changed)
       output+=closeTag+openTag+"Changed:True";
-    else  
+    else
       output+=closeTag+openTag+"Changed:False";
     return SetResponse(output);
   }
@@ -1427,7 +1428,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
     CURL::Decode(strPath);
     output = openTag + "Filename:" + strPath;  // currently playing item filename
     if (g_application.m_pPlayer->IsPlaying())
-      if (!g_application.m_pPlayer->IsPaused()) 
+      if (!g_application.m_pPlayer->IsPaused())
         output+=closeTag+openTag+"PlayStatus:Playing";
       else
         output+=closeTag+openTag+"PlayStatus:Paused";
@@ -1467,7 +1468,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
         if (!tagVal->m_strPlotOutline.empty())
           output+=closeTag+openTag+"Plotoutline"+tag+":"+tagVal->m_strPlotOutline.c_str();
         if (!tagVal->m_strPlot.empty())
-          output+=closeTag+openTag+"Plot"+tag+":"+tagVal->m_strPlot.c_str();    
+          output+=closeTag+openTag+"Plot"+tag+":"+tagVal->m_strPlot.c_str();
         if (tagVal->GetRating().rating != 0.0f)  // only non-zero ratings are of interest
           output.Format("%s%03.1f (%s %s)",output+closeTag+openTag+"Rating"+tag+":",tagVal->GetRating().rating, tagVal->GetRating().votes, g_localizeStrings.Get(20350));
         if (!tagVal->m_strOriginalTitle.empty())
@@ -1537,27 +1538,27 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
         output+=closeTag+openTag+"Year"+tag+":"+tagVal->GetYearString().c_str();
       if (tagVal && !tagVal->GetURL().empty())
         output+=closeTag+openTag+"URL"+tag+":"+tagVal->GetURL().c_str();
-      if (tagVal && !CServiceBroker::GetGUI()->GetInfoManager().GetMusicLabel(MUSICPLAYER_LYRICS).empty())
-        output+=closeTag+openTag+"Lyrics"+tag+":"+CServiceBroker::GetGUI()->GetInfoManager().GetMusicLabel(MUSICPLAYER_LYRICS).c_str();
+      if (tagVal && !CServiceBroker::GetGUI()->GetInfoManager().GetItemLabel(&fileItem, INFO::DEFAULT_CONTEXT, MUSICPLAYER_LYRICS).empty())
+        output+=closeTag+openTag+"Lyrics"+tag+":"+CServiceBroker::GetGUI()->GetInfoManager().GetItemLabel(&fileItem, INFO::DEFAULT_CONTEXT, MUSICPLAYER_LYRICS).c_str();
 
       // TODO: Should this be a tagitem member?? (wouldn't have vbr updates though)
-      CStdString bitRate(CServiceBroker::GetGUI()->GetInfoManager().GetMusicLabel(MUSICPLAYER_BITRATE)); 
+      CStdString bitRate(CServiceBroker::GetGUI()->GetInfoManager().GetItemLabel(&fileItem, INFO::DEFAULT_CONTEXT, MUSICPLAYER_BITRATE));
       // TODO: This should be a static tag item
-      CStdString sampleRate(CServiceBroker::GetGUI()->GetInfoManager().GetMusicLabel(MUSICPLAYER_SAMPLERATE));
+      CStdString sampleRate(CServiceBroker::GetGUI()->GetInfoManager().GetItemLabel(&fileItem, INFO::DEFAULT_CONTEXT, MUSICPLAYER_SAMPLERATE));
       if (!bitRate.IsEmpty())
-        output+=closeTag+openTag+"Bitrate"+tag+":"+bitRate;  
+        output+=closeTag+openTag+"Bitrate"+tag+":"+bitRate;
       if (!sampleRate.IsEmpty())
-        output+=closeTag+openTag+"Samplerate"+tag+":"+sampleRate;  
+        output+=closeTag+openTag+"Samplerate"+tag+":"+sampleRate;
       thumb=CServiceBroker::GetGUI()->GetInfoManager().GetImage(MUSICPLAYER_COVER, (DWORD)-1);
       copyThumb(thumb,thumbFn);
       output+=closeTag+openTag+"Thumb"+tag+":"+thumb;
     }
-    output+=closeTag+openTag+"Time:"+CServiceBroker::GetGUI()->GetInfoManager().GetCurrentPlayTime().c_str();
+    output+=closeTag+openTag+"Time:"+StringUtils::SecondsToTimeString(MathUtils::round_int(g_application.GetTime()), TIME_FORMAT_HH_MM_SS).c_str();
     output+=closeTag+openTag+"Duration:";
     if (g_application.m_pPlayer->IsPlayingVideo())
-      output += CServiceBroker::GetGUI()->GetInfoManager().GetDuration();
+      output += StringUtils::SecondsToTimeString(MathUtils::round_int(g_application.GetTotalTime()), TIME_FORMAT_HH_MM_SS);
     else
-      output += CServiceBroker::GetGUI()->GetInfoManager().GetDuration();
+      output += StringUtils::SecondsToTimeString(MathUtils::round_int(g_application.GetTotalTime()), TIME_FORMAT_HH_MM_SS);
     tmp.Format("%i",(int)g_application.GetPercentage());
     output+=closeTag+openTag+"Percentage:"+tmp;
     // file size
@@ -1570,7 +1571,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
     }
     if (changed)
       output+=closeTag+openTag+"Changed:True";
-    else  
+    else
       output+=closeTag+openTag+"Changed:False";
   }
   return SetResponse(output);
@@ -1583,7 +1584,7 @@ int CXbmcHttp::xbmcGetMusicLabel(int numParas, CStdString paras[])
   else
   {
     int item=(int)atoi(paras[0].c_str());
-    return SetResponse(openTag+CServiceBroker::GetGUI()->GetInfoManager().GetMusicLabel(item).c_str());
+    return SetResponse(openTag+CServiceBroker::GetGUI()->GetInfoManager().GetItemLabel(&g_application.CurrentFileItem(), INFO::DEFAULT_CONTEXT, item).c_str());
   }
 }
 
@@ -1594,7 +1595,7 @@ int CXbmcHttp::xbmcGetVideoLabel(int numParas, CStdString paras[])
   else
   {
     int item=(int)atoi(paras[0].c_str());
-    return SetResponse(openTag+CServiceBroker::GetGUI()->GetInfoManager().GetVideoLabel(item).c_str());
+    return SetResponse(openTag+CServiceBroker::GetGUI()->GetInfoManager().GetItemLabel(&g_application.CurrentFileItem(), INFO::DEFAULT_CONTEXT, item).c_str());
   }
 }
 
@@ -1622,7 +1623,7 @@ int CXbmcHttp::xbmcSeekPercentage(int numParas, CStdString paras[], bool relativ
       if (relative)
       {
         double newPos = g_application.GetTime() + percent * 0.01 * g_application.GetTotalTime();
-        if ((newPos>=0) && (newPos/1000<=CServiceBroker::GetGUI()->GetInfoManager().GetTotalPlayTime()))
+        if ((newPos>=0) && (newPos/1000<=g_application.GetTime()))
         {
           g_application.SeekTime(newPos);
           return SetResponse(openTag+"OK");
@@ -1730,7 +1731,7 @@ int CXbmcHttp::xbmcAddToSlideshow(int numParas, CStdString paras[])
   {
     IDirectory *pDirectory = CFactoryDirectory::Create(pItem->GetURL());
     if (!pDirectory)
-      return SetResponse(openTag+"Error");  
+      return SetResponse(openTag+"Error");
     bool bResult=pDirectory->Exists(CURL(pItem->GetPath()));
     pItem->m_bIsFolder=bResult;
   }
@@ -1766,10 +1767,10 @@ int CXbmcHttp::xbmcGetGUIDescription()
 int CXbmcHttp::xbmcGetGUIStatus()
 {
   CStdString output, tmp, strTmp;
-  CGUIMediaWindow *mediaWindow = (CGUIMediaWindow *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_MUSIC_FILES);
+  CGUIMediaWindow *mediaWindow = (CGUIMediaWindow *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_MUSIC_NAV);
   if (mediaWindow)
     output = closeTag+openTag+"MusicPath:" + mediaWindow->CurrentDirectory().GetPath().c_str();
-  mediaWindow = (CGUIMediaWindow *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_VIDEO_FILES);
+  mediaWindow = (CGUIMediaWindow *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_VIDEO_NAV);
   if (mediaWindow)
     output += closeTag+openTag+"VideoPath:" + mediaWindow->CurrentDirectory().GetPath().c_str();
   mediaWindow = (CGUIMediaWindow *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_PICTURES);
@@ -1785,7 +1786,7 @@ int CXbmcHttp::xbmcGetGUIStatus()
     output += closeTag+openTag+"FilesPath2:" + fileManager->CurrentDirectory(1).GetPath().c_str();
   }
   int iWin=CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
-  CGUIWindow* pWindow=CServiceBroker::GetGUI()->GetWindowManager().GetWindow(iWin);  
+  CGUIWindow* pWindow=CServiceBroker::GetGUI()->GetWindowManager().GetWindow(iWin);
   tmp.Format("%i", iWin);
   output += openTag+"ActiveWindow:" + tmp;
   if (pWindow)
@@ -1915,7 +1916,7 @@ int CXbmcHttp::xbmcGetCurrentPlayList()
 
 int CXbmcHttp::xbmcSetCurrentPlayList(int numParas, CStdString paras[])
 {
-  if (numParas<1) 
+  if (numParas<1)
     return SetResponse(openTag+"Error:Missing playlist") ;
   else {
     g_playlistPlayer.SetCurrentPlaylist(atoi(paras[0].c_str()));
@@ -1977,7 +1978,7 @@ int CXbmcHttp::xbmcGetPlayListLength(int numParas, CStdString paras[])
 {
   int playList;
 
-  if (numParas<1) 
+  if (numParas<1)
     playList=g_playlistPlayer.GetCurrentPlaylist();
   else
     playList=atoi(paras[0]);
@@ -2012,7 +2013,7 @@ int CXbmcHttp::xbmcGetPlayListSong(int numParas, CStdString paras[])
   CStdString Filename;
   int iSong;
 
-  if (numParas<1) 
+  if (numParas<1)
   {
     CStdString tmp;
     tmp.Format("%i", g_playlistPlayer.GetCurrentSong());
@@ -2020,7 +2021,7 @@ int CXbmcHttp::xbmcGetPlayListSong(int numParas, CStdString paras[])
   }
   else {
     CPlayList thePlayList;
-    iSong=atoi(paras[0]);  
+    iSong=atoi(paras[0]);
     if (iSong!=-1){
       thePlayList=g_playlistPlayer.GetPlaylist( g_playlistPlayer.GetCurrentPlaylist() );
       if (thePlayList.size()>iSong) {
@@ -2126,7 +2127,7 @@ int CXbmcHttp::xbmcSetKey(int numParas, CStdString paras[])
   float fLeftThumbX=0.0f, fLeftThumbY=0.0f, fRightThumbX=0.0f, fRightThumbY=0.0f ;
   if (numParas<1)
     return SetResponse(openTag+"Error:Missing parameters");
-    
+
   else
   {
     buttonCode=(int) strtol(paras[0], NULL, 0);
@@ -2510,7 +2511,7 @@ int CXbmcHttp::xbmcFileSize(int numParas, CStdString paras[])
 
 int CXbmcHttp::xbmcDeleteFile(int numParas, CStdString paras[])
 {
-  if (numParas<1) 
+  if (numParas<1)
     return SetResponse(openTag+"Error:Missing parameter");
   else
   {
@@ -2533,7 +2534,7 @@ int CXbmcHttp::xbmcDeleteFile(int numParas, CStdString paras[])
 
 int CXbmcHttp::xbmcFileExists(int numParas, CStdString paras[])
 {
-  if (numParas<1) 
+  if (numParas<1)
     return SetResponse(openTag+"Error:Missing parameter");
   else
   {
@@ -2555,7 +2556,7 @@ int CXbmcHttp::xbmcFileExists(int numParas, CStdString paras[])
 
 int CXbmcHttp::xbmcShowPicture(int numParas, CStdString paras[])
 {
-  if (numParas<1) 
+  if (numParas<1)
     return SetResponse(openTag+"Error:Missing parameter");
   else
   {
@@ -2582,7 +2583,7 @@ int CXbmcHttp::xbmcGetCurrentSlide()
 
 int CXbmcHttp::xbmcExecBuiltIn(int numParas, CStdString paras[])
 {
-  if (numParas<1) 
+  if (numParas<1)
     return SetResponse(openTag+"Error:Missing parameter");
   else
   {
@@ -2601,7 +2602,7 @@ int CXbmcHttp::xbmcGUISetting(int numParas, CStdString paras[])
   {
     CStdString tmp;
     if (numParas<3)
-      switch (atoi(paras[0])) 
+      switch (atoi(paras[0]))
       {
         case 0:  //  int
           tmp.Format("%i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(paras[1]));
@@ -2627,7 +2628,7 @@ int CXbmcHttp::xbmcGUISetting(int numParas, CStdString paras[])
       }
     else
     {
-      switch (atoi(paras[0])) 
+      switch (atoi(paras[0]))
       {
         case 0:  //  int
           CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt(paras[1], atoi(paras[2]));
@@ -2648,7 +2649,7 @@ int CXbmcHttp::xbmcGUISetting(int numParas, CStdString paras[])
         default:
           return SetResponse(openTag+"Error:Unknown type");
           break;
-      }     
+      }
     }
   }
   return 0; // not reached
@@ -2725,9 +2726,9 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
 int CXbmcHttp::xbmcConfig(int numParas, CStdString paras[])
 {
   int argc=0, ret=-1;
-  char_t* argv[20]; 
+  char_t* argv[20];
   CStdString response="";
-  
+
   if (numParas<1) {
     return SetResponse(openTag+"Error:Missing paramters");
   }
@@ -2749,7 +2750,7 @@ int CXbmcHttp::xbmcConfig(int numParas, CStdString paras[])
     if (ret!=-1)
       ret=1;
   }
-  else if (paras[0]=="addbookmark") 
+  else if (paras[0]=="addbookmark")
     ret=XbmcWebsHttpAPIConfigAddBookmark(response, argc, argv);
   else if (paras[0]=="savebookmark")
     ret=XbmcWebsHttpAPIConfigSaveBookmark(response, argc, argv);
@@ -2798,7 +2799,7 @@ int CXbmcHttp::xbmcGetSystemInfo(int numParas, CStdString paras[])
     int i;
     for (i=0; i<numParas; i++)
     {
-      CStdString strTemp = (CStdString) CServiceBroker::GetGUI()->GetInfoManager().GetLabel(atoi(paras[i]));
+      CStdString strTemp = (CStdString) CServiceBroker::GetGUI()->GetInfoManager().GetLabel(atoi(paras[i]), INFO::DEFAULT_CONTEXT);
       if (strTemp.IsEmpty())
         strTemp = "Error:No information retrieved for " + paras[i];
       strInfo += openTag + strTemp;
@@ -2817,16 +2818,16 @@ int CXbmcHttp::xbmcGetSystemInfoByName(int numParas, CStdString paras[])
     int i;
     for (i=0; i<numParas; i++)
     {
-      CStdString strTemp = (CStdString) CServiceBroker::GetGUI()->GetInfoManager().GetLabel(CServiceBroker::GetGUI()->GetInfoManager().TranslateString(paras[i]));
+      CStdString strTemp = (CStdString) CServiceBroker::GetGUI()->GetInfoManager().GetLabel(CServiceBroker::GetGUI()->GetInfoManager().TranslateString(paras[i]), INFO::DEFAULT_CONTEXT);
       if (strTemp.IsEmpty())
         strTemp = "Error:No information retrieved for " + paras[i];
       strInfo += openTag + strTemp;
     }
     if(strInfo.Find("°") && strInfo.Find("Â"))
     {
-      // The Charset Converter ToUtf8() will add. only in this case= "°" a char "Â°" during converting, 
+      // The Charset Converter ToUtf8() will add. only in this case= "°" a char "Â°" during converting,
       // which is the right value for the GUI!
-      // A length depending fix in CCharsetConverter::stringCharsetToUtf8() will couse a wrong char in GUI. 
+      // A length depending fix in CCharsetConverter::stringCharsetToUtf8() will couse a wrong char in GUI.
       // So just for http, we remove the "Â", to fix BUG ID:[1586251]
       strInfo.Replace("Â","");
     }
@@ -2838,25 +2839,25 @@ int CXbmcHttp::xbmcSpinDownHardDisk(int numParas, CStdString paras[])
 {
   if (numParas==1 && paras[0].ToLower()=="false")
   {
-	  if (g_application.m_dwSpinDownTime!=0)
-	    return SetResponse(openTag+"OK:Not spun down");
-	  else
-	  {
-	    #ifdef HAS_XBOX_HARDWARE
+      if (g_application.m_dwSpinDownTime!=0)
+        return SetResponse(openTag+"OK:Not spun down");
+      else
+      {
+        #ifdef HAS_XBOX_HARDWARE
         XKHDD::SpindownHarddisk(false);
       #endif
         g_application.m_dwSpinDownTime = timeGetTime();
         return SetResponse(openTag+"OK");
-	  }
+      }
   }
   if (g_application.m_dwSpinDownTime==0)
-	  return SetResponse(openTag+"OK:Already spin down");
-  if (CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog())
-	  return SetResponse(openTag+"Error:Can't spin down now (modal dialog)");
+      return SetResponse(openTag+"OK:Already spin down");
+  if (CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog(true))
+      return SetResponse(openTag+"Error:Can't spin down now (modal dialog)");
   if (g_application.MustBlockHDSpinDown())
-	  return SetResponse(openTag+"Error:Can't spin down now (must block)");
+      return SetResponse(openTag+"Error:Can't spin down now (must block)");
   if (g_application.m_pPlayer->IsPlaying() && g_application.CurrentFileItem().IsHD())
-	  return SetResponse(openTag+"Error:Can't spin down now (playing media on hard disk)");
+      return SetResponse(openTag+"Error:Can't spin down now (playing media on hard disk)");
   #ifdef HAS_XBOX_HARDWARE
     XKHDD::SpindownHarddisk();
   #endif
@@ -3068,7 +3069,7 @@ int CXbmcHttp::xbmcSetResponseFormat(int numParas, CStdString paras[])
       else if (para=="closefinaltag")
         closeFinalTag=(paras[i+1].ToLower()=="true");
       else if (para=="openrecordset")
-        openRecordSet=paras[i+1]; 
+        openRecordSet=paras[i+1];
       else if (para=="closerecordset")
         closeRecordSet=paras[i+1];
       else if (para=="openrecord")
@@ -3118,11 +3119,11 @@ int CXbmcHttp::xbmcCommand(const CStdString &parameter)
   command=command.ToLower();
   if (numParas>=0)
   {
-    if (command == "clearplaylist")                   retVal = xbmcClearPlayList(numParas, paras);  
-      else if (command == "addtoplaylist")            retVal = xbmcAddToPlayList(numParas, paras);  
-      else if (command == "addtoplaylistfromdb")      retVal = xbmcAddToPlayListFromDB(numParas, paras);  
-      else if (command == "swapplaylistitems")        retVal = xbmcSwapPlayListItems(numParas, paras);  
-      else if (command == "playfile")                 retVal = xbmcPlayerPlayFile(numParas, paras); 
+    if (command == "clearplaylist")                   retVal = xbmcClearPlayList(numParas, paras);
+      else if (command == "addtoplaylist")            retVal = xbmcAddToPlayList(numParas, paras);
+      else if (command == "addtoplaylistfromdb")      retVal = xbmcAddToPlayListFromDB(numParas, paras);
+      else if (command == "swapplaylistitems")        retVal = xbmcSwapPlayListItems(numParas, paras);
+      else if (command == "playfile")                 retVal = xbmcPlayerPlayFile(numParas, paras);
       else if (command == "pause")                    retVal = xbmcAction(numParas, paras,1);
       else if (command == "stop")                     retVal = xbmcAction(numParas, paras,2);
       else if (command == "playnext")                 retVal = xbmcAction(numParas, paras,3);
@@ -3135,12 +3136,12 @@ int CXbmcHttp::xbmcCommand(const CStdString &parameter)
       else if (command == "exit")                     retVal = xbmcExit(3);
       else if (command == "reset")                    retVal = xbmcExit(4);
       else if (command == "restartapp")               retVal = xbmcExit(5);
-      else if (command == "getcurrentlyplaying")      retVal = xbmcGetCurrentlyPlaying(numParas, paras); 
-      else if (command == "getxbeid")                 retVal = xbmcGetXBEID(numParas, paras); 
-      else if (command == "getxbetitle")              retVal = xbmcGetXBETitle(numParas, paras); 
-      else if (command == "getshares")                retVal = xbmcGetSources(numParas, paras); 
-      else if (command == "getdirectory")             retVal = xbmcGetDirectory(numParas, paras); 
-      else if (command == "getmedialocation")         retVal = xbmcGetMediaLocation(numParas, paras); 
+      else if (command == "getcurrentlyplaying")      retVal = xbmcGetCurrentlyPlaying(numParas, paras);
+      else if (command == "getxbeid")                 retVal = xbmcGetXBEID(numParas, paras);
+      else if (command == "getxbetitle")              retVal = xbmcGetXBETitle(numParas, paras);
+      else if (command == "getshares")                retVal = xbmcGetSources(numParas, paras);
+      else if (command == "getdirectory")             retVal = xbmcGetDirectory(numParas, paras);
+      else if (command == "getmedialocation")         retVal = xbmcGetMediaLocation(numParas, paras);
       else if (command == "gettagfromfilename")       retVal = xbmcGetTagFromFilename(numParas, paras);
       else if (command == "getcurrentplaylist")       retVal = xbmcGetCurrentPlayList();
       else if (command == "setcurrentplaylist")       retVal = xbmcSetCurrentPlayList(numParas, paras);
@@ -3337,7 +3338,7 @@ CStdString CXbmcHttpShim::xbmcProcessCommand( int eid, webs_t wp, char_t *comman
     //wait for response - max 20s
     Sleep(0);
     response=CServiceBroker::GetAppMessenger()->GetResponse();
-    while (response=="[No response yet]" && cnt++<200) 
+    while (response=="[No response yet]" && cnt++<200)
     {
       response=CServiceBroker::GetAppMessenger()->GetResponse();
       CLog::Log(LOGDEBUG, "XBMCHTTPShim: waiting %d", cnt);
@@ -3376,18 +3377,18 @@ int CXbmcHttpShim::xbmcCommand( int eid, webs_t wp, int argc, char_t **argv)
     return -1;
 
   int parameters = ejArgs(argc, argv, T("%s %s"), &command, &parameter);
-  if (parameters < 1) 
+  if (parameters < 1)
   {
     websError(wp, 500, T("Error:Insufficient args"));
     return -1;
   }
-  else if (parameters < 2) 
+  else if (parameters < 2)
     parameter = (char*)"";
   xbmcProcessCommand( eid, wp, command, parameter);
   return 0;
 }
 
-/* XBMC form for posted data (in-memory CGI). 
+/* XBMC form for posted data (in-memory CGI).
  */
 void CXbmcHttpShim::xbmcForm(webs_t wp, char_t *path, char_t *query)
 {
@@ -3395,7 +3396,7 @@ void CXbmcHttpShim::xbmcForm(webs_t wp, char_t *path, char_t *query)
 
   if (m_pXbmcHttp && m_pXbmcHttp->shuttingDown)
       return;
-  command = websGetVar(wp, WEB_COMMAND, ""); 
+  command = websGetVar(wp, WEB_COMMAND, "");
   parameter = websGetVar(wp, WEB_PARAMETER, "");
 
   // do the command

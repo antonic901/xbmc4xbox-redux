@@ -20,7 +20,8 @@
 #include "interfaces/legacy/WindowDialog.h"
 #include "interfaces/legacy/Dialog.h"
 #include "interfaces/legacy/WindowXML.h"
-#include "guilib/Key.h"
+#include "input/actions/ActionIDs.h"
+#include "input/keyboard/KeyIDs.h"
 
 using namespace XBMCAddon;
 using namespace xbmcgui;
@@ -108,4 +109,5 @@ using namespace xbmcgui;
 
 %include "interfaces/legacy/WindowXML.h"
 
-%include "guilib/Key.h"
+%include "input/actions/ActionIDs.h"
+%include "input/keyboard/KeyIDs.h"

@@ -15,7 +15,6 @@
 #include "GUITexture.h"
 #include "GUIWindowManager.h"
 #include "ServiceBroker.h"
-#include "input/InputManager.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
 #include "utils/log.h"
@@ -47,6 +46,8 @@ CGUIControl::CGUIControl()
   m_controlDirtyState = DIRTY_STATE_CONTROL;
   m_stereo = 0.0f;
   m_controlStats = nullptr;
+  m_hitColor = 0xffffffff;
+  m_isCulled = true;
 }
 
 CGUIControl::CGUIControl(int parentID, int controlID, float posX, float posY, float width, float height)
@@ -160,7 +161,7 @@ void CGUIControl::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyreg
 
   if (changed)
   {
-    dirtyregions.emplace_back(dirtyRegion);
+    dirtyregions.push_back(CDirtyRegion(dirtyRegion));
   }
 }
 

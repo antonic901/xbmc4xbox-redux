@@ -443,18 +443,18 @@ std::string CGUIControlGroupList::GetLabel(int info) const
   return "";
 }
 
+bool isVisibleFocusable(const CGUIControl *child) { return (child->IsVisible() && child->CanFocus()); }
 int CGUIControlGroupList::GetNumItems() const
 {
-  return std::count_if(m_children.begin(), m_children.end(), [&](const CGUIControl *child) {
-    return (child->IsVisible() && child->CanFocus());
-  });
+  return std::count_if(m_children.begin(), m_children.end(), isVisibleFocusable);
 }
 
 int CGUIControlGroupList::GetSelectedItem() const
 {
   int index = 1;
-  for (const auto& child : m_children)
+  for (std::vector<CGUIControl*>::const_iterator it = m_children.begin(); it != m_children.end(); ++it)
   {
+    const CGUIControl* child = *it;
     if (child->IsVisible() && child->CanFocus())
     {
       if (child->HasFocus())
@@ -476,8 +476,9 @@ void CGUIControlGroupList::CalculateItemGap()
   {
     int itemsCount = 0;
     float itemsSize = 0;
-    for (const auto& child : m_children)
+    for (iControls it = m_children.begin(); it != m_children.end(); ++it)
     {
+      CGUIControl *child = *it;
       if (child->IsVisible())
       {
         itemsSize += Size(child);
@@ -517,10 +518,11 @@ float CGUIControlGroupList::GetTotalSize() const
 
 float CGUIControlGroupList::GetControlOffset(const CGUIControl* control) const
 {
-  bool found{false};
-  float offset{0.f};
-  for (CGUIControl* child : m_children)
+  bool found = false;
+  float offset = 0.f;
+  for (ciControls it = m_children.begin(); it != m_children.end(); ++it)
   {
+    CGUIControl *child = *it;
     if (child->IsVisible())
     {
       if (child == control)
@@ -536,19 +538,20 @@ float CGUIControlGroupList::GetControlOffset(const CGUIControl* control) const
 
 SGUIControlAndOffset CGUIControlGroupList::GetFocusableControlAt(float target, int direction) const
 {
-  float offset{0.f};
-  CGUIControl* lastFocusable{nullptr};
-  float lastFocusableOffset{0.f};
+  float offset = 0.f;
+  CGUIControl* lastFocusable = NULL;
+  float lastFocusableOffset = 0.f;
 
-  for (CGUIControl* child : m_children)
+  for (ciControls it = m_children.begin(); it != m_children.end(); ++it)
   {
+    CGUIControl *child = *it;
     if (child->IsVisible())
     {
       if (child->CanFocus())
       {
         // The target is at the beginning or inside a focusable control > perfect match
         if (offset <= target && offset + Size(child) > target)
-          return SGUIControlAndOffset{child, offset};
+          return SGUIControlAndOffset(child, offset);
         // The control at the target position was not focusable
         // or the target was before the first focusable control.
         // Since the children are always iterated from first to last and their positions increase,
@@ -557,9 +560,9 @@ SGUIControlAndOffset CGUIControlGroupList::GetFocusableControlAt(float target, i
         else if (offset >= target)
         {
           if (direction > 0.f || !lastFocusable)
-            return SGUIControlAndOffset{child, offset};
+            return SGUIControlAndOffset(child, offset);
           else
-            return SGUIControlAndOffset{lastFocusable, lastFocusableOffset};
+            return SGUIControlAndOffset(lastFocusable, lastFocusableOffset);
         }
         lastFocusable = child;
         lastFocusableOffset = offset;
@@ -568,7 +571,7 @@ SGUIControlAndOffset CGUIControlGroupList::GetFocusableControlAt(float target, i
     }
   }
   // No visible focusable controls or the target is beyond the last focusable control
-  return SGUIControlAndOffset{lastFocusable, lastFocusableOffset};
+  return SGUIControlAndOffset(lastFocusable, lastFocusableOffset);
 }
 
 void CGUIControlGroupList::ScrollPages(float pages)

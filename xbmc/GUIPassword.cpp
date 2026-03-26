@@ -119,7 +119,7 @@ bool CGUIPassword::IsItemUnlocked(CFileItem* pItem, const CStdString &strType)
     default:
       {
         // this should never happen, but if it does, do nothing
-        return false; 
+        return false;
         break;
       }
     }
@@ -318,7 +318,7 @@ bool CGUIPassword::CheckLock(LockType btnType, const CStdString& strPassword, in
 bool CGUIPassword::CheckLock(LockType btnType, const CStdString& strPassword, int iHeading, bool& bCanceled)
 {
   bCanceled = false;
-  if (btnType == LOCK_MODE_EVERYONE || strPassword.Equals("-")        || 
+  if (btnType == LOCK_MODE_EVERYONE || strPassword.Equals("-")        ||
       CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE || g_passwordManager.bMasterUser)
     return true;
 
@@ -341,8 +341,8 @@ bool CGUIPassword::CheckSettingLevelLock(const SettingLevel& level, bool enforce
 
     //check if we are already in settings and in an level that needs unlocking
   int windowID = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
-  if ((int)lockLevel-1 <= (short)CViewStateSettings::GetInstance().GetSettingLevel() && 
-     (windowID == WINDOW_SETTINGS_MENU || 
+  if ((int)lockLevel-1 <= (short)CViewStateSettings::GetInstance().GetSettingLevel() &&
+     (windowID == WINDOW_SETTINGS_MENU ||
          (windowID >= WINDOW_SCREEN_CALIBRATION &&
           windowID <= WINDOW_SETTINGS_MYPVR)))
     return true; //Already unlocked
@@ -383,21 +383,13 @@ bool CGUIPassword::CheckMenuLock(int iWindowID)
       iSwitch = WINDOW_SETTINGS_MENU;
   }
 
-  if (iWindowID == WINDOW_MUSIC_FILES)
-    if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_MUSIC_NAV)
-      iSwitch = WINDOW_HOME;
-
   if (iWindowID == WINDOW_MUSIC_NAV)
     if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_HOME)
-      iSwitch = WINDOW_MUSIC_FILES;
+      iSwitch = WINDOW_MUSIC_NAV;
 
   if (iWindowID == WINDOW_VIDEO_NAV)
     if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_HOME)
-      iSwitch = WINDOW_VIDEO_FILES;
-
-  if (iWindowID == WINDOW_VIDEO_FILES)
-    if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_VIDEO_NAV)
-      iSwitch = WINDOW_HOME;
+      iSwitch = WINDOW_VIDEO_NAV;
 
   CLog::Log(LOGDEBUG, "Checking if window ID %i is locked.", iSwitch);
 
@@ -412,10 +404,10 @@ bool CGUIPassword::CheckMenuLock(int iWindowID)
     case WINDOW_PROGRAMS:       // Programs
       bCheckPW = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().programsLocked();
       break;
-    case WINDOW_MUSIC_FILES:    // Music
+    case WINDOW_MUSIC_NAV:    // Music
       bCheckPW = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().musicLocked();
       break;
-    case WINDOW_VIDEO_FILES:    // Video
+    case WINDOW_VIDEO_NAV:    // Video
       bCheckPW = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().videoLocked();
       break;
     case WINDOW_PICTURES:       // Pictures

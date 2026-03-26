@@ -98,7 +98,7 @@ bool CGUIKeyboardFactory::ShowAndGetInput(std::string& aTextString,
 #endif // defined(TARGET_DARWIN_TVOS)
 #endif
 
-  auto& winManager = CServiceBroker::GetGUI()->GetWindowManager();
+  CGUIWindowManager& winManager = CServiceBroker::GetGUI()->GetWindowManager();
   CGUIKeyboard* kb = nullptr;
   if (useKodiKeyboard)
     kb = winManager.GetWindow<CGUIDialogKeyboardGeneric>(WINDOW_DIALOG_KEYBOARD);
@@ -126,7 +126,7 @@ bool CGUIKeyboardFactory::ShowAndGetInput(std::string& aTextString,
 
 bool CGUIKeyboardFactory::ShowAndGetInput(std::string& aTextString, bool allowEmptyResult, unsigned int autoCloseMs /* = 0 */)
 {
-  return ShowAndGetInput(aTextString, CVariant{""}, allowEmptyResult, false, autoCloseMs);
+  return ShowAndGetInput(aTextString, "", allowEmptyResult, false, autoCloseMs);
 }
 
 // Shows keyboard and prompts for a password.
@@ -183,7 +183,7 @@ bool CGUIKeyboardFactory::ShowAndVerifyNewPassword(std::string& newPassword,
     newPassword = CDigest::Calculate(CDigest::Type::MD5, userInput);
     return true;
   }
-  HELPERS::ShowOKDialogText(CVariant{12341}, CVariant{12344});
+  HELPERS::ShowOKDialogText(12341, 12344);
   return false;
 }
 
@@ -210,7 +210,7 @@ int CGUIKeyboardFactory::ShowAndVerifyPassword(std::string& strPassword, const s
     strHeadingTemp =
         StringUtils::Format("{} - {} {}", g_localizeStrings.Get(12326),
                             CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(
-                                CSettings::SETTING_MASTERLOCK_MAXRETRIES) -
+                                "masterlock.maxretries") -
                                 iRetries,
                             g_localizeStrings.Get(12343));
 

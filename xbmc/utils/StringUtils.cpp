@@ -55,12 +55,12 @@ const char* ADDON_GUID_RE = "^(\\{){0,1}[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-
 const std::string StringUtils::Empty = "";
 std::string StringUtils::m_lastUUID = "";
 
-//	Copyright (c) Leigh Brasington 2012.  All rights reserved.
+//    Copyright (c) Leigh Brasington 2012.  All rights reserved.
 //  This code may be used and reproduced without written permission.
 //  http://www.leighb.com/tounicupper.htm
 //
-//	The tables were constructed from
-//	http://publib.boulder.ibm.com/infocenter/iseries/v7r1m0/index.jsp?topic=%2Fnls%2Frbagslowtoupmaptable.htm
+//    The tables were constructed from
+//    http://publib.boulder.ibm.com/infocenter/iseries/v7r1m0/index.jsp?topic=%2Fnls%2Frbagslowtoupmaptable.htm
 
 static wchar_t unicode_lowers[] = {
   (wchar_t)0x0061, (wchar_t)0x0062, (wchar_t)0x0063, (wchar_t)0x0064, (wchar_t)0x0065, (wchar_t)0x0066, (wchar_t)0x0067, (wchar_t)0x0068, (wchar_t)0x0069,
@@ -416,21 +416,27 @@ bool StringUtils::EqualsNoCase(const char *s1, const char *s2)
   return true;
 }
 
-int StringUtils::CompareNoCase(const std::string &str1, const std::string &str2)
+int StringUtils::CompareNoCase(const std::string& str1, const std::string& str2, size_t n /* = 0 */)
 {
-  return CompareNoCase(str1.c_str(), str2.c_str());
+  return CompareNoCase(str1.c_str(), str2.c_str(), n);
 }
 
-int StringUtils::CompareNoCase(const char *s1, const char *s2)
+int StringUtils::CompareNoCase(const char* s1, const char* s2, size_t n /* = 0 */)
 {
   char c2; // we need only one char outside the loop
+  size_t index = 0;
   do
   {
     const char c1 = *s1++; // const local variable should help compiler to optimize
     c2 = *s2++;
-    if (c1 != c2 && ::tolower(c1) != ::tolower(c2)) // This includes the possibility that one of the characters is the null-terminator, which implies a string mismatch.
+    index++;
+    if (c1 != c2 &&
+        ::tolower(c1) !=
+            ::tolower(
+                c2)) // This includes the possibility that one of the characters is the null-terminator, which implies a string mismatch.
       return ::tolower(c1) - ::tolower(c2);
-  } while (c2 != '\0'); // At this point, we know c1 == c2, so there's no need to test them both.
+  } while (c2 != '\0' &&
+           index != n); // At this point, we know c1 == c2, so there's no need to test them both.
   return 0;
 }
 

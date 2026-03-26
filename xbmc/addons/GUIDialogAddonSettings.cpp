@@ -35,7 +35,9 @@
 #include "guilib/GUIRadioButtonControl.h"
 #include "guilib/GUISpinControlEx.h"
 #include "guilib/GUIImage.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "filesystem/Directory.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
@@ -751,7 +753,7 @@ void CGUIDialogAddonSettings::CreateControls()
       }
       else if (type == "bool" && !id.empty())
       {
-        pControl = new CGUIRadioButtonControl(*pOriginalRadioButton);
+        pControl = pOriginalRadioButton->Clone();
         if (!pControl) return;
         ((CGUIRadioButtonControl *)pControl)->SetLabel(label);
         ((CGUIRadioButtonControl *)pControl)->SetSelected(m_settings[id] == "true");
@@ -772,7 +774,7 @@ void CGUIDialogAddonSettings::CreateControls()
           for (unsigned int i = 0; i < 24; i++)
           {
             CDateTime time(2000, 1, 1, i, 0, 0);
-            valuesVec.push_back(CServiceBroker::GetGUI()->GetInfoManager().LocalizeTime(time, TIME_FORMAT_HH_MM_XX));
+            valuesVec.push_back(time.GetAsLocalizedTime(g_langInfo.GetTimeFormat(), false));
           }
         }
         else
@@ -860,7 +862,7 @@ void CGUIDialogAddonSettings::CreateControls()
       // to make ints from 5-60 with 5 steps
       else if (type == "slider" && !id.empty())
       {
-        pControl = new CGUISettingsSliderControl(*pOriginalSlider);
+        pControl = pOriginalSlider->Clone();
         if (!pControl) return;
         ((CGUISettingsSliderControl *)pControl)->SetText(label);
 
@@ -1078,7 +1080,7 @@ bool CGUIDialogAddonSettings::GetCondition(const std::string &condition, const i
 
   if (!bControlDependend)//if condition doesn't depend on another control - try if its an infobool expression
   {
-    bCondition = CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool(condition);
+    bCondition = CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool(condition, INFO::DEFAULT_CONTEXT);
   }
 
   return bCondition;

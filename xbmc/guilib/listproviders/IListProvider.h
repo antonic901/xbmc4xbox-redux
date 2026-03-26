@@ -8,7 +8,9 @@
 
 #pragma once
 
-#include <memory>
+#include "system.h" // <xtl.h>
+#include <boost/shared_ptr.hpp>
+#include <boost/move/unique_ptr.hpp>
 #include <vector>
 
 class TiXmlNode;
@@ -51,7 +53,7 @@ public:
   /*! \brief Fetch the current list of items.
    \param items [out] the list to be filled.
    */
-  virtual void Fetch(std::vector<boost::shared_ptr<CGUIListItem>>& items) = 0;
+  virtual void Fetch(std::vector<boost::shared_ptr<CGUIListItem> >& items) = 0;
 
   /*! \brief Check whether the list provider is updating content.
    \return true if in the processing of updating, false otherwise.

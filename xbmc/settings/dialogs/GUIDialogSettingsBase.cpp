@@ -35,7 +35,9 @@
 #include "guilib/GUIToggleButtonControl.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "guilib/LocalizeStrings.h"
 #include "settings/SettingControl.h"
 #include "settings/lib/SettingSection.h"
@@ -616,7 +618,7 @@ CGUIControl* CGUIDialogSettingsBase::AddSetting(CSetting *pSetting, float width,
   if (controlType == "toggle")
   {
     if (m_pOriginalRadioButton != NULL)
-      pControl = new CGUIRadioButtonControl(*m_pOriginalRadioButton);
+      pControl = m_pOriginalRadioButton->Clone();
     if (pControl == NULL)
       return NULL;
 
@@ -669,7 +671,7 @@ CGUIControl* CGUIDialogSettingsBase::AddSetting(CSetting *pSetting, float width,
     else
     {
       if (m_pOriginalSlider != NULL)
-        pControl = new CGUISettingsSliderControl(*m_pOriginalSlider);
+        pControl = m_pOriginalSlider->Clone();
       if (pControl == NULL)
         return NULL;
 
@@ -680,7 +682,7 @@ CGUIControl* CGUIDialogSettingsBase::AddSetting(CSetting *pSetting, float width,
   else if (controlType == "range")
   {
     if (m_pOriginalSlider != NULL)
-      pControl = new CGUISettingsSliderControl(*m_pOriginalSlider);
+      pControl = m_pOriginalSlider->Clone();
     if (pControl == NULL)
       return NULL;
 

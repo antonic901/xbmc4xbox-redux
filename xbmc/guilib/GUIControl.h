@@ -220,7 +220,7 @@ public:
   void SetParentControl(CGUIControl* control) { m_parentControl = control; }
   CGUIControl* GetParentControl(void) const { return m_parentControl; }
   virtual void SaveStates(std::vector<CControlState> &states);
-  virtual CGUIControl *GetControl(int id, std::vector<CGUIControl*> *idCollector = nullptr);
+  virtual CGUIControl *GetControl(int id, std::vector<CGUIControl*> *idCollector = NULL);
 
 
   void SetControlStats(GUICONTROLSTATS* controlStats) { m_controlStats = controlStats; }
@@ -231,19 +231,14 @@ public:
     GUICONTROL_UNKNOWN,
 
     // Keep sorted
-    GUICONTAINER_EPGGRID,
     GUICONTAINER_FIXEDLIST,
     GUICONTAINER_LIST,
     GUICONTAINER_PANEL,
     GUICONTAINER_WRAPLIST,
     GUICONTROL_BORDEREDIMAGE,
     GUICONTROL_BUTTON,
-    GUICONTROL_COLORBUTTON,
     GUICONTROL_EDIT,
     GUICONTROL_FADELABEL,
-    GUICONTROL_GAME,
-    GUICONTROL_GAMECONTROLLER,
-    GUICONTROL_GAMECONTROLLERLIST,
     GUICONTROL_GROUP,
     GUICONTROL_GROUPLIST,
     GUICONTROL_IMAGE,
@@ -254,7 +249,6 @@ public:
     GUICONTROL_MULTI_IMAGE,
     GUICONTROL_PROGRESS,
     GUICONTROL_RADIO,
-    GUICONTROL_RANGES,
     GUICONTROL_RENDERADDON,
     GUICONTROL_RESIZE,
     GUICONTROL_RSS,
@@ -305,7 +299,7 @@ protected:
   float m_height;
   float m_width;
   CRect m_hitRect;
-  UTILS::COLOR::Color m_hitColor = 0xffffffff;
+  UTILS::COLOR::Color m_hitColor;
   KODI::GUILIB::GUIINFO::CGUIInfoColor m_diffuseColor;
   int m_controlID;
   int m_parentID;
@@ -338,7 +332,7 @@ protected:
   float m_stereo;
   TransformMatrix m_transform;
   TransformMatrix m_cachedTransform; // Contains the absolute transform the control
-  bool m_isCulled{true};
+  bool m_isCulled;
 
   static const unsigned int DIRTY_STATE_CONTROL = 1; //This control is dirty
   static const unsigned int DIRTY_STATE_CHILD = 2; //One / more children are dirty

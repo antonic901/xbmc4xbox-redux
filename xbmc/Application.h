@@ -24,7 +24,7 @@
 #include "XBApplicationEx.h"
 
 #include "IMsgTargetCallback.h"
-#include "guilib/Key.h"
+#include "input/keyboard/Key.h"
 #include "utils/GlobalsHandling.h"
 #include "messaging/IMessageTarget.h"
 #include "ServiceManager.h"
@@ -261,7 +261,7 @@ public:
 
   CNetwork& getNetwork();
 
-  bool ExecuteXBMCAction(std::string action, const CGUIListItemPtr &item = CGUIListItemPtr());
+  bool ExecuteXBMCAction(std::string action, const boost::shared_ptr<CGUIListItem> &item = boost::shared_ptr<CGUIListItem>());
 
   CIdleThread m_idleThread;
   MEDIA_DETECT::CAutorun m_Autorun;
@@ -322,8 +322,6 @@ public:
   void UnregisterActionListener(IActionListener *listener);
 
   boost::movelib::unique_ptr<CServiceManager> m_ServiceManager;
-
-  bool SwitchToFullScreen(bool force = false);
 
 protected:
   virtual bool OnSettingsSaving() const;
@@ -422,7 +420,7 @@ protected:
   void SaveCurrentFileSettings();
 
   CNetwork    *m_network;
-  
+
 #ifdef HAS_EVENT_SERVER
   std::map<std::string, std::map<int, float> > m_lastAxisMap;
 #endif

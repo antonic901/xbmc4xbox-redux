@@ -1,30 +1,20 @@
 /*
- *      Copyright (C) 2005-2015 Team Kodi
- *      http://kodi.tv
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Kodi; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "SkinVariable.h"
-#include "ServiceBroker.h"
+
 #include "GUIInfoManager.h"
+#include "ServiceBroker.h"
 #include "guilib/GUIComponent.h"
 #include "utils/XBMCTinyXML.h"
 
 using namespace INFO;
+using namespace KODI;
 
 const CSkinVariableString* CSkinVariable::CreateFromXML(const TiXmlElement& node, int context)
 {
@@ -43,7 +33,7 @@ const CSkinVariableString* CSkinVariable::CreateFromXML(const TiXmlElement& node
         pair.m_condition = CServiceBroker::GetGUI()->GetInfoManager().Register(condition, context);
 
       std::string label = valuenode->FirstChild() ? valuenode->FirstChild()->ValueStr() : "";
-      pair.m_label = CGUIInfoLabel(label);
+      pair.m_label = GUILIB::GUIINFO::CGUIInfoLabel(label);
       tmp->m_conditionLabelPairs.push_back(pair);
       if (!pair.m_condition)
         break; // once we reach default value (without condition) break iterating
@@ -57,9 +47,7 @@ const CSkinVariableString* CSkinVariable::CreateFromXML(const TiXmlElement& node
   return NULL;
 }
 
-CSkinVariableString::CSkinVariableString()
-{
-}
+CSkinVariableString::CSkinVariableString() {}
 
 int CSkinVariableString::GetContext() const
 {
@@ -71,16 +59,23 @@ const std::string& CSkinVariableString::GetName() const
   return m_name;
 }
 
-std::string CSkinVariableString::GetValue(bool preferImage /* = false*/, const CGUIListItem *item /* = NULL */)
+std::string CSkinVariableString::GetValue(int contextWindow,
+                                          bool preferImage /* = false */,
+                                          const CGUIListItem* item /* = nullptr */) const
 {
   for (VECCONDITIONLABELPAIR::const_iterator it = m_conditionLabelPairs.begin() ; it != m_conditionLabelPairs.end(); ++it)
   {
-    if (!it->m_condition || it->m_condition->Get(item))
+    // use propagated context in case this skin variable has the default context (i.e. if not tied to a specific window)
+    // nested skin variables are supported
+    int context = m_context == INFO::DEFAULT_CONTEXT ? contextWindow : m_context;
+    if (!it->m_condition || it->m_condition->Get(context, item))
     {
       if (item)
         return it->m_label.GetItemLabel(item, preferImage);
       else
-        return it->m_label.GetLabel(m_context, preferImage);
+      {
+        return it->m_label.GetLabel(context, preferImage);
+      }
     }
   }
   return "";

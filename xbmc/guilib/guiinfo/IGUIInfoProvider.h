@@ -13,9 +13,6 @@
 class CFileItem;
 class CGUIListItem;
 
-struct AudioStreamInfo;
-struct VideoStreamInfo;
-
 namespace KODI
 {
 namespace GUILIB
@@ -83,13 +80,6 @@ public:
    * @return True if the value was filled successfully, false otherwise.
    */
   virtual bool GetBool(bool& value, const CGUIListItem *item, int contextWindow, const CGUIInfo &info) const = 0;
-
-  /*!
-   * @brief Set new audio/video stream info data.
-   * @param audioInfo New audio stream info.
-   * @param videoInfo New video stream info.
-   */
-  virtual void UpdateAVInfo(const AudioStreamInfo& audioInfo, const VideoStreamInfo& videoInfo, const SubtitleStreamInfo& subtitleInfo) = 0;
 };
 
 } // namespace GUIINFO

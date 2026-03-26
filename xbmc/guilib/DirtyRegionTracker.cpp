@@ -79,8 +79,11 @@ CDirtyRegionList CDirtyRegionTracker::GetDirtyRegions()
 void CDirtyRegionTracker::CleanMarkedRegions()
 {
   int buffering = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_guiVisualizeDirtyRegions ? 20 : m_buffering;
-  m_markedRegions.erase(
-      std::remove_if(m_markedRegions.begin(), m_markedRegions.end(),
-                     [buffering](CDirtyRegion& r) { return r.UpdateAge() >= buffering; }),
-      m_markedRegions.end());
+  int i = m_markedRegions.size() - 1;
+  while (i >= 0)
+    {
+    if (m_markedRegions[i].UpdateAge() >= buffering)
+      m_markedRegions.erase(m_markedRegions.begin() + i);
+    i--;
+  }
 }

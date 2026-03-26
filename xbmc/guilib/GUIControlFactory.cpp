@@ -11,7 +11,6 @@
 #include "GUIAction.h"
 #include "GUIBorderedImage.h"
 #include "GUIButtonControl.h"
-#include "GUIColorButtonControl.h"
 #include "GUIColorManager.h"
 #include "GUIControlGroup.h"
 #include "GUIControlGroupList.h"
@@ -30,7 +29,6 @@
 #include "GUIPanelContainer.h"
 #include "GUIProgressControl.h"
 #include "GUIRadioButtonControl.h"
-#include "GUIRangesControl.h"
 #include "GUIRenderingControl.h"
 #include "GUIResizeControl.h"
 #include "GUIScrollBarControl.h"
@@ -61,14 +59,9 @@ typedef struct
 
 static const ControlMapping controls[] = {
     {"button", CGUIControl::GUICONTROL_BUTTON},
-    {"colorbutton", CGUIControl::GUICONTROL_COLORBUTTON},
     {"edit", CGUIControl::GUICONTROL_EDIT},
-    {"epggrid", CGUIControl::GUICONTAINER_EPGGRID},
     {"fadelabel", CGUIControl::GUICONTROL_FADELABEL},
     {"fixedlist", CGUIControl::GUICONTAINER_FIXEDLIST},
-    {"gamecontroller", CGUIControl::GUICONTROL_GAMECONTROLLER},
-    {"gamecontrollerlist", CGUIControl::GUICONTROL_GAMECONTROLLERLIST},
-    {"gamewindow", CGUIControl::GUICONTROL_GAME},
     {"group", CGUIControl::GUICONTROL_GROUP},
     {"group", CGUIControl::GUICONTROL_LISTGROUP},
     {"grouplist", CGUIControl::GUICONTROL_GROUPLIST},
@@ -82,7 +75,6 @@ static const ControlMapping controls[] = {
     {"panel", CGUIControl::GUICONTAINER_PANEL},
     {"progress", CGUIControl::GUICONTROL_PROGRESS},
     {"radiobutton", CGUIControl::GUICONTROL_RADIO},
-    {"ranges", CGUIControl::GUICONTROL_RANGES},
     {"renderaddon", CGUIControl::GUICONTROL_RENDERADDON},
     {"resize", CGUIControl::GUICONTROL_RESIZE},
     {"rss", CGUIControl::GUICONTROL_RSS},
@@ -100,17 +92,17 @@ static const ControlMapping controls[] = {
 
 CGUIControl::GUICONTROLTYPES CGUIControlFactory::TranslateControlType(const std::string& type)
 {
-  for (const ControlMapping& control : controls)
-    if (StringUtils::EqualsNoCase(type, control.name))
-      return control.type;
+  for (unsigned int i = 0; i < sizeof(controls) / sizeof(ControlMapping); ++i)
+    if (StringUtils::EqualsNoCase(type, controls[i].name))
+      return controls[i].type;
   return CGUIControl::GUICONTROL_UNKNOWN;
 }
 
 std::string CGUIControlFactory::TranslateControlType(CGUIControl::GUICONTROLTYPES type)
 {
-  for (const ControlMapping& control : controls)
-    if (type == control.type)
-      return control.name;
+  for (unsigned int i = 0; i < sizeof(controls) / sizeof(ControlMapping); ++i)
+    if (type == controls[i].type)
+      return controls[i].name;
   return "";
 }
 
@@ -480,7 +472,7 @@ bool CGUIControlFactory::GetConditionalVisibility(const TiXmlNode* control,
       allowHiddenFocus = hidden;
     // add to our condition string
     if (!node->NoChildren())
-      conditions.emplace_back(node->FirstChild()->Value());
+      conditions.push_back(node->FirstChild()->Value());
     node = node->NextSiblingElement("visible");
   }
   if (!conditions.size())
@@ -557,7 +549,7 @@ bool CGUIControlFactory::GetActions(const TiXmlNode* pRootNode,
     if (pElement->FirstChild())
     {
       actions.Append(
-          {XMLUtils::GetAttribute(pElement, "condition"), pElement->FirstChild()->Value()});
+        CGUIAction::CExecutableAction(XMLUtils::GetAttribute(pElement, "condition"), pElement->FirstChild()->Value()));
     }
     pElement = pElement->NextSiblingElement(strTag);
   }
@@ -675,7 +667,7 @@ void CGUIControlFactory::GetInfoLabels(const TiXmlNode* pControlNode,
   if (XMLUtils::GetInt(pControlNode, "number", labelNumber))
   {
     std::string label = std::to_string(labelNumber);
-    infoLabels.emplace_back(label);
+    infoLabels.push_back(label);
     return; // done
   }
   const TiXmlElement* labelNode = pControlNode->FirstChildElement(labelTag);
@@ -698,7 +690,7 @@ void CGUIControlFactory::GetInfoLabels(const TiXmlNode* pControlNode,
       if (infoNode->FirstChild())
       {
         std::string info = StringUtils::Format("$INFO[{}]", infoNode->FirstChild()->Value());
-        infoLabels.emplace_back(info, fallback, parentID);
+        infoLabels.push_back(GUIINFO::CGUIInfoLabel(info, fallback, parentID));
       }
       infoNode = infoNode->NextSibling("info");
     }
@@ -733,52 +725,6 @@ std::string CGUIControlFactory::GetType(const TiXmlElement* pControlNode)
   if (type.empty()) // backward compatibility - not desired
     XMLUtils::GetString(pControlNode, "type", type);
   return type;
-}
-
-bool CGUIControlFactory::GetMovingSpeedConfig(const TiXmlNode* pRootNode,
-                                              const char* strTag,
-                                              UTILS::MOVING_SPEED::MapEventConfig& movingSpeedCfg)
-{
-  const TiXmlElement* msNode = pRootNode->FirstChildElement(strTag);
-  if (!msNode)
-    return false;
-
-  float globalAccel{StringUtils::ToFloat(XMLUtils::GetAttribute(msNode, "acceleration"))};
-  float globalMaxVel{StringUtils::ToFloat(XMLUtils::GetAttribute(msNode, "maxvelocity"))};
-  uint32_t globalResetTimeout{
-      StringUtils::ToUint32(XMLUtils::GetAttribute(msNode, "resettimeout"))};
-  float globalDelta{StringUtils::ToFloat(XMLUtils::GetAttribute(msNode, "delta"))};
-
-  const TiXmlElement* configElement{msNode->FirstChildElement("eventconfig")};
-  while (configElement)
-  {
-    const char* eventType = configElement->Attribute("type");
-    if (!eventType)
-    {
-      CLog::LogF(LOGERROR, "Failed to parse XML \"eventconfig\" tag missing \"type\" attribute");
-      configElement = configElement->NextSiblingElement("eventconfig");
-      continue;
-    }
-
-    const char* accelerationStr{configElement->Attribute("acceleration")};
-    float acceleration = accelerationStr ? StringUtils::ToFloat(accelerationStr) : globalAccel;
-
-    const char* maxVelocityStr{configElement->Attribute("maxvelocity")};
-    float maxVelocity = maxVelocityStr ? StringUtils::ToFloat(maxVelocityStr) : globalMaxVel;
-
-    const char* resetTimeoutStr{configElement->Attribute("resettimeout")};
-    uint32_t resetTimeout =
-        resetTimeoutStr ? StringUtils::ToUint32(resetTimeoutStr) : globalResetTimeout;
-
-    const char* deltaStr{configElement->Attribute("delta")};
-    float delta = deltaStr ? StringUtils::ToFloat(deltaStr) : globalDelta;
-
-    UTILS::MOVING_SPEED::EventCfg eventCfg{acceleration, maxVelocity, resetTimeout, delta};
-    movingSpeedCfg.emplace(UTILS::MOVING_SPEED::ParseEventType(eventType), eventCfg);
-
-    configElement = configElement->NextSiblingElement("eventconfig");
-  }
-  return true;
 }
 
 CGUIControl* CGUIControlFactory::Create(int parentID,
@@ -908,8 +854,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID,
   bool resetOnLabelChange = true;
   bool bPassword = false;
   std::string visibleCondition;
-
-  UTILS::MOVING_SPEED::MapEventConfig movingSpeedCfg;
 
   /////////////////////////////////////////////////////////////////////////////
   // Read control properties from XML
@@ -1229,8 +1173,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID,
 
   XMLUtils::GetString(pControlNode, "action", action);
 
-  GetMovingSpeedConfig(pControlNode, "movingspeed", movingSpeedCfg);
-
   /////////////////////////////////////////////////////////////////////////////
   // Instantiate a new control using the properties gathered above
   //
@@ -1305,10 +1247,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID,
     case CGUIControl::GUICONTROL_VIDEO:
     {
       control = new CGUIVideoControl(parentID, id, posX, posY, width, height);
-      break;
-    }
-    case CGUIControl::GUICONTROL_GAME:
-    {
       break;
     }
     case CGUIControl::GUICONTROL_FADELABEL:
@@ -1449,13 +1387,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID,
 
       break;
     }
-    case CGUIControl::GUICONTROL_RANGES:
-    {
-      control =
-          new CGUIRangesControl(parentID, id, posX, posY, width, height, textureBackground,
-                                textureLeft, textureMid, textureRight, textureOverlay, singleInfo);
-      break;
-    }
     case CGUIControl::GUICONTROL_IMAGE:
     {
       // use a bordered texture if we have <bordersize> or <bordertexture> specified.
@@ -1518,10 +1449,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID,
       wcontrol->SetFocusActions(focusActions);
       wcontrol->SetUnFocusActions(unfocusActions);
 
-      break;
-    }
-    case CGUIControl::GUICONTAINER_EPGGRID:
-    {
       break;
     }
     case CGUIControl::GUICONTAINER_FIXEDLIST:
@@ -1587,13 +1514,13 @@ CGUIControl* CGUIControlFactory::Create(int parentID,
     case CGUIControl::GUICONTROL_MOVER:
     {
       control = new CGUIMoverControl(parentID, id, posX, posY, width, height, textureFocus,
-                                     textureNoFocus, movingSpeedCfg);
+                                     textureNoFocus);
       break;
     }
     case CGUIControl::GUICONTROL_RESIZE:
     {
       control = new CGUIResizeControl(parentID, id, posX, posY, width, height, textureFocus,
-                                      textureNoFocus, movingSpeedCfg);
+                                      textureNoFocus);
       break;
     }
     case CGUIControl::GUICONTROL_SPINEX:
@@ -1617,30 +1544,6 @@ CGUIControl* CGUIControlFactory::Create(int parentID,
     case CGUIControl::GUICONTROL_RENDERADDON:
     {
       control = new CGUIRenderingControl(parentID, id, posX, posY, width, height);
-      break;
-    }
-    case CGUIControl::GUICONTROL_GAMECONTROLLER:
-    {
-      break;
-    }
-    case CGUIControl::GUICONTROL_GAMECONTROLLERLIST:
-    {
-      break;
-    }
-    case CGUIControl::GUICONTROL_COLORBUTTON:
-    {
-      control = new CGUIColorButtonControl(parentID, id, posX, posY, width, height, textureFocus,
-                                           textureNoFocus, labelInfo, textureColorMask,
-                                           textureColorDisabledMask);
-
-      CGUIColorButtonControl* rcontrol = static_cast<CGUIColorButtonControl*>(control);
-      rcontrol->SetLabel(strLabel);
-      rcontrol->SetImageBoxColor(colorBox);
-      rcontrol->SetColorDimensions(colorPosX, colorPosY, colorWidth, colorHeight);
-      rcontrol->SetClickActions(clickActions);
-      rcontrol->SetFocusActions(focusActions);
-      rcontrol->SetUnFocusActions(unfocusActions);
-
       break;
     }
     default:

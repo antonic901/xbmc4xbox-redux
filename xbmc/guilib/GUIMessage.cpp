@@ -10,6 +10,8 @@
 
 #include "LocalizeStrings.h"
 
+#include <boost/move/move.hpp>
+
 std::string CGUIMessage::empty_string;
 
 CGUIMessage::CGUIMessage(int msg, int senderID, int controlID, int64_t param1, int64_t param2)
@@ -49,7 +51,10 @@ CGUIMessage::CGUIMessage(int msg,
   m_pointer = NULL;
 }
 
-CGUIMessage::CGUIMessage(const CGUIMessage& msg) {}
+CGUIMessage::CGUIMessage(const CGUIMessage& msg)
+{
+  *this = msg;
+}
 
 CGUIMessage::~CGUIMessage(void) {}
 
@@ -99,7 +104,21 @@ int CGUIMessage::GetSenderId() const
   return m_senderID;
 }
 
-CGUIMessage& CGUIMessage::operator = (const CGUIMessage& msg) {}
+CGUIMessage& CGUIMessage::operator = (const CGUIMessage& msg)
+{
+  if (this == &msg) return * this;
+
+  m_message = msg.m_message;
+  m_controlID = msg.m_controlID;
+  m_param1 = msg.m_param1;
+  m_param2 = msg.m_param2;
+  m_pointer = msg.m_pointer;
+  m_strLabel = msg.m_strLabel;
+  m_senderID = msg.m_senderID;
+  m_params = msg.m_params;
+  m_item = msg.m_item;
+  return *this;
+}
 
 void CGUIMessage::SetParam1(int64_t param1)
 {
@@ -157,5 +176,5 @@ size_t CGUIMessage::GetNumStringParams() const
 
 void CGUIMessage::SetItem(boost::shared_ptr<CGUIListItem> item)
 {
-  m_item = std::move(item);
+  m_item = boost::move(item);
 }

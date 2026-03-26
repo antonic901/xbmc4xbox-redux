@@ -26,6 +26,8 @@
 
 #include "defs_from_settings.h"
 
+#include <vector>
+
 class TiXmlNode;
 
 #define MAX_ROWS 20
@@ -40,7 +42,7 @@ public:
                         LCD_MODE_NAVIGATION,
                         LCD_MODE_SCREENSAVER,
                         LCD_MODE_XBE_LAUNCH,
-                        LCD_MODE_MAX 
+                        LCD_MODE_MAX
                 };
   enum CUSTOM_CHARSET {
                         CUSTOM_CHARSET_DEFAULT = 0,
@@ -67,7 +69,7 @@ protected:
   unsigned char GetLCDCharsetCharacter( UINT _nCharacter, int _nCharset=-1);
   void LoadMode(TiXmlNode *node, LCD_MODE mode);
 private:
-  std::vector<CGUIInfoLabel> m_lcdMode[LCD_MODE_MAX];
+  std::vector<KODI::GUILIB::GUIINFO::CGUIInfoLabel> m_lcdMode[LCD_MODE_MAX];
   UINT m_eCurrentCharset;
 };
 extern ILCD* g_lcd;

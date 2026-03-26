@@ -42,6 +42,7 @@ CGUITextLayout::CGUITextLayout(CGUIFont *font, bool wrap, float fHeight, CGUIFon
   m_textWidth = 0;
   m_textHeight = 0;
   m_lastUpdateW = false;
+  m_monoFont = NULL;
 }
 
 void CGUITextLayout::SetWrap(bool bWrap)
@@ -78,8 +79,9 @@ void CGUITextLayout::Render(float x,
     alignment &= ~XBFONT_CENTER_Y;
   }
   m_font->Begin();
-  for (const auto& string : m_lines)
+  for (std::vector<CGUIString>::iterator i = m_lines.begin(); i != m_lines.end(); ++i)
   {
+    const CGUIString &string = *i;
     uint32_t align = alignment;
     if (align & XBFONT_JUSTIFIED && string.m_carriageReturn)
       align &= ~XBFONT_JUSTIFIED;
@@ -140,9 +142,9 @@ void CGUITextLayout::RenderScrolling(float x,
   //       any difference to the smoothness of scrolling though which will be
   //       jumpy with this sort of thing.  It's not exactly a well used situation
   //       though, so this hack is probably OK.
-  for (const auto& string : m_lines)
+  for (std::vector<CGUIString>::iterator i = m_lines.begin(); i != m_lines.end(); ++i)
   {
-    m_font->DrawScrollingText(x, y, m_colors, shadowColor, string.m_text, alignment, maxWidth, scrollInfo);
+    m_font->DrawScrollingText(x, y, m_colors, shadowColor, i->m_text, alignment, maxWidth, scrollInfo);
     y += m_font->GetLineHeight();
   }
   m_font->End();
@@ -176,10 +178,10 @@ void CGUITextLayout::RenderOutline(float x,
     // adjust so the baselines of the fonts align
     float by = y + m_font->GetTextBaseLine() - m_borderFont->GetTextBaseLine();
     m_borderFont->Begin();
-    for (const auto& string : m_lines)
+    for (std::vector<CGUIString>::iterator i = m_lines.begin(); i != m_lines.end(); ++i)
     {
       uint32_t align = alignment;
-      if (align & XBFONT_JUSTIFIED && string.m_carriageReturn)
+      if (align & XBFONT_JUSTIFIED && i->m_carriageReturn)
         align &= ~XBFONT_JUSTIFIED;
       // text centered horizontally must be computed using the original font, not the bordered
       // font, as the bordered font will be wider, and thus will end up uncentered.
@@ -190,13 +192,13 @@ void CGUITextLayout::RenderOutline(float x,
       float bx = x;
       if (align & XBFONT_CENTER_X)
       {
-        bx -= m_font->GetTextWidth(string.m_text) * 0.5f;
+        bx -= m_font->GetTextWidth(i->m_text) * 0.5f;
         align &= ~XBFONT_CENTER_X;
       }
 
       // don't pass maxWidth through to the renderer for the same reason above: it will cause clipping
       // on the left.
-      m_borderFont->DrawText(bx, by, outlineColors, 0, string.m_text, align, 0);
+      m_borderFont->DrawText(bx, by, outlineColors, 0, i->m_text, align, 0);
       by += m_borderFont->GetLineHeight();
     }
     m_borderFont->End();
@@ -207,14 +209,14 @@ void CGUITextLayout::RenderOutline(float x,
     m_colors[0] = color;
 
   m_font->Begin();
-  for (const auto& string : m_lines)
+  for (std::vector<CGUIString>::iterator i = m_lines.begin(); i != m_lines.end(); ++i)
   {
     uint32_t align = alignment;
-    if (align & XBFONT_JUSTIFIED && string.m_carriageReturn)
+    if (align & XBFONT_JUSTIFIED && i->m_carriageReturn)
       align &= ~XBFONT_JUSTIFIED;
 
     // don't pass maxWidth through to the renderer for the reason above.
-    m_font->DrawText(x, y, m_colors, 0, string.m_text, align, 0);
+    m_font->DrawText(x, y, m_colors, 0, i->m_text, align, 0);
     y += m_font->GetLineHeight();
   }
   m_font->End();
@@ -294,10 +296,10 @@ void CGUITextLayout::BidiTransform(std::vector<CGUIString>& lines, bool forceLTR
     style.reserve(lineLength);
 
     // Separate the text and style for the input styled text
-    for (const auto& it : line.m_text)
+    for (vecText::const_iterator it = line.m_text.begin(); it != line.m_text.end(); ++it)
     {
-      logicalText.push_back((wchar_t)(it & 0xffff));
-      style.push_back(it & 0xffff0000);
+      logicalText.push_back((wchar_t)(*it & 0xffff));
+      style.push_back(*it & 0xffff0000);
     }
 
     // Allocate memory for visual to logical map and call bidi
@@ -470,7 +472,7 @@ void CGUITextLayout::ParseText(const std::wstring& text,
         std::string t;
         g_charsetConverter.wToUTF8(text.substr(pos + 5, finish - pos - 5), t);
         UTILS::COLOR::Color color = CServiceBroker::GetGUI()->GetColorManager().GetColor(t);
-        const auto& it = std::find(colors.begin(), colors.end(), color);
+        std::vector<UTILS::COLOR::Color>::const_iterator it = std::find(colors.begin(), colors.end(), color);
         if (it == colors.end())
         { // create new color
           if (colors.size() <= 0xFF)
@@ -547,7 +549,7 @@ void CGUITextLayout::WrapText(const vecText &text, float maxWidth)
 
   if (maxWidth < 0)
   {
-    CLog::LogF(LOGWARNING, "Cannot wrap the text due to invalid max width value.");
+    CLog::Log(LOGWARNING, "Cannot wrap the text due to invalid max width value.");
     return;
   }
 
@@ -569,14 +571,15 @@ void CGUITextLayout::WrapText(const vecText &text, float maxWidth)
   // Split lines that exceed the maximum width,
   // lines can be split by last space char or if there are no spaces by character
   // to mimics the line behavior of word processors
-  for (const CGUIString& line : lines)
+  for (std::vector<CGUIString>::const_iterator it = lines.begin(); it != lines.end(); ++it)
   {
+    const CGUIString& line = *it;
     if (m_lines.size() >= nMaxLines)
       return;
 
     if (line.m_text.empty()) // Blank line
     {
-      m_lines.emplace_back(line);
+      m_lines.push_back(line);
       continue;
     }
 
@@ -593,7 +596,7 @@ void CGUITextLayout::WrapText(const vecText &text, float maxWidth)
       if (CanWrapAtLetter(letter)) // Check for a space char
         lastSpacePos = pos;
 
-      curLine.emplace_back(letter);
+      curLine.push_back(letter);
 
       const float currWidth = m_font->GetTextWidth(curLine);
 
@@ -606,13 +609,13 @@ void CGUITextLayout::WrapText(const vecText &text, float maxWidth)
           if (pos == lastBeginPos)
             ++pos;
 
-          CGUIString linePart{lastBeginPos, pos, false};
-          m_lines.emplace_back(linePart);
+          CGUIString linePart(lastBeginPos, pos, false);
+          m_lines.push_back(linePart);
         }
         else
         {
-          CGUIString linePart{lastBeginPos, lastSpacePos, false};
-          m_lines.emplace_back(linePart);
+          CGUIString linePart(lastBeginPos, lastSpacePos, false);
+          m_lines.push_back(linePart);
 
           pos = lastSpacePos + 1;
           lastSpacePos = line.m_text.end();
@@ -633,8 +636,8 @@ void CGUITextLayout::WrapText(const vecText &text, float maxWidth)
     // Add the remaining text part
     if (!curLine.empty())
     {
-      CGUIString linePart{curLine.begin(), curLine.end(), false};
-      m_lines.emplace_back(linePart);
+      CGUIString linePart(curLine.begin(), curLine.end(), false);
+      m_lines.push_back(linePart);
     }
 
     // Restore carriage return marker for the end of paragraph
@@ -682,9 +685,9 @@ void CGUITextLayout::CalcTextExtent()
   m_textHeight = 0;
   if (!m_font) return;
 
-  for (const auto& string : m_lines)
+  for (std::vector<CGUIString>::iterator i = m_lines.begin(); i != m_lines.end(); ++i)
   {
-    float w = m_font->GetTextWidth(string.m_text);
+    float w = m_font->GetTextWidth(i->m_text);
     if (w > m_textWidth)
       m_textWidth = w;
   }
@@ -694,8 +697,8 @@ void CGUITextLayout::CalcTextExtent()
 unsigned int CGUITextLayout::GetTextLength() const
 {
   unsigned int length = 0;
-  for (const auto& string : m_lines)
-    length += string.m_text.size();
+  for (std::vector<CGUIString>::const_iterator i = m_lines.begin(); i != m_lines.end(); ++i)
+    length += i->m_text.size();
   return length;
 }
 

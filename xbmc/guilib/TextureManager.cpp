@@ -14,35 +14,19 @@
 #include "commons/ilog.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
-#if 0
-#include "guilib/TextureBundle.h"
-#endif
-#include "guilib/TextureFormats.h"
+#include "settings/AdvancedSettings.h"
+#include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
+#include "threads/SingleLock.h"
+#include "threads/SystemClock.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
 #include "windowing/GraphicContext.h"
 #include "windowing/WinSystem.h"
 
-#include <mutex>
-
 #ifdef _DEBUG_TEXTURES
 #include "utils/TimeUtils.h"
-#endif
-#if defined(TARGET_DARWIN_IOS)
-#define WIN_SYSTEM_CLASS CWinSystemIOS
-#include "windowing/ios/WinSystemIOS.h" // for g_Windowing in CGUITextureManager::FreeUnusedTextures
-#elif defined(TARGET_DARWIN_TVOS)
-#define WIN_SYSTEM_CLASS CWinSystemTVOS
-#include "windowing/tvos/WinSystemTVOS.h" // for g_Windowing in CGUITextureManager::FreeUnusedTextures
-#endif
-
-#if defined(HAS_GL) || defined(HAS_GLES)
-#include "system_gl.h"
-#endif
-
-#ifndef _XBOX
-#include "FFmpegImage.h"
 #endif
 
 #include <algorithm>
@@ -60,7 +44,11 @@ CTextureArray::CTextureArray(int width, int height, int loops,  bool texCoordsAr
   m_orientation = 0;
   m_texWidth = 0;
   m_texHeight = 0;
+#ifdef HAS_XBOX_D3D
+  m_texCoordsArePixels = texCoordsArePixels;
+#else
   m_texCoordsArePixels = false;
+#endif
 }
 
 CTextureArray::CTextureArray()
@@ -96,9 +84,13 @@ void CTextureArray::Add(boost::shared_ptr<CTexture> texture, int delay)
 
   m_texWidth = texture->GetTextureWidth();
   m_texHeight = texture->GetTextureHeight();
+#ifdef HAS_XBOX_D3D
+  m_texCoordsArePixels = texture->GetTexCoordsArePixels();
+#else
   m_texCoordsArePixels = false;
+#endif
 
-  m_textures.emplace_back(std::move(texture));
+  m_textures.push_back(boost::move(texture));
   m_delays.push_back(delay);
 }
 
@@ -108,7 +100,7 @@ void CTextureArray::Set(boost::shared_ptr<CTexture> texture, int width, int heig
   m_width = width;
   m_height = height;
   m_orientation = texture ? texture->GetOrientation() : 0;
-  Add(std::move(texture), 2);
+  Add(boost::move(texture), 2);
 }
 
 void CTextureArray::Free()
@@ -217,7 +209,7 @@ void CTextureMap::Add(boost::movelib::unique_ptr<CTexture> texture, int delay)
     m_memUsage += sizeof(CTexture) + (texture->GetTextureWidth() * texture->GetTextureHeight() * 4);
 #endif
 
-  m_texture.Add(std::move(texture), delay);
+  m_texture.Add(boost::shared_ptr<CTexture>(texture.release()), delay);
 }
 
 /************************************************************************/
@@ -225,7 +217,6 @@ void CTextureMap::Add(boost::movelib::unique_ptr<CTexture> texture, int delay)
 /************************************************************************/
 CGUITextureManager::CGUITextureManager(void)
 {
-#if 0
 #ifdef HAS_XBOX_D3D
   D3DXSetDXT3DXT5(TRUE);
   for (int bundle = 0; bundle < 2; bundle++)
@@ -233,7 +224,6 @@ CGUITextureManager::CGUITextureManager(void)
 #endif
   // we set the theme bundle to be the first bundle (thus prioritizing it)
   m_TexBundle[0].SetThemeBundle(true);
-#endif
 }
 
 CGUITextureManager::~CGUITextureManager(void)
@@ -241,7 +231,6 @@ CGUITextureManager::~CGUITextureManager(void)
   Cleanup();
 }
 
-#if 0
 #ifdef HAS_XBOX_D3D
 void CGUITextureManager::StartPreLoad()
 {
@@ -297,7 +286,6 @@ void CGUITextureManager::FlushPreLoad()
   }
 }
 #endif
-#endif
 
 /************************************************************************/
 /*                                                                      */
@@ -330,15 +318,12 @@ bool CGUITextureManager::HasTexture(const std::string &textureName, std::string 
     return false;
 
   // Check our loaded and bundled textures - we store in bundles using \\.
-#if 0
   std::string bundledName = CTextureBundle::Normalize(textureName);
-#endif
   for (int i = 0; i < (int)m_vecTextures.size(); ++i)
   {
     CTextureMap *pMap = m_vecTextures[i];
     if (pMap->GetName() == textureName)
     {
-#if 0
 #ifdef HAS_XBOX_D3D
       for (int i = 0; i < 2; i++)
       {
@@ -351,13 +336,11 @@ bool CGUITextureManager::HasTexture(const std::string &textureName, std::string 
         }
       }
 #endif
-#endif
       if (size) *size = 1;
       return true;
     }
   }
 
-#if 0
   for (int i = 0; i < 2; i++)
   {
 #ifdef HAS_XBOX_D3D
@@ -371,7 +354,6 @@ bool CGUITextureManager::HasTexture(const std::string &textureName, std::string 
       return true;
     }
     else
-#endif
     if (m_TexBundle[i].HasFile(bundledName))
     {
       if (bundle) *bundle = i;
@@ -415,14 +397,11 @@ const CTextureArray& CGUITextureManager::Load(const std::string& strTextureName,
     return emptyTexture;
   }
 
-  for (auto i = m_unusedTextures.begin(); i != m_unusedTextures.end(); ++i)
+  for (std::list<std::pair<CTextureMap*, unsigned int> >::iterator i = m_unusedTextures.begin(); i != m_unusedTextures.end(); ++i)
   {
     CTextureMap* pMap = i->first;
 
-    auto timestamp = i->second.time_since_epoch();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(timestamp);
-
-    if (pMap->GetName() == strTextureName && duration.count() > 0)
+    if (pMap->GetName() == strTextureName && i->second > 0)
     {
       m_vecTextures.push_back(pMap);
       m_unusedTextures.erase(i);
@@ -463,7 +442,7 @@ const CTextureArray& CGUITextureManager::Load(const std::string& strTextureName,
     {
       maxWidth = std::max(maxWidth, texture.first->GetWidth());
       maxHeight = std::max(maxHeight, texture.first->GetHeight());
-      pMap->Add(std::move(texture.first), texture.second);
+      pMap->Add(boost::move(texture.first), texture.second);
     }
 
     pMap->SetWidth((int)maxWidth);
@@ -511,7 +490,7 @@ const CTextureArray& CGUITextureManager::Load(const std::string& strTextureName,
         glTexture->LoadFromMemory(anim.Width(), anim.Height(), frame->GetPitch(), XB_FMT_A8R8G8B8, true, frame->m_pImage);
         maxWidth = std::max(maxWidth, glTexture->GetWidth());
         maxHeight = std::max(maxHeight, glTexture->GetHeight());
-        pMap->Add(std::move(glTexture), frame->m_delay);
+        pMap->Add(boost::move(glTexture), frame->m_delay);
       }
 
       if (pMap->GetMemoryUsage() <= maxMemoryUsage)
@@ -544,19 +523,13 @@ const CTextureArray& CGUITextureManager::Load(const std::string& strTextureName,
   int width = 0, height = 0;
   if (bundle >= 0)
   {
-#if 0
-    std::optional<CTextureBundleXBT::Texture> texture =
-        m_TexBundle[bundle].LoadTexture(strTextureName);
-    if (!texture)
+    CTexture* texture = NULL;
+    if (!m_TexBundle[bundle].LoadTexture(strTextureName, &texture, width, height))
     {
-      CLog::Log(LOGERROR, "Texture manager unable to load bundled file: {}", strTextureName);
+      CLog::Log(LOGERROR, "Texture manager unable to load bundled file: %s", strTextureName.c_str());
       return emptyTexture;
     }
-
-    pTexture = std::move(texture.value().texture);
-    width = texture.value().width;
-    height = texture.value().height;
-#endif
+    pTexture.reset(texture);
   }
   else
   {
@@ -575,7 +548,7 @@ const CTextureArray& CGUITextureManager::Load(const std::string& strTextureName,
   if (!pTexture) return emptyTexture;
 
   CTextureMap* pMap = new CTextureMap(strTextureName, width, height, 0);
-  pMap->Add(std::move(pTexture), 100);
+  pMap->Add(boost::move(pTexture), 100);
   m_vecTextures.push_back(pMap);
 
 #ifdef _DEBUG_TEXTURES
@@ -604,12 +577,12 @@ void CGUITextureManager::ReleaseTexture(const std::string& strTextureName, bool 
       {
         //CLog::Log(LOGINFO, "  cleanup:{}", strTextureName);
         // add to our textures to free
-        std::chrono::time_point<std::chrono::steady_clock> timestamp;
+        unsigned int timestamp = 0;
 
         if (!immediately)
-          timestamp = std::chrono::steady_clock::now();
+          timestamp = XbmcThreads::SystemClockMillis();
 
-        m_unusedTextures.emplace_back(pMap, timestamp);
+        m_unusedTextures.push_back(std::make_pair(pMap, timestamp));
         i = m_vecTextures.erase(i);
       }
       return;
@@ -622,12 +595,10 @@ void CGUITextureManager::ReleaseTexture(const std::string& strTextureName, bool 
 void CGUITextureManager::FreeUnusedTextures(unsigned int timeDelay)
 {
   CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
-  for (auto i = m_unusedTextures.begin(); i != m_unusedTextures.end();)
+  for (std::list<std::pair<CTextureMap*, unsigned int> >::iterator i = m_unusedTextures.begin(); i != m_unusedTextures.end();)
   {
-    auto now = std::chrono::steady_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - i->second);
-
-    if (duration.count() >= timeDelay)
+    unsigned int now = XbmcThreads::SystemClockMillis();
+    if (now - i->second >= timeDelay)
     {
       delete i->first;
       i = m_unusedTextures.erase(i);
@@ -671,19 +642,8 @@ void CGUITextureManager::Cleanup()
     delete pMap;
     i = m_vecTextures.erase(i);
   }
-#if 0
-  // Kodi XBT bundle
-  m_TexBundle[0].Close();
-  m_TexBundle[1].Close();
-  m_TexBundle[0] = CTextureBundle(true);
-  m_TexBundle[1] = CTextureBundle();
-#else
-#if 0
-  // XBMC4Xbox XPR bundle
   m_TexBundle[0].Cleanup();
   m_TexBundle[1].Cleanup();
-#endif
-#endif
   FreeUnusedTextures();
 }
 
@@ -765,9 +725,9 @@ std::string CGUITextureManager::GetTexturePath(const std::string &textureName, b
   else
   { // texture doesn't include the full path, so check all fallbacks
     CSingleLock lock(m_section);
-    for (const std::string& it : m_texturePaths)
+    for (std::vector<std::string>::iterator it = m_texturePaths.begin(); it != m_texturePaths.end(); ++it)
     {
-      std::string path = URIUtils::AddFileToFolder(it, "media", textureName);
+      std::string path = URIUtils::AddFileToFolder(*it, "media", textureName);
       if (directory)
       {
         if (XFILE::CDirectory::Exists(path))
@@ -789,12 +749,9 @@ std::string CGUITextureManager::GetTexturePath(const std::string &textureName, b
 std::vector<std::string> CGUITextureManager::GetBundledTexturesFromPath(
     const std::string& texturePath)
 {
-#if 0
-  std::vector<std::string> items = m_TexBundle[0].GetTexturesFromPath(texturePath);
+  std::vector<std::string> items;
+  m_TexBundle[0].GetTexturesFromPath(texturePath, items);
   if (items.empty())
-    items = m_TexBundle[1].GetTexturesFromPath(texturePath);
+    m_TexBundle[1].GetTexturesFromPath(texturePath, items);
   return items;
-#else
-  return std::vector<std::string>();
-#endif
 }

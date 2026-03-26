@@ -32,7 +32,7 @@ namespace XBMCAddon
     {
       DelayedCallGuard dg;
       CSingleLock gl(CServiceBroker::GetWinSystem()->GetGfxContext());
-      return CServiceBroker::GetGUI()->GetWindowManager().GetTopMostModalDialogID();
+      return CServiceBroker::GetGUI()->GetWindowManager().GetTopmostModalDialog();
     }
 
     long getScreenHeight()

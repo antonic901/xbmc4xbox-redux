@@ -30,6 +30,8 @@
 #include "utils/StringUtils.h"
 #include "utils/XBMCTinyXML.h"
 
+#include <boost/move/make_unique.hpp>
+
 using namespace KODI;
 
 namespace XBMCAddon
@@ -413,7 +415,10 @@ namespace XBMCAddon
     ControlSlider::ControlSlider(long x, long y, long width, long height,
                                  const char* textureback,
                                  const char* texture,
-                                 const char* texturefocus, int orientation)
+                                 const char* texturefocus,
+                                 int orientation,
+                                 const char* texturebackdisabled,
+                                 const char* texturedisabled)
     {
       dwPosX = x;
       dwPosY = y;
@@ -424,10 +429,12 @@ namespace XBMCAddon
       // if texture is supplied use it, else get default ones
       strTextureBack = textureback ? textureback :
         XBMCAddonUtils::getDefaultImage("slider", "texturesliderbar");
+      strTextureBackDisabled = texturebackdisabled ? texturebackdisabled : strTextureBack;
       strTexture = texture ? texture :
         XBMCAddonUtils::getDefaultImage("slider", "textureslidernib");
       strTextureFoc = texturefocus ? texturefocus :
         XBMCAddonUtils::getDefaultImage("slider", "textureslidernibfocus");
+      strTextureDisabled = texturedisabled ? texturedisabled : strTexture;
     }
 
     float ControlSlider::getPercent()
@@ -477,8 +484,9 @@ namespace XBMCAddon
     {
       pGUIControl = new CGUISliderControl(iParentId, iControlId,(float)dwPosX, (float)dwPosY,
                                           (float)dwWidth,(float)dwHeight,
-                                          CTextureInfo(strTextureBack),CTextureInfo(strTexture),
-                                          CTextureInfo(strTextureFoc), 0, ORIENTATION(iOrientation));
+                                          CTextureInfo(strTextureBack), CTextureInfo(strTextureBackDisabled),
+                                          CTextureInfo(strTexture), CTextureInfo(strTextureFoc), CTextureInfo(strTextureDisabled),
+                                          0, ORIENTATION(iOrientation));
 
       return pGUIControl;
     }
@@ -1183,7 +1191,7 @@ namespace XBMCAddon
     void ControlList::sendLabelBind(int tail)
     {
       // construct a CFileItemList to pass 'em on to the list
-      CGUIListItemPtr items(new CFileItemList());
+      boost::shared_ptr<CGUIListItem> items(new CFileItemList());
       for (unsigned int i = vecItems.size() - tail; i < vecItems.size(); i++)
         static_cast<CFileItemList*>(items.get())->Add(vecItems[i]->item);
 
@@ -1365,8 +1373,8 @@ namespace XBMCAddon
       }
 
       // set static list
-      IListProvider *provider = new CStaticListProvider(items);
-      static_cast<CGUIBaseContainer*>(pGUIControl)->SetListProvider(provider);
+      boost::movelib::unique_ptr<CStaticListProvider> provider = boost::movelib::make_unique<CStaticListProvider>(items);
+      static_cast<CGUIBaseContainer*>(pGUIControl)->SetListProvider(boost::move(provider));
     }
 
     // ============================================================

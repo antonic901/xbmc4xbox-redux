@@ -289,9 +289,6 @@
 				RelativePath=".\IWindowManagerCallback.cpp">
 			</File>
 			<File
-				RelativePath=".\Key.cpp">
-			</File>
-			<File
 				RelativePath=".\LocalizeStrings.cpp">
 			</File>
 			<File
@@ -520,9 +517,6 @@
 			</File>
 			<File
 				RelativePath=".\IWindowManagerCallback.h">
-			</File>
-			<File
-				RelativePath=".\Key.h">
 			</File>
 			<File
 				RelativePath=".\LocalizeStrings.h">

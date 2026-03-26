@@ -86,9 +86,9 @@ bool CSysInfoJob::DoWork()
     if (!CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_noDVDROM)
       g_sysinfo.GetDVDInfo(m_info.DVDModel, m_info.DVDFirmware);
   }
-  
+
   if (g_sysinfo.m_bSmartEnabled)
-  { // this will waste 4-8KB of memory on each refresh (this is issue on 3.5.3 too) 
+  { // this will waste 4-8KB of memory on each refresh (this is issue on 3.5.3 too)
     m_info.HDDTemp = XKHDD::GetHddSmartTemp();
   }
   else
@@ -154,24 +154,24 @@ CStdString CSysInfoJob::GetVideoEncoder()
 #else
   int iTemp;
   if (HalReadSMBusValue(XKUtils::SMBDEV_VIDEO_ENCODER_CONNEXANT,XKUtils::VIDEO_ENCODER_CMD_DETECT,0,(LPBYTE)&iTemp)==0)
-  { 
-    CLog::Log(LOGDEBUG, "Video Encoder: CONNEXANT");  
-    return "CONNEXANT"; 
+  {
+    CLog::Log(LOGDEBUG, "Video Encoder: CONNEXANT");
+    return "CONNEXANT";
   }
   if (HalReadSMBusValue(XKUtils::SMBDEV_VIDEO_ENCODER_FOCUS,XKUtils::VIDEO_ENCODER_CMD_DETECT,0,(LPBYTE)&iTemp)==0)
-  { 
+  {
     CLog::Log(LOGDEBUG, "Video Encoder: FOCUS");
-    return "FOCUS";   
+    return "FOCUS";
   }
   if (HalReadSMBusValue(XKUtils::SMBDEV_VIDEO_ENCODER_XCALIBUR,XKUtils::VIDEO_ENCODER_CMD_DETECT,0,(LPBYTE)&iTemp)==0)
-  { 
-    CLog::Log(LOGDEBUG, "Video Encoder: XCALIBUR");   
+  {
+    CLog::Log(LOGDEBUG, "Video Encoder: XCALIBUR");
     return "XCALIBUR";
   }
-  else 
-  {  
-    CLog::Log(LOGDEBUG, "Video Encoder: UNKNOWN");  
-    return "UNKNOWN"; 
+  else
+  {
+    CLog::Log(LOGDEBUG, "Video Encoder: UNKNOWN");
+    return "UNKNOWN";
   }
 #endif
 }
@@ -403,7 +403,7 @@ char* CSysInfo::MD5Buffer(char *buffer, long PosizioneInizio,int KBytes)
   XBMC::XBMC_MD5 mdContext;
   CStdString md5sumstring;
   mdContext.append((unsigned char *)(buffer + PosizioneInizio), KBytes * 1024);
-  mdContext.getDigest(md5sumstring);
+  md5sumstring = mdContext.getDigest();
   strcpy(MD5_Sign, md5sumstring.c_str());
   return MD5_Sign;
 }
@@ -694,7 +694,7 @@ bool CSysInfo::CheckBios(CStdString& strDetBiosNa)
             return true;
         }
         else
-        { 
+        {
           CLog::Log(LOGINFO, "- BIOS: This is not a 256KB Bios!");
           // 512k Bios MD5
           if ((MD5BufferNew(flash_copy,0,512)) == (MD5BufferNew(flash_copy,524288,512)))
@@ -891,9 +891,9 @@ bool CSysInfo::GetRefurbInfo(CStdString& rfi_FirstBootTime, CStdString& rfi_Powe
     return false;
 
   FileTimeToSystemTime((FILETIME*)&xri.FirstBootTime, &sys_time);
-  rfi_FirstBootTime.Format("%d-%d-%d %d:%02d", 
-    sys_time.wMonth, 
-    sys_time.wDay, 
+  rfi_FirstBootTime.Format("%d-%d-%d %d:%02d",
+    sys_time.wMonth,
+    sys_time.wDay,
     sys_time.wYear,
     sys_time.wHour,
     sys_time.wMinute);
@@ -947,7 +947,7 @@ bool CSysInfo::GetDiskSpace(const CStdString drive,int& iTotal, int& iTotalFree,
     ULARGE_INTEGER totalX, totalFreeX;
     ULARGE_INTEGER totalY, totalFreeY;
     ULARGE_INTEGER totalZ, totalFreeZ;
-    
+
     BOOL bC = GetDiskFreeSpaceEx("C:\\", NULL, &totalC, &totalFreeC);
     BOOL bE = GetDiskFreeSpaceEx("E:\\", NULL, &totalE, &totalFreeE);
     BOOL bF = GetDiskFreeSpaceEx("F:\\", NULL, &totalF, &totalFreeF);
@@ -955,7 +955,7 @@ bool CSysInfo::GetDiskSpace(const CStdString drive,int& iTotal, int& iTotalFree,
     BOOL bX = GetDiskFreeSpaceEx("X:\\", NULL, &totalX, &totalFreeX);
     BOOL bY = GetDiskFreeSpaceEx("Y:\\", NULL, &totalY, &totalFreeY);
     BOOL bZ = GetDiskFreeSpaceEx("Z:\\", NULL, &totalZ, &totalFreeZ);
-    
+
     total.QuadPart = (bC?totalC.QuadPart:0)+
       (bE?totalE.QuadPart:0)+
       (bF?totalF.QuadPart:0)+
@@ -970,7 +970,7 @@ bool CSysInfo::GetDiskSpace(const CStdString drive,int& iTotal, int& iTotalFree,
       (bX?totalFreeX.QuadPart:0)+
       (bY?totalFreeY.QuadPart:0)+
       (bZ?totalFreeZ.QuadPart:0);
-    
+
     iTotal = (int)(total.QuadPart/MB);
     iTotalFree = (int)(totalFree.QuadPart/MB);
     iTotalUsed = (int)((total.QuadPart - totalFree.QuadPart)/MB);
@@ -1222,12 +1222,12 @@ CStdString CSysInfo::MD5BufferNew(char *buffer,long PosizioneInizio,int KBytes)
   CStdString strReturn;
   XBMC::XBMC_MD5 mdContext;
   mdContext.append((unsigned char *)(buffer + PosizioneInizio), KBytes * 1024);
-  mdContext.getDigest(strReturn);
+  strReturn = mdContext.getDigest();
   return strReturn;
 }
 
 CStdString CSysInfo::GetAVPackInfo()
-{  
+{
   //AV-Pack Detection PICReg(0x04)
   int cAVPack;
   HalReadSMBusValue(0x20,XKUtils::PIC16L_CMD_AV_PACK,0,(LPBYTE)&cAVPack);
@@ -1256,7 +1256,7 @@ CStdString CSysInfo::SmartXXModCHIP()
     return "SmartXX OPX";
   else if ( uSmartXX_ID == 8 ) // SmartXX V3
     return "SmartXX V3";
-  else 
+  else
     return "None";
 }
 
@@ -1313,7 +1313,7 @@ CStdString CSysInfo::GetXBVerInfo()
   CStdString strXBOXVersion;
   if (GetXBOXVersionDetected(strXBOXVersion))
     return strXBOXVersion;
-  else 
+  else
     return g_localizeStrings.Get(13205); // "Unknown"
 }
 
@@ -1370,11 +1370,11 @@ CStdString CSysInfo::GetUnits(int iFrontPort)
   bHeadSet = dwDeviceHeadPhone > 0 && dwDeviceHeadPhone == iFrontPort;
   bMic = dwDeviceMicroPhone > 0 && dwDeviceMicroPhone == iFrontPort;
   bIR = dwDeviceIRRemote > 0 && dwDeviceIRRemote == iFrontPort;
-  
+
   CStdString strReturn;
   if (iFrontPort==4) iFrontPort = 3;
   if (iFrontPort==8) iFrontPort = 4;
-  strReturn.Format("%s%s%s%s%s%s%s%s%s%s%s", 
+  strReturn.Format("%s%s%s%s%s%s%s%s%s%s%s",
     bPad ? g_localizeStrings.Get(38730):"", bPad && bKeyb ? ", ":"", bPad && bMem ? ", ":"", bPad && (bHeadSet || bMic) ? ", ":"",
     bHeadSet || bMic ? g_localizeStrings.Get(38733):"", (bHeadSet || bMic) && bMem ? ", ":"",
     bMem ? g_localizeStrings.Get(38734):"", bMem && bIR ? ", ":"",
@@ -1391,7 +1391,7 @@ CStdString CSysInfo::GetXBOXSerial()
 
   CStdString strXBOXSerial;
   strXBOXSerial.Format("%s", serial);
-  return strXBOXSerial;  
+  return strXBOXSerial;
 }
 
 CStdString CSysInfo::GetXBProduceInfo()
@@ -1418,11 +1418,11 @@ CStdString CSysInfo::GetXBProduceInfo()
     country = "Unknown";
     break;
   }
-  
+
   CLog::Log(LOGDEBUG, "- XBOX production info: Country: %s, LineNumber: %c, Week %c%c, Year 200%c", country, info[0x00], info[0x08], info[0x09],info[0x07]);
   CStdString strXBProDate;
   strXBProDate.Format("%s, %s 200%c, %s: %c%c %s: %c",
-    country, 
+    country,
     g_localizeStrings.Get(201),
     info[0x07],
     g_localizeStrings.Get(20169),
@@ -1513,7 +1513,7 @@ CStdString CSysInfo::GetModChipInfo()
   // XBOX Modchip Type Detection
   CStdString ModChip = GetModCHIPDetected();
   CStdString SmartXX = SmartXXModCHIP();
-  
+
   // Check if it is a SmartXX
   if (!SmartXX.Equals("None"))
   {
@@ -1579,7 +1579,7 @@ CStdString CSysInfo::GetHddSpaceInfo(int drive, bool shortText)
 CStdString CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
 {
   int total, totalFree, totalUsed, percentFree, percentused;
-  CStdString strDrive; 
+  CStdString strDrive;
   bool bRet=false;
   percent = 0;
   CStdString strRet;

@@ -27,7 +27,8 @@
 #include "addons/AddonSystemSettings.h"
 #include "addons/Visualisation.h"
 #include "utils/log.h"
-#include "guilib/Key.h"
+#include "input/actions/Action.h"
+#include "input/keyboard/Key.h"
 
 using namespace ADDON;
 

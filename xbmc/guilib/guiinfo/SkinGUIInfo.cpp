@@ -50,12 +50,12 @@ bool CSkinGUIInfo::GetLabel(std::string& value, const CFileItem *item, int conte
     }
     case SKIN_THEME:
     {
-      value = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_LOOKANDFEEL_SKINTHEME);
+      value = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skintheme");
       return true;
     }
     case SKIN_COLOUR_THEME:
     {
-      value = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_LOOKANDFEEL_SKINCOLORS);
+      value = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skincolors");
       return true;
     }
     case SKIN_ASPECT_RATIO:
@@ -69,12 +69,7 @@ bool CSkinGUIInfo::GetLabel(std::string& value, const CFileItem *item, int conte
     }
     case SKIN_FONT:
     {
-      value = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_LOOKANDFEEL_FONT);
-      return true;
-    }
-    case SKIN_TIMER_ELAPSEDSECS:
-    {
-      value = std::to_string(g_SkinInfo->GetTimerElapsedSeconds(info.GetData3()));
+      value = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.font");
       return true;
     }
   }
@@ -84,19 +79,6 @@ bool CSkinGUIInfo::GetLabel(std::string& value, const CFileItem *item, int conte
 
 bool CSkinGUIInfo::GetInt(int& value, const CGUIListItem *gitem, int contextWindow, const CGUIInfo &info) const
 {
-  switch (info.m_info)
-  {
-    case SKIN_INTEGER:
-    {
-      value = CSkinSettings::GetInstance().GetInt(info.GetData1());
-      return true;
-    }
-    case SKIN_TIMER_ELAPSEDSECS:
-    {
-      value = g_SkinInfo->GetTimerElapsedSeconds(info.GetData3());
-      return true;
-    }
-  }
   return false;
 }
 
@@ -124,14 +106,9 @@ bool CSkinGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contextWi
     }
     case SKIN_HAS_THEME:
     {
-      std::string theme = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_LOOKANDFEEL_SKINTHEME);
+      std::string theme = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skintheme");
       URIUtils::RemoveExtension(theme);
       value = StringUtils::EqualsNoCase(theme, info.GetData3());
-      return true;
-    }
-    case SKIN_TIMER_IS_RUNNING:
-    {
-      value = g_SkinInfo->TimerIsRunning(info.GetData3());
       return true;
     }
   }

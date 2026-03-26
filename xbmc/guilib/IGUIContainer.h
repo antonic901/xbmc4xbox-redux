@@ -20,11 +20,11 @@
 class IGUIContainer : public CGUIControl
 {
 protected:
-  VIEW_TYPE m_type = VIEW_TYPE_NONE;
+  VIEW_TYPE m_type;
   std::string m_label;
 public:
   IGUIContainer(int parentID, int controlID, float posX, float posY, float width, float height)
-    : CGUIControl(parentID, controlID, posX, posY, width, height)
+    : CGUIControl(parentID, controlID, posX, posY, width, height), m_type(VIEW_TYPE_NONE)
   {
   }
 

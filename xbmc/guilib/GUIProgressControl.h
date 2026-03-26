@@ -59,9 +59,9 @@ protected:
   CRect m_guiMidClipRect;
 
   int m_iInfoCode;
-  int m_iInfoCode2 = 0;
+  int m_iInfoCode2;
   float m_fPercent;
-  float m_fPercent2 = 0.0f;
+  float m_fPercent2;
   bool m_bReveal;
   bool m_bChanged;
 

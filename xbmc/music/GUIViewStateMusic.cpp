@@ -25,7 +25,9 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "FileItem.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
 #include "utils/SortUtils.h"
@@ -549,7 +551,7 @@ VECSOURCES& CGUIViewStateWindowMusicNav::GetSources()
     CMediaSource share;
     share.strName = item->GetLabel();
     share.strPath = item->GetPath();
-    share.m_strThumbnailImage = item->GetIconImage();
+    share.m_strThumbnailImage = item->GetArt("icon");
     share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
     m_sources.push_back(share);
   }

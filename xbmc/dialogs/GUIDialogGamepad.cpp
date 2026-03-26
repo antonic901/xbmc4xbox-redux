@@ -25,7 +25,10 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "GUIDialogOK.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
+#include "input/keyboard/KeyIDs.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/Variant.h"
 

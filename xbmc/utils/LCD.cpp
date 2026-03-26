@@ -131,7 +131,7 @@ unsigned char ILCD::GetLCDCharsetCharacter( UINT _nCharacter, int _nCharset )
                                                             {0x1f, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x1f}, //        |_|
                                                           },
                                                           { // Medium Char                                    //   _
-                                                            {0x1f, 0x1f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, //    
+                                                            {0x1f, 0x1f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, //
                                                             {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1f, 0x1f}, //         _
                                                             {0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x1f, 0x1f}, //  |_     _
                                                             {0x1f, 0x1f, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18}, //   _      |
@@ -151,7 +151,7 @@ unsigned char ILCD::GetLCDCharsetCharacter( UINT _nCharacter, int _nCharset )
                                                             {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
                                                             {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
                                                           } };
-  if ( _nCharset == -1 ) 
+  if ( _nCharset == -1 )
     _nCharset = m_eCurrentCharset;
 
 
@@ -370,7 +370,7 @@ CStdString ILCD::GetBigDigit( UINT _nCharset, int _nDigit, UINT _nLine, UINT _nM
           break;
         }
       }
-        
+
     }
     // Add as partial string
     // Note that is it reversed, I.E. 'LSB' is added first
@@ -456,7 +456,7 @@ void ILCD::LoadMode(TiXmlNode *node, LCD_MODE mode)
   while (line)
   {
     if (line->FirstChild())
-      m_lcdMode[mode].push_back(CGUIInfoLabel(line->FirstChild()->Value()));
+      m_lcdMode[mode].push_back(KODI::GUILIB::GUIINFO::CGUIInfoLabel(line->FirstChild()->Value()));
     line = line->NextSibling("line");
   }
 }

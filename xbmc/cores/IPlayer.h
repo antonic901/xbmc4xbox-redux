@@ -21,11 +21,13 @@
  */
 
 #include "IAudioCallback.h"
-#include "guilib/Geometry.h"
-#include "Key.h"
+#include "utils/Geometry.h"
+#include "input/keyboard/Key.h"
+#include "utils/StdString.h"
 
-class TiXmlElement; 
+class TiXmlElement;
 class CStreamDetails;
+class CAction;
 
 class CFileItem;
 
@@ -56,7 +58,7 @@ public:
     video_only = false;
   }
   double  starttime; /* start time in seconds */
-  double  startpercent; /* start time in percent */  
+  double  startpercent; /* start time in percent */
   bool    identify;  /* identify mode, used for checking format and length of a file */
   CStdString state;  /* potential playerstate to restore to */
   bool    fullscreen; /* player is allowed to switch to fullscreen */
@@ -216,19 +218,19 @@ public:
   //Returns true if not playback (paused or stopped beeing filled)
   virtual bool IsCaching() const {return false;};
   //Cache filled in Percent
-  virtual int GetCacheLevel() const {return -1;}; 
+  virtual int GetCacheLevel() const {return -1;};
 
   virtual bool IsInMenu() const {return false;};
   virtual bool HasMenu() { return false; };
 
   virtual void DoAudioWork(){};
-  virtual bool OnAction(const CAction &action) { return false; };
+  virtual bool OnAction(const CAction &action) { return false; }
 
   virtual bool GetCurrentSubtitle(CStdString& strSubtitle) { strSubtitle = ""; return false; }
   //returns a state that is needed for resuming from a specific time
   virtual CStdString GetPlayerState() { return ""; };
   virtual bool SetPlayerState(CStdString state) { return false;};
-  
+
   virtual std::string GetPlayingTitle() { return ""; };
 
   std::string m_name;

@@ -1108,7 +1108,7 @@ void CFileItem::FillInDefaultIcon()
   //   for .. folders the default picture for parent folder
   //   for other folders the defaultFolder.png
 
-  if (GetIconImage().empty())
+  if (GetArt("icon").empty())
   {
     if (!m_bIsFolder)
     {
@@ -1120,68 +1120,68 @@ void CFileItem::FillInDefaultIcon()
       if ( IsLiveTV() )
       {
         // Live TV Channel
-        SetIconImage("DefaultVideo.png");
+        SetArt("icon", "DefaultVideo.png");
       }
       else if ( URIUtils::IsArchive(m_strPath) )
       { // archive
-        SetIconImage("DefaultFile.png");
+        SetArt("icon", "DefaultFile.png");
       }
       else if ( IsUsablePVRRecording() )
       {
         // PVR recording
-        SetIconImage("DefaultVideo.png");
+        SetArt("icon", "DefaultVideo.png");
       }
       else if ( IsDeletedPVRRecording() )
       {
         // PVR deleted recording
-        SetIconImage("DefaultVideoDeleted.png");
+        SetArt("icon", "DefaultVideoDeleted.png");
       }
       else if ( IsAudio() )
       {
         // audio
-        SetIconImage("DefaultAudio.png");
+        SetArt("icon", "DefaultAudio.png");
       }
       else if ( IsVideo() )
       {
         // video
-        SetIconImage("DefaultVideo.png");
+        SetArt("icon", "DefaultVideo.png");
       }
       else if (IsPVRTimer())
       {
-        SetIconImage("DefaultVideo.png");
+        SetArt("icon", "DefaultVideo.png");
       }
       else if ( IsPicture() )
       {
         // picture
-        SetIconImage("DefaultPicture.png");
+        SetArt("icon", "DefaultPicture.png");
       }
       else if ( IsPlayList() )
       {
-        SetIconImage("DefaultPlaylist.png");
+        SetArt("icon", "DefaultPlaylist.png");
       }
       else if ( IsPythonScript() )
       {
-        SetIconImage("DefaultScript.png");
+        SetArt("icon", "DefaultScript.png");
       }
       else
       {
         // default icon for unknown file type
-        SetIconImage("DefaultFile.png");
+        SetArt("icon", "DefaultFile.png");
       }
     }
     else
     {
       if ( IsPlayList() )
       {
-        SetIconImage("DefaultPlaylist.png");
+        SetArt("icon", "DefaultPlaylist.png");
       }
       else if (IsParentFolder())
       {
-        SetIconImage("DefaultFolderBack.png");
+        SetArt("icon", "DefaultFolderBack.png");
       }
       else
       {
-        SetIconImage("DefaultFolder.png");
+        SetArt("icon", "DefaultFolder.png");
       }
     }
   }
@@ -1386,7 +1386,8 @@ void CFileItem::UpdateInfo(const CFileItem &item, bool replaceLabels /*=true*/)
     //! @todo premiered info is normally stored in m_dateTime by the db
     *GetVideoInfoTag() = *item.GetVideoInfoTag();
     // preferably use some information from PVR info tag if available
-    SetOverlayImage(ICON_OVERLAY_UNWATCHED, GetVideoInfoTag()->m_playCount > 0);
+    SetOverlayImage(GetVideoInfoTag()->GetPlayCount() > 0 ? CGUIListItem::ICON_OVERLAY_WATCHED
+                                                          : CGUIListItem::ICON_OVERLAY_UNWATCHED);
     SetInvalid();
   }
   if (item.HasMusicInfoTag())
@@ -1405,8 +1406,8 @@ void CFileItem::UpdateInfo(const CFileItem &item, bool replaceLabels /*=true*/)
     SetLabel2(item.GetLabel2());
   if (!item.GetArt().empty())
     SetArt(item.GetArt());
-  if (!item.GetIconImage().empty())
-    SetIconImage(item.GetIconImage());
+  if (!item.GetArt("icon").empty())
+    SetArt("icon", item.GetArt("icon"));
   AppendProperties(item);
 }
 
@@ -2833,6 +2834,11 @@ bool CFileItem::SkipLocalArt() const
        || IsLiveTV()
        || IsPVRRecording()
        || IsDVD());
+}
+
+std::string CFileItem::GetThumbHideIfUnwatched(const CFileItem* item) const
+{
+  return item->GetArt("thumb");
 }
 
 std::string CFileItem::FindLocalArt(const std::string &artFile, bool useFolder) const

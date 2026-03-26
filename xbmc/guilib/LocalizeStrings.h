@@ -49,13 +49,13 @@ public:
   void Clear();
 
   // implementation of ILocalizer
-  virtual std::string Localize(std::uint32_t code) const { return Get(code); }
+  virtual std::string Localize(uint32_t code) const { return Get(code); }
 
 protected:
   void Clear(uint32_t start, uint32_t end);
 
   std::map<uint32_t, LocStr> m_strings;
-  std::map<std::string, std::map<uint32_t, LocStr>> m_addonStrings;
+  std::map<std::string, std::map<uint32_t, LocStr> > m_addonStrings;
   typedef std::map<uint32_t, LocStr>::const_iterator ciStrings;
   typedef std::map<uint32_t, LocStr>::iterator       iStrings;
 

@@ -102,7 +102,7 @@ bool CGUIDialogBusy::WaitOnEvent(CEvent &event, unsigned int displaytime /* = 10
 }
 
 CGUIDialogBusy::CGUIDialogBusy(void)
-  : CGUIDialog(WINDOW_DIALOG_BUSY, "DialogBusy.xml", PARENTLESS_MODAL),
+  : CGUIDialog(WINDOW_DIALOG_BUSY, "DialogBusy.xml", MODAL),
     m_bLastVisible(false)
 {
   m_loadType = LOAD_ON_GUI_INIT;
@@ -126,9 +126,9 @@ void CGUIDialogBusy::Open_Internal(const std::string &param /* = "" */)
 
 void CGUIDialogBusy::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
-  bool visible = CServiceBroker::GetGUI()->GetWindowManager().GetTopMostModalDialogID() == WINDOW_DIALOG_BUSY;
+  bool visible = CServiceBroker::GetGUI()->GetWindowManager().IsModalDialogTopmost(WINDOW_DIALOG_BUSY);
   if(!visible && m_bLastVisible)
-    dirtyregions.push_back(m_renderRegion);
+    dirtyregions.push_back(CDirtyRegion(m_renderRegion));
   m_bLastVisible = visible;
 
   // update the progress control if available

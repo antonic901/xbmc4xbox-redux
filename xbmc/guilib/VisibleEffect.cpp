@@ -711,10 +711,10 @@ void CAnimation::Create(const TiXmlElement *node, const CRect &rect, int context
   // compute the minimum delay and maximum length
   m_delay = 0xffffffff;
   unsigned int total = 0;
-  for (const auto& i : m_effects)
+  for (std::vector<CAnimEffect*>::const_iterator i = m_effects.begin(); i != m_effects.end(); ++i)
   {
-    m_delay = std::min(m_delay, i->GetDelay());
-    total = std::max(total, i->GetLength());
+    m_delay = std::min(m_delay, (*i)->GetDelay());
+    total = std::max(total, (*i)->GetLength());
   }
   m_length = total - m_delay;
 }
@@ -743,7 +743,7 @@ void CAnimation::AddEffect(const std::string &type, const TiXmlElement *node, co
 
 CScroller::CScroller(unsigned int duration /* = 200 */,
                      boost::shared_ptr<Tweener> tweener /* = NULL */)
-  : m_pTweener(std::move(tweener))
+  : m_pTweener(boost::move(tweener))
 {
   m_scrollValue = 0;
   m_delta = 0;

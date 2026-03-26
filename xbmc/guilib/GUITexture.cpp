@@ -14,15 +14,15 @@
 #include "utils/StringUtils.h"
 #include "windowing/GraphicContext.h"
 
-#include <stdexcept>
+#include "GUITextureD3D.h"
 
-CreateGUITextureFunc CGUITexture::m_createGUITextureFunc;
-DrawQuadFunc CGUITexture::m_drawQuadFunc;
+#include <stdexcept>
 
 CTextureInfo::CTextureInfo()
 {
   orientation = 0;
   useLarge = false;
+  m_infill = true;
 }
 
 CTextureInfo::CTextureInfo(const std::string &file):
@@ -32,21 +32,10 @@ CTextureInfo::CTextureInfo(const std::string &file):
   useLarge = false;
 }
 
-void CGUITexture::Register(const CreateGUITextureFunc& createFunction,
-                           const DrawQuadFunc& drawQuadFunction)
-{
-  m_createGUITextureFunc = createFunction;
-  m_drawQuadFunc = drawQuadFunction;
-}
-
 CGUITexture* CGUITexture::CreateTexture(
     float posX, float posY, float width, float height, const CTextureInfo& texture)
 {
-  if (!m_createGUITextureFunc)
-    throw std::runtime_error(
-        "No GUITexture Create function available. Did you forget to register?");
-
-  return m_createGUITextureFunc(posX, posY, width, height, texture);
+  return CGUITextureD3D::CreateTexture(posX, posY, width, height, texture);
 }
 
 void CGUITexture::DrawQuad(const CRect& coords,
@@ -54,11 +43,7 @@ void CGUITexture::DrawQuad(const CRect& coords,
                            CTexture* texture,
                            const CRect* texCoords)
 {
-  if (!m_drawQuadFunc)
-    throw std::runtime_error(
-        "No GUITexture DrawQuad function available. Did you forget to register?");
-
-  m_drawQuadFunc(coords, color, texture, texCoords);
+  CGUITextureD3D::DrawQuad(coords, color, texture, texCoords);
 }
 
 CGUITexture::CGUITexture(
@@ -182,7 +167,7 @@ void CGUITexture::Render()
   UTILS::COLOR::Color color =
       (m_info.diffuseColor) ? (UTILS::COLOR::Color)m_info.diffuseColor : m_diffuseColor;
   if (m_alpha != 0xFF)
-	  color = MIX_ALPHA(m_alpha, color);
+    color = MIX_ALPHA(m_alpha, color);
 
   color = CServiceBroker::GetWinSystem()->GetGfxContext().MergeColor(color);
 

@@ -16,16 +16,16 @@
 
 namespace
 {
-#define DEFAULT_CONTROL_ID 0;
+#define DEFAULT_CONTROL_ID 0
 }
 
-CGUIAction::CExecutableAction::CExecutableAction(const std::string& action) : m_action{action}
+CGUIAction::CExecutableAction::CExecutableAction(const std::string& action) : m_action(action)
 {
 }
 
 CGUIAction::CExecutableAction::CExecutableAction(const std::string& condition,
                                                  const std::string& action)
-  : m_condition{condition}, m_action{action}
+  : m_condition(condition), m_action(action)
 {
 }
 
@@ -49,6 +49,10 @@ void CGUIAction::CExecutableAction::SetAction(const std::string& action)
   m_action = action;
 }
 
+CGUIAction::CGUIAction() : m_sendThreadMessages(false)
+{
+}
+
 CGUIAction::CGUIAction(int controlID)
 {
   SetNavigation(controlID);
@@ -69,20 +73,20 @@ bool CGUIAction::ExecuteActions(int controlID,
   CGUIInfoManager& infoMgr = CServiceBroker::GetGUI()->GetInfoManager();
   // take a copy of actions that satisfy our conditions
   std::vector<std::string> actions;
-  for (const auto &i : m_actions)
+  for (std::vector<CExecutableAction>::const_iterator i = m_actions.begin() ; i != m_actions.end() ; ++i)
   {
-    if (!i.HasCondition() || infoMgr.EvaluateBool(i.GetCondition(), 0, item))
+    if (!i->HasCondition() || infoMgr.EvaluateBool(i->GetCondition(), 0, item))
     {
-      if (!StringUtils::IsInteger(i.GetAction()))
-        actions.emplace_back(i.GetAction());
+      if (!StringUtils::IsInteger(i->GetAction()))
+        actions.push_back(i->GetAction());
     }
   }
   // execute them
   bool retval = false;
-  for (const auto &i : actions)
+  for (std::vector<std::string>::const_iterator i = actions.begin() ; i != actions.end() ; ++i)
   {
     CGUIMessage msg(GUI_MSG_EXECUTE, controlID, parentID, 0, 0, item);
-    msg.SetStringParam(i);
+    msg.SetStringParam(*i);
     if (m_sendThreadMessages)
       CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
     else
@@ -95,12 +99,12 @@ bool CGUIAction::ExecuteActions(int controlID,
 int CGUIAction::GetNavigation() const
 {
   CGUIInfoManager& infoMgr = CServiceBroker::GetGUI()->GetInfoManager();
-  for (const auto &i : m_actions)
+  for (std::vector<CExecutableAction>::const_iterator i = m_actions.begin() ; i != m_actions.end() ; ++i)
   {
-    if (StringUtils::IsInteger(i.GetAction()))
+    if (StringUtils::IsInteger(i->GetAction()))
     {
-      if (!i.HasCondition() || infoMgr.EvaluateBool(i.GetCondition(), INFO::DEFAULT_CONTEXT))
-        return std::stoi(i.GetAction());
+      if (!i->HasCondition() || infoMgr.EvaluateBool(i->GetCondition(), INFO::DEFAULT_CONTEXT))
+        return atoi(i->GetAction().c_str());
     }
   }
   return 0;
@@ -112,22 +116,22 @@ void CGUIAction::SetNavigation(int id)
     return;
 
   std::string strId = std::to_string(id);
-  for (auto &i : m_actions)
+  for (std::vector<CExecutableAction>::iterator i = m_actions.begin() ; i != m_actions.end() ; ++i)
   {
-    if (StringUtils::IsInteger(i.GetAction()) && !i.HasCondition())
+    if (StringUtils::IsInteger(i->GetAction()) && !i->HasCondition())
     {
-      i.SetAction(strId);
+      i->SetAction(strId);
       return;
     }
   }
-  m_actions.emplace_back(std::move(strId));
+  m_actions.push_back(CExecutableAction(strId));
 }
 
 bool CGUIAction::HasConditionalActions() const
 {
-  for (const auto& i : m_actions)
+  for (std::vector<CExecutableAction>::const_iterator i = m_actions.begin() ; i != m_actions.end() ; ++i)
   {
-    if (i.HasCondition())
+    if (i->HasCondition())
       return true;
   }
   return false;
@@ -136,9 +140,9 @@ bool CGUIAction::HasConditionalActions() const
 bool CGUIAction::HasActionsMeetingCondition() const
 {
   CGUIInfoManager& infoMgr = CServiceBroker::GetGUI()->GetInfoManager();
-  for (const auto &i : m_actions)
+  for (std::vector<CExecutableAction>::const_iterator i = m_actions.begin() ; i != m_actions.end() ; ++i)
   {
-    if (!i.HasCondition() || infoMgr.EvaluateBool(i.GetCondition(), INFO::DEFAULT_CONTEXT))
+    if (!i->HasCondition() || infoMgr.EvaluateBool(i->GetCondition(), INFO::DEFAULT_CONTEXT))
       return true;
   }
   return false;
@@ -156,7 +160,7 @@ size_t CGUIAction::GetActionCount() const
 
 void CGUIAction::Append(const CExecutableAction& action)
 {
-  m_actions.emplace_back(action);
+  m_actions.push_back(action);
 }
 
 void CGUIAction::EnableSendThreadMessageMode()

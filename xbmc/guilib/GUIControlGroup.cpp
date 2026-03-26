@@ -42,8 +42,8 @@ CGUIControlGroup::CGUIControlGroup(const CGUIControlGroup &from)
   m_renderFocusedLast = from.m_renderFocusedLast;
 
   // run through and add our controls
-  for (auto *i : from.m_children)
-    AddControl(i->Clone());
+  for (ciControls it = from.m_children.begin(); it != from.m_children.end(); ++it)
+    AddControl((*it)->Clone());
 
   // defaults
   m_focusedControl = 0;
@@ -58,8 +58,9 @@ CGUIControlGroup::~CGUIControlGroup(void)
 void CGUIControlGroup::AllocResources()
 {
   CGUIControl::AllocResources();
-  for (auto *control : m_children)
+  for (iControls it = m_children.begin(); it != m_children.end(); ++it)
   {
+    CGUIControl *control = *it;
     if (!control->IsDynamicallyAllocated())
       control->AllocResources();
   }
@@ -68,16 +69,18 @@ void CGUIControlGroup::AllocResources()
 void CGUIControlGroup::FreeResources(bool immediately)
 {
   CGUIControl::FreeResources(immediately);
-  for (auto *control : m_children)
+  for (iControls it = m_children.begin(); it != m_children.end(); ++it)
   {
+    CGUIControl *control = *it;
     control->FreeResources(immediately);
   }
 }
 
 void CGUIControlGroup::DynamicResourceAlloc(bool bOnOff)
 {
-  for (auto *control : m_children)
+  for (iControls it = m_children.begin(); it != m_children.end(); ++it)
   {
+    CGUIControl *control = *it;
     control->DynamicResourceAlloc(bOnOff);
   }
 }
@@ -88,8 +91,9 @@ void CGUIControlGroup::Process(unsigned int currentTime, CDirtyRegionList &dirty
   CServiceBroker::GetWinSystem()->GetGfxContext().SetOrigin(pos.x, pos.y);
 
   CRect rect;
-  for (auto *control : m_children)
+  for (iControls it = m_children.begin(); it != m_children.end(); ++it)
   {
+    CGUIControl *control = *it;
     control->UpdateVisibility(nullptr);
     unsigned int oldDirty = dirtyregions.size();
     control->DoProcess(currentTime, dirtyregions);
@@ -107,8 +111,9 @@ void CGUIControlGroup::Render()
   CPoint pos(GetPosition());
   CServiceBroker::GetWinSystem()->GetGfxContext().SetOrigin(pos.x, pos.y);
   CGUIControl *focusedControl = NULL;
-  for (auto *control : m_children)
+  for (iControls it = m_children.begin(); it != m_children.end(); ++it)
   {
+    CGUIControl *control = *it;
     if (m_renderFocusedLast && control->HasFocus())
       focusedControl = control;
     else
@@ -122,8 +127,8 @@ void CGUIControlGroup::Render()
 
 void CGUIControlGroup::RenderEx()
 {
-  for (auto *control : m_children)
-    control->RenderEx();
+  for (iControls it = m_children.begin(); it != m_children.end(); ++it)
+    (*it)->RenderEx();
   CGUIControl::RenderEx();
 }
 
@@ -134,8 +139,9 @@ bool CGUIControlGroup::OnAction(const CAction &action)
 
 bool CGUIControlGroup::HasFocus() const
 {
-  for (auto *control : m_children)
+  for (ciControls it = m_children.begin(); it != m_children.end(); ++it)
   {
+    CGUIControl *control = *it;
     if (control->HasFocus())
       return true;
   }
@@ -209,8 +215,8 @@ bool CGUIControlGroup::OnMessage(CGUIMessage& message)
   case GUI_MSG_LOSTFOCUS:
     {
       // set all subcontrols unfocused
-      for (auto *control : m_children)
-        control->SetFocus(false);
+      for (iControls it = m_children.begin(); it != m_children.end(); ++it)
+        (*it)->SetFocus(false);
       if (!GetControl(message.GetParam1()))
       { // we don't have the new id, so unfocus
         SetFocus(false);
@@ -225,8 +231,9 @@ bool CGUIControlGroup::OnMessage(CGUIMessage& message)
   case GUI_MSG_REFRESH_LIST:
   case GUI_MSG_WINDOW_RESIZE:
     { // send to all child controls (make sure the target is the control id)
-      for (auto *control : m_children)
+      for (iControls it = m_children.begin(); it != m_children.end(); ++it)
       {
+        CGUIControl* control = *it;
         CGUIMessage msg(message.GetMessage(), message.GetSenderId(), control->GetID(), message.GetParam1());
         control->OnMessage(msg);
       }
@@ -242,8 +249,9 @@ bool CGUIControlGroup::OnMessage(CGUIMessage& message)
   //not intended for any specific control, send to all childs and our base handler.
   if (message.GetControlId() == 0)
   {
-    for (auto *control : m_children)
+    for (iControls it = m_children.begin();it != m_children.end(); ++it)
     {
+      CGUIControl* control = *it;
       handled |= control->OnMessage(message);
     }
     return CGUIControl::OnMessage(message) || handled;
@@ -266,8 +274,8 @@ bool CGUIControlGroup::SendControlMessage(CGUIMessage &message)
 
   // Unhandled - send to all matching invisible controls as well
   bool handled(false);
-  for (auto *control : *collector.m_collector)
-    if (control->OnMessage(message))
+  for (iControls it = (*collector.m_collector).begin(); it != (*collector.m_collector).end(); ++it)
+    if ((*it)->OnMessage(message))
       handled = true;
 
   return handled;
@@ -277,8 +285,9 @@ bool CGUIControlGroup::CanFocus() const
 {
   if (!CGUIControl::CanFocus()) return false;
   // see if we have any children that can be focused
-  for (auto *control : m_children)
+  for (ciControls it = m_children.begin(); it != m_children.end(); ++it)
   {
+    const CGUIControl *control = *it;
     if (control->CanFocus())
       return true;
   }
@@ -288,8 +297,8 @@ bool CGUIControlGroup::CanFocus() const
 void CGUIControlGroup::SetInitialVisibility()
 {
   CGUIControl::SetInitialVisibility();
-  for (auto *control : m_children)
-    control->SetInitialVisibility();
+  for (iControls it = m_children.begin(); it != m_children.end(); ++it)
+    (*it)->SetInitialVisibility();
 }
 
 void CGUIControlGroup::QueueAnimation(ANIMATION_TYPE animType)
@@ -298,8 +307,8 @@ void CGUIControlGroup::QueueAnimation(ANIMATION_TYPE animType)
   // send window level animations to our children as well
   if (animType == ANIM_TYPE_WINDOW_OPEN || animType == ANIM_TYPE_WINDOW_CLOSE)
   {
-    for (auto *control : m_children)
-      control->QueueAnimation(animType);
+    for (iControls it = m_children.begin(); it != m_children.end(); ++it)
+      (*it)->QueueAnimation(animType);
   }
 }
 
@@ -309,16 +318,16 @@ void CGUIControlGroup::ResetAnimation(ANIMATION_TYPE animType)
   // send window level animations to our children as well
   if (animType == ANIM_TYPE_WINDOW_OPEN || animType == ANIM_TYPE_WINDOW_CLOSE)
   {
-    for (auto *control : m_children)
-      control->ResetAnimation(animType);
+    for (iControls it = m_children.begin(); it != m_children.end(); ++it)
+      (*it)->ResetAnimation(animType);
   }
 }
 
 void CGUIControlGroup::ResetAnimations()
 { // resets all animations, regardless of condition
   CGUIControl::ResetAnimations();
-  for (auto *control : m_children)
-    control->ResetAnimations();
+  for (iControls it = m_children.begin(); it != m_children.end(); ++it)
+    (*it)->ResetAnimations();
 }
 
 bool CGUIControlGroup::IsAnimating(ANIMATION_TYPE animType)
@@ -328,8 +337,9 @@ bool CGUIControlGroup::IsAnimating(ANIMATION_TYPE animType)
 
   if (IsVisible())
   {
-    for (auto *control : m_children)
+    for (iControls it = m_children.begin(); it != m_children.end(); ++it)
     {
+      CGUIControl *control = *it;
       if (control->IsAnimating(animType))
         return true;
     }
@@ -344,8 +354,9 @@ bool CGUIControlGroup::HasAnimation(ANIMATION_TYPE animType)
 
   if (IsVisible())
   {
-    for (auto *control : m_children)
+    for (iControls it = m_children.begin(); it != m_children.end(); ++it)
     {
+      CGUIControl *control = *it;
       if (control->HasAnimation(animType))
         return true;
     }
@@ -358,9 +369,9 @@ void CGUIControlGroup::UnfocusFromPoint(const CPoint &point)
   CPoint controlCoords(point);
   m_transform.InverseTransformPosition(controlCoords.x, controlCoords.y);
   controlCoords -= GetPosition();
-  for (auto *child : m_children)
+  for (iControls it = m_children.begin(); it != m_children.end(); ++it)
   {
-    child->UnfocusFromPoint(controlCoords);
+    (*it)->UnfocusFromPoint(controlCoords);
   }
   CGUIControl::UnfocusFromPoint(point);
 }
@@ -389,8 +400,9 @@ CGUIControl *CGUIControlGroup::GetFocusedControl() const
   }
 
   // if lookup didn't find focused control, iterate m_children to find it
-  for (auto *control : m_children)
+  for (ciControls it = m_children.begin(); it != m_children.end(); ++it)
   {
+    CGUIControl *control = *it;
     // Avoid calling HasFocus() on control group as it will (possibly) recursively
     // traverse entire group tree just to check if there is focused control.
     // We are recursively traversing it here so no point in doing it twice.
@@ -412,8 +424,9 @@ CGUIControl *CGUIControlGroup::GetFirstFocusableControl(int id)
 {
   if (!CanFocus()) return NULL;
   if (id && id == GetID()) return this; // we're focusable and they want us
-  for (auto *pControl : m_children)
+  for (iControls it = m_children.begin(); it != m_children.end(); ++it)
   {
+    CGUIControl* pControl = *it;
     CGUIControlGroup *group(dynamic_cast<CGUIControlGroup*>(pControl));
     if (group)
     {
@@ -460,9 +473,9 @@ bool CGUIControlGroup::InsertControl(CGUIControl *control, const CGUIControl *in
 void CGUIControlGroup::SaveStates(std::vector<CControlState> &states)
 {
   // save our state, and that of our children
-  states.emplace_back(GetID(), m_focusedControl);
-  for (auto *control : m_children)
-    control->SaveStates(states);
+  states.push_back(CControlState(GetID(), m_focusedControl));
+  for (iControls it = m_children.begin(); it != m_children.end(); ++it)
+    (*it)->SaveStates(states);
 }
 
 // Note: This routine doesn't delete the control.  It just removes it from the control list
@@ -491,9 +504,9 @@ void CGUIControlGroup::ClearAll()
   RemoveLookup();
 
   // and delete all our children
-  for (auto *control : m_children)
+  for (iControls it = m_children.begin(); it != m_children.end(); it++)
   {
-    delete control;
+    delete (*it);
   }
   m_focusedControl = 0;
   m_children.clear();
@@ -504,7 +517,7 @@ void CGUIControlGroup::ClearAll()
 #ifdef _DEBUG
 void CGUIControlGroup::DumpTextureUse()
 {
-  for (auto *control : m_children)
-    control->DumpTextureUse();
+  for (iControls it = m_children.begin(); it != m_children.end(); ++it)
+    (*it)->DumpTextureUse();
 }
 #endif

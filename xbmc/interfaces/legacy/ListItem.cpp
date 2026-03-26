@@ -106,11 +106,6 @@ namespace XBMCAddon
       }
     }
 
-    void ListItem::setIconImage(const String& iconImage)
-    {
-      CLog::Log(LOGWARNING, "setIconImage results in NOP. Use setArt.");
-    }
-
     void ListItem::setThumbnailImage(const String& thumbFilename)
     {
       CLog::Log(LOGWARNING, "setThumbnailImage results in NOP. Use setArt.");

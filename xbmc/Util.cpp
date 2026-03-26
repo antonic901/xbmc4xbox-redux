@@ -496,15 +496,15 @@ bool CUtil::PatchCountryVideo(F_COUNTRY Country, F_VIDEO Video)
   for(i=0x1000; i<0x14000; i++)
   {
     if(Kernel[i]!=OriginalData[0])
-	    continue;
+        continue;
 
     for(j=0; j<57; j++)
     {
-	    if(Kernel[i+j]!=OriginalData[j])
-		    break;
+        if(Kernel[i+j]!=OriginalData[j])
+            break;
     }
     if(j==57)
-	    break;
+        break;
   }
 
   if(j==57)
@@ -713,7 +713,7 @@ CStdString CUtil::GetFileMD5(const CStdString& strPath)
         break;
       md5.append(temp,read);
     }
-    md5.getDigest(result);
+    result = md5.getDigest();
     file.Close();
   }
 
@@ -847,7 +847,7 @@ void CUtil::CreateShortcut(CFileItem* pItem)
   if ( pItem->IsXBE() )
   {
     // xbe
-    pItem->SetIconImage("defaultProgram.png");
+    pItem->SetArt("icon", "defaultProgram.png");
     if ( !pItem->IsOnDVD() )
     {
       CStdString strDescription;
@@ -2492,10 +2492,10 @@ bool CUtil::AutoDetectionPing(CStdString strFTPUserName, CStdString strFTPPass, 
   char sztmp[512];
 
   static int udp_server_socket, inited=0;
-	int cliLen, t1,t2,t3,t4, init_counter=0, life=0;
+    int cliLen, t1,t2,t3,t4, init_counter=0, life=0;
 
-  struct sockaddr_in	server;
-  struct sockaddr_in	cliAddr;
+  struct sockaddr_in    server;
+  struct sockaddr_in    cliAddr;
   struct timeval timeout={0,500};
   fd_set readfds;
 #ifdef HAS_XBOX_HARDWARE
@@ -2529,14 +2529,14 @@ bool CUtil::AutoDetectionPing(CStdString strFTPUserName, CStdString strFTPPass, 
   if( !inited )
   {
     int tUDPsocket  = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	  char value      = 1;
-	  setsockopt( tUDPsocket, SOL_SOCKET, SO_BROADCAST, &value, value );
-	  struct sockaddr_in addr;
-	  memset(&(addr),0,sizeof(addr));
-	  addr.sin_family       = AF_INET;
-	  addr.sin_addr.s_addr  = INADDR_ANY;
-	  addr.sin_port         = htons(iUDPPort);
-	  bind(tUDPsocket,(struct sockaddr *)(&addr),sizeof(addr));
+      char value      = 1;
+      setsockopt( tUDPsocket, SOL_SOCKET, SO_BROADCAST, &value, value );
+      struct sockaddr_in addr;
+      memset(&(addr),0,sizeof(addr));
+      addr.sin_family       = AF_INET;
+      addr.sin_addr.s_addr  = INADDR_ANY;
+      addr.sin_port         = htons(iUDPPort);
+      bind(tUDPsocket,(struct sockaddr *)(&addr),sizeof(addr));
     udp_server_socket = tUDPsocket;
     inited = 1;
   }
@@ -2554,9 +2554,9 @@ bool CUtil::AutoDetectionPing(CStdString strFTPUserName, CStdString strFTPPass, 
 #endif
   server.sin_port = htons(iUDPPort);
   sendto(udp_server_socket,(char *)strSendMessage.c_str(),5,0,(struct sockaddr *)(&server),sizeof(server));
-	FD_ZERO(&readfds);
-	FD_SET(udp_server_socket, &readfds);
-	life = select( 0,&readfds, NULL, NULL, &timeout );
+    FD_ZERO(&readfds);
+    FD_SET(udp_server_socket, &readfds);
+    life = select( 0,&readfds, NULL, NULL, &timeout );
 
   unsigned int iLookUpCountMax = 2;
   unsigned int i=0;
@@ -2832,12 +2832,12 @@ bool CUtil::GetXBOXNickName(CStdString &strXboxNickNameOut)
 #ifdef HAS_XBOX_HARDWARE
   WCHAR wszXboxNickname[MAX_NICKNAME];
   HANDLE hNickName = XFindFirstNickname( FALSE, wszXboxNickname, MAX_NICKNAME );
-	if ( hNickName != INVALID_HANDLE_VALUE )
-	{
+    if ( hNickName != INVALID_HANDLE_VALUE )
+    {
     strXboxNickNameOut.Format("%ls",wszXboxNickname);
-		XFindClose( hNickName );
+        XFindClose( hNickName );
     return true;
-	}
+    }
   else
 #endif
   {
@@ -3083,8 +3083,8 @@ bool CUtil::PWMControl(const CStdString &strRGBa, const CStdString &strRGBb, con
 bool CUtil::LookForKernelPatch()
 {
 #ifdef HAS_XBOX_HARDWARE
-  BYTE	*Kernel=(BYTE *)0x80010000;
-  DWORD	i, j = 0;
+  BYTE    *Kernel=(BYTE *)0x80010000;
+  DWORD    i, j = 0;
 
   for(i=0x1000; i<0x14000; i++)
   {
@@ -3263,17 +3263,17 @@ bool CUtil::RunFFPatchedXBE(CStdString szPath1, CStdString& szNewPath)
   // Test if we already have a patched _ffp XBE
   // Since the FF can be changed in XBMC, we will not check for a pre patched _ffp xbe!
   /* // May we can add. a changed FF detection.. then we can actived this!
-  CFile	xbe;
-	if (xbe.Exists(szPath1))
+  CFile    xbe;
+    if (xbe.Exists(szPath1))
   {
     char szDrive[_MAX_DRIVE], szDir[_MAX_DIR], szFname[_MAX_FNAME], szExt[_MAX_EXT];
-		_splitpath(szPath1, szDrive, szDir, szFname, szExt);
-		strncat(szFname, "_ffp", 4);
-		_makepath(szNewPath.GetBuffer(MAX_PATH), szDrive, szDir, szFname, szExt);
-		szNewPath.ReleaseBuffer();
-		if (xbe.Exists(szNewPath))
-			return true;
-	} */
+        _splitpath(szPath1, szDrive, szDir, szFname, szExt);
+        strncat(szFname, "_ffp", 4);
+        _makepath(szNewPath.GetBuffer(MAX_PATH), szDrive, szDir, szFname, szExt);
+        szNewPath.ReleaseBuffer();
+        if (xbe.Exists(szNewPath))
+            return true;
+    } */
 
 
   CXBE m_xbe;

@@ -21,28 +21,9 @@
  */
 
 #include "utils/IArchivable.h"
+#include "utils/TimeFormat.h"
 #include "system.h"
 #include <string>
-
-/*! \brief TIME_FORMAT enum/bitmask used for formatting time strings
- Note the use of bitmasking, e.g.
-  TIME_FORMAT_HH_MM_SS = TIME_FORMAT_HH | TIME_FORMAT_MM | TIME_FORMAT_SS
- \sa StringUtils::SecondsToTimeString
- */
-enum TIME_FORMAT { TIME_FORMAT_GUESS       =  0,
-                   TIME_FORMAT_SS          =  1,
-                   TIME_FORMAT_MM          =  2,
-                   TIME_FORMAT_MM_SS       =  3,
-                   TIME_FORMAT_HH          =  4,
-                   TIME_FORMAT_HH_SS       =  5, // not particularly useful
-                   TIME_FORMAT_HH_MM       =  6,
-                   TIME_FORMAT_HH_MM_SS    =  7,
-                   TIME_FORMAT_XX          =  8, // AM/PM
-                   TIME_FORMAT_HH_MM_XX    = 14,
-                   TIME_FORMAT_HH_MM_SS_XX = 15,
-                   TIME_FORMAT_H           = 16,
-                   TIME_FORMAT_H_MM_SS     = 19,
-                   TIME_FORMAT_H_MM_SS_XX  = 27};
 
 class CDateTime;
 
@@ -207,6 +188,7 @@ public:
   std::string GetAsLocalizedDate(const std::string &strFormat) const;
   std::string GetAsLocalizedTime(const std::string &format, bool withSeconds=true) const;
   std::string GetAsLocalizedDateTime(bool longDate=false, bool withSeconds=true) const;
+  std::string GetAsLocalizedTime(TIME_FORMAT format, bool withSeconds = false) const;
   std::string GetAsRFC1123DateTime() const;
   std::string GetAsW3CDate() const;
   std::string GetAsW3CDateTime(bool asUtc = false) const;

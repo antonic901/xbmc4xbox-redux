@@ -13,11 +13,8 @@
 #include "ServiceBroker.h"
 #include "URL.h"
 #include "Util.h"
-#include "application/Application.h"
-#include "application/ApplicationComponents.h"
-#include "application/ApplicationPlayer.h"
-#include "cores/DataCacheCore.h"
-#include "cores/VideoPlayer/VideoRenderers/BaseRenderer.h"
+#include "Application.h"
+#include "ApplicationPlayer.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
@@ -31,12 +28,14 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "settings/lib/Setting.h"
+#include "utils/MathUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
 #include "video/VideoInfoTag.h"
-#include "video/VideoManagerTypes.h"
 #include "video/VideoThumbLoader.h"
+
+#include "defs_from_settings.h"
 
 #include <math.h>
 
@@ -44,7 +43,6 @@ using namespace KODI::GUILIB;
 using namespace KODI::GUILIB::GUIINFO;
 
 CVideoGUIInfo::CVideoGUIInfo()
-  : m_appPlayer(CServiceBroker::GetAppComponents().GetComponent<CApplicationPlayer>())
 {
 }
 
@@ -52,7 +50,7 @@ int CVideoGUIInfo::GetPercentPlayed(const CVideoInfoTag* tag) const
 {
   CBookmark bookmark = tag->GetResumePoint();
   if (bookmark.IsPartWay())
-    return std::lrintf(static_cast<float>(bookmark.timeInSeconds) /
+    return MathUtils::round_int(static_cast<float>(bookmark.timeInSeconds) /
                        static_cast<float>(bookmark.totalTimeInSeconds) * 100.0f);
   else
     return 0;
@@ -63,7 +61,7 @@ bool CVideoGUIInfo::InitCurrentItem(CFileItem *item)
   if (item && item->IsVideo())
   {
     // special case where .strm is used to start an audio stream
-    if (item->IsInternetStream() && m_appPlayer->IsPlayingAudio())
+    if (item->IsInternetStream() && g_application.m_pPlayer->IsPlayingAudio())
       return false;
 
     CLog::Log(LOGDEBUG, "CVideoGUIInfo::InitCurrentItem({})", CURL::GetRedacted(item->GetPath()));
@@ -190,9 +188,9 @@ bool CVideoGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
           if (rating.rating > 0.f && rating.votes == 0)
             value = StringUtils::FormatNumber(rating.rating);
           else if (rating.votes > 0)
-            value = StringUtils::Format(g_localizeStrings.Get(20350),
-                                        StringUtils::FormatNumber(rating.rating),
-                                        StringUtils::FormatNumber(rating.votes));
+            value = StringUtils::Format(g_localizeStrings.Get(20350).c_str(),
+                                        StringUtils::FormatNumber(rating.rating).c_str(),
+                                        StringUtils::FormatNumber(rating.votes).c_str());
           else
             break;
           return true;
@@ -318,12 +316,6 @@ bool CVideoGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
       case LISTITEM_TAGLINE:
         value = tag->m_strTagLine;
         return true;
-      case VIDEOPLAYER_VIDEOVERSION_NAME:
-      case LISTITEM_VIDEOVERSION_NAME:
-        value = tag->GetAssetInfo().GetType() == VideoAssetType::VERSION
-                    ? tag->GetAssetInfo().GetTitle()
-                    : "";
-        return true;
       case VIDEOPLAYER_LASTPLAYED:
       case LISTITEM_LASTPLAYED:
       {
@@ -366,17 +358,10 @@ bool CVideoGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
         break;
       case LISTITEM_PLOT:
         {
-          boost::shared_ptr<CSettingList> setting(std::dynamic_pointer_cast<CSettingList>(
-              CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting(
-                  CSettings::SETTING_VIDEOLIBRARY_SHOWUNWATCHEDPLOTS)));
-          if (tag->m_type != MediaTypeTvShow && tag->m_type != MediaTypeVideoCollection &&
-              tag->GetPlayCount() == 0 && setting &&
-              ((tag->m_type == MediaTypeMovie &&
-                !CSettingUtils::FindIntInList(
-                    setting, CSettings::VIDEOLIBRARY_PLOTS_SHOW_UNWATCHED_MOVIES)) ||
-               (tag->m_type == MediaTypeEpisode &&
-                !CSettingUtils::FindIntInList(
-                    setting, CSettings::VIDEOLIBRARY_PLOTS_SHOW_UNWATCHED_TVSHOWEPISODES))))
+          if (item->GetVideoInfoTag()->m_type != MediaTypeTvShow &&
+              item->GetVideoInfoTag()->m_type != MediaTypeVideoCollection &&
+              item->GetVideoInfoTag()->m_playCount == 0 && 
+              !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videolibrary.showunwatchedplots"))
           {
             value = g_localizeStrings.Get(20370);
           }
@@ -523,26 +508,9 @@ bool CVideoGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
 
         value = CURL(value).GetWithoutUserDetails();
         return true;
-      case LISTITEM_VIDEO_HDR_TYPE:
-        value = tag->m_streamDetails.GetVideoHdrType();
-        return true;
       case LISTITEM_LABEL:
       {
-        //! @todo get rid of "videos with versions as folder" hack!
-
-        // special casing for "show videos with multiple versions as folders", where the label
-        // should be the video version, not the movie title.
-        if (!item->HasVideoVersions())
-          break;
-
-        CGUIWindow* videoNav{
-            CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_VIDEO_NAV)};
-        if (videoNav && videoNav->GetProperty("VideoVersionsFolderView").asBoolean() &&
-            videoNav->IsActive())
-        {
-          value = tag->GetAssetInfo().GetTitle();
-          return true;
-        }
+        value = "N/A";
         break;
       }
     }
@@ -568,17 +536,14 @@ bool CVideoGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
       }
       break;
     case VIDEOPLAYER_VIDEO_ASPECT:
-      value = CStreamDetails::VideoAspectToAspectDescription(CServiceBroker::GetDataCacheCore().GetVideoDAR());
+    {
+      SPlayerVideoStreamInfo info;
+      g_application.m_pPlayer->GetVideoStreamInfo(-1, info);
+      value = CStreamDetails::VideoAspectToAspectDescription(info.videoAspectRatio);
       return true;
-    case VIDEOPLAYER_STEREOSCOPIC_MODE:
-      value = CServiceBroker::GetDataCacheCore().GetVideoStereoMode();
-      return true;
-    case VIDEOPLAYER_SUBTITLES_LANG:
-      value = m_subtitleInfo.language;
-      return true;
-      break;
+    }
     case VIDEOPLAYER_COVER:
-      if (m_appPlayer->IsPlayingVideo())
+      if (g_application.m_pPlayer->IsPlayingVideo())
       {
         if (fallback)
           *fallback = "DefaultVideoCover.png";
@@ -589,64 +554,40 @@ bool CVideoGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
       break;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    // LISTITEM_*
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-#ifndef _XBOX
-    case LISTITEM_STEREOSCOPIC_MODE:
-      value = item->GetProperty("stereomode").asString();
-      if (value.empty() && tag)
-        value = CStereoscopicsManager::NormalizeStereoMode(tag->m_streamDetails.GetStereoMode());
-      return true;
-#endif
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
     // VIDEOPLAYER_*
     ///////////////////////////////////////////////////////////////////////////////////////////////
     case VIDEOPLAYER_VIDEO_CODEC:
-      value = m_videoInfo.codecName;
+    {
+      SPlayerVideoStreamInfo info;
+      g_application.m_pPlayer->GetVideoStreamInfo(-1, info);
+      value = info.videoCodecName;
       return true;
+    }
     case VIDEOPLAYER_VIDEO_RESOLUTION:
-      value = CStreamDetails::VideoDimsToResolutionDescription(m_videoInfo.width, m_videoInfo.height);
+    {
+      SPlayerVideoStreamInfo info;
+      g_application.m_pPlayer->GetVideoStreamInfo(-1, info);
+      value = CStreamDetails::VideoDimsToResolutionDescription(info.width, info.height);
       return true;
-    case VIDEOPLAYER_HDR_TYPE:
-      value = CStreamDetails::HdrTypeToString(m_videoInfo.hdrType);
-      return true;
+    }
     case VIDEOPLAYER_AUDIO_CODEC:
-      value = m_audioInfo.codecName;
+    {
+      SPlayerAudioStreamInfo info;
+      g_application.m_pPlayer->GetAudioStreamInfo(g_application.m_pPlayer->GetAudioStream(), info);
+      value = info.audioCodecName;
       return true;
+    }
     case VIDEOPLAYER_AUDIO_CHANNELS:
     {
-      int iChannels = m_audioInfo.channels;
-      if (iChannels > 0)
+      SPlayerAudioStreamInfo info;
+      g_application.m_pPlayer->GetAudioStreamInfo(g_application.m_pPlayer->GetAudioStream(), info);
+      if (info.channels > 0)
       {
-        value = std::to_string(iChannels);
+        value = StringUtils::Format("%i", info.channels);
         return true;
       }
       break;
     }
-    case VIDEOPLAYER_AUDIO_BITRATE:
-    {
-      int iBitrate = m_audioInfo.bitrate;
-      if (iBitrate > 0)
-      {
-        value = std::to_string(std::lrint(static_cast<double>(iBitrate) / 1000.0));
-        return true;
-      }
-      break;
-    }
-    case VIDEOPLAYER_VIDEO_BITRATE:
-    {
-      int iBitrate = m_videoInfo.bitrate;
-      if (iBitrate > 0)
-      {
-        value = std::to_string(std::lrint(static_cast<double>(iBitrate) / 1000.0));
-        return true;
-      }
-      break;
-    }
-    case VIDEOPLAYER_AUDIO_LANG:
-      value = m_audioInfo.language;
-      return true;
   }
 
   return false;
@@ -665,7 +606,7 @@ bool CVideoGUIInfo::GetPlaylistInfo(std::string& value, const CGUIInfo& info) co
     if (CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() != PLAYLIST::TYPE_VIDEO)
       return false;
 
-    index = CServiceBroker::GetPlaylistPlayer().GetNextItemIdx(index);
+    index = CServiceBroker::GetPlaylistPlayer().GetNextSong(index);
   }
 
   if (index < 0 || index >= playlist.size())
@@ -758,7 +699,7 @@ bool CVideoGUIInfo::GetInt(int& value, const CGUIListItem *gitem, int contextWin
     // VIDEOPLAYER_*
     ///////////////////////////////////////////////////////////////////////////////////////////////
     case VIDEOPLAYER_AUDIOSTREAMCOUNT:
-      value = m_appPlayer->GetAudioStreamCount();
+      value = g_application.m_pPlayer->GetAudioStreamCount();
       return true;
 
     default:
@@ -785,22 +726,12 @@ bool CVideoGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contextW
       case VIDEOPLAYER_HAS_INFO:
         value = !tag->IsEmpty();
         return true;
-      case VIDEOPLAYER_HAS_VIDEOVERSIONS:
-      case LISTITEM_HASVIDEOVERSIONS:
-        value = tag->HasVideoVersions();
-        return true;
 
       /////////////////////////////////////////////////////////////////////////////////////////////
       // LISTITEM_*
       /////////////////////////////////////////////////////////////////////////////////////////////
       case LISTITEM_IS_COLLECTION:
         value = tag->m_type == MediaTypeVideoCollection;
-        return true;
-      case LISTITEM_ISVIDEOEXTRA:
-        value = (tag->GetAssetInfo().GetType() == VideoAssetType::EXTRA);
-        return true;
-      case LISTITEM_HASVIDEOEXTRAS:
-        value = tag->HasVideoExtras();
         return true;
     }
   }
@@ -826,33 +757,27 @@ bool CVideoGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contextW
       return value; // if no match for this provider, other providers shall be asked.
     }
     case VIDEOPLAYER_USING_OVERLAYS:
-      value = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_VIDEOPLAYER_RENDERMETHOD) == RENDER_OVERLAYS);
+      value = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoplayer.rendermethod") == RENDER_OVERLAYS);
       return true;
     case VIDEOPLAYER_ISFULLSCREEN:
       value = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO ||
               CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_FULLSCREEN_GAME;
       return true;
     case VIDEOPLAYER_HASMENU:
-      value = m_appPlayer->GetSupportedMenuType() != MenuType::NONE;
-      return true;
-    case VIDEOPLAYER_HASTELETEXT:
-      value = m_appPlayer->HasTeletextCache();
+      value = g_application.m_pPlayer->HasMenu();
       return true;
     case VIDEOPLAYER_HASSUBTITLES:
-      value = m_appPlayer->GetSubtitleCount() > 0;
+      value = g_application.m_pPlayer->GetSubtitleCount() > 0;
       return true;
     case VIDEOPLAYER_SUBTITLESENABLED:
-      value = m_appPlayer->GetSubtitleVisible();
-      return true;
-    case VIDEOPLAYER_IS_STEREOSCOPIC:
-      value = !CServiceBroker::GetDataCacheCore().GetVideoStereoMode().empty();
+      value = g_application.m_pPlayer->GetSubtitleVisible();
       return true;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // LISTITEM_*
     ///////////////////////////////////////////////////////////////////////////////////////////////
     case LISTITEM_IS_RESUMABLE:
-      value = item->IsResumable();
+      value = tag->m_resumePoint.timeInSeconds > 0;
       return true;
 #ifndef _XBOX
     case LISTITEM_IS_STEREOSCOPIC:

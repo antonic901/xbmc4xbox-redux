@@ -28,12 +28,13 @@
  *
  */
 
+#include "utils/ColorUtils.h"
 #include <vector>
 #include <stack>
 #include <map>
 #include "threads/CriticalSection.h"  // base class
-#include "TransformMatrix.h"        // for the members m_guiTransform etc.
-#include "Geometry.h"               // for CRect/CPoint
+#include "utils/TransformMatrix.h"        // for the members m_guiTransform etc.
+#include "utils/Geometry.h"               // for CRect/CPoint
 #include "gui3d.h"
 #include "utils/StdString.h"
 
@@ -206,6 +207,7 @@ public:
     if (alpha > 255) alpha = 255;
     return ((alpha << 24) & 0xff000000) | (color & 0xffffff);
   }
+  UTILS::COLOR::Color MergeColor(UTILS::COLOR::Color color) const;
 
   void SetOrigin(float x, float y);
   void RestoreOrigin();
@@ -276,7 +278,7 @@ public:
     }
   }
 
-  CRect generateAABB(const CRect &rect) const;
+  CRect GenerateAABB(const CRect &rect) const;
 
   int GetMaxTextureSize() const { return m_maxTextureSize; };
 protected:

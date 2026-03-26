@@ -35,14 +35,10 @@ public:
   void        SetVolume(int level);
 
 private:
-#if 0
   bool        LoadWav(const std::string& strFile, WAVEFORMATEX* wfx, LPBYTE* ppWavData, int* pDataSize);
   bool        CreateBuffer(LPWAVEFORMATEX wfx, int iLength);
   bool        FillBuffer(LPBYTE pbData, int iLength);
-#endif
   void        FreeBuffer();
 
-#if 0
   LPDIRECTSOUNDBUFFER m_soundBuffer;
-#endif
 };

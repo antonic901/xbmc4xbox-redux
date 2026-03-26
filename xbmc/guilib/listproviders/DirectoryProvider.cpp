@@ -11,36 +11,31 @@
 #include "ContextMenuManager.h"
 #include "FileItem.h"
 #include "ServiceBroker.h"
+#include "Util.h"
 #include "addons/AddonManager.h"
-#include "favourites/FavouritesService.h"
+#include "addons/GUIDialogAddonInfo.h"
 #include "filesystem/Directory.h"
+#include "filesystem/FavouritesDirectory.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "interfaces/AnnouncementManager.h"
 #include "music/MusicThumbLoader.h"
+#include "music/dialogs/GUIDialogMusicInfo.h"
 #include "pictures/PictureThumbLoader.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
-#include "utils/ExecString.h"
 #include "utils/JobManager.h"
-#include "utils/PlayerUtils.h"
 #include "utils/SortUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
 #include "utils/XMLUtils.h"
-#include "utils/guilib/GUIContentUtils.h"
 #include "utils/log.h"
 #include "video/VideoInfoTag.h"
 #include "video/VideoThumbLoader.h"
-#include "video/VideoUtils.h"
-#include "video/guilib/VideoPlayActionProcessor.h"
-#include "video/guilib/VideoSelectActionProcessor.h"
-
-#include <memory>
-#include <mutex>
-#include <utility>
+#include "video/dialogs/GUIDialogVideoInfo.h"
+#include "video/windows/GUIWindowVideoBase.h"
 
 using namespace XFILE;
 using namespace KODI::MESSAGING;
@@ -63,8 +58,8 @@ public:
   { }
   virtual ~CDirectoryJob() {}
 
-  const char* GetType() const override { return "directory"; }
-  bool operator==(const CJob *job) const override
+  virtual const char* GetType() const { return "directory"; }
+  virtual bool operator==(const CJob *job) const
   {
     if (strcmp(job->GetType(),GetType()) == 0)
     {
@@ -75,7 +70,7 @@ public:
     return false;
   }
 
-  bool DoWork() override
+  virtual bool DoWork()
   {
     CFileItemList items;
     if (CDirectory::GetDirectory(m_url, items, "", DIR_FLAG_DEFAULTS))
@@ -118,10 +113,10 @@ public:
           item.SetProperty("node.target", m_target);
           item.SetProperty("node.type", "target_folder"); // make item identifyable, e.g. by skins
 
-          m_items.emplace_back(boost::make_shared<CGUIStaticItem>(item));
+          m_items.push_back(boost::make_shared<CGUIStaticItem>(item));
         }
         else
-          CLog::LogF(LOGWARNING, "Cannot add 'More...' item to list. No target window given.");
+          CLog::Log(LOGWARNING, "Cannot add 'More...' item to list. No target window given.");
       }
     }
     return true;
@@ -149,7 +144,7 @@ public:
   }
 
   template<class CThumbLoaderClass>
-  void initThumbLoader(InfoTagType type)
+  void initThumbLoader(InfoTagType::TagType type)
   {
     if (!m_thumbloaders.count(type))
     {
@@ -161,11 +156,11 @@ public:
 
   const std::vector<CGUIStaticItemPtr> &GetItems() const { return m_items; }
   const std::string &GetTarget() const { return m_target; }
-  std::vector<InfoTagType> GetItemTypes(std::vector<InfoTagType> &itemTypes) const
+  std::vector<InfoTagType::TagType> GetItemTypes(std::vector<InfoTagType::TagType> &itemTypes) const
   {
     itemTypes.clear();
-    for (const auto& i : m_thumbloaders)
-      itemTypes.push_back(i.first);
+    for (std::map<InfoTagType::TagType, boost::shared_ptr<CThumbLoader> >::const_iterator i = m_thumbloaders.begin(); i != m_thumbloaders.end(); ++i)
+      itemTypes.push_back(i->first);
     return itemTypes;
   }
 private:
@@ -173,14 +168,19 @@ private:
   std::string m_target;
   SortDescription m_sort;
   unsigned int m_limit;
-  CDirectoryProvider::BrowseMode m_browse{CDirectoryProvider::BrowseMode::AUTO};
+  CDirectoryProvider::BrowseMode m_browse;
   int m_parentID;
   std::vector<CGUIStaticItemPtr> m_items;
-  std::map<InfoTagType, boost::shared_ptr<CThumbLoader> > m_thumbloaders;
+  std::map<InfoTagType::TagType, boost::shared_ptr<CThumbLoader> > m_thumbloaders;
 };
 
 CDirectoryProvider::CDirectoryProvider(const TiXmlElement* element, int parentID)
-  : IListProvider(parentID)
+  : IListProvider(parentID),
+    m_updateState(OK),
+    m_jobID(0),
+    m_currentLimit(0),
+    m_currentBrowse(AUTO),
+    m_isSubscribed(false)
 {
   assert(element);
   if (!element->NoChildren())
@@ -212,6 +212,7 @@ CDirectoryProvider::CDirectoryProvider(const TiXmlElement* element, int parentID
 CDirectoryProvider::CDirectoryProvider(const CDirectoryProvider& other)
   : IListProvider(other.m_parentID),
     m_updateState(INVALIDATED),
+    m_jobID(0),
     m_url(other.m_url),
     m_target(other.m_target),
     m_sortMethod(other.m_sortMethod),
@@ -222,7 +223,8 @@ CDirectoryProvider::CDirectoryProvider(const CDirectoryProvider& other)
     m_currentTarget(other.m_currentTarget),
     m_currentSort(other.m_currentSort),
     m_currentLimit(other.m_currentLimit),
-    m_currentBrowse(other.m_currentBrowse)
+    m_currentBrowse(other.m_currentBrowse),
+    m_isSubscribed(false)
 {
 }
 
@@ -233,7 +235,7 @@ CDirectoryProvider::~CDirectoryProvider()
 
 boost::movelib::unique_ptr<IListProvider> CDirectoryProvider::Clone()
 {
-  return boost::movelib::make_unique<CDirectoryProvider>(*this);
+  return boost::movelib::unique_ptr<IListProvider>(new CDirectoryProvider(*this));
 }
 
 bool CDirectoryProvider::Update(bool forceRefresh)
@@ -270,15 +272,15 @@ bool CDirectoryProvider::Update(bool forceRefresh)
 
   if (!changed)
   {
-    for (auto& i : m_items)
-      changed |= i->UpdateVisibility(m_parentID);
+    for (std::vector<CGUIStaticItemPtr>::iterator i = m_items.begin(); i != m_items.end(); ++i)
+      changed |= (*i)->UpdateVisibility(m_parentID);
   }
   return changed; //! @todo Also returned changed if properties are changed (if so, need to update scroll to letter).
 }
 
 void CDirectoryProvider::Announce(ANNOUNCEMENT::AnnouncementFlag flag,
-                                  const std::string& sender,
-                                  const std::string& message,
+                                  const char *sender,
+                                  const char *message,
                                   const CVariant& data)
 {
   // we are only interested in library, player and GUI changes
@@ -297,7 +299,7 @@ void CDirectoryProvider::Announce(ANNOUNCEMENT::AnnouncementFlag flag,
 
     if (flag & ANNOUNCEMENT::Player)
     {
-      if (message == "OnPlay" || message == "OnResume" || message == "OnStop")
+      if (strcmp(message, "OnPlay") == 0 || strcmp(message, "OnResume") == 0 || strcmp(message, "OnStop") == 0)
       {
         if (m_currentSort.sortBy == SortByNone || // not nice, but many directories that need to be refreshed on start/stop have no special sort order (e.g. in progress movies)
             m_currentSort.sortBy == SortByLastPlayed ||
@@ -314,21 +316,21 @@ void CDirectoryProvider::Announce(ANNOUNCEMENT::AnnouncementFlag flag,
 
       // if there was a database update, we set the update state
       // to PENDING to fire off a new job in the next update
-      if (message == "OnScanFinished" || message == "OnCleanFinished" || message == "OnUpdate" ||
-          message == "OnRemove" || message == "OnRefresh")
+      if (strcmp(message, "OnScanFinished") == 0 || strcmp(message, "OnCleanFinished") == 0 || strcmp(message, "OnUpdate") == 0 ||
+          strcmp(message, "OnRemove") == 0 || strcmp(message, "OnRefresh") == 0)
         m_updateState = INVALIDATED;
     }
   }
 }
 
-void CDirectoryProvider::Fetch(std::vector<boost::shared_ptr<CGUIListItem>>& items)
+void CDirectoryProvider::Fetch(std::vector<boost::shared_ptr<CGUIListItem> >& items)
 {
   CSingleLock lock(m_section);
   items.clear();
-  for (const auto& i : m_items)
+  for (std::vector<CGUIStaticItemPtr>::const_iterator i = m_items.begin(); i != m_items.end(); ++i)
   {
-    if (i->IsVisible())
-      items.push_back(i);
+    if ((*i)->IsVisible())
+      items.push_back(*i);
   }
 }
 
@@ -339,10 +341,8 @@ void CDirectoryProvider::OnAddonEvent(const ADDON::AddonEvent& event)
   {
     if (typeid(event) == typeid(ADDON::AddonEvents::Enabled) ||
         typeid(event) == typeid(ADDON::AddonEvents::Disabled) ||
-        typeid(event) == typeid(ADDON::AddonEvents::ReInstalled) ||
-        typeid(event) == typeid(ADDON::AddonEvents::UnInstalled) ||
-        typeid(event) == typeid(ADDON::AddonEvents::MetadataChanged) ||
-        typeid(event) == typeid(ADDON::AddonEvents::AutoUpdateStateChanged))
+        typeid(event) == typeid(ADDON::AddonEvents::InstalledChanged) ||
+        typeid(event) == typeid(ADDON::AddonEvents::MetadataChanged))
       m_updateState = INVALIDATED;
   }
 }
@@ -354,13 +354,6 @@ void CDirectoryProvider::OnAddonRepositoryEvent(const ADDON::CRepositoryUpdater:
   {
     m_updateState = INVALIDATED;
   }
-}
-
-void CDirectoryProvider::OnFavouritesEvent(const CFavouritesService::FavouritesUpdated& event)
-{
-  CSingleLock lock(m_section);
-  if (URIUtils::IsProtocol(m_currentUrl, "favourites"))
-    m_updateState = INVALIDATED;
 }
 
 void CDirectoryProvider::Reset()
@@ -386,7 +379,6 @@ void CDirectoryProvider::Reset()
   {
     m_isSubscribed = false;
     CServiceBroker::GetAnnouncementManager()->RemoveAnnouncer(this);
-    CServiceBroker::GetFavouritesService().Events().Unsubscribe(this);
     CServiceBroker::GetRepositoryUpdater().Events().Unsubscribe(this);
     CServiceBroker::GetAddonMgr().Events().Unsubscribe(this);
   }
@@ -395,8 +387,8 @@ void CDirectoryProvider::Reset()
 void CDirectoryProvider::FreeResources(bool immediately)
 {
   CSingleLock lock(m_section);
-  for (const auto& item : m_items)
-    item->FreeMemory(immediately);
+  for (std::vector<CGUIStaticItemPtr>::iterator item = m_items.begin(); item != m_items.end(); ++item)
+    (*item)->FreeMemory(immediately);
 }
 
 void CDirectoryProvider::OnJobComplete(unsigned int jobID, bool success, CJob *job)
@@ -439,172 +431,52 @@ bool ExecuteAction(const std::string& execute)
   }
   return false;
 }
-
-bool ExecuteAction(const CExecString& execute)
-{
-  return ExecuteAction(execute.GetExecString());
-}
-
-class CVideoSelectActionProcessor : public VIDEO::GUILIB::CVideoSelectActionProcessorBase
-{
-public:
-  CVideoSelectActionProcessor(CDirectoryProvider& provider, const boost::shared_ptr<CFileItem>& item)
-    : CVideoSelectActionProcessorBase(item), m_provider(provider)
-  {
-  }
-
-protected:
-  bool OnPlayPartSelected(unsigned int part) override
-  {
-    // part numbers are 1-based
-    ExecuteAction({"PlayMedia", *m_item, StringUtils::Format("playoffset={}", part - 1)});
-    return true;
-  }
-
-  bool OnResumeSelected() override
-  {
-    ExecuteAction({"PlayMedia", *m_item, "resume"});
-    return true;
-  }
-
-  bool OnPlaySelected() override
-  {
-    ExecuteAction({"PlayMedia", *m_item, "noresume"});
-    return true;
-  }
-
-  bool OnQueueSelected() override
-  {
-    ExecuteAction({"QueueMedia", *m_item, ""});
-    return true;
-  }
-
-  bool OnInfoSelected() override
-  {
-    m_provider.OnInfo(m_item);
-    return true;
-  }
-
-  bool OnChooseSelected() override
-  {
-    m_provider.OnContextMenu(m_item);
-    return true;
-  }
-
-private:
-  CDirectoryProvider& m_provider;
-};
-
-class CVideoPlayActionProcessor : public VIDEO::GUILIB::CVideoPlayActionProcessorBase
-{
-public:
-  explicit CVideoPlayActionProcessor(const boost::shared_ptr<CFileItem>& item)
-    : CVideoPlayActionProcessorBase(item)
-  {
-  }
-
-protected:
-  bool OnResumeSelected() override
-  {
-    ExecuteAction({"PlayMedia", *m_item, "resume"});
-    return true;
-  }
-
-  bool OnPlaySelected() override
-  {
-    ExecuteAction({"PlayMedia", *m_item, "noresume"});
-    return true;
-  }
-};
 } // namespace
 
 bool CDirectoryProvider::OnClick(const boost::shared_ptr<CGUIListItem>& item)
 {
-  CFileItem targetItem{*std::static_pointer_cast<CFileItem>(item)};
+  CFileItem fileItem(*boost::static_pointer_cast<CFileItem>(item));
 
-  if (targetItem.IsFavourite())
-  {
-    const auto target{CServiceBroker::GetFavouritesService().ResolveFavourite(targetItem)};
-    if (!target)
-      return false;
-
-    targetItem = *target;
-  }
-
-  const CExecString exec{targetItem, GetTarget(targetItem)};
-  const bool isPlayMedia{exec.GetFunction() == "playmedia"};
-
-  // video select action setting is for files only, except exec func is playmedia...
-  if (targetItem.HasVideoInfoTag() && (!targetItem.m_bIsFolder || isPlayMedia))
-  {
-    // play the given/default video version, even if multiple versions are available
-    targetItem.SetProperty("has_resolved_video_asset", true);
-
-    CVideoSelectActionProcessor proc{*this, boost::make_shared<CFileItem>(targetItem)};
-    if (proc.ProcessDefaultAction())
-      return true;
-  }
-
-  // exec the execute string for the original (!) item
-  CFileItem fileItem{*std::static_pointer_cast<CFileItem>(item)};
+  if (fileItem.HasVideoInfoTag()
+      && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("myvideos.selectaction") == SELECT_ACTION_INFO
+      && OnInfo(item))
+    return true;
 
   if (fileItem.HasProperty("node.target_url"))
     fileItem.SetPath(fileItem.GetProperty("node.target_url").asString());
 
-  return ExecuteAction({fileItem, GetTarget(fileItem)});
-}
-
-bool CDirectoryProvider::OnPlay(const boost::shared_ptr<CGUIListItem>& item)
-{
-  CFileItem targetItem{*std::static_pointer_cast<CFileItem>(item)};
-
-  if (targetItem.IsFavourite())
-  {
-    const auto target{CServiceBroker::GetFavouritesService().ResolveFavourite(targetItem)};
-    if (!target)
-      return false;
-
-    targetItem = *target;
-  }
-
-  // video play action setting is for files and folders...
-  if (targetItem.HasVideoInfoTag() ||
-      (targetItem.m_bIsFolder && VIDEO_UTILS::IsItemPlayable(targetItem)))
-  {
-    CVideoPlayActionProcessor proc{boost::make_shared<CFileItem>(targetItem)};
-    if (proc.ProcessDefaultAction())
-      return true;
-  }
-
-  if (CPlayerUtils::IsItemPlayable(targetItem))
-  {
-    const CExecString exec{targetItem, GetTarget(targetItem)};
-    if (exec.GetFunction() == "playmedia")
-    {
-      // exec as is
-      return ExecuteAction(exec);
-    }
-    else
-    {
-      // build a playmedia execute string for given target and exec this
-      return ExecuteAction({"PlayMedia", targetItem, ""});
-    }
-  }
-  return true;
+  return ExecuteAction(CFavouritesDirectory::GetExecutePath(fileItem, GetTarget(fileItem)));
 }
 
 bool CDirectoryProvider::OnInfo(const boost::shared_ptr<CFileItem>& fileItem)
 {
-  const auto targetItem{fileItem->IsFavourite()
-                            ? CServiceBroker::GetFavouritesService().ResolveFavourite(*fileItem)
-                            : fileItem};
-
-  return UTILS::GUILIB::CGUIContentUtils::ShowInfoForItem(*targetItem);
+  if (fileItem->HasAddonInfo())
+  {
+    return CGUIDialogAddonInfo::ShowForItem(fileItem);
+  }
+  else if (fileItem->HasVideoInfoTag())
+  {
+    MediaType mediaType = fileItem->GetVideoInfoTag()->m_type;
+    if (mediaType == MediaTypeMovie || mediaType == MediaTypeTvShow ||
+        mediaType == MediaTypeSeason || mediaType == MediaTypeEpisode ||
+        mediaType == MediaTypeVideo || mediaType == MediaTypeVideoCollection ||
+        mediaType == MediaTypeMusicVideo)
+    {
+      CGUIDialogVideoInfo::ShowFor(*fileItem);
+      return true;
+    }
+  }
+  else if (fileItem->HasMusicInfoTag())
+  {
+    CGUIDialogMusicInfo::ShowFor(fileItem.get());
+    return true;
+  }
+  return false;
 }
 
 bool CDirectoryProvider::OnInfo(const boost::shared_ptr<CGUIListItem>& item)
 {
-  auto fileItem = std::static_pointer_cast<CFileItem>(item);
+  boost::shared_ptr<CFileItem> fileItem = boost::static_pointer_cast<CFileItem>(item);
   return OnInfo(fileItem);
 }
 
@@ -619,7 +491,7 @@ bool CDirectoryProvider::OnContextMenu(const boost::shared_ptr<CFileItem>& fileI
 
 bool CDirectoryProvider::OnContextMenu(const boost::shared_ptr<CGUIListItem>& item)
 {
-  auto fileItem = std::static_pointer_cast<CFileItem>(item);
+  boost::shared_ptr<CFileItem> fileItem = boost::static_pointer_cast<CFileItem>(item);
   return OnContextMenu(fileItem);
 }
 
@@ -647,7 +519,6 @@ bool CDirectoryProvider::UpdateURL()
     CServiceBroker::GetAnnouncementManager()->AddAnnouncer(this);
     CServiceBroker::GetAddonMgr().Events().Subscribe(this, &CDirectoryProvider::OnAddonEvent);
     CServiceBroker::GetRepositoryUpdater().Events().Subscribe(this, &CDirectoryProvider::OnAddonRepositoryEvent);
-    CServiceBroker::GetFavouritesService().Events().Subscribe(this, &CDirectoryProvider::OnFavouritesEvent);
   }
   return true;
 }
@@ -667,8 +538,8 @@ bool CDirectoryProvider::UpdateLimit()
 bool CDirectoryProvider::UpdateBrowse()
 {
   CSingleLock lock(m_section);
-  const std::string stringValue{m_browse.GetLabel(m_parentID, false)};
-  BrowseMode value{m_currentBrowse};
+  const std::string stringValue(m_browse.GetLabel(m_parentID, false));
+  BrowseMode value(m_currentBrowse);
   if (StringUtils::EqualsNoCase(stringValue, "always"))
     value = BrowseMode::ALWAYS;
   else if (StringUtils::EqualsNoCase(stringValue, "auto"))
@@ -698,7 +569,7 @@ bool CDirectoryProvider::UpdateSort()
   m_currentSort.sortOrder = sortOrder;
   m_currentSort.sortAttributes = SortAttributeIgnoreFolders;
 
-  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_FILELISTS_IGNORETHEWHENSORTING))
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting"))
     m_currentSort.sortAttributes = static_cast<SortAttribute>(m_currentSort.sortAttributes | SortAttributeIgnoreArticle);
 
   return true;

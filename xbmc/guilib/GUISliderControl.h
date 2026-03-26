@@ -16,8 +16,6 @@
 #include "GUIControl.h"
 #include "GUITexture.h"
 
-#include <array>
-
 #define SLIDER_CONTROL_TYPE_INT         1
 #define SLIDER_CONTROL_TYPE_FLOAT       2
 #define SLIDER_CONTROL_TYPE_PERCENTAGE  3
@@ -123,14 +121,14 @@ protected:
   bool m_rangeSelection;
   RangeSelector m_currentSelector;
 
-  std::array<float, 2> m_percentValues;
+  float m_percentValues[2];
 
-  std::array<int, 2> m_intValues;
+  int m_intValues[2];
   int m_iStart;
   int m_iInterval;
   int m_iEnd;
 
-  std::array<float, 2> m_floatValues;
+  float m_floatValues[2];
   float m_fStart;
   float m_fInterval;
   float m_fEnd;

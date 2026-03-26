@@ -21,13 +21,16 @@
 #include "GUIWindowInsignia.h"
 
 #include "GUIUserMessages.h"
-#include "guilib/Key.h"
+#include "guilib/WindowIDs.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "guilib/GUIBaseContainer.h"
 #include "guilib/GUIStaticItem.h"
 #include "guilib/GUIListItem.h"
 #include "guilib/LocalizeStrings.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "listproviders/StaticProvider.h"
+#include "input/keyboard/KeyIDs.h"
 #include "interfaces/builtins/Builtins.h"
 #include "utils/Insignia.h"
 #include "utils/Variant.h"
@@ -73,7 +76,7 @@ bool CGUIWindowInsignia::OnAction(const CAction &action)
   CGUIControl *focusedControl = GetFocusedControl();
   if (focusedControl && action.GetButtonCode() == KEY_BUTTON_A && focusedControl->GetID() == CONTROL_GAMES_LIST)
   {
-    CGUIListItemPtr game = m_pGamesContainer->GetListItem(0);
+    boost::shared_ptr<CGUIListItem> game = m_pGamesContainer->GetListItem(0);
 
     CProgramDatabase database;
     database.Open();
@@ -114,5 +117,5 @@ void CGUIWindowInsignia::ClearProperties()
   SetProperty("OnlineUsers", "");
 
   if (m_pGamesContainer)
-    m_pGamesContainer->SetListProvider(nullptr);
+    m_pGamesContainer->SetListProvider(NULL);
 }
