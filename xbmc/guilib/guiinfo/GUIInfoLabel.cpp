@@ -189,7 +189,7 @@ bool CGUIInfoLabel::ReplaceSpecialKeywordReferences(const std::string &strInput,
     else
     {
       // if closing bracket is missing, report error and leave incomplete reference in
-      CLog::Log(LOGERROR, "Error parsing value - missing ']' in \"{}\"", strInput);
+      CLog::Log(LOGERROR, "Error parsing value - missing ']' in \"%s\"", strInput.c_str());
       break;
     }
   }
@@ -327,7 +327,7 @@ void CGUIInfoLabel::Parse(const std::string& label,
             if (info == 0)
               info = infoMgr.RegisterSkinVariableString(g_SkinInfo->CreateSkinVariable(params[0], context));
             if (info == 0) // skinner didn't define this conditional label!
-              CLog::Log(LOGWARNING, "Label Formatting: $VAR[{}] is not defined", params[0]);
+              CLog::Log(LOGWARNING, "Label Formatting: $VAR[%s] is not defined", params[0].c_str());
           }
           else
             info = infoMgr.TranslateString(params[0]);
@@ -344,7 +344,7 @@ void CGUIInfoLabel::Parse(const std::string& label,
       }
       else
       {
-        CLog::Log(LOGERROR, "Error parsing label - missing ']' in \"{}\"", label);
+        CLog::Log(LOGERROR, "Error parsing label - missing ']' in \"%s\"", label.c_str());
         return;
       }
     }

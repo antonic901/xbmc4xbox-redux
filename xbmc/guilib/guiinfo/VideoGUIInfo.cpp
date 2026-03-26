@@ -64,7 +64,7 @@ bool CVideoGUIInfo::InitCurrentItem(CFileItem *item)
     if (item->IsInternetStream() && g_application.m_pPlayer->IsPlayingAudio())
       return false;
 
-    CLog::Log(LOGDEBUG, "CVideoGUIInfo::InitCurrentItem({})", CURL::GetRedacted(item->GetPath()));
+    CLog::Log(LOGDEBUG, "CVideoGUIInfo::InitCurrentItem(%s)", CURL::GetRedacted(item->GetPath()).c_str());
 
     // Find a thumb for this file.
     if (!item->HasArt("thumb"))
@@ -78,8 +78,8 @@ bool CVideoGUIInfo::InitCurrentItem(CFileItem *item)
     {
       if (!g_application.m_strPlayListFile.empty())
       {
-        CLog::Log(LOGDEBUG, "Streaming media detected... using {} to find a thumb",
-                  g_application.m_strPlayListFile);
+        CLog::Log(LOGDEBUG, "Streaming media detected... using %s to find a thumb",
+                  g_application.m_strPlayListFile.c_str());
         CFileItem thumbItem(g_application.m_strPlayListFile,false);
 
         CVideoThumbLoader loader;
@@ -360,7 +360,7 @@ bool CVideoGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
         {
           if (item->GetVideoInfoTag()->m_type != MediaTypeTvShow &&
               item->GetVideoInfoTag()->m_type != MediaTypeVideoCollection &&
-              item->GetVideoInfoTag()->m_playCount == 0 && 
+              item->GetVideoInfoTag()->m_playCount == 0 &&
               !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videolibrary.showunwatchedplots"))
           {
             value = g_localizeStrings.Get(20370);

@@ -261,7 +261,7 @@ bool CDirectoryProvider::Update(bool forceRefresh)
 
   if (fireJob)
   {
-    CLog::Log(LOGDEBUG, "CDirectoryProvider[{}]: refreshing..", m_currentUrl);
+    CLog::Log(LOGDEBUG, "CDirectoryProvider[%s]: refreshing..", m_currentUrl.c_str());
     if (m_jobID)
       CServiceBroker::GetJobManager()->CancelJob(m_jobID);
     m_jobID = CServiceBroker::GetJobManager()->AddJob(

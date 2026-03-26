@@ -118,7 +118,7 @@ const std::string CGUISpinControlEx::GetCurrentLabel() const
 
 std::string CGUISpinControlEx::GetDescription() const
 {
-  return StringUtils::Format("{} ({})", m_buttonControl.GetDescription(), GetLabel());
+  return StringUtils::Format("%s (%s)", m_buttonControl.GetDescription().c_str(), GetLabel().c_str());
 }
 
 void CGUISpinControlEx::SetItemInvalid(bool invalid)

@@ -832,7 +832,7 @@ std::string CGUIBaseContainer::GetDescription() const
   {
     boost::shared_ptr<CGUIListItem> pItem = m_items[item];
     if (pItem->m_bIsFolder)
-      strLabel = StringUtils::Format("[{}]", pItem->GetLabel());
+      strLabel = StringUtils::Format("[%s]", pItem->GetLabel().c_str());
     else
       strLabel = pItem->GetLabel();
   }
@@ -1236,7 +1236,7 @@ bool CGUIBaseContainer::InsideLayout(const CGUIListItemLayout *layout, const CPo
 #ifdef _DEBUG
 void CGUIBaseContainer::DumpTextureUse()
 {
-  CLog::Log(LOGDEBUG, "{} for container {}", __FUNCTION__, GetID());
+  CLog::Log(LOGDEBUG, "%s for container %i", __FUNCTION__, GetID());
   for (unsigned int i = 0; i < m_items.size(); ++i)
   {
     boost::shared_ptr<CGUIListItem> item = m_items[i];

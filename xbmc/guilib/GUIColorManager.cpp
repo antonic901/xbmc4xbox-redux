@@ -51,7 +51,7 @@ void CGUIColorManager::Load(const std::string &colorFile)
   path = URIUtils::AddFileToFolder(g_SkinInfo->Path(), "colors", colorFile);
   if (!URIUtils::HasExtension(path))
     path += ".xml";
-  CLog::Log(LOGINFO, "Loading colors from {}", path);
+  CLog::Log(LOGINFO, "Loading colors from %s", path.c_str());
 
   if (xmlDoc.LoadFile(path))
     LoadXML(xmlDoc);
@@ -109,11 +109,11 @@ bool CGUIColorManager::LoadColorsListFromXML(
     std::vector<std::pair<std::string, UTILS::COLOR::ColorInfo> >& colors,
     bool sortColors)
 {
-  CLog::Log(LOGDEBUG, "Loading colors from file {}", filePath);
+  CLog::Log(LOGDEBUG, "Loading colors from file %s", filePath.c_str());
   CXBMCTinyXML xmlDoc;
   if (!xmlDoc.LoadFile(filePath))
   {
-    CLog::Log(LOGERROR, "{} - Failed to load colors from file {}", __FUNCTION__, filePath);
+    CLog::Log(LOGERROR, "%s - Failed to load colors from file %s", __FUNCTION__, filePath.c_str());
     return false;
   }
 
@@ -121,7 +121,7 @@ bool CGUIColorManager::LoadColorsListFromXML(
   std::string strValue = pRootElement->Value();
   if (strValue != std::string("colors"))
   {
-    CLog::Log(LOGERROR, "{} - Color file doesn't start with <colors>", __FUNCTION__);
+    CLog::Log(LOGERROR, "%s - Color file doesn't start with <colors>", __FUNCTION__);
     return false;
   }
 

@@ -65,10 +65,10 @@ std::string CSystemGUIInfo::GetSystemHeatInfo(int info) const
     case SYSTEM_GPU_TEMPERATURE:
       return m_gpuTemp.IsValid() ? g_langInfo.GetTemperatureAsString(m_gpuTemp) : g_localizeStrings.Get(10005);
     case SYSTEM_FAN_SPEED:
-      text = StringUtils::Format("{}%", m_fanSpeed * 2);
+      text = StringUtils::Format("%i%%", m_fanSpeed * 2);
       break;
     case SYSTEM_CPU_USAGE:
-      text = 100 - static_cast<int>(100.0f * g_application.m_idleThread.GetRelativeUsage());
+      text = StringUtils::Format("%2.0f%%", (1.0f - g_application.m_idleThread.GetRelativeUsage()) * 100.0f);
       break;
   }
   return text;
@@ -201,7 +201,7 @@ bool CSystemGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
           "%i", CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo().iHeight);
       return true;
     case SYSTEM_FPS:
-      value = StringUtils::Format("{:02.2f}", m_fps);
+      value = StringUtils::Format("%02.2f", m_fps);
       return true;
 #ifdef HAS_OPTICAL_DRIVE
     case SYSTEM_DVD_LABEL:
@@ -226,7 +226,7 @@ bool CSystemGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
       value = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().getName();
       return true;
     case SYSTEM_PROFILECOUNT:
-      value = StringUtils::Format("{0}", CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles());
+      value = StringUtils::Format("%zu", CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles());
       return true;
     case SYSTEM_PROFILEAUTOLOGIN:
     {
@@ -299,7 +299,6 @@ bool CSystemGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
 
 bool CSystemGUIInfo::GetInt(int& value, const CGUIListItem *gitem, int contextWindow, const CGUIInfo &info) const
 {
-#if 0
   switch (info.m_info)
   {
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -308,15 +307,31 @@ bool CSystemGUIInfo::GetInt(int& value, const CGUIListItem *gitem, int contextWi
     case SYSTEM_FREE_MEMORY:
     case SYSTEM_USED_MEMORY:
     {
-      KODI::MEMORY::MemoryStatus stat;
-      KODI::MEMORY::GetMemoryStatus(&stat);
-      int memPercentUsed = static_cast<int>(100.0f * (stat.totalPhys - stat.availPhys) / stat.totalPhys + 0.5f);
+      MEMORYSTATUS stat;
+      GlobalMemoryStatus(&stat);
+      int memPercentUsed = static_cast<int>(100.0f * (stat.dwTotalPhys - stat.dwAvailPhys) / stat.dwTotalPhys + 0.5f);
       if (info.m_info == SYSTEM_FREE_MEMORY)
         value = 100 - memPercentUsed;
       else
         value = memPercentUsed;
       return true;
     }
+#ifdef HAS_XBOX_HARDWARE
+    case SYSTEM_FREE_SPACE_C:
+    case SYSTEM_FREE_SPACE_E:
+    case SYSTEM_FREE_SPACE_F:
+    case SYSTEM_FREE_SPACE_G:
+    case SYSTEM_FREE_SPACE_X:
+    case SYSTEM_FREE_SPACE_Y:
+    case SYSTEM_FREE_SPACE_Z:
+    case SYSTEM_USED_SPACE_C:
+    case SYSTEM_USED_SPACE_E:
+    case SYSTEM_USED_SPACE_F:
+    case SYSTEM_USED_SPACE_G:
+    case SYSTEM_USED_SPACE_X:
+    case SYSTEM_USED_SPACE_Y:
+    case SYSTEM_USED_SPACE_Z:
+#endif
     case SYSTEM_FREE_SPACE:
     case SYSTEM_USED_SPACE:
     {
@@ -324,13 +339,12 @@ bool CSystemGUIInfo::GetInt(int& value, const CGUIListItem *gitem, int contextWi
       return true;
     }
     case SYSTEM_CPU_USAGE:
-      value = CServiceBroker::GetCPUInfo()->GetUsedPercentage();
+      value = 100 - static_cast<int>(100.0f * g_application.m_idleThread.GetRelativeUsage());
       return true;
     case SYSTEM_BATTERY_LEVEL:
-      value = CServiceBroker::GetPowerManager().BatteryLevel();
+      value = 0;
       return true;
   }
-#endif
 
   return false;
 }

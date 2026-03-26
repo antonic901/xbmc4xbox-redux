@@ -689,7 +689,7 @@ void CGUIControlFactory::GetInfoLabels(const TiXmlNode* pControlNode,
     {
       if (infoNode->FirstChild())
       {
-        std::string info = StringUtils::Format("$INFO[{}]", infoNode->FirstChild()->Value());
+        std::string info = StringUtils::Format("$INFO[%s]", infoNode->FirstChild()->Value());
         infoLabels.push_back(GUIINFO::CGUIInfoLabel(info, fallback, parentID));
       }
       infoNode = infoNode->NextSibling("info");

@@ -8568,7 +8568,7 @@ void CGUIInfoManager::SplitInfoString(const std::string &infoString, std::vector
     else if (infoString[i] == ')')
     {
       if (!parentheses)
-        CLog::Log(LOGERROR, "unmatched parentheses in {}", infoString);
+        CLog::Log(LOGERROR, "unmatched parentheses in %s", infoString.c_str());
       else if (!--parentheses)
         continue;
     }
@@ -8590,7 +8590,7 @@ void CGUIInfoManager::SplitInfoString(const std::string &infoString, std::vector
   }
 
   if (parentheses)
-    CLog::Log(LOGERROR, "unmatched parentheses in {}", infoString);
+    CLog::Log(LOGERROR, "unmatched parentheses in %s", infoString.c_str());
 
   if (!property.empty())
   {
@@ -9789,7 +9789,7 @@ void CGUIInfoManager::Clear()
 
   // log which ones are used - they should all be gone by now
   for (INFOBOOLTYPE::const_iterator i = m_bools.begin(); i != m_bools.end(); ++i)
-    CLog::Log(LOGDEBUG, "Infobool '{}' still used by {} instances", (*i)->GetExpression(),
+    CLog::Log(LOGDEBUG, "Infobool '%s' still used by %u instances", (*i)->GetExpression().c_str(),
               (unsigned int)i->use_count());
 }
 
@@ -9803,7 +9803,7 @@ int CGUIInfoManager::AddMultiInfo(const CGUIInfo &info)
   m_multiInfo.push_back(info);
   int id = static_cast<int>(m_multiInfo.size()) + MULTI_INFO_START - 1;
   if (id > MULTI_INFO_END)
-    CLog::Log(LOGERROR, "{} - too many multiinfo bool/labels in this skin", __FUNCTION__);
+    CLog::Log(LOGERROR, "%s - too many multiinfo bool/labels in this skin", __FUNCTION__);
   return id;
 }
 

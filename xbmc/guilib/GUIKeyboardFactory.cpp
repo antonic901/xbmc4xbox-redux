@@ -208,11 +208,11 @@ int CGUIKeyboardFactory::ShowAndVerifyPassword(std::string& strPassword, const s
     strHeadingTemp = strHeading;
   else
     strHeadingTemp =
-        StringUtils::Format("{} - {} {}", g_localizeStrings.Get(12326),
+        StringUtils::Format("%s - %i %s", g_localizeStrings.Get(12326).c_str(),
                             CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(
                                 "masterlock.maxretries") -
                                 iRetries,
-                            g_localizeStrings.Get(12343));
+                            g_localizeStrings.Get(12343).c_str());
 
   std::string strUserInput;
   //! @todo GUI Setting to enable disable this feature y/n?

@@ -444,7 +444,7 @@ void CGUISpinControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyr
   {
     if (m_bShowRange)
     {
-      text = StringUtils::Format("{}/{}", m_iValue, m_iEnd);
+      text = StringUtils::Format("%i/%i", m_iValue, m_iEnd);
     }
     else
     {
@@ -458,17 +458,17 @@ void CGUISpinControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyr
     int currentPage = m_currentItem / m_itemsPerPage + 1;
     if (m_currentItem >= m_numItems - m_itemsPerPage)
       currentPage = numPages;
-    text = StringUtils::Format("{}/{}", currentPage, numPages);
+    text = StringUtils::Format("%i/%i", currentPage, numPages);
   }
   else if (m_iType == SPIN_CONTROL_TYPE_FLOAT)
   {
     if (m_bShowRange)
     {
-      text = StringUtils::Format("{:02.2f}/{:02.2f}", m_fValue, m_fEnd);
+      text = StringUtils::Format("%02.2f/%02.2f", m_fValue, m_fEnd);
     }
     else
     {
-      text = StringUtils::Format("{:02.2f}", m_fValue);
+      text = StringUtils::Format("%02.2f", m_fValue);
     }
   }
   else
@@ -477,8 +477,8 @@ void CGUISpinControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyr
     {
       if (m_bShowRange)
       {
-        text = StringUtils::Format("({}/{}) {}", m_iValue + 1, (int)m_vecLabels.size(),
-                                   m_vecLabels[m_iValue]);
+        text = StringUtils::Format("(%i/%i) %s", m_iValue + 1, (int)m_vecLabels.size(),
+                                   m_vecLabels[m_iValue].c_str());
       }
       else
       {
@@ -486,7 +486,7 @@ void CGUISpinControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyr
       }
     }
     else
-      text = StringUtils::Format("?{}?", m_iValue);
+      text = StringUtils::Format("?%i?", m_iValue);
   }
 
   changed |= m_label.SetText(text);
@@ -1009,7 +1009,7 @@ bool CGUISpinControl::HitTest(const CPoint &point) const
 
 std::string CGUISpinControl::GetDescription() const
 {
-  return StringUtils::Format("{}/{}", 1 + GetValue(), GetMaximum());
+  return StringUtils::Format("%i/%i", 1 + GetValue(), GetMaximum());
 }
 
 bool CGUISpinControl::IsFocusedOnUp() const

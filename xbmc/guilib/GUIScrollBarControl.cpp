@@ -330,7 +330,7 @@ void GUIScrollBarControl::SetFromPosition(const CPoint &point)
 
 std::string GUIScrollBarControl::GetDescription() const
 {
-  return StringUtils::Format("{}/{}", m_offset, m_numItems);
+  return StringUtils::Format("%i/%i", m_offset, m_numItems);
 }
 
 bool GUIScrollBarControl::UpdateColors(const CGUIListItem* item)

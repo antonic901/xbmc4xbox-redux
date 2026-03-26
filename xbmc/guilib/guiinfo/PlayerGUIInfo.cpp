@@ -167,7 +167,7 @@ bool CPlayerGUIInfo::InitCurrentItem(CFileItem *item)
 {
   if (item && g_application.m_pPlayer->IsPlaying())
   {
-    CLog::Log(LOGDEBUG, "CPlayerGUIInfo::InitCurrentItem({})", CURL::GetRedacted(item->GetPath()));
+    CLog::Log(LOGDEBUG, "CPlayerGUIInfo::InitCurrentItem(%s)", CURL::GetRedacted(item->GetPath()).c_str());
     m_currentItem = boost::movelib::make_unique<CFileItem>(*item);
   }
   else
@@ -201,11 +201,7 @@ bool CPlayerGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
       return true;
     case PLAYER_VOLUME:
       value =
-#if 0
-          StringUtils::Format("{:2.1f} dB", CAEUtil::PercentToGain(m_appVolume->GetVolumeRatio()));
-#else
-          "";
-#endif
+          StringUtils::Format("%2.1f dB", (float)(g_application.GetVolume(false) + g_application.GetDynamicRangeCompressionLevel()) * 0.01f);
       return true;
     case PLAYER_SUBTITLE_DELAY:
       value = StringUtils::Format("%2.3f s", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay);
@@ -266,8 +262,8 @@ bool CPlayerGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
     {
       float speed = g_application.m_pPlayer->GetPlaySpeed();
       if (speed != 1.0f)
-        value = StringUtils::Format("{} ({}x)",
-                                    GetCurrentPlayTime(static_cast<TIME_FORMAT>(info.GetData1())),
+        value = StringUtils::Format("%s (%ix)",
+                                    GetCurrentPlayTime(static_cast<TIME_FORMAT>(info.GetData1())).c_str(),
                                     static_cast<int>(speed));
       else
         value = GetCurrentPlayTime(TIME_FORMAT_GUESS);
@@ -332,11 +328,7 @@ bool CPlayerGUIInfo::GetInt(int& value, const CGUIListItem *gitem, int contextWi
     // PLAYER_*
     ///////////////////////////////////////////////////////////////////////////////////////////////
     case PLAYER_VOLUME:
-#if 0
-      value = static_cast<int>(m_appVolume->GetVolumePercent());
-#else
-      value = 0;
-#endif
+      value = g_application.GetVolume();
       return true;
     case PLAYER_PROGRESS:
       value = MathUtils::round_int(g_application.GetPercentage());
