@@ -1060,24 +1060,6 @@ void CGUIWindowManager::RenderPass() const
   }
 }
 
-void CGUIWindowManager::RenderEx() const
-{
-  CGUIWindow* pWindow = GetWindow(GetActiveWindow());
-  if (pWindow)
-    pWindow->RenderEx();
-
-  // We don't call RenderEx for now on dialogs since it is used
-  // to trigger non gui video rendering. We can activate it later at any time.
-  /*
-  vector<CGUIWindow *> &activeDialogs = m_activeDialogs;
-  for (iDialog it = activeDialogs.begin(); it != activeDialogs.end(); ++it)
-  {
-    if ((*it)->IsDialogRunning())
-      (*it)->RenderEx();
-  }
-  */
-}
-
 bool CGUIWindowManager::Render()
 {
   assert(g_application.IsCurrentThread());
