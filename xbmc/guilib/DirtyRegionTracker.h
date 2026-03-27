@@ -12,6 +12,8 @@
 
 #if defined(TARGET_DARWIN_EMBEDDED)
 #define DEFAULT_BUFFERING 4
+#elif defined(_XBOX)
+#define DEFAULT_BUFFERING 2
 #else
 #define DEFAULT_BUFFERING 3
 #endif
