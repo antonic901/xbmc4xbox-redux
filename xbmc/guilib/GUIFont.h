@@ -27,6 +27,7 @@
  *
  */
 
+#include "ServiceBroker.h" // for workaround for PAL vs NTSC speeds on xbox
 #include "utils/ColorUtils.h"
 #include "windowing/GraphicContext.h"
 
@@ -78,7 +79,19 @@ public:
               int speed = defaultSpeed,
               const std::string& scrollSuffix = " | ");
 
-  void SetSpeed(int speed) { m_pixelSpeed = speed * 0.001f; }
+  void SetSpeed(int speed)
+  {
+#ifdef _XBOX
+    if (speed == defaultSpeed)
+    {
+      // HACK: workaround for PAL vs NTSC speeds on xbox
+      if (CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution() == RES_PAL_4x3 ||
+          CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution() == RES_PAL_16x9)
+        speed = 50;
+    }
+#endif
+    m_pixelSpeed = speed * 0.001f;
+  }
   void Reset()
   {
     m_waitTime = m_initialWait;

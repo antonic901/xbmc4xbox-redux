@@ -59,7 +59,11 @@ float CScrollInfo::GetPixelsPerFrame()
   if (delta)
     m_averageFrameTime = m_averageFrameTime + (delta - m_averageFrameTime) * alphaEMA;
   // and multiply by pixel speed (per ms) to get number of pixels to move this frame
+#ifdef _XBOX
+  return ROUND(m_pixelSpeed * m_averageFrameTime);
+#else
   return m_pixelSpeed * m_averageFrameTime;
+#endif
 }
 
 CGUIFont::CGUIFont(const std::string& strFontName, uint32_t style, UTILS::COLOR::Color textColor,

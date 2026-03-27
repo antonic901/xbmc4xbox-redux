@@ -210,6 +210,13 @@ bool CGUIWindow::Load(TiXmlElement *pRootElement)
     {
       std::string condition;
       CGUIControlFactory::GetConditionalVisibility(pRootElement, condition);
+#ifdef _XBOX
+      // Check CGUIWindow::ClearAll() for more info
+      if (m_visibleCondition)
+      {
+        m_visibleCondition.reset();
+      }
+#endif
       m_visibleCondition = CServiceBroker::GetGUI()->GetInfoManager().Register(condition, GetID());
     }
     else if (strValue == "animation" && pChild->FirstChild())
@@ -774,7 +781,18 @@ void CGUIWindow::ClearAll()
   CGUIControlGroup::ClearAll();
   m_windowLoaded = false;
   m_dynamicResourceAlloc = true;
+#ifndef _XBOX
+  // Is this bug on Kodi?
+  // If we set LOAD_EVERY_TIME for XBMC dialogs they will be cleared on close.
+  // When clearing m_visibleCondition will be also cleared but it won't be
+  // loaded again because dialog won't be opened because of cleared m_visibleCondition.
+  // See CGUIDialog::UpdateVisibility(). Steps to reproduce:
+  // 1. Set m_loadType of CGUIDialogSeekBar to LOAD_EVERY_TIME
+  // 2. Start video playback and open VideoOSD
+  // 3. Close VideoOSD and open it again and you won't see seek bar
+  // TODO: Check with Team Kodi if we should remove clearing of visible condition
   m_visibleCondition.reset();
+#endif
 }
 
 bool CGUIWindow::Initialize()
