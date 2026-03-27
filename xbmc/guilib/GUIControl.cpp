@@ -44,7 +44,6 @@ CGUIControl::CGUIControl()
   m_pushedUpdates = false;
   m_pulseOnSelect = false;
   m_controlDirtyState = DIRTY_STATE_CONTROL;
-  m_stereo = 0.0f;
   m_controlStats = nullptr;
   m_hitColor = 0xffffffff;
   m_isCulled = true;
@@ -74,7 +73,6 @@ CGUIControl::CGUIControl(int parentID, int controlID, float posX, float posY, fl
   m_pushedUpdates = false;
   m_pulseOnSelect = false;
   m_controlDirtyState = DIRTY_STATE_CONTROL;
-  m_stereo = 0.0f;
   m_controlStats = nullptr;
   m_hitColor = 0xffffffff;
   m_isCulled = true;
@@ -926,9 +924,4 @@ CPoint CGUIControl::GetRenderPosition() const
   if (m_parentControl)
     point += m_parentControl->GetRenderPosition();
   return point;
-}
-
-void CGUIControl::SetStereoFactor(const float &factor)
-{
-  m_stereo = factor;
 }

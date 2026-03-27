@@ -255,11 +255,6 @@ bool CGUIWindow::Load(TiXmlElement *pRootElement)
       m_camera.y = CGUIControlFactory::ParsePosition(pChild->Attribute("y"), static_cast<float>(m_coordsRes.iHeight));
       m_hasCamera = true;
     }
-    else if (strValue == "depth" && pChild->FirstChild())
-    {
-      float stereo = static_cast<float>(atof(pChild->FirstChild()->Value()));
-      m_stereo = std::max(-1.f, std::min(1.f, stereo));
-    }
     else if (strValue == "controls")
     {
       TiXmlElement *pControl = pChild->FirstChildElement();
@@ -971,7 +966,6 @@ void CGUIWindow::SetDefaults()
   m_animations.clear();
   m_origins.clear();
   m_hasCamera = false;
-  m_stereo = 0.f;
   m_animationsEnabled = true;
   m_clearBackground = 0xff000000; // opaque black -> clear
   m_hitRect.SetRect(0, 0, static_cast<float>(m_coordsRes.iWidth), static_cast<float>(m_coordsRes.iHeight));

@@ -782,17 +782,6 @@ bool CVideoGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contextW
       else
         value = false;
       return true;
-#ifndef _XBOX
-    case LISTITEM_IS_STEREOSCOPIC:
-    {
-      std::string stereoMode = item->GetProperty("stereomode").asString();
-      if (stereoMode.empty() && tag)
-        stereoMode = CStereoscopicsManager::NormalizeStereoMode(tag->m_streamDetails.GetStereoMode());
-      if (!stereoMode.empty() && stereoMode != "mono")
-        value = true;
-      return true;
-    }
-#endif
   }
 
   return false;

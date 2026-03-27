@@ -140,7 +140,6 @@ public:
   virtual void SetPosition(float posX, float posY);
   virtual void SetHitRect(const CRect& rect, const UTILS::COLOR::Color& color);
   virtual void SetCamera(const CPoint &camera);
-  virtual void SetStereoFactor(const float &factor);
   bool SetColorDiffuse(const KODI::GUILIB::GUIINFO::CGUIInfoColor &color);
   CPoint GetRenderPosition() const;
   virtual float GetXPosition() const;
@@ -328,7 +327,6 @@ protected:
   std::vector<CAnimation> m_animations;
   CPoint m_camera;
   bool m_hasCamera;
-  float m_stereo;
   TransformMatrix m_transform;
   TransformMatrix m_cachedTransform; // Contains the absolute transform the control
   bool m_isCulled;
