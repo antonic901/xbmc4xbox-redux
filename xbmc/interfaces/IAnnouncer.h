@@ -32,12 +32,11 @@ namespace ANNOUNCEMENT
     AudioLibrary  = 0x020,
     Application   = 0x040,
     Input         = 0x080,
-    PVR           = 0x100,
     Other         = 0x200,
     Info          = 0x400
   };
 
-  #define ANNOUNCE_ALL (Player | Playlist | GUI | System | VideoLibrary | AudioLibrary | Application | Input | ANNOUNCEMENT::PVR | Other)
+  #define ANNOUNCE_ALL (Player | Playlist | GUI | System | VideoLibrary | AudioLibrary | Application | Input | Other)
 
   /*!
     \brief Returns a string representation for the
@@ -65,8 +64,6 @@ namespace ANNOUNCEMENT
       return "Application";
     case Input:
       return "Input";
-    case PVR:
-      return "PVR";
     case Other:
       return "Other";
     default:

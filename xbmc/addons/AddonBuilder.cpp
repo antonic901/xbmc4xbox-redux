@@ -77,7 +77,6 @@ boost::shared_ptr<IAddon> CAddonBuilder::Build()
   // Ensure binary types have a valid library for the platform
   if (type == ADDON_VIZ ||
       type == ADDON_SCREENSAVER ||
-      type == ADDON_PVRDLL ||
       type == ADDON_ADSPDLL ||
       type == ADDON_AUDIOENCODER ||
       type == ADDON_AUDIODECODER ||

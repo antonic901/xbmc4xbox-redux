@@ -36,7 +36,6 @@
 
 #define SETTINGS_SYSTEM                 WINDOW_SETTINGS_SYSTEM - WINDOW_SETTINGS_START
 #define SETTINGS_SERVICE                WINDOW_SETTINGS_SERVICE - WINDOW_SETTINGS_START
-#define SETTINGS_PVR                    WINDOW_SETTINGS_MYPVR - WINDOW_SETTINGS_START
 #define SETTINGS_PLAYER                 WINDOW_SETTINGS_PLAYER - WINDOW_SETTINGS_START
 #define SETTINGS_MEDIA                  WINDOW_SETTINGS_MEDIA - WINDOW_SETTINGS_START
 #define SETTINGS_INTERFACE              WINDOW_SETTINGS_INTERFACE - WINDOW_SETTINGS_START
@@ -50,7 +49,6 @@ typedef struct {
 
 static const SettingGroup s_settingGroupMap[] = { { SETTINGS_SYSTEM,      "system" },
                                                   { SETTINGS_SERVICE,     "services" },
-                                                  { SETTINGS_PVR,         "pvr" },
                                                   { SETTINGS_PLAYER,      "player" },
                                                   { SETTINGS_MEDIA,       "media" },
                                                   { SETTINGS_INTERFACE,   "interface" } };
@@ -69,7 +67,6 @@ CGUIWindowSettingsCategory::CGUIWindowSettingsCategory()
   m_idRange.clear();
   m_idRange.push_back(WINDOW_SETTINGS_SYSTEM);
   m_idRange.push_back(WINDOW_SETTINGS_SERVICE);
-  m_idRange.push_back(WINDOW_SETTINGS_MYPVR);
   m_idRange.push_back(WINDOW_SETTINGS_PLAYER);
   m_idRange.push_back(WINDOW_SETTINGS_MEDIA);
   m_idRange.push_back(WINDOW_SETTINGS_INTERFACE);

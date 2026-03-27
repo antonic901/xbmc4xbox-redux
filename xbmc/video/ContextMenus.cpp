@@ -36,9 +36,6 @@ bool CVideoInfo::IsVisible(const CFileItem& item) const
   if (!item.HasVideoInfoTag())
     return false;
 
-  if (item.IsPVRRecording())
-    return false; // pvr recordings have its own implementation for this
-
   return item.GetVideoInfoTag()->m_type == m_mediaType;
 }
 
@@ -50,9 +47,6 @@ bool CVideoInfo::Execute(const CFileItemPtr& item) const
 
 bool CMarkWatched::IsVisible(const CFileItem& item) const
 {
-  if (item.IsPVRRecording())
-    return false; // pvr recordings have its own implementation for this
-
   if (item.m_bIsFolder) // Only allow video db content and video folders to be updated recursively
   {
     if (item.HasVideoInfoTag())
@@ -74,9 +68,6 @@ bool CMarkWatched::Execute(const CFileItemPtr& item) const
 
 bool CMarkUnWatched::IsVisible(const CFileItem& item) const
 {
-  if (item.IsPVRRecording())
-    return false; // pvr recordings have its own implementation for this
-
   if (item.m_bIsFolder) // Only allow video db content and video folders to be updated recursively
   {
     if (item.HasVideoInfoTag())
@@ -103,9 +94,6 @@ std::string CResume::GetLabel(const CFileItem& item) const
 
 bool CResume::IsVisible(const CFileItem& item) const
 {
-  if (item.IsPVRRecording())
-    return false; // pvr recordings have its own implementation for this
-
   return CGUIWindowVideoBase::HasResumeItemOffset(&item);
 }
 
@@ -143,9 +131,6 @@ bool CPlay::IsVisible(const CFileItem& item) const
 {
   if (item.m_bIsFolder)
     return false; //! @todo implement
-
-  if (item.IsPVRRecording())
-    return false; // pvr recordings have its own implementation for this
 
   return item.IsVideo() || item.IsDVD() || item.IsCDDA();
 }

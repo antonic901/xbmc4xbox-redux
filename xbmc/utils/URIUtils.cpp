@@ -976,15 +976,6 @@ bool URIUtils::IsLiveTV(const CStdString& strFile)
   return false;
 }
 
-bool URIUtils::IsPVRRecording(const CStdString& strFile)
-{
-  CStdString strFileWithoutSlash(strFile);
-  RemoveSlashAtEnd(strFileWithoutSlash);
-
-  return StringUtils::EndsWithNoCase(strFileWithoutSlash, ".pvr") &&
-         PathStarts(strFile, "pvr://recordings");
-}
-
 bool URIUtils::IsMusicDb(const CStdString& strFile)
 {
   return IsProtocol(strFile, "musicdb");

@@ -93,7 +93,6 @@ static const TypeMapping types[] =
    {"xbmc.gui.skin",                     ADDON_SKIN,                  166, "DefaultAddonSkin.png" },
    {"xbmc.webinterface",                 ADDON_WEB_INTERFACE,         199, "DefaultAddonWebSkin.png" },
    {"xbmc.addon.repository",             ADDON_REPOSITORY,          24011, "DefaultAddonRepository.png" },
-   {"xbmc.pvrclient",                    ADDON_PVRDLL,              24019, "DefaultAddonPVRClient.png" },
    {"kodi.peripheral",                   ADDON_PERIPHERALDLL,       35010, "DefaultAddonPeripheral.png" },
    {"xbmc.addon.video",                  ADDON_VIDEO,                1037, "DefaultAddonVideo.png" },
    {"xbmc.addon.audio",                  ADDON_AUDIO,                1038, "DefaultAddonMusic.png" },
@@ -345,8 +344,7 @@ void OnEnabled(const std::string& id)
 {
   // If the addon is a special, call enabled handler
   AddonPtr addon;
-  if (CServiceBroker::GetAddonMgr().GetAddon(id, addon, ADDON_PVRDLL) ||
-      CServiceBroker::GetAddonMgr().GetAddon(id, addon, ADDON_ADSPDLL) ||
+  if (CServiceBroker::GetAddonMgr().GetAddon(id, addon, ADDON_ADSPDLL) ||
       CServiceBroker::GetAddonMgr().GetAddon(id, addon, ADDON_PERIPHERALDLL))
     return addon->OnEnabled();
 
@@ -364,8 +362,7 @@ void OnDisabled(const std::string& id)
 {
 
   AddonPtr addon;
-  if (CServiceBroker::GetAddonMgr().GetAddon(id, addon, ADDON_PVRDLL, false) ||
-      CServiceBroker::GetAddonMgr().GetAddon(id, addon, ADDON_ADSPDLL, false) ||
+  if (CServiceBroker::GetAddonMgr().GetAddon(id, addon, ADDON_ADSPDLL, false) ||
       CServiceBroker::GetAddonMgr().GetAddon(id, addon, ADDON_PERIPHERALDLL, false))
     return addon->OnDisabled();
 

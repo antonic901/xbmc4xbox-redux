@@ -263,7 +263,6 @@ bool CGUIWindowManager::DestroyWindows()
     DestroyWindow(WINDOW_FULLSCREEN_GAME);
 
     Remove(WINDOW_SETTINGS_SERVICE);
-    Remove(WINDOW_SETTINGS_MYPVR);
     Remove(WINDOW_SETTINGS_PLAYER);
     Remove(WINDOW_SETTINGS_MEDIA);
     Remove(WINDOW_SETTINGS_INTERFACE);

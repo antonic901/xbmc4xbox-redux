@@ -495,12 +495,6 @@ bool CSystemGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int context
     case SYSTEM_HASLOCKS:
       value = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE;
       return true;
-    case SYSTEM_HAS_PVR:
-      value = false;
-      return true;
-    case SYSTEM_HAS_PVR_ADDON:
-      value = false;
-      return true;
     case SYSTEM_HAS_CMS:
 #if defined(HAS_GL)
       value = true;

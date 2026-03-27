@@ -545,9 +545,7 @@ bool CAddonsDirectory::GetDirectory(const CURL& url, CFileItemList &items)
     VECADDONS addons;
     ADDON::TYPE type;
 
-    if (path.GetFileName() == "xbmc.pvrclient")
-      type = ADDON_PVRDLL;
-    else if (path.GetFileName() == "kodi.adsp")
+    if (path.GetFileName() == "kodi.adsp")
       type = ADDON_ADSPDLL;
     else
       type = ADDON_UNKNOWN;
