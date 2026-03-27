@@ -344,7 +344,7 @@ bool CGUIPassword::CheckSettingLevelLock(const SettingLevel& level, bool enforce
   if ((int)lockLevel-1 <= (short)CViewStateSettings::GetInstance().GetSettingLevel() &&
      (windowID == WINDOW_SETTINGS_MENU ||
          (windowID >= WINDOW_SCREEN_CALIBRATION &&
-          windowID <= WINDOW_SETTINGS_MYPVR)))
+          windowID <= WINDOW_SETTINGS_SERVICE)))
     return true; //Already unlocked
 
   else if (lockLevel == LOCK_LEVEL::ALL)
@@ -366,7 +366,7 @@ bool CGUIPassword::CheckSettingLevelLock(const SettingLevel& level, bool enforce
 
 bool IsSettingsWindow(int iWindowID)
 {
-  return (iWindowID >= WINDOW_SCREEN_CALIBRATION && iWindowID <= WINDOW_SETTINGS_MYPVR)
+  return (iWindowID >= WINDOW_SCREEN_CALIBRATION && iWindowID <= WINDOW_SETTINGS_SERVICE)
        || iWindowID == WINDOW_SKIN_SETTINGS;
 }
 

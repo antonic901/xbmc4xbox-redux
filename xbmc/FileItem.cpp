@@ -674,11 +674,6 @@ bool CFileItem::IsVideo() const
   return URIUtils::HasExtension(m_strPath, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions);
 }
 
-bool CFileItem::IsPVRRecording() const
-{
-  return false;
-}
-
 bool CFileItem::IsDiscStub() const
 {
   if (IsVideoDb() && HasVideoInfoTag())
@@ -2917,7 +2912,6 @@ bool CFileItem::SkipLocalArt() const
        || IsLibraryFolder()
        || IsParentFolder()
        || IsLiveTV()
-       || IsPVRRecording()
        || IsDVD());
 }
 

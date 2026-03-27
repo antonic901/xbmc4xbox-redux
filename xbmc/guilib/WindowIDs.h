@@ -22,8 +22,6 @@
 #define WINDOW_SETTINGS_SYSTEM            10016
 #define WINDOW_SETTINGS_SERVICE           10018
 
-#define WINDOW_SETTINGS_MYPVR             10021
-
 #define WINDOW_VIDEO_NAV                  10025
 #define WINDOW_VIDEO_PLAYLIST             10028
 
@@ -85,8 +83,6 @@
 #define WINDOW_MUSIC_PLAYLIST             10500
 #define WINDOW_MUSIC_NAV                  10502
 #define WINDOW_MUSIC_PLAYLIST_EDITOR      10503
-
-// PVR related Window and Dialog ID's
 
 //#define WINDOW_VIRTUAL_KEYBOARD           11000
 // WINDOW_ID's from 11100 to 11199 reserved for Skins

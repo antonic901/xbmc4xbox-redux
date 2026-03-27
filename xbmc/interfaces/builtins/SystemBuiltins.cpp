@@ -35,9 +35,6 @@ using namespace KODI::MESSAGING;
   template<int Wait>
 static int Exec(const std::vector<std::string>& params)
 {
-  CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MINIMIZE);
-  CServiceBroker::GetAppMessenger()->PostMsg(TMSG_EXECUTE_OS, Wait, -1, nullptr, params[0]);
-
   return 0;
 }
 
@@ -46,8 +43,6 @@ static int Exec(const std::vector<std::string>& params)
  */
 static int Hibernate(const std::vector<std::string>& params)
 {
-  CServiceBroker::GetAppMessenger()->PostMsg(TMSG_HIBERNATE);
-
   return 0;
 }
 
@@ -57,9 +52,6 @@ static int Hibernate(const std::vector<std::string>& params)
  */
 static int InhibitIdle(const std::vector<std::string>& params)
 {
-  bool inhibit = (params.size() == 1 && StringUtils::EqualsNoCase(params[0], "true"));
-  CServiceBroker::GetAppMessenger()->PostMsg(TMSG_INHIBITIDLESHUTDOWN, inhibit);
-
   return 0;
 }
 
@@ -68,8 +60,6 @@ static int InhibitIdle(const std::vector<std::string>& params)
  */
 static int Minimize(const std::vector<std::string>& params)
 {
-  CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MINIMIZE);
-
   return 0;
 }
 
@@ -148,8 +138,6 @@ static int Shutdown(const std::vector<std::string>& params)
  */
 static int Suspend(const std::vector<std::string>& params)
 {
-  CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SUSPEND);
-
   return 0;
 }
 

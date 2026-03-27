@@ -2532,23 +2532,11 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
 {
   switch (pMsg->dwMessage)
   {
-#ifndef _XBOX
-  case TMSG_POWERDOWN:
-    Stop(EXITCODE_POWERDOWN);
-    g_powerManager.Powerdown();
-    break;
-#endif
-
   case TMSG_QUIT:
-#ifdef _XBOX
     CBuiltins::GetInstance().Execute("XBMC.Dashboard()");
-#else
-    Stop(EXITCODE_QUIT);
-#endif
     break;
 
   case TMSG_SHUTDOWN:
-#ifdef _XBOX
   case TMSG_POWERDOWN:
   {
     g_application.Stop();
@@ -2559,54 +2547,9 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
     while(1){Sleep(0);}
 #endif
   }
-#else
-  {
-    switch (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("powermanagement.shutdownstate"))
-    {
-    case POWERSTATE_SHUTDOWN:
-      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SHUTDOWN);
-      break;
-
-    case POWERSTATE_SUSPEND:
-      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SUSPEND);
-      break;
-
-    case POWERSTATE_HIBERNATE:
-      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_HIBERNATE);
-      break;
-
-    case POWERSTATE_QUIT:
-      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_QUIT);
-      break;
-
-    case POWERSTATE_MINIMIZE:
-      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MINIMIZE);
-      break;
-
-    case TMSG_RENDERER_FLUSH:
-      g_renderManager.Flush();
-      break;
-    }
-  }
-#endif
   break;
-
-  case TMSG_HIBERNATE:
-#ifndef _XBOX
-    g_PVRManager.SetWakeupCommand();
-    g_powerManager.Hibernate();
-#endif
-    break;
-
-  case TMSG_SUSPEND:
-#ifndef _XBOX
-    g_PVRManager.SetWakeupCommand();
-    g_powerManager.Suspend();
-#endif
-    break;
 
   case TMSG_RESTART:
-#ifdef _XBOX
   {
     g_application.Stop();
     Sleep(200);
@@ -2616,9 +2559,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
 #endif
   }
   break;
-#endif
   case TMSG_RESET:
-#ifdef _XBOX
   {
     g_application.Stop();
     Sleep(200);
@@ -2627,29 +2568,15 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
     while(1){Sleep(0);}
 #endif
   }
-#else
-    Stop(EXITCODE_REBOOT);
-    g_powerManager.Reboot();
-#endif
-    break;
+  break;
 
   case TMSG_RESTARTAPP:
-#if defined(TARGET_WINDOWS) || defined(TARGET_LINUX)
-    Stop(EXITCODE_RESTARTAPP);
-#elif defined (_XBOX)
   {
     char szXBEFileName[1024];
 
     CIoSupport::GetXbePath(szXBEFileName);
     LAUNCHERS::CProgramLauncher::LaunchProgram(szXBEFileName);
   }
-#endif
-    break;
-
-  case TMSG_INHIBITIDLESHUTDOWN:
-#ifndef _XBOX
-    InhibitIdleShutdown(pMsg->param1 != 0);
-#endif
     break;
 
   case TMSG_ACTIVATESCREENSAVER:
@@ -2660,34 +2587,6 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
   {
     CAction action(pMsg->param1);
     ShowVolumeBar(&action);
-  }
-  break;
-
-  case TMSG_DISPLAY_SETUP:
-#ifndef _XBOX
-    *static_cast<bool*>(pMsg->lpVoid) = InitWindow();
-    SetRenderGUI(true);
-#endif
-    break;
-
-  case TMSG_DISPLAY_DESTROY:
-#ifndef _XBOX
-    *static_cast<bool*>(pMsg->lpVoid) = DestroyWindow();
-    SetRenderGUI(false);
-#endif
-    break;
-
-  case TMSG_START_ANDROID_ACTIVITY:
-  {
-#if defined(TARGET_ANDROID)
-    if (pMsg->params.size())
-    {
-      CXBMCApp::StartActivity(pMsg->params[0],
-        pMsg->params.size() > 1 ? pMsg->params[1] : "",
-        pMsg->params.size() > 2 ? pMsg->params[2] : "",
-        pMsg->params.size() > 3 ? pMsg->params[3] : "");
-    }
-#endif
   }
   break;
 
@@ -2721,41 +2620,6 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
 
   case TMSG_SETVIDEORESOLUTION:
     CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(static_cast<RESOLUTION>(pMsg->param1), pMsg->strParam == "true" ? TRUE : FALSE, pMsg->param2 == 1);
-    break;
-
-  case TMSG_TOGGLEFULLSCREEN:
-#ifndef _XBOX
-    CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
-    CServiceBroker::GetWinSystem()->GetGfxContext().ToggleFullScreenRoot();
-    CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
-#endif
-    break;
-
-  case TMSG_MINIMIZE:
-#ifndef _XBOX
-    Minimize();
-#endif
-    break;
-
-  case TMSG_EXECUTE_OS:
-#ifndef _XBOX
-    /* Suspend AE temporarily so exclusive or hog-mode sinks */
-    /* don't block external player's access to audio device  */
-    if (!CAEFactory::Suspend())
-    {
-      CLog::Log(LOGNOTICE, "%s: Failed to suspend AudioEngine before launching external program", __FUNCTION__);
-    }
-#if defined( TARGET_POSIX) && !defined(TARGET_DARWIN)
-    CUtil::RunCommandLine(pMsg->strParam.c_str(), (pMsg->param1 == 1));
-#elif defined(TARGET_WINDOWS)
-    CWIN32Util::XBMCShellExecute(pMsg->strParam.c_str(), (pMsg->param1 == 1));
-#endif
-    /* Resume AE processing of XBMC native audio */
-    if (!CAEFactory::Resume())
-    {
-      CLog::Log(LOGFATAL, "%s: Failed to restart AudioEngine after return from external player", __FUNCTION__);
-    }
-#endif
     break;
 
   case TMSG_EXECUTE_SCRIPT:

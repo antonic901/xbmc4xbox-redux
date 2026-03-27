@@ -206,7 +206,6 @@ public:
   bool IsMusicDb() const;
   bool IsProgramDb() const;
   bool IsVideoDb() const;
-  bool IsPVRRecording() const;
   bool IsType(const char *ext) const;
   bool IsVirtualDirectoryRoot() const;
   bool IsReadOnly() const;
