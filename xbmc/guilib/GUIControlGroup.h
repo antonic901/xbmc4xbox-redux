@@ -32,7 +32,6 @@ public:
 
   virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
-  virtual void RenderEx();
   virtual bool OnAction(const CAction &action);
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool SendControlMessage(CGUIMessage& message);
