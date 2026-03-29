@@ -21,7 +21,6 @@
  *
  */
 
-#include "include.h"
 #include "ServiceBroker.h"
 #include "threads/Thread.h"
 #include "threads/CriticalSection.h"
@@ -32,6 +31,7 @@
 
 #include <map>
 #include <queue>
+#include <list>
 
 namespace EVENTCLIENT
 {
