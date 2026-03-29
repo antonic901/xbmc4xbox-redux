@@ -1,58 +1,47 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIDialogFileBrowser.h"
-#include "Util.h"
-#include "utils/URIUtils.h"
-#include "utils/StringUtils.h"
-#include "network/GUIDialogNetworkSetup.h"
-#include "GUIDialogMediaSource.h"
-#include "GUIDialogContextMenu.h"
-#include "storage/DetectDVDType.h"
-#include "storage/MediaManager.h"
-#include "AutoSwitch.h"
-#include "xbox/Network.h"
-#include "GUIPassword.h"
-#include "guilib/GUIComponent.h"
-#include "guilib/GUIWindowManager.h"
+
 #include "Application.h"
-#include "GUIDialogOK.h"
+#include "AutoSwitch.h"
+#include "FileItem.h"
+#include "GUIDialogContextMenu.h"
+#include "GUIDialogMediaSource.h"
 #include "GUIDialogYesNo.h"
-#include "guilib/GUIKeyboardFactory.h"
+#include "GUIPassword.h"
 #include "GUIUserMessages.h"
+#include "ServiceBroker.h"
+#include "URL.h"
+#include "Util.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
-#include "FileItem.h"
 #include "filesystem/MultiPathDirectory.h"
-#include "profiles/ProfilesManager.h"
-#include "settings/MediaSourceSettings.h"
-#include "settings/SettingsComponent.h"
-#include "guilib/WindowIDs.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIKeyboardFactory.h"
+#include "guilib/GUIWindowManager.h"
+#include "guilib/LocalizeStrings.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
-#include "guilib/LocalizeStrings.h"
-#include "utils/log.h"
-#include "URL.h"
-#include "utils/Variant.h"
+#include "messaging/helpers/DialogOKHelper.h"
+#include "network/GUIDialogNetworkSetup.h"
+#include "xbox/Network.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/MediaSourceSettings.h"
+#include "settings/SettingsComponent.h"
+#include "storage/MediaManager.h"
+#include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
+#include "utils/Variant.h"
+#include "utils/log.h"
 
+using namespace KODI::MESSAGING;
 using namespace XFILE;
 
 #define CONTROL_LIST          450
@@ -228,7 +217,7 @@ bool CGUIDialogFileBrowser::OnMessage(CGUIMessage& message)
             Close();
           }
           else
-            CGUIDialogOK::ShowAndGetInput(257, 20072);
+            HELPERS::ShowOKDialogText(257, 20072);
         }
         else
         {
@@ -260,7 +249,7 @@ bool CGUIDialogFileBrowser::OnMessage(CGUIMessage& message)
           if (CDirectory::Create(strPath))
             Update(m_vecItems->GetPath());
           else
-            CGUIDialogOK::ShowAndGetInput(20069, 20072);
+            HELPERS::ShowOKDialogText(20069, 20072);
         }
       }
       else if (message.GetSenderId() == CONTROL_FLIP)
@@ -358,7 +347,8 @@ void CGUIDialogFileBrowser::Update(const std::string &strDirectory)
     {
       strSelectedItem = pItem->GetPath();
       URIUtils::RemoveSlashAtEnd(strSelectedItem);
-      m_history.SetSelectedItem(strSelectedItem, m_Directory->GetPath().empty()?"empty":m_Directory->GetPath());
+      m_history.SetSelectedItem(strSelectedItem,
+                                m_Directory->GetPath().empty() ? "empty" : m_Directory->GetPath());
     }
   }
 
@@ -369,7 +359,8 @@ void CGUIDialogFileBrowser::Update(const std::string &strDirectory)
 
     if (!m_rootDir.GetDirectory(pathToUrl, items, m_useFileDirectories))
     {
-      CLog::Log(LOGERROR,"CGUIDialogFileBrowser::GetDirectory(%s) failed", pathToUrl.GetRedacted().c_str());
+      CLog::Log(LOGERROR, "CGUIDialogFileBrowser::GetDirectory(%s) failed",
+                pathToUrl.GetRedacted().c_str());
 
       // We assume, we can get the parent
       // directory again
@@ -456,7 +447,7 @@ void CGUIDialogFileBrowser::Update(const std::string &strDirectory)
   strSelectedItem = m_history.GetSelectedItem(strPath2==""?"empty":strPath2);
 
   bool bSelectedFound = false;
-  for (int i = 0; i < (int)m_vecItems->Size(); ++i)
+  for (int i = 0; i < m_vecItems->Size(); ++i)
   {
     CFileItemPtr pItem = (*m_vecItems)[i];
     strPath2 = pItem->GetPath();
@@ -531,7 +522,7 @@ void CGUIDialogFileBrowser::FrameMove()
 
 void CGUIDialogFileBrowser::OnClick(int iItem)
 {
-  if ( iItem < 0 || iItem >= (int)m_vecItems->Size() ) return ;
+  if ( iItem < 0 || iItem >= m_vecItems->Size() ) return ;
   CFileItemPtr pItem = (*m_vecItems)[iItem];
   std::string strPath = pItem->GetPath();
 
@@ -572,9 +563,9 @@ bool CGUIDialogFileBrowser::HaveDiscOrConnection( int iDriveType )
   if ( iDriveType == CMediaSource::SOURCE_TYPE_DVD )
   {
     MEDIA_DETECT::CDetectDVDMedia::WaitMediaReady();
-    if ( !MEDIA_DETECT::CDetectDVDMedia::IsDiscInDrive() )
+    if (!MEDIA_DETECT::CDetectDVDMedia::IsDiscInDrive())
     {
-      CGUIDialogOK::ShowAndGetInput(218, 219);
+      HELPERS::ShowOKDialogText(218, 219);
       return false;
     }
   }
@@ -583,7 +574,7 @@ bool CGUIDialogFileBrowser::HaveDiscOrConnection( int iDriveType )
     //! @todo Handle not connected to a remote share
     if ( !g_application.getNetwork().IsEthernetConnected() )
     {
-      CGUIDialogOK::ShowAndGetInput(220, 221);
+      HELPERS::ShowOKDialogText(220, 221);
       return false;
     }
   }
@@ -951,7 +942,7 @@ bool CGUIDialogFileBrowser::OnPopupMenu(int iItem)
       VECSOURCES shares=m_shares;
       if (CGUIDialogNetworkSetup::ShowAndGetNetworkAddress(newPath))
       {
-        CServiceBroker::GetMediaManager().SetLocationPath(strOldPath,newPath);
+        CServiceBroker::GetMediaManager().SetLocationPath(strOldPath, newPath);
         CURL url(newPath);
         for (unsigned int i=0;i<shares.size();++i)
         {

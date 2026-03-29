@@ -1,24 +1,12 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
 
 #include "GUIDialogBoxBase.h"
 #include "IProgressCallback.h"
@@ -31,15 +19,22 @@ public:
   CGUIDialogProgress(void);
   virtual ~CGUIDialogProgress(void);
 
+  void Reset();
   void Open(const std::string &param = "");
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnBack(int actionID);
   virtual void OnWindowLoaded();
   void Progress();
-  bool IsCanceled() const { return m_bCanceled; }
+  bool IsCanceled() const { return m_iChoice == CHOICE_CANCELED; }
   void SetPercentage(int iPercentage);
-  int GetPercentage() const { return m_percentage; };
+  int GetPercentage() const { return m_percentage; }
   void ShowProgressBar(bool bOnOff);
+
+  void ShowChoice(int iChoice, const CVariant& label);
+
+  static const int CHOICE_NONE = -2;
+  static const int CHOICE_CANCELED = -1;
+  int GetChoice() const;
 
   /*! \brief Wait for the progress dialog to be closed or canceled, while regularly
    rendering to allow for pointer movement or progress to be shown. Used when showing
@@ -70,13 +65,15 @@ protected:
   virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
 
   bool m_bCanCancel;
-  bool m_bCanceled;
 
   int  m_iCurrent;
   int  m_iMax;
   int m_percentage;
   bool m_showProgress;
 
+  bool m_supportedChoices[DIALOG_MAX_CHOICES];
+  int m_iChoice;
+
 private:
-  void Reset();
+  void UpdateControls();
 };

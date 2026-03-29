@@ -8,12 +8,10 @@
 
 #pragma once
 
-#include "guilib/GUIDialog.h"
-
-class CGUIDialogPlayerControls :
-      public CGUIDialog
+class IRunnable
 {
 public:
-  CGUIDialogPlayerControls(void);
-  virtual ~CGUIDialogPlayerControls(void);
+  virtual void Run()=0;
+  virtual void Cancel() {}
+  virtual ~IRunnable() {};
 };

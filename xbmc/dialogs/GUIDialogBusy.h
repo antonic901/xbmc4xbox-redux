@@ -1,45 +1,25 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
+#pragma once
+
 #include "guilib/GUIDialog.h"
+
+#include <stdint.h>
 
 class IRunnable;
 class CEvent;
 
-class CGUIDialogBusy: public CGUIDialog
+class CGUIDialogBusy : private CGUIDialog
 {
+  friend class CGUIWindowManager;
+
 public:
-  CGUIDialogBusy(void);
-  virtual ~CGUIDialogBusy(void);
-  virtual bool OnBack(int actionID);
-  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions);
-  virtual void Render();
-  /*! \brief set the current progress of the busy operation
-   \param progress a percentage of progress
-   */
-  void SetProgress(float progress);
-
-  bool IsCanceled() { return m_bCanceled; }
-
   /*! \brief Wait for a runnable to execute off-thread.
    Creates a thread to run the given runnable, and while waiting
    it displays the busy dialog.
@@ -58,9 +38,17 @@ public:
    \return true if the event completed, false if cancelled.
    */
   static bool WaitOnEvent(CEvent &event, unsigned int displaytime = 100, bool allowCancel = true, bool isFromDvdPlayer = false);
-protected:
-  virtual void Open_Internal(const std::string &param = "");
-  bool m_bCanceled;
+
+private:
+  CGUIDialogBusy();
+  virtual ~CGUIDialogBusy();
+
+  virtual void Open_Internal(bool bProcessRenderLoop, const std::string& param = "");
+  virtual bool OnBack(int actionID);
+  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList& dirtyregions);
+  virtual void Render();
+
   bool m_bLastVisible;
-  float m_progress; ///< current progress
+  bool m_cancelled;
+  uint32_t m_waiters;
 };

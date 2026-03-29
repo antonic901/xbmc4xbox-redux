@@ -25,6 +25,7 @@
 #include "messaging/ApplicationMessenger.h"
 #include "LangInfo.h"
 #include "utils/CharsetConverter.h"
+#include "filesystem/File.h"
 
 #include "defs_from_settings.h"
 

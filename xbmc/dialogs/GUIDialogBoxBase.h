@@ -1,29 +1,17 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <vector>
+#pragma once
 
 #include "guilib/GUIDialog.h"
 #include "threads/CriticalSection.h"
+
+#include <vector>
 
 #define CONTROL_CHOICES_START  10
 #define CONTROL_NO_BUTTON      CONTROL_CHOICES_START
@@ -44,15 +32,17 @@ public:
   virtual ~CGUIDialogBoxBase(void);
   virtual bool OnMessage(CGUIMessage& message);
   bool IsConfirmed() const;
-  void SetLine(unsigned int iLine, CVariant line);
-  void SetText(CVariant text);
-  void SetHeading(CVariant heading);
+  void SetLine(unsigned int iLine, const CVariant& line);
+  void SetText(const CVariant& text);
+  bool HasText() const;
+  void SetHeading(const CVariant& heading);
+  bool HasHeading() const;
   void SetChoice(int iButton, const CVariant &choice);
 protected:
   std::string GetDefaultLabel(int controlId) const;
   virtual int GetDefaultLabelID(int controlId) const;
   /*! \brief Get a localized string from a variant
-   If the varaint is already a string we return directly, else if it's an integer we return the corresponding
+   If the variant is already a string we return directly, else if it's an integer we return the corresponding
    localized string.
    \param var the variant to localize.
    */
@@ -66,7 +56,7 @@ protected:
   bool m_hasTextbox;
 
   // actual strings
-  CCriticalSection m_section;
+  mutable CCriticalSection m_section;
   std::string m_strHeading;
   std::string m_text;
   std::string m_strChoices[DIALOG_MAX_CHOICES];

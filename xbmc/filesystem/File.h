@@ -42,13 +42,6 @@ namespace XFILE
 using ::XUTILS::auto_buffer;
 class IFile;
 
-class IFileCallback
-{
-public:
-  virtual bool OnFileCallback(void* pContext, int ipercent, float avgSpeed) = 0;
-  virtual ~IFileCallback() {};
-};
-
 class CFileStreamBuffer;
 
 class CFile

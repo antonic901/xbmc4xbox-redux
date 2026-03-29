@@ -82,4 +82,10 @@ enum CURLOPTIONTYPE
   CURL_OPTION_HEADER      /**< Add a Header           */
 };
 
+class IFileCallback
+{
+public:
+  virtual bool OnFileCallback(void* pContext, int ipercent, float avgSpeed) = 0;
+  virtual ~IFileCallback() {}
+};
 }

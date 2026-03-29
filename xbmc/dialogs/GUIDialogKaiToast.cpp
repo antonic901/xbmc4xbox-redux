@@ -1,24 +1,15 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIDialogKaiToast.h"
+
+#include "ServiceBroker.h"
+#include "guilib/GUIFadeLabelControl.h"
 #include "guilib/GUIMessage.h"
 #include "threads/SingleLock.h"
 #include "utils/TimeUtils.h"
@@ -39,9 +30,7 @@ CGUIDialogKaiToast::CGUIDialogKaiToast(void)
   m_toastMessageTime = 0;
 }
 
-CGUIDialogKaiToast::~CGUIDialogKaiToast(void)
-{
-}
+CGUIDialogKaiToast::~CGUIDialogKaiToast(void) {}
 
 bool CGUIDialogKaiToast::OnMessage(CGUIMessage& message)
 {
@@ -82,6 +71,14 @@ void CGUIDialogKaiToast::AddToQueue(const std::string& aImageFile, const eMessag
 {
   CSingleLock lock(m_critical);
 
+  if (!m_notifications.empty())
+  {
+    const CGUIDialogKaiToast::Notification &last = m_notifications.back();
+    if (last.eType == eType && last.imagefile == aImageFile && last.caption == aCaption &&
+        last.description == aDescription)
+      return; // avoid duplicates in a row.
+  }
+
   Notification toast;
   toast.eType = eType;
   toast.imagefile = aImageFile;
@@ -101,9 +98,16 @@ bool CGUIDialogKaiToast::DoWork()
   if (!m_notifications.empty() &&
       CTimeUtils::GetFrameTime() - m_timer > m_toastMessageTime)
   {
+    // if we have a fade label control for the text to display, ensure the whole text was shown
+    // (scrolled to the end) before we move on to the next message
+    const CGUIFadeLabelControl* notificationText =
+        dynamic_cast<const CGUIFadeLabelControl*>(GetControl(POPUP_NOTIFICATION_BUTTON));
+    if (notificationText && !notificationText->AllLabelsShown())
+      return false;
+
     Notification toast = m_notifications.front();
     m_notifications.pop();
-    lock.Leave();
+    lock.unlock();
 
     m_toastDisplayTime = toast.displayTime;
     m_toastMessageTime = toast.messageTime;
@@ -156,7 +160,22 @@ void CGUIDialogKaiToast::FrameMove()
 
   // now check if we should exit
   if (CTimeUtils::GetFrameTime() - m_timer > m_toastDisplayTime)
-    Close();
+  {
+    bool bClose = true;
+
+    // if we have a fade label control for the text to display, ensure the whole text was shown
+    // (scrolled to the end) before we're closing the toast dialog
+    const CGUIFadeLabelControl* notificationText =
+        dynamic_cast<const CGUIFadeLabelControl*>(GetControl(POPUP_NOTIFICATION_BUTTON));
+    if (notificationText)
+    {
+      CSingleLock lock(m_critical);
+      bClose = notificationText->AllLabelsShown() && m_notifications.empty();
+    }
+
+    if (bClose)
+      Close();
+  }
 
   CGUIDialog::FrameMove();
 }

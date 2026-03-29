@@ -12,24 +12,25 @@
 #include "GUIInfoManager.h"
 #include "SeekHandler.h"
 #include "guilib/GUIComponent.h"
+#include "guilib/GUIMessage.h"
 #include "guilib/guiinfo/GUIInfoLabels.h"
 
-#include <math.h>
+#include <cmath>
 
 #define POPUP_SEEK_PROGRESS           401
 
 CGUIDialogSeekBar::CGUIDialogSeekBar(void)
   : CGUIDialog(WINDOW_DIALOG_SEEK_BAR, "DialogSeekBar.xml", MODELESS)
-  , m_lastProgress(0)
 {
   m_loadType = LOAD_ON_GUI_INIT;    // the application class handles our resources
+  m_lastProgress = 0;
 }
 
-CGUIDialogSeekBar::~CGUIDialogSeekBar(void) {};
+CGUIDialogSeekBar::~CGUIDialogSeekBar(void) {}
 
 bool CGUIDialogSeekBar::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
   case GUI_MSG_WINDOW_INIT:
   case GUI_MSG_WINDOW_DEINIT:

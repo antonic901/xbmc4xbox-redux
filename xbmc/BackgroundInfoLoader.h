@@ -23,6 +23,7 @@
 #include "threads/Thread.h"
 #include "IProgressCallback.h"
 #include "threads/CriticalSection.h"
+#include "threads/IRunnable.h"
 
 #include <vector>
 #include <boost/shared_ptr.hpp>
