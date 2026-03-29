@@ -1,24 +1,12 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
 
 #include "guilib/GUIDialog.h"
 
@@ -29,14 +17,21 @@ public:
   CGUIDialogTextViewer(void);
   virtual ~CGUIDialogTextViewer(void);
   virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
   void SetText(const std::string& strText) { m_strText = strText; }
   void SetHeading(const std::string& strHeading) { m_strHeading = strHeading; }
+  void UseMonoFont(bool use);
+
+  //! \brief Load a file into memory and show in dialog.
+  //! \param path Path to file
+  //! \param useMonoFont True to use monospace font
+  static void ShowForFile(const std::string& path, bool useMonoFont);
 protected:
   virtual void OnDeinitWindow(int nextWindowID);
+  virtual bool OnAction(const CAction &action);
 
   std::string m_strText;
   std::string m_strHeading;
+  bool m_mono;
 
   void SetText();
   void SetHeading();

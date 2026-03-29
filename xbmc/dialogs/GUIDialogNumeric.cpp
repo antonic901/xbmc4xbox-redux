@@ -1,43 +1,30 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIDialogNumeric.h"
 
-#include <cassert>
-
-#include "guilib/GUILabelControl.h"
-#include "utils/md5.h"
+#include "ServiceBroker.h"
+#include "XBDateTime.h"
 #include "guilib/GUIComponent.h"
+#include "guilib/GUILabelControl.h"
 #include "guilib/GUIWindowManager.h"
-#include "GUIDialogOK.h"
+#include "guilib/LocalizeStrings.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
 #include "input/keyboard/KeyIDs.h"
 #include "input/keyboard/XBMC_vkeys.h"
+#include "interfaces/AnnouncementManager.h"
+#include "messaging/helpers/DialogOKHelper.h"
+#include "utils/Digest.h"
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
-#include "guilib/WindowIDs.h"
-#include "input/actions/Action.h"
-#include "input/actions/ActionIDs.h"
-#include "guilib/LocalizeStrings.h"
-#include "interfaces/AnnouncementManager.h"
+
+#include <cassert>
 
 #define CONTROL_HEADING_LABEL  1
 #define CONTROL_INPUT_LABEL    4
@@ -48,23 +35,21 @@
 #define CONTROL_NEXT          22
 #define CONTROL_BACKSPACE     23
 
+using namespace KODI::MESSAGING;
+using KODI::UTILITY::CDigest;
 
 CGUIDialogNumeric::CGUIDialogNumeric(void)
-  : CGUIDialog(WINDOW_DIALOG_NUMERIC, "DialogNumeric.xml")
-  , m_bConfirmed(false)
-  , m_bCanceled(false)
-  , m_mode(INPUT_PASSWORD)
-  , m_block(0)
-  , m_lastblock(0)
-  , m_dirty(false)
+  : CGUIDialog(WINDOW_DIALOG_NUMERIC, "DialogNumeric.xml"), m_block(0), m_lastblock(0)
 {
   memset(&m_datetime, 0, sizeof(SYSTEMTIME));
   m_loadType = KEEP_IN_MEMORY;
+  m_bConfirmed = false;
+  m_bCanceled = false;
+  m_mode = INPUT_PASSWORD;
+  m_dirty = false;
 }
 
-CGUIDialogNumeric::~CGUIDialogNumeric(void)
-{
-}
+CGUIDialogNumeric::~CGUIDialogNumeric(void) {}
 
 void CGUIDialogNumeric::OnInitWindow()
 {
@@ -101,6 +86,7 @@ void CGUIDialogNumeric::OnInitWindow()
     data["title"] = control->GetDescription();
 
   data["value"] = GetOutputString();
+
   CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::Input, "xbmc", "OnInputRequested", data);
 }
 
@@ -124,7 +110,7 @@ bool CGUIDialogNumeric::OnAction(const CAction &action)
     OnOK();
   else if (action.GetID() >= REMOTE_0 && action.GetID() <= REMOTE_9)
     OnNumber(action.GetID() - REMOTE_0);
-  else if (action.GetID() >= KEY_VKEY && action.GetID() < KEY_ASCII)
+  else if (action.GetID() >= KEY_VKEY && action.GetID() < KEY_UNICODE)
   {
     // input from the keyboard (vkey, not ascii)
     uint8_t b = action.GetID() & 0xFF;
@@ -139,7 +125,7 @@ bool CGUIDialogNumeric::OnAction(const CAction &action)
     else if (b == XBMCVK_ESCAPE)
       OnCancel();
   }
-  else if (action.GetID() >= KEY_ASCII) // FIXME make it KEY_UNICODE
+  else if (action.GetID() == KEY_UNICODE)
   { // input from the keyboard
     if (action.GetUnicode() == 10 || action.GetUnicode() == 13)
       OnOK(); // enter
@@ -337,13 +323,15 @@ void CGUIDialogNumeric::FrameMove()
   }
   else if (m_mode == INPUT_TIME_SECONDS)
   { // format up the time
-    strLabel = StringUtils::Format("%2d:%02d:%02d", m_datetime.wHour, m_datetime.wMinute, m_datetime.wSecond);
+    strLabel = StringUtils::Format("%2d:%02d:%02d", m_datetime.wHour, m_datetime.wMinute,
+                                   m_datetime.wSecond);
     start = m_block * 3;
     end = m_block * 3 + 2;
   }
   else if (m_mode == INPUT_DATE)
   { // format up the date
-    strLabel = StringUtils::Format("%2d/%2d/%4d", m_datetime.wDay, m_datetime.wMonth, m_datetime.wYear);
+    strLabel =
+        StringUtils::Format("%2d/%2d/%4d", m_datetime.wDay, m_datetime.wMonth, m_datetime.wYear);
     start = m_block * 3;
     end = m_block * 3 + 2;
     if (m_block == 2)
@@ -389,7 +377,7 @@ void CGUIDialogNumeric::OnNumber(uint32_t num)
   }
 }
 
-void CGUIDialogNumeric::SetMode(INPUT_MODE mode, const SYSTEMTIME &initial)
+void CGUIDialogNumeric::SetMode(INPUT_MODE mode, const SYSTEMTIME& initial)
 {
   m_mode = mode;
   m_block = 0;
@@ -470,11 +458,13 @@ std::string CGUIDialogNumeric::GetOutputString() const
   switch (m_mode)
   {
   case INPUT_DATE:
-    return StringUtils::Format("%02i/%02i/%04i", m_datetime.wDay, m_datetime.wMonth, m_datetime.wYear);
+    return StringUtils::Format("%02i/%02i/%04i", m_datetime.wDay, m_datetime.wMonth,
+                               m_datetime.wYear);
   case INPUT_TIME:
     return StringUtils::Format("%i:%02i", m_datetime.wHour, m_datetime.wMinute);
   case INPUT_TIME_SECONDS:
-    return StringUtils::Format("%i:%02i:%02i", m_datetime.wHour, m_datetime.wMinute, m_datetime.wSecond);
+    return StringUtils::Format("%i:%02i:%02i", m_datetime.wHour, m_datetime.wMinute,
+                               m_datetime.wSecond);
   case INPUT_IP_ADDRESS:
     return StringUtils::Format("%d.%d.%d.%d", m_ip[0], m_ip[1], m_ip[2], m_ip[3]);
   case INPUT_NUMBER:
@@ -488,7 +478,7 @@ std::string CGUIDialogNumeric::GetOutputString() const
 
 bool CGUIDialogNumeric::ShowAndGetSeconds(std::string &timeString, const std::string &heading)
 {
-  CGUIDialogNumeric *pDialog = (CGUIDialogNumeric *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_NUMERIC);
+  CGUIDialogNumeric *pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(WINDOW_DIALOG_NUMERIC);
   if (!pDialog) return false;
   int seconds = StringUtils::TimeStringToSeconds(timeString);
   SYSTEMTIME time = {0};
@@ -506,9 +496,9 @@ bool CGUIDialogNumeric::ShowAndGetSeconds(std::string &timeString, const std::st
   return true;
 }
 
-bool CGUIDialogNumeric::ShowAndGetTime(SYSTEMTIME &time, const std::string &heading)
+bool CGUIDialogNumeric::ShowAndGetTime(SYSTEMTIME& time, const std::string& heading)
 {
-  CGUIDialogNumeric *pDialog = (CGUIDialogNumeric *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_NUMERIC);
+  CGUIDialogNumeric *pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(WINDOW_DIALOG_NUMERIC);
   if (!pDialog) return false;
   pDialog->SetMode(INPUT_TIME, time);
   pDialog->SetHeading(heading);
@@ -519,9 +509,9 @@ bool CGUIDialogNumeric::ShowAndGetTime(SYSTEMTIME &time, const std::string &head
   return true;
 }
 
-bool CGUIDialogNumeric::ShowAndGetDate(SYSTEMTIME &date, const std::string &heading)
+bool CGUIDialogNumeric::ShowAndGetDate(SYSTEMTIME& date, const std::string& heading)
 {
-  CGUIDialogNumeric *pDialog = (CGUIDialogNumeric *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_NUMERIC);
+  CGUIDialogNumeric *pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(WINDOW_DIALOG_NUMERIC);
   if (!pDialog) return false;
   pDialog->SetMode(INPUT_DATE, date);
   pDialog->SetHeading(heading);
@@ -534,7 +524,7 @@ bool CGUIDialogNumeric::ShowAndGetDate(SYSTEMTIME &date, const std::string &head
 
 bool CGUIDialogNumeric::ShowAndGetIPAddress(std::string &IPAddress, const std::string &heading)
 {
-  CGUIDialogNumeric *pDialog = (CGUIDialogNumeric *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_NUMERIC);
+  CGUIDialogNumeric *pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(WINDOW_DIALOG_NUMERIC);
   if (!pDialog) return false;
   pDialog->SetMode(INPUT_IP_ADDRESS, IPAddress);
   pDialog->SetHeading(heading);
@@ -545,13 +535,16 @@ bool CGUIDialogNumeric::ShowAndGetIPAddress(std::string &IPAddress, const std::s
   return true;
 }
 
-bool CGUIDialogNumeric::ShowAndGetNumber(std::string& strInput, const std::string &strHeading, unsigned int iAutoCloseTimeoutMs /* = 0 */)
+bool CGUIDialogNumeric::ShowAndGetNumber(std::string& strInput, const std::string &strHeading, unsigned int iAutoCloseTimeoutMs /* = 0 */, bool bSetHidden /* = false */)
 {
   // Prompt user for password input
-  CGUIDialogNumeric *pDialog = (CGUIDialogNumeric *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_NUMERIC);
+  CGUIDialogNumeric *pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(WINDOW_DIALOG_NUMERIC);
   pDialog->SetHeading( strHeading );
 
-  pDialog->SetMode(INPUT_NUMBER, strInput);
+  if (bSetHidden)
+    pDialog->SetMode(INPUT_PASSWORD, strInput);
+  else
+    pDialog->SetMode(INPUT_NUMBER, strInput);
   if (iAutoCloseTimeoutMs)
     pDialog->SetAutoClose(iAutoCloseTimeoutMs);
 
@@ -570,10 +563,14 @@ bool CGUIDialogNumeric::ShowAndVerifyNewPassword(std::string& strNewPassword)
 {
   // Prompt user for password input
   std::string strUserInput;
-  if (!ShowAndVerifyInput(strUserInput, g_localizeStrings.Get(12340), false))
+  InputVerificationResult::VerificationResult ret = ShowAndVerifyInput(strUserInput, g_localizeStrings.Get(12340), false);
+  if (ret != InputVerificationResult::SUCCESS)
   {
-    // Show error to user saying the password entry was blank
-    CGUIDialogOK::ShowAndGetInput(12357, 12358); // Password is empty/blank
+    if (ret == InputVerificationResult::FAILED)
+    {
+      // Show error to user saying the password entry was blank
+      HELPERS::ShowOKDialogText(12357, 12358); // Password is empty/blank
+    }
     return false;
   }
 
@@ -582,10 +579,14 @@ bool CGUIDialogNumeric::ShowAndVerifyNewPassword(std::string& strNewPassword)
     return false;
 
   // Prompt again for password input, this time sending previous input as the password to verify
-  if (!ShowAndVerifyInput(strUserInput, g_localizeStrings.Get(12341), true))
+  ret = ShowAndVerifyInput(strUserInput, g_localizeStrings.Get(12341), true);
+  if (ret != InputVerificationResult::SUCCESS)
   {
-    // Show error to user saying the password re-entry failed
-    CGUIDialogOK::ShowAndGetInput(12357, 12344); // Password do not match
+    if (ret == InputVerificationResult::FAILED)
+    {
+      // Show error to user saying the password re-entry failed
+      HELPERS::ShowOKDialogText(12357, 12344); // Password do not match
+    }
     return false;
   }
 
@@ -602,16 +603,22 @@ bool CGUIDialogNumeric::ShowAndVerifyNewPassword(std::string& strNewPassword)
 int CGUIDialogNumeric::ShowAndVerifyPassword(std::string& strPassword, const std::string& strHeading, int iRetries)
 {
   std::string strTempHeading = strHeading;
-  if (0 < iRetries)
+  if (iRetries > 0)
   {
     // Show a string telling user they have iRetries retries left
-    strTempHeading = StringUtils::Format("%s. %s %i %s", strHeading.c_str(), g_localizeStrings.Get(12342).c_str(), iRetries, g_localizeStrings.Get(12343).c_str());
+    strTempHeading = StringUtils::Format("%s. %s %i %s", strHeading.c_str(), g_localizeStrings.Get(12342).c_str(),
+                                         iRetries, g_localizeStrings.Get(12343).c_str());
   }
+
   // make a copy of strPassword to prevent from overwriting it later
   std::string strPassTemp = strPassword;
-  if (ShowAndVerifyInput(strPassTemp, strTempHeading, true))
+  InputVerificationResult::VerificationResult ret = ShowAndVerifyInput(strPassTemp, strTempHeading, true);
+  if (ret == InputVerificationResult::SUCCESS)
     return 0;   // user entered correct password
-  if (strPassTemp.empty()) return -1;   // user canceled out
+
+  if (ret == InputVerificationResult::CANCELED)
+    return -1;   // user canceled out
+
   return 1; // user must have entered an incorrect password
 }
 
@@ -619,16 +626,17 @@ int CGUIDialogNumeric::ShowAndVerifyPassword(std::string& strPassword, const std
 // \param strToVerify Value to compare against user input.
 // \param dlgHeading String shown on dialog title.
 // \param bVerifyInput If set as true we verify the users input versus strToVerify.
-// \return true if successful display and user input. false if unsuccessful display, no user input, or canceled editing.
-bool CGUIDialogNumeric::ShowAndVerifyInput(std::string& strToVerify, const std::string& dlgHeading, bool bVerifyInput)
+// \return the result of the check (success, failed, or canceled by user).
+InputVerificationResult::VerificationResult CGUIDialogNumeric::ShowAndVerifyInput(std::string& strToVerify, const std::string& dlgHeading, bool bVerifyInput)
 {
   // Prompt user for password input
-  CGUIDialogNumeric *pDialog = (CGUIDialogNumeric *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_NUMERIC);
-  pDialog->SetHeading( dlgHeading );
+  CGUIDialogNumeric *pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(WINDOW_DIALOG_NUMERIC);
+  pDialog->SetHeading(dlgHeading);
 
   std::string strInput;
   if (!bVerifyInput)
     strInput = strToVerify;
+
   pDialog->SetMode(INPUT_PASSWORD, strInput);
   pDialog->Open();
 
@@ -637,24 +645,19 @@ bool CGUIDialogNumeric::ShowAndVerifyInput(std::string& strToVerify, const std::
   if (!pDialog->IsConfirmed() || pDialog->IsCanceled())
   {
     // user canceled out
-    strToVerify ="";
-    return false;
+    strToVerify = "";
+    return InputVerificationResult::CANCELED;
   }
 
-  std::string md5pword2 = XBMC::XBMC_MD5::GetMD5(strInput);
+  const std::string md5pword2 = CDigest::Calculate(CDigest::Type::MD5, strInput);
 
   if (!bVerifyInput)
   {
     strToVerify = md5pword2;
-    StringUtils::ToLower(strToVerify);
-    return true;
+    return InputVerificationResult::SUCCESS;
   }
 
-  if (StringUtils::EqualsNoCase(strToVerify, md5pword2))
-    return true;  // entered correct password
-
-  // incorrect password
-  return false;
+  return StringUtils::EqualsNoCase(strToVerify, md5pword2) ? InputVerificationResult::SUCCESS : InputVerificationResult::FAILED;
 }
 
 bool CGUIDialogNumeric::IsConfirmed() const
@@ -684,17 +687,18 @@ void CGUIDialogNumeric::VerifyDate(bool checkYear)
   // check for number of days in the month
   if (m_datetime.wDay == 31)
   {
-    if (m_datetime.wMonth == 4 || m_datetime.wMonth == 6 || m_datetime.wMonth == 9 || m_datetime.wMonth == 11)
+    if (m_datetime.wMonth == 4 || m_datetime.wMonth == 6 || m_datetime.wMonth == 9 ||
+        m_datetime.wMonth == 11)
       m_datetime.wDay = 30;
   }
   if (m_datetime.wMonth == 2 && m_datetime.wDay > 28)
   {
-    m_datetime.wDay = 29;   // max in february.
+    m_datetime.wDay = 29; // max in february.
     if (checkYear)
     {
       // leap years occur when the year is divisible by 4 but not by 100, or the year is divisible by 400
       // thus they don't occur, if the year has a remainder when divided by 4, or when the year is divisible by 100 but not by 400
-      if ( (m_datetime.wYear % 4) || ( !(m_datetime.wYear % 100) && (m_datetime.wYear % 400) ) )
+      if ((m_datetime.wYear % 4) || (!(m_datetime.wYear % 100) && (m_datetime.wYear % 400)))
         m_datetime.wDay = 28;
     }
   }
@@ -776,7 +780,7 @@ void CGUIDialogNumeric::HandleInputDate(uint32_t num)
   }
   else // year
   {
-    if (m_dirty && m_datetime.wYear < 1000)  // have taken input
+    if (m_dirty && m_datetime.wYear < 1000) // have taken input
     {
       m_datetime.wYear *= 10;
       m_datetime.wYear += num;

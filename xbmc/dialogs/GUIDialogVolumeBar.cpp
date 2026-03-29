@@ -1,26 +1,15 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIDialogVolumeBar.h"
+
 #include "Application.h"
-#include "guilib/WindowIDs.h"
+#include "guilib/GUIMessage.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
 
@@ -32,30 +21,30 @@ CGUIDialogVolumeBar::CGUIDialogVolumeBar(void)
   m_loadType = LOAD_ON_GUI_INIT;
 }
 
-CGUIDialogVolumeBar::~CGUIDialogVolumeBar(void)
-{}
+CGUIDialogVolumeBar::~CGUIDialogVolumeBar(void) {}
 
 bool CGUIDialogVolumeBar::OnAction(const CAction &action)
 {
   if (action.GetID() == ACTION_VOLUME_UP || action.GetID() == ACTION_VOLUME_DOWN || action.GetID() == ACTION_VOLUME_SET || action.GetID() == ACTION_MUTE)
   {
-    if (g_application.IsMuted() || g_application.GetVolume(false) <= VOLUME_MINIMUM)
+    if (g_application.IsMuted() ||
+        g_application.GetVolume(false) <= VOLUME_MINIMUM)
     { // cancel the timer, dialog needs to stay visible
       CancelAutoClose();
-      return true;
     }
     else
     { // reset the timer, as we've changed the volume level
       SetAutoClose(VOLUME_BAR_DISPLAY_TIME);
-      return true;
     }
+    MarkDirtyRegion();
+    return true;
   }
   return CGUIDialog::OnAction(action);
 }
 
 bool CGUIDialogVolumeBar::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
   case GUI_MSG_WINDOW_INIT:
   case GUI_MSG_WINDOW_DEINIT:

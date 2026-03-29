@@ -53,6 +53,7 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "guilib/LocalizeStrings.h"
+#include "threads/IRunnable.h"
 #include "threads/Thread.h"
 #include "utils/StringUtils.h"
 #include "utils/log.h"

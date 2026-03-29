@@ -67,14 +67,14 @@ CGUIDialogContextMenu::CGUIDialogContextMenu(void)
 {
   m_clickedButton = -1;
   m_backgroundImageSize = 0;
-  m_initiallyFocusedButtonIdx = 0;
   m_loadType = KEEP_IN_MEMORY;
   m_coordX = 0.0f;
   m_coordY = 0.0f;
+  m_initiallyFocusedButtonIdx = 0;
   m_backgroundImage = NULL;
 }
 
-CGUIDialogContextMenu::~CGUIDialogContextMenu(void) {};
+CGUIDialogContextMenu::~CGUIDialogContextMenu(void) {}
 
 bool CGUIDialogContextMenu::OnMessage(CGUIMessage &message)
 {
@@ -440,7 +440,7 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
       // password entry and re-entry succeeded, write out the lock data
       share->m_iHasLock = LOCK_STATE_LOCKED;
       CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "lockcode", strNewPassword);
-      strNewPassword = StringUtils::Format("%i", share->m_iLockMode);
+      strNewPassword = std::to_string(share->m_iLockMode);
       CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "lockmode", strNewPassword);
       CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "badpwdcount", "0");
       CMediaSourceSettings::GetInstance().Save();

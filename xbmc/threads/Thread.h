@@ -35,14 +35,6 @@
 #include <mach/mach.h>
 #endif
 
-class IRunnable
-{
-public:
-  virtual void Run()=0;
-  virtual void Cancel() {};
-  virtual ~IRunnable() {}
-};
-
 #ifdef _XBOX
 #undef GetCurrentThread
 #endif
@@ -51,6 +43,8 @@ public:
 #define THREAD_MINSTACKSIZE 0x10000
 
 namespace XbmcThreads { class ThreadSettings; }
+
+class IRunnable;
 
 class CThread
 {

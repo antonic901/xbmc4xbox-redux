@@ -1,57 +1,43 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "threads/SystemClock.h"
 #include "GUIDialogCache.h"
-#include "messaging/ApplicationMessenger.h"
+
+#include "ServiceBroker.h"
+#include "dialogs/GUIDialogProgress.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
-#include "dialogs/GUIDialogProgress.h"
 #include "guilib/LocalizeStrings.h"
-#include "utils/log.h"
-#include "threads/SingleLock.h"
+#include "messaging/ApplicationMessenger.h"
+#include "threads/SystemClock.h"
 #include "utils/Variant.h"
+#include "utils/log.h"
 
-extern "C" void mplayer_exit_player(void);
-
-using namespace KODI::MESSAGING;
-
-CGUIDialogCache::CGUIDialogCache(DWORD dwDelay, const std::string& strHeader, const std::string& strMsg) : CThread("GUIDialogCache"),
-  m_strHeader(strHeader),
-  m_strLinePrev(strMsg)
+CGUIDialogCache::CGUIDialogCache(unsigned int delay,
+                                 const std::string& strHeader,
+                                 const std::string& strMsg)
+  : CThread("GUIDialogCache"), m_strHeader(strHeader), m_strLinePrev(strMsg)
 {
   bSentCancel = false;
 
-  m_pDlg = (CGUIDialogProgress*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRESS);
+  m_pDlg = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
 
   if (!m_pDlg)
     return;
 
   /* if progress dialog is already running, take it over */
   if( m_pDlg->IsDialogRunning() )
-    dwDelay = 0;
+    delay = 0;
 
-  if(dwDelay == 0)
+  if (delay == 0)
     OpenDialog();
   else
-    m_endtime.Set((unsigned int)dwDelay);
+    m_endtime.Set(delay);
 
   Create(true);
 }
@@ -63,7 +49,8 @@ void CGUIDialogCache::Close(bool bForceClose)
   // we cannot wait for the app thread to process the close message
   // as this might happen during player startup which leads to a deadlock
   if (m_pDlg && m_pDlg->IsDialogRunning())
-    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_GUI_WINDOW_CLOSE, -1, bForceClose ? 1 : 0, static_cast<void*>(m_pDlg));
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_GUI_WINDOW_CLOSE, -1, bForceClose ? 1 : 0,
+                                               static_cast<void*>(m_pDlg));
 
   //Set stop, this will kill this object, when thread stops
   CThread::m_bStop = true;
@@ -144,16 +131,13 @@ void CGUIDialogCache::Process()
         m_pDlg->Progress();
         if( bSentCancel )
         {
-          Sleep(10);
+          CThread::Sleep(10);
           continue;
         }
 
         if(m_pDlg->IsCanceled())
         {
           bSentCancel = true;
-#ifdef _XBOX
-          mplayer_exit_player(); 
-#endif
         }
         else if( !m_pDlg->IsDialogRunning() && m_endtime.IsTimePast()
               && !CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_YES_NO) )
@@ -165,7 +149,7 @@ void CGUIDialogCache::Process()
       }
     }
 
-    Sleep(10);
+    CThread::Sleep(10);
   }
 }
 
