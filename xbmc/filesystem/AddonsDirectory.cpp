@@ -55,7 +55,6 @@ CAddonsDirectory::~CAddonsDirectory(void) {}
 
 const char* CATEGORY_INFO_PROVIDERS = "category.infoproviders";
 const char* CATEGORY_LOOK_AND_FEEL = "category.lookandfeel";
-const char* CATEGORY_GAME_ADDONS = "category.gameaddons";
 
 std::set<TYPE> createDependencyTypes() {
   std::set<TYPE> types;
@@ -90,13 +89,6 @@ std::set<TYPE> createLookAndFeelTypes() {
 }
 const std::set<TYPE> lookAndFeelTypes = createLookAndFeelTypes();
 
-std::set<TYPE> createGameTypes() {
-  std::set<TYPE> types;
-  types.insert(ADDON_GAME_CONTROLLER);
-  return types;
-}
-const std::set<TYPE> gameTypes = createGameTypes();
-
 static bool IsInfoProviderType(TYPE type)
 {
   return infoProviderTypes.find(type) != infoProviderTypes.end();
@@ -115,16 +107,6 @@ static bool IsLookAndFeelType(TYPE type)
 static bool IsLookAndFeelTypeAddon(const AddonPtr& addon)
 {
   return IsLookAndFeelType(addon->Type());
-}
-
-static bool IsGameType(TYPE type)
-{
-  return gameTypes.find(type) != gameTypes.end();
-}
-
-static bool IsGameAddon(const AddonPtr& addon)
-{
-  return IsGameType(addon->Type());
 }
 
 static bool IsDependecyType(TYPE type)
@@ -208,16 +190,6 @@ static void GenerateMainCategoryListing(const CURL& path, const VECADDONS& addon
       item->SetArt("thumb", thumb);
     items.Add(item);
   }
-  if (boost::algorithm::any_of(addons, IsGameAddon))
-  {
-    CFileItemPtr item(new CFileItem(g_localizeStrings.Get(35049))); // Game add-ons
-    item->SetPath(URIUtils::AddFileToFolder(path.Get(), CATEGORY_GAME_ADDONS));
-    item->m_bIsFolder = true;
-    const std::string thumb = "DefaultGameAddons.png";
-    if (CServiceBroker::GetGUI()->GetTextureManager().HasTexture(thumb))
-      item->SetArt("thumb", thumb);
-    items.Add(item);
-  }
 
   std::set<TYPE> uncategorized;
   for (unsigned int i = ADDON_UNKNOWN + 1; i < ADDON_MAX - 1; ++i)
@@ -247,12 +219,6 @@ static void GenerateCategoryListing(const CURL& path, VECADDONS& addons,
     items.SetProperty("addoncategory", g_localizeStrings.Get(24997));
     items.SetLabel(g_localizeStrings.Get(24997));
     GenerateTypeListing(path, lookAndFeelTypes, addons, items);
-  }
-  else if (category == CATEGORY_GAME_ADDONS)
-  {
-    items.SetProperty("addoncategory", g_localizeStrings.Get(35049)); // Game add-ons
-    items.SetLabel(g_localizeStrings.Get(35049)); // Game add-ons
-    GenerateTypeListing(path, gameTypes, addons, items);
   }
   else
   { // fallback to addon type
@@ -542,19 +508,6 @@ bool CAddonsDirectory::GetDirectory(const CURL& url, CFileItemList &items)
   // PVR & adsp hardcodes this view so keep for compatibility
   else if (endpoint == "disabled")
   {
-    VECADDONS addons;
-    ADDON::TYPE type;
-
-    if (path.GetFileName() == "kodi.adsp")
-      type = ADDON_ADSPDLL;
-    else
-      type = ADDON_UNKNOWN;
-
-    if (type != ADDON_UNKNOWN && CServiceBroker::GetAddonMgr().GetInstalledAddons(addons, type))
-    {
-      CAddonsDirectory::GenerateAddonListing(path, addons, items, TranslateType(type, true));
-      return true;
-    }
     return false;
   }
   else if (endpoint == "outdated")

@@ -76,12 +76,7 @@ boost::shared_ptr<IAddon> CAddonBuilder::Build()
 
   // Ensure binary types have a valid library for the platform
   if (type == ADDON_VIZ ||
-      type == ADDON_SCREENSAVER ||
-      type == ADDON_ADSPDLL ||
-      type == ADDON_AUDIOENCODER ||
-      type == ADDON_AUDIODECODER ||
-      type == ADDON_INPUTSTREAM ||
-      type == ADDON_PERIPHERALDLL)
+      type == ADDON_SCREENSAVER)
   {
     std::string value = CServiceBroker::GetAddonMgr().GetPlatformLibraryName(m_extPoint->plugin->extensions->configuration);
     if (value.empty())
