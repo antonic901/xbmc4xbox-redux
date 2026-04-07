@@ -5091,6 +5091,8 @@ void CApplication::ProcessSlow()
   if(UPNP::CUPnP::IsInstantiated())
     UPNP::CUPnP::GetInstance()->UpdateState();
 
+  CServiceBroker::GetGUI()->GetWindowManager().SendMessage(GUI_MSG_REFRESH_TIMER,0,0);
+
   //Check to see if current playing Title has changed and whether we should broadcast the fact
   CheckForTitleChange();
 }

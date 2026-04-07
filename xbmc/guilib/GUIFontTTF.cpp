@@ -87,7 +87,7 @@ public:
       FT_Done_FreeType(m_library);
   }
 
-  FT_Face GetFont(const CStdString &filename, float size, float aspect)
+  FT_Face GetFont(const std::string &filename, float size, float aspect)
   {
     // don't have it yet - create it
     if (!m_library)
@@ -119,7 +119,7 @@ public:
 
     return face;
   };
-  
+
   FT_Stroker GetStroker()
   {
     if (!m_library)
@@ -137,7 +137,7 @@ public:
     assert(face);
     FT_Done_Face(face);
   };
-  
+
   void ReleaseStroker(FT_Stroker stroker)
   {
     assert(stroker);
@@ -150,7 +150,7 @@ private:
 
 CFreeTypeLibrary g_freeTypeLibrary; // our freetype library
 
-CGUIFontTTF::CGUIFontTTF(const CStdString& strFileName)
+CGUIFontTTF::CGUIFontTTF(const std::string& strFileName)
 {
   m_texture = NULL;
   m_char = NULL;
@@ -223,7 +223,7 @@ void CGUIFontTTF::Clear()
   m_stroker = NULL;
 }
 
-bool CGUIFontTTF::Load(const CStdString& strFilename, float height, float aspect, float lineSpacing, bool border)
+bool CGUIFontTTF::Load(const std::string& strFilename, float height, float aspect, float lineSpacing, bool border)
 {
   // create our character texture + font shader
   m_pD3DDevice = CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice();
@@ -308,7 +308,7 @@ bool CGUIFontTTF::Load(const CStdString& strFilename, float height, float aspect
   return true;
 }
 
-void CGUIFontTTF::DrawTextInternal(float x, float y, const vecColors &colors, const vecText &text, uint32_t alignment, float maxPixelWidth, bool scrolling)
+void CGUIFontTTF::DrawTextInternal(float x, float y, const std::vector<UTILS::COLOR::Color>& colors, const vecText &text, uint32_t alignment, float maxPixelWidth, bool scrolling)
 {
   if (text.empty())
   {
@@ -933,7 +933,7 @@ void CGUIFontTTF::EmboldenGlyph(FT_GlyphSlot slot)
   slot->metrics.vertAdvance  += dy;
 }
 
-// Lighten code - original taken from freetype2 (ftsynth.c)  
+// Lighten code - original taken from freetype2 (ftsynth.c)
 void CGUIFontTTF::LightenGlyph(FT_GlyphSlot slot)
 {
   if (slot->format != FT_GLYPH_FORMAT_OUTLINE)
@@ -945,7 +945,7 @@ void CGUIFontTTF::LightenGlyph(FT_GlyphSlot slot)
 
   FT_BBox bbox_before, bbox_after;
   FT_Outline_Get_CBox(&slot->outline, &bbox_before);
-  FT_Outline_Embolden(&slot->outline, strength);  // ignore error  
+  FT_Outline_Embolden(&slot->outline, strength);  // ignore error
   FT_Outline_Get_CBox(&slot->outline, &bbox_after);
 
   FT_Pos dx = bbox_after.xMax - bbox_before.xMax;
