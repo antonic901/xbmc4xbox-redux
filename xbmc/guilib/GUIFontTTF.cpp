@@ -321,6 +321,9 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const std::vector<UTILS::CO
   m_originX = x;
   m_originY = y;
 
+  // Define the width of ellipses of three chars "..."
+  const float ellipsesWidth = 3 * m_ellipsesWidth;
+
   // Check if we will really need to truncate or justify the text
   if ( alignment & XBFONT_TRUNCATED )
   {
@@ -337,7 +340,12 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const std::vector<UTILS::CO
   float startX = 0;
   float startY = (alignment & XBFONT_CENTER_Y) ? -0.5f*m_cellHeight : 0;  // vertical centering
 
-  if ( alignment & (XBFONT_RIGHT | XBFONT_CENTER_X) )
+  // Defines whether ellipses are to be added at the beginning for right-aligned text
+  bool isBeginWithEllipses = false;
+  // Defines the index position where start rendering glyphs
+  size_t startPosGlyph = 0;
+
+  if (alignment & XBFONT_CENTER_X)
   {
     // Get the extent of this line
     float w = GetTextWidthInternal( text.begin(), text.end() );
@@ -349,6 +357,34 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const std::vector<UTILS::CO
       w *= 0.5f;
     // Offset this line's starting position
     startX -= w;
+  }
+  else if (alignment & XBFONT_RIGHT)
+  {
+    // We need to determine the point at which to stop rendering glyphs starting from the left,
+    // if "truncated" flag is set then we need to take in account ellipses before the text
+    float textWidth = 0;
+    if (alignment & XBFONT_TRUNCATED)
+    {
+      textWidth = ellipsesWidth;
+      isBeginWithEllipses = true;
+    }
+    // We need to iterate from the end to the beginning
+    for (vecText::const_reverse_iterator pos = text.rbegin(); pos != text.rend(); ++pos)
+    {
+      Character* ch =
+          GetCharacter(*pos);
+      if (!ch)
+        continue;
+
+      textWidth += ch->advance;
+
+      if (textWidth > maxPixelWidth)
+      {
+        // Start rendering from the glyph that does not exceed the maximum width
+        startPosGlyph = std::distance(pos, text.rend());
+        break;
+      }
+    }
   }
 
   float spacePerLetter = 0; // for justification effects
@@ -377,9 +413,14 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const std::vector<UTILS::CO
   std::queue<Character> characters;
   if (alignment & XBFONT_TRUNCATED)
     GetCharacter(L'.');
-  for (vecText::const_iterator pos = text.begin(); pos != text.end(); ++pos)
+
+  if (isBeginWithEllipses) // for right aligned text only
+    cursorX += ellipsesWidth;
+
+  for (vecText::const_iterator pos = text.begin() + startPosGlyph; pos != text.end(); ++pos)
   {
-    Character *ch = GetCharacter(*pos);
+    Character* ch =
+        GetCharacter(*pos);
     if (!ch)
     {
       Character null = { 0 };
@@ -388,14 +429,25 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const std::vector<UTILS::CO
     }
     characters.push(*ch);
 
-    if (maxPixelWidth > 0 &&
-        cursorX + (alignment & XBFONT_TRUNCATED ? ch->advance + 3 * m_ellipsesWidth : 0) > maxPixelWidth)
-      break;
+    if (maxPixelWidth > 0)
+    {
+      float nextCursorX = cursorX;
+
+      if (alignment & XBFONT_TRUNCATED)
+      {
+        nextCursorX += ch->advance;
+        if (!isBeginWithEllipses) // for left aligned text only
+          nextCursorX += ellipsesWidth;
+      }
+      if (nextCursorX > maxPixelWidth)
+        break;
+    }
+
     cursorX += ch->advance;
   }
   cursorX = 0;
 
-  for (vecText::const_iterator pos = text.begin(); pos != text.end(); pos++)
+  for (vecText::const_iterator pos = text.begin() + startPosGlyph; pos != text.end(); ++pos)
   {
     // If starting text on a new line, determine justification effects
     // Get the current letter in the CStdString
@@ -414,21 +466,42 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const std::vector<UTILS::CO
 
     if ( alignment & XBFONT_TRUNCATED )
     {
-      // Check if we will be exceeded the max allowed width
-      if ( cursorX + ch->advance + 3 * m_ellipsesWidth > maxPixelWidth )
+      if (alignment & XBFONT_RIGHT)
       {
-        // Yup. Let's draw the ellipses, then bail
-        // Perhaps we should really bail to the next line in this case??
-        Character *period = GetCharacter(L'.');
-        if (!period)
-          break;
-
-        for (int i = 0; i < 3; i++)
+        if (isBeginWithEllipses)
         {
-          RenderCharacter(startX + cursorX, startY, period, color, !scrolling);
-          cursorX += period->advance;
+          isBeginWithEllipses = false;
+          Character* period = GetCharacter(L'.');
+          if (!period)
+            break;
+
+          for (int i = 0; i < 3; i++)
+          {
+            RenderCharacter(startX + cursorX, startY, period, color, !scrolling);
+            cursorX += period->advance;
+          }
         }
-        break;
+        if (maxPixelWidth > 0 && cursorX > maxPixelWidth)
+          break; // exceeded max allowed width - stop rendering
+      }
+      else
+      {
+        // Check if we will be exceeded the max allowed width
+        if (cursorX + ch->advance + ellipsesWidth > maxPixelWidth)
+        {
+          // Yup. Let's draw the ellipses, then bail
+          // Perhaps we should really bail to the next line in this case??
+          Character* period = GetCharacter(L'.');
+          if (!period)
+            break;
+
+          for (int i = 0; i < 3; i++)
+          {
+            RenderCharacter(startX + cursorX, startY, period, color, !scrolling);
+            cursorX += period->advance;
+          }
+          break;
+        }
       }
     }
     else if (maxPixelWidth > 0 && cursorX > maxPixelWidth)
