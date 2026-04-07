@@ -25,9 +25,10 @@
 
 #include "Application.h"
 #include "FileItem.h"
-#include "windowing/GraphicContext.h"
-#include "guilib/LocalizeStrings.h"
 #include "ServiceBroker.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIWindowManager.h"
+#include "guilib/LocalizeStrings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
@@ -36,10 +37,12 @@
 #include "utils/MathUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
+#include "windowing/GraphicContext.h"
 
 CSeekHandler::CSeekHandler()
 : m_seekDelay(500),
   m_requireSeek(false),
+  m_seekChanged(false),
   m_analogSeek(false),
   m_seekSize(0),
   m_seekStep(0)
@@ -181,7 +184,7 @@ void CSeekHandler::Seek(bool forward, float amount, float duration /* = 0 */, bo
       Reset();
     }
   }
-
+  m_seekChanged = true;
   m_timer.StartZero();
 }
 
@@ -219,12 +222,20 @@ void CSeekHandler::FrameMove()
     // perform relative seek
     g_application.m_pPlayer->SeekTimeRelative(static_cast<int64_t>(m_seekSize * 1000));
 
+    m_seekChanged = true;
+
     Reset();
   }
 
   if (m_timeCodePosition > 0 && m_timerTimeCode.GetElapsedMilliseconds() >= 2500)
   {
     m_timeCodePosition = 0;
+  }
+
+  if (m_seekChanged)
+  {
+    m_seekChanged = false;
+    CServiceBroker::GetGUI()->GetWindowManager().SendMessage(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_STATE_CHANGED);
   }
 }
 

@@ -27,6 +27,15 @@
  *
  */
 
+#include "GUIFont.h"
+#include "utils/ColorUtils.h"
+#include "utils/Geometry.h"
+#include "windowing/GraphicContext.h" // DirectX related stuff
+
+#include <stdint.h>
+#include <string>
+#include <vector>
+
 // forward definition
 struct FT_FaceRec_;
 struct FT_LibraryRec_;
@@ -40,9 +49,7 @@ typedef struct FT_BitmapGlyphRec_ *FT_BitmapGlyph;
 typedef struct FT_StrokerRec_ *FT_Stroker;
 
 typedef uint32_t character_t;
-typedef uint32_t color_t;
 typedef std::vector<character_t> vecText;
-typedef std::vector<color_t> vecColors;
 
 /*!
  \ingroup textures
@@ -60,17 +67,17 @@ class CGUIFontTTF
   };
 public:
 
-  CGUIFontTTF(const CStdString& strFileName);
+  CGUIFontTTF(const std::string& strFileName);
   virtual ~CGUIFontTTF(void);
 
   void Clear();
 
-  bool Load(const CStdString& strFilename, float height = 20.0f, float aspect = 1.0f, float lineSpacing = 1.0f, bool border = false);
+  bool Load(const std::string& strFilename, float height = 20.0f, float aspect = 1.0f, float lineSpacing = 1.0f, bool border = false);
 
   void Begin();
   void End();
 
-  const CStdString& GetFileName() const { return m_strFileName; };
+  const std::string& GetFileName() const { return m_strFileName; };
   void CopyReferenceCountFrom(CGUIFontTTF& ttf) { m_referenceCount = ttf.m_referenceCount; }
 
 protected:
@@ -84,11 +91,11 @@ protected:
   float GetLineHeight(float lineSpacing) const;
   float GetFontHeight() const { return m_height; }
 
-  void DrawTextInternal(float x, float y, const vecColors &colors, const vecText &text,
+  void DrawTextInternal(float x, float y, const std::vector<UTILS::COLOR::Color>& colors, const vecText &text,
                             uint32_t alignment, float maxPixelWidth, bool scrolling);
 
   float m_height;
-  CStdString m_strFilename;
+  std::string m_strFilename;
 
   // Stuff for pre-rendering for speed
   inline Character *GetCharacter(character_t letter);
@@ -136,7 +143,7 @@ protected:
   static int justification_word_weight;
   static unsigned int max_texture_size;
 
-  CStdString m_strFileName;
+  std::string m_strFileName;
 
   DWORD m_numCharactersRendered;
 
