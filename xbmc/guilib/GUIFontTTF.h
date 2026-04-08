@@ -64,6 +64,7 @@ class CGUIFontTTF
     float left, top, right, bottom;
     float advance;
     DWORD letterAndStyle;
+    wchar_t letter;
   };
 public:
 
@@ -148,6 +149,8 @@ protected:
   DWORD m_numCharactersRendered;
 
 private:
+  float GetTabSpaceLength();
+
   int m_referenceCount;
 };
 

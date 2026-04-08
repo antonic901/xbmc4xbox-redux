@@ -75,6 +75,7 @@ unsigned int CGUIFontTTF::max_texture_size = 4096;         // max texture size -
 
 namespace
 {
+#define TAB_SPACE_LENGTH 4
 
 // \brief Check for conflicting alignments
 void ValidateAlignments(uint32_t& aligns)
@@ -530,6 +531,15 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const std::vector<UTILS::CO
       continue;
     }
 
+    if ((*pos & 0xffff) == static_cast<character_t>('\t'))
+    {
+      const float tabwidth = GetTabSpaceLength();
+      const float a = cursorX / tabwidth;
+      cursorX += tabwidth - ((a - floorf(a)) * tabwidth);
+      characters.pop();
+      continue;
+    }
+
     if ( alignment & XBFONT_TRUNCATED )
     {
       // Check if we will be exceeded the max allowed width
@@ -588,7 +598,13 @@ float CGUIFontTTF::GetTextWidthInternal(vecText::const_iterator start, vecText::
   while (start != end)
   {
     Character *c = GetCharacter(*start++);
-    if (c) width += c->advance;
+    if (c)
+    {
+      if ((c->letter & 0xffff) == static_cast<character_t>('\t'))
+        width += GetTabSpaceLength();
+      else
+        width += c->advance;
+    }
   }
   return width;
 }
@@ -596,7 +612,13 @@ float CGUIFontTTF::GetTextWidthInternal(vecText::const_iterator start, vecText::
 float CGUIFontTTF::GetCharWidthInternal(character_t ch)
 {
   Character *c = GetCharacter(ch);
-  if (c) return c->advance;
+  if (c)
+  {
+    if ((c->letter & 0xffff) == static_cast<character_t>('\t'))
+      return GetTabSpaceLength();
+    else
+      return c->advance;
+  }
   return 0;
 }
 
@@ -808,6 +830,7 @@ bool CGUIFontTTF::CacheCharacter(wchar_t letter, uint32_t style, Character *ch)
 
   // set the character in our table
   ch->letterAndStyle = (style << 16) | letter;
+  ch->letter = letter;
   ch->offsetX = (short)bitGlyph->left;
   ch->offsetY = (short)m_cellBaseLine - bitGlyph->top;
   ch->left = (float)m_posX + ch->offsetX;
@@ -1095,4 +1118,10 @@ void CGUIFontTTF::LightenGlyph(FT_GlyphSlot slot)
   slot->metrics.vertBearingX -= dx / 2;
   slot->metrics.vertBearingY += dy;
   slot->metrics.vertAdvance += dy;
+}
+
+float CGUIFontTTF::GetTabSpaceLength()
+{
+  const Character* c = GetCharacter(static_cast<character_t>('X'));
+  return c ? c->advance * TAB_SPACE_LENGTH : 28.0f * TAB_SPACE_LENGTH; 
 }
