@@ -73,6 +73,40 @@ int CGUIFontTTF::justification_word_weight = 6;   // weight of word spacing over
 
 unsigned int CGUIFontTTF::max_texture_size = 4096;         // max texture size - 4096 for xbox
 
+namespace
+{
+
+// \brief Check for conflicting alignments
+void ValidateAlignments(uint32_t& aligns)
+{
+  // Validate the horizontal alignment (XBFONT_LEFT is implicit unless otherwise specified)
+  {
+    const uint32_t hAligns = XBFONT_RIGHT | XBFONT_CENTER_X | XBFONT_JUSTIFIED;
+    const uint32_t commonFlags = hAligns & aligns;
+    // Check if at least 2 bits are set, it means multiple aligns
+    if ((commonFlags & (commonFlags - 1)) != 0)
+    {
+      CLog::Log(LOGERROR, "Text with invalid multiple horizontal alignments");
+      aligns &= ~commonFlags;
+    }
+  }
+
+  // Validate truncate alignment
+  {
+    const uint32_t truncateAligns = XBFONT_TRUNCATED | XBFONT_TRUNCATED_LEFT;
+    const uint32_t commonFlags = truncateAligns & aligns;
+    // Check if at least 2 bits are set, it means multiple aligns
+    if ((commonFlags & (commonFlags - 1)) != 0)
+    {
+      CLog::Log(LOGERROR, "Text with invalid multiple truncate alignments");
+      aligns &= ~commonFlags;
+      aligns |= XBFONT_TRUNCATED;
+    }
+  }
+}
+
+} /* namespace */
+
 class CFreeTypeLibrary
 {
 public:
@@ -317,6 +351,13 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const std::vector<UTILS::CO
 
   Begin();
 
+  // Try to validate any conflicting alignments
+  //! @todo: This validate is the last resort and can result in a bad rendered text
+  //! because the alignment it is used also by caller components for other operations
+  //! this inform the problem on the log, potentially can be improved
+  //! by add validating alignments from each parent caller component
+  ValidateAlignments(alignment);
+
   // save the origin, which is scaled separately
   m_originX = x;
   m_originY = y;
@@ -330,6 +371,11 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const std::vector<UTILS::CO
     if ( maxPixelWidth <= 0.0f || GetTextWidthInternal(text.begin(), text.end()) <= maxPixelWidth)
       alignment &= ~XBFONT_TRUNCATED;
   }
+  else if (alignment & XBFONT_TRUNCATED_LEFT)
+  {
+    if (maxPixelWidth <= 0.0f || GetTextWidthInternal(text.begin(), text.end()) <= maxPixelWidth)
+      alignment &= ~XBFONT_TRUNCATED_LEFT;
+  }
   else if ( alignment & XBFONT_JUSTIFIED )
   {
     if ( maxPixelWidth <= 0.0f )
@@ -340,51 +386,74 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const std::vector<UTILS::CO
   float startX = 0;
   float startY = (alignment & XBFONT_CENTER_Y) ? -0.5f*m_cellHeight : 0;  // vertical centering
 
-  // Defines whether ellipses are to be added at the beginning for right-aligned text
-  bool isBeginWithEllipses = false;
-  // Defines the index position where start rendering glyphs
-  size_t startPosGlyph = 0;
+  size_t startPosGlyph = 0; // Defines the index position where start rendering glyphs
+  float textWidth = 0; // The text width, by taking in account truncate (and ellipses)
 
-  if (alignment & XBFONT_CENTER_X)
+  if (alignment & XBFONT_TRUNCATED_LEFT)
   {
-    // Get the extent of this line
-    float w = GetTextWidthInternal( text.begin(), text.end() );
+    // To truncate to the left, we skip all characters that exceed the maximum width,
+    // so the rendering starts from the first character that falls within the maximum width,
+    // taking into account also the ellipses
+    textWidth = ellipsesWidth;
 
-    if ( alignment & XBFONT_TRUNCATED && w > maxPixelWidth + 0.5f ) // + 0.5f due to rounding issues
-      w = maxPixelWidth;
-
-    if ( alignment & XBFONT_CENTER_X)
-      w *= 0.5f;
-    // Offset this line's starting position
-    startX -= w;
-  }
-  else if (alignment & XBFONT_RIGHT)
-  {
-    // We need to determine the point at which to stop rendering glyphs starting from the left,
-    // if "truncated" flag is set then we need to take in account ellipses before the text
-    float textWidth = 0;
-    if (alignment & XBFONT_TRUNCATED)
-    {
-      textWidth = ellipsesWidth;
-      isBeginWithEllipses = true;
-    }
     // We need to iterate from the end to the beginning
     for (vecText::const_reverse_iterator pos = text.rbegin(); pos != text.rend(); ++pos)
     {
-      Character* ch =
-          GetCharacter(*pos);
-      if (!ch)
+      const character_t ch = *pos;
+      Character* c = GetCharacter(ch);
+      if (!c)
         continue;
 
-      textWidth += ch->advance;
+      float nextWidth;
+      if ((ch & 0xffff) == static_cast<character_t>('\t'))
+        nextWidth = GetTabSpaceLength();
+      else
+        nextWidth = textWidth + c->advance;
 
-      if (textWidth > maxPixelWidth)
+      if (nextWidth > maxPixelWidth)
       {
         // Start rendering from the glyph that does not exceed the maximum width
         startPosGlyph = std::distance(pos, text.rend());
         break;
       }
+      textWidth = nextWidth;
     }
+  }
+  else
+  {
+    // Calculates the text width based on the characters that can be contained within the maximum width
+    if (alignment & XBFONT_TRUNCATED)
+      textWidth = ellipsesWidth;
+
+    for (vecText::const_iterator pos = text.begin(); pos != text.end(); ++pos)
+    {
+      const character_t ch = *pos;
+      Character* c = GetCharacter(ch);
+      if (!c)
+        continue;
+
+      float nextWidth;
+      if ((ch & 0xffff) == static_cast<character_t>('\t'))
+        nextWidth = GetTabSpaceLength();
+      else
+        nextWidth = textWidth + c->advance;
+
+      if (nextWidth > maxPixelWidth)
+        break;
+
+      textWidth = nextWidth;
+    }
+  }
+
+  if (alignment & XBFONT_RIGHT)
+  {
+    // Moves the x pos with the purpose of having the text effect aligned to the right
+    startX += maxPixelWidth - textWidth;
+  }
+  else if (alignment & XBFONT_CENTER_X)
+  {
+    textWidth *= 0.5f;
+    startX -= textWidth;
   }
 
   float spacePerLetter = 0; // for justification effects
@@ -411,13 +480,13 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const std::vector<UTILS::CO
   // are not currently cached and cause the texture to be enlarged, which
   // would invalidate the texture coordinates.
   std::queue<Character> characters;
-  if (alignment & XBFONT_TRUNCATED)
-    GetCharacter(L'.');
 
-  if (isBeginWithEllipses) // for right aligned text only
+  if (alignment & XBFONT_TRUNCATED_LEFT)
     cursorX += ellipsesWidth;
 
-  for (vecText::const_iterator pos = text.begin() + startPosGlyph; pos != text.end(); ++pos)
+  vecText::const_iterator posBegin = text.begin() + startPosGlyph;
+
+  for (vecText::const_iterator pos = posBegin; pos != text.end(); ++pos)
   {
     Character* ch =
         GetCharacter(*pos);
@@ -434,11 +503,8 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const std::vector<UTILS::CO
       float nextCursorX = cursorX;
 
       if (alignment & XBFONT_TRUNCATED)
-      {
-        nextCursorX += ch->advance;
-        if (!isBeginWithEllipses) // for left aligned text only
-          nextCursorX += ellipsesWidth;
-      }
+        nextCursorX += ch->advance + ellipsesWidth;
+
       if (nextCursorX > maxPixelWidth)
         break;
     }
@@ -447,7 +513,7 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const std::vector<UTILS::CO
   }
   cursorX = 0;
 
-  for (vecText::const_iterator pos = text.begin() + startPosGlyph; pos != text.end(); ++pos)
+  for (vecText::const_iterator pos = posBegin; pos != text.end(); ++pos)
   {
     // If starting text on a new line, determine justification effects
     // Get the current letter in the CStdString
@@ -466,42 +532,34 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const std::vector<UTILS::CO
 
     if ( alignment & XBFONT_TRUNCATED )
     {
-      if (alignment & XBFONT_RIGHT)
+      // Check if we will be exceeded the max allowed width
+      if (cursorX + ch->advance + ellipsesWidth > maxPixelWidth)
       {
-        if (isBeginWithEllipses)
-        {
-          isBeginWithEllipses = false;
-          Character* period = GetCharacter(L'.');
-          if (!period)
-            break;
-
-          for (int i = 0; i < 3; i++)
-          {
-            RenderCharacter(startX + cursorX, startY, period, color, !scrolling);
-            cursorX += period->advance;
-          }
-        }
-        if (maxPixelWidth > 0 && cursorX > maxPixelWidth)
-          break; // exceeded max allowed width - stop rendering
-      }
-      else
-      {
-        // Check if we will be exceeded the max allowed width
-        if (cursorX + ch->advance + ellipsesWidth > maxPixelWidth)
-        {
-          // Yup. Let's draw the ellipses, then bail
-          // Perhaps we should really bail to the next line in this case??
-          Character* period = GetCharacter(L'.');
-          if (!period)
-            break;
-
-          for (int i = 0; i < 3; i++)
-          {
-            RenderCharacter(startX + cursorX, startY, period, color, !scrolling);
-            cursorX += period->advance;
-          }
+        // Yup. Let's draw the ellipses, then bail
+        // Perhaps we should really bail to the next line in this case??
+        Character* period = GetCharacter(L'.');
+        if (!period)
           break;
+
+        for (int i = 0; i < 3; i++)
+        {
+          RenderCharacter(startX + cursorX, startY, period, color, !scrolling);
+          cursorX += period->advance;
         }
+        break;
+      }
+    }
+    else if (alignment & XBFONT_TRUNCATED_LEFT && pos == posBegin)
+    {
+      // Add ellipsis only at the beginning of the text
+      Character* period = GetCharacter(L'.');
+      if (!period)
+        break;
+
+      for (int i = 0; i < 3; i++)
+      {
+        RenderCharacter(startX + cursorX, startY, period, color, !scrolling);
+        cursorX += period->advance;
       }
     }
     else if (maxPixelWidth > 0 && cursorX > maxPixelWidth)
