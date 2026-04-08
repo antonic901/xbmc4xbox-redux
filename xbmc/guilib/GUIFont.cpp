@@ -274,7 +274,7 @@ float CGUIFont::GetTextWidth(const vecText& text)
   CGraphicContext& context = winSystem->GetGfxContext();
 
   CSingleLock lock(context);
-  return m_font->GetTextWidthInternal(text.begin(), text.end()) * context.GetGUIScaleX();
+  return m_font->GetTextWidthInternal(text) * context.GetGUIScaleX();
 }
 
 float CGUIFont::GetCharWidth(character_t ch)
