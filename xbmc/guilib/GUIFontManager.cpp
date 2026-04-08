@@ -257,7 +257,7 @@ CGUIFontTTF* GUIFontManager::GetFontFile(const std::string& strFileName)
   for (int i = 0; i < (int)m_vecFontFiles.size(); ++i)
   {
     CGUIFontTTF* pFont = (CGUIFontTTF *)m_vecFontFiles[i];
-    if (StringUtils::EqualsNoCase(pFont->GetFileName(), strFileName))
+    if (StringUtils::EqualsNoCase(pFont->GetFontIdent(), strFileName))
       return pFont;
   }
   return NULL;
