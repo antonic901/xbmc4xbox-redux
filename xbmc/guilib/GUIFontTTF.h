@@ -11,7 +11,6 @@
 #include "GUIFont.h"
 #include "utils/ColorUtils.h"
 #include "utils/Geometry.h"
-#include "windowing/GraphicContext.h" // DirectX related stuff
 
 #include <memory>
 #include <stdint.h>
@@ -20,6 +19,8 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+
+class CGraphicContext;
 
 struct FT_FaceRec_;
 struct FT_LibraryRec_;
@@ -50,8 +51,9 @@ class CGUIFontTTF
   friend class CGUIFont;
 
 public:
-  CGUIFontTTF(const std::string& fontIdent);
   virtual ~CGUIFontTTF();
+
+  static CGUIFontTTF* CreateGUIFontTTF(const std::string& fontIdent);
 
   void Clear();
 
@@ -67,6 +69,8 @@ public:
   const std::string& GetFontIdent() const { return m_fontIdent; }
 
 protected:
+  explicit CGUIFontTTF(const std::string& fontIdent);
+
   struct Character
   {
     short m_offsetX;
@@ -76,7 +80,8 @@ protected:
     float m_right;
     float m_bottom;
     float m_advance;
-    character_t m_letterAndStyle;
+    FT_UInt m_glyphIndex;
+    character_t m_glyphAndStyle;
   };
 
   void AddReference();
@@ -89,7 +94,8 @@ protected:
   float GetLineHeight(float lineSpacing) const;
   float GetFontHeight() const { return m_height; }
 
-  void DrawTextInternal(float x,
+  void DrawTextInternal(CGraphicContext& context,
+                        float x,
                         float y,
                         const std::vector<UTILS::COLOR::Color>& colors,
                         const vecText& text,
@@ -100,20 +106,26 @@ protected:
   float m_height;
 
   // Stuff for pre-rendering for speed
-  Character* GetCharacter(character_t letter);
-  bool CacheCharacter(wchar_t letter, uint32_t style, Character* ch);
-  void RenderCharacter(float posX,
+  Character* GetCharacter(character_t letter, FT_UInt glyphIndex);
+  bool CacheCharacter(FT_UInt glyphIndex, uint32_t style, Character* ch);
+  void RenderCharacter(CGraphicContext& context,
+                       float posX,
                        float posY,
                        const Character* ch,
                        UTILS::COLOR::Color color,
                        bool roundX);
   void ClearCharacterCache();
 
+  virtual bool CopyCharToTexture(FT_BitmapGlyph bitGlyph,
+                                 unsigned int x1,
+                                 unsigned int y1,
+                                 unsigned int x2,
+                                 unsigned int y2);
+
   // modifying glyphs
   void SetGlyphStrength(FT_GlyphSlot slot, int glyphStrength);
   static void ObliqueGlyph(FT_GlyphSlot slot);
 
-  LPDIRECT3DDEVICE8 m_pD3DDevice;
   LPDIRECT3DTEXTURE8 m_texture; // texture that holds our rendered characters (8bit alpha only)
 
   unsigned int m_textureWidth; // width of our texture
@@ -153,12 +165,14 @@ protected:
 
   const std::string m_fontIdent;
 
-#ifdef HAS_XBOX_D3D
   int m_numCharactersRendered;
-#endif
 
 private:
   float GetTabSpaceLength();
 
+  virtual bool FirstBegin();
+  virtual void LastEnd();
+  CGUIFontTTF(const CGUIFontTTF&);
+  CGUIFontTTF& operator=(const CGUIFontTTF&);
   int m_referenceCount;
 };
