@@ -120,10 +120,10 @@ void CGUIFont::DrawText(float x,
     shadowColors.reserve(renderColors.size());
     for (std::vector<UTILS::COLOR::Color>::const_iterator renderColor = renderColors.begin(); renderColor != renderColors.end(); ++renderColor)
       shadowColors.push_back((*renderColor & 0xff000000) != 0 ? shadowColor : 0);
-    m_font->DrawTextInternal(x + 1, y + 1, shadowColors, text, alignment, maxPixelWidth,
+    m_font->DrawTextInternal(CServiceBroker::GetWinSystem()->GetGfxContext(), x + 1, y + 1, shadowColors, text, alignment, maxPixelWidth,
                              false);
   }
-  m_font->DrawTextInternal(x, y, renderColors, text, alignment, maxPixelWidth, false);
+  m_font->DrawTextInternal(CServiceBroker::GetWinSystem()->GetGfxContext(), x, y, renderColors, text, alignment, maxPixelWidth, false);
 
   if (clip)
     context.RestoreClipRegion();
@@ -237,17 +237,17 @@ void CGUIFont::DrawScrollingText(float x,
       shadowColors.push_back((*renderColor & 0xff000000) != 0 ? shadowColor : 0);
     for (float dx = -offset; dx < maxWidth; dx += scrollInfo.m_totalWidth)
     {
-      m_font->DrawTextInternal(x + dx + 1, y + 1, shadowColors, text, alignment,
+      m_font->DrawTextInternal(CServiceBroker::GetWinSystem()->GetGfxContext(), x + dx + 1, y + 1, shadowColors, text, alignment,
                                textPixelWidth, scroll);
-      m_font->DrawTextInternal(x + dx + scrollInfo.m_textWidth + 1, y + 1, shadowColors,
+      m_font->DrawTextInternal(CServiceBroker::GetWinSystem()->GetGfxContext(), x + dx + scrollInfo.m_textWidth + 1, y + 1, shadowColors,
                                scrollInfo.m_suffix, alignment, suffixPixelWidth, scroll);
     }
   }
   for (float dx = -offset; dx < maxWidth; dx += scrollInfo.m_totalWidth)
   {
-    m_font->DrawTextInternal(x + dx, y, renderColors, text, alignment, textPixelWidth,
+    m_font->DrawTextInternal(CServiceBroker::GetWinSystem()->GetGfxContext(), x + dx, y, renderColors, text, alignment, textPixelWidth,
                              scroll);
-    m_font->DrawTextInternal(x + dx + scrollInfo.m_textWidth, y, renderColors,
+    m_font->DrawTextInternal(CServiceBroker::GetWinSystem()->GetGfxContext(), x + dx + scrollInfo.m_textWidth, y, renderColors,
                              scrollInfo.m_suffix, alignment, suffixPixelWidth, scroll);
   }
 

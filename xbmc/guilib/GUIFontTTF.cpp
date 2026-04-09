@@ -172,32 +172,29 @@ XBMC_GLOBAL_REF(CFreeTypeLibrary, g_freeTypeLibrary); // our freetype library
 #define g_freeTypeLibrary XBMC_GLOBAL_USE(CFreeTypeLibrary)
 
 CGUIFontTTF::CGUIFontTTF(const std::string& fontIdent)
-  : m_fontIdent(fontIdent)
+  : m_fontIdent(fontIdent),
+    m_height(0.0f),
+    m_textureWidth(0),
+    m_textureHeight(0),
+    m_posX(0),
+    m_posY(0),
+    m_ellipseCached(false),
+    m_ellipsesWidth(0.0f),
+    m_cellBaseLine(0),
+    m_cellHeight(0),
+    m_maxFontHeight(0),
+    m_nestedBeginCount(0),
+    m_originX(0.0f),
+    m_originY(0.0f),
+    m_textureScaleX(0.0f),
+    m_textureScaleY(0.0f),
+    m_numCharactersRendered(0),
+    m_referenceCount(0)
 {
-  m_height = 0.0f;
-  m_texture = NULL;
-  m_textureWidth = 0;
-  m_textureHeight = 0;
-  m_posX = 0;
-  m_posY = 0;
-  m_char.clear();
   memset(m_charquick, 0, sizeof(m_charquick));
-  m_ellipseCached = false;
-  m_ellipsesWidth = 0.0f;
-  m_cellBaseLine = 0;
-  m_cellHeight = 0;
-  m_maxFontHeight = 0;
-  m_nestedBeginCount = 0;
+  m_texture = NULL;
   m_face = NULL;
   m_stroker = NULL;
-  m_originX = 0.0f;
-  m_originY = 0.0f;
-  m_textureScaleX = 0.0f;
-  m_textureScaleY = 0.0f;
-#ifdef HAS_XBOX_D3D
-  m_numCharactersRendered = 0;
-#endif
-  m_referenceCount = 0;
 }
 
 CGUIFontTTF::~CGUIFontTTF(void)
@@ -221,9 +218,7 @@ void CGUIFontTTF::RemoveReference()
 
 void CGUIFontTTF::ClearCharacterCache()
 {
-  if (m_texture)
-    m_texture->Release();
-  m_texture = NULL;
+  SAFE_RELEASE(m_texture);
   m_char.clear();
   m_char.reserve(CHAR_CHUNK);
   memset(m_charquick, 0, sizeof(m_charquick));
@@ -235,9 +230,7 @@ void CGUIFontTTF::ClearCharacterCache()
 
 void CGUIFontTTF::Clear()
 {
-  if (m_texture)
-    m_texture->Release();
-  m_texture = NULL;
+  SAFE_RELEASE(m_texture);
   memset(m_charquick, 0, sizeof(m_charquick));
   m_posX = 0;
   m_posY = 0;
@@ -254,9 +247,6 @@ void CGUIFontTTF::Clear()
 bool CGUIFontTTF::Load(
     const std::string& strFilename, float height, float aspect, float lineSpacing, bool border)
 {
-  // TODO: get rid of m_pD3DDevice
-  m_pD3DDevice = CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice();
-
   // we now know that this object is unique - only the GUIFont objects are non-unique, so no need
   // for reference tracking these fonts
   m_face = g_freeTypeLibrary.GetFont(strFilename, height, aspect);
@@ -313,9 +303,7 @@ bool CGUIFontTTF::Load(
 
   m_height = height;
 
-  if (m_texture)
-    m_texture->Release();
-  m_texture = NULL;
+  SAFE_RELEASE(m_texture);
 
   m_textureHeight = 0;
   m_textureWidth = ((m_cellHeight * CHARS_PER_TEXTURE_LINE) & ~63) + 64;
@@ -333,40 +321,8 @@ bool CGUIFontTTF::Load(
 
 void CGUIFontTTF::Begin()
 {
-  if (m_nestedBeginCount == 0)
+  if (m_nestedBeginCount == 0 && m_texture && FirstBegin())
   {
-    // just have to blit from our texture.
-    m_pD3DDevice->SetTexture( 0, m_texture );
-
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP );
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP );
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR );
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_MINFILTER, D3DTEXF_LINEAR );
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_SELECTARG1 ); // only use diffuse
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_MODULATE );
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-
-    // no other texture stages needed
-    m_pD3DDevice->SetTextureStageState( 1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-
-    m_pD3DDevice->SetRenderState( D3DRS_ZENABLE, FALSE );
-    m_pD3DDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
-    m_pD3DDevice->SetRenderState( D3DRS_FILLMODE, D3DFILL_SOLID );
-    m_pD3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
-    m_pD3DDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-    m_pD3DDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
-    m_pD3DDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-    m_pD3DDevice->SetRenderState( D3DRS_LIGHTING, FALSE);
-
-    m_pD3DDevice->SetVertexShader(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1);
-
-#ifdef HAS_XBOX_D3D
-    // Render the image
-    m_pD3DDevice->SetScreenSpaceOffset(-0.5f, -0.5f);
-    m_pD3DDevice->Begin(D3DPT_QUADLIST);
-#endif
   }
   // Keep track of the nested begin/end calls.
   m_nestedBeginCount++;
@@ -380,19 +336,11 @@ void CGUIFontTTF::End()
   if (--m_nestedBeginCount > 0)
     return;
 
-#ifdef HAS_XBOX_D3D
-  m_pD3DDevice->End();
-  m_pD3DDevice->SetScreenSpaceOffset(0, 0);
-#endif
-  m_pD3DDevice->SetTexture(0, NULL);
-  m_pD3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
-
-#ifdef HAS_XBOX_D3D
-  m_numCharactersRendered = 0;
-#endif
+  LastEnd();
 }
 
-void CGUIFontTTF::DrawTextInternal(float x,
+void CGUIFontTTF::DrawTextInternal(CGraphicContext& context,
+                                   float x,
                                    float y,
                                    const std::vector<UTILS::COLOR::Color>& colors,
                                    const vecText& text,
@@ -423,7 +371,7 @@ void CGUIFontTTF::DrawTextInternal(float x,
     if (!m_ellipseCached)
     {
       m_ellipseCached = true;
-      Character* ellipse = GetCharacter(L'.');
+      Character* ellipse = GetCharacter(L'.', 0);
       if (ellipse)
         m_ellipsesWidth = ellipse->m_advance;
     }
@@ -463,10 +411,10 @@ void CGUIFontTTF::DrawTextInternal(float x,
       textWidth = ellipsesWidth;
 
       // We need to iterate from the end to the beginning
-      for (vecText::const_reverse_iterator pos = text.rbegin(); pos != text.rend(); ++pos)
+      for (vecText::const_reverse_iterator itRGlyph = text.rbegin(); itRGlyph != text.rend(); ++itRGlyph)
       {
-        const character_t ch = *pos;
-        Character* c = GetCharacter(ch);
+        const character_t ch = *itRGlyph;
+        Character* c = GetCharacter(ch, 0);
         if (!c)
           continue;
 
@@ -479,7 +427,7 @@ void CGUIFontTTF::DrawTextInternal(float x,
         if (maxPixelWidth > 0 && nextWidth > maxPixelWidth)
         {
           // Start rendering from the glyph that does not exceed the maximum width
-          startPosGlyph = std::distance(pos, text.rend());
+          startPosGlyph = std::distance(itRGlyph, text.rend());
           break;
         }
         textWidth = nextWidth;
@@ -491,10 +439,10 @@ void CGUIFontTTF::DrawTextInternal(float x,
       if (alignment & XBFONT_TRUNCATED)
         textWidth = ellipsesWidth;
 
-      for (vecText::const_iterator pos = text.begin(); pos != text.end(); ++pos)
+      for (vecText::const_iterator glyph = text.begin(); glyph != text.end(); ++glyph)
       {
-        const character_t ch = *pos;
-        Character* c = GetCharacter(ch);
+        const character_t ch = *glyph;
+        Character* c = GetCharacter(ch, 0);
         if (!c)
           continue;
 
@@ -528,12 +476,12 @@ void CGUIFontTTF::DrawTextInternal(float x,
       // first compute the size of the text to render in both characters and pixels
       unsigned int numSpaces = 0;
       float linePixels = 0;
-      for (vecText::const_iterator pos = text.begin(); pos != text.end(); pos++)
+      for (vecText::const_iterator glyph = text.begin(); glyph != text.end(); ++glyph)
       {
-        Character* ch = GetCharacter(*pos);
+        Character* ch = GetCharacter(*glyph, 0);
         if (ch)
         {
-          if ((*pos & 0xffff) == L' ')
+          if ((*glyph & 0xffff) == L' ')
             numSpaces += 1;
           linePixels += ch->m_advance;
         }
@@ -552,12 +500,12 @@ void CGUIFontTTF::DrawTextInternal(float x,
     if (alignment & XBFONT_TRUNCATED_LEFT)
       cursorX += ellipsesWidth;
 
-    vecText::const_iterator posBegin = text.begin() + startPosGlyph;
+    vecText::const_iterator glyphBegin = text.begin() + startPosGlyph;
 
-    for (vecText::const_iterator pos = posBegin; pos != text.end(); ++pos)
+    for (vecText::const_iterator itGlyph = glyphBegin; itGlyph != text.end(); ++itGlyph)
     {
       Character* ch =
-          GetCharacter(*pos);
+          GetCharacter(*itGlyph, 0);
       if (!ch)
       {
         Character null = {};
@@ -582,11 +530,11 @@ void CGUIFontTTF::DrawTextInternal(float x,
 
     cursorX = 0;
 
-    for (vecText::const_iterator pos = posBegin; pos != text.end(); ++pos)
+    for (vecText::const_iterator itGlyph = glyphBegin; itGlyph != text.end(); ++itGlyph)
     {
       // If starting text on a new line, determine justification effects
       // Get the current letter in the CStdString
-      UTILS::COLOR::Color color = (*pos & 0xff0000) >> 16;
+      UTILS::COLOR::Color color = (*itGlyph & 0xff0000) >> 16;
       if (color >= colors.size())
         color = 0;
       color = colors[color];
@@ -594,7 +542,7 @@ void CGUIFontTTF::DrawTextInternal(float x,
       // grab the next character
       Character* ch = &characters.front();
 
-      if ((*pos & 0xffff) == static_cast<character_t>('\t'))
+      if ((*itGlyph & 0xffff) == static_cast<character_t>('\t'))
       {
         const float tabwidth = GetTabSpaceLength();
         const float a = cursorX / tabwidth;
@@ -610,38 +558,38 @@ void CGUIFontTTF::DrawTextInternal(float x,
         {
           // Yup. Let's draw the ellipses, then bail
           // Perhaps we should really bail to the next line in this case??
-          Character* period = GetCharacter(L'.');
+          Character* period = GetCharacter(L'.', 0);
           if (!period)
             break;
 
           for (int i = 0; i < 3; i++)
           {
-            RenderCharacter(startX + cursorX, startY, period, color, !scrolling);
+            RenderCharacter(context, startX + cursorX, startY, period, color, !scrolling);
             cursorX += period->m_advance;
           }
           break;
         }
       }
-      else if (alignment & XBFONT_TRUNCATED_LEFT && pos == posBegin)
+      else if (alignment & XBFONT_TRUNCATED_LEFT && itGlyph == glyphBegin)
       {
         // Add ellipsis only at the beginning of the text
-        Character* period = GetCharacter(L'.');
+        Character* period = GetCharacter(L'.', 0);
         if (!period)
           break;
 
         for (int i = 0; i < 3; i++)
         {
-          RenderCharacter(startX + cursorX, startY, period, color, !scrolling);
+          RenderCharacter(context, startX + cursorX, startY, period, color, !scrolling);
           cursorX += period->m_advance;
         }
       }
       else if (maxPixelWidth > 0 && cursorX > maxPixelWidth)
         break; // exceeded max allowed width - stop rendering
 
-      RenderCharacter(startX + cursorX, startY, ch, color, !scrolling);
+      RenderCharacter(context, startX + cursorX, startY, ch, color, !scrolling);
       if (alignment & XBFONT_JUSTIFIED)
       {
-        if ((*pos & 0xffff) == L' ')
+        if ((*itGlyph & 0xffff) == L' ')
           cursorX += ch->m_advance + spacePerSpaceCharacter;
         else
           cursorX += ch->m_advance;
@@ -662,7 +610,7 @@ float CGUIFontTTF::GetTextWidthInternal(const vecText& text)
   for (vecText::const_iterator it = text.begin(); it != text.end(); it++)
   {
     const character_t ch = *it;
-    Character* c = GetCharacter(ch);
+    Character* c = GetCharacter(ch, 0);
     if (c)
     {
       // If last character in line, we want to add render width
@@ -683,7 +631,7 @@ float CGUIFontTTF::GetTextWidthInternal(const vecText& text)
 
 float CGUIFontTTF::GetCharWidthInternal(character_t ch)
 {
-  Character* c = GetCharacter(ch);
+  Character* c = GetCharacter(ch, 0);
   if (c)
   {
     if ((ch & 0xffff) == static_cast<character_t>('\t'))
@@ -718,7 +666,7 @@ unsigned int CGUIFontTTF::GetMaxFontHeight() const
   return m_maxFontHeight + SPACING_BETWEEN_CHARACTERS_IN_TEXTURE;
 }
 
-CGUIFontTTF::Character* CGUIFontTTF::GetCharacter(character_t chr)
+CGUIFontTTF::Character* CGUIFontTTF::GetCharacter(character_t chr, FT_UInt glyphIndex)
 {
   const wchar_t letter = static_cast<wchar_t>(chr & 0xffff);
 
@@ -728,17 +676,20 @@ CGUIFontTTF::Character* CGUIFontTTF::GetCharacter(character_t chr)
 
   const character_t style = (chr & 0x7000000) >> 24; // style = 0 - 6
 
+  if (!glyphIndex)
+    glyphIndex = FT_Get_Char_Index(m_face, letter);
+
   // quick access to the most frequently used glyphs
-  if (letter < MAX_GLYPH_IDX)
+  if (glyphIndex < MAX_GLYPH_IDX)
   {
-    character_t ch = (style << 12) | letter; // 2^12 = 4096
+    character_t ch = (style << 12) | glyphIndex; // 2^12 = 4096
 
     if (ch < LOOKUPTABLE_SIZE && m_charquick[ch])
       return m_charquick[ch];
   }
 
-  // letters are stored based on style and letter
-  character_t ch = (style << 16) | letter;
+  // letters are stored based on style and glyph
+  character_t ch = (style << 16) | glyphIndex;
 
   // perform binary search on sorted array by m_glyphAndStyle and
   // if not found obtains position to insert the new m_char to keep sorted
@@ -747,9 +698,9 @@ CGUIFontTTF::Character* CGUIFontTTF::GetCharacter(character_t chr)
   while (low <= high)
   {
     int mid = (low + high) >> 1;
-    if (ch > m_char[mid].m_letterAndStyle)
+    if (ch > m_char[mid].m_glyphAndStyle)
       low = mid + 1;
-    else if (ch < m_char[mid].m_letterAndStyle)
+    else if (ch < m_char[mid].m_glyphAndStyle)
       high = mid - 1;
     else
       return &m_char[mid];
@@ -773,7 +724,7 @@ CGUIFontTTF::Character* CGUIFontTTF::GetCharacter(character_t chr)
     End();
 
   m_char.insert(m_char.begin() + low, Character());
-  if (!CacheCharacter(letter, style, &m_char[0] + low))
+  if (!CacheCharacter(glyphIndex, style, &m_char[0] + low))
   { // unable to cache character - try clearing them all out and starting over
     CLog::Log(LOGDEBUG, "Unable to cache character. Clearing character cache of %i characters",
                m_char.size());
@@ -781,7 +732,7 @@ CGUIFontTTF::Character* CGUIFontTTF::GetCharacter(character_t chr)
     low = 0;
     startIndex = 0;
     m_char.insert(m_char.begin(), Character());
-    if (!CacheCharacter(letter, style, &m_char[0]))
+    if (!CacheCharacter(glyphIndex, style, &m_char[0]))
     {
       CLog::Log(LOGERROR, "Unable to cache character (out of memory?)");
       if (nestedBeginCount)
@@ -798,10 +749,10 @@ CGUIFontTTF::Character* CGUIFontTTF::GetCharacter(character_t chr)
   // update the lookup table with only the m_char addresses that have changed
   for (size_t i = startIndex; i < m_char.size(); ++i)
   {
-    if ((m_char[i].m_letterAndStyle & 0xffff) < MAX_GLYPH_IDX)
+    if (m_char[i].m_glyphIndex < MAX_GLYPH_IDX)
     {
       // >> 16 is style (0-6), then 16 - 12 (>> 4) is equivalent to style * 4096
-      character_t ch = ((m_char[i].m_letterAndStyle & 0xffff0000) >> 4) | (m_char[i].m_letterAndStyle & 0xff);
+      character_t ch = ((m_char[i].m_glyphAndStyle & 0xffff0000) >> 4) | m_char[i].m_glyphIndex;
 
       if (ch < LOOKUPTABLE_SIZE)
         m_charquick[ch] = &m_char[0] + i;
@@ -811,10 +762,8 @@ CGUIFontTTF::Character* CGUIFontTTF::GetCharacter(character_t chr)
   return &m_char[0] + low;
 }
 
-bool CGUIFontTTF::CacheCharacter(wchar_t letter, uint32_t style, Character* ch)
+bool CGUIFontTTF::CacheCharacter(FT_UInt glyphIndex, uint32_t style, Character* ch)
 {
-  FT_UInt glyphIndex = FT_Get_Char_Index(m_face, letter);
-
   FT_Glyph glyph = NULL;
   if (FT_Load_Glyph(m_face, glyphIndex, FT_LOAD_TARGET_LIGHT))
   {
@@ -878,6 +827,7 @@ bool CGUIFontTTF::CacheCharacter(wchar_t letter, uint32_t style, Character* ch)
           return false;
         }
 
+        LPDIRECT3DDEVICE8 m_pD3DDevice = CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice();
         LPDIRECT3DTEXTURE8 newTexture;
         if (D3D_OK != D3DXCreateTexture(m_pD3DDevice, m_textureWidth, newHeight, 1, 0, D3DFMT_LIN_A8, D3DPOOL_MANAGED, &newTexture))
         {
@@ -923,7 +873,8 @@ bool CGUIFontTTF::CacheCharacter(wchar_t letter, uint32_t style, Character* ch)
   }
 
   // set the character in our table
-  ch->m_letterAndStyle = (style << 16) | letter;
+  ch->m_glyphAndStyle = (style << 16) | glyphIndex;
+  ch->m_glyphIndex = glyphIndex;
   ch->m_offsetX = static_cast<short>(bitGlyph->left);
   ch->m_offsetY = static_cast<short>(m_cellBaseLine - bitGlyph->top);
   ch->m_left = isEmptyGlyph ? 0.0f : (static_cast<float>(m_posX));
@@ -942,18 +893,7 @@ bool CGUIFontTTF::CacheCharacter(wchar_t letter, uint32_t style, Character* ch)
     unsigned int x2 = std::min(x1 + bitmap.width, m_textureWidth);
     unsigned int y2 = std::min(y1 + bitmap.rows, m_textureHeight);
     m_maxFontHeight = std::max(m_maxFontHeight, y2);
-    // render this onto our normal texture using gpu
-    LPDIRECT3DSURFACE8 target;
-    m_texture->GetSurfaceLevel(0, &target);
-
-    RECT sourcerect = { 0, 0, bitmap.width, bitmap.rows };
-    RECT targetrect = { x1, y1, x2, y2 };
-
-    D3DXLoadSurfaceFromMemory( target, NULL, &targetrect,
-      bitmap.buffer, D3DFMT_LIN_A8, bitmap.pitch, NULL, &sourcerect,
-      D3DX_FILTER_NONE, 0x00000000);
-
-    SAFE_RELEASE(target);
+    CopyCharToTexture(bitGlyph, x1, y1, x2, y2);
 
     m_posX += SPACING_BETWEEN_CHARACTERS_IN_TEXTURE +
               static_cast<unsigned short>(ch->m_right - ch->m_left);
@@ -965,7 +905,8 @@ bool CGUIFontTTF::CacheCharacter(wchar_t letter, uint32_t style, Character* ch)
   return true;
 }
 
-void CGUIFontTTF::RenderCharacter(float posX,
+void CGUIFontTTF::RenderCharacter(CGraphicContext& context,
+                                  float posX,
                                   float posY,
                                   const Character* ch,
                                   UTILS::COLOR::Color color,
@@ -982,19 +923,19 @@ void CGUIFontTTF::RenderCharacter(float posX,
 
   // posX and posY are relative to our origin, and the textcell is offset
   // from our (posX, posY).  Plus, these are unscaled quantities compared to the underlying GUI resolution
-  CRect vertex((posX + ch->m_offsetX) * CServiceBroker::GetWinSystem()->GetGfxContext().GetGUIScaleX(),
-               (posY + ch->m_offsetY) * CServiceBroker::GetWinSystem()->GetGfxContext().GetGUIScaleY(),
-               (posX + ch->m_offsetX + width) * CServiceBroker::GetWinSystem()->GetGfxContext().GetGUIScaleX(),
-               (posY + ch->m_offsetY + height) * CServiceBroker::GetWinSystem()->GetGfxContext().GetGUIScaleY());
+  CRect vertex((posX + ch->m_offsetX) * context.GetGUIScaleX(),
+               (posY + ch->m_offsetY) * context.GetGUIScaleY(),
+               (posX + ch->m_offsetX + width) * context.GetGUIScaleX(),
+               (posY + ch->m_offsetY + height) * context.GetGUIScaleY());
   vertex += CPoint(m_originX, m_originY);
   CRect texture(ch->m_left, ch->m_top, ch->m_right, ch->m_bottom);
-  CServiceBroker::GetWinSystem()->GetGfxContext().ClipRect(vertex, texture);
+  context.ClipRect(vertex, texture);
 
   // transform our positions - note, no scaling due to GUI calibration/resolution occurs
-  float x[VERTEX_PER_GLYPH] = {CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalXCoord(vertex.x1, vertex.y1),
-                               CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalXCoord(vertex.x2, vertex.y1),
-                               CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalXCoord(vertex.x2, vertex.y2),
-                               CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalXCoord(vertex.x1, vertex.y2)};
+  float x[VERTEX_PER_GLYPH] = {context.ScaleFinalXCoord(vertex.x1, vertex.y1),
+                               context.ScaleFinalXCoord(vertex.x2, vertex.y1),
+                               context.ScaleFinalXCoord(vertex.x2, vertex.y2),
+                               context.ScaleFinalXCoord(vertex.x1, vertex.y2)};
 
   if (roundX)
   {
@@ -1023,42 +964,43 @@ void CGUIFontTTF::RenderCharacter(float posX,
 
   const float y[VERTEX_PER_GLYPH] = {
       static_cast<float>(MathUtils::round_int(
-          static_cast<double>(CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalYCoord(vertex.x1, vertex.y1)))),
+          static_cast<double>(context.ScaleFinalYCoord(vertex.x1, vertex.y1)))),
       static_cast<float>(MathUtils::round_int(
-          static_cast<double>(CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalYCoord(vertex.x2, vertex.y1)))),
+          static_cast<double>(context.ScaleFinalYCoord(vertex.x2, vertex.y1)))),
       static_cast<float>(MathUtils::round_int(
-          static_cast<double>(CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalYCoord(vertex.x2, vertex.y2)))),
+          static_cast<double>(context.ScaleFinalYCoord(vertex.x2, vertex.y2)))),
       static_cast<float>(MathUtils::round_int(
-          static_cast<double>(CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalYCoord(vertex.x1, vertex.y2))))};
+          static_cast<double>(context.ScaleFinalYCoord(vertex.x1, vertex.y2))))};
 
   const float z[VERTEX_PER_GLYPH] = {
       static_cast<float>(MathUtils::round_int(
-          static_cast<double>(CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalZCoord(vertex.x1, vertex.y1)))),
+          static_cast<double>(context.ScaleFinalZCoord(vertex.x1, vertex.y1)))),
       static_cast<float>(MathUtils::round_int(
-          static_cast<double>(CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalZCoord(vertex.x2, vertex.y1)))),
+          static_cast<double>(context.ScaleFinalZCoord(vertex.x2, vertex.y1)))),
       static_cast<float>(MathUtils::round_int(
-          static_cast<double>(CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalZCoord(vertex.x2, vertex.y2)))),
+          static_cast<double>(context.ScaleFinalZCoord(vertex.x2, vertex.y2)))),
       static_cast<float>(MathUtils::round_int(
-          static_cast<double>(CServiceBroker::GetWinSystem()->GetGfxContext().ScaleFinalZCoord(vertex.x1, vertex.y2))))};
+          static_cast<double>(context.ScaleFinalZCoord(vertex.x1, vertex.y2))))};
 
   m_numCharactersRendered++;
 
+  LPDIRECT3DDEVICE8 m_pD3DDevice = CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice();
   if (m_numCharactersRendered >= MAX_GLYPHS_PER_TEXT_LINE)
   { // we're pushing the (undocumented) limits of xbox here
     m_pD3DDevice->End();
     m_pD3DDevice->Begin(D3DPT_QUADLIST);
     m_numCharactersRendered = 1;
   }
-  m_pD3DDevice->SetVertexDataColor( D3DVSDE_DIFFUSE, color);
+  m_pD3DDevice->SetVertexDataColor(D3DVSDE_DIFFUSE, color);
 
-  m_pD3DDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, texture.x1, texture.y1);
-  m_pD3DDevice->SetVertexData4f( D3DVSDE_VERTEX, x[0], y[0], z[0], 1);
-  m_pD3DDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, texture.x2, texture.y1);
-  m_pD3DDevice->SetVertexData4f( D3DVSDE_VERTEX, x[1], y[1], z[1], 1);
-  m_pD3DDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, texture.x2, texture.y2);
-  m_pD3DDevice->SetVertexData4f( D3DVSDE_VERTEX, x[2], y[2], z[2], 1);
-  m_pD3DDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, texture.x1, texture.y2);
-  m_pD3DDevice->SetVertexData4f( D3DVSDE_VERTEX, x[3], y[3], z[3], 1);
+  m_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, texture.x1, texture.y1);
+  m_pD3DDevice->SetVertexData4f(D3DVSDE_VERTEX, x[0], y[0], z[0], 1);
+  m_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, texture.x2, texture.y1);
+  m_pD3DDevice->SetVertexData4f(D3DVSDE_VERTEX, x[1], y[1], z[1], 1);
+  m_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, texture.x2, texture.y2);
+  m_pD3DDevice->SetVertexData4f(D3DVSDE_VERTEX, x[2], y[2], z[2], 1);
+  m_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, texture.x1, texture.y2);
+  m_pD3DDevice->SetVertexData4f(D3DVSDE_VERTEX, x[3], y[3], z[3], 1);
 }
 
 // Oblique code - original taken from freetype2 (ftsynth.c)
@@ -1117,6 +1059,80 @@ void CGUIFontTTF::SetGlyphStrength(FT_GlyphSlot slot, int glyphStrength)
 
 float CGUIFontTTF::GetTabSpaceLength()
 {
-  const Character* c = GetCharacter(static_cast<character_t>('X'));
+  const Character* c = GetCharacter(static_cast<character_t>('X'), 0);
   return c ? c->m_advance * TAB_SPACE_LENGTH : 28.0f * TAB_SPACE_LENGTH;
+}
+
+CGUIFontTTF* CGUIFontTTF::CreateGUIFontTTF(const std::string& fontIdent)
+{
+  return new CGUIFontTTF(fontIdent);
+}
+
+bool CGUIFontTTF::CopyCharToTexture(
+    FT_BitmapGlyph bitGlyph, unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2)
+{
+  FT_Bitmap bitmap = bitGlyph->bitmap;
+
+  // render this onto our normal texture using gpu
+  LPDIRECT3DSURFACE8 target;
+  bool result = m_texture->GetSurfaceLevel(0, &target) != D3D_OK;
+
+  RECT sourcerect = {0, 0, bitmap.width, bitmap.rows};
+  RECT targetrect = {x1, y1, x2, y2};
+
+  result &= D3DXLoadSurfaceFromMemory(target, NULL, &targetrect,
+                                      bitmap.buffer, D3DFMT_LIN_A8, bitmap.pitch, NULL, &sourcerect,
+                                      D3DX_FILTER_NONE, 0x00000000) != D3D_OK;
+
+  SAFE_RELEASE(target);
+  return result;
+}
+
+bool CGUIFontTTF::FirstBegin()
+{
+  LPDIRECT3DDEVICE8 m_pD3DDevice = CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice();
+
+  // just have to blit from our texture.
+  m_pD3DDevice->SetTexture(0, m_texture);
+
+  m_pD3DDevice->SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+  m_pD3DDevice->SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+  m_pD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+  m_pD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+  m_pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1); // only use diffuse
+  m_pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
+  m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+  m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+  m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+
+  // no other texture stages needed
+  m_pD3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+
+  m_pD3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+  m_pD3DDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
+  m_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+  m_pD3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+  m_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+  m_pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+  m_pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+  m_pD3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+
+  m_pD3DDevice->SetVertexShader(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1);
+
+  // Render the image
+  m_pD3DDevice->SetScreenSpaceOffset(-0.5f, -0.5f);
+  m_pD3DDevice->Begin(D3DPT_QUADLIST);
+
+  return true;
+}
+
+void CGUIFontTTF::LastEnd()
+{
+  LPDIRECT3DDEVICE8 m_pD3DDevice = CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice();
+
+  m_pD3DDevice->End();
+  m_pD3DDevice->SetScreenSpaceOffset(0, 0);
+  m_pD3DDevice->SetTexture(0, NULL);
+  m_pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+  m_numCharactersRendered = 0;
 }
