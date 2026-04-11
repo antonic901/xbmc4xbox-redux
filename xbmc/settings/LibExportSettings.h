@@ -1,30 +1,20 @@
 /*
- *      Copyright (C) 2017 Team KODI
- *      http://kodi.tv
+ *  Copyright (C) 2017-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with KODI; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
+
 // LibExportSettings.h: interface for the CLibExportSettings class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#pragma once
+#include "settings/lib/Setting.h"
 
 #include <string>
-#include "settings/lib/Setting.h"
 
 // Enumeration of library export options (possibly OR'd together)
 enum ELIBEXPORTOPTIONS
@@ -40,18 +30,22 @@ enum ELIBEXPORTOPTIONS
   ELIBEXPORT_OTHERARTISTS = 0x0080,
   ELIBEXPORT_ARTWORK = 0x0100,
   ELIBEXPORT_NFOFILES = 0x0200,
-  ELIBEXPORT_ACTORTHUMBS = 0x0400
+  ELIBEXPORT_ACTORTHUMBS = 0x0400,
+  ELIBEXPORT_ARTISTFOLDERS = 0x0800,
+  ELIBEXPORT_SONGS = 0x1000
 };
 
 class CLibExportSettings
 {
 public:
   CLibExportSettings();
-  ~CLibExportSettings() {};
+  ~CLibExportSettings() = default;
 
   bool operator!=(const CLibExportSettings &right) const;
   bool IsItemExported(ELIBEXPORTOPTIONS item) const;
+  bool IsArtists() const;
   std::vector<int> GetExportItems() const;
+  std::vector<int> GetLimitedItems(int items) const;
   void ClearItems() { m_itemstoexport = 0; }
   void AddItem(ELIBEXPORTOPTIONS item) { m_itemstoexport += item; }
   unsigned int GetItemsToExport() { return m_itemstoexport; }
@@ -61,6 +55,7 @@ public:
   bool IsSingleFile() const;
   bool IsSeparateFiles() const;
   bool IsToLibFolders() const;
+  bool IsArtistFoldersOnly() const;
 
   std::string m_strPath;
   bool m_overwrite;

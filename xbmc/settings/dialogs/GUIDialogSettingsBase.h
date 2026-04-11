@@ -1,46 +1,34 @@
-#pragma once
 /*
- *      Copyright (C) 2014 Team XBMC
- *      http://www.xbmc.org
+ *  Copyright (C) 2014-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <set>
-#include <vector>
+#pragma once
 
 #include "guilib/GUIDialog.h"
 #include "settings/SettingControl.h"
 #include "settings/lib/ISettingCallback.h"
 #include "threads/Timer.h"
+#include "utils/ILocalizer.h"
 
-#define CONTROL_SETTINGS_LABEL          2
-#define CONTROL_SETTINGS_DESCRIPTION    6
+#include <set>
+#include <vector>
 
-#define CONTROL_SETTINGS_OKAY_BUTTON    28
-#define CONTROL_SETTINGS_CANCEL_BUTTON  29
-#define CONTROL_SETTINGS_CUSTOM_BUTTON  30
+#define CONTROL_SETTINGS_LABEL 2
+#define CONTROL_SETTINGS_DESCRIPTION 6
 
-#define CONTROL_SETTINGS_CUSTOM         100
+#define CONTROL_SETTINGS_OKAY_BUTTON 28
+#define CONTROL_SETTINGS_CANCEL_BUTTON 29
+#define CONTROL_SETTINGS_CUSTOM_BUTTON 30
 
-#define CONTROL_SETTINGS_START_BUTTONS  -100
-#define CONTROL_SETTINGS_START_CONTROL  -80
+#define CONTROL_SETTINGS_START_BUTTONS -200
+#define CONTROL_SETTINGS_START_CONTROL -180
 
-#define SETTINGS_RESET_SETTING_ID       "settings.reset"
-#define SETTINGS_EMPTY_CATEGORY_ID      "categories.empty"
+#define SETTINGS_RESET_SETTING_ID "settings.reset"
+#define SETTINGS_EMPTY_CATEGORY_ID "categories.empty"
 
 class CGUIControl;
 class CGUIControlBaseSetting;
@@ -51,56 +39,67 @@ class CGUIButtonControl;
 class CGUIRadioButtonControl;
 class CGUISettingsSliderControl;
 class CGUILabelControl;
+class CGUIColorButtonControl;
 
 class CSetting;
 class CSettingAction;
 class CSettingCategory;
+class CSettingGroup;
 class CSettingSection;
 
 class CVariant;
 
-typedef boost::shared_ptr<CGUIControlBaseSetting> BaseSettingControlPtr;
+class ISetting;
 
-class CGUIDialogSettingsBase
-  : public CGUIDialog,
-    public CSettingControlCreator,
-    protected ITimerCallback,
-    protected ISettingCallback
+typedef std::shared_ptr<CGUIControlBaseSetting> BaseSettingControlPtr;
+
+class CGUIDialogSettingsBase : public CGUIDialog,
+                               public CSettingControlCreator,
+                               public ILocalizer,
+                               protected ITimerCallback,
+                               protected ISettingCallback
 {
 public:
-  CGUIDialogSettingsBase(int windowId, const std::string &xmlFile);
-  virtual ~CGUIDialogSettingsBase();
+  CGUIDialogSettingsBase(int windowId, const std::string& xmlFile);
+  ~CGUIDialogSettingsBase() override;
 
   // specializations of CGUIControl
-  virtual bool OnMessage(CGUIMessage &message);
-  virtual bool OnAction(const CAction &action);
-  virtual bool OnBack(int actionID);
-  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  bool OnMessage(CGUIMessage& message) override;
+  bool OnAction(const CAction& action) override;
+  bool OnBack(int actionID) override;
+  void DoProcess(unsigned int currentTime, CDirtyRegionList& dirtyregions) override;
 
   virtual bool IsConfirmed() const { return m_confirmed; }
 
+  // implementation of ILocalizer
+  std::string Localize(std::uint32_t code) const override { return GetLocalizedString(code); }
+
 protected:
   // specializations of CGUIWindow
-  virtual void OnInitWindow();
+  void OnInitWindow() override;
 
   // implementations of ITimerCallback
-  virtual void OnTimeout();
+  void OnTimeout() override;
 
   // implementations of ISettingCallback
-  virtual void OnSettingChanged(const CSetting *setting);
-  virtual void OnSettingPropertyChanged(const CSetting *setting, const char *propertyName);
+  void OnSettingChanged(const std::shared_ptr<const CSetting>& setting) override;
+  void OnSettingPropertyChanged(const std::shared_ptr<const CSetting>& setting,
+                                const char* propertyName) override;
 
   // new virtual methods
   virtual bool AllowResettingSettings() const { return true; }
   virtual int GetSettingLevel() const { return 0; }
-  virtual CSettingSection* GetSection() = 0;
-  virtual CSetting* GetSetting(const std::string &settingId) = 0;
-  virtual void Save() = 0;
-  virtual unsigned int GetDelayMs() const { return 1500; }
+  virtual std::shared_ptr<CSettingSection> GetSection() = 0;
+  virtual std::shared_ptr<CSetting> GetSetting(const std::string& settingId) = 0;
+  virtual std::chrono::milliseconds GetDelayMs() const { return std::chrono::milliseconds(1500); }
   virtual std::string GetLocalizedString(uint32_t labelId) const;
 
-  virtual void OnOkay() { m_confirmed = true; }
-  virtual void OnCancel() { }
+  virtual bool OnOkay()
+  {
+    m_confirmed = true;
+    return true;
+  }
+  virtual void OnCancel() {}
 
   virtual void SetupView();
   virtual std::set<std::string> CreateSettings();
@@ -116,18 +115,23 @@ protected:
     \param pSetting Base settings class which need the name
     \return Name used on settings dialog
    */
-  virtual std::string GetSettingsLabel(CSetting *pSetting);
+  virtual std::string GetSettingsLabel(const std::shared_ptr<ISetting>& pSetting);
 
-  virtual CGUIControl* AddSetting(CSetting *pSetting, float width, int &iControlID);
-  virtual CGUIControl* AddSettingControl(CGUIControl *pControl, BaseSettingControlPtr pSettingControl, float width, int &iControlID);
+  virtual CGUIControl* AddSetting(const std::shared_ptr<CSetting>& pSetting,
+                                  float width,
+                                  int& iControlID);
+  virtual CGUIControl* AddSettingControl(CGUIControl* pControl,
+                                         BaseSettingControlPtr pSettingControl,
+                                         float width,
+                                         int& iControlID);
 
   virtual void SetupControls(bool createSettings = true);
   virtual void FreeControls();
   virtual void DeleteControls();
   virtual void FreeSettingsControls();
 
-  virtual void SetHeading(const CVariant &label);
-  virtual void SetDescription(const CVariant &label);
+  virtual void SetHeading(const CVariant& label);
+  virtual void SetDescription(const CVariant& label);
 
   virtual void OnResetSettings();
 
@@ -142,38 +146,44 @@ protected:
 
     \param pSettingControl Setting control that has been interacted with
    */
-  virtual void OnClick(BaseSettingControlPtr pSettingControl);
+  virtual void OnClick(const BaseSettingControlPtr& pSettingControl);
 
-  void UpdateSettingControl(const std::string &settingId);
-  void UpdateSettingControl(BaseSettingControlPtr pSettingControl);
-  void SetControlLabel(int controlId, const CVariant &label);
+  void UpdateSettingControl(const std::string& settingId, bool updateDisplayOnly = false);
+  void UpdateSettingControl(const BaseSettingControlPtr& pSettingControl,
+                            bool updateDisplayOnly = false);
+  void SetControlLabel(int controlId, const CVariant& label);
 
-  BaseSettingControlPtr GetSettingControl(const std::string &setting);
+  BaseSettingControlPtr GetSettingControl(const std::string& setting);
   BaseSettingControlPtr GetSettingControl(int controlId);
 
-  CGUIControl* AddSeparator(float width, int &iControlID);
-  CGUIControl* AddLabel(float width, int &iControlID, int label);
+  CGUIControl* AddSeparator(float width, int& iControlID);
+  CGUIControl* AddGroupLabel(const std::shared_ptr<CSettingGroup>& group,
+                             float width,
+                             int& iControlID);
 
-  std::vector<CSettingCategory*> m_categories;
+  std::vector<std::shared_ptr<CSettingCategory>> m_categories;
   std::vector<BaseSettingControlPtr> m_settingControls;
 
-  int m_iSetting;
-  int m_iCategory;
-  CSettingAction *m_resetSetting;
-  CSettingCategory *m_dummyCategory;
+  int m_iSetting = 0;
+  int m_iCategory = 0;
+  std::shared_ptr<CSettingAction> m_resetSetting;
+  std::shared_ptr<CSettingCategory> m_dummyCategory;
 
-  CGUISpinControlEx *m_pOriginalSpin;
-  CGUISettingsSliderControl *m_pOriginalSlider;
-  CGUIRadioButtonControl *m_pOriginalRadioButton;
-  CGUIButtonControl *m_pOriginalCategoryButton;
-  CGUIButtonControl *m_pOriginalButton;
-  CGUIEditControl *m_pOriginalEdit;
-  CGUIImage *m_pOriginalImage;
-  CGUILabelControl *m_pOriginalGroupTitle;
-  bool m_newOriginalEdit;
+  CGUISpinControlEx* m_pOriginalSpin;
+  CGUISettingsSliderControl* m_pOriginalSlider;
+  CGUIRadioButtonControl* m_pOriginalRadioButton;
+  CGUIColorButtonControl* m_pOriginalColorButton = nullptr;
+  CGUIButtonControl* m_pOriginalCategoryButton;
+  CGUIButtonControl* m_pOriginalButton;
+  CGUIEditControl* m_pOriginalEdit;
+  CGUIImage* m_pOriginalImage;
+  CGUILabelControl* m_pOriginalGroupTitle;
+  bool m_newOriginalEdit = false;
 
-  BaseSettingControlPtr m_delayedSetting; ///< Current delayed setting \sa CBaseSettingControl::SetDelayed()
-  CTimer m_delayedTimer;                  ///< Delayed setting timer
+  BaseSettingControlPtr
+      m_delayedSetting; ///< Current delayed setting \sa CBaseSettingControl::SetDelayed()
+  CTimer m_delayedTimer; ///< Delayed setting timer
 
-  bool m_confirmed;
+  bool m_confirmed = false;
+  int m_focusedControl = 0, m_fadedControl = 0;
 };

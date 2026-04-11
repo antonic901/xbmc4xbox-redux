@@ -1,41 +1,35 @@
-#pragma once
 /*
- *      Copyright (C) 2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2013-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
+
+#include "utils/logtypes.h"
 
 #include <string>
 
 class TiXmlNode;
 
-typedef enum {
-  SettingUpdateTypeNone   = 0,
-  SettingUpdateTypeRename,
-  SettingUpdateTypeChange
-} SettingUpdateType;
+enum class SettingUpdateType {
+  Unknown = 0,
+  Rename,
+  Change
+};
 
 class CSettingUpdate
 {
 public:
   CSettingUpdate();
-  virtual ~CSettingUpdate() { }
+  virtual ~CSettingUpdate() = default;
 
-  bool operator<(const CSettingUpdate& rhs) const;
+  inline bool operator<(const CSettingUpdate& rhs) const
+  {
+    return m_type < rhs.m_type && m_value < rhs.m_value;
+  }
 
   virtual bool Deserialize(const TiXmlNode *node);
 
@@ -45,6 +39,8 @@ public:
 private:
   bool setType(const std::string &type);
 
-  SettingUpdateType m_type;
+  SettingUpdateType m_type = SettingUpdateType::Unknown;
   std::string m_value;
+
+  static Logger s_logger;
 };

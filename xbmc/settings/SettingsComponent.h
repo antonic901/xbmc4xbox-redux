@@ -8,13 +8,19 @@
 
 #pragma once
 
-#include "system.h" // xtl.h
-
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class CAdvancedSettings;
-class CProfilesManager;
+class CProfileManager;
 class CSettings;
+
+namespace KODI
+{
+namespace SUBTITLES
+{
+class CSubtitlesSettings;
+} // namespace SUBTITLES
+} // namespace KODI
 
 class CSettingsComponent
 {
@@ -42,33 +48,42 @@ public:
    * @brief Get access to the settings subcomponent.
    * @return the settings subcomponent.
    */
-  boost::shared_ptr<CSettings> GetSettings();
+  std::shared_ptr<CSettings> GetSettings();
 
   /*!
    * @brief Get access to the advanced settings subcomponent.
    * @return the advanced settings subcomponent.
    */
-  boost::shared_ptr<CAdvancedSettings> GetAdvancedSettings();
+  std::shared_ptr<CAdvancedSettings> GetAdvancedSettings();
+
+  /*!
+   * @brief Get access to the subtitles settings subcomponent.
+   * @return the subtiltles settings subcomponent.
+   */
+  std::shared_ptr<KODI::SUBTITLES::CSubtitlesSettings> GetSubtitlesSettings();
 
   /*!
    * @brief Get access to the profiles manager subcomponent.
    * @return the profiles manager subcomponent.
    */
-  boost::shared_ptr<CProfilesManager> GetProfileManager();
+  std::shared_ptr<CProfileManager> GetProfileManager();
 
 private:
-  bool InitDirectoriesXbox(bool bPlatformDirectories);
+  bool InitDirectoriesLinux(bool bPlatformDirectories);
+  bool InitDirectoriesOSX(bool bPlatformDirectories);
+  bool InitDirectoriesWin32(bool bPlatformDirectories);
   void CreateUserDirs() const;
 
-  enum State
+  enum class State
   {
     DEINITED,
     INITED,
     LOADED
   };
-  State m_state;
+  State m_state = State::DEINITED;
 
-  boost::shared_ptr<CSettings> m_settings;
-  boost::shared_ptr<CAdvancedSettings> m_advancedSettings;
-  boost::shared_ptr<CProfilesManager> m_profileManager;
+  std::shared_ptr<CSettings> m_settings;
+  std::shared_ptr<CAdvancedSettings> m_advancedSettings;
+  std::shared_ptr<KODI::SUBTITLES::CSubtitlesSettings> m_subtitlesSettings;
+  std::shared_ptr<CProfileManager> m_profileManager;
 };

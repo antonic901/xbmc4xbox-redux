@@ -1,27 +1,16 @@
-#pragma once
 /*
- *      Copyright (C) 2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2013-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
-#include <string>
-#include <vector>
+
+#pragma once
 
 #include "SettingRequirement.h"
+
+#include <string>
 
 class CSettingsManager;
 class TiXmlNode;
@@ -39,8 +28,8 @@ public:
    \param id Identifier of the setting object
    \param settingsManager Reference to the settings manager
    */
-  ISetting(const std::string &id, CSettingsManager *settingsManager = NULL);
-  virtual ~ISetting() { }
+  ISetting(const std::string &id, CSettingsManager *settingsManager = nullptr);
+  virtual ~ISetting() = default;
 
   /*!
    \brief Deserializes the given XML node into the properties of the setting
@@ -78,7 +67,7 @@ public:
 
    \return Localizeable label ID of the setting group
    */
-  const int GetLabel() const { return m_label; }
+  int GetLabel() const { return m_label; }
   /*!
    \brief Sets the localizeable label ID of the setting group.
 
@@ -90,7 +79,7 @@ public:
 
    \return Localizeable help ID of the setting group
    */
-  const int GetHelp() const { return m_help; }
+  int GetHelp() const { return m_help; }
   /*!
    \brief Sets the localizeable help ID of the setting group.
 
@@ -125,13 +114,26 @@ public:
   static bool DeserializeIdentification(const TiXmlNode *node, std::string &identification);
 
 protected:
+  static constexpr int DefaultLabel = -1;
+  /*!
+   \brief Deserializes the given XML node to retrieve a setting object's identifier from the given attribute.
+
+   \param node XML node containing a setting object's identifier
+   \param attribute Attribute which contains the setting object's identifier
+   \param identification Will contain the deserialized setting object's identifier
+   \return True if a setting object's identifier was deserialized, false otherwise
+   */
+  static bool DeserializeIdentificationFromAttribute(const TiXmlNode* node,
+                                                     const std::string& attribute,
+                                                     std::string& identification);
+
   std::string m_id;
   CSettingsManager *m_settingsManager;
 
 private:
-  bool m_visible;
-  int m_label;
-  int m_help;
-  bool m_meetsRequirements;
+  bool m_visible = true;
+  int m_label = DefaultLabel;
+  int m_help = -1;
+  bool m_meetsRequirements = true;
   CSettingRequirement m_requirementCondition;
 };

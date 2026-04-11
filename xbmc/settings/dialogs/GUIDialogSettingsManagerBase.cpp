@@ -1,70 +1,64 @@
 /*
- *      Copyright (C) 2014 Team XBMC
- *      http://www.xbmc.org
+ *  Copyright (C) 2014-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <set>
-#include <string>
-
 #include "GUIDialogSettingsManagerBase.h"
+
 #include "settings/lib/SettingsManager.h"
 
+#include <cassert>
+
 CGUIDialogSettingsManagerBase::CGUIDialogSettingsManagerBase(int windowId, const std::string &xmlFile)
-    : CGUIDialogSettingsBase(windowId, xmlFile),
-      m_settingsManager(NULL)
+    : CGUIDialogSettingsBase(windowId, xmlFile)
 { }
 
-CGUIDialogSettingsManagerBase::~CGUIDialogSettingsManagerBase()
+CGUIDialogSettingsManagerBase::~CGUIDialogSettingsManagerBase() = default;
+
+std::shared_ptr<CSetting> CGUIDialogSettingsManagerBase::GetSetting(const std::string &settingId)
 {
-  m_settingsManager = NULL;
+  assert(GetSettingsManager() != nullptr);
+
+  return GetSettingsManager()->GetSetting(settingId);
 }
 
-CSetting* CGUIDialogSettingsManagerBase::GetSetting(const std::string &settingId)
+bool CGUIDialogSettingsManagerBase::OnOkay()
 {
-  assert(m_settingsManager != NULL);
+  if (Save())
+  {
+    CGUIDialogSettingsBase::OnOkay();
+    return true;
+  }
 
-  return m_settingsManager->GetSetting(settingId);
+  return false;
 }
 
 std::set<std::string> CGUIDialogSettingsManagerBase::CreateSettings()
 {
-  assert(m_settingsManager != NULL);
+  assert(GetSettingsManager() != nullptr);
 
   std::set<std::string> settings = CGUIDialogSettingsBase::CreateSettings();
 
   if (!settings.empty())
-    m_settingsManager->RegisterCallback(this, settings);
+    GetSettingsManager()->RegisterCallback(this, settings);
 
   return settings;
 }
 
 void CGUIDialogSettingsManagerBase::FreeSettingsControls()
 {
-  assert(m_settingsManager != NULL);
-
   CGUIDialogSettingsBase::FreeSettingsControls();
 
-  m_settingsManager->UnregisterCallback(this);
+  if (GetSettingsManager() != nullptr)
+    GetSettingsManager()->UnregisterCallback(this);
 }
 
-ISettingControl* CGUIDialogSettingsManagerBase::CreateControl(const std::string &controlType) const
+std::shared_ptr<ISettingControl> CGUIDialogSettingsManagerBase::CreateControl(const std::string &controlType) const
 {
-  assert(m_settingsManager != NULL);
+  assert(GetSettingsManager() != nullptr);
 
-  return m_settingsManager->CreateControl(controlType);
+  return GetSettingsManager()->CreateControl(controlType);
 }

@@ -1,39 +1,32 @@
-#pragma once
 /*
- *      Copyright (C) 2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2013-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <map>
-#include <set>
-#include <vector>
+#pragma once
 
 #include "ISettingCallback.h"
 #include "ISettingControlCreator.h"
 #include "ISettingCreator.h"
 #include "ISettingsHandler.h"
-#include "ISubSettings.h"
+#include "ISettingsValueSerializer.h"
 #include "Setting.h"
 #include "SettingConditions.h"
 #include "SettingDefinitions.h"
 #include "SettingDependency.h"
 #include "threads/SharedSection.h"
+#include "utils/logtypes.h"
 
+#include <map>
+#include <set>
+#include <unordered_set>
+#include <vector>
+
+class CSettingCategory;
+class CSettingGroup;
 class CSettingSection;
 class CSettingUpdate;
 
@@ -45,22 +38,37 @@ class TiXmlNode;
  \brief Settings manager responsible for initializing, loading and handling
  all settings.
  */
-class CSettingsManager : public ISettingCreator, public ISettingControlCreator,
+class CSettingsManager : public ISettingCreator,
+                         public ISettingControlCreator,
                          private ISettingCallback,
-                         private ISettingsHandler, private ISubSettings
+                         private ISettingsHandler
 {
 public:
   /*!
    \brief Creates a new (uninitialized) settings manager.
    */
   CSettingsManager();
-  virtual ~CSettingsManager();
+  ~CSettingsManager() override;
+
+  static const uint32_t Version;
+  static const uint32_t MinimumSupportedVersion;
 
   // implementation of ISettingCreator
-  virtual CSetting* CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager = NULL) const;
+  std::shared_ptr<CSetting> CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager = nullptr) const override;
 
   // implementation of ISettingControlCreator
-  virtual ISettingControl* CreateControl(const std::string &controlType) const;
+  std::shared_ptr<ISettingControl> CreateControl(const std::string &controlType) const override;
+
+  uint32_t GetVersion() const { return Version; }
+  uint32_t GetMinimumSupportedVersion() const { return MinimumSupportedVersion; }
+
+  /*!
+   \brief Try to get the version of the setting definitions/values represented by the given XML element.
+
+   \param root XML element representing setting definitions/values
+   \return Version of the setting definitions/values or 0 if no version has been specified
+   */
+  uint32_t ParseVersion(const TiXmlElement* root) const;
 
   /*!
    \brief Initializes the settings manager using the setting definitions
@@ -79,14 +87,14 @@ public:
    \param loadedSettings A list to fill with all the successfully loaded settings
    \return True if the setting values were successfully loaded, false otherwise
    */
-  bool Load(const TiXmlElement *root, bool &updated, bool triggerEvents = true, std::map<std::string, CSetting*> *loadedSettings = NULL);
+  bool Load(const TiXmlElement *root, bool &updated, bool triggerEvents = true, std::map<std::string, std::shared_ptr<CSetting>> *loadedSettings = nullptr);
   /*!
-   \brief Saves the setting values to the given XML node.
+   \brief Saves the setting values using the given serializer.
 
-   \param root XML node
-   \return True if the setting values were successfully saved, false otherwise
+   \param serializer Settings value serializer to use
+   \return True if the setting values were successfully serialized, false otherwise
    */
-  virtual bool Save(TiXmlNode *root) const;
+  bool Save(const ISettingsValueSerializer* serializer, std::string& serializedValues) const;
   /*!
    \brief Unloads the previously loaded setting values.
 
@@ -131,6 +139,10 @@ public:
    */
   void SetInitialized();
   /*!
+  \brief Returns whether the settings system has been initialized or not.
+  */
+  bool IsInitialized() const { return m_initialized; }
+  /*!
    \brief Tells the settings system that all setting values
    have been loaded.
 
@@ -143,7 +155,36 @@ public:
   */
   bool IsLoaded() const { return m_loaded; }
 
-  void AddSection(CSettingSection *section);
+  /*!
+   \brief Adds the given section, its categories, groups and settings.
+
+   This is possible before and after the setting definitions have been
+   initialized.
+   */
+  void AddSection(const std::shared_ptr<CSettingSection>& section);
+
+  /*!
+   \brief Adds the given setting to the given group in the given category in
+   the given section;
+
+   If the given section has not been added yet, it is added. If the given
+   category has not been added to the given section yet, it is added. If the
+   given group has not been added to the given category yet, it is added. If
+   the given setting has not been added to the given group yet, it is added.
+
+   This is possible before and after the setting definitions have been
+   initialized.
+
+   \param setting New setting to be added
+   \param section Section the new setting should be added to
+   \param category Category the new setting should be added to
+   \param group Group the new setting should be added to
+   \return True if the setting has been added, false otherwise
+   */
+  bool AddSetting(const std::shared_ptr<CSetting>& setting,
+                  const std::shared_ptr<CSettingSection>& section,
+                  const std::shared_ptr<CSettingCategory>& category,
+                  const std::shared_ptr<CSettingGroup>& group);
 
   /*!
    \brief Registers the given ISettingCallback implementation to be triggered
@@ -190,27 +231,15 @@ public:
    \brief Registers the given ISettingsHandler implementation.
 
    \param settingsHandler ISettingsHandler implementation
+   \param bFront If True, insert the handler in front of other registered handlers, insert at the end otherwise.
    */
-  void RegisterSettingsHandler(ISettingsHandler *settingsHandler);
+  void RegisterSettingsHandler(ISettingsHandler *settingsHandler, bool bFront = false);
   /*!
    \brief Unregisters the given ISettingsHandler implementation.
 
    \param settingsHandler ISettingsHandler implementation
    */
   void UnregisterSettingsHandler(ISettingsHandler *settingsHandler);
-
-  /*!
-   \brief Registers the given ISubSettings implementation.
-
-   \param subSettings ISubSettings implementation
-   */
-  void RegisterSubSettings(ISubSettings *subSettings);
-  /*!
-   \brief Unregisters the given ISubSettings implementation.
-
-   \param subSettings ISubSettings implementation
-   */
-  void UnregisterSubSettings(ISubSettings *subSettings);
 
   /*!
    \brief Registers the given integer setting options filler under the given identifier.
@@ -239,28 +268,34 @@ public:
    \param setting Setting object
    \return Implementation of the setting options filler (either IntegerSettingOptionsFiller or StringSettingOptionsFiller)
    */
-  void* GetSettingOptionsFiller(const CSetting *setting);
+  void* GetSettingOptionsFiller(const std::shared_ptr<const CSetting>& setting);
+
+  /*!
+   \brief Checks whether any settings have been initialized.
+   
+   \return True if at least one setting has been initialized, false otherwise*/
+  bool HasSettings() const;
 
   /*!
    \brief Gets the setting with the given identifier.
 
    \param id Setting identifier
-   \return Setting object with the given identifier or NULL if the identifier is unknown
+   \return Setting object with the given identifier or nullptr if the identifier is unknown
    */
-  CSetting* GetSetting(const std::string &id) const;
+  std::shared_ptr<CSetting> GetSetting(const std::string &id) const;
   /*!
    \brief Gets the full list of setting sections.
 
    \return List of setting sections
    */
-  std::vector<CSettingSection*> GetSections() const;
+  std::vector<std::shared_ptr<CSettingSection>> GetSections() const;
   /*!
    \brief Gets the setting section with the given identifier.
 
    \param section Setting section identifier
-   \return Setting section with the given identifier or NULL if the identifier is unknown
+   \return Setting section with the given identifier or nullptr if the identifier is unknown
    */
-  CSettingSection* GetSection(const std::string &section) const;
+  std::shared_ptr<CSettingSection> GetSection(std::string section) const;
   /*!
    \brief Gets a map of settings (and their dependencies) which depend on
    the setting with the given identifier.
@@ -285,7 +320,7 @@ public:
    \param setting Setting object
    \return Map of settings (and their dependencies) which depend on the given setting
    */
-  SettingDependencyMap GetDependencies(const CSetting *setting) const;
+  SettingDependencyMap GetDependencies(const std::shared_ptr<const CSetting>& setting) const;
 
   /*!
    \brief Gets the boolean value of the setting with the given identifier.
@@ -321,7 +356,7 @@ public:
    \param id Setting identifier
    \return List of values of the setting with the given identifier
    */
-  std::vector< boost::shared_ptr<CSetting> > GetList(const std::string &id) const;
+  std::vector< std::shared_ptr<CSetting> > GetList(const std::string &id) const;
 
   /*!
    \brief Sets the boolean value of the setting with the given identifier.
@@ -369,7 +404,19 @@ public:
    \param value Values to set
    \return True if setting the values was successful, false otherwise
    */
-  bool SetList(const std::string &id, const std::vector< boost::shared_ptr<CSetting> > &value);
+  bool SetList(const std::string &id, const std::vector< std::shared_ptr<CSetting> > &value);
+
+  /*!
+   \brief Sets the value of the setting to its default.
+
+   \param id Setting identifier
+   \return True if setting the value to its default was successful, false otherwise
+   */
+  bool SetDefault(const std::string &id);
+  /*!
+  \brief Sets the value of all settings to their default.
+  */
+  void SetDefaults();
 
   /*!
    \brief Gets the setting conditions manager used by the settings manager.
@@ -396,78 +443,112 @@ public:
    \param condition Implementation of the dynamic condition
    \param data Opaque data pointer, will be passed back to SettingConditionCheck function
    */
-  void AddCondition(const std::string &identifier, SettingConditionCheck condition, void *data = NULL);
+  void AddDynamicCondition(const std::string &identifier, SettingConditionCheck condition, void *data = nullptr);
+
+  /*!
+   \brief Removes the given dynamic condition.
+
+   \param identifier Identifier of the dynamic condition
+   */
+  void RemoveDynamicCondition(const std::string &identifier);
 
 private:
   // implementation of ISettingCallback
-  virtual bool OnSettingChanging(const CSetting *setting);
-  virtual void OnSettingChanged(const CSetting *setting);
-  virtual void OnSettingAction(const CSetting *setting);
-  virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
-  virtual void OnSettingPropertyChanged(const CSetting *setting, const char *propertyName);
+  bool OnSettingChanging(const std::shared_ptr<const CSetting>& setting) override;
+  void OnSettingChanged(const std::shared_ptr<const CSetting>& setting) override;
+  void OnSettingAction(const std::shared_ptr<const CSetting>& setting) override;
+  bool OnSettingUpdate(const std::shared_ptr<CSetting>& setting,
+                       const char* oldSettingId,
+                       const TiXmlNode* oldSettingNode) override;
+  void OnSettingPropertyChanged(const std::shared_ptr<const CSetting>& setting,
+                                const char* propertyName) override;
 
   // implementation of ISettingsHandler
-  virtual bool OnSettingsLoading();
-  virtual void OnSettingsLoaded();
-  virtual void OnSettingsUnloaded();
-  virtual bool OnSettingsSaving() const;
-  virtual void OnSettingsSaved() const;
-  virtual void OnSettingsCleared();
-
-  // implementation of ISubSettings
-  virtual bool Load(const TiXmlNode *settings);
+  bool OnSettingsLoading() override;
+  void OnSettingsLoaded() override;
+  void OnSettingsUnloaded() override;
+  bool OnSettingsSaving() const override;
+  void OnSettingsSaved() const override;
+  void OnSettingsCleared() override;
 
   bool Serialize(TiXmlNode *parent) const;
-  bool Deserialize(const TiXmlNode *node, bool &updated, std::map<std::string, CSetting*> *loadedSettings = NULL);
+  bool Deserialize(const TiXmlNode *node, bool &updated, std::map<std::string, std::shared_ptr<CSetting>> *loadedSettings = nullptr);
 
-  bool LoadSetting(const TiXmlNode *node, CSetting *setting, bool &updated);
-  bool UpdateSetting(const TiXmlNode *node, CSetting *setting, const CSettingUpdate& update);
+  bool LoadSetting(const TiXmlNode* node, const std::shared_ptr<CSetting>& setting, bool& updated);
+  bool UpdateSetting(const TiXmlNode* node,
+                     const std::shared_ptr<CSetting>& setting,
+                     const CSettingUpdate& update);
   void UpdateSettingByDependency(const std::string &settingId, const CSettingDependency &dependency);
   void UpdateSettingByDependency(const std::string &settingId, SettingDependencyType dependencyType);
 
-  typedef enum {
-    SettingOptionsFillerTypeNone = 0,
-    SettingOptionsFillerTypeInteger,
-    SettingOptionsFillerTypeString
-  } SettingOptionsFillerType;
+  void AddSetting(const std::shared_ptr<CSetting>& setting);
+
+  void ResolveReferenceSettings(const std::shared_ptr<CSettingSection>& section);
+  void CleanupIncompleteSettings();
+
+  enum class SettingOptionsFillerType {
+    Unknown = 0,
+    Integer,
+    String
+  };
 
   void RegisterSettingOptionsFiller(const std::string &identifier, void *filler, SettingOptionsFillerType type);
 
-  typedef std::set<ISettingCallback *> CallbackSet;
-  typedef struct {
-    CSetting *setting;
+  using CallbackSet = std::set<ISettingCallback *>;
+  struct Setting {
+    std::shared_ptr<CSetting> setting;
     SettingDependencyMap dependencies;
     std::set<std::string> children;
     CallbackSet callbacks;
-  } Setting;
+    std::unordered_set<std::string> references;
+  };
 
-  bool m_initialized;
-  bool m_loaded;
+  using SettingMap = std::map<std::string, Setting>;
 
-  typedef std::map<std::string, Setting> SettingMap;
+  /*!
+   * \brief Refresh the visibility and enable status of a given setting
+   *
+   * \details A setting might have its visibility/enable status bound to complex conditions and, at the same time, depend
+   * on other settings. When those settings change, the visibility/enable status need to be refreshed (i.e. the complex condition must be re-evaluated)
+   *
+   * \param setting Setting object
+  */
+  void RefreshVisibilityAndEnableStatus(const std::shared_ptr<const CSetting>& setting);
+
+  void ResolveSettingDependencies(const std::shared_ptr<CSetting>& setting);
+  void ResolveSettingDependencies(const Setting& setting);
+
+  SettingMap::const_iterator FindSetting(std::string settingId) const;
+  SettingMap::iterator FindSetting(std::string settingId);
+  std::pair<SettingMap::iterator, bool> InsertSetting(std::string settingId, const Setting& setting);
+
+  bool m_initialized = false;
+  bool m_loaded = false;
+
   SettingMap m_settings;
-  typedef std::map<std::string, CSettingSection*> SettingSectionMap;
+  using SettingSectionMap = std::map<std::string, std::shared_ptr<CSettingSection>>;
   SettingSectionMap m_sections;
 
-  typedef std::map<std::string, ISettingCreator*> SettingCreatorMap;
+  using SettingCreatorMap = std::map<std::string, ISettingCreator*>;
   SettingCreatorMap m_settingCreators;
 
-  typedef std::map<std::string, ISettingControlCreator*> SettingControlCreatorMap;
+  using SettingControlCreatorMap = std::map<std::string, ISettingControlCreator*>;
   SettingControlCreatorMap m_settingControlCreators;
 
-  std::set<ISubSettings*> m_subSettings;
-  typedef std::vector<ISettingsHandler*> SettingsHandlers;
+  using SettingsHandlers = std::vector<ISettingsHandler*>;
   SettingsHandlers m_settingsHandlers;
 
   CSettingConditionsManager m_conditions;
 
-  typedef struct {
+  struct SettingOptionsFiller {
     void *filler;
     SettingOptionsFillerType type;
-  } SettingOptionsFiller;
-  typedef std::map<std::string, SettingOptionsFiller> SettingOptionsFillerMap;
+  };
+  using SettingOptionsFillerMap = std::map<std::string, SettingOptionsFiller>;
   SettingOptionsFillerMap m_optionsFillers;
 
-  CSharedSection m_critical;
-  CSharedSection m_settingsCritical;
+  mutable CSharedSection m_critical;
+  mutable CSharedSection m_settingsCritical;
+
+  Logger m_logger;
 };

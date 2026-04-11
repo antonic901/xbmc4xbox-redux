@@ -1,44 +1,36 @@
-#pragma once
 /*
- *      Copyright (C) 2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2013-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
+
+#include "SettingDefinitions.h"
+#include "utils/BooleanLogic.h"
 
 #include <map>
 #include <set>
 #include <string>
 #include <utility>
 
-#include "SettingDefinitions.h"
-#include "utils/BooleanLogic.h"
-
 class CSettingsManager;
 class CSetting;
 
-typedef bool (*SettingConditionCheck)(const std::string &condition, const std::string &value, const CSetting *setting, void *data);
+using SettingConditionCheck = bool (*)(const std::string& condition,
+                                       const std::string& value,
+                                       const std::shared_ptr<const CSetting>& setting,
+                                       void* data);
 
 class ISettingCondition
 {
 public:
-  ISettingCondition(CSettingsManager *settingsManager)
+  explicit ISettingCondition(CSettingsManager *settingsManager)
     : m_settingsManager(settingsManager)
   { }
-  virtual ~ISettingCondition() { }
+  virtual ~ISettingCondition() = default;
 
   virtual bool Check() const = 0;
 
@@ -49,14 +41,14 @@ protected:
 class CSettingConditionItem : public CBooleanLogicValue, public ISettingCondition
 {
 public:
-  CSettingConditionItem(CSettingsManager *settingsManager = NULL)
+  explicit CSettingConditionItem(CSettingsManager *settingsManager = nullptr)
     : ISettingCondition(settingsManager)
   { }
-  virtual ~CSettingConditionItem() { }
+  ~CSettingConditionItem() override = default;
 
-  virtual bool Deserialize(const TiXmlNode *node);
-  virtual const char* GetTag() const { return SETTING_XML_ELM_CONDITION; }
-  virtual bool Check() const;
+  bool Deserialize(const TiXmlNode *node) override;
+  const char* GetTag() const override { return SETTING_XML_ELM_CONDITION; }
+  bool Check() const override;
 
 protected:
   std::string m_name;
@@ -66,44 +58,47 @@ protected:
 class CSettingConditionCombination : public CBooleanLogicOperation, public ISettingCondition
 {
 public:
-  CSettingConditionCombination(CSettingsManager *settingsManager = NULL)
+  explicit CSettingConditionCombination(CSettingsManager *settingsManager = nullptr)
     : ISettingCondition(settingsManager)
   { }
-  virtual ~CSettingConditionCombination() { }
+  ~CSettingConditionCombination() override = default;
 
-  virtual bool Check() const;
+  bool Check() const override;
 
 private:
-  virtual CBooleanLogicOperation* newOperation() { return new CSettingConditionCombination(m_settingsManager); }
-  virtual CBooleanLogicValue* newValue() { return new CSettingConditionItem(m_settingsManager); }
+  CBooleanLogicOperation* newOperation() override { return new CSettingConditionCombination(m_settingsManager); }
+  CBooleanLogicValue* newValue() override { return new CSettingConditionItem(m_settingsManager); }
 };
 
 class CSettingCondition : public CBooleanLogic, public ISettingCondition
 {
 public:
-  CSettingCondition(CSettingsManager *settingsManager = NULL);
-  virtual ~CSettingCondition() { }
+  explicit CSettingCondition(CSettingsManager *settingsManager = nullptr);
+  ~CSettingCondition() override = default;
 
-  virtual bool Check() const;
+  bool Check() const override;
 };
 
 class CSettingConditionsManager
 {
 public:
-  CSettingConditionsManager();
-  virtual ~CSettingConditionsManager();
+  CSettingConditionsManager() = default;
+  CSettingConditionsManager(const CSettingConditionsManager&) = delete;
+  CSettingConditionsManager const& operator=(CSettingConditionsManager const&) = delete;
+  virtual ~CSettingConditionsManager() = default;
 
-  void AddCondition(const std::string &condition);
-  void AddCondition(const std::string &identifier, SettingConditionCheck condition, void *data = NULL);
+  void AddCondition(std::string condition);
+  void AddDynamicCondition(std::string identifier, SettingConditionCheck condition, void *data = nullptr);
+  void RemoveDynamicCondition(std::string identifier);
 
-  bool Check(const std::string &condition, const std::string &value = "", const CSetting *setting = NULL) const;
+  bool Check(
+      std::string condition,
+      const std::string& value = "",
+      const std::shared_ptr<const CSetting>& setting = std::shared_ptr<const CSetting>()) const;
 
 private:
-  CSettingConditionsManager(const CSettingConditionsManager&);
-  CSettingConditionsManager const& operator=(CSettingConditionsManager const&);
-
-  typedef std::pair<std::string, std::pair<SettingConditionCheck, void*> > SettingConditionPair;
-  typedef std::map<std::string, std::pair<SettingConditionCheck, void*> > SettingConditionMap;
+  using SettingConditionPair = std::pair<std::string, std::pair<SettingConditionCheck, void*>>;
+  using SettingConditionMap = std::map<std::string, std::pair<SettingConditionCheck, void*>>;
 
   SettingConditionMap m_conditions;
   std::set<std::string> m_defines;
