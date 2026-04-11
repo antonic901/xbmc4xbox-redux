@@ -1,21 +1,9 @@
 /*
- *      Copyright (C) 2017 Team KODI
- *      http://kodi.tv
+ *  Copyright (C) 2017-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with KODI; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 // LibExportSettings.cpp: implementation of the CLibExportSettings class.
 //
@@ -63,20 +51,46 @@ bool CLibExportSettings::IsItemExported(ELIBEXPORTOPTIONS item) const
   return (m_itemstoexport & item);
 }
 
+bool CLibExportSettings::IsArtists() const
+{
+  return (m_itemstoexport & ELIBEXPORT_ALBUMARTISTS) ||
+         (m_itemstoexport & ELIBEXPORT_SONGARTISTS) ||
+         (m_itemstoexport & ELIBEXPORT_OTHERARTISTS);
+}
+
 std::vector<int> CLibExportSettings::GetExportItems() const
 {
   std::vector<int> values;
   if (IsItemExported(ELIBEXPORT_ALBUMS))
-    values.push_back(ELIBEXPORT_ALBUMS);
+    values.emplace_back(ELIBEXPORT_ALBUMS);
   if (IsItemExported(ELIBEXPORT_ALBUMARTISTS))
-    values.push_back(ELIBEXPORT_ALBUMARTISTS);
+    values.emplace_back(ELIBEXPORT_ALBUMARTISTS);
   if (IsItemExported(ELIBEXPORT_SONGARTISTS))
-    values.push_back(ELIBEXPORT_SONGARTISTS);
+    values.emplace_back(ELIBEXPORT_SONGARTISTS);
   if (IsItemExported(ELIBEXPORT_OTHERARTISTS))
-    values.push_back(ELIBEXPORT_OTHERARTISTS);
+    values.emplace_back(ELIBEXPORT_OTHERARTISTS);
   if (IsItemExported(ELIBEXPORT_ACTORTHUMBS))
-    values.push_back(ELIBEXPORT_ACTORTHUMBS);
+    values.emplace_back(ELIBEXPORT_ACTORTHUMBS);
+  if (IsItemExported(ELIBEXPORT_SONGS))
+    values.emplace_back(ELIBEXPORT_SONGS);
+  return values;
+}
 
+std::vector<int> CLibExportSettings::GetLimitedItems(int items) const
+{
+  std::vector<int> values;
+  if (IsItemExported(ELIBEXPORT_ALBUMS) && (items & ELIBEXPORT_ALBUMS))
+    values.emplace_back(ELIBEXPORT_ALBUMS);
+  if (IsItemExported(ELIBEXPORT_ALBUMARTISTS) && (items & ELIBEXPORT_ALBUMARTISTS))
+    values.emplace_back(ELIBEXPORT_ALBUMARTISTS);
+  if (IsItemExported(ELIBEXPORT_SONGARTISTS) && (items & ELIBEXPORT_SONGARTISTS))
+    values.emplace_back(ELIBEXPORT_SONGARTISTS);
+  if (IsItemExported(ELIBEXPORT_OTHERARTISTS) && (items & ELIBEXPORT_OTHERARTISTS))
+    values.emplace_back(ELIBEXPORT_OTHERARTISTS);
+  if (IsItemExported(ELIBEXPORT_ACTORTHUMBS) && (items & ELIBEXPORT_ACTORTHUMBS))
+    values.emplace_back(ELIBEXPORT_ACTORTHUMBS);
+  if (IsItemExported(ELIBEXPORT_SONGS) && (items & ELIBEXPORT_SONGS))
+    values.emplace_back(ELIBEXPORT_SONGS);
   return values;
 }
 
@@ -93,4 +107,9 @@ bool CLibExportSettings::IsSeparateFiles() const
 bool CLibExportSettings::IsToLibFolders() const
 {
   return (m_exporttype == ELIBEXPORT_TOLIBRARYFOLDER);
+}
+
+bool CLibExportSettings::IsArtistFoldersOnly() const
+{
+  return (m_exporttype == ELIBEXPORT_ARTISTFOLDERS);
 }
