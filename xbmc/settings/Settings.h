@@ -509,13 +509,13 @@ public:
    For access to the "global" settings wrapper the static GetInstance() method should
    be used.
    */
-  CSettings() = default;
-  ~CSettings() override = default;
+  CSettings() {}
+  virtual ~CSettings() {}
 
   CSettingsManager* GetSettingsManager() const { return m_settingsManager; }
 
   // specialization of CSettingsBase
-  bool Initialize() override;
+  virtual bool Initialize();
 
   /*!
    \brief Registers the given ISubSettings implementation.
@@ -531,8 +531,8 @@ public:
   void UnregisterSubSettings(ISubSettings* subSettings);
 
   // implementations of CSettingsBase
-  bool Load() override;
-  bool Save() override;
+  virtual bool Load();
+  virtual bool Save();
 
   /*!
    \brief Loads setting values from the given (XML) file.
@@ -570,7 +570,7 @@ public:
    \param root XML node
    \return True if the setting values were successfully saved, false otherwise
    */
-  bool Save(TiXmlNode* root) const override;
+  virtual bool Save(TiXmlNode* root) const;
 
   /*!
    \brief Loads the setting being represented by the given XML node with the
@@ -592,27 +592,27 @@ public:
    returns to the uninitialized state. Any registered callbacks or
    implementations stay registered.
    */
-  void Clear() override;
+  virtual void Clear();
 
 protected:
   // specializations of CSettingsBase
-  void InitializeSettingTypes() override;
-  void InitializeControls() override;
-  void InitializeOptionFillers() override;
-  void UninitializeOptionFillers() override;
-  void InitializeConditions() override;
-  void UninitializeConditions() override;
-  void InitializeVisibility() override;
-  void InitializeDefaults() override;
-  void InitializeISettingsHandlers() override;
-  void UninitializeISettingsHandlers() override;
-  void InitializeISubSettings() override;
-  void UninitializeISubSettings() override;
-  void InitializeISettingCallbacks() override;
-  void UninitializeISettingCallbacks() override;
+  virtual void InitializeSettingTypes();
+  virtual void InitializeControls();
+  virtual void InitializeOptionFillers();
+  virtual void UninitializeOptionFillers();
+  virtual void InitializeConditions();
+  virtual void UninitializeConditions();
+  virtual void InitializeVisibility();
+  virtual void InitializeDefaults();
+  virtual void InitializeISettingsHandlers();
+  virtual void UninitializeISettingsHandlers();
+  virtual void InitializeISubSettings();
+  virtual void UninitializeISubSettings();
+  virtual void InitializeISettingCallbacks();
+  virtual void UninitializeISettingCallbacks();
 
   // implementation of CSettingsBase
-  bool InitializeDefinitions() override;
+  virtual bool InitializeDefinitions();
 
 private:
   CSettings(const CSettings&) = delete;
@@ -621,7 +621,7 @@ private:
   bool Load(const TiXmlElement* root, bool& updated);
 
   // implementation of ISubSettings
-  bool Load(const TiXmlNode* settings) override;
+  virtual bool Load(const TiXmlNode* settings);
 
   bool Initialize(const std::string &file);
   bool Reset();

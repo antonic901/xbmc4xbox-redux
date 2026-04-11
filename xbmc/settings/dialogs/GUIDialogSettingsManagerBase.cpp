@@ -16,11 +16,11 @@ CGUIDialogSettingsManagerBase::CGUIDialogSettingsManagerBase(int windowId, const
     : CGUIDialogSettingsBase(windowId, xmlFile)
 { }
 
-CGUIDialogSettingsManagerBase::~CGUIDialogSettingsManagerBase() = default;
+CGUIDialogSettingsManagerBase::~CGUIDialogSettingsManagerBase() {}
 
-std::shared_ptr<CSetting> CGUIDialogSettingsManagerBase::GetSetting(const std::string &settingId)
+boost::shared_ptr<CSetting> CGUIDialogSettingsManagerBase::GetSetting(const std::string &settingId)
 {
-  assert(GetSettingsManager() != nullptr);
+  assert(GetSettingsManager() != NULL);
 
   return GetSettingsManager()->GetSetting(settingId);
 }
@@ -38,7 +38,7 @@ bool CGUIDialogSettingsManagerBase::OnOkay()
 
 std::set<std::string> CGUIDialogSettingsManagerBase::CreateSettings()
 {
-  assert(GetSettingsManager() != nullptr);
+  assert(GetSettingsManager() != NULL);
 
   std::set<std::string> settings = CGUIDialogSettingsBase::CreateSettings();
 
@@ -52,13 +52,13 @@ void CGUIDialogSettingsManagerBase::FreeSettingsControls()
 {
   CGUIDialogSettingsBase::FreeSettingsControls();
 
-  if (GetSettingsManager() != nullptr)
+  if (GetSettingsManager() != NULL)
     GetSettingsManager()->UnregisterCallback(this);
 }
 
-std::shared_ptr<ISettingControl> CGUIDialogSettingsManagerBase::CreateControl(const std::string &controlType) const
+boost::shared_ptr<ISettingControl> CGUIDialogSettingsManagerBase::CreateControl(const std::string &controlType) const
 {
-  assert(GetSettingsManager() != nullptr);
+  assert(GetSettingsManager() != NULL);
 
   return GetSettingsManager()->CreateControl(controlType);
 }

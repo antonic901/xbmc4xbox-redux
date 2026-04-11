@@ -19,14 +19,14 @@ enum class AddonType;
 class CSettingAddon : public CSettingString
 {
 public:
-  CSettingAddon(const std::string &id, CSettingsManager *settingsManager = nullptr);
-  CSettingAddon(const std::string &id, int label, const std::string &value, CSettingsManager *settingsManager = nullptr);
+  CSettingAddon(const std::string &id, CSettingsManager *settingsManager = NULL);
+  CSettingAddon(const std::string &id, int label, const std::string &value, CSettingsManager *settingsManager = NULL);
   CSettingAddon(const std::string &id, const CSettingAddon &setting);
-  ~CSettingAddon() override = default;
+  virtual ~CSettingAddon() {}
 
-  SettingPtr Clone(const std::string &id) const override;
+  virtual SettingPtr Clone(const std::string &id) const;
 
-  bool Deserialize(const TiXmlNode *node, bool update = false) override;
+  virtual bool Deserialize(const TiXmlNode *node, bool update = false);
 
   ADDON::AddonType GetAddonType() const { return m_addonType; }
   void SetAddonType(ADDON::AddonType addonType) { m_addonType = addonType; }

@@ -40,17 +40,17 @@ enum class SettingDependencyTarget {
 class CSettingDependencyCondition : public CSettingConditionItem
 {
 public:
-  explicit CSettingDependencyCondition(CSettingsManager *settingsManager = nullptr);
+  explicit CSettingDependencyCondition(CSettingsManager *settingsManager = NULL);
   CSettingDependencyCondition(const std::string &setting, const std::string &value,
                               SettingDependencyOperator op, bool negated = false,
-                              CSettingsManager *settingsManager = nullptr);
+                              CSettingsManager *settingsManager = NULL);
   CSettingDependencyCondition(const std::string &strProperty, const std::string &value,
                               const std::string &setting = "", bool negated = false,
-                              CSettingsManager *settingsManager = nullptr);
-  ~CSettingDependencyCondition() override = default;
+                              CSettingsManager *settingsManager = NULL);
+  virtual ~CSettingDependencyCondition() {}
 
-  bool Deserialize(const TiXmlNode *node) override;
-  bool Check() const override;
+  virtual bool Deserialize(const TiXmlNode *node);
+  virtual bool Check() const;
 
   const std::string& GetName() const { return m_name; }
   const std::string& GetSetting() const { return m_setting; }
@@ -75,25 +75,25 @@ private:
   static Logger s_logger;
 };
 
-using CSettingDependencyConditionPtr = std::shared_ptr<CSettingDependencyCondition>;
+using CSettingDependencyConditionPtr = boost::shared_ptr<CSettingDependencyCondition>;
 
 class CSettingDependencyConditionCombination;
-using CSettingDependencyConditionCombinationPtr = std::shared_ptr<CSettingDependencyConditionCombination>;
+using CSettingDependencyConditionCombinationPtr = boost::shared_ptr<CSettingDependencyConditionCombination>;
 
 class CSettingDependencyConditionCombination : public CSettingConditionCombination
 {
 public:
-  explicit CSettingDependencyConditionCombination(CSettingsManager *settingsManager = nullptr)
+  explicit CSettingDependencyConditionCombination(CSettingsManager *settingsManager = NULL)
     : CSettingConditionCombination(settingsManager)
   { }
-  CSettingDependencyConditionCombination(BooleanLogicOperation op, CSettingsManager *settingsManager = nullptr)
+  CSettingDependencyConditionCombination(BooleanLogicOperation op, CSettingsManager *settingsManager = NULL)
     : CSettingConditionCombination(settingsManager)
   {
     SetOperation(op);
   }
-  ~CSettingDependencyConditionCombination() override = default;
+  virtual ~CSettingDependencyConditionCombination() {}
 
-  bool Deserialize(const TiXmlNode *node) override;
+  virtual bool Deserialize(const TiXmlNode *node);
 
   const std::set<std::string>& GetSettings() const { return m_settings; }
 
@@ -102,8 +102,8 @@ public:
       const CSettingDependencyConditionCombinationPtr& operation);
 
 private:
-  CBooleanLogicOperation* newOperation() override { return new CSettingDependencyConditionCombination(m_settingsManager); }
-  CBooleanLogicValue* newValue() override { return new CSettingDependencyCondition(m_settingsManager); }
+  virtual CBooleanLogicOperation* newOperation() { return new CSettingDependencyConditionCombination(m_settingsManager); }
+  virtual CBooleanLogicValue* newValue() { return new CSettingDependencyCondition(m_settingsManager); }
 
   std::set<std::string> m_settings;
 };
@@ -111,11 +111,11 @@ private:
 class CSettingDependency : public CSettingCondition
 {
 public:
-  explicit CSettingDependency(CSettingsManager *settingsManager = nullptr);
-  CSettingDependency(SettingDependencyType type, CSettingsManager *settingsManager = nullptr);
-  ~CSettingDependency() override = default;
+  explicit CSettingDependency(CSettingsManager *settingsManager = NULL);
+  CSettingDependency(SettingDependencyType type, CSettingsManager *settingsManager = NULL);
+  virtual ~CSettingDependency() {}
 
-  bool Deserialize(const TiXmlNode *node) override;
+  virtual bool Deserialize(const TiXmlNode *node);
 
   SettingDependencyType GetType() const { return m_type; }
   std::set<std::string> GetSettings() const;

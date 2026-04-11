@@ -19,17 +19,17 @@ bool CSettingConditionItem::Deserialize(const TiXmlNode *node)
     return false;
 
   auto elem = node->ToElement();
-  if (elem == nullptr)
+  if (elem == NULL)
     return false;
 
   // get the "name" attribute
   auto strAttribute = elem->Attribute(SETTING_XML_ATTR_NAME);
-  if (strAttribute != nullptr)
+  if (strAttribute != NULL)
     m_name = strAttribute;
 
   // get the "setting" attribute
   strAttribute = elem->Attribute(SETTING_XML_ATTR_SETTING);
-  if (strAttribute != nullptr)
+  if (strAttribute != NULL)
     m_setting = strAttribute;
 
   return true;
@@ -37,7 +37,7 @@ bool CSettingConditionItem::Deserialize(const TiXmlNode *node)
 
 bool CSettingConditionItem::Check() const
 {
-  if (m_settingsManager == nullptr)
+  if (m_settingsManager == NULL)
     return false;
 
   return m_settingsManager->GetConditions().Check(m_name, m_value, m_settingsManager->GetSetting(m_setting)) == !m_negated;
@@ -48,11 +48,11 @@ bool CSettingConditionCombination::Check() const
   bool ok = false;
   for (const auto& operation : m_operations)
   {
-    if (operation == nullptr)
+    if (operation == NULL)
       continue;
 
-    const auto combination = std::static_pointer_cast<const CSettingConditionCombination>(operation);
-    if (combination == nullptr)
+    const auto combination = boost::static_pointer_cast<const CSettingConditionCombination>(operation);
+    if (combination == NULL)
       continue;
 
     if (combination->Check())
@@ -63,11 +63,11 @@ bool CSettingConditionCombination::Check() const
 
   for (const auto& value : m_values)
   {
-    if (value == nullptr)
+    if (value == NULL)
       continue;
 
-    const auto condition = std::static_pointer_cast<const CSettingConditionItem>(value);
-    if (condition == nullptr)
+    const auto condition = boost::static_pointer_cast<const CSettingConditionItem>(value);
+    if (condition == NULL)
       continue;
 
     if (condition->Check())
@@ -79,7 +79,7 @@ bool CSettingConditionCombination::Check() const
   return ok;
 }
 
-CSettingCondition::CSettingCondition(CSettingsManager *settingsManager /* = nullptr */)
+CSettingCondition::CSettingCondition(CSettingsManager *settingsManager /* = NULL */)
   : ISettingCondition(settingsManager)
 {
   m_operation = CBooleanLogicOperationPtr(new CSettingConditionCombination(settingsManager));
@@ -87,8 +87,8 @@ CSettingCondition::CSettingCondition(CSettingsManager *settingsManager /* = null
 
 bool CSettingCondition::Check() const
 {
-  auto combination = std::static_pointer_cast<CSettingConditionCombination>(m_operation);
-  if (combination == nullptr)
+  auto combination = boost::static_pointer_cast<CSettingConditionCombination>(m_operation);
+  if (combination == NULL)
     return false;
 
   return combination->Check();
@@ -104,9 +104,9 @@ void CSettingConditionsManager::AddCondition(std::string condition)
   m_defines.insert(condition);
 }
 
-void CSettingConditionsManager::AddDynamicCondition(std::string identifier, SettingConditionCheck condition, void *data /*= nullptr*/)
+void CSettingConditionsManager::AddDynamicCondition(std::string identifier, SettingConditionCheck condition, void *data /*= NULL*/)
 {
-  if (identifier.empty() || condition == nullptr)
+  if (identifier.empty() || condition == NULL)
     return;
 
   StringUtils::ToLower(identifier);
@@ -129,7 +129,7 @@ void CSettingConditionsManager::RemoveDynamicCondition(std::string identifier)
 bool CSettingConditionsManager::Check(
     std::string condition,
     const std::string& value /* = "" */,
-    const std::shared_ptr<const CSetting>& setting /* = nullptr */) const
+    const boost::shared_ptr<const CSetting>& setting /* = NULL */) const
 {
   if (condition.empty())
     return false;

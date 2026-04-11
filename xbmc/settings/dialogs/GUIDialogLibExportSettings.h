@@ -19,25 +19,25 @@ public:
   CGUIDialogLibExportSettings();
 
   // specialization of CGUIWindow
-  bool HasListItems() const override { return true; }
+  virtual bool HasListItems() const { return true; }
   static bool Show(CLibExportSettings& settings);
 
 protected:
   // specializations of CGUIWindow
-  void OnInitWindow() override;
+  virtual void OnInitWindow();
 
   // implementations of ISettingCallback
-  void OnSettingChanged(const std::shared_ptr<const CSetting>& setting) override;
-  void OnSettingAction(const std::shared_ptr<const CSetting>& setting) override;
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
+  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
 
   // specialization of CGUIDialogSettingsBase
-  bool OnMessage(CGUIMessage& message) override;
-  bool AllowResettingSettings() const override { return false; }
-  bool Save() override;
-  void SetupView() override;
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool AllowResettingSettings() const { return false; }
+  virtual bool Save();
+  virtual void SetupView();
 
   // specialization of CGUIDialogSettingsManualBase
-  void InitializeSettings() override;
+  virtual void InitializeSettings();
 
   void OnOK();
   void UpdateButtons();
@@ -55,6 +55,6 @@ private:
 
   CLibExportSettings m_settings;
   bool m_destinationChecked = false;
-  std::shared_ptr<CSettingBool> m_settingNFO;
-  std::shared_ptr<CSettingBool> m_settingArt;
+  boost::shared_ptr<CSettingBool> m_settingNFO;
+  boost::shared_ptr<CSettingBool> m_settingArt;
 };

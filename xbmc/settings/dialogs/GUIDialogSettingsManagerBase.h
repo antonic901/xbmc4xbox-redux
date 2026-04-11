@@ -16,19 +16,19 @@ class CGUIDialogSettingsManagerBase : public CGUIDialogSettingsBase
 {
 public:
   CGUIDialogSettingsManagerBase(int windowId, const std::string &xmlFile);
-  ~CGUIDialogSettingsManagerBase() override;
+  virtual ~CGUIDialogSettingsManagerBase();
 
 protected:
   virtual bool Save() = 0;
   virtual CSettingsManager* GetSettingsManager() const = 0;
 
   // implementation of CGUIDialogSettingsBase
-  std::shared_ptr<CSetting> GetSetting(const std::string &settingId) override;
-  bool OnOkay() override;
+  virtual boost::shared_ptr<CSetting> GetSetting(const std::string &settingId);
+  virtual bool OnOkay();
 
-  std::set<std::string> CreateSettings() override;
-  void FreeSettingsControls() override;
+  virtual std::set<std::string> CreateSettings();
+  virtual void FreeSettingsControls();
 
   // implementation of ISettingControlCreator
-  std::shared_ptr<ISettingControl> CreateControl(const std::string &controlType) const override;
+  virtual boost::shared_ptr<ISettingControl> CreateControl(const std::string &controlType) const;
 };

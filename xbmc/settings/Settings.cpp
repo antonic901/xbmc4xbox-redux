@@ -65,7 +65,7 @@ using namespace XFILE;
 
 bool CSettings::Initialize()
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   if (m_initialized)
     return false;
 
@@ -96,25 +96,25 @@ bool CSettings::Initialize()
 
 void CSettings::RegisterSubSettings(ISubSettings* subSettings)
 {
-  if (subSettings == nullptr)
+  if (subSettings == NULL)
     return;
 
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   m_subSettings.insert(subSettings);
 }
 
 void CSettings::UnregisterSubSettings(ISubSettings* subSettings)
 {
-  if (subSettings == nullptr)
+  if (subSettings == NULL)
     return;
 
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   m_subSettings.erase(subSettings);
 }
 
 bool CSettings::Load()
 {
-  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   return Load(profileManager->GetSettingsFile());
 }
@@ -149,7 +149,7 @@ bool CSettings::Load(const TiXmlElement* root)
 
 bool CSettings::Save()
 {
-  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   return Save(profileManager->GetSettingsFile());
 }
@@ -161,7 +161,7 @@ bool CSettings::Save(const std::string &file)
     return false;
 
   TiXmlElement* root = xmlDoc.RootElement();
-  if (root == nullptr)
+  if (root == NULL)
     return false;
 
   if (!Save(root))
@@ -172,7 +172,7 @@ bool CSettings::Save(const std::string &file)
 
 bool CSettings::Save(TiXmlNode* root) const
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   // save any ISubSettings implementations
   for (const auto& subSetting : m_subSettings)
   {
@@ -199,7 +199,7 @@ bool CSettings::GetBool(const std::string& id) const
 
 void CSettings::Clear()
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   if (!m_initialized)
     return;
 
@@ -213,7 +213,7 @@ void CSettings::Clear()
 
 bool CSettings::Load(const TiXmlElement* root, bool& updated)
 {
-  if (root == nullptr)
+  if (root == NULL)
     return false;
 
   if (!CSettingsBase::LoadValuesFromXml(root, updated))
@@ -225,7 +225,7 @@ bool CSettings::Load(const TiXmlElement* root, bool& updated)
 bool CSettings::Load(const TiXmlNode* settings)
 {
   bool ok = true;
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   for (const auto& subSetting : m_subSettings)
     ok &= subSetting->Load(settings);
 
@@ -331,8 +331,8 @@ void CSettings::InitializeVisibility()
 {
   // hide some settings if necessary
 #if defined(TARGET_DARWIN_EMBEDDED)
-  std::shared_ptr<CSettingString> timezonecountry = std::static_pointer_cast<CSettingString>(GetSettingsManager()->GetSetting(CSettings::SETTING_LOCALE_TIMEZONECOUNTRY));
-  std::shared_ptr<CSettingString> timezone = std::static_pointer_cast<CSettingString>(GetSettingsManager()->GetSetting(CSettings::SETTING_LOCALE_TIMEZONE));
+  boost::shared_ptr<CSettingString> timezonecountry = boost::static_pointer_cast<CSettingString>(GetSettingsManager()->GetSetting(CSettings::SETTING_LOCALE_TIMEZONECOUNTRY));
+  boost::shared_ptr<CSettingString> timezone = boost::static_pointer_cast<CSettingString>(GetSettingsManager()->GetSetting(CSettings::SETTING_LOCALE_TIMEZONE));
 
   timezonecountry->SetRequirementsMet(false);
   timezone->SetRequirementsMet(false);
@@ -343,8 +343,8 @@ void CSettings::InitializeDefaults()
 {
   // set some default values if necessary
 #if defined(TARGET_POSIX)
-  std::shared_ptr<CSettingString> timezonecountry = std::static_pointer_cast<CSettingString>(GetSettingsManager()->GetSetting(CSettings::SETTING_LOCALE_TIMEZONECOUNTRY));
-  std::shared_ptr<CSettingString> timezone = std::static_pointer_cast<CSettingString>(GetSettingsManager()->GetSetting(CSettings::SETTING_LOCALE_TIMEZONE));
+  boost::shared_ptr<CSettingString> timezonecountry = boost::static_pointer_cast<CSettingString>(GetSettingsManager()->GetSetting(CSettings::SETTING_LOCALE_TIMEZONECOUNTRY));
+  boost::shared_ptr<CSettingString> timezone = boost::static_pointer_cast<CSettingString>(GetSettingsManager()->GetSetting(CSettings::SETTING_LOCALE_TIMEZONE));
 
   if (timezonecountry->IsVisible())
     timezonecountry->SetDefault(g_timezone.GetCountryByTimezone(g_timezone.GetOSConfiguredTimezone()));
@@ -364,7 +364,7 @@ void CSettings::InitializeDefaults()
       CLog::Log(LOGERROR, "Failed to load setting for: {}",
                 CSettings::SETTING_VIDEOSCREEN_FAKEFULLSCREEN);
     else
-      std::static_pointer_cast<CSettingBool>(setting)->SetDefault(false);
+      boost::static_pointer_cast<CSettingBool>(setting)->SetDefault(false);
   }
 #endif
 
@@ -376,11 +376,11 @@ void CSettings::InitializeDefaults()
       CLog::Log(LOGERROR, "Failed to load setting for: {}",
                 CSettings::SETTING_POWERMANAGEMENT_SHUTDOWNSTATE);
     else
-      std::static_pointer_cast<CSettingInt>(setting)->SetDefault(POWERSTATE_SHUTDOWN);
+      boost::static_pointer_cast<CSettingInt>(setting)->SetDefault(POWERSTATE_SHUTDOWN);
   }
 
   // Initialize deviceUUID if not already set, used in zeroconf advertisements.
-  std::shared_ptr<CSettingString> deviceUUID = std::static_pointer_cast<CSettingString>(GetSettingsManager()->GetSetting(CSettings::SETTING_SERVICES_DEVICEUUID));
+  boost::shared_ptr<CSettingString> deviceUUID = boost::static_pointer_cast<CSettingString>(GetSettingsManager()->GetSetting(CSettings::SETTING_SERVICES_DEVICEUUID));
   if (deviceUUID->GetValue().empty())
   {
     const std::string& uuid = StringUtils::CreateUUID();
@@ -388,7 +388,7 @@ void CSettings::InitializeDefaults()
     if (!setting)
       CLog::Log(LOGERROR, "Failed to load setting for: {}", CSettings::SETTING_SERVICES_DEVICEUUID);
     else
-      std::static_pointer_cast<CSettingString>(setting)->SetValue(uuid);
+      boost::static_pointer_cast<CSettingString>(setting)->SetValue(uuid);
   }
 }
 
@@ -692,7 +692,7 @@ void CSettings::UninitializeISettingCallbacks()
 
 bool CSettings::Reset()
 {
-  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   const std::string settingsFile = profileManager->GetSettingsFile();
 

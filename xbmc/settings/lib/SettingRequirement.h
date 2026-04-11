@@ -16,32 +16,32 @@
 class CSettingRequirementCondition : public CSettingConditionItem
 {
 public:
-  explicit CSettingRequirementCondition(CSettingsManager *settingsManager = nullptr)
+  explicit CSettingRequirementCondition(CSettingsManager *settingsManager = NULL)
     : CSettingConditionItem(settingsManager)
   { }
-  ~CSettingRequirementCondition() override = default;
+  virtual ~CSettingRequirementCondition() {}
 
-  bool Check() const override;
+  virtual bool Check() const;
 };
 
 class CSettingRequirementConditionCombination : public CSettingConditionCombination
 {
 public:
-  explicit CSettingRequirementConditionCombination(CSettingsManager *settingsManager = nullptr)
+  explicit CSettingRequirementConditionCombination(CSettingsManager *settingsManager = NULL)
     : CSettingConditionCombination(settingsManager)
   { }
-  ~CSettingRequirementConditionCombination() override = default;
+  virtual ~CSettingRequirementConditionCombination() {}
 
-  bool Check() const override;
+  virtual bool Check() const;
 
 private:
-  CBooleanLogicOperation* newOperation() override { return new CSettingRequirementConditionCombination(m_settingsManager); }
-  CBooleanLogicValue* newValue() override { return new CSettingRequirementCondition(m_settingsManager); }
+  virtual CBooleanLogicOperation* newOperation() { return new CSettingRequirementConditionCombination(m_settingsManager); }
+  virtual CBooleanLogicValue* newValue() { return new CSettingRequirementCondition(m_settingsManager); }
 };
 
 class CSettingRequirement : public CSettingCondition
 {
 public:
-  explicit CSettingRequirement(CSettingsManager *settingsManager = nullptr);
-  ~CSettingRequirement() override = default;
+  explicit CSettingRequirement(CSettingsManager *settingsManager = NULL);
+  virtual ~CSettingRequirement() {}
 };

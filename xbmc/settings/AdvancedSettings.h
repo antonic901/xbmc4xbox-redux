@@ -104,10 +104,10 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
   public:
     CAdvancedSettings();
 
-    void OnSettingsLoaded() override;
-    void OnSettingsUnloaded() override;
+    virtual void OnSettingsLoaded();
+    virtual void OnSettingsUnloaded();
 
-    void OnSettingChanged(const std::shared_ptr<const CSetting>& setting) override;
+    virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
 
     void Initialize(CSettingsManager& settingsMgr);
     void Uninitialize(CSettingsManager& settingsMgr);

@@ -20,30 +20,30 @@ const char* SHOW_ADDONS_ALL = "all";
 const char* SHOW_ADDONS_INSTALLED = "installed";
 const char* SHOW_ADDONS_INSTALLABLE = "installable";
 
-std::shared_ptr<ISettingControl> CSettingControlCreator::CreateControl(const std::string &controlType) const
+boost::shared_ptr<ISettingControl> CSettingControlCreator::CreateControl(const std::string &controlType) const
 {
   if (StringUtils::EqualsNoCase(controlType, "toggle"))
-    return std::make_shared<CSettingControlCheckmark>();
+    return boost::make_shared<CSettingControlCheckmark>();
   else if (StringUtils::EqualsNoCase(controlType, "spinner"))
-    return std::make_shared<CSettingControlSpinner>();
+    return boost::make_shared<CSettingControlSpinner>();
   else if (StringUtils::EqualsNoCase(controlType, "edit"))
-    return std::make_shared<CSettingControlEdit>();
+    return boost::make_shared<CSettingControlEdit>();
   else if (StringUtils::EqualsNoCase(controlType, "button"))
-    return std::make_shared<CSettingControlButton>();
+    return boost::make_shared<CSettingControlButton>();
   else if (StringUtils::EqualsNoCase(controlType, "list"))
-    return std::make_shared<CSettingControlList>();
+    return boost::make_shared<CSettingControlList>();
   else if (StringUtils::EqualsNoCase(controlType, "slider"))
-    return std::make_shared<CSettingControlSlider>();
+    return boost::make_shared<CSettingControlSlider>();
   else if (StringUtils::EqualsNoCase(controlType, "range"))
-    return std::make_shared<CSettingControlRange>();
+    return boost::make_shared<CSettingControlRange>();
   else if (StringUtils::EqualsNoCase(controlType, "title"))
-    return std::make_shared<CSettingControlTitle>();
+    return boost::make_shared<CSettingControlTitle>();
   else if (StringUtils::EqualsNoCase(controlType, "label"))
-    return std::make_shared<CSettingControlLabel>();
+    return boost::make_shared<CSettingControlLabel>();
   else if (StringUtils::EqualsNoCase(controlType, "colorbutton"))
-    return std::make_shared<CSettingControlColorButton>();
+    return boost::make_shared<CSettingControlColorButton>();
 
-  return nullptr;
+  return NULL;
 }
 
 bool CSettingControlCheckmark::SetFormat(const std::string &format)
@@ -62,16 +62,16 @@ bool CSettingControlFormattedRange::Deserialize(const TiXmlNode *node, bool upda
 
     // get the minimum label from <setting><constraints><minimum label="X" />
     auto settingNode = node->Parent();
-    if (settingNode != nullptr)
+    if (settingNode != NULL)
     {
       auto constraintsNode = settingNode->FirstChild(SETTING_XML_ELM_CONSTRAINTS);
-      if (constraintsNode != nullptr)
+      if (constraintsNode != NULL)
       {
         auto minimumNode = constraintsNode->FirstChild(SETTING_XML_ELM_MINIMUM);
-        if (minimumNode != nullptr)
+        if (minimumNode != NULL)
         {
           auto minimumElem = minimumNode->ToElement();
-          if (minimumElem != nullptr)
+          if (minimumElem != NULL)
           {
             if (minimumElem->QueryIntAttribute(SETTING_XML_ATTR_LABEL, &m_minimumLabel) != TIXML_SUCCESS)
               m_minimumLabel = -1;
@@ -173,10 +173,10 @@ bool CSettingControlButton::Deserialize(const TiXmlNode *node, bool update /* = 
         CLog::Log(LOGWARNING, "CSettingControlButton: invalid <show>");
 
       auto show = node->FirstChildElement("show");
-      if (show != nullptr)
+      if (show != NULL)
       {
-        const char *strShowDetails = nullptr;
-        if ((strShowDetails = show->Attribute(SETTING_XML_ATTR_SHOW_DETAILS)) != nullptr)
+        const char *strShowDetails = NULL;
+        if ((strShowDetails = show->Attribute(SETTING_XML_ATTR_SHOW_DETAILS)) != NULL)
         {
           if (StringUtils::EqualsNoCase(strShowDetails, "false") || StringUtils::EqualsNoCase(strShowDetails, "true"))
             m_showAddonDetails = StringUtils::EqualsNoCase(strShowDetails, "true");
@@ -186,8 +186,8 @@ bool CSettingControlButton::Deserialize(const TiXmlNode *node, bool update /* = 
 
         if (!m_showInstallableAddons)
         {
-          const char *strShowMore = nullptr;
-          if ((strShowMore = show->Attribute(SETTING_XML_ATTR_SHOW_MORE)) != nullptr)
+          const char *strShowMore = NULL;
+          if ((strShowMore = show->Attribute(SETTING_XML_ATTR_SHOW_MORE)) != NULL)
           {
             if (StringUtils::EqualsNoCase(strShowMore, "false") || StringUtils::EqualsNoCase(strShowMore, "true"))
               m_showMoreAddons = StringUtils::EqualsNoCase(strShowMore, "true");
@@ -305,17 +305,17 @@ bool CSettingControlRange::Deserialize(const TiXmlNode *node, bool update /* = f
     return false;
 
   auto formatLabel = node->FirstChildElement(SETTING_XML_ELM_CONTROL_FORMATLABEL);
-  if (formatLabel != nullptr)
+  if (formatLabel != NULL)
   {
     XMLUtils::GetInt(node, SETTING_XML_ELM_CONTROL_FORMATLABEL, m_formatLabel);
     if (m_formatLabel < 0)
       return false;
 
     auto formatValue = formatLabel->Attribute(SETTING_XML_ELM_CONTROL_FORMATVALUE);
-    if (formatValue != nullptr)
+    if (formatValue != NULL)
     {
       if (StringUtils::IsInteger(formatValue))
-        m_valueFormatLabel = (int)strtol(formatValue, nullptr, 0);
+        m_valueFormatLabel = (int)strtol(formatValue, NULL, 0);
       else
       {
         m_valueFormat = formatValue;

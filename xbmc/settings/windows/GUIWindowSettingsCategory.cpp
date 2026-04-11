@@ -63,7 +63,7 @@ CGUIWindowSettingsCategory::CGUIWindowSettingsCategory()
   m_idRange.push_back(WINDOW_SETTINGS_MYGAMES);
 }
 
-CGUIWindowSettingsCategory::~CGUIWindowSettingsCategory() = default;
+CGUIWindowSettingsCategory::~CGUIWindowSettingsCategory() {}
 
 bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
 {

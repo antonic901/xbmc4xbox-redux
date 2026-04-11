@@ -124,22 +124,22 @@ void CSettingsComponent::Deinitialize()
   m_state = State::DEINITED;
 }
 
-std::shared_ptr<CSettings> CSettingsComponent::GetSettings()
+boost::shared_ptr<CSettings> CSettingsComponent::GetSettings()
 {
   return m_settings;
 }
 
-std::shared_ptr<CAdvancedSettings> CSettingsComponent::GetAdvancedSettings()
+boost::shared_ptr<CAdvancedSettings> CSettingsComponent::GetAdvancedSettings()
 {
   return m_advancedSettings;
 }
 
-std::shared_ptr<KODI::SUBTITLES::CSubtitlesSettings> CSettingsComponent::GetSubtitlesSettings()
+boost::shared_ptr<KODI::SUBTITLES::CSubtitlesSettings> CSettingsComponent::GetSubtitlesSettings()
 {
   return m_subtitlesSettings;
 }
 
-std::shared_ptr<CProfileManager> CSettingsComponent::GetProfileManager()
+boost::shared_ptr<CProfileManager> CSettingsComponent::GetProfileManager()
 {
   return m_profileManager;
 }

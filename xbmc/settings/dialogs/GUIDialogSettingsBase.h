@@ -51,7 +51,7 @@ class CVariant;
 
 class ISetting;
 
-typedef std::shared_ptr<CGUIControlBaseSetting> BaseSettingControlPtr;
+typedef boost::shared_ptr<CGUIControlBaseSetting> BaseSettingControlPtr;
 
 class CGUIDialogSettingsBase : public CGUIDialog,
                                public CSettingControlCreator,
@@ -61,36 +61,36 @@ class CGUIDialogSettingsBase : public CGUIDialog,
 {
 public:
   CGUIDialogSettingsBase(int windowId, const std::string& xmlFile);
-  ~CGUIDialogSettingsBase() override;
+  virtual ~CGUIDialogSettingsBase();
 
   // specializations of CGUIControl
-  bool OnMessage(CGUIMessage& message) override;
-  bool OnAction(const CAction& action) override;
-  bool OnBack(int actionID) override;
-  void DoProcess(unsigned int currentTime, CDirtyRegionList& dirtyregions) override;
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction& action);
+  virtual bool OnBack(int actionID);
+  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList& dirtyregions);
 
   virtual bool IsConfirmed() const { return m_confirmed; }
 
   // implementation of ILocalizer
-  std::string Localize(std::uint32_t code) const override { return GetLocalizedString(code); }
+  virtual std::string Localize(std::uint32_t code) const { return GetLocalizedString(code); }
 
 protected:
   // specializations of CGUIWindow
-  void OnInitWindow() override;
+  virtual void OnInitWindow();
 
   // implementations of ITimerCallback
-  void OnTimeout() override;
+  virtual void OnTimeout();
 
   // implementations of ISettingCallback
-  void OnSettingChanged(const std::shared_ptr<const CSetting>& setting) override;
-  void OnSettingPropertyChanged(const std::shared_ptr<const CSetting>& setting,
-                                const char* propertyName) override;
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
+  void OnSettingPropertyChanged(const boost::shared_ptr<const CSetting>& setting,
+                                virtual const char* propertyName);
 
   // new virtual methods
   virtual bool AllowResettingSettings() const { return true; }
   virtual int GetSettingLevel() const { return 0; }
-  virtual std::shared_ptr<CSettingSection> GetSection() = 0;
-  virtual std::shared_ptr<CSetting> GetSetting(const std::string& settingId) = 0;
+  virtual boost::shared_ptr<CSettingSection> GetSection() = 0;
+  virtual boost::shared_ptr<CSetting> GetSetting(const std::string& settingId) = 0;
   virtual std::chrono::milliseconds GetDelayMs() const { return std::chrono::milliseconds(1500); }
   virtual std::string GetLocalizedString(uint32_t labelId) const;
 
@@ -115,9 +115,9 @@ protected:
     \param pSetting Base settings class which need the name
     \return Name used on settings dialog
    */
-  virtual std::string GetSettingsLabel(const std::shared_ptr<ISetting>& pSetting);
+  virtual std::string GetSettingsLabel(const boost::shared_ptr<ISetting>& pSetting);
 
-  virtual CGUIControl* AddSetting(const std::shared_ptr<CSetting>& pSetting,
+  virtual CGUIControl* AddSetting(const boost::shared_ptr<CSetting>& pSetting,
                                   float width,
                                   int& iControlID);
   virtual CGUIControl* AddSettingControl(CGUIControl* pControl,
@@ -157,22 +157,22 @@ protected:
   BaseSettingControlPtr GetSettingControl(int controlId);
 
   CGUIControl* AddSeparator(float width, int& iControlID);
-  CGUIControl* AddGroupLabel(const std::shared_ptr<CSettingGroup>& group,
+  CGUIControl* AddGroupLabel(const boost::shared_ptr<CSettingGroup>& group,
                              float width,
                              int& iControlID);
 
-  std::vector<std::shared_ptr<CSettingCategory>> m_categories;
+  std::vector<boost::shared_ptr<CSettingCategory>> m_categories;
   std::vector<BaseSettingControlPtr> m_settingControls;
 
   int m_iSetting = 0;
   int m_iCategory = 0;
-  std::shared_ptr<CSettingAction> m_resetSetting;
-  std::shared_ptr<CSettingCategory> m_dummyCategory;
+  boost::shared_ptr<CSettingAction> m_resetSetting;
+  boost::shared_ptr<CSettingCategory> m_dummyCategory;
 
   CGUISpinControlEx* m_pOriginalSpin;
   CGUISettingsSliderControl* m_pOriginalSlider;
   CGUIRadioButtonControl* m_pOriginalRadioButton;
-  CGUIColorButtonControl* m_pOriginalColorButton = nullptr;
+  CGUIColorButtonControl* m_pOriginalColorButton = NULL;
   CGUIButtonControl* m_pOriginalCategoryButton;
   CGUIButtonControl* m_pOriginalButton;
   CGUIEditControl* m_pOriginalEdit;

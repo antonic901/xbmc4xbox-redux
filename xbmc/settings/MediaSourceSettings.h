@@ -27,8 +27,8 @@ public:
 
   static std::string GetSourcesFile();
 
-  void OnSettingsLoaded() override;
-  void OnSettingsUnloaded() override;
+  virtual void OnSettingsLoaded();
+  virtual void OnSettingsUnloaded();
 
   bool Load();
   bool Load(const std::string &file);
@@ -49,7 +49,7 @@ protected:
   CMediaSourceSettings();
   CMediaSourceSettings(const CMediaSourceSettings&) = delete;
   CMediaSourceSettings& operator=(CMediaSourceSettings const&) = delete;
-  ~CMediaSourceSettings() override;
+  virtual ~CMediaSourceSettings();
 
 private:
   bool GetSource(const std::string& category, const tinyxml2::XMLNode* source, CMediaSource& share);

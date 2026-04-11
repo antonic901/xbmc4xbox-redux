@@ -29,16 +29,16 @@ class CDisplaySettings : public ISettingCallback, public ISubSettings,
 public:
   static CDisplaySettings& GetInstance();
 
-  bool Load(const TiXmlNode *settings) override;
-  bool Save(TiXmlNode *settings) const override;
-  void Clear() override;
+  virtual bool Load(const TiXmlNode *settings);
+  virtual bool Save(TiXmlNode *settings) const;
+  virtual void Clear();
 
-  void OnSettingAction(const std::shared_ptr<const CSetting>& setting) override;
-  bool OnSettingChanging(const std::shared_ptr<const CSetting>& setting) override;
-  bool OnSettingUpdate(const std::shared_ptr<CSetting>& setting,
+  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
+  virtual bool OnSettingChanging(const boost::shared_ptr<const CSetting>& setting);
+  bool OnSettingUpdate(const boost::shared_ptr<CSetting>& setting,
                        const char* oldSettingId,
-                       const TiXmlNode* oldSettingNode) override;
-  void OnSettingChanged(const std::shared_ptr<const CSetting>& setting) override;
+                       virtual const TiXmlNode* oldSettingNode);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
 
   /*!
    \brief Returns the currently active resolution
@@ -89,53 +89,53 @@ public:
   void SetNonLinearStretched(bool nonLinearStretch) { m_nonLinearStretched = nonLinearStretch; }
   void SetMonitor(const std::string& monitor);
 
-  static void SettingOptionsModesFiller(const std::shared_ptr<const CSetting>& setting,
+  static void SettingOptionsModesFiller(const boost::shared_ptr<const CSetting>& setting,
                                         std::vector<StringSettingOption>& list,
                                         std::string& current,
                                         void* data);
   static void SettingOptionsRefreshChangeDelaysFiller(
-      const std::shared_ptr<const CSetting>& setting,
+      const boost::shared_ptr<const CSetting>& setting,
       std::vector<IntegerSettingOption>& list,
       int& current,
       void* data);
-  static void SettingOptionsRefreshRatesFiller(const std::shared_ptr<const CSetting>& setting,
+  static void SettingOptionsRefreshRatesFiller(const boost::shared_ptr<const CSetting>& setting,
                                                std::vector<StringSettingOption>& list,
                                                std::string& current,
                                                void* data);
-  static void SettingOptionsResolutionsFiller(const std::shared_ptr<const CSetting>& setting,
+  static void SettingOptionsResolutionsFiller(const boost::shared_ptr<const CSetting>& setting,
                                               std::vector<IntegerSettingOption>& list,
                                               int& current,
                                               void* data);
-  static void SettingOptionsDispModeFiller(const std::shared_ptr<const CSetting>& setting,
+  static void SettingOptionsDispModeFiller(const boost::shared_ptr<const CSetting>& setting,
                                            std::vector<IntegerSettingOption>& list,
                                            int& current,
                                            void* data);
-  static void SettingOptionsStereoscopicModesFiller(const std::shared_ptr<const CSetting>& setting,
+  static void SettingOptionsStereoscopicModesFiller(const boost::shared_ptr<const CSetting>& setting,
                                                     std::vector<IntegerSettingOption>& list,
                                                     int& current,
                                                     void* data);
   static void SettingOptionsPreferredStereoscopicViewModesFiller(
-      const std::shared_ptr<const CSetting>& setting,
+      const boost::shared_ptr<const CSetting>& setting,
       std::vector<IntegerSettingOption>& list,
       int& current,
       void* data);
-  static void SettingOptionsMonitorsFiller(const std::shared_ptr<const CSetting>& setting,
+  static void SettingOptionsMonitorsFiller(const boost::shared_ptr<const CSetting>& setting,
                                            std::vector<StringSettingOption>& list,
                                            std::string& current,
                                            void* data);
-  static void SettingOptionsCmsModesFiller(const std::shared_ptr<const CSetting>& setting,
+  static void SettingOptionsCmsModesFiller(const boost::shared_ptr<const CSetting>& setting,
                                            std::vector<IntegerSettingOption>& list,
                                            int& current,
                                            void* data);
-  static void SettingOptionsCmsWhitepointsFiller(const std::shared_ptr<const CSetting>& setting,
+  static void SettingOptionsCmsWhitepointsFiller(const boost::shared_ptr<const CSetting>& setting,
                                                  std::vector<IntegerSettingOption>& list,
                                                  int& current,
                                                  void* data);
-  static void SettingOptionsCmsPrimariesFiller(const std::shared_ptr<const CSetting>& setting,
+  static void SettingOptionsCmsPrimariesFiller(const boost::shared_ptr<const CSetting>& setting,
                                                std::vector<IntegerSettingOption>& list,
                                                int& current,
                                                void* data);
-  static void SettingOptionsCmsGammaModesFiller(const std::shared_ptr<const CSetting>& setting,
+  static void SettingOptionsCmsGammaModesFiller(const boost::shared_ptr<const CSetting>& setting,
                                                 std::vector<IntegerSettingOption>& list,
                                                 int& current,
                                                 void* data);
@@ -145,7 +145,7 @@ protected:
   CDisplaySettings();
   CDisplaySettings(const CDisplaySettings&) = delete;
   CDisplaySettings& operator=(CDisplaySettings const&) = delete;
-  ~CDisplaySettings() override;
+  virtual ~CDisplaySettings();
 
   DisplayMode GetCurrentDisplayMode() const;
 

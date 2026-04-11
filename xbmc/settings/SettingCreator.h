@@ -14,9 +14,9 @@ class CSettingCreator : public ISettingCreator
 {
 public:
   // implementation of ISettingCreator
-  std::shared_ptr<CSetting> CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager = nullptr) const override;
+  virtual boost::shared_ptr<CSetting> CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager = NULL) const;
 
 protected:
-  CSettingCreator() = default;
-  ~CSettingCreator() override = default;
+  CSettingCreator() {}
+  virtual ~CSettingCreator() {}
 };

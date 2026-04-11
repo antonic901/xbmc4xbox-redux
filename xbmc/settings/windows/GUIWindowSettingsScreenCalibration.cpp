@@ -35,22 +35,22 @@ using namespace KODI;
 
 namespace
 {
-constexpr int CONTROL_LABEL_RES = 2;
-constexpr int CONTROL_LABEL_DESCRIPTION = 3;
-constexpr int CONTROL_LABEL_VALUE = 4;
-constexpr int CONTROL_TOP_LEFT = 8;
-constexpr int CONTROL_BOTTOM_RIGHT = 9;
-constexpr int CONTROL_SUBTITLES = 10;
-constexpr int CONTROL_PIXEL_RATIO = 11;
-constexpr int CONTROL_RESET = 12;
-constexpr int CONTROL_VIDEO = 20;
+const static int CONTROL_LABEL_RES = 2;
+const static int CONTROL_LABEL_DESCRIPTION = 3;
+const static int CONTROL_LABEL_VALUE = 4;
+const static int CONTROL_TOP_LEFT = 8;
+const static int CONTROL_BOTTOM_RIGHT = 9;
+const static int CONTROL_SUBTITLES = 10;
+const static int CONTROL_PIXEL_RATIO = 11;
+const static int CONTROL_RESET = 12;
+const static int CONTROL_VIDEO = 20;
 
-constexpr int DEFAULT_GUI_HEIGHT = 1080;
-constexpr int DEFAULT_GUI_WIDTH = 1920;
+const static int DEFAULT_GUI_HEIGHT = 1080;
+const static int DEFAULT_GUI_WIDTH = 1920;
 
 // Fixed transparent space of the subtitle bar (on top + below) for touch screen
 // must match with the space of the skin bar image
-constexpr int CONTROL_SUBTITLES_SPACE = 80;
+const static int CONTROL_SUBTITLES_SPACE = 80;
 } // unnamed namespace
 
 CGUIWindowSettingsScreenCalibration::CGUIWindowSettingsScreenCalibration(void)
@@ -62,7 +62,7 @@ CGUIWindowSettingsScreenCalibration::CGUIWindowSettingsScreenCalibration(void)
   m_needsScaling = false; // we handle all the scaling
 }
 
-CGUIWindowSettingsScreenCalibration::~CGUIWindowSettingsScreenCalibration(void) = default;
+CGUIWindowSettingsScreenCalibration::~CGUIWindowSettingsScreenCalibration(void) {}
 
 
 void CGUIWindowSettingsScreenCalibration::ResetCalibration()
@@ -71,13 +71,13 @@ void CGUIWindowSettingsScreenCalibration::ResetCalibration()
   // Reset will be applied to: windowed mode or per fullscreen resolution
   CGUIDialogYesNo* pDialog =
       CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
-  pDialog->SetHeading(CVariant{20325});
+  pDialog->SetHeading(20325);
   std::string strText = StringUtils::Format(
       g_localizeStrings.Get(20326),
       CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo(m_Res[m_iCurRes]).strMode);
-  pDialog->SetText(CVariant{std::move(strText)});
-  pDialog->SetChoice(0, CVariant{222});
-  pDialog->SetChoice(1, CVariant{186});
+  pDialog->SetText(std::move(strText));
+  pDialog->SetChoice(0, 222);
+  pDialog->SetChoice(1, 186);
   pDialog->Open();
   if (pDialog->IsConfirmed())
   {

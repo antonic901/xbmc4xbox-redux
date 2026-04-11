@@ -39,7 +39,7 @@ class CLibExportSettings
 {
 public:
   CLibExportSettings();
-  ~CLibExportSettings() = default;
+  ~CLibExportSettings() {}
 
   bool operator!=(const CLibExportSettings &right) const;
   bool IsItemExported(ELIBEXPORTOPTIONS item) const;

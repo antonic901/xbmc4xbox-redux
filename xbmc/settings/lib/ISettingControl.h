@@ -18,7 +18,7 @@ class ISettingControl
 {
 public:
   ISettingControl();
-  virtual ~ISettingControl() = default;
+  virtual ~ISettingControl() {}
 
   virtual std::string GetType() const = 0;
   const std::string& GetFormat() const { return m_format; }

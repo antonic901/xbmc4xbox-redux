@@ -103,7 +103,7 @@ struct StringSettingOption
 
 struct TranslatableIntegerSettingOption
 {
-  TranslatableIntegerSettingOption() = default;
+  TranslatableIntegerSettingOption() {}
   TranslatableIntegerSettingOption(int _label, int _value, const std::string& _addonId = "")
     : label(_label), value(_value), addonId(_addonId)
   {
@@ -121,11 +121,11 @@ using TranslatableStringSettingOptions = std::vector<TranslatableStringSettingOp
 using StringSettingOptions = std::vector<StringSettingOption>;
 
 class CSetting;
-using IntegerSettingOptionsFiller = void (*)(const std::shared_ptr<const CSetting>& setting,
+using IntegerSettingOptionsFiller = void (*)(const boost::shared_ptr<const CSetting>& setting,
                                              IntegerSettingOptions& list,
                                              int& current,
                                              void* data);
-using StringSettingOptionsFiller = void (*)(const std::shared_ptr<const CSetting>& setting,
+using StringSettingOptionsFiller = void (*)(const boost::shared_ptr<const CSetting>& setting,
                                             StringSettingOptions& list,
                                             std::string& current,
                                             void* data);

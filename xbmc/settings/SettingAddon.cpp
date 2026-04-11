@@ -18,11 +18,11 @@
 
 #include <mutex>
 
-CSettingAddon::CSettingAddon(const std::string &id, CSettingsManager *settingsManager /* = nullptr */)
+CSettingAddon::CSettingAddon(const std::string &id, CSettingsManager *settingsManager /* = NULL */)
   : CSettingString(id, settingsManager)
 { }
 
-CSettingAddon::CSettingAddon(const std::string &id, int label, const std::string &value, CSettingsManager *settingsManager /* = nullptr */)
+CSettingAddon::CSettingAddon(const std::string &id, int label, const std::string &value, CSettingsManager *settingsManager /* = NULL */)
   : CSettingString(id, label, value, settingsManager)
 { }
 
@@ -34,17 +34,17 @@ CSettingAddon::CSettingAddon(const std::string &id, const CSettingAddon &setting
 
 SettingPtr CSettingAddon::Clone(const std::string &id) const
 {
-  return std::make_shared<CSettingAddon>(id, *this);
+  return boost::make_shared<CSettingAddon>(id, *this);
 }
 
 bool CSettingAddon::Deserialize(const TiXmlNode *node, bool update /* = false */)
 {
-  std::unique_lock<CSharedSection> lock(m_critical);
+  CExclusiveLock lock(m_critical);
 
   if (!CSettingString::Deserialize(node, update))
     return false;
 
-  if (m_control != nullptr &&
+  if (m_control != NULL &&
      (m_control->GetType() != "button" || m_control->GetFormat() != "addon"))
   {
     CLog::Log(LOGERROR, "CSettingAddon: invalid <control> of \"{}\"", m_id);
@@ -54,7 +54,7 @@ bool CSettingAddon::Deserialize(const TiXmlNode *node, bool update /* = false */
   bool ok = false;
   std::string strAddonType;
   auto constraints = node->FirstChild("constraints");
-  if (constraints != nullptr)
+  if (constraints != NULL)
   {
     // get the addon type
     if (XMLUtils::GetString(constraints, "addontype", strAddonType) && !strAddonType.empty())
@@ -79,6 +79,6 @@ void CSettingAddon::copyaddontype(const CSettingAddon &setting)
 {
   CSettingString::Copy(setting);
 
-  std::unique_lock<CSharedSection> lock(m_critical);
+  CExclusiveLock lock(m_critical);
   m_addonType = setting.m_addonType;
 }

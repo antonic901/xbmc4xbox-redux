@@ -44,7 +44,7 @@ CAdvancedSettings::CAdvancedSettings()
 
 void CAdvancedSettings::OnSettingsLoaded()
 {
-  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   // load advanced settings
   Load(*profileManager);
@@ -54,7 +54,7 @@ void CAdvancedSettings::OnSettingsLoaded()
   CLog::Log(LOGINFO, "Default Audio Player: {}", m_audioDefaultPlayer);
 
   // setup any logging...
-  const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+  const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
   if (settings->GetBool(CSettings::SETTING_DEBUG_SHOWLOGINFO))
   {
     m_logLevel = std::max(m_logLevelHint, LOG_LEVEL_DEBUG_FREEMEM);
@@ -73,14 +73,14 @@ void CAdvancedSettings::OnSettingsUnloaded()
   m_initialized = false;
 }
 
-void CAdvancedSettings::OnSettingChanged(const std::shared_ptr<const CSetting>& setting)
+void CAdvancedSettings::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;
 
   const std::string &settingId = setting->GetId();
   if (settingId == CSettings::SETTING_DEBUG_SHOWLOGINFO)
-    SetDebugMode(std::static_pointer_cast<const CSettingBool>(setting)->GetValue());
+    SetDebugMode(boost::static_pointer_cast<const CSettingBool>(setting)->GetValue());
 }
 
 void CAdvancedSettings::Initialize(CSettingsManager& settingsMgr)

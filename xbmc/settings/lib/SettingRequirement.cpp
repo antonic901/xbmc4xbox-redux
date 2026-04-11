@@ -12,7 +12,7 @@
 
 bool CSettingRequirementCondition::Check() const
 {
-  if (m_settingsManager == nullptr)
+  if (m_settingsManager == NULL)
     return false;
 
   bool found = m_settingsManager->GetConditions().Check("IsDefined", m_value);
@@ -30,7 +30,7 @@ bool CSettingRequirementConditionCombination::Check() const
   return CSettingConditionCombination::Check();
 }
 
-CSettingRequirement::CSettingRequirement(CSettingsManager *settingsManager /* = nullptr */)
+CSettingRequirement::CSettingRequirement(CSettingsManager *settingsManager /* = NULL */)
   : CSettingCondition(settingsManager)
 {
   m_operation = CBooleanLogicOperationPtr(new CSettingRequirementConditionCombination(m_settingsManager));

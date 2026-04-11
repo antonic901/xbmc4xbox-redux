@@ -37,7 +37,7 @@ bool AddonHasSettings(const std::string& condition,
   if (setting == NULL)
     return false;
 
-  std::shared_ptr<const CSettingAddon> settingAddon = std::dynamic_pointer_cast<const CSettingAddon>(setting);
+  boost::shared_ptr<const CSettingAddon> settingAddon = std::dynamic_pointer_cast<const CSettingAddon>(setting);
   if (settingAddon == NULL)
     return false;
 
@@ -272,7 +272,7 @@ bool ProfileLockMode(const std::string& condition,
                      const SettingConstPtr& setting,
                      void* data)
 {
-  char* tmp = nullptr;
+  char* tmp = NULL;
   LockType lock = (LockType)strtol(value.c_str(), &tmp, 0);
   if (tmp != NULL && *tmp != '\0')
     return false;
@@ -288,11 +288,11 @@ bool GreaterThan(const std::string& condition,
   if (setting == NULL)
     return false;
 
-  std::shared_ptr<const CSettingInt> settingInt = std::dynamic_pointer_cast<const CSettingInt>(setting);
+  boost::shared_ptr<const CSettingInt> settingInt = std::dynamic_pointer_cast<const CSettingInt>(setting);
   if (settingInt == NULL)
     return false;
 
-  char* tmp = nullptr;
+  char* tmp = NULL;
 
   int lhs = settingInt->GetValue();
   int rhs = StringUtils::IsInteger(value) ? (int)strtol(value.c_str(), &tmp, 0) : 0;
@@ -308,11 +308,11 @@ bool GreaterThanOrEqual(const std::string& condition,
   if (setting == NULL)
     return false;
 
-  std::shared_ptr<const CSettingInt> settingInt = std::dynamic_pointer_cast<const CSettingInt>(setting);
+  boost::shared_ptr<const CSettingInt> settingInt = std::dynamic_pointer_cast<const CSettingInt>(setting);
   if (settingInt == NULL)
     return false;
 
-  char* tmp = nullptr;
+  char* tmp = NULL;
 
   int lhs = settingInt->GetValue();
   int rhs = StringUtils::IsInteger(value) ? (int)strtol(value.c_str(), &tmp, 0) : 0;
@@ -328,11 +328,11 @@ bool LessThan(const std::string& condition,
   if (setting == NULL)
     return false;
 
-  std::shared_ptr<const CSettingInt> settingInt = std::dynamic_pointer_cast<const CSettingInt>(setting);
+  boost::shared_ptr<const CSettingInt> settingInt = std::dynamic_pointer_cast<const CSettingInt>(setting);
   if (settingInt == NULL)
     return false;
 
-  char* tmp = nullptr;
+  char* tmp = NULL;
 
   int lhs = settingInt->GetValue();
   int rhs = StringUtils::IsInteger(value) ? (int)strtol(value.c_str(), &tmp, 0) : 0;
@@ -348,11 +348,11 @@ bool LessThanOrEqual(const std::string& condition,
   if (setting == NULL)
     return false;
 
-  std::shared_ptr<const CSettingInt> settingInt = std::dynamic_pointer_cast<const CSettingInt>(setting);
+  boost::shared_ptr<const CSettingInt> settingInt = std::dynamic_pointer_cast<const CSettingInt>(setting);
   if (settingInt == NULL)
     return false;
 
-  char* tmp = nullptr;
+  char* tmp = NULL;
 
   int lhs = settingInt->GetValue();
   int rhs = StringUtils::IsInteger(value) ? (int)strtol(value.c_str(), &tmp, 0) : 0;
@@ -361,7 +361,7 @@ bool LessThanOrEqual(const std::string& condition,
 }
 }; // anonymous namespace
 
-const CProfileManager* CSettingConditions::m_profileManager = nullptr;
+const CProfileManager* CSettingConditions::m_profileManager = NULL;
 std::set<std::string> CSettingConditions::m_simpleConditions;
 std::map<std::string, SettingConditionCheck> CSettingConditions::m_complexConditions;
 
@@ -508,7 +508,7 @@ void CSettingConditions::Initialize()
 
 void CSettingConditions::Deinitialize()
 {
-  m_profileManager = nullptr;
+  m_profileManager = NULL;
 }
 
 const CProfile& CSettingConditions::GetCurrentProfile()
