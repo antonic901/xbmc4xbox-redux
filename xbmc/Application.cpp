@@ -1213,6 +1213,10 @@ HRESULT CApplication::Initialize()
   // initialize (and update as needed) our databases
   CServiceBroker::GetDatabaseManager().Initialize();
 
+  // Initialize GUI font manager to build/update fonts cache
+  //! @todo Move GUIFontManager into service broker and drop the global reference
+  g_fontManager.Initialize();
+
   StartServices();
 
   bool uiInitializationFinished = true;

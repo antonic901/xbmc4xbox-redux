@@ -22,7 +22,7 @@
 				AdditionalOptions="/EHa"
 				Optimization="0"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
 				PreprocessorDefinitions="_XBOX;_XBMC;_DEBUG;HAVE_MSWINDOWS;NOMINMAX"
 				MinimalRebuild="FALSE"
 				ExceptionHandling="FALSE"
@@ -89,7 +89,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="FALSE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
 				PreprocessorDefinitions="NDEBUG;_XBOX;_XBMC;PROFILE;HAVE_MSWINDOWS;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -152,7 +152,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="FALSE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
 				PreprocessorDefinitions="NDEBUG;_XBOX;_XBMC;PROFILE;FASTCAP;HAVE_MSWINDOWS;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -214,7 +214,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
 				PreprocessorDefinitions="_XBOX;_XBMC;NDEBUG;HAVE_MSWINDOWS;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -280,7 +280,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
 				PreprocessorDefinitions="_XBOX;_XBMC;NDEBUG;HAVE_MSWINDOWS;LTCG;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -335,7 +335,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				AdditionalOptions="/EHa"
 				Optimization="0"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
 				PreprocessorDefinitions="_XBOX;_XBMC;_DEBUG;HAVE_MSWINDOWS;NOMINMAX"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="FALSE"
@@ -914,6 +914,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\FilterFlickerPatch.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\FontUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\FontUtils.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\fstrcmp.cpp">

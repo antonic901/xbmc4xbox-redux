@@ -18,6 +18,8 @@ namespace COLOR
 
 typedef uint32_t Color;
 
+const Color BLACK = 0xFF000000;
+
 struct ColorInfo
 {
   Color colorARGB;
