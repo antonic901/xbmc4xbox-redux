@@ -17,15 +17,15 @@ class CFileExtensionProvider;
 class CSettingPath : public CSettingString
 {
 public:
-  CSettingPath(const std::string &id, CSettingsManager *settingsManager = nullptr);
-  CSettingPath(const std::string &id, int label, const std::string &value, CSettingsManager *settingsManager = nullptr);
+  CSettingPath(const std::string &id, CSettingsManager *settingsManager = NULL);
+  CSettingPath(const std::string &id, int label, const std::string &value, CSettingsManager *settingsManager = NULL);
   CSettingPath(const std::string &id, const CSettingPath &setting);
-  ~CSettingPath() override = default;
+  virtual ~CSettingPath() {}
 
-  SettingPtr Clone(const std::string &id) const override;
+  virtual SettingPtr Clone(const std::string &id) const;
 
-  bool Deserialize(const TiXmlNode *node, bool update = false) override;
-  bool SetValue(const std::string &value) override;
+  virtual bool Deserialize(const TiXmlNode *node, bool update = false);
+  virtual bool SetValue(const std::string &value);
 
   bool Writable() const { return m_writable; }
   void SetWritable(bool writable) { m_writable = writable; }

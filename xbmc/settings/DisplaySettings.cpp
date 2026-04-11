@@ -89,7 +89,7 @@ CDisplaySettings::CDisplaySettings()
   m_resolutionChangeAborted = false;
 }
 
-CDisplaySettings::~CDisplaySettings() = default;
+CDisplaySettings::~CDisplaySettings() {}
 
 CDisplaySettings& CDisplaySettings::GetInstance()
 {
@@ -99,7 +99,7 @@ CDisplaySettings& CDisplaySettings::GetInstance()
 
 bool CDisplaySettings::Load(const TiXmlNode *settings)
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   m_calibrations.clear();
 
   if (settings == NULL)
@@ -166,7 +166,7 @@ bool CDisplaySettings::Save(TiXmlNode *settings) const
   if (settings == NULL)
     return false;
 
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   TiXmlElement xmlRootElement("resolutions");
   TiXmlNode *pRoot = settings->InsertEndChild(xmlRootElement);
   if (pRoot == NULL)
@@ -208,7 +208,7 @@ bool CDisplaySettings::Save(TiXmlNode *settings) const
 
 void CDisplaySettings::Clear()
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   m_calibrations.clear();
   m_resolutions.clear();
   m_resolutions.resize(RES_CUSTOM);
@@ -219,7 +219,7 @@ void CDisplaySettings::Clear()
   m_nonLinearStretched = false;
 }
 
-void CDisplaySettings::OnSettingAction(const std::shared_ptr<const CSetting>& setting)
+void CDisplaySettings::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;
@@ -227,27 +227,27 @@ void CDisplaySettings::OnSettingAction(const std::shared_ptr<const CSetting>& se
   const std::string &settingId = setting->GetId();
   if (settingId == "videoscreen.cms3dlut")
   {
-    std::string path = std::static_pointer_cast<const CSettingString>(setting)->GetValue();
+    std::string path = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
     VECSOURCES shares;
     CServiceBroker::GetMediaManager().GetLocalDrives(shares);
     if (CGUIDialogFileBrowser::ShowAndGetFile(shares, ".3dlut", g_localizeStrings.Get(36580), path))
     {
-      std::static_pointer_cast<CSettingString>(std::const_pointer_cast<CSetting>(setting))->SetValue(path);
+      boost::static_pointer_cast<CSettingString>(std::const_pointer_cast<CSetting>(setting))->SetValue(path);
     }
   }
   else if (settingId == "videoscreen.displayprofile")
   {
-    std::string path = std::static_pointer_cast<const CSettingString>(setting)->GetValue();
+    std::string path = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
     VECSOURCES shares;
     CServiceBroker::GetMediaManager().GetLocalDrives(shares);
     if (CGUIDialogFileBrowser::ShowAndGetFile(shares, ".icc|.icm", g_localizeStrings.Get(36581), path))
     {
-      std::static_pointer_cast<CSettingString>(std::const_pointer_cast<CSetting>(setting))->SetValue(path);
+      boost::static_pointer_cast<CSettingString>(std::const_pointer_cast<CSetting>(setting))->SetValue(path);
     }
   }
 }
 
-bool CDisplaySettings::OnSettingChanging(const std::shared_ptr<const CSetting>& setting)
+bool CDisplaySettings::OnSettingChanging(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return false;
@@ -258,10 +258,10 @@ bool CDisplaySettings::OnSettingChanging(const std::shared_ptr<const CSetting>& 
   {
     RESOLUTION newRes = RES_DESKTOP;
     if (settingId == CSettings::SETTING_VIDEOSCREEN_RESOLUTION)
-      newRes = (RESOLUTION)std::static_pointer_cast<const CSettingInt>(setting)->GetValue();
+      newRes = (RESOLUTION)boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
     else if (settingId == CSettings::SETTING_VIDEOSCREEN_SCREEN)
     {
-      int screen = std::static_pointer_cast<const CSettingInt>(setting)->GetValue();
+      int screen = boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
 
       // if triggered by a change of screenmode, screen may not have changed
       if (screen == GetCurrentDisplayMode())
@@ -279,7 +279,7 @@ bool CDisplaySettings::OnSettingChanging(const std::shared_ptr<const CSetting>& 
   if (settingId == CSettings::SETTING_VIDEOSCREEN_SCREENMODE)
   {
     RESOLUTION oldRes = GetCurrentResolution();
-    RESOLUTION newRes = GetResolutionFromString(std::static_pointer_cast<const CSettingString>(setting)->GetValue());
+    RESOLUTION newRes = GetResolutionFromString(boost::static_pointer_cast<const CSettingString>(setting)->GetValue());
 
     SetCurrentResolution(newRes, false);
     CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(newRes, false);
@@ -290,8 +290,8 @@ bool CDisplaySettings::OnSettingChanging(const std::shared_ptr<const CSetting>& 
     {
       if (!m_resolutionChangeAborted)
       {
-        if (HELPERS::ShowYesNoDialogText(CVariant{13110}, CVariant{13111}, CVariant{""},
-                                         CVariant{""}, 15000) != DialogResponse::CHOICE_YES)
+        if (HELPERS::ShowYesNoDialogText(13110, 13111, "",
+                                         "", 15000) != DialogResponse::CHOICE_YES)
         {
           m_resolutionChangeAborted = true;
           return false;
@@ -307,7 +307,7 @@ bool CDisplaySettings::OnSettingChanging(const std::shared_ptr<const CSetting>& 
     if (winSystem->SupportsScreenMove())
     {
       const std::string screen =
-          std::static_pointer_cast<const CSettingString>(setting)->GetValue();
+          boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
       const unsigned int screenIdx = winSystem->GetScreenId(screen);
       winSystem->MoveToScreen(screenIdx);
     }
@@ -319,7 +319,7 @@ bool CDisplaySettings::OnSettingChanging(const std::shared_ptr<const CSetting>& 
 
     if (!m_resolutionChangeAborted)
     {
-      if (HELPERS::ShowYesNoDialogText(CVariant{13110}, CVariant{13111}, CVariant{""}, CVariant{""},
+      if (HELPERS::ShowYesNoDialogText(13110, 13111, "", "",
                                        10000) != DialogResponse::CHOICE_YES)
       {
         m_resolutionChangeAborted = true;
@@ -354,7 +354,7 @@ bool CDisplaySettings::OnSettingChanging(const std::shared_ptr<const CSetting>& 
   return true;
 }
 
-bool CDisplaySettings::OnSettingUpdate(const std::shared_ptr<CSetting>& setting,
+bool CDisplaySettings::OnSettingUpdate(const boost::shared_ptr<CSetting>& setting,
                                        const char* oldSettingId,
                                        const TiXmlNode* oldSettingNode)
 {
@@ -364,7 +364,7 @@ bool CDisplaySettings::OnSettingUpdate(const std::shared_ptr<CSetting>& setting,
   const std::string &settingId = setting->GetId();
   if (settingId == CSettings::SETTING_VIDEOSCREEN_SCREENMODE)
   {
-    std::shared_ptr<CSettingString> screenmodeSetting = std::static_pointer_cast<CSettingString>(setting);
+    boost::shared_ptr<CSettingString> screenmodeSetting = boost::static_pointer_cast<CSettingString>(setting);
     std::string screenmode = screenmodeSetting->GetValue();
     // in Eden there was no character ("i" or "p") indicating interlaced/progressive
     // at the end so we just add a "p" and assume progressive
@@ -376,8 +376,8 @@ bool CDisplaySettings::OnSettingUpdate(const std::shared_ptr<CSetting>& setting,
   }
   else if (settingId == CSettings::SETTING_VIDEOSCREEN_PREFEREDSTEREOSCOPICMODE)
   {
-    std::shared_ptr<CSettingInt> stereomodeSetting = std::static_pointer_cast<CSettingInt>(setting);
-    const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+    boost::shared_ptr<CSettingInt> stereomodeSetting = boost::static_pointer_cast<CSettingInt>(setting);
+    const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
     STEREOSCOPIC_PLAYBACK_MODE playbackMode = (STEREOSCOPIC_PLAYBACK_MODE) settings->GetInt(CSettings::SETTING_VIDEOPLAYER_STEREOSCOPICPLAYBACKMODE);
     if (stereomodeSetting->GetValue() == RENDER_STEREO_MODE_OFF)
     {
@@ -398,7 +398,7 @@ bool CDisplaySettings::OnSettingUpdate(const std::shared_ptr<CSetting>& setting,
   return false;
 }
 
-void CDisplaySettings::OnSettingChanged(const std::shared_ptr<const CSetting>& setting)
+void CDisplaySettings::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
 {
   if (!setting)
     return;
@@ -410,7 +410,7 @@ void CDisplaySettings::OnSettingChanged(const std::shared_ptr<const CSetting>& s
 
 void CDisplaySettings::SetMonitor(const std::string& monitor)
 {
-  const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+  const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
   const std::string curMonitor = settings->GetString(CSettings::SETTING_VIDEOSCREEN_MONITOR);
   if (curMonitor != monitor)
   {
@@ -454,7 +454,7 @@ RESOLUTION CDisplaySettings::GetDisplayResolution() const
 
 const RESOLUTION_INFO& CDisplaySettings::GetResolutionInfo(size_t index) const
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   if (index >= m_resolutions.size())
     return EmptyResolution;
 
@@ -471,7 +471,7 @@ const RESOLUTION_INFO& CDisplaySettings::GetResolutionInfo(RESOLUTION resolution
 
 RESOLUTION_INFO& CDisplaySettings::GetResolutionInfo(size_t index)
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   if (index >= m_resolutions.size())
   {
     EmptyModifiableResolution = RESOLUTION_INFO();
@@ -494,7 +494,7 @@ RESOLUTION_INFO& CDisplaySettings::GetResolutionInfo(RESOLUTION resolution)
 
 void CDisplaySettings::AddResolutionInfo(const RESOLUTION_INFO &resolution)
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   RESOLUTION_INFO res(resolution);
 
   if((res.dwFlags & D3DPRESENTFLAG_MODE3DTB) == 0)
@@ -520,7 +520,7 @@ void CDisplaySettings::AddResolutionInfo(const RESOLUTION_INFO &resolution)
 
 void CDisplaySettings::ApplyCalibrations()
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   // apply all calibrations to the resolutions
   for (ResolutionInfos::const_iterator itCal = m_calibrations.begin(); itCal != m_calibrations.end(); ++itCal)
   {
@@ -573,7 +573,7 @@ void CDisplaySettings::ApplyCalibrations()
 
 void CDisplaySettings::UpdateCalibrations()
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
 
   if (m_resolutions.size() <= RES_DESKTOP)
     return;
@@ -599,7 +599,7 @@ void CDisplaySettings::UpdateCalibrations()
 
 void CDisplaySettings::ClearCalibrations()
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   m_calibrations.clear();
 }
 
@@ -706,7 +706,7 @@ static inline bool ModeSort(const StringSettingOption& i, const StringSettingOpt
   return (i.value > j.value);
 }
 
-void CDisplaySettings::SettingOptionsModesFiller(const std::shared_ptr<const CSetting>& setting,
+void CDisplaySettings::SettingOptionsModesFiller(const boost::shared_ptr<const CSetting>& setting,
                                                  std::vector<StringSettingOption>& list,
                                                  std::string& current,
                                                  void* data)
@@ -768,7 +768,7 @@ void CDisplaySettings::SettingOptionsRefreshRatesFiller(const SettingConstPtr& s
   for (std::vector<REFRESHRATE>::const_iterator refreshrate = refreshrates.begin(); refreshrate != refreshrates.end(); ++refreshrate)
   {
     std::string screenmode = GetStringFromResolution((RESOLUTION)refreshrate->ResInfo_Index, refreshrate->RefreshRate);
-    if (!match && StringUtils::EqualsNoCase(std::static_pointer_cast<const CSettingString>(setting)->GetValue(), screenmode))
+    if (!match && StringUtils::EqualsNoCase(boost::static_pointer_cast<const CSettingString>(setting)->GetValue(), screenmode))
       match = true;
     list.emplace_back(StringUtils::Format("{:.2f}", refreshrate->RefreshRate), screenmode);
   }
@@ -850,7 +850,7 @@ void CDisplaySettings::SettingOptionsStereoscopicModesFiller(
     void* data)
 {
   CGUIComponent *gui = CServiceBroker::GetGUI();
-  if (gui != nullptr)
+  if (gui != NULL)
   {
     const CStereoscopicsManager &stereoscopicsManager = gui->GetStereoscopicsManager();
 

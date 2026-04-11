@@ -48,25 +48,25 @@ public:
    * @brief Get access to the settings subcomponent.
    * @return the settings subcomponent.
    */
-  std::shared_ptr<CSettings> GetSettings();
+  boost::shared_ptr<CSettings> GetSettings();
 
   /*!
    * @brief Get access to the advanced settings subcomponent.
    * @return the advanced settings subcomponent.
    */
-  std::shared_ptr<CAdvancedSettings> GetAdvancedSettings();
+  boost::shared_ptr<CAdvancedSettings> GetAdvancedSettings();
 
   /*!
    * @brief Get access to the subtitles settings subcomponent.
    * @return the subtiltles settings subcomponent.
    */
-  std::shared_ptr<KODI::SUBTITLES::CSubtitlesSettings> GetSubtitlesSettings();
+  boost::shared_ptr<KODI::SUBTITLES::CSubtitlesSettings> GetSubtitlesSettings();
 
   /*!
    * @brief Get access to the profiles manager subcomponent.
    * @return the profiles manager subcomponent.
    */
-  std::shared_ptr<CProfileManager> GetProfileManager();
+  boost::shared_ptr<CProfileManager> GetProfileManager();
 
 private:
   bool InitDirectoriesLinux(bool bPlatformDirectories);
@@ -82,8 +82,8 @@ private:
   };
   State m_state = State::DEINITED;
 
-  std::shared_ptr<CSettings> m_settings;
-  std::shared_ptr<CAdvancedSettings> m_advancedSettings;
-  std::shared_ptr<KODI::SUBTITLES::CSubtitlesSettings> m_subtitlesSettings;
-  std::shared_ptr<CProfileManager> m_profileManager;
+  boost::shared_ptr<CSettings> m_settings;
+  boost::shared_ptr<CAdvancedSettings> m_advancedSettings;
+  boost::shared_ptr<KODI::SUBTITLES::CSubtitlesSettings> m_subtitlesSettings;
+  boost::shared_ptr<CProfileManager> m_profileManager;
 };

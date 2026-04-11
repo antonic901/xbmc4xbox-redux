@@ -48,16 +48,16 @@ public:
    \brief Creates a new (uninitialized) settings manager.
    */
   CSettingsManager();
-  ~CSettingsManager() override;
+  virtual ~CSettingsManager();
 
   static const uint32_t Version;
   static const uint32_t MinimumSupportedVersion;
 
   // implementation of ISettingCreator
-  std::shared_ptr<CSetting> CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager = nullptr) const override;
+  virtual boost::shared_ptr<CSetting> CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager = NULL) const;
 
   // implementation of ISettingControlCreator
-  std::shared_ptr<ISettingControl> CreateControl(const std::string &controlType) const override;
+  virtual boost::shared_ptr<ISettingControl> CreateControl(const std::string &controlType) const;
 
   uint32_t GetVersion() const { return Version; }
   uint32_t GetMinimumSupportedVersion() const { return MinimumSupportedVersion; }
@@ -87,7 +87,7 @@ public:
    \param loadedSettings A list to fill with all the successfully loaded settings
    \return True if the setting values were successfully loaded, false otherwise
    */
-  bool Load(const TiXmlElement *root, bool &updated, bool triggerEvents = true, std::map<std::string, std::shared_ptr<CSetting>> *loadedSettings = nullptr);
+  bool Load(const TiXmlElement *root, bool &updated, bool triggerEvents = true, std::map<std::string, boost::shared_ptr<CSetting>> *loadedSettings = NULL);
   /*!
    \brief Saves the setting values using the given serializer.
 
@@ -161,7 +161,7 @@ public:
    This is possible before and after the setting definitions have been
    initialized.
    */
-  void AddSection(const std::shared_ptr<CSettingSection>& section);
+  void AddSection(const boost::shared_ptr<CSettingSection>& section);
 
   /*!
    \brief Adds the given setting to the given group in the given category in
@@ -181,10 +181,10 @@ public:
    \param group Group the new setting should be added to
    \return True if the setting has been added, false otherwise
    */
-  bool AddSetting(const std::shared_ptr<CSetting>& setting,
-                  const std::shared_ptr<CSettingSection>& section,
-                  const std::shared_ptr<CSettingCategory>& category,
-                  const std::shared_ptr<CSettingGroup>& group);
+  bool AddSetting(const boost::shared_ptr<CSetting>& setting,
+                  const boost::shared_ptr<CSettingSection>& section,
+                  const boost::shared_ptr<CSettingCategory>& category,
+                  const boost::shared_ptr<CSettingGroup>& group);
 
   /*!
    \brief Registers the given ISettingCallback implementation to be triggered
@@ -268,7 +268,7 @@ public:
    \param setting Setting object
    \return Implementation of the setting options filler (either IntegerSettingOptionsFiller or StringSettingOptionsFiller)
    */
-  void* GetSettingOptionsFiller(const std::shared_ptr<const CSetting>& setting);
+  void* GetSettingOptionsFiller(const boost::shared_ptr<const CSetting>& setting);
 
   /*!
    \brief Checks whether any settings have been initialized.
@@ -280,22 +280,22 @@ public:
    \brief Gets the setting with the given identifier.
 
    \param id Setting identifier
-   \return Setting object with the given identifier or nullptr if the identifier is unknown
+   \return Setting object with the given identifier or NULL if the identifier is unknown
    */
-  std::shared_ptr<CSetting> GetSetting(const std::string &id) const;
+  boost::shared_ptr<CSetting> GetSetting(const std::string &id) const;
   /*!
    \brief Gets the full list of setting sections.
 
    \return List of setting sections
    */
-  std::vector<std::shared_ptr<CSettingSection>> GetSections() const;
+  std::vector<boost::shared_ptr<CSettingSection>> GetSections() const;
   /*!
    \brief Gets the setting section with the given identifier.
 
    \param section Setting section identifier
-   \return Setting section with the given identifier or nullptr if the identifier is unknown
+   \return Setting section with the given identifier or NULL if the identifier is unknown
    */
-  std::shared_ptr<CSettingSection> GetSection(std::string section) const;
+  boost::shared_ptr<CSettingSection> GetSection(std::string section) const;
   /*!
    \brief Gets a map of settings (and their dependencies) which depend on
    the setting with the given identifier.
@@ -320,7 +320,7 @@ public:
    \param setting Setting object
    \return Map of settings (and their dependencies) which depend on the given setting
    */
-  SettingDependencyMap GetDependencies(const std::shared_ptr<const CSetting>& setting) const;
+  SettingDependencyMap GetDependencies(const boost::shared_ptr<const CSetting>& setting) const;
 
   /*!
    \brief Gets the boolean value of the setting with the given identifier.
@@ -356,7 +356,7 @@ public:
    \param id Setting identifier
    \return List of values of the setting with the given identifier
    */
-  std::vector< std::shared_ptr<CSetting> > GetList(const std::string &id) const;
+  std::vector< boost::shared_ptr<CSetting> > GetList(const std::string &id) const;
 
   /*!
    \brief Sets the boolean value of the setting with the given identifier.
@@ -404,7 +404,7 @@ public:
    \param value Values to set
    \return True if setting the values was successful, false otherwise
    */
-  bool SetList(const std::string &id, const std::vector< std::shared_ptr<CSetting> > &value);
+  bool SetList(const std::string &id, const std::vector< boost::shared_ptr<CSetting> > &value);
 
   /*!
    \brief Sets the value of the setting to its default.
@@ -443,7 +443,7 @@ public:
    \param condition Implementation of the dynamic condition
    \param data Opaque data pointer, will be passed back to SettingConditionCheck function
    */
-  void AddDynamicCondition(const std::string &identifier, SettingConditionCheck condition, void *data = nullptr);
+  void AddDynamicCondition(const std::string &identifier, SettingConditionCheck condition, void *data = NULL);
 
   /*!
    \brief Removes the given dynamic condition.
@@ -454,36 +454,36 @@ public:
 
 private:
   // implementation of ISettingCallback
-  bool OnSettingChanging(const std::shared_ptr<const CSetting>& setting) override;
-  void OnSettingChanged(const std::shared_ptr<const CSetting>& setting) override;
-  void OnSettingAction(const std::shared_ptr<const CSetting>& setting) override;
-  bool OnSettingUpdate(const std::shared_ptr<CSetting>& setting,
+  virtual bool OnSettingChanging(const boost::shared_ptr<const CSetting>& setting);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
+  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
+  bool OnSettingUpdate(const boost::shared_ptr<CSetting>& setting,
                        const char* oldSettingId,
-                       const TiXmlNode* oldSettingNode) override;
-  void OnSettingPropertyChanged(const std::shared_ptr<const CSetting>& setting,
-                                const char* propertyName) override;
+                       virtual const TiXmlNode* oldSettingNode);
+  void OnSettingPropertyChanged(const boost::shared_ptr<const CSetting>& setting,
+                                virtual const char* propertyName);
 
   // implementation of ISettingsHandler
-  bool OnSettingsLoading() override;
-  void OnSettingsLoaded() override;
-  void OnSettingsUnloaded() override;
-  bool OnSettingsSaving() const override;
-  void OnSettingsSaved() const override;
-  void OnSettingsCleared() override;
+  virtual bool OnSettingsLoading();
+  virtual void OnSettingsLoaded();
+  virtual void OnSettingsUnloaded();
+  virtual bool OnSettingsSaving() const;
+  virtual void OnSettingsSaved() const;
+  virtual void OnSettingsCleared();
 
   bool Serialize(TiXmlNode *parent) const;
-  bool Deserialize(const TiXmlNode *node, bool &updated, std::map<std::string, std::shared_ptr<CSetting>> *loadedSettings = nullptr);
+  bool Deserialize(const TiXmlNode *node, bool &updated, std::map<std::string, boost::shared_ptr<CSetting>> *loadedSettings = NULL);
 
-  bool LoadSetting(const TiXmlNode* node, const std::shared_ptr<CSetting>& setting, bool& updated);
+  bool LoadSetting(const TiXmlNode* node, const boost::shared_ptr<CSetting>& setting, bool& updated);
   bool UpdateSetting(const TiXmlNode* node,
-                     const std::shared_ptr<CSetting>& setting,
+                     const boost::shared_ptr<CSetting>& setting,
                      const CSettingUpdate& update);
   void UpdateSettingByDependency(const std::string &settingId, const CSettingDependency &dependency);
   void UpdateSettingByDependency(const std::string &settingId, SettingDependencyType dependencyType);
 
-  void AddSetting(const std::shared_ptr<CSetting>& setting);
+  void AddSetting(const boost::shared_ptr<CSetting>& setting);
 
-  void ResolveReferenceSettings(const std::shared_ptr<CSettingSection>& section);
+  void ResolveReferenceSettings(const boost::shared_ptr<CSettingSection>& section);
   void CleanupIncompleteSettings();
 
   enum class SettingOptionsFillerType {
@@ -496,7 +496,7 @@ private:
 
   using CallbackSet = std::set<ISettingCallback *>;
   struct Setting {
-    std::shared_ptr<CSetting> setting;
+    boost::shared_ptr<CSetting> setting;
     SettingDependencyMap dependencies;
     std::set<std::string> children;
     CallbackSet callbacks;
@@ -513,9 +513,9 @@ private:
    *
    * \param setting Setting object
   */
-  void RefreshVisibilityAndEnableStatus(const std::shared_ptr<const CSetting>& setting);
+  void RefreshVisibilityAndEnableStatus(const boost::shared_ptr<const CSetting>& setting);
 
-  void ResolveSettingDependencies(const std::shared_ptr<CSetting>& setting);
+  void ResolveSettingDependencies(const boost::shared_ptr<CSetting>& setting);
   void ResolveSettingDependencies(const Setting& setting);
 
   SettingMap::const_iterator FindSetting(std::string settingId) const;
@@ -526,7 +526,7 @@ private:
   bool m_loaded = false;
 
   SettingMap m_settings;
-  using SettingSectionMap = std::map<std::string, std::shared_ptr<CSettingSection>>;
+  using SettingSectionMap = std::map<std::string, boost::shared_ptr<CSettingSection>>;
   SettingSectionMap m_sections;
 
   using SettingCreatorMap = std::map<std::string, ISettingCreator*>;

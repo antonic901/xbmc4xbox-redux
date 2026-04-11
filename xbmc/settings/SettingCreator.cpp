@@ -13,16 +13,16 @@
 #include "settings/SettingPath.h"
 #include "utils/StringUtils.h"
 
-std::shared_ptr<CSetting> CSettingCreator::CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager /* = nullptr */) const
+boost::shared_ptr<CSetting> CSettingCreator::CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager /* = NULL */) const
 {
   if (StringUtils::EqualsNoCase(settingType, "addon"))
-    return std::make_shared<CSettingAddon>(settingId, settingsManager);
+    return boost::make_shared<CSettingAddon>(settingId, settingsManager);
   else if (StringUtils::EqualsNoCase(settingType, "path"))
-    return std::make_shared<CSettingPath>(settingId, settingsManager);
+    return boost::make_shared<CSettingPath>(settingId, settingsManager);
   else if (StringUtils::EqualsNoCase(settingType, "date"))
-    return std::make_shared<CSettingDate>(settingId, settingsManager);
+    return boost::make_shared<CSettingDate>(settingId, settingsManager);
   else if (StringUtils::EqualsNoCase(settingType, "time"))
-    return std::make_shared<CSettingTime>(settingId, settingsManager);
+    return boost::make_shared<CSettingTime>(settingId, settingsManager);
 
-  return nullptr;
+  return NULL;
 }

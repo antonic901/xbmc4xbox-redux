@@ -16,28 +16,28 @@ class CGUIWindowSettingsCategory : public CGUIDialogSettingsManagerBase
 {
 public:
   CGUIWindowSettingsCategory();
-  ~CGUIWindowSettingsCategory() override;
+  virtual ~CGUIWindowSettingsCategory();
 
   // specialization of CGUIControl
-  bool OnMessage(CGUIMessage &message) override;
-  bool OnAction(const CAction &action) override;
-  bool OnBack(int actionID) override;
-  int GetID() const override { return CGUIDialogSettingsManagerBase::GetID() + m_iSection; }
+  virtual bool OnMessage(CGUIMessage &message);
+  virtual bool OnAction(const CAction &action);
+  virtual bool OnBack(int actionID);
+  virtual int GetID() const { return CGUIDialogSettingsManagerBase::GetID() + m_iSection; }
 
   // specialization of CGUIWindow
-  bool IsDialog() const override { return false; }
+  virtual bool IsDialog() const { return false; }
 
 protected:
   // specialization of CGUIWindow
-  void OnWindowLoaded() override;
+  virtual void OnWindowLoaded();
 
   // implementation of CGUIDialogSettingsBase
-  int GetSettingLevel() const override;
-  std::shared_ptr<CSettingSection> GetSection() override;
-  bool Save() override;
+  virtual int GetSettingLevel() const;
+  virtual boost::shared_ptr<CSettingSection> GetSection();
+  virtual bool Save();
 
   // implementation of CGUIDialogSettingsManagerBase
-  CSettingsManager* GetSettingsManager() const override;
+  virtual CSettingsManager* GetSettingsManager() const;
 
   /*!
    * Set focus to a category or setting in this window. The setting/category must be active in the
@@ -45,7 +45,7 @@ protected:
    */
   void FocusElement(const std::string& elementId);
 
-  std::shared_ptr<CSettings> m_settings;
+  boost::shared_ptr<CSettings> m_settings;
   int m_iSection = 0;
   bool m_returningFromSkinLoad = false; // true if we are returning from loading the skin
 };

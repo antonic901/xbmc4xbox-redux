@@ -28,8 +28,8 @@ public:
    \param id Identifier of the setting object
    \param settingsManager Reference to the settings manager
    */
-  ISetting(const std::string &id, CSettingsManager *settingsManager = nullptr);
-  virtual ~ISetting() = default;
+  ISetting(const std::string &id, CSettingsManager *settingsManager = NULL);
+  virtual ~ISetting() {}
 
   /*!
    \brief Deserializes the given XML node into the properties of the setting
@@ -114,7 +114,7 @@ public:
   static bool DeserializeIdentification(const TiXmlNode *node, std::string &identification);
 
 protected:
-  static constexpr int DefaultLabel = -1;
+  static const int DefaultLabel = -1;
   /*!
    \brief Deserializes the given XML node to retrieve a setting object's identifier from the given attribute.
 

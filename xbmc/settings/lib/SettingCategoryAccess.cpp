@@ -16,7 +16,7 @@ bool CSettingCategoryAccessCondition::Check() const
   if (m_value.empty())
     return true;
 
-  if (m_settingsManager == nullptr)
+  if (m_settingsManager == NULL)
     return false;
 
   bool found = m_settingsManager->GetConditions().Check(m_value, "true");
@@ -34,7 +34,7 @@ bool CSettingCategoryAccessConditionCombination::Check() const
   return CSettingConditionCombination::Check();
 }
 
-CSettingCategoryAccess::CSettingCategoryAccess(CSettingsManager *settingsManager /* = nullptr */)
+CSettingCategoryAccess::CSettingCategoryAccess(CSettingsManager *settingsManager /* = NULL */)
   : CSettingCondition(settingsManager)
 {
   m_operation = CBooleanLogicOperationPtr(new CSettingCategoryAccessConditionCombination(m_settingsManager));

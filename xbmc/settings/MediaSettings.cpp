@@ -59,7 +59,7 @@ CMediaSettings::CMediaSettings()
   m_videoNeedsUpdate = 0;
 }
 
-CMediaSettings::~CMediaSettings() = default;
+CMediaSettings::~CMediaSettings() {}
 
 CMediaSettings& CMediaSettings::GetInstance()
 {
@@ -72,7 +72,7 @@ bool CMediaSettings::Load(const TiXmlNode *settings)
   if (settings == NULL)
     return false;
 
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   const TiXmlElement *pElement = settings->FirstChildElement("defaultvideosettings");
   if (pElement != NULL)
   {
@@ -128,7 +128,7 @@ bool CMediaSettings::Load(const TiXmlNode *settings)
 
   m_defaultGameSettings.Reset();
   pElement = settings->FirstChildElement("defaultgamesettings");
-  if (pElement != nullptr)
+  if (pElement != NULL)
   {
     std::string videoFilter;
     if (XMLUtils::GetString(pElement, "videofilter", videoFilter))
@@ -208,7 +208,7 @@ bool CMediaSettings::Save(TiXmlNode *settings) const
   if (settings == NULL)
     return false;
 
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   // default video settings
   TiXmlElement videoSettingsNode("defaultvideosettings");
   TiXmlNode *pNode = settings->InsertEndChild(videoSettingsNode);
@@ -246,7 +246,7 @@ bool CMediaSettings::Save(TiXmlNode *settings) const
   // Default game settings
   TiXmlElement gameSettingsNode("defaultgamesettings");
   pNode = settings->InsertEndChild(gameSettingsNode);
-  if (pNode == nullptr)
+  if (pNode == NULL)
     return false;
 
   XMLUtils::SetString(pNode, "videofilter", m_defaultGameSettings.VideoFilter());
@@ -300,7 +300,7 @@ bool CMediaSettings::Save(TiXmlNode *settings) const
   return true;
 }
 
-void CMediaSettings::OnSettingAction(const std::shared_ptr<const CSetting>& setting)
+void CMediaSettings::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;
@@ -308,10 +308,10 @@ void CMediaSettings::OnSettingAction(const std::shared_ptr<const CSetting>& sett
   const std::string &settingId = setting->GetId();
   if (settingId == CSettings::SETTING_MUSICLIBRARY_CLEANUP)
   {
-    if (HELPERS::ShowYesNoDialogText(CVariant{313}, CVariant{333}) == DialogResponse::CHOICE_YES)
+    if (HELPERS::ShowYesNoDialogText(313, 333) == DialogResponse::CHOICE_YES)
     {
       if (CMusicLibraryQueue::GetInstance().IsRunning())
-        HELPERS::ShowOKDialogText(CVariant{700}, CVariant{703});
+        HELPERS::ShowOKDialogText(700, 703);
       else
         CMusicLibraryQueue::GetInstance().CleanLibrary(true);
     }
@@ -341,10 +341,10 @@ void CMediaSettings::OnSettingAction(const std::shared_ptr<const CSetting>& sett
   }
   else if (settingId == CSettings::SETTING_VIDEOLIBRARY_CLEANUP)
   {
-    if (HELPERS::ShowYesNoDialogText(CVariant{313}, CVariant{333}) == DialogResponse::CHOICE_YES)
+    if (HELPERS::ShowYesNoDialogText(313, 333) == DialogResponse::CHOICE_YES)
     {
       if (!CVideoLibraryQueue::GetInstance().CleanLibraryModal())
-        HELPERS::ShowOKDialogText(CVariant{700}, CVariant{703});
+        HELPERS::ShowOKDialogText(700, 703);
     }
   }
   else if (settingId == CSettings::SETTING_VIDEOLIBRARY_EXPORT)
@@ -367,9 +367,9 @@ void CMediaSettings::OnSettingAction(const std::shared_ptr<const CSetting>& sett
   }
 }
 
-void CMediaSettings::OnSettingChanged(const std::shared_ptr<const CSetting>& setting)
+void CMediaSettings::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
 {
-  if (setting == nullptr)
+  if (setting == NULL)
     return;
 
   if (setting->GetId() == CSettings::SETTING_VIDEOLIBRARY_SHOWUNWATCHEDPLOTS)
@@ -378,7 +378,7 @@ void CMediaSettings::OnSettingChanged(const std::shared_ptr<const CSetting>& set
 
 int CMediaSettings::GetWatchedMode(const std::string &content) const
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   WatchedModes::const_iterator it = m_watchedModes.find(GetWatchedContent(content));
   if (it != m_watchedModes.end())
     return it->second;
@@ -388,7 +388,7 @@ int CMediaSettings::GetWatchedMode(const std::string &content) const
 
 void CMediaSettings::SetWatchedMode(const std::string &content, WatchedMode mode)
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   WatchedModes::iterator it = m_watchedModes.find(GetWatchedContent(content));
   if (it != m_watchedModes.end())
     it->second = mode;
@@ -396,7 +396,7 @@ void CMediaSettings::SetWatchedMode(const std::string &content, WatchedMode mode
 
 void CMediaSettings::CycleWatchedMode(const std::string &content)
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   WatchedModes::iterator it = m_watchedModes.find(GetWatchedContent(content));
   if (it != m_watchedModes.end())
   {

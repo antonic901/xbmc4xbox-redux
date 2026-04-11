@@ -14,12 +14,12 @@
 
 #include <algorithm>
 
-std::vector<CVariant> CSettingUtils::GetList(const std::shared_ptr<const CSettingList>& settingList)
+std::vector<CVariant> CSettingUtils::GetList(const boost::shared_ptr<const CSettingList>& settingList)
 {
   return ListToValues(settingList, settingList->GetValue());
 }
 
-bool CSettingUtils::SetList(const std::shared_ptr<CSettingList>& settingList,
+bool CSettingUtils::SetList(const boost::shared_ptr<CSettingList>& settingList,
                             const std::vector<CVariant>& value)
 {
   SettingList newValues;
@@ -30,8 +30,8 @@ bool CSettingUtils::SetList(const std::shared_ptr<CSettingList>& settingList,
 }
 
 std::vector<CVariant> CSettingUtils::ListToValues(
-    const std::shared_ptr<const CSettingList>& setting,
-    const std::vector<std::shared_ptr<CSetting>>& values)
+    const boost::shared_ptr<const CSettingList>& setting,
+    const std::vector<boost::shared_ptr<CSetting>>& values)
 {
   std::vector<CVariant> realValues;
 
@@ -43,19 +43,19 @@ std::vector<CVariant> CSettingUtils::ListToValues(
     switch (setting->GetElementType())
     {
       case SettingType::Boolean:
-        realValues.emplace_back(std::static_pointer_cast<const CSettingBool>(value)->GetValue());
+        realValues.emplace_back(boost::static_pointer_cast<const CSettingBool>(value)->GetValue());
         break;
 
       case SettingType::Integer:
-        realValues.emplace_back(std::static_pointer_cast<const CSettingInt>(value)->GetValue());
+        realValues.emplace_back(boost::static_pointer_cast<const CSettingInt>(value)->GetValue());
         break;
 
       case SettingType::Number:
-        realValues.emplace_back(std::static_pointer_cast<const CSettingNumber>(value)->GetValue());
+        realValues.emplace_back(boost::static_pointer_cast<const CSettingNumber>(value)->GetValue());
         break;
 
       case SettingType::String:
-        realValues.emplace_back(std::static_pointer_cast<const CSettingString>(value)->GetValue());
+        realValues.emplace_back(boost::static_pointer_cast<const CSettingString>(value)->GetValue());
         break;
 
       default:
@@ -66,9 +66,9 @@ std::vector<CVariant> CSettingUtils::ListToValues(
   return realValues;
 }
 
-bool CSettingUtils::ValuesToList(const std::shared_ptr<const CSettingList>& setting,
+bool CSettingUtils::ValuesToList(const boost::shared_ptr<const CSettingList>& setting,
                                  const std::vector<CVariant>& values,
-                                 std::vector<std::shared_ptr<CSetting>>& newValues)
+                                 std::vector<boost::shared_ptr<CSetting>>& newValues)
 {
   if (setting == NULL)
     return false;
@@ -88,28 +88,28 @@ bool CSettingUtils::ValuesToList(const std::shared_ptr<const CSettingList>& sett
         if (!value.isBoolean())
           ret = false;
         else
-          ret = std::static_pointer_cast<CSettingBool>(settingValue)->SetValue(value.asBoolean());
+          ret = boost::static_pointer_cast<CSettingBool>(settingValue)->SetValue(value.asBoolean());
         break;
 
       case SettingType::Integer:
         if (!value.isInteger())
           ret = false;
         else
-          ret = std::static_pointer_cast<CSettingInt>(settingValue)->SetValue(static_cast<int>(value.asInteger()));
+          ret = boost::static_pointer_cast<CSettingInt>(settingValue)->SetValue(static_cast<int>(value.asInteger()));
         break;
 
       case SettingType::Number:
         if (!value.isDouble())
           ret = false;
         else
-          ret = std::static_pointer_cast<CSettingNumber>(settingValue)->SetValue(value.asDouble());
+          ret = boost::static_pointer_cast<CSettingNumber>(settingValue)->SetValue(value.asDouble());
         break;
 
       case SettingType::String:
         if (!value.isString())
           ret = false;
         else
-          ret = std::static_pointer_cast<CSettingString>(settingValue)->SetValue(value.asString());
+          ret = boost::static_pointer_cast<CSettingString>(settingValue)->SetValue(value.asString());
         break;
 
       default:
@@ -126,15 +126,15 @@ bool CSettingUtils::ValuesToList(const std::shared_ptr<const CSettingList>& sett
   return true;
 }
 
-bool CSettingUtils::FindIntInList(const std::shared_ptr<const CSettingList>& settingList, int value)
+bool CSettingUtils::FindIntInList(const boost::shared_ptr<const CSettingList>& settingList, int value)
 {
-  if (settingList == nullptr || settingList->GetElementType() != SettingType::Integer)
+  if (settingList == NULL || settingList->GetElementType() != SettingType::Integer)
     return false;
 
   const auto values = settingList->GetValue();
   const auto matchingValue =
       std::find_if(values.begin(), values.end(), [value](const SettingPtr& setting) {
-        return std::static_pointer_cast<CSettingInt>(setting)->GetValue() == value;
+        return boost::static_pointer_cast<CSettingInt>(setting)->GetValue() == value;
       });
   return matchingValue != values.end();
 }

@@ -23,11 +23,11 @@ class CSkinSettings : public ISubSettings
 public:
   static CSkinSettings& GetInstance();
 
-  bool Load(const TiXmlNode *settings) override;
-  bool Save(TiXmlNode *settings) const override;
-  void Clear() override;
+  virtual bool Load(const TiXmlNode *settings);
+  virtual bool Save(TiXmlNode *settings) const;
+  virtual void Clear();
 
-  void MigrateSettings(const std::shared_ptr<ADDON::CSkinInfo>& skin);
+  void MigrateSettings(const boost::shared_ptr<ADDON::CSkinInfo>& skin);
 
   int TranslateString(const std::string &setting);
   const std::string& GetString(int setting) const;
@@ -45,7 +45,7 @@ public:
 
   std::set<ADDON::CSkinSettingPtr> GetSettings() const;
   ADDON::CSkinSettingPtr GetSetting(const std::string& settingId);
-  std::shared_ptr<const ADDON::CSkinSetting> GetSetting(const std::string& settingId) const;
+  boost::shared_ptr<const ADDON::CSkinSetting> GetSetting(const std::string& settingId) const;
 
   void Reset(const std::string &setting);
   void Reset();
@@ -54,7 +54,7 @@ protected:
   CSkinSettings();
   CSkinSettings(const CSkinSettings&) = delete;
   CSkinSettings& operator=(CSkinSettings const&) = delete;
-  ~CSkinSettings() override;
+  virtual ~CSkinSettings();
 
 private:
   CCriticalSection m_critical;

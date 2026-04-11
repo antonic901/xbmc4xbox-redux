@@ -34,7 +34,7 @@ CMediaSourceSettings::CMediaSourceSettings()
   Clear();
 }
 
-CMediaSourceSettings::~CMediaSourceSettings() = default;
+CMediaSourceSettings::~CMediaSourceSettings() {}
 
 CMediaSourceSettings& CMediaSourceSettings::GetInstance()
 {
@@ -44,7 +44,7 @@ CMediaSourceSettings& CMediaSourceSettings::GetInstance()
 
 std::string CMediaSourceSettings::GetSourcesFile()
 {
-  const std::shared_ptr<CProfileManager> profileManager =
+  const boost::shared_ptr<CProfileManager> profileManager =
       CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   std::string file;
@@ -419,7 +419,7 @@ bool CMediaSourceSettings::GetSource(const std::string& category,
   if (lockModeElement)
   {
     share.m_iLockMode =
-        static_cast<LockType>(std::strtol(lockModeElement->FirstChild()->Value(), nullptr, 10));
+        static_cast<LockType>(std::strtol(lockModeElement->FirstChild()->Value(), NULL, 10));
     share.m_iHasLock = LOCK_STATE_LOCKED;
   }
 
@@ -429,7 +429,7 @@ bool CMediaSourceSettings::GetSource(const std::string& category,
   if (badPwdCountElement && badPwdCountElement->FirstChild())
   {
     share.m_iBadPwdCount =
-        static_cast<int>(std::strtol(badPwdCountElement->FirstChild()->Value(), nullptr, 10));
+        static_cast<int>(std::strtol(badPwdCountElement->FirstChild()->Value(), NULL, 10));
   }
 
   if (thumbnailNodeElement && thumbnailNodeElement->FirstChild())

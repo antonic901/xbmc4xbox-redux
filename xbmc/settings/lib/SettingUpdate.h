@@ -24,7 +24,7 @@ class CSettingUpdate
 {
 public:
   CSettingUpdate();
-  virtual ~CSettingUpdate() = default;
+  virtual ~CSettingUpdate() {}
 
   inline bool operator<(const CSettingUpdate& rhs) const
   {

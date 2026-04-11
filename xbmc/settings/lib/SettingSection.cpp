@@ -20,20 +20,20 @@
 template<class T>
 void addISetting(const TiXmlNode* node, const T& item, std::vector<T>& items, bool toBegin = false)
 {
-  if (node != nullptr)
+  if (node != NULL)
   {
     auto element = node->ToElement();
-    if (element != nullptr)
+    if (element != NULL)
     {
       // check if there is a "before" or "after" attribute to place the setting at a specific position
       int position = -1; // -1 => end, 0 => before, 1 => after
       auto positionId = element->Attribute(SETTING_XML_ATTR_BEFORE);
-      if (positionId != nullptr && strlen(positionId) > 0)
+      if (positionId != NULL && strlen(positionId) > 0)
         position = 0;
-      else if ((positionId = element->Attribute(SETTING_XML_ATTR_AFTER)) != nullptr && strlen(positionId) > 0)
+      else if ((positionId = element->Attribute(SETTING_XML_ATTR_AFTER)) != NULL && strlen(positionId) > 0)
         position = 1;
 
-      if (positionId != nullptr && strlen(positionId) > 0 && position >= 0)
+      if (positionId != NULL && strlen(positionId) > 0 && position >= 0)
       {
         for (typename std::vector<T>::iterator it = items.begin(); it != items.end(); ++it)
         {
@@ -60,10 +60,10 @@ void addISetting(const TiXmlNode* node, const T& item, std::vector<T>& items, bo
 Logger CSettingGroup::s_logger;
 
 CSettingGroup::CSettingGroup(const std::string& id,
-                             CSettingsManager* settingsManager /* = nullptr */)
+                             CSettingsManager* settingsManager /* = NULL */)
   : ISetting(id, settingsManager)
 {
-  if (s_logger == nullptr)
+  if (s_logger == NULL)
     s_logger = CServiceBroker::GetLogging().GetLogger("CSettingGroup");
 }
 
@@ -74,17 +74,17 @@ bool CSettingGroup::Deserialize(const TiXmlNode *node, bool update /* = false */
     return false;
 
   auto controlElement = node->FirstChildElement(SETTING_XML_ELM_CONTROL);
-  if (controlElement != nullptr)
+  if (controlElement != NULL)
   {
     auto controlType = controlElement->Attribute(SETTING_XML_ATTR_TYPE);
-    if (controlType == nullptr || strlen(controlType) <= 0)
+    if (controlType == NULL || strlen(controlType) <= 0)
     {
       s_logger->error("unable to read control type");
       return false;
     }
 
     m_control = m_settingsManager->CreateControl(controlType);
-    if (m_control == nullptr)
+    if (m_control == NULL)
     {
       s_logger->error("unable to create new control \"{}\"", controlType);
       return false;
@@ -98,7 +98,7 @@ bool CSettingGroup::Deserialize(const TiXmlNode *node, bool update /* = false */
   }
 
   auto settingElement = node->FirstChildElement(SETTING_XML_ELM_SETTING);
-  while (settingElement != nullptr)
+  while (settingElement != NULL)
   {
     std::string settingId;
     bool isReference;
@@ -114,22 +114,22 @@ bool CSettingGroup::Deserialize(const TiXmlNode *node, bool update /* = false */
       if (settingIt != m_settings.end())
         setting = *settingIt;
 
-      update = (setting != nullptr);
+      update = (setting != NULL);
       if (!update)
       {
         auto settingType = settingElement->Attribute(SETTING_XML_ATTR_TYPE);
-        if (settingType == nullptr || strlen(settingType) <= 0)
+        if (settingType == NULL || strlen(settingType) <= 0)
         {
           s_logger->error("unable to read setting type of \"{}\"", settingId);
           return false;
         }
 
         setting = m_settingsManager->CreateSetting(settingType, settingId, m_settingsManager);
-        if (setting == nullptr)
+        if (setting == NULL)
           s_logger->error("unknown setting type \"{}\" of \"{}\"", settingType, settingId);
       }
 
-      if (setting == nullptr)
+      if (setting == NULL)
         s_logger->error("unable to create new setting \"{}\"", settingId);
       else
       {
@@ -174,23 +174,23 @@ bool CSettingGroup::ContainsVisibleSettings(const SettingLevel level) const
 
 void CSettingGroup::AddSetting(const SettingPtr& setting)
 {
-  addISetting(nullptr, setting, m_settings);
+  addISetting(NULL, setting, m_settings);
 }
 
 void CSettingGroup::AddSettings(const SettingList &settings)
 {
   for (const auto& setting : settings)
-    addISetting(nullptr, setting, m_settings);
+    addISetting(NULL, setting, m_settings);
 }
 
-bool CSettingGroup::ReplaceSetting(const std::shared_ptr<const CSetting>& currentSetting,
-                                   const std::shared_ptr<CSetting>& newSetting)
+bool CSettingGroup::ReplaceSetting(const boost::shared_ptr<const CSetting>& currentSetting,
+                                   const boost::shared_ptr<CSetting>& newSetting)
 {
   for (auto itSetting = m_settings.begin(); itSetting != m_settings.end(); ++itSetting)
   {
     if (*itSetting == currentSetting)
     {
-      if (newSetting == nullptr)
+      if (newSetting == NULL)
         m_settings.erase(itSetting);
       else
         *itSetting = newSetting;
@@ -205,11 +205,11 @@ bool CSettingGroup::ReplaceSetting(const std::shared_ptr<const CSetting>& curren
 Logger CSettingCategory::s_logger;
 
 CSettingCategory::CSettingCategory(const std::string& id,
-                                   CSettingsManager* settingsManager /* = nullptr */)
+                                   CSettingsManager* settingsManager /* = NULL */)
   : ISetting(id, settingsManager),
     m_accessCondition(settingsManager)
 {
-  if (s_logger == nullptr)
+  if (s_logger == NULL)
     s_logger = CServiceBroker::GetLogging().GetLogger("CSettingCategory");
 }
 
@@ -220,11 +220,11 @@ bool CSettingCategory::Deserialize(const TiXmlNode *node, bool update /* = false
     return false;
 
   auto accessNode = node->FirstChild(SETTING_XML_ELM_ACCESS);
-  if (accessNode != nullptr && !m_accessCondition.Deserialize(accessNode))
+  if (accessNode != NULL && !m_accessCondition.Deserialize(accessNode))
     return false;
 
   auto groupNode = node->FirstChild(SETTING_XML_ELM_GROUP);
-  while (groupNode != nullptr)
+  while (groupNode != NULL)
   {
     std::string groupId;
     if (CSettingGroup::DeserializeIdentification(groupNode, groupId))
@@ -239,9 +239,9 @@ bool CSettingCategory::Deserialize(const TiXmlNode *node, bool update /* = false
       if (groupIt != m_groups.end())
         group = *groupIt;
 
-      update = (group != nullptr);
+      update = (group != NULL);
       if (!update)
-        group = std::make_shared<CSettingGroup>(groupId, m_settingsManager);
+        group = boost::make_shared<CSettingGroup>(groupId, m_settingsManager);
 
       if (group->Deserialize(groupNode, update))
       {
@@ -277,27 +277,27 @@ bool CSettingCategory::CanAccess() const
 
 void CSettingCategory::AddGroup(const SettingGroupPtr& group)
 {
-  addISetting(nullptr, group, m_groups, false);
+  addISetting(NULL, group, m_groups, false);
 }
 
 void CSettingCategory::AddGroupToFront(const SettingGroupPtr& group)
 {
-  addISetting(nullptr, group, m_groups, true);
+  addISetting(NULL, group, m_groups, true);
 }
 
 void CSettingCategory::AddGroups(const SettingGroupList &groups)
 {
   for (const auto& group : groups)
-    addISetting(nullptr, group, m_groups);
+    addISetting(NULL, group, m_groups);
 }
 
 Logger CSettingSection::s_logger;
 
 CSettingSection::CSettingSection(const std::string& id,
-                                 CSettingsManager* settingsManager /* = nullptr */)
+                                 CSettingsManager* settingsManager /* = NULL */)
   : ISetting(id, settingsManager)
 {
-  if (s_logger == nullptr)
+  if (s_logger == NULL)
     s_logger = CServiceBroker::GetLogging().GetLogger("CSettingSection");
 }
 
@@ -308,7 +308,7 @@ bool CSettingSection::Deserialize(const TiXmlNode *node, bool update /* = false 
     return false;
 
   auto categoryNode = node->FirstChild(SETTING_XML_ELM_CATEGORY);
-  while (categoryNode != nullptr)
+  while (categoryNode != NULL)
   {
     std::string categoryId;
     if (CSettingCategory::DeserializeIdentification(categoryNode, categoryId))
@@ -323,9 +323,9 @@ bool CSettingSection::Deserialize(const TiXmlNode *node, bool update /* = false 
       if (categoryIt != m_categories.end())
         category = *categoryIt;
 
-      update = (category != nullptr);
+      update = (category != NULL);
       if (!update)
-        category = std::make_shared<CSettingCategory>(categoryId, m_settingsManager);
+        category = boost::make_shared<CSettingCategory>(categoryId, m_settingsManager);
 
       if (category->Deserialize(categoryNode, update))
       {
@@ -356,11 +356,11 @@ SettingCategoryList CSettingSection::GetCategories(SettingLevel level) const
 
 void CSettingSection::AddCategory(const SettingCategoryPtr& category)
 {
-  addISetting(nullptr, category, m_categories);
+  addISetting(NULL, category, m_categories);
 }
 
 void CSettingSection::AddCategories(const SettingCategoryList &categories)
 {
   for (const auto& category : categories)
-    addISetting(nullptr, category, m_categories);
+    addISetting(NULL, category, m_categories);
 }

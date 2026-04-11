@@ -25,7 +25,7 @@
 class TiXmlNode;
 
 // Step used to increase/decrease audio delay
-static constexpr float AUDIO_DELAY_STEP = 0.025f;
+static const float AUDIO_DELAY_STEP = 0.025f;
 
 typedef enum {
   WatchedModeAll        = 0,
@@ -38,11 +38,11 @@ class CMediaSettings : public ISettingCallback, public ISettingsHandler, public 
 public:
   static CMediaSettings& GetInstance();
 
-  bool Load(const TiXmlNode *settings) override;
-  bool Save(TiXmlNode *settings) const override;
+  virtual bool Load(const TiXmlNode *settings);
+  virtual bool Save(TiXmlNode *settings) const;
 
-  void OnSettingAction(const std::shared_ptr<const CSetting>& setting) override;
-  void OnSettingChanged(const std::shared_ptr<const CSetting>& setting) override;
+  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
 
   const CVideoSettings& GetDefaultVideoSettings() const { return m_defaultVideoSettings; }
   CVideoSettings& GetDefaultVideoSettings() { return m_defaultVideoSettings; }
@@ -92,7 +92,7 @@ protected:
   CMediaSettings();
   CMediaSettings(const CMediaSettings&) = delete;
   CMediaSettings& operator=(CMediaSettings const&) = delete;
-  ~CMediaSettings() override;
+  virtual ~CMediaSettings();
 
   static std::string GetWatchedContent(const std::string &content);
 
