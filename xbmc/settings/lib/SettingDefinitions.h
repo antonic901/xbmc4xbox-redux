@@ -8,9 +8,10 @@
 
 #pragma once
 
+#include "system.h" // <xtl.h>
 #include "utils/Variant.h"
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <string>
 #include <utility>
 #include <vector>
@@ -71,15 +72,15 @@ struct IntegerSettingOption
   IntegerSettingOption(const std::string& _label,
                        const std::string& _label2,
                        int _value,
-                       const std::vector<std::pair<std::string, CVariant>>& props)
+                       const std::vector<std::pair<std::string, CVariant> >& props)
     : label(_label), label2(_label2), value(_value), properties(props)
   {
   }
 
   std::string label;
   std::string label2;
-  int value = 0;
-  std::vector<std::pair<std::string, CVariant>> properties;
+  int value;
+  std::vector<std::pair<std::string, CVariant> > properties;
 };
 
 struct StringSettingOption
@@ -90,7 +91,7 @@ struct StringSettingOption
   StringSettingOption(const std::string& _label,
                       const std::string& _label2,
                       const std::string& _value,
-                      const std::vector<std::pair<std::string, CVariant>>& props)
+                      const std::vector<std::pair<std::string, CVariant> >& props)
     : label(_label), label2(_label2), value(_value), properties(props)
   {
   }
@@ -98,41 +99,43 @@ struct StringSettingOption
   std::string label;
   std::string label2;
   std::string value;
-  std::vector<std::pair<std::string, CVariant>> properties;
+  std::vector<std::pair<std::string, CVariant> > properties;
 };
 
 struct TranslatableIntegerSettingOption
 {
-  TranslatableIntegerSettingOption() {}
+  TranslatableIntegerSettingOption() : label(0), value(0) {}
   TranslatableIntegerSettingOption(int _label, int _value, const std::string& _addonId = "")
     : label(_label), value(_value), addonId(_addonId)
   {
   }
 
-  int label = 0;
-  int value = 0;
+  int label;
+  int value;
   std::string addonId; // Leaved empty for Kodi labels
 };
 
-using TranslatableIntegerSettingOptions = std::vector<TranslatableIntegerSettingOption>;
-using IntegerSettingOptions = std::vector<IntegerSettingOption>;
-using TranslatableStringSettingOption = std::pair<int, std::string>;
-using TranslatableStringSettingOptions = std::vector<TranslatableStringSettingOption>;
-using StringSettingOptions = std::vector<StringSettingOption>;
+typedef std::vector<TranslatableIntegerSettingOption> TranslatableIntegerSettingOptions;
+typedef std::vector<IntegerSettingOption> IntegerSettingOptions;
+typedef std::pair<int, std::string> TranslatableStringSettingOption;
+typedef std::vector<TranslatableStringSettingOption> TranslatableStringSettingOptions;
+typedef std::vector<StringSettingOption> StringSettingOptions;
 
 class CSetting;
-using IntegerSettingOptionsFiller = void (*)(const boost::shared_ptr<const CSetting>& setting,
+typedef void (*IntegerSettingOptionsFiller)(const boost::shared_ptr<const CSetting>& setting,
                                              IntegerSettingOptions& list,
                                              int& current,
                                              void* data);
-using StringSettingOptionsFiller = void (*)(const boost::shared_ptr<const CSetting>& setting,
+typedef void (*StringSettingOptionsFiller)(const boost::shared_ptr<const CSetting>& setting,
                                             StringSettingOptions& list,
                                             std::string& current,
                                             void* data);
 
-enum class SettingOptionsSort
+namespace SettingOptionsSort
 {
-  NoSorting,
-  Ascending,
-  Descending
-};
+  enum Type {
+    NoSorting,
+    Ascending,
+    Descending
+  };
+}
