@@ -10,39 +10,47 @@
 
 #include "SettingConditions.h"
 #include "utils/BooleanLogic.h"
-#include "utils/logtypes.h"
 
 #include <list>
 #include <set>
 #include <string>
 
-enum class SettingDependencyType {
-  Unknown = 0,
-  Enable,
-  Update,
-  Visible
-};
+namespace SettingDependencyType
+{
+  enum Type {
+    Unknown = 0,
+    Enable,
+    Update,
+    Visible
+  };
+}
 
-enum class SettingDependencyOperator {
-  Unknown = 0,
-  Equals,
-  LessThan,
-  GreaterThan,
-  Contains
-};
+namespace SettingDependencyOperator
+{
+  enum Type {
+    Unknown = 0,
+    Equals,
+    LessThan,
+    GreaterThan,
+    Contains
+  };
+}
 
-enum class SettingDependencyTarget {
-  Unknown = 0,
-  Setting,
-  Property
-};
+namespace SettingDependencyTarget
+{
+  enum Type {
+    Unknown = 0,
+    Setting,
+    Property
+  };
+}
 
 class CSettingDependencyCondition : public CSettingConditionItem
 {
 public:
   explicit CSettingDependencyCondition(CSettingsManager *settingsManager = NULL);
   CSettingDependencyCondition(const std::string &setting, const std::string &value,
-                              SettingDependencyOperator op, bool negated = false,
+                              SettingDependencyOperator::Type op, bool negated = false,
                               CSettingsManager *settingsManager = NULL);
   CSettingDependencyCondition(const std::string &strProperty, const std::string &value,
                               const std::string &setting = "", bool negated = false,
@@ -54,31 +62,29 @@ public:
 
   const std::string& GetName() const { return m_name; }
   const std::string& GetSetting() const { return m_setting; }
-  SettingDependencyTarget GetTarget() const { return m_target; }
-  SettingDependencyOperator GetOperator() const { return m_operator; }
+  SettingDependencyTarget::Type GetTarget() const { return m_target; }
+  SettingDependencyOperator::Type GetOperator() const { return m_operator; }
 
 private:
   CSettingDependencyCondition(CSettingsManager* settingsManager,
                               const std::string& strProperty,
                               const std::string& setting,
                               const std::string& value,
-                              SettingDependencyTarget target = SettingDependencyTarget::Unknown,
-                              SettingDependencyOperator op = SettingDependencyOperator::Equals,
+                              SettingDependencyTarget::Type target = SettingDependencyTarget::Unknown,
+                              SettingDependencyOperator::Type op = SettingDependencyOperator::Equals,
                               bool negated = false);
 
   bool setTarget(const std::string &target);
   bool setOperator(const std::string &op);
 
-  SettingDependencyTarget m_target = SettingDependencyTarget::Unknown;
-  SettingDependencyOperator m_operator = SettingDependencyOperator::Equals;
-
-  static Logger s_logger;
+  SettingDependencyTarget::Type m_target;
+  SettingDependencyOperator::Type m_operator;
 };
 
-using CSettingDependencyConditionPtr = boost::shared_ptr<CSettingDependencyCondition>;
+typedef boost::shared_ptr<CSettingDependencyCondition> CSettingDependencyConditionPtr;
 
 class CSettingDependencyConditionCombination;
-using CSettingDependencyConditionCombinationPtr = boost::shared_ptr<CSettingDependencyConditionCombination>;
+typedef boost::shared_ptr<CSettingDependencyConditionCombination> CSettingDependencyConditionCombinationPtr;
 
 class CSettingDependencyConditionCombination : public CSettingConditionCombination
 {
@@ -112,12 +118,12 @@ class CSettingDependency : public CSettingCondition
 {
 public:
   explicit CSettingDependency(CSettingsManager *settingsManager = NULL);
-  CSettingDependency(SettingDependencyType type, CSettingsManager *settingsManager = NULL);
+  CSettingDependency(SettingDependencyType::Type type, CSettingsManager *settingsManager = NULL);
   virtual ~CSettingDependency() {}
 
   virtual bool Deserialize(const TiXmlNode *node);
 
-  SettingDependencyType GetType() const { return m_type; }
+  SettingDependencyType::Type GetType() const { return m_type; }
   std::set<std::string> GetSettings() const;
 
   CSettingDependencyConditionCombinationPtr And();
@@ -126,10 +132,8 @@ public:
 private:
   bool setType(const std::string &type);
 
-  SettingDependencyType m_type = SettingDependencyType::Unknown;
-
-  static Logger s_logger;
+  SettingDependencyType::Type m_type;
 };
 
-using SettingDependencies = std::list<CSettingDependency>;
-using SettingDependencyMap = std::map<std::string, SettingDependencies>;
+typedef std::list<CSettingDependency> SettingDependencies;
+typedef std::map<std::string, SettingDependencies> SettingDependencyMap;

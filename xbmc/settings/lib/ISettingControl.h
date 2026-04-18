@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include "utils/logtypes.h"
-
 #include <string>
 
 class TiXmlNode;
@@ -29,8 +27,6 @@ public:
   virtual bool SetFormat(const std::string &format) { return true; }
 
 protected:
-  bool m_delayed = false;
+  bool m_delayed;
   std::string m_format;
-
-  static Logger s_logger;
 };

@@ -14,12 +14,9 @@
 #include "utils/XBMCTinyXML.h"
 #include "utils/log.h"
 
-Logger ISettingControl::s_logger;
-
 ISettingControl::ISettingControl()
 {
-  if (s_logger == NULL)
-    s_logger = CServiceBroker::GetLogging().GetLogger("ISettingControl");
+  m_delayed = false;
 }
 
 bool ISettingControl::Deserialize(const TiXmlNode *node, bool update /* = false */)
@@ -27,17 +24,17 @@ bool ISettingControl::Deserialize(const TiXmlNode *node, bool update /* = false 
   if (node == NULL)
     return false;
 
-  auto elem = node->ToElement();
+  const TiXmlElement *elem = node->ToElement();
   if (elem == NULL)
     return false;
 
-  auto strTmp = elem->Attribute(SETTING_XML_ATTR_FORMAT);
+  const char *strTmp = elem->Attribute(SETTING_XML_ATTR_FORMAT);
   std::string format;
   if (strTmp != NULL)
     format = strTmp;
   if (!SetFormat(format))
   {
-    s_logger->error("error reading \"{}\" attribute of <control>", SETTING_XML_ATTR_FORMAT);
+    CLog::Log(LOGERROR, "error reading \"{}\" attribute of <control>", SETTING_XML_ATTR_FORMAT);
     return false;
   }
 
@@ -45,7 +42,7 @@ bool ISettingControl::Deserialize(const TiXmlNode *node, bool update /* = false 
   {
     if (!StringUtils::EqualsNoCase(strTmp, "false") && !StringUtils::EqualsNoCase(strTmp, "true"))
     {
-      s_logger->error("error reading \"{}\" attribute of <control>", SETTING_XML_ATTR_DELAYED);
+      CLog::Log(LOGERROR, "error reading \"{}\" attribute of <control>", SETTING_XML_ATTR_DELAYED);
       return false;
     }
     else

@@ -19,7 +19,7 @@
 class CSettingsManager;
 class CSetting;
 
-using SettingConditionCheck = bool (*)(const std::string& condition,
+typedef bool (*SettingConditionCheck)(const std::string& condition,
                                        const std::string& value,
                                        const boost::shared_ptr<const CSetting>& setting,
                                        void* data);
@@ -83,8 +83,8 @@ class CSettingConditionsManager
 {
 public:
   CSettingConditionsManager() {}
-  CSettingConditionsManager(const CSettingConditionsManager&) = delete;
-  CSettingConditionsManager const& operator=(CSettingConditionsManager const&) = delete;
+  CSettingConditionsManager(const CSettingConditionsManager&);
+  CSettingConditionsManager const& operator=(CSettingConditionsManager const&);
   virtual ~CSettingConditionsManager() {}
 
   void AddCondition(std::string condition);
@@ -97,8 +97,8 @@ public:
       const boost::shared_ptr<const CSetting>& setting = boost::shared_ptr<const CSetting>()) const;
 
 private:
-  using SettingConditionPair = std::pair<std::string, std::pair<SettingConditionCheck, void*>>;
-  using SettingConditionMap = std::map<std::string, std::pair<SettingConditionCheck, void*>>;
+  typedef std::pair<std::string, std::pair<SettingConditionCheck, void*> > SettingConditionPair;
+  typedef std::map<std::string, std::pair<SettingConditionCheck, void*> > SettingConditionMap;
 
   SettingConditionMap m_conditions;
   std::set<std::string> m_defines;

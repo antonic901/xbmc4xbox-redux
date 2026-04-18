@@ -673,6 +673,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\settings\lib\ISettingsHandler.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\settings\lib\ISettingsValueSerializer.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\settings\lib\ISubSettings.h">
 					</File>
 					<File
@@ -703,6 +706,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\settings\lib\SettingDependency.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\settings\lib\SettingLevel.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\settings\lib\SettingRequirement.cpp">
 					</File>
 					<File
@@ -719,6 +725,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\settings\lib\SettingsManager.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\settings\lib\SettingType.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\settings\lib\SettingUpdate.cpp">

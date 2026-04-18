@@ -8,7 +8,8 @@
 
 #pragma once
 
-#include <memory>
+#include "system.h" // <xtl.h>
+#include <boost/shared_ptr.hpp>
 
 class CSetting;
 class TiXmlNode;

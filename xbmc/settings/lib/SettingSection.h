@@ -11,7 +11,6 @@
 #include "ISetting.h"
 #include "Setting.h"
 #include "SettingCategoryAccess.h"
-#include "utils/logtypes.h"
 
 #include <string>
 #include <utility>
@@ -54,7 +53,7 @@ public:
    \param level Level the settings should be assigned to
    \return List of settings belonging to the setting group
    */
-  SettingList GetSettings(SettingLevel level) const;
+  SettingList GetSettings(SettingLevel::Type level) const;
 
   /*
    * \brief Determine if there are visible settings assigned to the given setting level (or below)
@@ -62,7 +61,7 @@ public:
    * \param level Level the settings should be assigned to
    * \return True if there are visible settings belonging to the setting group, otherwise false
    */
-  bool ContainsVisibleSettings(const SettingLevel level) const;
+  bool ContainsVisibleSettings(const SettingLevel::Type level) const;
 
   void AddSetting(const boost::shared_ptr<CSetting>& setting);
   void AddSettings(const SettingList &settings);
@@ -72,17 +71,15 @@ public:
 
   boost::shared_ptr<const ISettingControl> GetControl() const { return m_control; }
   boost::shared_ptr<ISettingControl> GetControl() { return m_control; }
-  void SetControl(boost::shared_ptr<ISettingControl> control) { m_control = std::move(control); }
+  void SetControl(boost::shared_ptr<ISettingControl> control) { m_control = boost::move(control); }
 
 private:
   SettingList m_settings;
   boost::shared_ptr<ISettingControl> m_control;
-
-  static Logger s_logger;
 };
 
-using SettingGroupPtr = boost::shared_ptr<CSettingGroup>;
-using SettingGroupList = std::vector<SettingGroupPtr>;
+typedef boost::shared_ptr<CSettingGroup> SettingGroupPtr;
+typedef std::vector<SettingGroupPtr> SettingGroupList;
 
 /*!
  \ingroup settings
@@ -120,7 +117,7 @@ public:
    \param level Level the settings should be assigned to
    \return List of setting groups belonging to the setting category
    */
-  SettingGroupList GetGroups(SettingLevel level) const;
+  SettingGroupList GetGroups(SettingLevel::Type level) const;
 
   /*!
    \brief Whether the setting category can be accessed or not.
@@ -136,12 +133,10 @@ public:
 private:
   SettingGroupList m_groups;
   CSettingCategoryAccess m_accessCondition;
-
-  static Logger s_logger;
 };
 
-using SettingCategoryPtr = boost::shared_ptr<CSettingCategory>;
-using SettingCategoryList = std::vector<SettingCategoryPtr>;
+typedef boost::shared_ptr<CSettingCategory> SettingCategoryPtr;
+typedef std::vector<SettingCategoryPtr> SettingCategoryList;
 
 /*!
  \ingroup settings
@@ -179,16 +174,14 @@ public:
    \param level Level the settings should be assigned to
    \return List of setting categories belonging to the setting section
    */
-  SettingCategoryList GetCategories(SettingLevel level) const;
+  SettingCategoryList GetCategories(SettingLevel::Type level) const;
 
   void AddCategory(const SettingCategoryPtr& category);
   void AddCategories(const SettingCategoryList &categories);
 
 private:
   SettingCategoryList m_categories;
-
-  static Logger s_logger;
 };
 
-using SettingSectionPtr = boost::shared_ptr<CSettingSection>;
-using SettingSectionList = std::vector<SettingSectionPtr>;
+typedef boost::shared_ptr<CSettingSection> SettingSectionPtr;
+typedef std::vector<SettingSectionPtr> SettingSectionList;

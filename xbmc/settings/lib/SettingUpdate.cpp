@@ -14,12 +14,9 @@
 #include "utils/XBMCTinyXML.h"
 #include "utils/log.h"
 
-Logger CSettingUpdate::s_logger;
-
 CSettingUpdate::CSettingUpdate()
 {
-  if (s_logger == NULL)
-    s_logger = CServiceBroker::GetLogging().GetLogger("CSettingUpdate");
+  m_type = SettingUpdateType::Unknown;
 }
 
 bool CSettingUpdate::Deserialize(const TiXmlNode *node)
@@ -27,14 +24,14 @@ bool CSettingUpdate::Deserialize(const TiXmlNode *node)
   if (node == NULL)
     return false;
 
-  auto elem = node->ToElement();
+  const TiXmlElement *elem = node->ToElement();
   if (elem == NULL)
     return false;
 
-  auto strType = elem->Attribute(SETTING_XML_ATTR_TYPE);
+  const char *strType = elem->Attribute(SETTING_XML_ATTR_TYPE);
   if (strType == NULL || strlen(strType) <= 0 || !setType(strType))
   {
-    s_logger->warn("missing or unknown update type definition");
+    CLog::Log(LOGWARNING, "missing or unknown update type definition");
     return false;
   }
 
@@ -42,7 +39,7 @@ bool CSettingUpdate::Deserialize(const TiXmlNode *node)
   {
     if (node->FirstChild() == NULL || node->FirstChild()->Type() != TiXmlNode::TINYXML_TEXT)
     {
-      s_logger->warn("missing or invalid setting id for rename update definition");
+      CLog::Log(LOGWARNING, "missing or invalid setting id for rename update definition");
       return false;
     }
 

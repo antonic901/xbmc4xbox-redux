@@ -8,17 +8,18 @@
 
 #pragma once
 
-#include "utils/logtypes.h"
-
 #include <string>
 
 class TiXmlNode;
 
-enum class SettingUpdateType {
-  Unknown = 0,
-  Rename,
-  Change
-};
+namespace SettingUpdateType
+{
+  enum Type {
+    Unknown = 0,
+    Rename,
+    Change
+  };
+}
 
 class CSettingUpdate
 {
@@ -33,14 +34,12 @@ public:
 
   virtual bool Deserialize(const TiXmlNode *node);
 
-  SettingUpdateType GetType() const { return m_type; }
+  SettingUpdateType::Type GetType() const { return m_type; }
   const std::string& GetValue() const { return m_value; }
 
 private:
   bool setType(const std::string &type);
 
-  SettingUpdateType m_type = SettingUpdateType::Unknown;
+  SettingUpdateType::Type m_type;
   std::string m_value;
-
-  static Logger s_logger;
 };

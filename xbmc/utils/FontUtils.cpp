@@ -38,7 +38,7 @@ std::string GetFamilyNameFromSfnt(FT_Face face)
     FT_SfntName name;
     if (FT_Get_Sfnt_Name(face, index, &name) != 0)
     {
-      CLog::Log(LOGWARNING, "Failed to get SFNT name at index %u", index);
+      CLog::Log(LOGWARNING, "Failed to get SFNT name at index {}", index);
       continue;
     }
 
@@ -73,7 +73,7 @@ std::string GetFamilyNameFromSfnt(FT_Face face)
       }
       else
       {
-        CLog::Log(LOGERROR, "Unsupported font SFNT name platform \"%hu\"", name.platform_id);
+        CLog::Log(LOGERROR, "Unsupported font SFNT name platform \"{}\"", name.platform_id);
       }
     }
   }
@@ -111,14 +111,14 @@ bool UTILS::FONT::GetFontFamilyNames(const XUTILS::auto_buffer& buffer,
     FT_Error error = FT_Open_Face(m_library, &args, idx, &face);
     if (error)
     {
-      CLog::Log(LOGERROR, "Failed to open font face at index %ld error code %i", idx, error);
+      CLog::Log(LOGERROR, "Failed to open font face at index {} error code {}", idx, error);
       break;
     }
 
     std::string familyName = GetFamilyNameFromSfnt(face);
     if (familyName.empty())
     {
-      CLog::Log(LOGWARNING, "Failed to get the unicode family name for \"%s\", fallback to ASCII",
+      CLog::Log(LOGWARNING, "Failed to get the unicode family name for \"{}\", fallback to ASCII",
                  face->family_name);
       // ASCII font family name may differ from the unicode one, use this as fallback only
       familyName = std::string(face->family_name);
@@ -161,7 +161,7 @@ bool UTILS::FONT::GetFontFamilyNames(const std::string& filepath,
 
   if (XFILE::CFile().LoadFile(filepath, buffer) <= 0)
   {
-    CLog::Log(LOGERROR, "Failed to load file %s", filepath.c_str());
+    CLog::Log(LOGERROR, "Failed to load file {}", filepath);
     return false;
   }
   return GetFontFamilyNames(buffer, familyNames);
@@ -186,7 +186,7 @@ std::string UTILS::FONT::GetFontFamily(XUTILS::auto_buffer& buffer)
     familyName = GetFamilyNameFromSfnt(face);
     if (familyName.empty())
     {
-      CLog::Log(LOGWARNING, "Failed to get the unicode family name for \"%s\", fallback to ASCII",
+      CLog::Log(LOGWARNING, "Failed to get the unicode family name for \"{}\", fallback to ASCII",
                  face->family_name);
       // ASCII font family name may differ from the unicode one, use this as fallback only
       familyName = std::string(face->family_name);
@@ -211,7 +211,7 @@ std::string UTILS::FONT::GetFontFamily(const std::string& filepath)
     return "";
   if (XFILE::CFile().LoadFile(filepath, buffer) <= 0)
   {
-    CLog::Log(LOGERROR, "Failed to load file %s", filepath.c_str());
+    CLog::Log(LOGERROR, "Failed to load file {}", filepath);
     return "";
   }
   return GetFontFamily(buffer);
@@ -231,6 +231,6 @@ std::string UTILS::FONT::FONTPATH::GetSystemFontPath(const std::string& filename
     return CSpecialProtocol::TranslatePath(fontPath);
   }
 
-  CLog::Log(LOGERROR, "Could not find application system font %s", filename.c_str());
+  CLog::Log(LOGERROR, "Could not find application system font {}", filename);
   return "";
 }

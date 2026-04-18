@@ -18,12 +18,12 @@ bool CSettingConditionItem::Deserialize(const TiXmlNode *node)
   if (!CBooleanLogicValue::Deserialize(node))
     return false;
 
-  auto elem = node->ToElement();
+  const TiXmlElement *elem = node->ToElement();
   if (elem == NULL)
     return false;
 
   // get the "name" attribute
-  auto strAttribute = elem->Attribute(SETTING_XML_ATTR_NAME);
+  const char *strAttribute = elem->Attribute(SETTING_XML_ATTR_NAME);
   if (strAttribute != NULL)
     m_name = strAttribute;
 
@@ -46,12 +46,12 @@ bool CSettingConditionItem::Check() const
 bool CSettingConditionCombination::Check() const
 {
   bool ok = false;
-  for (const auto& operation : m_operations)
+  for (CBooleanLogicOperations::const_iterator operation = m_operations.begin(); operation != m_operations.end(); ++operation)
   {
-    if (operation == NULL)
+    if (*operation == NULL)
       continue;
 
-    const auto combination = boost::static_pointer_cast<const CSettingConditionCombination>(operation);
+    const boost::shared_ptr<const CSettingConditionCombination> combination = boost::static_pointer_cast<const CSettingConditionCombination>(*operation);
     if (combination == NULL)
       continue;
 
@@ -61,12 +61,12 @@ bool CSettingConditionCombination::Check() const
       return false;
   }
 
-  for (const auto& value : m_values)
+  for (CBooleanLogicValues::const_iterator value = m_values.begin(); value != m_values.end(); ++value)
   {
-    if (value == NULL)
+    if (*value == NULL)
       continue;
 
-    const auto condition = boost::static_pointer_cast<const CSettingConditionItem>(value);
+    const boost::shared_ptr<const CSettingConditionItem> condition = boost::static_pointer_cast<const CSettingConditionItem>(*value);
     if (condition == NULL)
       continue;
 
@@ -87,7 +87,7 @@ CSettingCondition::CSettingCondition(CSettingsManager *settingsManager /* = NULL
 
 bool CSettingCondition::Check() const
 {
-  auto combination = boost::static_pointer_cast<CSettingConditionCombination>(m_operation);
+  boost::shared_ptr<CSettingConditionCombination> combination = boost::static_pointer_cast<CSettingConditionCombination>(m_operation);
   if (combination == NULL)
     return false;
 
@@ -111,7 +111,7 @@ void CSettingConditionsManager::AddDynamicCondition(std::string identifier, Sett
 
   StringUtils::ToLower(identifier);
 
-  m_conditions.emplace(identifier, std::make_pair(condition, data));
+  m_conditions.insert(std::make_pair(identifier, std::make_pair(condition, data)));
 }
 
 void CSettingConditionsManager::RemoveDynamicCondition(std::string identifier)
@@ -121,7 +121,7 @@ void CSettingConditionsManager::RemoveDynamicCondition(std::string identifier)
 
   StringUtils::ToLower(identifier);
 
-  auto it = m_conditions.find(identifier);
+  CSettingConditionsManager::SettingConditionMap::iterator it = m_conditions.find(identifier);
   if (it != m_conditions.end())
     m_conditions.erase(it);
 }
@@ -145,7 +145,7 @@ bool CSettingConditionsManager::Check(
     return m_defines.find(tmpValue) != m_defines.end();
   }
 
-  auto conditionIt = m_conditions.find(condition);
+  CSettingConditionsManager::SettingConditionMap::const_iterator conditionIt = m_conditions.find(condition);
   if (conditionIt == m_conditions.end())
     return false;
 
