@@ -8,6 +8,9 @@
 
 #include "SettingPath.h"
 
+#include "ServiceBroker.h"
+#include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
 #include "settings/lib/SettingsManager.h"
 #include "utils/StringUtils.h"
 #include "utils/XBMCTinyXML.h"
@@ -105,9 +108,9 @@ std::string CSettingPath::GetMasking(const CFileExtensionProvider& fileExtension
     return m_masking;
 
   // setup masking
-  std::string audioMask = fileExtensionProvider.GetMusicExtensions();
-  std::string videoMask = fileExtensionProvider.GetVideoExtensions();
-  std::string imageMask = fileExtensionProvider.GetPictureExtensions();
+  std::string audioMask = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions;
+  std::string videoMask = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions;
+  std::string imageMask = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions;
   const char *execMask = "";
 #if defined(TARGET_WINDOWS)
   execMask = ".exe|.bat|.cmd|.py";
