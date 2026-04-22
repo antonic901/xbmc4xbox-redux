@@ -604,6 +604,20 @@ int CSkinInfo::TranslateString(const std::string &setting)
   return number;
 }
 
+int CSkinInfo::GetInt(int setting) const
+{
+  const std::string settingValue = GetString(setting);
+  if (settingValue.empty())
+  {
+    return -1;
+  }
+  char* endPtr = NULL;
+  int settingValueInt = static_cast<int>(std::strtol(settingValue.c_str(), &endPtr, 10));
+  if (endPtr == settingValue || *endPtr != '\0')
+    settingValueInt = -1;
+  return settingValueInt;
+}
+
 const std::string& CSkinInfo::GetString(int setting) const
 {
   const std::map<int, ADDON::CSkinSettingStringPtr>::const_iterator &it = m_strings.find(setting);
@@ -669,6 +683,34 @@ void CSkinInfo::SetBool(int setting, bool set)
 
   CLog::Log(LOGFATAL, "%s: unknown setting (%d) requested", __FUNCTION__, setting);
   assert(false);
+}
+
+std::set<CSkinSettingPtr> CSkinInfo::GetSkinSettings() const
+{
+  std::set<CSkinSettingPtr> settings;
+
+  for (std::map<std::string, CSkinSettingPtr>::const_iterator setting = m_settings.begin(); setting != m_settings.end(); ++setting)
+    settings.insert(setting->second);
+
+  return settings;
+}
+
+CSkinSettingPtr CSkinInfo::GetSkinSetting(const std::string& settingId)
+{
+  const std::map<std::string, ADDON::CSkinSettingPtr>::iterator &it = m_settings.find(settingId);
+  if (it != m_settings.end())
+    return it->second;
+
+  return CSkinSettingPtr();
+}
+
+boost::shared_ptr<const CSkinSetting> CSkinInfo::GetSkinSetting(const std::string& settingId) const
+{
+  const std::map<std::string, ADDON::CSkinSettingPtr>::const_iterator &it = m_settings.find(settingId);
+  if (it != m_settings.end())
+    return it->second;
+
+  return boost::shared_ptr<const CSkinSetting>();
 }
 
 void CSkinInfo::Reset(const std::string &setting)
@@ -764,6 +806,7 @@ bool CSkinInfo::SettingsFromXML(const CXBMCTinyXML &doc, bool loadDefaults /* = 
     return false;
   }
 
+  m_settings.clear();
   m_strings.clear();
   m_bools.clear();
 
@@ -773,9 +816,17 @@ bool CSkinInfo::SettingsFromXML(const CXBMCTinyXML &doc, bool loadDefaults /* = 
   {
     const ADDON::CSkinSettingPtr &setting = *it;
     if (setting->GetType() == "string")
-      m_strings.insert(std::pair<int, CSkinSettingStringPtr>(number++, boost::dynamic_pointer_cast<CSkinSettingString>(setting)));
+    {
+      m_settings.insert(std::make_pair(setting->name, setting));
+      m_strings.insert(
+          std::make_pair(number++, boost::dynamic_pointer_cast<CSkinSettingString>(setting)));
+    }
     else if (setting->GetType() == "bool")
-      m_bools.insert(std::pair<int, CSkinSettingBoolPtr>(number++, boost::dynamic_pointer_cast<CSkinSettingBool>(setting)));
+    {
+      m_settings.insert(std::make_pair(setting->name, setting));
+      m_bools.insert(
+          std::make_pair(number++, boost::dynamic_pointer_cast<CSkinSettingBool>(setting)));
+    }
     else
       CLog::Log(LOGWARNING, "CSkinInfo: ignoring setting of unknwon type \"%s\"", setting->GetType().c_str());
   }
