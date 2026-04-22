@@ -473,6 +473,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\DisplaySettings.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\settings\ISubSettings.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\settings\LibExportSettings.cpp">
 				</File>
 				<File
@@ -551,6 +554,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\SettingCreator.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\settings\SettingDateTime.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingDateTime.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\settings\SettingPath.cpp">
 				</File>
 				<File
@@ -560,10 +569,25 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\Settings.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\settings\Settings.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingsBase.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingsBase.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\settings\SettingsComponent.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\settings\SettingsComponent.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingsValueXmlSerializer.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingsValueXmlSerializer.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\settings\SettingUtils.cpp">
@@ -5127,9 +5151,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\SectionLoader.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\settings\Settings.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\Shortcut.h">

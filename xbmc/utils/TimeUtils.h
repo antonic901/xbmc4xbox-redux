@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include <time.h>
+#include <string>
 
 class CDateTime;
 
@@ -34,6 +35,13 @@ public:
   static void UpdateFrameTime();      ///< update the frame time.  Not threadsafe
   static unsigned int GetFrameTime(); ///< returns the frame time in MS.  Not threadsafe
   static CDateTime GetLocalTime(time_t time);
+
+  /*!
+   * @brief Returns a time string without seconds, i.e: HH:MM
+   * @param hhmmss Time string in the format HH:MM:SS
+  */
+  static std::string WithoutSeconds(const std::string& hhmmss);
+
 private:
   static unsigned int frameTime;
 };

@@ -11,11 +11,6 @@
 #include "addons/IAddon.h"
 #include "settings/lib/Setting.h"
 
-namespace ADDON
-{
-enum class AddonType;
-}
-
 class CSettingAddon : public CSettingString
 {
 public:
@@ -28,11 +23,11 @@ public:
 
   virtual bool Deserialize(const TiXmlNode *node, bool update = false);
 
-  ADDON::AddonType GetAddonType() const { return m_addonType; }
-  void SetAddonType(ADDON::AddonType addonType) { m_addonType = addonType; }
+  ADDON::TYPE GetAddonType() const { return m_addonType; }
+  void SetAddonType(ADDON::TYPE addonType) { m_addonType = addonType; }
 
 private:
   void copyaddontype(const CSettingAddon &setting);
 
-  ADDON::AddonType m_addonType{};
+  ADDON::TYPE m_addonType;
 };

@@ -40,8 +40,8 @@ private:
   using CSettingString::copy;
   void copy(const CSettingPath &setting);
 
-  bool m_writable = true;
+  bool m_writable;
   std::vector<std::string> m_sources;
-  bool m_hideExtension = false;
+  bool m_hideExtension;
   std::string m_masking;
 };

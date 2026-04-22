@@ -8,7 +8,8 @@
 
 #pragma once
 
-#include <memory>
+#include "system.h" // <xtl.h>
+#include <boost/shared_ptr.hpp>
 #include <vector>
 
 class CVariant;
@@ -36,10 +37,10 @@ public:
                       const std::vector<CVariant>& value);
 
   static std::vector<CVariant> ListToValues(const boost::shared_ptr<const CSettingList>& setting,
-                                            const std::vector<boost::shared_ptr<CSetting>>& values);
+                                            const std::vector<boost::shared_ptr<CSetting> >& values);
   static bool ValuesToList(const boost::shared_ptr<const CSettingList>& setting,
                            const std::vector<CVariant>& values,
-                           std::vector<boost::shared_ptr<CSetting>>& newValues);
+                           std::vector<boost::shared_ptr<CSetting> >& newValues);
 
   /*!
    \brief Search in a list of Ints for a given value.

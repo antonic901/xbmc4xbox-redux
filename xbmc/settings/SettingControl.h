@@ -67,11 +67,16 @@ public:
   void SetMinimumLabel(int minimumLabel) { m_minimumLabel = minimumLabel; }
 
 protected:
-  CSettingControlFormattedRange() {}
+  CSettingControlFormattedRange()
+  {
+    m_formatLabel = -1;
+    m_formatString = "{}";
+    m_minimumLabel = -1;
+  }
 
-  int m_formatLabel = -1;
-  std::string m_formatString = "{}";
-  int m_minimumLabel = -1;
+  int m_formatLabel;
+  std::string m_formatString;
+  int m_minimumLabel;
 };
 
 class CSettingControlSpinner : public CSettingControlFormattedRange
@@ -93,6 +98,9 @@ public:
   CSettingControlEdit()
   {
     m_delayed = true;
+    m_hidden = false;
+    m_verifyNewValue = false;
+    m_heading = -1;
   }
   virtual ~CSettingControlEdit() {}
 
@@ -109,15 +117,26 @@ public:
   void SetHeading(int heading) { m_heading = heading; }
 
 protected:
-  bool m_hidden = false;
-  bool m_verifyNewValue = false;
-  int m_heading = -1;
+  bool m_hidden;
+  bool m_verifyNewValue;
+  int m_heading;
 };
 
 class CSettingControlButton : public ISettingControl
 {
 public:
-  CSettingControlButton() {}
+  CSettingControlButton()
+  {
+    m_heading = -1;
+    m_hideValue = false;
+    m_showAddonDetails = true;
+    m_showInstalledAddons = true;
+    m_showInstallableAddons = false;
+    m_showMoreAddons = false;
+    m_useImageThumbs = false;
+    m_useFileDirectories = false;
+    m_closeDialog = false;
+  }
   virtual ~CSettingControlButton() {}
 
   // implementation of ISettingControl
@@ -152,29 +171,36 @@ public:
   void SetCloseDialog(bool closeDialog) { m_closeDialog = closeDialog; }
 
 protected:
-  int m_heading = -1;
-  bool m_hideValue = false;
+  int m_heading;
+  bool m_hideValue;
 
-  bool m_showAddonDetails = true;
-  bool m_showInstalledAddons = true;
-  bool m_showInstallableAddons = false;
-  bool m_showMoreAddons = true;
+  bool m_showAddonDetails;
+  bool m_showInstalledAddons;
+  bool m_showInstallableAddons;
+  bool m_showMoreAddons;
 
-  bool m_useImageThumbs = false;
-  bool m_useFileDirectories = false;
+  bool m_useImageThumbs;
+  bool m_useFileDirectories;
 
   std::string m_actionData;
-  bool m_closeDialog = false;
+  bool m_closeDialog;
 };
 
 class CSetting;
-using SettingControlListValueFormatter =
-    std::string (*)(const boost::shared_ptr<const CSetting>& setting);
+typedef std::string (*SettingControlListValueFormatter)(const boost::shared_ptr<const CSetting>& setting);
 
 class CSettingControlList : public CSettingControlFormattedRange
 {
 public:
-  CSettingControlList() {}
+  CSettingControlList()
+  {
+    m_heading = -1;
+    m_multiselect = false;
+    m_hideValue = false;
+    m_addButtonLabel = -1;
+    m_formatter = NULL;
+    m_useDetails = false;
+  }
   virtual ~CSettingControlList() {}
 
   // implementation of ISettingControl
@@ -200,17 +226,16 @@ public:
   void SetUseDetails(bool useDetails) { m_useDetails = useDetails; }
 
 protected:
-  int m_heading = -1;
-  bool m_multiselect = false;
-  bool m_hideValue = false;
-  int m_addButtonLabel = -1;
-  SettingControlListValueFormatter m_formatter = NULL;
-  bool m_useDetails{false};
+  int m_heading;
+  bool m_multiselect;
+  bool m_hideValue;
+  int m_addButtonLabel;
+  SettingControlListValueFormatter m_formatter;
+  bool m_useDetails;
 };
 
 class CSettingControlSlider;
-using SettingControlSliderFormatter =
-    std::string (*)(const boost::shared_ptr<const CSettingControlSlider>& control,
+typedef std::string (*SettingControlSliderFormatter)(const boost::shared_ptr<const CSettingControlSlider>& control,
                     const CVariant& value,
                     const CVariant& minimum,
                     const CVariant& step,
@@ -219,7 +244,13 @@ using SettingControlSliderFormatter =
 class CSettingControlSlider : public ISettingControl
 {
 public:
-  CSettingControlSlider() {}
+  CSettingControlSlider()
+  {
+    m_heading = -1;
+    m_popup = false;
+    m_formatLabel = -1;
+    m_formatter = NULL;
+  }
   virtual ~CSettingControlSlider() {}
 
   // implementation of ISettingControl
@@ -241,17 +272,22 @@ public:
   void SetFormatter(SettingControlSliderFormatter formatter) { m_formatter = formatter; }
 
 protected:
-  int m_heading = -1;
-  bool m_popup = false;
-  int m_formatLabel = -1;
+  int m_heading;
+  bool m_popup;
+  int m_formatLabel;
   std::string m_formatString;
-  SettingControlSliderFormatter m_formatter = NULL;
+  SettingControlSliderFormatter m_formatter;
 };
 
 class CSettingControlRange : public ISettingControl
 {
 public:
-  CSettingControlRange() {}
+  CSettingControlRange()
+  {
+    m_formatLabel = 21469;
+    m_valueFormatLabel = -1;
+    m_valueFormat = "{}";
+  }
   virtual ~CSettingControlRange() {}
 
   // implementation of ISettingControl
@@ -267,15 +303,19 @@ public:
   void SetValueFormat(const std::string &valueFormat) { m_valueFormat = valueFormat; }
 
 protected:
-  int m_formatLabel = 21469;
-  int m_valueFormatLabel = -1;
-  std::string m_valueFormat = "{}";
+  int m_formatLabel;
+  int m_valueFormatLabel;
+  std::string m_valueFormat;
 };
 
 class CSettingControlTitle : public ISettingControl
 {
 public:
-  CSettingControlTitle() {}
+  CSettingControlTitle()
+  {
+    m_separatorHidden = false;
+    m_separatorBelowLabel = false;
+  }
   virtual ~CSettingControlTitle() {}
 
   // implementation of ISettingControl
@@ -288,8 +328,8 @@ public:
   void SetSeparatorBelowLabel(bool below) { m_separatorBelowLabel = below; }
 
 protected:
-  bool m_separatorHidden = false;
-  bool m_separatorBelowLabel = true;
+  bool m_separatorHidden;
+  bool m_separatorBelowLabel;
 };
 
 class CSettingControlLabel : public ISettingControl

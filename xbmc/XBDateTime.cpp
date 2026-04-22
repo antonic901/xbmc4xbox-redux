@@ -863,6 +863,14 @@ std::string CDateTime::GetAsDBDate() const
   return StringUtils::Format("%04i-%02i-%02i", st.wYear, st.wMonth, st.wDay);
 }
 
+std::string CDateTime::GetAsDBTime() const
+{
+  SYSTEMTIME st;
+  GetAsSystemTime(st);
+
+  return StringUtils::Format("%02i:%02i:%02i", st.wHour, st.wMinute, st.wSecond);
+}
+
 std::string CDateTime::GetAsDBDateTime() const
 {
   SYSTEMTIME st;
@@ -1063,15 +1071,20 @@ bool CDateTime::SetFromDBDate(const std::string &date)
 
 bool CDateTime::SetFromDBTime(const std::string &time)
 {
-  if (time.size() < 8)
+  if (time.size() < 5)
     return false;
-  // assumes format:
-  // HH:MM:SS
-  int hour, minute, second;
+
+  int hour;
+  int minute;
+
+  int second = 0;
+  // HH:MM or HH:MM:SS
 
   hour   = atoi(time.substr(0, 2).c_str());
   minute = atoi(time.substr(3, 2).c_str());
-  second = atoi(time.substr(6, 2).c_str());
+  // HH:MM:SS
+  if (time.size() == 8)
+    second = atoi(time.substr(6, 2).c_str());
 
   return SetTime(hour, minute, second);
 }
