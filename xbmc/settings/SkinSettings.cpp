@@ -19,7 +19,6 @@
 #include "utils/log.h"
 
 #include <memory>
-#include <mutex>
 #include <string>
 
 #define XML_SKINSETTINGS  "skinsettings"
@@ -150,27 +149,27 @@ void CSkinSettings::MigrateSettings(const boost::shared_ptr<ADDON::CSkinInfo>& s
   bool settingsMigrated = false;
   const std::string& skinId = skin->ID();
   std::set<ADDON::CSkinSettingPtr> settingsCopy(m_settings.begin(), m_settings.end());
-  for (const auto& setting : settingsCopy)
+  for (std::set<ADDON::CSkinSettingPtr>::const_iterator setting = settingsCopy.begin(); setting != settingsCopy.end(); ++setting)
   {
-    if (!StringUtils::StartsWith(setting->name, skinId + "."))
+    if (!StringUtils::StartsWith((*setting)->name, skinId + "."))
       continue;
 
-    std::string settingName = setting->name.substr(skinId.size() + 1);
+    std::string settingName = (*setting)->name.substr(skinId.size() + 1);
 
-    if (setting->GetType() == "string")
+    if ((*setting)->GetType() == "string")
     {
       int settingNumber = skin->TranslateString(settingName);
       if (settingNumber >= 0)
-        skin->SetString(settingNumber, std::dynamic_pointer_cast<ADDON::CSkinSettingString>(setting)->value);
+        skin->SetString(settingNumber, boost::dynamic_pointer_cast<ADDON::CSkinSettingString>(*setting)->value);
     }
-    else if (setting->GetType() == "bool")
+    else if ((*setting)->GetType() == "bool")
     {
       int settingNumber = skin->TranslateBool(settingName);
       if (settingNumber >= 0)
-        skin->SetBool(settingNumber, std::dynamic_pointer_cast<ADDON::CSkinSettingBool>(setting)->value);
+        skin->SetBool(settingNumber, boost::dynamic_pointer_cast<ADDON::CSkinSettingBool>(*setting)->value);
     }
 
-    m_settings.erase(setting);
+    m_settings.erase(*setting);
     settingsMigrated = true;
   }
 

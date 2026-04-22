@@ -201,6 +201,16 @@ public:
   bool GetBool(int setting) const;
   void SetBool(int setting, bool set);
 
+  std::set<CSkinSettingPtr> GetSkinSettings() const;
+  CSkinSettingPtr GetSkinSetting(const std::string& settingId);
+  boost::shared_ptr<const CSkinSetting> GetSkinSetting(const std::string& settingId) const;
+
+  /*! \brief Get the skin setting value as an integer value
+   * \param setting - the setting id
+   * \return the setting value as an integer, -1 if no conversion is possible
+   */
+  int GetInt(int setting) const;
+
   void Reset(const std::string &setting);
   void Reset();
 
@@ -245,6 +255,7 @@ protected:
 private:
   std::map<int, CSkinSettingStringPtr> m_strings;
   std::map<int, CSkinSettingBoolPtr> m_bools;
+  std::map<std::string, CSkinSettingPtr> m_settings;
   boost::movelib::unique_ptr<CSkinSettingUpdateHandler> m_settingsUpdateHandler;
 };
 

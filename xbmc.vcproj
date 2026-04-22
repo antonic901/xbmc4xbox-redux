@@ -700,9 +700,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\settings\lib\ISettingsValueSerializer.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\settings\lib\ISubSettings.h">
-					</File>
-					<File
 						RelativePath=".\xbmc\settings\lib\Setting.cpp">
 					</File>
 					<File
