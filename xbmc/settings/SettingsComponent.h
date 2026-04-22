@@ -8,19 +8,12 @@
 
 #pragma once
 
-#include <memory>
+#include "system.h" // <xtl.h>
+#include <boost/shared_ptr.hpp>
 
 class CAdvancedSettings;
-class CProfileManager;
+class CProfilesManager;
 class CSettings;
-
-namespace KODI
-{
-namespace SUBTITLES
-{
-class CSubtitlesSettings;
-} // namespace SUBTITLES
-} // namespace KODI
 
 class CSettingsComponent
 {
@@ -57,33 +50,24 @@ public:
   boost::shared_ptr<CAdvancedSettings> GetAdvancedSettings();
 
   /*!
-   * @brief Get access to the subtitles settings subcomponent.
-   * @return the subtiltles settings subcomponent.
-   */
-  boost::shared_ptr<KODI::SUBTITLES::CSubtitlesSettings> GetSubtitlesSettings();
-
-  /*!
    * @brief Get access to the profiles manager subcomponent.
    * @return the profiles manager subcomponent.
    */
-  boost::shared_ptr<CProfileManager> GetProfileManager();
+  boost::shared_ptr<CProfilesManager> GetProfileManager();
 
 private:
-  bool InitDirectoriesLinux(bool bPlatformDirectories);
-  bool InitDirectoriesOSX(bool bPlatformDirectories);
-  bool InitDirectoriesWin32(bool bPlatformDirectories);
+  bool InitDirectoriesXbox(bool bPlatformDirectories);
   void CreateUserDirs() const;
 
-  enum class State
+  enum State
   {
     DEINITED,
     INITED,
     LOADED
   };
-  State m_state = State::DEINITED;
+  State m_state;
 
   boost::shared_ptr<CSettings> m_settings;
   boost::shared_ptr<CAdvancedSettings> m_advancedSettings;
-  boost::shared_ptr<KODI::SUBTITLES::CSubtitlesSettings> m_subtitlesSettings;
-  boost::shared_ptr<CProfileManager> m_profileManager;
+  boost::shared_ptr<CProfilesManager> m_profileManager;
 };
