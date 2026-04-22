@@ -84,15 +84,15 @@ public:
   virtual void Clear() = 0; ///< Clears the attached control
 protected:
   // implementation of ILocalizer
-  virtual std::string Localize(std::uint32_t code) const;
+  virtual std::string Localize(uint32_t code) const;
 
   virtual void Update(bool fromControl, bool updateDisplayOnly);
 
   int m_id;
   boost::shared_ptr<CSetting> m_pSetting;
   ILocalizer* m_localizer;
-  bool m_delayed = false;
-  bool m_valid = true;
+  bool m_delayed;
+  bool m_valid;
 };
 
 class CGUIControlRadioButtonSetting : public CGUIControlBaseSetting

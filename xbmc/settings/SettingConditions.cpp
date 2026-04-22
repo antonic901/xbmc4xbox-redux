@@ -11,16 +11,9 @@
 #include "LockType.h"
 #include "addons/AddonManager.h"
 #include "addons/Skin.h"
-#include "addons/addoninfo/AddonType.h"
-#include "application/AppParams.h"
-#include "cores/AudioEngine/Engines/ActiveAE/ActiveAESettings.h"
 #include "ServiceBroker.h"
 #include "GUIPassword.h"
-#if defined(HAS_WEB_SERVER)
-#include "network/WebServer.h"
-#endif
-#include "peripherals/Peripherals.h"
-#include "profiles/ProfileManager.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/SettingAddon.h"
 #include "settings/SettingsComponent.h"
 #include "utils/FontUtils.h"
@@ -37,21 +30,20 @@ bool AddonHasSettings(const std::string& condition,
   if (setting == NULL)
     return false;
 
-  boost::shared_ptr<const CSettingAddon> settingAddon = std::dynamic_pointer_cast<const CSettingAddon>(setting);
+  boost::shared_ptr<const CSettingAddon> settingAddon = boost::dynamic_pointer_cast<const CSettingAddon>(setting);
   if (settingAddon == NULL)
     return false;
 
   ADDON::AddonPtr addon;
   if (!CServiceBroker::GetAddonMgr().GetAddon(settingAddon->GetValue(), addon,
-                                              settingAddon->GetAddonType(),
-                                              ADDON::OnlyEnabled::CHOICE_YES) ||
+                                              settingAddon->GetAddonType()) ||
       addon == NULL)
     return false;
 
-  if (addon->Type() == ADDON::AddonType::SKIN)
+  if (addon->Type() == ADDON::ADDON_SKIN)
     return ((ADDON::CSkinInfo*)addon.get())->HasSkinFile("SkinSettings.xml");
 
-  return addon->CanHaveAddonOrInstanceSettings();
+  return addon->HasSettings();
 }
 
 bool CheckMasterLock(const std::string& condition,
@@ -67,79 +59,7 @@ bool HasPeripherals(const std::string& condition,
                     const SettingConstPtr& setting,
                     void* data)
 {
-  return CServiceBroker::GetPeripherals().GetNumberOfPeripherals() > 0;
-}
-
-bool HasPeripheralLibraries(const std::string& condition,
-                            const std::string& value,
-                            const SettingConstPtr& setting,
-                            void* data)
-{
-  return CServiceBroker::GetAddonMgr().HasInstalledAddons(ADDON::AddonType::PERIPHERALDLL);
-}
-
-bool HasRumbleFeature(const std::string& condition,
-                      const std::string& value,
-                      const SettingConstPtr& setting,
-                      void* data)
-{
-  return CServiceBroker::GetPeripherals().SupportsFeature(PERIPHERALS::FEATURE_RUMBLE);
-}
-
-bool HasRumbleController(const std::string& condition,
-                         const std::string& value,
-                         const SettingConstPtr& setting,
-                         void* data)
-{
-  return CServiceBroker::GetPeripherals().HasPeripheralWithFeature(PERIPHERALS::FEATURE_RUMBLE);
-}
-
-bool HasPowerOffFeature(const std::string& condition,
-                        const std::string& value,
-                        const SettingConstPtr& setting,
-                        void* data)
-{
-  return CServiceBroker::GetPeripherals().SupportsFeature(PERIPHERALS::FEATURE_POWER_OFF);
-}
-
-bool HasSystemSdrPeakLuminance(const std::string& condition,
-                               const std::string& value,
-                               const SettingConstPtr& setting,
-                               void* data)
-{
-  return CServiceBroker::GetWinSystem()->HasSystemSdrPeakLuminance();
-}
-
-bool SupportsVideoSuperResolution(const std::string& condition,
-                                  const std::string& value,
-                                  const SettingConstPtr& setting,
-                                  void* data)
-{
-  return CServiceBroker::GetWinSystem()->SupportsVideoSuperResolution();
-}
-
-bool SupportsDolbyVision(const std::string& condition,
-                         const std::string& value,
-                         const SettingConstPtr& setting,
-                         void* data)
-{
-  return CServiceBroker::GetWinSystem()->GetDisplayHDRCapabilities().SupportsDolbyVision();
-}
-
-bool SupportsScreenMove(const std::string& condition,
-                        const std::string& value,
-                        const SettingConstPtr& setting,
-                        void* data)
-{
-  return CServiceBroker::GetWinSystem()->SupportsScreenMove();
-}
-
-bool IsHDRDisplay(const std::string& condition,
-                  const std::string& value,
-                  const SettingConstPtr& setting,
-                  void* data)
-{
-  return CServiceBroker::GetWinSystem()->IsHDRDisplay();
+  return true;
 }
 
 bool IsMasterUser(const std::string& condition,
@@ -148,18 +68,6 @@ bool IsMasterUser(const std::string& condition,
                   void* data)
 {
   return g_passwordManager.bMasterUser;
-}
-
-bool HasSubtitlesFontExtensions(const std::string& condition,
-                                const std::string& value,
-                                const SettingConstPtr& setting,
-                                void* data)
-{
-  auto settingStr = std::dynamic_pointer_cast<const CSettingString>(setting);
-  if (!settingStr)
-    return false;
-
-  return UTILS::FONT::IsSupportedFontExtension(settingStr->GetValue());
 }
 
 bool ProfileCanWriteDatabase(const std::string& condition,
@@ -288,7 +196,7 @@ bool GreaterThan(const std::string& condition,
   if (setting == NULL)
     return false;
 
-  boost::shared_ptr<const CSettingInt> settingInt = std::dynamic_pointer_cast<const CSettingInt>(setting);
+  boost::shared_ptr<const CSettingInt> settingInt = boost::dynamic_pointer_cast<const CSettingInt>(setting);
   if (settingInt == NULL)
     return false;
 
@@ -308,7 +216,7 @@ bool GreaterThanOrEqual(const std::string& condition,
   if (setting == NULL)
     return false;
 
-  boost::shared_ptr<const CSettingInt> settingInt = std::dynamic_pointer_cast<const CSettingInt>(setting);
+  boost::shared_ptr<const CSettingInt> settingInt = boost::dynamic_pointer_cast<const CSettingInt>(setting);
   if (settingInt == NULL)
     return false;
 
@@ -328,7 +236,7 @@ bool LessThan(const std::string& condition,
   if (setting == NULL)
     return false;
 
-  boost::shared_ptr<const CSettingInt> settingInt = std::dynamic_pointer_cast<const CSettingInt>(setting);
+  boost::shared_ptr<const CSettingInt> settingInt = boost::dynamic_pointer_cast<const CSettingInt>(setting);
   if (settingInt == NULL)
     return false;
 
@@ -348,7 +256,7 @@ bool LessThanOrEqual(const std::string& condition,
   if (setting == NULL)
     return false;
 
-  boost::shared_ptr<const CSettingInt> settingInt = std::dynamic_pointer_cast<const CSettingInt>(setting);
+  boost::shared_ptr<const CSettingInt> settingInt = boost::dynamic_pointer_cast<const CSettingInt>(setting);
   if (settingInt == NULL)
     return false;
 
@@ -361,7 +269,7 @@ bool LessThanOrEqual(const std::string& condition,
 }
 }; // anonymous namespace
 
-const CProfileManager* CSettingConditions::m_profileManager = NULL;
+const CProfilesManager* CSettingConditions::m_profileManager = NULL;
 std::set<std::string> CSettingConditions::m_simpleConditions;
 std::map<std::string, SettingConditionCheck> CSettingConditions::m_complexConditions;
 
@@ -371,139 +279,55 @@ void CSettingConditions::Initialize()
     return;
 
   // add simple conditions
-  m_simpleConditions.emplace("true");
+  m_simpleConditions.insert("true");
 #ifdef HAS_UPNP
-  m_simpleConditions.emplace("has_upnp");
-#endif
-#ifdef HAS_AIRPLAY
-  m_simpleConditions.emplace("has_airplay");
-#endif
-#ifdef HAVE_X11
-  m_simpleConditions.emplace("have_x11");
-#endif
-#ifdef HAVE_WAYLAND
-  m_simpleConditions.emplace("have_wayland");
-#endif
-#ifdef HAS_GL
-  m_simpleConditions.emplace("has_gl");
-#endif
-#ifdef HAS_GLES
-  m_simpleConditions.emplace("has_gles");
-#endif
-#if HAS_GLES >= 2
-  m_simpleConditions.emplace("has_glesv2");
+  m_simpleConditions.insert("has_upnp");
 #endif
 #ifdef HAS_TIME_SERVER
-  m_simpleConditions.emplace("has_time_server");
+  m_simpleConditions.insert("has_time_server");
 #endif
 #ifdef HAS_WEB_SERVER
-  m_simpleConditions.emplace("has_web_server");
+  m_simpleConditions.insert("has_web_server");
 #endif
 #ifdef HAS_FILESYSTEM_SMB
-  m_simpleConditions.emplace("has_filesystem_smb");
+  m_simpleConditions.insert("has_filesystem_smb");
 #endif
-#ifdef HAS_FILESYSTEM_NFS
-  m_simpleConditions.insert("has_filesystem_nfs");
-#endif
-#ifdef HAS_ZEROCONF
-  m_simpleConditions.emplace("has_zeroconf");
-#endif
-#ifdef HAVE_LIBVA
-  m_simpleConditions.emplace("have_libva");
-#endif
-#ifdef HAVE_LIBVDPAU
-  m_simpleConditions.emplace("have_libvdpau");
-#endif
-#ifdef TARGET_ANDROID
-  m_simpleConditions.emplace("has_mediacodec");
-#endif
-#ifdef TARGET_DARWIN
-  m_simpleConditions.emplace("HasVTB");
-#endif
-#ifdef TARGET_DARWIN_OSX
-  m_simpleConditions.emplace("have_osx");
-#endif
-#ifdef TARGET_DARWIN_IOS
-  m_simpleConditions.emplace("have_ios");
-#endif
-#ifdef TARGET_DARWIN_TVOS
-  m_simpleConditions.emplace("have_tvos");
-#endif
-#if defined(TARGET_WINDOWS)
-  m_simpleConditions.emplace("has_dx");
-  m_simpleConditions.emplace("hasdxva2");
-#endif
-#if defined(TARGET_WEBOS)
-  m_simpleConditions.emplace("have_webos");
+#if defined(_XBOX)
+  m_simpleConditions.insert("has_dx");
 #endif
 
-#ifdef HAVE_LCMS2
-  m_simpleConditions.emplace("have_lcms2");
-#endif
-
-#ifdef TARGET_ANDROID
-  m_simpleConditions.emplace("isstandalone");
-#else
-  if (CServiceBroker::GetAppParams()->IsStandAlone())
-    m_simpleConditions.emplace("isstandalone");
-#endif
-
-  m_simpleConditions.emplace("has_ae_quality_levels");
-
-#ifdef HAS_WEB_SERVER
-  if (CWebServer::WebServerSupportsSSL())
-    m_simpleConditions.emplace("webserver_has_ssl");
-#endif
-
-#ifdef HAVE_LIBBLURAY
-  m_simpleConditions.emplace("have_libbluray");
-#endif
+  m_simpleConditions.insert("isstandalone");
 
 #ifdef HAS_CDDA_RIPPER
-  m_simpleConditions.emplace("has_cdda_ripper");
+  m_simpleConditions.insert("has_cdda_ripper");
 #endif
 
 #ifdef HAS_OPTICAL_DRIVE
-  m_simpleConditions.emplace("has_optical_drive");
-#endif
-
-#ifdef HAS_XBMCHELPER
-  m_simpleConditions.emplace("has_xbmchelper");
+  m_simpleConditions.insert("has_optical_drive");
 #endif
 
   // add complex conditions
-  m_complexConditions.emplace("addonhassettings", AddonHasSettings);
-  m_complexConditions.emplace("checkmasterlock", CheckMasterLock);
-  m_complexConditions.emplace("hasperipherals", HasPeripherals);
-  m_complexConditions.emplace("hasperipherallibraries", HasPeripheralLibraries);
-  m_complexConditions.emplace("hasrumblefeature", HasRumbleFeature);
-  m_complexConditions.emplace("hasrumblecontroller", HasRumbleController);
-  m_complexConditions.emplace("haspowerofffeature", HasPowerOffFeature);
-  m_complexConditions.emplace("hassystemsdrpeakluminance", HasSystemSdrPeakLuminance);
-  m_complexConditions.emplace("supportsscreenmove", SupportsScreenMove);
-  m_complexConditions.emplace("supportsvideosuperresolution", SupportsVideoSuperResolution);
-  m_complexConditions.emplace("supportsdolbyvision", SupportsDolbyVision);
-  m_complexConditions.emplace("ishdrdisplay", IsHDRDisplay);
-  m_complexConditions.emplace("ismasteruser", IsMasterUser);
-  m_complexConditions.emplace("hassubtitlesfontextensions", HasSubtitlesFontExtensions);
-  m_complexConditions.emplace("profilecanwritedatabase", ProfileCanWriteDatabase);
-  m_complexConditions.emplace("profilecanwritesources", ProfileCanWriteSources);
-  m_complexConditions.emplace("profilehasaddons", ProfileHasAddons);
-  m_complexConditions.emplace("profilehasdatabase", ProfileHasDatabase);
-  m_complexConditions.emplace("profilehassources", ProfileHasSources);
-  m_complexConditions.emplace("profilehasaddonmanagerlocked", ProfileHasAddonManagerLocked);
-  m_complexConditions.emplace("profilehasfileslocked", ProfileHasFilesLocked);
-  m_complexConditions.emplace("profilehasmusiclocked", ProfileHasMusicLocked);
-  m_complexConditions.emplace("profilehaspictureslocked", ProfileHasPicturesLocked);
-  m_complexConditions.emplace("profilehasprogramslocked", ProfileHasProgramsLocked);
-  m_complexConditions.emplace("profilehassettingslocked", ProfileHasSettingsLocked);
-  m_complexConditions.emplace("profilehasvideoslocked", ProfileHasVideosLocked);
-  m_complexConditions.emplace("profilelockmode", ProfileLockMode);
-  m_complexConditions.emplace("aesettingvisible", ActiveAE::CActiveAESettings::IsSettingVisible);
-  m_complexConditions.emplace("gt", GreaterThan);
-  m_complexConditions.emplace("gte", GreaterThanOrEqual);
-  m_complexConditions.emplace("lt", LessThan);
-  m_complexConditions.emplace("lte", LessThanOrEqual);
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("addonhassettings", AddonHasSettings));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("checkmasterlock", CheckMasterLock));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("hasperipherals", HasPeripherals));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("ismasteruser", IsMasterUser));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("profilecanwritedatabase", ProfileCanWriteDatabase));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("profilecanwritesources", ProfileCanWriteSources));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("profilehasaddons", ProfileHasAddons));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("profilehasdatabase", ProfileHasDatabase));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("profilehassources", ProfileHasSources));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("profilehasaddonmanagerlocked", ProfileHasAddonManagerLocked));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("profilehasfileslocked", ProfileHasFilesLocked));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("profilehasmusiclocked", ProfileHasMusicLocked));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("profilehaspictureslocked", ProfileHasPicturesLocked));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("profilehasprogramslocked", ProfileHasProgramsLocked));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("profilehassettingslocked", ProfileHasSettingsLocked));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("profilehasvideoslocked", ProfileHasVideosLocked));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("profilelockmode", ProfileLockMode));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("gt", GreaterThan));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("gte", GreaterThanOrEqual));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("lt", LessThan));
+  m_complexConditions.insert(std::pair<std::string, SettingConditionCheck>("lte", LessThanOrEqual));
 }
 
 void CSettingConditions::Deinitialize()

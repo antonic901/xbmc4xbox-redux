@@ -14,7 +14,7 @@
 #include <string>
 
 class CProfile;
-class CProfileManager;
+class CProfilesManager;
 
 class CSettingConditions
 {
@@ -29,11 +29,11 @@ public:
 
   static bool Check(const std::string& condition,
                     const std::string& value = "",
-                    const boost::shared_ptr<const CSetting>& setting = NULL);
+                    const boost::shared_ptr<const CSetting>& setting = boost::shared_ptr<const CSetting>());
 
 private:
   // Initialization parameters
-  static const CProfileManager *m_profileManager;
+  static const CProfilesManager *m_profileManager;
 
   static std::set<std::string> m_simpleConditions;
   static std::map<std::string, SettingConditionCheck> m_complexConditions;

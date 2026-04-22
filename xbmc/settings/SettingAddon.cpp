@@ -9,21 +9,17 @@
 #include "SettingAddon.h"
 
 #include "addons/Addon.h"
-#include "addons/addoninfo/AddonInfo.h"
-#include "addons/addoninfo/AddonType.h"
 #include "settings/lib/SettingsManager.h"
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
 #include "utils/log.h"
 
-#include <mutex>
-
 CSettingAddon::CSettingAddon(const std::string &id, CSettingsManager *settingsManager /* = NULL */)
-  : CSettingString(id, settingsManager)
+  : CSettingString(id, settingsManager), m_addonType(ADDON::ADDON_UNKNOWN)
 { }
 
 CSettingAddon::CSettingAddon(const std::string &id, int label, const std::string &value, CSettingsManager *settingsManager /* = NULL */)
-  : CSettingString(id, label, value, settingsManager)
+  : CSettingString(id, label, value, settingsManager), m_addonType(ADDON::ADDON_UNKNOWN)
 { }
 
 CSettingAddon::CSettingAddon(const std::string &id, const CSettingAddon &setting)
@@ -53,14 +49,14 @@ bool CSettingAddon::Deserialize(const TiXmlNode *node, bool update /* = false */
 
   bool ok = false;
   std::string strAddonType;
-  auto constraints = node->FirstChild("constraints");
+  const TiXmlNode *constraints = node->FirstChild("constraints");
   if (constraints != NULL)
   {
     // get the addon type
     if (XMLUtils::GetString(constraints, "addontype", strAddonType) && !strAddonType.empty())
     {
-      m_addonType = ADDON::CAddonInfo::TranslateType(strAddonType);
-      if (m_addonType != ADDON::AddonType::UNKNOWN)
+      m_addonType = ADDON::TranslateType(strAddonType);
+      if (m_addonType != ADDON::ADDON_UNKNOWN)
         ok = true;
     }
   }

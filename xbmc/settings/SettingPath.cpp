@@ -9,23 +9,22 @@
 #include "SettingPath.h"
 
 #include "settings/lib/SettingsManager.h"
-#include "utils/FileExtensionProvider.h"
 #include "utils/StringUtils.h"
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
 #include "utils/log.h"
 
-#include <mutex>
+#include <boost/make_shared.hpp>
 
 #define XML_ELM_DEFAULT     "default"
 #define XML_ELM_CONSTRAINTS "constraints"
 
 CSettingPath::CSettingPath(const std::string &id, CSettingsManager *settingsManager /* = NULL */)
-  : CSettingString(id, settingsManager)
+  : CSettingString(id, settingsManager), m_writable(true), m_hideExtension(false)
 { }
 
 CSettingPath::CSettingPath(const std::string &id, int label, const std::string &value, CSettingsManager *settingsManager /* = NULL */)
-  : CSettingString(id, label, value, settingsManager)
+  : CSettingString(id, label, value, settingsManager), m_writable(true), m_hideExtension(false)
 { }
 
 CSettingPath::CSettingPath(const std::string &id, const CSettingPath &setting)
@@ -53,7 +52,7 @@ bool CSettingPath::Deserialize(const TiXmlNode *node, bool update /* = false */)
     return false;
   }
 
-  auto constraints = node->FirstChild(XML_ELM_CONSTRAINTS);
+  const TiXmlNode *constraints = node->FirstChild(XML_ELM_CONSTRAINTS);
   if (constraints != NULL)
   {
     // get writable
@@ -62,14 +61,14 @@ bool CSettingPath::Deserialize(const TiXmlNode *node, bool update /* = false */)
     XMLUtils::GetBoolean(constraints, "hideextensions", m_hideExtension);
 
     // get sources
-    auto sources = constraints->FirstChild("sources");
+    const TiXmlNode *sources = constraints->FirstChild("sources");
     if (sources != NULL)
     {
       m_sources.clear();
-      auto source = sources->FirstChild("source");
+      const TiXmlNode *source = sources->FirstChild("source");
       while (source != NULL)
       {
-        auto child = source->FirstChild();
+        const TiXmlNode *child = source->FirstChild();
         if (child != NULL)
         {
           const std::string& strSource = child->ValueStr();
@@ -82,7 +81,7 @@ bool CSettingPath::Deserialize(const TiXmlNode *node, bool update /* = false */)
     }
 
     // get masking
-    auto masking = constraints->FirstChild("masking");
+    const TiXmlNode *masking = constraints->FirstChild("masking");
     if (masking != NULL)
       m_masking = masking->FirstChild()->ValueStr();
   }
@@ -106,12 +105,14 @@ std::string CSettingPath::GetMasking(const CFileExtensionProvider& fileExtension
     return m_masking;
 
   // setup masking
-  auto audioMask = fileExtensionProvider.GetMusicExtensions();
-  auto videoMask = fileExtensionProvider.GetVideoExtensions();
-  auto imageMask = fileExtensionProvider.GetPictureExtensions();
-  auto execMask = "";
+  std::string audioMask = fileExtensionProvider.GetMusicExtensions();
+  std::string videoMask = fileExtensionProvider.GetVideoExtensions();
+  std::string imageMask = fileExtensionProvider.GetPictureExtensions();
+  const char *execMask = "";
 #if defined(TARGET_WINDOWS)
   execMask = ".exe|.bat|.cmd|.py";
+#elif defined(_XBOX)
+  execMask = ".xbe|.py";
 #endif // defined(TARGET_WINDOWS)
 
   std::string masking = m_masking;

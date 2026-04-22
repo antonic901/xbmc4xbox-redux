@@ -11,7 +11,6 @@
 #include "GUIUserMessages.h"
 #include "ServiceBroker.h"
 #include "dialogs/GUIDialogYesNo.h"
-#include "guilib/GUIColorButtonControl.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIControlGroupList.h"
 #include "guilib/GUIEditControl.h"
@@ -31,7 +30,7 @@
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
 
-#include <memory>
+#include <boost/make_shared.hpp>
 #include <set>
 #include <string>
 #include <vector>
@@ -56,8 +55,6 @@
 
 CGUIDialogSettingsBase::CGUIDialogSettingsBase(int windowId, const std::string& xmlFile)
   : CGUIDialog(windowId, xmlFile),
-    m_resetSetting(NULL),
-    m_dummyCategory(NULL),
     m_pOriginalSpin(NULL),
     m_pOriginalSlider(NULL),
     m_pOriginalRadioButton(NULL),
@@ -66,9 +63,17 @@ CGUIDialogSettingsBase::CGUIDialogSettingsBase(int windowId, const std::string& 
     m_pOriginalEdit(NULL),
     m_pOriginalImage(NULL),
     m_pOriginalGroupTitle(NULL),
-    m_delayedTimer(this)
+    m_delayedTimer(this),
+    m_iSetting(0),
+    m_iCategory(0),
+    m_newOriginalEdit(false),
+    m_confirmed(false),
+    m_focusedControl(0),
+    m_fadedControl(0)
 {
   m_loadType = KEEP_IN_MEMORY;
+  m_resetSetting.reset();
+  m_dummyCategory.reset();
 }
 
 CGUIDialogSettingsBase::~CGUIDialogSettingsBase()
@@ -279,7 +284,7 @@ bool CGUIDialogSettingsBase::OnAction(const CAction& action)
       if (m_iSetting >= CONTROL_SETTINGS_START_CONTROL &&
           m_iSetting < (int)(CONTROL_SETTINGS_START_CONTROL + m_settingControls.size()))
       {
-        auto settingControl = GetSettingControl(m_iSetting);
+        BaseSettingControlPtr settingControl = GetSettingControl(m_iSetting);
         if (settingControl != NULL)
         {
           boost::shared_ptr<CSetting> setting = settingControl->GetSetting();
@@ -368,8 +373,6 @@ void CGUIDialogSettingsBase::SetupControls(bool createSettings /* = true */)
   m_pOriginalEdit = dynamic_cast<CGUIEditControl*>(GetControl(CONTROL_DEFAULT_EDIT));
   m_pOriginalGroupTitle =
       dynamic_cast<CGUILabelControl*>(GetControl(CONTROL_DEFAULT_SETTING_LABEL));
-  m_pOriginalColorButton =
-      dynamic_cast<CGUIColorButtonControl*>(GetControl(CONTROL_DEFAULT_COLORBUTTON));
 
   // if there's no edit control but there's a button control use that instead
   if (m_pOriginalEdit == NULL && m_pOriginalButton != NULL)
@@ -395,8 +398,6 @@ void CGUIDialogSettingsBase::SetupControls(bool createSettings /* = true */)
     m_pOriginalImage->SetVisible(false);
   if (m_pOriginalGroupTitle != NULL)
     m_pOriginalGroupTitle->SetVisible(false);
-  if (m_pOriginalColorButton != NULL)
-    m_pOriginalColorButton->SetVisible(false);
 
   // get the section
   SettingSectionPtr section = GetSection();
@@ -408,7 +409,7 @@ void CGUIDialogSettingsBase::SetupControls(bool createSettings /* = true */)
     SetHeading(section->GetLabel());
 
   // get the categories we need
-  m_categories = section->GetCategories((SettingLevel)GetSettingLevel());
+  m_categories = section->GetCategories((SettingLevel::Type)GetSettingLevel());
   if (m_categories.empty())
     m_categories.push_back(m_dummyCategory);
 
@@ -429,9 +430,6 @@ void CGUIDialogSettingsBase::SetupControls(bool createSettings /* = true */)
       if (m_pOriginalCategoryButton->GetControlType() == CGUIControl::GUICONTROL_TOGGLEBUTTON)
         pButton = new CGUIToggleButtonControl(
             *static_cast<CGUIToggleButtonControl*>(m_pOriginalCategoryButton));
-      else if (m_pOriginalCategoryButton->GetControlType() == CGUIControl::GUICONTROL_COLORBUTTON)
-        pButton = new CGUIColorButtonControl(
-            *static_cast<CGUIColorButtonControl*>(m_pOriginalCategoryButton));
       else
         pButton = new CGUIButtonControl(*m_pOriginalCategoryButton);
       pButton->SetLabel(GetSettingsLabel(*category));
@@ -558,7 +556,7 @@ std::set<std::string> CGUIDialogSettingsBase::CreateSettings()
   // set the description of the current category
   SetDescription(category->GetHelp());
 
-  const SettingGroupList& groups = category->GetGroups((SettingLevel)GetSettingLevel());
+  const SettingGroupList& groups = category->GetGroups((SettingLevel::Type)GetSettingLevel());
   int iControlID = CONTROL_SETTINGS_START_CONTROL;
   bool first = true;
   for (SettingGroupList::const_iterator groupIt = groups.begin(); groupIt != groups.end();
@@ -567,12 +565,12 @@ std::set<std::string> CGUIDialogSettingsBase::CreateSettings()
     if (*groupIt == NULL)
       continue;
 
-    const SettingList& settings = (*groupIt)->GetSettings((SettingLevel)GetSettingLevel());
+    const SettingList& settings = (*groupIt)->GetSettings((SettingLevel::Type)GetSettingLevel());
     if (settings.size() <= 0)
       continue;
 
     boost::shared_ptr<const CSettingControlTitle> title =
-        std::dynamic_pointer_cast<const CSettingControlTitle>((*groupIt)->GetControl());
+        boost::dynamic_pointer_cast<const CSettingControlTitle>((*groupIt)->GetControl());
     bool hideSeparator = title ? title->IsSeparatorHidden() : false;
     bool separatorBelowGroupLabel = title ? title->IsSeparatorBelowLabel() : false;
     int groupLabel = (*groupIt)->GetLabel();
@@ -664,7 +662,7 @@ CGUIControl* CGUIDialogSettingsBase::AddSetting(const boost::shared_ptr<CSetting
     std::string indentation;
     for (int index = 1; index < parentLevels; index++)
       indentation.append("  ");
-    label = StringUtils::Format(g_localizeStrings.Get(168), indentation, label);
+    label = StringUtils::Format(g_localizeStrings.Get(168).c_str(), indentation.c_str(), label.c_str());
   }
 
   // create the proper controls
@@ -763,17 +761,6 @@ CGUIControl* CGUIDialogSettingsBase::AddSetting(const boost::shared_ptr<CSetting
     static_cast<CGUIButtonControl*>(pControl)->SetLabel(label);
     pSettingControl = boost::make_shared<CGUIControlLabelSetting>(
         static_cast<CGUIButtonControl*>(pControl), iControlID, pSetting, this);
-  }
-  else if (controlType == "colorbutton")
-  {
-    if (m_pOriginalColorButton)
-      pControl = m_pOriginalColorButton->Clone();
-    if (pControl == NULL)
-      return NULL;
-
-    static_cast<CGUIColorButtonControl*>(pControl)->SetLabel(label);
-    pSettingControl = boost::make_shared<CGUIControlColorButtonSetting>(
-        static_cast<CGUIColorButtonControl*>(pControl), iControlID, pSetting, this);
   }
   else
     return NULL;

@@ -15,6 +15,7 @@
 #include "utils/log.h"
 
 #include <vector>
+#include <boost/make_shared.hpp>
 
 const char* SHOW_ADDONS_ALL = "all";
 const char* SHOW_ADDONS_INSTALLED = "installed";
@@ -43,7 +44,7 @@ boost::shared_ptr<ISettingControl> CSettingControlCreator::CreateControl(const s
   else if (StringUtils::EqualsNoCase(controlType, "colorbutton"))
     return boost::make_shared<CSettingControlColorButton>();
 
-  return NULL;
+  return boost::shared_ptr<ISettingControl>();
 }
 
 bool CSettingControlCheckmark::SetFormat(const std::string &format)
@@ -61,16 +62,16 @@ bool CSettingControlFormattedRange::Deserialize(const TiXmlNode *node, bool upda
     XMLUtils::GetInt(node, SETTING_XML_ELM_CONTROL_FORMATLABEL, m_formatLabel);
 
     // get the minimum label from <setting><constraints><minimum label="X" />
-    auto settingNode = node->Parent();
+    const TiXmlNode *settingNode = node->Parent();
     if (settingNode != NULL)
     {
-      auto constraintsNode = settingNode->FirstChild(SETTING_XML_ELM_CONSTRAINTS);
+      const TiXmlNode *constraintsNode = settingNode->FirstChild(SETTING_XML_ELM_CONSTRAINTS);
       if (constraintsNode != NULL)
       {
-        auto minimumNode = constraintsNode->FirstChild(SETTING_XML_ELM_MINIMUM);
+        const TiXmlNode *minimumNode = constraintsNode->FirstChild(SETTING_XML_ELM_MINIMUM);
         if (minimumNode != NULL)
         {
-          auto minimumElem = minimumNode->ToElement();
+          const TiXmlElement *minimumElem = minimumNode->ToElement();
           if (minimumElem != NULL)
           {
             if (minimumElem->QueryIntAttribute(SETTING_XML_ATTR_LABEL, &m_minimumLabel) != TIXML_SUCCESS)
@@ -172,7 +173,7 @@ bool CSettingControlButton::Deserialize(const TiXmlNode *node, bool update /* = 
       else
         CLog::Log(LOGWARNING, "CSettingControlButton: invalid <show>");
 
-      auto show = node->FirstChildElement("show");
+      const TiXmlElement *show = node->FirstChildElement("show");
       if (show != NULL)
       {
         const char *strShowDetails = NULL;
@@ -304,14 +305,14 @@ bool CSettingControlRange::Deserialize(const TiXmlNode *node, bool update /* = f
   if (!ISettingControl::Deserialize(node, update))
     return false;
 
-  auto formatLabel = node->FirstChildElement(SETTING_XML_ELM_CONTROL_FORMATLABEL);
+  const TiXmlElement *formatLabel = node->FirstChildElement(SETTING_XML_ELM_CONTROL_FORMATLABEL);
   if (formatLabel != NULL)
   {
     XMLUtils::GetInt(node, SETTING_XML_ELM_CONTROL_FORMATLABEL, m_formatLabel);
     if (m_formatLabel < 0)
       return false;
 
-    auto formatValue = formatLabel->Attribute(SETTING_XML_ELM_CONTROL_FORMATVALUE);
+    const char *formatValue = formatLabel->Attribute(SETTING_XML_ELM_CONTROL_FORMATVALUE);
     if (formatValue != NULL)
     {
       if (StringUtils::IsInteger(formatValue))

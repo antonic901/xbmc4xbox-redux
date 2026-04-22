@@ -24,5 +24,5 @@ boost::shared_ptr<CSetting> CSettingCreator::CreateSetting(const std::string &se
   else if (StringUtils::EqualsNoCase(settingType, "time"))
     return boost::make_shared<CSettingTime>(settingId, settingsManager);
 
-  return NULL;
+  return boost::shared_ptr<CSetting>();
 }

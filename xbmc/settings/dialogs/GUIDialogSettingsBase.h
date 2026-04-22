@@ -39,7 +39,6 @@ class CGUIButtonControl;
 class CGUIRadioButtonControl;
 class CGUISettingsSliderControl;
 class CGUILabelControl;
-class CGUIColorButtonControl;
 
 class CSetting;
 class CSettingAction;
@@ -72,7 +71,7 @@ public:
   virtual bool IsConfirmed() const { return m_confirmed; }
 
   // implementation of ILocalizer
-  virtual std::string Localize(std::uint32_t code) const { return GetLocalizedString(code); }
+  virtual std::string Localize(uint32_t code) const { return GetLocalizedString(code); }
 
 protected:
   // specializations of CGUIWindow
@@ -83,15 +82,14 @@ protected:
 
   // implementations of ISettingCallback
   virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
-  void OnSettingPropertyChanged(const boost::shared_ptr<const CSetting>& setting,
-                                virtual const char* propertyName);
+  virtual void OnSettingPropertyChanged(const boost::shared_ptr<const CSetting>& setting, const char* propertyName);
 
   // new virtual methods
   virtual bool AllowResettingSettings() const { return true; }
   virtual int GetSettingLevel() const { return 0; }
   virtual boost::shared_ptr<CSettingSection> GetSection() = 0;
   virtual boost::shared_ptr<CSetting> GetSetting(const std::string& settingId) = 0;
-  virtual std::chrono::milliseconds GetDelayMs() const { return std::chrono::milliseconds(1500); }
+  virtual unsigned int GetDelayMs() const { return 1500; }
   virtual std::string GetLocalizedString(uint32_t labelId) const;
 
   virtual bool OnOkay()
@@ -161,29 +159,28 @@ protected:
                              float width,
                              int& iControlID);
 
-  std::vector<boost::shared_ptr<CSettingCategory>> m_categories;
+  std::vector<boost::shared_ptr<CSettingCategory> > m_categories;
   std::vector<BaseSettingControlPtr> m_settingControls;
 
-  int m_iSetting = 0;
-  int m_iCategory = 0;
+  int m_iSetting;
+  int m_iCategory;
   boost::shared_ptr<CSettingAction> m_resetSetting;
   boost::shared_ptr<CSettingCategory> m_dummyCategory;
 
   CGUISpinControlEx* m_pOriginalSpin;
   CGUISettingsSliderControl* m_pOriginalSlider;
   CGUIRadioButtonControl* m_pOriginalRadioButton;
-  CGUIColorButtonControl* m_pOriginalColorButton = NULL;
   CGUIButtonControl* m_pOriginalCategoryButton;
   CGUIButtonControl* m_pOriginalButton;
   CGUIEditControl* m_pOriginalEdit;
   CGUIImage* m_pOriginalImage;
   CGUILabelControl* m_pOriginalGroupTitle;
-  bool m_newOriginalEdit = false;
+  bool m_newOriginalEdit;
 
   BaseSettingControlPtr
       m_delayedSetting; ///< Current delayed setting \sa CBaseSettingControl::SetDelayed()
   CTimer m_delayedTimer; ///< Delayed setting timer
 
-  bool m_confirmed = false;
-  int m_focusedControl = 0, m_fadedControl = 0;
+  bool m_confirmed;
+  int m_focusedControl, m_fadedControl;
 };
