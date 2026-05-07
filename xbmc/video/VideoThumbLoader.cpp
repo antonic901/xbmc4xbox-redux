@@ -24,6 +24,7 @@
 #include <utility>
 
 #include "cores/dvdplayer/DVDFileInfo.h"
+#include "cores/VideoSettings.h"
 #include "FileItem.h"
 #include "filesystem/DirectoryCache.h"
 #include "filesystem/StackDirectory.h"
@@ -34,7 +35,6 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
-#include "settings/VideoSettings.h"
 #include "TextureCache.h"
 #include "URL.h"
 #include "utils/log.h"

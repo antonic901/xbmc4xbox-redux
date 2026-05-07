@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "settings/VideoSettings.h"
+#include "cores/VideoSettings.h"
 #include "settings/ISubSettings.h"
 #include "settings/LibExportSettings.h"
 #include "settings/lib/ISettingCallback.h"

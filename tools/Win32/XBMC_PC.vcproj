@@ -1161,12 +1161,6 @@
 				<File
 					RelativePath="..\..\xbmc\settings\SettingsControls.cpp">
 				</File>
-				<File
-					RelativePath="..\..\xbmc\settings\VideoSettings.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\settings\VideoSettings.h">
-				</File>
 			</Filter>
 			<Filter
 				Name="GUI Music"
