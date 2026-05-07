@@ -54,7 +54,7 @@ private:
   void UpdateDescription();
 
   CLibExportSettings m_settings;
-  bool m_destinationChecked = false;
+  bool m_destinationChecked;
   boost::shared_ptr<CSettingBool> m_settingNFO;
   boost::shared_ptr<CSettingBool> m_settingArt;
 };

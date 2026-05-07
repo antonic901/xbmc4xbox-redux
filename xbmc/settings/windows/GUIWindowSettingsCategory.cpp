@@ -25,7 +25,6 @@
 
 #define SETTINGS_SYSTEM                 WINDOW_SETTINGS_SYSTEM - WINDOW_SETTINGS_START
 #define SETTINGS_SERVICE                WINDOW_SETTINGS_SERVICE - WINDOW_SETTINGS_START
-#define SETTINGS_PVR                    WINDOW_SETTINGS_MYPVR - WINDOW_SETTINGS_START
 #define SETTINGS_PLAYER                 WINDOW_SETTINGS_PLAYER - WINDOW_SETTINGS_START
 #define SETTINGS_MEDIA                  WINDOW_SETTINGS_MEDIA - WINDOW_SETTINGS_START
 #define SETTINGS_INTERFACE              WINDOW_SETTINGS_INTERFACE - WINDOW_SETTINGS_START
@@ -40,23 +39,21 @@ typedef struct {
 
 static const SettingGroup s_settingGroupMap[] = { { SETTINGS_SYSTEM,      "system" },
                                                   { SETTINGS_SERVICE,     "services" },
-                                                  { SETTINGS_PVR,         "pvr" },
                                                   { SETTINGS_PLAYER,      "player" },
                                                   { SETTINGS_MEDIA,       "media" },
                                                   { SETTINGS_INTERFACE,   "interface" },
                                                   { SETTINGS_GAMES,       "games" } };
 
-#define SettingGroupSize sizeof(s_settingGroupMap) / sizeof(SettingGroup)
-
 CGUIWindowSettingsCategory::CGUIWindowSettingsCategory()
     : CGUIDialogSettingsManagerBase(WINDOW_SETTINGS_SYSTEM, "SettingsCategory.xml"),
-      m_settings(CServiceBroker::GetSettingsComponent()->GetSettings())
+      m_settings(CServiceBroker::GetSettingsComponent()->GetSettings()),
+      m_iSection(0),
+      m_returningFromSkinLoad(false)
 {
   // set the correct ID range...
   m_idRange.clear();
   m_idRange.push_back(WINDOW_SETTINGS_SYSTEM);
   m_idRange.push_back(WINDOW_SETTINGS_SERVICE);
-  m_idRange.push_back(WINDOW_SETTINGS_MYPVR);
   m_idRange.push_back(WINDOW_SETTINGS_PLAYER);
   m_idRange.push_back(WINDOW_SETTINGS_MEDIA);
   m_idRange.push_back(WINDOW_SETTINGS_INTERFACE);
@@ -189,13 +186,14 @@ int CGUIWindowSettingsCategory::GetSettingLevel() const
 
 SettingSectionPtr CGUIWindowSettingsCategory::GetSection()
 {
-  for (const SettingGroup& settingGroup : s_settingGroupMap)
+  for (size_t index = 0; index < sizeof(s_settingGroupMap) / sizeof(SettingGroup); ++index)
   {
+    const SettingGroup& settingGroup = s_settingGroupMap[index];
     if (settingGroup.id == m_iSection)
       return m_settings->GetSection(settingGroup.name);
   }
 
-  return NULL;
+  return SettingSectionPtr();
 }
 
 bool CGUIWindowSettingsCategory::Save()
@@ -219,15 +217,17 @@ void CGUIWindowSettingsCategory::FocusElement(const std::string& elementId)
       SET_CONTROL_FOCUS(CONTROL_SETTINGS_START_BUTTONS + i, 0);
       return;
     }
-    for (const auto& group: m_categories[i]->GetGroups())
+    SettingGroupList groups = m_categories[i]->GetGroups();
+    for (SettingGroupList::const_iterator group = groups.begin(); group != groups.end(); ++group)
     {
-      for (const auto& setting : group->GetSettings())
+      const SettingList &settings = (*group)->GetSettings();
+      for (SettingList::const_iterator setting = settings.begin(); setting != settings.end(); ++setting)
       {
-        if (setting->GetId() == elementId)
+        if ((*setting)->GetId() == elementId)
         {
           SET_CONTROL_FOCUS(CONTROL_SETTINGS_START_BUTTONS + i, 0);
 
-          auto control = GetSettingControl(elementId);
+          BaseSettingControlPtr control = GetSettingControl(elementId);
           if (control)
             SET_CONTROL_FOCUS(control->GetID(), 0);
           else

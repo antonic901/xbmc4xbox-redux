@@ -1,26 +1,16 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://www.xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
+#pragma once
+
 #include "threads/CriticalSection.h"
+
+#include <vector>
 
 class Observable;
 class ObservableMessageJob;
@@ -28,60 +18,26 @@ class ObservableMessageJob;
 typedef enum
 {
   ObservableMessageNone,
-  ObservableMessageCurrentItem,
-  ObservableMessageAddons,
-  ObservableMessageEpg,
-  ObservableMessageEpgContainer,
-  ObservableMessageEpgActiveItem,
-  ObservableMessageChannelGroup,
-  ObservableMessageChannelGroupReset,
-  ObservableMessageTimers,
-  ObservableMessageTimersReset,
-  ObservableMessageRecordings,
+  ObservableMessagePeripheralsChanged,
+  ObservableMessageSettingsChanged,
+  ObservableMessageButtonMapsChanged,
+  // Used for example when the subtitle alignment position change
+  ObservableMessagePositionChanged,
+  ObservableMessageGamePortsChanged,
+  ObservableMessageAgentControllersChanged,
 } ObservableMessage;
 
 class Observer
 {
-  friend class Observable;
-
 public:
-  Observer(void) {};
-  virtual ~Observer(void);
-
-  /*!
-   * @brief Remove this observer from all observables.
-   */
-  virtual void StopObserving(void);
-
-  /*!
-   * @brief Check whether this observer is observing an observable.
-   * @param obs The observable to check.
-   * @return True if this observer is observing the given observable, false otherwise.
-   */
-  virtual bool IsObserving(const Observable &obs) const;
-
+  Observer() {}
+  virtual ~Observer() {}
   /*!
    * @brief Process a message from an observable.
    * @param obs The observable that sends the message.
    * @param msg The message.
    */
   virtual void Notify(const Observable &obs, const ObservableMessage msg) = 0;
-
-protected:
-  /*!
-   * @brief Callback to register an observable.
-   * @param obs The observable to register.
-   */
-  virtual void RegisterObservable(Observable *obs);
-
-  /*!
-   * @brief Callback to unregister an observable.
-   * @param obs The observable to unregister.
-   */
-  virtual void UnregisterObservable(Observable *obs);
-
-  std::vector<Observable *> m_observables;     /*!< all observables that are watched */
-  CCriticalSection          m_obsCritSection;  /*!< mutex */
 };
 
 class Observable
@@ -89,14 +45,9 @@ class Observable
   friend class ObservableMessageJob;
 
 public:
-  Observable();
-  virtual ~Observable();
-  virtual Observable &operator=(const Observable &observable);
-
-  /*!
-   * @brief Remove this observable from all observers.
-   */
-  virtual void StopObserver(void);
+  Observable() : m_bObservableChanged(false) {}
+  virtual ~Observable() {}
+  Observable& operator=(const Observable& observable);
 
   /*!
    * @brief Register an observer.
@@ -135,9 +86,9 @@ protected:
    * @param obs The observer that sends the message.
    * @param message The message to send.
    */
-  static void SendMessage(const Observable& obs, const ObservableMessage message);
+  void SendMessage(const ObservableMessage message);
 
   bool                    m_bObservableChanged; /*!< true when the observable is marked as changed, false otherwise */
-  std::vector<Observer *> m_observers;          /*!< all observers */
-  CCriticalSection        m_obsCritSection;     /*!< mutex */
+  std::vector<Observer *> m_observers;                 /*!< all observers */
+  mutable CCriticalSection m_obsCritSection; /*!< mutex */
 };

@@ -24,6 +24,13 @@
 
 #define XC_VIDEO_FLAGS 8
 
+#define VIDEO_NORMAL 0
+#define VIDEO_LETTERBOX 1
+#define VIDEO_WIDESCREEN 2
+#define FRAME_RATE_LEAVE_AS_IS  0
+#define FRAME_RATE_CONVERT      1
+#define FRAME_RATE_USE_PAL60    2
+
 class XBVideoConfig : public ISettingsHandler
 {
 public:

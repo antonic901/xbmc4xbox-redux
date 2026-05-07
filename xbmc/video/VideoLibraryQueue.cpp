@@ -92,7 +92,9 @@ void CVideoLibraryQueue::StopLibraryScanning()
   Refresh();
 }
 
-void CVideoLibraryQueue::CleanLibrary(const std::set<int>& paths /* = std::set<int>() */, bool asynchronous /* = true */, CGUIDialogProgressBarHandle* progressBar /* = NULL */)
+bool CVideoLibraryQueue::CleanLibrary(const std::set<int>& paths /* = std::set<int>() */,
+                                      bool asynchronous /* = true */,
+                                      CGUIDialogProgressBarHandle* progressBar /* = NULL */)
 {
   CVideoLibraryCleaningJob* cleaningJob = new CVideoLibraryCleaningJob(paths, progressBar);
 
@@ -100,6 +102,10 @@ void CVideoLibraryQueue::CleanLibrary(const std::set<int>& paths /* = std::set<i
     AddJob(cleaningJob);
   else
   {
+    // we can't perform a modal library cleaning if other jobs are running
+    if (IsRunning())
+      return false;
+
     m_modal = true;
     m_cleaning = true;
     cleaningJob->DoWork();
@@ -109,13 +115,15 @@ void CVideoLibraryQueue::CleanLibrary(const std::set<int>& paths /* = std::set<i
     m_modal = false;
     Refresh();
   }
+
+  return true;
 }
 
-void CVideoLibraryQueue::CleanLibraryModal(const std::set<int>& paths /* = std::set<int>() */)
+bool CVideoLibraryQueue::CleanLibraryModal(const std::set<int>& paths /* = std::set<int>() */)
 {
   // we can't perform a modal library cleaning if other jobs are running
   if (IsRunning())
-    return;
+    return false;
 
   m_modal = true;
   m_cleaning = true;
@@ -124,6 +132,8 @@ void CVideoLibraryQueue::CleanLibraryModal(const std::set<int>& paths /* = std::
   m_cleaning = false;
   m_modal = false;
   Refresh();
+
+  return true;
 }
 
 void CVideoLibraryQueue::RefreshItem(CFileItemPtr item, bool ignoreNfo /* = false */, bool forceRefresh /* = true */, bool refreshAll /* = false */, const std::string& searchTitle /* = "" */)

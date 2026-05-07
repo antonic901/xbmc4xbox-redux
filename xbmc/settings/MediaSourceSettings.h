@@ -13,12 +13,8 @@
 
 #include <string>
 
-class CProfileManager;
-
-namespace tinyxml2
-{
-class XMLNode;
-}
+class CProfilesManager;
+class TiXmlNode;
 
 class CMediaSourceSettings : public ISettingsHandler
 {
@@ -47,17 +43,17 @@ public:
 
 protected:
   CMediaSourceSettings();
-  CMediaSourceSettings(const CMediaSourceSettings&) = delete;
-  CMediaSourceSettings& operator=(CMediaSourceSettings const&) = delete;
+  CMediaSourceSettings(const CMediaSourceSettings&);
+  CMediaSourceSettings& operator=(CMediaSourceSettings const&);
   virtual ~CMediaSourceSettings();
 
 private:
-  bool GetSource(const std::string& category, const tinyxml2::XMLNode* source, CMediaSource& share);
-  void GetSources(const tinyxml2::XMLNode* rootElement,
+  bool GetSource(const std::string& category, const TiXmlNode* source, CMediaSource& share);
+  void GetSources(const TiXmlNode* rootElement,
                   const std::string& tagName,
                   VECSOURCES& items,
                   std::string& defaultString);
-  bool SetSources(tinyxml2::XMLNode* rootNode,
+  bool SetSources(TiXmlNode* rootNode,
                   const char* section,
                   const VECSOURCES& shares,
                   const std::string& defaultPath) const;
