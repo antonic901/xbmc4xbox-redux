@@ -332,7 +332,7 @@ bool CGUIPassword::CheckLock(LockType btnType, const CStdString& strPassword, in
   return (iVerifyPasswordResult==0);
 }
 
-bool CGUIPassword::CheckSettingLevelLock(const SettingLevel& level, bool enforce /*=false*/)
+bool CGUIPassword::CheckSettingLevelLock(const SettingLevel::Type& level, bool enforce /*=false*/)
 {
   LOCK_LEVEL::SETTINGS_LOCK lockLevel = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().settingsLockLevel();
 
@@ -356,7 +356,7 @@ bool CGUIPassword::CheckSettingLevelLock(const SettingLevel& level, bool enforce
     else if (!IsMasterLockUnlocked(false))
     {
       //Current Setting level is higher than our permission... so lower the viewing level
-      SettingLevel newLevel = (SettingLevel)(short)(lockLevel-2);
+      SettingLevel::Type newLevel = (SettingLevel::Type)(short)(lockLevel-2);
       CViewStateSettings::GetInstance().SetSettingLevel(newLevel);
     }
   }

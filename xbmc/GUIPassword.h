@@ -72,7 +72,7 @@ public:
                     to a level we're allowed to access
    \returns true if we're allowed to access the settings
    */
-  bool CheckSettingLevelLock(const SettingLevel& level, bool enforce = false);
+  bool CheckSettingLevelLock(const SettingLevel::Type& level, bool enforce = false);
   bool CheckMenuLock(int iWindowID);
   bool SetMasterLockMode(bool bDetails=true);
   CStdString GetSMBAuthFilename(const CStdString& strAuth);

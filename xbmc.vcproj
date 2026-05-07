@@ -601,12 +601,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\settings\SkinSettings.h">
 				</File>
-				<File
-					RelativePath=".\xbmc\settings\VideoSettings.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\settings\VideoSettings.h">
-				</File>
 				<Filter
 					Name="windows"
 					Filter="">
@@ -5275,6 +5269,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\cores\ssrc.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\cores\VideoSettings.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\cores\VideoSettings.h">
 			</File>
 			<Filter
 				Name="mplayer"
