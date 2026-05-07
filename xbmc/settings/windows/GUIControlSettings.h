@@ -8,11 +8,12 @@
 
 #pragma once
 
+#include "system.h" // <xtl.h>
 #include "guilib/ISliderCallback.h"
 #include "utils/ILocalizer.h"
 
 #include <functional>
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <stdlib.h>
 #include <string>
 

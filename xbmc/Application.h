@@ -51,7 +51,7 @@ namespace ANNOUNCEMENT
 #include "cores/playercorefactory/PlayerCoreFactory.h"
 #include "PlayListPlayer.h"
 #include "settings/lib/ISettingsHandler.h"
-#include "settings/lib/ISubSettings.h"
+#include "settings/ISubSettings.h"
 #include "storage/DetectDVDType.h"
 #include "Autorun.h"
 #include "video/Bookmark.h"
@@ -329,9 +329,9 @@ protected:
   virtual bool Load(const TiXmlNode *settings);
   virtual bool Save(TiXmlNode *settings) const;
 
-  virtual void OnSettingChanged(const CSetting *setting);
-  virtual void OnSettingAction(const CSetting *setting);
-  virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
+  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
+  virtual bool OnSettingUpdate(const boost::shared_ptr<CSetting>& setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
 
   bool LoadSkin(const std::string& skinID);
 

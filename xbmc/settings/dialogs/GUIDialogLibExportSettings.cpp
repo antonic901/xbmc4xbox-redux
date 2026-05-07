@@ -39,7 +39,7 @@ using namespace KODI::MESSAGING;
 using KODI::MESSAGING::HELPERS::DialogResponse;
 
 CGUIDialogLibExportSettings::CGUIDialogLibExportSettings()
-  : CGUIDialogSettingsManualBase(WINDOW_DIALOG_LIBEXPORT_SETTINGS, "DialogSettings.xml")
+  : CGUIDialogSettingsManualBase(WINDOW_DIALOG_LIBEXPORT_SETTINGS, "DialogSettings.xml"), m_destinationChecked(false)
 { }
 
 bool CGUIDialogLibExportSettings::Show(CLibExportSettings& settings)

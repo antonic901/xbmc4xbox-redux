@@ -12,7 +12,7 @@
 #include "settings/lib/ISettingCallback.h"
 #include "threads/CriticalSection.h"
 #include "utils/Observer.h"
-#include "windowing/Resolution.h"
+#include "windowing/GraphicContext.h" // RESOLUTION
 
 #include <map>
 #include <set>
@@ -33,12 +33,7 @@ public:
   virtual bool Save(TiXmlNode *settings) const;
   virtual void Clear();
 
-  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
   virtual bool OnSettingChanging(const boost::shared_ptr<const CSetting>& setting);
-  bool OnSettingUpdate(const boost::shared_ptr<CSetting>& setting,
-                       const char* oldSettingId,
-                       virtual const TiXmlNode* oldSettingNode);
-  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
 
   /*!
    \brief Returns the currently active resolution
@@ -71,89 +66,29 @@ public:
 
   const RESOLUTION_INFO& GetCurrentResolutionInfo() const { return GetResolutionInfo(m_currentResolution); }
   RESOLUTION_INFO& GetCurrentResolutionInfo() { return GetResolutionInfo(m_currentResolution); }
-  RESOLUTION GetResFromString(const std::string &strResolution) { return GetResolutionFromString(strResolution); }
-  std::string GetStringFromRes(const RESOLUTION resolution, float refreshrate = 0.0f) { return GetStringFromResolution(resolution, refreshrate); }
 
   void ApplyCalibrations();
   void UpdateCalibrations();
-  void ClearCalibrations();
-  void ClearCustomResolutions();
 
   float GetZoomAmount() const { return m_zoomAmount; }
   void SetZoomAmount(float zoomAmount) { m_zoomAmount = zoomAmount; }
   float GetPixelRatio() const { return m_pixelRatio; }
   void SetPixelRatio(float pixelRatio) { m_pixelRatio = pixelRatio; }
-  float GetVerticalShift() const { return m_verticalShift; }
-  void SetVerticalShift(float verticalShift) { m_verticalShift = verticalShift; }
-  bool IsNonLinearStretched() const { return m_nonLinearStretched; }
-  void SetNonLinearStretched(bool nonLinearStretch) { m_nonLinearStretched = nonLinearStretch; }
-  void SetMonitor(const std::string& monitor);
-
-  static void SettingOptionsModesFiller(const boost::shared_ptr<const CSetting>& setting,
-                                        std::vector<StringSettingOption>& list,
-                                        std::string& current,
-                                        void* data);
-  static void SettingOptionsRefreshChangeDelaysFiller(
-      const boost::shared_ptr<const CSetting>& setting,
-      std::vector<IntegerSettingOption>& list,
-      int& current,
-      void* data);
-  static void SettingOptionsRefreshRatesFiller(const boost::shared_ptr<const CSetting>& setting,
-                                               std::vector<StringSettingOption>& list,
-                                               std::string& current,
-                                               void* data);
   static void SettingOptionsResolutionsFiller(const boost::shared_ptr<const CSetting>& setting,
                                               std::vector<IntegerSettingOption>& list,
                                               int& current,
                                               void* data);
-  static void SettingOptionsDispModeFiller(const boost::shared_ptr<const CSetting>& setting,
-                                           std::vector<IntegerSettingOption>& list,
-                                           int& current,
-                                           void* data);
-  static void SettingOptionsStereoscopicModesFiller(const boost::shared_ptr<const CSetting>& setting,
-                                                    std::vector<IntegerSettingOption>& list,
-                                                    int& current,
-                                                    void* data);
-  static void SettingOptionsPreferredStereoscopicViewModesFiller(
-      const boost::shared_ptr<const CSetting>& setting,
-      std::vector<IntegerSettingOption>& list,
-      int& current,
-      void* data);
-  static void SettingOptionsMonitorsFiller(const boost::shared_ptr<const CSetting>& setting,
-                                           std::vector<StringSettingOption>& list,
-                                           std::string& current,
-                                           void* data);
-  static void SettingOptionsCmsModesFiller(const boost::shared_ptr<const CSetting>& setting,
-                                           std::vector<IntegerSettingOption>& list,
-                                           int& current,
-                                           void* data);
-  static void SettingOptionsCmsWhitepointsFiller(const boost::shared_ptr<const CSetting>& setting,
-                                                 std::vector<IntegerSettingOption>& list,
-                                                 int& current,
-                                                 void* data);
-  static void SettingOptionsCmsPrimariesFiller(const boost::shared_ptr<const CSetting>& setting,
-                                               std::vector<IntegerSettingOption>& list,
-                                               int& current,
-                                               void* data);
-  static void SettingOptionsCmsGammaModesFiller(const boost::shared_ptr<const CSetting>& setting,
-                                                std::vector<IntegerSettingOption>& list,
-                                                int& current,
-                                                void* data);
+  static void SettingOptionsFramerateconversionsFiller(const boost::shared_ptr<const CSetting>& setting,
+                                              std::vector<IntegerSettingOption>& list,
+                                              int& current,
+                                              void* data);
 
 
 protected:
   CDisplaySettings();
-  CDisplaySettings(const CDisplaySettings&) = delete;
-  CDisplaySettings& operator=(CDisplaySettings const&) = delete;
+  CDisplaySettings(const CDisplaySettings&);
+  CDisplaySettings& operator=(CDisplaySettings const&);
   virtual ~CDisplaySettings();
-
-  DisplayMode GetCurrentDisplayMode() const;
-
-  static RESOLUTION GetResolutionFromString(const std::string &strResolution);
-  static std::string GetStringFromResolution(RESOLUTION resolution, float refreshrate = 0.0f);
-  static RESOLUTION GetResolutionForScreen();
-
-  static RESOLUTION FindBestMatchingResolution(const std::map<RESOLUTION, RESOLUTION_INFO> &resolutionInfos, int width, int height, float refreshrate, unsigned int flags);
 
 private:
   // holds the real gui resolution
@@ -165,8 +100,6 @@ private:
 
   float m_zoomAmount;         // current zoom amount
   float m_pixelRatio;         // current pixel ratio
-  float m_verticalShift;      // current vertical shift
-  bool  m_nonLinearStretched;   // current non-linear stretch
 
   bool m_resolutionChangeAborted;
   mutable CCriticalSection m_critical;

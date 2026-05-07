@@ -46,6 +46,6 @@ protected:
   void FocusElement(const std::string& elementId);
 
   boost::shared_ptr<CSettings> m_settings;
-  int m_iSection = 0;
-  bool m_returningFromSkinLoad = false; // true if we are returning from loading the skin
+  int m_iSection;
+  bool m_returningFromSkinLoad; // true if we are returning from loading the skin
 };
