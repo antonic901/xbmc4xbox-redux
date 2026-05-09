@@ -43,9 +43,6 @@
 using namespace std;
 using namespace KODI::MESSAGING;
 
-/* quick access to a skin setting, fine unless we starts clearing video settings */
-static CSettingInt* g_guiSkinzoom = NULL;
-
 CGraphicContext::CGraphicContext(void) :
   m_iScreenWidth(720),
   m_iScreenHeight(576),
@@ -716,9 +713,14 @@ void CGraphicContext::ApplyStateBlock()
   }
 }
 
-const RESOLUTION_INFO &CGraphicContext::GetResInfo() const
+const RESOLUTION_INFO CGraphicContext::GetResInfo(RESOLUTION res) const
 {
-  return CDisplaySettings::GetInstance().GetResolutionInfo(m_Resolution);
+  return CDisplaySettings::GetInstance().GetResolutionInfo(res);
+}
+
+const RESOLUTION_INFO CGraphicContext::GetResInfo() const
+{
+  return GetResInfo(m_Resolution);
 }
 
 void CGraphicContext::SetResInfo(RESOLUTION res, const RESOLUTION_INFO& info)
@@ -742,8 +744,7 @@ void CGraphicContext::GetGUIScaling(const RESOLUTION_INFO &res, float &scaleX, f
     float fToWidth    = (float)info.Overscan.right  - fToPosX;
     float fToHeight   = (float)info.Overscan.bottom - fToPosY;
 
-    if(!g_guiSkinzoom) // lookup gui setting if we didn't have it already
-      g_guiSkinzoom = (CSettingInt*)CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.skinzoom");
+    boost::shared_ptr<CSettingInt> g_guiSkinzoom = boost::static_pointer_cast<CSettingInt>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting(CSettings::SETTING_LOOKANDFEEL_SKINZOOM));
 
     float fZoom = 1.0f;
     if(g_guiSkinzoom)

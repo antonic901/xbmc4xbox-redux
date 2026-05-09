@@ -87,6 +87,20 @@ struct OVERSCAN
   int top;
   int right;
   int bottom;
+public:
+  OVERSCAN()
+  {
+    left = top = right = bottom = 0;
+  }
+
+  bool operator==(const OVERSCAN& other)
+  {
+    return left == other.left && right == other.right && top == other.top && bottom == other.bottom;
+  }
+  bool operator!=(const OVERSCAN& other)
+  {
+    return left != other.left || right != other.right || top != other.top || bottom != other.bottom;
+  }
 };
 
 /*!
@@ -176,7 +190,8 @@ public:
   void Clear(color_t color = 0);
 
   // output scaling
-  const RESOLUTION_INFO &GetResInfo() const;
+  const RESOLUTION_INFO GetResInfo() const;
+  const RESOLUTION_INFO GetResInfo(RESOLUTION res) const;
   void SetResInfo(RESOLUTION res, const RESOLUTION_INFO& info);
 
   /* \brief Get UI scaling information from a given resolution to the screen resolution.
