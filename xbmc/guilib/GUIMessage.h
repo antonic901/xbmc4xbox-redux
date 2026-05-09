@@ -88,11 +88,6 @@
 #define GUI_MSG_RENDERER_RESET     36
 
 /*!
- \brief A request for supported gestures is made
- */
-#define GUI_MSG_GESTURE_NOTIFY     38
-
-/*!
  \brief A request to add a control
  */
 #define GUI_MSG_ADD_CONTROL     39
