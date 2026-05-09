@@ -119,10 +119,10 @@ bool CViewStateSettings::Load(const TiXmlNode *settings)
   if (pElement != NULL)
   {
     int settingLevel;
-    if (XMLUtils::GetInt(pElement, XML_SETTINGLEVEL, settingLevel, (const int)SettingLevelBasic, (const int)SettingLevelExpert))
-      m_settingLevel = (SettingLevel)settingLevel;
+    if (XMLUtils::GetInt(pElement, XML_SETTINGLEVEL, settingLevel, (const int)SettingLevel::Basic, (const int)SettingLevel::Expert))
+      m_settingLevel = (SettingLevel::Type)settingLevel;
     else
-      m_settingLevel = SettingLevelStandard;
+      m_settingLevel = SettingLevel::Standard;
   }
 
   return true;
@@ -172,7 +172,7 @@ bool CViewStateSettings::Save(TiXmlNode *settings) const
 
 void CViewStateSettings::Clear()
 {
-  m_settingLevel = SettingLevelStandard;
+  m_settingLevel = SettingLevel::Standard;
 }
 
 const CViewState* CViewStateSettings::Get(const std::string &viewState) const
@@ -195,12 +195,12 @@ CViewState* CViewStateSettings::Get(const std::string &viewState)
   return NULL;
 }
 
-void CViewStateSettings::SetSettingLevel(SettingLevel settingLevel)
+void CViewStateSettings::SetSettingLevel(SettingLevel::Type settingLevel)
 {
-  if (settingLevel < SettingLevelBasic)
-    m_settingLevel = SettingLevelBasic;
-  if (settingLevel > SettingLevelExpert)
-    m_settingLevel = SettingLevelExpert;
+  if (settingLevel < SettingLevel::Basic)
+    m_settingLevel = SettingLevel::Basic;
+  if (settingLevel > SettingLevel::Expert)
+    m_settingLevel = SettingLevel::Expert;
   else
     m_settingLevel = settingLevel;
 }
@@ -210,11 +210,11 @@ void CViewStateSettings::CycleSettingLevel()
   m_settingLevel = GetNextSettingLevel();
 }
 
-SettingLevel CViewStateSettings::GetNextSettingLevel() const
+SettingLevel::Type CViewStateSettings::GetNextSettingLevel() const
 {
-  SettingLevel level = (SettingLevel)((int)m_settingLevel + 1);
-  if (level > SettingLevelExpert)
-    level = SettingLevelBasic;
+  SettingLevel::Type level = (SettingLevel::Type)((int)m_settingLevel + 1);
+  if (level > SettingLevel::Expert)
+    level = SettingLevel::Basic;
   return level;
 }
 

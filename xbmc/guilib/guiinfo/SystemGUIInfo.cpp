@@ -518,7 +518,7 @@ bool CSystemGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int context
       value = !(CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_LOGIN_SCREEN);
       return true;
     case SYSTEM_SHOW_EXIT_BUTTON:
-      value = true;
+      value = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_showExitButton;
       return true;
     case SYSTEM_HAS_LOGINSCREEN:
       value = CServiceBroker::GetSettingsComponent()->GetProfileManager()->UsingLoginScreen();

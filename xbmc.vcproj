@@ -3581,6 +3581,16 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						</File>
 					</Filter>
 				</Filter>
+				<Filter
+					Name="settings"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\addons\settings\SettingUrlEncodedString.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\settings\SettingUrlEncodedString.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="xbox"

@@ -19,6 +19,7 @@
 #include "threads/SharedSection.h"
 
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/move/move.hpp>
 #include <set>
 #include <string>

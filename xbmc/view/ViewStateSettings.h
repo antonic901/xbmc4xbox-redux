@@ -24,7 +24,7 @@
 
 #include "ViewState.h"
 #include "windowing/GraphicContext.h"
-#include "settings/lib/ISubSettings.h"
+#include "settings/ISubSettings.h"
 #include "settings/lib/Setting.h"
 #include "threads/CriticalSection.h"
 
@@ -42,10 +42,10 @@ public:
   const CViewState* Get(const std::string &viewState) const;
   CViewState* Get(const std::string &viewState);
 
-  SettingLevel GetSettingLevel() const { return m_settingLevel; }
-  void SetSettingLevel(SettingLevel settingLevel);
+  SettingLevel::Type GetSettingLevel() const { return m_settingLevel; }
+  void SetSettingLevel(SettingLevel::Type settingLevel);
   void CycleSettingLevel();
-  SettingLevel GetNextSettingLevel() const;
+  SettingLevel::Type GetNextSettingLevel() const;
 
 protected:
   CViewStateSettings();
@@ -55,7 +55,7 @@ protected:
 
 private:
   std::map<std::string, CViewState*> m_viewStates;
-  SettingLevel m_settingLevel;
+  SettingLevel::Type m_settingLevel;
   CCriticalSection m_critical;
 
   void AddViewState(const std::string& strTagName, int defaultView = DEFAULT_VIEW_LIST, SortBy defaultSort = SortByLabel);

@@ -11,8 +11,8 @@
 #include "ServiceBroker.h"
 #include "addons/AddonManager.h"
 #include "addons/AddonSystemSettings.h"
-#include "addons/gui/GUIDialogAddonSettings.h"
-#include "addons/gui/GUIWindowAddonBrowser.h"
+#include "addons/GUIDialogAddonSettings.h"
+#include "addons/GUIWindowAddonBrowser.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "filesystem/AddonsDirectory.h"
@@ -40,13 +40,20 @@
 #define SETTING_CONTAINS_SINGLE_ITEM  "containssingleitem"
 #define SETTING_EXCLUDE               "exclude"
 #define SETTING_NO_UPDATING           "noupdating"
-#define SETTING_ALL_EXTERNAL_AUDIO "allexternalaudio"
 
 using namespace ADDON;
 
 
 CGUIDialogContentSettings::CGUIDialogContentSettings()
   : CGUIDialogSettingsManualBase(WINDOW_DIALOG_CONTENT_SETTINGS, "DialogSettings.xml")
+  , m_content(CONTENT_NONE)
+  , m_originalContent(CONTENT_NONE)
+  , m_showScanSettings(false)
+  , m_scanRecursive(false)
+  , m_useDirectoryNames(false)
+  , m_containsSingleItem(false)
+  , m_exclude(false)
+  , m_noUpdating(false)
 { }
 
 void CGUIDialogContentSettings::SetContent(CONTENT_TYPE content)
@@ -67,7 +74,6 @@ void CGUIDialogContentSettings::SetScanSettings(const VIDEO::SScanSettings &scan
   m_exclude             = scanSettings.exclude;
   m_containsSingleItem  = scanSettings.parent_name_root;
   m_noUpdating          = scanSettings.noupdate;
-  m_allExternalAudio = scanSettings.m_allExtAudio;
 }
 
 bool CGUIDialogContentSettings::Show(ADDON::ScraperPtr& scraper, CONTENT_TYPE content /* = CONTENT_NONE */)
@@ -99,8 +105,6 @@ bool CGUIDialogContentSettings::Show(ADDON::ScraperPtr& scraper, VIDEO::SScanSet
   {
     scraper = dialog->GetScraper();
     content = dialog->GetContent();
-
-    settings.m_allExtAudio = dialog->GetUseAllExternalAudio();
 
     if (scraper == NULL || content == CONTENT_NONE)
       settings.exclude = dialog->GetExclude();
@@ -171,8 +175,6 @@ void CGUIDialogContentSettings::OnSettingChanged(const boost::shared_ptr<const C
   }
   else if (settingId == SETTING_EXCLUDE)
     m_exclude = boost::static_pointer_cast<const CSettingBool>(setting)->GetValue();
-  else if (settingId == SETTING_ALL_EXTERNAL_AUDIO)
-    m_allExternalAudio = boost::static_pointer_cast<const CSettingBool>(setting)->GetValue();
 }
 
 void CGUIDialogContentSettings::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
@@ -186,17 +188,17 @@ void CGUIDialogContentSettings::OnSettingAction(const boost::shared_ptr<const CS
 
   if (settingId == SETTING_CONTENT_TYPE)
   {
-    std::vector<std::pair<std::string, int>> labels;
+    std::vector<std::pair<std::string, int> > labels;
     if (m_content == CONTENT_ALBUMS || m_content == CONTENT_ARTISTS)
     {
-      labels.emplace_back(ADDON::TranslateContent(m_content, true), m_content);
+      labels.push_back(std::make_pair(ADDON::TranslateContent(m_content, true), m_content));
     }
     else
     {
-      labels.emplace_back(ADDON::TranslateContent(CONTENT_NONE, true), CONTENT_NONE);
-      labels.emplace_back(ADDON::TranslateContent(CONTENT_MOVIES, true), CONTENT_MOVIES);
-      labels.emplace_back(ADDON::TranslateContent(CONTENT_TVSHOWS, true), CONTENT_TVSHOWS);
-      labels.emplace_back(ADDON::TranslateContent(CONTENT_MUSICVIDEOS, true), CONTENT_MUSICVIDEOS);
+      labels.push_back(std::make_pair(ADDON::TranslateContent(CONTENT_NONE, true), CONTENT_NONE));
+      labels.push_back(std::make_pair(ADDON::TranslateContent(CONTENT_MOVIES, true), CONTENT_MOVIES));
+      labels.push_back(std::make_pair(ADDON::TranslateContent(CONTENT_TVSHOWS, true), CONTENT_TVSHOWS));
+      labels.push_back(std::make_pair(ADDON::TranslateContent(CONTENT_MUSICVIDEOS, true), CONTENT_MUSICVIDEOS));
     }
     std::sort(labels.begin(), labels.end());
 
@@ -207,11 +209,11 @@ void CGUIDialogContentSettings::OnSettingAction(const boost::shared_ptr<const CS
 
       int iIndex = 0;
       int iSelected = 0;
-      for (const auto &label : labels)
+      for (std::vector<std::pair<std::string, int> >::const_iterator label = labels.begin(); label != labels.end(); ++label)
       {
-        dialog->Add(label.first);
+        dialog->Add(label->first);
 
-        if (m_content == label.second)
+        if (m_content == label->second)
           iSelected = iIndex;
         iIndex++;
       }
@@ -224,14 +226,14 @@ void CGUIDialogContentSettings::OnSettingAction(const boost::shared_ptr<const CS
       if (!dialog->IsConfirmed() || newSelected < 0 || newSelected == iSelected)
         return;
 
-      auto selected = labels.at(newSelected);
+      std::pair<std::string, int> selected = labels.at(newSelected);
       m_content = static_cast<CONTENT_TYPE>(selected.second);
 
       AddonPtr scraperAddon;
       if (!CAddonSystemSettings::GetInstance().GetActive(ADDON::ScraperTypeFromContent(m_content), scraperAddon) && m_content != CONTENT_NONE)
         return;
 
-      m_scraper = std::dynamic_pointer_cast<CScraper>(scraperAddon);
+      m_scraper = boost::dynamic_pointer_cast<CScraper>(scraperAddon);
 
       SetupView();
       SetFocusToSetting(SETTING_CONTENT_TYPE);
@@ -239,7 +241,7 @@ void CGUIDialogContentSettings::OnSettingAction(const boost::shared_ptr<const CS
   }
   else if (settingId == SETTING_SCRAPER_LIST)
   {
-    ADDON::AddonType type = ADDON::ScraperTypeFromContent(m_content);
+    ADDON::TYPE type = ADDON::ScraperTypeFromContent(m_content);
     std::string currentScraperId;
     if (m_scraper != NULL)
       currentScraperId = m_scraper->ID();
@@ -249,10 +251,9 @@ void CGUIDialogContentSettings::OnSettingAction(const boost::shared_ptr<const CS
         && selectedAddonId != currentScraperId)
     {
       AddonPtr scraperAddon;
-      if (CServiceBroker::GetAddonMgr().GetAddon(selectedAddonId, scraperAddon,
-                                                 ADDON::OnlyEnabled::CHOICE_YES))
+      if (CServiceBroker::GetAddonMgr().GetAddon(selectedAddonId, scraperAddon))
       {
-        m_scraper = std::dynamic_pointer_cast<CScraper>(scraperAddon);
+        m_scraper = boost::dynamic_pointer_cast<CScraper>(scraperAddon);
         SetupView();
         SetFocusToSetting(SETTING_SCRAPER_LIST);
       }
@@ -264,7 +265,7 @@ void CGUIDialogContentSettings::OnSettingAction(const boost::shared_ptr<const CS
     }
   }
   else if (settingId == SETTING_SCRAPER_SETTINGS)
-    CGUIDialogAddonSettings::ShowForAddon(m_scraper, false);
+    CGUIDialogAddonSettings::ShowAndGetInput(m_scraper, false);
 }
 
 bool CGUIDialogContentSettings::Save()
@@ -349,8 +350,6 @@ void CGUIDialogContentSettings::InitializeSettings()
     {
       AddToggle(groupDetails, SETTING_CONTAINS_SINGLE_ITEM, 20379, SettingLevel::Basic, m_containsSingleItem, false, m_showScanSettings);
       AddToggle(groupDetails, SETTING_NO_UPDATING, 20432, SettingLevel::Basic, m_noUpdating, false, m_showScanSettings);
-      AddToggle(groupDetails, SETTING_ALL_EXTERNAL_AUDIO, 39120, SettingLevel::Basic,
-                m_allExternalAudio, false, m_showScanSettings);
       break;
     }
 
@@ -361,8 +360,6 @@ void CGUIDialogContentSettings::InitializeSettings()
       boost::shared_ptr<CSettingBool> settingScanRecursive = AddToggle(groupDetails, SETTING_SCAN_RECURSIVE, 20346, SettingLevel::Basic, m_scanRecursive, false, m_showScanSettings);
       boost::shared_ptr<CSettingBool> settingContainsSingleItem = AddToggle(groupDetails, SETTING_CONTAINS_SINGLE_ITEM, 20383, SettingLevel::Basic, m_containsSingleItem, false, m_showScanSettings);
       AddToggle(groupDetails, SETTING_NO_UPDATING, 20432, SettingLevel::Basic, m_noUpdating, false, m_showScanSettings);
-      AddToggle(groupDetails, SETTING_ALL_EXTERNAL_AUDIO, 39120, SettingLevel::Basic,
-                m_allExternalAudio, false, m_showScanSettings);
 
       // define an enable dependency with (m_useDirectoryNames && !m_containsSingleItem) || !m_useDirectoryNames
       CSettingDependency dependencyScanRecursive(SettingDependencyType::Enable, GetSettingsManager());
@@ -408,8 +405,6 @@ void CGUIDialogContentSettings::InitializeSettings()
     case CONTENT_NONE:
     default:
       AddToggle(groupDetails, SETTING_EXCLUDE, 20380, SettingLevel::Basic, m_exclude, false, !m_showScanSettings);
-      AddToggle(groupDetails, SETTING_ALL_EXTERNAL_AUDIO, 39120, SettingLevel::Basic,
-                m_allExternalAudio, false, !m_showScanSettings);
       break;
   }
 }
