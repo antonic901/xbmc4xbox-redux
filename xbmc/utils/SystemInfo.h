@@ -23,7 +23,7 @@
 #include "md5.h"
 #include "xbox/XKEEPROM.h"
 #include "InfoLoader.h"
-#include "settings/lib/ISubSettings.h"
+#include "settings/ISubSettings.h"
 #include "utils/StdString.h"
 
 #define KB  (1024)          // 1 KiloByte (1KB)   1024 Byte (2^10 Byte)

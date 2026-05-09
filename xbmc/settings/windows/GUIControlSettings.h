@@ -25,7 +25,6 @@ class CGUIButtonControl;
 class CGUIRadioButtonControl;
 class CGUISettingsSliderControl;
 class CGUILabelControl;
-class CGUIColorButtonControl;
 
 class CSetting;
 class CSettingControlSlider;
@@ -117,29 +116,6 @@ protected:
 
 private:
   CGUIRadioButtonControl* m_pRadioButton;
-};
-
-class CGUIControlColorButtonSetting : public CGUIControlBaseSetting
-{
-public:
-  CGUIControlColorButtonSetting(CGUIColorButtonControl* pColorControl,
-                                int id,
-                                const boost::shared_ptr<CSetting>& pSetting,
-                                ILocalizer* localizer);
-  virtual ~CGUIControlColorButtonSetting();
-
-  void Select(bool bSelect);
-
-  virtual CGUIControl* GetControl() { return reinterpret_cast<CGUIControl*>(m_pColorButton); }
-  virtual bool OnClick();
-  virtual void Clear() { m_pColorButton = NULL; }
-
-protected:
-  // specialization of CGUIControlBaseSetting
-  virtual void Update(bool fromControl, bool updateDisplayOnly);
-
-private:
-  CGUIColorButtonControl* m_pColorButton;
 };
 
 class CGUIControlSpinExSetting : public CGUIControlBaseSetting

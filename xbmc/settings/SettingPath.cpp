@@ -102,7 +102,7 @@ bool CSettingPath::SetValue(const std::string &value)
   return CSettingString::SetValue(value);
 }
 
-std::string CSettingPath::GetMasking(const CFileExtensionProvider& fileExtensionProvider) const
+std::string CSettingPath::GetMasking() const
 {
   if (m_masking.empty())
     return m_masking;

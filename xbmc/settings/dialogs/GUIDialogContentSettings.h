@@ -33,7 +33,7 @@ public:
   void ResetContent();
 
   const ADDON::ScraperPtr& GetScraper() const { return m_scraper; }
-  void SetScraper(ADDON::ScraperPtr scraper) { m_scraper = std::move(scraper); }
+  void SetScraper(ADDON::ScraperPtr scraper) { m_scraper = boost::move(scraper); }
 
   void SetScanSettings(const VIDEO::SScanSettings &scanSettings);
   bool GetScanRecursive() const { return m_scanRecursive; }
@@ -41,7 +41,6 @@ public:
   bool GetContainsSingleItem() const { return m_containsSingleItem; }
   bool GetExclude() const { return m_exclude; }
   bool GetNoUpdating() const { return m_noUpdating; }
-  bool GetUseAllExternalAudio() const { return m_allExternalAudio; }
 
   static bool Show(ADDON::ScraperPtr& scraper, CONTENT_TYPE content = CONTENT_NONE);
   static bool Show(ADDON::ScraperPtr& scraper, VIDEO::SScanSettings& settings, CONTENT_TYPE content = CONTENT_NONE);
@@ -71,21 +70,20 @@ private:
   /*!
   * @brief The currently selected content type
   */
-  CONTENT_TYPE m_content = CONTENT_NONE;
+  CONTENT_TYPE m_content;
   /*!
   * @brief The selected content type at dialog creation
   */
-  CONTENT_TYPE m_originalContent = CONTENT_NONE;
+  CONTENT_TYPE m_originalContent;
   /*!
   * @brief The currently selected scraper
   */
   ADDON::ScraperPtr m_scraper;
 
-  bool m_showScanSettings = false;
-  bool m_scanRecursive = false;
-  bool m_useDirectoryNames = false;
-  bool m_containsSingleItem = false;
-  bool m_exclude = false;
-  bool m_noUpdating = false;
-  bool m_allExternalAudio = false;
+  bool m_showScanSettings;
+  bool m_scanRecursive;
+  bool m_useDirectoryNames;
+  bool m_containsSingleItem;
+  bool m_exclude;
+  bool m_noUpdating;
 };
