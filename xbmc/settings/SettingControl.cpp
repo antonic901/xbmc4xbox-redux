@@ -358,7 +358,7 @@ bool CSettingControlTitle::Deserialize(const TiXmlNode *node, bool update /* = f
   if (XMLUtils::GetString(node, SETTING_XML_ATTR_SEPARATOR_POSITION, strTmp))
   {
     if (!StringUtils::EqualsNoCase(strTmp, "top") && !StringUtils::EqualsNoCase(strTmp, "bottom"))
-      CLog::Log(LOGWARNING, "CSettingControlTitle: error reading \"value\" attribute of <{}>",
+      CLog::Log(LOGWARNING, "CSettingControlTitle: error reading \"value\" attribute of <%s>",
                 SETTING_XML_ATTR_SEPARATOR_POSITION);
     else
       m_separatorBelowLabel = StringUtils::EqualsNoCase(strTmp, "bottom");

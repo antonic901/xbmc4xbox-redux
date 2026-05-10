@@ -88,7 +88,7 @@ bool CSettingDependencyCondition::Deserialize(const TiXmlNode *node)
   const char *strTarget = elem->Attribute(SETTING_XML_ATTR_ON);
   if (strTarget != NULL && !setTarget(strTarget))
   {
-    CLog::Log(LOGWARNING, "unknown target \"{}\"", strTarget);
+    CLog::Log(LOGWARNING, "unknown target \"%s\"", strTarget);
     return false;
   }
 
@@ -113,7 +113,7 @@ bool CSettingDependencyCondition::Deserialize(const TiXmlNode *node)
   const char *strOperator = elem->Attribute(SETTING_XML_ATTR_OPERATOR);
   if (strOperator != NULL && !setOperator(strOperator))
   {
-    CLog::Log(LOGWARNING, "unknown operator \"{}\"", strOperator);
+    CLog::Log(LOGWARNING, "unknown operator \"%s\"", strOperator);
     return false;
   }
 
@@ -139,7 +139,7 @@ bool CSettingDependencyCondition::Check() const
       SettingPtr setting = m_settingsManager->GetSetting(m_setting);
       if (setting == NULL)
       {
-        CLog::Log(LOGWARNING, "unable to check condition on unknown setting \"{}\"", m_setting);
+        CLog::Log(LOGWARNING, "unable to check condition on unknown setting \"%s\"", m_setting.c_str());
         return false;
       }
 
@@ -189,7 +189,7 @@ bool CSettingDependencyCondition::Check() const
         setting = m_settingsManager->GetSetting(m_setting);
         if (setting == NULL)
         {
-          CLog::Log(LOGWARNING, "unable to check condition on unknown setting \"{}\"", m_setting);
+          CLog::Log(LOGWARNING, "unable to check condition on unknown setting \"%s\"", m_setting.c_str());
           return false;
         }
       }

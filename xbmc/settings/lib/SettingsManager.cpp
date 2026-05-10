@@ -97,13 +97,13 @@ bool CSettingsManager::Initialize(const TiXmlElement *root)
 
   if (MinimumSupportedVersion >= version+1)
   {
-    CLog::Log(LOGERROR, "unable to read setting definitions from version {} (minimum version: {})",
+    CLog::Log(LOGERROR, "unable to read setting definitions from version %"PRIu32" (minimum version: %"PRIu32")",
                     version, MinimumSupportedVersion);
     return false;
   }
   if (version > Version)
   {
-    CLog::Log(LOGERROR, "unable to read setting definitions from version {} (current version: {})",
+    CLog::Log(LOGERROR, "unable to read setting definitions from version %"PRIu32" (current version: %"PRIu32")",
                     version, Version);
     return false;
   }
@@ -126,7 +126,7 @@ bool CSettingsManager::Initialize(const TiXmlElement *root)
         AddSection(section);
       else
       {
-        CLog::Log(LOGWARNING, "unable to read section \"{}\"", sectionId);
+        CLog::Log(LOGWARNING, "unable to read section \"%s\"", sectionId.c_str());
       }
     }
 
@@ -149,17 +149,17 @@ bool CSettingsManager::Load(const TiXmlElement *root, bool &updated, bool trigge
   // try to get and check the version
   uint32_t version = ParseVersion(root);
   if (version == 0)
-    CLog::Log(LOGWARNING, "missing {} attribute", SETTING_XML_ROOT_VERSION);
+    CLog::Log(LOGWARNING, "missing %s attribute", SETTING_XML_ROOT_VERSION);
 
   if (MinimumSupportedVersion >= version+1)
   {
-    CLog::Log(LOGERROR, "unable to read setting values from version {} (minimum version: {})", version,
+    CLog::Log(LOGERROR, "unable to read setting values from version %"PRIu32" (minimum version: %"PRIu32")", version,
                     MinimumSupportedVersion);
     return false;
   }
   if (version > Version)
   {
-    CLog::Log(LOGERROR, "unable to read setting values from version {} (current version: {})", version,
+    CLog::Log(LOGERROR, "unable to read setting values from version %"PRIu32" (current version: %"PRIu32")", version,
                     Version);
     return false;
   }
@@ -533,7 +533,7 @@ SettingPtr CSettingsManager::GetSetting(const std::string &id) const
     return setting->second.setting;
   }
 
-  CLog::Log(LOGDEBUG, "requested setting ({}) was not found.", id);
+  CLog::Log(LOGDEBUG, "requested setting (%s) was not found.", id.c_str());
   return SettingPtr();
 }
 
@@ -559,7 +559,7 @@ SettingSectionPtr CSettingsManager::GetSection(std::string section) const
   if (sectionIt != m_sections.end())
     return sectionIt->second;
 
-  CLog::Log(LOGDEBUG, "requested setting section ({}) was not found.", section);
+  CLog::Log(LOGDEBUG, "requested setting section (%s) was not found.", section.c_str());
   return SettingSectionPtr();
 }
 
@@ -1099,7 +1099,7 @@ bool CSettingsManager::LoadSetting(const TiXmlNode* node, const SettingPtr& sett
 
   if (!setting->FromString(settingElement->FirstChild() != NULL ? settingElement->FirstChild()->ValueStr() : StringUtils::Empty))
   {
-    CLog::Log(LOGWARNING, "unable to read value of setting \"{}\"", settingId);
+    CLog::Log(LOGWARNING, "unable to read value of setting \"%s\"", settingId.c_str());
     return false;
   }
 
@@ -1151,8 +1151,8 @@ bool CSettingsManager::UpdateSetting(const TiXmlNode* node,
     if (setting->FromString(oldSettingNode->FirstChild() != NULL ? oldSettingNode->FirstChild()->ValueStr() : StringUtils::Empty))
       updated = true;
     else
-      CLog::Log(LOGWARNING, "unable to update \"{}\" through automatically renaming from \"{}\"",
-                     setting->GetId(), oldSetting);
+      CLog::Log(LOGWARNING, "unable to update \"%s\" through automatically renaming from \"%s\"",
+                     setting->GetId().c_str(), oldSetting);
   }
 
   updated |= OnSettingUpdate(setting, oldSetting, oldSettingNode);
@@ -1297,7 +1297,7 @@ void CSettingsManager::ResolveReferenceSettings(const boost::shared_ptr<CSetting
             CSettingsManager::SettingMap::iterator itReferencedSetting = FindSetting(referencedSettingId);
             if (itReferencedSetting == m_settings.end())
             {
-              CLog::Log(LOGWARNING, "missing referenced setting \"{}\"", referencedSettingId);
+              CLog::Log(LOGWARNING, "missing referenced setting \"%s\"", referencedSettingId.c_str());
               continue;
             }
 
@@ -1375,7 +1375,7 @@ void CSettingsManager::CleanupIncompleteSettings()
     CSettingsManager::SettingMap::iterator tmpIterator = setting++;
     if (tmpIterator->second.setting == NULL)
     {
-      CLog::Log(LOGWARNING, "removing empty setting \"{}\"", tmpIterator->first);
+      CLog::Log(LOGWARNING, "removing empty setting \"%s\"", tmpIterator->first.c_str());
       m_settings.erase(tmpIterator);
     }
   }

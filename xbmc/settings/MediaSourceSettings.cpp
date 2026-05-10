@@ -78,7 +78,7 @@ bool CMediaSourceSettings::Load(const std::string& file)
   if (!XFILE::CFile::Exists(file))
     return false;
 
-  CLog::Log(LOGINFO, "CMediaSourceSettings: loading media sources from {}", file);
+  CLog::Log(LOGINFO, "CMediaSourceSettings: loading media sources from %s", file.c_str());
 
   // load xml file
   CXBMCTinyXML xmlDoc;
@@ -272,12 +272,12 @@ bool CMediaSourceSettings::AddShare(const std::string& type, const CMediaSource&
   {
     shareToAdd.strPath = CUtil::TranslateSpecialSource(strPath1);
     if (!share.strPath.empty())
-      CLog::Log(LOGDEBUG, "CMediaSourceSettings: translated ({}) to path ({})", strPath1,
-                shareToAdd.strPath);
+      CLog::Log(LOGDEBUG, "CMediaSourceSettings: translated (%s) to path (%s)", strPath1.c_str(),
+                shareToAdd.strPath.c_str());
     else
     {
-      CLog::Log(LOGDEBUG, "CMediaSourceSettings: skipping invalid special directory token ({})",
-                strPath1);
+      CLog::Log(LOGDEBUG, "CMediaSourceSettings: skipping invalid special directory token (%s)",
+                strPath1.c_str());
       return false;
     }
   }
@@ -398,8 +398,8 @@ bool CMediaSourceSettings::GetSource(const std::string& category,
 
       // error message
       if (isInvalid)
-        CLog::Log(LOGERROR, "CMediaSourceSettings:    invalid path type ({}) for multipath source",
-                  *path);
+        CLog::Log(LOGERROR, "CMediaSourceSettings:    invalid path type (%s) for multipath source",
+                  (*path).c_str());
     }
 
     // no valid paths? skip to next source

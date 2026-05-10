@@ -78,7 +78,7 @@ bool CSettingUtils::ValuesToList(const boost::shared_ptr<const CSettingList>& se
   for (std::vector<CVariant>::const_iterator value = values.begin(); value != values.end(); ++value)
   {
     SettingPtr settingValue =
-        setting->GetDefinition()->Clone(StringUtils::Format("{}.{}", setting->GetId(), index++));
+        setting->GetDefinition()->Clone(StringUtils::Format("%s.%i", setting->GetId().c_str(), index++));
     if (settingValue == NULL)
       return false;
 

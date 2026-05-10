@@ -71,12 +71,12 @@ void CAdvancedSettings::OnSettingsLoaded()
   if (settings->GetBool(CSettings::SETTING_DEBUG_SHOWLOGINFO))
   {
     m_logLevel = std::max(m_logLevelHint, LOG_LEVEL_DEBUG_FREEMEM);
-    CLog::Log(LOGINFO, "Enabled debug logging due to GUI setting ({})", m_logLevel);
+    CLog::Log(LOGINFO, "Enabled debug logging due to GUI setting (%i)", m_logLevel);
   }
   else
   {
     m_logLevel = std::min(m_logLevelHint, LOG_LEVEL_DEBUG/*LOG_LEVEL_NORMAL*/);
-    CLog::Log(LOGINFO, "Disabled debug logging due to GUI setting. Level {}.", m_logLevel);
+    CLog::Log(LOGINFO, "Disabled debug logging due to GUI setting. Level %i.", m_logLevel);
   }
   CLog::SetLogLevel(m_logLevel);
 }
@@ -345,13 +345,13 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
   CXBMCTinyXML advancedXML;
   if (!XFILE::CFile::Exists(file))
   {
-    CLog::Log(LOGINFO, "No settings file to load ({})", file);
+    CLog::Log(LOGINFO, "No settings file to load (%s)", file.c_str());
     return;
   }
 
   if (!advancedXML.LoadFile(file))
   {
-    CLog::Log(LOGERROR, "Error loading {}, Line {}\n{}", file, advancedXML.ErrorRow(),
+    CLog::Log(LOGERROR, "Error loading %s, Line %i\n%s", file.c_str(), advancedXML.ErrorRow(),
               advancedXML.ErrorDesc());
     return;
   }
@@ -359,12 +359,12 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
   TiXmlElement *pRootElement = advancedXML.RootElement();
   if (!pRootElement || StringUtils::CompareNoCase(pRootElement->Value(), "advancedsettings") != 0)
   {
-    CLog::Log(LOGERROR, "Error loading {}, no <advancedsettings> node", file);
+    CLog::Log(LOGERROR, "Error loading %s, no <advancedsettings> node", file.c_str());
     return;
   }
 
   // succeeded - tell the user it worked
-  CLog::Log(LOGINFO, "Loaded settings file from {}", file);
+  CLog::Log(LOGINFO, "Loaded settings file from %s", file.c_str());
 
   // Dump contents of copied AS.xml to debug log
   TiXmlPrinter printer;
@@ -659,8 +659,8 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
       if (!strFrom.empty() && !strTo.empty())
       {
         CLog::Log(LOGDEBUG,"  Registering substitution pair:");
-        CLog::Log(LOGDEBUG, "    From: [{}]", CURL::GetRedacted(strFrom));
-        CLog::Log(LOGDEBUG, "    To:   [{}]", CURL::GetRedacted(strTo));
+        CLog::Log(LOGDEBUG, "    From: [%s]", CURL::GetRedacted(strFrom).c_str());
+        CLog::Log(LOGDEBUG, "    To:   [%s]", CURL::GetRedacted(strTo).c_str());
         m_pathSubstitutions.push_back(std::make_pair(strFrom, strTo));
       }
       else

@@ -1475,8 +1475,8 @@ bool CGUIControlSliderSetting::FormatText(const std::string& formatString,
   }
   catch (const std::runtime_error& err)
   {
-    CLog::Log(LOGERROR, "Invalid formatting with string \"{}\" for setting \"{}\": {}",
-              formatString, settingId, err.what());
+    CLog::Log(LOGERROR, "Invalid formatting with string \"%s\" for setting \"%s\": %s",
+              formatString.c_str(), settingId.c_str(), err.what());
     return false;
   }
 

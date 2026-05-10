@@ -98,7 +98,7 @@ SettingGroupPtr CGUIDialogSettingsManualBase::AddGroup(const SettingCategoryPtr&
 
   size_t groups = category->GetGroups().size();
 
-  SettingGroupPtr group = boost::make_shared<CSettingGroup>(StringUtils::Format("{0}", groups + 1), GetSettingsManager());
+  SettingGroupPtr group = boost::make_shared<CSettingGroup>(StringUtils::Format("%" PRIuS, groups + 1), GetSettingsManager());
   if (group == NULL)
     return SettingGroupPtr();
 

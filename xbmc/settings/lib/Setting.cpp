@@ -130,7 +130,7 @@ bool CSetting::Deserialize(const TiXmlNode *node, bool update /* = false */)
       if (dependency.Deserialize(dependencyNode))
         m_dependencies.push_back(dependency);
       else
-        CLog::Log(LOGWARNING, "error reading <{}> tag of \"{}\"", SETTING_XML_ELM_DEPENDENCY, m_id);
+        CLog::Log(LOGWARNING, "error reading <%s> tag of \"%s\"", SETTING_XML_ELM_DEPENDENCY, m_id.c_str());
 
       dependencyNode = dependencyNode->NextSibling(SETTING_XML_ELM_DEPENDENCY);
     }
@@ -142,21 +142,21 @@ bool CSetting::Deserialize(const TiXmlNode *node, bool update /* = false */)
     const char *controlType = control->Attribute(SETTING_XML_ATTR_TYPE);
     if (controlType == NULL)
     {
-      CLog::Log(LOGERROR, "error reading \"{}\" attribute of <control> tag of \"{}\"",
-                      SETTING_XML_ATTR_TYPE, m_id);
+      CLog::Log(LOGERROR, "error reading \"%s\" attribute of <control> tag of \"%s\"",
+                      SETTING_XML_ATTR_TYPE, m_id.c_str());
       return false;
     }
 
     m_control = m_settingsManager->CreateControl(controlType);
     if (m_control == NULL || !m_control->Deserialize(control, update))
     {
-      CLog::Log(LOGERROR, "error reading <{}> tag of \"{}\"", SETTING_XML_ELM_CONTROL, m_id);
+      CLog::Log(LOGERROR, "error reading <%s> tag of \"%s\"", SETTING_XML_ELM_CONTROL, m_id.c_str());
       return false;
     }
   }
   else if (!update && m_level < SettingLevel::Internal && !IsReference())
   {
-    CLog::Log(LOGERROR, "missing <{}> tag of \"{}\"", SETTING_XML_ELM_CONTROL, m_id);
+    CLog::Log(LOGERROR, "missing <%s> tag of \"%s\"", SETTING_XML_ELM_CONTROL, m_id.c_str());
     return false;
   }
 
@@ -170,10 +170,10 @@ bool CSetting::Deserialize(const TiXmlNode *node, bool update /* = false */)
       if (settingUpdate.Deserialize(updateElem))
       {
         if (!m_updates.insert(settingUpdate).second)
-          CLog::Log(LOGWARNING, "duplicate <{}> definition for \"{}\"", SETTING_XML_ELM_UPDATE, m_id);
+          CLog::Log(LOGWARNING, "duplicate <%s> definition for \"%s\"", SETTING_XML_ELM_UPDATE, m_id.c_str());
       }
       else
-        CLog::Log(LOGWARNING, "error reading <{}> tag of \"{}\"", SETTING_XML_ELM_UPDATE, m_id);
+        CLog::Log(LOGWARNING, "error reading <%s> tag of \"%s\"", SETTING_XML_ELM_UPDATE, m_id.c_str());
 
       updateElem = updateElem->NextSiblingElement(SETTING_XML_ELM_UPDATE);
     }
@@ -227,7 +227,7 @@ void CSetting::MakeReference(const std::string& referencedId /* = "" */)
   if (referencedId.empty())
     tmpReferencedId = m_id;
 
-  m_id = StringUtils::Format("#{}[{}]", tmpReferencedId, StringUtils::CreateUUID());
+  m_id = StringUtils::Format("#%s[%s]", tmpReferencedId.c_str(), StringUtils::CreateUUID().c_str());
   m_referencedId = tmpReferencedId;
 }
 
@@ -398,7 +398,7 @@ bool CSettingList::Deserialize(const TiXmlNode *node, bool update /* = false */)
   const TiXmlElement *element = node->ToElement();
   if (element == NULL)
   {
-    CLog::Log(LOGWARNING, "unable to read type of list setting of {}", m_id);
+    CLog::Log(LOGWARNING, "unable to read type of list setting of %s", m_id.c_str());
     return false;
   }
 
@@ -423,8 +423,8 @@ bool CSettingList::Deserialize(const TiXmlNode *node, bool update /* = false */)
       m_maximumItems = -1;
     else if (m_maximumItems < m_minimumItems)
     {
-      CLog::Log(LOGWARNING, "invalid <{}> ({}) and/or <{}> ({}) of {}", SETTING_XML_ELM_MINIMUM_ITEMS,
-                     m_minimumItems, SETTING_XML_ELM_MAXIMUM_ITEMS, m_maximumItems, m_id);
+      CLog::Log(LOGWARNING, "invalid <%s> (%i) and/or <%s> (%i) of %s", SETTING_XML_ELM_MINIMUM_ITEMS,
+                     m_minimumItems, SETTING_XML_ELM_MAXIMUM_ITEMS, m_maximumItems, m_id.c_str());
       return false;
     }
   }
@@ -435,7 +435,7 @@ bool CSettingList::Deserialize(const TiXmlNode *node, bool update /* = false */)
   {
     if (!fromString(values, m_defaults))
     {
-      CLog::Log(LOGWARNING, "invalid <{}> definition \"{}\" of {}", SETTING_XML_ELM_DEFAULT, values, m_id);
+      CLog::Log(LOGWARNING, "invalid <%s> definition \"%s\" of %s", SETTING_XML_ELM_DEFAULT, values.c_str(), m_id.c_str());
       return false;
     }
     Reset();
@@ -621,7 +621,7 @@ bool CSettingList::fromValues(const std::vector<std::string> &strValues, Setting
   int index = 0;
   for (std::vector<std::string>::const_iterator value = strValues.begin(); value != strValues.end(); ++value)
   {
-    SettingPtr settingValue = m_definition->Clone(StringUtils::Format("{}.{}", m_id, index++));
+    SettingPtr settingValue = m_definition->Clone(StringUtils::Format("%s.%i", m_id.c_str(), index++));
     if (settingValue == NULL ||
         !settingValue->FromString(*value))
     {
@@ -703,7 +703,7 @@ bool CSettingBool::Deserialize(const TiXmlNode *node, bool update /* = false */)
     m_value = m_default = value;
   else if (!update)
   {
-    CLog::Log(LOGERROR, "error reading the default value of \"{}\"", m_id);
+    CLog::Log(LOGERROR, "error reading the default value of \"%s\"", m_id.c_str());
     return false;
   }
 
@@ -928,7 +928,7 @@ bool CSettingInt::Deserialize(const TiXmlNode *node, bool update /* = false */)
     m_value = m_default = value;
   else if (!update)
   {
-    CLog::Log(LOGERROR, "error reading the default value of \"{}\"", m_id);
+    CLog::Log(LOGERROR, "error reading the default value of \"%s\"", m_id.c_str());
     return false;
   }
 
@@ -1108,7 +1108,7 @@ IntegerSettingOptions CSettingInt::UpdateDynamicOptions()
     m_optionsFiller = reinterpret_cast<IntegerSettingOptionsFiller>(m_settingsManager->GetSettingOptionsFiller(shared_from_base<CSettingInt>()));
     if (m_optionsFiller == NULL)
     {
-      CLog::Log(LOGWARNING, "unknown options filler \"{}\" of \"{}\"", m_optionsFillerName, m_id);
+      CLog::Log(LOGWARNING, "unknown options filler \"%s\" of \"%s\"", m_optionsFillerName.c_str(), m_id.c_str());
       return options;
     }
   }
@@ -1264,7 +1264,7 @@ bool CSettingNumber::Deserialize(const TiXmlNode *node, bool update /* = false *
     m_value = m_default = value;
   else if (!update)
   {
-    CLog::Log(LOGERROR, "error reading the default value of \"{}\"", m_id);
+    CLog::Log(LOGERROR, "error reading the default value of \"%s\"", m_id.c_str());
     return false;
   }
 
@@ -1516,7 +1516,7 @@ bool CSettingString::Deserialize(const TiXmlNode *node, bool update /* = false *
     m_value = m_default = value;
   else if (!update && !m_allowEmpty)
   {
-    CLog::Log(LOGERROR, "error reading the default value of \"{}\"", m_id);
+    CLog::Log(LOGERROR, "error reading the default value of \"%s\"", m_id.c_str());
     return false;
   }
 
@@ -1608,7 +1608,7 @@ StringSettingOptions CSettingString::UpdateDynamicOptions()
     m_optionsFiller = reinterpret_cast<StringSettingOptionsFiller>(m_settingsManager->GetSettingOptionsFiller(shared_from_base<CSettingString>()));
     if (m_optionsFiller == NULL)
     {
-      CLog::Log(LOGERROR, "unknown options filler \"{}\" of \"{}\"", m_optionsFillerName, m_id);
+      CLog::Log(LOGERROR, "unknown options filler \"%s\" of \"%s\"", m_optionsFillerName.c_str(), m_id.c_str());
       return options;
     }
   }
