@@ -223,7 +223,10 @@ void CGUIDialogProgramSettings::SaveProgramSettings()
   }
 }
 
-void CGUIDialogProgramSettings::IntegerOptionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void CGUIDialogProgramSettings::IntegerOptionsFiller(const SettingConstPtr& setting,
+                                                     std::vector<IntegerSettingOption>& list,
+                                                     int& current,
+                                                     void* data)
 {
   if (setting == NULL || data == NULL)
     return;
@@ -233,21 +236,24 @@ void CGUIDialogProgramSettings::IntegerOptionsFiller(const CSetting *setting, st
   if (setting->GetId() == SETTING_FORCEREGION)
   {
     int iRegion = GetXBERegion(programSettings->m_strExecutable, true);
-    list.push_back(make_pair(g_localizeStrings.Get(16316), 0));
-    list.push_back(make_pair(iRegion == VIDEO_NTSCM ? "NTSC-M (default)" : "NTSC-M", VIDEO_NTSCM));
-    list.push_back(make_pair(iRegion == VIDEO_NTSCJ ? "NTSC-J (default)" : "NTSC-J", VIDEO_NTSCJ));
-    list.push_back(make_pair(iRegion == VIDEO_PAL50 ? "PAL (default)" : "PAL", VIDEO_PAL50));
-    list.push_back(make_pair(iRegion == VIDEO_PAL60 ? "PAL60 (default)" : "PAL60", VIDEO_PAL60));
+    list.push_back(IntegerSettingOption(g_localizeStrings.Get(16316), 0));
+    list.push_back(IntegerSettingOption(iRegion == VIDEO_NTSCM ? "NTSC-M (default)" : "NTSC-M", VIDEO_NTSCM));
+    list.push_back(IntegerSettingOption(iRegion == VIDEO_NTSCJ ? "NTSC-J (default)" : "NTSC-J", VIDEO_NTSCJ));
+    list.push_back(IntegerSettingOption(iRegion == VIDEO_PAL50 ? "PAL (default)" : "PAL", VIDEO_PAL50));
+    list.push_back(IntegerSettingOption(iRegion == VIDEO_PAL60 ? "PAL60 (default)" : "PAL60", VIDEO_PAL60));
   }
   else if (setting->GetId() == SETTING_TRAINER_LIST)
   {
-    list.push_back(make_pair(g_localizeStrings.Get(231), 0));
+    list.push_back(IntegerSettingOption(g_localizeStrings.Get(231), 0));
     for (std::vector<CTrainer*>::const_iterator it = programSettings->m_trainers.begin(); it != programSettings->m_trainers.end(); ++it)
-      list.push_back(make_pair((*it)->GetName(), (*it)->GetTrainerId()));
+      list.push_back(IntegerSettingOption((*it)->GetName(), (*it)->GetTrainerId()));
   }
 }
 
-void CGUIDialogProgramSettings::StringOptionsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data)
+void CGUIDialogProgramSettings::StringOptionsFiller(const SettingConstPtr& setting,
+                                                    std::vector<StringSettingOption>& list,
+                                                    std::string& current,
+                                                    void* data)
 {
   if (setting == NULL || data == NULL)
     return;
@@ -263,23 +269,23 @@ void CGUIDialogProgramSettings::StringOptionsFiller(const CSetting *setting, std
       if (!items[i]->m_bIsFolder)
       {
         std::string strLabel = URIUtils::GetFileName(items[i]->GetPath());
-        list.push_back(std::pair<std::string, std::string>(strLabel, strLabel));
+        list.push_back(StringSettingOption(strLabel, strLabel));
       }
     }
   }
   else if (setting->GetId() == SETTING_EMULATOR)
   {
-    list.push_back(std::pair<std::string, std::string>(g_localizeStrings.Get(231), "none"));
+    list.push_back(StringSettingOption(g_localizeStrings.Get(231), "none"));
     CFileItemList emulators;
     if (LAUNCHERS::CROMLauncher::FindEmulators(programSettings->m_strExecutable, emulators))
     {
       for (int i = 0; i < emulators.Size(); ++i)
-        list.push_back(std::pair<std::string, std::string>(emulators[i]->GetLabel(), emulators[i]->GetPath()));
+        list.push_back(StringSettingOption(emulators[i]->GetLabel(), emulators[i]->GetPath()));
     }
   }
 }
 
-void CGUIDialogProgramSettings::OnSettingChanged(const CSetting *setting)
+void CGUIDialogProgramSettings::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;
@@ -289,21 +295,21 @@ void CGUIDialogProgramSettings::OnSettingChanged(const CSetting *setting)
   const std::string &settingId = setting->GetId();
   if (settingId == SETTING_EXECUTABLE)
   {
-    m_settings.strExecutable = ((CSettingString*)setting)->GetValue();
+    m_settings.strExecutable = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
   }
   else if (settingId == SETTING_EMULATOR)
   {
-    m_settings.strEmulator = ((CSettingString*)setting)->GetValue();
+    m_settings.strEmulator = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
   }
   else if (settingId == SETTING_FORCEREGION)
   {
-    m_settings.iForceRegion = ((CSettingInt*)setting)->GetValue();
+    m_settings.iForceRegion = boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
   }
   else if (settingId == SETTING_TRAINER_LIST)
   {
     ResetTrainer();
 
-    const int idTrainer = ((CSettingInt*)setting)->GetValue();
+    const int idTrainer = boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
     if (idTrainer == 0)
       return;
 
@@ -330,12 +336,12 @@ void CGUIDialogProgramSettings::SetupView()
   SET_CONTROL_LABEL(CONTROL_SETTINGS_CUSTOM_BUTTON, 190);
 }
 
-void CGUIDialogProgramSettings::OnSettingAction(const CSetting *setting)
+void CGUIDialogProgramSettings::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;
 
-  CGUIDialogSettingsManualBase::OnSettingChanged(setting);
+  CGUIDialogSettingsManualBase::OnSettingAction(setting);
 
   const std::string &settingId = setting->GetId();
   if (settingId == SETTING_TRAINER_HACKS)
@@ -372,29 +378,29 @@ void CGUIDialogProgramSettings::OnSettingAction(const CSetting *setting)
   }
 }
 
-void CGUIDialogProgramSettings::Save()
+bool CGUIDialogProgramSettings::Save()
 {
   if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
-      !g_passwordManager.CheckSettingLevelLock(::SettingLevelExpert))
-    return;
+      !g_passwordManager.CheckSettingLevelLock(SettingLevel::Expert))
+    return true;
 
   SaveProgramSettings();
 
-  LAUNCHERS::CProgramLauncher::LaunchProgram(m_strExecutable);
+  return LAUNCHERS::CProgramLauncher::LaunchProgram(m_strExecutable);
 }
 
 void CGUIDialogProgramSettings::InitializeSettings()
 {
   CGUIDialogSettingsManualBase::InitializeSettings();
 
-  CSettingCategory *category = AddCategory("xbelauncher", -1);
+  const boost::shared_ptr<CSettingCategory> category = AddCategory("xbelauncher", -1);
   if (category == NULL)
   {
     CLog::Log(LOGERROR, "CGUIDialogProgramSettings: unable to setup xbelauncher");
     return;
   }
 
-  CSettingGroup *group = AddGroup(category);
+  const boost::shared_ptr<CSettingGroup> group = AddGroup(category);
   if (group == NULL)
   {
     CLog::Log(LOGERROR, "CGUIDialogProgramSettings: unable to setup xbelauncher");
@@ -407,15 +413,15 @@ void CGUIDialogProgramSettings::InitializeSettings()
 
   LoadProgramSettings();
 
-  AddSpinner(group, SETTING_EXECUTABLE, 655, 0, m_settings.strExecutable, StringOptionsFiller, true);
+  AddSpinner(group, SETTING_EXECUTABLE, 655, SettingLevel::Basic, m_settings.strExecutable, StringOptionsFiller, true);
   if (isXBE)
   { // Xbox (XBE) executable
-    AddList(group, SETTING_FORCEREGION, 20026, 0, m_settings.iForceRegion, IntegerOptionsFiller, 20026);
-    AddList(group, SETTING_TRAINER_LIST, 38710, 0, m_trainer ? m_trainer->GetTrainerId() : 0, IntegerOptionsFiller, 38710);
-    CSettingAction *btnHacks = AddButton(group, SETTING_TRAINER_HACKS, 38711, 0);
+    AddList(group, SETTING_FORCEREGION, 20026, SettingLevel::Basic, m_settings.iForceRegion, IntegerOptionsFiller, 20026);
+    AddList(group, SETTING_TRAINER_LIST, 38710, SettingLevel::Basic, m_trainer ? m_trainer->GetTrainerId() : 0, IntegerOptionsFiller, 38710);
+    const boost::shared_ptr<CSettingAction> btnHacks = AddButton(group, SETTING_TRAINER_HACKS, 38711, SettingLevel::Basic);
 
-    CSettingDependency dependencyHacks(SettingDependencyTypeEnable, m_settingsManager);
-    dependencyHacks.And()->Add(CSettingDependencyConditionPtr(new CSettingDependencyCondition(SETTING_TRAINER_LIST, "0", SettingDependencyOperatorEquals, true, m_settingsManager)));
+    CSettingDependency dependencyHacks(SettingDependencyType::Enable, GetSettingsManager());
+    dependencyHacks.And()->Add(CSettingDependencyConditionPtr(new CSettingDependencyCondition(SETTING_TRAINER_LIST, "0", SettingDependencyOperator::Equals, true, GetSettingsManager())));
 
     SettingDependencies deps;
     deps.push_back(dependencyHacks);
@@ -424,7 +430,7 @@ void CGUIDialogProgramSettings::InitializeSettings()
   }
   else
   { // everything else is ROM
-    AddList(group, SETTING_EMULATOR, 38995, 0, m_settings.strEmulator, StringOptionsFiller, 38995);
+    AddList(group, SETTING_EMULATOR, 38995, SettingLevel::Basic, m_settings.strEmulator, StringOptionsFiller, 38995);
   }
 }
 

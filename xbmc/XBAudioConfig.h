@@ -52,7 +52,11 @@ public:
   bool NeedsSave();
   void Save();
 
-  static void SettingAudioOutputFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
+  static void SettingAudioOutputFiller(const boost::shared_ptr<const CSetting>& setting,
+                                       std::vector<IntegerSettingOption>& list,
+                                       int& current,
+                                       void* data);
+
 private:
   DWORD m_dwAudioFlags;
 };

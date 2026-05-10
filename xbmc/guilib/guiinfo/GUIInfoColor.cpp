@@ -27,7 +27,7 @@ bool CGUIInfoColor::Update(const CGUIListItem* item /* = nullptr */)
   std::string infoLabel;
   if (item && item->IsFileItem())
     infoLabel = CServiceBroker::GetGUI()->GetInfoManager().GetItemLabel(
-        static_cast<const CFileItem*>(item), 0, m_info);
+        boost::static_pointer_cast<const CFileItem>(item), 0, m_info);
   else
     infoLabel = CServiceBroker::GetGUI()->GetInfoManager().GetLabel(m_info, INFO::DEFAULT_CONTEXT);
 

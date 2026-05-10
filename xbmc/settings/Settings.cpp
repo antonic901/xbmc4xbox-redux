@@ -412,7 +412,7 @@ bool CSettings::Load(const TiXmlElement* root, bool& updated)
   if (!CSettingsBase::LoadValuesFromXml(root, updated))
     return false;
 
-  return Load(static_cast<const TiXmlNode*>(root));
+  return Load(boost::static_pointer_cast<const TiXmlNode>(root));
 }
 
 bool CSettings::Load(const TiXmlNode* settings)

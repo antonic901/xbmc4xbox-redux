@@ -151,7 +151,7 @@ public:
 protected:
   inline CArchive &streamout(const void *dataPtr, size_t size)
   {
-    const uint8_t *ptr = static_cast<const uint8_t *>(dataPtr);
+    const uint8_t *ptr = boost::static_pointer_cast<const uint8_t>(dataPtr);
     /* Note, the buffer is flushed as soon as it is full (m_BufferRemain == size) rather
      * than waiting until we attempt to put more data into an already full buffer */
     if (m_BufferRemain > size)

@@ -68,12 +68,12 @@ protected:
   void OnInitWindow();
 
   // implementations of ISettingCallback
-  void OnSettingChanged(const CSetting *setting);
-  void OnSettingAction(const CSetting *setting);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
+  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
 
   // specialization of CGUIDialogSettingsBase
   bool AllowResettingSettings() const { return false; }
-  void Save();
+  virtual bool Save();
   void SetupView();
 
   // specialization of CGUIDialogSettingsManualBase

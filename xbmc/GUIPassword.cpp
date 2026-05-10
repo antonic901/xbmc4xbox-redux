@@ -499,7 +499,7 @@ bool CGUIPassword::IsDatabasePathUnlocked(std::string& strPath, VECSOURCES& vecS
   return false;
 }
 
-void CGUIPassword::OnSettingAction(const CSetting *setting)
+void CGUIPassword::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;

@@ -100,7 +100,7 @@ bool CGUIControlsGUIInfo::GetLabel(std::string& value, const CFileItem *item, in
         {
           if (info.m_info == CONTAINER_VIEWMODE)
           {
-            value = static_cast<const IGUIContainer*>(control)->GetLabel();
+            value = boost::static_pointer_cast<const IGUIContainer>(control)->GetLabel();
             return true;
           }
           else if (info.m_info == CONTAINER_VIEWCOUNT)
@@ -256,11 +256,11 @@ bool CGUIControlsGUIInfo::GetLabel(std::string& value, const CFileItem *item, in
       if (control)
       {
         if (control->IsContainer())
-          value = static_cast<const IGUIContainer*>(control)->GetLabel(info.m_info);
+          value = boost::static_pointer_cast<const IGUIContainer>(control)->GetLabel(info.m_info);
         else if (control->GetControlType() == CGUIControl::GUICONTROL_GROUPLIST)
-          value = static_cast<const CGUIControlGroupList*>(control)->GetLabel(info.m_info);
+          value = boost::static_pointer_cast<const CGUIControlGroupList>(control)->GetLabel(info.m_info);
         else if (control->GetControlType() == CGUIControl::GUICONTROL_TEXTBOX)
-          value = static_cast<const CGUITextBox*>(control)->GetLabel(info.m_info);
+          value = boost::static_pointer_cast<const CGUITextBox>(control)->GetLabel(info.m_info);
         return true;
       }
       break;
@@ -582,7 +582,7 @@ bool CGUIControlsGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int co
         const CGUIControl *control = window->GetControl(info.GetData1());
         if (control && control->IsContainer())
         {
-          const CFileItemPtr item = boost::static_pointer_cast<CFileItem>(static_cast<const IGUIContainer*>(control)->GetListItem(0));
+          const CFileItemPtr item = boost::static_pointer_cast<CFileItem>(boost::static_pointer_cast<const IGUIContainer>(control)->GetListItem(0));
           if (item && item->m_iprogramCount == info.GetData2())  // programcount used to store item id
           {
             value = true;

@@ -81,7 +81,7 @@ public:
   void RemoveSourceLocks();
   bool IsDatabasePathUnlocked(std::string& strPath, VECSOURCES& VECSOURCES);
 
-  virtual void OnSettingAction(const CSetting *setting);
+  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
 
   bool bMasterUser;
   int iMasterLockRetriesLeft;
