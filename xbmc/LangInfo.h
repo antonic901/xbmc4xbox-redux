@@ -44,6 +44,7 @@
 #endif // TARGET_WINDOWS
 
 class TiXmlNode;
+struct StringSettingOption;
 
 namespace ADDON
 {
@@ -185,18 +186,57 @@ public:
 
   static void LoadTokens(const TiXmlNode* pTokens, std::set<std::string>& vecTokens);
 
-  static void SettingOptionsLanguageNamesFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
-  static void SettingOptionsAudioStreamLanguagesFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
-  static void SettingOptionsSubtitleStreamLanguagesFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
-  static void SettingOptionsSubtitleDownloadlanguagesFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
-  static void SettingOptionsISO6391LanguagesFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
-  static void SettingOptionsRegionsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
-  static void SettingOptionsShortDateFormatsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
-  static void SettingOptionsLongDateFormatsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
-  static void SettingOptionsTimeFormatsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
-  static void SettingOptions24HourClockFormatsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
-  static void SettingOptionsTemperatureUnitsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
-  static void SettingOptionsSpeedUnitsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
+  static void SettingOptionsLanguageNamesFiller(const boost::shared_ptr<const CSetting>& setting,
+                                                std::vector<StringSettingOption>& list,
+                                                std::string& current,
+                                                void* data);
+  static void SettingOptionsAudioStreamLanguagesFiller(
+      const boost::shared_ptr<const CSetting>& setting,
+      std::vector<StringSettingOption>& list,
+      std::string& current,
+      void* data);
+  static void SettingOptionsSubtitleStreamLanguagesFiller(
+      const boost::shared_ptr<const CSetting>& setting,
+      std::vector<StringSettingOption>& list,
+      std::string& current,
+      void* data);
+  static void SettingOptionsSubtitleDownloadlanguagesFiller(
+      const boost::shared_ptr<const CSetting>& setting,
+      std::vector<StringSettingOption>& list,
+      std::string& current,
+      void* data);
+  static void SettingOptionsISO6391LanguagesFiller(const boost::shared_ptr<const CSetting>& setting,
+                                                   std::vector<StringSettingOption>& list,
+                                                   std::string& current,
+                                                   void* data);
+  static void SettingOptionsRegionsFiller(const boost::shared_ptr<const CSetting>& setting,
+                                          std::vector<StringSettingOption>& list,
+                                          std::string& current,
+                                          void* data);
+  static void SettingOptionsShortDateFormatsFiller(const boost::shared_ptr<const CSetting>& setting,
+                                                   std::vector<StringSettingOption>& list,
+                                                   std::string& current,
+                                                   void* data);
+  static void SettingOptionsLongDateFormatsFiller(const boost::shared_ptr<const CSetting>& setting,
+                                                  std::vector<StringSettingOption>& list,
+                                                  std::string& current,
+                                                  void* data);
+  static void SettingOptionsTimeFormatsFiller(const boost::shared_ptr<const CSetting>& setting,
+                                              std::vector<StringSettingOption>& list,
+                                              std::string& current,
+                                              void* data);
+  static void SettingOptions24HourClockFormatsFiller(const boost::shared_ptr<const CSetting>& setting,
+                                                     std::vector<StringSettingOption>& list,
+                                                     std::string& current,
+                                                     void* data);
+  static void SettingOptionsTemperatureUnitsFiller(const boost::shared_ptr<const CSetting>& setting,
+                                                   std::vector<StringSettingOption>& list,
+                                                   std::string& current,
+                                                   void* data);
+  static void SettingOptionsSpeedUnitsFiller(const boost::shared_ptr<const CSetting>& setting,
+                                             std::vector<StringSettingOption>& list,
+                                             std::string& current,
+                                             void* data);
 
 protected:
   void SetDefaults();

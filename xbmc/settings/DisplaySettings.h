@@ -79,9 +79,9 @@ public:
                                               int& current,
                                               void* data);
   static void SettingOptionsFramerateconversionsFiller(const boost::shared_ptr<const CSetting>& setting,
-                                              std::vector<IntegerSettingOption>& list,
-                                              int& current,
-                                              void* data);
+                                                       std::vector<IntegerSettingOption>& list,
+                                                       int& current,
+                                                       void* data);
 
 
 protected:

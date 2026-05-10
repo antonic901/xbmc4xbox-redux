@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "system.h"
 #include "utils/log.h"
 #include "XBoxRenderer.h"
@@ -53,13 +53,13 @@ YUVCOEF yuv_coef_bt709 = {
 YUVCOEF yuv_coef_ebu = {
     0.0f,  1.140f,
  -0.396f, -0.581f,
-  2.029f,    0.0f, 
+  2.029f,    0.0f,
 };
 
 YUVCOEF yuv_coef_smtp240m = {
      0.0f,  1.5756f,
  -0.2253f, -0.5000f, /* page above have the 0.5000f as positive */
-  1.8270f,     0.0f,  
+  1.8270f,     0.0f,
 };
 
 
@@ -276,7 +276,7 @@ void CXBoxRenderer::DrawAlpha(int x0, int y0, int w, int h, unsigned char *src, 
 
   if(true /*isvobsub*/) // xbox_video.cpp is fixed to 720x576 osd, so this should be fine
   { // vobsubs are given to us unscaled
-    // scale them up to the full output, assuming vobsubs have same 
+    // scale them up to the full output, assuming vobsubs have same
     // pixel aspect ratio as the movie, and are 720 pixels wide
 
     float pixelaspect = m_fSourceFrameRatio * m_iSourceHeight / m_iSourceWidth;
@@ -291,7 +291,7 @@ void CXBoxRenderer::DrawAlpha(int x0, int y0, int w, int h, unsigned char *src, 
     xscale = 1.0f;
     yscale = 1.0f;
   }
-  
+
   // horizontal centering, and align to bottom of subtitles line
   osdRect.left = rv.x1 + (rv.Width() - (float)w * xscale) / 2.0f;
   osdRect.right = osdRect.left + (float)w * xscale;
@@ -746,7 +746,7 @@ bool CXBoxRenderer::Configure(unsigned int width, unsigned int height, unsigned 
   m_fps = fps;
   m_iFlags = flags;
   m_bConfigured = true;
-  
+
   // setup what colorspace we live in
   if(flags & CONF_FLAGS_YUV_FULLRANGE)
     m_yuvrange = yuv_range_full;
@@ -759,7 +759,7 @@ bool CXBoxRenderer::Configure(unsigned int width, unsigned int height, unsigned 
       m_yuvcoef = yuv_coef_smtp240m; break;
     case CONF_FLAGS_YUVCOEF_BT709:
       m_yuvcoef = yuv_coef_bt709; break;
-    case CONF_FLAGS_YUVCOEF_BT601:    
+    case CONF_FLAGS_YUVCOEF_BT601:
       m_yuvcoef = yuv_coef_bt601; break;
     case CONF_FLAGS_YUVCOEF_EBU:
       m_yuvcoef = yuv_coef_ebu; break;
@@ -782,7 +782,7 @@ int CXBoxRenderer::NextYV12Texture()
 #ifdef MP_DIRECTRENDERING
   int source = m_iYV12RenderBuffer;
   do {
-    source = (source + 1) % m_NumYV12Buffers;    
+    source = (source + 1) % m_NumYV12Buffers;
   } while( source != m_iYV12RenderBuffer
     && m_image[source].flags & IMAGE_FLAG_INUSE);
 
@@ -805,7 +805,7 @@ int CXBoxRenderer::GetImage(YV12Image *image, int source, bool readonly)
   if( source == AUTOSOURCE )
     source = NextYV12Texture();
 
-#ifdef MP_DIRECTRENDERING 
+#ifdef MP_DIRECTRENDERING
     if( source < 0 )
     { /* no free source existed, so create one */
       CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
@@ -841,12 +841,12 @@ void CXBoxRenderer::ReleaseImage(int source, bool preserve)
 {
   if( m_image[source].flags & IMAGE_FLAG_WRITING )
     SetEvent(m_eventTexturesDone[source]);
-  
+
   m_image[source].flags &= ~IMAGE_FLAG_INUSE;
 
   /* if image should be preserved reserve it so it's not auto seleceted */
   if( preserve )
-    m_image[source].flags |= IMAGE_FLAG_RESERVED;  
+    m_image[source].flags |= IMAGE_FLAG_RESERVED;
 }
 
 void CXBoxRenderer::Reset()
@@ -856,7 +856,7 @@ void CXBoxRenderer::Reset()
     /* reset all image flags, this will cleanup textures later */
     m_image[i].flags = 0;
     /* reset texure locks, abit uggly, could result in tearing */
-    SetEvent(m_eventTexturesDone[i]); 
+    SetEvent(m_eventTexturesDone[i]);
   }
 }
 
@@ -897,8 +897,8 @@ void CXBoxRenderer::RenderUpdate(bool clear, DWORD flags, DWORD alpha)
 }
 
 void CXBoxRenderer::FlipPage(int source)
-{  
-  if(source == AUTOSOURCE) 
+{
+  if(source == AUTOSOURCE)
     source = NextYV12Texture();
 
   if( source >= 0 && source < m_NumYV12Buffers )
@@ -1046,7 +1046,7 @@ void CXBoxRenderer::UnInit()
     DeleteYV12Texture(i);
     DeleteOSDTextures(i);
   }
-  
+
   if (m_hLowMemShader)
   {
     m_pD3DDevice->DeletePixelShader(m_hLowMemShader);
@@ -1368,7 +1368,7 @@ void CXBoxRenderer::CreateThumbnail(LPDIRECT3DSURFACE8 surface, unsigned int wid
 void CXBoxRenderer::DeleteYV12Texture(int index)
 {
   CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
-  
+
   YV12Image &im = m_image[index];
   YUVFIELDS &fields = m_YUVTexture[index];
 
@@ -1393,7 +1393,7 @@ void CXBoxRenderer::DeleteYV12Texture(int index)
     im.plane[p] = NULL;
 
   m_NumYV12Buffers = 0;
-  
+
   CLog::Log(LOGDEBUG, "Deleted YV12 texture %i", index);
 }
 
@@ -1506,7 +1506,11 @@ void CXBoxRenderer::TextureCallback(DWORD dwContext)
   SetEvent((HANDLE)dwContext);
 }
 
-void CXBoxRenderer::SettingOptionsRenderMethodsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void CXBoxRenderer::SettingOptionsRenderMethodsFiller(
+    const boost::shared_ptr<const CSetting>& setting,
+    std::vector<IntegerSettingOption>& list,
+    int& current,
+    void* data)
 {
   list.push_back(make_pair(g_localizeStrings.Get(13355), RENDER_LQ_RGB_SHADER));
   list.push_back(make_pair(g_localizeStrings.Get(13356), RENDER_OVERLAYS));
