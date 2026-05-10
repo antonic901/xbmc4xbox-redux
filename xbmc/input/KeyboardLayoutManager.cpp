@@ -125,7 +125,11 @@ bool CKeyboardLayoutManager::GetLayout(const std::string& name, CKeyboardLayout&
   return true;
 }
 
-void CKeyboardLayoutManager::SettingOptionsKeyboardLayoutsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void* data)
+void CKeyboardLayoutManager::SettingOptionsKeyboardLayoutsFiller(
+    const SettingConstPtr& setting,
+    std::vector<StringSettingOption>& list,
+    std::string& current,
+    void* data)
 {
   for (KeyboardLayouts::const_iterator it = CServiceBroker::GetKeyboardLayoutManager()->m_layouts.begin(); it != CServiceBroker::GetKeyboardLayoutManager()->m_layouts.end(); ++it)
   {

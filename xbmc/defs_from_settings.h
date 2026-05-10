@@ -17,9 +17,6 @@
 #define CDDARIP_QUALITY_STANDARD 2
 #define CDDARIP_QUALITY_EXTREME  3
 
-#define AUDIO_ANALOG      0
-#define AUDIO_DIGITAL      1
-
 // LCD settings
 #define LCD_TYPE_NONE        0
 #define LCD_TYPE_LCD_HD44780 1

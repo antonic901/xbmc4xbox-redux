@@ -427,7 +427,10 @@ void CSkinInfo::OnPostInstall(bool update, bool modal)
   }
 }
 
-void CSkinInfo::SettingOptionsSkinColorsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data)
+void CSkinInfo::SettingOptionsSkinColorsFiller(const SettingConstPtr& setting,
+                                               std::vector<StringSettingOption>& list,
+                                               std::string& current,
+                                               void* data)
 {
   if (!g_SkinInfo)
     return;
@@ -471,7 +474,10 @@ void CSkinInfo::SettingOptionsSkinColorsFiller(const CSetting *setting, std::vec
   }
 }
 
-void CSkinInfo::SettingOptionsSkinFontsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data)
+void CSkinInfo::SettingOptionsSkinFontsFiller(const SettingConstPtr& setting,
+                                              std::vector<StringSettingOption>& list,
+                                              std::string& current,
+                                              void* data)
 {
   if (!g_SkinInfo)
     return;
@@ -523,7 +529,10 @@ void CSkinInfo::SettingOptionsSkinFontsFiller(const CSetting *setting, std::vect
     current = list[0].second;
 }
 
-void CSkinInfo::SettingOptionsSkinThemesFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data)
+void CSkinInfo::SettingOptionsSkinThemesFiller(const SettingConstPtr& setting,
+                                               std::vector<StringSettingOption>& list,
+                                               std::string& current,
+                                               void* data)
 {
   // get the choosen theme and remove the extension from the current theme (backward compat)
   std::string settingValue = ((const CSettingString*)setting)->GetValue();
@@ -552,7 +561,10 @@ void CSkinInfo::SettingOptionsSkinThemesFiller(const CSetting *setting, std::vec
   }
 }
 
-void CSkinInfo::SettingOptionsStartupWindowsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void CSkinInfo::SettingOptionsStartupWindowsFiller(const SettingConstPtr& setting,
+                                                   std::vector<IntegerSettingOption>& list,
+                                                   int& current,
+                                                   void* data)
 {
   if (!g_SkinInfo)
     return;

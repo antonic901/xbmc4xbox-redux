@@ -540,8 +540,8 @@ void GUIFontManager::GetStyle(const TiXmlNode* fontNode, int& iStyle)
   }
 }
 
-void GUIFontManager::SettingOptionsFontsFiller(const CSetting *setting,
-                                               std::vector< std::pair<std::string, std::string> >& list,
+void GUIFontManager::SettingOptionsFontsFiller(const SettingConstPtr& setting,
+                                               std::vector<StringSettingOption>& list,
                                                std::string& current,
                                                void* data)
 {
@@ -582,7 +582,10 @@ void GUIFontManager::SettingOptionsFontsFiller(const CSetting *setting,
   }
 }
 
-void GUIFontManager::SettingOptionsSubtitleHeightsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void GUIFontManager::SettingOptionsSubtitleHeightsFiller(const boost::shared_ptr<const CSetting>& setting,
+                                                         std::vector<StringSettingOption>& list,
+                                                         std::string& current,
+                                                         void* data)
 {
   if (CUtil::IsUsingTTFSubtitles())
   { // easy - just fill as per usual

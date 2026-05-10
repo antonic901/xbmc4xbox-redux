@@ -5774,9 +5774,6 @@ void CApplication::OnSettingChanged(const CSetting *setting)
 
     if (g_audioConfig.NeedsSave())
       g_audioConfig.Save();
-  //   if (settingId == "audiooutput.guisoundmode")
-  //     CAEFactory::SetSoundMode(((CSettingInt*)setting)->GetValue());
-  //   CAEFactory::OnSettingsChange(settingId);
   }
   else if (settingId == "harddisk.aamlevel")
   {
@@ -5900,26 +5897,7 @@ bool CApplication::OnSettingUpdate(CSetting* &setting, const char *oldSettingId,
     return false;
 
   const std::string &settingId = setting->GetId();
-  // if (settingId == "audiooutput.channels")
-  // {
-  //   // check if this is an update from Eden
-  //   if (oldSettingId != NULL && oldSettingNode != NULL &&
-  //       StringUtils::EqualsNoCase(oldSettingId, "audiooutput.channellayout"))
-  //   {
-  //     bool ret = false;
-  //     CSettingInt* channels = (CSettingInt*)setting;
-  //     if (channels->FromString(oldSettingNode->FirstChild()->ValueStr()) && channels->GetValue() < AE_CH_LAYOUT_MAX - 1)
-  //       ret = channels->SetValue(channels->GetValue() + 1);
-
-  //     // let's just reset the audiodevice settings as well
-  //     std::string audiodevice = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("audiooutput.audiodevice");
-  //     CAEFactory::VerifyOutputDevice(audiodevice, false);
-  //     ret |= CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("audiooutput.audiodevice", audiodevice.c_str());
-
-  //     return ret;
-  //   }
-  // }
-  // else if (settingId == "screensaver.mode")
+  // if (settingId == "screensaver.mode")
   // {
   //   CSettingString *screensaverMode = (CSettingString*)setting;
   //   // we no longer ship the built-in slideshow screensaver, replace it if it's still in use

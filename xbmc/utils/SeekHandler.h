@@ -40,7 +40,10 @@ class CSeekHandler : public ISettingCallback, public IActionListener
 public:
   static CSeekHandler& GetInstance();
 
-  static void SettingOptionsSeekStepsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
+  static void SettingOptionsSeekStepsFiller(const boost::shared_ptr<const CSetting>& setting,
+                                            std::vector<IntegerSettingOption>& list,
+                                            int& current,
+                                            void* data);
 
   virtual void OnSettingChanged(const CSetting *setting);
   virtual bool OnAction(const CAction &action);

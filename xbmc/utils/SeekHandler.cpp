@@ -239,7 +239,10 @@ void CSeekHandler::FrameMove()
   }
 }
 
-void CSeekHandler::SettingOptionsSeekStepsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void CSeekHandler::SettingOptionsSeekStepsFiller(const SettingConstPtr& setting,
+                                                 std::vector<IntegerSettingOption>& list,
+                                                 int& current,
+                                                 void* data)
 {
   std::string label;
   for (std::vector<int>::iterator it = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_seekSteps.begin(); it != CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_seekSteps.end(); ++it) {

@@ -121,6 +121,8 @@ extern YUVCOEF yuv_coef_smtp240m;
 static const DWORD FVF_VERTEX = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 static const DWORD FVF_Y8A8VERTEX = D3DFVF_XYZRHW | D3DFVF_TEX2;
 
+struct IntegerSettingOption;
+
 class CXBoxRenderer
 {
 public:
@@ -148,9 +150,12 @@ public:
 
   void AutoCrop(bool bCrop);
   void RenderUpdate(bool clear, DWORD flags = 0, DWORD alpha = 255);
-  RESOLUTION GetResolution();  
+  RESOLUTION GetResolution();
 
-  static void SettingOptionsRenderMethodsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
+  static void SettingOptionsRenderMethodsFiller(const boost::shared_ptr<const CSetting>& setting,
+                                                std::vector<IntegerSettingOption>& list,
+                                                int& current,
+                                                void* data);
 
 protected:
   virtual void Render(DWORD flags);
