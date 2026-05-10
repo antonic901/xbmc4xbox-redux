@@ -248,7 +248,7 @@ unsigned int CGUIWindowSettingsScreenCalibration::FindCurrentResolution()
     if (m_Res[i] == CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution())
       return i;
   }
-  CLog::Log(LOGERROR, "CALIBRATION: Reported current resolution: {}",
+  CLog::Log(LOGERROR, "CALIBRATION: Reported current resolution: %d",
             CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution());
   CLog::Log(LOGERROR,
             "CALIBRATION: Could not determine current resolution, falling back to default");
@@ -389,9 +389,9 @@ bool CGUIWindowSettingsScreenCalibration::UpdateFromControl(int iControl)
       // recenter our control...
       pControl->SetPosition((static_cast<float>(info.iWidth) - pControl->GetWidth()) / 2,
                             (static_cast<float>(info.iHeight) - pControl->GetHeight()) / 2);
-      labelDescription = StringUtils::Format("[B]{}[/B][CR]{}", g_localizeStrings.Get(272),
-                                             g_localizeStrings.Get(273));
-      labelValue = StringUtils::Format("{:5.3f}", info.fPixelRatio);
+      labelDescription = StringUtils::Format("[B]%s[/B][CR]%s", g_localizeStrings.Get(272).c_str(),
+                                             g_localizeStrings.Get(273).c_str());
+      labelValue = StringUtils::Format("%5.3f", info.fPixelRatio);
       labelValue = StringUtils::Format(g_localizeStrings.Get(20327).c_str(), labelValue.c_str());
     }
   }
@@ -406,10 +406,10 @@ bool CGUIWindowSettingsScreenCalibration::UpdateFromControl(int iControl)
         {
           info.Overscan.left = pControl->GetXLocation();
           info.Overscan.top = pControl->GetYLocation();
-          labelDescription = StringUtils::Format("[B]{}[/B][CR]{}", g_localizeStrings.Get(274),
-                                                 g_localizeStrings.Get(276));
+          labelDescription = StringUtils::Format("[B]%s[/B][CR]%s", g_localizeStrings.Get(274).c_str(),
+                                                 g_localizeStrings.Get(276).c_str());
           labelValue =
-              StringUtils::Format("{}, {}", pControl->GetXLocation(), pControl->GetYLocation());
+              StringUtils::Format("%i, %i", pControl->GetXLocation(), pControl->GetYLocation());
           labelValue = StringUtils::Format(g_localizeStrings.Get(20327).c_str(), labelValue.c_str());
           // Update reset control position
           CGUIMoverControl* pControl = dynamic_cast<CGUIMoverControl*>(GetControl(CONTROL_RESET));
@@ -430,9 +430,9 @@ bool CGUIWindowSettingsScreenCalibration::UpdateFromControl(int iControl)
           info.Overscan.bottom = pControl->GetYLocation();
           int iXOff1 = info.iWidth - pControl->GetXLocation();
           int iYOff1 = info.iHeight - pControl->GetYLocation();
-          labelDescription = StringUtils::Format("[B]{}[/B][CR]{}", g_localizeStrings.Get(275),
-                                                 g_localizeStrings.Get(276));
-          labelValue = StringUtils::Format("{}, {}", iXOff1, iYOff1);
+          labelDescription = StringUtils::Format("[B]%s[/B][CR]%s", g_localizeStrings.Get(275).c_str(),
+                                                 g_localizeStrings.Get(276).c_str());
+          labelValue = StringUtils::Format("%i, %i", iXOff1, iYOff1);
           labelValue = StringUtils::Format(g_localizeStrings.Get(20327).c_str(), labelValue.c_str());
           // Keep the subtitle bar within the overscan boundary
           pControl = dynamic_cast<CGUIMoverControl*>(GetControl(CONTROL_SUBTITLES));

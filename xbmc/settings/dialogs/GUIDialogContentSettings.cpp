@@ -259,8 +259,8 @@ void CGUIDialogContentSettings::OnSettingAction(const boost::shared_ptr<const CS
       }
       else
       {
-        CLog::Log(LOGERROR, "{} - Could not get settings for addon: {}", __FUNCTION__,
-                  selectedAddonId);
+        CLog::Log(LOGERROR, "%s - Could not get settings for addon: %s", __FUNCTION__,
+                  selectedAddonId.c_str());
       }
     }
   }

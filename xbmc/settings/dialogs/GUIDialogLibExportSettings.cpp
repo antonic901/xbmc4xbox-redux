@@ -431,7 +431,7 @@ int CGUIDialogLibExportSettings::GetExportItemsFromSetting(const SettingConstPtr
   boost::shared_ptr<const CSettingList> settingList = boost::static_pointer_cast<const CSettingList>(setting);
   if (settingList->GetElementType() != SettingType::Integer)
   {
-    CLog::Log(LOGERROR, "CGUIDialogLibExportSettings::{} - wrong items element type", __FUNCTION__);
+    CLog::Log(LOGERROR, "CGUIDialogLibExportSettings::%s - wrong items element type", __FUNCTION__);
     return 0;
   }
   int exportitems = 0;
