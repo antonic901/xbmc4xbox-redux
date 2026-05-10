@@ -53,7 +53,7 @@ public:
     std::string controlType;
     std::string controlFormat;
     CDatabaseQueryRule::SEARCH_OPERATOR ruleOperator;
-    CSetting *setting;
+    boost::shared_ptr<CSetting> setting;
     CSmartPlaylistRule *rule;
     void *data;
   } Filter;
@@ -64,11 +64,11 @@ protected:
   virtual void OnInitWindow();
 
   // implementations of ISettingCallback
-  virtual void OnSettingChanged(const CSetting *setting);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
 
   // specialization of CGUIDialogSettingsBase
   virtual bool AllowResettingSettings() const { return false; }
-  virtual void Save() { }
+  virtual bool Save() { return true; }
   virtual unsigned int GetDelayMs() const { return 500; }
 
   // specialization of CGUIDialogSettingsManualBase
@@ -88,7 +88,10 @@ protected:
   CSmartPlaylistRule* AddRule(Field field, CDatabaseQueryRule::SEARCH_OPERATOR ruleOperator = CDatabaseQueryRule::OPERATOR_CONTAINS);
   void DeleteRule(Field field);
 
-  static void GetStringListOptions(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
+  static void GetStringListOptions(const boost::shared_ptr<const CSetting>& setting,
+                                   std::vector<StringSettingOption>& list,
+                                   std::string& current,
+                                   void* data);
 
   CDbUrl* m_dbUrl;
   std::string m_mediaType;

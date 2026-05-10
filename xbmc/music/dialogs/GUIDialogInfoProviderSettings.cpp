@@ -151,9 +151,10 @@ void CGUIDialogInfoProviderSettings::OnInitWindow()
   CGUIDialogSettingsManualBase::OnInitWindow();
 }
 
-void CGUIDialogInfoProviderSettings::OnSettingChanged(const CSetting *setting)
+void CGUIDialogInfoProviderSettings::OnSettingChanged(
+    const boost::shared_ptr<const CSetting>& setting)
 {
-  if (setting == nullptr)
+  if (setting == NULL)
     return;
 
   CGUIDialogSettingsManualBase::OnSettingChanged(setting);
@@ -162,23 +163,23 @@ void CGUIDialogInfoProviderSettings::OnSettingChanged(const CSetting *setting)
 
   if (settingId == "musiclibrary.downloadinfo")
   {
-    m_fetchInfo = ((const CSettingBool*)setting)->GetValue();
+    m_fetchInfo = boost::static_pointer_cast<const CSettingBool>(setting)->GetValue();
     SetupView();
     SetFocus(std::string("musiclibrary.downloadinfo"));
   }
   else if (settingId == "musiclibrary.artistsfolder")
-    m_strArtistInfoPath = ((const CSettingString*)setting)->GetValue();
+    m_strArtistInfoPath = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
   else if (settingId == SETTING_APPLYTOITEMS)
   {
-    m_applyToItems = ((const CSettingInt*)setting)->GetValue();
+    m_applyToItems = boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
     SetupView();
     SetFocus(SETTING_APPLYTOITEMS);
   }
 }
 
-void CGUIDialogInfoProviderSettings::OnSettingAction(const CSetting *setting)
+void CGUIDialogInfoProviderSettings::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
 {
-  if (setting == nullptr)
+  if (setting == NULL)
     return;
 
   CGUIDialogSettingsManualBase::OnSettingAction(setting);
@@ -259,10 +260,10 @@ void CGUIDialogInfoProviderSettings::OnSettingAction(const CSetting *setting)
   }
 }
 
-void CGUIDialogInfoProviderSettings::Save()
+bool CGUIDialogInfoProviderSettings::Save()
 {
   if (m_showSingleScraper)
-    return;  //Save done by caller of ::Show
+    return true;  //Save done by caller of ::Show
 
   // Save default settings for fetching additional information and art
   CLog::Log(LOGINFO, "%s called", __FUNCTION__);
@@ -276,6 +277,8 @@ void CGUIDialogInfoProviderSettings::Save()
   // Save artist information folder
   CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("musiclibrary.artistsfolder", m_strArtistInfoPath);
   CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
+
+  return true;
 }
 
 void CGUIDialogInfoProviderSettings::SetupView()
@@ -380,14 +383,14 @@ void CGUIDialogInfoProviderSettings::InitializeSettings()
 {
   CGUIDialogSettingsManualBase::InitializeSettings();
 
-  CSettingCategory *category = AddCategory("infoprovidersettings", -1);
-  if (category == nullptr)
+  boost::shared_ptr<CSettingCategory> category = AddCategory("infoprovidersettings", -1);
+  if (category == NULL)
   {
     CLog::Log(LOGERROR, "%s: unable to setup settings", __FUNCTION__);
     return;
   }
-  CSettingGroup *group1 = AddGroup(category);
-  if (group1 == nullptr)
+  boost::shared_ptr<CSettingGroup> group1 = AddGroup(category);
+  if (group1 == NULL)
   {
     CLog::Log(LOGERROR, "%s: unable to setup settings", __FUNCTION__);
     return;
@@ -395,48 +398,48 @@ void CGUIDialogInfoProviderSettings::InitializeSettings()
 
   if (!m_showSingleScraper)
   {
-    AddToggle(group1, "musiclibrary.downloadinfo", 38333, 0, m_fetchInfo); // "Fetch additional information during scan"
+    AddToggle(group1, "musiclibrary.downloadinfo", 38333, SettingLevel::Basic, m_fetchInfo); // "Fetch additional information during scan"
   }
   else
   {
-    std::vector<std::pair<int, int> > entries;
+    TranslatableIntegerSettingOptions entries;
     entries.clear();
     if (m_singleScraperType == CONTENT_ALBUMS)
     {
-      entries.push_back(std::make_pair(38066, INFOPROVIDER_THISITEM));
-      entries.push_back(std::make_pair(38067, INFOPROVIDER_ALLVIEW));
+      entries.push_back(TranslatableIntegerSettingOption(38066, INFOPROVIDER_THISITEM));
+      entries.push_back(TranslatableIntegerSettingOption(38067, INFOPROVIDER_ALLVIEW));
     }
     else
     {
-      entries.push_back(std::make_pair(38064, INFOPROVIDER_THISITEM));
-      entries.push_back(std::make_pair(38065, INFOPROVIDER_ALLVIEW));
+      entries.push_back(TranslatableIntegerSettingOption(38064, INFOPROVIDER_THISITEM));
+      entries.push_back(TranslatableIntegerSettingOption(38065, INFOPROVIDER_ALLVIEW));
     }
-    entries.push_back(std::make_pair(38063, INFOPROVIDER_DEFAULT));
-    AddList(group1, SETTING_APPLYTOITEMS, 38338, 0, m_applyToItems, entries, 38339); // "Apply settings to"
+    entries.push_back(TranslatableIntegerSettingOption(38063, INFOPROVIDER_DEFAULT));
+    AddList(group1, SETTING_APPLYTOITEMS, 38338, SettingLevel::Basic, m_applyToItems, entries, 38339); // "Apply settings to"
   }
 
-  CSettingGroup *group = AddGroup(category, 38337);
-  if (group == nullptr)
+  boost::shared_ptr<CSettingGroup> group = AddGroup(category, 38337);
+  if (group == NULL)
   {
     CLog::Log(LOGERROR, "%s: unable to setup settings", __FUNCTION__);
     return;
   }
-  CSettingAction *subsetting;
+  boost::shared_ptr<CSettingAction> subsetting;
   if (!m_showSingleScraper || m_singleScraperType == CONTENT_ALBUMS)
   {
-    AddButton(group, "musiclibrary.albumsscraper", 38334, 0); //Provider for album information
-    subsetting = AddButton(group, SETTING_ALBUMSCRAPER_SETTINGS, 10004, 0); //"settings"
+    AddButton(group, "musiclibrary.albumsscraper", 38334, SettingLevel::Basic); //Provider for album information
+    subsetting = AddButton(group, SETTING_ALBUMSCRAPER_SETTINGS, 10004, SettingLevel::Basic); //"settings"
     if (subsetting)
       subsetting->SetParent("musiclibrary.albumsscraper");
   }
   if (!m_showSingleScraper || m_singleScraperType == CONTENT_ARTISTS)
   {
-    AddButton(group, "musiclibrary.artistsscraper", 38335, 0); //Provider for artist information
-    subsetting = AddButton(group, SETTING_ARTISTSCRAPER_SETTINGS, 10004, 0); //"settings"
+    AddButton(group, "musiclibrary.artistsscraper", 38335, SettingLevel::Basic); //Provider for artist information
+    subsetting = AddButton(group, SETTING_ARTISTSCRAPER_SETTINGS, 10004, SettingLevel::Basic); //"settings"
     if (subsetting)
       subsetting->SetParent("musiclibrary.artistsscraper");
 
-    AddButton(group, "musiclibrary.artistsfolder", 38336, 0);
+    AddButton(group, "musiclibrary.artistsfolder", 38336, SettingLevel::Basic);
   }
 }
 

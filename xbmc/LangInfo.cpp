@@ -1280,7 +1280,7 @@ void CLangInfo::SettingOptionsShortDateFormatsFiller(const SettingConstPtr& sett
                                                      void* data)
 {
   bool match = false;
-  const std::string& shortDateFormatSetting = static_cast<const CSettingString*>(setting)->GetValue();
+  const std::string& shortDateFormatSetting = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
 
   CDateTime now = CDateTime::GetCurrentDateTime();
 
@@ -1313,7 +1313,7 @@ void CLangInfo::SettingOptionsLongDateFormatsFiller(const SettingConstPtr& setti
                                                     void* data)
 {
   bool match = false;
-  const std::string& longDateFormatSetting = static_cast<const CSettingString*>(setting)->GetValue();
+  const std::string& longDateFormatSetting = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
 
   CDateTime now = CDateTime::GetCurrentDateTime();
 
@@ -1346,7 +1346,7 @@ void CLangInfo::SettingOptionsTimeFormatsFiller(const SettingConstPtr& setting,
                                                 void* data)
 {
   bool match = false;
-  const std::string& timeFormatSetting = static_cast<const CSettingString*>(setting)->GetValue();
+  const std::string& timeFormatSetting = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
 
   CDateTime now = CDateTime::GetCurrentDateTime();
   bool use24hourFormat = g_langInfo.Use24HourClock();
@@ -1417,7 +1417,7 @@ void CLangInfo::SettingOptions24HourClockFormatsFiller(const SettingConstPtr& se
                                                        void* data)
 {
   bool match = false;
-  const std::string& clock24HourFormatSetting = static_cast<const CSettingString*>(setting)->GetValue();
+  const std::string& clock24HourFormatSetting = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
 
   // determine the 24-hour clock format of the regional setting
   int regionalClock24HourFormatLabel = DetermineUse24HourClockFromTimeFormat(g_langInfo.m_currentRegion->m_strTimeFormat) ? 12384 : 12383;
@@ -1452,7 +1452,7 @@ void CLangInfo::SettingOptionsTemperatureUnitsFiller(const SettingConstPtr& sett
                                                      void* data)
 {
   bool match = false;
-  const std::string& temperatureUnitSetting = static_cast<const CSettingString*>(setting)->GetValue();
+  const std::string& temperatureUnitSetting = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
 
   list.push_back(std::make_pair(StringUtils::Format(g_localizeStrings.Get(20035).c_str(), GetTemperatureUnitString(g_langInfo.m_currentRegion->m_tempUnit).c_str()), SETTING_REGIONAL_DEFAULT));
   if (temperatureUnitSetting == SETTING_REGIONAL_DEFAULT)
@@ -1483,7 +1483,7 @@ void CLangInfo::SettingOptionsSpeedUnitsFiller(const SettingConstPtr& setting,
                                                void* data)
 {
   bool match = false;
-  const std::string& speedUnitSetting = static_cast<const CSettingString*>(setting)->GetValue();
+  const std::string& speedUnitSetting = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
 
   list.push_back(std::make_pair(StringUtils::Format(g_localizeStrings.Get(20035).c_str(), GetSpeedUnitString(g_langInfo.m_currentRegion->m_speedUnit).c_str()), SETTING_REGIONAL_DEFAULT));
   if (speedUnitSetting == SETTING_REGIONAL_DEFAULT)

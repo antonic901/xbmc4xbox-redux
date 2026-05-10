@@ -12,6 +12,8 @@
 
 class CSetting;
 class CTrainer;
+struct IntegerSettingOption;
+struct StringSettingOption;
 
 typedef struct SProgramSettings
 {
@@ -50,19 +52,25 @@ public:
   static void ShowForTitle(const CFileItemPtr pItem);
 
 protected:
-  static void IntegerOptionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
-  static void StringOptionsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
+  static void IntegerOptionsFiller(const boost::shared_ptr<const CSetting>& setting,
+                                   std::vector<IntegerSettingOption>& list,
+                                   int& current,
+                                   void* data);
+  static void StringOptionsFiller(const boost::shared_ptr<const CSetting>& setting,
+                                  std::vector<StringSettingOption>& list,
+                                  std::string& current,
+                                  void* data);
 
   // implementations of ISettingCallback
-  virtual void OnSettingChanged(const CSetting *setting);
-  virtual void OnSettingAction(const CSetting *setting);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
+  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
 
   // specialization of CGUIDialogSettingsManualBase
   virtual void SetupView();
 
   // specialization of CGUIDialogSettingsBase
   virtual bool AllowResettingSettings() const { return false; }
-  virtual void Save();
+  virtual bool Save();
 
   // specialization of CGUIDialogSettingsManualBase
   virtual void InitializeSettings();

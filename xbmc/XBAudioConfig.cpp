@@ -173,8 +173,11 @@ void XBAudioConfig::Save()
 #endif
 }
 
-void XBAudioConfig::SettingAudioOutputFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void XBAudioConfig::SettingAudioOutputFiller(const SettingConstPtr& setting,
+                                             std::vector<IntegerSettingOption>& list,
+                                             int& current,
+                                             void* data)
 {
-  list.push_back(std::make_pair(g_localizeStrings.Get(38630), 0)); // ANALOG
-  list.push_back(std::make_pair(g_localizeStrings.Get(38631), 1)); // DIGITAL
+  list.push_back(IntegerSettingOption(g_localizeStrings.Get(38630), 0)); // ANALOG
+  list.push_back(IntegerSettingOption(g_localizeStrings.Get(38631), 1)); // DIGITAL
 }

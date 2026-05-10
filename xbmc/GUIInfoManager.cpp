@@ -9948,7 +9948,7 @@ std::string CGUIInfoManager::GetItemImage(const CGUIListItem *item, int contextW
   if (!item || !item->IsFileItem())
     return std::string();
 
-  return GetMultiInfoItemImage(static_cast<const CFileItem*>(item), contextWindow, CGUIInfo(info), fallback);
+  return GetMultiInfoItemImage(boost::static_pointer_cast<const CFileItem>(item), contextWindow, CGUIInfo(info), fallback);
 }
 
 std::string CGUIInfoManager::GetMultiInfoItemImage(const CFileItem *item, int contextWindow, const CGUIInfo &info, std::string *fallback /*= nullptr*/) const
@@ -9983,7 +9983,7 @@ bool CGUIInfoManager::GetItemBool(const CGUIListItem *item, int contextWindow, i
       {
         if (item->IsFileItem())
         {
-          const CFileItem *pItem = static_cast<const CFileItem *>(item);
+          const CFileItem *pItem = boost::static_pointer_cast<const CFileItem>(item);
           return pItem->IsParentFolder();
         }
         break;

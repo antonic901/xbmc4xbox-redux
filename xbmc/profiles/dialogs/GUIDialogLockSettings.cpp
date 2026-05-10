@@ -116,7 +116,7 @@ bool CGUIDialogLockSettings::ShowAndGetUserAndPassword(std::string &user, std::s
   return true;
 }
 
-void CGUIDialogLockSettings::OnSettingChanged(const CSetting *setting)
+void CGUIDialogLockSettings::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;
@@ -125,30 +125,30 @@ void CGUIDialogLockSettings::OnSettingChanged(const CSetting *setting)
 
   const std::string &settingId = setting->GetId();
   if (settingId == SETTING_USERNAME)
-    m_user = static_cast<const CSettingString*>(setting)->GetValue();
+    m_user = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
   else if (settingId == SETTING_PASSWORD)
-    m_locks.code = static_cast<const CSettingString*>(setting)->GetValue();
+    m_locks.code = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
   else if (settingId == SETTING_PASSWORD_REMEMBER)
-    *m_saveUserDetails = static_cast<const CSettingBool*>(setting)->GetValue();
+    *m_saveUserDetails = boost::static_pointer_cast<const CSettingBool>(setting)->GetValue();
   else if (settingId == SETTING_LOCK_MUSIC)
-    m_locks.music = static_cast<const CSettingBool*>(setting)->GetValue();
+    m_locks.music = boost::static_pointer_cast<const CSettingBool>(setting)->GetValue();
   else if (settingId == SETTING_LOCK_VIDEOS)
-    m_locks.video = static_cast<const CSettingBool*>(setting)->GetValue();
+    m_locks.video = boost::static_pointer_cast<const CSettingBool>(setting)->GetValue();
   else if (settingId == SETTING_LOCK_PICTURES)
-    m_locks.pictures = static_cast<const CSettingBool*>(setting)->GetValue();
+    m_locks.pictures = boost::static_pointer_cast<const CSettingBool>(setting)->GetValue();
   else if (settingId == SETTING_LOCK_PROGRAMS)
-    m_locks.programs = static_cast<const CSettingBool*>(setting)->GetValue();
+    m_locks.programs = boost::static_pointer_cast<const CSettingBool>(setting)->GetValue();
   else if (settingId == SETTING_LOCK_FILEMANAGER)
-    m_locks.files = static_cast<const CSettingBool*>(setting)->GetValue();
+    m_locks.files = boost::static_pointer_cast<const CSettingBool>(setting)->GetValue();
   else if (settingId == SETTING_LOCK_SETTINGS)
-    m_locks.settings = static_cast<LOCK_LEVEL::SETTINGS_LOCK>(static_cast<const CSettingInt*>(setting)->GetValue());
+    m_locks.settings = static_cast<LOCK_LEVEL::SETTINGS_LOCK>(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
   else if (settingId == SETTING_LOCK_ADDONMANAGER)
-    m_locks.addonManager = static_cast<const CSettingBool*>(setting)->GetValue();
+    m_locks.addonManager = boost::static_pointer_cast<const CSettingBool>(setting)->GetValue();
 
   m_changed = true;
 }
 
-void CGUIDialogLockSettings::OnSettingAction(const CSetting *setting)
+void CGUIDialogLockSettings::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;
@@ -239,14 +239,14 @@ void CGUIDialogLockSettings::InitializeSettings()
 {
   CGUIDialogSettingsManualBase::InitializeSettings();
 
-  CSettingCategory *category = AddCategory("locksettings", -1);
+  const boost::shared_ptr<CSettingCategory> category = AddCategory("locksettings", -1);
   if (category == NULL)
   {
     CLog::Log(LOGERROR, "CGUIDialogLockSettings: unable to setup settings");
     return;
   }
 
-  CSettingGroup *group = AddGroup(category);
+  const boost::shared_ptr<CSettingGroup> group = AddGroup(category);
   if (group == NULL)
   {
     CLog::Log(LOGERROR, "CGUIDialogLockSettings: unable to setup settings");
@@ -255,40 +255,40 @@ void CGUIDialogLockSettings::InitializeSettings()
 
   if (m_getUser)
   {
-    AddEdit(group, SETTING_USERNAME, 20142, 0, m_user);
-    AddEdit(group, SETTING_PASSWORD, 12326, 0, m_locks.code, false, true);
+    AddEdit(group, SETTING_USERNAME, 20142, SettingLevel::Basic, m_user);
+    AddEdit(group, SETTING_PASSWORD, 12326, SettingLevel::Basic, m_locks.code, false, true);
     if (m_saveUserDetails != NULL)
-      AddToggle(group, SETTING_PASSWORD_REMEMBER, 13423, 0, *m_saveUserDetails);
+      AddToggle(group, SETTING_PASSWORD_REMEMBER, 13423, SettingLevel::Basic, *m_saveUserDetails);
 
     return;
   }
 
-  AddButton(group, SETTING_LOCKCODE, m_buttonLabel, 0);
+  AddButton(group, SETTING_LOCKCODE, m_buttonLabel, SettingLevel::Basic);
 
   if (m_details)
   {
-    CSettingGroup *groupDetails = AddGroup(category);
+    const boost::shared_ptr<CSettingGroup> groupDetails = AddGroup(category);
     if (groupDetails == NULL)
     {
       CLog::Log(LOGERROR, "CGUIDialogLockSettings: unable to setup settings");
       return;
     }
 
-    AddToggle(groupDetails, SETTING_LOCK_MUSIC, 20038, 0, m_locks.music);
-    AddToggle(groupDetails, SETTING_LOCK_VIDEOS, 20039, 0, m_locks.video);
-    AddToggle(groupDetails, SETTING_LOCK_PICTURES, 20040, 0, m_locks.pictures);
-    AddToggle(groupDetails, SETTING_LOCK_PROGRAMS, 20041, 0, m_locks.programs);
-    AddToggle(groupDetails, SETTING_LOCK_FILEMANAGER, 20042, 0, m_locks.files);
+    AddToggle(groupDetails, SETTING_LOCK_MUSIC, 20038, SettingLevel::Basic, m_locks.music);
+    AddToggle(groupDetails, SETTING_LOCK_VIDEOS, 20039, SettingLevel::Basic, m_locks.video);
+    AddToggle(groupDetails, SETTING_LOCK_PICTURES, 20040, SettingLevel::Basic, m_locks.pictures);
+    AddToggle(groupDetails, SETTING_LOCK_PROGRAMS, 20041, SettingLevel::Basic, m_locks.programs);
+    AddToggle(groupDetails, SETTING_LOCK_FILEMANAGER, 20042, SettingLevel::Basic, m_locks.files);
 
-    StaticIntegerSettingOptions settingsLevelOptions;
-    settingsLevelOptions.push_back(std::make_pair(106,    LOCK_LEVEL::NONE));
-    settingsLevelOptions.push_back(std::make_pair(593,    LOCK_LEVEL::ALL));
-    settingsLevelOptions.push_back(std::make_pair(10037,  LOCK_LEVEL::STANDARD));
-    settingsLevelOptions.push_back(std::make_pair(10038,  LOCK_LEVEL::ADVANCED));
-    settingsLevelOptions.push_back(std::make_pair(10039,  LOCK_LEVEL::EXPERT));
-    AddSpinner(groupDetails, SETTING_LOCK_SETTINGS, 20043, 0, static_cast<int>(m_locks.settings), settingsLevelOptions);
+    TranslatableIntegerSettingOptions settingsLevelOptions;
+    settingsLevelOptions.push_back(TranslatableIntegerSettingOption(106,    LOCK_LEVEL::NONE));
+    settingsLevelOptions.push_back(TranslatableIntegerSettingOption(593,    LOCK_LEVEL::ALL));
+    settingsLevelOptions.push_back(TranslatableIntegerSettingOption(10037,  LOCK_LEVEL::STANDARD));
+    settingsLevelOptions.push_back(TranslatableIntegerSettingOption(10038,  LOCK_LEVEL::ADVANCED));
+    settingsLevelOptions.push_back(TranslatableIntegerSettingOption(10039,  LOCK_LEVEL::EXPERT));
+    AddSpinner(groupDetails, SETTING_LOCK_SETTINGS, 20043, SettingLevel::Basic, static_cast<int>(m_locks.settings), settingsLevelOptions);
 
-    AddToggle(groupDetails, SETTING_LOCK_ADDONMANAGER, 24090, 0, m_locks.addonManager);
+    AddToggle(groupDetails, SETTING_LOCK_ADDONMANAGER, 24090, SettingLevel::Basic, m_locks.addonManager);
   }
 
   m_changed = false;

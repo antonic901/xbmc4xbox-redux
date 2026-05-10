@@ -22,6 +22,8 @@
 
 #include "settings/dialogs/GUIDialogSettingsManualBase.h"
 
+struct IntegerSettingOption;
+
 class CGUIDialogAudioSubtitleSettings : public CGUIDialogSettingsManualBase
 {
 public:
@@ -37,25 +39,41 @@ public:
 
 protected:
   // implementations of ISettingCallback
-  virtual void OnSettingChanged(const CSetting *setting);
-  virtual void OnSettingAction(const CSetting *setting);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
+  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
 
   // specialization of CGUIDialogSettingsBase
   virtual bool AllowResettingSettings() const { return false; }
-  virtual void Save();
+  virtual bool Save();
   virtual void SetupView();
 
   // specialization of CGUIDialogSettingsManualBase
   virtual void InitializeSettings();
 
-  void AddAudioStreams(CSettingGroup *group, const std::string &settingId);
-  void AddSubtitleStreams(CSettingGroup *group, const std::string &settingId);
+  void AddAudioStreams(const boost::shared_ptr<CSettingGroup>& group, const std::string &settingId);
+  void AddSubtitleStreams(const boost::shared_ptr<CSettingGroup>& group, const std::string &settingId);
 
-  static void AudioStreamsOptionFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
-  static void SubtitleStreamsOptionFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
-  
-  static std::string SettingFormatterDelay(const CSettingControlSlider *control, const CVariant &value, const CVariant &minimum, const CVariant &step, const CVariant &maximum);
-  static std::string SettingFormatterPercentAsDecibel(const CSettingControlSlider *control, const CVariant &value, const CVariant &minimum, const CVariant &step, const CVariant &maximum);
+  static void AudioStreamsOptionFiller(const boost::shared_ptr<const CSetting>& setting,
+                                       std::vector<IntegerSettingOption>& list,
+                                       int& current,
+                                       void* data);
+  static void SubtitleStreamsOptionFiller(const boost::shared_ptr<const CSetting>& setting,
+                                          std::vector<IntegerSettingOption>& list,
+                                          int& current,
+                                          void* data);
+
+  static std::string SettingFormatterDelay(
+      const boost::shared_ptr<const CSettingControlSlider>& control,
+      const CVariant& value,
+      const CVariant& minimum,
+      const CVariant& step,
+      const CVariant& maximum);
+  static std::string SettingFormatterPercentAsDecibel(
+      const boost::shared_ptr<const CSettingControlSlider>& control,
+      const CVariant& value,
+      const CVariant& minimum,
+      const CVariant& step,
+      const CVariant& maximum);
 
   float m_volume;
   int m_audioStream;
