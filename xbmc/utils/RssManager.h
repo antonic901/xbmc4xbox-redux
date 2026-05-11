@@ -47,7 +47,7 @@ public:
   virtual void OnSettingsLoaded();
   virtual void OnSettingsUnloaded();
 
-  virtual void OnSettingAction(const CSetting *setting);
+  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
 
   void Start();
   void Stop();

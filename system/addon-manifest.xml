@@ -27,7 +27,6 @@
   <addon>webinterface.default</addon>
   <addon>xbmc.addon</addon>
   <addon>xbmc.core</addon>
-  <addon>xbmc.debug</addon>
   <addon>xbmc.gui</addon>
   <addon>xbmc.metadata</addon>
   <addon>xbmc.python</addon>

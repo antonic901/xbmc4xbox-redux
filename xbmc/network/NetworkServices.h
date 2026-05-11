@@ -37,8 +37,8 @@ class CNetworkServices : public ISettingCallback
 public:
   static CNetworkServices& GetInstance();
 
-  virtual bool OnSettingChanging(const CSetting *setting);
-  virtual void OnSettingChanged(const CSetting *setting);
+  virtual bool OnSettingChanging(const boost::shared_ptr<const CSetting>& setting);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
 
   void Start();
   void Stop(bool bWait);

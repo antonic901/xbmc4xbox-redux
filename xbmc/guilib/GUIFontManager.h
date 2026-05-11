@@ -31,6 +31,7 @@ class CXBMCTinyXML;
 class TiXmlNode;
 class CSetting;
 struct StringSettingOption;
+struct IntegerSettingOption;
 
 struct OrigFontInfo
 {
@@ -105,7 +106,7 @@ public:
 #ifdef _XBOX
   static void SettingOptionsSubtitleHeightsFiller(const boost::shared_ptr<const CSetting>& setting,
                                                   std::vector<IntegerSettingOption>& list,
-                                                  std::string& current,
+                                                  int& current,
                                                   void* data);
 #endif
 

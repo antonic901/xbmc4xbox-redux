@@ -66,7 +66,7 @@ public:
   CDateTime LastUpdated() const;
 
 
-  virtual void OnSettingChanged(const CSetting* setting);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
 
   struct RepositoryUpdated { };
 

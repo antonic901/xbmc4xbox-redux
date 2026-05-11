@@ -27,6 +27,8 @@
 #include "filesystem/File.h"
 #include "settings/lib/Setting.h"
 
+struct StringSettingOption;
+
 //////////////////////
 //////CdgLoader///////
 //////////////////////
@@ -119,7 +121,7 @@ protected:
 //////////////////////
 #define TEX_COLOR DWORD  //Texture color format is A8R8G8B8
 
-#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZRHW | D3DFVF_TEX1) 
+#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZRHW | D3DFVF_TEX1)
 //Message strings:
 #define KARAOKE 13327
 #define NOT_FOUND 13328
@@ -187,7 +189,10 @@ public:
   // ... Karaoke patch (114097)
   inline bool IsRunning() { return m_bIsRunning; }
 
-  void static SettingOptionsVoiceMasksFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
+  static void SettingOptionsVoiceMasksFiller(const boost::shared_ptr<const CSetting>& setting,
+                                             std::vector<StringSettingOption>& list,
+                                             std::string& current,
+                                             void* data);
   void static FillInVoiceMaskValues(unsigned int port, CStdString strCurMask);
 
 protected:

@@ -158,7 +158,7 @@ void CRepositoryUpdater::OnTimeout()
   CheckForUpdates();
 }
 
-void CRepositoryUpdater::OnSettingChanged(const CSetting* setting)
+void CRepositoryUpdater::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting->GetId() == "general.addonupdates")
     ScheduleUpdate();

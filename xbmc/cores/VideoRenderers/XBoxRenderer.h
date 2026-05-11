@@ -121,6 +121,7 @@ extern YUVCOEF yuv_coef_smtp240m;
 static const DWORD FVF_VERTEX = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 static const DWORD FVF_Y8A8VERTEX = D3DFVF_XYZRHW | D3DFVF_TEX2;
 
+class CSetting;
 struct IntegerSettingOption;
 
 class CXBoxRenderer

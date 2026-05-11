@@ -625,15 +625,15 @@ extern const MINI_TZI g_TimeZoneInfo[] = {
       0,
     },
     {
-      "GMT+08 AWDT", 
-      -480, 
-      "AWST", 
-      { 3, 4, 0, 2 }, 
-      0, 
-      "AWDT", 
-      { 10, 5, 0, 2 }, 
-      -60, 
-    }, 
+      "GMT+08 AWDT",
+      -480,
+      "AWST",
+      { 3, 4, 0, 2 },
+      0,
+      "AWDT",
+      { 10, 5, 0, 2 },
+      -60,
+    },
     {
       "GMT+08 TST",
       -480,
@@ -921,7 +921,7 @@ bool XBTimeZone::SetTimeZoneInfo(const MINI_TZI * tzi)
 
   if (tzi->DaylightName)
     usersettings->TimeZoneDltName = *(DWORD*)(tzi->DaylightName);
-  else 
+  else
     usersettings->TimeZoneDltName = 0;
   usersettings->TimeZoneDltDate = tzi->DaylightDate;
 
@@ -972,28 +972,31 @@ void XBTimeZone::OnSettingsLoaded()
   CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("locale.usedst", GetDST());
 }
 
-void XBTimeZone::OnSettingChanged(const CSetting *setting)
+void XBTimeZone::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;
 
   const std::string &settingId = setting->GetId();
-  if (settingId == "locale.timezone" && GetTimeZoneIndex() != ((CSettingInt*)setting)->GetValue())
-    SetTimeZoneIndex(((CSettingInt*)setting)->GetValue());
-  else if (settingId == "locale.usedst" && GetDST() != ((CSettingBool*)setting)->GetValue())
-    SetDST(((CSettingBool*)setting)->GetValue());
+  if (settingId == "locale.timezone" && GetTimeZoneIndex() != boost::static_pointer_cast<const CSettingInt>(setting)->GetValue())
+    SetTimeZoneIndex(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
+  else if (settingId == "locale.usedst" && GetDST() != boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
+    SetDST(boost::static_pointer_cast<const CSettingBool>(setting)->GetValue());
 }
 
-void XBTimeZone::SettingOptionsTimezonesFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void XBTimeZone::SettingOptionsTimezonesFiller(const SettingConstPtr& setting,
+                                               std::vector<IntegerSettingOption>& list,
+                                               int& current,
+                                               void* data)
 {
-  current = ((const CSettingInt*)setting)->GetValue();
+  current = boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
   bool found = false;
   for (int i = 0; i < GetNumberOfTimeZones(); i++)
   {
     if (!found && i == current)
       found = true;
 
-    list.push_back(std::make_pair(GetTimeZoneString(i), i));
+    list.push_back(IntegerSettingOption(GetTimeZoneString(i), i));
   }
 
   if (!found)

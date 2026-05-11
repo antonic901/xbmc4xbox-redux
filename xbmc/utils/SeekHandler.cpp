@@ -245,19 +245,20 @@ void CSeekHandler::SettingOptionsSeekStepsFiller(const SettingConstPtr& setting,
                                                  void* data)
 {
   std::string label;
-  for (std::vector<int>::iterator it = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_seekSteps.begin(); it != CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_seekSteps.end(); ++it) {
+  for (std::vector<int>::iterator it = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_seekSteps.begin(); it != CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_seekSteps.end(); ++it)
+  {
     int seconds = *it;
     if (seconds > 60)
       label = StringUtils::Format(g_localizeStrings.Get(14044).c_str(), seconds / 60);
     else
       label = StringUtils::Format(g_localizeStrings.Get(14045).c_str(), seconds);
 
-    list.insert(list.begin(), make_pair("-" + label, seconds*-1));
-    list.push_back(make_pair(label, seconds));
+    list.insert(list.begin(), IntegerSettingOption("-" + label, seconds*-1));
+    list.push_back(IntegerSettingOption(label, seconds));
   }
 }
 
-void CSeekHandler::OnSettingChanged(const CSetting *setting)
+void CSeekHandler::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;

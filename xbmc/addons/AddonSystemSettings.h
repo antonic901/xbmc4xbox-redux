@@ -35,8 +35,8 @@ class CAddonSystemSettings : public ISettingCallback
 {
 public:
   static CAddonSystemSettings& GetInstance();
-  void OnSettingAction(const CSetting* setting);
-  void OnSettingChanged(const CSetting* setting);
+  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
 
   bool GetActive(const TYPE& type, AddonPtr& addon);
   bool SetActive(const TYPE& type, const std::string& addonID);

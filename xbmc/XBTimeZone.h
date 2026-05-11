@@ -68,6 +68,8 @@ typedef struct _EEPROM_USER_SETTINGS {
 
 extern const MINI_TZI g_TimeZoneInfo[];
 
+struct IntegerSettingOption;
+
 class XBTimeZone : public ISettingCallback, public ISettingsHandler
 {
 public:
@@ -78,15 +80,18 @@ public:
   static int GetTimeZoneIndex();
   static void SetTimeZoneIndex(int index);
   static bool SetTimeZoneInfo(const MINI_TZI * tzi);
-  
+
   static bool GetDST();
   static void SetDST(BOOL bEnable);
 
   virtual void OnSettingsLoaded();
 
-  virtual void OnSettingChanged(const CSetting *setting);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
 
-  static void SettingOptionsTimezonesFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
+  static void SettingOptionsTimezonesFiller(const boost::shared_ptr<const CSetting>& setting,
+                                            std::vector<IntegerSettingOption>& list,
+                                            int& current,
+                                            void* data);
 };
 
 extern XBTimeZone g_timezone;

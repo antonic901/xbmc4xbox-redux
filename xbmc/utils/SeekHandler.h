@@ -29,6 +29,8 @@
 #include "threads/CriticalSection.h"
 #include "utils/Stopwatch.h"
 
+struct IntegerSettingOption;
+
 enum SeekType
 {
   SEEK_TYPE_VIDEO = 0,
@@ -45,7 +47,7 @@ public:
                                             int& current,
                                             void* data);
 
-  virtual void OnSettingChanged(const CSetting *setting);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
   virtual bool OnAction(const CAction &action);
 
   void Seek(bool forward, float amount, float duration = 0, bool analogSeek = false, SeekType type = SEEK_TYPE_VIDEO);

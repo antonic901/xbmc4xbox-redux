@@ -24,10 +24,12 @@
 
 #include "FileItem.h"
 #include "ServiceBroker.h"
-#include "filesystem/Directory.h"
 #include "URL.h"
-#include "utils/log.h"
+#include "filesystem/Directory.h"
+#include "settings/lib/Setting.h"
+#include "settings/lib/SettingDefinitions.h"
 #include "utils/XBMCTinyXML.h"
+#include "utils/log.h"
 
 using namespace KODI;
 using namespace KEYBOARD;
@@ -125,6 +127,14 @@ bool CKeyboardLayoutManager::GetLayout(const std::string& name, CKeyboardLayout&
   return true;
 }
 
+namespace
+{
+inline bool LayoutSort(const StringSettingOption& i, const StringSettingOption& j)
+{
+  return (i.value < j.value);
+}
+} // namespace
+
 void CKeyboardLayoutManager::SettingOptionsKeyboardLayoutsFiller(
     const SettingConstPtr& setting,
     std::vector<StringSettingOption>& list,
@@ -134,8 +144,8 @@ void CKeyboardLayoutManager::SettingOptionsKeyboardLayoutsFiller(
   for (KeyboardLayouts::const_iterator it = CServiceBroker::GetKeyboardLayoutManager()->m_layouts.begin(); it != CServiceBroker::GetKeyboardLayoutManager()->m_layouts.end(); ++it)
   {
     std::string name = it->second.GetName();
-    list.push_back(make_pair(name, name));
+    list.push_back(StringSettingOption(name, name));
   }
 
-  std::sort(list.begin(), list.end());
+  std::sort(list.begin(), list.end(), LayoutSort);
 }

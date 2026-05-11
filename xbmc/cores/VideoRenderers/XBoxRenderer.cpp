@@ -1512,8 +1512,8 @@ void CXBoxRenderer::SettingOptionsRenderMethodsFiller(
     int& current,
     void* data)
 {
-  list.push_back(make_pair(g_localizeStrings.Get(13355), RENDER_LQ_RGB_SHADER));
-  list.push_back(make_pair(g_localizeStrings.Get(13356), RENDER_OVERLAYS));
-  list.push_back(make_pair(g_localizeStrings.Get(13357), RENDER_HQ_RGB_SHADER));
-  list.push_back(make_pair(g_localizeStrings.Get(21397), RENDER_HQ_RGB_SHADERV2));
+  list.push_back(IntegerSettingOption(g_localizeStrings.Get(13355), RENDER_LQ_RGB_SHADER));
+  list.push_back(IntegerSettingOption(g_localizeStrings.Get(13356), RENDER_OVERLAYS));
+  list.push_back(IntegerSettingOption(g_localizeStrings.Get(13357), RENDER_HQ_RGB_SHADER));
+  list.push_back(IntegerSettingOption(g_localizeStrings.Get(21397), RENDER_HQ_RGB_SHADERV2));
 }

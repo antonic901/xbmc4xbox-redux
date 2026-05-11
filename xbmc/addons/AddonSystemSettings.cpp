@@ -62,7 +62,7 @@ CAddonSystemSettings& CAddonSystemSettings::GetInstance()
   return inst;
 }
 
-void CAddonSystemSettings::OnSettingAction(const CSetting* setting)
+void CAddonSystemSettings::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting->GetId() == "addons.managedependencies")
   {
@@ -80,7 +80,7 @@ void CAddonSystemSettings::OnSettingAction(const CSetting* setting)
   }
 }
 
-void CAddonSystemSettings::OnSettingChanged(const CSetting* setting)
+void CAddonSystemSettings::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
 {
   using namespace KODI::MESSAGING::HELPERS;
 
@@ -126,7 +126,7 @@ bool CAddonSystemSettings::UnsetActive(const AddonPtr& addon)
   if (it == m_activeSettings.end())
     return true;
 
-  CSettingString *setting = static_cast<CSettingString*>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting(it->second));
+  boost::shared_ptr<CSettingString> setting = boost::static_pointer_cast<CSettingString>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting(it->second));
   if (setting->GetValue() != addon->ID())
     return true;
 

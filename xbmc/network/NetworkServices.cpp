@@ -102,7 +102,7 @@ CNetworkServices& CNetworkServices::GetInstance()
   return sNetworkServices;
 }
 
-bool CNetworkServices::OnSettingChanging(const CSetting *setting)
+bool CNetworkServices::OnSettingChanging(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return false;
@@ -126,7 +126,7 @@ bool CNetworkServices::OnSettingChanging(const CSetting *setting)
   }
   else if (settingId == "services.esport" ||
            settingId == "services.webserverport")
-    return ValidatePort(((CSettingInt*)setting)->GetValue());
+    return ValidatePort(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
   else
 #endif // HAS_WEB_SERVER
 
@@ -139,14 +139,14 @@ bool CNetworkServices::OnSettingChanging(const CSetting *setting)
 #ifdef HAS_UPNP
   if (settingId == "services.upnpserver")
   {
-    if (((CSettingBool*)setting)->GetValue())
+    if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
       return StartUPnPServer();
     else
       return StopUPnPServer();
   }
   else if (settingId == "services.upnprenderer")
   {
-    if (((CSettingBool*)setting)->GetValue())
+    if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
       return StartUPnPRenderer();
     else
       return StopUPnPRenderer();
@@ -155,7 +155,7 @@ bool CNetworkServices::OnSettingChanging(const CSetting *setting)
   {
     // always stop and restart
     StopUPnPClient();
-    if (((CSettingBool*)setting)->GetValue())
+    if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
       return StartUPnPClient();
   }
   // else
@@ -164,7 +164,7 @@ bool CNetworkServices::OnSettingChanging(const CSetting *setting)
   if (settingId == "services.esenabled")
   {
 #ifdef HAS_EVENT_SERVER
-    if (((CSettingBool*)setting)->GetValue())
+    if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
     {
       if (!StartEventServer())
       {
@@ -219,7 +219,7 @@ bool CNetworkServices::OnSettingChanging(const CSetting *setting)
   return true;
 }
 
-void CNetworkServices::OnSettingChanged(const CSetting *setting)
+void CNetworkServices::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;
@@ -228,7 +228,7 @@ void CNetworkServices::OnSettingChanged(const CSetting *setting)
 #ifdef HAS_TIME_SERVER
   if (settingId == "services.timeserver")
   {
-    if (((CSettingBool*)setting)->GetValue())
+    if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
       StartTimeServer();
     else
       StopTimeServer();
@@ -243,7 +243,7 @@ void CNetworkServices::OnSettingChanged(const CSetting *setting)
 #ifdef HAS_FTP_SERVER
   if (settingId == "services.ftpserver")
   {
-    if (((CSettingBool*)setting)->GetValue())
+    if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
       StartFtpServer();
     else
       StopFtpServer();
@@ -255,9 +255,9 @@ void CNetworkServices::OnSettingChanged(const CSetting *setting)
       settingId == "services.webserverpassword")
   {
     if (settingId == "services.webserverusername")
-      m_webserver->SetUserName(((CSettingString*)setting)->GetValue().c_str());
+      m_webserver->SetUserName(boost::static_pointer_cast<const CSettingString>(setting)->GetValue().c_str());
     else if(settingId == "services.webserverpassword")
-      m_webserver->SetPassword(((CSettingString*)setting)->GetValue().c_str());
+      m_webserver->SetPassword(boost::static_pointer_cast<const CSettingString>(setting)->GetValue().c_str());
   }
   else
 #endif // HAS_WEB_SERVER
@@ -446,7 +446,7 @@ bool CNetworkServices::StartFtpServer()
     }
     else
     {
-      // 'FileZilla Server.xml' does not exist or is corrupt, 
+      // 'FileZilla Server.xml' does not exist or is corrupt,
       // falling back to ftp emergency recovery mode
       CLog::Log(LOGNOTICE, "XBFileZilla: 'FileZilla Server.xml' is missing or is corrupt!");
       CLog::Log(LOGNOTICE, "XBFileZilla: Starting ftp emergency recovery mode");
@@ -649,7 +649,7 @@ bool CNetworkServices::StopEventServer(bool bWait, bool promptuser)
   {
     if (server->GetNumberOfClients() > 0)
     {
-      if (HELPERS::ShowYesNoDialogText(13140, 13141, "", "", 10000) != 
+      if (HELPERS::ShowYesNoDialogText(13140, 13141, "", "", 10000) !=
         YES)
       {
         CLog::Log(LOGNOTICE, "ES: Not stopping event server");
@@ -815,7 +815,7 @@ bool CNetworkServices::StopUPnPServer()
 #endif // HAS_UPNP
   return false;
 }
-  
+
 bool CNetworkServices::StartRss()
 {
   if (IsRssRunning())

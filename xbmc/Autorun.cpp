@@ -92,7 +92,7 @@ void CAutorun::ExecuteAutorun( bool bypassSettings, bool ignoreplaying, bool res
   }
 }
 
-void CAutorun::ExecuteXBE(const CStdString &xbeFile)
+void CAutorun::ExecuteXBE(const std::string &xbeFile)
 {
   LAUNCHERS::CProgramLauncher::LaunchProgram(xbeFile);
 }
@@ -173,12 +173,12 @@ void CAutorun::RunMedia(bool bypassSettings, bool restart)
 /**
  * This method tries to determine what type of disc is located in the given drive and starts to play the content appropriately.
  */
-bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAddedToPlaylist, bool bRoot, bool bypassSettings /* = false */, bool restart /* = false */)
+bool CAutorun::RunDisc(IDirectory* pDir, const std::string& strDrive, int& nAddedToPlaylist, bool bRoot, bool bypassSettings /* = false */, bool restart /* = false */)
 {
   bool bPlaying(false);
   CFileItemList vecItems;
   char szSlash = '\\';
-  if (strDrive.Find("iso9660") != -1) szSlash = '/';
+  if (strDrive.find("iso9660") != -1) szSlash = '/';
 
   const CURL pathToUrl(strDrive);
   if ( !pDir->GetDirectory( pathToUrl, vecItems ) )
@@ -218,14 +218,14 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
         }
 
         // Video CDs can have multiple file formats. First we need to determine which one is used on the CD
-        CStdString strExt;
+        std::string strExt;
         if (pItem->GetPath().find("MPEGAV") != std::string::npos)
           strExt = ".dat";
         if (pItem->GetPath().find("MPEG2") != std::string::npos)
           strExt = ".mpg";
 
         // If a file format was extracted we are sure this is a VCD. Autoplay if settings indicate we should.
-        if (!strExt.IsEmpty() && bAllowVideo
+        if (!strExt.empty() && bAllowVideo
               && (bypassSettings || CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.vcd")))
         {
           CFileItemList items;
@@ -245,8 +245,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
               && (bypassSettings || CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.pictures")))
         {
           bPlaying = true;
-          CStdString strExec;
-          strExec.Format("XBMC.RecursiveSlideShow(%s)", pItem->GetPath().c_str());
+          std::string strExec = StringUtils::Format("XBMC.RecursiveSlideShow(%s)", pItem->GetPath().c_str());
           CBuiltins::GetInstance().Execute(strExec);
           return true;
         }
@@ -321,8 +320,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const CStdString& strDrive, int& nAdded
       if (!pItem->m_bIsFolder && pItem->IsPicture())
       {
         bPlaying = true;
-        CStdString strExec;
-        strExec.Format("XBMC.RecursiveSlideShow(%s)", strDrive.c_str());
+        std::string strExec = StringUtils::Format("XBMC.RecursiveSlideShow(%s)", strDrive.c_str());
         CBuiltins::GetInstance().Execute(strExec);
         break;
       }
@@ -388,24 +386,30 @@ bool CAutorun::PlayDisc(bool restart)
   return true;
 }
 
-void CAutorun::SettingOptionAudioCdActionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void CAutorun::SettingOptionAudioCdActionsFiller(const SettingConstPtr& setting,
+                                                 std::vector<IntegerSettingOption>& list,
+                                                 int& current,
+                                                 void* data)
 {
-  list.push_back(make_pair(g_localizeStrings.Get(16018), AUTOCD_NONE));
-  list.push_back(make_pair(g_localizeStrings.Get(14098), AUTOCD_PLAY));
+  list.push_back(IntegerSettingOption(g_localizeStrings.Get(16018), AUTOCD_NONE));
+  list.push_back(IntegerSettingOption(g_localizeStrings.Get(14098), AUTOCD_PLAY));
 #ifdef HAS_CDDA_RIPPER
-  list.push_back(make_pair(g_localizeStrings.Get(14096), AUTOCD_RIP));
+  list.push_back(IntegerSettingOption(g_localizeStrings.Get(14096), AUTOCD_RIP));
 #endif
 }
 
-void CAutorun::SettingOptionAudioCdEncodersFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void CAutorun::SettingOptionAudioCdEncodersFiller(const SettingConstPtr& setting,
+                                                  std::vector<IntegerSettingOption>& list,
+                                                  int& current,
+                                                  void* data)
 {
 #ifdef HAVE_LIBMP3LAME
-  list.push_back(make_pair(g_localizeStrings.Get(34000), CDDARIP_ENCODER_LAME));
+  list.push_back(IntegerSettingOption(g_localizeStrings.Get(34000), CDDARIP_ENCODER_LAME));
 #endif
 #ifdef HAVE_LIBVORBISENC
-  list.push_back(make_pair(g_localizeStrings.Get(34001), CDDARIP_ENCODER_VORBIS));
+  list.push_back(IntegerSettingOption(g_localizeStrings.Get(34001), CDDARIP_ENCODER_VORBIS));
 #endif
-  list.push_back(make_pair(g_localizeStrings.Get(34002), CDDARIP_ENCODER_WAV));
-  list.push_back(make_pair(g_localizeStrings.Get(34005), CDDARIP_ENCODER_FLAC));
+  list.push_back(IntegerSettingOption(g_localizeStrings.Get(34002), CDDARIP_ENCODER_WAV));
+  list.push_back(IntegerSettingOption(g_localizeStrings.Get(34005), CDDARIP_ENCODER_FLAC));
 }
 

@@ -544,7 +544,7 @@
         <setting id="musiclibrary.exportfolder" type="string" label="38305" help="">
           <level>4</level>
           <default></default>
-		  <constraints>
+      <constraints>
             <allowempty>true</allowempty>
           </constraints>
         </setting>
@@ -562,11 +562,11 @@
         </setting>
         <setting id="musiclibrary.exportartwork" type="boolean" label="" help="">
           <level>4</level>
-		  <default>false</default>
+      <default>false</default>
         </setting>
         <setting id="musiclibrary.exportskipnfo" type="boolean" label="" help="">
           <level>4</level>
-		  <default>false</default>
+      <default>false</default>
         </setting>
         <setting id="musiclibrary.import" type="action" label="14249" help="36263">
           <level>2</level>
@@ -1346,12 +1346,20 @@
           <default>false</default>
           <control type="toggle" />
         </setting>
-        <setting id="debug.setextraloglevel" type="action" parent="debug.extralogging" label="666" help="36394">
+        <setting id="debug.setextraloglevel" type="list[integer]" parent="debug.extralogging" label="668" help="36534">
           <level>1</level>
+          <default></default>
+          <constraints>
+            <options>loggingcomponents</options>
+            <delimiter>,</delimiter>
+          </constraints>
           <dependencies>
-            <dependency type="enable" setting="debug.extralogging">true</dependency>
+            <dependency type="enable" setting="debug.extralogging" operator="is">true</dependency>
           </dependencies>
-          <control type="button" format="action" />
+          <control type="list" format="string">
+            <multiselect>true</multiselect>
+            <hidevalue>true</hidevalue>
+          </control>
         </setting>
         <setting id="debug.screenshotpath" type="path" label="20004" help="36393">
           <level>1</level>

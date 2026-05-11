@@ -48,8 +48,10 @@ public:
   CGUIAudioManager();
   ~CGUIAudioManager();
 
-  virtual void OnSettingChanged(const CSetting *setting);
-  virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
+  virtual bool OnSettingUpdate(const boost::shared_ptr<CSetting>& setting,
+                               const char* oldSettingId,
+                               const TiXmlNode* oldSettingNode);
 
   void Initialize(int iDevice);
   void DeInitialize(int iDevice);
