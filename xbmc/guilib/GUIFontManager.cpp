@@ -565,7 +565,7 @@ void GUIFontManager::SettingOptionsFontsFiller(const SettingConstPtr& setting,
     if (item->m_bIsFolder)
       continue;
 
-    list.push_back(std::make_pair(item->GetLabel(), item->GetLabel()));
+    list.push_back(StringSettingOption(item->GetLabel(), item->GetLabel()));
   }
 
 #ifdef _XBOX
@@ -577,21 +577,21 @@ void GUIFontManager::SettingOptionsFontsFiller(const SettingConstPtr& setting,
     if (pItem->m_bIsFolder)
     {
       if (strcmpi(pItem->GetLabel().c_str(), ".svn") == 0) continue;
-      list.push_back(std::make_pair(pItem->GetLabel(), pItem->GetLabel()));
+      list.push_back(StringSettingOption(pItem->GetLabel(), pItem->GetLabel()));
     }
   }
 }
 
 void GUIFontManager::SettingOptionsSubtitleHeightsFiller(const boost::shared_ptr<const CSetting>& setting,
-                                                         std::vector<StringSettingOption>& list,
-                                                         std::string& current,
+                                                         std::vector<IntegerSettingOption>& list,
+                                                         int& current,
                                                          void* data)
 {
   if (CUtil::IsUsingTTFSubtitles())
   { // easy - just fill as per usual
-    CSettingInt* pSettingInt = ((CSettingInt*)setting);
+    boost::shared_ptr<const CSettingInt> pSettingInt = boost::static_pointer_cast<const CSettingInt>(setting);
     for (int i = pSettingInt->GetMinimum(); i <= pSettingInt->GetMaximum(); i += pSettingInt->GetStep())
-      list.push_back(std::make_pair(StringUtils::Format("%i", i), i));
+      list.push_back(IntegerSettingOption(StringUtils::Format("%i", i), i));
   }
   else
   {
@@ -615,7 +615,7 @@ void GUIFontManager::SettingOptionsSubtitleHeightsFiller(const boost::shared_ptr
           iCurrentSize = atoi(pItem->GetLabel().c_str());
           if (iCurrentSize == current)
             found = true;
-          list.push_back(std::make_pair(StringUtils::Format("%i", iCurrentSize), iCurrentSize));
+          list.push_back(IntegerSettingOption(StringUtils::Format("%i", iCurrentSize), iCurrentSize));
         }
       }
 

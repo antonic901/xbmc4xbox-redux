@@ -258,11 +258,11 @@ std::string CConverterType::ResolveSpecialCharset(enum SpecialCharset charset)
     return g_langInfo.GetSubtitleCharSet();
   case KaraokeCharset:
     {
-      CSetting* karaokeSetting = CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("karaoke.charset");
-      if (karaokeSetting == NULL || ((CSettingString*)karaokeSetting)->GetValue() == "DEFAULT")
+      boost::shared_ptr<const CSettingString> karaokeSetting = boost::static_pointer_cast<const CSettingString>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("karaoke.charset"));
+      if (karaokeSetting == NULL || karaokeSetting->GetValue() == "DEFAULT")
         return g_langInfo.GetGuiCharSet();
 
-      return ((CSettingString*)karaokeSetting)->GetValue();
+      return karaokeSetting->GetValue();
     }
   case NotSpecialCharset:
   default:
@@ -604,7 +604,7 @@ CCharsetConverter::CCharsetConverter()
 {
 }
 
-void CCharsetConverter::OnSettingChanged(const CSetting* setting)
+void CCharsetConverter::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;
@@ -990,7 +990,7 @@ void CCharsetConverter::SettingOptionsCharsetsFiller(const SettingConstPtr& sett
   std::vector<std::string> vecCharsets = g_charsetConverter.getCharsetLabels();
   sort(vecCharsets.begin(), vecCharsets.end(), sortstringbyname());
 
-  list.push_back(make_pair(g_localizeStrings.Get(13278), "DEFAULT")); // "Default"
+  list.push_back(StringSettingOption(g_localizeStrings.Get(13278), "DEFAULT")); // "Default"
   for (int i = 0; i < (int) vecCharsets.size(); ++i)
-    list.push_back(make_pair(vecCharsets[i], g_charsetConverter.getCharsetNameByLabel(vecCharsets[i])));
+    list.push_back(StringSettingOption(vecCharsets[i], g_charsetConverter.getCharsetNameByLabel(vecCharsets[i])));
 }

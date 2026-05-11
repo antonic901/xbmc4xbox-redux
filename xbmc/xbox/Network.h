@@ -20,7 +20,6 @@
  *
  */
 
-#include "settings/lib/ISettingCallback.h"
 #include "utils/StdString.h"
 #include "threads/CriticalSection.h"
 
@@ -57,10 +56,10 @@ public:
 
   /* waits for network to finish init */
   bool WaitForSetup(unsigned int iTimeout = WAIT_TIME);
-  
+
   // Return true if the magic packet was send
-  bool WakeOnLan(char *mac); 
-  
+  bool WakeOnLan(char *mac);
+
   bool CheckNetwork(int count);
   bool SetupNetwork();
   bool IsEthernetConnected();
@@ -74,7 +73,7 @@ public:
   /* be unplugged */
   DWORD UpdateState();
   void LogState();
-  
+
   /* callback from application controlled thread to handle any setup */
   void NetworkMessage(EMESSAGE message, DWORD dwParam);
 

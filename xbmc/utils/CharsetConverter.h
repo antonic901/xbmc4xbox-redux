@@ -30,13 +30,14 @@
 #include <vector>
 
 class CSetting;
+struct StringSettingOption;
 
 class CCharsetConverter : public ISettingCallback
 {
 public:
   CCharsetConverter();
 
-  virtual void OnSettingChanged(const CSetting* setting);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
 
   static void reset();
   static void resetSystemCharset();

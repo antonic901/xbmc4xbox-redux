@@ -156,7 +156,7 @@ void CFanController::Start(int targetTemperature, int minFanspeed)
   Create();
 }
 
-void CFanController::OnSettingChanged(const CSetting *setting)
+void CFanController::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;
@@ -164,7 +164,7 @@ void CFanController::OnSettingChanged(const CSetting *setting)
   const std::string &settingId = setting->GetId();
   if (settingId == "system.autotemperature")
   {
-    if (((CSettingBool*)setting)->GetValue())
+    if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
     {
       CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("system.fanspeedcontrol", false);
       CFanController::Instance()->Start(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("system.targettemperature"), CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("system.minfanspeed") );
@@ -174,13 +174,13 @@ void CFanController::OnSettingChanged(const CSetting *setting)
   }
   else if (settingId == "system.fanspeed")
   {
-    int iSpeed = ((CSettingInt*)setting)->GetValue();
+    int iSpeed = boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
     CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("system.fanspeed", iSpeed);
     CFanController::Instance()->SetFanSpeed(iSpeed);
   }
   else if (settingId == "system.fanspeedcontrol")
   {
-    if (((CSettingBool*)setting)->GetValue())
+    if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
     {
       CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("system.autotemperature", false);
       CFanController::Instance()->Stop();
@@ -190,9 +190,9 @@ void CFanController::OnSettingChanged(const CSetting *setting)
       CFanController::Instance()->RestoreStartupSpeed();
   }
   else if (settingId == "system.minfanspeed")
-    CFanController::Instance()->SetMinFanSpeed(((CSettingInt*)setting)->GetValue());
+    CFanController::Instance()->SetMinFanSpeed(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
   else if (settingId == "system.targettemperature")
-    CFanController::Instance()->SetTargetTemperature(((CSettingInt*)setting)->GetValue());
+    CFanController::Instance()->SetTargetTemperature(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
 }
 
 void CFanController::Stop()
@@ -277,7 +277,7 @@ void CFanController::GetCPUTempInternal()
   unsigned short cpu, cpudec;
   float temp1;
 
-  
+
   if (!bIs16Box)
   { //if it is an old xbox, then do as we have always done
     _outp(0xc004, (0x4c << 1) | 0x01);
@@ -303,7 +303,7 @@ void CFanController::GetCPUTempInternal()
     _outpw(0xc000, _inpw(0xc000));      // clear errors
     _outp(0xc002, 0x0d);                // start block transfer
     while ((_inp(0xc000) & 8));         // wait for response
-   
+
     if (!(_inp(0xc000) & 0x23)) // if there was a error then just skip this read..
     {
       _inp(0xc004);                       // read out the data reg (no. bytes in block, will be 4)
@@ -410,26 +410,36 @@ void CFanController::CalcSpeed(int targetTemp)
     }
   }
 
-  if (calculatedFanSpeed < m_minFanspeed) 
+  if (calculatedFanSpeed < m_minFanspeed)
   {
     calculatedFanSpeed = m_minFanspeed;
-  } 
-  if (calculatedFanSpeed > 50) {calculatedFanSpeed = 50;}
+  }
+  if (calculatedFanSpeed > 50)
+  {
+    calculatedFanSpeed = 50;
+  }
 }
 
-void CFanController::SettingOptionsSpeedsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void CFanController::SettingOptionsSpeedsFiller(const SettingConstPtr& setting,
+                                                std::vector<IntegerSettingOption>& list,
+                                                int& current,
+                                                void* data)
 {
-  for (int i=((CSettingInt*)setting)->GetMinimum(); i <= ((CSettingInt*)setting)->GetMaximum(); i += ((CSettingInt*)setting)->GetStep())
-    list.push_back(std::make_pair(StringUtils::Format(g_localizeStrings.Get(14047).c_str(), i * 2), i));
+  boost::shared_ptr<const CSettingInt> settingInt = boost::static_pointer_cast<const CSettingInt>(setting);
+  for (int i = settingInt->GetMinimum(); i <= settingInt->GetMaximum(); i += settingInt->GetStep())
+    list.push_back(IntegerSettingOption(StringUtils::Format(g_localizeStrings.Get(14047).c_str(), i * 2), i));
   if (current < 1 || current > 50)
     current = Instance()->GetFanSpeed();
 }
 
-void CFanController::SettingOptionsTemperaturesFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void CFanController::SettingOptionsTemperaturesFiller(const SettingConstPtr& setting,
+                                                      std::vector<IntegerSettingOption>& list,
+                                                      int& current,
+                                                      void* data)
 {
   for (int i = 40; i <= 68; ++i)
   {
     std::string strTemp = g_langInfo.GetTemperatureAsString(CTemperature::CreateFromCelsius(i));
-    list.push_back(std::make_pair(strTemp, i));
+    list.push_back(IntegerSettingOption(strTemp, i));
   }
 }

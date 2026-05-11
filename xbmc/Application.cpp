@@ -993,12 +993,6 @@ HRESULT CApplication::Create(HWND hWnd)
     FatalErrorHandler(true, true, true);
   }
 
-  // set logging from debug add-on
-  AddonPtr addon;
-  CServiceBroker::GetAddonMgr().GetAddon("xbmc.debug", addon);
-  if (addon)
-    CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->SetExtraLogsFromAddon(addon.get());
-
   // load the keyboard layouts
   if (!keyboardLayoutManager->Load())
   {
@@ -1226,7 +1220,7 @@ HRESULT CApplication::Initialize()
 
   CServiceBroker::RegisterTextureCache(boost::make_shared<CTextureCache>());
 
-  std::string defaultSkin = ((const CSettingString*)CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.skin"))->GetDefault();
+  std::string defaultSkin = boost::static_pointer_cast<const CSettingString>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.skin"))->GetDefault();
   if (!LoadSkin(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skin")))
   {
     CLog::Log(LOGERROR, "Failed to load skin '%s'", CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skin").c_str());
@@ -1549,7 +1543,7 @@ void CApplication::ReloadSkin(bool confirm/*=false*/)
   else
   {
     // skin failed to load - we revert to the default only if we didn't fail loading the default
-    string defaultSkin = ((CSettingString*)CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.skin"))->GetDefault();
+    string defaultSkin = boost::static_pointer_cast<const CSettingString>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.skin"))->GetDefault();
     if (newSkin != defaultSkin)
     {
       m_skinReverting = true;
@@ -5686,7 +5680,7 @@ bool CApplication::LoadLanguage(bool reload)
   return true;
 }
 
-void CApplication::OnSettingChanged(const CSetting *setting)
+void CApplication::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;
@@ -5851,7 +5845,7 @@ void CApplication::OnSettingChanged(const CSetting *setting)
   }
 }
 
-void CApplication::OnSettingAction(const CSetting *setting)
+void CApplication::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;
@@ -5891,7 +5885,7 @@ void CApplication::OnSettingAction(const CSetting *setting)
     CServiceBroker::GetJobManager()->AddJob(new CUpdaterJob(false, true), NULL, CJob::PRIORITY_HIGH);
 }
 
-bool CApplication::OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode)
+bool CApplication::OnSettingUpdate(const boost::shared_ptr<CSetting>& setting, const char *oldSettingId, const TiXmlNode *oldSettingNode)
 {
   if (setting == NULL)
     return false;

@@ -51,7 +51,7 @@ CGUIAudioManager::~CGUIAudioManager()
   CServiceBroker::GetSettingsComponent()->GetSettings()->UnregisterCallback(this);
 }
 
-void CGUIAudioManager::OnSettingChanged(const CSetting *setting)
+void CGUIAudioManager::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;
@@ -64,7 +64,9 @@ void CGUIAudioManager::OnSettingChanged(const CSetting *setting)
   }
 }
 
-bool CGUIAudioManager::OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode)
+bool CGUIAudioManager::OnSettingUpdate(const boost::shared_ptr<CSetting>& setting,
+                                       const char* oldSettingId,
+                                       const TiXmlNode* oldSettingNode)
 {
   if (setting == NULL)
     return false;
@@ -72,10 +74,10 @@ bool CGUIAudioManager::OnSettingUpdate(CSetting* &setting, const char *oldSettin
   if (setting->GetId() == "lookandfeel.soundskin")
   {
     //Migrate the old settings
-    if (((CSettingString*)setting)->GetValue() == "SKINDEFAULT")
-      ((CSettingString*)setting)->Reset();
-    else if (((CSettingString*)setting)->GetValue() == "OFF")
-      ((CSettingString*)setting)->SetValue("");
+    if (boost::static_pointer_cast<const CSettingString>(setting)->GetValue() == "SKINDEFAULT")
+      boost::static_pointer_cast<CSettingString>(setting)->Reset();
+    else if (boost::static_pointer_cast<const CSettingString>(setting)->GetValue() == "OFF")
+      boost::static_pointer_cast<CSettingString>(setting)->SetValue("");
   }
   return true;
 }
@@ -288,7 +290,7 @@ void CGUIAudioManager::PlayPythonSound(const std::string& strFileName)
 
 std::string GetSoundSkinPath()
 {
-  CSettingString* setting = static_cast<CSettingString*>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.soundskin"));
+  boost::shared_ptr<CSettingString> setting = boost::static_pointer_cast<CSettingString>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.soundskin"));
   std::string value = setting->GetValue();
   if (value.empty())
     return "";

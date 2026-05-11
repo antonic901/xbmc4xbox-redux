@@ -27,6 +27,7 @@
 #include "input/KeyboardLayout.h"
 
 class CSetting;
+struct StringSettingOption;
 
 namespace KODI
 {

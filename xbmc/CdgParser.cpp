@@ -727,7 +727,10 @@ void CCdgParser::ProcessVoice()
 }
 // ... Karaoke patch (114097)
 
-void CCdgParser::SettingOptionsVoiceMasksFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data)
+void CCdgParser::SettingOptionsVoiceMasksFiller(const SettingConstPtr& setting,
+                                                std::vector<StringSettingOption>& list,
+                                                std::string& current,
+                                                void* data)
 {
   std::string strDefaultMask = "None";
   std::vector<std::string> vecMask;
@@ -761,7 +764,7 @@ void CCdgParser::SettingOptionsVoiceMasksFiller(const CSetting *setting, std::ve
   for (int i = 0; i < (int) vecMask.size(); ++i)
   {
     std::string strMask = vecMask[i];
-    list.push_back(make_pair(StringUtils::Format("(%i/%i) %s", i + 1, vecMask.size(), strMask.c_str()), vecMask[i]));
+    list.push_back(StringSettingOption(StringUtils::Format("(%i/%i) %s", i + 1, vecMask.size(), strMask.c_str()), vecMask[i]));
     if (strcmpi(strMask.c_str(), current.c_str()) == 0)
       found = true;
   }

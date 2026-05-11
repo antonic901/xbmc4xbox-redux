@@ -65,7 +65,7 @@ public:
   virtual ~CLangInfo();
 
   // implementation of ISettingCallback
-  virtual void OnSettingChanged(const CSetting *setting);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
 
   // implementation of ISettingsHandler
   virtual void OnSettingsLoaded();
@@ -244,7 +244,7 @@ protected:
   static bool DetermineUse24HourClockFromTimeFormat(const std::string& timeFormat);
   static bool DetermineUseMeridiemFromTimeFormat(const std::string& timeFormat);
   static std::string PrepareTimeFormat(const std::string& timeFormat, bool use24HourClock);
-  static void AddLanguages(std::vector< std::pair<std::string, std::string> > &list);
+  static void AddLanguages(std::vector<StringSettingOption> &list);
 
   class CRegion
   {

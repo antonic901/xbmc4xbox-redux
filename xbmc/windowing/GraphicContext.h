@@ -38,8 +38,6 @@
 #include "gui3d.h"
 #include "utils/StdString.h"
 
-#include "settings/lib/ISettingCallback.h"
-
 // required by clients
 #include "ServiceBroker.h"
 #include "WinSystem.h"
