@@ -119,13 +119,15 @@ bool CPicture::CreateTiledThumb(const std::vector<std::string> &files, const std
   unsigned int num_across = (unsigned int)ceil(sqrt((float)files.size()));
   unsigned int num_down = (files.size() + num_across - 1) / num_across;
 
-  unsigned int tile_width = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetThumbSize() / num_across;
-  unsigned int tile_height = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetThumbSize() / num_down;
+  unsigned int imageRes = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_imageRes;
+
+  unsigned int tile_width = imageRes / num_across;
+  unsigned int tile_height = imageRes / num_down;
   unsigned int tile_gap = 1;
   bool success = false;
 
   // create a buffer for the resulting thumb
-  uint32_t *buffer = (uint32_t *)calloc(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetThumbSize() * CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetThumbSize(), 4);
+  uint32_t *buffer = (uint32_t *)calloc(imageRes * imageRes, 4);
   for (unsigned int i = 0; i < files.size(); ++i)
   {
     int x = i % num_across;
@@ -148,11 +150,11 @@ bool CPicture::CreateTiledThumb(const std::vector<std::string> &files, const std
           // drop into the texture
           unsigned int posX = x*tile_width + (tile_width - width)/2;
           unsigned int posY = y*tile_height + (tile_height - height)/2;
-          uint32_t *dest = buffer + posX + posY*CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetThumbSize();
+          uint32_t *dest = buffer + posX + posY * imageRes;
           for (unsigned int y = 0; y < height; ++y)
           {
             memcpy(dest, scaled, width*4);
-            dest += CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetThumbSize();
+            dest += imageRes;
             scaled += width;
           }
         }
@@ -162,8 +164,8 @@ bool CPicture::CreateTiledThumb(const std::vector<std::string> &files, const std
   }
   // now save to a file
   if (success)
-    success = CreateThumbnailFromSurface((uint8_t *)buffer, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetThumbSize(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetThumbSize(),
-                                        CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetThumbSize() * 4, thumb);
+    success = CreateThumbnailFromSurface((uint8_t *)buffer, imageRes, imageRes,
+                                        imageRes * 4, thumb);
   free(buffer);
   return success;
 }
