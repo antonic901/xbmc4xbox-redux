@@ -445,12 +445,7 @@ const CTextureArray& CGUITextureManager::Load(const std::string& strTextureName,
   }
   else
   {
-#ifdef HAS_XBOX_D3D
-    bool isThumbnail = URIUtils::GetExtension(strPath).Equals(".tbn");
-    pTexture = CTexture::LoadFromFile(strPath, isThumbnail ? CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetThumbSize() : 0, isThumbnail ? CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetThumbSize() : 0);
-#else
     pTexture = CTexture::LoadFromFile(strPath);
-#endif
     if (!pTexture)
       return emptyTexture;
     width = pTexture->GetWidth();
