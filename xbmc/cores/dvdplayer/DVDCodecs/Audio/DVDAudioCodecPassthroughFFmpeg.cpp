@@ -21,12 +21,11 @@
 #include "DVDAudioCodecPassthroughFFmpeg.h"
 #include "DVDCodecs/DVDCodecs.h"
 #include "DVDStreamInfo.h"
+#include "XBAudioConfig.h" // AUDIO_ANALOG, AUDIO_DIGITAL
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "utils/log.h"
-
-#include "defs_from_settings.h"
 
 //These values are forced to allow spdif out
 #define OUT_SAMPLESIZE 16
@@ -58,7 +57,7 @@ CDVDAudioCodecPassthroughFFmpeg::CDVDAudioCodecPassthroughFFmpeg(void)
   m_SampleRate   = 0;
 
   m_Codec        = NULL;
-  
+
   /* make enough room for at-least two audio frames */
   m_DecodeSize   = 0;
   m_DecodeBuffer = NULL;
@@ -390,13 +389,13 @@ int CDVDAudioCodecPassthroughFFmpeg::Decode(BYTE* pData, int iSize)
       /* if we have a sync function for this codec */
       if (m_pSyncFrame)
       {
-	int skip = (this->*m_pSyncFrame)(pData, iSize, &m_Needed);
-	if (skip > 0)
-	{
-	  /* we lost sync, so invalidate our buffer */
-	  m_NeededUsed = 0;
-	  return used + skip;
-	}
+    int skip = (this->*m_pSyncFrame)(pData, iSize, &m_Needed);
+    if (skip > 0)
+    {
+      /* we lost sync, so invalidate our buffer */
+      m_NeededUsed = 0;
+      return used + skip;
+    }
       }
       else
         m_Needed = iSize;
@@ -493,7 +492,7 @@ unsigned int CDVDAudioCodecPassthroughFFmpeg::SyncAC3(BYTE* pData, unsigned int 
     /* search for an ac3 sync word */
     if(pData[0] != 0x0b || pData[1] != 0x77)
       continue;
- 
+
     uint8_t fscod      = pData[4] >> 6;
     uint8_t frmsizecod = pData[4] & 0x3F;
     uint8_t bsid       = pData[5] >> 3;

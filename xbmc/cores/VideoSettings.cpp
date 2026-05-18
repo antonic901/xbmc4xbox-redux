@@ -26,6 +26,7 @@ CVideoSettings::CVideoSettings()
   m_VolumeAmplification = 0;
   m_AudioDelay = 0.0f;
   // Xbox specific
+  m_bForceIndex = false;
   m_OutputToAllSpeakers = false;
   m_NoCache = false;
   m_NonInterleaved = false;
@@ -55,6 +56,7 @@ bool CVideoSettings::operator!=(const CVideoSettings &right) const
   if (m_VolumeAmplification != right.m_VolumeAmplification) return true;
   if (m_AudioDelay != right.m_AudioDelay) return true;
   // Xbox specific
+  if (m_bForceIndex != right.m_bForceIndex) return true;
   if (m_OutputToAllSpeakers != right.m_OutputToAllSpeakers) return true;
   if (m_NoCache != right.m_NoCache) return true;
   if (m_NonInterleaved != right.m_NonInterleaved) return true;

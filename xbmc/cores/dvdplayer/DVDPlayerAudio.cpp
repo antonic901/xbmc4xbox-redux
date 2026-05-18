@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "system.h"
 #include "utils/log.h"
 #include "settings/Settings.h"
@@ -28,14 +28,13 @@
 #include "DVDCodecs/DVDCodecs.h"
 #include "DVDCodecs/DVDFactoryCodec.h"
 #include "DVDPerformanceCounter.h"
+#include "XBAudioConfig.h" // AUDIO_DIGITAL
 #include "utils/TimeUtils.h"
 #include "utils/MathUtils.h"
 #include "threads/SingleLock.h"
 
 #include <sstream>
 #include <iomanip>
-
-#include "defs_from_settings.h"
 
 using namespace std;
 
@@ -474,8 +473,8 @@ void CDVDPlayerAudio::Process()
 #ifndef _XBOX
       // Flush as the audio output may keep looping if we don't
       if(m_speed == DVD_PLAYSPEED_NORMAL)
-	  {
-	    m_dvdAudio.Drain();
+      {
+        m_dvdAudio.Drain();
         m_dvdAudio.Flush();
       }
 #endif

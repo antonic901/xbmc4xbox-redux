@@ -78,7 +78,7 @@ extern "C" int debug_callback(CURL_HANDLE *handle, curl_infotype info, char *out
   if (info == CURLINFO_DATA_IN || info == CURLINFO_DATA_OUT)
     return 0;
 
-  if ((CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_extraLogLevels & LOGCURL) == 0)
+  if (!CLog::CanLogComponent(LOGCURL))
     return 0;
 
   std::string strLine;

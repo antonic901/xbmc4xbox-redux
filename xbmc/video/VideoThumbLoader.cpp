@@ -27,6 +27,7 @@
 #include "cores/VideoSettings.h"
 #include "FileItem.h"
 #include "filesystem/DirectoryCache.h"
+#include "filesystem/File.h"
 #include "filesystem/StackDirectory.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"

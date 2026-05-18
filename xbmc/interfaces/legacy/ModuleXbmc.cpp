@@ -477,7 +477,7 @@ namespace XBMCAddon
       if (strcmpi(mediaType, "video") == 0)
         result = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions;
       else if (strcmpi(mediaType, "music") == 0)
-        result = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetMusicExtensions();
+        result = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions;
       else if (strcmpi(mediaType, "picture") == 0)
         result = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions;
 

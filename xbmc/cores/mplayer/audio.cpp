@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "utils/log.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
@@ -28,10 +28,9 @@
 #include "ResampleDirectSound.h"
 #include "IAudioCallback.h"
 #include "MPlayer.h"
+#include "XBAudioConfig.h" // AUDIO_DIGITAL
 #include "cores/VideoRenderers/RenderManager.h"
 #include "threads/SingleLock.h"
-
-#include "defs_from_settings.h"
 
 static IDirectSoundRenderer* m_pAudioDecoder = NULL;
 static CCriticalSection m_critAudio;
@@ -193,7 +192,7 @@ static int audio_init(int rate, int channels, int format, int flags)
   }
   else
   { // check if we should resample this audio
-    // currently we don't do this for videos for fear of CPU issues    
+    // currently we don't do this for videos for fear of CPU issues
     bool bResample = false;
     if( !mplayer_HasVideo() && channels <= 2 && rate != 48000 )
       bResample = true;
@@ -299,7 +298,7 @@ static int audio_play(void* data, int len, int flags)
       m_waitvideo = 0;
     }
   }
-    
+
   return playsize;
 }
 
@@ -308,7 +307,7 @@ static int audio_play(void* data, int len, int flags)
 static float audio_get_delay()
 {
   CSingleLock lock(m_critAudio);
-  if (!m_pAudioDecoder) 
+  if (!m_pAudioDecoder)
     return 0.0f;
 
   return m_pAudioDecoder->GetDelay();
@@ -375,20 +374,20 @@ void xbox_audio_unregistercallback()
 void xbox_audio_wait_completion()
 {
   CSingleLock lock(m_critAudio);
-  if (m_pAudioDecoder)    
+  if (m_pAudioDecoder)
     m_pAudioDecoder->WaitCompletion();
 }
 
 void xbox_audio_do_work()
 {
   CSingleLock lock(m_critAudio);
-  if (m_pAudioDecoder)   
+  if (m_pAudioDecoder)
     m_pAudioDecoder->DoWork();
 }
 
 void xbox_audio_switch_channel(int iAudioStream, bool bAudioOnAllSpeakers)
 {
   CSingleLock lock(m_critAudio);
-  if (m_pAudioDecoder)    
+  if (m_pAudioDecoder)
     m_pAudioDecoder->SwitchChannels(iAudioStream, bAudioOnAllSpeakers);
 }

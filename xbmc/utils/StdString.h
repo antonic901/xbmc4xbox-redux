@@ -3699,7 +3699,7 @@ public:
 
   const CT& operator[](int nIdx) const
   {
-    return boost::static_pointer_cast<const MYBASE>(this)->operator[](static_cast<MYSIZE>(nIdx));
+    return static_cast<const MYBASE*>(this)->operator[](static_cast<MYSIZE>(nIdx));
   }
 
   CT& operator[](unsigned int nIdx)
@@ -3709,7 +3709,7 @@ public:
 
   const CT& operator[](unsigned int nIdx) const
   {
-    return boost::static_pointer_cast<const MYBASE>(this)->operator[](static_cast<MYSIZE>(nIdx));
+    return static_cast<const MYBASE*>(this)->operator[](static_cast<MYSIZE>(nIdx));
   }
 
   CT& operator[](unsigned long nIdx)
@@ -3719,7 +3719,7 @@ public:
 
   const CT& operator[](unsigned long nIdx) const
   {
-    return boost::static_pointer_cast<const MYBASE>(this)->operator[](static_cast<MYSIZE>(nIdx));
+    return static_cast<const MYBASE*>(this)->operator[](static_cast<MYSIZE>(nIdx));
   }
 
 #ifndef SS_NO_IMPLICIT_CAST

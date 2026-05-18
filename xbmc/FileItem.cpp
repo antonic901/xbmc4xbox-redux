@@ -718,7 +718,7 @@ bool CFileItem::IsAudio() const
   //! @todo If the file is a zip file, ask the game clients if any support this
   // file before assuming it is audio
 
-  return URIUtils::HasExtension(m_strPath, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetMusicExtensions());
+  return URIUtils::HasExtension(m_strPath, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions);
 }
 
 bool CFileItem::IsAudioBook() const

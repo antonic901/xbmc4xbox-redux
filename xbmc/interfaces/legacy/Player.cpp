@@ -31,7 +31,7 @@ namespace XBMCAddon
 {
   namespace xbmc
   {
-	PlayParameter Player::defaultPlayParameter;
+    PlayParameter Player::defaultPlayParameter;
 
     Player::Player(int _playerCore)
     {
@@ -84,7 +84,7 @@ namespace XBMCAddon
       if (!item.empty())
       {
         // set fullscreen or windowed
-        CMediaSettings::GetInstance().SetVideoStartWindowed(windowed);
+        CMediaSettings::GetInstance().SetMediaStartWindowed(windowed);
 
         // force a playercore before playing
         g_application.m_eForcedNextPlayer = playerCore;
@@ -113,7 +113,7 @@ namespace XBMCAddon
       XBMC_TRACE;
       DelayedCallGuard dc(languageHook);
       // set fullscreen or windowed
-      CMediaSettings::GetInstance().SetVideoStartWindowed(windowed);
+      CMediaSettings::GetInstance().SetMediaStartWindowed(windowed);
 
       // force a playercore before playing
       g_application.m_eForcedNextPlayer = playerCore;
@@ -131,7 +131,7 @@ namespace XBMCAddon
       if (playlist != NULL)
       {
         // set fullscreen or windowed
-        CMediaSettings::GetInstance().SetVideoStartWindowed(windowed);
+        CMediaSettings::GetInstance().SetMediaStartWindowed(windowed);
 
         // force a playercore before playing
         g_application.m_eForcedNextPlayer = playerCore;

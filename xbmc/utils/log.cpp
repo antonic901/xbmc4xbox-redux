@@ -214,6 +214,15 @@ void CLog::SetExtraLogLevels(int level)
   m_extraLogLevels = level;
 }
 
+bool CLog::CanLogComponent(uint32_t component)
+{
+  // TODO: this wont work until CLog implements ISettings callbacks where m_extraLogLevels should be set / changed
+  if (component == 0)
+    return false;
+
+  return ((m_extraLogLevels & component) == component);
+}
+
 void CLog::OutputDebugString(const std::string& line)
 {
 #if defined(_DEBUG) || defined(PROFILE)

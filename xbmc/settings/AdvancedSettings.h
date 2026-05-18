@@ -99,6 +99,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     static void GetCustomExtensions(TiXmlElement *pRootElement, std::string& extensions);
 
     float m_audioPlayCountMinimumPercent;
+    bool m_VideoPlayerIgnoreDTSinWAV;
 
     float m_videoSubsDelayRange;
     float m_videoAudioDelayRange;

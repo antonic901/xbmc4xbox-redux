@@ -158,13 +158,15 @@ const char* CCDDARipper::GetExtension(int iEncoder)
 
 bool CCDDARipper::CreateAlbumDir(const MUSIC_INFO::CMusicInfoTag& infoTag, std::string& strDirectory, int& legalType)
 {
-  CSettingPath *recordingpathSetting = (CSettingPath*)CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("audiocds.recordingpath");
+  boost::shared_ptr<CSettingPath> recordingpathSetting = boost::static_pointer_cast<CSettingPath>(
+      CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting(
+          CSettings::SETTING_AUDIOCDS_RECORDINGPATH));
   if (recordingpathSetting != NULL)
   {
     strDirectory = recordingpathSetting->GetValue();
     if (strDirectory.empty())
     {
-      if (CGUIControlButtonSetting::GetPath(recordingpathSetting))
+      if (CGUIControlButtonSetting::GetPath(recordingpathSetting, &g_localizeStrings))
         strDirectory = recordingpathSetting->GetValue();
     }
   }

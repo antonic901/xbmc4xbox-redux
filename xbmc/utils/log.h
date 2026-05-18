@@ -33,6 +33,8 @@
 #define ATTRIB_LOG_FORMAT
 #endif
 
+// TODO: refactor CLog, get rid of CLogGlobals, add CSettings callbacks
+
 class CLog
 {
 public:
@@ -59,6 +61,7 @@ public:
   static bool Init(const char* path);
   static void SetLogLevel(int level);
   static int  GetLogLevel();
+  static bool CanLogComponent(uint32_t component);
   static void SetExtraLogLevels(int level);
 private:
   static void OutputDebugString(const std::string& line);
