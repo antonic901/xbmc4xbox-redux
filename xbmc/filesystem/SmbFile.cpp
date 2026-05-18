@@ -104,7 +104,7 @@ void CSMB::Init()
 
     // setup our context
     m_context = smbc_new_context();
-    m_context->debug = (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_extraLogLevels & LOGSAMBA?10:0);
+    m_context->debug = (CLog::CanLogComponent(LOGSAMBA)?10:0);
     smbc_init(xb_smbc_auth, 0);
     m_context->callbacks.auth_fn = xb_smbc_auth;
     orig_cache = m_context->callbacks.get_cached_srv_fn;

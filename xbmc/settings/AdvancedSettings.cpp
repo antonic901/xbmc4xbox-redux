@@ -43,18 +43,6 @@ CAdvancedSettings::CAdvancedSettings()
   m_bVideoLibraryImportResumePoint = true;
 }
 
-std::string GetPlayerName(const int& player)
-{
-  if (player == 0)
-    return "mplayer";
-  if (player == 1)
-    return "dvdplayer";
-  if (player == 2)
-    return "paplayer";
-
-  return "";
-}
-
 void CAdvancedSettings::OnSettingsLoaded()
 {
   const boost::shared_ptr<CProfilesManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
@@ -63,8 +51,8 @@ void CAdvancedSettings::OnSettingsLoaded()
   Load(*profileManager);
 
   // default players?
-  CLog::Log(LOGINFO, "Default Video Player: %s", GetPlayerName(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_VIDEOPLAYER_DEFAULTPLAYER)).c_str());
-  CLog::Log(LOGINFO, "Default Audio Player: %s", GetPlayerName(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_MUSICPLAYER_DEFAULTPLAYER)).c_str());
+  CLog::Log(LOGINFO, "Default Video Player: %s", CServiceBroker::GetSettingsComponent()->GetSettings()->GetDefaultVideoPlayerName().c_str());
+  CLog::Log(LOGINFO, "Default Audio Player: %s", CServiceBroker::GetSettingsComponent()->GetSettings()->GetDefaultAudioPlayerName().c_str());
 
   // setup any logging...
   const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
@@ -121,6 +109,8 @@ void CAdvancedSettings::Initialize()
 {
   if (m_initialized)
     return;
+
+  m_VideoPlayerIgnoreDTSinWAV = false;
 
   m_seekSteps.push_back(10);
   m_seekSteps.push_back(30);
@@ -397,6 +387,8 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
     pAudioExcludes = pElement->FirstChildElement("excludefromscan");
     if (pAudioExcludes)
       GetCustomRegexps(pAudioExcludes, m_audioExcludeFromScanRegExps);
+
+    XMLUtils::GetBoolean(pElement, "VideoPlayerignoredtsinwav", m_VideoPlayerIgnoreDTSinWAV);
   }
 
   pElement = pRootElement->FirstChildElement("video");

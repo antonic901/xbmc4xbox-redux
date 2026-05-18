@@ -362,6 +362,38 @@ public:
    */
   virtual void Clear();
 
+#ifdef _XBOX
+  inline std::string GetPlayerName(const int& player) const
+  {
+    if (player == 0)
+      return "mplayer";
+    if (player == 1)
+      return "dvdplayer";
+    if (player == 2)
+      return "paplayer";
+
+    return "";
+  }
+
+  inline std::string GetFFmpegDllFolder() const
+  {
+    std::string folder = "Q:\\system\\players\\dvdplayer\\";
+    if (GetBool("videoplayer.allcodecs"))
+      folder += "full\\";
+    return folder;
+  }
+
+  inline std::string GetDefaultVideoPlayerName() const
+  {
+    return GetPlayerName(GetInt(CSettings::SETTING_VIDEOPLAYER_DEFAULTPLAYER));
+  }
+
+  inline std::string GetDefaultAudioPlayerName() const
+  {
+    return GetPlayerName(GetInt(CSettings::SETTING_MUSICPLAYER_DEFAULTPLAYER));
+  }
+#endif
+
 protected:
   // specializations of CSettingsBase
   virtual void InitializeSettingTypes();

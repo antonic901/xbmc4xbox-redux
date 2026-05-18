@@ -102,7 +102,7 @@ bool CGUIInfoLabel::ItemLabelNeedsUpdate(const CGUIListItem* item,
         infoLabel = infoMgr.GetItemImage(item, 0, portion->m_info, fallback);
       else
         infoLabel =
-            infoMgr.GetItemLabel(boost::static_pointer_cast<const CFileItem>(item), 0, portion->m_info, fallback);
+            infoMgr.GetItemLabel(static_cast<const CFileItem*>(item), 0, portion->m_info, fallback);
       needsUpdate |= portion->NeedsUpdate(infoLabel);
     }
   }

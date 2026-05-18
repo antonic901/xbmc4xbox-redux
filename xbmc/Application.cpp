@@ -3812,23 +3812,23 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
   if (playlist == PLAYLIST_VIDEO && g_playlistPlayer.GetPlaylist(playlist).size() > 1)
   { // playing from a playlist by the looks
     // don't switch to fullscreen if we are not playing the first item...
-    options.fullscreen = !g_playlistPlayer.HasPlayedFirstFile() && CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::GetInstance().DoesVideoStartWindowed();
+    options.fullscreen = !g_playlistPlayer.HasPlayedFirstFile() && CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::GetInstance().DoesMediaStartWindowed();
   }
   else if(m_itemCurrentFile->IsStack() && m_currentStack->Size() > 0)
   {
     // TODO - this will fail if user seeks back to first file in stack
     if(m_currentStackPosition == 0 || m_itemCurrentFile->GetStartOffset() == STARTOFFSET_RESUME)
-      options.fullscreen = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::GetInstance().DoesVideoStartWindowed();
+      options.fullscreen = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::GetInstance().DoesMediaStartWindowed();
     else
       options.fullscreen = false;
     // reset this so we don't think we are resuming on seek
     m_itemCurrentFile->SetStartOffset(0);
   }
   else
-    options.fullscreen = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::GetInstance().DoesVideoStartWindowed();
+    options.fullscreen = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::GetInstance().DoesMediaStartWindowed();
 
   // reset VideoStartWindowed as it's a temp setting
-  CMediaSettings::GetInstance().SetVideoStartWindowed(false);
+  CMediaSettings::GetInstance().SetMediaStartWindowed(false);
   // reset any forced player
   m_eForcedNextPlayer = EPC_NONE;
 
@@ -5703,21 +5703,24 @@ void CApplication::OnSettingChanged(const boost::shared_ptr<const CSetting>& set
     // the it to the default value
     if (settingId == "lookandfeel.skin")
     {
-      CSetting* skinRelatedSetting = CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.skincolors");
+      const boost::shared_ptr<CSettings> settings =
+          CServiceBroker::GetSettingsComponent()->GetSettings();
+      SettingPtr skinRelatedSetting =
+          settings->GetSetting(CSettings::SETTING_LOOKANDFEEL_SKINCOLORS);
       if (!skinRelatedSetting->IsDefault())
       {
         m_ignoreSkinSettingChanges = true;
         skinRelatedSetting->Reset();
       }
 
-      skinRelatedSetting = CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.skintheme");
+      skinRelatedSetting = settings->GetSetting(CSettings::SETTING_LOOKANDFEEL_SKINTHEME);
       if (!skinRelatedSetting->IsDefault())
       {
         m_ignoreSkinSettingChanges = true;
         skinRelatedSetting->Reset();
       }
 
-      skinRelatedSetting = CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.font");
+      skinRelatedSetting = settings->GetSetting(CSettings::SETTING_LOOKANDFEEL_FONT);
       if (!skinRelatedSetting->IsDefault())
       {
         m_ignoreSkinSettingChanges = true;
@@ -5726,11 +5729,13 @@ void CApplication::OnSettingChanged(const boost::shared_ptr<const CSetting>& set
     }
     else if (settingId == "lookandfeel.skintheme")
     {
-      CSettingString* skinColorsSetting = static_cast<CSettingString*>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting("lookandfeel.skincolors"));
+      boost::shared_ptr<CSettingString> skinColorsSetting = boost::static_pointer_cast<CSettingString>(
+          CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting(
+              CSettings::SETTING_LOOKANDFEEL_SKINCOLORS));
       m_ignoreSkinSettingChanges = true;
 
       // we also need to adjust the skin color setting
-      std::string colorTheme = ((CSettingString*)setting)->GetValue();
+      std::string colorTheme = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
       URIUtils::RemoveExtension(colorTheme);
       if (setting->IsDefault() || StringUtils::EqualsNoCase(colorTheme, "Textures"))
         skinColorsSetting->Reset();
@@ -5754,31 +5759,31 @@ void CApplication::OnSettingChanged(const boost::shared_ptr<const CSetting>& set
   else if (StringUtils::StartsWithNoCase(settingId, "audiooutput."))
   {
     if (settingId == "audiooutput.ac3passthrough")
-      g_audioConfig.SetAC3Enabled(((CSettingBool*)setting)->GetValue());
+      g_audioConfig.SetAC3Enabled(boost::static_pointer_cast<const CSettingBool>(setting)->GetValue());
     else if (settingId == "audiooutput.dtspassthrough")
-      g_audioConfig.SetDTSEnabled(((CSettingBool*)setting)->GetValue());
+      g_audioConfig.SetDTSEnabled(boost::static_pointer_cast<const CSettingBool>(setting)->GetValue());
     else if (settingId == "audiooutput.aacpassthrough")
-      g_audioConfig.SetAACEnabled(((CSettingBool*)setting)->GetValue());
+      g_audioConfig.SetAACEnabled(boost::static_pointer_cast<const CSettingBool>(setting)->GetValue());
     else if (settingId == "audiooutput.mp1passthrough")
-      g_audioConfig.SetMP1Enabled(((CSettingBool*)setting)->GetValue());
+      g_audioConfig.SetMP1Enabled(boost::static_pointer_cast<const CSettingBool>(setting)->GetValue());
     else if (settingId == "audiooutput.mp2passthrough")
-      g_audioConfig.SetMP2Enabled(((CSettingBool*)setting)->GetValue());
+      g_audioConfig.SetMP2Enabled(boost::static_pointer_cast<const CSettingBool>(setting)->GetValue());
     else if (settingId == "audiooutput.mp3passthrough")
-      g_audioConfig.SetMP3Enabled(((CSettingBool*)setting)->GetValue());
+      g_audioConfig.SetMP3Enabled(boost::static_pointer_cast<const CSettingBool>(setting)->GetValue());
 
     if (g_audioConfig.NeedsSave())
       g_audioConfig.Save();
   }
   else if (settingId == "harddisk.aamlevel")
   {
-    if (((CSettingInt*)setting)->GetValue() == AAM_QUIET)
+    if (boost::static_pointer_cast<const CSettingInt>(setting)->GetValue() == AAM_QUIET)
       XKHDD::SetAAMLevel(0x80);
-    else if (((CSettingInt*)setting)->GetValue() == AAM_FAST)
+    else if (boost::static_pointer_cast<const CSettingInt>(setting)->GetValue() == AAM_FAST)
       XKHDD::SetAAMLevel(0xFE);
   }
   else if (settingId == "harddisk.apmlevel")
   {
-    switch(((CSettingInt*)setting)->GetValue())
+    switch(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue())
     {
     case APM_LOPOWER:
       XKHDD::SetAPMLevel(0x80);
@@ -5795,17 +5800,17 @@ void CApplication::OnSettingChanged(const boost::shared_ptr<const CSetting>& set
     }
   }
   else if (settingId == "karaoke.port0voicemask")
-    CCdgParser::FillInVoiceMaskValues(0, ((CSettingString*)setting)->GetValue());
+    CCdgParser::FillInVoiceMaskValues(0, boost::static_pointer_cast<const CSettingString>(setting)->GetValue());
   else if (settingId == "karaoke.port1voicemask")
-    CCdgParser::FillInVoiceMaskValues(1, ((CSettingString*)setting)->GetValue());
+    CCdgParser::FillInVoiceMaskValues(1, boost::static_pointer_cast<const CSettingString>(setting)->GetValue());
   else if (settingId == "karaoke.port2voicemask")
-    CCdgParser::FillInVoiceMaskValues(2, ((CSettingString*)setting)->GetValue());
+    CCdgParser::FillInVoiceMaskValues(2, boost::static_pointer_cast<const CSettingString>(setting)->GetValue());
   else if (settingId == "karaoke.port3voicemask")
-    CCdgParser::FillInVoiceMaskValues(3, ((CSettingString*)setting)->GetValue());
+    CCdgParser::FillInVoiceMaskValues(3, boost::static_pointer_cast<const CSettingString>(setting)->GetValue());
   else if (settingId == "lcd.type")
     g_lcd->Initialize();
   else if (settingId == "lcd.backlight")
-    g_lcd->SetBackLight(((CSettingInt*)setting)->GetValue());
+    g_lcd->SetBackLight(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
   else if (settingId == "lcd.modchip")
   {
     g_lcd->Stop();
@@ -5815,15 +5820,15 @@ void CApplication::OnSettingChanged(const boost::shared_ptr<const CSetting>& set
     g_lcd->Initialize();
   }
   else if (settingId == "lcd.contrast")
-    g_lcd->SetContrast(((CSettingInt*)setting)->GetValue());
+    g_lcd->SetContrast(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
   else if (StringUtils::EqualsNoCase(settingId, "musicplayer.replaygaintype"))
-    m_replayGainSettings.iType = ((CSettingInt*)setting)->GetValue();
+    m_replayGainSettings.iType = boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
   else if (StringUtils::EqualsNoCase(settingId, "musicplayer.replaygainpreamp"))
-    m_replayGainSettings.iPreAmp = ((CSettingInt*)setting)->GetValue();
+    m_replayGainSettings.iPreAmp = boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
   else if (StringUtils::EqualsNoCase(settingId, "musicplayer.replaygainnogainpreamp"))
-    m_replayGainSettings.iNoGainPreAmp = ((CSettingInt*)setting)->GetValue();
+    m_replayGainSettings.iNoGainPreAmp = boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
   else if (StringUtils::EqualsNoCase(settingId, "musicplayer.replaygainavoidclipping"))
-    m_replayGainSettings.bAvoidClipping = ((CSettingBool*)setting)->GetValue();
+    m_replayGainSettings.bAvoidClipping = boost::static_pointer_cast<const CSettingBool>(setting)->GetValue();
   else if (settingId == "network.assignment" || settingId == "network.ipaddress" ||
            settingId == "network.subnet" || settingId == "network.gateway" ||
            settingId == "network.dns" || settingId == "network.dns2")
@@ -5834,7 +5839,7 @@ void CApplication::OnSettingChanged(const boost::shared_ptr<const CSetting>& set
   else if (settingId == "system.ledcolour")
   {
     // Alter LED Colour immediately
-    int iData =  ((CSettingInt*)setting)->GetValue();
+    int iData =  boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
     if (iData == LED_COLOUR_NO_CHANGE)
       // LED_COLOUR_NO_CHANGE: to prevent "led off" on colour immediately change, set to default green!
       //                       (we have no previos reference LED COLOUR, to set the LED colour back)

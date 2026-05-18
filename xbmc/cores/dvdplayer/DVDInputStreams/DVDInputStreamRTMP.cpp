@@ -76,7 +76,7 @@ CDVDInputStreamRTMP::CDVDInputStreamRTMP(CFileItem &fileitem)
       default: level = RTMP_LOGCRIT; break;
     }
 
-    if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_extraLogLevels & LOGRTMP)
+    if (CLog::CanLogComponent(LOGRTMP))
       level = RTMP_LOGDEBUG2;
 
     m_libRTMP.LogSetLevel(level);

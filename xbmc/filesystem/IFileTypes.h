@@ -65,6 +65,15 @@ struct SCacheStatus
   float    level;    /**< cache level (0.0 - 1.0) */
 };
 
+enum CACHE_BUFFER_MODES
+{
+  CACHE_BUFFER_MODE_INTERNET = 0,
+  CACHE_BUFFER_MODE_ALL = 1,
+  CACHE_BUFFER_MODE_TRUE_INTERNET = 2,
+  CACHE_BUFFER_MODE_NONE = 3,
+  CACHE_BUFFER_MODE_NETWORK = 4,
+};
+
 typedef enum {
   IOCTRL_NATIVE        = 1,  /**< SNativeIoControl structure, containing what should be passed to native ioctrl */
   IOCTRL_SEEK_POSSIBLE = 2,  /**< return 0 if known not to work, 1 if it should work */

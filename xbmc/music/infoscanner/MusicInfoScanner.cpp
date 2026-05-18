@@ -480,7 +480,7 @@ bool CMusicInfoScanner::DoScan(const std::string& strDirectory)
 
   // load subfolder
   CFileItemList items;
-  CDirectory::GetDirectory(strDirectory, items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetMusicExtensions() + "|.jpg|.tbn|.lrc|.cdg", DIR_FLAG_DEFAULTS);
+  CDirectory::GetDirectory(strDirectory, items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions + "|.jpg|.tbn|.lrc|.cdg", DIR_FLAG_DEFAULTS);
 
   // sort and get the path hash.  Note that we don't filter .cue sheet items here as we want
   // to detect changes in the .cue sheet as well.  The .cue sheet items only need filtering
@@ -2202,7 +2202,7 @@ int CMusicInfoScanner::CountFilesRecursively(const std::string& strPath)
 {
   // load subfolder
   CFileItemList items;
-  CDirectory::GetDirectory(strPath, items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetMusicExtensions(), DIR_FLAG_NO_FILE_DIRS);
+  CDirectory::GetDirectory(strPath, items, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions, DIR_FLAG_NO_FILE_DIRS);
 
   if (m_bStop)
     return 0;

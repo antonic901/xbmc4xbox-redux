@@ -392,7 +392,7 @@ static int PlayMedia(const std::vector<std::string>& params)
     if (StringUtils::EqualsNoCase(params[i], "isdir"))
       item.m_bIsFolder = true;
     else if (params[i] == "1") // set fullscreen or windowed
-      CMediaSettings::GetInstance().SetVideoStartWindowed(true);
+      CMediaSettings::GetInstance().SetMediaStartWindowed(true);
     else if (StringUtils::EqualsNoCase(params[i], "resume"))
     {
       // force the item to resume (if applicable) (see CApplication::PlayMedia)
@@ -421,7 +421,7 @@ static int PlayMedia(const std::vector<std::string>& params)
   if (item.m_bIsFolder)
   {
     CFileItemList items;
-    std::string extensions = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions + "|" + CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetMusicExtensions();
+    std::string extensions = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions + "|" + CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions;
     XFILE::CDirectory::GetDirectory(item.GetPath(), items, extensions, XFILE::DIR_FLAG_DEFAULTS);
 
     bool containsMusic = false, containsVideo = false;

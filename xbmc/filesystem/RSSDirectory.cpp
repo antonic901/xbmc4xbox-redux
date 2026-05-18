@@ -93,7 +93,7 @@ static bool IsPathToMedia(const std::string& strPath )
 {
   return URIUtils::HasExtension(strPath,
                               CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions + '|' +
-                              CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->GetMusicExtensions() + '|' +
+                              CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions + '|' +
                               CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions);
 }
 

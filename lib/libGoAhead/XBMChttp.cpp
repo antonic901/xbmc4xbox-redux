@@ -27,6 +27,7 @@
 #include "Util.h"
 #include "URL.h"
 #include "PlayListPlayer.h"
+#include "filesystem/DirectoryFactory.h"
 #include "filesystem/HDDirectory.h"
 #include "filesystem/CDDADirectory.h"
 #include "filesystem/SpecialProtocol.h"
@@ -2694,14 +2695,6 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
         tmp = (g_application.IsMuted()==0) ? "False" : "True";
       else if (paras[i]=="myvideonavflatten")
         tmp = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.flatten")==0) ? "False" : "True";
-      else if (paras[i]=="myvideoplaylistshuffle")
-        tmp = (CMediaSettings::GetInstance().IsVideoPlaylistShuffled()==0) ? "False" : "True";
-      else if (paras[i]=="myvideoplaylistrepeat")
-        tmp = (CMediaSettings::GetInstance().DoesVideoPlaylistRepeat()==0) ? "False" : "True";
-      else if (paras[i]=="mymusicplaylistshuffle")
-        tmp = (CMediaSettings::GetInstance().IsMusicPlaylistShuffled()==0) ? "False" : "True";
-      else if (paras[i]=="mymusicplaylistrepeat")
-        tmp = (CMediaSettings::GetInstance().DoesMusicPlaylistRepeat()==0) ? "False" : "True";
       else if (paras[i]=="zoomamount")
         tmp.Format("%f", CDisplaySettings::GetInstance().GetZoomAmount());
       else if (paras[i]=="pixelratio")

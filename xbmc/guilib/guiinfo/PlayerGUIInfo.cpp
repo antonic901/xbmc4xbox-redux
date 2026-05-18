@@ -363,7 +363,7 @@ bool CPlayerGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int context
 {
   const CFileItem *item = nullptr;
   if (gitem->IsFileItem())
-    item = boost::static_pointer_cast<const CFileItem>(gitem);
+    item = static_cast<const CFileItem*>(gitem);
 
   switch (info.m_info)
   {

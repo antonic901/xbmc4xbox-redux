@@ -469,11 +469,11 @@ void CGUIDialogSmartPlaylistRule::OnField()
 
 void CGUIDialogSmartPlaylistRule::OnOperator()
 {
-  const DynamicIntegerSettingOptions labels = GetValidOperators(m_rule);
+  const std::vector<std::pair<std::string, int> > labels = GetValidOperators(m_rule);
   CGUIDialogSelect* dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
   dialog->Reset();
   dialog->SetHeading( 16023 );
-  for (DynamicIntegerSettingOptions::const_iterator it = labels.begin(); it != labels.end(); ++it)
+  for (std::vector<std::pair<std::string, int> >::const_iterator it = labels.begin(); it != labels.end(); ++it)
     dialog->Add(it->first);
   dialog->SetSelected(CSmartPlaylistRule::GetLocalizedOperator(m_rule.m_operator));
   dialog->Open();

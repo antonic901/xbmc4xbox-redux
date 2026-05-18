@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "DVDInputStreamFile.h"
 #include "ServiceBroker.h"
 #include "filesystem/File.h"
@@ -72,7 +72,7 @@ bool CDVDInputStreamFile::Open()
   {
     if ((CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cacheBufferMode == CACHE_BUFFER_MODE_INTERNET && URIUtils::IsInternetStream(m_item.GetPath(), true))
      || (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cacheBufferMode == CACHE_BUFFER_MODE_TRUE_INTERNET && URIUtils::IsInternetStream(m_item.GetPath(), false))
-     || (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cacheBufferMode == CACHE_BUFFER_MODE_REMOTE && URIUtils::IsRemote(m_item.GetPath()))
+     || (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cacheBufferMode == CACHE_BUFFER_MODE_NETWORK && URIUtils::IsRemote(m_item.GetPath()))
      || (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cacheBufferMode == CACHE_BUFFER_MODE_ALL))
     {
       flags |= READ_CACHED;
@@ -94,10 +94,10 @@ bool CDVDInputStreamFile::Open()
     m_pFile = NULL;
     return false;
   }
-   
+
   if (m_pFile->GetImplemenation() && (content.empty() || content == "application/octet-stream"))
     m_content = m_pFile->GetImplemenation()->GetContent();
-  
+
   m_eof = true;
   return true;
 }
@@ -158,7 +158,7 @@ bool CDVDInputStreamFile::GetCacheStatus(XFILE::SCacheStatus *status)
     return false;
 }
 
-BitstreamStats CDVDInputStreamFile::GetBitstreamStats() const 
+BitstreamStats CDVDInputStreamFile::GetBitstreamStats() const
 {
   if (!m_pFile)
     return m_stats; // dummy return. defined in CDVDInputStream

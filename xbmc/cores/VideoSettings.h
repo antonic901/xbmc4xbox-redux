@@ -60,6 +60,7 @@ public:
   bool m_PostProcess;
   float m_AudioDelay;
   // Xbox specific
+  bool m_bForceIndex;
   bool m_OutputToAllSpeakers;
   bool m_NoCache;
   bool m_NonInterleaved;

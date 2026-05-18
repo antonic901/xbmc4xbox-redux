@@ -46,7 +46,6 @@
 #define LOGCURL   (1 << (LOGMASKBIT+1))
 #define LOGFFMPEG (1 << (LOGMASKBIT+3))
 #define LOGRTMP   (1 << (LOGMASKBIT+4))
-#define LOGDBUS   (1 << (LOGMASKBIT+5))
 
 #ifdef __GNUC__
 #define ATTRIB_LOG_FORMAT __attribute__((format(printf,3,4)))
