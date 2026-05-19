@@ -45,6 +45,8 @@ public:
 
   const CVideoSettings& GetDefaultVideoSettings() const { return m_defaultVideoSettings; }
   CVideoSettings& GetDefaultVideoSettings() { return m_defaultVideoSettings; }
+  const CVideoSettings& GetCurrentVideoSettings() const { return m_currentVideoSettings; }
+  CVideoSettings& GetCurrentVideoSettings() { return m_currentVideoSettings; }
 
   /*! \brief Retrieve the watched mode for the given content type
    \param content Current content type
@@ -92,6 +94,7 @@ protected:
 
 private:
   CVideoSettings m_defaultVideoSettings;
+  CVideoSettings m_currentVideoSettings;
 
   typedef std::map<std::string, WatchedMode> WatchedModes;
   WatchedModes m_watchedModes;
