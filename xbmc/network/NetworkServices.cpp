@@ -137,26 +137,41 @@ bool CNetworkServices::OnSettingChanging(const boost::shared_ptr<const CSetting>
 #endif // HAS_FTP_SERVER
 
 #ifdef HAS_UPNP
-  if (settingId == "services.upnpserver")
+  if (settingId == CSettings::SETTING_SERVICES_UPNP)
   {
     if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
-      return StartUPnPServer();
+    {
+      StartUPnPClient();
+      StartUPnPServer();
+      StartUPnPRenderer();
+    }
+    else
+    {
+      StopUPnPRenderer();
+      StopUPnPServer();
+      StopUPnPClient();
+    }
+  }
+  else if (settingId == CSettings::SETTING_SERVICES_UPNPSERVER)
+  {
+    if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
+    {
+      if (!StartUPnPServer())
+        return false;
+
+      // always stop and restart the client and controller if necessary
+      StopUPnPClient();
+      StartUPnPClient();
+    }
     else
       return StopUPnPServer();
   }
-  else if (settingId == "services.upnprenderer")
+  else if (settingId == CSettings::SETTING_SERVICES_UPNPRENDERER)
   {
     if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
       return StartUPnPRenderer();
     else
       return StopUPnPRenderer();
-  }
-  else if (settingId == "services.upnpcontroller")
-  {
-    // always stop and restart
-    StopUPnPClient();
-    if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
-      return StartUPnPClient();
   }
   // else
 #endif // HAS_UPNP
@@ -280,7 +295,8 @@ void CNetworkServices::Start()
   if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.webserver") && !StartWebserver())
     CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33101), g_localizeStrings.Get(33100));
   StartFtpServer();
-  StartUPnP();
+  if (m_settings->GetBool(CSettings::SETTING_SERVICES_UPNP))
+    StartUPnP();
   if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.esenabled") && !StartEventServer())
     CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33102), g_localizeStrings.Get(33100));
   StartRss();
@@ -716,10 +732,10 @@ bool CNetworkServices::StopUPnP(bool bWait)
 bool CNetworkServices::StartUPnPClient()
 {
 #ifdef HAS_UPNP
-  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.upnpcontroller"))
+  if (!m_settings->GetBool(CSettings::SETTING_SERVICES_UPNP))
     return false;
 
-  CLog::Log(LOGNOTICE, "starting upnp controller");
+  CLog::Log(LOGNOTICE, "starting upnp client");
   CUPnP::GetInstance()->StartClient();
   return IsUPnPClientRunning();
 #endif // HAS_UPNP
@@ -751,7 +767,8 @@ bool CNetworkServices::StopUPnPClient()
 bool CNetworkServices::StartUPnPRenderer()
 {
 #ifdef HAS_UPNP
-  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.upnprenderer"))
+  if (!m_settings->GetBool(CSettings::SETTING_SERVICES_UPNPRENDERER) ||
+      !m_settings->GetBool(CSettings::SETTING_SERVICES_UPNP))
     return false;
 
   CLog::Log(LOGNOTICE, "starting upnp renderer");
@@ -785,7 +802,8 @@ bool CNetworkServices::StopUPnPRenderer()
 bool CNetworkServices::StartUPnPServer()
 {
 #ifdef HAS_UPNP
-  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.upnpserver"))
+  if (!m_settings->GetBool(CSettings::SETTING_SERVICES_UPNPSERVER) ||
+      !m_settings->GetBool(CSettings::SETTING_SERVICES_UPNP))
     return false;
 
   CLog::Log(LOGNOTICE, "starting upnp server");

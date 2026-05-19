@@ -11,7 +11,6 @@
 #include "GUIComponent.h"
 #include "GUIFontTTF.h"
 #include "GUIWindowManager.h"
-#include "Util.h" // SettingOptionsSubtitleHeightsFiller
 #include "addons/AddonManager.h"
 #include "addons/Skin.h"
 #include "filesystem/SpecialProtocol.h"
@@ -30,8 +29,6 @@
 #include "URL.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
-#include "settings/Settings.h" // SettingOptionsSubtitleHeightsFiller
-#include "settings/SettingsComponent.h" // SettingOptionsSubtitleHeightsFiller
 #include "settings/lib/Setting.h"
 #include "settings/lib/SettingDefinitions.h"
 #include "utils/FileUtils.h"
@@ -578,49 +575,6 @@ void GUIFontManager::SettingOptionsFontsFiller(const SettingConstPtr& setting,
     {
       if (strcmpi(pItem->GetLabel().c_str(), ".svn") == 0) continue;
       list.push_back(StringSettingOption(pItem->GetLabel(), pItem->GetLabel()));
-    }
-  }
-}
-
-void GUIFontManager::SettingOptionsSubtitleHeightsFiller(const boost::shared_ptr<const CSetting>& setting,
-                                                         std::vector<IntegerSettingOption>& list,
-                                                         int& current,
-                                                         void* data)
-{
-  if (CUtil::IsUsingTTFSubtitles())
-  { // easy - just fill as per usual
-    boost::shared_ptr<const CSettingInt> pSettingInt = boost::static_pointer_cast<const CSettingInt>(setting);
-    for (int i = pSettingInt->GetMinimum(); i <= pSettingInt->GetMaximum(); i += pSettingInt->GetStep())
-      list.push_back(IntegerSettingOption(StringUtils::Format("%i", i), i));
-  }
-  else
-  {
-    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.font").size())
-    {
-      //find font sizes...
-      CFileItemList items;
-      CStdString strPath = "special://xbmc/system/players/mplayer/font/";
-      strPath += CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.font");
-      strPath += "/";
-      XFILE::CDirectory::GetDirectory(strPath, items, "", XFILE::DIR_FLAG_DEFAULTS);
-      int iCurrentSize = 0;
-
-      bool found = false;
-      for (int i = 0; i < items.Size(); ++i)
-      {
-        CFileItemPtr pItem = items[i];
-        if (pItem->m_bIsFolder)
-        {
-          if (strcmpi(pItem->GetLabel().c_str(), ".svn") == 0) continue;
-          iCurrentSize = atoi(pItem->GetLabel().c_str());
-          if (iCurrentSize == current)
-            found = true;
-          list.push_back(IntegerSettingOption(StringUtils::Format("%i", iCurrentSize), iCurrentSize));
-        }
-      }
-
-      if (!found)
-        current = iCurrentSize;
     }
   }
 #endif

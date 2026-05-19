@@ -103,12 +103,6 @@ public:
                                         std::vector<StringSettingOption>& list,
                                         std::string& current,
                                         void* data);
-#ifdef _XBOX
-  static void SettingOptionsSubtitleHeightsFiller(const boost::shared_ptr<const CSetting>& setting,
-                                                  std::vector<IntegerSettingOption>& list,
-                                                  int& current,
-                                                  void* data);
-#endif
 
   /*!
    * \brief Get the list of user fonts as family names from cache
