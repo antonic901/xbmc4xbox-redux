@@ -341,6 +341,7 @@ CSettingDependencyConditionCombination* CSettingDependencyConditionCombination::
 CSettingDependency::CSettingDependency(CSettingsManager* settingsManager /* = NULL */)
   : CSettingCondition(settingsManager), m_type(SettingDependencyType::Unknown)
 {
+  m_operation = CBooleanLogicOperationPtr(new CSettingDependencyConditionCombination(m_settingsManager));
 }
 
 CSettingDependency::CSettingDependency(SettingDependencyType::Type type,
