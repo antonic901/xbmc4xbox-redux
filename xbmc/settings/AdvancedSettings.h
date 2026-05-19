@@ -98,6 +98,8 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     static void GetCustomRegexps(TiXmlElement *pRootElement, std::vector<std::string> &settings);
     static void GetCustomExtensions(TiXmlElement *pRootElement, std::string& extensions);
 
+    int m_audioHeadRoom;
+    float m_karaokeSyncDelay;
     float m_audioPlayCountMinimumPercent;
     bool m_VideoPlayerIgnoreDTSinWAV;
 
@@ -113,6 +115,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     int m_videoPercentSeekForwardBig;
     int m_videoPercentSeekBackwardBig;
     std::vector<int> m_seekSteps;
+    std::string m_videoPPFFmpegDeint;
     std::string m_videoPPFFmpegPostProc;
     bool m_musicUseTimeSeeking;
     int m_musicTimeSeekForward;
@@ -123,14 +126,30 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     int m_musicPercentSeekBackward;
     int m_musicPercentSeekForwardBig;
     int m_musicPercentSeekBackwardBig;
+    int m_musicResample;
+    int m_videoBlackBarColour;
+    int m_videoBusyDialogDelay_ms;
     int m_videoIgnoreSecondsAtStart;
     float m_videoIgnorePercentAtEnd;
 
     float m_videoPlayCountMinimumPercent;
 
+    unsigned int m_cacheMemSize;
+    unsigned int m_cacheBufferMode;
+    float m_cacheReadFactor;
+
     float m_slideshowBlackBarCompensation;
     float m_slideshowZoomAmount;
     float m_slideshowPanAmount;
+
+    int m_lcdRows;
+    int m_lcdColumns;
+    int m_lcdAddress1;
+    int m_lcdAddress2;
+    int m_lcdAddress3;
+    int m_lcdAddress4;
+
+    int m_autoDetectPingTime;
 
     int m_songInfoDuration;
     int m_logLevel;
@@ -155,11 +174,21 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     typedef std::vector< std::pair<std::string, std::string> > StringMapping;
     StringMapping m_pathSubstitutions;
 
+    int m_remoteRepeat;
+    float m_controllerDeadzone;
+    bool m_FTPShowCache;
+    bool m_DisableModChipDetection;
+    bool m_bPowerSave;
+    bool m_displayRemoteCodes;
+    bool m_noDVDROM;
+    bool m_usePCDVDROM;
+
     bool m_playlistAsFolders;
     bool m_detectAsUdf;
 
     unsigned int m_fanartRes; ///< \brief the maximal resolution to cache fanart at (assumes 16x9)
     unsigned int m_imageRes;  ///< \brief the maximal resolution to cache images at (assumes 16x9)
+    bool m_useDDSFanart; ///< \brief support for DDS DXT1 generated thumbs
 
     int m_sambaclienttimeout;
     std::string m_sambadoscodepage;
@@ -170,6 +199,8 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     bool m_bFTPThumbs;
 
     std::string m_musicThumbs;
+    std::vector<std::string> m_musicArtistExtraArt;
+    std::vector<std::string> m_musicAlbumExtraArt;
 
     int m_iMusicLibraryRecentlyAddedItems;
     int m_iMusicLibraryDateAdded;
@@ -181,7 +212,9 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     std::string m_musicItemSeparator;
     std::vector<std::string> m_musicArtistSeparators;
     std::string m_videoItemSeparator;
+    std::string m_programItemSeparator;
     std::vector<std::string> m_musicTagsFromFileFilters;
+    bool m_musicUseArtistSortName;
 
     bool m_bVideoLibraryAllItemsOnBottom;
     int m_iVideoLibraryRecentlyAddedItems;
@@ -219,6 +252,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     DatabaseSettings m_databaseMusic; // advanced music database setup
     DatabaseSettings m_databaseVideo; // advanced video database setup
 
+    bool m_guiKeepInMemory;
     bool m_guiVisualizeDirtyRegions;
     int  m_guiAlgorithmDirtyRegions;
     bool m_guiSmartRedraw;
@@ -244,6 +278,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     std::string m_subtitlesExtensions;
     std::string m_musicExtensions;
     std::string m_pictureExtensions;
+    std::string m_programExtensions;
 
     std::string m_userAgent;
 

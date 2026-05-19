@@ -110,6 +110,8 @@ void CAdvancedSettings::Initialize()
   if (m_initialized)
     return;
 
+  m_audioHeadRoom = 0;
+  m_karaokeSyncDelay = 0;
   m_VideoPlayerIgnoreDTSinWAV = false;
 
   m_seekSteps.push_back(10);
@@ -134,7 +136,10 @@ void CAdvancedSettings::Initialize()
   m_videoPercentSeekForwardBig = 10;
   m_videoPercentSeekBackwardBig = -10;
 
+  m_videoPPFFmpegDeint = "linblenddeint";
   m_videoPPFFmpegPostProc = "ha:128:7,va,dr";
+  m_videoBlackBarColour = 0;
+  m_videoBusyDialogDelay_ms = 100;
   m_videoIgnoreSecondsAtStart = 3*60;
   m_videoIgnorePercentAtEnd   = 8.0f;
   m_videoPlayCountMinimumPercent = 90.0f;
@@ -148,10 +153,26 @@ void CAdvancedSettings::Initialize()
   m_musicPercentSeekBackward = -1;
   m_musicPercentSeekForwardBig = 10;
   m_musicPercentSeekBackwardBig = -10;
+  m_musicResample = 48000;
+
+  m_cacheMemSize = 1024 * 1024;
+  m_cacheBufferMode = XFILE::CACHE_BUFFER_MODE_INTERNET; // Default (buffer all internet streams/filesystems)
+  // the following setting determines the readRate of a player data
+  // as multiply of the default data read rate
+  m_cacheReadFactor = 4.0f;
 
   m_slideshowPanAmount = 2.5f;
   m_slideshowZoomAmount = 5.0f;
   m_slideshowBlackBarCompensation = 20.0f;
+
+  m_lcdRows = 4;
+  m_lcdColumns = 20;
+  m_lcdAddress1 = 0;
+  m_lcdAddress2 = 0x40;
+  m_lcdAddress3 = 0x14;
+  m_lcdAddress4 = 0x54;
+
+  m_autoDetectPingTime = 30;
 
   m_songInfoDuration = 10;
 
@@ -226,11 +247,21 @@ void CAdvancedSettings::Initialize()
 
   m_tvshowMultiPartEnumRegExp = "^[-_ex]+([0-9]+(?:(?:[a-i]|\\.[1-9])(?![0-9]))?)";
 
+  m_remoteRepeat = 480;
+  m_controllerDeadzone = 0.2f;
+  m_FTPShowCache = false;
+  m_DisableModChipDetection = true;
+  m_bPowerSave = true;
+  m_displayRemoteCodes = false;
+  m_noDVDROM = false;
+  m_usePCDVDROM = false;
+
   m_playlistAsFolders = true;
   m_detectAsUdf = false;
 
   m_fanartRes = 480;
   m_imageRes = 384;
+  m_useDDSFanart = false;
 
   m_sambaclienttimeout = 30;
   m_sambadoscodepage = "";
@@ -241,6 +272,8 @@ void CAdvancedSettings::Initialize()
   m_bFTPThumbs = false;
 
   m_musicThumbs = "folder.jpg|Folder.jpg|folder.JPG|Folder.JPG|cover.jpg|Cover.jpg|cover.jpeg|thumb.jpg|Thumb.jpg|thumb.JPG|Thumb.JPG";
+  m_musicArtistExtraArt.clear();
+  m_musicAlbumExtraArt.clear();
 
   m_bMusicLibraryAllItemsOnBottom = false;
   m_bMusicLibraryCleanOnUpdate = false;
@@ -248,11 +281,13 @@ void CAdvancedSettings::Initialize()
   m_iMusicLibraryRecentlyAddedItems = 25;
   m_strMusicLibraryAlbumFormat = "";
   m_prioritiseAPEv2tags = false;
+  m_musicUseArtistSortName = false;
   m_musicItemSeparator = " / ";
   m_musicArtistSeparators.push_back(";");
   m_musicArtistSeparators.push_back(" feat. ");
   m_musicArtistSeparators.push_back(" ft. ");
   m_videoItemSeparator = " / ";
+  m_programItemSeparator = " / ";
   m_iMusicLibraryDateAdded = 1; // prefer mtime over ctime and current time
 
   m_bVideoLibraryAllItemsOnBottom = false;
@@ -287,6 +322,7 @@ void CAdvancedSettings::Initialize()
 
   m_jsonOutputCompact = true;
 
+  m_guiKeepInMemory = false;
   m_guiVisualizeDirtyRegions = false;
   m_guiAlgorithmDirtyRegions = 3;
   m_guiSmartRedraw = false;
@@ -300,11 +336,10 @@ void CAdvancedSettings::Initialize()
   m_videoExtensions = ".m4v|.3g2|.3gp|.nsv|.tp|.ts|.ty|.strm|.pls|.rm|.rmvb|.mpd|.m3u|.m3u8|.ifo|.mov|.qt|.divx|.xvid|.bivx|.vob|.nrg|.img|.iso|.udf|.pva|.wmv|.asf|.asx|.ogm|.m2v|.avi|.bin|.dat|.mpg|.mpeg|.mp4|.mkv|.mk3d|.avc|.vp3|.svq3|.nuv|.viv|.dv|.fli|.flv|.001|.wpl|.xspf|.zip|.vdr|.dvr-ms|.xsp|.mts|.m2t|.m2ts|.evo|.ogv|.sdp|.avs|.rec|.url|.pxml|.vc1|.h264|.rcv|.rss|.mpls|.mpl|.webm|.bdmv|.bdm|.wtv|.trp|.f4v";
   m_subtitlesExtensions = ".utf|.utf8|.utf-8|.sub|.srt|.smi|.rt|.txt|.ssa|.text|.ssa|.aqt|.jss|"
                           ".ass|.vtt|.idx|.ifo|.zip|.sup";
+  m_programExtensions = ".xbe|.nes|.sms|.md|.sfc";
   m_discStubExtensions = ".disc";
   // internal music extensions
   m_musicExtensions += "|.cdda";
-  // internal video extensions
-  m_videoExtensions += "|.pvr";
 
   m_logLevelHint = m_logLevel = LOG_LEVEL_NORMAL;
 
@@ -366,6 +401,9 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
   TiXmlElement *pElement = pRootElement->FirstChildElement("audio");
   if (pElement)
   {
+    XMLUtils::GetInt(pElement, "headroom", m_audioHeadRoom, 0, 12);
+    XMLUtils::GetFloat(pElement, "karaokesyncdelay", m_karaokeSyncDelay, -3.0f, 3.0f);
+
     // 101 on purpose - can be used to never automark as watched
     XMLUtils::GetFloat(pElement, "playcountminimumpercent", m_audioPlayCountMinimumPercent, 0.0f, 101.0f);
 
@@ -379,6 +417,8 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
     XMLUtils::GetInt(pElement, "percentseekbackward", m_musicPercentSeekBackward, -100, 0);
     XMLUtils::GetInt(pElement, "percentseekforwardbig", m_musicPercentSeekForwardBig, 0, 100);
     XMLUtils::GetInt(pElement, "percentseekbackwardbig", m_musicPercentSeekBackwardBig, -100, 0);
+
+    XMLUtils::GetInt(pElement, "resample", m_musicResample, 0, 48000);
 
     TiXmlElement* pAudioExcludes = pElement->FirstChildElement("excludefromlisting");
     if (pAudioExcludes)
@@ -396,6 +436,10 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
   {
     XMLUtils::GetFloat(pElement, "subsdelayrange", m_videoSubsDelayRange, 10, 600);
     XMLUtils::GetFloat(pElement, "audiodelayrange", m_videoAudioDelayRange, 10, 600);
+    XMLUtils::GetInt(pElement, "blackbarcolour", m_videoBlackBarColour, 0, 255);
+    // controls the delay, in milliseconds, until
+    // the busy dialog is shown when starting video playback.
+    XMLUtils::GetInt(pElement, "busydialogdelayms", m_videoBusyDialogDelay_ms, 0, 1000);
     XMLUtils::GetBoolean(pElement, "fullscreenonmoviestart", m_fullScreenOnMovieStart);
     // 101 on purpose - can be used to never automark as watched
     XMLUtils::GetFloat(pElement, "playcountminimumpercent", m_videoPlayCountMinimumPercent, 0.0f, 101.0f);
@@ -430,6 +474,7 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
       GetCustomRegexps(pVideoExcludes, m_videoCleanStringRegExps);
 
     XMLUtils::GetString(pElement,"cleandatetime", m_videoCleanDateTimeRegExp);
+    XMLUtils::GetString(pElement,"ppffmpegdeinterlacing",m_videoPPFFmpegDeint);
     XMLUtils::GetString(pElement,"ppffmpegpostprocessing",m_videoPPFFmpegPostProc);
   }
 
@@ -441,6 +486,7 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
     XMLUtils::GetBoolean(pElement, "allitemsonbottom", m_bMusicLibraryAllItemsOnBottom);
     XMLUtils::GetBoolean(pElement, "cleanonupdate", m_bMusicLibraryCleanOnUpdate);
     XMLUtils::GetBoolean(pElement, "artistsortonupdate", m_bMusicLibraryArtistSortOnUpdate);
+    XMLUtils::GetBoolean(pElement, "useartistsortname", m_musicUseArtistSortName);
     XMLUtils::GetString(pElement, "albumformat", m_strMusicLibraryAlbumFormat);
     XMLUtils::GetString(pElement, "itemseparator", m_musicItemSeparator);
     XMLUtils::GetInt(pElement, "dateadded", m_iMusicLibraryDateAdded);
@@ -455,6 +501,32 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
         if (separator->FirstChild())
           m_musicArtistSeparators.push_back(separator->FirstChild()->ValueStr());
         separator = separator->NextSibling("separator");
+      }
+    }
+    // Music extra artist art
+    TiXmlElement* arttypes = pElement->FirstChildElement("artistextraart");
+    if (arttypes)
+    {
+      m_musicArtistExtraArt.clear();
+      TiXmlNode* arttype = arttypes->FirstChild("arttype");
+      while (arttype)
+      {
+        if (arttype->FirstChild())
+          m_musicArtistExtraArt.push_back(arttype->FirstChild()->ValueStr());
+        arttype = arttype->NextSibling("arttype");
+      }
+    }
+    // Music extra album art
+    arttypes = pElement->FirstChildElement("albumextraart");
+    if (arttypes)
+    {
+      m_musicAlbumExtraArt.clear();
+      TiXmlNode* arttype = arttypes->FirstChild("arttype");
+      while (arttype)
+      {
+        if (arttype->FirstChild())
+          m_musicAlbumExtraArt.push_back(arttype->FirstChild()->ValueStr());
+        arttype = arttype->NextSibling("arttype");
       }
     }
   }
@@ -492,9 +564,21 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
     XMLUtils::GetFloat(pElement, "blackbarcompensation", m_slideshowBlackBarCompensation, 0.0f, 50.0f);
   }
 
+  pElement = pRootElement->FirstChildElement("lcd");
+  if (pElement)
+  {
+    XMLUtils::GetInt(pElement, "rows", m_lcdRows, 1, 4);
+    XMLUtils::GetInt(pElement, "columns", m_lcdColumns, 1, 40);
+    XMLUtils::GetInt(pElement, "address1", m_lcdAddress1, 0, 0x100);
+    XMLUtils::GetInt(pElement, "address2", m_lcdAddress2, 0, 0x100);
+    XMLUtils::GetInt(pElement, "address3", m_lcdAddress3, 0, 0x100);
+    XMLUtils::GetInt(pElement, "address4", m_lcdAddress4, 0, 0x100);
+  }
+
   pElement = pRootElement->FirstChildElement("network");
   if (pElement)
   {
+    XMLUtils::GetInt(pElement, "autodetectpingtime", m_autoDetectPingTime, 1, 240);
     XMLUtils::GetInt(pElement, "curlclienttimeout", m_curlconnecttimeout, 1, 1000);
     XMLUtils::GetInt(pElement, "curllowspeedtime", m_curllowspeedtime, 1, 1000);
     XMLUtils::GetInt(pElement, "curlretries", m_curlretries, 0, 10);
@@ -505,6 +589,14 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
   if (pElement)
   {
     XMLUtils::GetBoolean(pElement, "compactoutput", m_jsonOutputCompact);
+  }
+
+  pElement = pRootElement->FirstChildElement("cache");
+  if (pElement)
+  {
+    XMLUtils::GetUInt(pElement, "memorysize", m_cacheMemSize);
+    XMLUtils::GetUInt(pElement, "buffermode", m_cacheBufferMode, 0, 4);
+    XMLUtils::GetFloat(pElement, "readfactor", m_cacheReadFactor);
   }
 
   pElement = pRootElement->FirstChildElement("samba");
@@ -669,8 +761,18 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
     }
   }
 
+  XMLUtils::GetInt(pRootElement, "remoterepeat", m_remoteRepeat, 1, INT_MAX);
+  XMLUtils::GetFloat(pRootElement, "controllerdeadzone", m_controllerDeadzone, 0.0f, 1.0f);
+  XMLUtils::GetBoolean(pRootElement, "ftpshowcache", m_FTPShowCache);
+  XMLUtils::GetBoolean(pRootElement, "disablemodchipdetection", m_DisableModChipDetection);
+  XMLUtils::GetBoolean(pRootElement, "powersave", m_bPowerSave);
+  XMLUtils::GetBoolean(pRootElement, "displayremotecodes", m_displayRemoteCodes);
+  XMLUtils::GetBoolean(pRootElement, "nodvdrom", m_noDVDROM);
+  XMLUtils::GetBoolean(pRootElement, "usepcdvdrom", m_usePCDVDROM);
+
   XMLUtils::GetUInt(pRootElement, "fanartres", m_fanartRes, 0, 9999);
   XMLUtils::GetUInt(pRootElement, "imageres", m_imageRes, 0, 9999);
+  XMLUtils::GetBoolean(pRootElement, "useddsfanart", m_useDDSFanart);
   XMLUtils::GetBoolean(pRootElement, "playlistasfolders", m_playlistAsFolders);
   XMLUtils::GetBoolean(pRootElement, "detectasudf", m_detectAsUdf);
 
@@ -747,6 +849,7 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
   pElement = pRootElement->FirstChildElement("gui");
   if (pElement)
   {
+    XMLUtils::GetBoolean(pElement, "keepinmemory", m_guiKeepInMemory);
     XMLUtils::GetBoolean(pElement, "visualizedirtyregions", m_guiVisualizeDirtyRegions);
     XMLUtils::GetInt(pElement, "algorithmdirtyregions",     m_guiAlgorithmDirtyRegions);
     XMLUtils::GetBoolean(pElement, "smartredraw", m_guiSmartRedraw);
@@ -781,6 +884,7 @@ void CAdvancedSettings::Clear()
   m_pictureExtensions.clear();
   m_musicExtensions.clear();
   m_videoExtensions.clear();
+  m_programExtensions.clear();
   m_discStubExtensions.clear();
 
   m_userAgent.clear();
