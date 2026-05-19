@@ -21,6 +21,7 @@
 */
 
 #include "UPnPDirectory.h"
+#include "ServiceBroker.h"
 #include "URL.h"
 #include "network/upnp/UPnP.h"
 #include "network/upnp/UPnPInternal.h"
@@ -28,6 +29,8 @@
 #include "PltSyncMediaBrowser.h"
 #include "video/VideoInfoTag.h"
 #include "FileItem.h"
+#include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 
@@ -151,6 +154,9 @@ CUPnPDirectory::GetFriendlyName(const CURL& url)
 +---------------------------------------------------------------------*/
 bool CUPnPDirectory::GetResource(const CURL& path, CFileItem &item)
 {
+    if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_SERVICES_UPNP))
+      return false;
+
     if(!path.IsProtocol("upnp"))
       return false;
 
@@ -252,6 +258,9 @@ bool CUPnPDirectory::GetResource(const CURL& path, CFileItem &item)
 bool
 CUPnPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
+    if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_SERVICES_UPNP))
+      return false;
+
     CUPnP* upnp = CUPnP::GetInstance();
 
     /* upnp should never be cached, it has internal cache */

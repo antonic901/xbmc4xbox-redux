@@ -4430,7 +4430,7 @@ void CApplication::ActivateScreenSaver(bool forceType /*= false */)
         m_screenSaver.reset(new CScreenSaver(""));
     }
     // Check if we are Playing Audio and Vis instead Screensaver!
-    else if (m_pPlayer->IsPlayingAudio() && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("screensaver.usemusicvisinstead") && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicplayer.visualisation").empty())
+    else if (m_pPlayer->IsPlayingAudio() && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_SCREENSAVER_DISABLEFORAUDIO) && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicplayer.visualisation").empty())
     { // activate the visualisation
       m_screenSaver.reset(new CScreenSaver("visualization"));
       CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_VISUALISATION);
@@ -5086,7 +5086,7 @@ void CApplication::ProcessSlow()
     m_Autorun.HandleAutorun();
 
   // update upnp server/renderer states
-  if(UPNP::CUPnP::IsInstantiated())
+  if(CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_SERVICES_UPNP) && UPNP::CUPnP::IsInstantiated())
     UPNP::CUPnP::GetInstance()->UpdateState();
 
   CServiceBroker::GetGUI()->GetWindowManager().SendMessage(GUI_MSG_REFRESH_TIMER,0,0);

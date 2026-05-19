@@ -527,8 +527,8 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
 
         // We scale based on PAL4x3 - this at least ensures all sizing is constant across resolutions.
         RESOLUTION_INFO pal(720, 576, 0);
-        CGUIFont *subFont = g_fontManager.LoadTTF("__subtitle__", fontPath, color[CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.color")], 0, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.height"), CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.style"), false, 1.0f, 1.0f, &pal, true);
-        CGUIFont *borderFont = g_fontManager.LoadTTF("__subtitleborder__", fontPath, 0xFF000000, 0, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.height"), CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.style"), true, 1.0f, 1.0f, &pal, true);
+        CGUIFont *subFont = g_fontManager.LoadTTF("__subtitle__", fontPath, color[CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.color")], 0, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_SUBTITLES_FONTSIZE), CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.style"), false, 1.0f, 1.0f, &pal, true);
+        CGUIFont *borderFont = g_fontManager.LoadTTF("__subtitleborder__", fontPath, 0xFF000000, 0, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_SUBTITLES_FONTSIZE), CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.style"), true, 1.0f, 1.0f, &pal, true);
         if (!subFont || !borderFont)
           CLog::Log(LOGERROR, "CGUIWindowFullScreen::OnMessage(WINDOW_INIT) - Unable to load subtitle font");
         else

@@ -1427,7 +1427,7 @@ void CUtil::PrepareSubtitleFonts()
   CStdString strFontPath = "special://xbmc/system/players/mplayer/font";
 
   if( IsUsingTTFSubtitles()
-    || CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.height") == 0
+    || CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_SUBTITLES_FONTSIZE) == 0
     || CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.font").size() == 0)
   {
     /* delete all files in the font dir, so mplayer doesn't try to load them */

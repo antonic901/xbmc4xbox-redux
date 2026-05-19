@@ -34,7 +34,6 @@ public:
   static const char* SETTING_LOOKANDFEEL_SKINCOLORS;
   static const char* SETTING_LOOKANDFEEL_FONT;
   static const char* SETTING_LOOKANDFEEL_SKINZOOM;
-  static const char* SETTING_LOOKANDFEEL_STARTUPACTION;
   static const char* SETTING_LOOKANDFEEL_STARTUPWINDOW;
   static const char* SETTING_LOOKANDFEEL_SOUNDSKIN;
   static const char* SETTING_LOOKANDFEEL_ENABLERSSFEEDS;
@@ -61,6 +60,7 @@ public:
   static const char* SETTING_SCREENSAVER_SETTINGS;
   static const char* SETTING_SCREENSAVER_PREVIEW;
   static const char* SETTING_SCREENSAVER_TIME;
+  static const char* SETTING_SCREENSAVER_DISABLEFORAUDIO;
   static const char* SETTING_SCREENSAVER_USEDIMONPAUSE;
   static const char* SETTING_VIDEOLIBRARY_SHOWUNWATCHEDPLOTS;
   static const char* SETTING_VIDEOLIBRARY_ACTORTHUMBS;
@@ -104,6 +104,7 @@ public:
   static const char* SETTING_MYVIDEOS_EXTRACTTHUMB;
   static const char* SETTING_MYVIDEOS_STACKVIDEOS;
   static const char* SETTING_LOCALE_SUBTITLELANGUAGE;
+  static const char* SETTING_SUBTITLES_FONTSIZE;
   static const char* SETTING_SUBTITLES_STYLE;
   static const char* SETTING_SUBTITLES_CHARSET;
   static const char* SETTING_SUBTITLES_LANGUAGES;
@@ -113,7 +114,6 @@ public:
   static const char* SETTING_SUBTITLES_DOWNLOADFIRST;
   static const char* SETTING_SUBTITLES_TV;
   static const char* SETTING_SUBTITLES_MOVIE;
-  static const char* SETTING_DVDS_AUTORUN;
   static const char* SETTING_DVDS_PLAYERREGION;
   static const char* SETTING_DVDS_AUTOMENU;
   static const char* SETTING_SCRAPERS_MOVIESDEFAULT;
@@ -188,7 +188,6 @@ public:
   static const char* SETTING_SERVICES_DEVICENAME;
   static const char* SETTING_SERVICES_UPNP;
   static const char* SETTING_SERVICES_UPNPSERVER;
-  static const char* SETTING_SERVICES_UPNPCONTROLLER;
   static const char* SETTING_SERVICES_UPNPRENDERER;
   static const char* SETTING_SERVICES_WEBSERVER;
   static const char* SETTING_SERVICES_WEBSERVERPORT;
