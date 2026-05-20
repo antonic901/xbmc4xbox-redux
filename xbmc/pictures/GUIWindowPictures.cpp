@@ -329,7 +329,7 @@ bool CGUIWindowPictures::ShowPicture(int iItem, bool startSlideShow)
   CFileItemPtr pItem = m_vecItems->Get(iItem);
   std::string strPicture = pItem->GetPath();
 
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
   if (pItem->IsDVD())
     return MEDIA_DETECT::CAutorun::PlayDisc();
 #endif

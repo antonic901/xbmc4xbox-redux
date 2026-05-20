@@ -40,7 +40,7 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "settings/lib/SettingsManager.h"
-#if !defined(TARGET_WINDOWS) && defined(HAS_DVD_DRIVE)
+#if !defined(TARGET_WINDOWS) && defined(HAS_OPTICAL_DRIVE)
 #include "storage/DetectDVDType.h"
 #endif
 #include "threads/SingleLock.h"
@@ -285,7 +285,7 @@ bool CProfilesManager::LoadProfile(size_t index)
   CPasswordManager::GetInstance().Clear();
 
   // to set labels - shares are reloaded
-#if !defined(TARGET_WINDOWS) && defined(HAS_DVD_DRIVE)
+#if !defined(TARGET_WINDOWS) && defined(HAS_OPTICAL_DRIVE)
   MEDIA_DETECT::CDetectDVDMedia::UpdateState();
 #endif
 

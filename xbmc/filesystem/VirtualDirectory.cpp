@@ -189,7 +189,7 @@ void CVirtualDirectory::GetSources(VECSOURCES &shares) const
 #endif
   }
 
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
   // and update our dvd share
   for (unsigned int i = 0; i < shares.size(); ++i)
   {

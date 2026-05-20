@@ -43,7 +43,7 @@
 
 #include <math.h>
 
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
 #include "Autorun.h"
 #endif
 
@@ -349,7 +349,7 @@ static int PlayerControl(const std::vector<std::string>& params)
  */
 static int PlayDVD(const std::vector<std::string>& params)
 {
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
   bool restart = false;
   if (!params.empty() && StringUtils::EqualsNoCase(params[0], "restart"))
     restart = true;

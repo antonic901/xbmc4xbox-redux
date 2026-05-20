@@ -3363,7 +3363,7 @@ HRESULT CApplication::Cleanup()
     g_playlistPlayer.Clear();
     CServiceBroker::GetSettingsComponent()->GetSettings()->Uninitialize();
 
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
     CLibcdio::ReleaseInstance();
 #endif
 #endif

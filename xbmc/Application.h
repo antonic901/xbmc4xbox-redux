@@ -20,7 +20,7 @@
  *
  */
 
-#include "system.h" // for HAS_DVD_DRIVE et. al.
+#include "system.h" // for HAS_OPTICAL_DRIVE et. al.
 #include "XBApplicationEx.h"
 
 #include "IMsgTargetCallback.h"
