@@ -49,7 +49,7 @@
 							<param name="texture" value="osd/fullscreen/buttons/previous.png"/>
 						</include>
 						<onclick>PlayerControl(Previous)</onclick>
-						<visible>Player.HasSceneMarkers | Player.ChapterCount | Integer.IsGreater(Playlist.Length(video),1)</visible>
+						<visible>Player.ChapterCount | Integer.IsGreater(Playlist.Length(video),1)</visible>
 					</control>
 					<control type="radiobutton" id="601">
 						<include content="OSDButton">
@@ -106,7 +106,7 @@
 							<param name="texture" value="osd/fullscreen/buttons/next.png"/>
 						</include>
 						<onclick>PlayerControl(Next)</onclick>
-						<visible>Player.HasSceneMarkers | Player.ChapterCount | Integer.IsGreater(Playlist.Length(video),1)</visible>
+						<visible>Player.ChapterCount | Integer.IsGreater(Playlist.Length(video),1)</visible>
 					</control>
 				</control>
 				<control type="grouplist" id="202">
