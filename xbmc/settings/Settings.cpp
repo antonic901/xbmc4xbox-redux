@@ -8,19 +8,23 @@
 
 #include "Settings.h"
 
+#include "Application.h"
 #include "Autorun.h"
+#include "CdgParser.h"
 #include "GUIPassword.h"
 #include "LangInfo.h"
 #include "XBAudioConfig.h"
 #include "XBTimeZone.h"
 #include "XBVideoConfig.h"
 #include "addons/AddonSystemSettings.h"
+#include "addons/RepositoryUpdater.h"
 #include "addons/Skin.h"
 #include "cores/VideoRenderers/XBoxRenderer.h"
 #include "filesystem/File.h"
 #include "guilib/GUIFontManager.h"
 #include "input/KeyboardLayoutManager.h"
 
+#include "network/NetworkServices.h"
 #include "network/upnp/UPnPSettings.h"
 #include "SeekHandler.h"
 #include "ServiceBroker.h"
@@ -33,11 +37,13 @@
 #include "settings/SkinSettings.h"
 #include "settings/lib/SettingsManager.h"
 #include "utils/CharsetConverter.h"
+#include "utils/FanController.h"
 #include "utils/RssManager.h"
 #include "utils/StringUtils.h"
 #include "utils/SystemInfo.h"
 #include "utils/Variant.h"
 #include "utils/XBMCTinyXML.h"
+#include "utils/Weather.h"
 #include "utils/log.h"
 #include "view/ViewStateSettings.h"
 
@@ -518,13 +524,13 @@ void CSettings::InitializeOptionFillers()
   // register setting option fillers
 #ifdef HAS_OPTICAL_DRIVE
   GetSettingsManager()->RegisterSettingOptionsFiller("audiocdactions", MEDIA_DETECT::CAutorun::SettingOptionAudioCdActionsFiller);
-#ifdef _XBOX
   GetSettingsManager()->RegisterSettingOptionsFiller("audiocdencoders", MEDIA_DETECT::CAutorun::SettingOptionAudioCdEncodersFiller);
 #endif
-#endif
   GetSettingsManager()->RegisterSettingOptionsFiller("charsets", CCharsetConverter::SettingOptionsCharsetsFiller);
+  GetSettingsManager()->RegisterSettingOptionsFiller("fanspeeds", CFanController::SettingOptionsSpeedsFiller);
   GetSettingsManager()->RegisterSettingOptionsFiller("fonts", GUIFontManager::SettingOptionsFontsFiller);
   GetSettingsManager()->RegisterSettingOptionsFiller("languagenames", CLangInfo::SettingOptionsLanguageNamesFiller);
+  GetSettingsManager()->RegisterSettingOptionsFiller("framerateconversions", CDisplaySettings::SettingOptionsFramerateconversionsFiller);
   GetSettingsManager()->RegisterSettingOptionsFiller("regions", CLangInfo::SettingOptionsRegionsFiller);
   GetSettingsManager()->RegisterSettingOptionsFiller("shortdateformats", CLangInfo::SettingOptionsShortDateFormatsFiller);
   GetSettingsManager()->RegisterSettingOptionsFiller("longdateformats", CLangInfo::SettingOptionsLongDateFormatsFiller);
@@ -532,9 +538,7 @@ void CSettings::InitializeOptionFillers()
   GetSettingsManager()->RegisterSettingOptionsFiller("24hourclockformats", CLangInfo::SettingOptions24HourClockFormatsFiller);
   GetSettingsManager()->RegisterSettingOptionsFiller("speedunits", CLangInfo::SettingOptionsSpeedUnitsFiller);
   GetSettingsManager()->RegisterSettingOptionsFiller("temperatureunits", CLangInfo::SettingOptionsTemperatureUnitsFiller);
-#ifdef _XBOX
   GetSettingsManager()->RegisterSettingOptionsFiller("rendermethods", CXBoxRenderer::SettingOptionsRenderMethodsFiller);
-#endif
   GetSettingsManager()->RegisterSettingOptionsFiller("resolutions", CDisplaySettings::SettingOptionsResolutionsFiller);
   GetSettingsManager()->RegisterSettingOptionsFiller("videoseeksteps", CSeekHandler::SettingOptionsSeekStepsFiller);
   GetSettingsManager()->RegisterSettingOptionsFiller("startupwindows", ADDON::CSkinInfo::SettingOptionsStartupWindowsFiller);
@@ -545,8 +549,11 @@ void CSettings::InitializeOptionFillers()
   GetSettingsManager()->RegisterSettingOptionsFiller("skincolors", ADDON::CSkinInfo::SettingOptionsSkinColorsFiller);
   GetSettingsManager()->RegisterSettingOptionsFiller("skinfonts", ADDON::CSkinInfo::SettingOptionsSkinFontsFiller);
   GetSettingsManager()->RegisterSettingOptionsFiller("skinthemes", ADDON::CSkinInfo::SettingOptionsSkinThemesFiller);
+  GetSettingsManager()->RegisterSettingOptionsFiller("targettemperatures", CFanController::SettingOptionsTemperaturesFiller);
+  GetSettingsManager()->RegisterSettingOptionsFiller("timezones", XBTimeZone::SettingOptionsTimezonesFiller);
   GetSettingsManager()->RegisterSettingOptionsFiller(
       "keyboardlayouts", KEYBOARD::CKeyboardLayoutManager::SettingOptionsKeyboardLayoutsFiller);
+  GetSettingsManager()->RegisterSettingOptionsFiller("voicemasks", CCdgParser::SettingOptionsVoiceMasksFiller);
 }
 
 void CSettings::UninitializeOptionFillers()
@@ -554,8 +561,10 @@ void CSettings::UninitializeOptionFillers()
   GetSettingsManager()->UnregisterSettingOptionsFiller("audiocdactions");
   GetSettingsManager()->UnregisterSettingOptionsFiller("audiocdencoders");
   GetSettingsManager()->UnregisterSettingOptionsFiller("charsets");
+  GetSettingsManager()->UnregisterSettingOptionsFiller("fanspeeds");
   GetSettingsManager()->UnregisterSettingOptionsFiller("fonts");
   GetSettingsManager()->UnregisterSettingOptionsFiller("languagenames");
+  GetSettingsManager()->UnregisterSettingOptionsFiller("framerateconversions");
   GetSettingsManager()->UnregisterSettingOptionsFiller("regions");
   GetSettingsManager()->UnregisterSettingOptionsFiller("shortdateformats");
   GetSettingsManager()->UnregisterSettingOptionsFiller("longdateformats");
@@ -574,11 +583,10 @@ void CSettings::UninitializeOptionFillers()
   GetSettingsManager()->UnregisterSettingOptionsFiller("skincolors");
   GetSettingsManager()->UnregisterSettingOptionsFiller("skinfonts");
   GetSettingsManager()->UnregisterSettingOptionsFiller("skinthemes");
-#if defined(TARGET_LINUX) || defined(_XBOX)
-  GetSettingsManager()->UnregisterSettingOptionsFiller("timezonecountries");
+  GetSettingsManager()->UnregisterSettingOptionsFiller("targettemperatures");
   GetSettingsManager()->UnregisterSettingOptionsFiller("timezones");
-#endif // defined(TARGET_LINUX) || defined(_XBOX)
   GetSettingsManager()->UnregisterSettingOptionsFiller("keyboardlayouts");
+  GetSettingsManager()->UnregisterSettingOptionsFiller("voicemasks");
 }
 
 void CSettings::InitializeConditions()
@@ -606,11 +614,18 @@ void CSettings::InitializeISettingsHandlers()
   // register ISettingsHandler implementations
   // The order of these matters! Handlers are processed in the order they were registered.
   GetSettingsManager()->RegisterSettingsHandler(&CMediaSourceSettings::GetInstance());
+  GetSettingsManager()->RegisterSettingsHandler(&CServiceBroker::GetPlayerCoreFactory());
 #ifdef HAS_UPNP
   GetSettingsManager()->RegisterSettingsHandler(&CUPnPSettings::GetInstance());
 #endif
   GetSettingsManager()->RegisterSettingsHandler(&CRssManager::GetInstance());
   GetSettingsManager()->RegisterSettingsHandler(&g_langInfo);
+  GetSettingsManager()->RegisterSettingsHandler(&g_application);
+#ifdef _XBOX
+  GetSettingsManager()->RegisterSettingsHandler(&g_audioConfig);
+  GetSettingsManager()->RegisterSettingsHandler(&g_videoConfig);
+  GetSettingsManager()->RegisterSettingsHandler(&g_timezone);
+#endif
   GetSettingsManager()->RegisterSettingsHandler(&CMediaSettings::GetInstance());
 }
 
@@ -618,17 +633,23 @@ void CSettings::UninitializeISettingsHandlers()
 {
   // unregister ISettingsHandler implementations
   GetSettingsManager()->UnregisterSettingsHandler(&CMediaSettings::GetInstance());
+  GetSettingsManager()->UnregisterSettingsHandler(&CServiceBroker::GetPlayerCoreFactory());
   GetSettingsManager()->UnregisterSettingsHandler(&g_langInfo);
   GetSettingsManager()->UnregisterSettingsHandler(&CRssManager::GetInstance());
 #ifdef HAS_UPNP
   GetSettingsManager()->UnregisterSettingsHandler(&CUPnPSettings::GetInstance());
 #endif
+  GetSettingsManager()->UnregisterSettingsHandler(&g_application);
+  GetSettingsManager()->UnregisterSettingsHandler(&g_audioConfig);
+  GetSettingsManager()->UnregisterSettingsHandler(&g_videoConfig);
+  GetSettingsManager()->UnregisterSettingsHandler(&g_timezone);
   GetSettingsManager()->UnregisterSettingsHandler(&CMediaSourceSettings::GetInstance());
 }
 
 void CSettings::InitializeISubSettings()
 {
   // register ISubSettings implementations
+  RegisterSubSettings(&g_application);
   RegisterSubSettings(&CDisplaySettings::GetInstance());
   RegisterSubSettings(&CMediaSettings::GetInstance());
   RegisterSubSettings(&CSkinSettings::GetInstance());
@@ -639,6 +660,7 @@ void CSettings::InitializeISubSettings()
 void CSettings::UninitializeISubSettings()
 {
   // unregister ISubSettings implementations
+  UnregisterSubSettings(&g_application);
   UnregisterSubSettings(&CDisplaySettings::GetInstance());
   UnregisterSubSettings(&CMediaSettings::GetInstance());
   UnregisterSubSettings(&CSkinSettings::GetInstance());
@@ -650,6 +672,8 @@ void CSettings::InitializeISettingCallbacks()
 {
   // register any ISettingCallback implementations
   std::set<std::string> settingSet;
+  settingSet.insert("karaoke.export");
+  settingSet.insert("karaoke.importcsv");
   settingSet.insert(CSettings::SETTING_MUSICLIBRARY_CLEANUP);
   settingSet.insert(CSettings::SETTING_MUSICLIBRARY_EXPORT);
   settingSet.insert(CSettings::SETTING_MUSICLIBRARY_IMPORT);
@@ -664,12 +688,83 @@ void CSettings::InitializeISettingCallbacks()
 
   settingSet.clear();
   settingSet.insert(CSettings::SETTING_VIDEOSCREEN_RESOLUTION);
+  settingSet.insert("videoscreen.flickerfilter");
+  settingSet.insert("videoscreen.soften");
+  settingSet.insert("videooutput.aspect");
+  settingSet.insert("videooutput.hd480p");
+  settingSet.insert("videooutput.hd720p");
+  settingSet.insert("videooutput.hd1080i");
   GetSettingsManager()->RegisterCallback(&CDisplaySettings::GetInstance(), settingSet);
 
   settingSet.clear();
+  settingSet.insert(CSettings::SETTING_VIDEOPLAYER_SEEKDELAY);
+  settingSet.insert(CSettings::SETTING_VIDEOPLAYER_SEEKSTEPS);
+  settingSet.insert(CSettings::SETTING_MUSICPLAYER_SEEKDELAY);
+  settingSet.insert(CSettings::SETTING_MUSICPLAYER_SEEKSTEPS);
+  GetSettingsManager()->RegisterCallback(&CSeekHandler::GetInstance(), settingSet);
+
+  settingSet.clear();
+  settingSet.insert("audiooutput.channels");
+  settingSet.insert("audiooutput.guisoundmode");
+  settingSet.insert(CSettings::SETTING_AUDIOOUTPUT_AC3PASSTHROUGH);
+  settingSet.insert(CSettings::SETTING_AUDIOOUTPUT_DTSPASSTHROUGH);
+  settingSet.insert("audiooutput.aacpassthrough");
+  settingSet.insert("audiooutput.mp1passthrough");
+  settingSet.insert("audiooutput.mp2passthrough");
+  settingSet.insert("audiooutput.mp3passthrough");
+  settingSet.insert("harddisk.aamlevel");
+  settingSet.insert("harddisk.apmlevel");
+  settingSet.insert("karaoke.port0voicemask");
+  settingSet.insert("karaoke.port1voicemask");
+  settingSet.insert("karaoke.port2voicemask");
+  settingSet.insert("karaoke.port3voicemask");
+  settingSet.insert("lcd.backlight");
+  settingSet.insert("lcd.contrast");
+  settingSet.insert("lcd.modchip");
+  settingSet.insert("lcd.type");
+  settingSet.insert(CSettings::SETTING_LOOKANDFEEL_SKIN);
+  settingSet.insert(CSettings::SETTING_LOOKANDFEEL_SKINSETTINGS);
+  settingSet.insert(CSettings::SETTING_LOOKANDFEEL_FONT);
+  settingSet.insert(CSettings::SETTING_LOOKANDFEEL_SKINTHEME);
+  settingSet.insert(CSettings::SETTING_LOOKANDFEEL_SKINCOLORS);
+  settingSet.insert(CSettings::SETTING_LOOKANDFEEL_SKINZOOM);
+  settingSet.insert(CSettings::SETTING_MUSICPLAYER_REPLAYGAINPREAMP);
+  settingSet.insert(CSettings::SETTING_MUSICPLAYER_REPLAYGAINNOGAINPREAMP);
+  settingSet.insert(CSettings::SETTING_MUSICPLAYER_REPLAYGAINTYPE);
+  settingSet.insert(CSettings::SETTING_MUSICPLAYER_REPLAYGAINAVOIDCLIPPING);
+  settingSet.insert("myprograms.trainerscan");
+  settingSet.insert("network.assignment");
+  settingSet.insert("network.ipaddress");
+  settingSet.insert("network.subnet");
+  settingSet.insert("network.gateway");
+  settingSet.insert("network.dns");
+  settingSet.insert("network.dns2");
+  settingSet.insert(CSettings::SETTING_SCREENSAVER_MODE);
+  settingSet.insert(CSettings::SETTING_SCREENSAVER_PREVIEW);
+  settingSet.insert(CSettings::SETTING_SCREENSAVER_SETTINGS);
+  settingSet.insert("system.ledcolour");
+  settingSet.insert(CSettings::SETTING_VIDEOSCREEN_GUICALIBRATION);
+  settingSet.insert(CSettings::SETTING_SOURCE_VIDEOS);
+  settingSet.insert(CSettings::SETTING_SOURCE_MUSIC);
+  settingSet.insert(CSettings::SETTING_SOURCE_PICTURES);
+  settingSet.insert("updater.check");
+  GetSettingsManager()->RegisterCallback(&g_application, settingSet);
+
+  settingSet.clear();
   settingSet.insert(CSettings::SETTING_SUBTITLES_CHARSET);
+  settingSet.insert("karaoke.charset");
   settingSet.insert(CSettings::SETTING_LOCALE_CHARSET);
   GetSettingsManager()->RegisterCallback(&g_charsetConverter, settingSet);
+
+#ifdef _XBOX
+  settingSet.clear();
+  settingSet.insert("system.autotemperature");
+  settingSet.insert("system.fanspeedcontrol");
+  settingSet.insert("system.fanspeed");
+  settingSet.insert("system.minfanspeed");
+  settingSet.insert("system.targettemperature");
+  GetSettingsManager()->RegisterCallback(CFanController::Instance(), settingSet);
+#endif
 
   settingSet.clear();
   settingSet.insert(CSettings::SETTING_LOCALE_AUDIOLANGUAGE);
@@ -685,12 +780,49 @@ void CSettings::InitializeISettingCallbacks()
   GetSettingsManager()->RegisterCallback(&g_langInfo, settingSet);
 
   settingSet.clear();
+  settingSet.insert(CSettings::SETTING_SERVICES_WEBSERVER);
+  settingSet.insert(CSettings::SETTING_SERVICES_WEBSERVERPORT);
+  settingSet.insert(CSettings::SETTING_SERVICES_WEBSERVERUSERNAME);
+  settingSet.insert(CSettings::SETTING_SERVICES_WEBSERVERPASSWORD);
+  settingSet.insert(CSettings::SETTING_SERVICES_UPNPSERVER);
+  settingSet.insert(CSettings::SETTING_SERVICES_UPNPRENDERER);
+  settingSet.insert(CSettings::SETTING_SERVICES_ESENABLED);
+  settingSet.insert(CSettings::SETTING_SERVICES_ESPORT);
+  settingSet.insert(CSettings::SETTING_SERVICES_ESALLINTERFACES);
+  settingSet.insert(CSettings::SETTING_SERVICES_ESINITIALDELAY);
+  settingSet.insert(CSettings::SETTING_SERVICES_ESCONTINUOUSDELAY);
+  settingSet.insert("services.ftpserver");
+  settingSet.insert("services.ftpserveruser");
+  settingSet.insert("services.ftpserverpassword");
+  settingSet.insert("services.timeserver");
+  settingSet.insert("services.timeserveraddress");
+  settingSet.insert(CSettings::SETTING_SMB_WINSSERVER);
+  settingSet.insert(CSettings::SETTING_SMB_WORKGROUP);
+  GetSettingsManager()->RegisterCallback(&CNetworkServices::GetInstance(), settingSet);
+
+  settingSet.clear();
   settingSet.insert(CSettings::SETTING_MASTERLOCK_LOCKCODE);
   GetSettingsManager()->RegisterCallback(&g_passwordManager, settingSet);
 
   settingSet.clear();
   settingSet.insert(CSettings::SETTING_LOOKANDFEEL_RSSEDIT);
   GetSettingsManager()->RegisterCallback(&CRssManager::GetInstance(), settingSet);
+
+#ifdef _XBOX
+  settingSet.clear();
+  settingSet.insert(CSettings::SETTING_LOCALE_TIMEZONE);
+  settingSet.insert("locale.usedst");
+  GetSettingsManager()->RegisterCallback(&g_timezone, settingSet);
+#endif
+
+  settingSet.clear();
+  settingSet.insert(CSettings::SETTING_WEATHER_ADDON);
+  settingSet.insert(CSettings::SETTING_WEATHER_ADDONSETTINGS);
+  GetSettingsManager()->RegisterCallback(&CServiceBroker::GetWeatherManager(), settingSet);
+
+  settingSet.clear();
+  settingSet.insert(CSettings::SETTING_ADDONS_AUTOUPDATES);
+  GetSettingsManager()->RegisterCallback(&CServiceBroker::GetRepositoryUpdater(), settingSet);
 
   settingSet.clear();
   settingSet.insert(CSettings::SETTING_ADDONS_SHOW_RUNNING);
@@ -704,10 +836,17 @@ void CSettings::UninitializeISettingCallbacks()
 {
   GetSettingsManager()->UnregisterCallback(&CMediaSettings::GetInstance());
   GetSettingsManager()->UnregisterCallback(&CDisplaySettings::GetInstance());
+  GetSettingsManager()->UnregisterCallback(&CSeekHandler::GetInstance());
+  GetSettingsManager()->UnregisterCallback(&g_application);
   GetSettingsManager()->UnregisterCallback(&g_charsetConverter);
+  GetSettingsManager()->UnregisterCallback(CFanController::Instance());
   GetSettingsManager()->UnregisterCallback(&g_langInfo);
+  GetSettingsManager()->UnregisterCallback(&CNetworkServices::GetInstance());
   GetSettingsManager()->UnregisterCallback(&g_passwordManager);
   GetSettingsManager()->UnregisterCallback(&CRssManager::GetInstance());
+  GetSettingsManager()->UnregisterCallback(&g_timezone);
+  GetSettingsManager()->UnregisterCallback(&CServiceBroker::GetWeatherManager());
+  GetSettingsManager()->UnregisterCallback(&CServiceBroker::GetRepositoryUpdater());
 }
 
 bool CSettings::Reset()
