@@ -293,16 +293,6 @@
 							<param name="fallback_icon" value="DefaultAddon.png"/>
 						</include>
 						<include content="WidgetListSquare">
-							<param name="content_path" value="addons://sources/game/"/>
-							<param name="widget_header" value="$LOCALIZE[35049]"/>
-							<param name="widget_target" value="games"/>
-							<param name="sortby" value="lastused"/>
-							<param name="sortorder" value="descending"/>
-							<param name="list_id" value="8700"/>
-							<param name="fallback_icon" value="DefaultAddonGame.png"/>
-							<param name="visible" value="System.GetBool(gamesgeneral.enable)"/>
-						</include>
-						<include content="WidgetListSquare">
 							<param name="content_path" value="addons://sources/executable/"/>
 							<param name="widget_header" value="$LOCALIZE[1043]"/>
 							<param name="widget_target" value="programs"/>
@@ -653,36 +643,6 @@
 						</include>
 					</control>
 				</control>
-				<control type="group" id="17000">
-					<visible>String.IsEqual(Container(9000).ListItem.Property(id),games)</visible>
-					<include content="Visible_Right_Delayed">
-						<param name="id" value="games"/>
-					</include>
-					<control type="grouplist" id="17001">
-						<include>WidgetGroupListCommon</include>
-						<pagecontrol>17010</pagecontrol>
-						<include content="WidgetListSquare">
-							<param name="content_path" value="addons://sources/game/"/>
-							<param name="widget_header" value="$LOCALIZE[35049]"/>
-							<param name="widget_target" value="games"/>
-							<param name="sortby" value="lastused"/>
-							<param name="sortorder" value="descending"/>
-							<param name="list_id" value="17200"/>
-							<param name="fallback_icon" value="DefaultAddonGame.png"/>
-						</include>
-					</control>
-					<include content="ImageWidget">
-						<param name="text_label" value="$LOCALIZE[31162]" />
-						<param name="button_label" value="$LOCALIZE[31144]" />
-						<param name="button_onclick" value="ActivateWindow(addonbrowser,addons://default_binary_addons_source/category.gameaddons,return)"/>
-						<param name="button_id" value="17100"/>
-						<param name="visible" value="!Integer.IsGreater(Container(17001).NumItems,0)"/>
-						<param name="button2_onclick" value="Skin.SetBool(HomeMenuNoGamesButton)"/>
-					</include>
-					<include content="WidgetScrollbar" condition="Skin.HasSetting(touchmode)">
-						<param name="scrollbar_id" value="17010"/>
-					</include>
-				</control>
 				<control type="group" id="21000">
 					<visible>String.IsEqual(Container(9000).ListItem.Property(id),disc)</visible>
 					<include content="Visible_Right_Delayed">
@@ -830,14 +790,6 @@
 							<thumb>icons/sidemenu/musicvideos.png</thumb>
 							<property name="id">musicvideos</property>
 							<visible>!Skin.HasSetting(HomeMenuNoMusicVideoButton)</visible>
-						</item>
-						<item>
-							<label>$LOCALIZE[15016]</label>
-							<property name="menu_id">$NUMBER[17000]</property>
-							<onclick>ActivateWindow(Games)</onclick>
-							<thumb>icons/sidemenu/games.png</thumb>
-							<property name="id">games</property>
-							<visible>System.GetBool(gamesgeneral.enable) + !Skin.HasSetting(HomeMenuNoGamesButton)</visible>
 						</item>
 						<item>
 							<label>$LOCALIZE[1]</label>
