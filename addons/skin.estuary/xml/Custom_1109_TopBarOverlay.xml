@@ -168,7 +168,7 @@
 						<height>100</height>
 						<width>auto</width>
 						<visible>!String.isempty(Player.Duration)</visible>
-						<visible>Player.HasVideo + ![Player.HasGame]</visible>
+						<visible>Player.HasVideo</visible>
 					</control>
 					<control type="image">
 						<top>2</top>
