@@ -114,31 +114,6 @@
 				<height>3</height>
 				<texture colordiffuse="button_focus" border="2">dialogs/separator-grey.png</texture>
 			</control>
-			<control type="group" id="102">
-				<description>System Info page that shows a QR code linking to https://kodi.tv/donate/</description>
-				<left>420</left>
-				<right>50</right>
-				<top>30</top>
-				<bottom>30</bottom>
-				<control type="textbox">
-					<height>110</height>
-					<label>$LOCALIZE[12397]</label>
-				</control>
-				<control type="multiimage" id="103">
-					<top>110</top>
-					<height>620</height>
-					<imagepath>special://xbmc/media/qr/kodilove/</imagepath>
-					<aspectratio>keep</aspectratio>
-					<timeperimage>5000</timeperimage>
-					<fadetime>1000</fadetime>
-					<randomize>false</randomize>
-				</control>
-				<control type="label">
-					<top>748</top>
-					<align>center</align>
-					<label>$LOCALIZE[12398]</label>
-				</control>
-			</control>
 		</control>
 		<control type="group">
 			<left>0</left>
@@ -179,6 +154,22 @@
 					<width>420</width>
 					<label>$LOCALIZE[13279]</label>
 				</control>
+				<control type="button" id="92">
+					<description>Button HDD</description>
+					<include content="DefaultSettingButton">
+						<param name="height" value="88" />
+					</include>
+					<width>420</width>
+					<label>$LOCALIZE[13275]</label>
+				</control>
+				<control type="button" id="93">
+					<description>Button DVD</description>
+					<include content="DefaultSettingButton">
+						<param name="height" value="88" />
+					</include>
+					<width>420</width>
+					<label>$LOCALIZE[13276]</label>
+				</control>
 				<control type="button" id="97">
 					<description>Button Video</description>
 					<include content="DefaultSettingButton">
@@ -194,22 +185,6 @@
 					</include>
 					<width>420</width>
 					<label>$LOCALIZE[13281]</label>
-				</control>
-				<control type="button" id="100">
-					<description>Button Privacy policy</description>
-					<include content="DefaultSettingButton">
-						<param name="height" value="85" />
-					</include>
-					<width>420</width>
-					<label>$LOCALIZE[12389]</label>
-				</control>
-				<control type="button" id="101">
-					<description>Button "Thank you!"</description>
-					<include content="DefaultSettingButton">
-						<param name="height" value="85" />
-					</include>
-					<width>420</width>
-					<label>$LOCALIZE[12396]</label>
 				</control>
 			</control>
 		</control>
@@ -256,18 +231,15 @@
 					<aligny>center</aligny>
 					<shadowcolor>black</shadowcolor>
 					<font>font12</font>
-					<visible>System.SupportsCPUUsage</visible>
 				</control>
 				<control type="progress">
 					<description>CPU BAR</description>
 					<width>730</width>
 					<height>16</height>
 					<info>System.CPUUsage</info>
-					<visible>System.SupportsCPUUsage</visible>
 				</control>
 			</control>
 			<control type="group">
-				<animation effect="slide" end="0,-55" time="0" condition="!System.SupportsCPUUsage">Conditional</animation>
 				<control type="label">
 					<top>155</top>
 					<left>420</left>
