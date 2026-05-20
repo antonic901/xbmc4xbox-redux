@@ -90,9 +90,6 @@
 #include "video/dialogs/GUIDialogVideoSettings.h"
 
 #include "dialogs/GUIDialogSlider.h"
-#ifdef HAS_OPTICAL_DRIVE
-#include "dialogs/GUIDialogPlayEject.h"
-#endif
 #include "dialogs/GUIDialogMediaFilter.h"
 #include "video/dialogs/GUIDialogSubtitles.h"
 
