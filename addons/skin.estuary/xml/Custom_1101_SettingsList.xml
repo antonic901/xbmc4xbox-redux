@@ -85,38 +85,6 @@
 						<visible>Player.HasResolutions</visible>
 					</control>
 				</control>
-				<control type="grouplist" id="13100">
-					<visible>String.IsEqual(window(home).Property(settingslist_content),3d)</visible>
-					<width>700</width>
-					<height>360</height>
-					<itemgap>0</itemgap>
-					<onup>13100</onup>
-					<ondown>13100</ondown>
-					<orientation>vertical</orientation>
-					<control type="radiobutton" id="13101">
-						<width>700</width>
-						<include>DialogSettingButton</include>
-						<radioposx>590</radioposx>
-						<label>$LOCALIZE[24022]</label>
-						<onclick>ToggleStereoMode</onclick>
-						<selected>Integer.IsGreater(System.StereoscopicMode,0)</selected>
-					</control>
-					<control type="button" id="13102">
-						<width>700</width>
-						<include>DialogSettingButton</include>
-						<label>$LOCALIZE[31004]</label>
-						<label2>[B]$INFO[VideoPlayer.StereoscopicMode][/B]</label2>
-						<onclick>StereoMode</onclick>
-					</control>
-					<control type="radiobutton" id="13103">
-						<width>700</width>
-						<include>DialogSettingButton</include>
-						<radioposx>590</radioposx>
-						<label>$LOCALIZE[31005]</label>
-						<onclick>StereoModeToMono</onclick>
-						<selected>Integer.IsEqual(System.StereoscopicMode,9)</selected>
-					</control>
-				</control>
 				<control type="grouplist" id="14100">
 					<defaultcontrol always="true">14101</defaultcontrol>
 					<visible>String.IsEqual(window(home).Property(settingslist_content),games)</visible>
