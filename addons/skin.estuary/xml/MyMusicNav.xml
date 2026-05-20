@@ -28,6 +28,15 @@
 				<param name="info_visible" value="true" />
 			</include>
 			<control type="group">
+				<depth>DepthBars</depth>
+				<bottom>0</bottom>
+				<height>70</height>
+				<animation effect="fade" start="0" end="100" time="300" delay="300">WindowOpen</animation>
+				<animation effect="fade" start="100" end="0" time="200">WindowClose</animation>
+				<include condition="!Skin.HasSetting(hide_mediaflags) + ![Window.IsVisible(songinformation) | Window.IsVisible(musicinformation)]">MediaFlags</include>
+			</control>
+			<include>MediaMenuMouseOverlay</include>
+			<control type="group">
 				<include>MediaMenuCommon</include>
 				<control type="grouplist" id="9000">
 					<top>50</top>
@@ -70,7 +79,8 @@
 					<control type="button" id="622">
 						<include>MediaMenuItemsCommon</include>
 						<label>$LOCALIZE[31117]</label>
-						<onclick condition="System.HasAddon(plugin.library.node.editor)">ActivateWindow(programs,plugin://plugin.library.node.editor/?ltype=music,return)</onclick>
+						<onclick condition="System.AddonIsEnabled(plugin.library.node.editor)">ActivateWindow(programs,plugin://plugin.library.node.editor/?ltype=music,return)</onclick>
+						<onclick condition="System.HasAddon(plugin.library.node.editor) + !System.AddonIsEnabled(plugin.library.node.editor)">EnableAddon(plugin.library.node.editor)</onclick>
 						<onclick condition="!System.HasAddon(plugin.library.node.editor)">InstallAddon(plugin.library.node.editor)</onclick>
 						<visible>String.IsEmpty(Container.FolderPath) + String.IsEmpty(Container.PluginName)</visible>
 					</control>

@@ -21,15 +21,16 @@
 				<preloaditems>2</preloaditems>
 				<pagecontrol>531</pagecontrol>
 				<scrolltime tween="cubic" easing="out">500</scrolltime>
-				<visible>Container.Content(movies) | Container.Content(sets) | Container.Content(tvshows) | Container.Content(seasons) | Container.Content(episodes) | Container.Content(artists) | Container.Content(albums) | Container.Content(musicvideos) | Container.Content(addons) | Container.Content(images) | Container.Content(videos)</visible>
-				<itemlayout height="445" width="300" condition="Container.Content(movies) | Container.Content(sets) | Container.Content(tvshows) | Container.Content(seasons)">
+				<visible>Container.Content(movies) | Container.Content(sets) | Container.Content(tvshows) | Container.Content(seasons) | Container.Content(episodes) | Container.Content(artists) | Container.Content(albums) | Container.Content(musicvideos) | Container.Content(addons) | Container.Content(images) | Container.Content(videos) | Container.Content(games) | Container.Content(favourites)</visible>
+				<itemlayout height="445" width="300" condition="Container.Content(movies) | Container.Content(sets) | Container.Content(tvshows) | Container.Content(seasons) | [Container.Content(musicvideos) + Skin.HasSetting(show_musicvideoposter)]">
 					<control type="group">
 						<top>120</top>
 						<include>InfoWallMovieLayout</include>
 					</control>
 				</itemlayout>
-				<focusedlayout height="445" width="300" condition="Container.Content(movies) | Container.Content(sets) | Container.Content(tvshows) | Container.Content(seasons)">
+				<focusedlayout height="445" width="300" condition="Container.Content(movies) | Container.Content(sets) | Container.Content(tvshows) | Container.Content(seasons) | [Container.Content(musicvideos) + Skin.HasSetting(show_musicvideoposter)]">
 					<control type="group">
+						<depth>DepthContentPopout</depth>
 						<animation effect="zoom" start="100" end="110" time="200" tween="sine" easing="inout" center="160,300">Focus</animation>
 						<animation effect="zoom" start="110" end="100" time="200" tween="sine" easing="inout" center="160,300">UnFocus</animation>
 						<top>120</top>
@@ -38,7 +39,7 @@
 						</include>
 					</control>
 				</focusedlayout>
-				<itemlayout height="300" width="300" condition="Container.Content(episodes) | Container.Content(videos) | Container.Content(musicvideos)">
+				<itemlayout height="301" width="300" condition="Container.Content(episodes) | Container.Content(videos) | [Container.Content(musicvideos) + !Skin.HasSetting(show_musicvideoposter)]">
 					<control type="group">
 						<top>110</top>
 						<include content="InfoWallEpisodeLayout">
@@ -47,8 +48,9 @@
 						</include>
 					</control>
 				</itemlayout>
-				<focusedlayout height="300" width="300" condition="Container.Content(episodes) | Container.Content(videos) | Container.Content(musicvideos)">
+				<focusedlayout height="301" width="300" condition="Container.Content(episodes) | Container.Content(videos) | [Container.Content(musicvideos) + !Skin.HasSetting(show_musicvideoposter)]">
 					<control type="group">
+						<depth>DepthContentPopout</depth>
 						<animation effect="zoom" start="100" end="110" time="200" tween="sine" easing="inout" center="160,280">Focus</animation>
 						<animation effect="zoom" start="110" end="100" time="200" tween="sine" easing="inout" center="160,280">UnFocus</animation>
 						<top>110</top>
@@ -67,6 +69,7 @@
 				</itemlayout>
 				<focusedlayout height="425" width="442" condition="Container.Content(images)">
 					<control type="group">
+						<depth>DepthContentPopout</depth>
 						<animation effect="zoom" start="100" end="110" time="200" tween="sine" easing="inout" center="220,330">Focus</animation>
 						<animation effect="zoom" start="110" end="100" time="200" tween="sine" easing="inout" center="220,330">UnFocus</animation>
 						<left>40</left>
@@ -76,7 +79,7 @@
 						</include>
 					</control>
 				</focusedlayout>
-				<itemlayout height="400" width="300" condition="Container.Content(artists) | Container.Content(albums)">
+				<itemlayout height="401" width="300" condition="Container.Content(artists) | Container.Content(albums)">
 					<control type="group">
 						<top>150</top>
 						<include content="InfoWallMusicLayout">
@@ -84,8 +87,9 @@
 						</include>
 					</control>
 				</itemlayout>
-				<focusedlayout height="400" width="300" condition="Container.Content(artists) | Container.Content(albums)">
+				<focusedlayout height="401" width="300" condition="Container.Content(artists) | Container.Content(albums)">
 					<control type="group">
+						<depth>DepthContentPopout</depth>
 						<top>150</top>
 						<animation effect="zoom" start="100" end="110" time="200" tween="sine" easing="inout" center="160,350">Focus</animation>
 						<animation effect="zoom" start="110" end="100" time="200" tween="sine" easing="inout" center="160,350">UnFocus</animation>
@@ -95,7 +99,7 @@
 						</include>
 					</control>
 				</focusedlayout>
-				<itemlayout height="390" width="300" condition="Container.Content(addons)">
+				<itemlayout height="401" width="300" condition="Container.Content(addons)">
 					<control type="group">
 						<top>150</top>
 						<include content="InfoWallMusicLayout">
@@ -103,13 +107,34 @@
 						</include>
 					</control>
 				</itemlayout>
-				<focusedlayout height="390" width="300" condition="Container.Content(addons)">
+				<focusedlayout height="401" width="300" condition="Container.Content(addons)">
 					<control type="group">
+						<depth>DepthContentPopout</depth>
 						<top>150</top>
-						<animation effect="zoom" start="100" end="110" time="200" tween="sine" easing="inout" center="150,350">Focus</animation>
-						<animation effect="zoom" start="110" end="100" time="200" tween="sine" easing="inout" center="150,350">UnFocus</animation>
+						<animation effect="zoom" start="100" end="110" time="200" tween="sine" easing="inout" center="160,350">Focus</animation>
+						<animation effect="zoom" start="110" end="100" time="200" tween="sine" easing="inout" center="160,350">UnFocus</animation>
 						<include content="InfoWallMusicLayout">
 							<param name="fallback_image" value="DefaultAddon.png" />
+							<param name="focused" value="true" />
+						</include>
+					</control>
+				</focusedlayout>
+				<itemlayout height="401" width="300" condition="Container.Content(favourites)">
+					<control type="group">
+						<top>150</top>
+						<include content="InfoWallMusicLayout">
+							<param name="fallback_image" value="DefaultFavourites.png" />
+						</include>
+					</control>
+				</itemlayout>
+				<focusedlayout height="401" width="300" condition="Container.Content(favourites)">
+					<control type="group">
+						<depth>DepthContentPopout</depth>
+						<top>150</top>
+						<animation effect="zoom" start="100" end="110" time="200" tween="sine" easing="inout" center="160,350">Focus</animation>
+						<animation effect="zoom" start="110" end="100" time="200" tween="sine" easing="inout" center="160,350">UnFocus</animation>
+						<include content="InfoWallMusicLayout">
+							<param name="fallback_image" value="DefaultFavourites.png" />
 							<param name="focused" value="true" />
 						</include>
 					</control>

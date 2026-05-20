@@ -115,6 +115,19 @@
 		<aligny>center</aligny>
 		<pulseonselect>no</pulseonselect>
 	</default>
+	<default type="colorbutton">
+		<colorwidth>150</colorwidth>
+		<colorheight>76</colorheight>
+		<texturecolormask>buttons/color-button-box.png</texturecolormask>
+		<texturecolordisabledmask colordiffuse="disabled">buttons/color-button-box.png</texturecolordisabledmask>
+		<font>font13</font>
+		<textcolor>white</textcolor>
+		<disabledcolor>disabled</disabledcolor>
+		<textoffsetx>7</textoffsetx>
+		<align>left</align>
+		<aligny>center</aligny>
+		<pulseonselect>no</pulseonselect>
+	</default>
 	<default type="scrollbar">
 		<texturesliderbackground colordiffuse="29FFFFFF">colors/white.png</texturesliderbackground>
 		<texturesliderbar colordiffuse="FFAAAAAA">colors/white.png</texturesliderbar>
@@ -130,8 +143,10 @@
 	</default>
 	<default type="slider">
 		<texturesliderbar border="10">buttons/slider-back.png</texturesliderbar>
+		<texturesliderbardisabled colordiffuse="disabled">buttons/slider-back.png</texturesliderbardisabled>
 		<textureslidernib>buttons/slider-nib.png</textureslidernib>
 		<textureslidernibfocus colordiffuse="button_focus">buttons/slider-nib.png</textureslidernibfocus>
+		<textureslidernibdisabled colordiffuse="disabled">buttons/slider-nib.png</textureslidernibdisabled>
 		<orientation>horizontal</orientation>
 	</default>
 	<default type="sliderex">
@@ -142,8 +157,10 @@
 		<sliderwidth>150</sliderwidth>
 		<sliderheight>28</sliderheight>
 		<texturesliderbar>buttons/slider-back.png</texturesliderbar>
+		<texturesliderbardisabled colordiffuse="disabled">buttons/slider-back.png</texturesliderbardisabled>
 		<textureslidernib>buttons/slider-nib.png</textureslidernib>
 		<textureslidernibfocus colordiffuse="button_focus">buttons/slider-nib.png</textureslidernibfocus>
+		<textureslidernibdisabled colordiffuse="disabled">buttons/slider-nib.png</textureslidernibdisabled>
 		<font>font13</font>
 		<textcolor>white</textcolor>
 		<disabledcolor>disabled</disabledcolor>

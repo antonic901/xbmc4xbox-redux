@@ -32,8 +32,9 @@
 			</control>
 		</control>
 		<control type="group" id="1">
-			<visible>Player.Caching</visible>
-			<animation delay="300" effect="fade" time="200">Visible</animation>
+			<depth>DepthOSD+</depth>
+			<visible>Player.Caching + Integer.IsGreater(Player.CacheLevel,0)</visible>
+			<animation effect="fade" delay="300" time="200">Visible</animation>
 			<animation effect="fade" delay="200" time="150">Hidden</animation>
 			<centerleft>50%</centerleft>
 			<width>110</width>
@@ -69,7 +70,7 @@
 				<height>200</height>
 				<aligny>center</aligny>
 				<align>center</align>
-				<font>font11</font>
+				<font>font13</font>
 			</control>
 		</control>
 	</controls>

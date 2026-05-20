@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <window>
 	<defaultcontrol always="true">6</defaultcontrol>
+	<views>50</views>
 	<menucontrol>9000</menucontrol>
 	<controls>
 		<include>DefaultBackground</include>
@@ -8,13 +9,12 @@
 			<include>OpenClose_Left</include>
 			<left>302</left>
 			<include content="FileManagerPanel">
-				<param name="header_id" value="22" />
-				<param name="header_label" value="$LOCALIZE[20094]" />
 				<param name="list_id" value="50" />
 				<param name="scrollbar_id" value="60" />
 				<param name="onleft_id" value="9000" />
 				<param name="onright_id" value="60" />
-				<param name="width" value="playlisteditorlist_width" />
+				<param name="right" value="848" />
+				<param name="width" value="772" />
 			</include>
 		</control>
 		<control type="group">
@@ -61,13 +61,12 @@
 				<param name="left" value="-21" />
 			</include>
 			<include content="FileManagerPanel">
-				<param name="header_id" value="23" />
-				<param name="header_label" value="$LOCALIZE[13350]" />
 				<param name="list_id" value="100" />
 				<param name="scrollbar_id" value="61" />
 				<param name="onleft_id" value="60" />
 				<param name="onright_id" value="61" />
-				<param name="width" value="850" />
+				<param name="right" value="-5" />
+				<param name="width" value="840" />
 			</include>
 			<control type="scrollbar" id="60">
 				<left>0</left>

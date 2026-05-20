@@ -1,20 +1,33 @@
 # Kodi Media Center language file
 # Addon Name: Estuary
 # Addon id: skin.estuary
-# Addon Provider: phil65, Ichabod Fletchman
+# Addon Provider: Team Kodi
 msgid ""
 msgstr ""
 "Project-Id-Version: KODI Main\n"
-"Report-Msgid-Bugs-To: http://trac.kodi.tv/\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Kodi Translation Team\n"
-"Language-Team: Afrikaans (South Africa) (http://www.transifex.com/projects/p/kodi-main/language/af_ZA/)\n"
+"PO-Revision-Date: 2024-02-12 00:31+0000\n"
+"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Language-Team: Afrikaans (South Africa) <https://kodi.weblate.cloud/projects/kodi-add-ons-skins/skin-estuary/af_za/>\n"
+"Language: af_za\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: af_ZA\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.3\n"
+
+msgctxt "Addon Summary"
+msgid "Estuary skin by phil65. (Kodi's default skin)"
+msgstr "Estuary oortreksel deur phil65. (Kodi se bestek oortreksel)"
+
+msgctxt "Addon Description"
+msgid "Estuary is the default skin for Kodi 17.0 and above. It attempts to be easy for first time Kodi users to understand and use."
+msgstr "Estuary is die bestek oortreksel vir Kodi 17.0 en op. Dit poog om maklik te wees vir eerste keer Kodi gebruikers om te verstaan en te gebruik."
+
+msgctxt "Addon Disclaimer"
+msgid "Estuary is the default skin for Kodi, removing it may cause issues"
+msgstr "Estuary is die bestek oortreksel vir Kodi, verwydering mag probleme veroorsaak"
 
 msgctxt "#31000"
 msgid "Now playing"
@@ -48,6 +61,10 @@ msgctxt "#31007"
 msgid "Unwatched movies"
 msgstr "Ongekykte flieks"
 
+msgctxt "#31008"
+msgid "Enable category widgets"
+msgstr "Stel kategorie widget in staat"
+
 msgctxt "#31009"
 msgid "Download icons"
 msgstr "Aflaai ikone"
@@ -72,10 +89,12 @@ msgctxt "#31014"
 msgid "Unplayed albums"
 msgstr "Ongespeelde albums"
 
+#. home screen recordings widget: recent tv / radio recordings
 msgctxt "#31015"
 msgid "Recent recordings"
 msgstr "Onlangse opnames"
 
+#. home screen channel widget: recently played tv channels. (please note that in some non-english languages #31018 and #31016 might not be equal)
 msgctxt "#31016"
 msgid "Recently played channels"
 msgstr "Onlangs gespeelde kanale"
@@ -84,6 +103,7 @@ msgctxt "#31017"
 msgid "Rated"
 msgstr "Gegradeer"
 
+#. home screen channel widget: recently played radio channels. (please note that in some non-english languages #31018 and #31016 might not be equal)
 msgctxt "#31018"
 msgid "Recently played channels"
 msgstr "Onlangs gespeelde kanale"
@@ -108,6 +128,10 @@ msgctxt "#31023"
 msgid "Viewtype"
 msgstr "Aansigtipe"
 
+msgctxt "#31024"
+msgid "Choose rating to display for media items"
+msgstr "Kies gradering om vir media items te vertoon"
+
 msgctxt "#31025"
 msgid "No favourites found. You can add any item from media views to this list by using the context menu."
 msgstr "Geen gunstelinge gevind. Jy kan enige item vanaf media aansigte byvoeg by hierdie lys deur die konteks kieslys te gebruik."
@@ -115,6 +139,10 @@ msgstr "Geen gunstelinge gevind. Jy kan enige item vanaf media aansigte byvoeg b
 msgctxt "#31026"
 msgid "Timeshift"
 msgstr "Tydskuif"
+
+msgctxt "#31027"
+msgid "Next aired"
+msgstr "Volgende gelug"
 
 msgctxt "#31028"
 msgid "Show fanart"
@@ -124,6 +152,7 @@ msgctxt "#31029"
 msgid "Last logged in"
 msgstr "Laas ingeteken"
 
+#. Label to show the system memory usage
 msgctxt "#31030"
 msgid "System memory usage"
 msgstr "Stelsel geheue gebruik"
@@ -151,6 +180,10 @@ msgstr "Bladsye"
 msgctxt "#31036"
 msgid "items"
 msgstr "items"
+
+msgctxt "#31037"
+msgid "Selected track"
+msgstr "Gekose snit"
 
 msgctxt "#31038"
 msgid "Rewind"
@@ -188,14 +221,6 @@ msgctxt "#31048"
 msgid "Available"
 msgstr "Beskikbaar"
 
-msgctxt "#31050"
-msgid "Press [B]OK[/B] to stop"
-msgstr "Druk [B]OK[/B] om te stop"
-
-msgctxt "#31051"
-msgid "Toggle language"
-msgstr "Wissel taal"
-
 msgctxt "#31052"
 msgid "filtered"
 msgstr "gefilter"
@@ -205,8 +230,12 @@ msgid "Arial based"
 msgstr "Antenna gebasseer"
 
 msgctxt "#31054"
-msgid "Press [B]Left[/B] to rewind, or [B]Right[/B] to fast-forward"
-msgstr "Druk [B]Links[/B] om terug te draai, of [B]Regs[/B] vir vinnig vorentoe"
+msgid "Press [B]Left[/B] to step back, or [B]Right[/B] to step forward"
+msgstr "Druk [B]Links[/B] om terug te tree, of [B]Regs[/B] om vorentoe te trree"
+
+msgctxt "#31055"
+msgid "Press [B]Right[/B] to frame advance"
+msgstr "Druk [B]Regs[/B] vir volgende raam"
 
 msgctxt "#31056"
 msgid "Go to playlist"
@@ -260,6 +289,14 @@ msgctxt "#31072"
 msgid "Power Options"
 msgstr "Krag Opsies"
 
+msgctxt "#31073"
+msgid "Total length"
+msgstr "Totale lengte"
+
+msgctxt "#31074"
+msgid "Total duration"
+msgstr "Totale tydsduur"
+
 msgctxt "#31075"
 msgid "Movie sets"
 msgstr "Fliek stelle"
@@ -288,10 +325,6 @@ msgctxt "#31089"
 msgid "Available groups"
 msgstr "Beskikbare groepe"
 
-msgctxt "#31090"
-msgid "Search trailer"
-msgstr "Soek lokprent"
-
 msgctxt "#31092"
 msgid "Video menu"
 msgstr "Video kieslys"
@@ -316,18 +349,22 @@ msgctxt "#31098"
 msgid "Select your Kodi user profile[CR]to login and continue"
 msgstr "Selekteer jou Kodi gebruikers profiel[CR]om in te teken en voort te gaan"
 
+#. viewtype name
 msgctxt "#31099"
 msgid "IconWall"
 msgstr "IkoonMuur"
 
+#. viewtype name
 msgctxt "#31100"
 msgid "Shift"
 msgstr "Shift"
 
+#. viewtype name
 msgctxt "#31101"
 msgid "InfoWall"
 msgstr "InfoMuur"
 
+#. viewtype name
 msgctxt "#31102"
 msgid "Wall"
 msgstr "Muur"
@@ -348,6 +385,7 @@ msgctxt "#31106"
 msgid "Teletext"
 msgstr "Teleteks"
 
+#. viewtype name
 msgctxt "#31107"
 msgid "WideList"
 msgstr "WyeLys"
@@ -373,8 +411,8 @@ msgid "Search YouTube"
 msgstr "Deursoek YouTube"
 
 msgctxt "#31115"
-msgid "Search TheMovieDB"
-msgstr "Deursoek TheMovieDB"
+msgid "Toggle subtitle"
+msgstr ""
 
 msgctxt "#31116"
 msgid "Remove this main menu item"
@@ -408,10 +446,6 @@ msgctxt "#31123"
 msgid "Same director"
 msgstr "Selfde direkteur"
 
-msgctxt "#31124"
-msgid "Show images on map"
-msgstr "Wys beelde op kaart"
-
 msgctxt "#31125"
 msgid "Press up for actor info"
 msgstr "Druk op vir akteur info"
@@ -441,29 +475,41 @@ msgid "Choose skin fanart pack"
 msgstr "Kies oortreksel ondersteunerkuns pak"
 
 msgctxt "#31132"
-msgid "min"
-msgstr "min"
+msgid "Select Program"
+msgstr "Selekteer program"
+
+msgctxt "#31133"
+msgid "Select Resolution"
+msgstr "Selekteer resolusie"
 
 msgctxt "#31134"
 msgid "Remaining"
 msgstr "Oorblywend"
 
+msgctxt "#31135"
+msgid "Binary"
+msgstr "Binêr"
+
 msgctxt "#31136"
 msgid "Click here to see latest changes..."
 msgstr "Kliek hier om laatste veranderinge te sien..."
 
+#. Label to show PVR info page
 msgctxt "#31137"
-msgid "PVR info"
-msgstr "PVR info"
+msgid "PVR"
+msgstr "PVR"
 
+#. Label to show player info page
 msgctxt "#31138"
-msgid "Player process info"
-msgstr "Speler proses info"
+msgid "Player"
+msgstr "Speler"
 
+#. Label to show video decoder name
 msgctxt "#31139"
 msgid "Video decoder"
 msgstr "Video dekodeerder"
 
+#. Label to show the video pixel format
 msgctxt "#31140"
 msgid "Pixel format"
 msgstr "Pixel formaat"
@@ -488,6 +534,14 @@ msgctxt "#31145"
 msgid "Search add-ons"
 msgstr "Deursoek byvoegsels"
 
+msgctxt "#31146"
+msgid "In cinemas"
+msgstr "In teaters"
+
+msgctxt "#31147"
+msgid "In cinemas soon"
+msgstr "Binnekort in teaters"
+
 msgctxt "#31148"
 msgid "Categories"
 msgstr "Kategorieë"
@@ -497,8 +551,8 @@ msgid "Select genre fanart pack"
 msgstr "Kies genre ondersteunerkuns pak"
 
 msgctxt "#31150"
-msgid "Repository"
-msgstr "Stoorplek"
+msgid "Origin"
+msgstr "Oorsprong"
 
 msgctxt "#31151"
 msgid "Unwatched music videos"
@@ -543,3 +597,157 @@ msgstr "Wys media vlaggies"
 msgctxt "#31161"
 msgid "Numeric pad"
 msgstr "Nommer blok"
+
+msgctxt "#31162"
+msgid "Play your personal games or download one of the many game add-ons from the official repository."
+msgstr "Speel jou persoonlike speletjies of laai een van die baie speletjie byvoegsels af vanaf die offisiële stoorplek."
+
+msgctxt "#31163"
+msgid "Show Fanart background"
+msgstr "Wys Ondersteunerkuns agtergrond"
+
+#. Choose profile identifier
+msgctxt "#31164"
+msgid "Choose kind of profile identification"
+msgstr "Kies tipe profiel identifikasie"
+
+#. Label for the kind of profile identification
+msgctxt "#31165"
+msgid "Profile name"
+msgstr "Profiel naam"
+
+#. Label for the kind of profile identification
+msgctxt "#31166"
+msgid "Profile avatar"
+msgstr "Profiel avatar"
+
+#. Label of a setting
+msgctxt "#31167"
+msgid "Animate background"
+msgstr "Animeer agtergrond"
+
+#. Label of a setting
+msgctxt "#31168"
+msgid "Show posters instead of thumbs for musicvideos"
+msgstr "Wys plakkate in plaas van duimnaelsketse vir musiekvideos"
+
+#. Description label for skin settings area
+msgctxt "#31169"
+msgid "Artwork related settings."
+msgstr "Kunswerk verwante verstellings."
+
+#. Label for OSD settings category
+msgctxt "#31170"
+msgid "On screen display"
+msgstr ""
+
+#. Helper text for the label of OSD settings category
+msgctxt "#31171"
+msgid "On screen display (OSD) related settings"
+msgstr ""
+
+#. Setting Automatically close video OSD
+msgctxt "#31172"
+msgid "Automatically close video OSD"
+msgstr ""
+
+#. Setting auto close time for video osd
+msgctxt "#31173"
+msgid "Video OSD autoclose time (seconds)"
+msgstr ""
+
+#. Setting to control what happens when clicking a music album on the home screen
+msgctxt "#31174"
+msgid "Default select action for albums on the home screen"
+msgstr ""
+
+#. Setting to control what happens when clicking a TV show on the home screen
+msgctxt "#31175"
+msgid "Default select action for TV shows on the home screen"
+msgstr ""
+
+#. Setting to control what happens when clicking a movie set on the home screen
+msgctxt "#31176"
+msgid "Default select action for movie sets on the home screen"
+msgstr ""
+
+# empty strings from id 31170 to 31599
+#. Label to show the video codec name
+msgctxt "#31600"
+msgid "Video codec"
+msgstr "Video kodek"
+
+#. Label to show the video resolution
+msgctxt "#31601"
+msgid "Video resolution"
+msgstr "Video resolusie"
+
+#. Label to show the video aspect
+msgctxt "#31602"
+msgid "Video aspect"
+msgstr "Video aspek"
+
+#. Label to show the video bitrate
+msgctxt "#31603"
+msgid "Video bitrate"
+msgstr "Video bis tempo"
+
+#. Label to show the audio codec name
+msgctxt "#31604"
+msgid "Audio codec"
+msgstr "Oudio kodek"
+
+#. Label to show the number of audio channels
+msgctxt "#31605"
+msgid "Audio channels"
+msgstr "Oudio kanale"
+
+#. Label to show the audio bitrate
+msgctxt "#31606"
+msgid "Audio bitrate"
+msgstr "Oudio bis tempo"
+
+#. Label to show the screen resolution
+msgctxt "#31607"
+msgid "Screen resolution"
+msgstr "Skerm resolusie"
+
+#. Label to show the system rendering speed
+msgctxt "#31608"
+msgid "System rendering speed"
+msgstr "Stelsel teken spoed"
+
+#. Label to show the system CPU usage
+msgctxt "#31609"
+msgid "System CPU usage"
+msgstr "Stelsel CPU gebruik"
+
+#. Label to show the media (metadata) info page
+msgctxt "#31610"
+msgid "Media"
+msgstr "Media"
+
+#. Label to show the system info page
+msgctxt "#31611"
+msgid "System"
+msgstr "Stelsel"
+
+#~ msgctxt "#31615"
+#~ msgid "Extras"
+#~ msgstr "Ekstras"
+
+#~ msgctxt "#31059"
+#~ msgid "Select + X"
+#~ msgstr "Kies + X"
+
+#~ msgctxt "#31060"
+#~ msgid "Select + Start"
+#~ msgstr "Kies + Begin"
+
+#~ msgctxt "#31137"
+#~ msgid "PVR info"
+#~ msgstr "PVR info"
+
+#~ msgctxt "#31138"
+#~ msgid "Player process info"
+#~ msgstr "Speler proses info"

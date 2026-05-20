@@ -10,14 +10,40 @@
 			<animation effect="fade" start="100" end="0" time="200" tween="sine" condition="$EXP[infodialog_active]">Conditional</animation>
 			<include>View_50_List</include>
 			<include>View_52_IconWall</include>
-			<include>View_55_WideList</include>
-			<include>CommonScrollbars</include>
+			<include content="View_55_WideList">
+				<param name="bottom_offset">list_bottom</param>
+			</include>
+			<include content="CommonScrollbars">
+				<param name="bottom_offset">list_bottom</param>
+			</include>
 			<control type="group">
 				<include>OpenClose_Left</include>
 				<visible>Control.IsVisible(55)</visible>
 				<visible>Container.Content(addons) | Container.Content()</visible>
 				<include>Visible_Left</include>
-				<include>ListThumbInfoPanel</include>
+				<include content="ListThumbInfoPanel">
+					<param name="fallback_image" value="DefaultAddon.png" />
+				</include>
+				<control type="group">
+					<visible>String.IsEqual(ListItem.AddonLifecycleType,$LOCALIZE[24170]) | String.IsEqual(ListItem.AddonLifecycleType,$LOCALIZE[24171])</visible>
+					<control type="image">
+						<left>64</left>
+						<top>109</top>
+						<width>472</width>
+						<height>472</height>
+						<texture colordiffuse="AAFFFFFF">colors/black.png</texture>
+					</control>
+					<control type="textbox">
+						<left>75</left>
+						<top>110</top>
+						<width>450</width>
+						<height>470</height>
+						<align>center</align>
+						<aligny>center</aligny>
+						<label>$VAR[AddonLifecycleType]</label>
+						<font>font32_title</font>
+					</control>
+				</control>
 			</control>
 			<include content="TopBar">
 				<param name="breadcrumbs_label" value="$LOCALIZE[24001]" />
@@ -25,6 +51,7 @@
 			<include content="BottomBar">
 				<param name="info_visible" value="true" />
 			</include>
+			<include>MediaMenuMouseOverlay</include>
 			<control type="group">
 				<include>MediaMenuCommon</include>
 				<control type="grouplist" id="9000">

@@ -18,12 +18,14 @@
 			<include>View_501_Banner</include>
 			<include>View_502_FanArt</include>
 			<control type="group">
+				<depth>DepthContentPanel</depth>
 				<include>OpenClose_Left</include>
 				<visible>Control.IsVisible(55)</visible>
 				<include>Visible_Left</include>
 				<include>ListThumbInfoPanel</include>
 			</control>
 			<control type="group">
+				<depth>DepthContentPanel</depth>
 				<include>OpenClose_Left</include>
 				<visible>Control.IsVisible(50) | Control.Isvisible(54) | [Control.IsVisible(501) + String.IsEqual(Skin.AspectRatio,21:9)]</visible>
 				<include>Visible_Left</include>
@@ -39,14 +41,14 @@
 						<aligny>center</aligny>
 						<height>110</height>
 						<font>font36_title</font>
-						<label>$INFO[ListItem.Label]</label>
+						<label>$INFO[ListItem.Title]</label>
 					</control>
 					<control type="textbox">
 						<left>30</left>
 						<top>240</top>
 						<width>525</width>
 						<bottom>100</bottom>
-						<visible>!ListItem.IsCollection</visible>
+						<visible>![ListItem.IsCollection + String.IsEmpty(ListItem.Plot)]</visible>
 						<label>$INFO[ListItem.Tagline,[I],[/I][CR][CR]]$INFO[ListItem.Plot][CR][CR]</label>
 						<autoscroll delay="10000" time="3000" repeat="10000">Skin.HasSetting(autoscroll)</autoscroll>
 					</control>
@@ -65,12 +67,12 @@
 					<control type="group">
 						<left>20</left>
 						<top>245</top>
-						<visible>ListItem.IsCollection</visible>
+						<visible>ListItem.IsCollection + String.IsEmpty(ListItem.Plot)</visible>
 						<include content="InfoList">
 							<param name="bottom" value="108" />
 							<param name="width" value="540" />
 							<param name="sortby" value="year" />
-							<param name="sortorder" value="descending" />
+							<param name="sortorder" value="ascending" />
 							<param name="font" value="font13" />
 						</include>
 					</control>
@@ -83,6 +85,7 @@
 				<param name="info_visible" value="true" />
 			</include>
 			<control type="group">
+				<depth>DepthBars</depth>
 				<bottom>0</bottom>
 				<height>70</height>
 				<animation effect="fade" start="0" end="100" time="300" delay="300">WindowOpen</animation>
@@ -90,6 +93,7 @@
 				<include condition="!Skin.HasSetting(hide_mediaflags)">MediaFlags</include>
 			</control>
 			<include>CommonScrollbars</include>
+			<include>MediaMenuMouseOverlay</include>
 			<control type="group">
 				<include>MediaMenuCommon</include>
 				<control type="grouplist" id="9000">
@@ -100,7 +104,7 @@
 						<include>MediaMenuItemsCommon</include>
 						<label>$LOCALIZE[20367]</label>
 						<label2>[B]$INFO[Container.NumItems][/B]</label2>
-						<visible>Container.Content(movies) | Container.Content(sets) | Container.Content(tvshows) | Container.content(seasons) | Container.Content(episodes)</visible>
+						<visible>Container.Content(movies) | Container.Content(sets) | Container.Content(tvshows) | Container.content(seasons) | Container.Content(episodes) | Container.Content(MusicVideos)</visible>
 					</control>
 					<control type="label" id="203">
 						<include>MediaMenuLabelCommon</include>
@@ -146,7 +150,8 @@
 					<control type="button" id="622">
 						<include>MediaMenuItemsCommon</include>
 						<label>$LOCALIZE[31117]</label>
-						<onclick condition="System.HasAddon(plugin.library.node.editor)">ActivateWindow(programs,plugin://plugin.library.node.editor/?ltype=video,return)</onclick>
+						<onclick condition="System.AddonIsEnabled(plugin.library.node.editor)">ActivateWindow(programs,plugin://plugin.library.node.editor/?ltype=video,return)</onclick>
+						<onclick condition="System.HasAddon(plugin.library.node.editor) + !System.AddonIsEnabled(plugin.library.node.editor)">EnableAddon(plugin.library.node.editor)</onclick>
 						<onclick condition="!System.HasAddon(plugin.library.node.editor)">InstallAddon(plugin.library.node.editor)</onclick>
 						<visible>Container.Content() + String.IsEmpty(Container.PluginName)</visible>
 					</control>
@@ -154,7 +159,7 @@
 						<include>MediaMenuItemsCommon</include>
 						<label>$LOCALIZE[31009]</label>
 						<onclick>InstallAddon(resource.images.studios.white)</onclick>
-						<visible>Container.Content(studios) + !System.HasAddon(resource.images.studios.white)</visible>
+						<visible>Container.Content(studios) + !System.AddonIsEnabled(resource.images.studios.white)</visible>
 					</control>
 					<control type="button" id="624">
 						<include>MediaMenuItemsCommon</include>

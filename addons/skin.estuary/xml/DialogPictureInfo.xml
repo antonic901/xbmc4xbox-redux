@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <window>
+	<depth>DepthOSD</depth>
 	<defaultcontrol always="true">9000</defaultcontrol>
 	<onload>SetProperty(infobackground,$ESCINFO[ListItem.FolderPath],home)</onload>
 	<onunload>ClearProperty(infobackground,home)</onunload>
@@ -118,8 +119,9 @@
 			</control>
 		</control>
 		<include content="InfoDialogTopBarInfo">
-			<param name="main_label" value="$INFO[ListItem.Label]" />
-			<param name="sub_label" value="$INFO[ListItem.PictureDateTime]" />
+			<param name="main_label" value="$VAR[PictureInfoMainLabelVar]" />
+			<param name="sub_label" value="$VAR[PictureInfoSubLabelVar]" />
 		</include>
+		<include condition="Skin.HasSetting(touchmode)">TouchBackButton</include>
 	</controls>
 </window>

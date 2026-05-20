@@ -54,7 +54,7 @@
 					<pagecontrol>5199</pagecontrol>
 					<scrolltime tween="cubic" easing="out">500</scrolltime>
 					<orientation>horizontal</orientation>
-					<visible>Container.Content(movies) | Container.Content(sets) | Container.Content(tvshows) | Container.Content(seasons) | Container.Content(musicvideos) | Container.Content(artists) | Container.Content(albums) | Container.Content(mixed) | Container.Content(images) | Container.Content(videos)</visible>
+					<visible>Container.Content(movies) | Container.Content(sets) | Container.Content(tvshows) | Container.Content(seasons) | Container.Content(musicvideos) | Container.Content(artists) | Container.Content(albums) | Container.Content(mixed) | Container.Content(images) | Container.Content(videos) | Container.Content(games) | Container.Content(favourites)</visible>
 					<onleft>53</onleft>
 					<onup>9000</onup>
 					<ondown>5199</ondown>
@@ -62,61 +62,10 @@
 					<preloaditems>1</preloaditems>
 					<viewtype label="31100">icon</viewtype>
 					<itemlayout width="370">
-						<control type="image">
-							<left>0</left>
-							<top>90</top>
-							<width>370</width>
-							<height>480</height>
-							<aspectratio aligny="center">keep</aspectratio>
-							<texture fallback="DefaultVideo.png">$VAR[ShiftThumbVar]</texture>
-							<bordertexture border="21">overlays/shadow.png</bordertexture>
-							<bordersize>20</bordersize>
-						</control>
-						<control type="textbox">
-							<left>20</left>
-							<top>603</top>
-							<width>330</width>
-							<height>105</height>
-							<align>center</align>
-							<aligny>center</aligny>
-							<label>$INFO[ListItem.Label]</label>
-						</control>
-						<control type="image">
-							<left>169</left>
-							<top>560</top>
-							<width>32</width>
-							<height>32</height>
-							<texture>$VAR[WallWatchedIconVar]</texture>
-						</control>
+						<include content="ShiftImageBox" />
 					</itemlayout>
 					<focusedlayout width="370">
-						<control type="image">
-							<left>0</left>
-							<top>90</top>
-							<width>370</width>
-							<height>480</height>
-							<aspectratio aligny="center">keep</aspectratio>
-							<texture fallback="DefaultVideo.png">$VAR[ShiftThumbVar]</texture>
-							<bordertexture border="21">overlays/shadow.png</bordertexture>
-							<bordersize>20</bordersize>
-						</control>
-						<control type="textbox">
-							<left>20</left>
-							<top>603</top>
-							<width>330</width>
-							<height>105</height>
-							<align>center</align>
-							<aligny>center</aligny>
-							<label>$INFO[ListItem.Label]</label>
-							<autoscroll time="3000" delay="3000" repeat="3000">True</autoscroll>
-						</control>
-						<control type="image">
-							<left>169</left>
-							<top>560</top>
-							<width>32</width>
-							<height>32</height>
-							<texture>$VAR[WallWatchedIconVar]</texture>
-						</control>
+						<include content="ShiftImageBox" />
 					</focusedlayout>
 				</control>
 			</control>
@@ -142,34 +91,96 @@
 				<control type="panel">
 					<left>20</left>
 					<top>48</top>
-					<width>1880</width>
+					<width>940</width>
 					<height>180</height>
 					<orientation>horizontal</orientation>
 					<visible>ListItem.IsCollection</visible>
 					<animation effect="fade" time="200">VisibleChange</animation>
-					<focusedlayout height="40" width="628">
+					<focusedlayout height="40" width="470">
 						<control type="label">
 							<textoffsetx>10</textoffsetx>
 							<height>40</height>
-							<width>628</width>
+							<width>460</width>
 							<aligny>center</aligny>
 							<label>$INFO[ListItem.Year,[COLOR button_focus],[/COLOR]  -  ]$INFO[ListItem.Title]</label>
 							<shadowcolor>text_shadow</shadowcolor>
 						</control>
 					</focusedlayout>
-					<itemlayout height="40" width="628">
+					<itemlayout height="40" width="470">
 						<control type="label">
 							<textoffsetx>10</textoffsetx>
 							<height>40</height>
-							<width>628</width>
+							<width>460</width>
 							<aligny>center</aligny>
 							<label>$INFO[ListItem.Year,[COLOR button_focus],[/COLOR]  -  ]$INFO[ListItem.Title]</label>
 							<shadowcolor>text_shadow</shadowcolor>
 						</control>
 					</itemlayout>
-					<content sortby="year" sortorder="descending">$VAR[InfoListPathVar]</content>
+					<content sortby="year" sortorder="ascending">$VAR[InfoListPathVar]</content>
 				</control>
 			</control>
+		</control>
+	</include>
+	<include name="ShiftImageBox">
+		<control type="image">
+			<left>18</left>
+			<top>90</top>
+			<width>334</width>
+			<height>480</height>
+			<aspectratio aligny="center">stretch</aspectratio>
+			<texture>dialogs/dialog-bg-nobo.png</texture>
+			<bordertexture border="21" infill="false">overlays/shadow.png</bordertexture>
+			<bordersize>20</bordersize>
+			<visible>String.IsEmpty(ListItem.Art(thumb)) + !Container.Content(albums) | String.IsEmpty(ListItem.Art(poster)) + [Container.Content(movies) | Container.Content(tvshows)]</visible>
+		</control>
+		<control type="image">
+			<depth>DepthContentPopout</depth>
+			<left>18</left>
+			<top>90</top>
+			<width>334</width>
+			<height>480</height>
+			<aspectratio aligny="center">keep</aspectratio>
+			<texture fallback="DefaultVideo.png" background="true">$VAR[ShiftThumbVar]</texture>
+			<bordertexture border="21" infill="false">overlays/shadow.png</bordertexture>
+			<bordersize>20</bordersize>
+			<visible>String.IsEmpty(ListItem.Art(poster))</visible>
+		</control>
+		<control type="image">
+			<depth>DepthContentPopout</depth>
+			<left>18</left>
+			<top>90</top>
+			<width>334</width>
+			<height>480</height>
+			<aspectratio aligny="center">scale</aspectratio>
+			<texture fallback="DefaultVideo.png" background="true">$VAR[ShiftThumbVar]</texture>
+			<bordertexture border="21" infill="false">overlays/shadow.png</bordertexture>
+			<bordersize>20</bordersize>
+			<visible>!String.IsEmpty(ListItem.Art(poster))</visible>
+		</control>
+		<control type="textbox">
+			<left>20</left>
+			<top>603</top>
+			<width>330</width>
+			<height>105</height>
+			<align>center</align>
+			<aligny>center</aligny>
+			<label>$INFO[ListItem.Label]</label>
+		</control>
+		<include>IconStatusOverlay</include>
+		<control type="group">
+			<left>158</left>
+			<top>92</top>
+			<include condition="Skin.HasSetting(circle_rating) | Skin.HasSetting(circle_userrating)">RatingCircle</include>
+		</control>
+		<control type="progress">
+			<left>32</left>
+			<top>530</top>
+			<width>298</width>
+			<height>1</height>
+			<texturebg></texturebg>
+			<midtexture colordiffuse="button_focus" border="3">progress/texturebg_alt_white.png</midtexture>
+			<info>ListItem.PercentPlayed</info>
+			<visible>!Integer.IsEqual(ListItem.PercentPlayed,0)</visible>
 		</control>
 	</include>
 	<include name="ShiftTextbox">
@@ -183,6 +194,59 @@
 				<height>163</height>
 				<label>$PARAM[textbox_content]</label>
 				<shadowcolor>text_shadow</shadowcolor>
+			</control>
+		</control>
+	</include>
+	<include name="IconStatusOverlay">
+		<control type="group">
+			<visible>String.IsEqual(ListItem.DBtype,tvshow) | String.IsEqual(ListItem.DBType,season) | ListItem.IsRecording | ListItem.HasReminder | ListItem.HasTimer | ListItem.IsCollection | ListItem.HasVideoVersions | ListItem.IsPlaying | ListItem.IsResumable | ListItem.HasVideoExtras | ListItem.HasArchive | Integer.IsGreater(ListItem.Playcount,0)</visible>
+			<control type="image">
+				<left>38</left>
+				<top>500</top>
+				<width>294</width>
+				<height>50</height>
+				<texture colordiffuse="CCFFFFFF">overlays/overlayfade.png</texture>
+				<visible>!String.IsEmpty(ListItem.Art(poster))</visible>
+			</control>
+			<control type="image">
+				<left>45</left>
+				<top>522</top>
+				<width>24</width>
+				<height>24</height>
+				<align>left</align>
+				<aligny>center</aligny>
+				<texture>$VAR[ItemTypeIconVar]</texture>
+			</control>
+			<control type="image">
+				<left>75</left>
+				<top>522</top>
+				<width>24</width>
+				<height>24</height>
+				<align>left</align>
+				<aligny>center</aligny>
+				<texture>overlays/extras.png</texture>
+				<visible>ListItem.HasVideoVersions + ListItem.HasVideoExtras</visible>
+			</control>
+			<control type="label">
+				<left>110</left>
+				<top>522</top>
+				<width>185</width>
+				<height>24</height>
+				<label>$VAR[WatchedStatusVar]</label>
+				<font>font20_title</font>
+				<shadowcolor>text_shadow</shadowcolor>
+				<align>right</align>
+				<aligny>center</aligny>
+				<visible>String.IsEqual(ListItem.DBtype,tvshow) | String.IsEqual(ListItem.DBtype,set) | String.IsEqual(ListItem.DBType,season)</visible>
+			</control>
+			<control type="image">
+				<left>302</left>
+				<top>522</top>
+				<width>24</width>
+				<height>24</height>
+				<texture>$VAR[ItemStatusIconVar]</texture>
+				<align>right</align>
+				<aligny>center</aligny>
 			</control>
 		</control>
 	</include>

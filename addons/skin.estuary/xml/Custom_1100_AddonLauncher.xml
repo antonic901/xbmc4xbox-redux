@@ -5,6 +5,7 @@
 	<controls>
 		<include>DefaultBackground</include>
 		<control type="multiimage">
+			<depth>DepthBackground</depth>
 			<include>FullScreenDimensions</include>
 			<aspectratio>scale</aspectratio>
 			<fadetime>600</fadetime>
@@ -32,6 +33,13 @@
 					<param name="container_path" value="addons://sources/audio/" />
 					<param name="container_target" value="music" />
 					<param name="imagewidget_onclick" value="ActivateWindow(addonbrowser,addons://all/xbmc.addon.audio,return)" />
+				</include>
+				<include content="AddonLauncherPanel">
+					<param name="group_id" value="509" />
+					<param name="id" value="game" />
+					<param name="container_path" value="addons://sources/game/" />
+					<param name="container_target" value="games" />
+					<param name="imagewidget_onclick" value="ActivateWindow(addonbrowser,addons://all/category.standalonegames,return)" />
 				</include>
 				<include content="AddonLauncherPanel">
 					<param name="group_id" value="502" />
@@ -71,12 +79,14 @@
 				<include content="ContentPanel">
 					<param name="width" value="523" />
 				</include>
-				<control type="list" id="9000">
+				<control type="fixedlist" id="9000">
 					<left>1</left>
 					<top>300</top>
 					<width>462</width>
-					<height>671</height>
+					<height>855</height>
 					<pagecontrol>70</pagecontrol>
+					<movement>6</movement>
+					<focusposition>0</focusposition>
 					<onup>700</onup>
 					<ondown>700</ondown>
 					<onright>SetFocus($INFO[Container(9000).ListItem.Property(menu_id)])</onright>
@@ -156,6 +166,15 @@
 							<property name="path">addons://sources/audio/</property>
 							<property name="menu_id">$NUMBER[501]</property>
 						</item>
+						<item id="8">
+							<label>$LOCALIZE[35049]</label>
+							<visible>System.GetBool(gamesgeneral.enable)</visible>
+							<onclick>ActivateWindow(games,addons://sources/game/,return)</onclick>
+							<thumb>icons/sidemenu/games.png</thumb>
+							<property name="id">game</property>
+							<property name="path">addons://sources/game/</property>
+							<property name="menu_id">$NUMBER[509]</property>
+						</item>
 						<item id="3">
 							<label>$LOCALIZE[1043]</label>
 							<onclick>ActivateWindow(programs,addons://sources/executable/,return)</onclick>
@@ -205,9 +224,8 @@
 				<left>32</left>
 				<top>135</top>
 				<height>120</height>
-				<onup>SetFocus(9000,99)</onup>
-				<onup>9000</onup>
-				<ondown>SetFocus(9000,0)</ondown>
+				<onup>SetFocus(9000,99,absolute)</onup>
+				<ondown>SetFocus(9000,0,absolute)</ondown>
 				<include>OpenClose_Left</include>
 				<onright>400</onright>
 				<usecontrolcoords>true</usecontrolcoords>
@@ -218,7 +236,7 @@
 					<aligny>center</aligny>
 					<onclick>ActivateWindow(addonbrowser,root)</onclick>
 					<font>font12</font>
-					<label></label>
+					<label/>
 					<textoffsetx>40</textoffsetx>
 					<textwidth>230</textwidth>
 					<texturefocus colordiffuse="button_focus">buttons/roundbutton-fo.png</texturefocus>
@@ -240,7 +258,7 @@
 					<aligny>center</aligny>
 					<onclick>ActivateWindow(addonbrowser,addons://outdated/,return)</onclick>
 					<font>font12</font>
-					<label></label>
+					<label/>
 					<textoffsetx>40</textoffsetx>
 					<textwidth>230</textwidth>
 					<texturefocus border="30" colordiffuse="button_focus">buttons/dialogbutton-fo.png</texturefocus>
@@ -264,7 +282,7 @@
 					<aligny>center</aligny>
 					<onclick>ActivateWindow(systemsettings,addons)</onclick>
 					<font>font12</font>
-					<label></label>
+					<label/>
 					<textoffsetx>40</textoffsetx>
 					<textwidth>230</textwidth>
 					<texturefocus colordiffuse="button_focus">buttons/roundbutton-fo.png</texturefocus>
