@@ -2,7 +2,6 @@
 <window>
 	<defaultcontrol always="true">21</defaultcontrol>
 	<include>Animation_DialogPopupOpenClose</include>
-	<depth>DepthDialog+</depth>
 	<controls>
 		<control type="group">
 			<centertop>50%</centertop>

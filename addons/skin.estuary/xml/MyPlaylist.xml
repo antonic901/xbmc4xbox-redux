@@ -29,7 +29,6 @@
 			</include>
 			<control type="group">
 				<visible>!Container.Content(songs)</visible>
-				<depth>DepthBars</depth>
 				<bottom>0</bottom>
 				<height>70</height>
 				<animation effect="fade" start="0" end="100" time="300" delay="300">WindowOpen</animation>

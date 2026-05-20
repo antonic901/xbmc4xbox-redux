@@ -4,7 +4,6 @@
 	<visible>!Window.IsActive(sliderdialog)</visible>
 	<visible>Player.Seeking | Player.HasPerformedSeek(3) | [Player.Paused + !Player.Caching] | Player.Forwarding | Player.Rewinding | Player.ShowInfo | Window.IsActive(fullscreeninfo) | Player.ShowTime | Window.IsActive(videoosd) | Window.IsActive(musicosd) | Window.IsActive(playerprocessinfo) | !String.IsEmpty(Player.SeekNumeric)</visible>
 	<include>Animation_BottomSlide</include>
-	<depth>DepthOSD</depth>
 	<zorder>0</zorder>
 	<controls>
 		<control type="group">
@@ -230,7 +229,6 @@
 				<texture>dialogs/dialog-bg-nobo.png</texture>
 			</control>
 			<control type="image">
-				<depth>DepthOSD+</depth>
 				<left>10</left>
 				<bottom>145</bottom>
 				<width>400</width>
