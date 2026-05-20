@@ -885,17 +885,6 @@
 				<textureradioonfocus colordiffuse="EEFFFFFF">dialogs/close.png</textureradioonfocus>
 				<textureradioonnofocus colordiffuse="EEFFFFFF">special://xbmc/media/vendor_icon.png</textureradioonnofocus>
 				<onclick>Action(close)</onclick>
-				<visible>!Skin.HasSetting(touchmode)</visible>
-			</control>
-			<control type="button">
-				<right>10</right>
-				<top>11</top>
-				<width>48</width>
-				<height>48</height>
-				<texturefocus>dialogs/close.png</texturefocus>
-				<texturenofocus>dialogs/close.png</texturenofocus>
-				<onclick>Action(close)</onclick>
-				<visible>Skin.HasSetting(touchmode)</visible>
 			</control>
 		</control>
 	</include>
@@ -1102,7 +1091,6 @@
 					<animation effect="fade" start="100" end="0" time="200">WindowClose</animation>
 				</control>
 			</control>
-			<include condition="Skin.HasSetting(touchmode) + !Window.IsActive(home)">TouchBackButton</include>
 		</definition>
 	</include>
 	<include name="TopBarLabels">
@@ -1232,7 +1220,6 @@
 				<control type="group">
 					<visible>$PARAM[info_visible]</visible>
 					<visible>!System.HasActiveModalDialog</visible>
-					<visible>!Skin.HasSetting(touchmode)</visible>
 					<animation effect="fade" time="400">VisibleChange</animation>
 					<animation effect="fade" start="0" end="100" time="400">WindowOpen</animation>
 					<animation effect="fade" start="100" end="0" time="300">WindowClose</animation>
@@ -1260,7 +1247,6 @@
 						<texturenofocus />
 					</control>
 				</control>
-				<include>TouchButtons</include>
 			</control>
 		</definition>
 	</include>
@@ -1399,129 +1385,6 @@
 				<height>$PARAM[height]</height>
 			</control>
 		</definition>
-	</include>
-	<include name="TouchButtons">
-		<control type="grouplist" id="700">
-			<orientation>horizontal</orientation>
-			<visible>Skin.HasSetting(touchmode)</visible>
-			<visible>!Window.IsActive(home) + !Window.IsActive(filemanager)</visible>
-			<animation effect="fade" start="0" end="100" time="400" condition="Window.Previous(home)">WindowOpen</animation>
-			<animation effect="fade" start="100" end="0" time="300" condition="Window.Next(home)">WindowClose</animation>
-			<itemgap>0</itemgap>
-			<left>-8</left>
-			<width>480</width>
-			<height>110</height>
-			<bottom>0</bottom>
-			<onup>noop</onup>
-			<ondown>9000</ondown>
-			<onright>2000</onright>
-			<align>justify</align>
-			<usecontrolcoords>true</usecontrolcoords>
-			<include content="IconButton">
-				<param name="control_id" value="" />
-				<param name="onclick" value="SetFocus(9000)" />
-				<param name="icon" value="icons/settings.png" />
-				<param name="label" value="$LOCALIZE[10004]" />
-				<param name="visible" value="Window.IsMedia" />
-			</include>
-			<include content="IconButton">
-				<param name="control_id" value="" />
-				<param name="onclick" value="ActivateWindow(shutdownmenu)" />
-				<param name="icon" value="icons/power.png" />
-				<param name="label" value="$LOCALIZE[33060]" />
-				<param name="visible" value="!Window.IsMedia" />
-			</include>
-			<control type="group">
-				<width>120</width>
-				<control type="button">
-					<top>0</top>
-					<width>120</width>
-					<height>120</height>
-					<label></label>
-					<onclick>ActivateWindow(1103)</onclick>
-					<texturefocus colordiffuse="button_focus">buttons/roundbutton-fo.png</texturefocus>
-					<texturenofocus />
-				</control>
-				<control type="image">
-					<left>34</left>
-					<top>34</top>
-					<width>52</width>
-					<height>52</height>
-					<texture colordiffuse="grey">$VAR[VolumeIconVar]</texture>
-				</control>
-			</control>
-			<include content="IconButton">
-				<param name="control_id" value="" />
-				<param name="onclick" value="ActivateWindow(favouritesbrowser)" />
-				<param name="icon" value="icons/favourites.png" />
-				<param name="label" value="$LOCALIZE[10134]" />
-			</include>
-		</control>
-	</include>
-	<include name="TouchBackButton">
-		<control type="radiobutton" id="799">
-			<left>-10</left>
-			<top>-10</top>
-			<width>120</width>
-			<height>120</height>
-			<align>center</align>
-			<aligny>center</aligny>
-			<onclick>Action(Back)</onclick>
-			<animation effect="fade" start="0" end="100" time="400" condition="Window.Previous(home)">WindowOpen</animation>
-			<animation effect="fade" start="100" end="0" time="300" condition="Window.Next(home)">WindowClose</animation>
-			<texturefocus colordiffuse="button_focus">buttons/roundbutton-fo.png</texturefocus>
-			<texturenofocus />
-			<radioposx>30</radioposx>
-			<radiowidth>60</radiowidth>
-			<radioheight>60</radioheight>
-			<textureradioonfocus>icons/back.png</textureradioonfocus>
-			<textureradioonnofocus colordiffuse="grey">icons/back.png</textureradioonnofocus>
-			<textureradioofffocus>icons/back.png</textureradioofffocus>
-			<textureradiooffnofocus colordiffuse="grey">icons/back.png</textureradiooffnofocus>
-		</control>
-	</include>
-	<include name="TouchBackOSDButton">
-		<control type="radiobutton" id="799">
-			<left>-10</left>
-			<top>-10</top>
-			<width>120</width>
-			<height>120</height>
-			<align>center</align>
-			<aligny>center</aligny>
-			<onclick>Dialog.Close(all,true)</onclick>
-			<onclick>Action(FullScreen)</onclick>
-			<texturefocus colordiffuse="button_focus">buttons/roundbutton-fo.png</texturefocus>
-			<texturenofocus />
-			<radioposx>30</radioposx>
-			<radiowidth>60</radiowidth>
-			<radioheight>60</radioheight>
-			<textureradioonfocus>icons/back.png</textureradioonfocus>
-			<textureradioonnofocus colordiffuse="grey">icons/back.png</textureradioonnofocus>
-			<textureradioofffocus>icons/back.png</textureradioofffocus>
-			<textureradiooffnofocus colordiffuse="grey">icons/back.png</textureradiooffnofocus>
-			<include>Animation_TopSlide</include>
-		</control>
-	</include>
-	<include name="TouchBackSlideshowButton">
-		<control type="radiobutton" id="13">
-			<left>-10</left>
-			<top>-10</top>
-			<width>120</width>
-			<height>120</height>
-			<align>center</align>
-			<aligny>center</aligny>
-			<onfocus>Action(Back)</onfocus>
-			<texturefocus colordiffuse="button_focus">buttons/roundbutton-fo.png</texturefocus>
-			<texturenofocus />
-			<radioposx>30</radioposx>
-			<radiowidth>60</radiowidth>
-			<radioheight>60</radioheight>
-			<textureradioonfocus>icons/back.png</textureradioonfocus>
-			<textureradioonnofocus colordiffuse="grey">icons/back.png</textureradioonnofocus>
-			<textureradioofffocus>icons/back.png</textureradioofffocus>
-			<textureradiooffnofocus colordiffuse="grey">icons/back.png</textureradiooffnofocus>
-			<visible>!Window.IsVisible(PictureInfo)</visible>
-		</control>
 	</include>
 	<include name="SettingsPanel">
 		<itemlayout height="260" width="400">

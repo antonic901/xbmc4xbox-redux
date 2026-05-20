@@ -40,12 +40,6 @@
 					<onclick>Skin.ToggleSetting(autoscroll)</onclick>
 					<selected>Skin.HasSetting(autoscroll)</selected>
 				</control>
-				<control type="radiobutton" id="703">
-					<label>$LOCALIZE[31158]</label>
-					<include>DefaultSettingButton</include>
-					<onclick>Skin.ToggleSetting(touchmode)</onclick>
-					<selected>Skin.HasSetting(touchmode)</selected>
-				</control>
 				<control type="radiobutton" id="704">
 					<label>$LOCALIZE[31093]</label>
 					<include>DefaultSettingButton</include>

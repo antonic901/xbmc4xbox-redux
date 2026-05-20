@@ -569,10 +569,6 @@ msgctxt "#31157"
 msgid "Edit categories"
 msgstr "แก้ไขหมวดหมู่"
 
-msgctxt "#31158"
-msgid "Touch mode"
-msgstr "โหมดสัมผัส"
-
 msgctxt "#31159"
 msgid "Artwork"
 msgstr "งานศิลป์"

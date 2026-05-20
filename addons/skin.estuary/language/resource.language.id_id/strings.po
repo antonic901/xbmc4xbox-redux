@@ -580,10 +580,6 @@ msgctxt "#31157"
 msgid "Edit categories"
 msgstr "Sunting kategori"
 
-msgctxt "#31158"
-msgid "Touch mode"
-msgstr "Mode sentuh"
-
 msgctxt "#31159"
 msgid "Artwork"
 msgstr "Karya seni"

@@ -569,10 +569,6 @@ msgctxt "#31157"
 msgid "Edit categories"
 msgstr "카테고리 편집"
 
-msgctxt "#31158"
-msgid "Touch mode"
-msgstr "터치 모드"
-
 msgctxt "#31159"
 msgid "Artwork"
 msgstr "아트워크"

@@ -106,9 +106,6 @@
 						<param name="button_id" value="5500"/>
 						<param name="button2_onclick" value="Skin.SetBool(HomeMenuNoMovieButton)"/>
 					</include>
-					<include content="WidgetScrollbar" condition="Skin.HasSetting(touchmode)">
-						<param name="scrollbar_id" value="5010"/>
-					</include>
 				</control>
 				<control type="group" id="6000">
 					<visible>String.IsEqual(Container(9000).ListItem.Property(id),tvshows)</visible>
@@ -172,9 +169,6 @@
 						<param name="button_onclick" value="ActivateWindow(videos,files,return)"/>
 						<param name="button_id" value="6400"/>
 						<param name="button2_onclick" value="Skin.SetBool(HomeMenuNoTVShowButton)"/>
-					</include>
-					<include content="WidgetScrollbar" condition="Skin.HasSetting(touchmode)">
-						<param name="scrollbar_id" value="6010"/>
 					</include>
 				</control>
 				<control type="group" id="7000">
@@ -255,9 +249,6 @@
 						<param name="button_id" value="7600"/>
 						<param name="button2_onclick" value="Skin.SetBool(HomeMenuNoMusicButton)"/>
 					</include>
-					<include content="WidgetScrollbar" condition="Skin.HasSetting(touchmode)">
-						<param name="scrollbar_id" value="7010"/>
-					</include>
 				</control>
 				<control type="group" id="8000">
 					<visible>String.IsEqual(Container(9000).ListItem.Property(id),addons)</visible>
@@ -327,9 +318,6 @@
 						<param name="visible" value="!Integer.IsGreater(Container(8001).NumItems,0)"/>
 						<param name="button2_onclick" value="Skin.SetBool(HomeMenuNoProgramsButton)"/>
 					</include>
-					<include content="WidgetScrollbar" condition="Skin.HasSetting(touchmode)">
-						<param name="scrollbar_id" value="8010"/>
-					</include>
 				</control>
 				<control type="group" id="11000">
 					<visible>String.IsEqual(Container(9000).ListItem.Property(id),video)</visible>
@@ -366,9 +354,6 @@
 						<param name="button_id" value="11300"/>
 						<param name="visible" value="!Integer.IsGreater(Container(11001).NumItems,0)"/>
 						<param name="button2_onclick" value="Skin.SetBool(HomeMenuNoVideosButton)"/>
-					</include>
-					<include content="WidgetScrollbar" condition="Skin.HasSetting(touchmode)">
-						<param name="scrollbar_id" value="11010"/>
 					</include>
 				</control>
 				<control type="group" id="14000">
@@ -420,9 +405,6 @@
 						<param name="visible" value="!Integer.IsGreater(Container(14100).NumItems,0) + !Container(14100).IsUpdating"/>
 						<param name="visible_1" value="false"/>
 						<param name="button2_onclick" value="Skin.SetBool(HomeMenuNoFavButton)"/>
-					</include>
-					<include content="WidgetScrollbar" condition="Skin.HasSetting(touchmode)">
-						<param name="scrollbar_id" value="14010"/>
 					</include>
 				</control>
 				<control type="group" id="15000">
@@ -529,9 +511,6 @@
 						<param name="button_id" value="15300"/>
 						<param name="button2_onclick" value="Skin.SetBool(HomeMenuNoWeatherButton)"/>
 					</include>
-					<include content="WidgetScrollbar" condition="Skin.HasSetting(touchmode)">
-						<param name="scrollbar_id" value="15010"/>
-					</include>
 				</control>
 				<control type="group" id="16000">
 					<visible>String.IsEqual(Container(9000).ListItem.Property(id),musicvideos)</visible>
@@ -622,9 +601,6 @@
 						<param name="button_onclick" value="ActivateWindow(videos,files,return)"/>
 						<param name="button_id" value="16800"/>
 						<param name="button2_onclick" value="Skin.SetBool(HomeMenuNoMusicVideoButton)"/>
-					</include>
-					<include content="WidgetScrollbar" condition="Skin.HasSetting(touchmode)">
-						<param name="scrollbar_id" value="16010"/>
 					</include>
 				</control>
 				<control type="group" id="4000">

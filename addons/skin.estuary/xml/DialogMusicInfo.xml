@@ -533,6 +533,5 @@
 			<height>70</height>
 			<include>MediaFlags</include>
 		</control>
-		<include condition="Skin.HasSetting(touchmode)">TouchBackButton</include>
 	</controls>
 </window>

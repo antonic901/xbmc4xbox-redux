@@ -700,11 +700,6 @@ msgid "Edit categories"
 msgstr ""
 
 #: /xml/SkinSettings.xml
-msgctxt "#31158"
-msgid "Touch mode"
-msgstr ""
-
-#: /xml/SkinSettings.xml
 msgctxt "#31159"
 msgid "Artwork"
 msgstr ""

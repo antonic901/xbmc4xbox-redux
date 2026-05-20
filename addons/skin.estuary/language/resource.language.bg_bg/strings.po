@@ -569,10 +569,6 @@ msgctxt "#31157"
 msgid "Edit categories"
 msgstr "Редактиране на категориите"
 
-msgctxt "#31158"
-msgid "Touch mode"
-msgstr "Режим на управление с допир"
-
 msgctxt "#31159"
 msgid "Artwork"
 msgstr "Изображения"
