@@ -381,10 +381,6 @@ msgctxt "#31105"
 msgid "Add video sources and set the appropriate content type in order to populate your video libraries."
 msgstr "비디오 라이브러리에 표시하려면 비디오 소스를 추가하고 적합한 콘텐츠 종류를 설정하세요."
 
-msgctxt "#31106"
-msgid "Teletext"
-msgstr "문자다중방송"
-
 #. viewtype name
 msgctxt "#31107"
 msgid "WideList"
@@ -494,11 +490,6 @@ msgctxt "#31136"
 msgid "Click here to see latest changes..."
 msgstr "변경 사항을 보려면 클릭하세요..."
 
-#. Label to show PVR info page
-msgctxt "#31137"
-msgid "PVR"
-msgstr "PVR"
-
 #. Label to show player info page
 msgctxt "#31138"
 msgid "Player"
@@ -521,10 +512,6 @@ msgstr "버전 변경 사항"
 msgctxt "#31142"
 msgid "Play speed"
 msgstr "재생 속도"
-
-msgctxt "#31143"
-msgid "You did not set up PVR yet. In order to use PVR, choose a PVR client addon and configure it. Please visit http://kodi.wiki/view/PVR to learn more."
-msgstr "아직 PVR을 설정하지 않았습니다. PVR을 사용하려면 PVR 클라이언트 애드온을 선택하고 구성하면 됩니다. 자세한 정보는 http://kodi.wiki/view/PVR 방문하시기 바랍니다."
 
 msgctxt "#31144"
 msgid "Enter add-on browser"
@@ -755,10 +742,6 @@ msgstr "시스템"
 #~ msgctxt "#31060"
 #~ msgid "Select + Start"
 #~ msgstr "Select + Start"
-
-#~ msgctxt "#31137"
-#~ msgid "PVR info"
-#~ msgstr "PVR 정보"
 
 #~ msgctxt "#31138"
 #~ msgid "Player process info"

@@ -37,7 +37,7 @@
 			<include>ColoredBackgroundImages</include>
 		</control>
 		<control type="group">
-			<visible>[Player.ShowInfo | Window.IsActive(musicosd)] + !MusicPlayer.Content(livetv)</visible>
+			<visible>[Player.ShowInfo | Window.IsActive(musicosd)]</visible>
 			<height>460</height>
 			<include>OpenClose_Left</include>
 			<include>Visible_Left</include>
@@ -52,7 +52,7 @@
 				<left>20</left>
 				<top>-140</top>
 				<include>Visible_Left</include>
-				<visible>[Player.ShowInfo | Window.IsActive(musicosd)] + !MusicPlayer.Content(livetv)</visible>
+				<visible>Player.ShowInfo | Window.IsActive(musicosd)</visible>
 				<width>400</width>
 				<height>400</height>
 				<fadetime>400</fadetime>
@@ -62,7 +62,7 @@
 				<bordersize>4</bordersize>
 			</control>
 			<control type="group">
-				<visible>[Player.ShowInfo | Window.IsActive(musicosd)] + ![Window.IsActive(playerprocessinfo) | MusicPlayer.Content(livetv)]</visible>
+				<visible>[Player.ShowInfo | Window.IsActive(musicosd)] + !Window.IsActive(playerprocessinfo)</visible>
 				<include>Visible_Left</include>
 				<left>440</left>
 				<top>10</top>

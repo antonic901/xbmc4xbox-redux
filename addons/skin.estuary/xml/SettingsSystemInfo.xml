@@ -198,14 +198,6 @@
 					<width>420</width>
 					<label>$LOCALIZE[13281]</label>
 				</control>
-				<control type="button" id="99">
-					<description>Button PVR</description>
-					<include content="DefaultSettingButton">
-						<param name="height" value="85" />
-					</include>
-					<width>420</width>
-					<label>$LOCALIZE[19191]</label>
-				</control>
 				<control type="button" id="100">
 					<description>Button Privacy policy</description>
 					<include content="DefaultSettingButton">

@@ -136,7 +136,7 @@ msgctxt "#31020"
 msgid "Actions"
 msgstr ""
 
-#: /xml/AddonBrowser.xml /xml/DialogPVRChannelManager.xml /xml/Includes_MediaMenu.xml /xml/EventLog.xml
+#: /xml/AddonBrowser.xml /xml/Includes_MediaMenu.xml /xml/EventLog.xml
 msgctxt "#31021"
 msgid "Misc options"
 msgstr ""
@@ -207,12 +207,12 @@ msgctxt "#31034"
 msgid "Extended info"
 msgstr ""
 
-#: /xml/DialogPVRChannelManager.xml /xml/DialogPVRChannelsOSD.xml /xml/DialogPVRGuideOSD.xml /xml/Variables.xml /xml/FileBrowser.xml
+#: /xml/Variables.xml /xml/FileBrowser.xml
 msgctxt "#31035"
 msgid "Pages"
 msgstr ""
 
-#: /xml/FileBrowser.xml /xml/Variables.xml /xml/MyPVRRecordings.xml
+#: /xml/FileBrowser.xml /xml/Variables.xml
 msgctxt "#31036"
 msgid "items"
 msgstr ""
@@ -247,21 +247,6 @@ msgstr ""
 #: /xml/SmartPlaylistEditor.xml
 msgctxt "#31043"
 msgid "Set the type and add rules to create a smart playlist. These playlists are dynamic and include all media items from your database which apply to your chosen rules."
-msgstr ""
-
-#: /xml/DialogPVRGroupManager.xml
-msgctxt "#31044"
-msgid "Add group"
-msgstr ""
-
-#: /xml/DialogPVRGroupManager.xml
-msgctxt "#31045"
-msgid "Rename group"
-msgstr ""
-
-#: /xml/DialogPVRGroupManager.xml
-msgctxt "#31046"
-msgid "Delete group"
 msgstr ""
 
 #empty string with id 31047
@@ -410,11 +395,6 @@ msgstr ""
 
 #empty strings from id 31085 to 31088
 
-#: /xml/DialogPVRGroupManager.xml
-msgctxt "#31089"
-msgid "Available groups"
-msgstr ""
-
 #empty strings from id 31090 to 31091
 
 #: /xml/VideoOSD.xml /xml/Variables.xml
@@ -437,11 +417,6 @@ msgstr ""
 #: /xml/DialogSubtitles.xml
 msgctxt "#31096"
 msgid "Local subtitle available"
-msgstr ""
-
-#: /xml/DialogPVRChannelManager.xml
-msgctxt "#31097"
-msgid "Channel options"
 msgstr ""
 
 #: /xml/LoginScreen.xml
@@ -486,11 +461,6 @@ msgstr ""
 #: /xml/Home.xml
 msgctxt "#31105"
 msgid "Add video sources and set the appropriate content type in order to populate your video libraries."
-msgstr ""
-
-#: /xml/Variables.xml
-msgctxt "#31106"
-msgid "Teletext"
 msgstr ""
 
 #. viewtype name
@@ -634,12 +604,6 @@ msgid "Click here to see latest changes..."
 msgstr ""
 
 #: /xml/DialogPlayerProcessInfo.xml
-#. Label to show PVR info page
-msgctxt "#31137"
-msgid "PVR"
-msgstr ""
-
-#: /xml/DialogPlayerProcessInfo.xml
 #. Label to show player info page
 msgctxt "#31138"
 msgid "Player"
@@ -665,11 +629,6 @@ msgstr ""
 #: /xml/Variables.xml
 msgctxt "#31142"
 msgid "Play speed"
-msgstr ""
-
-#: /xml/Home.xml
-msgctxt "#31143"
-msgid "You did not set up PVR yet. In order to use PVR, choose a PVR client addon and configure it. Please visit http://kodi.wiki/view/PVR to learn more."
 msgstr ""
 
 #: /xml/Home.xml
