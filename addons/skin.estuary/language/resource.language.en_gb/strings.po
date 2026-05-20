@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: KODI Main\n"
-"Report-Msgid-Bugs-To: http://trac.kodi.tv/\n"
+"Report-Msgid-Bugs-To: https://github.com/xbmc/xbmc/issues/\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Kodi Translation Team\n"
@@ -16,7 +16,19 @@ msgstr ""
 "Language: en_GB\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: /xml/Home.xml /xml/DialogFullScreenInfo.xml
+msgctxt "Addon Summary"
+msgid "Estuary skin by phil65. (Kodi's default skin)"
+msgstr ""
+
+msgctxt "Addon Description"
+msgid "Estuary is the default skin for Kodi 17.0 and above. It attempts to be easy for first time Kodi users to understand and use."
+msgstr ""
+
+msgctxt "Addon Disclaimer"
+msgid "Estuary is the default skin for Kodi, removing it may cause issues"
+msgstr ""
+
+#: /xml/Home.xml /xml/DialogSeekBar.xml
 msgctxt "#31000"
 msgid "Now playing"
 msgstr ""
@@ -56,7 +68,10 @@ msgctxt "#31007"
 msgid "Unwatched movies"
 msgstr ""
 
-#empty string with id 31008
+#: /xml/SkinSettings.xml
+msgctxt "#31008"
+msgid "Enable category widgets"
+msgstr ""
 
 #: /xml/MyVideoNav.xml
 msgctxt "#31009"
@@ -136,7 +151,10 @@ msgctxt "#31023"
 msgid "Viewtype"
 msgstr ""
 
-#empty string with id 31024
+#: /xml/SkinSettings.xml
+msgctxt "#31024"
+msgid "Choose rating to display for media items"
+msgstr ""
 
 #: /xml/DialogFavourites.xml
 msgctxt "#31025"
@@ -148,7 +166,9 @@ msgctxt "#31026"
 msgid "Timeshift"
 msgstr ""
 
-#empty string with id 31027
+msgctxt "#31027"
+msgid "Next aired"
+msgstr ""
 
 #: /xml/DialogAlbumInfo.xml /xml/DialogVideoInfo.xml
 msgctxt "#31028"
@@ -161,6 +181,8 @@ msgid "Last logged in"
 msgstr ""
 
 #: /xml/SettingsSystemInfo.xml
+#: /xml/DialogPlayerProcessInfo.xml
+#. Label to show the system memory usage
 msgctxt "#31030"
 msgid "System memory usage"
 msgstr ""
@@ -195,7 +217,10 @@ msgctxt "#31036"
 msgid "items"
 msgstr ""
 
-#empty string with id 31037
+#: /xml/Includes.xml
+msgctxt "#31037"
+msgid "Selected track"
+msgstr ""
 
 #: /xml/Variables.xml
 msgctxt "#31038"
@@ -246,17 +271,7 @@ msgctxt "#31048"
 msgid "Available"
 msgstr ""
 
-#empty string with id 31049
-
-#: /xml/Variables.xml
-msgctxt "#31050"
-msgid "Press [B]OK[/B] to stop"
-msgstr ""
-
-#: /xml/VideoOSD.xml
-msgctxt "#31051"
-msgid "Toggle language"
-msgstr ""
+#empty strings from id 31049 to 31051
 
 #: /xml/Includes.xml
 msgctxt "#31052"
@@ -270,10 +285,13 @@ msgstr ""
 
 #: /xml/Variables.xml
 msgctxt "#31054"
-msgid "Press [B]Left[/B] to rewind, or [B]Right[/B] to fast-forward"
+msgid "Press [B]Left[/B] to step back, or [B]Right[/B] to step forward"
 msgstr ""
 
-#empty string with id 31055
+#: /xml/Variables.xml
+msgctxt "#31055"
+msgid "Press [B]Right[/B] to frame advance"
+msgstr ""
 
 #: /xml/MyMusicNav.xml /xml/MyVideoNav.xml
 msgctxt "#31056"
@@ -346,7 +364,15 @@ msgctxt "#31072"
 msgid "Power Options"
 msgstr ""
 
-#empty strings from id 31073 to 31074
+#: /xml/MyPlaylist.xml
+msgctxt "#31073"
+msgid "Total length"
+msgstr ""
+
+#: /xml/MyPlaylist.xml
+msgctxt "#31074"
+msgid "Total duration"
+msgstr ""
 
 #: /xml/Home.xml
 msgctxt "#31075"
@@ -389,12 +415,7 @@ msgctxt "#31089"
 msgid "Available groups"
 msgstr ""
 
-#: /xml/DialogVideoInfo.xml
-msgctxt "#31090"
-msgid "Search trailer"
-msgstr ""
-
-#empty string with id 31091
+#empty strings from id 31090 to 31091
 
 #: /xml/VideoOSD.xml /xml/Variables.xml
 msgctxt "#31092"
@@ -500,14 +521,14 @@ msgctxt "#31113"
 msgid "Search local library"
 msgstr ""
 
-#: /xml/Custom_1107_SearchDialog.xml /xml/DialogMusicInfo.xml
+#: /xml/Custom_1107_SearchDialog.xml
 msgctxt "#31114"
 msgid "Search YouTube"
 msgstr ""
 
-#: /xml/Custom_1107_SearchDialog.xml
+#: /xml/VideoOSD.xml
 msgctxt "#31115"
-msgid "Search TheMovieDB"
+msgid "Toggle subtitle"
 msgstr ""
 
 #: /xml/Includes_Home.xml
@@ -550,10 +571,7 @@ msgctxt "#31123"
 msgid "Same director"
 msgstr ""
 
-#: /xml/MyPics.xml
-msgctxt "#31124"
-msgid "Show images on map"
-msgstr ""
+#empty string with id 31124
 
 #: /xml/DialogVideoInfo.xml
 msgctxt "#31125"
@@ -590,19 +608,25 @@ msgctxt "#31131"
 msgid "Choose skin fanart pack"
 msgstr ""
 
-#: /xml/MyVideoNav.xml /xml/View_502_FanArt.xml
+#: /xml/Custom_1101_SettingsList.xml
 msgctxt "#31132"
-msgid "min"
+msgid "Select Program"
 msgstr ""
 
-#empty string with id 31133
+#: /xml/Custom_1101_SettingsList.xml
+msgctxt "#31133"
+msgid "Select Resolution"
+msgstr ""
 
 #: /xml/DialogSeekBar.xml
 msgctxt "#31134"
 msgid "Remaining"
 msgstr ""
 
-#empty string with id 31135
+#: /xml/DialogAddonInfo.xml
+msgctxt "#31135"
+msgid "Binary"
+msgstr ""
 
 #: /xml/DialogAddonInfo.xml
 msgctxt "#31136"
@@ -610,21 +634,25 @@ msgid "Click here to see latest changes..."
 msgstr ""
 
 #: /xml/DialogPlayerProcessInfo.xml
+#. Label to show PVR info page
 msgctxt "#31137"
-msgid "PVR info"
+msgid "PVR"
 msgstr ""
 
 #: /xml/DialogPlayerProcessInfo.xml
+#. Label to show player info page
 msgctxt "#31138"
-msgid "Player process info"
+msgid "Player"
 msgstr ""
 
 #: /xml/DialogPlayerProcessInfo.xml
+#. Label to show video decoder name
 msgctxt "#31139"
 msgid "Video decoder"
 msgstr ""
 
 #: /xml/DialogPlayerProcessInfo.xml
+#. Label to show the video pixel format
 msgctxt "#31140"
 msgid "Pixel format"
 msgstr ""
@@ -654,7 +682,13 @@ msgctxt "#31145"
 msgid "Search add-ons"
 msgstr ""
 
-#empty strings from id 31146 to 31147
+msgctxt "#31146"
+msgid "In cinemas"
+msgstr ""
+
+msgctxt "#31147"
+msgid "In cinemas soon"
+msgstr ""
 
 #: /xml/Home.xml
 msgctxt "#31148"
@@ -668,7 +702,7 @@ msgstr ""
 
 #: /xml/DialogAddonInfo.xml
 msgctxt "#31150"
-msgid "Repository"
+msgid "Origin"
 msgstr ""
 
 #: /xml/Home.xml
@@ -726,42 +760,164 @@ msgctxt "#31161"
 msgid "Numeric pad"
 msgstr ""
 
-#: /xml/DialogProgramInfo.xml
-msgctxt "#31200"
-msgid "Screenshots not available"
+#: /xml/Home.xml
+msgctxt "#31162"
+msgid "Play your personal games or download one of the many game add-ons from the official repository."
 msgstr ""
 
-#: /xml/DialogProgramInfo.xml
-msgctxt "#31201"
-msgid "Publisher"
+#: /xml/Custom_1105_MusicOSDSettings.xml
+msgctxt "#31163"
+msgid "Show Fanart background"
 msgstr ""
 
-#: /xml/DialogProgramInfo.xml
-msgctxt "#31202"
-msgid "Developer"
+#. Choose profile identifier
+#: /xml/SkinSettings.xml
+msgctxt "#31164"
+msgid "Choose kind of profile identification"
 msgstr ""
 
-#: /xml/DialogProgramInfo.xml
-msgctxt "#31203"
-msgid "Descriptor"
+#. Label for the kind of profile identification
+#: /xml/SkinSettings.xml
+msgctxt "#31165"
+msgid "Profile name"
 msgstr ""
 
-#: /xml/DialogProgramInfo.xml
-msgctxt "#31204"
-msgid "Release date"
+#. Label for the kind of profile identification
+#: /xml/SkinSettings.xml
+msgctxt "#31166"
+msgid "Profile avatar"
 msgstr ""
 
-#: /xml/DialogProgramInfo.xml
-msgctxt "#31205"
-msgid "General feature"
+#. Label of a setting
+#: /xml/SkinSettings.xml
+msgctxt "#31167"
+msgid "Animate background"
 msgstr ""
 
-#: /xml/DialogProgramInfo.xml
-msgctxt "#31206"
-msgid "Online feature"
+#. Label of a setting
+#: /xml/SkinSettings.xml
+msgctxt "#31168"
+msgid "Show posters instead of thumbs for musicvideos"
 msgstr ""
 
-#: /xml/DialogProgramInfo.xml
-msgctxt "#31207"
-msgid "Platform"
+#. Description label for skin settings area
+#: /xml/Variables.xml
+msgctxt "#31169"
+msgid "Artwork related settings."
+msgstr ""
+
+#: /xml/SkinSettings.xml
+#. Label for OSD settings category
+msgctxt "#31170"
+msgid "On screen display"
+msgstr ""
+
+#: /xml/SkinSettings.xml
+#. Helper text for the label of OSD settings category
+msgctxt "#31171"
+msgid "On screen display (OSD) related settings"
+msgstr ""
+
+#: /xml/SkinSettings.xml
+#. Setting Automatically close video OSD
+msgctxt "#31172"
+msgid "Automatically close video OSD"
+msgstr ""
+
+#: /xml/SkinSettings.xml
+#. Setting auto close time for video osd
+msgctxt "#31173"
+msgid "Video OSD autoclose time (seconds)"
+msgstr ""
+
+#: /xml/SkinSettings.xml
+#. Setting to control what happens when clicking a music album on the home screen
+msgctxt "#31174"
+msgid "Default select action for albums on the home screen"
+msgstr ""
+
+#: /xml/SkinSettings.xml
+#. Setting to control what happens when clicking a TV show on the home screen
+msgctxt "#31175"
+msgid "Default select action for TV shows on the home screen"
+msgstr ""
+
+#: /xml/SkinSettings.xml
+#. Setting to control what happens when clicking a movie set on the home screen
+msgctxt "#31176"
+msgid "Default select action for movie sets on the home screen"
+msgstr ""
+
+#empty strings from id 31177 to 31599
+
+#: /xml/DialogPlayerProcessInfo.xml
+#. Label to show the video codec name
+msgctxt "#31600"
+msgid "Video codec"
+msgstr ""
+
+#: /xml/DialogPlayerProcessInfo.xml
+#. Label to show the video resolution
+msgctxt "#31601"
+msgid "Video resolution"
+msgstr ""
+
+#: /xml/DialogPlayerProcessInfo.xml
+#. Label to show the video aspect
+msgctxt "#31602"
+msgid "Video aspect"
+msgstr ""
+
+#: /xml/DialogPlayerProcessInfo.xml
+#. Label to show the video bitrate
+msgctxt "#31603"
+msgid "Video bitrate"
+msgstr ""
+
+#: /xml/DialogPlayerProcessInfo.xml
+#. Label to show the audio codec name
+msgctxt "#31604"
+msgid "Audio codec"
+msgstr ""
+
+#: /xml/DialogPlayerProcessInfo.xml
+#. Label to show the number of audio channels
+msgctxt "#31605"
+msgid "Audio channels"
+msgstr ""
+
+#: /xml/DialogPlayerProcessInfo.xml
+#. Label to show the audio bitrate
+msgctxt "#31606"
+msgid "Audio bitrate"
+msgstr ""
+
+#: /xml/DialogPlayerProcessInfo.xml
+#. Label to show the screen resolution
+msgctxt "#31607"
+msgid "Screen resolution"
+msgstr ""
+
+#: /xml/DialogPlayerProcessInfo.xml
+#. Label to show the system rendering speed
+msgctxt "#31608"
+msgid "System rendering speed"
+msgstr ""
+
+#: /xml/DialogPlayerProcessInfo.xml
+#. Label to show the system CPU usage
+msgctxt "#31609"
+msgid "System CPU usage"
+msgstr ""
+
+#: /xml/DialogPlayerProcessInfo.xml
+#. Label to show the media (metadata) info page
+msgctxt "#31610"
+msgid "Media"
+msgstr ""
+
+#: /xml/DialogPlayerProcessInfo.xml
+#. Label to show the system info page
+msgctxt "#31611"
+msgid "System"
 msgstr ""

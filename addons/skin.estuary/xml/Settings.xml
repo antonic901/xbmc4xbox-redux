@@ -5,6 +5,7 @@
 	<controls>
 		<include>DefaultBackground</include>
 		<control type="multiimage">
+			<depth>DepthBackground</depth>
 			<include>FullScreenDimensions</include>
 			<aspectratio>scale</aspectratio>
 			<animation effect="zoom" center="auto" end="102,102" time="0" condition="Integer.IsGreater(System.StereoscopicMode,0)">conditional</animation>
@@ -34,8 +35,7 @@
 				<width>100%</width>
 				<top>120</top>
 				<height>300</height>
-				<onup>Control.SetFocus(9001,$INFO[Container(9000).Position],absolute)</onup>
-				<onup>Down</onup>
+				<onup>noop</onup>
 				<ondown>Control.SetFocus(9001,$INFO[Container(9000).Position],absolute)</ondown>
 				<include>SettingsPanel</include>
 				<content>
@@ -55,9 +55,9 @@
 						<icon>icons/settings/sysinfo.png</icon>
 					</item>
 					<item>
-						<label>$LOCALIZE[20077]</label>
-						<onclick>ActivateWindow(skinsettings)</onclick>
-						<icon>icons/settings/skin.png</icon>
+						<label>$LOCALIZE[31067]</label>
+						<onclick>ActivateWindow(eventlog)</onclick>
+						<icon>icons/settings/eventlog.png</icon>
 					</item>
 				</content>
 			</control>
@@ -67,8 +67,7 @@
 				<top>470</top>
 				<bottom>0</bottom>
 				<onup>Control.SetFocus(9000,$INFO[Container(9001).Position],absolute)</onup>
-				<ondown>Up</ondown>
-				<ondown>Control.SetFocus(9000,$INFO[Container(9001).Position],absolute)</ondown>
+				<ondown>noop</ondown>
 				<include>SettingsPanel</include>
 				<content>
 					<item>
@@ -82,9 +81,20 @@
 						<icon>icons/settings/media.png</icon>
 					</item>
 					<item>
+						<label>$LOCALIZE[14204]</label>
+						<onclick>ActivateWindow(PVRSettings)</onclick>
+						<icon>icons/settings/livetv.png</icon>
+					</item>
+					<item>
 						<label>$LOCALIZE[14036]</label>
 						<onclick>ActivateWindow(ServiceSettings)</onclick>
 						<icon>icons/settings/network.png</icon>
+					</item>
+					<item>
+						<label>$LOCALIZE[15016]</label>
+						<visible>System.GetBool(gamesgeneral.enable)</visible>
+						<onclick>ActivateWindow(GameSettings)</onclick>
+						<icon>icons/settings/games.png</icon>
 					</item>
 					<item>
 						<label>$LOCALIZE[14206]</label>
@@ -102,10 +112,10 @@
 						<icon>icons/settings/system.png</icon>
 					</item>
 					<item>
-						<label>$LOCALIZE[24068]</label>
-						<onclick>ActivateWindow(SystemSettings,updater.check)</onclick>
-						<icon>icons/settings/update.png</icon>
-						<visible>Skin.HasSetting(updateavailable)</visible>
+						<label>LibreELEC</label>
+						<onclick>RunAddon(service.libreelec.settings)</onclick>
+						<icon>icons/settings/libreelec.png</icon>
+						<visible>System.AddonIsEnabled(service.libreelec.settings)</visible>
 					</item>
 				</content>
 			</control>

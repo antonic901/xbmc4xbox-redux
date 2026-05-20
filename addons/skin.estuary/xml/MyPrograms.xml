@@ -2,7 +2,7 @@
 <window>
 	<defaultcontrol always="true">52</defaultcontrol>
 	<backgroundcolor>background</backgroundcolor>
-	<views>50,52</views>
+	<views>50,52,55,500</views>
 	<menucontrol>9000</menucontrol>
 	<controls>
 		<include>DefaultBackground</include>
@@ -10,45 +10,13 @@
 			<animation effect="fade" start="100" end="0" time="200" tween="sine" condition="$EXP[infodialog_active]">Conditional</animation>
 			<include>View_50_List</include>
 			<include>View_52_IconWall</include>
+			<include>View_55_WideList</include>
+			<include>View_500_Wall</include>
 			<control type="group">
 				<include>OpenClose_Left</include>
-				<visible>Control.IsVisible(50)</visible>
 				<include>Visible_Left</include>
-				<include content="ContentPanel">
-					<param name="width" value="656" />
-				</include>
-				<control type="group">
-					<width>550</width>
-					<control type="textbox">
-						<top>120</top>
-						<left>30</left>
-						<width>550</width>
-						<aligny>center</aligny>
-						<height>110</height>
-						<font>font36_title</font>
-						<label>$INFO[ListItem.Label]</label>
-					</control>
-					<control type="textbox">
-						<left>30</left>
-						<top>240</top>
-						<width>525</width>
-						<bottom>100</bottom>
-						<label>$INFO[ListItem.Tagline,[I],[/I][CR][CR]]$INFO[ListItem.Plot][CR][CR]</label>
-						<autoscroll delay="10000" time="3000" repeat="10000">Skin.HasSetting(autoscroll)</autoscroll>
-					</control>
-					<control type="textbox">
-						<left>30</left>
-						<top>360</top>
-						<width>530</width>
-						<height>413</height>
-						<align>center</align>
-						<aligny>center</aligny>
-						<font>font27</font>
-						<textcolor>80FFFFFF</textcolor>
-						<label>$LOCALIZE[19055]</label>
-						<visible>String.IsEmpty(ListItem.Plot) + !ListItem.IsParentFolder</visible>
-					</control>
-				</control>
+				<visible>Control.IsVisible(55)</visible>
+				<include>ListThumbInfoPanel</include>
 			</control>
 			<include content="TopBar">
 				<param name="breadcrumbs_label" value="$LOCALIZE[10001]" />
@@ -57,6 +25,7 @@
 				<param name="info_visible" value="true" />
 			</include>
 			<include>CommonScrollbars</include>
+			<include>MediaMenuMouseOverlay</include>
 			<control type="group">
 				<include>MediaMenuCommon</include>
 				<control type="grouplist" id="9000">

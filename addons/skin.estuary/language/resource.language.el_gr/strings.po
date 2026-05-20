@@ -1,20 +1,33 @@
 # Kodi Media Center language file
 # Addon Name: Estuary
 # Addon id: skin.estuary
-# Addon Provider: phil65, Ichabod Fletchman
+# Addon Provider: Team Kodi
 msgid ""
 msgstr ""
 "Project-Id-Version: KODI Main\n"
-"Report-Msgid-Bugs-To: http://trac.kodi.tv/\n"
+"Report-Msgid-Bugs-To: https://github.com/xbmc/xbmc/issues/\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Kodi Translation Team\n"
-"Language-Team: Greek (Greece) (http://www.transifex.com/projects/p/kodi-main/language/el_GR/)\n"
+"PO-Revision-Date: 2023-12-04 09:42+0000\n"
+"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Language-Team: Greek <https://kodi.weblate.cloud/projects/kodi-add-ons-skins/skin-estuary/el_gr/>\n"
+"Language: el_gr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: el_GR\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.2.1\n"
+
+msgctxt "Addon Summary"
+msgid "Estuary skin by phil65. (Kodi's default skin)"
+msgstr "Το κέλυφος Estuary από τον phil65 και τον Pier. (προεπιλεγμένο κέλυφος του Kodi)"
+
+msgctxt "Addon Description"
+msgid "Estuary is the default skin for Kodi 17.0 and above. It attempts to be easy for first time Kodi users to understand and use."
+msgstr "Το Estuary είναι η προεπιλεγμένη αμφίεση για τις εκδόσεις Kodi 17.0 και άνω. Επιχειρεί να είναι προσιτό στους αρχάριους χρήστες του Kodi για να το κατανοήσουν και να το χρησιμοποιήσουν."
+
+msgctxt "Addon Disclaimer"
+msgid "Estuary is the default skin for Kodi, removing it may cause issues"
+msgstr "Το Estuary είναι η προεπιλεγμένη αμφίεση για το Kodi. Η αφαίρεσή του μπορεί να δημιουργήσει προβλήματα."
 
 msgctxt "#31000"
 msgid "Now playing"
@@ -48,6 +61,10 @@ msgctxt "#31007"
 msgid "Unwatched movies"
 msgstr "Μη προβληθείσες ταινίες"
 
+msgctxt "#31008"
+msgid "Enable category widgets"
+msgstr ""
+
 msgctxt "#31009"
 msgid "Download icons"
 msgstr "Λήψη εικονιδίων"
@@ -72,10 +89,12 @@ msgctxt "#31014"
 msgid "Unplayed albums"
 msgstr "Μη παιγμένα άλμπουμ"
 
+#. home screen recordings widget: recent tv / radio recordings
 msgctxt "#31015"
 msgid "Recent recordings"
 msgstr "Πρόσφατες εγγραφές"
 
+#. home screen channel widget: recently played tv channels. (please note that in some non-english languages #31018 and #31016 might not be equal)
 msgctxt "#31016"
 msgid "Recently played channels"
 msgstr "Πρόσφατα παιγμένα κανάλια"
@@ -84,6 +103,7 @@ msgctxt "#31017"
 msgid "Rated"
 msgstr "Αξιολογημένο/α"
 
+#. home screen channel widget: recently played radio channels. (please note that in some non-english languages #31018 and #31016 might not be equal)
 msgctxt "#31018"
 msgid "Recently played channels"
 msgstr "Πρόσφατα παιγμένα κανάλια"
@@ -108,6 +128,10 @@ msgctxt "#31023"
 msgid "Viewtype"
 msgstr "Τύπος προβολής"
 
+msgctxt "#31024"
+msgid "Choose rating to display for media items"
+msgstr ""
+
 msgctxt "#31025"
 msgid "No favourites found. You can add any item from media views to this list by using the context menu."
 msgstr "Δεν βρέθηκαν αγαπημένα. Μπορείτε να προσθέσετε οποιοδήποτε αντικείμενο από την προβολή πολυμέσων σε αυτή τη λίστα χρησιμοποιώντας το κεντρικό μενού."
@@ -115,6 +139,10 @@ msgstr "Δεν βρέθηκαν αγαπημένα. Μπορείτε να προ
 msgctxt "#31026"
 msgid "Timeshift"
 msgstr "Timeshift"
+
+msgctxt "#31027"
+msgid "Next aired"
+msgstr "Επόμενο Επεισόδιο"
 
 msgctxt "#31028"
 msgid "Show fanart"
@@ -124,6 +152,7 @@ msgctxt "#31029"
 msgid "Last logged in"
 msgstr "Τελευταία σύνδεση"
 
+#. Label to show the system memory usage
 msgctxt "#31030"
 msgid "System memory usage"
 msgstr "Χρήση μνήμης συστήματος"
@@ -151,6 +180,10 @@ msgstr "Σελίδες"
 msgctxt "#31036"
 msgid "items"
 msgstr "Αντικείμενα"
+
+msgctxt "#31037"
+msgid "Selected track"
+msgstr ""
 
 msgctxt "#31038"
 msgid "Rewind"
@@ -188,14 +221,6 @@ msgctxt "#31048"
 msgid "Available"
 msgstr "Διαθέσιμος"
 
-msgctxt "#31050"
-msgid "Press [B]OK[/B] to stop"
-msgstr "Πατήστε το [B]OK[/B] για να διακοπή"
-
-msgctxt "#31051"
-msgid "Toggle language"
-msgstr "Εναλλαγή γλώσσας"
-
 msgctxt "#31052"
 msgid "filtered"
 msgstr "φιλτραρισμένο"
@@ -205,8 +230,12 @@ msgid "Arial based"
 msgstr "Βασισμένη στην Arial"
 
 msgctxt "#31054"
-msgid "Press [B]Left[/B] to rewind, or [B]Right[/B] to fast-forward"
-msgstr "Πατήστε το [B]Αριστερό[/B] βέλος για επαναφορά, ή το [B]Δεξί[/B] για γρήγορη προώθηση"
+msgid "Press [B]Left[/B] to step back, or [B]Right[/B] to step forward"
+msgstr ""
+
+msgctxt "#31055"
+msgid "Press [B]Right[/B] to frame advance"
+msgstr ""
 
 msgctxt "#31056"
 msgid "Go to playlist"
@@ -260,6 +289,14 @@ msgctxt "#31072"
 msgid "Power Options"
 msgstr "Επιλογές Ενέργειας"
 
+msgctxt "#31073"
+msgid "Total length"
+msgstr ""
+
+msgctxt "#31074"
+msgid "Total duration"
+msgstr "Συνολική διάρκεια"
+
 msgctxt "#31075"
 msgid "Movie sets"
 msgstr "Ομάδες ταινιών"
@@ -288,10 +325,6 @@ msgctxt "#31089"
 msgid "Available groups"
 msgstr "Διαθέσιμες ομάδες"
 
-msgctxt "#31090"
-msgid "Search trailer"
-msgstr "Αναζήτηση τρέιλερ"
-
 msgctxt "#31092"
 msgid "Video menu"
 msgstr "Μενού βίντεο"
@@ -316,14 +349,22 @@ msgctxt "#31098"
 msgid "Select your Kodi user profile[CR]to login and continue"
 msgstr "Επιλέξτε προφίλ χρήστη για το Kodi[CR]για να συνδεθείτε και να συνεχίσετε"
 
+#. viewtype name
+msgctxt "#31099"
+msgid "IconWall"
+msgstr ""
+
+#. viewtype name
 msgctxt "#31100"
 msgid "Shift"
 msgstr "Shift"
 
+#. viewtype name
 msgctxt "#31101"
 msgid "InfoWall"
 msgstr "Τοίχος πληροφοριών"
 
+#. viewtype name
 msgctxt "#31102"
 msgid "Wall"
 msgstr "Τοίχος"
@@ -344,6 +385,7 @@ msgctxt "#31106"
 msgid "Teletext"
 msgstr "Teletext"
 
+#. viewtype name
 msgctxt "#31107"
 msgid "WideList"
 msgstr "Ευρεία λίστα"
@@ -369,8 +411,8 @@ msgid "Search YouTube"
 msgstr "Αναζήτηση στο Youtube"
 
 msgctxt "#31115"
-msgid "Search TheMovieDB"
-msgstr "Αναζήτηση στο TheMovieDB"
+msgid "Toggle subtitle"
+msgstr ""
 
 msgctxt "#31116"
 msgid "Remove this main menu item"
@@ -386,7 +428,7 @@ msgstr "Εισαγωγή Περιηγητή πρόσθετων"
 
 msgctxt "#31119"
 msgid "You do not have any add-ons installed yet. Visit our add-on browser to browse through our collection and improve your Kodi experience."
-msgstr "Δεν έχετε εγκαταστήσει κανένα πρόσθετο ακόμα. Επισκεφθείτε  τον περιηγητή προσθέτων μας για να περιηγηθείτε στη συλλογή μας και να βελτιώσετε την εμπειρία σας στο Kodi."
+msgstr "Δεν έχετε εγκαταστήσει κανένα πρόσθετο ακόμα. Επισκεφθείτε τον περιηγητή προσθέτων μας για να περιηγηθείτε στη συλλογή μας και να βελτιώσετε την εμπειρία σας στο Kodi."
 
 msgctxt "#31120"
 msgid "You did not set up a weather provider yet. In order to view weather information, choose a weather provider and set up your location."
@@ -403,10 +445,6 @@ msgstr "Μη προβληθείσες Τηλ. Σειρές"
 msgctxt "#31123"
 msgid "Same director"
 msgstr "Ίδιος σκηνοθέτης"
-
-msgctxt "#31124"
-msgid "Show images on map"
-msgstr "Προβολή εικόνων στο χάρτη"
 
 msgctxt "#31125"
 msgid "Press up for actor info"
@@ -434,32 +472,44 @@ msgstr "Ρυθμίσεις βασικού μενού: Ρυθμίστε την α
 
 msgctxt "#31131"
 msgid "Choose skin fanart pack"
-msgstr "Επιλογή πακέτου fanart "
+msgstr "Επιλογή πακέτου fanart"
 
 msgctxt "#31132"
-msgid "min"
-msgstr "λεπτά"
+msgid "Select Program"
+msgstr ""
+
+msgctxt "#31133"
+msgid "Select Resolution"
+msgstr ""
 
 msgctxt "#31134"
 msgid "Remaining"
 msgstr "Απομένουν"
 
+msgctxt "#31135"
+msgid "Binary"
+msgstr ""
+
 msgctxt "#31136"
 msgid "Click here to see latest changes..."
 msgstr "Πατήστε εδώ για να δείτε τις πρόσφατες αλλαγές..."
 
+#. Label to show PVR info page
 msgctxt "#31137"
-msgid "PVR info"
-msgstr "Πληροφορίες PVR"
+msgid "PVR"
+msgstr ""
 
+#. Label to show player info page
 msgctxt "#31138"
-msgid "Player process info"
-msgstr "Πληροφορίες διεργασίας αναπαραγωγής"
+msgid "Player"
+msgstr "Αναπαραγωγή"
 
+#. Label to show video decoder name
 msgctxt "#31139"
 msgid "Video decoder"
 msgstr "Αποκωδικοποιητής βίντεο"
 
+#. Label to show the video pixel format
 msgctxt "#31140"
 msgid "Pixel format"
 msgstr "Μορφή εικονοστοιχείων"
@@ -472,6 +522,10 @@ msgctxt "#31142"
 msgid "Play speed"
 msgstr "Ταχύτητα αναπαραγωγής"
 
+msgctxt "#31143"
+msgid "You did not set up PVR yet. In order to use PVR, choose a PVR client addon and configure it. Please visit http://kodi.wiki/view/PVR to learn more."
+msgstr ""
+
 msgctxt "#31144"
 msgid "Enter add-on browser"
 msgstr "Εισαγωγή Περιηγητή πρόσθετων"
@@ -480,13 +534,25 @@ msgctxt "#31145"
 msgid "Search add-ons"
 msgstr "Αναζήτηση προσθέτων"
 
+msgctxt "#31146"
+msgid "In cinemas"
+msgstr ""
+
+msgctxt "#31147"
+msgid "In cinemas soon"
+msgstr ""
+
 msgctxt "#31148"
 msgid "Categories"
 msgstr "Κατηγορίες"
 
+msgctxt "#31149"
+msgid "Select genre fanart pack"
+msgstr ""
+
 msgctxt "#31150"
-msgid "Repository"
-msgstr "Αποθετήριο"
+msgid "Origin"
+msgstr ""
 
 msgctxt "#31151"
 msgid "Unwatched music videos"
@@ -495,6 +561,14 @@ msgstr "Μη προβληθέντα βίντεο"
 msgctxt "#31152"
 msgid "Random music videos"
 msgstr "Τυχαία μουσικά βίντεο"
+
+msgctxt "#31153"
+msgid "You do not have any add-ons of this type installed. Enter the add-on browser to download add-ons created by our community."
+msgstr ""
+
+msgctxt "#31154"
+msgid "Press OK to switch between locations"
+msgstr ""
 
 msgctxt "#31155"
 msgid "No bookmarks created yet."
@@ -512,6 +586,160 @@ msgctxt "#31158"
 msgid "Touch mode"
 msgstr "Λειτουργία αφής"
 
+msgctxt "#31159"
+msgid "Artwork"
+msgstr "Εικόνες"
+
+msgctxt "#31160"
+msgid "Show media flags"
+msgstr ""
+
 msgctxt "#31161"
 msgid "Numeric pad"
 msgstr "Αριθμητικό πληκτρολόγιο"
+
+msgctxt "#31162"
+msgid "Play your personal games or download one of the many game add-ons from the official repository."
+msgstr ""
+
+msgctxt "#31163"
+msgid "Show Fanart background"
+msgstr ""
+
+#. Choose profile identifier
+msgctxt "#31164"
+msgid "Choose kind of profile identification"
+msgstr ""
+
+#. Label for the kind of profile identification
+msgctxt "#31165"
+msgid "Profile name"
+msgstr "Όνομα προφίλ"
+
+#. Label for the kind of profile identification
+msgctxt "#31166"
+msgid "Profile avatar"
+msgstr ""
+
+#. Label of a setting
+msgctxt "#31167"
+msgid "Animate background"
+msgstr ""
+
+#. Label of a setting
+msgctxt "#31168"
+msgid "Show posters instead of thumbs for musicvideos"
+msgstr ""
+
+#. Description label for skin settings area
+msgctxt "#31169"
+msgid "Artwork related settings."
+msgstr ""
+
+#. Label for OSD settings category
+msgctxt "#31170"
+msgid "On screen display"
+msgstr ""
+
+#. Helper text for the label of OSD settings category
+msgctxt "#31171"
+msgid "On screen display (OSD) related settings"
+msgstr ""
+
+#. Setting Automatically close video OSD
+msgctxt "#31172"
+msgid "Automatically close video OSD"
+msgstr ""
+
+#. Setting auto close time for video osd
+msgctxt "#31173"
+msgid "Video OSD autoclose time (seconds)"
+msgstr ""
+
+#. Setting to control what happens when clicking a music album on the home screen
+msgctxt "#31174"
+msgid "Default select action for albums on the home screen"
+msgstr ""
+
+#. Setting to control what happens when clicking a TV show on the home screen
+msgctxt "#31175"
+msgid "Default select action for TV shows on the home screen"
+msgstr ""
+
+#. Setting to control what happens when clicking a movie set on the home screen
+msgctxt "#31176"
+msgid "Default select action for movie sets on the home screen"
+msgstr ""
+
+# empty strings from id 31170 to 31599
+#. Label to show the video codec name
+msgctxt "#31600"
+msgid "Video codec"
+msgstr "Κωδικοποίηση βίντεο"
+
+#. Label to show the video resolution
+msgctxt "#31601"
+msgid "Video resolution"
+msgstr "Ανάλυση βίντεο"
+
+#. Label to show the video aspect
+msgctxt "#31602"
+msgid "Video aspect"
+msgstr "Αναλογίες εικόνας"
+
+#. Label to show the video bitrate
+msgctxt "#31603"
+msgid "Video bitrate"
+msgstr ""
+
+#. Label to show the audio codec name
+msgctxt "#31604"
+msgid "Audio codec"
+msgstr "Κωδικοποίηση ήχου"
+
+#. Label to show the number of audio channels
+msgctxt "#31605"
+msgid "Audio channels"
+msgstr "Κανάλια ήχου"
+
+#. Label to show the audio bitrate
+msgctxt "#31606"
+msgid "Audio bitrate"
+msgstr ""
+
+#. Label to show the screen resolution
+msgctxt "#31607"
+msgid "Screen resolution"
+msgstr "Ανάλυση οθόνης"
+
+#. Label to show the system rendering speed
+msgctxt "#31608"
+msgid "System rendering speed"
+msgstr ""
+
+#. Label to show the system CPU usage
+msgctxt "#31609"
+msgid "System CPU usage"
+msgstr "Χρήση CPU συστήματος"
+
+#. Label to show the media (metadata) info page
+msgctxt "#31610"
+msgid "Media"
+msgstr "Πολυμέσα"
+
+#. Label to show the system info page
+msgctxt "#31611"
+msgid "System"
+msgstr "Σύστημα"
+
+#~ msgctxt "#31615"
+#~ msgid "Extras"
+#~ msgstr "Extras"
+
+#~ msgctxt "#31137"
+#~ msgid "PVR info"
+#~ msgstr "Πληροφορίες PVR"
+
+#~ msgctxt "#31138"
+#~ msgid "Player process info"
+#~ msgstr "Πληροφορίες διεργασίας αναπαραγωγής"

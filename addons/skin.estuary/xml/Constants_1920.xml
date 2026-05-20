@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<includes>
-	<constant name="widelist_width">1325</constant>
-	<constant name="list_width">730</constant>
-	<constant name="width_center">960</constant>
-	<constant name="playlisteditorlist_width">770</constant>
-	<constant name="playlistlist_width">896</constant>
-</includes>

@@ -3,15 +3,17 @@
 	<include name="View_502_FanArt">
 		<control type="group">
 			<include>OpenClose_Left</include>
-			<left>-5</left>
 			<visible>Control.IsVisible(502)</visible>
 			<include>Visible_Left</include>
 			<include content="ListContainer">
+				<param name="left" value="-5" />
+				<param name="right" value="1195" />
 				<param name="list_id" value="502" />
 				<param name="viewtype_label" value="$LOCALIZE[20445]" />
 			</include>
 		</control>
 		<control type="group">
+			<depth>DepthContentPanel</depth>
 			<include>OpenClose_Right</include>
 			<visible>Control.IsVisible(502)</visible>
 			<include>Visible_Right</include>
@@ -36,21 +38,21 @@
 				<control type="group">
 					<left>600</left>
 					<top>82</top>
-					<include>UserRatingCircle</include>
+					<include condition="Skin.HasSetting(circle_rating) | Skin.HasSetting(circle_userrating)">RatingCircle</include>
 				</control>
 				<control type="textbox">
 					<left>50</left>
 					<right>50</right>
 					<top>769</top>
 					<bottom>105</bottom>
-					<label>$INFO[ListItem.Plot]</label>
-					<autoscroll time="3000" delay="7000" repeat="5000">!System.HasModalDialog + Skin.HasSetting(AutoScroll)</autoscroll>
+					<label>$VAR[PlotTextBoxVar]</label>
+					<autoscroll time="3000" delay="7000" repeat="5000">!System.HasActiveModalDialog + Skin.HasSetting(AutoScroll)</autoscroll>
 				</control>
 				<control type="scrollbar" id="502600">
 					<left>20</left>
-					<top>list_y_offset</top>
+					<top>list_top_offset</top>
 					<width>12</width>
-					<bottom>list_y_offset</bottom>
+					<bottom>list_bottom_offset</bottom>
 					<onleft>502</onleft>
 					<onright>502</onright>
 					<orientation>vertical</orientation>
@@ -59,12 +61,12 @@
 				<control type="group">
 					<left>40</left>
 					<top>770</top>
-					<visible>ListItem.IsCollection</visible>
+					<visible>ListItem.IsCollection + String.IsEmpty(ListItem.PlotOutline) + String.IsEmpty(ListItem.Plot)</visible>
 					<include content="InfoList">
 						<param name="bottom" value="108" />
 						<param name="width" value="1000" />
 						<param name="sortby" value="year" />
-						<param name="sortorder" value="descending" />
+						<param name="sortorder" value="ascending" />
 						<param name="font" value="font13" />
 					</include>
 				</control>

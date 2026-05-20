@@ -23,7 +23,7 @@
 				<visible>Container.Content(tvshows)</visible>
 				<itemlayout height="220" width="900">
 					<control type="group">
-						<posy>100</posy>
+						<top>100</top>
 						<control type="image">
 							<left>0</left>
 							<top>0</top>
@@ -31,7 +31,7 @@
 							<height>195</height>
 							<texture fallback="dialogs/dialog-bg-nobo.png" background="true">$VAR[BannerArtVar]</texture>
 							<aspectratio aligny="center">scale</aspectratio>
-							<bordertexture border="21">overlays/shadow.png</bordertexture>
+							<bordertexture border="21" infill="false">overlays/shadow.png</bordertexture>
 							<bordersize>20</bordersize>
 						</control>
 						<control type="label">
@@ -47,19 +47,20 @@
 						</control>
 						<control type="group">
 							<left>405</left>
-							<include>UserRatingCircle</include>
+							<include condition="Skin.HasSetting(circle_rating) | Skin.HasSetting(circle_userrating)">RatingCircle</include>
 						</control>
 					</control>
 				</itemlayout>
 				<focusedlayout height="220" width="900">
 					<control type="group">
+						<depth>DepthContentPopout</depth>
 						<animation type="Focus">
 							<effect type="zoom" start="100" end="110" time="200" tween="sine" easing="inout" center="450,180" />
 						</animation>
 						<animation type="Unfocus">
 							<effect type="zoom" start="110" end="100" time="200" tween="sine" easing="inout" center="450,180" />
 						</animation>
-						<posy>100</posy>
+						<top>100</top>
 						<control type="image">
 							<left>0</left>
 							<top>0</top>
@@ -67,7 +68,7 @@
 							<height>195</height>
 							<texture fallback="dialogs/dialog-bg-nobo.png" background="true">$VAR[BannerArtVar]</texture>
 							<aspectratio aligny="center">scale</aspectratio>
-							<bordertexture border="21">overlays/shadow.png</bordertexture>
+							<bordertexture border="21" infill="false">overlays/shadow.png</bordertexture>
 							<bordersize>20</bordersize>
 						</control>
 						<control type="label">
@@ -117,7 +118,7 @@
 								<visible>!Listitem.IsParentFolder</visible>
 							</control>
 							<control type="image">
-								<right>220</right>
+								<right>230</right>
 								<top>143</top>
 								<width>22</width>
 								<height>22</height>
@@ -125,7 +126,7 @@
 								<visible>!String.IsEmpty(ListItem.Rating)</visible>
 							</control>
 							<control type="label">
-								<right>258</right>
+								<right>268</right>
 								<top>144</top>
 								<width>800</width>
 								<height>20</height>
@@ -141,7 +142,7 @@
 								<width>22</width>
 								<height>22</height>
 								<texture>lists/played-total.png</texture>
-								<visible>String.IsEqual(Listitem.dbtype,tvshow) + !String.IsEmpty(ListItem.Property(TotalEpisodes))</visible>
+								<visible>[String.IsEqual(Listitem.dbtype,tvshow) | String.IsEqual(Listitem.dbtype,season)] + !String.IsEmpty(ListItem.Property(TotalEpisodes))</visible>
 							</control>
 							<control type="label">
 								<right>103</right>
@@ -151,12 +152,12 @@
 								<font>font12</font>
 								<align>right</align>
 								<aligny>center</aligny>
-								<label>$VAR[BannerLabel2Var]</label>
+								<label>$VAR[WatchedStatusVar]</label>
 							</control>
 						</control>
 						<control type="group">
 							<left>405</left>
-							<include>UserRatingCircle</include>
+							<include condition="Skin.HasSetting(circle_rating) | Skin.HasSetting(circle_userrating)">RatingCircle</include>
 						</control>
 					</control>
 				</focusedlayout>

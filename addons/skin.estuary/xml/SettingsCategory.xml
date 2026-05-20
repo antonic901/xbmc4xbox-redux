@@ -5,6 +5,7 @@
 	<controls>
 		<include>DefaultBackground</include>
 		<control type="multiimage">
+			<depth>DepthBackground</depth>
 			<include>FullScreenDimensions</include>
 			<aspectratio>scale</aspectratio>
 			<animation effect="zoom" center="auto" end="102,102" time="0" condition="Integer.IsGreater(System.StereoscopicMode,0)">conditional</animation>
@@ -18,7 +19,7 @@
 			<include>OpenClose_Right</include>
 			<control type="grouplist" id="5">
 				<description>control area</description>
-				<top>163</top>
+				<top>133</top>
 				<left>470</left>
 				<pagecontrol>60</pagecontrol>
 				<right>0</right>
@@ -30,7 +31,7 @@
 			</control>
 			<control type="image">
 				<left>470</left>
-				<top>160</top>
+				<top>130</top>
 				<right>0</right>
 				<height>2</height>
 				<texture colordiffuse="button_focus" border="2">dialogs/separator-grey.png</texture>
@@ -79,7 +80,12 @@
 			<textcolor>grey</textcolor>
 			<shadowcolor>black</shadowcolor>
 		</control>
+		<control type="colorbutton" id="15">
+			<description>Default ColorButton</description>
+			<include>DefaultSettingButton</include>
+		</control>
 		<control type="group">
+			<depth>DepthContentPanel</depth>
 			<include>OpenClose_Left</include>
 			<include content="ContentPanel">
 				<param name="width" value="530" />
@@ -87,9 +93,9 @@
 			<control type="grouplist" id="3">
 				<description>button area</description>
 				<left>0</left>
-				<top>160</top>
+				<top>130</top>
 				<width>470</width>
-				<height>720</height>
+				<height>810</height>
 				<usecontrolcoords>true</usecontrolcoords>
 				<onleft>5</onleft>
 				<onright>5</onright>
@@ -99,7 +105,7 @@
 			<control type="button" id="10">
 				<description>Default Category Button</description>
 				<left>0</left>
-				<height>90</height>
+				<height>85</height>
 				<width>470</width>
 				<textoffsetx>40</textoffsetx>
 				<aligny>center</aligny>
@@ -107,10 +113,40 @@
 				<texturefocus colordiffuse="button_focus">lists/focus.png</texturefocus>
 				<texturenofocus />
 			</control>
+		</control>
+		<control type="group">
+			<right>0</right>
+			<top>133</top>
+			<bottom>137</bottom>
+			<width>60</width>
+			<control type="scrollbar" id="60">
+				<right>0</right>
+				<top>0</top>
+				<bottom>0</bottom>
+				<width>12</width>
+				<orientation>vertical</orientation>
+				<texturesliderbackground />
+				<animation effect="slide" end="6,0" time="300" tween="sine" easing="inout" condition="!Control.HasFocus(60)">conditional</animation>
+				<onleft>5</onleft>
+				<onright>5</onright>
+				<animation effect="fade" start="0" end="100" time="200" delay="300">Visible</animation>
+				<animation effect="fade" start="100" end="0" time="200">Hidden</animation>
+				<animation effect="fade" start="0" end="100" delay="300" time="320">WindowOpen</animation>
+				<animation effect="fade" start="100" end="0" time="150">WindowClose</animation>
+				<hitrect x="0" y="0" w="60" h="100%" />
+			</control>
+		</control>
+		<include content="TopBar">
+			<param name="breadcrumbs_label" value="$LOCALIZE[5]$INFO[Control.GetLabel(2), / ]" />
+		</include>
+		<include>BottomBar</include>
+		<control type="group">
+			<depth>DepthContentPanel</depth>
+			<include>OpenClose_Left</include>
 			<control type="radiobutton" id="20">
 				<width>470</width>
 				<left>0</left>
-				<bottom>110</bottom>
+				<bottom>70</bottom>
 				<height>90</height>
 				<aligny>center</aligny>
 				<onclick>SettingsLevelChange</onclick>
@@ -132,25 +168,6 @@
 				<textureradiooffnofocus>icons/settings.png</textureradiooffnofocus>
 			</control>
 		</control>
-		<control type="scrollbar" id="60">
-			<right>0</right>
-			<top>163</top>
-			<width>12</width>
-			<bottom>137</bottom>
-			<orientation>vertical</orientation>
-			<texturesliderbackground />
-			<animation effect="slide" end="6,0" time="300" tween="sine" easing="inout" condition="!Control.HasFocus(60)">conditional</animation>
-			<onleft>5</onleft>
-			<onright>5</onright>
-			<animation effect="fade" start="0" end="100" time="200" delay="300">Visible</animation>
-			<animation effect="fade" start="100" end="0" time="200">Hidden</animation>
-			<animation effect="fade" start="0" end="100" delay="300" time="320">WindowOpen</animation>
-			<animation effect="fade" start="100" end="0" time="150">WindowClose</animation>
-		</control>
-		<include content="TopBar">
-			<param name="breadcrumbs_label" value="$LOCALIZE[5]$INFO[Control.GetLabel(2), / ]" />
-		</include>
-		<include>BottomBar</include>
 		<control type="group">
 			<include>OpenClose_Right</include>
 			<control type="textbox" id="6">
@@ -158,7 +175,7 @@
 				<left>510</left>
 				<bottom>25</bottom>
 				<right>60</right>
-				<height>102</height>
+				<height>104</height>
 				<font>font12</font>
 				<align>justify</align>
 				<textcolor>button_focus</textcolor>

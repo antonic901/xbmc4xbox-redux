@@ -40,11 +40,13 @@
 					</item>
 					<item>
 						<label>$LOCALIZE[13011]</label>
+						<onclick>Dialog.Close(shutdownmenu)</onclick>
 						<onclick>Suspend()</onclick>
 						<visible>System.CanSuspend</visible>
 					</item>
 					<item>
 						<label>$LOCALIZE[13010]</label>
+						<onclick>Dialog.Close(shutdownmenu)</onclick>
 						<onclick>Hibernate()</onclick>
 						<visible>System.CanHibernate</visible>
 					</item>
@@ -54,10 +56,6 @@
 						<visible>System.CanReboot</visible>
 					</item>
 					<item>
-						<label>$LOCALIZE[10035]</label>
-						<onclick>RestartApp()</onclick>
-					</item>
-					<item>
 						<label>$LOCALIZE[20126] $INFO[system.profilename]</label>
 						<onclick>dialog.close(all,true)</onclick>
 						<onclick>System.LogOff</onclick>
@@ -65,21 +63,19 @@
 						<visible>System.Loggedon</visible>
 					</item>
 					<item>
-						<label>$LOCALIZE[20046]</label>
-						<altlabel>$LOCALIZE[20045]</altlabel>
-						<usealttexture>!System.IsMaster</usealttexture>
+						<label>$VAR[MasterModeLabel]</label>
 						<onclick>mastermode</onclick>
 						<visible>System.HasLocks</visible>
 					</item>
 					<item>
 						<label>$LOCALIZE[13017]</label>
 						<onclick>InhibitIdleShutdown(true)</onclick>
-						<visible>System.HasShutdown +!System.IsInhibit</visible>
+						<visible>System.HasShutdown +!System.IdleShutdownInhibited</visible>
 					</item>
 					<item>
 						<label>$LOCALIZE[13018]</label>
 						<onclick>InhibitIdleShutdown(false)</onclick>
-						<visible>System.HasShutdown + System.IsInhibit</visible>
+						<visible>System.HasShutdown + System.IdleShutdownInhibited</visible>
 					</item>
 				</content>
 			</control>

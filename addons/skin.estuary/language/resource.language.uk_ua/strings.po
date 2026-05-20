@@ -1,20 +1,33 @@
 # Kodi Media Center language file
 # Addon Name: Estuary
 # Addon id: skin.estuary
-# Addon Provider: phil65, Ichabod Fletchman
+# Addon Provider: Team Kodi
 msgid ""
 msgstr ""
 "Project-Id-Version: KODI Main\n"
-"Report-Msgid-Bugs-To: http://trac.kodi.tv/\n"
+"Report-Msgid-Bugs-To: https://github.com/xbmc/xbmc/issues/\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Kodi Translation Team\n"
-"Language-Team: Ukrainian (Ukraine) (http://www.transifex.com/projects/p/kodi-main/language/uk_UA/)\n"
+"PO-Revision-Date: 2022-06-22 09:36+0000\n"
+"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Language-Team: Ukrainian <https://kodi.weblate.cloud/projects/kodi-add-ons-skins/skin-estuary/uk_ua/>\n"
+"Language: uk_ua\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: uk_UA\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
+"X-Generator: Weblate 4.13\n"
+
+msgctxt "Addon Summary"
+msgid "Estuary skin by phil65. (Kodi's default skin)"
+msgstr "Обкладинка Estuary від phil65 і Piers. (стандартна обкладинка Kodi)"
+
+msgctxt "Addon Description"
+msgid "Estuary is the default skin for Kodi 17.0 and above. It attempts to be easy for first time Kodi users to understand and use."
+msgstr "Estuary є стандартною обкладинкою Kodi 17.0 і подальших версій. Її основна ідея — простота використання для нових користувачів Kodi."
+
+msgctxt "Addon Disclaimer"
+msgid "Estuary is the default skin for Kodi, removing it may cause issues"
+msgstr "Estuary — основна обкладинка Kodi, і її видалення може призвести до проблем"
 
 msgctxt "#31000"
 msgid "Now playing"
@@ -22,7 +35,7 @@ msgstr "Відтворюється"
 
 msgctxt "#31001"
 msgid "Search..."
-msgstr "Пошук"
+msgstr "Пошук..."
 
 msgctxt "#31002"
 msgid "Show media fanart as background"
@@ -48,6 +61,10 @@ msgctxt "#31007"
 msgid "Unwatched movies"
 msgstr "Непереглянуті фільми"
 
+msgctxt "#31008"
+msgid "Enable category widgets"
+msgstr "Увімкнути віджети категорій"
+
 msgctxt "#31009"
 msgid "Download icons"
 msgstr "Завантажити значки"
@@ -72,10 +89,12 @@ msgctxt "#31014"
 msgid "Unplayed albums"
 msgstr "Непрослухані альбоми"
 
+#. home screen recordings widget: recent tv / radio recordings
 msgctxt "#31015"
 msgid "Recent recordings"
 msgstr "Нещодавні записи"
 
+#. home screen channel widget: recently played tv channels. (please note that in some non-english languages #31018 and #31016 might not be equal)
 msgctxt "#31016"
 msgid "Recently played channels"
 msgstr "Недавно переглянуті канали"
@@ -84,6 +103,7 @@ msgctxt "#31017"
 msgid "Rated"
 msgstr "Рейтинг"
 
+#. home screen channel widget: recently played radio channels. (please note that in some non-english languages #31018 and #31016 might not be equal)
 msgctxt "#31018"
 msgid "Recently played channels"
 msgstr "Недавно переглянуті канали"
@@ -102,15 +122,27 @@ msgstr "Інші параметри"
 
 msgctxt "#31022"
 msgid "Sort by"
-msgstr "Сорт. за:"
+msgstr "Сорт. за"
 
 msgctxt "#31023"
 msgid "Viewtype"
 msgstr "Вигляд"
 
+msgctxt "#31024"
+msgid "Choose rating to display for media items"
+msgstr "Виберіть рейтинг для відображення медіа-елементів"
+
 msgctxt "#31025"
 msgid "No favourites found. You can add any item from media views to this list by using the context menu."
 msgstr "Немає обраних. Ви можете додати до цього списку будь-який медіафайл за допомогою контекстного меню."
+
+msgctxt "#31026"
+msgid "Timeshift"
+msgstr "Зрушення в часі"
+
+msgctxt "#31027"
+msgid "Next aired"
+msgstr "Наступний ефір"
 
 msgctxt "#31028"
 msgid "Show fanart"
@@ -120,6 +152,7 @@ msgctxt "#31029"
 msgid "Last logged in"
 msgstr "Останній вхід"
 
+#. Label to show the system memory usage
 msgctxt "#31030"
 msgid "System memory usage"
 msgstr "Використання пам'яті"
@@ -142,11 +175,15 @@ msgstr "Додаткові відомості"
 
 msgctxt "#31035"
 msgid "Pages"
-msgstr "Стор."
+msgstr "Сторінки"
 
 msgctxt "#31036"
 msgid "items"
 msgstr "об'єктів"
+
+msgctxt "#31037"
+msgid "Selected track"
+msgstr "Обраний трек"
 
 msgctxt "#31038"
 msgid "Rewind"
@@ -184,14 +221,6 @@ msgctxt "#31048"
 msgid "Available"
 msgstr "Доступно"
 
-msgctxt "#31050"
-msgid "Press [B]OK[/B] to stop"
-msgstr "Натисніть [B]OK[/B] для зупинки"
-
-msgctxt "#31051"
-msgid "Toggle language"
-msgstr "Змінити мову"
-
 msgctxt "#31052"
 msgid "filtered"
 msgstr "відібрано"
@@ -201,8 +230,12 @@ msgid "Arial based"
 msgstr "Стиль Arial"
 
 msgctxt "#31054"
-msgid "Press [B]Left[/B] to rewind, or [B]Right[/B] to fast-forward"
-msgstr "Натисніть стрілку [B]ліворуч[/B] для перемотування назад або [B]праворуч[/B] для перемотування вперед"
+msgid "Press [B]Left[/B] to step back, or [B]Right[/B] to step forward"
+msgstr "Натисніть [B]Наліво[/B] для кроку назад або [B]Направо[/B] для кроку вперед"
+
+msgctxt "#31055"
+msgid "Press [B]Right[/B] to frame advance"
+msgstr "Натисніть [B]Направо[/B] для переходу на кадр вперед"
 
 msgctxt "#31056"
 msgid "Go to playlist"
@@ -210,7 +243,7 @@ msgstr "Перейти до списку відтворення"
 
 msgctxt "#31057"
 msgid "Show login screen on startup"
-msgstr "Показувати екран входу при запуску."
+msgstr "Показувати екран входу при запуску"
 
 msgctxt "#31058"
 msgid "Automatic Login on startup"
@@ -256,6 +289,14 @@ msgctxt "#31072"
 msgid "Power Options"
 msgstr "Налаштування живлення"
 
+msgctxt "#31073"
+msgid "Total length"
+msgstr "Загальна довжина"
+
+msgctxt "#31074"
+msgid "Total duration"
+msgstr "Загальна тривалість"
+
 msgctxt "#31075"
 msgid "Movie sets"
 msgstr "Кіноцикли"
@@ -284,10 +325,6 @@ msgctxt "#31089"
 msgid "Available groups"
 msgstr "Доступні групи"
 
-msgctxt "#31090"
-msgid "Search trailer"
-msgstr "Шукати трейлер"
-
 msgctxt "#31092"
 msgid "Video menu"
 msgstr "Меню відео"
@@ -312,25 +349,29 @@ msgctxt "#31098"
 msgid "Select your Kodi user profile[CR]to login and continue"
 msgstr "Виберіть профіль користувача Kodi,[CR]щоб увійти до системи"
 
+#. viewtype name
 msgctxt "#31099"
 msgid "IconWall"
 msgstr "Значки"
 
+#. viewtype name
 msgctxt "#31100"
 msgid "Shift"
 msgstr "Shift"
 
+#. viewtype name
 msgctxt "#31101"
 msgid "InfoWall"
 msgstr "Стіна з відомостями"
 
+#. viewtype name
 msgctxt "#31102"
 msgid "Wall"
 msgstr "Стіна"
 
 msgctxt "#31103"
 msgid "Enter text here..."
-msgstr "Уведіть текст"
+msgstr "Введіть текст..."
 
 msgctxt "#31104"
 msgid "Your library is currently empty. In order to populate it with your personal media, enter \"Files\" section, add a media source and configure it. After the source has been added and indexed you will be able to browse your library."
@@ -344,6 +385,7 @@ msgctxt "#31106"
 msgid "Teletext"
 msgstr "Телетекст"
 
+#. viewtype name
 msgctxt "#31107"
 msgid "WideList"
 msgstr "Широкий список"
@@ -369,8 +411,8 @@ msgid "Search YouTube"
 msgstr "Пошук на YouTube"
 
 msgctxt "#31115"
-msgid "Search TheMovieDB"
-msgstr "Пошук на TheMovieDB"
+msgid "Toggle subtitle"
+msgstr "Перемкнути субтитри"
 
 msgctxt "#31116"
 msgid "Remove this main menu item"
@@ -404,10 +446,6 @@ msgctxt "#31123"
 msgid "Same director"
 msgstr "Той же режисер"
 
-msgctxt "#31124"
-msgid "Show images on map"
-msgstr "Показувати зображення на карті"
-
 msgctxt "#31125"
 msgid "Press up for actor info"
 msgstr "Натисніть стрілку вгору для перегляду відомостей про актора"
@@ -426,7 +464,7 @@ msgstr "Учасники"
 
 msgctxt "#31129"
 msgid "General settings applying to all areas of the skin."
-msgstr "Загальні налаштування для всіх розділів обкладинки"
+msgstr "Загальні налаштування для всіх розділів обкладинки."
 
 msgctxt "#31130"
 msgid "Main menu-related settings: Configure the home screen to your likings."
@@ -437,29 +475,41 @@ msgid "Choose skin fanart pack"
 msgstr "Вибрати набір фанартів обкладинки"
 
 msgctxt "#31132"
-msgid "min"
-msgstr "хв"
+msgid "Select Program"
+msgstr "Вибрати програму"
+
+msgctxt "#31133"
+msgid "Select Resolution"
+msgstr "Вибрати розширення"
 
 msgctxt "#31134"
 msgid "Remaining"
 msgstr "Залишилося"
 
+msgctxt "#31135"
+msgid "Binary"
+msgstr "Бінарний"
+
 msgctxt "#31136"
 msgid "Click here to see latest changes..."
-msgstr "Натисніть тут, щоб переглянути зміни"
+msgstr "Натисніть тут, щоб переглянути зміни..."
 
+#. Label to show PVR info page
 msgctxt "#31137"
-msgid "PVR info"
-msgstr "Відомості PVR"
+msgid "PVR"
+msgstr "PVR"
 
+#. Label to show player info page
 msgctxt "#31138"
-msgid "Player process info"
-msgstr "Відомості про програвач"
+msgid "Player"
+msgstr "Програвач"
 
+#. Label to show video decoder name
 msgctxt "#31139"
 msgid "Video decoder"
 msgstr "Декодер відео"
 
+#. Label to show the video pixel format
 msgctxt "#31140"
 msgid "Pixel format"
 msgstr "Формат пікселів"
@@ -484,6 +534,14 @@ msgctxt "#31145"
 msgid "Search add-ons"
 msgstr "Пошук надбудов"
 
+msgctxt "#31146"
+msgid "In cinemas"
+msgstr "В кінотеатрах"
+
+msgctxt "#31147"
+msgid "In cinemas soon"
+msgstr "Скоро в кінотеатрах"
+
 msgctxt "#31148"
 msgid "Categories"
 msgstr "Категорії"
@@ -493,8 +551,8 @@ msgid "Select genre fanart pack"
 msgstr "Вибрати набір фанартів жанрів"
 
 msgctxt "#31150"
-msgid "Repository"
-msgstr "Репозиторій"
+msgid "Origin"
+msgstr "Джерело"
 
 msgctxt "#31151"
 msgid "Unwatched music videos"
@@ -539,3 +597,153 @@ msgstr "Інформаційні значки"
 msgctxt "#31161"
 msgid "Numeric pad"
 msgstr "Цифрова клавіатура"
+
+msgctxt "#31162"
+msgid "Play your personal games or download one of the many game add-ons from the official repository."
+msgstr "Грайте в свої персональні ігри, або завантажте одні з багатьох ігрових додатків з офіційного сховища."
+
+msgctxt "#31163"
+msgid "Show Fanart background"
+msgstr "Показувати фанарт у фоні"
+
+#. Choose profile identifier
+msgctxt "#31164"
+msgid "Choose kind of profile identification"
+msgstr "Обрати вид ідентифікації облік. запису"
+
+#. Label for the kind of profile identification
+msgctxt "#31165"
+msgid "Profile name"
+msgstr "Назва профілю"
+
+#. Label for the kind of profile identification
+msgctxt "#31166"
+msgid "Profile avatar"
+msgstr "Аватар облік. запису"
+
+#. Label of a setting
+msgctxt "#31167"
+msgid "Animate background"
+msgstr "Анімація фону"
+
+#. Label of a setting
+msgctxt "#31168"
+msgid "Show posters instead of thumbs for musicvideos"
+msgstr "Показувати постери замість мініатюр для музичних відеокліпів"
+
+#. Description label for skin settings area
+msgctxt "#31169"
+msgid "Artwork related settings."
+msgstr "Налаштування ілюстрацій."
+
+#. Label for OSD settings category
+msgctxt "#31170"
+msgid "On screen display"
+msgstr ""
+
+#. Helper text for the label of OSD settings category
+msgctxt "#31171"
+msgid "On screen display (OSD) related settings"
+msgstr ""
+
+#. Setting Automatically close video OSD
+msgctxt "#31172"
+msgid "Automatically close video OSD"
+msgstr ""
+
+#. Setting auto close time for video osd
+msgctxt "#31173"
+msgid "Video OSD autoclose time (seconds)"
+msgstr ""
+
+#. Setting to control what happens when clicking a music album on the home screen
+msgctxt "#31174"
+msgid "Default select action for albums on the home screen"
+msgstr ""
+
+#. Setting to control what happens when clicking a TV show on the home screen
+msgctxt "#31175"
+msgid "Default select action for TV shows on the home screen"
+msgstr ""
+
+#. Setting to control what happens when clicking a movie set on the home screen
+msgctxt "#31176"
+msgid "Default select action for movie sets on the home screen"
+msgstr ""
+
+# empty strings from id 31170 to 31599
+#. Label to show the video codec name
+msgctxt "#31600"
+msgid "Video codec"
+msgstr "Кодування відео"
+
+#. Label to show the video resolution
+msgctxt "#31601"
+msgid "Video resolution"
+msgstr "Роздільна здатність відео"
+
+#. Label to show the video aspect
+msgctxt "#31602"
+msgid "Video aspect"
+msgstr "Співвідношення сторін відео"
+
+#. Label to show the video bitrate
+msgctxt "#31603"
+msgid "Video bitrate"
+msgstr "Бітрейт відео"
+
+#. Label to show the audio codec name
+msgctxt "#31604"
+msgid "Audio codec"
+msgstr "Кодування аудіо"
+
+#. Label to show the number of audio channels
+msgctxt "#31605"
+msgid "Audio channels"
+msgstr "Каналів аудіо"
+
+#. Label to show the audio bitrate
+msgctxt "#31606"
+msgid "Audio bitrate"
+msgstr "Бітрейт аудіо"
+
+#. Label to show the screen resolution
+msgctxt "#31607"
+msgid "Screen resolution"
+msgstr "Роздільна здатність"
+
+#. Label to show the system rendering speed
+msgctxt "#31608"
+msgid "System rendering speed"
+msgstr "Швидкість візуалізації системи"
+
+#. Label to show the system CPU usage
+msgctxt "#31609"
+msgid "System CPU usage"
+msgstr "Завантаження CPU"
+
+#. Label to show the media (metadata) info page
+msgctxt "#31610"
+msgid "Media"
+msgstr "Медіафайли"
+
+#. Label to show the system info page
+msgctxt "#31611"
+msgid "System"
+msgstr "Система"
+
+#~ msgctxt "#31059"
+#~ msgid "Select + X"
+#~ msgstr "Select + X"
+
+#~ msgctxt "#31060"
+#~ msgid "Select + Start"
+#~ msgstr "Select + Start"
+
+#~ msgctxt "#31137"
+#~ msgid "PVR info"
+#~ msgstr "Відомості PVR"
+
+#~ msgctxt "#31138"
+#~ msgid "Player process info"
+#~ msgstr "Відомості про програвач"

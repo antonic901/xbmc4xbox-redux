@@ -2,6 +2,7 @@
 <window>
 	<defaultcontrol always="true">300</defaultcontrol>
 	<include>Keyboard_Slide_Up</include>
+	<depth>DepthDialog+</depth>
 	<controls>
 		<control type="group">
 			<bottom>0</bottom>
@@ -144,16 +145,23 @@
 					</control>
 					<control type="button" id="110">
 						<description>(0,10) key button</description>
-						<onup condition="!Integer.IsGreater(Container(9010).NumItems,0)">8</onup>
+						<onup condition="!Integer.IsGreater(Container(9010).NumItems,0)">170</onup>
 						<onup condition="Integer.IsGreater(Container(9010).NumItems,0)">9010</onup>
 						<ondown>130</ondown>
 						<include>KeyboardButton</include>
 					</control>
 					<control type="button" id="111">
 						<description>(0,11) key button</description>
-						<onup condition="!Integer.IsGreater(Container(9010).NumItems,0)">8</onup>
+						<onup condition="!Integer.IsGreater(Container(9010).NumItems,0)">171</onup>
 						<onup condition="Integer.IsGreater(Container(9010).NumItems,0)">9010</onup>
 						<ondown>131</ondown>
+						<include>KeyboardButton</include>
+					</control>
+					<control type="button" id="112">
+						<description>(0,12) key button</description>
+						<onup condition="!Integer.IsGreater(Container(9010).NumItems,0)">172</onup>
+						<onup condition="Integer.IsGreater(Container(9010).NumItems,0)">9010</onup>
+						<ondown>132</ondown>
 						<include>KeyboardButton</include>
 					</control>
 				</control>
@@ -236,6 +244,12 @@
 						<ondown>151</ondown>
 						<include>KeyboardButton</include>
 					</control>
+					<control type="button" id="132">
+						<description>(1,12) key button</description>
+						<onup>112</onup>
+						<ondown>152</ondown>
+						<include>KeyboardButton</include>
+					</control>
 				</control>
 				<!-- 3rd row -->
 				<control type="grouplist">
@@ -316,6 +330,12 @@
 						<ondown>171</ondown>
 						<include>KeyboardButton</include>
 					</control>
+					<control type="button" id="152">
+						<description>(2,12) key button</description>
+						<onup>132</onup>
+						<ondown>172</ondown>
+						<include>KeyboardButton</include>
+					</control>
 				</control>
 				<!-- 4th row -->
 				<control type="grouplist">
@@ -387,13 +407,19 @@
 					<control type="button" id="170">
 						<description>(3,10) key button</description>
 						<onup>150</onup>
-						<ondown>8</ondown>
+						<ondown>110</ondown>
 						<include>KeyboardButton</include>
 					</control>
 					<control type="button" id="171">
 						<description>(3,11) key button</description>
-						<onup>501</onup>
-						<ondown>8</ondown>
+						<onup>151</onup>
+						<ondown>111</ondown>
+						<include>KeyboardButton</include>
+					</control>
+					<control type="button" id="172">
+						<description>(3,12) key button</description>
+						<onup>152</onup>
+						<ondown>112</ondown>
 						<include>KeyboardButton</include>
 					</control>
 				</control>
@@ -414,8 +440,8 @@
 						<texturenofocus />
 						<textureradioonfocus colordiffuse="FFFFFFFF">icons/keyboard/letters.png</textureradioonfocus>
 						<textureradioonnofocus colordiffuse="FFFFFFFF">icons/keyboard/letters.png</textureradioonnofocus>
-						<textureradioofffocus colordiffuse="FFFFFFFF">icons/keyboard/symbols.png</textureradioofffocus>
-						<textureradiooffnofocus colordiffuse="FFFFFFFF">icons/keyboard/symbols.png</textureradiooffnofocus>
+						<textureradioofffocus colordiffuse="FFFFFFFF">icons/keyboard/accents.png</textureradioofffocus>
+						<textureradiooffnofocus colordiffuse="FFFFFFFF">icons/keyboard/accents.png</textureradiooffnofocus>
 						<radioposx>32l</radioposx>
 						<radiowidth>56</radiowidth>
 						<radioheight>36</radioheight>
@@ -522,9 +548,10 @@
 			<control type="grouplist" id="95200">
 				<bottom>0</bottom>
 				<height>460</height>
-				<centerleft>86%</centerleft>
+				<centerleft>88%</centerleft>
 				<itemgap>dialogbuttons_itemgap</itemgap>
-				<onup>95200</onup>
+				<onup condition="!Integer.IsGreater(Container(9010).NumItems,0)">95200</onup>
+				<onup condition="Integer.IsGreater(Container(9010).NumItems,0)">9010</onup>
 				<ondown>95200</ondown>
 				<onleft>78500</onleft>
 				<onright>140</onright>
@@ -541,8 +568,11 @@
 					<param name="width" value="350" />
 				</include>
 				<include content="DefaultDialogButton">
+					<param name="id" value="310" />
+					<param name="width" value="350" />
+				</include>
+				<include content="DefaultDialogButton">
 					<param name="id" value="309" />
-					<param name="label" value="Layout" />
 					<param name="width" value="350" />
 				</include>
 				<include content="DefaultDialogButton">
@@ -613,8 +643,8 @@
 				<content>$VAR[AutoCompletionContentVar]</content>
 			</control>
 			<control type="label" id="313">
-				<left>60</left>
-				<top>690</top>
+				<centerleft>50%</centerleft>
+				<top>290</top>
 				<width>1480</width>
 				<height>90</height>
 				<font>font37</font>
@@ -624,22 +654,22 @@
 			<control type="group">
 				<visible>Control.IsVisible(313)</visible>
 				<control type="image">
-					<left>20</left>
-					<top>690</top>
+					<centerleft>50%</centerleft>
+					<top>290</top>
 					<width>1560</width>
 					<height>90</height>
 					<texture border="40">buttons/dialogbutton-nofo.png</texture>
 				</control>
 				<control type="image">
-					<left>20</left>
-					<top>770</top>
+					<centerleft>50%</centerleft>
+					<top>370</top>
 					<width>1560</width>
 					<height>90</height>
 					<texture border="40">buttons/dialogbutton-nofo.png</texture>
 				</control>
 				<control type="label" id="314">
-					<left>60</left>
-					<top>770</top>
+					<centerleft>50%</centerleft>
+					<top>370</top>
 					<width>1480</width>
 					<height>90</height>
 					<font>font37</font>
