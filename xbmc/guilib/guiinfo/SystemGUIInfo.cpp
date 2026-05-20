@@ -205,7 +205,7 @@ bool CSystemGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
       return true;
 #ifdef HAS_OPTICAL_DRIVE
     case SYSTEM_DVD_LABEL:
-      value = CServiceBroker::GetMediaManager().GetDiskLabel();
+      value = MEDIA_DETECT::CDetectDVDMedia::GetDVDLabel();
       return true;
 #endif
     case SYSTEM_ALARM_POS:
@@ -440,9 +440,9 @@ bool CSystemGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int context
     }
     case SYSTEM_MEDIA_AUDIO_CD:
 #ifdef HAS_OPTICAL_DRIVE
-      if (CServiceBroker::GetMediaManager().IsDiscInDrive())
+      if (MEDIA_DETECT::CDetectDVDMedia::IsDiscInDrive())
       {
-        MEDIA_DETECT::CCdInfo* pCdInfo = CServiceBroker::GetMediaManager().GetCdInfo();
+        MEDIA_DETECT::CCdInfo *pCdInfo = MEDIA_DETECT::CDetectDVDMedia::GetCdInfo();
         value = pCdInfo && (pCdInfo->IsAudio(1) || pCdInfo->IsCDExtra(1) || pCdInfo->IsMixedMode(1));
       }
       else
@@ -453,10 +453,10 @@ bool CSystemGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int context
       return true;
 #ifdef HAS_OPTICAL_DRIVE
     case SYSTEM_DVDREADY:
-      value = CServiceBroker::GetMediaManager().GetDriveStatus() != DriveState::NOT_READY;
+      value = MEDIA_DETECT::CDetectDVDMedia::DriveReady() != DRIVE_NOT_READY;
       return true;
     case SYSTEM_TRAYOPEN:
-      value = CServiceBroker::GetMediaManager().GetDriveStatus() == DriveState::OPEN;
+      value = MEDIA_DETECT::CDetectDVDMedia::DriveReady() == DRIVE_OPEN;
       return true;
 #endif
     case SYSTEM_CAN_POWERDOWN:
