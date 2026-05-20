@@ -207,7 +207,7 @@ bool CGUIWindowFileManager::OnAction(const CAction &action)
     }
     if (action.GetID() == ACTION_PLAYER_PLAY)
     {
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
       if (m_vecItems[list]->Get(GetSelectedItem(list))->IsDVD())
         return MEDIA_DETECT::CAutorun::PlayDisc();
 #endif

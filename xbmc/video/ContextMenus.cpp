@@ -109,7 +109,7 @@ static void SetPathAndPlay(CFileItem& item)
 
 bool CResume::Execute(const CFileItemPtr& item) const
 {
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
   if (item->IsDVD() || item->IsCDDA())
     return MEDIA_DETECT::CAutorun::PlayDisc();
 #endif
@@ -137,7 +137,7 @@ bool CPlay::IsVisible(const CFileItem& item) const
 
 bool CPlay::Execute(const CFileItemPtr& item) const
 {
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
   if (item->IsDVD() || item->IsCDDA())
     return MEDIA_DETECT::CAutorun::PlayDisc();
 #endif

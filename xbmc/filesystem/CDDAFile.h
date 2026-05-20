@@ -19,9 +19,9 @@
  *
  */
 
-#include "system.h" // for HAS_DVD_DRIVE
+#include "system.h" // for HAS_OPTICAL_DRIVE
 
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
 
 #include "IFile.h"
 #include "storage/cdioSupport.h"

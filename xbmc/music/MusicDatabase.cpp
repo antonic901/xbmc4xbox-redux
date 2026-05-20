@@ -81,7 +81,7 @@ using namespace KODI::MESSAGING::HELPERS;
 #define RECENTLY_PLAYED_LIMIT 25
 #define MIN_FULL_SEARCH_LENGTH 3
 
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
 using namespace CDDB;
 using namespace MEDIA_DETECT;
 #endif
@@ -3532,7 +3532,7 @@ error:
 
 bool CMusicDatabase::LookupCDDBInfo(bool bRequery/*=false*/)
 {
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
   if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("audiocds.usecddb"))
     return false;
 
@@ -3643,7 +3643,7 @@ bool CMusicDatabase::LookupCDDBInfo(bool bRequery/*=false*/)
 
 void CMusicDatabase::DeleteCDDBInfo()
 {
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
   CFileItemList items;
   if (!CDirectory::GetDirectory(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCDDBFolder(), items, ".cddb", DIR_FLAG_NO_FILE_DIRS))
   {

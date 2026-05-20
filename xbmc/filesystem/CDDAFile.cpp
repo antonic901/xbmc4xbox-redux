@@ -20,7 +20,7 @@
 
 #include "system.h"
 
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
 
 #include "CDDAFile.h"
 #include <sys/stat.h>

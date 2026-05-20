@@ -350,7 +350,7 @@ DWORD CDetectDVDMedia::GetTrayState()
     m_dwLastTrayState = m_dwTrayState;
   }
 
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
   return DRIVE_NOT_READY;
 #else
   return DRIVE_READY;

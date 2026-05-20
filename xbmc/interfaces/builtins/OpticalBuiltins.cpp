@@ -22,7 +22,7 @@
 
 #include "system.h"
 
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
 #include "storage/MediaManager.h"
 #include "xbox/IoSupport.h"
 #endif
@@ -36,7 +36,7 @@
  */
 static int Eject(const std::vector<std::string>& params)
 {
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
   CIoSupport::ToggleTray();
 #endif
 
