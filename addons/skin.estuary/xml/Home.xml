@@ -1004,14 +1004,6 @@
 							<visible>System.GetBool(gamesgeneral.enable) + !Skin.HasSetting(HomeMenuNoGamesButton)</visible>
 						</item>
 						<item>
-							<label>$LOCALIZE[24001]</label>
-							<property name="menu_id">$NUMBER[8000]</property>
-							<onclick>ActivateWindow(1100)</onclick>
-							<thumb>icons/sidemenu/addons.png</thumb>
-							<property name="id">addons</property>
-							<visible>!Skin.HasSetting(HomeMenuNoProgramsButton)</visible>
-						</item>
-						<item>
 							<label>$LOCALIZE[1]</label>
 							<onclick>ActivateWindow(Pictures)</onclick>
 							<property name="menu_id">$NUMBER[4000]</property>
