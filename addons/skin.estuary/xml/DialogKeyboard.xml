@@ -2,7 +2,6 @@
 <window>
 	<defaultcontrol always="true">300</defaultcontrol>
 	<include>Keyboard_Slide_Up</include>
-	<depth>DepthDialog+</depth>
 	<controls>
 		<control type="group">
 			<bottom>0</bottom>

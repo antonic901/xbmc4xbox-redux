@@ -2,7 +2,6 @@
 <window>
 	<defaultcontrol always="true">3</defaultcontrol>
 	<include>Animation_DialogPopupOpenClose</include>
-	<depth>DepthOSD</depth>
 	<controls>
 		<include condition="![Window.IsActive(selectvideoversion) | Window.IsActive(selectvideoextra) | Window.IsActive(gamesaves) | Window.IsActive(gamestretchmode) | Window.IsActive(gamevideofilter) | Window.IsActive(gamevideorotation) | Window.IsActive(ingamesaves)]">DefaultDialogSelectLayout</include>
 		<include condition="Window.IsActive(gamesaves)">GameDialogSelectSaveLayout</include>

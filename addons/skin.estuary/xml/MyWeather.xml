@@ -24,7 +24,6 @@
 			<onclick>noop</onclick>
 		</control>
 		<control type="videowindow">
-			<depth>DepthBackground</depth>
 			<include>FullScreenDimensions</include>
 			<visible>Player.HasVideo</visible>
 		</control>
@@ -38,7 +37,6 @@
 			<include>ColoredBackgroundImages</include>
 		</control>
 		<control type="multiimage">
-			<depth>DepthBackground</depth>
 			<include>FullScreenDimensions</include>
 			<aspectratio>scale</aspectratio>
 			<fadetime>400</fadetime>
@@ -211,7 +209,6 @@
 				<animation effect="fade" start="100" end="70" time="0" condition="true">Conditional</animation>
 			</control>
 			<control type="group">
-				<depth>DepthMax</depth>
 				<centerleft>50%</centerleft>
 				<centertop>50%</centertop>
 				<width>80</width>

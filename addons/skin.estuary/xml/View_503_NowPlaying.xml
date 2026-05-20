@@ -12,7 +12,6 @@
 				<param name="viewtype_label" value="$LOCALIZE[31000]" />
 			</include>
 			<control type="group">
-				<depth>DepthContentPanel</depth>
 				<control type="group">
 					<right>-20</right>
 					<width>634</width>

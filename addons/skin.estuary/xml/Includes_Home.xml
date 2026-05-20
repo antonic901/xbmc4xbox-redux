@@ -58,7 +58,6 @@
 				</itemlayout>
 				<focusedlayout width="310" height="486">
 					<control type="group">
-						<depth>DepthContentPopout</depth>
 						<left>68</left>
 						<top>10</top>
 						<animation type="Focus">
@@ -189,7 +188,6 @@
 				</itemlayout>
 				<focusedlayout width="310" height="500">
 					<control type="group">
-						<depth>DepthContentPopout</depth>
 						<left>70</left>
 						<top>5</top>
 						<animation type="Focus">
@@ -254,7 +252,6 @@
 				</itemlayout>
 				<focusedlayout width="310" height="500">
 					<control type="group">
-						<depth>DepthContentPopout</depth>
 						<left>70</left>
 						<animation type="Focus">
 							<effect type="zoom" start="100" end="112" time="200" tween="sine" easing="inout" center="240,120" />
@@ -335,7 +332,6 @@
 				</itemlayout>
 				<focusedlayout width="310" height="340">
 					<control type="group">
-						<depth>DepthContentPopout</depth>
 						<left>70</left>
 						<animation type="Focus">
 							<effect type="zoom" start="100" end="115" time="200" tween="sine" easing="inout" center="228,70" />
@@ -474,7 +470,6 @@
 				<focusedlayout width="$PARAM[width]" height="400">
 					<control type="group">
 						<left>70</left>
-						<depth>DepthContentPopout</depth>
 						<animation type="Focus">
 							<effect type="zoom" start="100" end="110" time="200" tween="sine" easing="inout" center="180,140" />
 						</animation>

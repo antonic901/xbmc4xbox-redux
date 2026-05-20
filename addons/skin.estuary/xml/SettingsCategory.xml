@@ -5,7 +5,6 @@
 	<controls>
 		<include>DefaultBackground</include>
 		<control type="multiimage">
-			<depth>DepthBackground</depth>
 			<include>FullScreenDimensions</include>
 			<aspectratio>scale</aspectratio>
 			<animation effect="fade" start="0" end="100" time="400" reversible="true" condition="!Window.Previous(Settings)">WindowOpen</animation>
@@ -84,7 +83,6 @@
 			<include>DefaultSettingButton</include>
 		</control>
 		<control type="group">
-			<depth>DepthContentPanel</depth>
 			<include>OpenClose_Left</include>
 			<include content="ContentPanel">
 				<param name="width" value="530" />
@@ -140,7 +138,6 @@
 		</include>
 		<include>BottomBar</include>
 		<control type="group">
-			<depth>DepthContentPanel</depth>
 			<include>OpenClose_Left</include>
 			<control type="radiobutton" id="20">
 				<width>470</width>

@@ -134,7 +134,6 @@
 			<visible>String.IsEmpty(ListItem.Art(thumb)) + !Container.Content(albums) | String.IsEmpty(ListItem.Art(poster)) + [Container.Content(movies) | Container.Content(tvshows)]</visible>
 		</control>
 		<control type="image">
-			<depth>DepthContentPopout</depth>
 			<left>18</left>
 			<top>90</top>
 			<width>334</width>
@@ -146,7 +145,6 @@
 			<visible>String.IsEmpty(ListItem.Art(poster))</visible>
 		</control>
 		<control type="image">
-			<depth>DepthContentPopout</depth>
 			<left>18</left>
 			<top>90</top>
 			<width>334</width>

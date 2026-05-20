@@ -24,7 +24,6 @@
 					<bordersize>20</bordersize>
 				</control>
 				<control type="image">
-					<depth>DepthContentPopout</depth>
 					<left>4</left>
 					<top>4</top>
 					<width>526</width>

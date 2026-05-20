@@ -12,7 +12,6 @@
 				<param name="viewtype_label" value="$LOCALIZE[535]" />
 			</include>
 			<control type="group">
-				<depth>DepthContentPanel</depth>
 				<control type="group">
 					<right>-20</right>
 					<width>634</width>
@@ -41,7 +40,6 @@
 	</include>
 	<include name="RightListPanel">
 		<control type="group">
-			<depth>DepthContentPanel</depth>
 			<control type="group">
 				<right>-32</right>
 				<include content="ContentPanel">
@@ -53,7 +51,6 @@
 				<control type="group">
 					<visible>!Container.Content(songs)</visible>
 					<control type="image">
-						<depth>DepthContentPopout</depth>
 						<left>48</left>
 						<top>120</top>
 						<width>540</width>
@@ -227,7 +224,6 @@
 		<param name="flip_bg">false</param>
 		<definition>
 			<control type="group">
-				<depth>DepthContentPanel</depth>
 				<include content="ContentPanel">
 					<param name="width" value="656" />
 					<param name="flipx" value="$PARAM[flip_bg]" />

@@ -2,7 +2,6 @@
 <window type="dialog" id="1103">
 	<defaultcontrol>11</defaultcontrol>
 	<include>Animation_DialogPopupOpenClose</include>
-	<depth>DepthOSD+</depth>
 	<controls>
 		<control type="button">
 			<description>background close area</description>

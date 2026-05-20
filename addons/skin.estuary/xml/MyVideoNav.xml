@@ -18,14 +18,12 @@
 			<include>View_501_Banner</include>
 			<include>View_502_FanArt</include>
 			<control type="group">
-				<depth>DepthContentPanel</depth>
 				<include>OpenClose_Left</include>
 				<visible>Control.IsVisible(55)</visible>
 				<include>Visible_Left</include>
 				<include>ListThumbInfoPanel</include>
 			</control>
 			<control type="group">
-				<depth>DepthContentPanel</depth>
 				<include>OpenClose_Left</include>
 				<visible>Control.IsVisible(50) | Control.Isvisible(54) | [Control.IsVisible(501) + String.IsEqual(Skin.AspectRatio,21:9)]</visible>
 				<include>Visible_Left</include>
@@ -85,7 +83,6 @@
 				<param name="info_visible" value="true" />
 			</include>
 			<control type="group">
-				<depth>DepthBars</depth>
 				<bottom>0</bottom>
 				<height>70</height>
 				<animation effect="fade" start="0" end="100" time="300" delay="300">WindowOpen</animation>
