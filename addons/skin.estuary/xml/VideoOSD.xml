@@ -13,7 +13,6 @@
 			<texturenofocus />
 			<onclick>Action(close)</onclick>
 		</control>
-		<include condition="Skin.HasSetting(touchmode)">TouchBackOSDButton</include>
 		<control type="group">
 			<include>Animation_BottomSlide</include>
 			<bottom>0</bottom>

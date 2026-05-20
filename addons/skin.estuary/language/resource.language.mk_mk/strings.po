@@ -573,10 +573,6 @@ msgctxt "#31157"
 msgid "Edit categories"
 msgstr "Уреди категории"
 
-msgctxt "#31158"
-msgid "Touch mode"
-msgstr ""
-
 msgctxt "#31159"
 msgid "Artwork"
 msgstr "Декорации"

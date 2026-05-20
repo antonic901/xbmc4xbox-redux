@@ -569,10 +569,6 @@ msgctxt "#31157"
 msgid "Edit categories"
 msgstr "Upraviť kategórie"
 
-msgctxt "#31158"
-msgid "Touch mode"
-msgstr "Dotykový mód"
-
 msgctxt "#31159"
 msgid "Artwork"
 msgstr "Artwork"

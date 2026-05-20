@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <window>
 	<controls>
-		<include condition="Skin.HasSetting(touchmode)">TouchBackSlideshowButton</include>
 		<control type="image">
 			<centerleft>50%</centerleft>
 			<centertop>50%</centertop>

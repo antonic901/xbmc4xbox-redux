@@ -569,10 +569,6 @@ msgctxt "#31157"
 msgid "Edit categories"
 msgstr "Editar categorias"
 
-msgctxt "#31158"
-msgid "Touch mode"
-msgstr "Modo de toque"
-
 msgctxt "#31159"
 msgid "Artwork"
 msgstr "Imagens"

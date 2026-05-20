@@ -569,10 +569,6 @@ msgctxt "#31157"
 msgid "Edit categories"
 msgstr "Uredi kategorije"
 
-msgctxt "#31158"
-msgid "Touch mode"
-msgstr "Način rada na dodir"
-
 msgctxt "#31159"
 msgid "Artwork"
 msgstr "Slike omota"

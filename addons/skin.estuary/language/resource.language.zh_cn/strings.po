@@ -569,10 +569,6 @@ msgctxt "#31157"
 msgid "Edit categories"
 msgstr "编辑类别"
 
-msgctxt "#31158"
-msgid "Touch mode"
-msgstr "触摸模式"
-
 msgctxt "#31159"
 msgid "Artwork"
 msgstr "艺术图片"

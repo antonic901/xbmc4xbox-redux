@@ -121,6 +121,5 @@
 			<param name="main_label" value="$VAR[PictureInfoMainLabelVar]" />
 			<param name="sub_label" value="$VAR[PictureInfoSubLabelVar]" />
 		</include>
-		<include condition="Skin.HasSetting(touchmode)">TouchBackButton</include>
 	</controls>
 </window>

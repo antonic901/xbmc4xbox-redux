@@ -202,7 +202,6 @@
 			<include content="BottomBar">
 				<param name="info_visible" value="true" />
 			</include>
-			<include>MediaMenuMouseOverlay</include>
 			<control type="group">
 				<include>MediaMenuCommon</include>
 				<control type="grouplist" id="9000">

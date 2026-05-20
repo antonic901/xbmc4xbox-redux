@@ -569,10 +569,6 @@ msgctxt "#31157"
 msgid "Edit categories"
 msgstr "Redigera kategorier"
 
-msgctxt "#31158"
-msgid "Touch mode"
-msgstr "Pekskärmsläge"
-
 msgctxt "#31159"
 msgid "Artwork"
 msgstr "Utsmyckning"
