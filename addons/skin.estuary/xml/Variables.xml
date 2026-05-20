@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <includes>
-	<variable name="PVRStatusImageVar">
-		<value condition="ListItem.IsRecording">windows/pvr/record.png</value>
-		<value condition="ListItem.HasTimer | ListItem.HasTimerSchedule">windows/pvr/timer.png</value>
-		<value condition="ListItem.HasArchive">windows/pvr/archive.png</value>
-		<value condition="ListItem.HasReminder">icons/pvr/timers/bell.png</value>
-	</variable>
-	<variable name="PVRMySearchLabel1Var">
-		<value condition="!String.IsEmpty(ListItem.ChannelName)">$INFO[ListItem.ChannelName]</value>
-		<value>$INFO[ListItem.Label]</value>
-	</variable>
 	<variable name="AutoCompletionContentVar">
 		<value condition="System.AddonIsEnabled(plugin.program.autocompletion) + !System.HasHiddenInput">plugin://plugin.program.autocompletion?info=autocomplete&amp;&amp;id=$INFO[Control.GetLabel(312).index(1)]&amp;&amp;limit=9</value>
 	</variable>
@@ -30,7 +20,6 @@
 		<value condition="VideoPlayer.Content(musicvideos)">$INFO[VideoPlayer.Artist]$INFO[VideoPlayer.Album, - ]</value>
 		<value condition="VideoPlayer.Content(episodes)">$INFO[VideoPlayer.TvShowTitle]</value>
 		<value condition="VideoPlayer.Content(movies)">$INFO[VideoPlayer.Year]$INFO[VideoPlayer.Genre, - ]</value>
-		<value condition="VideoPlayer.Content(livetv)">$INFO[VideoPlayer.ChannelName]</value>
 		<value condition="Player.HasAudio">$INFO[MusicPlayer.Artist]$INFO[MusicPlayer.Album, - ]</value>
 	</variable>
 	<variable name="NowPlayingIconVar">
@@ -40,7 +29,6 @@
 	<variable name="NowPlayingPosterVar">
 		<value condition="!String.IsEmpty(Player.Art(poster))">$INFO[Player.Art(poster)]</value>
 		<value condition="!String.IsEmpty(Player.Art(tvshow.poster))">$INFO[Player.Art(tvshow.poster)]</value>
-		<value condition="String.IsEmpty(Player.Icon) + VideoPlayer.Content(livetv)">DefaultTVShows.png</value>
 		<value>$INFO[Player.Icon]</value>
 	</variable>
 	<variable name="ShiftThumbVar">
@@ -90,7 +78,7 @@
 		<value condition="String.IsEmpty(Container.PluginName) + Container.Content(tvshows) + Container.SortMethod(29)">$VAR[WatchedStatusVar]</value>
 		<value condition="String.IsEmpty(Container.PluginName) + String.IsEqual(ListItem.DBType,season) + Container.SortMethod(29)">$VAR[WatchedStatusVar]</value>
 		<value condition="String.IsEmpty(Container.PluginName) + String.IsEqual(ListItem.DBType,set) + Container.SortMethod(1)">$VAR[WatchedStatusVar]</value>
-		<value condition="ListItem.IsFolder + [Window.IsActive(TVRecordings) | Window.IsActive(RadioRecordings)]">$VAR[WatchedStatusVar]</value>
+		<value condition="ListItem.IsFolder">$VAR[WatchedStatusVar]</value>
 		<value condition="Container.SortMethod(7) | Container.SortMethod(29)">$INFO[ListItem.Year]</value>
 		<value condition="!String.isempty(ListItem.Appearances)">$LOCALIZE[38026]: $INFO[ListItem.Appearances]</value>
 		<value condition="Window.IsActive(musicplaylist) | Window.IsActive(videoplaylist)">$INFO[ListItem.Duration]</value>
@@ -292,7 +280,7 @@
 	<variable name="WatchedStatusVar">
 		<value condition="String.IsEqual(Listitem.DBType,tvshow) | String.IsEqual(Listitem.DBType,season)">$INFO[ListItem.Property(WatchedEpisodes)]$INFO[ListItem.Property(TotalEpisodes), / ,]</value>
 		<value condition="String.IsEqual(Listitem.DBType,set)">$INFO[ListItem.Property(Watched)]$INFO[ListItem.Property(Total), / ,]</value>
-		<value condition="ListItem.IsFolder + [Window.IsActive(TVRecordings) | Window.IsActive(RadioRecordings)]">$INFO[ListItem.Property(WatchedEpisodes)]$INFO[ListItem.Property(TotalEpisodes), / ,]</value>
+		<value condition="ListItem.IsFolder">$INFO[ListItem.Property(WatchedEpisodes)]$INFO[ListItem.Property(TotalEpisodes), / ,]</value>
 	</variable>
 	<variable name="VideoPlayerForwardRewindVar">
 		<value condition="Player.Forwarding2x | Player.Rewinding2x">2x</value>
@@ -311,29 +299,12 @@
 	</variable>
 	<variable name="SeekTimeLabelVar">
 		<value condition="!String.IsEmpty(Player.SeekNumeric)">[B]$INFO[Player.SeekNumeric(hh:mm:ss)][/B]</value>
-		<value condition="Player.Seeking + VideoPlayer.HasEPG">$INFO[PVR.EpgEventSeekTime]$INFO[PVR.EpgEventDuration, / ]</value>
 		<value condition="Player.Seeking">$INFO[Player.SeekTime]$INFO[Player.Duration, / ]</value>
-		<value condition="VideoPlayer.HasEpg">$INFO[PVR.EpgEventElapsedTime]$INFO[PVR.EpgEventDuration, / ]</value>
 		<value>$INFO[Player.Time]$INFO[Player.Duration, / ]</value>
-	</variable>
-	<variable name="PVRGuideControlsHelpTextVar">
-		<value condition="Control.HasFocus(600)">$LOCALIZE[19063]</value>
-		<value condition="Control.HasFocus(601)">$LOCALIZE[19317]</value>
-		<value condition="Control.HasFocus(602)">$LOCALIZE[19070]</value>
-		<value condition="Control.HasFocus(603)">$LOCALIZE[19318]</value>
-		<value condition="Control.HasFocus(604)">$LOCALIZE[19064]</value>
-		<value condition="Control.HasFocus(605)">$LOCALIZE[19288]</value>
-		<value condition="Control.HasFocus(70040)">$LOCALIZE[19322]</value>
-		<value condition="Control.HasFocus(70041)">$LOCALIZE[19323]</value>
-		<value condition="Control.HasFocus(70042)">$LOCALIZE[19324]</value>
-		<value condition="Control.HasFocus(70043)">$LOCALIZE[19319]</value>
-		<value condition="Control.HasFocus(70044)">$LOCALIZE[19320]</value>
-		<value condition="Control.HasFocus(70045)">$LOCALIZE[19321]</value>
 	</variable>
 	<variable name="OSDHelpTextVar">
 		<value condition="Control.HasFocus(87) + !Player.Paused">$LOCALIZE[31054]</value>
 		<value condition="Control.HasFocus(87) + [Player.Paused + Window.IsVisible(videoosd)]">$LOCALIZE[31055]</value>
-		<value condition="Control.HasFocus(608)+ PVR.IsRecordingPlayingChannel">$LOCALIZE[19059]</value>
 		<value condition="Control.HasFocus(608)">$LOCALIZE[264]</value>
 		<value condition="Control.HasFocus(804)">$LOCALIZE[33061]</value>
 		<value condition="Control.HasFocus(70040)">$LOCALIZE[19019]</value>
@@ -403,8 +374,6 @@
 		<value>$INFO[ListItem.PictureDateTime]</value>
 	</variable>
 	<variable name="NowPlayingBreadcrumbsVar">
-		<value condition="MusicPlayer.Content(livetv) + Player.HasAudio">$INFO[MusicPlayer.Artist,, - ]$INFO[MusicPlayer.Title]</value>
-		<value condition="VideoPlayer.Content(livetv)">$INFO[VideoPlayer.Title]</value>
 		<value condition="VideoPlayer.Content(episodes) + Window.IsActive(fullscreenvideo)">$INFO[VideoPlayer.TVShowTitle]$INFO[VideoPlayer.Year, (,)]</value>
 		<value condition="!VideoPlayer.Content(episodes) + Window.IsActive(fullscreenvideo)">$INFO[VideoPlayer.Title]$INFO[VideoPlayer.Year, (,)]</value>
 		<value condition="MusicPartyMode.Enabled">$LOCALIZE[589]</value>
@@ -416,13 +385,11 @@
 		<value condition="VideoPlayer.Content(musicvideos)">$VAR[NowPlayingSublabelVar,,[CR]]$INFO[player.chapter,[COLOR button_focus]$LOCALIZE[21396]: [/COLOR]]$INFO[Player.ChapterCount,/]$INFO[Player.ChapterName, - ]</value>
 		<value condition="VideoPlayer.Content(episodes) + !player.chaptercount">$INFO[VideoPlayer.Season,[COLOR button_focus][CAPITALIZE]$LOCALIZE[36906][/CAPITALIZE]:[/COLOR] S]$INFO[VideoPlayer.Episode,E,: ]$INFO[VideoPlayer.Title]</value>
 		<value condition="VideoPlayer.Content(episodes) + player.chaptercount">$INFO[VideoPlayer.Season,[COLOR button_focus][CAPITALIZE]$LOCALIZE[36906][/CAPITALIZE]:[/COLOR] S]$INFO[VideoPlayer.Episode,E, - ]$INFO[VideoPlayer.Title,,[CR]]$INFO[player.chapter,[COLOR button_focus]$LOCALIZE[21396]:[/COLOR] ]$INFO[Player.ChapterCount,/]$INFO[Player.ChapterName, - ]</value>
-		<value condition="VideoPlayer.Content(LiveTV) | PVR.IsPlayingRecording | PVR.IsPlayingEpgTag">$INFO[VideoPlayer.Season,[COLOR button_focus][CAPITALIZE]$LOCALIZE[36906][/CAPITALIZE]:[/COLOR] S]$INFO[VideoPlayer.Episode,E, - ]$INFO[VideoPlayer.EpisodeName]</value>
-		<value condition="player.chaptercount + [!VideoPlayer.Content(episodes) + !VideoPlayer.Content(LiveTV)]">$INFO[player.chapter,[COLOR button_focus]$LOCALIZE[21396]:[/COLOR] ]$INFO[Player.ChapterCount,/]$INFO[Player.ChapterName, - ]</value>
+		<value condition="player.chaptercount + [!VideoPlayer.Content(episodes)]">$INFO[player.chapter,[COLOR button_focus]$LOCALIZE[21396]:[/COLOR] ]$INFO[Player.ChapterCount,/]$INFO[Player.ChapterName, - ]</value>
 		<value>$INFO[VideoPlayer.Genre]</value>
 	</variable>
 	<variable name="OSDNextLabelVar">
 		<value condition="VideoPlayer.Content(musicvideos)">$INFO[VideoPlayer.offset(1).Title,[COLOR button_focus]$LOCALIZE[19031]: [/COLOR]]$INFO[VideoPlayer.offset(1).Artist, - ]$INFO[VideoPlayer.offset(1).Album, - ]$INFO[VideoPlayer.offset(1).Year, (,)]</value>
-		<value condition="VideoPlayer.Content(livetv)">$INFO[VideoPlayer.NextStartTime,[COLOR button_focus]$LOCALIZE[19031]: [/COLOR]]$INFO[VideoPlayer.NextEndTime, - ]$INFO[VideoPlayer.NextTitle,: ]</value>
 		<value condition="VideoPlayer.Content(episodes) + Window.IsActive(fullscreenvideo)">$INFO[VideoPlayer.offset(1).TVShowtitle,[COLOR button_focus]$LOCALIZE[19031]: [/COLOR]]$INFO[VideoPlayer.offset(1).Season, - S,]$INFO[VideoPlayer.offset(1).Episode,E]$INFO[VideoPlayer.offset(1).Title,  - ]</value>
 		<value condition="Window.IsActive(visualisation)">$INFO[MusicPlayer.offset(1).Title,[COLOR button_focus]$LOCALIZE[19031]: [/COLOR]]$INFO[MusicPlayer.offset(1).Artist, - ]$INFO[MusicPlayer.offset(1).Album, - ]$INFO[MusicPlayer.offset(1).Year, (,)]</value>
 		<value>$INFO[VideoPlayer.offset(1).Title,[COLOR button_focus]$LOCALIZE[19031]: [/COLOR]]$INFO[VideoPlayer.offset(1).Year, (,)]</value>
@@ -433,13 +400,13 @@
 	</variable>
 	<variable name="AddonsFanartVar">
 		<value condition="Skin.HasSetting(no_fanart)"></value>
-		<value condition="Window.IsActive(musicinformation) | Window.IsActive(movieinformation) | Window.IsActive(addoninformation) | Window.IsActive(pvrguideinfo) | Window.IsActive(pvrrecordinginfo) | Window.IsActive(pictureinfo)">$INFO[Window(home).Property(infobackground)]</value>
+		<value condition="Window.IsActive(musicinformation) | Window.IsActive(movieinformation) | Window.IsActive(addoninformation) | Window.IsActive(pictureinfo)">$INFO[Window(home).Property(infobackground)]</value>
 		<value condition="!String.IsEmpty(Container.ListItem.Art(fanart))">$INFO[Container.ListItem.Art(fanart)]</value>
 		<value condition="!String.IsEmpty(Skin.String(HomeFanart.path))">$INFO[Skin.String(HomeFanart.path)]$INFO[Container(9000).ListItem.Property(id)]$INFO[Skin.String(HomeFanart.ext)]</value>
 	</variable>
 	<variable name="HomeFanartVar">
 		<value condition="Skin.HasSetting(no_fanart)"></value>
-		<value condition="Window.IsActive(musicinformation) | Window.IsActive(movieinformation) | Window.IsActive(addoninformation) | Window.IsActive(pvrguideinfo) | Window.IsActive(pvrrecordinginfo) | Window.IsActive(pictureinfo)">$INFO[Window(home).Property(infobackground)]</value>
+		<value condition="Window.IsActive(musicinformation) | Window.IsActive(movieinformation) | Window.IsActive(addoninformation) | Window.IsActive(pictureinfo)">$INFO[Window(home).Property(infobackground)]</value>
 		<value condition="!String.IsEmpty(Container.ListItem.Art(fanart))">$INFO[Container.ListItem.Art(fanart)]</value>
 		<value condition="!String.IsEmpty(Container.ListItem.Property(FanartCode))">$INFO[Skin.String(WeatherFanart.path)]$INFO[Container.ListItem.Property(FanartCode)]$INFO[Skin.String(WeatherFanart.ext)]</value>
 		<value condition="!String.IsEmpty(Skin.String(HomeFanart.path)) + Control.HasFocus(804)">$INFO[Skin.String(HomeFanart.path)]power$INFO[Skin.String(HomeFanart.ext)]</value>
@@ -450,7 +417,7 @@
 	</variable>
 	<variable name="MediaFanartVar">
 		<value condition="Skin.HasSetting(no_fanart)"></value>
-		<value condition="Window.IsActive(musicinformation) | Window.IsActive(movieinformation) | Window.IsActive(addoninformation) | Window.IsActive(pvrguideinfo) | Window.IsActive(pvrrecordinginfo) | Window.IsActive(pictureinfo)">$INFO[Window(home).Property(infobackground)]</value>
+		<value condition="Window.IsActive(musicinformation) | Window.IsActive(movieinformation) | Window.IsActive(addoninformation) | Window.IsActive(pictureinfo)">$INFO[Window(home).Property(infobackground)]</value>
 		<value condition="Container.Content(genres) + Window.IsActive(videos)">$INFO[Skin.String(MovieGenreFanart.path)]$INFO[ListItem.Label]$INFO[Skin.String(MovieGenreFanart.ext)]</value>
 		<value condition="Window.IsActive(pictures) + String.IsEmpty(ListItem.Art(fanart))">$INFO[ListItem.FolderPath]</value>
 		<value condition="!String.IsEmpty(ListItem.Art(fanart))">$INFO[ListItem.Art(fanart)]</value>
@@ -464,7 +431,6 @@
 		<value condition="!String.IsEmpty(Skin.String(HomeFanart.path))">$INFO[Skin.String(HomeFanart.path)]weather$INFO[Skin.String(HomeFanart.ext)]</value>
 	</variable>
 	<variable name="ListWatchedIconVar">
-		<value condition="ListItem.IsRecording">windows/pvr/record.png</value>
 		<value condition="ListItem.IsCollection">overlays/set.png</value>
 		<value condition="ListItem.HasVideoVersions">overlays/versions.png</value>
 		<value condition="ListItem.IsPlaying">overlays/watched/OverlayPlaying-List.png</value>
@@ -477,12 +443,8 @@
 	<variable name="ItemStatusIconVar">
 		<value condition="[String.IsEqual(Listitem.DBType,tvshow) | String.IsEqual(Listitem.DBType,season)] + String.IsEqual(ListItem.Property(WatchedEpisodes),ListItem.Property(TotalEpisodes)) | String.IsEqual(ListItem.DBtype,set) + String.IsEqual(ListItem.Property(Watched),ListItem.Property(Total))">OverlayWatched.png</value>
 		<value condition="String.IsEqual(ListItem.DBtype,tvshow) | String.IsEqual(ListItem.DBtype,set) | String.IsEqual(ListItem.DBType,season)">lists/played-total.png</value>
-		<value condition="ListItem.IsRecording">windows/pvr/record.png</value>
-		<value condition="ListItem.HasReminder">icons/pvr/timers/bell.png</value>
-		<value condition="ListItem.HasTimer">icons/pvr/timers/recording.png</value>
 		<value condition="ListItem.IsPlaying">overlays/watched/OverlayPlaying-List.png</value>
 		<value condition="ListItem.IsResumable">overlays/watched/resume.png</value>
-		<value condition="ListItem.HasArchive">windows/pvr/archive.png</value>
 		<value condition="Integer.IsGreater(ListItem.Playcount,0)">$INFO[ListItem.Overlay]</value>
 	</variable>
 	<variable name="ItemTypeIconVar">
@@ -490,17 +452,6 @@
 		<value condition="ListItem.HasVideoVersions">overlays/versions.png</value>
 		<value condition="ListItem.HasVideoExtras">overlays/extras.png</value>
 	</variable>
-	<variable name="ListPVRRecordingsIconVar">
-		<value condition="ListItem.IsRecording">windows/pvr/record.png</value>
-		<value condition="ListItem.IsResumable">overlays/watched/resume.png</value>
-		<value condition="!String.IsEmpty(ListItem.Overlay)">$INFO[ListItem.Overlay]</value>
-		<value condition="!ListItem.IsParentFolder">OverlayUnwatched.png</value>
-	</variable>
-	<variable name="ListPVRTimersIconVar">
-		<value condition="ListItem.IsRecording">windows/pvr/record.png</value>
-		<value condition="ListItem.HasReminder">icons/pvr/timers/bell.png</value>
-		<value>icons/pvr/timers/recording.png</value>
-  </variable>
 	<!-- Breadcrumbs -->
 	<variable name="BreadcrumbsVideoVar">
 		<value condition="Container.Content(movies) | String.StartsWith(container.folderpath,library://video/movies/) | String.StartsWith(container.folderpath,videodb://movies)">$LOCALIZE[20342]</value>
@@ -510,61 +461,12 @@
 		<value condition="Container.Content(episodes)">$LOCALIZE[20343]</value>
 		<value>$LOCALIZE[3]</value>
 	</variable>
-	<variable name="BreadcrumbsPVRChannelsVar">
-		<value condition="Window.IsActive(TVChannels)">$LOCALIZE[19020] / $LOCALIZE[19019] / $INFO[Control.GetLabel(29)]</value>
-		<value>$LOCALIZE[19021] / $LOCALIZE[19019] / $INFO[Control.GetLabel(29)]</value>
-	</variable>
-	<variable name="BreadcrumbsPVRGuideVar">
-		<value condition="Window.IsActive(TVGuide)">$LOCALIZE[19020] / $LOCALIZE[19069] / $INFO[Control.GetLabel(30)]</value>
-		<value>$LOCALIZE[19021] / $LOCALIZE[19069] / $INFO[Control.GetLabel(30)]</value>
-	</variable>
-	<variable name="BreadcrumbsPVRRecordingsVar">
-		<value condition="Window.IsActive(TVRecordings) + String.Contains(Control.GetLabel(7),*)">$LOCALIZE[19020] / $LOCALIZE[19017]$INFO[Control.GetLabel(30), / ] - $LOCALIZE[19179]</value>
-		<value condition="Window.IsActive(TVRecordings) + !String.Contains(Control.GetLabel(7),*)">$LOCALIZE[19020] / $LOCALIZE[19017]$INFO[Control.GetLabel(30), / ]</value>
-		<value condition="Window.IsActive(RadioRecordings) + String.Contains(Control.GetLabel(7),*)">$LOCALIZE[19021] / $LOCALIZE[19017]$INFO[Control.GetLabel(30), / ] - $LOCALIZE[19179]</value>
-		<value>$LOCALIZE[19021] / $LOCALIZE[19017]$INFO[Control.GetLabel(30), / ]</value>
-	</variable>
-	<variable name="BreadcrumbsPVRTimersVar">
-		<value condition="Window.IsActive(TVTimers)">$LOCALIZE[19020] / $LOCALIZE[19040]</value>
-		<value condition="Window.IsActive(RadioTimers)">$LOCALIZE[19021] / $LOCALIZE[19040]</value>
-		<value condition="Window.IsActive(TVTimerRules)">$LOCALIZE[19020] / $LOCALIZE[19138]$INFO[Control.GetLabel(29), / ]</value>
-		<value>$LOCALIZE[19021] / $LOCALIZE[19138]$INFO[Control.GetLabel(29), / ]</value>
-	</variable>
-	<variable name="BreadcrumbsPVRSearchVar">
-		<value condition="Window.IsActive(TVSearch)">$LOCALIZE[19020] / $LOCALIZE[137]$INFO[Control.GetLabel(29), / ]$INFO[Control.GetLabel(30), ]</value>
-		<value>$LOCALIZE[19021] / $LOCALIZE[137]$INFO[Control.GetLabel(29), / ]$INFO[Control.GetLabel(30), ]</value>
-	</variable>
-	<variable name="BreadcrumbsPVRChannelsOSDVar">
-		<value condition="PVR.IsPlayingTV">$LOCALIZE[19020] / $LOCALIZE[19019] / $INFO[VideoPlayer.ChannelGroup]</value>
-		<value condition="PVR.IsPlayingRadio">$LOCALIZE[19021] / $LOCALIZE[19019] / $INFO[VideoPlayer.ChannelGroup]</value>
-		<value>$LOCALIZE[19019] / $INFO[VideoPlayer.ChannelGroup]</value>
-	</variable>
 	<variable name="BreadcrumbsGameVar">
 		<value>$LOCALIZE[15016]</value>
 	</variable>
 	<variable name="RepeatButtonColordiffuseVar">
 		<value condition="Control.HasFocus(704)">button_focus</value>
 		<value>FFFFFFFF</value>
-	</variable>
-	<variable name="PVRChannelMgrHeader">
-		<value condition="!String.IsEmpty(Window.Property(IsRadio))">$LOCALIZE[19199] - $LOCALIZE[19024]</value>
-		<value>$LOCALIZE[19199] - $LOCALIZE[19023]</value>
-	</variable>
-	<variable name="RDSInfoSubTitle">
-		<value condition="String.IsEmpty(MusicPlayer.ChannelName)">$INFO[Player.Title]</value>
-		<value>$INFO[MusicPlayer.ChannelName]$INFO[Player.Title, - ]</value>
-	</variable>
-	<variable name="PVRGroupMgrHeader">
-		<value condition="!String.IsEmpty(Window.Property(IsRadio))">$LOCALIZE[19048] - $LOCALIZE[19174]</value>
-		<value>$LOCALIZE[19048] - $LOCALIZE[19173]</value>
-	</variable>
-	<variable name="PVRAreaVar">
-		<value condition="Control.HasFocus(100)">$LOCALIZE[19019]</value>
-		<value condition="Control.HasFocus(101)">$LOCALIZE[19069]</value>
-		<value condition="Control.HasFocus(102)">$LOCALIZE[19017]</value>
-		<value condition="Control.HasFocus(103)">$LOCALIZE[19040]</value>
-		<value condition="Control.HasFocus(104)">$LOCALIZE[19138]</value>
-		<value condition="Control.HasFocus(105)">$LOCALIZE[137]</value>
 	</variable>
 	<variable name="PlayerControlsPlayImageVar">
 		<value condition="Player.Playing">osd/fullscreen/buttons/pause.png</value>
@@ -582,27 +484,12 @@
 	<variable name="PlayerLabel2">
 		<value condition="VideoPlayer.Content(episodes)">$LOCALIZE[20373]$INFO[VideoPlayer.Season,: , / ]$LOCALIZE[20359]$INFO[VideoPlayer.Episode,: ]</value>
 		<value condition="VideoPlayer.Content(movies)">$INFO[VideoPlayer.Year]</value>
-		<value condition="VideoPlayer.Content(livetv)">$INFO[VideoPlayer.ChannelName]</value>
 		<value condition="Player.HasAudio">[COLOR grey]$INFO[MusicPlayer.Album][/COLOR]$INFO[MusicPlayer.Year, [,] ]</value>
 	</variable>
 	<variable name="PlayerLabel3">
 		<value condition="VideoPlayer.Content(episodes)">$INFO[VideoPlayer.TvShowTitle]</value>
-		<value condition="VideoPlayer.Content(movies) | VideoPlayer.Content(livetv)">$INFO[VideoPlayer.Genre]</value>
+		<value condition="VideoPlayer.Content(movies)">$INFO[VideoPlayer.Genre]</value>
 		<value condition="Player.HasAudio">$INFO[MusicPlayer.TrackNumber,,: ][COLOR=grey]$INFO[Player.Title][/COLOR]</value>
-	</variable>
-	<variable name="PVRTimerIcon">
-		<value condition="ListItem.IsRecording">icons/pvr/PVR-IsRecording.png</value>
-		<value condition="ListItem.HasReminder">icons/pvr/timers/bell.png</value>
-		<value condition="ListItem.HasTimerSchedule + ListItem.TimerHasError">icons/pvr/PVR-HasTimerScheduleError.png</value>
-		<value condition="ListItem.HasTimer + ListItem.TimerHasError">icons/pvr/PVR-HasTimerError.png</value>
-		<value condition="ListItem.HasTimerSchedule + ListItem.TimerHasConflict">icons/pvr/PVR-HasTimerScheduleConflict.png</value>
-		<value condition="ListItem.HasTimer + ListItem.TimerHasConflict">icons/pvr/PVR-HasTimerConflict.png</value>
-		<value condition="ListItem.HasRecording">icons/pvr/PVR-HasRecording.png</value>
-		<value condition="ListItem.HasTimerSchedule + !ListItem.TimerIsActive">icons/pvr/PVR-HasTimerScheduleDisabled.png</value>
-		<value condition="ListItem.HasTimer + !ListItem.TimerIsActive">icons/pvr/PVR-HasTimerDisabled.png</value>
-		<value condition="ListItem.HasTimerSchedule">icons/pvr/PVR-HasTimerSchedule.png</value>
-		<value condition="ListItem.HasTimer">icons/pvr/PVR-HasTimer.png</value>
-		<value condition="ListItem.IsPlayable">icons/pvr/PVR-HasArchive.png</value>
 	</variable>
 	<variable name="SeasonEpisodeLabel">
 		<value condition="String.IsEmpty(ListItem.EpisodeName)">$INFO[ListItem.Season,S]$INFO[ListItem.Episode,E]</value>
@@ -648,26 +535,6 @@
 	<variable name="AddonNewsVar">
 		<value condition="!String.IsEmpty(ListItem.AddonNews)">$LOCALIZE[31136]</value>
 	</variable>
-	<variable name="PVRNextProgrammeLabel">
-		<value condition="!String.IsEmpty(ListItem.NextStartTime) + !String.IsEmpty(ListItem.NextTitle)">[COLOR grey]$LOCALIZE[19031]:[/COLOR] $INFO[ListItem.NextStartTime]: $INFO[ListItem.NextTitle]</value>
-		<value condition="!String.IsEmpty(ListItem.NextTitle)">[COLOR grey]$LOCALIZE[19031]:[/COLOR] $INFO[ListItem.NextTitle]</value>
-	</variable>
-	<variable name="PVRListItemSubLabel">
-		<value condition="ListItem.IsFolder">[COLOR grey]$INFO[ListItem.Timertype][/COLOR]</value>
-		<value condition="$EXP[listitem_has_episode_info] + !String.IsEmpty(ListItem.EpgEventTitle) + !String.StartsWith(ListItem.EpisodeName,ListItem.EpgEventTitle)">$INFO[ListItem.EpgEventTitle] | [COLOR grey]$VAR[SeasonEpisodeLabel]$INFO[ListItem.EpisodeName][/COLOR]</value>
-		<value condition="$EXP[listitem_has_episode_info]">[COLOR grey]$VAR[SeasonEpisodeLabel]$INFO[ListItem.EpisodeName][/COLOR]</value>
-		<value>$INFO[ListItem.EpgEventTitle]</value>
-	</variable>
-	<variable name="PVRListItemSubLabelFocused">
-		<value condition="ListItem.IsFolder">$INFO[ListItem.Timertype]</value>
-		<value condition="$EXP[listitem_has_episode_info] + !String.IsEmpty(ListItem.EpgEventTitle) + !String.StartsWith(ListItem.EpisodeName,ListItem.EpgEventTitle)">$INFO[ListItem.EpgEventTitle] | $VAR[SeasonEpisodeLabel]$INFO[ListItem.EpisodeName]</value>
-		<value condition="$EXP[listitem_has_episode_info]">$VAR[SeasonEpisodeLabel]$INFO[ListItem.EpisodeName]</value>
-		<value>$INFO[ListItem.EpgEventTitle]</value>
-	</variable>
-	<variable name="PVRInfoPanelDateDurationLabel">
-		<value condition="!String.IsEmpty(ListItem.StartDate) + !String.IsEmpty(ListItem.StartTime)">$INFO[ListItem.StartDate,[COLOR grey]$LOCALIZE[552]:[/COLOR] ,[CR]]$INFO[ListItem.StartTime,[COLOR grey]$LOCALIZE[555]:[/COLOR] ,[CR]]$INFO[ListItem.Duration,[COLOR grey]$LOCALIZE[180]:[/COLOR] ]</value>
-		<value>$INFO[ListItem.Date,[COLOR grey]$LOCALIZE[552]:[/COLOR] ,[CR]]$INFO[ListItem.Duration,[COLOR grey]$LOCALIZE[180]:[/COLOR] ]</value>
-	</variable>
 	<variable name="BackgroundOverlayTypeVar">
 		<value condition="String.IsEqual(Skin.String(background_overlay),0)">$LOCALIZE[231]</value>
 		<value>$INFO[Skin.String(background_overlay),$LOCALIZE[467] ]</value>
@@ -675,10 +542,6 @@
 	<variable name="MasterModeLabel">
 		<value condition="!System.IsMaster">$LOCALIZE[20045]</value>
 		<value>$LOCALIZE[20046]</value>
-	</variable>
-	<variable name="ChannelListEPGIconVar">
-		<value condition="!String.IsEmpty(Listitem.EpgEventIcon)">$INFO[ListItem.EpgEventIcon]</value>
-		<value>$INFO[ListItem.Icon]</value>
 	</variable>
 	<variable name="ActiveVideoPlayerSubtitleLanguage">
 		<value condition="VideoPlayer.SubtitlesEnabled">[B]$INFO[VideoPlayer.SubtitlesLanguage][/B]</value>

@@ -381,10 +381,6 @@ msgctxt "#31105"
 msgid "Add video sources and set the appropriate content type in order to populate your video libraries."
 msgstr "Pridajte zdroje videí a nastavte správny typ obsahu pre naplnenie vašich knižníc videí."
 
-msgctxt "#31106"
-msgid "Teletext"
-msgstr "Teletext"
-
 #. viewtype name
 msgctxt "#31107"
 msgid "WideList"
@@ -494,11 +490,6 @@ msgctxt "#31136"
 msgid "Click here to see latest changes..."
 msgstr "Kliknite sem, aby ste videli najnovšie zmeny..."
 
-#. Label to show PVR info page
-msgctxt "#31137"
-msgid "PVR"
-msgstr "PVR"
-
 #. Label to show player info page
 msgctxt "#31138"
 msgid "Player"
@@ -521,10 +512,6 @@ msgstr "Zmeny pre verziu"
 msgctxt "#31142"
 msgid "Play speed"
 msgstr "Rýchlosť prehrávania"
-
-msgctxt "#31143"
-msgid "You did not set up PVR yet. In order to use PVR, choose a PVR client addon and configure it. Please visit http://kodi.wiki/view/PVR to learn more."
-msgstr "Nenastavili ste PVR. Aby ste mohli používať PVR, vyberte si doplnok PVR klienta a nakonfigurujte ho. Navštívte http://kodi.wiki/view/PVR pre viac informácií."
 
 msgctxt "#31144"
 msgid "Enter add-on browser"
@@ -739,10 +726,6 @@ msgstr "Systém"
 #~ msgctxt "#31060"
 #~ msgid "Select + Start"
 #~ msgstr "Vybrať + Štart"
-
-#~ msgctxt "#31137"
-#~ msgid "PVR info"
-#~ msgstr "Informácie o PVR"
 
 #~ msgctxt "#31138"
 #~ msgid "Player process info"

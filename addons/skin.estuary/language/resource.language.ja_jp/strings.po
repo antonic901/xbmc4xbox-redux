@@ -381,10 +381,6 @@ msgctxt "#31105"
 msgid "Add video sources and set the appropriate content type in order to populate your video libraries."
 msgstr "ビデオライブラリに追加するために、適切なコンテンツタイプのビデオソースを追加し設定します。"
 
-msgctxt "#31106"
-msgid "Teletext"
-msgstr "文字多重放送"
-
 #. viewtype name
 msgctxt "#31107"
 msgid "WideList"
@@ -494,11 +490,6 @@ msgctxt "#31136"
 msgid "Click here to see latest changes..."
 msgstr "ここをクリックして最近の変更を見る..."
 
-#. Label to show PVR info page
-msgctxt "#31137"
-msgid "PVR"
-msgstr "PVR"
-
 #. Label to show player info page
 msgctxt "#31138"
 msgid "Player"
@@ -521,10 +512,6 @@ msgstr "バージョン変更"
 msgctxt "#31142"
 msgid "Play speed"
 msgstr "再生速度"
-
-msgctxt "#31143"
-msgid "You did not set up PVR yet. In order to use PVR, choose a PVR client addon and configure it. Please visit http://kodi.wiki/view/PVR to learn more."
-msgstr "まだPVRを設定していません。PVRを使用するには、PVRクライアントアドオンを選択して設定します。詳細については、http://kodi.wiki/view/PVR をご覧ください。"
 
 msgctxt "#31144"
 msgid "Enter add-on browser"
@@ -743,10 +730,6 @@ msgstr "システム"
 #~ msgctxt "#31060"
 #~ msgid "Select + Start"
 #~ msgstr "セレクト + スタート"
-
-#~ msgctxt "#31137"
-#~ msgid "PVR info"
-#~ msgstr "PVR詳細"
 
 #~ msgctxt "#31138"
 #~ msgid "Player process info"

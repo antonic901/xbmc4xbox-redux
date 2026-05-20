@@ -381,10 +381,6 @@ msgctxt "#31105"
 msgid "Add video sources and set the appropriate content type in order to populate your video libraries."
 msgstr "Додајте видео изворе и поставите одговарајућу врсту садржаја да би попунили ваше видео библиотеке."
 
-msgctxt "#31106"
-msgid "Teletext"
-msgstr "Телетекст"
-
 #. viewtype name
 msgctxt "#31107"
 msgid "WideList"
@@ -494,11 +490,6 @@ msgctxt "#31136"
 msgid "Click here to see latest changes..."
 msgstr "Кликните овде да би видели послење промене..."
 
-#. Label to show PVR info page
-msgctxt "#31137"
-msgid "PVR"
-msgstr ""
-
 #. Label to show player info page
 msgctxt "#31138"
 msgid "Player"
@@ -521,10 +512,6 @@ msgstr "Промене за верзију"
 msgctxt "#31142"
 msgid "Play speed"
 msgstr "Брзина репродукције"
-
-msgctxt "#31143"
-msgid "You did not set up PVR yet. In order to use PVR, choose a PVR client addon and configure it. Please visit http://kodi.wiki/view/PVR to learn more."
-msgstr "Још нисте подесили PVR. Да би користили PVR, изаберите додатни програм PVR клијента и подесите га. Молимо, посетите http://kodi.wiki/view/PVR да би више научили."
 
 msgctxt "#31144"
 msgid "Enter add-on browser"
@@ -731,10 +718,6 @@ msgstr "Медији"
 msgctxt "#31611"
 msgid "System"
 msgstr "Систем"
-
-#~ msgctxt "#31137"
-#~ msgid "PVR info"
-#~ msgstr "PVR информације"
 
 #~ msgctxt "#31138"
 #~ msgid "Player process info"

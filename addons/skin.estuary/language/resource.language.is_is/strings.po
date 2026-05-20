@@ -381,10 +381,6 @@ msgctxt "#31105"
 msgid "Add video sources and set the appropriate content type in order to populate your video libraries."
 msgstr "Bættu við veitum fyrir myndskeið og stilltu viðeigandi gerð efnis til að fylla inn í myndskeiðasöfnin þín."
 
-msgctxt "#31106"
-msgid "Teletext"
-msgstr "Textavarp"
-
 #. viewtype name
 msgctxt "#31107"
 msgid "WideList"
@@ -494,11 +490,6 @@ msgctxt "#31136"
 msgid "Click here to see latest changes..."
 msgstr "Smelltu hér til að sjá síðustu breytingar..."
 
-#. Label to show PVR info page
-msgctxt "#31137"
-msgid "PVR"
-msgstr "PVR"
-
 #. Label to show player info page
 msgctxt "#31138"
 msgid "Player"
@@ -521,10 +512,6 @@ msgstr "Breytingar í útgáfunni"
 msgctxt "#31142"
 msgid "Play speed"
 msgstr "Hraði afspilunar"
-
-msgctxt "#31143"
-msgid "You did not set up PVR yet. In order to use PVR, choose a PVR client addon and configure it. Please visit http://kodi.wiki/view/PVR to learn more."
-msgstr "Þú ert ekki búinn að setja upp PVR-upptökutæki. Til að geta notað PVR-upptöku, veldu þér PVR-biðlaraviðbót og stilltu hana. Skoðaðu http://kodi.wiki/view/PVR til að fá nánari upplýsingar."
 
 msgctxt "#31144"
 msgid "Enter add-on browser"
@@ -743,10 +730,6 @@ msgstr "Kerfi"
 #~ msgctxt "#31060"
 #~ msgid "Select + Start"
 #~ msgstr "Val + Start"
-
-#~ msgctxt "#31137"
-#~ msgid "PVR info"
-#~ msgstr "Upplýsingar um PVR-upptöku"
 
 #~ msgctxt "#31138"
 #~ msgid "Player process info"

@@ -80,7 +80,6 @@
 						<param name="texture" value="osd/fullscreen/buttons/previous.png"/>
 					</include>
 					<onclick>PlayerControl(Previous)</onclick>
-					<visible>!VideoPlayer.Content(livetv)</visible>
 				</control>
 				<control type="radiobutton" id="602">
 					<textureradioonfocus colordiffuse="white">osd/fullscreen/buttons/play.png</textureradioonfocus>
@@ -112,12 +111,12 @@
 						<param name="texture" value="osd/fullscreen/buttons/next.png"/>
 					</include>
 					<onclick>PlayerControl(Next)</onclick>
-					<visible>!VideoPlayer.Content(livetv) + [Integer.IsGreater(Playlist.Length(video),1) | Integer.IsGreater(Playlist.Length(music),1)]</visible>
+					<visible>[Integer.IsGreater(Playlist.Length(video),1) | Integer.IsGreater(Playlist.Length(music),1)]</visible>
 				</control>
 				<control type="group" id="699">
 					<width>125</width>
 					<height>125</height>
-					<visible>Player.HasAudio + !MusicPlayer.Content(LiveTV)</visible>
+					<visible>Player.HasAudio</visible>
 					<control type="button" id="704">
 						<left>40</left>
 						<top>0</top>
@@ -160,7 +159,7 @@
 					<radioposy>0</radioposy>
 					<animation center="62,62" effect="zoom" end="100" reversible="false" start="95" time="480" tween="back">Focus</animation>
 					<selected>Playlist.IsRandom</selected>
-					<visible>Player.HasAudio + !MusicPlayer.Content(LiveTV)</visible>
+					<visible>Player.HasAudio</visible>
 					<onclick>PlayerControl(Random)</onclick>
 				</control>
 			</control>

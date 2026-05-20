@@ -390,10 +390,6 @@ msgctxt "#31105"
 msgid "Add video sources and set the appropriate content type in order to populate your video libraries."
 msgstr "Tambahkan sumber video dan atur jenis konten yang sesuai untuk mengisi perpustakaan video anda."
 
-msgctxt "#31106"
-msgid "Teletext"
-msgstr "Teleteks"
-
 #. viewtype name
 msgctxt "#31107"
 msgid "WideList"
@@ -505,11 +501,6 @@ msgctxt "#31136"
 msgid "Click here to see latest changes..."
 msgstr "Klik di sini untuk melihat perubahan terakhir..."
 
-#. Label to show PVR info page
-msgctxt "#31137"
-msgid "PVR"
-msgstr "PVR"
-
 #. Label to show player info page
 msgctxt "#31138"
 msgid "Player"
@@ -532,10 +523,6 @@ msgstr "Perubahan untuk versi"
 msgctxt "#31142"
 msgid "Play speed"
 msgstr "Kecepatan putar"
-
-msgctxt "#31143"
-msgid "You did not set up PVR yet. In order to use PVR, choose a PVR client addon and configure it. Please visit http://kodi.wiki/view/PVR to learn more."
-msgstr "Anda belum menyiapkan PVR. Untuk menggunakan PVR, pilih pengaya klien PVR dan konfigurasikan. Silakan kunjungi http://kodi.wiki/view/PVR untuk mempelajari lebih lanjut."
 
 msgctxt "#31144"
 msgid "Enter add-on browser"
@@ -754,10 +741,6 @@ msgstr "Sistem"
 #~ msgctxt "#31060"
 #~ msgid "Select + Start"
 #~ msgstr "Select + Start"
-
-#~ msgctxt "#31137"
-#~ msgid "PVR info"
-#~ msgstr "Info PVR"
 
 #~ msgctxt "#31138"
 #~ msgid "Player process info"

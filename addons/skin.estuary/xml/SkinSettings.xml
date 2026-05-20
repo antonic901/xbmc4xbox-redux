@@ -222,18 +222,6 @@
 					<selected>!Skin.HasSetting(HomeMenuNoMusicVideoButton)</selected>
 					<onclick>Skin.ToggleSetting(HomeMenuNoMusicVideoButton)</onclick>
 				</control>
-				<control type="radiobutton" id="618">
-					<label>$LOCALIZE[19020]</label>
-					<include>DefaultSettingButton</include>
-					<selected>!Skin.HasSetting(HomeMenuNoTVButton)</selected>
-					<onclick>Skin.ToggleSetting(HomeMenuNoTVButton)</onclick>
-				</control>
-				<control type="radiobutton" id="619">
-					<label>$LOCALIZE[19021]</label>
-					<include>DefaultSettingButton</include>
-					<selected>!Skin.HasSetting(HomeMenuNoRadioButton)</selected>
-					<onclick>Skin.ToggleSetting(HomeMenuNoRadioButton)</onclick>
-				</control>
 				<control type="radiobutton" id="614">
 					<label>$LOCALIZE[24001]</label>
 					<include>DefaultSettingButton</include>

@@ -381,10 +381,6 @@ msgctxt "#31105"
 msgid "Add video sources and set the appropriate content type in order to populate your video libraries."
 msgstr "Dodaj źródła wideo i ustaw właściwy typ zawartości w celu wypełnienia swojej biblioteki wideo."
 
-msgctxt "#31106"
-msgid "Teletext"
-msgstr "Teletekst"
-
 #. viewtype name
 msgctxt "#31107"
 msgid "WideList"
@@ -494,11 +490,6 @@ msgctxt "#31136"
 msgid "Click here to see latest changes..."
 msgstr "Naciśnij, aby zobaczyć ostatnie zmiany..."
 
-#. Label to show PVR info page
-msgctxt "#31137"
-msgid "PVR"
-msgstr "Telewizja"
-
 #. Label to show player info page
 msgctxt "#31138"
 msgid "Player"
@@ -521,10 +512,6 @@ msgstr "Lista zmian"
 msgctxt "#31142"
 msgid "Play speed"
 msgstr "Szybkość odtwarzania"
-
-msgctxt "#31143"
-msgid "You did not set up PVR yet. In order to use PVR, choose a PVR client addon and configure it. Please visit http://kodi.wiki/view/PVR to learn more."
-msgstr "Korzystanie z funkcji telewizyjnych wymaga wybrania i skonfigurowania odpowiedniego klienta telewizji. Odwiedź stronę Wiki na http://kodi.wiki/view/PVR, aby dowiedzieć się więcej."
 
 msgctxt "#31144"
 msgid "Enter add-on browser"
@@ -755,10 +742,6 @@ msgstr "System"
 #~ msgctxt "#31060"
 #~ msgid "Select + Start"
 #~ msgstr "Select + Start"
-
-#~ msgctxt "#31137"
-#~ msgid "PVR info"
-#~ msgstr "O telewizji"
 
 #~ msgctxt "#31138"
 #~ msgid "Player process info"

@@ -381,10 +381,6 @@ msgctxt "#31105"
 msgid "Add video sources and set the appropriate content type in order to populate your video libraries."
 msgstr "Προσθέστε πηγές βίντεο και ορίστε το κατάλληλο είδος περιεχομένου, ώστε να συμπληρώσετε τις βιβλιοθήκες βίντεο."
 
-msgctxt "#31106"
-msgid "Teletext"
-msgstr "Teletext"
-
 #. viewtype name
 msgctxt "#31107"
 msgid "WideList"
@@ -494,11 +490,6 @@ msgctxt "#31136"
 msgid "Click here to see latest changes..."
 msgstr "Πατήστε εδώ για να δείτε τις πρόσφατες αλλαγές..."
 
-#. Label to show PVR info page
-msgctxt "#31137"
-msgid "PVR"
-msgstr ""
-
 #. Label to show player info page
 msgctxt "#31138"
 msgid "Player"
@@ -521,10 +512,6 @@ msgstr "Αλλαγές έκδοσης"
 msgctxt "#31142"
 msgid "Play speed"
 msgstr "Ταχύτητα αναπαραγωγής"
-
-msgctxt "#31143"
-msgid "You did not set up PVR yet. In order to use PVR, choose a PVR client addon and configure it. Please visit http://kodi.wiki/view/PVR to learn more."
-msgstr ""
 
 msgctxt "#31144"
 msgid "Enter add-on browser"
@@ -735,10 +722,6 @@ msgstr "Σύστημα"
 #~ msgctxt "#31615"
 #~ msgid "Extras"
 #~ msgstr "Extras"
-
-#~ msgctxt "#31137"
-#~ msgid "PVR info"
-#~ msgstr "Πληροφορίες PVR"
 
 #~ msgctxt "#31138"
 #~ msgid "Player process info"

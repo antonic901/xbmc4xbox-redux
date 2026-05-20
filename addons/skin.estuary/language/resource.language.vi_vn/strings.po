@@ -381,10 +381,6 @@ msgctxt "#31105"
 msgid "Add video sources and set the appropriate content type in order to populate your video libraries."
 msgstr "Thêm nguồn video và đặt loại nội dung phù hợp để thêm vào thư viện video của bạn."
 
-msgctxt "#31106"
-msgid "Teletext"
-msgstr "Teletext"
-
 #. viewtype name
 msgctxt "#31107"
 msgid "WideList"
@@ -494,11 +490,6 @@ msgctxt "#31136"
 msgid "Click here to see latest changes..."
 msgstr "Nhấn vào đây để xem những thay đổi mới nhất..."
 
-#. Label to show PVR info page
-msgctxt "#31137"
-msgid "PVR"
-msgstr "PVR"
-
 #. Label to show player info page
 msgctxt "#31138"
 msgid "Player"
@@ -521,10 +512,6 @@ msgstr "Thay đổi phiên bản"
 msgctxt "#31142"
 msgid "Play speed"
 msgstr "Tốc độ phát"
-
-msgctxt "#31143"
-msgid "You did not set up PVR yet. In order to use PVR, choose a PVR client addon and configure it. Please visit http://kodi.wiki/view/PVR to learn more."
-msgstr "Bạn chưa thiết lập PVR. Để sử dụng PVR, chọn một tiện ích máy khách PVR và cấu hình nó. Vui lòng truy cập http://kodi.wiki/view/PVR để tìm hiểu thêm."
 
 msgctxt "#31144"
 msgid "Enter add-on browser"
@@ -743,10 +730,6 @@ msgstr "Hệ thống"
 #~ msgctxt "#31060"
 #~ msgid "Select + Start"
 #~ msgstr "Chọn + Start"
-
-#~ msgctxt "#31137"
-#~ msgid "PVR info"
-#~ msgstr "Thông tin PVR"
 
 #~ msgctxt "#31138"
 #~ msgid "Player process info"

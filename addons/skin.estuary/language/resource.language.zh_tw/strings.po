@@ -381,10 +381,6 @@ msgctxt "#31105"
 msgid "Add video sources and set the appropriate content type in order to populate your video libraries."
 msgstr "加入視訊來源並且設定合適的內容類型，以豐富你的視訊資料庫。"
 
-msgctxt "#31106"
-msgid "Teletext"
-msgstr "電傳聞訊"
-
 #. viewtype name
 msgctxt "#31107"
 msgid "WideList"
@@ -494,11 +490,6 @@ msgctxt "#31136"
 msgid "Click here to see latest changes..."
 msgstr "按這裡以檢視最新的更新項目..."
 
-#. Label to show PVR info page
-msgctxt "#31137"
-msgid "PVR"
-msgstr "PVR"
-
 #. Label to show player info page
 msgctxt "#31138"
 msgid "Player"
@@ -521,10 +512,6 @@ msgstr "版本更新之變動"
 msgctxt "#31142"
 msgid "Play speed"
 msgstr "播放速度"
-
-msgctxt "#31143"
-msgid "You did not set up PVR yet. In order to use PVR, choose a PVR client addon and configure it. Please visit http://kodi.wiki/view/PVR to learn more."
-msgstr "您尚未設置 PVR。欲使用 PVR，請選取並設置 PVR 客戶端附加元件。請參考 http://kodi.wiki/view/PVR。"
 
 msgctxt "#31144"
 msgid "Enter add-on browser"
@@ -743,10 +730,6 @@ msgstr "系統"
 #~ msgctxt "#31060"
 #~ msgid "Select + Start"
 #~ msgstr "選擇 + 開始"
-
-#~ msgctxt "#31137"
-#~ msgid "PVR info"
-#~ msgstr "PVR 資訊"
 
 #~ msgctxt "#31138"
 #~ msgid "Player process info"
