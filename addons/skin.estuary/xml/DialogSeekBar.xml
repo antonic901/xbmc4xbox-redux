@@ -2,13 +2,13 @@
 <window>
 	<visible>Window.IsActive(fullscreenvideo) | Window.IsActive(visualisation)</visible>
 	<visible>!Window.IsActive(sliderdialog)</visible>
-	<visible>Player.Seeking | Player.HasPerformedSeek(3) | [Player.Paused + !Player.Caching] | Player.Forwarding | Player.Rewinding | Player.ShowInfo | Window.IsActive(fullscreeninfo) | Player.ShowTime | Window.IsActive(videoosd) | Window.IsActive(musicosd) | Window.IsActive(playerprocessinfo) | !String.IsEmpty(Player.SeekNumeric)</visible>
+	<visible>Player.Seeking | Player.HasPerformedSeek(3) | [Player.Paused + !Player.Caching] | Player.Forwarding | Player.Rewinding | Player.ShowInfo | Window.IsActive(fullscreeninfo) | Player.ShowTime | Window.IsActive(videoosd) | Window.IsActive(musicosd) | !String.IsEmpty(Player.SeekNumeric)</visible>
 	<include>Animation_BottomSlide</include>
 	<zorder>0</zorder>
 	<controls>
 		<control type="group">
 			<animation effect="slide" start="0,200" end="0,0" time="300" tween="cubic" easing="out">VisibleChange</animation>
-			<visible>Player.ShowInfo | Window.IsActive(fullscreeninfo) | Player.ShowTime | Window.IsActive(videoosd) | Window.IsActive(musicosd) | Window.IsActive(playerprocessinfo) | ![!String.IsEmpty(Player.SeekNumeric) | Player.Seeking | Player.HasPerformedSeek(3) | Player.Forwarding | Player.Rewinding | Player.Paused]</visible>
+			<visible>Player.ShowInfo | Window.IsActive(fullscreeninfo) | Player.ShowTime | Window.IsActive(videoosd) | Window.IsActive(musicosd) | ![!String.IsEmpty(Player.SeekNumeric) | Player.Seeking | Player.HasPerformedSeek(3) | Player.Forwarding | Player.Rewinding | Player.Paused]</visible>
 			<bottom>0</bottom>
 			<height>190</height>
 			<control type="image">
@@ -185,7 +185,6 @@
 			</control>
 		</control>
 		<control type="group">
-			<visible>!Window.IsVisible(playerprocessinfo)</visible>
 			<visible>[Player.ShowInfo | Window.IsActive(fullscreeninfo)] + Window.IsActive(fullscreenvideo)</visible>
 			<visible>Player.ShowInfo | Window.IsActive(fullscreeninfo) | !Player.Seeking | !Player.HasPerformedSeek(3) | !Player.Forwarding | !Player.Rewinding | !Player.Paused</visible>
 			<animation effect="fade" start="0" end="100" time="300" delay="250">Visible</animation>

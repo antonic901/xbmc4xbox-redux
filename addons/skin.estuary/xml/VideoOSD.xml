@@ -17,7 +17,7 @@
 			<include>Animation_BottomSlide</include>
 			<bottom>0</bottom>
 			<height>180</height>
-			<visible>![Window.IsVisible(SliderDialog) | Window.IsVisible(osdaudiosettings) | Window.IsVisible(osdvideosettings) | Window.IsVisible(VideoBookmarks) | Window.IsVisible(playerprocessinfo) | Window.IsVisible(osdcmssettings)]</visible>
+			<visible>![Window.IsVisible(SliderDialog) | Window.IsVisible(osdaudiosettings) | Window.IsVisible(osdvideosettings) | Window.IsVisible(VideoBookmarks) | Window.IsVisible(osdcmssettings)]</visible>
 			<animation effect="fade" time="200">VisibleChange</animation>
 			<control type="label">
 				<right>20</right>
