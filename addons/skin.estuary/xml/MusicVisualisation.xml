@@ -61,7 +61,7 @@
 				<bordersize>4</bordersize>
 			</control>
 			<control type="group">
-				<visible>[Player.ShowInfo | Window.IsActive(musicosd)] + !Window.IsActive(playerprocessinfo)</visible>
+				<visible>Player.ShowInfo | Window.IsActive(musicosd)</visible>
 				<include>Visible_Left</include>
 				<left>440</left>
 				<top>10</top>
