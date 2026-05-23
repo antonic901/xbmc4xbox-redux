@@ -70,7 +70,7 @@ protected:
   CSettingControlFormattedRange()
   {
     m_formatLabel = -1;
-    m_formatString = "{}";
+    m_formatString = "%i";
     m_minimumLabel = -1;
   }
 
@@ -286,7 +286,7 @@ public:
   {
     m_formatLabel = 21469;
     m_valueFormatLabel = -1;
-    m_valueFormat = "{}";
+    m_valueFormat = "%s";
   }
   virtual ~CSettingControlRange() {}
 
