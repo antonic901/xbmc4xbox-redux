@@ -291,13 +291,13 @@ bool CSettingControlSlider::SetFormat(const std::string &format)
 std::string CSettingControlSlider::GetDefaultFormatString() const
 {
   if (m_format == "percentage")
-    return "{} %";
+    return "%i %%";
   if (m_format == "integer")
-    return "{:d}";
+    return "%d";
   if (m_format == "number")
-    return "{:.1f}";
+    return "%.1f";
 
-  return "{}";
+  return "%i";
 }
 
 bool CSettingControlRange::Deserialize(const TiXmlNode *node, bool update /* = false */)
