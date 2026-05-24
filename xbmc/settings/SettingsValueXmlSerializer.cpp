@@ -47,7 +47,7 @@ void CSettingsValueXmlSerializer::SerializeSection(
     return;
 
   const SettingCategoryList categories = section->GetCategories();
-  for (SettingCategoryList::const_iterator category = categories.end(); category != categories.end(); ++category)
+  for (SettingCategoryList::const_iterator category = categories.begin(); category != categories.end(); ++category)
     SerializeCategory(parent, *category);
 }
 
