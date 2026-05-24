@@ -303,6 +303,8 @@ public:
     return true;
   }
 
+  virtual bool GetRenderGUI() const { return true; };
+
   bool SetLanguage(const std::string &strLanguage);
   bool LoadLanguage(bool reload);
 

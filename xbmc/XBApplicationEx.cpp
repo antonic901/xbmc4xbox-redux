@@ -267,6 +267,3 @@ void CXBApplicationEx::ReadInput()
   m_DefaultGamepad.fY2 = DeadZone(m_DefaultGamepad.fY2);
 #endif
 }
-
-void CXBApplicationEx::Process()
-{}
