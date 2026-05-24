@@ -13,7 +13,7 @@
 #include "XBInput.h"
 #include "XBInputEx.h"
 #endif
-#include "IWindowManagerCallback.h"
+#include "guilib/IWindowManagerCallback.h"
 #include "common/Keyboard.h"
 #include "gui3d.h"
 //-----------------------------------------------------------------------------
@@ -70,7 +70,6 @@ public:
   virtual HRESULT Create(HWND hWnd);
   INT Run();
   VOID Destroy();
-  virtual void Process();
   // Internal constructor
   CXBApplicationEx();
 };
