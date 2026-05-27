@@ -579,9 +579,6 @@
 				RelativePath=".\DirtyRegionTracker.h">
 			</File>
 			<File
-				RelativePath=".\Geometry.h">
-			</File>
-			<File
 				RelativePath=".\gui3d.h">
 			</File>
 			<File

@@ -23,6 +23,7 @@
 #include "DVDInputStream.h"
 #include "IDVDPlayer.h"
 #include "DVDCodecs/Overlay/DVDOverlaySpu.h"
+#include "utils/Geometry.h"
 #include <string>
 
 #include "DllDvdNav.h"
@@ -40,7 +41,6 @@
 class CDVDDemuxSPU;
 class CSPUInfo;
 class CDVDOverlayPicture;
-class CPoint;
 
 struct dvdnav_s;
 
@@ -53,7 +53,7 @@ public:
   int type;
 };
 
-class CDVDInputStreamNavigator 
+class CDVDInputStreamNavigator
   : public CDVDInputStream
   , public CDVDInputStream::IDisplayTime
   , public CDVDInputStream::IChapter

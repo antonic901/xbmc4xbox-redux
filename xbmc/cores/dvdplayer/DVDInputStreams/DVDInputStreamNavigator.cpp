@@ -29,8 +29,6 @@
 #include "settings/SettingsComponent.h"
 #include "LangInfo.h"
 
-#include "utils/Geometry.h"
-
 #ifndef PRId64
 #ifdef _MSC_VER
 #define PRId64 "I64d"

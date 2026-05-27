@@ -22,6 +22,7 @@
 
 #include <string>
 #include "utils/BitstreamStats.h"
+#include "utils/Geometry.h"
 #include "filesystem/IFileTypes.h"
 
 #include "FileItem.h"
@@ -48,7 +49,6 @@ namespace XFILE
 {
   class CFile;
 }
-class CPoint;
 
 class CDVDInputStream
 {

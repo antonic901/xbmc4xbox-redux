@@ -4944,6 +4944,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\utils\fstrcmp.h">
 			</File>
 			<File
+				RelativePath=".\xbmc\utils\Geometry.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\utils\GroupUtils.h">
 			</File>
 			<File

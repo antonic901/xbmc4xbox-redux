@@ -134,7 +134,7 @@ static int ActivateAndFocus(const std::vector<std::string>& params)
     {
       // disable the screensaver
       g_application.ResetScreenSaverWindow();
-      CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(iWindow, std::vector<string>(), Replace);
+      CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(iWindow, std::vector<std::string>(), Replace);
 
       unsigned int iPtr = 1;
       while (params.size() > iPtr + 1)
