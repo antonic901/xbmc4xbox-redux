@@ -150,7 +150,7 @@ public:
     {
       boost::shared_ptr<CThumbLoader> thumbLoader = boost::make_shared<CThumbLoaderClass>();
       thumbLoader->OnLoaderStart();
-      m_thumbloaders.insert(make_pair(type, thumbLoader));
+      m_thumbloaders.insert(std::make_pair(type, thumbLoader));
     }
   }
 

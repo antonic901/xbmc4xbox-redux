@@ -2911,9 +2911,9 @@ void CVideoDatabase::SetStreamDetailsForFileId(const CStreamDetails& details, in
     if (details.GetVideoDuration())
     {
       std::vector<std::pair<std::string, int> > tables;
-      tables.push_back(make_pair("movie", VIDEODB_ID_RUNTIME));
-      tables.push_back(make_pair("episode", VIDEODB_ID_EPISODE_RUNTIME));
-      tables.push_back(make_pair("musicvideo", VIDEODB_ID_MUSICVIDEO_RUNTIME));
+      tables.push_back(std::make_pair("movie", VIDEODB_ID_RUNTIME));
+      tables.push_back(std::make_pair("episode", VIDEODB_ID_EPISODE_RUNTIME));
+      tables.push_back(std::make_pair("musicvideo", VIDEODB_ID_MUSICVIDEO_RUNTIME));
       for (std::vector<std::pair<std::string, int> >::const_iterator it = tables.begin(); it != tables.end(); ++it)
       {
         const std::pair<std::string, int> &i = *it;

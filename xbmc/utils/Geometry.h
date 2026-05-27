@@ -1,92 +1,139 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
+#pragma once
+
+#ifdef __GNUC__
+// under gcc, inline will only take place if optimizations are applied (-O). this will force inline even with optimizations.
+#define XBMC_FORCE_INLINE __attribute__((always_inline))
+#else
+#define XBMC_FORCE_INLINE
+#endif
+
 #include <algorithm>
+#include <stdexcept>
+#include <vector>
 
-using namespace std;
-
-class CPoint
+template <typename T> class CPointGen
 {
 public:
-  CPoint()
+  typedef CPointGen<T> this_type;
+
+  CPointGen()  { x = y = static_cast<T>(0); }
+
+  CPointGen(T a, T b)
+  : x(a), y(b)
+  {}
+
+  template<class U> explicit CPointGen(const CPointGen<U>& rhs)
+  : x(static_cast<T> (rhs.x)), y(static_cast<T> (rhs.y))
+  {}
+
+  this_type operator+(const this_type &point) const
   {
-    x = 0; y = 0;
+    return this_type(x + point.x, y + point.y);
   };
 
-  CPoint(float a, float b)
-  {
-    x = a;
-    y = b;
-  };
-
-  CPoint operator+(const CPoint &point) const
-  {
-    CPoint ans;
-    ans.x = x + point.x;
-    ans.y = y + point.y;
-    return ans;
-  };
-
-  const CPoint &operator+=(const CPoint &point)
+  this_type& operator+=(const this_type &point)
   {
     x += point.x;
     y += point.y;
     return *this;
   };
 
-  CPoint operator-(const CPoint &point) const
+  this_type operator-(const this_type &point) const
   {
-    CPoint ans;
-    ans.x = x - point.x;
-    ans.y = y - point.y;
-    return ans;
+    return this_type(x - point.x, y - point.y);
   };
 
-  const CPoint &operator-=(const CPoint &point)
+  this_type& operator-=(const this_type &point)
   {
     x -= point.x;
     y -= point.y;
     return *this;
   };
 
-  float x, y;
+  this_type operator*(T factor) const
+  {
+    return this_type(x * factor, y * factor);
+  }
+
+  this_type& operator*=(T factor)
+  {
+    x *= factor;
+    y *= factor;
+    return *this;
+  }
+
+  this_type operator/(T factor) const
+  {
+    return this_type(x / factor, y / factor);
+  }
+
+  this_type& operator/=(T factor)
+  {
+    x /= factor;
+    y /= factor;
+    return *this;
+  }
+
+  T x, y;
 };
 
-class CRect
+template<typename T>
+bool operator==(const CPointGen<T> &point1, const CPointGen<T> &point2)
+{
+  return (point1.x == point2.x && point1.y == point2.y);
+}
+
+template<typename T>
+bool operator!=(const CPointGen<T> &point1, const CPointGen<T> &point2)
+{
+  return !(point1 == point2);
+}
+
+typedef CPointGen<float> CPoint;
+
+
+template <typename T> class CRectGen
 {
 public:
-  CRect() { x1 = y1 = x2 = y2 = 0;};
-  CRect(float left, float top, float right, float bottom) { x1 = left; y1 = top; x2 = right; y2 = bottom; };
+  typedef CRectGen<T> this_type;
+  typedef CPointGen<T> point_type;
 
-  void SetRect(float left, float top, float right, float bottom) { x1 = left; y1 = top; x2 = right; y2 = bottom; };
+  CRectGen()  { x1 = y1 = x2 = y2 = static_cast<T>(0); }
 
-  bool PtInRect(const CPoint &point) const
+  CRectGen(T left, T top, T right, T bottom)
+  : x1(left), y1(top), x2(right), y2(bottom)
+  {}
+
+  CRectGen(const point_type &p1, const point_type &p2)
+  : x1(p1.x), y1(p1.y), x2(p2.x), y2(p2.y)
+  {}
+
+  template<class U> explicit CRectGen(const CRectGen<U>& rhs)
+  : x1(static_cast<T> (rhs.x1)), y1(static_cast<T> (rhs.y1)), x2(static_cast<T> (rhs.x2)), y2(static_cast<T> (rhs.y2))
+  {}
+
+  void SetRect(T left, T top, T right, T bottom)
   {
-    if (x1 <= point.x && point.x <= x2 && y1 <= point.y && point.y <= y2)
-      return true;
-    return false;
+    x1 = left;
+    y1 = top;
+    x2 = right;
+    y2 = bottom;
+  }
+
+  bool PtInRect(const point_type &point) const
+  {
+    return (x1 <= point.x && point.x <= x2 && y1 <= point.y && point.y <= y2);
   };
 
-  const CRect &operator -=(const CPoint &point)
+  this_type& operator-=(const point_type &point) XBMC_FORCE_INLINE
   {
     x1 -= point.x;
     y1 -= point.y;
@@ -95,7 +142,12 @@ public:
     return *this;
   };
 
-  const CRect &operator +=(const CPoint &point)
+  this_type operator-(const point_type &point) const
+  {
+    return this_type(x1 - point.x, y1 - point.y, x2 - point.x, y2 - point.y);
+  }
+
+  this_type& operator+=(const point_type &point) XBMC_FORCE_INLINE
   {
     x1 += point.x;
     y1 += point.y;
@@ -104,7 +156,12 @@ public:
     return *this;
   };
 
-  const CRect &Intersect(const CRect &rect)
+  this_type operator+(const point_type &point) const
+  {
+    return this_type(x1 + point.x, y1 + point.y, x2 + point.x, y2 + point.y);
+  }
+
+  this_type& Intersect(const this_type &rect)
   {
     x1 = clamp_range(x1, rect.x1, rect.x2);
     x2 = clamp_range(x2, rect.x1, rect.x2);
@@ -113,56 +170,60 @@ public:
     return *this;
   };
 
-  const CRect &Union(const CRect &rect)
+  this_type& Union(const this_type &rect)
   {
     if (IsEmpty())
       *this = rect;
     else if (!rect.IsEmpty())
     {
-      x1 = min(x1,rect.x1);
-      y1 = min(y1,rect.y1);
+      x1 = std::min(x1,rect.x1);
+      y1 = std::min(y1,rect.y1);
 
-      x2 = max(x2,rect.x2);
-      y2 = max(y2,rect.y2);
+      x2 = std::max(x2,rect.x2);
+      y2 = std::max(y2,rect.y2);
     }
 
     return *this;
   };
 
-  bool IsEmpty() const
+  bool IsEmpty() const XBMC_FORCE_INLINE
   {
     return (x2 - x1) * (y2 - y1) == 0;
   };
 
-  inline float Width() const
+  T Width() const XBMC_FORCE_INLINE
   {
     return x2 - x1;
   };
 
-  inline float Height() const
+  T Height() const XBMC_FORCE_INLINE
   {
     return y2 - y1;
   };
 
-  inline float Area() const
+  T Area() const XBMC_FORCE_INLINE
   {
     return Width() * Height();
   };
 
-  bool operator !=(const CRect &rect) const
-  {
-    if (x1 != rect.x1) return true;
-    if (x2 != rect.x2) return true;
-    if (y1 != rect.y1) return true;
-    if (y2 != rect.y2) return true;
-    return false;
-  };
-
-  float x1, y1, x2, y2;
+  T x1, y1, x2, y2;
 private:
-  inline static float clamp_range(float x, float l, float h)
+  static T clamp_range(T x, T l, T h) XBMC_FORCE_INLINE
   {
     return (x > h) ? h : ((x < l) ? l : x);
   }
 };
 
+template<typename T>
+bool operator==(const CRectGen<T> &rect1, const CRectGen<T> &rect2)
+{
+  return (rect1.x1 == rect2.x1 && rect1.y1 == rect2.y1 && rect1.x2 == rect2.x2 && rect1.y2 == rect2.y2);
+}
+
+template<typename T>
+bool operator!=(const CRectGen<T> &rect1, const CRectGen<T> &rect2)
+{
+  return !(rect1 == rect2);
+}
+
+typedef CRectGen<float> CRect;
