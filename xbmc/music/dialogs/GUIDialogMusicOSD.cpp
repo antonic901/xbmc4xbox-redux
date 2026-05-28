@@ -1,29 +1,20 @@
 /*
- *      Copyright (C) 2005-2018 Team Kodi
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIDialogMusicOSD.h"
-#include "addons/GUIWindowAddonBrowser.h"
+
+#include "GUIUserMessages.h"
+#include "ServiceBroker.h"
+#include "addons/addoninfo/AddonType.h"
+#include "addons/gui/GUIWindowAddonBrowser.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
-#include "GUIUserMessages.h"
-#include "guilib/WindowIDs.h"
+#include "input/InputManager.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
 #include "settings/Settings.h"
@@ -38,9 +29,7 @@ CGUIDialogMusicOSD::CGUIDialogMusicOSD(void)
   m_loadType = KEEP_IN_MEMORY;
 }
 
-CGUIDialogMusicOSD::~CGUIDialogMusicOSD(void)
-{
-}
+CGUIDialogMusicOSD::~CGUIDialogMusicOSD(void) = default;
 
 bool CGUIDialogMusicOSD::OnMessage(CGUIMessage &message)
 {
@@ -52,10 +41,12 @@ bool CGUIDialogMusicOSD::OnMessage(CGUIMessage &message)
       if (iControl == CONTROL_VIS_BUTTON)
       {
         std::string addonID;
-        if (CGUIWindowAddonBrowser::SelectAddonID(ADDON::ADDON_VIZ, addonID, true) == 1)
+        if (CGUIWindowAddonBrowser::SelectAddonID(ADDON::AddonType::VISUALIZATION, addonID, true) ==
+            1)
         {
-          CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("musicplayer.visualisation", addonID);
-          CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
+          const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+          settings->SetString(CSettings::SETTING_MUSICPLAYER_VISUALISATION, addonID);
+          settings->Save();
           CServiceBroker::GetGUI()->GetWindowManager().SendMessage(GUI_MSG_VISUALISATION_RELOAD, 0, 0);
         }
       }
@@ -78,7 +69,6 @@ bool CGUIDialogMusicOSD::OnAction(const CAction &action)
     case ACTION_SHOW_OSD:
       Close();
       return true;
-
     default:
       break;
   }
@@ -91,8 +81,10 @@ void CGUIDialogMusicOSD::FrameMove()
   if (m_autoClosing)
   {
     // check for movement of mouse or a submenu open
-    if (CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_VIS_SETTINGS) ||
-        CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_VIS_PRESET_LIST))
+    if (CServiceBroker::GetInputManager().IsMouseActive() ||
+        CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_VIS_SETTINGS) ||
+        CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_VIS_PRESET_LIST) ||
+        CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_PVR_RADIO_RDS_INFO))
       // extend show time by original value
       SetAutoClose(m_showDuration);
   }

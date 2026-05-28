@@ -1863,12 +1863,6 @@
 				Name="GUI Dialog"
 				Filter="">
 				<File
-					RelativePath="..\..\xbmc\video\dialogs\GUIDialogAudioSubtitleSettings.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\video\dialogs\GUIDialogAudioSubtitleSettings.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\dialogs\GUIDialogBoxBase.cpp">
 				</File>
 				<File

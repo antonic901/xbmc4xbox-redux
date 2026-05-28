@@ -1,56 +1,83 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "MusicDatabaseDirectory.h"
-#include "ServiceBroker.h"
-#include "utils/URIUtils.h"
-#include "MusicDatabaseDirectory/QueryParams.h"
-#include "music/MusicDatabase.h"
-#include "filesystem/File.h"
+
 #include "FileItem.h"
-#include "utils/Crc32.h"
-#include "guilib/TextureManager.h"
+#include "MusicDatabaseDirectory/QueryParams.h"
+#include "ServiceBroker.h"
+#include "filesystem/File.h"
 #include "guilib/LocalizeStrings.h"
+#include "guilib/TextureManager.h"
+#include "music/MusicDatabase.h"
+#include "music/MusicDbUrl.h"
+#include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
+#include "utils/Crc32.h"
 #include "utils/LegacyPathTranslation.h"
 #include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
 
 using namespace XFILE;
 using namespace MUSICDATABASEDIRECTORY;
 
-CMusicDatabaseDirectory::CMusicDatabaseDirectory(void)
-{
-}
+CMusicDatabaseDirectory::CMusicDatabaseDirectory(void) = default;
 
-CMusicDatabaseDirectory::~CMusicDatabaseDirectory(void)
-{
-}
+CMusicDatabaseDirectory::~CMusicDatabaseDirectory(void) = default;
 
 bool CMusicDatabaseDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
   std::string path = CLegacyPathTranslation::TranslateMusicDbPath(url);
+
+  // Adjust path to control navigation from albums to discs or directly to songs
+  CQueryParams params;
+  NODE_TYPE type;
+  NODE_TYPE childtype;
+  GetDirectoryNodeInfo(path, type, childtype, params);
+  if (childtype == NODE_TYPE_DISC)
+  {
+    bool bFlatten = false;
+    if (params.GetAlbumId() < 0)
+      bFlatten = true; // Showing *all albums next always songs
+    else
+    {
+      // Option to show discs for ordinary albums (not just boxed sets)
+      bFlatten = !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(
+          CSettings::SETTING_MUSICLIBRARY_SHOWDISCS);
+      CMusicDatabase musicdatabase;
+      if (musicdatabase.Open())
+      {
+        if (bFlatten) // Check for boxed set
+          bFlatten = !musicdatabase.IsAlbumBoxset(params.GetAlbumId());
+        if (!bFlatten)
+        { // Check we will get more than 1 disc when path filter options applied
+          int iDiscTotal = musicdatabase.GetDiscsCount(path);
+          bFlatten = iDiscTotal <= 1;
+        }
+      }
+      musicdatabase.Close();
+    }
+    if (bFlatten)
+    { // Skip discs level and go directly to songs
+      CMusicDbUrl musicUrl;
+      if (!musicUrl.FromString(path))
+        return false;
+      musicUrl.AppendPath("-2/"); // Flattened so adjust list label etc.
+      path = musicUrl.ToString();
+    }
+  }
+
   items.SetPath(path);
   items.m_dwSize = -1;  // No size
 
-  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
 
-  if (!pNode.get())
+  if (!pNode)
     return false;
 
   bool bResult = pNode->GetChilds(items);
@@ -64,7 +91,8 @@ bool CMusicDatabaseDirectory::GetDirectory(const CURL& url, CFileItemList &items
         item->SetArt("icon", strImage);
     }
   }
-  items.SetLabel(pNode->GetLocalizedName());
+  if (items.GetLabel().empty())
+    items.SetLabel(pNode->GetLocalizedName());
 
   return bResult;
 }
@@ -72,9 +100,9 @@ bool CMusicDatabaseDirectory::GetDirectory(const CURL& url, CFileItemList &items
 NODE_TYPE CMusicDatabaseDirectory::GetDirectoryChildType(const std::string& strPath)
 {
   std::string path = CLegacyPathTranslation::TranslateMusicDbPath(strPath);
-  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
 
-  if (!pNode.get())
+  if (!pNode)
     return NODE_TYPE_NONE;
 
   return pNode->GetChildType();
@@ -83,9 +111,9 @@ NODE_TYPE CMusicDatabaseDirectory::GetDirectoryChildType(const std::string& strP
 NODE_TYPE CMusicDatabaseDirectory::GetDirectoryType(const std::string& strPath)
 {
   std::string path = CLegacyPathTranslation::TranslateMusicDbPath(strPath);
-  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
 
-  if (!pNode.get())
+  if (!pNode)
     return NODE_TYPE_NONE;
 
   return pNode->GetType();
@@ -94,9 +122,9 @@ NODE_TYPE CMusicDatabaseDirectory::GetDirectoryType(const std::string& strPath)
 NODE_TYPE CMusicDatabaseDirectory::GetDirectoryParentType(const std::string& strPath)
 {
   std::string path = CLegacyPathTranslation::TranslateMusicDbPath(strPath);
-  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
 
-  if (!pNode.get())
+  if (!pNode)
     return NODE_TYPE_NONE;
 
   CDirectoryNode* pParentNode=pNode->GetParent();
@@ -105,6 +133,18 @@ NODE_TYPE CMusicDatabaseDirectory::GetDirectoryParentType(const std::string& str
     return NODE_TYPE_NONE;
 
   return pParentNode->GetChildType();
+}
+
+bool CMusicDatabaseDirectory::GetDirectoryNodeInfo(const std::string& strPath,
+                                                   MUSICDATABASEDIRECTORY::NODE_TYPE& type,
+                                                   MUSICDATABASEDIRECTORY::NODE_TYPE& childtype,
+                                                   MUSICDATABASEDIRECTORY::CQueryParams& params)
+{
+  std::string path = CLegacyPathTranslation::TranslateMusicDbPath(strPath);
+  if (!CDirectoryNode::GetNodeInfo(path, type, childtype, params))
+    return false;
+
+  return true;
 }
 
 bool CMusicDatabaseDirectory::IsArtistDir(const std::string& strDirectory)
@@ -118,18 +158,18 @@ void CMusicDatabaseDirectory::ClearDirectoryCache(const std::string& strDirector
   std::string path = CLegacyPathTranslation::TranslateMusicDbPath(strDirectory);
   URIUtils::RemoveSlashAtEnd(path);
 
-  Crc32 crc;
-  crc.ComputeFromLowerCase(path);
+  uint32_t crc = Crc32::ComputeFromLowerCase(path);
 
-  std::string strFileName = StringUtils::Format("special://temp/%08x.fi", (unsigned __int32) crc);
+  std::string strFileName = StringUtils::Format("special://temp/archive_cache/{:08x}.fi", crc);
   CFile::Delete(strFileName);
 }
 
 bool CMusicDatabaseDirectory::IsAllItem(const std::string& strDirectory)
 {
-  //Last query parameter, ignoring any appended options, is -1
+  //Last query parameter, ignoring any appended options, is -1 or -2
   CURL url(strDirectory);
-  if (StringUtils::EndsWith(url.GetWithoutOptions(), "/-1/"))
+  if (StringUtils::EndsWith(url.GetWithoutOptions(), "/-1/") || // any albumid
+      StringUtils::EndsWith(url.GetWithoutOptions(), "/-1/-2/")) // any albumid + flattened
     return true;
   return false;
 }
@@ -139,8 +179,8 @@ bool CMusicDatabaseDirectory::GetLabel(const std::string& strDirectory, std::str
   strLabel = "";
 
   std::string path = CLegacyPathTranslation::TranslateMusicDbPath(strDirectory);
-  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
-  if (!pNode.get())
+  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  if (!pNode)
     return false;
 
   // first see if there's any filter criteria
@@ -181,6 +221,9 @@ bool CMusicDatabaseDirectory::GetLabel(const std::string& strDirectory, std::str
     case NODE_TYPE_GENRE:
       strLabel = g_localizeStrings.Get(135); // Genres
       break;
+    case NODE_TYPE_SOURCE:
+      strLabel = g_localizeStrings.Get(39030); // Sources
+      break;
     case NODE_TYPE_ROLE:
       strLabel = g_localizeStrings.Get(38033); // Roles
       break;
@@ -212,13 +255,7 @@ bool CMusicDatabaseDirectory::GetLabel(const std::string& strDirectory, std::str
       strLabel = g_localizeStrings.Get(10504); // Top 100 Songs
       break;
     case NODE_TYPE_YEAR:
-    case NODE_TYPE_YEAR_ALBUM:
-    case NODE_TYPE_YEAR_SONG:
       strLabel = g_localizeStrings.Get(652);  // Years
-      break;
-    case NODE_TYPE_ALBUM_COMPILATIONS:
-    case NODE_TYPE_ALBUM_COMPILATIONS_SONGS:
-      strLabel = g_localizeStrings.Get(521);
       break;
     case NODE_TYPE_OVERVIEW:
       strLabel = "";
@@ -238,19 +275,18 @@ bool CMusicDatabaseDirectory::ContainsSongs(const std::string &path)
   if (type == MUSICDATABASEDIRECTORY::NODE_TYPE_SINGLES) return true;
   if (type == MUSICDATABASEDIRECTORY::NODE_TYPE_ALBUM_RECENTLY_ADDED_SONGS) return true;
   if (type == MUSICDATABASEDIRECTORY::NODE_TYPE_ALBUM_RECENTLY_PLAYED_SONGS) return true;
-  if (type == MUSICDATABASEDIRECTORY::NODE_TYPE_ALBUM_COMPILATIONS_SONGS) return true;
   if (type == MUSICDATABASEDIRECTORY::NODE_TYPE_ALBUM_TOP100_SONGS) return true;
   if (type == MUSICDATABASEDIRECTORY::NODE_TYPE_SONG_TOP100) return true;
-  if (type == MUSICDATABASEDIRECTORY::NODE_TYPE_YEAR_SONG) return true;
+  if (type == MUSICDATABASEDIRECTORY::NODE_TYPE_DISC) return true;
   return false;
 }
 
 bool CMusicDatabaseDirectory::Exists(const CURL& url)
 {
   std::string path = CLegacyPathTranslation::TranslateMusicDbPath(url);
-  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
 
-  if (!pNode.get())
+  if (!pNode)
     return false;
 
   if (pNode->GetChildType() == MUSICDATABASEDIRECTORY::NODE_TYPE_NONE)
@@ -262,8 +298,8 @@ bool CMusicDatabaseDirectory::Exists(const CURL& url)
 bool CMusicDatabaseDirectory::CanCache(const std::string& strPath)
 {
   std::string path = CLegacyPathTranslation::TranslateMusicDbPath(strPath);
-  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
-  if (!pNode.get())
+  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  if (!pNode)
     return false;
   return pNode->CanCache();
 }
@@ -276,12 +312,13 @@ std::string CMusicDatabaseDirectory::GetIcon(const std::string &strDirectory)
       return "DefaultMusicArtists.png";
   case NODE_TYPE_GENRE:
       return "DefaultMusicGenres.png";
+  case NODE_TYPE_SOURCE:
+    return "DefaultMusicSources.png";
   case NODE_TYPE_ROLE:
     return "DefaultMusicRoles.png";
   case NODE_TYPE_TOP100:
       return "DefaultMusicTop100.png";
   case NODE_TYPE_ALBUM:
-  case NODE_TYPE_YEAR_ALBUM:
     return "DefaultMusicAlbums.png";
   case NODE_TYPE_ALBUM_RECENTLY_ADDED:
   case NODE_TYPE_ALBUM_RECENTLY_ADDED_SONGS:
@@ -291,8 +328,6 @@ std::string CMusicDatabaseDirectory::GetIcon(const std::string &strDirectory)
     return "DefaultMusicRecentlyPlayed.png";
   case NODE_TYPE_SINGLES:
   case NODE_TYPE_SONG:
-  case NODE_TYPE_YEAR_SONG:
-  case NODE_TYPE_ALBUM_COMPILATIONS_SONGS:
     return "DefaultMusicSongs.png";
   case NODE_TYPE_ALBUM_TOP100:
   case NODE_TYPE_ALBUM_TOP100_SONGS:
@@ -301,8 +336,6 @@ std::string CMusicDatabaseDirectory::GetIcon(const std::string &strDirectory)
     return "DefaultMusicTop100Songs.png";
   case NODE_TYPE_YEAR:
     return "DefaultMusicYears.png";
-  case NODE_TYPE_ALBUM_COMPILATIONS:
-    return "DefaultMusicCompilations.png";
   default:
     break;
   }

@@ -1,41 +1,33 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
+
+#include "XBDateTime.h"
+#include "utils/EmbeddedArt.h"
+#include "utils/Fanart.h"
+#include "utils/ISortable.h"
+#include "utils/ScraperUrl.h"
+#include "utils/StreamDetails.h"
+#include "video/Bookmark.h"
 
 #include <string>
 #include <vector>
-#include "XBDateTime.h"
-#include "utils/ScraperUrl.h"
-#include "utils/Fanart.h"
-#include "utils/ISortable.h"
-#include "utils/StreamDetails.h"
-#include "video/Bookmark.h"
 
 class CArchive;
 class TiXmlNode;
 class TiXmlElement;
 class CVariant;
 
+enum class VideoAssetType;
+
 struct SActorInfo
 {
-  SActorInfo() : order(-1) {};
   bool operator<(const SActorInfo &right) const
   {
     return order < right.order;
@@ -44,24 +36,25 @@ struct SActorInfo
   std::string strRole;
   CScraperUrl thumbUrl;
   std::string thumb;
-  int        order;
+  int        order = -1;
 };
 
 class CRating
 {
 public:
-  CRating(): rating(0.0f), votes(0) {}
-  CRating(float r): rating(r), votes(0) {}
+  CRating() = default;
+  explicit CRating(float r): rating(r) {}
   CRating(float r, int v): rating(r), votes(v) {}
-  float rating;
-  int votes;
+  float rating = 0.0f;
+  int votes = 0;
 };
 typedef std::map<std::string, CRating> RatingMap;
 
 class CVideoInfoTag : public IArchivable, public ISerializable, public ISortable
 {
 public:
-  CVideoInfoTag() { Reset(); };
+  CVideoInfoTag() { Reset(); }
+  virtual ~CVideoInfoTag() = default;
   void Reset();
   /* \brief Load information to a videoinfotag from an XML element
    There are three types of tags supported:
@@ -80,18 +73,19 @@ public:
    */
   bool Load(const TiXmlElement *element, bool append = false, bool prioritise = false);
   bool Save(TiXmlNode *node, const std::string &tag, bool savePathInfo = true, const TiXmlElement *additionalNode = NULL);
-  virtual void Archive(CArchive& ar);
-  virtual void Serialize(CVariant& value) const;
-  virtual void ToSortable(SortItem& sortable, Field field) const;
+  void Merge(CVideoInfoTag& other);
+  void Archive(CArchive& ar) override;
+  void Serialize(CVariant& value) const override;
+  void ToSortable(SortItem& sortable, Field field) const override;
   const CRating GetRating(std::string type = "") const;
   const std::string& GetDefaultRating() const;
   const std::string GetUniqueID(std::string type = "") const;
   const std::map<std::string, std::string>& GetUniqueIDs() const;
   const std::string& GetDefaultUniqueID() const;
-  const bool HasUniqueID() const;
-  const bool HasYear() const;
-  const int GetYear() const;
-  const bool HasPremiered() const;
+  bool HasUniqueID() const;
+  virtual bool HasYear() const;
+  virtual int GetYear() const;
+  bool HasPremiered() const;
   const CDateTime& GetPremiered() const;
   const CDateTime& GetFirstAired() const;
   const std::string GetCast(bool bIncludeRole = false) const;
@@ -135,6 +129,7 @@ public:
   void SetPlotOutline(std::string plotOutline);
   void SetTrailer(std::string trailer);
   void SetPlot(std::string plot);
+  std::string const& GetTitle() const;
   void SetTitle(std::string title);
   void SetSortTitle(std::string sortTitle);
   void SetPictureURL(CScraperUrl &pictureURL);
@@ -142,12 +137,12 @@ public:
   void SetRating(CRating rating, const std::string& type = "", bool def = false);
   void SetRating(float rating, const std::string& type = "", bool def = false);
   void RemoveRating(const std::string& type);
-  void SetRatings(RatingMap ratings);
+  void SetRatings(RatingMap ratings, const std::string& defaultRating = "");
   void SetVotes(int votes, const std::string& type = "");
   void SetUniqueIDs(std::map<std::string, std::string> uniqueIDs);
-  void SetPremiered(CDateTime premiered);
-  void SetPremieredFromDBDate(std::string premieredString);
-  void SetYear(int year);
+  void SetPremiered(const CDateTime& premiered);
+  void SetPremieredFromDBDate(const std::string& premieredString);
+  virtual void SetYear(int year);
   void SetArtist(std::vector<std::string> artist);
   void SetSet(std::string set);
   void SetSetOverview(std::string setOverview);
@@ -171,7 +166,7 @@ public:
 
   /*!
    * @brief Get this videos's play count.
-   * @return True the play count.
+   * @return the play count.
    */
   virtual int GetPlayCount() const;
 
@@ -189,14 +184,14 @@ public:
   virtual bool IncrementPlayCount();
 
   /*!
-  * @brief Reset playcount
-  */
+   * @brief Reset playcount
+   */
   virtual void ResetPlayCount();
 
   /*!
-  * @brief Check if the playcount is set
-  * @return True if play count value is set
-  */
+   * @brief Check if the playcount is set
+   * @return True if play count value is set
+   */
   virtual bool IsPlayCountSet() const;
 
   /*!
@@ -212,6 +207,136 @@ public:
    */
   virtual bool SetResumePoint(const CBookmark &resumePoint);
 
+  class CAssetInfo
+  {
+  public:
+    /*!
+     * @brief Clear all data.
+     */
+    void Clear();
+
+    /*!
+     * @brief Archive all data.
+     * @param ar The archive to write the data to / to read the data from.
+     */
+    void Archive(CArchive& ar);
+
+    /*!
+     * @brief Store all data to XML.
+     * @param movie The XML element to write the data to.
+     */
+    void Save(TiXmlNode* movie);
+
+    /*!
+     * @brief Restore all data from XML.
+     * @param movie The XML element containing the data.
+     */
+    void ParseNative(const TiXmlElement* movie);
+
+    /*!
+     * @brief Merge in all valid data from another asset info.
+     * @param other The other asset info.
+     */
+    void Merge(CAssetInfo& other);
+
+    /*!
+     * @brief Serialize all data.
+     * @param value The container to write the data to.
+     */
+    void Serialize(CVariant& value) const;
+
+    /*!
+     * @brief Get the video's asset title.
+     * @return The title or an empty string if the item has no video asset.
+     */
+    const std::string& GetTitle() const { return m_title; }
+
+    /*!
+     * @brief Set this videos's asset title.
+     * @param assetTitle The title.
+     */
+    void SetTitle(const std::string& assetTitle);
+
+    /*!
+     * @brief Get the video's asset id.
+     * @return The id or -1 if the item has no video asset.
+     */
+    int GetId() const { return m_id; }
+
+    /*!
+     * @brief Set this videos's asset id.
+     * @param assetId The id.
+     */
+    void SetId(int assetId);
+
+    /*!
+     * @brief Get the video's asset type.
+     * @return The type or VideoAssetType::UNKNOWN if the item has no video asset.
+     */
+    VideoAssetType GetType() const { return m_type; }
+
+    /*!
+     * @brief Set this videos's asset type.
+     * @param assetType The type.
+     */
+    void SetType(VideoAssetType assetType);
+
+  private:
+    std::string m_title;
+    int m_id{-1};
+    VideoAssetType m_type{-1};
+  };
+
+  /*!
+   * @brief Get the video's asset info.
+   * @return The info.
+   */
+  const CAssetInfo& GetAssetInfo() const { return m_assetInfo; }
+  CAssetInfo& GetAssetInfo() { return m_assetInfo; }
+
+  /*!
+   * @brief Whether the item has multiple video versions.
+   * @return True if the item has multiple video versions, false otherwise.
+   */
+  bool HasVideoVersions() const { return m_hasVideoVersions; }
+
+  /*!
+   * @brief Set whether this video has video versions.
+   * @param hasVersion The versions flag.
+   */
+  void SetHasVideoVersions(bool hasVersions);
+
+  /*!
+   * @brief Whether the item has video extras.
+   * @return True if the item has video extras, false otherwise.
+   */
+  bool HasVideoExtras() const { return m_hasVideoExtras; }
+
+  /*!
+   * @brief Set whether this video has video extras.
+   * @param hasExtras The extras flag.
+   */
+  void SetHasVideoExtras(bool hasExtras);
+
+  /*!
+   * @brief Whether the item is the default video version.
+   * @return True if the item is the default version, false otherwise.
+   */
+  bool IsDefaultVideoVersion() const { return m_isDefaultVideoVersion; }
+
+  /*!
+   * @brief Set whether the item is the default version.
+   * @param isDefaultVideoVersion The default flag.
+   */
+  void SetIsDefaultVideoVersion(bool isDefaultVideoVersion);
+
+  /*!
+  * @brief Get whether the Set Overview should be updated. If an NFO contains a <name> but no <overview> then
+  * this allows the current Overview to be kept. Otherwise it is overwritten. Default is true - so if updated
+  * by a scraper the Overview will be overwritten.
+  */
+  bool GetUpdateSetOverview() const { return m_updateSetOverview; }
+
   /*!
    * @brief Set this videos's resume point.
    * @param timeInSeconds the time of the resume point
@@ -219,7 +344,7 @@ public:
    * @param playerState the player state
    * @return True if resume point was set successfully, false otherwise.
    */
-  bool SetResumePoint(double timeInSeconds, double totalTimeInSeconds, const std::string &playerState = "");
+  virtual bool SetResumePoint(double timeInSeconds, double totalTimeInSeconds, const std::string &playerState);
 
   std::string m_basePath; // the base path of the video, for folder-based lookups
   int m_parentPathID;      // the parent path id where the base path of the video lies
@@ -262,8 +387,8 @@ public:
   CDateTime m_lastPlayed;
   std::vector<std::string> m_showLink;
   std::map<int, std::string> m_namedSeasons;
-  int m_playCount;
   int m_iTop250;
+  int m_year;
   int m_iSeason;
   int m_iEpisode;
   int m_iIdUniqueID;
@@ -281,12 +406,14 @@ public:
   int m_iIdSeason;
   CFanart m_fanart;
   CStreamDetails m_streamDetails;
-  CBookmark m_resumePoint;
   CDateTime m_dateAdded;
   MediaType m_type;
-  int m_duration; ///< duration in seconds
   int m_relevance; // Used for actors' number of appearances
   int m_parsedDetails;
+  std::vector<EmbeddedArtInfo> m_coverArt; ///< art information
+
+  // TODO: cannot be private, because of 'struct SDbTableOffsets'
+  unsigned int m_duration; ///< duration in seconds
 
 private:
   /* \brief Parse our native XML format for video info.
@@ -301,10 +428,19 @@ private:
   std::string m_strDefaultRating;
   std::string m_strDefaultUniqueID;
   std::map<std::string, std::string> m_uniqueIDs;
-  std::string Trim(std::string &value);
-  std::vector<std::string> Trim(std::vector<std::string> &items);
+  std::string Trim(std::string &&value);
+  std::vector<std::string> Trim(std::vector<std::string> &&items);
 
+  int m_playCount;
+  CBookmark m_resumePoint;
   static const int PLAYCOUNT_NOT_SET = -1;
+
+  CAssetInfo m_assetInfo;
+  bool m_hasVideoVersions{false};
+  bool m_hasVideoExtras{false};
+  bool m_isDefaultVideoVersion{false};
+
+  bool m_updateSetOverview{true};
 };
 
 typedef std::vector<CVideoInfoTag> VECMOVIES;

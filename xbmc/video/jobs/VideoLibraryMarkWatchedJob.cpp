@@ -1,45 +1,36 @@
 /*
- *      Copyright (C) 2014 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2014-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <vector>
-
 #include "VideoLibraryMarkWatchedJob.h"
-#include "ServiceBroker.h"
+
 #include "FileItem.h"
+#include "ServiceBroker.h"
 #include "Util.h"
 #include "filesystem/Directory.h"
 #ifdef HAS_UPNP
 #include "network/upnp/UPnP.h"
 #endif
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
+#include "pvr/PVRManager.h"
+#include "pvr/recordings/PVRRecordings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/URIUtils.h"
 #include "video/VideoDatabase.h"
-#include "settings/SettingsComponent.h"
 
-CVideoLibraryMarkWatchedJob::CVideoLibraryMarkWatchedJob(const CFileItemPtr &item, bool mark)
-  : m_item(item),
-    m_mark(mark)
+#include <memory>
+#include <vector>
+
+CVideoLibraryMarkWatchedJob::CVideoLibraryMarkWatchedJob(const std::shared_ptr<CFileItem>& item,
+                                                         bool mark)
+  : m_item(item), m_mark(mark)
 { }
 
-CVideoLibraryMarkWatchedJob::~CVideoLibraryMarkWatchedJob()
-{ }
+CVideoLibraryMarkWatchedJob::~CVideoLibraryMarkWatchedJob() = default;
 
 bool CVideoLibraryMarkWatchedJob::operator==(const CJob* job) const
 {
@@ -55,11 +46,13 @@ bool CVideoLibraryMarkWatchedJob::operator==(const CJob* job) const
 
 bool CVideoLibraryMarkWatchedJob::Work(CVideoDatabase &db)
 {
-  if (!CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteDatabases())
+  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+
+  if (!profileManager->GetCurrentProfile().canWriteDatabases())
     return false;
 
   CFileItemList items;
-  items.Add(CFileItemPtr(new CFileItem(*m_item)));
+  items.Add(std::make_shared<CFileItem>(*m_item));
 
   if (m_item->m_bIsFolder)
     CUtil::GetRecursiveListing(m_item->GetPath(), items, "", XFILE::DIR_FLAG_NO_FILE_INFO);
@@ -68,13 +61,28 @@ bool CVideoLibraryMarkWatchedJob::Work(CVideoDatabase &db)
   for (int i = 0; i < items.Size(); i++)
   {
     CFileItemPtr item = items.Get(i);
-    if (item->HasVideoInfoTag() && m_mark == (item->GetVideoInfoTag()->m_playCount > 0))
+    if (item->HasVideoInfoTag() && m_mark == (item->GetVideoInfoTag()->GetPlayCount() > 0))
       continue;
 
 #ifdef HAS_UPNP
     if (URIUtils::IsUPnP(item->GetPath()) && UPNP::CUPnP::MarkWatched(*item, m_mark))
       continue;
 #endif
+
+    if (item->HasPVRRecordingInfoTag() &&
+        CServiceBroker::GetPVRManager().Recordings()->MarkWatched(item->GetPVRRecordingInfoTag(), m_mark))
+    {
+      CDateTime newLastPlayed;
+      if (m_mark)
+        newLastPlayed = db.IncrementPlayCount(*item);
+      else
+        newLastPlayed = db.SetPlayCount(*item, 0);
+
+      if (newLastPlayed.IsValid())
+        item->GetVideoInfoTag()->m_lastPlayed = newLastPlayed;
+
+      continue;
+    }
 
     markItems.push_back(item);
   }
@@ -86,18 +94,23 @@ bool CVideoLibraryMarkWatchedJob::Work(CVideoDatabase &db)
 
   for (std::vector<CFileItemPtr>::const_iterator iter = markItems.begin(); iter != markItems.end(); ++iter)
   {
-    CFileItemPtr item = *iter;
-    if (m_mark)
-    {
-      std::string path(item->GetPath());
-      if (item->HasVideoInfoTag())
-        path = item->GetVideoInfoTag()->GetPath();
+    const CFileItemPtr& item = *iter;
 
-      db.ClearBookMarksOfFile(path, CBookmark::RESUME);
-      db.IncrementPlayCount(*item);
-    }
+    std::string path(item->GetPath());
+    if (item->HasVideoInfoTag() && !item->GetVideoInfoTag()->GetPath().empty())
+      path = item->GetVideoInfoTag()->GetPath();
+
+    // With both mark as watched and unwatched we want the resume bookmarks to be reset
+    db.ClearBookMarksOfFile(path, CBookmark::RESUME);
+
+    CDateTime newLastPlayed;
+    if (m_mark)
+      newLastPlayed = db.IncrementPlayCount(*item);
     else
-      db.SetPlayCount(*item, 0);
+      newLastPlayed = db.SetPlayCount(*item, 0);
+
+    if (newLastPlayed.IsValid() && item->HasVideoInfoTag())
+      item->GetVideoInfoTag()->m_lastPlayed = newLastPlayed;
   }
 
   db.CommitTransaction();

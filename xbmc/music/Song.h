@@ -1,33 +1,24 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
+
 /*!
  \file Song.h
 \brief
 */
-#pragma once
 
-#include "utils/ISerializable.h"
-#include "XBDateTime.h"
-#include "music/EmbeddedArt.h"
-#include "music/tags/ReplayGain.h"
 #include "Artist.h"
+#include "XBDateTime.h"
+#include "music/tags/ReplayGain.h"
+#include "utils/EmbeddedArt.h"
+#include "utils/ISerializable.h"
+
 #include <map>
 #include <string>
 #include <vector>
@@ -43,7 +34,7 @@ class CVariant;
 class CGenre
 {
 public:
-  long idGenre;
+  int idGenre;
   std::string strGenre;
 };
 
@@ -54,15 +45,14 @@ class CFileItem;
  \brief Class to store and read song information from CMusicDatabase
  \sa CAlbum, CMusicDatabase
  */
-class CSong: public ISerializable
+class CSong final : public ISerializable
 {
 public:
   CSong() ;
-  CSong(CFileItem& item);
-  virtual ~CSong(){};
+  explicit CSong(CFileItem& item);
   void Clear() ;
   void MergeScrapedSong(const CSong& source, bool override);
-  virtual void Serialize(CVariant& value) const;
+  void Serialize(CVariant& value) const override;
 
   bool operator<(const CSong &song) const
   {
@@ -87,7 +77,7 @@ public:
   */
   const std::vector<std::string> GetMusicBrainzArtistID() const;
 
-  /*! \brief Get artist names from the artist decription string (if it exists)
+  /*! \brief Get artist names from the artist description string (if it exists)
   or concatenated from the vector of artistcredits objects
   \return artist names as a single string
   */
@@ -110,6 +100,11 @@ public:
   */
   const std::string GetAlbumArtistSort() const { return m_strAlbumArtistSort; }
 
+  /*! \brief Get disc subtitle string where one exists
+  \return disc subtitle as a single string
+  */
+  const std::string GetDiscSubtitle() const;
+
   /*! \brief Get composer sort name string
   \return composer sort name as a single string
   */
@@ -120,12 +115,12 @@ public:
     or ALBUMARTIST, e.g. COMPOSER or CONDUCTOR etc.
   \return a vector of all contributing artist names and their roles
   */
-  const VECMUSICROLES& GetContributors() const { return m_musicRoles; };
+  const VECMUSICROLES& GetContributors() const { return m_musicRoles; }
   //void AddArtistRole(const int &role, const std::string &artist);
   void AppendArtistRole(const CMusicRole& musicRole);
 
   /*! \brief Set album artist vector.
-   Album artist is held local to song until album created for inital processing only.
+   Album artist is held local to song until album created for initial processing only.
    Normalised album artist data belongs to album and is stored in album artist credits
   \param album artist names as a vector of strings
   */
@@ -152,7 +147,17 @@ public:
    */
   bool ArtMatches(const CSong &right) const;
 
-  long idSong;
+  /*! \brief Set artist credits using the arrays of tag values.
+    If strArtistSort (as from ARTISTSORT tag) is already set then individual
+    artist sort names are also processed.
+    \param names       String vector of artist names (as from ARTIST tag)
+    \param hints       String vector of artist name hints (as from ARTISTS tag)
+    \param mbids       String vector of artist Musicbrainz IDs (as from MUSICBRAINZARTISTID tag)
+  */
+  void SetArtistCredits(const std::vector<std::string>& names, const std::vector<std::string>& hints,
+    const std::vector<std::string>& mbids);
+
+  int idSong;
   int idAlbum;
   std::string strFileName;
   std::string strTitle;
@@ -162,7 +167,7 @@ public:
   std::string strAlbum;
   std::vector<std::string> genre;
   std::string strThumb;
-  MUSIC_INFO::EmbeddedArtInfo embeddedArt;
+  EmbeddedArtInfo embeddedArt;
   std::string strMusicBrainzTrackID;
   std::string strComment;
   std::string strMood;
@@ -172,15 +177,24 @@ public:
   int votes;
   int iTrack;
   int iDuration;
-  int iYear;
+  std::string strOrigReleaseDate;
+  std::string strReleaseDate;
+  std::string strDiscSubtitle;
   int iTimesPlayed;
   CDateTime lastPlayed;
-  CDateTime dateAdded;
+  CDateTime dateAdded; // File creation or modification time, or when tags (re-)scanned
+  CDateTime dateUpdated; // Time db record Last modified
+  CDateTime dateNew;  // Time db record created
   int iStartOffset;
   int iEndOffset;
   bool bCompilation;
+  int iBPM;
+  int iSampleRate;
+  int iBitRate;
+  int iChannels;
   std::string strRecordLabel; // Record label from tag for album processing by CMusicInfoScanner::FileItemsToAlbums
   std::string strAlbumType; // (Musicbrainz release type) album type from tag for album processing by CMusicInfoScanner::FileItemsToAlbums
+  std::string songVideoURL; // url to song video
 
   ReplayGain replayGain;
 private:
@@ -192,16 +206,16 @@ private:
 
 /*!
  \ingroup music
- \brief A map of CSong objects, used for CMusicDatabase
- */
-typedef std::map<std::string, CSong> MAPSONGS;
-
-/*!
- \ingroup music
  \brief A vector of CSong objects, used for CMusicDatabase
  \sa CMusicDatabase
  */
 typedef std::vector<CSong> VECSONGS;
+
+/*!
+ \ingroup music
+ \brief A map of a vector of CSong objects key by filename, used for CMusicDatabase
+ */
+typedef std::map<std::string, VECSONGS> MAPSONGS;
 
 /*!
  \ingroup music

@@ -1,21 +1,9 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "Bookmark.h"
@@ -29,18 +17,23 @@ void CBookmark::Reset()
 {
   episodeNumber = 0;
   seasonNumber = 0;
-  timeInSeconds = 0.0f;
-  totalTimeInSeconds = 0.0f;
+  timeInSeconds = 0.0;
+  totalTimeInSeconds = 0.0;
   partNumber = 0;
   type = STANDARD;
 }
 
 bool CBookmark::IsSet() const
 {
-  return totalTimeInSeconds > 0.0f;
+  return totalTimeInSeconds > 0.0;
 }
 
 bool CBookmark::IsPartWay() const
 {
-  return totalTimeInSeconds > 0.0f && timeInSeconds > 0.0f;
+  return totalTimeInSeconds > 0.0 && timeInSeconds > 0.0;
+}
+
+bool CBookmark::HasSavedPlayerState() const
+{
+  return !playerState.empty();
 }

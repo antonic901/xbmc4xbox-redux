@@ -1,48 +1,34 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "DirectoryNode.h"
-#include "utils/URIUtils.h"
-#include "QueryParams.h"
-#include "DirectoryNodeRoot.h"
-#include "DirectoryNodeOverview.h"
-#include "DirectoryNodeGrouped.h"
-#include "DirectoryNodeArtist.h"
+
 #include "DirectoryNodeAlbum.h"
-#include "DirectoryNodeSong.h"
 #include "DirectoryNodeAlbumRecentlyAdded.h"
 #include "DirectoryNodeAlbumRecentlyAddedSong.h"
 #include "DirectoryNodeAlbumRecentlyPlayed.h"
 #include "DirectoryNodeAlbumRecentlyPlayedSong.h"
-#include "DirectoryNodeTop100.h"
-#include "DirectoryNodeSongTop100.h"
 #include "DirectoryNodeAlbumTop100.h"
 #include "DirectoryNodeAlbumTop100Song.h"
-#include "DirectoryNodeAlbumCompilations.h"
-#include "DirectoryNodeAlbumCompilationsSongs.h"
-#include "DirectoryNodeYearAlbum.h"
-#include "DirectoryNodeYearSong.h"
+#include "DirectoryNodeArtist.h"
+#include "DirectoryNodeDiscs.h"
+#include "DirectoryNodeGrouped.h"
+#include "DirectoryNodeOverview.h"
+#include "DirectoryNodeRoot.h"
 #include "DirectoryNodeSingles.h"
-#include "URL.h"
+#include "DirectoryNodeSong.h"
+#include "DirectoryNodeSongTop100.h"
+#include "DirectoryNodeTop100.h"
 #include "FileItem.h"
+#include "QueryParams.h"
+#include "URL.h"
 #include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 
@@ -91,12 +77,28 @@ CDirectoryNode* CDirectoryNode::ParseURL(const std::string& strPath)
 //  returns the database ids of the path,
 void CDirectoryNode::GetDatabaseInfo(const std::string& strPath, CQueryParams& params)
 {
-  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(strPath));
+  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(strPath));
 
-  if (!pNode.get())
+  if (!pNode)
     return;
 
   pNode->CollectQueryParams(params);
+}
+
+bool CDirectoryNode::GetNodeInfo(const std::string& strPath,
+                                 NODE_TYPE& type,
+                                 NODE_TYPE& childtype,
+                                 CQueryParams& params)
+{
+  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(strPath));
+  if (!pNode)
+    return false;
+
+  type = pNode->GetType();
+  childtype = pNode->GetChildType();
+  pNode->CollectQueryParams(params);
+
+  return true;
 }
 
 //  Create a node object
@@ -109,9 +111,12 @@ CDirectoryNode* CDirectoryNode::CreateNode(NODE_TYPE Type, const std::string& st
   case NODE_TYPE_OVERVIEW:
     return new CDirectoryNodeOverview(strName, pParent);
   case NODE_TYPE_GENRE:
+  case NODE_TYPE_SOURCE:
   case NODE_TYPE_ROLE:
   case NODE_TYPE_YEAR:
     return new CDirectoryNodeGrouped(Type, strName, pParent);
+  case NODE_TYPE_DISC:
+    return new CDirectoryNodeDiscs(strName, pParent);
   case NODE_TYPE_ARTIST:
     return new CDirectoryNodeArtist(strName, pParent);
   case NODE_TYPE_ALBUM:
@@ -136,14 +141,6 @@ CDirectoryNode* CDirectoryNode::CreateNode(NODE_TYPE Type, const std::string& st
     return new CDirectoryNodeAlbumRecentlyPlayed(strName, pParent);
   case NODE_TYPE_ALBUM_RECENTLY_PLAYED_SONGS:
     return new CDirectoryNodeAlbumRecentlyPlayedSong(strName, pParent);
-  case NODE_TYPE_ALBUM_COMPILATIONS:
-    return new CDirectoryNodeAlbumCompilations(strName, pParent);
-  case NODE_TYPE_ALBUM_COMPILATIONS_SONGS:
-    return new CDirectoryNodeAlbumCompilationsSongs(strName, pParent);
-  case NODE_TYPE_YEAR_ALBUM:
-    return new CDirectoryNodeYearAlbum(strName, pParent);
-  case NODE_TYPE_YEAR_SONG:
-    return new CDirectoryNodeYearSong(strName, pParent);
   default:
     break;
   }
@@ -257,10 +254,10 @@ bool CDirectoryNode::GetChilds(CFileItemList& items)
   if (CanCache() && items.Load())
     return true;
 
-  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::CreateNode(GetChildType(), "", this));
+  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::CreateNode(GetChildType(), "", this));
 
   bool bSuccess=false;
-  if (pNode.get())
+  if (pNode)
   {
     pNode->m_options = m_options;
     bSuccess=pNode->GetContent(items);

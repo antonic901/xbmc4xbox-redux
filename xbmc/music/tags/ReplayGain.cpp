@@ -1,24 +1,15 @@
 /*
-*      Copyright (C) 2005-2013 Team XBMC
-*      http://xbmc.org
-*
-*  This Program is free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2, or (at your option)
-*  any later version.
-*
-*  This Program is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-*  GNU General Public License for more details.
-*
-*  You should have received a copy of the GNU General Public License
-*  along with XBMC; see the file COPYING.  If not, see
-*  <http://www.gnu.org/licenses/>.
-*
-*/
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
 
 #include "ReplayGain.h"
+
+#include "utils/StringUtils.h"
+
 #include <stdlib.h>
 
 static bool TypeIsValid(ReplayGain::Type aType)
@@ -74,15 +65,38 @@ void ReplayGain::SetPeak(Type aType, float aPeak)
     m_data[index(aType)].SetPeak(aPeak);
 }
 
+std::string ReplayGain::Get() const
+{
+  if (!Get(ALBUM).Valid() && !Get(TRACK).Valid())
+    return std::string();
+
+  std::string rg;
+  if (Get(ALBUM).Valid())
+    rg = StringUtils::Format("{:.3f},{:.3f},", Get(ALBUM).Gain(), Get(ALBUM).Peak());
+  else
+    rg = "-1000, -1,";
+  if (Get(TRACK).Valid())
+    rg += StringUtils::Format("{:.3f},{:.3f}", Get(TRACK).Gain(), Get(TRACK).Peak());
+  else
+    rg += "-1000, -1";
+  return rg;
+}
+
+void ReplayGain::Set(const std::string& strReplayGain)
+{
+  std::vector<std::string> values = StringUtils::Split(strReplayGain, ",");
+  if (values.size() == 4)
+  {
+    ParseGain(ALBUM, values[0]);
+    ParsePeak(ALBUM, values[1]);
+    ParseGain(TRACK, values[2]);
+    ParsePeak(TRACK, values[3]);
+  }
+}
+
 ///////////////////////////////////////////////////////////////
 // class ReplayGain::Info
 ///////////////////////////////////////////////////////////////
-
-ReplayGain::Info::Info()
-  : m_gain(REPLAY_GAIN_NO_GAIN)
-  , m_peak(REPLAY_GAIN_NO_PEAK)
-{
-}
 
 void ReplayGain::Info::SetGain(float aGain)
 {

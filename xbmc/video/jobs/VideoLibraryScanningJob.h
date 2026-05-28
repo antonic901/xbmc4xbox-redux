@@ -1,28 +1,17 @@
-#pragma once
 /*
- *      Copyright (C) 2014 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2014-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <string>
+#pragma once
 
 #include "video/VideoInfoScanner.h"
 #include "video/jobs/VideoLibraryJob.h"
+
+#include <string>
 
 /*!
  \brief Video library job implementation for scanning items.
@@ -41,19 +30,19 @@ public:
    \param[in] showProgress Whether to show a progress bar or not
    */
   CVideoLibraryScanningJob(const std::string& directory, bool scanAll = false, bool showProgress = true);
-  virtual ~CVideoLibraryScanningJob();
+  ~CVideoLibraryScanningJob() override;
 
   // specialization of CVideoLibraryJob
-  virtual bool CanBeCancelled() const { return true; }
-  virtual bool Cancel();
+  bool CanBeCancelled() const override { return true; }
+  bool Cancel() override;
 
   // specialization of CJob
-  virtual const char *GetType() const { return "VideoLibraryScanningJob"; }
-  virtual bool operator==(const CJob* job) const;
+  const char *GetType() const override { return "VideoLibraryScanningJob"; }
+  bool operator==(const CJob* job) const override;
 
 protected:
   // implementation of CVideoLibraryJob
-  virtual bool Work(CVideoDatabase &db);
+  bool Work(CVideoDatabase &db) override;
 
 private:
   VIDEO::CVideoInfoScanner m_scanner;

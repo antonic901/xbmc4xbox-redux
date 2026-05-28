@@ -1,31 +1,19 @@
-#pragma once
 /*
- *      Copyright (C) 2017 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2017-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <map>
-#include <set>
+#pragma once
 
-#include "FileItem.h"
 #include "settings/LibExportSettings.h"
 #include "threads/CriticalSection.h"
 #include "utils/JobManager.h"
+
+#include <map>
+#include <set>
 
 class CGUIDialogProgressBarHandle;
 class CMusicLibraryJob;
@@ -40,7 +28,7 @@ class CGUIDialogProgress;
 class CMusicLibraryQueue : protected CJobQueue
 {
 public:
-  ~CMusicLibraryQueue();
+  ~CMusicLibraryQueue() override;
 
   /*!
    \brief Gets the singleton instance of the music library queue.
@@ -53,6 +41,13 @@ public:
    \param[in] showDialog Show a progress dialog while (asynchronously) exporting, otherwise export in synchronous
   */
   void ExportLibrary(const CLibExportSettings& settings, bool showDialog = false);
+
+  /*!
+  \brief Enqueue a music library import job.
+  \param[in] xmlFile    xml file to import
+  \param[in] showDialog Show a progress dialog while (asynchronously) exporting, otherwise export in synchronous
+  */
+  void ImportLibrary(const std::string& xmlFile, bool showDialog = false);
 
   /*!
    \brief Enqueue a music library update job, scanning tags embedded in music files and optionally scraping additional data.
@@ -94,13 +89,6 @@ public:
   void CleanLibrary(bool showDialog = false);
 
   /*!
-   \brief Executes a library cleaning with a modal dialog.
-   However UI rendering of dialog is on same thread as the cleaning process, so mouse movement
-   is stilted and opportunities to cancel the process limited
-   */
-  void CleanLibraryModal();
-
-  /*!
    \brief Adds the given job to the queue.
    \param[in] job Music library job to be queued.
    */
@@ -124,7 +112,7 @@ public:
 
 protected:
   // implementation of IJobCallback
-  void OnJobComplete(unsigned int jobID, bool success, CJob *job);
+  void OnJobComplete(unsigned int jobID, bool success, CJob *job) override;
 
   /*!
    \brief Notifies all to refresh the current listings.
@@ -141,7 +129,6 @@ private:
   MusicLibraryJobMap m_jobs;
   CCriticalSection m_critical;
 
-  bool m_modal;
-  bool m_exporting;
-  bool m_cleaning;
+  bool m_modal = false;
+  bool m_cleaning = false;
 };

@@ -1,55 +1,39 @@
 /*
- *      Copyright (C) 2005-2018 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIDialogSongInfo.h"
+
+#include "GUIDialogMusicInfo.h"
+#include "GUIPassword.h"
+#include "GUIUserMessages.h"
+#include "ServiceBroker.h"
+#include "TextureCache.h"
+#include "Util.h"
 #include "dialogs/GUIDialogBusy.h"
 #include "dialogs/GUIDialogFileBrowser.h"
-#include "dialogs/GUIDialogSelect.h"
-#include "filesystem/File.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
-#include "GUIDialogMusicInfo.h"
-#include "GUIUserMessages.h"
-#include "guilib/WindowIDs.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
-#include "music/Album.h"
 #include "music/MusicDatabase.h"
 #include "music/MusicUtils.h"
 #include "music/tags/MusicInfoTag.h"
 #include "music/windows/GUIWindowMusicBase.h"
-#include "profiles/ProfilesManager.h"
-#include "ServiceBroker.h"
+#include "profiles/ProfileManager.h"
 #include "settings/MediaSourceSettings.h"
-#include "storage/MediaManager.h"
-#include "TextureCache.h"
-#include "Util.h"
 #include "settings/SettingsComponent.h"
-
-#include <boost/make_shared.hpp>
-
-using namespace XFILE;
+#include "storage/MediaManager.h"
+#include "utils/FileUtils.h"
 
 #define CONTROL_BTN_REFRESH       6
 #define CONTROL_USERRATING        7
+#define CONTROL_BTN_PLAY 8
 #define CONTROL_BTN_GET_THUMB     10
 #define CONTROL_ALBUMINFO         12
 
@@ -62,12 +46,12 @@ using namespace XFILE;
 class CGetSongInfoJob : public CJob
 {
 public:
-  ~CGetSongInfoJob(void) { };
+  ~CGetSongInfoJob(void) override = default;
 
   // Fetch full song information including art types list
-  bool DoWork()
+  bool DoWork() override
   {
-    CGUIDialogSongInfo *dialog = static_cast<CGUIDialogSongInfo*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_SONG_INFO));
+    CGUIDialogSongInfo *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSongInfo>(WINDOW_DIALOG_SONG_INFO);
     if (!dialog)
       return false;
     if (dialog->IsCancelled())
@@ -101,8 +85,9 @@ public:
       return false;
 
     // Load song art.
-    // For songs in library this includes related album and artist(s) art,
-    // otherwise just embedded or cached thumb is fetched.
+    // For songs in library this includes related album and artist(s) art.
+    // Also fetches artist art for non library songs when artist can be found
+    // uniquely by name, otherwise just embedded or cached thumb is fetched.
     CMusicThumbLoader loader;
     loader.LoadItem(m_song.get());
     if (dialog->IsCancelled())
@@ -116,21 +101,6 @@ public:
     if (dialog->IsCancelled())
       return false;
 
-    // Fetch artist art for non db songs when artist can be found uniquely by name
-    if (!m_song->IsMusicDb() && m_song->HasMusicInfoTag() && !m_song->GetMusicInfoTag()->GetArtist().empty())
-    {
-      CMusicDatabase db;
-      db.Open();
-      int idArtist = db.GetArtistByName(m_song->GetMusicInfoTag()->GetArtist()[0]);
-      if (idArtist > 0)
-      {
-        std::map<std::string, std::string> art;
-        if (db.GetArtForItem(idArtist, MediaTypeArtist, art))
-          m_song->AppendArt(art, "artist");
-      }
-      db.Close();
-    }
-
     // Tell waiting SongInfoDialog that job is complete
     dialog->FetchComplete();
 
@@ -141,7 +111,6 @@ public:
 CGUIDialogSongInfo::CGUIDialogSongInfo(void)
     : CGUIDialog(WINDOW_DIALOG_SONG_INFO, "DialogMusicInfo.xml")
     , m_song(new CFileItem)
-    , m_albumId(-1)
 {
   m_cancelled = false;
   m_hasUpdatedUserrating = false;
@@ -150,9 +119,7 @@ CGUIDialogSongInfo::CGUIDialogSongInfo(void)
   m_loadType = KEEP_IN_MEMORY;
 }
 
-CGUIDialogSongInfo::~CGUIDialogSongInfo(void)
-{
-}
+CGUIDialogSongInfo::~CGUIDialogSongInfo(void) = default;
 
 bool CGUIDialogSongInfo::OnMessage(CGUIMessage& message)
 {
@@ -171,7 +138,7 @@ bool CGUIDialogSongInfo::OnMessage(CGUIMessage& message)
         // Send a message to all windows to tell them to update the fileitem
         // This communicates the rating change to the music lib window, current playlist and OSD.
         // The music lib window item is updated to but changes to the rating when it is the sort
-        // do not show on screen until refresh() that fetchs the list from scratch, sorts etc.
+        // do not show on screen until refresh() that fetches the list from scratch, sorts etc.
         CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_ITEM, 0, m_song);
         CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
       }
@@ -218,6 +185,12 @@ bool CGUIDialogSongInfo::OnMessage(CGUIMessage& message)
           return true;
         }
       }
+      else if (iControl == CONTROL_BTN_PLAY)
+      {
+        OnPlaySong(m_song);
+        return true;
+      }
+      return false;
     }
     break;
   }
@@ -272,7 +245,7 @@ void CGUIDialogSongInfo::OnInitWindow()
     CONTROL_ENABLE(CONTROL_USERRATING);
 
   // Disable the Choose Art button if the user isn't allowed it
-  const boost::shared_ptr<CProfilesManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
   CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_GET_THUMB,
     profileManager->GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser);
 
@@ -280,6 +253,7 @@ void CGUIDialogSongInfo::OnInitWindow()
   SET_CONTROL_LABEL(CONTROL_USERRATING, 38023);
   SET_CONTROL_LABEL(CONTROL_BTN_GET_THUMB, 13511);
   SET_CONTROL_LABEL(CONTROL_ALBUMINFO, 10523);
+  SET_CONTROL_LABEL(CONTROL_BTN_PLAY, 208);
 
   CGUIDialog::OnInitWindow();
 }
@@ -287,13 +261,12 @@ void CGUIDialogSongInfo::OnInitWindow()
 void CGUIDialogSongInfo::Update()
 {
   CFileItemList items;
-  for (VECMUSICROLES::const_iterator it =  m_song->GetMusicInfoTag()->GetContributors().begin(); it !=  m_song->GetMusicInfoTag()->GetContributors().end(); ++it)
+  for (const auto& contributor : m_song->GetMusicInfoTag()->GetContributors())
   {
-    const CMusicRole &contributor = *it;
-    CFileItemPtr item = boost::make_shared<CFileItem>(contributor.GetRoleDesc());
+    auto item = std::make_shared<CFileItem>(contributor.GetRoleDesc());
     item->SetLabel2(contributor.GetArtist());
-    item->GetMusicInfoTag()->SetDatabaseId(contributor.GetArtistId(), "artist");
-    items.Add(boost::move(item));
+    item->GetMusicInfoTag()->SetDatabaseId(contributor.GetArtistId(), MediaTypeArtist);
+    items.Add(std::move(item));
   }
   CGUIMessage message(GUI_MSG_LABEL_BIND, GetID(), CONTROL_LIST, 0, 0, &items);
   OnMessage(message);
@@ -315,9 +288,10 @@ bool CGUIDialogSongInfo::SetSong(CFileItem* item)
   m_event.Reset();
   m_cancelled = false;  // SetSong happens before win_init
   // In a separate job fetch song info and fill list of art types.
-  int jobid = CServiceBroker::GetJobManager()->AddJob(new CGetSongInfoJob(), nullptr, CJob::PRIORITY_LOW);
+  int jobid =
+      CServiceBroker::GetJobManager()->AddJob(new CGetSongInfoJob(), nullptr, CJob::PRIORITY_LOW);
 
-  // Wait to get all data before show, allowing user to to cancel if fetch is slow
+  // Wait to get all data before show, allowing user to cancel if fetch is slow
   if (!CGUIDialogBusy::WaitOnEvent(m_event, TIME_TO_BUSY_DIALOG))
   {
     // Cancel job still waiting in queue (unlikely)
@@ -363,7 +337,6 @@ void CGUIDialogSongInfo::OnGetArt()
   if (type.empty())
     return; // Cancelled
 
-
   CFileItemList items;
   CGUIListItem::ArtMap primeArt = m_song->GetArt(); // Song art without fallbacks
   bool bHasArt = m_song->HasArt(type);
@@ -407,7 +380,7 @@ void CGUIDialogSongInfo::OnGetArt()
       CFileItem item(m_song->GetMusicInfoTag()->GetURL(), false);
       localThumb = item.GetUserMusicThumb(true);
     }
-    if (CFile::Exists(localThumb))
+    if (CFileUtils::Exists(localThumb))
     {
       CFileItemPtr item(new CFileItem("thumb://Local", false));
       item->SetArt("thumb", localThumb);
@@ -418,9 +391,8 @@ void CGUIDialogSongInfo::OnGetArt()
 
   // Clear these local images from cache so user will see any recent
   // local file changes immediately
-  for (int i = 0; items.Size(); ++i)
+  for (auto& item : items)
   {
-    CFileItemPtr &item = items[i];
     std::string thumb(item->GetArt("thumb"));
     if (thumb.empty())
       continue;
@@ -466,7 +438,7 @@ void CGUIDialogSongInfo::OnGetArt()
       newArt = localThumb;
 //    else if (result == "thumb://Embedded")
 //      newArt = embeddedArt;
-    else if (CFile::Exists(result))
+    else if (CFileUtils::Exists(result))
       newArt = result;
     else // none
       newArt.clear();
@@ -489,9 +461,8 @@ void CGUIDialogSongInfo::OnGetArt()
     // Show any fallback art when song art removed
     if (newArt.empty() && m_song->HasArt(type))
       newArt = m_song->GetArt(type);
-    for (int i = 0; i < m_artTypeList.Size(); ++i)
+    for (const auto& artitem : m_artTypeList)
     {
-      const CFileItemPtr artitem = m_artTypeList[i];
       if (artitem->GetProperty("artType") == type)
       {
         artitem->SetArt("thumb", newArt);
@@ -529,8 +500,8 @@ void CGUIDialogSongInfo::ShowFor(CFileItem* pItem)
   if (!pItem->HasMusicInfoTag())
     return;
 
-  CGUIDialogSongInfo *dialog = static_cast<CGUIDialogSongInfo*>(CServiceBroker::GetGUI()->GetWindowManager().
-    GetWindow(WINDOW_DIALOG_SONG_INFO));
+  CGUIDialogSongInfo *dialog = CServiceBroker::GetGUI()->GetWindowManager().
+    GetWindow<CGUIDialogSongInfo>(WINDOW_DIALOG_SONG_INFO);
   if (dialog)
   {
     if (dialog->SetSong(pItem))  // Fetch full song info asynchronously
@@ -538,10 +509,16 @@ void CGUIDialogSongInfo::ShowFor(CFileItem* pItem)
       dialog->Open();
       if (dialog->HasUpdatedUserrating())
       {
-        CGUIWindowMusicBase *window = static_cast<CGUIWindowMusicBase*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_MUSIC_NAV));
+        auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIWindowMusicBase>(WINDOW_MUSIC_NAV);
         if (window)
           window->RefreshContent("songs");
       }
     }
   }
+}
+
+void CGUIDialogSongInfo::OnPlaySong(const std::shared_ptr<CFileItem>& item)
+{
+  Close(true);
+  MUSIC_UTILS::PlayItem(item, "");
 }
