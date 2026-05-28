@@ -1128,6 +1128,9 @@ bool CGUIFontTTF::FirstBegin()
 
 void CGUIFontTTF::LastEnd()
 {
+  if (m_texture)
+    return;
+
   LPDIRECT3DDEVICE8 m_pD3DDevice = CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice();
 
   m_pD3DDevice->End();
