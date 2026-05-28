@@ -58,7 +58,8 @@ CGUIButtonControl::CGUIButtonControl(const CGUIButtonControl& control)
     m_clickActions(control.m_clickActions),
     m_focusActions(control.m_focusActions),
     m_unfocusActions(control.m_unfocusActions),
-    m_bSelected(control.m_bSelected)
+    m_bSelected(control.m_bSelected),
+    m_labelMaxWidth(0)
 {
 }
 
