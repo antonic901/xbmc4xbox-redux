@@ -1,24 +1,13 @@
 /*
- *      Copyright (C) 2016 Team Kodi
- *      http://kodi.tv
+ *  Copyright (C) 2016-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Kodi; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "DirectoryNodeGrouped.h"
+
 #include "QueryParams.h"
 #include "video/VideoDatabase.h"
 #include "video/VideoDbUrl.h"
@@ -34,9 +23,10 @@ NODE_TYPE CDirectoryNodeGrouped::GetChildType() const
   CQueryParams params;
   CollectQueryParams(params);
 
-  if (params.GetContentType() == VIDEODB_CONTENT_MOVIES)
+  VideoDbContentType type = static_cast<VideoDbContentType>(params.GetContentType());
+  if (type == VideoDbContentType::MOVIES)
     return NODE_TYPE_TITLE_MOVIES;
-  if (params.GetContentType() == VIDEODB_CONTENT_MUSICVIDEOS)
+  if (type == VideoDbContentType::MUSICVIDEOS)
   {
     if (GetType() == NODE_TYPE_ACTOR)
       return NODE_TYPE_MUSICVIDEOS_ALBUM;
@@ -74,7 +64,9 @@ bool CDirectoryNodeGrouped::GetContent(CFileItemList& items) const
   if (!videoUrl.FromString(BuildPath()))
     return false;
 
-  return videodatabase.GetItems(videoUrl.ToString(), (VIDEODB_CONTENT_TYPE)params.GetContentType(), itemType, items);
+  return videodatabase.GetItems(videoUrl.ToString(),
+                                static_cast<VideoDbContentType>(params.GetContentType()), itemType,
+                                items);
 }
 
 std::string CDirectoryNodeGrouped::GetContentType() const
@@ -97,10 +89,13 @@ std::string CDirectoryNodeGrouped::GetContentType(const CQueryParams &params) co
       return "sets";
     case NODE_TYPE_TAGS:
       return "tags";
+    case NODE_TYPE_VIDEOVERSIONS:
+      return "videoversions";
     case NODE_TYPE_YEAR:
       return "years";
     case NODE_TYPE_ACTOR:
-      if ((VIDEODB_CONTENT_TYPE)params.GetContentType() == VIDEODB_CONTENT_MUSICVIDEOS)
+      if (static_cast<VideoDbContentType>(params.GetContentType()) ==
+          VideoDbContentType::MUSICVIDEOS)
         return "artists";
       else
         return "actors";

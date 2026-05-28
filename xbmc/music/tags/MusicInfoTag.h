@@ -1,51 +1,33 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
 
 class CSong;
 class CArtist;
 class CVariant;
 
-#include <stdint.h>
-#include <string>
-#include <vector>
-
 #include "ReplayGain.h"
 #include "XBDateTime.h"
 #include "music/Album.h"
-#include "music/Artist.h"
-#include "music/EmbeddedArt.h"
 #include "utils/IArchivable.h"
 #include "utils/ISerializable.h"
 #include "utils/ISortable.h"
 
+#include <string>
+#include <vector>
 
 namespace MUSIC_INFO
 {
-class CMusicInfoTag : public IArchivable, public ISerializable, public ISortable
+class CMusicInfoTag final : public IArchivable, public ISerializable, public ISortable
 {
 public:
   CMusicInfoTag(void);
-  CMusicInfoTag(const CMusicInfoTag& tag);
-  virtual ~CMusicInfoTag();
-  const CMusicInfoTag& operator =(const CMusicInfoTag& tag);
   bool operator !=(const CMusicInfoTag& tag) const;
   bool Loaded() const;
   const std::string& GetTitle() const;
@@ -63,12 +45,17 @@ public:
   int GetTrackNumber() const;
   int GetDiscNumber() const;
   int GetTrackAndDiscNumber() const;
+  int GetTotalDiscs() const;
   int GetDuration() const;  // may be set even if Loaded() returns false
   int GetYear() const;
+  const std::string& GetReleaseDate() const;
+  const std::string GetReleaseYear() const;
+  const std::string& GetOriginalDate() const;
+  const std::string GetOriginalYear() const;
   int GetDatabaseId() const;
   const std::string &GetType() const;
-
-  void GetReleaseDate(SYSTEMTIME& dateTime) const;
+  const std::string& GetDiscSubtitle() const;
+  int GetBPM() const;
   std::string GetYearString() const;
   const std::string& GetMusicBrainzTrackID() const;
   const std::vector<std::string>& GetMusicBrainzArtistID() const;
@@ -86,11 +73,19 @@ public:
   const CDateTime& GetLastPlayed() const;
   const CDateTime& GetDateAdded() const;
   bool  GetCompilation() const;
+  bool GetBoxset() const;
   float GetRating() const;
   int GetUserrating() const;
   int GetVotes() const;
   int GetListeners() const;
   int GetPlayCount() const;
+  int GetBitRate() const;
+  int GetNoOfChannels() const;
+  int GetSampleRate() const;
+  const std::string& GetAlbumReleaseStatus() const;
+  const std::string& GetStationName() const;
+  const std::string& GetStationArt() const;
+  const std::string& GetSongVideoURL() const;
   const EmbeddedArtInfo &GetCoverArtInfo() const;
   const ReplayGain& GetReplayGain() const;
   CAlbum::ReleaseType GetAlbumReleaseType() const;
@@ -108,11 +103,12 @@ public:
   void SetAlbumArtist(const std::vector<std::string>& albumArtists, bool FillDesc = false);
   void SetAlbumArtistDesc(const std::string& strAlbumArtistDesc);
   void SetAlbumArtistSort(const std::string& strAlbumArtistSort);
-  void SetGenre(const std::string& strGenre);
-  void SetGenre(const std::vector<std::string>& genres);
+  void SetGenre(const std::string& strGenre, bool bTrim = false);
+  void SetGenre(const std::vector<std::string>& genres, bool bTrim = false);
   void SetYear(int year);
-  void SetDatabaseId(long id, const std::string &type);
-  void SetReleaseDate(SYSTEMTIME& dateTime);
+  void SetOriginalDate(const std::string& strOriginalDate);
+  void SetReleaseDate(const std::string& strReleaseDate);
+  void SetDatabaseId(int id, const std::string &type);
   void SetTrackNumber(int iTrack);
   void SetDiscNumber(int iDiscNumber);
   void SetTrackAndDiscNumber(int iTrackAndDisc);
@@ -142,12 +138,27 @@ public:
   void SetLastPlayed(const std::string& strLastPlayed);
   void SetLastPlayed(const CDateTime& strLastPlayed);
   void SetDateAdded(const std::string& strDateAdded);
-  void SetDateAdded(const CDateTime& strDateAdded);
+  void SetDateAdded(const CDateTime& dateAdded);
+  void SetDateUpdated(const std::string& strDateUpdated);
+  void SetDateUpdated(const CDateTime& dateUpdated);
+  void SetDateNew(const std::string& strDateNew);
+  void SetDateNew(const CDateTime& dateNew);
   void SetCompilation(bool compilation);
+  void SetBoxset(bool boxset);
   void SetCoverArtInfo(size_t size, const std::string &mimeType);
   void SetReplayGain(const ReplayGain& aGain);
   void SetAlbumReleaseType(CAlbum::ReleaseType releaseType);
-  void SetType(const MediaType mediaType);
+  void SetType(const MediaType& mediaType);
+  void SetDiscSubtitle(const std::string& strDiscSubtitle);
+  void SetTotalDiscs(int iDiscTotal);
+  void SetBPM(int iBPM);
+  void SetBitRate(int bitrate);
+  void SetNoOfChannels(int channels);
+  void SetSampleRate(int samplerate);
+  void SetAlbumReleaseStatus(const std::string& strReleaseStatus);
+  void SetStationName(const std::string& strStationName); // name of online radio station
+  void SetStationArt(const std::string& strStationArt);
+  void SetSongVideoURL(const std::string& songVideoURL); // link to video of song
 
   /*! \brief Append a unique artist to the artist list
    Checks if we have this artist already added, and if not adds it to the songs artist list.
@@ -166,6 +177,8 @@ public:
    \param genre genre to add.
    */
   void AppendGenre(const std::string &genre);
+  void AddOriginalDate(const std::string& strDateYear);
+  void AddReleaseDate(const std::string& strDateYear, bool isMonth = false);
 
   void AddArtistRole(const std::string& Role, const std::string& strArtist);
   void AddArtistRole(const std::string& Role, const std::vector<std::string>& artists);
@@ -177,9 +190,9 @@ public:
   void SetContributors(const VECMUSICROLES& contributors);
   bool HasContributors() const { return !m_musicRoles.empty(); }
 
-  virtual void Archive(CArchive& ar);
-  virtual void Serialize(CVariant& ar) const;
-  virtual void ToSortable(SortItem& sortable, Field field) const;
+  void Archive(CArchive& ar) override;
+  void Serialize(CVariant& ar) const override;
+  void ToSortable(SortItem& sortable, Field field) const override;
 
   void Clear();
 
@@ -215,8 +228,13 @@ protected:
   std::string m_strRecordLabel;
   std::string m_strLyrics;
   std::string m_cuesheet;
+  std::string m_strDiscSubtitle;
+  std::string m_strReleaseDate; //ISO8601 date YYYY, YYYY-MM or YYYY-MM-DD
+  std::string m_strOriginalDate; //ISO8601 date YYYY, YYYY-MM or YYYY-MM-DD
   CDateTime m_lastPlayed;
+  CDateTime m_dateNew;
   CDateTime m_dateAdded;
+  CDateTime m_dateUpdated;
   bool m_bCompilation;
   int m_iDuration;
   int m_iTrack;     // consists of the disk number in the high 16 bits, the track number in the low 16bits
@@ -229,8 +247,17 @@ protected:
   int m_listeners;
   int m_iTimesPlayed;
   int m_iAlbumId;
-  SYSTEMTIME m_dwReleaseDate;
+  int m_iDiscTotal;
+  bool m_bBoxset;
+  int m_iBPM;
   CAlbum::ReleaseType m_albumReleaseType;
+  std::string m_strReleaseStatus;
+  int m_samplerate;
+  int m_channels;
+  int m_bitrate;
+  std::string m_stationName;
+  std::string m_stationArt; // Used to fetch thumb URL for Shoutcasts
+  std::string m_songVideoURL; // link to a video for a song
 
   EmbeddedArtInfo m_coverArt; ///< art information
 

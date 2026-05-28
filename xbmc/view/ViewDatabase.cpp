@@ -1,21 +1,9 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "ViewDatabase.h"
@@ -24,7 +12,6 @@
 
 #include "dbwrappers/dataset.h"
 #include "SortFileItem.h"
-#include "system.h"
 #include "utils/LegacyPathTranslation.h"
 #include "utils/log.h"
 #include "utils/SortUtils.h"
@@ -33,13 +20,11 @@
 #include "view/ViewState.h"
 
 #ifdef TARGET_POSIX
-#include "linux/ConvUtils.h" // GetLastError()
+#include "platform/posix/ConvUtils.h"
 #endif
-CViewDatabase::CViewDatabase(void)
-{ }
+CViewDatabase::CViewDatabase(void) = default;
 
-CViewDatabase::~CViewDatabase(void)
-{ }
+CViewDatabase::~CViewDatabase(void) = default;
 
 bool CViewDatabase::Open()
 {
@@ -62,7 +47,7 @@ void CViewDatabase::CreateTables()
 
 void CViewDatabase::CreateAnalytics()
 {
-  CLog::Log(LOGINFO, "%s - creating indicies", __FUNCTION__);
+  CLog::Log(LOGINFO, "{} - creating indices", __FUNCTION__);
   m_pDS->exec("CREATE INDEX idxViews ON view(path)");
   m_pDS->exec("CREATE INDEX idxViewsWindow ON view(window)");
 }
@@ -87,7 +72,7 @@ void CViewDatabase::UpdateTables(int version)
           path = CLegacyPathTranslation::TranslateVideoDbPath(path);
 
         if (!StringUtils::EqualsNoCase(path, originalPath))
-          paths.push_back(std::make_pair(m_pDS->fv(0).get_asInt(), path));
+          paths.emplace_back(m_pDS->fv(0).get_asInt(), path);
         m_pDS->next();
       }
       m_pDS->close();
@@ -99,8 +84,7 @@ void CViewDatabase::UpdateTables(int version)
   if (version < 6)
   {
     // convert the "path" table
-    m_pDS->exec("CREATE TABLE tmp_view AS SELECT * FROM view");
-    m_pDS->exec("DROP TABLE view");
+    m_pDS->exec("ALTER TABLE view RENAME TO tmp_view");
 
     m_pDS->exec("CREATE TABLE view ("
                 "idView integer primary key,"
@@ -132,8 +116,10 @@ bool CViewDatabase::GetViewState(const std::string &path, int window, CViewState
 {
   try
   {
-    if (NULL == m_pDB.get()) return false;
-    if (NULL == m_pDS.get()) return false;
+    if (nullptr == m_pDB)
+      return false;
+    if (nullptr == m_pDS)
+      return false;
 
     std::string path1(path);
     URIUtils::AddSlashAtEnd(path1);
@@ -159,7 +145,7 @@ bool CViewDatabase::GetViewState(const std::string &path, int window, CViewState
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "%s, failed on path '%s'", __FUNCTION__, path.c_str());
+    CLog::Log(LOGERROR, "{}, failed on path '{}'", __FUNCTION__, path);
   }
   return false;
 }
@@ -168,8 +154,10 @@ bool CViewDatabase::SetViewState(const std::string &path, int window, const CVie
 {
   try
   {
-    if (NULL == m_pDB.get()) return false;
-    if (NULL == m_pDS.get()) return false;
+    if (nullptr == m_pDB)
+      return false;
+    if (nullptr == m_pDS)
+      return false;
 
     std::string path1(path);
     URIUtils::AddSlashAtEnd(path1);
@@ -195,7 +183,7 @@ bool CViewDatabase::SetViewState(const std::string &path, int window, const CVie
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "%s failed on path '%s'", __FUNCTION__, path.c_str());
+    CLog::Log(LOGERROR, "{} failed on path '{}'", __FUNCTION__, path);
   }
   return true;
 }
@@ -204,15 +192,17 @@ bool CViewDatabase::ClearViewStates(int windowID)
 {
   try
   {
-    if (NULL == m_pDB.get()) return false;
-    if (NULL == m_pDS.get()) return false;
+    if (nullptr == m_pDB)
+      return false;
+    if (nullptr == m_pDS)
+      return false;
 
     std::string sql = PrepareSQL("delete from view where window = %i", windowID);
     m_pDS->exec(sql);
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "%s failed on window '%i'", __FUNCTION__, windowID);
+    CLog::Log(LOGERROR, "{} failed on window '{}'", __FUNCTION__, windowID);
   }
   return true;
 }

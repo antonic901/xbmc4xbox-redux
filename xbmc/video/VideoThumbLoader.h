@@ -1,79 +1,38 @@
-#pragma once
 /*
- *      Copyright (C) 2012-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2012-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
+
+#include "FileItem.h"
+#include "ThumbLoader.h"
 
 #include <map>
 #include <vector>
-#include "ThumbLoader.h"
-#include "utils/JobManager.h"
-#include "FileItem.h"
 
 class CStreamDetails;
 class CVideoDatabase;
+class EmbeddedArt;
 
-/*!
- \ingroup thumbs,jobs
- \brief Thumb extractor job class
+using ArtMap = std::map<std::string, std::string>;
+using ArtCache = std::map<std::pair<MediaType, int>, ArtMap>;
 
- Used by the CVideoThumbLoader to perform asynchronous generation of thumbs
-
- \sa CVideoThumbLoader and CJob
- */
-class CThumbExtractor : public CJob
-{
-public:
-  CThumbExtractor(const CFileItem& item, const std::string& listpath, bool thumb, const std::string& strTarget="", int64_t pos = -1, bool fillStreamDetails = true);
-  virtual ~CThumbExtractor();
-
-  /*!
-   \brief Work function that extracts thumb.
-   */
-  virtual bool DoWork();
-
-  virtual const char* GetType() const
-  {
-    return kJobTypeMediaFlags;
-  }
-
-  virtual bool operator==(const CJob* job) const;
-
-  std::string m_target; ///< thumbpath
-  std::string m_listpath; ///< path used in fileitem list
-  CFileItem  m_item;
-  bool       m_thumb; ///< extract thumb?
-  int64_t    m_pos; ///< position to extract thumb from
-  bool m_fillStreamDetails; ///< fill in stream details?
-};
-
-class CVideoThumbLoader : public CThumbLoader, public CJobQueue
+class CVideoThumbLoader : public CThumbLoader
 {
 public:
   CVideoThumbLoader();
-  virtual ~CVideoThumbLoader();
+  ~CVideoThumbLoader() override;
 
-  virtual void OnLoaderStart();
-  virtual void OnLoaderFinish();
+  void OnLoaderStart() override;
+  void OnLoaderFinish() override;
 
-  virtual bool LoadItem(CFileItem* pItem);
-  virtual bool LoadItemCached(CFileItem* pItem);
-  virtual bool LoadItemLookup(CFileItem* pItem);
+  bool LoadItem(CFileItem* pItem) override;
+  bool LoadItemCached(CFileItem* pItem) override;
+  bool LoadItemLookup(CFileItem* pItem) override;
 
   /*! \brief Fill the thumb of a video item
    First uses a cached thumb from a previous run, then checks for a local thumb
@@ -98,6 +57,10 @@ public:
    */
   static std::vector<std::string> GetArtTypes(const std::string &type);
 
+  static bool IsValidArtType(const std::string& potentialArtType);
+
+  static bool IsArtTypeInWhitelist(const std::string& artType, const std::vector<std::string>& whitelist, bool exact);
+
   /*! \brief helper function to retrieve a thumb URL for embedded video thumbs
    \param item a video CFileItem.
    \return a URL for the embedded thumb.
@@ -108,33 +71,17 @@ public:
    \param item a video CFileItem
    \return true if we fill art, false otherwise
    */
- virtual bool FillLibraryArt(CFileItem &item);
-
-  /*!
-   \brief Callback from CThumbExtractor on completion of a generated image
-
-   Performs the callbacks and updates the GUI.
-
-   \sa CImageLoader, IJobCallback
-   */
-  virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
-
-  /*! \brief set the artwork map for an item
-   In addition, sets the standard fallbacks.
-   \param item the item on which to set art.
-   \param artwork the artwork map.
-   */
-  static void SetArt(CFileItem &item, const std::map<std::string, std::string> &artwork);
+ bool FillLibraryArt(CFileItem &item) override;
 
 protected:
   CVideoDatabase *m_videoDatabase;
-  typedef std::map<int, std::map<std::string, std::string> > ArtCache;
-  ArtCache m_showArt;
-  ArtCache m_seasonArt;
+  ArtCache m_artCache;
 
   /*! \brief Tries to detect missing data/info from a file and adds those
    \param item The CFileItem to process
    \return void
    */
   void DetectAndAddMissingItemData(CFileItem &item);
+
+  const ArtMap& GetArtFromCache(const std::string &mediaType, const int id);
 };

@@ -1,29 +1,20 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
+
 #include "InfoScanner.h"
 #include "MusicAlbumInfo.h"
 #include "MusicInfoScraper.h"
 #include "music/MusicDatabase.h"
 #include "threads/IRunnable.h"
 #include "threads/Thread.h"
+#include "utils/ScraperUrl.h"
 
 class CAlbum;
 class CArtist;
@@ -45,7 +36,7 @@ public:
                     SCAN_ALBUMS     = 1 << 4 };
 
   CMusicInfoScanner();
-  virtual ~CMusicInfoScanner();
+  ~CMusicInfoScanner() override;
 
   void Start(const std::string& strDirectory, int flags);
   void FetchAlbumInfo(const std::string& strDirectory, bool refresh = false);
@@ -86,7 +77,8 @@ public:
 
 protected:
   virtual void Process();
-  bool DoScan(const std::string& strDirectory);
+  bool DoScan(const std::string& strDirectory) override;
+
 
   /*! \brief Find art for albums
    Based on the albums in the folder, finds whether we have unique album art
@@ -156,52 +148,67 @@ protected:
   /*! \brief Get the types of art for an artist or album that are to be
   automatically fetched from local files during scanning
   \param mediaType [in] artist or album
+  \param iArtLevel [in] art level
   \return vector of art types that are to be fetched during scanning
   */
-  std::vector<std::string> GetArtTypesToScan(const MediaType& mediaType);
+  std::vector<CVariant> GetArtWhitelist(const MediaType& mediaType, int iArtLevel);
 
-  /*! \brief Get the types of art for an artist or album that can be
-   automatically found during scanning, and are not in the provided set of art
-   \param mediaType [in] artist or album
-   \param art [in] set of art type and file location (URL or path) pairs
-   \return vector of art types that are missing from the set
-   */
-  std::vector<std::string> GetMissingArtTypes(const MediaType& mediaType, const std::map<std::string, std::string>& art);
+  /*! \brief Add extra local artwork for albums and artists
+  This common utility scans the given folder for local (non-thumb) art.
+  The art types checked are determined by whitelist and usealllocalart settings.
+  \param art [in/out] map of art type and file location (URL or path) pairs
+  \param mediaType [in] artist or album
+  \param mediaName [in] artist or album name that may be stripped from image file names
+  \param artfolder [in] path of folder containing local image files
+  \return true when art is added
+  */
+  bool AddLocalArtwork(std::map<std::string, std::string>& art,
+                       const std::string& mediaType,
+                       const std::string& mediaName,
+                       const std::string& artfolder,
+                       int discnum = 0);
 
-  /*! \brief Set art for an artist
-  Checks for the missing types of art in the given folder. If none is found
-  there then it tries to use the first available art of that type from those
-  listed in the artist structure. Art found is saved in the artist structure
-  and written to the music database. The images found are cached.
+  /*! \brief Add extra remote artwork for albums and artists
+  This common utility fills the gaps in artwork using the first available art of each type from the
+  possible art URL results of previous scraping.
+  The art types applied are determined by whitelist and usealllocalart settings.
+  \param art [in/out] map of art type and file location (URL or path) pairs
+  \param mediaType [in] artist or album
+  \param thumbURL [in] URLs for potential remote artwork (provided by scrapers)
+  \return true when art is added
+  */
+  bool AddRemoteArtwork(std::map<std::string, std::string>& art,
+                        const std::string& mediaType,
+                        const CScraperUrl& thumbURL);
+
+  /*! \brief Add art for an artist
+  This scans the given folder for local art and/or applies the first available art of each type
+  from the possible art URLs previously scraped. Art is added to any already stored by previous
+  scanning etc.The art types processed are determined by whitelist and other art settings.
+  When usealllocalart is enabled then all local image files are applied as art (providing name is
+  valid for an art type), and then the URL list of remote art is checked adding the first available
+  image of each art type not yet in the art map.
+  Art found is saved in the album structure and the music database. The images found are cached.
   \param artist [in/out] an artist, the art is set
-  \param missing [in] vector of art types that are missing
   \param artfolder [in] path of the location to search for local art files
   \return true when art is added
   */
-  bool SetArtistArtwork(CArtist& artist, const std::vector<std::string>& missing, const std::string& artfolder);
+  bool AddArtistArtwork(CArtist& artist, const std::string& artfolder);
 
-  /*! \brief Set art for an album
-  Checks for the missing types of art in the given folder. If none is found
-  there then it tries to use the first available art of that type from those
-  listed in the album structure. Art found is saved in the album structure
-  and written to the music database. The images found are cached.
+  /*! \brief Add art for an album
+  This scans the album folder, and any disc set subfolders, for local art and/or applies the first
+  available art of each type from the possible art URLs previously scraped. Only those subfolders
+  beneath the album folder containing music files tagged with same unique disc number are scanned.
+  Art is added to any already stored by previous scanning, only "thumb" is optionally replaced.
+  The art types processed are determined by whitelist and other art settings. When usealllocalart is
+  enabled then all local image files are applied as art (providing name is valid for an art type),
+  and then the URL list of remote art is checked adding the first available image of each art type
+  not yet in the art map.
+  Art found is saved in the album structure and the music database. The images found are cached.
   \param artist [in/out] an album, the art is set
-  \param missing [in] vector of art types that are missing
-  \param artfolder [in] path of the location to search for local art files
   \return true when art is added
   */
-  bool SetAlbumArtwork(CAlbum& album, std::vector<std::string>& missing, const std::string& artfolder);
-
-  /*! \brief Set art for an album with local art from disc set subfolders
-  When we have a true disc set - subfolders beneath the album folder AND the
-  music files in each sub folder tagged with same unique - this checks for the
-  all types of art in the given subfolders.
-  Art found is saved in the album structure and written to the music database.
-  The images found are cached.
-  \param artist [in/out] an album, the art is modified
-  \param paths [in] a set of pairs of disc subfolder path and disc number
-  */
-  void SetDiscSetArtwork(CAlbum& album, const std::vector<std::pair<std::string, int> >& paths);
+  bool AddAlbumArtwork(CAlbum& album);
 
   /*! \brief Scan in the ID3/Ogg/FLAC tags for a bunch of FileItems
    Given a list of FileItems, scan in the tags for those FileItems
@@ -225,9 +232,8 @@ protected:
    */
   INFO_RET ScanTags(const CFileItemList& items, CFileItemList& scannedItems);
   int GetPathHash(const CFileItemList &items, std::string &hash);
-  void GetAlbumArtwork(long id, const CAlbum &artist);
 
-  virtual void Run();
+  void Run() override;
   int CountFiles(const CFileItemList& items, bool recursive);
   int CountFilesRecursively(const std::string& strPath);
 
@@ -245,8 +251,9 @@ protected:
   int m_currentItem;
   int m_itemCount;
   bool m_bStop;
-  bool m_needsCleanup;
-  int m_scanType; // 0 - load from files, 1 - albums, 2 - artists
+  bool m_needsCleanup = false;
+  int m_scanType = 0; // 0 - load from files, 1 - albums, 2 - artists
+  int m_idSourcePath;
   CMusicDatabase m_musicDatabase;
 
   std::set<int> m_albumsAdded;

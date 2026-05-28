@@ -1,66 +1,43 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "windows/GUIMediaWindow.h"
-#include "video/VideoDatabase.h"
-#include "PlayListPlayer.h"
-#include "video/VideoThumbLoader.h"
+#pragma once
 
-enum VideoSelectAction
+#include "playlists/PlayListTypes.h"
+#include "video/VideoDatabase.h"
+#include "video/VideoThumbLoader.h"
+#include "video/guilib/VideoAction.h"
+#include "windows/GUIMediaWindow.h"
+
+namespace
 {
-  SELECT_ACTION_CHOOSE          = 0,
-  SELECT_ACTION_PLAY_OR_RESUME,
-  SELECT_ACTION_RESUME,
-  SELECT_ACTION_INFO,
-  SELECT_ACTION_MORE,
-  SELECT_ACTION_PLAY,
-  SELECT_ACTION_PLAYPART
-};
+class CVideoSelectActionProcessor;
+class CVideoPlayActionProcessor;
+} // unnamed namespace
 
 class CGUIWindowVideoBase : public CGUIMediaWindow, public IBackgroundLoaderObserver
 {
+  friend class ::CVideoSelectActionProcessor;
+  friend class ::CVideoPlayActionProcessor;
+
 public:
   CGUIWindowVideoBase(int id, const std::string &xmlFile);
-  virtual ~CGUIWindowVideoBase(void);
-  virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
+  ~CGUIWindowVideoBase(void) override;
+  bool OnMessage(CGUIMessage& message) override;
+  bool OnAction(const CAction &action) override;
 
-  void PlayMovie(const CFileItem *item, const std::string &player = "");
-  static void GetResumeItemOffset(const CFileItem *item, int& startoffset, int& partNumber);
-  static bool HasResumeItemOffset(const CFileItem *item);
-
-  void AddToDatabase(int iItem);
-  virtual void OnItemInfo(const CFileItem& fileItem, ADDON::ScraperPtr& scraper);
-
-
-  /*! \brief Show the resume menu for this item (if it has a resume bookmark)
-   If a resume bookmark is found, we set the item's m_lStartOffset to STARTOFFSET_RESUME.
-   Note that we do this in favour of setting the resume point, as we need additional
-   information from the database (in particular, the playerState) when resuming some items
-   (eg ISO/VIDEO_TS).
-   \param item item to check for a resume bookmark
-   \return true if an option was chosen, false if the resume menu was cancelled.
+  /*! \brief Gets called to process the "info" action for the given file item
+   Default implementation shows a dialog containing information for the movie/episode/...
+   represented by the file item.
+   \param fileItem the item for which information is to be presented.
+   \return true if information was presented, false otherwise.
    */
-  static bool ShowResumeMenu(CFileItem &item);
+  bool OnItemInfo(const CFileItem& fileItem);
 
   /*! \brief Append a set of search items to a results list using a specific prepend label
    Sorts the search items first, then appends with the given prependLabel to the results list.
@@ -79,32 +56,36 @@ public:
    */
   static void OnAssignContent(const std::string &path);
 
-  /*! \brief checks the database for a resume position and puts together a string
-   \param item selected item
-   \return string containing the resume position or an empty string if there is no resume position
+  /*! \brief Load video information from the database for these items (public static version)
+   Useful for grabbing information for file listings, from watched status to full metadata
+   \param items the items to load information for.
+   \param database open database object to retrieve the data from
+   \param allowReplaceLabels allow label replacement if according GUI setting is enabled
    */
-  static std::string GetResumeString(const CFileItem &item);
+  static void LoadVideoInfo(CFileItemList& items,
+                            CVideoDatabase& database,
+                            bool allowReplaceLabels = true);
 
 protected:
   void OnScan(const std::string& strPath, bool scanAll = false);
-  virtual bool Update(const std::string &strDirectory, bool updateFilterPath = true);
-  virtual bool GetDirectory(const std::string &strDirectory, CFileItemList &items);
-  virtual void OnItemLoaded(CFileItem* pItem) {};
-  virtual void GetGroupedItems(CFileItemList &items);
+  bool Update(const std::string &strDirectory, bool updateFilterPath = true) override;
+  bool GetDirectory(const std::string &strDirectory, CFileItemList &items) override;
+  void OnItemLoaded(CFileItem* pItem) override {};
+  void GetGroupedItems(CFileItemList &items) override;
 
-  virtual bool CheckFilterAdvanced(CFileItemList &items) const;
-  virtual bool CanContainFilter(const std::string &strDirectory) const;
+  bool CheckFilterAdvanced(CFileItemList &items) const override;
+  bool CanContainFilter(const std::string &strDirectory) const override;
 
-  virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
-  virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
-  virtual void OnQueueItem(int iItem);
-  virtual void OnDeleteItem(CFileItemPtr pItem);
-  virtual void OnDeleteItem(int iItem);
-  virtual void DoSearch(const std::string& strSearch, CFileItemList& items) {};
-  virtual std::string GetStartFolder(const std::string &dir);
+  void GetContextButtons(int itemNumber, CContextButtons &buttons) override;
+  bool OnContextButton(int itemNumber, CONTEXT_BUTTON button) override;
+  virtual void OnQueueItem(int iItem, bool first = false);
+  void OnQueueItem(const std::shared_ptr<CFileItem>& item, int iItem, bool first = false);
+  virtual void OnDeleteItem(const CFileItemPtr& pItem);
+  void OnDeleteItem(int iItem) override;
+  virtual void DoSearch(const std::string& strSearch, CFileItemList& items) {}
+  std::string GetStartFolder(const std::string &dir) override;
 
-  bool OnClick(int iItem, const std::string &player = "");
-  bool OnSelect(int iItem);
+  bool OnSelect(int iItem) override;
   /*! \brief react to an Info action on a view item
    \param item the selected item
    \return true if the action is performed, false otherwise
@@ -115,18 +96,25 @@ protected:
    \param action the action to perform
    \return true if the action is performed, false otherwise
    */
-  bool OnFileAction(int item, int action, std::string player);
+  bool OnFileAction(int item, VIDEO::GUILIB::Action action, const std::string& player);
 
   void OnRestartItem(int iItem, const std::string &player = "");
-  bool OnResumeItem(int iItem, const std::string &player = "");
-  void PlayItem(int iItem, const std::string &player = "");
-  virtual bool OnPlayMedia(int iItem, const std::string &player = "");
-  virtual bool OnPlayAndQueueMedia(const CFileItemPtr &item, std::string player = "");
-  void LoadPlayList(const std::string& strPlayList, int iPlayList = PLAYLIST_VIDEO);
+  bool OnPlayOrResumeItem(int iItem, const std::string& player = "");
+  bool OnPlayMedia(int iItem, const std::string &player = "") override;
+  bool OnPlayMedia(const std::shared_ptr<CFileItem>& item, const std::string& player);
+  bool OnPlayAndQueueMedia(const CFileItemPtr& item, const std::string& player = "") override;
+  using CGUIMediaWindow::LoadPlayList;
+  void LoadPlayList(const std::string& strPlayList, PLAYLIST::Id playlistId = PLAYLIST::TYPE_VIDEO);
+  bool PlayItem(const std::shared_ptr<CFileItem>& item, const std::string& player);
 
-  bool ShowIMDB(CFileItemPtr item, const ADDON::ScraperPtr& content, bool fromDB);
-
-  void AddItemToPlayList(const CFileItemPtr &pItem, CFileItemList &queuedItems);
+  /*!
+   \brief Lookup the information of an item and display an Info dialog
+   If item has changed then refresh the active underlying list
+   \param item the item to lookup
+   \param content
+   \return true: the information of the item was modified. false: no change.
+   */
+  bool ShowInfoAndRefresh(const CFileItemPtr& item, const ADDON::ScraperPtr& content);
 
   void OnSearch();
   void OnSearchItemFound(const CFileItem* pSelItem);
@@ -136,11 +124,23 @@ protected:
 
   static bool StackingAvailable(const CFileItemList &items);
 
-  bool OnPlayStackPart(int item);
+  bool OnPlayStackPart(const std::shared_ptr<CFileItem>& item, unsigned int partNumber);
+
+  void UpdateVideoVersionItems();
+  void UpdateVideoVersionItemsLabel(const std::string& directory);
 
   CGUIDialogProgress* m_dlgProgress;
   CVideoDatabase m_database;
 
   CVideoThumbLoader m_thumbLoader;
   bool m_stackingAvailable;
+
+private:
+  /*!
+   \brief Lookup the information of an item and display an Info dialog
+   \param item the item to lookup
+   \param content
+   \return true: the information of the item was modified. false: no change.
+   */
+  bool ShowInfo(const CFileItemPtr& item, const ADDON::ScraperPtr& content);
 };

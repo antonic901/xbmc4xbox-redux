@@ -1,38 +1,29 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIWindowVisualisation.h"
-#include "Application.h"
-#include "FileItem.h"
-#include "music/dialogs/GUIDialogMusicOSD.h"
-#include "GUIUserMessages.h"
+
 #include "GUIInfoManager.h"
+#include "GUIUserMessages.h"
+#include "ServiceBroker.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "guilib/GUIComponent.h"
+#include "guilib/GUIDialog.h"
 #include "guilib/GUIWindowManager.h"
-#include "input/ButtonTranslator.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
+#include "input/mouse/MouseEvent.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 
+using namespace KODI;
 using namespace MUSIC_INFO;
 
 #define START_FADE_LENGTH  2.0f // 2 seconds on startup
@@ -40,8 +31,7 @@ using namespace MUSIC_INFO;
 #define CONTROL_VIS          2
 
 CGUIWindowVisualisation::CGUIWindowVisualisation(void)
-    : CGUIWindow(WINDOW_VISUALISATION, "MusicVisualisation.xml"),
-      m_initTimer(true), m_lockedTimer(true)
+  : CGUIWindow(WINDOW_VISUALISATION, "MusicVisualisation.xml")
 {
   m_bShowPreset = false;
   m_loadType = KEEP_IN_MEMORY;
@@ -63,7 +53,8 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
   case ACTION_SHOW_INFO:
     {
       m_initTimer.Stop();
-      CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("mymusic.songthumbinvis", CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().ToggleShowInfo());
+      CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool(CSettings::SETTING_MYMUSIC_SONGTHUMBINVIS,
+                                            CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().ToggleShowInfo());
       return true;
     }
     break;
@@ -104,7 +95,7 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
       CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetShowInfo(true);
     }
     break;
-    //! @todo These should be mapped to it's own function - at the moment it's overriding
+    //! @todo These should be mapped to its own function - at the moment it's overriding
     //! the global action of fastforward/rewind and OSD.
 /*  case KEY_BUTTON_Y:
     g_application.m_CdgParser.Pause();
@@ -163,19 +154,22 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
     {
       // check whether we've come back here from a window during which time we've actually
       // stopped playing music
-      if (message.GetParam1() == WINDOW_INVALID && !g_application.m_pPlayer->IsPlayingAudio())
+      const auto& components = CServiceBroker::GetAppComponents();
+      const auto appPlayer = components.GetComponent<CApplicationPlayer>();
+      if (message.GetParam1() == WINDOW_INVALID && !appPlayer->IsPlayingAudio())
       { // why are we here if nothing is playing???
         CServiceBroker::GetGUI()->GetWindowManager().PreviousWindow();
         return true;
       }
 
       // hide or show the preset button(s)
-      CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetShowInfo(true);  // always show the info initially.
+      CGUIInfoManager& infoMgr = CServiceBroker::GetGUI()->GetInfoManager();
+      infoMgr.GetInfoProviders().GetPlayerInfoProvider().SetShowInfo(true);  // always show the info initially.
       CGUIWindow::OnMessage(message);
-      if (CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag())
-        m_tag = *CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag();
+      if (infoMgr.GetCurrentSongTag())
+        m_tag = *infoMgr.GetCurrentSongTag();
 
-      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("mymusic.songthumbinvis"))
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_MYMUSIC_SONGTHUMBINVIS))
       { // always on
         m_initTimer.Stop();
       }
@@ -190,23 +184,48 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
   return CGUIWindow::OnMessage(message);
 }
 
+EVENT_RESULT CGUIWindowVisualisation::OnMouseEvent(const CPoint& point,
+                                                   const MOUSE::CMouseEvent& event)
+{
+  if (event.m_id == ACTION_MOUSE_RIGHT_CLICK)
+  { // no control found to absorb this click - go back to GUI
+    OnAction(CAction(ACTION_SHOW_GUI));
+    return EVENT_RESULT_HANDLED;
+  }
+  if (event.m_id == ACTION_GESTURE_NOTIFY)
+    return EVENT_RESULT_UNHANDLED;
+  if (event.m_id != ACTION_MOUSE_MOVE || event.m_offsetX || event.m_offsetY)
+  { // some other mouse action has occurred - bring up the OSD
+    CGUIDialog *pOSD = CServiceBroker::GetGUI()->GetWindowManager().GetDialog(WINDOW_DIALOG_MUSIC_OSD);
+    if (pOSD)
+    {
+      pOSD->SetAutoClose(3000);
+      pOSD->Open();
+    }
+    return EVENT_RESULT_HANDLED;
+  }
+  return EVENT_RESULT_UNHANDLED;
+}
+
 void CGUIWindowVisualisation::FrameMove()
 {
+  CGUIInfoManager& infoMgr = CServiceBroker::GetGUI()->GetInfoManager();
+
   // check for a tag change
-  const CMusicInfoTag* tag = CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag();
+  const CMusicInfoTag* tag = infoMgr.GetCurrentSongTag();
   if (tag && *tag != m_tag)
   { // need to fade in then out again
     m_tag = *tag;
     // fade in
     m_initTimer.StartZero();
-    CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetShowInfo(true);
+    infoMgr.GetInfoProviders().GetPlayerInfoProvider().SetShowInfo(true);
   }
   if (m_initTimer.IsRunning() && m_initTimer.GetElapsedSeconds() > (float)CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_songInfoDuration)
   {
     m_initTimer.Stop();
-    if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("mymusic.songthumbinvis"))
+    if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_MYMUSIC_SONGTHUMBINVIS))
     { // reached end of fade in, fade out again
-      CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetShowInfo(false);
+      infoMgr.GetInfoProviders().GetPlayerInfoProvider().SetShowInfo(false);
     }
   }
   // show or hide the locked texture

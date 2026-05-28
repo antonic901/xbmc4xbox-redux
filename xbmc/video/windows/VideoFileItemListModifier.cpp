@@ -1,33 +1,24 @@
 /*
-*      Copyright (C) 2016 Team Kodi
-*      http://xbmc.org
-*
-*  This Program is free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2, or (at your option)
-*  any later version.
-*
-*  This Program is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-*  GNU General Public License for more details.
-*
-*  You should have received a copy of the GNU General Public License
-*  along with Kodi; see the file COPYING.  If not, see
-*  <http://www.gnu.org/licenses/>.
-*
-*/
+ *  Copyright (C) 2016-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
+
+#include "VideoFileItemListModifier.h"
 
 #include "FileItem.h"
-#include "VideoFileItemListModifier.h"
 #include "ServiceBroker.h"
-#include "settings/AdvancedSettings.h"
-#include "video/VideoDatabase.h"
 #include "filesystem/VideoDatabaseDirectory/DirectoryNode.h"
 #include "guilib/LocalizeStrings.h"
+#include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
+#include "video/VideoDatabase.h"
 #include "video/VideoDbUrl.h"
+
+#include <memory>
 
 using namespace XFILE::VIDEODATABASEDIRECTORY;
 
@@ -52,12 +43,12 @@ void CVideoFileItemListModifier::AddQueuingFolder(CFileItemList& items)
   if (!items.IsVideoDb())
     return;
 
-  CDirectoryNode *directoryNode = CDirectoryNode::ParseURL(items.GetPath());
+  auto directoryNode = CDirectoryNode::ParseURL(items.GetPath());
 
   CFileItemPtr pItem;
 
   // always show "all" items by default
-  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videolibrary.showallitems"))
+  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_VIDEOLIBRARY_SHOWALLITEMS))
     return;
 
   // no need for "all" item when only one item
@@ -69,37 +60,58 @@ void CVideoFileItemListModifier::AddQueuingFolder(CFileItemList& items)
     return;
 
   // hack - as the season node might return episodes
-  boost::movelib::unique_ptr<CDirectoryNode> pNode(directoryNode);
+  std::unique_ptr<CDirectoryNode> pNode(directoryNode);
 
   switch (pNode->GetChildType())
   {
   case NODE_TYPE_SEASONS:
   {
-    std::string strLabel = g_localizeStrings.Get(20366);
-    pItem.reset(new CFileItem(strLabel));  // "All Seasons"
+    const std::string& strLabel = g_localizeStrings.Get(20366);
+    pItem = std::make_shared<CFileItem>(strLabel); // "All Seasons"
     videoUrl.AppendPath("-1/");
     pItem->SetPath(videoUrl.ToString());
     // set the number of watched and unwatched items accordingly
     int watched = 0;
     int unwatched = 0;
+    int inprogress = 0;
     for (int i = 0; i < items.Size(); i++)
     {
       CFileItemPtr item = items[i];
       watched += static_cast<int>(item->GetProperty("watchedepisodes").asInteger());
       unwatched += static_cast<int>(item->GetProperty("unwatchedepisodes").asInteger());
+      inprogress += static_cast<int>(item->GetProperty("inprogressepisodes").asInteger());
     }
-    pItem->SetProperty("totalepisodes", watched + unwatched);
-    pItem->SetProperty("numepisodes", watched + unwatched); // will be changed later to reflect watchmode setting
+    const int totalEpisodes = watched + unwatched;
+    pItem->SetProperty("totalepisodes", totalEpisodes);
+    pItem->SetProperty("numepisodes",
+                       totalEpisodes); // will be changed later to reflect watchmode setting
     pItem->SetProperty("watchedepisodes", watched);
     pItem->SetProperty("unwatchedepisodes", unwatched);
-    if (items.Size() && items[0]->GetVideoInfoTag())
+    pItem->SetProperty("inprogressepisodes", inprogress);
+    pItem->SetProperty("watchedepisodepercent",
+                       totalEpisodes > 0 ? watched * 100 / totalEpisodes : 0);
+
+    // @note: The items list may contain additional items that do not belong to the show.
+    // This is the case of the up directory (..) or movies linked to the tvshow.
+    // Iterate through the list till the first season type is found and the infotag can safely be copied.
+
+    if (items.Size() > 1)
     {
-      *pItem->GetVideoInfoTag() = *items[0]->GetVideoInfoTag();
-      pItem->GetVideoInfoTag()->m_iSeason = -1;
+      for (int i = 1; i < items.Size(); i++)
+      {
+        if (items[i]->GetVideoInfoTag() && items[i]->GetVideoInfoTag()->m_type == MediaTypeSeason &&
+            items[i]->GetVideoInfoTag()->m_iSeason > 0)
+        {
+          *pItem->GetVideoInfoTag() = *items[i]->GetVideoInfoTag();
+          pItem->GetVideoInfoTag()->m_iSeason = -1;
+          break;
+        }
+      }
     }
+
     pItem->GetVideoInfoTag()->m_strTitle = strLabel;
     pItem->GetVideoInfoTag()->m_iEpisode = watched + unwatched;
-    pItem->GetVideoInfoTag()->m_playCount = (unwatched == 0) ? 1 : 0;
+    pItem->GetVideoInfoTag()->SetPlayCount((unwatched == 0) ? 1 : 0);
     CVideoDatabase db;
     if (db.Open())
     {
@@ -110,7 +122,7 @@ void CVideoFileItemListModifier::AddQueuingFolder(CFileItemList& items)
   }
   break;
   case NODE_TYPE_MUSICVIDEOS_ALBUM:
-    pItem.reset(new CFileItem(g_localizeStrings.Get(15102)));  // "All Albums"
+    pItem = std::make_shared<CFileItem>("* " + g_localizeStrings.Get(16100)); // "* All Videos"
     videoUrl.AppendPath("-1/");
     pItem->SetPath(videoUrl.ToString());
     break;

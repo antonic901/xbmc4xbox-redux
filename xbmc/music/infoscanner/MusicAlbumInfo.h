@@ -1,28 +1,15 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "music/Song.h"
-#include "music/Album.h"
+#pragma once
+
 #include "addons/Scraper.h"
+#include "music/Album.h"
 #include "utils/ScraperUrl.h"
 
 class CXBMCTinyXML;
@@ -34,10 +21,10 @@ namespace MUSIC_GRABBER
 class CMusicAlbumInfo
 {
 public:
-  CMusicAlbumInfo() : m_bLoaded(false), m_relevance(-1) {}
+  CMusicAlbumInfo() = default;
   CMusicAlbumInfo(const std::string& strAlbumInfo, const CScraperUrl& strAlbumURL);
   CMusicAlbumInfo(const std::string& strAlbum, const std::string& strArtist, const std::string& strAlbumInfo, const CScraperUrl& strAlbumURL);
-  virtual ~CMusicAlbumInfo() {}
+  virtual ~CMusicAlbumInfo() = default;
 
   bool Loaded() const { return m_bLoaded; }
   void SetLoaded(bool bLoaded) { m_bLoaded = bLoaded; }
@@ -53,9 +40,9 @@ public:
   bool Load(XFILE::CCurlFile& http, const ADDON::ScraperPtr& scraper);
 
 protected:
-  bool m_bLoaded;
+  bool m_bLoaded = false;
   CAlbum m_album;
-  float m_relevance;
+  float m_relevance = -1;
   std::string m_strTitle2;
   CScraperUrl m_albumURL;
 };

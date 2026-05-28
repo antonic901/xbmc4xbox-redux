@@ -1,50 +1,37 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
+#pragma once
+
 #include "GUIWindowMusicBase.h"
-#include "BackgroundInfoLoader.h"
 
 class CGUIWindowMusicPlayList : public CGUIWindowMusicBase
 {
 public:
   CGUIWindowMusicPlayList(void);
-  virtual ~CGUIWindowMusicPlayList(void);
+  ~CGUIWindowMusicPlayList(void) override;
 
-  virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
-  virtual bool OnBack(int actionID);
+  bool OnMessage(CGUIMessage& message) override;
+  bool OnAction(const CAction &action) override;
+  bool OnBack(int actionID) override;
 
   void RemovePlayListItem(int iItem);
   void MoveItem(int iStart, int iDest);
 
 protected:
-  virtual bool GoParentFolder() { return false; };
-  virtual void UpdateButtons();
-  virtual void OnItemLoaded(CFileItem* pItem);
-  virtual bool Update(const std::string& strDirectory, bool updateFilterPath = true);
-  virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
-  virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
+  bool GoParentFolder() override { return false; }
+  void UpdateButtons() override;
+  void OnItemLoaded(CFileItem* pItem) override;
+  bool Update(const std::string& strDirectory, bool updateFilterPath = true) override;
+  void GetContextButtons(int itemNumber, CContextButtons &buttons) override;
+  bool OnContextButton(int itemNumber, CONTEXT_BUTTON button) override;
   void OnMove(int iItem, int iAction);
-  virtual bool OnPlayMedia(int iItem, const std::string &player = "");
+  bool OnPlayMedia(int iItem, const std::string &player = "") override;
 
   void SavePlayList();
   void ClearPlayList();

@@ -1,24 +1,13 @@
 /*
- *      Copyright (C) 2012-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2012-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "MusicDbUrl.h"
+
 #include "filesystem/MusicDatabaseDirectory.h"
 #include "playlists/SmartPlayList.h"
 #include "utils/StringUtils.h"
@@ -31,8 +20,7 @@ CMusicDbUrl::CMusicDbUrl()
   : CDbUrl()
 { }
 
-CMusicDbUrl::~CMusicDbUrl()
-{ }
+CMusicDbUrl::~CMusicDbUrl() = default;
 
 bool CMusicDbUrl::parse()
 {
@@ -41,8 +29,13 @@ bool CMusicDbUrl::parse()
     return false;
 
   std::string path = m_url.Get();
-  NODE_TYPE dirType = CMusicDatabaseDirectory::GetDirectoryType(path);
-  NODE_TYPE childType = CMusicDatabaseDirectory::GetDirectoryChildType(path);
+
+  // Parse path for directory node types and query params
+  NODE_TYPE dirType;
+  NODE_TYPE childType;
+  CQueryParams queryParams;
+  if (!CMusicDatabaseDirectory::GetDirectoryNodeInfo(path, dirType, childType, queryParams))
+    return false;
 
   switch (dirType)
   {
@@ -54,18 +47,18 @@ bool CMusicDbUrl::parse()
     case NODE_TYPE_ALBUM_RECENTLY_ADDED:
     case NODE_TYPE_ALBUM_RECENTLY_PLAYED:
     case NODE_TYPE_ALBUM_TOP100:
-    case NODE_TYPE_ALBUM_COMPILATIONS:
-    case NODE_TYPE_YEAR_ALBUM:
       m_type = "albums";
+      break;
+
+    case NODE_TYPE_DISC:
+      m_type = "discs";
       break;
 
     case NODE_TYPE_ALBUM_RECENTLY_ADDED_SONGS:
     case NODE_TYPE_ALBUM_RECENTLY_PLAYED_SONGS:
     case NODE_TYPE_ALBUM_TOP100_SONGS:
-    case NODE_TYPE_ALBUM_COMPILATIONS_SONGS:
     case NODE_TYPE_SONG:
     case NODE_TYPE_SONG_TOP100:
-    case NODE_TYPE_YEAR_SONG:
     case NODE_TYPE_SINGLES:
       m_type = "songs";
       break;
@@ -84,17 +77,18 @@ bool CMusicDbUrl::parse()
     case NODE_TYPE_ALBUM_RECENTLY_ADDED:
     case NODE_TYPE_ALBUM_RECENTLY_PLAYED:
     case NODE_TYPE_ALBUM_TOP100:
-    case NODE_TYPE_YEAR_ALBUM:
       m_type = "albums";
+      break;
+
+    case NODE_TYPE_DISC:
+      m_type = "discs";
       break;
 
     case NODE_TYPE_SONG:
     case NODE_TYPE_ALBUM_RECENTLY_ADDED_SONGS:
     case NODE_TYPE_ALBUM_RECENTLY_PLAYED_SONGS:
     case NODE_TYPE_ALBUM_TOP100_SONGS:
-    case NODE_TYPE_ALBUM_COMPILATIONS_SONGS:
     case NODE_TYPE_SONG_TOP100:
-    case NODE_TYPE_YEAR_SONG:
     case NODE_TYPE_SINGLES:
       m_type = "songs";
       break;
@@ -103,16 +97,16 @@ bool CMusicDbUrl::parse()
       m_type = "genres";
       break;
 
+    case NODE_TYPE_SOURCE:
+      m_type = "sources";
+      break;
+
     case NODE_TYPE_ROLE:
       m_type = "roles";
       break;
 
     case NODE_TYPE_YEAR:
       m_type = "years";
-      break;
-
-    case NODE_TYPE_ALBUM_COMPILATIONS:
-      m_type = "albums";
       break;
 
     case NODE_TYPE_TOP100:
@@ -127,10 +121,6 @@ bool CMusicDbUrl::parse()
 
   if (m_type.empty())
     return false;
-
-  // parse query params
-  CQueryParams queryParams;
-  CDirectoryNode::GetDatabaseInfo(path, queryParams);
 
   // retrieve and parse all options
   AddOptions(m_url.GetOptions());
@@ -150,6 +140,10 @@ bool CMusicDbUrl::parse()
     AddOption("songid", (int)queryParams.GetSongId());
   if (queryParams.GetYear() != -1)
     AddOption("year", (int)queryParams.GetYear());
+
+  // Decode legacy use of "musicdb://compilations/" path for filtered albums
+  if (m_url.GetFileName() == "compilations/")
+    AddOption("compilation", true);
 
   return true;
 }

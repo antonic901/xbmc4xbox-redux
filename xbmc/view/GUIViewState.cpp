@@ -1,57 +1,53 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "view/GUIViewState.h"
-#include "addons/GUIViewStateAddonBrowser.h"
-#include "music/GUIViewStateMusic.h"
-#include "video/GUIViewStateVideo.h"
-#include "pictures/GUIViewStatePictures.h"
-#include "profiles/ProfilesManager.h"
-#include "programs/GUIViewStatePrograms.h"
-#include "PlayListPlayer.h"
-#include "utils/URIUtils.h"
-#include "URL.h"
-#include "GUIPassword.h"
-#include "ViewDatabase.h"
+
 #include "AutoSwitch.h"
-#include "dialogs/GUIDialogSelect.h"
-#include "guilib/GUIComponent.h"
-#include "guilib/GUIWindowManager.h"
+#include "FileItem.h"
+#include "GUIPassword.h"
+#include "PlayListPlayer.h"
+#include "ServiceBroker.h"
+#include "URL.h"
+#include "ViewDatabase.h"
 #include "addons/Addon.h"
 #include "addons/AddonManager.h"
 #include "addons/PluginSource.h"
-#include "view/ViewState.h"
-#include "settings/AdvancedSettings.h"
+#include "addons/addoninfo/AddonType.h"
+#include "addons/gui/GUIViewStateAddonBrowser.h"
+#include "dialogs/GUIDialogSelect.h"
+#include "events/windows/GUIViewStateEventLog.h"
+#include "favourites/GUIViewStateFavourites.h"
+#include "games/windows/GUIViewStateWindowGames.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIWindowManager.h"
+#include "guilib/LocalizeStrings.h"
+#include "guilib/TextureManager.h"
+#include "music/GUIViewStateMusic.h"
+#include "pictures/GUIViewStatePictures.h"
+#include "profiles/ProfileManager.h"
+#include "programs/GUIViewStatePrograms.h"
+#include "pvr/windows/GUIViewStatePVR.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
-#include "FileItem.h"
-#include "filesystem/AddonsDirectory.h"
-#include "guilib/TextureManager.h"
-
-#include <boost/pointer_cast.hpp>
+#include "settings/lib/Setting.h"
+#include "utils/URIUtils.h"
+#include "video/GUIViewStateVideo.h"
+#include "video/VideoUtils.h"
+#include "view/ViewState.h"
 
 #define PROPERTY_SORT_ORDER         "sort.order"
 #define PROPERTY_SORT_ASCENDING     "sort.ascending"
 
+using namespace KODI;
 using namespace ADDON;
+using namespace PVR;
 
 std::string CGUIViewState::m_strPlaylistDirectory;
 VECSOURCES CGUIViewState::m_sources;
@@ -99,13 +95,22 @@ CGUIViewState* CGUIViewState::GetViewState(int windowId, const CFileItemList& it
     return new CGUIViewStateLibrary(items);
 
   if (items.IsPlayList())
-    return new CGUIViewStateMusicPlaylist(items);
+  {
+    // Playlists (like .strm) can be music or video type
+    if (windowId == WINDOW_VIDEO_NAV)
+      return new CGUIViewStateVideoPlaylist(items);
+    else
+      return new CGUIViewStateMusicPlaylist(items);
+  }
 
   if (items.GetPath() == "special://musicplaylists/")
     return new CGUIViewStateWindowMusicNav(items);
 
   if (url.IsProtocol("androidapp"))
     return new CGUIViewStateWindowPrograms(items);
+
+  if (url.IsProtocol("activities"))
+    return new CGUIViewStateEventLog(items);
 
   if (windowId == WINDOW_MUSIC_NAV)
     return new CGUIViewStateWindowMusicNav(items);
@@ -122,14 +127,59 @@ CGUIViewState* CGUIViewState::GetViewState(int windowId, const CFileItemList& it
   if (windowId == WINDOW_VIDEO_PLAYLIST)
     return new CGUIViewStateWindowVideoPlaylist(items);
 
+  if (windowId == WINDOW_TV_CHANNELS)
+    return new CGUIViewStateWindowPVRChannels(windowId, items);
+
+  if (windowId == WINDOW_TV_RECORDINGS)
+    return new CGUIViewStateWindowPVRRecordings(windowId, items);
+
+  if (windowId == WINDOW_TV_GUIDE)
+    return new CGUIViewStateWindowPVRGuide(windowId, items);
+
+  if (windowId == WINDOW_TV_TIMERS)
+    return new CGUIViewStateWindowPVRTimers(windowId, items);
+
+  if (windowId == WINDOW_TV_TIMER_RULES)
+    return new CGUIViewStateWindowPVRTimers(windowId, items);
+
+  if (windowId == WINDOW_TV_SEARCH)
+    return new CGUIViewStateWindowPVRSearch(windowId, items);
+
+  if (windowId == WINDOW_RADIO_CHANNELS)
+      return new CGUIViewStateWindowPVRChannels(windowId, items);
+
+  if (windowId == WINDOW_RADIO_RECORDINGS)
+    return new CGUIViewStateWindowPVRRecordings(windowId, items);
+
+  if (windowId == WINDOW_RADIO_GUIDE)
+    return new CGUIViewStateWindowPVRGuide(windowId, items);
+
+  if (windowId == WINDOW_RADIO_TIMERS)
+    return new CGUIViewStateWindowPVRTimers(windowId, items);
+
+  if (windowId == WINDOW_RADIO_TIMER_RULES)
+    return new CGUIViewStateWindowPVRTimers(windowId, items);
+
+  if (windowId == WINDOW_RADIO_SEARCH)
+    return new CGUIViewStateWindowPVRSearch(windowId, items);
+
   if (windowId == WINDOW_PICTURES)
     return new CGUIViewStateWindowPictures(items);
 
   if (windowId == WINDOW_PROGRAMS)
     return new CGUIViewStateWindowPrograms(items);
 
+  if (windowId == WINDOW_GAMES)
+    return new GAME::CGUIViewStateWindowGames(items);
+
   if (windowId == WINDOW_ADDON_BROWSER)
     return new CGUIViewStateAddonBrowser(items);
+
+  if (windowId == WINDOW_EVENT_LOG)
+    return new CGUIViewStateEventLog(items);
+
+  if (windowId == WINDOW_FAVOURITES)
+    return new CGUIViewStateFavourites(items);
 
   //  Use as fallback/default
   return new CGUIViewStateGeneral(items);
@@ -139,11 +189,10 @@ CGUIViewState::CGUIViewState(const CFileItemList& items) : m_items(items)
 {
   m_currentViewAsControl = 0;
   m_currentSortMethod = 0;
-  m_playlist = PLAYLIST_NONE;
+  m_playlist = PLAYLIST::TYPE_NONE;
 }
 
-CGUIViewState::~CGUIViewState()
-{ }
+CGUIViewState::~CGUIViewState() = default;
 
 SortOrder CGUIViewState::SetNextSortOrder()
 {
@@ -227,7 +276,17 @@ void CGUIViewState::GetSortMethodLabelMasks(LABEL_MASKS& masks) const
   masks.m_strLabel2File.clear();
   masks.m_strLabelFolder.clear();
   masks.m_strLabel2Folder.clear();
-  return;
+}
+
+std::vector<SortDescription> CGUIViewState::GetSortDescriptions() const
+{
+  std::vector<SortDescription> descriptions;
+  descriptions.reserve(m_sortMethods.size());
+  for (const auto& desc : m_sortMethods)
+  {
+    descriptions.emplace_back(desc.m_sortDescription);
+  }
+  return descriptions;
 }
 
 void CGUIViewState::AddSortMethod(SortBy sortBy, int buttonLabel, const LABEL_MASKS &labelMasks, SortAttribute sortAttributes /* = SortAttributeNone */, SortOrder sortOrder /* = SortOrderNone */)
@@ -271,7 +330,7 @@ void CGUIViewState::AddSortMethod(SortDescription sortDescription, int buttonLab
 void CGUIViewState::SetCurrentSortMethod(int method)
 {
   SortBy sortBy = (SortBy)method;
-  if (sortBy < SortByNone || sortBy > SortByRandom)
+  if (sortBy < SortByNone || sortBy > SortByLastUsed)
     return; // invalid
 
   SetSortMethod(sortBy);
@@ -301,13 +360,13 @@ void CGUIViewState::SetSortMethod(SortDescription sortDescription)
 bool CGUIViewState::ChooseSortMethod()
 {
 
-  CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect *>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_SELECT));
+  CGUIDialogSelect *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
   if (!dialog)
     return false;
   dialog->Reset();
-  dialog->SetHeading( 39010 ); // Label "Sort by"
-  for (std::vector<GUIViewSortDetails>::const_iterator it = m_sortMethods.begin(); it != m_sortMethods.end(); ++it)
-    dialog->Add(g_localizeStrings.Get((*it).m_buttonLabel));
+  dialog->SetHeading(CVariant{ 39010 }); // Label "Sort by"
+  for (auto &sortMethod : m_sortMethods)
+    dialog->Add(g_localizeStrings.Get(sortMethod.m_buttonLabel));
   dialog->SetSelected(m_currentSortMethod);
   dialog->Open();
   int newSelected = dialog->GetSelectedItem();
@@ -336,23 +395,25 @@ SortDescription CGUIViewState::SetNextSortMethod(int direction /* = 1 */)
 
 bool CGUIViewState::HideExtensions()
 {
-  return !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.showextensions");
+  return !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_FILELISTS_SHOWEXTENSIONS);
 }
 
 bool CGUIViewState::HideParentDirItems()
 {
-  return !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.showparentdiritems");
+  return !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_FILELISTS_SHOWPARENTDIRITEMS);
 }
 
 bool CGUIViewState::DisableAddSourceButtons()
 {
-  if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().canWriteSources() || g_passwordManager.bMasterUser)
-    return !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.showaddsourcebuttons");
+  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+
+  if (profileManager->GetCurrentProfile().canWriteSources() || g_passwordManager.bMasterUser)
+    return !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_FILELISTS_SHOWADDSOURCEBUTTONS);
 
   return true;
 }
 
-int CGUIViewState::GetPlaylist()
+PLAYLIST::Id CGUIViewState::GetPlaylist() const
 {
   return m_playlist;
 }
@@ -370,7 +431,7 @@ void CGUIViewState::SetPlaylistDirectory(const std::string& strDirectory)
 
 bool CGUIViewState::IsCurrentPlaylistDirectory(const std::string& strDirectory)
 {
-  if (g_playlistPlayer.GetCurrentPlaylist()!=GetPlaylist())
+  if (CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist()!=GetPlaylist())
     return false;
 
   std::string strDir = strDirectory;
@@ -399,29 +460,10 @@ VECSOURCES& CGUIViewState::GetSources()
   return m_sources;
 }
 
-void CGUIViewState::AddAddonsSource(const std::string &content, const std::string &label, const std::string &thumb)
-{
-  if (!CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bVirtualShares)
-    return;
-
-  CFileItemList items;
-  if (XFILE::CAddonsDirectory::GetScriptsAndPlugins(content, items))
-  { // add the plugin source
-    CMediaSource source;
-    source.strPath = "addons://sources/" + content + "/";
-    source.strName = label;
-    if (!thumb.empty() && CServiceBroker::GetGUI()->GetTextureManager().HasTexture(thumb))
-      source.m_strThumbnailImage = thumb;
-    source.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
-    source.m_ignore = true;
-    m_sources.push_back(source);
-  }
-}
-
 void CGUIViewState::AddLiveTVSources()
 {
   VECSOURCES *sources = CMediaSourceSettings::GetInstance().GetSources("video");
-  for (IVECSOURCES it = sources->begin(); it != sources->end(); it++)
+  for (IVECSOURCES it = sources->begin(); it != sources->end(); ++it)
   {
     if (URIUtils::IsLiveTV((*it).strPath))
     {
@@ -447,6 +489,14 @@ void CGUIViewState::SetSortOrder(SortOrder sortOrder)
   m_sortMethods[m_currentSortMethod].m_sortDescription.sortOrder = sortOrder;
 }
 
+bool CGUIViewState::AutoPlayNextVideoItem() const
+{
+  if (GetPlaylist() != PLAYLIST::TYPE_VIDEO)
+    return false;
+
+  return VIDEO_UTILS::IsAutoPlayNextItem(m_items.GetContent());
+}
+
 void CGUIViewState::LoadViewState(const std::string &path, int windowID)
 { // get our view state from the db
   CViewDatabase db;
@@ -454,7 +504,7 @@ void CGUIViewState::LoadViewState(const std::string &path, int windowID)
     return;
 
   CViewState state;
-  if (db.GetViewState(path, windowID, state, CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skin")) ||
+  if (db.GetViewState(path, windowID, state, CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_LOOKANDFEEL_SKIN)) ||
       db.GetViewState(path, windowID, state, ""))
   {
     SetViewAsControl(state.m_viewMode);
@@ -473,14 +523,15 @@ void CGUIViewState::SaveViewToDb(const std::string &path, int windowID, CViewSta
   if (viewState != NULL)
     *viewState = state;
 
-  db.SetViewState(path, windowID, state, CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skin"));
+  const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+  db.SetViewState(path, windowID, state, settings->GetString(CSettings::SETTING_LOOKANDFEEL_SKIN));
   db.Close();
 
   if (viewState != NULL)
-    CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
+    settings->Save();
 }
 
-void CGUIViewState::AddPlaylistOrder(const CFileItemList &items, LABEL_MASKS label_masks)
+void CGUIViewState::AddPlaylistOrder(const CFileItemList& items, const LABEL_MASKS& label_masks)
 {
   SortBy sortBy = SortByPlaylistOrder;
   int sortLabel = 559;
@@ -512,7 +563,7 @@ CGUIViewStateFromItems::CGUIViewStateFromItems(const CFileItemList &items) : CGU
   const std::vector<GUIViewSortDetails> &details = items.GetSortDetails();
   for (unsigned int i = 0; i < details.size(); i++)
   {
-    const GUIViewSortDetails sort = details[i];
+    const GUIViewSortDetails& sort = details[i];
     AddSortMethod(sort.m_sortDescription, sort.m_buttonLabel, sort.m_labelMasks);
   }
   //! @todo Should default sort/view mode be specified?
@@ -524,17 +575,23 @@ CGUIViewStateFromItems::CGUIViewStateFromItems(const CFileItemList &items) : CGU
   {
     CURL url(items.GetPath());
     AddonPtr addon;
-    if (CServiceBroker::GetAddonMgr().GetAddon(url.GetHostName(), addon, ADDON_PLUGIN))
+    if (CServiceBroker::GetAddonMgr().GetAddon(url.GetHostName(), addon, AddonType::PLUGIN,
+                                               OnlyEnabled::CHOICE_YES))
     {
-      PluginPtr plugin = boost::static_pointer_cast<CPluginSource>(addon);
+      const auto plugin = std::static_pointer_cast<CPluginSource>(addon);
       if (plugin->Provides(CPluginSource::AUDIO))
-        m_playlist = PLAYLIST_MUSIC;
+        m_playlist = PLAYLIST::TYPE_MUSIC;
       if (plugin->Provides(CPluginSource::VIDEO))
-        m_playlist = PLAYLIST_VIDEO;
+        m_playlist = PLAYLIST::TYPE_VIDEO;
     }
   }
 
   LoadViewState(items.GetPath(), CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow());
+}
+
+bool CGUIViewStateFromItems::AutoPlayNextItem()
+{
+  return AutoPlayNextVideoItem();
 }
 
 void CGUIViewStateFromItems::SaveViewState()

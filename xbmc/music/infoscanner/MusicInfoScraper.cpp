@@ -1,37 +1,27 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "MusicInfoScraper.h"
-#include "utils/log.h"
+
 #include "filesystem/CurlFile.h"
+#include "utils/log.h"
 
 using namespace MUSIC_GRABBER;
 using namespace ADDON;
+using namespace std::chrono_literals;
 
-CMusicInfoScraper::CMusicInfoScraper(const ADDON::ScraperPtr &scraper) : CThread("MusicInfoScraper")
+CMusicInfoScraper::CMusicInfoScraper(const ADDON::ScraperPtr& scraper)
+  : CThread("MusicInfoScraper"), m_scraper(scraper)
 {
   m_bSucceeded=false;
   m_bCanceled=false;
   m_iAlbum=-1;
   m_iArtist=-1;
-  m_scraper = scraper;
   m_http = new XFILE::CCurlFile;
 }
 
@@ -132,7 +122,7 @@ void CMusicInfoScraper::LoadArtistInfo()
 
 bool CMusicInfoScraper::Completed()
 {
-  return WaitForThreadExit(10);
+  return Join(10ms);
 }
 
 bool CMusicInfoScraper::Succeeded()
@@ -194,11 +184,11 @@ bool CMusicInfoScraper::CheckValidOrFallback(const std::string &fallbackScraper)
 {
   return true;
 //! @todo Handle fallback mechanism
-/*
+  /*
   if (m_scraper->Path() != fallbackScraper &&
       parser.Load("special://xbmc/system/scrapers/music/" + fallbackScraper))
   {
-    CLog::Log(LOGWARNING, "%s - scraper %s fails to load, falling back to %s", __FUNCTION__, m_info.strPath.c_str(), fallbackScraper.c_str());
+    CLog::Log(LOGWARNING, "{} - scraper {} fails to load, falling back to {}", __FUNCTION__, m_info.strPath, fallbackScraper);
     m_info.strPath = fallbackScraper;
     m_info.strContent = "albums";
     m_info.strTitle = parser.GetName();

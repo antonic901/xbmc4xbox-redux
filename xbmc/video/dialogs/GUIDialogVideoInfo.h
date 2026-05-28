@@ -1,28 +1,22 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "guilib/GUIDialog.h"
-#include "FileItem.h"
+#pragma once
 
+#include "guilib/GUIDialog.h"
+#include "media/MediaType.h"
+
+#include <memory>
+#include <vector>
+
+class CFileItem;
+class CFileItemList;
+class CMediaSource;
 class CVideoDatabase;
 
 class CGUIDialogVideoInfo :
@@ -30,46 +24,51 @@ class CGUIDialogVideoInfo :
 {
 public:
   CGUIDialogVideoInfo(void);
-  virtual ~CGUIDialogVideoInfo(void);
-  bool OnMessage(CGUIMessage& message);
-  bool OnAction(const CAction &action);
+  ~CGUIDialogVideoInfo(void) override;
+  bool OnMessage(CGUIMessage& message) override;
+  bool OnAction(const CAction &action) override;
   void SetMovie(const CFileItem *item);
   bool NeedRefresh() const;
   bool RefreshAll() const;
-  bool HasUpdatedThumb() const { return m_hasUpdatedThumb; };
-  bool HasUpdatedUserrating() const { return m_hasUpdatedUserrating; };
+  bool HasUpdatedThumb() const { return m_hasUpdatedThumb; }
+  bool HasUpdatedUserrating() const { return m_hasUpdatedUserrating; }
+  bool HasUpdatedItems() const { return m_hasUpdatedItems; }
 
   std::string GetThumbnail() const;
-  CFileItemPtr GetCurrentListItem(int offset = 0) { return m_movieItem; }
-  const CFileItemList& CurrentDirectory() const { return *m_castList; };
-  bool HasListItems() const { return true; };
+  std::shared_ptr<CFileItem> GetCurrentListItem(int offset = 0) override { return m_movieItem; }
+  const CFileItemList& CurrentDirectory() const { return *m_castList; }
+  bool HasListItems() const override { return true; }
 
-  static std::string ChooseArtType(const CFileItem &item, std::map<std::string, std::string> &currentArt);
-  static void AddItemPathToFileBrowserSources(std::vector<CMediaSource> &sources, const CFileItem &item);
+  static void AddItemPathToFileBrowserSources(std::vector<CMediaSource>& sources,
+                                              const CFileItem& item);
 
-  static int ManageVideoItem(const CFileItemPtr &item);
-  static bool UpdateVideoItemTitle(const CFileItemPtr &pItem);
-  static bool CanDeleteVideoItem(const CFileItemPtr &item);
-  static bool DeleteVideoItemFromDatabase(const CFileItemPtr &item, bool unavailable = false);
-  static bool DeleteVideoItem(const CFileItemPtr &item, bool unavailable = false);
+  static int ManageVideoItem(const std::shared_ptr<CFileItem>& item);
+  static bool UpdateVideoItemTitle(const std::shared_ptr<CFileItem>& pItem);
+  static bool CanDeleteVideoItem(const std::shared_ptr<CFileItem>& item);
+  static bool DeleteVideoItemFromDatabase(const std::shared_ptr<CFileItem>& item,
+                                          bool unavailable = false);
+  static bool DeleteVideoItem(const std::shared_ptr<CFileItem>& item, bool unavailable = false);
 
-  static bool ManageMovieSets(const CFileItemPtr &item);
+  static bool ManageMovieSets(const std::shared_ptr<CFileItem>& item);
   static bool GetMoviesForSet(const CFileItem *setItem, CFileItemList &originalMovies, CFileItemList &selectedMovies);
-  static bool GetSetForMovie(const CFileItem *movieItem, CFileItemPtr &selectedSet);
+  static bool GetSetForMovie(const CFileItem* movieItem, std::shared_ptr<CFileItem>& selectedSet);
   static bool SetMovieSet(const CFileItem *movieItem, const CFileItem *selectedSet);
 
-  static bool GetItemsForTag(const std::string &strHeading, const std::string &type, CFileItemList &items, int idTag = -1, bool showAll = true);
-  static bool AddItemsToTag(const CFileItemPtr &tagItem);
-  static bool RemoveItemsFromTag(const CFileItemPtr &tagItem);
+  static void ManageVideoVersions(const std::shared_ptr<CFileItem>& item);
 
-  static bool ManageVideoItemArtwork(const CFileItemPtr &item, const MediaType &type);
+  static bool GetItemsForTag(const std::string &strHeading, const std::string &type, CFileItemList &items, int idTag = -1, bool showAll = true);
+  static bool AddItemsToTag(const std::shared_ptr<CFileItem>& tagItem);
+  static bool RemoveItemsFromTag(const std::shared_ptr<CFileItem>& tagItem);
+
+  static bool ChooseAndManageVideoItemArtwork(const std::shared_ptr<CFileItem>& item);
+  static bool ManageVideoItemArtwork(const std::shared_ptr<CFileItem>& item, const MediaType& type);
 
   static std::string GetLocalizedVideoType(const std::string &strType);
 
   static void ShowFor(const CFileItem& item);
 
 protected:
-  void OnInitWindow();
+  void OnInitWindow() override;
   void Update();
   void SetLabel(int iControl, const std::string& strLabel);
   void SetUserrating(int userrating) const;
@@ -92,26 +91,32 @@ protected:
    * \param pItem Search result item
    */
   void OnSearchItemFound(const CFileItem* pItem);
+  bool OnManageVideoVersions();
+  bool OnManageVideoExtras();
   void Play(bool resume = false);
   void OnGetArt();
   void OnGetFanart();
   void OnSetUserrating() const;
   void PlayTrailer();
 
-  static bool UpdateVideoItemSortTitle(const CFileItemPtr &pItem);
-  static bool LinkMovieToTvShow(const CFileItemPtr &item, bool bRemove, CVideoDatabase &database);
+  static bool UpdateVideoItemSortTitle(const std::shared_ptr<CFileItem>& pItem);
+  static bool LinkMovieToTvShow(const std::shared_ptr<CFileItem>& item,
+                                bool bRemove,
+                                CVideoDatabase& database);
 
-  /*! \brief Pop up a fanart chooser. Does not utilise remote URLs.
-   \param videoItem the item to choose fanart for.
-   */
-  static bool OnGetFanart(const CFileItemPtr &videoItem);
-
-  CFileItemPtr m_movieItem;
+  std::shared_ptr<CFileItem> m_movieItem;
   CFileItemList *m_castList;
-  bool m_bViewReview;
-  bool m_bRefresh;
-  bool m_bRefreshAll;
-  bool m_hasUpdatedThumb;
-  bool m_hasUpdatedUserrating;
-  int m_startUserrating;
+  bool m_bViewReview = false;
+  bool m_bRefresh = false;
+  bool m_bRefreshAll = true;
+  bool m_hasUpdatedThumb = false;
+  bool m_hasUpdatedUserrating = false;
+  int m_startUserrating = -1;
+  bool m_hasUpdatedItems{false};
+
+private:
+  static bool ManageVideoItemArtwork(const std::shared_ptr<CFileItem>& item,
+                                     const MediaType& mediaType,
+                                     const std::string& artType);
+  bool ChooseVideoVersion();
 };

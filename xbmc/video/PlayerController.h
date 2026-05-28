@@ -1,28 +1,16 @@
-#pragma once
-
 /*
- *      Copyright (C) 2012-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2012-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
+#pragma once
+
 #include "guilib/ISliderCallback.h"
-#include "input/actions/Action.h"
-#include "interfaces/IActionListener.h"
+#include "input/actions/interfaces/IActionListener.h"
+#include "utils/MovingSpeed.h"
 
 /*! \brief Player controller class to handle user actions.
 
@@ -30,7 +18,7 @@
  altering subtitles and audio tracks, changing aspect ratio, subtitle placement,
  and placement of the video on screen.
  */
-class CPlayerController : public ISliderCallback, public IActionListener
+class CPlayerController : public ISliderCallback, public KODI::ACTION::IActionListener
 {
 public:
   static CPlayerController& GetInstance();
@@ -39,18 +27,18 @@ public:
   \param action the action to perform.
   \return true if the action is considered handled, false if it should be handled elsewhere.
   */
-  virtual bool OnAction(const CAction &action);
+  bool OnAction(const CAction &action) override;
 
   /*! \brief Callback from the slider dialog.
    \sa CGUIDialogSlider
    */
-  virtual void OnSliderChange(void *data, CGUISliderControl *slider);
+  void OnSliderChange(void *data, CGUISliderControl *slider) override;
 
 protected:
   CPlayerController();
-  CPlayerController(const CPlayerController&);
-  CPlayerController& operator=(CPlayerController const&);
-  virtual ~CPlayerController();
+  CPlayerController(const CPlayerController&) = delete;
+  CPlayerController& operator=(CPlayerController const&) = delete;
+  ~CPlayerController() override;
 
 private:
   /*! \brief pop up a slider dialog for a particular action
@@ -64,5 +52,6 @@ private:
    */
   void ShowSlider(int action, int label, float value, float min, float delta, float max, bool modal = false);
 
-  int m_sliderAction; ///< \brief set to the action id for a slider being displayed \sa ShowSlider
+  int m_sliderAction = 0; ///< \brief set to the action id for a slider being displayed \sa ShowSlider
+  UTILS::MOVING_SPEED::CMovingSpeed m_movingSpeed;
 };

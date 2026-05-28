@@ -4025,12 +4025,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					Name="dialogs"
 					Filter="">
 					<File
-						RelativePath=".\xbmc\video\dialogs\GUIDialogAudioSubtitleSettings.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\video\dialogs\GUIDialogAudioSubtitleSettings.h">
-					</File>
-					<File
 						RelativePath=".\xbmc\video\dialogs\GUIDialogFullScreenInfo.cpp">
 					</File>
 					<File
@@ -4170,9 +4164,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\music\CueInfoLoader.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\music\EmbeddedArt.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\music\GUIViewStateMusic.cpp">

@@ -1,52 +1,87 @@
-#pragma once
 /*
- *      Copyright (C) 2016 Team Kodi
- *      http://kodi.tv
+ *  Copyright (C) 2016-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "ContextMenuItem.h"
+#pragma once
 
+#include "ContextMenuItem.h"
+#include "media/MediaType.h"
+
+#include <memory>
+
+class CFileItem;
 
 namespace CONTEXTMENU
 {
 
-struct CMusicInfo : CStaticContextMenuAction
+struct CMusicInfoBase : CStaticContextMenuAction
 {
-  explicit CMusicInfo(MediaType mediaType);
-  bool IsVisible(const CFileItem& item) const;
-  bool Execute(const CFileItemPtr& item) const;
+  explicit CMusicInfoBase(MediaType mediaType);
+  bool IsVisible(const CFileItem& item) const override;
+  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+
 private:
   const MediaType m_mediaType;
 };
 
-struct CAlbumInfo : CMusicInfo
+struct CMusicInfo : CMusicInfoBase
 {
-  CAlbumInfo() : CMusicInfo(MediaTypeAlbum) {}
+  CMusicInfo() : CMusicInfoBase(MediaTypeMusic) {}
+  bool IsVisible(const CFileItem& item) const override;
 };
 
-struct CArtistInfo : CMusicInfo
+struct CAlbumInfo : CMusicInfoBase
 {
-  CArtistInfo() : CMusicInfo(MediaTypeArtist) {}
+  CAlbumInfo() : CMusicInfoBase(MediaTypeAlbum) {}
 };
 
-struct CSongInfo : CMusicInfo
+struct CArtistInfo : CMusicInfoBase
 {
-  CSongInfo() : CMusicInfo(MediaTypeSong) {}
+  CArtistInfo() : CMusicInfoBase(MediaTypeArtist) {}
 };
 
-}
+struct CSongInfo : CMusicInfoBase
+{
+  CSongInfo() : CMusicInfoBase(MediaTypeSong) {}
+};
+
+struct CMusicBrowse : CStaticContextMenuAction
+{
+  CMusicBrowse() : CStaticContextMenuAction(37015) {} // Browse into
+  bool IsVisible(const CFileItem& item) const override;
+  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+};
+
+struct CMusicPlay : CStaticContextMenuAction
+{
+  CMusicPlay() : CStaticContextMenuAction(208) {} // Play
+  bool IsVisible(const CFileItem& item) const override;
+  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+};
+
+struct CMusicPlayUsing : CStaticContextMenuAction
+{
+  CMusicPlayUsing() : CStaticContextMenuAction(15213) {} // Play using...
+  bool IsVisible(const CFileItem& item) const override;
+  bool Execute(const std::shared_ptr<CFileItem>& _item) const override;
+};
+
+struct CMusicPlayNext : CStaticContextMenuAction
+{
+  CMusicPlayNext() : CStaticContextMenuAction(10008) {} // Play next
+  bool IsVisible(const CFileItem& item) const override;
+  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+};
+
+struct CMusicQueue : CStaticContextMenuAction
+{
+  CMusicQueue() : CStaticContextMenuAction(13347) {} // Queue item
+  bool IsVisible(const CFileItem& item) const override;
+  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+};
+
+} // namespace CONTEXTMENU

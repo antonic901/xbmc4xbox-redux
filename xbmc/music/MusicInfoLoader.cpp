@@ -1,49 +1,36 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "MusicInfoLoader.h"
-#include "ServiceBroker.h"
+
+#include "Album.h"
+#include "Artist.h"
+#include "FileItem.h"
 #include "MusicDatabase.h"
-#include "music/tags/MusicInfoTagLoaderFactory.h"
+#include "MusicThumbLoader.h"
+#include "ServiceBroker.h"
+#include "filesystem/File.h"
 #include "filesystem/MusicDatabaseDirectory/DirectoryNode.h"
 #include "filesystem/MusicDatabaseDirectory/QueryParams.h"
-#include "utils/URIUtils.h"
 #include "music/tags/MusicInfoTag.h"
-#include "filesystem/File.h"
+#include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
-#include "FileItem.h"
-#include "utils/log.h"
 #include "utils/Archive.h"
-#include "Artist.h"
-#include "Album.h"
-#include "MusicThumbLoader.h"
+#include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
+#include "utils/log.h"
 
 using namespace XFILE;
 using namespace MUSIC_INFO;
 
 // HACK until we make this threadable - specify 1 thread only for now
-CMusicInfoLoader::CMusicInfoLoader()
-  : CBackgroundInfoLoader()
-  , m_databaseHits(0)
-  , m_tagReads(0)
+CMusicInfoLoader::CMusicInfoLoader() : CBackgroundInfoLoader()
 {
   m_mapFileItems = new CFileItemList;
 
@@ -84,7 +71,8 @@ void CMusicInfoLoader::OnLoaderStart()
 
 bool CMusicInfoLoader::LoadAdditionalTagInfo(CFileItem* pItem)
 {
-  if (!pItem || pItem->m_bIsFolder || pItem->IsPlayList() || pItem->IsNFO() || pItem->IsInternetStream())
+  if (!pItem || (pItem->m_bIsFolder && !pItem->IsAudio()) ||
+      pItem->IsPlayList() || pItem->IsNFO() || pItem->IsInternetStream())
     return false;
 
   if (pItem->GetProperty("hasfullmusictag") == "true")
@@ -108,7 +96,7 @@ bool CMusicInfoLoader::LoadAdditionalTagInfo(CFileItem* pItem)
     if (pItem->HasProperty("artistid") && pItem->GetProperty("artistid").isArray())
     {
       CVariant::const_iterator_array varid = pItem->GetProperty("artistid").begin_array();
-      int idArtist = varid->asInteger();
+      int idArtist = static_cast<int>(varid->asInteger());
       artistfound = database.GetArtist(idArtist, artist, false);
     }
     else
@@ -130,13 +118,13 @@ bool CMusicInfoLoader::LoadAdditionalTagInfo(CFileItem* pItem)
     path = pItem->GetMusicInfoTag()->GetURL();
   }
 
-  CLog::Log(LOGDEBUG, "Loading additional tag info for file %s", path.c_str());
+  CLog::Log(LOGDEBUG, "Loading additional tag info for file {}", path);
 
   // we load up the actual tag for this file in order to
   // fetch the lyrics and add it to the current music info tag
   CFileItem tempItem(path, false);
-  boost::movelib::unique_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(tempItem));
-  if (NULL != pLoader.get())
+  std::unique_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(tempItem));
+  if (nullptr != pLoader)
   {
     CMusicInfoTag tag;
     pLoader->Load(path, tag);
@@ -157,7 +145,11 @@ bool CMusicInfoLoader::LoadItem(CFileItem* pItem)
 
 bool CMusicInfoLoader::LoadItemCached(CFileItem* pItem)
 {
-  if (pItem->m_bIsFolder || pItem->IsPlayList() || pItem->IsNFO() || pItem->IsInternetStream())
+  if ((pItem->m_bIsFolder && !pItem->IsAudio()) ||
+      pItem->IsPlayList() || pItem->IsSmartPlayList() ||
+      StringUtils::StartsWithNoCase(pItem->GetPath(), "newplaylist://") ||
+      StringUtils::StartsWithNoCase(pItem->GetPath(), "newsmartplaylist://") ||
+      pItem->IsNFO() || (pItem->IsInternetStream() && !pItem->IsMusicDb()))
     return false;
 
   // Get thumb for item
@@ -171,10 +163,14 @@ bool CMusicInfoLoader::LoadItemLookup(CFileItem* pItem)
   if (m_pProgressCallback && !pItem->m_bIsFolder)
     m_pProgressCallback->SetProgressAdvance();
 
-  if (pItem->m_bIsFolder || pItem->IsPlayList() || pItem->IsNFO() || pItem->IsInternetStream())
+  if ((pItem->m_bIsFolder && !pItem->IsAudio()) || //
+      pItem->IsPlayList() || pItem->IsSmartPlayList() || //
+      StringUtils::StartsWithNoCase(pItem->GetPath(), "newplaylist://") || //
+      StringUtils::StartsWithNoCase(pItem->GetPath(), "newsmartplaylist://") || //
+      pItem->IsNFO() || (pItem->IsInternetStream() && !pItem->IsMusicDb()))
     return false;
 
-  if (!pItem->HasMusicInfoTag() || !pItem->GetMusicInfoTag()->Loaded())
+  if ((!pItem->HasMusicInfoTag() || !pItem->GetMusicInfoTag()->Loaded()) && pItem->IsAudio())
   {
     // first check the cached item
     CFileItemPtr mapItem = (*m_mapFileItems)[pItem->GetPath()];
@@ -196,13 +192,23 @@ bool CMusicInfoLoader::LoadItemLookup(CFileItem* pItem)
         m_databaseHits++;
       }
 
-      MAPSONGS::iterator it = m_songsMap.find(pItem->GetPath());
-      if (it != m_songsMap.end())
-      {  // Have we loaded this item from database before
-        pItem->GetMusicInfoTag()->SetSong(it->second);
-        pItem->GetMusicInfoTag()->SetCueSheet(m_musicDatabase.LoadCuesheet(it->second.strFileName));
-        if (!it->second.strThumb.empty())
-          pItem->SetArt("thumb", it->second.strThumb);
+      /*
+      This only loads the item with the song from the database when it maps to a single song,
+      it can not load song data for items with cuesheets that expand to multiple songs.
+      For songs from embedded or separate cuesheets strFileName is not unique, so the song map for
+      the path will have the list of songs from that file. But items with cuesheets are expanded
+      (replacing each item with items for every track) elsewhere. When the item we are looking up
+      has a cuesheet document or is a music file with a cuesheet embedded in the tags, and it maps
+      to more than one song then we can not fill the tag data and thumb from the database.
+      */
+      MAPSONGS::iterator it = m_songsMap.find(pItem->GetPath()); // Find file in song map
+      if (it != m_songsMap.end() && it->second.size() == 1)
+      {
+        // Have we loaded this item from database before,
+        // and even if it has a cuesheet it has only one song
+        pItem->GetMusicInfoTag()->SetSong(it->second[0]);
+        if (!it->second[0].strThumb.empty())
+          pItem->SetArt("thumb", it->second[0].strThumb);
       }
       else if (pItem->IsMusicDb())
       { // a music db item that doesn't have tag loaded - grab details from the database
@@ -216,12 +222,12 @@ bool CMusicInfoLoader::LoadItemLookup(CFileItem* pItem)
             pItem->SetArt("thumb", song.strThumb);
         }
       }
-      else if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicfiles.usetags") || pItem->IsCDDA())
+      else if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_MUSICFILES_USETAGS) || pItem->IsCDDA())
       { // Nothing found, load tag from file,
         // always try to load cddb info
         // get correct tag parser
-        boost::movelib::unique_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(*pItem));
-        if (NULL != pLoader.get())
+        std::unique_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(*pItem));
+        if (nullptr != pLoader)
           // get tag
           pLoader->Load(pItem->GetPath(), *pItem->GetMusicInfoTag());
         m_tagReads++;
@@ -292,7 +298,7 @@ void CMusicInfoLoader::SaveCache(const std::string& strFileName, CFileItemList& 
   if (file.OpenForWrite(strFileName))
   {
     CArchive ar(&file, CArchive::store);
-    ar << (int)items.Size();
+    ar << items.Size();
     for (int i = 0; i < iSize; i++)
     {
       CFileItemPtr pItem = items[i];

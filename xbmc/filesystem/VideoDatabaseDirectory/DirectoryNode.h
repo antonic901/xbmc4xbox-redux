@@ -1,25 +1,15 @@
-#pragma once
 /*
- *      Copyright (C) 2016 Team Kodi
- *      http://kodi.tv
+ *  Copyright (C) 2016-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Kodi; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
+#pragma once
+
 #include "utils/UrlOptions.h"
+
 #include <string>
 
 class CFileItemList;
@@ -32,7 +22,7 @@ namespace XFILE
 
     typedef enum _NODE_TYPE
     {
-      NODE_TYPE_NONE=0,
+      NODE_TYPE_NONE = 0,
       NODE_TYPE_MOVIES_OVERVIEW,
       NODE_TYPE_TVSHOWS_OVERVIEW,
       NODE_TYPE_GENRE,
@@ -55,7 +45,8 @@ namespace XFILE
       NODE_TYPE_SETS,
       NODE_TYPE_COUNTRY,
       NODE_TYPE_TAGS,
-      NODE_TYPE_INPROGRESS_TVSHOWS
+      NODE_TYPE_INPROGRESS_TVSHOWS,
+      NODE_TYPE_VIDEOVERSIONS
     } NODE_TYPE;
 
     typedef struct {
@@ -76,6 +67,7 @@ namespace XFILE
       bool GetChilds(CFileItemList& items);
       virtual NODE_TYPE GetChildType() const;
       virtual std::string GetLocalizedName() const;
+      void CollectQueryParams(CQueryParams& params) const;
 
       CDirectoryNode* GetParent() const;
 
@@ -86,8 +78,7 @@ namespace XFILE
       CDirectoryNode(NODE_TYPE Type, const std::string& strName, CDirectoryNode* pParent);
       static CDirectoryNode* CreateNode(NODE_TYPE Type, const std::string& strName, CDirectoryNode* pParent);
 
-      void AddOptions(const std::string &options);
-      void CollectQueryParams(CQueryParams& params) const;
+      void AddOptions(const std::string& options);
 
       const std::string& GetName() const;
       int GetID() const;
