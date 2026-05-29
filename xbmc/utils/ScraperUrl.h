@@ -11,6 +11,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <boost/move/move.hpp>
 
 class TiXmlElement;
 namespace XFILE
