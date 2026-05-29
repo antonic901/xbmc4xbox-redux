@@ -1,93 +1,120 @@
-#ifndef SCRAPER_URL_H
-#define SCRAPER_URL_H
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <vector>
+#pragma once
+
 #include <map>
 #include <string>
+#include <vector>
 
 class TiXmlElement;
-namespace XFILE { class CCurlFile; }
+namespace XFILE
+{
+class CCurlFile;
+}
 
 class CScraperUrl
 {
 public:
-  CScraperUrl(const std::string&);
-  CScraperUrl(const TiXmlElement*);
-  CScraperUrl();
-  ~CScraperUrl();
-
-  enum URLTYPES
+  enum UrlType
   {
-    URL_TYPE_GENERAL = 1,
-    URL_TYPE_SEASON = 2
+    General = 1,
+    Season = 2
   };
 
   struct SUrlEntry
   {
+    explicit SUrlEntry(std::string url = "") : m_url(boost::move(url)), m_type(General), m_post(false), m_isgz(false), m_season(-1) {}
+
     std::string m_spoof;
     std::string m_url;
     std::string m_cache;
     std::string m_aspect;
-    URLTYPES m_type;
+    std::string m_preview;
+    UrlType m_type;
     bool m_post;
     bool m_isgz;
     int m_season;
   };
 
-  bool Parse();
-  bool ParseString(std::string); // copies by intention
-  bool ParseElement(const TiXmlElement*);
-  bool ParseEpisodeGuide(std::string strUrls); // copies by intention
-  void AddElement(std::string url, std::string aspect = "", std::string referrer = "", std::string cache = "", bool post = false, bool isgz = false, int season = -1);
+  CScraperUrl();
+  explicit CScraperUrl(const std::string& strUrl);
+  explicit CScraperUrl(const TiXmlElement* element);
+  ~CScraperUrl();
 
-  const SUrlEntry GetFirstThumb(const std::string &type = "") const;
-  const SUrlEntry GetSeasonThumb(int season, const std::string &type = "") const;
-  unsigned int GetMaxSeasonThumb() const;
+  void Clear();
+
+  bool HasData() const { return !m_data.empty(); }
+  const std::string& GetData() const { return m_data; }
+  void SetData(std::string data);
+
+  const std::string& GetTitle() const { return m_title; }
+  void SetTitle(std::string title) { m_title = boost::move(title); }
+
+  const std::string& GetId() const { return m_id; }
+  void SetId(std::string id) { m_id = boost::move(id); }
+
+  double GetRelevance() const { return m_relevance; }
+  void SetRelevance(double relevance) { m_relevance = relevance; }
+
+  bool HasUrls() const { return !m_urls.empty(); }
+  const std::vector<SUrlEntry>& GetUrls() const { return m_urls; }
+  void SetUrls(std::vector<SUrlEntry> urls) { m_urls = boost::move(urls); }
+  void AppendUrl(SUrlEntry url) { m_urls.push_back(boost::move(url)); }
+
+  const SUrlEntry GetFirstUrlByType(const std::string& type = "") const;
+  const SUrlEntry GetSeasonUrl(int season, const std::string& type = "") const;
+  unsigned int GetMaxSeasonUrl() const;
+
+  std::string GetFirstThumbUrl() const;
+
+  /*! \brief fetch the full URLs (including referrer) of thumbs
+   \param thumbs [out] vector of thumb URLs to fill
+   \param type the type of thumb URLs to fetch, if empty (the default) picks any
+   \param season number of season that we want thumbs for, -1 indicates no season (the default)
+   \param unique avoid adding duplicate URLs when adding to a thumbs vector with existing items
+   */
+  void GetThumbUrls(std::vector<std::string>& thumbs,
+                    const std::string& type = "",
+                    int season = -1,
+                    bool unique = false) const;
+
+  bool Parse();
+  bool ParseFromData(const std::string& data); // copies by intention
+  bool ParseAndAppendUrl(const TiXmlElement* element);
+  bool ParseAndAppendUrlsFromEpisodeGuide(const std::string& episodeGuide); // copies by intention
+  void AddParsedUrl(const std::string& url,
+                    const std::string& aspect = "",
+                    const std::string& preview = "",
+                    const std::string& referrer = "",
+                    const std::string& cache = "",
+                    bool post = false,
+                    bool isgz = false,
+                    int season = -1);
 
   /*! \brief fetch the full URL (including referrer) of a thumb
    \param URL entry to use to create the full URL
    \return the full URL, including referrer
    */
-  static std::string GetThumbURL(const CScraperUrl::SUrlEntry &entry);
+  static std::string GetThumbUrl(const CScraperUrl::SUrlEntry& entry);
 
-  /*! \brief fetch the full URL (including referrer) of thumbs
-   \param thumbs [out] vector of thumb URLs to fill
-   \param type the type of thumb URLs to fetch, if empty (the default) picks any
-   \param season number of season that we want thumbs for, -1 indicates no season (the default)
-   */
-  void GetThumbURLs(std::vector<std::string> &thumbs, const std::string &type = "", int season = -1) const;
-  void Clear();
-  static bool Get(const SUrlEntry&, std::string&, XFILE::CCurlFile& http,
-                 const std::string& cacheContext);
+  static bool Get(const SUrlEntry& scrURL,
+                  std::string& strHTML,
+                  XFILE::CCurlFile& http,
+                  const std::string& cacheContext);
 
-  std::string m_xml;
-  std::string m_spoof; // for backwards compatibility only!
-  std::string strTitle;
-  std::string strId;
-  double relevance;
-  std::vector<SUrlEntry> m_url;
+  // ATTENTION: this member MUST NOT be used directly except from databases
+  std::string m_data;
+
+private:
+  std::string m_title;
+  std::string m_id;
+  double m_relevance;
+  std::vector<SUrlEntry> m_urls;
+  bool m_parsed;
 };
-
-#endif
-
-

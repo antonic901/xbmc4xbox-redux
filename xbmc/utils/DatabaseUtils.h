@@ -36,16 +36,17 @@ namespace dbiplus
   class field_value;
 }
 
-typedef enum {
+typedef enum
+{
   // special fields used during sorting
   FieldUnknown = -1,
   FieldNone = 0,
-  FieldSort,        // used to store the string to use for sorting
+  FieldSort, // used to store the string to use for sorting
   FieldSortSpecial, // whether the item needs special handling (0 = no, 1 = sort on top, 2 = sort on bottom)
   FieldLabel,
   FieldFolder,
   FieldMediaType,
-  FieldRow,         // the row number in a dataset
+  FieldRow, // the row number in a dataset
 
   // special fields not retrieved from the database
   FieldSize,
@@ -71,12 +72,17 @@ typedef enum {
   FieldId,
   FieldGenre,
   FieldAlbum,
+  FieldDiscTitle,
+  FieldIsBoxset,
+  FieldTotalDiscs,
   FieldOrigYear,
+  FieldOrigDate,
   FieldArtist,
   FieldArtistSort,
   FieldAlbumArtist,
   FieldTitle,
   FieldSortTitle,
+  FieldOriginalTitle,
   FieldYear,
   FieldTime,
   FieldTrackNumber,
@@ -89,6 +95,8 @@ typedef enum {
   FieldComment,
   FieldRole,
   FieldDateAdded,
+  FieldDateModified,
+  FieldDateNew,
   FieldTvShowTitle,
   FieldPlot,
   FieldPlotOutline,
@@ -129,17 +137,30 @@ typedef enum {
   FieldSubtitleLanguage,
   FieldProductionCode,
   FieldTag,
+  FieldVideoAssetTitle,
   FieldChannelName,
   FieldChannelNumber,
   FieldInstruments,
   FieldBiography,
+  FieldArtistType,
+  FieldGender,
+  FieldDisambiguation,
   FieldBorn,
   FieldBandFormed,
   FieldDisbanded,
   FieldDied,
   FieldStereoMode,
   FieldUserRating,
-  FieldRelevance, // Used for actors' appearences
+  FieldRelevance, // Used for actors' appearances
+  FieldClientChannelOrder,
+  FieldBPM,
+  FieldMusicBitRate,
+  FieldSampleRate,
+  FieldNoOfChannels,
+  FieldAlbumStatus,
+  FieldAlbumDuration,
+  FieldProvider,
+  FieldUserPreference,
   FieldMax
 } Field;
 
