@@ -15,6 +15,7 @@
 #include "utils/ScraperUrl.h"
 #include "utils/StreamDetails.h"
 #include "video/Bookmark.h"
+#include "video/VideoManagerTypes.h" // VideoAssetType
 
 #include <string>
 #include <vector>
@@ -24,10 +25,9 @@ class TiXmlNode;
 class TiXmlElement;
 class CVariant;
 
-enum class VideoAssetType;
-
 struct SActorInfo
 {
+  SActorInfo() : order(-1) {}
   bool operator<(const SActorInfo &right) const
   {
     return order < right.order;
@@ -36,17 +36,17 @@ struct SActorInfo
   std::string strRole;
   CScraperUrl thumbUrl;
   std::string thumb;
-  int        order = -1;
+  int        order;
 };
 
 class CRating
 {
 public:
-  CRating() {}
-  explicit CRating(float r): rating(r) {}
+  CRating() : rating(0.0f), votes(0) {}
+  explicit CRating(float r): rating(r), votes(0) {}
   CRating(float r, int v): rating(r), votes(v) {}
-  float rating = 0.0f;
-  int votes = 0;
+  float rating;
+  int votes;
 };
 typedef std::map<std::string, CRating> RatingMap;
 
@@ -210,6 +210,8 @@ public:
   class CAssetInfo
   {
   public:
+    CAssetInfo() : m_id(-1), m_type(VideoAssetType::UNKNOWN) {}
+
     /*!
      * @brief Clear all data.
      */
@@ -273,18 +275,18 @@ public:
      * @brief Get the video's asset type.
      * @return The type or VideoAssetType::UNKNOWN if the item has no video asset.
      */
-    VideoAssetType GetType() const { return m_type; }
+    VideoAssetType::Type GetType() const { return m_type; }
 
     /*!
      * @brief Set this videos's asset type.
      * @param assetType The type.
      */
-    void SetType(VideoAssetType assetType);
+    void SetType(VideoAssetType::Type assetType);
 
   private:
     std::string m_title;
-    int m_id{-1};
-    VideoAssetType m_type{-1};
+    int m_id;
+    VideoAssetType::Type m_type;
   };
 
   /*!
@@ -428,19 +430,19 @@ private:
   std::string m_strDefaultRating;
   std::string m_strDefaultUniqueID;
   std::map<std::string, std::string> m_uniqueIDs;
-  std::string Trim(std::string &&value);
-  std::vector<std::string> Trim(std::vector<std::string> &&items);
+  std::string Trim(std::string &value);
+  std::vector<std::string> Trim(std::vector<std::string> &items);
 
   int m_playCount;
   CBookmark m_resumePoint;
   static const int PLAYCOUNT_NOT_SET = -1;
 
   CAssetInfo m_assetInfo;
-  bool m_hasVideoVersions{false};
-  bool m_hasVideoExtras{false};
-  bool m_isDefaultVideoVersion{false};
+  bool m_hasVideoVersions;
+  bool m_hasVideoExtras;
+  bool m_isDefaultVideoVersion;
 
-  bool m_updateSetOverview{true};
+  bool m_updateSetOverview;
 };
 
 typedef std::vector<CVideoInfoTag> VECMOVIES;

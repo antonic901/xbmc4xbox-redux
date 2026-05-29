@@ -318,6 +318,12 @@ TiXmlNode* XMLUtils::SetFloat(TiXmlNode* pRootNode, const char *strTag, float va
   return SetString(pRootNode, strTag, strValue);
 }
 
+TiXmlNode* XMLUtils::SetDouble(TiXmlNode* pRootNode, const char* strTag, double value)
+{
+  std::string strValue = StringUtils::Format("%f", value);
+  return SetString(pRootNode, strTag, strValue);
+}
+
 void XMLUtils::SetBoolean(TiXmlNode* pRootNode, const char *strTag, bool value)
 {
   SetString(pRootNode, strTag, value ? "true" : "false");

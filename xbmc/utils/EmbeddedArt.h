@@ -17,7 +17,7 @@
 class EmbeddedArtInfo : public IArchivable
 {
 public:
-  EmbeddedArtInfo() {}
+  EmbeddedArtInfo() : m_size(0) {}
   EmbeddedArtInfo(size_t size, const std::string &mime, const std::string& type = "");
   virtual ~EmbeddedArtInfo() {}
 
@@ -30,7 +30,7 @@ public:
   bool Matches(const EmbeddedArtInfo &right) const;
   void SetType(const std::string& type) { m_type = type; }
 
-  size_t m_size = 0;
+  size_t m_size;
   std::string m_mime;
   std::string m_type;
 };
