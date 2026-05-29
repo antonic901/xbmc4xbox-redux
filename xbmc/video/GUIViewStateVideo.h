@@ -16,11 +16,11 @@ public:
   explicit CGUIViewStateWindowVideo(const CFileItemList& items) : CGUIViewState(items) {}
 
 protected:
-  VECSOURCES& GetSources() override;
-  std::string GetLockType() override;
-  PLAYLIST::Id GetPlaylist() const override;
-  std::string GetExtensions() override;
-  bool AutoPlayNextItem() override;
+  virtual VECSOURCES& GetSources();
+  virtual std::string GetLockType();
+  virtual PLAYLIST::Id GetPlaylist() const;
+  virtual std::string GetExtensions();
+  virtual bool AutoPlayNextItem();
 };
 
 class CGUIViewStateVideoPlaylist : public CGUIViewStateWindowVideo
@@ -29,18 +29,18 @@ public:
   explicit CGUIViewStateVideoPlaylist(const CFileItemList& items);
 
 protected:
-  void SaveViewState() override;
+  virtual void SaveViewState();
 };
 
 class CGUIViewStateWindowVideoNav : public CGUIViewStateWindowVideo
 {
 public:
   explicit CGUIViewStateWindowVideoNav(const CFileItemList& items);
-  bool AutoPlayNextItem() override;
+  virtual bool AutoPlayNextItem();
 
 protected:
-  void SaveViewState() override;
-  VECSOURCES& GetSources() override;
+  virtual void SaveViewState();
+  virtual VECSOURCES& GetSources();
 };
 
 class CGUIViewStateWindowVideoPlaylist : public CGUIViewStateWindowVideo
@@ -49,11 +49,11 @@ public:
   explicit CGUIViewStateWindowVideoPlaylist(const CFileItemList& items);
 
 protected:
-  void SaveViewState() override;
-  bool HideExtensions() override;
-  bool HideParentDirItems() override;
-  VECSOURCES& GetSources() override;
-  bool AutoPlayNextItem() override { return false; }
+  virtual void SaveViewState();
+  virtual bool HideExtensions();
+  virtual bool HideParentDirItems();
+  virtual VECSOURCES& GetSources();
+  virtual bool AutoPlayNextItem() { return false; }
 };
 
 class CGUIViewStateVideoMovies : public CGUIViewStateWindowVideo
@@ -61,7 +61,7 @@ class CGUIViewStateVideoMovies : public CGUIViewStateWindowVideo
 public:
   explicit CGUIViewStateVideoMovies(const CFileItemList& items);
 protected:
-  void SaveViewState() override;
+  virtual void SaveViewState();
 };
 
 class CGUIViewStateVideoMusicVideos : public CGUIViewStateWindowVideo
@@ -69,7 +69,7 @@ class CGUIViewStateVideoMusicVideos : public CGUIViewStateWindowVideo
 public:
   explicit CGUIViewStateVideoMusicVideos(const CFileItemList& items);
 protected:
-  void SaveViewState() override;
+  virtual void SaveViewState();
 };
 
 class CGUIViewStateVideoTVShows : public CGUIViewStateWindowVideo
@@ -77,7 +77,7 @@ class CGUIViewStateVideoTVShows : public CGUIViewStateWindowVideo
 public:
   explicit CGUIViewStateVideoTVShows(const CFileItemList& items);
 protected:
-  void SaveViewState() override;
+  virtual void SaveViewState();
 };
 
 class CGUIViewStateVideoEpisodes : public CGUIViewStateWindowVideo
@@ -85,6 +85,6 @@ class CGUIViewStateVideoEpisodes : public CGUIViewStateWindowVideo
 public:
   explicit CGUIViewStateVideoEpisodes(const CFileItemList& items);
 protected:
-  void SaveViewState() override;
+  virtual void SaveViewState();
 };
 

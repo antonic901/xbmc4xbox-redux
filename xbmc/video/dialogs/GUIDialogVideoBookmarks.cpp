@@ -163,7 +163,7 @@ int CGUIDialogVideoBookmarks::ItemToBookmarkIndex(int item) const
   if (item < 0 || item >= static_cast<int>(m_vecItems->Size()))
     return -1;
 
-  const std::shared_ptr<CFileItem> fileItem{m_vecItems->Get(item)};
+  const boost::shared_ptr<CFileItem> fileItem{m_vecItems->Get(item)};
 
   if (!fileItem->GetProperty("isbookmark").asBoolean(false))
     return -1;
@@ -239,7 +239,7 @@ void CGUIDialogVideoBookmarks::OnRefreshList()
   videoDatabase.GetBookMarksForFile(m_filePath, m_bookmarks, CBookmark::EPISODE, true);
   videoDatabase.Close();
 
-  std::unique_lock<CCriticalSection> lock(m_refreshSection);
+  CSingleLock lock(m_refreshSection);
   m_vecItems->Clear();
 
   // cycle through each stored bookmark and add it to our list control
@@ -424,7 +424,7 @@ bool CGUIDialogVideoBookmarks::AddBookmark(CVideoInfoTag* tag)
 
   if (hasImage)
   {
-    const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+    const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
     auto crc = Crc32::ComputeFromLowerCase(g_application.CurrentFile());
     bookmark.thumbNailImage =

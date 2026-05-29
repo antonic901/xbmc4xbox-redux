@@ -24,9 +24,9 @@ class CGUIDialogVideoInfo :
 {
 public:
   CGUIDialogVideoInfo(void);
-  ~CGUIDialogVideoInfo(void) override;
-  bool OnMessage(CGUIMessage& message) override;
-  bool OnAction(const CAction &action) override;
+  virtual ~CGUIDialogVideoInfo(void);
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction &action);
   void SetMovie(const CFileItem *item);
   bool NeedRefresh() const;
   bool RefreshAll() const;
@@ -35,40 +35,40 @@ public:
   bool HasUpdatedItems() const { return m_hasUpdatedItems; }
 
   std::string GetThumbnail() const;
-  std::shared_ptr<CFileItem> GetCurrentListItem(int offset = 0) override { return m_movieItem; }
+  virtual boost::shared_ptr<CFileItem> GetCurrentListItem(int offset = 0) { return m_movieItem; }
   const CFileItemList& CurrentDirectory() const { return *m_castList; }
-  bool HasListItems() const override { return true; }
+  virtual bool HasListItems() const { return true; }
 
   static void AddItemPathToFileBrowserSources(std::vector<CMediaSource>& sources,
                                               const CFileItem& item);
 
-  static int ManageVideoItem(const std::shared_ptr<CFileItem>& item);
-  static bool UpdateVideoItemTitle(const std::shared_ptr<CFileItem>& pItem);
-  static bool CanDeleteVideoItem(const std::shared_ptr<CFileItem>& item);
-  static bool DeleteVideoItemFromDatabase(const std::shared_ptr<CFileItem>& item,
+  static int ManageVideoItem(const boost::shared_ptr<CFileItem>& item);
+  static bool UpdateVideoItemTitle(const boost::shared_ptr<CFileItem>& pItem);
+  static bool CanDeleteVideoItem(const boost::shared_ptr<CFileItem>& item);
+  static bool DeleteVideoItemFromDatabase(const boost::shared_ptr<CFileItem>& item,
                                           bool unavailable = false);
-  static bool DeleteVideoItem(const std::shared_ptr<CFileItem>& item, bool unavailable = false);
+  static bool DeleteVideoItem(const boost::shared_ptr<CFileItem>& item, bool unavailable = false);
 
-  static bool ManageMovieSets(const std::shared_ptr<CFileItem>& item);
+  static bool ManageMovieSets(const boost::shared_ptr<CFileItem>& item);
   static bool GetMoviesForSet(const CFileItem *setItem, CFileItemList &originalMovies, CFileItemList &selectedMovies);
-  static bool GetSetForMovie(const CFileItem* movieItem, std::shared_ptr<CFileItem>& selectedSet);
+  static bool GetSetForMovie(const CFileItem* movieItem, boost::shared_ptr<CFileItem>& selectedSet);
   static bool SetMovieSet(const CFileItem *movieItem, const CFileItem *selectedSet);
 
-  static void ManageVideoVersions(const std::shared_ptr<CFileItem>& item);
+  static void ManageVideoVersions(const boost::shared_ptr<CFileItem>& item);
 
   static bool GetItemsForTag(const std::string &strHeading, const std::string &type, CFileItemList &items, int idTag = -1, bool showAll = true);
-  static bool AddItemsToTag(const std::shared_ptr<CFileItem>& tagItem);
-  static bool RemoveItemsFromTag(const std::shared_ptr<CFileItem>& tagItem);
+  static bool AddItemsToTag(const boost::shared_ptr<CFileItem>& tagItem);
+  static bool RemoveItemsFromTag(const boost::shared_ptr<CFileItem>& tagItem);
 
-  static bool ChooseAndManageVideoItemArtwork(const std::shared_ptr<CFileItem>& item);
-  static bool ManageVideoItemArtwork(const std::shared_ptr<CFileItem>& item, const MediaType& type);
+  static bool ChooseAndManageVideoItemArtwork(const boost::shared_ptr<CFileItem>& item);
+  static bool ManageVideoItemArtwork(const boost::shared_ptr<CFileItem>& item, const MediaType& type);
 
   static std::string GetLocalizedVideoType(const std::string &strType);
 
   static void ShowFor(const CFileItem& item);
 
 protected:
-  void OnInitWindow() override;
+  virtual void OnInitWindow();
   void Update();
   void SetLabel(int iControl, const std::string& strLabel);
   void SetUserrating(int userrating) const;
@@ -99,12 +99,12 @@ protected:
   void OnSetUserrating() const;
   void PlayTrailer();
 
-  static bool UpdateVideoItemSortTitle(const std::shared_ptr<CFileItem>& pItem);
-  static bool LinkMovieToTvShow(const std::shared_ptr<CFileItem>& item,
+  static bool UpdateVideoItemSortTitle(const boost::shared_ptr<CFileItem>& pItem);
+  static bool LinkMovieToTvShow(const boost::shared_ptr<CFileItem>& item,
                                 bool bRemove,
                                 CVideoDatabase& database);
 
-  std::shared_ptr<CFileItem> m_movieItem;
+  boost::shared_ptr<CFileItem> m_movieItem;
   CFileItemList *m_castList;
   bool m_bViewReview = false;
   bool m_bRefresh = false;
@@ -115,7 +115,7 @@ protected:
   bool m_hasUpdatedItems{false};
 
 private:
-  static bool ManageVideoItemArtwork(const std::shared_ptr<CFileItem>& item,
+  static bool ManageVideoItemArtwork(const boost::shared_ptr<CFileItem>& item,
                                      const MediaType& mediaType,
                                      const std::string& artType);
   bool ChooseVideoVersion();

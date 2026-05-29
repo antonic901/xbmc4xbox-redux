@@ -54,7 +54,7 @@ CGUIWindowVideoPlaylist::CGUIWindowVideoPlaylist()
   m_movingFrom = -1;
 }
 
-CGUIWindowVideoPlaylist::~CGUIWindowVideoPlaylist() = default;
+CGUIWindowVideoPlaylist::~CGUIWindowVideoPlaylist() {}
 
 void CGUIWindowVideoPlaylist::OnPrepareFileItems(CFileItemList& items)
 {
@@ -379,7 +379,7 @@ namespace
 class CVideoPlayActionProcessor : public CVideoPlayActionProcessorBase
 {
 public:
-  CVideoPlayActionProcessor(const std::shared_ptr<CFileItem>& item,
+  CVideoPlayActionProcessor(const boost::shared_ptr<CFileItem>& item,
                             int itemIndex,
                             const std::string& player)
     : CVideoPlayActionProcessorBase(item), m_itemIndex(itemIndex), m_player(player)
@@ -387,7 +387,7 @@ public:
   }
 
 protected:
-  bool OnResumeSelected() override
+  virtual bool OnResumeSelected()
   {
     auto& playlistPlayer = CServiceBroker::GetPlaylistPlayer();
     playlistPlayer.SetCurrentPlaylist(PLAYLIST::TYPE_VIDEO);
@@ -401,7 +401,7 @@ protected:
     return true;
   }
 
-  bool OnPlaySelected() override
+  virtual bool OnPlaySelected()
   {
     auto& playlistPlayer = CServiceBroker::GetPlaylistPlayer();
     playlistPlayer.SetCurrentPlaylist(PLAYLIST::TYPE_VIDEO);
@@ -467,7 +467,7 @@ void CGUIWindowVideoPlaylist::RemovePlayListItem(int iItem)
 void CGUIWindowVideoPlaylist::SavePlayList()
 {
   std::string strNewFileName;
-  if (CGUIKeyboardFactory::ShowAndGetInput(strNewFileName, CVariant{g_localizeStrings.Get(16012)},
+  if (CGUIKeyboardFactory::ShowAndGetInput(strNewFileName, g_localizeStrings.Get(16012),
                                            false))
   {
     // need 2 rename it

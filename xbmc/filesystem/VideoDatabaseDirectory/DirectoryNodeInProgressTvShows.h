@@ -19,9 +19,9 @@ namespace XFILE
     public:
       CDirectoryNodeInProgressTvShows(const std::string& strEntryName, CDirectoryNode* pParent);
     protected:
-      NODE_TYPE GetChildType() const override;
-      bool GetContent(CFileItemList& items) const override;
-      std::string GetLocalizedName() const override;
+      virtual NODE_TYPE GetChildType() const;
+      virtual bool GetContent(CFileItemList& items) const;
+      virtual std::string GetLocalizedName() const;
     };
   }
 }

@@ -90,12 +90,12 @@ public:
   {
   }
 
-  void Run() override
+  virtual void Run()
   {
     m_result = m_dir.GetDirectory(m_url, m_items, m_useDir, true);
   }
 
-  void Cancel() override
+  virtual void Cancel()
   {
     m_dir.CancelDirectory();
   }
@@ -403,7 +403,7 @@ bool CGUIMediaWindow::OnMessage(CGUIMessage& message)
       else if (message.GetParam1()==GUI_MSG_UPDATE_ITEM && message.GetItem())
       {
         int flag = message.GetParam2();
-        CFileItemPtr newItem = std::static_pointer_cast<CFileItem>(message.GetItem());
+        CFileItemPtr newItem = boost::static_pointer_cast<CFileItem>(message.GetItem());
 
         if (IsActive() || (flag & GUI_MSG_FLAG_FORCE_UPDATE))
         {
@@ -636,7 +636,7 @@ void CGUIMediaWindow::ClearFileItems()
  */
 void CGUIMediaWindow::SortItems(CFileItemList &items)
 {
-  std::unique_ptr<CGUIViewState> guiState(CGUIViewState::GetViewState(GetID(), items));
+  boost::movelib::unique_ptr<CGUIViewState> guiState(CGUIViewState::GetViewState(GetID(), items));
 
   if (guiState)
   {
@@ -700,7 +700,7 @@ void CGUIMediaWindow::FormatItemLabels(CFileItemList &items, const LABEL_MASKS &
  */
 void CGUIMediaWindow::FormatAndSort(CFileItemList &items)
 {
-  std::unique_ptr<CGUIViewState> viewState(CGUIViewState::GetViewState(GetID(), items));
+  boost::movelib::unique_ptr<CGUIViewState> viewState(CGUIViewState::GetViewState(GetID(), items));
 
   if (viewState)
   {
@@ -1014,7 +1014,7 @@ bool CGUIMediaWindow::OnClick(int iItem, const std::string &player)
   if (iItem < 0 || iItem >= m_vecItems->Size())
     return true;
 
-  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   CFileItemPtr pItem = m_vecItems->Get(iItem);
 
@@ -1166,7 +1166,7 @@ bool CGUIMediaWindow::OnClick(int iItem, const std::string &player)
         if (plugin && plugin->Provides(CPluginSource::AUDIO))
         {
           CFileItemList items;
-          std::unique_ptr<CGUIViewState> state(CGUIViewState::GetViewState(GetID(), items));
+          boost::movelib::unique_ptr<CGUIViewState> state(CGUIViewState::GetViewState(GetID(), items));
           autoplay = state.get() && state->AutoPlayNextItem();
         }
       }
@@ -1202,7 +1202,7 @@ bool CGUIMediaWindow::HaveDiscOrConnection(const std::string& strPath, int iDriv
   {
     if (!CServiceBroker::GetMediaManager().IsDiscInDrive(strPath))
     {
-      HELPERS::ShowOKDialogText(CVariant{218}, CVariant{219});
+      HELPERS::ShowOKDialogText(218, 219);
       return false;
     }
   }
@@ -1211,7 +1211,7 @@ bool CGUIMediaWindow::HaveDiscOrConnection(const std::string& strPath, int iDriv
     //! @todo Handle not connected to a remote share
     if (!CServiceBroker::GetNetwork().IsConnected())
     {
-      HELPERS::ShowOKDialogText(CVariant{220}, CVariant{221});
+      HELPERS::ShowOKDialogText(220, 221);
       return false;
     }
   }
@@ -1237,7 +1237,7 @@ void CGUIMediaWindow::ShowShareErrorMessage(CFileItem* pItem) const
   else
     idMessageText = 15300; // Path not found or invalid
 
-  HELPERS::ShowOKDialogText(CVariant{220}, CVariant{idMessageText});
+  HELPERS::ShowOKDialogText(220, idMessageText);
 }
 
 /*!
@@ -1638,7 +1638,7 @@ void CGUIMediaWindow::OnDeleteItem(int iItem)
   if (item->IsPlayList())
     item->m_bIsFolder = false;
 
-  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   if (profileManager->GetCurrentProfile().getLockMode() != LOCK_MODE_EVERYONE && profileManager->GetCurrentProfile().filesLocked())
   {
@@ -1664,7 +1664,7 @@ void CGUIMediaWindow::OnRenameItem(int iItem)
   if (iItem < 0 || iItem >= m_vecItems->Size())
     return;
 
-  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   if (profileManager->GetCurrentProfile().getLockMode() != LOCK_MODE_EVERYONE && profileManager->GetCurrentProfile().filesLocked())
   {
@@ -1838,8 +1838,8 @@ bool CGUIMediaWindow::WaitForNetwork() const
     return true;
 
   CURL url(m_vecItems->GetPath());
-  progress->SetHeading(CVariant{1040}); // Loading Directory
-  progress->SetLine(1, CVariant{url.GetWithoutUserDetails()});
+  progress->SetHeading(1040); // Loading Directory
+  progress->SetLine(1, url.GetWithoutUserDetails());
   progress->ShowProgressBar(false);
   progress->Open();
   while (!CServiceBroker::GetNetwork().IsAvailable())
@@ -2217,7 +2217,7 @@ bool CGUIMediaWindow::GetDirectoryItems(CURL &url, CFileItemList &items, bool us
     }
     else if (!getItems.m_result)
     {
-      if (CServiceBroker::GetAppMessenger()->IsProcessThread() && m_rootDir.GetDirImpl() &&
+      if (g_application.IsCurrentThread() && m_rootDir.GetDirImpl() &&
           !m_rootDir.GetDirImpl()->ProcessRequirements())
       {
         ret = false;

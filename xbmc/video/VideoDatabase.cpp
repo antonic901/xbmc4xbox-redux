@@ -72,10 +72,10 @@ using namespace KODI::MESSAGING;
 using namespace KODI::GUILIB;
 
 //********************************************************************************************************************************
-CVideoDatabase::CVideoDatabase(void) = default;
+CVideoDatabase::CVideoDatabase(void) {}
 
 //********************************************************************************************************************************
-CVideoDatabase::~CVideoDatabase(void) = default;
+CVideoDatabase::~CVideoDatabase(void) {}
 
 //********************************************************************************************************************************
 bool CVideoDatabase::Open()
@@ -1373,7 +1373,7 @@ int CVideoDatabase::GetEpisodeId(const std::string& strFilenameAndPath, int idEp
       return -1;
 
     // need this due to the nested GetEpisodeInfo query
-    std::unique_ptr<Dataset> pDS;
+    boost::movelib::unique_ptr<Dataset> pDS;
     pDS.reset(m_pDB->CreateDataset());
     if (nullptr == pDS)
       return -1;
@@ -3692,7 +3692,7 @@ void CVideoDatabase::DeleteMovie(int idMovie,
         // Clean up the other assets attached to the movie, if any.
 
         // need local dataset due to nested DeleteVideoAsset query
-        const std::unique_ptr<Dataset> pDS{m_pDB->CreateDataset()};
+        const boost::movelib::unique_ptr<Dataset> pDS{m_pDB->CreateDataset()};
 
         pDS->query(
             PrepareSQL("SELECT idFile FROM videoversion WHERE idMedia=%i AND media_type='%s'",
@@ -4073,7 +4073,7 @@ void CVideoDatabase::GetSameVideoItems(const CFileItem& item, CFileItemList& ite
     // get video item details
     for (const auto id : itemIds)
     {
-      auto current = std::make_shared<CFileItem>();
+      auto current = boost::make_shared<CFileItem>();
       if (GetDetailsByTypeAndId(*current.get(), itemType, id))
         items.Add(current);
     }
@@ -4110,7 +4110,7 @@ void CVideoDatabase::DeleteTag(int idTag, VideoDbContentType mediaType)
   }
 }
 
-void CVideoDatabase::GetDetailsFromDB(std::unique_ptr<Dataset> &pDS, int min, int max, const SDbTableOffsets *offsets, CVideoInfoTag &details, int idxOffset)
+void CVideoDatabase::GetDetailsFromDB(boost::movelib::unique_ptr<Dataset> &pDS, int min, int max, const SDbTableOffsets *offsets, CVideoInfoTag &details, int idxOffset)
 {
   GetDetailsFromDB(pDS->get_sql_record(), min, max, offsets, details, idxOffset);
 }
@@ -4218,7 +4218,7 @@ bool CVideoDatabase::GetStreamDetails(CVideoInfoTag& tag) const
   CStreamDetails& details = tag.m_streamDetails;
   details.Reset();
 
-  std::unique_ptr<Dataset> pDS(m_pDB->CreateDataset());
+  boost::movelib::unique_ptr<Dataset> pDS(m_pDB->CreateDataset());
   try
   {
     std::string strSQL = PrepareSQL("SELECT * FROM streamdetails WHERE idFile = %i", tag.m_iFileId);
@@ -4332,7 +4332,7 @@ bool CVideoDatabase::GetResumePoint(CVideoInfoTag& tag)
   return match;
 }
 
-CVideoInfoTag CVideoDatabase::GetDetailsForMovie(std::unique_ptr<Dataset> &pDS, int getDetails /* = VideoDbDetailsNone */)
+CVideoInfoTag CVideoDatabase::GetDetailsForMovie(boost::movelib::unique_ptr<Dataset> &pDS, int getDetails /* = VideoDbDetailsNone */)
 {
   return GetDetailsForMovie(pDS->get_sql_record(), getDetails);
 }
@@ -4420,7 +4420,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForMovie(const dbiplus::sql_record* cons
   return details;
 }
 
-CVideoInfoTag CVideoDatabase::GetDetailsForTvShow(std::unique_ptr<Dataset> &pDS, int getDetails /* = VideoDbDetailsNone */, CFileItem* item /* = NULL */)
+CVideoInfoTag CVideoDatabase::GetDetailsForTvShow(boost::movelib::unique_ptr<Dataset> &pDS, int getDetails /* = VideoDbDetailsNone */, CFileItem* item /* = NULL */)
 {
   return GetDetailsForTvShow(pDS->get_sql_record(), getDetails, item);
 }
@@ -4495,7 +4495,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForTvShow(const dbiplus::sql_record* con
   return details;
 }
 
-CVideoInfoTag CVideoDatabase::GetBasicDetailsForEpisode(std::unique_ptr<Dataset> &pDS)
+CVideoInfoTag CVideoDatabase::GetBasicDetailsForEpisode(boost::movelib::unique_ptr<Dataset> &pDS)
 {
   return GetBasicDetailsForEpisode(pDS->get_sql_record());
 }
@@ -4520,7 +4520,7 @@ CVideoInfoTag CVideoDatabase::GetBasicDetailsForEpisode(const dbiplus::sql_recor
   return details;
 }
 
-CVideoInfoTag CVideoDatabase::GetDetailsForEpisode(std::unique_ptr<Dataset> &pDS, int getDetails /* = VideoDbDetailsNone */)
+CVideoInfoTag CVideoDatabase::GetDetailsForEpisode(boost::movelib::unique_ptr<Dataset> &pDS, int getDetails /* = VideoDbDetailsNone */)
 {
   return GetDetailsForEpisode(pDS->get_sql_record(), getDetails);
 }
@@ -4580,7 +4580,7 @@ CVideoInfoTag CVideoDatabase::GetDetailsForEpisode(const dbiplus::sql_record* co
   return details;
 }
 
-CVideoInfoTag CVideoDatabase::GetDetailsForMusicVideo(std::unique_ptr<Dataset> &pDS, int getDetails /* = VideoDbDetailsNone */)
+CVideoInfoTag CVideoDatabase::GetDetailsForMusicVideo(boost::movelib::unique_ptr<Dataset> &pDS, int getDetails /* = VideoDbDetailsNone */)
 {
   return GetDetailsForMusicVideo(pDS->get_sql_record(), getDetails);
 }
@@ -5500,10 +5500,10 @@ void CVideoDatabase::RemoveContentForPath(const std::string& strPath, CGUIDialog
 
     if (progress)
     {
-      progress->SetHeading(CVariant{700});
-      progress->SetLine(0, CVariant{""});
-      progress->SetLine(1, CVariant{313});
-      progress->SetLine(2, CVariant{330});
+      progress->SetHeading(700);
+      progress->SetLine(0, "");
+      progress->SetLine(1, 313);
+      progress->SetLine(2, 330);
       progress->SetPercentage(0);
       progress->Open();
       progress->ShowProgressBar(true);
@@ -6130,7 +6130,7 @@ void CVideoDatabase::UpdateTables(int iVersion)
   if (iVersion < 107)
   {
     // need this due to the nested GetScraperPath query
-    std::unique_ptr<Dataset> pDS;
+    boost::movelib::unique_ptr<Dataset> pDS;
     pDS.reset(m_pDB->CreateDataset());
     if (nullptr == pDS)
       return;
@@ -6671,7 +6671,7 @@ CDateTime CVideoDatabase::SetPlayCount(const CFileItem& item, int count, const C
       if (item.GetVideoInfoTag()->GetPlayCount() != count)
         data["playcount"] = count;
       CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::VideoLibrary, "OnUpdate",
-                                                         std::make_shared<CFileItem>(item), data);
+                                                         boost::make_shared<CFileItem>(item), data);
     }
 
     return lastPlayed;
@@ -9972,10 +9972,10 @@ void CVideoDatabase::CleanDatabase(CGUIDialogProgressBarHandle* handle,
           WINDOW_DIALOG_PROGRESS);
       if (progress)
       {
-        progress->SetHeading(CVariant{700});
-        progress->SetLine(0, CVariant{""});
-        progress->SetLine(1, CVariant{313});
-        progress->SetLine(2, CVariant{330});
+        progress->SetHeading(700);
+        progress->SetLine(0, "");
+        progress->SetLine(1, 313);
+        progress->SetLine(2, 330);
         progress->SetPercentage(0);
         progress->Open();
         progress->ShowProgressBar(true);
@@ -10444,11 +10444,11 @@ std::vector<int> CVideoDatabase::CleanMediaType(const std::string &mediaType, co
             if (pDialog != NULL)
             {
               CURL sourceUrl(sourcePath);
-              pDialog->SetHeading(CVariant{15012});
+              pDialog->SetHeading(15012);
               pDialog->SetText(CVariant{StringUtils::Format(g_localizeStrings.Get(15013),
                                                             sourceUrl.GetWithoutUserDetails())});
-              pDialog->SetChoice(0, CVariant{15015});
-              pDialog->SetChoice(1, CVariant{15014});
+              pDialog->SetChoice(0, 15015);
+              pDialog->SetChoice(1, 15014);
               pDialog->Open();
 
               del = !pDialog->IsConfirmed();
@@ -10541,12 +10541,12 @@ void CVideoDatabase::ExportToXML(const std::string &path, bool singleFile /* = t
       return;
 
     // create a 3rd dataset as well as GetEpisodeDetails() etc. uses m_pDS2, and we need to do 3 nested queries on tv shows
-    std::unique_ptr<Dataset> pDS;
+    boost::movelib::unique_ptr<Dataset> pDS;
     pDS.reset(m_pDB->CreateDataset());
     if (nullptr == pDS)
       return;
 
-    std::unique_ptr<Dataset> pDS2;
+    boost::movelib::unique_ptr<Dataset> pDS2;
     pDS2.reset(m_pDB->CreateDataset());
     if (nullptr == pDS2)
       return;
@@ -10581,10 +10581,10 @@ void CVideoDatabase::ExportToXML(const std::string &path, bool singleFile /* = t
 
     if (progress)
     {
-      progress->SetHeading(CVariant{647});
-      progress->SetLine(0, CVariant{650});
-      progress->SetLine(1, CVariant{""});
-      progress->SetLine(2, CVariant{""});
+      progress->SetHeading(647);
+      progress->SetLine(0, 650);
+      progress->SetLine(1, "");
+      progress->SetLine(2, "");
       progress->SetPercentage(0);
       progress->Open();
       progress->ShowProgressBar(true);
@@ -10629,7 +10629,7 @@ void CVideoDatabase::ExportToXML(const std::string &path, bool singleFile /* = t
 
       if (progress)
       {
-        progress->SetLine(1, CVariant{movie.m_strTitle});
+        progress->SetLine(1, movie.m_strTitle);
         progress->SetPercentage(current * 100 / total);
         progress->Progress();
         if (progress->IsCanceled())
@@ -10721,7 +10721,7 @@ void CVideoDatabase::ExportToXML(const std::string &path, bool singleFile /* = t
 
         if (progress)
         {
-          progress->SetLine(1, CVariant{title});
+          progress->SetLine(1, title);
           progress->SetPercentage(current * 100 / total);
           progress->Progress();
           if (progress->IsCanceled())
@@ -10782,7 +10782,7 @@ void CVideoDatabase::ExportToXML(const std::string &path, bool singleFile /* = t
 
       if (progress)
       {
-        progress->SetLine(1, CVariant{movie.m_strTitle});
+        progress->SetLine(1, movie.m_strTitle);
         progress->SetPercentage(current * 100 / total);
         progress->Progress();
         if (progress->IsCanceled())
@@ -10885,7 +10885,7 @@ void CVideoDatabase::ExportToXML(const std::string &path, bool singleFile /* = t
 
       if (progress)
       {
-        progress->SetLine(1, CVariant{tvshow.m_strTitle});
+        progress->SetLine(1, tvshow.m_strTitle);
         progress->SetPercentage(current * 100 / total);
         progress->Progress();
         if (progress->IsCanceled())
@@ -11105,7 +11105,7 @@ void CVideoDatabase::ExportToXML(const std::string &path, bool singleFile /* = t
 
   if (iFailCount > 0)
     HELPERS::ShowOKDialogText(
-        CVariant{647}, CVariant{StringUtils::Format(g_localizeStrings.Get(15011), iFailCount)});
+        647, StringUtils::Format(g_localizeStrings.Get(15011), iFailCount));
 }
 
 void CVideoDatabase::ExportActorThumbs(const std::string& strDir,
@@ -11160,10 +11160,10 @@ void CVideoDatabase::ImportFromXML(const std::string &path)
     progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
     if (progress)
     {
-      progress->SetHeading(CVariant{648});
-      progress->SetLine(0, CVariant{649});
-      progress->SetLine(1, CVariant{330});
-      progress->SetLine(2, CVariant{""});
+      progress->SetHeading(648);
+      progress->SetLine(0, 649);
+      progress->SetLine(1, 330);
+      progress->SetLine(2, "");
       progress->SetPercentage(0);
       progress->Open();
       progress->ShowProgressBar(true);
@@ -11321,7 +11321,7 @@ void CVideoDatabase::ImportFromXML(const std::string &path)
       if (progress && total)
       {
         progress->SetPercentage(current * 100 / total);
-        progress->SetLine(2, CVariant{info.m_strTitle});
+        progress->SetLine(2, info.m_strTitle);
         progress->Progress();
         if (progress->IsCanceled())
         {
@@ -12124,7 +12124,7 @@ void CVideoDatabase::GetVideoVersions(VideoDbContentType itemType,
         infoTag.m_strPictureURL = videoItem.GetVideoInfoTag()->m_strPictureURL;
         infoTag.m_fanart = videoItem.GetVideoInfoTag()->m_fanart;
 
-        auto item(std::make_shared<CFileItem>(infoTag));
+        auto item(boost::make_shared<CFileItem>(infoTag));
         item->m_strTitle = name;
         item->SetLabel(name);
 
@@ -12221,7 +12221,7 @@ bool CVideoDatabase::UpdateAssetsOwner(const std::string& mediaType, int dbIdSou
   return true;
 }
 
-bool CVideoDatabase::FillMovieItem(std::unique_ptr<Dataset>& dataset, int movieId, CFileItem& item)
+bool CVideoDatabase::FillMovieItem(boost::movelib::unique_ptr<Dataset>& dataset, int movieId, CFileItem& item)
 {
   CVideoInfoTag infoTag{GetDetailsForMovie(dataset)};
   if (infoTag.IsEmpty())
@@ -12281,7 +12281,7 @@ bool CVideoDatabase::GetAssetsForVideo(VideoDbContentType itemType,
 
     while (!m_pDS->eof())
     {
-      const auto item{std::make_shared<CFileItem>()};
+      const auto item{boost::make_shared<CFileItem>()};
       if (FillMovieItem(m_pDS, mediaId, *item))
         items.Add(item);
 
@@ -12628,7 +12628,7 @@ bool CVideoDatabase::GetVideoVersionsNav(const std::string& strBaseDir,
       CVideoDbUrl itemUrl{videoUrl};
       itemUrl.AppendPath(StringUtils::Format("{}/", id));
 
-      const auto item{std::make_shared<CFileItem>(itemUrl.ToString(), true)};
+      const auto item{boost::make_shared<CFileItem>(itemUrl.ToString(), true)};
       item->SetLabel(m_pDS->fv("name").get_asString());
       auto tag{item->GetVideoInfoTag()};
       tag->m_type = MediaTypeVideoVersion;
@@ -12675,7 +12675,7 @@ bool CVideoDatabase::GetVideoVersionTypes(VideoDbContentType idContent,
       std::string name = m_pDS->fv("name").get_asString();
       int id = m_pDS->fv("id").get_asInt();
 
-      const auto item{std::make_shared<CFileItem>(name)};
+      const auto item{boost::make_shared<CFileItem>(name)};
       item->GetVideoInfoTag()->m_type = MediaTypeVideoVersion;
       item->GetVideoInfoTag()->m_iDbId = id;
       item->GetVideoInfoTag()->GetAssetInfo().SetId(id);

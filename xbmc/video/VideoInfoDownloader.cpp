@@ -53,7 +53,7 @@ int CVideoInfoDownloader::InternalFindMovie(const std::string &movieTitle, int m
 void CVideoInfoDownloader::ShowErrorDialog(const ADDON::CScraperError &sce)
 {
   if (!sce.Title().empty())
-    HELPERS::ShowOKDialogText(CVariant{ sce.Title() }, CVariant{ sce.Message() });
+    HELPERS::ShowOKDialogText( sce.Title() ,  sce.Message() );
 }
 
 // threaded functions
@@ -147,7 +147,7 @@ bool CVideoInfoDownloader::GetArtwork(CVideoInfoTag &details)
   return m_info->GetArtwork(*m_http, details);
 }
 
-bool CVideoInfoDownloader::GetDetails(const std::unordered_map<std::string, std::string>& uniqueIDs,
+bool CVideoInfoDownloader::GetDetails(const std::map<std::string, std::string>& uniqueIDs,
                                       const CScraperUrl& url,
                                       CVideoInfoTag& movieDetails,
                                       CGUIDialogProgress* pProgress /* = NULL */)

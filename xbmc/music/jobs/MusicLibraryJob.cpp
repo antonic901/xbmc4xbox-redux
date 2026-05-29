@@ -10,9 +10,9 @@
 
 #include "music/MusicDatabase.h"
 
-CMusicLibraryJob::CMusicLibraryJob() = default;
+CMusicLibraryJob::CMusicLibraryJob() {}
 
-CMusicLibraryJob::~CMusicLibraryJob() = default;
+CMusicLibraryJob::~CMusicLibraryJob() {}
 
 bool CMusicLibraryJob::DoWork()
 {

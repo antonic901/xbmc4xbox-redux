@@ -54,7 +54,7 @@ bool CGUIDialogInfoProviderSettings::Show()
   if (!dialog)
     return false;
 
-  const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+  const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
 
   dialog->m_showSingleScraper = false;
 
@@ -138,7 +138,7 @@ void CGUIDialogInfoProviderSettings::OnInitWindow()
 }
 
 void CGUIDialogInfoProviderSettings::OnSettingChanged(
-    const std::shared_ptr<const CSetting>& setting)
+    const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == nullptr)
     return;
@@ -149,21 +149,21 @@ void CGUIDialogInfoProviderSettings::OnSettingChanged(
 
   if (settingId == CSettings::SETTING_MUSICLIBRARY_DOWNLOADINFO)
   {
-    m_fetchInfo = std::static_pointer_cast<const CSettingBool>(setting)->GetValue();
+    m_fetchInfo = boost::static_pointer_cast<const CSettingBool>(setting)->GetValue();
     SetupView();
     SetFocus(CSettings::SETTING_MUSICLIBRARY_DOWNLOADINFO);
   }
   else if (settingId == CSettings::SETTING_MUSICLIBRARY_ARTISTSFOLDER)
-    m_strArtistInfoPath = std::static_pointer_cast<const CSettingString>(setting)->GetValue();
+    m_strArtistInfoPath = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
   else if (settingId == SETTING_APPLYTOITEMS)
   {
-    m_applyToItems = std::static_pointer_cast<const CSettingInt>(setting)->GetValue();
+    m_applyToItems = boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
     SetupView();
     SetFocus(SETTING_APPLYTOITEMS);
   }
 }
 
-void CGUIDialogInfoProviderSettings::OnSettingAction(const std::shared_ptr<const CSetting>& setting)
+void CGUIDialogInfoProviderSettings::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == nullptr)
     return;
@@ -269,7 +269,7 @@ bool CGUIDialogInfoProviderSettings::Save()
   // Save default settings for fetching additional information and art
   CLog::Log(LOGINFO, "{} called", __FUNCTION__);
   // Save Fetch addiitional info during update
-  const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+  const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
   settings->SetBool(CSettings::SETTING_MUSICLIBRARY_DOWNLOADINFO, m_fetchInfo);
   // Save default scrapers and addon setting values
   settings->SetString(CSettings::SETTING_MUSICLIBRARY_ALBUMSSCRAPER, m_albumscraper->ID());
@@ -385,13 +385,13 @@ void CGUIDialogInfoProviderSettings::InitializeSettings()
 {
   CGUIDialogSettingsManualBase::InitializeSettings();
 
-  std::shared_ptr<CSettingCategory> category = AddCategory("infoprovidersettings", -1);
+  boost::shared_ptr<CSettingCategory> category = AddCategory("infoprovidersettings", -1);
   if (category == nullptr)
   {
     CLog::Log(LOGERROR, "{}: unable to setup settings", __FUNCTION__);
     return;
   }
-  std::shared_ptr<CSettingGroup> group1 = AddGroup(category);
+  boost::shared_ptr<CSettingGroup> group1 = AddGroup(category);
   if (group1 == nullptr)
   {
     CLog::Log(LOGERROR, "{}: unable to setup settings", __FUNCTION__);
@@ -420,13 +420,13 @@ void CGUIDialogInfoProviderSettings::InitializeSettings()
     AddList(group1, SETTING_APPLYTOITEMS, 38338, SettingLevel::Basic, m_applyToItems, entries, 38339); // "Apply settings to"
   }
 
-  std::shared_ptr<CSettingGroup> group = AddGroup(category, 38337);
+  boost::shared_ptr<CSettingGroup> group = AddGroup(category, 38337);
   if (group == nullptr)
   {
     CLog::Log(LOGERROR, "{}: unable to setup settings", __FUNCTION__);
     return;
   }
-  std::shared_ptr<CSettingAction> subsetting;
+  boost::shared_ptr<CSettingAction> subsetting;
   if (!m_showSingleScraper || m_singleScraperType == CONTENT_ALBUMS)
   {
     AddButton(group, CSettings::SETTING_MUSICLIBRARY_ALBUMSSCRAPER, 38334, SettingLevel::Basic); //Provider for album information

@@ -28,19 +28,19 @@ public:
    \param[in] showProgress Whether to show a progress bar or not
    */
   CMusicLibraryScanningJob(const std::string& directory, int flags, bool showProgress = true);
-  ~CMusicLibraryScanningJob() override;
+  virtual ~CMusicLibraryScanningJob();
 
   // specialization of CMusicLibraryJob
-  bool CanBeCancelled() const override { return true; }
-  bool Cancel() override;
+  virtual bool CanBeCancelled() const { return true; }
+  virtual bool Cancel();
 
   // specialization of CJob
-  const char *GetType() const override { return "MusicLibraryScanningJob"; }
-  bool operator==(const CJob* job) const override;
+  virtual const char *GetType() const { return "MusicLibraryScanningJob"; }
+  virtual bool operator==(const CJob* job) const;
 
 protected:
   // implementation of CMusicLibraryJob
-  bool Work(CMusicDatabase &db) override;
+  virtual bool Work(CMusicDatabase &db);
 
 private:
   MUSIC_INFO::CMusicInfoScanner m_scanner;

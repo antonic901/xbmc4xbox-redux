@@ -15,11 +15,11 @@ class CGUIViewStateWindowMusic : public CGUIViewState
 public:
   explicit CGUIViewStateWindowMusic(const CFileItemList& items) : CGUIViewState(items) {}
 protected:
-  VECSOURCES& GetSources() override;
-  PLAYLIST::Id GetPlaylist() const override;
-  bool AutoPlayNextItem() override;
-  std::string GetLockType() override;
-  std::string GetExtensions() override;
+  virtual VECSOURCES& GetSources();
+  virtual PLAYLIST::Id GetPlaylist() const;
+  virtual bool AutoPlayNextItem();
+  virtual std::string GetLockType();
+  virtual std::string GetExtensions();
 };
 
 class CGUIViewStateMusicSearch : public CGUIViewStateWindowMusic
@@ -28,7 +28,7 @@ public:
   explicit CGUIViewStateMusicSearch(const CFileItemList& items);
 
 protected:
-  void SaveViewState() override;
+  virtual void SaveViewState();
 };
 
 class CGUIViewStateMusicDatabase : public CGUIViewStateWindowMusic
@@ -37,7 +37,7 @@ public:
   explicit CGUIViewStateMusicDatabase(const CFileItemList& items);
 
 protected:
-  void SaveViewState() override;
+  virtual void SaveViewState();
 };
 
 class CGUIViewStateMusicSmartPlaylist : public CGUIViewStateWindowMusic
@@ -46,7 +46,7 @@ public:
   explicit CGUIViewStateMusicSmartPlaylist(const CFileItemList& items);
 
 protected:
-  void SaveViewState() override;
+  virtual void SaveViewState();
 };
 
 class CGUIViewStateMusicPlaylist : public CGUIViewStateWindowMusic
@@ -55,7 +55,7 @@ public:
   explicit CGUIViewStateMusicPlaylist(const CFileItemList& items);
 
 protected:
-  void SaveViewState() override;
+  virtual void SaveViewState();
 };
 
 class CGUIViewStateWindowMusicNav : public CGUIViewStateWindowMusic
@@ -64,8 +64,8 @@ public:
   explicit CGUIViewStateWindowMusicNav(const CFileItemList& items);
 
 protected:
-  void SaveViewState() override;
-  VECSOURCES& GetSources() override;
+  virtual void SaveViewState();
+  virtual VECSOURCES& GetSources();
 
 private:
   void AddOnlineShares();
@@ -77,9 +77,9 @@ public:
   explicit CGUIViewStateWindowMusicPlaylist(const CFileItemList& items);
 
 protected:
-  void SaveViewState() override;
-  PLAYLIST::Id GetPlaylist() const override;
-  bool AutoPlayNextItem() override;
-  bool HideParentDirItems() override;
-  VECSOURCES& GetSources() override;
+  virtual void SaveViewState();
+  virtual PLAYLIST::Id GetPlaylist() const;
+  virtual bool AutoPlayNextItem();
+  virtual bool HideParentDirItems();
+  virtual VECSOURCES& GetSources();
 };

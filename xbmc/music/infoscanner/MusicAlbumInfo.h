@@ -21,10 +21,10 @@ namespace MUSIC_GRABBER
 class CMusicAlbumInfo
 {
 public:
-  CMusicAlbumInfo() = default;
+  CMusicAlbumInfo() {}
   CMusicAlbumInfo(const std::string& strAlbumInfo, const CScraperUrl& strAlbumURL);
   CMusicAlbumInfo(const std::string& strAlbum, const std::string& strArtist, const std::string& strAlbumInfo, const CScraperUrl& strAlbumURL);
-  virtual ~CMusicAlbumInfo() = default;
+  virtual ~CMusicAlbumInfo() {}
 
   bool Loaded() const { return m_bLoaded; }
   void SetLoaded(bool bLoaded) { m_bLoaded = bLoaded; }

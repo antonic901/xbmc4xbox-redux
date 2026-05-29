@@ -19,7 +19,7 @@ namespace XFILE
     public:
       CDirectoryNodeTitleMovies(const std::string& strEntryName, CDirectoryNode* pParent);
     protected:
-      bool GetContent(CFileItemList& items) const override;
+      virtual bool GetContent(CFileItemList& items) const;
     };
   }
 }

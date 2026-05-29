@@ -103,17 +103,17 @@ public:
   explicit CGUIViewStateGeneral(const CFileItemList& items);
 
 protected:
-  void SaveViewState() override { }
+  virtual void SaveViewState() { }
 };
 
 class CGUIViewStateFromItems : public CGUIViewState
 {
 public:
   explicit CGUIViewStateFromItems(const CFileItemList& items);
-  bool AutoPlayNextItem() override;
+  virtual bool AutoPlayNextItem();
 
 protected:
-  void SaveViewState() override;
+  virtual void SaveViewState();
 };
 
 class CGUIViewStateLibrary : public CGUIViewState
@@ -122,5 +122,5 @@ public:
   explicit CGUIViewStateLibrary(const CFileItemList& items);
 
 protected:
-  void SaveViewState() override;
+  virtual void SaveViewState();
 };

@@ -70,7 +70,7 @@ bool CViewStateSettings::Load(const TiXmlNode *settings)
   if (settings == NULL)
     return false;
 
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   const TiXmlNode *pElement = settings->FirstChildElement(XML_VIEWSTATESETTINGS);
   if (pElement == NULL)
   {
@@ -138,7 +138,7 @@ bool CViewStateSettings::Save(TiXmlNode *settings) const
   if (settings == NULL)
     return false;
 
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   // add the <viewstates> tag
   TiXmlElement xmlViewStateElement(XML_VIEWSTATESETTINGS);
   TiXmlNode *pViewStateNode = settings->InsertEndChild(xmlViewStateElement);
@@ -194,7 +194,7 @@ void CViewStateSettings::Clear()
 
 const CViewState* CViewStateSettings::Get(const std::string &viewState) const
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   std::map<std::string, CViewState*>::const_iterator view = m_viewStates.find(viewState);
   if (view != m_viewStates.end())
     return view->second;
@@ -204,7 +204,7 @@ const CViewState* CViewStateSettings::Get(const std::string &viewState) const
 
 CViewState* CViewStateSettings::Get(const std::string &viewState)
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   std::map<std::string, CViewState*>::iterator view = m_viewStates.find(viewState);
   if (view != m_viewStates.end())
     return view->second;

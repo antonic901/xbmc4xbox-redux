@@ -46,10 +46,10 @@
 class CGetSongInfoJob : public CJob
 {
 public:
-  ~CGetSongInfoJob(void) override = default;
+  virtual ~CGetSongInfoJob(void) {}
 
   // Fetch full song information including art types list
-  bool DoWork() override
+  virtual bool DoWork()
   {
     CGUIDialogSongInfo *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSongInfo>(WINDOW_DIALOG_SONG_INFO);
     if (!dialog)
@@ -119,7 +119,7 @@ CGUIDialogSongInfo::CGUIDialogSongInfo(void)
   m_loadType = KEEP_IN_MEMORY;
 }
 
-CGUIDialogSongInfo::~CGUIDialogSongInfo(void) = default;
+CGUIDialogSongInfo::~CGUIDialogSongInfo(void) {}
 
 bool CGUIDialogSongInfo::OnMessage(CGUIMessage& message)
 {
@@ -245,7 +245,7 @@ void CGUIDialogSongInfo::OnInitWindow()
     CONTROL_ENABLE(CONTROL_USERRATING);
 
   // Disable the Choose Art button if the user isn't allowed it
-  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
   CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_GET_THUMB,
     profileManager->GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser);
 
@@ -263,7 +263,7 @@ void CGUIDialogSongInfo::Update()
   CFileItemList items;
   for (const auto& contributor : m_song->GetMusicInfoTag()->GetContributors())
   {
-    auto item = std::make_shared<CFileItem>(contributor.GetRoleDesc());
+    auto item = boost::make_shared<CFileItem>(contributor.GetRoleDesc());
     item->SetLabel2(contributor.GetArtist());
     item->GetMusicInfoTag()->SetDatabaseId(contributor.GetArtistId(), MediaTypeArtist);
     items.Add(std::move(item));
@@ -517,7 +517,7 @@ void CGUIDialogSongInfo::ShowFor(CFileItem* pItem)
   }
 }
 
-void CGUIDialogSongInfo::OnPlaySong(const std::shared_ptr<CFileItem>& item)
+void CGUIDialogSongInfo::OnPlaySong(const boost::shared_ptr<CFileItem>& item)
 {
   Close(true);
   MUSIC_UTILS::PlayItem(item, "");

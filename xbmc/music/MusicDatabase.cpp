@@ -4578,8 +4578,8 @@ int CMusicDatabase::Cleanup(CGUIDialogProgress* progressDialog /*= nullptr*/)
   // first cleanup any songs with invalid paths
   if (progressDialog)
   {
-    progressDialog->SetLine(1, CVariant{318});
-    progressDialog->SetLine(2, CVariant{330});
+    progressDialog->SetLine(1, 318);
+    progressDialog->SetLine(2, 330);
     progressDialog->SetPercentage(0);
     progressDialog->Progress();
   }
@@ -4591,7 +4591,7 @@ int CMusicDatabase::Cleanup(CGUIDialogProgress* progressDialog /*= nullptr*/)
   // then the albums that are not linked to a song or to album, or whose path is removed
   if (progressDialog)
   {
-    progressDialog->SetLine(1, CVariant{326});
+    progressDialog->SetLine(1, 326);
     progressDialog->SetPercentage(20);
     progressDialog->Progress();
     if (progressDialog->IsCanceled())
@@ -4608,7 +4608,7 @@ int CMusicDatabase::Cleanup(CGUIDialogProgress* progressDialog /*= nullptr*/)
   // now the paths
   if (progressDialog)
   {
-    progressDialog->SetLine(1, CVariant{324});
+    progressDialog->SetLine(1, 324);
     progressDialog->SetPercentage(40);
     progressDialog->Progress();
     if (progressDialog->IsCanceled())
@@ -4625,7 +4625,7 @@ int CMusicDatabase::Cleanup(CGUIDialogProgress* progressDialog /*= nullptr*/)
   // and finally artists + genres
   if (progressDialog)
   {
-    progressDialog->SetLine(1, CVariant{320});
+    progressDialog->SetLine(1, 320);
     progressDialog->SetPercentage(60);
     progressDialog->Progress();
     if (progressDialog->IsCanceled())
@@ -4642,7 +4642,7 @@ int CMusicDatabase::Cleanup(CGUIDialogProgress* progressDialog /*= nullptr*/)
   //Genres, roles and info settings progress in one step
   if (progressDialog)
   {
-    progressDialog->SetLine(1, CVariant{322});
+    progressDialog->SetLine(1, 322);
     progressDialog->SetPercentage(80);
     progressDialog->Progress();
     if (progressDialog->IsCanceled())
@@ -4675,7 +4675,7 @@ int CMusicDatabase::Cleanup(CGUIDialogProgress* progressDialog /*= nullptr*/)
   // commit transaction
   if (progressDialog)
   {
-    progressDialog->SetLine(1, CVariant{328});
+    progressDialog->SetLine(1, 328);
     progressDialog->SetPercentage(90);
     progressDialog->Progress();
     if (progressDialog->IsCanceled())
@@ -4696,7 +4696,7 @@ int CMusicDatabase::Cleanup(CGUIDialogProgress* progressDialog /*= nullptr*/)
   // and compress the database
   if (progressDialog)
   {
-    progressDialog->SetLine(1, CVariant{331});
+    progressDialog->SetLine(1, 331);
     progressDialog->SetPercentage(100);
     progressDialog->Close();
   }
@@ -4783,10 +4783,10 @@ bool CMusicDatabase::LookupCDDBInfo(bool bRequery /*=false*/)
       return false;
 
     // Show progress dialog if we have to connect to freedb.org
-    pDialogProgress->SetHeading(CVariant{255}); //CDDB
-    pDialogProgress->SetLine(0, CVariant{""}); // Querying freedb for CDDB info
-    pDialogProgress->SetLine(1, CVariant{256});
-    pDialogProgress->SetLine(2, CVariant{""});
+    pDialogProgress->SetHeading(255); //CDDB
+    pDialogProgress->SetLine(0, ""); // Querying freedb for CDDB info
+    pDialogProgress->SetLine(1, 256);
+    pDialogProgress->SetLine(2, "");
     pDialogProgress->ShowProgressBar(false);
     pDialogProgress->Open();
 
@@ -4802,7 +4802,7 @@ bool CMusicDatabase::LookupCDDBInfo(bool bRequery /*=false*/)
         // ...yes, show the matches found in a select dialog
         // and let the user choose an entry.
         pDlgSelect->Reset();
-        pDlgSelect->SetHeading(CVariant{255});
+        pDlgSelect->SetHeading(255);
         int i = 1;
         while (true)
         {
@@ -4840,8 +4840,8 @@ bool CMusicDatabase::LookupCDDBInfo(bool bRequery /*=false*/)
         // ..no, an error occurred, display it to the user
         std::string strErrorText =
             StringUtils::Format("[{}] {}", cddb.getLastError(), cddb.getLastErrorText());
-        HELPERS::ShowOKDialogLines(CVariant{255}, CVariant{257}, CVariant{std::move(strErrorText)},
-                                   CVariant{0});
+        HELPERS::ShowOKDialogLines(255, 257, std::move(strErrorText),
+                                   0);
       }
     } // if ( !cddb.queryCDinfo( pCdInfo ) )
     else
@@ -4863,7 +4863,7 @@ void CMusicDatabase::DeleteCDDBInfo()
   if (!CDirectory::GetDirectory(m_profileManager.GetCDDBFolder(), items, ".cddb",
                                 DIR_FLAG_NO_FILE_DIRS))
   {
-    HELPERS::ShowOKDialogText(CVariant{313}, CVariant{426});
+    HELPERS::ShowOKDialogText(313, 426);
     return;
   }
   // Show a selectdialog that the user can select the album to delete
@@ -4871,7 +4871,7 @@ void CMusicDatabase::DeleteCDDBInfo()
       WINDOW_DIALOG_SELECT);
   if (pDlg)
   {
-    pDlg->SetHeading(CVariant{g_localizeStrings.Get(181)});
+    pDlg->SetHeading(g_localizeStrings.Get(181));
     pDlg->Reset();
 
     std::map<uint32_t, std::string> mapCDDBIds;
@@ -4935,11 +4935,11 @@ void CMusicDatabase::Clean()
   // other writing access to the database is prohibited.
   if (CMusicLibraryQueue::GetInstance().IsScanningLibrary())
   {
-    HELPERS::ShowOKDialogText(CVariant{189}, CVariant{14057});
+    HELPERS::ShowOKDialogText(189, 14057);
     return;
   }
 
-  if (HELPERS::ShowYesNoDialogText(CVariant{313}, CVariant{333}) == DialogResponse::CHOICE_YES)
+  if (HELPERS::ShowYesNoDialogText(313, 333) == DialogResponse::CHOICE_YES)
   {
     CMusicDatabase musicdatabase;
     if (musicdatabase.Open())
@@ -4949,7 +4949,7 @@ void CMusicDatabase::Clean()
 
       if (iReturnString != ERROR_OK)
       {
-        HELPERS::ShowOKDialogText(CVariant{313}, CVariant{iReturnString});
+        HELPERS::ShowOKDialogText(313, iReturnString);
       }
     }
   }
@@ -5586,7 +5586,7 @@ bool CMusicDatabase::GetArtistsByWhere(
     }
 
     // Apply sort in SQL
-    const std::shared_ptr<CSettings> settings =
+    const boost::shared_ptr<CSettings> settings =
         CServiceBroker::GetSettingsComponent()->GetSettings();
     if (settings->GetBool(CSettings::SETTING_MUSICLIBRARY_USEARTISTSORTNAME))
       sorting.sortAttributes =
@@ -5815,7 +5815,7 @@ bool CMusicDatabase::GetAlbumsByWhere(
     }
 
     // Apply sort in SQL
-    const std::shared_ptr<CSettings> settings =
+    const boost::shared_ptr<CSettings> settings =
         CServiceBroker::GetSettingsComponent()->GetSettings();
     if (settings->GetBool(CSettings::SETTING_MUSICLIBRARY_USEARTISTSORTNAME))
       sorting.sortAttributes =
@@ -6205,7 +6205,7 @@ bool CMusicDatabase::GetSongsFullByWhere(
     }
 
     // Apply sort in SQL
-    const std::shared_ptr<CSettings> settings =
+    const boost::shared_ptr<CSettings> settings =
         CServiceBroker::GetSettingsComponent()->GetSettings();
     if (settings->GetBool(CSettings::SETTING_MUSICLIBRARY_USEARTISTSORTNAME))
       sorting.sortAttributes =
@@ -12056,7 +12056,7 @@ void CMusicDatabase::ExportToXML(const CLibExportSettings& settings,
 
         if ((current % 50) == 0 && progressDialog)
         {
-          progressDialog->SetLine(1, CVariant{album.strAlbum});
+          progressDialog->SetLine(1, album.strAlbum);
           progressDialog->SetPercentage(current * 100 / total);
           if (progressDialog->IsCanceled())
             return;
@@ -12198,7 +12198,7 @@ void CMusicDatabase::ExportToXML(const CLibExportSettings& settings,
         }
         if ((current % 50) == 0 && progressDialog)
         {
-          progressDialog->SetLine(1, CVariant{artist.strArtist});
+          progressDialog->SetLine(1, artist.strArtist);
           progressDialog->SetPercentage(current * 100 / total);
           if (progressDialog->IsCanceled())
             return;
@@ -12235,7 +12235,7 @@ void CMusicDatabase::ExportToXML(const CLibExportSettings& settings,
 
   if (iFailCount > 0 && progressDialog)
     HELPERS::ShowOKDialogLines(
-        CVariant{20196}, CVariant{StringUtils::Format(g_localizeStrings.Get(15011), iFailCount)});
+        20196, StringUtils::Format(g_localizeStrings.Get(15011), iFailCount));
 }
 
 bool CMusicDatabase::ExportSongHistory(TiXmlNode* pNode, CGUIDialogProgress* progressDialog)
@@ -12286,7 +12286,7 @@ bool CMusicDatabase::ExportSongHistory(TiXmlNode* pNode, CGUIDialogProgress* pro
 
       if ((current % 100) == 0 && progressDialog)
       {
-        progressDialog->SetLine(1, CVariant{m_pDS->fv("strAlbum").get_asString()});
+        progressDialog->SetLine(1, m_pDS->fv("strAlbum").get_asString());
         progressDialog->SetPercentage(current * 100 / total);
         if (progressDialog->IsCanceled())
         {
@@ -12320,7 +12320,7 @@ void CMusicDatabase::ImportFromXML(const std::string& xmlFile, CGUIDialogProgres
     CXBMCTinyXML xmlDoc;
     if (!xmlDoc.LoadFile(xmlFile) && progressDialog)
     {
-      HELPERS::ShowOKDialogLines(CVariant{20197}, CVariant{38354}); //"Unable to read xml file"
+      HELPERS::ShowOKDialogLines(20197, 38354); //"Unable to read xml file"
       return;
     }
 
@@ -12393,7 +12393,7 @@ void CMusicDatabase::ImportFromXML(const std::string& xmlFile, CGUIDialogProgres
       if (progressDialog && total)
       {
         progressDialog->SetPercentage(current * 100 / total);
-        progressDialog->SetLine(2, CVariant{std::move(strTitle)});
+        progressDialog->SetLine(2, std::move(strTitle));
         progressDialog->Progress();
         if (progressDialog->IsCanceled())
         {
@@ -12442,8 +12442,8 @@ bool CMusicDatabase::ImportSongHistory(const std::string& xmlFile,
 
     if (progressDialog)
     {
-      progressDialog->SetLine(1, CVariant{38350}); //"Importing song playback history"
-      progressDialog->SetLine(2, CVariant{""});
+      progressDialog->SetLine(1, 38350); //"Importing song playback history"
+      progressDialog->SetLine(2, "");
     }
 
     // As can be many songs do in db, not song at a time which would be slow
@@ -12536,7 +12536,7 @@ bool CMusicDatabase::ImportSongHistory(const std::string& xmlFile,
       if ((current % 100) == 0 && progressDialog)
       {
         progressDialog->SetPercentage(current * 100 / total);
-        progressDialog->SetLine(3, CVariant{std::move(strTitle)});
+        progressDialog->SetLine(3, std::move(strTitle));
         progressDialog->Progress();
         if (progressDialog->IsCanceled())
           return false;
@@ -12571,8 +12571,8 @@ bool CMusicDatabase::ImportSongHistory(const std::string& xmlFile,
 
     if (progressDialog)
     {
-      progressDialog->SetLine(2, CVariant{38351}); //"Matching data"
-      progressDialog->SetLine(3, CVariant{""});
+      progressDialog->SetLine(2, 38351); //"Matching data"
+      progressDialog->SetLine(3, "");
       progressDialog->Progress();
       if (progressDialog->IsCanceled())
       {
@@ -12676,7 +12676,7 @@ bool CMusicDatabase::ImportSongHistory(const std::string& xmlFile,
 
     if (progressDialog)
     {
-      progressDialog->SetLine(2, CVariant{38352}); //"Updating song playback history"
+      progressDialog->SetLine(2, 38352); //"Updating song playback history"
       progressDialog->Progress();
       if (progressDialog->IsCanceled())
       {
@@ -12733,7 +12733,7 @@ bool CMusicDatabase::ImportSongHistory(const std::string& xmlFile,
     // Compact db to recover space as had to add/drop actual table
     if (progressDialog)
     {
-      progressDialog->SetLine(2, CVariant{331});
+      progressDialog->SetLine(2, 331);
       progressDialog->Progress();
     }
     Compress(false);

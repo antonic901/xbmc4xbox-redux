@@ -448,10 +448,10 @@ public:
   };
 
   CVideoDatabase(void);
-  ~CVideoDatabase(void) override;
+  virtual ~CVideoDatabase(void);
 
-  bool Open() override;
-  bool CommitTransaction() override;
+  virtual bool Open();
+  virtual bool CommitTransaction();
 
   int AddNewEpisode(int idShow, CVideoInfoTag& details);
 
@@ -1022,7 +1022,7 @@ public:
   void RemoveTagFromItem(int idItem, int idTag, const std::string &type);
   void RemoveTagsFromItem(int idItem, const std::string &type);
 
-  bool GetFilter(CDbUrl &videoUrl, Filter &filter, SortDescription &sorting) override;
+  virtual bool GetFilter(CDbUrl &videoUrl, Filter &filter, SortDescription &sorting);
 
   /*! \brief Will check if the season exists and if that is not the case add it to the database.
   \param showID The id of the show in question.
@@ -1162,15 +1162,15 @@ protected:
 
   void AddCast(int mediaId, const char *mediaType, const std::vector<SActorInfo> &cast);
 
-  CVideoInfoTag GetDetailsForMovie(std::unique_ptr<dbiplus::Dataset> &pDS, int getDetails = VideoDbDetailsNone);
+  CVideoInfoTag GetDetailsForMovie(boost::movelib::unique_ptr<dbiplus::Dataset> &pDS, int getDetails = VideoDbDetailsNone);
   CVideoInfoTag GetDetailsForMovie(const dbiplus::sql_record* const record, int getDetails = VideoDbDetailsNone);
-  CVideoInfoTag GetDetailsForTvShow(std::unique_ptr<dbiplus::Dataset> &pDS, int getDetails = VideoDbDetailsNone, CFileItem* item = NULL);
+  CVideoInfoTag GetDetailsForTvShow(boost::movelib::unique_ptr<dbiplus::Dataset> &pDS, int getDetails = VideoDbDetailsNone, CFileItem* item = NULL);
   CVideoInfoTag GetDetailsForTvShow(const dbiplus::sql_record* const record, int getDetails = VideoDbDetailsNone, CFileItem* item = NULL);
-  CVideoInfoTag GetBasicDetailsForEpisode(std::unique_ptr<dbiplus::Dataset> &pDS);
+  CVideoInfoTag GetBasicDetailsForEpisode(boost::movelib::unique_ptr<dbiplus::Dataset> &pDS);
   CVideoInfoTag GetBasicDetailsForEpisode(const dbiplus::sql_record* const record);
-  CVideoInfoTag GetDetailsForEpisode(std::unique_ptr<dbiplus::Dataset> &pDS, int getDetails = VideoDbDetailsNone);
+  CVideoInfoTag GetDetailsForEpisode(boost::movelib::unique_ptr<dbiplus::Dataset> &pDS, int getDetails = VideoDbDetailsNone);
   CVideoInfoTag GetDetailsForEpisode(const dbiplus::sql_record* const record, int getDetails = VideoDbDetailsNone);
-  CVideoInfoTag GetDetailsForMusicVideo(std::unique_ptr<dbiplus::Dataset> &pDS, int getDetails = VideoDbDetailsNone);
+  CVideoInfoTag GetDetailsForMusicVideo(boost::movelib::unique_ptr<dbiplus::Dataset> &pDS, int getDetails = VideoDbDetailsNone);
   CVideoInfoTag GetDetailsForMusicVideo(const dbiplus::sql_record* const record, int getDetails = VideoDbDetailsNone);
   bool GetPeopleNav(const std::string& strBaseDir,
                     CFileItemList& items,
@@ -1189,14 +1189,14 @@ protected:
   void GetRatings(int media_id, const std::string &media_type, RatingMap &ratings);
   void GetUniqueIDs(int media_id, const std::string &media_type, CVideoInfoTag& details);
 
-  void GetDetailsFromDB(std::unique_ptr<dbiplus::Dataset> &pDS, int min, int max, const SDbTableOffsets *offsets, CVideoInfoTag &details, int idxOffset = 2);
+  void GetDetailsFromDB(boost::movelib::unique_ptr<dbiplus::Dataset> &pDS, int min, int max, const SDbTableOffsets *offsets, CVideoInfoTag &details, int idxOffset = 2);
   void GetDetailsFromDB(const dbiplus::sql_record* const record, int min, int max, const SDbTableOffsets *offsets, CVideoInfoTag &details, int idxOffset = 2);
   std::string GetValueString(const CVideoInfoTag &details, int min, int max, const SDbTableOffsets *offsets) const;
 
 private:
-  void CreateTables() override;
-  void CreateAnalytics() override;
-  void UpdateTables(int version) override;
+  virtual void CreateTables();
+  virtual void CreateAnalytics();
+  virtual void UpdateTables(int version);
   void CreateLinkIndex(const char *table);
   void CreateForeignLinkIndex(const char *table, const char *foreignkey);
 
@@ -1244,10 +1244,10 @@ private:
 
   bool GetSeasonInfo(int idSeason, CVideoInfoTag& details, bool allDetails, CFileItem* item);
 
-  int GetMinSchemaVersion() const override { return 75; }
-  int GetSchemaVersion() const override;
+  virtual int GetMinSchemaVersion() const { return 75; }
+  virtual int GetSchemaVersion() const;
   virtual int GetExportVersion() const { return 1; }
-  const char* GetBaseDBName() const override { return "MyVideos"; }
+  virtual const char* GetBaseDBName() const { return "MyVideos"; }
 
   void ConstructPath(std::string& strDest, const std::string& strPath, const std::string& strFileName);
   void SplitPath(const std::string& strFileNameAndPath, std::string& strPath, std::string& strFileName);
@@ -1268,5 +1268,5 @@ private:
 
   static CDateTime GetDateAdded(const std::string& filename, CDateTime dateAdded = CDateTime());
 
-  bool FillMovieItem(std::unique_ptr<dbiplus::Dataset>& dataset, int movieId, CFileItem& item);
+  bool FillMovieItem(boost::movelib::unique_ptr<dbiplus::Dataset>& dataset, int movieId, CFileItem& item);
 };

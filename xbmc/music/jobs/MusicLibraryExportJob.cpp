@@ -21,7 +21,7 @@ CMusicLibraryExportJob::CMusicLibraryExportJob(const CLibExportSettings& setting
   SetAutoClose(true);
 }
 
-CMusicLibraryExportJob::~CMusicLibraryExportJob() = default;
+CMusicLibraryExportJob::~CMusicLibraryExportJob() {}
 
 bool CMusicLibraryExportJob::operator==(const CJob* job) const
 {

@@ -21,8 +21,8 @@ namespace CONTEXTMENU
 struct CMusicInfoBase : CStaticContextMenuAction
 {
   explicit CMusicInfoBase(MediaType mediaType);
-  bool IsVisible(const CFileItem& item) const override;
-  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+  virtual bool IsVisible(const CFileItem& item) const;
+  virtual bool Execute(const boost::shared_ptr<CFileItem>& item) const;
 
 private:
   const MediaType m_mediaType;
@@ -31,7 +31,7 @@ private:
 struct CMusicInfo : CMusicInfoBase
 {
   CMusicInfo() : CMusicInfoBase(MediaTypeMusic) {}
-  bool IsVisible(const CFileItem& item) const override;
+  virtual bool IsVisible(const CFileItem& item) const;
 };
 
 struct CAlbumInfo : CMusicInfoBase
@@ -52,36 +52,36 @@ struct CSongInfo : CMusicInfoBase
 struct CMusicBrowse : CStaticContextMenuAction
 {
   CMusicBrowse() : CStaticContextMenuAction(37015) {} // Browse into
-  bool IsVisible(const CFileItem& item) const override;
-  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+  virtual bool IsVisible(const CFileItem& item) const;
+  virtual bool Execute(const boost::shared_ptr<CFileItem>& item) const;
 };
 
 struct CMusicPlay : CStaticContextMenuAction
 {
   CMusicPlay() : CStaticContextMenuAction(208) {} // Play
-  bool IsVisible(const CFileItem& item) const override;
-  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+  virtual bool IsVisible(const CFileItem& item) const;
+  virtual bool Execute(const boost::shared_ptr<CFileItem>& item) const;
 };
 
 struct CMusicPlayUsing : CStaticContextMenuAction
 {
   CMusicPlayUsing() : CStaticContextMenuAction(15213) {} // Play using...
-  bool IsVisible(const CFileItem& item) const override;
-  bool Execute(const std::shared_ptr<CFileItem>& _item) const override;
+  virtual bool IsVisible(const CFileItem& item) const;
+  virtual bool Execute(const boost::shared_ptr<CFileItem>& _item) const;
 };
 
 struct CMusicPlayNext : CStaticContextMenuAction
 {
   CMusicPlayNext() : CStaticContextMenuAction(10008) {} // Play next
-  bool IsVisible(const CFileItem& item) const override;
-  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+  virtual bool IsVisible(const CFileItem& item) const;
+  virtual bool Execute(const boost::shared_ptr<CFileItem>& item) const;
 };
 
 struct CMusicQueue : CStaticContextMenuAction
 {
   CMusicQueue() : CStaticContextMenuAction(13347) {} // Queue item
-  bool IsVisible(const CFileItem& item) const override;
-  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+  virtual bool IsVisible(const CFileItem& item) const;
+  virtual bool Execute(const boost::shared_ptr<CFileItem>& item) const;
 };
 
 } // namespace CONTEXTMENU

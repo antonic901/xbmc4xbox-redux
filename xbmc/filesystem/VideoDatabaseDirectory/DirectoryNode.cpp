@@ -78,7 +78,7 @@ CDirectoryNode* CDirectoryNode::ParseURL(const std::string& strPath)
 //  returns the database ids of the path,
 void CDirectoryNode::GetDatabaseInfo(const std::string& strPath, CQueryParams& params)
 {
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(strPath));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(strPath));
 
   if (!pNode)
     return;
@@ -243,7 +243,7 @@ bool CDirectoryNode::GetChilds(CFileItemList& items)
   if (CanCache() && items.Load())
     return true;
 
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::CreateNode(GetChildType(), "", this));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::CreateNode(GetChildType(), "", this));
 
   bool bSuccess=false;
   if (pNode)

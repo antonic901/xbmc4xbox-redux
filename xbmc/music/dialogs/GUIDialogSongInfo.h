@@ -19,16 +19,16 @@ class CGUIDialogSongInfo :
 {
 public:
   CGUIDialogSongInfo(void);
-  ~CGUIDialogSongInfo(void) override;
-  bool OnMessage(CGUIMessage& message) override;
+  virtual ~CGUIDialogSongInfo(void);
+  virtual bool OnMessage(CGUIMessage& message);
   bool SetSong(CFileItem* item);
   void SetArtTypeList(CFileItemList& artlist);
-  bool OnAction(const CAction& action) override;
-  bool OnBack(int actionID) override;
+  virtual bool OnAction(const CAction& action);
+  virtual bool OnBack(int actionID);
   bool HasUpdatedUserrating() const { return m_hasUpdatedUserrating; }
 
-  bool HasListItems() const override { return true; }
-  CFileItemPtr GetCurrentListItem(int offset = 0) override;
+  virtual bool HasListItems() const { return true; }
+  virtual CFileItemPtr GetCurrentListItem(int offset = 0);
   std::string GetContent();
   //const CFileItemList& CurrentDirectory() const { return m_artTypeList; }
   bool IsCancelled() const { return m_cancelled; }
@@ -36,12 +36,12 @@ public:
 
   static void ShowFor(CFileItem* pItem);
 protected:
-  void OnInitWindow() override;
+  virtual void OnInitWindow();
   void Update();
   void OnGetArt();
   void SetUserrating(int userrating);
   void OnSetUserrating();
-  void OnPlaySong(const std::shared_ptr<CFileItem>& item);
+  void OnPlaySong(const boost::shared_ptr<CFileItem>& item);
 
   CFileItemPtr m_song;
   CFileItemList m_artTypeList;

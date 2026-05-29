@@ -19,9 +19,9 @@ namespace MUSIC_GRABBER
 class CMusicArtistInfo
 {
 public:
-  CMusicArtistInfo() = default;
+  CMusicArtistInfo() {}
   CMusicArtistInfo(const std::string& strArtist, const CScraperUrl& strArtistURL);
-  virtual ~CMusicArtistInfo() = default;
+  virtual ~CMusicArtistInfo() {}
   bool Loaded() const { return m_bLoaded; }
   void SetLoaded() { m_bLoaded = true; }
   void SetArtist(const CArtist& artist);

@@ -288,7 +288,7 @@ bool CVideoThumbLoader::LoadItemLookup(CFileItem* pItem)
   // We can only extract flags/thumbs for file-like items
   if (!pItem->m_bIsFolder && pItem->IsVideo())
   {
-    const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+    const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
     if (!pItem->HasArt("thumb"))
     {
       std::string thumbURL = GetEmbeddedThumbURL(*pItem);

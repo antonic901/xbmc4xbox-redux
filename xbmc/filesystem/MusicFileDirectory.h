@@ -17,11 +17,11 @@ namespace XFILE
   {
     public:
       CMusicFileDirectory(void);
-      ~CMusicFileDirectory(void) override;
-      bool GetDirectory(const CURL& url, CFileItemList &items) override;
-      bool Exists(const CURL& url) override;
-      bool ContainsFiles(const CURL& url) override;
-      bool AllowAll() const override { return true; }
+      virtual ~CMusicFileDirectory(void);
+      virtual bool GetDirectory(const CURL& url, CFileItemList &items);
+      virtual bool Exists(const CURL& url);
+      virtual bool ContainsFiles(const CURL& url);
+      virtual bool AllowAll() const { return true; }
     protected:
       virtual bool Load(const std::string& strFileName,
                         MUSIC_INFO::CMusicInfoTag& tag,

@@ -135,7 +135,7 @@ class CArtistCredit
   friend class CMusicDatabase;
 
 public:
-  CArtistCredit() = default;
+  CArtistCredit() {}
   explicit CArtistCredit(std::string strArtist) : m_strArtist(std::move(strArtist)) {}
   CArtistCredit(std::string strArtist, std::string strMusicBrainzArtistID)
     : m_strArtist(std::move(strArtist)), m_strMusicBrainzArtistID(std::move(strMusicBrainzArtistID))
@@ -194,7 +194,7 @@ const std::string VARIOUSARTISTS_MBID = "89ad4ac3-39f7-470e-963a-56509c546377";
 class CMusicRole
 {
 public:
-  CMusicRole() = default;
+  CMusicRole() {}
   CMusicRole(std::string strRole, std::string strArtist)
     : idRole(-1), m_strRole(std::move(strRole)), m_strArtist(std::move(strArtist)), idArtist(-1)
   {

@@ -18,19 +18,19 @@ class CGUIWindowFullScreen : public CGUIWindow
 {
 public:
   CGUIWindowFullScreen();
-  ~CGUIWindowFullScreen(void) override;
-  bool OnMessage(CGUIMessage& message) override;
-  bool OnAction(const CAction &action) override;
-  void ClearBackground() override;
-  void FrameMove() override;
-  void Process(unsigned int currentTime, CDirtyRegionList &dirtyregion) override;
-  void Render() override;
-  void RenderEx() override;
-  void OnWindowLoaded() override;
-  bool HasVisibleControls() override;
+  virtual ~CGUIWindowFullScreen(void);
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction &action);
+  virtual void ClearBackground();
+  virtual void FrameMove();
+  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregion);
+  virtual void Render();
+  virtual void RenderEx();
+  virtual void OnWindowLoaded();
+  virtual bool HasVisibleControls();
 
 protected:
-  EVENT_RESULT OnMouseEvent(const CPoint& point, const KODI::MOUSE::CMouseEvent& event) override;
+  virtual EVENT_RESULT OnMouseEvent(const CPoint& point, const KODI::MOUSE::CMouseEvent& event);
 
 private:
   void SeekChapter(int iChapter);

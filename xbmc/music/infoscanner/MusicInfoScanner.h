@@ -36,7 +36,7 @@ public:
                     SCAN_ALBUMS     = 1 << 4 };
 
   CMusicInfoScanner();
-  ~CMusicInfoScanner() override;
+  virtual ~CMusicInfoScanner();
 
   void Start(const std::string& strDirectory, int flags);
   void FetchAlbumInfo(const std::string& strDirectory, bool refresh = false);
@@ -77,7 +77,7 @@ public:
 
 protected:
   virtual void Process();
-  bool DoScan(const std::string& strDirectory) override;
+  virtual bool DoScan(const std::string& strDirectory);
 
 
   /*! \brief Find art for albums
@@ -233,7 +233,7 @@ protected:
   INFO_RET ScanTags(const CFileItemList& items, CFileItemList& scannedItems);
   int GetPathHash(const CFileItemList &items, std::string &hash);
 
-  void Run() override;
+  virtual void Run();
   int CountFiles(const CFileItemList& items, bool recursive);
   int CountFilesRecursively(const std::string& strPath);
 

@@ -30,24 +30,24 @@ public:
    \param[in] ignoreNfo Whether or not to ignore local NFO files
    \param[in] searchTitle Title to use for the search (instead of determining it from the item's filename/path)
   */
-  CVideoLibraryRefreshingJob(std::shared_ptr<CFileItem> item,
+  CVideoLibraryRefreshingJob(boost::shared_ptr<CFileItem> item,
                              bool forceRefresh,
                              bool refreshAll,
                              bool ignoreNfo = false,
                              const std::string& searchTitle = "");
 
-  ~CVideoLibraryRefreshingJob() override;
+  virtual ~CVideoLibraryRefreshingJob();
 
   // specialization of CJob
-  const char *GetType() const override { return "VideoLibraryRefreshingJob"; }
-  bool operator==(const CJob* job) const override;
+  virtual const char *GetType() const { return "VideoLibraryRefreshingJob"; }
+  virtual bool operator==(const CJob* job) const;
 
 protected:
   // implementation of CVideoLibraryJob
-  bool Work(CVideoDatabase &db) override;
+  virtual bool Work(CVideoDatabase &db);
 
 private:
-  std::shared_ptr<CFileItem> m_item;
+  boost::shared_ptr<CFileItem> m_item;
   bool m_forceRefresh;
   bool m_refreshAll;
   bool m_ignoreNfo;

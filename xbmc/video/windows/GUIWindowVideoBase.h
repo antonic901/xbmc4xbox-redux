@@ -27,9 +27,9 @@ class CGUIWindowVideoBase : public CGUIMediaWindow, public IBackgroundLoaderObse
 
 public:
   CGUIWindowVideoBase(int id, const std::string &xmlFile);
-  ~CGUIWindowVideoBase(void) override;
-  bool OnMessage(CGUIMessage& message) override;
-  bool OnAction(const CAction &action) override;
+  virtual ~CGUIWindowVideoBase(void);
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction &action);
 
   /*! \brief Gets called to process the "info" action for the given file item
    Default implementation shows a dialog containing information for the movie/episode/...
@@ -68,24 +68,24 @@ public:
 
 protected:
   void OnScan(const std::string& strPath, bool scanAll = false);
-  bool Update(const std::string &strDirectory, bool updateFilterPath = true) override;
-  bool GetDirectory(const std::string &strDirectory, CFileItemList &items) override;
-  void OnItemLoaded(CFileItem* pItem) override {};
-  void GetGroupedItems(CFileItemList &items) override;
+  virtual bool Update(const std::string &strDirectory, bool updateFilterPath = true);
+  virtual bool GetDirectory(const std::string &strDirectory, CFileItemList &items);
+  virtual void OnItemLoaded(CFileItem* pItem) {};
+  virtual void GetGroupedItems(CFileItemList &items);
 
-  bool CheckFilterAdvanced(CFileItemList &items) const override;
-  bool CanContainFilter(const std::string &strDirectory) const override;
+  virtual bool CheckFilterAdvanced(CFileItemList &items) const;
+  virtual bool CanContainFilter(const std::string &strDirectory) const;
 
-  void GetContextButtons(int itemNumber, CContextButtons &buttons) override;
-  bool OnContextButton(int itemNumber, CONTEXT_BUTTON button) override;
+  virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
+  virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
   virtual void OnQueueItem(int iItem, bool first = false);
-  void OnQueueItem(const std::shared_ptr<CFileItem>& item, int iItem, bool first = false);
+  void OnQueueItem(const boost::shared_ptr<CFileItem>& item, int iItem, bool first = false);
   virtual void OnDeleteItem(const CFileItemPtr& pItem);
-  void OnDeleteItem(int iItem) override;
+  virtual void OnDeleteItem(int iItem);
   virtual void DoSearch(const std::string& strSearch, CFileItemList& items) {}
-  std::string GetStartFolder(const std::string &dir) override;
+  virtual std::string GetStartFolder(const std::string &dir);
 
-  bool OnSelect(int iItem) override;
+  virtual bool OnSelect(int iItem);
   /*! \brief react to an Info action on a view item
    \param item the selected item
    \return true if the action is performed, false otherwise
@@ -100,12 +100,12 @@ protected:
 
   void OnRestartItem(int iItem, const std::string &player = "");
   bool OnPlayOrResumeItem(int iItem, const std::string& player = "");
-  bool OnPlayMedia(int iItem, const std::string &player = "") override;
-  bool OnPlayMedia(const std::shared_ptr<CFileItem>& item, const std::string& player);
-  bool OnPlayAndQueueMedia(const CFileItemPtr& item, const std::string& player = "") override;
+  virtual bool OnPlayMedia(int iItem, const std::string &player = "");
+  bool OnPlayMedia(const boost::shared_ptr<CFileItem>& item, const std::string& player);
+  virtual bool OnPlayAndQueueMedia(const CFileItemPtr& item, const std::string& player = "");
   using CGUIMediaWindow::LoadPlayList;
   void LoadPlayList(const std::string& strPlayList, PLAYLIST::Id playlistId = PLAYLIST::TYPE_VIDEO);
-  bool PlayItem(const std::shared_ptr<CFileItem>& item, const std::string& player);
+  bool PlayItem(const boost::shared_ptr<CFileItem>& item, const std::string& player);
 
   /*!
    \brief Lookup the information of an item and display an Info dialog
@@ -124,7 +124,7 @@ protected:
 
   static bool StackingAvailable(const CFileItemList &items);
 
-  bool OnPlayStackPart(const std::shared_ptr<CFileItem>& item, unsigned int partNumber);
+  bool OnPlayStackPart(const boost::shared_ptr<CFileItem>& item, unsigned int partNumber);
 
   void UpdateVideoVersionItems();
   void UpdateVideoVersionItemsLabel(const std::string& directory);

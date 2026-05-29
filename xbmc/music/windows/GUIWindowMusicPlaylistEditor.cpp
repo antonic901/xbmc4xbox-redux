@@ -378,7 +378,7 @@ void CGUIWindowMusicPlaylistEditor::OnSavePlaylist()
   else
     URIUtils::RemoveExtension(name);
 
-  if (CGUIKeyboardFactory::ShowAndGetInput(name, CVariant{g_localizeStrings.Get(16012)}, false))
+  if (CGUIKeyboardFactory::ShowAndGetInput(name, g_localizeStrings.Get(16012), false))
   {
     PLAYLIST::CPlayListM3U playlist;
     playlist.Add(*m_playlist);

@@ -19,7 +19,7 @@ CMusicLibraryCleaningJob::CMusicLibraryCleaningJob(CGUIDialogProgress* progressD
   SetAutoClose(true);
 }
 
-CMusicLibraryCleaningJob::~CMusicLibraryCleaningJob() = default;
+CMusicLibraryCleaningJob::~CMusicLibraryCleaningJob() {}
 
 bool CMusicLibraryCleaningJob::operator==(const CJob* job) const
 {

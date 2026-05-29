@@ -34,7 +34,7 @@ CMusicLibraryQueue::CMusicLibraryQueue()
 
 CMusicLibraryQueue::~CMusicLibraryQueue()
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   m_jobs.clear();
 }
 
@@ -52,8 +52,8 @@ void CMusicLibraryQueue::ExportLibrary(const CLibExportSettings& settings, bool 
     progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
     if (progress)
     {
-      progress->SetHeading(CVariant{ 20196 }); //"Export music library"
-      progress->SetText(CVariant{ 650 });   //"Exporting"
+      progress->SetHeading( 20196 ); //"Export music library"
+      progress->SetText( 650 );   //"Exporting"
       progress->SetPercentage(0);
       progress->Open();
       progress->ShowProgressBar(true);
@@ -89,10 +89,10 @@ void CMusicLibraryQueue::ImportLibrary(const std::string& xmlFile, bool showDial
     progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
     if (progress)
     {
-      progress->SetHeading(CVariant{ 20197 }); //"Import music library"
-      progress->SetText(CVariant{ 649 });   //"Importing"
-      progress->SetLine(1, CVariant{ 330 }); //"This could take some time"
-      progress->SetLine(2, CVariant{ "" });
+      progress->SetHeading( 20197 ); //"Import music library"
+      progress->SetText( 649 );   //"Importing"
+      progress->SetLine(1,  330 ); //"This could take some time"
+      progress->SetLine(2,  "" );
       progress->SetPercentage(0);
       progress->Open();
       progress->ShowProgressBar(true);
@@ -175,7 +175,7 @@ bool CMusicLibraryQueue::IsScanningLibrary() const
 
 void CMusicLibraryQueue::StopLibraryScanning()
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   MusicLibraryJobMap::const_iterator scanningJobs = m_jobs.find("MusicLibraryScanningJob");
   if (scanningJobs == m_jobs.end())
     return;
@@ -197,7 +197,7 @@ void CMusicLibraryQueue::CleanLibrary(bool showDialog /* = false */)
     progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
     if (progress)
     {
-      progress->SetHeading(CVariant{ 700 });
+      progress->SetHeading( 700 );
       progress->SetPercentage(0);
       progress->Open();
       progress->ShowProgressBar(true);
@@ -218,7 +218,7 @@ void CMusicLibraryQueue::AddJob(CMusicLibraryJob *job)
   if (job == NULL)
     return;
 
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   if (!CJobQueue::AddJob(job))
     return;
 
@@ -240,7 +240,7 @@ void CMusicLibraryQueue::CancelJob(CMusicLibraryJob *job)
   if (job == NULL)
     return;
 
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   // remember the job type needed later because the job might be deleted
   // in the call to CJobQueue::CancelJob()
   std::string jobType;
@@ -262,7 +262,7 @@ void CMusicLibraryQueue::CancelJob(CMusicLibraryJob *job)
 
 void CMusicLibraryQueue::CancelAllJobs()
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   CJobQueue::CancelJobs();
 
   // remove all scanning jobs
@@ -290,7 +290,7 @@ void CMusicLibraryQueue::OnJobComplete(unsigned int jobID, bool success, CJob *j
   }
 
   {
-    std::unique_lock<CCriticalSection> lock(m_critical);
+    CSingleLock lock(m_critical);
     // remove the job from our list of queued/running jobs
     MusicLibraryJobMap::iterator jobsIt = m_jobs.find(job->GetType());
     if (jobsIt != m_jobs.end())

@@ -192,7 +192,7 @@ CGUIViewState::CGUIViewState(const CFileItemList& items) : m_items(items)
   m_playlist = PLAYLIST::TYPE_NONE;
 }
 
-CGUIViewState::~CGUIViewState() = default;
+CGUIViewState::~CGUIViewState() {}
 
 SortOrder CGUIViewState::SetNextSortOrder()
 {
@@ -364,7 +364,7 @@ bool CGUIViewState::ChooseSortMethod()
   if (!dialog)
     return false;
   dialog->Reset();
-  dialog->SetHeading(CVariant{ 39010 }); // Label "Sort by"
+  dialog->SetHeading( 39010 ); // Label "Sort by"
   for (auto &sortMethod : m_sortMethods)
     dialog->Add(g_localizeStrings.Get(sortMethod.m_buttonLabel));
   dialog->SetSelected(m_currentSortMethod);
@@ -405,7 +405,7 @@ bool CGUIViewState::HideParentDirItems()
 
 bool CGUIViewState::DisableAddSourceButtons()
 {
-  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   if (profileManager->GetCurrentProfile().canWriteSources() || g_passwordManager.bMasterUser)
     return !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_FILELISTS_SHOWADDSOURCEBUTTONS);
@@ -523,7 +523,7 @@ void CGUIViewState::SaveViewToDb(const std::string &path, int windowID, CViewSta
   if (viewState != NULL)
     *viewState = state;
 
-  const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+  const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
   db.SetViewState(path, windowID, state, settings->GetString(CSettings::SETTING_LOOKANDFEEL_SKIN));
   db.Close();
 
@@ -578,7 +578,7 @@ CGUIViewStateFromItems::CGUIViewStateFromItems(const CFileItemList &items) : CGU
     if (CServiceBroker::GetAddonMgr().GetAddon(url.GetHostName(), addon, AddonType::PLUGIN,
                                                OnlyEnabled::CHOICE_YES))
     {
-      const auto plugin = std::static_pointer_cast<CPluginSource>(addon);
+      const auto plugin = boost::static_pointer_cast<CPluginSource>(addon);
       if (plugin->Provides(CPluginSource::AUDIO))
         m_playlist = PLAYLIST::TYPE_MUSIC;
       if (plugin->Provides(CPluginSource::VIDEO))

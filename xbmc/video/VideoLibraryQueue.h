@@ -28,7 +28,7 @@ class CVideoLibraryJob;
 class CVideoLibraryQueue : protected CJobQueue
 {
 public:
-  ~CVideoLibraryQueue() override;
+  virtual ~CVideoLibraryQueue();
 
   /*!
    \brief Gets the singleton instance of the video library queue.
@@ -85,7 +85,7 @@ public:
    \param[in] refreshAll Whether to refresh all sub-items (in case of a tvshow)
    \param[in] searchTitle Title to use for the search (instead of determining it from the item's filename/path)
    */
-  void RefreshItem(std::shared_ptr<CFileItem> item,
+  void RefreshItem(boost::shared_ptr<CFileItem> item,
                    bool ignoreNfo = false,
                    bool forceRefresh = true,
                    bool refreshAll = false,
@@ -99,7 +99,7 @@ public:
    \param[in] refreshAll Whether to refresh all sub-items (in case of a tvshow)
    \return True if the item has been successfully refreshed, false otherwise.
   */
-  bool RefreshItemModal(std::shared_ptr<CFileItem> item,
+  bool RefreshItemModal(boost::shared_ptr<CFileItem> item,
                         bool forceRefresh = true,
                         bool refreshAll = false);
 
@@ -109,14 +109,14 @@ public:
    \param[in] item Item to update watched status for
    \param[in] watched New watched status
    */
-  void MarkAsWatched(const std::shared_ptr<CFileItem>& item, bool watched);
+  void MarkAsWatched(const boost::shared_ptr<CFileItem>& item, bool watched);
 
   /*!
    \brief Queue a reset resume point job.
 
    \param[in] item Item to reset the resume point for
    */
-  void ResetResumePoint(const std::shared_ptr<CFileItem>& item);
+  void ResetResumePoint(const boost::shared_ptr<CFileItem>& item);
 
   /*!
    \brief Adds the given job to the queue.
@@ -144,7 +144,7 @@ public:
 
 protected:
   // implementation of IJobCallback
-  void OnJobComplete(unsigned int jobID, bool success, CJob *job) override;
+  virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
 
   /*!
    \brief Notifies all to refresh the current listings.

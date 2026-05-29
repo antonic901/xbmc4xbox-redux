@@ -18,17 +18,17 @@ class CViewDatabase : public CDatabase
 {
 public:
   CViewDatabase();
-  ~CViewDatabase() override;
-  bool Open() override;
+  virtual ~CViewDatabase();
+  virtual bool Open();
 
   bool GetViewState(const std::string &path, int windowID, CViewState &state, const std::string &skin);
   bool SetViewState(const std::string &path, int windowID, const CViewState &state, const std::string &skin);
   bool ClearViewStates(int windowID);
 
 protected:
-  void CreateTables() override;
-  void CreateAnalytics() override;
-  void UpdateTables(int version) override;
-  int GetSchemaVersion() const override { return 6; }
-  const char *GetBaseDBName() const override { return "ViewModes"; }
+  virtual void CreateTables();
+  virtual void CreateAnalytics();
+  virtual void UpdateTables(int version);
+  virtual int GetSchemaVersion() const { return 6; }
+  virtual const char *GetBaseDBName() const { return "ViewModes"; }
 };

@@ -35,7 +35,7 @@
 #include "utils/StringUtils.h"
 
 // Casting from boost::movelib::unique_ptr to boost::shared_ptr is not supported.
-// In order to achive same behavior just like casting from std::unique_ptr to boost::shared_ptr
+// In order to achive same behavior just like casting from boost::movelib::unique_ptr to boost::shared_ptr
 // we need this custom deleter class which will ensure the unique pointer's ownership is correctly transferred.
 template<typename T>
 void deleter(T* ptr) {

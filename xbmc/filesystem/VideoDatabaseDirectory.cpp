@@ -25,13 +25,13 @@
 using namespace XFILE;
 using namespace VIDEODATABASEDIRECTORY;
 
-CVideoDatabaseDirectory::CVideoDatabaseDirectory(void) = default;
+CVideoDatabaseDirectory::CVideoDatabaseDirectory(void) {}
 
-CVideoDatabaseDirectory::~CVideoDatabaseDirectory(void) = default;
+CVideoDatabaseDirectory::~CVideoDatabaseDirectory(void) {}
 
 namespace
 {
-std::string GetChildContentType(const std::unique_ptr<CDirectoryNode>& node)
+std::string GetChildContentType(const boost::movelib::unique_ptr<CDirectoryNode>& node)
 {
   switch (node->GetChildType())
   {
@@ -90,7 +90,7 @@ bool CVideoDatabaseDirectory::GetDirectory(const CURL& url, CFileItemList &items
   std::string path = CLegacyPathTranslation::TranslateVideoDbPath(url);
   items.SetPath(path);
   items.m_dwSize = -1;  // No size
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
 
   if (!pNode)
     return false;
@@ -123,7 +123,7 @@ bool CVideoDatabaseDirectory::GetDirectory(const CURL& url, CFileItemList &items
 NODE_TYPE CVideoDatabaseDirectory::GetDirectoryChildType(const std::string& strPath)
 {
   std::string path = CLegacyPathTranslation::TranslateVideoDbPath(strPath);
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
 
   if (!pNode)
     return NODE_TYPE_NONE;
@@ -134,7 +134,7 @@ NODE_TYPE CVideoDatabaseDirectory::GetDirectoryChildType(const std::string& strP
 NODE_TYPE CVideoDatabaseDirectory::GetDirectoryType(const std::string& strPath)
 {
   std::string path = CLegacyPathTranslation::TranslateVideoDbPath(strPath);
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
 
   if (!pNode)
     return NODE_TYPE_NONE;
@@ -145,7 +145,7 @@ NODE_TYPE CVideoDatabaseDirectory::GetDirectoryType(const std::string& strPath)
 NODE_TYPE CVideoDatabaseDirectory::GetDirectoryParentType(const std::string& strPath)
 {
   std::string path = CLegacyPathTranslation::TranslateVideoDbPath(strPath);
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
 
   if (!pNode)
     return NODE_TYPE_NONE;
@@ -161,7 +161,7 @@ NODE_TYPE CVideoDatabaseDirectory::GetDirectoryParentType(const std::string& str
 bool CVideoDatabaseDirectory::GetQueryParams(const std::string& strPath, CQueryParams& params)
 {
   std::string path = CLegacyPathTranslation::TranslateVideoDbPath(strPath);
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
 
   if (!pNode)
     return false;
@@ -193,7 +193,7 @@ bool CVideoDatabaseDirectory::GetLabel(const std::string& strDirectory, std::str
   strLabel = "";
 
   std::string path = CLegacyPathTranslation::TranslateVideoDbPath(strDirectory);
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
   if (!pNode || path.empty())
     return false;
 
@@ -371,7 +371,7 @@ bool CVideoDatabaseDirectory::ContainsMovies(const std::string &path)
 bool CVideoDatabaseDirectory::Exists(const CURL& url)
 {
   std::string path = CLegacyPathTranslation::TranslateVideoDbPath(url);
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
 
   if (!pNode)
     return false;
@@ -385,7 +385,7 @@ bool CVideoDatabaseDirectory::Exists(const CURL& url)
 bool CVideoDatabaseDirectory::CanCache(const std::string& strPath)
 {
   std::string path = CLegacyPathTranslation::TranslateVideoDbPath(strPath);
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
   if (!pNode)
     return false;
   return pNode->CanCache();

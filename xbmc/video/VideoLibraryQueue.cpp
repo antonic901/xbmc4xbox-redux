@@ -30,7 +30,7 @@ CVideoLibraryQueue::CVideoLibraryQueue()
 
 CVideoLibraryQueue::~CVideoLibraryQueue()
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   m_jobs.clear();
 }
 
@@ -66,7 +66,7 @@ bool CVideoLibraryQueue::IsScanningLibrary() const
 
 void CVideoLibraryQueue::StopLibraryScanning()
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   VideoLibraryJobMap::const_iterator scanningJobs = m_jobs.find("VideoLibraryScanningJob");
   if (scanningJobs == m_jobs.end())
     return;
@@ -124,7 +124,7 @@ bool CVideoLibraryQueue::CleanLibraryModal(const std::set<int>& paths /* = std::
   return true;
 }
 
-void CVideoLibraryQueue::RefreshItem(std::shared_ptr<CFileItem> item,
+void CVideoLibraryQueue::RefreshItem(boost::shared_ptr<CFileItem> item,
                                      bool ignoreNfo /* = false */,
                                      bool forceRefresh /* = true */,
                                      bool refreshAll /* = false */,
@@ -134,7 +134,7 @@ void CVideoLibraryQueue::RefreshItem(std::shared_ptr<CFileItem> item,
                                         searchTitle));
 }
 
-bool CVideoLibraryQueue::RefreshItemModal(std::shared_ptr<CFileItem> item,
+bool CVideoLibraryQueue::RefreshItemModal(boost::shared_ptr<CFileItem> item,
                                           bool forceRefresh /* = true */,
                                           bool refreshAll /* = false */)
 {
@@ -151,7 +151,7 @@ bool CVideoLibraryQueue::RefreshItemModal(std::shared_ptr<CFileItem> item,
   return result;
 }
 
-void CVideoLibraryQueue::MarkAsWatched(const std::shared_ptr<CFileItem>& item, bool watched)
+void CVideoLibraryQueue::MarkAsWatched(const boost::shared_ptr<CFileItem>& item, bool watched)
 {
   if (item == NULL)
     return;
@@ -159,7 +159,7 @@ void CVideoLibraryQueue::MarkAsWatched(const std::shared_ptr<CFileItem>& item, b
   AddJob(new CVideoLibraryMarkWatchedJob(item, watched));
 }
 
-void CVideoLibraryQueue::ResetResumePoint(const std::shared_ptr<CFileItem>& item)
+void CVideoLibraryQueue::ResetResumePoint(const boost::shared_ptr<CFileItem>& item)
 {
   if (item == nullptr)
     return;
@@ -172,7 +172,7 @@ void CVideoLibraryQueue::AddJob(CVideoLibraryJob *job)
   if (job == NULL)
     return;
 
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   if (!CJobQueue::AddJob(job))
     return;
 
@@ -194,7 +194,7 @@ void CVideoLibraryQueue::CancelJob(CVideoLibraryJob *job)
   if (job == NULL)
     return;
 
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   // remember the job type needed later because the job might be deleted
   // in the call to CJobQueue::CancelJob()
   std::string jobType;
@@ -216,7 +216,7 @@ void CVideoLibraryQueue::CancelJob(CVideoLibraryJob *job)
 
 void CVideoLibraryQueue::CancelAllJobs()
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   CJobQueue::CancelJobs();
 
   // remove all scanning jobs
@@ -244,7 +244,7 @@ void CVideoLibraryQueue::OnJobComplete(unsigned int jobID, bool success, CJob *j
   }
 
   {
-    std::unique_lock<CCriticalSection> lock(m_critical);
+    CSingleLock lock(m_critical);
     // remove the job from our list of queued/running jobs
     VideoLibraryJobMap::iterator jobsIt = m_jobs.find(job->GetType());
     if (jobsIt != m_jobs.end())

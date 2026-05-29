@@ -20,7 +20,7 @@ CVideoDatabaseFile::CVideoDatabaseFile(void)
   : COverrideFile(true)
 { }
 
-CVideoDatabaseFile::~CVideoDatabaseFile(void) = default;
+CVideoDatabaseFile::~CVideoDatabaseFile(void) {}
 
 CVideoInfoTag CVideoDatabaseFile::GetVideoTag(const CURL& url)
 {

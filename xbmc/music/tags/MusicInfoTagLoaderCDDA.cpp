@@ -30,9 +30,9 @@ using namespace CDDB;
 #define CDTEXT_FIELD_GENRE CDTEXT_GENRE
 #endif
 
-CMusicInfoTagLoaderCDDA::CMusicInfoTagLoaderCDDA(void) = default;
+CMusicInfoTagLoaderCDDA::CMusicInfoTagLoaderCDDA(void) {}
 
-CMusicInfoTagLoaderCDDA::~CMusicInfoTagLoaderCDDA() = default;
+CMusicInfoTagLoaderCDDA::~CMusicInfoTagLoaderCDDA() {}
 
 bool CMusicInfoTagLoaderCDDA::Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
@@ -47,7 +47,7 @@ bool CMusicInfoTagLoaderCDDA::Load(const std::string& strFileName, CMusicInfoTag
     if (pCdInfo == NULL)
       return bResult;
 
-    const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+    const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
     // Prepare cddb
     Xcddb cddb;

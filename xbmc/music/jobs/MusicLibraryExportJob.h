@@ -27,15 +27,15 @@ public:
   */
   CMusicLibraryExportJob(const CLibExportSettings& settings, CGUIDialogProgress* progressDialog);
 
-  ~CMusicLibraryExportJob() override;
+  virtual ~CMusicLibraryExportJob();
 
   // specialization of CJob
-  const char *GetType() const override { return "MusicLibraryExportJob"; }
-  bool operator==(const CJob* job) const override;
+  virtual const char *GetType() const { return "MusicLibraryExportJob"; }
+  virtual bool operator==(const CJob* job) const;
 
 protected:
   // implementation of CMusicLibraryJob
-  bool Work(CMusicDatabase &db) override;
+  virtual bool Work(CMusicDatabase &db);
 
 private:
   CLibExportSettings m_settings;

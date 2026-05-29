@@ -14,21 +14,21 @@ class CGUIWindowVideoPlaylist : public CGUIWindowVideoBase
 {
 public:
   CGUIWindowVideoPlaylist(void);
-  ~CGUIWindowVideoPlaylist(void) override;
+  virtual ~CGUIWindowVideoPlaylist(void);
 
-  void OnPrepareFileItems(CFileItemList& items) override;
-  bool OnMessage(CGUIMessage& message) override;
-  bool OnAction(const CAction &action) override;
-  bool OnBack(int actionID) override;
-  bool OnSelect(int iItem) override;
+  virtual void OnPrepareFileItems(CFileItemList& items);
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction &action);
+  virtual bool OnBack(int actionID);
+  virtual bool OnSelect(int iItem);
 
 protected:
-  bool OnPlayMedia(int iItem, const std::string &player = "") override;
-  void UpdateButtons() override;
+  virtual bool OnPlayMedia(int iItem, const std::string &player = "");
+  virtual void UpdateButtons();
   void MarkPlaying();
 
-  void GetContextButtons(int itemNumber, CContextButtons &buttons) override;
-  bool OnContextButton(int itemNumber, CONTEXT_BUTTON button) override;
+  virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
+  virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
 
   void OnMove(int iItem, int iAction);
 

@@ -190,9 +190,9 @@ public:
   void SetContributors(const VECMUSICROLES& contributors);
   bool HasContributors() const { return !m_musicRoles.empty(); }
 
-  void Archive(CArchive& ar) override;
-  void Serialize(CVariant& ar) const override;
-  void ToSortable(SortItem& sortable, Field field) const override;
+  virtual void Archive(CArchive& ar);
+  virtual void Serialize(CVariant& ar) const;
+  virtual void ToSortable(SortItem& sortable, Field field) const;
 
   void Clear();
 

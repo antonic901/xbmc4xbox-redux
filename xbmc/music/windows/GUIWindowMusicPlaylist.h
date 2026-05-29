@@ -14,24 +14,24 @@ class CGUIWindowMusicPlayList : public CGUIWindowMusicBase
 {
 public:
   CGUIWindowMusicPlayList(void);
-  ~CGUIWindowMusicPlayList(void) override;
+  virtual ~CGUIWindowMusicPlayList(void);
 
-  bool OnMessage(CGUIMessage& message) override;
-  bool OnAction(const CAction &action) override;
-  bool OnBack(int actionID) override;
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction &action);
+  virtual bool OnBack(int actionID);
 
   void RemovePlayListItem(int iItem);
   void MoveItem(int iStart, int iDest);
 
 protected:
-  bool GoParentFolder() override { return false; }
-  void UpdateButtons() override;
-  void OnItemLoaded(CFileItem* pItem) override;
-  bool Update(const std::string& strDirectory, bool updateFilterPath = true) override;
-  void GetContextButtons(int itemNumber, CContextButtons &buttons) override;
-  bool OnContextButton(int itemNumber, CONTEXT_BUTTON button) override;
+  virtual bool GoParentFolder() { return false; }
+  virtual void UpdateButtons();
+  virtual void OnItemLoaded(CFileItem* pItem);
+  virtual bool Update(const std::string& strDirectory, bool updateFilterPath = true);
+  virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
+  virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
   void OnMove(int iItem, int iAction);
-  bool OnPlayMedia(int iItem, const std::string &player = "") override;
+  virtual bool OnPlayMedia(int iItem, const std::string &player = "");
 
   void SavePlayList();
   void ClearPlayList();
