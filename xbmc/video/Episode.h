@@ -11,7 +11,7 @@
 #include "XBDateTime.h"
 #include "utils/ScraperUrl.h"
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <string>
 #include <vector>
 

@@ -78,8 +78,8 @@ protected:
   CVideoInfoTag       m_movieDetails;
   CScraperUrl         m_url;
   VIDEO::EPISODELIST  m_episode;
-  LOOKUP_STATE m_state = DO_NOTHING;
-  int m_found = 0;
+  LOOKUP_STATE m_state;
+  int m_found;
   ADDON::ScraperPtr   m_info;
 
   // threaded stuff

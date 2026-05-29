@@ -342,7 +342,7 @@ bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
     if (origDbId > 0)
     {
       if (scraper->Content() == CONTENT_MOVIES)
-        db.DeleteMovie(origDbId, false, DeleteMovieCascadeAction::DEFAULT_VERSION);
+        db.DeleteMovie(origDbId, false, DEFAULT_VERSION);
       else if (scraper->Content() == CONTENT_MUSICVIDEOS)
         db.DeleteMusicVideo(origDbId);
       else if (scraper->Content() == CONTENT_TVSHOWS)

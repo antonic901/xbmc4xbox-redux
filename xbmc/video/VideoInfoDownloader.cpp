@@ -16,14 +16,13 @@
 
 using namespace VIDEO;
 using namespace KODI::MESSAGING;
-using namespace std::chrono_literals;
 
 #ifndef __GNUC__
 #pragma warning (disable:4018)
 #endif
 
 CVideoInfoDownloader::CVideoInfoDownloader(const ADDON::ScraperPtr& scraper)
-  : CThread("VideoInfoDownloader"), m_info(scraper)
+  : CThread("VideoInfoDownloader"), m_info(scraper), m_state(DO_NOTHING), m_found(0)
 {
   m_http = new XFILE::CCurlFile;
 }
@@ -123,7 +122,7 @@ int CVideoInfoDownloader::FindMovie(const std::string &movieTitle, int movieYear
         CloseThread();
         return 0;
       }
-      CThread::Sleep(1ms);
+      CThread::Sleep(1);
     }
     // transfer to our movielist
     m_movieList.swap(movieList);
@@ -174,7 +173,7 @@ bool CVideoInfoDownloader::GetDetails(const std::map<std::string, std::string>& 
         CloseThread();
         return false;
       }
-      CThread::Sleep(1ms);
+      CThread::Sleep(1);
     }
     movieDetails = m_movieDetails;
     CloseThread();
@@ -209,7 +208,7 @@ bool CVideoInfoDownloader::GetEpisodeDetails(const CScraperUrl &url,
         CloseThread();
         return false;
       }
-      CThread::Sleep(1ms);
+      CThread::Sleep(1);
     }
     movieDetails = m_movieDetails;
     CloseThread();
@@ -244,7 +243,7 @@ bool CVideoInfoDownloader::GetEpisodeList(const CScraperUrl& url,
         CloseThread();
         return false;
       }
-      CThread::Sleep(1ms);
+      CThread::Sleep(1);
     }
     movieDetails = m_episode;
     CloseThread();

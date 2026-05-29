@@ -12,6 +12,7 @@
 #include "VideoInfoTag.h"
 #include "addons/Scraper.h"
 #include "dbwrappers/Database.h"
+#include "video/VideoManagerTypes.h" // VideoAssetTypeOwner, VideoAssetType
 #include "utils/SortUtils.h"
 #include "utils/UrlOptions.h"
 
@@ -27,9 +28,6 @@ class CGUIDialogProgress;
 class CGUIDialogProgressBarHandle;
 
 struct VideoAssetInfo;
-
-enum class VideoAssetTypeOwner;
-enum class VideoAssetType;
 
 namespace dbiplus
 {
@@ -167,16 +165,18 @@ enum VideoDbDetails
 #define VIDEODB_TYPE_DATE 7
 #define VIDEODB_TYPE_DATETIME 8
 
-enum class VideoDbContentType
+namespace VideoDbContentType
 {
-  UNKNOWN = -1,
-  MOVIES = 1,
-  TVSHOWS = 2,
-  MUSICVIDEOS = 3,
-  EPISODES = 4,
-  MOVIE_SETS = 5,
-  MUSICALBUMS = 6
-};
+  enum Type {
+    UNKNOWN = -1,
+    MOVIES = 1,
+    TVSHOWS = 2,
+    MUSICVIDEOS = 3,
+    EPISODES = 4,
+    MOVIE_SETS = 5,
+    MUSICALBUMS = 6
+  };
+}
 
 typedef enum // this enum MUST match the offset struct further down!! and make sure to keep min and max at -1 and sizeof(offsets)
 {
@@ -401,13 +401,15 @@ const struct SDbTableOffsets DbMusicVideoOffsets[] =
   { VIDEODB_TYPE_INT, my_offsetof(CVideoInfoTag,m_iIdUniqueID)}
 };
 
-enum class ArtFallbackOptions
+namespace ArtFallbackOptions
 {
-  NONE,
-  PARENT
-};
+  enum Type {
+    NONE,
+    PARENT
+  };
+}
 
-enum class DeleteMovieCascadeAction
+enum DeleteMovieCascadeAction
 {
   DEFAULT_VERSION,
   ALL_ASSETS
@@ -514,17 +516,17 @@ public:
 
   void UpdateMovieTitle(int idMovie,
                         const std::string& strNewMovieTitle,
-                        VideoDbContentType iType = VideoDbContentType::MOVIES);
+                        VideoDbContentType::Type iType = VideoDbContentType::MOVIES);
   bool UpdateVideoSortTitle(int idDb,
                             const std::string& strNewSortTitle,
-                            VideoDbContentType iType = VideoDbContentType::MOVIES);
+                            VideoDbContentType::Type iType = VideoDbContentType::MOVIES);
 
   bool HasMovieInfo(const std::string& strFilenameAndPath);
   bool HasTvShowInfo(const std::string& strFilenameAndPath);
   bool HasEpisodeInfo(const std::string& strFilenameAndPath);
   bool HasMusicVideoInfo(const std::string& strFilenameAndPath);
 
-  void GetFilePathById(int idMovie, std::string& filePath, VideoDbContentType iType);
+  void GetFilePathById(int idMovie, std::string& filePath, VideoDbContentType::Type iType);
   std::string GetGenreById(int id);
   std::string GetCountryById(int id);
   std::string GetSetById(int id);
@@ -591,8 +593,8 @@ public:
   void SetStreamDetailsForFile(const CStreamDetails& details, const std::string &strFileNameAndPath);
   void SetStreamDetailsForFileId(const CStreamDetails& details, int idFile);
 
-  bool SetSingleValue(VideoDbContentType type, int dbId, int dbField, const std::string& strValue);
-  bool SetSingleValue(VideoDbContentType type,
+  bool SetSingleValue(VideoDbContentType::Type type, int dbId, int dbField, const std::string& strValue);
+  bool SetSingleValue(VideoDbContentType::Type type,
                       int dbId,
                       Field dbField,
                       const std::string& strValue);
@@ -603,7 +605,7 @@ public:
 
   void DeleteMovie(int idMovie,
                    bool bKeepId = false,
-                   DeleteMovieCascadeAction action = DeleteMovieCascadeAction::ALL_ASSETS);
+                   DeleteMovieCascadeAction action = ALL_ASSETS);
   void DeleteTvShow(int idTvShow, bool bKeepId = false);
   void DeleteTvShow(const std::string& strPath);
   void DeleteSeason(int idSeason, bool bKeepId = false);
@@ -612,9 +614,9 @@ public:
   void DeleteDetailsForTvShow(int idTvShow);
   void DeleteStreamDetails(int idFile);
   void RemoveContentForPath(const std::string& strPath,CGUIDialogProgress *progress = NULL);
-  void UpdateFanart(const CFileItem& item, VideoDbContentType type);
+  void UpdateFanart(const CFileItem& item, VideoDbContentType::Type type);
   void DeleteSet(int idSet);
-  void DeleteTag(int idTag, VideoDbContentType mediaType);
+  void DeleteTag(int idTag, VideoDbContentType::Type mediaType);
 
   /*! \brief Get video settings for the specified file id
    \param idFile file id to get the settings for
@@ -690,8 +692,8 @@ public:
   bool GetResumePoint(CVideoInfoTag& tag);
   bool GetStreamDetails(CFileItem& item);
   bool GetStreamDetails(CVideoInfoTag& tag) const;
-  bool GetDetailsByTypeAndId(CFileItem& item, VideoDbContentType type, int id);
-  CVideoInfoTag GetDetailsByTypeAndId(VideoDbContentType type, int id);
+  bool GetDetailsByTypeAndId(CFileItem& item, VideoDbContentType::Type type, int id);
+  CVideoInfoTag GetDetailsByTypeAndId(VideoDbContentType::Type type, int id);
 
   // scraper settings
   void SetScraperForPath(const std::string& filePath, const ADDON::ScraperPtr& info, const VIDEO::SScanSettings& settings);
@@ -797,46 +799,46 @@ public:
   // general browsing
   bool GetGenresNav(const std::string& strBaseDir,
                     CFileItemList& items,
-                    VideoDbContentType idContent = VideoDbContentType::UNKNOWN,
+                    VideoDbContentType::Type idContent = VideoDbContentType::UNKNOWN,
                     const Filter& filter = Filter(),
                     bool countOnly = false);
   bool GetCountriesNav(const std::string& strBaseDir,
                        CFileItemList& items,
-                       VideoDbContentType idContent = VideoDbContentType::UNKNOWN,
+                       VideoDbContentType::Type idContent = VideoDbContentType::UNKNOWN,
                        const Filter& filter = Filter(),
                        bool countOnly = false);
   bool GetStudiosNav(const std::string& strBaseDir,
                      CFileItemList& items,
-                     VideoDbContentType idContent = VideoDbContentType::UNKNOWN,
+                     VideoDbContentType::Type idContent = VideoDbContentType::UNKNOWN,
                      const Filter& filter = Filter(),
                      bool countOnly = false);
   bool GetYearsNav(const std::string& strBaseDir,
                    CFileItemList& items,
-                   VideoDbContentType idContent = VideoDbContentType::UNKNOWN,
+                   VideoDbContentType::Type idContent = VideoDbContentType::UNKNOWN,
                    const Filter& filter = Filter());
   bool GetActorsNav(const std::string& strBaseDir,
                     CFileItemList& items,
-                    VideoDbContentType idContent = VideoDbContentType::UNKNOWN,
+                    VideoDbContentType::Type idContent = VideoDbContentType::UNKNOWN,
                     const Filter& filter = Filter(),
                     bool countOnly = false);
   bool GetDirectorsNav(const std::string& strBaseDir,
                        CFileItemList& items,
-                       VideoDbContentType idContent = VideoDbContentType::UNKNOWN,
+                       VideoDbContentType::Type idContent = VideoDbContentType::UNKNOWN,
                        const Filter& filter = Filter(),
                        bool countOnly = false);
   bool GetWritersNav(const std::string& strBaseDir,
                      CFileItemList& items,
-                     VideoDbContentType idContent = VideoDbContentType::UNKNOWN,
+                     VideoDbContentType::Type idContent = VideoDbContentType::UNKNOWN,
                      const Filter& filter = Filter(),
                      bool countOnly = false);
   bool GetSetsNav(const std::string& strBaseDir,
                   CFileItemList& items,
-                  VideoDbContentType idContent = VideoDbContentType::UNKNOWN,
+                  VideoDbContentType::Type idContent = VideoDbContentType::UNKNOWN,
                   const Filter& filter = Filter(),
                   bool ignoreSingleMovieSets = false);
   bool GetTagsNav(const std::string& strBaseDir,
                   CFileItemList& items,
-                  VideoDbContentType idContent = VideoDbContentType::UNKNOWN,
+                  VideoDbContentType::Type idContent = VideoDbContentType::UNKNOWN,
                   const Filter& filter = Filter(),
                   bool countOnly = false);
 
@@ -854,7 +856,7 @@ public:
   bool GetInProgressTvShowsNav(const std::string& strBaseDir, CFileItemList& items, unsigned int limit=0, int getDetails = VideoDbDetailsNone);
 
   bool HasContent();
-  bool HasContent(VideoDbContentType type);
+  bool HasContent(VideoDbContentType::Type type);
   bool HasSets() const;
 
   void CleanDatabase(CGUIDialogProgressBarHandle* handle = NULL, const std::set<int>& paths = std::set<int>(), bool showProgress = true);
@@ -929,7 +931,7 @@ public:
   bool GetItems(const std::string &strBaseDir, CFileItemList &items, const Filter &filter = Filter(), const SortDescription &sortDescription = SortDescription());
   bool GetItems(const std::string &strBaseDir, const std::string &mediaType, const std::string &itemType, CFileItemList &items, const Filter &filter = Filter(), const SortDescription &sortDescription = SortDescription());
   bool GetItems(const std::string& strBaseDir,
-                VideoDbContentType mediaType,
+                VideoDbContentType::Type mediaType,
                 const std::string& itemType,
                 CFileItemList& items,
                 const Filter& filter = Filter(),
@@ -944,7 +946,7 @@ public:
   */
   unsigned int GetRandomMusicVideoIDs(const std::string& strWhere, std::vector<std::pair<int, int> > &songIDs);
 
-  static void VideoContentTypeToString(VideoDbContentType type, std::string& out)
+  static void VideoContentTypeToString(VideoDbContentType::Type type, std::string& out)
   {
     switch (type)
     {
@@ -980,7 +982,7 @@ public:
    * \return
   */
   bool GetArtForAsset(int assetId,
-                      ArtFallbackOptions fallback,
+                      ArtFallbackOptions::Type fallback,
                       std::map<std::string, std::string>& art);
   bool HasArtForItem(int mediaId, const MediaType &mediaType);
   bool RemoveArtForItem(int mediaId, const MediaType &mediaType, const std::string &artType);
@@ -1040,13 +1042,13 @@ public:
 
   std::string GetSetByNameLike(const std::string& nameLike) const;
 
-  std::string GetVideoItemTitle(VideoDbContentType itemType, int dbId);
+  std::string GetVideoItemTitle(VideoDbContentType::Type itemType, int dbId);
   std::string GetVideoVersionById(int id);
-  void GetVideoVersions(VideoDbContentType itemType,
+  void GetVideoVersions(VideoDbContentType::Type itemType,
                         int dbId,
                         CFileItemList& items,
-                        VideoAssetType videoAssetType);
-  void GetDefaultVideoVersion(VideoDbContentType itemType, int dbId, CFileItem& item);
+                        VideoAssetType::Type videoAssetType);
+  void GetDefaultVideoVersion(VideoDbContentType::Type itemType, int dbId, CFileItem& item);
 
   /*!
    * \brief Remove a video from the library and transfer all of its assets to another video of the
@@ -1058,39 +1060,39 @@ public:
    * \param assetType new asset type of the default version of the video
    * \return true for success, false otherwise
    */
-  bool ConvertVideoToVersion(VideoDbContentType itemType,
+  bool ConvertVideoToVersion(VideoDbContentType::Type itemType,
                              int dbIdSource,
                              int dbIdTarget,
                              int idVideoVersion,
-                             VideoAssetType assetType);
-  void SetDefaultVideoVersion(VideoDbContentType itemType, int dbId, int idFile);
+                             VideoAssetType::Type assetType);
+  void SetDefaultVideoVersion(VideoDbContentType::Type itemType, int dbId, int idFile);
   void SetVideoVersion(int idFile, int idVideoVersion);
   int AddVideoVersionType(const std::string& typeVideoVersion,
-                          VideoAssetTypeOwner owner,
-                          VideoAssetType assetType);
-  void AddVideoAsset(VideoDbContentType itemType,
+                          VideoAssetTypeOwner::Type owner,
+                          VideoAssetType::Type assetType);
+  void AddVideoAsset(VideoDbContentType::Type itemType,
                      int dbId,
                      int idVideoVersion,
-                     VideoAssetType videoAssetType,
+                     VideoAssetType::Type videoAssetType,
                      CFileItem& item);
   bool DeleteVideoAsset(int idFile);
   bool IsDefaultVideoVersion(int idFile);
-  bool GetVideoVersionTypes(VideoDbContentType idContent,
-                            VideoAssetType asset,
+  bool GetVideoVersionTypes(VideoDbContentType::Type idContent,
+                            VideoAssetType::Type asset,
                             CFileItemList& items);
-  void SetVideoVersionDefaultArt(int dbId, int idFrom, VideoDbContentType type);
+  void SetVideoVersionDefaultArt(int dbId, int idFrom, VideoDbContentType::Type type);
   void InitializeVideoVersionTypeTable(int schemaVersion);
   void UpdateVideoVersionTypeTable();
   bool GetVideoVersionsNav(const std::string& strBaseDir,
                            CFileItemList& items,
-                           VideoDbContentType idContent = VideoDbContentType::UNKNOWN,
+                           VideoDbContentType::Type idContent = VideoDbContentType::UNKNOWN,
                            const Filter& filter = Filter());
   VideoAssetInfo GetVideoVersionInfo(const std::string& filenameAndPath);
-  bool GetAssetsForVideo(VideoDbContentType itemType,
+  bool GetAssetsForVideo(VideoDbContentType::Type itemType,
                          int mediaId,
-                         VideoAssetType assetType,
+                         VideoAssetType::Type assetType,
                          CFileItemList& items);
-  bool GetDefaultVersionForVideo(VideoDbContentType itemType, int mediaId, CFileItem& item);
+  bool GetDefaultVersionForVideo(VideoDbContentType::Type itemType, int mediaId, CFileItem& item);
   bool UpdateAssetsOwner(const std::string& mediaType, int dbIdSource, int dbIdTarget);
 
   int GetMovieId(const std::string& strFilenameAndPath);
@@ -1175,13 +1177,13 @@ protected:
   bool GetPeopleNav(const std::string& strBaseDir,
                     CFileItemList& items,
                     const char* type,
-                    VideoDbContentType idContent = VideoDbContentType::UNKNOWN,
+                    VideoDbContentType::Type idContent = VideoDbContentType::UNKNOWN,
                     const Filter& filter = Filter(),
                     bool countOnly = false);
   bool GetNavCommon(const std::string& strBaseDir,
                     CFileItemList& items,
                     const char* type,
-                    VideoDbContentType idContent = VideoDbContentType::UNKNOWN,
+                    VideoDbContentType::Type idContent = VideoDbContentType::UNKNOWN,
                     const Filter& filter = Filter(),
                     bool countOnly = false);
   void GetCast(int media_id, const std::string &media_type, std::vector<SActorInfo> &cast);

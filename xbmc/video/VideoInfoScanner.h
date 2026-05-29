@@ -240,12 +240,12 @@ namespace VIDEO
     bool ProcessItemByVideoInfoTag(const CFileItem *item, EPISODELIST &episodeList);
 
     bool AddVideoExtras(CFileItemList& items, const CONTENT_TYPE& content, const std::string& path);
-    bool ProcessVideoVersion(VideoDbContentType itemType, int dbId);
+    bool ProcessVideoVersion(VideoDbContentType::Type itemType, int dbId);
 
     bool m_bStop;
     bool m_scanAll;
-    bool m_ignoreVideoVersions{false};
-    bool m_ignoreVideoExtras{false};
+    bool m_ignoreVideoVersions;
+    bool m_ignoreVideoExtras;
     std::string m_strStartDir;
     CVideoDatabase m_database;
     std::set<std::string> m_pathsToCount;
@@ -264,7 +264,7 @@ namespace VIDEO
      */
     static std::string GetArtTypeFromSize(unsigned int width, unsigned int height);
 
-    static std::pair<CInfoScanner::INFO_TYPE, boost::movelib::unique_ptr<IVideoInfoTagLoader>> ReadInfoTag(
+    static std::pair<CInfoScanner::INFO_TYPE, boost::movelib::unique_ptr<IVideoInfoTagLoader> > ReadInfoTag(
         CFileItem& item, const ADDON::ScraperPtr& scraper, bool lookInFolder, bool resetTag);
   };
 }
