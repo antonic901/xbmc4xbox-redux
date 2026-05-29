@@ -1,16 +1,32 @@
+/*
+ *  Copyright (C) 2010-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
+
 #pragma once
-#include "FileItem.h"
+
+#include "system.h" // <xtl.h>
+#include <boost/shared_ptr.hpp>
+#include <string>
+
+class CFileItem;
+class CDateTime;
+
 class CFileUtils
 {
 public:
-  static bool DeleteItem(const CFileItemPtr &item, bool force=false);
-  static bool DeleteItem(const std::string &strPath, bool force=false);
+  static bool DeleteItem(const boost::shared_ptr<CFileItem>& item);
+  static bool DeleteItem(const std::string &strPath);
+  static bool Exists(const std::string& strFileName, bool bUseCache = true);
   static bool RenameFile(const std::string &strFile);
-  static bool RemoteAccessAllowed(const std::string &strPath);
   /*! \brief Get the modified date of a file if its invalid it returns the creation date - this behavior changes when you set bUseLatestDate
   \param strFileNameAndPath path to the file
   \param bUseLatestDate use the newer datetime of the files mtime and ctime
-  \return Returns the file date, can return a invalid date if problems occure
+  \return Returns the file date, can return a invalid date if problems occur
   */
   static CDateTime GetModificationDate(const std::string& strFileNameAndPath, const bool& bUseLatestDate);
+  static CDateTime GetModificationDate(const int& code, const std::string& strFileNameAndPath);
 };
