@@ -40,7 +40,9 @@ struct ArtistVideoLinks
 class CArtist
 {
 public:
-  int idArtist = -1;
+  CArtist() : idArtist(-1), bScrapedMBID(false) {}
+
+  int idArtist;
   bool operator<(const CArtist& a) const
   {
     if (strMusicBrainzArtistID.empty() && a.strMusicBrainzArtistID.empty())
@@ -124,7 +126,7 @@ public:
   CDateTime dateAdded; // From related file creation or modification times, or when (re-)scanned
   CDateTime dateUpdated; // Time db record Last modified
   CDateTime dateNew;  // Time db record created
-  bool bScrapedMBID = false;
+  bool bScrapedMBID;
   std::string strLastScraped;
   std::vector<ArtistVideoLinks> videolinks;
 };
@@ -135,16 +137,18 @@ class CArtistCredit
   friend class CMusicDatabase;
 
 public:
-  CArtistCredit() {}
-  explicit CArtistCredit(std::string strArtist) : m_strArtist(std::move(strArtist)) {}
+  CArtistCredit() : idArtist(-1), m_bScrapedMBID(false) {}
+  explicit CArtistCredit(std::string strArtist) : m_strArtist(boost::move(strArtist)), idArtist(-1), m_bScrapedMBID(false) {}
   CArtistCredit(std::string strArtist, std::string strMusicBrainzArtistID)
-    : m_strArtist(std::move(strArtist)), m_strMusicBrainzArtistID(std::move(strMusicBrainzArtistID))
+    : m_strArtist(boost::move(strArtist)), m_strMusicBrainzArtistID(boost::move(strMusicBrainzArtistID)), idArtist(-1), m_bScrapedMBID(false)
   {
   }
   CArtistCredit(std::string strArtist, std::string strSortName, std::string strMusicBrainzArtistID)
-    : m_strArtist(std::move(strArtist)),
-      m_strSortName(std::move(strSortName)),
-      m_strMusicBrainzArtistID(std::move(strMusicBrainzArtistID))
+    : m_strArtist(boost::move(strArtist)),
+      m_strSortName(boost::move(strSortName)),
+      m_strMusicBrainzArtistID(boost::move(strMusicBrainzArtistID)),
+      idArtist(-1),
+      m_bScrapedMBID(false)
   {
   }
 
@@ -174,11 +178,11 @@ public:
   void SetScrapedMBID(bool scrapedMBID) { this->m_bScrapedMBID = scrapedMBID; }
 
 private:
-  int idArtist = -1;
+  int idArtist;
   std::string m_strArtist;
   std::string m_strSortName;
   std::string m_strMusicBrainzArtistID;
-  bool m_bScrapedMBID = false; // Flag that mbid is from album merge of scarper results not derived from tags
+  bool m_bScrapedMBID; // Flag that mbid is from album merge of scarper results not derived from tags
 };
 
 typedef std::vector<CArtist> VECARTISTS;
@@ -196,13 +200,13 @@ class CMusicRole
 public:
   CMusicRole() {}
   CMusicRole(std::string strRole, std::string strArtist)
-    : idRole(-1), m_strRole(std::move(strRole)), m_strArtist(std::move(strArtist)), idArtist(-1)
+    : idRole(-1), m_strRole(boost::move(strRole)), m_strArtist(boost::move(strArtist)), idArtist(-1)
   {
   }
   CMusicRole(int role, std::string strRole, std::string strArtist, int ArtistId)
     : idRole(role),
-      m_strRole(std::move(strRole)),
-      m_strArtist(std::move(strArtist)),
+      m_strRole(boost::move(strRole)),
+      m_strArtist(boost::move(strArtist)),
       idArtist(ArtistId)
   {
   }

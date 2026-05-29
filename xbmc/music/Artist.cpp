@@ -111,7 +111,7 @@ bool CArtist::Load(const TiXmlElement *artist, bool append, bool prioritise)
   // prefix thumbs from nfos
   if (prioritise && iThumbCount && iThumbCount != thumbURL.GetUrls().size())
   {
-    auto thumbUrls = thumbURL.GetUrls();
+    std::vector<CScraperUrl::SUrlEntry> thumbUrls = thumbURL.GetUrls();
     rotate(thumbUrls.begin(), thumbUrls.begin() + iThumbCount, thumbUrls.end());
     thumbURL.SetUrls(thumbUrls);
     thumbURL.SetData(xmlAdd);
@@ -147,7 +147,7 @@ bool CArtist::Load(const TiXmlElement *artist, bool append, bool prioritise)
       XMLUtils::GetString(songurls, "musicbrainztrackid", videoLink.mbTrackID);
       XMLUtils::GetString(songurls, "url", videoLink.videoURL);
       XMLUtils::GetString(songurls, "thumburl", videoLink.thumbURL);
-      videolinks.emplace_back(std::move(videoLink));
+      videolinks.push_back(boost::move(videoLink));
     }
     songurls = songurls->NextSiblingElement("videourl");
   }
@@ -228,24 +228,24 @@ bool CArtist::Save(TiXmlNode *node, const std::string &tag, const std::string& s
   XMLUtils::SetString(artist,        "path", strPath);
 
   // Discography
-  for (const auto& it : discography)
+  for (std::vector<CDiscoAlbum>::const_iterator it = discography.begin(); it != discography.end(); ++it)
   {
     // add a <album> tag
     TiXmlElement discoElement("album");
     TiXmlNode* node = artist->InsertEndChild(discoElement);
-    XMLUtils::SetString(node, "title", it.strAlbum);
-    XMLUtils::SetString(node, "year", it.strYear);
-    XMLUtils::SetString(node, "musicbrainzreleasegroupid", it.strReleaseGroupMBID);
+    XMLUtils::SetString(node, "title", it->strAlbum);
+    XMLUtils::SetString(node, "year", it->strYear);
+    XMLUtils::SetString(node, "musicbrainzreleasegroupid", it->strReleaseGroupMBID);
   }
   // song video links
-  for (const auto& it : videolinks)
+  for (std::vector<ArtistVideoLinks>::const_iterator it = videolinks.begin(); it != videolinks.end(); ++it)
   {
     TiXmlElement videolinkElement("videourl");
     TiXmlNode* node = artist->InsertEndChild(videolinkElement);
-    XMLUtils::SetString(node, "title", it.title);
-    XMLUtils::SetString(node, "musicbrainztrackid", it.mbTrackID);
-    XMLUtils::SetString(node, "url", it.videoURL);
-    XMLUtils::SetString(node, "thumburl", it.thumbURL);
+    XMLUtils::SetString(node, "title", it->title);
+    XMLUtils::SetString(node, "musicbrainztrackid", it->mbTrackID);
+    XMLUtils::SetString(node, "url", it->videoURL);
+    XMLUtils::SetString(node, "thumburl", it->thumbURL);
   }
 
   return true;

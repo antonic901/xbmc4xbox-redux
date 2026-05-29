@@ -66,6 +66,8 @@ namespace VIDEO
   {
     m_bStop = false;
     m_scanAll = false;
+    m_ignoreVideoVersions = false;
+    m_ignoreVideoExtras = false;
 
     const auto settings = CServiceBroker::GetSettingsComponent()->GetSettings();
 
@@ -74,7 +76,7 @@ namespace VIDEO
   }
 
   CVideoInfoScanner::~CVideoInfoScanner()
-  = default;
+  {}
 
   void CVideoInfoScanner::Process()
   {

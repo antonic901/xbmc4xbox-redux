@@ -54,7 +54,6 @@
 #include "video/VideoDbUrl.h"
 #include "video/VideoInfoTag.h"
 #include "video/VideoLibraryQueue.h"
-#include "video/VideoManagerTypes.h"
 #include "video/VideoThumbLoader.h"
 
 #include <algorithm>
@@ -3686,7 +3685,7 @@ void CVideoDatabase::DeleteMovie(int idMovie,
       const std::string strSQL = PrepareSQL("delete from movie where idMovie=%i", idMovie);
       m_pDS->exec(strSQL);
 
-      if (ca == DeleteMovieCascadeAction::ALL_ASSETS)
+      if (ca == ALL_ASSETS)
       {
         // The default version of the movie was removed by a delete trigger.
         // Clean up the other assets attached to the movie, if any.
@@ -4987,7 +4986,7 @@ bool CVideoDatabase::GetArtForItem(int mediaId, const MediaType &mediaType, std:
 }
 
 bool CVideoDatabase::GetArtForAsset(int assetId,
-                                    ArtFallbackOptions fallback,
+                                    ArtFallbackOptions::Type fallback,
                                     std::map<std::string, std::string>& art)
 {
   try
