@@ -27,7 +27,7 @@ class CAlbum
 {
 public:
   explicit CAlbum(const CFileItem& item);
-  CAlbum() = default;
+  CAlbum() {}
   bool operator<(const CAlbum &a) const;
   void MergeScrapedAlbum(const CAlbum& album, bool override = true);
 

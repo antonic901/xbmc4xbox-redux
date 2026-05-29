@@ -71,7 +71,7 @@ CMusicInfoScanner::CMusicInfoScanner()
   m_flags = 0;
 }
 
-CMusicInfoScanner::~CMusicInfoScanner() = default;
+CMusicInfoScanner::~CMusicInfoScanner() {}
 
 void CMusicInfoScanner::Process()
 {
@@ -585,7 +585,7 @@ CInfoScanner::INFO_RET CMusicInfoScanner::ScanTags(const CFileItemList& items,
     CMusicInfoTag& tag = *pItem->GetMusicInfoTag();
     if (!tag.Loaded())
     {
-      std::unique_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(*pItem));
+      boost::movelib::unique_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(*pItem));
       if (nullptr != pLoader)
         pLoader->Load(pItem->GetPath(), tag);
     }
@@ -1303,12 +1303,12 @@ CMusicInfoScanner::UpdateDatabaseAlbumInfo(CAlbum& album,
       if (pDialog && bAllowSelection)
       {
         std::string strTempAlbum(album.strAlbum);
-        if (!CGUIKeyboardFactory::ShowAndGetInput(strTempAlbum, CVariant{ g_localizeStrings.Get(16011) }, false))
+        if (!CGUIKeyboardFactory::ShowAndGetInput(strTempAlbum,  g_localizeStrings.Get(16011) , false))
           albumDownloadStatus = INFO_CANCELLED;
         else
         {
           std::string strTempArtist(album.GetAlbumArtistString());
-          if (!CGUIKeyboardFactory::ShowAndGetInput(strTempArtist, CVariant{ g_localizeStrings.Get(16025) }, false))
+          if (!CGUIKeyboardFactory::ShowAndGetInput(strTempArtist,  g_localizeStrings.Get(16025) , false))
             albumDownloadStatus = INFO_CANCELLED;
           else
           {
@@ -1383,7 +1383,7 @@ CMusicInfoScanner::UpdateDatabaseArtistInfo(CArtist& artist,
     {
       if (pDialog && bAllowSelection)
       {
-        if (!CGUIKeyboardFactory::ShowAndGetInput(artist.strArtist, CVariant{ g_localizeStrings.Get(16025) }, false))
+        if (!CGUIKeyboardFactory::ShowAndGetInput(artist.strArtist,  g_localizeStrings.Get(16025) , false))
           artistDownloadStatus = INFO_CANCELLED;
         else
           stop = false;
@@ -1568,7 +1568,7 @@ CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album,
         if (pDialog)
         {
           pDlg = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
-          pDlg->SetHeading(CVariant{g_localizeStrings.Get(181)});
+          pDlg->SetHeading(g_localizeStrings.Get(181));
           pDlg->Reset();
           pDlg->EnableButton(true, 413); // manual
           pDlg->SetUseDetails(true);
@@ -1631,17 +1631,17 @@ CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album,
 
             // manual button pressed
             std::string strNewAlbum = album.strAlbum;
-            if (!CGUIKeyboardFactory::ShowAndGetInput(strNewAlbum, CVariant{g_localizeStrings.Get(16011)}, false))
+            if (!CGUIKeyboardFactory::ShowAndGetInput(strNewAlbum, g_localizeStrings.Get(16011), false))
               return INFO_CANCELLED;
             if (strNewAlbum == "")
               return INFO_CANCELLED;
 
             std::string strNewArtist = album.GetAlbumArtistString();
-            if (!CGUIKeyboardFactory::ShowAndGetInput(strNewArtist, CVariant{g_localizeStrings.Get(16025)}, false))
+            if (!CGUIKeyboardFactory::ShowAndGetInput(strNewArtist, g_localizeStrings.Get(16025), false))
               return INFO_CANCELLED;
 
-            pDialog->SetLine(0, CVariant{strNewAlbum});
-            pDialog->SetLine(1, CVariant{strNewArtist});
+            pDialog->SetLine(0, strNewAlbum);
+            pDialog->SetLine(1, strNewArtist);
             pDialog->Progress();
 
             CAlbum newAlbum = album;
@@ -1838,7 +1838,7 @@ CMusicInfoScanner::DownloadArtistInfo(const CArtist& artist,
         CGUIDialogSelect *pDlg = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
         if (pDlg)
         {
-          pDlg->SetHeading(CVariant{g_localizeStrings.Get(21890)});
+          pDlg->SetHeading(g_localizeStrings.Get(21890));
           pDlg->Reset();
           pDlg->EnableButton(true, 413); // manual
 
@@ -1871,12 +1871,12 @@ CMusicInfoScanner::DownloadArtistInfo(const CArtist& artist,
 
             // manual button pressed
             std::string strNewArtist = artist.strArtist;
-            if (!CGUIKeyboardFactory::ShowAndGetInput(strNewArtist, CVariant{g_localizeStrings.Get(16025)}, false))
+            if (!CGUIKeyboardFactory::ShowAndGetInput(strNewArtist, g_localizeStrings.Get(16025), false))
               return INFO_CANCELLED;
 
             if (pDialog)
             {
-              pDialog->SetLine(0, CVariant{strNewArtist});
+              pDialog->SetLine(0, strNewArtist);
               pDialog->Progress();
             }
 

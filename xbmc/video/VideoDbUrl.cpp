@@ -19,7 +19,7 @@ CVideoDbUrl::CVideoDbUrl()
   : CDbUrl()
 { }
 
-CVideoDbUrl::~CVideoDbUrl() = default;
+CVideoDbUrl::~CVideoDbUrl() {}
 
 bool CVideoDbUrl::parse()
 {

@@ -19,7 +19,7 @@ class CMusicDatabase;
 class CMusicLibraryJob : public CJob
 {
 public:
-  ~CMusicLibraryJob() override;
+  virtual ~CMusicLibraryJob();
 
   /*!
    \brief Whether the job can be cancelled or not.
@@ -33,9 +33,9 @@ public:
   virtual bool Cancel() { return false; }
 
   // implementation of CJob
-  bool DoWork() override;
-  const char *GetType() const override { return "MusicLibraryJob"; }
-  bool operator==(const CJob* job) const override { return false; }
+  virtual bool DoWork();
+  virtual const char *GetType() const { return "MusicLibraryJob"; }
+  virtual bool operator==(const CJob* job) const { return false; }
 
 protected:
   CMusicLibraryJob();

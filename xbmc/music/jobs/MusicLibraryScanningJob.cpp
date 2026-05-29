@@ -17,7 +17,7 @@ CMusicLibraryScanningJob::CMusicLibraryScanningJob(const std::string& directory,
     m_flags(flags)
 { }
 
-CMusicLibraryScanningJob::~CMusicLibraryScanningJob() = default;
+CMusicLibraryScanningJob::~CMusicLibraryScanningJob() {}
 
 bool CMusicLibraryScanningJob::Cancel()
 {

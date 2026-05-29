@@ -25,12 +25,12 @@
 #include <memory>
 #include <vector>
 
-CVideoLibraryMarkWatchedJob::CVideoLibraryMarkWatchedJob(const std::shared_ptr<CFileItem>& item,
+CVideoLibraryMarkWatchedJob::CVideoLibraryMarkWatchedJob(const boost::shared_ptr<CFileItem>& item,
                                                          bool mark)
   : m_item(item), m_mark(mark)
 { }
 
-CVideoLibraryMarkWatchedJob::~CVideoLibraryMarkWatchedJob() = default;
+CVideoLibraryMarkWatchedJob::~CVideoLibraryMarkWatchedJob() {}
 
 bool CVideoLibraryMarkWatchedJob::operator==(const CJob* job) const
 {
@@ -46,13 +46,13 @@ bool CVideoLibraryMarkWatchedJob::operator==(const CJob* job) const
 
 bool CVideoLibraryMarkWatchedJob::Work(CVideoDatabase &db)
 {
-  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   if (!profileManager->GetCurrentProfile().canWriteDatabases())
     return false;
 
   CFileItemList items;
-  items.Add(std::make_shared<CFileItem>(*m_item));
+  items.Add(boost::make_shared<CFileItem>(*m_item));
 
   if (m_item->m_bIsFolder)
     CUtil::GetRecursiveListing(m_item->GetPath(), items, "", XFILE::DIR_FLAG_NO_FILE_INFO);

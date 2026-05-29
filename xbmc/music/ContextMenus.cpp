@@ -36,7 +36,7 @@ bool CMusicInfoBase::IsVisible(const CFileItem& item) const
          (m_mediaType == MediaTypeAlbum && item.IsVideoDb() && item.HasProperty("album_musicid"));
 }
 
-bool CMusicInfoBase::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CMusicInfoBase::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   CGUIDialogMusicInfo::ShowFor(item.get());
   return true;
@@ -60,7 +60,7 @@ bool CMusicBrowse::IsVisible(const CFileItem& item) const
           MUSIC_UTILS::IsItemPlayable(item));
 }
 
-bool CMusicBrowse::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CMusicBrowse::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   // For file directory browsing, we need item's dyn path, for everything else the path.
   const std::string path{item->IsFileFolder(EFILEFOLDER_MASK_ONBROWSE) ? item->GetDynPath()
@@ -87,7 +87,7 @@ bool CMusicPlay::IsVisible(const CFileItem& item) const
 
 namespace
 {
-void Play(const std::shared_ptr<CFileItem>& item, const std::string& player)
+void Play(const boost::shared_ptr<CFileItem>& item, const std::string& player)
 {
   item->SetProperty("playlist_type_hint", PLAYLIST::TYPE_MUSIC);
 
@@ -118,7 +118,7 @@ bool CanQueue(const CFileItem& item)
 }
 } // unnamed namespace
 
-bool CMusicPlay::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CMusicPlay::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   Play(item, "");
   return true;
@@ -130,7 +130,7 @@ bool CMusicPlayUsing::IsVisible(const CFileItem& item) const
   return (GetPlayers(playerCoreFactory, item).size() > 1) && MUSIC_UTILS::IsItemPlayable(item);
 }
 
-bool CMusicPlayUsing::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CMusicPlayUsing::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   const CPlayerCoreFactory& playerCoreFactory{CServiceBroker::GetPlayerCoreFactory()};
   const std::vector<std::string> players{GetPlayers(playerCoreFactory, *item)};
@@ -151,7 +151,7 @@ bool CMusicPlayNext::IsVisible(const CFileItem& item) const
   return MUSIC_UTILS::IsItemPlayable(item);
 }
 
-bool CMusicPlayNext::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CMusicPlayNext::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   MUSIC_UTILS::QueueItem(item, MUSIC_UTILS::QueuePosition::POSITION_BEGIN);
   return true;
@@ -186,7 +186,7 @@ void SelectNextItem(int windowID)
 }
 } // unnamed namespace
 
-bool CMusicQueue::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CMusicQueue::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   MUSIC_UTILS::QueueItem(item, MUSIC_UTILS::QueuePosition::POSITION_END);
 

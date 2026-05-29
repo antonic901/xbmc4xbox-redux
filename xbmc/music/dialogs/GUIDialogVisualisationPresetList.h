@@ -18,12 +18,12 @@ class CGUIDialogVisualisationPresetList : public CGUIDialogSelect
 {
 public:
   CGUIDialogVisualisationPresetList();
-  bool OnMessage(CGUIMessage &message) override;
+  virtual bool OnMessage(CGUIMessage &message);
 
 protected:
-  void OnInitWindow() override;
-  void OnDeinitWindow(int nextWindowID) override;
-  void OnSelect(int idx) override;
+  virtual void OnInitWindow();
+  virtual void OnDeinitWindow(int nextWindowID);
+  virtual void OnSelect(int idx);
 
 private:
   void ClearVisualisation();

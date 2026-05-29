@@ -42,7 +42,7 @@ struct SActorInfo
 class CRating
 {
 public:
-  CRating() = default;
+  CRating() {}
   explicit CRating(float r): rating(r) {}
   CRating(float r, int v): rating(r), votes(v) {}
   float rating = 0.0f;
@@ -54,7 +54,7 @@ class CVideoInfoTag : public IArchivable, public ISerializable, public ISortable
 {
 public:
   CVideoInfoTag() { Reset(); }
-  virtual ~CVideoInfoTag() = default;
+  virtual ~CVideoInfoTag() {}
   void Reset();
   /* \brief Load information to a videoinfotag from an XML element
    There are three types of tags supported:
@@ -74,9 +74,9 @@ public:
   bool Load(const TiXmlElement *element, bool append = false, bool prioritise = false);
   bool Save(TiXmlNode *node, const std::string &tag, bool savePathInfo = true, const TiXmlElement *additionalNode = NULL);
   void Merge(CVideoInfoTag& other);
-  void Archive(CArchive& ar) override;
-  void Serialize(CVariant& value) const override;
-  void ToSortable(SortItem& sortable, Field field) const override;
+  virtual void Archive(CArchive& ar);
+  virtual void Serialize(CVariant& value) const;
+  virtual void ToSortable(SortItem& sortable, Field field) const;
   const CRating GetRating(std::string type = "") const;
   const std::string& GetDefaultRating() const;
   const std::string GetUniqueID(std::string type = "") const;

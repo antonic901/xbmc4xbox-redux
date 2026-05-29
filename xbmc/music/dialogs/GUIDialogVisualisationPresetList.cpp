@@ -53,7 +53,7 @@ void CGUIDialogVisualisationPresetList::SetVisualisation(CGUIVisualisationContro
   Reset();
   if (!m_viz)
   { // No viz, but show something if this dialog activated
-    SetHeading(CVariant{ 10122 });
+    SetHeading( 10122 );
     CFileItem item(g_localizeStrings.Get(13389));
     Add(item);
   }
@@ -61,7 +61,7 @@ void CGUIDialogVisualisationPresetList::SetVisualisation(CGUIVisualisationContro
   {
     SetUseDetails(false);
     SetMultiSelection(false);
-    SetHeading(CVariant{StringUtils::Format(g_localizeStrings.Get(13407), m_viz->Name())});
+    SetHeading(StringUtils::Format(g_localizeStrings.Get(13407), m_viz->Name()));
     std::vector<std::string> presets;
     if (m_viz->GetPresetList(presets))
     {

@@ -38,10 +38,10 @@ class CGUIWindowMusicBase : public CGUIMediaWindow, public IBackgroundLoaderObse
 {
 public:
   CGUIWindowMusicBase(int id, const std::string &xmlFile);
-  ~CGUIWindowMusicBase(void) override;
-  bool OnMessage(CGUIMessage& message) override;
-  bool OnAction(const CAction &action) override;
-  bool OnBack(int actionID) override;
+  virtual ~CGUIWindowMusicBase(void);
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction &action);
+  virtual bool OnBack(int actionID);
 
   void DoScan(const std::string &strPath, bool bRescan = false);
   void RefreshContent(const std::string& strContent);
@@ -54,37 +54,37 @@ public:
   static void OnAssignContent(const std::string& oldName, const CMediaSource& source);
 
 protected:
-  void OnInitWindow() override;
+  virtual void OnInitWindow();
   /*!
   \brief Will be called when an popup context menu has been asked for
   \param itemNumber List/thumb control item that has been clicked on
   */
-  void GetContextButtons(int itemNumber, CContextButtons &buttons) override;
+  virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
   void GetNonContextButtons(CContextButtons &buttons);
-  bool OnContextButton(int itemNumber, CONTEXT_BUTTON button) override;
-  bool OnAddMediaSource() override;
+  virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
+  virtual bool OnAddMediaSource();
   /*!
   \brief Overwrite to update your gui buttons (visible, enable,...)
   */
-  void UpdateButtons() override;
+  virtual void UpdateButtons();
 
-  bool GetDirectory(const std::string &strDirectory, CFileItemList &items) override;
+  virtual bool GetDirectory(const std::string &strDirectory, CFileItemList &items);
   virtual void OnRetrieveMusicInfo(CFileItemList& items);
-  void OnPrepareFileItems(CFileItemList& items) override;
+  virtual void OnPrepareFileItems(CFileItemList& items);
   void OnRipCD();
-  std::string GetStartFolder(const std::string &dir) override;
-  void OnItemLoaded(CFileItem* pItem) override {}
+  virtual std::string GetStartFolder(const std::string &dir);
+  virtual void OnItemLoaded(CFileItem* pItem) {}
 
   virtual void OnScan(int iItem, bool bPromptRescan = false);
 
-  bool CheckFilterAdvanced(CFileItemList &items) const override;
-  bool CanContainFilter(const std::string &strDirectory) const override;
+  virtual bool CheckFilterAdvanced(CFileItemList &items) const;
+  virtual bool CanContainFilter(const std::string &strDirectory) const;
 
-  bool OnSelect(int iItem) override;
+  virtual bool OnSelect(int iItem);
 
   // new methods
   virtual void PlayItem(int iItem);
-  bool OnPlayMedia(int iItem, const std::string &player = "") override;
+  virtual bool OnPlayMedia(int iItem, const std::string &player = "");
 
   void RetrieveMusicInfo();
   void OnItemInfo(int iItem);
@@ -93,7 +93,7 @@ protected:
   enum ALLOW_SELECTION { SELECTION_ALLOWED = 0, SELECTION_AUTO, SELECTION_FORCED };
 
   void OnRipTrack(int iItem);
-  void LoadPlayList(const std::string& strPlayList) override;
+  virtual void LoadPlayList(const std::string& strPlayList);
   virtual void OnRemoveSource(int iItem);
 
   typedef std::vector <CFileItem*>::iterator ivecItems; ///< CFileItem* vector Iterator

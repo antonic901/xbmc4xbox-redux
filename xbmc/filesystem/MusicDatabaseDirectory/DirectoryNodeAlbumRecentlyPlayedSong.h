@@ -19,7 +19,7 @@ namespace XFILE
     public:
       CDirectoryNodeAlbumRecentlyPlayedSong(const std::string& strName, CDirectoryNode* pParent);
     protected:
-      bool GetContent(CFileItemList& items) const override;
+      virtual bool GetContent(CFileItemList& items) const;
     };
   }
 }

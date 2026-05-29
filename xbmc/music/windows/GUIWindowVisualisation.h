@@ -17,11 +17,11 @@ class CGUIWindowVisualisation :
 {
 public:
   CGUIWindowVisualisation(void);
-  bool OnMessage(CGUIMessage& message) override;
-  bool OnAction(const CAction &action) override;
-  void FrameMove() override;
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction &action);
+  virtual void FrameMove();
 protected:
-  EVENT_RESULT OnMouseEvent(const CPoint& point, const KODI::MOUSE::CMouseEvent& event) override;
+  virtual EVENT_RESULT OnMouseEvent(const CPoint& point, const KODI::MOUSE::CMouseEvent& event);
 
   CStopWatch m_initTimer;
   CStopWatch m_lockedTimer;

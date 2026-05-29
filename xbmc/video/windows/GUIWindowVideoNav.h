@@ -32,29 +32,29 @@ class CGUIWindowVideoNav : public CGUIWindowVideoBase
 public:
 
   CGUIWindowVideoNav(void);
-  ~CGUIWindowVideoNav(void) override;
+  virtual ~CGUIWindowVideoNav(void);
 
-  bool OnAction(const CAction &action) override;
-  bool OnMessage(CGUIMessage& message) override;
+  virtual bool OnAction(const CAction &action);
+  virtual bool OnMessage(CGUIMessage& message);
 
 protected:
   bool ApplyWatchedFilter(CFileItemList &items);
-  bool GetFilteredItems(const std::string &filter, CFileItemList &items) override;
+  virtual bool GetFilteredItems(const std::string &filter, CFileItemList &items);
 
-  void OnItemLoaded(CFileItem* pItem) override {};
+  virtual void OnItemLoaded(CFileItem* pItem) {};
 
   // override base class methods
-  bool Update(const std::string &strDirectory, bool updateFilterPath = true) override;
-  bool GetDirectory(const std::string &strDirectory, CFileItemList &items) override;
-  void UpdateButtons() override;
-  void DoSearch(const std::string& strSearch, CFileItemList& items) override;
-  void OnDeleteItem(const CFileItemPtr& pItem) override;
-  void GetContextButtons(int itemNumber, CContextButtons &buttons) override;
-  bool OnPopupMenu(int iItem) override;
-  bool OnContextButton(int itemNumber, CONTEXT_BUTTON button) override;
-  bool OnAddMediaSource() override;
-  bool OnClick(int iItem, const std::string &player = "") override;
-  std::string GetStartFolder(const std::string &dir) override;
+  virtual bool Update(const std::string &strDirectory, bool updateFilterPath = true);
+  virtual bool GetDirectory(const std::string &strDirectory, CFileItemList &items);
+  virtual void UpdateButtons();
+  virtual void DoSearch(const std::string& strSearch, CFileItemList& items);
+  virtual void OnDeleteItem(const CFileItemPtr& pItem);
+  virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
+  virtual bool OnPopupMenu(int iItem);
+  virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
+  virtual bool OnAddMediaSource();
+  virtual bool OnClick(int iItem, const std::string &player = "");
+  virtual std::string GetStartFolder(const std::string &dir);
 
   VECSOURCES m_shares;
 

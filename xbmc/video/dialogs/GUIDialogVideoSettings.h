@@ -21,20 +21,20 @@ class CGUIDialogVideoSettings : public CGUIDialogSettingsManualBase
 {
 public:
   CGUIDialogVideoSettings();
-  ~CGUIDialogVideoSettings() override;
+  virtual ~CGUIDialogVideoSettings();
 
 protected:
   // implementations of ISettingCallback
-  void OnSettingChanged(const std::shared_ptr<const CSetting>& setting) override;
-  void OnSettingAction(const std::shared_ptr<const CSetting>& setting) override;
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
+  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
 
-  void AddVideoStreams(const std::shared_ptr<CSettingGroup>& group, const std::string& settingId);
-  static void VideoStreamsOptionFiller(const std::shared_ptr<const CSetting>& setting,
+  void AddVideoStreams(const boost::shared_ptr<CSettingGroup>& group, const std::string& settingId);
+  static void VideoStreamsOptionFiller(const boost::shared_ptr<const CSetting>& setting,
                                        std::vector<IntegerSettingOption>& list,
                                        int& current,
                                        void* data);
 
-  static void VideoOrientationFiller(const std::shared_ptr<const CSetting>& setting,
+  static void VideoOrientationFiller(const boost::shared_ptr<const CSetting>& setting,
                                      std::vector<IntegerSettingOption>& list,
                                      int& current,
                                      void* data);
@@ -42,12 +42,12 @@ protected:
   static std::string FormatFlags(StreamFlags flags);
 
   // specialization of CGUIDialogSettingsBase
-  bool AllowResettingSettings() const override { return false; }
-  bool Save() override;
-  void SetupView() override;
+  virtual bool AllowResettingSettings() const { return false; }
+  virtual bool Save();
+  virtual void SetupView();
 
   // specialization of CGUIDialogSettingsManualBase
-  void InitializeSettings() override;
+  virtual void InitializeSettings();
 
 private:
   int m_videoStream;

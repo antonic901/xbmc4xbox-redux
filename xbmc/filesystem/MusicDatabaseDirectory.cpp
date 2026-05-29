@@ -26,9 +26,9 @@
 using namespace XFILE;
 using namespace MUSICDATABASEDIRECTORY;
 
-CMusicDatabaseDirectory::CMusicDatabaseDirectory(void) = default;
+CMusicDatabaseDirectory::CMusicDatabaseDirectory(void) {}
 
-CMusicDatabaseDirectory::~CMusicDatabaseDirectory(void) = default;
+CMusicDatabaseDirectory::~CMusicDatabaseDirectory(void) {}
 
 bool CMusicDatabaseDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
@@ -75,7 +75,7 @@ bool CMusicDatabaseDirectory::GetDirectory(const CURL& url, CFileItemList &items
   items.SetPath(path);
   items.m_dwSize = -1;  // No size
 
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
 
   if (!pNode)
     return false;
@@ -100,7 +100,7 @@ bool CMusicDatabaseDirectory::GetDirectory(const CURL& url, CFileItemList &items
 NODE_TYPE CMusicDatabaseDirectory::GetDirectoryChildType(const std::string& strPath)
 {
   std::string path = CLegacyPathTranslation::TranslateMusicDbPath(strPath);
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
 
   if (!pNode)
     return NODE_TYPE_NONE;
@@ -111,7 +111,7 @@ NODE_TYPE CMusicDatabaseDirectory::GetDirectoryChildType(const std::string& strP
 NODE_TYPE CMusicDatabaseDirectory::GetDirectoryType(const std::string& strPath)
 {
   std::string path = CLegacyPathTranslation::TranslateMusicDbPath(strPath);
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
 
   if (!pNode)
     return NODE_TYPE_NONE;
@@ -122,7 +122,7 @@ NODE_TYPE CMusicDatabaseDirectory::GetDirectoryType(const std::string& strPath)
 NODE_TYPE CMusicDatabaseDirectory::GetDirectoryParentType(const std::string& strPath)
 {
   std::string path = CLegacyPathTranslation::TranslateMusicDbPath(strPath);
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
 
   if (!pNode)
     return NODE_TYPE_NONE;
@@ -179,7 +179,7 @@ bool CMusicDatabaseDirectory::GetLabel(const std::string& strDirectory, std::str
   strLabel = "";
 
   std::string path = CLegacyPathTranslation::TranslateMusicDbPath(strDirectory);
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
   if (!pNode)
     return false;
 
@@ -284,7 +284,7 @@ bool CMusicDatabaseDirectory::ContainsSongs(const std::string &path)
 bool CMusicDatabaseDirectory::Exists(const CURL& url)
 {
   std::string path = CLegacyPathTranslation::TranslateMusicDbPath(url);
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
 
   if (!pNode)
     return false;
@@ -298,7 +298,7 @@ bool CMusicDatabaseDirectory::Exists(const CURL& url)
 bool CMusicDatabaseDirectory::CanCache(const std::string& strPath)
 {
   std::string path = CLegacyPathTranslation::TranslateMusicDbPath(strPath);
-  std::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::ParseURL(path));
   if (!pNode)
     return false;
   return pNode->CanCache();

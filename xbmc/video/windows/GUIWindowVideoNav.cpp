@@ -73,7 +73,7 @@ CGUIWindowVideoNav::CGUIWindowVideoNav(void)
   m_thumbLoader.SetObserver(this);
 }
 
-CGUIWindowVideoNav::~CGUIWindowVideoNav(void) = default;
+CGUIWindowVideoNav::~CGUIWindowVideoNav(void) {}
 
 bool CGUIWindowVideoNav::OnAction(const CAction &action)
 {
@@ -495,7 +495,7 @@ bool CGUIWindowVideoNav::GetDirectory(const std::string &strDirectory, CFileItem
     {
       if (items.GetContent() == "tags" && !items.Contains("newtag://" + videoUrl.GetType()))
       {
-        const auto newTag{std::make_shared<CFileItem>("newtag://" + videoUrl.GetType(), false)};
+        const auto newTag{boost::make_shared<CFileItem>("newtag://" + videoUrl.GetType(), false)};
         newTag->SetLabel(g_localizeStrings.Get(20462));
         newTag->SetLabelPreformatted(true);
         newTag->SetSpecialSort(SortSpecialOnTop);
@@ -685,11 +685,11 @@ void CGUIWindowVideoNav::OnDeleteItem(const CFileItemPtr& pItem)
     if (!pDialog)
       return;
 
-    pDialog->SetHeading(CVariant{432});
+    pDialog->SetHeading(432);
     std::string strLabel = StringUtils::Format(
         g_localizeStrings.Get(pItem->HasVideoVersions() ? 40021 : 433), pItem->GetLabel());
-    pDialog->SetLine(1, CVariant{std::move(strLabel)});
-    pDialog->SetLine(2, CVariant{""});
+    pDialog->SetLine(1, std::move(strLabel));
+    pDialog->SetLine(2, "");
     pDialog->Open();
     if (pDialog->IsConfirmed())
     {
@@ -735,7 +735,7 @@ void CGUIWindowVideoNav::GetContextButtons(int itemNumber, CContextButtons &butt
   CVideoDatabaseDirectory dir;
   NODE_TYPE node = dir.GetDirectoryChildType(m_vecItems->GetPath());
 
-  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   if (!item)
   {
@@ -957,13 +957,13 @@ bool CGUIWindowVideoNav::OnClick(int iItem, const std::string &player)
     // dont allow update while scanning
     if (CVideoLibraryQueue::GetInstance().IsScanningLibrary())
     {
-      HELPERS::ShowOKDialogText(CVariant{257}, CVariant{14057});
+      HELPERS::ShowOKDialogText(257, 14057);
       return true;
     }
 
     //Get the new title
     std::string strTag;
-    if (!CGUIKeyboardFactory::ShowAndGetInput(strTag, CVariant{g_localizeStrings.Get(20462)}, false))
+    if (!CGUIKeyboardFactory::ShowAndGetInput(strTag, g_localizeStrings.Get(20462), false))
       return true;
 
     CVideoDatabase videodb;
@@ -980,7 +980,7 @@ bool CGUIWindowVideoNav::OnClick(int iItem, const std::string &player)
     if (!videodb.GetSingleValue("tag", "tag.tag_id", videodb.PrepareSQL("tag.name = '%s' AND tag.tag_id IN (SELECT tag_link.tag_id FROM tag_link WHERE tag_link.media_type = '%s')", strTag.c_str(), mediaType.c_str())).empty())
     {
       std::string strError = StringUtils::Format(g_localizeStrings.Get(20463), strTag);
-      HELPERS::ShowOKDialogText(CVariant{20462}, CVariant{std::move(strError)});
+      HELPERS::ShowOKDialogText(20462, std::move(strError));
       return true;
     }
 

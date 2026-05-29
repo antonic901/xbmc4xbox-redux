@@ -16,9 +16,9 @@ namespace XFILE
   {
   public:
     CMusicSearchDirectory(void);
-    ~CMusicSearchDirectory(void) override;
-    bool GetDirectory(const CURL& url, CFileItemList &items) override;
-    bool Exists(const CURL& url) override;
-    bool AllowAll() const override { return true; }
+    virtual ~CMusicSearchDirectory(void);
+    virtual bool GetDirectory(const CURL& url, CFileItemList &items);
+    virtual bool Exists(const CURL& url);
+    virtual bool AllowAll() const { return true; }
   };
 }

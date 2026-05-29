@@ -30,7 +30,7 @@ namespace VIDEO
     std::string strTitle;
     CDateTime   cDate;
     CScraperUrl cScraperUrl;
-    std::shared_ptr<CFileItem> item;
+    boost::shared_ptr<CFileItem> item;
     EPISODE(int Season = -1, int Episode = -1, int Subepisode = 0, bool Folder = false)
     {
       iSeason     = Season;

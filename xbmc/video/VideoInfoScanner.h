@@ -48,7 +48,7 @@ namespace VIDEO
   {
   public:
     CVideoInfoScanner();
-    ~CVideoInfoScanner() override;
+    virtual ~CVideoInfoScanner();
 
     /*! \brief Scan a folder using the background scanner
      \param strDirectory path to scan
@@ -107,7 +107,7 @@ namespace VIDEO
 
   protected:
     virtual void Process();
-    bool DoScan(const std::string& strDirectory) override;
+    virtual bool DoScan(const std::string& strDirectory);
 
     INFO_RET RetrieveInfoForTvShow(CFileItem *pItem, bool bDirNames, ADDON::ScraperPtr &scraper, bool useLocal, CScraperUrl* pURL, bool fetchEpisodes, CGUIDialogProgress* pDlgProgress);
     INFO_RET RetrieveInfoForMovie(CFileItem *pItem, bool bDirNames, ADDON::ScraperPtr &scraper, bool useLocal, CScraperUrl* pURL, CGUIDialogProgress* pDlgProgress);
@@ -152,7 +152,7 @@ namespace VIDEO
      \return true if information is found, false if an error occurred, the lookup was cancelled, or no information was found.
      */
     bool GetDetails(CFileItem* pItem,
-                    const std::unordered_map<std::string, std::string>& uniqueIDs,
+                    const std::map<std::string, std::string>& uniqueIDs,
                     CScraperUrl& url,
                     const ADDON::ScraperPtr& scraper,
                     VIDEO::IVideoInfoTagLoader* nfoFile = nullptr,
@@ -264,7 +264,7 @@ namespace VIDEO
      */
     static std::string GetArtTypeFromSize(unsigned int width, unsigned int height);
 
-    static std::pair<CInfoScanner::INFO_TYPE, std::unique_ptr<IVideoInfoTagLoader>> ReadInfoTag(
+    static std::pair<CInfoScanner::INFO_TYPE, boost::movelib::unique_ptr<IVideoInfoTagLoader>> ReadInfoTag(
         CFileItem& item, const ADDON::ScraperPtr& scraper, bool lookInFolder, bool resetTag);
   };
 }

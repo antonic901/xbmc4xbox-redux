@@ -627,7 +627,7 @@ namespace VIDEO
     CInfoScanner::INFO_TYPE result=CInfoScanner::NO_NFO;
     CScraperUrl scrUrl;
     // handle .nfo files
-    std::unique_ptr<IVideoInfoTagLoader> loader;
+    boost::movelib::unique_ptr<IVideoInfoTagLoader> loader;
     if (useLocal)
       std::tie(result, loader) = ReadInfoTag(*pItem, info2, bDirNames, true);
 
@@ -668,7 +668,7 @@ namespace VIDEO
     long lResult = -1;
     if (info2->IsPython() && CUtil::GetFilenameIdentifier(movieTitle, identifierType, identifier))
     {
-      const std::unordered_map<std::string, std::string> uniqueIDs{{identifierType, identifier}};
+      const std::map<std::string, std::string> uniqueIDs{{identifierType, identifier}};
       if (GetDetails(pItem, uniqueIDs, url, info2,
                      (result == CInfoScanner::COMBINED_NFO || result == CInfoScanner::OVERRIDE_NFO)
                          ? loader.get()
@@ -698,7 +698,7 @@ namespace VIDEO
 
     CLog::Log(LOGDEBUG, "VideoInfoScanner: Fetching url '{}' using {} scraper (content: '{}')",
               url.GetFirstThumbUrl(), info2->Name(), TranslateContent(info2->Content()));
-    const std::unordered_map<std::string, std::string> uniqueIDs{{identifierType, identifier}};
+    const std::map<std::string, std::string> uniqueIDs{{identifierType, identifier}};
 
     if (GetDetails(pItem, {}, url, info2,
                    (result == CInfoScanner::COMBINED_NFO || result == CInfoScanner::OVERRIDE_NFO)
@@ -742,7 +742,7 @@ namespace VIDEO
     CInfoScanner::INFO_TYPE result = CInfoScanner::NO_NFO;
     CScraperUrl scrUrl;
     // handle .nfo files
-    std::unique_ptr<IVideoInfoTagLoader> loader;
+    boost::movelib::unique_ptr<IVideoInfoTagLoader> loader;
     if (useLocal)
       std::tie(result, loader) = ReadInfoTag(*pItem, info2, bDirNames, true);
     if (result == CInfoScanner::FULL_NFO)
@@ -775,7 +775,7 @@ namespace VIDEO
     std::string identifier;
     if (info2->IsPython() && CUtil::GetFilenameIdentifier(movieTitle, identifierType, identifier))
     {
-      const std::unordered_map<std::string, std::string> uniqueIDs{{identifierType, identifier}};
+      const std::map<std::string, std::string> uniqueIDs{{identifierType, identifier}};
       if (GetDetails(pItem, uniqueIDs, url, info2,
                      (result == CInfoScanner::COMBINED_NFO || result == CInfoScanner::OVERRIDE_NFO)
                          ? loader.get()
@@ -840,7 +840,7 @@ namespace VIDEO
     CInfoScanner::INFO_TYPE result = CInfoScanner::NO_NFO;
     CScraperUrl scrUrl;
     // handle .nfo files
-    std::unique_ptr<IVideoInfoTagLoader> loader;
+    boost::movelib::unique_ptr<IVideoInfoTagLoader> loader;
     if (useLocal)
       std::tie(result, loader) = ReadInfoTag(*pItem, info2, bDirNames, true);
     if (result == CInfoScanner::FULL_NFO)
@@ -870,7 +870,7 @@ namespace VIDEO
     std::string identifier;
     if (info2->IsPython() && CUtil::GetFilenameIdentifier(movieTitle, identifierType, identifier))
     {
-      const std::unordered_map<std::string, std::string> uniqueIDs{{identifierType, identifier}};
+      const std::map<std::string, std::string> uniqueIDs{{identifierType, identifier}};
       if (GetDetails(pItem, uniqueIDs, url, info2,
                      (result == CInfoScanner::COMBINED_NFO || result == CInfoScanner::OVERRIDE_NFO)
                          ? loader.get()
@@ -1010,8 +1010,8 @@ namespace VIDEO
 
         // Listing that ignores files inside and below folders containing .nomedia files.
         CDirectory::EnumerateDirectory(
-            item->GetPath(), [&items](const std::shared_ptr<CFileItem>& item) { items.Add(item); },
-            [this](const std::shared_ptr<CFileItem>& folder)
+            item->GetPath(), [&items](const boost::shared_ptr<CFileItem>& item) { items.Add(item); },
+            [this](const boost::shared_ptr<CFileItem>& folder)
             { return !HasNoMedia(folder->GetPath()); },
             true, CServiceBroker::GetFileExtensionProvider().GetVideoExtensions(), flags);
 
@@ -1166,7 +1166,7 @@ namespace VIDEO
       episode.isFolder = false;
       // save full item for plugin source
       if (item->IsPlugin())
-        episode.item = std::make_shared<CFileItem>(*item);
+        episode.item = boost::make_shared<CFileItem>(*item);
       episodeList.push_back(episode);
       CLog::Log(LOGDEBUG, "{} - found match for: {}. Season {}, Episode {}", __FUNCTION__,
                 CURL::GetRedacted(episode.strPath), episode.iSeason, episode.iEpisode);
@@ -1626,7 +1626,7 @@ namespace VIDEO
 
     m_database.Close();
 
-    CFileItemPtr itemCopy = std::make_shared<CFileItem>(*pItem);
+    CFileItemPtr itemCopy = boost::make_shared<CFileItem>(*pItem);
     CVariant data;
     data["added"] = true;
     if (m_bRunning)
@@ -1676,14 +1676,14 @@ namespace VIDEO
     return type;
   }
 
-  std::pair<CInfoScanner::INFO_TYPE, std::unique_ptr<IVideoInfoTagLoader>> CVideoInfoScanner::
+  std::pair<CInfoScanner::INFO_TYPE, boost::movelib::unique_ptr<IVideoInfoTagLoader>> CVideoInfoScanner::
       ReadInfoTag(CFileItem& item,
                   const ADDON::ScraperPtr& scraper,
                   bool lookInFolder,
                   bool resetTag)
   {
     auto result = NO_NFO;
-    std::unique_ptr<IVideoInfoTagLoader> loader(
+    boost::movelib::unique_ptr<IVideoInfoTagLoader> loader(
         CVideoInfoTagLoaderFactory::CreateLoader(item, scraper, lookInFolder));
     if (loader)
     {
@@ -1920,7 +1920,7 @@ namespace VIDEO
   {
     if (pDlgProgress)
     {
-      pDlgProgress->SetLine(1, CVariant{20361}); // Loading episode details
+      pDlgProgress->SetLine(1, 20361); // Loading episode details
       pDlgProgress->SetPercentage(0);
       pDlgProgress->ShowProgressBar(true);
       pDlgProgress->Progress();
@@ -1935,7 +1935,7 @@ namespace VIDEO
     {
       if (pDlgProgress)
       {
-        pDlgProgress->SetLine(1, CVariant{20361}); // Loading episode details
+        pDlgProgress->SetLine(1, 20361); // Loading episode details
         pDlgProgress->SetLine(2, StringUtils::Format("{} {}", g_localizeStrings.Get(20373),
                                                      file->iSeason)); // Season x
         pDlgProgress->SetLine(3, StringUtils::Format("{} {}", g_localizeStrings.Get(20359),
@@ -1969,7 +1969,7 @@ namespace VIDEO
       CInfoScanner::INFO_TYPE result=CInfoScanner::NO_NFO;
       CScraperUrl scrUrl;
       const ScraperPtr& info(scraper);
-      std::unique_ptr<IVideoInfoTagLoader> loader;
+      boost::movelib::unique_ptr<IVideoInfoTagLoader> loader;
       if (useLocal)
         std::tie(result, loader) = ReadInfoTag(item, info, false, false);
       if (result == CInfoScanner::FULL_NFO)
@@ -1995,7 +1995,7 @@ namespace VIDEO
 
           if (pDlgProgress)
           {
-            pDlgProgress->SetLine(1, CVariant{20354}); // Fetching episode guide
+            pDlgProgress->SetLine(1, 20354); // Fetching episode guide
             pDlgProgress->Progress();
           }
 
@@ -2145,7 +2145,7 @@ namespace VIDEO
   }
 
   bool CVideoInfoScanner::GetDetails(CFileItem* pItem,
-                                     const std::unordered_map<std::string, std::string>& uniqueIDs,
+                                     const std::map<std::string, std::string>& uniqueIDs,
                                      CScraperUrl& url,
                                      const ScraperPtr& scraper,
                                      IVideoInfoTagLoader* loader,
@@ -2170,7 +2170,7 @@ namespace VIDEO
       if (pDialog)
       {
         if (!pDialog->HasText())
-          pDialog->SetLine(0, CVariant{movieDetails.m_strTitle});
+          pDialog->SetLine(0, movieDetails.m_strTitle);
         pDialog->Progress();
       }
 
@@ -2275,7 +2275,7 @@ namespace VIDEO
       const std::vector<std::string> &excludes) const
   {
     CFileItemList items;
-    items.Add(std::make_shared<CFileItem>(directory, true));
+    items.Add(boost::make_shared<CFileItem>(directory, true));
     CUtil::GetRecursiveDirsListing(directory, items, DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_NO_FILE_INFO);
 
     CDigest digest{CDigest::Type::MD5};
@@ -2426,10 +2426,10 @@ namespace VIDEO
 
     if (pDialog)
     {
-      HELPERS::ShowOKDialogText(CVariant{20448}, CVariant{20449});
+      HELPERS::ShowOKDialogText(20448, 20449);
       return false;
     }
-    return HELPERS::ShowYesNoDialogText(CVariant{20448}, CVariant{20450}) ==
+    return HELPERS::ShowYesNoDialogText(20448, 20450) ==
            DialogResponse::CHOICE_YES;
   }
 
@@ -2437,8 +2437,8 @@ namespace VIDEO
   {
     if (progress)
     {
-      progress->SetHeading(CVariant{heading});
-      progress->SetLine(0, CVariant{line1});
+      progress->SetHeading(heading);
+      progress->SetLine(0, line1);
       progress->Progress();
       return progress->IsCanceled();
     }
@@ -2492,7 +2492,7 @@ namespace VIDEO
     // Add video extras to library
     CDirectory::EnumerateDirectory(
         path,
-        [this, content, dbId, path](const std::shared_ptr<CFileItem>& item)
+        [this, content, dbId, path](const boost::shared_ptr<CFileItem>& item)
         {
           if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(
                   CSettings::SETTING_MYVIDEOS_EXTRACTFLAGS))

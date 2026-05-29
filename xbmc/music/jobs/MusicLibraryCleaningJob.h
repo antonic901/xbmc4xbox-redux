@@ -23,15 +23,15 @@ public:
    \param[in] progressDialog Progress dialog to be used to display the cleaning progress
   */
   CMusicLibraryCleaningJob(CGUIDialogProgress* progressDialog);
-  ~CMusicLibraryCleaningJob() override;
+  virtual ~CMusicLibraryCleaningJob();
 
   // specialization of CJob
-  const char *GetType() const override { return "MusicLibraryCleaningJob"; }
-  bool operator==(const CJob* job) const override;
+  virtual const char *GetType() const { return "MusicLibraryCleaningJob"; }
+  virtual bool operator==(const CJob* job) const;
 
 protected:
   // implementation of CMusicLibraryJob
-  bool Work(CMusicDatabase &db) override;
+  virtual bool Work(CMusicDatabase &db);
 
 private:
 

@@ -25,17 +25,17 @@ class CGUIDialogMusicInfo :
 {
 public:
   CGUIDialogMusicInfo(void);
-  ~CGUIDialogMusicInfo(void) override;
-  bool OnMessage(CGUIMessage& message) override;
-  bool OnAction(const CAction &action) override;
+  virtual ~CGUIDialogMusicInfo(void);
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction &action);
   bool SetItem(CFileItem* item);
   void SetAlbum(const CAlbum& album, const std::string &path);
   void SetArtist(const CArtist& artist, const std::string &path);
   bool HasUpdatedUserrating() const { return m_hasUpdatedUserrating; }
   bool HasRefreshed() const { return m_hasRefreshed; }
 
-  bool HasListItems() const override { return true; }
-  CFileItemPtr GetCurrentListItem(int offset = 0) override;
+  virtual bool HasListItems() const { return true; }
+  virtual CFileItemPtr GetCurrentListItem(int offset = 0);
   std::string GetContent();
   static void AddItemPathToFileBrowserSources(VECSOURCES &sources, const CFileItem &item);
   void SetDiscography(CMusicDatabase& database) const;
@@ -54,7 +54,7 @@ public:
   static void ShowForArtist(int idArtist);
   static void ShowFor(CFileItem* pItem);
 protected:
-  void OnInitWindow() override;
+  virtual void OnInitWindow();
   void Update();
   void SetLabel(int iControl, const std::string& strLabel);
   void OnGetArt();
@@ -62,7 +62,7 @@ protected:
   void OnArtistInfo(int id);
   void OnSetUserrating() const;
   void SetUserrating(int userrating) const;
-  void OnPlayItem(const std::shared_ptr<CFileItem>& item);
+  void OnPlayItem(const boost::shared_ptr<CFileItem>& item);
 
   CAlbum m_album;
   CArtist m_artist;
@@ -72,9 +72,9 @@ protected:
   bool m_bArtistInfo = false;
   bool m_cancelled = false;
   bool m_scraperAddInfo = false;
-  std::unique_ptr<CFileItemList> m_albumSongs;
-  std::shared_ptr<CFileItem> m_item;
-  std::unique_ptr<CFileItemList> m_artTypeList;
+  boost::movelib::unique_ptr<CFileItemList> m_albumSongs;
+  boost::shared_ptr<CFileItem> m_item;
+  boost::movelib::unique_ptr<CFileItemList> m_artTypeList;
   CEvent m_event;
   std::string m_fallbackartpath;
 };

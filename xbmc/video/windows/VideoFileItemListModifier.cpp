@@ -60,14 +60,14 @@ void CVideoFileItemListModifier::AddQueuingFolder(CFileItemList& items)
     return;
 
   // hack - as the season node might return episodes
-  std::unique_ptr<CDirectoryNode> pNode(directoryNode);
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(directoryNode);
 
   switch (pNode->GetChildType())
   {
   case NODE_TYPE_SEASONS:
   {
     const std::string& strLabel = g_localizeStrings.Get(20366);
-    pItem = std::make_shared<CFileItem>(strLabel); // "All Seasons"
+    pItem = boost::make_shared<CFileItem>(strLabel); // "All Seasons"
     videoUrl.AppendPath("-1/");
     pItem->SetPath(videoUrl.ToString());
     // set the number of watched and unwatched items accordingly
@@ -122,7 +122,7 @@ void CVideoFileItemListModifier::AddQueuingFolder(CFileItemList& items)
   }
   break;
   case NODE_TYPE_MUSICVIDEOS_ALBUM:
-    pItem = std::make_shared<CFileItem>("* " + g_localizeStrings.Get(16100)); // "* All Videos"
+    pItem = boost::make_shared<CFileItem>("* " + g_localizeStrings.Get(16100)); // "* All Videos"
     videoUrl.AppendPath("-1/");
     pItem->SetPath(videoUrl.ToString());
     break;

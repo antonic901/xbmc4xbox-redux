@@ -63,9 +63,9 @@ CGUIDialogVideoSettings::CGUIDialogVideoSettings()
     : CGUIDialogSettingsManualBase(WINDOW_DIALOG_VIDEO_OSD_SETTINGS, "DialogSettings.xml")
 { }
 
-CGUIDialogVideoSettings::~CGUIDialogVideoSettings() = default;
+CGUIDialogVideoSettings::~CGUIDialogVideoSettings() {}
 
-void CGUIDialogVideoSettings::OnSettingChanged(const std::shared_ptr<const CSetting>& setting)
+void CGUIDialogVideoSettings::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;
@@ -79,18 +79,18 @@ void CGUIDialogVideoSettings::OnSettingChanged(const std::shared_ptr<const CSett
   if (settingId == SETTING_VIDEO_INTERLACEMETHOD)
   {
     CVideoSettings vs = appPlayer->GetVideoSettings();
-    vs.m_InterlaceMethod = static_cast<EINTERLACEMETHOD>(std::static_pointer_cast<const CSettingInt>(setting)->GetValue());
+    vs.m_InterlaceMethod = static_cast<EINTERLACEMETHOD>(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
     appPlayer->SetVideoSettings(vs);
   }
   else if (settingId == SETTING_VIDEO_SCALINGMETHOD)
   {
     CVideoSettings vs = appPlayer->GetVideoSettings();
-    vs.m_ScalingMethod = static_cast<ESCALINGMETHOD>(std::static_pointer_cast<const CSettingInt>(setting)->GetValue());
+    vs.m_ScalingMethod = static_cast<ESCALINGMETHOD>(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
     appPlayer->SetVideoSettings(vs);
   }
   else if (settingId == SETTING_VIDEO_STREAM)
   {
-    m_videoStream = std::static_pointer_cast<const CSettingInt>(setting)->GetValue();
+    m_videoStream = boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
     // only change the video stream if a different one has been asked for
     if (appPlayer->GetVideoStream() != m_videoStream)
     {
@@ -99,7 +99,7 @@ void CGUIDialogVideoSettings::OnSettingChanged(const std::shared_ptr<const CSett
   }
   else if (settingId == SETTING_VIDEO_VIEW_MODE)
   {
-    int value = std::static_pointer_cast<const CSettingInt>(setting)->GetValue();
+    int value = boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
     const CVideoSettings vs = appPlayer->GetVideoSettings();
 
     appPlayer->SetRenderViewMode(value, vs.m_CustomZoomAmount, vs.m_CustomPixelRatio,
@@ -121,13 +121,13 @@ void CGUIDialogVideoSettings::OnSettingChanged(const std::shared_ptr<const CSett
   {
     CVideoSettings vs = appPlayer->GetVideoSettings();
     if (settingId == SETTING_VIDEO_ZOOM)
-      vs.m_CustomZoomAmount = static_cast<float>(std::static_pointer_cast<const CSettingNumber>(setting)->GetValue());
+      vs.m_CustomZoomAmount = static_cast<float>(boost::static_pointer_cast<const CSettingNumber>(setting)->GetValue());
     else if (settingId == SETTING_VIDEO_VERTICAL_SHIFT)
-      vs.m_CustomVerticalShift = static_cast<float>(std::static_pointer_cast<const CSettingNumber>(setting)->GetValue());
+      vs.m_CustomVerticalShift = static_cast<float>(boost::static_pointer_cast<const CSettingNumber>(setting)->GetValue());
     else if (settingId == SETTING_VIDEO_PIXEL_RATIO)
-      vs.m_CustomPixelRatio = static_cast<float>(std::static_pointer_cast<const CSettingNumber>(setting)->GetValue());
+      vs.m_CustomPixelRatio = static_cast<float>(boost::static_pointer_cast<const CSettingNumber>(setting)->GetValue());
     else if (settingId == SETTING_VIDEO_NONLIN_STRETCH)
-      vs.m_CustomNonLinStretch = std::static_pointer_cast<const CSettingBool>(setting)->GetValue();
+      vs.m_CustomNonLinStretch = boost::static_pointer_cast<const CSettingBool>(setting)->GetValue();
 
     // try changing the view mode to custom. If it already is set to custom
     // manually call the render manager
@@ -140,73 +140,73 @@ void CGUIDialogVideoSettings::OnSettingChanged(const std::shared_ptr<const CSett
   else if (settingId == SETTING_VIDEO_POSTPROCESS)
   {
     CVideoSettings vs = appPlayer->GetVideoSettings();
-    vs.m_PostProcess = std::static_pointer_cast<const CSettingBool>(setting)->GetValue();
+    vs.m_PostProcess = boost::static_pointer_cast<const CSettingBool>(setting)->GetValue();
     appPlayer->SetVideoSettings(vs);
   }
   else if (settingId == SETTING_VIDEO_BRIGHTNESS)
   {
     CVideoSettings vs = appPlayer->GetVideoSettings();
-    vs.m_Brightness = static_cast<float>(std::static_pointer_cast<const CSettingInt>(setting)->GetValue());
+    vs.m_Brightness = static_cast<float>(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
     appPlayer->SetVideoSettings(vs);
   }
   else if (settingId == SETTING_VIDEO_CONTRAST)
   {
     CVideoSettings vs = appPlayer->GetVideoSettings();
-    vs.m_Contrast = static_cast<float>(std::static_pointer_cast<const CSettingInt>(setting)->GetValue());
+    vs.m_Contrast = static_cast<float>(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
     appPlayer->SetVideoSettings(vs);
   }
   else if (settingId == SETTING_VIDEO_GAMMA)
   {
     CVideoSettings vs = appPlayer->GetVideoSettings();
-    vs.m_Gamma = static_cast<float>(std::static_pointer_cast<const CSettingInt>(setting)->GetValue());
+    vs.m_Gamma = static_cast<float>(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
     appPlayer->SetVideoSettings(vs);
   }
   else if (settingId == SETTING_VIDEO_VDPAU_NOISE)
   {
     CVideoSettings vs = appPlayer->GetVideoSettings();
-    vs.m_NoiseReduction = static_cast<float>(std::static_pointer_cast<const CSettingNumber>(setting)->GetValue());
+    vs.m_NoiseReduction = static_cast<float>(boost::static_pointer_cast<const CSettingNumber>(setting)->GetValue());
     appPlayer->SetVideoSettings(vs);
   }
   else if (settingId == SETTING_VIDEO_VDPAU_SHARPNESS)
   {
     CVideoSettings vs = appPlayer->GetVideoSettings();
-    vs.m_Sharpness = static_cast<float>(std::static_pointer_cast<const CSettingNumber>(setting)->GetValue());
+    vs.m_Sharpness = static_cast<float>(boost::static_pointer_cast<const CSettingNumber>(setting)->GetValue());
     appPlayer->SetVideoSettings(vs);
   }
   else if (settingId == SETTING_VIDEO_TONEMAP_METHOD)
   {
     CVideoSettings vs = appPlayer->GetVideoSettings();
     vs.m_ToneMapMethod = static_cast<ETONEMAPMETHOD>(
-        std::static_pointer_cast<const CSettingInt>(setting)->GetValue());
+        boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
     appPlayer->SetVideoSettings(vs);
   }
   else if (settingId == SETTING_VIDEO_TONEMAP_PARAM)
   {
     CVideoSettings vs = appPlayer->GetVideoSettings();
-    vs.m_ToneMapParam = static_cast<float>(std::static_pointer_cast<const CSettingNumber>(setting)->GetValue());
+    vs.m_ToneMapParam = static_cast<float>(boost::static_pointer_cast<const CSettingNumber>(setting)->GetValue());
     appPlayer->SetVideoSettings(vs);
   }
   else if (settingId == SETTING_VIDEO_ORIENTATION)
   {
     CVideoSettings vs = appPlayer->GetVideoSettings();
-    vs.m_Orientation = std::static_pointer_cast<const CSettingInt>(setting)->GetValue();
+    vs.m_Orientation = boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
     appPlayer->SetVideoSettings(vs);
   }
   else if (settingId == SETTING_VIDEO_STEREOSCOPICMODE)
   {
     CVideoSettings vs = appPlayer->GetVideoSettings();
-    vs.m_StereoMode = std::static_pointer_cast<const CSettingInt>(setting)->GetValue();
+    vs.m_StereoMode = boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
     appPlayer->SetVideoSettings(vs);
   }
   else if (settingId == SETTING_VIDEO_STEREOSCOPICINVERT)
   {
     CVideoSettings vs = appPlayer->GetVideoSettings();
-    vs.m_StereoInvert = std::static_pointer_cast<const CSettingBool>(setting)->GetValue();
+    vs.m_StereoInvert = boost::static_pointer_cast<const CSettingBool>(setting)->GetValue();
     appPlayer->SetVideoSettings(vs);
   }
 }
 
-void CGUIDialogVideoSettings::OnSettingAction(const std::shared_ptr<const CSetting>& setting)
+void CGUIDialogVideoSettings::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting == NULL)
     return;
@@ -216,7 +216,7 @@ void CGUIDialogVideoSettings::OnSettingAction(const std::shared_ptr<const CSetti
   const std::string &settingId = setting->GetId();
   if (settingId == SETTING_VIDEO_CALIBRATION)
   {
-    const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+    const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
     auto settingsComponent = CServiceBroker::GetSettingsComponent();
     if (!settingsComponent)
@@ -248,7 +248,7 @@ void CGUIDialogVideoSettings::OnSettingAction(const std::shared_ptr<const CSetti
 
 bool CGUIDialogVideoSettings::Save()
 {
-  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   if (profileManager->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
       !g_passwordManager.CheckSettingLevelLock(::SettingLevel::Expert))
@@ -289,7 +289,7 @@ void CGUIDialogVideoSettings::InitializeSettings()
 {
   CGUIDialogSettingsManualBase::InitializeSettings();
 
-  const std::shared_ptr<CSettingCategory> category = AddCategory("videosettings", -1);
+  const boost::shared_ptr<CSettingCategory> category = AddCategory("videosettings", -1);
   if (category == NULL)
   {
     CLog::Log(LOGERROR, "CGUIDialogVideoSettings: unable to setup settings");
@@ -297,25 +297,25 @@ void CGUIDialogVideoSettings::InitializeSettings()
   }
 
   // get all necessary setting groups
-  const std::shared_ptr<CSettingGroup> groupVideoStream = AddGroup(category);
+  const boost::shared_ptr<CSettingGroup> groupVideoStream = AddGroup(category);
   if (groupVideoStream == NULL)
   {
     CLog::Log(LOGERROR, "CGUIDialogVideoSettings: unable to setup settings");
     return;
   }
-  const std::shared_ptr<CSettingGroup> groupVideo = AddGroup(category);
+  const boost::shared_ptr<CSettingGroup> groupVideo = AddGroup(category);
   if (groupVideo == NULL)
   {
     CLog::Log(LOGERROR, "CGUIDialogVideoSettings: unable to setup settings");
     return;
   }
-  const std::shared_ptr<CSettingGroup> groupStereoscopic = AddGroup(category);
+  const boost::shared_ptr<CSettingGroup> groupStereoscopic = AddGroup(category);
   if (groupStereoscopic == NULL)
   {
     CLog::Log(LOGERROR, "CGUIDialogVideoSettings: unable to setup settings");
     return;
   }
-  const std::shared_ptr<CSettingGroup> groupSaveAsDefault = AddGroup(category);
+  const boost::shared_ptr<CSettingGroup> groupSaveAsDefault = AddGroup(category);
   if (groupSaveAsDefault == NULL)
   {
     CLog::Log(LOGERROR, "CGUIDialogVideoSettings: unable to setup settings");
@@ -465,7 +465,7 @@ void CGUIDialogVideoSettings::InitializeSettings()
   AddButton(groupSaveAsDefault, SETTING_VIDEO_CALIBRATION, 214, SettingLevel::Basic);
 }
 
-void CGUIDialogVideoSettings::AddVideoStreams(const std::shared_ptr<CSettingGroup>& group,
+void CGUIDialogVideoSettings::AddVideoStreams(const boost::shared_ptr<CSettingGroup>& group,
                                               const std::string& settingId)
 {
   if (group == NULL || settingId.empty())
@@ -482,7 +482,7 @@ void CGUIDialogVideoSettings::AddVideoStreams(const std::shared_ptr<CSettingGrou
 }
 
 void CGUIDialogVideoSettings::VideoStreamsOptionFiller(
-    const std::shared_ptr<const CSetting>& setting,
+    const boost::shared_ptr<const CSetting>& setting,
     std::vector<IntegerSettingOption>& list,
     int& current,
     void* data)
@@ -536,7 +536,7 @@ void CGUIDialogVideoSettings::VideoStreamsOptionFiller(
   }
 }
 
-void CGUIDialogVideoSettings::VideoOrientationFiller(const std::shared_ptr<const CSetting>& setting,
+void CGUIDialogVideoSettings::VideoOrientationFiller(const boost::shared_ptr<const CSetting>& setting,
                                                      std::vector<IntegerSettingOption>& list,
                                                      int& current,
                                                      void* data)

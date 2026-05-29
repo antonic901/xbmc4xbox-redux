@@ -18,11 +18,11 @@ class CGUIDialogVideoBookmarks : public CGUIDialog
 {
 public:
   CGUIDialogVideoBookmarks(void);
-  ~CGUIDialogVideoBookmarks(void) override;
-  bool OnMessage(CGUIMessage& message) override;
-  void OnWindowLoaded() override;
-  void OnWindowUnload() override;
-  bool OnAction(const CAction &action) override;
+  virtual ~CGUIDialogVideoBookmarks(void);
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual void OnWindowLoaded();
+  virtual void OnWindowUnload();
+  virtual bool OnAction(const CAction &action);
 
   /*!
    \brief Creates a bookmark of the currently playing video file.
@@ -55,7 +55,7 @@ protected:
   void Clear();
   void OnRefreshList();
   void OnPopupMenu(int item);
-  CGUIControl *GetFirstFocusableControl(int id) override;
+  virtual CGUIControl *GetFirstFocusableControl(int id);
 
   CFileItemList* m_vecItems;
   CGUIViewControl m_viewControl;

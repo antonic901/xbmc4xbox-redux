@@ -41,7 +41,7 @@
 using namespace KODI::MESSAGING;
 using namespace VIDEO;
 
-CVideoLibraryRefreshingJob::CVideoLibraryRefreshingJob(std::shared_ptr<CFileItem> item,
+CVideoLibraryRefreshingJob::CVideoLibraryRefreshingJob(boost::shared_ptr<CFileItem> item,
                                                        bool forceRefresh,
                                                        bool refreshAll,
                                                        bool ignoreNfo /* = false */,
@@ -54,7 +54,7 @@ CVideoLibraryRefreshingJob::CVideoLibraryRefreshingJob(std::shared_ptr<CFileItem
     m_searchTitle(searchTitle)
 { }
 
-CVideoLibraryRefreshingJob::~CVideoLibraryRefreshingJob() = default;
+CVideoLibraryRefreshingJob::~CVideoLibraryRefreshingJob() {}
 
 bool CVideoLibraryRefreshingJob::operator==(const CJob* job) const
 {
@@ -105,19 +105,19 @@ bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
   bool failure = false;
   do
   {
-    std::unique_ptr<CVideoInfoTag> pluginTag;
-    std::unique_ptr<CGUIListItem::ArtMap> pluginArt;
+    boost::movelib::unique_ptr<CVideoInfoTag> pluginTag;
+    boost::movelib::unique_ptr<CGUIListItem::ArtMap> pluginArt;
 
     if (!ignoreNfo)
     {
-      std::unique_ptr<IVideoInfoTagLoader> loader;
+      boost::movelib::unique_ptr<IVideoInfoTagLoader> loader;
       loader.reset(CVideoInfoTagLoaderFactory::CreateLoader(*m_item, scraper,
                                                             scanSettings.parent_name_root, m_forceRefresh));
       // check if there's an NFO for the item
       CInfoScanner::INFO_TYPE nfoResult = CInfoScanner::NO_NFO;
       if (loader)
       {
-        std::unique_ptr<CVideoInfoTag> tag(new CVideoInfoTag());
+        boost::movelib::unique_ptr<CVideoInfoTag> tag(new CVideoInfoTag());
         nfoResult = loader->Load(*tag, false);
 
         // keep some properties only if advancedsettings.xml says so
@@ -308,13 +308,13 @@ bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
       }
       // otherwise just add a copy of the item
       else
-        items.Add(std::make_shared<CFileItem>(*m_item->GetVideoInfoTag()));
+        items.Add(boost::make_shared<CFileItem>(*m_item->GetVideoInfoTag()));
 
       // update the path to the real path (instead of a videodb:// one)
       path = m_item->GetVideoInfoTag()->m_strPath;
     }
     else
-      items.Add(std::make_shared<CFileItem>(*m_item));
+      items.Add(boost::make_shared<CFileItem>(*m_item));
 
     // set the proper path of the list of items to lookup
     items.SetPath(m_item->m_bIsFolder ? URIUtils::GetParentPath(path) : URIUtils::GetDirectory(path));
@@ -382,7 +382,7 @@ bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
 
       // check if the user cancelled
       if (!IsCancelled() && IsModal())
-        HELPERS::ShowOKDialogText(CVariant{195}, CVariant{itemTitle});
+        HELPERS::ShowOKDialogText(195, itemTitle);
 
       return false;
     }
@@ -424,7 +424,7 @@ bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
   } while (needsRefresh);
 
   if (failure && IsModal())
-    HELPERS::ShowOKDialogText(CVariant{195}, CVariant{itemTitle});
+    HELPERS::ShowOKDialogText(195, itemTitle);
 
   return true;
 }

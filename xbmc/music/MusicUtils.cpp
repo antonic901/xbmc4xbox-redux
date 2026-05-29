@@ -62,7 +62,7 @@ public:
   {
   }
 
-  ~CSetArtJob(void) override = default;
+  virtual ~CSetArtJob(void) {}
 
   bool HasSongExtraArtChanged(const CFileItemPtr& pSongItem,
                               const std::string& type,
@@ -110,7 +110,7 @@ public:
   // Asynchronously update song, album or artist art in library
   // and trigger update to album & artist art of the currently playing song
   // and songs queued in the current playlist
-  bool DoWork(void) override
+  virtual bool DoWork(void)
   {
     int itemID = pItem->GetMusicInfoTag()->GetDatabaseId();
     if (itemID <= 0)
@@ -157,7 +157,7 @@ public:
     const auto appPlayer = components.GetComponent<CApplicationPlayer>();
     if (appPlayer->IsPlayingAudio() && g_application.CurrentFileItem().HasMusicInfoTag())
     {
-      CFileItemPtr songitem = std::make_shared<CFileItem>(g_application.CurrentFileItem());
+      CFileItemPtr songitem = boost::make_shared<CFileItem>(g_application.CurrentFileItem());
       if (HasSongExtraArtChanged(songitem, type, itemID, db))
         g_application.UpdateCurrentPlayArt();
     }
@@ -183,9 +183,9 @@ public:
   {
   }
 
-  ~CSetSongRatingJob(void) override = default;
+  virtual ~CSetSongRatingJob(void) {}
 
-  bool DoWork(void) override
+  virtual bool DoWork(void)
   {
     // Asynchronously update song userrating in library
     CMusicDatabase db;
@@ -202,7 +202,7 @@ public:
   }
 };
 
-void UpdateArtJob(const std::shared_ptr<CFileItem>& pItem,
+void UpdateArtJob(const boost::shared_ptr<CFileItem>& pItem,
                   const std::string& strType,
                   const std::string& strArt)
 {
@@ -318,7 +318,7 @@ std::string ShowSelectArtTypeDialog(CFileItemList& artitems)
   if (!dialog)
     return "";
 
-  dialog->SetHeading(CVariant{13521});
+  dialog->SetHeading(13521);
   dialog->Reset();
   dialog->SetUseDetails(true);
   dialog->EnableButton(true, 13516);
@@ -331,7 +331,7 @@ std::string ShowSelectArtTypeDialog(CFileItemList& artitems)
     // Get the new art type name
     std::string strArtTypeName;
     if (!CGUIKeyboardFactory::ShowAndGetInput(strArtTypeName,
-                                              CVariant{g_localizeStrings.Get(13516)}, false))
+                                              g_localizeStrings.Get(13516), false))
       return "";
     // Add new type to the list of art types
     CFileItemPtr artitem(new CFileItem(strArtTypeName, false));
@@ -352,7 +352,7 @@ int ShowSelectRatingDialog(int iSelected)
           WINDOW_DIALOG_SELECT);
   if (dialog)
   {
-    dialog->SetHeading(CVariant{38023});
+    dialog->SetHeading(38023);
     dialog->Add(g_localizeStrings.Get(38022));
     for (int i = 1; i <= 10; i++)
       dialog->Add(StringUtils::Format("{}: {}", g_localizeStrings.Get(563), i));
@@ -367,7 +367,7 @@ int ShowSelectRatingDialog(int iSelected)
   return -1;
 }
 
-void UpdateSongRatingJob(const std::shared_ptr<CFileItem>& pItem, int userrating)
+void UpdateSongRatingJob(const boost::shared_ptr<CFileItem>& pItem, int userrating)
 {
   // Asynchronously update the song user rating in music library
   const CMusicInfoTag* tag = pItem->GetMusicInfoTag();
@@ -422,14 +422,14 @@ namespace
 class CAsyncGetItemsForPlaylist : public IRunnable
 {
 public:
-  CAsyncGetItemsForPlaylist(const std::shared_ptr<CFileItem>& item, CFileItemList& queuedItems)
+  CAsyncGetItemsForPlaylist(const boost::shared_ptr<CFileItem>& item, CFileItemList& queuedItems)
     : m_item(item), m_queuedItems(queuedItems)
   {
   }
 
-  ~CAsyncGetItemsForPlaylist() override = default;
+  virtual ~CAsyncGetItemsForPlaylist() {}
 
-  void Run() override
+  virtual void Run()
   {
     // fast lookup is needed here
     m_queuedItems.SetFastLookup(true);
@@ -440,9 +440,9 @@ public:
   }
 
 private:
-  void GetItemsForPlaylist(const std::shared_ptr<CFileItem>& item);
+  void GetItemsForPlaylist(const boost::shared_ptr<CFileItem>& item);
 
-  const std::shared_ptr<CFileItem> m_item;
+  const boost::shared_ptr<CFileItem> m_item;
   CFileItemList& m_queuedItems;
   CMusicDatabase m_musicDatabase;
 };
@@ -495,7 +495,7 @@ SortDescription GetSortDescription(const CGUIViewState& state, const CFileItemLi
     return state.GetSortMethod(); // last resort
 }
 
-void CAsyncGetItemsForPlaylist::GetItemsForPlaylist(const std::shared_ptr<CFileItem>& item)
+void CAsyncGetItemsForPlaylist::GetItemsForPlaylist(const boost::shared_ptr<CFileItem>& item)
 {
   if (item->IsParentFolder() || !item->CanQueue() || item->IsRAR() || item->IsZIP())
     return;
@@ -515,7 +515,7 @@ void CAsyncGetItemsForPlaylist::GetItemsForPlaylist(const std::shared_ptr<CFileI
       {
         musicUrl.AppendPath("-1/");
 
-        const auto allItem = std::make_shared<CFileItem>(musicUrl.ToString(), true);
+        const auto allItem = boost::make_shared<CFileItem>(musicUrl.ToString(), true);
         allItem->SetCanQueue(true); // workaround for CanQueue() check above
         GetItemsForPlaylist(allItem);
       }
@@ -535,7 +535,7 @@ void CAsyncGetItemsForPlaylist::GetItemsForPlaylist(const std::shared_ptr<CFileI
     CFileItemList items;
     XFILE::CDirectory::GetDirectory(item->GetPath(), items, "", XFILE::DIR_FLAG_DEFAULTS);
 
-    const std::unique_ptr<CGUIViewState> state(
+    const boost::movelib::unique_ptr<CGUIViewState> state(
         CGUIViewState::GetViewState(WINDOW_MUSIC_NAV, items));
     if (state)
     {
@@ -577,7 +577,7 @@ void CAsyncGetItemsForPlaylist::GetItemsForPlaylist(const std::shared_ptr<CFileI
   {
     if (item->IsPlayList())
     {
-      const std::unique_ptr<PLAYLIST::CPlayList> playList(
+      const boost::movelib::unique_ptr<PLAYLIST::CPlayList> playList(
           PLAYLIST::CPlayListFactory::Create(*item));
       if (!playList)
       {
@@ -654,8 +654,8 @@ std::string GetMusicDbItemPath(const CFileItem& item)
   return {};
 }
 
-void AddItemToPlayListAndPlay(const std::shared_ptr<CFileItem>& itemToQueue,
-                              const std::shared_ptr<CFileItem>& itemToPlay,
+void AddItemToPlayListAndPlay(const boost::shared_ptr<CFileItem>& itemToQueue,
+                              const boost::shared_ptr<CFileItem>& itemToPlay,
                               const std::string& player)
 {
   // recursively add items to list
@@ -672,7 +672,7 @@ void AddItemToPlayListAndPlay(const std::shared_ptr<CFileItem>& itemToQueue,
   int pos = 0;
   if (itemToPlay)
   {
-    for (const std::shared_ptr<CFileItem>& queuedItem : queuedItems)
+    for (const boost::shared_ptr<CFileItem>& queuedItem : queuedItems)
     {
       if (queuedItem->IsSamePath(itemToPlay.get()))
         break;
@@ -704,7 +704,7 @@ bool IsAutoPlayNextItem(const CFileItem& item)
          !settings->GetBool(CSettings::SETTING_MUSICPLAYER_QUEUEBYDEFAULT);
 }
 
-void PlayItem(const std::shared_ptr<CFileItem>& itemIn,
+void PlayItem(const boost::shared_ptr<CFileItem>& itemIn,
               const std::string& player,
               ContentUtils::PlayMode mode /* = ContentUtils::PlayMode::CHECK_AUTO_PLAY_NEXT_ITEM */)
 {
@@ -715,7 +715,7 @@ void PlayItem(const std::shared_ptr<CFileItem>& itemIn,
   if (!itemIn->CanQueue())
   {
     // make a copy to not alter the original item
-    item = std::make_shared<CFileItem>(*itemIn);
+    item = boost::make_shared<CFileItem>(*itemIn);
     item->SetCanQueue(true);
   }
 
@@ -746,7 +746,7 @@ void PlayItem(const std::shared_ptr<CFileItem>& itemIn,
         }
       }
 
-      const auto parentItem = std::make_shared<CFileItem>(parentPath, true);
+      const auto parentItem = boost::make_shared<CFileItem>(parentPath, true);
       if (item->GetStartOffset() == STARTOFFSET_RESUME)
         parentItem->SetStartOffset(STARTOFFSET_RESUME);
 
@@ -763,7 +763,7 @@ void PlayItem(const std::shared_ptr<CFileItem>& itemIn,
   }
 }
 
-void QueueItem(const std::shared_ptr<CFileItem>& itemIn, QueuePosition pos)
+void QueueItem(const boost::shared_ptr<CFileItem>& itemIn, QueuePosition pos)
 {
   auto item = itemIn;
 
@@ -772,7 +772,7 @@ void QueueItem(const std::shared_ptr<CFileItem>& itemIn, QueuePosition pos)
   if (!itemIn->CanQueue())
   {
     // make a copy to not alter the original item
-    item = std::make_shared<CFileItem>(*itemIn);
+    item = boost::make_shared<CFileItem>(*itemIn);
     item->SetCanQueue(true);
   }
 
@@ -845,7 +845,7 @@ void QueueItem(const std::shared_ptr<CFileItem>& itemIn, QueuePosition pos)
   }
 }
 
-bool GetItemsForPlayList(const std::shared_ptr<CFileItem>& item, CFileItemList& queuedItems)
+bool GetItemsForPlayList(const boost::shared_ptr<CFileItem>& item, CFileItemList& queuedItems)
 {
   CAsyncGetItemsForPlaylist getItems(item, queuedItems);
   return CGUIDialogBusy::Wait(&getItems,

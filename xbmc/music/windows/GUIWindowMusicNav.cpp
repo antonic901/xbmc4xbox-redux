@@ -75,7 +75,7 @@ CGUIWindowMusicNav::CGUIWindowMusicNav(void)
   m_searchWithEdit = false;
 }
 
-CGUIWindowMusicNav::~CGUIWindowMusicNav(void) = default;
+CGUIWindowMusicNav::~CGUIWindowMusicNav(void) {}
 
 bool CGUIWindowMusicNav::OnMessage(CGUIMessage& message)
 {
@@ -258,7 +258,7 @@ bool CGUIWindowMusicNav::ManageInfoProvider(const CFileItemPtr& item)
         msgctxt = 38069;
         if (content == CONTENT_ARTISTS)
           msgctxt = 38068;
-        if (CGUIDialogYesNo::ShowAndGetInput(CVariant{ 20195 }, msgctxt)) // Change information provider, confirm for all shown
+        if (CGUIDialogYesNo::ShowAndGetInput( 20195 , msgctxt)) // Change information provider, confirm for all shown
         {
           // Set scraper for all items on current view.
           std::string strPath = "musicdb://";
@@ -284,12 +284,12 @@ bool CGUIWindowMusicNav::ManageInfoProvider(const CFileItemPtr& item)
         msgctxt = 38071;
         if (content == CONTENT_ARTISTS)
           msgctxt = 38070;
-        if (CGUIDialogYesNo::ShowAndGetInput(CVariant{20195}, msgctxt)) // Change information provider, confirm default and clear
+        if (CGUIDialogYesNo::ShowAndGetInput(20195, msgctxt)) // Change information provider, confirm default and clear
         {
           // Save scraper addon default setting values
           scraper->SaveSettings();
           // Set default scraper
-          const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+          const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
           if (content == CONTENT_ARTISTS)
             settings->SetString(CSettings::SETTING_MUSICLIBRARY_ARTISTSSCRAPER, scraper->ID());
           else
@@ -312,13 +312,13 @@ bool CGUIWindowMusicNav::ManageInfoProvider(const CFileItemPtr& item)
     if (applyto == INFOPROVIDERAPPLYOPTIONS::INFOPROVIDER_ALLVIEW || applyto == INFOPROVIDERAPPLYOPTIONS::INFOPROVIDER_DEFAULT)
     {
       // Change information provider, all artists or albums
-      if (CGUIDialogYesNo::ShowAndGetInput(CVariant{20195}, CVariant{38072}))
+      if (CGUIDialogYesNo::ShowAndGetInput(20195, 38072))
         OnItemInfoAll(m_vecItems->GetPath(), true);
     }
     else
     {
       // Change information provider, selected artist or album
-      if (CGUIDialogYesNo::ShowAndGetInput(CVariant{20195}, CVariant{38073}))
+      if (CGUIDialogYesNo::ShowAndGetInput(20195, 38073))
       {
         std::string itempath = StringUtils::Format("musicdb://albums/{}/", id);
         if (content == CONTENT_ARTISTS)
@@ -567,7 +567,7 @@ void CGUIWindowMusicNav::GetContextButtons(int itemNumber, CContextButtons &butt
     item = m_vecItems->Get(itemNumber);
   if (item)
   {
-    const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+    const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
     // are we in the playlists location?
     bool inPlaylists = m_vecItems->IsPath(CUtil::MusicPlaylistsLocation()) ||
@@ -641,7 +641,7 @@ void CGUIWindowMusicNav::GetContextButtons(int itemNumber, CContextButtons &butt
               nodetype == NODE_TYPE_OVERVIEW ||
               nodetype == NODE_TYPE_TOP100))
           {
-            const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+            const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
             if (!item->IsPath(settings->GetString(CSettings::SETTING_MYMUSIC_DEFAULTLIBVIEW)))
               buttons.Add(CONTEXT_BUTTON_SET_DEFAULT, 13335); // set default
             if (!settings->GetString(CSettings::SETTING_MYMUSIC_DEFAULTLIBVIEW).empty())
@@ -769,7 +769,7 @@ bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 
   case CONTEXT_BUTTON_SET_DEFAULT:
   {
-    const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+    const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
     settings->SetString(CSettings::SETTING_MYMUSIC_DEFAULTLIBVIEW, item->GetPath());
     settings->Save();
     return true;
@@ -777,7 +777,7 @@ bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 
   case CONTEXT_BUTTON_CLEAR_DEFAULT:
   {
-    const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+    const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
     settings->SetString(CSettings::SETTING_MYMUSIC_DEFAULTLIBVIEW, "");
     settings->Save();
     return true;
@@ -857,13 +857,13 @@ bool CGUIWindowMusicNav::GetSongsFromPlayList(const std::string& strPlayList, CF
   items.SetPath(strPlayList);
   CLog::Log(LOGDEBUG, "CGUIWindowMusicNav, opening playlist [{}]", strPlayList);
 
-  std::unique_ptr<CPlayList> pPlayList (CPlayListFactory::Create(strPlayList));
+  boost::movelib::unique_ptr<CPlayList> pPlayList (CPlayListFactory::Create(strPlayList));
   if (nullptr != pPlayList)
   {
     // load it
     if (!pPlayList->Load(strPlayList))
     {
-      HELPERS::ShowOKDialogText(CVariant{6}, CVariant{477});
+      HELPERS::ShowOKDialogText(6, 477);
       return false; //hmmm unable to load playlist?
     }
     CPlayList playlist = *pPlayList;

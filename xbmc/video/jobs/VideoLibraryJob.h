@@ -19,7 +19,7 @@ class CVideoDatabase;
 class CVideoLibraryJob : public CJob
 {
 public:
-  ~CVideoLibraryJob() override;
+  virtual ~CVideoLibraryJob();
 
   /*!
    \brief Whether the job can be cancelled or not.
@@ -34,9 +34,9 @@ public:
   virtual bool Cancel() { return false; }
 
   // implementation of CJob
-  bool DoWork() override;
-  const char *GetType() const override { return "VideoLibraryJob"; }
-  bool operator==(const CJob* job) const override { return false; }
+  virtual bool DoWork();
+  virtual const char *GetType() const { return "VideoLibraryJob"; }
+  virtual bool operator==(const CJob* job) const { return false; }
 
 protected:
   CVideoLibraryJob();

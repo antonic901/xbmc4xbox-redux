@@ -18,9 +18,9 @@ class CMusicDbUrl : public CDbUrl
 {
 public:
   CMusicDbUrl();
-  ~CMusicDbUrl() override;
+  virtual ~CMusicDbUrl();
 
 protected:
-  bool parse() override;
-  bool validateOption(const std::string &key, const CVariant &value) override;
+  virtual bool parse();
+  virtual bool validateOption(const std::string &key, const CVariant &value);
 };

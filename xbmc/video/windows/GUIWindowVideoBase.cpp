@@ -92,7 +92,7 @@ CGUIWindowVideoBase::CGUIWindowVideoBase(int id, const std::string &xmlFile)
   m_dlgProgress = NULL;
 }
 
-CGUIWindowVideoBase::~CGUIWindowVideoBase() = default;
+CGUIWindowVideoBase::~CGUIWindowVideoBase() {}
 
 bool CGUIWindowVideoBase::OnAction(const CAction &action)
 {
@@ -180,7 +180,7 @@ bool CGUIWindowVideoBase::OnMessage(CGUIMessage& message)
         }
         else if (iAction == ACTION_DELETE_ITEM)
         {
-          const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+          const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
           // is delete allowed?
           if (profileManager->GetCurrentProfile().canWriteDatabases())
@@ -216,7 +216,7 @@ bool CGUIWindowVideoBase::OnItemInfo(const CFileItem& fileItem)
 
   // "Videos/Video Add-ons" lists addons in the video window
   if (fileItem.HasAddonInfo())
-    return CGUIDialogAddonInfo::ShowForItem(std::make_shared<CFileItem>(fileItem));
+    return CGUIDialogAddonInfo::ShowForItem(boost::make_shared<CFileItem>(fileItem));
 
   // Video version
   if (fileItem.HasVideoInfoTag() && fileItem.GetVideoInfoTag()->m_type == MediaTypeVideoVersion)
@@ -226,13 +226,13 @@ bool CGUIWindowVideoBase::OnItemInfo(const CFileItem& fileItem)
   if (fileItem.m_bIsFolder && fileItem.IsVideoDb() &&
       fileItem.GetPath() != "videodb://movies/sets/" &&
       StringUtils::StartsWith(fileItem.GetPath(), "videodb://movies/sets/"))
-    return ShowInfoAndRefresh(std::make_shared<CFileItem>(fileItem), nullptr);
+    return ShowInfoAndRefresh(boost::make_shared<CFileItem>(fileItem), nullptr);
 
   // Music video. Match visibility test of CMusicInfo::IsVisible
   if (fileItem.IsVideoDb() && fileItem.HasVideoInfoTag() &&
       (fileItem.HasProperty("artist_musicid") || fileItem.HasProperty("album_musicid")))
   {
-    CGUIDialogMusicInfo::ShowFor(std::make_shared<CFileItem>(fileItem).get());
+    CGUIDialogMusicInfo::ShowFor(boost::make_shared<CFileItem>(fileItem).get());
     return true;
   }
 
@@ -253,8 +253,8 @@ bool CGUIWindowVideoBase::OnItemInfo(const CFileItem& fileItem)
       !VIDEO_UTILS::HasItemVideoDbInformation(fileItem))
   {
     // We have no chance to fill a video info tag, neither scraper nor db data available.
-    HELPERS::ShowOKDialogText(CVariant{20176}, // Show video information
-                              CVariant{19055}); // no information available
+    HELPERS::ShowOKDialogText(20176, // Show video information
+                              19055); // no information available
     m_database.Close();
     return false;
   }
@@ -313,7 +313,7 @@ bool CGUIWindowVideoBase::OnItemInfo(const CFileItem& fileItem)
       // no video file in this folder
       if (!bFoundFile)
       {
-        HELPERS::ShowOKDialogText(CVariant{13346}, CVariant{20349});
+        HELPERS::ShowOKDialogText(13346, 20349);
         return false;
       }
     }
@@ -323,7 +323,7 @@ bool CGUIWindowVideoBase::OnItemInfo(const CFileItem& fileItem)
   if (fileItem.m_bIsFolder)
     item.SetProperty("set_folder_thumb", fileItem.GetPath());
 
-  return ShowInfoAndRefresh(std::make_shared<CFileItem>(item), scraper);
+  return ShowInfoAndRefresh(boost::make_shared<CFileItem>(item), scraper);
 }
 
 // ShowInfo is called as follows:
@@ -450,7 +450,7 @@ bool CGUIWindowVideoBase::ShowInfo(const CFileItemPtr& item2, const ScraperPtr& 
     }
   }
 
-  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   // quietly return if Internet lookups are disabled
   if (!profileManager->GetCurrentProfile().canWriteDatabases() && !g_passwordManager.bMasterUser)
@@ -461,7 +461,7 @@ bool CGUIWindowVideoBase::ShowInfo(const CFileItemPtr& item2, const ScraperPtr& 
 
   if (CVideoLibraryQueue::GetInstance().IsScanningLibrary())
   {
-    HELPERS::ShowOKDialogText(CVariant{13346}, CVariant{14057});
+    HELPERS::ShowOKDialogText(13346, 14057);
     return false;
   }
 
@@ -522,7 +522,7 @@ void CGUIWindowVideoBase::OnQueueItem(int iItem, bool first)
   OnQueueItem(m_vecItems->Get(iItem), iItem, first);
 }
 
-void CGUIWindowVideoBase::OnQueueItem(const std::shared_ptr<CFileItem>& item, int iItem, bool first)
+void CGUIWindowVideoBase::OnQueueItem(const boost::shared_ptr<CFileItem>& item, int iItem, bool first)
 {
   // don't re-queue items from playlist window
   if (GetID() == WINDOW_VIDEO_PLAYLIST)
@@ -543,7 +543,7 @@ bool CGUIWindowVideoBase::OnSelect(int iItem)
   if (iItem < 0 || iItem >= m_vecItems->Size())
     return false;
 
-  const std::shared_ptr<CFileItem> item = m_vecItems->Get(iItem);
+  const boost::shared_ptr<CFileItem> item = m_vecItems->Get(iItem);
 
   const std::string path = item->GetPath();
   if (!item->m_bIsFolder && path != "add" &&
@@ -565,7 +565,7 @@ class CVideoSelectActionProcessor : public CVideoSelectActionProcessorBase
 {
 public:
   CVideoSelectActionProcessor(CGUIWindowVideoBase& window,
-                              const std::shared_ptr<CFileItem>& item,
+                              const boost::shared_ptr<CFileItem>& item,
                               int itemIndex,
                               const std::string& player)
     : CVideoSelectActionProcessorBase(item),
@@ -576,32 +576,32 @@ public:
   }
 
 protected:
-  bool OnPlayPartSelected(unsigned int part) override
+  virtual bool OnPlayPartSelected(unsigned int part)
   {
     return m_window.OnPlayStackPart(m_item, part);
   }
 
-  bool OnResumeSelected() override
+  virtual bool OnResumeSelected()
   {
     m_item->SetStartOffset(STARTOFFSET_RESUME);
     return m_window.PlayItem(m_item, m_player);
   }
 
-  bool OnPlaySelected() override
+  virtual bool OnPlaySelected()
   {
     m_item->SetStartOffset(0);
     return m_window.PlayItem(m_item, m_player);
   }
 
-  bool OnQueueSelected() override
+  virtual bool OnQueueSelected()
   {
     m_window.OnQueueItem(m_item, m_itemIndex);
     return true;
   }
 
-  bool OnInfoSelected() override { return m_window.OnItemInfo(*m_item); }
+  virtual bool OnInfoSelected() { return m_window.OnItemInfo(*m_item); }
 
-  bool OnChooseSelected() override
+  virtual bool OnChooseSelected()
   {
     // window only shows the default version, so no window specific context menu items available
     if (m_item->HasVideoVersions() && !m_item->GetVideoInfoTag()->IsDefaultVideoVersion())
@@ -620,7 +620,7 @@ private:
 
 bool CGUIWindowVideoBase::OnFileAction(int iItem, Action action, const std::string& player)
 {
-  const std::shared_ptr<CFileItem> item = m_vecItems->Get(iItem);
+  const boost::shared_ptr<CFileItem> item = m_vecItems->Get(iItem);
   if (!item)
     return false;
 
@@ -669,7 +669,7 @@ void CGUIWindowVideoBase::LoadVideoInfo(CFileItemList& items,
     Similarly, we assign the "clean" library labels to the item only if the "Replace filenames with library titles"
     setting is enabled.
     */
-  const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+  const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
   const bool stackItems =
       items.GetProperty("isstacked").asBoolean() ||
       (StackingAvailable(items) && settings->GetBool(CSettings::SETTING_MYVIDEOS_STACKVIDEOS));
@@ -752,20 +752,20 @@ class CVideoPlayActionProcessor : public CVideoPlayActionProcessorBase
 {
 public:
   CVideoPlayActionProcessor(CGUIWindowVideoBase& window,
-                            const std::shared_ptr<CFileItem>& item,
+                            const boost::shared_ptr<CFileItem>& item,
                             const std::string& player)
     : CVideoPlayActionProcessorBase(item), m_window(window), m_player(player)
   {
   }
 
 protected:
-  bool OnResumeSelected() override
+  virtual bool OnResumeSelected()
   {
     m_item->SetStartOffset(STARTOFFSET_RESUME);
     return m_window.PlayItem(m_item, m_player);
   }
 
-  bool OnPlaySelected() override
+  virtual bool OnPlaySelected()
   {
     m_item->SetStartOffset(0);
     return m_window.PlayItem(m_item, m_player);
@@ -836,7 +836,7 @@ void CGUIWindowVideoBase::GetContextButtons(int itemNumber, CContextButtons &but
   CGUIMediaWindow::GetContextButtons(itemNumber, buttons);
 }
 
-bool CGUIWindowVideoBase::OnPlayStackPart(const std::shared_ptr<CFileItem>& item,
+bool CGUIWindowVideoBase::OnPlayStackPart(const boost::shared_ptr<CFileItem>& item,
                                           unsigned int partNumber)
 {
   // part numbers are 1-based.
@@ -946,7 +946,7 @@ bool CGUIWindowVideoBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   return CGUIMediaWindow::OnContextButton(itemNumber, button);
 }
 
-bool CGUIWindowVideoBase::OnPlayMedia(const std::shared_ptr<CFileItem>& pItem,
+bool CGUIWindowVideoBase::OnPlayMedia(const boost::shared_ptr<CFileItem>& pItem,
                                       const std::string& player)
 {
   // party mode
@@ -963,7 +963,7 @@ bool CGUIWindowVideoBase::OnPlayMedia(const std::shared_ptr<CFileItem>& pItem,
   CServiceBroker::GetPlaylistPlayer().Reset();
   CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(PLAYLIST::TYPE_NONE);
 
-  auto itemCopy = std::make_shared<CFileItem>(*pItem);
+  auto itemCopy = boost::make_shared<CFileItem>(*pItem);
 
   if (pItem->IsVideoDb())
   {
@@ -1029,7 +1029,7 @@ void CGUIWindowVideoBase::OnDeleteItem(const CFileItemPtr& item)
   if (item->IsStack())
     item->m_bIsFolder = true;
 
-  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   if (profileManager->GetCurrentProfile().getLockMode() != LOCK_MODE_EVERYONE &&
       profileManager->GetCurrentProfile().filesLocked())
@@ -1057,13 +1057,13 @@ void CGUIWindowVideoBase::LoadPlayList(const std::string& strPlayList,
 
   // load a playlist like .m3u, .pls
   // first get correct factory to load playlist
-  std::unique_ptr<PLAYLIST::CPlayList> pPlayList(PLAYLIST::CPlayListFactory::Create(strPlayList));
+  boost::movelib::unique_ptr<PLAYLIST::CPlayList> pPlayList(PLAYLIST::CPlayListFactory::Create(strPlayList));
   if (pPlayList)
   {
     // load it
     if (!pPlayList->Load(strPlayList))
     {
-      HELPERS::ShowOKDialogText(CVariant{6}, CVariant{477});
+      HELPERS::ShowOKDialogText(6, 477);
       return; //hmmm unable to load playlist?
     }
   }
@@ -1075,7 +1075,7 @@ void CGUIWindowVideoBase::LoadPlayList(const std::string& strPlayList,
   }
 }
 
-bool CGUIWindowVideoBase::PlayItem(const std::shared_ptr<CFileItem>& pItem,
+bool CGUIWindowVideoBase::PlayItem(const boost::shared_ptr<CFileItem>& pItem,
                                    const std::string& player)
 {
   if (!pItem->m_bIsFolder && pItem->IsVideoDb() && !pItem->Exists())
@@ -1107,8 +1107,8 @@ bool CGUIWindowVideoBase::PlayItem(const std::shared_ptr<CFileItem>& pItem,
     }
     else
     {
-      HELPERS::ShowOKDialogText(CVariant{257}, // Error
-                                CVariant{662}); // This file is no longer available.
+      HELPERS::ShowOKDialogText(257, // Error
+                                662); // This file is no longer available.
     }
     return true;
   }
@@ -1118,7 +1118,7 @@ bool CGUIWindowVideoBase::PlayItem(const std::shared_ptr<CFileItem>& pItem,
       !(pItem->HasVideoInfoTag() && pItem->GetVideoInfoTag()->IsDefaultVideoVersion()))
   {
     // take a copy so we can alter the queue state
-    const auto item{std::make_shared<CFileItem>(*pItem)};
+    const auto item{boost::make_shared<CFileItem>(*pItem)};
 
     //  Allow queuing of unqueueable items
     //  when we try to queue them directly
@@ -1176,7 +1176,7 @@ bool CGUIWindowVideoBase::GetDirectory(const std::string &strDirectory, CFileIte
   // add in the "New Playlist" item if we're in the playlists folder
   if ((items.GetPath() == "special://videoplaylists/") && !items.Contains("newplaylist://"))
   {
-    const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+    const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
     CFileItemPtr newPlaylist(new CFileItem(profileManager->GetUserDataItem("PartyMode-Video.xsp"),false));
     newPlaylist->SetLabel(g_localizeStrings.Get(16035));
@@ -1190,7 +1190,7 @@ bool CGUIWindowVideoBase::GetDirectory(const std::string &strDirectory, CFileIte
     newPlaylist->SetLabelPreformatted(true);
     items.Add(newPlaylist);
 */
-    newPlaylist = std::make_shared<CFileItem>("newsmartplaylist://video", false);
+    newPlaylist = boost::make_shared<CFileItem>("newsmartplaylist://video", false);
     newPlaylist->SetLabel(g_localizeStrings.Get(21437));  // "new smart playlist..."
     newPlaylist->SetArt("icon", "DefaultAddSource.png");
     newPlaylist->SetLabelPreformatted(true);
@@ -1237,7 +1237,7 @@ void CGUIWindowVideoBase::GetGroupedItems(CFileItemList &items)
     CVideoDatabaseDirectory dir;
     dir.GetQueryParams(items.GetPath(), params);
     VIDEODATABASEDIRECTORY::NODE_TYPE nodeType = CVideoDatabaseDirectory::GetDirectoryChildType(m_strFilterPath);
-    const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+    const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
     if (items.GetContent() == "movies" && params.GetSetId() <= 0 &&
         params.GetVideoVersionId() < 0 && nodeType == NODE_TYPE_TITLE_MOVIES &&
         (settings->GetBool(CSettings::SETTING_VIDEOLIBRARY_GROUPMOVIESETS) ||
@@ -1282,16 +1282,16 @@ bool CGUIWindowVideoBase::CanContainFilter(const std::string &strDirectory) cons
 void CGUIWindowVideoBase::OnSearch()
 {
   std::string strSearch;
-  if (!CGUIKeyboardFactory::ShowAndGetInput(strSearch, CVariant{g_localizeStrings.Get(16017)}, false))
+  if (!CGUIKeyboardFactory::ShowAndGetInput(strSearch, g_localizeStrings.Get(16017), false))
     return ;
 
   StringUtils::ToLower(strSearch);
   if (m_dlgProgress)
   {
-    m_dlgProgress->SetHeading(CVariant{194});
-    m_dlgProgress->SetLine(0, CVariant{strSearch});
-    m_dlgProgress->SetLine(1, CVariant{""});
-    m_dlgProgress->SetLine(2, CVariant{""});
+    m_dlgProgress->SetHeading(194);
+    m_dlgProgress->SetLine(0, strSearch);
+    m_dlgProgress->SetLine(1, "");
+    m_dlgProgress->SetLine(2, "");
     m_dlgProgress->Open();
     m_dlgProgress->Progress();
   }
@@ -1305,7 +1305,7 @@ void CGUIWindowVideoBase::OnSearch()
   {
     CGUIDialogSelect* pDlgSelect = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
     pDlgSelect->Reset();
-    pDlgSelect->SetHeading(CVariant{283});
+    pDlgSelect->SetHeading(283);
 
     for (int i = 0; i < items.Size(); i++)
     {
@@ -1323,7 +1323,7 @@ void CGUIWindowVideoBase::OnSearch()
   }
   else
   {
-    HELPERS::ShowOKDialogText(CVariant{194}, CVariant{284});
+    HELPERS::ShowOKDialogText(194, 284);
   }
 }
 
@@ -1440,7 +1440,7 @@ bool CGUIWindowVideoBase::OnUnAssignContent(const std::string &path, int header,
   bool bCanceled;
   CVideoDatabase db;
   db.Open();
-  if (CGUIDialogYesNo::ShowAndGetInput(CVariant{header}, CVariant{text}, bCanceled, CVariant{ "" }, CVariant{ "" }, CGUIDialogYesNo::NO_TIMEOUT))
+  if (CGUIDialogYesNo::ShowAndGetInput(header, text, bCanceled,  "" ,  "" , CGUIDialogYesNo::NO_TIMEOUT))
   {
     CGUIDialogProgress *progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
     db.RemoveContentForPath(path, progress);

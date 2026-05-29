@@ -16,9 +16,9 @@ namespace MUSIC_INFO
   {
     public:
       CMusicInfoTagLoaderDatabase(void);
-      ~CMusicInfoTagLoaderDatabase() override;
+      virtual ~CMusicInfoTagLoaderDatabase();
 
-      bool Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL) override;
+      virtual bool Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
   };
 }
 

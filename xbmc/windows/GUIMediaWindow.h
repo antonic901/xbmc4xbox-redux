@@ -29,22 +29,22 @@ class CGUIMediaWindow : public CGUIWindow
 {
 public:
   CGUIMediaWindow(int id, const char *xmlFile);
-  ~CGUIMediaWindow(void) override;
+  virtual ~CGUIMediaWindow(void);
 
   // specializations of CGUIControl
-  bool OnAction(const CAction &action) override;
-  bool OnBack(int actionID) override;
-  bool OnMessage(CGUIMessage& message) override;
+  virtual bool OnAction(const CAction &action);
+  virtual bool OnBack(int actionID);
+  virtual bool OnMessage(CGUIMessage& message);
 
   // specializations of CGUIWindow
-  void OnWindowLoaded() override;
-  void OnWindowUnload() override;
-  void OnInitWindow() override;
-  bool IsMediaWindow() const  override { return true; }
-  int GetViewContainerID() const  override { return m_viewControl.GetCurrentControl(); }
-  int GetViewCount() const override { return m_viewControl.GetViewModeCount(); }
-  bool HasListItems() const  override { return true; }
-  CFileItemPtr GetCurrentListItem(int offset = 0) override;
+  virtual void OnWindowLoaded();
+  virtual void OnWindowUnload();
+  virtual void OnInitWindow();
+  virtual bool IsMediaWindow() const { return true; }
+  virtual int GetViewContainerID() const { return m_viewControl.GetCurrentControl(); }
+  virtual int GetViewCount() const { return m_viewControl.GetViewModeCount(); }
+  virtual bool HasListItems() const { return true; }
+  virtual CFileItemPtr GetCurrentListItem(int offset = 0);
 
   // custom methods
   virtual bool CanFilterAdvanced() { return m_canFilterAdvanced; }
@@ -59,9 +59,9 @@ public:
 
 protected:
   // specializations of CGUIControlGroup
-  CGUIControl *GetFirstFocusableControl(int id) override;
+  virtual CGUIControl *GetFirstFocusableControl(int id);
 
-  bool Load(TiXmlElement *pRootElement) override;
+  virtual bool Load(TiXmlElement *pRootElement);
 
   // custom methods
   virtual void SetupShares();
@@ -81,8 +81,8 @@ protected:
 
   virtual void FormatItemLabels(CFileItemList &items, const LABEL_MASKS &labelMasks);
   virtual void UpdateButtons();
-  void SaveControlStates() override;
-  void RestoreControlStates() override;
+  virtual void SaveControlStates();
+  virtual void RestoreControlStates();
 
   virtual bool GetDirectory(const std::string &strDirectory, CFileItemList &items);
   /*! \brief Retrieves the items from the given path and updates the list
@@ -182,7 +182,7 @@ protected:
   CFileItemList* m_vecItems;
   CFileItemList* m_unfilteredItems;        ///< \brief items prior to filtering using FilterItems()
   CDirectoryHistory m_history;
-  std::unique_ptr<CGUIViewState> m_guiState;
+  boost::movelib::unique_ptr<CGUIViewState> m_guiState;
   std::atomic_bool m_vecItemsUpdating = {false};
   class CUpdateGuard
   {

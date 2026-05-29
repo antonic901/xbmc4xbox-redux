@@ -90,7 +90,7 @@ CGUIWindowMusicBase::CGUIWindowMusicBase(int id, const std::string &xmlFile)
   m_thumbLoader.SetObserver(this);
 }
 
-CGUIWindowMusicBase::~CGUIWindowMusicBase () = default;
+CGUIWindowMusicBase::~CGUIWindowMusicBase () {}
 
 bool CGUIWindowMusicBase::OnBack(int actionID)
 {
@@ -425,7 +425,7 @@ void CGUIWindowMusicBase::GetContextButtons(int itemNumber, CContextButtons &but
 
   if (item)
   {
-    const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+    const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
     // Check for the partymode playlist item.
     // When "PartyMode.xsp" not exist, only context menu button is edit
@@ -535,7 +535,7 @@ bool CGUIWindowMusicBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   case CONTEXT_BUTTON_SCAN:
     // Check if scanning already and inform user
     if (CMusicLibraryQueue::GetInstance().IsScanningLibrary())
-      HELPERS::ShowOKDialogText(CVariant{ 189 }, CVariant{ 14057 });
+      HELPERS::ShowOKDialogText( 189 ,  14057 );
     else
       OnScan(itemNumber, true);
     return true;
@@ -568,7 +568,7 @@ void CGUIWindowMusicBase::OnRipCD()
 #endif
     }
     else
-      HELPERS::ShowOKDialogText(CVariant{257}, CVariant{20099});
+      HELPERS::ShowOKDialogText(257, 20099);
   }
 }
 
@@ -584,7 +584,7 @@ void CGUIWindowMusicBase::OnRipTrack(int iItem)
 #endif
     }
     else
-      HELPERS::ShowOKDialogText(CVariant{257}, CVariant{20099});
+      HELPERS::ShowOKDialogText(257, 20099);
   }
 }
 
@@ -606,7 +606,7 @@ void CGUIWindowMusicBase::PlayItem(int iItem)
   // Check for the partymode playlist item, do nothing when "PartyMode.xsp" not exist
   if (pItem->IsSmartPlayList())
   {
-    const std::shared_ptr<CProfileManager> profileManager =
+    const boost::shared_ptr<CProfileManager> profileManager =
         CServiceBroker::GetSettingsComponent()->GetProfileManager();
     if ((pItem->GetPath() == profileManager->GetUserDataItem("PartyMode.xsp")) &&
         !CFileUtils::Exists(pItem->GetPath()))
@@ -670,13 +670,13 @@ void CGUIWindowMusicBase::LoadPlayList(const std::string& strPlayList)
 
   // load a playlist like .m3u, .pls
   // first get correct factory to load playlist
-  std::unique_ptr<PLAYLIST::CPlayList> pPlayList(PLAYLIST::CPlayListFactory::Create(strPlayList));
+  boost::movelib::unique_ptr<PLAYLIST::CPlayList> pPlayList(PLAYLIST::CPlayListFactory::Create(strPlayList));
   if (pPlayList)
   {
     // load it
     if (!pPlayList->Load(strPlayList))
     {
-      HELPERS::ShowOKDialogText(CVariant{6}, CVariant{477});
+      HELPERS::ShowOKDialogText(6, 477);
       return; //hmmm unable to load playlist?
     }
   }
@@ -754,10 +754,10 @@ void CGUIWindowMusicBase::OnRetrieveMusicInfo(CFileItemList& items)
       if (!bProgressVisible && duration.count() > 1500 && m_dlgProgress)
       { // tag loading takes more then 1.5 secs, show a progress dialog
         CURL url(items.GetPath());
-        m_dlgProgress->SetHeading(CVariant{189});
-        m_dlgProgress->SetLine(0, CVariant{505});
-        m_dlgProgress->SetLine(1, CVariant{""});
-        m_dlgProgress->SetLine(2, CVariant{url.GetWithoutUserDetails()});
+        m_dlgProgress->SetHeading(189);
+        m_dlgProgress->SetLine(0, 505);
+        m_dlgProgress->SetLine(1, "");
+        m_dlgProgress->SetLine(2, url.GetWithoutUserDetails());
         m_dlgProgress->Open();
         m_dlgProgress->ShowProgressBar(true);
         bProgressVisible = true;
@@ -834,7 +834,7 @@ bool CGUIWindowMusicBase::GetDirectory(const std::string &strDirectory, CFileIte
     if ((iWindow != WINDOW_MUSIC_PLAYLIST_EDITOR) &&
         (items.GetPath() == "special://musicplaylists/") && !items.Contains("newplaylist://"))
     {
-      const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+      const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
       CFileItemPtr newPlaylist(new CFileItem(profileManager->GetUserDataItem("PartyMode.xsp"),false));
       newPlaylist->SetLabel(g_localizeStrings.Get(16035));
@@ -843,7 +843,7 @@ bool CGUIWindowMusicBase::GetDirectory(const std::string &strDirectory, CFileIte
       newPlaylist->m_bIsFolder = true;
       items.Add(newPlaylist);
 
-      newPlaylist = std::make_shared<CFileItem>("newplaylist://", false);
+      newPlaylist = boost::make_shared<CFileItem>("newplaylist://", false);
       newPlaylist->SetLabel(g_localizeStrings.Get(525));
       newPlaylist->SetArt("icon", "DefaultAddSource.png");
       newPlaylist->SetLabelPreformatted(true);
@@ -851,7 +851,7 @@ bool CGUIWindowMusicBase::GetDirectory(const std::string &strDirectory, CFileIte
       newPlaylist->SetCanQueue(false);
       items.Add(newPlaylist);
 
-      newPlaylist = std::make_shared<CFileItem>("newsmartplaylist://music", false);
+      newPlaylist = boost::make_shared<CFileItem>("newsmartplaylist://music", false);
       newPlaylist->SetLabel(g_localizeStrings.Get(21437));
       newPlaylist->SetArt("icon", "DefaultAddSource.png");
       newPlaylist->SetLabelPreformatted(true);
@@ -940,13 +940,13 @@ void CGUIWindowMusicBase::OnInitWindow()
         !CMusicLibraryQueue::GetInstance().IsScanningLibrary())
     {
       // rescan of music library required
-      if (CGUIDialogYesNo::ShowAndGetInput(CVariant{799}, CVariant{38060}))
+      if (CGUIDialogYesNo::ShowAndGetInput(799, 38060))
       {
         int flags = CMusicInfoScanner::SCAN_RESCAN;
         // When set to fetch information on update enquire about scraping that as well
         // It may take some time, so the user may want to do it later by "Query Info For All"
         if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_MUSICLIBRARY_DOWNLOADINFO))
-          if (CGUIDialogYesNo::ShowAndGetInput(CVariant{799}, CVariant{38061}))
+          if (CGUIDialogYesNo::ShowAndGetInput(799, 38061))
             flags |= CMusicInfoScanner::SCAN_ONLINE;
 
         CMusicLibraryQueue::GetInstance().ScanLibrary("", flags, true);
@@ -987,7 +987,7 @@ void CGUIWindowMusicBase::OnScan(int iItem, bool bPromptRescan /*= false*/)
   // Ask for full rescan of music files when scan item from file view context menu
   bool doRescan = false;
   if (bPromptRescan)
-    doRescan = CGUIDialogYesNo::ShowAndGetInput(CVariant{ 799 }, CVariant{ 38062 });
+    doRescan = CGUIDialogYesNo::ShowAndGetInput( 799 ,  38062 );
 
   DoScan(strPath, doRescan);
 }
@@ -1023,7 +1023,7 @@ void CGUIWindowMusicBase::OnRemoveSource(int iItem)
   database.RemoveSource(m_vecItems->Get(iItem)->GetLabel());
 
   bool bCanceled;
-  if (CGUIDialogYesNo::ShowAndGetInput(CVariant{522}, CVariant{20340}, bCanceled, CVariant{""}, CVariant{""}, CGUIDialogYesNo::NO_TIMEOUT))
+  if (CGUIDialogYesNo::ShowAndGetInput(522, 20340, bCanceled, "", "", CGUIDialogYesNo::NO_TIMEOUT))
   {
     MAPSONGS songs;
     database.RemoveSongsFromPath(m_vecItems->Get(iItem)->GetPath(), songs, false);
@@ -1060,7 +1060,7 @@ void CGUIWindowMusicBase::OnAssignContent(const std::string& oldName, const CMed
   DialogResponse rep = DialogResponse::CHOICE_CUSTOM;
   while (rep == DialogResponse::CHOICE_CUSTOM)
   {
-    rep = HELPERS::ShowYesNoCustomDialog(CVariant{20444}, CVariant{20447}, CVariant{106}, CVariant{107}, CVariant{10004});
+    rep = HELPERS::ShowYesNoCustomDialog(20444, 20447, 106, 107, 10004);
     if (rep == DialogResponse::CHOICE_CUSTOM)
       // Edit default info provider settings so can be applied during scan
       CGUIDialogInfoProviderSettings::Show();

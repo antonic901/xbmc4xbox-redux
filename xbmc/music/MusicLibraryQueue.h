@@ -28,7 +28,7 @@ class CGUIDialogProgress;
 class CMusicLibraryQueue : protected CJobQueue
 {
 public:
-  ~CMusicLibraryQueue() override;
+  virtual ~CMusicLibraryQueue();
 
   /*!
    \brief Gets the singleton instance of the music library queue.
@@ -112,7 +112,7 @@ public:
 
 protected:
   // implementation of IJobCallback
-  void OnJobComplete(unsigned int jobID, bool success, CJob *job) override;
+  virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
 
   /*!
    \brief Notifies all to refresh the current listings.

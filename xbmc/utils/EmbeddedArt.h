@@ -17,12 +17,12 @@
 class EmbeddedArtInfo : public IArchivable
 {
 public:
-  EmbeddedArtInfo() = default;
+  EmbeddedArtInfo() {}
   EmbeddedArtInfo(size_t size, const std::string &mime, const std::string& type = "");
-  virtual ~EmbeddedArtInfo() = default;
+  virtual ~EmbeddedArtInfo() {}
 
   // implementation of IArchivable
-  void Archive(CArchive& ar) override;
+  virtual void Archive(CArchive& ar);
 
   void Set(size_t size, const std::string &mime, const std::string& type = "");
   void Clear();
@@ -38,7 +38,7 @@ public:
 class EmbeddedArt : public EmbeddedArtInfo
 {
 public:
-  EmbeddedArt() = default;
+  EmbeddedArt() {}
   EmbeddedArt(const uint8_t *data, size_t size,
               const std::string &mime, const std::string& type = "");
 

@@ -102,10 +102,10 @@ class CMusicDatabase : public CDatabase
 
 public:
   CMusicDatabase(void);
-  ~CMusicDatabase(void) override;
+  virtual ~CMusicDatabase(void);
 
-  bool Open() override;
-  bool CommitTransaction() override;
+  virtual bool Open();
+  virtual bool CommitTransaction();
   void EmptyCache();
   void Clean();
   int Cleanup(CGUIDialogProgress* progressDialog = nullptr);
@@ -647,7 +647,7 @@ public:
                          bool countOnly = false);
   int GetDiscsCount(const std::string& baseDir, const Filter& filter = Filter());
   int GetSongsCount(const Filter& filter = Filter());
-  bool GetFilter(CDbUrl& musicUrl, Filter& filter, SortDescription& sorting) override;
+  virtual bool GetFilter(CDbUrl& musicUrl, Filter& filter, SortDescription& sorting);
   int GetOrderFilter(const std::string& type, const SortDescription& sorting, Filter& filter);
 
   /////////////////////////////////////////////////
@@ -886,12 +886,12 @@ protected:
   std::map<std::string, int> m_genreCache;
   std::map<std::string, int> m_pathCache;
 
-  void CreateTables() override;
-  void CreateAnalytics() override;
-  int GetMinSchemaVersion() const override { return 32; }
-  int GetSchemaVersion() const override;
+  virtual void CreateTables();
+  virtual void CreateAnalytics();
+  virtual int GetMinSchemaVersion() const { return 32; }
+  virtual int GetSchemaVersion() const;
 
-  const char* GetBaseDBName() const override { return "MyMusic"; }
+  virtual const char* GetBaseDBName() const { return "MyMusic"; }
 
 private:
   /*! \brief (Re)Create the generic database views for songs and albums
@@ -933,7 +933,7 @@ private:
   bool CleanupGenres();
   bool CleanupInfoSettings();
   bool CleanupRoles();
-  void UpdateTables(int version) override;
+  virtual void UpdateTables(int version);
   bool SearchArtists(const std::string& search, CFileItemList& artists);
   bool SearchAlbums(const std::string& search, CFileItemList& albums);
   bool SearchSongs(const std::string& strSearch, CFileItemList& songs);

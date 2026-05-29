@@ -51,13 +51,13 @@ using namespace XFILE;
 
 namespace
 {
-constexpr int CONTROL_NAMELABEL = 100;
-constexpr int CONTROL_NAMELOGO = 110;
-constexpr int CONTROL_SUBLIST = 120;
-constexpr int CONTROL_SUBSEXIST = 130;
-constexpr int CONTROL_SUBSTATUS = 140;
-constexpr int CONTROL_SERVICELIST = 150;
-constexpr int CONTROL_MANUALSEARCH = 160;
+const static int CONTROL_NAMELABEL = 100;
+const static int CONTROL_NAMELOGO = 110;
+const static int CONTROL_SUBLIST = 120;
+const static int CONTROL_SUBSEXIST = 130;
+const static int CONTROL_SUBSTATUS = 140;
+const static int CONTROL_SERVICELIST = 150;
+const static int CONTROL_MANUALSEARCH = 160;
 
 enum class SUBTITLE_SERVICE_CONTEXT_BUTTONS
 {
@@ -75,16 +75,16 @@ public:
   {
     m_items = new CFileItemList;
   }
-  ~CSubtitlesJob() override
+  virtual ~CSubtitlesJob()
   {
     delete m_items;
   }
-  bool DoWork() override
+  virtual bool DoWork()
   {
     CDirectory::GetDirectory(m_url.Get(), *m_items, "", DIR_FLAG_DEFAULTS);
     return true;
   }
-  bool operator==(const CJob *job) const override
+  virtual bool operator==(const CJob *job) const
   {
     if (strcmp(job->GetType(),GetType()) == 0)
     {
@@ -169,7 +169,7 @@ bool CGUIDialogSubtitles::OnMessage(CGUIMessage& message)
     else if (iControl == CONTROL_MANUALSEARCH)
     {
       //manual search
-      if (CGUIKeyboardFactory::ShowAndGetInput(m_strManualSearch, CVariant{g_localizeStrings.Get(24121)}, true))
+      if (CGUIKeyboardFactory::ShowAndGetInput(m_strManualSearch, g_localizeStrings.Get(24121), true))
       {
         Search(m_strManualSearch);
         return true;
@@ -220,7 +220,7 @@ void CGUIDialogSubtitles::Process(unsigned int currentTime, CDirtyRegionList &di
     std::string status;
     CFileItemList subs;
     {
-      std::unique_lock<CCriticalSection> lock(m_critsection);
+      CSingleLock lock(m_critsection);
       status = m_status;
       subs.Assign(*m_subtitles);
     }
@@ -358,7 +358,7 @@ void CGUIDialogSubtitles::Search(const std::string &search/*=""*/)
   else
     url.SetOption("action", "search");
 
-  const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+  const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
   SettingConstPtr setting = settings->GetSetting(CSettings::SETTING_SUBTITLES_LANGUAGES);
   if (setting)
     url.SetOption("languages", setting->ToString());
@@ -405,7 +405,7 @@ void CGUIDialogSubtitles::OnJobComplete(unsigned int jobID, bool success, CJob *
 
 void CGUIDialogSubtitles::OnSearchComplete(const CFileItemList *items)
 {
-  std::unique_lock<CCriticalSection> lock(m_critsection);
+  CSingleLock lock(m_critsection);
   m_subtitles->Assign(*items);
   UpdateStatus(SEARCH_COMPLETE);
   m_updateSubsList = true;
@@ -485,7 +485,7 @@ void CGUIDialogSubtitles::OnSubtitleServiceContextMenu(int itemIdx)
 
 void CGUIDialogSubtitles::UpdateStatus(STATUS status)
 {
-  std::unique_lock<CCriticalSection> lock(m_critsection);
+  CSingleLock lock(m_critsection);
   std::string label;
   switch (status)
   {
@@ -684,7 +684,7 @@ void CGUIDialogSubtitles::ClearSubtitles()
 {
   CGUIMessage msg(GUI_MSG_LABEL_RESET, GetID(), CONTROL_SUBLIST);
   OnMessage(msg);
-  std::unique_lock<CCriticalSection> lock(m_critsection);
+  CSingleLock lock(m_critsection);
   m_subtitles->Clear();
 }
 

@@ -16,13 +16,13 @@ class CVideoDbUrl : public CDbUrl
 {
 public:
   CVideoDbUrl();
-  ~CVideoDbUrl() override;
+  virtual ~CVideoDbUrl();
 
   const std::string& GetItemType() const { return m_itemType; }
 
 protected:
-  bool parse() override;
-  bool validateOption(const std::string &key, const CVariant &value) override;
+  virtual bool parse();
+  virtual bool validateOption(const std::string &key, const CVariant &value);
 
 private:
   std::string m_itemType;

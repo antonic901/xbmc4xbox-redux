@@ -42,7 +42,7 @@ CPlayerController::CPlayerController()
   m_movingSpeed.AddEventConfig(ACTION_SUBTITLE_VSHIFT_DOWN, eventCfg);
 }
 
-CPlayerController::~CPlayerController() = default;
+CPlayerController::~CPlayerController() {}
 
 CPlayerController& CPlayerController::GetInstance()
 {
@@ -479,7 +479,7 @@ bool CPlayerController::OnAction(const CAction &action)
               playing = idx;
             idx++;
           }
-          dialog->SetHeading(CVariant{g_localizeStrings.Get(39109)});
+          dialog->SetHeading(g_localizeStrings.Get(39109));
           dialog->SetSelected(playing);
           dialog->Open();
           idx = dialog->GetSelectedItem();
@@ -508,7 +508,7 @@ bool CPlayerController::OnAction(const CAction &action)
               current = idx;
             idx++;
           }
-          dialog->SetHeading(CVariant{g_localizeStrings.Get(39110)});
+          dialog->SetHeading(g_localizeStrings.Get(39110));
           dialog->SetSelected(current);
           dialog->Open();
           idx = dialog->GetSelectedItem();

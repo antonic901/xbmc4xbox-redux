@@ -51,7 +51,7 @@ bool FillArtTypesList(CFileItem& musicitem, CFileItemList& artlist);
   \param strType the type of art e.g. "fanart" or "thumb" etc.
   \param strArt art URL, when empty the entry for that type of art is deleted.
   */
-void UpdateArtJob(const std::shared_ptr<CFileItem>& pItem,
+void UpdateArtJob(const boost::shared_ptr<CFileItem>& pItem,
                   const std::string& strType,
                   const std::string& strArt);
 
@@ -65,7 +65,7 @@ int ShowSelectRatingDialog(int iSelected);
   \param pItem pointer to song item being rated
   \param userrating the userrating 0 = no rating, 1 to 10
   */
-void UpdateSongRatingJob(const std::shared_ptr<CFileItem>& pItem, int userrating);
+void UpdateSongRatingJob(const boost::shared_ptr<CFileItem>& pItem, int userrating);
 
 /*! \brief Get the types of art for an artist or album that are to be
   automatically fetched from local files during scanning
@@ -94,7 +94,7 @@ bool IsAutoPlayNextItem(const CFileItem& item);
   \param player [in] the player to use, empty for default player
   \param mode [in] queue all successors and play them after item
   */
-void PlayItem(const std::shared_ptr<CFileItem>& item,
+void PlayItem(const boost::shared_ptr<CFileItem>& item,
               const std::string& player,
               ContentUtils::PlayMode mode = ContentUtils::PlayMode::CHECK_AUTO_PLAY_NEXT_ITEM);
 
@@ -109,7 +109,7 @@ enum class QueuePosition
   \param item [in] the item to queue
   \param pos [in] whether to place the item and the begin or the end of the queue
   */
-void QueueItem(const std::shared_ptr<CFileItem>& item, QueuePosition pos);
+void QueueItem(const boost::shared_ptr<CFileItem>& item, QueuePosition pos);
 
 /*! \brief For a given item, get the items to put in a playlist. If the item is a folder, all
   subitems will be added recursively to the returned item list. If the item is a playlist, the
@@ -119,7 +119,7 @@ void QueueItem(const std::shared_ptr<CFileItem>& item, QueuePosition pos);
   \param queuedItems [out] the items that can be put in a play list
   \return true on success, false otherwise
   */
-bool GetItemsForPlayList(const std::shared_ptr<CFileItem>& item, CFileItemList& queuedItems);
+bool GetItemsForPlayList(const boost::shared_ptr<CFileItem>& item, CFileItemList& queuedItems);
 
 /*!
  \brief Check whether the given item can be played by the app playlist player as one or more songs.

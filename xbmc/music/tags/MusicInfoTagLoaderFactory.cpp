@@ -24,9 +24,9 @@
 using namespace KODI::ADDONS;
 using namespace MUSIC_INFO;
 
-CMusicInfoTagLoaderFactory::CMusicInfoTagLoaderFactory() = default;
+CMusicInfoTagLoaderFactory::CMusicInfoTagLoaderFactory() {}
 
-CMusicInfoTagLoaderFactory::~CMusicInfoTagLoaderFactory() = default;
+CMusicInfoTagLoaderFactory::~CMusicInfoTagLoaderFactory() {}
 
 IMusicInfoTagLoader* CMusicInfoTagLoaderFactory::CreateLoader(const CFileItem& item)
 {
@@ -50,7 +50,7 @@ IMusicInfoTagLoader* CMusicInfoTagLoaderFactory::CreateLoader(const CFileItem& i
   {
     if (addonInfo.first == ADDON::AddonType::AUDIODECODER)
     {
-      std::unique_ptr<CAudioDecoder> result = std::make_unique<CAudioDecoder>(addonInfo.second);
+      boost::movelib::unique_ptr<CAudioDecoder> result = boost::movelib::make_unique<CAudioDecoder>(addonInfo.second);
       if (!result->CreateDecoder() && result->SupportsFile(item.GetPath()))
         continue;
 

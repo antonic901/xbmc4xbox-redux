@@ -58,7 +58,7 @@ CGUIWindowMusicPlayList::CGUIWindowMusicPlayList(void)
   m_movingFrom = -1;
 }
 
-CGUIWindowMusicPlayList::~CGUIWindowMusicPlayList(void) = default;
+CGUIWindowMusicPlayList::~CGUIWindowMusicPlayList(void) {}
 
 bool CGUIWindowMusicPlayList::OnMessage(CGUIMessage& message)
 {
@@ -300,7 +300,7 @@ bool CGUIWindowMusicPlayList::MoveCurrentPlayListItem(int iItem,
 void CGUIWindowMusicPlayList::SavePlayList()
 {
   std::string strNewFileName;
-  if (CGUIKeyboardFactory::ShowAndGetInput(strNewFileName, CVariant{g_localizeStrings.Get(16012)},
+  if (CGUIKeyboardFactory::ShowAndGetInput(strNewFileName, g_localizeStrings.Get(16012),
                                            false))
   {
     // need 2 rename it
@@ -484,7 +484,7 @@ void CGUIWindowMusicPlayList::OnItemLoaded(CFileItem* pItem)
 {
   if (pItem->HasMusicInfoTag() && pItem->GetMusicInfoTag()->Loaded())
   { // set label 1+2 from tags
-    const std::shared_ptr<CSettings> settings =
+    const boost::shared_ptr<CSettings> settings =
         CServiceBroker::GetSettingsComponent()->GetSettings();
     std::string strTrack = settings->GetString(CSettings::SETTING_MUSICFILES_NOWPLAYINGTRACKFORMAT);
     if (strTrack.empty())
@@ -605,7 +605,7 @@ bool CGUIWindowMusicPlayList::OnContextButton(int itemNumber, CONTEXT_BUTTON but
 
     case CONTEXT_BUTTON_EDIT_PARTYMODE:
     {
-      const std::shared_ptr<CProfileManager> profileManager =
+      const boost::shared_ptr<CProfileManager> profileManager =
           CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
       std::string playlist = profileManager->GetUserDataItem("PartyMode.xsp");

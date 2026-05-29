@@ -52,7 +52,7 @@ bool CVideoInfoBase::IsVisible(const CFileItem& item) const
   return item.GetVideoInfoTag()->m_type == m_mediaType;
 }
 
-bool CVideoInfoBase::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CVideoInfoBase::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   CGUIDialogVideoInfo::ShowFor(*item);
   return true;
@@ -83,7 +83,7 @@ bool CVideoRemoveResumePoint::IsVisible(const CFileItem& itemIn) const
   return !item.m_bIsFolder && VIDEO_UTILS::GetItemResumeInformation(item).isResumable;
 }
 
-bool CVideoRemoveResumePoint::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CVideoRemoveResumePoint::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   CVideoLibraryQueue::GetInstance().ResetResumePoint(item);
   return true;
@@ -123,7 +123,7 @@ bool CVideoMarkWatched::IsVisible(const CFileItem& item) const
   return item.GetVideoInfoTag()->GetPlayCount() == 0;
 }
 
-bool CVideoMarkWatched::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CVideoMarkWatched::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   CVideoLibraryQueue::GetInstance().MarkAsWatched(item, true);
   return true;
@@ -162,7 +162,7 @@ bool CVideoMarkUnWatched::IsVisible(const CFileItem& item) const
   return item.GetVideoInfoTag()->GetPlayCount() > 0;
 }
 
-bool CVideoMarkUnWatched::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CVideoMarkUnWatched::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   CVideoLibraryQueue::GetInstance().MarkAsWatched(item, false);
   return true;
@@ -174,7 +174,7 @@ bool CVideoBrowse::IsVisible(const CFileItem& item) const
           VIDEO_UTILS::IsItemPlayable(item));
 }
 
-bool CVideoBrowse::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CVideoBrowse::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   int target = WINDOW_INVALID;
   if (URIUtils::IsPVRRadioRecordingFileOrFolder(item->GetPath()))
@@ -221,44 +221,44 @@ bool ExecuteAction(const CExecString& execute)
 class CVideoSelectActionProcessor : public VIDEO::GUILIB::CVideoSelectActionProcessorBase
 {
 public:
-  explicit CVideoSelectActionProcessor(const std::shared_ptr<CFileItem>& item)
+  explicit CVideoSelectActionProcessor(const boost::shared_ptr<CFileItem>& item)
     : CVideoSelectActionProcessorBase(item)
   {
   }
 
 protected:
-  bool OnPlayPartSelected(unsigned int part) override
+  virtual bool OnPlayPartSelected(unsigned int part)
   {
     // part numbers are 1-based
     ExecuteAction({"PlayMedia", *m_item, StringUtils::Format("playoffset={}", part - 1)});
     return true;
   }
 
-  bool OnResumeSelected() override
+  virtual bool OnResumeSelected()
   {
     ExecuteAction({"PlayMedia", *m_item, "resume"});
     return true;
   }
 
-  bool OnPlaySelected() override
+  virtual bool OnPlaySelected()
   {
     ExecuteAction({"PlayMedia", *m_item, "noresume"});
     return true;
   }
 
-  bool OnQueueSelected() override
+  virtual bool OnQueueSelected()
   {
     ExecuteAction({"QueueMedia", *m_item, ""});
     return true;
   }
 
-  bool OnInfoSelected() override
+  virtual bool OnInfoSelected()
   {
     CGUIDialogVideoInfo::ShowFor(*m_item);
     return true;
   }
 
-  bool OnChooseSelected() override
+  virtual bool OnChooseSelected()
   {
     CONTEXTMENU::ShowFor(m_item, CContextMenuManager::MAIN);
     return true;
@@ -274,7 +274,7 @@ bool CVideoChooseVersion::IsVisible(const CFileItem& item) const
          !VIDEO::IsVideoAssetFile(item);
 }
 
-bool CVideoChooseVersion::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CVideoChooseVersion::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   // force selection dialog, regardless of any settings like 'Select default video version'
   item->SetProperty("needs_resolved_video_asset", true);
@@ -322,20 +322,20 @@ std::vector<std::string> GetPlayers(const CPlayerCoreFactory& playerCoreFactory,
 class CVideoPlayActionProcessor : public VIDEO::GUILIB::CVideoPlayActionProcessorBase
 {
 public:
-  CVideoPlayActionProcessor(const std::shared_ptr<CFileItem>& item, bool choosePlayer)
+  CVideoPlayActionProcessor(const boost::shared_ptr<CFileItem>& item, bool choosePlayer)
     : CVideoPlayActionProcessorBase(item), m_choosePlayer(choosePlayer)
   {
   }
 
 protected:
-  bool OnResumeSelected() override
+  virtual bool OnResumeSelected()
   {
     m_item->SetStartOffset(STARTOFFSET_RESUME);
     Play();
     return true;
   }
 
-  bool OnPlaySelected() override
+  virtual bool OnPlaySelected()
   {
     std::string player;
     if (m_choosePlayer)
@@ -374,7 +374,7 @@ enum class PlayMode
   PLAY_VERSION_USING,
   RESUME,
 };
-void SetPathAndPlay(const std::shared_ptr<CFileItem>& item, PlayMode mode)
+void SetPathAndPlay(const boost::shared_ptr<CFileItem>& item, PlayMode mode)
 {
   item->SetProperty("check_resume", false);
 
@@ -384,7 +384,7 @@ void SetPathAndPlay(const std::shared_ptr<CFileItem>& item, PlayMode mode)
   }
   else
   {
-    const auto itemCopy{std::make_shared<CFileItem>(*item)};
+    const auto itemCopy{boost::make_shared<CFileItem>(*item)};
     if (itemCopy->IsVideoDb())
     {
       if (!itemCopy->m_bIsFolder)
@@ -421,9 +421,9 @@ void SetPathAndPlay(const std::shared_ptr<CFileItem>& item, PlayMode mode)
 }
 } // unnamed namespace
 
-bool CVideoResume::Execute(const std::shared_ptr<CFileItem>& itemIn) const
+bool CVideoResume::Execute(const boost::shared_ptr<CFileItem>& itemIn) const
 {
-  const auto item{std::make_shared<CFileItem>(itemIn->GetItemToPlay())};
+  const auto item{boost::make_shared<CFileItem>(itemIn->GetItemToPlay())};
 #ifdef HAS_OPTICAL_DRIVE
   if (item->IsDVD() || item->IsCDDA())
     return MEDIA_DETECT::CAutorun::PlayDisc(item->GetPath(), true, false);
@@ -449,9 +449,9 @@ bool CVideoPlay::IsVisible(const CFileItem& item) const
   return VIDEO_UTILS::IsItemPlayable(item);
 }
 
-bool CVideoPlay::Execute(const std::shared_ptr<CFileItem>& itemIn) const
+bool CVideoPlay::Execute(const boost::shared_ptr<CFileItem>& itemIn) const
 {
-  const auto item{std::make_shared<CFileItem>(itemIn->GetItemToPlay())};
+  const auto item{boost::make_shared<CFileItem>(itemIn->GetItemToPlay())};
 #ifdef HAS_OPTICAL_DRIVE
   if (item->IsDVD() || item->IsCDDA())
     return MEDIA_DETECT::CAutorun::PlayDisc(item->GetPath(), true, true);
@@ -475,9 +475,9 @@ bool CVideoPlayUsing::IsVisible(const CFileItem& item) const
   return (GetPlayers(playerCoreFactory, item).size() > 1) && VIDEO_UTILS::IsItemPlayable(item);
 }
 
-bool CVideoPlayUsing::Execute(const std::shared_ptr<CFileItem>& itemIn) const
+bool CVideoPlayUsing::Execute(const boost::shared_ptr<CFileItem>& itemIn) const
 {
-  const auto item{std::make_shared<CFileItem>(itemIn->GetItemToPlay())};
+  const auto item{boost::make_shared<CFileItem>(itemIn->GetItemToPlay())};
   SetPathAndPlay(item, PlayMode::PLAY_USING);
   return true;
 }
@@ -490,9 +490,9 @@ bool CVideoPlayVersionUsing::IsVisible(const CFileItem& item) const
          !VIDEO::IsVideoAssetFile(item);
 }
 
-bool CVideoPlayVersionUsing::Execute(const std::shared_ptr<CFileItem>& itemIn) const
+bool CVideoPlayVersionUsing::Execute(const boost::shared_ptr<CFileItem>& itemIn) const
 {
-  const auto item{std::make_shared<CFileItem>(itemIn->GetItemToPlay())};
+  const auto item{boost::make_shared<CFileItem>(itemIn->GetItemToPlay())};
   item->SetProperty("video_asset_type", static_cast<int>(VideoAssetType::VERSION));
   SetPathAndPlay(item, PlayMode::PLAY_VERSION_USING);
   return true;
@@ -539,7 +539,7 @@ bool CVideoQueue::IsVisible(const CFileItem& item) const
   return VIDEO_UTILS::IsItemPlayable(item);
 }
 
-bool CVideoQueue::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CVideoQueue::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   VIDEO_UTILS::QueueItem(item, VIDEO_UTILS::QueuePosition::POSITION_END);
 
@@ -558,7 +558,7 @@ bool CVideoPlayNext::IsVisible(const CFileItem& item) const
   return VIDEO_UTILS::IsItemPlayable(item);
 }
 
-bool CVideoPlayNext::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CVideoPlayNext::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   VIDEO_UTILS::QueueItem(item, VIDEO_UTILS::QueuePosition::POSITION_BEGIN);
   return true;
@@ -585,7 +585,7 @@ bool CVideoPlayAndQueue::IsVisible(const CFileItem& item) const
   return false; //! @todo implement
 }
 
-bool CVideoPlayAndQueue::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CVideoPlayAndQueue::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   const int windowId = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
   if ((windowId == WINDOW_TV_RECORDINGS || windowId == WINDOW_RADIO_RECORDINGS) &&

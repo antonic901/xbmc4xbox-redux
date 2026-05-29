@@ -62,10 +62,10 @@ using namespace KODI::MESSAGING;
 class CGetInfoJob : public CJob
 {
 public:
-  ~CGetInfoJob(void) override = default;
+  virtual ~CGetInfoJob(void) {}
 
   // Fetch full album/artist information including art types list
-  bool DoWork() override
+  virtual bool DoWork()
   {
     CGUIDialogMusicInfo *dialog = CServiceBroker::GetGUI()->GetWindowManager().
       GetWindow<CGUIDialogMusicInfo>(WINDOW_DIALOG_MUSIC_INFO);
@@ -177,9 +177,9 @@ public:
     iUserrating(userrating)
   { }
 
-  ~CSetUserratingJob(void) override = default;
+  virtual ~CSetUserratingJob(void) {}
 
-  bool DoWork(void) override
+  virtual bool DoWork(void)
   {
     // Asynchronously update userrating in library
     CMusicDatabase db;
@@ -204,10 +204,10 @@ public:
     SetAutoClose(true);
   }
 
-  ~CRefreshInfoJob(void) override = default;
+  virtual ~CRefreshInfoJob(void) {}
 
   // Refresh album/artist information including art types list
-  bool DoWork() override
+  virtual bool DoWork()
   {
     CGUIDialogMusicInfo *dialog = CServiceBroker::GetGUI()->GetWindowManager().
       GetWindow<CGUIDialogMusicInfo>(WINDOW_DIALOG_MUSIC_INFO);
@@ -415,7 +415,7 @@ bool CGUIDialogMusicInfo::OnMessage(CGUIMessage& message)
         {
           // Play album
           const std::string path = StringUtils::Format("musicdb://albums/{}", m_album.idAlbum);
-          OnPlayItem(std::make_shared<CFileItem>(path, m_album));
+          OnPlayItem(boost::make_shared<CFileItem>(path, m_album));
           return true;
         }
         else
@@ -552,7 +552,7 @@ void CGUIDialogMusicInfo::Update()
 
   }
 
-  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   // Disable the Choose Art button if the user isn't allowed it
   CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_GET_THUMB,
@@ -598,14 +598,14 @@ void CGUIDialogMusicInfo::FetchComplete()
 void CGUIDialogMusicInfo::RefreshInfo()
 {
   // Double check we have permission (button should be hidden when not)
-  const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
   if (!profileManager->GetCurrentProfile().canWriteDatabases() && !g_passwordManager.bMasterUser)
     return;
 
   // Check if scanning
   if (CMusicLibraryQueue::GetInstance().IsScanningLibrary())
   {
-    HELPERS::ShowOKDialogText(CVariant{ 189 }, CVariant{ 14057 });
+    HELPERS::ShowOKDialogText( 189 ,  14057 );
     return;
   }
 
@@ -616,17 +616,17 @@ void CGUIDialogMusicInfo::RefreshInfo()
 
   if (m_bArtistInfo)
   { // Show dialog box indicating we're searching for the artist
-    dlgProgress->SetHeading(CVariant{ 21889 });
-    dlgProgress->SetLine(0, CVariant{ m_artist.strArtist });
-    dlgProgress->SetLine(1, CVariant{ "" });
-    dlgProgress->SetLine(2, CVariant{ "" });
+    dlgProgress->SetHeading( 21889 );
+    dlgProgress->SetLine(0,  m_artist.strArtist );
+    dlgProgress->SetLine(1,  "" );
+    dlgProgress->SetLine(2,  "" );
   }
   else
   { // Show dialog box indicating we're searching for the album
-    dlgProgress->SetHeading(CVariant{ 185 });
-    dlgProgress->SetLine(0, CVariant{ m_album.strAlbum });
-    dlgProgress->SetLine(1, CVariant{ m_album.strArtistDesc });
-    dlgProgress->SetLine(2, CVariant{ "" });
+    dlgProgress->SetHeading( 185 );
+    dlgProgress->SetLine(0,  m_album.strAlbum );
+    dlgProgress->SetLine(1,  m_album.strArtistDesc );
+    dlgProgress->SetLine(2,  "" );
   }
   dlgProgress->Open();
 
@@ -649,9 +649,9 @@ void CGUIDialogMusicInfo::RefreshInfo()
   if (!HasScrapedInfo())
   {
     if (m_bArtistInfo)
-      HELPERS::ShowOKDialogText(CVariant{ 21889 }, CVariant{ 20199 });
+      HELPERS::ShowOKDialogText( 21889 ,  20199 );
     else
-      HELPERS::ShowOKDialogText(CVariant{ 185 }, CVariant{ 500 });
+      HELPERS::ShowOKDialogText( 185 ,  500 );
     return;
   }
 
@@ -1037,7 +1037,7 @@ void CGUIDialogMusicInfo::ShowFor(CFileItem* pItem)
     }
 }
 
-void CGUIDialogMusicInfo::OnPlayItem(const std::shared_ptr<CFileItem>& item)
+void CGUIDialogMusicInfo::OnPlayItem(const boost::shared_ptr<CFileItem>& item)
 {
   Close(true);
   MUSIC_UTILS::PlayItem(item, "");

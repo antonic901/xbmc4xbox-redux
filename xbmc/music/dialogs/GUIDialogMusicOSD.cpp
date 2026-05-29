@@ -29,7 +29,7 @@ CGUIDialogMusicOSD::CGUIDialogMusicOSD(void)
   m_loadType = KEEP_IN_MEMORY;
 }
 
-CGUIDialogMusicOSD::~CGUIDialogMusicOSD(void) = default;
+CGUIDialogMusicOSD::~CGUIDialogMusicOSD(void) {}
 
 bool CGUIDialogMusicOSD::OnMessage(CGUIMessage &message)
 {
@@ -44,7 +44,7 @@ bool CGUIDialogMusicOSD::OnMessage(CGUIMessage &message)
         if (CGUIWindowAddonBrowser::SelectAddonID(ADDON::AddonType::VISUALIZATION, addonID, true) ==
             1)
         {
-          const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+          const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
           settings->SetString(CSettings::SETTING_MUSICPLAYER_VISUALISATION, addonID);
           settings->Save();
           CServiceBroker::GetGUI()->GetWindowManager().SendMessage(GUI_MSG_VISUALISATION_RELOAD, 0, 0);

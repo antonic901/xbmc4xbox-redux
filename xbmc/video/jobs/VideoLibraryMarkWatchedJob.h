@@ -26,16 +26,16 @@ public:
    \param[in] item Item to be marked as watched/unwatched
    \param[in] mark Whether to mark the item as watched or unwatched
   */
-  CVideoLibraryMarkWatchedJob(const std::shared_ptr<CFileItem>& item, bool mark);
-  ~CVideoLibraryMarkWatchedJob() override;
+  CVideoLibraryMarkWatchedJob(const boost::shared_ptr<CFileItem>& item, bool mark);
+  virtual ~CVideoLibraryMarkWatchedJob();
 
-  const char *GetType() const override { return "CVideoLibraryMarkWatchedJob"; }
-  bool operator==(const CJob* job) const override;
+  virtual const char *GetType() const { return "CVideoLibraryMarkWatchedJob"; }
+  virtual bool operator==(const CJob* job) const;
 
 protected:
-  bool Work(CVideoDatabase &db) override;
+  virtual bool Work(CVideoDatabase &db);
 
 private:
-  std::shared_ptr<CFileItem> m_item;
+  boost::shared_ptr<CFileItem> m_item;
   bool m_mark;
 };
