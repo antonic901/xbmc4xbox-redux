@@ -12,151 +12,15 @@
 
 #include "sqlitedataset.h"
 
+#include "filesystem/File.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
 
+#include <fstream>
 #include <iostream>
-#include <map>
 #include <sstream>
 #include <string>
-
-using namespace std::chrono_literals;
-
-namespace
-{
-#define X(VAL) std::make_pair(VAL, #VAL)
-//!@todo Remove ifdefs when sqlite version requirement has been bumped to at least 3.26.0
-const std::map<int, const char*> g_SqliteErrorStrings = {
-    X(SQLITE_OK),
-    X(SQLITE_ERROR),
-    X(SQLITE_INTERNAL),
-    X(SQLITE_PERM),
-    X(SQLITE_ABORT),
-    X(SQLITE_BUSY),
-    X(SQLITE_LOCKED),
-    X(SQLITE_NOMEM),
-    X(SQLITE_READONLY),
-    X(SQLITE_INTERRUPT),
-    X(SQLITE_IOERR),
-    X(SQLITE_CORRUPT),
-    X(SQLITE_NOTFOUND),
-    X(SQLITE_FULL),
-    X(SQLITE_CANTOPEN),
-    X(SQLITE_PROTOCOL),
-    X(SQLITE_EMPTY),
-    X(SQLITE_SCHEMA),
-    X(SQLITE_TOOBIG),
-    X(SQLITE_CONSTRAINT),
-    X(SQLITE_MISMATCH),
-    X(SQLITE_MISUSE),
-    X(SQLITE_NOLFS),
-    X(SQLITE_AUTH),
-    X(SQLITE_FORMAT),
-    X(SQLITE_RANGE),
-    X(SQLITE_NOTADB),
-    X(SQLITE_NOTICE),
-    X(SQLITE_WARNING),
-    X(SQLITE_ROW),
-    X(SQLITE_DONE),
-#if defined(SQLITE_ERROR_MISSING_COLLSEQ)
-    X(SQLITE_ERROR_MISSING_COLLSEQ),
-#endif
-#if defined(SQLITE_ERROR_RETRY)
-    X(SQLITE_ERROR_RETRY),
-#endif
-#if defined(SQLITE_ERROR_SNAPSHOT)
-    X(SQLITE_ERROR_SNAPSHOT),
-#endif
-    X(SQLITE_IOERR_READ),
-    X(SQLITE_IOERR_SHORT_READ),
-    X(SQLITE_IOERR_WRITE),
-    X(SQLITE_IOERR_FSYNC),
-    X(SQLITE_IOERR_DIR_FSYNC),
-    X(SQLITE_IOERR_TRUNCATE),
-    X(SQLITE_IOERR_FSTAT),
-    X(SQLITE_IOERR_UNLOCK),
-    X(SQLITE_IOERR_RDLOCK),
-    X(SQLITE_IOERR_DELETE),
-    X(SQLITE_IOERR_BLOCKED),
-    X(SQLITE_IOERR_NOMEM),
-    X(SQLITE_IOERR_ACCESS),
-    X(SQLITE_IOERR_CHECKRESERVEDLOCK),
-    X(SQLITE_IOERR_LOCK),
-    X(SQLITE_IOERR_CLOSE),
-    X(SQLITE_IOERR_DIR_CLOSE),
-    X(SQLITE_IOERR_SHMOPEN),
-    X(SQLITE_IOERR_SHMSIZE),
-    X(SQLITE_IOERR_SHMLOCK),
-    X(SQLITE_IOERR_SHMMAP),
-    X(SQLITE_IOERR_SEEK),
-    X(SQLITE_IOERR_DELETE_NOENT),
-    X(SQLITE_IOERR_MMAP),
-    X(SQLITE_IOERR_GETTEMPPATH),
-    X(SQLITE_IOERR_CONVPATH),
-#if defined(SQLITE_IOERR_VNODE)
-    X(SQLITE_IOERR_VNODE),
-#endif
-#if defined(SQLITE_IOERR_AUTH)
-    X(SQLITE_IOERR_AUTH),
-#endif
-#if defined(SQLITE_IOERR_BEGIN_ATOMIC)
-    X(SQLITE_IOERR_BEGIN_ATOMIC),
-#endif
-#if defined(SQLITE_IOERR_COMMIT_ATOMIC)
-    X(SQLITE_IOERR_COMMIT_ATOMIC),
-#endif
-#if defined(SQLITE_IOERR_ROLLBACK_ATOMIC)
-    X(SQLITE_IOERR_ROLLBACK_ATOMIC),
-#endif
-    X(SQLITE_LOCKED_SHAREDCACHE),
-#if defined(SQLITE_LOCKED_VTAB)
-    X(SQLITE_LOCKED_VTAB),
-#endif
-    X(SQLITE_BUSY_RECOVERY),
-    X(SQLITE_BUSY_SNAPSHOT),
-    X(SQLITE_CANTOPEN_NOTEMPDIR),
-    X(SQLITE_CANTOPEN_ISDIR),
-    X(SQLITE_CANTOPEN_FULLPATH),
-    X(SQLITE_CANTOPEN_CONVPATH),
-#if defined(SQLITE_CANTOPEN_DIRTYWAL)
-    X(SQLITE_CANTOPEN_DIRTYWAL),
-#endif
-    X(SQLITE_CORRUPT_VTAB),
-#if defined(SQLITE_CORRUPT_SEQUENCE)
-    X(SQLITE_CORRUPT_SEQUENCE),
-#endif
-    X(SQLITE_READONLY_RECOVERY),
-    X(SQLITE_READONLY_CANTLOCK),
-    X(SQLITE_READONLY_ROLLBACK),
-    X(SQLITE_READONLY_DBMOVED),
-#if defined(SQLITE_READONLY_CANTINIT)
-    X(SQLITE_READONLY_CANTINIT),
-#endif
-#if defined(SQLITE_READONLY_DIRECTORY)
-    X(SQLITE_READONLY_DIRECTORY),
-#endif
-    X(SQLITE_ABORT_ROLLBACK),
-    X(SQLITE_CONSTRAINT_CHECK),
-    X(SQLITE_CONSTRAINT_COMMITHOOK),
-    X(SQLITE_CONSTRAINT_FOREIGNKEY),
-    X(SQLITE_CONSTRAINT_FUNCTION),
-    X(SQLITE_CONSTRAINT_NOTNULL),
-    X(SQLITE_CONSTRAINT_PRIMARYKEY),
-    X(SQLITE_CONSTRAINT_TRIGGER),
-    X(SQLITE_CONSTRAINT_UNIQUE),
-    X(SQLITE_CONSTRAINT_VTAB),
-    X(SQLITE_CONSTRAINT_ROWID),
-    X(SQLITE_NOTICE_RECOVER_WAL),
-    X(SQLITE_NOTICE_RECOVER_ROLLBACK),
-    X(SQLITE_WARNING_AUTOINDEX),
-    X(SQLITE_AUTH_USER),
-#if defined(SQLITE_OK_LOAD_PERMANENTLY)
-    X(SQLITE_OK_LOAD_PERMANENTLY),
-#endif
-};
-#undef X
-} // namespace
 
 namespace dbiplus
 {
@@ -201,7 +65,7 @@ int callback(void* res_ptr, int ncol, char** result, char** cols)
 
 static int busy_callback(void*, int busyCount)
 {
-  KODI::TIME::Sleep(100ms);
+  Sleep(100);
   return 1;
 }
 
@@ -278,15 +142,7 @@ int SqliteDatabase::setErr(int err_code, const char* qry)
 {
   std::stringstream ss;
   ss << "[" << db << "] ";
-  auto errorIt = g_SqliteErrorStrings.find(err_code);
-  if (errorIt != g_SqliteErrorStrings.end())
-  {
-    ss << "SQLite error " << errorIt->second;
-  }
-  else
-  {
-    ss << "Undefined SQLite error " << err_code;
-  }
+  ss << "SQLite error " << err_code;
   if (conn)
     ss << " (" << sqlite3_errmsg(conn) << ")";
   ss << "\nQuery: " << qry;
@@ -299,11 +155,13 @@ const char* SqliteDatabase::getErrorMsg()
   return error.c_str();
 }
 
+#if 0
 static int AlphaNumericCollation(
     void* not_used, int nKey1, const void* pKey1, int nKey2, const void* pKey2)
 {
   return StringUtils::AlphaNumericCollation(nKey1, pKey1, nKey2, pKey2);
 }
+#endif
 
 int SqliteDatabase::connect(bool create)
 {
@@ -317,10 +175,31 @@ int SqliteDatabase::connect(bool create)
   try
   {
     disconnect();
+#if 0
     int flags = SQLITE_OPEN_READWRITE;
     if (create)
       flags |= SQLITE_OPEN_CREATE;
     int errorCode = sqlite3_open_v2(db_fullpath.c_str(), &conn, flags, NULL);
+#else
+    if (XFILE::CFile::Exists(db_fullpath.c_str()))
+    {
+      XFILE::CFile file;
+      if (file.Open(db_fullpath.c_str()))
+      {
+        if (file.GetLength() == 0)
+        {
+          file.Close();
+          CLog::Log(LOGWARNING, "Found zero byte SQLite database, deleting %s", db_fullpath.c_str());
+          XFILE::CFile::Delete(db_fullpath.c_str());
+        }
+        else
+          file.Close();
+      }
+    }
+    if (!create && !XFILE::CFile::Exists(db_fullpath))
+      return DB_CONNECTION_NONE;
+    int errorCode = sqlite3_open(db_fullpath.c_str(), &conn);
+#endif
     if (create && errorCode == SQLITE_CANTOPEN)
     {
       CLog::Log(LOGFATAL, "SqliteDatabase: can't open %s", db_fullpath.c_str());
@@ -328,24 +207,29 @@ int SqliteDatabase::connect(bool create)
     }
     else if (errorCode == SQLITE_OK)
     {
+#if 0
       sqlite3_extended_result_codes(conn, 1);
+#endif
       sqlite3_busy_handler(conn, busy_callback, NULL);
       if (setErr(sqlite3_exec(getHandle(), "PRAGMA empty_result_callbacks=ON", NULL, NULL, NULL),
                  "PRAGMA empty_result_callbacks=ON") != SQLITE_OK)
       {
         throw DbErrors("%s", getErrorMsg());
       }
+#if 0
       else if (sqlite3_db_readonly(conn, NULL) == 1)
       {
         CLog::Log(LOGFATAL, "SqliteDatabase: %s is read only", db_fullpath.c_str());
         throw std::runtime_error("SqliteDatabase: " + db_fullpath + " is read only");
       }
+      // TODO: this is supported by our sqlite, however StringUtils::AlphaNumericCollation is missing
       errorCode = sqlite3_create_collation(conn, "ALPHANUM", SQLITE_UTF8, 0, AlphaNumericCollation);
       if (errorCode != SQLITE_OK)
       {
         CLog::Log(LOGFATAL, "SqliteDatabase: can not register collation");
         throw std::runtime_error("SqliteDatabase: can not register collation " + db_fullpath);
       }
+#endif
       active = true;
       return DB_CONNECTION_OK;
     }
@@ -369,7 +253,7 @@ bool SqliteDatabase::exists(void)
 
   // performing a select all on the sqlite_master will return rows if there are tables
   // defined indicating it's not empty and therefore must "exist".
-  snprintf(sqlcmd, sizeof(sqlcmd), "SELECT * FROM sqlite_master");
+  _snprintf(sqlcmd, sizeof(sqlcmd), "SELECT * FROM sqlite_master");
   if ((last_err = sqlite3_exec(getHandle(), sqlcmd, &callback, &res, NULL)) == SQLITE_OK)
   {
     bRet = (res.records.size() > 0);
@@ -401,6 +285,7 @@ int SqliteDatabase::copy(const char* backup_name)
   int rc;
   std::string backup_db = backup_name;
 
+#if 0
   sqlite3* pFile; /* Database connection opened on zFilename */
   sqlite3_backup* pBackup; /* Backup object used to copy data */
 
@@ -434,6 +319,26 @@ int SqliteDatabase::copy(const char* backup_name)
 
   if (rc != SQLITE_OK)
     throw DbErrors("Can't copy database. (%d)", rc);
+#else
+  if (backup_name[0] == '/' || backup_name[0] == '\\')
+    backup_db = backup_db.substr(1);
+
+  // ensure the ".db" extension is appended to the end
+  if ( backup_db.find(".db") != (backup_db.length()-3) )
+    backup_db += ".db";
+
+  std::string backup_path = URIUtils::AddFileToFolder(host, backup_db);
+  std::string original_path = URIUtils::AddFileToFolder(host, db);
+
+  std::ifstream original_file(original_path.c_str(), std::ios::binary);
+  std::ofstream destination_file(backup_path.c_str(), std::ios::binary);
+
+  if (!original_file.is_open() || !destination_file.is_open())
+    throw DbErrors("Can't copy database.");
+
+  destination_file << original_file.rdbuf();
+  rc = 1;
+#endif
 
   return rc;
 }
@@ -449,14 +354,14 @@ int SqliteDatabase::drop_analytics(void)
   result_set res;
 
   CLog::Log(LOGDEBUG, "Cleaning indexes from database %s at %s", db.c_str(), host.c_str());
-  snprintf(sqlcmd, sizeof(sqlcmd),
+  _snprintf(sqlcmd, sizeof(sqlcmd),
            "SELECT name FROM sqlite_master WHERE type == 'index' AND sql IS NOT NULL");
   if ((last_err = sqlite3_exec(conn, sqlcmd, &callback, &res, NULL)) != SQLITE_OK)
     return DB_UNEXPECTED_RESULT;
 
   for (size_t i = 0; i < res.records.size(); i++)
   {
-    snprintf(sqlcmd, sizeof(sqlcmd), "DROP INDEX '%s'",
+    _snprintf(sqlcmd, sizeof(sqlcmd), "DROP INDEX '%s'",
              res.records[i]->at(0).get_asString().c_str());
     if ((last_err = sqlite3_exec(conn, sqlcmd, NULL, NULL, NULL)) != SQLITE_OK)
       return DB_UNEXPECTED_RESULT;
@@ -464,13 +369,13 @@ int SqliteDatabase::drop_analytics(void)
   res.clear();
 
   CLog::Log(LOGDEBUG, "Cleaning views from database %s at %s", db.c_str(), host.c_str());
-  snprintf(sqlcmd, sizeof(sqlcmd), "SELECT name FROM sqlite_master WHERE type == 'view'");
+  _snprintf(sqlcmd, sizeof(sqlcmd), "SELECT name FROM sqlite_master WHERE type == 'view'");
   if ((last_err = sqlite3_exec(conn, sqlcmd, &callback, &res, NULL)) != SQLITE_OK)
     return DB_UNEXPECTED_RESULT;
 
   for (size_t i = 0; i < res.records.size(); i++)
   {
-    snprintf(sqlcmd, sizeof(sqlcmd), "DROP VIEW '%s'",
+    _snprintf(sqlcmd, sizeof(sqlcmd), "DROP VIEW '%s'",
              res.records[i]->at(0).get_asString().c_str());
     if ((last_err = sqlite3_exec(conn, sqlcmd, NULL, NULL, NULL)) != SQLITE_OK)
       return DB_UNEXPECTED_RESULT;
@@ -478,13 +383,13 @@ int SqliteDatabase::drop_analytics(void)
   res.clear();
 
   CLog::Log(LOGDEBUG, "Cleaning triggers from database %s at %s", db.c_str(), host.c_str());
-  snprintf(sqlcmd, sizeof(sqlcmd), "SELECT name FROM sqlite_master WHERE type == 'trigger'");
+  _snprintf(sqlcmd, sizeof(sqlcmd), "SELECT name FROM sqlite_master WHERE type == 'trigger'");
   if ((last_err = sqlite3_exec(conn, sqlcmd, &callback, &res, NULL)) != SQLITE_OK)
     return DB_UNEXPECTED_RESULT;
 
   for (size_t i = 0; i < res.records.size(); i++)
   {
-    snprintf(sqlcmd, sizeof(sqlcmd), "DROP TRIGGER '%s'",
+    _snprintf(sqlcmd, sizeof(sqlcmd), "DROP TRIGGER '%s'",
              res.records[i]->at(0).get_asString().c_str());
     if ((last_err = sqlite3_exec(conn, sqlcmd, NULL, NULL, NULL)) != SQLITE_OK)
       return DB_UNEXPECTED_RESULT;
@@ -514,7 +419,7 @@ long SqliteDatabase::nextid(const char* sname)
   int id; /*,nrow,ncol;*/
   result_set res;
   char sqlcmd[512];
-  snprintf(sqlcmd, sizeof(sqlcmd), "SELECT nextid FROM %s WHERE seq_name = '%s'",
+  _snprintf(sqlcmd, sizeof(sqlcmd), "SELECT nextid FROM %s WHERE seq_name = '%s'",
            sequence_table.c_str(), sname);
   if ((last_err = sqlite3_exec(getHandle(), sqlcmd, &callback, &res, NULL)) != SQLITE_OK)
   {
@@ -523,7 +428,7 @@ long SqliteDatabase::nextid(const char* sname)
   if (res.records.empty())
   {
     id = 1;
-    snprintf(sqlcmd, sizeof(sqlcmd), "INSERT INTO %s (nextid,seq_name) VALUES (%d,'%s')",
+    _snprintf(sqlcmd, sizeof(sqlcmd), "INSERT INTO %s (nextid,seq_name) VALUES (%d,'%s')",
              sequence_table.c_str(), id, sname);
     if ((last_err = sqlite3_exec(conn, sqlcmd, NULL, NULL, NULL)) != SQLITE_OK)
       return DB_UNEXPECTED_RESULT;
@@ -532,7 +437,7 @@ long SqliteDatabase::nextid(const char* sname)
   else
   {
     id = res.records[0]->at(0).get_asInt() + 1;
-    snprintf(sqlcmd, sizeof(sqlcmd), "UPDATE %s SET nextid=%d WHERE seq_name = '%s'",
+    _snprintf(sqlcmd, sizeof(sqlcmd), "UPDATE %s SET nextid=%d WHERE seq_name = '%s'",
              sequence_table.c_str(), id, sname);
     if ((last_err = sqlite3_exec(conn, sqlcmd, NULL, NULL, NULL)) != SQLITE_OK)
       return DB_UNEXPECTED_RESULT;
@@ -698,9 +603,9 @@ void SqliteDataset::make_query(StringList& _sql)
     if (autocommit)
       db->start_transaction();
 
-    for (const std::string& i : _sql)
+    for (std::list<std::string>::iterator i =_sql.begin(); i!=_sql.end(); ++i)
     {
-      query = i;
+      query = *i;
       char* err = NULL;
       Dataset::parse_sql(query);
       if (db->setErr(sqlite3_exec(this->handle(), query.c_str(), NULL, NULL, &err),
@@ -766,7 +671,8 @@ void SqliteDataset::fill_fields()
     {
       (*fields_object)[i].props = result.record_header[i];
       std::string name = result.record_header[i].name;
-      name2indexMap.insert({str_toLower(name.data()), i});
+      StringUtils::ToLower(name);
+      name2indexMap.insert(std::make_pair(name, i));
     }
   }
 
@@ -887,7 +793,11 @@ bool SqliteDataset::query(const std::string& query)
   close();
 
   sqlite3_stmt* stmt = NULL;
+#if 0
   if (db->setErr(sqlite3_prepare_v2(handle(), query.c_str(), -1, &stmt, NULL), query.c_str()) !=
+#else
+  if (db->setErr(sqlite3_prepare(handle(),query.c_str(),-1,&stmt, NULL),query.c_str()) !=
+#endif
       SQLITE_OK)
     throw DbErrors("%s", db->getErrorMsg());
 
