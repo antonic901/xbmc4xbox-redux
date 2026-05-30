@@ -91,12 +91,11 @@ void CVideoDatabase::CreateTables()
 
   CLog::Log(LOGINFO, "create settings table");
   m_pDS->exec("CREATE TABLE settings ( idFile integer, Deinterlace bool,"
-              "ViewMode integer,ZoomAmount float, PixelRatio float, VerticalShift float, AudioStream integer, SubtitleStream integer,"
+              "ViewMode integer,ZoomAmount float, PixelRatio float, AudioStream integer, SubtitleStream integer,"
               "SubtitleDelay float, SubtitlesOn bool, Brightness float, Contrast float, Gamma float,"
-              "VolumeAmplification float, AudioDelay float, ResumeTime integer,"
-              "Sharpness float, NoiseReduction float, NonLinStretch bool, PostProcess bool,"
-              "ScalingMethod integer, DeinterlaceMode integer, StereoMode integer, StereoInvert bool, VideoStream integer,"
-              "TonemapMethod integer, TonemapParam float, Orientation integer, CenterMixLevel integer)\n");
+              "VolumeAmplification float, AudioDelay float,"
+              "PostProcess bool,"
+              "DeinterlaceMode integer)\n");
 
   CLog::Log(LOGINFO, "create stacktimes table");
   m_pDS->exec("CREATE TABLE stacktimes (idFile integer, times text)\n");
@@ -179,8 +178,7 @@ void CVideoDatabase::CreateTables()
   m_pDS->exec("CREATE TABLE streamdetails (idFile integer, iStreamType integer, "
     "strVideoCodec text, fVideoAspect float, iVideoWidth integer, iVideoHeight integer, "
     "strAudioCodec text, iAudioChannels integer, strAudioLanguage text, "
-    "strSubtitleLanguage text, iVideoDuration integer, strStereoMode text, strVideoLanguage text, "
-    "strHdrType text)");
+    "strSubtitleLanguage text, iVideoDuration integer, strStereoMode text, strVideoLanguage text)");
 
   CLog::Log(LOGINFO, "create sets table");
   m_pDS->exec("CREATE TABLE sets ( idSet integer primary key, strSet text, strOverview text)");
@@ -3230,15 +3228,13 @@ void CVideoDatabase::SetStreamDetailsForFileId(const CStreamDetails& details, in
     {
       m_pDS->exec(PrepareSQL("INSERT INTO streamdetails "
                              "(idFile, iStreamType, strVideoCodec, fVideoAspect, iVideoWidth, "
-                             "iVideoHeight, iVideoDuration, strStereoMode, strVideoLanguage,  "
-                             "strHdrType)"
-                             "VALUES (%i,%i,'%s',%f,%i,%i,%i,'%s','%s','%s')",
+                             "iVideoHeight, iVideoDuration, strStereoMode, strVideoLanguage)"
+                             "VALUES (%i,%i,'%s',%f,%i,%i,%i,'%s','%s')",
                              idFile, (int)CStreamDetail::VIDEO, details.GetVideoCodec(i).c_str(),
                              static_cast<double>(details.GetVideoAspect(i)),
                              details.GetVideoWidth(i), details.GetVideoHeight(i),
                              details.GetVideoDuration(i), details.GetStereoMode(i).c_str(),
-                             details.GetVideoLanguage(i).c_str(),
-                             details.GetVideoHdrType(i).c_str()));
+                             details.GetVideoLanguage(i).c_str()));
     }
     for (int i=1; i<=details.GetAudioStreamCount(); i++)
     {
@@ -4238,7 +4234,6 @@ bool CVideoDatabase::GetStreamDetails(CVideoInfoTag& tag) const
           p->m_iDuration = pDS->fv(10).get_asInt();
           p->m_strStereoMode = pDS->fv(11).get_asString();
           p->m_strLanguage = pDS->fv(12).get_asString();
-          p->m_strHdrType = pDS->fv(13).get_asString();
           details.AddStream(p);
           retVal = true;
           break;
@@ -4791,29 +4786,15 @@ bool CVideoDatabase::GetVideoSettings(int idFile, CVideoSettings &settings)
       settings.m_Brightness = m_pDS->fv("Brightness").get_asFloat();
       settings.m_Contrast = m_pDS->fv("Contrast").get_asFloat();
       settings.m_CustomPixelRatio = m_pDS->fv("PixelRatio").get_asFloat();
-      settings.m_CustomNonLinStretch = m_pDS->fv("NonLinStretch").get_asBool();
-      settings.m_NoiseReduction = m_pDS->fv("NoiseReduction").get_asFloat();
       settings.m_PostProcess = m_pDS->fv("PostProcess").get_asBool();
-      settings.m_Sharpness = m_pDS->fv("Sharpness").get_asFloat();
       settings.m_CustomZoomAmount = m_pDS->fv("ZoomAmount").get_asFloat();
-      settings.m_CustomVerticalShift = m_pDS->fv("VerticalShift").get_asFloat();
       settings.m_Gamma = m_pDS->fv("Gamma").get_asFloat();
       settings.m_SubtitleDelay = m_pDS->fv("SubtitleDelay").get_asFloat();
       settings.m_SubtitleOn = m_pDS->fv("SubtitlesOn").get_asBool();
       settings.m_SubtitleStream = m_pDS->fv("SubtitleStream").get_asInt();
       settings.m_ViewMode = m_pDS->fv("ViewMode").get_asInt();
-      settings.m_ResumeTime = m_pDS->fv("ResumeTime").get_asInt();
       settings.m_InterlaceMethod = (EINTERLACEMETHOD)m_pDS->fv("Deinterlace").get_asInt();
       settings.m_VolumeAmplification = m_pDS->fv("VolumeAmplification").get_asFloat();
-      settings.m_ScalingMethod = (ESCALINGMETHOD)m_pDS->fv("ScalingMethod").get_asInt();
-      settings.m_StereoMode = m_pDS->fv("StereoMode").get_asInt();
-      settings.m_StereoInvert = m_pDS->fv("StereoInvert").get_asBool();
-      settings.m_VideoStream = m_pDS->fv("VideoStream").get_asInt();
-      settings.m_ToneMapMethod =
-          static_cast<ETONEMAPMETHOD>(m_pDS->fv("TonemapMethod").get_asInt());
-      settings.m_ToneMapParam = m_pDS->fv("TonemapParam").get_asFloat();
-      settings.m_Orientation = m_pDS->fv("Orientation").get_asInt();
-      settings.m_CenterMixLevel = m_pDS->fv("CenterMixLevel").get_asInt();
       m_pDS->close();
       return true;
     }
@@ -4851,29 +4832,24 @@ void CVideoDatabase::SetVideoSettings(int idFile, const CVideoSettings &setting)
       // update the item
       strSQL = PrepareSQL(
           "update settings set "
-          "Deinterlace=%i,ViewMode=%i,ZoomAmount=%f,PixelRatio=%f,VerticalShift=%f,"
+          "Deinterlace=%i,ViewMode=%i,ZoomAmount=%f,PixelRatio=%f,"
           "AudioStream=%i,SubtitleStream=%i,SubtitleDelay=%f,SubtitlesOn=%i,Brightness=%f,Contrast="
           "%f,Gamma=%f,"
-          "VolumeAmplification=%f,AudioDelay=%f,Sharpness=%f,NoiseReduction=%f,NonLinStretch=%i,"
-          "PostProcess=%i,ScalingMethod=%i,",
+          "VolumeAmplification=%f,AudioDelay=%f,"
+          "PostProcess=%i",
           setting.m_InterlaceMethod, setting.m_ViewMode,
           static_cast<double>(setting.m_CustomZoomAmount),
           static_cast<double>(setting.m_CustomPixelRatio),
-          static_cast<double>(setting.m_CustomVerticalShift), setting.m_AudioStream,
+          setting.m_AudioStream,
           setting.m_SubtitleStream, static_cast<double>(setting.m_SubtitleDelay),
           setting.m_SubtitleOn, static_cast<double>(setting.m_Brightness),
           static_cast<double>(setting.m_Contrast), static_cast<double>(setting.m_Gamma),
           static_cast<double>(setting.m_VolumeAmplification),
-          static_cast<double>(setting.m_AudioDelay), static_cast<double>(setting.m_Sharpness),
-          static_cast<double>(setting.m_NoiseReduction), setting.m_CustomNonLinStretch,
-          setting.m_PostProcess, setting.m_ScalingMethod);
+          static_cast<double>(setting.m_AudioDelay),
+          setting.m_PostProcess);
       std::string strSQL2;
 
-      strSQL2 = PrepareSQL("ResumeTime=%i,StereoMode=%i,StereoInvert=%i,VideoStream=%i,"
-                           "TonemapMethod=%i,TonemapParam=%f where idFile=%i\n",
-                           setting.m_ResumeTime, setting.m_StereoMode, setting.m_StereoInvert,
-                           setting.m_VideoStream, setting.m_ToneMapMethod,
-                           static_cast<double>(setting.m_ToneMapParam), idFile);
+      strSQL2 = PrepareSQL(" where idFile=%i\n", idFile);
       strSQL += strSQL2;
       m_pDS->exec(strSQL);
       return ;
@@ -4881,28 +4857,22 @@ void CVideoDatabase::SetVideoSettings(int idFile, const CVideoSettings &setting)
     else
     { // add the items
       m_pDS->close();
-      strSQL= "INSERT INTO settings (idFile,Deinterlace,ViewMode,ZoomAmount,PixelRatio, VerticalShift, "
+      strSQL= "INSERT INTO settings (idFile,Deinterlace,ViewMode,ZoomAmount,PixelRatio, "
                 "AudioStream,SubtitleStream,SubtitleDelay,SubtitlesOn,Brightness,"
-                "Contrast,Gamma,VolumeAmplification,AudioDelay,"
-                "ResumeTime,"
-                "Sharpness,NoiseReduction,NonLinStretch,PostProcess,ScalingMethod,StereoMode,StereoInvert,VideoStream,TonemapMethod,TonemapParam,Orientation,CenterMixLevel) "
+                "Contrast,Gamma,VolumeAmplification,AudioDelay) "
               "VALUES ";
       strSQL += PrepareSQL(
-          "(%i,%i,%i,%f,%f,%f,%i,%i,%f,%i,%f,%f,%f,%f,%f,%i,%f,%f,%i,%i,%i,%i,%i,%i,%i,%f,%i,%i)",
+          "(%i,%i,%i,%f,%f,%i,%i,%f,%i,%f,%f,%f,%f,%f,%i)",
           idFile, setting.m_InterlaceMethod, setting.m_ViewMode,
           static_cast<double>(setting.m_CustomZoomAmount),
           static_cast<double>(setting.m_CustomPixelRatio),
-          static_cast<double>(setting.m_CustomVerticalShift), setting.m_AudioStream,
+          setting.m_AudioStream,
           setting.m_SubtitleStream, static_cast<double>(setting.m_SubtitleDelay),
           setting.m_SubtitleOn, static_cast<double>(setting.m_Brightness),
           static_cast<double>(setting.m_Contrast), static_cast<double>(setting.m_Gamma),
           static_cast<double>(setting.m_VolumeAmplification),
-          static_cast<double>(setting.m_AudioDelay), setting.m_ResumeTime,
-          static_cast<double>(setting.m_Sharpness), static_cast<double>(setting.m_NoiseReduction),
-          setting.m_CustomNonLinStretch, setting.m_PostProcess, setting.m_ScalingMethod,
-          setting.m_StereoMode, setting.m_StereoInvert, setting.m_VideoStream,
-          setting.m_ToneMapMethod, static_cast<double>(setting.m_ToneMapParam),
-          setting.m_Orientation, setting.m_CenterMixLevel);
+          static_cast<double>(setting.m_AudioDelay),
+          setting.m_PostProcess);
       m_pDS->exec(strSQL);
     }
   }
@@ -5305,16 +5275,17 @@ std::vector<CScraperUrl::SUrlEntry> GetBasicItemAvailableArt(int mediaId,
   }
   tag.m_strPictureURL.Parse();
   const std::vector<CScraperUrl::SUrlEntry>& urls = tag.m_strPictureURL.GetUrls();
-  for (std::vector<CScraperUrl::SUrlEntry>::const_iterator urlEntry = urls.begin(); urlEntry != urls.end(); ++urlEntry)
+  for (std::vector<CScraperUrl::SUrlEntry>::const_iterator it = urls.begin(); it != urls.end(); ++it)
   {
-    if (urlEntry->m_aspect.empty())
-      urlEntry->m_aspect = tag.m_type == MediaTypeEpisode ? "thumb" : "poster";
+    CScraperUrl::SUrlEntry urlEntry = *it;
+    if (urlEntry.m_aspect.empty())
+      urlEntry.m_aspect = tag.m_type == MediaTypeEpisode ? "thumb" : "poster";
 
-    if ((urlEntry->m_aspect == artType ||
-        (artType.empty() && !StringUtils::StartsWith(urlEntry->m_aspect, "set."))) &&
-        urlEntry->m_type == CScraperUrl::UrlType::General)
+    if ((urlEntry.m_aspect == artType ||
+        (artType.empty() && !StringUtils::StartsWith(urlEntry.m_aspect, "set."))) &&
+        urlEntry.m_type == CScraperUrl::UrlType::General)
     {
-      result.push_back(*urlEntry);
+      result.push_back(urlEntry);
     }
   }
 
@@ -5333,16 +5304,17 @@ std::vector<CScraperUrl::SUrlEntry> GetSeasonAvailableArt(
   db.GetTvShowInfo("", sourceShow, tag.m_iIdShow);
   sourceShow.m_strPictureURL.Parse();
   const std::vector<CScraperUrl::SUrlEntry>& urls = sourceShow.m_strPictureURL.GetUrls();
-  for (std::vector<CScraperUrl::SUrlEntry>::const_iterator urlEntry = urls.begin(); urlEntry != urls.end(); ++urlEntry)
+  for (std::vector<CScraperUrl::SUrlEntry>::const_iterator it = urls.begin(); it != urls.end(); ++it)
   {
-    if (urlEntry->m_aspect.empty())
-      urlEntry->m_aspect = "poster";
+    CScraperUrl::SUrlEntry urlEntry = *it;
+    if (urlEntry.m_aspect.empty())
+      urlEntry.m_aspect = "poster";
 
-    if ((artType.empty() || urlEntry->m_aspect == artType) &&
-      urlEntry->m_type == CScraperUrl::UrlType::Season &&
-      urlEntry->m_season == tag.m_iSeason)
+    if ((artType.empty() || urlEntry.m_aspect == artType) &&
+      urlEntry.m_type == CScraperUrl::UrlType::Season &&
+      urlEntry.m_season == tag.m_iSeason)
     {
-      result.push_back(*urlEntry);
+      result.push_back(urlEntry);
     }
   }
   return result;
@@ -5363,15 +5335,16 @@ std::vector<CScraperUrl::SUrlEntry> GetMovieSetAvailableArt(
       pTag->m_strPictureURL.Parse();
 
       const std::vector<CScraperUrl::SUrlEntry>& urls = pTag->m_strPictureURL.GetUrls();
-      for (std::vector<CScraperUrl::SUrlEntry>::const_iterator urlEntry = urls.begin(); urlEntry != urls.end(); ++urlEntry)
+      for (std::vector<CScraperUrl::SUrlEntry>::const_iterator it = urls.begin(); it != urls.end(); ++it)
       {
-        bool isSetArt = !artType.empty() ? urlEntry->m_aspect == "set." + artType :
-          StringUtils::StartsWith(urlEntry->m_aspect, "set.");
+        CScraperUrl::SUrlEntry urlEntry = *it;
+        bool isSetArt = !artType.empty() ? urlEntry.m_aspect == "set." + artType :
+          StringUtils::StartsWith(urlEntry.m_aspect, "set.");
 
-        if (isSetArt && addedURLs.insert(urlEntry->m_url).second)
+        if (isSetArt && addedURLs.insert(urlEntry.m_url).second)
         {
-          urlEntry->m_aspect = urlEntry->m_aspect.substr(4);
-          result.push_back(*urlEntry);
+          urlEntry.m_aspect = urlEntry.m_aspect.substr(4);
+          result.push_back(urlEntry);
         }
       }
     }
