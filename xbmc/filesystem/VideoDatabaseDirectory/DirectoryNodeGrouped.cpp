@@ -23,7 +23,7 @@ NODE_TYPE CDirectoryNodeGrouped::GetChildType() const
   CQueryParams params;
   CollectQueryParams(params);
 
-  VideoDbContentType::Type type = static_cast<VideoDbContentType>(params.GetContentType());
+  VideoDbContentType::Type type = static_cast<VideoDbContentType::Type>(params.GetContentType());
   if (type == VideoDbContentType::MOVIES)
     return NODE_TYPE_TITLE_MOVIES;
   if (type == VideoDbContentType::MUSICVIDEOS)
@@ -65,7 +65,7 @@ bool CDirectoryNodeGrouped::GetContent(CFileItemList& items) const
     return false;
 
   return videodatabase.GetItems(videoUrl.ToString(),
-                                static_cast<VideoDbContentType>(params.GetContentType()), itemType,
+                                static_cast<VideoDbContentType::Type>(params.GetContentType()), itemType,
                                 items);
 }
 
@@ -94,7 +94,7 @@ std::string CDirectoryNodeGrouped::GetContentType(const CQueryParams &params) co
     case NODE_TYPE_YEAR:
       return "years";
     case NODE_TYPE_ACTOR:
-      if (static_cast<VideoDbContentType>(params.GetContentType()) ==
+      if (static_cast<VideoDbContentType::Type>(params.GetContentType()) ==
           VideoDbContentType::MUSICVIDEOS)
         return "artists";
       else

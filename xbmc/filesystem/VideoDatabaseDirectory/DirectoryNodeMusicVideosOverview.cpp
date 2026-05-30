@@ -34,18 +34,18 @@ CDirectoryNodeMusicVideosOverview::CDirectoryNodeMusicVideosOverview(const std::
 
 NODE_TYPE CDirectoryNodeMusicVideosOverview::GetChildType() const
 {
-  for (const Node& node : MusicVideoChildren)
-    if (GetName() == node.id)
-      return node.node;
+  for (unsigned int i = 0; i < sizeof(MusicVideoChildren) / sizeof(Node); ++i)
+    if (GetName() == MusicVideoChildren[i].id)
+      return MusicVideoChildren[i].node;
 
   return NODE_TYPE_NONE;
 }
 
 std::string CDirectoryNodeMusicVideosOverview::GetLocalizedName() const
 {
-  for (const Node& node : MusicVideoChildren)
-    if (GetName() == node.id)
-      return g_localizeStrings.Get(node.label);
+  for (unsigned int i = 0; i < sizeof(MusicVideoChildren) / sizeof(Node); ++i)
+    if (GetName() == MusicVideoChildren[i].id)
+      return g_localizeStrings.Get(MusicVideoChildren[i].label);
   return "";
 }
 
@@ -55,12 +55,12 @@ bool CDirectoryNodeMusicVideosOverview::GetContent(CFileItemList& items) const
   if (!videoUrl.FromString(BuildPath()))
     return false;
 
-  for (const Node& node : MusicVideoChildren)
+  for (unsigned int i = 0; i < sizeof(MusicVideoChildren) / sizeof(Node); ++i)
   {
-    CFileItemPtr pItem(new CFileItem(g_localizeStrings.Get(node.label)));
+    CFileItemPtr pItem(new CFileItem(g_localizeStrings.Get(MusicVideoChildren[i].label)));
 
     CVideoDbUrl itemUrl = videoUrl;
-    std::string strDir = StringUtils::Format("{}/", node.id);
+    std::string strDir = StringUtils::Format("{}/", MusicVideoChildren[i].id);
     itemUrl.AppendPath(strDir);
     pItem->SetPath(itemUrl.ToString());
 

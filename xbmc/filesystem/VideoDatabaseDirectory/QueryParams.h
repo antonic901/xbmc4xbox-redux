@@ -55,7 +55,7 @@ namespace XFILE
       long m_idAlbum;
       long m_idSet;
       long m_idTag;
-      long m_idVideoVersion{-1};
+      long m_idVideoVersion;
     };
   }
 }
