@@ -74,7 +74,7 @@ bool CServiceManager::Init2()
   return true;
 }
 
-bool CServiceManager::Init3(const boost::shared_ptr<CProfilesManager>& profileManager)
+bool CServiceManager::Init3(const boost::shared_ptr<CProfileManager>& profileManager)
 {
   m_contextMenuManager->Init();
 

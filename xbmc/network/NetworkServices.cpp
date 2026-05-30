@@ -55,7 +55,7 @@ using namespace KODI::MESSAGING::HELPERS;
 
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"

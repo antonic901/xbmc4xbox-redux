@@ -33,20 +33,6 @@ class CMediaSource;
 
 typedef std::vector<CMediaSource> VECSOURCES;
 
-namespace LOCK_LEVEL {
-  /**
-   Specifies, what Settings levels are locked for the user
-   **/
-  enum SETTINGS_LOCK
-  {
-    NONE,     //settings are unlocked => user can access all settings levels
-    ALL,      //all settings are locked => user always has to enter password, when entering the settings screen
-    STANDARD, //settings level standard and up are locked => user can still access the beginner levels
-    ADVANCED,
-    EXPERT
-  };
-}
-
 class CGUIPassword : public ISettingCallback
 {
 public:

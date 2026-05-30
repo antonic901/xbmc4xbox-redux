@@ -25,7 +25,7 @@
 #include "Util.h"
 #include "FileItem.h"
 #include "File.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/SettingsComponent.h"
 #include "guilib/TextureManager.h"

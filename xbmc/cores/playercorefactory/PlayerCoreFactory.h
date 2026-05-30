@@ -31,7 +31,7 @@
 class TiXmlElement;
 class CPlayerCoreConfig;
 class CPlayerSelectionRule;
-class CProfilesManager;
+class CProfileManager;
 class CSettings;
 
 enum EPLAYERCORES
@@ -52,7 +52,7 @@ const PLAYERCOREID PCID_PAPLAYER = 3;
 class CPlayerCoreFactory : public ISettingsHandler
 {
 public:
-  CPlayerCoreFactory(const CProfilesManager &profileManager);
+  CPlayerCoreFactory(const CProfileManager &profileManager);
   CPlayerCoreFactory(const CPlayerCoreFactory&);
   CPlayerCoreFactory const& operator=(CPlayerCoreFactory const&);
   virtual ~CPlayerCoreFactory();
@@ -77,7 +77,7 @@ public:
 private:
   // Construction parameters
   boost::shared_ptr<CSettings> m_settings;
-  const CProfilesManager &m_profileManager;
+  const CProfileManager &m_profileManager;
 
   bool LoadConfiguration(const std::string &file, bool clear);
 

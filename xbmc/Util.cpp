@@ -51,7 +51,7 @@
 #include "cores/VideoRenderers/RenderManager.h"
 #endif
 #include "interfaces/python/XBPython.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "utils/RegExp.h"
 #include "utils/AlarmClock.h"
 #include "input/ButtonTranslator.h"

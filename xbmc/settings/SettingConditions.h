@@ -14,7 +14,7 @@
 #include <string>
 
 class CProfile;
-class CProfilesManager;
+class CProfileManager;
 
 class CSettingConditions
 {
@@ -33,7 +33,7 @@ public:
 
 private:
   // Initialization parameters
-  static const CProfilesManager *m_profileManager;
+  static const CProfileManager *m_profileManager;
 
   static std::set<std::string> m_simpleConditions;
   static std::map<std::string, SettingConditionCheck> m_complexConditions;

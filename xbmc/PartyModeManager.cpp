@@ -34,7 +34,7 @@
 #include "PlayListPlayer.h"
 #include "playlists/PlayList.h"
 #include "playlists/SmartPlayList.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "threads/SystemClock.h"
 #include "settings/SettingsComponent.h"
 #include "utils/log.h"

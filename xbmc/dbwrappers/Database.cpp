@@ -24,7 +24,7 @@
 #include "settings/SettingsComponent.h"
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/File.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "utils/log.h"
 #include "utils/SortUtils.h"
 #include "utils/StringUtils.h"

@@ -31,7 +31,7 @@
 #include "messaging/helpers/DialogOKHelper.h"
 #include "network/GUIDialogNetworkSetup.h"
 #include "xbox/Network.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/SettingsComponent.h"

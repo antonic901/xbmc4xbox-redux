@@ -28,7 +28,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "music/Album.h"
 #include "music/Artist.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "URIUtils.h"
 #include "Crc32.h"
 #include "utils/StringUtils.h"

@@ -79,7 +79,7 @@
 #include "filesystem/RarManager.h"
 #endif
 #include "playlists/PlayList.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "settings/AdvancedSettings.h"

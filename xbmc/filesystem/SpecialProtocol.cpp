@@ -22,7 +22,7 @@
 #include "URL.h"
 #include "Util.h"
 #include "windowing/GraphicContext.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
@@ -96,7 +96,7 @@ CStdString CSpecialProtocol::TranslatePath(const CStdString &path)
   {
     return path;
   }
-  
+
   return TranslatePath(url);
 }
 

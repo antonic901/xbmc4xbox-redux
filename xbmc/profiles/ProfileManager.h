@@ -1,45 +1,39 @@
-#pragma once
 /*
- *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *  Copyright (C) 2013-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <vector>
+#pragma once
 
 #include "profiles/Profile.h"
+#include "settings/lib/ISettingCallback.h"
 #include "settings/lib/ISettingsHandler.h"
 #include "threads/CriticalSection.h"
+
+#include <boost/move/unique_ptr.hpp>
+#include <stdint.h>
+#include <vector>
 
 class CSettings;
 class TiXmlNode;
 
-class CProfilesManager : public ISettingsHandler
+class CProfileManager : protected ISettingsHandler,
+                         protected ISettingCallback
 {
 public:
-  CProfilesManager();
-  virtual ~CProfilesManager();
+  CProfileManager();
+  CProfileManager(const CProfileManager&);
+  CProfileManager& operator=(CProfileManager const&);
+  virtual ~CProfileManager();
 
   void Initialize(const boost::shared_ptr<CSettings>& settings);
   void Uninitialize();
 
-  virtual bool OnSettingsLoading();
   virtual void OnSettingsLoaded();
-  virtual void OnSettingsSaved();
+  virtual void OnSettingsSaved() const;
   virtual void OnSettingsCleared();
 
   bool Load();
@@ -49,20 +43,20 @@ public:
     after special://masterprofile/ has been defined.
     \param file XML file to load.
     */
-  bool Load(const std::string &file);
 
-  bool Save();
+  bool Save() const;
   /*! \brief Save the user profile information to disk
     Saves the list of profiles to the profiles.xml file.
     \param file XML file to save.
     \return true on success, false on failure to save
     */
-  bool Save(const std::string &file) const;
 
   void Clear();
 
-  bool LoadProfile(size_t index);
-  bool DeleteProfile(size_t index);
+  bool LoadProfile(unsigned int index);
+  void LogOff();
+
+  bool DeleteProfile(unsigned int index);
 
   void CreateProfileFolders();
 
@@ -71,24 +65,24 @@ public:
     */
   const CProfile& GetMasterProfile() const;
 
-  /*! \brief Retreive the current profile
+  /*! \brief Retrieve the current profile
     \return const reference to the current profile
     */
   const CProfile& GetCurrentProfile() const;
 
-  /*! \brief Retreive the profile from an index
+  /*! \brief Retrieve the profile from an index
     \param unsigned index of the profile to retrieve
     \return const pointer to the profile, NULL if the index is invalid
     */
-  const CProfile* GetProfile(size_t index) const;
+  const CProfile* GetProfile(unsigned int index) const;
 
-  /*! \brief Retreive the profile from an index
+  /*! \brief Retrieve the profile from an index
     \param unsigned index of the profile to retrieve
     \return pointer to the profile, NULL if the index is invalid
     */
-  CProfile* GetProfile(size_t index);
+  CProfile* GetProfile(unsigned int index);
 
-  /*! \brief Retreive index of a particular profile by name
+  /*! \brief Retrieve index of a particular profile by name
     \param name name of the profile index to retrieve
     \return index of this profile, -1 if invalid.
     */
@@ -112,7 +106,11 @@ public:
   /*! \brief Toggle login screen use on and off
     Toggles the login screen state
     */
-  void ToggleLoginScreen() { m_usingLoginScreen = !m_usingLoginScreen; }
+  void ToggleLoginScreen()
+  {
+    m_usingLoginScreen = !m_usingLoginScreen;
+    Save();
+  }
 
   /*! \brief Are we the master user?
     \return true if the current profile is the master user, false otherwise
@@ -129,7 +127,7 @@ public:
     */
   void LoadMasterProfileForLogin();
 
-  /*! \brief Retreive the last used profile index
+  /*! \brief Retrieve the last used profile index
     \return the last used profile that logged in.  Does not count the
     master user during login.
     */
@@ -159,14 +157,18 @@ public:
     used profile will be loaded
     \return the id to the autologin profile
     */
-  void SetAutoLoginProfileId(const int profileId) { m_autoLoginProfile = profileId; }
+  void SetAutoLoginProfileId(const int profileId)
+  {
+    m_autoLoginProfile = profileId;
+    Save();
+  }
 
   /*! \brief Retrieve the name of a particular profile by index
     \param profileId profile index for which to retrieve the name
     \param name will hold the name of the profile when a valid profile index has been provided
     \return false if profileId is an invalid index, true if the name parameter is set
     */
-  bool GetProfileName(const size_t profileId, std::string& name) const;
+  bool GetProfileName(const unsigned int profileId, std::string& name) const;
 
   std::string GetUserDataFolder() const;
   std::string GetProfileUserDataFolder() const;
@@ -176,33 +178,31 @@ public:
   std::string GetVideoThumbFolder() const;
   std::string GetBookmarksThumbFolder() const;
   std::string GetLibraryFolder() const;
+  std::string GetSavestatesFolder() const;
   std::string GetSettingsFile() const;
-
-  // Xbox specific methods since we currently don't have TextureDatabase
-  std::string GetProgramsThumbFolder() const;
-  std::string GetGameSaveThumbFolder() const;
 
   // uses HasSlashAtEnd to determine if a directory or file was meant
   std::string GetUserDataItem(const std::string& strFile) const;
-
-protected:
-  CProfilesManager(const CProfilesManager&);
-  CProfilesManager const& operator=(CProfilesManager const&);
 
 private:
   /*! \brief Set the current profile id and update the special://profile path
     \param profileId profile index
     */
-  void SetCurrentProfileId(size_t profileId);
+  void SetCurrentProfileId(unsigned int profileId);
+
+  void PrepareLoadProfile(unsigned int profileIndex);
+  void FinalizeLoadProfile();
 
   // Construction parameters
   boost::shared_ptr<CSettings> m_settings;
 
   std::vector<CProfile> m_profiles;
   bool m_usingLoginScreen;
+  bool m_profileLoadedForLogin;
+  bool m_previousProfileLoadedForLogin;
   int m_autoLoginProfile;
-  uint32_t m_lastUsedProfile;
-  uint32_t m_currentProfile; // do not modify directly, use SetCurrentProfileId() function instead
+  unsigned int m_lastUsedProfile;
+  unsigned int m_currentProfile; // do not modify directly, use SetCurrentProfileId() function instead
   int m_nextProfileId; // for tracking the next available id to give to a new profile to ensure id's are not re-used
-  CCriticalSection m_critical;
+  mutable CCriticalSection m_critical;
 };

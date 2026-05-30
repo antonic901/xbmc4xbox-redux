@@ -31,7 +31,7 @@
 #include "GUIUserMessages.h"
 #include "xbox/Network.h"
 #include "network/NetworkServices.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "Util.h"
 #include "utils/StringUtils.h"
 #include "settings/SettingsComponent.h"
