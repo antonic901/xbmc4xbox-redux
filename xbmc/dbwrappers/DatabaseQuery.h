@@ -8,7 +8,8 @@
 
 #pragma once
 
-#include <memory>
+#include "system.h" // <xtl.h>
+#include <boost/shared_ptr.hpp>
 #include <set>
 #include <string>
 #include <vector>
@@ -23,7 +24,7 @@ class CDatabaseQueryRule
 {
 public:
   CDatabaseQueryRule();
-  virtual ~CDatabaseQueryRule() = default;
+  virtual ~CDatabaseQueryRule() {}
 
   enum SEARCH_OPERATOR
   {
@@ -104,13 +105,13 @@ protected:
 
 class CDatabaseQueryRuleCombination;
 
-typedef std::vector<std::shared_ptr<CDatabaseQueryRule>> CDatabaseQueryRules;
-typedef std::vector<std::shared_ptr<CDatabaseQueryRuleCombination>> CDatabaseQueryRuleCombinations;
+typedef std::vector<boost::shared_ptr<CDatabaseQueryRule> > CDatabaseQueryRules;
+typedef std::vector<boost::shared_ptr<CDatabaseQueryRuleCombination> > CDatabaseQueryRuleCombinations;
 
 class IDatabaseQueryRuleFactory
 {
 public:
-  virtual ~IDatabaseQueryRuleFactory() = default;
+  virtual ~IDatabaseQueryRuleFactory() {}
   virtual CDatabaseQueryRule* CreateRule() const = 0;
   virtual CDatabaseQueryRuleCombination* CreateCombination() const = 0;
 };
@@ -118,7 +119,8 @@ public:
 class CDatabaseQueryRuleCombination
 {
 public:
-  virtual ~CDatabaseQueryRuleCombination() = default;
+  CDatabaseQueryRuleCombination() : m_type(CombinationAnd) {}
+  virtual ~CDatabaseQueryRuleCombination() {}
 
   typedef enum
   {
@@ -144,7 +146,7 @@ protected:
   friend class CGUIDialogSmartPlaylistEditor;
   friend class CGUIDialogMediaFilter;
 
-  Combination m_type = CombinationAnd;
+  Combination m_type;
   CDatabaseQueryRuleCombinations m_combinations;
   CDatabaseQueryRules m_rules;
 };
