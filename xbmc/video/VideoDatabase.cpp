@@ -95,7 +95,9 @@ void CVideoDatabase::CreateTables()
               "SubtitleDelay float, SubtitlesOn bool, Brightness float, Contrast float, Gamma float,"
               "VolumeAmplification float, AudioDelay float,"
               "PostProcess bool,"
-              "DeinterlaceMode integer)\n");
+              "DeinterlaceMode integer,"
+              // Xbox specific settings
+              "OutputToAllSpeakers bool, Interleaved bool, NoCache bool, FilmGrain float, Crop bool, CropLeft integer, CropRight integer, CropTop integer, CropBottom integer)\n");
 
   CLog::Log(LOGINFO, "create stacktimes table");
   m_pDS->exec("CREATE TABLE stacktimes (idFile integer, times text)\n");
@@ -4795,6 +4797,16 @@ bool CVideoDatabase::GetVideoSettings(int idFile, CVideoSettings &settings)
       settings.m_ViewMode = m_pDS->fv("ViewMode").get_asInt();
       settings.m_InterlaceMethod = (EINTERLACEMETHOD)m_pDS->fv("Deinterlace").get_asInt();
       settings.m_VolumeAmplification = m_pDS->fv("VolumeAmplification").get_asFloat();
+      // Xbox specific settings
+      settings.m_OutputToAllSpeakers = m_pDS->fv("OutputToAllSpeakers").get_asBool();
+      settings.m_NonInterleaved = m_pDS->fv("Interleaved").get_asBool();
+      settings.m_NoCache = m_pDS->fv("NoCache").get_asBool();
+      settings.m_FilmGrain = m_pDS->fv("FilmGrain").get_asFloat();
+      settings.m_Crop = m_pDS->fv("Crop").get_asBool();
+      settings.m_CropLeft = m_pDS->fv("CropLeft").get_asInt();
+      settings.m_CropRight = m_pDS->fv("CropRight").get_asInt();
+      settings.m_CropTop = m_pDS->fv("CropTop").get_asInt();
+      settings.m_CropBottom = m_pDS->fv("CropBottom").get_asInt();
       m_pDS->close();
       return true;
     }
@@ -4836,7 +4848,7 @@ void CVideoDatabase::SetVideoSettings(int idFile, const CVideoSettings &setting)
           "AudioStream=%i,SubtitleStream=%i,SubtitleDelay=%f,SubtitlesOn=%i,Brightness=%f,Contrast="
           "%f,Gamma=%f,"
           "VolumeAmplification=%f,AudioDelay=%f,"
-          "PostProcess=%i",
+          "PostProcess=%i,",
           setting.m_InterlaceMethod, setting.m_ViewMode,
           static_cast<double>(setting.m_CustomZoomAmount),
           static_cast<double>(setting.m_CustomPixelRatio),
@@ -4849,7 +4861,10 @@ void CVideoDatabase::SetVideoSettings(int idFile, const CVideoSettings &setting)
           setting.m_PostProcess);
       std::string strSQL2;
 
-      strSQL2 = PrepareSQL(" where idFile=%i\n", idFile);
+      strSQL2 = PrepareSQL("OutputToAllSpeakers=%i,Interleaved=%i,NoCache=%i,FilmGrain=%f,Crop=%i,CropLeft=%i,CropRight=%i,CropTop=%i,CropBottom=%i where idFile=%i\n",
+                          setting.m_OutputToAllSpeakers, setting.m_NonInterleaved, setting.m_NoCache, setting.m_FilmGrain,
+                          setting.m_Crop, setting.m_CropLeft, setting.m_CropRight, setting.m_CropTop, setting.m_CropBottom,
+                          idFile);
       strSQL += strSQL2;
       m_pDS->exec(strSQL);
       return ;
@@ -4859,10 +4874,11 @@ void CVideoDatabase::SetVideoSettings(int idFile, const CVideoSettings &setting)
       m_pDS->close();
       strSQL= "INSERT INTO settings (idFile,Deinterlace,ViewMode,ZoomAmount,PixelRatio, "
                 "AudioStream,SubtitleStream,SubtitleDelay,SubtitlesOn,Brightness,"
-                "Contrast,Gamma,VolumeAmplification,AudioDelay) "
+                "Contrast,Gamma,VolumeAmplification,AudioDelay,"
+                "OutputToAllSpeakers,Interleaved,NoCache,FilmGrain,Crop,CropLeft,CropRight,CropTop,CropBottom) "
               "VALUES ";
       strSQL += PrepareSQL(
-          "(%i,%i,%i,%f,%f,%i,%i,%f,%i,%f,%f,%f,%f,%f,%i)",
+          "(%i,%i,%i,%f,%f,%i,%i,%f,%i,%f,%f,%f,%f,%f,%i,%i,%i,%i,%f,%i,%i,%i,%i,%i)",
           idFile, setting.m_InterlaceMethod, setting.m_ViewMode,
           static_cast<double>(setting.m_CustomZoomAmount),
           static_cast<double>(setting.m_CustomPixelRatio),
@@ -4872,7 +4888,8 @@ void CVideoDatabase::SetVideoSettings(int idFile, const CVideoSettings &setting)
           static_cast<double>(setting.m_Contrast), static_cast<double>(setting.m_Gamma),
           static_cast<double>(setting.m_VolumeAmplification),
           static_cast<double>(setting.m_AudioDelay),
-          setting.m_PostProcess);
+          setting.m_PostProcess,
+          setting.m_OutputToAllSpeakers, setting.m_NonInterleaved, setting.m_NoCache, setting.m_FilmGrain, setting.m_Crop, setting.m_CropLeft, setting.m_CropRight, setting.m_CropTop, setting.m_CropBottom);
       m_pDS->exec(strSQL);
     }
   }
