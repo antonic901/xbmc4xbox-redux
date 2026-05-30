@@ -63,9 +63,9 @@ public:
   static void RemoveExtension(std::string& strFileName);
   static CStdString ReplaceExtension(const CStdString& strFile,
                                      const CStdString& strNewExtension);
-  static void Split(const CStdString& strFileNameAndPath, 
+  static void Split(const CStdString& strFileNameAndPath,
                     CStdString& strPath, CStdString& strFileName);
-  static void Split(const std::string& strFileNameAndPath, 
+  static void Split(const std::string& strFileNameAndPath,
                     std::string& strPath, std::string& strFileName);
   static CStdStringArray SplitPath(const CStdString& strPath);
 
@@ -150,8 +150,8 @@ public:
   static bool IsLiveTV(const CStdString& strFile);
   static bool IsMultiPath(const CStdString& strPath);
   static bool IsMusicDb(const CStdString& strFile);
-  static bool IsNfs(const CStdString& strFile);  
-  static bool IsAfp(const CStdString& strFile);    
+  static bool IsNfs(const CStdString& strFile);
+  static bool IsAfp(const CStdString& strFile);
   static bool IsOnDVD(const CStdString& strFile);
   static bool IsOnLAN(const CStdString& strFile);
   static bool IsHostOnLAN(const CStdString& hostName, bool offLineCheck = false);
@@ -171,6 +171,8 @@ public:
   static bool IsAPK(const CStdString& strFile);
   static bool IsZIP(const CStdString& strFile);
   static bool IsArchive(const CStdString& strFile);
+  static bool IsDiscImage(const std::string& file);
+  static bool IsDiscImageStack(const std::string& file);
   static bool IsBluray(const CStdString& strFile);
   static bool IsAndroidApp(const CStdString& strFile);
   static bool IsLibraryFolder(const CStdString& strFile);

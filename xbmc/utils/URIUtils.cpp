@@ -239,10 +239,10 @@ CStdStringArray URIUtils::SplitPath(const CStdString& strPath)
   // split the filename portion of the URL up into separate dirs
   CStdStringArray dirs;
   StringUtils::SplitString(url.GetFileName(), sep, dirs);
-  
+
   // we start with the root path
   CStdString dir = url.GetWithoutFilename();
-  
+
   if (!dir.empty())
     dirs.insert(dirs.begin(), dir);
 
@@ -654,7 +654,7 @@ bool URIUtils::IsOnLAN(const CStdString& strPath)
 
   if(IsSpecial(strPath))
     return IsOnLAN(CSpecialProtocol::TranslatePath(strPath));
-  
+
   if(IsPlugin(strPath))
     return false;
 
@@ -815,6 +815,16 @@ bool URIUtils::IsZIP(const CStdString& strFile) // also checks for comic books!
 bool URIUtils::IsArchive(const CStdString& strFile)
 {
   return HasExtension(strFile, ".zip|.rar|.apk|.cbz|.cbr");
+}
+
+bool URIUtils::IsDiscImage(const std::string& file)
+{
+  return HasExtension(file, ".img|.iso|.nrg|.udf|.cci|.cso");
+}
+
+bool URIUtils::IsDiscImageStack(const std::string& file)
+{
+  return IsStack(file) && IsDiscImage(CStackDirectory::GetFirstStackedFile(file));
 }
 
 bool URIUtils::IsSpecial(const CStdString& strFile)
@@ -984,20 +994,20 @@ bool URIUtils::IsMusicDb(const CStdString& strFile)
 bool URIUtils::IsNfs(const CStdString& strFile)
 {
   CStdString strFile2(strFile);
-  
+
   if (IsStack(strFile))
     strFile2 = CStackDirectory::GetFirstStackedFile(strFile);
-  
+
   return IsProtocol(strFile2, "nfs");
 }
 
 bool URIUtils::IsAfp(const CStdString& strFile)
 {
   CStdString strFile2(strFile);
-  
+
   if (IsStack(strFile))
     strFile2 = CStackDirectory::GetFirstStackedFile(strFile);
-  
+
   return IsProtocol(strFile2, "afp");
 }
 
@@ -1181,7 +1191,7 @@ std::string URIUtils::CanonicalizePath(const std::string& path, const char slash
   return result;
 }
 
-std::string URIUtils::AddFileToFolder(const std::string& strFolder, 
+std::string URIUtils::AddFileToFolder(const std::string& strFolder,
                                 const std::string& strFile)
 {
   if (IsURL(strFolder))
@@ -1271,7 +1281,7 @@ string URIUtils::GetRealPath(const string &path)
   CURL url(path);
   url.SetHostName(GetRealPath(url.GetHostName()));
   url.SetFileName(resolvePath(url.GetFileName()));
-  
+
   return url.Get();
 }
 
@@ -1324,7 +1334,7 @@ bool URIUtils::UpdateUrlEncoding(std::string &strFilename)
 {
   if (strFilename.empty())
     return false;
-  
+
   CURL url(strFilename);
   // if this is a stack:// URL we need to work with its filename
   if (URIUtils::IsStack(strFilename))
@@ -1359,7 +1369,7 @@ bool URIUtils::UpdateUrlEncoding(std::string &strFilename)
   std::string newFilename = url.Get();
   if (newFilename == strFilename)
     return false;
-  
+
   strFilename = newFilename;
   return true;
 }

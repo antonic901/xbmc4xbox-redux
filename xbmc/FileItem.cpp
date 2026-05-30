@@ -870,7 +870,7 @@ bool CFileItem::IsNFO() const
 
 bool CFileItem::IsDiscImage() const
 {
-  return URIUtils::HasExtension(m_strPath, ".img|.iso|.nrg");
+  return URIUtils::IsDiscImage(GetDynPath());
 }
 
 bool CFileItem::IsOpticalMediaFile() const
