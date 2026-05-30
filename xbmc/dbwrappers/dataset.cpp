@@ -427,7 +427,7 @@ field_value Dataset::f_old(const char* f_name)
     for (int unsigned i = 0; i < fields_object->size(); i++)
       if ((*fields_object)[i].props.name == f_name)
         return (*fields_object)[i].val;
-  return {};
+  return field_value();
 }
 
 void Dataset::setParamList(const ParamList& params)
@@ -575,18 +575,11 @@ const char* Dataset::fieldName(int n)
     return NULL;
 }
 
-char* Dataset::str_toLower(char* s)
-{
-  for (char* p = s; *p; p++)
-    *p = std::tolower(*p);
-
-  return s;
-}
-
 int Dataset::fieldIndex(const char* fn)
 {
   std::string name(fn);
-  const auto it = name2indexMap.find(str_toLower(name.data()));
+  StringUtils::ToLower(name);
+  const boost::unordered_map<std::string, unsigned int>::iterator it = name2indexMap.find(name.c_str());
   if (it != name2indexMap.end())
     return (*it).second;
   else
@@ -613,7 +606,7 @@ DbErrors::DbErrors(const char* msg, ...)
   msg_ = "SQL: ";
   msg_ += buf;
 
-  CLog::Log(LOGERROR, "{}", msg_);
+  CLog::Log(LOGERROR, "%s", msg_.c_str());
 }
 
 const char* DbErrors::getMsg()

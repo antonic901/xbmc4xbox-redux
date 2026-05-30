@@ -14,7 +14,7 @@ class Database;
 class Dataset;
 } // namespace dbiplus
 
-#include <memory>
+#include <boost/move/unique_ptr.hpp>
 #include <string>
 #include <vector>
 
@@ -133,7 +133,7 @@ public:
    \return the value from the query, empty on failure.
    */
   std::string GetSingleValue(const std::string& query,
-                             const std::unique_ptr<dbiplus::Dataset>& ds) const;
+                             const boost::movelib::unique_ptr<dbiplus::Dataset>& ds) const;
 
   /*!
  * @brief Get a single integer value from a table.
@@ -156,7 +156,7 @@ public:
    \return the value from the query, 0 on failure.
    */
   int GetSingleValueInt(const std::string& query,
-                        const std::unique_ptr<dbiplus::Dataset>& ds) const;
+                        const boost::movelib::unique_ptr<dbiplus::Dataset>& ds) const;
 
   /*!
    * @brief Delete values from a table.
@@ -300,9 +300,9 @@ protected:
 
   bool m_sqlite; ///< \brief whether we use sqlite (defaults to true)
 
-  std::unique_ptr<dbiplus::Database> m_pDB;
-  std::unique_ptr<dbiplus::Dataset> m_pDS;
-  std::unique_ptr<dbiplus::Dataset> m_pDS2;
+  boost::movelib::unique_ptr<dbiplus::Database> m_pDB;
+  boost::movelib::unique_ptr<dbiplus::Dataset> m_pDS;
+  boost::movelib::unique_ptr<dbiplus::Dataset> m_pDS2;
 
 protected:
   // Construction parameters
@@ -312,10 +312,8 @@ private:
   void InitSettings(DatabaseSettings& dbSettings);
   void UpdateVersionNumber();
 
-  bool m_bMultiInsert =
-      false; /*!< True if there are any queries in the insert queue, false otherwise */
-  bool m_bMultiDelete =
-      false; /*!< True if there are any queries in the delete queue, false otherwise */
+  bool m_bMultiInsert; /*!< True if there are any queries in the insert queue, false otherwise */
+  bool m_bMultiDelete; /*!< True if there are any queries in the delete queue, false otherwise */
   unsigned int m_openCount;
 
   bool m_multipleExecute;

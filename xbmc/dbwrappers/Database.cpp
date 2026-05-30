@@ -27,8 +27,6 @@
 #include "platform/posix/ConvUtils.h"
 #endif
 
-#include <memory>
-
 using namespace dbiplus;
 
 #define MAX_COMPRESS_COUNT 20
@@ -161,11 +159,11 @@ void CDatabase::DatasetLayout::SetField(int fieldNo,
 void CDatabase::DatasetLayout::AdjustRecordNumbers(int offset)
 {
   int recno = 0;
-  for (auto& field : m_fields)
+  for (std::vector<DatasetFieldInfo>::iterator field = m_fields.begin(); field != m_fields.end(); ++field)
   {
-    if (field.fetch)
+    if (field->fetch)
     {
-      field.recno = recno + offset;
+      field->recno = recno + offset;
       ++recno;
     }
   }
@@ -201,14 +199,14 @@ int CDatabase::DatasetLayout::GetRecNo(int fieldno)
 const std::string CDatabase::DatasetLayout::GetFields()
 {
   std::string strSQL;
-  for (const auto& field : m_fields)
+  for (std::vector<DatasetFieldInfo>::const_iterator field = m_fields.begin(); field != m_fields.end(); ++field)
   {
-    if (!field.strField.empty() && field.fetch)
+    if (!field->strField.empty() && field->fetch)
     {
       if (strSQL.empty())
-        strSQL = field.strField;
+        strSQL = field->strField;
       else
-        strSQL += ", " + field.strField;
+        strSQL += ", " + field->strField;
     }
   }
 
@@ -217,9 +215,9 @@ const std::string CDatabase::DatasetLayout::GetFields()
 
 bool CDatabase::DatasetLayout::HasFilterFields()
 {
-  for (const auto& field : m_fields)
+  for (std::vector<DatasetFieldInfo>::const_iterator field = m_fields.begin(); field != m_fields.end(); ++field)
   {
-    if (field.fetch)
+    if (field->fetch)
       return true;
   }
   return false;
@@ -231,6 +229,8 @@ CDatabase::CDatabase()
   m_openCount = 0;
   m_sqlite = true;
   m_multipleExecute = false;
+  m_bMultiInsert = false;
+  m_bMultiDelete = false;
 }
 
 CDatabase::~CDatabase(void)
@@ -261,7 +261,7 @@ std::string CDatabase::PrepareSQL(std::string strStmt, ...) const
 {
   std::string strResult = "";
 
-  if (nullptr != m_pDB)
+  if (NULL != m_pDB)
   {
     va_list args;
     va_start(args, strStmt);
@@ -273,7 +273,7 @@ std::string CDatabase::PrepareSQL(std::string strStmt, ...) const
 }
 
 std::string CDatabase::GetSingleValue(const std::string& query,
-                                      const std::unique_ptr<Dataset>& ds) const
+                                      const boost::movelib::unique_ptr<Dataset>& ds) const
 {
   std::string ret;
   try
@@ -288,7 +288,7 @@ std::string CDatabase::GetSingleValue(const std::string& query,
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "{} - failed on query '{}'", __FUNCTION__, query);
+    CLog::Log(LOGERROR, "%s - failed on query '%s'", __FUNCTION__, query.c_str());
   }
   return ret;
 }
@@ -312,7 +312,7 @@ std::string CDatabase::GetSingleValue(const std::string& query) const
   return GetSingleValue(query, m_pDS);
 }
 
-int CDatabase::GetSingleValueInt(const std::string& query, const std::unique_ptr<Dataset>& ds) const
+int CDatabase::GetSingleValueInt(const std::string& query, const boost::movelib::unique_ptr<Dataset>& ds) const
 {
   int ret = 0;
   try
@@ -327,7 +327,7 @@ int CDatabase::GetSingleValueInt(const std::string& query, const std::unique_ptr
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "{} - failed on query '{}'", __FUNCTION__, query);
+    CLog::Log(LOGERROR, "%s - failed on query '%s'", __FUNCTION__, query.c_str());
   }
   return ret;
 }
@@ -364,9 +364,9 @@ bool CDatabase::CommitMultipleExecute()
 {
   m_multipleExecute = false;
   BeginTransaction();
-  for (const auto& i : m_multipleQueries)
+  for (std::vector<std::string>::const_iterator i = m_multipleQueries.begin(); i != m_multipleQueries.end(); ++i)
   {
-    if (!ExecuteQuery(i))
+    if (!ExecuteQuery(*i))
     {
       RollbackTransaction();
       return false;
@@ -388,16 +388,16 @@ bool CDatabase::ExecuteQuery(const std::string& strQuery)
 
   try
   {
-    if (nullptr == m_pDB)
+    if (NULL == m_pDB)
       return bReturn;
-    if (nullptr == m_pDS)
+    if (NULL == m_pDS)
       return bReturn;
     m_pDS->exec(strQuery);
     bReturn = true;
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "{} - failed to execute query '{}'", __FUNCTION__, strQuery);
+    CLog::Log(LOGERROR, "%s - failed to execute query '%s'", __FUNCTION__, strQuery.c_str());
   }
 
   return bReturn;
@@ -409,9 +409,9 @@ bool CDatabase::ResultQuery(const std::string& strQuery) const
 
   try
   {
-    if (nullptr == m_pDB)
+    if (NULL == m_pDB)
       return bReturn;
-    if (nullptr == m_pDS)
+    if (NULL == m_pDS)
       return bReturn;
 
     std::string strPreparedQuery = PrepareSQL(strQuery);
@@ -420,7 +420,7 @@ bool CDatabase::ResultQuery(const std::string& strQuery) const
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "{} - failed to execute query '{}'", __FUNCTION__, strQuery);
+    CLog::Log(LOGERROR, "%s - failed to execute query '%s'", __FUNCTION__, strQuery.c_str());
   }
 
   return bReturn;
@@ -433,9 +433,9 @@ bool CDatabase::QueueInsertQuery(const std::string& strQuery)
 
   if (!m_bMultiInsert)
   {
-    if (nullptr == m_pDB)
+    if (NULL == m_pDB)
       return false;
-    if (nullptr == m_pDS2)
+    if (NULL == m_pDS2)
       return false;
 
     m_bMultiInsert = true;
@@ -462,7 +462,7 @@ bool CDatabase::CommitInsertQueries()
     catch (...)
     {
       bReturn = false;
-      CLog::Log(LOGERROR, "{} - failed to execute queries", __FUNCTION__);
+      CLog::Log(LOGERROR, "%s - failed to execute queries", __FUNCTION__);
     }
   }
 
@@ -500,7 +500,7 @@ bool CDatabase::CommitDeleteQueries()
     catch (...)
     {
       bReturn = false;
-      CLog::Log(LOGERROR, "{} - failed to execute queries", __FUNCTION__);
+      CLog::Log(LOGERROR, "%s - failed to execute queries", __FUNCTION__);
     }
   }
 
@@ -585,17 +585,17 @@ bool CDatabase::Connect(const std::string& dbName, const DatabaseSettings& dbSet
   // create the appropriate database structure
   if (dbSettings.type == "sqlite3")
   {
-    m_pDB = std::make_unique<SqliteDatabase>();
+    m_pDB.reset(new SqliteDatabase());
   }
 #if defined(HAS_MYSQL) || defined(HAS_MARIADB)
   else if (dbSettings.type == "mysql")
   {
-    m_pDB = std::make_unique<MysqlDatabase>();
+    m_pDB.reset(new MysqlDatabase());
   }
 #endif
   else
   {
-    CLog::Log(LOGERROR, "Unable to determine database type: {}", dbSettings.type);
+    CLog::Log(LOGERROR, "Unable to determine database type: %s", dbSettings.type.c_str());
     return false;
   }
 
@@ -655,7 +655,7 @@ bool CDatabase::Connect(const std::string& dbName, const DatabaseSettings& dbSet
   }
   catch (DbErrors& error)
   {
-    CLog::Log(LOGERROR, "{} failed with '{}'", __FUNCTION__, error.getMsg());
+    CLog::Log(LOGERROR, "%s failed with '%s'", __FUNCTION__, error.getMsg());
     m_openCount = 1; // set to open so we can execute Close()
     Close();
     return false;
@@ -692,9 +692,9 @@ void CDatabase::Close()
   m_openCount = 0;
   m_multipleExecute = false;
 
-  if (nullptr == m_pDB)
+  if (NULL == m_pDB)
     return;
-  if (nullptr != m_pDS)
+  if (NULL != m_pDS)
     m_pDS->close();
   m_pDB->disconnect();
   m_pDB.reset();
@@ -709,9 +709,9 @@ bool CDatabase::Compress(bool bForce /* =true */)
 
   try
   {
-    if (nullptr == m_pDB)
+    if (NULL == m_pDB)
       return false;
-    if (nullptr == m_pDS)
+    if (NULL == m_pDS)
       return false;
     if (!bForce)
     {
@@ -734,7 +734,7 @@ bool CDatabase::Compress(bool bForce /* =true */)
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "{} - Compressing the database failed", __FUNCTION__);
+    CLog::Log(LOGERROR, "%s - Compressing the database failed", __FUNCTION__);
     return false;
   }
   return true;
@@ -749,7 +749,7 @@ void CDatabase::BeginTransaction()
 {
   try
   {
-    if (nullptr != m_pDB)
+    if (NULL != m_pDB)
       m_pDB->start_transaction();
   }
   catch (...)
@@ -762,7 +762,7 @@ bool CDatabase::CommitTransaction()
 {
   try
   {
-    if (nullptr != m_pDB)
+    if (NULL != m_pDB)
       m_pDB->commit_transaction();
   }
   catch (...)
@@ -777,7 +777,7 @@ void CDatabase::RollbackTransaction()
 {
   try
   {
-    if (nullptr != m_pDB)
+    if (NULL != m_pDB)
       m_pDB->rollback_transaction();
   }
   catch (...)
@@ -802,7 +802,7 @@ bool CDatabase::CreateDatabase()
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "{} unable to create database:{}", __FUNCTION__, (int)GetLastError());
+    CLog::Log(LOGERROR, "%s unable to create database:%i", __FUNCTION__, (int)GetLastError());
     RollbackTransaction();
     return false;
   }

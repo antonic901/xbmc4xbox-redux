@@ -170,16 +170,11 @@ field_value::field_value(const field_value& fv)
   is_null = fv.get_isNull();
 }
 
-field_value::field_value(field_value&& fv) noexcept
-{
-  *this = std::move(fv);
-}
-
 //empty destructor
-field_value::~field_value() = default;
+field_value::~field_value() {}
 
 //Conversations functions
-std::string field_value::get_asString() const&
+std::string field_value::get_asString() const
 {
   switch (field_type)
   {
@@ -196,63 +191,52 @@ std::string field_value::get_asString() const&
     }
     case ft_Char:
     {
-      return {char_value};
+      return std::string(1, char_value);
     }
     case ft_Short:
     {
       char t[10];
-      snprintf(t, sizeof(t), "%i", short_value);
+      _snprintf(t, sizeof(t), "%i", short_value);
       return t;
     }
     case ft_UShort:
     {
       char t[10];
-      snprintf(t, sizeof(t), "%i", ushort_value);
+      _snprintf(t, sizeof(t), "%i", ushort_value);
       return t;
     }
     case ft_Int:
     {
       char t[12];
-      snprintf(t, sizeof(t), "%d", int_value);
+      _snprintf(t, sizeof(t), "%d", int_value);
       return t;
     }
     case ft_UInt:
     {
       char t[12];
-      snprintf(t, sizeof(t), "%u", uint_value);
+      _snprintf(t, sizeof(t), "%u", uint_value);
       return t;
     }
     case ft_Float:
     {
       char t[16];
-      snprintf(t, sizeof(t), "%f", static_cast<double>(float_value));
+      _snprintf(t, sizeof(t), "%f", static_cast<double>(float_value));
       return t;
     }
     case ft_Double:
     {
       char t[32];
-      snprintf(t, sizeof(t), "%f", double_value);
+      _snprintf(t, sizeof(t), "%f", double_value);
       return t;
     }
     case ft_Int64:
     {
       char t[23];
-      snprintf(t, sizeof(t), "%" PRId64, int64_value);
+      _snprintf(t, sizeof(t), "%" PRId64, int64_value);
       return t;
     }
     default:
       return "";
-  }
-}
-
-std::string field_value::get_asString() &&
-{
-  switch (field_type)
-  {
-    case ft_String:
-      return std::move(str_value);
-    default:
-      return get_asString();
   }
 }
 
@@ -333,43 +317,43 @@ char field_value::get_asChar() const
     case ft_Short:
     {
       char t[10];
-      snprintf(t, sizeof(t), "%i", short_value);
+      _snprintf(t, sizeof(t), "%i", short_value);
       return t[0];
     }
     case ft_UShort:
     {
       char t[10];
-      snprintf(t, sizeof(t), "%i", ushort_value);
+      _snprintf(t, sizeof(t), "%i", ushort_value);
       return t[0];
     }
     case ft_Int:
     {
       char t[12];
-      snprintf(t, sizeof(t), "%d", int_value);
+      _snprintf(t, sizeof(t), "%d", int_value);
       return t[0];
     }
     case ft_UInt:
     {
       char t[12];
-      snprintf(t, sizeof(t), "%u", uint_value);
+      _snprintf(t, sizeof(t), "%u", uint_value);
       return t[0];
     }
     case ft_Float:
     {
       char t[16];
-      snprintf(t, sizeof(t), "%f", static_cast<double>(float_value));
+      _snprintf(t, sizeof(t), "%f", static_cast<double>(float_value));
       return t[0];
     }
     case ft_Double:
     {
       char t[32];
-      snprintf(t, sizeof(t), "%f", double_value);
+      _snprintf(t, sizeof(t), "%f", double_value);
       return t[0];
     }
     case ft_Int64:
     {
       char t[24];
-      snprintf(t, sizeof(t), "%" PRId64, int64_value);
+      _snprintf(t, sizeof(t), "%" PRId64, int64_value);
       return t[0];
     }
     default:
@@ -677,7 +661,7 @@ int64_t field_value::get_asInt64() const
   {
     case ft_String:
     {
-      return std::atoll(str_value.c_str());
+      return _atoi64(str_value.c_str());
     }
     case ft_Boolean:
     {
@@ -794,23 +778,6 @@ field_value& field_value::operator=(const field_value& fv)
   }
 }
 
-field_value& field_value::operator=(field_value&& fv) noexcept
-{
-  if (this == &fv)
-    return *this;
-
-  is_null = fv.get_isNull();
-
-  switch (fv.get_fType())
-  {
-    case ft_String:
-      set_asString(std::move(fv.str_value));
-      return *this;
-    default:
-      return *this = fv;
-  }
-}
-
 //Set functions
 void field_value::set_asString(const char* s)
 {
@@ -820,19 +787,13 @@ void field_value::set_asString(const char* s)
 
 void field_value::set_asString(const char* s, std::size_t len)
 {
-  str_value = std::string_view(s, len);
+  str_value.assign(s, len);
   field_type = ft_String;
 }
 
 void field_value::set_asString(const std::string& s)
 {
   str_value = s;
-  field_type = ft_String;
-}
-
-void field_value::set_asString(std::string&& s)
-{
-  str_value = std::move(s);
   field_type = ft_String;
 }
 

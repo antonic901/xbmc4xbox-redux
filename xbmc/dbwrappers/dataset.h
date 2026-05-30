@@ -19,7 +19,7 @@
 #include <map>
 #include <stdarg.h>
 #include <string>
-#include <unordered_map>
+#include <boost/unordered_map.hpp>
 
 namespace dbiplus
 {
@@ -205,7 +205,7 @@ protected:
   Database* db; // info about db connection
   dsStates ds_state; // current state
   Fields *fields_object, *edit_object;
-  std::unordered_map<std::string, unsigned int>
+  boost::unordered_map<std::string, unsigned int>
       name2indexMap; // Lower case field name -> database index
 
   /* query results*/
@@ -407,8 +407,8 @@ public:
   const sql_record* get_sql_record();
 
 private:
-  Dataset(const Dataset&) = delete;
-  Dataset& operator=(const Dataset&) = delete;
+  Dataset(const Dataset&);
+  Dataset& operator=(const Dataset&);
 
   /* Get the column index from a string field_value request */
   bool get_index_map_entry(const char* f_name);
@@ -450,7 +450,7 @@ public:
 
 /******************** Class DbErrors definition *********************
 
-			   error handling
+               error handling
 
 ******************************************************************/
 class DbErrors
