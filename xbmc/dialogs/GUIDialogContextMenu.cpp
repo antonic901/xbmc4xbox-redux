@@ -28,7 +28,7 @@
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
 #include "media/MediaLockState.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "profiles/dialogs/GUIDialogLockSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"

@@ -27,7 +27,7 @@
 #include "filesystem/Directory.h"
 #include "filesystem/DirectoryFactory.h"
 #include "filesystem/File.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "playlists/PlayList.h"

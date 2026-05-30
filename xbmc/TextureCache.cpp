@@ -22,7 +22,7 @@
 #include "ServiceBroker.h"
 #include "TextureCacheJob.h"
 #include "filesystem/File.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "threads/SingleLock.h"
 #include "utils/Crc32.h"
 #include "settings/AdvancedSettings.h"

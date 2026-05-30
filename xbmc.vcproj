@@ -3739,10 +3739,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\profiles\Profile.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\profiles\ProfilesManager.cpp">
+					RelativePath=".\xbmc\profiles\ProfileManager.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\profiles\ProfilesManager.h">
+					RelativePath=".\xbmc\profiles\ProfileManager.h">
 				</File>
 				<Filter
 					Name="dialogs"
@@ -5152,6 +5152,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\SectionLoader.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\SettingsLock.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\Shortcut.h">

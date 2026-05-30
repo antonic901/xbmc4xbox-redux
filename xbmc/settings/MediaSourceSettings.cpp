@@ -13,7 +13,7 @@
 #include "Util.h"
 #include "filesystem/File.h"
 #include "media/MediaLockState.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/SettingsComponent.h"
 #include "utils/FileUtils.h"
 #include "utils/StringUtils.h"
@@ -44,7 +44,7 @@ CMediaSourceSettings& CMediaSourceSettings::GetInstance()
 
 std::string CMediaSourceSettings::GetSourcesFile()
 {
-  const boost::shared_ptr<CProfilesManager> profileManager =
+  const boost::shared_ptr<CProfileManager> profileManager =
       CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   std::string file;

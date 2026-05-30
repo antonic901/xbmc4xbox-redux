@@ -35,7 +35,7 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "FileItem.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "settings/lib/SettingsManager.h"
@@ -51,7 +51,7 @@
 
 using namespace AUTOPTR;
 
-CPlayerCoreFactory::CPlayerCoreFactory(const CProfilesManager& profileManager)
+CPlayerCoreFactory::CPlayerCoreFactory(const CProfileManager& profileManager)
   : m_settings(CServiceBroker::GetSettingsComponent()->GetSettings()),
     m_profileManager(profileManager)
 {

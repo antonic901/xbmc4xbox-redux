@@ -13,7 +13,7 @@
 
 #include <string>
 
-class CProfilesManager;
+class CProfileManager;
 class TiXmlNode;
 
 class CMediaSourceSettings : public ISettingsHandler

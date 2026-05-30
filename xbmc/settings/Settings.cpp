@@ -28,7 +28,7 @@
 #include "network/upnp/UPnPSettings.h"
 #include "SeekHandler.h"
 #include "ServiceBroker.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
@@ -321,7 +321,7 @@ void CSettings::UnregisterSubSettings(ISubSettings* subSettings)
 
 bool CSettings::Load()
 {
-  const boost::shared_ptr<CProfilesManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   return Load(profileManager->GetSettingsFile());
 }
@@ -356,7 +356,7 @@ bool CSettings::Load(const TiXmlElement* root)
 
 bool CSettings::Save()
 {
-  const boost::shared_ptr<CProfilesManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   return Save(profileManager->GetSettingsFile());
 }
@@ -851,7 +851,7 @@ void CSettings::UninitializeISettingCallbacks()
 
 bool CSettings::Reset()
 {
-  const boost::shared_ptr<CProfilesManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   const std::string settingsFile = profileManager->GetSettingsFile();
 

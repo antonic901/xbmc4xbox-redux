@@ -30,7 +30,7 @@
 #include "pictures/PictureInfoTag.h"
 #include "playlists/PlayList.h"
 #include "playlists/PlayListFactory.h"
-#include "profiles/ProfilesManager.h" // for Save Games
+#include "profiles/ProfileManager.h" // for Save Games
 #include "programs/ProgramInfoTag.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingUtils.h"

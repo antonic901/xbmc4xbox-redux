@@ -11,7 +11,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "pictures/GUIWindowSlideShow.h"
 #include "pictures/PictureInfoTag.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "utils/URIUtils.h"
 #include "guilib/guiinfo/GUIInfoLabels.h"
 #include "input/actions/Action.h"

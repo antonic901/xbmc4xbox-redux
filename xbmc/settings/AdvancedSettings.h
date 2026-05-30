@@ -18,7 +18,7 @@
 #include <utility>
 #include <vector>
 
-class CProfilesManager;
+class CProfileManager;
 class CSettingsManager;
 class CVariant;
 struct IntegerSettingOption;
@@ -92,7 +92,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     void Initialize(CSettingsManager& settingsMgr);
     void Uninitialize(CSettingsManager& settingsMgr);
     bool Initialized() const { return m_initialized; }
-    bool Load(const CProfilesManager &profileManager);
+    bool Load(const CProfileManager &profileManager);
 
     static void GetCustomTVRegexps(TiXmlElement *pRootElement, SETTINGS_TVSHOWLIST& settings);
     static void GetCustomRegexps(TiXmlElement *pRootElement, std::vector<std::string> &settings);

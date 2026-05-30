@@ -14,7 +14,7 @@
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
 #include "network/DNSNameCache.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "settings/lib/Setting.h"
@@ -45,7 +45,7 @@ CAdvancedSettings::CAdvancedSettings()
 
 void CAdvancedSettings::OnSettingsLoaded()
 {
-  const boost::shared_ptr<CProfilesManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   // load advanced settings
   Load(*profileManager);
@@ -348,7 +348,7 @@ void CAdvancedSettings::Initialize()
   m_initialized = true;
 }
 
-bool CAdvancedSettings::Load(const CProfilesManager &profileManager)
+bool CAdvancedSettings::Load(const CProfileManager &profileManager)
 {
   // NOTE: This routine should NOT set the default of any of these parameters
   //       it should instead use the versions of GetString/Integer/Float that

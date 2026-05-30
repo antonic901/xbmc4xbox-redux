@@ -1,45 +1,31 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIWindowSettingsProfile.h"
-#include "windows/GUIWindowFileManager.h"
-#include "profiles/Profile.h"
-#include "profiles/ProfilesManager.h"
-#include "Application.h"
+
+#include "FileItem.h"
+#include "ServiceBroker.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogSelect.h"
-#include "profiles/dialogs/GUIDialogProfileSettings.h"
-#include "xbox/Network.h"
-#include "utils/URIUtils.h"
-#include "GUIPassword.h"
-#include "windows/GUIWindowLoginScreen.h"
-#include "guilib/GUIComponent.h"
-#include "guilib/GUIWindowManager.h"
 #include "filesystem/Directory.h"
-#include "FileItem.h"
-#include "guilib/WindowIDs.h"
-#include "input/actions/Action.h"
-#include "input/actions/ActionIDs.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIMessage.h"
+#include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
-#include "utils/Variant.h"
+#include "input/actions/ActionIDs.h"
+#include "messaging/ApplicationMessenger.h"
+#include "profiles/Profile.h"
+#include "profiles/ProfileManager.h"
+#include "profiles/dialogs/GUIDialogProfileSettings.h"
 #include "settings/SettingsComponent.h"
+#include "utils/URIUtils.h"
+#include "utils/Variant.h"
+#include "windows/GUIWindowFileManager.h"
 
 using namespace XFILE;
 
@@ -69,7 +55,9 @@ int CGUIWindowSettingsProfile::GetSelectedItem()
 
 void CGUIWindowSettingsProfile::OnPopupMenu(int iItem)
 {
-  if (iItem == (int)CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles())
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+
+  if (iItem == (int)profileManager->GetNumberOfProfiles())
     return;
 
   // popup the context menu
@@ -81,19 +69,13 @@ void CGUIWindowSettingsProfile::OnPopupMenu(int iItem)
   int choice = CGUIDialogContextMenu::ShowAndGetChoice(choices);
   if (choice == 1)
   {
-    unsigned iCtrlID = GetFocusedControlID();
-    g_application.StopPlaying();
-    CGUIMessage msg2(GUI_MSG_ITEM_SELECTED, CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow(), iCtrlID);
-    CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg2);
-    g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
-    CServiceBroker::GetSettingsComponent()->GetProfileManager()->LoadMasterProfileForLogin();
-    CGUIWindowLoginScreen::LoadProfile(iItem);
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_LOADPROFILE, iItem);
     return;
   }
 
   if (choice == 2)
   {
-    if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->DeleteProfile(iItem))
+    if (profileManager->DeleteProfile(iItem))
       iItem--;
   }
 
@@ -127,19 +109,21 @@ bool CGUIWindowSettingsProfile::OnMessage(CGUIMessage& message)
           iAction == ACTION_MOUSE_RIGHT_CLICK
         )
         {
+          const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+
           CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), CONTROL_PROFILES);
           CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
           int iItem = msg.GetParam1();
           if (iAction == ACTION_CONTEXT_MENU || iAction == ACTION_MOUSE_RIGHT_CLICK)
           {
             //contextmenu
-            if (iItem <= (int)CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles() - 1)
+            if (iItem <= static_cast<int>(profileManager->GetNumberOfProfiles()) - 1)
             {
               OnPopupMenu(iItem);
             }
             return true;
           }
-          else if (iItem < (int)CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles())
+          else if (iItem < static_cast<int>(profileManager->GetNumberOfProfiles()))
           {
             if (CGUIDialogProfileSettings::ShowForProfile(iItem))
             {
@@ -152,10 +136,10 @@ bool CGUIWindowSettingsProfile::OnMessage(CGUIMessage& message)
 
             return false;
           }
-          else if (iItem > (int)CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles() - 1)
+          else if (iItem > static_cast<int>(profileManager->GetNumberOfProfiles()) - 1)
           {
-            CDirectory::Create(URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(),"profiles"));
-            if (CGUIDialogProfileSettings::ShowForProfile(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles()))
+            CDirectory::Create(URIUtils::AddFileToFolder(profileManager->GetUserDataFolder(),"profiles"));
+            if (CGUIDialogProfileSettings::ShowForProfile(profileManager->GetNumberOfProfiles()))
             {
               LoadList();
               CGUIMessage msg(GUI_MSG_ITEM_SELECT, GetID(), 2,iItem);
@@ -169,18 +153,22 @@ bool CGUIWindowSettingsProfile::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_LOGINSCREEN)
       {
-        CServiceBroker::GetSettingsComponent()->GetProfileManager()->ToggleLoginScreen();
-        CServiceBroker::GetSettingsComponent()->GetProfileManager()->Save();
+        const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+
+        profileManager->ToggleLoginScreen();
+        profileManager->Save();
         return true;
       }
       else if (iControl == CONTROL_AUTOLOGIN)
       {
-        int currentId = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetAutoLoginProfileId();
+        const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+
+        int currentId = profileManager->GetAutoLoginProfileId();
         int profileId;
         if (GetAutoLoginProfileChoice(profileId) && (currentId != profileId))
         {
-          CServiceBroker::GetSettingsComponent()->GetProfileManager()->SetAutoLoginProfileId(profileId);
-          CServiceBroker::GetSettingsComponent()->GetProfileManager()->Save();
+          profileManager->SetAutoLoginProfileId(profileId);
+          profileManager->Save();
         }
         return true;
       }
@@ -195,9 +183,11 @@ void CGUIWindowSettingsProfile::LoadList()
 {
   ClearListItems();
 
-  for (unsigned int i = 0; i < CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles(); i++)
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+
+  for (unsigned int i = 0; i < profileManager->GetNumberOfProfiles(); i++)
   {
-    const CProfile *profile = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetProfile(i);
+    const CProfile *profile = profileManager->GetProfile(i);
     CFileItemPtr item(new CFileItem(profile->getName()));
     item->SetLabel2(profile->getDate());
     item->SetArt("thumb", profile->getThumb());
@@ -211,7 +201,7 @@ void CGUIWindowSettingsProfile::LoadList()
   CGUIMessage msg(GUI_MSG_LABEL_BIND, GetID(), CONTROL_PROFILES, 0, 0, m_listItems);
   OnMessage(msg);
 
-  if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->UsingLoginScreen())
+  if (profileManager->UsingLoginScreen())
   {
     CONTROL_SELECT(CONTROL_LOGINSCREEN);
   }
@@ -237,22 +227,24 @@ void CGUIWindowSettingsProfile::OnInitWindow()
 
 bool CGUIWindowSettingsProfile::GetAutoLoginProfileChoice(int &iProfile)
 {
-  CGUIDialogSelect *dialog = (CGUIDialogSelect*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_SELECT);
+  CGUIDialogSelect *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
   if (!dialog) return false;
+
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
   // add items
   // "Last used profile" option comes first, so up indices by 1
-  int autoLoginProfileId = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetAutoLoginProfileId() + 1;
+  int autoLoginProfileId = profileManager->GetAutoLoginProfileId() + 1;
   CFileItemList items;
   CFileItemPtr item(new CFileItem());
   item->SetLabel(g_localizeStrings.Get(37014)); // Last used profile
   item->SetArt("icon", "DefaultUser.png");
   items.Add(item);
 
-  for (unsigned int i = 0; i < CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetNumberOfProfiles(); i++)
+  for (unsigned int i = 0; i < profileManager->GetNumberOfProfiles(); i++)
   {
-    const CProfile *profile = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetProfile(i);
-    std::string locked = g_localizeStrings.Get(profile->getLockMode() > 0 ? 20166 : 20165);
+    const CProfile *profile = profileManager->GetProfile(i);
+    const std::string& locked = g_localizeStrings.Get(profile->getLockMode() > 0 ? 20166 : 20165);
     CFileItemPtr item(new CFileItem(profile->getName()));
     item->SetLabel2(locked); // lock setting
     std::string thumb = profile->getThumb();

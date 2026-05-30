@@ -24,7 +24,7 @@
 #include "ServiceBroker.h"
 #include "Util.h"
 #include "interfaces/AnnouncementManager.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "FileItem.h"
 #include "utils/XBMCTinyXML.h"
 #include "utils/log.h"

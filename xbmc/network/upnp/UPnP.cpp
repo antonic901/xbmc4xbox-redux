@@ -34,7 +34,7 @@
 #include "Platinum.h"
 #include "PltSyncMediaBrowser.h"
 #include "URL.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "FileItem.h"

@@ -25,7 +25,7 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "music/tags/MusicInfoTag.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "filesystem/SpecialProtocol.h"

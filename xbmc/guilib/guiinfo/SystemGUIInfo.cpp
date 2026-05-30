@@ -20,7 +20,7 @@
 #include "guilib/guiinfo/GUIInfo.h"
 #include "guilib/guiinfo/GUIInfoHelper.h"
 #include "guilib/guiinfo/GUIInfoLabels.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
@@ -230,7 +230,7 @@ bool CSystemGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
       return true;
     case SYSTEM_PROFILEAUTOLOGIN:
     {
-      const boost::shared_ptr<CProfilesManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+      const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
       int iProfileId = profileManager->GetAutoLoginProfileId();
       if ((iProfileId < 0) || !profileManager->GetProfileName(iProfileId, value))
         value = g_localizeStrings.Get(37014); // Last used profile

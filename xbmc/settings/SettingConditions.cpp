@@ -13,7 +13,7 @@
 #include "addons/Skin.h"
 #include "ServiceBroker.h"
 #include "GUIPassword.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/SettingAddon.h"
 #include "settings/SettingsComponent.h"
 #include "utils/FontUtils.h"
@@ -269,7 +269,7 @@ bool LessThanOrEqual(const std::string& condition,
 }
 }; // anonymous namespace
 
-const CProfilesManager* CSettingConditions::m_profileManager = NULL;
+const CProfileManager* CSettingConditions::m_profileManager = NULL;
 std::set<std::string> CSettingConditions::m_simpleConditions;
 std::map<std::string, SettingConditionCheck> CSettingConditions::m_complexConditions;
 

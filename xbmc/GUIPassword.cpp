@@ -25,7 +25,7 @@
 #include "guilib/GUIKeyboardFactory.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogOK.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "profiles/dialogs/GUIDialogLockSettings.h"
 #include "profiles/dialogs/GUIDialogProfileSettings.h"
 #include "Util.h"

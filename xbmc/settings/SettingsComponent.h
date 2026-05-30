@@ -12,7 +12,7 @@
 #include <boost/shared_ptr.hpp>
 
 class CAdvancedSettings;
-class CProfilesManager;
+class CProfileManager;
 class CSettings;
 
 class CSettingsComponent
@@ -53,7 +53,7 @@ public:
    * @brief Get access to the profiles manager subcomponent.
    * @return the profiles manager subcomponent.
    */
-  boost::shared_ptr<CProfilesManager> GetProfileManager();
+  boost::shared_ptr<CProfileManager> GetProfileManager();
 
 private:
   bool InitDirectoriesXbox(bool bPlatformDirectories);
@@ -69,5 +69,5 @@ private:
 
   boost::shared_ptr<CSettings> m_settings;
   boost::shared_ptr<CAdvancedSettings> m_advancedSettings;
-  boost::shared_ptr<CProfilesManager> m_profileManager;
+  boost::shared_ptr<CProfileManager> m_profileManager;
 };

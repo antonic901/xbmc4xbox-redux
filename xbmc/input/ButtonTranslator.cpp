@@ -21,7 +21,7 @@
 #include "system.h"
 #include "interfaces/builtins/Builtins.h"
 #include "ButtonTranslator.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "guilib/WindowIDs.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"

@@ -29,7 +29,7 @@
 #include "interfaces/builtins/Builtins.h"
 #include "messaging/ApplicationMessenger.h"
 #include "messaging/helpers/DialogHelper.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"

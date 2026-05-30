@@ -17,7 +17,7 @@
 #include "guilib/guiinfo/GUIInfoLabels.h"
 #include "music/MusicDatabase.h"
 #include "music/MusicLibraryQueue.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/SettingsComponent.h"
 #include "utils/FileUtils.h"
 #include "utils/StringUtils.h"
@@ -241,7 +241,7 @@ bool CLibraryGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contex
     case LIBRARY_HAS_NODE:
     {
       const CURL url(info.GetData3());
-      const boost::shared_ptr<CProfilesManager> profileManager =
+      const boost::shared_ptr<CProfileManager> profileManager =
             CServiceBroker::GetSettingsComponent()->GetProfileManager();
       CFileItemList items;
 

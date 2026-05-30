@@ -42,7 +42,7 @@ class CWeather;
 
 class CPlayerCoreFactory;
 class CDatabaseManager;
-class CProfilesManager;
+class CProfileManager;
 class CMediaManager;
 
 class CServiceManager
@@ -53,7 +53,7 @@ public:
 
   bool Init1();
   bool Init2();
-  bool Init3(const boost::shared_ptr<CProfilesManager>& profileManager);
+  bool Init3(const boost::shared_ptr<CProfileManager>& profileManager);
   void Deinit();
   ADDON::CAddonMgr& GetAddonMgr();
   ADDON::CRepositoryUpdater& GetRepositoryUpdater();

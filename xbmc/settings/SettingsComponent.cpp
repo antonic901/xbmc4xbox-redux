@@ -12,7 +12,7 @@
 #include "Util.h"
 #include "filesystem/Directory.h"
 #include "filesystem/SpecialProtocol.h"
-#include "profiles/ProfilesManager.h"
+#include "profiles/ProfileManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "utils/StringUtils.h"
@@ -22,7 +22,7 @@
 CSettingsComponent::CSettingsComponent()
   : m_settings(new CSettings()),
     m_advancedSettings(new CAdvancedSettings()),
-    m_profileManager(new CProfilesManager()),
+    m_profileManager(new CProfileManager()),
     m_state(State::DEINITED)
 {
 }
@@ -105,7 +105,7 @@ boost::shared_ptr<CAdvancedSettings> CSettingsComponent::GetAdvancedSettings()
   return m_advancedSettings;
 }
 
-boost::shared_ptr<CProfilesManager> CSettingsComponent::GetProfileManager()
+boost::shared_ptr<CProfileManager> CSettingsComponent::GetProfileManager()
 {
   return m_profileManager;
 }

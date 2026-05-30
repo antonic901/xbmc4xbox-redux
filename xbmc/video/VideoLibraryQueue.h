@@ -153,14 +153,14 @@ protected:
 
 private:
   CVideoLibraryQueue();
-  CVideoLibraryQueue(const CVideoLibraryQueue&) = delete;
-  CVideoLibraryQueue const& operator=(CVideoLibraryQueue const&) = delete;
+  CVideoLibraryQueue(const CVideoLibraryQueue&);
+  CVideoLibraryQueue const& operator=(CVideoLibraryQueue const&);
 
   typedef std::set<CVideoLibraryJob*> VideoLibraryJobs;
   typedef std::map<std::string, VideoLibraryJobs> VideoLibraryJobMap;
   VideoLibraryJobMap m_jobs;
   CCriticalSection m_critical;
 
-  bool m_modal = false;
-  bool m_cleaning = false;
+  bool m_modal;
+  bool m_cleaning;
 };
