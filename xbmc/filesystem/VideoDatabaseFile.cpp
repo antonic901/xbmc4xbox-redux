@@ -35,7 +35,7 @@ CVideoInfoTag CVideoDatabaseFile::GetVideoTag(const CURL& url)
     return tag;
   long idDb = atol(strFileName.c_str());
 
-  VideoDbContentType type = GetType(url);
+  VideoDbContentType::Type type = GetType(url);
   if (type == VideoDbContentType::UNKNOWN)
     return tag;
 
@@ -48,7 +48,7 @@ CVideoInfoTag CVideoDatabaseFile::GetVideoTag(const CURL& url)
   return tag;
 }
 
-VideoDbContentType CVideoDatabaseFile::GetType(const CURL& url)
+VideoDbContentType::Type CVideoDatabaseFile::GetType(const CURL& url)
 {
   std::string strPath = URIUtils::GetDirectory(url.Get());
   if (strPath.empty())
@@ -59,7 +59,7 @@ VideoDbContentType CVideoDatabaseFile::GetType(const CURL& url)
     return VideoDbContentType::UNKNOWN;
 
   std::string itemType = pathElem.at(2);
-  VideoDbContentType type;
+  VideoDbContentType::Type type;
   if (itemType == "movies" || itemType == "recentlyaddedmovies")
     type = VideoDbContentType::MOVIES;
   else if (itemType == "episodes" || itemType == "recentlyaddedepisodes" || itemType == "inprogresstvshows" || itemType == "tvshows")
@@ -84,7 +84,7 @@ std::string CVideoDatabaseFile::TranslatePath(const CURL& url)
     return "";
   long idDb = atol(strFileName.c_str());
 
-  VideoDbContentType type = GetType(url);
+  VideoDbContentType::Type type = GetType(url);
   if (type == VideoDbContentType::UNKNOWN)
     return "";
 

@@ -21,6 +21,7 @@
 #include "utils/ISerializable.h"
 #include "utils/ISortable.h"
 #include "utils/SortUtils.h"
+#include "video/VideoDatabase.h" // VideoDbContentType
 
 #include <map>
 #include <memory>
@@ -224,7 +225,7 @@ public:
   void FillInDefaultIcon();
   void SetFileSizeLabel();
   virtual void SetLabel(const std::string &strLabel);
-  int GetVideoContentType() const;
+  VideoDbContentType::Type GetVideoContentType() const;
   bool IsLabelPreformatted() const { return m_bLabelPreformatted; }
   void SetLabelPreformatted(bool bYesNo) { m_bLabelPreformatted=bYesNo; }
   bool SortsOnTop() const { return m_specialSort == SortSpecialOnTop; }

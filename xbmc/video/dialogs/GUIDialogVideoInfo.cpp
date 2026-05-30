@@ -291,7 +291,7 @@ void CGUIDialogVideoInfo::OnInitWindow()
   // Disable video user rating button for plugins and sets as they don't have tables to save this
   CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_USERRATING, !m_movieItem->IsPlugin() && m_movieItem->GetVideoInfoTag()->m_type != MediaTypeVideoCollection);
 
-  VideoDbContentType type = m_movieItem->GetVideoContentType();
+  VideoDbContentType::Type type = m_movieItem->GetVideoContentType();
   if (type == VideoDbContentType::TVSHOWS || type == VideoDbContentType::MOVIES)
     CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_GET_FANART, (profileManager->
         GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser) &&
@@ -680,7 +680,7 @@ void CGUIDialogVideoInfo::DoSearch(std::string& strSearch, CFileItemList& items)
 
 void CGUIDialogVideoInfo::OnSearchItemFound(const CFileItem* pItem)
 {
-  VideoDbContentType type = pItem->GetVideoContentType();
+  VideoDbContentType::Type type = pItem->GetVideoContentType();
 
   CVideoDatabase db;
   if (!db.Open())
@@ -1294,7 +1294,7 @@ bool CGUIDialogVideoInfo::UpdateVideoItemTitle(const boost::shared_ptr<CFileItem
   else
   {
     detail.m_strTitle = title;
-    VideoDbContentType iType = pItem->GetVideoContentType();
+    VideoDbContentType::Type iType = pItem->GetVideoContentType();
     database.UpdateMovieTitle(iDbId, detail.m_strTitle, iType);
   }
 
@@ -1337,7 +1337,7 @@ bool CGUIDialogVideoInfo::DeleteVideoItemFromDatabase(const boost::shared_ptr<CF
     return false;
 
   int heading = -1;
-  VideoDbContentType type = item->GetVideoContentType();
+  VideoDbContentType::Type type = item->GetVideoContentType();
   const std::string& subtype = item->GetVideoInfoTag()->m_type;
   if (subtype != "tag")
   {
@@ -2026,7 +2026,7 @@ bool CGUIDialogVideoInfo::UpdateVideoItemSortTitle(const boost::shared_ptr<CFile
 
   int iDbId = pItem->GetVideoInfoTag()->m_iDbId;
   CVideoInfoTag detail;
-  VideoDbContentType iType = pItem->GetVideoContentType();
+  VideoDbContentType::Type iType = pItem->GetVideoContentType();
   if (iType == VideoDbContentType::MOVIES)
     database.GetMovieInfo("", detail, iDbId, pItem->GetVideoInfoTag()->GetAssetInfo().GetId(),
                           pItem->GetVideoInfoTag()->m_iFileId, VideoDbDetailsNone);

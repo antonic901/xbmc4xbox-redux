@@ -47,7 +47,6 @@
 #include "utils/Variant.h"
 #include "utils/log.h"
 #include "video/Bookmark.h"
-#include "video/VideoDatabase.h"
 #include "video/VideoInfoTag.h"
 
 #include <algorithm>
@@ -3481,21 +3480,23 @@ std::string CFileItem::FindTrailer() const
   return strTrailer;
 }
 
-int CFileItem::GetVideoContentType() const
+VideoDbContentType::Type CFileItem::GetVideoContentType() const
 {
-  VIDEODB_CONTENT_TYPE type = VIDEODB_CONTENT_MOVIES;
+  VideoDbContentType::Type type = VideoDbContentType::MOVIES;
   if (HasVideoInfoTag() && GetVideoInfoTag()->m_type == MediaTypeTvShow)
-    type = VIDEODB_CONTENT_TVSHOWS;
+    type = VideoDbContentType::TVSHOWS;
   if (HasVideoInfoTag() && GetVideoInfoTag()->m_type == MediaTypeEpisode)
-    return VIDEODB_CONTENT_EPISODES;
+    return VideoDbContentType::EPISODES;
   if (HasVideoInfoTag() && GetVideoInfoTag()->m_type == MediaTypeMusicVideo)
-    return VIDEODB_CONTENT_MUSICVIDEOS;
+    return VideoDbContentType::MUSICVIDEOS;
+  if (HasVideoInfoTag() && GetVideoInfoTag()->m_type == MediaTypeAlbum)
+    return VideoDbContentType::MUSICALBUMS;
 
   CVideoDatabaseDirectory dir;
   VIDEODATABASEDIRECTORY::CQueryParams params;
   dir.GetQueryParams(m_strPath, params);
   if (params.GetSetId() != -1 && params.GetMovieId() == -1) // movie set
-    return VIDEODB_CONTENT_MOVIE_SETS;
+    return VideoDbContentType::MOVIE_SETS;
 
   return type;
 }
