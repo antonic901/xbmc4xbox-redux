@@ -57,7 +57,7 @@ std::string GetChildContentType(const boost::movelib::unique_ptr<CDirectoryNode>
     {
       CQueryParams params;
       node->CollectQueryParams(params);
-      if (static_cast<VideoDbContentType>(params.GetContentType()) ==
+      if (static_cast<VideoDbContentType::Type>(params.GetContentType()) ==
           VideoDbContentType::MUSICVIDEOS)
         return "artists";
 
@@ -80,7 +80,7 @@ std::string GetChildContentType(const boost::movelib::unique_ptr<CDirectoryNode>
     default:
       break;
   }
-  return {};
+  return "";
 }
 
 } // unnamed namespace
@@ -175,9 +175,10 @@ void CVideoDatabaseDirectory::ClearDirectoryCache(const std::string& strDirector
   std::string path = CLegacyPathTranslation::TranslateVideoDbPath(strDirectory);
   URIUtils::RemoveSlashAtEnd(path);
 
-  uint32_t crc = Crc32::ComputeFromLowerCase(path);
+  Crc32 crc;
+  crc.ComputeFromLowerCase(path);
 
-  std::string strFileName = StringUtils::Format("special://temp/archive_cache/{:08x}.fi", crc);
+  std::string strFileName = StringUtils::Format("special://temp/archive_cache/%08x.fi", (unsigned __int32)crc);
   CFile::Delete(strFileName);
 }
 

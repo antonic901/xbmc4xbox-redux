@@ -59,7 +59,7 @@ std::string CDirectoryNodeSeasons::GetSeasonTitle() const
     season = db.GetTvShowNamedSeasonById(params.GetTvShowId(), params.GetSeason());
   }
   if (season.empty())
-    season = StringUtils::Format(g_localizeStrings.Get(20358), GetID()); // Season <n>
+    season = StringUtils::Format(g_localizeStrings.Get(20358).c_str(), GetID()); // Season <n>
 
   return season;
 }

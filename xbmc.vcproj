@@ -1983,6 +1983,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\VideoDatabaseDirectory.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\filesystem\VideoDatabaseFile.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\filesystem\VideoDatabaseFile.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\FileSystem\VirtualDirectory.cpp">
 				</File>
 				<File

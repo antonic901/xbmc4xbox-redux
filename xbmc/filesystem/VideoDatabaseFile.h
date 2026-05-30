@@ -9,8 +9,8 @@
 #pragma once
 
 #include "filesystem/OverrideFile.h"
+#include "video/VideoDatabase.h" // VideoDbContentType
 
-enum class VideoDbContentType;
 class CVideoInfoTag;
 class CURL;
 

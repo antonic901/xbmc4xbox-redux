@@ -11,7 +11,6 @@
 #include "URL.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
-#include "video/VideoDatabase.h"
 #include "video/VideoInfoTag.h"
 
 using namespace XFILE;
