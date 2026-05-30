@@ -26,6 +26,6 @@ public:
 
 protected:
   virtual std::string TranslatePath(const CURL& url);
-  static VideoDbContentType GetType(const CURL& url);
+  static VideoDbContentType::Type GetType(const CURL& url);
 };
 }

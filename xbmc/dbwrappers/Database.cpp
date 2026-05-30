@@ -152,6 +152,7 @@ bool CDatabase::ExistsSubQuery::BuildSQL(std::string & strSQL)
 }
 
 CDatabase::CDatabase(void)
+  : m_profileManager(*CServiceBroker::GetSettingsComponent()->GetProfileManager())
 {
   m_openCount = 0;
   m_sqlite = true;
@@ -398,7 +399,7 @@ void CDatabase::InitSettings(DatabaseSettings &dbSettings)
   {
     dbSettings.type = "sqlite3";
     if (dbSettings.host.empty())
-      dbSettings.host = CSpecialProtocol::TranslatePath(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetDatabaseFolder());
+      dbSettings.host = CSpecialProtocol::TranslatePath(m_profileManager.GetDatabaseFolder());
   }
 
   // use separate, versioned database

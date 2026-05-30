@@ -18,8 +18,8 @@ class CStreamDetails;
 class CVideoDatabase;
 class EmbeddedArt;
 
-using ArtMap = std::map<std::string, std::string>;
-using ArtCache = std::map<std::pair<MediaType, int>, ArtMap>;
+typedef std::map<std::string, std::string> ArtMap;
+typedef std::map<std::pair<MediaType, int>, ArtMap> ArtCache;
 
 class CVideoThumbLoader : public CThumbLoader
 {

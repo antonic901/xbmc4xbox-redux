@@ -1653,7 +1653,7 @@ namespace VIDEO
     }
   }
 
-  VideoDbContentType ContentToVideoDbType(CONTENT_TYPE content)
+  VideoDbContentType::Type ContentToVideoDbType(CONTENT_TYPE content)
   {
     switch (content)
     {
@@ -2522,7 +2522,7 @@ namespace VIDEO
     return true;
   }
 
-  bool CVideoInfoScanner::ProcessVideoVersion(VideoDbContentType itemType, int dbId)
+  bool CVideoInfoScanner::ProcessVideoVersion(VideoDbContentType::Type itemType, int dbId)
   {
     return CGUIDialogVideoManagerVersions::ProcessVideoVersion(itemType, dbId);
   }

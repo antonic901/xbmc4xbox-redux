@@ -31,11 +31,16 @@
 #include "Application.h"
 #include "XbmcContext.h"
 
+#include <boost/tuple/tuple.hpp>
+
 CApplication g_application;
 void main()
 {
   // set up some xbmc specific relationships
   XBMC::Context context;
+
+  std::vector<boost::tuple<std::string, int, int> > versions;
+  versions.push_back(boost::make_tuple("a", 0, 1));
 
   g_application.Create(NULL);
   while (1)

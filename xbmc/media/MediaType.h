@@ -37,6 +37,7 @@ typedef std::string MediaType;
 #define MediaTypeTvShow           "tvshow"
 #define MediaTypeSeason           "season"
 #define MediaTypeEpisode          "episode"
+#define MediaTypeVideoVersion "videoversion"
 
 class CMediaTypes
 {

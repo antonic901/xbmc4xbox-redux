@@ -31,6 +31,7 @@ namespace dbiplus {
 
 class DatabaseSettings; // forward
 class CDbUrl;
+class CProfileManager;
 struct SortDescription;
 
 class CDatabase
@@ -221,6 +222,10 @@ protected:
   boost::movelib::unique_ptr<dbiplus::Database> m_pDB;
   boost::movelib::unique_ptr<dbiplus::Dataset> m_pDS;
   boost::movelib::unique_ptr<dbiplus::Dataset> m_pDS2;
+
+protected:
+  // Construction parameters
+  const CProfileManager& m_profileManager;
 
 private:
   void InitSettings(DatabaseSettings &dbSettings);
