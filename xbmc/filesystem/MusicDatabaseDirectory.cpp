@@ -158,9 +158,10 @@ void CMusicDatabaseDirectory::ClearDirectoryCache(const std::string& strDirector
   std::string path = CLegacyPathTranslation::TranslateMusicDbPath(strDirectory);
   URIUtils::RemoveSlashAtEnd(path);
 
-  uint32_t crc = Crc32::ComputeFromLowerCase(path);
+  Crc32 crc;
+  crc.ComputeFromLowerCase(path);
 
-  std::string strFileName = StringUtils::Format("special://temp/archive_cache/{:08x}.fi", crc);
+  std::string strFileName = StringUtils::Format("special://temp/archive_cache/%08x.fi", (unsigned __int32)crc);
   CFile::Delete(strFileName);
 }
 
