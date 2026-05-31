@@ -27,7 +27,7 @@ class CAlbum
 {
 public:
   explicit CAlbum(const CFileItem& item);
-  CAlbum() {}
+  CAlbum() { Reset(); }
   bool operator<(const CAlbum &a) const;
   void MergeScrapedAlbum(const CAlbum& album, bool override = true);
 
@@ -141,7 +141,7 @@ public:
   bool Load(const TiXmlElement *element, bool append = false, bool prioritise = false);
   bool Save(TiXmlNode *node, const std::string &tag, const std::string& strPath);
 
-  int idAlbum = -1;
+  int idAlbum;
   std::string strAlbum;
   std::string strMusicBrainzAlbumID;
   std::string strReleaseGroupMBID;
@@ -159,25 +159,25 @@ public:
   std::string strType;
   std::string strReleaseStatus;
   std::string strPath;
-  float fRating = -1;
-  int iUserrating = -1;
-  int iVotes = -1;
+  float fRating;
+  int iUserrating;
+  int iVotes;
   std::string strReleaseDate;
   std::string strOrigReleaseDate;
-  bool bBoxedSet = false;
-  bool bCompilation = false;
-  int iTimesPlayed = 0;
+  bool bBoxedSet;
+  bool bCompilation;
+  int iTimesPlayed;
   CDateTime dateAdded; // From related file creation or modification times, or when (re-)scanned
   CDateTime dateUpdated; // Time db record Last modified
   CDateTime dateNew;  // Time db record created
   CDateTime lastPlayed;
-  int iTotalDiscs = -1;
+  int iTotalDiscs;
   VECSONGS songs;     ///< Local songs
-  ReleaseType releaseType = Album;
+  ReleaseType releaseType;
   std::string strLastScraped;
-  bool bScrapedMBID = false;
-  bool bArtistSongMerge = false;
-  int iAlbumDuration = 0;
+  bool bScrapedMBID;
+  bool bArtistSongMerge;
+  int iAlbumDuration;
 };
 
 typedef std::vector<CAlbum> VECALBUMS;

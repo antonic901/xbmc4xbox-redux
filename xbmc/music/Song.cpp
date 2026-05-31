@@ -41,8 +41,8 @@ CSong::CSong(CFileItem& item)
   else
     // Split album artist names further using multiple possible delimiters, over single separator applied in Tag loader
     m_albumArtist = StringUtils::SplitMulti(m_albumArtist, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicArtistSeparators);
-  for (auto artistname : m_albumArtist)
-    StringUtils::Trim(artistname);
+  for (std::vector<std::string>::iterator artistname = m_albumArtist.begin(); artistname != m_albumArtist.end(); ++artistname)
+    StringUtils::Trim(*artistname);
   m_strAlbumArtistSort = tag.GetAlbumArtistSort();
 
   strMusicBrainzTrackID = tag.GetMusicBrainzTrackID();
@@ -92,8 +92,19 @@ void CSong::SetArtistCredits(const std::vector<std::string>& names, const std::v
   std::vector<std::string> artistSort = StringUtils::Split(strArtistSort, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
 
   // Vector of possible separators in the order least likely to be part of artist name
-  static const std::vector<std::string> separators{
-      " feat. ", " ft. ", " Feat. ", " Ft. ", ";", ":", "|", "#", "/", " with ", "&"};
+  std::vector<std::string> separators;
+  separators.push_back(" feat. ");
+  separators.push_back(" ft. ");
+  separators.push_back(" Feat. ");
+  separators.push_back(" Ft. ");
+  separators.push_back(";");
+  separators.push_back(":");
+  separators.push_back("|");
+  separators.push_back("#");
+  separators.push_back("/");
+  separators.push_back(" with ");
+  separators.push_back(",");
+  separators.push_back("&");
 
   if (!mbids.empty())
   { // Have musicbrainz artist info, so use it
@@ -168,9 +179,9 @@ void CSong::SetArtistCredits(const std::vector<std::string>& names, const std::v
       // Use artist sort name providing we have as many as we have mbid,
       // otherwise something is wrong with them so ignore and leave blank
       if (artistSort.size() == mbids.size())
-        artistCredits.emplace_back(StringUtils::Trim(artistName), StringUtils::Trim(artistSort[i]), artistId);
+        artistCredits.push_back(CArtistCredit(StringUtils::Trim(artistName), StringUtils::Trim(artistSort[i]), artistId));
       else
-        artistCredits.emplace_back(StringUtils::Trim(artistName), "", artistId);
+        artistCredits.push_back(CArtistCredit(StringUtils::Trim(artistName), "", artistId));
     }
   }
   else
@@ -190,7 +201,7 @@ void CSong::SetArtistCredits(const std::vector<std::string>& names, const std::v
 
     for (size_t i = 0; i < artists.size(); i++)
     {
-      artistCredits.emplace_back(StringUtils::Trim(artists[i]));
+      artistCredits.push_back(CArtistCredit(StringUtils::Trim(artists[i])));
       // Set artist sort name providing we have as many as we have artists,
       // otherwise something is wrong with them so ignore rather than guess.
       if (artistSort.size() == artists.size())
@@ -290,9 +301,9 @@ const std::vector<std::string> CSong::GetArtist() const
 {
   //Get artist names as vector from artist credits
   std::vector<std::string> songartists;
-  for (const auto& artistCredit : artistCredits)
+  for (VECARTISTCREDITS::const_iterator artistCredit = artistCredits.begin(); artistCredit != artistCredits.end(); ++artistCredit)
   {
-    songartists.push_back(artistCredit.GetArtist());
+    songartists.push_back(artistCredit->GetArtist());
   }
   //When artist credits have not been populated attempt to build an artist vector from the description string
   //This is a temporary fix, in the longer term other areas should query the song_artist table and populate
@@ -309,9 +320,9 @@ const std::string CSong::GetArtistSort() const
   if (!strArtistSort.empty())
     return strArtistSort;
   std::vector<std::string> artistvector;
-  for (const auto& artistcredit : artistCredits)
-    if (!artistcredit.GetSortName().empty())
-      artistvector.emplace_back(artistcredit.GetSortName());
+  for (VECARTISTCREDITS::const_iterator artistcredit = artistCredits.begin(); artistcredit != artistCredits.end(); ++artistcredit)
+    if (!artistcredit->GetSortName().empty())
+      artistvector.push_back(artistcredit->GetSortName());
   std::string artistString;
   if (!artistvector.empty())
     artistString = StringUtils::Join(artistvector, "; ");
@@ -322,9 +333,9 @@ const std::vector<std::string> CSong::GetMusicBrainzArtistID() const
 {
   //Get artist MusicBrainz IDs as vector from artist credits
   std::vector<std::string> musicBrainzID;
-  for (const auto& artistCredit : artistCredits)
+  for (VECARTISTCREDITS::const_iterator artistCredit = artistCredits.begin(); artistCredit != artistCredits.end(); ++artistCredit)
   {
-    musicBrainzID.push_back(artistCredit.GetMusicBrainzArtistID());
+    musicBrainzID.push_back(artistCredit->GetMusicBrainzArtistID());
   }
   return musicBrainzID;
 }
@@ -336,8 +347,8 @@ const std::string CSong::GetArtistString() const
   if (!strArtistDesc.empty())
     return strArtistDesc;
   std::vector<std::string> artistvector;
-  for (const auto& i : artistCredits)
-    artistvector.push_back(i.GetArtist());
+  for (VECARTISTCREDITS::const_iterator i = artistCredits.begin(); i != artistCredits.end(); ++i)
+    artistvector.push_back(i->GetArtist());
   std::string artistString;
   if (!artistvector.empty())
     artistString = StringUtils::Join(artistvector, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
@@ -348,8 +359,8 @@ const std::vector<int> CSong::GetArtistIDArray() const
 {
   // Get song artist IDs for json rpc
   std::vector<int> artistids;
-  for (const auto& artistCredit : artistCredits)
-    artistids.push_back(artistCredit.GetArtistId());
+  for (VECARTISTCREDITS::const_iterator artistCredit = artistCredits.begin(); artistCredit != artistCredits.end(); ++artistCredit)
+    artistids.push_back(artistCredit->GetArtistId());
   return artistids;
 }
 

@@ -434,7 +434,7 @@ public:
   bool GetPaths(std::set<std::string>& paths);
   bool SetPathHash(const std::string& path, const std::string& hash);
   bool GetPathHash(const std::string& path, std::string& hash);
-  bool GetAlbumPaths(int idAlbum, std::vector<std::pair<std::string, int>>& paths);
+  bool GetAlbumPaths(int idAlbum, std::vector<std::pair<std::string, int> >& paths);
   bool GetAlbumPath(int idAlbum, std::string& basePath);
   int GetDiscnumberForPathID(int idPath);
   bool GetOldArtistPath(int idArtist, std::string& path);
@@ -658,7 +658,7 @@ public:
   \param songIDs a vector of <1, id> pairs suited to party mode use
   \return count of song ids found.
   */
-  unsigned int GetRandomSongIDs(const Filter& filter, std::vector<std::pair<int, int>>& songIDs);
+  unsigned int GetRandomSongIDs(const Filter& filter, std::vector<std::pair<int, int> >& songIDs);
 
   /////////////////////////////////////////////////
   // JSON-RPC
