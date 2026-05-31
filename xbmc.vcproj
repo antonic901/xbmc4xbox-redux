@@ -901,6 +901,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\ColorUtils.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\ContentUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ContentUtils.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\Crc32.cpp">
 				</File>
 				<File
