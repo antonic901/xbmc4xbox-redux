@@ -24,7 +24,7 @@ class CVariant;
 
 namespace MUSIC_INFO
 {
-class CMusicInfoTag final : public IArchivable, public ISerializable, public ISortable
+class CMusicInfoTag : public IArchivable, public ISerializable, public ISortable
 {
 public:
   CMusicInfoTag(void);
