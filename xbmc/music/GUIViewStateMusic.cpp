@@ -20,7 +20,6 @@
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
-#include "utils/FileExtensionProvider.h"
 #include "utils/SortUtils.h"
 #include "utils/log.h"
 #include "view/ViewStateSettings.h"
@@ -47,7 +46,7 @@ std::string CGUIViewStateWindowMusic::GetLockType()
 
 std::string CGUIViewStateWindowMusic::GetExtensions()
 {
-  return CServiceBroker::GetFileExtensionProvider().GetMusicExtensions();
+  return CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions;
 }
 
 VECSOURCES& CGUIViewStateWindowMusic::GetSources()

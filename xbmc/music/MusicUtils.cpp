@@ -13,9 +13,7 @@
 #include "PartyModeManager.h"
 #include "PlayListPlayer.h"
 #include "ServiceBroker.h"
-#include "application/Application.h"
-#include "application/ApplicationComponents.h"
-#include "application/ApplicationPlayer.h"
+#include "Application.h"
 #include "dialogs/GUIDialogBusy.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogSelect.h"
@@ -43,10 +41,10 @@
 #include "view/GUIViewState.h"
 
 #include <memory>
+#include <boost/algorithm/cxx11/find_if_not.hpp>
 
 using namespace MUSIC_INFO;
 using namespace XFILE;
-using namespace std::chrono_literals;
 
 namespace MUSIC_UTILS
 {
@@ -153,9 +151,7 @@ public:
     }
 
     // Similarly update the art of the currently playing song so it shows on OSD
-    const auto& components = CServiceBroker::GetAppComponents();
-    const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-    if (appPlayer->IsPlayingAudio() && g_application.CurrentFileItem().HasMusicInfoTag())
+    if (g_application.m_pPlayer->IsPlayingAudio() && g_application.CurrentFileItem().HasMusicInfoTag())
     {
       CFileItemPtr songitem = boost::make_shared<CFileItem>(g_application.CurrentFileItem());
       if (HasSongExtraArtChanged(songitem, type, itemID, db))
@@ -208,16 +204,17 @@ void UpdateArtJob(const boost::shared_ptr<CFileItem>& pItem,
 {
   // Asynchronously update that type of art in the database
   CSetArtJob* job = new CSetArtJob(pItem, strType, strArt);
-  CServiceBroker::GetJobManager()->AddJob(job, nullptr);
+  CServiceBroker::GetJobManager()->AddJob(job, NULL);
 }
 
 // Add art types required in Kodi and configured by the user
 void AddHardCodedAndExtendedArtTypes(std::vector<std::string>& artTypes, const CMusicInfoTag& tag)
 {
-  for (const auto& artType : GetArtTypesToScan(tag.GetType()))
+  std::vector<std::string> artTypesToScan = GetArtTypesToScan(tag.GetType());
+  for (std::vector<std::string>::const_iterator artType = artTypesToScan.begin(); artType != artTypesToScan.end(); ++artType)
   {
-    if (find(artTypes.begin(), artTypes.end(), artType) == artTypes.end())
-      artTypes.push_back(artType);
+    if (find(artTypes.begin(), artTypes.end(), *artType) == artTypes.end())
+      artTypes.push_back(*artType);
   }
 }
 
@@ -228,10 +225,10 @@ void AddCurrentArtTypes(std::vector<std::string>& artTypes,
 {
   std::map<std::string, std::string> currentArt;
   db.GetArtForItem(tag.GetDatabaseId(), tag.GetType(), currentArt);
-  for (const auto& art : currentArt)
+  for (std::map<std::string, std::string>::const_iterator art = currentArt.begin(); art != currentArt.end(); ++art)
   {
-    if (!art.second.empty() && find(artTypes.begin(), artTypes.end(), art.first) == artTypes.end())
-      artTypes.push_back(art.first);
+    if (!art->second.empty() && find(artTypes.begin(), artTypes.end(), art->first) == artTypes.end())
+      artTypes.push_back(art->first);
   }
 }
 
@@ -242,10 +239,10 @@ void AddMediaTypeArtTypes(std::vector<std::string>& artTypes,
 {
   std::vector<std::string> dbArtTypes;
   db.GetArtTypes(tag.GetType(), dbArtTypes);
-  for (const auto& artType : dbArtTypes)
+  for (std::vector<std::string>::const_iterator artType = dbArtTypes.begin(); artType != dbArtTypes.end(); ++artType)
   {
-    if (find(artTypes.begin(), artTypes.end(), artType) == artTypes.end())
-      artTypes.push_back(artType);
+    if (find(artTypes.begin(), artTypes.end(), *artType) == artTypes.end())
+      artTypes.push_back(*artType);
   }
 }
 
@@ -254,10 +251,11 @@ void AddAvailableArtTypes(std::vector<std::string>& artTypes,
                           const CMusicInfoTag& tag,
                           CMusicDatabase& db)
 {
-  for (const auto& artType : db.GetAvailableArtTypesForItem(tag.GetDatabaseId(), tag.GetType()))
+  std::vector<std::string> availableArtTypes = db.GetAvailableArtTypesForItem(tag.GetDatabaseId(), tag.GetType());
+  for (std::vector<std::string>::const_iterator artType = availableArtTypes.begin(); artType != availableArtTypes.end(); ++artType)
   {
-    if (find(artTypes.begin(), artTypes.end(), artType) == artTypes.end())
-      artTypes.push_back(artType);
+    if (find(artTypes.begin(), artTypes.end(), *artType) == artTypes.end())
+      artTypes.push_back(*artType);
   }
 }
 
@@ -284,25 +282,25 @@ bool FillArtTypesList(CFileItem& musicitem, CFileItemList& artlist)
 
   db.Close();
 
-  for (const auto& type : artTypes)
+  for (std::vector<std::string>::const_iterator type = artTypes.begin(); type != artTypes.end(); ++type)
   {
-    CFileItemPtr artitem(new CFileItem(type, false));
+    CFileItemPtr artitem(new CFileItem(*type, false));
     // Localise the names of common types of art
-    if (type == "banner")
+    if (*type == "banner")
       artitem->SetLabel(g_localizeStrings.Get(20020));
-    else if (type == "fanart")
+    else if (*type == "fanart")
       artitem->SetLabel(g_localizeStrings.Get(20445));
-    else if (type == "poster")
+    else if (*type == "poster")
       artitem->SetLabel(g_localizeStrings.Get(20021));
-    else if (type == "thumb")
+    else if (*type == "thumb")
       artitem->SetLabel(g_localizeStrings.Get(21371));
     else
-      artitem->SetLabel(type);
+      artitem->SetLabel(*type);
     // Set art type as art item property
-    artitem->SetProperty("arttype", type);
+    artitem->SetProperty("arttype", *type);
     // Set current art as art item thumb
-    if (musicitem.HasArt(type))
-      artitem->SetArt("thumb", musicitem.GetArt(type));
+    if (musicitem.HasArt(*type))
+      artitem->SetArt("thumb", musicitem.GetArt(*type));
     artlist.Add(artitem);
   }
 
@@ -377,7 +375,7 @@ void UpdateSongRatingJob(const boost::shared_ptr<CFileItem>& pItem, int userrati
     job = new CSetSongRatingJob(tag->GetDatabaseId(), userrating);
   else
     job = new CSetSongRatingJob(pItem->GetPath(), userrating);
-  CServiceBroker::GetJobManager()->AddJob(job, nullptr);
+  CServiceBroker::GetJobManager()->AddJob(job, NULL);
 }
 
 std::vector<std::string> GetArtTypesToScan(const MediaType& mediaType)
@@ -386,22 +384,23 @@ std::vector<std::string> GetArtTypesToScan(const MediaType& mediaType)
   // Get default types of art that are to be automatically fetched during scanning
   if (mediaType == MediaTypeArtist)
   {
-    arttypes = {"thumb", "fanart"};
-    for (auto& artType : CServiceBroker::GetSettingsComponent()->GetSettings()->GetList(
-             CSettings::SETTING_MUSICLIBRARY_ARTISTART_WHITELIST))
+    arttypes.push_back("thumb");
+    arttypes.push_back("fanart");
+    std::vector<CVariant> whitelist = CServiceBroker::GetSettingsComponent()->GetSettings()->GetList(CSettings::SETTING_MUSICLIBRARY_ARTISTART_WHITELIST);
+    for (std::vector<CVariant>::iterator artType = whitelist.begin(); artType != whitelist.end(); ++artType)
     {
-      if (find(arttypes.begin(), arttypes.end(), artType.asString()) == arttypes.end())
-        arttypes.emplace_back(artType.asString());
+      if (find(arttypes.begin(), arttypes.end(), artType->asString()) == arttypes.end())
+        arttypes.push_back(artType->asString());
     }
   }
   else if (mediaType == MediaTypeAlbum)
   {
-    arttypes = {"thumb"};
-    for (auto& artType : CServiceBroker::GetSettingsComponent()->GetSettings()->GetList(
-             CSettings::SETTING_MUSICLIBRARY_ALBUMART_WHITELIST))
+    arttypes.push_back("thumb");
+    std::vector<CVariant> whitelist = CServiceBroker::GetSettingsComponent()->GetSettings()->GetList(CSettings::SETTING_MUSICLIBRARY_ALBUMART_WHITELIST);
+    for (std::vector<CVariant>::iterator artType = whitelist.begin(); artType != whitelist.end(); ++artType)
     {
-      if (find(arttypes.begin(), arttypes.end(), artType.asString()) == arttypes.end())
-        arttypes.emplace_back(artType.asString());
+      if (find(arttypes.begin(), arttypes.end(), artType->asString()) == arttypes.end())
+        arttypes.push_back(artType->asString());
     }
   }
   return arttypes;
@@ -411,7 +410,7 @@ bool IsValidArtType(const std::string& potentialArtType)
 {
   // Check length and is ascii
   return potentialArtType.length() <= 25 &&
-         std::find_if_not(potentialArtType.begin(), potentialArtType.end(),
+         boost::algorithm::find_if_not(potentialArtType.begin(), potentialArtType.end(),
                           StringUtils::isasciialphanum) == potentialArtType.end();
 }
 
@@ -451,37 +450,39 @@ SortDescription GetSortDescription(const CGUIViewState& state, const CFileItemLi
 {
   SortDescription sortDescTrackNumber;
 
-  auto sortDescriptions = state.GetSortDescriptions();
-  for (auto& sortDescription : sortDescriptions)
+  std::vector<SortDescription> sortDescriptions = state.GetSortDescriptions();
+  for (std::vector<SortDescription>::iterator sortDescription = sortDescriptions.begin(); sortDescription != sortDescriptions.end(); ++sortDescription)
   {
-    if (sortDescription.sortBy == SortByTrackNumber)
+    if (sortDescription->sortBy == SortByTrackNumber)
     {
       // check whether at least one item has actually a track number set
-      for (const auto& item : items)
+      for (int i = 0; i < items.Size(); ++i)
       {
+        const CFileItemPtr &item = items[i];
         if (item->HasMusicInfoTag() && item->GetMusicInfoTag()->GetTrackNumber() > 0)
         {
           // First choice for folders containing a single album
-          sortDescTrackNumber = sortDescription;
+          sortDescTrackNumber = *sortDescription;
           sortDescTrackNumber.sortOrder = SortOrderAscending;
           break; // leave items loop. we can still find ByArtistThenYear. so, no return here.
         }
       }
     }
-    else if (sortDescription.sortBy == SortByArtistThenYear)
+    else if (sortDescription->sortBy == SortByArtistThenYear)
     {
       // check whether songs from at least two different albums are in the list
       int lastAlbumId = -1;
-      for (const auto& item : items)
+      for (int i = 0; i < items.Size(); ++i)
       {
+        const CFileItemPtr &item = items[i];
         if (item->HasMusicInfoTag())
         {
-          const auto tag = item->GetMusicInfoTag();
+          MUSIC_INFO::CMusicInfoTag *const tag = item->GetMusicInfoTag();
           if (lastAlbumId != -1 && tag->GetAlbumId() != lastAlbumId)
           {
             // First choice for folders containing multiple albums
-            sortDescription.sortOrder = SortOrderAscending;
-            return sortDescription;
+            sortDescription->sortOrder = SortOrderAscending;
+            return *sortDescription;
           }
           lastAlbumId = tag->GetAlbumId();
         }
@@ -515,7 +516,7 @@ void CAsyncGetItemsForPlaylist::GetItemsForPlaylist(const boost::shared_ptr<CFil
       {
         musicUrl.AppendPath("-1/");
 
-        const auto allItem = boost::make_shared<CFileItem>(musicUrl.ToString(), true);
+        const CFileItemPtr allItem = boost::make_shared<CFileItem>(musicUrl.ToString(), true);
         allItem->SetCanQueue(true); // workaround for CanQueue() check above
         GetItemsForPlaylist(allItem);
       }
@@ -545,8 +546,9 @@ void CAsyncGetItemsForPlaylist::GetItemsForPlaylist(const boost::shared_ptr<CFil
       const CLabelFormatter fileFormatter(labelMasks.m_strLabelFile, labelMasks.m_strLabel2File);
       const CLabelFormatter folderFormatter(labelMasks.m_strLabelFolder,
                                             labelMasks.m_strLabel2Folder);
-      for (const auto& i : items)
+      for (int j = 0; j < items.Size(); ++j)
       {
+        const CFileItemPtr &i = items[j];
         if (i->IsLabelPreformatted())
           continue;
 
@@ -568,8 +570,9 @@ void CAsyncGetItemsForPlaylist::GetItemsForPlaylist(const boost::shared_ptr<CFil
       items.Sort(sortDesc);
     }
 
-    for (const auto& i : items)
+    for (int j = 0; j < items.Size(); ++j)
     {
+      const CFileItemPtr &i = items[j];
       GetItemsForPlaylist(i);
     }
   }
@@ -608,7 +611,7 @@ void CAsyncGetItemsForPlaylist::GetItemsForPlaylist(const boost::shared_ptr<CFil
     }
     else if (!item->IsNFO() && (item->IsAudio() || item->IsVideo()))
     {
-      const auto itemCheck = m_queuedItems.Get(item->GetPath());
+      const CFileItemPtr itemCheck = m_queuedItems.Get(item->GetPath());
       if (!itemCheck || itemCheck->GetStartOffset() != item->GetStartOffset())
       {
         // add item
@@ -651,7 +654,7 @@ std::string GetMusicDbItemPath(const CFileItem& item)
   if (URIUtils::IsMusicDb(path))
     return path;
 
-  return {};
+  return std::string();
 }
 
 void AddItemToPlayListAndPlay(const boost::shared_ptr<CFileItem>& itemToQueue,
@@ -662,7 +665,7 @@ void AddItemToPlayListAndPlay(const boost::shared_ptr<CFileItem>& itemToQueue,
   CFileItemList queuedItems;
   MUSIC_UTILS::GetItemsForPlayList(itemToQueue, queuedItems);
 
-  auto& playlistPlayer = CServiceBroker::GetPlaylistPlayer();
+  PLAYLIST::CPlayListPlayer &playlistPlayer = CServiceBroker::GetPlaylistPlayer();
   playlistPlayer.ClearPlaylist(PLAYLIST::TYPE_MUSIC);
   playlistPlayer.Reset();
   playlistPlayer.Add(PLAYLIST::TYPE_MUSIC, queuedItems);
@@ -672,9 +675,9 @@ void AddItemToPlayListAndPlay(const boost::shared_ptr<CFileItem>& itemToQueue,
   int pos = 0;
   if (itemToPlay)
   {
-    for (const boost::shared_ptr<CFileItem>& queuedItem : queuedItems)
+    for (int i = 0; i < queuedItems.Size(); ++i)
     {
-      if (queuedItem->IsSamePath(itemToPlay.get()))
+      if (queuedItems[i]->IsSamePath(itemToPlay.get()))
         break;
 
       pos++;
@@ -699,7 +702,7 @@ bool IsAutoPlayNextItem(const CFileItem& item)
   if (!item.HasMusicInfoTag())
     return false;
 
-  const auto settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+  const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
   return settings->GetBool(CSettings::SETTING_MUSICPLAYER_AUTOPLAYNEXTITEM) &&
          !settings->GetBool(CSettings::SETTING_MUSICPLAYER_QUEUEBYDEFAULT);
 }
@@ -708,7 +711,7 @@ void PlayItem(const boost::shared_ptr<CFileItem>& itemIn,
               const std::string& player,
               ContentUtils::PlayMode::Type mode /* = ContentUtils::PlayMode::CHECK_AUTO_PLAY_NEXT_ITEM */)
 {
-  auto item = itemIn;
+  CFileItemPtr item = itemIn;
 
   //  Allow queuing of unqueueable items
   //  when we try to queue them directly
@@ -721,7 +724,7 @@ void PlayItem(const boost::shared_ptr<CFileItem>& itemIn,
 
   if (item->m_bIsFolder)
   {
-    AddItemToPlayListAndPlay(item, nullptr, player);
+    AddItemToPlayListAndPlay(item, boost::shared_ptr<CFileItem>(), player);
   }
   else if (item->HasMusicInfoTag())
   {
@@ -741,12 +744,12 @@ void PlayItem(const boost::shared_ptr<CFileItem>& itemIn,
 
         if (parentPath.empty())
         {
-          CLog::LogF(LOGERROR, "Unable to obtain parent path for '{}'", item->GetPath());
+          CLog::Log(LOGERROR, "Unable to obtain parent path for '%s'", item->GetPath().c_str());
           return;
         }
       }
 
-      const auto parentItem = boost::make_shared<CFileItem>(parentPath, true);
+      const CFileItemPtr parentItem = boost::make_shared<CFileItem>(parentPath, true);
       if (item->GetStartOffset() == STARTOFFSET_RESUME)
         parentItem->SetStartOffset(STARTOFFSET_RESUME);
 
@@ -755,7 +758,7 @@ void PlayItem(const boost::shared_ptr<CFileItem>& itemIn,
     else // mode == PlayMode::PLAY_ONLY_THIS
     {
       // song, so just play it
-      auto& playlistPlayer = CServiceBroker::GetPlaylistPlayer();
+      PLAYLIST::CPlayListPlayer &playlistPlayer = CServiceBroker::GetPlaylistPlayer();
       playlistPlayer.Reset();
       playlistPlayer.SetCurrentPlaylist(PLAYLIST::TYPE_NONE);
       playlistPlayer.Play(item, player);
@@ -765,7 +768,7 @@ void PlayItem(const boost::shared_ptr<CFileItem>& itemIn,
 
 void QueueItem(const boost::shared_ptr<CFileItem>& itemIn, QueuePosition pos)
 {
-  auto item = itemIn;
+  CFileItemPtr item = itemIn;
 
   //  Allow queuing of unqueueable items
   //  when we try to queue them directly
@@ -776,13 +779,12 @@ void QueueItem(const boost::shared_ptr<CFileItem>& itemIn, QueuePosition pos)
     item->SetCanQueue(true);
   }
 
-  auto& player = CServiceBroker::GetPlaylistPlayer();
+  PLAYLIST::CPlayListPlayer &player = CServiceBroker::GetPlaylistPlayer();
 
   PLAYLIST::Id playlistId = player.GetCurrentPlaylist();
   if (playlistId == PLAYLIST::TYPE_NONE)
   {
-    const auto& components = CServiceBroker::GetAppComponents();
-    playlistId = components.GetComponent<CApplicationPlayer>()->GetPreferredPlaylist();
+    playlistId = g_application.m_pPlayer->GetPreferredPlaylist();
   }
 
   if (playlistId == PLAYLIST::TYPE_NONE)
@@ -791,7 +793,7 @@ void QueueItem(const boost::shared_ptr<CFileItem>& itemIn, QueuePosition pos)
   // Check for the partymode playlist item, do nothing when "PartyMode.xsp" not exists
   if (item->IsSmartPlayList() && !CFileUtils::Exists(item->GetPath()))
   {
-    const auto profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+    const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
     if (item->GetPath() == profileManager->GetUserDataItem("PartyMode.xsp"))
       return;
   }
@@ -808,18 +810,15 @@ void QueueItem(const boost::shared_ptr<CFileItem>& itemIn, QueuePosition pos)
     return;
   }
 
-  const auto& components = CServiceBroker::GetAppComponents();
-  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-
-  if (pos == QueuePosition::POSITION_BEGIN && appPlayer->IsPlaying())
+  if (pos == MUSIC_UTILS::POSITION_BEGIN && g_application.m_pPlayer->IsPlaying())
     player.Insert(playlistId, queuedItems,
-                  CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx() + 1);
+                  CServiceBroker::GetPlaylistPlayer().GetCurrentSong() + 1);
   else
     player.Add(playlistId, queuedItems);
 
   bool playbackStarted = false;
 
-  if (!appPlayer->IsPlaying() && player.GetPlaylist(playlistId).size())
+  if (!g_application.m_pPlayer->IsPlaying() && player.GetPlaylist(playlistId).size())
   {
     const int winID = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
     if (winID == WINDOW_MUSIC_NAV)
@@ -838,7 +837,7 @@ void QueueItem(const boost::shared_ptr<CFileItem>& itemIn, QueuePosition pos)
 
   if (!playbackStarted)
   {
-    if (pos == QueuePosition::POSITION_END)
+    if (pos == MUSIC_UTILS::POSITION_END)
       ShowToastNotification(*item, 38082); // Added to end of playlist
     else
       ShowToastNotification(*item, 38083); // Added to playlist to play next
@@ -860,8 +859,8 @@ bool IsNonExistingUserPartyModePlaylist(const CFileItem& item)
   if (!item.IsSmartPlayList())
     return false;
 
-  const std::string& path{item.GetPath()};
-  const auto profileManager{CServiceBroker::GetSettingsComponent()->GetProfileManager()};
+  const std::string& path(item.GetPath());
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
   return ((profileManager->GetUserDataItem("PartyMode.xsp") == path) && !CFileUtils::Exists(path));
 }
 
@@ -884,7 +883,7 @@ bool IsItemPlayable(const CFileItem& item)
     return false;
 
   // Exclude other components
-  if (item.IsPVR() || item.IsAddonsPath())
+  if (item.IsAddonsPath())
     return false;
 
   // Exclude special items
@@ -903,7 +902,7 @@ bool IsItemPlayable(const CFileItem& item)
       return true;
 
     // Has user changed default playlists location and the list is located there?
-    const auto settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+    const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
     std::string path = settings->GetString(CSettings::SETTING_SYSTEM_PLAYLISTSPATH);
     StringUtils::TrimRight(path, "/");
     if (StringUtils::StartsWith(item.GetPath(), StringUtils::Format("{}/music/", path)))

@@ -197,10 +197,10 @@ class CRefreshInfoJob : public CProgressJob
 {
 public:
   CRefreshInfoJob(CGUIDialogProgress* progressDialog)
-    : CProgressJob(nullptr)
+    : CProgressJob(NULL)
   {
     if (progressDialog)
-      SetProgressIndicators(nullptr, progressDialog);
+      SetProgressIndicators(NULL, progressDialog);
     SetAutoClose(true);
   }
 
@@ -319,6 +319,12 @@ CGUIDialogMusicInfo::CGUIDialogMusicInfo(void)
     m_artTypeList(new CFileItemList)
 {
   m_loadType = KEEP_IN_MEMORY;
+  m_startUserrating = -1;
+  m_hasUpdatedUserrating = false;
+  m_hasRefreshed = false;
+  m_bArtistInfo = false;
+  m_cancelled = false;
+  m_scraperAddInfo = false;
 }
 
 CGUIDialogMusicInfo::~CGUIDialogMusicInfo(void)
@@ -340,7 +346,7 @@ bool CGUIDialogMusicInfo::OnMessage(CGUIMessage& message)
         // Asynchronously update song userrating in library
         CSetUserratingJob *job = new CSetUserratingJob(m_item->GetMusicInfoTag()->GetAlbumId(),
                                                        m_item->GetMusicInfoTag()->GetUserrating());
-        CServiceBroker::GetJobManager()->AddJob(job, nullptr);
+        CServiceBroker::GetJobManager()->AddJob(job, NULL);
       }
       if (m_hasRefreshed || m_hasUpdatedUserrating)
       {
@@ -468,7 +474,7 @@ bool CGUIDialogMusicInfo::SetItem(CFileItem* item)
 
   // In a separate job fetch info and fill list of art types.
   int jobid =
-      CServiceBroker::GetJobManager()->AddJob(new CGetInfoJob(), nullptr, CJob::PRIORITY_LOW);
+      CServiceBroker::GetJobManager()->AddJob(new CGetInfoJob(), NULL, CJob::PRIORITY_LOW);
 
   // Wait to get all data before show, allowing user to cancel if fetch is slow
   if (!CGUIDialogBusy::WaitOnEvent(m_event, TIME_TO_BUSY_DIALOG))
@@ -632,7 +638,7 @@ void CGUIDialogMusicInfo::RefreshInfo()
 
   SetScrapedInfo(false);
   // Start separate job to scrape info and fill list of art types.
-  CServiceBroker::GetJobManager()->AddJob(new CRefreshInfoJob(dlgProgress), nullptr,
+  CServiceBroker::GetJobManager()->AddJob(new CRefreshInfoJob(dlgProgress), NULL,
                                           CJob::PRIORITY_HIGH);
 
   // Wait for refresh to complete or be canceled, but render every 10ms so that the

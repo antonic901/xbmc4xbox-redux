@@ -21,6 +21,7 @@
 
 #include "IMsgTargetCallback.h"
 #include "messaging/IMessageTarget.h"
+#include "playlists/PlayListTypes.h"
 #include "ServiceBroker.h"
 #include <boost/shared_ptr.hpp>
 

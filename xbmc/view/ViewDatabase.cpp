@@ -72,7 +72,7 @@ void CViewDatabase::UpdateTables(int version)
           path = CLegacyPathTranslation::TranslateVideoDbPath(path);
 
         if (!StringUtils::EqualsNoCase(path, originalPath))
-          paths.emplace_back(m_pDS->fv(0).get_asInt(), path);
+          paths.push_back(std::make_pair(m_pDS->fv(0).get_asInt(), path));
         m_pDS->next();
       }
       m_pDS->close();
@@ -116,9 +116,9 @@ bool CViewDatabase::GetViewState(const std::string &path, int window, CViewState
 {
   try
   {
-    if (nullptr == m_pDB)
+    if (NULL == m_pDB)
       return false;
-    if (nullptr == m_pDS)
+    if (NULL == m_pDS)
       return false;
 
     std::string path1(path);
@@ -154,9 +154,9 @@ bool CViewDatabase::SetViewState(const std::string &path, int window, const CVie
 {
   try
   {
-    if (nullptr == m_pDB)
+    if (NULL == m_pDB)
       return false;
-    if (nullptr == m_pDS)
+    if (NULL == m_pDS)
       return false;
 
     std::string path1(path);
@@ -192,9 +192,9 @@ bool CViewDatabase::ClearViewStates(int windowID)
 {
   try
   {
-    if (nullptr == m_pDB)
+    if (NULL == m_pDB)
       return false;
-    if (nullptr == m_pDS)
+    if (NULL == m_pDS)
       return false;
 
     std::string sql = PrepareSQL("delete from view where window = %i", windowID);

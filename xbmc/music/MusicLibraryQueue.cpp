@@ -24,7 +24,6 @@
 #include "settings/SettingsComponent.h"
 #include "utils/Variant.h"
 
-#include <mutex>
 #include <utility>
 
 CMusicLibraryQueue::CMusicLibraryQueue()
@@ -186,8 +185,8 @@ void CMusicLibraryQueue::StopLibraryScanning()
   MusicLibraryJobs tmpScanningJobs(scanningJobs->second.begin(), scanningJobs->second.end());
 
   // cancel all scanning jobs
-  for (const auto& job : tmpScanningJobs)
-    CancelJob(job);
+  for (MusicLibraryJobs::const_iterator job = tmpScanningJobs.begin(); job != tmpScanningJobs.end(); ++job)
+    CancelJob(*job);
   Refresh();
 }
 
