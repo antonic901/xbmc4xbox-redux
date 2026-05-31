@@ -271,17 +271,12 @@ void CAdvancedSettings::Initialize()
 
   m_bFTPThumbs = false;
 
-  m_musicThumbs = "folder.jpg|Folder.jpg|folder.JPG|Folder.JPG|cover.jpg|Cover.jpg|cover.jpeg|thumb.jpg|Thumb.jpg|thumb.JPG|Thumb.JPG";
-  m_musicArtistExtraArt.clear();
-  m_musicAlbumExtraArt.clear();
-
   m_bMusicLibraryAllItemsOnBottom = false;
   m_bMusicLibraryCleanOnUpdate = false;
   m_bMusicLibraryArtistSortOnUpdate = false;
   m_iMusicLibraryRecentlyAddedItems = 25;
   m_strMusicLibraryAlbumFormat = "";
   m_prioritiseAPEv2tags = false;
-  m_musicUseArtistSortName = false;
   m_musicItemSeparator = " / ";
   m_musicArtistSeparators.push_back(";");
   m_musicArtistSeparators.push_back(" feat. ");
@@ -289,6 +284,7 @@ void CAdvancedSettings::Initialize()
   m_videoItemSeparator = " / ";
   m_programItemSeparator = " / ";
   m_iMusicLibraryDateAdded = 1; // prefer mtime over ctime and current time
+  m_bMusicLibraryArtistNavigatesToSongs = false;
 
   m_bVideoLibraryAllItemsOnBottom = false;
   m_iVideoLibraryRecentlyAddedItems = 25;
@@ -486,10 +482,10 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
     XMLUtils::GetBoolean(pElement, "allitemsonbottom", m_bMusicLibraryAllItemsOnBottom);
     XMLUtils::GetBoolean(pElement, "cleanonupdate", m_bMusicLibraryCleanOnUpdate);
     XMLUtils::GetBoolean(pElement, "artistsortonupdate", m_bMusicLibraryArtistSortOnUpdate);
-    XMLUtils::GetBoolean(pElement, "useartistsortname", m_musicUseArtistSortName);
     XMLUtils::GetString(pElement, "albumformat", m_strMusicLibraryAlbumFormat);
     XMLUtils::GetString(pElement, "itemseparator", m_musicItemSeparator);
     XMLUtils::GetInt(pElement, "dateadded", m_iMusicLibraryDateAdded);
+    XMLUtils::GetBoolean(pElement, "artistnavigatestosongs", m_bMusicLibraryArtistNavigatesToSongs);
     //Music artist name separators
     TiXmlElement* separators = pElement->FirstChildElement("artistseparators");
     if (separators)
@@ -501,32 +497,6 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
         if (separator->FirstChild())
           m_musicArtistSeparators.push_back(separator->FirstChild()->ValueStr());
         separator = separator->NextSibling("separator");
-      }
-    }
-    // Music extra artist art
-    TiXmlElement* arttypes = pElement->FirstChildElement("artistextraart");
-    if (arttypes)
-    {
-      m_musicArtistExtraArt.clear();
-      TiXmlNode* arttype = arttypes->FirstChild("arttype");
-      while (arttype)
-      {
-        if (arttype->FirstChild())
-          m_musicArtistExtraArt.push_back(arttype->FirstChild()->ValueStr());
-        arttype = arttype->NextSibling("arttype");
-      }
-    }
-    // Music extra album art
-    arttypes = pElement->FirstChildElement("albumextraart");
-    if (arttypes)
-    {
-      m_musicAlbumExtraArt.clear();
-      TiXmlNode* arttype = arttypes->FirstChild("arttype");
-      while (arttype)
-      {
-        if (arttype->FirstChild())
-          m_musicAlbumExtraArt.push_back(arttype->FirstChild()->ValueStr());
-        arttype = arttype->NextSibling("arttype");
       }
     }
   }
@@ -775,11 +745,6 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
   XMLUtils::GetBoolean(pRootElement, "useddsfanart", m_useDDSFanart);
   XMLUtils::GetBoolean(pRootElement, "playlistasfolders", m_playlistAsFolders);
   XMLUtils::GetBoolean(pRootElement, "detectasudf", m_detectAsUdf);
-
-  // music thumbs
-  TiXmlElement* pThumbs = pRootElement->FirstChildElement("musicthumbs");
-  if (pThumbs)
-    GetCustomExtensions(pThumbs,m_musicThumbs);
 
   // music filename->tag filters
   TiXmlElement* filters = pRootElement->FirstChildElement("musicfilenamefilters");

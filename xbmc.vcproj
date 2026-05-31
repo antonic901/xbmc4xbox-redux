@@ -2028,18 +2028,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeAlbum.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeAlbumCompilations.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeAlbumCompilations.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeAlbumCompilationsSongs.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeAlbumCompilationsSongs.h">
-					</File>
-					<File
 						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeAlbumRecentlyAdded.cpp">
 					</File>
 					<File
@@ -2080,6 +2068,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeArtist.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\MusicDatabaseDirectory\DirectoryNodeDiscs.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\filesystem\MusicDatabaseDirectory\DirectoryNodeDiscs.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeGrouped.cpp">
@@ -2158,18 +2152,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeTop100.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeYearAlbum.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeYearAlbum.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeYearSong.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\DirectoryNodeYearSong.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\FileSystem\MusicDatabaseDirectory\QueryParams.cpp">

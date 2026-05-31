@@ -31,16 +31,13 @@ bool CMusicSearchDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 
   // and retrieve the search details
   items.SetURL(url);
-  auto start = std::chrono::steady_clock::now();
+  unsigned int start = XbmcThreads::SystemClockMillis();
   CMusicDatabase db;
   db.Open();
   db.Search(search, items);
   db.Close();
 
-  auto end = std::chrono::steady_clock::now();
-  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-
-  CLog::Log(LOGDEBUG, "{} ({}) took {} ms", __FUNCTION__, url.GetRedacted(), duration.count());
+  CLog::Log(LOGDEBUG, "%s (%s) took %u ms", __FUNCTION__, url.GetRedacted().c_str(), XbmcThreads::SystemClockMillis() - start);
 
   items.SetLabel(g_localizeStrings.Get(137)); // Search
   return true;
