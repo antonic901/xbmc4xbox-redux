@@ -8,10 +8,11 @@
 
 #pragma once
 
+#include "system.h" // <xtl.h>
 #include "media/MediaType.h"
 #include "utils/ContentUtils.h"
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <string>
 #include <vector>
 
@@ -96,9 +97,9 @@ bool IsAutoPlayNextItem(const CFileItem& item);
   */
 void PlayItem(const boost::shared_ptr<CFileItem>& item,
               const std::string& player,
-              ContentUtils::PlayMode mode = ContentUtils::PlayMode::CHECK_AUTO_PLAY_NEXT_ITEM);
+              ContentUtils::PlayMode::Type mode = ContentUtils::PlayMode::CHECK_AUTO_PLAY_NEXT_ITEM);
 
-enum class QueuePosition
+enum QueuePosition
 {
   POSITION_BEGIN, // place at begin of queue, before other items
   POSITION_END, // place at end of queue, after other items

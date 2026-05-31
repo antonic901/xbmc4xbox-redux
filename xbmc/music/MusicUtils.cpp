@@ -706,7 +706,7 @@ bool IsAutoPlayNextItem(const CFileItem& item)
 
 void PlayItem(const boost::shared_ptr<CFileItem>& itemIn,
               const std::string& player,
-              ContentUtils::PlayMode mode /* = ContentUtils::PlayMode::CHECK_AUTO_PLAY_NEXT_ITEM */)
+              ContentUtils::PlayMode::Type mode /* = ContentUtils::PlayMode::CHECK_AUTO_PLAY_NEXT_ITEM */)
 {
   auto item = itemIn;
 
