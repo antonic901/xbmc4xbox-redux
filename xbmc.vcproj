@@ -790,6 +790,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\playlists\PlayListPLS.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\playlists\PlayListTypes.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\playlists\PlayListURL.cpp">
 				</File>
 				<File
@@ -4552,6 +4555,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\music\jobs\MusicLibraryExportJob.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\jobs\MusicLibraryImportJob.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\jobs\MusicLibraryImportJob.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\music\jobs\MusicLibraryJob.cpp">

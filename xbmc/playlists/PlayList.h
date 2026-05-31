@@ -19,6 +19,8 @@
  *
  */
 
+#include "PlayListTypes.h"
+
 #include "FileItem.h"
 #include <memory>
 #include <string>

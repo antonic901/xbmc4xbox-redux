@@ -14,7 +14,6 @@
 #include "utils/log.h"
 
 #include <cstring>
-#include <mutex>
 #include <utility>
 
 #define XML_VIEWSTATESETTINGS       "viewstates"
@@ -24,9 +23,6 @@
 #define XML_SORTATTRIBUTES          "sortattributes"
 #define XML_GENERAL                 "general"
 #define XML_SETTINGLEVEL            "settinglevel"
-#define XML_EVENTLOG                "eventlog"
-#define XML_EVENTLOG_LEVEL          "level"
-#define XML_EVENTLOG_LEVEL_HIGHER   "showhigherlevels"
 
 CViewStateSettings::CViewStateSettings()
 {
@@ -50,6 +46,8 @@ CViewStateSettings::CViewStateSettings()
   AddViewState("games", DEFAULT_VIEW_AUTO);
 
   Clear();
+
+  m_settingLevel = SettingLevel::Standard;
 }
 
 CViewStateSettings::~CViewStateSettings()
@@ -112,22 +110,9 @@ bool CViewStateSettings::Load(const TiXmlNode *settings)
   {
     int settingLevel;
     if (XMLUtils::GetInt(pElement, XML_SETTINGLEVEL, settingLevel, static_cast<int>(SettingLevel::Basic), static_cast<int>(SettingLevel::Expert)))
-      m_settingLevel = (SettingLevel)settingLevel;
+      m_settingLevel = (SettingLevel::Type)settingLevel;
     else
       m_settingLevel = SettingLevel::Standard;
-
-    const TiXmlNode* pEventLogNode = pElement->FirstChild(XML_EVENTLOG);
-    if (pEventLogNode != NULL)
-    {
-      int eventLevel;
-      if (XMLUtils::GetInt(pEventLogNode, XML_EVENTLOG_LEVEL, eventLevel, static_cast<int>(EventLevel::Basic), static_cast<int>(EventLevel::Error)))
-        m_eventLevel = (EventLevel)eventLevel;
-      else
-        m_eventLevel = EventLevel::Basic;
-
-      if (!XMLUtils::GetBoolean(pEventLogNode, XML_EVENTLOG_LEVEL_HIGHER, m_eventShowHigherLevels))
-        m_eventShowHigherLevels = true;
-    }
   }
 
   return true;
@@ -172,18 +157,6 @@ bool CViewStateSettings::Save(TiXmlNode *settings) const
 
   XMLUtils::SetInt(generalNode, XML_SETTINGLEVEL, (int)m_settingLevel);
 
-  TiXmlNode *eventLogNode = generalNode->FirstChild(XML_EVENTLOG);
-  if (eventLogNode == NULL)
-  {
-    TiXmlElement eventLogElement(XML_EVENTLOG);
-    eventLogNode = generalNode->InsertEndChild(eventLogElement);
-    if (eventLogNode == NULL)
-      return false;
-  }
-
-  XMLUtils::SetInt(eventLogNode, XML_EVENTLOG_LEVEL, (int)m_eventLevel);
-  XMLUtils::SetBoolean(eventLogNode, XML_EVENTLOG_LEVEL_HIGHER, (int)m_eventShowHigherLevels);
-
   return true;
 }
 
@@ -212,7 +185,7 @@ CViewState* CViewStateSettings::Get(const std::string &viewState)
   return NULL;
 }
 
-void CViewStateSettings::SetSettingLevel(SettingLevel settingLevel)
+void CViewStateSettings::SetSettingLevel(SettingLevel::Type settingLevel)
 {
   if (settingLevel < SettingLevel::Basic)
     m_settingLevel = SettingLevel::Basic;
@@ -227,34 +200,11 @@ void CViewStateSettings::CycleSettingLevel()
   m_settingLevel = GetNextSettingLevel();
 }
 
-SettingLevel CViewStateSettings::GetNextSettingLevel() const
+SettingLevel::Type CViewStateSettings::GetNextSettingLevel() const
 {
-  SettingLevel level = (SettingLevel)((int)m_settingLevel + 1);
+  SettingLevel::Type level = (SettingLevel::Type)((int)m_settingLevel + 1);
   if (level > SettingLevel::Expert)
     level = SettingLevel::Basic;
-  return level;
-}
-
-void CViewStateSettings::SetEventLevel(EventLevel eventLevel)
-{
-  if (eventLevel < EventLevel::Basic)
-    m_eventLevel = EventLevel::Basic;
-  if (eventLevel > EventLevel::Error)
-    m_eventLevel = EventLevel::Error;
-  else
-    m_eventLevel = eventLevel;
-}
-
-void CViewStateSettings::CycleEventLevel()
-{
-  m_eventLevel = GetNextEventLevel();
-}
-
-EventLevel CViewStateSettings::GetNextEventLevel() const
-{
-  EventLevel level = (EventLevel)((int)m_eventLevel + 1);
-  if (level > EventLevel::Error)
-    level = EventLevel::Basic;
   return level;
 }
 

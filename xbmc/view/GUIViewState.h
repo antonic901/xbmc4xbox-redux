@@ -17,10 +17,7 @@
 class CViewState; // forward
 class CFileItemList;
 
-namespace PLAYLIST
-{
-using Id = int;
-} // namespace PLAYLIST
+#include "playlists/PlayListTypes.h"
 
 class CGUIViewState
 {

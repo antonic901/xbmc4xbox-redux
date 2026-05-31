@@ -8,6 +8,7 @@
 
 #include "ContextMenus.h"
 
+#include "Application.h" // m_eForcedNextPlayer
 #include "FileItem.h"
 #include "GUIUserMessages.h"
 #include "ServiceBroker.h"
@@ -25,7 +26,7 @@
 using namespace CONTEXTMENU;
 
 CMusicInfoBase::CMusicInfoBase(MediaType mediaType)
-  : CStaticContextMenuAction(19033), m_mediaType(std::move(mediaType))
+  : CStaticContextMenuAction(19033), m_mediaType(boost::move(mediaType))
 {
 }
 
@@ -50,7 +51,7 @@ bool CMusicInfo::IsVisible(const CFileItem& item) const
   if (item.m_bIsFolder)
     return false;
 
-  const auto* tag{item.GetMusicInfoTag()};
+  const MUSIC_INFO::CMusicInfoTag *tag = item.GetMusicInfoTag();
   return tag && tag->GetType() == MediaTypeNone && !tag->GetTitle().empty() && item.IsAudio();
 }
 
@@ -63,10 +64,10 @@ bool CMusicBrowse::IsVisible(const CFileItem& item) const
 bool CMusicBrowse::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   // For file directory browsing, we need item's dyn path, for everything else the path.
-  const std::string path{item->IsFileFolder(EFILEFOLDER_MASK_ONBROWSE) ? item->GetDynPath()
-                                                                       : item->GetPath()};
+  const std::string path(item->IsFileFolder(EFILEFOLDER_MASK_ONBROWSE) ? item->GetDynPath()
+                                                                       : item->GetPath());
 
-  auto& windowMgr = CServiceBroker::GetGUI()->GetWindowManager();
+  CGUIWindowManager &windowMgr = CServiceBroker::GetGUI()->GetWindowManager();
   if (windowMgr.GetActiveWindow() == WINDOW_MUSIC_NAV)
   {
     CGUIMessage msg(GUI_MSG_NOTIFY_ALL, WINDOW_MUSIC_NAV, 0, GUI_MSG_UPDATE);
@@ -75,7 +76,10 @@ bool CMusicBrowse::Execute(const boost::shared_ptr<CFileItem>& item) const
   }
   else
   {
-    windowMgr.ActivateWindow(WINDOW_MUSIC_NAV, {path, "return"});
+    std::vector<std::string> temp;
+    temp.push_back(path);
+    temp.push_back("return");
+    windowMgr.ActivateWindow(WINDOW_MUSIC_NAV, temp);
   }
   return true;
 }
@@ -91,18 +95,10 @@ void Play(const boost::shared_ptr<CFileItem>& item, const std::string& player)
 {
   item->SetProperty("playlist_type_hint", PLAYLIST::TYPE_MUSIC);
 
-  const ContentUtils::PlayMode mode = item->GetProperty("CheckAutoPlayNextItem").asBoolean()
+  const ContentUtils::PlayMode::Type mode = item->GetProperty("CheckAutoPlayNextItem").asBoolean()
                                           ? ContentUtils::PlayMode::CHECK_AUTO_PLAY_NEXT_ITEM
                                           : ContentUtils::PlayMode::PLAY_ONLY_THIS;
   MUSIC_UTILS::PlayItem(item, player, mode);
-}
-
-std::vector<std::string> GetPlayers(const CPlayerCoreFactory& playerCoreFactory,
-                                    const CFileItem& item)
-{
-  std::vector<std::string> players;
-  playerCoreFactory.GetPlayers(item, players);
-  return players;
 }
 
 bool CanQueue(const CFileItem& item)
@@ -126,18 +122,19 @@ bool CMusicPlay::Execute(const boost::shared_ptr<CFileItem>& item) const
 
 bool CMusicPlayUsing::IsVisible(const CFileItem& item) const
 {
-  const CPlayerCoreFactory& playerCoreFactory{CServiceBroker::GetPlayerCoreFactory()};
-  return (GetPlayers(playerCoreFactory, item).size() > 1) && MUSIC_UTILS::IsItemPlayable(item);
+  VECPLAYERCORES players;
+  CServiceBroker::GetPlayerCoreFactory().GetPlayers(item, players);
+  return (players.size() > 1) && MUSIC_UTILS::IsItemPlayable(item);
 }
 
 bool CMusicPlayUsing::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
-  const CPlayerCoreFactory& playerCoreFactory{CServiceBroker::GetPlayerCoreFactory()};
-  const std::vector<std::string> players{GetPlayers(playerCoreFactory, *item)};
-  const std::string player{playerCoreFactory.SelectPlayerDialog(players)};
-  if (!player.empty())
+  VECPLAYERCORES players;
+  CServiceBroker::GetPlayerCoreFactory().GetPlayers(*item, players);
+  g_application.m_eForcedNextPlayer = CServiceBroker::GetPlayerCoreFactory().SelectPlayerDialog(players);
+  if (g_application.m_eForcedNextPlayer != EPC_NONE)
   {
-    Play(item, player);
+    Play(item, "");
     return true;
   }
   return false;
@@ -153,7 +150,7 @@ bool CMusicPlayNext::IsVisible(const CFileItem& item) const
 
 bool CMusicPlayNext::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
-  MUSIC_UTILS::QueueItem(item, MUSIC_UTILS::QueuePosition::POSITION_BEGIN);
+  MUSIC_UTILS::QueueItem(item, MUSIC_UTILS::POSITION_BEGIN);
   return true;
 }
 
@@ -169,7 +166,7 @@ namespace
 {
 void SelectNextItem(int windowID)
 {
-  auto& windowMgr = CServiceBroker::GetGUI()->GetWindowManager();
+  CGUIWindowManager &windowMgr = CServiceBroker::GetGUI()->GetWindowManager();
   CGUIWindow* window = windowMgr.GetWindow(windowID);
   if (window)
   {
@@ -188,7 +185,7 @@ void SelectNextItem(int windowID)
 
 bool CMusicQueue::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
-  MUSIC_UTILS::QueueItem(item, MUSIC_UTILS::QueuePosition::POSITION_END);
+  MUSIC_UTILS::QueueItem(item, MUSIC_UTILS::POSITION_END);
 
   // Set selection to next item in active window's view.
   const int windowID = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();

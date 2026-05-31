@@ -42,7 +42,7 @@ void CMusicFileItemListModifier::AddQueuingFolder(CFileItemList& items)
   if (!items.IsMusicDb())
     return;
 
-  auto directoryNode = CDirectoryNode::ParseURL(items.GetPath());
+  XFILE::MUSICDATABASEDIRECTORY::CDirectoryNode *directoryNode = CDirectoryNode::ParseURL(items.GetPath());
 
   CFileItemPtr pItem;
 

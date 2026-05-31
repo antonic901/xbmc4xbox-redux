@@ -30,7 +30,7 @@ using namespace XFILE;
 using namespace MUSIC_INFO;
 
 // HACK until we make this threadable - specify 1 thread only for now
-CMusicInfoLoader::CMusicInfoLoader() : CBackgroundInfoLoader()
+CMusicInfoLoader::CMusicInfoLoader() : CBackgroundInfoLoader(), m_databaseHits(0), m_tagReads(0)
 {
   m_mapFileItems = new CFileItemList;
 
@@ -124,7 +124,7 @@ bool CMusicInfoLoader::LoadAdditionalTagInfo(CFileItem* pItem)
   // fetch the lyrics and add it to the current music info tag
   CFileItem tempItem(path, false);
   boost::movelib::unique_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(tempItem));
-  if (nullptr != pLoader)
+  if (NULL != pLoader)
   {
     CMusicInfoTag tag;
     pLoader->Load(path, tag);
@@ -227,7 +227,7 @@ bool CMusicInfoLoader::LoadItemLookup(CFileItem* pItem)
         // always try to load cddb info
         // get correct tag parser
         boost::movelib::unique_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(*pItem));
-        if (nullptr != pLoader)
+        if (NULL != pLoader)
           // get tag
           pLoader->Load(pItem->GetPath(), *pItem->GetMusicInfoTag());
         m_tagReads++;
