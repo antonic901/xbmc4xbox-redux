@@ -40,9 +40,9 @@ using namespace PLAYLIST;
   </playlist>
  </WinampXML>
 ------------------------ end of example b4s playlist file ---------------------------------*/
-CPlayListB4S::CPlayListB4S(void) = default;
+CPlayListB4S::CPlayListB4S(void) {}
 
-CPlayListB4S::~CPlayListB4S(void) = default;
+CPlayListB4S::~CPlayListB4S(void) {}
 
 
 bool CPlayListB4S::LoadData(std::istream& stream)
@@ -53,7 +53,7 @@ bool CPlayListB4S::LoadData(std::istream& stream)
 
   if (xmlDoc.Error())
   {
-    CLog::Log(LOGERROR, "Unable to parse B4S info Error: {}", xmlDoc.ErrorDesc());
+    CLog::Log(LOGERROR, "Unable to parse B4S info Error: %s", xmlDoc.ErrorDesc());
     return false;
   }
 
@@ -105,26 +105,26 @@ void CPlayListB4S::Save(const std::string& strFileName) const
 {
   if (!m_vecItems.size()) return ;
   std::string strPlaylist = strFileName;
-  strPlaylist = CUtil::MakeLegalPath(std::move(strPlaylist));
+  strPlaylist = CUtil::MakeLegalPath(boost::move(strPlaylist));
   CFile file;
   if (!file.OpenForWrite(strPlaylist, true))
   {
-    CLog::Log(LOGERROR, "Could not save B4S playlist: [{}]", strPlaylist);
+    CLog::Log(LOGERROR, "Could not save B4S playlist: [%s]", strPlaylist.c_str());
     return ;
   }
   std::string write;
-  write += StringUtils::Format("<?xml version={}1.0{} encoding='UTF-8' standalone={}yes{}?>\n", 34,
+  write += StringUtils::Format("<?xml version=%c1.0%c encoding='UTF-8' standalone=%cyes%c?>\n", 34,
                                34, 34, 34);
   write += StringUtils::Format("<WinampXML>\n");
-  write += StringUtils::Format("  <playlist num_entries=\"{0}\" label=\"{1}\">\n",
-                               m_vecItems.size(), m_strPlayListName);
+  write += StringUtils::Format("  <playlist num_entries=\"%i\" label=\"%s\">\n",
+                               m_vecItems.size(), m_strPlayListName.c_str());
   for (int i = 0; i < (int)m_vecItems.size(); ++i)
   {
     const CFileItemPtr item = m_vecItems[i];
-    write += StringUtils::Format("    <entry Playstring={}file:{}{}>\n", 34, item->GetPath(), 34);
-    write += StringUtils::Format("      <Name>{}</Name>\n", item->GetLabel().c_str());
+    write += StringUtils::Format("    <entry Playstring=%cfile:%s%c>\n", 34, item->GetPath().c_str(), 34);
+    write += StringUtils::Format("      <Name>%s</Name>\n", item->GetLabel().c_str());
     write +=
-        StringUtils::Format("      <Length>{}</Length>\n", item->GetMusicInfoTag()->GetDuration());
+        StringUtils::Format("      <Length>%i</Length>\n", item->GetMusicInfoTag()->GetDuration());
   }
   write += StringUtils::Format("  </playlist>\n");
   write += StringUtils::Format("</WinampXML>\n");

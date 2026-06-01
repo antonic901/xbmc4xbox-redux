@@ -8,9 +8,10 @@
 
 #pragma once
 
+#include "system.h" // <xtl.h>
 #include "PlayListTypes.h"
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <string>
 #include <vector>
 
@@ -24,20 +25,20 @@ class CPlayList
 {
 public:
   explicit CPlayList(PLAYLIST::Id id = PLAYLIST::TYPE_NONE);
-  virtual ~CPlayList(void) = default;
+  virtual ~CPlayList(void) {}
   virtual bool Load(const std::string& strFileName);
   virtual bool LoadData(std::istream &stream);
   virtual bool LoadData(const std::string& strData);
   virtual void Save(const std::string& strFileName) const {};
 
   void Add(const CPlayList& playlist);
-  void Add(const std::shared_ptr<CFileItem>& pItem);
+  void Add(const boost::shared_ptr<CFileItem>& pItem);
   void Add(const CFileItemList& items);
 
   // for Party Mode
   void Insert(const CPlayList& playlist, int iPosition = -1);
   void Insert(const CFileItemList& items, int iPosition = -1);
-  void Insert(const std::shared_ptr<CFileItem>& item, int iPosition = -1);
+  void Insert(const boost::shared_ptr<CFileItem>& item, int iPosition = -1);
 
   int FindOrder(int iOrder) const;
   const std::string& GetName() const;
@@ -49,8 +50,8 @@ public:
   int size() const;
   int RemoveDVDItems();
 
-  const std::shared_ptr<CFileItem> operator[](int iItem) const;
-  std::shared_ptr<CFileItem> operator[](int iItem);
+  const boost::shared_ptr<CFileItem> operator[](int iItem) const;
+  boost::shared_ptr<CFileItem> operator[](int iItem);
 
   void Shuffle(int iPosition = 0);
   void UnShuffle();
@@ -64,7 +65,7 @@ public:
 
   void UpdateItem(const CFileItem *item);
 
-  const std::string& ResolveURL(const std::shared_ptr<CFileItem>& item) const;
+  const std::string& ResolveURL(const boost::shared_ptr<CFileItem>& item) const;
 
 protected:
   PLAYLIST::Id m_id;
@@ -75,18 +76,18 @@ protected:
   bool m_bWasPlayed;
 
 //  CFileItemList m_vecItems;
-  std::vector<std::shared_ptr<CFileItem>> m_vecItems;
-  typedef std::vector<std::shared_ptr<CFileItem>>::iterator ivecItems;
+  std::vector<boost::shared_ptr<CFileItem> > m_vecItems;
+  typedef std::vector<boost::shared_ptr<CFileItem> >::iterator ivecItems;
 
 private:
-  void Add(const std::shared_ptr<CFileItem>& item, int iPosition, int iOrderOffset);
+  void Add(const boost::shared_ptr<CFileItem>& item, int iPosition, int iOrderOffset);
   void DecrementOrder(int iOrder);
   void IncrementOrder(int iPosition, int iOrder);
 
   void AnnounceRemove(int pos);
   void AnnounceClear();
-  void AnnounceAdd(const std::shared_ptr<CFileItem>& item, int pos);
+  void AnnounceAdd(const boost::shared_ptr<CFileItem>& item, int pos);
 };
 
-typedef std::shared_ptr<CPlayList> CPlayListPtr;
+typedef boost::shared_ptr<CPlayList> CPlayListPtr;
 }

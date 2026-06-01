@@ -24,7 +24,7 @@ using namespace PLAYLIST;
 
 CPlayList* CPlayListFactory::Create(const CURL& url)
 {
-  CFileItem item{url.Get(), false};
+  CFileItem item(url.Get(), false);
 
   if (url.HasOption("mimetype"))
   {

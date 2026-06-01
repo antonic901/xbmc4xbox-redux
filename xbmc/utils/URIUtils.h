@@ -178,6 +178,7 @@ public:
   static bool IsLibraryFolder(const CStdString& strFile);
   static bool IsLibraryContent(const std::string& strFile);
 
+  static std::string AppendSlash(std::string strFolder);
   static void AddSlashAtEnd(std::string& strFolder);
   static bool HasSlashAtEnd(const std::string& strFile, bool checkURL = false);
   static void RemoveSlashAtEnd(std::string& strFolder);

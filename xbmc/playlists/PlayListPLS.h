@@ -20,16 +20,16 @@ class CPlayListPLS :
 {
 public:
   CPlayListPLS(void);
-  ~CPlayListPLS(void) override;
-  bool Load(const std::string& strFileName) override;
-  void Save(const std::string& strFileName) const override;
+  virtual ~CPlayListPLS(void);
+  virtual bool Load(const std::string& strFileName);
+  virtual void Save(const std::string& strFileName) const;
   virtual bool Resize(std::vector<int>::size_type newSize);
 };
 
 class CPlayListASX : public CPlayList
 {
 public:
-  bool LoadData(std::istream &stream) override;
+  virtual bool LoadData(std::istream &stream);
 protected:
   bool LoadAsxIniInfo(std::istream &stream);
 };
@@ -37,7 +37,7 @@ protected:
 class CPlayListRAM : public CPlayList
 {
 public:
-  bool LoadData(std::istream &stream) override;
+  virtual bool LoadData(std::istream &stream);
 };
 
 

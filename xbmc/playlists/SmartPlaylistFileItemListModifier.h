@@ -15,11 +15,11 @@
 class CSmartPlaylistFileItemListModifier : public IFileItemListModifier
 {
 public:
-  CSmartPlaylistFileItemListModifier() = default;
-  ~CSmartPlaylistFileItemListModifier() override = default;
+  CSmartPlaylistFileItemListModifier() {}
+  virtual ~CSmartPlaylistFileItemListModifier() {}
 
-  bool CanModify(const CFileItemList &items) const override;
-  bool Modify(CFileItemList &items) const override;
+  virtual bool CanModify(const CFileItemList &items) const;
+  virtual bool Modify(CFileItemList &items) const;
 
 private:
   static std::string GetUrlOption(const std::string &path, const std::string &option);

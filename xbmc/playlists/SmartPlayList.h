@@ -1,32 +1,21 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <set>
-#include <string>
-#include <vector>
-#include <memory>
+#pragma once
 
 #include "dbwrappers/DatabaseQuery.h"
 #include "utils/SortUtils.h"
 #include "utils/XBMCTinyXML.h"
+
+#include <memory>
+#include <set>
+#include <string>
+#include <vector>
 
 class CURL;
 class CVariant;
@@ -35,56 +24,59 @@ class CSmartPlaylistRule : public CDatabaseQueryRule
 {
 public:
   CSmartPlaylistRule();
-  virtual ~CSmartPlaylistRule() { }
+  virtual ~CSmartPlaylistRule() {}
 
-  std::string                 GetLocalizedRule() const;
+  std::string GetLocalizedRule() const;
 
-  static SortBy               TranslateOrder(const char *order);
-  static std::string          TranslateOrder(SortBy order);
-  static Field                TranslateGroup(const char *group);
-  static std::string          TranslateGroup(Field group);
+  static SortBy TranslateOrder(const char *order);
+  static std::string TranslateOrder(SortBy order);
+  static Field TranslateGroup(const char *group);
+  static std::string TranslateGroup(Field group);
 
-  static std::string          GetLocalizedField(int field);
-  static std::string          GetLocalizedGroup(Field group);
-  static bool                 CanGroupMix(Field group);
+  static std::string GetLocalizedField(int field);
+  static std::string GetLocalizedGroup(Field group);
+  static bool CanGroupMix(Field group);
 
-  static std::vector<Field>   GetFields(const std::string &type);
-  static std::vector<SortBy>  GetOrders(const std::string &type);
-  static std::vector<Field>   GetGroups(const std::string &type);
-  virtual FIELD_TYPE          GetFieldType(int field) const;
-  static bool                 IsFieldBrowseable(int field);
+  static std::vector<Field> GetFields(const std::string &type);
+  static std::vector<SortBy> GetOrders(const std::string &type);
+  static std::vector<Field> GetGroups(const std::string &type);
+  virtual FIELD_TYPE GetFieldType(int field) const;
+  static bool IsFieldBrowseable(int field);
 
   static bool Validate(const std::string &input, void *data);
   static bool ValidateRating(const std::string &input, void *data);
   static bool ValidateMyRating(const std::string &input, void *data);
 
 protected:
-  virtual std::string         GetField(int field, const std::string& type) const;
-  virtual int                 TranslateField(const char *field) const;
-  virtual std::string         TranslateField(int field) const;
-  virtual std::string         FormatParameter(const std::string &negate,
-                                              const std::string &oper,
-                                              const CDatabase &db,
-                                              const std::string &type) const;
-  virtual std::string         FormatWhereClause(const std::string &negate,
-                                                const std::string& oper,
-                                                const std::string &param,
-                                                const CDatabase &db,
-                                                const std::string &type) const;
-  virtual SEARCH_OPERATOR     GetOperator(const std::string &type) const;
-  virtual std::string         GetBooleanQuery(const std::string &negate,
-                                              const std::string &strType) const;
+  virtual std::string GetField(int field, const std::string& type) const;
+  virtual int TranslateField(const char *field) const;
+  virtual std::string TranslateField(int field) const;
+  virtual std::string FormatParameter(const std::string &negate,
+                              const std::string &oper,
+                              const CDatabase &db,
+                              const std::string &type) const;
+  virtual std::string FormatWhereClause(const std::string &negate,
+                                const std::string& oper,
+                                const std::string &param,
+                                const CDatabase &db,
+                                const std::string &type) const;
+  virtual SEARCH_OPERATOR GetOperator(const std::string &type) const;
+  virtual std::string GetBooleanQuery(const std::string &negate,
+                              const std::string &strType) const;
 
 private:
   std::string GetVideoResolutionQuery(const std::string &parameter) const;
   static std::string FormatLinkQuery(const char *field, const char *table, const MediaType& mediaType, const std::string& mediaField, const std::string& parameter);
+  std::string FormatYearQuery(const std::string& field,
+                              const std::string& param,
+                              const std::string& parameter) const;
 };
 
 class CSmartPlaylistRuleCombination : public CDatabaseQueryRuleCombination
 {
 public:
-  CSmartPlaylistRuleCombination() { }
-  virtual ~CSmartPlaylistRuleCombination() { }
+  CSmartPlaylistRuleCombination() {}
+  virtual ~CSmartPlaylistRuleCombination() {}
 
   std::string GetWhereClause(const CDatabase &db,
                              const std::string& strType,
@@ -99,7 +91,7 @@ class CSmartPlaylist : public IDatabaseQueryRuleFactory
 {
 public:
   CSmartPlaylist();
-  virtual ~CSmartPlaylist() { }
+  virtual ~CSmartPlaylist() {}
 
   bool Load(const CURL& url);
   bool Load(const std::string &path);
@@ -117,21 +109,24 @@ public:
 
   void SetName(const std::string &name);
   void SetType(const std::string &type); // music, video, mixed
-  const std::string& GetName() const { return m_playlistName; };
-  const std::string& GetType() const { return m_playlistType; };
+  const std::string& GetName() const { return m_playlistName; }
+  const std::string& GetType() const { return m_playlistType; }
   bool IsVideoType() const;
   bool IsMusicType() const;
 
   void SetMatchAllRules(bool matchAll) { m_ruleCombination.SetType(matchAll ? CSmartPlaylistRuleCombination::CombinationAnd : CSmartPlaylistRuleCombination::CombinationOr); }
   bool GetMatchAllRules() const { return m_ruleCombination.GetType() == CSmartPlaylistRuleCombination::CombinationAnd; }
 
-  void SetLimit(unsigned int limit) { m_limit = limit; };
-  unsigned int GetLimit() const { return m_limit; };
+  void SetLimit(unsigned int limit) { m_limit = limit; }
+  unsigned int GetLimit() const { return m_limit; }
 
-  void SetOrder(SortBy order) { m_orderField = order; };
-  SortBy GetOrder() const { return m_orderField; };
-  void SetOrderAscending(bool orderAscending) { m_orderDirection = orderAscending ? SortOrderAscending : SortOrderDescending; };
-  bool GetOrderAscending() const { return m_orderDirection != SortOrderDescending; };
+  void SetOrder(SortBy order) { m_orderField = order; }
+  SortBy GetOrder() const { return m_orderField; }
+  void SetOrderAscending(bool orderAscending)
+  {
+    m_orderDirection = orderAscending ? SortOrderAscending : SortOrderDescending;
+  }
+  bool GetOrderAscending() const { return m_orderDirection != SortOrderDescending; }
   SortOrder GetOrderDirection() const { return m_orderDirection; }
   void SetOrderAttributes(SortAttribute attributes) { m_orderAttributes = attributes; }
   SortAttribute GetOrderAttributes() const { return m_orderAttributes; }
