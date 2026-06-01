@@ -21,8 +21,6 @@ public:
   virtual bool OnAction(const CAction &action);
   virtual void FrameMove();
 protected:
-  virtual EVENT_RESULT OnMouseEvent(const CPoint& point, const KODI::MOUSE::CMouseEvent& event);
-
   CStopWatch m_initTimer;
   CStopWatch m_lockedTimer;
   bool m_bShowPreset;
