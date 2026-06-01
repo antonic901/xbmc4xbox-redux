@@ -178,7 +178,7 @@ bool CGUIWindowVideoPlaylist::OnMessage(CGUIMessage& message)
       else if (iControl == CONTROL_BTNREPEAT)
       {
         // increment repeat state
-        PLAYLIST::RepeatState state =
+        PLAYLIST::RepeatState::Type state =
             CServiceBroker::GetPlaylistPlayer().GetRepeat(PLAYLIST::TYPE_VIDEO);
         if (state == PLAYLIST::RepeatState::NONE)
           CServiceBroker::GetPlaylistPlayer().SetRepeat(PLAYLIST::TYPE_VIDEO,
@@ -359,7 +359,7 @@ void CGUIWindowVideoPlaylist::UpdateButtons()
     CONTROL_SELECT(CONTROL_BTNSHUFFLE);
 
   // update repeat button
-  PLAYLIST::RepeatState repState =
+  PLAYLIST::RepeatState::Type repState =
       CServiceBroker::GetPlaylistPlayer().GetRepeat(PLAYLIST::TYPE_VIDEO);
   int iLocalizedString;
   if (repState == PLAYLIST::RepeatState::NONE)
