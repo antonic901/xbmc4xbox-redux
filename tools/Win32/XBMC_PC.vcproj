@@ -1273,43 +1273,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Playlist"
-				Filter="">
-				<File
-					RelativePath="..\..\xbmc\playlists\PlayList.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\playlists\PlayListB4S.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\playlists\PlayListFactory.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\playlists\PlayListM3U.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\PlayListPlayer.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\playlists\PlayListPLS.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\playlists\PlayListURL.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\playlists\PlayListURL.h">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\playlists\PlayListWPL.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\playlists\PlayListXML.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\playlists\PlayListXML.h">
-				</File>
-			</Filter>
-			<Filter
 				Name="infoTagReaders"
 				Filter="">
 				<File
@@ -3140,27 +3103,6 @@
 			</File>
 			<File
 				RelativePath="..\..\xbmc\cores\PlayerCoreFactory.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\playlists\PlayList.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\playlists\PlayListB4S.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\playlists\PlayListFactory.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\playlists\PlayListM3U.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\PlayListPlayer.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\playlists\PlayListPLS.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\playlists\PlayListWPL.h">
 			</File>
 			<File
 				RelativePath="..\..\xbmc\settings\Profile.h">

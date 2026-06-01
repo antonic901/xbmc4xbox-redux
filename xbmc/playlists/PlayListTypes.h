@@ -11,17 +11,17 @@
 namespace PLAYLIST
 {
 
-typedef int Id;
+using Id = int;
 
-static const Id TYPE_NONE = -1; //! Playlist id of type none
-static const Id TYPE_MUSIC = 0; //! Playlist id of type music
-static const Id TYPE_VIDEO = 1; //! Playlist id of type video
-static const Id TYPE_PICTURE = 2; //! Playlist id of type picture
+constexpr Id TYPE_NONE = -1; //! Playlist id of type none
+constexpr Id TYPE_MUSIC = 0; //! Playlist id of type music
+constexpr Id TYPE_VIDEO = 1; //! Playlist id of type video
+constexpr Id TYPE_PICTURE = 2; //! Playlist id of type picture
 
 /*!
  * \brief Manages playlist playing.
  */
-enum RepeatState
+enum class RepeatState
 {
   NONE,
   ONE,
