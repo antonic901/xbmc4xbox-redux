@@ -8,9 +8,10 @@
 
 #pragma once
 
+#include "system.h" // <xtl.h>
 #include "video/guilib/VideoPlayActionProcessor.h"
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 
 class CFileItem;
 
@@ -40,7 +41,7 @@ protected:
   virtual bool OnChooseSelected() = 0;
 
 private:
-  CVideoSelectActionProcessorBase() = delete;
+  CVideoSelectActionProcessorBase();
   unsigned int ChooseStackItemPartNumber() const;
 };
 } // namespace GUILIB

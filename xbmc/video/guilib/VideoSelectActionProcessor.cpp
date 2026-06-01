@@ -59,7 +59,7 @@ bool CVideoSelectActionProcessorBase::Process(Action action)
     case ACTION_INFO:
     {
       if (GetDefaultAction() == ACTION_INFO && !m_item->IsVideoDb() && !m_item->IsPlugin() &&
-          !m_item->IsScript() && !m_item->IsPVR() &&
+          !m_item->IsScript() &&
           !VIDEO_UTILS::HasItemVideoDbInformation(*m_item))
       {
         // for items without info fall back to default play action
@@ -81,7 +81,7 @@ unsigned int CVideoSelectActionProcessorBase::ChooseStackItemPartNumber() const
   XFILE::CDirectory::GetDirectory(m_item->GetDynPath(), parts, "", XFILE::DIR_FLAG_DEFAULTS);
 
   for (int i = 0; i < parts.Size(); ++i)
-    parts[i]->SetLabel(StringUtils::Format(g_localizeStrings.Get(23051), i + 1)); // Part #
+    parts[i]->SetLabel(StringUtils::Format(g_localizeStrings.Get(23051).c_str(), i + 1)); // Part #
 
   CGUIDialogSelect* dialog =
       CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
