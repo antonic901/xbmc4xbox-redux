@@ -49,6 +49,6 @@ protected:
   int m_startUserrating;
   bool m_cancelled;
   bool m_hasUpdatedUserrating;
-  long m_albumId = -1;
+  long m_albumId;
 
 };

@@ -34,9 +34,9 @@ public:
   virtual bool HasListItems() const { return true; }
 
   const ADDON::ScraperPtr& GetAlbumScraper() const { return m_albumscraper; }
-  void SetAlbumScraper(ADDON::ScraperPtr scraper) { m_albumscraper = std::move(scraper); }
+  void SetAlbumScraper(ADDON::ScraperPtr scraper) { m_albumscraper = boost::move(scraper); }
   const ADDON::ScraperPtr& GetArtistScraper() const { return m_artistscraper; }
-  void SetArtistScraper(ADDON::ScraperPtr scraper) { m_artistscraper = std::move(scraper); }
+  void SetArtistScraper(ADDON::ScraperPtr scraper) { m_artistscraper = boost::move(scraper); }
 
   /*! \brief Show dialog to change information provider for either artists or albums (not both).
    Has a list to select how settings are to be applied - as system default, to just current item or to all the filtered items on the node.
@@ -85,8 +85,8 @@ private:
   ADDON::ScraperPtr m_artistscraper;
 
   std::string m_strArtistInfoPath;
-  bool m_showSingleScraper = false;
-  CONTENT_TYPE m_singleScraperType = CONTENT_NONE;
+  bool m_showSingleScraper;
+  CONTENT_TYPE m_singleScraperType;
   bool m_fetchInfo;
-  unsigned int m_applyToItems = INFOPROVIDER_THISITEM;
+  unsigned int m_applyToItems;
 };

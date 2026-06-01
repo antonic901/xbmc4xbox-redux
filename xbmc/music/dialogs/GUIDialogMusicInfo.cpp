@@ -34,11 +34,11 @@
 #include "music/tags/MusicInfoTag.h"
 #include "music/windows/GUIWindowMusicBase.h"
 #include "profiles/ProfileManager.h"
+#include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "storage/MediaManager.h"
-#include "utils/FileExtensionProvider.h"
 #include "utils/FileUtils.h"
 #include "utils/ProgressJob.h"
 #include "utils/StringUtils.h"
@@ -528,8 +528,9 @@ void CGUIDialogMusicInfo::SetDiscography(CMusicDatabase& database) const
   m_albumSongs->Clear();
   database.GetArtistDiscography(m_artist.idArtist, *m_albumSongs);
   CMusicThumbLoader loader;
-  for (const auto& item : *m_albumSongs)
+  for (int i = 0; i < m_albumSongs->Size(); ++i)
   {
+    const CFileItemPtr &item =(*m_albumSongs)[i];
     // Load all the album art and related artist(s) art (could be other collaborating artists)
     loader.LoadItem(item.get());
     if (item->GetMusicInfoTag()->GetDatabaseId() == -1)
@@ -818,20 +819,20 @@ void CGUIDialogMusicInfo::OnGetArt()
   if (m_bArtistInfo)
   {
     // Individual artist subfolder within the Artist Information Folder
-    paths.emplace_back(m_artist.strPath);
+    paths.push_back(m_artist.strPath);
     // Fallback local to music files (when there is a unique folder)
-    paths.emplace_back(m_fallbackartpath);
+    paths.push_back(m_fallbackartpath);
   }
   else
     // Album folder, when a unique one exists, no fallback
-    paths.emplace_back(m_album.strPath);
-  for (const auto& path : paths)
+    paths.push_back(m_album.strPath);
+  for (std::vector<std::string>::const_iterator path = paths.begin(); path != paths.end(); ++path)
   {
     if (!localArt.empty() && CFileUtils::Exists(localArt))
       break;
-    if (!path.empty())
+    if (!path->empty())
     {
-      CFileItem item(path, true);
+      CFileItem item(*path, true);
       if (type == "thumb")
         // Local music thumbnail images named by <musicthumbs>
         localArt = item.GetUserMusicThumb(true);
@@ -839,8 +840,8 @@ void CGUIDialogMusicInfo::OnGetArt()
       { // Check case and ext insenitively for local images with type as name
         // e.g. <arttype>.jpg
         CFileItemList items;
-        CDirectory::GetDirectory(path, items,
-            CServiceBroker::GetFileExtensionProvider().GetPictureExtensions(),
+        CDirectory::GetDirectory(*path, items,
+            CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions,
             DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO);
 
         for (int j = 0; j < items.Size(); j++)
@@ -881,8 +882,9 @@ void CGUIDialogMusicInfo::OnGetArt()
 
   // Clear local images of this type from cache so user will see any recent
   // local file changes immediately
-  for (auto& item : items)
+  for (int i = 0; i < items.Size(); ++i)
   {
+    CFileItemPtr &item = items[i];
     // Skip images from remote sources, recache done by refresh (could be slow)
     if (StringUtils::StartsWith(item->GetPath(), "thumb://Remote"))
       continue;
@@ -934,8 +936,9 @@ void CGUIDialogMusicInfo::OnGetArt()
 
     // Update local item and art list with current art
     m_item->SetArt(type, newArt);
-    for (const auto& artitem : *m_artTypeList)
+    for (int i = 0; i < m_artTypeList->Size(); ++i)
     {
+      const CFileItemPtr &artitem = (*m_artTypeList)[i];
       if (artitem->GetProperty("artType") == type)
       {
         artitem->SetArt("thumb", newArt);
@@ -1035,7 +1038,7 @@ void CGUIDialogMusicInfo::ShowFor(CFileItem* pItem)
         if (pItem->GetMusicInfoTag()->GetType() == MediaTypeAlbum &&
           pDlgMusicInfo->HasUpdatedUserrating())
         {
-          auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIWindowMusicBase>(WINDOW_MUSIC_NAV);
+          CGUIWindowMusicBase *window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIWindowMusicBase>(WINDOW_MUSIC_NAV);
           if (window)
             window->RefreshContent("albums");
         }

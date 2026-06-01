@@ -15,7 +15,7 @@
 #include "playlists/SmartPlayList.h"
 #include "view/GUIViewControl.h"
 
-#include <atomic>
+#include <atomic.h>
 
 class CFileItemList;
 class CGUIViewState;
@@ -183,20 +183,20 @@ protected:
   CFileItemList* m_unfilteredItems;        ///< \brief items prior to filtering using FilterItems()
   CDirectoryHistory m_history;
   boost::movelib::unique_ptr<CGUIViewState> m_guiState;
-  std::atomic_bool m_vecItemsUpdating = {false};
+  atomic_bool m_vecItemsUpdating;
   class CUpdateGuard
   {
   public:
-    CUpdateGuard(std::atomic_bool &update) : m_update(update)
+    CUpdateGuard(atomic_bool &update) : m_update(update)
     {
-      m_update = true;
+      m_update.set(true);
     }
     ~CUpdateGuard()
     {
-      m_update = false;
+      m_update.set(false);
     }
   protected:
-    std::atomic_bool &m_update;
+    atomic_bool &m_update;
   };
 
   // save control state on window exit
@@ -218,5 +218,5 @@ protected:
    \sa Update
    */
   std::string m_strFilterPath;
-  bool m_backgroundLoad = false;
+  bool m_backgroundLoad;
 };
