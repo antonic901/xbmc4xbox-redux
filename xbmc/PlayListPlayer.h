@@ -151,8 +151,8 @@ public:
    \param notify notify the user with a Toast notification
    \sa GetRepeat
    */
-  void SetRepeat(PLAYLIST::Id playlistId, PLAYLIST::RepeatState state, bool notify = false);
-  PLAYLIST::RepeatState GetRepeat(PLAYLIST::Id playlistId) const;
+  void SetRepeat(PLAYLIST::Id playlistId, PLAYLIST::RepeatState::Type state, bool notify = false);
+  PLAYLIST::RepeatState::Type GetRepeat(PLAYLIST::Id playlistId) const;
 
   // add items via the playlist player
   void Add(PLAYLIST::Id playlistId, const CPlayList& playlist);
@@ -195,7 +195,7 @@ protected:
   CPlayList* m_PlaylistMusic;
   CPlayList* m_PlaylistVideo;
   CPlayList* m_PlaylistEmpty;
-  std::map<PLAYLIST::Id, PLAYLIST::RepeatState> m_repeatState;
+  std::map<PLAYLIST::Id, PLAYLIST::RepeatState::Type> m_repeatState;
 };
 
 }

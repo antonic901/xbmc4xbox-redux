@@ -181,7 +181,7 @@ bool CGUIWindowMusicPlayList::OnMessage(CGUIMessage& message)
       else if (iControl == CONTROL_BTNREPEAT)
       {
         // increment repeat state
-        PLAYLIST::RepeatState state =
+        PLAYLIST::RepeatState::Type state =
             CServiceBroker::GetPlaylistPlayer().GetRepeat(PLAYLIST::TYPE_MUSIC);
         if (state == PLAYLIST::RepeatState::NONE)
           CServiceBroker::GetPlaylistPlayer().SetRepeat(PLAYLIST::TYPE_MUSIC,
@@ -421,7 +421,7 @@ void CGUIWindowMusicPlayList::UpdateButtons()
 
   // update repeat button
   int iLocalizedString;
-  PLAYLIST::RepeatState repState =
+  PLAYLIST::RepeatState::Type repState =
       CServiceBroker::GetPlaylistPlayer().GetRepeat(PLAYLIST::TYPE_MUSIC);
   if (repState == PLAYLIST::RepeatState::NONE)
     iLocalizedString = 595; // Repeat: Off

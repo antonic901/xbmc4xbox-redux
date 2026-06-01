@@ -21,11 +21,14 @@ static const Id TYPE_PICTURE = 2; //! Playlist id of type picture
 /*!
  * \brief Manages playlist playing.
  */
-enum RepeatState
+namespace RepeatState
 {
-  NONE,
-  ONE,
-  ALL
-};
+  enum Type
+  {
+    NONE,
+    ONE,
+    ALL
+  };
+}
 
 } // namespace PLAYLIST
