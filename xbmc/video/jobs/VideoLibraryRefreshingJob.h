@@ -8,9 +8,10 @@
 
 #pragma once
 
+#include "system.h" // <xtl.h>
 #include "video/jobs/VideoLibraryProgressJob.h"
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <string>
 
 class CFileItem;

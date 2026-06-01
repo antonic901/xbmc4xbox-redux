@@ -181,6 +181,7 @@ void CAdvancedSettings::Initialize()
   m_fullScreenOnMovieStart = true;
   m_cachePath = "special://temp/";
 
+  m_videoFilenameIdentifierRegExp = "([\\{\\[](\\w+?)(?:id)?[-=](\\w+)[\\}|\\]])";
   m_videoCleanDateTimeRegExp = "(.*[^ _\\,\\.\\(\\)\\[\\]\\-])[ _\\.\\(\\)\\[\\]\\-]+(19[0-9][0-9]|20[0-9][0-9])([ _\\,\\.\\(\\)\\[\\]\\-]|[^0-9]$)?";
 
   m_videoCleanStringRegExps.clear();
@@ -469,6 +470,7 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
     if (pVideoExcludes)
       GetCustomRegexps(pVideoExcludes, m_videoCleanStringRegExps);
 
+    XMLUtils::GetString(pElement, "filenameidentifier", m_videoFilenameIdentifierRegExp);
     XMLUtils::GetString(pElement,"cleandatetime", m_videoCleanDateTimeRegExp);
     XMLUtils::GetString(pElement,"ppffmpegdeinterlacing",m_videoPPFFmpegDeint);
     XMLUtils::GetString(pElement,"ppffmpegpostprocessing",m_videoPPFFmpegPostProc);

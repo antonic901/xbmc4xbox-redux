@@ -20,7 +20,6 @@
 #include "video/jobs/VideoLibraryResetResumePointJob.h"
 #include "video/jobs/VideoLibraryScanningJob.h"
 
-#include <mutex>
 #include <utility>
 
 CVideoLibraryQueue::CVideoLibraryQueue()
@@ -132,7 +131,7 @@ void CVideoLibraryQueue::RefreshItem(boost::shared_ptr<CFileItem> item,
                                      bool refreshAll /* = false */,
                                      const std::string& searchTitle /* = "" */)
 {
-  AddJob(new CVideoLibraryRefreshingJob(std::move(item), forceRefresh, refreshAll, ignoreNfo,
+  AddJob(new CVideoLibraryRefreshingJob(boost::move(item), forceRefresh, refreshAll, ignoreNfo,
                                         searchTitle));
 }
 
@@ -145,7 +144,7 @@ bool CVideoLibraryQueue::RefreshItemModal(boost::shared_ptr<CFileItem> item,
     return false;
 
   m_modal = true;
-  CVideoLibraryRefreshingJob refreshingJob(std::move(item), forceRefresh, refreshAll);
+  CVideoLibraryRefreshingJob refreshingJob(boost::move(item), forceRefresh, refreshAll);
 
   bool result = refreshingJob.DoModal();
   m_modal = false;
@@ -163,7 +162,7 @@ void CVideoLibraryQueue::MarkAsWatched(const boost::shared_ptr<CFileItem>& item,
 
 void CVideoLibraryQueue::ResetResumePoint(const boost::shared_ptr<CFileItem>& item)
 {
-  if (item == nullptr)
+  if (item == NULL)
     return;
 
   AddJob(new CVideoLibraryResetResumePointJob(item));

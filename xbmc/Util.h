@@ -77,6 +77,14 @@ public:
   virtual ~CUtil(void);
   static bool GetVolumeFromFileName(const CStdString& strFileName, CStdString& strFileTitle, CStdString& strVolumeNumber);
   static void CleanString(const CStdString& strFileName, std::string& strTitle, std::string& strTitleAndYear, std::string& strYear, bool bRemoveExtension = false, bool bCleanChars = true);
+  static bool GetFilenameIdentifier(const std::string& fileName,
+                                    std::string& identifierType,
+                                    std::string& identifier);
+  static bool GetFilenameIdentifier(const std::string& fileName,
+                                    std::string& identifierType,
+                                    std::string& identifier,
+                                    std::string& match);
+  static bool HasFilenameIdentifier(const std::string& fileName);
   static CStdString GetTitleFromPath(const CURL& url, bool bIsFolder = false);
   static CStdString GetTitleFromPath(const CStdString& strFileNameAndPath, bool bIsFolder = false);
   static void GetQualifiedFilename(const std::string &strBasePath, std::string &strFilename);

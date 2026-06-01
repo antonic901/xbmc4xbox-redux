@@ -338,6 +338,53 @@ bool CUtil::GetVolumeFromFileName(const CStdString& strFileName, CStdString& str
   return false;
 }
 
+bool CUtil::GetFilenameIdentifier(const std::string& fileName,
+                                  std::string& identifierType,
+                                  std::string& identifier)
+{
+  std::string match;
+  return GetFilenameIdentifier(fileName, identifierType, identifier, match);
+}
+
+bool CUtil::GetFilenameIdentifier(const std::string& fileName,
+                                  std::string& identifierType,
+                                  std::string& identifier,
+                                  std::string& match)
+{
+  CRegExp reIdentifier(true, CRegExp::autoUtf8);
+
+  const boost::shared_ptr<CAdvancedSettings> advancedSettings =
+      CServiceBroker::GetSettingsComponent()->GetAdvancedSettings();
+  if (!reIdentifier.RegComp(advancedSettings->m_videoFilenameIdentifierRegExp))
+  {
+    CLog::Log(LOGERROR, "Invalid filename identifier RegExp:'%s'",
+               advancedSettings->m_videoFilenameIdentifierRegExp.c_str());
+    return false;
+  }
+  else
+  {
+    if (reIdentifier.RegComp(advancedSettings->m_videoFilenameIdentifierRegExp))
+    {
+      if (reIdentifier.RegFind(fileName) >= 0)
+      {
+        match = reIdentifier.GetMatch(0);
+        identifierType = reIdentifier.GetMatch(1);
+        identifier = reIdentifier.GetMatch(2);
+        StringUtils::ToLower(identifierType);
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool CUtil::HasFilenameIdentifier(const std::string& fileName)
+{
+  std::string identifierType;
+  std::string identifier;
+  return GetFilenameIdentifier(fileName, identifierType, identifier);
+}
+
 void CUtil::CleanString(const CStdString& strFileName, std::string& strTitle, std::string& strTitleAndYear, std::string& strYear, bool bRemoveExtension /* = false */, bool bCleanChars /* = true */)
 {
   strTitleAndYear = strFileName;

@@ -3564,3 +3564,21 @@ bool CFileItem::IsResumable() const
     return HasVideoInfoTag() && GetVideoInfoTag()->GetResumePoint().IsPartWay();
   }
 }
+
+bool CFileItem::HasVideoVersions() const
+{
+  if (HasVideoInfoTag())
+  {
+    return GetVideoInfoTag()->HasVideoVersions();
+  }
+  return false;
+}
+
+bool CFileItem::HasVideoExtras() const
+{
+  if (HasVideoInfoTag())
+  {
+    return GetVideoInfoTag()->HasVideoExtras();
+  }
+  return false;
+}
