@@ -237,6 +237,9 @@
 #define ACTION_INPUT_TEXT             244
 #define ACTION_VOLUME_SET             245
 
+//! Used to queue an item to the next position in the playlist
+#define ACTION_QUEUE_ITEM_NEXT        251
+
 // The NOOP action can be specified to disable an input event. This is
 // useful in user keyboard.xml etc to disable actions specified in the
 // system mappings. ERROR action is used to play an error sound

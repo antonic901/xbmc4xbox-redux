@@ -222,7 +222,7 @@ bool CDirectory::GetDirectory(const CURL& url, boost::shared_ptr<IDirectory> pDi
         {
           CFileItemPtr item = items[i];
           CURL itemUrl = item->GetURL();
-          // for explicitly credetials 
+          // for explicitly credetials
           if (!realURL.GetUserName().empty())
           {
             // credentials was changed i.e. were stored in the password
@@ -437,12 +437,14 @@ bool CDirectory::RemoveRecursive(const CURL& url)
   return false;
 }
 
-void CDirectory::FilterFileDirectories(CFileItemList &items, const std::string &mask)
+void CDirectory::FilterFileDirectories(CFileItemList &items, const std::string &mask,
+                                       bool expandImages)
 {
   for (int i=0; i< items.Size(); ++i)
   {
     CFileItemPtr pItem=items[i];
-    if (!pItem->m_bIsFolder && pItem->IsFileFolder(EFILEFOLDER_TYPE_ALWAYS))
+    EFileFolderType mode = expandImages && pItem->IsDiscImage() ? EFILEFOLDER_TYPE_ONBROWSE : EFILEFOLDER_TYPE_ALWAYS;
+    if (!pItem->m_bIsFolder && pItem->IsFileFolder(mode))
     {
       boost::movelib::unique_ptr<IFileDirectory> pDirectory(CFactoryFileDirectory::Create(pItem->GetURL(),pItem.get(),mask));
       if (pDirectory.get())
