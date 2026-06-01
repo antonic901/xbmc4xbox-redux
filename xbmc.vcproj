@@ -3953,6 +3953,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\video\VideoThumbLoader.h">
 				</File>
+				<File
+					RelativePath=".\xbmc\video\VideoUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\video\VideoUtils.h">
+				</File>
 				<Filter
 					Name="windows"
 					Filter="">
@@ -4078,6 +4084,24 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					Filter="">
 					<File
 						RelativePath=".\xbmc\video\guilib\VideoAction.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\guilib\VideoPlayActionProcessor.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\guilib\VideoPlayActionProcessor.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\guilib\VideoSelectActionProcessor.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\guilib\VideoSelectActionProcessor.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\guilib\VideoVersionHelper.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\guilib\VideoVersionHelper.h">
 					</File>
 				</Filter>
 				<Filter
