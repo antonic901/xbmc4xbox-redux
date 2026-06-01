@@ -29,9 +29,9 @@ public:
 
 public:
   CPlayListM3U(void);
-  ~CPlayListM3U(void) override;
-  bool Load(const std::string& strFileName) override;
-  void Save(const std::string& strFileName) const override;
+  virtual ~CPlayListM3U(void);
+  virtual bool Load(const std::string& strFileName);
+  virtual void Save(const std::string& strFileName) const;
 
   static std::map<std::string,std::string> ParseStreamLine(const std::string &streamLine);
 };
