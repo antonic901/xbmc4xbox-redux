@@ -428,6 +428,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\InfoScanner.cpp">
 			</File>
 			<File
+				RelativePath=".\xbmc\PlayListPlayer.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\PlayListPlayer.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\ServiceBroker.cpp">
 			</File>
 			<File
@@ -766,49 +772,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogSmartPlaylistRule.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="Playlist"
-				Filter="">
-				<File
-					RelativePath=".\xbmc\playlists\PlayList.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\playlists\PlayListB4S.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\playlists\PlayListFactory.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\playlists\PlayListM3U.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\PlayListPlayer.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\playlists\PlayListPLS.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\playlists\PlayListTypes.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\playlists\PlayListURL.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\playlists\PlayListWPL.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\playlists\PlayListXML.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\playlists\SmartPlaylist.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\playlists\SmartPlaylist.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\playlists\SmartPlaylistFileItemListModifier.cpp">
 				</File>
 			</Filter>
 			<Filter
@@ -4846,6 +4809,79 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="playlists"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\playlists\PlayList.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayList.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListB4S.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListB4S.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListFactory.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListFactory.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListM3U.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListM3U.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListPLS.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListPLS.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListTypes.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListURL.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListURL.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListWPL.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListWPL.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListXML.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListXML.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListXSPF.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\PlayListXSPF.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\SmartPlayList.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\SmartPlayList.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\SmartPlaylistFileItemListModifier.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\playlists\SmartPlaylistFileItemListModifier.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -5125,33 +5161,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\pictures\Picture.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\playlists\PlayList.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\playlists\PlayListB4S.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\playlists\PlayListFactory.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\playlists\PlayListM3U.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\PlayListPlayer.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\playlists\PlayListPLS.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\playlists\PlayListURL.cpp">
-			</File>
-			<File
-				RelativePath=".\xbmc\playlists\PlayListWPL.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\playlists\PlayListXML.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\utils\Random.h">
 			</File>
 			<File
@@ -5168,9 +5177,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\Shortcut.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\playlists\SmartPlaylistFileItemListModifier.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\Sntp.h">

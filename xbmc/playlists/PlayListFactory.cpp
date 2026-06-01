@@ -1,34 +1,39 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "PlayListFactory.h"
-#include "PlayListM3U.h"
-#include "PlayListPLS.h"
-#include "PlayListB4S.h"
-#include "PlayListWPL.h"
-#include "PlayListURL.h"
-#include "PlayListXML.h"
-#include "utils/URIUtils.h"
+
+#include "FileItem.h"
+#include "URL.h"
+#include "playlists/PlayListB4S.h"
+#include "playlists/PlayListM3U.h"
+#include "playlists/PlayListPLS.h"
+#include "playlists/PlayListURL.h"
+#include "playlists/PlayListWPL.h"
+#include "playlists/PlayListXML.h"
+#include "playlists/PlayListXSPF.h"
 #include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
 
 using namespace PLAYLIST;
+
+CPlayList* CPlayListFactory::Create(const CURL& url)
+{
+  CFileItem item{url.Get(), false};
+
+  if (url.HasOption("mimetype"))
+  {
+    item.SetContentLookup(false);
+    item.SetMimeType(url.GetOption("mimetype"));
+  }
+
+  return Create(item);
+}
 
 CPlayList* CPlayListFactory::Create(const std::string& filename)
 {
@@ -38,7 +43,7 @@ CPlayList* CPlayListFactory::Create(const std::string& filename)
 
 CPlayList* CPlayListFactory::Create(const CFileItem& item)
 {
-  if( item.IsInternetStream() )
+  if (item.IsInternetStream())
   {
     // Ensure the MIME type has been retrieved for http:// and shout:// streams
     if (item.GetMimeType().empty())
@@ -70,12 +75,17 @@ CPlayList* CPlayListFactory::Create(const CFileItem& item)
 
     if (strMimeType == "application/vnd.ms-wpl")
       return new CPlayListWPL();
+
+    if (strMimeType == "application/xspf+xml")
+      return new CPlayListXSPF();
   }
 
-  std::string extension = URIUtils::GetExtension(item.GetPath());
+  std::string path = item.GetDynPath();
+
+  std::string extension = URIUtils::GetExtension(path);
   StringUtils::ToLower(extension);
 
-  if (extension == ".m3u" || extension == ".strm")
+  if (extension == ".m3u" || (extension == ".m3u8" && !item.IsInternetStream()) || extension == ".strm")
     return new CPlayListM3U();
 
   if (extension == ".pls")
@@ -99,6 +109,9 @@ CPlayList* CPlayListFactory::Create(const CFileItem& item)
   if (extension == ".pxml")
     return new CPlayListXML();
 
+  if (extension == ".xspf")
+    return new CPlayListXSPF();
+
   return NULL;
 
 }
@@ -108,7 +121,7 @@ bool CPlayListFactory::IsPlaylist(const CFileItem& item)
   std::string strMimeType = item.GetMimeType();
   StringUtils::ToLower(strMimeType);
 
-/* These are abit uncertain
+/* These are a bit uncertain
   if(strMimeType == "video/x-ms-asf"
   || strMimeType == "video/x-ms-asx"
   || strMimeType == "video/x-ms-wmv"
@@ -129,18 +142,18 @@ bool CPlayListFactory::IsPlaylist(const CFileItem& item)
   || strMimeType == "audio/x-mpegurl")
     return true;
 
-  return IsPlaylist(item.GetPath());
+  return IsPlaylist(item.GetDynPath());
 }
 
 bool CPlayListFactory::IsPlaylist(const CURL& url)
 {
   return URIUtils::HasExtension(url,
-                                ".m3u|.b4s|.pls|.strm|.wpl|.asx|.ram|.url|.pxml");
+                                ".m3u|.m3u8|.b4s|.pls|.strm|.wpl|.asx|.ram|.url|.pxml|.xspf");
 }
 
 bool CPlayListFactory::IsPlaylist(const std::string& filename)
 {
   return URIUtils::HasExtension(filename,
-                     ".m3u|.b4s|.pls|.strm|.wpl|.asx|.ram|.url|.pxml");
+                     ".m3u|.m3u8|.b4s|.pls|.strm|.wpl|.asx|.ram|.url|.pxml|.xspf");
 }
 
