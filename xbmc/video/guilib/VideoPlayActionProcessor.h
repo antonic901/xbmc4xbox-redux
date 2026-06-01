@@ -8,9 +8,10 @@
 
 #pragma once
 
+#include "system.h" // <xtl.h>
 #include "video/guilib/VideoAction.h"
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 
 class CFileItem;
 
@@ -21,7 +22,7 @@ namespace GUILIB
 class CVideoPlayActionProcessorBase
 {
 public:
-  explicit CVideoPlayActionProcessorBase(const boost::shared_ptr<CFileItem>& item) : m_item(item) {}
+  explicit CVideoPlayActionProcessorBase(const boost::shared_ptr<CFileItem>& item) : m_item(item), m_userCancelled(false) {}
   virtual ~CVideoPlayActionProcessorBase() {}
 
   bool ProcessDefaultAction();
@@ -39,10 +40,10 @@ protected:
   virtual bool OnPlaySelected() = 0;
 
   boost::shared_ptr<CFileItem> m_item;
-  bool m_userCancelled{false};
+  bool m_userCancelled;
 
 private:
-  CVideoPlayActionProcessorBase() = delete;
+  CVideoPlayActionProcessorBase();
 };
 } // namespace GUILIB
 } // namespace VIDEO

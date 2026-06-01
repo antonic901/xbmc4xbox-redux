@@ -164,6 +164,12 @@ public:
   bool IsAudio() const;
 
   /*!
+   \brief Check whether an item is 'deleted' (for example, a trashed pvr recording).
+   \return true if item is 'deleted', false otherwise.
+   */
+  bool IsDeleted() const;
+
+  /*!
    \brief Check whether an item is an audio book item.
    \return true if item is audiobook, false otherwise.
    */

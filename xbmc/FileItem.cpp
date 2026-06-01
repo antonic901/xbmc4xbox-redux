@@ -720,6 +720,11 @@ bool CFileItem::IsAudio() const
   return URIUtils::HasExtension(m_strPath, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions);
 }
 
+bool CFileItem::IsDeleted() const
+{
+  return false;
+}
+
 bool CFileItem::IsAudioBook() const
 {
   return IsType(".m4b") || IsType(".mka");

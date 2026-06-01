@@ -35,7 +35,7 @@ bool CVideoPlayActionProcessorBase::ProcessAction(Action action)
 {
   m_userCancelled = false;
 
-  const auto movie{CVideoVersionHelper::ChooseVideoFromAssets(m_item)};
+  const CFileItemPtr movie = CVideoVersionHelper::ChooseVideoFromAssets(m_item);
   if (movie)
     m_item = movie;
   else
