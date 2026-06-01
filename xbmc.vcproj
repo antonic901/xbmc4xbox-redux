@@ -4080,6 +4080,43 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\video\guilib\VideoAction.h">
 					</File>
 				</Filter>
+				<Filter
+					Name="tags"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\video\tags\IVideoInfoTagLoader.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\tags\VideoInfoTagLoaderFactory.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\tags\VideoInfoTagLoaderFactory.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\tags\VideoTagExtractionHelper.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\tags\VideoTagExtractionHelper.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\tags\VideoTagLoaderFFmpeg.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\tags\VideoTagLoaderFFmpeg.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\tags\VideoTagLoaderNFO.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\tags\VideoTagLoaderNFO.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\tags\VideoTagLoaderPlugin.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\tags\VideoTagLoaderPlugin.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="music"
