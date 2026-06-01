@@ -243,7 +243,7 @@ void CGUIWindowMusicPlaylistEditor::PlayItem(int iItem)
 
 #ifdef HAS_OPTICAL_DRIVE
   if (m_vecItems->Get(iItem)->IsDVD())
-    MEDIA_DETECT::CAutorun::PlayDiscAskResume(m_vecItems->Get(iItem)->GetPath());
+    MEDIA_DETECT::CAutorun::PlayDisc();
   else
 #endif
     CGUIWindowMusicBase::PlayItem(iItem);
@@ -405,8 +405,8 @@ void CGUIWindowMusicPlaylistEditor::AppendToPlaylist(CFileItemList &newItems)
 
 void CGUIWindowMusicPlaylistEditor::OnSourcesContext()
 {
-  static constexpr int CONTEXT_BUTTON_QUEUE_ITEM = 0;
-  static constexpr int CONTEXT_BUTTON_BROWSE_INTO = 1;
+  static const int CONTEXT_BUTTON_QUEUE_ITEM = 0;
+  static const int CONTEXT_BUTTON_BROWSE_INTO = 1;
 
   CFileItemPtr item = GetCurrentListItem();
   CContextButtons buttons;

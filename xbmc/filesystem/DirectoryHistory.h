@@ -1,23 +1,12 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
 
 #include <map>
 #include <string>
@@ -29,17 +18,17 @@ public:
   class CHistoryItem
   {
   public:
-    CHistoryItem(){};
-    virtual ~CHistoryItem(){};
+    CHistoryItem() : m_indexItem(-1) {}
+    virtual ~CHistoryItem() {}
     std::string m_strItem;
-    std::string m_strDirectory;
+    int m_indexItem;
   };
 
   class CPathHistoryItem
   {
   public:
-    CPathHistoryItem() { }
-    virtual ~CPathHistoryItem() { }
+    CPathHistoryItem() {}
+    virtual ~CPathHistoryItem() {}
 
     const std::string& GetPath(bool filter = false) const;
 
@@ -47,11 +36,21 @@ public:
     std::string m_strFilterPath;
   };
 
-  CDirectoryHistory() { }
+  CDirectoryHistory() {}
   virtual ~CDirectoryHistory();
 
-  void SetSelectedItem(const std::string& strSelectedItem, const std::string& strDirectory);
+  /*!
+   * \brief Store the currently selected item for the navigation path
+   * \param strSelectedItem Selected item
+   * \param strDirectory Path
+   * \param indexItem Index of the selected item (in list, after filtering/sorting).
+   * -1 when the index information is not available.
+  */
+  void SetSelectedItem(const std::string& strSelectedItem,
+                       const std::string& strDirectory,
+                       const int indexItem = -1);
   const std::string& GetSelectedItem(const std::string& strDirectory) const;
+  int GetSelectedItemIndex(const std::string& strDirectory) const;
   void RemoveSelectedItem(const std::string& strDirectory);
 
   void AddPath(const std::string& strPath, const std::string &m_strFilterPath = "");

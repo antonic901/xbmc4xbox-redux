@@ -348,7 +348,8 @@ void CGUIDialogFileBrowser::Update(const std::string &strDirectory)
       strSelectedItem = pItem->GetPath();
       URIUtils::RemoveSlashAtEnd(strSelectedItem);
       m_history.SetSelectedItem(strSelectedItem,
-                                m_Directory->GetPath().empty() ? "empty" : m_Directory->GetPath());
+                                m_Directory->GetPath().empty() ? "empty" : m_Directory->GetPath(),
+                                iItem);
     }
   }
 
