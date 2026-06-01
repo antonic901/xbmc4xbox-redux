@@ -11,8 +11,8 @@
 #include "FileItem.h"
 #include "GUIUserMessages.h"
 #include "ServiceBroker.h"
+#include "addons/Visualisation.h"
 #include "guilib/GUIComponent.h"
-#include "guilib/GUIVisualisationControl.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/StringUtils.h"
@@ -22,6 +22,7 @@ CGUIDialogVisualisationPresetList::CGUIDialogVisualisationPresetList()
     : CGUIDialogSelect(WINDOW_DIALOG_VIS_PRESET_LIST)
 {
   m_loadType = KEEP_IN_MEMORY;
+  m_viz = NULL;
 }
 
 bool CGUIDialogVisualisationPresetList::OnMessage(CGUIMessage &message)
@@ -38,16 +39,16 @@ bool CGUIDialogVisualisationPresetList::OnMessage(CGUIMessage &message)
 void CGUIDialogVisualisationPresetList::OnSelect(int idx)
 {
   if (m_viz)
-    m_viz->SetPreset(idx);
+    m_viz->OnAction(VIS_ACTION_LOAD_PRESET, static_cast<void*>(&idx));
 }
 
 void CGUIDialogVisualisationPresetList::ClearVisualisation()
 {
-  m_viz = nullptr;
+  m_viz = NULL;
   Reset();
 }
 
-void CGUIDialogVisualisationPresetList::SetVisualisation(CGUIVisualisationControl* vis)
+void CGUIDialogVisualisationPresetList::SetVisualisation(ADDON::CVisualisation* vis)
 {
   m_viz = vis;
   Reset();
@@ -61,17 +62,17 @@ void CGUIDialogVisualisationPresetList::SetVisualisation(CGUIVisualisationContro
   {
     SetUseDetails(false);
     SetMultiSelection(false);
-    SetHeading(StringUtils::Format(g_localizeStrings.Get(13407), m_viz->Name()));
+    SetHeading(StringUtils::Format(g_localizeStrings.Get(13407).c_str(), m_viz->Name().c_str()));
     std::vector<std::string> presets;
     if (m_viz->GetPresetList(presets))
     {
-      for (const auto& preset : presets)
+      for (std::vector<std::string>::const_iterator preset = presets.begin(); preset != presets.end(); ++preset)
       {
-        CFileItem item(preset);
+        CFileItem item(*preset);
         item.RemoveExtension();
         Add(item);
       }
-      SetSelected(m_viz->GetActivePreset());
+      SetSelected(m_viz->GetPreset());
     }
     else
     { // Viz does not have any presets
@@ -86,7 +87,7 @@ void CGUIDialogVisualisationPresetList::OnInitWindow()
 {
   CGUIMessage msg(GUI_MSG_GET_VISUALISATION, 0, 0);
   CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
-  SetVisualisation(static_cast<CGUIVisualisationControl*>(msg.GetPointer()));
+  SetVisualisation(static_cast<ADDON::CVisualisation*>(msg.GetPointer()));
   CGUIDialogSelect::OnInitWindow();
 }
 

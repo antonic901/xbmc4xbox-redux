@@ -10,11 +10,9 @@
 
 #include "GUIUserMessages.h"
 #include "ServiceBroker.h"
-#include "addons/addoninfo/AddonType.h"
-#include "addons/gui/GUIWindowAddonBrowser.h"
+#include "addons/GUIWindowAddonBrowser.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
-#include "input/InputManager.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
 #include "settings/Settings.h"
@@ -41,7 +39,7 @@ bool CGUIDialogMusicOSD::OnMessage(CGUIMessage &message)
       if (iControl == CONTROL_VIS_BUTTON)
       {
         std::string addonID;
-        if (CGUIWindowAddonBrowser::SelectAddonID(ADDON::AddonType::VISUALIZATION, addonID, true) ==
+        if (CGUIWindowAddonBrowser::SelectAddonID(ADDON::ADDON_VIZ, addonID, true) ==
             1)
         {
           const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
@@ -81,10 +79,8 @@ void CGUIDialogMusicOSD::FrameMove()
   if (m_autoClosing)
   {
     // check for movement of mouse or a submenu open
-    if (CServiceBroker::GetInputManager().IsMouseActive() ||
-        CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_VIS_SETTINGS) ||
-        CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_VIS_PRESET_LIST) ||
-        CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_PVR_RADIO_RDS_INFO))
+    if (CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_VIS_SETTINGS) ||
+        CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_VIS_PRESET_LIST))
       // extend show time by original value
       SetAutoClose(m_showDuration);
   }

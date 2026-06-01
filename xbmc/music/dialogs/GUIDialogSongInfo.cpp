@@ -116,6 +116,7 @@ CGUIDialogSongInfo::CGUIDialogSongInfo(void)
   m_hasUpdatedUserrating = false;
   m_startUserrating = -1;
   m_artTypeList.Clear();
+  m_albumId = -1;
   m_loadType = KEEP_IN_MEMORY;
 }
 
@@ -261,12 +262,13 @@ void CGUIDialogSongInfo::OnInitWindow()
 void CGUIDialogSongInfo::Update()
 {
   CFileItemList items;
-  for (const auto& contributor : m_song->GetMusicInfoTag()->GetContributors())
+  const VECMUSICROLES& contributors = m_song->GetMusicInfoTag()->GetContributors();
+  for (VECMUSICROLES::const_iterator contributor = contributors.begin(); contributor != contributors.end(); ++contributor)
   {
-    auto item = boost::make_shared<CFileItem>(contributor.GetRoleDesc());
-    item->SetLabel2(contributor.GetArtist());
-    item->GetMusicInfoTag()->SetDatabaseId(contributor.GetArtistId(), MediaTypeArtist);
-    items.Add(std::move(item));
+    CFileItemPtr item = boost::make_shared<CFileItem>(contributor->GetRoleDesc());
+    item->SetLabel2(contributor->GetArtist());
+    item->GetMusicInfoTag()->SetDatabaseId(contributor->GetArtistId(), MediaTypeArtist);
+    items.Add(boost::move(item));
   }
   CGUIMessage message(GUI_MSG_LABEL_BIND, GetID(), CONTROL_LIST, 0, 0, &items);
   OnMessage(message);
@@ -391,9 +393,9 @@ void CGUIDialogSongInfo::OnGetArt()
 
   // Clear these local images from cache so user will see any recent
   // local file changes immediately
-  for (auto& item : items)
+  for (int i = 0; i < items.Size(); ++i)
   {
-    std::string thumb(item->GetArt("thumb"));
+    std::string thumb(items[i]->GetArt("thumb"));
     if (thumb.empty())
       continue;
     CServiceBroker::GetTextureCache()->ClearCachedImage(thumb);
@@ -461,8 +463,9 @@ void CGUIDialogSongInfo::OnGetArt()
     // Show any fallback art when song art removed
     if (newArt.empty() && m_song->HasArt(type))
       newArt = m_song->GetArt(type);
-    for (const auto& artitem : m_artTypeList)
+    for (int i = 0; i < m_artTypeList.Size(); ++i)
     {
+      const CFileItemPtr &artitem = m_artTypeList[i];
       if (artitem->GetProperty("artType") == type)
       {
         artitem->SetArt("thumb", newArt);
@@ -509,7 +512,7 @@ void CGUIDialogSongInfo::ShowFor(CFileItem* pItem)
       dialog->Open();
       if (dialog->HasUpdatedUserrating())
       {
-        auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIWindowMusicBase>(WINDOW_MUSIC_NAV);
+        CGUIWindowMusicBase *window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIWindowMusicBase>(WINDOW_MUSIC_NAV);
         if (window)
           window->RefreshContent("songs");
       }

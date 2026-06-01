@@ -119,6 +119,8 @@ CGUIMediaWindow::CGUIMediaWindow(int id, const char *xmlFile)
   m_vecItems->SetPath("?");
   m_iLastControl = -1;
   m_canFilterAdvanced = false;
+  m_vecItemsUpdating.set(false);
+  m_backgroundLoad = false;
 
   m_guiState.reset(CGUIViewState::GetViewState(GetID(), *m_vecItems));
 }
