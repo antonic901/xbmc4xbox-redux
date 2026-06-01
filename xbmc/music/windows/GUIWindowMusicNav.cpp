@@ -37,6 +37,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
+#include "storage/DetectDVDType.h"
 #include "storage/MediaManager.h"
 #include "utils/FileUtils.h"
 #include "utils/LegacyPathTranslation.h"
@@ -238,7 +239,7 @@ bool CGUIWindowMusicNav::ManageInfoProvider(const CFileItemPtr& item)
     if (ADDON::CAddonSystemSettings::GetInstance().GetActive(
         ADDON::ScraperTypeFromContent(content), defaultScraper))
     {
-      scraper = std::dynamic_pointer_cast<ADDON::CScraper>(defaultScraper);
+      scraper = boost::dynamic_pointer_cast<ADDON::CScraper>(defaultScraper);
     }
   }
 
@@ -250,10 +251,10 @@ bool CGUIWindowMusicNav::ManageInfoProvider(const CFileItemPtr& item)
     CVariant msgctxt;
     switch (applyto)
     {
-    case INFOPROVIDERAPPLYOPTIONS::INFOPROVIDER_THISITEM: // Change information provider for specific item
+    case INFOPROVIDER_THISITEM: // Change information provider for specific item
       result = m_musicdatabase.SetScraper(id, content, scraper);
       break;
-    case INFOPROVIDERAPPLYOPTIONS::INFOPROVIDER_ALLVIEW: // Change information provider for the filtered items shown on this node
+    case INFOPROVIDER_ALLVIEW: // Change information provider for the filtered items shown on this node
       {
         msgctxt = 38069;
         if (content == CONTENT_ARTISTS)
@@ -279,7 +280,7 @@ bool CGUIWindowMusicNav::ManageInfoProvider(const CFileItemPtr& item)
         }
       }
       break;
-    case INFOPROVIDERAPPLYOPTIONS::INFOPROVIDER_DEFAULT: // Change information provider for all items
+    case INFOPROVIDER_DEFAULT: // Change information provider for all items
       {
         msgctxt = 38071;
         if (content == CONTENT_ARTISTS)
@@ -297,9 +298,9 @@ bool CGUIWindowMusicNav::ManageInfoProvider(const CFileItemPtr& item)
           settings->Save();
           // Clear all item specific settings
           if (content == CONTENT_ARTISTS)
-            result = m_musicdatabase.SetScraperAll("musicdb://artists/", nullptr);
+            result = m_musicdatabase.SetScraperAll("musicdb://artists/", ADDON::ScraperPtr());
           else
-            result = m_musicdatabase.SetScraperAll("musicdb://albums/", nullptr);
+            result = m_musicdatabase.SetScraperAll("musicdb://albums/", ADDON::ScraperPtr());
         }
       }
     default:
@@ -309,7 +310,7 @@ bool CGUIWindowMusicNav::ManageInfoProvider(const CFileItemPtr& item)
       return false;
 
     // Refresh additional information using the new settings
-    if (applyto == INFOPROVIDERAPPLYOPTIONS::INFOPROVIDER_ALLVIEW || applyto == INFOPROVIDERAPPLYOPTIONS::INFOPROVIDER_DEFAULT)
+    if (applyto == INFOPROVIDER_ALLVIEW || applyto == INFOPROVIDER_DEFAULT)
     {
       // Change information provider, all artists or albums
       if (CGUIDialogYesNo::ShowAndGetInput(20195, 38072))
@@ -579,10 +580,10 @@ void CGUIWindowMusicNav::GetContextButtons(int itemNumber, CContextButtons &butt
       CGUIDialogContextMenu::GetContextButtons("music", item, buttons);
 #ifdef HAS_OPTICAL_DRIVE
       // enable Rip CD an audio disc
-      if (CServiceBroker::GetMediaManager().IsDiscInDrive() && item->IsCDDA())
+      if (MEDIA_DETECT::CDetectDVDMedia::IsDiscInDrive() && item->IsCDDA())
       {
         // those cds can also include Audio Tracks: CDExtra and MixedMode!
-        MEDIA_DETECT::CCdInfo* pCdInfo = CServiceBroker::GetMediaManager().GetCdInfo();
+        MEDIA_DETECT::CCdInfo *pCdInfo = MEDIA_DETECT::CDetectDVDMedia::GetCdInfo();
         if (pCdInfo->IsAudio(1) || pCdInfo->IsCDExtra(1) || pCdInfo->IsMixedMode(1))
         {
           if (CServiceBroker::GetJobManager()->IsProcessing("cdrip"))
@@ -701,7 +702,7 @@ bool CGUIWindowMusicNav::OnPopupMenu(int iItem)
 {
   if (iItem >= 0 && iItem < m_vecItems->Size())
   {
-    const auto item = m_vecItems->Get(iItem);
+    const CFileItemPtr item = m_vecItems->Get(iItem);
     item->SetProperty("CheckAutoPlayNextItem", true);
   }
 
@@ -858,7 +859,7 @@ bool CGUIWindowMusicNav::GetSongsFromPlayList(const std::string& strPlayList, CF
   CLog::Log(LOGDEBUG, "CGUIWindowMusicNav, opening playlist [{}]", strPlayList);
 
   boost::movelib::unique_ptr<CPlayList> pPlayList (CPlayListFactory::Create(strPlayList));
-  if (nullptr != pPlayList)
+  if (NULL != pPlayList)
   {
     // load it
     if (!pPlayList->Load(strPlayList))
@@ -944,28 +945,37 @@ void CGUIWindowMusicNav::AddSearchFolder()
   }
 }
 
+struct Mapping
+{
+  const char* key;
+  const char* value;
+};
+
+static const Mapping mappings[] =
+{
+  { "albums", "musicdb://albums/" },
+  { "artists", "musicdb://artists/" },
+  { "boxsets", "musicdb://boxsets/" },
+  { "compilations", "musicdb://compilations/" },
+  { "files", "sources://music/" },
+  { "genres", "musicdb://genres/" },
+  { "recentlyaddedalbums", "musicdb://recentlyaddedalbums/" },
+  { "recentlyplayedalbums", "musicdb://recentlyplayedalbums/" },
+  { "singles", "musicdb://singles/" },
+  { "songs", "musicdb://songs/" },
+  { "top100", "musicdb://top100/" },
+  { "top100albums", "musicdb://top100/albums/" },
+  { "top100songs", "musicdb://top100/songs/" },
+  { "years", "musicdb://years/" }
+};
+
 std::string CGUIWindowMusicNav::GetStartFolder(const std::string &dir)
 {
-  static const auto map = std::map<std::string, std::string>{
-      {"albums", "musicdb://albums/"},
-      {"artists", "musicdb://artists/"},
-      {"boxsets", "musicdb://boxsets/"},
-      {"compilations", "musicdb://compilations/"},
-      {"files", "sources://music/"},
-      {"genres", "musicdb://genres/"},
-      {"recentlyaddedalbums", "musicdb://recentlyaddedalbums/"},
-      {"recentlyplayedalbums", "musicdb://recentlyplayedalbums/"},
-      {"singles", "musicdb://singles/"},
-      {"songs", "musicdb://songs/"},
-      {"top100", "musicdb://top100/"},
-      {"top100albums", "musicdb://top100/albums/"},
-      {"top100songs", "musicdb://top100/songs/"},
-      {"years", "musicdb://years/"},
-  };
-
-  const auto it = map.find(StringUtils::ToLower(dir));
-  if (it == map.end())
-    return CGUIWindowMusicBase::GetStartFolder(dir);
-  else
-    return it->second;
+  std::string lower(dir); StringUtils::ToLower(lower);
+  for (size_t i = 0; i < sizeof(mappings) / sizeof(mappings[0]); ++i)
+  {
+    if (lower == mappings[i].key)
+      return mappings[i].value;
+  }
+  return CGUIWindowMusicBase::GetStartFolder(dir);
 }
