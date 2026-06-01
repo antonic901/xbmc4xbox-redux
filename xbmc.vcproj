@@ -4104,6 +4104,13 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\video\jobs\VideoLibraryScanningJob.h">
 					</File>
 				</Filter>
+				<Filter
+					Name="guilib"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\video\guilib\VideoAction.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="music"
