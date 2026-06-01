@@ -14,9 +14,7 @@
 #include "PlayListPlayer.h"
 #include "ServiceBroker.h"
 #include "Util.h"
-#include "application/Application.h"
-#include "application/ApplicationComponents.h"
-#include "application/ApplicationPlayer.h"
+#include "Application.h"
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIKeyboardFactory.h"
@@ -76,7 +74,7 @@ bool CGUIWindowMusicPlayList::OnMessage(CGUIMessage& message)
       // global playlist changed outside playlist window
       UpdateButtons();
 
-      if (m_vecItemsUpdating)
+      if (m_vecItemsUpdating.value())
       {
         CLog::Log(LOGWARNING, "CGUIWindowMusicPlayList::OnMessage - updating in progress");
         return true;
@@ -119,9 +117,7 @@ bool CGUIWindowMusicPlayList::OnMessage(CGUIMessage& message)
         SET_CONTROL_FOCUS(m_iLastControl, 0);
       }
 
-      const auto& components = CServiceBroker::GetAppComponents();
-      const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-      if (appPlayer->IsPlayingAudio() &&
+      if (g_application.m_pPlayer->IsPlayingAudio() &&
           CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_MUSIC)
       {
         int iSong = CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx();
@@ -263,13 +259,10 @@ bool CGUIWindowMusicPlayList::MoveCurrentPlayListItem(int iItem,
   else
     iNew++;
 
-  const auto& components = CServiceBroker::GetAppComponents();
-  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-
   // is the currently playing item affected?
   bool bFixCurrentSong = false;
   if ((CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_MUSIC) &&
-      appPlayer->IsPlayingAudio() &&
+      g_application.m_pPlayer->IsPlayingAudio() &&
       ((CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx() == iSelected) ||
        (CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx() == iNew)))
     bFixCurrentSong = true;
@@ -304,7 +297,7 @@ void CGUIWindowMusicPlayList::SavePlayList()
                                            false))
   {
     // need 2 rename it
-    strNewFileName = CUtil::MakeLegalFileName(std::move(strNewFileName));
+    strNewFileName = CUtil::MakeLegalFileName(boost::move(strNewFileName));
     strNewFileName += ".m3u8";
     std::string strPath =
         URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(
@@ -362,11 +355,9 @@ void CGUIWindowMusicPlayList::RemovePlayListItem(int iItem)
   if (iItem < 0 || iItem > m_vecItems->Size())
     return;
 
-  const auto& components = CServiceBroker::GetAppComponents();
-  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
   // The current playing song can't be removed
   if (CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_MUSIC &&
-      appPlayer->IsPlayingAudio() &&
+      g_application.m_pPlayer->IsPlayingAudio() &&
       CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx() == iItem)
     return;
 
@@ -399,9 +390,7 @@ void CGUIWindowMusicPlayList::UpdateButtons()
     CONTROL_ENABLE(CONTROL_BTNREPEAT);
     CONTROL_ENABLE(CONTROL_BTNPLAY);
 
-    const auto& components = CServiceBroker::GetAppComponents();
-    const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-    if (appPlayer->IsPlayingAudio() &&
+    if (g_application.m_pPlayer->IsPlayingAudio() &&
         CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_MUSIC)
     {
       CONTROL_ENABLE(CONTROL_BTNNEXT);
