@@ -4021,6 +4021,24 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\video\dialogs\GUIDialogVideoInfo.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\video\dialogs\GUIDialogVideoManager.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\dialogs\GUIDialogVideoManager.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\dialogs\GUIDialogVideoManagerExtras.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\dialogs\GUIDialogVideoManagerExtras.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\dialogs\GUIDialogVideoManagerVersions.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\dialogs\GUIDialogVideoManagerVersions.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\video\dialogs\GUIDialogVideoOSD.cpp">
 					</File>
 					<File
