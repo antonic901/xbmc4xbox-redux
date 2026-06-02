@@ -31,16 +31,16 @@ namespace
 class CVideoChooser
 {
 public:
-  explicit CVideoChooser(const boost::shared_ptr<const CFileItem>& item) : m_item(item) {}
+  explicit CVideoChooser(const boost::shared_ptr<const CFileItem>& item) : m_item(item), m_enableTypeSwitch(false), m_initialAssetType(VideoAssetType::UNKNOWN), m_switchType(false) {}
   virtual ~CVideoChooser() {}
 
   void EnableTypeSwitch(bool enable) { m_enableTypeSwitch = enable; }
-  void SetInitialAssetType(VideoAssetType type) { m_initialAssetType = type; }
+  void SetInitialAssetType(VideoAssetType::Type type) { m_initialAssetType = type; }
 
   boost::shared_ptr<const CFileItem> ChooseVideo();
 
 private:
-  CVideoChooser() = delete;
+  CVideoChooser();
   boost::shared_ptr<const CFileItem> ChooseVideoVersion();
   boost::shared_ptr<const CFileItem> ChooseVideoExtra();
   boost::shared_ptr<const CFileItem> ChooseVideo(CGUIDialogSelect& dialog,
@@ -50,9 +50,9 @@ private:
                                                const CFileItemList& itemsToSwitchTo);
 
   const boost::shared_ptr<const CFileItem> m_item;
-  bool m_enableTypeSwitch{false};
-  VideoAssetType m_initialAssetType{VideoAssetType::UNKNOWN};
-  bool m_switchType{false};
+  bool m_enableTypeSwitch;
+  VideoAssetType::Type m_initialAssetType;
+  bool m_switchType;
   CFileItemList m_videoVersions;
   CFileItemList m_videoExtras;
 };
@@ -78,7 +78,7 @@ boost::shared_ptr<const CFileItem> CVideoChooser::ChooseVideo()
   CVideoDatabase db;
   if (!db.Open())
   {
-    CLog::LogF(LOGERROR, "Unable to open video database!");
+    CLog::Log(LOGERROR, "Unable to open video database!");
     return result;
   }
 
@@ -88,9 +88,9 @@ boost::shared_ptr<const CFileItem> CVideoChooser::ChooseVideo()
                          VideoAssetType::VERSION, m_videoVersions);
 
     // find default version item in list and select it
-    for (const auto& item : m_videoVersions)
+    for (int i = 0; i < m_videoVersions.Size(); ++i)
     {
-      item->Select(item->GetVideoInfoTag()->IsDefaultVideoVersion());
+      m_videoVersions[i]->Select(m_videoVersions[i]->GetVideoInfoTag()->IsDefaultVideoVersion());
     }
   }
 
@@ -98,7 +98,7 @@ boost::shared_ptr<const CFileItem> CVideoChooser::ChooseVideo()
     db.GetAssetsForVideo(m_item->GetVideoContentType(), m_item->GetVideoInfoTag()->m_iDbId,
                          VideoAssetType::EXTRA, m_videoExtras);
 
-  VideoAssetType itemType{m_initialAssetType};
+  VideoAssetType::Type itemType(m_initialAssetType);
   while (true)
   {
     if (itemType == VideoAssetType::VERSION)
@@ -122,12 +122,12 @@ boost::shared_ptr<const CFileItem> CVideoChooser::ChooseVideo()
 
 boost::shared_ptr<const CFileItem> CVideoChooser::ChooseVideoVersion()
 {
-  CGUIDialogSelect* dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-      WINDOW_DIALOG_SELECT_VIDEO_VERSION)};
+  CGUIDialogSelect* dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT_VIDEO_VERSION);
   if (!dialog)
   {
-    CLog::LogF(LOGERROR, "Unable to get WINDOW_DIALOG_SELECT_VIDEO_VERSION dialog instance!");
-    return {};
+    CLog::Log(LOGERROR, "Unable to get WINDOW_DIALOG_SELECT_VIDEO_VERSION dialog instance!");
+    return boost::shared_ptr<const CFileItem>();
   }
 
   return ChooseVideo(*dialog, 40208 /* Choose version */, 40211 /* Extras */, m_videoVersions,
@@ -136,12 +136,12 @@ boost::shared_ptr<const CFileItem> CVideoChooser::ChooseVideoVersion()
 
 boost::shared_ptr<const CFileItem> CVideoChooser::ChooseVideoExtra()
 {
-  CGUIDialogSelect* dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-      WINDOW_DIALOG_SELECT_VIDEO_EXTRA)};
+  CGUIDialogSelect* dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT_VIDEO_EXTRA);
   if (!dialog)
   {
-    CLog::LogF(LOGERROR, "Unable to get WINDOW_DIALOG_SELECT_VIDEO_EXTRA dialog instance!");
-    return {};
+    CLog::Log(LOGERROR, "Unable to get WINDOW_DIALOG_SELECT_VIDEO_EXTRA dialog instance!");
+    return boost::shared_ptr<const CFileItem>();
   }
 
   return ChooseVideo(*dialog, 40214 /* Choose extra */, 40210 /* Versions */, m_videoExtras,
@@ -156,13 +156,13 @@ boost::shared_ptr<const CFileItem> CVideoChooser::ChooseVideo(CGUIDialogSelect& 
 {
   CVideoThumbLoader thumbLoader;
   thumbLoader.Load(itemsToDisplay);
-  for (auto& item : itemsToDisplay)
-    item->SetLabel2(item->GetVideoInfoTag()->m_strFileNameAndPath);
+  for (int i = 0; i < itemsToDisplay.Size(); ++i)
+    itemsToDisplay[i]->SetLabel2(itemsToDisplay[i]->GetVideoInfoTag()->m_strFileNameAndPath);
 
   dialog.Reset();
 
-  const std::string heading{
-      StringUtils::Format(g_localizeStrings.Get(headingId), m_item->GetVideoInfoTag()->GetTitle())};
+  const std::string heading =
+      StringUtils::Format(g_localizeStrings.Get(headingId).c_str(), m_item->GetVideoInfoTag()->GetTitle().c_str());
   dialog.SetHeading(heading);
 
   dialog.EnableButton(m_enableTypeSwitch && !itemsToSwitchTo.IsEmpty(), buttonId);
@@ -179,7 +179,7 @@ boost::shared_ptr<const CFileItem> CVideoChooser::ChooseVideo(CGUIDialogSelect& 
   if (dialog.IsConfirmed())
     return dialog.GetSelectedFileItem();
 
-  return {};
+  return boost::shared_ptr<const CFileItem>();
 }
 } // unnamed namespace
 
@@ -188,10 +188,10 @@ boost::shared_ptr<CFileItem> CVideoVersionHelper::ChooseVideoFromAssets(
 {
   boost::shared_ptr<const CFileItem> video;
 
-  VideoAssetType assetType{static_cast<int>(
-      item->GetProperty("video_asset_type").asInteger(static_cast<int>(VideoAssetType::UNKNOWN)))};
-  bool allAssetTypes{false};
-  bool hasMultipleChoices{false};
+  VideoAssetType::Type assetType = static_cast<VideoAssetType::Type>(static_cast<int>(
+      item->GetProperty("video_asset_type").asInteger(static_cast<int>(VideoAssetType::UNKNOWN))));
+  bool allAssetTypes = false;
+  bool hasMultipleChoices = false;
 
   switch (assetType)
   {
@@ -213,8 +213,8 @@ boost::shared_ptr<CFileItem> CVideoVersionHelper::ChooseVideoFromAssets(
       break;
 
     default:
-      CLog::LogF(LOGERROR, "unknown asset type ({})", static_cast<int>(assetType));
-      return {};
+      CLog::Log(LOGERROR, "unknown asset type (%i)", static_cast<int>(assetType));
+      return boost::shared_ptr<CFileItem>();
   }
 
   if (hasMultipleChoices)
@@ -222,7 +222,7 @@ boost::shared_ptr<CFileItem> CVideoVersionHelper::ChooseVideoFromAssets(
     if (!item->GetProperty("needs_resolved_video_asset").asBoolean(false))
     {
       // auto select the default video version
-      const auto settings{CServiceBroker::GetSettingsComponent()->GetSettings()};
+      const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
       if (settings->GetBool(CSettings::SETTING_MYVIDEOS_SELECTDEFAULTVERSION))
       {
         if (item->GetVideoInfoTag()->IsDefaultVideoVersion())
@@ -234,14 +234,14 @@ boost::shared_ptr<CFileItem> CVideoVersionHelper::ChooseVideoFromAssets(
           CVideoDatabase db;
           if (!db.Open())
           {
-            CLog::LogF(LOGERROR, "Unable to open video database!");
+            CLog::Log(LOGERROR, "Unable to open video database!");
           }
           else
           {
             CFileItem defaultVersion;
             if (!db.GetDefaultVersionForVideo(item->GetVideoContentType(),
                                               item->GetVideoInfoTag()->m_iDbId, defaultVersion))
-              CLog::LogF(LOGERROR, "Unable to get default version from video database!");
+              CLog::Log(LOGERROR, "Unable to get default version from video database!");
             else
               video = boost::make_shared<const CFileItem>(defaultVersion);
           }
@@ -252,7 +252,7 @@ boost::shared_ptr<CFileItem> CVideoVersionHelper::ChooseVideoFromAssets(
     if (!video && (item->GetProperty("needs_resolved_video_asset").asBoolean(false) ||
                    !item->GetProperty("has_resolved_video_asset").asBoolean(false)))
     {
-      CVideoChooser chooser{item};
+      CVideoChooser chooser(item);
 
       if (allAssetTypes)
       {
@@ -265,11 +265,11 @@ boost::shared_ptr<CFileItem> CVideoVersionHelper::ChooseVideoFromAssets(
         chooser.SetInitialAssetType(assetType);
       }
 
-      const auto result{chooser.ChooseVideo()};
+      const boost::shared_ptr<const CFileItem> result = chooser.ChooseVideo();
       if (result)
         video = result;
       else
-        return {};
+        return boost::shared_ptr<CFileItem>();
     }
   }
 
@@ -286,7 +286,7 @@ bool VIDEO::IsVideoAssetFile(const CFileItem& item)
 
   // @todo maybe in the future look for prefix videodb://movies/videoversions in path instead
   // @todo better encoding of video assets as path, they won't always be tied with movies.
-  const CURL itemUrl{item.GetPath()};
+  const CURL itemUrl(item.GetPath());
   if (itemUrl.HasOption("videoversionid"))
     return true;
 
