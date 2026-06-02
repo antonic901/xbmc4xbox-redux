@@ -15,11 +15,11 @@
 #include "filesystem/VideoDatabaseDirectory.h"
 #include "guilib/WindowIDs.h"
 #include "playlists/PlayListTypes.h"
+#include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
-#include "utils/FileExtensionProvider.h"
 #include "utils/SortUtils.h"
 #include "view/ViewStateSettings.h"
 
@@ -33,7 +33,7 @@ std::string CGUIViewStateWindowVideo::GetLockType()
 
 std::string CGUIViewStateWindowVideo::GetExtensions()
 {
-  return CServiceBroker::GetFileExtensionProvider().GetVideoExtensions();
+  return CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions;
 }
 
 PLAYLIST::Id CGUIViewStateWindowVideo::GetPlaylist() const
@@ -405,7 +405,7 @@ bool CGUIViewStateWindowVideoNav::AutoPlayNextItem()
 {
   CQueryParams params;
   CVideoDatabaseDirectory::GetQueryParams(m_items.GetPath(),params);
-  if (static_cast<VideoDbContentType>(params.GetContentType()) == VideoDbContentType::MUSICVIDEOS)
+  if (static_cast<VideoDbContentType::Type>(params.GetContentType()) == VideoDbContentType::MUSICVIDEOS)
     return CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_MUSICPLAYER_AUTOPLAYNEXTITEM);
 
   return CGUIViewStateWindowVideo::AutoPlayNextItem();

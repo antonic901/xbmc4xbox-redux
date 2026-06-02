@@ -12,13 +12,12 @@
 #include "ServiceBroker.h"
 #include "TextureCache.h"
 #include "URL.h"
-#include "cores/VideoPlayer/DVDFileInfo.h"
+#include "cores/dvdplayer/DVDFileInfo.h"
 #include "cores/VideoSettings.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
 #include "filesystem/StackDirectory.h"
 #include "guilib/GUIComponent.h"
-#include "guilib/StereoscopicsManager.h"
 #include "music/MusicDatabase.h"
 #include "music/tags/MusicInfoTag.h"
 #include "settings/AdvancedSettings.h"
@@ -34,6 +33,7 @@
 #include "video/guilib/VideoVersionHelper.h"
 
 #include <algorithm>
+#include <boost/algorithm/cxx11/find_if_not.hpp>
 #include <cstdlib>
 #include <utility>
 
@@ -67,45 +67,67 @@ void CVideoThumbLoader::OnLoaderFinish()
 
 namespace
 {
+static std::string mapListToString(const CVariant& s) { return s.asString();  }
+
 std::vector<std::string> GetSettingListAsString(const std::string& settingID)
 {
   std::vector<CVariant> values =
     CServiceBroker::GetSettingsComponent()->GetSettings()->GetList(settingID);
   std::vector<std::string> result;
-  std::transform(values.begin(), values.end(), std::back_inserter(result),
-                 [](const CVariant& s) { return s.asString(); });
+  std::transform(values.begin(), values.end(), std::back_inserter(result), mapListToString);
   return result;
 }
 
-const std::map<std::string, std::vector<std::string>> artTypeDefaults = {
-    {MediaTypeEpisode, {"thumb"}},
-    {MediaTypeTvShow, {"poster", "fanart", "banner"}},
-    {MediaTypeSeason, {"poster", "fanart", "banner"}},
-    {MediaTypeMovie, {"poster", "fanart"}},
-    {MediaTypeVideoCollection, {"poster", "fanart"}},
-    {MediaTypeMusicVideo, {"poster", "fanart"}},
-    {MediaTypeVideoVersion, {"poster", "fanart", "banner", "thumb"}},
-    {MediaTypeNone, {"poster", "fanart", "banner", "thumb"}},
-};
-
-const std::vector<std::string> artTypeDefaultsFallback = {};
-
-const std::vector<std::string>& GetArtTypeDefault(const std::string& mediaType)
+const std::map<std::string, std::vector<std::string> > GetArtTypeDefaults()
 {
-  auto defaults = artTypeDefaults.find(mediaType);
+  std::map<std::string, std::vector<std::string> > artTypeDefaults;
+  artTypeDefaults[MediaTypeEpisode] = std::vector<std::string>(1, "thumb");
+  artTypeDefaults[MediaTypeTvShow] = std::vector<std::string>();
+  artTypeDefaults[MediaTypeTvShow].push_back("poster");
+  artTypeDefaults[MediaTypeTvShow].push_back("fanart");
+  artTypeDefaults[MediaTypeTvShow].push_back("banner");
+  artTypeDefaults[MediaTypeSeason] = artTypeDefaults[MediaTypeTvShow];
+  artTypeDefaults[MediaTypeMovie] = std::vector<std::string>();
+  artTypeDefaults[MediaTypeMovie].push_back("poster");
+  artTypeDefaults[MediaTypeMovie].push_back("fanart");
+  artTypeDefaults[MediaTypeVideoCollection] = artTypeDefaults[MediaTypeMovie];
+  artTypeDefaults[MediaTypeMusicVideo] = artTypeDefaults[MediaTypeMovie];
+  artTypeDefaults[MediaTypeVideoVersion] = std::vector<std::string>();
+  artTypeDefaults[MediaTypeVideoVersion].push_back("poster");
+  artTypeDefaults[MediaTypeVideoVersion].push_back("fanart");
+  artTypeDefaults[MediaTypeVideoVersion].push_back("banner");
+  artTypeDefaults[MediaTypeVideoVersion].push_back("thumb");
+  artTypeDefaults[MediaTypeNone] = artTypeDefaults[MediaTypeVideoVersion];
+
+  return artTypeDefaults;
+}
+const std::map<std::string, std::vector<std::string> > artTypeDefaults = GetArtTypeDefaults();
+
+const std::vector<std::string> artTypeDefaultsFallback;
+
+const std::vector<std::string> GetArtTypeDefault(const std::string& mediaType)
+{
+  std::map<std::string, std::vector<std::string> >::const_iterator defaults = artTypeDefaults.find(mediaType);
   if (defaults != artTypeDefaults.end())
     return defaults->second;
   return artTypeDefaultsFallback;
 }
 
-const std::map<std::string, std::string> artTypeSettings = {
-    {MediaTypeEpisode, CSettings::SETTING_VIDEOLIBRARY_EPISODEART_WHITELIST},
-    {MediaTypeTvShow, CSettings::SETTING_VIDEOLIBRARY_TVSHOWART_WHITELIST},
-    {MediaTypeSeason, CSettings::SETTING_VIDEOLIBRARY_TVSHOWART_WHITELIST},
-    {MediaTypeMovie, CSettings::SETTING_VIDEOLIBRARY_MOVIEART_WHITELIST},
-    {MediaTypeVideoCollection, CSettings::SETTING_VIDEOLIBRARY_MOVIEART_WHITELIST},
-    {MediaTypeMusicVideo, CSettings::SETTING_VIDEOLIBRARY_MUSICVIDEOART_WHITELIST},
-    {MediaTypeVideoVersion, CSettings::SETTING_VIDEOLIBRARY_MOVIEART_WHITELIST},
+struct Mapping
+{
+  const char* key;
+  const char* value;
+};
+
+static const Mapping artTypeSettings[] =
+{
+  { MediaTypeEpisode,         CSettings::SETTING_VIDEOLIBRARY_EPISODEART_WHITELIST },
+  { MediaTypeTvShow,          CSettings::SETTING_VIDEOLIBRARY_TVSHOWART_WHITELIST },
+  { MediaTypeSeason,          CSettings::SETTING_VIDEOLIBRARY_TVSHOWART_WHITELIST },
+  { MediaTypeMovie,           CSettings::SETTING_VIDEOLIBRARY_MOVIEART_WHITELIST },
+  { MediaTypeVideoCollection, CSettings::SETTING_VIDEOLIBRARY_MOVIEART_WHITELIST },
+  { MediaTypeMusicVideo,      CSettings::SETTING_VIDEOLIBRARY_MUSICVIDEOART_WHITELIST },
+  { MediaTypeVideoVersion,    CSettings::SETTING_VIDEOLIBRARY_MOVIEART_WHITELIST }
 };
 } // namespace
 
@@ -115,7 +137,7 @@ std::vector<std::string> CVideoThumbLoader::GetArtTypes(const std::string &type)
     CSettings::SETTING_VIDEOLIBRARY_ARTWORK_LEVEL);
   if (artworkLevel == CSettings::VIDEOLIBRARY_ARTWORK_LEVEL_NONE)
   {
-    return {};
+    return std::vector<std::string>();
   }
 
   std::vector<std::string> result = GetArtTypeDefault(type);
@@ -124,14 +146,23 @@ std::vector<std::string> CVideoThumbLoader::GetArtTypes(const std::string &type)
     return result;
   }
 
-  auto settings = artTypeSettings.find(type);
-  if (settings == artTypeSettings.end())
+  const char* value = NULL;
+  for (size_t i = 0; i < sizeof(artTypeSettings) / sizeof(Mapping); ++i)
+  {
+    if (type == artTypeSettings[i].key)
+    {
+      value = artTypeSettings[i].value;
+      break;
+    }
+  }
+  if (!value)
     return result;
 
-  for (auto& artType : GetSettingListAsString(settings->second))
+  const std::vector<std::string> artTypes = GetSettingListAsString(value);
+  for (std::vector<std::string>::const_iterator artType = artTypes.begin(); artType != artTypes.end(); ++artType)
   {
-    if (find(result.begin(), result.end(), artType) == result.end())
-      result.push_back(artType);
+    if (find(result.begin(), result.end(), *artType) == result.end())
+      result.push_back(*artType);
   }
 
   return result;
@@ -140,7 +171,7 @@ std::vector<std::string> CVideoThumbLoader::GetArtTypes(const std::string &type)
 bool CVideoThumbLoader::IsValidArtType(const std::string& potentialArtType)
 {
   return !potentialArtType.empty() && potentialArtType.length() <= 25 &&
-    std::find_if_not(
+    boost::algorithm::find_if_not(
       potentialArtType.begin(), potentialArtType.end(),
       StringUtils::isasciialphanum
     ) == potentialArtType.end();
@@ -211,7 +242,7 @@ bool CVideoThumbLoader::LoadItemCached(CFileItem* pItem)
   {
     std::vector<std::string> artTypes = GetArtTypes(pItem->HasVideoInfoTag() ? pItem->GetVideoInfoTag()->m_type : "");
     if (find(artTypes.begin(), artTypes.end(), "thumb") == artTypes.end())
-      artTypes.emplace_back("thumb"); // always look for "thumb" art for files
+      artTypes.push_back("thumb"); // always look for "thumb" art for files
     for (std::vector<std::string>::const_iterator i = artTypes.begin(); i != artTypes.end(); ++i)
     {
       std::string type = *i;
@@ -252,7 +283,7 @@ bool CVideoThumbLoader::LoadItemLookup(CFileItem* pItem)
     std::vector<std::string> artTypes =
         GetArtTypes(pItem->HasVideoInfoTag() ? pItem->GetVideoInfoTag()->m_type : "");
     if (find(artTypes.begin(), artTypes.end(), "thumb") == artTypes.end())
-      artTypes.emplace_back("thumb"); // always look for "thumb" art for files
+      artTypes.push_back("thumb"); // always look for "thumb" art for files
     for (std::vector<std::string>::const_iterator i = artTypes.begin(); i != artTypes.end(); ++i)
     {
       std::string type = *i;
@@ -270,9 +301,9 @@ bool CVideoThumbLoader::LoadItemLookup(CFileItem* pItem)
           // If nothing was found, try embedded art
           if (pItem->HasVideoInfoTag() && !pItem->GetVideoInfoTag()->m_coverArt.empty())
           {
-            for (auto& it : pItem->GetVideoInfoTag()->m_coverArt)
+            for (std::vector<EmbeddedArtInfo>::const_iterator it = pItem->GetVideoInfoTag()->m_coverArt.begin(); it != pItem->GetVideoInfoTag()->m_coverArt.end(); ++it)
             {
-              if (it.m_type == type)
+              if (it->m_type == type)
               {
                 art = CTextureUtils::GetWrappedImageURL(pItem->GetPath(), "video_" + type);
                 artwork.insert(std::make_pair(type, art));
@@ -315,8 +346,8 @@ bool CVideoThumbLoader::LoadItemLookup(CFileItem* pItem)
         (!pItem->HasVideoInfoTag() || !pItem->GetVideoInfoTag()->HasStreamDetails()))
     {
       // No tag or no details set, so extract them
-      CLog::LogF(LOGDEBUG, "trying to extract filestream details from video file {}",
-                 CURL::GetRedacted(pItem->GetPath()));
+      CLog::Log(LOGDEBUG, "trying to extract filestream details from video file %s",
+                 CURL::GetRedacted(pItem->GetPath()).c_str());
       if (CDVDFileInfo::GetFileStreamDetails(pItem))
       {
         CVideoInfoTag* info = pItem->GetVideoInfoTag();
@@ -487,12 +518,12 @@ bool CVideoThumbLoader::FillThumb(CFileItem &item)
     // If nothing was found, try embedded art
     if (item.HasVideoInfoTag() && !item.GetVideoInfoTag()->m_coverArt.empty())
     {
-      for (auto& it : item.GetVideoInfoTag()->m_coverArt)
+      for (std::vector<EmbeddedArtInfo>::const_iterator it = item.GetVideoInfoTag()->m_coverArt.begin(); it != item.GetVideoInfoTag()->m_coverArt.end(); ++it)
       {
-        if (it.m_type == "thumb")
+        if (it->m_type == "thumb")
         {
-          thumb = CTextureUtils::GetWrappedImageURL(item.GetPath(), "video_" + it.m_type);
-          item.SetArt(it.m_type, thumb);
+          thumb = CTextureUtils::GetWrappedImageURL(item.GetPath(), "video_" + it->m_type);
+          item.SetArt(it->m_type, thumb);
         }
       }
     }
@@ -513,7 +544,7 @@ std::string CVideoThumbLoader::GetLocalArt(const CFileItem &item, const std::str
      app thread and the latter has to wait for it.
    */
 
-  const auto settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+  const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
 
   const bool cacheAll =
       settings ? settings->GetInt(CSettings::SETTING_FILECACHE_BUFFERMODE) == CACHE_BUFFER_MODE_ALL
@@ -583,49 +614,17 @@ void CVideoThumbLoader::DetectAndAddMissingItemData(CFileItem &item)
       item.SetProperty("SubtitleLanguage." + index, details.GetSubtitleLanguage(i).c_str());
     }
   }
-
-  const CStereoscopicsManager &stereoscopicsManager = CServiceBroker::GetGUI()->GetStereoscopicsManager();
-
-  std::string stereoMode;
-
-  // detect stereomode for videos
-  if (item.HasVideoInfoTag())
-    stereoMode = item.GetVideoInfoTag()->m_streamDetails.GetStereoMode();
-
-  if (stereoMode.empty())
-  {
-    std::string path = item.GetPath();
-    if (item.IsVideoDb() && item.HasVideoInfoTag())
-      path = item.GetVideoInfoTag()->GetPath();
-
-    // check for custom stereomode setting in video settings
-    CVideoSettings itemVideoSettings;
-    m_videoDatabase->Open();
-    if (m_videoDatabase->GetVideoSettings(item, itemVideoSettings) && itemVideoSettings.m_StereoMode != RENDER_STEREO_MODE_OFF)
-    {
-      stereoMode = CStereoscopicsManager::ConvertGuiStereoModeToString(static_cast<RENDER_STEREO_MODE>(itemVideoSettings.m_StereoMode));
-    }
-    m_videoDatabase->Close();
-
-    // still empty, try grabbing from filename
-    //! @todo in case of too many false positives due to using the full path, extract the filename only using string utils
-    if (stereoMode.empty())
-      stereoMode = stereoscopicsManager.DetectStereoModeByString(path);
-  }
-
-  if (!stereoMode.empty())
-    item.SetProperty("stereomode", CStereoscopicsManager::NormalizeStereoMode(stereoMode));
 }
 
 const ArtMap& CVideoThumbLoader::GetArtFromCache(const std::string &mediaType, const int id)
 {
   std::pair<MediaType, int> key = std::make_pair(mediaType, id);
-  auto it = m_artCache.find(key);
+  ArtCache::iterator it = m_artCache.find(key);
   if (it == m_artCache.end())
   {
     ArtMap newart;
     m_videoDatabase->GetArtForItem(id, mediaType, newart);
-    it = m_artCache.insert(std::make_pair(key, std::move(newart))).first;
+    it = m_artCache.insert(std::make_pair(key, boost::move(newart))).first;
   }
   return it->second;
 }

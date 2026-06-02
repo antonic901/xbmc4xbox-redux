@@ -256,6 +256,30 @@ bool CDVDFileInfo::ExtractThumb(const CStdString &strPath, CTextureDetails &deta
   return bOk;
 }
 
+bool CDVDFileInfo::CanExtract(const CFileItem& fileItem)
+{
+  if (fileItem.m_bIsFolder)
+    return false;
+
+  if (fileItem.IsLiveTV() ||
+      // plugin path not fully resolved
+      URIUtils::IsPlugin(fileItem.GetDynPath()) || URIUtils::IsUPnP(fileItem.GetPath()) ||
+      fileItem.IsInternetStream() || fileItem.IsDiscStub() || fileItem.IsPlayList())
+    return false;
+
+  // mostly can't extract from discs and files from discs.
+  if (URIUtils::IsBluray(fileItem.GetPath()) || fileItem.IsBDFile() || fileItem.IsDVD() ||
+      fileItem.IsDiscImage() || fileItem.IsDVDFile(false, true))
+    return false;
+
+  // For HTTP/FTP we only allow extraction when on a LAN
+  if (URIUtils::IsRemote(fileItem.GetPath()) && !URIUtils::IsOnLAN(fileItem.GetPath()) &&
+      (URIUtils::IsFTP(fileItem.GetPath()) || URIUtils::IsHTTP(fileItem.GetPath())))
+    return false;
+
+  return true;
+}
+
 /**
  * \brief Open the item pointed to by pItem and extact streamdetails
  * \return true if the stream details have changed

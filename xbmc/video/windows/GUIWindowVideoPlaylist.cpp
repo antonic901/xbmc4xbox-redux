@@ -8,13 +8,12 @@
 
 #include "GUIWindowVideoPlaylist.h"
 
+#include "Application.h"
 #include "GUIUserMessages.h"
 #include "PartyModeManager.h"
 #include "PlayListPlayer.h"
 #include "ServiceBroker.h"
 #include "Util.h"
-#include "application/ApplicationComponents.h"
-#include "application/ApplicationPlayer.h"
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIKeyboardFactory.h"
@@ -119,9 +118,7 @@ bool CGUIWindowVideoPlaylist::OnMessage(CGUIMessage& message)
         SET_CONTROL_FOCUS(m_iLastControl, 0);
       }
 
-      const auto& components = CServiceBroker::GetAppComponents();
-      const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-      if (appPlayer->IsPlayingVideo() &&
+      if (g_application.m_pPlayer->IsPlayingVideo() &&
           CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_VIDEO)
       {
         int iSong = CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx();
@@ -268,12 +265,10 @@ bool CGUIWindowVideoPlaylist::MoveCurrentPlayListItem(int iItem,
   else
     iNew++;
 
-  const auto& components = CServiceBroker::GetAppComponents();
-  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
   // is the currently playing item affected?
   bool bFixCurrentSong = false;
   if ((CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_VIDEO) &&
-      appPlayer->IsPlayingVideo() &&
+      g_application.m_pPlayer->IsPlayingVideo() &&
       ((CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx() == iSelected) ||
        (CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx() == iNew)))
     bFixCurrentSong = true;
@@ -326,9 +321,7 @@ void CGUIWindowVideoPlaylist::UpdateButtons()
     CONTROL_ENABLE(CONTROL_BTNSHUFFLE);
     CONTROL_ENABLE(CONTROL_BTNREPEAT);
 
-    const auto& components = CServiceBroker::GetAppComponents();
-    const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-    if (appPlayer->IsPlayingVideo() &&
+    if (g_application.m_pPlayer->IsPlayingVideo() &&
         CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_VIDEO)
     {
       CONTROL_ENABLE(CONTROL_BTNNEXT);
@@ -389,10 +382,10 @@ public:
 protected:
   virtual bool OnResumeSelected()
   {
-    auto& playlistPlayer = CServiceBroker::GetPlaylistPlayer();
+    PLAYLIST::CPlayListPlayer &playlistPlayer = CServiceBroker::GetPlaylistPlayer();
     playlistPlayer.SetCurrentPlaylist(PLAYLIST::TYPE_VIDEO);
 
-    const auto playlistItem{playlistPlayer.GetPlaylist(PLAYLIST::TYPE_VIDEO)[m_itemIndex]};
+    const CFileItemPtr playlistItem = playlistPlayer.GetPlaylist(PLAYLIST::TYPE_VIDEO)[m_itemIndex];
     playlistItem->SetStartOffset(STARTOFFSET_RESUME);
     if (playlistItem->HasVideoInfoTag() && m_item->HasVideoInfoTag())
       playlistItem->GetVideoInfoTag()->SetResumePoint(m_item->GetVideoInfoTag()->GetResumePoint());
@@ -403,7 +396,7 @@ protected:
 
   virtual bool OnPlaySelected()
   {
-    auto& playlistPlayer = CServiceBroker::GetPlaylistPlayer();
+    PLAYLIST::CPlayListPlayer &playlistPlayer = CServiceBroker::GetPlaylistPlayer();
     playlistPlayer.SetCurrentPlaylist(PLAYLIST::TYPE_VIDEO);
     playlistPlayer.Play(m_itemIndex, m_player);
     return true;
@@ -426,7 +419,7 @@ bool CGUIWindowVideoPlaylist::OnPlayMedia(int iItem, const std::string& player)
   }
   else
   {
-    const auto item{m_vecItems->Get(iItem)};
+    const CFileItemPtr item = m_vecItems->Get(iItem);
     // play the current video version, even if multiple versions are available
     item->SetProperty("has_resolved_video_asset", true);
     CVideoPlayActionProcessor proc{item, iItem, player};
@@ -438,12 +431,9 @@ bool CGUIWindowVideoPlaylist::OnPlayMedia(int iItem, const std::string& player)
 
 void CGUIWindowVideoPlaylist::RemovePlayListItem(int iItem)
 {
-  const auto& components = CServiceBroker::GetAppComponents();
-  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-
   // The current playing song can't be removed
   if (CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_VIDEO &&
-      appPlayer->IsPlayingVideo() &&
+      g_application.m_pPlayer->IsPlayingVideo() &&
       CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx() == iItem)
     return;
 

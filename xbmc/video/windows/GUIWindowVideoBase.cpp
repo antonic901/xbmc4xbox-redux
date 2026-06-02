@@ -17,10 +17,8 @@
 #include "ServiceBroker.h"
 #include "URL.h"
 #include "Util.h"
-#include "addons/gui/GUIDialogAddonInfo.h"
-#include "application/Application.h"
-#include "application/ApplicationComponents.h"
-#include "application/ApplicationPlayer.h"
+#include "addons/GUIDialogAddonInfo.h"
+#include "Application.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"
@@ -164,14 +162,12 @@ bool CGUIWindowVideoBase::OnMessage(CGUIMessage& message)
         }
         else if (iAction == ACTION_PLAYER_PLAY)
         {
-          const auto& components = CServiceBroker::GetAppComponents();
-          const auto appPlayer = components.GetComponent<CApplicationPlayer>();
           // if playback is paused or playback speed != 1, return
-          if (appPlayer->IsPlayingVideo())
+          if (g_application.m_pPlayer->IsPlayingVideo())
           {
-            if (appPlayer->IsPausedPlayback())
+            if (g_application.m_pPlayer->IsPausedPlayback())
               return false;
-            if (appPlayer->GetPlaySpeed() != 1)
+            if (g_application.m_pPlayer->GetPlaySpeed() != 1)
               return false;
           }
 
@@ -298,8 +294,9 @@ bool CGUIWindowVideoBase::OnItemInfo(const CFileItem& fileItem)
       const std::vector<std::string>& excludeFromScan = CServiceBroker::GetSettingsComponent()
                                                             ->GetAdvancedSettings()
                                                             ->m_moviesExcludeFromScanRegExps;
-      for (const auto& i : items)
+      for (int j = 0; j < items.Size(); ++j)
       {
+        const CFileItemPtr &i = items[j];
         if (i->IsVideo() && !i->IsPlayList() &&
             !CUtil::ExcludeFileOrFolder(i->GetPath(), excludeFromScan))
         {
@@ -963,7 +960,7 @@ bool CGUIWindowVideoBase::OnPlayMedia(const boost::shared_ptr<CFileItem>& pItem,
   CServiceBroker::GetPlaylistPlayer().Reset();
   CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(PLAYLIST::TYPE_NONE);
 
-  auto itemCopy = boost::make_shared<CFileItem>(*pItem);
+  CFileItemPtr itemCopy = boost::make_shared<CFileItem>(*pItem);
 
   if (pItem->IsVideoDb())
   {
@@ -979,9 +976,7 @@ bool CGUIWindowVideoBase::OnPlayMedia(const boost::shared_ptr<CFileItem>& pItem,
 
   CServiceBroker::GetPlaylistPlayer().Play(itemCopy, player);
 
-  const auto& components = CServiceBroker::GetAppComponents();
-  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-  if (!appPlayer->IsPlayingVideo())
+  if (!g_application.m_pPlayer->IsPlayingVideo())
     m_thumbLoader.Load(*m_vecItems);
 
   return true;
@@ -1083,7 +1078,7 @@ bool CGUIWindowVideoBase::PlayItem(const boost::shared_ptr<CFileItem>& pItem,
     CLog::LogF(LOGDEBUG, "File '{}' for library item '{}' doesn't exist.", pItem->GetDynPath(),
                pItem->GetPath());
 
-    const auto profileManager{CServiceBroker::GetSettingsComponent()->GetProfileManager()};
+    const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
     if (profileManager->GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser)
     {
@@ -1118,7 +1113,7 @@ bool CGUIWindowVideoBase::PlayItem(const boost::shared_ptr<CFileItem>& pItem,
       !(pItem->HasVideoInfoTag() && pItem->GetVideoInfoTag()->IsDefaultVideoVersion()))
   {
     // take a copy so we can alter the queue state
-    const auto item{boost::make_shared<CFileItem>(*pItem)};
+    const CFileItemPtr item = boost::make_shared<CFileItem>(*pItem);
 
     //  Allow queuing of unqueueable items
     //  when we try to queue them directly
@@ -1500,8 +1495,9 @@ void CGUIWindowVideoBase::UpdateVideoVersionItems()
           CSettings::SETTING_VIDEOLIBRARY_SHOWVIDEOVERSIONSASFOLDER))
     return;
 
-  for (const auto& item : *m_vecItems)
+  for (int i = 0; i <m_vecItems->Size(); ++i)
   {
+    const CFileItemPtr &item = m_vecItems->Get(i);
     if (item->m_bIsFolder || !item->HasVideoInfoTag())
       continue;
 

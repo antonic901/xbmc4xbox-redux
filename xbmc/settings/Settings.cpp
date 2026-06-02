@@ -269,6 +269,7 @@ const char* CSettings::SETTING_GENERAL_ADDONBROKENFILTER = "general.addonbrokenf
 const char* CSettings::SETTING_SOURCE_VIDEOS = "source.videos";
 const char* CSettings::SETTING_SOURCE_MUSIC = "source.music";
 const char* CSettings::SETTING_SOURCE_PICTURES = "source.pictures";
+const char* CSettings::SETTING_FILECACHE_BUFFERMODE = "filecache.buffermode";
 
 bool CSettings::Initialize()
 {
