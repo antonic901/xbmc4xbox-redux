@@ -26,28 +26,31 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
-#include "video/VideoManagerTypes.h"
 #include "video/VideoThumbLoader.h"
 #include "video/VideoUtils.h"
 #include "video/dialogs/GUIDialogVideoInfo.h"
 #include "video/guilib/VideoPlayActionProcessor.h"
 
 #include <algorithm>
+#include <boost/algorithm/cxx11/any_of.hpp>
+#include <boost/bind.hpp>
+#include <boost/move/make_unique.hpp>
 #include <string>
 
-static constexpr unsigned int CONTROL_LABEL_TITLE = 2;
+static const unsigned int CONTROL_LABEL_TITLE = 2;
 
-static constexpr unsigned int CONTROL_BUTTON_PLAY = 21;
-static constexpr unsigned int CONTROL_BUTTON_REMOVE = 26;
-static constexpr unsigned int CONTROL_BUTTON_CHOOSE_ART = 27;
+static const unsigned int CONTROL_BUTTON_PLAY = 21;
+static const unsigned int CONTROL_BUTTON_REMOVE = 26;
+static const unsigned int CONTROL_BUTTON_CHOOSE_ART = 27;
 
-static constexpr unsigned int CONTROL_LIST_ASSETS = 50;
+static const unsigned int CONTROL_LIST_ASSETS = 50;
 
 CGUIDialogVideoManager::CGUIDialogVideoManager(int windowId)
   : CGUIDialog(windowId, "DialogVideoManager.xml"),
-    m_videoAsset(std::make_shared<CFileItem>()),
-    m_videoAssetsList(std::make_unique<CFileItemList>()),
-    m_selectedVideoAsset(std::make_shared<CFileItem>())
+    m_videoAsset(boost::make_shared<CFileItem>()),
+    m_videoAssetsList(boost::movelib::make_unique<CFileItemList>()),
+    m_selectedVideoAsset(boost::make_shared<CFileItem>()),
+    m_hasUpdatedItems(false)
 {
   m_loadType = KEEP_IN_MEMORY;
 }
@@ -64,10 +67,10 @@ bool CGUIDialogVideoManager::OnMessage(CGUIMessage& message)
 
     case GUI_MSG_CLICKED:
     {
-      const int control{message.GetSenderId()};
+      const int control(message.GetSenderId());
       if (control == CONTROL_LIST_ASSETS)
       {
-        const int action{message.GetParam1()};
+        const int action(message.GetParam1());
         if (action == ACTION_SELECT_ITEM || action == ACTION_MOUSE_LEFT_CLICK)
         {
           if (UpdateSelectedAsset())
@@ -95,7 +98,7 @@ bool CGUIDialogVideoManager::OnMessage(CGUIMessage& message)
 
 bool CGUIDialogVideoManager::OnAction(const CAction& action)
 {
-  const int actionId{action.GetID()};
+  const int actionId(action.GetID());
   if (actionId == ACTION_MOVE_DOWN || actionId == ACTION_MOVE_UP || actionId == ACTION_PAGE_DOWN ||
       actionId == ACTION_PAGE_UP || actionId == ACTION_FIRST_PAGE || actionId == ACTION_LAST_PAGE)
   {
@@ -112,15 +115,15 @@ bool CGUIDialogVideoManager::OnAction(const CAction& action)
 void CGUIDialogVideoManager::OnInitWindow()
 {
   if (!m_database.IsOpen() && !m_database.Open())
-    CLog::LogF(LOGERROR, "Failed to open video database!");
+    CLog::Log(LOGERROR, "Failed to open video database!");
 
   CGUIDialog::OnInitWindow();
 
   SET_CONTROL_LABEL(CONTROL_LABEL_TITLE,
-                    StringUtils::Format(g_localizeStrings.Get(GetHeadingId()),
-                                        m_videoAsset->GetVideoInfoTag()->GetTitle()));
+                    StringUtils::Format(g_localizeStrings.Get(GetHeadingId()).c_str(),
+                                        m_videoAsset->GetVideoInfoTag()->GetTitle().c_str()));
 
-  CGUIMessage msg{GUI_MSG_LABEL_BIND, GetID(), CONTROL_LIST_ASSETS, 0, 0, m_videoAssetsList.get()};
+  CGUIMessage msg(GUI_MSG_LABEL_BIND, GetID(), CONTROL_LIST_ASSETS, 0, 0, m_videoAssetsList.get());
   OnMessage(msg);
 
   UpdateControls();
@@ -172,10 +175,10 @@ void CGUIDialogVideoManager::UpdateAssetsList()
 
 bool CGUIDialogVideoManager::UpdateSelectedAsset()
 {
-  CGUIMessage msg{GUI_MSG_ITEM_SELECTED, GetID(), CONTROL_LIST_ASSETS};
+  CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), CONTROL_LIST_ASSETS);
   OnMessage(msg);
 
-  const int item{msg.GetParam1()};
+  const int item(msg.GetParam1());
   if (item >= 0 && item < m_videoAssetsList->Size())
   {
     m_selectedVideoAsset = m_videoAssetsList->Get(item);
@@ -204,13 +207,13 @@ void CGUIDialogVideoManager::UpdateControls()
 void CGUIDialogVideoManager::Refresh()
 {
   if (!m_database.IsOpen() && !m_database.Open())
-    CLog::LogF(LOGERROR, "Failed to open video database!");
+    CLog::Log(LOGERROR, "Failed to open video database!");
 
   Clear();
 
-  const int dbId{m_videoAsset->GetVideoInfoTag()->m_iDbId};
-  const MediaType mediaType{m_videoAsset->GetVideoInfoTag()->m_type};
-  const VideoDbContentType itemType{m_videoAsset->GetVideoContentType()};
+  const int dbId(m_videoAsset->GetVideoInfoTag()->m_iDbId);
+  const MediaType mediaType = m_videoAsset->GetVideoInfoTag()->m_type;
+  const VideoDbContentType::Type itemType = m_videoAsset->GetVideoContentType();
 
   //! @todo db refactor: should not be versions, but assets
   m_database.GetVideoVersions(itemType, dbId, *m_videoAssetsList, GetVideoAssetType());
@@ -218,21 +221,22 @@ void CGUIDialogVideoManager::Refresh()
 
   CVideoThumbLoader loader;
 
-  for (auto& item : *m_videoAssetsList)
+  for (int i = 0; m_videoAssetsList->Size(); ++i)
   {
+    CFileItemPtr &item = m_videoAssetsList->Get(i);
     item->SetProperty("noartfallbacktoowner", true);
     loader.LoadItem(item.get());
   }
 
-  CGUIMessage msg{GUI_MSG_LABEL_BIND, GetID(), CONTROL_LIST_ASSETS, 0, 0, m_videoAssetsList.get()};
+  CGUIMessage msg(GUI_MSG_LABEL_BIND, GetID(), CONTROL_LIST_ASSETS, 0, 0, m_videoAssetsList.get());
   OnMessage(msg);
 }
 
-void CGUIDialogVideoManager::SetVideoAsset(const std::shared_ptr<CFileItem>& item)
+void CGUIDialogVideoManager::SetVideoAsset(const boost::shared_ptr<CFileItem>& item)
 {
   if (!item || !item->HasVideoInfoTag() || item->GetVideoInfoTag()->m_type != MediaTypeMovie)
   {
-    CLog::LogF(LOGERROR, "Unexpected video item!");
+    CLog::Log(LOGERROR, "Unexpected video item!");
     return;
   }
 
@@ -247,9 +251,9 @@ void CGUIDialogVideoManager::CloseAll()
   Close(true);
 
   // close the video info dialog if exists
-  CGUIDialogVideoInfo* dialog{
+  CGUIDialogVideoInfo* dialog =
       CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogVideoInfo>(
-          WINDOW_DIALOG_VIDEO_INFO)};
+          WINDOW_DIALOG_VIDEO_INFO);
   if (dialog)
     dialog->Close(true);
 }
@@ -259,20 +263,20 @@ namespace
 class CVideoPlayActionProcessor : public VIDEO::GUILIB::CVideoPlayActionProcessorBase
 {
 public:
-  explicit CVideoPlayActionProcessor(const std::shared_ptr<CFileItem>& item)
+  explicit CVideoPlayActionProcessor(const boost::shared_ptr<CFileItem>& item)
     : CVideoPlayActionProcessorBase(item)
   {
   }
 
 protected:
-  bool OnResumeSelected() override
+  virtual bool OnResumeSelected()
   {
     m_item->SetStartOffset(STARTOFFSET_RESUME);
     Play();
     return true;
   }
 
-  bool OnPlaySelected() override
+  virtual bool OnPlaySelected()
   {
     Play();
     return true;
@@ -282,9 +286,9 @@ private:
   void Play()
   {
     m_item->SetProperty("playlist_type_hint", PLAYLIST::TYPE_VIDEO);
-    const ContentUtils::PlayMode mode{m_item->GetProperty("CheckAutoPlayNextItem").asBoolean()
+    const ContentUtils::PlayMode::Type mode = m_item->GetProperty("CheckAutoPlayNextItem").asBoolean()
                                           ? ContentUtils::PlayMode::CHECK_AUTO_PLAY_NEXT_ITEM
-                                          : ContentUtils::PlayMode::PLAY_ONLY_THIS};
+                                          : ContentUtils::PlayMode::PLAY_ONLY_THIS;
     VIDEO_UTILS::PlayItem(m_item, "", mode);
   }
 };
@@ -294,7 +298,7 @@ void CGUIDialogVideoManager::Play()
 {
   CloseAll();
 
-  CVideoPlayActionProcessor proc{m_selectedVideoAsset};
+  CVideoPlayActionProcessor proc(m_selectedVideoAsset);
   proc.ProcessDefaultAction();
 }
 
@@ -303,8 +307,8 @@ void CGUIDialogVideoManager::Remove()
   // confirm to remove
   if (!CGUIDialogYesNo::ShowAndGetInput(
           CVariant(40018),
-          StringUtils::Format(g_localizeStrings.Get(40020),
-                              m_selectedVideoAsset->GetVideoInfoTag()->GetAssetInfo().GetTitle())))
+          StringUtils::Format(g_localizeStrings.Get(40020).c_str(),
+                              m_selectedVideoAsset->GetVideoInfoTag()->GetAssetInfo().GetTitle().c_str())))
   {
     return;
   }
@@ -319,8 +323,8 @@ void CGUIDialogVideoManager::Remove()
 
 void CGUIDialogVideoManager::Rename()
 {
-  const int idAsset{
-      ChooseVideoAsset(m_videoAsset, GetVideoAssetType(), m_selectedVideoAsset->m_strTitle)};
+  const int idAsset(
+      ChooseVideoAsset(m_videoAsset, GetVideoAssetType(), m_selectedVideoAsset->m_strTitle));
   if (idAsset != -1)
   {
     //! @todo db refactor: should not be version, but asset
@@ -342,34 +346,34 @@ void CGUIDialogVideoManager::ChooseArt()
   UpdateControls();
 }
 
-void CGUIDialogVideoManager::SetSelectedVideoAsset(const std::shared_ptr<CFileItem>& asset)
+static bool FindByDbId (const CFileItemPtr& entry, const int& dbId) { return entry->GetVideoInfoTag()->m_iDbId == dbId; }
+
+void CGUIDialogVideoManager::SetSelectedVideoAsset(const boost::shared_ptr<CFileItem>& asset)
 {
-  const int dbId{asset->GetVideoInfoTag()->m_iDbId};
-  const auto it{std::find_if(m_videoAssetsList->cbegin(), m_videoAssetsList->cend(),
-                             [dbId](const auto& entry)
-                             { return entry->GetVideoInfoTag()->m_iDbId == dbId; })};
+  const int dbId(asset->GetVideoInfoTag()->m_iDbId);
+  const VECFILEITEMS::const_iterator it = std::find_if(m_videoAssetsList->cbegin(), m_videoAssetsList->cend(), boost::bind(&FindByDbId, _1, dbId));
   if (it != m_videoAssetsList->cend())
     m_selectedVideoAsset = (*it);
   else
-    CLog::LogF(LOGERROR, "Item to select not found in asset list!");
+    CLog::Log(LOGERROR, "Item to select not found in asset list!");
 
   UpdateControls();
 }
 
-int CGUIDialogVideoManager::ChooseVideoAsset(const std::shared_ptr<CFileItem>& item,
-                                             VideoAssetType assetType,
+int CGUIDialogVideoManager::ChooseVideoAsset(const boost::shared_ptr<CFileItem>& item,
+                                             VideoAssetType::Type assetType,
                                              const std::string& defaultName)
 {
   if (!item || !item->HasVideoInfoTag())
     return -1;
 
-  const VideoDbContentType itemType{item->GetVideoContentType()};
+  const VideoDbContentType::Type itemType = item->GetVideoContentType();
   if (itemType != VideoDbContentType::MOVIES)
     return -1;
 
-  int dialogHeadingMsgId{};
-  int dialogButtonMsgId{};
-  int dialogNewHeadingMsgId{};
+  int dialogHeadingMsgId = 0;
+  int dialogButtonMsgId = 0;
+  int dialogNewHeadingMsgId = 0;
 
   switch (assetType)
   {
@@ -384,22 +388,22 @@ int CGUIDialogVideoManager::ChooseVideoAsset(const std::shared_ptr<CFileItem>& i
       dialogNewHeadingMsgId = 40220;
       break;
     default:
-      CLog::LogF(LOGERROR, "Unknown asset type ({})", static_cast<int>(assetType));
+      CLog::Log(LOGERROR, "Unknown asset type ({})", static_cast<int>(assetType));
       return -1;
   }
 
   CVideoDatabase videodb;
   if (!videodb.Open())
   {
-    CLog::LogF(LOGERROR, "Failed to open video database!");
+    CLog::Log(LOGERROR, "Failed to open video database!");
     return -1;
   }
 
-  CGUIDialogSelect* dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-      WINDOW_DIALOG_SELECT)};
+  CGUIDialogSelect* dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   if (!dialog)
   {
-    CLog::LogF(LOGERROR, "Unable to get WINDOW_DIALOG_SELECT instance!");
+    CLog::Log(LOGERROR, "Unable to get WINDOW_DIALOG_SELECT instance!");
     return -1;
   }
 
@@ -407,7 +411,7 @@ int CGUIDialogVideoManager::ChooseVideoAsset(const std::shared_ptr<CFileItem>& i
   CFileItemList list;
   videodb.GetVideoVersionTypes(itemType, assetType, list);
 
-  int assetId{-1};
+  int assetId(-1);
   while (true)
   {
     std::string assetTitle;
@@ -432,7 +436,7 @@ int CGUIDialogVideoManager::ChooseVideoAsset(const std::shared_ptr<CFileItem>& i
     }
     else if (dialog->IsConfirmed())
     {
-      const std::shared_ptr<CFileItem> selectedItem{dialog->GetSelectedFileItem()};
+      const boost::shared_ptr<CFileItem> selectedItem = dialog->GetSelectedFileItem();
       assetId = selectedItem->GetVideoInfoTag()->GetAssetInfo().GetId();
       assetTitle = selectedItem->GetVideoInfoTag()->GetAssetInfo().GetTitle();
     }
@@ -442,19 +446,17 @@ int CGUIDialogVideoManager::ChooseVideoAsset(const std::shared_ptr<CFileItem>& i
     if (assetId < 0)
       return -1;
 
-    const int dbId{item->GetVideoInfoTag()->m_iDbId};
+    const int dbId(item->GetVideoInfoTag()->m_iDbId);
 
     //! @todo db refactor: should not be versions, but assets
     CFileItemList assets;
     videodb.GetVideoVersions(itemType, dbId, assets, assetType);
 
     // the selected video asset already exists
-    if (std::any_of(assets.cbegin(), assets.cend(),
-                    [assetId](const std::shared_ptr<CFileItem>& asset)
-                    { return asset->GetVideoInfoTag()->m_iDbId == assetId; }))
+    if (boost::algorithm::any_of(assets.cbegin(), assets.cend(), boost::bind(&FindByDbId, _1, assetId)))
     {
-      CGUIDialogOK::ShowAndGetInput(CVariant{40005},
-                                    StringUtils::Format(g_localizeStrings.Get(40007), assetTitle));
+      CGUIDialogOK::ShowAndGetInput(40005,
+                                    StringUtils::Format(g_localizeStrings.Get(40007).c_str(), assetTitle.c_str()));
     }
     else
       break;
@@ -466,13 +468,13 @@ int CGUIDialogVideoManager::ChooseVideoAsset(const std::shared_ptr<CFileItem>& i
 void CGUIDialogVideoManager::AppendItemFolderToFileBrowserSources(
     std::vector<CMediaSource>& sources)
 {
-  const std::string itemDir{URIUtils::GetParentPath(m_videoAsset->GetDynPath())};
+  const std::string itemDir(URIUtils::GetParentPath(m_videoAsset->GetDynPath()));
   if (!itemDir.empty() && XFILE::CDirectory::Exists(itemDir))
   {
-    CMediaSource itemSource{};
+    CMediaSource itemSource;
     itemSource.strName = g_localizeStrings.Get(36041); // * Item folder
     itemSource.strPath = itemDir;
-    sources.emplace_back(itemSource);
+    sources.push_back(itemSource);
   }
 }
 
@@ -481,14 +483,12 @@ void CGUIDialogVideoManager::RefreshSelectedVideoAsset()
   if (!m_selectedVideoAsset || !m_selectedVideoAsset->HasVideoInfoTag() ||
       !m_videoAssetsList->Size())
   {
-    m_selectedVideoAsset = std::make_shared<CFileItem>();
+    m_selectedVideoAsset = boost::make_shared<CFileItem>();
     return;
   }
 
-  const int dbId{m_selectedVideoAsset->GetVideoInfoTag()->m_iDbId};
-  const auto it{std::find_if(m_videoAssetsList->cbegin(), m_videoAssetsList->cend(),
-                             [dbId](const auto& entry)
-                             { return entry->GetVideoInfoTag()->m_iDbId == dbId; })};
+  const int dbId(m_selectedVideoAsset->GetVideoInfoTag()->m_iDbId);
+  const VECFILEITEMS::const_iterator it = std::find_if(m_videoAssetsList->cbegin(), m_videoAssetsList->cend(), boost::bind(&FindByDbId, _1, dbId));
 
   if (it == m_videoAssetsList->cend())
     m_selectedVideoAsset = m_videoAssetsList->Get(0);

@@ -10,6 +10,7 @@
 
 #include "guilib/GUIDialog.h"
 #include "video/VideoDatabase.h"
+#include "video/VideoManagerTypes.h" // VideoAssetType
 
 #include <memory>
 
@@ -17,25 +18,23 @@ class CFileItem;
 class CFileItemList;
 class CMediaSource;
 
-enum class VideoAssetType;
-
 class CGUIDialogVideoManager : public CGUIDialog
 {
 public:
   explicit CGUIDialogVideoManager(int windowId);
-  ~CGUIDialogVideoManager() override = default;
+  virtual ~CGUIDialogVideoManager() {}
 
-  virtual void SetVideoAsset(const std::shared_ptr<CFileItem>& item);
-  virtual void SetSelectedVideoAsset(const std::shared_ptr<CFileItem>& asset);
+  virtual void SetVideoAsset(const boost::shared_ptr<CFileItem>& item);
+  virtual void SetSelectedVideoAsset(const boost::shared_ptr<CFileItem>& asset);
   virtual bool HasUpdatedItems() const { return m_hasUpdatedItems; }
 
 protected:
-  void OnInitWindow() override;
-  void OnDeinitWindow(int nextWindowID) override;
-  bool OnMessage(CGUIMessage& message) override;
-  bool OnAction(const CAction& action) override;
+  virtual void OnInitWindow();
+  virtual void OnDeinitWindow(int nextWindowID);
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction& action);
 
-  virtual VideoAssetType GetVideoAssetType() = 0;
+  virtual VideoAssetType::Type GetVideoAssetType() = 0;
   virtual int GetHeadingId() = 0;
 
   virtual void Clear();
@@ -53,20 +52,20 @@ protected:
 
   void UpdateControls();
 
-  static int ChooseVideoAsset(const std::shared_ptr<CFileItem>& item,
-                              VideoAssetType assetType,
+  static int ChooseVideoAsset(const boost::shared_ptr<CFileItem>& item,
+                              VideoAssetType::Type assetType,
                               const std::string& defaultName);
   void AppendItemFolderToFileBrowserSources(std::vector<CMediaSource>& sources);
   void RefreshSelectedVideoAsset();
 
   CVideoDatabase m_database;
-  std::shared_ptr<CFileItem> m_videoAsset;
-  std::unique_ptr<CFileItemList> m_videoAssetsList;
-  std::shared_ptr<CFileItem> m_selectedVideoAsset;
-  bool m_hasUpdatedItems{false};
+  boost::shared_ptr<CFileItem> m_videoAsset;
+  boost::movelib::unique_ptr<CFileItemList> m_videoAssetsList;
+  boost::shared_ptr<CFileItem> m_selectedVideoAsset;
+  bool m_hasUpdatedItems;
 
 private:
-  CGUIDialogVideoManager() = delete;
+  CGUIDialogVideoManager();
 
   void CloseAll();
   bool UpdateSelectedAsset();

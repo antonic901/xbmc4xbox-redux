@@ -15,32 +15,30 @@
 
 class CFileItem;
 
-enum class VideoAssetType;
-
 class CGUIDialogVideoManagerExtras : public CGUIDialogVideoManager
 {
 public:
   CGUIDialogVideoManagerExtras();
-  ~CGUIDialogVideoManagerExtras() override = default;
+  virtual ~CGUIDialogVideoManagerExtras() {}
 
-  void SetVideoAsset(const std::shared_ptr<CFileItem>& item) override;
+  virtual void SetVideoAsset(const boost::shared_ptr<CFileItem>& item);
   /*!
    * \brief Open the Manage Extras dialog for a video
    * \param item video to manage
    * \return true: the video or another item was modified, a containing list should be refreshed.
    * false: no changes
    */
-  static bool ManageVideoExtras(const std::shared_ptr<CFileItem>& item);
+  static bool ManageVideoExtras(const boost::shared_ptr<CFileItem>& item);
   static std::string GenerateVideoExtra(const std::string& extrasRoot,
                                         const std::string& extrasPath);
 
 protected:
-  bool OnMessage(CGUIMessage& message) override;
+  virtual bool OnMessage(CGUIMessage& message);
 
-  VideoAssetType GetVideoAssetType() override;
-  int GetHeadingId() override { return 40025; } // Extras:
+  virtual VideoAssetType::Type GetVideoAssetType();
+  virtual int GetHeadingId() { return 40025; } // Extras:
 
-  void UpdateButtons() override;
+  virtual void UpdateButtons();
 
 private:
   /*!
