@@ -9,44 +9,40 @@
 #pragma once
 
 #include "video/dialogs/GUIDialogVideoManager.h"
+#include "video/VideoManagerTypes.h" // VideoDbContentType, VideoAssetType, MediaRole
 
 #include <memory>
 #include <string>
-#include <tuple>
 
 class CFileItem;
-
-enum class VideoDbContentType;
-enum class VideoAssetType;
-enum class MediaRole;
 
 class CGUIDialogVideoManagerVersions : public CGUIDialogVideoManager
 {
 public:
   CGUIDialogVideoManagerVersions();
-  ~CGUIDialogVideoManagerVersions() override = default;
+  virtual ~CGUIDialogVideoManagerVersions() {}
 
-  void SetVideoAsset(const std::shared_ptr<CFileItem>& item) override;
+  virtual void SetVideoAsset(const boost::shared_ptr<CFileItem>& item);
 
-  static bool ProcessVideoVersion(VideoDbContentType itemType, int dbId);
+  static bool ProcessVideoVersion(VideoDbContentType::Type itemType, int dbId);
   /*!
    * \brief Open the Manage Versions dialog for a video
    * \param item video to manage
    * \return true: the video or another item was modified, a containing list should be refreshed.
    * false: no changes
    */
-  static bool ManageVideoVersions(const std::shared_ptr<CFileItem>& item);
+  static bool ManageVideoVersions(const boost::shared_ptr<CFileItem>& item);
 
 protected:
-  bool OnMessage(CGUIMessage& message) override;
+  virtual bool OnMessage(CGUIMessage& message);
 
-  VideoAssetType GetVideoAssetType() override;
-  int GetHeadingId() override { return 40024; } // Versions:
+  virtual VideoAssetType::Type GetVideoAssetType();
+  virtual int GetHeadingId() { return 40024; } // Versions:
 
-  void Clear() override;
-  void Refresh() override;
-  void UpdateButtons() override;
-  void Remove() override;
+  virtual void Clear();
+  virtual void Refresh();
+  virtual void UpdateButtons();
+  virtual void Remove();
 
 private:
   void SetDefaultVideoVersion(const CFileItem& version);
@@ -74,11 +70,11 @@ private:
    * \return True: success, a version was created and attached, false otherwise.
    */
   static bool ChooseVideoAndConvertToVideoVersion(CFileItemList& items,
-                                                  VideoDbContentType itemType,
+                                                  VideoDbContentType::Type itemType,
                                                   const std::string& mediaType,
                                                   int dbId,
                                                   CVideoDatabase& videoDb,
-                                                  MediaRole role);
+                                                  MediaRole::Type role);
   /*!
    * \brief Use a file picker to select a file to add as a new version of a movie.
    * \return True when a version was added, false otherwise
@@ -93,7 +89,7 @@ private:
    * \param[in] videoDb Database connection
    * \return True for success, false otherwise
    */
-  static bool GetSimilarMovies(const std::shared_ptr<CFileItem>& item,
+  static bool GetSimilarMovies(const boost::shared_ptr<CFileItem>& item,
                                CFileItemList& list,
                                CVideoDatabase& videoDb);
 
@@ -102,7 +98,7 @@ private:
    * \param itemMovie Movie to convert
    * \return True for success, false otherwse
    */
-  bool AddSimilarMovieAsVersion(const std::shared_ptr<CFileItem>& itemMovie);
+  bool AddSimilarMovieAsVersion(const boost::shared_ptr<CFileItem>& itemMovie);
 
   /*!
    * \brief Populates a list with all movies of the libray, excluding the item provided as parameter.
@@ -111,7 +107,7 @@ private:
    * \param[in] videoDb Database connection
    * \return True for success, false otherwise.
    */
-  static bool GetAllOtherMovies(const std::shared_ptr<CFileItem>& item,
+  static bool GetAllOtherMovies(const boost::shared_ptr<CFileItem>& item,
                                 CFileItemList& list,
                                 CVideoDatabase& videoDb);
 
@@ -123,5 +119,5 @@ private:
    */
   static bool PostProcessList(CFileItemList& list, int dbId);
 
-  std::shared_ptr<CFileItem> m_defaultVideoVersion;
+  boost::shared_ptr<CFileItem> m_defaultVideoVersion;
 };

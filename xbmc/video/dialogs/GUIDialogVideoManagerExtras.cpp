@@ -12,35 +12,34 @@
 #include "GUIUserMessages.h"
 #include "ServiceBroker.h"
 #include "URL.h"
-#include "cores/VideoPlayer/DVDFileInfo.h"
+#include "cores/dvdplayer/DVDFileInfo.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
+#include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "storage/MediaManager.h"
-#include "utils/FileExtensionProvider.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
-#include "video/VideoManagerTypes.h"
 
 #include <algorithm>
 #include <string>
 
-static constexpr unsigned int CONTROL_BUTTON_ADD_EXTRAS = 23;
-static constexpr unsigned int CONTROL_BUTTON_RENAME_EXTRA = 28;
+static const unsigned int CONTROL_BUTTON_ADD_EXTRAS = 23;
+static const unsigned int CONTROL_BUTTON_RENAME_EXTRA = 28;
 
 CGUIDialogVideoManagerExtras::CGUIDialogVideoManagerExtras()
   : CGUIDialogVideoManager(WINDOW_DIALOG_MANAGE_VIDEO_EXTRAS)
 {
 }
 
-VideoAssetType CGUIDialogVideoManagerExtras::GetVideoAssetType()
+VideoAssetType::Type CGUIDialogVideoManagerExtras::GetVideoAssetType()
 {
   return VideoAssetType::EXTRA;
 }
@@ -51,7 +50,7 @@ bool CGUIDialogVideoManagerExtras::OnMessage(CGUIMessage& message)
   {
     case GUI_MSG_CLICKED:
     {
-      const int control{message.GetSenderId()};
+      const int control(message.GetSenderId());
       if (control == CONTROL_BUTTON_ADD_EXTRAS)
       {
         if (AddVideoExtra())
@@ -94,7 +93,7 @@ void CGUIDialogVideoManagerExtras::UpdateButtons()
   }
 }
 
-void CGUIDialogVideoManagerExtras::SetVideoAsset(const std::shared_ptr<CFileItem>& item)
+void CGUIDialogVideoManagerExtras::SetVideoAsset(const boost::shared_ptr<CFileItem>& item)
 {
   CGUIDialogVideoManager::SetVideoAsset(item);
 
@@ -106,10 +105,10 @@ bool CGUIDialogVideoManagerExtras::AddVideoExtra()
 {
   // @todo: combine with versions add file logic, structured similarly and sharing most logic.
 
-  const MediaType mediaType{m_videoAsset->GetVideoInfoTag()->m_type};
+  const MediaType mediaType = m_videoAsset->GetVideoInfoTag()->m_type;
 
   // prompt to choose a video file
-  VECSOURCES sources{*CMediaSourceSettings::GetInstance().GetSources("files")};
+  VECSOURCES sources = *CMediaSourceSettings::GetInstance().GetSources("files");
 
   CServiceBroker::GetMediaManager().GetLocalDrives(sources);
   CServiceBroker::GetMediaManager().GetNetworkLocations(sources);
@@ -117,16 +116,16 @@ bool CGUIDialogVideoManagerExtras::AddVideoExtra()
 
   std::string path;
   if (CGUIDialogFileBrowser::ShowAndGetFile(
-          sources, CServiceBroker::GetFileExtensionProvider().GetVideoExtensions(),
+          sources, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions,
           g_localizeStrings.Get(40015), path))
   {
-    const int dbId{m_videoAsset->GetVideoInfoTag()->m_iDbId};
-    const VideoDbContentType itemType = m_videoAsset->GetVideoContentType();
+    const int dbId(m_videoAsset->GetVideoInfoTag()->m_iDbId);
+    const VideoDbContentType::Type itemType = m_videoAsset->GetVideoContentType();
 
-    const VideoAssetInfo newAsset{m_database.GetVideoVersionInfo(path)};
+    const VideoAssetInfo newAsset = m_database.GetVideoVersionInfo(path);
 
-    std::string typeNewVideoVersion{
-        CGUIDialogVideoManagerExtras::GenerateVideoExtra(URIUtils::GetFileName(path))};
+    std::string typeNewVideoVersion(
+        CGUIDialogVideoManagerExtras::GenerateVideoExtra(URIUtils::GetFileName(path)));
 
     if (newAsset.m_idFile != -1 && newAsset.m_assetTypeId != -1)
     {
@@ -134,7 +133,7 @@ bool CGUIDialogVideoManagerExtras::AddVideoExtra()
       if (newAsset.m_idMedia == dbId &&
           newAsset.m_mediaType == m_videoAsset->GetVideoInfoTag()->m_type)
       {
-        unsigned int msgid{};
+        unsigned int msgid = 0;
 
         if (newAsset.m_assetType == VideoAssetType::VERSION)
           msgid = 40016; // video is a version of the movie
@@ -142,13 +141,13 @@ bool CGUIDialogVideoManagerExtras::AddVideoExtra()
           msgid = 40026; // video is an extra of the movie
         else
         {
-          CLog::LogF(LOGERROR, "unexpected asset type {}", static_cast<int>(newAsset.m_assetType));
+          CLog::Log(LOGERROR, "unexpected asset type {}", static_cast<int>(newAsset.m_assetType));
           return false;
         }
 
         CGUIDialogOK::ShowAndGetInput(
-            CVariant{40015},
-            StringUtils::Format(g_localizeStrings.Get(msgid), newAsset.m_assetTypeName));
+            40015,
+            StringUtils::Format(g_localizeStrings.Get(msgid).c_str(), newAsset.m_assetTypeName.c_str()));
         return false;
       }
 
@@ -156,8 +155,8 @@ bool CGUIDialogVideoManagerExtras::AddVideoExtra()
 
       // The video is a version, ask for confirmation
       if (newAsset.m_assetType == VideoAssetType::VERSION &&
-          !CGUIDialogYesNo::ShowAndGetInput(CVariant{40015},
-                                            StringUtils::Format(g_localizeStrings.Get(40036))))
+          !CGUIDialogYesNo::ShowAndGetInput(40015,
+                                            StringUtils::Format(g_localizeStrings.Get(40036).c_str())))
       {
         return false;
       }
@@ -171,7 +170,7 @@ bool CGUIDialogVideoManagerExtras::AddVideoExtra()
         return false;
 
       {
-        unsigned int msgid{};
+        unsigned int msgid = 0;
 
         if (newAsset.m_assetType == VideoAssetType::VERSION)
           msgid = 40017; // video is a version of another movie
@@ -179,13 +178,13 @@ bool CGUIDialogVideoManagerExtras::AddVideoExtra()
           msgid = 40027; // video is an extra of another movie
         else
         {
-          CLog::LogF(LOGERROR, "unexpected asset type {}", static_cast<int>(newAsset.m_assetType));
+          CLog::Log(LOGERROR, "unexpected asset type {}", static_cast<int>(newAsset.m_assetType));
           return false;
         }
 
         if (!CGUIDialogYesNo::ShowAndGetInput(
-                CVariant{40015}, StringUtils::Format(g_localizeStrings.Get(msgid),
-                                                     newAsset.m_assetTypeName, videoTitle)))
+                40015, StringUtils::Format(g_localizeStrings.Get(msgid).c_str(),
+                                                     newAsset.m_assetTypeName.c_str(), videoTitle.c_str())))
         {
           return false;
         }
@@ -201,12 +200,12 @@ bool CGUIDialogVideoManagerExtras::AddVideoExtra()
         if (list.Size() > 1)
         {
           // cannot add the default version of a movie with multiple versions to another movie
-          CGUIDialogOK::ShowAndGetInput(CVariant{40015}, CVariant{40034});
+          CGUIDialogOK::ShowAndGetInput(40015, 40034);
           return false;
         }
 
-        const int idNewVideoVersion{m_database.AddVideoVersionType(
-            typeNewVideoVersion, VideoAssetTypeOwner::AUTO, VideoAssetType::EXTRA)};
+        const int idNewVideoVersion = m_database.AddVideoVersionType(
+            typeNewVideoVersion, VideoAssetTypeOwner::AUTO, VideoAssetType::EXTRA);
 
         if (idNewVideoVersion == -1)
           return false;
@@ -216,18 +215,18 @@ bool CGUIDialogVideoManagerExtras::AddVideoExtra()
       }
     }
 
-    CFileItem item{path, false};
+    CFileItem item(path, false);
 
     if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(
             CSettings::SETTING_MYVIDEOS_EXTRACTFLAGS))
     {
       CDVDFileInfo::GetFileStreamDetails(&item);
-      CLog::LogF(LOGDEBUG, "Extracted filestream details from video file {}",
+      CLog::Log(LOGDEBUG, "Extracted filestream details from video file {}",
                  CURL::GetRedacted(item.GetPath()));
     }
 
-    const int idNewVideoVersion{m_database.AddVideoVersionType(
-        typeNewVideoVersion, VideoAssetTypeOwner::AUTO, VideoAssetType::EXTRA)};
+    const int idNewVideoVersion = m_database.AddVideoVersionType(
+        typeNewVideoVersion, VideoAssetTypeOwner::AUTO, VideoAssetType::EXTRA);
 
     if (idNewVideoVersion == -1)
       return false;
@@ -239,14 +238,14 @@ bool CGUIDialogVideoManagerExtras::AddVideoExtra()
   return false;
 }
 
-bool CGUIDialogVideoManagerExtras::ManageVideoExtras(const std::shared_ptr<CFileItem>& item)
+bool CGUIDialogVideoManagerExtras::ManageVideoExtras(const boost::shared_ptr<CFileItem>& item)
 {
-  CGUIDialogVideoManagerExtras* dialog{
+  CGUIDialogVideoManagerExtras* dialog =
       CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogVideoManagerExtras>(
-          WINDOW_DIALOG_MANAGE_VIDEO_EXTRAS)};
+          WINDOW_DIALOG_MANAGE_VIDEO_EXTRAS);
   if (!dialog)
   {
-    CLog::LogF(LOGERROR, "Unable to get WINDOW_DIALOG_MANAGE_VIDEO_EXTRAS instance!");
+    CLog::Log(LOGERROR, "Unable to get WINDOW_DIALOG_MANAGE_VIDEO_EXTRAS instance!");
     return false;
   }
 
@@ -261,7 +260,7 @@ std::string CGUIDialogVideoManagerExtras::GenerateVideoExtra(const std::string& 
   // generate a video extra version string from its file path
 
   // remove the root path from its path
-  const std::string extrasVersion{extrasPath.substr(extrasRoot.size())};
+  const std::string extrasVersion(extrasPath.substr(extrasRoot.size()));
 
   return GenerateVideoExtra(extrasVersion);
 }
@@ -270,7 +269,7 @@ std::string CGUIDialogVideoManagerExtras::GenerateVideoExtra(const std::string& 
 {
   // generate a video extra version string from its file path
 
-  std::string extrasVersion{extrasPath};
+  std::string extrasVersion(extrasPath);
 
   // remove file extension
   URIUtils::RemoveExtension(extrasVersion);
