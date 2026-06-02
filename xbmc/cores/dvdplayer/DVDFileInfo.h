@@ -36,6 +36,12 @@ public:
   // GetFileMetaData will fill pItem's properties according to what can be extracted from the file.
   static void GetFileMetaData(const CStdString &strPath, CFileItem *pItem); 
   
+
+  /*!
+   * @brief Can a thumbnail image and file stream details be extracted from this file item?
+  */
+  static bool CanExtract(const CFileItem& fileItem);
+
   // Probe the files streams and store the info in the VideoInfoTag
   static bool GetFileStreamDetails(CFileItem *pItem);
   static bool DemuxerToStreamDetails(CDVDInputStream* pInputStream, CDVDDemux *pDemux, CStreamDetails &details, const CStdString &path = "");

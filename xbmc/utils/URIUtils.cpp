@@ -958,6 +958,26 @@ bool URIUtils::IsInternetStream(const CURL& url, bool bStrictCheck /* = false */
   return false;
 }
 
+bool URIUtils::IsStreamedFilesystem(const std::string& strPath)
+{
+  CURL url(strPath);
+
+  if (url.GetProtocol().empty())
+    return false;
+
+  if (url.IsProtocol("stack"))
+    return IsStreamedFilesystem(CStackDirectory::GetFirstStackedFile(strPath));
+
+  if (IsUPnP(strPath) || IsFTP(strPath) || IsHTTP(strPath, true))
+    return true;
+
+  //! @todo sftp/ssh special case has to be handled by vfs addon
+  if (url.IsProtocol("sftp") || url.IsProtocol("ssh"))
+    return true;
+
+  return false;
+}
+
 bool URIUtils::IsUPnP(const CStdString& strFile)
 {
   return IsProtocol(strFile, "upnp");

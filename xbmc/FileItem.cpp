@@ -779,6 +779,14 @@ bool CFileItem::IsInternetStream(const bool bStrictCheck /* = false */) const
   return URIUtils::IsInternetStream(m_strPath, bStrictCheck);
 }
 
+bool CFileItem::IsStreamedFilesystem() const
+{
+  if (!m_strDynPath.empty())
+    return URIUtils::IsStreamedFilesystem(m_strDynPath);
+
+  return URIUtils::IsStreamedFilesystem(m_strPath);
+}
+
 bool CFileItem::IsFileFolder(EFileFolderType types) const
 {
   EFileFolderType always_type = EFILEFOLDER_TYPE_ALWAYS;
@@ -1682,11 +1690,9 @@ bool CFileItem::LoadTracksFromCueDocument(CFileItemList& scannedItems)
         if (!tag.GetCueSheet().empty())
           song.strCueSheet = tag.GetCueSheet();
 
-        SYSTEMTIME dateTime;
-        tag.GetReleaseDate(dateTime);
-        if (dateTime.wYear)
-          song.iYear = dateTime.wYear;
-        if (song.embeddedArt.empty() && !tag.GetCoverArtInfo().empty())
+        if (tag.GetYear())
+          song.strReleaseDate = tag.GetReleaseDate();
+        if (song.embeddedArt.Empty() && !tag.GetCoverArtInfo().Empty())
           song.embeddedArt = tag.GetCoverArtInfo();
       }
 

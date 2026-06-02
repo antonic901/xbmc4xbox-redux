@@ -245,6 +245,7 @@ public:
   static const char* SETTING_SOURCE_VIDEOS;
   static const char* SETTING_SOURCE_MUSIC;
   static const char* SETTING_SOURCE_PICTURES;
+  static const char* SETTING_FILECACHE_BUFFERMODE;
 
   // values for SETTING_VIDEOLIBRARY_SHOWUNWATCHEDPLOTS
   static const int VIDEOLIBRARY_PLOTS_SHOW_UNWATCHED_MOVIES = 0;

@@ -495,7 +495,7 @@ bool CGUIWindowVideoNav::GetDirectory(const std::string &strDirectory, CFileItem
     {
       if (items.GetContent() == "tags" && !items.Contains("newtag://" + videoUrl.GetType()))
       {
-        const auto newTag{boost::make_shared<CFileItem>("newtag://" + videoUrl.GetType(), false)};
+        const CFileItemPtr newTag = boost::make_shared<CFileItem>("newtag://" + videoUrl.GetType(), false);
         newTag->SetLabel(g_localizeStrings.Get(20462));
         newTag->SetLabelPreformatted(true);
         newTag->SetSpecialSort(SortSpecialOnTop);
@@ -854,7 +854,7 @@ bool CGUIWindowVideoNav::OnPopupMenu(int iItem)
 {
   if (iItem >= 0 && iItem < m_vecItems->Size())
   {
-    const auto item = m_vecItems->Get(iItem);
+    const CFileItemPtr item = m_vecItems->Get(iItem);
     item->SetProperty("CheckAutoPlayNextItem", true);
   }
 
@@ -1005,47 +1005,57 @@ bool CGUIWindowVideoNav::OnClick(int iItem, const std::string &player)
   return CGUIWindowVideoBase::OnClick(iItem, player);
 }
 
+struct StartFolderMapping
+{
+  const char* key;
+  const char* value;
+};
+
+static const StartFolderMapping map[] =
+{
+  { "files", "sources://video/" },
+  { "inprogresstvshows", "videodb://inprogresstvshows/" },
+  { "movieactors", "videodb://movies/actors/" },
+  { "moviecountries", "videodb://movies/countries/" },
+  { "moviedirectors", "videodb://movies/directors/" },
+  { "moviegenres", "videodb://movies/genres/" },
+  { "movies", "videodb://movies/" },
+  { "moviesets", "videodb://movies/sets/" },
+  { "moviestudios", "videodb://movies/studios/" },
+  { "movietags", "videodb://movies/tags/" },
+  { "movietitles", "videodb://movies/titles/" },
+  { "movieyears", "videodb://movies/years/" },
+  { "musicvideoalbums", "videodb://musicvideos/albums/" },
+  { "musicvideoartists", "videodb://musicvideos/artists/" },
+  { "musicvideodirectors", "videodb://musicvideos/directors/" },
+  { "musicvideogenres", "videodb://musicvideos/genres/" },
+  { "musicvideos", "videodb://musicvideos/" },
+  { "musicvideostudios", "videodb://musicvideos/studios/" },
+  { "musicvideotags", "videodb://musicvideos/tags/" },
+  { "musicvideotitles", "videodb://musicvideos/titles/" },
+  { "musicvideoyears", "videodb://musicvideos/years/" },
+  { "recentlyaddedepisodes", "videodb://recentlyaddedepisodes/" },
+  { "recentlyaddedmovies", "videodb://recentlyaddedmovies/" },
+  { "recentlyaddedmusicvideos", "videodb://recentlyaddedmusicvideos/" },
+  { "tvshowactors", "videodb://tvshows/actors/" },
+  { "tvshowgenres", "videodb://tvshows/genres/" },
+  { "tvshows", "videodb://tvshows/" },
+  { "tvshowstudios", "videodb://tvshows/studios/" },
+  { "tvshowtags", "videodb://tvshows/tags/" },
+  { "tvshowtitles", "videodb://tvshows/titles/" },
+  { "tvshowyears", "videodb://tvshows/years/" }
+};
+
 std::string CGUIWindowVideoNav::GetStartFolder(const std::string &dir)
 {
-  static const auto map = std::map<std::string, std::string>{
-      {"files", "sources://video/"},
-      {"inprogresstvshows", "videodb://inprogresstvshows/"},
-      {"movieactors", "videodb://movies/actors/"},
-      {"moviecountries", "videodb://movies/countries/"},
-      {"moviedirectors", "videodb://movies/directors/"},
-      {"moviegenres", "videodb://movies/genres/"},
-      {"movies", "videodb://movies/"},
-      {"moviesets", "videodb://movies/sets/"},
-      {"moviestudios", "videodb://movies/studios/"},
-      {"movietags", "videodb://movies/tags/"},
-      {"movietitles", "videodb://movies/titles/"},
-      {"movieyears", "videodb://movies/years/"},
-      {"musicvideoalbums", "videodb://musicvideos/albums/"},
-      {"musicvideoartists", "videodb://musicvideos/artists/"},
-      {"musicvideodirectors", "videodb://musicvideos/directors/"},
-      {"musicvideogenres", "videodb://musicvideos/genres/"},
-      {"musicvideos", "videodb://musicvideos/"},
-      {"musicvideostudios", "videodb://musicvideos/studios/"},
-      {"musicvideotags", "videodb://musicvideos/tags/"},
-      {"musicvideotitles", "videodb://musicvideos/titles/"},
-      {"musicvideoyears", "videodb://musicvideos/years/"},
-      {"recentlyaddedepisodes", "videodb://recentlyaddedepisodes/"},
-      {"recentlyaddedmovies", "videodb://recentlyaddedmovies/"},
-      {"recentlyaddedmusicvideos", "videodb://recentlyaddedmusicvideos/"},
-      {"tvshowactors", "videodb://tvshows/actors/"},
-      {"tvshowgenres", "videodb://tvshows/genres/"},
-      {"tvshows", "videodb://tvshows/"},
-      {"tvshowstudios", "videodb://tvshows/studios/"},
-      {"tvshowtags", "videodb://tvshows/tags/"},
-      {"tvshowtitles", "videodb://tvshows/titles/"},
-      {"tvshowyears", "videodb://tvshows/years/"},
-  };
+  const std::string lower; StringUtils::ToLower(dir);
+  for (size_t i = 0; i < sizeof(map) / sizeof(map[0]); ++i)
+  {
+    if (lower == map[i].key)
+      return map[i].value;
+  }
 
-  const auto it = map.find(StringUtils::ToLower(dir));
-  if (it == map.end())
-    return CGUIWindowVideoBase::GetStartFolder(dir);
-  else
-    return it->second;
+  return CGUIWindowVideoBase::GetStartFolder(dir);
 }
 
 bool CGUIWindowVideoNav::ApplyWatchedFilter(CFileItemList &items)
