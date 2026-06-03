@@ -338,6 +338,67 @@ bool CUtil::GetVolumeFromFileName(const CStdString& strFileName, CStdString& str
   return false;
 }
 
+namespace
+{
+void GetTrailingDiscNumberSegmentInfoFromPath(const std::string& pathIn,
+                                              size_t& pos,
+                                              std::string& number)
+{
+  std::string path(pathIn);
+  URIUtils::RemoveSlashAtEnd(path);
+
+  pos = std::string::npos;
+  number.clear();
+
+  // Handle Disc, Disk and locale specific spellings
+  std::string discStr(StringUtils::Format("/%s ", g_localizeStrings.Get(427).c_str()));
+  size_t discPos = path.rfind(discStr);
+
+  if (discPos == std::string::npos)
+  {
+    discStr = "/Disc ";
+    discPos = path.rfind(discStr);
+  }
+
+  if (discPos == std::string::npos)
+  {
+    discStr = "/Disk ";
+    discPos = path.rfind(discStr);
+  }
+
+  if (discPos != std::string::npos)
+  {
+    // Check remainder of path is numeric (eg. Disc 1)
+    const std::string discNum(path.substr(discPos + discStr.size()));
+    if (discNum.find_first_not_of("0123456789") == std::string::npos)
+    {
+      pos = discPos;
+      number = discNum;
+    }
+  }
+}
+} // unnamed namespace
+
+std::string CUtil::RemoveTrailingDiscNumberSegmentFromPath(std::string path)
+{
+  size_t discPos(std::string::npos);
+  std::string discNum;
+  GetTrailingDiscNumberSegmentInfoFromPath(path, discPos, discNum);
+
+  if (discPos != std::string::npos)
+    path.erase(discPos);
+
+  return path;
+}
+
+std::string CUtil::GetDiscNumberFromPath(const std::string& path)
+{
+  size_t discPos(std::string::npos);
+  std::string discNum;
+  GetTrailingDiscNumberSegmentInfoFromPath(path, discPos, discNum);
+  return discNum;
+}
+
 bool CUtil::GetFilenameIdentifier(const std::string& fileName,
                                   std::string& identifierType,
                                   std::string& identifier)

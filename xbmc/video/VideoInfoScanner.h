@@ -16,6 +16,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <boost/unordered_map.hpp>
 
 class CRegExp;
 class CFileItem;
@@ -152,7 +153,7 @@ namespace VIDEO
      \return true if information is found, false if an error occurred, the lookup was cancelled, or no information was found.
      */
     bool GetDetails(CFileItem* pItem,
-                    const std::map<std::string, std::string>& uniqueIDs,
+                    const boost::unordered_map<std::string, std::string>& uniqueIDs,
                     CScraperUrl& url,
                     const ADDON::ScraperPtr& scraper,
                     VIDEO::IVideoInfoTagLoader* nfoFile = nullptr,

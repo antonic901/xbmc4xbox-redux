@@ -356,6 +356,20 @@ wchar_t toupperUnicode(const wchar_t& c)
   return c;
 }
 
+std::string StringUtils::ToUpper(const std::string& str)
+{
+  std::string result(str.size(), '\0');
+  std::transform(str.begin(), str.end(), result.begin(), ::toupper);
+  return result;
+}
+
+std::wstring StringUtils::ToUpper(const std::wstring& str)
+{
+  std::wstring result(str.size(), '\0');
+  std::transform(str.begin(), str.end(), result.begin(), toupperUnicode);
+  return result;
+}
+
 void StringUtils::ToUpper(string &str)
 {
   std::transform(str.begin(), str.end(), str.begin(), ::toupper);
@@ -364,6 +378,20 @@ void StringUtils::ToUpper(string &str)
 void StringUtils::ToUpper(wstring &str)
 {
   transform(str.begin(), str.end(), str.begin(), toupperUnicode);
+}
+
+std::string StringUtils::ToLower(const std::string& str)
+{
+  std::string result(str.size(), '\0');
+  std::transform(str.begin(), str.end(), result.begin(), ::tolower);
+  return result;
+}
+
+std::wstring StringUtils::ToLower(const std::wstring& str)
+{
+  std::wstring result(str.size(), '\0');
+  std::transform(str.begin(), str.end(), result.begin(), tolowerUnicode);
+  return result;
 }
 
 void StringUtils::ToLower(string &str)

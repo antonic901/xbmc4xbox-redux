@@ -190,6 +190,7 @@ public:
   bool IsSourcesPath() const;
   bool IsShortCut() const;
   bool IsNFO() const;
+  bool IsVideoExtras() const;
   bool IsDiscImage() const;
   bool IsOpticalMediaFile() const;
   bool IsDVDFile(bool bVobs = true, bool bIfos = true) const;

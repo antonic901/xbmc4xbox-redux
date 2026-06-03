@@ -34,6 +34,7 @@ public:
 
   static const CStdString GetFileName(const CURL& url);
   static const CStdString GetFileName(const CStdString& strFileNameAndPath);
+  static std::string GetFileOrFolderName(const std::string& path);
 
   static CStdString GetExtension(const CURL& url);
   static CStdString GetExtension(const CStdString& strFileName);
