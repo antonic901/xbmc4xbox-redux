@@ -22,8 +22,11 @@
 #include "system.h" // <xtl.h>
 #include "IDirectory.h"
 
+#include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 #include <string>
+
+class CFileItem;
 
 namespace XFILE
 {
@@ -60,6 +63,29 @@ public:
   static bool GetDirectory(const CURL& url
                            , CFileItemList &items
                            , const CHints &hints);
+
+  typedef boost::function<void(const boost::shared_ptr<CFileItem>& item)> DirectoryEnumerationCallback;
+  typedef boost::function<bool(const boost::shared_ptr<CFileItem>& folder)> DirectoryFilter;
+
+  static bool DirectoryFilterDefault(const boost::shared_ptr<CFileItem>&) { return true; }
+
+  /*!
+   * \brief Enumerates files and folders in and below a directory. Every applicable gets passed to the callback.
+   *
+   * \param path Directory to enumerate
+   * \param callback Files and folders matching the criteria are passed to this function
+   * \param filter Only folders are passed to this function. If it return false the folder and everything below it will skipped from the enumeration
+   * \param fileOnly If true only files are passed to \p callback. Doesn't affect \p filter
+   * \param mask Only files matching this mask are passed to \p callback
+   * \param flags See \ref DIR_FLAG enum
+   */
+  static bool EnumerateDirectory(
+      const std::string& path,
+      const DirectoryEnumerationCallback& callback,
+      const DirectoryFilter& filter = &DirectoryFilterDefault,
+      bool fileOnly = false,
+      const std::string& mask = "",
+      int flags = DIR_FLAG_DEFAULTS);
 
   static bool Create(const CURL& url);
   static bool Exists(const CURL& url, bool bUseCache = true);

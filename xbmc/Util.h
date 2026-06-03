@@ -87,6 +87,19 @@ public:
   static bool HasFilenameIdentifier(const std::string& fileName);
   static CStdString GetTitleFromPath(const CURL& url, bool bIsFolder = false);
   static CStdString GetTitleFromPath(const CStdString& strFileNameAndPath, bool bIsFolder = false);
+
+  /*! \brief Return the disc number in case the last segment of given path ends with 'Disc n'.
+   Will look for 'Disc', 'Disk' and the locale specific spelling.
+   \return the disc number as string if found, empty string otherwise.
+   */
+  static std::string GetDiscNumberFromPath(const std::string& path);
+
+  /*! \brief Remove last segment of the given path if it matches 'Disc n'.
+   Will look for 'Disc', 'Disk' and the locale specific spelling.
+   \return the given path with last segment removed if it matches 'Disc n', unchanged path otherwise.
+   */
+  static std::string RemoveTrailingDiscNumberSegmentFromPath(std::string path);
+
   static void GetQualifiedFilename(const std::string &strBasePath, std::string &strFilename);
   static bool PatchCountryVideo(F_COUNTRY Country, F_VIDEO Video);
   static void RunShortcut(const char* szPath);

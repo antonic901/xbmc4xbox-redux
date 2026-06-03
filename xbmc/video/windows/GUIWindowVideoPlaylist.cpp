@@ -403,7 +403,7 @@ protected:
   }
 
 private:
-  const int m_itemIndex{-1};
+  const int m_itemIndex;
   const std::string m_player;
 };
 } // namespace
@@ -422,7 +422,7 @@ bool CGUIWindowVideoPlaylist::OnPlayMedia(int iItem, const std::string& player)
     const CFileItemPtr item = m_vecItems->Get(iItem);
     // play the current video version, even if multiple versions are available
     item->SetProperty("has_resolved_video_asset", true);
-    CVideoPlayActionProcessor proc{item, iItem, player};
+    CVideoPlayActionProcessor proc(item, iItem, player);
     proc.ProcessDefaultAction();
     item->ClearProperty("has_resolved_video_asset");
   }
@@ -461,7 +461,7 @@ void CGUIWindowVideoPlaylist::SavePlayList()
                                            false))
   {
     // need 2 rename it
-    strNewFileName = CUtil::MakeLegalFileName(std::move(strNewFileName));
+    strNewFileName = CUtil::MakeLegalFileName(boost::move(strNewFileName));
     strNewFileName += ".m3u8";
     std::string strPath =
         URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(

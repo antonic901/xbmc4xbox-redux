@@ -307,6 +307,44 @@ bool CDirectory::GetDirectory(const CURL& url, boost::shared_ptr<IDirectory> pDi
   return false;
 }
 
+bool CDirectory::EnumerateDirectory(
+    const std::string& path,
+    const DirectoryEnumerationCallback& callback,
+    const DirectoryFilter& filter /* = [](const boost::shared_ptr<CFileItem>&) {return true;} */,
+    bool fileOnly /* = false */,
+    const std::string& mask /* = "" */,
+    int flags /* = DIR_FLAG_DEFAULTS */)
+{
+  CFileItemList items;
+
+  // get items in specified directory
+  if (!CDirectory::GetDirectory(path, items, mask, flags))
+    return false;
+
+  // process all files
+  for (int i = 0; i < items.Size(); ++i)
+  {
+    if (!items[i]->m_bIsFolder)
+      callback(items[i]);
+  }
+
+  // process all directories
+  for (int i = 0; i < items.Size(); ++i)
+  {
+    const CFileItemPtr &item = items[i];
+    if (item->m_bIsFolder && filter(item))
+    {
+      if (!fileOnly)
+        callback(item);
+
+      if (!EnumerateDirectory(item->GetPath(), callback, filter, fileOnly, mask, flags))
+        return false;
+    }
+  }
+
+  return true;
+}
+
 bool CDirectory::Create(const std::string& strPath)
 {
   const CURL pathToUrl(strPath);

@@ -15,6 +15,7 @@
 
 #include <string>
 #include <vector>
+#include <boost/unordered_map.hpp>
 
 // forward declarations
 class CXBMCTinyXML;
@@ -54,7 +55,7 @@ public:
    */
   bool GetArtwork(CVideoInfoTag &details);
 
-  bool GetDetails(const std::map<std::string, std::string>& uniqueIDs,
+  bool GetDetails(const boost::unordered_map<std::string, std::string>& uniqueIDs,
                   const CScraperUrl& url,
                   CVideoInfoTag& movieDetails,
                   CGUIDialogProgress* pProgress = NULL);
@@ -73,7 +74,7 @@ protected:
   XFILE::CCurlFile*   m_http;
   std::string         m_movieTitle;
   int                 m_movieYear;
-  std::map<std::string, std::string> m_uniqueIDs;
+  boost::unordered_map<std::string, std::string> m_uniqueIDs;
   MOVIELIST           m_movieList;
   CVideoInfoTag       m_movieDetails;
   CScraperUrl         m_url;
