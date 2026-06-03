@@ -12,20 +12,26 @@
 
 class CFileItemList;
 
-enum SelectFirstUnwatchedItem
+namespace SelectFirstUnwatchedItem
 {
-  NEVER = 0,
-  ON_FIRST_ENTRY = 1,
-  ALWAYS = 2
-};
+  enum Type
+  {
+    NEVER = 0,
+    ON_FIRST_ENTRY = 1,
+    ALWAYS = 2
+  };
+}
 
-enum IncludeAllSeasonsAndSpecials
+namespace IncludeAllSeasonsAndSpecials
 {
-  NEITHER = 0,
-  BOTH = 1,
-  ALL_SEASONS = 2,
-  SPECIALS = 3
-};
+  enum Type
+  {
+    NEITHER = 0,
+    BOTH = 1,
+    ALL_SEASONS = 2,
+    SPECIALS = 3
+  };
+}
 
 class CGUIWindowVideoNav : public CGUIWindowVideoBase
 {
@@ -59,8 +65,8 @@ protected:
   VECSOURCES m_shares;
 
 private:
-  virtual SelectFirstUnwatchedItem GetSettingSelectFirstUnwatchedItem();
-  virtual IncludeAllSeasonsAndSpecials GetSettingIncludeAllSeasonsAndSpecials();
+  virtual SelectFirstUnwatchedItem::Type GetSettingSelectFirstUnwatchedItem();
+  virtual IncludeAllSeasonsAndSpecials::Type GetSettingIncludeAllSeasonsAndSpecials();
   virtual int GetFirstUnwatchedItemIndex(bool includeAllSeasons, bool includeSpecials);
   void SelectFirstUnwatched();
 };

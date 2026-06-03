@@ -2472,27 +2472,27 @@ namespace VIDEO
     return 0;    // didn't find anything
   }
 
-  static void AddVideoExtra(const CVideoInfoScanner *scanner, const CONTENT_TYPE &content, int dbId, const std::string &path, const boost::shared_ptr<CFileItem>& item)
+  static void AddVideoExtra(CVideoDatabase& database, const CONTENT_TYPE &content, int dbId, const std::string &path, const boost::shared_ptr<CFileItem>& item)
   {
-    // if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(
-    //         CSettings::SETTING_MYVIDEOS_EXTRACTFLAGS))
-    // {
-    //   CDVDFileInfo::GetFileStreamDetails(item.get());
-    //   CLog::Log(LOGDEBUG, "VideoInfoScanner: Extracted filestream details from video file {}",
-    //             CURL::GetRedacted(item->GetPath()));
-    // }
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(
+            CSettings::SETTING_MYVIDEOS_EXTRACTFLAGS))
+    {
+      CDVDFileInfo::GetFileStreamDetails(item.get());
+      CLog::Log(LOGDEBUG, "VideoInfoScanner: Extracted filestream details from video file {}",
+                CURL::GetRedacted(item->GetPath()));
+    }
 
-    // const std::string typeVideoVersion =
-    //     CGUIDialogVideoManagerExtras::GenerateVideoExtra(path, item->GetPath());
+    const std::string typeVideoVersion =
+        CGUIDialogVideoManagerExtras::GenerateVideoExtra(path, item->GetPath());
 
-    // const int idVideoVersion = m_database.AddVideoVersionType(
-    //     typeVideoVersion, VideoAssetTypeOwner::AUTO, VideoAssetType::EXTRA);
+    const int idVideoVersion = database.AddVideoVersionType(
+        typeVideoVersion, VideoAssetTypeOwner::AUTO, VideoAssetType::EXTRA);
 
-    // m_database.AddVideoAsset(ContentToVideoDbType(content), dbId, idVideoVersion,
-    //                           VideoAssetType::EXTRA, *item.get());
+    database.AddVideoAsset(ContentToVideoDbType(content), dbId, idVideoVersion,
+                              VideoAssetType::EXTRA, *item.get());
 
-    // CLog::Log(LOGDEBUG, "VideoInfoScanner: Added video extras {}",
-    //           CURL::GetRedacted(item->GetPath()));
+    CLog::Log(LOGDEBUG, "VideoInfoScanner: Added video extras {}",
+              CURL::GetRedacted(item->GetPath()));
   }
   static bool AcceptAllFilter(const boost::shared_ptr<CFileItem>&) { return true; }
 
@@ -2526,7 +2526,7 @@ namespace VIDEO
     // Add video extras to library
     CDirectory::EnumerateDirectory(
         path,
-        boost::bind(&AddVideoExtra, this, content, dbId, path, _1),
+        boost::bind(&AddVideoExtra, boost::ref(m_database), content, dbId, path, _1),
         boost::bind(&AcceptAllFilter, _1), true,
         CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions, DIR_FLAG_DEFAULTS);
 

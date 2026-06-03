@@ -44,6 +44,9 @@
 #include "video/dialogs/GUIDialogVideoInfo.h"
 #include "view/GUIViewState.h"
 
+#include <boost/array.hpp>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 #include <utility>
 
 using namespace XFILE;
@@ -240,7 +243,7 @@ bool CGUIWindowVideoNav::OnMessage(CGUIMessage& message)
   return CGUIWindowVideoBase::OnMessage(message);
 }
 
-SelectFirstUnwatchedItem CGUIWindowVideoNav::GetSettingSelectFirstUnwatchedItem()
+SelectFirstUnwatchedItem::Type CGUIWindowVideoNav::GetSettingSelectFirstUnwatchedItem()
 {
   if (m_vecItems->IsVideoDb())
   {
@@ -250,18 +253,18 @@ SelectFirstUnwatchedItem CGUIWindowVideoNav::GetSettingSelectFirstUnwatchedItem(
     {
       int iValue = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_VIDEOLIBRARY_TVSHOWSSELECTFIRSTUNWATCHEDITEM);
       if (iValue >= SelectFirstUnwatchedItem::NEVER && iValue <= SelectFirstUnwatchedItem::ALWAYS)
-        return (SelectFirstUnwatchedItem)iValue;
+        return (SelectFirstUnwatchedItem::Type)iValue;
     }
   }
 
   return SelectFirstUnwatchedItem::NEVER;
 }
 
-IncludeAllSeasonsAndSpecials CGUIWindowVideoNav::GetSettingIncludeAllSeasonsAndSpecials()
+IncludeAllSeasonsAndSpecials::Type CGUIWindowVideoNav::GetSettingIncludeAllSeasonsAndSpecials()
 {
   int iValue = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_VIDEOLIBRARY_TVSHOWSINCLUDEALLSEASONSANDSPECIALS);
   if (iValue >= IncludeAllSeasonsAndSpecials::NEITHER && iValue <= IncludeAllSeasonsAndSpecials::SPECIALS)
-    return (IncludeAllSeasonsAndSpecials)iValue;
+    return (IncludeAllSeasonsAndSpecials::Type)iValue;
 
   return IncludeAllSeasonsAndSpecials::NEITHER;
 }
@@ -289,7 +292,7 @@ int CGUIWindowVideoNav::GetFirstUnwatchedItemIndex(bool includeAllSeasons, bool 
     int iSeason = pTag->m_iSpecialSortSeason >= 0 ? pTag->m_iSpecialSortSeason : pTag->m_iSeason;
     int iEpisode = pTag->m_iSpecialSortEpisode >= 0 ? pTag->m_iSpecialSortEpisode : pTag->m_iEpisode;
 
-    if (nodeType == NODE_TYPE::NODE_TYPE_SEASONS)
+    if (nodeType == NODE_TYPE_SEASONS)
     {
       // Is the season unwatched, and is its season number lower than the currently identified
       // first unwatched season
@@ -300,7 +303,7 @@ int CGUIWindowVideoNav::GetFirstUnwatchedItemIndex(bool includeAllSeasons, bool 
       }
     }
 
-    if (nodeType == NODE_TYPE::NODE_TYPE_EPISODES)
+    if (nodeType == NODE_TYPE_EPISODES)
     {
       // Is the episode unwatched, and is its season number lower
       // or is its episode number lower within the current season
@@ -328,7 +331,7 @@ bool CGUIWindowVideoNav::Update(const std::string &strDirectory, bool updateFilt
 
 void CGUIWindowVideoNav::SelectFirstUnwatched() {
   // Check if we should select the first unwatched item
-  SelectFirstUnwatchedItem selectFirstUnwatched = GetSettingSelectFirstUnwatchedItem();
+  SelectFirstUnwatchedItem::Type selectFirstUnwatched = GetSettingSelectFirstUnwatchedItem();
   if (selectFirstUnwatched != SelectFirstUnwatchedItem::NEVER)
   {
     bool bIsItemSelected = (m_viewControl.GetSelectedItem() > 0);
@@ -336,7 +339,7 @@ void CGUIWindowVideoNav::SelectFirstUnwatched() {
     if (selectFirstUnwatched == SelectFirstUnwatchedItem::ALWAYS ||
       (selectFirstUnwatched == SelectFirstUnwatchedItem::ON_FIRST_ENTRY && !bIsItemSelected))
     {
-      IncludeAllSeasonsAndSpecials incAllSeasonsSpecials = GetSettingIncludeAllSeasonsAndSpecials();
+      IncludeAllSeasonsAndSpecials::Type incAllSeasonsSpecials = GetSettingIncludeAllSeasonsAndSpecials();
 
       bool bIncludeAllSeasons = (incAllSeasonsSpecials == IncludeAllSeasonsAndSpecials::BOTH || incAllSeasonsSpecials == IncludeAllSeasonsAndSpecials::ALL_SEASONS);
       bool bIncludeSpecials = (incAllSeasonsSpecials == IncludeAllSeasonsAndSpecials::BOTH || incAllSeasonsSpecials == IncludeAllSeasonsAndSpecials::SPECIALS);
@@ -574,6 +577,21 @@ bool CGUIWindowVideoNav::GetFilteredItems(const std::string &filter, CFileItemLi
   return listchanged;
 }
 
+namespace
+{
+  struct Entry
+  {
+    int id;
+    boost::function<void()> func;
+    int prefix;
+
+    Entry(int i, const boost::function<void()>& f, int p = 0)
+      : id(i), func(f), prefix(p)
+    {
+    }
+  };
+}
+
 /// \brief Search for names, genres, artists, directors, and plots with search string \e strSearch in the
 /// \brief video databases and return the found \e items
 /// \param strSearch The search string
@@ -582,88 +600,65 @@ void CGUIWindowVideoNav::DoSearch(const std::string& strSearch, CFileItemList& i
 {
   CFileItemList tempItems;
 
-  struct Entry
+  const boost::array<Entry, 16> entries =
+  {{
+      Entry(20338,
+            boost::bind(&CVideoDatabase::GetMoviesByName, &m_database, strSearch, boost::ref(tempItems))),
+      Entry(20359,
+            boost::bind(&CVideoDatabase::GetEpisodesByName, &m_database, strSearch, boost::ref(tempItems))),
+      Entry(20364,
+            boost::bind(&CVideoDatabase::GetTvShowsByName, &m_database, strSearch, boost::ref(tempItems))),
+      Entry(20391,
+            boost::bind(&CVideoDatabase::GetMusicVideosByName, &m_database, strSearch, boost::ref(tempItems))),
+      Entry(558,
+            boost::bind(&CVideoDatabase::GetMusicVideosByAlbum, &m_database, strSearch, boost::ref(tempItems))),
+      Entry(20342,
+            boost::bind(&CVideoDatabase::GetMovieGenresByName, &m_database, strSearch, boost::ref(tempItems)),
+            515),
+      Entry(20343,
+            boost::bind(&CVideoDatabase::GetTvShowGenresByName, &m_database, strSearch, boost::ref(tempItems)),
+            515),
+      Entry(20389,
+            boost::bind(&CVideoDatabase::GetMusicVideoGenresByName, &m_database, strSearch, boost::ref(tempItems)),
+            515),
+      Entry(20342,
+            boost::bind(&CVideoDatabase::GetMovieActorsByName, &m_database, strSearch, boost::ref(tempItems)),
+            20337),
+      Entry(20343,
+            boost::bind(&CVideoDatabase::GetTvShowsActorsByName, &m_database, strSearch, boost::ref(tempItems)),
+            20337),
+      Entry(20389,
+            boost::bind(&CVideoDatabase::GetMusicVideoArtistsByName, &m_database, strSearch, boost::ref(tempItems)),
+            20337),
+      Entry(20342,
+            boost::bind(&CVideoDatabase::GetMovieDirectorsByName, &m_database, strSearch, boost::ref(tempItems)),
+            20339),
+      Entry(20343,
+            boost::bind(&CVideoDatabase::GetTvShowsDirectorsByName, &m_database, strSearch, boost::ref(tempItems)),
+            20339),
+      Entry(20389,
+            boost::bind(&CVideoDatabase::GetMusicVideoDirectorsByName, &m_database, strSearch, boost::ref(tempItems)),
+            20339),
+      Entry(20365,
+            boost::bind(&CVideoDatabase::GetEpisodesByPlot, &m_database, strSearch, boost::ref(tempItems))),
+      Entry(20323,
+            boost::bind(&CVideoDatabase::GetMoviesByPlot, &m_database, strSearch, boost::ref(tempItems)))
+  }};
+
+  for (boost::array<Entry, 16>::const_iterator it = entries.begin(); it != entries.end(); ++it)
   {
-    int id;
-    std::function<void()> func;
-    int prefix = 0;
-  };
-
-  const auto entries = std::array{
-      Entry{20338,
-            [&strSearch, &tempItems, this]() { m_database.GetMoviesByName(strSearch, tempItems); }},
-      Entry{20359, [&strSearch, &tempItems,
-                    this]() { m_database.GetEpisodesByName(strSearch, tempItems); }},
-      Entry{20364, [&strSearch, &tempItems,
-                    this]() { m_database.GetTvShowsByName(strSearch, tempItems); }},
-      Entry{20391, [&strSearch, &tempItems,
-                    this]() { m_database.GetMusicVideosByName(strSearch, tempItems); }},
-      Entry{558, [&strSearch, &tempItems,
-                  this]() { m_database.GetMusicVideosByAlbum(strSearch, tempItems); }},
-      Entry{20342,
-            [&strSearch, &tempItems, this]() {
-              m_database.GetMovieGenresByName(strSearch, tempItems);
-            },
-            515},
-      Entry{20343,
-            [&strSearch, &tempItems, this]() {
-              m_database.GetTvShowGenresByName(strSearch, tempItems);
-            },
-            515},
-      Entry{20389,
-            [&strSearch, &tempItems, this]() {
-              m_database.GetMusicVideoGenresByName(strSearch, tempItems);
-            },
-            515},
-      Entry{20342,
-            [&strSearch, &tempItems, this]() {
-              m_database.GetMovieActorsByName(strSearch, tempItems);
-            },
-            20337},
-      Entry{20343,
-            [&strSearch, &tempItems, this]() {
-              m_database.GetTvShowsActorsByName(strSearch, tempItems);
-            },
-            20337},
-      Entry{20389,
-            [&strSearch, &tempItems, this]() {
-              m_database.GetMusicVideoArtistsByName(strSearch, tempItems);
-            },
-            20337},
-      Entry{20342,
-            [&strSearch, &tempItems, this]() {
-              m_database.GetMovieDirectorsByName(strSearch, tempItems);
-            },
-            20339},
-      Entry{20343,
-            [&strSearch, &tempItems, this]() {
-              m_database.GetTvShowsDirectorsByName(strSearch, tempItems);
-            },
-            20339},
-      Entry{20389,
-            [&strSearch, &tempItems, this]() {
-              m_database.GetMusicVideoDirectorsByName(strSearch, tempItems);
-            },
-            20339},
-      Entry{20365, [&strSearch, &tempItems,
-                    this]() { m_database.GetEpisodesByPlot(strSearch, tempItems); }},
-      Entry{20323,
-            [&strSearch, &tempItems, this]() { m_database.GetMoviesByPlot(strSearch, tempItems); }},
-  };
-
-  std::for_each(entries.begin(), entries.end(), [this, &items, &tempItems](const auto& entry) {
-    entry.func();
+    it->func();
     std::string msg;
-    if (entry.prefix > 0)
+    if (it->prefix > 0)
     {
-      msg = fmt::format("[{} - {}] ", g_localizeStrings.Get(entry.prefix),
-                        g_localizeStrings.Get(entry.id));
+      msg = StringUtils::Format("[%s - %s] ", g_localizeStrings.Get(it->prefix).c_str(),
+                                g_localizeStrings.Get(it->id).c_str());
     }
     else
-      msg = fmt::format("[{}] ", g_localizeStrings.Get(entry.id));
+      msg = StringUtils::Format("[%s] ", g_localizeStrings.Get(it->id).c_str());
 
-    this->AppendAndClearSearchItems(tempItems, msg, items);
-  });
+    AppendAndClearSearchItems(tempItems, msg, items);
+  }
 }
 
 void CGUIWindowVideoNav::OnDeleteItem(const CFileItemPtr& pItem)
@@ -687,8 +682,8 @@ void CGUIWindowVideoNav::OnDeleteItem(const CFileItemPtr& pItem)
 
     pDialog->SetHeading(432);
     std::string strLabel = StringUtils::Format(
-        g_localizeStrings.Get(pItem->HasVideoVersions() ? 40021 : 433), pItem->GetLabel());
-    pDialog->SetLine(1, std::move(strLabel));
+        g_localizeStrings.Get(pItem->HasVideoVersions() ? 40021 : 433).c_str(), pItem->GetLabel().c_str());
+    pDialog->SetLine(1, boost::move(strLabel));
     pDialog->SetLine(2, "");
     pDialog->Open();
     if (pDialog->IsConfirmed())
@@ -882,8 +877,8 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   {
   case CONTEXT_BUTTON_EDIT:
     {
-      const CONTEXT_BUTTON ret{
-          static_cast<CONTEXT_BUTTON>(CGUIDialogVideoInfo::ManageVideoItem(item))};
+      const CONTEXT_BUTTON ret =
+          static_cast<CONTEXT_BUTTON>(CGUIDialogVideoInfo::ManageVideoItem(item));
 
       if (ret != CONTEXT_BUTTON_CANCELLED)
       {
@@ -898,8 +893,8 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     }
     case CONTEXT_BUTTON_SET_ART:
     {
-      const bool result{
-          CGUIDialogVideoInfo::ChooseAndManageVideoItemArtwork(m_vecItems->Get(itemNumber))};
+      const bool result(
+          CGUIDialogVideoInfo::ChooseAndManageVideoItemArtwork(m_vecItems->Get(itemNumber)));
       Refresh();
       return result;
     }
@@ -972,21 +967,21 @@ bool CGUIWindowVideoNav::OnClick(int iItem, const std::string &player)
 
     // get the media type and convert from plural to singular (by removing the trailing "s")
     std::string mediaType = item->GetPath().substr(9);
-    mediaType.pop_back();
+    mediaType = mediaType.substr(0, mediaType.size() - 1);
     std::string localizedType = CGUIDialogVideoInfo::GetLocalizedVideoType(mediaType);
     if (localizedType.empty())
       return true;
 
     if (!videodb.GetSingleValue("tag", "tag.tag_id", videodb.PrepareSQL("tag.name = '%s' AND tag.tag_id IN (SELECT tag_link.tag_id FROM tag_link WHERE tag_link.media_type = '%s')", strTag.c_str(), mediaType.c_str())).empty())
     {
-      std::string strError = StringUtils::Format(g_localizeStrings.Get(20463), strTag);
-      HELPERS::ShowOKDialogText(20462, std::move(strError));
+      std::string strError = StringUtils::Format(g_localizeStrings.Get(20463).c_str(), strTag.c_str());
+      HELPERS::ShowOKDialogText(20462, boost::move(strError));
       return true;
     }
 
     int idTag = videodb.AddTag(strTag);
     CFileItemList items;
-    std::string strLabel = StringUtils::Format(g_localizeStrings.Get(20464), localizedType);
+    std::string strLabel = StringUtils::Format(g_localizeStrings.Get(20464).c_str(), localizedType.c_str());
     if (CGUIDialogVideoInfo::GetItemsForTag(strLabel, mediaType, items, idTag))
     {
       for (int index = 0; index < items.Size(); index++)
