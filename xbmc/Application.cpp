@@ -5916,18 +5916,18 @@ bool CApplication::OnSettingUpdate(const boost::shared_ptr<CSetting>& setting, c
   return false;
 }
 
-void CApplication::RegisterActionListener(IActionListener *listener)
+void CApplication::RegisterActionListener(KODI::ACTION::IActionListener *listener)
 {
   CSingleLock lock(m_critSection);
-  std::vector<IActionListener *>::iterator it = std::find(m_actionListeners.begin(), m_actionListeners.end(), listener);
+  std::vector<KODI::ACTION::IActionListener *>::iterator it = std::find(m_actionListeners.begin(), m_actionListeners.end(), listener);
   if (it == m_actionListeners.end())
     m_actionListeners.push_back(listener);
 }
 
-void CApplication::UnregisterActionListener(IActionListener *listener)
+void CApplication::UnregisterActionListener(KODI::ACTION::IActionListener *listener)
 {
   CSingleLock lock(m_critSection);
-  std::vector<IActionListener *>::iterator it = std::find(m_actionListeners.begin(), m_actionListeners.end(), listener);
+  std::vector<KODI::ACTION::IActionListener *>::iterator it = std::find(m_actionListeners.begin(), m_actionListeners.end(), listener);
   if (it != m_actionListeners.end())
     m_actionListeners.erase(it);
 }
@@ -5935,7 +5935,7 @@ void CApplication::UnregisterActionListener(IActionListener *listener)
 bool CApplication::NotifyActionListeners(const CAction &action) const
 {
   CSingleLock lock(m_critSection);
-  for (std::vector<IActionListener *>::const_iterator it = m_actionListeners.begin(); it != m_actionListeners.end(); ++it)
+  for (std::vector<KODI::ACTION::IActionListener *>::const_iterator it = m_actionListeners.begin(); it != m_actionListeners.end(); ++it)
   {
     if ((*it)->OnAction(action))
       return true;

@@ -2660,9 +2660,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\interfaces\AnnouncementManager.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\interfaces\IActionListener.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\interfaces\IAnnouncer.h">
 				</File>
 				<Filter
@@ -4714,6 +4711,13 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					<File
 						RelativePath=".\xbmc\input\actions\ActionIDs.h">
 					</File>
+					<Filter
+						Name="interfaces"
+						Filter="">
+						<File
+							RelativePath=".\xbmc\input\actions\interfaces\IActionListener.h">
+						</File>
+					</Filter>
 				</Filter>
 				<Filter
 					Name="keyboard"
