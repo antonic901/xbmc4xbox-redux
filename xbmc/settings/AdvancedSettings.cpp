@@ -177,6 +177,7 @@ void CAdvancedSettings::Initialize()
   m_songInfoDuration = 10;
 
   m_cddbAddress = "gnudb.gnudb.org";
+  m_addSourceOnTop = false;
 
   m_fullScreenOnMovieStart = true;
   m_cachePath = "special://temp/";
@@ -606,6 +607,7 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
   }
 
   XMLUtils::GetString(pRootElement, "cddbaddress", m_cddbAddress);
+  XMLUtils::GetBoolean(pRootElement, "addsourceontop", m_addSourceOnTop);
 
   XMLUtils::GetBoolean(pRootElement, "splash", m_splashImage);
   XMLUtils::GetBoolean(pRootElement, "showexitbutton", m_showExitButton);

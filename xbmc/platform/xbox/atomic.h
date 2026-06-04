@@ -6,6 +6,8 @@
  *  See LICENSES/README.md for more information.
  */
 
+#pragma once
+
 template<typename T1>
 class atomic
 {
