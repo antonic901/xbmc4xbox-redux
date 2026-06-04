@@ -1,37 +1,25 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "system.h"
 #include "VirtualDirectory.h"
+
+#include "Directory.h"
 #include "DirectoryFactory.h"
+#include "FileItem.h"
+#include "ServiceBroker.h"
+#include "SourcesDirectory.h"
 #include "URL.h"
 #include "Util.h"
-#include "utils/URIUtils.h"
-#include "utils/StringUtils.h"
-#include "Directory.h"
-#include "SourcesDirectory.h"
-#ifdef HAS_XBOX_HARDWARE
-#include "utils/MemoryUnitManager.h"
-#endif
 #include "storage/DetectDVDType.h"
-#include "FileItem.h"
+#include "storage/MediaManager.h"
+#include "utils/MemoryUnitManager.h"
+#include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
 
 using namespace XFILE;
 
@@ -44,8 +32,7 @@ CVirtualDirectory::CVirtualDirectory(void)
   m_allowNonLocalSources = true;
 }
 
-CVirtualDirectory::~CVirtualDirectory(void)
-{}
+CVirtualDirectory::~CVirtualDirectory(void) {}
 
 /*!
  \brief Add shares to the virtual directory
@@ -61,16 +48,17 @@ void CVirtualDirectory::SetSources(const VECSOURCES& vecSources)
  \brief Retrieve the shares or the content of a directory.
  \param strPath Specifies the path of the directory to retrieve or pass an empty string to get the shares.
  \param items Content of the directory.
- \return Returns \e true, if directory access is successfull.
+ \return Returns \e true, if directory access is successful.
  \note If \e strPath is an empty string, the share \e items have thumbnails and icons set, else the thumbnails
     and icons have to be set manually.
  */
 
 bool CVirtualDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
-  return GetDirectory(url,items,true);
+  return GetDirectory(url, items, true, false);
 }
-bool CVirtualDirectory::GetDirectory(const CURL& url, CFileItemList &items, bool bUseFileDirectories)
+
+bool CVirtualDirectory::GetDirectory(const CURL& url, CFileItemList &items, bool bUseFileDirectories, bool keepImpl)
 {
   std::string strPath = url.Get();
   int flags = m_flags;
@@ -79,9 +67,11 @@ bool CVirtualDirectory::GetDirectory(const CURL& url, CFileItemList &items, bool
   if (!strPath.empty() && strPath != "files://")
   {
     CURL realURL = URIUtils::SubstitutePath(url);
-    m_pDir.reset(CFactoryDirectory::Create(realURL));
+    if (!m_pDir)
+      m_pDir.reset(CFactoryDirectory::Create(realURL));
     bool ret = CDirectory::GetDirectory(strPath, m_pDir, items, m_strFileMask, flags);
-    m_pDir.reset();
+    if (!keepImpl)
+      m_pDir.reset();
     return ret;
   }
 
@@ -181,12 +171,8 @@ void CVirtualDirectory::GetSources(VECSOURCES &shares) const
 
   if (m_allowNonLocalSources)
   {
-#ifdef HAS_XBOX_HARDWARE
     g_memoryUnitManager.GetMemoryUnitSources(shares);
     CUtil::AutoDetectionGetSource(shares);
-#else
-    CServiceBroker::GetMediaManager().GetRemovableDrives(shares);
-#endif
   }
 
 #ifdef HAS_OPTICAL_DRIVE
@@ -196,30 +182,8 @@ void CVirtualDirectory::GetSources(VECSOURCES &shares) const
     CMediaSource& share = shares[i];
     if (share.m_iDriveType == CMediaSource::SOURCE_TYPE_DVD)
     {
-#ifdef _XBOX
       share.strStatus = MEDIA_DETECT::CDetectDVDMedia::GetDVDLabel();
       share.strPath = MEDIA_DETECT::CDetectDVDMedia::GetDVDPath();
-#else
-      if(CServiceBroker::GetMediaManager().IsAudio(share.strPath))
-      {
-        share.strStatus = "Audio-CD";
-        share.strPath = "cdda://local/";
-        share.strDiskUniqueId = "";
-      }
-      else
-      {
-        share.strStatus = CServiceBroker::GetMediaManager().GetDiskLabel(share.strPath);
-        share.strDiskUniqueId = CServiceBroker::GetMediaManager().GetDiskUniqueId(share.strPath);
-        if (!share.strPath.length()) // unmounted CD
-        {
-          if (CServiceBroker::GetMediaManager().GetDiscPath() == "iso9660://")
-            share.strPath = "iso9660://";
-          else
-            // share is unmounted and not iso9660, discard it
-            shares.erase(shares.begin() + i--);
-        }
-      }
-#endif
     }
   }
 #endif
