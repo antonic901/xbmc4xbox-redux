@@ -3942,6 +3942,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\video\VideoInfoTag.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\video\VideoItemArtworkHandler.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\video\VideoItemArtworkHandler.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\video\VideoLibraryQueue.cpp">
 				</File>
 				<File
@@ -3958,6 +3964,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\video\VideoUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\video\ViewModeSettings.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\video\ViewModeSettings.h">
 				</File>
 				<Filter
 					Name="windows"

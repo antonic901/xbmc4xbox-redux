@@ -20,6 +20,4 @@ public:
   virtual void FrameMove();
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnAction(const CAction &action);
-protected:
-  virtual EVENT_RESULT OnMouseEvent(const CPoint& point, const KODI::MOUSE::CMouseEvent& event);
 };

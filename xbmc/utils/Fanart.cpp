@@ -145,7 +145,7 @@ bool CFanart::SetPrimaryFanart(unsigned int index)
   return true;
 }
 
-unsigned int CFanart::GetNumFanarts()
+unsigned int CFanart::GetNumFanarts() const
 {
   return m_fanart.size();
 }

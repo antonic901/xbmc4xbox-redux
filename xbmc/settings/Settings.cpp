@@ -124,6 +124,7 @@ const char* CSettings::SETTING_MYVIDEOS_SELECTDEFAULTVERSION = "myvideos.selectd
 const char* CSettings::SETTING_MYVIDEOS_PLAYACTION = "myvideos.playaction";
 const char* CSettings::SETTING_MYVIDEOS_USETAGS = "myvideos.usetags";
 const char* CSettings::SETTING_MYVIDEOS_EXTRACTFLAGS = "myvideos.extractflags";
+const char* CSettings::SETTING_MYVIDEOS_EXTRACTCHAPTERTHUMBS = "myvideos.extractchapterthumbs";
 const char* CSettings::SETTING_MYVIDEOS_REPLACELABELS = "myvideos.replacelabels";
 const char* CSettings::SETTING_MYVIDEOS_EXTRACTTHUMB = "myvideos.extractthumb";
 const char* CSettings::SETTING_MYVIDEOS_STACKVIDEOS = "myvideos.stackvideos";

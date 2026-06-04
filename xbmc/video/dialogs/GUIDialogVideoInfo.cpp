@@ -65,7 +65,6 @@
 #include <algorithm>
 #include <iterator>
 #include <string>
-#include <unordered_map>
 
 using namespace XFILE::VIDEODATABASEDIRECTORY;
 using namespace XFILE;
@@ -201,20 +200,20 @@ bool CGUIDialogVideoInfo::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_BTN_DIRECTOR)
       {
-        auto directors = m_movieItem->GetVideoInfoTag()->m_director;
+        std::vector<std::string> directors = m_movieItem->GetVideoInfoTag()->m_director;
         if (directors.size() == 0)
           return true;
         if (directors.size() == 1)
           OnSearch(directors[0]);
         else
         {
-          auto pDlgSelect = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+          CGUIDialogSelect *pDlgSelect = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
           if (pDlgSelect)
           {
             pDlgSelect->Reset();
             pDlgSelect->SetHeading(22080);
-            for (const auto &director: directors)
-              pDlgSelect->Add(director);
+            for (std::vector<std::string>::const_iterator director = directors.begin(); director != directors.end(); ++director)
+              pDlgSelect->Add(*director);
             pDlgSelect->Open();
 
             int iItem = pDlgSelect->GetSelectedItem();
@@ -383,7 +382,7 @@ void CGUIDialogVideoInfo::SetMovie(const CFileItem *item)
          it != m_movieItem->GetVideoInfoTag()->m_cast.end(); ++it)
     {
       // Check to see if we have already added this performer as the artist and skip adding if so
-      auto haveArtist = std::find(std::begin(artists), std::end(artists), it->strName);
+      std::vector<std::string>::const_iterator haveArtist = std::find(artists.begin(), artists.end(), it->strName);
       if (haveArtist == artists.end()) // artist or performer not already in the list
       {
         CFileItemPtr item(new CFileItem(it->strName));
@@ -415,8 +414,8 @@ void CGUIDialogVideoInfo::SetMovie(const CFileItem *item)
                           SortDescription(), VideoDbDetailsAll);
     m_castList->Sort(SortBySortTitle, SortOrderDescending);
     CVideoThumbLoader loader;
-    for (auto& item : *m_castList)
-      loader.LoadItem(item.get());
+    for (int i = 0; i < m_castList->Size(); ++i)
+      loader.LoadItem(m_castList->Get(i).get());
   }
   else
   { // movie/show/season/episode
@@ -481,8 +480,8 @@ void CGUIDialogVideoInfo::SetMovie(const CFileItem *item)
 void CGUIDialogVideoInfo::Update()
 {
   // setup plot text area
-  boost::shared_ptr<CSettingList> setting(std::dynamic_pointer_cast<CSettingList>(
-    CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting(CSettings::SETTING_VIDEOLIBRARY_SHOWUNWATCHEDPLOTS)));
+  boost::shared_ptr<CSettingList> setting = boost::dynamic_pointer_cast<CSettingList>(
+    CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting(CSettings::SETTING_VIDEOLIBRARY_SHOWUNWATCHEDPLOTS));
   std::string strTmp = m_movieItem->GetVideoInfoTag()->m_strPlot;
   if (m_movieItem->GetVideoInfoTag()->m_type != MediaTypeTvShow)
     if (m_movieItem->GetVideoInfoTag()->GetPlayCount() == 0 && setting &&
@@ -761,7 +760,7 @@ protected:
 private:
   void Play()
   {
-    auto item{m_item};
+    CFileItemPtr item = m_item;
     if (item->m_bIsFolder && item->HasVideoVersions())
     {
       //! @todo get rid of "videos with versions as folder" hack!
@@ -770,9 +769,9 @@ private:
     }
 
     item->SetProperty("playlist_type_hint", PLAYLIST::TYPE_VIDEO);
-    const ContentUtils::PlayMode mode{item->GetProperty("CheckAutoPlayNextItem").asBoolean()
+    const ContentUtils::PlayMode::Type mode = item->GetProperty("CheckAutoPlayNextItem").asBoolean()
                                           ? ContentUtils::PlayMode::CHECK_AUTO_PLAY_NEXT_ITEM
-                                          : ContentUtils::PlayMode::PLAY_ONLY_THIS};
+                                          : ContentUtils::PlayMode::PLAY_ONLY_THIS;
     VIDEO_UTILS::PlayItem(item, "", mode);
   }
 };
@@ -825,7 +824,7 @@ void CGUIDialogVideoInfo::Play(bool resume)
 
   if (resume)
   {
-    CVideoPlayActionProcessor proc{m_movieItem};
+    CVideoPlayActionProcessor proc(m_movieItem);
     proc.ProcessAction(VIDEO::GUILIB::ACTION_RESUME);
   }
   else
@@ -833,13 +832,13 @@ void CGUIDialogVideoInfo::Play(bool resume)
     if (GetControl(CONTROL_BTN_RESUME))
     {
       // if dialog has a resume button, play button has always the purpose to start from beginning
-      CVideoPlayActionProcessor proc{m_movieItem};
+      CVideoPlayActionProcessor proc(m_movieItem);
       proc.ProcessAction(VIDEO::GUILIB::ACTION_PLAY_FROM_BEGINNING);
     }
     else
     {
       // play button acts according to default play action setting
-      CVideoPlayActionProcessor proc{m_movieItem};
+      CVideoPlayActionProcessor proc(m_movieItem);
       proc.ProcessDefaultAction();
       if (proc.UserCancelled())
       {
@@ -858,10 +857,11 @@ namespace
 // Add art types required in Kodi and configured by the user
 void AddHardCodedAndExtendedArtTypes(std::vector<std::string>& artTypes, const CVideoInfoTag& tag)
 {
-  for (const auto& artType : CVideoThumbLoader::GetArtTypes(tag.m_type))
+  std::vector<std::string> types = CVideoThumbLoader::GetArtTypes(tag.m_type);
+  for (std::vector<std::string>::const_iterator artType = types.begin(); artType != types.end(); ++artType)
   {
-    if (std::find(artTypes.cbegin(), artTypes.cend(), artType) == artTypes.cend())
-      artTypes.emplace_back(artType);
+    if (std::find(artTypes.begin(), artTypes.end(), *artType) == artTypes.end())
+      artTypes.push_back(*artType);
   }
 }
 
@@ -876,11 +876,11 @@ void AddCurrentArtTypes(std::vector<std::string>& artTypes, const CVideoInfoTag&
   else
     db.GetArtForItem(tag.m_iDbId, tag.m_type, currentArt);
 
-  for (const auto& art : currentArt)
+  for (std::map<std::string, std::string>::const_iterator art = currentArt.begin(); art != currentArt.end(); ++art)
   {
-    if (!art.second.empty() &&
-        std::find(artTypes.cbegin(), artTypes.cend(), art.first) == artTypes.cend())
-      artTypes.emplace_back(art.first);
+    if (!art->second.empty() &&
+        std::find(artTypes.begin(), artTypes.end(), art->first) == artTypes.end())
+      artTypes.push_back(art->first);
   }
 }
 
@@ -890,10 +890,10 @@ void AddMediaTypeArtTypes(std::vector<std::string>& artTypes, const CVideoInfoTa
 {
   std::vector<std::string> dbArtTypes;
   db.GetArtTypes(tag.m_type, dbArtTypes);
-  for (const auto& artType : dbArtTypes)
+  for (std::vector<std::string>::const_iterator artType = dbArtTypes.begin(); artType != dbArtTypes.end(); ++artType)
   {
-    if (std::find(artTypes.cbegin(), artTypes.cend(), artType) == artTypes.cend())
-      artTypes.emplace_back(artType);
+    if (std::find(artTypes.begin(), artTypes.end(), *artType) == artTypes.end())
+      artTypes.push_back(*artType);
   }
 }
 
@@ -901,10 +901,11 @@ void AddMediaTypeArtTypes(std::vector<std::string>& artTypes, const CVideoInfoTa
 void AddAvailableArtTypes(std::vector<std::string>& artTypes, const CVideoInfoTag& tag,
   CVideoDatabase& db)
 {
-  for (const auto& artType : db.GetAvailableArtTypesForItem(tag.m_iDbId, tag.m_type))
+  const std::vector<std::string> types = db.GetAvailableArtTypesForItem(tag.m_iDbId, tag.m_type);
+  for (std::vector<std::string>::const_iterator artType = types.begin(); artType != types.end(); ++artType)
   {
-    if (std::find(artTypes.cbegin(), artTypes.cend(), artType) == artTypes.cend())
-      artTypes.emplace_back(artType);
+    if (std::find(artTypes.begin(), artTypes.end(), *artType) == artTypes.end())
+      artTypes.push_back(*artType);
   }
 }
 
@@ -927,8 +928,8 @@ std::vector<std::string> GetArtTypesList(const CVideoInfoTag& tag)
 class CArtTypeChooser
 {
 public:
-  CArtTypeChooser() = delete;
-  explicit CArtTypeChooser(const boost::shared_ptr<CFileItem>& item) : m_item(item) {}
+  CArtTypeChooser();
+  explicit CArtTypeChooser(const boost::shared_ptr<CFileItem>& item) : m_item(item), m_selectedItem(0) {}
 
   bool ChooseArtType();
   const std::string& GetArtType() const { return m_artType; }
@@ -936,7 +937,7 @@ public:
 private:
   boost::shared_ptr<CFileItem> m_item;
   CFileItemList m_items;
-  int m_selectedItem{0};
+  int m_selectedItem;
   std::string m_artType;
 };
 
@@ -958,22 +959,21 @@ bool CArtTypeChooser::ChooseArtType()
     const std::vector<std::string> availableArtTypes = GetArtTypesList(*m_item->GetVideoInfoTag());
 
     // maps art types to resource ids
-    static const std::map<std::string, int> name2idMap = {
-        {"banner", 20020},
-        {"fanart", 20445},
-        {"poster", 20021},
-        {"thumb", 21371},
-    };
+    std::map<std::string, int> name2idMap;
+    name2idMap["banner"] = 20020;
+    name2idMap["fanart"] = 20445;
+    name2idMap["poster"] = 20021;
+    name2idMap["thumb"] = 21371;
 
-    for (const auto& type : availableArtTypes)
+    for (std::vector<std::string>::const_iterator type = availableArtTypes.begin(); type != availableArtTypes.end(); ++type)
     {
-      const auto item = boost::make_shared<CFileItem>(type, false);
-      item->SetProperty("type", type);
-      if (m_item->HasArt(type))
-        item->SetArt("thumb", m_item->GetArt(type));
+      const CFileItemPtr item = boost::make_shared<CFileItem>(*type, false);
+      item->SetProperty("type", *type);
+      if (m_item->HasArt(*type))
+        item->SetArt("thumb", m_item->GetArt(*type));
 
-      const auto it = name2idMap.find(type);
-      item->SetLabel(it == name2idMap.cend() ? type : g_localizeStrings.Get((*it).second));
+      const std::map<std::string, int>::const_iterator it = name2idMap.find(*type);
+      item->SetLabel(it == name2idMap.end() ? *type : g_localizeStrings.Get((*it).second));
 
       m_items.Add(item);
     }
@@ -1074,7 +1074,7 @@ std::string CGUIDialogVideoInfo::GetThumbnail() const
 
 int CGUIDialogVideoInfo::ManageVideoItem(const boost::shared_ptr<CFileItem>& item)
 {
-  if (item == nullptr || !item->IsVideoDb() || !item->HasVideoInfoTag() || item->GetVideoInfoTag()->m_iDbId < 0)
+  if (item == NULL || !item->IsVideoDb() || !item->HasVideoInfoTag() || item->GetVideoInfoTag()->m_iDbId < 0)
     return -1;
 
   CVideoDatabase database;
@@ -1141,7 +1141,7 @@ int CGUIDialogVideoInfo::ManageVideoItem(const boost::shared_ptr<CFileItem>& ite
 
       buttons.Add(
           CONTEXT_BUTTON_TAGS_ADD_ITEMS,
-          StringUtils::Format(g_localizeStrings.Get(20460), GetLocalizedVideoType(mediaType)));
+          StringUtils::Format(g_localizeStrings.Get(20460).c_str(), GetLocalizedVideoType(mediaType).c_str()));
       buttons.Add(CONTEXT_BUTTON_TAGS_REMOVE_ITEMS, StringUtils::Format(g_localizeStrings.Get(20461).c_str(), GetLocalizedVideoType(mediaType).c_str()));
     }
   }
@@ -1155,7 +1155,7 @@ int CGUIDialogVideoInfo::ManageVideoItem(const boost::shared_ptr<CFileItem>& ite
   //temporary workaround until the context menu ids are removed
   const int addonItemOffset = 10000;
 
-  auto addonItems = CServiceBroker::GetContextMenuManager().GetAddonItems(*item, CContextMenuManager::MANAGE);
+  ContextMenuView addonItems = CServiceBroker::GetContextMenuManager().GetAddonItems(*item, CContextMenuManager::MANAGE);
   for (size_t i = 0; i < addonItems.size(); ++i)
     buttons.Add(addonItemOffset + i, addonItems[i]->GetLabel(*item));
 
@@ -1237,7 +1237,7 @@ int CGUIDialogVideoInfo::ManageVideoItem(const boost::shared_ptr<CFileItem>& ite
 //Add change a title's name
 bool CGUIDialogVideoInfo::UpdateVideoItemTitle(const boost::shared_ptr<CFileItem>& pItem)
 {
-  if (pItem == nullptr || !pItem->HasVideoInfoTag())
+  if (pItem == NULL || !pItem->HasVideoInfoTag())
     return false;
 
   // dont allow update while scanning
@@ -1310,7 +1310,7 @@ bool CGUIDialogVideoInfo::UpdateVideoItemTitle(const boost::shared_ptr<CFileItem
 
 bool CGUIDialogVideoInfo::CanDeleteVideoItem(const boost::shared_ptr<CFileItem>& item)
 {
-  if (item == nullptr || !item->HasVideoInfoTag())
+  if (item == NULL || !item->HasVideoInfoTag())
     return false;
 
   if (item->GetVideoInfoTag()->m_type == "tag")
@@ -1328,7 +1328,7 @@ bool CGUIDialogVideoInfo::CanDeleteVideoItem(const boost::shared_ptr<CFileItem>&
 bool CGUIDialogVideoInfo::DeleteVideoItemFromDatabase(const boost::shared_ptr<CFileItem>& item,
                                                       bool unavailable /* = false */)
 {
-  if (item == nullptr || !item->HasVideoInfoTag() ||
+  if (item == NULL || !item->HasVideoInfoTag() ||
       !CanDeleteVideoItem(item))
     return false;
 
@@ -1340,7 +1340,7 @@ bool CGUIDialogVideoInfo::DeleteVideoItemFromDatabase(const boost::shared_ptr<CF
   }
 
   CGUIDialogYesNo* pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
-  if (pDialog == nullptr)
+  if (pDialog == NULL)
     return false;
 
   int heading = -1;
@@ -1384,8 +1384,8 @@ bool CGUIDialogVideoInfo::DeleteVideoItemFromDatabase(const boost::shared_ptr<CF
   else
   {
     pDialog->SetLine(
-        0, CVariant{StringUtils::Format(
-               g_localizeStrings.Get(item->HasVideoVersions() ? 40021 : 433), item->GetLabel())});
+        0, StringUtils::Format(
+               g_localizeStrings.Get(item->HasVideoVersions() ? 40021 : 433).c_str(), item->GetLabel().c_str()));
     pDialog->SetLine(1, "");
   }
   pDialog->SetLine(2, "");
@@ -1432,7 +1432,7 @@ bool CGUIDialogVideoInfo::DeleteVideoItemFromDatabase(const boost::shared_ptr<CF
 bool CGUIDialogVideoInfo::DeleteVideoItem(const boost::shared_ptr<CFileItem>& item,
                                           bool unavailable /* = false */)
 {
-  if (item == nullptr)
+  if (item == NULL)
     return false;
 
   // delete the video item from the database
@@ -1483,7 +1483,7 @@ bool CGUIDialogVideoInfo::DeleteVideoItem(const boost::shared_ptr<CFileItem>& it
 
 bool CGUIDialogVideoInfo::ManageMovieSets(const boost::shared_ptr<CFileItem>& item)
 {
-  if (item == nullptr)
+  if (item == NULL)
     return false;
 
   CFileItemList originalItems;
@@ -1524,7 +1524,7 @@ bool CGUIDialogVideoInfo::ManageMovieSets(const boost::shared_ptr<CFileItem>& it
 
 bool CGUIDialogVideoInfo::GetMoviesForSet(const CFileItem *setItem, CFileItemList &originalMovies, CFileItemList &selectedMovies)
 {
-  if (setItem == nullptr || !setItem->HasVideoInfoTag())
+  if (setItem == NULL || !setItem->HasVideoInfoTag())
     return false;
 
   CVideoDatabase videodb;
@@ -1543,7 +1543,7 @@ bool CGUIDialogVideoInfo::GetMoviesForSet(const CFileItem *setItem, CFileItemLis
     return false;
 
   CGUIDialogSelect *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
-  if (dialog == nullptr)
+  if (dialog == NULL)
     return false;
 
   listItems.Sort(SortByLabel, SortOrderAscending, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_FILELISTS_IGNORETHEWHENSORTING) ? SortAttributeIgnoreArticle : SortAttributeNone);
@@ -1570,8 +1570,9 @@ bool CGUIDialogVideoInfo::GetMoviesForSet(const CFileItem *setItem, CFileItemLis
 
   if (dialog->IsConfirmed())
   {
-    for (int i : dialog->GetSelectedItems())
-      selectedMovies.Add(listItems.Get(i));
+    std::vector<int> selectedItems = dialog->GetSelectedItems();
+    for (std::vector<int>::const_iterator i = selectedItems.begin(); i != selectedItems.end(); ++i)
+      selectedMovies.Add(listItems.Get(*i));
     return (selectedMovies.Size() > 0);
   }
   else
@@ -1581,7 +1582,7 @@ bool CGUIDialogVideoInfo::GetMoviesForSet(const CFileItem *setItem, CFileItemLis
 bool CGUIDialogVideoInfo::GetSetForMovie(const CFileItem* movieItem,
                                          boost::shared_ptr<CFileItem>& selectedSet)
 {
-  if (movieItem == nullptr || !movieItem->HasVideoInfoTag())
+  if (movieItem == NULL || !movieItem->HasVideoInfoTag())
     return false;
 
   CVideoDatabase videodb;
@@ -1621,19 +1622,19 @@ bool CGUIDialogVideoInfo::GetSetForMovie(const CFileItem* movieItem,
       }
     }
     // add clear item
-    std::string strClear = StringUtils::Format(g_localizeStrings.Get(20467), currentSetLabel);
+    std::string strClear = StringUtils::Format(g_localizeStrings.Get(20467).c_str(), currentSetLabel.c_str());
     CFileItemPtr clearItem(new CFileItem(strClear));
     clearItem->GetVideoInfoTag()->m_iDbId = -1; // -1 will be used to clear set
     listItems.AddFront(clearItem, 0);
     // add keep current set item
-    std::string strKeep = StringUtils::Format(g_localizeStrings.Get(20469), currentSetLabel);
+    std::string strKeep = StringUtils::Format(g_localizeStrings.Get(20469).c_str(), currentSetLabel.c_str());
     CFileItemPtr keepItem(new CFileItem(strKeep));
     keepItem->GetVideoInfoTag()->m_iDbId = currentSetId;
     listItems.AddFront(keepItem, 1);
   }
 
   CGUIDialogSelect *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
-  if (dialog == nullptr)
+  if (dialog == NULL)
     return false;
 
   dialog->Reset();
@@ -1673,7 +1674,7 @@ bool CGUIDialogVideoInfo::GetSetForMovie(const CFileItem* movieItem,
   else if (dialog->IsConfirmed())
   {
     selectedSet = dialog->GetSelectedFileItem();
-    return (selectedSet != nullptr);
+    return (selectedSet != NULL);
   }
   else
     return false;
@@ -1681,8 +1682,8 @@ bool CGUIDialogVideoInfo::GetSetForMovie(const CFileItem* movieItem,
 
 bool CGUIDialogVideoInfo::SetMovieSet(const CFileItem *movieItem, const CFileItem *selectedSet)
 {
-  if (movieItem == nullptr || !movieItem->HasVideoInfoTag() ||
-      selectedSet == nullptr || !selectedSet->HasVideoInfoTag())
+  if (movieItem == NULL || !movieItem->HasVideoInfoTag() ||
+      selectedSet == NULL || !selectedSet->HasVideoInfoTag())
     return false;
 
   CVideoDatabase videodb;
@@ -1740,7 +1741,7 @@ bool CGUIDialogVideoInfo::GetItemsForTag(const std::string &strHeading, const st
     return false;
 
   CGUIDialogSelect *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
-  if (dialog == nullptr)
+  if (dialog == NULL)
     return false;
 
   listItems.Sort(SortByLabel, SortOrderAscending, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_FILELISTS_IGNORETHEWHENSORTING) ? SortAttributeIgnoreArticle : SortAttributeNone);
@@ -1752,14 +1753,15 @@ bool CGUIDialogVideoInfo::GetItemsForTag(const std::string &strHeading, const st
   dialog->EnableButton(true, 186);
   dialog->Open();
 
-  for (int i : dialog->GetSelectedItems())
-    items.Add(listItems.Get(i));
+  std::vector<int> selectedItems = dialog->GetSelectedItems();
+  for (std::vector<int>::const_iterator i = selectedItems.begin(); i != selectedItems.end(); ++i)
+    items.Add(listItems.Get(*i));
   return items.Size() > 0;
 }
 
 bool CGUIDialogVideoInfo::AddItemsToTag(const boost::shared_ptr<CFileItem>& tagItem)
 {
-  if (tagItem == nullptr || !tagItem->HasVideoInfoTag())
+  if (tagItem == NULL || !tagItem->HasVideoInfoTag())
     return false;
 
   CVideoDbUrl videoUrl;
@@ -1771,11 +1773,11 @@ bool CGUIDialogVideoInfo::AddItemsToTag(const boost::shared_ptr<CFileItem>& tagI
     return true;
 
   std::string mediaType = videoUrl.GetItemType();
-  mediaType.pop_back();
+  mediaType = mediaType.substr(0, mediaType.length() - 1);
 
   CFileItemList items;
   std::string localizedType = GetLocalizedVideoType(mediaType);
-  std::string strLabel = StringUtils::Format(g_localizeStrings.Get(20464), localizedType);
+  std::string strLabel = StringUtils::Format(g_localizeStrings.Get(20464).c_str(), localizedType.c_str());
   if (!GetItemsForTag(strLabel, mediaType, items, tagItem->GetVideoInfoTag()->m_iDbId))
     return true;
 
@@ -1792,7 +1794,7 @@ bool CGUIDialogVideoInfo::AddItemsToTag(const boost::shared_ptr<CFileItem>& tagI
 
 bool CGUIDialogVideoInfo::RemoveItemsFromTag(const boost::shared_ptr<CFileItem>& tagItem)
 {
-  if (tagItem == nullptr || !tagItem->HasVideoInfoTag())
+  if (tagItem == NULL || !tagItem->HasVideoInfoTag())
     return false;
 
   CVideoDbUrl videoUrl;
@@ -1804,11 +1806,11 @@ bool CGUIDialogVideoInfo::RemoveItemsFromTag(const boost::shared_ptr<CFileItem>&
     return true;
 
   std::string mediaType = videoUrl.GetItemType();
-  mediaType.pop_back();
+  mediaType = mediaType.substr(0, mediaType.length() - 1);
 
   CFileItemList items;
   std::string localizedType = GetLocalizedVideoType(mediaType);
-  std::string strLabel = StringUtils::Format(g_localizeStrings.Get(20464), localizedType);
+  std::string strLabel = StringUtils::Format(g_localizeStrings.Get(20464).c_str(), localizedType.c_str());
   if (!GetItemsForTag(strLabel, mediaType, items, tagItem->GetVideoInfoTag()->m_iDbId, false))
     return true;
 
@@ -1827,7 +1829,7 @@ bool CGUIDialogVideoInfo::ChooseAndManageVideoItemArtwork(const boost::shared_pt
 {
   bool result = false;
 
-  CArtTypeChooser chooser{item};
+  CArtTypeChooser chooser(item);
   do
   {
     if (!chooser.ChooseArtType())
@@ -1852,7 +1854,7 @@ namespace
 class CAsyncGetArt : private IRunnable
 {
 public:
-  CAsyncGetArt() = delete;
+  CAsyncGetArt();
   CAsyncGetArt(const VIDEO::IVideoItemArtworkHandler& handler) : m_handler(handler) {}
 
   bool FetchAllArt()
@@ -1893,12 +1895,12 @@ bool CGUIDialogVideoInfo::ManageVideoItemArtwork(const boost::shared_ptr<CFileIt
                                                  const MediaType& mediaType,
                                                  const std::string& artType)
 {
-  if (item == nullptr || !item->HasVideoInfoTag() || mediaType.empty() || artType.empty())
+  if (item == NULL || !item->HasVideoInfoTag() || mediaType.empty() || artType.empty())
     return false;
 
   const boost::movelib::unique_ptr<VIDEO::IVideoItemArtworkHandler> artHandler =
       VIDEO::IVideoItemArtworkHandlerFactory::Create(item, mediaType, artType);
-  CAsyncGetArt asyncArtHandler{*artHandler};
+  CAsyncGetArt asyncArtHandler(*artHandler);
   asyncArtHandler.FetchAllArt();
 
   CFileItemList items;
@@ -1906,7 +1908,7 @@ bool CGUIDialogVideoInfo::ManageVideoItemArtwork(const boost::shared_ptr<CFileIt
   const std::string currentArt = asyncArtHandler.GetCurrentArt();
   if (!currentArt.empty())
   {
-    const auto itemCurrent = boost::make_shared<CFileItem>("thumb://Current", false);
+    const CFileItemPtr itemCurrent = boost::make_shared<CFileItem>("thumb://Current", false);
     itemCurrent->SetArt("thumb", currentArt);
     itemCurrent->SetLabel(g_localizeStrings.Get(13512));
     items.Add(itemCurrent);
@@ -1915,7 +1917,7 @@ bool CGUIDialogVideoInfo::ManageVideoItemArtwork(const boost::shared_ptr<CFileIt
   const std::string embeddedArt = asyncArtHandler.GetEmbeddedArt();
   if (!embeddedArt.empty())
   {
-    const auto itemEmbedded = boost::make_shared<CFileItem>("thumb://Embedded", false);
+    const CFileItemPtr itemEmbedded = boost::make_shared<CFileItem>("thumb://Embedded", false);
     itemEmbedded->SetArt("thumb", embeddedArt);
     itemEmbedded->SetLabel(g_localizeStrings.Get(13519));
     items.Add(itemEmbedded);
@@ -1924,7 +1926,7 @@ bool CGUIDialogVideoInfo::ManageVideoItemArtwork(const boost::shared_ptr<CFileIt
   const std::vector<std::string> remoteArt = asyncArtHandler.GetRemoteArt();
   for (size_t i = 0; i < remoteArt.size(); ++i)
   {
-    const auto itemRemote =
+    const CFileItemPtr itemRemote =
         boost::make_shared<CFileItem>(StringUtils::Format("thumb://Remote{0}", i), false);
     itemRemote->SetArt("thumb", remoteArt[i]);
     itemRemote->SetArt("icon", "DefaultPicture.png");
@@ -1938,13 +1940,13 @@ bool CGUIDialogVideoInfo::ManageVideoItemArtwork(const boost::shared_ptr<CFileIt
   const std::string localArt = asyncArtHandler.GetLocalArt();
   if (!localArt.empty())
   {
-    const auto itemLocal = boost::make_shared<CFileItem>("thumb://Local", false);
+    const CFileItemPtr itemLocal = boost::make_shared<CFileItem>("thumb://Local", false);
     itemLocal->SetLabel(g_localizeStrings.Get(13514));
     itemLocal->SetArt("thumb", localArt);
     items.Add(itemLocal);
   }
 
-  const auto itemNone = boost::make_shared<CFileItem>("thumb://None", false);
+  const CFileItemPtr itemNone = boost::make_shared<CFileItem>("thumb://None", false);
   itemNone->SetLabel(g_localizeStrings.Get(13515));
   itemNone->SetArt("icon", artHandler->GetDefaultIcon());
   items.Add(itemNone);
@@ -1957,7 +1959,7 @@ bool CGUIDialogVideoInfo::ManageVideoItemArtwork(const boost::shared_ptr<CFileIt
   bool flip = false;
   if (!CGUIDialogFileBrowser::ShowAndGetImage(
           items, sources, g_localizeStrings.Get(13511) /* Choose art */, result,
-          artHandler->SupportsFlippedArt() ? &flip : nullptr, 39123 /* Artwork */))
+          artHandler->SupportsFlippedArt() ? &flip : NULL, 39123 /* Artwork */))
     return false; // user cancelled
 
   if (result == "thumb://Current")
@@ -2121,7 +2123,7 @@ bool CGUIDialogVideoInfo::LinkMovieToTvShow(const boost::shared_ptr<CFileItem>& 
 
 void CGUIDialogVideoInfo::ShowFor(const CFileItem& item)
 {
-  auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIWindowVideoNav>(WINDOW_VIDEO_NAV);
+  CGUIWindowVideoNav *window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIWindowVideoNav>(WINDOW_VIDEO_NAV);
   if (window)
     window->OnItemInfo(item);
 }
