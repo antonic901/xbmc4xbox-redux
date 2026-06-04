@@ -20,12 +20,8 @@
 #include "Util.h"
 #include "addons/AddonManager.h"
 #include "addons/PluginSource.h"
-#include "addons/addoninfo/AddonType.h"
-#include "application/Application.h"
+#include "Application.h"
 #include "messaging/ApplicationMessenger.h"
-#if defined(TARGET_ANDROID)
-#include "platform/android/activity/XBMCApp.h"
-#endif
 #include "dialogs/GUIDialogBusy.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogMediaFilter.h"
@@ -44,7 +40,7 @@
 #include "input/actions/ActionIDs.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "messaging/helpers/DialogOKHelper.h"
-#include "network/Network.h"
+#include "xbox/Network.h"
 #include "playlists/PlayList.h"
 #include "profiles/ProfileManager.h"
 #include "settings/AdvancedSettings.h"
@@ -78,7 +74,6 @@
 
 using namespace ADDON;
 using namespace KODI::MESSAGING;
-using namespace std::chrono_literals;
 
 namespace
 {
@@ -86,7 +81,7 @@ class CGetDirectoryItems : public IRunnable
 {
 public:
   CGetDirectoryItems(XFILE::CVirtualDirectory &dir, CURL &url, CFileItemList &items, bool useDir)
-  : m_dir(dir), m_url(url), m_items(items), m_useDir(useDir)
+  : m_dir(dir), m_url(url), m_items(items), m_useDir(useDir), m_result(false)
   {
   }
 
@@ -100,7 +95,7 @@ public:
     m_dir.CancelDirectory();
   }
 
-  bool m_result = false;
+  bool m_result;
 
 protected:
   XFILE::CVirtualDirectory &m_dir;
@@ -370,7 +365,7 @@ bool CGUIMediaWindow::OnMessage(CGUIMessage& message)
         if ((m_vecItems->IsVirtualDirectoryRoot() ||
              m_vecItems->IsSourcesPath()) && IsActive())
         {
-          if (m_vecItemsUpdating)
+          if (m_vecItemsUpdating.value())
           {
             CLog::Log(LOGWARNING, "CGUIMediaWindow::OnMessage - updating in progress");
             return true;
@@ -384,7 +379,7 @@ bool CGUIMediaWindow::OnMessage(CGUIMessage& message)
       }
       else if (message.GetParam1()==GUI_MSG_UPDATE && IsActive())
       {
-        if (m_vecItemsUpdating)
+        if (m_vecItemsUpdating.value())
         {
           CLog::Log(LOGWARNING, "CGUIMediaWindow::OnMessage - updating in progress");
           return true;
@@ -612,7 +607,7 @@ void CGUIMediaWindow::UpdateButtons()
       CONTROL_ENABLE(CONTROL_BTNSORTBY);
 
     std::string sortLabel = StringUtils::Format(
-        g_localizeStrings.Get(550), g_localizeStrings.Get(m_guiState->GetSortMethodLabel()));
+        g_localizeStrings.Get(550).c_str(), g_localizeStrings.Get(m_guiState->GetSortMethodLabel()).c_str());
     SET_CONTROL_LABEL(CONTROL_BTNSORTBY, sortLabel);
   }
 
@@ -741,7 +736,7 @@ bool CGUIMediaWindow::GetDirectory(const std::string &strDirectory, CFileItemLis
   }
   else
   {
-    auto start = std::chrono::steady_clock::now();
+    unsigned int start = XbmcThreads::SystemClockMillis();
 
     if (strDirectory.empty())
       SetupShares();
@@ -754,10 +749,7 @@ bool CGUIMediaWindow::GetDirectory(const std::string &strDirectory, CFileItemLis
     items.Assign(dirItems);
 
     // took over a second, and not normally cached, so cache it
-    auto end = std::chrono::steady_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-
-    if (duration.count() > 1000 && items.CacheToDiscIfSlow())
+    if (XbmcThreads::SystemClockMillis() - start > 1000 && items.CacheToDiscIfSlow())
       items.Save(GetID());
 
     // if these items should replace the current listing, then pop it off the top
@@ -766,9 +758,9 @@ bool CGUIMediaWindow::GetDirectory(const std::string &strDirectory, CFileItemLis
   }
 
   // Store parent path along with item as parent path cannot safely be calculated from item's path.
-  for (const auto& item : items)
+  for (int i = 0; i < items.Size(); ++i)
   {
-    item->SetProperty("ParentPath", m_vecItems->GetPath());
+    items[i]->SetProperty("ParentPath", m_vecItems->GetPath());
   }
 
   // update the view state's reference to the current items
@@ -858,21 +850,6 @@ bool CGUIMediaWindow::Update(const std::string &strDirectory, bool updateFilterP
   }
 
   if (m_vecItems->GetLabel().empty())
-  {
-    // Removable sources
-    VECSOURCES removables;
-    CServiceBroker::GetMediaManager().GetRemovableDrives(removables);
-    for (const auto& s : removables)
-    {
-      if (URIUtils::CompareWithoutSlashAtEnd(s.strPath, m_vecItems->GetPath()))
-      {
-        m_vecItems->SetLabel(s.strName);
-        break;
-      }
-    }
-  }
-
-  if (m_vecItems->GetLabel().empty())
     m_vecItems->SetLabel(CUtil::GetTitleFromPath(m_vecItems->GetPath(), true));
 
   // check the given path for filter data
@@ -891,8 +868,6 @@ bool CGUIMediaWindow::Update(const std::string &strDirectory, bool updateFilterP
       showLabel = 997;
     else if (iWindow == WINDOW_FILES)
       showLabel = 1026;
-    else if (iWindow == WINDOW_GAMES)
-      showLabel = 35250; // "Add games..."
   }
   if (m_vecItems->IsPath("sources://video/"))
     showLabel = 999;
@@ -902,8 +877,6 @@ bool CGUIMediaWindow::Update(const std::string &strDirectory, bool updateFilterP
     showLabel = 997;
   else if (m_vecItems->IsPath("sources://files/"))
     showLabel = 1026;
-  else if (m_vecItems->IsPath("sources://games/"))
-    showLabel = 35250; // "Add games..."
    // Add 'Add source ' item
   if (showLabel && (m_vecItems->Size() == 0 || !m_guiState->DisableAddSourceButtons()) &&
       iWindow != WINDOW_MUSIC_PLAYLIST_EDITOR)
@@ -1044,8 +1017,8 @@ bool CGUIMediaWindow::OnClick(int iItem, const std::string &player)
 
   if (!pItem->m_bIsFolder && pItem->IsFileFolder(EFILEFOLDER_MASK_ONCLICK))
   {
-    XFILE::IFileDirectory *pFileDirectory = nullptr;
-    pFileDirectory = XFILE::CFileDirectoryFactory::Create(pItem->GetURL(), pItem.get(), "");
+    XFILE::IFileDirectory *pFileDirectory = NULL;
+    pFileDirectory = XFILE::CFactoryFileDirectory::Create(pItem->GetURL(), pItem.get(), "");
     if(pFileDirectory)
       pItem->m_bIsFolder = true;
     else if(pItem->m_bIsFolder)
@@ -1058,8 +1031,7 @@ bool CGUIMediaWindow::OnClick(int iItem, const std::string &player)
     // execute the script
     CURL url(pItem->GetPath());
     AddonPtr addon;
-    if (CServiceBroker::GetAddonMgr().GetAddon(url.GetHostName(), addon, AddonType::SCRIPT,
-                                               OnlyEnabled::CHOICE_YES))
+    if (CServiceBroker::GetAddonMgr().GetAddon(url.GetHostName(), addon, ADDON_SCRIPT))
     {
       if (!CScriptInvocationManager::GetInstance().Stop(addon->LibPath()))
       {
@@ -1112,7 +1084,7 @@ bool CGUIMediaWindow::OnClick(int iItem, const std::string &player)
       m_history.AddPath(strCurrentDirectory, m_strFilterPath);
     }
 
-    if (m_vecItemsUpdating)
+    if (m_vecItemsUpdating.value())
     {
       CLog::Log(LOGWARNING, "CGUIMediaWindow::OnClick - updating in progress");
       return true;
@@ -1162,9 +1134,9 @@ bool CGUIMediaWindow::OnClick(int iItem, const std::string &player)
     {
       CURL url(m_vecItems->GetPath());
       AddonPtr addon;
-      if (CServiceBroker::GetAddonMgr().GetAddon(url.GetHostName(), addon, OnlyEnabled::CHOICE_YES))
+      if (CServiceBroker::GetAddonMgr().GetAddon(url.GetHostName(), addon))
       {
-        const auto plugin = std::dynamic_pointer_cast<CPluginSource>(addon);
+        const ADDON::PluginPtr plugin = boost::dynamic_pointer_cast<CPluginSource>(addon);
         if (plugin && plugin->Provides(CPluginSource::AUDIO))
         {
           CFileItemList items;
@@ -1202,7 +1174,8 @@ bool CGUIMediaWindow::HaveDiscOrConnection(const std::string& strPath, int iDriv
 {
   if (iDriveType==CMediaSource::SOURCE_TYPE_DVD)
   {
-    if (!CServiceBroker::GetMediaManager().IsDiscInDrive(strPath))
+    MEDIA_DETECT::CDetectDVDMedia::WaitMediaReady();
+    if (!MEDIA_DETECT::CDetectDVDMedia::IsDiscInDrive())
     {
       HELPERS::ShowOKDialogText(218, 219);
       return false;
@@ -1211,7 +1184,7 @@ bool CGUIMediaWindow::HaveDiscOrConnection(const std::string& strPath, int iDriv
   else if (iDriveType==CMediaSource::SOURCE_TYPE_REMOTE)
   {
     //! @todo Handle not connected to a remote share
-    if (!CServiceBroker::GetNetwork().IsConnected())
+    if (!g_application.getNetwork().IsConnected())
     {
       HELPERS::ShowOKDialogText(220, 221);
       return false;
@@ -1507,7 +1480,7 @@ bool CGUIMediaWindow::OnPlayMedia(int iItem, const std::string &player)
   if (pItem->IsInternetStream() || pItem->IsPlayList())
     bResult = g_application.PlayMedia(*pItem, player, m_guiState->GetPlaylist());
   else
-    bResult = g_application.PlayFile(*pItem, player);
+    bResult = g_application.PlayFile(*pItem, player) == PLAYBACK_OK;
 
   if (pItem->GetStartOffset() == STARTOFFSET_RESUME)
     pItem->SetStartOffset(0);
@@ -1749,14 +1722,17 @@ void CGUIMediaWindow::SetupShares()
   }
 }
 
+namespace
+{
+  bool InRange(size_t i, std::pair<size_t, size_t> range) { return i >= range.first && i < range.second; }
+}
+
 bool CGUIMediaWindow::OnPopupMenu(int itemIdx)
 {
-  auto InRange = [](size_t i, std::pair<size_t, size_t> range){ return i >= range.first && i < range.second; };
-
   if (itemIdx < 0 || itemIdx >= m_vecItems->Size())
     return false;
 
-  auto item = m_vecItems->Get(itemIdx);
+  CFileItemPtr item = m_vecItems->Get(itemIdx);
   if (!item)
     return false;
 
@@ -1767,30 +1743,30 @@ bool CGUIMediaWindow::OnPopupMenu(int itemIdx)
     int i = 0;
     while (item->HasProperty(StringUtils::Format("contextmenulabel({})", i)))
     {
-      buttons.emplace_back(
+      buttons.push_back(std::make_pair(
           ~buttons.size(),
-          item->GetProperty(StringUtils::Format("contextmenulabel({})", i)).asString());
+          item->GetProperty(StringUtils::Format("contextmenulabel({})", i)).asString()));
       ++i;
     }
   }
-  auto pluginMenuRange = std::make_pair(static_cast<size_t>(0), buttons.size());
+  std::pair<size_t, size_t> pluginMenuRange = std::make_pair(static_cast<size_t>(0), buttons.size());
 
   //Add the global menu
-  auto globalMenu = CServiceBroker::GetContextMenuManager().GetItems(*item, CContextMenuManager::MAIN);
-  auto globalMenuRange = std::make_pair(buttons.size(), buttons.size() + globalMenu.size());
-  for (const auto& menu : globalMenu)
-    buttons.emplace_back(~buttons.size(), menu->GetLabel(*item));
+  ContextMenuView globalMenu = CServiceBroker::GetContextMenuManager().GetItems(*item, CContextMenuManager::MAIN);
+  std::pair<size_t, size_t> globalMenuRange = std::make_pair(buttons.size(), buttons.size() + globalMenu.size());
+  for (ContextMenuView::const_iterator menu = globalMenu.begin(); menu != globalMenu.end(); ++menu)
+    buttons.push_back(std::make_pair(~buttons.size(), (*menu)->GetLabel(*item)));
 
   //Add legacy items from windows
-  auto buttonsSize = buttons.size();
+  std::size_t buttonsSize = buttons.size();
   GetContextButtons(itemIdx, buttons);
-  auto windowMenuRange = std::make_pair(buttonsSize, buttons.size());
+  std::pair<size_t, size_t> windowMenuRange = std::make_pair(buttonsSize, buttons.size());
 
   //Add addon menus
-  auto addonMenu = CServiceBroker::GetContextMenuManager().GetAddonItems(*item, CContextMenuManager::MAIN);
-  auto addonMenuRange = std::make_pair(buttons.size(), buttons.size() + addonMenu.size());
-  for (const auto& menu : addonMenu)
-    buttons.emplace_back(~buttons.size(), menu->GetLabel(*item));
+  ContextMenuView addonMenu = CServiceBroker::GetContextMenuManager().GetAddonItems(*item, CContextMenuManager::MAIN);
+  std::pair<size_t, size_t> addonMenuRange = std::make_pair(buttons.size(), buttons.size() + addonMenu.size());
+  for (ContextMenuView::const_iterator menu = addonMenu.begin(); menu != addonMenu.end(); ++menu)
+    buttons.push_back(std::make_pair(~buttons.size(), (*menu)->GetLabel(*item)));
 
   if (buttons.empty())
     return true;
@@ -1804,7 +1780,7 @@ bool CGUIMediaWindow::OnPopupMenu(int itemIdx)
     bool saveVal = m_backgroundLoad;
     m_backgroundLoad = false;
     CServiceBroker::GetAppMessenger()->SendMsg(
-        TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr,
+        TMSG_EXECUTE_BUILT_IN, -1, -1, NULL,
         item->GetProperty(StringUtils::Format("contextmenuaction({})", idx - pluginMenuRange.first))
             .asString());
     m_backgroundLoad = saveVal;
@@ -1832,7 +1808,7 @@ const CFileItemList& CGUIMediaWindow::CurrentDirectory() const
 
 bool CGUIMediaWindow::WaitForNetwork() const
 {
-  if (CServiceBroker::GetNetwork().IsAvailable())
+  if (g_application.getNetwork().IsAvailable())
     return true;
 
   CGUIDialogProgress *progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
@@ -1844,7 +1820,7 @@ bool CGUIMediaWindow::WaitForNetwork() const
   progress->SetLine(1, url.GetWithoutUserDetails());
   progress->ShowProgressBar(false);
   progress->Open();
-  while (!CServiceBroker::GetNetwork().IsAvailable())
+  while (!g_application.getNetwork().IsAvailable())
   {
     progress->Progress();
     if (progress->IsCanceled())

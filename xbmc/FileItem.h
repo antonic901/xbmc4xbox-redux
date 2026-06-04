@@ -713,6 +713,7 @@ public:
    */
   void RemoveDiscCache(int windowID = 0) const;
   void RemoveDiscCache(const std::string& cachefile) const;
+  void RemoveDiscCacheCRC(const std::string& crc) const;
   bool AlwaysCache() const;
 
   void Swap(unsigned int item1, unsigned int item2);

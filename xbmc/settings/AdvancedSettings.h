@@ -155,6 +155,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     int m_logLevel;
     int m_logLevelHint;
     std::string m_cddbAddress;
+    bool m_addSourceOnTop; //!< True to put 'add source' buttons on top
 
     bool m_fullScreenOnMovieStart;
     std::string m_cachePath;
