@@ -80,7 +80,7 @@ public:
   ///
   /// Returns how many fanarts are stored
   /// \return An integer indicating how many fanarts are stored in the class.  Fanart indices are 0 to (GetNumFanarts() - 1)
-  unsigned int GetNumFanarts();
+  unsigned int GetNumFanarts() const;
   /// Adds an image to internal fanart data
   void AddFanart(const std::string& image, const std::string& preview, const std::string& colors);
   /// Clear all internal fanart data

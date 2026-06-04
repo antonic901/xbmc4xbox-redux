@@ -100,6 +100,7 @@ public:
   static const char* SETTING_MYVIDEOS_PLAYACTION;
   static const char* SETTING_MYVIDEOS_USETAGS;
   static const char* SETTING_MYVIDEOS_EXTRACTFLAGS;
+  static const char* SETTING_MYVIDEOS_EXTRACTCHAPTERTHUMBS;
   static const char* SETTING_MYVIDEOS_REPLACELABELS;
   static const char* SETTING_MYVIDEOS_EXTRACTTHUMB;
   static const char* SETTING_MYVIDEOS_STACKVIDEOS;
