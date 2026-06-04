@@ -10,7 +10,6 @@
 
 #include "guilib/ISliderCallback.h"
 #include "input/actions/interfaces/IActionListener.h"
-#include "utils/MovingSpeed.h"
 
 /*! \brief Player controller class to handle user actions.
 
@@ -36,8 +35,8 @@ public:
 
 protected:
   CPlayerController();
-  CPlayerController(const CPlayerController&) = delete;
-  CPlayerController& operator=(CPlayerController const&) = delete;
+  CPlayerController(const CPlayerController&);
+  CPlayerController& operator=(CPlayerController const&);
   virtual ~CPlayerController();
 
 private:
@@ -52,6 +51,5 @@ private:
    */
   void ShowSlider(int action, int label, float value, float min, float delta, float max, bool modal = false);
 
-  int m_sliderAction = 0; ///< \brief set to the action id for a slider being displayed \sa ShowSlider
-  UTILS::MOVING_SPEED::CMovingSpeed m_movingSpeed;
+  int m_sliderAction; ///< \brief set to the action id for a slider being displayed \sa ShowSlider
 };

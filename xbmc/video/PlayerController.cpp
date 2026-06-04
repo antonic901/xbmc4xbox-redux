@@ -9,8 +9,7 @@
 #include "PlayerController.h"
 
 #include "ServiceBroker.h"
-#include "application/ApplicationComponents.h"
-#include "application/ApplicationPlayer.h"
+#include "Application.h"
 #include "cores/IPlayer.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogSelect.h"
@@ -37,9 +36,7 @@ using namespace UTILS;
 
 CPlayerController::CPlayerController()
 {
-  MOVING_SPEED::EventCfg eventCfg{100.0f, 300.0f, 200};
-  m_movingSpeed.AddEventConfig(ACTION_SUBTITLE_VSHIFT_UP, eventCfg);
-  m_movingSpeed.AddEventConfig(ACTION_SUBTITLE_VSHIFT_DOWN, eventCfg);
+  m_sliderAction = 0;
 }
 
 CPlayerController::~CPlayerController() {}

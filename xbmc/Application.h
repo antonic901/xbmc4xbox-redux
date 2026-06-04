@@ -56,7 +56,7 @@ namespace ANNOUNCEMENT
 #include "Autorun.h"
 #include "video/Bookmark.h"
 #include "utils/Stopwatch.h"
-#include "interfaces/IActionListener.h"
+#include "input/actions/interfaces/IActionListener.h"
 
 class CNetwork;
 
@@ -316,12 +316,12 @@ public:
    \brief Register an action listener.
    \param listener The listener to register
    */
-  void RegisterActionListener(IActionListener *listener);
+  void RegisterActionListener(KODI::ACTION::IActionListener *listener);
   /*!
    \brief Unregister an action listener.
    \param listener The listener to unregister
    */
-  void UnregisterActionListener(IActionListener *listener);
+  void UnregisterActionListener(KODI::ACTION::IActionListener *listener);
 
   boost::movelib::unique_ptr<CServiceManager> m_ServiceManager;
 
@@ -429,7 +429,7 @@ protected:
 
   ReplayGainSettings m_replayGainSettings;
 
-  std::vector<IActionListener *> m_actionListeners;
+  std::vector<KODI::ACTION::IActionListener *> m_actionListeners;
 
   bool m_fallbackLanguageLoaded;
 
