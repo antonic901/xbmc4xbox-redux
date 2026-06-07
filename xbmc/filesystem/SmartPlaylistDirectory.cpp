@@ -1,32 +1,21 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <math.h>
-
 #include "SmartPlaylistDirectory.h"
+
 #include "FileItem.h"
 #include "ServiceBroker.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
 #include "filesystem/FileDirectoryFactory.h"
 #include "music/MusicDatabase.h"
+#include "music/MusicDbUrl.h"
+#include "playlists/PlayListTypes.h"
 #include "playlists/SmartPlayList.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
@@ -34,6 +23,10 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "video/VideoDatabase.h"
+#include "video/VideoDbUrl.h"
+
+#include <math.h>
+#include <memory>
 
 #define PROPERTY_PATH_DB            "path.db"
 #define PROPERTY_SORT_ORDER         "sort.order"
@@ -43,13 +36,9 @@
 
 namespace XFILE
 {
-  CSmartPlaylistDirectory::CSmartPlaylistDirectory()
-  {
-  }
+  CSmartPlaylistDirectory::CSmartPlaylistDirectory() {}
 
-  CSmartPlaylistDirectory::~CSmartPlaylistDirectory()
-  {
-  }
+  CSmartPlaylistDirectory::~CSmartPlaylistDirectory() {}
 
   bool CSmartPlaylistDirectory::GetDirectory(const CURL& url, CFileItemList& items)
   {
@@ -70,23 +59,31 @@ namespace XFILE
     std::vector<std::string> virtualFolders;
 
     SortDescription sorting;
-    sorting.limitEnd = playlist.GetLimit();
+    if (playlist.GetLimit() > 0)
+      sorting.limitEnd = playlist.GetLimit();
     sorting.sortBy = playlist.GetOrder();
     sorting.sortOrder = playlist.GetOrderAscending() ? SortOrderAscending : SortOrderDescending;
     sorting.sortAttributes = playlist.GetOrderAttributes();
-    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting"))
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_FILELISTS_IGNORETHEWHENSORTING))
       sorting.sortAttributes = (SortAttribute)(sorting.sortAttributes | SortAttributeIgnoreArticle);
-    items.SetSortIgnoreFolders((sorting.sortAttributes & SortAttributeIgnoreFolders) == SortAttributeIgnoreFolders);
+    if (playlist.IsMusicType() && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(
+                                      CSettings::SETTING_MUSICLIBRARY_USEARTISTSORTNAME))
+      sorting.sortAttributes =
+          static_cast<SortAttribute>(sorting.sortAttributes | SortAttributeUseArtistSortName);
+    items.SetSortIgnoreFolders((sorting.sortAttributes & SortAttributeIgnoreFolders) ==
+                               SortAttributeIgnoreFolders);
 
     std::string option = !filter ? "xsp" : "filter";
     std::string group = playlist.GetGroup();
     bool isGrouped = !group.empty() && !StringUtils::EqualsNoCase(group, "none") && !playlist.IsGroupMixed();
+    // Hint for playlist files like STRM
+    PLAYLIST::Id playlistTypeHint = PLAYLIST::TYPE_NONE;
 
     // get all virtual folders and add them to the item list
     playlist.GetVirtualFolders(virtualFolders);
     for (std::vector<std::string>::const_iterator virtualFolder = virtualFolders.begin(); virtualFolder != virtualFolders.end(); ++virtualFolder)
     {
-      CFileItemPtr pItem = CFileItemPtr(new CFileItem(*virtualFolder, true));
+      CFileItemPtr pItem = boost::make_shared<CFileItem>(*virtualFolder, true);
       IFileDirectory *dir = CFactoryFileDirectory::Create(pItem->GetURL(), pItem.get());
 
       if (dir != NULL)
@@ -101,6 +98,7 @@ namespace XFILE
         playlist.GetType() == "tvshows" ||
         playlist.GetType() == "episodes")
     {
+      playlistTypeHint = PLAYLIST::TYPE_VIDEO;
       CVideoDatabase db;
       if (db.Open())
       {
@@ -156,6 +154,7 @@ namespace XFILE
     }
     else if (playlist.IsMusicType() || playlist.GetType().empty())
     {
+      playlistTypeHint = PLAYLIST::TYPE_MUSIC;
       CMusicDatabase db;
       if (db.Open())
       {
@@ -213,6 +212,7 @@ namespace XFILE
 
     if (playlist.GetType() == "musicvideos" || playlist.GetType() == "mixed")
     {
+      playlistTypeHint = PLAYLIST::TYPE_VIDEO;
       CVideoDatabase db;
       if (db.Open())
       {
@@ -294,13 +294,14 @@ namespace XFILE
 
     // sort grouped list by label
     if (items.Size() > 1 && !group.empty())
-      items.Sort(SortByLabel, SortOrderAscending, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+      items.Sort(SortByLabel, SortOrderAscending, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_FILELISTS_IGNORETHEWHENSORTING) ? SortAttributeIgnoreArticle : SortAttributeNone);
 
     // go through and set the playlist order
     for (int i = 0; i < items.Size(); i++)
     {
       CFileItemPtr item = items[i];
       item->m_iprogramCount = i;  // hack for playlist order
+      item->SetProperty("playlist_type_hint", playlistTypeHint);
     }
 
     if (playlist.GetType() == "mixed")
