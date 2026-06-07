@@ -265,7 +265,7 @@ namespace VIDEO
      */
     static std::string GetArtTypeFromSize(unsigned int width, unsigned int height);
 
-    static std::pair<CInfoScanner::INFO_TYPE, boost::movelib::unique_ptr<IVideoInfoTagLoader> > ReadInfoTag(
+    static std::pair<CInfoScanner::INFO_TYPE, boost::shared_ptr<IVideoInfoTagLoader> > ReadInfoTag(
         CFileItem& item, const ADDON::ScraperPtr& scraper, bool lookInFolder, bool resetTag);
   };
 }
