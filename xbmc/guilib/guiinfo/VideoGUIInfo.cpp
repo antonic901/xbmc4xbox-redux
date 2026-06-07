@@ -360,7 +360,7 @@ bool CVideoGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
         {
           if (item->GetVideoInfoTag()->m_type != MediaTypeTvShow &&
               item->GetVideoInfoTag()->m_type != MediaTypeVideoCollection &&
-              item->GetVideoInfoTag()->m_playCount == 0 &&
+              item->GetVideoInfoTag()->GetPlayCount() == 0 &&
               !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videolibrary.showunwatchedplots"))
           {
             value = g_localizeStrings.Get(20370);
@@ -606,7 +606,7 @@ bool CVideoGUIInfo::GetPlaylistInfo(std::string& value, const CGUIInfo& info) co
     if (CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() != PLAYLIST::TYPE_VIDEO)
       return false;
 
-    index = CServiceBroker::GetPlaylistPlayer().GetNextSong(index);
+    index = CServiceBroker::GetPlaylistPlayer().GetNextItemIdx(index);
   }
 
   if (index < 0 || index >= playlist.size())
@@ -778,7 +778,7 @@ bool CVideoGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contextW
     ///////////////////////////////////////////////////////////////////////////////////////////////
     case LISTITEM_IS_RESUMABLE:
       if (tag)
-        value = tag->m_resumePoint.timeInSeconds > 0;
+        value = item->IsResumable();
       else
         value = false;
       return true;

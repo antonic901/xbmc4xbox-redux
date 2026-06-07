@@ -168,7 +168,7 @@ void CAnnouncementManager::DoAnnounce(AnnouncementFlag flag, const char *sender,
     if (!item->GetVideoInfoTag()->m_type.empty())
       type = item->GetVideoInfoTag()->m_type;
     else
-      CVideoDatabase::VideoContentTypeToString((VIDEODB_CONTENT_TYPE)item->GetVideoContentType(), type);
+      CVideoDatabase::VideoContentTypeToString((VideoDbContentType::Type)item->GetVideoContentType(), type);
 
     if (id <= 0)
     {
@@ -182,11 +182,11 @@ void CAnnouncementManager::DoAnnounce(AnnouncementFlag flag, const char *sender,
 
       switch (item->GetVideoContentType())
       {
-      case VIDEODB_CONTENT_MOVIES:
+      case VideoDbContentType::MOVIES:
         if (item->GetVideoInfoTag()->HasYear())
           object["item"]["year"] = item->GetVideoInfoTag()->GetYear();
         break;
-      case VIDEODB_CONTENT_EPISODES:
+      case VideoDbContentType::EPISODES:
         if (item->GetVideoInfoTag()->m_iEpisode >= 0)
           object["item"]["episode"] = item->GetVideoInfoTag()->m_iEpisode;
         if (item->GetVideoInfoTag()->m_iSeason >= 0)
@@ -194,7 +194,7 @@ void CAnnouncementManager::DoAnnounce(AnnouncementFlag flag, const char *sender,
         if (!item->GetVideoInfoTag()->m_strShowTitle.empty())
           object["item"]["showtitle"] = item->GetVideoInfoTag()->m_strShowTitle;
         break;
-      case VIDEODB_CONTENT_MUSICVIDEOS:
+      case VideoDbContentType::MUSICVIDEOS:
         if (!item->GetVideoInfoTag()->m_strAlbum.empty())
           object["item"]["album"] = item->GetVideoInfoTag()->m_strAlbum;
         if (!item->GetVideoInfoTag()->m_artist.empty())

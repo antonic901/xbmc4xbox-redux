@@ -367,7 +367,7 @@ bool CGUIWindowPictures::ShowPicture(int iItem, bool startSlideShow)
   {
     CVariant param;
     param["player"]["speed"] = 1;
-    param["player"]["playerid"] = PLAYLIST_PICTURE;
+    param["player"]["playerid"] = PLAYLIST::TYPE_PICTURE;
     CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::Player, "xbmc", "OnPlay", pSlideShow->GetCurrentSlide(), param);
   }
 

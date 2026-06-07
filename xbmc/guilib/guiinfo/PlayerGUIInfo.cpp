@@ -492,9 +492,9 @@ bool CPlayerGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int context
       PLAYLIST::CPlayListPlayer& player = CServiceBroker::GetPlaylistPlayer();
       PLAYLIST::Id playlistid = info.GetData1();
       if (info.GetData2() > 0 && playlistid != PLAYLIST::TYPE_NONE)
-        value = (player.GetRepeat(playlistid) == PLAYLIST::ALL);
+        value = (player.GetRepeat(playlistid) == PLAYLIST::RepeatState::ALL);
       else
-        value = player.GetRepeat(player.GetCurrentPlaylist()) == PLAYLIST::ALL;
+        value = player.GetRepeat(player.GetCurrentPlaylist()) == PLAYLIST::RepeatState::ALL;
       return true;
     }
     case PLAYLIST_ISREPEATONE:
@@ -502,9 +502,9 @@ bool CPlayerGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int context
       PLAYLIST::CPlayListPlayer& player = CServiceBroker::GetPlaylistPlayer();
       PLAYLIST::Id playlistid = info.GetData1();
       if (info.GetData2() > 0 && playlistid != PLAYLIST::TYPE_NONE)
-        value = (player.GetRepeat(playlistid) == PLAYLIST::ONE);
+        value = (player.GetRepeat(playlistid) == PLAYLIST::RepeatState::ONE);
       else
-        value = player.GetRepeat(player.GetCurrentPlaylist()) == PLAYLIST::ONE;
+        value = player.GetRepeat(player.GetCurrentPlaylist()) == PLAYLIST::RepeatState::ONE;
       return true;
     }
 
@@ -520,7 +520,7 @@ bool CPlayerGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int context
           value = static_cast<int>(item->GetProperty("playlisttype").asInteger()) ==
                       CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() &&
                   static_cast<int>(item->GetProperty("playlistposition").asInteger()) ==
-                      CServiceBroker::GetPlaylistPlayer().GetCurrentSong();
+                      CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx();
           return true;
         }
         else if (m_currentItem && !m_currentItem->GetPath().empty())

@@ -758,7 +758,7 @@ HRESULT CApplication::Create(HWND hWnd)
   // here we register all global classes for the CApplicationMessenger,
   // after that we can send messages to the corresponding modules
   CServiceBroker::GetAppMessenger()->RegisterReceiver(this);
-  CServiceBroker::GetAppMessenger()->RegisterReceiver(&g_playlistPlayer);
+  CServiceBroker::GetAppMessenger()->RegisterReceiver(&CServiceBroker::GetPlaylistPlayer());
 
   // create our windowing - TODO: lot of DX related stuff could go there
   m_pWinSystem = CWinSystemXbox::CreateWinSystem();
@@ -1241,7 +1241,7 @@ HRESULT CApplication::Initialize()
 
   if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("masterlock.startuplock") &&
       CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
-     !CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockCode().IsEmpty())
+     !CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockCode().empty())
   {
      g_passwordManager.CheckStartUpLock();
   }
@@ -2367,7 +2367,7 @@ bool CApplication::OnAction(CAction &action)
     }
     else
     {
-      g_playlistPlayer.PlayPrevious();
+      CServiceBroker::GetPlaylistPlayer().PlayPrevious();
     }
     return true;
   }
@@ -2378,7 +2378,7 @@ bool CApplication::OnAction(CAction &action)
     if (m_pPlayer->IsPlaying() && m_pPlayer->SkipNext())
       return true;
 
-    g_playlistPlayer.PlayNext();
+    CServiceBroker::GetPlaylistPlayer().PlayNext();
 
     return true;
   }
@@ -2511,10 +2511,10 @@ bool CApplication::OnAction(CAction &action)
   }
   if (action.GetID() == ACTION_SHOW_PLAYLIST)
   {
-    int iPlaylist = g_playlistPlayer.GetCurrentPlaylist();
-    if (iPlaylist == PLAYLIST_VIDEO && CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() != WINDOW_VIDEO_PLAYLIST)
+    int iPlaylist = CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist();
+    if (iPlaylist == PLAYLIST::TYPE_VIDEO && CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() != WINDOW_VIDEO_PLAYLIST)
       CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_VIDEO_PLAYLIST);
-    else if (iPlaylist == PLAYLIST_MUSIC && CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() != WINDOW_MUSIC_PLAYLIST)
+    else if (iPlaylist == PLAYLIST::TYPE_MUSIC && CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() != WINDOW_MUSIC_PLAYLIST)
       CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_MUSIC_PLAYLIST);
     return true;
   }
@@ -2721,10 +2721,13 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
   break;
 
   case TMSG_LOADPROFILE:
-  {
-    CGUIWindowLoginScreen::LoadProfile(pMsg->param1);
+    {
+      const int profile = pMsg->param1;
+      if (profile >= 0)
+        CServiceBroker::GetSettingsComponent()->GetProfileManager()->LoadProfile(static_cast<unsigned int>(profile));
+    }
+
     break;
-  }
 
   }
 }
@@ -3360,7 +3363,7 @@ HRESULT CApplication::Cleanup()
 #endif
     CServiceBroker::GetGUI()->GetInfoManager().Clear();
     DllLoaderContainer::Clear();
-    g_playlistPlayer.Clear();
+    CServiceBroker::GetPlaylistPlayer().Clear();
     CServiceBroker::GetSettingsComponent()->GetSettings()->Uninitialize();
 
 #ifdef HAS_OPTICAL_DRIVE
@@ -3501,7 +3504,7 @@ bool CApplication::PlayMedia(const CFileItem& item, const std::string &player, i
       smartpl.OpenAndReadName(item.GetURL());
       CPlayList playlist;
       playlist.Add(items);
-      return ProcessAndStartPlaylist(smartpl.GetName(), playlist, (smartpl.GetType() == "songs" || smartpl.GetType() == "albums") ? PLAYLIST_MUSIC:PLAYLIST_VIDEO);
+      return ProcessAndStartPlaylist(smartpl.GetName(), playlist, (smartpl.GetType() == "songs" || smartpl.GetType() == "albums") ? PLAYLIST::TYPE_MUSIC:PLAYLIST::TYPE_VIDEO);
     }
   }
   else if (item.IsPlayList() || item.IsInternetStream())
@@ -3510,7 +3513,7 @@ bool CApplication::PlayMedia(const CFileItem& item, const std::string &player, i
     auto_ptr<CPlayList> pPlayList (CPlayListFactory::Create(item));
     if (pPlayList.get() && pPlayList->Load(item.GetPath()))
     {
-      if (iPlaylist != PLAYLIST_NONE)
+      if (iPlaylist != PLAYLIST::TYPE_NONE)
       {
         int track=0;
         if (item.HasProperty("playlist_starting_track"))
@@ -3598,7 +3601,7 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
     //       Also, this is really just a hack for the slow load up times we have
     //       A much better solution is a fast reader of FPS and fileLength
     //       that we can use on a file to get it's time.
-    vector<int> times;
+    std::vector<uint64_t> times;
     bool haveTimes(false);
     CVideoDatabase dbs;
     if (dbs.Open())
@@ -3611,7 +3614,7 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
     // calculate the total time of the stack
     CStackDirectory dir;
     dir.GetDirectory(item.GetURL(), *m_currentStack);
-    long totalTime = 0;
+    uint64_t totalTime = 0;
     for (int i = 0; i < m_currentStack->Size(); i++)
     {
       if (haveTimes)
@@ -3781,8 +3784,8 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
          should the playerState be required, it is fetched from the database.
          See the note in CGUIWindowVideoBase::ShowResumeMenu.
          */
-        if (item.HasVideoInfoTag() && item.GetVideoInfoTag()->m_resumePoint.IsSet())
-          options.starttime = item.GetVideoInfoTag()->m_resumePoint.timeInSeconds;
+        if (item.HasVideoInfoTag() && item.GetVideoInfoTag()->GetResumePoint().IsSet())
+          options.starttime = item.GetVideoInfoTag()->GetResumePoint().timeInSeconds;
       }
       else if (item.HasVideoInfoTag())
       {
@@ -3808,11 +3811,11 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
 
   // this really aught to be inside !bRestart, but since PlayStack
   // uses that to init playback, we have to keep it outside
-  int playlist = g_playlistPlayer.GetCurrentPlaylist();
-  if (playlist == PLAYLIST_VIDEO && g_playlistPlayer.GetPlaylist(playlist).size() > 1)
+  int playlist = CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist();
+  if (playlist == PLAYLIST::TYPE_VIDEO && CServiceBroker::GetPlaylistPlayer().GetPlaylist(playlist).size() > 1)
   { // playing from a playlist by the looks
     // don't switch to fullscreen if we are not playing the first item...
-    options.fullscreen = !g_playlistPlayer.HasPlayedFirstFile() && CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::GetInstance().DoesMediaStartWindowed();
+    options.fullscreen = !CServiceBroker::GetPlaylistPlayer().HasPlayedFirstFile() && CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreenOnMovieStart && !CMediaSettings::GetInstance().DoesMediaStartWindowed();
   }
   else if(m_itemCurrentFile->IsStack() && m_currentStack->Size() > 0)
   {
@@ -3967,8 +3970,8 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
   else if (iResult == PLAYBACK_FAIL)
   {
     // we send this if it isn't playlistplayer that is doing this
-    int next = g_playlistPlayer.GetNextSong();
-    int size = g_playlistPlayer.GetPlaylist(g_playlistPlayer.GetCurrentPlaylist()).size();
+    int next = CServiceBroker::GetPlaylistPlayer().GetNextItemIdx();
+    int size = CServiceBroker::GetPlaylistPlayer().GetPlaylist(CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist()).size();
     if(next < 0
     || next >= size)
       OnPlayBackStopped();
@@ -4682,7 +4685,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
       if (message.GetParam1()==GUI_MSG_REMOVED_MEDIA)
       {
         // Update general playlist: Remove DVD playlist items
-        int nRemoved = g_playlistPlayer.RemoveDVDItems();
+        int nRemoved = CServiceBroker::GetPlaylistPlayer().RemoveDVDItems();
         if ( nRemoved > 0 )
         {
           CGUIMessage msg( GUI_MSG_PLAYLIST_CHANGED, 0, 0 );
@@ -4717,13 +4720,13 @@ bool CApplication::OnMessage(CGUIMessage& message)
       // Update our infoManager with the new details etc.
       if (m_nextPlaylistItem >= 0)
       { // we've started a previously queued item
-        CFileItemPtr item = g_playlistPlayer.GetPlaylist(g_playlistPlayer.GetCurrentPlaylist())[m_nextPlaylistItem];
+        CFileItemPtr item = CServiceBroker::GetPlaylistPlayer().GetPlaylist(CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist())[m_nextPlaylistItem];
         // update the playlist manager
-        int currentSong = g_playlistPlayer.GetCurrentSong();
+        int currentSong = CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx();
         int param = ((currentSong & 0xffff) << 16) | (m_nextPlaylistItem & 0xffff);
-        CGUIMessage msg(GUI_MSG_PLAYLISTPLAYER_CHANGED, 0, 0, g_playlistPlayer.GetCurrentPlaylist(), param, item);
+        CGUIMessage msg(GUI_MSG_PLAYLISTPLAYER_CHANGED, 0, 0, CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist(), param, item);
         CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
-        g_playlistPlayer.SetCurrentSong(m_nextPlaylistItem);
+        CServiceBroker::GetPlaylistPlayer().SetCurrentItemIdx(m_nextPlaylistItem);
         *m_itemCurrentFile = *item;
       }
       CServiceBroker::GetGUI()->GetInfoManager().SetCurrentItem(*m_itemCurrentFile);
@@ -4765,8 +4768,8 @@ bool CApplication::OnMessage(CGUIMessage& message)
     {
       // Check to see if our playlist player has a new item for us,
       // and if so, we check whether our current player wants the file
-      int iNext = g_playlistPlayer.GetNextSong();
-      CPlayList& playlist = g_playlistPlayer.GetPlaylist(g_playlistPlayer.GetCurrentPlaylist());
+      int iNext = CServiceBroker::GetPlaylistPlayer().GetNextItemIdx();
+      CPlayList& playlist = CServiceBroker::GetPlaylistPlayer().GetPlaylist(CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist());
       if (iNext < 0 || iNext >= playlist.size())
       {
         m_pPlayer->OnNothingToQueueNotify();
@@ -4833,7 +4836,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
         // sending true to PlayNext() effectively passes bRestart to PlayFile()
         // which is not generally what we want (except for stacks, which are
         // handled above)
-        g_playlistPlayer.PlayNext();
+        CServiceBroker::GetPlaylistPlayer().PlayNext();
       }
       else
       {
@@ -4857,7 +4860,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
         CServiceBroker::GetGUI()->GetWindowManager().PreviousWindow();
       }
 
-      if (!m_pPlayer->IsPlayingAudio() && g_playlistPlayer.GetCurrentPlaylist() == PLAYLIST_NONE && CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_VISUALISATION)
+      if (!m_pPlayer->IsPlayingAudio() && CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_NONE && CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_VISUALISATION)
       {
         CServiceBroker::GetSettingsComponent()->GetSettings()->Save();  // save vis settings
         ResetScreenSaverWindow();
@@ -5593,26 +5596,26 @@ bool CApplication::ProcessAndStartPlaylist(const CStdString& strPlayList, CPlayL
     return false;
 
   // illegal playlist
-  if (iPlaylist < PLAYLIST_MUSIC || iPlaylist > PLAYLIST_VIDEO)
+  if (iPlaylist < PLAYLIST::TYPE_MUSIC || iPlaylist > PLAYLIST::TYPE_VIDEO)
     return false;
 
   // setup correct playlist
-  g_playlistPlayer.ClearPlaylist(iPlaylist);
+  CServiceBroker::GetPlaylistPlayer().ClearPlaylist(iPlaylist);
 
   // if the playlist contains an internet stream, this file will be used
   // to generate a thumbnail for musicplayer.cover
   g_application.m_strPlayListFile = strPlayList;
 
   // add the items to the playlist player
-  g_playlistPlayer.Add(iPlaylist, playlist);
+  CServiceBroker::GetPlaylistPlayer().Add(iPlaylist, playlist);
 
   // if we have a playlist
-  if (g_playlistPlayer.GetPlaylist(iPlaylist).size())
+  if (CServiceBroker::GetPlaylistPlayer().GetPlaylist(iPlaylist).size())
   {
     // start playing it
-    g_playlistPlayer.SetCurrentPlaylist(iPlaylist);
-    g_playlistPlayer.Reset();
-    g_playlistPlayer.Play(track, "");
+    CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(iPlaylist);
+    CServiceBroker::GetPlaylistPlayer().Reset();
+    CServiceBroker::GetPlaylistPlayer().Play(track, "");
     return true;
   }
   return false;
@@ -5642,7 +5645,7 @@ void CApplication::SaveCurrentFileSettings()
     {
       CVideoDatabase dbs;
       dbs.Open();
-      dbs.SetVideoSettings(m_itemCurrentFile->GetPath(), CMediaSettings::GetInstance().GetCurrentVideoSettings());
+      dbs.SetVideoSettings(*m_itemCurrentFile, CMediaSettings::GetInstance().GetCurrentVideoSettings());
       dbs.Close();
     }
   }

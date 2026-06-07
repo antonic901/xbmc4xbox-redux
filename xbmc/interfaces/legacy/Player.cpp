@@ -35,7 +35,7 @@ namespace XBMCAddon
 
     Player::Player(int _playerCore)
     {
-      iPlayList = PLAYLIST_MUSIC;
+      iPlayList = PLAYLIST::TYPE_MUSIC;
 
       if (_playerCore == EPC_DVDPLAYER ||
           _playerCore == EPC_MPLAYER ||

@@ -44,14 +44,14 @@
 
 //  Message is send by the playlistplayer when it starts a playlist
 //  Parameter:
-//  dwParam1 = Current Playlist, can be PLAYLIST_MUSIC, PLAYLIST_TEMP_MUSIC, PLAYLIST_VIDEO or PLAYLIST_TEMP_VIDEO
+//  dwParam1 = Current Playlist, can be PLAYLIST::TYPE_MUSIC, PLAYLIST_TEMP_MUSIC, PLAYLIST::TYPE_VIDEO or PLAYLIST_TEMP_VIDEO
 //  dwParam2 = Item started in the playlist
 //  lpVoid = Playlistitem started playing
 #define GUI_MSG_PLAYLISTPLAYER_STARTED  GUI_MSG_USER + 8
 
 //  Message is send by playlistplayer when next/previous item is started
 //  Parameter:
-//  dwParam1 = Current Playlist, can be PLAYLIST_MUSIC, PLAYLIST_TEMP_MUSIC, PLAYLIST_VIDEO or PLAYLIST_TEMP_VIDEO
+//  dwParam1 = Current Playlist, can be PLAYLIST::TYPE_MUSIC, PLAYLIST_TEMP_MUSIC, PLAYLIST::TYPE_VIDEO or PLAYLIST_TEMP_VIDEO
 //  dwParam2 = LOWORD Position of the current playlistitem
 //             HIWORD Position of the previous playlistitem
 //  lpVoid = Current Playlistitem
@@ -59,7 +59,7 @@
 
 //  Message is send by the playlistplayer when the last item to play ended
 //  Parameter:
-//  dwParam1 = Current Playlist, can be PLAYLIST_MUSIC, PLAYLIST_TEMP_MUSIC, PLAYLIST_VIDEO or PLAYLIST_TEMP_VIDEO
+//  dwParam1 = Current Playlist, can be PLAYLIST::TYPE_MUSIC, PLAYLIST_TEMP_MUSIC, PLAYLIST::TYPE_VIDEO or PLAYLIST_TEMP_VIDEO
 //  dwParam2 = Playlistitem played when stopping
 #define GUI_MSG_PLAYLISTPLAYER_STOPPED  GUI_MSG_USER + 10
 
@@ -89,13 +89,13 @@
 
 //  Message is sent by built-in function to alert the playlist window
 //  that the user has initiated Random playback
-//  dwParam1 = Current Playlist (PLAYLIST_MUSIC, PLAYLIST_TEMP_MUSIC, PLAYLIST_VIDEO or PLAYLIST_TEMP_VIDEO)
+//  dwParam1 = Current Playlist (PLAYLIST::TYPE_MUSIC, PLAYLIST_TEMP_MUSIC, PLAYLIST::TYPE_VIDEO or PLAYLIST_TEMP_VIDEO)
 //  dwParam2 = 0 or 1 (Enabled or Disabled)
 #define GUI_MSG_PLAYLISTPLAYER_RANDOM   GUI_MSG_USER + 22
 
 //  Message is sent by built-in function to alert the playlist window
 //  that the user has initiated Repeat playback
-//  dwParam1 = Current Playlist (PLAYLIST_MUSIC, PLAYLIST_TEMP_MUSIC, PLAYLIST_VIDEO or PLAYLIST_TEMP_VIDEO)
+//  dwParam1 = Current Playlist (PLAYLIST::TYPE_MUSIC, PLAYLIST_TEMP_MUSIC, PLAYLIST::TYPE_VIDEO or PLAYLIST_TEMP_VIDEO)
 //  dwParam2 = 0 or 1 or 2 (Off, Repeat All, Repeat One)
 #define GUI_MSG_PLAYLISTPLAYER_REPEAT   GUI_MSG_USER + 23
 

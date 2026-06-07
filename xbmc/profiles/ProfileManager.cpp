@@ -368,9 +368,9 @@ void CProfileManager::FinalizeLoadProfile()
 
   if (m_lastUsedProfile != m_currentProfile)
   {
-    playlistManager.ClearPlaylist(PLAYLIST_VIDEO);
-    playlistManager.ClearPlaylist(PLAYLIST_MUSIC);
-    playlistManager.SetCurrentPlaylist(PLAYLIST_NONE);
+    playlistManager.ClearPlaylist(PLAYLIST::TYPE_VIDEO);
+    playlistManager.ClearPlaylist(PLAYLIST::TYPE_MUSIC);
+    playlistManager.SetCurrentPlaylist(PLAYLIST::TYPE_NONE);
   }
 
   networkManager.NetworkMessage(CNetwork::SERVICES_UP, 1);
@@ -498,6 +498,7 @@ void CProfileManager::CreateProfileFolders()
   CDirectory::Create(GetVideoThumbFolder());
   CDirectory::Create(GetBookmarksThumbFolder());
   CDirectory::Create(GetSavestatesFolder());
+  CDirectory::Create(GetGameSaveThumbFolder());
   for (size_t hex = 0; hex < 16; hex++)
     CDirectory::Create(
         URIUtils::AddFileToFolder(GetThumbnailsFolder(), StringUtils::Format("%x", hex)));
@@ -674,6 +675,11 @@ std::string CProfileManager::GetSettingsFile() const
     return "special://masterprofile/guisettings.xml";
 
   return "special://profile/guisettings.xml";
+}
+
+std::string CProfileManager::GetGameSaveThumbFolder() const
+{
+  return URIUtils::AddFileToFolder(GetThumbnailsFolder(), "GameSaves");
 }
 
 std::string CProfileManager::GetUserDataItem(const std::string& strFile) const

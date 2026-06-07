@@ -109,7 +109,7 @@ public:
   }
   void Run()
   {
-    m_result = m_dir.GetDirectory(m_url, m_items, false);
+    m_result = m_dir.GetDirectory(m_url, m_items, false, false);
   }
   void Cancel()
   {
@@ -647,7 +647,7 @@ void CGUIWindowFileManager::OnStart(CFileItem *pItem, const std::string &player)
         return;
       }
     }
-    g_application.ProcessAndStartPlaylist(strPlayList, *pPlayList, PLAYLIST_MUSIC);
+    g_application.ProcessAndStartPlaylist(strPlayList, *pPlayList, PLAYLIST::TYPE_MUSIC);
     return;
   }
   if (pItem->IsAudio() || pItem->IsVideo())
@@ -1178,7 +1178,7 @@ int64_t CGUIWindowFileManager::CalculateFolderSize(const std::string &strDirecto
   CFileItemList items;
   CVirtualDirectory rootDir;
   rootDir.SetSources(*CMediaSourceSettings::GetInstance().GetSources("files"));
-  rootDir.GetDirectory(pathToUrl, items, false);
+  rootDir.GetDirectory(pathToUrl, items, false, false);
   for (int i=0; i < items.Size(); i++)
   {
     if (items[i]->m_bIsFolder && !items[i]->IsParentFolder()) // folder

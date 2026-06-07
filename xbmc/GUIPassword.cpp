@@ -209,7 +209,7 @@ bool CGUIPassword::IsProfileLockUnlocked(int iProfile, bool& bCanceled, bool pro
     if (!prompt)
       return (profile->getLockMode() == LOCK_MODE_EVERYONE);
 
-    if (profile->getDate().IsEmpty() &&
+    if (profile->getDate().empty() &&
        (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE ||
         profile->getLockMode() == LOCK_MODE_EVERYONE))
     {

@@ -25,6 +25,7 @@
 #include "pictures/PictureThumbLoader.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
+#include "utils/ExecString.h"
 #include "utils/JobManager.h"
 #include "utils/SortUtils.h"
 #include "utils/StringUtils.h"
@@ -35,7 +36,8 @@
 #include "video/VideoInfoTag.h"
 #include "video/VideoThumbLoader.h"
 #include "video/dialogs/GUIDialogVideoInfo.h"
-#include "video/windows/GUIWindowVideoBase.h"
+#include "video/guilib/VideoPlayActionProcessor.h"
+#include "video/guilib/VideoSelectActionProcessor.h"
 
 using namespace XFILE;
 using namespace KODI::MESSAGING;
@@ -431,21 +433,110 @@ bool ExecuteAction(const std::string& execute)
   }
   return false;
 }
+
+bool ExecuteAction(const CExecString& execute)
+{
+  return ExecuteAction(execute.GetExecString());
+}
+
+class CVideoSelectActionProcessor : public VIDEO::GUILIB::CVideoSelectActionProcessorBase
+{
+public:
+  CVideoSelectActionProcessor(CDirectoryProvider& provider, const boost::shared_ptr<CFileItem>& item)
+    : CVideoSelectActionProcessorBase(item), m_provider(provider)
+  {
+  }
+
+protected:
+  virtual bool OnPlayPartSelected(unsigned int part)
+  {
+    // part numbers are 1-based
+    ExecuteAction(CExecString("PlayMedia", *m_item, StringUtils::Format("playoffset={}", part - 1)));
+    return true;
+  }
+
+  virtual bool OnResumeSelected()
+  {
+    ExecuteAction(CExecString("PlayMedia", *m_item, "resume"));
+    return true;
+  }
+
+  virtual bool OnPlaySelected()
+  {
+    ExecuteAction(CExecString("PlayMedia", *m_item, "noresume"));
+    return true;
+  }
+
+  virtual bool OnQueueSelected()
+  {
+    ExecuteAction(CExecString("QueueMedia", *m_item, ""));
+    return true;
+  }
+
+  virtual bool OnInfoSelected()
+  {
+    m_provider.OnInfo(m_item);
+    return true;
+  }
+
+  virtual bool OnChooseSelected()
+  {
+    m_provider.OnContextMenu(m_item);
+    return true;
+  }
+
+private:
+  CDirectoryProvider& m_provider;
+};
+
+class CVideoPlayActionProcessor : public VIDEO::GUILIB::CVideoPlayActionProcessorBase
+{
+public:
+  explicit CVideoPlayActionProcessor(const boost::shared_ptr<CFileItem>& item)
+    : CVideoPlayActionProcessorBase(item)
+  {
+  }
+
+protected:
+  virtual bool OnResumeSelected()
+  {
+    ExecuteAction(CExecString("PlayMedia", *m_item, "resume"));
+    return true;
+  }
+
+  virtual bool OnPlaySelected()
+  {
+    ExecuteAction(CExecString("PlayMedia", *m_item, "noresume"));
+    return true;
+  }
+};
 } // namespace
 
 bool CDirectoryProvider::OnClick(const boost::shared_ptr<CGUIListItem>& item)
 {
-  CFileItem fileItem(*boost::static_pointer_cast<CFileItem>(item));
+  CFileItem targetItem = *boost::static_pointer_cast<CFileItem>(item);
 
-  if (fileItem.HasVideoInfoTag()
-      && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("myvideos.selectaction") == SELECT_ACTION_INFO
-      && OnInfo(item))
-    return true;
+  const CExecString exec(targetItem, GetTarget(targetItem));
+  const bool isPlayMedia(exec.GetFunction() == "playmedia");
+
+  // video select action setting is for files only, except exec func is playmedia...
+  if (targetItem.HasVideoInfoTag() && (!targetItem.m_bIsFolder || isPlayMedia))
+  {
+    // play the given/default video version, even if multiple versions are available
+    targetItem.SetProperty("has_resolved_video_asset", true);
+
+    CVideoSelectActionProcessor proc(*this, boost::make_shared<CFileItem>(targetItem));
+    if (proc.ProcessDefaultAction())
+      return true;
+  }
+
+  // exec the execute string for the original (!) item
+  CFileItem fileItem = *boost::static_pointer_cast<CFileItem>(item);
 
   if (fileItem.HasProperty("node.target_url"))
     fileItem.SetPath(fileItem.GetProperty("node.target_url").asString());
 
-  return ExecuteAction(CFavouritesDirectory::GetExecutePath(fileItem, GetTarget(fileItem)));
+  return ExecuteAction(CExecString(fileItem, GetTarget(fileItem)));
 }
 
 bool CDirectoryProvider::OnInfo(const boost::shared_ptr<CFileItem>& fileItem)

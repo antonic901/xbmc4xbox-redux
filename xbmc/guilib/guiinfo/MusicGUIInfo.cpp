@@ -476,7 +476,7 @@ bool CMusicGUIInfo::GetPlaylistInfo(std::string& value, const CGUIInfo &info) co
     if (CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() != PLAYLIST::TYPE_MUSIC)
       return false;
 
-    index = CServiceBroker::GetPlaylistPlayer().GetNextSong(index);
+    index = CServiceBroker::GetPlaylistPlayer().GetNextItemIdx(index);
   }
 
   if (index < 0 || index >= playlist.size())
@@ -565,7 +565,7 @@ bool CMusicGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contextW
       // requires current playlist be TYPE_MUSIC
       if (CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_MUSIC)
       {
-        value = (CServiceBroker::GetPlaylistPlayer().GetCurrentSong() > 0); // not first song
+        value = (CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx() > 0); // not first song
         return true;
       }
       break;
@@ -573,7 +573,7 @@ bool CMusicGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contextW
       // requires current playlist be TYPE_MUSIC
       if (CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_MUSIC)
       {
-        value = (CServiceBroker::GetPlaylistPlayer().GetCurrentSong() <
+        value = (CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx() <
                  (CServiceBroker::GetPlaylistPlayer().GetPlaylist(PLAYLIST::TYPE_MUSIC).size() -
                   1)); // not last song
         return true;
@@ -599,7 +599,7 @@ bool CMusicGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contextW
           value = false;
           return true;
         }
-        index += CServiceBroker::GetPlaylistPlayer().GetCurrentSong();
+        index += CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx();
       }
       value =
           (index >= 0 &&

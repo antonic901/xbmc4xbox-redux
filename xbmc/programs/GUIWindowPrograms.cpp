@@ -132,7 +132,7 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         if (URIUtils::IsProtocol(item->GetPath(), "gamesaves"))
         {
           std::vector<std::string> Path = StringUtils::Split(item->GetPath(), "://");
-          if (!CFileUtils::DeleteItem("E:\\UDATA\\" + Path.back() + "\\", true))
+          if (!CFileUtils::DeleteItem("E:\\UDATA\\" + Path.back() + "\\"))
             return false;
         }
         else

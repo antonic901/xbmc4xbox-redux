@@ -82,8 +82,6 @@ std::string CGUIViewStateWindowPrograms::GetExtensions()
 
 VECSOURCES& CGUIViewStateWindowPrograms::GetSources()
 {
-  AddAddonsSource("executable", g_localizeStrings.Get(1043), "DefaultAddonProgram.png");
-
   VECSOURCES *programSources = CMediaSourceSettings::GetInstance().GetSources("programs");
   AddOrReplace(*programSources, CGUIViewState::GetSources());
   return *programSources;

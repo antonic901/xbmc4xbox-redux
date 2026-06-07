@@ -552,8 +552,8 @@ namespace XBMCAddon
     int getSERVER_JSONRPCSERVER() { return CApplication::ES_JSONRPCSERVER; }
     int getSERVER_ZEROCONF() { return CApplication::ES_ZEROCONF; }
 
-    int getPLAYLIST_MUSIC() { return PLAYLIST_MUSIC; }
-    int getPLAYLIST_VIDEO() { return PLAYLIST_VIDEO; }
+    int getPLAYLIST_MUSIC() { return PLAYLIST::TYPE_MUSIC; }
+    int getPLAYLIST_VIDEO() { return PLAYLIST::TYPE_VIDEO; }
 #ifdef _XBOX
     int getPLAYER_CORE_AUTO() { return EPC_NONE; }
     int getPLAYER_CORE_DVDPLAYER() { return EPC_DVDPLAYER; }

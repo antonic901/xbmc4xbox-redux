@@ -27,7 +27,7 @@ bool CSaveFileStateJob::DoWork()
 {
   CStdString progressTrackingFile = m_item.GetPath();
 
-  if (m_item.IsDVD()) 
+  if (m_item.IsDVD())
     progressTrackingFile = m_item.GetVideoInfoTag()->m_strFileNameAndPath; // this variable contains removable:// suffixed by disc label
 
   if (progressTrackingFile != "")
@@ -52,7 +52,7 @@ bool CSaveFileStateJob::DoWork()
             updateListing = true;
           }
 
-          if (!m_item.HasVideoInfoTag() || m_item.GetVideoInfoTag()->m_resumePoint.timeInSeconds != m_bookmark.timeInSeconds)
+          if (!m_item.HasVideoInfoTag() || m_item.GetVideoInfoTag()->GetResumePoint().timeInSeconds != m_bookmark.timeInSeconds)
           {
             if (m_bookmark.timeInSeconds <= 0.0f)
             {
@@ -63,14 +63,14 @@ bool CSaveFileStateJob::DoWork()
               videodatabase.AddBookMarkToFile(progressTrackingFile, m_bookmark, CBookmark::RESUME);
             }
             if (m_item.HasVideoInfoTag())
-              m_item.GetVideoInfoTag()->m_resumePoint = m_bookmark;
+              m_item.GetVideoInfoTag()->SetResumePoint(m_bookmark);
             updateListing = true;
           }
         }
 
         if (CMediaSettings::GetInstance().GetCurrentVideoSettings() != CMediaSettings::GetInstance().GetDefaultVideoSettings())
         {
-          videodatabase.SetVideoSettings(progressTrackingFile, CMediaSettings::GetInstance().GetCurrentVideoSettings());
+          videodatabase.SetVideoSettings(m_item, CMediaSettings::GetInstance().GetCurrentVideoSettings());
         }
 
         if (m_item.HasVideoInfoTag() && m_item.GetVideoInfoTag()->HasStreamDetails())

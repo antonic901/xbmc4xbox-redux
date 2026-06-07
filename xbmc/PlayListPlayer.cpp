@@ -7,6 +7,7 @@
  */
 
 #include "PlayListPlayer.h"
+#include "nikola.h"
 
 #include "FileItem.h"
 #include "GUIUserMessages.h"
@@ -291,7 +292,7 @@ bool CPlayListPlayer::Play(const CFileItemPtr& pItem, const std::string& player)
   }
   else
   {
-    CLog::LogF(LOGWARNING, "ListItem type must be audio or video type. The type can be specified "
+    CLog::Log(LOGWARNING, "ListItem type must be audio or video type. The type can be specified "
                            "by using ListItem::getVideoInfoTag or ListItem::getMusicInfoTag, in "
                            "the case of playlist entries by adding #KODIPROP mimetype value.");
     return false;
@@ -908,7 +909,7 @@ void PLAYLIST::CPlayListPlayer::OnApplicationMessage(KODI::MESSAGING::ThreadMess
       CFileItemList *list = static_cast<CFileItemList*>(pMsg->lpVoid);
 
       for (int i = 0; i < playlist.size(); i++)
-        list->Add(std::make_shared<CFileItem>(*playlist[i]));
+        list->Add(boost::make_shared<CFileItem>(*playlist[i]));
     }
     break;
 
