@@ -1,39 +1,27 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #pragma once
 
+#include "TextureCacheJob.h"
+#include "dbwrappers/Database.h"
+#include "dbwrappers/DatabaseQuery.h"
+
 #include <string>
 #include <vector>
-
-#include "dbwrappers/Database.h"
-#include "TextureCacheJob.h"
-#include "dbwrappers/DatabaseQuery.h"
 
 class CVariant;
 
 class CTextureRule : public CDatabaseQueryRule
 {
 public:
-  CTextureRule() {};
-  virtual ~CTextureRule() {};
+  CTextureRule() {}
+  virtual ~CTextureRule() {}
 
   static void GetAvailableFields(std::vector<std::string> &fieldList);
 protected:
@@ -41,7 +29,7 @@ protected:
   virtual std::string         TranslateField(int field) const;
   virtual std::string         GetField(int field, const std::string& type) const;
   virtual FIELD_TYPE          GetFieldType(int field) const;
-  virtual std::string         FormatParameter(const std::string &negate,
+  std::string         FormatParameter(const std::string &negate,
                                               const std::string &oper,
                                               const CDatabase &db,
                                               const std::string &type) const;
@@ -132,6 +120,6 @@ protected:
   virtual void CreateTables();
   virtual void CreateAnalytics();
   virtual void UpdateTables(int version);
-  virtual int GetSchemaVersion() const { return 13; };
-  const char *GetBaseDBName() const { return "Textures"; };
+  virtual int GetSchemaVersion() const { return 13; }
+  virtual const char* GetBaseDBName() const { return "Textures"; }
 };

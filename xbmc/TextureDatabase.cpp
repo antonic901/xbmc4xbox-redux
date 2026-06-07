@@ -1,31 +1,20 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "TextureDatabase.h"
-#include "utils/log.h"
+
+#include "URL.h"
 #include "XBDateTime.h"
 #include "dbwrappers/dataset.h"
-#include "URL.h"
+#include "utils/DatabaseUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
-#include "utils/DatabaseUtils.h"
+#include "utils/log.h"
 
 enum TextureField
 {
@@ -47,8 +36,6 @@ typedef struct
   char string[14];
   TextureField field;
   CDatabaseQueryRule::FIELD_TYPE type;
-  bool browseable;
-  int localizedString;
 } translateField;
 
 static const translateField fields[] = {
@@ -68,14 +55,14 @@ static const size_t NUM_FIELDS = sizeof(fields) / sizeof(translateField);
 
 int CTextureRule::TranslateField(const char *field) const
 {
-  for (unsigned int i = 0; i < NUM_FIELDS; i++)
+  for (size_t i = 0; i < NUM_FIELDS; i++)
     if (StringUtils::EqualsNoCase(field, fields[i].string)) return fields[i].field;
   return FieldNone;
 }
 
 std::string CTextureRule::TranslateField(int field) const
 {
-  for (unsigned int i = 0; i < NUM_FIELDS; i++)
+  for (size_t i = 0; i < NUM_FIELDS; i++)
     if (field == fields[i].field) return fields[i].string;
   return "none";
 }
@@ -96,7 +83,7 @@ std::string CTextureRule::GetField(int field, const std::string &type) const
 
 CDatabaseQueryRule::FIELD_TYPE CTextureRule::GetFieldType(int field) const
 {
-  for (unsigned int i = 0; i < NUM_FIELDS; i++)
+  for (size_t i = 0; i < NUM_FIELDS; i++)
     if (field == fields[i].field) return fields[i].type;
   return TEXT_FIELD;
 }
@@ -152,13 +139,9 @@ std::string CTextureUtils::UnwrapImageURL(const std::string &image)
   return image;
 }
 
-CTextureDatabase::CTextureDatabase()
-{
-}
+CTextureDatabase::CTextureDatabase() {}
 
-CTextureDatabase::~CTextureDatabase()
-{
-}
+CTextureDatabase::~CTextureDatabase() {}
 
 bool CTextureDatabase::Open()
 {
@@ -179,14 +162,14 @@ void CTextureDatabase::CreateTables()
 
 void CTextureDatabase::CreateAnalytics()
 {
-  CLog::Log(LOGINFO, "%s creating indices", __FUNCTION__);
+  CLog::Log(LOGINFO, "{} creating indices", __FUNCTION__);
   m_pDS->exec("CREATE INDEX idxTexture ON texture(url)");
   m_pDS->exec("CREATE INDEX idxSize ON sizes(idtexture, size)");
   m_pDS->exec("CREATE INDEX idxSize2 ON sizes(idtexture, width, height)");
   //! @todo Should the path index be a covering index? (we need only retrieve texture)
   m_pDS->exec("CREATE INDEX idxPath ON path(url, type)");
 
-  CLog::Log(LOGINFO, "%s creating triggers", __FUNCTION__);
+  CLog::Log(LOGINFO, "{} creating triggers", __FUNCTION__);
   m_pDS->exec("CREATE TRIGGER textureDelete AFTER delete ON texture FOR EACH ROW BEGIN delete from sizes where sizes.idtexture=old.id; END");
 }
 
@@ -255,8 +238,10 @@ bool CTextureDatabase::GetCachedTexture(const std::string &url, CTextureDetails 
 {
   try
   {
-    if (NULL == m_pDB.get()) return false;
-    if (NULL == m_pDS.get()) return false;
+    if (!m_pDB)
+      return false;
+    if (!m_pDS)
+      return false;
 
     std::string sql = PrepareSQL("SELECT id, cachedurl, lasthashcheck, imagehash, width, height FROM texture JOIN sizes ON (texture.id=sizes.idtexture AND sizes.size=1) WHERE url='%s'", url.c_str());
     m_pDS->query(sql);
@@ -277,7 +262,7 @@ bool CTextureDatabase::GetCachedTexture(const std::string &url, CTextureDetails 
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "%s, failed on url '%s'", __FUNCTION__, url.c_str());
+    CLog::Log(LOGERROR, "{}, failed on url '{}'", __FUNCTION__, url);
   }
   return false;
 }
@@ -286,8 +271,10 @@ bool CTextureDatabase::GetTextures(CVariant &items, const Filter &filter)
 {
   try
   {
-    if (NULL == m_pDB.get()) return false;
-    if (NULL == m_pDS.get()) return false;
+    if (!m_pDB)
+      return false;
+    if (!m_pDS)
+      return false;
 
     std::string sql = "SELECT %s FROM texture JOIN sizes ON (texture.id=sizes.idtexture AND sizes.size=1)";
     std::string sqlFilter;
@@ -323,7 +310,7 @@ bool CTextureDatabase::GetTextures(CVariant &items, const Filter &filter)
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "%s, failed", __FUNCTION__);
+    CLog::Log(LOGERROR, "{}, failed", __FUNCTION__);
   }
   return false;
 }
@@ -339,8 +326,12 @@ bool CTextureDatabase::AddCachedTexture(const std::string &url, const CTextureDe
 {
   try
   {
-    if (NULL == m_pDB.get()) return false;
-    if (NULL == m_pDS.get()) return false;
+    if (!m_pDB)
+      return false;
+    if (!m_pDS)
+      return false;
+
+    BeginTransaction();
 
     std::string sql = PrepareSQL("DELETE FROM texture WHERE url='%s'", url.c_str());
     m_pDS->exec(sql);
@@ -353,10 +344,13 @@ bool CTextureDatabase::AddCachedTexture(const std::string &url, const CTextureDe
     // set the size information
     sql = PrepareSQL("INSERT INTO sizes (idtexture, size, usecount, lastusetime, width, height) VALUES(%u, 1, 1, CURRENT_TIMESTAMP, %u, %u)", textureID, details.width, details.height);
     m_pDS->exec(sql);
+
+    CommitTransaction();
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "%s failed on url '%s'", __FUNCTION__, url.c_str());
+    CLog::Log(LOGERROR, "{} failed on url '{}'", __FUNCTION__, url);
+    RollbackTransaction();
   }
   return true;
 }
@@ -371,8 +365,10 @@ bool CTextureDatabase::ClearCachedTexture(int id, std::string &cacheFile)
 {
   try
   {
-    if (NULL == m_pDB.get()) return false;
-    if (NULL == m_pDS.get()) return false;
+    if (!m_pDB)
+      return false;
+    if (!m_pDS)
+      return false;
 
     std::string sql = PrepareSQL("select cachedurl from texture where id=%u", id);
     m_pDS->query(sql);
@@ -390,7 +386,7 @@ bool CTextureDatabase::ClearCachedTexture(int id, std::string &cacheFile)
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "%s, failed on texture id %u", __FUNCTION__, id);
+    CLog::Log(LOGERROR, "{}, failed on texture id {}", __FUNCTION__, id);
   }
   return false;
 }
@@ -406,8 +402,10 @@ std::string CTextureDatabase::GetTextureForPath(const std::string &url, const st
 {
   try
   {
-    if (NULL == m_pDB.get()) return "";
-    if (NULL == m_pDS.get()) return "";
+    if (!m_pDB)
+      return "";
+    if (!m_pDS)
+      return "";
 
     if (url.empty())
       return "";
@@ -425,7 +423,7 @@ std::string CTextureDatabase::GetTextureForPath(const std::string &url, const st
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "%s, failed on url '%s'", __FUNCTION__, url.c_str());
+    CLog::Log(LOGERROR, "{}, failed on url '{}'", __FUNCTION__, url);
   }
   return "";
 }
@@ -434,8 +432,10 @@ void CTextureDatabase::SetTextureForPath(const std::string &url, const std::stri
 {
   try
   {
-    if (NULL == m_pDB.get()) return;
-    if (NULL == m_pDS.get()) return;
+    if (!m_pDB)
+      return;
+    if (!m_pDS)
+      return;
 
     if (url.empty())
       return;
@@ -458,26 +458,26 @@ void CTextureDatabase::SetTextureForPath(const std::string &url, const std::stri
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "%s failed on url '%s'", __FUNCTION__, url.c_str());
+    CLog::Log(LOGERROR, "{} failed on url '{}'", __FUNCTION__, url);
   }
-  return;
 }
 
 void CTextureDatabase::ClearTextureForPath(const std::string &url, const std::string &type)
 {
   try
   {
-    if (NULL == m_pDB.get()) return;
-    if (NULL == m_pDS.get()) return;
+    if (!m_pDB)
+      return;
+    if (!m_pDS)
+      return;
 
     std::string sql = PrepareSQL("DELETE FROM path WHERE url='%s' and type='%s'", url.c_str(), type.c_str());
     m_pDS->exec(sql);
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "%s failed on url '%s'", __FUNCTION__, url.c_str());
+    CLog::Log(LOGERROR, "{} failed on url '{}'", __FUNCTION__, url);
   }
-  return;
 }
 
 CDatabaseQueryRule *CTextureDatabase::CreateRule() const
