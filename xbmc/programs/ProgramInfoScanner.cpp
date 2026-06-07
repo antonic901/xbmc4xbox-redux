@@ -196,7 +196,7 @@ namespace PROGRAM
     }
     else
     {
-      scraper->GetProgramDetails(strPath, tag);
+      scraper->GetProgramDetails(CScraperUrl(strPath), tag);
     }
 
     // set default values if not present

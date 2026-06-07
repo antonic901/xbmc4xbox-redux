@@ -25,6 +25,7 @@ class CFileItem;
 class CDVDDemux;
 class CStreamDetails;
 class CDVDInputStream;
+class CTexture;
 class CTextureDetails;
 
 class CDVDFileInfo
@@ -32,10 +33,10 @@ class CDVDFileInfo
 public:
   // Extract a thumbnail immage from the media at strPath, optionally populating a streamdetails class with the data
   static bool ExtractThumb(const CStdString &strPath, CTextureDetails &details, CStreamDetails *pStreamDetails, int pos=-1);
-  
+
   // GetFileMetaData will fill pItem's properties according to what can be extracted from the file.
-  static void GetFileMetaData(const CStdString &strPath, CFileItem *pItem); 
-  
+  static void GetFileMetaData(const CStdString &strPath, CFileItem *pItem);
+
 
   /*!
    * @brief Can a thumbnail image and file stream details be extracted from this file item?

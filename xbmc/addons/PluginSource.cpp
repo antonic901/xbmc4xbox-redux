@@ -25,6 +25,7 @@
 #include "AddonManager.h"
 #include "ServiceBroker.h"
 #include "utils/StringUtils.h"
+#include "URL.h"
 
 namespace ADDON
 {
@@ -34,7 +35,29 @@ boost::movelib::unique_ptr<CPluginSource> CPluginSource::FromExtension(AddonProp
   std::string provides = CServiceBroker::GetAddonMgr().GetExtValue(ext->configuration, "provides");
   if (!provides.empty())
     props.extrainfo.insert(make_pair("provides", provides));
-  return boost::movelib::unique_ptr<CPluginSource>(new CPluginSource(boost::move(props), provides));
+  CPluginSource* p = new CPluginSource(boost::move(props), provides);
+
+  ELEMENTS elements;
+  if (CServiceBroker::GetAddonMgr().GetExtElements(ext->configuration, "medialibraryscanpath", elements))
+  {
+    std::string url = "plugin://" + p->ID() + '/';
+    for (ELEMENTS::const_iterator elem = elements.begin(); elem != elements.end(); ++elem)
+    {
+      std::string content = CServiceBroker::GetAddonMgr().GetExtValue(*elem, "@content");
+      if (content.empty())
+        continue;
+      std::string path;
+      if ((*elem)->value)
+        path.assign((*elem)->value);
+      if (!path.empty() && path[0] == '/')
+        path.erase(0, 1);
+      if (path.compare(0, url.size(), url))
+        path.insert(0, url);
+      p->m_mediaLibraryScanPaths[content].push_back(CURL(path).GetFileName());
+    }
+  }
+
+  return boost::movelib::unique_ptr<CPluginSource>(p);
 }
 
 CPluginSource::CPluginSource(AddonProps props) : CAddon(boost::move(props))

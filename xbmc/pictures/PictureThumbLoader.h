@@ -19,10 +19,9 @@
  *
  */
 
-#include "utils/JobManager.h"
 #include "ThumbLoader.h"
 
-class CPictureThumbLoader : public CThumbLoader, public CJobQueue
+class CPictureThumbLoader : public CThumbLoader
 {
 public:
   CPictureThumbLoader();
@@ -33,15 +32,6 @@ public:
   virtual bool LoadItemLookup(CFileItem* pItem);
   void SetRegenerateThumbs(bool regenerate) { m_regenerateThumbs = regenerate; };
   static void ProcessFoldersAndArchives(CFileItem *pItem);
-
-  /*!
-   \brief Callback from CThumbExtractor on completion of a generated image
-
-   Performs the callbacks and updates the GUI.
-
-   \sa CImageLoader, IJobCallback
-   */
-  virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
 
 protected:
   virtual void OnLoaderFinish();

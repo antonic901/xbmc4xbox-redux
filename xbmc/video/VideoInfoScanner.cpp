@@ -609,12 +609,12 @@ namespace VIDEO
     CInfoScanner::INFO_TYPE result=CInfoScanner::NO_NFO;
     CScraperUrl scrUrl;
     // handle .nfo files
-    boost::movelib::unique_ptr<IVideoInfoTagLoader> loader;
+    boost::shared_ptr<IVideoInfoTagLoader> loader;
     if (useLocal)
     {
-      std::pair<CInfoScanner::INFO_TYPE, boost::movelib::unique_ptr<IVideoInfoTagLoader> > temp = ReadInfoTag(*pItem, info2, bDirNames, true);
+      std::pair<CInfoScanner::INFO_TYPE, boost::shared_ptr<IVideoInfoTagLoader> > temp = ReadInfoTag(*pItem, info2, bDirNames, true);
       result = temp.first;
-      loader = boost::move(temp.second);
+      loader = temp.second;
     }
 
     if (result == CInfoScanner::FULL_NFO)
@@ -728,12 +728,12 @@ namespace VIDEO
     CInfoScanner::INFO_TYPE result = CInfoScanner::NO_NFO;
     CScraperUrl scrUrl;
     // handle .nfo files
-    boost::movelib::unique_ptr<IVideoInfoTagLoader> loader;
+    boost::shared_ptr<IVideoInfoTagLoader> loader;
     if (useLocal)
     {
-      std::pair<CInfoScanner::INFO_TYPE, boost::movelib::unique_ptr<IVideoInfoTagLoader> > temp = ReadInfoTag(*pItem, info2, bDirNames, true);
+      std::pair<CInfoScanner::INFO_TYPE, boost::shared_ptr<IVideoInfoTagLoader> > temp = ReadInfoTag(*pItem, info2, bDirNames, true);
       result = temp.first;
-      loader = boost::move(temp.second);
+      loader = temp.second;
     }
     if (result == CInfoScanner::FULL_NFO)
     {
@@ -831,12 +831,12 @@ namespace VIDEO
     CInfoScanner::INFO_TYPE result = CInfoScanner::NO_NFO;
     CScraperUrl scrUrl;
     // handle .nfo files
-    boost::movelib::unique_ptr<IVideoInfoTagLoader> loader;
+    boost::shared_ptr<IVideoInfoTagLoader> loader;
     if (useLocal)
     {
-      std::pair<CInfoScanner::INFO_TYPE, boost::movelib::unique_ptr<IVideoInfoTagLoader> > temp = ReadInfoTag(*pItem, info2, bDirNames, true);
+      std::pair<CInfoScanner::INFO_TYPE, boost::shared_ptr<IVideoInfoTagLoader> > temp = ReadInfoTag(*pItem, info2, bDirNames, true);
       result = temp.first;
-      loader = boost::move(temp.second);
+      loader = temp.second;
     }
     if (result == CInfoScanner::FULL_NFO)
     {
@@ -970,6 +970,7 @@ namespace VIDEO
   }
 
   void AddItemToList(CFileItemList& items, const boost::shared_ptr<CFileItem>& item) { items.Add(item); }
+  bool ItemHasNoMedia(const CVideoInfoScanner *scanner, const boost::shared_ptr<CFileItem>& item) { return !scanner->HasNoMedia(item->GetPath()); }
 
   bool CVideoInfoScanner::EnumerateSeriesFolder(CFileItem* item, EPISODELIST& episodeList)
   {
@@ -1022,8 +1023,8 @@ namespace VIDEO
 
         // Listing that ignores files inside and below folders containing .nomedia files.
         CDirectory::EnumerateDirectory(
-            item->GetPath(), boost::bind(&AddItemToList, &items, _1),
-            boost::bind(&CVideoInfoScanner::HasNoMedia, this, _1),
+            item->GetPath(), boost::bind(&AddItemToList, boost::ref(items), _1),
+            boost::bind(&ItemHasNoMedia, this, _1),
             true, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions, flags);
 
         // fast hash failed - compute slow one
@@ -1675,14 +1676,14 @@ namespace VIDEO
     return type;
   }
 
-  std::pair<CInfoScanner::INFO_TYPE, boost::movelib::unique_ptr<IVideoInfoTagLoader> > CVideoInfoScanner::
+  std::pair<CInfoScanner::INFO_TYPE, boost::shared_ptr<IVideoInfoTagLoader> > CVideoInfoScanner::
       ReadInfoTag(CFileItem& item,
                   const ADDON::ScraperPtr& scraper,
                   bool lookInFolder,
                   bool resetTag)
   {
     CInfoScanner::INFO_TYPE result = NO_NFO;
-    boost::movelib::unique_ptr<IVideoInfoTagLoader> loader(
+    boost::shared_ptr<IVideoInfoTagLoader> loader(
         CVideoInfoTagLoaderFactory::CreateLoader(item, scraper, lookInFolder));
     if (loader)
     {
@@ -1698,7 +1699,7 @@ namespace VIDEO
       if (!advancedSettings->m_bVideoLibraryImportResumePoint)
         infoTag.SetResumePoint(CBookmark());
     }
-    return std::make_pair<CInfoScanner::INFO_TYPE, boost::movelib::unique_ptr<IVideoInfoTagLoader> >(result, boost::move(loader));
+    return std::make_pair<CInfoScanner::INFO_TYPE, boost::shared_ptr<IVideoInfoTagLoader> >(result, loader);
   }
 
   std::string CVideoInfoScanner::GetMovieSetInfoFolder(const std::string& setTitle)
@@ -1972,12 +1973,12 @@ namespace VIDEO
       CInfoScanner::INFO_TYPE result=CInfoScanner::NO_NFO;
       CScraperUrl scrUrl;
       const ScraperPtr& info(scraper);
-      boost::movelib::unique_ptr<IVideoInfoTagLoader> loader;
+      boost::shared_ptr<IVideoInfoTagLoader> loader;
       if (useLocal)
       {
-        std::pair<CInfoScanner::INFO_TYPE, boost::movelib::unique_ptr<IVideoInfoTagLoader> > temp = ReadInfoTag(item, info, false, false);
+        std::pair<CInfoScanner::INFO_TYPE, boost::shared_ptr<IVideoInfoTagLoader> > temp = ReadInfoTag(item, info, false, false);
         result = temp.first;
-        loader = boost::move(temp.second);
+        loader = temp.second;
       }
       if (result == CInfoScanner::FULL_NFO)
       {
