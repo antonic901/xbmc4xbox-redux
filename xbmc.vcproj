@@ -455,6 +455,24 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\SystemGlobals.cpp">
 			</File>
 			<File
+				RelativePath=".\xbmc\TextureCache.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\TextureCache.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\TextureCacheJob.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\TextureCacheJob.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\TextureDatabase.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\TextureDatabase.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\xbmc.cpp">
 			</File>
 			<File
@@ -1293,12 +1311,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\DatabaseManager.h">
 				</File>
-				<File
-					RelativePath=".\xbmc\TextureDatabase.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\TextureDatabase.h">
-				</File>
 			</Filter>
 			<Filter
 				Name="GUI Dialog"
@@ -1492,18 +1504,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\pictures\SlideShowPicture.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\TextureCache.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\TextureCache.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\TextureCacheJob.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\TextureCacheJob.h">
 				</File>
 			</Filter>
 			<Filter
@@ -4981,6 +4981,19 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\playlists\SmartPlaylistFileItemListModifier.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="imagefiles"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\imagefiles\SpecialImageFileLoader.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\imagefiles\SpecialImageLoaderFactory.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\imagefiles\SpecialImageLoaderFactory.h">
 				</File>
 			</Filter>
 		</Filter>

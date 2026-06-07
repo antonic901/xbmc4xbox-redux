@@ -1,31 +1,20 @@
 /*
- *      Copyright (C) 2012-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2012-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #pragma once
 
+#include "utils/Job.h"
+
+#include <cstddef>
+#include <boost/move/unique_ptr.hpp>
 #include <stdint.h>
 #include <string>
 #include <vector>
-#include <boost/move/unique_ptr.hpp>
-
-#include "utils/Job.h"
 
 class CTexture;
 
@@ -36,24 +25,21 @@ class CTexture;
 class CTextureDetails
 {
 public:
-  CTextureDetails()
-  {
-    id = -1;
-    width = height = 0;
-    updateable = false;
-  };
+  CTextureDetails() : id(-1), width(0), height(0), updateable(false), hashRevalidated(false) {}
   bool operator==(const CTextureDetails &right) const
   {
     return (id    == right.id    &&
             file  == right.file  &&
             width == right.width );
   };
-  int          id;
-  std::string  file;
-  std::string  hash;
+
+  int id;
+  std::string file;
+  std::string hash;
   unsigned int width;
   unsigned int height;
-  bool         updateable;
+  bool updateable;
+  bool hashRevalidated;
 };
 
 /*!
@@ -68,7 +54,7 @@ public:
   CTextureCacheJob(const std::string &url, const std::string &oldHash = "");
   virtual ~CTextureCacheJob();
 
-  virtual const char* GetType() const { return kJobTypeCacheImage; };
+  virtual const char* GetType() const { return kJobTypeCacheImage; }
   virtual bool operator==(const CJob *job) const;
   virtual bool DoWork();
 
@@ -77,7 +63,7 @@ public:
    \param url location of the image
    \return a hash string for this image
    */
-  bool CacheTexture(boost::movelib::unique_ptr<CTexture>* = NULL);
+  bool CacheTexture(boost::movelib::unique_ptr<CTexture>* texture = NULL);
 
   std::string m_url;
   std::string m_oldHash;
@@ -89,15 +75,6 @@ private:
    \return a hash string for this image
    */
   static std::string GetImageHash(const std::string &url);
-
-  /*! \brief Check whether a given URL represents an image that can be updated
-   We currently don't check http:// and https:// URLs for updates, under the assumption that
-   a image URL is much more likely to be static and the actual image at the URL is unlikely
-   to change, so no point checking all the time.
-   \param url the url to check
-   \return true if the image given by the URL should be checked for updates, false otehrwise
-   */
-  bool UpdateableURL(const std::string &url) const;
 
   /*! \brief Decode an image URL to the underlying image, width, height and orientation
    \param url wrapped URL of the image
@@ -119,7 +96,11 @@ private:
    \param additional_info extra info for loading, such as whether to flip horizontally.
    \return a pointer to a CTexture object, NULL if failed.
    */
-  static boost::movelib::unique_ptr<CTexture> LoadImage(const std::string &image, unsigned int width, unsigned int height, const std::string &additional_info);
+  static boost::movelib::unique_ptr<CTexture> LoadImage(const std::string& image,
+                                             unsigned int width,
+                                             unsigned int height,
+                                             const std::string& additional_info,
+                                             bool requirePixels = false);
 
   std::string    m_cachePath;
 };
@@ -129,9 +110,9 @@ private:
 class CTextureUseCountJob : public CJob
 {
 public:
-  CTextureUseCountJob(const std::vector<CTextureDetails> &textures);
+  explicit CTextureUseCountJob(const std::vector<CTextureDetails> &textures);
 
-  virtual const char* GetType() const { return "usecount"; };
+  virtual const char* GetType() const { return "usecount"; }
   virtual bool operator==(const CJob *job) const;
   virtual bool DoWork();
 

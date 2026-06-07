@@ -1,32 +1,25 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #pragma once
 
+#include "TextureCacheJob.h"
+#include "TextureDatabase.h"
+#include "threads/CriticalSection.h"
+#include "threads/Event.h"
+#include "utils/JobManager.h"
+
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
-#include "utils/JobManager.h"
-#include "TextureDatabase.h"
-#include "threads/Event.h"
 
+class CJob;
 class CURL;
 class CTexture;
 
@@ -46,7 +39,7 @@ public:
   CTextureCache();
   virtual ~CTextureCache();
 
-  /*! \brief Initalize the texture cache
+  /*! \brief Initialize the texture cache
    */
   void Initialize();
 
@@ -77,6 +70,17 @@ public:
    */
   void BackgroundCacheImage(const std::string &image);
 
+  /*! \brief Updates the in-process list.
+
+   Inserts the image url into the currently processing list
+   to avoid 2 jobs being processed at once
+
+   \param image url of the image to start processing
+   \return true if list updated, false otherwise
+   \sa CacheImage
+   */
+  bool StartCacheImage(const std::string& image);
+
   /*! \brief Cache an image to image cache, optionally return the texture
 
    Caches the given image, returning the texture if the caller wants it.
@@ -87,7 +91,9 @@ public:
    \return cached url of this image
    \sa CTextureCacheJob::CacheTexture
    */
-  std::string CacheImage(const std::string &image, boost::movelib::unique_ptr<CTexture>* = NULL, CTextureDetails *details = NULL);
+  std::string CacheImage(const std::string& image,
+                         boost::movelib::unique_ptr<CTexture>* texture = nullptr,
+                         CTextureDetails* details = nullptr);
 
   /*! \brief Cache an image to image cache if not already cached, returning the image details.
    \param image url of the image to cache.
@@ -153,7 +159,7 @@ public:
   bool Export(const std::string &image, const std::string &destination, bool overwrite);
   bool Export(const std::string &image, const std::string &destination); //! @todo BACKWARD COMPATIBILITY FOR MUSIC THUMBS
 private:
-  // private construction, and no assignements; use the provided singleton methods
+  // private construction, and no assignments; use the provided singleton methods
   CTextureCache(const CTextureCache&);
   CTextureCache const& operator=(CTextureCache const&);
 
@@ -204,7 +210,6 @@ private:
   bool SetCachedTextureValid(const std::string &url, bool updateable);
 
   virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
-  virtual void OnJobProgress(unsigned int jobID, unsigned int progress, unsigned int total, const CJob *job);
 
   /*! \brief Called when a caching job has completed.
    Removes the job from our processing list, updates the database
