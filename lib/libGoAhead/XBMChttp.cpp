@@ -488,7 +488,7 @@ void CXbmcHttp::SetCurrentMediaItem(CFileItem& newItem)
 
 int CXbmcHttp::FindPathInPlayList(int playList, CStdString path)
 {
-  CPlayList& thePlayList = g_playlistPlayer.GetPlaylist(playList);
+  CPlayList& thePlayList = CServiceBroker::GetPlaylistPlayer().GetPlaylist(playList);
   for (int i = 0; i < thePlayList.size(); i++)
   {
     CFileItemPtr item = thePlayList[i];
@@ -524,7 +524,7 @@ void CXbmcHttp::AddItemToPlayList(const CFileItemPtr &pItem, int playList, int s
       pSlideShow->Add(pItem.get());
     }
     else
-      g_playlistPlayer.Add(playList, pItem);
+      CServiceBroker::GetPlaylistPlayer().Add(playList, pItem);
   }
 }
 
@@ -557,15 +557,15 @@ bool CXbmcHttp::LoadPlayList(CStdString strPath, int iPlaylist, bool clearList, 
   }
 
   if (clearList)
-    g_playlistPlayer.ClearPlaylist(iPlaylist);
+    CServiceBroker::GetPlaylistPlayer().ClearPlaylist(iPlaylist);
 
-  g_playlistPlayer.Add(iPlaylist, *pPlayList);
+  CServiceBroker::GetPlaylistPlayer().Add(iPlaylist, *pPlayList);
 
   if (autoStart)
-    if (g_playlistPlayer.GetPlaylist( iPlaylist ).size() )
+    if (CServiceBroker::GetPlaylistPlayer().GetPlaylist( iPlaylist ).size() )
     {
-      g_playlistPlayer.SetCurrentPlaylist(iPlaylist);
-      g_playlistPlayer.Reset();
+      CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(iPlaylist);
+      CServiceBroker::GetPlaylistPlayer().Reset();
       CServiceBroker::GetAppMessenger()->PostMsg(TMSG_PLAYLISTPLAYER_PLAY);
       return true;
     }
@@ -977,46 +977,12 @@ int CXbmcHttp::xbmcGetSources(int numParas, CStdString paras[])
 
 int CXbmcHttp::xbmcQueryMusicDataBase(int numParas, CStdString paras[])
 {
-  if (numParas==0)
-    return SetResponse(openTag+"Error:Missing Parameter");
-  else
-  {
-    CMusicDatabase musicdatabase;
-    if (musicdatabase.Open())
-    {
-      CStdString result;
-      if (musicdatabase.GetArbitraryQuery(paras[0], openRecordSet, closeRecordSet, openRecord, closeRecord, openField, closeField, result))
-        return SetResponse(result);
-      else
-        return SetResponse(openTag+"Error:"+result);
-      musicdatabase.Close();
-    }
-    else
-      return SetResponse(openTag+"Error:Could not open database");
-  }
-  return true;
+  return SetResponse(openTag+"Error:Deprecated function");
 }
 
 int CXbmcHttp::xbmcQueryVideoDataBase(int numParas, CStdString paras[])
 {
-  if (numParas==0)
-    return SetResponse(openTag+"Error:Missing Parameter");
-  else
-  {
-  CVideoDatabase videodatabase;
-  if (videodatabase.Open())
-  {
-    CStdString result;
-    if (videodatabase.GetArbitraryQuery(paras[0], openRecordSet, closeRecordSet, openRecord, closeRecord, openField, closeField, result))
-      return SetResponse(result);
-    else
-      return SetResponse(openTag+"Error:"+result);
-    videodatabase.Close();
-  }
-  else
-    return SetResponse(openTag+"Error:Could not open database");
-  }
-  return true;
+  return SetResponse(openTag+"Error:Deprecated function");
 }
 
 int CXbmcHttp::xbmcQueryProgramDataBase(int numParas, CStdString paras[])
@@ -1026,46 +992,12 @@ int CXbmcHttp::xbmcQueryProgramDataBase(int numParas, CStdString paras[])
 
 int CXbmcHttp::xbmcExecVideoDataBase(int numParas, CStdString paras[])
 {
-  if (numParas==0)
-    return SetResponse(openTag+"Error:Missing Parameter");
-  else
-  {
-    CVideoDatabase videodatabase;
-    if (videodatabase.Open())
-    {
-      CStdString result;
-      if (videodatabase.ArbitraryExec(paras[0]))
-        return SetResponse(openTag+"SQL Exec Done");
-      else
-        return SetResponse(openTag+"Error:SQL Exec Failed");
-      videodatabase.Close();
-    }
-    else
-      return SetResponse(openTag+"Error:Could not open database");
-  }
-  return true;
+  return SetResponse(openTag+"Error:Deprecated function");
 }
 
 int CXbmcHttp::xbmcExecMusicDataBase(int numParas, CStdString paras[])
 {
-  if (numParas==0)
-    return SetResponse(openTag+"Error:Missing Parameter");
-  else
-  {
-    CMusicDatabase musicdatabase;
-    if (musicdatabase.Open())
-    {
-      CStdString result;
-      if (musicdatabase.ArbitraryExec(paras[0]))
-        return SetResponse(openTag+"SQL Exec Done");
-      else
-        return SetResponse(openTag+"Error:SQL Exec Failed");
-      musicdatabase.Close();
-    }
-    else
-      return SetResponse(openTag+"Error:Could not open database");
-  }
-  return true;
+  return SetResponse(openTag+"Error:Deprecated function");
 }
 
 int CXbmcHttp::xbmcAddToPlayListFromDB(int numParas, CStdString paras[])
@@ -1078,36 +1010,38 @@ int CXbmcHttp::xbmcAddToPlayListFromDB(int numParas, CStdString paras[])
   // Perform open query if empty where clause
   if (paras[1] == "")
     paras[1] = "1 = 1";
-  CStdString where = paras[1];
+
+  CDatabase::Filter filter;
+  filter.where = paras[1];
 
   int playList;
   CFileItemList filelist;
   if (type.Equals("songs"))
   {
-    playList = PLAYLIST_MUSIC;
+    playList = PLAYLIST::TYPE_MUSIC;
 
     CMusicDatabase musicdatabase;
     if (!musicdatabase.Open())
       return SetResponse(openTag+ "Error: Could not open music database");
-    musicdatabase.GetSongsByWhere("musicdb://songs/", where, filelist);
+    musicdatabase.GetSongsByWhere("musicdb://songs/", filter, filelist);
     musicdatabase.Close();
   }
   else if (type.Equals("movies") ||
            type.Equals("episodes") ||
            type.Equals("musicvideos"))
   {
-    playList = PLAYLIST_VIDEO;
+    playList = PLAYLIST::TYPE_VIDEO;
 
     CVideoDatabase videodatabase;
     if (!videodatabase.Open())
       return SetResponse(openTag+"Error: Could not open video database");
 
     if (type.Equals("movies"))
-      videodatabase.GetMoviesByWhere("videodb://movies/titles/", where, filelist);
+      videodatabase.GetMoviesByWhere("videodb://movies/titles/", filter, filelist);
     else if (type.Equals("episodes"))
-      videodatabase.GetEpisodesByWhere("videodb://tvshows/titles/", where, filelist);
+      videodatabase.GetEpisodesByWhere("videodb://tvshows/titles/", filter, filelist);
     else if (type.Equals("musicvideos"))
-      videodatabase.GetMusicVideosByWhere("videodb://musicvideos/titles/", where, filelist);
+      videodatabase.GetMusicVideosByWhere("videodb://musicvideos/titles/", filter, filelist);
     videodatabase.Close();
   }
   else
@@ -1116,7 +1050,7 @@ int CXbmcHttp::xbmcAddToPlayListFromDB(int numParas, CStdString paras[])
   if (filelist.Size() == 0)
     return SetResponse(openTag+"Nothing added");
 
-  g_playlistPlayer.Add(playList, filelist);
+  CServiceBroker::GetPlaylistPlayer().Add(playList, filelist);
   return SetResponse(openTag+"OK");
 }
 
@@ -1132,12 +1066,12 @@ int CXbmcHttp::xbmcAddToPlayList(int numParas, CStdString paras[])
   else
   {
     if (numParas==1) //no playlist and no mask
-      playList=g_playlistPlayer.GetCurrentPlaylist();
+      playList=CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist();
     else
     {
       playList=atoi(paras[1]);
       if (playList==-1)
-        playList=g_playlistPlayer.GetCurrentPlaylist();
+        playList=CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist();
       if(numParas>2) //includes mask
         mask=procMask(paras[2]);
       if (numParas>3) //recursive
@@ -1194,9 +1128,7 @@ int CXbmcHttp::xbmcGetTagFromFilename(int numParas, CStdString paras[])
   }
   if (bFound)
   {
-    SYSTEMTIME systime;
-    systime.wYear=song.iYear;
-    tag->SetReleaseDate(systime);
+    tag->SetReleaseDate(song.strReleaseDate);
     tag->SetTrackNumber(song.iTrack);
     tag->SetAlbum(song.strAlbum);
     tag->SetArtist(song.GetArtist());
@@ -1237,9 +1169,7 @@ int CXbmcHttp::xbmcGetTagFromFilename(int numParas, CStdString paras[])
     tmp.Format("%i", tag->GetDuration());
     output += closeTag+openTag+"Duration:" + tmp;
     output += closeTag+openTag+"Genre:" + StringUtils::Join(tag->GetGenre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator).c_str();
-    SYSTEMTIME stTime;
-    tag->GetReleaseDate(stTime);
-    tmp.Format("%i", stTime.wYear);
+    tmp.Format("%i", tag->GetYear());
     output += closeTag+openTag+"Release year:" + tmp;
     CMusicThumbLoader loader;
     if (loader.LoadItem(pItem) && pItem->HasArt("thumb"))
@@ -1261,10 +1191,10 @@ int CXbmcHttp::xbmcClearPlayList(int numParas, CStdString paras[])
 {
   int playList ;
   if (numParas==0)
-    playList = g_playlistPlayer.GetCurrentPlaylist() ;
+    playList = CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() ;
   else
     playList=atoi(paras[0]) ;
-  g_playlistPlayer.ClearPlaylist( playList );
+  CServiceBroker::GetPlaylistPlayer().ClearPlaylist( playList );
   return SetResponse(openTag+"OK");
 }
 
@@ -1273,10 +1203,10 @@ int CXbmcHttp::xbmcSwapPlayListItems(int numParas, CStdString paras[])
   int iPlayList ;
   if (numParas < 3)
     return SetResponse(openTag+"Error: Not enough parameters");
-  iPlayList=g_playlistPlayer.GetCurrentPlaylist();
+  iPlayList=CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist();
   if (numParas > 2)
     iPlayList = atoi(paras[2]);
-  CPlayList& playlist = g_playlistPlayer.GetPlaylist(iPlayList);
+  CPlayList& playlist = CServiceBroker::GetPlaylistPlayer().GetPlaylist(iPlayList);
 
   int item1;
   if (StringUtils::IsNaturalNumber(paras[0]))
@@ -1437,7 +1367,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
       output+=closeTag+openTag+"PlayStatus:Stopped";
     if (g_application.m_pPlayer->IsPlayingVideo())
     { // Video information
-      tmp.Format("%i",g_playlistPlayer.GetCurrentSong());
+      tmp.Format("%i",CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx());
       output+=closeTag+openTag+"VideoNo:"+tmp;  // current item # in playlist
       output+=closeTag+openTag+"Type"+tag+":Video" ;
       const CVideoInfoTag* tagVal=CServiceBroker::GetGUI()->GetInfoManager().GetCurrentMovieTag();
@@ -1508,7 +1438,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
     }
     else if (g_application.m_pPlayer->IsPlayingAudio())
     { // Audio information
-      tmp.Format("%i",g_playlistPlayer.GetCurrentSong());
+      tmp.Format("%i",CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx());
       output+=closeTag+openTag+"SongNo:"+tmp;  // current item # in playlist
       output+=closeTag+openTag+"Type"+tag+":Audio";
       const CMusicInfoTag* tagVal=CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag();
@@ -1882,14 +1812,14 @@ int CXbmcHttp::xbmcGetThumbFilename(int numParas, CStdString paras[])
 
 int CXbmcHttp::xbmcPlayerPlayFile(int numParas, CStdString paras[])
 {
-  int iPlaylist = g_playlistPlayer.GetCurrentPlaylist();
+  int iPlaylist = CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist();
   if (numParas<1)
     return SetResponse(openTag+"Error:Missing file parameter");
   if (numParas>1)
     iPlaylist = atoi(paras[1]);
   CFileItem item(paras[0], FALSE);
-  if (iPlaylist == PLAYLIST_NONE)
-    iPlaylist = PLAYLIST_MUSIC;
+  if (iPlaylist == PLAYLIST::TYPE_NONE)
+    iPlaylist = PLAYLIST::TYPE_MUSIC;
   if (item.IsPlayList())
   {
     LoadPlayList(paras[0], iPlaylist, true, true);
@@ -1911,7 +1841,7 @@ int CXbmcHttp::xbmcPlayerPlayFile(int numParas, CStdString paras[])
 int CXbmcHttp::xbmcGetCurrentPlayList()
 {
   CStdString tmp;
-  tmp.Format("%i", g_playlistPlayer.GetCurrentPlaylist());
+  tmp.Format("%i", CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist());
   return SetResponse(openTag + tmp  );
 }
 
@@ -1920,7 +1850,7 @@ int CXbmcHttp::xbmcSetCurrentPlayList(int numParas, CStdString paras[])
   if (numParas<1)
     return SetResponse(openTag+"Error:Missing playlist") ;
   else {
-    g_playlistPlayer.SetCurrentPlaylist(atoi(paras[0].c_str()));
+    CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(atoi(paras[0].c_str()));
     return SetResponse(openTag+"OK") ;
   }
 }
@@ -1932,7 +1862,7 @@ int CXbmcHttp::xbmcGetPlayListContents(int numParas, CStdString paras[])
   // option = showduration -> path;duration
 
   CStdString list="";
-  int playList = g_playlistPlayer.GetCurrentPlaylist();
+  int playList = CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist();
   bool bShowIndex = false;
   bool bShowTitle = false;
   bool bShowDuration = false;
@@ -1947,10 +1877,10 @@ int CXbmcHttp::xbmcGetPlayListContents(int numParas, CStdString paras[])
     else if (StringUtils::IsNaturalNumber(paras[i]))
       playList = atoi(paras[i]);
   }
-  CPlayList& thePlayList = g_playlistPlayer.GetPlaylist(playList);
+  CPlayList& thePlayList = CServiceBroker::GetPlaylistPlayer().GetPlaylist(playList);
   if (thePlayList.size()==0)
     list=openTag+"[Empty]" ;
-  bool bIsMusic = (playList == PLAYLIST_MUSIC);
+  bool bIsMusic = (playList == PLAYLIST::TYPE_MUSIC);
   for (int i = 0; i < thePlayList.size(); i++)
   {
     CFileItemPtr item = thePlayList[i];
@@ -1980,10 +1910,10 @@ int CXbmcHttp::xbmcGetPlayListLength(int numParas, CStdString paras[])
   int playList;
 
   if (numParas<1)
-    playList=g_playlistPlayer.GetCurrentPlaylist();
+    playList=CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist();
   else
     playList=atoi(paras[0]);
-  CPlayList& thePlayList = g_playlistPlayer.GetPlaylist(playList);
+  CPlayList& thePlayList = CServiceBroker::GetPlaylistPlayer().GetPlaylist(playList);
 
   CStdString tmp;
   tmp.Format("%i", thePlayList.size());
@@ -2017,14 +1947,14 @@ int CXbmcHttp::xbmcGetPlayListSong(int numParas, CStdString paras[])
   if (numParas<1)
   {
     CStdString tmp;
-    tmp.Format("%i", g_playlistPlayer.GetCurrentSong());
+    tmp.Format("%i", CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx());
     return SetResponse(openTag + tmp );
   }
   else {
     CPlayList thePlayList;
     iSong=atoi(paras[0]);
     if (iSong!=-1){
-      thePlayList=g_playlistPlayer.GetPlaylist( g_playlistPlayer.GetCurrentPlaylist() );
+      thePlayList=CServiceBroker::GetPlaylistPlayer().GetPlaylist( CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() );
       if (thePlayList.size()>iSong) {
         Filename=thePlayList[iSong]->GetPath();
         return SetResponse(openTag + Filename );
@@ -2040,20 +1970,20 @@ int CXbmcHttp::xbmcSetPlayListSong(int numParas, CStdString paras[])
     return SetResponse(openTag+"Error:Missing song number");
   else
   {
-    g_playlistPlayer.Play(atoi(paras[0].c_str()), "");
+    CServiceBroker::GetPlaylistPlayer().Play(atoi(paras[0].c_str()), "");
     return SetResponse(openTag+"OK");
   }
 }
 
 int CXbmcHttp::xbmcPlayListNext()
 {
-  g_playlistPlayer.PlayNext();
+  CServiceBroker::GetPlaylistPlayer().PlayNext();
   return SetResponse(openTag+"OK");
 }
 
 int CXbmcHttp::xbmcPlayListPrev()
 {
-  g_playlistPlayer.PlayPrevious();
+  CServiceBroker::GetPlaylistPlayer().PlayPrevious();
   return SetResponse(openTag+"OK");
 }
 
@@ -2061,7 +1991,7 @@ int CXbmcHttp::xbmcRemoveFromPlayList(int numParas, CStdString paras[])
 {
   if (numParas > 0)
   {
-    int iPlaylist = g_playlistPlayer.GetCurrentPlaylist();
+    int iPlaylist = CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist();
     CStdString strItem = paras[0];
     int itemToRemove;
     if (numParas > 1)
@@ -2071,21 +2001,21 @@ int CXbmcHttp::xbmcRemoveFromPlayList(int numParas, CStdString paras[])
     else
       itemToRemove=FindPathInPlayList(iPlaylist, strItem);
     // The current playing song can't be removed
-    if (g_playlistPlayer.GetCurrentPlaylist() == PLAYLIST_MUSIC && g_application.m_pPlayer->IsPlayingAudio()
-      && g_playlistPlayer.GetCurrentSong() == itemToRemove)
+    if (CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_MUSIC && g_application.m_pPlayer->IsPlayingAudio()
+      && CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx() == itemToRemove)
       return SetResponse(openTag+"Error:Can't remove current playing song");
-    if (itemToRemove<0 || itemToRemove>=g_playlistPlayer.GetPlaylist(iPlaylist).size())
+    if (itemToRemove<0 || itemToRemove>=CServiceBroker::GetPlaylistPlayer().GetPlaylist(iPlaylist).size())
       return SetResponse(openTag+"Error:Item not found or parameter out of range");
-    g_playlistPlayer.GetPlaylist(PLAYLIST_MUSIC).Remove(itemToRemove);
+    CServiceBroker::GetPlaylistPlayer().GetPlaylist(PLAYLIST::TYPE_MUSIC).Remove(itemToRemove);
 
     // Correct the current playing song in playlistplayer
-    if (g_playlistPlayer.GetCurrentPlaylist() == PLAYLIST_MUSIC && g_application.m_pPlayer->IsPlayingAudio())
+    if (CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_MUSIC && g_application.m_pPlayer->IsPlayingAudio())
     {
-      int iCurrentSong = g_playlistPlayer.GetCurrentSong();
+      int iCurrentSong = CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx();
       if (itemToRemove <= iCurrentSong)
       {
         iCurrentSong--;
-        g_playlistPlayer.SetCurrentSong(iCurrentSong);
+        CServiceBroker::GetPlaylistPlayer().SetCurrentItemIdx(iCurrentSong);
       }
     }
     return SetResponse(openTag+"OK");
@@ -2202,7 +2132,7 @@ int CXbmcHttp::xbmcAction(int numParas, CStdString paras[], int theAction)
         pSlideShow->OnAction(CAction(ACTION_NEXT_PICTURE));
     }
     else
-      g_playlistPlayer.PlayNext();
+      CServiceBroker::GetPlaylistPlayer().PlayNext();
     return SetResponse(openTag+"OK");
     break;
   case 4:
@@ -2212,7 +2142,7 @@ int CXbmcHttp::xbmcAction(int numParas, CStdString paras[], int theAction)
         pSlideShow->OnAction(CAction(ACTION_PREV_PICTURE));
     }
     else
-      g_playlistPlayer.PlayPrevious();
+      CServiceBroker::GetPlaylistPlayer().PlayPrevious();
     return SetResponse(openTag+"OK");
     break;
   case 5:
@@ -2330,7 +2260,7 @@ int CXbmcHttp::xbmcLookupAlbum(int numParas, CStdString paras[])
           for (int i=0; i < iAlbumCount; ++i)
           {
             CMusicAlbumInfo& info = scraper.GetAlbum(i);
-            albums += closeTag+openTag + info.GetTitle2().c_str() + "<@@>" + info.GetAlbumURL().m_url[0].m_url.c_str();
+            albums += closeTag+openTag + info.GetTitle2().c_str() + "<@@>" + info.GetAlbumURL().GetFirstThumbUrl().c_str();
             if (rel)
             {
               relevance = CUtil::AlbumRelevance(info.GetAlbum().strAlbum, album, StringUtils::Join(info.GetAlbum().GetAlbumArtist(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator), artist);
@@ -2367,8 +2297,8 @@ int CXbmcHttp::xbmcChooseAlbum(int numParas, CStdString paras[])
       ScraperPtr info; // TODO - WTF is this code supposed to do?
       if (musicInfo.Load(http,info))
       {
-        if (musicInfo.GetAlbum().thumbURL.m_url.size() > 0)
-         output=openTag+"image:" + musicInfo.GetAlbum().thumbURL.m_url[0].m_url.c_str();
+        if (musicInfo.GetAlbum().thumbURL.HasUrls() > 0)
+          output=openTag+"image:" + musicInfo.GetAlbum().thumbURL.GetFirstThumbUrl().c_str();
 
         output+=closeTag+openTag+"review:" + musicInfo.GetAlbum().strReview.c_str();
         return SetResponse(output) ;

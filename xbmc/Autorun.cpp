@@ -20,9 +20,11 @@
 
 #include "Autorun.h"
 #include "Application.h"
+#include "FileItem.h"
 #include "GUIPassword.h"
 #include "GUIUserMessages.h"
 #include "PlayListPlayer.h"
+#include "ServiceBroker.h"
 #include "filesystem/StackDirectory.h"
 #include "filesystem/Directory.h"
 #include "filesystem/DirectoryFactory.h"
@@ -109,10 +111,10 @@ void CAutorun::RunCdda()
   if ( vecItems.Size() <= 0 )
     return ;
 
-  g_playlistPlayer.ClearPlaylist(PLAYLIST_MUSIC);
-  g_playlistPlayer.Add(PLAYLIST_MUSIC, vecItems);
-  g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_MUSIC);
-  g_playlistPlayer.Play();
+  CServiceBroker::GetPlaylistPlayer().ClearPlaylist(PLAYLIST::TYPE_MUSIC);
+  CServiceBroker::GetPlaylistPlayer().Add(PLAYLIST::TYPE_MUSIC, vecItems);
+  CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(PLAYLIST::TYPE_MUSIC);
+  CServiceBroker::GetPlaylistPlayer().Play();
 }
 
 void CAutorun::RunMedia(bool bypassSettings, bool restart)
@@ -135,7 +137,7 @@ void CAutorun::RunMedia(bool bypassSettings, bool restart)
   if ( !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.dvd") && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.vcd") && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.video") && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.music") && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("autorun.pictures") )
     return ;
 
-  int nSize = g_playlistPlayer.GetPlaylist( PLAYLIST_MUSIC ).size();
+  int nSize = CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_MUSIC ).size();
   int nAddedToPlaylist = 0;
 #ifndef _XBOX
   auto_ptr<IDirectory> pDir ( CFactoryDirectory::Create( CServiceBroker::GetMediaManager().TranslateDevicePath("") ));
@@ -164,9 +166,9 @@ void CAutorun::RunMedia(bool bypassSettings, bool restart)
   {
     CGUIMessage msg( GUI_MSG_PLAYLIST_CHANGED, 0, 0 );
     CServiceBroker::GetGUI()->GetWindowManager().SendMessage( msg );
-    g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_MUSIC);
+    CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(PLAYLIST::TYPE_MUSIC);
     // Start playing the items we inserted
-    g_playlistPlayer.Play(nSize, "");
+    CServiceBroker::GetPlaylistPlayer().Play(nSize, "");
   }
 }
 
@@ -233,10 +235,10 @@ bool CAutorun::RunDisc(IDirectory* pDir, const std::string& strDrive, int& nAdde
           if (items.Size())
           {
             items.Sort(SortByLabel, SortOrderDescending);
-            g_playlistPlayer.ClearPlaylist(PLAYLIST_VIDEO);
-            g_playlistPlayer.Add(PLAYLIST_VIDEO, items);
-            g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_VIDEO);
-            g_playlistPlayer.Play(0, "");
+            CServiceBroker::GetPlaylistPlayer().ClearPlaylist(PLAYLIST::TYPE_VIDEO);
+            CServiceBroker::GetPlaylistPlayer().Add(PLAYLIST::TYPE_VIDEO, items);
+            CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(PLAYLIST::TYPE_VIDEO);
+            CServiceBroker::GetPlaylistPlayer().Play(0, "");
             bPlaying = true;
             return true;
           }
@@ -292,10 +294,10 @@ bool CAutorun::RunDisc(IDirectory* pDir, const std::string& strDrive, int& nAdde
           if (!g_passwordManager.IsMasterLockUnlocked(true))
             return false;
       }
-      g_playlistPlayer.ClearPlaylist(PLAYLIST_VIDEO);
-      g_playlistPlayer.Add(PLAYLIST_VIDEO, itemlist);
-      g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_VIDEO);
-      g_playlistPlayer.Play(0, "");
+      CServiceBroker::GetPlaylistPlayer().ClearPlaylist(PLAYLIST::TYPE_VIDEO);
+      CServiceBroker::GetPlaylistPlayer().Add(PLAYLIST::TYPE_VIDEO, itemlist);
+      CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(PLAYLIST::TYPE_VIDEO);
+      CServiceBroker::GetPlaylistPlayer().Play(0, "");
     }
   }
   // then music
@@ -307,7 +309,7 @@ bool CAutorun::RunDisc(IDirectory* pDir, const std::string& strDrive, int& nAdde
       if (!pItem->m_bIsFolder && pItem->IsAudio())
       {
         nAddedToPlaylist++;
-        g_playlistPlayer.Add(PLAYLIST_MUSIC, pItem);
+        CServiceBroker::GetPlaylistPlayer().Add(PLAYLIST::TYPE_MUSIC, pItem);
       }
     }
   }

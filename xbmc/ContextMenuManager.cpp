@@ -66,8 +66,8 @@ void CContextMenuManager::Init()
   m_addonMgr.Events().Subscribe(this, &CContextMenuManager::OnEvent);
 
   CSingleLock lock(m_criticalSection);
-  m_items.push_back(boost::make_shared<CONTEXTMENU::CResume>());
-  m_items.push_back(boost::make_shared<CONTEXTMENU::CPlay>());
+  m_items.push_back(boost::make_shared<CONTEXTMENU::CVideoResume>());
+  m_items.push_back(boost::make_shared<CONTEXTMENU::CVideoPlay>());
   m_items.push_back(boost::make_shared<CONTEXTMENU::CAddonInfo>());
   m_items.push_back(boost::make_shared<CONTEXTMENU::CAddonSettings>());
   m_items.push_back(boost::make_shared<CONTEXTMENU::CCheckForUpdates>());
@@ -78,8 +78,8 @@ void CContextMenuManager::Init()
   m_items.push_back(boost::make_shared<CONTEXTMENU::CAlbumInfo>());
   m_items.push_back(boost::make_shared<CONTEXTMENU::CArtistInfo>());
   m_items.push_back(boost::make_shared<CONTEXTMENU::CSongInfo>());
-  m_items.push_back(boost::make_shared<CONTEXTMENU::CMarkWatched>());
-  m_items.push_back(boost::make_shared<CONTEXTMENU::CMarkUnWatched>());
+  m_items.push_back(boost::make_shared<CONTEXTMENU::CVideoMarkWatched>());
+  m_items.push_back(boost::make_shared<CONTEXTMENU::CVideoMarkUnWatched>());
   m_items.push_back(boost::make_shared<CONTEXTMENU::CProgramSettings>());
   m_items.push_back(boost::make_shared<CONTEXTMENU::CProgramInfoBase>());
   m_items.push_back(boost::make_shared<CONTEXTMENU::CScraperConfig>());

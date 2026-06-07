@@ -32,8 +32,8 @@ namespace XBMCAddon
     /// @param playList              [integer] To define the stream type
     /// | Value | Integer String      | Description                            |
     /// |:-----:|:--------------------|:---------------------------------------|
-    /// |   0   | xbmc.PLAYLIST_MUSIC | Playlist for music files or streams    |
-    /// |   1   | xbmc.PLAYLIST_VIDEO | Playlist for video files or streams    |
+    /// |   0   | xbmc.PLAYLIST::TYPE_MUSIC | Playlist for music files or streams    |
+    /// |   1   | xbmc.PLAYLIST::TYPE_VIDEO | Playlist for video files or streams    |
     ///
     ///
     ///
@@ -42,7 +42,7 @@ namespace XBMCAddon
     /// **Example:**
     /// ~~~~~~~~~~~~~{.py}
     /// ...
-    /// play=xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+    /// play=xbmc.PlayList(xbmc.PLAYLIST::TYPE_VIDEO)
     /// ...
     /// ~~~~~~~~~~~~~
     //
@@ -89,7 +89,7 @@ namespace XBMCAddon
       /// **Example:**
       /// ~~~~~~~~~~~~~{.py}
       /// ..
-      /// playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+      /// playlist = xbmc.PlayList(xbmc.PLAYLIST::TYPE_VIDEO)
       /// video = 'F:\\movies\\Ironman.mov'
       /// listitem = xbmcgui.ListItem('Ironman', thumbnailImage='F:\\movies\\Ironman.tbn')
       /// listitem.setInfo('video', {'Title': 'Ironman', 'Genre': 'Science Fiction'})

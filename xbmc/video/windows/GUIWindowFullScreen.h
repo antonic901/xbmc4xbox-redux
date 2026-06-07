@@ -10,8 +10,6 @@
 
 #include "guilib/GUIWindow.h"
 
-#include <chrono>
-
 class CGUIDialog;
 
 class CGUIWindowFullScreen : public CGUIWindow
@@ -39,7 +37,7 @@ private:
   CGUIDialog *GetOSD();
 
   bool m_viewModeChanged;
-  std::chrono::time_point<std::chrono::steady_clock> m_dwShowViewModeTimeout;
+  unsigned int m_dwShowViewModeTimeout;
 
   bool m_bShowCurrentTime;
 };

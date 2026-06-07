@@ -18,6 +18,7 @@
 #include "music/MusicDatabase.h"
 #include "XBMCweb.h"
 
+#include "URL.h"
 #include "Util.h"
 #include "PlayListPlayer.h"
 #include "filesystem/CDDADirectory.h"
@@ -194,11 +195,11 @@ void CXbmcWeb::AddItemToPlayList(const CFileItemPtr &pItem)
     switch(GetNavigatorState())
     {
     case WEB_NAV_VIDEOS:
-      g_playlistPlayer.Add(PLAYLIST_VIDEO, pItem);
+      CServiceBroker::GetPlaylistPlayer().Add(PLAYLIST::TYPE_VIDEO, pItem);
       break;
 
     case WEB_NAV_MUSIC:
-      g_playlistPlayer.Add(PLAYLIST_MUSIC, pItem);
+      CServiceBroker::GetPlaylistPlayer().Add(PLAYLIST::TYPE_MUSIC, pItem);
       break;
     }
   }
@@ -326,14 +327,14 @@ int CXbmcWeb::xbmcNavigate( int eid, webs_t wp, char_t *parameter)
         //get shares and extensions
         if (!strcmp(parameter, WEB_VIDEOS))
         {
-          g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_VIDEO);
+          CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(PLAYLIST::TYPE_VIDEO);
           // NOTICE: point always to list of all movies (MoviesTitle)
           shares = CMediaSourceSettings::GetInstance().GetSources("video");;
           directory->SetMask(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoExtensions);
         }
         else if (!strcmp(parameter, WEB_MUSIC))
         {
-          g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_MUSIC);
+          CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(PLAYLIST::TYPE_MUSIC);
           shares = CMediaSourceSettings::GetInstance().GetSources("music");
           directory->SetMask(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions);
         }
@@ -436,9 +437,9 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
 
     // get total items in current state
     if (navigatorState == WEB_NAV_MUSICPLAYLIST)
-      iItemCount = g_playlistPlayer.GetPlaylist(PLAYLIST_MUSIC).size();
+      iItemCount = CServiceBroker::GetPlaylistPlayer().GetPlaylist(PLAYLIST::TYPE_MUSIC).size();
     else if (navigatorState == WEB_NAV_VIDEOPLAYLIST)
-      iItemCount = g_playlistPlayer.GetPlaylist(PLAYLIST_VIDEO).size();
+      iItemCount = CServiceBroker::GetPlaylistPlayer().GetPlaylist(PLAYLIST::TYPE_VIDEO).size();
     else iItemCount = webDirItems->Size();
 
     // have we requested a catalog item name?
@@ -448,18 +449,18 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
       if (navigatorState == WEB_NAV_MUSICPLAYLIST)
       {
         // we want to know the name from an item in the music playlist
-        if (selectionNumber <= g_playlistPlayer.GetPlaylist( PLAYLIST_MUSIC ).size())
+        if (selectionNumber <= CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_MUSIC ).size())
         {
-          strcpy(buffer, g_playlistPlayer.GetPlaylist( PLAYLIST_MUSIC )[selectionNumber]->GetLabel().c_str());
+          strcpy(buffer, CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_MUSIC )[selectionNumber]->GetLabel().c_str());
           output = buffer;
         }
       }
       else if (navigatorState == WEB_NAV_VIDEOPLAYLIST)
       {
         // we want to know the name from an item in the video playlist
-        if (selectionNumber <= g_playlistPlayer.GetPlaylist( PLAYLIST_VIDEO ).size())
+        if (selectionNumber <= CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_VIDEO ).size())
         {
-          strcpy(buffer, g_playlistPlayer.GetPlaylist( PLAYLIST_VIDEO )[selectionNumber]->GetLabel().c_str());
+          strcpy(buffer, CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_VIDEO )[selectionNumber]->GetLabel().c_str());
           output = buffer;
         }
       }
@@ -534,12 +535,12 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
       if (navigatorState == WEB_NAV_MUSICPLAYLIST)
       {
         // we want to know how much music files are in the music playlist
-        items = g_playlistPlayer.GetPlaylist( PLAYLIST_MUSIC ).size();
+        items = CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_MUSIC ).size();
       }
       else if (navigatorState == WEB_NAV_VIDEOPLAYLIST)
       {
         // we want to know how much video files are in the video playlist
-        items = g_playlistPlayer.GetPlaylist( PLAYLIST_VIDEO ).size();
+        items = CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_VIDEO ).size();
       }
       else
       {
@@ -561,15 +562,15 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
       if (navigatorState == WEB_NAV_MUSICPLAYLIST)
       {
         // we want the first music item form the music playlist
-        if(catalogItemCounter < g_playlistPlayer.GetPlaylist( PLAYLIST_MUSIC ).size()) {
-          name = g_playlistPlayer.GetPlaylist( PLAYLIST_MUSIC )[catalogItemCounter]->GetLabel();
+        if(catalogItemCounter < CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_MUSIC ).size()) {
+          name = CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_MUSIC )[catalogItemCounter]->GetLabel();
         }
       }
       else if (navigatorState == WEB_NAV_VIDEOPLAYLIST)
       {
         // we want the first video item form the video playlist
-        if(catalogItemCounter < g_playlistPlayer.GetPlaylist( PLAYLIST_VIDEO ).size()) {
-          name = g_playlistPlayer.GetPlaylist( PLAYLIST_VIDEO )[catalogItemCounter]->GetLabel();
+        if(catalogItemCounter < CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_VIDEO ).size()) {
+          name = CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_VIDEO )[catalogItemCounter]->GetLabel();
         }
       }
       else
@@ -593,22 +594,22 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
       CStdString name;
       if (navigatorState == WEB_NAV_MUSICPLAYLIST || navigatorState == WEB_NAV_VIDEOPLAYLIST)
       {
-        if(navigatorState == WEB_NAV_MUSICPLAYLIST && (catalogItemCounter + 1) < g_playlistPlayer.GetPlaylist( PLAYLIST_MUSIC ).size())
+        if(navigatorState == WEB_NAV_MUSICPLAYLIST && (catalogItemCounter + 1) < CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_MUSIC ).size())
         {
           // we want the next item in the music playlist
           ++catalogItemCounter;
-          name = g_playlistPlayer.GetPlaylist( PLAYLIST_MUSIC )[catalogItemCounter]->GetLabel();
+          name = CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_MUSIC )[catalogItemCounter]->GetLabel();
           if( eid != NO_EID) {
             ejSetResult( eid, (char_t *)name.c_str());
           } else {
             cnt = websWrite(wp, (char_t *)name.c_str());
           }
         }
-        else if(navigatorState == WEB_NAV_VIDEOPLAYLIST && (catalogItemCounter + 1) < g_playlistPlayer.GetPlaylist( PLAYLIST_VIDEO ).size())
+        else if(navigatorState == WEB_NAV_VIDEOPLAYLIST && (catalogItemCounter + 1) < CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_VIDEO ).size())
         {
           // we want the next item in the video playlist
           ++catalogItemCounter;
-          name = g_playlistPlayer.GetPlaylist( PLAYLIST_VIDEO )[catalogItemCounter]->GetLabel();
+          name = CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_VIDEO )[catalogItemCounter]->GetLabel();
           if( eid != NO_EID) {
             ejSetResult( eid, (char_t *)name.c_str());
           } else {
@@ -667,23 +668,23 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
         {
           // get xbmc's playlist using our navigator state
           int iPlaylist;
-          if (navigatorState == WEB_NAV_MUSICPLAYLIST) iPlaylist = PLAYLIST_MUSIC;
-          else iPlaylist = PLAYLIST_VIDEO;
+          if (navigatorState == WEB_NAV_MUSICPLAYLIST) iPlaylist = PLAYLIST::TYPE_MUSIC;
+          else iPlaylist = PLAYLIST::TYPE_VIDEO;
 
           // attemt to unque item from playlist.
-          g_playlistPlayer.GetPlaylist(iPlaylist).Remove(catalogNumber(parameter));
+          CServiceBroker::GetPlaylistPlayer().GetPlaylist(iPlaylist).Remove(catalogNumber(parameter));
         }
         else
         {
           CFileItemPtr itm;
           if (navigatorState == WEB_NAV_MUSICPLAYLIST)
           {
-            itm = g_playlistPlayer.GetPlaylist(PLAYLIST_MUSIC)[selectionNumber];
+            itm = CServiceBroker::GetPlaylistPlayer().GetPlaylist(PLAYLIST::TYPE_MUSIC)[selectionNumber];
             itm->m_bIsFolder = false;
           }
           else if (navigatorState == WEB_NAV_VIDEOPLAYLIST)
           {
-            itm = g_playlistPlayer.GetPlaylist(PLAYLIST_VIDEO)[selectionNumber];
+            itm = CServiceBroker::GetPlaylistPlayer().GetPlaylist(PLAYLIST::TYPE_VIDEO)[selectionNumber];
             itm->m_bIsFolder = false;
           }
           else itm = webDirItems->Get(selectionNumber);
@@ -767,8 +768,8 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
             {
               if (itm->IsPlayList())
               {
-                int iPlayList = PLAYLIST_MUSIC;
-                if (GetNavigatorState() == WEB_NAV_VIDEOS) iPlayList = PLAYLIST_VIDEO;
+                int iPlayList = PLAYLIST::TYPE_MUSIC;
+                if (GetNavigatorState() == WEB_NAV_VIDEOS) iPlayList = PLAYLIST::TYPE_VIDEO;
 
                 // load a playlist like .m3u, .pls
                 // first get correct factory to load playlist
@@ -783,7 +784,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
                   }
 
                   // clear current playlist
-                  CPlayList& playlist = g_playlistPlayer.GetPlaylist(iPlayList);
+                  CPlayList& playlist = CServiceBroker::GetPlaylistPlayer().GetPlaylist(iPlayList);
                   playlist.Clear();
 
                   // add each item of the playlist to the playlistplayer
@@ -795,7 +796,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
                     playlist.Add(playlistItem);
                   }
 
-                  g_playlistPlayer.SetCurrentPlaylist(iPlayList);
+                  CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(iPlayList);
 
                   // play first item in playlist
                   CServiceBroker::GetAppMessenger()->PostMsg(TMSG_PLAYLISTPLAYER_PLAY);
@@ -855,9 +856,9 @@ int CXbmcWeb::xbmcPlayerPlay( int eid, webs_t wp, char_t *parameter)
 int CXbmcWeb::xbmcPlayerNext(int eid, webs_t wp, char_t *parameter)
 {
   // get the playlist we want for the current navigator state
-  int currentPlayList = (navigatorState == WEB_NAV_MUSICPLAYLIST) ? PLAYLIST_MUSIC : PLAYLIST_VIDEO;
+  int currentPlayList = (navigatorState == WEB_NAV_MUSICPLAYLIST) ? PLAYLIST::TYPE_MUSIC : PLAYLIST::TYPE_VIDEO;
   // activate needed playlist
-  g_playlistPlayer.SetCurrentPlaylist(currentPlayList);
+  CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(currentPlayList);
 
   CServiceBroker::GetAppMessenger()->SendMsg(TMSG_PLAYLISTPLAYER_NEXT);
   return 0;
@@ -870,9 +871,9 @@ int CXbmcWeb::xbmcPlayerNext(int eid, webs_t wp, char_t *parameter)
 int CXbmcWeb::xbmcPlayerPrevious(int eid, webs_t wp, char_t *parameter)
 {
   // get the playlist we want for the current navigator state
-  int currentPlayList = (navigatorState == WEB_NAV_MUSICPLAYLIST) ? PLAYLIST_MUSIC : PLAYLIST_VIDEO;
+  int currentPlayList = (navigatorState == WEB_NAV_MUSICPLAYLIST) ? PLAYLIST::TYPE_MUSIC : PLAYLIST::TYPE_VIDEO;
   // activate playlist
-  g_playlistPlayer.SetCurrentPlaylist(currentPlayList);
+  CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(currentPlayList);
 
   CServiceBroker::GetAppMessenger()->SendMsg(TMSG_PLAYLISTPLAYER_PREV);
   return 0;

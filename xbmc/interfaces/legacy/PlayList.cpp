@@ -25,8 +25,8 @@ namespace XBMCAddon
       iPlayList(playList), pPlayList(NULL)
     {
       // we do not create our own playlist, just using the ones from playlistplayer
-      if (iPlayList != PLAYLIST_MUSIC &&
-          iPlayList != PLAYLIST_VIDEO)
+      if (iPlayList != PLAYLIST::TYPE_MUSIC &&
+          iPlayList != PLAYLIST::TYPE_VIDEO)
         throw PlayListException("PlayList does not exist");
 
       pPlayList = &g_playlistPlayer.GetPlaylist(playList);

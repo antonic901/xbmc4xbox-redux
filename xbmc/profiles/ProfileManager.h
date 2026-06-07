@@ -181,6 +181,9 @@ public:
   std::string GetSavestatesFolder() const;
   std::string GetSettingsFile() const;
 
+  // TODO: cache thumbs through CTextureCacheJob
+  std::string GetGameSaveThumbFolder() const;
+
   // uses HasSlashAtEnd to determine if a directory or file was meant
   std::string GetUserDataItem(const std::string& strFile) const;
 

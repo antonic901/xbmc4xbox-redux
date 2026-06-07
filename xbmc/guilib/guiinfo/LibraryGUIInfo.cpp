@@ -128,7 +128,7 @@ bool CLibraryGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contex
         CVideoDatabase db;
         if (db.Open())
         {
-          m_libraryHasMovies = db.HasContent(VIDEODB_CONTENT_MOVIES) ? 1 : 0;
+          m_libraryHasMovies = db.HasContent(VideoDbContentType::MOVIES) ? 1 : 0;
           db.Close();
         }
       }
@@ -156,7 +156,7 @@ bool CLibraryGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contex
         CVideoDatabase db;
         if (db.Open())
         {
-          m_libraryHasTVShows = db.HasContent(VIDEODB_CONTENT_TVSHOWS) ? 1 : 0;
+          m_libraryHasTVShows = db.HasContent(VideoDbContentType::TVSHOWS) ? 1 : 0;
           db.Close();
         }
       }
@@ -170,7 +170,7 @@ bool CLibraryGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contex
         CVideoDatabase db;
         if (db.Open())
         {
-          m_libraryHasMusicVideos = db.HasContent(VIDEODB_CONTENT_MUSICVIDEOS) ? 1 : 0;
+          m_libraryHasMusicVideos = db.HasContent(VideoDbContentType::MUSICVIDEOS) ? 1 : 0;
           db.Close();
         }
       }

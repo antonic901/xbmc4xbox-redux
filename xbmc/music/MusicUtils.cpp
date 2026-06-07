@@ -812,7 +812,7 @@ void QueueItem(const boost::shared_ptr<CFileItem>& itemIn, QueuePosition pos)
 
   if (pos == MUSIC_UTILS::POSITION_BEGIN && g_application.m_pPlayer->IsPlaying())
     player.Insert(playlistId, queuedItems,
-                  CServiceBroker::GetPlaylistPlayer().GetCurrentSong() + 1);
+                  CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx() + 1);
   else
     player.Add(playlistId, queuedItems);
 

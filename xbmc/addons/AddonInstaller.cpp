@@ -386,7 +386,7 @@ void CAddonInstaller::PrunePackageCache()
   {
     size -= items[i]->m_dwSize;
     db.RemovePackage(items[i]->GetPath());
-    CFileUtils::DeleteItem(items[i++], true);
+    CFileUtils::DeleteItem(items[i++]);
   }
 
   if (size > limit)
@@ -405,7 +405,7 @@ void CAddonInstaller::PrunePackageCache()
     {
       size -= items[i]->m_dwSize;
       db.RemovePackage(items[i]->GetPath());
-      CFileUtils::DeleteItem(items[i++],true);
+      CFileUtils::DeleteItem(items[i++]);
     }
   }
 

@@ -190,9 +190,7 @@ bool CEncoderLame::Close()
   tag.SetGenre(m_strGenre);
   tag.SetTitle(m_strTitle);
   tag.SetTrackNumber(atoi(m_strTrack.c_str()));
-  SYSTEMTIME time;
-  time.wYear=atoi(m_strYear.c_str());
-  tag.SetReleaseDate(time);
+  tag.SetYear(atoi(m_strYear.c_str()));
   id3tag.SetMusicInfoTag(tag);
   id3tag.Write(m_strFile);
 

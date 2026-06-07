@@ -6067,7 +6067,7 @@ bool CVideoDatabase::UpdateVideoSortTitle(int idDb,
   catch (...)
   {
     CLog::Log(LOGERROR,
-              "{} (int idDb, const std::string& strNewSortTitle, VIDEODB_CONTENT_TYPE iType) "
+              "{} (int idDb, const std::string& strNewSortTitle, VideoDbContentType::Type iType) "
               "failed on ID: {} and Sort Title: {}",
               __FUNCTION__, idDb, strNewSortTitle);
   }

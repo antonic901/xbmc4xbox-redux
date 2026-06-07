@@ -26,6 +26,7 @@
 #include "CDDARipJob.h"
 #include "utils/StringUtils.h"
 #include "Util.h"
+#include "URL.h"
 #include "filesystem/CDDADirectory.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "utils/LabelFormatter.h"

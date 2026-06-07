@@ -66,7 +66,7 @@ EClientQuirks GetClientQuirks(const PLT_HttpRequestContext* context)
       return ECLIENTQUIRKS_NONE;
 
   unsigned int quirks = 0;
-  const NPT_String* user_agent = context->GetRequest().GetHeaders().GetHeaderValue(NPT_HTTP_HEADER_USER_AGENT); 
+  const NPT_String* user_agent = context->GetRequest().GetHeaders().GetHeaderValue(NPT_HTTP_HEADER_USER_AGENT);
   const NPT_String* server     = context->GetRequest().GetHeaders().GetHeaderValue(NPT_HTTP_HEADER_SERVER);
 
   if (user_agent) {
@@ -426,9 +426,7 @@ BuildObject(const CFileItem&              item,
                   }
                   break;
                 case MUSICDATABASEDIRECTORY::NODE_TYPE_ALBUM:
-                case MUSICDATABASEDIRECTORY::NODE_TYPE_ALBUM_COMPILATIONS:
-                case MUSICDATABASEDIRECTORY::NODE_TYPE_ALBUM_RECENTLY_ADDED:
-                case MUSICDATABASEDIRECTORY::NODE_TYPE_YEAR_ALBUM: {
+                case MUSICDATABASEDIRECTORY::NODE_TYPE_ALBUM_RECENTLY_ADDED: {
                       container->m_ObjectClass.type += ".album.musicAlbum";
                       // for Sonos to be happy
                       CMusicInfoTag *tag = (CMusicInfoTag*)item.GetMusicInfoTag();

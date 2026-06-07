@@ -30,6 +30,7 @@
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
 #include "music/MusicDatabase.h"
+#include "music/MusicDbUrl.h"
 #include "music/tags/MusicInfoTag.h"
 #include "utils/StringUtils.h"
 #include "settings/AdvancedSettings.h"
@@ -327,7 +328,7 @@ bool CRecentlyAddedJob::UpdateMusic()
       std::string strDBpath = StringUtils::Format("musicdb://albums/%li/", album.idAlbum);
 
       home->SetProperty("LatestAlbum." + value + ".Title"   , album.strAlbum);
-      home->SetProperty("LatestAlbum." + value + ".Year"    , album.iYear);
+      home->SetProperty("LatestAlbum." + value + ".Year"    , album.strReleaseDate);
       home->SetProperty("LatestAlbum." + value + ".Artist"  , album.GetAlbumArtistString());
       home->SetProperty("LatestAlbum." + value + ".Rating"  , album.fRating);
       home->SetProperty("LatestAlbum." + value + ".Path"    , strDBpath);

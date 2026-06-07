@@ -252,7 +252,7 @@ bool CCueDocument::GetSong(int aTrackNumber, CSong& aSong)
   aSong.SetAlbumArtist(StringUtils::Split(m_strArtist, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
   aSong.strAlbum = m_strAlbum;
   aSong.genre = StringUtils::Split(m_strGenre, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
-  aSong.iYear = m_iYear;
+  aSong.strReleaseDate = StringUtils::Format("%04i", m_iYear);
   aSong.iTrack = track.iTrackNumber;
   if (m_iDiscNumber > 0)
     aSong.iTrack |= (m_iDiscNumber << 16); // see CMusicInfoTag::GetDiscNumber()
