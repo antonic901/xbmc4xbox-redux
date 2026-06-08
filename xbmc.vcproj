@@ -4006,6 +4006,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					Name="dialogs"
 					Filter="">
 					<File
+						RelativePath=".\xbmc\video\dialogs\GUIDialogAudioSettings.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\video\dialogs\GUIDialogAudioSettings.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\video\dialogs\GUIDialogFullScreenInfo.cpp">
 					</File>
 					<File

@@ -161,7 +161,7 @@ public:
   virtual int  GetMessageMask();
   virtual void OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg);
 
-  bool PlayMedia(const CFileItem& item, const std::string &player, int iPlaylist = PLAYLIST::TYPE_MUSIC);
+  bool PlayMedia(CFileItem& item, const std::string &player, int iPlaylist = PLAYLIST::TYPE_MUSIC);
   bool ProcessAndStartPlaylist(const CStdString& strPlayList, PLAYLIST::CPlayList& playlist, int iPlaylist, int track=0);
   PlayBackRet PlayFile(CFileItem item, const std::string& player, bool bRestart = false);
   void SaveFileState(bool bForeground = false);

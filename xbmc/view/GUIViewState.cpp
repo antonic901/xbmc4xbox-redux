@@ -18,12 +18,8 @@
 #include "addons/Addon.h"
 #include "addons/AddonManager.h"
 #include "addons/PluginSource.h"
-#include "addons/addoninfo/AddonType.h"
-#include "addons/gui/GUIViewStateAddonBrowser.h"
+#include "addons/GUIViewStateAddonBrowser.h"
 #include "dialogs/GUIDialogSelect.h"
-#include "events/windows/GUIViewStateEventLog.h"
-#include "favourites/GUIViewStateFavourites.h"
-#include "games/windows/GUIViewStateWindowGames.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
@@ -32,7 +28,6 @@
 #include "pictures/GUIViewStatePictures.h"
 #include "profiles/ProfileManager.h"
 #include "programs/GUIViewStatePrograms.h"
-#include "pvr/windows/GUIViewStatePVR.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
@@ -47,7 +42,6 @@
 
 using namespace KODI;
 using namespace ADDON;
-using namespace PVR;
 
 std::string CGUIViewState::m_strPlaylistDirectory;
 VECSOURCES CGUIViewState::m_sources;
@@ -106,12 +100,6 @@ CGUIViewState* CGUIViewState::GetViewState(int windowId, const CFileItemList& it
   if (items.GetPath() == "special://musicplaylists/")
     return new CGUIViewStateWindowMusicNav(items);
 
-  if (url.IsProtocol("androidapp"))
-    return new CGUIViewStateWindowPrograms(items);
-
-  if (url.IsProtocol("activities"))
-    return new CGUIViewStateEventLog(items);
-
   if (windowId == WINDOW_MUSIC_NAV)
     return new CGUIViewStateWindowMusicNav(items);
 
@@ -127,59 +115,14 @@ CGUIViewState* CGUIViewState::GetViewState(int windowId, const CFileItemList& it
   if (windowId == WINDOW_VIDEO_PLAYLIST)
     return new CGUIViewStateWindowVideoPlaylist(items);
 
-  if (windowId == WINDOW_TV_CHANNELS)
-    return new CGUIViewStateWindowPVRChannels(windowId, items);
-
-  if (windowId == WINDOW_TV_RECORDINGS)
-    return new CGUIViewStateWindowPVRRecordings(windowId, items);
-
-  if (windowId == WINDOW_TV_GUIDE)
-    return new CGUIViewStateWindowPVRGuide(windowId, items);
-
-  if (windowId == WINDOW_TV_TIMERS)
-    return new CGUIViewStateWindowPVRTimers(windowId, items);
-
-  if (windowId == WINDOW_TV_TIMER_RULES)
-    return new CGUIViewStateWindowPVRTimers(windowId, items);
-
-  if (windowId == WINDOW_TV_SEARCH)
-    return new CGUIViewStateWindowPVRSearch(windowId, items);
-
-  if (windowId == WINDOW_RADIO_CHANNELS)
-      return new CGUIViewStateWindowPVRChannels(windowId, items);
-
-  if (windowId == WINDOW_RADIO_RECORDINGS)
-    return new CGUIViewStateWindowPVRRecordings(windowId, items);
-
-  if (windowId == WINDOW_RADIO_GUIDE)
-    return new CGUIViewStateWindowPVRGuide(windowId, items);
-
-  if (windowId == WINDOW_RADIO_TIMERS)
-    return new CGUIViewStateWindowPVRTimers(windowId, items);
-
-  if (windowId == WINDOW_RADIO_TIMER_RULES)
-    return new CGUIViewStateWindowPVRTimers(windowId, items);
-
-  if (windowId == WINDOW_RADIO_SEARCH)
-    return new CGUIViewStateWindowPVRSearch(windowId, items);
-
   if (windowId == WINDOW_PICTURES)
     return new CGUIViewStateWindowPictures(items);
 
   if (windowId == WINDOW_PROGRAMS)
     return new CGUIViewStateWindowPrograms(items);
 
-  if (windowId == WINDOW_GAMES)
-    return new GAME::CGUIViewStateWindowGames(items);
-
   if (windowId == WINDOW_ADDON_BROWSER)
     return new CGUIViewStateAddonBrowser(items);
-
-  if (windowId == WINDOW_EVENT_LOG)
-    return new CGUIViewStateEventLog(items);
-
-  if (windowId == WINDOW_FAVOURITES)
-    return new CGUIViewStateFavourites(items);
 
   //  Use as fallback/default
   return new CGUIViewStateGeneral(items);
@@ -282,9 +225,9 @@ std::vector<SortDescription> CGUIViewState::GetSortDescriptions() const
 {
   std::vector<SortDescription> descriptions;
   descriptions.reserve(m_sortMethods.size());
-  for (const auto& desc : m_sortMethods)
+  for (std::vector<GUIViewSortDetails>::const_iterator desc = m_sortMethods.begin(); desc != m_sortMethods.end(); ++desc)
   {
-    descriptions.emplace_back(desc.m_sortDescription);
+    descriptions.push_back(desc->m_sortDescription);
   }
   return descriptions;
 }
@@ -365,8 +308,8 @@ bool CGUIViewState::ChooseSortMethod()
     return false;
   dialog->Reset();
   dialog->SetHeading( 39010 ); // Label "Sort by"
-  for (auto &sortMethod : m_sortMethods)
-    dialog->Add(g_localizeStrings.Get(sortMethod.m_buttonLabel));
+  for (std::vector<GUIViewSortDetails>::iterator sortMethod = m_sortMethods.begin(); sortMethod != m_sortMethods.end(); ++sortMethod)
+    dialog->Add(g_localizeStrings.Get(sortMethod->m_buttonLabel));
   dialog->SetSelected(m_currentSortMethod);
   dialog->Open();
   int newSelected = dialog->GetSelectedItem();
@@ -575,10 +518,9 @@ CGUIViewStateFromItems::CGUIViewStateFromItems(const CFileItemList &items) : CGU
   {
     CURL url(items.GetPath());
     AddonPtr addon;
-    if (CServiceBroker::GetAddonMgr().GetAddon(url.GetHostName(), addon, AddonType::PLUGIN,
-                                               OnlyEnabled::CHOICE_YES))
+    if (CServiceBroker::GetAddonMgr().GetAddon(url.GetHostName(), addon, ADDON_PLUGIN))
     {
-      const auto plugin = boost::static_pointer_cast<CPluginSource>(addon);
+      const ADDON::PluginPtr plugin = boost::static_pointer_cast<CPluginSource>(addon);
       if (plugin->Provides(CPluginSource::AUDIO))
         m_playlist = PLAYLIST::TYPE_MUSIC;
       if (plugin->Provides(CPluginSource::VIDEO))
