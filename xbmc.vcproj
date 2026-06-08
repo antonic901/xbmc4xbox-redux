@@ -915,6 +915,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\EmbeddedArt.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\ExecString.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ExecString.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\Fanart.cpp">
 				</File>
 				<File

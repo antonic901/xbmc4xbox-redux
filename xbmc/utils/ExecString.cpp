@@ -40,13 +40,13 @@ CExecString::CExecString(const std::string& function,
 {
   m_valid = !m_function.empty() && !target.GetPath().empty();
 
-  m_params.emplace_back(StringUtils::Paramify(target.GetPath()));
+  m_params.push_back(StringUtils::Paramify(target.GetPath()));
 
   if (target.m_bIsFolder)
-    m_params.emplace_back("isdir");
+    m_params.push_back("isdir");
 
   if (!param.empty())
-    m_params.emplace_back(param);
+    m_params.push_back(param);
 
   if (m_valid)
     SetExecString();
@@ -201,22 +201,28 @@ bool CExecString::Parse(const CFileItem& item, const std::string& contextWindow)
             !(item.IsSmartPlayList() || item.IsPlayList())))
   {
     if (!contextWindow.empty())
-      Build("ActivateWindow", {contextWindow, StringUtils::Paramify(item.GetPath()), "return"});
+    {
+      std::vector<std::string> temp;
+      temp.push_back(contextWindow);
+      temp.push_back(StringUtils::Paramify(item.GetPath()));
+      temp.push_back("return");
+      Build("ActivateWindow", temp);
+    }
   }
   else if (item.IsScript() && item.GetPath().size() > 9) // script://<foo>
-    Build("RunScript", {StringUtils::Paramify(item.GetPath().substr(9))});
+    Build("RunScript", std::vector<std::string>(1, StringUtils::Paramify(item.GetPath().substr(9))));
   else if (item.IsAddonsPath() && item.GetPath().size() > 9) // addons://<foo>
   {
     const CURL url(item.GetPath());
     if (url.GetHostName() == "install")
-      Build("InstallFromZip", {});
+      Build("InstallFromZip", std::vector<std::string>());
     else if (url.GetHostName() == "check_for_updates")
-      Build("UpdateAddonRepos", {"showProgress"});
+      Build("UpdateAddonRepos", std::vector<std::string>(1, "showProgress"));
     else
-      Build("RunAddon", {StringUtils::Paramify(url.GetFileName())});
+      Build("RunAddon", std::vector<std::string>(1, StringUtils::Paramify(url.GetFileName())));
   }
   else if (item.IsAndroidApp() && item.GetPath().size() > 26) // androidapp://sources/apps/<foo>
-    Build("StartAndroidActivity", {StringUtils::Paramify(item.GetPath().substr(26))});
+    Build("StartAndroidActivity", std::vector<std::string>(1, StringUtils::Paramify(item.GetPath().substr(26))));
   else // assume a media file
   {
     if (item.IsVideoDb() && item.HasVideoInfoTag())
@@ -224,7 +230,7 @@ bool CExecString::Parse(const CFileItem& item, const std::string& contextWindow)
     else if (item.IsMusicDb() && item.HasMusicInfoTag())
       BuildPlayMedia(item, StringUtils::Paramify(item.GetMusicInfoTag()->GetURL()));
     else if (item.IsPicture())
-      Build("ShowPicture", {StringUtils::Paramify(item.GetPath())});
+      Build("ShowPicture", std::vector<std::string>(1, StringUtils::Paramify(item.GetPath())));
     else
     {
       // Everything else will be treated as PlayMedia for item's path
@@ -243,10 +249,10 @@ void CExecString::Build(const std::string& function, const std::vector<std::stri
 
 void CExecString::BuildPlayMedia(const CFileItem& item, const std::string& target)
 {
-  std::vector<std::string> params{target};
+  std::vector<std::string> params(1, target);
 
   if (item.HasProperty("playlist_type_hint"))
-    params.emplace_back("playlist_type_hint=" + item.GetProperty("playlist_type_hint").asString());
+    params.push_back("playlist_type_hint=" + item.GetProperty("playlist_type_hint").asString());
 
   Build("PlayMedia", params);
 }

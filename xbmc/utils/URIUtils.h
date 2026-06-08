@@ -171,6 +171,7 @@ public:
   static bool IsSmb(const CStdString& strFile);
   static bool IsSpecial(const CStdString& strFile);
   static bool IsStack(const CStdString& strFile);
+  static bool IsFavourite(const std::string& strFile);
   static bool IsUPnP(const CStdString& strFile);
   static bool IsMemCard(const CStdString& strFile);
   static bool IsURL(const CStdString& strFile);
