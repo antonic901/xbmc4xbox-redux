@@ -70,7 +70,7 @@ namespace XBMCAddon
 
     String InfoTagVideo::getPictureURL()
     {
-      return infoTag->m_strPictureURL.GetFirstThumb().m_url;
+      return infoTag->m_strPictureURL.GetFirstThumbUrl();
     }
 
     String InfoTagVideo::getTVShowTitle()

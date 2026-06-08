@@ -970,6 +970,11 @@ bool CFileItem::IsStack() const
   return URIUtils::IsStack(m_strPath);
 }
 
+bool CFileItem::IsFavourite() const
+{
+  return URIUtils::IsFavourite(m_strPath);
+}
+
 bool CFileItem::IsPlugin() const
 {
   return URIUtils::IsPlugin(m_strPath);

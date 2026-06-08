@@ -29,7 +29,7 @@ namespace XBMCAddon
           iPlayList != PLAYLIST::TYPE_VIDEO)
         throw PlayListException("PlayList does not exist");
 
-      pPlayList = &g_playlistPlayer.GetPlaylist(playList);
+      pPlayList = &CServiceBroker::GetPlaylistPlayer().GetPlaylist(playList);
       iPlayList = playList;
     }
 
@@ -78,7 +78,7 @@ namespace XBMCAddon
             return false;
 
           // clear current playlist
-          g_playlistPlayer.ClearPlaylist(this->iPlayList);
+          CServiceBroker::GetPlaylistPlayer().ClearPlaylist(this->iPlayList);
 
           // add each item of the playlist to the playlistplayer
           for (int i=0; i < pPlayList->size(); ++i)
@@ -125,7 +125,7 @@ namespace XBMCAddon
 
     int PlayList::getposition()
     {
-      return g_playlistPlayer.GetCurrentSong();
+      return CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx();
     }
 
     XBMCAddon::xbmcgui::ListItem* PlayList::operator [](long i)

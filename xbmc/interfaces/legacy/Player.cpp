@@ -119,9 +119,9 @@ namespace XBMCAddon
       g_application.m_eForcedNextPlayer = playerCore;
 
       // play current file in playlist
-      if (g_playlistPlayer.GetCurrentPlaylist() != iPlayList)
-        g_playlistPlayer.SetCurrentPlaylist(iPlayList);
-      CServiceBroker::GetAppMessenger()->SendMsg(TMSG_PLAYLISTPLAYER_PLAY, g_playlistPlayer.GetCurrentSong());
+      if (CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() != iPlayList)
+        CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(iPlayList);
+      CServiceBroker::GetAppMessenger()->SendMsg(TMSG_PLAYLISTPLAYER_PLAY, CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx());
     }
 
     void Player::playPlaylist(const PlayList* playlist, bool windowed, int startpos)
@@ -138,9 +138,9 @@ namespace XBMCAddon
 
         // play a python playlist (a playlist from playlistplayer.cpp)
         iPlayList = playlist->getPlayListId();
-        g_playlistPlayer.SetCurrentPlaylist(iPlayList);
+        CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(iPlayList);
         if (startpos > -1)
-          g_playlistPlayer.SetCurrentSong(startpos);
+          CServiceBroker::GetPlaylistPlayer().SetCurrentItemIdx(startpos);
         CServiceBroker::GetAppMessenger()->SendMsg(TMSG_PLAYLISTPLAYER_PLAY, startpos);
       }
       else
@@ -186,15 +186,15 @@ namespace XBMCAddon
       // force a playercore before playing
       g_application.m_eForcedNextPlayer = playerCore;
 
-      if (g_playlistPlayer.GetCurrentPlaylist() != iPlayList)
+      if (CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() != iPlayList)
       {
-        g_playlistPlayer.SetCurrentPlaylist(iPlayList);
+        CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(iPlayList);
       }
-      g_playlistPlayer.SetCurrentSong(selected);
+      CServiceBroker::GetPlaylistPlayer().SetCurrentItemIdx(selected);
 
       CServiceBroker::GetAppMessenger()->SendMsg(TMSG_PLAYLISTPLAYER_PLAY, selected);
-      //g_playlistPlayer.Play(selected);
-      //CLog::Log(LOGNOTICE, "Current Song After Play: %i", g_playlistPlayer.GetCurrentSong());
+      //CServiceBroker::GetPlaylistPlayer().Play(selected);
+      //CLog::Log(LOGNOTICE, "Current Song After Play: %i", CServiceBroker::GetPlaylistPlayer().GetCurrentSong());
     }
 
     void Player::OnPlayBackStarted()
