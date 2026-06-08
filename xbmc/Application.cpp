@@ -3482,17 +3482,12 @@ void CApplication::Stop(bool bLCDStop)
   }
 }
 
-bool CApplication::PlayMedia(const CFileItem& item, const std::string &player, int iPlaylist)
+bool CApplication::PlayMedia(CFileItem& item, const std::string &player, int iPlaylist)
 {
-  //If item is a plugin, expand out now and run ourselves again
-  if (item.IsPlugin())
-  {
-    bool resume = item.GetStartOffset() == STARTOFFSET_RESUME;
-    CFileItem item_new(item);
-    if (XFILE::CPluginDirectory::GetPluginResult(item.GetPath(), item_new, resume))
-      return PlayMedia(item_new, player, iPlaylist);
+  // if the item is a plugin we need to resolve the plugin paths
+  if (URIUtils::HasPluginPath(item) && !XFILE::CPluginDirectory::GetResolvedPluginResult(item))
     return false;
-  }
+
   if (item.IsSmartPlayList())
   {
     CFileItemList items;
@@ -3710,14 +3705,9 @@ PlayBackRet CApplication::PlayFile(CFileItem item, const std::string& player, bo
   if (item.IsPlayList())
     return PLAYBACK_FAIL;
 
-  if (item.IsPlugin())
-  { // we modify the item so that it becomes a real URL
-    bool resume = item.GetStartOffset() == STARTOFFSET_RESUME;
-    CFileItem item_new(item);
-    if (XFILE::CPluginDirectory::GetPluginResult(item.GetPath(), item_new, resume))
-      return PlayFile(boost::move(item_new), player, false);
+  // if the item is a plugin we need to resolve the plugin paths
+  if (URIUtils::HasPluginPath(item) && !XFILE::CPluginDirectory::GetResolvedPluginResult(item))
     return PLAYBACK_FAIL;
-  }
 
   if (URIUtils::IsUPnP(item.GetPath()))
   {

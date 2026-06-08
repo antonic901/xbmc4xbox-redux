@@ -63,6 +63,11 @@ CStdString URIUtils::GetExtension(const CStdString& strFileName)
   return strFileName.substr(period);
 }
 
+bool URIUtils::HasPluginPath(const CFileItem& item)
+{
+  return IsPlugin(item.GetPath()) || IsPlugin(item.GetDynPath());
+}
+
 bool URIUtils::HasExtension(const CStdString& strFileName)
 {
   if (IsURL(strFileName))

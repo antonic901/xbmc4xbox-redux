@@ -22,6 +22,7 @@
 #include "StdString.h"
 
 class CURL;
+class CFileItem;
 
 class URIUtils
 {
@@ -38,6 +39,12 @@ public:
 
   static CStdString GetExtension(const CURL& url);
   static CStdString GetExtension(const CStdString& strFileName);
+
+  /*! \brief Check if the CFileItem has a plugin path.
+   \param item The CFileItem.
+   \return true if there is a plugin path, false otherwise.
+  */
+  static bool HasPluginPath(const CFileItem& item);
 
   /*!
    \brief Check if there is a file extension

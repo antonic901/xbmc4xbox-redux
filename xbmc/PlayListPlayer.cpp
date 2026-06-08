@@ -7,7 +7,6 @@
  */
 
 #include "PlayListPlayer.h"
-#include "nikola.h"
 
 #include "FileItem.h"
 #include "GUIUserMessages.h"
@@ -87,10 +86,13 @@ bool CPlayListPlayer::OnMessage(CGUIMessage &message)
     if (message.GetParam1() == GUI_MSG_UPDATE_ITEM && message.GetItem())
     {
       // update the items in our playlist(s) if necessary
-      for (Id playlistId : {TYPE_MUSIC, TYPE_VIDEO})
+      std::vector<Id> playlistIds;
+      playlistIds.push_back(TYPE_MUSIC);
+      playlistIds.push_back(TYPE_VIDEO);
+      for (std::vector<Id>::const_iterator playlistId = playlistIds.begin(); playlistId != playlistIds.end(); ++playlistId)
       {
-        CPlayList& playlist = GetPlaylist(playlistId);
-        CFileItemPtr item = std::static_pointer_cast<CFileItem>(message.GetItem());
+        CPlayList& playlist = GetPlaylist(*playlistId);
+        CFileItemPtr item = boost::static_pointer_cast<CFileItem>(message.GetItem());
         playlist.UpdateItem(item.get());
       }
     }
@@ -199,11 +201,7 @@ bool CPlayListPlayer::PlayNext(int offset, bool bAutoPlay)
     return false;
   }
 
-  const auto& components = CServiceBroker::GetAppComponents();
-  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-  const std::string player = appPlayer->GetName();
-
-  return Play(iSong, player, false);
+  return Play(iSong, "", false);
 }
 
 bool CPlayListPlayer::PlayPrevious()
@@ -268,8 +266,8 @@ bool CPlayListPlayer::PlayItemIdx(int itemIdx)
 bool CPlayListPlayer::Play(const CFileItemPtr& pItem, const std::string& player)
 {
   Id playlistId;
-  bool isVideo{pItem->IsVideo()};
-  bool isAudio{pItem->IsAudio()};
+  bool isVideo(pItem->IsVideo());
+  bool isAudio(pItem->IsAudio());
 
   if (isAudio && !isVideo)
     playlistId = TYPE_MUSIC;
@@ -340,7 +338,7 @@ bool CPlayListPlayer::Play(int iSong,
 
   m_bPlaybackStarted = false;
 
-  const auto playAttempt = std::chrono::steady_clock::now();
+  unsigned int playAttempt = XbmcThreads::SystemClockMillis();
   bool ret = g_application.PlayFile(*item, player, bAutoPlay);
   if (!ret)
   {
@@ -352,21 +350,20 @@ bool CPlayListPlayer::Play(int iSong,
     if (!m_iFailedSongs)
       m_failedSongsStart = playAttempt;
     m_iFailedSongs++;
-    const std::shared_ptr<CAdvancedSettings> advancedSettings = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings();
+    const boost::shared_ptr<CAdvancedSettings> advancedSettings = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings();
 
-    auto now = std::chrono::steady_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_failedSongsStart);
+    unsigned int duration = XbmcThreads::SystemClockMillis() - m_failedSongsStart;
 
     if ((m_iFailedSongs >= advancedSettings->m_playlistRetries &&
          advancedSettings->m_playlistRetries >= 0) ||
-        ((duration.count() >=
+        ((duration >=
           static_cast<unsigned int>(advancedSettings->m_playlistTimeout) * 1000) &&
          advancedSettings->m_playlistTimeout))
     {
       CLog::Log(LOGDEBUG,"Playlist Player: one or more items failed to play... aborting playback");
 
       // open error dialog
-      HELPERS::ShowOKDialogText(CVariant{16026}, CVariant{16027});
+      HELPERS::ShowOKDialogText(16026, 16027);
 
       CGUIMessage msg(GUI_MSG_PLAYLISTPLAYER_STOPPED, 0, 0, m_iCurrentPlayList, m_iCurrentSong);
       CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
@@ -374,7 +371,7 @@ bool CPlayListPlayer::Play(int iSong,
       GetPlaylist(m_iCurrentPlayList).Clear();
       m_iCurrentPlayList = TYPE_NONE;
       m_iFailedSongs = 0;
-      m_failedSongsStart = std::chrono::steady_clock::now();
+      m_failedSongsStart = XbmcThreads::SystemClockMillis();
       return false;
     }
 
@@ -405,7 +402,7 @@ bool CPlayListPlayer::Play(int iSong,
 
   // consecutive error counter so reset if the current item is playing
   m_iFailedSongs = 0;
-  m_failedSongsStart = std::chrono::steady_clock::now();
+  m_failedSongsStart = XbmcThreads::SystemClockMillis();
   m_bPlayedFirstFile = true;
   return true;
 }
@@ -513,7 +510,7 @@ bool CPlayListPlayer::HasPlayedFirstFile() const
 
 bool CPlayListPlayer::Repeated(Id playlistId) const
 {
-  const auto repStatePos = m_repeatState.find(playlistId);
+  const std::map<PLAYLIST::Id, PLAYLIST::RepeatState::Type>::const_iterator repStatePos = m_repeatState.find(playlistId);
   if (repStatePos != m_repeatState.end())
     return repStatePos->second == RepeatState::ALL;
   return false;
@@ -521,7 +518,7 @@ bool CPlayListPlayer::Repeated(Id playlistId) const
 
 bool CPlayListPlayer::RepeatedOne(Id playlistId) const
 {
-  const auto repStatePos = m_repeatState.find(playlistId);
+  const std::map<PLAYLIST::Id, PLAYLIST::RepeatState::Type>::const_iterator repStatePos = m_repeatState.find(playlistId);
   if (repStatePos != m_repeatState.end())
     return (repStatePos->second == RepeatState::ONE);
   return false;
@@ -592,7 +589,7 @@ bool CPlayListPlayer::IsShuffled(Id playlistId) const
   return false;
 }
 
-void CPlayListPlayer::SetRepeat(Id playlistId, RepeatState state, bool bNotify /* = false */)
+void CPlayListPlayer::SetRepeat(Id playlistId, RepeatState::Type state, bool bNotify /* = false */)
 {
   if (playlistId != TYPE_MUSIC && playlistId != TYPE_VIDEO)
     return;
@@ -640,9 +637,9 @@ void CPlayListPlayer::SetRepeat(Id playlistId, RepeatState state, bool bNotify /
   AnnouncePropertyChanged(playlistId, "repeat", data);
 }
 
-RepeatState CPlayListPlayer::GetRepeat(Id playlistId) const
+RepeatState::Type CPlayListPlayer::GetRepeat(Id playlistId) const
 {
-  const auto repStatePos = m_repeatState.find(playlistId);
+  const std::map<PLAYLIST::Id, PLAYLIST::RepeatState::Type>::const_iterator repStatePos = m_repeatState.find(playlistId);
   if (repStatePos != m_repeatState.end())
     return repStatePos->second;
   return RepeatState::NONE;
@@ -660,10 +657,8 @@ void CPlayListPlayer::ReShuffle(Id playlistId, int iPosition)
   // so we shuffle starting at two positions below the current item
   else if (playlistId == m_iCurrentPlayList)
   {
-    const auto& components = CServiceBroker::GetAppComponents();
-    const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-    if ((appPlayer->IsPlayingAudio() && playlistId == TYPE_MUSIC) ||
-        (appPlayer->IsPlayingVideo() && playlistId == TYPE_VIDEO))
+    if ((g_application.m_pPlayer->IsPlayingAudio() && playlistId == TYPE_MUSIC) ||
+        (g_application.m_pPlayer->IsPlayingVideo() && playlistId == TYPE_VIDEO))
     {
       GetPlaylist(playlistId).Shuffle(m_iCurrentSong + 2);
     }
@@ -807,18 +802,15 @@ void CPlayListPlayer::AnnouncePropertyChanged(Id playlistId,
                                               const std::string& strProperty,
                                               const CVariant& value)
 {
-  const auto& components = CServiceBroker::GetAppComponents();
-  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-
   if (strProperty.empty() || value.isNull() ||
-      (playlistId == TYPE_VIDEO && !appPlayer->IsPlayingVideo()) ||
-      (playlistId == TYPE_MUSIC && !appPlayer->IsPlayingAudio()))
+      (playlistId == TYPE_VIDEO && !g_application.m_pPlayer->IsPlayingVideo()) ||
+      (playlistId == TYPE_MUSIC && !g_application.m_pPlayer->IsPlayingAudio()))
     return;
 
   CVariant data;
   data["player"]["playerid"] = playlistId;
   data["property"][strProperty] = value;
-  CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::Player, "OnPropertyChanged",
+  CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::Player, "xbmc", "OnPropertyChanged",
                                                      data);
 }
 
@@ -827,17 +819,11 @@ int PLAYLIST::CPlayListPlayer::GetMessageMask()
   return TMSG_MASK_PLAYLISTPLAYER;
 }
 
+void wakeScreensaver() { g_application.ResetScreenSaver(); g_application.ResetScreenSaverWindow(); }
+
 void PLAYLIST::CPlayListPlayer::OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg)
 {
-  auto& components = CServiceBroker::GetAppComponents();
-  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-
-  auto wakeScreensaver = []() {
-    auto& components = CServiceBroker::GetAppComponents();
-    const auto appPower = components.GetComponent<CApplicationPowerHandling>();
-    appPower->ResetScreenSaver();
-    appPower->WakeUpScreenSaverAndDPMS();
-  };
+  CApplicationPlayer *const appPlayer = g_application.m_pPlayer;
 
   switch (pMsg->dwMessage)
   {
@@ -899,7 +885,7 @@ void PLAYLIST::CPlayListPlayer::OnApplicationMessage(KODI::MESSAGING::ThreadMess
     break;
 
   case TMSG_PLAYLISTPLAYER_REPEAT:
-    SetRepeat(pMsg->param1, static_cast<RepeatState>(pMsg->param2));
+    SetRepeat(pMsg->param1, static_cast<RepeatState::Type>(pMsg->param2));
     break;
 
   case TMSG_PLAYLISTPLAYER_GET_ITEMS:
@@ -916,7 +902,7 @@ void PLAYLIST::CPlayListPlayer::OnApplicationMessage(KODI::MESSAGING::ThreadMess
   case TMSG_PLAYLISTPLAYER_SWAP:
     if (pMsg->lpVoid)
     {
-      auto indexes = static_cast<std::vector<int>*>(pMsg->lpVoid);
+      std::vector<int> *indexes = static_cast<std::vector<int>*>(pMsg->lpVoid);
       if (indexes->size() == 2)
         Swap(pMsg->param1, indexes->at(0), indexes->at(1));
       delete indexes;
@@ -981,7 +967,7 @@ void PLAYLIST::CPlayListPlayer::OnApplicationMessage(KODI::MESSAGING::ThreadMess
             SetShuffle(playlistId, list->GetProperty("shuffled").asBoolean(), false);
           // Handle "repeat" option if present
           if (list->HasProperty("repeat") && list->GetProperty("repeat").isInteger())
-            SetRepeat(playlistId, static_cast<RepeatState>(list->GetProperty("repeat").asInteger()),
+            SetRepeat(playlistId, static_cast<RepeatState::Type>(list->GetProperty("repeat").asInteger()),
                       false);
 
           Add(playlistId, (*list));
@@ -1058,13 +1044,6 @@ void PLAYLIST::CPlayListPlayer::OnApplicationMessage(KODI::MESSAGING::ThreadMess
     }
     break;
 
-  case TMSG_MEDIA_SEEK_TIME:
-  {
-    if (appPlayer->IsPlaying() || appPlayer->IsPaused())
-      appPlayer->SeekTime(pMsg->param3);
-
-    break;
-  }
   default:
     break;
   }
