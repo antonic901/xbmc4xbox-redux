@@ -1,33 +1,23 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <map>
-#include <set>
-#include <vector>
-#include <utility>
+#pragma once
 
 #include "addons/Addon.h"
+#include "addons/gui/skin/SkinTimerManager.h"
+#include "guilib/GUIIncludes.h" // needed for the GUIInclude member
 #include "windowing/GraphicContext.h" // needed for the RESOLUTION members
-#include "guilib/GUIIncludes.h"    // needed for the GUIInclude member
+
+#include <map>
+#include <memory>
+#include <set>
+#include <utility>
+#include <vector>
 
 #define CREDIT_LINE_LENGTH 50
 
@@ -43,7 +33,7 @@ class CSkinSettingUpdateHandler;
 class CSkinSetting
 {
 public:
-  virtual ~CSkinSetting() { }
+  virtual ~CSkinSetting() = default;
 
   bool Serialize(TiXmlElement* parent) const;
 
@@ -57,44 +47,41 @@ protected:
   virtual bool SerializeSetting(TiXmlElement* element) const = 0;
 };
 
-typedef boost::shared_ptr<CSkinSetting> CSkinSettingPtr;
+typedef std::shared_ptr<CSkinSetting> CSkinSettingPtr;
 
 class CSkinSettingString : public CSkinSetting
 {
 public:
-  virtual ~CSkinSettingString() { }
+  ~CSkinSettingString() override = default;
 
-  virtual std::string GetType() const { return "string"; }
+  std::string GetType() const override { return "string"; }
 
-  virtual bool Deserialize(const TiXmlElement* element);
+  bool Deserialize(const TiXmlElement* element) override;
 
   std::string value;
 
 protected:
-  virtual bool SerializeSetting(TiXmlElement* element) const;
+  bool SerializeSetting(TiXmlElement* element) const override;
 };
 
-typedef boost::shared_ptr<CSkinSettingString> CSkinSettingStringPtr;
+typedef std::shared_ptr<CSkinSettingString> CSkinSettingStringPtr;
 
 class CSkinSettingBool : public CSkinSetting
 {
 public:
-  CSkinSettingBool()
-    : value(false)
-  { }
-  virtual ~CSkinSettingBool() { }
+  ~CSkinSettingBool() override = default;
 
-  virtual std::string GetType() const { return "bool"; }
+  std::string GetType() const override { return "bool"; }
 
-  virtual bool Deserialize(const TiXmlElement* element);
+  bool Deserialize(const TiXmlElement* element) override;
 
-  bool value;
+  bool value = false;
 
 protected:
-  virtual bool SerializeSetting(TiXmlElement* element) const;
+  bool SerializeSetting(TiXmlElement* element) const override;
 };
 
-typedef boost::shared_ptr<CSkinSettingBool> CSkinSettingBoolPtr;
+typedef std::shared_ptr<CSkinSettingBool> CSkinSettingBoolPtr;
 
 class CSkinInfo : public CAddon
 {
@@ -110,21 +97,20 @@ public:
     std::string m_name;
   };
 
-  static boost::movelib::unique_ptr<CSkinInfo> FromExtension(AddonProps props, const cp_extension_t* ext);
-
+  explicit CSkinInfo(const AddonInfoPtr& addonInfo);
   //FIXME: CAddonCallbacksGUI/WindowXML hack
   explicit CSkinInfo(
-      AddonProps props,
-      const RESOLUTION_INFO& resolution = RESOLUTION_INFO());
+      const AddonInfoPtr& addonInfo,
+      const RESOLUTION_INFO& resolution);
 
   CSkinInfo(
-      AddonProps props,
+      const AddonInfoPtr& addonInfo,
       const RESOLUTION_INFO& resolution,
       const std::vector<RESOLUTION_INFO>& resolutions,
       float effectsSlowDown,
       bool debugging);
 
-  ~CSkinInfo();
+  ~CSkinInfo() override;
 
   /*! \brief Load resolution information from directories in Path().
    */
@@ -139,12 +125,14 @@ public:
    \param baseDir [in] If non-empty, the given directory is searched instead of the skin's directory.  Defaults to empty.
    \return path to the XML file
    */
-  std::string GetSkinPath(const std::string& file, RESOLUTION_INFO *res = NULL, const std::string& baseDir = "") const;
+  std::string GetSkinPath(const std::string& file,
+                          RESOLUTION_INFO* res = nullptr,
+                          const std::string& baseDir = "") const;
 
   /*! \brief Return whether skin debugging is enabled
    \return true if skin debugging (set via <debugging>true</debugging> in addon.xml) is enabled.
    */
-  bool IsDebugging() const { return m_debugging; };
+  bool IsDebugging() const { return m_debugging; }
 
   /*! \brief Get the id of the first window to load
    The first window is generally Startup.xml unless it doesn't exist or if the skinner
@@ -166,46 +154,62 @@ public:
    */
   static bool TranslateResolution(const std::string &name, RESOLUTION_INFO &res);
 
-  void ResolveIncludes(TiXmlElement *node, std::map<INFO::InfoPtr, bool>* xmlIncludeConditions = NULL);
+  void ResolveIncludes(TiXmlElement* node,
+                       std::map<INFO::InfoPtr, bool>* xmlIncludeConditions = nullptr);
 
-  float GetEffectsSlowdown() const { return m_effectsSlowDown; };
+  float GetEffectsSlowdown() const { return m_effectsSlowDown; }
 
-  const std::vector<CStartupWindow> &GetStartupWindows() const { return m_startupWindows; };
+  const std::vector<CStartupWindow>& GetStartupWindows() const { return m_startupWindows; }
 
   /*! \brief Retrieve the skin paths to search for skin XML files
    \param paths [out] vector of paths to search, in order.
    */
   void GetSkinPaths(std::vector<std::string> &paths) const;
 
-  bool IsInUse() const;
+  bool IsInUse() const override;
 
   const std::string& GetCurrentAspect() const { return m_currentAspect; }
 
   void LoadIncludes();
+
+  /*! \brief Load the defined skin timers
+   \details Skin timers are defined in Timers.xml \sa Skin_Timers
+   */
+  void LoadTimers();
+
+  /*! \brief Starts evaluating timers
+   */
+  void ProcessTimers();
+
+  /*! \brief Called when unloading a skin, allows to cleanup specific
+   * skin resources.
+   */
+  void Unload();
+
   void ToggleDebug();
   const INFO::CSkinVariableString* CreateSkinVariable(const std::string& name, int context);
 
-  static void SettingOptionsSkinColorsFiller(const boost::shared_ptr<const CSetting>& setting,
+  static void SettingOptionsSkinColorsFiller(const std::shared_ptr<const CSetting>& setting,
                                              std::vector<StringSettingOption>& list,
                                              std::string& current,
                                              void* data);
-  static void SettingOptionsSkinFontsFiller(const boost::shared_ptr<const CSetting>& setting,
+  static void SettingOptionsSkinFontsFiller(const std::shared_ptr<const CSetting>& setting,
                                             std::vector<StringSettingOption>& list,
                                             std::string& current,
                                             void* data);
-  static void SettingOptionsSkinThemesFiller(const boost::shared_ptr<const CSetting>& setting,
+  static void SettingOptionsSkinThemesFiller(const std::shared_ptr<const CSetting>& setting,
                                              std::vector<StringSettingOption>& list,
                                              std::string& current,
                                              void* data);
-  static void SettingOptionsStartupWindowsFiller(const boost::shared_ptr<const CSetting>& setting,
+  static void SettingOptionsStartupWindowsFiller(const std::shared_ptr<const CSetting>& setting,
                                                  std::vector<IntegerSettingOption>& list,
                                                  int& current,
                                                  void* data);
 
   /*! \brief Don't handle skin settings like normal addon settings
    */
-  virtual bool HasSettings() { return false; }
-  virtual bool HasUserSettings() { return false; }
+  bool HasSettings(AddonInstanceId id = ADDON_SETTINGS_ID) override { return false; }
+  bool HasUserSettings(AddonInstanceId id = ADDON_SETTINGS_ID) override { return false; }
 
   int TranslateString(const std::string &setting);
   const std::string& GetString(int setting) const;
@@ -215,46 +219,58 @@ public:
   bool GetBool(int setting) const;
   void SetBool(int setting, bool set);
 
-  std::set<CSkinSettingPtr> GetSkinSettings() const;
-  CSkinSettingPtr GetSkinSetting(const std::string& settingId);
-  boost::shared_ptr<const CSkinSetting> GetSkinSetting(const std::string& settingId) const;
-
   /*! \brief Get the skin setting value as an integer value
    * \param setting - the setting id
    * \return the setting value as an integer, -1 if no conversion is possible
    */
   int GetInt(int setting) const;
 
+  std::set<CSkinSettingPtr> GetSkinSettings() const;
+  CSkinSettingPtr GetSkinSetting(const std::string& settingId);
+  std::shared_ptr<const CSkinSetting> GetSkinSetting(const std::string& settingId) const;
+
   void Reset(const std::string &setting);
   void Reset();
 
   static std::set<CSkinSettingPtr> ParseSettings(const TiXmlElement* rootElement);
 
-  virtual void OnPreInstall();
-  virtual void OnPostInstall(bool update, bool modal);
+  void OnPreInstall() override;
+  void OnPostInstall(bool update, bool modal) override;
+
+  // skin timer methods
+
+  /*! \brief Checks if the timer with name `timer` is running
+   \param timer the name of the skin timer
+   \return true if the given timer exists and is running, false otherwise
+   */
+  bool TimerIsRunning(const std::string& timer) const;
+
+  /*! \brief Get the elapsed seconds since the timer with name `timer` was started
+   \param timer the name of the skin timer
+   \return the elapsed time in seconds the given timer is running (0 if not running or if it does not exist)
+   */
+  float GetTimerElapsedSeconds(const std::string& timer) const;
+
+  /*! \brief Starts/Enables a given skin timer
+   \param timer the name of the skin timer
+   */
+  void TimerStart(const std::string& timer) const;
+
+  /*! \brief Stops/Disables a given skin timer
+   \param timer the name of the skin timer
+   */
+  void TimerStop(const std::string& timer) const;
+
 protected:
-  /*! \brief Given a resolution, retrieve the corresponding directory name
-   \param res RESOLUTION to translate
-   \return directory name for res
-   */
-  std::string GetDirFromRes(RESOLUTION res) const;
-
-  /*! \brief grab a resolution tag from a skin's configuration data
-   \param props passed addoninfo structure to check for resolution
-   \param tag name of the tag to look for
-   \param res resolution to return
-   \return true if we find a valid resolution, false otherwise
-   */
-  void GetDefaultResolution(const cp_extension_t *ext, const char *tag, RESOLUTION &res, const RESOLUTION &def) const;
-
-  bool LoadStartupWindows(const cp_extension_t *ext);
+  bool LoadStartupWindows(const AddonInfoPtr& addonInfo);
 
   static CSkinSettingPtr ParseSetting(const TiXmlElement* element);
 
-  virtual bool HasSettingsDefinition() const { return false; }
-  virtual bool HasSettingsToSave() const;
-  virtual bool SettingsFromXML(const CXBMCTinyXML &doc, bool loadDefaults = false);
-  virtual void SettingsToXML(CXBMCTinyXML &doc) const;
+  bool SettingsLoaded(AddonInstanceId id = ADDON_SETTINGS_ID) const override;
+  bool SettingsFromXML(const CXBMCTinyXML& doc,
+                       bool loadDefaults,
+                       AddonInstanceId id = ADDON_SETTINGS_ID) override;
+  bool SettingsToXML(CXBMCTinyXML& doc, AddonInstanceId id = ADDON_SETTINGS_ID) const override;
 
   RESOLUTION_INFO m_defaultRes;
   std::vector<RESOLUTION_INFO> m_resolutions;
@@ -266,13 +282,16 @@ protected:
   std::vector<CStartupWindow> m_startupWindows;
   bool m_debugging;
 
+  /*! Manager/Owner of skin timers */
+  std::unique_ptr<CSkinTimerManager> m_skinTimerManager;
+
 private:
   std::map<int, CSkinSettingStringPtr> m_strings;
   std::map<int, CSkinSettingBoolPtr> m_bools;
   std::map<std::string, CSkinSettingPtr> m_settings;
-  boost::movelib::unique_ptr<CSkinSettingUpdateHandler> m_settingsUpdateHandler;
+  std::unique_ptr<CSkinSettingUpdateHandler> m_settingsUpdateHandler;
 };
 
 } /*namespace ADDON*/
 
-extern boost::shared_ptr<ADDON::CSkinInfo> g_SkinInfo;
+extern std::shared_ptr<ADDON::CSkinInfo> g_SkinInfo;

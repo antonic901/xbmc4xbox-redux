@@ -1,25 +1,14 @@
 /*
-*      Copyright (C) 2015 Team XBMC
-*      http://xbmc.org
-*
-*  This Program is free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2, or (at your option)
-*  any later version.
-*
-*  This Program is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-*  GNU General Public License for more details.
-*
-*  You should have received a copy of the GNU General Public License
-*  along with XBMC; see the file COPYING.  If not, see
-*  <http://www.gnu.org/licenses/>.
-*
-*/
+ *  Copyright (C) 2015-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
 #include "UISoundsResource.h"
+
 #include "ServiceBroker.h"
-#include "guilib/GUIComponent.h"
+#include "addons/addoninfo/AddonType.h"
 #include "guilib/GUIAudioManager.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
@@ -30,6 +19,11 @@
 namespace ADDON
 {
 
+CUISoundsResource::CUISoundsResource(const AddonInfoPtr& addonInfo)
+  : CResource(addonInfo, AddonType::RESOURCE_UISOUNDS)
+{
+}
+
 bool CUISoundsResource::IsAllowed(const std::string& file) const
 {
   return StringUtils::EqualsNoCase(file, "sounds.xml")
@@ -38,13 +32,14 @@ bool CUISoundsResource::IsAllowed(const std::string& file) const
 
 bool CUISoundsResource::IsInUse() const
 {
-  return CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.soundskin") == ID();
+  return CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_LOOKANDFEEL_SOUNDSKIN) == ID();
 }
 
 void CUISoundsResource::OnPostInstall(bool update, bool modal)
 {
-  if (IsInUse())
-    CServiceBroker::GetGUI()->GetAudioManager().Load();
+  CGUIComponent* gui = CServiceBroker::GetGUI();
+  if (IsInUse() && gui)
+    gui->GetAudioManager().Load();
 }
 
 }

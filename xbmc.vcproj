@@ -3372,9 +3372,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\addons\AddonDatabase.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\addons\AddonDll.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\addons\AddonEvents.h">
 				</File>
 				<File
@@ -3420,40 +3417,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\addons\ContextMenus.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\addons\DllAddon.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\addons\DllLibCPluff.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\addons\FilesystemInstaller.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\addons\FilesystemInstaller.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\addons\GUIDialogAddonInfo.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\addons\GUIDialogAddonInfo.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\addons\GUIDialogAddonSettings.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\addons\GUIDialogAddonSettings.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\addons\GUIViewStateAddonBrowser.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\addons\GUIViewStateAddonBrowser.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\addons\GUIWindowAddonBrowser.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\addons\GUIWindowAddonBrowser.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\addons\IAddon.h">
@@ -3551,8 +3518,93 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</Filter>
 				</Filter>
 				<Filter
+					Name="binary-addons"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\addons\binary-addons\AddonDll.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\binary-addons\DllAddon.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="gui"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\addons\gui\GUIDialogAddonInfo.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\gui\GUIDialogAddonInfo.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\gui\GUIDialogAddonSettings.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\gui\GUIDialogAddonSettings.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\gui\GUIViewStateAddonBrowser.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\gui\GUIViewStateAddonBrowser.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\gui\GUIWindowAddonBrowser.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\gui\GUIWindowAddonBrowser.h">
+					</File>
+					<Filter
+						Name="skin"
+						Filter="">
+						<File
+							RelativePath=".\xbmc\addons\gui\skin\SkinTimer.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\addons\gui\skin\SkinTimer.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\addons\gui\skin\SkinTimerManager.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\addons\gui\skin\SkinTimerManager.h">
+						</File>
+					</Filter>
+				</Filter>
+				<Filter
+					Name="include"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\addons\include\xbmc_addon_cpp_dll.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\include\xbmc_addon_dll.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\include\xbmc_addon_types.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\include\xbmc_scr_dll.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\include\xbmc_scr_types.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\include\xbmc_vis_dll.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\include\xbmc_vis_types.h">
+					</File>
+				</Filter>
+				<Filter
 					Name="settings"
 					Filter="">
+					<File
+						RelativePath=".\xbmc\addons\settings\AddonSettings.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\settings\AddonSettings.h">
+					</File>
 					<File
 						RelativePath=".\xbmc\addons\settings\SettingUrlEncodedString.cpp">
 					</File>

@@ -1,59 +1,60 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
-#include "Addon.h"
+
+#pragma once
+
+#include "addons/Addon.h"
+#include "addons/AddonEvents.h"
+#include "threads/CriticalSection.h"
 
 namespace ADDON
 {
-
   class CService: public CAddon
   {
   public:
+    explicit CService(const AddonInfoPtr& addonInfo);
+  };
 
-    enum TYPE
-    {
-      UNKNOWN,
-      PYTHON
-    };
+  class CServiceAddonManager
+  {
+  public:
+    explicit CServiceAddonManager(CAddonMgr& addonMgr);
+    ~CServiceAddonManager();
 
-    enum START_OPTION
-    {
-      STARTUP,
-      LOGIN
-    };
+    /**
+     * Start all services.
+     */
+    void Start();
 
-    static boost::movelib::unique_ptr<CService> FromExtension(AddonProps props, const cp_extension_t* ext);
+    /**
+     * Start service by add-on id.
+     */
+    void Start(const AddonPtr& addon);
+    void Start(const std::string& addonId);
 
-    explicit CService(AddonProps props) : CAddon(boost::move(props)), m_type(UNKNOWN), m_startOption(LOGIN) {}
-    CService(AddonProps props, TYPE type, START_OPTION startOption);
+    /**
+     * Stop all services.
+     */
+    void Stop();
 
-    bool Start();
-    bool Stop();
-    TYPE GetServiceType() { return m_type; }
-    START_OPTION GetStartOption() { return m_startOption; }
-
-  protected:
-    void BuildServiceType();
+    /**
+     * Stop service by add-on id.
+     */
+    void Stop(const std::string& addonId);
 
   private:
-    TYPE m_type;
-    START_OPTION m_startOption;
+    void OnEvent(const AddonEvent& event);
+
+    void Stop(const std::map<std::string, int>::value_type& service);
+
+    CAddonMgr& m_addonMgr;
+    CCriticalSection m_criticalSection;
+    /** add-on id -> script id */
+    std::map<std::string, int> m_services;
   };
 }

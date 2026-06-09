@@ -1,27 +1,18 @@
-#pragma once
 /*
- *      Copyright (C) 2016 Team Kodi
- *      http://kodi.tv
+ *  Copyright (C) 2016-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
+#pragma once
+
 #include "ContextMenuItem.h"
-#include "FileItem.h"
-#include "GUIDialogAddonInfo.h"
+
+#include <memory>
+
+class CFileItem;
 
 namespace CONTEXTMENU
 {
@@ -29,24 +20,35 @@ namespace CONTEXTMENU
 struct CAddonInfo : CStaticContextMenuAction
 {
   CAddonInfo() : CStaticContextMenuAction(19033) {}
-  bool IsVisible(const CFileItem& item) const { return item.HasAddonInfo(); }
-  bool Execute(const CFileItemPtr& item) const
-  {
-    return CGUIDialogAddonInfo::ShowForItem(item);
-  }
+  bool IsVisible(const CFileItem& item) const override;
+  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
 };
 
 struct CAddonSettings : CStaticContextMenuAction
 {
   CAddonSettings() : CStaticContextMenuAction(10004) {}
-  bool IsVisible(const CFileItem& item) const;
-  bool Execute(const CFileItemPtr& item) const;
+  bool IsVisible(const CFileItem& item) const override;
+  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
 };
 
 struct CCheckForUpdates : CStaticContextMenuAction
 {
   CCheckForUpdates() : CStaticContextMenuAction(24034) {}
-  bool IsVisible(const CFileItem& item) const;
-  bool Execute(const CFileItemPtr& item) const;
+  bool IsVisible(const CFileItem& item) const override;
+  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+};
+
+struct CEnableAddon : CStaticContextMenuAction
+{
+  CEnableAddon() : CStaticContextMenuAction(24022) {}
+  bool IsVisible(const CFileItem& item) const override;
+  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+};
+
+struct CDisableAddon : CStaticContextMenuAction
+{
+  CDisableAddon() : CStaticContextMenuAction(24021) {}
+  bool IsVisible(const CFileItem& item) const override;
+  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
 };
 }

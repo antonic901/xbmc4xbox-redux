@@ -1,54 +1,37 @@
 /*
- *      Copyright (C) 2015 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2015-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "Webinterface.h"
-#include "ServiceBroker.h"
-#include "addons/AddonManager.h"
-#include "utils/log.h"
+
+#include "addons/addoninfo/AddonType.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
+#include "utils/log.h"
 
 using namespace ADDON;
 
-boost::movelib::unique_ptr<CWebinterface> CWebinterface::FromExtension(AddonProps props, const cp_extension_t* ext)
+CWebinterface::CWebinterface(const AddonInfoPtr& addonInfo)
+  : CAddon(addonInfo, AddonType::WEB_INTERFACE), m_entryPoint(WEBINTERFACE_DEFAULT_ENTRY_POINT)
 {
   // determine the type of the webinterface
-  WebinterfaceType type(WebinterfaceTypeStatic);
-  std::string webinterfaceType = CServiceBroker::GetAddonMgr().GetExtValue(ext->configuration, "@type");
-  if (StringUtils::EqualsNoCase(webinterfaceType.c_str(), "wsgi"))
-    type = WebinterfaceTypeWsgi;
-  else if (!webinterfaceType.empty() && !StringUtils::EqualsNoCase(webinterfaceType.c_str(), "static") && !StringUtils::EqualsNoCase(webinterfaceType.c_str(), "html"))
-    CLog::Log(LOGWARNING, "Webinterface addon \"%s\" has specified an unsupported type \"%s\"", props.id.c_str(), webinterfaceType.c_str());
+  std::string webinterfaceType = Type(AddonType::WEB_INTERFACE)->GetValue("@type").asString();
+  if (StringUtils::EqualsNoCase(webinterfaceType, "wsgi"))
+    m_type = WebinterfaceTypeWsgi;
+  else if (!webinterfaceType.empty() && !StringUtils::EqualsNoCase(webinterfaceType, "static") && !StringUtils::EqualsNoCase(webinterfaceType, "html"))
+    CLog::Log(LOGWARNING,
+              "CWebinterface::{}: Addon \"{}\" has specified an unsupported type \"{}\"", __func__,
+              ID(), webinterfaceType);
 
   // determine the entry point of the webinterface
-  std::string entryPoint(WEBINTERFACE_DEFAULT_ENTRY_POINT);
-  std::string entry = CServiceBroker::GetAddonMgr().GetExtValue(ext->configuration, "@entry");
+  std::string entry = Type(AddonType::WEB_INTERFACE)->GetValue("@entry").asString();
   if (!entry.empty())
-    entryPoint = entry;
-
-  return boost::movelib::unique_ptr<CWebinterface>(new CWebinterface(boost::move(props), type, entryPoint));
+    m_entryPoint = entry;
 }
-
-CWebinterface::CWebinterface(ADDON::AddonProps props, WebinterfaceType type,
-    const std::string &entryPoint) : CAddon(boost::move(props)), m_type(type), m_entryPoint(entryPoint)
-{ }
 
 std::string CWebinterface::GetEntryPoint(const std::string &path) const
 {
