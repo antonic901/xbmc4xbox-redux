@@ -1,0 +1,1 @@
+When new API for binary addons is introduced, everyting inside this folder is obsolete.

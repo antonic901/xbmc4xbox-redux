@@ -1,138 +1,99 @@
 /*
-*      Copyright (C) 2005-2013 Team XBMC
-*      http://xbmc.org
-*
-*  This Program is free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2, or (at your option)
-*  any later version.
-*
-*  This Program is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-*  GNU General Public License for more details.
-*
-*  You should have received a copy of the GNU General Public License
-*  along with XBMC; see the file COPYING.  If not, see
-*  <http://www.gnu.org/licenses/>.
-*
-*/
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
 #include "LanguageResource.h"
+
 #include "LangInfo.h"
 #include "ServiceBroker.h"
 #include "addons/AddonManager.h"
-#include "dialogs/GUIDialogKaiToast.h"
-#include "guilib/GUIComponent.h"
+#include "addons/Skin.h"
+#include "addons/addoninfo/AddonType.h"
 #include "guilib/GUIWindowManager.h"
+#include "messaging/helpers/DialogHelper.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
-#include "messaging/helpers/DialogHelper.h"
-#include "Skin.h"
 
 using namespace KODI::MESSAGING;
 
-using namespace KODI::MESSAGING::HELPERS;
+using KODI::MESSAGING::HELPERS::DialogResponse;
 
 #define LANGUAGE_ADDON_PREFIX   "resource.language."
 
 namespace ADDON
 {
 
- boost::movelib::unique_ptr<CLanguageResource> CLanguageResource::FromExtension(AddonProps props, const cp_extension_t* ext)
+CLanguageResource::CLanguageResource(const AddonInfoPtr& addonInfo)
+  : CResource(addonInfo, AddonType::RESOURCE_LANGUAGE)
 {
   // parse <extension> attributes
-  CLocale locale = CLocale::FromString(CServiceBroker::GetAddonMgr().GetExtValue(ext->configuration, "@locale"));
+  m_locale =
+      CLocale::FromString(Type(AddonType::RESOURCE_LANGUAGE)->GetValue("@locale").asString());
 
   // parse <charsets>
-  std::string charsetGui;
-  bool forceUnicodeFont(false);
-  std::string charsetSubtitle;
-  cp_cfg_element_t *charsetsElement = CServiceBroker::GetAddonMgr().GetExtElement(ext->configuration, "charsets");
-  if (charsetsElement != NULL)
+  const CAddonExtensions* charsetsElement =
+      Type(AddonType::RESOURCE_LANGUAGE)->GetElement("charsets");
+  if (charsetsElement != nullptr)
   {
-    charsetGui = CServiceBroker::GetAddonMgr().GetExtValue(charsetsElement, "gui");
-    forceUnicodeFont = CServiceBroker::GetAddonMgr().GetExtValue(charsetsElement, "gui@unicodefont") == "true";
-    charsetSubtitle = CServiceBroker::GetAddonMgr().GetExtValue(charsetsElement, "subtitle");
+    m_charsetGui = charsetsElement->GetValue("gui").asString();
+    m_forceUnicodeFont = charsetsElement->GetValue("gui@unicodefont").asBoolean();
+    m_charsetSubtitle = charsetsElement->GetValue("subtitle").asString();
   }
 
   // parse <dvd>
-  std::string dvdLanguageMenu;
-  std::string dvdLanguageAudio;
-  std::string dvdLanguageSubtitle;
-  cp_cfg_element_t *dvdElement = CServiceBroker::GetAddonMgr().GetExtElement(ext->configuration, "dvd");
-  if (dvdElement != NULL)
+  const CAddonExtensions* dvdElement = Type(AddonType::RESOURCE_LANGUAGE)->GetElement("dvd");
+  if (dvdElement != nullptr)
   {
-    dvdLanguageMenu = CServiceBroker::GetAddonMgr().GetExtValue(dvdElement, "menu");
-    dvdLanguageAudio = CServiceBroker::GetAddonMgr().GetExtValue(dvdElement, "audio");
-    dvdLanguageSubtitle = CServiceBroker::GetAddonMgr().GetExtValue(dvdElement, "subtitle");
+    m_dvdLanguageMenu = dvdElement->GetValue("menu").asString();
+    m_dvdLanguageAudio = dvdElement->GetValue("audio").asString();
+    m_dvdLanguageSubtitle = dvdElement->GetValue("subtitle").asString();
   }
   // fall back to the language of the addon if a DVD language is not defined
-  if (dvdLanguageMenu.empty())
-    dvdLanguageMenu = locale.GetLanguageCode();
-  if (dvdLanguageAudio.empty())
-    dvdLanguageAudio = locale.GetLanguageCode();
-  if (dvdLanguageSubtitle.empty())
-    dvdLanguageSubtitle = locale.GetLanguageCode();
+  if (m_dvdLanguageMenu.empty())
+    m_dvdLanguageMenu = m_locale.GetLanguageCode();
+  if (m_dvdLanguageAudio.empty())
+    m_dvdLanguageAudio = m_locale.GetLanguageCode();
+  if (m_dvdLanguageSubtitle.empty())
+    m_dvdLanguageSubtitle = m_locale.GetLanguageCode();
 
   // parse <sorttokens>
-  std::set<std::string> sortTokens;
-  cp_cfg_element_t *sorttokensElement = CServiceBroker::GetAddonMgr().GetExtElement(ext->configuration, "sorttokens");
-  if (sorttokensElement != NULL)
+  const CAddonExtensions* sorttokensElement =
+      Type(AddonType::RESOURCE_LANGUAGE)->GetElement("sorttokens");
+  if (sorttokensElement != nullptr)
   {
-    for (size_t i = 0; i < sorttokensElement->num_children; ++i)
+    /* First loop goes around rows e.g.
+     *   <token separators="'">L</token>
+     *   <token>Le</token>
+     *   ...
+     */
+    for (const auto& values : sorttokensElement->GetValues())
     {
-      cp_cfg_element_t &tokenElement = sorttokensElement->children[i];
-      if (tokenElement.name != NULL && strcmp(tokenElement.name, "token") == 0 &&
-          tokenElement.value != NULL)
+      /* Second loop goes around the row parts, e.g.
+       *   separators = "'"
+       *   token = Le
+       */
+      std::string token = values.second.GetValue("token").asString();
+      std::string separators = values.second.GetValue("token@separators").asString();
+      if (!token.empty())
       {
-        std::string token(tokenElement.value);
-        std::string separators = CServiceBroker::GetAddonMgr().GetExtValue(&tokenElement, "@separators");
         if (separators.empty())
           separators = " ._";
 
-        for (std::string::const_iterator separator = separators.begin(); separator != separators.end(); ++separator)
-          sortTokens.insert(token + *separator);
+        for (auto separator : separators)
+          m_sortTokens.insert(token + separator);
       }
     }
   }
-  return boost::movelib::unique_ptr<CLanguageResource>(new CLanguageResource(
-      boost::move(props),
-      locale,
-      charsetGui,
-      forceUnicodeFont,
-      charsetSubtitle,
-      dvdLanguageMenu,
-      dvdLanguageAudio,
-      dvdLanguageSubtitle,
-      sortTokens));
 }
-
-CLanguageResource::CLanguageResource(
-    AddonProps props,
-    const CLocale& locale,
-    const std::string& charsetGui,
-    bool forceUnicodeFont,
-    const std::string& charsetSubtitle,
-    const std::string& dvdLanguageMenu,
-    const std::string& dvdLanguageAudio,
-    const std::string& dvdLanguageSubtitle,
-    const std::set<std::string>& sortTokens)
-  : CResource(boost::move(props)),
-    m_locale(locale),
-    m_charsetGui(charsetGui),
-    m_forceUnicodeFont(forceUnicodeFont),
-    m_charsetSubtitle(charsetSubtitle),
-    m_dvdLanguageMenu(dvdLanguageMenu),
-    m_dvdLanguageAudio(dvdLanguageAudio),
-    m_dvdLanguageSubtitle(dvdLanguageSubtitle),
-    m_sortTokens(sortTokens)
-{ }
 
 bool CLanguageResource::IsInUse() const
 {
-  return StringUtils::EqualsNoCase(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("locale.language"), ID());
+  return StringUtils::EqualsNoCase(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_LOCALE_LANGUAGE), ID());
 }
 
 void CLanguageResource::OnPostInstall(bool update, bool modal)
@@ -140,14 +101,14 @@ void CLanguageResource::OnPostInstall(bool update, bool modal)
   if (!g_SkinInfo)
     return;
 
-  if (IsInUse() ||
-     (!update && !modal &&
-       (HELPERS::ShowYesNoDialogText(Name(), 24132) == YES)))
+  if (IsInUse() || (!update && !modal &&
+                    (HELPERS::ShowYesNoDialogText(CVariant{Name()}, CVariant{24132}) ==
+                     DialogResponse::CHOICE_YES)))
   {
     if (IsInUse())
       g_langInfo.SetLanguage(ID());
     else
-      CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("locale.language", ID());
+      CServiceBroker::GetSettingsComponent()->GetSettings()->SetString(CSettings::SETTING_LOCALE_LANGUAGE, ID());
   }
 }
 
@@ -155,8 +116,7 @@ bool CLanguageResource::IsAllowed(const std::string &file) const
 {
   return file.empty() ||
          StringUtils::EqualsNoCase(file.c_str(), "langinfo.xml") ||
-         StringUtils::EqualsNoCase(file.c_str(), "strings.po") ||
-         StringUtils::EqualsNoCase(file.c_str(), "strings.xml");
+         StringUtils::EqualsNoCase(file.c_str(), "strings.po");
 }
 
 std::string CLanguageResource::GetAddonId(const std::string& locale)
@@ -180,41 +140,12 @@ bool CLanguageResource::FindLegacyLanguage(const std::string &locale, std::strin
   std::string addonId = GetAddonId(locale);
 
   AddonPtr addon;
-  if (!CServiceBroker::GetAddonMgr().GetAddon(addonId, addon, ADDON_RESOURCE_LANGUAGE, true))
+  if (!CServiceBroker::GetAddonMgr().GetAddon(addonId, addon, AddonType::RESOURCE_LANGUAGE,
+                                              OnlyEnabled::CHOICE_YES))
     return false;
 
   legacyLanguage = addon->Name();
   return true;
-}
-
-bool CLanguageResource::FindLanguageAddonByName(const std::string &legacyLanguage, std::string &addonId, const VECADDONS &languageAddons /* = VECADDONS() */)
-{
-  if (legacyLanguage.empty())
-    return false;
-
-  VECADDONS addons;
-  if (!languageAddons.empty())
-    addons = languageAddons;
-  else if (!CServiceBroker::GetAddonMgr().GetInstalledAddons(addons, ADDON_RESOURCE_LANGUAGE) || addons.empty())
-    return false;
-
-  // try to find a language that matches the old language in name or id
-  for (VECADDONS::const_iterator addon = addons.begin(); addon != addons.end(); ++addon)
-  {
-    const CLanguageResource* languageAddon = static_cast<CLanguageResource*>(addon->get());
-
-    // check if the old language matches the language addon id, the language
-    // locale or the language addon name
-    if (legacyLanguage.compare((*addon)->ID()) == 0 ||
-        languageAddon->GetLocale().Equals(legacyLanguage) ||
-        StringUtils::EqualsNoCase(legacyLanguage, languageAddon->Name()))
-    {
-      addonId = (*addon)->ID();
-      return true;
-    }
-  }
-
-  return false;
 }
 
 }

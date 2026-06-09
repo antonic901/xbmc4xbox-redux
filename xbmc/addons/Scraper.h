@@ -1,37 +1,25 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
+
+#include "XBDateTime.h"
+#include "addons/Addon.h"
+#include "utils/ScraperParser.h"
+#include "utils/ScraperUrl.h"
+#include "video/Episode.h"
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "addons/Addon.h"
-#include "XBDateTime.h"
-#include "utils/ScraperUrl.h"
-#include "utils/ScraperParser.h"
-#include "video/Episode.h"
-
 class CAlbum;
 class CArtist;
-class CProgramInfoTag;
 class CVideoInfoTag;
 
 namespace MUSIC_GRABBER
@@ -60,17 +48,17 @@ class CScraperUrl;
 namespace ADDON
 {
 class CScraper;
-typedef boost::shared_ptr<CScraper> ScraperPtr;
+typedef std::shared_ptr<CScraper> ScraperPtr;
 
 std::string TranslateContent(const CONTENT_TYPE &content, bool pretty=false);
 CONTENT_TYPE TranslateContent(const std::string &string);
-TYPE ScraperTypeFromContent(const CONTENT_TYPE &content);
+AddonType ScraperTypeFromContent(const CONTENT_TYPE& content);
 
 // thrown as exception to signal abort or show error dialog
 class CScraperError
 {
 public:
-  CScraperError() : m_fAborted(true) {}
+  CScraperError() = default;
   CScraperError(const std::string &sTitle, const std::string &sMessage) :
     m_fAborted(false), m_sTitle(sTitle), m_sMessage(sMessage) {}
 
@@ -79,7 +67,7 @@ public:
   const std::string &Message() const { return m_sMessage; }
 
 private:
-  bool m_fAborted;
+  bool m_fAborted = true;
   std::string m_sTitle;
   std::string m_sMessage;
 };
@@ -87,11 +75,7 @@ private:
 class CScraper : public CAddon
 {
 public:
-
-  static boost::movelib::unique_ptr<CScraper> FromExtension(AddonProps props, const cp_extension_t* ext);
-
-  explicit CScraper(AddonProps props);
-  CScraper(AddonProps props, bool requiressettings, CDateTimeSpan persistence, CONTENT_TYPE pathContent);
+  explicit CScraper(const AddonInfoPtr& addonInfo, AddonType addonType);
 
   /*! \brief Set the scraper settings for a particular path from an XML string
    Loads the default and user settings (if not already loaded) and, if the given XML string is non-empty,
@@ -121,7 +105,7 @@ public:
   bool RequiresSettings() const { return m_requiressettings; }
   bool Supports(const CONTENT_TYPE &content) const;
 
-  bool IsInUse() const;
+  bool IsInUse() const override;
   bool IsNoop();
   bool IsPython() const { return m_isPython; }
 
@@ -147,9 +131,11 @@ public:
     XFILE::CCurlFile &fcurl, const std::string &sArtist);
   VIDEO::EPISODELIST GetEpisodeList(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl);
 
-  bool GetProgramDetails(const CScraperUrl &scurl, CProgramInfoTag &program);
-  bool GetVideoDetails(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl,
-    bool fMovie/*else episode*/, CVideoInfoTag &video);
+  bool GetVideoDetails(XFILE::CCurlFile& fcurl,
+                       const std::unordered_map<std::string, std::string>& uniqueIDs,
+                       const CScraperUrl& scurl,
+                       bool fMovie /*else episode*/,
+                       CVideoInfoTag& video);
   bool GetAlbumDetails(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl,
     CAlbum &album);
   bool GetArtistDetails(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl,
@@ -157,31 +143,41 @@ public:
   bool GetArtwork(XFILE::CCurlFile &fcurl, CVideoInfoTag &details);
 
 private:
-  CScraper(const CScraper &rhs);
-  CScraper& operator=(const CScraper&);
+  CScraper(const CScraper &rhs) = delete;
+  CScraper& operator=(const CScraper&) = delete;
+  CScraper(CScraper&&) = delete;
+  CScraper& operator=(CScraper&&) = delete;
 
   std::string SearchStringEncoding() const
     { return m_parser.GetSearchStringEncoding(); }
 
+  /*! \brief Get the scraper settings for a particular path in the form of a JSON string
+   Loads the default and user settings (if not already loaded) and returns the user settings in the
+   form of an JSON string. It is used in Python scrapers.
+   \return a string containing the JSON settings
+   \sa SetPathSettings
+   */
+  std::string GetPathSettingsAsJSON();
+
   bool Load();
   std::vector<std::string> Run(const std::string& function,
-                              const CScraperUrl& url,
-                              XFILE::CCurlFile& http,
-                              const std::vector<std::string>* extras = NULL);
+                               const CScraperUrl& url,
+                               XFILE::CCurlFile& http,
+                               const std::vector<std::string>* extras = nullptr);
   std::vector<std::string> RunNoThrow(const std::string& function,
-                              const CScraperUrl& url,
-                              XFILE::CCurlFile& http,
-                              const std::vector<std::string>* extras = NULL);
+                                      const CScraperUrl& url,
+                                      XFILE::CCurlFile& http,
+                                      const std::vector<std::string>* extras = nullptr);
   std::string InternalRun(const std::string& function,
                          const CScraperUrl& url,
                          XFILE::CCurlFile& http,
                          const std::vector<std::string>* extras);
 
-  bool m_fLoaded;
-  bool m_isPython;
-  bool m_requiressettings;
+  bool m_fLoaded = false;
+  bool m_isPython = false;
+  bool m_requiressettings = false;
   CDateTimeSpan m_persistence;
-  CONTENT_TYPE m_pathContent;
+  CONTENT_TYPE m_pathContent = CONTENT_NONE;
   CScraperParser m_parser;
 };
 

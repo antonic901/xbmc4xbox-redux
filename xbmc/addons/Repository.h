@@ -1,100 +1,79 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
+
+#include "addons/Addon.h"
+#include "addons/AddonVersion.h"
+#include "utils/Digest.h"
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "Addon.h"
-#include "utils/Job.h"
-#include "utils/ProgressJob.h"
-
-struct cp_cfg_element_t;
-
 namespace ADDON
 {
-  class CRepository : public CAddon
+class CAddonExtensions;
+
+struct RepositoryDirInfo
+{
+  CAddonVersion minversion{""};
+  CAddonVersion maxversion{""};
+  std::string info;
+  std::string checksum;
+  KODI::UTILITY::CDigest::Type checksumType{KODI::UTILITY::CDigest::Type::INVALID};
+  std::string datadir;
+  std::string artdir;
+  KODI::UTILITY::CDigest::Type hashType{KODI::UTILITY::CDigest::Type::INVALID};
+};
+
+typedef std::vector<RepositoryDirInfo> RepositoryDirList;
+
+class CRepository : public CAddon
+{
+public:
+  explicit CRepository(const AddonInfoPtr& addonInfo);
+
+  enum FetchStatus
   {
-  public:
-    struct DirInfo
-    {
-      DirInfo() : version("0.0.0"), hashes(false) {}
-      AddonVersion version;
-      std::string info;
-      std::string checksum;
-      std::string datadir;
-      std::string artdir;
-      bool hashes;
-    };
-
-    typedef std::vector<DirInfo> DirList;
-
-    static boost::movelib::unique_ptr<CRepository> FromExtension(AddonProps props, const cp_extension_t* ext);
-
-    explicit CRepository(AddonProps props) : CAddon(boost::move(props)) {};
-    CRepository(AddonProps props, DirList dirs);
-
-    /*! \brief Get the md5 hash for an addon.
-     \param the addon in question.
-     */
-    bool GetAddonHash(const AddonPtr& addon, std::string& checksum) const;
-
-    enum FetchStatus
-    {
-      STATUS_OK,
-      STATUS_NOT_MODIFIED,
-      STATUS_ERROR
-    };
-
-    FetchStatus FetchIfChanged(const std::string& oldChecksum, std::string& checksum, VECADDONS& addons) const;
-
-    struct ResolveResult
-    {
-      std::string location;
-      std::string hash;
-    };
-    ResolveResult ResolvePathAndHash(AddonPtr const& addon) const;
-
-  private:
-    static bool FetchChecksum(const std::string& url, std::string& checksum);
-    static bool FetchIndex(const DirInfo& repo, VECADDONS& addons);
-
-    static DirInfo ParseDirConfiguration(cp_cfg_element_t* configuration);
-
-    DirList m_dirs;
+    STATUS_OK,
+    STATUS_NOT_MODIFIED,
+    STATUS_ERROR
   };
 
-  typedef boost::shared_ptr<CRepository> RepositoryPtr;
+  FetchStatus FetchIfChanged(const std::string& oldChecksum,
+                             std::string& checksum,
+                             std::vector<AddonInfoPtr>& addons,
+                             int& recheckAfter) const;
 
-
-  class CRepositoryUpdateJob : public CProgressJob
+  struct ResolveResult
   {
-  public:
-    CRepositoryUpdateJob(const RepositoryPtr& repo);
-    virtual ~CRepositoryUpdateJob() {}
-    virtual bool DoWork();
-    const RepositoryPtr& GetAddon() const { return m_repo; };
-
-  private:
-    const RepositoryPtr m_repo;
+    std::string location;
+    KODI::UTILITY::TypedDigest digest;
   };
+  ResolveResult ResolvePathAndHash(AddonPtr const& addon) const;
+
+  // Implementation of CAddon
+  void OnPostInstall(bool update, bool modal) override;
+
+private:
+  static bool FetchChecksum(const std::string& url,
+                            std::string& checksum,
+                            int& recheckAfter) noexcept;
+  static bool FetchIndex(const RepositoryDirInfo& repo,
+                         std::string const& digest,
+                         std::vector<AddonInfoPtr>& addons) noexcept;
+
+  static RepositoryDirInfo ParseDirConfiguration(const CAddonExtensions& configuration);
+
+  RepositoryDirList m_dirs;
+};
+
+typedef std::shared_ptr<CRepository> RepositoryPtr;
 }
 

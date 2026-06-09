@@ -1,25 +1,14 @@
-#pragma once
 /*
- *      Copyright (C) 2015 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2015-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "Addon.h"
+#pragma once
+
+#include "addons/Addon.h"
 
 #define WEBINTERFACE_DEFAULT_ENTRY_POINT  "index.html"
 
@@ -34,13 +23,7 @@ namespace ADDON
   class CWebinterface : public CAddon
   {
   public:
-    static boost::movelib::unique_ptr<CWebinterface> FromExtension(AddonProps props, const cp_extension_t* ext);
-
-    explicit CWebinterface(AddonProps props)
-        : CAddon(boost::move(props)),
-          m_type(WebinterfaceTypeStatic),
-          m_entryPoint(WEBINTERFACE_DEFAULT_ENTRY_POINT) {}
-    CWebinterface(ADDON::AddonProps props, WebinterfaceType type, const std::string &entryPoint);
+    explicit CWebinterface(const AddonInfoPtr& addonInfo);
 
     WebinterfaceType GetType() const { return m_type; }
     const std::string& EntryPoint() const { return m_entryPoint; }
@@ -49,7 +32,7 @@ namespace ADDON
     std::string GetBaseLocation() const;
 
   private:
-    WebinterfaceType m_type;
+    WebinterfaceType m_type = WebinterfaceTypeStatic;
     std::string m_entryPoint;
   };
 }

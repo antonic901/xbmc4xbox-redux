@@ -1,77 +1,43 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "PluginSource.h"
 
-#include <utility>
-
-#include "AddonManager.h"
-#include "ServiceBroker.h"
-#include "utils/StringUtils.h"
 #include "URL.h"
+#include "addons/addoninfo/AddonInfo.h"
+#include "addons/addoninfo/AddonType.h"
+#include "utils/StringUtils.h"
+
+#include <utility>
 
 namespace ADDON
 {
 
-boost::movelib::unique_ptr<CPluginSource> CPluginSource::FromExtension(AddonProps props, const cp_extension_t* ext)
+CPluginSource::CPluginSource(const AddonInfoPtr& addonInfo, AddonType addonType)
+  : CAddon(addonInfo, addonType)
 {
-  std::string provides = CServiceBroker::GetAddonMgr().GetExtValue(ext->configuration, "provides");
-  if (!provides.empty())
-    props.extrainfo.insert(make_pair("provides", provides));
-  CPluginSource* p = new CPluginSource(boost::move(props), provides);
+  std::string provides = addonInfo->Type(addonType)->GetValue("provides").asString();
 
-  ELEMENTS elements;
-  if (CServiceBroker::GetAddonMgr().GetExtElements(ext->configuration, "medialibraryscanpath", elements))
+  for (const auto& values : addonInfo->Type(addonType)->GetValues())
   {
-    std::string url = "plugin://" + p->ID() + '/';
-    for (ELEMENTS::const_iterator elem = elements.begin(); elem != elements.end(); ++elem)
-    {
-      std::string content = CServiceBroker::GetAddonMgr().GetExtValue(*elem, "@content");
-      if (content.empty())
-        continue;
-      std::string path;
-      if ((*elem)->value)
-        path.assign((*elem)->value);
-      if (!path.empty() && path[0] == '/')
-        path.erase(0, 1);
-      if (path.compare(0, url.size(), url))
-        path.insert(0, url);
-      p->m_mediaLibraryScanPaths[content].push_back(CURL(path).GetFileName());
-    }
+    if (values.first != "medialibraryscanpath")
+      continue;
+
+    std::string url = "plugin://" + ID() + '/';
+    std::string content = values.second.GetValue("medialibraryscanpath@content").asString();
+    std::string path = values.second.GetValue("medialibraryscanpath").asString();
+    if (!path.empty() && path.front() == '/')
+      path.erase(0, 1);
+    if (path.compare(0, url.size(), url))
+      path.insert(0, url);
+    m_mediaLibraryScanPaths[content].push_back(CURL(path).GetFileName());
   }
 
-  return boost::movelib::unique_ptr<CPluginSource>(p);
-}
-
-CPluginSource::CPluginSource(AddonProps props) : CAddon(boost::move(props))
-{
-  std::string provides;
-  InfoMap::const_iterator i = m_props.extrainfo.find("provides");
-  if (i != m_props.extrainfo.end())
-    provides = i->second;
-  SetProvides(provides);
-}
-
-CPluginSource::CPluginSource(AddonProps props, const std::string& provides)
-  : CAddon(boost::move(props))
-{
   SetProvides(provides);
 }
 
@@ -87,7 +53,7 @@ void CPluginSource::SetProvides(const std::string &content)
         m_providedContent.insert(content);
     }
   }
-  if (Type() == ADDON_SCRIPT && m_providedContent.empty())
+  if (Type() == AddonType::SCRIPT && m_providedContent.empty())
     m_providedContent.insert(EXECUTABLE);
 }
 
@@ -101,30 +67,19 @@ CPluginSource::Content CPluginSource::Translate(const std::string &content)
     return CPluginSource::EXECUTABLE;
   else if (content == "video")
     return CPluginSource::VIDEO;
+  else if (content == "game")
+    return CPluginSource::GAME;
   else
     return CPluginSource::UNKNOWN;
 }
 
-TYPE CPluginSource::FullType() const
+bool CPluginSource::HasType(AddonType type) const
 {
-  if (Provides(VIDEO))
-    return ADDON_VIDEO;
-  if (Provides(AUDIO))
-    return ADDON_AUDIO;
-  if (Provides(IMAGE))
-    return ADDON_IMAGE;
-  if (Provides(EXECUTABLE))
-    return ADDON_EXECUTABLE;
-
-  return CAddon::FullType();
-}
-
-bool CPluginSource::IsType(TYPE type) const
-{
-  return ((type == ADDON_VIDEO && Provides(VIDEO))
-       || (type == ADDON_AUDIO && Provides(AUDIO))
-       || (type == ADDON_IMAGE && Provides(IMAGE))
-       || (type == ADDON_EXECUTABLE && Provides(EXECUTABLE)));
+  return ((type == AddonType::VIDEO && Provides(VIDEO)) ||
+          (type == AddonType::AUDIO && Provides(AUDIO)) ||
+          (type == AddonType::IMAGE && Provides(IMAGE)) ||
+          (type == AddonType::GAME && Provides(GAME)) ||
+          (type == AddonType::EXECUTABLE && Provides(EXECUTABLE)) || (type == CAddon::Type()));
 }
 
 } /*namespace ADDON*/
