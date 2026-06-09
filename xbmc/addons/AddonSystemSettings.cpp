@@ -52,7 +52,7 @@ CAddonSystemSettings& CAddonSystemSettings::GetInstance()
   return inst;
 }
 
-void CAddonSystemSettings::OnSettingAction(const std::shared_ptr<const CSetting>& setting)
+void CAddonSystemSettings::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
 {
   if (setting->GetId() == CSettings::SETTING_ADDONS_MANAGE_DEPENDENCIES)
   {
@@ -74,16 +74,16 @@ void CAddonSystemSettings::OnSettingAction(const std::shared_ptr<const CSetting>
       const auto message =
           StringUtils::Format(g_localizeStrings.Get(36641), StringUtils::Join(removedItems, ", "));
 
-      ShowOKDialogText(CVariant{36640}, CVariant{message}); // "following orphaned were removed..."
+      ShowOKDialogText(36640, message); // "following orphaned were removed..."
     }
     else
     {
-      ShowOKDialogText(CVariant{36640}, CVariant{36642}); // "no orphaned found / removed"
+      ShowOKDialogText(36640, 36642); // "no orphaned found / removed"
     }
   }
 }
 
-void CAddonSystemSettings::OnSettingChanged(const std::shared_ptr<const CSetting>& setting)
+void CAddonSystemSettings::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
 {
   using namespace KODI::MESSAGING::HELPERS;
 
@@ -131,7 +131,7 @@ bool CAddonSystemSettings::UnsetActive(const AddonInfoPtr& addon)
   if (it == m_activeSettings.end())
     return true;
 
-  auto setting = std::static_pointer_cast<CSettingString>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting(it->second));
+  auto setting = boost::static_pointer_cast<CSettingString>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting(it->second));
   if (setting->GetValue() != addon->ID())
     return true;
 

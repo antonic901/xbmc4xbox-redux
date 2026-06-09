@@ -20,11 +20,11 @@ class CLanguageResource : public CResource
 public:
   explicit CLanguageResource(const AddonInfoPtr& addonInfo);
 
-  bool IsInUse() const override;
+  virtual bool IsInUse() const;
 
-  void OnPostInstall(bool update, bool modal) override;
+  virtual void OnPostInstall(bool update, bool modal);
 
-  bool IsAllowed(const std::string &file) const override;
+  virtual bool IsAllowed(const std::string &file) const;
 
   const CLocale& GetLocale() const { return m_locale; }
 

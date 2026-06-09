@@ -15,11 +15,11 @@ class CGUIDialogAddonSettings : public CGUIDialogSettingsManagerBase
 {
 public:
   CGUIDialogAddonSettings();
-  ~CGUIDialogAddonSettings() override = default;
+  virtual ~CGUIDialogAddonSettings() {}
 
   // specializations of CGUIControl
-  bool OnMessage(CGUIMessage& message) override;
-  bool OnAction(const CAction& action) override;
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction& action);
 
   static bool ShowForAddon(const ADDON::AddonPtr& addon, bool saveToDisk = true);
   static void SaveAndClose();
@@ -28,19 +28,19 @@ public:
 
 protected:
   // implementation of CGUIDialogSettingsBase
-  void SetupView() override;
-  std::string GetLocalizedString(uint32_t labelId) const override;
-  std::string GetSettingsLabel(const std::shared_ptr<ISetting>& setting) override;
-  int GetSettingLevel() const override;
-  std::shared_ptr<CSettingSection> GetSection() override;
+  virtual void SetupView();
+  virtual std::string GetLocalizedString(uint32_t labelId) const;
+  virtual std::string GetSettingsLabel(const boost::shared_ptr<ISetting>& setting);
+  virtual int GetSettingLevel() const;
+  virtual boost::shared_ptr<CSettingSection> GetSection();
 
   // implementation of CGUIDialogSettingsManagerBase
-  bool AllowResettingSettings() const override { return false; }
-  bool Save() override { return true; }
-  CSettingsManager* GetSettingsManager() const override;
+  virtual bool AllowResettingSettings() const { return false; }
+  virtual bool Save() { return true; }
+  virtual CSettingsManager* GetSettingsManager() const;
 
   // implementation of ISettingCallback
-  void OnSettingAction(const std::shared_ptr<const CSetting>& setting) override;
+  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
 
 private:
   static bool ShowForSingleInstance(const ADDON::AddonPtr& addon,

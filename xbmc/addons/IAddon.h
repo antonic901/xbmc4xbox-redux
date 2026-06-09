@@ -64,7 +64,7 @@ constexpr AddonInstanceId ADDON_SETTINGS_ID = ADDON_SINGLETON_INSTANCE_ID;
 constexpr char const* ORIGIN_SYSTEM = "b6a50484-93a0-4afb-a01c-8d17e059feda";
 
 class IAddon;
-typedef std::shared_ptr<IAddon> AddonPtr;
+typedef boost::shared_ptr<IAddon> AddonPtr;
 typedef std::vector<AddonPtr> VECADDONS;
 
 using InfoMap = std::map<std::string, std::string>;
@@ -73,7 +73,7 @@ using ArtMap = std::map<std::string, std::string>;
 class IAddon : public std::enable_shared_from_this<IAddon>
 {
 public:
-  virtual ~IAddon() = default;
+  virtual ~IAddon() {}
   virtual AddonType MainType() const = 0;
   virtual AddonType Type() const = 0;
   virtual bool HasType(AddonType type) const = 0;
@@ -143,7 +143,7 @@ public:
   virtual bool GetSettingString(const std::string& key,
                                 std::string& value,
                                 AddonInstanceId id = ADDON_SETTINGS_ID) = 0;
-  virtual std::shared_ptr<CAddonSettings> GetSettings(AddonInstanceId id = ADDON_SETTINGS_ID) = 0;
+  virtual boost::shared_ptr<CAddonSettings> GetSettings(AddonInstanceId id = ADDON_SETTINGS_ID) = 0;
   virtual const std::vector<DependencyInfo>& GetDependencies() const = 0;
   virtual CAddonVersion GetDependencyVersion(const std::string& dependencyID) const = 0;
   virtual bool MeetsVersion(const CAddonVersion& versionMin,

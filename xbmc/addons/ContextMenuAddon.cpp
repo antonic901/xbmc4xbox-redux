@@ -56,7 +56,7 @@ CContextMenuAddon::CContextMenuAddon(const AddonInfoPtr& addonInfo)
   }
 }
 
-CContextMenuAddon::~CContextMenuAddon() = default;
+CContextMenuAddon::~CContextMenuAddon() {}
 
 void CContextMenuAddon::ParseMenu(
     const CAddonExtensions* elem,
@@ -66,7 +66,7 @@ void CContextMenuAddon::ParseMenu(
   auto menuId = elem->GetValue("@id").asString();
   auto menuLabel = elem->GetValue("label").asString();
   if (StringUtils::IsNaturalNumber(menuLabel))
-    menuLabel = g_localizeStrings.GetAddonString(ID(), std::stoi(menuLabel));
+    menuLabel = g_localizeStrings.GetAddonString(ID(), atoi(menuLabel.c_str()));
 
   if (menuId.empty())
   {

@@ -30,12 +30,12 @@ public:
   explicit CAddonVersion(const char* version = nullptr);
   explicit CAddonVersion(const std::string& version);
 
-  CAddonVersion(const CAddonVersion& other) = default;
-  CAddonVersion(CAddonVersion&& other) = default;
-  CAddonVersion& operator=(const CAddonVersion& other) = default;
-  CAddonVersion& operator=(CAddonVersion&& other) = default;
+  CAddonVersion(const CAddonVersion& other) {}
+  CAddonVersion(CAddonVersion&& other) {}
+  CAddonVersion& operator=(const CAddonVersion& other) {}
+  CAddonVersion& operator=(CAddonVersion&& other) {}
 
-  virtual ~CAddonVersion() = default;
+  virtual ~CAddonVersion() {}
 
   int Epoch() const { return mEpoch; }
   const std::string& Upstream() const { return mUpstream; }

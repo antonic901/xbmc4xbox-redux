@@ -194,7 +194,7 @@ bool CRepository::FetchChecksum(const std::string& url,
     {
       // Limit value range to sensible values (1 hour to 1 week)
       recheckAfter =
-          std::max(std::min(std::stoi(recheckAfterHeader), 24 * 7 * 60 * 60), 1 * 60 * 60);
+          std::max(std::min(atoi(recheckAfterHeader.c_str()), 24 * 7 * 60 * 60), 1 * 60 * 60);
     }
     catch (...)
     {

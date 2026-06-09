@@ -72,7 +72,7 @@ bool CGUIDialogAddonSettings::OnMessage(CGUIMessage& message)
         break;
       }
 
-      std::shared_ptr<CSetting> setting = GetSettingsManager()->GetSetting(settingId);
+      boost::shared_ptr<CSetting> setting = GetSettingsManager()->GetSetting(settingId);
       if (setting != nullptr)
       {
         setting->FromString(settingValue);
@@ -171,7 +171,7 @@ bool CGUIDialogAddonSettings::ShowForSingleInstance(
   if (!addon->HasSettings(instanceId))
   {
     // addon does not support settings, inform user
-    HELPERS::ShowOKDialogText(CVariant{24000}, CVariant{24030});
+    HELPERS::ShowOKDialogText(24000, 24030);
     return false;
   }
 
@@ -241,7 +241,7 @@ bool CGUIDialogAddonSettings::ShowForMultipleInstances(const ADDON::AddonPtr& ad
           g_localizeStrings.Get(10020), name,
           g_localizeStrings.Get(enabled ? 305 : 13106)); // Edit "config name" [enabled state]
 
-      const CFileItemPtr item = std::make_shared<CFileItem>(label);
+      const CFileItemPtr item = boost::make_shared<CFileItem>(label);
       item->SetProperty("id", id);
       item->SetProperty("name", name);
       itemsInstances.Add(item);
@@ -256,21 +256,21 @@ bool CGUIDialogAddonSettings::ShowForMultipleInstances(const ADDON::AddonPtr& ad
     const ADDON::AddonInstanceId removeInstanceId = highestId + 2;
 
     CFileItemPtr item =
-        std::make_shared<CFileItem>(g_localizeStrings.Get(10014)); // Add add-on configuration
+        boost::make_shared<CFileItem>(g_localizeStrings.Get(10014)); // Add add-on configuration
     item->SetProperty("id", addInstanceId);
     itemsGeneral.Add(item);
 
     if (ids.size() > 1) // Forbid removal of last instance
     {
       item =
-          std::make_shared<CFileItem>(g_localizeStrings.Get(10015)); // Remove add-on configuration
+          boost::make_shared<CFileItem>(g_localizeStrings.Get(10015)); // Remove add-on configuration
       item->SetProperty("id", removeInstanceId);
       itemsGeneral.Add(item);
     }
 
     if (addon->HasSettings(ADDON_SETTINGS_ID))
     {
-      item = std::make_shared<CFileItem>(g_localizeStrings.Get(10013)); // Edit Add-on settings
+      item = boost::make_shared<CFileItem>(g_localizeStrings.Get(10013)); // Edit Add-on settings
       item->SetProperty("id", ADDON_SETTINGS_ID);
       itemsGeneral.Add(item);
     }
@@ -441,7 +441,7 @@ std::string CGUIDialogAddonSettings::GetLocalizedString(uint32_t labelId) const
   return CGUIDialogSettingsManagerBase::GetLocalizedString(labelId);
 }
 
-std::string CGUIDialogAddonSettings::GetSettingsLabel(const std::shared_ptr<ISetting>& setting)
+std::string CGUIDialogAddonSettings::GetSettingsLabel(const boost::shared_ptr<ISetting>& setting)
 {
   if (setting == nullptr)
     return "";
@@ -463,7 +463,7 @@ int CGUIDialogAddonSettings::GetSettingLevel() const
   return static_cast<int>(CViewStateSettings::GetInstance().GetSettingLevel());
 }
 
-std::shared_ptr<CSettingSection> CGUIDialogAddonSettings::GetSection()
+boost::shared_ptr<CSettingSection> CGUIDialogAddonSettings::GetSection()
 {
   const auto settingsManager = GetSettingsManager();
   if (settingsManager == nullptr)
@@ -484,7 +484,7 @@ CSettingsManager* CGUIDialogAddonSettings::GetSettingsManager() const
   return m_addon->GetSettings(m_instanceId)->GetSettingsManager();
 }
 
-void CGUIDialogAddonSettings::OnSettingAction(const std::shared_ptr<const CSetting>& setting)
+void CGUIDialogAddonSettings::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
 {
   if (m_addon == nullptr || m_addon->GetSettings(m_instanceId) == nullptr)
     return;

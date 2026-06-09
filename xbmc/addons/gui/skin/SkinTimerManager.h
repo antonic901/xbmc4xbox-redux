@@ -37,7 +37,7 @@ public:
   CSkinTimerManager() = delete;
 
   /*! \brief Default skin timer manager destructor */
-  ~CSkinTimerManager() = default;
+  ~CSkinTimerManager() {}
 
   /*! \brief Loads all the skin timers
   * \param path - the path for the skin Timers.xml file
@@ -62,7 +62,7 @@ public:
    *  \param timer the name of the skin timer
    *  \return the timer (moved), nullptr if it doesn't exist
   */
-  std::unique_ptr<CSkinTimer> GrabTimer(const std::string& timer);
+  boost::movelib::unique_ptr<CSkinTimer> GrabTimer(const std::string& timer);
 
   /*! \brief Checks if the timer with name `timer` is running
    \param timer the name of the skin timer
@@ -99,6 +99,6 @@ private:
   void LoadTimerInternal(const tinyxml2::XMLNode* node);
 
   /*! Container for the skin timers */
-  std::map<std::string, std::unique_ptr<CSkinTimer>> m_timers;
+  std::map<std::string, boost::movelib::unique_ptr<CSkinTimer>> m_timers;
   CGUIInfoManager& m_infoMgr;
 };

@@ -16,6 +16,6 @@ public:
   explicit CGUIViewStateAddonBrowser(const CFileItemList& items);
 
 protected:
-  void SaveViewState() override;
-  std::string GetExtensions() override;
+  virtual void SaveViewState();
+  virtual std::string GetExtensions();
 };

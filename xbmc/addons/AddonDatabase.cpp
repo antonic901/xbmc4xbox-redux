@@ -188,9 +188,9 @@ void CAddonDatabaseSerializer::DeserializeExtensions(const CVariant& variant,
   return;
 }
 
-CAddonDatabase::CAddonDatabase() = default;
+CAddonDatabase::CAddonDatabase() {}
 
-CAddonDatabase::~CAddonDatabase() = default;
+CAddonDatabase::~CAddonDatabase() {}
 
 bool CAddonDatabase::Open()
 {
@@ -1223,7 +1223,7 @@ void CAddonDatabase::GetInstallData(const AddonInfoPtr& addon)
   }
 }
 
-bool CAddonDatabase::AddInstalledAddon(const std::shared_ptr<CAddonInfo>& addon,
+bool CAddonDatabase::AddInstalledAddon(const boost::shared_ptr<CAddonInfo>& addon,
                                        const std::string& origin)
 {
   try

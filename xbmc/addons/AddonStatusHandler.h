@@ -29,12 +29,12 @@ namespace ADDON
                           AddonInstanceId instanceId,
                           ADDON_STATUS status,
                           bool sameThread = true);
-      ~CAddonStatusHandler() override;
+      virtual ~CAddonStatusHandler();
 
       /* Thread handling */
-      void Process() override;
-      void OnStartup() override;
-      void OnExit() override;
+      virtual void Process();
+      virtual void OnStartup();
+      virtual void OnExit();
 
     private:
       static CCriticalSection   m_critSection;

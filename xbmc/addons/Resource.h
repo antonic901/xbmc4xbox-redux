@@ -19,7 +19,7 @@ namespace ADDON
 class CResource : public CAddon
 {
 public:
-  ~CResource() override = default;
+  virtual ~CResource() {}
 
   virtual bool IsAllowed(const std::string &file) const = 0;
 

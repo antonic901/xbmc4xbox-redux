@@ -20,35 +20,35 @@ namespace CONTEXTMENU
 struct CAddonInfo : CStaticContextMenuAction
 {
   CAddonInfo() : CStaticContextMenuAction(19033) {}
-  bool IsVisible(const CFileItem& item) const override;
-  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+  virtual bool IsVisible(const CFileItem& item) const;
+  virtual bool Execute(const boost::shared_ptr<CFileItem>& item) const;
 };
 
 struct CAddonSettings : CStaticContextMenuAction
 {
   CAddonSettings() : CStaticContextMenuAction(10004) {}
-  bool IsVisible(const CFileItem& item) const override;
-  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+  virtual bool IsVisible(const CFileItem& item) const;
+  virtual bool Execute(const boost::shared_ptr<CFileItem>& item) const;
 };
 
 struct CCheckForUpdates : CStaticContextMenuAction
 {
   CCheckForUpdates() : CStaticContextMenuAction(24034) {}
-  bool IsVisible(const CFileItem& item) const override;
-  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+  virtual bool IsVisible(const CFileItem& item) const;
+  virtual bool Execute(const boost::shared_ptr<CFileItem>& item) const;
 };
 
 struct CEnableAddon : CStaticContextMenuAction
 {
   CEnableAddon() : CStaticContextMenuAction(24022) {}
-  bool IsVisible(const CFileItem& item) const override;
-  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+  virtual bool IsVisible(const CFileItem& item) const;
+  virtual bool Execute(const boost::shared_ptr<CFileItem>& item) const;
 };
 
 struct CDisableAddon : CStaticContextMenuAction
 {
   CDisableAddon() : CStaticContextMenuAction(24021) {}
-  bool IsVisible(const CFileItem& item) const override;
-  bool Execute(const std::shared_ptr<CFileItem>& item) const override;
+  virtual bool IsVisible(const CFileItem& item) const;
+  virtual bool Execute(const boost::shared_ptr<CFileItem>& item) const;
 };
 }

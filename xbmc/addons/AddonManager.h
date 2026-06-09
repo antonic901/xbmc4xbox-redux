@@ -33,11 +33,11 @@ class CAddonVersion;
 class IAddonMgrCallback;
 
 class CAddonInfo;
-using AddonInfoPtr = std::shared_ptr<CAddonInfo>;
+using AddonInfoPtr = boost::shared_ptr<CAddonInfo>;
 using ADDON_INFO_LIST = std::map<std::string, AddonInfoPtr>;
 
 class IAddon;
-using AddonPtr = std::shared_ptr<IAddon>;
+using AddonPtr = boost::shared_ptr<IAddon>;
 using VECADDONS = std::vector<AddonPtr>;
 
 struct AddonEvent;
@@ -168,10 +168,10 @@ public:
   bool ReloadSettings(const std::string& addonId, AddonInstanceId instanceId);
 
   /*! Get addons with available updates */
-  std::vector<std::shared_ptr<IAddon>> GetAvailableUpdates() const;
+  std::vector<boost::shared_ptr<IAddon>> GetAvailableUpdates() const;
 
   /*! Get addons that are outdated */
-  std::vector<std::shared_ptr<IAddon>> GetOutdatedAddons() const;
+  std::vector<boost::shared_ptr<IAddon>> GetOutdatedAddons() const;
 
   /*! Returns true if there is any addon with available updates, otherwise false */
   bool HasAvailableUpdates();
@@ -182,8 +182,8 @@ public:
      * \param allAddons vector of all installed add-ons
      * \return true or false
      */
-  bool IsOrphaned(const std::shared_ptr<IAddon>& addon,
-                  const std::vector<std::shared_ptr<IAddon>>& allAddons) const;
+  bool IsOrphaned(const boost::shared_ptr<IAddon>& addon,
+                  const std::vector<boost::shared_ptr<IAddon>>& allAddons) const;
 
   /*! \brief Checks for new / updated add-ons
      \return True if everything went ok, false otherwise
@@ -432,7 +432,7 @@ public:
      * @param[in] addon Addon to check
      * @return true if compatible, false if not
      */
-  bool IsCompatible(const std::shared_ptr<const IAddon>& addon) const;
+  bool IsCompatible(const boost::shared_ptr<const IAddon>& addon) const;
 
   /*!
      * @brief Check given addon information is compatible with Kodi.
@@ -593,7 +593,7 @@ public:
      * \param[in] addonId addon to look up
      * \return vector containing compatible addon versions
      */
-  std::vector<std::shared_ptr<IAddon>> GetCompatibleVersions(const std::string& addonId) const;
+  std::vector<boost::shared_ptr<IAddon>> GetCompatibleVersions(const std::string& addonId) const;
 
   /*!
      * \brief Return number of available updates formatted as string
@@ -607,7 +607,7 @@ public:
      * \brief returns a vector with all found orphaned dependencies.
      * \return the vector
      */
-  std::vector<std::shared_ptr<IAddon>> GetOrphanedDependencies() const;
+  std::vector<boost::shared_ptr<IAddon>> GetOrphanedDependencies() const;
 
 private:
   CAddonMgr& operator=(CAddonMgr const&) = delete;
@@ -621,7 +621,7 @@ private:
      * \param[in] true to return outdated addons, false to return available updates
      * \return vector filled with either available updates or outdated addons
      */
-  std::vector<std::shared_ptr<IAddon>> GetAvailableUpdatesOrOutdatedAddons(
+  std::vector<boost::shared_ptr<IAddon>> GetAvailableUpdatesOrOutdatedAddons(
       AddonCheckType addonCheckType) const;
 
   bool GetAddonsInternal(AddonType type,
@@ -678,8 +678,8 @@ private:
   std::map<std::string, AddonDisabledReason> m_disabled;
   static std::map<AddonType, IAddonMgrCallback*> m_managers;
   mutable CCriticalSection m_critSection;
-  std::unique_ptr<CAddonDatabase> m_database;
-  std::unique_ptr<CAddonUpdateRules> m_updateRules;
+  boost::movelib::unique_ptr<CAddonDatabase> m_database;
+  boost::movelib::unique_ptr<CAddonUpdateRules> m_updateRules;
   CEventSource<AddonEvent> m_events;
   CBlockingEventSource<AddonEvent> m_unloadEvents;
   std::set<std::string> m_systemAddons;

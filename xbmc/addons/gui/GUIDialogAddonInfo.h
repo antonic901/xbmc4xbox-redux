@@ -19,7 +19,7 @@
 namespace ADDON
 {
 class IAddon;
-using AddonPtr = std::shared_ptr<IAddon>;
+using AddonPtr = boost::shared_ptr<IAddon>;
 
 } // namespace ADDON
 
@@ -45,8 +45,8 @@ enum class EntryPoint : int
 struct CInstalledWithAvailable
 {
   CInstalledWithAvailable(const ADDON::DependencyInfo& depInfo,
-                          const std::shared_ptr<ADDON::IAddon>& installed,
-                          const std::shared_ptr<ADDON::IAddon>& available)
+                          const boost::shared_ptr<ADDON::IAddon>& installed,
+                          const boost::shared_ptr<ADDON::IAddon>& available)
     : m_depInfo(depInfo), m_installed(installed), m_available(available)
   {
   }
@@ -58,25 +58,25 @@ struct CInstalledWithAvailable
   bool IsInstalledUpToDate() const;
 
   ADDON::DependencyInfo m_depInfo;
-  std::shared_ptr<ADDON::IAddon> m_installed;
-  std::shared_ptr<ADDON::IAddon> m_available;
+  boost::shared_ptr<ADDON::IAddon> m_installed;
+  boost::shared_ptr<ADDON::IAddon> m_available;
 };
 
 class CGUIDialogAddonInfo : public CGUIDialog
 {
 public:
   CGUIDialogAddonInfo(void);
-  ~CGUIDialogAddonInfo(void) override;
-  bool OnMessage(CGUIMessage& message) override;
-  bool OnAction(const CAction& action) override;
+  virtual ~CGUIDialogAddonInfo(void);
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction& action);
 
-  CFileItemPtr GetCurrentListItem(int offset = 0) override { return m_item; }
-  bool HasListItems() const override { return true; }
+  virtual CFileItemPtr GetCurrentListItem(int offset = 0) { return m_item; }
+  virtual bool HasListItems() const { return true; }
 
   static bool ShowForItem(const CFileItemPtr& item);
 
 private:
-  void OnInitWindow() override;
+  virtual void OnInitWindow();
 
   /*!
    * @brief Set the item to display addon info on.

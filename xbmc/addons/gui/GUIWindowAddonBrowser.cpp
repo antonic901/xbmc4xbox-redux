@@ -55,7 +55,7 @@ CGUIWindowAddonBrowser::CGUIWindowAddonBrowser(void)
 {
 }
 
-CGUIWindowAddonBrowser::~CGUIWindowAddonBrowser() = default;
+CGUIWindowAddonBrowser::~CGUIWindowAddonBrowser() {}
 
 bool CGUIWindowAddonBrowser::OnMessage(CGUIMessage& message)
 {
@@ -84,7 +84,7 @@ bool CGUIWindowAddonBrowser::OnMessage(CGUIMessage& message)
       int iControl = message.GetSenderId();
       if (iControl == CONTROL_FOREIGNFILTER)
       {
-        const std::shared_ptr<CSettings> settings =
+        const boost::shared_ptr<CSettings> settings =
             CServiceBroker::GetSettingsComponent()->GetSettings();
         settings->ToggleBool(CSettings::SETTING_GENERAL_ADDONFOREIGNFILTER);
         settings->Save();
@@ -93,7 +93,7 @@ bool CGUIWindowAddonBrowser::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_BROKENFILTER)
       {
-        const std::shared_ptr<CSettings> settings =
+        const boost::shared_ptr<CSettings> settings =
             CServiceBroker::GetSettingsComponent()->GetSettings();
         settings->ToggleBool(CSettings::SETTING_GENERAL_ADDONBROKENFILTER);
         settings->Save();
@@ -162,7 +162,7 @@ void CGUIWindowAddonBrowser::SetProperties()
 
 class UpdateAddons : public IRunnable
 {
-  void Run() override
+  virtual void Run()
   {
     for (const auto& addon : CServiceBroker::GetAddonMgr().GetAvailableUpdates())
       CAddonInstaller::GetInstance().InstallOrUpdate(addon->ID(), BackgroundJob::CHOICE_YES,
@@ -172,7 +172,7 @@ class UpdateAddons : public IRunnable
 
 class UpdateAllowedAddons : public IRunnable
 {
-  void Run() override
+  virtual void Run()
   {
     for (const auto& addon : CServiceBroker::GetAddonMgr().GetAvailableUpdates())
       if (CServiceBroker::GetAddonMgr().IsAutoUpdateable(addon->ID()))
@@ -243,8 +243,8 @@ bool CGUIWindowAddonBrowser::OnClick(int iItem, const std::string& player)
     // cancel a downloading job
     if (item->HasProperty("Addon.Downloading"))
     {
-      if (CGUIDialogYesNo::ShowAndGetInput(CVariant{24000}, item->GetProperty("Addon.Name"),
-                                           CVariant{24066}, CVariant{""}))
+      if (CGUIDialogYesNo::ShowAndGetInput(24000, item->GetProperty("Addon.Name"),
+                                           24066, ""))
       {
         if (CAddonInstaller::GetInstance().Cancel(item->GetProperty("Addon.ID").asString()))
           Refresh();
@@ -266,7 +266,7 @@ bool CGUIWindowAddonBrowser::OnClick(int iItem, const std::string& player)
 
 void CGUIWindowAddonBrowser::UpdateButtons()
 {
-  const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+  const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
   SET_CONTROL_SELECTED(GetID(), CONTROL_FOREIGNFILTER,
                        settings->GetBool(CSettings::SETTING_GENERAL_ADDONFOREIGNFILTER));
   SET_CONTROL_SELECTED(GetID(), CONTROL_BROKENFILTER,
@@ -305,7 +305,7 @@ bool CGUIWindowAddonBrowser::GetDirectory(const std::string& strDirectory, CFile
 
   if (result && CAddonsDirectory::IsRepoDirectory(CURL(strDirectory)))
   {
-    const std::shared_ptr<CSettings> settings =
+    const boost::shared_ptr<CSettings> settings =
         CServiceBroker::GetSettingsComponent()->GetSettings();
     if (settings->GetBool(CSettings::SETTING_GENERAL_ADDONFOREIGNFILTER))
     {
@@ -550,7 +550,7 @@ int CGUIWindowAddonBrowser::SelectAddonID(const std::vector<AddonType>& types,
     heading += CAddonInfo::TranslateType(*type, true);
   }
 
-  dialog->SetHeading(CVariant{std::move(heading)});
+  dialog->SetHeading(std::move(heading));
   dialog->Reset();
   dialog->SetUseDetails(showDetails);
 

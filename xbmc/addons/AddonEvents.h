@@ -29,7 +29,7 @@ struct AddonEvent
   // Note: Do not remove the virtual dtor. There are types derived from AddonEvent (see below)
   //       and there are several places where 'typeid' is used to determine the runtime type of
   //       AddonEvent references. And 'typeid' only works for polymorphic objects.
-  virtual ~AddonEvent() = default;
+  virtual ~AddonEvent() {}
 };
 
 namespace AddonEvents
