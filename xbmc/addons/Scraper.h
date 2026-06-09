@@ -48,7 +48,7 @@ class CScraperUrl;
 namespace ADDON
 {
 class CScraper;
-typedef std::shared_ptr<CScraper> ScraperPtr;
+typedef boost::shared_ptr<CScraper> ScraperPtr;
 
 std::string TranslateContent(const CONTENT_TYPE &content, bool pretty=false);
 CONTENT_TYPE TranslateContent(const std::string &string);
@@ -58,7 +58,7 @@ AddonType ScraperTypeFromContent(const CONTENT_TYPE& content);
 class CScraperError
 {
 public:
-  CScraperError() = default;
+  CScraperError() {}
   CScraperError(const std::string &sTitle, const std::string &sMessage) :
     m_fAborted(false), m_sTitle(sTitle), m_sMessage(sMessage) {}
 
@@ -105,7 +105,7 @@ public:
   bool RequiresSettings() const { return m_requiressettings; }
   bool Supports(const CONTENT_TYPE &content) const;
 
-  bool IsInUse() const override;
+  virtual bool IsInUse() const;
   bool IsNoop();
   bool IsPython() const { return m_isPython; }
 
@@ -132,7 +132,7 @@ public:
   VIDEO::EPISODELIST GetEpisodeList(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl);
 
   bool GetVideoDetails(XFILE::CCurlFile& fcurl,
-                       const std::unordered_map<std::string, std::string>& uniqueIDs,
+                       const boost::unordered_map<std::string, std::string>& uniqueIDs,
                        const CScraperUrl& scurl,
                        bool fMovie /*else episode*/,
                        CVideoInfoTag& video);

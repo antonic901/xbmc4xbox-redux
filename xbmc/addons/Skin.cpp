@@ -48,7 +48,7 @@ using namespace std::chrono_literals;
 
 using KODI::MESSAGING::HELPERS::DialogResponse;
 
-std::shared_ptr<ADDON::CSkinInfo> g_SkinInfo;
+boost::shared_ptr<ADDON::CSkinInfo> g_SkinInfo;
 
 namespace
 {
@@ -63,9 +63,9 @@ class CSkinSettingUpdateHandler : private ITimerCallback
 public:
   CSkinSettingUpdateHandler(CAddon& addon)
   : m_addon(addon), m_timer(this) {}
-  ~CSkinSettingUpdateHandler() override = default;
+  virtual ~CSkinSettingUpdateHandler() {}
 
-  void OnTimeout() override;
+  virtual void OnTimeout();
   void TriggerSave();
 private:
   CAddon &m_addon;
@@ -158,7 +158,7 @@ CSkinInfo::CSkinInfo(const AddonInfoPtr& addonInfo,
     m_effectsSlowDown(1.f),
     m_debugging(false)
 {
-  m_settingsUpdateHandler = std::make_unique<CSkinSettingUpdateHandler>(*this);
+  m_settingsUpdateHandler = boost::movelib::make_unique<CSkinSettingUpdateHandler>(*this);
 }
 
 CSkinInfo::CSkinInfo(const AddonInfoPtr& addonInfo) : CAddon(addonInfo, AddonType::SKIN)
@@ -194,11 +194,11 @@ CSkinInfo::CSkinInfo(const AddonInfoPtr& addonInfo) : CAddon(addonInfo, AddonTyp
 
   m_debugging = Type(AddonType::SKIN)->GetValue("@debugging").asBoolean();
 
-  m_settingsUpdateHandler = std::make_unique<CSkinSettingUpdateHandler>(*this);
+  m_settingsUpdateHandler = boost::movelib::make_unique<CSkinSettingUpdateHandler>(*this);
   LoadStartupWindows(addonInfo);
 }
 
-CSkinInfo::~CSkinInfo() = default;
+CSkinInfo::~CSkinInfo() {}
 
 struct closestRes
 {
@@ -287,7 +287,7 @@ void CSkinInfo::LoadIncludes()
 void CSkinInfo::LoadTimers()
 {
   m_skinTimerManager =
-      std::make_unique<CSkinTimerManager>(CServiceBroker::GetGUI()->GetInfoManager());
+      boost::movelib::make_unique<CSkinTimerManager>(CServiceBroker::GetGUI()->GetInfoManager());
   const std::string timersPath =
       CSpecialProtocol::TranslatePathConvertCase(GetSkinPath("Timers.xml"));
   CLog::LogF(LOGINFO, "Trying to load skin timers from {}", timersPath);
@@ -402,7 +402,7 @@ void CSkinInfo::OnPostInstall(bool update, bool modal)
     return;
 
   if (IsInUse() || (!update && !modal &&
-                    HELPERS::ShowYesNoDialogText(CVariant{Name()}, CVariant{24099}) ==
+                    HELPERS::ShowYesNoDialogText(Name(), 24099) ==
                         DialogResponse::CHOICE_YES))
   {
     CGUIDialogKaiToast *toast = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogKaiToast>(WINDOW_DIALOG_KAI_TOAST);
@@ -452,7 +452,7 @@ void CSkinInfo::SettingOptionsSkinColorsFiller(const SettingConstPtr& setting,
   if (!g_SkinInfo)
     return;
 
-  std::string settingValue = std::static_pointer_cast<const CSettingString>(setting)->GetValue();
+  std::string settingValue = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
   // Remove the .xml extension from the Themes
   if (URIUtils::HasExtension(settingValue, ".xml"))
     URIUtils::RemoveExtension(settingValue);
@@ -536,7 +536,7 @@ void CSkinInfo::SettingOptionsSkinFontsFiller(const SettingConstPtr& setting,
     return;
 
   const std::string settingValue =
-      std::static_pointer_cast<const CSettingString>(setting)->GetValue();
+      boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
   bool currentValueSet = false;
 
   // Look for fontsets that are defined in the skin's Font.xml file
@@ -568,7 +568,7 @@ void CSkinInfo::SettingOptionsSkinThemesFiller(const SettingConstPtr& setting,
                                                void* data)
 {
   // get the chosen theme and remove the extension from the current theme (backward compat)
-  std::string settingValue = std::static_pointer_cast<const CSettingString>(setting)->GetValue();
+  std::string settingValue = boost::static_pointer_cast<const CSettingString>(setting)->GetValue();
   URIUtils::RemoveExtension(settingValue);
   current = "SKINDEFAULT";
 
@@ -602,7 +602,7 @@ void CSkinInfo::SettingOptionsStartupWindowsFiller(const SettingConstPtr& settin
   if (!g_SkinInfo)
     return;
 
-  int settingValue = std::static_pointer_cast<const CSettingInt>(setting)->GetValue();
+  int settingValue = boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
   current = -1;
 
   const std::vector<CStartupWindow> &startupWindows = g_SkinInfo->GetStartupWindows();
@@ -747,7 +747,7 @@ CSkinSettingPtr CSkinInfo::GetSkinSetting(const std::string& settingId)
   return nullptr;
 }
 
-std::shared_ptr<const CSkinSetting> CSkinInfo::GetSkinSetting(const std::string& settingId) const
+boost::shared_ptr<const CSkinSetting> CSkinInfo::GetSkinSetting(const std::string& settingId) const
 {
   const auto& it = m_settings.find(settingId);
   if (it != m_settings.end())

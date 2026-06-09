@@ -18,9 +18,9 @@ class CUISoundsResource : public CResource
 public:
   explicit CUISoundsResource(const AddonInfoPtr& addonInfo);
 
-  bool IsAllowed(const std::string &file) const override;
-  bool IsInUse() const override;
-  void OnPostInstall(bool update, bool modal) override;
+  virtual bool IsAllowed(const std::string &file) const;
+  virtual bool IsInUse() const;
+  virtual void OnPostInstall(bool update, bool modal);
 };
 
 }

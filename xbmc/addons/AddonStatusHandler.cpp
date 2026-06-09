@@ -85,7 +85,7 @@ void CAddonStatusHandler::OnExit()
 
 void CAddonStatusHandler::Process()
 {
-  std::unique_lock<CCriticalSection> lock(m_critSection);
+  CSingleLock lock(m_critSection);
 
   std::string heading = StringUtils::Format(
       "{}: {}", CAddonInfo::TranslateType(m_addon->Type(), true), m_addon->Name());
@@ -93,7 +93,7 @@ void CAddonStatusHandler::Process()
   /* Request to restart the AddOn and data structures need updated */
   if (m_status == ADDON_STATUS_NEED_RESTART)
   {
-    HELPERS::ShowOKDialogLines(CVariant{heading}, CVariant{24074});
+    HELPERS::ShowOKDialogLines(heading, 24074);
     CServiceBroker::GetAddonMgr()
         .GetCallbackForType(m_addon->Type())
         ->RequestRestart(m_addon->ID(), m_instanceId, true);
@@ -104,9 +104,9 @@ void CAddonStatusHandler::Process()
     CGUIDialogYesNo* pDialogYesNo = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
     if (!pDialogYesNo) return;
 
-    pDialogYesNo->SetHeading(CVariant{heading});
-    pDialogYesNo->SetLine(1, CVariant{24070});
-    pDialogYesNo->SetLine(2, CVariant{24072});
+    pDialogYesNo->SetHeading(heading);
+    pDialogYesNo->SetLine(1, 24070);
+    pDialogYesNo->SetLine(2, 24072);
     pDialogYesNo->Open();
 
     if (!pDialogYesNo->IsConfirmed()) return;

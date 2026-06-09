@@ -42,7 +42,7 @@ public:
              bool resetOnStart);
 
   /*! \brief Default skin timer destructor */
-  virtual ~CSkinTimer() = default;
+  virtual ~CSkinTimer() {}
 
   /*! \brief Start the skin timer */
   void Start();

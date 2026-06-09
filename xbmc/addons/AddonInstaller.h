@@ -27,10 +27,10 @@ class CAddonVersion;
 class CAddonDatabase;
 
 class CRepository;
-using RepositoryPtr = std::shared_ptr<CRepository>;
+using RepositoryPtr = boost::shared_ptr<CRepository>;
 
 class IAddon;
-using AddonPtr = std::shared_ptr<IAddon>;
+using AddonPtr = boost::shared_ptr<IAddon>;
 using VECADDONS = std::vector<AddonPtr>;
 
 enum class BackgroundJob : bool
@@ -118,7 +118,7 @@ public:
    \param dependsId the dependency to remove
    \return true on successful uninstall, false on failure.
    */
-  bool RemoveDependency(const std::shared_ptr<IAddon>& dependsId) const;
+  bool RemoveDependency(const boost::shared_ptr<IAddon>& dependsId) const;
 
   /*!
    * \brief Removes all orphaned add-ons recursively. Removal may orphan further
@@ -180,8 +180,8 @@ public:
    */
   bool HasJob(const std::string& ID) const;
 
-  void OnJobComplete(unsigned int jobID, bool success, CJob* job) override;
-  void OnJobProgress(unsigned int jobID, unsigned int progress, unsigned int total, const CJob *job) override;
+  virtual void OnJobComplete(unsigned int jobID, bool success, CJob* job);
+  virtual void OnJobProgress(unsigned int jobID, unsigned int progress, unsigned int total, const CJob *job);
 
   class CDownloadJob
   {
@@ -200,7 +200,7 @@ private:
   CAddonInstaller();
   CAddonInstaller(const CAddonInstaller&) = delete;
   CAddonInstaller const& operator=(CAddonInstaller const&) = delete;
-  ~CAddonInstaller() override;
+  virtual ~CAddonInstaller();
 
   /*! \brief Install an addon from a repository or zip
    *  \param addon the AddonPtr describing the addon
@@ -234,7 +234,7 @@ private:
   bool CheckDependencies(const ADDON::AddonPtr &addon, std::vector<std::string>& preDeps, CAddonDatabase &database, std::pair<std::string, std::string> &failedDep);
 
   void PrunePackageCache();
-  int64_t EnumeratePackageFolder(std::map<std::string, std::unique_ptr<CFileItemList>>& result);
+  int64_t EnumeratePackageFolder(std::map<std::string, boost::movelib::unique_ptr<CFileItemList>>& result);
 
   mutable CCriticalSection m_critSection;
   JobMap m_downloadJobs;

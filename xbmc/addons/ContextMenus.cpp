@@ -28,7 +28,7 @@ bool CAddonInfo::IsVisible(const CFileItem& item) const
   return item.HasAddonInfo();
 }
 
-bool CAddonInfo::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CAddonInfo::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   return CGUIDialogAddonInfo::ShowForItem(item);
 }
@@ -42,7 +42,7 @@ bool CAddonSettings::IsVisible(const CFileItem& item) const
          addon->CanHaveAddonOrInstanceSettings();
 }
 
-bool CAddonSettings::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CAddonSettings::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   AddonPtr addon;
   return CServiceBroker::GetAddonMgr().GetAddon(item->GetAddonInfo()->ID(), addon,
@@ -55,14 +55,14 @@ bool CCheckForUpdates::IsVisible(const CFileItem& item) const
   return item.HasAddonInfo() && item.GetAddonInfo()->Type() == AddonType::REPOSITORY;
 }
 
-bool CCheckForUpdates::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CCheckForUpdates::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   AddonPtr addon;
   if (item->HasAddonInfo() &&
       CServiceBroker::GetAddonMgr().GetAddon(item->GetAddonInfo()->ID(), addon,
                                              AddonType::REPOSITORY, OnlyEnabled::CHOICE_YES))
   {
-    CServiceBroker::GetRepositoryUpdater().CheckForUpdates(std::static_pointer_cast<CRepository>(addon), true);
+    CServiceBroker::GetRepositoryUpdater().CheckForUpdates(boost::static_pointer_cast<CRepository>(addon), true);
     return true;
   }
   return false;
@@ -76,7 +76,7 @@ bool CEnableAddon::IsVisible(const CFileItem& item) const
       CServiceBroker::GetAddonMgr().CanAddonBeEnabled(item.GetAddonInfo()->ID());
 }
 
-bool CEnableAddon::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CEnableAddon::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   // Check user want to enable if lifecycle not normal
   if (!ADDON::GUI::CHelpers::DialogAddonLifecycleUseAsk(item->GetAddonInfo()))
@@ -92,7 +92,7 @@ bool CDisableAddon::IsVisible(const CFileItem& item) const
       CServiceBroker::GetAddonMgr().CanAddonBeDisabled(item.GetAddonInfo()->ID());
 }
 
-bool CDisableAddon::Execute(const std::shared_ptr<CFileItem>& item) const
+bool CDisableAddon::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
   return CServiceBroker::GetAddonMgr().DisableAddon(item->GetAddonInfo()->ID(),
                                                     AddonDisabledReason::USER);

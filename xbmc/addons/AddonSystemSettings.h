@@ -30,17 +30,17 @@ enum class AddonRepoUpdateMode
 enum class AddonType;
 
 class CAddonInfo;
-using AddonInfoPtr = std::shared_ptr<CAddonInfo>;
+using AddonInfoPtr = boost::shared_ptr<CAddonInfo>;
 
 class IAddon;
-using AddonPtr = std::shared_ptr<IAddon>;
+using AddonPtr = boost::shared_ptr<IAddon>;
 
 class CAddonSystemSettings : public ISettingCallback
 {
 public:
   static CAddonSystemSettings& GetInstance();
-  void OnSettingAction(const std::shared_ptr<const CSetting>& setting) override;
-  void OnSettingChanged(const std::shared_ptr<const CSetting>& setting) override;
+  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
 
   bool GetActive(AddonType type, AddonPtr& addon);
   bool SetActive(AddonType type, const std::string& addonID);
@@ -71,7 +71,7 @@ private:
   CAddonSystemSettings();
   CAddonSystemSettings(const CAddonSystemSettings&) = delete;
   CAddonSystemSettings& operator=(const CAddonSystemSettings&) = delete;
-  ~CAddonSystemSettings() override = default;
+  virtual ~CAddonSystemSettings() {}
 
   const std::map<AddonType, std::string> m_activeSettings;
 };

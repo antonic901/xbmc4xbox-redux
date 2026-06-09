@@ -41,7 +41,7 @@ AddonPtr CAddonBuilder::Generate(const AddonInfoPtr& info, AddonType type)
   if (type == AddonType::UNKNOWN)
     type = info->MainType();
   if (type == AddonType::UNKNOWN)
-    return std::make_shared<CAddon>(info, AddonType::UNKNOWN);
+    return boost::make_shared<CAddon>(info, AddonType::UNKNOWN);
 
   // Handle screensaver special cases
   if (type == AddonType::SCREENSAVER)
@@ -49,7 +49,7 @@ AddonPtr CAddonBuilder::Generate(const AddonInfoPtr& info, AddonType type)
     // built in screensaver or python screensaver
     if (StringUtils::StartsWithNoCase(info->ID(), "screensaver.xbmc.builtin.") ||
         URIUtils::HasExtension(info->LibName(), ".py"))
-      return std::make_shared<CAddon>(info, type);
+      return boost::make_shared<CAddon>(info, type);
   }
 
   // Handle audio encoder special cases
@@ -57,7 +57,7 @@ AddonPtr CAddonBuilder::Generate(const AddonInfoPtr& info, AddonType type)
   {
     // built in audio encoder
     if (StringUtils::StartsWithNoCase(info->ID(), "audioencoder.kodi.builtin."))
-      return std::make_shared<CAddonDll>(info, type);
+      return boost::make_shared<CAddonDll>(info, type);
   }
 
   switch (type)
@@ -71,47 +71,47 @@ AddonPtr CAddonBuilder::Generate(const AddonInfoPtr& info, AddonType type)
     case AddonType::VFS:
     case AddonType::VISUALIZATION:
     case AddonType::SCREENSAVER:
-      return std::make_shared<CAddonDll>(info, type);
+      return boost::make_shared<CAddonDll>(info, type);
     case AddonType::GAMEDLL:
-      return std::make_shared<GAME::CGameClient>(info);
+      return boost::make_shared<GAME::CGameClient>(info);
     case AddonType::PLUGIN:
     case AddonType::SCRIPT:
-      return std::make_shared<CPluginSource>(info, type);
+      return boost::make_shared<CPluginSource>(info, type);
     case AddonType::SCRIPT_LIBRARY:
     case AddonType::SCRIPT_LYRICS:
     case AddonType::SCRIPT_MODULE:
     case AddonType::SUBTITLE_MODULE:
     case AddonType::SCRIPT_WEATHER:
-      return std::make_shared<CAddon>(info, type);
+      return boost::make_shared<CAddon>(info, type);
     case AddonType::WEB_INTERFACE:
-      return std::make_shared<CWebinterface>(info);
+      return boost::make_shared<CWebinterface>(info);
     case AddonType::SERVICE:
-      return std::make_shared<CService>(info);
+      return boost::make_shared<CService>(info);
     case AddonType::SCRAPER_ALBUMS:
     case AddonType::SCRAPER_ARTISTS:
     case AddonType::SCRAPER_MOVIES:
     case AddonType::SCRAPER_MUSICVIDEOS:
     case AddonType::SCRAPER_TVSHOWS:
     case AddonType::SCRAPER_LIBRARY:
-      return std::make_shared<CScraper>(info, type);
+      return boost::make_shared<CScraper>(info, type);
     case AddonType::SKIN:
-      return std::make_shared<CSkinInfo>(info);
+      return boost::make_shared<CSkinInfo>(info);
     case AddonType::RESOURCE_FONT:
-      return std::make_shared<CFontResource>(info);
+      return boost::make_shared<CFontResource>(info);
     case AddonType::RESOURCE_IMAGES:
-      return std::make_shared<CImageResource>(info);
+      return boost::make_shared<CImageResource>(info);
     case AddonType::RESOURCE_GAMES:
-      return std::make_shared<CGameResource>(info);
+      return boost::make_shared<CGameResource>(info);
     case AddonType::RESOURCE_LANGUAGE:
-      return std::make_shared<CLanguageResource>(info);
+      return boost::make_shared<CLanguageResource>(info);
     case AddonType::RESOURCE_UISOUNDS:
-      return std::make_shared<CUISoundsResource>(info);
+      return boost::make_shared<CUISoundsResource>(info);
     case AddonType::REPOSITORY:
-      return std::make_shared<CRepository>(info);
+      return boost::make_shared<CRepository>(info);
     case AddonType::CONTEXTMENU_ITEM:
-      return std::make_shared<CContextMenuAddon>(info);
+      return boost::make_shared<CContextMenuAddon>(info);
     case AddonType::GAME_CONTROLLER:
-      return std::make_shared<GAME::CController>(info);
+      return boost::make_shared<GAME::CController>(info);
     default:
       break;
   }

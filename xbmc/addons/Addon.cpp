@@ -430,7 +430,7 @@ bool GetSettingValue(CAddon& addon,
   if (setting == nullptr || setting->GetType() != TSetting::Type())
     return false;
 
-  value = std::static_pointer_cast<TSetting>(setting)->GetValue();
+  value = boost::static_pointer_cast<TSetting>(setting)->GetValue();
   return true;
 }
 
@@ -512,7 +512,7 @@ bool UpdateSettingValue(CAddon& addon,
   if (setting->GetType() != TSetting::Type())
     return false;
 
-  return std::static_pointer_cast<TSetting>(setting)->SetValue(value);
+  return boost::static_pointer_cast<TSetting>(setting)->SetValue(value);
 }
 
 bool CAddon::UpdateSettingBool(const std::string& key,
@@ -598,7 +598,7 @@ bool CAddon::InitSettings(AddonInstanceId id)
     CSettingsData data;
 
     data.m_addonSettings =
-        std::make_shared<CAddonSettings>(enable_shared_from_this::shared_from_this(), id);
+        boost::make_shared<CAddonSettings>(enable_shared_from_this::shared_from_this(), id);
     if (id == ADDON_SETTINGS_ID)
     {
       data.m_addonSettingsPath =
@@ -620,7 +620,7 @@ bool CAddon::InitSettings(AddonInstanceId id)
   return false;
 }
 
-std::shared_ptr<CAddonSettings> CAddon::FindInstanceSettings(AddonInstanceId id) const
+boost::shared_ptr<CAddonSettings> CAddon::FindInstanceSettings(AddonInstanceId id) const
 {
   const auto itr = m_settings.find(id);
   if (itr == m_settings.end())
@@ -629,7 +629,7 @@ std::shared_ptr<CAddonSettings> CAddon::FindInstanceSettings(AddonInstanceId id)
   return itr->second.m_addonSettings;
 }
 
-std::shared_ptr<CAddonSettings> CAddon::GetSettings(AddonInstanceId id /* = ADDON_SETTINGS_ID */)
+boost::shared_ptr<CAddonSettings> CAddon::GetSettings(AddonInstanceId id /* = ADDON_SETTINGS_ID */)
 {
   if (InitSettings(id))
     LoadSettings(false, true, id);

@@ -19,13 +19,13 @@ namespace ADDON
 {
 class CAddonExtensions;
 class CAddonInfo;
-using AddonInfoPtr = std::shared_ptr<CAddonInfo>;
+using AddonInfoPtr = boost::shared_ptr<CAddonInfo>;
 
 class CContextMenuAddon : public CAddon
 {
 public:
   explicit CContextMenuAddon(const AddonInfoPtr& addonInfo);
-  ~CContextMenuAddon() override;
+  virtual ~CContextMenuAddon();
 
   const std::vector<CContextMenuItem>& GetItems() const { return m_items; }
 

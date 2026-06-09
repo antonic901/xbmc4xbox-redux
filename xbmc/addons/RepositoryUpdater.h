@@ -25,7 +25,7 @@ namespace ADDON
 class CAddonMgr;
 
 class CRepository;
-using RepositoryPtr = std::shared_ptr<CRepository>;
+using RepositoryPtr = boost::shared_ptr<CRepository>;
 
 class CRepositoryUpdateJob;
 
@@ -35,7 +35,7 @@ class CRepositoryUpdater : private ITimerCallback, private IJobCallback, public 
 {
 public:
   explicit CRepositoryUpdater(CAddonMgr& addonMgr);
-  ~CRepositoryUpdater() override;
+  virtual ~CRepositoryUpdater();
 
   void Start();
 
@@ -75,7 +75,7 @@ public:
   CDateTime LastUpdated() const;
 
 
-  void OnSettingChanged(const std::shared_ptr<const CSetting>& setting) override;
+  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
 
   struct RepositoryUpdated { };
 
@@ -87,9 +87,9 @@ private:
   CRepositoryUpdater& operator=(const CRepositoryUpdater&) = delete;
   CRepositoryUpdater& operator=(CRepositoryUpdater&&) = delete;
 
-  void OnJobComplete(unsigned int jobID, bool success, CJob *job) override;
+  virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
 
-  void OnTimeout() override;
+  virtual void OnTimeout();
 
   void OnEvent(const ADDON::AddonEvent& event);
 

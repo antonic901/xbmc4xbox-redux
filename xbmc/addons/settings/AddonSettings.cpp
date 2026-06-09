@@ -48,7 +48,7 @@ namespace
 
 constexpr auto OldSettingValuesSeparator = "|";
 
-constexpr int UnknownSettingLabelIdStart = 100000;
+const static int UnknownSettingLabelIdStart = 100000;
 
 bool InfoBool(const std::string& condition,
               const std::string& value,
@@ -63,8 +63,8 @@ SettingPtr InitializeFromOldSettingWithoutDefinition(ADDON::CAddonSettings& sett
                                                      const std::string& settingId,
                                                      const typename TSetting::Value& defaultValue)
 {
-  std::shared_ptr<TSetting> setting =
-      std::make_shared<TSetting>(settingId, settings.GetSettingsManager());
+  boost::shared_ptr<TSetting> setting =
+      boost::make_shared<TSetting>(settingId, settings.GetSettingsManager());
   setting->SetLevel(SettingLevel::Internal);
   setting->SetVisible(false);
   setting->SetDefault(defaultValue);
@@ -78,8 +78,8 @@ SettingPtr InitializeFromOldSettingWithoutDefinition<CSettingString>(
     const std::string& settingId,
     const typename CSettingString::Value& defaultValue)
 {
-  std::shared_ptr<CSettingString> setting =
-      std::make_shared<CSettingString>(settingId, settings.GetSettingsManager());
+  boost::shared_ptr<CSettingString> setting =
+      boost::make_shared<CSettingString>(settingId, settings.GetSettingsManager());
   setting->SetLevel(SettingLevel::Internal);
   setting->SetVisible(false);
   setting->SetDefault(defaultValue);
@@ -109,7 +109,7 @@ SettingPtr AddSettingWithoutDefinition(ADDON::CAddonSettings& settings,
   SettingSectionPtr section;
   if (sections.empty())
     section =
-        std::make_shared<CSettingSection>(settings.GetAddonId(), settings.GetSettingsManager());
+        boost::make_shared<CSettingSection>(settings.GetAddonId(), settings.GetSettingsManager());
   else
     section = sections.back();
 
@@ -117,7 +117,7 @@ SettingPtr AddSettingWithoutDefinition(ADDON::CAddonSettings& settings,
   auto categories = section->GetCategories();
   SettingCategoryPtr category;
   if (categories.empty())
-    category = std::make_shared<CSettingCategory>("category0", settings.GetSettingsManager());
+    category = boost::make_shared<CSettingCategory>("category0", settings.GetSettingsManager());
   else
     category = categories.back();
 
@@ -125,7 +125,7 @@ SettingPtr AddSettingWithoutDefinition(ADDON::CAddonSettings& settings,
   auto groups = category->GetGroups();
   SettingGroupPtr group;
   if (groups.empty())
-    group = std::make_shared<CSettingGroup>("0", settings.GetSettingsManager());
+    group = boost::make_shared<CSettingGroup>("0", settings.GetSettingsManager());
   else
     group = groups.back();
 
@@ -153,7 +153,7 @@ SettingPtr AddSettingWithoutDefinition(ADDON::CAddonSettings& settings,
 namespace ADDON
 {
 
-CAddonSettings::CAddonSettings(const std::shared_ptr<IAddon>& addon, AddonInstanceId instanceId)
+CAddonSettings::CAddonSettings(const boost::shared_ptr<IAddon>& addon, AddonInstanceId instanceId)
   : CSettingsBase(),
     m_addonId(addon->ID()),
     m_addonPath(addon->Path()),
@@ -166,18 +166,18 @@ CAddonSettings::CAddonSettings(const std::shared_ptr<IAddon>& addon, AddonInstan
 {
 }
 
-std::shared_ptr<CSetting> CAddonSettings::CreateSetting(
+boost::shared_ptr<CSetting> CAddonSettings::CreateSetting(
     const std::string& settingType,
     const std::string& settingId,
     CSettingsManager* settingsManager /* = nullptr */) const
 {
   if (StringUtils::EqualsNoCase(settingType, "urlencodedstring"))
-    return std::make_shared<CSettingUrlEncodedString>(settingId, settingsManager);
+    return boost::make_shared<CSettingUrlEncodedString>(settingId, settingsManager);
 
   return CSettingCreator::CreateSetting(settingType, settingId, settingsManager);
 }
 
-void CAddonSettings::OnSettingAction(const std::shared_ptr<const CSetting>& setting)
+void CAddonSettings::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
 {
   std::string actionData;
   bool closeDialog = false;
@@ -260,21 +260,21 @@ bool CAddonSettings::AddInstanceSettings()
   }
   else
   {
-    group = std::make_shared<CSettingGroup>(ADDON_SETTING_INSTANCE_GROUP, mgr);
+    group = boost::make_shared<CSettingGroup>(ADDON_SETTING_INSTANCE_GROUP, mgr);
     group->SetLabel(10017); // Add-on configuration
     category->AddGroupToFront(group);
   }
 
-  const std::shared_ptr<CSettingString> name =
-      std::make_shared<CSettingString>(ADDON_SETTING_INSTANCE_NAME_VALUE, 551, "", mgr); // Name
+  const boost::shared_ptr<CSettingString> name =
+      boost::make_shared<CSettingString>(ADDON_SETTING_INSTANCE_NAME_VALUE, 551, "", mgr); // Name
   name->SetAllowEmpty(false);
-  name->SetControl(std::make_shared<CSettingControlEdit>());
+  name->SetControl(boost::make_shared<CSettingControlEdit>());
   if (!mgr->AddSetting(name, section, category, group))
     return false;
 
-  const std::shared_ptr<CSettingBool> enabled = std::make_shared<CSettingBool>(
+  const boost::shared_ptr<CSettingBool> enabled = boost::make_shared<CSettingBool>(
       ADDON_SETTING_INSTANCE_ENABLED_VALUE, 305, true, mgr); // Enabled
-  enabled->SetControl(std::make_shared<CSettingControlCheckmark>());
+  enabled->SetControl(boost::make_shared<CSettingControlCheckmark>());
   if (!mgr->AddSetting(enabled, section, category, group))
     return false;
 
@@ -283,7 +283,7 @@ bool CAddonSettings::AddInstanceSettings()
 
 bool CAddonSettings::Initialize(const CXBMCTinyXML& doc, bool allowEmpty /* = false */)
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   if (m_initialized)
     return false;
 
@@ -312,7 +312,7 @@ bool CAddonSettings::Initialize(const CXBMCTinyXML& doc, bool allowEmpty /* = fa
 
 bool CAddonSettings::Load(const CXBMCTinyXML& doc)
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   if (!m_initialized)
     return false;
 
@@ -417,7 +417,7 @@ bool CAddonSettings::Load(const CXBMCTinyXML& doc)
 
 bool CAddonSettings::Save(CXBMCTinyXML& doc) const
 {
-  std::unique_lock<CCriticalSection> lock(m_critical);
+  CSingleLock lock(m_critical);
   if (!m_initialized)
     return false;
 
@@ -437,7 +437,7 @@ bool CAddonSettings::HasSettings() const
 
 bool CAddonSettings::Save()
 {
-  std::shared_ptr<IAddon> addon = m_addon.lock();
+  boost::shared_ptr<IAddon> addon = m_addon.lock();
   assert(addon);
   if (addon)
     return addon->SaveSettings();
@@ -457,22 +457,22 @@ std::string CAddonSettings::GetSettingLabel(int label) const
   return labelIt->second;
 }
 
-std::shared_ptr<CSetting> CAddonSettings::AddSetting(const std::string& settingId, bool value)
+boost::shared_ptr<CSetting> CAddonSettings::AddSetting(const std::string& settingId, bool value)
 {
   return AddSettingWithoutDefinition<CSettingBool>(*this, settingId, value, m_logger);
 }
 
-std::shared_ptr<CSetting> CAddonSettings::AddSetting(const std::string& settingId, int value)
+boost::shared_ptr<CSetting> CAddonSettings::AddSetting(const std::string& settingId, int value)
 {
   return AddSettingWithoutDefinition<CSettingInt>(*this, settingId, value, m_logger);
 }
 
-std::shared_ptr<CSetting> CAddonSettings::AddSetting(const std::string& settingId, double value)
+boost::shared_ptr<CSetting> CAddonSettings::AddSetting(const std::string& settingId, double value)
 {
   return AddSettingWithoutDefinition<CSettingNumber>(*this, settingId, value, m_logger);
 }
 
-std::shared_ptr<CSetting> CAddonSettings::AddSetting(const std::string& settingId,
+boost::shared_ptr<CSetting> CAddonSettings::AddSetting(const std::string& settingId,
                                                      const std::string& value)
 {
   return AddSettingWithoutDefinition<CSettingString>(*this, settingId, value, m_logger);
@@ -546,13 +546,13 @@ bool CAddonSettings::ParseSettingVersion(const CXBMCTinyXML& doc, uint32_t& vers
   return true;
 }
 
-std::shared_ptr<CSettingGroup> CAddonSettings::ParseOldSettingElement(
+boost::shared_ptr<CSettingGroup> CAddonSettings::ParseOldSettingElement(
     const TiXmlElement* categoryElement,
-    const std::shared_ptr<CSettingCategory>& category,
+    const boost::shared_ptr<CSettingCategory>& category,
     std::set<std::string>& settingIds)
 {
   // build a vector of settings from the same category
-  std::vector<std::shared_ptr<const CSetting>> categorySettings;
+  std::vector<boost::shared_ptr<const CSetting>> categorySettings;
 
   // prepare for settings with enable/visible conditions
   struct SettingWithConditions
@@ -564,7 +564,7 @@ std::shared_ptr<CSettingGroup> CAddonSettings::ParseOldSettingElement(
   };
   std::vector<SettingWithConditions> settingsWithConditions;
 
-  auto group = std::make_shared<CSettingGroup>("0", GetSettingsManager());
+  auto group = boost::make_shared<CSettingGroup>("0", GetSettingsManager());
   uint32_t groupId = 1;
 
   // go through all settings in the category
@@ -591,7 +591,7 @@ std::shared_ptr<CSettingGroup> CAddonSettings::ParseOldSettingElement(
         category->AddGroup(group);
 
         // and create a new one
-        group = std::make_shared<CSettingGroup>(std::to_string(groupId), GetSettingsManager());
+        group = boost::make_shared<CSettingGroup>(std::to_string(groupId), GetSettingsManager());
         groupId += 1;
       }
 
@@ -784,11 +784,11 @@ std::shared_ptr<CSettingGroup> CAddonSettings::ParseOldSettingElement(
   return group;
 }
 
-std::shared_ptr<CSettingCategory> CAddonSettings::ParseOldCategoryElement(
+boost::shared_ptr<CSettingCategory> CAddonSettings::ParseOldCategoryElement(
     uint32_t& categoryId, const TiXmlElement* categoryElement, std::set<std::string>& settingIds)
 {
   // create the category
-  auto category = std::make_shared<CSettingCategory>(StringUtils::Format("category{}", categoryId),
+  auto category = boost::make_shared<CSettingCategory>(StringUtils::Format("category{}", categoryId),
                                                      GetSettingsManager());
   categoryId += 1;
 
@@ -814,10 +814,10 @@ bool CAddonSettings::InitializeFromOldSettingDefinitions(const CXBMCTinyXML& doc
   if (root == nullptr)
     return false;
 
-  std::shared_ptr<CSettingSection> section =
-      std::make_shared<CSettingSection>(m_addonId, GetSettingsManager());
+  boost::shared_ptr<CSettingSection> section =
+      boost::make_shared<CSettingSection>(m_addonId, GetSettingsManager());
 
-  std::shared_ptr<CSettingCategory> category;
+  boost::shared_ptr<CSettingCategory> category;
   uint32_t categoryId = 0;
 
   // Settings id set
@@ -853,7 +853,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingAction(const std::string& set
   StringUtils::Replace(action, "$ID", m_addonId);
 
   // prepare the setting's control
-  auto control = std::make_shared<CSettingControlButton>();
+  auto control = boost::make_shared<CSettingControlButton>();
   control->SetFormat("action");
 
   SettingPtr setting = nullptr;
@@ -863,7 +863,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingAction(const std::string& set
     auto actionSettingId = StringUtils::Format("action{}", m_unidentifiedSettingId);
     m_unidentifiedSettingId += 1;
 
-    auto settingAction = std::make_shared<CSettingAction>(actionSettingId, GetSettingsManager());
+    auto settingAction = boost::make_shared<CSettingAction>(actionSettingId, GetSettingsManager());
     settingAction->SetData(action);
 
     setting = settingAction;
@@ -871,7 +871,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingAction(const std::string& set
   else
   {
     // assume that the setting might store a value as a string
-    auto settingString = std::make_shared<CSettingString>(settingId, GetSettingsManager());
+    auto settingString = boost::make_shared<CSettingString>(settingId, GetSettingsManager());
     settingString->SetDefault(defaultValue);
     settingString->SetAllowEmpty(true);
 
@@ -891,16 +891,16 @@ SettingPtr CAddonSettings::InitializeFromOldSettingAction(const std::string& set
   return setting;
 }
 
-std::shared_ptr<CSetting> CAddonSettings::InitializeFromOldSettingLabel()
+boost::shared_ptr<CSetting> CAddonSettings::InitializeFromOldSettingLabel()
 {
   // label settings don't require a setting id
   auto labelSettingId = StringUtils::Format("label{}", m_unidentifiedSettingId);
   m_unidentifiedSettingId += 1;
 
-  auto settingLabel = std::make_shared<CSettingString>(labelSettingId, GetSettingsManager());
+  auto settingLabel = boost::make_shared<CSettingString>(labelSettingId, GetSettingsManager());
 
   // create the setting's control
-  settingLabel->SetControl(std::make_shared<CSettingControlLabel>());
+  settingLabel->SetControl(boost::make_shared<CSettingControlLabel>());
 
   return settingLabel;
 }
@@ -909,11 +909,11 @@ SettingPtr CAddonSettings::InitializeFromOldSettingBool(const std::string& setti
                                                         const TiXmlElement* settingElement,
                                                         const std::string& defaultValue)
 {
-  auto setting = std::make_shared<CSettingBool>(settingId, GetSettingsManager());
+  auto setting = boost::make_shared<CSettingBool>(settingId, GetSettingsManager());
   if (setting->FromString(defaultValue))
     setting->SetDefault(setting->GetValue());
 
-  setting->SetControl(std::make_shared<CSettingControlCheckmark>());
+  setting->SetControl(boost::make_shared<CSettingControlCheckmark>());
 
   return setting;
 }
@@ -924,8 +924,8 @@ SettingPtr CAddonSettings::InitializeFromOldSettingTextIpAddress(const std::stri
                                                                  const std::string& defaultValue,
                                                                  const int settingLabel)
 {
-  std::shared_ptr<CSettingString> setting;
-  auto control = std::make_shared<CSettingControlEdit>();
+  boost::shared_ptr<CSettingString> setting;
+  auto control = boost::make_shared<CSettingControlEdit>();
   control->SetHeading(settingLabel);
 
   // get any options
@@ -933,7 +933,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingTextIpAddress(const std::stri
 
   if (settingType == "ipaddress")
   {
-    setting = std::make_shared<CSettingString>(settingId, GetSettingsManager());
+    setting = boost::make_shared<CSettingString>(settingId, GetSettingsManager());
     control->SetFormat("ip");
   }
   else if (settingType == "text")
@@ -941,12 +941,12 @@ SettingPtr CAddonSettings::InitializeFromOldSettingTextIpAddress(const std::stri
 
     if (StringUtils::EqualsNoCase(option, "urlencoded"))
     {
-      setting = std::make_shared<CSettingUrlEncodedString>(settingId, GetSettingsManager());
+      setting = boost::make_shared<CSettingUrlEncodedString>(settingId, GetSettingsManager());
       control->SetFormat("urlencoded");
     }
     else
     {
-      setting = std::make_shared<CSettingString>(settingId, GetSettingsManager());
+      setting = boost::make_shared<CSettingString>(settingId, GetSettingsManager());
       control->SetFormat("string");
       control->SetHidden(StringUtils::EqualsNoCase(option, "hidden"));
     }
@@ -964,11 +964,11 @@ SettingPtr CAddonSettings::InitializeFromOldSettingNumber(const std::string& set
                                                           const std::string& defaultValue,
                                                           const int settingLabel)
 {
-  auto setting = std::make_shared<CSettingInt>(settingId, GetSettingsManager());
+  auto setting = boost::make_shared<CSettingInt>(settingId, GetSettingsManager());
   if (setting->FromString(defaultValue))
     setting->SetDefault(setting->GetValue());
 
-  auto control = std::make_shared<CSettingControlEdit>();
+  auto control = boost::make_shared<CSettingControlEdit>();
   control->SetHeading(settingLabel);
   control->SetFormat("integer");
   setting->SetControl(control);
@@ -982,7 +982,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingPath(const std::string& setti
                                                         const std::string& defaultValue,
                                                         const int settingLabel)
 {
-  auto setting = std::make_shared<CSettingPath>(settingId, GetSettingsManager());
+  auto setting = boost::make_shared<CSettingPath>(settingId, GetSettingsManager());
   setting->SetDefault(defaultValue);
 
   // parse sources/shares
@@ -1025,7 +1025,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingPath(const std::string& setti
   const auto option = XMLUtils::GetAttribute(settingElement, "option");
   setting->SetWritable(StringUtils::EqualsNoCase(option, "writeable"));
 
-  auto control = std::make_shared<CSettingControlButton>();
+  auto control = boost::make_shared<CSettingControlButton>();
   if (settingType == "folder")
     control->SetFormat("path");
   else if (settingType == "image")
@@ -1052,11 +1052,11 @@ SettingPtr CAddonSettings::InitializeFromOldSettingDate(const std::string& setti
                                                         const std::string& defaultValue,
                                                         const int settingLabel)
 {
-  auto setting = std::make_shared<CSettingDate>(settingId, GetSettingsManager());
+  auto setting = boost::make_shared<CSettingDate>(settingId, GetSettingsManager());
   if (setting->FromString(defaultValue))
     setting->SetDefault(setting->GetValue());
 
-  auto control = std::make_shared<CSettingControlButton>();
+  auto control = boost::make_shared<CSettingControlButton>();
   control->SetFormat("date");
   control->SetHeading(settingLabel);
   setting->SetControl(control);
@@ -1069,11 +1069,11 @@ SettingPtr CAddonSettings::InitializeFromOldSettingTime(const std::string& setti
                                                         const std::string& defaultValue,
                                                         const int settingLabel)
 {
-  auto setting = std::make_shared<CSettingTime>(settingId, GetSettingsManager());
+  auto setting = boost::make_shared<CSettingTime>(settingId, GetSettingsManager());
   if (setting->FromString(defaultValue))
     setting->SetDefault(setting->GetValue());
 
-  auto control = std::make_shared<CSettingControlButton>();
+  auto control = boost::make_shared<CSettingControlButton>();
   control->SetFormat("time");
   control->SetHeading(settingLabel);
   setting->SetControl(control);
@@ -1101,7 +1101,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingSelect(
   {
     if (settingLValues.empty())
     {
-      auto settingString = std::make_shared<CSettingString>(settingId, GetSettingsManager());
+      auto settingString = boost::make_shared<CSettingString>(settingId, GetSettingsManager());
       settingString->SetDefault(defaultValue);
 
       StringSettingOptions options;
@@ -1113,7 +1113,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingSelect(
     }
     else
     {
-      auto settingInt = std::make_shared<CSettingInt>(settingId, GetSettingsManager());
+      auto settingInt = boost::make_shared<CSettingInt>(settingId, GetSettingsManager());
       if (settingInt->FromString(defaultValue))
         settingInt->SetDefault(settingInt->GetValue());
 
@@ -1139,7 +1139,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingSelect(
 
   if (setting != nullptr)
   {
-    auto control = std::make_shared<CSettingControlList>();
+    auto control = boost::make_shared<CSettingControlList>();
     control->SetHeading(settingLabel);
     control->SetFormat("string");
     setting->SetControl(control);
@@ -1191,14 +1191,14 @@ SettingPtr CAddonSettings::InitializeFromOldSettingAddon(const std::string& sett
     addonIds.erase(++addonIds.begin(), addonIds.end());
   }
 
-  auto settingAddon = std::make_shared<CSettingAddon>(settingId, GetSettingsManager());
+  auto settingAddon = boost::make_shared<CSettingAddon>(settingId, GetSettingsManager());
   settingAddon->SetAddonType(*addonTypes.begin());
 
   SettingPtr setting = settingAddon;
   if (multiselect)
   {
     auto settingList =
-        std::make_shared<CSettingList>(settingId, settingAddon, GetSettingsManager());
+        boost::make_shared<CSettingList>(settingId, settingAddon, GetSettingsManager());
     settingList->SetDelimiter(",");
     if (settingList->FromString(addonIds))
       settingList->SetDefault(settingList->GetValue());
@@ -1208,7 +1208,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingAddon(const std::string& sett
   else if (!addonIds.empty())
     settingAddon->SetDefault(addonIds.front());
 
-  auto control = std::make_shared<CSettingControlButton>();
+  auto control = boost::make_shared<CSettingControlButton>();
   control->SetFormat("addon");
   control->SetHeading(settingLabel);
   setting->SetControl(control);
@@ -1250,7 +1250,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingEnums(
   SettingPtr setting = nullptr;
   if (settingType == "enum")
   {
-    auto settingInt = std::make_shared<CSettingInt>(settingId, GetSettingsManager());
+    auto settingInt = boost::make_shared<CSettingInt>(settingId, GetSettingsManager());
 
     if (settingLValues.empty())
     {
@@ -1294,7 +1294,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingEnums(
   }
   else
   {
-    auto settingString = std::make_shared<CSettingString>(settingId, GetSettingsManager());
+    auto settingString = boost::make_shared<CSettingString>(settingId, GetSettingsManager());
 
     if (settingLValues.empty())
     {
@@ -1335,7 +1335,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingEnums(
     setting = settingString;
   }
 
-  auto control = std::make_shared<CSettingControlSpinner>();
+  auto control = boost::make_shared<CSettingControlSpinner>();
   control->SetFormat("string");
   setting->SetControl(control);
 
@@ -1350,7 +1350,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingFileEnum(const std::string& s
   auto setting = InitializeFromOldSettingFileWithSource(settingId, settingElement, defaultValue,
                                                         settingValues);
 
-  auto control = std::make_shared<CSettingControlSpinner>();
+  auto control = boost::make_shared<CSettingControlSpinner>();
   control->SetFormat("string");
   setting->SetControl(control);
 
@@ -1361,7 +1361,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingRangeOfNum(const std::string&
                                                               const TiXmlElement* settingElement,
                                                               const std::string& defaultValue)
 {
-  auto setting = std::make_shared<CSettingNumber>(settingId, GetSettingsManager());
+  auto setting = boost::make_shared<CSettingNumber>(settingId, GetSettingsManager());
   if (setting->FromString(defaultValue))
     setting->SetDefault(setting->GetValue());
 
@@ -1382,7 +1382,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingRangeOfNum(const std::string&
   int valueFormat = -1;
   settingElement->QueryIntAttribute("valueformat", &valueFormat);
 
-  auto control = std::make_shared<CSettingControlSpinner>();
+  auto control = boost::make_shared<CSettingControlSpinner>();
   control->SetFormat("string");
   control->SetFormatLabel(valueFormat);
   setting->SetControl(control);
@@ -1415,7 +1415,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingSlider(const std::string& set
   auto option = XMLUtils::GetAttribute(settingElement, "option");
   if (option.empty() || StringUtils::EqualsNoCase(option, "float"))
   {
-    auto setting = std::make_shared<CSettingNumber>(settingId, GetSettingsManager());
+    auto setting = boost::make_shared<CSettingNumber>(settingId, GetSettingsManager());
     if (setting->FromString(defaultValue))
       setting->SetDefault(setting->GetValue());
 
@@ -1423,7 +1423,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingSlider(const std::string& set
     setting->SetStep(step);
     setting->SetMaximum(max);
 
-    auto control = std::make_shared<CSettingControlSlider>();
+    auto control = boost::make_shared<CSettingControlSlider>();
     control->SetFormat("number");
     control->SetPopup(false);
     setting->SetControl(control);
@@ -1433,7 +1433,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingSlider(const std::string& set
 
   if (StringUtils::EqualsNoCase(option, "int") || StringUtils::EqualsNoCase(option, "percent"))
   {
-    auto setting = std::make_shared<CSettingInt>(settingId, GetSettingsManager());
+    auto setting = boost::make_shared<CSettingInt>(settingId, GetSettingsManager());
     if (setting->FromString(defaultValue))
       setting->SetDefault(setting->GetValue());
 
@@ -1441,7 +1441,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingSlider(const std::string& set
     setting->SetStep(static_cast<int>(step));
     setting->SetMaximum(static_cast<int>(max));
 
-    auto control = std::make_shared<CSettingControlSlider>();
+    auto control = boost::make_shared<CSettingControlSlider>();
     control->SetFormat(StringUtils::EqualsNoCase(option, "int") ? "integer" : "percentage");
     control->SetPopup(false);
     setting->SetControl(control);
@@ -1462,7 +1462,7 @@ SettingPtr CAddonSettings::InitializeFromOldSettingFileWithSource(
     const std::string& defaultValue,
     std::string source)
 {
-  auto setting = std::make_shared<CSettingPath>(settingId, GetSettingsManager());
+  auto setting = boost::make_shared<CSettingPath>(settingId, GetSettingsManager());
   setting->SetDefault(defaultValue);
 
   if (source.find("$PROFILE") != std::string::npos)
@@ -1546,8 +1546,8 @@ bool CAddonSettings::ParseOldLabel(const TiXmlElement* element,
   return parsed;
 }
 
-bool CAddonSettings::ParseOldCondition(const std::shared_ptr<const CSetting>& setting,
-                                       const std::vector<std::shared_ptr<const CSetting>>& settings,
+bool CAddonSettings::ParseOldCondition(const boost::shared_ptr<const CSetting>& setting,
+                                       const std::vector<boost::shared_ptr<const CSetting>>& settings,
                                        const std::string& condition,
                                        CSettingDependency& dependeny) const
 {
@@ -1625,7 +1625,7 @@ bool CAddonSettings::ParseOldCondition(const std::shared_ptr<const CSetting>& se
       size_t valueIndex = static_cast<size_t>(strtoul(expression.m_value.c_str(), nullptr, 10));
 
       const auto referencedSettingString =
-          std::static_pointer_cast<const CSettingString>(referencedSetting);
+          boost::static_pointer_cast<const CSettingString>(referencedSetting);
       switch (referencedSettingString->GetOptionsType())
       {
         case SettingOptionsType::Static:
@@ -1650,7 +1650,7 @@ bool CAddonSettings::ParseOldCondition(const std::shared_ptr<const CSetting>& se
     }
 
     // add the condition to the value of the referenced setting
-    dependencyCombination->Add(std::make_shared<CSettingDependencyCondition>(
+    dependencyCombination->Add(boost::make_shared<CSettingDependencyCondition>(
         referencedSetting->GetId(), expression.m_value, expression.m_operator, expression.m_negated,
         GetSettingsManager()));
   }
@@ -1658,7 +1658,7 @@ bool CAddonSettings::ParseOldCondition(const std::shared_ptr<const CSetting>& se
   // if the condition doesn't depend on other settings it might be an infobool expression
   if (!error && dependencyCombination->GetOperations().empty() &&
       dependencyCombination->GetValues().empty())
-    dependencyCombination->Add(std::make_shared<CSettingDependencyCondition>(
+    dependencyCombination->Add(boost::make_shared<CSettingDependencyCondition>(
         "InfoBool", condition, "", false, GetSettingsManager()));
 
   return !error;
@@ -1699,7 +1699,7 @@ bool CAddonSettings::ParseOldConditionExpression(std::string str, ConditionExpre
   return true;
 }
 
-void CAddonSettings::FileEnumSettingOptionsFiller(const std::shared_ptr<const CSetting>& setting,
+void CAddonSettings::FileEnumSettingOptionsFiller(const boost::shared_ptr<const CSetting>& setting,
                                                   std::vector<StringSettingOption>& list,
                                                   std::string& current,
                                                   void* data)

@@ -27,8 +27,8 @@ class CGUIWindowAddonBrowser : public CGUIMediaWindow
 {
 public:
   CGUIWindowAddonBrowser(void);
-  ~CGUIWindowAddonBrowser(void) override;
-  bool OnMessage(CGUIMessage& message) override;
+  virtual ~CGUIWindowAddonBrowser(void);
+  virtual bool OnMessage(CGUIMessage& message);
 
   /*!
    * @brief Popup a selection dialog with a list of addons of the given type
@@ -93,18 +93,18 @@ public:
                            bool showInstallable = false,
                            bool showMore = true);
 
-  bool UseFileDirectories() override { return false; }
+  virtual bool UseFileDirectories() { return false; }
 
   static void InstallFromZip();
 
 protected:
-  bool OnClick(int iItem, const std::string& player = "") override;
-  void UpdateButtons() override;
-  bool GetDirectory(const std::string& strDirectory, CFileItemList& items) override;
-  bool Update(const std::string& strDirectory, bool updateFilterPath = true) override;
-  std::string GetStartFolder(const std::string& dir) override;
+  virtual bool OnClick(int iItem, const std::string& player = "");
+  virtual void UpdateButtons();
+  virtual bool GetDirectory(const std::string& strDirectory, CFileItemList& items);
+  virtual bool Update(const std::string& strDirectory, bool updateFilterPath = true);
+  virtual std::string GetStartFolder(const std::string& dir);
 
-  std::string GetRootPath() const override { return "addons://"; }
+  virtual std::string GetRootPath() const { return "addons://"; }
 
 private:
   void SetProperties();

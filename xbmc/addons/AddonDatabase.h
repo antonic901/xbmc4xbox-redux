@@ -30,10 +30,10 @@ class CAddonExtensions;
 class CAddonInfoBuilderFromDB;
 
 class CAddonInfo;
-using AddonInfoPtr = std::shared_ptr<CAddonInfo>;
+using AddonInfoPtr = boost::shared_ptr<CAddonInfo>;
 
 class IAddon;
-using AddonPtr = std::shared_ptr<IAddon>;
+using AddonPtr = boost::shared_ptr<IAddon>;
 using VECADDONS = std::vector<AddonPtr>;
 
 /*!
@@ -62,8 +62,8 @@ class CAddonDatabase : public CDatabase
 {
 public:
   CAddonDatabase();
-  ~CAddonDatabase() override;
-  bool Open() override;
+  virtual ~CAddonDatabase();
+  virtual bool Open();
 
   /*! \brief Get an addon with a specific version and repository. */
   bool GetAddon(const std::string& addonID,
@@ -103,7 +103,7 @@ public:
     /*! \brief next time the repo should be checked, or invalid CDateTime if unknown */
     CDateTime nextCheckAt;
 
-    RepoUpdateData() = default;
+    RepoUpdateData() {}
 
     RepoUpdateData(const CDateTime& lastCheckedAt,
                    const ADDON::CAddonVersion& lastCheckedVersion,
@@ -228,15 +228,15 @@ public:
    *  \param origin the origin it was installed from
    *  \return true on success, false otherwise
    */
-  bool AddInstalledAddon(const std::shared_ptr<CAddonInfo>& addon, const std::string& origin);
+  bool AddInstalledAddon(const boost::shared_ptr<CAddonInfo>& addon, const std::string& origin);
 
 protected:
-  void CreateTables() override;
-  void CreateAnalytics() override;
-  void UpdateTables(int version) override;
-  int GetMinSchemaVersion() const override;
-  int GetSchemaVersion() const override;
-  const char *GetBaseDBName() const override { return "Addons"; }
+  virtual void CreateTables();
+  virtual void CreateAnalytics();
+  virtual void UpdateTables(int version);
+  virtual int GetMinSchemaVersion() const;
+  virtual int GetSchemaVersion() const;
+  virtual const char *GetBaseDBName() const { return "Addons"; }
 
   bool GetAddon(int id, ADDON::AddonPtr& addon);
   void DeleteRepository(const std::string& id);

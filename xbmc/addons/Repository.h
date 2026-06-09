@@ -59,7 +59,7 @@ public:
   ResolveResult ResolvePathAndHash(AddonPtr const& addon) const;
 
   // Implementation of CAddon
-  void OnPostInstall(bool update, bool modal) override;
+  virtual void OnPostInstall(bool update, bool modal);
 
 private:
   static bool FetchChecksum(const std::string& url,
@@ -74,6 +74,6 @@ private:
   RepositoryDirList m_dirs;
 };
 
-typedef std::shared_ptr<CRepository> RepositoryPtr;
+typedef boost::shared_ptr<CRepository> RepositoryPtr;
 }
 

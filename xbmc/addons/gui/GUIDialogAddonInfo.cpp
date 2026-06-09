@@ -67,12 +67,12 @@ using namespace KODI::MESSAGING;
 
 CGUIDialogAddonInfo::CGUIDialogAddonInfo(void)
   : CGUIDialog(WINDOW_DIALOG_ADDON_INFO, "DialogAddonInfo.xml"),
-    m_item(std::make_shared<CFileItem>())
+    m_item(boost::make_shared<CFileItem>())
 {
   m_loadType = KEEP_IN_MEMORY;
 }
 
-CGUIDialogAddonInfo::~CGUIDialogAddonInfo(void) = default;
+CGUIDialogAddonInfo::~CGUIDialogAddonInfo(void) {}
 
 bool CGUIDialogAddonInfo::OnMessage(CGUIMessage& message)
 {
@@ -273,7 +273,7 @@ void CGUIDialogAddonInfo::UpdateControls(PerformButtonFocus performButtonFocus)
   CFileItemList items;
   for (const auto& screenshot : m_item->GetAddonInfo()->Screenshots())
   {
-    auto item = std::make_shared<CFileItem>("");
+    auto item = boost::make_shared<CFileItem>("");
     item->SetArt("thumb", screenshot);
     items.Add(std::move(item));
   }
@@ -289,7 +289,7 @@ int CGUIDialogAddonInfo::AskForVersion(std::vector<std::pair<CAddonVersion, std:
   auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
       WINDOW_DIALOG_SELECT);
   dialog->Reset();
-  dialog->SetHeading(CVariant{21338});
+  dialog->SetHeading(21338);
   dialog->SetUseDetails(true);
 
   for (const auto& versionInfo : versions)
@@ -344,7 +344,7 @@ void CGUIDialogAddonInfo::OnSelectVersion()
   EntryPoint entryPoint = m_localAddon ? EntryPoint::UPDATE : EntryPoint::INSTALL;
 
   // get all compatible versions of an addon-id regardless of their origin
-  std::vector<std::shared_ptr<IAddon>> compatibleVersions =
+  std::vector<boost::shared_ptr<IAddon>> compatibleVersions =
       CServiceBroker::GetAddonMgr().GetCompatibleVersions(processAddonId);
 
   std::vector<std::pair<CAddonVersion, std::string>> versions;
@@ -387,7 +387,7 @@ void CGUIDialogAddonInfo::OnSelectVersion()
   }
 
   if (versions.empty())
-    HELPERS::ShowOKDialogText(CVariant{21341}, CVariant{21342});
+    HELPERS::ShowOKDialogText(21341, 21342);
   else
   {
     int i = AskForVersion(versions);
@@ -564,8 +564,8 @@ bool CGUIDialogAddonInfo::PromptIfDependency(int heading, int line2)
   {
     std::string line0 = StringUtils::Format(g_localizeStrings.Get(24046), m_localAddon->Name());
     std::string line1 = StringUtils::Join(deps, ", ");
-    HELPERS::ShowOKDialogLines(CVariant{heading}, CVariant{std::move(line0)},
-                               CVariant{std::move(line1)}, CVariant{line2});
+    HELPERS::ShowOKDialogLines(heading, std::move(line0),
+                               std::move(line1), line2);
     return true;
   }
   return false;
@@ -584,12 +584,12 @@ void CGUIDialogAddonInfo::OnUninstall()
     return;
 
   // prompt user to be sure
-  if (!m_silentUninstall && !CGUIDialogYesNo::ShowAndGetInput(CVariant{24037}, CVariant{750}))
+  if (!m_silentUninstall && !CGUIDialogYesNo::ShowAndGetInput(24037, 750))
     return;
 
   bool removeData = false;
   if (CDirectory::Exists(m_localAddon->Profile()))
-    removeData = CGUIDialogYesNo::ShowAndGetInput(CVariant{24037}, CVariant{39014});
+    removeData = CGUIDialogYesNo::ShowAndGetInput(24037, 39014);
 
   CAddonInstaller::GetInstance().UnInstall(m_localAddon, removeData);
 
@@ -643,13 +643,13 @@ bool CGUIDialogAddonInfo::ShowDependencyList(Reactivate reactivate, EntryPoint e
       // info_addon is the add-on to take the information to display (name, icon) from. The
       // version in the repository is preferred because it might contain more recent data.
 
-      std::shared_ptr<IAddon> infoAddon = it.m_available ? it.m_available : it.m_installed;
+      boost::shared_ptr<IAddon> infoAddon = it.m_available ? it.m_available : it.m_installed;
 
       if (infoAddon)
       {
         if (entryPoint != EntryPoint::UPDATE || !it.IsInstalledUpToDate())
         {
-          const CFileItemPtr item = std::make_shared<CFileItem>(infoAddon->Name());
+          const CFileItemPtr item = boost::make_shared<CFileItem>(infoAddon->Name());
           int messageId = 24180; // minversion only
 
           // dep not installed locally, but it is available from a repo!
@@ -698,7 +698,7 @@ bool CGUIDialogAddonInfo::ShowDependencyList(Reactivate reactivate, EntryPoint e
       }
       else
       {
-        const CFileItemPtr item = std::make_shared<CFileItem>(it.m_depInfo.id);
+        const CFileItemPtr item = boost::make_shared<CFileItem>(it.m_depInfo.id);
         item->SetLabel2(g_localizeStrings.Get(10005)); // Not available
         items.Add(item);
       }
@@ -725,11 +725,11 @@ bool CGUIDialogAddonInfo::ShowDependencyList(Reactivate reactivate, EntryPoint e
         {
           const CFileItemPtr& item = pDialog->GetSelectedFileItem();
           std::string addon_id = item->GetProperty("addon_id").asString();
-          std::shared_ptr<IAddon> depAddon;
+          boost::shared_ptr<IAddon> depAddon;
           if (CServiceBroker::GetAddonMgr().FindInstallableById(addon_id, depAddon))
           {
             Close();
-            ShowForItem(std::make_shared<CFileItem>(depAddon));
+            ShowForItem(boost::make_shared<CFileItem>(depAddon));
           }
         }
         else
@@ -770,7 +770,7 @@ void CGUIDialogAddonInfo::ShowSupportList()
     else
       label = entry.m_name;
 
-    const CFileItemPtr item = std::make_shared<CFileItem>(label);
+    const CFileItemPtr item = boost::make_shared<CFileItem>(label);
     item->SetLabel2(entry.m_description);
     if (!entry.m_icon.empty())
       item->SetArt("icon", entry.m_icon);
@@ -813,7 +813,7 @@ bool CGUIDialogAddonInfo::SetItem(const CFileItemPtr& item)
   if (!item || !item->HasAddonInfo())
     return false;
 
-  m_item = std::make_shared<CFileItem>(*item);
+  m_item = boost::make_shared<CFileItem>(*item);
   m_localAddon.reset();
   if (CServiceBroker::GetAddonMgr().GetAddon(item->GetAddonInfo()->ID(), m_localAddon,
                                              OnlyEnabled::CHOICE_NO))
@@ -836,8 +836,8 @@ void CGUIDialogAddonInfo::BuildDependencyList()
 
   for (const auto& dep : m_deps)
   {
-    std::shared_ptr<IAddon> addonInstalled;
-    std::shared_ptr<IAddon> addonAvailable;
+    boost::shared_ptr<IAddon> addonInstalled;
+    boost::shared_ptr<IAddon> addonAvailable;
 
     // Find add-on in local installation
     if (!CServiceBroker::GetAddonMgr().GetAddon(dep.id, addonInstalled, OnlyEnabled::CHOICE_YES))
@@ -898,8 +898,8 @@ void CGUIDialogAddonInfo::BuildDependencyList()
               }
 
               // 3. addon type asc, except scripts/modules at the bottom
-              const std::shared_ptr<IAddon>& depA = a.m_installed ? a.m_installed : a.m_available;
-              const std::shared_ptr<IAddon>& depB = b.m_installed ? b.m_installed : b.m_available;
+              const boost::shared_ptr<IAddon>& depA = a.m_installed ? a.m_installed : a.m_available;
+              const boost::shared_ptr<IAddon>& depB = b.m_installed ? b.m_installed : b.m_available;
 
               if (depA && depB)
               {

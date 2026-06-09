@@ -126,7 +126,7 @@ void CSkinTimerManager::LoadTimerInternal(const tinyxml2::XMLNode* node)
     onStopElement = onStopElement->NextSiblingElement("onstop");
   }
 
-  m_timers[timerName] = std::make_unique<CSkinTimer>(CSkinTimer(
+  m_timers[timerName] = boost::movelib::make_unique<CSkinTimer>(CSkinTimer(
       timerName, startInfo, resetInfo, stopInfo, startActions, stopActions, resetOnStart));
 }
 
@@ -178,7 +178,7 @@ bool CSkinTimerManager::TimerExists(const std::string& timer) const
   return m_timers.count(timer) != 0;
 }
 
-std::unique_ptr<CSkinTimer> CSkinTimerManager::GrabTimer(const std::string& timer)
+boost::movelib::unique_ptr<CSkinTimer> CSkinTimerManager::GrabTimer(const std::string& timer)
 {
   if (auto iter = m_timers.find(timer); iter != m_timers.end())
   {
@@ -198,7 +198,7 @@ void CSkinTimerManager::Stop()
   // self-contain this component unregister them all here.
   for (auto const& [key, val] : m_timers)
   {
-    const std::unique_ptr<CSkinTimer>::pointer timer = val.get();
+    const boost::movelib::unique_ptr<CSkinTimer>::pointer timer = val.get();
     if (timer->GetStartCondition())
     {
       m_infoMgr.UnRegister(timer->GetStartCondition());
@@ -219,7 +219,7 @@ void CSkinTimerManager::Process()
 {
   for (const auto& [key, val] : m_timers)
   {
-    const std::unique_ptr<CSkinTimer>::pointer timer = val.get();
+    const boost::movelib::unique_ptr<CSkinTimer>::pointer timer = val.get();
     if (!timer->IsRunning() && timer->VerifyStartCondition())
     {
       timer->Start();

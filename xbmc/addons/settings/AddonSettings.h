@@ -41,24 +41,24 @@ class CAddonSettings : public CSettingControlCreator,
                        public ISettingCallback
 {
 public:
-  CAddonSettings(const std::shared_ptr<IAddon>& addon, AddonInstanceId instanceId);
-  ~CAddonSettings() override = default;
+  CAddonSettings(const boost::shared_ptr<IAddon>& addon, AddonInstanceId instanceId);
+  virtual ~CAddonSettings() {}
 
   // specialization of CSettingsBase
-  bool Initialize() override { return false; }
+  virtual bool Initialize() { return false; }
 
   // implementations of CSettingsBase
-  bool Load() override { return false; }
-  bool Save() override;
+  virtual bool Load() { return false; }
+  virtual bool Save();
 
   // specialization of CSettingCreator
-  std::shared_ptr<CSetting> CreateSetting(
+  boost::shared_ptr<CSetting> CreateSetting(
       const std::string& settingType,
       const std::string& settingId,
-      CSettingsManager* settingsManager = nullptr) const override;
+      virtual CSettingsManager* settingsManager = nullptr) const;
 
   // implementation of ISettingCallback
-  void OnSettingAction(const std::shared_ptr<const CSetting>& setting) override;
+  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
 
   const std::string& GetAddonId() const { return m_addonId; }
 
@@ -70,19 +70,19 @@ public:
 
   std::string GetSettingLabel(int label) const;
 
-  std::shared_ptr<CSetting> AddSetting(const std::string& settingId, bool value);
-  std::shared_ptr<CSetting> AddSetting(const std::string& settingId, int value);
-  std::shared_ptr<CSetting> AddSetting(const std::string& settingId, double value);
-  std::shared_ptr<CSetting> AddSetting(const std::string& settingId, const std::string& value);
+  boost::shared_ptr<CSetting> AddSetting(const std::string& settingId, bool value);
+  boost::shared_ptr<CSetting> AddSetting(const std::string& settingId, int value);
+  boost::shared_ptr<CSetting> AddSetting(const std::string& settingId, double value);
+  boost::shared_ptr<CSetting> AddSetting(const std::string& settingId, const std::string& value);
 
 protected:
   // specializations of CSettingsBase
-  void InitializeSettingTypes() override;
-  void InitializeControls() override;
-  void InitializeConditions() override;
+  virtual void InitializeSettingTypes();
+  virtual void InitializeControls();
+  virtual void InitializeConditions();
 
   // implementation of CSettingsBase
-  bool InitializeDefinitions() override { return false; }
+  virtual bool InitializeDefinitions() { return false; }
 
 private:
   bool AddInstanceSettings();
@@ -90,75 +90,75 @@ private:
 
   bool ParseSettingVersion(const CXBMCTinyXML& doc, uint32_t& version) const;
 
-  std::shared_ptr<CSettingGroup> ParseOldSettingElement(
+  boost::shared_ptr<CSettingGroup> ParseOldSettingElement(
       const TiXmlElement* categoryElement,
-      const std::shared_ptr<CSettingCategory>& category,
+      const boost::shared_ptr<CSettingCategory>& category,
       std::set<std::string>& settingIds);
 
-  std::shared_ptr<CSettingCategory> ParseOldCategoryElement(uint32_t& categoryId,
+  boost::shared_ptr<CSettingCategory> ParseOldCategoryElement(uint32_t& categoryId,
                                                             const TiXmlElement* categoryElement,
                                                             std::set<std::string>& settingIds);
 
   bool InitializeFromOldSettingDefinitions(const CXBMCTinyXML& doc);
-  std::shared_ptr<CSetting> InitializeFromOldSettingAction(const std::string& settingId,
+  boost::shared_ptr<CSetting> InitializeFromOldSettingAction(const std::string& settingId,
                                                            const TiXmlElement* settingElement,
                                                            const std::string& defaultValue);
-  std::shared_ptr<CSetting> InitializeFromOldSettingLabel();
-  std::shared_ptr<CSetting> InitializeFromOldSettingBool(const std::string& settingId,
+  boost::shared_ptr<CSetting> InitializeFromOldSettingLabel();
+  boost::shared_ptr<CSetting> InitializeFromOldSettingBool(const std::string& settingId,
                                                          const TiXmlElement* settingElement,
                                                          const std::string& defaultValue);
-  std::shared_ptr<CSetting> InitializeFromOldSettingTextIpAddress(
+  boost::shared_ptr<CSetting> InitializeFromOldSettingTextIpAddress(
       const std::string& settingId,
       const std::string& settingType,
       const TiXmlElement* settingElement,
       const std::string& defaultValue,
       const int settingLabel);
-  std::shared_ptr<CSetting> InitializeFromOldSettingNumber(const std::string& settingId,
+  boost::shared_ptr<CSetting> InitializeFromOldSettingNumber(const std::string& settingId,
                                                            const TiXmlElement* settingElement,
                                                            const std::string& defaultValue,
                                                            const int settingLabel);
-  std::shared_ptr<CSetting> InitializeFromOldSettingPath(const std::string& settingId,
+  boost::shared_ptr<CSetting> InitializeFromOldSettingPath(const std::string& settingId,
                                                          const std::string& settingType,
                                                          const TiXmlElement* settingElement,
                                                          const std::string& defaultValue,
                                                          const int settingLabel);
-  std::shared_ptr<CSetting> InitializeFromOldSettingDate(const std::string& settingId,
+  boost::shared_ptr<CSetting> InitializeFromOldSettingDate(const std::string& settingId,
                                                          const TiXmlElement* settingElement,
                                                          const std::string& defaultValue,
                                                          const int settingLabel);
-  std::shared_ptr<CSetting> InitializeFromOldSettingTime(const std::string& settingId,
+  boost::shared_ptr<CSetting> InitializeFromOldSettingTime(const std::string& settingId,
                                                          const TiXmlElement* settingElement,
                                                          const std::string& defaultValue,
                                                          const int settingLabel);
-  std::shared_ptr<CSetting> InitializeFromOldSettingSelect(
+  boost::shared_ptr<CSetting> InitializeFromOldSettingSelect(
       const std::string& settingId,
       const TiXmlElement* settingElement,
       const std::string& defaultValue,
       const int settingLabel,
       const std::string& settingValues,
       const std::vector<std::string>& settingLValues);
-  std::shared_ptr<CSetting> InitializeFromOldSettingAddon(const std::string& settingId,
+  boost::shared_ptr<CSetting> InitializeFromOldSettingAddon(const std::string& settingId,
                                                           const TiXmlElement* settingElement,
                                                           const std::string& defaultValue,
                                                           const int settingLabel);
-  std::shared_ptr<CSetting> InitializeFromOldSettingEnums(
+  boost::shared_ptr<CSetting> InitializeFromOldSettingEnums(
       const std::string& settingId,
       const std::string& settingType,
       const TiXmlElement* settingElement,
       const std::string& defaultValue,
       const std::string& settingValues,
       const std::vector<std::string>& settingLValues);
-  std::shared_ptr<CSetting> InitializeFromOldSettingFileEnum(const std::string& settingId,
+  boost::shared_ptr<CSetting> InitializeFromOldSettingFileEnum(const std::string& settingId,
                                                              const TiXmlElement* settingElement,
                                                              const std::string& defaultValue,
                                                              const std::string& settingValues);
-  std::shared_ptr<CSetting> InitializeFromOldSettingRangeOfNum(const std::string& settingId,
+  boost::shared_ptr<CSetting> InitializeFromOldSettingRangeOfNum(const std::string& settingId,
                                                                const TiXmlElement* settingElement,
                                                                const std::string& defaultValue);
-  std::shared_ptr<CSetting> InitializeFromOldSettingSlider(const std::string& settingId,
+  boost::shared_ptr<CSetting> InitializeFromOldSettingSlider(const std::string& settingId,
                                                            const TiXmlElement* settingElement,
                                                            const std::string& defaultValue);
-  std::shared_ptr<CSetting> InitializeFromOldSettingFileWithSource(
+  boost::shared_ptr<CSetting> InitializeFromOldSettingFileWithSource(
       const std::string& settingId,
       const TiXmlElement* settingElement,
       const std::string& defaultValue,
@@ -176,13 +176,13 @@ private:
   };
 
   bool ParseOldLabel(const TiXmlElement* element, const std::string& settingId, int& labelId);
-  bool ParseOldCondition(const std::shared_ptr<const CSetting>& setting,
-                         const std::vector<std::shared_ptr<const CSetting>>& settings,
+  bool ParseOldCondition(const boost::shared_ptr<const CSetting>& setting,
+                         const std::vector<boost::shared_ptr<const CSetting>>& settings,
                          const std::string& condition,
                          CSettingDependency& dependeny) const;
   static bool ParseOldConditionExpression(std::string str, ConditionExpression& expression);
 
-  static void FileEnumSettingOptionsFiller(const std::shared_ptr<const CSetting>& setting,
+  static void FileEnumSettingOptionsFiller(const boost::shared_ptr<const CSetting>& setting,
                                            std::vector<StringSettingOption>& list,
                                            std::string& current,
                                            void* data);

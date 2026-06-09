@@ -15,10 +15,10 @@ namespace ADDON
 enum class AddonType;
 
 class IAddon;
-using AddonPtr = std::shared_ptr<IAddon>;
+using AddonPtr = boost::shared_ptr<IAddon>;
 
 class CAddonInfo;
-using AddonInfoPtr = std::shared_ptr<CAddonInfo>;
+using AddonInfoPtr = boost::shared_ptr<CAddonInfo>;
 
 class CAddonBuilder
 {
