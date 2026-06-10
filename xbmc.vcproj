@@ -3612,6 +3612,34 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\addons\settings\SettingUrlEncodedString.h">
 					</File>
 				</Filter>
+				<Filter
+					Name="addoninfo"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\addons\addoninfo\AddonExtensions.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\addoninfo\AddonExtensions.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\addoninfo\AddonInfo.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\addoninfo\AddonInfo.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\addoninfo\AddonInfoBuilder.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\addoninfo\AddonInfoBuilder.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\addoninfo\AddonType.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\addoninfo\AddonType.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="xbox"
