@@ -10,9 +10,11 @@
 
 #include "threads/Event.h"
 #include "utils/Job.h"
+#include "PlatformDefs.h" // int64_t
 
 #include <map>
-#include <memory>
+#include <boost/shared_ptr.hpp>
+#include <boost/move/unique_ptr.hpp>
 #include <string>
 #include <utility>
 #include <vector>
