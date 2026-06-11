@@ -159,7 +159,7 @@ void CRepository::OnPostInstall(bool update, bool modal)
 
 bool CRepository::FetchChecksum(const std::string& url,
                                 std::string& checksum,
-                                int& recheckAfter) noexcept
+                                int& recheckAfter)
 {
   CFile file;
   if (!file.Open(url))
@@ -208,7 +208,7 @@ bool CRepository::FetchChecksum(const std::string& url,
 
 bool CRepository::FetchIndex(const RepositoryDirInfo& repo,
                              std::string const& digest,
-                             std::vector<AddonInfoPtr>& addons) noexcept
+                             std::vector<AddonInfoPtr>& addons)
 {
   XFILE::CCurlFile http;
 

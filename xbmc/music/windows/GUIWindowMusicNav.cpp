@@ -972,7 +972,7 @@ static const Mapping mappings[] =
 std::string CGUIWindowMusicNav::GetStartFolder(const std::string &dir)
 {
   std::string lower(dir); StringUtils::ToLower(lower);
-  for (size_t i = 0; i < sizeof(mappings) / sizeof(mappings[0]); ++i)
+  for (size_t i = 0; i < sizeof(mappings) / sizeof(Mapping); ++i)
   {
     if (lower == mappings[i].key)
       return mappings[i].value;

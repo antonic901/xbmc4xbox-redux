@@ -26,14 +26,14 @@ struct SExtValue
   int asInteger() const { return std::atoi(str.c_str()); }
   float asFloat() const { return static_cast<float>(std::atof(str.c_str())); }
   bool empty() const { return str.empty(); }
-  const std::string str;
+  std::string str;
 };
 
 class CExtValues;
 class CAddonExtensions;
-typedef std::vector<std::pair<std::string, CAddonExtensions>> EXT_ELEMENTS;
-typedef std::vector<std::pair<std::string, SExtValue>> EXT_VALUE;
-typedef std::vector<std::pair<std::string, CExtValues>> EXT_VALUES;
+typedef std::vector<std::pair<std::string, CAddonExtensions> > EXT_ELEMENTS;
+typedef std::vector<std::pair<std::string, SExtValue> > EXT_VALUE;
+typedef std::vector<std::pair<std::string, CExtValues> > EXT_VALUES;
 
 class CExtValues : public EXT_VALUE
 {
@@ -42,10 +42,10 @@ public:
 
   const SExtValue GetValue(const std::string& id) const
   {
-    for (const auto& value : *this)
+    for (EXT_VALUE::const_iterator value = begin(); value != end(); ++value)
     {
-      if (value.first == id)
-        return value.second;
+      if (value->first == id)
+        return value->second;
     }
     return SExtValue("");
   }

@@ -8,68 +8,74 @@
 
 #pragma once
 
+#include "addons/AddonInstaller.h" // AllowCheckForUpdates
 #include "threads/CriticalSection.h"
 #include "utils/EventStream.h"
 
-#include <cstdint>
+#include <stdint.h>
 #include <map>
-#include <memory>
-#include <mutex>
+#include <boost/move/unique_ptr.hpp>
 #include <set>
 #include <string>
 #include <vector>
 
 namespace ADDON
 {
-enum class AddonDisabledReason;
-enum class AddonOriginType;
-enum class AddonType;
-enum class AddonUpdateRule;
-enum class AllowCheckForUpdates : bool;
-
 class CAddonDatabase;
 class CAddonUpdateRules;
 class CAddonVersion;
 class IAddonMgrCallback;
 
 class CAddonInfo;
-using AddonInfoPtr = boost::shared_ptr<CAddonInfo>;
-using ADDON_INFO_LIST = std::map<std::string, AddonInfoPtr>;
+typedef boost::shared_ptr<CAddonInfo> AddonInfoPtr;
+typedef std::map<std::string, AddonInfoPtr> ADDON_INFO_LIST;
 
 class IAddon;
-using AddonPtr = boost::shared_ptr<IAddon>;
-using VECADDONS = std::vector<AddonPtr>;
+typedef boost::shared_ptr<IAddon> AddonPtr;
+typedef std::vector<AddonPtr> VECADDONS;
 
 struct AddonEvent;
 struct AddonWithUpdate;
 struct DependencyInfo;
 struct RepositoryDirInfo;
 
-using AddonInstanceId = uint32_t;
+typedef uint32_t AddonInstanceId;
 
-enum class AddonCheckType : bool
+namespace AddonCheckType
+{
+enum Type
 {
   OUTDATED_ADDONS,
   AVAILABLE_UPDATES,
 };
+}
 
-enum class OnlyEnabled : bool
+namespace OnlyEnabled
+{
+enum Type
 {
   CHOICE_YES = true,
   CHOICE_NO = false,
 };
+}
 
-enum class OnlyEnabledRootAddon : bool
+namespace OnlyEnabledRootAddon
+{
+enum Type
 {
   CHOICE_YES = true,
   CHOICE_NO = false,
 };
+}
 
-enum class CheckIncompatible : bool
+namespace CheckIncompatible
+{
+enum Type
 {
   CHOICE_YES = true,
   CHOICE_NO = false,
 };
+}
 
 /**
   * Class - CAddonMgr
@@ -89,15 +95,15 @@ public:
   void DeInit();
 
   CAddonMgr();
-  CAddonMgr(const CAddonMgr&) = delete;
+  CAddonMgr(const CAddonMgr&);
   virtual ~CAddonMgr();
 
   CEventStream<AddonEvent>& Events() { return m_events; }
   CEventStream<AddonEvent>& UnloadEvents() { return m_unloadEvents; }
 
-  IAddonMgrCallback* GetCallbackForType(AddonType type);
-  bool RegisterAddonMgrCallback(AddonType type, IAddonMgrCallback* cb);
-  void UnregisterAddonMgrCallback(AddonType type);
+  IAddonMgrCallback* GetCallbackForType(AddonType::Type type);
+  bool RegisterAddonMgrCallback(AddonType::Type type, IAddonMgrCallback* cb);
+  void UnregisterAddonMgrCallback(AddonType::Type type);
 
   /*! \brief Retrieve a specific addon (of a specific type)
      \param id the id of the addon to retrieve.
@@ -108,8 +114,8 @@ public:
      */
   bool GetAddon(const std::string& id,
                 AddonPtr& addon,
-                AddonType type,
-                OnlyEnabled onlyEnabled) const;
+                AddonType::Type type,
+                OnlyEnabled::Type onlyEnabled) const;
 
   /*! \brief Retrieve a specific addon (of no specific type)
      \param id the id of the addon to retrieve.
@@ -117,13 +123,13 @@ public:
      \param onlyEnabled whether we only want enabled addons - set to false to allow both enabled and disabled addons - defaults to true.
      \return true if an addon matching the id of any type is available and is enabled (if onlyEnabled is true).
      */
-  bool GetAddon(const std::string& id, AddonPtr& addon, OnlyEnabled onlyEnabled) const;
+  bool GetAddon(const std::string& id, AddonPtr& addon, OnlyEnabled::Type onlyEnabled) const;
 
-  bool HasType(const std::string& id, AddonType type);
+  bool HasType(const std::string& id, AddonType::Type type);
 
-  bool HasAddons(AddonType type);
+  bool HasAddons(AddonType::Type type);
 
-  bool HasInstalledAddons(AddonType type);
+  bool HasInstalledAddons(AddonType::Type type);
 
   /*! Returns all installed, enabled and incompatible (and disabled) add-ons. */
   bool GetAddonsForUpdate(VECADDONS& addons) const;
@@ -132,22 +138,22 @@ public:
   bool GetAddons(VECADDONS& addons) const;
 
   /*! Returns enabled add-ons with given type. */
-  bool GetAddons(VECADDONS& addons, AddonType type);
+  bool GetAddons(VECADDONS& addons, AddonType::Type type);
 
   /*! Returns all installed, including disabled. */
   bool GetInstalledAddons(VECADDONS& addons);
 
   /*! Returns installed add-ons, including disabled, with given type. */
-  bool GetInstalledAddons(VECADDONS& addons, AddonType type);
+  bool GetInstalledAddons(VECADDONS& addons, AddonType::Type type);
 
   bool GetDisabledAddons(VECADDONS& addons);
 
-  bool GetDisabledAddons(VECADDONS& addons, AddonType type);
+  bool GetDisabledAddons(VECADDONS& addons, AddonType::Type type);
 
   /*! Get all installable addons */
   bool GetInstallableAddons(VECADDONS& addons);
 
-  bool GetInstallableAddons(VECADDONS& addons, AddonType type);
+  bool GetInstallableAddons(VECADDONS& addons, AddonType::Type type);
 
   /*! \brief Get the installable addon depending on install rules
      *         or fall back to highest version.
@@ -168,10 +174,10 @@ public:
   bool ReloadSettings(const std::string& addonId, AddonInstanceId instanceId);
 
   /*! Get addons with available updates */
-  std::vector<boost::shared_ptr<IAddon>> GetAvailableUpdates() const;
+  std::vector<boost::shared_ptr<IAddon> > GetAvailableUpdates() const;
 
   /*! Get addons that are outdated */
-  std::vector<boost::shared_ptr<IAddon>> GetOutdatedAddons() const;
+  std::vector<boost::shared_ptr<IAddon> > GetOutdatedAddons() const;
 
   /*! Returns true if there is any addon with available updates, otherwise false */
   bool HasAvailableUpdates();
@@ -183,7 +189,7 @@ public:
      * \return true or false
      */
   bool IsOrphaned(const boost::shared_ptr<IAddon>& addon,
-                  const std::vector<boost::shared_ptr<IAddon>>& allAddons) const;
+                  const std::vector<boost::shared_ptr<IAddon> >& allAddons) const;
 
   /*! \brief Checks for new / updated add-ons
      \return True if everything went ok, false otherwise
@@ -255,10 +261,10 @@ public:
   void OnPostUnInstall(const std::string& id);
 
   /*! \brief Disable an addon. Returns true on success, false on failure. */
-  bool DisableAddon(const std::string& ID, AddonDisabledReason disabledReason);
+  bool DisableAddon(const std::string& ID, AddonDisabledReason ::Type disabledReason);
 
   /*! \brief Updates reason for a disabled addon. Returns true on success, false on failure. */
-  bool UpdateDisabledReason(const std::string& id, AddonDisabledReason newDisabledReason);
+  bool UpdateDisabledReason(const std::string& id, AddonDisabledReason ::Type newDisabledReason);
 
   /*! \brief Enable an addon. Returns true on success, false on failure. */
   bool EnableAddon(const std::string& ID);
@@ -279,7 +285,7 @@ public:
      * @return true if the addon was disabled except for the specified reason
      * @sa DisableAddon
      */
-  bool IsAddonDisabledExcept(const std::string& ID, AddonDisabledReason disabledReason) const;
+  bool IsAddonDisabledExcept(const std::string& ID, AddonDisabledReason ::Type disabledReason) const;
 
   /* \brief Checks whether an addon can be disabled via DisableAddon.
      \param ID id of the addon
@@ -368,7 +374,7 @@ public:
   /* \brief Add a single update rule to the list for an addon
      * \sa CAddonUpdateRules::AddUpdateRuleToList()
      */
-  bool AddUpdateRuleToList(const std::string& id, AddonUpdateRule updateRule);
+  bool AddUpdateRuleToList(const std::string& id, AddonUpdateRule::Type updateRule);
 
   /* \brief Remove all rules from update rules list for an addon
      * \sa CAddonUpdateRules::RemoveAllUpdateRulesFromList()
@@ -378,7 +384,7 @@ public:
   /* \brief Remove a specific rule from update rules list for an addon
      * \sa CAddonUpdateRules::RemoveUpdateRuleFromList()
      */
-  bool RemoveUpdateRuleFromList(const std::string& id, AddonUpdateRule updateRule);
+  bool RemoveUpdateRuleFromList(const std::string& id, AddonUpdateRule::Type updateRule);
 
   /* \brief Check if an addon version is auto-updateable
      * \param id addon id to be checked
@@ -447,7 +453,7 @@ public:
      *  \param onlyEnabledRootAddon whether look for enabled root add-ons only
      */
   std::vector<DependencyInfo> GetDepsRecursive(const std::string& id,
-                                               OnlyEnabledRootAddon onlyEnabledRootAddon);
+                                               OnlyEnabledRootAddon::Type onlyEnabledRootAddon);
 
   /*!
      * @brief Get a list of add-on's with info's for the on system available
@@ -462,7 +468,7 @@ public:
      *                 match them. Default is for all types.
      * @return true if the list contains entries
      */
-  bool GetAddonInfos(std::vector<AddonInfoPtr>& addonInfos, bool onlyEnabled, AddonType type) const;
+  bool GetAddonInfos(std::vector<AddonInfoPtr>& addonInfos, bool onlyEnabled, AddonType::Type type) const;
 
   /*!
      * @brief Get a list of add-on's with info's for the on system available
@@ -476,7 +482,7 @@ public:
      * @note @ref ADDON_UNKNOWN should not used for here!
      */
   std::vector<AddonInfoPtr> GetAddonInfos(bool onlyEnabled,
-                                          const std::vector<AddonType>& types) const;
+                                          const std::vector<AddonType::Type>& types) const;
 
   /*!
      * @brief Get a list of disabled add-on's with info's
@@ -489,7 +495,7 @@ public:
      *                        returned who match them. Default is for all types.
      * @return true if the list contains entries
      */
-  bool GetDisabledAddonInfos(std::vector<AddonInfoPtr>& addonInfos, AddonType type) const;
+  bool GetDisabledAddonInfos(std::vector<AddonInfoPtr>& addonInfos, AddonType::Type type) const;
 
   /*!
      * @brief Get a list of disabled add-on's with info's for the on system
@@ -508,10 +514,10 @@ public:
      * @return true if the list contains entries
      */
   bool GetDisabledAddonInfos(std::vector<AddonInfoPtr>& addonInfos,
-                             AddonType type,
-                             AddonDisabledReason disabledReason) const;
+                             AddonType::Type type,
+                             AddonDisabledReason ::Type disabledReason) const;
 
-  const AddonInfoPtr GetAddonInfo(const std::string& id, AddonType type) const;
+  const AddonInfoPtr GetAddonInfo(const std::string& id, AddonType::Type type) const;
 
   /*!
      * @brief Get the path where temporary add-on files are stored
@@ -522,7 +528,7 @@ public:
      */
   const std::string& GetTempAddonBasePath() { return m_tempAddonBasePath; }
 
-  AddonOriginType GetAddonOriginType(const AddonPtr& addon) const;
+  AddonOriginType::Type GetAddonOriginType(const AddonPtr& addon) const;
 
   /*!
      * \brief Check whether an addon has been disabled with a special reason.
@@ -530,7 +536,7 @@ public:
      * \param disabledReason reason we want to check for (NONE, USER, INCOMPATIBLE, PERMANENT_FAILURE)
      * \return true or false
      */
-  bool IsAddonDisabledWithReason(const std::string& ID, AddonDisabledReason disabledReason) const;
+  bool IsAddonDisabledWithReason(const std::string& ID, AddonDisabledReason ::Type disabledReason) const;
 
   /*!
      * @brief Addon update and install management.
@@ -593,7 +599,7 @@ public:
      * \param[in] addonId addon to look up
      * \return vector containing compatible addon versions
      */
-  std::vector<boost::shared_ptr<IAddon>> GetCompatibleVersions(const std::string& addonId) const;
+  std::vector<boost::shared_ptr<IAddon> > GetCompatibleVersions(const std::string& addonId) const;
 
   /*!
      * \brief Return number of available updates formatted as string
@@ -607,10 +613,10 @@ public:
      * \brief returns a vector with all found orphaned dependencies.
      * \return the vector
      */
-  std::vector<boost::shared_ptr<IAddon>> GetOrphanedDependencies() const;
+  std::vector<boost::shared_ptr<IAddon> > GetOrphanedDependencies() const;
 
 private:
-  CAddonMgr& operator=(CAddonMgr const&) = delete;
+  CAddonMgr& operator=(CAddonMgr const&);
 
   VECADDONS m_updateableAddons;
 
@@ -621,13 +627,13 @@ private:
      * \param[in] true to return outdated addons, false to return available updates
      * \return vector filled with either available updates or outdated addons
      */
-  std::vector<boost::shared_ptr<IAddon>> GetAvailableUpdatesOrOutdatedAddons(
-      AddonCheckType addonCheckType) const;
+  std::vector<boost::shared_ptr<IAddon> > GetAvailableUpdatesOrOutdatedAddons(
+      AddonCheckType::Type addonCheckType) const;
 
-  bool GetAddonsInternal(AddonType type,
+  bool GetAddonsInternal(AddonType::Type type,
                          VECADDONS& addons,
-                         OnlyEnabled onlyEnabled,
-                         CheckIncompatible checkIncompatible) const;
+                         OnlyEnabled::Type onlyEnabled,
+                         CheckIncompatible::Type checkIncompatible) const;
 
   bool EnableSingle(const std::string& id);
 
@@ -666,17 +672,17 @@ private:
      */
   void InstallAddonUpdates(VECADDONS& updates,
                            bool wait,
-                           AllowCheckForUpdates allowCheckForUpdates) const;
+                           AllowCheckForUpdates::Type allowCheckForUpdates) const;
 
   // This guards the addon installation process to make sure
   // addon updates are not installed concurrently
   // while the migration is running. Addon updates can be triggered
   // as a result of a repository update event.
   // (migration will install any available update anyway)
-  mutable std::mutex m_installAddonsMutex;
+  mutable CCriticalSection m_installAddonsMutex;
 
-  std::map<std::string, AddonDisabledReason> m_disabled;
-  static std::map<AddonType, IAddonMgrCallback*> m_managers;
+  std::map<std::string, AddonDisabledReason::Type> m_disabled;
+  static std::map<AddonType::Type, IAddonMgrCallback*> m_managers;
   mutable CCriticalSection m_critSection;
   boost::movelib::unique_ptr<CAddonDatabase> m_database;
   boost::movelib::unique_ptr<CAddonUpdateRules> m_updateRules;
@@ -687,13 +693,13 @@ private:
   ADDON_INFO_LIST m_installedAddons;
 
   // Temporary path given to add-ons, whose content is deleted when Kodi is stopped
-  const std::string m_tempAddonBasePath = "special://temp/addons";
+  const std::string m_tempAddonBasePath;
 
   /*!
      * latest count of available updates
      */
   mutable std::string m_lastAvailableUpdatesCountAsString;
-  mutable std::mutex m_lastAvailableUpdatesCountMutex;
+  mutable CCriticalSection m_lastAvailableUpdatesCountMutex;
 };
 
 }; /* namespace ADDON */

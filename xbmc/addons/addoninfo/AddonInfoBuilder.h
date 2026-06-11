@@ -21,9 +21,6 @@ class TiXmlElement;
 
 namespace ADDON
 {
-enum class AddonLifecycleState;
-enum class AddonType;
-
 class CAddonExtensions;
 class CAddonType;
 
@@ -31,12 +28,12 @@ struct DependencyInfo;
 struct RepositoryDirInfo;
 
 class CAddonInfo;
-using AddonInfoPtr = boost::shared_ptr<CAddonInfo>;
+typedef boost::shared_ptr<CAddonInfo> AddonInfoPtr;
 
 class CAddonInfoBuilder
 {
 public:
-  static AddonInfoPtr Generate(const std::string& id, AddonType type);
+  static AddonInfoPtr Generate(const std::string& id, AddonType::Type type);
   static AddonInfoPtr Generate(const std::string& addonPath, bool platformCheck = true);
   static AddonInfoPtr Generate(const TiXmlElement* baseElement,
                                const RepositoryDirInfo& repo,
@@ -88,7 +85,7 @@ public:
   void SetArt(std::map<std::string, std::string> art);
   void SetScreenshots(std::vector<std::string> screenshots);
   void SetChangelog(std::string changelog);
-  void SetLifecycleState(AddonLifecycleState state, std::string description);
+  void SetLifecycleState(AddonLifecycleState::Type state, std::string description);
   void SetPath(std::string path);
   void SetLibName(std::string libname);
   void SetVersion(CAddonVersion version);

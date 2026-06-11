@@ -8,76 +8,76 @@
 
 #pragma once
 
-#include <cstdint>
+#include "system.h" // <xtl.h>
+#include <stdint.h>
 #include <map>
-#include <memory>
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <string>
 #include <vector>
+
+#include "addons/addoninfo/AddonInfo.h" // AddonInstanceSupport, AddonLifecycleState
 
 class CDateTime;
 class TiXmlElement;
 
 namespace ADDON
 {
-enum class AddonInstanceSupport;
-enum class AddonLifecycleState;
-enum class AddonType;
-
 class CAddonMgr;
 class CAddonSettings;
 class CAddonVersion;
 
 struct DependencyInfo;
 
-using AddonInstanceId = uint32_t;
+typedef uint32_t AddonInstanceId;
 
-constexpr const char* ADDON_SETTING_INSTANCE_GROUP = "kodi_addon_instance";
-constexpr const char* ADDON_SETTING_INSTANCE_NAME_VALUE = "kodi_addon_instance_name";
-constexpr const char* ADDON_SETTING_INSTANCE_ENABLED_VALUE = "kodi_addon_instance_enabled";
+const char* ADDON_SETTING_INSTANCE_GROUP = "kodi_addon_instance";
+const char* ADDON_SETTING_INSTANCE_NAME_VALUE = "kodi_addon_instance_name";
+const char* ADDON_SETTING_INSTANCE_ENABLED_VALUE = "kodi_addon_instance_enabled";
 
 /*!
  * @brief Identifier denoting default add-on instance.
  *
  * All numbers greater than 0 denote add-ons with support for multiple instances.
  */
-constexpr AddonInstanceId ADDON_SINGLETON_INSTANCE_ID = 0;
+AddonInstanceId ADDON_SINGLETON_INSTANCE_ID = 0;
 
 /*!
  * @brief Identifier denoting initial first add-on instance.
  */
-constexpr AddonInstanceId ADDON_FIRST_INSTANCE_ID = 1;
+AddonInstanceId ADDON_FIRST_INSTANCE_ID = 1;
 
 /*!
  * @brief Identifier denoting add-on instance id as unused.
  *
  * @sa ADDON::IAddonInstanceHandler
  */
-constexpr AddonInstanceId ADDON_INSTANCE_ID_UNUSED = ADDON_SINGLETON_INSTANCE_ID;
+AddonInstanceId ADDON_INSTANCE_ID_UNUSED = ADDON_SINGLETON_INSTANCE_ID;
 
 /*!
  * @brief Identifier denoting default add-on settings.xml.
  *
  * All numbers greater than 0 denote add-on instances with an individual set of settings.
  */
-constexpr AddonInstanceId ADDON_SETTINGS_ID = ADDON_SINGLETON_INSTANCE_ID;
+AddonInstanceId ADDON_SETTINGS_ID = ADDON_SINGLETON_INSTANCE_ID;
 
-constexpr char const* ORIGIN_SYSTEM = "b6a50484-93a0-4afb-a01c-8d17e059feda";
+char const* ORIGIN_SYSTEM = "b6a50484-93a0-4afb-a01c-8d17e059feda";
 
 class IAddon;
 typedef boost::shared_ptr<IAddon> AddonPtr;
 typedef std::vector<AddonPtr> VECADDONS;
 
-using InfoMap = std::map<std::string, std::string>;
-using ArtMap = std::map<std::string, std::string>;
+typedef std::map<std::string, std::string> InfoMap;
+typedef std::map<std::string, std::string> ArtMap;
 
-class IAddon : public std::enable_shared_from_this<IAddon>
+class IAddon : public boost::enable_shared_from_this<IAddon>
 {
 public:
   virtual ~IAddon() {}
-  virtual AddonType MainType() const = 0;
-  virtual AddonType Type() const = 0;
-  virtual bool HasType(AddonType type) const = 0;
-  virtual bool HasMainType(AddonType type) const = 0;
+  virtual AddonType::Type MainType() const = 0;
+  virtual AddonType::Type Type() const = 0;
+  virtual bool HasType(AddonType::Type type) const = 0;
+  virtual bool HasMainType(AddonType::Type type) const = 0;
   virtual std::string ID() const = 0;
   virtual std::string Name() const = 0;
   virtual bool IsInUse() const = 0;
@@ -96,7 +96,7 @@ public:
   virtual std::string Author() const = 0;
   virtual std::string Icon() const = 0;
   virtual std::string Disclaimer() const = 0;
-  virtual AddonLifecycleState LifecycleState() const = 0;
+  virtual AddonLifecycleState::Type LifecycleState() const = 0;
   virtual std::string LifecycleStateDescription() const = 0;
   virtual CDateTime InstallDate() const = 0;
   virtual CDateTime LastUpdated() const = 0;
@@ -106,7 +106,7 @@ public:
   virtual uint64_t PackageSize() const = 0;
   virtual const InfoMap& ExtraInfo() const = 0;
   virtual bool SupportsMultipleInstances() const = 0;
-  virtual AddonInstanceSupport InstanceUseType() const = 0;
+  virtual AddonInstanceSupport::Type InstanceUseType() const = 0;
   virtual std::vector<AddonInstanceId> GetKnownInstanceIds() const = 0;
   virtual bool SupportsInstanceSettings() const = 0;
   virtual bool DeleteInstanceSettings(AddonInstanceId instance) = 0;

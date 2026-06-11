@@ -27,13 +27,8 @@ namespace ADDON
 class CAddonVersion
 {
 public:
-  explicit CAddonVersion(const char* version = nullptr);
+  explicit CAddonVersion(const char* version = NULL);
   explicit CAddonVersion(const std::string& version);
-
-  CAddonVersion(const CAddonVersion& other) {}
-  CAddonVersion(CAddonVersion&& other) {}
-  CAddonVersion& operator=(const CAddonVersion& other) {}
-  CAddonVersion& operator=(CAddonVersion&& other) {}
 
   virtual ~CAddonVersion() {}
 

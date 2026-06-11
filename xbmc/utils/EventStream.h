@@ -93,3 +93,18 @@ private:
       (*it)->HandleEvent(event);
   }
 };
+
+template<typename Event>
+class CBlockingEventSource : public CEventStream<Event>
+{
+public:
+  template<typename A>
+  void HandleEvent(A event)
+  {
+    CSingleLock lock(this->m_criticalSection);
+    for (std::vector<boost::shared_ptr<detail::ISubscription<Event> > >::const_iterator it = this->m_subscriptions.begin(); it != this->m_subscriptions.end(); ++it)
+    {
+      (*it)->HandleEvent(event);
+    }
+  }
+};

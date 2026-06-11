@@ -21,6 +21,7 @@
 
 #include <set>
 #include <string>
+#include <boost/unordered_map.hpp>
 
 /*!
  \brief Class representing a full locale of the form `[language[_territory][.codeset][@modifier]]`.
@@ -140,6 +141,19 @@ public:
   \return Best matching locale from the given list or empty string.
   */
   std::string FindBestMatch(const std::set<std::string>& locales) const;
+
+  /*!
+  \brief Tries to find the locale in the given list that matches this locale
+         best.
+
+  \param locales Map list of string representations of locales with first as
+                 locale identifier
+  \return Best matching locale from the given list or empty string.
+
+  \remark Used from \ref CAddonInfo::GetTranslatedText to prevent copy from map
+          to set.
+  */
+  std::string FindBestMatch(const boost::unordered_map<std::string, std::string>& locales) const;
 
 private:
   static bool CheckValidity(const std::string& language, const std::string& territory, const std::string& codeset, const std::string& modifier);
