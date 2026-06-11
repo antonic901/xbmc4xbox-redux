@@ -20,11 +20,10 @@ class CXBMCTinyXML;
 namespace ADDON
 {
 
-enum class AddonType;
 class CAddonType;
 
 class CAddonInfo;
-using AddonInfoPtr = boost::shared_ptr<CAddonInfo>;
+typedef boost::shared_ptr<CAddonInfo> AddonInfoPtr;
 
 void OnPreInstall(const AddonPtr& addon);
 void OnPostInstall(const AddonPtr& addon, bool update, bool modal);
@@ -34,7 +33,7 @@ void OnPostUnInstall(const AddonPtr& addon);
 class CAddon : public IAddon
 {
 public:
-  explicit CAddon(const AddonInfoPtr& addonInfo, AddonType addonType);
+  explicit CAddon(const AddonInfoPtr& addonInfo, AddonType::Type addonType);
   virtual ~CAddon() {}
 
   /**
@@ -45,14 +44,14 @@ public:
    *
    * @return The used main type of addon
    */
-  virtual AddonType MainType() const;
+  virtual AddonType::Type MainType() const;
 
   /**
    * @brief To get the on this CAddon class processed addon type
    *
    * @return For this class used addon type
    */
-  virtual AddonType Type() const { return m_type; }
+  virtual AddonType::Type Type() const { return m_type; }
 
   /**
    * @brief To check complete addon (not only this) contains a type
@@ -63,7 +62,7 @@ public:
    * @param[in] type The to checked type identifier
    * @return true in case the wanted type is supported, false if not
    */
-  virtual bool HasType(AddonType type) const;
+  virtual bool HasType(AddonType::Type type) const;
 
   /**
    * @brief To check complete addon (not only this) has a specific type
@@ -73,7 +72,7 @@ public:
    * @param[in] type Type identifier to be checked
    * @return true in case the wanted type is the main type, false if not
    */
-  virtual bool HasMainType(AddonType type) const;
+  virtual bool HasMainType(AddonType::Type type) const;
 
   /**
    * @brief The get for given addon type information and extension data
@@ -93,7 +92,7 @@ public:
    * ~~~~~~~~~~~~~
    *
    */
-  const CAddonType* Type(AddonType type) const;
+  const CAddonType* Type(AddonType::Type type) const;
 
   virtual std::string ID() const;
   virtual std::string Name() const;
@@ -112,7 +111,7 @@ public:
   virtual ArtMap Art() const;
   virtual std::vector<std::string> Screenshots() const;
   virtual std::string Disclaimer() const;
-  virtual AddonLifecycleState LifecycleState() const;
+  virtual AddonLifecycleState::Type LifecycleState() const;
   virtual std::string LifecycleStateDescription() const;
   virtual CDateTime InstallDate() const;
   virtual CDateTime LastUpdated() const;
@@ -136,7 +135,7 @@ public:
    *
    * \return The route used to instance handling, @ref AddonInstanceUse::NONE if not supported.
    */
-  virtual AddonInstanceSupport InstanceUseType() const;
+  virtual AddonInstanceSupport::Type InstanceUseType() const;
 
   /*!
    * \brief Gives active, independently working instance identifiers for this add-on.
@@ -219,9 +218,9 @@ public:
    *
    * \sa LoadSettings, LoadUserSettings, SaveSettings, HasSettings, HasUserSettings, GetSetting
    */
-  void UpdateSetting(const std::string& key,
+  virtual void UpdateSetting(const std::string& key,
                      const std::string& value,
-                     virtual AddonInstanceId id = ADDON_SETTINGS_ID);
+                     AddonInstanceId id = ADDON_SETTINGS_ID);
 
   /*!
    * \brief Update a user-configured setting with a new boolean value.
@@ -233,9 +232,9 @@ public:
    *
    * \sa LoadSettings, LoadUserSettings, SaveSettings, HasSettings, HasUserSettings, GetSetting
    */
-  bool UpdateSettingBool(const std::string& key,
+  virtual bool UpdateSettingBool(const std::string& key,
                          bool value,
-                         virtual AddonInstanceId id = ADDON_SETTINGS_ID);
+                         AddonInstanceId id = ADDON_SETTINGS_ID);
 
   /*!
    * \brief Update a user-configured setting with a new integer value.
@@ -247,9 +246,9 @@ public:
    *
    * \sa LoadSettings, LoadUserSettings, SaveSettings, HasSettings, HasUserSettings, GetSetting
    */
-  bool UpdateSettingInt(const std::string& key,
+  virtual bool UpdateSettingInt(const std::string& key,
                         int value,
-                        virtual AddonInstanceId id = ADDON_SETTINGS_ID);
+                        AddonInstanceId id = ADDON_SETTINGS_ID);
 
   /*!
    * \brief Update a user-configured setting with a new number value.
@@ -261,9 +260,9 @@ public:
    *
    * \sa LoadSettings, LoadUserSettings, SaveSettings, HasSettings, HasUserSettings, GetSetting
    */
-  bool UpdateSettingNumber(const std::string& key,
+  virtual bool UpdateSettingNumber(const std::string& key,
                            double value,
-                           virtual AddonInstanceId id = ADDON_SETTINGS_ID);
+                           AddonInstanceId id = ADDON_SETTINGS_ID);
 
   /*!
    * \brief Update a user-configured setting with a new string value.
@@ -275,9 +274,9 @@ public:
    *
    * \sa LoadSettings, LoadUserSettings, SaveSettings, HasSettings, HasUserSettings, GetSetting
    */
-  bool UpdateSettingString(const std::string& key,
+  virtual bool UpdateSettingString(const std::string& key,
                            const std::string& value,
-                           virtual AddonInstanceId id = ADDON_SETTINGS_ID);
+                           AddonInstanceId id = ADDON_SETTINGS_ID);
 
   /*!
    * \brief Retrieve a particular settings value.
@@ -306,9 +305,9 @@ public:
    *
    * \sa LoadSettings, LoadUserSettings, SaveSettings, HasSettings, HasUserSettings, UpdateSetting
    */
-  bool GetSettingBool(const std::string& key,
+  virtual bool GetSettingBool(const std::string& key,
                       bool& value,
-                      virtual AddonInstanceId id = ADDON_SETTINGS_ID);
+                      AddonInstanceId id = ADDON_SETTINGS_ID);
 
   /*!
    * \brief Retrieve a particular settings value as integer.
@@ -323,9 +322,9 @@ public:
    *
    * \sa LoadSettings, LoadUserSettings, SaveSettings, HasSettings, HasUserSettings, UpdateSetting
    */
-  bool GetSettingInt(const std::string& key,
+  virtual bool GetSettingInt(const std::string& key,
                      int& value,
-                     virtual AddonInstanceId id = ADDON_SETTINGS_ID);
+                     AddonInstanceId id = ADDON_SETTINGS_ID);
 
   /*!
    * \brief Retrieve a particular settings value as number.
@@ -340,9 +339,9 @@ public:
    *
    * \sa LoadSettings, LoadUserSettings, SaveSettings, HasSettings, HasUserSettings, UpdateSetting
    */
-  bool GetSettingNumber(const std::string& key,
+  virtual bool GetSettingNumber(const std::string& key,
                         double& value,
-                        virtual AddonInstanceId id = ADDON_SETTINGS_ID);
+                        AddonInstanceId id = ADDON_SETTINGS_ID);
 
   /*!
    * \brief Retrieve a particular settings value as string
@@ -357,9 +356,9 @@ public:
    *
    * \sa LoadSettings, LoadUserSettings, SaveSettings, HasSettings, HasUserSettings, UpdateSetting
    */
-  bool GetSettingString(const std::string& key,
+  virtual bool GetSettingString(const std::string& key,
                         std::string& value,
-                        virtual AddonInstanceId id = ADDON_SETTINGS_ID);
+                        AddonInstanceId id = ADDON_SETTINGS_ID);
 
   virtual boost::shared_ptr<CAddonSettings> GetSettings(AddonInstanceId id = ADDON_SETTINGS_ID);
 
@@ -474,8 +473,9 @@ protected:
 private:
   struct CSettingsData
   {
-    bool m_loadSettingsFailed{false};
-    bool m_hasUserSettings{false};
+    CSettingsData() : m_loadSettingsFailed(false), m_hasUserSettings(false) {}
+    bool m_loadSettingsFailed;
+    bool m_hasUserSettings;
     std::string m_addonSettingsPath;
     std::string m_userSettingsPath;
     boost::shared_ptr<CAddonSettings> m_addonSettings;
@@ -485,7 +485,7 @@ private:
   boost::shared_ptr<CAddonSettings> FindInstanceSettings(AddonInstanceId id) const;
 
   mutable boost::unordered_map<AddonInstanceId, CSettingsData> m_settings;
-  const AddonType m_type;
+  const AddonType::Type m_type;
 };
 
 }; // namespace ADDON

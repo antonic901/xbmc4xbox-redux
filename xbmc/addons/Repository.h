@@ -22,14 +22,15 @@ class CAddonExtensions;
 
 struct RepositoryDirInfo
 {
-  CAddonVersion minversion{""};
-  CAddonVersion maxversion{""};
+  RepositoryDirInfo() : minversion(""), maxversion(""), checksumType(KODI::UTILITY::CDigest::Type::INVALID), hashType(KODI::UTILITY::CDigest::Type::INVALID) {}
+  CAddonVersion minversion;
+  CAddonVersion maxversion;
   std::string info;
   std::string checksum;
-  KODI::UTILITY::CDigest::Type checksumType{KODI::UTILITY::CDigest::Type::INVALID};
+  KODI::UTILITY::CDigest::Type checksumType;
   std::string datadir;
   std::string artdir;
-  KODI::UTILITY::CDigest::Type hashType{KODI::UTILITY::CDigest::Type::INVALID};
+  KODI::UTILITY::CDigest::Type hashType;
 };
 
 typedef std::vector<RepositoryDirInfo> RepositoryDirList;
@@ -64,10 +65,10 @@ public:
 private:
   static bool FetchChecksum(const std::string& url,
                             std::string& checksum,
-                            int& recheckAfter) noexcept;
+                            int& recheckAfter);
   static bool FetchIndex(const RepositoryDirInfo& repo,
                          std::string const& digest,
-                         std::vector<AddonInfoPtr>& addons) noexcept;
+                         std::vector<AddonInfoPtr>& addons);
 
   static RepositoryDirInfo ParseDirConfiguration(const CAddonExtensions& configuration);
 

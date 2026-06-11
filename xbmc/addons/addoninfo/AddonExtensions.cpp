@@ -19,12 +19,12 @@ bool SExtValue::asBoolean() const
 
 const SExtValue CAddonExtensions::GetValue(const std::string& id) const
 {
-  for (const auto& values : m_values)
+  for (EXT_VALUES::const_iterator values = m_values.begin(); values != m_values.end(); ++values)
   {
-    for (const auto& value : values.second)
+    for (CExtValues::const_iterator value = values->second.begin(); value != values->second.end(); ++value)
     {
-      if (value.first == id)
-        return value.second;
+      if (value->first == id)
+        return value->second;
     }
   }
   return SExtValue("");
@@ -37,13 +37,13 @@ const EXT_VALUES& CAddonExtensions::GetValues() const
 
 const CAddonExtensions* CAddonExtensions::GetElement(const std::string& id) const
 {
-  for (const auto& child : m_children)
+  for (EXT_ELEMENTS::const_iterator child = m_children.begin(); child != m_children.end(); ++child)
   {
-    if (child.first == id)
-      return &child.second;
+    if (child->first == id)
+      return &child->second;
   }
 
-  return nullptr;
+  return NULL;
 }
 
 const EXT_ELEMENTS CAddonExtensions::GetElements(const std::string& id) const
@@ -52,10 +52,10 @@ const EXT_ELEMENTS CAddonExtensions::GetElements(const std::string& id) const
     return m_children;
 
   EXT_ELEMENTS children;
-  for (const auto& child : m_children)
+  for (EXT_ELEMENTS::const_iterator child = m_children.begin(); child != m_children.end(); ++child)
   {
-    if (child.first == id)
-      children.emplace_back(child.first, child.second);
+    if (child->first == id)
+      children.push_back(std::make_pair(child->first, child->second));
   }
   return children;
 }
@@ -63,6 +63,6 @@ const EXT_ELEMENTS CAddonExtensions::GetElements(const std::string& id) const
 void CAddonExtensions::Insert(const std::string& id, const std::string& value)
 {
   EXT_VALUE extension;
-  extension.emplace_back(id, SExtValue(value));
-  m_values.emplace_back(id, extension);
+  extension.push_back(std::make_pair(id, SExtValue(value)));
+  m_values.push_back(std::make_pair(id, extension));
 }

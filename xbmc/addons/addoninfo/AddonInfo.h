@@ -10,9 +10,10 @@
 
 #include "XBDateTime.h"
 #include "addons/AddonVersion.h"
+#include "addons/addoninfo/AddonType.h" // AddonType
 
 #include <map>
-#include <memory>
+#include <boost/move/unique_ptr.hpp>
 #include <string>
 #include <boost/unordered_map.hpp>
 #include <utility>
@@ -21,23 +22,23 @@
 namespace ADDON
 {
 
-enum class AddonType;
-
 class CAddonBuilder;
 class CAddonInfo;
 class CAddonType;
 typedef boost::shared_ptr<CAddonInfo> AddonInfoPtr;
 typedef std::vector<AddonInfoPtr> AddonInfos;
 
-using AddonInstanceId = uint32_t;
+typedef uint32_t AddonInstanceId;
 
 /*!
  * Defines the default language code used as fallback in case the requested language is not
  * available. Used, for instance, to handle content from addon.xml.
  */
-constexpr const char* KODI_ADDON_DEFAULT_LANGUAGE_CODE = "en_GB";
+const char* KODI_ADDON_DEFAULT_LANGUAGE_CODE = "en_GB";
 
-enum class AddonDisabledReason
+namespace AddonDisabledReason
+{
+enum Type
 {
   /// @brief Special reason for returning all disabled addons.
   ///
@@ -47,8 +48,11 @@ enum class AddonDisabledReason
   INCOMPATIBLE = 2,
   PERMANENT_FAILURE = 3
 };
+}
 
-enum class AddonOriginType
+namespace AddonOriginType
+{
+enum Type
 {
   /// @brief The type of the origin of an addon.
   ///
@@ -57,22 +61,28 @@ enum class AddonOriginType
   REPOSITORY = 1, /// The addon origin is a repository
   MANUAL = 2 /// The addon origin is a zip file, package or development build
 };
+}
 
 //! @brief Reasons why an addon is not updateable
-enum class AddonUpdateRule
+namespace AddonUpdateRule
+{
+enum Type
 {
   ANY = 0, //!< used internally, not to be explicitly set
   USER_DISABLED_AUTO_UPDATE = 1, //!< automatic updates disabled via AddonInfo dialog
   PIN_OLD_VERSION = 2, //!< user downgraded to an older version
   PIN_ZIP_INSTALL = 3, //!< user installed manually from zip
 };
+}
 
 /*!
  * @brief Independent add-on instance support.
  *
  * Used to be able to find out its instance path for the respective add-on types.
  */
-enum class AddonInstanceSupport
+namespace AddonInstanceSupport
+{
+enum Type
 {
   //! If add-on type does not support instances.
   SUPPORT_NONE = 0,
@@ -86,6 +96,7 @@ enum class AddonInstanceSupport
   //! If add-on type supports multiple instances using independent settings.
   SUPPORT_SETTINGS = 3,
 };
+}
 
 /*!
  * @brief Add-on state defined within addon.xml to report about the current addon
@@ -98,12 +109,15 @@ enum class AddonInstanceSupport
  * <lifecyclestate type="broken" lang="en_GB">SOME TEXT</lifecyclestate>
  * ~~~~~~~~~~~~~
  */
-enum class AddonLifecycleState
+namespace AddonLifecycleState
+{
+enum Type
 {
   NORMAL = 0, //!< Used if an add-on has no special lifecycle state which is the default state
   DEPRECATED = 1, //!< the add-on should be marked as deprecated but is still usable
   BROKEN = 2, //!< the add-on should marked as broken in the repository
 };
+}
 
 struct DependencyInfo
 {
@@ -114,7 +128,7 @@ struct DependencyInfo
                  const CAddonVersion& versionMin,
                  const CAddonVersion& version,
                  bool optional)
-    : id(std::move(id)),
+    : id(boost::move(id)),
       versionMin(versionMin.empty() ? version : versionMin),
       version(version),
       optional(optional)
@@ -141,10 +155,10 @@ class CAddonInfoBuilder;
 class CAddonInfo
 {
 public:
-  CAddonInfo() {}
-  CAddonInfo(std::string id, AddonType type);
+  CAddonInfo() : m_isBinary(false), m_lifecycleState(AddonLifecycleState::NORMAL), m_packageSize(0), m_addonInstanceSupportType(AddonInstanceSupport::SUPPORT_NONE), m_supportsAddonSettings(false), m_supportsInstanceSettings(false) {}
+  CAddonInfo(std::string id, AddonType::Type type);
 
-  void SetMainType(AddonType type) { m_mainType = type; }
+  void SetMainType(AddonType::Type type) { m_mainType = type; }
   void SetBinary(bool isBinary) { m_isBinary = isBinary; }
   void SetLibName(const std::string& libname) { m_libname = libname; }
   void SetPath(const std::string& path) { m_path = path; }
@@ -160,7 +174,7 @@ public:
    *
    * @return The used main type of addon
    */
-  AddonType MainType() const { return m_mainType; }
+  AddonType::Type MainType() const { return m_mainType; }
 
   /**
    * @brief To check addon contains a type
@@ -169,7 +183,7 @@ public:
    * @param[in] mainOnly to check only in first defined main addon inside addon.xml
    * @return true in case the wanted type is supported, false if not
    */
-  bool HasType(AddonType type, bool mainOnly = false) const;
+  bool HasType(AddonType::Type type, bool mainOnly = false) const;
 
   /**
    * @brief To get all available types inside the addon
@@ -186,7 +200,7 @@ public:
    * @param[in] type The wanted type data
    * @return addon type class with @ref CAddonExtensions as information
    *
-   * @note This function return never a "nullptr", in case the wanted type is
+   * @note This function return never a "NULL", in case the wanted type is
    * not supported, becomes a dummy of @ref CAddonType given.
    *
    * ------------------------------------------------------------------------
@@ -198,9 +212,9 @@ public:
    * ~~~~~~~~~~~~~
    *
    */
-  const CAddonType* Type(AddonType type) const;
+  const CAddonType* Type(AddonType::Type type) const;
 
-  bool ProvidesSubContent(AddonType content, AddonType mainType) const;
+  bool ProvidesSubContent(AddonType::Type content, AddonType::Type mainType) const;
   bool ProvidesSeveralSubContents() const;
 
   const CAddonVersion& Version() const { return m_version; }
@@ -226,7 +240,7 @@ public:
   const std::vector<std::string>& Screenshots() const { return m_screenshots; }
   const std::string& Disclaimer() const { return GetTranslatedText(m_disclaimer); }
   const std::vector<DependencyInfo>& GetDependencies() const { return m_dependencies; }
-  AddonLifecycleState LifecycleState() const { return m_lifecycleState; }
+  AddonLifecycleState::Type LifecycleState() const { return m_lifecycleState; }
   const std::string& LifecycleStateDescription() const
   {
     return GetTranslatedText(m_lifecycleStateDescription);
@@ -243,7 +257,7 @@ public:
   CDateTime LastUsed() const { return m_lastUsed; }
 
   bool SupportsMultipleInstances() const;
-  AddonInstanceSupport InstanceUseType() const { return m_addonInstanceSupportType; }
+  AddonInstanceSupport::Type InstanceUseType() const { return m_addonInstanceSupportType; }
 
   bool SupportsAddonSettings() const { return m_supportsAddonSettings; }
   bool SupportsInstanceSettings() const { return m_supportsInstanceSettings; }
@@ -253,11 +267,11 @@ public:
     * @brief Utilities to translate add-on parts to his requested part.
     */
   //@{
-  static std::string TranslateType(AddonType type, bool pretty = false);
-  static std::string TranslateIconType(AddonType type);
-  static AddonType TranslateType(const std::string& string);
-  static AddonType TranslateSubContent(const std::string& content);
-  static AddonInstanceSupport InstanceSupportType(AddonType type);
+  static std::string TranslateType(AddonType::Type type, bool pretty = false);
+  static std::string TranslateIconType(AddonType::Type type);
+  static AddonType::Type TranslateType(const std::string& string);
+  static AddonType::Type TranslateSubContent(const std::string& content);
+  static AddonInstanceSupport::Type InstanceSupportType(AddonType::Type type);
   //@}
 
 private:
@@ -265,12 +279,12 @@ private:
   friend class CAddonInfoBuilderFromDB;
 
   std::string m_id;
-  AddonType m_mainType{};
+  AddonType::Type m_mainType;
   std::vector<CAddonType> m_types;
 
   CAddonVersion m_version;
   CAddonVersion m_minversion;
-  bool m_isBinary = false;
+  bool m_isBinary;
   std::string m_name;
   std::string m_license;
   boost::unordered_map<std::string, std::string> m_summary;
@@ -288,20 +302,20 @@ private:
   std::vector<std::string> m_screenshots;
   boost::unordered_map<std::string, std::string> m_disclaimer;
   std::vector<DependencyInfo> m_dependencies;
-  AddonLifecycleState m_lifecycleState = AddonLifecycleState::NORMAL;
+  AddonLifecycleState::Type m_lifecycleState;
   boost::unordered_map<std::string, std::string> m_lifecycleStateDescription;
   CDateTime m_installDate;
   CDateTime m_lastUpdated;
   CDateTime m_lastUsed;
   std::string m_origin;
   mutable boost::movelib::unique_ptr<std::string> m_originName; // @todo use std::optional once we use c++17
-  uint64_t m_packageSize = 0;
+  uint64_t m_packageSize;
   std::string m_libname;
   InfoMap m_extrainfo;
   std::vector<std::string> m_platforms;
-  AddonInstanceSupport m_addonInstanceSupportType{AddonInstanceSupport::SUPPORT_NONE};
-  bool m_supportsAddonSettings{false};
-  bool m_supportsInstanceSettings{false};
+  AddonInstanceSupport::Type m_addonInstanceSupportType;
+  bool m_supportsAddonSettings;
+  bool m_supportsInstanceSettings;
 
   const std::string& GetTranslatedText(const boost::unordered_map<std::string, std::string>& locales) const;
 };

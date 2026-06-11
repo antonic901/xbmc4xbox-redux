@@ -14,11 +14,15 @@
 
 namespace ADDON
 {
-static const std::set<AddonType> dependencyTypes = {
-    AddonType::SCRAPER_LIBRARY,
-    AddonType::SCRIPT_LIBRARY,
-    AddonType::SCRIPT_MODULE,
-};
+static std::set<AddonType::Type> createDependencyTypes()
+{
+  std::set<AddonType::Type> s;
+  s.insert(AddonType::SCRAPER_LIBRARY);
+  s.insert(AddonType::SCRIPT_LIBRARY);
+  s.insert(AddonType::SCRIPT_MODULE);
+  return s;
+}
+static const std::set<AddonType::Type> dependencyTypes = createDependencyTypes();
 } /* namespace ADDON */
 
 using namespace ADDON;
@@ -44,16 +48,17 @@ void CAddonType::SetProvides(const std::string& content)
     if (GetValue("provides").empty())
       Insert("provides", content);
 
-    for (const auto& provide : StringUtils::Split(content, ' '))
+    const std::vector<std::string> provides = StringUtils::Split(content, ' ');
+    for (std::vector<std::string>::const_iterator provide = provides.begin(); provide != provides.end(); ++provide)
     {
-      AddonType content = CAddonInfo::TranslateSubContent(provide);
+      AddonType::Type content = CAddonInfo::TranslateSubContent(*provide);
       if (content != AddonType::UNKNOWN)
         m_providedSubContent.insert(content);
     }
   }
 }
 
-bool CAddonType::IsDependencyType(AddonType type)
+bool CAddonType::IsDependencyType(AddonType::Type type)
 {
   return dependencyTypes.find(type) != dependencyTypes.end();
 }

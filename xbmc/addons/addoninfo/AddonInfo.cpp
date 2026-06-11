@@ -13,32 +13,31 @@
 #include "ServiceBroker.h"
 #include "addons/AddonManager.h"
 #include "addons/IAddon.h"
-#include "addons/addoninfo/AddonType.h"
 #include "filesystem/Directory.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 
 #include <algorithm>
-#include <array>
-#include <string_view>
+#include <boost/bind.hpp>
+#include <boost/move/make_unique.hpp>
 
 namespace ADDON
 {
 
 typedef struct
 {
-  std::string_view name;
-  std::string_view old_name;
-  AddonType type;
+  const char* name;
+  const char* old_name;
+  AddonType::Type type;
   int pretty;
-  AddonInstanceSupport instance_support;
-  std::string_view icon;
+  AddonInstanceSupport::Type instance_support;
+  const char* icon;
 } TypeMapping;
 
 // clang-format off
-static constexpr const std::array<TypeMapping, 40> types =
-  {{
+static const TypeMapping types[] =
+  {
    {"unknown",                           "", AddonType::UNKNOWN,                 0, AddonInstanceSupport::SUPPORT_NONE,      "" },
    {"xbmc.metadata.scraper.albums",      "", AddonType::SCRAPER_ALBUMS,      24016, AddonInstanceSupport::SUPPORT_NONE,      "DefaultAddonAlbumInfo.png" },
    {"xbmc.metadata.scraper.artists",     "", AddonType::SCRAPER_ARTISTS,     24017, AddonInstanceSupport::SUPPORT_NONE,      "DefaultAddonArtistInfo.png" },
@@ -79,7 +78,7 @@ static constexpr const std::array<TypeMapping, 40> types =
    {"kodi.inputstream",                  "", AddonType::INPUTSTREAM,         24048, AddonInstanceSupport::SUPPORT_MANDATORY, "DefaultAddonInputstream.png" },
    {"kodi.vfs",                          "", AddonType::VFS,                 39013, AddonInstanceSupport::SUPPORT_MANDATORY, "DefaultAddonVfs.png" },
    {"kodi.imagedecoder",                 "", AddonType::IMAGEDECODER,        39015, AddonInstanceSupport::SUPPORT_MANDATORY, "DefaultAddonImageDecoder.png" },
-  }};
+  };
 // clang-format on
 
 const std::string& CAddonInfo::OriginName() const
@@ -100,43 +99,46 @@ const std::string& CAddonInfo::OriginName() const
  *
  */
 
-std::string CAddonInfo::TranslateType(AddonType type, bool pretty /*= false*/)
+std::string CAddonInfo::TranslateType(AddonType::Type type, bool pretty /*= false*/)
 {
-  for (const TypeMapping& map : types)
+  for (size_t i = 0; i < sizeof(types) / sizeof(TypeMapping); ++i)
   {
+    const TypeMapping& map = types[i];
     if (type == map.type)
     {
       if (pretty && map.pretty)
         return g_localizeStrings.Get(map.pretty);
       else
-        return std::string(map.name.data(), map.name.size());
+        return map.name;
     }
   }
   return "";
 }
 
-AddonType CAddonInfo::TranslateType(const std::string& string)
+AddonType::Type CAddonInfo::TranslateType(const std::string& string)
 {
-  for (const TypeMapping& map : types)
+  for (size_t i = 0; i < sizeof(types) / sizeof(TypeMapping); ++i)
   {
-    if (string == map.name || (!map.old_name.empty() && string == map.old_name))
+    const TypeMapping& map = types[i];
+    if (string == map.name || (map.old_name[0] != '\0' && string == map.old_name))
       return map.type;
   }
 
   return AddonType::UNKNOWN;
 }
 
-std::string CAddonInfo::TranslateIconType(AddonType type)
+std::string CAddonInfo::TranslateIconType(AddonType::Type type)
 {
-  for (const TypeMapping& map : types)
+  for (size_t i = 0; i < sizeof(types) / sizeof(TypeMapping); ++i)
   {
+    const TypeMapping& map = types[i];
     if (type == map.type)
-      return std::string(map.icon.data(), map.icon.size());
+      return map.icon;
   }
   return "";
 }
 
-AddonType CAddonInfo::TranslateSubContent(const std::string& content)
+AddonType::Type CAddonInfo::TranslateSubContent(const std::string& content)
 {
   if (content == "audio")
     return AddonType::AUDIO;
@@ -152,22 +154,21 @@ AddonType CAddonInfo::TranslateSubContent(const std::string& content)
     return AddonType::UNKNOWN;
 }
 
-AddonInstanceSupport CAddonInfo::InstanceSupportType(AddonType type)
+AddonInstanceSupport::Type CAddonInfo::InstanceSupportType(AddonType::Type type)
 {
-  const auto it = std::find_if(types.begin(), types.end(),
-                               [type](const TypeMapping& entry) { return entry.type == type; });
-  if (it != types.end())
-    return it->instance_support;
+  for (size_t i = 0; i < sizeof(types) / sizeof(TypeMapping); ++i)
+    if (type == types[i].type)
+      return types[i].instance_support;
 
   return AddonInstanceSupport::SUPPORT_NONE;
 }
 
-CAddonInfo::CAddonInfo(std::string id, AddonType type) : m_id(std::move(id)), m_mainType(type)
+CAddonInfo::CAddonInfo(std::string id, AddonType::Type type) : m_id(boost::move(id)), m_mainType(type), m_isBinary(false), m_packageSize(0), m_lifecycleState(AddonLifecycleState::NORMAL), m_addonInstanceSupportType(AddonInstanceSupport::SUPPORT_NONE), m_supportsAddonSettings(false), m_supportsInstanceSettings(false)
 {
 
 }
 
-const CAddonType* CAddonInfo::Type(AddonType type) const
+const CAddonType* CAddonInfo::Type(AddonType::Type type) const
 {
   static CAddonType dummy;
 
@@ -176,31 +177,31 @@ const CAddonType* CAddonInfo::Type(AddonType type) const
     if (type == AddonType::UNKNOWN)
       return &m_types[0];
 
-    for (auto& addonType : m_types)
+    for (std::vector<CAddonType>::const_iterator addonType = m_types.begin(); addonType != m_types.end(); ++addonType)
     {
-      if (addonType.Type() == type)
-        return &addonType;
+      if (addonType->Type() == type)
+        return &(*addonType);
     }
   }
 
   return &dummy;
 }
 
-bool CAddonInfo::HasType(AddonType type, bool mainOnly /*= false*/) const
+bool CAddonInfo::HasType(AddonType::Type type, bool mainOnly /*= false*/) const
 {
   return (m_mainType == type ||
           ProvidesSubContent(type, mainOnly ? m_mainType : AddonType::UNKNOWN));
 }
 
-bool CAddonInfo::ProvidesSubContent(AddonType content, AddonType mainType) const
+bool CAddonInfo::ProvidesSubContent(AddonType::Type content, AddonType::Type mainType) const
 {
   if (content == AddonType::UNKNOWN)
     return false;
 
-  for (const auto& addonType : m_types)
+  for (std::vector<CAddonType>::const_iterator addonType = m_types.begin(); addonType != m_types.end(); ++addonType)
   {
-    if ((mainType == AddonType::UNKNOWN || addonType.Type() == mainType) &&
-        addonType.ProvidesSubContent(content))
+    if ((mainType == AddonType::UNKNOWN || addonType->Type() == mainType) &&
+        addonType->ProvidesSubContent(content))
       return true;
   }
 
@@ -210,8 +211,8 @@ bool CAddonInfo::ProvidesSubContent(AddonType content, AddonType mainType) const
 bool CAddonInfo::ProvidesSeveralSubContents() const
 {
   int contents = 0;
-  for (const auto& addonType : m_types)
-    contents += addonType.ProvidedSubContents();
+  for (std::vector<CAddonType>::const_iterator addonType = m_types.begin(); addonType != m_types.end(); ++addonType)
+    contents += addonType->ProvidedSubContents();
   return contents > 0 ? true : false;
 }
 
@@ -220,10 +221,12 @@ bool CAddonInfo::MeetsVersion(const CAddonVersion& versionMin, const CAddonVersi
   return !(versionMin > m_version || version < m_minversion);
 }
 
+static bool IsSameDependencyID(const DependencyInfo& other, const std::string &dependencyID) { return other.id == dependencyID; }
+
 const CAddonVersion& CAddonInfo::DependencyMinVersion(const std::string& dependencyID) const
 {
-  auto it = std::find_if(m_dependencies.begin(), m_dependencies.end(),
-                         [&](const DependencyInfo& other) { return other.id == dependencyID; });
+  std::vector<ADDON::DependencyInfo>::const_iterator it = std::find_if(m_dependencies.begin(), m_dependencies.end(),
+                         boost::bind(&IsSameDependencyID, _1, dependencyID));
 
   if (it != m_dependencies.end())
     return it->versionMin;
@@ -234,7 +237,7 @@ const CAddonVersion& CAddonInfo::DependencyMinVersion(const std::string& depende
 
 const CAddonVersion& CAddonInfo::DependencyVersion(const std::string& dependencyID) const
 {
-  auto it = std::find_if(m_dependencies.begin(), m_dependencies.end(), [&](const DependencyInfo& other) { return other.id == dependencyID; });
+  std::vector<ADDON::DependencyInfo>::const_iterator it = std::find_if(m_dependencies.begin(), m_dependencies.end(), boost::bind(&IsSameDependencyID, _1, dependencyID));
 
   if (it != m_dependencies.end())
     return it->version;
@@ -255,7 +258,7 @@ const std::string& CAddonInfo::GetTranslatedText(const boost::unordered_map<std:
   if (matchingLanguage.empty())
     matchingLanguage = KODI_ADDON_DEFAULT_LANGUAGE_CODE;
 
-  auto const& translatedValue = locales.find(matchingLanguage);
+  const boost::unordered_map<std::string, std::string>::const_iterator &translatedValue = locales.find(matchingLanguage);
   if (translatedValue != locales.end())
     return translatedValue->second;
   return StringUtils::Empty;
@@ -278,7 +281,7 @@ bool CAddonInfo::SupportsMultipleInstances() const
 
 std::vector<AddonInstanceId> CAddonInfo::GetKnownInstanceIds() const
 {
-  static const std::vector<AddonInstanceId> singletonInstance = {ADDON_SINGLETON_INSTANCE_ID};
+  static const std::vector<AddonInstanceId> singletonInstance(1, ADDON_SINGLETON_INSTANCE_ID);
 
   if (!m_supportsInstanceSettings)
     return singletonInstance;
@@ -293,22 +296,23 @@ std::vector<AddonInstanceId> CAddonInfo::GetKnownInstanceIds() const
 
     static const std::string startName = "instance-settings-";
 
-    for (const auto& item : items)
+    for (int i = 0; i < items.Size(); ++i)
     {
+      const CFileItemPtr &item = items[i];
       std::string filename = URIUtils::GetFileName(item->GetPath());
       if (StringUtils::StartsWithNoCase(filename, startName))
       {
         URIUtils::RemoveExtension(filename);
-        const std::string_view uid(filename.data() + startName.length());
+        const std::string uid(filename.data() + startName.length());
         if (!uid.empty() && StringUtils::IsInteger(uid.data()))
-          ret.emplace_back(std::atoi(uid.data()));
+          ret.push_back(std::atoi(uid.c_str()));
       }
     }
   }
 
   // If no instances are used, create first as default.
   if (ret.empty())
-    ret.emplace_back(ADDON_FIRST_INSTANCE_ID);
+    ret.push_back(ADDON_FIRST_INSTANCE_ID);
 
   return ret;
 }

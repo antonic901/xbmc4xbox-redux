@@ -52,13 +52,13 @@ typedef boost::shared_ptr<CScraper> ScraperPtr;
 
 std::string TranslateContent(const CONTENT_TYPE &content, bool pretty=false);
 CONTENT_TYPE TranslateContent(const std::string &string);
-AddonType ScraperTypeFromContent(const CONTENT_TYPE& content);
+AddonType::Type ScraperTypeFromContent(const CONTENT_TYPE& content);
 
 // thrown as exception to signal abort or show error dialog
 class CScraperError
 {
 public:
-  CScraperError() {}
+  CScraperError() : m_fAborted(true) {}
   CScraperError(const std::string &sTitle, const std::string &sMessage) :
     m_fAborted(false), m_sTitle(sTitle), m_sMessage(sMessage) {}
 
@@ -67,7 +67,7 @@ public:
   const std::string &Message() const { return m_sMessage; }
 
 private:
-  bool m_fAborted = true;
+  bool m_fAborted;
   std::string m_sTitle;
   std::string m_sMessage;
 };
@@ -75,7 +75,7 @@ private:
 class CScraper : public CAddon
 {
 public:
-  explicit CScraper(const AddonInfoPtr& addonInfo, AddonType addonType);
+  explicit CScraper(const AddonInfoPtr& addonInfo, AddonType::Type addonType);
 
   /*! \brief Set the scraper settings for a particular path from an XML string
    Loads the default and user settings (if not already loaded) and, if the given XML string is non-empty,
@@ -143,10 +143,8 @@ public:
   bool GetArtwork(XFILE::CCurlFile &fcurl, CVideoInfoTag &details);
 
 private:
-  CScraper(const CScraper &rhs) = delete;
-  CScraper& operator=(const CScraper&) = delete;
-  CScraper(CScraper&&) = delete;
-  CScraper& operator=(CScraper&&) = delete;
+  CScraper(const CScraper &rhs);
+  CScraper& operator=(const CScraper&);
 
   std::string SearchStringEncoding() const
     { return m_parser.GetSearchStringEncoding(); }
@@ -173,11 +171,11 @@ private:
                          XFILE::CCurlFile& http,
                          const std::vector<std::string>* extras);
 
-  bool m_fLoaded = false;
-  bool m_isPython = false;
-  bool m_requiressettings = false;
+  bool m_fLoaded;
+  bool m_isPython;
+  bool m_requiressettings;
   CDateTimeSpan m_persistence;
-  CONTENT_TYPE m_pathContent = CONTENT_NONE;
+  CONTENT_TYPE m_pathContent;
   CScraperParser m_parser;
 };
 

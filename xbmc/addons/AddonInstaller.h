@@ -27,53 +27,74 @@ class CAddonVersion;
 class CAddonDatabase;
 
 class CRepository;
-using RepositoryPtr = boost::shared_ptr<CRepository>;
+typedef boost::shared_ptr<CRepository> RepositoryPtr;
 
 class IAddon;
-using AddonPtr = boost::shared_ptr<IAddon>;
-using VECADDONS = std::vector<AddonPtr>;
+typedef boost::shared_ptr<IAddon> AddonPtr;
+typedef std::vector<AddonPtr> VECADDONS;
 
-enum class BackgroundJob : bool
+namespace BackgroundJob
 {
-  CHOICE_YES = true,
-  CHOICE_NO = false,
+enum Type
+{
+  CHOICE_NO = 0,
+  CHOICE_YES = 1
 };
+}
 
-enum class ModalJob : bool
+namespace ModalJob
 {
-  CHOICE_YES = true,
-  CHOICE_NO = false,
+enum Type
+{
+  CHOICE_NO = 0,
+  CHOICE_YES = 1
 };
+}
 
-enum class AutoUpdateJob : bool
+namespace AutoUpdateJob
 {
-  CHOICE_YES = true,
-  CHOICE_NO = false,
+enum Type
+{
+  CHOICE_NO = 0,
+  CHOICE_YES = 1
 };
+}
 
-enum class DependencyJob : bool
+namespace DependencyJob
 {
-  CHOICE_YES = true,
-  CHOICE_NO = false,
+enum Type
+{
+  CHOICE_NO = 0,
+  CHOICE_YES = 1
 };
+}
 
-enum class InstallModalPrompt : bool
+namespace InstallModalPrompt
 {
-  CHOICE_YES = true,
-  CHOICE_NO = false,
+enum Type
+{
+  CHOICE_NO = 0,
+  CHOICE_YES = 1
 };
+}
 
-enum class AllowCheckForUpdates : bool
+namespace AllowCheckForUpdates
 {
-  CHOICE_YES = true,
-  CHOICE_NO = false,
+enum Type
+{
+  CHOICE_NO = 0,
+  CHOICE_YES = 1
 };
+}
 
-enum class RecurseOrphaned : bool
+namespace RecurseOrphaned
 {
-  CHOICE_YES = true,
-  CHOICE_NO = false,
+enum Type
+{
+  CHOICE_NO = 0,
+  CHOICE_YES = 1
 };
+}
 
 class CAddonInstaller : public IJobCallback
 {
@@ -94,7 +115,7 @@ public:
    */
   bool InstallModal(const std::string& addonID,
                     ADDON::AddonPtr& addon,
-                    InstallModalPrompt promptForInstall);
+                    InstallModalPrompt::Type promptForInstall);
 
   /*! \brief Install an addon if it is available in a repository
    \param addonID the addon ID of the item to install
@@ -103,7 +124,7 @@ public:
    \return true on successful install, false on failure.
    \sa DoInstall
    */
-  bool InstallOrUpdate(const std::string& addonID, BackgroundJob background, ModalJob modal);
+  bool InstallOrUpdate(const std::string& addonID, BackgroundJob::Type background, ModalJob::Type modal);
 
   /*! \brief Install a dependency from a specific repository
    \param dependsId the dependency to install
@@ -136,7 +157,7 @@ public:
    */
   void InstallAddons(const ADDON::VECADDONS& addons,
                      bool wait,
-                     AllowCheckForUpdates allowCheckForUpdates);
+                     AllowCheckForUpdates::Type allowCheckForUpdates);
 
   /*! \brief Install an addon from the given zip path
    \param path the zip file to install from
@@ -186,11 +207,11 @@ public:
   class CDownloadJob
   {
   public:
-    explicit CDownloadJob(unsigned int id) : jobID(id) { }
+    explicit CDownloadJob(unsigned int id) : jobID(id), progress(0), downloadFinshed(false) { }
 
     unsigned int jobID;
-    unsigned int progress = 0;
-    bool downloadFinshed = false;
+    unsigned int progress;
+    bool downloadFinshed;
   };
 
   typedef std::map<std::string, CDownloadJob> JobMap;
@@ -198,8 +219,8 @@ public:
 private:
   // private construction, and no assignments; use the provided singleton methods
   CAddonInstaller();
-  CAddonInstaller(const CAddonInstaller&) = delete;
-  CAddonInstaller const& operator=(CAddonInstaller const&) = delete;
+  CAddonInstaller(const CAddonInstaller&);
+  CAddonInstaller const& operator=(CAddonInstaller const&);
   virtual ~CAddonInstaller();
 
   /*! \brief Install an addon from a repository or zip
@@ -216,11 +237,11 @@ private:
    */
   bool DoInstall(const ADDON::AddonPtr& addon,
                  const ADDON::RepositoryPtr& repo,
-                 BackgroundJob background,
-                 ModalJob modal,
-                 AutoUpdateJob autoUpdate,
-                 DependencyJob dependsInstall,
-                 AllowCheckForUpdates allowCheckForUpdates);
+                 BackgroundJob::Type background,
+                 ModalJob::Type modal,
+                 AutoUpdateJob::Type autoUpdate,
+                 DependencyJob::Type dependsInstall,
+                 AllowCheckForUpdates::Type allowCheckForUpdates);
 
   /*! \brief Check whether dependencies of an addon exist or are installable.
    Iterates through the addon's dependencies, checking they're installed or installable.
@@ -234,7 +255,7 @@ private:
   bool CheckDependencies(const ADDON::AddonPtr &addon, std::vector<std::string>& preDeps, CAddonDatabase &database, std::pair<std::string, std::string> &failedDep);
 
   void PrunePackageCache();
-  int64_t EnumeratePackageFolder(std::map<std::string, boost::movelib::unique_ptr<CFileItemList>>& result);
+  int64_t EnumeratePackageFolder(std::map<std::string, boost::movelib::unique_ptr<CFileItemList> >& result);
 
   mutable CCriticalSection m_critSection;
   JobMap m_downloadJobs;

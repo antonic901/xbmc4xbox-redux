@@ -85,7 +85,8 @@ static bool LoadManifest(std::set<std::string>& system, std::set<std::string>& o
 
 CAddonMgr::CAddonMgr()
   : m_database(boost::movelib::make_unique<CAddonDatabase>()),
-    m_updateRules(boost::movelib::make_unique<CAddonUpdateRules>())
+    m_updateRules(boost::movelib::make_unique<CAddonUpdateRules>()),
+    m_tempAddonBasePath("special://temp/addons")
 {
 }
 

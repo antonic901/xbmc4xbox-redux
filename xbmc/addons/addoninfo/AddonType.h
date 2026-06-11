@@ -18,7 +18,9 @@ class TiXmlElement;
 namespace ADDON
 {
 
-enum class AddonType
+namespace AddonType
+{
+enum Type
 {
   UNKNOWN = 0,
   VISUALIZATION,
@@ -70,6 +72,7 @@ enum class AddonType
 
   MAX_TYPES
 };
+}
 
 class CAddonInfoBuilder;
 class CAddonDatabaseSerializer;
@@ -77,13 +80,13 @@ class CAddonDatabaseSerializer;
 class CAddonType : public CAddonExtensions
 {
 public:
-  CAddonType(AddonType type = AddonType::UNKNOWN) : m_type(type) {}
+  CAddonType(AddonType::Type type = AddonType::UNKNOWN) : m_type(type) {}
 
-  AddonType Type() const { return m_type; }
+  AddonType::Type Type() const { return m_type; }
   std::string LibPath() const;
   const std::string& LibName() const { return m_libname; }
 
-  bool ProvidesSubContent(const AddonType& content) const
+  bool ProvidesSubContent(const AddonType::Type& content) const
   {
     return content == AddonType::UNKNOWN
                ? false
@@ -107,7 +110,7 @@ public:
    * @param[in] type the provided type
    * @return true if type is one of the dependency types
    */
-  static bool IsDependencyType(AddonType type);
+  static bool IsDependencyType(AddonType::Type type);
 
 private:
   friend class CAddonInfoBuilder;
@@ -116,10 +119,10 @@ private:
 
   void SetProvides(const std::string& content);
 
-  AddonType m_type;
+  AddonType::Type m_type;
   std::string m_path;
   std::string m_libname;
-  std::set<AddonType> m_providedSubContent;
+  std::set<AddonType::Type> m_providedSubContent;
 };
 
 } /* namespace ADDON */

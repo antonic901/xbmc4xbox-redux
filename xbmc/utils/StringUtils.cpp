@@ -730,56 +730,25 @@ std::string StringUtils::Join(const vector<string> &strings, const std::string& 
   return result;
 }
 
-vector<string> StringUtils::Split(const std::string& input, const std::string& delimiter, unsigned int iMaxStrings /* = 0 */)
+std::vector<std::string> StringUtils::Split(const std::string& input, const std::string& delimiter, unsigned int iMaxStrings)
 {
-  std::vector<std::string> results;
-  if (input.empty())
-    return results;
-  if (delimiter.empty())
-  {
-    results.push_back(input);
-    return results;
-  }
-
-  const size_t delimLen = delimiter.length();
-  size_t nextDelim;
-  size_t textPos = 0;
-  do
-  {
-    if (--iMaxStrings == 0)
-    {
-      results.push_back(input.substr(textPos));
-      break;
-    }
-    nextDelim = input.find(delimiter, textPos);
-    results.push_back(input.substr(textPos, nextDelim - textPos));
-    textPos = nextDelim + delimLen;
-  } while (nextDelim != std::string::npos);
-
-  return results;
+  std::vector<std::string> result;
+  SplitTo(std::back_inserter(result), input, delimiter, iMaxStrings);
+  return result;
 }
 
-std::vector<std::string> StringUtils::Split(const std::string& input, const char delimiter, size_t iMaxStrings /*= 0*/)
+std::vector<std::string> StringUtils::Split(const std::string& input, const char delimiter, size_t iMaxStrings)
 {
-  std::vector<std::string> results;
-  if (input.empty())
-    return results;
+  std::vector<std::string> result;
+  SplitTo(std::back_inserter(result), input, delimiter, iMaxStrings);
+  return result;
+}
 
-  size_t nextDelim;
-  size_t textPos = 0;
-  do
-  {
-    if (--iMaxStrings == 0)
-    {
-      results.push_back(input.substr(textPos));
-      break;
-    }
-    nextDelim = input.find(delimiter, textPos);
-    results.push_back(input.substr(textPos, nextDelim - textPos));
-    textPos = nextDelim + 1;
-  } while (nextDelim != std::string::npos);
-
-  return results;
+std::vector<std::string> StringUtils::Split(const std::string& input, const std::vector<std::string>& delimiters)
+{
+  std::vector<std::string> result;
+  SplitTo(std::back_inserter(result), input, delimiters);
+  return result;
 }
 
 std::vector<std::string> StringUtils::SplitMulti(const std::vector<std::string> &input, const std::vector<std::string> &delimiters, unsigned int iMaxStrings /* = 0 */)
@@ -1602,4 +1571,9 @@ std::string StringUtils::FormatFileSize(uint64_t bytes)
   int decimals = value < 9.995 ? 2 : (value < 99.95 ? 1 : 0);
   std::string frmt = "%.0" + Format("%d", decimals) + "f%s";
   return Format(frmt.c_str(), value, units[i].c_str());
+}
+
+std::string StringUtils::CreateFromCString(const char* cstr)
+{
+  return cstr != NULL ? std::string(cstr) : std::string();
 }
