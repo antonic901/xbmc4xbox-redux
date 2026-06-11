@@ -29,7 +29,7 @@ public:
   }
 
 protected:
-  explicit CResource(const AddonInfoPtr& addonInfo, AddonType addonType)
+  explicit CResource(const AddonInfoPtr& addonInfo, AddonType::Type addonType)
     : CAddon(addonInfo, addonType)
   {
   }
