@@ -161,8 +161,7 @@ CAddonSettings::CAddonSettings(const boost::shared_ptr<IAddon>& addon, AddonInst
     m_instanceId(instanceId),
     m_addon{addon},
     m_unknownSettingLabelId(UnknownSettingLabelIdStart),
-    m_logger(CServiceBroker::GetLogging().GetLogger(
-        StringUtils::Format("CAddonSettings[{}@{}]", m_instanceId, m_addonId)))
+    m_unidentifiedSettingId(0)
 {
 }
 

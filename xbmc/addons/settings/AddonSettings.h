@@ -13,14 +13,13 @@
 #include "settings/SettingCreator.h"
 #include "settings/SettingsBase.h"
 #include "settings/lib/ISettingCallback.h"
+#include "settings/lib/SettingDependency.h" // SettingDependencyOperator
 
 #include <map>
-#include <memory>
+#include <boost/weak_ptr.hpp>
 #include <set>
 #include <string>
 #include <vector>
-
-enum class SettingDependencyOperator;
 
 class CSettingCategory;
 class CSettingGroup;
@@ -52,10 +51,10 @@ public:
   virtual bool Save();
 
   // specialization of CSettingCreator
-  boost::shared_ptr<CSetting> CreateSetting(
+  virtual boost::shared_ptr<CSetting> CreateSetting(
       const std::string& settingType,
       const std::string& settingId,
-      virtual CSettingsManager* settingsManager = nullptr) const;
+      CSettingsManager* settingsManager = NULL) const;
 
   // implementation of ISettingCallback
   virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
@@ -169,7 +168,7 @@ private:
 
   struct ConditionExpression
   {
-    SettingDependencyOperator m_operator;
+    SettingDependencyOperator::Type m_operator;
     bool m_negated;
     int32_t m_relativeSettingIndex;
     std::string m_value;
@@ -177,7 +176,7 @@ private:
 
   bool ParseOldLabel(const TiXmlElement* element, const std::string& settingId, int& labelId);
   bool ParseOldCondition(const boost::shared_ptr<const CSetting>& setting,
-                         const std::vector<boost::shared_ptr<const CSetting>>& settings,
+                         const std::vector<boost::shared_ptr<const CSetting> >& settings,
                          const std::string& condition,
                          CSettingDependency& dependeny) const;
   static bool ParseOldConditionExpression(std::string str, ConditionExpression& expression);
@@ -191,14 +190,12 @@ private:
   const std::string m_addonId;
   const std::string m_addonPath;
   const std::string m_addonProfile;
-  const AddonInstanceId m_instanceId{ADDON_SETTINGS_ID};
-  std::weak_ptr<IAddon> m_addon;
+  const AddonInstanceId m_instanceId;
+  boost::weak_ptr<IAddon> m_addon;
 
-  uint32_t m_unidentifiedSettingId = 0;
+  uint32_t m_unidentifiedSettingId;
   int m_unknownSettingLabelId;
   std::map<int, std::string> m_unknownSettingLabels;
-
-  Logger m_logger;
 };
 
 } // namespace ADDON
