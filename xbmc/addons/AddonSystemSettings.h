@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "addons/addoninfo/AddonType.h" // AddonType
 #include "settings/lib/ISettingCallback.h"
 
 #include <map>
@@ -21,19 +22,20 @@ const int AUTO_UPDATES_ON = 0;
 const int AUTO_UPDATES_NOTIFY = 1;
 const int AUTO_UPDATES_NEVER = 2;
 
-enum class AddonRepoUpdateMode
+namespace AddonRepoUpdateMode
+{
+enum Type
 {
   OFFICIAL_ONLY = 0,
   ANY_REPOSITORY = 1
 };
-
-enum class AddonType;
+}
 
 class CAddonInfo;
-using AddonInfoPtr = boost::shared_ptr<CAddonInfo>;
+typedef boost::shared_ptr<CAddonInfo> AddonInfoPtr;
 
 class IAddon;
-using AddonPtr = boost::shared_ptr<IAddon>;
+typedef boost::shared_ptr<IAddon> AddonPtr;
 
 class CAddonSystemSettings : public ISettingCallback
 {
@@ -42,8 +44,8 @@ public:
   virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
   virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
 
-  bool GetActive(AddonType type, AddonPtr& addon);
-  bool SetActive(AddonType type, const std::string& addonID);
+  bool GetActive(AddonType::Type type, AddonPtr& addon);
+  bool SetActive(AddonType::Type type, const std::string& addonID);
   bool IsActive(const IAddon& addon);
 
   /*!
@@ -59,7 +61,7 @@ public:
    *
    * @return the preferred mode value
    */
-  AddonRepoUpdateMode GetAddonRepoUpdateMode() const;
+  AddonRepoUpdateMode::Type GetAddonRepoUpdateMode() const;
 
   /*!
    * Attempt to unset addon as active. Returns true if addon is no longer active,
@@ -69,10 +71,10 @@ public:
 
 private:
   CAddonSystemSettings();
-  CAddonSystemSettings(const CAddonSystemSettings&) = delete;
-  CAddonSystemSettings& operator=(const CAddonSystemSettings&) = delete;
+  CAddonSystemSettings(const CAddonSystemSettings&);
+  CAddonSystemSettings& operator=(const CAddonSystemSettings&);
   virtual ~CAddonSystemSettings() {}
 
-  const std::map<AddonType, std::string> m_activeSettings;
+  const std::map<AddonType::Type, std::string> m_activeSettings;
 };
 };

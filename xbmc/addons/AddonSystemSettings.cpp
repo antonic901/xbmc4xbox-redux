@@ -13,7 +13,6 @@
 #include "addons/AddonManager.h"
 #include "addons/IAddon.h"
 #include "addons/addoninfo/AddonInfo.h"
-#include "addons/addoninfo/AddonType.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
