@@ -10,11 +10,11 @@
 
 #include "XBDateTime.h"
 #include "addons/AddonBuilder.h"
-#include "addons/addoninfo/AddonInfo.h"
 #include "addons/addoninfo/AddonInfoBuilder.h"
 #include "addons/addoninfo/AddonType.h"
 #include "dbwrappers/dataset.h"
 #include "filesystem/SpecialProtocol.h"
+#include "threads/SystemClock.h"
 #include "utils/JSONVariantParser.h"
 #include "utils/JSONVariantWriter.h"
 #include "utils/StringUtils.h"
@@ -40,39 +40,37 @@ std::string CAddonDatabaseSerializer::SerializeMetadata(const CAddonInfo& addon)
   variant["icon"] = addon.Icon();
 
   variant["art"] = CVariant(CVariant::VariantTypeObject);
-  for (const auto& item : addon.Art())
-    variant["art"][item.first] = item.second;
+  for (ArtMap::const_iterator item = addon.Art().begin(); item != addon.Art().end(); ++item)
+    variant["art"][item->first] = item->second;
 
   variant["screenshots"] = CVariant(CVariant::VariantTypeArray);
-  for (const auto& item : addon.Screenshots())
-    variant["screenshots"].push_back(item);
+  for (std::vector<std::string>::const_iterator item = addon.Screenshots().begin(); item != addon.Screenshots().end(); ++item)
+    variant["screenshots"].push_back(*item);
 
   variant["extensions"] = CVariant(CVariant::VariantTypeArray);
   variant["extensions"].push_back(SerializeExtensions(*addon.Type(addon.MainType())));
 
   variant["dependencies"] = CVariant(CVariant::VariantTypeArray);
-  for (const auto& dep : addon.GetDependencies())
+  for (std::vector<DependencyInfo>::const_iterator dep = addon.GetDependencies().begin(); dep != addon.GetDependencies().end(); ++dep)
   {
     CVariant info(CVariant::VariantTypeObject);
-    info["addonId"] = dep.id;
-    info["version"] = dep.version.asString();
-    info["minversion"] = dep.versionMin.asString();
-    info["optional"] = dep.optional;
-    variant["dependencies"].push_back(std::move(info));
+    info["addonId"] = dep->id;
+    info["version"] = dep->version.asString();
+    info["minversion"] = dep->versionMin.asString();
+    info["optional"] = dep->optional;
+    variant["dependencies"].push_back(info);
   }
 
   variant["extrainfo"] = CVariant(CVariant::VariantTypeArray);
-  for (const auto& kv : addon.ExtraInfo())
+  for (InfoMap::const_iterator kv = addon.ExtraInfo().begin(); kv != addon.ExtraInfo().end(); ++kv)
   {
     CVariant info(CVariant::VariantTypeObject);
-    info["key"] = kv.first;
-    info["value"] = kv.second;
-    variant["extrainfo"].push_back(std::move(info));
+    info["key"] = kv->first;
+    info["value"] = kv->second;
+    variant["extrainfo"].push_back(info);
   }
 
-  std::string json;
-  CJSONVariantWriter::Write(variant, json, true);
-  return json;
+  return CJSONVariantWriter::Write(variant, true);
 }
 
 CVariant CAddonDatabaseSerializer::SerializeExtensions(const CAddonExtensions& addonType)
@@ -81,29 +79,30 @@ CVariant CAddonDatabaseSerializer::SerializeExtensions(const CAddonExtensions& a
   variant["type"] = addonType.m_point;
 
   variant["values"] = CVariant(CVariant::VariantTypeArray);
-  for (const auto& value : addonType.m_values)
+  for (EXT_VALUES::const_iterator value = addonType.m_values.begin(); value != addonType.m_values.end(); ++value)
   {
     CVariant info(CVariant::VariantTypeObject);
-    info["id"] = value.first;
+    info["id"] = value->first;
     info["content"] = CVariant(CVariant::VariantTypeArray);
-    for (const auto& content : value.second)
+
+    for (CExtValues::const_iterator content = value->second.begin(); content != value->second.end(); ++content)
     {
       CVariant contentEntry(CVariant::VariantTypeObject);
-      contentEntry["key"] = content.first;
-      contentEntry["value"] = content.second.str;
-      info["content"].push_back(std::move(contentEntry));
+      contentEntry["key"] = content->first;
+      contentEntry["value"] = content->second.str;
+      info["content"].push_back(contentEntry);
     }
 
-    variant["values"].push_back(std::move(info));
+    variant["values"].push_back(info);
   }
 
   variant["children"] = CVariant(CVariant::VariantTypeArray);
-  for (auto& child : addonType.m_children)
+  for (EXT_ELEMENTS::const_iterator child = addonType.m_children.begin(); child != addonType.m_children.end(); ++child)
   {
     CVariant info(CVariant::VariantTypeObject);
-    info["id"] = child.first;
-    info["child"] = SerializeExtensions(child.second);
-    variant["children"].push_back(std::move(info));
+    info["id"] = child->first;
+    info["child"] = SerializeExtensions(child->second);
+    variant["children"].push_back(info);
   }
 
   return variant;
@@ -112,14 +111,12 @@ CVariant CAddonDatabaseSerializer::SerializeExtensions(const CAddonExtensions& a
 void CAddonDatabaseSerializer::DeserializeMetadata(const std::string& document,
                                                    CAddonInfoBuilderFromDB& builder)
 {
-  CVariant variant;
-  if (!CJSONVariantParser::Parse(document, variant))
-    return;
+  CVariant variant = CJSONVariantParser::Parse(document);
 
   builder.SetAuthor(variant["author"].asString());
   builder.SetDisclaimer(variant["disclaimer"].asString());
   builder.SetLifecycleState(
-      static_cast<AddonLifecycleState>(variant["lifecycletype"].asUnsignedInteger()),
+      static_cast<AddonLifecycleState::Type>(variant["lifecycletype"].asUnsignedInteger()),
       variant["lifecycledesc"].asString());
   builder.SetPackageSize(variant["size"].asUnsignedInteger());
 
@@ -127,34 +124,34 @@ void CAddonDatabaseSerializer::DeserializeMetadata(const std::string& document,
   builder.SetIcon(variant["icon"].asString());
 
   std::map<std::string, std::string> art;
-  for (auto it = variant["art"].begin_map(); it != variant["art"].end_map(); ++it)
-    art.emplace(it->first, it->second.asString());
-  builder.SetArt(std::move(art));
+  for (CVariant::iterator_map it = variant["art"].begin_map(); it != variant["art"].end_map(); ++it)
+    art.insert(std::make_pair(it->first, it->second.asString()));
+  builder.SetArt(boost::move(art));
 
   std::vector<std::string> screenshots;
-  for (auto it = variant["screenshots"].begin_array(); it != variant["screenshots"].end_array(); ++it)
+  for (CVariant::iterator_array it = variant["screenshots"].begin_array(); it != variant["screenshots"].end_array(); ++it)
     screenshots.push_back(it->asString());
-  builder.SetScreenshots(std::move(screenshots));
+  builder.SetScreenshots(boost::move(screenshots));
 
   CAddonType addonType;
   DeserializeExtensions(variant["extensions"][0], addonType);
   addonType.m_type = CAddonInfo::TranslateType(addonType.m_point);
-  builder.SetExtensions(std::move(addonType));
+  builder.SetExtensions(boost::move(addonType));
 
   {
     std::vector<DependencyInfo> deps;
-    for (auto it = variant["dependencies"].begin_array(); it != variant["dependencies"].end_array(); ++it)
+    for (CVariant::iterator_array it = variant["dependencies"].begin_array(); it != variant["dependencies"].end_array(); ++it)
     {
-      deps.emplace_back((*it)["addonId"].asString(), CAddonVersion((*it)["minversion"].asString()),
-                        CAddonVersion((*it)["version"].asString()), (*it)["optional"].asBoolean());
+      deps.push_back(DependencyInfo((*it)["addonId"].asString(), CAddonVersion((*it)["minversion"].asString()),
+                        CAddonVersion((*it)["version"].asString()), (*it)["optional"].asBoolean()));
     }
-    builder.SetDependencies(std::move(deps));
+    builder.SetDependencies(boost::move(deps));
   }
 
   InfoMap extraInfo;
-  for (auto it = variant["extrainfo"].begin_array(); it != variant["extrainfo"].end_array(); ++it)
-    extraInfo.emplace((*it)["key"].asString(), (*it)["value"].asString());
-  builder.SetExtrainfo(std::move(extraInfo));
+  for (CVariant::iterator_array it = variant["extrainfo"].begin_array(); it != variant["extrainfo"].end_array(); ++it)
+    extraInfo.insert(std::make_pair((*it)["key"].asString(), (*it)["value"].asString()));
+  builder.SetExtrainfo(boost::move(extraInfo));
 }
 
 void CAddonDatabaseSerializer::DeserializeExtensions(const CVariant& variant,
@@ -162,27 +159,27 @@ void CAddonDatabaseSerializer::DeserializeExtensions(const CVariant& variant,
 {
   addonType.m_point = variant["type"].asString();
 
-  for (auto value = variant["values"].begin_array(); value != variant["values"].end_array();
+  for (CVariant::const_iterator_array value = variant["values"].begin_array(); value != variant["values"].end_array();
        ++value)
   {
     std::string id = (*value)["id"].asString();
-    std::vector<std::pair<std::string, SExtValue>> extValues;
-    for (auto content = (*value)["content"].begin_array();
+    std::vector<std::pair<std::string, SExtValue> > extValues;
+    for (CVariant::const_iterator_array content = (*value)["content"].begin_array();
          content != (*value)["content"].end_array(); ++content)
     {
-      extValues.emplace_back((*content)["key"].asString(), SExtValue{(*content)["value"].asString()});
+      extValues.push_back(std::make_pair((*content)["key"].asString(), SExtValue((*content)["value"].asString())));
     }
 
-    addonType.m_values.emplace_back(id, extValues);
+    addonType.m_values.push_back(std::make_pair(id, extValues));
   }
 
-  for (auto child = variant["children"].begin_array(); child != variant["children"].end_array();
+  for (CVariant::const_iterator_array child = variant["children"].begin_array(); child != variant["children"].end_array();
        ++child)
   {
     CAddonExtensions childExt;
     DeserializeExtensions((*child)["child"], childExt);
     std::string id = (*child)["id"].asString();
-    addonType.m_children.emplace_back(id, childExt);
+    addonType.m_children.push_back(std::make_pair(id, childExt));
   }
 
   return;
@@ -252,134 +249,6 @@ void CAddonDatabase::CreateAnalytics()
 
 void CAddonDatabase::UpdateTables(int version)
 {
-  if (version < 22)
-  {
-    m_pDS->exec("DROP TABLE system");
-  }
-  if (version < 24)
-  {
-    m_pDS->exec("DELETE FROM addon");
-    m_pDS->exec("DELETE FROM addonextra");
-    m_pDS->exec("DELETE FROM dependencies");
-    m_pDS->exec("DELETE FROM addonlinkrepo");
-    m_pDS->exec("DELETE FROM repo");
-  }
-  if (version < 25)
-  {
-    m_pDS->exec("ALTER TABLE installed ADD origin TEXT NOT NULL DEFAULT ''");
-  }
-  if (version < 26)
-  {
-    m_pDS->exec("DROP TABLE addon");
-    m_pDS->exec("DROP TABLE addonextra");
-    m_pDS->exec("DROP TABLE dependencies");
-    m_pDS->exec("DELETE FROM addonlinkrepo");
-    m_pDS->exec("DELETE FROM repo");
-    m_pDS->exec("CREATE TABLE addons ("
-        "id INTEGER PRIMARY KEY,"
-        "metadata BLOB,"
-        "addonID TEXT NOT NULL,"
-        "version TEXT NOT NULL,"
-        "name TEXT NOT NULL,"
-        "summary TEXT NOT NULL,"
-        "description TEXT NOT NULL)");
-  }
-  if (version < 27)
-  {
-    m_pDS->exec("ALTER TABLE addons ADD news TEXT NOT NULL DEFAULT ''");
-  }
-  if (version < 28)
-  {
-    m_pDS->exec("ALTER TABLE installed ADD disabledReason INTEGER NOT NULL DEFAULT 0");
-    // On adding this field we will use user disabled as the default reason for any disabled addons
-    m_pDS->exec("UPDATE installed SET disabledReason=1 WHERE enabled=0");
-  }
-  if (version < 29)
-  {
-    m_pDS->exec("DROP TABLE broken");
-  }
-  if (version < 30)
-  {
-    m_pDS->exec("ALTER TABLE repo ADD nextcheck TEXT");
-  }
-  if (version < 31)
-  {
-    m_pDS->exec("UPDATE installed SET origin = addonID WHERE (origin='') AND "
-                "EXISTS (SELECT * FROM repo WHERE repo.addonID = installed.addonID)");
-  }
-  if (version < 32)
-  {
-    m_pDS->exec(
-        "CREATE TABLE update_rules (id integer primary key, addonID text, updateRule INTEGER)");
-    m_pDS->exec("INSERT INTO update_rules (addonID, updateRule) SELECT addonID, 1 updateRule FROM "
-                "blacklist");
-    m_pDS->exec("DROP INDEX IF EXISTS idxBlack");
-    m_pDS->exec("DROP TABLE blacklist");
-  }
-  if (version < 33)
-  {
-    m_pDS->query(PrepareSQL("SELECT * FROM addons"));
-    while (!m_pDS->eof())
-    {
-      const int id = m_pDS->fv("id").get_asInt();
-      const std::string metadata = m_pDS->fv("metadata").get_asString();
-
-      CVariant variant;
-      if (!CJSONVariantParser::Parse(metadata, variant))
-        continue;
-
-      // Replace obsolete "broken" with new in json text
-      if (variant.isMember("broken") && variant["broken"].asString().empty())
-      {
-        variant["lifecycletype"] = static_cast<unsigned int>(AddonLifecycleState::BROKEN);
-        variant["lifecycledesc"] = variant["broken"].asString();
-        variant.erase("broken");
-      }
-
-      // Fix wrong added change about "broken" to "lifecycle..." (request 18286)
-      // as there was every addon marked as broken. This checks his text and if
-      // them empty, becomes it declared as normal.
-      if (variant.isMember("lifecycledesc") && variant.isMember("lifecycletype") &&
-          variant["lifecycledesc"].asString().empty() &&
-          variant["lifecycletype"].asUnsignedInteger() !=
-              static_cast<unsigned int>(AddonLifecycleState::NORMAL))
-      {
-        variant["lifecycletype"] = static_cast<unsigned int>(AddonLifecycleState::NORMAL);
-      }
-
-      CVariant variantUpdate;
-      variantUpdate["type"] = variant["extensions"][0].asString();
-      variantUpdate["values"] = CVariant(CVariant::VariantTypeArray);
-      variantUpdate["children"] = CVariant(CVariant::VariantTypeArray);
-
-      for (auto it = variant["extrainfo"].begin_array(); it != variant["extrainfo"].end_array();
-           ++it)
-      {
-        if ((*it)["key"].asString() == "provides")
-        {
-          CVariant info(CVariant::VariantTypeObject);
-          info["id"] = (*it)["key"].asString();
-          info["content"] = CVariant(CVariant::VariantTypeArray);
-
-          CVariant contentEntry(CVariant::VariantTypeObject);
-          contentEntry["key"] = (*it)["key"].asString();
-          contentEntry["value"] = (*it)["value"].asString();
-          info["content"].push_back(std::move(contentEntry));
-
-          variantUpdate["values"].push_back(std::move(info));
-          break;
-        }
-      }
-      variant["extensions"][0] = variantUpdate;
-
-      std::string json;
-      CJSONVariantWriter::Write(variant, json, true);
-      m_pDS->exec(PrepareSQL("UPDATE addons SET metadata='%s' WHERE id=%i", json.c_str(), id));
-
-      m_pDS->next();
-    }
-    m_pDS->close();
-  }
 }
 
 void CAddonDatabase::SyncInstalled(const std::set<std::string>& ids,
@@ -407,45 +276,45 @@ void CAddonDatabase::SyncInstalled(const std::set<std::string>& ids,
     std::set_difference(ids.begin(), ids.end(), db.begin(), db.end(), std::inserter(added, added.end()));
     std::set_difference(db.begin(), db.end(), ids.begin(), ids.end(), std::inserter(removed, removed.end()));
 
-    for (const auto& id : added)
-      CLog::Log(LOGDEBUG, "CAddonDatabase: {} has been installed.", id);
+    for (std::set<std::string>::const_iterator id = added.begin(); id != added.end(); ++id)
+      CLog::Log(LOGDEBUG, "CAddonDatabase: %s has been installed.", id->c_str());
 
-    for (const auto& id : removed)
-      CLog::Log(LOGDEBUG, "CAddonDatabase: {} has been uninstalled.", id);
+    for (std::set<std::string>::const_iterator id = removed.begin(); id != removed.end(); ++id)
+      CLog::Log(LOGDEBUG, "CAddonDatabase: %s has been uninstalled.", id->c_str());
 
     std::string now = CDateTime::GetCurrentDateTime().GetAsDBDateTime();
     BeginTransaction();
-    for (const auto& id : added)
+    for (std::set<std::string>::const_iterator id = added.begin(); id != added.end(); ++id)
     {
       int enable = 0;
 
-      if (system.find(id) != system.end() || optional.find(id) != optional.end())
+      if (system.find(*id) != system.end() || optional.find(*id) != optional.end())
         enable = 1;
 
       m_pDS->exec(PrepareSQL("INSERT INTO installed(addonID, enabled, installDate) "
-        "VALUES('%s', %d, '%s')", id.c_str(), enable, now.c_str()));
+        "VALUES('%s', %d, '%s')", id->c_str(), enable, now.c_str()));
     }
 
-    for (const auto& id : removed)
+    for (std::set<std::string>::const_iterator id = removed.begin(); id != removed.end(); ++id)
     {
-      m_pDS->exec(PrepareSQL("DELETE FROM installed WHERE addonID='%s'", id.c_str()));
-      RemoveAllUpdateRulesForAddon(id);
-      DeleteRepository(id);
+      m_pDS->exec(PrepareSQL("DELETE FROM installed WHERE addonID='%s'", id->c_str()));
+      RemoveAllUpdateRulesForAddon(*id);
+      DeleteRepository(*id);
     }
 
-    for (const auto& id : system)
+    for (std::set<std::string>::const_iterator id = system.begin(); id != system.end(); ++id)
     {
-      m_pDS->exec(PrepareSQL("UPDATE installed SET enabled=1 WHERE addonID='%s'", id.c_str()));
+      m_pDS->exec(PrepareSQL("UPDATE installed SET enabled=1 WHERE addonID='%s'", id->c_str()));
       // Make sure system addons always have ORIGIN_SYSTEM origin
       m_pDS->exec(PrepareSQL("UPDATE installed SET origin='%s' WHERE addonID='%s'", ORIGIN_SYSTEM,
-                             id.c_str()));
+                              id->c_str()));
     }
 
-    for (const auto& id : optional)
+    for (std::set<std::string>::const_iterator id = optional.begin(); id != optional.end(); ++id)
     {
       // Make sure optional system addons always have ORIGIN_SYSTEM origin
       m_pDS->exec(PrepareSQL("UPDATE installed SET origin='%s' WHERE addonID='%s'", ORIGIN_SYSTEM,
-                             id.c_str()));
+                              id->c_str()));
     }
 
     CommitTransaction();
@@ -505,13 +374,11 @@ bool CAddonDatabase::SetLastUsed(const std::string& addonId, const CDateTime& da
     if (!m_pDS)
       return false;
 
-    auto start = std::chrono::steady_clock::now();
+    unsigned int start = XbmcThreads::SystemClockMillis();
     m_pDS->exec(PrepareSQL("UPDATE installed SET lastUsed='%s' WHERE addonID='%s'",
         dateTime.GetAsDBDateTime().c_str(), addonId.c_str()));
 
-    auto end = std::chrono::steady_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    CLog::Log(LOGDEBUG, "CAddonDatabase::SetLastUsed[{}] took {} ms", addonId, duration.count());
+    CLog::Log(LOGDEBUG, "CAddonDatabase::SetLastUsed[%s] took %u ms", addonId.c_str(), XbmcThreads::SystemClockMillis() - start);
     return true;
   }
   catch (...)
@@ -557,15 +424,15 @@ bool CAddonDatabase::FindByAddonId(const std::string& addonId, ADDON::VECADDONS&
       builder.SetChangelog(m_pDS->fv("news").get_asString());
       builder.SetOrigin(m_pDS->fv("repoID").get_asString());
 
-      auto addon = CAddonBuilder::Generate(builder.get(), AddonType::UNKNOWN);
+      ADDON::AddonPtr addon = CAddonBuilder::Generate(builder.get(), AddonType::UNKNOWN);
       if (addon)
-        addons.push_back(std::move(addon));
+        addons.push_back(boost::move(addon));
       else
         CLog::Log(LOGERROR, "CAddonDatabase: failed to build {}", addonId);
       m_pDS->next();
     }
     m_pDS->close();
-    result = std::move(addons);
+    result = boost::move(addons);
     return true;
   }
   catch (...)
@@ -635,7 +502,7 @@ bool CAddonDatabase::GetAddon(int id, AddonPtr &addon)
     CAddonDatabaseSerializer::DeserializeMetadata(m_pDS2->fv("metadata").get_asString(), builder);
 
     addon = CAddonBuilder::Generate(builder.get(), AddonType::UNKNOWN);
-    return addon != nullptr;
+    return addon != NULL;
 
   }
   catch (...)
@@ -659,7 +526,7 @@ bool CAddonDatabase::GetRepositoryContent(const std::string& id, VECADDONS& addo
     if (!m_pDS)
       return false;
 
-    auto start = std::chrono::steady_clock::now();
+    unsigned int start = XbmcThreads::SystemClockMillis();
 
     // Ensure that the repositories we fetch from are enabled and valid.
     std::vector<std::string> repoIds;
@@ -676,21 +543,19 @@ bool CAddonDatabase::GetRepositoryContent(const std::string& id, VECADDONS& addo
       m_pDS->query(sql);
       while (!m_pDS->eof())
       {
-        repoIds.emplace_back(m_pDS->fv("id").get_asString());
+        repoIds.push_back(m_pDS->fv("id").get_asString());
         m_pDS->next();
       }
     }
 
-    auto end = std::chrono::steady_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    CLog::Log(LOGDEBUG, "CAddonDatabase: SELECT repo.id FROM repo .. took {} ms", duration.count());
+    CLog::Log(LOGDEBUG, "CAddonDatabase: SELECT repo.id FROM repo .. took %u ms", XbmcThreads::SystemClockMillis() - start);
 
     if (repoIds.empty())
     {
       if (id.empty())
       {
         CLog::Log(LOGDEBUG, "CAddonDatabase: no valid repository, continuing");
-        addons = {};
+        addons.clear();
         return true;
       }
 
@@ -706,13 +571,11 @@ bool CAddonDatabase::GetRepositoryContent(const std::string& id, VECADDONS& addo
                                    " ORDER BY repo.addonID, addons.addonID",
                                    StringUtils::Join(repoIds, ",").c_str());
 
-      start = std::chrono::steady_clock::now();
+      start = XbmcThreads::SystemClockMillis();
       m_pDS->query(sql);
 
-      end = std::chrono::steady_clock::now();
-      duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-      CLog::Log(LOGDEBUG, "CAddonDatabase: query {} returned {} rows in {} ms", sql,
-                m_pDS->num_rows(), duration.count());
+      CLog::Log(LOGDEBUG, "CAddonDatabase: query %s returned %i rows in %u ms", sql.c_str(),
+                m_pDS->num_rows(), XbmcThreads::SystemClockMillis() - start);
     }
 
     VECADDONS result;
@@ -732,21 +595,19 @@ bool CAddonDatabase::GetRepositoryContent(const std::string& id, VECADDONS& addo
       builder.SetOrigin(m_pDS->fv("repoID").get_asString());
       CAddonDatabaseSerializer::DeserializeMetadata(m_pDS->fv("metadata").get_asString(), builder);
 
-      auto addon = CAddonBuilder::Generate(builder.get(), AddonType::UNKNOWN);
+      ADDON::AddonPtr addon = CAddonBuilder::Generate(builder.get(), AddonType::UNKNOWN);
       if (addon)
       {
-        result.emplace_back(std::move(addon));
+        result.push_back(boost::move(addon));
       }
       else
         CLog::Log(LOGWARNING, "CAddonDatabase: failed to build {}", addonId);
       m_pDS->next();
     }
     m_pDS->close();
-    addons = std::move(result);
+    addons = boost::move(result);
 
-    end = std::chrono::steady_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    CLog::Log(LOGDEBUG, "CAddonDatabase::GetAddons took {} ms", duration.count());
+    CLog::Log(LOGDEBUG, "CAddonDatabase::GetAddons took %u ms", XbmcThreads::SystemClockMillis() - start);
 
     return true;
   }
@@ -836,19 +697,19 @@ bool CAddonDatabase::UpdateRepositoryContent(const std::string& repository,
     m_pDB->start_transaction();
     m_pDS->exec(
         PrepareSQL("UPDATE repo SET checksum='%s' WHERE id='%i'", checksum.c_str(), idRepo));
-    for (const auto& addon : addons)
+    for (std::vector<AddonInfoPtr>::const_iterator addon = addons.begin(); addon != addons.end(); ++addon)
     {
       m_pDS->exec(PrepareSQL(
           "INSERT INTO addons (id, metadata, addonID, version, name, summary, description, news) "
           "VALUES (NULL, '%s', '%s', '%s', '%s','%s', '%s','%s')",
-          CAddonDatabaseSerializer::SerializeMetadata(*addon).c_str(), addon->ID().c_str(),
-          addon->Version().asString().c_str(), addon->Name().c_str(), addon->Summary().c_str(),
-          addon->Description().c_str(), addon->ChangeLog().c_str()));
+          CAddonDatabaseSerializer::SerializeMetadata(*(*addon)).c_str(), (*addon)->ID().c_str(),
+          (*addon)->Version().asString().c_str(), (*addon)->Name().c_str(), (*addon)->Summary().c_str(),
+          (*addon)->Description().c_str(), (*addon)->ChangeLog().c_str()));
 
       int idAddon = static_cast<int>(m_pDS->lastinsertid());
       if (idAddon <= 0)
       {
-        CLog::Log(LOGERROR, "{} insert failed on addon '{}'", __FUNCTION__, addon->ID());
+        CLog::Log(LOGERROR, "%s insert failed on addon '%s'", __FUNCTION__, (*addon)->ID().c_str());
         RollbackTransaction();
         return false;
       }
@@ -894,7 +755,7 @@ int CAddonDatabase::GetRepoChecksum(const std::string& id, std::string& checksum
 
 CAddonDatabase::RepoUpdateData CAddonDatabase::GetRepoUpdateData(const std::string& id)
 {
-  RepoUpdateData result{};
+  RepoUpdateData result;
   try
   {
     if (m_pDB && m_pDS)
@@ -996,7 +857,7 @@ bool CAddonDatabase::Search(const std::string& search, VECADDONS& addons)
   return false;
 }
 
-bool CAddonDatabase::DisableAddon(const std::string& addonID, AddonDisabledReason disabledReason)
+bool CAddonDatabase::DisableAddon(const std::string& addonID, AddonDisabledReason::Type disabledReason)
 {
   try
   {
@@ -1039,7 +900,7 @@ bool CAddonDatabase::EnableAddon(const std::string& addonID)
   return false;
 }
 
-bool CAddonDatabase::GetDisabled(std::map<std::string, AddonDisabledReason>& addons)
+bool CAddonDatabase::GetDisabled(std::map<std::string, AddonDisabledReason::Type>& addons)
 {
   try
   {
@@ -1053,8 +914,8 @@ bool CAddonDatabase::GetDisabled(std::map<std::string, AddonDisabledReason>& add
     m_pDS->query(sql);
     while (!m_pDS->eof())
     {
-      addons.insert({m_pDS->fv("addonID").get_asString(),
-                     static_cast<AddonDisabledReason>(m_pDS->fv("disabledReason").get_asInt())});
+      addons.insert(std::make_pair(m_pDS->fv("addonID").get_asString(),
+                     static_cast<AddonDisabledReason::Type>(m_pDS->fv("disabledReason").get_asInt())));
       m_pDS->next();
     }
     m_pDS->close();
@@ -1068,7 +929,7 @@ bool CAddonDatabase::GetDisabled(std::map<std::string, AddonDisabledReason>& add
 }
 
 bool CAddonDatabase::GetAddonUpdateRules(
-    std::map<std::string, std::vector<AddonUpdateRule>>& rulesMap) const
+    std::map<std::string, std::vector<AddonUpdateRule::Type> >& rulesMap) const
 {
   try
   {
@@ -1081,8 +942,8 @@ bool CAddonDatabase::GetAddonUpdateRules(
     m_pDS->query(sql);
     while (!m_pDS->eof())
     {
-      rulesMap[m_pDS->fv("addonID").get_asString()].emplace_back(
-          static_cast<AddonUpdateRule>(m_pDS->fv("updateRule").get_asInt()));
+      rulesMap[m_pDS->fv("addonID").get_asString()].push_back(
+          static_cast<AddonUpdateRule::Type>(m_pDS->fv("updateRule").get_asInt()));
       m_pDS->next();
     }
     m_pDS->close();
@@ -1095,7 +956,7 @@ bool CAddonDatabase::GetAddonUpdateRules(
   return false;
 }
 
-bool CAddonDatabase::AddUpdateRuleForAddon(const std::string& addonID, AddonUpdateRule updateRule)
+bool CAddonDatabase::AddUpdateRuleForAddon(const std::string& addonID, AddonUpdateRule::Type updateRule)
 {
   try
   {
@@ -1123,7 +984,7 @@ bool CAddonDatabase::RemoveAllUpdateRulesForAddon(const std::string& addonID)
 }
 
 bool CAddonDatabase::RemoveUpdateRuleForAddon(const std::string& addonID,
-                                              AddonUpdateRule updateRule)
+                                              AddonUpdateRule::Type updateRule)
 {
   try
   {

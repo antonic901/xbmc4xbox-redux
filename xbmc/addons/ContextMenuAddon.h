@@ -19,7 +19,7 @@ namespace ADDON
 {
 class CAddonExtensions;
 class CAddonInfo;
-using AddonInfoPtr = boost::shared_ptr<CAddonInfo>;
+typedef boost::shared_ptr<CAddonInfo> AddonInfoPtr;
 
 class CContextMenuAddon : public CAddon
 {

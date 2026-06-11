@@ -8,22 +8,22 @@
 
 #pragma once
 
-#include <memory>
+#include "system.h" // <xtl.h>
+#include "addons/addoninfo/AddonType.h" // AddonType
+#include <boost/shared_ptr.hpp>
 
 namespace ADDON
 {
-enum class AddonType;
-
 class IAddon;
-using AddonPtr = boost::shared_ptr<IAddon>;
+typedef boost::shared_ptr<IAddon> AddonPtr;
 
 class CAddonInfo;
-using AddonInfoPtr = boost::shared_ptr<CAddonInfo>;
+typedef boost::shared_ptr<CAddonInfo> AddonInfoPtr;
 
 class CAddonBuilder
 {
 public:
-  static AddonPtr Generate(const AddonInfoPtr& info, AddonType type);
+  static AddonPtr Generate(const AddonInfoPtr& info, AddonType::Type type);
 };
 
 } // namespace ADDON
