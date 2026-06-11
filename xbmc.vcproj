@@ -3423,6 +3423,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\addons\FilesystemInstaller.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\addons\FontResource.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\FontResource.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\addons\IAddon.h">
 				</File>
 				<File
