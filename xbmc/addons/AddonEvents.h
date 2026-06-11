@@ -18,11 +18,11 @@ namespace ADDON
 struct AddonEvent
 {
   std::string addonId;
-  AddonInstanceId instanceId{ADDON_SINGLETON_INSTANCE_ID};
+  AddonInstanceId instanceId;
 
-  explicit AddonEvent(std::string addonId) : addonId(std::move(addonId)) {}
+  explicit AddonEvent(std::string addonId) : addonId(boost::move(addonId)), instanceId(ADDON_SINGLETON_INSTANCE_ID) {}
   AddonEvent(std::string addonId, AddonInstanceId instanceId)
-    : addonId(std::move(addonId)), instanceId(instanceId)
+    : addonId(boost::move(addonId)), instanceId(instanceId)
   {
   }
 
@@ -40,7 +40,7 @@ namespace AddonEvents
  */
 struct Enabled : AddonEvent
 {
-  explicit Enabled(std::string addonId) : AddonEvent(std::move(addonId)) {}
+  explicit Enabled(std::string addonId) : AddonEvent(boost::move(addonId)) {}
 };
 
 /**
@@ -48,7 +48,7 @@ struct Enabled : AddonEvent
  */
 struct Disabled : AddonEvent
 {
-  explicit Disabled(std::string addonId) : AddonEvent(std::move(addonId)) {}
+  explicit Disabled(std::string addonId) : AddonEvent(boost::move(addonId)) {}
 };
 
 /**
@@ -57,7 +57,7 @@ struct Disabled : AddonEvent
 struct InstanceAdded : AddonEvent
 {
   InstanceAdded(std::string addonId, AddonInstanceId instanceId)
-    : AddonEvent(std::move(addonId), instanceId)
+    : AddonEvent(boost::move(addonId), instanceId)
   {
   }
 };
@@ -68,7 +68,7 @@ struct InstanceAdded : AddonEvent
 struct InstanceRemoved : AddonEvent
 {
   InstanceRemoved(std::string addonId, AddonInstanceId instanceId)
-    : AddonEvent(std::move(addonId), instanceId)
+    : AddonEvent(boost::move(addonId), instanceId)
   {
   }
 };
@@ -78,7 +78,7 @@ struct InstanceRemoved : AddonEvent
  */
 struct MetadataChanged : AddonEvent
 {
-  explicit MetadataChanged(std::string addonId) : AddonEvent(std::move(addonId)) {}
+  explicit MetadataChanged(std::string addonId) : AddonEvent(boost::move(addonId)) {}
 };
 
 /**
@@ -87,7 +87,7 @@ struct MetadataChanged : AddonEvent
  */
 struct ReInstalled : AddonEvent
 {
-  explicit ReInstalled(std::string addonId) : AddonEvent(std::move(addonId)) {}
+  explicit ReInstalled(std::string addonId) : AddonEvent(boost::move(addonId)) {}
 };
 
 /**
@@ -95,7 +95,7 @@ struct ReInstalled : AddonEvent
  */
 struct UnInstalled : AddonEvent
 {
-  explicit UnInstalled(std::string addonId) : AddonEvent(std::move(addonId)) {}
+  explicit UnInstalled(std::string addonId) : AddonEvent(boost::move(addonId)) {}
 };
 
 /**
@@ -103,7 +103,7 @@ struct UnInstalled : AddonEvent
  */
 struct Load : AddonEvent
 {
-  explicit Load(std::string addonId) : AddonEvent(std::move(addonId)) {}
+  explicit Load(std::string addonId) : AddonEvent(boost::move(addonId)) {}
 };
 
 /**
@@ -111,7 +111,7 @@ struct Load : AddonEvent
  */
 struct Unload : AddonEvent
 {
-  explicit Unload(std::string addonId) : AddonEvent(std::move(addonId)) {}
+  explicit Unload(std::string addonId) : AddonEvent(boost::move(addonId)) {}
 };
 
 /**
@@ -119,7 +119,7 @@ struct Unload : AddonEvent
  */
 struct AutoUpdateStateChanged : AddonEvent
 {
-  explicit AutoUpdateStateChanged(std::string addonId) : AddonEvent(std::move(addonId)) {}
+  explicit AutoUpdateStateChanged(std::string addonId) : AddonEvent(boost::move(addonId)) {}
 };
 
 } // namespace AddonEvents

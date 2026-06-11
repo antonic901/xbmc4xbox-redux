@@ -15,7 +15,7 @@
 namespace ADDON
 {
 
-typedef std::map<std::string, std::vector<std::string>> ContentPathMap;
+typedef std::map<std::string, std::vector<std::string> > ContentPathMap;
 
 class CPluginSource : public CAddon
 {
@@ -23,9 +23,9 @@ public:
 
   enum Content { UNKNOWN, AUDIO, IMAGE, EXECUTABLE, VIDEO, GAME };
 
-  explicit CPluginSource(const AddonInfoPtr& addonInfo, AddonType addonType);
+  explicit CPluginSource(const AddonInfoPtr& addonInfo, AddonType::Type addonType);
 
-  virtual bool HasType(AddonType type) const;
+  virtual bool HasType(AddonType::Type type) const;
   bool Provides(const Content& content) const
   {
     return content == UNKNOWN ? false : m_providedContent.count(content) > 0;

@@ -126,5 +126,5 @@ private:
   /*! The builtin functions to be executed when the timer is stopped */
   CGUIAction m_stopActions;
   /*! if the timer should be reset on start (or just resumed) */
-  bool m_resetOnStart{false};
+  bool m_resetOnStart;
 };

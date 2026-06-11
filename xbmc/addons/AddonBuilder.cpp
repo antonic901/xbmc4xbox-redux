@@ -11,7 +11,6 @@
 #include "ServiceBroker.h"
 #include "addons/ContextMenuAddon.h"
 #include "addons/FontResource.h"
-#include "addons/GameResource.h"
 #include "addons/ImageResource.h"
 #include "addons/LanguageResource.h"
 #include "addons/PluginSource.h"
@@ -22,17 +21,16 @@
 #include "addons/UISoundsResource.h"
 #include "addons/Webinterface.h"
 #include "addons/addoninfo/AddonInfo.h"
-#include "games/addons/GameClient.h"
-#include "games/controllers/Controller.h"
-#include "pvr/addons/PVRClient.h"
 #include "utils/StringUtils.h"
+
+#include <boost/make_shared.hpp>
 
 using namespace KODI;
 
 namespace ADDON
 {
 
-AddonPtr CAddonBuilder::Generate(const AddonInfoPtr& info, AddonType type)
+AddonPtr CAddonBuilder::Generate(const AddonInfoPtr& info, AddonType::Type type)
 {
   if (!info || info->ID().empty())
     return AddonPtr();
@@ -51,28 +49,11 @@ AddonPtr CAddonBuilder::Generate(const AddonInfoPtr& info, AddonType type)
       return boost::make_shared<CAddon>(info, type);
   }
 
-  // Handle audio encoder special cases
-  if (type == AddonType::AUDIOENCODER)
-  {
-    // built in audio encoder
-    if (StringUtils::StartsWithNoCase(info->ID(), "audioencoder.kodi.builtin."))
-      return boost::make_shared<CAddonDll>(info, type);
-  }
-
   switch (type)
   {
-    case AddonType::AUDIODECODER:
-    case AddonType::AUDIOENCODER:
-    case AddonType::IMAGEDECODER:
-    case AddonType::INPUTSTREAM:
-    case AddonType::PERIPHERALDLL:
-    case AddonType::PVRDLL:
-    case AddonType::VFS:
     case AddonType::VISUALIZATION:
     case AddonType::SCREENSAVER:
       return boost::make_shared<CAddonDll>(info, type);
-    case AddonType::GAMEDLL:
-      return boost::make_shared<GAME::CGameClient>(info);
     case AddonType::PLUGIN:
     case AddonType::SCRIPT:
       return boost::make_shared<CPluginSource>(info, type);
@@ -99,8 +80,6 @@ AddonPtr CAddonBuilder::Generate(const AddonInfoPtr& info, AddonType type)
       return boost::make_shared<CFontResource>(info);
     case AddonType::RESOURCE_IMAGES:
       return boost::make_shared<CImageResource>(info);
-    case AddonType::RESOURCE_GAMES:
-      return boost::make_shared<CGameResource>(info);
     case AddonType::RESOURCE_LANGUAGE:
       return boost::make_shared<CLanguageResource>(info);
     case AddonType::RESOURCE_UISOUNDS:
@@ -109,8 +88,6 @@ AddonPtr CAddonBuilder::Generate(const AddonInfoPtr& info, AddonType type)
       return boost::make_shared<CRepository>(info);
     case AddonType::CONTEXTMENU_ITEM:
       return boost::make_shared<CContextMenuAddon>(info);
-    case AddonType::GAME_CONTROLLER:
-      return boost::make_shared<GAME::CController>(info);
     default:
       break;
   }

@@ -533,14 +533,12 @@ bool CGUIDialogAddonInfo::CanUse() const
                           m_localAddon->Type() == AddonType::VISUALIZATION ||
                           m_localAddon->Type() == AddonType::SCRIPT_WEATHER ||
                           m_localAddon->Type() == AddonType::RESOURCE_LANGUAGE ||
-                          m_localAddon->Type() == AddonType::RESOURCE_UISOUNDS ||
-                          m_localAddon->Type() == AddonType::AUDIOENCODER);
+                          m_localAddon->Type() == AddonType::RESOURCE_UISOUNDS);
 }
 
 bool CGUIDialogAddonInfo::CanShowSupportList() const
 {
-  return m_localAddon && (m_localAddon->Type() == AddonType::AUDIODECODER ||
-                          m_localAddon->Type() == AddonType::IMAGEDECODER);
+  return false;
 }
 
 bool CGUIDialogAddonInfo::PromptIfDependency(int heading, int line2)

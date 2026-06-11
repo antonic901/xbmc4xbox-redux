@@ -147,13 +147,6 @@ bool CGUIDialogAddonSettings::ShowForAddon(const ADDON::AddonPtr& addon,
     return false;
   }
 
-  if (addon->Type() == ADDON::AddonType::GAME_CONTROLLER)
-  {
-    CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_DIALOG_GAME_CONTROLLERS,
-                                                                addon->ID());
-    return true;
-  }
-
   if (!g_passwordManager.CheckMenuLock(WINDOW_ADDON_BROWSER))
     return false;
 

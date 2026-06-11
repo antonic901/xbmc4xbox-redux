@@ -30,7 +30,6 @@ namespace ADDON
 
 CAddonSystemSettings::CAddonSystemSettings()
   : m_activeSettings{
-        {AddonType::AUDIOENCODER, CSettings::SETTING_AUDIOCDS_ENCODER},
         {AddonType::RESOURCE_LANGUAGE, CSettings::SETTING_LOCALE_LANGUAGE},
         {AddonType::RESOURCE_UISOUNDS, CSettings::SETTING_LOOKANDFEEL_SOUNDSKIN},
         {AddonType::SCRAPER_ALBUMS, CSettings::SETTING_MUSICLIBRARY_ALBUMSSCRAPER},
