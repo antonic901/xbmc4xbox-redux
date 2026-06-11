@@ -593,11 +593,7 @@ bool CAddonInfoBuilder::ParseXML(const AddonInfoPtr& addon,
 
   // Ensure binary types have a valid library for the platform
   if (addon->m_mainType == AddonType::VISUALIZATION ||
-      addon->m_mainType == AddonType::SCREENSAVER || addon->m_mainType == AddonType::PVRDLL ||
-      addon->m_mainType == AddonType::AUDIOENCODER ||
-      addon->m_mainType == AddonType::AUDIODECODER || addon->m_mainType == AddonType::VFS ||
-      addon->m_mainType == AddonType::IMAGEDECODER || addon->m_mainType == AddonType::INPUTSTREAM ||
-      addon->m_mainType == AddonType::PERIPHERALDLL || addon->m_mainType == AddonType::GAMEDLL)
+      addon->m_mainType == AddonType::SCREENSAVER)
   {
     if (addon->m_libname.empty())
     {

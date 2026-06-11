@@ -9,7 +9,7 @@
 #pragma once
 
 #include "addons/Resource.h"
-#include "utils/Locale.h"
+#include "utils/XBLocale.h"
 
 #include <set>
 

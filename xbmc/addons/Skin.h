@@ -69,13 +69,14 @@ typedef boost::shared_ptr<CSkinSettingString> CSkinSettingStringPtr;
 class CSkinSettingBool : public CSkinSetting
 {
 public:
+  CSkinSettingBool() : value(false) {}
   virtual ~CSkinSettingBool() {}
 
   virtual std::string GetType() const { return "bool"; }
 
   virtual bool Deserialize(const TiXmlElement* element);
 
-  bool value = false;
+  bool value;
 
 protected:
   virtual bool SerializeSetting(TiXmlElement* element) const;
@@ -267,9 +268,9 @@ protected:
   static CSkinSettingPtr ParseSetting(const TiXmlElement* element);
 
   virtual bool SettingsLoaded(AddonInstanceId id = ADDON_SETTINGS_ID) const;
-  bool SettingsFromXML(const CXBMCTinyXML& doc,
+  virtual bool SettingsFromXML(const CXBMCTinyXML& doc,
                        bool loadDefaults,
-                       virtual AddonInstanceId id = ADDON_SETTINGS_ID);
+                       AddonInstanceId id = ADDON_SETTINGS_ID);
   virtual bool SettingsToXML(CXBMCTinyXML& doc, AddonInstanceId id = ADDON_SETTINGS_ID) const;
 
   RESOLUTION_INFO m_defaultRes;

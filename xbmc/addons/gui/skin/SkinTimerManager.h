@@ -34,7 +34,7 @@ public:
    *  \param infoMgr reference to the infomanager
    */
   CSkinTimerManager(CGUIInfoManager& infoMgr);
-  CSkinTimerManager() = delete;
+  CSkinTimerManager();
 
   /*! \brief Default skin timer manager destructor */
   ~CSkinTimerManager() {}
@@ -99,6 +99,6 @@ private:
   void LoadTimerInternal(const tinyxml2::XMLNode* node);
 
   /*! Container for the skin timers */
-  std::map<std::string, boost::movelib::unique_ptr<CSkinTimer>> m_timers;
+  std::map<std::string, boost::movelib::unique_ptr<CSkinTimer> > m_timers;
   CGUIInfoManager& m_infoMgr;
 };
