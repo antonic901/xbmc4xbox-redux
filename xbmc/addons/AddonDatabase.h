@@ -10,6 +10,7 @@
 
 #include "XBDateTime.h"
 #include "addons/AddonVersion.h"
+#include "addons/addoninfo/AddonInfo.h" // AddonDisabledReason, AddonUpdateRule
 #include "dbwrappers/Database.h"
 
 #include <map>
@@ -23,18 +24,15 @@ class CVariant;
 namespace ADDON
 {
 
-enum class AddonDisabledReason;
-enum class AddonUpdateRule;
-
 class CAddonExtensions;
 class CAddonInfoBuilderFromDB;
 
 class CAddonInfo;
-using AddonInfoPtr = boost::shared_ptr<CAddonInfo>;
+typedef boost::shared_ptr<CAddonInfo> AddonInfoPtr;
 
 class IAddon;
-using AddonPtr = boost::shared_ptr<IAddon>;
-using VECADDONS = std::vector<AddonPtr>;
+typedef boost::shared_ptr<IAddon> AddonPtr;
+typedef std::vector<AddonPtr> VECADDONS;
 
 /*!
  * @brief Addon content serializer/deserializer.
@@ -47,7 +45,7 @@ using VECADDONS = std::vector<AddonPtr>;
  */
 class CAddonDatabaseSerializer
 {
-  CAddonDatabaseSerializer() = delete;
+  CAddonDatabaseSerializer();
 
 public:
   static std::string SerializeMetadata(const CAddonInfo& addon);
@@ -72,7 +70,7 @@ public:
                 ADDON::AddonPtr& addon);
 
   /*! Get the addon IDs that have been set to disabled */
-  bool GetDisabled(std::map<std::string, ADDON::AddonDisabledReason>& addons);
+  bool GetDisabled(std::map<std::string, ADDON::AddonDisabledReason::Type>& addons);
 
   /*! Returns all addons in the repositories with id `addonId`. */
   bool FindByAddonId(const std::string& addonId, ADDON::VECADDONS& addons) const;
@@ -99,18 +97,18 @@ public:
     /*! \brief last time the repo was checked, or invalid CDateTime if never checked */
     CDateTime lastCheckedAt;
     /*! \brief last version of the repo add-on that was checked, or empty if never checked */
-    ADDON::CAddonVersion lastCheckedVersion{""};
+    ADDON::CAddonVersion lastCheckedVersion;
     /*! \brief next time the repo should be checked, or invalid CDateTime if unknown */
     CDateTime nextCheckAt;
 
-    RepoUpdateData() {}
+    RepoUpdateData() : lastCheckedVersion("") {}
 
     RepoUpdateData(const CDateTime& lastCheckedAt,
                    const ADDON::CAddonVersion& lastCheckedVersion,
                    const CDateTime& nextCheckAt)
-      : lastCheckedAt{lastCheckedAt},
-        lastCheckedVersion{lastCheckedVersion},
-        nextCheckAt{nextCheckAt}
+      : lastCheckedAt(lastCheckedAt),
+        lastCheckedVersion(lastCheckedVersion),
+        nextCheckAt(nextCheckAt)
     {
     }
   };
@@ -141,7 +139,7 @@ public:
    * \return true on success, false on failure
    * \sa IsAddonDisabled, HasDisabledAddons, EnableAddon
    */
-  bool DisableAddon(const std::string& addonID, ADDON::AddonDisabledReason disabledReason);
+  bool DisableAddon(const std::string& addonID, ADDON::AddonDisabledReason::Type disabledReason);
 
   /*! \brief Enable an addon.
    * Enables an addon that has previously been disabled
@@ -157,7 +155,7 @@ public:
    * \param updateRule the rule value to be written
    * \return true on success, false otherwise
    */
-  bool AddUpdateRuleForAddon(const std::string& addonID, ADDON::AddonUpdateRule updateRule);
+  bool AddUpdateRuleForAddon(const std::string& addonID, ADDON::AddonUpdateRule::Type updateRule);
 
   /*!
    * \brief Remove all rule datasets for an addon-id from the db
@@ -174,14 +172,14 @@ public:
    * \param updateRule the rule to remove
    * \return true on success, false otherwise
    */
-  bool RemoveUpdateRuleForAddon(const std::string& addonID, AddonUpdateRule updateRule);
+  bool RemoveUpdateRuleForAddon(const std::string& addonID, AddonUpdateRule::Type updateRule);
 
   /*!
    * \brief Retrieve all rule datasets from db and store them into map
    * \param rulesMap target map
    * \return true on success, false otherwise
    */
-  bool GetAddonUpdateRules(std::map<std::string, std::vector<AddonUpdateRule>>& rulesMap) const;
+  bool GetAddonUpdateRules(std::map<std::string, std::vector<AddonUpdateRule::Type> >& rulesMap) const;
 
   /*! \brief Store an addon's package filename and that file's hash for future verification
       \param  addonID         id of the addon we're adding a package for
