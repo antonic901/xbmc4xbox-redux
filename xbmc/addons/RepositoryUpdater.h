@@ -25,7 +25,7 @@ namespace ADDON
 class CAddonMgr;
 
 class CRepository;
-using RepositoryPtr = boost::shared_ptr<CRepository>;
+typedef boost::shared_ptr<CRepository> RepositoryPtr;
 
 class CRepositoryUpdateJob;
 
@@ -54,7 +54,7 @@ public:
    */
   void Await();
 
-  enum class UpdateScheduleType
+  enum UpdateScheduleType
   {
     /*! Update should be scheduled as the first update after application start or setting change. */
     First,
@@ -82,10 +82,8 @@ public:
   CEventStream<RepositoryUpdated>& Events() { return m_events; }
 
 private:
-  CRepositoryUpdater(const CRepositoryUpdater&) = delete;
-  CRepositoryUpdater(CRepositoryUpdater&&) = delete;
-  CRepositoryUpdater& operator=(const CRepositoryUpdater&) = delete;
-  CRepositoryUpdater& operator=(CRepositoryUpdater&&) = delete;
+  CRepositoryUpdater(const CRepositoryUpdater&);
+  CRepositoryUpdater& operator=(const CRepositoryUpdater&);
 
   virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
 
