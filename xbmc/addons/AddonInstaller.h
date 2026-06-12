@@ -14,7 +14,6 @@
 
 #include <map>
 #include <boost/shared_ptr.hpp>
-#include <boost/move/unique_ptr.hpp>
 #include <string>
 #include <utility>
 #include <vector>
@@ -257,7 +256,7 @@ private:
   bool CheckDependencies(const ADDON::AddonPtr &addon, std::vector<std::string>& preDeps, CAddonDatabase &database, std::pair<std::string, std::string> &failedDep);
 
   void PrunePackageCache();
-  int64_t EnumeratePackageFolder(std::map<std::string, boost::movelib::unique_ptr<CFileItemList> >& result);
+  int64_t EnumeratePackageFolder(std::map<std::string, boost::shared_ptr<CFileItemList> >& result);
 
   mutable CCriticalSection m_critSection;
   JobMap m_downloadJobs;
