@@ -122,6 +122,7 @@ using namespace AUTOPTR;
 using namespace MEDIA_DETECT;
 using namespace XFILE;
 using namespace PLAYLIST;
+using KODI::UTILITY::CDigest;
 static D3DGAMMARAMP oldramp, flashramp;
 
 XBOXDETECTION v_xboxclients;
@@ -744,6 +745,28 @@ int CUtil::GetDVDIfoTitle(const CStdString& strFile)
   return atoi(strFilename.Mid(4, 2).c_str());
 }
 
+std::string CUtil::GetFileDigest(const std::string& strPath, KODI::UTILITY::CDigest::Type type)
+{
+  CFile file;
+  std::string result;
+  if (file.Open(strPath))
+  {
+    CDigest digest(type);
+    char temp[1024];
+    while (true)
+    {
+      ssize_t read = file.Read(temp,1024);
+      if (read <= 0)
+        break;
+      digest.Update(temp,read);
+    }
+    result = digest.Finalize();
+    file.Close();
+  }
+
+  return result;
+}
+
 bool CUtil::CacheXBEIcon(const std::string& strFilePath, const std::string& strIcon)
 {
   bool success = false;
@@ -804,28 +827,6 @@ bool CUtil::CacheXBEIcon(const std::string& strFilePath, const std::string& strI
   }
   delete pPackedResource;
   return success;
-}
-
-CStdString CUtil::GetFileMD5(const CStdString& strPath)
-{
-  CFile file;
-  CStdString result;
-  if (file.Open(strPath))
-  {
-    XBMC::XBMC_MD5 md5;
-    char temp[1024];
-    while (true)
-    {
-      ssize_t read = file.Read(temp,1024);
-      if (read <= 0)
-        break;
-      md5.append(temp,read);
-    }
-    result = md5.getDigest();
-    file.Close();
-  }
-
-  return result;
 }
 
 bool CUtil::GetDirectoryName(const CStdString& strFileName, CStdString& strDescription)

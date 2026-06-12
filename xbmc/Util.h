@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include "utils/StringUtils.h"
 #include "MediaSource.h"
+#include "utils/Digest.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "xbox/custom_launch_params.h"
 #else
@@ -118,7 +119,7 @@ public:
    \param strPath - path to the file to MD5sum
    \return md5 sum of the file
    */
-  static CStdString GetFileMD5(const CStdString& strPath);
+  static std::string GetFileDigest(const std::string& strPath, KODI::UTILITY::CDigest::Type type);
   static bool GetDirectoryName(const CStdString& strFileName, CStdString& strDescription);
   static void CreateShortcuts(CFileItemList &items);
   static void CreateShortcut(CFileItem* pItem);
