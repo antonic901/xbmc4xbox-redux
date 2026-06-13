@@ -28,12 +28,24 @@ const std::string VALID_ADDON_VERSION_CHARACTERS =
 namespace ADDON
 {
 CAddonVersion::CAddonVersion(const std::string& version)
-  : mEpoch(0), mUpstream(version.empty() ? "0.0.0" : [&version] {
-      auto versionLowerCase = std::string(version);
-      StringUtils::ToLower(versionLowerCase);
-      return versionLowerCase;
-    }())
+  : mEpoch(0), mUpstream(version)
 {
+  Initialize();
+}
+
+CAddonVersion::CAddonVersion(const char* version)
+  : mEpoch(0), mUpstream(std::string(version ? version : ""))
+{
+  Initialize();
+}
+
+void CAddonVersion::Initialize()
+{
+  if (mUpstream.empty())
+    mUpstream = "0.0.0";
+  else
+    StringUtils::ToLower(mUpstream);
+
   size_t pos = mUpstream.find(':');
   if (pos != std::string::npos)
   {
@@ -58,11 +70,6 @@ CAddonVersion::CAddonVersion(const std::string& version)
     CLog::Log(LOGERROR, "AddonVersion: {} is not a valid version", mUpstream);
     mUpstream = "0.0.0";
   }
-}
-
-CAddonVersion::CAddonVersion(const char* version)
-  : CAddonVersion(std::string(version ? version : ""))
-{
 }
 
 /**Compare two components of a Debian-style version.  Return -1, 0, or 1

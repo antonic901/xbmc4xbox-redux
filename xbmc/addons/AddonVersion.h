@@ -48,6 +48,8 @@ public:
   static bool SplitFileName(std::string& ID, std::string& version, const std::string& filename);
 
 protected:
+  void Initialize();
+
   int mEpoch;
   std::string mUpstream;
   std::string mRevision;
