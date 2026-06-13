@@ -460,7 +460,7 @@ bool CAddonInstaller::CheckDependencies(const AddonPtr &addon,
   if (addon == NULL)
     return true; // a NULL addon has no dependencies
 
-  const std::vector<ADDON::DependencyInfo> dependencies = addon->GetDependencies();
+  const std::vector<ADDON::DependencyInfo> &dependencies = addon->GetDependencies();
   for (std::vector<DependencyInfo>::const_iterator it = dependencies.begin(); it != dependencies.end(); ++it)
   {
     const std::string& addonID = it->id;

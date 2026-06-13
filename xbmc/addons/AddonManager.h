@@ -9,6 +9,7 @@
 #pragma once
 
 #include "addons/AddonInstaller.h" // AllowCheckForUpdates
+#include "addons/addoninfo/AddonInfo.h" // AddonDisabledReason, AddonType, AddonUpdateRule, AddonOriginType
 #include "threads/CriticalSection.h"
 #include "utils/EventStream.h"
 
@@ -616,6 +617,9 @@ public:
   std::vector<boost::shared_ptr<IAddon> > GetOrphanedDependencies() const;
 
 private:
+  // Used inside UpdateLastUsed to asynchronously add a job to Job Manager
+  void OnEventSubmit(const std::string& id, const CDateTime& time);
+
   CAddonMgr& operator=(CAddonMgr const&);
 
   VECADDONS m_updateableAddons;
