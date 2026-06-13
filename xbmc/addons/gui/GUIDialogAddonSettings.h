@@ -49,6 +49,6 @@ private:
   static bool ShowForMultipleInstances(const ADDON::AddonPtr& addon, bool saveToDisk);
 
   ADDON::AddonPtr m_addon;
-  ADDON::AddonInstanceId m_instanceId{ADDON::ADDON_SETTINGS_ID};
-  bool m_saveToDisk = false;
+  ADDON::AddonInstanceId m_instanceId;
+  bool m_saveToDisk;
 };

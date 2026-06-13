@@ -1,7 +1,7 @@
 #ifndef __XBMC_ADDON_CPP_H__
 #define __XBMC_ADDON_CPP_H__
 
-#include "xbmc_addon_types.h"
+#include "../kodi-dev-kit/kodi/c-api/addon_base.h"
 
 #include <vector>
 #include <string.h>
@@ -82,7 +82,7 @@ class DllUtils
 {
 public:
 
-  static unsigned int VecToStruct(std::vector<DllSetting> &vecSet, ADDON_StructSetting*** sSet) 
+  static unsigned int VecToStruct(std::vector<DllSetting> &vecSet, ADDON_StructSetting*** sSet)
   {
     *sSet = NULL;
     if(vecSet.size() == 0)
@@ -124,7 +124,7 @@ public:
     return uiElements;
   }
 
-  static void StructToVec(unsigned int iElements, ADDON_StructSetting*** sSet, std::vector<DllSetting> *vecSet) 
+  static void StructToVec(unsigned int iElements, ADDON_StructSetting*** sSet, std::vector<DllSetting> *vecSet)
   {
     if(iElements == 0)
       return;

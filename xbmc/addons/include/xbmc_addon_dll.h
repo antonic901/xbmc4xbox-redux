@@ -14,10 +14,10 @@
 #endif
 #endif
 
-#include "xbmc_addon_types.h"
+#include "../kodi-dev-kit/kodi/c-api/addon_base.h"
 
 #ifdef __cplusplus
-extern "C" { 
+extern "C" {
 #endif
 
   ADDON_STATUS __declspec(dllexport) ADDON_Create(void *callbacks, void* props);

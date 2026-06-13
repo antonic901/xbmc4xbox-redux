@@ -3602,9 +3602,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\addons\include\xbmc_addon_dll.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\addons\include\xbmc_addon_types.h">
-					</File>
-					<File
 						RelativePath=".\xbmc\addons\include\xbmc_scr_dll.h">
 					</File>
 					<File
@@ -3659,6 +3656,13 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\addons\addoninfo\AddonType.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="kodi-dev-kit"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\addons\kodi-dev-kit\include\kodi\c-api\addon_base.h">
 					</File>
 				</Filter>
 			</Filter>
