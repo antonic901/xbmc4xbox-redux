@@ -28,21 +28,20 @@ namespace ADDON
 {
 
 CAddonSystemSettings::CAddonSystemSettings()
-  : m_activeSettings{
-        {AddonType::RESOURCE_LANGUAGE, CSettings::SETTING_LOCALE_LANGUAGE},
-        {AddonType::RESOURCE_UISOUNDS, CSettings::SETTING_LOOKANDFEEL_SOUNDSKIN},
-        {AddonType::SCRAPER_ALBUMS, CSettings::SETTING_MUSICLIBRARY_ALBUMSSCRAPER},
-        {AddonType::SCRAPER_ARTISTS, CSettings::SETTING_MUSICLIBRARY_ARTISTSSCRAPER},
-        {AddonType::SCRAPER_MOVIES, CSettings::SETTING_SCRAPERS_MOVIESDEFAULT},
-        {AddonType::SCRAPER_MUSICVIDEOS, CSettings::SETTING_SCRAPERS_MUSICVIDEOSDEFAULT},
-        {AddonType::SCRAPER_TVSHOWS, CSettings::SETTING_SCRAPERS_TVSHOWSDEFAULT},
-        {AddonType::SCREENSAVER, CSettings::SETTING_SCREENSAVER_MODE},
-        {AddonType::SCRIPT_WEATHER, CSettings::SETTING_WEATHER_ADDON},
-        {AddonType::SKIN, CSettings::SETTING_LOOKANDFEEL_SKIN},
-        {AddonType::WEB_INTERFACE, CSettings::SETTING_SERVICES_WEBSKIN},
-        {AddonType::VISUALIZATION, CSettings::SETTING_MUSICPLAYER_VISUALISATION},
-    }
-{}
+{
+  m_activeSettings[AddonType::RESOURCE_LANGUAGE] = CSettings::SETTING_LOCALE_LANGUAGE;
+  m_activeSettings[AddonType::RESOURCE_UISOUNDS] = CSettings::SETTING_LOOKANDFEEL_SOUNDSKIN;
+  m_activeSettings[AddonType::SCRAPER_ALBUMS] = CSettings::SETTING_MUSICLIBRARY_ALBUMSSCRAPER;
+  m_activeSettings[AddonType::SCRAPER_ARTISTS] = CSettings::SETTING_MUSICLIBRARY_ARTISTSSCRAPER;
+  m_activeSettings[AddonType::SCRAPER_MOVIES] = CSettings::SETTING_SCRAPERS_MOVIESDEFAULT;
+  m_activeSettings[AddonType::SCRAPER_MUSICVIDEOS] = CSettings::SETTING_SCRAPERS_MUSICVIDEOSDEFAULT;
+  m_activeSettings[AddonType::SCRAPER_TVSHOWS] = CSettings::SETTING_SCRAPERS_TVSHOWSDEFAULT;
+  m_activeSettings[AddonType::SCREENSAVER] = CSettings::SETTING_SCREENSAVER_MODE;
+  m_activeSettings[AddonType::SCRIPT_WEATHER] = CSettings::SETTING_WEATHER_ADDON;
+  m_activeSettings[AddonType::SKIN] = CSettings::SETTING_LOOKANDFEEL_SKIN;
+  m_activeSettings[AddonType::WEB_INTERFACE] = CSettings::SETTING_SERVICES_WEBSKIN;
+  m_activeSettings[AddonType::VISUALIZATION] = CSettings::SETTING_MUSICPLAYER_VISUALISATION;
+}
 
 CAddonSystemSettings& CAddonSystemSettings::GetInstance()
 {
@@ -54,23 +53,27 @@ void CAddonSystemSettings::OnSettingAction(const boost::shared_ptr<const CSettin
 {
   if (setting->GetId() == CSettings::SETTING_ADDONS_MANAGE_DEPENDENCIES)
   {
-    std::vector<std::string> params{"addons://dependencies/", "return"};
+    std::vector<std::string> params;
+    params.push_back("addons://dependencies/");
+    params.push_back("return");
     CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_ADDON_BROWSER, params);
   }
   else if (setting->GetId() == CSettings::SETTING_ADDONS_SHOW_RUNNING)
   {
-    std::vector<std::string> params{"addons://running/", "return"};
+    std::vector<std::string> params;
+    params.push_back("addons://running/");
+    params.push_back("return");
     CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_ADDON_BROWSER, params);
   }
   else if (setting->GetId() == CSettings::SETTING_ADDONS_REMOVE_ORPHANED_DEPENDENCIES)
   {
     using namespace KODI::MESSAGING::HELPERS;
 
-    const auto removedItems = CAddonInstaller::GetInstance().RemoveOrphanedDepsRecursively();
+    const std::vector<std::string> removedItems = CAddonInstaller::GetInstance().RemoveOrphanedDepsRecursively();
     if (removedItems.size() > 0)
     {
-      const auto message =
-          StringUtils::Format(g_localizeStrings.Get(36641), StringUtils::Join(removedItems, ", "));
+      const std::string message =
+          StringUtils::Format(g_localizeStrings.Get(36641).c_str(), StringUtils::Join(removedItems, ", ").c_str());
 
       ShowOKDialogText(36640, message); // "following orphaned were removed..."
     }
@@ -88,27 +91,27 @@ void CAddonSystemSettings::OnSettingChanged(const boost::shared_ptr<const CSetti
   if (setting->GetId() == CSettings::SETTING_ADDONS_ALLOW_UNKNOWN_SOURCES &&
       CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(
           CSettings::SETTING_ADDONS_ALLOW_UNKNOWN_SOURCES) &&
-      ShowYesNoDialogText(19098, 36618) != DialogResponse::CHOICE_YES)
+      ShowYesNoDialogText(19098, 36618) != KODI::MESSAGING::HELPERS::YES)
   {
     CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool(CSettings::SETTING_ADDONS_ALLOW_UNKNOWN_SOURCES, false);
   }
 }
 
-bool CAddonSystemSettings::GetActive(AddonType type, AddonPtr& addon)
+bool CAddonSystemSettings::GetActive(AddonType::Type type, AddonPtr& addon)
 {
-  auto it = m_activeSettings.find(type);
+  std::map<ADDON::AddonType::Type, std::string>::const_iterator it = m_activeSettings.find(type);
   if (it != m_activeSettings.end())
   {
-    auto settingValue = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(it->second);
+    std::string settingValue = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(it->second);
     return CServiceBroker::GetAddonMgr().GetAddon(settingValue, addon, type,
                                                   OnlyEnabled::CHOICE_YES);
   }
   return false;
 }
 
-bool CAddonSystemSettings::SetActive(AddonType type, const std::string& addonID)
+bool CAddonSystemSettings::SetActive(AddonType::Type type, const std::string& addonID)
 {
-  auto it = m_activeSettings.find(type);
+  std::map<ADDON::AddonType::Type, std::string>::const_iterator it = m_activeSettings.find(type);
   if (it != m_activeSettings.end())
   {
     CServiceBroker::GetSettingsComponent()->GetSettings()->SetString(it->second, addonID);
@@ -125,11 +128,11 @@ bool CAddonSystemSettings::IsActive(const IAddon& addon)
 
 bool CAddonSystemSettings::UnsetActive(const AddonInfoPtr& addon)
 {
-  auto it = m_activeSettings.find(addon->MainType());
+  std::map<ADDON::AddonType::Type, std::string>::const_iterator it = m_activeSettings.find(addon->MainType());
   if (it == m_activeSettings.end())
     return true;
 
-  auto setting = boost::static_pointer_cast<CSettingString>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting(it->second));
+  boost::shared_ptr<CSettingString> setting = boost::static_pointer_cast<CSettingString>(CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting(it->second));
   if (setting->GetValue() != addon->ID())
     return true;
 
@@ -146,10 +149,10 @@ int CAddonSystemSettings::GetAddonAutoUpdateMode() const
       CSettings::SETTING_ADDONS_AUTOUPDATES);
 }
 
-AddonRepoUpdateMode CAddonSystemSettings::GetAddonRepoUpdateMode() const
+AddonRepoUpdateMode::Type CAddonSystemSettings::GetAddonRepoUpdateMode() const
 {
   const int updateMode = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(
       CSettings::SETTING_ADDONS_UPDATEMODE);
-  return static_cast<AddonRepoUpdateMode>(updateMode);
+  return static_cast<AddonRepoUpdateMode::Type>(updateMode);
 }
 }
