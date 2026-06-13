@@ -3408,6 +3408,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\addons\AddonSystemSettings.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\addons\AddonUpdateRules.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\addons\AddonUpdateRules.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\addons\AddonVersion.cpp">
 				</File>
 				<File
