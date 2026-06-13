@@ -75,6 +75,6 @@ private:
   CAddonSystemSettings& operator=(const CAddonSystemSettings&);
   virtual ~CAddonSystemSettings() {}
 
-  const std::map<AddonType::Type, std::string> m_activeSettings;
+  std::map<AddonType::Type, std::string> m_activeSettings;
 };
 };
