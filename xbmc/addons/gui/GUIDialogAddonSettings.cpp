@@ -41,6 +41,8 @@ using namespace KODI::MESSAGING;
 CGUIDialogAddonSettings::CGUIDialogAddonSettings()
   : CGUIDialogSettingsManagerBase(WINDOW_DIALOG_ADDON_SETTINGS, "DialogAddonSettings.xml")
 {
+  m_instanceId = ADDON::ADDON_SETTINGS_ID;
+  m_saveToDisk = false;
 }
 
 bool CGUIDialogAddonSettings::OnMessage(CGUIMessage& message)
