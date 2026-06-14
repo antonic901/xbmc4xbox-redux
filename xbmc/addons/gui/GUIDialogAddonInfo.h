@@ -19,28 +19,37 @@
 namespace ADDON
 {
 class IAddon;
-using AddonPtr = boost::shared_ptr<IAddon>;
+typedef boost::shared_ptr<IAddon> AddonPtr;
 
 } // namespace ADDON
 
-enum class Reactivate : bool
+namespace Reactivate
 {
-  CHOICE_YES = true,
-  CHOICE_NO = false,
-};
-
-enum class PerformButtonFocus : bool
+enum Type
 {
-  CHOICE_YES = true,
-  CHOICE_NO = false,
+  CHOICE_YES = 1,
+  CHOICE_NO = 0,
 };
+}
 
-enum class EntryPoint : int
+namespace PerformButtonFocus
+{
+enum Type
+{
+  CHOICE_YES = 1,
+  CHOICE_NO = 0,
+};
+}
+
+namespace EntryPoint
+{
+enum Type
 {
   INSTALL,
   UPDATE,
   SHOW_DEPENDENCIES,
 };
+}
 
 struct CInstalledWithAvailable
 {
@@ -85,7 +94,7 @@ private:
    * @return true if we can display information, false otherwise
    */
   bool SetItem(const CFileItemPtr& item);
-  void UpdateControls(PerformButtonFocus performButtonFocus);
+  void UpdateControls(PerformButtonFocus::Type performButtonFocus);
 
   void OnUpdate();
   void OnSelectVersion();
@@ -95,7 +104,7 @@ private:
   void OnSettings();
   void OnSelect();
   void OnToggleAutoUpdates();
-  int AskForVersion(std::vector<std::pair<ADDON::CAddonVersion, std::string>>& versions);
+  int AskForVersion(std::vector<std::pair<ADDON::CAddonVersion, std::string> >& versions);
 
   /*!
    * @brief Returns true if current addon can be opened (i.e is a plugin)
@@ -134,7 +143,7 @@ private:
    * @param[in] entryPoint INSTALL, UPDATE or SHOW_DEPENDENCIES
    * @return True if okay was selected, false otherwise
    */
-  bool ShowDependencyList(Reactivate reactivate, EntryPoint entryPoint);
+  bool ShowDependencyList(Reactivate::Type reactivate, EntryPoint::Type entryPoint);
 
   /*!
    * @brief Show a dialog with the addon's supported extensions and mimetypes.
@@ -148,15 +157,15 @@ private:
 
   CFileItemPtr m_item;
   ADDON::AddonPtr m_localAddon;
-  bool m_addonEnabled = false;
+  bool m_addonEnabled;
 
   /*!< a switch to force @ref OnUninstall() to proceed without user interaction.
    *   useful for cases like where another repo’s version of an addon must
    *   be removed before installing a new version.
    */
-  bool m_silentUninstall = false;
+  bool m_silentUninstall;
 
-  bool m_showDepDialogOnInstall = false;
+  bool m_showDepDialogOnInstall;
   std::vector<ADDON::DependencyInfo> m_deps;
   std::vector<CInstalledWithAvailable> m_depsInstalledWithAvailable;
 };
