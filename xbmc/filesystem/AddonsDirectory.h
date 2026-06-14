@@ -1,29 +1,29 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "IDirectory.h"
-#include "addons/AddonManager.h"
+#pragma once
 
+#include "system.h" // <xtl.h>
+#include "IDirectory.h"
+
+#include <boost/shared_ptr.hpp>
+#include <vector>
+
+class CFileItem;
+class CFileItemList;
 class CURL;
 typedef boost::shared_ptr<CFileItem> CFileItemPtr;
+
+namespace ADDON
+{
+class IAddon;
+typedef std::vector<boost::shared_ptr<IAddon> > VECADDONS;
+} // namespace ADDON
 
 namespace XFILE
 {
@@ -56,8 +56,13 @@ namespace XFILE
      */
     static bool GetScriptsAndPlugins(const std::string &content, CFileItemList &items);
 
-    static void GenerateAddonListing(const CURL &path, const ADDON::VECADDONS& addons, CFileItemList &items, const std::string label);
-    static CFileItemPtr FileItemFromAddon(const ADDON::AddonPtr &addon, const std::string& path, bool folder = false);
+    static void GenerateAddonListing(const CURL& path,
+                                     const ADDON::VECADDONS& addons,
+                                     CFileItemList& items,
+                                     const std::string& label);
+    static CFileItemPtr FileItemFromAddon(const boost::shared_ptr<ADDON::IAddon>& addon,
+                                          const std::string& path,
+                                          bool folder = false);
 
     /*! \brief Returns true if `path` is a path or subpath of the repository directory, otherwise false */
     static bool IsRepoDirectory(const CURL& path);
