@@ -3447,6 +3447,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\addons\IAddon.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\addons\IAddonManagerCallback.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\addons\ImageResource.cpp">
 				</File>
 				<File
@@ -3562,6 +3565,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\addons\gui\GUIDialogAddonSettings.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\gui\GUIHelpers.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\gui\GUIHelpers.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\addons\gui\GUIViewStateAddonBrowser.cpp">
