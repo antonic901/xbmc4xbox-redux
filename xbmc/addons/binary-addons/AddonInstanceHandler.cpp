@@ -32,7 +32,7 @@ IAddonInstanceHandler::IAddonInstanceHandler(
     ADDON_TYPE type,
     const AddonInfoPtr& addonInfo,
     AddonInstanceId instanceId /* = ADDON_INSTANCE_ID_UNUSED */,
-    KODI_HANDLE parentInstance /* = nullptr*/,
+    KODI_HANDLE parentInstance /* = NULL*/,
     const std::string& uniqueWorkID /* = ""*/)
   : m_type(type), m_instanceId(instanceId), m_parentInstance(parentInstance), m_addonInfo(addonInfo)
 {
@@ -119,7 +119,7 @@ ADDON_STATUS IAddonInstanceHandler::CreateInstance()
   if (!m_addon)
     return ADDON_STATUS_UNKNOWN;
 
-  std::unique_lock<CCriticalSection> lock(m_cdSec);
+  CSingleLock lock(m_cdSec);
 
   ADDON_STATUS status = m_addon->CreateInstance(&m_ifc);
   if (status != ADDON_STATUS_OK)
@@ -133,26 +133,26 @@ ADDON_STATUS IAddonInstanceHandler::CreateInstance()
 
 void IAddonInstanceHandler::DestroyInstance()
 {
-  std::unique_lock<CCriticalSection> lock(m_cdSec);
+  CSingleLock lock(m_cdSec);
   if (m_addon)
     m_addon->DestroyInstance(&m_ifc);
 }
 
-std::shared_ptr<CSetting> IAddonInstanceHandler::GetSetting(const std::string& setting)
+boost::shared_ptr<CSetting> IAddonInstanceHandler::GetSetting(const std::string& setting)
 {
   if (!m_addon->HasSettings(m_instanceId))
   {
     CLog::Log(LOGERROR, "IAddonInstanceHandler::{} - couldn't get settings for add-on '{}'",
               __func__, Name());
-    return nullptr;
+    return NULL;
   }
 
-  auto value = m_addon->GetSettings(m_instanceId)->GetSetting(setting);
-  if (value == nullptr)
+  SettingPtr value = m_addon->GetSettings(m_instanceId)->GetSetting(setting);
+  if (value == NULL)
   {
     CLog::Log(LOGERROR, "IAddonInstanceHandler::{} - can't find setting '{}' in '{}'", __func__,
               setting, Name());
-    return nullptr;
+    return NULL;
   }
 
   return value;
@@ -162,7 +162,7 @@ char* IAddonInstanceHandler::get_instance_user_path(const KODI_ADDON_INSTANCE_BA
 {
   IAddonInstanceHandler* instance = static_cast<IAddonInstanceHandler*>(hdl);
   if (!instance)
-    return nullptr;
+    return NULL;
 
   const std::string path = CSpecialProtocol::TranslatePath(instance->m_addon->Profile());
 
@@ -177,8 +177,8 @@ bool IAddonInstanceHandler::is_instance_setting_using_default(
   if (!instance || !id)
     return false;
 
-  auto setting = instance->GetSetting(id);
-  if (setting == nullptr)
+  SettingPtr setting = instance->GetSetting(id);
+  if (setting == NULL)
     return false;
 
   return setting->IsDefault();
@@ -192,8 +192,8 @@ bool IAddonInstanceHandler::get_instance_setting_bool(const KODI_ADDON_INSTANCE_
   if (!instance || !id || !value)
     return false;
 
-  auto setting = instance->GetSetting(id);
-  if (setting == nullptr)
+  SettingPtr setting = instance->GetSetting(id);
+  if (setting == NULL)
     return false;
 
   if (setting->GetType() != SettingType::Boolean)
@@ -203,7 +203,7 @@ bool IAddonInstanceHandler::get_instance_setting_bool(const KODI_ADDON_INSTANCE_
     return false;
   }
 
-  *value = std::static_pointer_cast<CSettingBool>(setting)->GetValue();
+  *value = boost::static_pointer_cast<CSettingBool>(setting)->GetValue();
   return true;
 }
 
@@ -215,8 +215,8 @@ bool IAddonInstanceHandler::get_instance_setting_int(const KODI_ADDON_INSTANCE_B
   if (!instance || !id || !value)
     return false;
 
-  auto setting = instance->GetSetting(id);
-  if (setting == nullptr)
+  SettingPtr setting = instance->GetSetting(id);
+  if (setting == NULL)
     return false;
 
   if (setting->GetType() != SettingType::Integer && setting->GetType() != SettingType::Number)
@@ -227,9 +227,9 @@ bool IAddonInstanceHandler::get_instance_setting_int(const KODI_ADDON_INSTANCE_B
   }
 
   if (setting->GetType() == SettingType::Integer)
-    *value = std::static_pointer_cast<CSettingInt>(setting)->GetValue();
+    *value = boost::static_pointer_cast<CSettingInt>(setting)->GetValue();
   else
-    *value = static_cast<int>(std::static_pointer_cast<CSettingNumber>(setting)->GetValue());
+    *value = static_cast<int>(boost::static_pointer_cast<CSettingNumber>(setting)->GetValue());
   return true;
 }
 
@@ -241,8 +241,8 @@ bool IAddonInstanceHandler::get_instance_setting_float(const KODI_ADDON_INSTANCE
   if (!instance || !id || !value)
     return false;
 
-  auto setting = instance->GetSetting(id);
-  if (setting == nullptr)
+  SettingPtr setting = instance->GetSetting(id);
+  if (setting == NULL)
     return false;
 
   if (setting->GetType() != SettingType::Number)
@@ -252,7 +252,7 @@ bool IAddonInstanceHandler::get_instance_setting_float(const KODI_ADDON_INSTANCE
     return false;
   }
 
-  *value = static_cast<float>(std::static_pointer_cast<CSettingNumber>(setting)->GetValue());
+  *value = static_cast<float>(boost::static_pointer_cast<CSettingNumber>(setting)->GetValue());
   return true;
 }
 
@@ -264,8 +264,8 @@ bool IAddonInstanceHandler::get_instance_setting_string(const KODI_ADDON_INSTANC
   if (!instance || !id || !value)
     return false;
 
-  auto setting = instance->GetSetting(id);
-  if (setting == nullptr)
+  SettingPtr setting = instance->GetSetting(id);
+  if (setting == NULL)
     return false;
 
   if (setting->GetType() != SettingType::String)
@@ -275,7 +275,7 @@ bool IAddonInstanceHandler::get_instance_setting_string(const KODI_ADDON_INSTANC
     return false;
   }
 
-  *value = strdup(std::static_pointer_cast<CSettingString>(setting)->GetValue().c_str());
+  *value = strdup(boost::static_pointer_cast<CSettingString>(setting)->GetValue().c_str());
   return true;
 }
 

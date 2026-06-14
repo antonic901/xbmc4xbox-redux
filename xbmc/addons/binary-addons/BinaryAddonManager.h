@@ -11,7 +11,7 @@
 #include "threads/CriticalSection.h"
 
 #include <map>
-#include <memory>
+#include <boost/shared_ptr.hpp>
 
 namespace ADDON
 {
@@ -19,23 +19,23 @@ namespace ADDON
   class IAddonInstanceHandler;
 
   class IAddon;
-  using AddonPtr = std::shared_ptr<IAddon>;
+  typedef boost::shared_ptr<IAddon> AddonPtr;
 
   class CAddonInfo;
-  using AddonInfoPtr = std::shared_ptr<CAddonInfo>;
+  typedef boost::shared_ptr<CAddonInfo> AddonInfoPtr;
 
   class CAddonDll;
-  typedef std::shared_ptr<CAddonDll> AddonDllPtr;
+  typedef boost::shared_ptr<CAddonDll> AddonDllPtr;
 
   class CBinaryAddonBase;
-  typedef std::shared_ptr<CBinaryAddonBase> BinaryAddonBasePtr;
+  typedef boost::shared_ptr<CBinaryAddonBase> BinaryAddonBasePtr;
 
   class CBinaryAddonManager
   {
   public:
-    CBinaryAddonManager() = default;
-    CBinaryAddonManager(const CBinaryAddonManager&) = delete;
-    ~CBinaryAddonManager() = default;
+    CBinaryAddonManager() {}
+    CBinaryAddonManager(const CBinaryAddonManager&);
+    ~CBinaryAddonManager() {}
 
     /*!
      * @brief Create or get available addon instance handle base.
@@ -71,7 +71,7 @@ namespace ADDON
      * @brief Get running addon base class for a given addon id.
      *
      * @param[in] addonId the addon id
-     * @return running addon base class if found, nullptr otherwise.
+     * @return running addon base class if found, NULL otherwise.
      *
      */
     BinaryAddonBasePtr GetRunningAddonBase(const std::string& addonId) const;
@@ -81,7 +81,7 @@ namespace ADDON
      * created CAddonDll.
      *
      * @param[in] addonId related addon id string
-     * @return if present the pointer to active one or nullptr if not present
+     * @return if present the pointer to active one or NULL if not present
      *
      */
     AddonPtr GetRunningAddon(const std::string& addonId) const;

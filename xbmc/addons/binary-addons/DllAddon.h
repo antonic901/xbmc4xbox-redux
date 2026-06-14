@@ -13,7 +13,7 @@
 class DllAddonInterface
 {
 public:
-  virtual ~DllAddonInterface() = default;
+  virtual ~DllAddonInterface() {}
   virtual ADDON_STATUS Create(void* cb) = 0;
   virtual const char* GetAddonTypeVersion(int type)=0;
   virtual const char* GetAddonTypeMinVersion(int type) = 0;
@@ -26,7 +26,7 @@ public:
   DEFINE_METHOD1(ADDON_STATUS, Create, (void* p1))
   DEFINE_METHOD1(const char*, GetAddonTypeVersion, (int p1))
   DEFINE_METHOD1(const char*, GetAddonTypeMinVersion, (int p1))
-  bool GetAddonTypeMinVersion_available() { return m_GetAddonTypeMinVersion != nullptr; }
+  bool GetAddonTypeMinVersion_available() { return m_GetAddonTypeMinVersion != NULL; }
   BEGIN_METHOD_RESOLVE()
     RESOLVE_METHOD_RENAME(ADDON_Create, Create)
     RESOLVE_METHOD_RENAME(ADDON_GetTypeVersion, GetAddonTypeVersion)

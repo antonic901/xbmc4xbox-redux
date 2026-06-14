@@ -28,6 +28,7 @@
 #include "utils/log.h"
 
 #include <algorithm>
+#include <boost/bind.hpp>
 #include <utility>
 
 using namespace KODI::MESSAGING;
@@ -36,14 +37,22 @@ namespace ADDON
 {
 
 CAddonDll::CAddonDll(const AddonInfoPtr& addonInfo, BinaryAddonBasePtr addonBase)
-  : CAddon(addonInfo, addonInfo->MainType()), m_binaryAddonBase(std::move(addonBase))
+  : CAddon(addonInfo, addonInfo->MainType()), m_binaryAddonBase(boost::move(addonBase)),
+    m_pDll(NULL),
+    m_initialized(false),
+    m_informer(NULL)
 {
+  m_interface = {NULL, NULL, NULL, NULL, NULL}
 }
 
 CAddonDll::CAddonDll(const AddonInfoPtr& addonInfo, AddonType addonType)
   : CAddon(addonInfo, addonType),
-    m_binaryAddonBase(CServiceBroker::GetBinaryAddonManager().GetRunningAddonBase(addonInfo->ID()))
+    m_binaryAddonBase(CServiceBroker::GetBinaryAddonManager().GetRunningAddonBase(addonInfo->ID())),
+    m_pDll(NULL),
+    m_initialized(false),
+    m_informer(NULL)
 {
+  m_interface = {NULL, NULL, NULL, NULL, NULL}
 }
 
 CAddonDll::~CAddonDll()
@@ -151,11 +160,11 @@ bool CAddonDll::LoadDll()
   if (!m_pDll->Load())
   {
     delete m_pDll;
-    m_pDll = nullptr;
+    m_pDll = NULL;
 
     std::string heading =
         StringUtils::Format("{}: {}", CAddonInfo::TranslateType(Type(), true), Name());
-    HELPERS::ShowOKDialogLines(CVariant{heading}, CVariant{24070}, CVariant{24071});
+    HELPERS::ShowOKDialogLines(heading, 24070, 24071);
 
     return false;
   }
@@ -213,7 +222,7 @@ ADDON_STATUS CAddonDll::Create(KODI_ADDON_INSTANCE_STRUCT* firstKodiInstance)
     // @todo currently a copy and paste from other function and becomes improved.
     std::string heading =
         StringUtils::Format("{}: {}", CAddonInfo::TranslateType(Type(), true), Name());
-    HELPERS::ShowOKDialogLines(CVariant{ heading }, CVariant{ 24070 }, CVariant{ 24071 });
+    HELPERS::ShowOKDialogLines( heading ,  24070 ,  24071 );
   }
 
   return status;
@@ -234,7 +243,7 @@ void CAddonDll::Destroy()
   if (m_pDll)
   {
     delete m_pDll;
-    m_pDll = nullptr;
+    m_pDll = NULL;
     CLog::Log(LOGINFO, "ADDON: Dll Destroyed - {}", Name());
   }
 
@@ -245,10 +254,10 @@ void CAddonDll::Destroy()
 
 ADDON_STATUS CAddonDll::CreateInstance(KODI_ADDON_INSTANCE_STRUCT* instance)
 {
-  assert(instance != nullptr);
-  assert(instance->functions != nullptr);
-  assert(instance->info != nullptr);
-  assert(instance->info->functions != nullptr);
+  assert(instance != NULL);
+  assert(instance->functions != NULL);
+  assert(instance->info != NULL);
+  assert(instance->info->functions != NULL);
 
   ADDON_STATUS status = ADDON_STATUS_OK;
 
@@ -276,7 +285,7 @@ void CAddonDll::DestroyInstance(KODI_ADDON_INSTANCE_STRUCT* instance)
   if (m_usedInstances.empty())
     return;
 
-  auto it = m_usedInstances.find(instance->info->kodi);
+  std::map<ADDON::ADDON_INSTANCE_HANDLER, KODI_ADDON_INSTANCE_STRUCT *>::iterator it = m_usedInstances.find(instance->info->kodi);
   if (it != m_usedInstances.end())
   {
     m_interface.toAddon->destroy_instance(m_interface.addonBase, it->second);
@@ -333,17 +342,17 @@ void CAddonDll::OnPostUnInstall()
 
 bool CAddonDll::DllLoaded(void) const
 {
-  return m_pDll != nullptr;
+  return m_pDll != NULL;
 }
 
 CAddonVersion CAddonDll::GetTypeVersionDll(int type) const
 {
-  return CAddonVersion(m_pDll ? m_pDll->GetAddonTypeVersion(type) : nullptr);
+  return CAddonVersion(m_pDll ? m_pDll->GetAddonTypeVersion(type) : NULL);
 }
 
 CAddonVersion CAddonDll::GetTypeMinVersionDll(int type) const
 {
-  return CAddonVersion(m_pDll ? m_pDll->GetAddonTypeMinVersion(type) : nullptr);
+  return CAddonVersion(m_pDll ? m_pDll->GetAddonTypeMinVersion(type) : NULL);
 }
 
 bool CAddonDll::SaveSettings(AddonInstanceId id /* = ADDON_SETTINGS_ID */)
@@ -355,6 +364,8 @@ bool CAddonDll::SaveSettings(AddonInstanceId id /* = ADDON_SETTINGS_ID */)
   return success;
 }
 
+static bool findByInstanceID(const std::pair<const ADDON::ADDON_INSTANCE_HANDLER, KODI_ADDON_INSTANCE_STRUCT *> &data, AddonInstanceId instanceId) { return data.second->info->number == instanceId; }
+
 ADDON_STATUS CAddonDll::TransferSettings(AddonInstanceId instanceId)
 {
   bool restart = false;
@@ -364,16 +375,15 @@ ADDON_STATUS CAddonDll::TransferSettings(AddonInstanceId instanceId)
 
   LoadSettings(false, true, instanceId);
 
-  auto settings = GetSettings(instanceId);
-  if (settings != nullptr)
+  boost::shared_ptr<ADDON::CAddonSettings> settings = GetSettings(instanceId);
+  if (settings != NULL)
   {
-    KODI_ADDON_INSTANCE_FUNC* instanceTarget{nullptr};
-    KODI_ADDON_INSTANCE_HDL instanceHandle{nullptr};
+    KODI_ADDON_INSTANCE_FUNC* instanceTarget{NULL};
+    KODI_ADDON_INSTANCE_HDL instanceHandle{NULL};
     if (instanceId != ADDON_SETTINGS_ID)
     {
-      const auto it = std::find_if(
-          m_usedInstances.begin(), m_usedInstances.end(),
-          [instanceId](const auto& data) { return data.second->info->number == instanceId; });
+      const std::map<ADDON::ADDON_INSTANCE_HANDLER, KODI_ADDON_INSTANCE_STRUCT *>::iterator it = std::find_if(
+          m_usedInstances.begin(), m_usedInstances.end(), boost::bind(&findByInstanceID, _1, instanceId));
       if (it == m_usedInstances.end())
         return ADDON_STATUS_UNKNOWN;
 
@@ -381,14 +391,19 @@ ADDON_STATUS CAddonDll::TransferSettings(AddonInstanceId instanceId)
       instanceHandle = it->second->hdl;
     }
 
-    for (const auto& section : settings->GetSections())
+    const SettingSectionList sections = settings->GetSections();
+    for (SettingSectionList::const_iterator section = sections.begin(); section != sections.end(); ++section)
     {
-      for (const auto& category : section->GetCategories())
+      const SettingCategoryList &categories = (*section)->GetCategories();
+      for (SettingCategoryList::const_iterator category = categories.begin(); category != categories.end(); ++category)
       {
-        for (const auto& group : category->GetGroups())
+        const SettingGroupList &groups = (*category)->GetGroups();
+        for (SettingGroupList::const_iterator group = groups.begin(); group != groups.end(); ++group)
         {
-          for (const auto& setting : group->GetSettings())
+          const SettingList &groupSettings = (*group)->GetSettings();
+          for (SettingList::const_iterator it = groupSettings.begin(); it != groupSettings.end(); ++it)
           {
+            const SettingPtr &setting = *it;
             if (StringUtils::StartsWith(setting->GetId(), ADDON_SETTING_INSTANCE_GROUP))
               continue; // skip internal settings
 
@@ -399,7 +414,7 @@ ADDON_STATUS CAddonDll::TransferSettings(AddonInstanceId instanceId)
             {
               case SettingType::Boolean:
               {
-                bool tmp = std::static_pointer_cast<CSettingBool>(setting)->GetValue();
+                bool tmp = boost::static_pointer_cast<CSettingBool>(setting)->GetValue();
                 if (instanceId == ADDON_SETTINGS_ID)
                 {
                   if (m_interface.toAddon->setting_change_boolean)
@@ -417,7 +432,7 @@ ADDON_STATUS CAddonDll::TransferSettings(AddonInstanceId instanceId)
 
               case SettingType::Integer:
               {
-                int tmp = std::static_pointer_cast<CSettingInt>(setting)->GetValue();
+                int tmp = boost::static_pointer_cast<CSettingInt>(setting)->GetValue();
                 if (instanceId == ADDON_SETTINGS_ID)
                 {
                   if (m_interface.toAddon->setting_change_integer)
@@ -435,7 +450,7 @@ ADDON_STATUS CAddonDll::TransferSettings(AddonInstanceId instanceId)
 
               case SettingType::Number:
               {
-                float tmpf = static_cast<float>(std::static_pointer_cast<CSettingNumber>(setting)->GetValue());
+                float tmpf = static_cast<float>(boost::static_pointer_cast<CSettingNumber>(setting)->GetValue());
                 if (instanceId == ADDON_SETTINGS_ID)
                 {
                   if (m_interface.toAddon->setting_change_float)
@@ -458,14 +473,14 @@ ADDON_STATUS CAddonDll::TransferSettings(AddonInstanceId instanceId)
                   if (m_interface.toAddon->setting_change_string)
                     status = m_interface.toAddon->setting_change_string(
                         m_interface.addonBase, id,
-                        std::static_pointer_cast<CSettingString>(setting)->GetValue().c_str());
+                        boost::static_pointer_cast<CSettingString>(setting)->GetValue().c_str());
                 }
                 else if (instanceTarget && instanceHandle)
                 {
                   if (instanceTarget->instance_setting_change_string)
                     status = instanceTarget->instance_setting_change_string(
                         instanceHandle, id,
-                        std::static_pointer_cast<CSettingString>(setting)->GetValue().c_str());
+                        boost::static_pointer_cast<CSettingString>(setting)->GetValue().c_str());
                 }
                 break;
               }
