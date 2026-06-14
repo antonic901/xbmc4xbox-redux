@@ -24,7 +24,7 @@
 #include "threads/CriticalSection.h"
 #include "threads/SingleLock.h"
 #include <algorithm>
-#include <memory>
+#include <boost/make_shared.hpp>
 #include <vector>
 #include <boost/function.hpp>
 

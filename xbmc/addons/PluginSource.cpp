@@ -18,20 +18,21 @@
 namespace ADDON
 {
 
-CPluginSource::CPluginSource(const AddonInfoPtr& addonInfo, AddonType addonType)
+CPluginSource::CPluginSource(const AddonInfoPtr& addonInfo, AddonType::Type addonType)
   : CAddon(addonInfo, addonType)
 {
   std::string provides = addonInfo->Type(addonType)->GetValue("provides").asString();
 
-  for (const auto& values : addonInfo->Type(addonType)->GetValues())
+  const ADDON::EXT_VALUES &temp = addonInfo->Type(addonType)->GetValues();
+  for (ADDON::EXT_VALUES::const_iterator values = temp.begin(); values != temp.end(); ++values)
   {
-    if (values.first != "medialibraryscanpath")
+    if (values->first != "medialibraryscanpath")
       continue;
 
     std::string url = "plugin://" + ID() + '/';
-    std::string content = values.second.GetValue("medialibraryscanpath@content").asString();
-    std::string path = values.second.GetValue("medialibraryscanpath").asString();
-    if (!path.empty() && path.front() == '/')
+    std::string content = values->second.GetValue("medialibraryscanpath@content").asString();
+    std::string path = values->second.GetValue("medialibraryscanpath").asString();
+    if (!path.empty() && path[0] == '/')
       path.erase(0, 1);
     if (path.compare(0, url.size(), url))
       path.insert(0, url);
@@ -73,7 +74,7 @@ CPluginSource::Content CPluginSource::Translate(const std::string &content)
     return CPluginSource::UNKNOWN;
 }
 
-bool CPluginSource::HasType(AddonType type) const
+bool CPluginSource::HasType(AddonType::Type type) const
 {
   return ((type == AddonType::VIDEO && Provides(VIDEO)) ||
           (type == AddonType::AUDIO && Provides(AUDIO)) ||

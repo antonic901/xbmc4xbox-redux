@@ -91,6 +91,34 @@ enum CURLOPTIONTYPE
   CURL_OPTION_HEADER      /**< Add a Header           */
 };
 
+/**
+ * The following names for CURL_OPTION_PROTOCOL are possible:
+ *
+ * accept-charset: Set the "accept-charset" header
+ * acceptencoding or encoding: Set the "accept-encoding" header
+ * active-remote: Set the "active-remote" header
+ * auth: Set the authentication method. Possible values: any, anysafe, digest, ntlm, basic
+ * connection-timeout: Set the connection timeout in seconds
+ * cookie: Set the "cookie" header
+ * customrequest: Set a custom HTTP request like DELETE
+ * noshout: Set to true if kodi detects a stream as shoutcast by mistake.
+ * postdata: Set the post body (value needs to be base64 encoded). (Implicitly sets the request to POST)
+ * referer: Set the "referer" header
+ * user-agent: Set the "user-agent" header
+ * seekable: Set the stream seekable. 1: enable, 0: disable
+ * sslcipherlist: Set list of accepted SSL ciphers.
+ */
+
+enum FileProperty
+{
+  FILE_PROPERTY_RESPONSE_PROTOCOL,          /**< Get response protocol line  */
+  FILE_PROPERTY_RESPONSE_HEADER,            /**< Get response Header value  */
+  FILE_PROPERTY_CONTENT_TYPE,               /**< Get file content-type  */
+  FILE_PROPERTY_CONTENT_CHARSET,            /**< Get file content charset  */
+  FILE_PROPERTY_MIME_TYPE,                  /**< Get file mime type  */
+  FILE_PROPERTY_EFFECTIVE_URL               /**< Get effective URL for redirected streams  */
+};
+
 class IFileCallback
 {
 public:

@@ -13,8 +13,6 @@
 #include "utils/StringUtils.h"
 #include "utils/log.h"
 
-#include <mutex>
-
 
 namespace ADDON
 {
@@ -59,9 +57,9 @@ void CServiceAddonManager::Start()
   VECADDONS addons;
   if (m_addonMgr.GetAddons(addons, AddonType::SERVICE))
   {
-    for (const auto& addon : addons)
+    for (VECADDONS::const_iterator addon = addons.begin(); addon != addons.end(); ++addon)
     {
-      Start(addon);
+      Start(*addon);
     }
   }
 }
@@ -102,9 +100,9 @@ void CServiceAddonManager::Stop()
   m_addonMgr.Events().Unsubscribe(this);
   m_addonMgr.UnloadEvents().Unsubscribe(this);
   CSingleLock lock(m_criticalSection);
-  for (const auto& service : m_services)
+  for (std::map<std::string, int>::const_iterator service = m_services.begin(); service != m_services.end(); ++service)
   {
-    Stop(service);
+    Stop(*service);
   }
   m_services.clear();
 }
@@ -112,7 +110,7 @@ void CServiceAddonManager::Stop()
 void CServiceAddonManager::Stop(const std::string& addonId)
 {
   CSingleLock lock(m_criticalSection);
-  auto it = m_services.find(addonId);
+  std::map<std::string, int>::iterator it = m_services.find(addonId);
   if (it != m_services.end())
   {
     Stop(*it);
