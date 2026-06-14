@@ -14,7 +14,7 @@
 #include "threads/SingleLock.h"
 #include "utils/log.h"
 
-#include <mutex>
+#include <boost/make_shared.hpp>
 
 using namespace ADDON;
 
@@ -29,7 +29,7 @@ AddonDllPtr CBinaryAddonBase::GetAddon(IAddonInstanceHandler* handler)
   {
     CLog::Log(LOGERROR, "CBinaryAddonBase::{}: for Id '{}' called with empty instance handler",
               __FUNCTION__, ID());
-    return NULL;
+    return AddonDllPtr();
   }
 
   CSingleLock lock(m_critSection);
@@ -55,7 +55,7 @@ void CBinaryAddonBase::ReleaseAddon(IAddonInstanceHandler* handler)
 
   CSingleLock lock(m_critSection);
 
-  boost::unordered_set<ADDON::IAddonInstanceHandler *>::iterator presentHandler = m_activeAddonHandlers.find(handler);
+  std::set<ADDON::IAddonInstanceHandler *>::iterator presentHandler = m_activeAddonHandlers.find(handler);
   if (presentHandler == m_activeAddonHandlers.end())
     return;
 
@@ -82,28 +82,28 @@ AddonDllPtr CBinaryAddonBase::GetActiveAddon()
 
 void CBinaryAddonBase::OnPreInstall()
 {
-  const boost::unordered_set<IAddonInstanceHandler*> activeAddonHandlers = m_activeAddonHandlers;
-  for (boost::unordered_set<IAddonInstanceHandler*>::const_iterator instance = activeAddonHandlers.begin(); instance != activeAddonHandlers.end(); ++instance)
+  const std::set<IAddonInstanceHandler*> activeAddonHandlers = m_activeAddonHandlers;
+  for (std::set<IAddonInstanceHandler*>::const_iterator instance = activeAddonHandlers.begin(); instance != activeAddonHandlers.end(); ++instance)
     (*instance)->OnPreInstall();
 }
 
 void CBinaryAddonBase::OnPostInstall(bool update, bool modal)
 {
-  const boost::unordered_set<IAddonInstanceHandler*> activeAddonHandlers = m_activeAddonHandlers;
-  for (boost::unordered_set<IAddonInstanceHandler*>::const_iterator instance = activeAddonHandlers.begin(); instance != activeAddonHandlers.end(); ++instance)
+  const std::set<IAddonInstanceHandler*> activeAddonHandlers = m_activeAddonHandlers;
+  for (std::set<IAddonInstanceHandler*>::const_iterator instance = activeAddonHandlers.begin(); instance != activeAddonHandlers.end(); ++instance)
     (*instance)->OnPostInstall(update, modal);
 }
 
 void CBinaryAddonBase::OnPreUnInstall()
 {
-  const boost::unordered_set<IAddonInstanceHandler*> activeAddonHandlers = m_activeAddonHandlers;
-  for (boost::unordered_set<IAddonInstanceHandler*>::const_iterator instance = activeAddonHandlers.begin(); instance != activeAddonHandlers.end(); ++instance)
+  const std::set<IAddonInstanceHandler*> activeAddonHandlers = m_activeAddonHandlers;
+  for (std::set<IAddonInstanceHandler*>::const_iterator instance = activeAddonHandlers.begin(); instance != activeAddonHandlers.end(); ++instance)
     (*instance)->OnPreUnInstall();
 }
 
 void CBinaryAddonBase::OnPostUnInstall()
 {
-  const boost::unordered_set<IAddonInstanceHandler*> activeAddonHandlers = m_activeAddonHandlers;
-  for (boost::unordered_set<IAddonInstanceHandler*>::const_iterator instance = activeAddonHandlers.begin(); instance != activeAddonHandlers.end(); ++instance)
+  const std::set<IAddonInstanceHandler*> activeAddonHandlers = m_activeAddonHandlers;
+  for (std::set<IAddonInstanceHandler*>::const_iterator instance = activeAddonHandlers.begin(); instance != activeAddonHandlers.end(); ++instance)
     (*instance)->OnPostUnInstall();
 }
