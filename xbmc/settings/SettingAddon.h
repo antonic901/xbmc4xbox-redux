@@ -23,11 +23,11 @@ public:
 
   virtual bool Deserialize(const TiXmlNode *node, bool update = false);
 
-  ADDON::TYPE GetAddonType() const { return m_addonType; }
-  void SetAddonType(ADDON::TYPE addonType) { m_addonType = addonType; }
+  ADDON::AddonType::Type GetAddonType() const { return m_addonType; }
+  void SetAddonType(ADDON::AddonType::Type addonType) { m_addonType = addonType; }
 
 private:
   void copyaddontype(const CSettingAddon &setting);
 
-  ADDON::TYPE m_addonType;
+  ADDON::AddonType::Type m_addonType;
 };
