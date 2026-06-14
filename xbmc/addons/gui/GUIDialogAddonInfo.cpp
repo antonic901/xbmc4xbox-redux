@@ -17,8 +17,6 @@
 #include "addons/AddonManager.h"
 #include "addons/AddonRepos.h"
 #include "addons/AddonSystemSettings.h"
-#include "addons/AudioDecoder.h"
-#include "addons/ExtsMimeSupportList.h"
 #include "addons/IAddon.h"
 #include "addons/addoninfo/AddonInfo.h"
 #include "addons/addoninfo/AddonType.h"
@@ -27,7 +25,6 @@
 #include "dialogs/GUIDialogSelect.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "filesystem/Directory.h"
-#include "games/GameUtils.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
@@ -44,7 +41,7 @@
 #include "utils/Variant.h"
 #include "utils/log.h"
 
-#include <functional>
+#include <boost/bind.hpp>
 #include <memory>
 #include <sstream>
 #include <utility>
@@ -61,7 +58,6 @@
 
 using namespace KODI;
 using namespace ADDON;
-using namespace KODI::ADDONS;
 using namespace XFILE;
 using namespace KODI::MESSAGING;
 
@@ -91,7 +87,7 @@ bool CGUIDialogAddonInfo::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_BTN_INSTALL)
       {
-        const auto& itemAddonInfo = m_item->GetAddonInfo();
+        const boost::shared_ptr<const ADDON::IAddon> &itemAddonInfo = m_item->GetAddonInfo();
         if (!CServiceBroker::GetAddonMgr().IsAddonInstalled(
                 itemAddonInfo->ID(), itemAddonInfo->Origin(), itemAddonInfo->Version()))
         {
@@ -173,12 +169,12 @@ void CGUIDialogAddonInfo::OnInitWindow()
   UpdateControls(PerformButtonFocus::CHOICE_YES);
 }
 
-void CGUIDialogAddonInfo::UpdateControls(PerformButtonFocus performButtonFocus)
+void CGUIDialogAddonInfo::UpdateControls(PerformButtonFocus::Type performButtonFocus)
 {
   if (!m_item)
     return;
 
-  const auto& itemAddonInfo = m_item->GetAddonInfo();
+  const boost::shared_ptr<const ADDON::IAddon> &itemAddonInfo = m_item->GetAddonInfo();
   bool isInstalled = CServiceBroker::GetAddonMgr().IsAddonInstalled(
       itemAddonInfo->ID(), itemAddonInfo->Origin(), itemAddonInfo->Version());
   m_addonEnabled =
@@ -274,11 +270,12 @@ void CGUIDialogAddonInfo::UpdateControls(PerformButtonFocus performButtonFocus)
   CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_DEPENDENCIES, !m_depsInstalledWithAvailable.empty());
 
   CFileItemList items;
-  for (const auto& screenshot : m_item->GetAddonInfo()->Screenshots())
+  const std::vector<std::string> screenshots = m_item->GetAddonInfo()->Screenshots();
+  for (std::vector<std::string>::const_iterator screenshot = screenshots.begin(); screenshot != screenshots.end(); ++screenshot)
   {
-    auto item = boost::make_shared<CFileItem>("");
-    item->SetArt("thumb", screenshot);
-    items.Add(std::move(item));
+    CFileItemPtr item = boost::make_shared<CFileItem>("");
+    item->SetArt("thumb", *screenshot);
+    items.Add(boost::move(item));
   }
   CGUIMessage msg(GUI_MSG_LABEL_BIND, GetID(), CONTROL_LIST_SCREENSHOTS, 0, 0, &items);
   OnMessage(msg);
@@ -287,29 +284,29 @@ void CGUIDialogAddonInfo::UpdateControls(PerformButtonFocus performButtonFocus)
 static const std::string LOCAL_CACHE =
     "\\0_local_cache"; // \0 to give it the lowest priority when sorting
 
-int CGUIDialogAddonInfo::AskForVersion(std::vector<std::pair<CAddonVersion, std::string>>& versions)
+int CGUIDialogAddonInfo::AskForVersion(std::vector<std::pair<CAddonVersion, std::string> >& versions)
 {
-  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+  CGUIDialogSelect *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
       WINDOW_DIALOG_SELECT);
   dialog->Reset();
   dialog->SetHeading(21338);
   dialog->SetUseDetails(true);
 
-  for (const auto& versionInfo : versions)
+  for (std::vector<std::pair<CAddonVersion, std::string> >::const_iterator versionInfo = versions.begin(); versionInfo != versions.end(); ++versionInfo)
   {
-    CFileItem item(StringUtils::Format(g_localizeStrings.Get(21339), versionInfo.first.asString()));
-    if (m_localAddon && m_localAddon->Version() == versionInfo.first &&
-        m_item->GetAddonInfo()->Origin() == versionInfo.second)
+    CFileItem item(StringUtils::Format(g_localizeStrings.Get(21339).c_str(), versionInfo->first.asString().c_str()));
+    if (m_localAddon && m_localAddon->Version() == versionInfo->first &&
+        m_item->GetAddonInfo()->Origin() == versionInfo->second)
       item.Select(true);
 
     AddonPtr repo;
-    if (versionInfo.second == LOCAL_CACHE)
+    if (versionInfo->second == LOCAL_CACHE)
     {
       item.SetLabel2(g_localizeStrings.Get(24095));
       item.SetArt("icon", "DefaultAddonRepository.png");
       dialog->Add(item);
     }
-    else if (CServiceBroker::GetAddonMgr().GetAddon(versionInfo.second, repo, AddonType::REPOSITORY,
+    else if (CServiceBroker::GetAddonMgr().GetAddon(versionInfo->second, repo, AddonType::REPOSITORY,
                                                     OnlyEnabled::CHOICE_YES))
     {
       item.SetLabel2(repo->Name());
@@ -324,7 +321,7 @@ int CGUIDialogAddonInfo::AskForVersion(std::vector<std::pair<CAddonVersion, std:
 
 void CGUIDialogAddonInfo::OnUpdate()
 {
-  const auto& itemAddonInfo = m_item->GetAddonInfo();
+  const boost::shared_ptr<const ADDON::IAddon> &itemAddonInfo = m_item->GetAddonInfo();
   const std::string& addonId = itemAddonInfo->ID();
   const std::string& origin = m_item->GetProperty("Addon.ValidUpdateOrigin").asString();
   const CAddonVersion& version =
@@ -344,17 +341,17 @@ void CGUIDialogAddonInfo::OnSelectVersion()
     return;
 
   const std::string& processAddonId = m_item->GetAddonInfo()->ID();
-  EntryPoint entryPoint = m_localAddon ? EntryPoint::UPDATE : EntryPoint::INSTALL;
+  EntryPoint::Type entryPoint = m_localAddon ? EntryPoint::UPDATE : EntryPoint::INSTALL;
 
   // get all compatible versions of an addon-id regardless of their origin
-  std::vector<boost::shared_ptr<IAddon>> compatibleVersions =
+  std::vector<boost::shared_ptr<IAddon> > compatibleVersions =
       CServiceBroker::GetAddonMgr().GetCompatibleVersions(processAddonId);
 
-  std::vector<std::pair<CAddonVersion, std::string>> versions;
+  std::vector<std::pair<CAddonVersion, std::string> > versions;
   versions.reserve(compatibleVersions.size());
 
-  for (const auto& compatibleVersion : compatibleVersions)
-    versions.emplace_back(compatibleVersion->Version(), compatibleVersion->Origin());
+  for (std::vector<boost::shared_ptr<IAddon> >::const_iterator compatibleVersion = compatibleVersions.begin(); compatibleVersion != compatibleVersions.end(); ++compatibleVersion)
+    versions.push_back(std::make_pair((*compatibleVersion)->Version(), (*compatibleVersion)->Origin()));
 
   CAddonDatabase database;
   database.Open();
@@ -382,7 +379,7 @@ void CGUIDialogAddonInfo::OnSelectVersion()
             // e.g. downloading "http://localhost/a+b.zip" ends up in "a b.zip"
             const CAddonVersion version(versionString);
             if (StringUtils::EqualsNoCase(sha256, hash) && !version.empty())
-              versions.emplace_back(version, LOCAL_CACHE);
+              versions.push_back(std::make_pair(version, LOCAL_CACHE));
           }
         }
       }
@@ -453,7 +450,7 @@ void CGUIDialogAddonInfo::OnInstall()
   if (!m_item->HasAddonInfo())
     return;
 
-  const auto& itemAddonInfo = m_item->GetAddonInfo();
+  const boost::shared_ptr<const ADDON::IAddon> &itemAddonInfo = m_item->GetAddonInfo();
   const std::string& origin = itemAddonInfo->Origin();
 
   if (m_localAddon && CAddonSystemSettings::GetInstance().GetAddonRepoUpdateMode() !=
@@ -465,8 +462,8 @@ void CGUIDialogAddonInfo::OnInstall()
       const std::string origin =
           !m_localAddon->Origin().empty() ? m_localAddon->Origin() : g_localizeStrings.Get(39029);
       const std::string text =
-          StringUtils::Format(g_localizeStrings.Get(39028), m_localAddon->Name(), origin,
-                              m_localAddon->Version().asString());
+          StringUtils::Format(g_localizeStrings.Get(39028).c_str(), m_localAddon->Name().c_str(), origin.c_str(),
+                              m_localAddon->Version().asString().c_str());
 
       if (CGUIDialogYesNo::ShowAndGetInput(header, text))
       {
@@ -521,9 +518,6 @@ bool CGUIDialogAddonInfo::CanRun() const
   {
     if (m_localAddon->Type() == AddonType::SCRIPT)
       return true;
-
-    if (GAME::CGameUtils::IsStandaloneGame(m_localAddon))
-      return true;
   }
 
   return false;
@@ -544,6 +538,8 @@ bool CGUIDialogAddonInfo::CanShowSupportList() const
   return false;
 }
 
+static bool isLocalAddonID(const DependencyInfo& other, AddonPtr& localAddon) { return other.id == localAddon->ID(); }
+
 bool CGUIDialogAddonInfo::PromptIfDependency(int heading, int line2)
 {
   if (!m_localAddon)
@@ -554,19 +550,18 @@ bool CGUIDialogAddonInfo::PromptIfDependency(int heading, int line2)
   CServiceBroker::GetAddonMgr().GetAddons(addons);
   for (VECADDONS::const_iterator it = addons.begin(); it != addons.end(); ++it)
   {
-    auto i =
-        std::find_if((*it)->GetDependencies().begin(), (*it)->GetDependencies().end(),
-                     [&](const DependencyInfo& other) { return other.id == m_localAddon->ID(); });
+    std::vector<ADDON::DependencyInfo>::const_iterator i =
+        std::find_if((*it)->GetDependencies().begin(), (*it)->GetDependencies().end(), boost::bind(&isLocalAddonID, _1, m_localAddon));
     if (i != (*it)->GetDependencies().end() && !i->optional) // non-optional dependency
       deps.push_back((*it)->Name());
   }
 
   if (!deps.empty())
   {
-    std::string line0 = StringUtils::Format(g_localizeStrings.Get(24046), m_localAddon->Name());
+    std::string line0 = StringUtils::Format(g_localizeStrings.Get(24046).c_str(), m_localAddon->Name().c_str());
     std::string line1 = StringUtils::Join(deps, ", ");
-    HELPERS::ShowOKDialogLines(heading, std::move(line0),
-                               std::move(line1), line2);
+    HELPERS::ShowOKDialogLines(heading, boost::move(line0),
+                               boost::move(line1), line2);
     return true;
   }
   return false;
@@ -629,26 +624,26 @@ void CGUIDialogAddonInfo::OnSettings()
   CGUIDialogAddonSettings::ShowForAddon(m_localAddon);
 }
 
-bool CGUIDialogAddonInfo::ShowDependencyList(Reactivate reactivate, EntryPoint entryPoint)
+bool CGUIDialogAddonInfo::ShowDependencyList(Reactivate::Type reactivate, EntryPoint::Type entryPoint)
 {
   if (entryPoint != EntryPoint::INSTALL || m_showDepDialogOnInstall)
   {
-    auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+    CGUIDialogSelect *pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
         WINDOW_DIALOG_SELECT);
     CFileItemList items;
 
-    for (const auto& it : m_depsInstalledWithAvailable)
+    for (std::vector<CInstalledWithAvailable>::const_iterator it = m_depsInstalledWithAvailable.begin(); it != m_depsInstalledWithAvailable.end(); ++it)
     {
       // All combinations of depAddon and localAddon validity are possible and information
       // must be displayed even when there is no depAddon.
       // info_addon is the add-on to take the information to display (name, icon) from. The
       // version in the repository is preferred because it might contain more recent data.
 
-      boost::shared_ptr<IAddon> infoAddon = it.m_available ? it.m_available : it.m_installed;
+      boost::shared_ptr<IAddon> infoAddon = it->m_available ? it->m_available : it->m_installed;
 
       if (infoAddon)
       {
-        if (entryPoint != EntryPoint::UPDATE || !it.IsInstalledUpToDate())
+        if (entryPoint != EntryPoint::UPDATE || !it->IsInstalledUpToDate())
         {
           const CFileItemPtr item = boost::make_shared<CFileItem>(infoAddon->Name());
           int messageId = 24180; // minversion only
@@ -657,11 +652,11 @@ bool CGUIDialogAddonInfo::ShowDependencyList(Reactivate reactivate, EntryPoint e
           // make sure only non-optional add-ons that meet versionMin are
           // announced for installation
 
-          if (!it.m_installed)
+          if (!it->m_installed)
           {
-            if (entryPoint != EntryPoint::SHOW_DEPENDENCIES && !it.m_depInfo.optional)
+            if (entryPoint != EntryPoint::SHOW_DEPENDENCIES && !it->m_depInfo.optional)
             {
-              if (it.m_depInfo.versionMin <= it.m_available->Version())
+              if (it->m_depInfo.versionMin <= it->m_available->Version())
               {
                 messageId = 24181; // => install
               }
@@ -675,7 +670,7 @@ bool CGUIDialogAddonInfo::ShowDependencyList(Reactivate reactivate, EntryPoint e
           {
             messageId = 24182; // => installed
 
-            if (!it.IsInstalledUpToDate())
+            if (!it->IsInstalledUpToDate())
             {
               messageId = 24183; // => update to
             }
@@ -686,20 +681,20 @@ bool CGUIDialogAddonInfo::ShowDependencyList(Reactivate reactivate, EntryPoint e
               !CAddonRepos::IsFromOfficialRepo(infoAddon, CheckAddonPath::CHOICE_NO))
           {
             item->SetLabel2(StringUtils::Format(
-                g_localizeStrings.Get(messageId), it.m_depInfo.versionMin.asString(),
-                it.m_installed ? it.m_installed->Version().asString() : "",
-                it.m_available ? it.m_available->Version().asString() : "",
-                it.m_depInfo.optional ? g_localizeStrings.Get(24184) : ""));
+                g_localizeStrings.Get(messageId).c_str(), it->m_depInfo.versionMin.asString().c_str(),
+                it->m_installed ? it->m_installed->Version().asString().c_str() : "",
+                it->m_available ? it->m_available->Version().asString().c_str() : "",
+                it->m_depInfo.optional ? g_localizeStrings.Get(24184).c_str() : ""));
 
             item->SetArt("icon", infoAddon->Icon());
-            item->SetProperty("addon_id", it.m_depInfo.id);
+            item->SetProperty("addon_id", it->m_depInfo.id);
             items.Add(item);
           }
         }
       }
       else
       {
-        const CFileItemPtr item = boost::make_shared<CFileItem>(it.m_depInfo.id);
+        const CFileItemPtr item = boost::make_shared<CFileItem>(it->m_depInfo.id);
         item->SetLabel2(g_localizeStrings.Get(10005)); // Not available
         items.Add(item);
       }
@@ -713,8 +708,8 @@ bool CGUIDialogAddonInfo::ShowDependencyList(Reactivate reactivate, EntryPoint e
         pDialog->Reset();
         pDialog->SetHeading(reactivate == Reactivate::CHOICE_YES ? 39024 : 39020);
         pDialog->SetUseDetails(true);
-        for (auto& it : items)
-          pDialog->Add(*it);
+        for (int i = 0; i < items.Size(); ++i)
+          pDialog->Add(*items[i]);
         pDialog->EnableButton(reactivate == Reactivate::CHOICE_NO, 186);
         pDialog->SetButtonFocus(true);
         pDialog->Open();
@@ -749,47 +744,7 @@ bool CGUIDialogAddonInfo::ShowDependencyList(Reactivate reactivate, EntryPoint e
 
 void CGUIDialogAddonInfo::ShowSupportList()
 {
-  std::vector<KODI::ADDONS::AddonSupportEntry> list;
-  if (CanShowSupportList())
-    list =
-        CServiceBroker::GetExtsMimeSupportList().GetSupportedExtsAndMimeTypes(m_localAddon->ID());
-
-  auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-      WINDOW_DIALOG_SELECT);
-  CFileItemList items;
-  for (const auto& entry : list)
-  {
-    // Ignore included extension about track support
-    if (StringUtils::EndsWith(entry.m_name, KODI_ADDON_AUDIODECODER_TRACK_EXT))
-      continue;
-
-    std::string label;
-    if (entry.m_type == AddonSupportType::Extension)
-      label = StringUtils::Format(g_localizeStrings.Get(21346), entry.m_name);
-    else if (entry.m_type == AddonSupportType::Mimetype)
-      label = StringUtils::Format(g_localizeStrings.Get(21347), entry.m_name);
-    else
-      label = entry.m_name;
-
-    const CFileItemPtr item = boost::make_shared<CFileItem>(label);
-    item->SetLabel2(entry.m_description);
-    if (!entry.m_icon.empty())
-      item->SetArt("icon", entry.m_icon);
-    else if (entry.m_type == AddonSupportType::Extension)
-      item->SetArt("icon", "DefaultExtensionInfo.png");
-    else if (entry.m_type == AddonSupportType::Mimetype)
-      item->SetArt("icon", "DefaultMimetypeInfo.png");
-    item->SetProperty("addon_id", m_localAddon->ID());
-    items.Add(item);
-  }
-
-  pDialog->Reset();
-  pDialog->SetHeading(21485);
-  pDialog->SetUseDetails(true);
-  for (auto& it : items)
-    pDialog->Add(*it);
-  pDialog->SetButtonFocus(true);
-  pDialog->Open();
+  // Used only for AUDIODECODER and IMAGEDECODER addons not present on Xbox
 }
 
 bool CGUIDialogAddonInfo::ShowForItem(const CFileItemPtr& item)
@@ -825,6 +780,54 @@ bool CGUIDialogAddonInfo::SetItem(const CFileItemPtr& item)
   return true;
 }
 
+static bool sortAddons(const CInstalledWithAvailable& a, const CInstalledWithAvailable& b)
+{
+  // 1. "not installed/available" go to the bottom first
+  const bool depAInstalledOrAvailable =
+      a.m_installed != NULL || a.m_available != NULL;
+  const bool depBInstalledOrAvailable =
+      b.m_installed != NULL || b.m_available != NULL;
+
+  if (depAInstalledOrAvailable != depBInstalledOrAvailable)
+  {
+    return !depAInstalledOrAvailable;
+  }
+
+  // 2. then optional add-ons to top
+  if (a.m_depInfo.optional != b.m_depInfo.optional)
+  {
+    return a.m_depInfo.optional;
+  }
+
+  // 3. addon type asc, except scripts/modules at the bottom
+  const boost::shared_ptr<IAddon>& depA = a.m_installed ? a.m_installed : a.m_available;
+  const boost::shared_ptr<IAddon>& depB = b.m_installed ? b.m_installed : b.m_available;
+
+  if (depA && depB)
+  {
+    const AddonType::Type typeA = depA->MainType();
+    const AddonType::Type typeB = depB->MainType();
+    if (typeA != typeB)
+    {
+      if ((typeA == AddonType::SCRIPT_MODULE) == (typeB == AddonType::SCRIPT_MODULE))
+      {
+        // both are scripts/modules or neither one is => sort by addon type asc
+        return typeA < typeB;
+      }
+      else
+      {
+        // At this point, either:
+        // A is script/module and B is not, or A is not script/module and B is.
+        // the script/module goes to the bottom
+        return typeA != AddonType::SCRIPT_MODULE;
+      }
+    }
+  }
+
+  // 4. finally order by addon-id
+  return a.m_depInfo.id < b.m_depInfo.id;
+}
+
 void CGUIDialogAddonInfo::BuildDependencyList()
 {
   if (!m_item)
@@ -835,21 +838,21 @@ void CGUIDialogAddonInfo::BuildDependencyList()
   m_deps = CServiceBroker::GetAddonMgr().GetDepsRecursive(m_item->GetAddonInfo()->ID(),
                                                           OnlyEnabledRootAddon::CHOICE_NO);
 
-  for (const auto& dep : m_deps)
+  for (std::vector<ADDON::DependencyInfo>::const_iterator dep = m_deps.begin(); dep != m_deps.end(); ++dep)
   {
     boost::shared_ptr<IAddon> addonInstalled;
     boost::shared_ptr<IAddon> addonAvailable;
 
     // Find add-on in local installation
-    if (!CServiceBroker::GetAddonMgr().GetAddon(dep.id, addonInstalled, OnlyEnabled::CHOICE_YES))
+    if (!CServiceBroker::GetAddonMgr().GetAddon(dep->id, addonInstalled, OnlyEnabled::CHOICE_YES))
     {
-      addonInstalled = nullptr;
+      addonInstalled.reset();
     }
 
     // Find add-on in repositories
-    if (!CServiceBroker::GetAddonMgr().FindInstallableById(dep.id, addonAvailable))
+    if (!CServiceBroker::GetAddonMgr().FindInstallableById(dep->id, addonAvailable))
     {
-      addonAvailable = nullptr;
+      addonAvailable.reset();
     }
 
     if (!addonInstalled)
@@ -876,56 +879,10 @@ void CGUIDialogAddonInfo::BuildDependencyList()
       }
     }
 
-    m_depsInstalledWithAvailable.emplace_back(dep, addonInstalled, addonAvailable);
+    m_depsInstalledWithAvailable.push_back(CInstalledWithAvailable(*dep, addonInstalled, addonAvailable));
   }
 
-  std::sort(m_depsInstalledWithAvailable.begin(), m_depsInstalledWithAvailable.end(),
-            [](const auto& a, const auto& b) {
-              // 1. "not installed/available" go to the bottom first
-              const bool depAInstalledOrAvailable =
-                  a.m_installed != nullptr || a.m_available != nullptr;
-              const bool depBInstalledOrAvailable =
-                  b.m_installed != nullptr || b.m_available != nullptr;
-
-              if (depAInstalledOrAvailable != depBInstalledOrAvailable)
-              {
-                return !depAInstalledOrAvailable;
-              }
-
-              // 2. then optional add-ons to top
-              if (a.m_depInfo.optional != b.m_depInfo.optional)
-              {
-                return a.m_depInfo.optional;
-              }
-
-              // 3. addon type asc, except scripts/modules at the bottom
-              const boost::shared_ptr<IAddon>& depA = a.m_installed ? a.m_installed : a.m_available;
-              const boost::shared_ptr<IAddon>& depB = b.m_installed ? b.m_installed : b.m_available;
-
-              if (depA && depB)
-              {
-                const AddonType typeA = depA->MainType();
-                const AddonType typeB = depB->MainType();
-                if (typeA != typeB)
-                {
-                  if ((typeA == AddonType::SCRIPT_MODULE) == (typeB == AddonType::SCRIPT_MODULE))
-                  {
-                    // both are scripts/modules or neither one is => sort by addon type asc
-                    return typeA < typeB;
-                  }
-                  else
-                  {
-                    // At this point, either:
-                    // A is script/module and B is not, or A is not script/module and B is.
-                    // the script/module goes to the bottom
-                    return typeA != AddonType::SCRIPT_MODULE;
-                  }
-                }
-              }
-
-              // 4. finally order by addon-id
-              return a.m_depInfo.id < b.m_depInfo.id;
-            });
+  std::sort(m_depsInstalledWithAvailable.begin(), m_depsInstalledWithAvailable.end(), sortAddons);
 }
 
 bool CInstalledWithAvailable::IsInstalledUpToDate() const
