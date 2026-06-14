@@ -12,35 +12,33 @@
 #include "guilib/GUIAction.h"
 #include "guilib/GUIComponent.h"
 #include "utils/StringUtils.h"
-#include "utils/XBMCTinyXML2.h"
+#include "utils/XBMCTinyXML.h"
 #include "utils/log.h"
 
-#include <chrono>
+#include <boost/move/make_unique.hpp>
 
-using namespace std::chrono_literals;
-
-CSkinTimerManager::CSkinTimerManager(CGUIInfoManager& infoMgr) : m_infoMgr{infoMgr}
+CSkinTimerManager::CSkinTimerManager(CGUIInfoManager& infoMgr) : m_infoMgr(infoMgr)
 {
 }
 
 void CSkinTimerManager::LoadTimers(const std::string& path)
 {
-  CXBMCTinyXML2 doc;
+  CXBMCTinyXML doc;
   if (!doc.LoadFile(path))
   {
-    CLog::LogF(LOGWARNING, "Could not load timers file {}: {} (Line: {})", path, doc.ErrorStr(),
-               doc.ErrorLineNum());
+    CLog::Log(LOGWARNING, "Could not load timers file %s: %s (Line: %i)", path.c_str(), doc.ErrorDesc(),
+               doc.ErrorRow());
     return;
   }
 
-  auto* root = doc.RootElement();
+  TiXmlElement* root = doc.RootElement();
   if (!root || !StringUtils::EqualsNoCase(root->Value(), "timers"))
   {
-    CLog::LogF(LOGERROR, "Error loading timers file {}: Root element <timers> required.", path);
+    CLog::Log(LOGERROR, "Error loading timers file {}: Root element <timers> required.", path);
     return;
   }
 
-  const auto* timerNode = root->FirstChildElement("timer");
+  const TiXmlElement* timerNode = root->FirstChildElement("timer");
   while (timerNode)
   {
     LoadTimerInternal(timerNode);
@@ -48,26 +46,26 @@ void CSkinTimerManager::LoadTimers(const std::string& path)
   }
 }
 
-void CSkinTimerManager::LoadTimerInternal(const tinyxml2::XMLNode* node)
+void CSkinTimerManager::LoadTimerInternal(const TiXmlElement* node)
 {
   if ((!node->FirstChildElement("name") || !node->FirstChildElement("name")->FirstChild()))
   {
-    CLog::LogF(LOGERROR, "Missing required field 'name' for valid skin timer. Ignoring timer.");
+    CLog::Log(LOGERROR, "Missing required field 'name' for valid skin timer. Ignoring timer.");
     return;
   }
 
   std::string timerName = node->FirstChildElement("name")->FirstChild()->Value();
   if (TimerExists(timerName))
   {
-    CLog::LogF(LOGWARNING,
+    CLog::Log(LOGWARNING,
                "Ignoring timer with name {} - another timer with the same name already exists",
                timerName);
     return;
   }
 
   // timer start
-  INFO::InfoPtr startInfo{nullptr};
-  bool resetOnStart{false};
+  INFO::InfoPtr startInfo;
+  bool resetOnStart(false);
   if (node->FirstChildElement("start") && node->FirstChildElement("start")->FirstChild())
   {
     startInfo = m_infoMgr.Register(node->FirstChildElement("start")->FirstChild()->Value());
@@ -80,13 +78,13 @@ void CSkinTimerManager::LoadTimerInternal(const tinyxml2::XMLNode* node)
   }
 
   // timer reset
-  INFO::InfoPtr resetInfo{nullptr};
+  INFO::InfoPtr resetInfo;
   if (node->FirstChildElement("reset") && node->FirstChildElement("reset")->FirstChild())
   {
     resetInfo = m_infoMgr.Register(node->FirstChildElement("reset")->FirstChild()->Value());
   }
   // timer stop
-  INFO::InfoPtr stopInfo{nullptr};
+  INFO::InfoPtr stopInfo;
   if (node->FirstChildElement("stop") && node->FirstChildElement("stop")->FirstChild())
   {
     stopInfo = m_infoMgr.Register(node->FirstChildElement("stop")->FirstChild()->Value());
@@ -95,16 +93,16 @@ void CSkinTimerManager::LoadTimerInternal(const tinyxml2::XMLNode* node)
   // process onstart actions
   CGUIAction startActions;
   startActions.EnableSendThreadMessageMode();
-  const auto* onStartElement = node->FirstChildElement("onstart");
+  const TiXmlElement* onStartElement = node->FirstChildElement("onstart");
   while (onStartElement)
   {
     if (onStartElement->FirstChild())
     {
       const std::string conditionalActionAttribute =
-          onStartElement->Attribute("condition") != nullptr ? onStartElement->Attribute("condition")
+          onStartElement->Attribute("condition") != NULL ? onStartElement->Attribute("condition")
                                                             : "";
-      startActions.Append(CGUIAction::CExecutableAction{conditionalActionAttribute,
-                                                        onStartElement->FirstChild()->Value()});
+      startActions.Append(CGUIAction::CExecutableAction(conditionalActionAttribute,
+                                                        onStartElement->FirstChild()->Value()));
     }
     onStartElement = onStartElement->NextSiblingElement("onstart");
   }
@@ -112,16 +110,16 @@ void CSkinTimerManager::LoadTimerInternal(const tinyxml2::XMLNode* node)
   // process onstop actions
   CGUIAction stopActions;
   stopActions.EnableSendThreadMessageMode();
-  const auto* onStopElement = node->FirstChildElement("onstop");
+  const TiXmlElement* onStopElement = node->FirstChildElement("onstop");
   while (onStopElement)
   {
     if (onStopElement->FirstChild())
     {
       const std::string conditionalActionAttribute =
-          onStopElement->Attribute("condition") != nullptr ? onStopElement->Attribute("condition")
+          onStopElement->Attribute("condition") != NULL ? onStopElement->Attribute("condition")
                                                            : "";
-      stopActions.Append(CGUIAction::CExecutableAction{conditionalActionAttribute,
-                                                       onStopElement->FirstChild()->Value()});
+      stopActions.Append(CGUIAction::CExecutableAction(conditionalActionAttribute,
+                                                       onStopElement->FirstChild()->Value()));
     }
     onStopElement = onStopElement->NextSiblingElement("onstop");
   }
@@ -132,40 +130,44 @@ void CSkinTimerManager::LoadTimerInternal(const tinyxml2::XMLNode* node)
 
 bool CSkinTimerManager::TimerIsRunning(const std::string& timer) const
 {
-  if (auto iter = m_timers.find(timer); iter != m_timers.end())
+  boost::unordered_map<std::string, boost::movelib::unique_ptr<CSkinTimer> >::const_iterator iter = m_timers.find(timer);
+  if (iter != m_timers.end())
   {
     return iter->second->IsRunning();
   }
-  CLog::LogF(LOGERROR, "Couldn't find Skin Timer with name: {}", timer);
+  CLog::Log(LOGERROR, "Couldn't find Skin Timer with name: {}", timer);
   return false;
 }
 
 float CSkinTimerManager::GetTimerElapsedSeconds(const std::string& timer) const
 {
-  if (auto iter = m_timers.find(timer); iter != m_timers.end())
+  boost::unordered_map<std::string, boost::movelib::unique_ptr<CSkinTimer> >::const_iterator iter = m_timers.find(timer);
+  if (iter != m_timers.end())
   {
     return iter->second->GetElapsedSeconds();
   }
-  CLog::LogF(LOGERROR, "Couldn't find Skin Timer with name: {}", timer);
+  CLog::Log(LOGERROR, "Couldn't find Skin Timer with name: {}", timer);
   return 0;
 }
 
 void CSkinTimerManager::TimerStart(const std::string& timer) const
 {
-  if (auto iter = m_timers.find(timer); iter != m_timers.end())
+  boost::unordered_map<std::string, boost::movelib::unique_ptr<CSkinTimer> >::const_iterator iter = m_timers.find(timer);
+  if (iter != m_timers.end())
   {
     return iter->second->Start();
   }
-  CLog::LogF(LOGERROR, "Couldn't find Skin Timer with name: {}", timer);
+  CLog::Log(LOGERROR, "Couldn't find Skin Timer with name: {}", timer);
 }
 
 void CSkinTimerManager::TimerStop(const std::string& timer) const
 {
-  if (auto iter = m_timers.find(timer); iter != m_timers.end())
+  boost::unordered_map<std::string, boost::movelib::unique_ptr<CSkinTimer> >::const_iterator iter = m_timers.find(timer);
+  if (iter != m_timers.end())
   {
     return iter->second->Stop();
   }
-  CLog::LogF(LOGERROR, "Couldn't find Skin Timer with name: {}", timer);
+  CLog::Log(LOGERROR, "Couldn't find Skin Timer with name: {}", timer);
 }
 
 size_t CSkinTimerManager::GetTimerCount() const
@@ -180,13 +182,14 @@ bool CSkinTimerManager::TimerExists(const std::string& timer) const
 
 boost::movelib::unique_ptr<CSkinTimer> CSkinTimerManager::GrabTimer(const std::string& timer)
 {
-  if (auto iter = m_timers.find(timer); iter != m_timers.end())
+  boost::unordered_map<std::string, boost::movelib::unique_ptr<CSkinTimer> >::iterator iter = m_timers.find(timer);
+  if (iter != m_timers.end())
   {
-    auto timerInstance = std::move(iter->second);
+    boost::movelib::unique_ptr<CSkinTimer> timerInstance = boost::move(iter->second);
     m_timers.erase(iter);
-    return timerInstance;
+    return boost::move(timerInstance);
   }
-  return {};
+  return boost::movelib::unique_ptr<CSkinTimer>();
 }
 
 void CSkinTimerManager::Stop()
@@ -196,9 +199,9 @@ void CSkinTimerManager::Stop()
   // skins are loaded (or unloaded). All the registered boolean conditions from
   // skin timers will end up being removed when the skin is unloaded. However, to
   // self-contain this component unregister them all here.
-  for (auto const& [key, val] : m_timers)
+  for (boost::unordered_map<std::string, boost::movelib::unique_ptr<CSkinTimer> >::const_iterator key = m_timers.begin(); key != m_timers.end(); ++key)
   {
-    const boost::movelib::unique_ptr<CSkinTimer>::pointer timer = val.get();
+    const boost::movelib::unique_ptr<CSkinTimer>::pointer timer = key->second.get();
     if (timer->GetStartCondition())
     {
       m_infoMgr.UnRegister(timer->GetStartCondition());
@@ -217,9 +220,9 @@ void CSkinTimerManager::Stop()
 
 void CSkinTimerManager::Process()
 {
-  for (const auto& [key, val] : m_timers)
+  for (boost::unordered_map<std::string, boost::movelib::unique_ptr<CSkinTimer> >::const_iterator key = m_timers.begin(); key != m_timers.end(); ++key)
   {
-    const boost::movelib::unique_ptr<CSkinTimer>::pointer timer = val.get();
+    const boost::movelib::unique_ptr<CSkinTimer>::pointer timer = key->second.get();
     if (!timer->IsRunning() && timer->VerifyStartCondition())
     {
       timer->Start();
