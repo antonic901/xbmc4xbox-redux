@@ -608,6 +608,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\SettingsComponent.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\settings\SettingsValueFlatJsonSerializer.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\SettingsValueFlatJsonSerializer.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\settings\SettingsValueXmlSerializer.cpp">
 				</File>
 				<File

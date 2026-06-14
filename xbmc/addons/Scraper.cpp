@@ -68,14 +68,14 @@ static const ContentMapping content[] = {{"unknown", CONTENT_NONE, 231},
 
 std::string TranslateContent(const CONTENT_TYPE &type, bool pretty /*=false*/)
 {
-  for (const ContentMapping& map : content)
+  for (size_t i = 0; i < sizeof(content) / sizeof(ContentMapping); ++i)
   {
-    if (type == map.type)
+    if (type == content[i].type)
     {
-      if (pretty && map.pretty)
-        return g_localizeStrings.Get(map.pretty);
+      if (pretty && content[i].pretty)
+        return g_localizeStrings.Get(content[i].pretty);
       else
-        return map.name;
+        return content[i].name;
     }
   }
   return "";
@@ -83,15 +83,15 @@ std::string TranslateContent(const CONTENT_TYPE &type, bool pretty /*=false*/)
 
 CONTENT_TYPE TranslateContent(const std::string &string)
 {
-  for (const ContentMapping& map : content)
+  for (size_t i = 0; i < sizeof(content) / sizeof(ContentMapping); ++i)
   {
-    if (string == map.name)
-      return map.type;
+    if (string == content[i].name)
+      return content[i].type;
   }
   return CONTENT_NONE;
 }
 
-AddonType ScraperTypeFromContent(const CONTENT_TYPE& content)
+AddonType::Type ScraperTypeFromContent(const CONTENT_TYPE& content)
 {
   switch (content)
   {
@@ -122,7 +122,7 @@ static void CheckScraperError(const TiXmlElement *pxeRoot)
   throw CScraperError(sTitle, sMessage);
 }
 
-CScraper::CScraper(const AddonInfoPtr& addonInfo, AddonType addonType)
+CScraper::CScraper(const AddonInfoPtr& addonInfo, AddonType::Type addonType)
   : CAddon(addonInfo, addonType), m_fLoaded(false), m_isPython(false), m_requiressettings(false), m_pathContent(CONTENT_NONE)
 {
   m_requiressettings = addonInfo->Type(addonType)->GetValue("@requiressettings").asBoolean();
@@ -264,7 +264,7 @@ std::vector<std::string> CScraper::Run(const std::string &function,
       if (strcmp(xchain->Value(), "chain") == 0)
       {
         if (xchain->FirstChild())
-          extras.emplace_back(xchain->FirstChild()->Value());
+          extras.push_back(xchain->FirstChild()->Value());
       }
       else
         scrURL2.ParseAndAppendUrl(xchain);
@@ -311,7 +311,7 @@ std::string CScraper::InternalRun(const std::string &function,
                                   const std::vector<std::string> *extras)
 {
   // walk the list of input URLs and fetch each into parser parameters
-  const auto& urls = scrURL.GetUrls();
+  const std::vector<CScraperUrl::SUrlEntry> &urls = scrURL.GetUrls();
   size_t i;
   for (i = 0; i < urls.size(); ++i)
   {
@@ -337,7 +337,7 @@ std::string CScraper::GetPathSettingsAsJSON()
     return EmptyPathSettings;
 
   CSettingsValueFlatJsonSerializer jsonSerializer;
-  auto json = jsonSerializer.SerializeValues(GetSettings()->GetSettingsManager());
+  std::string json = jsonSerializer.SerializeValues(GetSettings()->GetSettingsManager());
   if (json.empty())
     return EmptyPathSettings;
 
@@ -355,8 +355,8 @@ bool CScraper::Load()
     //! @todo this routine assumes that deps are a single level, and assumes the dep is installed.
     //!       1. Does it make sense to have recursive dependencies?
     //!       2. Should we be checking the dep versions or do we assume it is ok?
-    auto deps = GetDependencies();
-    auto itr = deps.begin();
+    std::vector<ADDON::DependencyInfo> deps = GetDependencies();
+    std::vector<ADDON::DependencyInfo>::iterator itr = deps.begin();
     while (itr != deps.end())
     {
       if (itr->id == "xbmc.metadata")
@@ -670,13 +670,13 @@ static std::vector<T> PythonFind(const std::string &ID,
   CFileItemList items;
   std::stringstream str;
   str << "plugin://" << ID << "?action=find";
-  for (const auto &it : additionals)
-    str << "&" << it.first << "=" << CURL::Encode(it.second);
+  for (std::map<std::string, std::string>::const_iterator it = additionals.begin(); it != additionals.end(); ++it)
+    str << "&" << it->first << "=" << CURL::Encode(it->second);
 
   if (XFILE::CDirectory::GetDirectory(str.str(), items, "", DIR_FLAG_DEFAULTS))
   {
-    for (const auto& it : items)
-      result.emplace_back(std::move(FromFileItem<T>(*it)));
+    for (int i = 0; i < items.Size(); ++i)
+      result.push_back(boost::move(FromFileItem<T>(*items[i])));
   }
 
   return result;
@@ -815,7 +815,7 @@ bool DetailsFromFileItem<CArtist>(const CFileItem& item, CArtist& artist)
     discoAlbum.strAlbum = FromString(item, prefix.str() + ".title");
     discoAlbum.strYear = FromString(item, prefix.str() + ".year");
     discoAlbum.strReleaseGroupMBID = FromString(item, prefix.str() + ".musicbrainzreleasegroupid");
-    artist.discography.emplace_back(discoAlbum);
+    artist.discography.push_back(discoAlbum);
   }
 
   const int numvideolinks = item.GetProperty("artist.videolinks").asInteger32();
@@ -831,7 +831,7 @@ bool DetailsFromFileItem<CArtist>(const CFileItem& item, CArtist& artist)
       videoLink.mbTrackID = FromString(item, prefix.str() + ".mbtrackid");
       videoLink.videoURL = FromString(item, prefix.str() + ".url");
       videoLink.thumbURL = FromString(item, prefix.str() + ".thumb");
-      artist.videolinks.emplace_back(std::move(videoLink));
+      artist.videolinks.push_back(boost::move(videoLink));
     }
   }
 
@@ -872,10 +872,9 @@ static bool PythonDetails(const std::string& ID,
                           T& result)
 {
   CVariant ids;
-  for (const auto& [identifierType, identifier] : uniqueIDs)
-    ids[identifierType] = identifier;
-  std::string uids;
-  CJSONVariantWriter::Write(ids, uids, true);
+  for (boost::unordered_map<std::string, std::string>::const_iterator identifierType = uniqueIDs.begin(); identifierType != uniqueIDs.end(); ++identifierType)
+    ids[identifierType->first] = identifierType->second;
+  std::string uids = CJSONVariantWriter::Write(ids, true);
   std::stringstream str;
   str << "plugin://" << ID << "?action=" << action << "&" << key << "=" << CURL::Encode(url);
   str << "&pathSettings=" << CURL::Encode(pathSettings);
@@ -936,10 +935,11 @@ std::vector<CScraperUrl> CScraper::FindMovie(XFILE::CCurlFile &fcurl,
 
   if (m_isPython)
   {
-    std::map<std::string, std::string> additionals{{"title", sTitle}};
+    std::map<std::string, std::string> additionals;
+    additionals["title"] = sTitle;
     if (!sYear.empty())
-      additionals.insert({"year", sYear});
-    additionals.emplace("pathSettings", GetPathSettingsAsJSON());
+      additionals.insert(std::make_pair("year", sYear));
+    additionals.insert(std::make_pair("pathSettings", GetPathSettingsAsJSON()));
     return PythonFind<CScraperUrl>(ID(), additionals);
   }
 
@@ -1001,7 +1001,7 @@ std::vector<CScraperUrl> CScraper::FindMovie(XFILE::CCurlFile &fcurl,
       if (pxnTitle && pxnTitle->FirstChild() && pxeLink && pxeLink->FirstChild())
       {
         CScraperUrl scurlMovie;
-        auto title = pxnTitle->FirstChild()->ValueStr();
+        std::string title = pxnTitle->FirstChild()->ValueStr();
         std::string id;
         if (XMLUtils::GetString(pxeMovie, "id", id))
           scurlMovie.SetId(id);
@@ -1029,7 +1029,7 @@ std::vector<CScraperUrl> CScraper::FindMovie(XFILE::CCurlFile &fcurl,
           yearScore =
               std::max(0.0, 1 - 0.5 * abs(atoi(sYear.c_str()) - atoi(sCompareYear.c_str())));
 
-        scurlMovie.SetRelevance(fstrcmp(sMatchTitle.c_str(), sCompareTitle.c_str()) + yearScore);
+        scurlMovie.SetRelevance(fstrcmp(sMatchTitle.c_str(), sCompareTitle.c_str(), 0.0) + yearScore);
 
         // reconstruct a title for the user
         if (!sCompareYear.empty())
@@ -1075,8 +1075,13 @@ std::vector<CMusicAlbumInfo> CScraper::FindAlbum(CCurlFile &fcurl,
     return vcali;
 
   if (m_isPython)
-    return PythonFind<CMusicAlbumInfo>(ID(),
-      {{"title", sAlbum}, {"artist", sArtist}, {"pathSettings", GetPathSettingsAsJSON()}});
+  {
+    std::map<std::string, std::string> additionals;
+    additionals["title"] = sAlbum;
+    additionals["artist"] = sArtist;
+    additionals["pathSettings"] = GetPathSettingsAsJSON();
+    return PythonFind<CMusicAlbumInfo>(ID(), additionals);
+  }
 
   // scraper function is given the album and artist as parameters and
   // returns an XML <url> element parseable by CScraperUrl
@@ -1176,8 +1181,12 @@ std::vector<CMusicArtistInfo> CScraper::FindArtist(CCurlFile &fcurl, const std::
     return vcari;
 
   if (m_isPython)
-    return PythonFind<CMusicArtistInfo>(ID(),
-      {{"artist", sArtist}, {"pathSettings", GetPathSettingsAsJSON()}});
+  {
+    std::map<std::string, std::string> additionals;
+    additionals["artist"] = sArtist;
+    additionals["pathSettings"] = GetPathSettingsAsJSON();
+    return PythonFind<CMusicArtistInfo>(ID(), additionals);
+  }
 
   // scraper function is given the artist as parameter and
   // returns an XML <url> element parseable by CScraperUrl
@@ -1276,7 +1285,7 @@ EPISODELIST CScraper::GetEpisodeList(XFILE::CCurlFile &fcurl, const CScraperUrl 
     for (int i = 0; i < items.Size(); ++i)
     {
       EPISODE ep;
-      const auto& tag = *items[i]->GetVideoInfoTag();
+      const CVideoInfoTag &tag = *items[i]->GetVideoInfoTag();
       ep.strTitle = tag.m_strTitle;
       ep.iSeason = tag.m_iSeason;
       ep.iEpisode = tag.m_iEpisode;

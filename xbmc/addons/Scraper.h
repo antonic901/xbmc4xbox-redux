@@ -161,11 +161,11 @@ private:
   std::vector<std::string> Run(const std::string& function,
                                const CScraperUrl& url,
                                XFILE::CCurlFile& http,
-                               const std::vector<std::string>* extras = nullptr);
+                               const std::vector<std::string>* extras = NULL);
   std::vector<std::string> RunNoThrow(const std::string& function,
                                       const CScraperUrl& url,
                                       XFILE::CCurlFile& http,
-                                      const std::vector<std::string>* extras = nullptr);
+                                      const std::vector<std::string>* extras = NULL);
   std::string InternalRun(const std::string& function,
                          const CScraperUrl& url,
                          XFILE::CCurlFile& http,
