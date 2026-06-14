@@ -70,12 +70,12 @@ bool CGUIDialogAddonSettings::OnMessage(CGUIMessage& message)
         CLog::Log(LOGERROR,
                   "CGUIDialogAddonSettings::{}: Set value \"{}\" from add-on \"{}\" called with "
                   "invalid instance id (given: {}, needed: {})",
-                  __func__, m_addon->ID(), settingId, instanceId, m_instanceId);
+                  __FUNCTION__, m_addon->ID(), settingId, instanceId, m_instanceId);
         break;
       }
 
       boost::shared_ptr<CSetting> setting = GetSettingsManager()->GetSetting(settingId);
-      if (setting != nullptr)
+      if (setting != NULL)
       {
         setting->FromString(settingValue);
         return true;
@@ -145,7 +145,7 @@ bool CGUIDialogAddonSettings::ShowForAddon(const ADDON::AddonPtr& addon,
 {
   if (!addon)
   {
-    CLog::LogF(LOGERROR, "No addon given!");
+    CLog::Log(LOGERROR, "No addon given!");
     return false;
   }
 
@@ -176,7 +176,7 @@ bool CGUIDialogAddonSettings::ShowForSingleInstance(
           WINDOW_DIALOG_ADDON_SETTINGS);
   if (!dialog)
   {
-    CLog::LogF(LOGERROR, "Unable to get WINDOW_DIALOG_ADDON_SETTINGS instance!");
+    CLog::Log(LOGERROR, "Unable to get WINDOW_DIALOG_ADDON_SETTINGS instance!");
     return false;
   }
 
@@ -198,6 +198,8 @@ bool CGUIDialogAddonSettings::ShowForSingleInstance(
   return true;
 }
 
+static bool LessThen(const ADDON::AddonInstanceId& a, const ADDON::AddonInstanceId& b) { return a < b; }
+
 bool CGUIDialogAddonSettings::ShowForMultipleInstances(const ADDON::AddonPtr& addon,
                                                        bool saveToDisk)
 {
@@ -206,7 +208,7 @@ bool CGUIDialogAddonSettings::ShowForMultipleInstances(const ADDON::AddonPtr& ad
           WINDOW_DIALOG_SELECT);
   if (!dialog)
   {
-    CLog::LogF(LOGERROR, "Unable to get WINDOW_DIALOG_SELECT instance!");
+    CLog::Log(LOGERROR, "Unable to get WINDOW_DIALOG_SELECT instance!");
     return false;
   }
 
@@ -214,7 +216,7 @@ bool CGUIDialogAddonSettings::ShowForMultipleInstances(const ADDON::AddonPtr& ad
   while (true)
   {
     std::vector<ADDON::AddonInstanceId> ids = addon->GetKnownInstanceIds();
-    std::sort(ids.begin(), ids.end(), [](const auto& a, const auto& b) { return a < b; });
+    std::sort(ids.begin(), ids.end(), LessThen);
 
     dialog->Reset();
     dialog->SetHeading(10012); // Add-on configurations and settings
@@ -222,27 +224,27 @@ bool CGUIDialogAddonSettings::ShowForMultipleInstances(const ADDON::AddonPtr& ad
 
     CFileItemList itemsInstances;
     ADDON::AddonInstanceId highestId = 0;
-    for (const auto& id : ids)
+    for (std::vector<ADDON::AddonInstanceId>::const_iterator id = ids.begin(); id != ids.end(); ++id)
     {
       std::string name;
-      addon->GetSettingString(ADDON_SETTING_INSTANCE_NAME_VALUE, name, id);
+      addon->GetSettingString(ADDON_SETTING_INSTANCE_NAME_VALUE, name, *id);
       if (name.empty())
         name = g_localizeStrings.Get(13205); // Unknown
 
       bool enabled = false;
-      addon->GetSettingBool(ADDON_SETTING_INSTANCE_ENABLED_VALUE, enabled, id);
+      addon->GetSettingBool(ADDON_SETTING_INSTANCE_ENABLED_VALUE, enabled, *id);
 
       const std::string label = StringUtils::Format(
-          g_localizeStrings.Get(10020), name,
-          g_localizeStrings.Get(enabled ? 305 : 13106)); // Edit "config name" [enabled state]
+          g_localizeStrings.Get(10020).c_str(), name.c_str(),
+          g_localizeStrings.Get(enabled ? 305 : 13106).c_str()); // Edit "config name" [enabled state]
 
       const CFileItemPtr item = boost::make_shared<CFileItem>(label);
-      item->SetProperty("id", id);
+      item->SetProperty("id", *id);
       item->SetProperty("name", name);
       itemsInstances.Add(item);
 
-      if (id > highestId)
-        highestId = id;
+      if (*id > highestId)
+        highestId = *id;
     }
 
     CFileItemList itemsGeneral;
@@ -270,11 +272,11 @@ bool CGUIDialogAddonSettings::ShowForMultipleInstances(const ADDON::AddonPtr& ad
       itemsGeneral.Add(item);
     }
 
-    for (auto& it : itemsGeneral)
-      dialog->Add(*it);
+    for (int i = 0; i < itemsGeneral.Size(); ++i)
+      dialog->Add(*itemsGeneral[i]);
 
-    for (auto& it : itemsInstances)
-      dialog->Add(*it);
+    for (int i = 0; i < itemsInstances.Size(); ++i)
+      dialog->Add(*itemsInstances[i]);
 
     // Select last selected item, first instance config item or first item
     if (lastSelected >= 0)
@@ -317,10 +319,10 @@ bool CGUIDialogAddonSettings::ShowForMultipleInstances(const ADDON::AddonPtr& ad
       dialog->SetHeading(10010); // Select add-on configuration to remove
       dialog->SetUseDetails(false);
 
-      for (auto& it : itemsInstances)
+      for (int i = 0; i < itemsInstances.Size(); ++i)
       {
-        CFileItem item(*it);
-        item.SetLabel((*it).GetProperty("name").asString());
+        CFileItem item(*itemsInstances[i]);
+        item.SetLabel((*itemsInstances[i]).GetProperty("name").asString());
         dialog->Add(item);
       }
 
@@ -331,9 +333,9 @@ bool CGUIDialogAddonSettings::ShowForMultipleInstances(const ADDON::AddonPtr& ad
       {
         item = dialog->GetSelectedFileItem();
         const std::string label = StringUtils::Format(
-            g_localizeStrings.Get(10019),
+            g_localizeStrings.Get(10019).c_str(),
             item->GetProperty("name")
-                .asString()); // Do you want to remove the add-on configuration "config name"?
+                .asString().c_str()); // Do you want to remove the add-on configuration "config name"?
 
         if (CGUIDialogYesNo::ShowAndGetInput(10009, // Confirm add-on configuration removal
                                              label))
@@ -382,11 +384,11 @@ void CGUIDialogAddonSettings::SaveAndClose()
   CGUIDialogAddonSettings* dialog =
       CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogAddonSettings>(
           WINDOW_DIALOG_ADDON_SETTINGS);
-  if (dialog == nullptr || !dialog->IsActive())
+  if (dialog == NULL || !dialog->IsActive())
     return;
 
   // check if we need to save the settings
-  if (dialog->m_saveToDisk && dialog->m_addon != nullptr)
+  if (dialog->m_saveToDisk && dialog->m_addon != NULL)
     dialog->m_addon->SaveSettings(dialog->m_instanceId);
 
   // close the dialog
@@ -395,7 +397,7 @@ void CGUIDialogAddonSettings::SaveAndClose()
 
 std::string CGUIDialogAddonSettings::GetCurrentAddonID() const
 {
-  if (m_addon == nullptr)
+  if (m_addon == NULL)
     return "";
 
   return m_addon->ID();
@@ -403,10 +405,10 @@ std::string CGUIDialogAddonSettings::GetCurrentAddonID() const
 
 void CGUIDialogAddonSettings::SetupView()
 {
-  if (m_addon == nullptr || m_addon->GetSettings(m_instanceId) == nullptr)
+  if (m_addon == NULL || m_addon->GetSettings(m_instanceId) == NULL)
     return;
 
-  auto settings = m_addon->GetSettings(m_instanceId);
+  boost::shared_ptr<ADDON::CAddonSettings> settings = m_addon->GetSettings(m_instanceId);
   if (!settings->IsLoaded())
     return;
 
@@ -438,7 +440,7 @@ std::string CGUIDialogAddonSettings::GetLocalizedString(uint32_t labelId) const
 
 std::string CGUIDialogAddonSettings::GetSettingsLabel(const boost::shared_ptr<ISetting>& setting)
 {
-  if (setting == nullptr)
+  if (setting == NULL)
     return "";
 
   std::string label = GetLocalizedString(setting->GetLabel());
@@ -460,28 +462,28 @@ int CGUIDialogAddonSettings::GetSettingLevel() const
 
 boost::shared_ptr<CSettingSection> CGUIDialogAddonSettings::GetSection()
 {
-  const auto settingsManager = GetSettingsManager();
-  if (settingsManager == nullptr)
-    return nullptr;
+  CSettingsManager *const settingsManager = GetSettingsManager();
+  if (settingsManager == NULL)
+    return boost::shared_ptr<CSettingSection>();
 
-  const auto sections = settingsManager->GetSections();
+  const SettingSectionList sections = settingsManager->GetSections();
   if (!sections.empty())
     return sections.front();
 
-  return nullptr;
+  return boost::shared_ptr<CSettingSection>();
 }
 
 CSettingsManager* CGUIDialogAddonSettings::GetSettingsManager() const
 {
-  if (m_addon == nullptr || m_addon->GetSettings(m_instanceId) == nullptr)
-    return nullptr;
+  if (m_addon == NULL || m_addon->GetSettings(m_instanceId) == NULL)
+    return NULL;
 
   return m_addon->GetSettings(m_instanceId)->GetSettingsManager();
 }
 
 void CGUIDialogAddonSettings::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
 {
-  if (m_addon == nullptr || m_addon->GetSettings(m_instanceId) == nullptr)
+  if (m_addon == NULL || m_addon->GetSettings(m_instanceId) == NULL)
     return;
 
   m_addon->GetSettings(m_instanceId)->OnSettingAction(setting);
