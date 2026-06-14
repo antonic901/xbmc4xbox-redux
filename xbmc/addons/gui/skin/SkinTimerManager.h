@@ -10,15 +10,11 @@
 
 #include "SkinTimer.h"
 
-#include <map>
-#include <memory>
+#include <boost/unordered_map.hpp>
+#include <boost/move/unique_ptr.hpp>
 #include <string>
 
 class CGUIInfoManager;
-namespace tinyxml2
-{
-class XMLNode;
-}
 
 /*! \brief CSkinTimerManager is the container and manager for Skin timers. Its role is that of
  * checking if the timer boolean conditions are valid, start or stop timers and execute the respective
@@ -96,9 +92,9 @@ private:
   * \note Called internally from LoadTimers
   * \param node - the XML representation of a skin timer object
   */
-  void LoadTimerInternal(const tinyxml2::XMLNode* node);
+  void LoadTimerInternal(const TiXmlElement* node);
 
   /*! Container for the skin timers */
-  std::map<std::string, boost::movelib::unique_ptr<CSkinTimer> > m_timers;
+  boost::unordered_map<std::string, boost::movelib::unique_ptr<CSkinTimer> > m_timers;
   CGUIInfoManager& m_infoMgr;
 };

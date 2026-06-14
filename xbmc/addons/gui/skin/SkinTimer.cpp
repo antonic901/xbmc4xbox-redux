@@ -16,13 +16,13 @@ CSkinTimer::CSkinTimer(const std::string& name,
                        const CGUIAction& startActions,
                        const CGUIAction& stopActions,
                        bool resetOnStart)
-  : m_name{name},
-    m_startCondition{startCondition},
-    m_resetCondition{resetCondition},
-    m_stopCondition{stopCondition},
-    m_startActions{startActions},
-    m_stopActions{stopActions},
-    m_resetOnStart{resetOnStart}
+  : m_name(name),
+    m_startCondition(startCondition),
+    m_resetCondition(resetCondition),
+    m_stopCondition(stopCondition),
+    m_startActions(startActions),
+    m_stopActions(stopActions),
+    m_resetOnStart(resetOnStart)
 {
 }
 
