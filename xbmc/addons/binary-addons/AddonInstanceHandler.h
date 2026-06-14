@@ -89,8 +89,8 @@ public:
   virtual void OnPostUnInstall() {}
 
 protected:
-  KODI_ADDON_INSTANCE_INFO m_info{};
-  KODI_ADDON_INSTANCE_STRUCT m_ifc{};
+  KODI_ADDON_INSTANCE_INFO m_info;
+  KODI_ADDON_INSTANCE_STRUCT m_ifc;
 
 private:
   boost::shared_ptr<CSetting> GetSetting(const std::string& setting);

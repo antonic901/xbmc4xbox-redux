@@ -13,7 +13,7 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 #include <string>
-#include <boost/unordered_set.hpp>
+#include <set>
 
 namespace ADDON
 {
@@ -49,7 +49,7 @@ namespace ADDON
 
     mutable CCriticalSection m_critSection;
     AddonDllPtr m_activeAddon;
-    boost::unordered_set<IAddonInstanceHandler*> m_activeAddonHandlers;
+    std::set<IAddonInstanceHandler*> m_activeAddonHandlers;
   };
 
 } /* namespace ADDON */
