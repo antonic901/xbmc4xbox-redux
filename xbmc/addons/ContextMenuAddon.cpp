@@ -42,7 +42,7 @@ CContextMenuAddon::CContextMenuAddon(const AddonInfoPtr& addonInfo)
       std::string parent = elem->GetValue("parent").asString() == "kodi.core.manage"
           ? CContextMenuManager::MANAGE.m_groupId : CContextMenuManager::MAIN.m_groupId;
 
-      auto label = elem->GetValue("label").asString();
+      std::string label = elem->GetValue("label").asString();
       if (StringUtils::IsNaturalNumber(label))
         label = g_localizeStrings.GetAddonString(ID(), atoi(label.c_str()));
 
@@ -63,8 +63,8 @@ void CContextMenuAddon::ParseMenu(
     const std::string& parent,
     int& anonGroupCount)
 {
-  auto menuId = elem->GetValue("@id").asString();
-  auto menuLabel = elem->GetValue("label").asString();
+  std::string menuId = elem->GetValue("@id").asString();
+  std::string menuLabel = elem->GetValue("label").asString();
   if (StringUtils::IsNaturalNumber(menuLabel))
     menuLabel = g_localizeStrings.GetAddonString(ID(), atoi(menuLabel.c_str()));
 
@@ -78,27 +78,29 @@ void CContextMenuAddon::ParseMenu(
 
   m_items.push_back(CContextMenuItem::CreateGroup(menuLabel, parent, menuId, ID()));
 
-  for (const auto& subMenu : elem->GetElements("menu"))
-    ParseMenu(&subMenu.second, menuId, anonGroupCount);
+  const EXT_ELEMENTS menuElements = elem->GetElements("menu");
+  for (EXT_ELEMENTS::const_iterator subMenu = menuElements.begin(); subMenu != menuElements.end(); ++subMenu)
+    ParseMenu(&subMenu->second, menuId, anonGroupCount);
 
-  for (const auto& element : elem->GetElements("item"))
+  const EXT_ELEMENTS itemElements = elem->GetElements("item");
+  for (EXT_ELEMENTS::const_iterator element = itemElements.begin(); element != itemElements.end(); ++element)
   {
-    std::string visCondition = element.second.GetValue("visible").asString();
-    std::string library = element.second.GetValue("@library").asString();
-    std::string label = element.second.GetValue("label").asString();
+    std::string visCondition = element->second.GetValue("visible").asString();
+    std::string library = element->second.GetValue("@library").asString();
+    std::string label = element->second.GetValue("label").asString();
     if (StringUtils::IsNaturalNumber(label))
       label = g_localizeStrings.GetAddonString(ID(), atoi(label.c_str()));
 
     std::vector<std::string> args;
     args.push_back(ID());
 
-    std::string arg = element.second.GetValue("@args").asString();
+    std::string arg = element->second.GetValue("@args").asString();
     if (!arg.empty())
       args.push_back(arg);
 
     if (!label.empty() && !library.empty() && !visCondition.empty())
     {
-      auto menu = CContextMenuItem::CreateItem(label, menuId,
+      CContextMenuItem menu = CContextMenuItem::CreateItem(label, menuId,
           URIUtils::AddFileToFolder(Path(), library), visCondition, ID(), args);
       m_items.push_back(menu);
     }

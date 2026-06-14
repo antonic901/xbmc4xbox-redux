@@ -25,8 +25,8 @@
 #include "addons/AddonManager.h"
 #include "addons/Repository.h"
 #include "addons/RepositoryUpdater.h"
-#include "addons/GUIDialogAddonInfo.h"
-#include "addons/GUIDialogAddonSettings.h"
+#include "addons/gui/GUIDialogAddonInfo.h"
+#include "addons/gui/GUIDialogAddonSettings.h"
 
 
 namespace ADDON
@@ -48,10 +48,7 @@ class CStaticContextMenuAction : public IContextMenuItem
 {
 public:
   explicit CStaticContextMenuAction(uint32_t label) : m_label(label) {}
-  std::string GetLabel(const CFileItem& item) const
-  {
-    return g_localizeStrings.Get(m_label);
-  }
+  std::string GetLabel(const CFileItem& item) const;
   bool IsGroup() const { return false; }
 private:
   const uint32_t m_label;
@@ -82,7 +79,8 @@ public:
     const std::string& parent,
     const std::string& library,
     const std::string& condition,
-    const std::string& addonId);
+    const std::string& addonId,
+    const std::vector<std::string>& args = std::vector<std::string>());
 
   friend class ADDON::CContextMenuAddon;
 
@@ -92,6 +90,7 @@ private:
   std::string m_groupId;
   std::string m_library;
   std::string m_addonId; // The owner of this menu item
+  std::vector<std::string> m_args;
 
   std::string m_visibilityCondition;
   mutable INFO::InfoPtr m_infoBool;

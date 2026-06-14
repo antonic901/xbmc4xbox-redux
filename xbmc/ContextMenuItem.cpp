@@ -24,12 +24,17 @@
 #include "addons/ContextMenuAddon.h"
 #include "addons/IAddon.h"
 #include "guilib/GUIComponent.h"
+#include "guilib/LocalizeStrings.h"
 #include "GUIInfoManager.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "interfaces/python/ContextItemAddonInvoker.h"
 #include "interfaces/python/XBPython.h"
 #include "utils/StringUtils.h"
 
+std::string CStaticContextMenuAction::GetLabel(const CFileItem& item) const
+{
+  return g_localizeStrings.Get(m_label);
+}
 
 bool CContextMenuItem::IsVisible(const CFileItem& item) const
 {
@@ -57,7 +62,7 @@ bool CContextMenuItem::Execute(const CFileItemPtr& item) const
     return false;
 
   ADDON::AddonPtr addon;
-  if (!CServiceBroker::GetAddonMgr().GetAddon(m_addonId, addon))
+  if (!CServiceBroker::GetAddonMgr().GetAddon(m_addonId, addon, ADDON::OnlyEnabled::CHOICE_YES))
     return false;
 
   LanguageInvokerPtr invoker(new CContextItemAddonInvoker(&g_pythonParser, item));
@@ -97,7 +102,7 @@ CContextMenuItem CContextMenuItem::CreateGroup(const std::string& label, const s
 }
 
 CContextMenuItem CContextMenuItem::CreateItem(const std::string& label, const std::string& parent,
-    const std::string& library, const std::string& condition, const std::string& addonId)
+    const std::string& library, const std::string& condition, const std::string& addonId, const std::vector<std::string>& args)
 {
   CContextMenuItem menuItem;
   menuItem.m_label = label;
@@ -105,5 +110,6 @@ CContextMenuItem CContextMenuItem::CreateItem(const std::string& label, const st
   menuItem.m_library = library;
   menuItem.m_visibilityCondition = condition;
   menuItem.m_addonId = addonId;
+  menuItem.m_args = args;
   return menuItem;
 }

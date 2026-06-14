@@ -67,7 +67,10 @@ using namespace KODI::MESSAGING;
 
 CGUIDialogAddonInfo::CGUIDialogAddonInfo(void)
   : CGUIDialog(WINDOW_DIALOG_ADDON_INFO, "DialogAddonInfo.xml"),
-    m_item(boost::make_shared<CFileItem>())
+    m_item(boost::make_shared<CFileItem>()),
+    m_addonEnabled(false),
+    m_silentUninstall(false),
+    m_showDepDialogOnInstall(false)
 {
   m_loadType = KEEP_IN_MEMORY;
 }
