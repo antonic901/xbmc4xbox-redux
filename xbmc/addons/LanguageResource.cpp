@@ -71,21 +71,22 @@ CLanguageResource::CLanguageResource(const AddonInfoPtr& addonInfo)
      *   <token>Le</token>
      *   ...
      */
-    for (const auto& values : sorttokensElement->GetValues())
+    const ADDON::EXT_VALUES &sortTokenValues = sorttokensElement->GetValues();
+    for (ADDON::EXT_VALUES::const_iterator values = sortTokenValues.begin(); values != sortTokenValues.end(); ++values)
     {
       /* Second loop goes around the row parts, e.g.
        *   separators = "'"
        *   token = Le
        */
-      std::string token = values.second.GetValue("token").asString();
-      std::string separators = values.second.GetValue("token@separators").asString();
+      std::string token = values->second.GetValue("token").asString();
+      std::string separators = values->second.GetValue("token@separators").asString();
       if (!token.empty())
       {
         if (separators.empty())
           separators = " ._";
 
-        for (auto separator : separators)
-          m_sortTokens.insert(token + separator);
+        for (std::string::const_iterator separator = separators.begin(); separator != separators.end(); ++separator)
+          m_sortTokens.insert(token + *separator);
       }
     }
   }
@@ -103,7 +104,7 @@ void CLanguageResource::OnPostInstall(bool update, bool modal)
 
   if (IsInUse() || (!update && !modal &&
                     (HELPERS::ShowYesNoDialogText(Name(), 24132) ==
-                     DialogResponse::CHOICE_YES)))
+                     HELPERS::YES)))
   {
     if (IsInUse())
       g_langInfo.SetLanguage(ID());

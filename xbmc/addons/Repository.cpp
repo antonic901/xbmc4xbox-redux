@@ -20,7 +20,6 @@
 #include "filesystem/CurlFile.h"
 #include "filesystem/File.h"
 #include "filesystem/ZipFile.h"
-#include "games/GameServices.h"
 #include "messaging/helpers/DialogHelper.h"
 #include "utils/Base64.h"
 #include "utils/Digest.h"
@@ -32,7 +31,8 @@
 
 #include <algorithm>
 #include <iterator>
-#include <tuple>
+#include <boost/bind.hpp>
+#include <boost/tuple/tuple.hpp>
 #include <utility>
 
 using namespace XFILE;
@@ -41,34 +41,39 @@ using namespace KODI::MESSAGING;
 using KODI::UTILITY::CDigest;
 using KODI::UTILITY::TypedDigest;
 
+static bool pathHasParent(RepositoryDirInfo const& dir, const std::string &path) { return URIUtils::PathHasParent(path, dir.datadir, true); }
 
 CRepository::ResolveResult CRepository::ResolvePathAndHash(const AddonPtr& addon) const
 {
   std::string const& path = addon->Path();
 
-  auto dirIt = std::find_if(m_dirs.begin(), m_dirs.end(), [&path](RepositoryDirInfo const& dir) {
-    return URIUtils::PathHasParent(path, dir.datadir, true);
-  });
+  ADDON::RepositoryDirList::const_iterator dirIt = std::find_if(m_dirs.begin(), m_dirs.end(), boost::bind(&pathHasParent, _1, path));
   if (dirIt == m_dirs.end())
   {
     CLog::Log(LOGERROR, "Requested path {} not found in known repository directories", path);
-    return {};
+    KODI::UTILITY::TypedDigest digest;
+    CRepository::ResolveResult resolveResult = {"", digest};
+    return resolveResult;
   }
 
   if (dirIt->hashType == CDigest::Type::INVALID)
   {
     // We have a path, but need no hash
-    return {path, {}};
+    KODI::UTILITY::TypedDigest digest;
+    CRepository::ResolveResult resolveResult = {path, digest};
+    return resolveResult;
   }
 
   // Do not follow mirror redirect, we want the headers of the redirect response
-  CURL url{path};
+  CURL url(path);
   url.SetProtocolOption("redirect-limit", "0");
   CCurlFile file;
   if (!file.Open(url))
   {
     CLog::Log(LOGERROR, "Could not fetch addon location and hash from {}", path);
-    return {};
+    KODI::UTILITY::TypedDigest digest;
+    CRepository::ResolveResult resolveResult = {"", digest};
+    return resolveResult;
   }
 
   std::string hashTypeStr = CDigest::TypeToString(dirIt->hashType);
@@ -77,7 +82,7 @@ CRepository::ResolveResult CRepository::ResolvePathAndHash(const AddonPtr& addon
   // (saves one request per addon install)
   std::string location = file.GetRedirectURL();
   // content-* headers are base64, convert to base16
-  TypedDigest hash{dirIt->hashType, StringUtils::ToHexadecimal(Base64::Decode(file.GetHttpHeader().GetValue(std::string("content-") + hashTypeStr)))};
+  TypedDigest hash(dirIt->hashType, StringUtils::ToHexadecimal(Base64::Decode(file.GetHttpHeader().GetValue(std::string("content-") + hashTypeStr))));
 
   if (hash.Empty())
   {
@@ -86,7 +91,9 @@ CRepository::ResolveResult CRepository::ResolvePathAndHash(const AddonPtr& addon
     if (!FetchChecksum(path + "." + hashTypeStr, hash.value, tmp) || hash.Empty())
     {
       CLog::Log(LOGERROR, "Failed to find hash for {} from HTTP header and in separate file", path);
-      return {};
+      KODI::UTILITY::TypedDigest digest;
+      CRepository::ResolveResult resolveResult = {"", digest};
+      return resolveResult;
     }
   }
   if (location.empty())
@@ -97,7 +104,8 @@ CRepository::ResolveResult CRepository::ResolvePathAndHash(const AddonPtr& addon
 
   CLog::Log(LOGDEBUG, "Resolved addon path {} to {} hash {}", path, location, hash.value);
 
-  return {location, hash};
+  CRepository::ResolveResult resolveResult = {location, hash};
+  return resolveResult;
 }
 
 CRepository::CRepository(const AddonInfoPtr& addonInfo) : CAddon(addonInfo, AddonType::REPOSITORY)
@@ -109,12 +117,13 @@ CRepository::CRepository(const AddonInfoPtr& addonInfo) : CAddon(addonInfo, Addo
   if (addonver)
     version = addonver->Version();
 
-  for (const auto& element : Type(AddonType::REPOSITORY)->GetElements("dir"))
+  const ADDON::EXT_ELEMENTS elements = Type(AddonType::REPOSITORY)->GetElements("dir");
+  for (ADDON::EXT_ELEMENTS::const_iterator element = elements.begin(); element != elements.end(); ++element)
   {
-    RepositoryDirInfo dir = ParseDirConfiguration(element.second);
+    RepositoryDirInfo dir = ParseDirConfiguration(element->second);
     if ((dir.minversion.empty() || version >= dir.minversion) &&
         (dir.maxversion.empty() || version <= dir.maxversion))
-      m_dirs.push_back(std::move(dir));
+      m_dirs.push_back(dir);
   }
 
   // old (dharma compatible) way of defining the addon repository structure, is no longer supported
@@ -136,9 +145,9 @@ CRepository::CRepository(const AddonInfoPtr& addonInfo) : CAddon(addonInfo, Addo
               ID(), version.asString());
   }
 
-  for (auto const& dir : m_dirs)
+  for (RepositoryDirList::const_iterator dir = m_dirs.begin(); dir != m_dirs.end(); ++dir)
   {
-    CURL datadir(dir.datadir);
+    CURL datadir(dir->datadir);
     if (datadir.IsProtocol("http"))
     {
       CLog::Log(LOGWARNING, "Repository add-on {} uses plain HTTP for add-on downloads in path {} - this is insecure and will make your Kodi installation vulnerable to attacks if enabled!", ID(), datadir.GetRedacted());
@@ -152,9 +161,6 @@ CRepository::CRepository(const AddonInfoPtr& addonInfo) : CAddon(addonInfo, Addo
 
 void CRepository::OnPostInstall(bool update, bool modal)
 {
-  // The repo may contain game add-ons, which can introduce new file
-  // extensions to the list of known game extensions
-  CServiceBroker::GetGameServices().OnAddonRepoInstalled();
 }
 
 bool CRepository::FetchChecksum(const std::string& url,
@@ -186,8 +192,8 @@ bool CRepository::FetchChecksum(const std::string& url,
   recheckAfter = 24 * 60 * 60;
   // This special header is set by the Kodi mirror redirector to control client update frequency
   // depending on the load on the mirrors
-  const std::string recheckAfterHeader{
-      file.GetProperty(FILE_PROPERTY_RESPONSE_HEADER, "X-Kodi-Recheck-After")};
+  const std::string recheckAfterHeader(
+      file.GetProperty(FILE_PROPERTY_RESPONSE_HEADER, "X-Kodi-Recheck-After"));
   if (!recheckAfterHeader.empty())
   {
     try
@@ -239,7 +245,7 @@ bool CRepository::FetchIndex(const RepositoryDirInfo& repo,
       CLog::Log(LOGERROR, "CRepository: failed to decompress gzip from '{}'", repo.info);
       return false;
     }
-    response = std::move(buffer);
+    response = boost::move(buffer);
   }
 
   return CServiceBroker::GetAddonMgr().AddonsFromRepoXML(repo, response, addons);
@@ -251,22 +257,22 @@ CRepository::FetchStatus CRepository::FetchIfChanged(const std::string& oldCheck
                                                      int& recheckAfter) const
 {
   checksum = "";
-  std::vector<std::tuple<RepositoryDirInfo const&, std::string>> dirChecksums;
+  std::vector<boost::tuple<RepositoryDirInfo const&, std::string> > dirChecksums;
   std::vector<int> recheckAfterTimes;
 
-  for (const auto& dir : m_dirs)
+  for (RepositoryDirList::const_iterator dir = m_dirs.begin(); dir != m_dirs.end(); ++dir)
   {
-    if (!dir.checksum.empty())
+    if (!dir->checksum.empty())
     {
       std::string part;
       int recheckAfterThisDir;
-      if (!FetchChecksum(dir.checksum, part, recheckAfterThisDir))
+      if (!FetchChecksum(dir->checksum, part, recheckAfterThisDir))
       {
         recheckAfter = 1 * 60 * 60; // retry after 1 hour
-        CLog::Log(LOGERROR, "CRepository: failed read '{}'", dir.checksum);
+        CLog::Log(LOGERROR, "CRepository: failed read '{}'", dir->checksum);
         return STATUS_ERROR;
       }
-      dirChecksums.emplace_back(dir, part);
+      dirChecksums.push_back(boost::make_tuple(*dir, part));
       recheckAfterTimes.push_back(recheckAfterThisDir);
       checksum += part;
     }
@@ -284,10 +290,10 @@ CRepository::FetchStatus CRepository::FetchIfChanged(const std::string& oldCheck
       return STATUS_NOT_MODIFIED;
   }
 
-  for (const auto& dirTuple : dirChecksums)
+  for (std::vector<boost::tuple<RepositoryDirInfo const&, std::string> >::const_iterator dirTuple = dirChecksums.begin(); dirTuple != dirChecksums.end(); ++dirTuple)
   {
     std::vector<AddonInfoPtr> tmp;
-    if (!FetchIndex(std::get<0>(dirTuple), std::get<1>(dirTuple), tmp))
+    if (!FetchIndex(boost::get<0>(*dirTuple), boost::get<1>(*dirTuple), tmp))
       return STATUS_ERROR;
     addons.insert(addons.end(), tmp.begin(), tmp.end());
   }
@@ -327,8 +333,8 @@ RepositoryDirInfo CRepository::ParseDirConfiguration(const CAddonExtensions& con
     }
   }
 
-  dir.minversion = CAddonVersion{configuration.GetValue("@minversion").asString()};
-  dir.maxversion = CAddonVersion{configuration.GetValue("@maxversion").asString()};
+  dir.minversion = CAddonVersion(configuration.GetValue("@minversion").asString());
+  dir.maxversion = CAddonVersion(configuration.GetValue("@maxversion").asString());
 
   return dir;
 }

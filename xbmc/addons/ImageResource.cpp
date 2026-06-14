@@ -9,10 +9,14 @@
 
 #include "URL.h"
 #include "addons/addoninfo/AddonType.h"
+#if 0
 #include "filesystem/XbtManager.h"
+#endif
 #include "utils/FileUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
+
+// TODO: adjust this for XPR textures
 
 namespace ADDON
 {
@@ -29,8 +33,10 @@ void CImageResource::OnPreUnInstall()
   if (!HasXbt(xbtUrl))
     return;
 
+#if 0
   // if there's an XBT we need to remove it from the XBT manager
   XFILE::CXbtManager::GetInstance().Release(xbtUrl);
+#endif
 }
 
 bool CImageResource::IsAllowed(const std::string &file) const
