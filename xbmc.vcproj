@@ -3531,27 +3531,31 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\addons\Webinterface.h">
 				</File>
 				<Filter
-					Name="binary"
-					Filter="">
-					<Filter
-						Name="interfaces"
-						Filter="">
-						<File
-							RelativePath=".\xbmc\addons\binary\interfaces\AddonInterfaces.cpp">
-						</File>
-						<File
-							RelativePath=".\xbmc\addons\binary\interfaces\AddonInterfaces.h">
-						</File>
-						<File
-							RelativePath=".\xbmc\addons\binary\interfaces\IAddonInterface.h">
-						</File>
-					</Filter>
-				</Filter>
-				<Filter
 					Name="binary-addons"
 					Filter="">
 					<File
+						RelativePath=".\xbmc\addons\binary-addons\AddonDll.cpp">
+					</File>
+					<File
 						RelativePath=".\xbmc\addons\binary-addons\AddonDll.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\binary-addons\AddonInstanceHandler.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\binary-addons\AddonInstanceHandler.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\binary-addons\BinaryAddonBase.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\binary-addons\BinaryAddonBase.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\binary-addons\BinaryAddonManager.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\binary-addons\BinaryAddonManager.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\addons\binary-addons\DllAddon.h">
