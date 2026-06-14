@@ -21,7 +21,7 @@ namespace ADDON
 {
 
 class CBinaryAddonBase;
-using BinaryAddonBasePtr = std::shared_ptr<CBinaryAddonBase>;
+typedef boost::shared_ptr<CBinaryAddonBase> BinaryAddonBasePtr;
 
 /*!
  * Addon instance handler, used as identify for std::map to find related
@@ -32,7 +32,7 @@ using BinaryAddonBasePtr = std::shared_ptr<CBinaryAddonBase>;
  * After game system is changed should by this also changed to
  * "const IAddonInstanceHandler*" or direct in map below.
  */
-using ADDON_INSTANCE_HANDLER = void*;
+typedef void* ADDON_INSTANCE_HANDLER;
 
 /*!
  * @brief Information class for use on addon type managers.
@@ -43,7 +43,7 @@ using ADDON_INSTANCE_HANDLER = void*;
 class CAddonDllInformer
 {
 public:
-  virtual ~CAddonDllInformer() = default;
+  virtual ~CAddonDllInformer() {}
 
   virtual bool IsInUse(const std::string& id) = 0;
 };
@@ -52,14 +52,14 @@ class CAddonDll : public CAddon
 {
 public:
   CAddonDll(const AddonInfoPtr& addonInfo, BinaryAddonBasePtr addonBase);
-  CAddonDll(const AddonInfoPtr& addonInfo, AddonType addonType);
-  ~CAddonDll() override;
+  CAddonDll(const AddonInfoPtr& addonInfo, AddonType::Type addonType);
+  virtual ~CAddonDll();
 
   // Implementation of IAddon via CAddon
-  std::string LibPath() const override;
+  virtual std::string LibPath() const;
 
   // addon settings
-  bool SaveSettings(AddonInstanceId id = ADDON_SETTINGS_ID) override;
+  virtual bool SaveSettings(AddonInstanceId id = ADDON_SETTINGS_ID);
 
   bool DllLoaded(void) const;
 
@@ -100,14 +100,14 @@ public:
    */
   void DestroyInstance(KODI_ADDON_INSTANCE_STRUCT* instance);
 
-  bool IsInUse() const override;
+  virtual bool IsInUse() const;
   void RegisterInformer(CAddonDllInformer* informer);
-  AddonPtr GetRunningInstance() const override;
+  virtual AddonPtr GetRunningInstance() const;
 
-  void OnPreInstall() override;
-  void OnPostInstall(bool update, bool modal) override;
-  void OnPreUnInstall() override;
-  void OnPostUnInstall() override;
+  virtual void OnPreInstall();
+  virtual void OnPostInstall(bool update, bool modal);
+  virtual void OnPreUnInstall();
+  virtual void OnPostUnInstall();
 
   bool Initialized() const { return m_initialized; }
 
@@ -142,12 +142,12 @@ private:
 
   bool CheckAPIVersion(int type);
 
-  BinaryAddonBasePtr m_binaryAddonBase = nullptr;
-  DllAddon* m_pDll = nullptr;
-  bool m_initialized = false;
+  BinaryAddonBasePtr m_binaryAddonBase;
+  DllAddon* m_pDll;
+  bool m_initialized;
   bool LoadDll();
   std::map<ADDON_INSTANCE_HANDLER, KODI_ADDON_INSTANCE_STRUCT*> m_usedInstances;
-  CAddonDllInformer* m_informer = nullptr;
+  CAddonDllInformer* m_informer;
 
   virtual ADDON_STATUS TransferSettings(AddonInstanceId instanceId);
 
@@ -157,7 +157,7 @@ private:
    * This structure is defined in:
    * /xbmc/addons/kodi-dev-kit/include/kodi/AddonBase.h
    */
-  AddonGlobalInterface m_interface = {};
+  AddonGlobalInterface m_interface;
 };
 
 } /* namespace ADDON */

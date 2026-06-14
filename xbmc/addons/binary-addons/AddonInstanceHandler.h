@@ -22,13 +22,13 @@ namespace ADDON
 {
 
 class CAddonDll;
-using AddonDllPtr = std::shared_ptr<CAddonDll>;
+typedef boost::shared_ptr<CAddonDll> AddonDllPtr;
 
 class CAddonInfo;
-using AddonInfoPtr = std::shared_ptr<CAddonInfo>;
+typedef boost::shared_ptr<CAddonInfo> AddonInfoPtr;
 
 class CBinaryAddonBase;
-using BinaryAddonBasePtr = std::shared_ptr<CBinaryAddonBase>;
+typedef boost::shared_ptr<CBinaryAddonBase> BinaryAddonBasePtr;
 
 class IAddonInstanceHandler
 {
@@ -61,7 +61,7 @@ public:
   IAddonInstanceHandler(ADDON_TYPE type,
                         const AddonInfoPtr& addonInfo,
                         AddonInstanceId instanceId = ADDON_INSTANCE_ID_UNUSED,
-                        KODI_HANDLE parentInstance = nullptr,
+                        KODI_HANDLE parentInstance = NULL,
                         const std::string& uniqueWorkID = "");
   virtual ~IAddonInstanceHandler();
 
@@ -93,7 +93,7 @@ protected:
   KODI_ADDON_INSTANCE_STRUCT m_ifc{};
 
 private:
-  std::shared_ptr<CSetting> GetSetting(const std::string& setting);
+  boost::shared_ptr<CSetting> GetSetting(const std::string& setting);
 
   static char* get_instance_user_path(const KODI_ADDON_INSTANCE_BACKEND_HDL hdl);
   static bool is_instance_setting_using_default(const KODI_ADDON_INSTANCE_BACKEND_HDL hdl,

@@ -10,9 +10,10 @@
 
 #include "threads/CriticalSection.h"
 
-#include <memory>
+#include <boost/enable_shared_from_this.hpp>
+#include <boost/shared_ptr.hpp>
 #include <string>
-#include <unordered_set>
+#include <boost/unordered_set.hpp>
 
 namespace ADDON
 {
@@ -20,12 +21,12 @@ namespace ADDON
   class IAddonInstanceHandler;
 
   class CAddonInfo;
-  using AddonInfoPtr = std::shared_ptr<CAddonInfo>;
+  typedef boost::shared_ptr<CAddonInfo> AddonInfoPtr;
 
   class CAddonDll;
-  typedef std::shared_ptr<CAddonDll> AddonDllPtr;
+  typedef boost::shared_ptr<CAddonDll> AddonDllPtr;
 
-  class CBinaryAddonBase : public std::enable_shared_from_this<CBinaryAddonBase>
+  class CBinaryAddonBase : public boost::enable_shared_from_this<CBinaryAddonBase>
   {
   public:
     explicit CBinaryAddonBase(const AddonInfoPtr& addonInfo) : m_addonInfo(addonInfo) { }
@@ -48,7 +49,7 @@ namespace ADDON
 
     mutable CCriticalSection m_critSection;
     AddonDllPtr m_activeAddon;
-    std::unordered_set<IAddonInstanceHandler*> m_activeAddonHandlers;
+    boost::unordered_set<IAddonInstanceHandler*> m_activeAddonHandlers;
   };
 
 } /* namespace ADDON */
