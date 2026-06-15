@@ -25,6 +25,7 @@
 namespace ADDON
 {
 class CAddonMgr;
+class CBinaryAddonManager;
 class CBinaryAddonCache;
 class CRepositoryUpdater;
 } // namespace ADDON
@@ -76,10 +77,12 @@ public:
   static void UnregisterAnnouncementManager();
 
   static ADDON::CAddonMgr &GetAddonMgr();
+  static ADDON::CBinaryAddonManager& GetBinaryAddonManager();
   static XBPython &GetXBPython();
   static CContextMenuManager& GetContextMenuManager();
   static PLAYLIST::CPlayListPlayer& GetPlaylistPlayer();
   static ADDON::CRepositoryUpdater& GetRepositoryUpdater();
+  static bool IsAddonInterfaceUp();
   static CWeather& GetWeatherManager();
   static CPlayerCoreFactory& GetPlayerCoreFactory();
   static CDatabaseManager& GetDatabaseManager();

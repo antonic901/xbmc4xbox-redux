@@ -17,8 +17,6 @@
 #include "addons/interfaces/AddonBase.h"
 #include "addons/kodi-dev-kit/include/kodi/versions.h"
 #include "addons/settings/AddonSettings.h"
-#include "events/EventLog.h"
-#include "events/NotificationEvent.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
 #include "messaging/helpers/DialogOKHelper.h"
@@ -42,17 +40,17 @@ CAddonDll::CAddonDll(const AddonInfoPtr& addonInfo, BinaryAddonBasePtr addonBase
     m_initialized(false),
     m_informer(NULL)
 {
-  m_interface = {NULL, NULL, NULL, NULL, NULL}
+  m_interface = AddonGlobalInterface();
 }
 
-CAddonDll::CAddonDll(const AddonInfoPtr& addonInfo, AddonType addonType)
+CAddonDll::CAddonDll(const AddonInfoPtr& addonInfo, AddonType::Type addonType)
   : CAddon(addonInfo, addonType),
     m_binaryAddonBase(CServiceBroker::GetBinaryAddonManager().GetRunningAddonBase(addonInfo->ID())),
     m_pDll(NULL),
     m_initialized(false),
     m_informer(NULL)
 {
-  m_interface = {NULL, NULL, NULL, NULL, NULL}
+  m_interface = AddonGlobalInterface();
 }
 
 CAddonDll::~CAddonDll()
@@ -378,8 +376,8 @@ ADDON_STATUS CAddonDll::TransferSettings(AddonInstanceId instanceId)
   boost::shared_ptr<ADDON::CAddonSettings> settings = GetSettings(instanceId);
   if (settings != NULL)
   {
-    KODI_ADDON_INSTANCE_FUNC* instanceTarget{NULL};
-    KODI_ADDON_INSTANCE_HDL instanceHandle{NULL};
+    KODI_ADDON_INSTANCE_FUNC* instanceTarget = NULL;
+    KODI_ADDON_INSTANCE_HDL instanceHandle = NULL;
     if (instanceId != ADDON_SETTINGS_ID)
     {
       const std::map<ADDON::ADDON_INSTANCE_HANDLER, KODI_ADDON_INSTANCE_STRUCT *>::iterator it = std::find_if(
@@ -552,14 +550,6 @@ bool CAddonDll::CheckAPIVersion(int type)
       kodiMinVersion.asString(),
       addonMinVersion.asString(),
       addonVersion.asString());
-
-    if (CServiceBroker::GetGUI())
-    {
-      CEventLog* eventLog = CServiceBroker::GetEventLog();
-      if (eventLog)
-        eventLog->AddWithNotification(
-            EventPtr(new CNotificationEvent(Name(), 24152, EventLevel::Error)));
-    }
 
     return false;
   }

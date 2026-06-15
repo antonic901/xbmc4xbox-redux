@@ -3678,13 +3678,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 				</Filter>
 				<Filter
-					Name="kodi-dev-kit"
-					Filter="">
-					<File
-						RelativePath=".\xbmc\addons\kodi-dev-kit\include\kodi\c-api\addon_base.h">
-					</File>
-				</Filter>
-				<Filter
 					Name="interfaces"
 					Filter="">
 					<File

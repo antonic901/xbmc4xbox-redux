@@ -47,6 +47,11 @@ ADDON::CAddonMgr &CServiceBroker::GetAddonMgr()
   return g_application.m_ServiceManager->GetAddonMgr();
 }
 
+ADDON::CBinaryAddonManager& CServiceBroker::GetBinaryAddonManager()
+{
+  return g_application.m_ServiceManager->GetBinaryAddonManager();
+}
+
 XBPython& CServiceBroker::GetXBPython()
 {
   return g_application.m_ServiceManager->GetXBPython();
@@ -95,6 +100,11 @@ void CServiceBroker::RegisterGUI(CGUIComponent* gui)
 void CServiceBroker::UnregisterGUI()
 {
   g_serviceBroker.m_pGUI = nullptr;
+}
+
+bool CServiceBroker::IsAddonInterfaceUp()
+{
+  return g_application.m_ServiceManager && g_application.m_ServiceManager->init_level > 1;
 }
 
 CWinSystemBase* CServiceBroker::GetWinSystem()
