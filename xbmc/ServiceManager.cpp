@@ -24,6 +24,7 @@
 #include "DatabaseManager.h"
 #include "PlayListPlayer.h"
 #include "addons/RepositoryUpdater.h"
+#include "addons/binary-addons/BinaryAddonManager.h"
 #include "cores/playercorefactory/PlayerCoreFactory.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "interfaces/python/XBPython.h"
@@ -35,6 +36,7 @@
 
 CServiceManager::CServiceManager()
 {
+  init_level = 0;
 }
 
 CServiceManager::~CServiceManager()
@@ -48,6 +50,7 @@ bool CServiceManager::Init1()
 
   m_playlistPlayer.reset(new PLAYLIST::CPlayListPlayer());
 
+  init_level = 1;
   return true;
 }
 
@@ -56,6 +59,9 @@ bool CServiceManager::Init2()
   // Initialize the addon database (must be before the addon manager is init'd)
   m_databaseManager = boost::movelib::make_unique<CDatabaseManager>();
 
+  m_binaryAddonManager = boost::movelib::make_unique<
+      ADDON::
+          CBinaryAddonManager>(); /* Need to constructed before, GetRunningInstance() of binary CAddonDll need to call them */
   m_addonMgr.reset(new ADDON::CAddonMgr());
   if (!m_addonMgr->Init())
   {
@@ -71,6 +77,7 @@ bool CServiceManager::Init2()
 
   m_mediaManager = boost::movelib::make_unique<CMediaManager>();
 
+  init_level = 2;
   return true;
 }
 
@@ -80,15 +87,19 @@ bool CServiceManager::Init3(const boost::shared_ptr<CProfileManager>& profileMan
 
   m_playerCoreFactory = boost::movelib::make_unique<CPlayerCoreFactory>(*profileManager);
 
+  init_level = 3;
   return true;
 }
 
 void CServiceManager::Deinit()
 {
+  init_level = 0;
+
   m_weatherManager.reset();
   m_playerCoreFactory.reset();
   m_contextMenuManager.reset();
   m_repositoryUpdater.reset();
+  m_binaryAddonManager.reset();
   m_addonMgr.reset();
   m_databaseManager.reset();
   CScriptInvocationManager::GetInstance().UnregisterLanguageInvocationHandler(m_XBPython.get());
@@ -100,6 +111,11 @@ void CServiceManager::Deinit()
 ADDON::CAddonMgr &CServiceManager::GetAddonMgr()
 {
   return *m_addonMgr.get();
+}
+
+ADDON::CBinaryAddonManager& CServiceManager::GetBinaryAddonManager()
+{
+  return *m_binaryAddonManager;
 }
 
 ADDON::CRepositoryUpdater& CServiceManager::GetRepositoryUpdater()

@@ -27,6 +27,7 @@
 namespace ADDON
 {
 class CAddonMgr;
+class CBinaryAddonManager;
 class CRepositoryUpdater;
 }
 
@@ -56,11 +57,13 @@ public:
   bool Init3(const boost::shared_ptr<CProfileManager>& profileManager);
   void Deinit();
   ADDON::CAddonMgr& GetAddonMgr();
+  ADDON::CBinaryAddonManager& GetBinaryAddonManager();
   ADDON::CRepositoryUpdater& GetRepositoryUpdater();
   XBPython& GetXBPython();
   CContextMenuManager& GetContextMenuManager();
 
   PLAYLIST::CPlayListPlayer& GetPlaylistPlayer();
+  int init_level;
 
   CWeather& GetWeatherManager();
 
@@ -77,6 +80,7 @@ protected:
   };
 
   boost::movelib::unique_ptr<ADDON::CAddonMgr> m_addonMgr;
+  boost::movelib::unique_ptr<ADDON::CBinaryAddonManager> m_binaryAddonManager;
   boost::movelib::unique_ptr<ADDON::CRepositoryUpdater> m_repositoryUpdater;
   boost::movelib::unique_ptr<XBPython> m_XBPython;
   boost::movelib::unique_ptr<CContextMenuManager, delete_contextMenuManager> m_contextMenuManager;
