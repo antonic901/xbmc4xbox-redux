@@ -27,7 +27,7 @@
 #include <utility>
 
 #include "addons/AddonManager.h"
-#include "addons/GUIDialogAddonSettings.h"
+#include "addons/gui/GUIDialogAddonSettings.h"
 #include "Application.h"
 #include "filesystem/Directory.h"
 #include "filesystem/ZipManager.h"
@@ -92,7 +92,7 @@ bool CWeatherJob::DoWork()
     return false;
 
   AddonPtr addon;
-  if (!CServiceBroker::GetAddonMgr().GetAddon(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("weather.addon"), addon, ADDON_SCRIPT_WEATHER))
+  if (!CServiceBroker::GetAddonMgr().GetAddon(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("weather.addon"), addon, ADDON::AddonType::SCRIPT_WEATHER))
     return false;
 
   // initialize our sys.argv variables
@@ -853,9 +853,9 @@ void CWeather::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
   if (settingId == "weather.addonsettings")
   {
     AddonPtr addon;
-    if (CServiceBroker::GetAddonMgr().GetAddon(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("weather.addon"), addon, ADDON_SCRIPT_WEATHER) && addon != NULL)
+    if (CServiceBroker::GetAddonMgr().GetAddon(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("weather.addon"), addon, ADDON::AddonType::SCRIPT_WEATHER) && addon != NULL)
     { //! @todo maybe have ShowAndGetInput return a bool if settings changed, then only reset weather if true.
-      CGUIDialogAddonSettings::ShowAndGetInput(addon);
+      CGUIDialogAddonSettings::ShowForAddon(addon);
       Refresh();
     }
   }

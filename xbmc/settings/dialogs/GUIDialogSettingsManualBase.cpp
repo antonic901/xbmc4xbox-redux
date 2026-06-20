@@ -335,7 +335,7 @@ boost::shared_ptr<CSettingAddon> CGUIDialogSettingsManualBase::AddAddon(
     int label,
     SettingLevel::Type level,
     const std::string& value,
-    ADDON::TYPE addonType,
+    ADDON::AddonType::Type addonType,
     bool allowEmpty /* = false */,
     int heading /* = -1 */,
     bool hideValue /* = false */,

@@ -12,8 +12,8 @@
 #include "Util.h"
 #include "addons/AddonManager.h"
 #include "addons/AddonSystemSettings.h"
-#include "addons/GUIDialogAddonSettings.h"
-#include "addons/GUIWindowAddonBrowser.h"
+#include "addons/gui/GUIDialogAddonSettings.h"
+#include "addons/gui/GUIWindowAddonBrowser.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "filesystem/AddonsDirectory.h"
@@ -65,7 +65,7 @@ bool CGUIDialogInfoProviderSettings::Show()
 
   ADDON::AddonPtr defaultScraper;
   // Get default album scraper (when enabled - can default scraper be disabled??)
-  if (ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::ADDON_SCRAPER_ALBUMS,
+  if (ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::AddonType::SCRAPER_ALBUMS,
                                                            defaultScraper))
   {
     ADDON::ScraperPtr scraper = boost::dynamic_pointer_cast<ADDON::CScraper>(defaultScraper);
@@ -73,7 +73,7 @@ bool CGUIDialogInfoProviderSettings::Show()
   }
 
   // Get default artist scraper
-  if (ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::ADDON_SCRAPER_ARTISTS,
+  if (ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::AddonType::SCRAPER_ARTISTS,
                                                            defaultScraper))
   {
     ADDON::ScraperPtr scraper = boost::dynamic_pointer_cast<ADDON::CScraper>(defaultScraper);
@@ -181,7 +181,7 @@ void CGUIDialogInfoProviderSettings::OnSettingAction(const boost::shared_ptr<con
       currentScraperId = m_albumscraper->ID();
     std::string selectedAddonId = currentScraperId;
 
-    if (CGUIWindowAddonBrowser::SelectAddonID(ADDON_SCRAPER_ALBUMS, selectedAddonId, false) ==
+    if (CGUIWindowAddonBrowser::SelectAddonID(ADDON::AddonType::SCRAPER_ALBUMS, selectedAddonId, false) ==
             1 &&
         selectedAddonId != currentScraperId)
     {
@@ -206,7 +206,7 @@ void CGUIDialogInfoProviderSettings::OnSettingAction(const boost::shared_ptr<con
       currentScraperId = m_artistscraper->ID();
     std::string selectedAddonId = currentScraperId;
 
-    if (CGUIWindowAddonBrowser::SelectAddonID(ADDON_SCRAPER_ARTISTS, selectedAddonId, false) ==
+    if (CGUIWindowAddonBrowser::SelectAddonID(ADDON::AddonType::SCRAPER_ARTISTS, selectedAddonId, false) ==
             1 &&
         selectedAddonId != currentScraperId)
     {
@@ -224,9 +224,9 @@ void CGUIDialogInfoProviderSettings::OnSettingAction(const boost::shared_ptr<con
     }
   }
   else if (settingId == SETTING_ALBUMSCRAPER_SETTINGS)
-    CGUIDialogAddonSettings::ShowAndGetInput(m_albumscraper, false);
+    CGUIDialogAddonSettings::ShowForAddon(m_albumscraper, false);
   else if (settingId == SETTING_ARTISTSCRAPER_SETTINGS)
-    CGUIDialogAddonSettings::ShowAndGetInput(m_artistscraper, false);
+    CGUIDialogAddonSettings::ShowForAddon(m_artistscraper, false);
   else if (settingId == CSettings::SETTING_MUSICLIBRARY_ARTISTSFOLDER)
   {
     VECSOURCES shares;

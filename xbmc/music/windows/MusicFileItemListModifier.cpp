@@ -17,7 +17,7 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 
-#include <memory>
+#include <boost/make_shared.hpp>
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 

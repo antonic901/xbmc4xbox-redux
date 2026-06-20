@@ -25,8 +25,8 @@
 #include "addons/AddonManager.h"
 #include "addons/AddonInstaller.h"
 #include "addons/AddonSystemSettings.h"
-#include "addons/GUIDialogAddonSettings.h"
-#include "addons/GUIWindowAddonBrowser.h"
+#include "addons/gui/GUIDialogAddonSettings.h"
+#include "addons/gui/GUIWindowAddonBrowser.h"
 #include "addons/PluginSource.h"
 #include "addons/RepositoryUpdater.h"
 #include "FileItem.h"
@@ -56,7 +56,7 @@ static int InstallAddon(const std::vector<std::string>& params)
   const std::string& addonid = params[0];
 
   AddonPtr addon;
-  CAddonInstaller::GetInstance().InstallModal(addonid, addon);
+  CAddonInstaller::GetInstance().InstallModal(addonid, addon, InstallModalPrompt::CHOICE_YES);
 
   return 0;
 }
@@ -98,9 +98,10 @@ static int RunAddon(const std::vector<std::string>& params)
     const std::string& addonid = params[0];
 
     AddonPtr addon;
-    if (CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, ADDON_PLUGIN))
+    if (CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, AddonType::PLUGIN,
+                                               OnlyEnabled::CHOICE_YES))
     {
-      PluginPtr plugin = boost::dynamic_pointer_cast<CPluginSource>(addon);
+      const boost::shared_ptr<ADDON::CPluginSource> plugin = boost::dynamic_pointer_cast<CPluginSource>(addon);
       std::string urlParameters;
       std::vector<std::string> parameters;
       if (params.size() == 2 &&
@@ -133,10 +134,14 @@ static int RunAddon(const std::vector<std::string>& params)
         cmd = StringUtils::Format("RunPlugin(%s)", StringUtils::Join(params, ",").c_str());
       CBuiltins::GetInstance().Execute(cmd);
     }
-    else if (CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, ADDON_SCRIPT) ||
-        CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, ADDON_SCRIPT_WEATHER) ||
-        CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, ADDON_SCRIPT_LYRICS) ||
-        CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, ADDON_SCRIPT_LIBRARY))
+    else if (CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, AddonType::SCRIPT,
+                                                    OnlyEnabled::CHOICE_YES) ||
+             CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, AddonType::SCRIPT_WEATHER,
+                                                    OnlyEnabled::CHOICE_YES) ||
+             CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, AddonType::SCRIPT_LYRICS,
+                                                    OnlyEnabled::CHOICE_YES) ||
+             CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, AddonType::SCRIPT_LIBRARY,
+                                                    OnlyEnabled::CHOICE_YES))
     {
       // Pass the script name (addonid) and all the parameters
       // (params[1] ... params[x]) separated by a comma to RunScript
@@ -182,22 +187,34 @@ static int RunScript(const std::vector<std::string>& params)
     AddonPtr addon;
     std::string scriptpath;
     // Test to see if the param is an addon ID
-    if (CServiceBroker::GetAddonMgr().GetAddon(params[0], addon))
+    if (CServiceBroker::GetAddonMgr().GetAddon(params[0], addon, OnlyEnabled::CHOICE_YES))
     {
       //Get the correct extension point to run
-      if (CServiceBroker::GetAddonMgr().GetAddon(params[0], addon, ADDON_SCRIPT) ||
-          CServiceBroker::GetAddonMgr().GetAddon(params[0], addon, ADDON_SCRIPT_WEATHER) ||
-          CServiceBroker::GetAddonMgr().GetAddon(params[0], addon, ADDON_SCRIPT_LYRICS) ||
-          CServiceBroker::GetAddonMgr().GetAddon(params[0], addon, ADDON_SCRIPT_LIBRARY))
+      if (CServiceBroker::GetAddonMgr().GetAddon(params[0], addon, AddonType::SCRIPT,
+                                                 OnlyEnabled::CHOICE_YES) ||
+          CServiceBroker::GetAddonMgr().GetAddon(params[0], addon, AddonType::SCRIPT_WEATHER,
+                                                 OnlyEnabled::CHOICE_YES) ||
+          CServiceBroker::GetAddonMgr().GetAddon(params[0], addon, AddonType::SCRIPT_LYRICS,
+                                                 OnlyEnabled::CHOICE_YES) ||
+          CServiceBroker::GetAddonMgr().GetAddon(params[0], addon, AddonType::SCRIPT_LIBRARY,
+                                                 OnlyEnabled::CHOICE_YES))
       {
         scriptpath = addon->LibPath();
       }
       else
       {
         //Run a random extension point (old behaviour).
-        CServiceBroker::GetAddonMgr().GetAddon(params[0], addon);
-        scriptpath = addon->LibPath();
-        CLog::Log(LOGWARNING, "RunScript called for a non-script addon '%s'. This behaviour is deprecated.", params[0].c_str());
+        if (CServiceBroker::GetAddonMgr().GetAddon(params[0], addon, OnlyEnabled::CHOICE_YES))
+        {
+          scriptpath = addon->LibPath();
+          CLog::Log(LOGWARNING,
+                    "RunScript called for a non-script addon '{}'. This behaviour is deprecated.",
+                    params[0]);
+        }
+        else
+        {
+          CLog::Log(LOGERROR, "{} - Could not get addon: {}", __FUNCTION__, params[0]);
+        }
       }
     }
     else
@@ -222,11 +239,11 @@ static int RunScript(const std::vector<std::string>& params)
 static int OpenDefaultSettings(const std::vector<std::string>& params)
 {
   AddonPtr addon;
-  ADDON::TYPE type = TranslateType(params[0]);
+  AddonType::Type type = CAddonInfo::TranslateType(params[0]);
   if (CAddonSystemSettings::GetInstance().GetActive(type, addon))
   {
-    bool changed = CGUIDialogAddonSettings::ShowAndGetInput(addon);
-    if (type == ADDON_VIZ && changed)
+    bool changed = CGUIDialogAddonSettings::ShowForAddon(addon);
+    if (type == AddonType::VISUALIZATION && changed)
       CServiceBroker::GetGUI()->GetWindowManager().SendMessage(GUI_MSG_VISUALISATION_RELOAD, 0, 0);
   }
 
@@ -240,16 +257,16 @@ static int OpenDefaultSettings(const std::vector<std::string>& params)
 static int SetDefaultAddon(const std::vector<std::string>& params)
 {
   std::string addonID;
-  TYPE type = TranslateType(params[0]);
+  AddonType::Type type = CAddonInfo::TranslateType(params[0]);
   bool allowNone = false;
-  if (type == ADDON_VIZ)
+  if (type == AddonType::VISUALIZATION)
     allowNone = true;
 
-  if (type != ADDON_UNKNOWN &&
+  if (type != AddonType::UNKNOWN &&
       CGUIWindowAddonBrowser::SelectAddonID(type,addonID,allowNone))
   {
     CAddonSystemSettings::GetInstance().SetActive(type, addonID);
-    if (type == ADDON_VIZ)
+    if (type == AddonType::VISUALIZATION)
       CServiceBroker::GetGUI()->GetWindowManager().SendMessage(GUI_MSG_VISUALISATION_RELOAD, 0, 0);
   }
 
@@ -263,8 +280,8 @@ static int SetDefaultAddon(const std::vector<std::string>& params)
 static int AddonSettings(const std::vector<std::string>& params)
 {
   AddonPtr addon;
-  if (CServiceBroker::GetAddonMgr().GetAddon(params[0], addon))
-    CGUIDialogAddonSettings::ShowAndGetInput(addon);
+  if (CServiceBroker::GetAddonMgr().GetAddon(params[0], addon, OnlyEnabled::CHOICE_YES))
+    CGUIDialogAddonSettings::ShowForAddon(addon);
 
   return 0;
 }
@@ -282,7 +299,7 @@ static int StopScript(const std::vector<std::string>& params)
   std::string scriptpath(params[0]);
   // Test to see if the param is an addon ID
   AddonPtr script;
-  if (CServiceBroker::GetAddonMgr().GetAddon(params[0], script))
+  if (CServiceBroker::GetAddonMgr().GetAddon(params[0], script, OnlyEnabled::CHOICE_YES))
     scriptpath = script->LibPath();
   CScriptInvocationManager::GetInstance().Stop(scriptpath);
 

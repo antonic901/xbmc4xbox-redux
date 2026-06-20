@@ -11,7 +11,7 @@
 #include "FileItem.h"
 #include "ServiceBroker.h"
 #include "addons/Addon.h"
-#include "addons/GUIWindowAddonBrowser.h"
+#include "addons/gui/GUIWindowAddonBrowser.h"
 #include "addons/Scraper.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogSelect.h"

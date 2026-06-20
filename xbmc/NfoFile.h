@@ -23,7 +23,7 @@
 class CNfoFile
 {
 public:
-  CNfoFile() : m_headPos(0), m_type(ADDON::ADDON_UNKNOWN) {}
+  CNfoFile() : m_headPos(0), m_type(ADDON::AddonType::UNKNOWN) {}
   virtual ~CNfoFile() { Close(); }
 
   CInfoScanner::INFO_TYPE Create(const std::string&,
@@ -51,14 +51,14 @@ public:
   static int Scrape(ADDON::ScraperPtr& scraper, CScraperUrl& url,
                     const std::string& content);
 
-  static std::vector<ADDON::ScraperPtr> GetScrapers(ADDON::TYPE type,
+  static std::vector<ADDON::ScraperPtr> GetScrapers(ADDON::AddonType::Type type,
                                                     const ADDON::ScraperPtr& selectedScraper);
 
 private:
   std::string m_doc;
   size_t m_headPos;
   ADDON::ScraperPtr m_info;
-  ADDON::TYPE m_type;
+  ADDON::AddonType::Type m_type;
   CScraperUrl m_scurl;
 
   int Load(const std::string&);

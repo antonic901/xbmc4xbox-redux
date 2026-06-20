@@ -21,9 +21,12 @@
 #include "ContextMenuManager.h"
 #include "ContextMenuItem.h"
 #include "addons/Addon.h"
+#include "addons/AddonEvents.h"
+#include "addons/AddonManager.h"
 #include "addons/ContextMenuAddon.h"
 #include "addons/ContextMenus.h"
 #include "addons/IAddon.h"
+#include "addons/addoninfo/AddonType.h"
 #include "music/ContextMenus.h"
 #include "video/ContextMenus.h"
 #include "programs/ContextMenus.h"
@@ -91,7 +94,7 @@ void CContextMenuManager::Init()
 void CContextMenuManager::ReloadAddonItems()
 {
   VECADDONS addons;
-  m_addonMgr.GetAddons(addons, ADDON_CONTEXT_ITEM);
+  m_addonMgr.GetAddons(addons, AddonType::CONTEXTMENU_ITEM);
 
   std::vector<CContextMenuItem> addonItems;
   for (VECADDONS::const_iterator ait = addons.begin(); ait != addons.end(); ++ait)
@@ -135,25 +138,33 @@ bool CContextMenuManager::Unload(const CContextMenuAddon& addon)
 
 void CContextMenuManager::OnEvent(const ADDON::AddonEvent& event)
 {
-  if (typeid(event) == typeid(AddonEvents::InstalledChanged))
+  if (typeid(event) == typeid(AddonEvents::ReInstalled) ||
+      typeid(event) == typeid(AddonEvents::UnInstalled))
   {
     ReloadAddonItems();
   }
-  else if (const ADDON::AddonEvents::Enabled *enableEvent = dynamic_cast<const AddonEvents::Enabled*>(&event))
+  else if (typeid(event) == typeid(AddonEvents::Enabled))
   {
     AddonPtr addon;
-    if (m_addonMgr.GetAddon(enableEvent->id, addon, ADDON_CONTEXT_ITEM))
+    if (m_addonMgr.GetAddon(event.addonId, addon, AddonType::CONTEXTMENU_ITEM,
+                            OnlyEnabled::CHOICE_YES))
     {
       CSingleLock lock(m_criticalSection);
       std::vector<CContextMenuItem> items = boost::static_pointer_cast<CContextMenuAddon>(addon)->GetItems();
-      for (std::vector<CContextMenuItem>::iterator iit = items.begin(); iit != items.end(); ++iit)
+      for (std::vector<CContextMenuItem>::iterator item = items.begin(); item != items.end(); ++item)
       {
-        CContextMenuItem &item = *iit;
-        std::vector<CContextMenuItem>::iterator it = std::find(m_addonItems.begin(), m_addonItems.end(), item);
+        std::vector<CContextMenuItem>::iterator it = std::find(m_addonItems.begin(), m_addonItems.end(), *item);
         if (it == m_addonItems.end())
-          m_addonItems.push_back(item);
+          m_addonItems.push_back(*item);
       }
-      CLog::Log(LOGDEBUG, "ContextMenuManager: loaded %s.", enableEvent->id.c_str());
+      CLog::Log(LOGDEBUG, "ContextMenuManager: loaded {}.", event.addonId);
+    }
+  }
+  else if (typeid(event) == typeid(AddonEvents::Disabled))
+  {
+    if (m_addonMgr.HasType(event.addonId, AddonType::CONTEXTMENU_ITEM))
+    {
+      ReloadAddonItems();
     }
   }
 }

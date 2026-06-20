@@ -2223,7 +2223,7 @@ int CXbmcHttp::xbmcLookupAlbum(int numParas, CStdString paras[])
   double relevance;
   bool rel = false;
   AddonPtr addon;
-  if (!ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON_SCRAPER_ALBUMS, addon))
+  if (!ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::AddonType::SCRAPER_ALBUMS, addon))
     return -1;
   ScraperPtr info = boost::dynamic_pointer_cast<CScraper>(addon);
   if (!info)

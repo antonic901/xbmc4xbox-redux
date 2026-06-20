@@ -152,7 +152,7 @@
 #include "dialogs/GUIDialogSubMenu.h"
 #include "dialogs/GUIDialogButtonMenu.h"
 #include "dialogs/GUIDialogYesNo.h"
-#include "addons/GUIDialogAddonSettings.h"
+#include "addons/gui/GUIDialogAddonSettings.h"
 
 #include "video/dialogs/GUIDialogFullScreenInfo.h"
 #include "guilib/GUIControlFactory.h"

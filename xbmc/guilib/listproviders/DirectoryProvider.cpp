@@ -13,7 +13,7 @@
 #include "ServiceBroker.h"
 #include "Util.h"
 #include "addons/AddonManager.h"
-#include "addons/GUIDialogAddonInfo.h"
+#include "addons/gui/GUIDialogAddonInfo.h"
 #include "filesystem/Directory.h"
 #include "filesystem/FavouritesDirectory.h"
 #include "guilib/GUIComponent.h"

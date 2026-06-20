@@ -21,7 +21,7 @@
 #include "SkinBuiltins.h"
 
 #include "addons/Addon.h"
-#include "addons/GUIWindowAddonBrowser.h"
+#include "addons/gui/GUIWindowAddonBrowser.h"
 #include "Application.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "dialogs/GUIDialogNumeric.h"
@@ -87,11 +87,11 @@ static int ToggleSetting(const std::vector<std::string>& params)
 static int SetAddon(const std::vector<std::string>& params)
 {
   int string = CSkinSettings::GetInstance().TranslateString(params[0]);
-  std::vector<ADDON::TYPE> types;
+  std::vector<ADDON::AddonType::Type> types;
   for (unsigned int i = 1 ; i < params.size() ; i++)
   {
-    ADDON::TYPE type = TranslateType(params[i]);
-    if (type != ADDON_UNKNOWN)
+    ADDON::AddonType::Type type = CAddonInfo::TranslateType(params[i]);
+    if (type != ADDON::AddonType::UNKNOWN)
       types.push_back(type);
   }
   std::string result;
@@ -237,8 +237,8 @@ static int SetFile(const std::vector<std::string>& params)
   // as contenttype string see IAddon.h & ADDON::TranslateXX
   std::string strMask = (params.size() > 1) ? params[1] : "";
   StringUtils::ToLower(strMask);
-  ADDON::TYPE type;
-  if ((type = TranslateType(strMask)) != ADDON_UNKNOWN)
+  ADDON::AddonType::Type type;
+  if ((type = CAddonInfo::TranslateType(strMask)) != ADDON::AddonType::UNKNOWN)
   {
     CURL url;
     url.SetProtocol("addons");
@@ -249,10 +249,10 @@ static int SetFile(const std::vector<std::string>& params)
     StringUtils::ToLower(content);
     url.SetPassword(content);
     std::string strMask;
-    if (type == ADDON_SCRIPT)
+    if (type == ADDON::AddonType::SCRIPT)
       strMask = ".py";
     std::string replace;
-    if (CGUIDialogFileBrowser::ShowAndGetFile(url.Get(), strMask, TranslateType(type, true), replace, true, true, true))
+    if (CGUIDialogFileBrowser::ShowAndGetFile(url.Get(), strMask, CAddonInfo::TranslateType(type, true), replace, true, true, true))
     {
       if (StringUtils::StartsWithNoCase(replace, "addons://"))
         CSkinSettings::GetInstance().SetString(string, URIUtils::GetFileName(replace));

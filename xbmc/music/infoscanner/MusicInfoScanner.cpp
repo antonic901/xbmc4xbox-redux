@@ -1001,10 +1001,10 @@ void MUSIC_INFO::CMusicInfoScanner::ScrapeInfoAddedAlbums()
 
   ADDON::ScraperPtr albumScraper;
   ADDON::ScraperPtr artistScraper;
-  if (ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::ADDON_SCRAPER_ALBUMS, addon))
+  if (ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::AddonType::SCRAPER_ALBUMS, addon))
     albumScraper = boost::dynamic_pointer_cast<ADDON::CScraper>(addon);
 
-  if (ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::ADDON_SCRAPER_ARTISTS,
+  if (ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::AddonType::SCRAPER_ARTISTS,
                                                            addon))
     artistScraper = boost::dynamic_pointer_cast<ADDON::CScraper>(addon);
 

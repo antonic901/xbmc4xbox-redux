@@ -35,6 +35,8 @@
 #include "utils/log.h"
 #include "video/VideoDatabase.h"
 
+#include <boost/make_shared.hpp>
+
 using namespace PLAYLIST;
 using namespace KODI::MESSAGING;
 

@@ -180,7 +180,7 @@ bool CVideoInfoDownloader::GetDetails(const boost::unordered_map<std::string, st
     return true;
   }
   else  // unthreaded
-    return m_info->GetVideoDetails(*m_http, /*m_uniqueIDs,*/ url, true /*fMovie*/, movieDetails);
+    return m_info->GetVideoDetails(*m_http, m_uniqueIDs, url, true /*fMovie*/, movieDetails);
 }
 
 bool CVideoInfoDownloader::GetEpisodeDetails(const CScraperUrl &url,
@@ -215,7 +215,7 @@ bool CVideoInfoDownloader::GetEpisodeDetails(const CScraperUrl &url,
     return true;
   }
   else  // unthreaded
-    return m_info->GetVideoDetails(*m_http, /*m_uniqueIDs,*/ url, false /*fMovie*/, movieDetails);
+    return m_info->GetVideoDetails(*m_http, m_uniqueIDs, url, false /*fMovie*/, movieDetails);
 }
 
 bool CVideoInfoDownloader::GetEpisodeList(const CScraperUrl& url,

@@ -26,7 +26,7 @@
 #include "Application.h"
 #include "GUIPassword.h"
 #include "GUIDialogPictureInfo.h"
-#include "addons/GUIDialogAddonInfo.h"
+#include "addons/gui/GUIDialogAddonInfo.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "playlists/PlayListFactory.h"

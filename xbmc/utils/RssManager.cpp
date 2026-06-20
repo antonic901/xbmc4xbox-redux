@@ -79,9 +79,11 @@ void CRssManager::OnSettingAction(const boost::shared_ptr<const CSetting>& setti
   if (settingId == "lookandfeel.rssedit")
   {
     ADDON::AddonPtr addon;
-    if (!CServiceBroker::GetAddonMgr().GetAddon("script.rss.editor", addon))
+    if (!CServiceBroker::GetAddonMgr().GetAddon("script.rss.editor", addon,
+                                                ADDON::OnlyEnabled::CHOICE_YES))
     {
-      if (!CAddonInstaller::GetInstance().InstallModal("script.rss.editor", addon))
+      if (!ADDON::CAddonInstaller::GetInstance().InstallModal(
+              "script.rss.editor", addon, ADDON::InstallModalPrompt::CHOICE_YES))
         return;
     }
     CBuiltins::GetInstance().Execute("RunScript(script.rss.editor)");
