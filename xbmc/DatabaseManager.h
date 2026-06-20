@@ -62,6 +62,8 @@ public:
   bool CanOpen(const std::string &name);
   volatile bool m_bIsUpgrading;
 
+  void LocalizationChanged();
+
 private:
   // private construction, and no assignements; use the provided singleton methods
   CDatabaseManager(const CDatabaseManager&);
