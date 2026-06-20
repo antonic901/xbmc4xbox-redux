@@ -212,7 +212,7 @@ bool CPythonInvoker::execute(const std::string &script, const std::vector<std::s
         "modules installed to python path as fallback. This behaviour will be removed in future "
         "version.", GetId());
       ADDON::VECADDONS addons;
-      CServiceBroker::GetAddonMgr().GetAddons(addons, ADDON::ADDON_SCRIPT_MODULE);
+      CServiceBroker::GetAddonMgr().GetAddons(addons, ADDON::AddonType::SCRIPT_MODULE);
       for (unsigned int i = 0; i < addons.size(); ++i)
         addPath(CSpecialProtocol::TranslatePath(addons[i]->LibPath()));
     }
@@ -621,7 +621,7 @@ void CPythonInvoker::onPythonModuleInitialization(void* moduleDict)
   PyObject *pyaddonid = PyString_FromString(m_addon->ID().c_str());
   PyDict_SetItemString(moduleDictionary, "__xbmcaddonid__", pyaddonid);
 
-  ADDON::AddonVersion version = m_addon->GetDependencyVersion("xbmc.python");
+  ADDON::CAddonVersion version = m_addon->GetDependencyVersion("xbmc.python");
   PyObject *pyxbmcapiversion = PyString_FromString(version.asString().c_str());
   PyDict_SetItemString(moduleDictionary, "__xbmcapiversion__", pyxbmcapiversion);
 
@@ -682,12 +682,13 @@ bool CPythonInvoker::initializeModule(PythonModuleInitialization module)
 
 void CPythonInvoker::getAddonModuleDeps(const ADDON::AddonPtr& addon, std::set<std::string>& paths)
 {
-  ADDON::ADDONDEPS deps = addon->GetDeps();
-  for (ADDON::ADDONDEPS::const_iterator it = deps.begin(); it != deps.end(); ++it)
+  const std::vector<ADDON::DependencyInfo> &deps = addon->GetDependencies();
+  for (std::vector<ADDON::DependencyInfo>::const_iterator it = deps.begin(); it != deps.end(); ++it)
   {
     //Check if dependency is a module addon
     ADDON::AddonPtr dependency;
-    if (CServiceBroker::GetAddonMgr().GetAddon(it->first, dependency, ADDON::ADDON_SCRIPT_MODULE))
+    if (CServiceBroker::GetAddonMgr().GetAddon(it->id, dependency, ADDON::AddonType::SCRIPT_MODULE,
+                                               ADDON::OnlyEnabled::CHOICE_YES))
     {
       std::string path = CSpecialProtocol::TranslatePath(dependency->LibPath());
       if (paths.find(path) == paths.end())

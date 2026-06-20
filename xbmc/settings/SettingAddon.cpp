@@ -15,11 +15,11 @@
 #include "utils/log.h"
 
 CSettingAddon::CSettingAddon(const std::string &id, CSettingsManager *settingsManager /* = NULL */)
-  : CSettingString(id, settingsManager), m_addonType(ADDON::ADDON_UNKNOWN)
+  : CSettingString(id, settingsManager), m_addonType(ADDON::AddonType::UNKNOWN)
 { }
 
 CSettingAddon::CSettingAddon(const std::string &id, int label, const std::string &value, CSettingsManager *settingsManager /* = NULL */)
-  : CSettingString(id, label, value, settingsManager), m_addonType(ADDON::ADDON_UNKNOWN)
+  : CSettingString(id, label, value, settingsManager), m_addonType(ADDON::AddonType::UNKNOWN)
 { }
 
 CSettingAddon::CSettingAddon(const std::string &id, const CSettingAddon &setting)
@@ -55,8 +55,8 @@ bool CSettingAddon::Deserialize(const TiXmlNode *node, bool update /* = false */
     // get the addon type
     if (XMLUtils::GetString(constraints, "addontype", strAddonType) && !strAddonType.empty())
     {
-      m_addonType = ADDON::TranslateType(strAddonType);
-      if (m_addonType != ADDON::ADDON_UNKNOWN)
+      m_addonType = ADDON::CAddonInfo::TranslateType(strAddonType);
+      if (m_addonType != ADDON::AddonType::UNKNOWN)
         ok = true;
     }
   }

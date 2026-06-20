@@ -12,7 +12,7 @@
 #include "ServiceBroker.h"
 #include "Util.h"
 #include "addons/AddonManager.h"
-#include "addons/GUIWindowAddonBrowser.h"
+#include "addons/gui/GUIWindowAddonBrowser.h"
 #include "addons/settings/SettingUrlEncodedString.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "dialogs/GUIDialogNumeric.h"
@@ -1028,7 +1028,8 @@ void CGUIControlButtonSetting::Update(bool fromControl, bool updateDisplayOnly)
             for (std::vector<std::string>::const_iterator addonID = addonIDs.begin(); addonID != addonIDs.end(); ++addonID)
             {
               ADDON::AddonPtr addon;
-              if (CServiceBroker::GetAddonMgr().GetAddon(*addonID, addon))
+              if (CServiceBroker::GetAddonMgr().GetAddon(addonID, addon,
+                                                         ADDON::OnlyEnabled::CHOICE_YES))
                 addonNames.push_back(addon->Name());
             }
 

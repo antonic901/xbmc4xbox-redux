@@ -653,7 +653,9 @@ LanguageResourcePtr CLangInfo::GetLanguageAddon(const std::string& locale /* = "
     addonId = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("locale.language");
 
   ADDON::AddonPtr addon;
-  if (CServiceBroker::GetAddonMgr().GetAddon(addonId, addon, ADDON::ADDON_RESOURCE_LANGUAGE, true) && addon != NULL)
+  if (CServiceBroker::GetAddonMgr().GetAddon(addonId, addon, ADDON::AddonType::RESOURCE_LANGUAGE,
+                                             ADDON::OnlyEnabled::CHOICE_YES) &&
+      addon != NULL)
     return boost::dynamic_pointer_cast<ADDON::CLanguageResource>(addon);
 
   return LanguageResourcePtr();
@@ -674,7 +676,7 @@ bool CLangInfo::SetLanguage(const std::string &strLanguage /* = "" */, bool relo
   return SetLanguage(fallback, strLanguage, reloadServices);
 }
 
-bool isLanguageAddon(const ADDON:: AddonPtr& addon){ return !addon->IsType(ADDON::ADDON_RESOURCE_LANGUAGE); }
+bool isLanguageAddon(const ADDON:: AddonPtr& addon){ return !addon->IsType(ADDON::AddonType::RESOURCE_LANGUAGE); }
 
 bool CLangInfo::SetLanguage(bool& fallback, const std::string &strLanguage /* = "" */, bool reloadServices /* = true */)
 {
@@ -699,7 +701,7 @@ bool CLangInfo::SetLanguage(bool& fallback, const std::string &strLanguage /* = 
       addonId = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("locale.language");
 
     ADDON::AddonPtr addon;
-    if (CServiceBroker::GetAddonMgr().GetAddon(addonId, addon, ADDON::ADDON_RESOURCE_LANGUAGE, false))
+    if (CServiceBroker::GetAddonMgr().GetAddon(addonId, addon, ADDON::AddonType::RESOURCE_LANGUAGE, false))
     {
       languageAddon = boost::static_pointer_cast<ADDON::CLanguageResource>(addon);
       CServiceBroker::GetAddonMgr().EnableAddon(languageAddon->ID());
@@ -720,7 +722,7 @@ bool CLangInfo::SetLanguage(bool& fallback, const std::string &strLanguage /* = 
       CLog::Log(LOGWARNING, "CLangInfo: unable to find an installed language addon matching \"%s\". Trying to find an installable language...", language.c_str());
 
       bool foundMatchingAddon = false;
-      CAddonDatabase addondb;
+      ADDON::CAddonDatabase addondb;
       if (addondb.Open())
       {
         // update the addon repositories to check if there's a matching language addon available for download
@@ -1209,7 +1211,7 @@ void CLangInfo::SettingOptionsLanguageNamesFiller(const SettingConstPtr& setting
 {
   // find languages...
   ADDON::VECADDONS addons;
-  if (!CServiceBroker::GetAddonMgr().GetAddons(addons, ADDON::ADDON_RESOURCE_LANGUAGE))
+  if (!CServiceBroker::GetAddonMgr().GetAddons(addons, ADDON::AddonType::RESOURCE_LANGUAGE))
     return;
 
   for (ADDON::VECADDONS::const_iterator addon = addons.begin(); addon != addons.end(); ++addon)

@@ -14,7 +14,7 @@
 #include "URL.h"
 #include "Util.h"
 #include "addons/AddonManager.h"
-#include "addons/GUIDialogAddonSettings.h"
+#include "addons/gui/GUIDialogAddonSettings.h"
 #include "Application.h"
 #include "cores/IPlayer.h"
 #include "dialogs/GUIDialogContextMenu.h"
@@ -257,7 +257,7 @@ void CGUIDialogSubtitles::FillServices()
   ClearServices();
 
   VECADDONS addons;
-  CServiceBroker::GetAddonMgr().GetAddons(addons, ADDON_SUBTITLE_MODULE);
+  CServiceBroker::GetAddonMgr().GetAddons(addons, ADDON::AddonType::SUBTITLE_MODULE);
 
   if (addons.empty())
   {
@@ -436,9 +436,10 @@ void CGUIDialogSubtitles::OnSubtitleServiceContextMenu(int itemIdx)
     {
       AddonPtr addon;
       if (CServiceBroker::GetAddonMgr().GetAddon(service->GetProperty("Addon.ID").asString(), addon,
-                                                 ADDON_SUBTITLE_MODULE))
+                                                 AddonType::SUBTITLE_MODULE,
+                                                 OnlyEnabled::CHOICE_YES))
       {
-        CGUIDialogAddonSettings::ShowAndGetInput(addon);
+        CGUIDialogAddonSettings::ShowForAddon(addon);
       }
       else
       {
@@ -449,7 +450,8 @@ void CGUIDialogSubtitles::OnSubtitleServiceContextMenu(int itemIdx)
     }
     case SUBTITLE_SERVICE_CONTEXT_BUTTONS::ADDON_DISABLE:
     {
-      CServiceBroker::GetAddonMgr().DisableAddon(service->GetProperty("Addon.ID").asString());
+      CServiceBroker::GetAddonMgr().DisableAddon(service->GetProperty("Addon.ID").asString(),
+                                                 AddonDisabledReason::USER);
       const bool currentActiveServiceWasDisabled =
           m_currentService == service->GetProperty("Addon.ID").asString();
       FillServices();

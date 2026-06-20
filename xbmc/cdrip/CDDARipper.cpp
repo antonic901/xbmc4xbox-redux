@@ -33,6 +33,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
+#include "guilib/LocalizeStrings.h"
 #include "dialogs/GUIDialogOK.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingPath.h"

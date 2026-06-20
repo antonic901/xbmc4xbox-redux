@@ -7983,7 +7983,7 @@ int CVideoDatabase::GetTvShowForEpisode(int idEpisode)
 int CVideoDatabase::GetSeasonForEpisode(int idEpisode)
 {
   char column[5];
-  snprintf(column, sizeof(column), "c%0d", VIDEODB_ID_EPISODE_SEASON);
+  _snprintf(column, sizeof(column), "c%0d", VIDEODB_ID_EPISODE_SEASON);
   std::string id = GetSingleValue("episode", column, PrepareSQL("idEpisode=%i", idEpisode));
   if (id.empty())
     return -1;
@@ -8093,7 +8093,7 @@ ScraperPtr CVideoDatabase::GetScraperForPath(const std::string& strPath, SScanSe
 
       AddonPtr addon;
       if (!scraperID.empty() &&
-          CServiceBroker::GetAddonMgr().GetAddon(scraperID, addon))
+          CServiceBroker::GetAddonMgr().GetAddon(scraperID, addon, ADDON::OnlyEnabled::CHOICE_YES))
       {
         scraper = boost::dynamic_pointer_cast<CScraper>(addon);
         if (!scraper)
@@ -8141,7 +8141,7 @@ ScraperPtr CVideoDatabase::GetScraperForPath(const std::string& strPath, SScanSe
           AddonPtr addon;
           if (content != CONTENT_NONE &&
               CServiceBroker::GetAddonMgr().GetAddon(m_pDS->fv("path.strScraper").get_asString(),
-                                                     addon))
+                                                     addon, ADDON::OnlyEnabled::CHOICE_YES))
           {
             scraper = boost::dynamic_pointer_cast<CScraper>(addon);
             scraper->SetPathSettings(content, m_pDS->fv("path.strSettings").get_asString());
@@ -10491,7 +10491,7 @@ void CVideoDatabase::ImportFromXML(const std::string &path)
         AddonPtr addon;
         std::string id;
         XMLUtils::GetString(path,"scraperpath",id);
-        if (CServiceBroker::GetAddonMgr().GetAddon(id, addon))
+        if (CServiceBroker::GetAddonMgr().GetAddon(id, addon, ADDON::OnlyEnabled::CHOICE_YES))
         {
           SScanSettings settings;
           ScraperPtr scraper = boost::dynamic_pointer_cast<CScraper>(addon);

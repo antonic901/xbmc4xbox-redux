@@ -100,7 +100,8 @@ namespace XBMCAddon
       if (!XFILE::CFile::Exists(strSkinPath))
       {
         std::string str("none");
-        ADDON::AddonProps props(str, ADDON::ADDON_SKIN);
+        ADDON::AddonInfoPtr addonInfo =
+            boost::make_shared<ADDON::CAddonInfo>(str, ADDON::AddonType::SKIN);
         ADDON::CSkinInfo::TranslateResolution(defaultRes, res);
 
         // Check for the matching folder for the skin in the fallback skins folder
@@ -112,20 +113,20 @@ namespace XBMCAddon
         // Check for the matching folder for the skin in the fallback skins folder (if it exists)
         if (XFILE::CFile::Exists(basePath))
         {
-          props.path = basePath;
-          ADDON::CSkinInfo skinInfo(props, res);
-          skinInfo.Start();
-          strSkinPath = skinInfo.GetSkinPath(xmlFilename, &res);
+          addonInfo->SetPath(basePath);
+          boost::shared_ptr<ADDON::CSkinInfo> skinInfo = boost::make_shared<ADDON::CSkinInfo>(addonInfo, res);
+          skinInfo->Start();
+          strSkinPath = skinInfo->GetSkinPath(xmlFilename, &res);
         }
 
         if (!XFILE::CFile::Exists(strSkinPath))
         {
           // Finally fallback to the DefaultSkin as it didn't exist in either the XBMC Skin folder or the fallback skin folder
-          props.path = URIUtils::AddFileToFolder(fallbackPath, defaultSkin);
-          ADDON::CSkinInfo skinInfo(props, res);
+          addonInfo->SetPath(URIUtils::AddFileToFolder(fallbackPath, defaultSkin));
+          boost::shared_ptr<ADDON::CSkinInfo> skinInfo = boost::make_shared<ADDON::CSkinInfo>(addonInfo, res);
 
-          skinInfo.Start();
-          strSkinPath = skinInfo.GetSkinPath(xmlFilename, &res);
+          skinInfo->Start();
+          strSkinPath = skinInfo->GetSkinPath(xmlFilename, &res);
           if (!XFILE::CFile::Exists(strSkinPath))
             throw WindowException("XML File for Window is missing");
         }

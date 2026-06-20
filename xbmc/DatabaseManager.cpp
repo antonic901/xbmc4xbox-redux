@@ -41,7 +41,7 @@ CDatabaseManager::~CDatabaseManager()
 void CDatabaseManager::Initialize(bool addonsOnly)
 {
   Deinitialize();
-  { CAddonDatabase db; UpdateDatabase(db); }
+  { ADDON::CAddonDatabase db; UpdateDatabase(db); }
   if (addonsOnly)
     return;
   CLog::Log(LOGDEBUG, "%s, updating databases...", __FUNCTION__);

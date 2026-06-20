@@ -11,8 +11,8 @@
 #include "ServiceBroker.h"
 #include "addons/AddonManager.h"
 #include "addons/AddonSystemSettings.h"
-#include "addons/GUIDialogAddonSettings.h"
-#include "addons/GUIWindowAddonBrowser.h"
+#include "addons/gui/GUIDialogAddonSettings.h"
+#include "addons/gui/GUIWindowAddonBrowser.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "filesystem/AddonsDirectory.h"
@@ -241,7 +241,7 @@ void CGUIDialogContentSettings::OnSettingAction(const boost::shared_ptr<const CS
   }
   else if (settingId == SETTING_SCRAPER_LIST)
   {
-    ADDON::TYPE type = ADDON::ScraperTypeFromContent(m_content);
+    ADDON::AddonType::Type type = ADDON::ScraperTypeFromContent(m_content);
     std::string currentScraperId;
     if (m_scraper != NULL)
       currentScraperId = m_scraper->ID();
@@ -251,7 +251,8 @@ void CGUIDialogContentSettings::OnSettingAction(const boost::shared_ptr<const CS
         && selectedAddonId != currentScraperId)
     {
       AddonPtr scraperAddon;
-      if (CServiceBroker::GetAddonMgr().GetAddon(selectedAddonId, scraperAddon))
+      if (CServiceBroker::GetAddonMgr().GetAddon(selectedAddonId, scraperAddon,
+                                                 ADDON::OnlyEnabled::CHOICE_YES))
       {
         m_scraper = boost::dynamic_pointer_cast<CScraper>(scraperAddon);
         SetupView();
@@ -265,7 +266,7 @@ void CGUIDialogContentSettings::OnSettingAction(const boost::shared_ptr<const CS
     }
   }
   else if (settingId == SETTING_SCRAPER_SETTINGS)
-    CGUIDialogAddonSettings::ShowAndGetInput(m_scraper, false);
+    CGUIDialogAddonSettings::ShowForAddon(m_scraper, false);
 }
 
 bool CGUIDialogContentSettings::Save()

@@ -13,7 +13,7 @@
 #include "Exception.h"
 #include "ServiceBroker.h"
 #include "addons/AddonManager.h"
-#include "addons/GUIDialogAddonSettings.h"
+#include "addons/gui/GUIDialogAddonSettings.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
