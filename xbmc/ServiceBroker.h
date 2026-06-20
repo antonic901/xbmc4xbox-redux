@@ -83,6 +83,7 @@ public:
   static PLAYLIST::CPlayListPlayer& GetPlaylistPlayer();
   static ADDON::CRepositoryUpdater& GetRepositoryUpdater();
   static bool IsAddonInterfaceUp();
+  static bool IsServiceManagerUp();
   static CWeather& GetWeatherManager();
   static CPlayerCoreFactory& GetPlayerCoreFactory();
   static CDatabaseManager& GetDatabaseManager();

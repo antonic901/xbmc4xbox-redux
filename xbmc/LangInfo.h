@@ -1,23 +1,19 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
+
+#include "settings/lib/ISettingCallback.h"
+#include "settings/lib/ISettingsHandler.h"
+#include "utils/GlobalsHandling.h"
+#include "utils/XBLocale.h"
+#include "utils/Speed.h"
+#include "utils/Temperature.h"
 
 #include <locale>
 #include <map>
@@ -26,13 +22,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "settings/lib/ISettingCallback.h"
-#include "settings/lib/ISettingsHandler.h"
-#include "utils/GlobalsHandling.h"
-#include "utils/XBLocale.h"
-#include "utils/Speed.h"
-#include "utils/Temperature.h"
 
 #ifdef TARGET_WINDOWS
 #ifdef GetDateFormat
@@ -70,7 +59,11 @@ public:
   // implementation of ISettingsHandler
   virtual void OnSettingsLoaded();
 
-  bool Load(const std::string& strLanguage);
+  /*
+   * \brief Get language codes list of the installed language addons.
+   * \param languages [OUT] The list of languages (language code, name).
+   */
+  static void GetAddonsLanguageCodes(std::map<std::string, std::string>& languages);
 
   /*!
    \brief Returns the language addon for the given locale (or the current one).
@@ -87,9 +80,17 @@ public:
   const std::string& GetLanguageCode() const { return m_languageCodeGeneral; }
 
   /*!
-   \brief Returns the given language's name in English
+   * \brief Convert an english language name to an addon locale,
+   *        by searching in the installed language addons.
+   * \param langName [IN] The english language name
+   * \return The locale for the given english name, or empty if not found
+   */
+  static std::string ConvertEnglishNameToAddonLocale(const std::string& langName);
 
-   \param locale (optional) Locale of the language (current if empty)
+  /*!
+   * \brief Get the english language name from given locale,
+   *        by searching in the installed language addons.
+   * \param locale [OPT] Locale of the language (current if empty)
    */
   std::string GetEnglishLanguageName(const std::string& locale = "") const;
 
@@ -100,29 +101,39 @@ public:
   \param reloadServices (optional) Whether to reload services relying on localization.
   \return True if the language has been successfully loaded, false otherwise.
   */
-  bool SetLanguage(const std::string &strLanguage = "", bool reloadServices = true);
-  /*!
-   \brief Sets and loads the given (or configured) language, its details and strings.
+  bool SetLanguage(std::string strLanguage = "", bool reloadServices = true);
 
-   \param fallback Whether the fallback language has been loaded instead of the given language.
-   \param strLanguage (optional) Language to be loaded.
-   \param reloadServices (optional) Whether to reload services relying on localization.
-   \return True if the language has been successfully loaded, false otherwise.
+  /*
+   * \brief Get the audio language in ISO 639-2 format.
+   * \return The language code (user-defined also allowed), otherwise if "default", "original" or "mediadefault" is set
+   *         to the audio language setting, will fallback to a general language code (e.g. eng)
    */
-  bool SetLanguage(bool& fallback, const std::string &strLanguage = "", bool reloadServices = true);
-
   const std::string& GetAudioLanguage() const;
-  // language can either be a two char language code as defined in ISO639
-  // or a three char language code
-  // or a language name in english (as used by XBMC)
-  void SetAudioLanguage(const std::string& language);
 
-  // three char language code (not win32 specific)
+  /*
+   * \brief Set the audio language.
+   * \param language The language can either be a two char language code,
+   *        or a three char language code, or a language name in english,
+   *        also user-defined languages are allowed.
+   * \param isIso6392 Defines that language is in ISO 639-2 format, otherwise will be considered as ISO 639-1 format.
+   */
+  void SetAudioLanguage(const std::string& language, bool isIso6392 = false);
+
+  /*
+   * \brief Get the subtitle language in ISO 639-2 format.
+   * \return The language code (user-defined also allowed), otherwise if "default", "original" is set
+   *         to the subtitle language setting, will fallback to a general language code (e.g. eng)
+   */
   const std::string& GetSubtitleLanguage() const;
-  // language can either be a two char language code as defined in ISO639
-  // or a three char language code
-  // or a language name in english (as used by XBMC)
-  void SetSubtitleLanguage(const std::string& language);
+
+  /*
+   * \brief Set the subtitle language.
+   * \param language The language can either be a two char language code,
+   *        or a three char language code, or a language name in english,
+   *        also user-defined languages are allowed.
+   * \param isIso6392 Defines that language is in ISO 639-2 format, otherwise will be considered as ISO 639-1 format.
+   */
+  void SetSubtitleLanguage(const std::string& language, bool isIso6392 = false);
 
   const std::string GetDVDMenuLanguage() const;
   const std::string GetDVDAudioLanguage() const;
@@ -183,6 +194,7 @@ public:
   static std::string GetLanguagePath() { return "resource://"; }
   static std::string GetLanguagePath(const std::string &language);
   static std::string GetLanguageInfoPath(const std::string &language);
+  bool UseLocaleCollation();
 
   static void LoadTokens(const TiXmlNode* pTokens, std::set<std::string>& vecTokens);
 
@@ -240,6 +252,7 @@ public:
 
 protected:
   void SetDefaults();
+  bool Load(const std::string& strLanguage);
 
   static bool DetermineUse24HourClockFromTimeFormat(const std::string& timeFormat);
   static bool DetermineUseMeridiemFromTimeFormat(const std::string& timeFormat);
@@ -249,9 +262,7 @@ protected:
   class CRegion
   {
   public:
-    CRegion(const CRegion& region);
     CRegion();
-    virtual ~CRegion();
     void SetDefaults();
     void SetTemperatureUnit(const std::string& strUnit);
     void SetSpeedUnit(const std::string& strUnit);
@@ -260,7 +271,7 @@ protected:
     class custom_numpunct : public std::numpunct<char>
     {
     public:
-      custom_numpunct(const char decimal_point, const char thousands_sep, const std::string grouping)
+      custom_numpunct(const char decimal_point, const char thousands_sep, const std::string& grouping)
         : cDecimalPoint(decimal_point), cThousandsSep(thousands_sep), sGroup(grouping) {}
     protected:
       virtual char do_decimal_point() const { return cDecimalPoint; }
@@ -304,7 +315,7 @@ protected:
   CRegion m_defaultRegion; // default, will be used if no region available via langinfo.xml
   std::locale m_systemLocale;     // current locale, matching GUI settings
   std::locale m_originalLocale; // original locale, without changes of collate
-
+  int m_collationtype;
   LanguageResourcePtr m_languageAddon;
 
   std::string m_strGuiCharSet;
@@ -322,10 +333,9 @@ protected:
   CTemperature::Unit m_temperatureUnit;
   CSpeed::Unit m_speedUnit;
 
-  std::string m_audioLanguage;
-  std::string m_subtitleLanguage;
-  // this is the general (not win32-specific) three char language code
-  std::string m_languageCodeGeneral;
+  std::string m_audioLanguage; // ISO 639-2 three char (not win32 specific)
+  std::string m_subtitleLanguage; // ISO 639-2 three char (not win32 specific)
+  std::string m_languageCodeGeneral; // ISO 639-2 three char (not win32-specific)
 };
 
 

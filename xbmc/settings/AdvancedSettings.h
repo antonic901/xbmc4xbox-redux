@@ -256,6 +256,8 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     bool m_guiSmartRedraw;
     unsigned int m_addonPackageFolderSize;
 
+    bool m_useLocaleCollation;
+
     bool m_jsonOutputCompact;
 
     void ParseSettingsFile(const std::string &file);
