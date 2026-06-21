@@ -33,13 +33,6 @@ class CFileItem;
 class CFileItemList;
 class CGUIComponent;
 
-namespace ADDON
-{
-  class CSkinInfo;
-  class IAddon;
-  typedef boost::shared_ptr<IAddon> AddonPtr;
-}
-
 namespace ANNOUNCEMENT
 {
   class CAnnouncementManager;
@@ -351,7 +344,7 @@ protected:
 
   // screensaver
   bool m_bScreenSave;
-  ADDON::AddonPtr m_screenSaver;
+  std::string m_screensaverIdInUse;
 
   D3DGAMMARAMP m_OldRamp;
 
