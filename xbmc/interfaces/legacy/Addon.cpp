@@ -36,7 +36,7 @@ namespace XBMCAddon
         return false;
 
       CGUIDialogAddonSettings* dialog = dynamic_cast<CGUIDialogAddonSettings*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_ADDON_SETTINGS));
-      if (dialog->GetCurrentID() != addon->ID())
+      if (dialog->GetCurrentAddonID() != addon->ID())
         return false;
 
       CGUIMessage message(GUI_MSG_SETTING_UPDATED, 0, 0);
@@ -62,7 +62,7 @@ namespace XBMCAddon
       if (id.empty())
         throw AddonException("No valid addon id could be obtained. None was passed and the script wasn't executed in a normal xbmc manner.");
 
-      if (!CServiceBroker::GetAddonMgr().GetAddon(id.c_str(), pAddon))
+      if (!CServiceBroker::GetAddonMgr().GetAddon(id, pAddon, OnlyEnabled::CHOICE_YES))
         throw AddonException("Unknown addon id '%s'.", id.c_str());
 
       CServiceBroker::GetAddonMgr().AddToUpdateableAddons(pAddon);
@@ -147,7 +147,7 @@ namespace XBMCAddon
       DelayedCallGuard dcguard(languageHook);
       // show settings dialog
       ADDON::AddonPtr addon(pAddon);
-      CGUIDialogAddonSettings::ShowAndGetInput(addon);
+      CGUIDialogAddonSettings::ShowForAddon(addon);
     }
 
     String Addon::getAddonInfo(const char* id)
@@ -177,7 +177,7 @@ namespace XBMCAddon
       else if (strcmpi(id, "summary") == 0)
         return pAddon->Summary();
       else if (strcmpi(id, "type") == 0)
-        return ADDON::TranslateType(pAddon->Type());
+        return ADDON::CAddonInfo::TranslateType(pAddon->Type());
       else if (strcmpi(id, "version") == 0)
         return pAddon->Version().asString();
       else
