@@ -36,11 +36,12 @@ bool AddonHasSettings(const std::string& condition,
 
   ADDON::AddonPtr addon;
   if (!CServiceBroker::GetAddonMgr().GetAddon(settingAddon->GetValue(), addon,
-                                              settingAddon->GetAddonType()) ||
+                                              settingAddon->GetAddonType(),
+                                              ADDON::OnlyEnabled::CHOICE_YES) ||
       addon == NULL)
     return false;
 
-  if (addon->Type() == ADDON::ADDON_SKIN)
+  if (addon->Type() == ADDON::AddonType::SKIN)
     return ((ADDON::CSkinInfo*)addon.get())->HasSkinFile("SkinSettings.xml");
 
   return addon->HasSettings();
