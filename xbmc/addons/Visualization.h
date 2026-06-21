@@ -9,39 +9,7 @@
 #pragma once
 
 #include "addons/binary-addons/AddonInstanceHandler.h"
-
-struct KODI_ADDON_VISUALIZATION_TRACK
-{
-  const char* title;
-  const char* artist;
-  const char* album;
-  const char* albumArtist;
-  const char* genre;
-  const char* comment;
-  const char* lyrics;
-
-  const char* reserved1;
-  const char* reserved2;
-
-  int trackNumber;
-  int discNumber;
-  int duration;
-  int year;
-  int rating;
-
-  int reserved3;
-  int reserved4;
-};
-
-struct KODI_ADDON_VISUALIZATION_PROPS
-{
-  ADDON_HARDWARE_CONTEXT device;
-  int x;
-  int y;
-  int width;
-  int height;
-  float pixelRatio;
-};
+#include "addons/kodi-dev-kit/include/kodi/addon-instance/Visualization.h"
 
 namespace KODI
 {
