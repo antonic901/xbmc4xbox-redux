@@ -162,6 +162,7 @@
 #include "addons/AddonInstaller.h"
 #include "addons/AddonManager.h"
 #include "addons/RepositoryUpdater.h"
+#include "addons/Service.h"
 #include "music/tags/MusicInfoTag.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 
@@ -4419,7 +4420,7 @@ void CApplication::ActivateScreenSaver(bool forceType /*= false */)
     // set to Dim in the case of a dialog on screen or playing video
     if (CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog(true) || (m_pPlayer->IsPlayingVideo() && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("screensaver.usedimonpause")))
     {
-      if (!CServiceBroker::GetAddonMgr().GetAddon("screensaver.xbmc.builtin.dim", m_screenSaver))
+      if (!CServiceBroker::GetAddonMgr().GetAddon("screensaver.xbmc.builtin.dim", m_screenSaver, ADDON::AddonType::SCREENSAVER, ADDON::OnlyEnabled::CHOICE_YES))
         m_screenSaver.reset(new CScreenSaver(""));
     }
     // Check if we are Playing Audio and Vis instead Screensaver!
