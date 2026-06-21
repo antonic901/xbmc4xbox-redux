@@ -151,7 +151,7 @@ bool CScraperConfig::Execute(const boost::shared_ptr<CFileItem>& item) const
     currentScraperId = scraper->ID();
   std::string selectedAddonId = currentScraperId;
 
-  if (CGUIWindowAddonBrowser::SelectAddonID(ADDON::ADDON_SCRAPER_PROGRAMS, selectedAddonId, false) == 1
+  if (CGUIWindowAddonBrowser::SelectAddonID(ADDON::AddonType::SCRAPER_PROGRAMS, selectedAddonId, false) == 1
       && selectedAddonId != currentScraperId)
   {
     ADDON::AddonPtr scraperAddon;

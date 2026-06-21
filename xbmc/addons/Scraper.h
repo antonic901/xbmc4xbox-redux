@@ -20,6 +20,7 @@
 
 class CAlbum;
 class CArtist;
+class CProgramInfoTag;
 class CVideoInfoTag;
 
 namespace MUSIC_GRABBER
@@ -131,6 +132,7 @@ public:
     XFILE::CCurlFile &fcurl, const std::string &sArtist);
   VIDEO::EPISODELIST GetEpisodeList(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl);
 
+  bool GetProgramDetails(const CScraperUrl& scurl, CProgramInfoTag& program);
   bool GetVideoDetails(XFILE::CCurlFile& fcurl,
                        const boost::unordered_map<std::string, std::string>& uniqueIDs,
                        const CScraperUrl& scurl,

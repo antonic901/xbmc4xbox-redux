@@ -38,6 +38,7 @@
 #include "utils/XMLUtils.h"
 #include "utils/log.h"
 #include "video/VideoDatabase.h"
+#include "programs/ProgramDatabase.h"
 
 #include <algorithm>
 #include <sstream>
@@ -852,6 +853,17 @@ bool DetailsFromFileItem<CArtist>(const CFileItem& item, CArtist& artist)
 }
 
 template<>
+bool DetailsFromFileItem<CProgramInfoTag>(const CFileItem& item, CProgramInfoTag& tag)
+{
+  if (item.HasProgramInfoTag())
+  {
+    tag = *item.GetProgramInfoTag();
+    return true;
+  }
+  return false;
+}
+
+template<>
 bool DetailsFromFileItem<CVideoInfoTag>(const CFileItem& item, CVideoInfoTag& tag)
 {
   if (item.HasVideoInfoTag())
@@ -1356,6 +1368,24 @@ EPISODELIST CScraper::GetEpisodeList(XFILE::CCurlFile &fcurl, const CScraperUrl 
   }
 
   return vcep;
+}
+
+// takes URL; returns true and populates program details on success, false otherwise
+bool CScraper::GetProgramDetails(const CScraperUrl& scurl, CProgramInfoTag& program)
+{
+  if (!m_isPython)
+    return false;
+
+  CLog::Log(LOGDEBUG,
+            "%s: Reading program '%s' using %s scraper "
+            "(file: '%s', content: '%s', version: '%s')",
+            __FUNCTION__, scurl.GetFirstThumbUrl().c_str(),
+            Name().c_str(), Path().c_str(), ADDON::TranslateContent(Content()).c_str(), Version().asString().c_str());
+
+  program.Reset();
+  return PythonDetails(ID(), "url", scurl.GetFirstThumbUrl(),
+                        "getdetails", GetPathSettingsAsJSON(),
+                        boost::unordered_map<std::string, std::string>(), program);
 }
 
 // takes URL; returns true and populates video details on success, false otherwise
