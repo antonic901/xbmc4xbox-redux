@@ -1,47 +1,43 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
 #pragma once
 
-#include "AddonDll.h"
-#include "include/xbmc_scr_types.h"
+#include "addons/binary-addons/AddonInstanceHandler.h"
 
-typedef DllAddon<ScreenSaver, SCR_PROPS> DllScreenSaver;
-
-namespace ADDON
+struct KODI_ADDON_SCREENSAVER_PROPS
 {
-
-class CScreenSaver : public ADDON::CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>
-{
-public:
-  explicit CScreenSaver(AddonProps props) : CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>(boost::move(props)) {};
-  explicit CScreenSaver(const char *addonID);
-
-  virtual ~CScreenSaver() {}
-  virtual bool IsInUse() const;
-
-  // Things that MUST be supplied by the child classes
-  bool CreateScreenSaver();
-  void Start();
-  void Render();
-  void GetInfo(SCR_INFO *info);
-  void Destroy();
+  ADDON_HARDWARE_CONTEXT device;
+  int x;
+  int y;
+  int width;
+  int height;
+  float pixelRatio;
 };
 
-} /*namespace ADDON*/
+namespace KODI
+{
+namespace ADDONS
+{
+
+class CScreenSaver : public ADDON::IAddonInstanceHandler
+{
+public:
+  explicit CScreenSaver(const ADDON::AddonInfoPtr& addonInfo);
+  virtual ~CScreenSaver();
+
+  bool Start();
+  void Stop();
+  void Render();
+
+  // Addon callback functions
+  void GetProperties(struct KODI_ADDON_SCREENSAVER_PROPS* props);
+};
+
+} /* namespace ADDONS */
+} /* namespace KODI */

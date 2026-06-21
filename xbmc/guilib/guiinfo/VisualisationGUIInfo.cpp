@@ -12,7 +12,7 @@
 #include "ServiceBroker.h"
 #include "addons/Addon.h"
 #include "addons/AddonManager.h"
-#include "addons/Visualisation.h"
+#include "addons/Visualization.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIVisualisationControl.h"
 #include "guilib/GUIWindowManager.h"
@@ -42,10 +42,10 @@ bool CVisualisationGUIInfo::GetLabel(std::string& value, const CFileItem *item, 
       CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
       if (msg.GetPointer())
       {
-        ADDON::CVisualisation* viz = static_cast<ADDON::CVisualisation*>(msg.GetPointer());
+        CGUIVisualisationControl* viz = static_cast<CGUIVisualisationControl*>(msg.GetPointer());
         if (viz)
         {
-          value = viz->GetPresetName();
+          value = viz->GetActivePresetName();
           URIUtils::RemoveExtension(value);
           return true;
         }
@@ -55,8 +55,8 @@ bool CVisualisationGUIInfo::GetLabel(std::string& value, const CFileItem *item, 
     case VISUALISATION_NAME:
     {
       ADDON::AddonPtr addon;
-      value = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicplayer.visualisation");
-      if (CServiceBroker::GetAddonMgr().GetAddon(value, addon) &&
+      value = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_MUSICPLAYER_VISUALISATION);
+      if (CServiceBroker::GetAddonMgr().GetAddon(value, addon, ADDON::OnlyEnabled::CHOICE_YES) &&
           addon)
       {
         value = addon->Name();
@@ -87,7 +87,7 @@ bool CVisualisationGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int 
       CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
       if (msg.GetPointer())
       {
-        ADDON::CVisualisation *pVis = static_cast<ADDON::CVisualisation*>(msg.GetPointer());
+        CGUIVisualisationControl *pVis = static_cast<CGUIVisualisationControl*>(msg.GetPointer());
         value = pVis->IsLocked();
         return true;
       }
@@ -95,7 +95,7 @@ bool CVisualisationGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int 
     }
     case VISUALISATION_ENABLED:
     {
-      value = !CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("musicplayer.visualisation").empty();
+      value = !CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_MUSICPLAYER_VISUALISATION).empty();
       return true;
     }
     case VISUALISATION_HAS_PRESETS:
@@ -104,7 +104,7 @@ bool CVisualisationGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int 
       CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
       if (msg.GetPointer())
       {
-        ADDON::CVisualisation* viz = static_cast<ADDON::CVisualisation*>(msg.GetPointer());
+        CGUIVisualisationControl* viz = static_cast<CGUIVisualisationControl*>(msg.GetPointer());
         value = (viz && viz->HasPresets());
         return true;
       }

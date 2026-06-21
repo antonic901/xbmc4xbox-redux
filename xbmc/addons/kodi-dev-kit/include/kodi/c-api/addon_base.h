@@ -96,7 +96,7 @@
 //@}
 
 #ifdef _WIN32 // windows
-#if !defined(_SSIZE_T_DEFINED) && !defined(HAVE_SSIZE_T)
+#if !defined(_SSIZE_T_DEFINED) && !defined(HAVE_SSIZE_T) && !defined(_XBOX) // defined in PlatformDefs.h
 typedef intptr_t ssize_t;
 #define _SSIZE_T_DEFINED
 #endif // !_SSIZE_T_DEFINED

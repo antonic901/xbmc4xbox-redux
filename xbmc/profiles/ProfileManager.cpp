@@ -254,9 +254,12 @@ void CProfileManager::Clear()
 void CProfileManager::PrepareLoadProfile(unsigned int profileIndex)
 {
   CContextMenuManager &contextMenuManager = CServiceBroker::GetContextMenuManager();
+  ADDON::CServiceAddonManager &serviceAddons = CServiceBroker::GetServiceAddons();
   CNetwork &networkManager = g_application.getNetwork();
 
   contextMenuManager.Deinit();
+
+  serviceAddons.Stop();
 
   if (profileIndex != 0 || !IsMasterProfile())
     networkManager.NetworkMessage(CNetwork::SERVICES_DOWN, 1);

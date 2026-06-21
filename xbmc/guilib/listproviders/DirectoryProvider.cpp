@@ -343,8 +343,10 @@ void CDirectoryProvider::OnAddonEvent(const ADDON::AddonEvent& event)
   {
     if (typeid(event) == typeid(ADDON::AddonEvents::Enabled) ||
         typeid(event) == typeid(ADDON::AddonEvents::Disabled) ||
-        typeid(event) == typeid(ADDON::AddonEvents::InstalledChanged) ||
-        typeid(event) == typeid(ADDON::AddonEvents::MetadataChanged))
+        typeid(event) == typeid(ADDON::AddonEvents::ReInstalled) ||
+        typeid(event) == typeid(ADDON::AddonEvents::UnInstalled) ||
+        typeid(event) == typeid(ADDON::AddonEvents::MetadataChanged) ||
+        typeid(event) == typeid(ADDON::AddonEvents::AutoUpdateStateChanged))
       m_updateState = INVALIDATED;
   }
 }

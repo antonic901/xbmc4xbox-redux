@@ -5327,9 +5327,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\utils\HttpHeader.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\cores\mplayer\IAudioCallback.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\FileSystem\IDirectory.h">
 			</File>
 			<File

@@ -140,7 +140,7 @@ CGUIFont* GUIFontManager::LoadTTF(const std::string& strFontName,
     CLog::Log(LOGFATAL,
               "GUIFontManager::%s: Something tries to call function without an available GUI "
               "window system",
-              __func__);
+              __FUNCTION__);
     return NULL;
   }
 
@@ -198,11 +198,11 @@ CGUIFont* GUIFontManager::LoadTTF(const std::string& strFontName,
       if (strFilename != "arial.ttf")
       {
         CLog::Log(LOGERROR, "GUIFontManager::%s: Couldn't load font name: %s(%s), trying arial.ttf",
-                  __func__, strFontName.c_str(), strFilename.c_str());
+                  __FUNCTION__, strFontName.c_str(), strFilename.c_str());
         return LoadTTF(strFontName, "arial.ttf", textColor, shadowColor, iSize, iStyle, border,
                        lineSpacing, originalAspect);
       }
-      CLog::Log(LOGERROR, "GUIFontManager::%s: Couldn't load font name:%s file:%s", __func__,
+      CLog::Log(LOGERROR, "GUIFontManager::%s: Couldn't load font name:%s file:%s", __FUNCTION__,
                 strFontName.c_str(), strPath.c_str());
 
       return NULL;
@@ -293,7 +293,7 @@ void GUIFontManager::ReloadTTFFonts(void)
       {
         delete pFontFile;
         // font could not be loaded
-        CLog::Log(LOGERROR, "GUIFontManager::%s: Couldn't re-load font file: '%s'", __func__,
+        CLog::Log(LOGERROR, "GUIFontManager::%s: Couldn't re-load font file: '%s'", __FUNCTION__,
                   strPath.c_str());
         return;
       }

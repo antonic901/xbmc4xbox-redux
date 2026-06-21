@@ -33,7 +33,7 @@
 #include <xtl.h>
 #endif
 
-#include "IAudioCallback.h"
+#include "cores/IAudioCallback.h"
 extern void RegisterAudioCallback(IAudioCallback* pCallback);
 extern void UnRegisterAudioCallback();
 

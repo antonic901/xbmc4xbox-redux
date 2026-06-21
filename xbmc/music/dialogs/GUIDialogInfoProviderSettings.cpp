@@ -186,7 +186,8 @@ void CGUIDialogInfoProviderSettings::OnSettingAction(const boost::shared_ptr<con
         selectedAddonId != currentScraperId)
     {
       AddonPtr scraperAddon;
-      if (CServiceBroker::GetAddonMgr().GetAddon(selectedAddonId, scraperAddon))
+      if (CServiceBroker::GetAddonMgr().GetAddon(selectedAddonId, scraperAddon,
+                                                 OnlyEnabled::CHOICE_YES))
       {
         m_albumscraper = boost::dynamic_pointer_cast<CScraper>(scraperAddon);
         SetupView();
@@ -211,7 +212,8 @@ void CGUIDialogInfoProviderSettings::OnSettingAction(const boost::shared_ptr<con
         selectedAddonId != currentScraperId)
     {
       AddonPtr scraperAddon;
-      if (CServiceBroker::GetAddonMgr().GetAddon(selectedAddonId, scraperAddon))
+      if (CServiceBroker::GetAddonMgr().GetAddon(selectedAddonId, scraperAddon,
+                                                 OnlyEnabled::CHOICE_YES))
       {
         m_artistscraper = boost::dynamic_pointer_cast<CScraper>(scraperAddon);
         SetupView();
