@@ -9,16 +9,7 @@
 #pragma once
 
 #include "addons/binary-addons/AddonInstanceHandler.h"
-
-struct KODI_ADDON_SCREENSAVER_PROPS
-{
-  ADDON_HARDWARE_CONTEXT device;
-  int x;
-  int y;
-  int width;
-  int height;
-  float pixelRatio;
-};
+#include "addons/kodi-dev-kit/include/kodi/addon-instance/Screensaver.h"
 
 namespace KODI
 {

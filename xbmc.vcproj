@@ -3519,10 +3519,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\addons\UISoundsResource.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\addons\Visualisation.cpp">
+					RelativePath=".\xbmc\addons\Visualization.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\addons\Visualisation.h">
+					RelativePath=".\xbmc\addons\Visualization.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\addons\Webinterface.cpp">
