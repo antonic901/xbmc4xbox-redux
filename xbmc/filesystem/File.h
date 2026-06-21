@@ -99,8 +99,7 @@ public:
   int64_t GetLength();
   void Close();
   int GetChunkSize();
-  std::string GetContentMimeType(void);
-  std::string GetContentCharset(void);
+  const std::string GetProperty(XFILE::FileProperty type, const std::string &name = "") const;
   ssize_t LoadFile(const std::string &filename, auto_buffer& outputBuffer);
 
 
@@ -119,7 +118,7 @@ public:
 
   int IoControl(EIoControl request, void* param);
 
-  IFile *GetImplemenation() { return m_pFile; }
+  IFile *GetImplementation() const { return m_pFile; }
 
   // CURL interface
   static bool Exists(const CURL& file, bool bUseCache = true);

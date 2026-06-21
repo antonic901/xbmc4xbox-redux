@@ -19,6 +19,7 @@
 #include "filesystem/File.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
+#include "guilib/LocalizeStrings.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "programs/ProgramDatabase.h"
 #include "programs/ProgramLibraryQueue.h"
@@ -155,7 +156,7 @@ bool CScraperConfig::Execute(const boost::shared_ptr<CFileItem>& item) const
       && selectedAddonId != currentScraperId)
   {
     ADDON::AddonPtr scraperAddon;
-    CServiceBroker::GetAddonMgr().GetAddon(selectedAddonId, scraperAddon);
+    CServiceBroker::GetAddonMgr().GetAddon(selectedAddonId, scraperAddon, ADDON::AddonType::SCRAPER_PROGRAMS, ADDON::OnlyEnabled::CHOICE_YES);
     scraper = boost::dynamic_pointer_cast<ADDON::CScraper>(scraperAddon);
     database.SetScraperForPath(item->GetPath(), scraper);
   }
