@@ -61,10 +61,8 @@ namespace XFILE
       virtual bool ReadString(char *szLine, int iLineLength)     { return m_state->ReadString(szLine, iLineLength); }
       virtual ssize_t Read(void* lpBuf, size_t uiBufSize)        { return m_state->Read(lpBuf, uiBufSize); }
       virtual ssize_t Write(const void* lpBuf, size_t uiBufSize);
-      virtual std::string GetMimeType()                          { return m_state->m_httpheader.GetMimeType(); }
-      virtual std::string GetContent()                           { return m_state->m_httpheader.GetValue("content-type"); }
+      virtual const std::string GetProperty(XFILE::FileProperty type, const std::string &name = "") const;
       virtual int IoControl(EIoControl request, void* param);
-      virtual std::string GetContentCharset(void)                { return GetServerReportedCharset(); }
       virtual double GetDownloadSpeed();
 
       bool Post(const std::string& strURL, const std::string& strPostData, std::string& strHTML);
@@ -94,7 +92,6 @@ namespace XFILE
       void SetBufferSize(unsigned int size);
 
       const CHttpHeader& GetHttpHeader() const { return m_state->m_httpheader; }
-      std::string GetServerReportedCharset(void);
       std::string GetURL(void);
       std::string GetRedirectURL();
 

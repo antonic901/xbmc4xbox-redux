@@ -148,7 +148,7 @@ void CFileCache::SetCacheStrategy(CCacheStrategy *pCache, bool bDeleteCache /* =
 
 IFile *CFileCache::GetFileImp()
 {
-  return m_source.GetImplemenation();
+  return m_source.GetImplementation();
 }
 
 bool CFileCache::Open(const CURL& url)
@@ -568,21 +568,12 @@ void CFileCache::StopThread(bool bWait /*= true*/)
   CThread::StopThread(bWait);
 }
 
-std::string CFileCache::GetContent()
+const std::string CFileCache::GetProperty(XFILE::FileProperty type, const std::string &name) const
 {
-  if (!m_source.GetImplemenation())
-    return IFile::GetContent();
+  if (!m_source.GetImplementation())
+    return IFile::GetProperty(type, name);
 
-  return m_source.GetImplemenation()->GetContent();
-}
-
-std::string CFileCache::GetContentCharset(void)
-{
-  IFile* impl = m_source.GetImplemenation();
-  if (!impl)
-    return IFile::GetContentCharset();
-
-  return impl->GetContentCharset();
+  return m_source.GetImplementation()->GetProperty(type, name);
 }
 
 int CFileCache::IoControl(EIoControl request, void* param)
