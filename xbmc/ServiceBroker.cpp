@@ -82,6 +82,11 @@ boost::shared_ptr<CSettingsComponent> CServiceBroker::GetSettingsComponent()
   return g_serviceBroker.m_pSettingsComponent;
 }
 
+ADDON::CServiceAddonManager& CServiceBroker::GetServiceAddons()
+{
+  return g_application.m_ServiceManager->GetServiceAddons();
+}
+
 ADDON::CRepositoryUpdater& CServiceBroker::GetRepositoryUpdater()
 {
   return g_application.m_ServiceManager->GetRepositoryUpdater();

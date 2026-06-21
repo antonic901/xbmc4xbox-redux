@@ -11,8 +11,8 @@
 #include "FileItem.h"
 #include "GUIUserMessages.h"
 #include "ServiceBroker.h"
-#include "addons/Visualisation.h"
 #include "guilib/GUIComponent.h"
+#include "guilib/GUIVisualisationControl.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/StringUtils.h"
@@ -39,7 +39,7 @@ bool CGUIDialogVisualisationPresetList::OnMessage(CGUIMessage &message)
 void CGUIDialogVisualisationPresetList::OnSelect(int idx)
 {
   if (m_viz)
-    m_viz->OnAction(VIS_ACTION_LOAD_PRESET, static_cast<void*>(&idx));
+    m_viz->SetPreset(idx);
 }
 
 void CGUIDialogVisualisationPresetList::ClearVisualisation()
@@ -48,7 +48,7 @@ void CGUIDialogVisualisationPresetList::ClearVisualisation()
   Reset();
 }
 
-void CGUIDialogVisualisationPresetList::SetVisualisation(ADDON::CVisualisation* vis)
+void CGUIDialogVisualisationPresetList::SetVisualisation(CGUIVisualisationControl* vis)
 {
   m_viz = vis;
   Reset();
@@ -72,7 +72,7 @@ void CGUIDialogVisualisationPresetList::SetVisualisation(ADDON::CVisualisation* 
         item.RemoveExtension();
         Add(item);
       }
-      SetSelected(m_viz->GetPreset());
+      SetSelected(m_viz->GetActivePreset());
     }
     else
     { // Viz does not have any presets
@@ -87,7 +87,7 @@ void CGUIDialogVisualisationPresetList::OnInitWindow()
 {
   CGUIMessage msg(GUI_MSG_GET_VISUALISATION, 0, 0);
   CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
-  SetVisualisation(static_cast<ADDON::CVisualisation*>(msg.GetPointer()));
+  SetVisualisation(static_cast<CGUIVisualisationControl*>(msg.GetPointer()));
   CGUIDialogSelect::OnInitWindow();
 }
 

@@ -26,7 +26,7 @@
 #include "ASyncDirectSound.h"
 #include "Ac97DirectSound.h"
 #include "ResampleDirectSound.h"
-#include "IAudioCallback.h"
+#include "cores/IAudioCallback.h"
 #include "MPlayer.h"
 #include "XBAudioConfig.h" // AUDIO_DIGITAL
 #include "cores/VideoRenderers/RenderManager.h"

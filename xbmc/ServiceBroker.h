@@ -27,6 +27,7 @@ namespace ADDON
 class CAddonMgr;
 class CBinaryAddonManager;
 class CBinaryAddonCache;
+class CServiceAddonManager;
 class CRepositoryUpdater;
 } // namespace ADDON
 
@@ -81,6 +82,7 @@ public:
   static XBPython &GetXBPython();
   static CContextMenuManager& GetContextMenuManager();
   static PLAYLIST::CPlayListPlayer& GetPlaylistPlayer();
+  static ADDON::CServiceAddonManager& GetServiceAddons();
   static ADDON::CRepositoryUpdater& GetRepositoryUpdater();
   static bool IsAddonInterfaceUp();
   static bool IsServiceManagerUp();

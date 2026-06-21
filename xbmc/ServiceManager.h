@@ -28,6 +28,7 @@ namespace ADDON
 {
 class CAddonMgr;
 class CBinaryAddonManager;
+class CServiceAddonManager;
 class CRepositoryUpdater;
 }
 
@@ -58,6 +59,7 @@ public:
   void Deinit();
   ADDON::CAddonMgr& GetAddonMgr();
   ADDON::CBinaryAddonManager& GetBinaryAddonManager();
+  ADDON::CServiceAddonManager& GetServiceAddons();
   ADDON::CRepositoryUpdater& GetRepositoryUpdater();
   XBPython& GetXBPython();
   CContextMenuManager& GetContextMenuManager();
@@ -81,6 +83,7 @@ protected:
 
   boost::movelib::unique_ptr<ADDON::CAddonMgr> m_addonMgr;
   boost::movelib::unique_ptr<ADDON::CBinaryAddonManager> m_binaryAddonManager;
+  boost::movelib::unique_ptr<ADDON::CServiceAddonManager> m_serviceAddons;
   boost::movelib::unique_ptr<ADDON::CRepositoryUpdater> m_repositoryUpdater;
   boost::movelib::unique_ptr<XBPython> m_XBPython;
   boost::movelib::unique_ptr<CContextMenuManager, delete_contextMenuManager> m_contextMenuManager;

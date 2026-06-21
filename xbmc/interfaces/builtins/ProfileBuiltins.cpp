@@ -67,33 +67,8 @@ static int LoadProfile(const std::vector<std::string>& params)
  */
 static int LogOff(const std::vector<std::string>& params)
 {
-  // there was a commit from cptspiff here which was reverted
-  // for keeping the behaviour from Eden in Frodo - see
-  // git rev 9ee5f0047b
-  if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_LOGIN_SCREEN)
-    return -1;
-
-  g_application.StopPlaying();
-  if (g_application.IsMusicScanning())
-    g_application.StopMusicScan();
-
-  if (CVideoLibraryQueue::GetInstance().IsRunning())
-    CVideoLibraryQueue::GetInstance().CancelAllJobs();
-
-  CServiceBroker::GetAddonMgr().StopServices(true);
-
-  g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
-#ifdef HAS_XBOX_HARDWARE
-  CFanController::Instance()->Stop();
-#endif
-  CServiceBroker::GetSettingsComponent()->GetProfileManager()->LoadMasterProfileForLogin();
-  g_passwordManager.bMasterUser = false;
-
-  g_application.ResetScreenSaverWindow();
-  CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_LOGIN_SCREEN, std::vector<std::string>(), false);
-
-  if (!CNetworkServices::GetInstance().StartEventServer()) // event server could be needed in some situations
-    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33102), g_localizeStrings.Get(33100));
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+  profileManager->LogOff();
 
   return 0;
 }

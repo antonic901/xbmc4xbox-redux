@@ -34,7 +34,7 @@ typedef uint32_t AddonInstanceId;
  * Defines the default language code used as fallback in case the requested language is not
  * available. Used, for instance, to handle content from addon.xml.
  */
-const char* KODI_ADDON_DEFAULT_LANGUAGE_CODE = "en_GB";
+static const char* KODI_ADDON_DEFAULT_LANGUAGE_CODE = "en_GB";
 
 namespace AddonDisabledReason
 {

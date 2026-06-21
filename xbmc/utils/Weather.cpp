@@ -92,7 +92,10 @@ bool CWeatherJob::DoWork()
     return false;
 
   AddonPtr addon;
-  if (!CServiceBroker::GetAddonMgr().GetAddon(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("weather.addon"), addon, ADDON::AddonType::SCRIPT_WEATHER))
+  if (CServiceBroker::GetAddonMgr().GetAddon(
+          CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(
+              CSettings::SETTING_WEATHER_ADDON),
+          addon, AddonType::SCRIPT_WEATHER, OnlyEnabled::CHOICE_YES))
     return false;
 
   // initialize our sys.argv variables
@@ -850,10 +853,14 @@ void CWeather::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
     return;
 
   const std::string settingId = setting->GetId();
-  if (settingId == "weather.addonsettings")
+  if (settingId == CSettings::SETTING_WEATHER_ADDONSETTINGS)
   {
     AddonPtr addon;
-    if (CServiceBroker::GetAddonMgr().GetAddon(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("weather.addon"), addon, ADDON::AddonType::SCRIPT_WEATHER) && addon != NULL)
+    if (CServiceBroker::GetAddonMgr().GetAddon(
+            CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(
+                CSettings::SETTING_WEATHER_ADDON),
+            addon, AddonType::SCRIPT_WEATHER, OnlyEnabled::CHOICE_YES) &&
+        addon != NULL)
     { //! @todo maybe have ShowAndGetInput return a bool if settings changed, then only reset weather if true.
       CGUIDialogAddonSettings::ShowForAddon(addon);
       Refresh();

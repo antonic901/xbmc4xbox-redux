@@ -31,37 +31,37 @@ struct DependencyInfo;
 
 typedef uint32_t AddonInstanceId;
 
-const char* ADDON_SETTING_INSTANCE_GROUP = "kodi_addon_instance";
-const char* ADDON_SETTING_INSTANCE_NAME_VALUE = "kodi_addon_instance_name";
-const char* ADDON_SETTING_INSTANCE_ENABLED_VALUE = "kodi_addon_instance_enabled";
+static const char* ADDON_SETTING_INSTANCE_GROUP = "kodi_addon_instance";
+static const char* ADDON_SETTING_INSTANCE_NAME_VALUE = "kodi_addon_instance_name";
+static const char* ADDON_SETTING_INSTANCE_ENABLED_VALUE = "kodi_addon_instance_enabled";
 
 /*!
  * @brief Identifier denoting default add-on instance.
  *
  * All numbers greater than 0 denote add-ons with support for multiple instances.
  */
-AddonInstanceId ADDON_SINGLETON_INSTANCE_ID = 0;
+static AddonInstanceId ADDON_SINGLETON_INSTANCE_ID = 0;
 
 /*!
  * @brief Identifier denoting initial first add-on instance.
  */
-AddonInstanceId ADDON_FIRST_INSTANCE_ID = 1;
+static AddonInstanceId ADDON_FIRST_INSTANCE_ID = 1;
 
 /*!
  * @brief Identifier denoting add-on instance id as unused.
  *
  * @sa ADDON::IAddonInstanceHandler
  */
-AddonInstanceId ADDON_INSTANCE_ID_UNUSED = ADDON_SINGLETON_INSTANCE_ID;
+static AddonInstanceId ADDON_INSTANCE_ID_UNUSED = ADDON_SINGLETON_INSTANCE_ID;
 
 /*!
  * @brief Identifier denoting default add-on settings.xml.
  *
  * All numbers greater than 0 denote add-on instances with an individual set of settings.
  */
-AddonInstanceId ADDON_SETTINGS_ID = ADDON_SINGLETON_INSTANCE_ID;
+static AddonInstanceId ADDON_SETTINGS_ID = ADDON_SINGLETON_INSTANCE_ID;
 
-char const* ORIGIN_SYSTEM = "b6a50484-93a0-4afb-a01c-8d17e059feda";
+static char const* ORIGIN_SYSTEM = "b6a50484-93a0-4afb-a01c-8d17e059feda";
 
 class IAddon;
 typedef boost::shared_ptr<IAddon> AddonPtr;

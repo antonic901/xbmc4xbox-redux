@@ -1256,8 +1256,6 @@ HRESULT CApplication::Initialize()
   }
   else
   {
-    CServiceBroker::GetAddonMgr().StartServices(false);
-
     // activate the configured start window
     int firstWindow = g_SkinInfo->GetFirstWindow();
     CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(firstWindow);
@@ -1300,7 +1298,6 @@ HRESULT CApplication::Initialize()
 #ifdef __APPLE__
   g_xbmcHelper.CaptureAllInput();
 #endif
-  CServiceBroker::GetAddonMgr().StartServices(true);
 
   // configure seek handler
   CSeekHandler::GetInstance().Configure();
@@ -1310,6 +1307,8 @@ HRESULT CApplication::Initialize()
   RegisterActionListener(&CPlayerController::GetInstance());
 
   CServiceBroker::GetRepositoryUpdater().Start();
+  if (!CServiceBroker::GetSettingsComponent()->GetProfileManager()->UsingLoginScreen())
+    CServiceBroker::GetServiceAddons().Start();
 
   CLog::Log(LOGNOTICE, "initialize done");
 
@@ -1626,10 +1625,11 @@ bool CApplication::Save(TiXmlNode *settings) const
 
 bool CApplication::LoadSkin(const std::string& skinID)
 {
-  SkinPtr skin;
+  boost::shared_ptr<ADDON::CSkinInfo> skin;
   {
-    AddonPtr addon;
-    if (!CServiceBroker::GetAddonMgr().GetAddon(skinID, addon, ADDON_SKIN))
+    ADDON::AddonPtr addon;
+    if (!CServiceBroker::GetAddonMgr().GetAddon(skinID, addon, ADDON::AddonType::SKIN,
+                                                ADDON::OnlyEnabled::CHOICE_YES))
       return false;
     skin = boost::static_pointer_cast<ADDON::CSkinInfo>(addon);
   }
@@ -3455,7 +3455,7 @@ void CApplication::Stop(bool bLCDStop)
     UnloadSkin();
 
     // Stop services before unloading Python
-    CServiceBroker::GetAddonMgr().StopServices(false);
+    CServiceBroker::GetServiceAddons().Stop();
 
     // unregister action listeners
     UnregisterActionListener(&CSeekHandler::GetInstance());
@@ -4409,7 +4409,7 @@ void CApplication::ActivateScreenSaver(bool forceType /*= false */)
 
   // Get Screensaver Mode
   m_screenSaver.reset();
-  if (!CServiceBroker::GetAddonMgr().GetAddon(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("screensaver.mode"), m_screenSaver))
+  if (!CServiceBroker::GetAddonMgr().GetAddon(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_SCREENSAVER_MODE), m_screenSaver, ADDON::AddonType::SCREENSAVER, ADDON::OnlyEnabled::CHOICE_YES))
     m_screenSaver.reset(new CScreenSaver(""));
 
   // disable screensaver lock from the login screen
@@ -4689,9 +4689,6 @@ bool CApplication::OnMessage(CGUIMessage& message)
       {
         // remove splash window
         CServiceBroker::GetGUI()->GetWindowManager().Delete(WINDOW_SPLASH);
-
-        if (m_fallbackLanguageLoaded)
-          CGUIDialogOK::ShowAndGetInput(24133, 24134);
       }
       else if (message.GetParam1() == GUI_MSG_UPDATE_ITEM && message.GetItem())
       {
@@ -5663,7 +5660,7 @@ bool CApplication::SetLanguage(const std::string &strLanguage)
 bool CApplication::LoadLanguage(bool reload)
 {
   // load the configured langauge
-  if (!g_langInfo.SetLanguage(m_fallbackLanguageLoaded, "", reload))
+  if (!g_langInfo.SetLanguage("", reload))
     return false;
 
   // set the proper audio and subtitle languages
@@ -5856,8 +5853,8 @@ void CApplication::OnSettingAction(const boost::shared_ptr<const CSetting>& sett
   else if (settingId == "screensaver.settings")
   {
     AddonPtr addon;
-    if (CServiceBroker::GetAddonMgr().GetAddon(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("screensaver.mode"), addon, ADDON_SCREENSAVER))
-      CGUIDialogAddonSettings::ShowAndGetInput(addon);
+    if (CServiceBroker::GetAddonMgr().GetAddon(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_SCREENSAVER_MODE), addon, ADDON::AddonType::SCREENSAVER, ADDON::OnlyEnabled::CHOICE_YES))
+      CGUIDialogAddonSettings::ShowForAddon(addon);
   }
   else if (settingId == "videoscreen.guicalibration")
     CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_SCREEN_CALIBRATION);

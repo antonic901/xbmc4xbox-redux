@@ -24,6 +24,7 @@
 #include "DatabaseManager.h"
 #include "PlayListPlayer.h"
 #include "addons/RepositoryUpdater.h"
+#include "addons/Service.h"
 #include "addons/binary-addons/BinaryAddonManager.h"
 #include "cores/playercorefactory/PlayerCoreFactory.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
@@ -69,7 +70,9 @@ bool CServiceManager::Init2()
     return false;
   }
 
-  m_repositoryUpdater = boost::movelib::make_unique<ADDON::CRepositoryUpdater>();
+  m_repositoryUpdater.reset(new ADDON::CRepositoryUpdater(*m_addonMgr));
+
+  m_serviceAddons.reset(new ADDON::CServiceAddonManager(*m_addonMgr));
 
   m_contextMenuManager.reset(new CContextMenuManager(*m_addonMgr.get()));
 
@@ -98,6 +101,7 @@ void CServiceManager::Deinit()
   m_weatherManager.reset();
   m_playerCoreFactory.reset();
   m_contextMenuManager.reset();
+  m_serviceAddons.reset();
   m_repositoryUpdater.reset();
   m_binaryAddonManager.reset();
   m_addonMgr.reset();
@@ -116,6 +120,11 @@ ADDON::CAddonMgr &CServiceManager::GetAddonMgr()
 ADDON::CBinaryAddonManager& CServiceManager::GetBinaryAddonManager()
 {
   return *m_binaryAddonManager;
+}
+
+ADDON::CServiceAddonManager& CServiceManager::GetServiceAddons()
+{
+  return *m_serviceAddons;
 }
 
 ADDON::CRepositoryUpdater& CServiceManager::GetRepositoryUpdater()

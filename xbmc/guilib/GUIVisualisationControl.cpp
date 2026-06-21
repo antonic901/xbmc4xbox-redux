@@ -1,134 +1,455 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIVisualisationControl.h"
+
 #include "GUIComponent.h"
-#include "GUIWindowManager.h"
+#include "GUIInfoManager.h"
 #include "GUIUserMessages.h"
-#include "Application.h"
+#include "GUIWindowManager.h"
+#include "ServiceBroker.h"
 #include "addons/AddonManager.h"
-#include "addons/AddonSystemSettings.h"
-#include "addons/Visualisation.h"
-#include "utils/log.h"
+#include "addons/Visualization.h"
+#include "addons/addoninfo/AddonType.h"
+#include "Application.h"
+#include "filesystem/SpecialProtocol.h"
+#include "guilib/guiinfo/GUIInfoLabels.h"
 #include "input/actions/Action.h"
-#include "input/keyboard/Key.h"
+#include "input/actions/ActionIDs.h"
+#include "music/tags/MusicInfoTag.h"
+#include "settings/AdvancedSettings.h"
+#include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
+#include "utils/URIUtils.h"
+#include "utils/log.h"
 
-using namespace ADDON;
+#include <boost/move/make_unique.hpp>
 
-#define LABEL_ROW1 10
-#define LABEL_ROW2 11
-#define LABEL_ROW3 12
-
-CGUIVisualisationControl::CGUIVisualisationControl(int parentID, int controlID, float posX, float posY, float width, float height)
-    : CGUIRenderingControl(parentID, controlID, posX, posY, width, height), m_bAttemptedLoad(false)
+namespace
 {
-  ControlType = GUICONTROL_VISUALISATION;
+const unsigned int MAX_AUDIO_BUFFERS = 16;
+} // namespace
+
+CAudioBuffer::CAudioBuffer(int iSize)
+{
+  m_iLen = iSize;
+  m_pBuffer = new float[iSize];
 }
 
-CGUIVisualisationControl::CGUIVisualisationControl(const CGUIVisualisationControl &from)
-  : CGUIRenderingControl(from), m_bAttemptedLoad(false), m_addon()
+CAudioBuffer::~CAudioBuffer()
 {
-  ControlType = GUICONTROL_VISUALISATION;
+  delete[] m_pBuffer;
 }
 
-bool CGUIVisualisationControl::OnMessage(CGUIMessage &message)
+const float* CAudioBuffer::Get() const
 {
-  switch (message.GetMessage())
+  return m_pBuffer;
+}
+
+int CAudioBuffer::Size() const
+{
+  return m_iLen;
+}
+
+void CAudioBuffer::Set(const float* psBuffer, int iSize)
+{
+  if (iSize < 0)
+    return;
+
+  memcpy(m_pBuffer, psBuffer, iSize * sizeof(float));
+  for (int i = iSize; i < m_iLen; ++i)
+    m_pBuffer[i] = 0;
+}
+
+CGUIVisualisationControl::CGUIVisualisationControl(
+    int parentID, int controlID, float posX, float posY, float width, float height)
+  : CGUIControl(parentID, controlID, posX, posY, width, height)
+{
+  ControlType = GUICONTROL_VISUALISATION;
+  m_callStart = false;
+  m_alreadyStarted = false;
+  m_attemptedLoad = false;
+  m_updateTrack = false;
+}
+
+CGUIVisualisationControl::CGUIVisualisationControl(const CGUIVisualisationControl& from)
+  : CGUIControl(from)
+{
+  ControlType = GUICONTROL_VISUALISATION;
+  m_callStart = false;
+  m_alreadyStarted = false;
+  m_attemptedLoad = false;
+  m_updateTrack = false;
+}
+
+std::string CGUIVisualisationControl::Name()
+{
+  if (m_instance == NULL)
+    return "";
+  return m_instance->Name();
+}
+
+bool CGUIVisualisationControl::OnMessage(CGUIMessage& message)
+{
+  if (m_alreadyStarted)
   {
-  case GUI_MSG_GET_VISUALISATION:
-    message.SetPointer(m_addon.get());
-    return m_addon != NULL;
-  case GUI_MSG_VISUALISATION_RELOAD:
-    FreeResources(true);
-    return true;
-  case GUI_MSG_PLAYBACK_STARTED:
-    if (m_addon)
+    switch (message.GetMessage())
     {
-      m_addon->UpdateTrack();
-      return true;
+      case GUI_MSG_GET_VISUALISATION:
+        message.SetPointer(this);
+        return true;
+      case GUI_MSG_VISUALISATION_RELOAD:
+        FreeResources(true);
+        return true;
+      case GUI_MSG_PLAYBACK_STARTED:
+        m_updateTrack = true;
+        return true;
+      default:
+        break;
     }
-    break;
   }
-  return CGUIRenderingControl::OnMessage(message);
+  return CGUIControl::OnMessage(message);
 }
 
-bool CGUIVisualisationControl::OnAction(const CAction &action)
+bool CGUIVisualisationControl::OnAction(const CAction& action)
 {
-  if (!m_addon)
-    return false;
-
-  switch (action.GetID())
+  if (m_alreadyStarted)
   {
-  case ACTION_VIS_PRESET_NEXT:
-    return m_addon->OnAction(VIS_ACTION_NEXT_PRESET);
-  case ACTION_VIS_PRESET_PREV:
-    return m_addon->OnAction(VIS_ACTION_PREV_PRESET);
-  case ACTION_VIS_PRESET_RANDOM:
-    return m_addon->OnAction(VIS_ACTION_RANDOM_PRESET);
-  case ACTION_VIS_RATE_PRESET_PLUS:
-    return m_addon->OnAction(VIS_ACTION_RATE_PRESET_PLUS);
-  case ACTION_VIS_RATE_PRESET_MINUS:
-    return m_addon->OnAction(VIS_ACTION_RATE_PRESET_MINUS);
-  case ACTION_VIS_PRESET_LOCK:
-    return m_addon->OnAction(VIS_ACTION_LOCK_PRESET);
-  default:
-    return CGUIRenderingControl::OnAction(action);
+    switch (action.GetID())
+    {
+      case ACTION_VIS_PRESET_NEXT:
+        m_instance->NextPreset();
+        break;
+      case ACTION_VIS_PRESET_PREV:
+        m_instance->PrevPreset();
+        break;
+      case ACTION_VIS_PRESET_RANDOM:
+        m_instance->RandomPreset();
+        break;
+      case ACTION_VIS_RATE_PRESET_PLUS:
+        m_instance->RatePreset(true);
+        break;
+      case ACTION_VIS_RATE_PRESET_MINUS:
+        m_instance->RatePreset(false);
+        break;
+      case ACTION_VIS_PRESET_LOCK:
+        m_instance->LockPreset();
+        break;
+      default:
+        break;
+    }
+    return true;
   }
+
+  return CGUIControl::OnAction(action);
 }
 
-void CGUIVisualisationControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+void CGUIVisualisationControl::Process(unsigned int currentTime, CDirtyRegionList& dirtyregions)
 {
   if (g_application.m_pPlayer->IsPlayingAudio())
   {
     if (m_bInvalidated)
       FreeResources(true);
 
-    if (!m_addon && !m_bAttemptedLoad)
+    if (!m_instance && !m_attemptedLoad)
     {
-      AddonPtr addon;
-      if (ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON_VIZ, addon))
+      InitVisualization();
+
+      m_attemptedLoad = true;
+    }
+    else if (m_callStart && m_instance)
+    {
+      CGraphicContext &context = CServiceBroker::GetWinSystem()->GetGfxContext();
+
+      context.CaptureStateBlock();
+      if (m_alreadyStarted)
       {
-        m_addon = boost::dynamic_pointer_cast<CVisualisation>(addon);
-        if (m_addon)
-          if (!InitCallback(m_addon.get()))
-            m_addon.reset();
+        m_instance->Stop();
+        m_alreadyStarted = false;
       }
 
-      m_bAttemptedLoad = true;
+      std::string songTitle = URIUtils::GetFileName(g_application.CurrentFile());
+      const MUSIC_INFO::CMusicInfoTag* tag =
+          CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag();
+      if (tag && !tag->GetTitle().empty())
+        songTitle = tag->GetTitle();
+      m_alreadyStarted = m_instance->Start(m_channels, m_samplesPerSec, m_bitsPerSample, songTitle);
+      context.ApplyStateBlock();
+      m_callStart = false;
+      m_updateTrack = true;
     }
+    else if (m_updateTrack)
+    {
+      /* Initial update of currently processed track */
+      UpdateTrack();
+      m_updateTrack = false;
+    }
+
+    if (m_instance && m_instance->IsDirty())
+      MarkDirtyRegion();
   }
-  CGUIRenderingControl::Process(currentTime, dirtyregions);
+
+  CGUIControl::Process(currentTime, dirtyregions);
+}
+
+void CGUIVisualisationControl::Render()
+{
+  if (m_instance && m_alreadyStarted)
+  {
+    CGraphicContext &context = CServiceBroker::GetWinSystem()->GetGfxContext();
+
+    /*
+     * set the viewport - note: We currently don't have any control over how
+     * the addon renders, so the best we can do is attempt to define
+     * a viewport??
+     */
+    context.SetViewPort(m_posX, m_posY, m_width, m_height);
+    context.CaptureStateBlock();
+    m_instance->Render();
+    context.ApplyStateBlock();
+    context.RestoreViewPort();
+  }
+
+  CGUIControl::Render();
+}
+
+void CGUIVisualisationControl::UpdateVisibility(const CGUIListItem* item /* = NULL*/)
+{
+  // if made invisible, start timer, only free addonptr after
+  // some period, configurable by window class
+  CGUIControl::UpdateVisibility(item);
+  if (!IsVisible() && m_attemptedLoad)
+    FreeResources();
+}
+
+bool CGUIVisualisationControl::CanFocusFromPoint(const CPoint& point) const
+{ // mouse is allowed to focus this control, but it doesn't actually receive focus
+  return IsVisible() && HitTest(point);
 }
 
 void CGUIVisualisationControl::FreeResources(bool immediately)
 {
-  m_bAttemptedLoad = false;
-  // tell our app that we're going
-  if (!m_addon)
-    return;
+  DeInitVisualization();
 
-  CGUIMessage msg(GUI_MSG_VISUALISATION_UNLOADING, m_controlID, 0);
-  CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
-  CLog::Log(LOGDEBUG, "FreeVisualisation() started");
-  CGUIRenderingControl::FreeResources(immediately);
-  m_addon.reset();
+  CGUIControl::FreeResources(immediately);
+
   CLog::Log(LOGDEBUG, "FreeVisualisation() done");
 }
 
+void CGUIVisualisationControl::OnInitialize(int channels, int samplesPerSec, int bitsPerSample)
+{
+  m_channels = channels;
+  m_samplesPerSec = samplesPerSec;
+  m_bitsPerSample = bitsPerSample;
+  m_callStart = true;
+}
+
+void CGUIVisualisationControl::OnAudioData(const float* audioData, int audioDataLength)
+{
+  if (!m_instance || !m_alreadyStarted || !audioData || audioDataLength == 0)
+    return;
+
+  // Save our audio data in the buffers
+  boost::shared_ptr<CAudioBuffer> pBuffer(new CAudioBuffer(audioDataLength));
+  pBuffer->Set(audioData, audioDataLength);
+  m_vecBuffers.push_back(pBuffer);
+
+  if (m_vecBuffers.size() < m_numBuffers)
+    return;
+
+  boost::shared_ptr<CAudioBuffer> ptrAudioBuffer = m_vecBuffers.front();
+  m_vecBuffers.pop_front();
+
+  // Transfer data to our visualisation
+  m_instance->AudioData(ptrAudioBuffer->Get(), ptrAudioBuffer->Size());
+}
+
+void CGUIVisualisationControl::UpdateTrack()
+{
+  if (!m_instance || !m_alreadyStarted)
+    return;
+
+  // get the current album art filename
+  m_albumThumb = CSpecialProtocol::TranslatePath(
+      CServiceBroker::GetGUI()->GetInfoManager().GetImage(MUSICPLAYER_COVER, WINDOW_INVALID));
+  if (m_albumThumb == "DefaultAlbumCover.png")
+    m_albumThumb = "";
+  else
+    CLog::Log(LOGDEBUG, "Updating visualization albumart: {}", m_albumThumb);
+
+  m_instance->UpdateAlbumart(m_albumThumb.c_str());
+
+  const MUSIC_INFO::CMusicInfoTag* tag =
+      CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag();
+  if (!tag)
+    return;
+
+  const std::string artist(tag->GetArtistString());
+  const std::string albumArtist(tag->GetAlbumArtistString());
+  const std::string genre(StringUtils::Join(
+      tag->GetGenre(),
+      CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
+
+  KODI_ADDON_VISUALIZATION_TRACK track = {};
+  track.title = tag->GetTitle().c_str();
+  track.artist = artist.c_str();
+  track.album = tag->GetAlbum().c_str();
+  track.albumArtist = albumArtist.c_str();
+  track.genre = genre.c_str();
+  track.comment = tag->GetComment().c_str();
+  track.lyrics = tag->GetLyrics().c_str();
+  track.trackNumber = tag->GetTrackNumber();
+  track.discNumber = tag->GetDiscNumber();
+  track.duration = tag->GetDuration();
+  track.year = tag->GetYear();
+  track.rating = tag->GetUserrating();
+
+  m_instance->UpdateTrack(&track);
+}
+
+bool CGUIVisualisationControl::IsLocked()
+{
+  if (m_instance && m_alreadyStarted)
+    return m_instance->IsLocked();
+
+  return false;
+}
+
+bool CGUIVisualisationControl::HasPresets()
+{
+  if (m_instance && m_alreadyStarted)
+    return m_instance->HasPresets();
+
+  return false;
+}
+
+int CGUIVisualisationControl::GetActivePreset()
+{
+  if (m_instance && m_alreadyStarted)
+    return m_instance->GetActivePreset();
+
+  return -1;
+}
+
+void CGUIVisualisationControl::SetPreset(int idx)
+{
+  if (m_instance && m_alreadyStarted)
+    m_instance->LoadPreset(idx);
+}
+
+std::string CGUIVisualisationControl::GetActivePresetName()
+{
+  if (m_instance && m_alreadyStarted)
+    return m_instance->GetActivePresetName();
+
+  return "";
+}
+
+bool CGUIVisualisationControl::GetPresetList(std::vector<std::string>& vecpresets)
+{
+  if (m_instance && m_alreadyStarted)
+    return m_instance->GetPresetList(vecpresets);
+
+  return false;
+}
+
+bool CGUIVisualisationControl::InitVisualization()
+{
+  CWinSystemBase* const winSystem = CServiceBroker::GetWinSystem();
+  if (!g_application.m_pPlayer->HasPlayer() || !winSystem)
+    return false;
+
+  const std::string addon = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(
+      CSettings::SETTING_MUSICPLAYER_VISUALISATION);
+  const ADDON::AddonInfoPtr addonBase =
+      CServiceBroker::GetAddonMgr().GetAddonInfo(addon, ADDON::AddonType::VISUALIZATION);
+  if (!addonBase)
+    return false;
+
+  g_application.m_pPlayer->RegisterAudioCallback(this);
+
+  CGraphicContext &context = winSystem->GetGfxContext();
+
+  context.CaptureStateBlock();
+
+  float x = context.ScaleFinalXCoord(GetXPosition(), GetYPosition());
+  float y = context.ScaleFinalYCoord(GetXPosition(), GetYPosition());
+  float w = context.ScaleFinalXCoord(GetXPosition() + GetWidth(), GetYPosition() + GetHeight()) - x;
+  float h = context.ScaleFinalYCoord(GetXPosition() + GetWidth(), GetYPosition() + GetHeight()) - y;
+  if (x < 0)
+    x = 0;
+  if (y < 0)
+    y = 0;
+  if (x + w > context.GetWidth())
+    w = context.GetWidth() - x;
+  if (y + h > context.GetHeight())
+    h = context.GetHeight() - y;
+
+  m_instance = boost::movelib::make_unique<KODI::ADDONS::CVisualization>(addonBase, x, y, w, h);
+  CreateBuffers();
+
+  m_alreadyStarted = false;
+  context.ApplyStateBlock();
+  return true;
+}
+
+void CGUIVisualisationControl::DeInitVisualization()
+{
+  if (!m_attemptedLoad)
+    return;
+
+  CWinSystemBase* const winSystem = CServiceBroker::GetWinSystem();
+  if (!winSystem)
+    return;
+
+  if (g_application.m_pPlayer->HasPlayer())
+    g_application.m_pPlayer->UnRegisterAudioCallback();
+
+  m_attemptedLoad = false;
+
+  CGUIMessage msg(GUI_MSG_VISUALISATION_UNLOADING, m_controlID, 0);
+  CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
+
+  CLog::Log(LOGDEBUG, "FreeVisualisation() started");
+
+  if (m_instance)
+  {
+    if (m_alreadyStarted)
+    {
+      CGraphicContext &context = winSystem->GetGfxContext();
+
+      context.CaptureStateBlock();
+      m_instance->Stop();
+      context.ApplyStateBlock();
+      m_alreadyStarted = false;
+    }
+
+    m_instance.reset();
+  }
+
+  ClearBuffers();
+}
+
+void CGUIVisualisationControl::CreateBuffers()
+{
+  ClearBuffers();
+
+  m_numBuffers = 1;
+  if (m_instance)
+    m_numBuffers += m_instance->GetSyncDelay();
+  if (m_numBuffers > MAX_AUDIO_BUFFERS)
+    m_numBuffers = MAX_AUDIO_BUFFERS;
+  if (m_numBuffers < 1)
+    m_numBuffers = 1;
+}
+
+void CGUIVisualisationControl::ClearBuffers()
+{
+  m_numBuffers = 0;
+  m_vecBuffers.clear();
+}

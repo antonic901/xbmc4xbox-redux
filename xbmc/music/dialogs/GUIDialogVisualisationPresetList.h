@@ -11,10 +11,7 @@
 #include "dialogs/GUIDialogSelect.h"
 #include "guilib/GUIDialog.h"
 
-namespace ADDON
-{
-  class CVisualisation;
-}
+class CGUIVisualisationControl;
 class CFileItemList;
 
 class CGUIDialogVisualisationPresetList : public CGUIDialogSelect
@@ -30,6 +27,6 @@ protected:
 
 private:
   void ClearVisualisation();
-  void SetVisualisation(ADDON::CVisualisation *addon);
-  ADDON::CVisualisation* m_viz;
+  void SetVisualisation(CGUIVisualisationControl *addon);
+  CGUIVisualisationControl* m_viz;
 };

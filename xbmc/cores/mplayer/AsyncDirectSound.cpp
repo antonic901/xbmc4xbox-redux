@@ -30,7 +30,6 @@
 #include "AudioContext.h"
 #include "CdgParser.h"
 #include "MPlayer.h"
-#include "addons/Visualisation.h" // AUDIO_BUFFER_SIZE
 
 #define CALC_DELAY_START   0
 #define CALC_DELAY_STARTED 1
@@ -75,8 +74,8 @@ void CASyncDirectSound::DoWork()
   if (m_VisBytes && m_pCallback)
   {
     // Convert to floats
-    float buffer[2*AUDIO_BUFFER_SIZE];
-    for (int i = 0; i < 2*AUDIO_BUFFER_SIZE; i++)
+    float buffer[2*512];
+    for (int i = 0; i < 2*512; i++)
       buffer[i] = (float)m_VisBuffer[i];
     m_pCallback->OnAudioData(buffer, m_VisBytes);
     m_VisBytes = 0;
@@ -209,7 +208,7 @@ CASyncDirectSound::CASyncDirectSound(IAudioCallback* pCallback, int iChannels, u
 
   // align m_dwPacketSize to dwInputSize
   XMEDIAINFO info;
-  m_pStream->GetInfo(&info);    
+  m_pStream->GetInfo(&info);
   m_dwPacketSize /= info.dwInputSize;
   m_dwPacketSize *= info.dwInputSize;
 
@@ -255,7 +254,7 @@ HRESULT CASyncDirectSound::Deinitialize()
   // CDGParser needs to be close since closefile could be called from mplayer
   // WHY?????, what does it matter who removes this for the cdg parser?
   if( g_application.m_pCdgParser )
-    g_application.m_pCdgParser->Stop(); 
+    g_application.m_pCdgParser->Stop();
 
   m_bIsAllocated = false;
   if (m_pStream)
@@ -282,7 +281,7 @@ HRESULT CASyncDirectSound::Deinitialize()
     delete [] m_adwStatus;
   m_adwStatus = NULL;
 
-  m_pDSound = NULL;  
+  m_pDSound = NULL;
   g_audioContext.SetActiveDevice(CAudioContext::DEFAULT_DEVICE);
 
   if (m_drcTable)

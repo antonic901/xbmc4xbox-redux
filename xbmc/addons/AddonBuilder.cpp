@@ -21,6 +21,7 @@
 #include "addons/UISoundsResource.h"
 #include "addons/Webinterface.h"
 #include "addons/addoninfo/AddonInfo.h"
+#include "addons/binary-addons/AddonDll.h"
 #include "utils/StringUtils.h"
 
 #include <boost/make_shared.hpp>

@@ -30,7 +30,7 @@
 #endif // _MSC_VER > 1000
 
 #include "IDirectSoundRenderer.h"
-#include "IAudioCallback.h"
+#include "cores/IAudioCallback.h"
 #include "cores/ssrc.h"
 
 extern void RegisterAudioCallback(IAudioCallback* pCallback);

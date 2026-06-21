@@ -431,8 +431,6 @@ protected:
 
   std::vector<KODI::ACTION::IActionListener *> m_actionListeners;
 
-  bool m_fallbackLanguageLoaded;
-
 private:
   CCriticalSection                m_critSection;                 /*!< critical section for all changes to this class, except for changes to triggers */
 };
