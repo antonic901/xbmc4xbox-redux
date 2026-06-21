@@ -257,7 +257,7 @@ CRepository::FetchStatus CRepository::FetchIfChanged(const std::string& oldCheck
                                                      int& recheckAfter) const
 {
   checksum = "";
-  std::vector<boost::tuple<RepositoryDirInfo const&, std::string> > dirChecksums;
+  std::vector<boost::tuple<RepositoryDirInfo const*, std::string> > dirChecksums;
   std::vector<int> recheckAfterTimes;
 
   for (RepositoryDirList::const_iterator dir = m_dirs.begin(); dir != m_dirs.end(); ++dir)
@@ -272,7 +272,7 @@ CRepository::FetchStatus CRepository::FetchIfChanged(const std::string& oldCheck
         CLog::Log(LOGERROR, "CRepository: failed read '{}'", dir->checksum);
         return STATUS_ERROR;
       }
-      dirChecksums.push_back(boost::make_tuple(*dir, part));
+      dirChecksums.push_back(boost::make_tuple(&(*dir), part));
       recheckAfterTimes.push_back(recheckAfterThisDir);
       checksum += part;
     }
@@ -290,10 +290,10 @@ CRepository::FetchStatus CRepository::FetchIfChanged(const std::string& oldCheck
       return STATUS_NOT_MODIFIED;
   }
 
-  for (std::vector<boost::tuple<RepositoryDirInfo const&, std::string> >::const_iterator dirTuple = dirChecksums.begin(); dirTuple != dirChecksums.end(); ++dirTuple)
+  for (std::vector<boost::tuple<RepositoryDirInfo const*, std::string> >::const_iterator dirTuple = dirChecksums.begin(); dirTuple != dirChecksums.end(); ++dirTuple)
   {
     std::vector<AddonInfoPtr> tmp;
-    if (!FetchIndex(boost::get<0>(*dirTuple), boost::get<1>(*dirTuple), tmp))
+    if (!FetchIndex(*boost::get<0>(*dirTuple), boost::get<1>(*dirTuple), tmp))
       return STATUS_ERROR;
     addons.insert(addons.end(), tmp.begin(), tmp.end());
   }
