@@ -73,6 +73,7 @@ AddonPtr CAddonBuilder::Generate(const AddonInfoPtr& info, AddonType::Type type)
     case AddonType::SCRAPER_MOVIES:
     case AddonType::SCRAPER_MUSICVIDEOS:
     case AddonType::SCRAPER_TVSHOWS:
+    case AddonType::SCRAPER_PROGRAMS:
     case AddonType::SCRAPER_LIBRARY:
       return boost::make_shared<CScraper>(info, type);
     case AddonType::SKIN:

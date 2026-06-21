@@ -638,7 +638,7 @@ ScraperPtr CProgramDatabase::GetScraperForPath(const std::string& strPath)
       return ScraperPtr();
 
     AddonPtr addon;
-    if (CServiceBroker::GetAddonMgr().GetAddon(scraperID, addon))
+    if (CServiceBroker::GetAddonMgr().GetAddon(scraperID, addon, ADDON::AddonType::SCRAPER_PROGRAMS, ADDON::OnlyEnabled::CHOICE_YES))
       return boost::dynamic_pointer_cast<CScraper>(addon);
   }
   catch(...)
