@@ -21,6 +21,7 @@
  */
 
 #include <string>
+#include <xtl.h>
 
 class CGUISound
 {

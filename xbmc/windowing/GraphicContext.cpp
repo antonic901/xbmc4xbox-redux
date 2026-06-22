@@ -18,7 +18,6 @@
  *
  */
 
-#include "include.h"
 #include "GraphicContext.h"
 #include "XBVideoConfig.h"
 #include "Application.h"
