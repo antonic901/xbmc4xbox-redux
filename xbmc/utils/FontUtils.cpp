@@ -6,7 +6,6 @@
  *  See LICENSES/README.md for more information.
  */
 
-#include "include.h"
 #include "FontUtils.h"
 
 #include "FileItem.h"

@@ -19,7 +19,6 @@
  */
 
 #include "Edl.h"
-#include "include.h"
 #include "ServiceBroker.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
@@ -684,7 +683,7 @@ bool CEdl::WriteMPlayerEdl()
   CStdString strBuffer;
   for (int i = 0; i < (int)m_vecCuts.size(); i++)
   {
-    /* 
+    /*
      * MPlayer doesn't understand the scene marker (2) or commercial break (3) identifiers that XBMC
      * supports in EDL files.
      *
